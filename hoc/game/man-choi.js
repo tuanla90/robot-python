@@ -57,17 +57,20 @@
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
     E.ffr = q('.ffr');
 
+    S.kieu = TP.taoKieu(function () { return { man: S.man, hamCuaMan: S.bai ? S.bai.hamCuaMan : [], kho: KhoHam.ds() }; });     // kiểu đối số của hàm: số / một chữ / chuỗi ghép
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
-      thutLe: function () { return TP.coCauTruc(S.man, 'for'); },
+      thutLe: function () { return TP.coCauTruc(S.man, 'for') || TP.coCauTruc(S.man, 'if'); },
+      kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) { if (!S.ed.chen(txt)) toast(t('choi.dayKhung'), 'bad'); },
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
-      khiMoi: function () { Xuong.moiHam(function (ten) { Xuong.mo('em', ten); }); }
+      khiMoi: function () { Xuong.moiHam(function (ten) { Xuong.mo('em', ten); }); },
+      kieuDoiSo: function (ten, k) { return S.kieu(ten, k); }
     });
 
     TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiDay: function () { toast(t('choi.dayKhung'), 'bad'); }, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); } });
@@ -151,7 +154,9 @@
     S.pal.dung({
       goc: m.hamGoc,
       vong: TP.coCauTruc(m, 'for'),
-      em: (m.moXuong !== false && !m.camHamCuaEm) ? KhoHam.ds() : null,
+      chuoi: TP.coCauTruc(m, 'for') && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R":
+      dieuKien: TP.coCauTruc(m, 'if'),
+      em: (m.moXuong !== false && !m.camHamCuaEm) ? TP.locHamTheoRobot(m, KhoHam.ds()) : null,      // nhện: bỏ hàm dùng lệnh bánh
       man: S.bai.hamCuaMan,
       coNutMoi: true
     });
@@ -331,7 +336,7 @@
     // chưa thắng: bong bóng chẩn đoán (lỗi trước, thông tin sau), đánh dấu dòng / khối
     var loi = k.chanDoan.filter(function (c) { return c.muc === 'loi'; });
     var tin = k.chanDoan.filter(function (c) { return c.muc !== 'loi'; });
-    S.cd = loi.concat(tin); S.cdi = 0;
+    S.cd = TP.xepChanDoan(loi.concat(tin)); S.cdi = 0;
     var rows = [], bricks = [], conTran = false;
     S.cd.forEach(function (c) {
       chiCho(c).forEach(function (cho) {

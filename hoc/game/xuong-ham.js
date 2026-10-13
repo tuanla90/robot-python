@@ -56,11 +56,14 @@
     E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong');
     S.field = new SanVe.Field(E.canvas, { kich: 210 });
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
+    S.kieu = TP.taoKieu(function () { return { man: A.man(), hamCuaMan: A.bai().hamCuaMan, kho: KhoHam.ds() }; });     // kiểu đối số của hàm: số / một chữ / chuỗi ghép
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
-      thutLe: function () { return TP.coCauTruc(A.man(), 'for'); },
+      thutLe: function () { return TP.coCauTruc(A.man(), 'for') || TP.coCauTruc(A.man(), 'if'); },
       bienDuoc: function () { var f = hamHienTai(); return f ? (f.thamSo || []) : []; },       // thân hàm có tham số: chọn được biến ở bộ chọn số
+      kieuBien: kieuBienHam,                                                                   // kiểu của từng đối số (số / một chữ / chuỗi) để bộ chọn chỉ liệt kê biến hợp kiểu
+      kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
       giaBien: giaBienThu,                                                                     // để hiện số lượt của range(n) khi Thử
       tt: q('.p-prog .tt'), ttDay: t('xuong.def'), ttNgan: t('xuong.def'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); }
@@ -68,9 +71,10 @@
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) { S.ed.chen(txt); },
       khiSua: function (loai, ten) { mo(loai, ten); },
-      khiBien: function (ten) { thayBien(ten); }
+      khiBien: function (ten) { thayBien(ten); },
+      kieuDoiSo: function (ten, k) { return S.kieu(ten, k); }
     });
-    TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiKhongSo: function (ten) { toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000); } });
+    TP.Keo.gan({ ed: S.ed, pal: S.pal, kieuBien: kieuBienHam, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiKhongSo: function (ten) { toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000); } });
     q('[data-nut="xoa-het"]').addEventListener('click', function () {
       if (!S.than || !S.than.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
@@ -135,7 +139,9 @@
     S.pal.dung({
       goc: man.hamGoc,
       vong: TP.coCauTruc(man, 'for'),
-      em: (man.moXuong !== false && !man.camHamCuaEm) ? KhoHam.ds() : null,
+      chuoi: TP.coCauTruc(man, 'for') && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
+      dieuKien: TP.coCauTruc(man, 'if'),
+      em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
       man: A.bai().hamCuaMan,
       bien: (hamHienTai() || {}).thamSo || [],          // hàm có tham số: nhóm BIẾN có thẻ cho từng đối số
       coNutMoi: false,
@@ -145,19 +151,29 @@
   /** Thẻ biến ở kho: thay vào dòng đang chọn (hoặc dòng có số gần nhất phía trên); không có dòng nào thì nhắc. */
   function thayBien(ten) {
     if (S.busy) return;
-    if (!S.ed.datBien(ten)) toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000);
+    if (!S.ed.datBien(ten, kieuBienHam(ten))) toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000);
+  }
+  /** Kiểu của đối số `ten` của hàm đang sửa: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi chữ). */
+  function kieuBienHam(ten) {
+    var f = hamHienTai(), k = f ? (f.thamSo || []).indexOf(ten) : -1;
+    return k < 0 ? 'so' : S.kieu(f.ten, k);
   }
 
   /* ----------------------------------------- ô số cạnh nút Thử (đối số khi thử) */
   function thamSoHienTai() { var f = hamHienTai(); return f ? (f.thamSo || []) : []; }
-  /** Giá trị thử của từng đối số (nhớ theo hàm; mặc định 2). */
+  /** Giá trị thử của từng đối số (nhớ theo hàm; số mặc định 2; đối số chữ: "R" cho một chữ, "RRD" cho chuỗi; chuỗi lưu không có nháy). */
   function doiSoHienTai() {
     var nho = S.doiSo[S.loai + ':' + S.ten] || [];
-    return thamSoHienTai().map(function (_, k) { return nho[k] > 0 ? nho[k] : DS_THU_MAC_DINH; });
+    return thamSoHienTai().map(function (ten, k) {
+      var kd = kieuBienHam(ten);
+      if (kd === 'so') return nho[k] > 0 ? +nho[k] : DS_THU_MAC_DINH;
+      var v = typeof nho[k] === 'string' ? nho[k] : '';
+      return /^[UDLR]+$/.test(v) && (kd === 'ghep' || v.length === 1) ? v : (kd === 'don' ? 'R' : 'RRD');
+    });
   }
   function giaBienThu() {
     var v = doiSoHienTai(), o = {};
-    thamSoHienTai().forEach(function (ten, k) { o[ten] = v[k]; });
+    thamSoHienTai().forEach(function (ten, k) { o[ten] = typeof v[k] === 'string' ? 0 : v[k]; });
     return o;
   }
   function dungDoiSo() {
@@ -166,13 +182,15 @@
     E.thuHang.classList.toggle('co-ds', ts.length > 0);
     E.thuHang.classList.toggle('ds2', ts.length > 1);
     ts.forEach(function (ten, k) {
-      var b = h('button', 'bt g-pu dso-o'); b.setAttribute('data-nut', 'doi-so'); b.setAttribute('data-k', k); b.setAttribute('data-ten', ten);
-      b.setAttribute('aria-label', t('xuong.doiSo', { ten: ten }));
+      var kd = kieuBienHam(ten), laChu = kd !== 'so';
+      var b = h('button', 'bt g-pu dso-o' + (laChu ? ' chu' : '')); b.setAttribute('data-nut', 'doi-so'); b.setAttribute('data-k', k); b.setAttribute('data-ten', ten);
+      b.setAttribute('aria-label', t(laChu ? 'xuong.doiChuoi' : 'xuong.doiSo', { ten: ten }));
       b.appendChild(h('span', 'k', ten)); b.appendChild(h('span', 'v', String(v[k])));
       b.addEventListener('click', function (ev) {
         ev.stopPropagation();
         if (S.busy) return;
-        TP.chonSo({ neo: b, so: doiSoHienTai()[k], khiChon: function (n) { datDoiSo(k, n); } });
+        if (laChu) TP.chonChuoi({ neo: b, kieu: kd, gia: doiSoHienTai()[k], bien: [], khiChon: function (s) { datDoiSo(k, s.replace(/"/g, '')); } });
+        else TP.chonSo({ neo: b, so: doiSoHienTai()[k], khiChon: function (n) { datDoiSo(k, n); } });
       });
       E.dso.appendChild(b);
     });
@@ -243,7 +261,7 @@
     if (x < 0 || y < 0 || x >= st.rong || y >= st.cao) return;
     var co = coGi(x, y), moi = { rong: st.rong, cao: st.cao, batDau: Object.assign({}, st.batDau), vat: st.vat.slice(), tuong: st.tuong.slice() };
     if (S.che === 'xe') {
-      if (co === 'xe') moi.batDau.huong = (moi.batDau.huong + 1) % 4;
+      if (co === 'xe') { if (A.man().loaiRobot === 'nhen') return; moi.batDau.huong = (moi.batDau.huong + 1) % 4; }       // nhện không có hướng mặt: chạm lại vào nó không xoay
       else if (co === 'vat' && coTay()) { moi.batDau.x = x; moi.batDau.y = y; }          // có tay gắp: xe được đứng trên vật
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else { moi.batDau.x = x; moi.batDau.y = y; }
@@ -272,7 +290,8 @@
   /* ------------------------------------------------------- kết quả thử */
   function chay() {
     var man = A.man();
-    return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds(), { sanThu: S.st, doiSo: doiSoHienTai() });
+    var ds = doiSoHienTai().map(function (v) { return typeof v === 'string' ? '"' + v + '"' : v; });      // đối số chữ truyền vào code có nháy: go("R"), walk("RRD")
+    return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds(), { sanThu: S.st, doiSo: ds });
   }
   function anBongD() { TP.bongAn(E.bongD); S.coBong = false; }
   function xoaKetThu() {
@@ -311,7 +330,7 @@
     S.ketThu = kq; S.cdi = 0; anBongD();
     var loi = kq.chanDoan.filter(function (c) { return c.muc === 'loi'; });
     var tin = kq.chanDoan.filter(function (c) { return c.muc !== 'loi'; });
-    var ds = loi.concat(tin);
+    var ds = TP.xepChanDoan(loi.concat(tin));
     kq.chanDoan = ds;
     var rows = [], bricks = [];
     ds.forEach(function (c) { chiCho(c).forEach(function (cho) { gomLoi(cho, rows, bricks); }); });

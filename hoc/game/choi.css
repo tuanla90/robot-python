@@ -497,3 +497,38 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .cuon-b:disabled{opacity:.38;filter:saturate(.35);cursor:default;pointer-events:none}
 .cuon-b.xuong:not(:disabled){--c:#ffc933;--hi:#fff3a8;--lo:#d89a1a}
 .cuon-b.xuong:not(:disabled) .tam{border-top-color:var(--ink)}
+
+/* ---------- nhện: nhóm CHÂN (xanh dương), nhóm ĐIỀU KIỆN (xanh ngọc: if / elif / else), chuỗi chữ chỉ đường ---------- */
+.gl.g-chan{color:#b4ccff}.gl.g-chan::after{background:#4a6ed0}
+.brick.chan{--c:#5b8cff;--hi:#b4ccff;--lo:#2f58c4;--stud:var(--st-cy)}
+.gl.g-dk{color:#9ff0e2}.gl.g-dk::after{background:#1fa08f}
+.brick.dk{--c:#2fc2ad;--hi:#9ff0e2;--lo:#128474;--stud:var(--st-gr)}
+.pal .brick.dk .tx{padding-right:4px;font-size:.86em}
+.pal.d3 .brick.dk{grid-column:1/-1}
+.strip.if:not(.on):not(.err){background:#d4f4ee;box-shadow:inset 0 0 0 2px var(--ink),inset 0 4px 0 #ecfffb,inset 0 -4px 0 #9fddd0}
+.strip.if{font-size:calc(10px*var(--km))}
+.keo-dong.if{background:#d4f4ee;font-size:calc(10px*var(--km))}
+.strip .kw.if,.keo-dong .kw.if{color:#0c7a6e}
+.bk.if{background:#4fd6c4;box-shadow:inset 1px 0 0 #0c4a42,inset -1px 0 0 #0c4a42,inset 2px 0 0 #a8f2e6}
+.bk.if.cuoi::after{background:#4fd6c4;box-shadow:inset 0 1px 0 #0c4a42,inset 0 -1px 0 #0c4a42}
+.num.chuoi{background:#e08a3a;min-width:1.4em;padding:0 2px;box-shadow:0 0 0 1px #5a2f08,inset 0 2px 0 #ffcf94,inset 0 -2px 0 #a8651f}
+.strip .num.chuoi{flex:0 1 auto;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.strip.ko-cat .num.chuoi{flex:none;max-width:none;overflow:visible}
+.chon-so .cs:disabled{opacity:.38;filter:saturate(.35);pointer-events:none}
+.chon-chuoi{display:flex;flex-direction:column;gap:6px;width:136px;grid-template-columns:none}
+.chon-chuoi .cc-chu{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.chon-chuoi.don,.chon-chuoi.dl{width:128px}
+.chon-chuoi .cs-bien{flex-wrap:wrap;margin-top:0}
+.cc-hang0{display:flex;align-items:flex-end;gap:4px}
+.cc-hien{flex:1;min-width:0;min-height:24px;padding:4px 5px 1px;background:#0e3a2b;box-shadow:inset 0 0 0 2px var(--ink);
+  font:var(--wm) calc(13px*var(--km))/1 var(--mono);color:#ffe9a8;word-break:break-all;white-space:pre-wrap}
+.cc-hien.trong{color:#7fb59c}
+.cc-dem{flex:none;font:700 calc(8px*var(--kp))/1 var(--px);color:#8fc9ac;padding-bottom:1px}
+.cc-hang{display:flex;gap:6px}
+.cc-hang .cs{flex:1}
+.cc-hang .cc-xong{flex:1.6}
+.dso-o.chu .v{max-width:100%;padding:0 1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:calc(11px*var(--km))}
+.pal .g-2c{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:7px;align-content:start}
+.pal .g-2c .brick{min-width:0}
+.pal .g-2c .brick .tx{padding-right:2px;font-size:.92em}
+.pal.d3 .g-2c{grid-column:1/-1}

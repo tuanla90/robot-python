@@ -65,7 +65,7 @@
     datLai: function () {
       this.rid++;
       var b = this.cfg.bd;
-      this.vis = { x: b.x, y: b.y, d: b.huong || 0, hop: 0, dx: 0, dy: 0, tay: { tuThe: 'tren', kep: false, cam: null }, tayDo: 0, bao: null, baoDen: 0 };
+      this.vis = { x: b.x, y: b.y, d: b.huong || 0, chan: 0, hop: 0, dx: 0, dy: 0, tay: { tuThe: 'tren', kep: false, cam: null }, tayDo: 0, bao: null, baoDen: 0 };
       this.objs = this.vat0.map(function (o) { return { id: o.id, x: o.x, y: o.y, tt: 'dat', voLuc: 0 }; });
       this.clearFx();
     },
@@ -175,7 +175,9 @@
         g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, this.lop.width, this.lop.height);
         var X = Math.round(mcu + cx * ku), Y = Math.round(mcu + cy * ku - v.hop * ku), p = this.p;
         var ph = (now / 90 | 0) & 1, duoi = this.vatDuoiXe();
-        var spr = VeRobot.ve(c.robot, { wl: this.wh.L, wr: this.wh.R, ph: ph, tay: v.tay, camBien: v.camBien, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
+        var wL = this.wh.L, wR = this.wh.R, phC = ph;
+        if (c.robot.than === 'nhen') { wL = wR = v.chan ? 2 : 0; if (v.chan === 1) phC = 1; }   // nhện: chan 1 = nhấc chân (khung `buoc` đứng yên), 2 = chân bước luân phiên
+        var spr = VeRobot.ve(c.robot, { wl: wL, wr: wR, ph: phC, tay: v.tay, camBien: v.camBien, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
         g.imageSmoothingEnabled = false;
         var w = spr.width, h = spr.height, sc = spr.laPart ? 1 : ku;
         g.fillStyle = 'rgba(0,30,10,.35)';                                                // bóng dưới thân
@@ -286,17 +288,18 @@
         tgian = await this.apTay(e, ms, my);
         if (tgian < 0) return;
       }
-      var n = Math.max(1, list.length), per = tgian / n, d = v.d;
+      var n = Math.max(1, list.length), per = tgian / n, d = v.d, laNhen = this.cfg.robot.than === 'nhen';
       if (!list.length) await ngu(tgian);
       for (var i = 0; i < list.length; i++) {
         var s = list[i];
         if (my !== this.rid) return;
         if (s.den && (s.ma === 'tien' || s.ma === 'lui' || s.ma === 'di' || s.ma === 'bang-day')) {
           var x0 = v.x, y0 = v.y;
+          if (laNhen && s.ma === 'di') v.chan = 2;                    // nhịp 2 của bước nhện: trượt sang ô mới, chân bước
           if (s.ma === 'bang-day') await ngu(per * 0.15);
           await this.tween(per * (s.ma === 'bang-day' ? 0.85 : 1), my, function (k) { var k2 = ease(k); v.x = x0 + (s.den.x - x0) * k2; v.y = y0 + (s.den.y - y0) * k2; });
           if (my !== this.rid) return;
-          v.x = s.den.x; v.y = s.den.y;
+          v.x = s.den.x; v.y = s.den.y; v.chan = 0;
         } else if (s.ma === 'quay-phai' || s.ma === 'quay-trai' || s.ma === 'quay-dau') {
           var d1 = (d + (s.ma === 'quay-phai' ? 1 : s.ma === 'quay-trai' ? 3 : 2)) % 4, lt = s.ma === 'quay-trai' ? 'L' : 'R';
           await this.tween(per, my, function (k) {
@@ -308,26 +311,29 @@
         } else if (s.ma === 'dam-tuong' || s.ma === 'bang-chan') {
           var ddx = s.den ? Math.sign(s.den.x - (s.tu ? s.tu.x : v.x)) : 0, ddy = s.den ? Math.sign(s.den.y - (s.tu ? s.tu.y : v.y)) : 0;
           var bad = s.ma === 'dam-tuong';
+          if (laNhen) v.chan = 1;
           await this.tween(per, my, function (k) {
             var a = Math.sin(k * Math.PI * 3) * (1 - k) * 3; v.dx = ddx * a; v.dy = ddy * a;
             if (bad && k > 0.1 && k < 0.6) self.flash = performance.now() + 120;
           });
-          v.dx = 0; v.dy = 0;
+          v.dx = 0; v.dy = 0; v.chan = 0;
           if (bad && this.onRung) this.onRung();
-        } else if (s.ma === 'chuan-bi') {
+        } else if (s.ma === 'chuan-bi') {                            // nhện: nhịp 1 của bước, nhấc chân (đổi khung `buoc`), chưa rời ô
+          if (laNhen) v.chan = 1;
           await this.tween(per, my, function (k) { v.hop = Math.sin(k * Math.PI) * 1; });
           v.hop = 0;
         } else if (s.ma === 'tay-vuong') {                           // tay hạ sát đất: xe rung tại chỗ, tay nháy đỏ
           v.tayDo = performance.now() + per + 700;
+          if (laNhen) v.chan = 1;
           await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 7) * (1 - k) * 2.5; });
-          v.dx = 0;
+          v.dx = 0; v.chan = 0;
         } else {
           await ngu(per);
         }
       }
       if (my !== this.rid) return;
       // đồng bộ với vết (an toàn nếu có sự kiện lạ)
-      v.x = e.robot.x; v.y = e.robot.y; v.d = e.robot.huong; v.hop = 0; v.dx = 0; v.dy = 0;
+      v.x = e.robot.x; v.y = e.robot.y; v.d = laNhen ? 0 : e.robot.huong; v.hop = 0; v.dx = 0; v.dy = 0; v.chan = 0;   // nhện không có hướng mặt: luôn hướng lên
       if (e.robot.tay) v.tay = { tuThe: e.robot.tay.tuThe, kep: e.robot.tay.kep, cam: e.robot.tay.cam };
       v.camBien = null;
       this.wh.L = 0; this.wh.R = 0;
