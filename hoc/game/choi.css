@@ -142,18 +142,24 @@ body.dien-thoai .screen{clip-path:none}
 .pan .rv{position:absolute;width:4px;height:4px;background:#d8cdb8;box-shadow:0 0 0 1px var(--ink)}
 .pan .rv.a{left:1px;top:1px}.pan .rv.b{right:1px;top:1px}.pan .rv.c{left:1px;bottom:1px}.pan .rv.d{right:1px;bottom:1px}
 .board{height:100%;padding:3px 4px 4px;display:flex;flex-direction:column;overflow:hidden}
-.bh{flex:none;height:26px;display:flex;align-items:center;gap:3px;padding-bottom:2px}
+.bh{flex:none;height:26px;display:flex;align-items:center;gap:2px;padding-bottom:2px}
 .bh .tt{font:700 calc(10px*var(--kp))/1 var(--px);color:#e8ffe0;white-space:nowrap;padding-top:2px}
-.bh .ct{font:var(--wm) calc(11px*var(--km))/1 var(--mono);color:#ffd95a;margin-left:auto}
-.bh .del{flex:none;width:22px;height:19px;display:flex;align-items:center;justify-content:center;margin-bottom:3px;
+.bh .ct{font:var(--wm) calc(11px*var(--km))/1 var(--mono);color:#ffd95a}
+.bh .del{flex:none;height:19px;display:flex;align-items:center;justify-content:center;margin-bottom:3px;padding:2px 3px 0;white-space:nowrap;
+  font:700 calc(10px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.5);
   box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink),inset 0 2px 0 var(--hi),inset 0 -3px 0 var(--lo)}
 .bh .del:active{transform:translateY(2px)}
+.bh .del.dong{margin-left:auto}
+.bh .del.het{--c:#c4302c;--hi:#ff9088;--lo:#7c1614}
+.bh .ct{margin-left:2px}
+.bh .del.dong ~ .del{margin-left:3px}
+.bh .del:disabled{opacity:.38;filter:saturate(.35);cursor:default;pointer-events:none}
 .pan.flash{animation:redfl .5s steps(2) 1}
 @keyframes redfl{0%,100%{box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 rgba(255,210,150,.55),inset 0 -3px 0 rgba(50,25,8,.55)}
   25%,75%{box-shadow:0 0 0 4px #ff3b30,inset 0 0 0 4px #ff3b30,inset 0 -3px 0 rgba(50,25,8,.55)}}
 
-.rows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:2px}
-.row{flex:1 1 0;min-height:0;max-height:46px;display:flex;gap:3px;cursor:pointer}
+.rows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:2px;touch-action:none}
+.row{flex:1 1 0;min-height:0;max-height:46px;display:flex;gap:3px;cursor:pointer;-webkit-touch-callout:none}
 .tab{flex:none;width:17px;background:#0e3a2b;box-shadow:inset 0 0 0 2px var(--ink);font:var(--wm) calc(11px*var(--km))/1 var(--mono);color:#8fc9ac;display:flex;align-items:center;justify-content:center}
 .strip{flex:1;min-width:0;display:flex;align-items:center;padding:0 5px;overflow:hidden;white-space:pre;
   background:#f6e8c0;box-shadow:inset 0 0 0 2px var(--ink),inset 0 4px 0 #fffbe8,inset 0 -4px 0 #d9c58e;
@@ -171,7 +177,7 @@ body.dien-thoai .screen{clip-path:none}
 .strip.on .pu{color:#5a3a10}
 
 /* kho khối lệnh */
-.pal{flex:1;min-height:0;overflow:hidden;overflow:clip;padding:0 1px}
+.pal{flex:1;min-height:0;overflow:hidden;overflow:clip;padding:0 1px;touch-action:none}
 .gl{display:flex;align-items:center;gap:4px;margin:2px 0 0;height:16px;min-width:0;overflow:hidden;font:700 calc(10px*var(--kp))/1 var(--px);color:#a8dcc0;letter-spacing:0;white-space:nowrap}
 .gl::after{content:"";flex:1;min-width:0;height:2px;background:#2f7a5c}
 .gl.g-em{color:#9ff08f}.gl.g-em::after{background:#3f9a3a}
@@ -358,3 +364,38 @@ body.dien-thoai .screen{clip-path:none}
 .fb .cbtn{font-size:14px}.fb .mini .bt{font-size:11px}
 .fb .c-td{font-size:17px}.fb .c-nhan{font-size:12px}
 .fb .plate2 .nm{font-size:18px}
+
+/* ---------- kéo thả ---------- */
+body.dang-keo,body.dang-keo *{cursor:grabbing!important}
+.strip.slot{background:rgba(255,217,90,.16);border:2px solid #ffd95a;box-shadow:0 0 0 2px rgba(255,255,255,.55),inset 0 0 0 2px rgba(255,217,90,.25);animation:slotb .5s steps(1) infinite}
+@keyframes slotb{0%{border-color:#ffd95a;background:rgba(255,217,90,.16)}50%{border-color:#fff;background:rgba(255,255,255,.2)}}
+.pan.keo-dich{box-shadow:0 0 0 2px var(--ink),0 0 0 4px rgba(255,217,90,.7),inset 0 2px 0 rgba(255,210,150,.55),inset 0 -3px 0 rgba(50,25,8,.55)}
+.pan.keo-co-cho{box-shadow:0 0 0 2px var(--ink),0 0 0 4px #ffd95a,inset 0 2px 0 rgba(255,210,150,.55),inset 0 -3px 0 rgba(50,25,8,.55)}
+.strip.cam{animation:cam .4s steps(4) 1}
+@keyframes cam{0%{transform:translateY(-8px) scale(1.06);filter:brightness(1.35)}35%{transform:translateY(3px) scale(.97);filter:brightness(1.2)}65%{transform:translateY(-1px);filter:brightness(1.1)}100%{transform:none;filter:none}}
+.keo-bong{position:absolute;z-index:60;pointer-events:none;margin:0!important;transform:rotate(-2.5deg) scale(1.05);will-change:left,top;
+  filter:drop-shadow(4px 7px 0 rgba(0,0,0,.4))}
+.keo-bong::before{display:none!important}
+.keo-bong.brick{transition:none}
+.keo-dong{display:flex;align-items:center;padding:0 5px;overflow:hidden;white-space:pre;
+  background:#fff3c8;box-shadow:0 0 0 2px var(--ink),0 0 0 4px #ffd95a,inset 0 4px 0 #fffbe8,inset 0 -4px 0 #d9c58e;
+  font:var(--wm) calc(13px*var(--km))/1 var(--mono);color:#2a1c0e}
+.keo-dong .mv{color:#0b6f86}.keo-dong .wt{color:#8a5200}.keo-dong .fn{color:#1a7a2e}.keo-dong .pu{color:#7a6a4a}.keo-dong .cm{color:#8a7f66}.keo-dong .ar{color:#9a2fb0}
+.keo-bong.bad{filter:drop-shadow(4px 7px 0 rgba(0,0,0,.4)) saturate(.6)}
+.keo-bong.keo-dong.bad{background:#ffc0b8;box-shadow:0 0 0 2px #8a1a14,0 0 0 4px #ff4a3c,inset 0 4px 0 #ffe0dc,inset 0 -4px 0 #e0766c}
+.keo-bong.brick.bad{box-shadow:0 0 0 2px #fff,0 0 0 4px #ff3b30,0 3px 0 4px var(--ink),inset 0 3px 0 var(--hi),inset 0 -4px 0 var(--lo)}
+.keo-bong.vao-thung{transform:rotate(5deg) scale(.82);opacity:.92}
+/* thùng rác: thế chỗ cột KHỐI LỆNH khi đang kéo một dòng code */
+.thung{position:absolute;left:5px;right:5px;top:5px;bottom:5px;z-index:12;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:8px;text-align:center;
+  background-color:#9c2a26;
+  background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.12) 0 8px,rgba(0,0,0,0) 8px 16px);
+  box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 5px #ff6a60,inset 0 0 0 7px var(--ink)}
+.keo-thung .thung{display:flex}
+.thung-ic{display:flex;transition:none}
+.thung-chu{font:700 calc(15px*var(--kp))/1.15 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.5);max-width:120px;text-wrap:balance}
+.thung.on{background-color:#e0443c;box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 5px #fff,inset 0 0 0 7px var(--ink)}
+.thung.on .thung-ic{animation:thungl .3s steps(2) infinite}
+@keyframes thungl{0%{transform:translateY(0) rotate(-5deg) scale(1.15)}50%{transform:translateY(-3px) rotate(5deg) scale(1.15)}}
+
+/* bong bóng đang mở thì kho khối tạm ẩn (và không bấm / kéo được) */
+.pan.co-bong .pal{visibility:hidden}

@@ -25,7 +25,7 @@
         '<button class="bt g-pu menu" data-nut="menu" aria-label="' + t('choi.menu') + '"><span data-i="menu" data-s="2" data-l="#2f1a6a"></span></button>' +
       '</div>' +
       '<div class="fblock">' +
-        '<div class="ffr"><canvas class="tex" id="field"></canvas><div class="toast"></div><div class="bong" data-nut="bong"></div></div>' +
+        '<div class="ffr"><canvas class="tex" id="field"></canvas><div class="toast"></div></div>' +
         '<div class="side">' +
           '<button class="bt g-gr cbtn" data-nut="chay"><span data-i="play" data-s="2" data-l="#14561e"></span>' + t('choi.chay') + '</button>' +
           '<button class="bt g-yl cbtn dark" data-nut="nhip"><span data-i="step" data-s="2" data-l="#6a4400"></span>' + t('choi.nhip') + '</button>' +
@@ -38,9 +38,9 @@
       '</div>' +
       '<div class="low">' +
         '<div class="pan p-prog" id="pan-main"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.chuongTrinh') + '</span><span class="ct">0/10</span>' +
-            '<button class="bt g-rd del" data-nut="xoa-dong" aria-label="' + t('choi.xoaDong') + '"><span data-i="del" data-s="1" data-l="#5a1010"></span></button>' +
-            '<button class="bt g-wd del" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="1" data-l="#3a2008"></span></button></div>' +
+          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.chuongTrinhNgan') + '</span><span class="ct">0/10</span>' +
+            '<button class="bt g-rd del dong" data-nut="xoa-dong" aria-label="' + t('choi.xoaDong') + '">' + t('choi.xoaDongNut') + '</button>' +
+            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '">' + t('choi.xoaHetNut') + '</button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
@@ -51,7 +51,7 @@
     Ve.hydrate(host);
     var q = function (s) { return host.querySelector(s); };
     E.n = q('.plaque .n'); E.t = q('.plaque .t'); E.sao = q('.top .stars');
-    E.toast = q('.toast'); E.bong = q('.ffr .bong'); E.bongD = q('.p-pal .bong'); E.clock = q('.clock .v'); E.side = q('.side');
+    E.toast = q('.toast'); E.bongD = q('.p-pal .bong'); E.clock = q('.clock .v'); E.side = q('.side');
     E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov');
 
     S.field = new SanVe.Field(q('#field'), { kich: 210, lamps: { T: q('.lamp.lt'), P: q('.lamp.lp') } });
@@ -60,6 +60,7 @@
 
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
+      nutXoaDong: q('[data-nut="xoa-dong"]'), nutXoaHet: q('[data-nut="xoa-het"]'),
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
@@ -67,6 +68,8 @@
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
       khiMoi: function () { Xuong.moiHam(function (ten) { Xuong.mo('em', ten); }); }
     });
+
+    TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiDay: function () { toast(t('choi.dayKhung'), 'bad'); }, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); } });
 
     Xuong.dung(E.ov, {
       man: function () { return S.man; }, bai: function () { return S.bai; },
@@ -174,12 +177,11 @@
   function anToast() { clearTimeout(toastHen); E.toast.className = 'toast'; }
 
   /* ------------------------------------------------------------- bong bóng */
-  // Đề bài / gợi ý: bong bóng đè lên sân (E.bong). Chẩn đoán sau khi chạy: bong bóng đè lên cột KHỐI LỆNH (E.bongD),
-  // để sân (robot dừng ở đâu) và dòng code tô đỏ ở cột CHƯƠNG TRÌNH vẫn thấy được.
-  function bong(o) { TP.bongVe(E.bong, o); }
-  function anBongTren() { TP.bongAn(E.bong); }
+  // Mọi bong bóng (đề bài, gợi ý, chẩn đoán sau khi chạy) đè lên cột KHỐI LỆNH (E.bongD), kho khối tạm ẩn khi bong bóng mở;
+  // nhờ vậy sân (robot dừng ở đâu) và cột CHƯƠNG TRÌNH (dòng tô đỏ, kéo thả) luôn thấy được.
+  function bong(o) { TP.bongVe(E.bongD, o); }
   function anBongD() { TP.bongAn(E.bongD); }
-  function anBong() { anBongTren(); anBongD(); }
+  function anBong() { anBongD(); }
   function hienDeBai() { bong({ kieu: 'de', tieuDe: S.man.id + ' · ' + S.man.ten, chu: S.man.deBai }); }
   function goiY() {
     var ds = S.man.goiY || [];
