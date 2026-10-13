@@ -695,17 +695,22 @@ let khoCuoi = null;
 
     // học sinh tạo / sửa hàm trong Xưởng
     let khoNhan = true, loiKho = '';
+    // màn "Tiết kiệm nhịp" (tietKiemNhip): lời giải SỬA riêng hàm có sẵn trong kho (pick, drop); bản sửa không ghi vào kho dùng chung
+    // (kiem-tay-gap.mjs kiểm riêng: giữ bản sửa trong kho thì các màn sau vẫn 3 sao)
+    const suaRieng = m.tietKiemNhip === true ? m.loiGiai.hamCuaEmMoi.filter((h) => tenTruoc.includes(h.ten)) : [];
     for (const h of m.loiGiai.hamCuaEmMoi) {
+      if (suaRieng.includes(h)) continue;
       if (!kho.tim(h.ten)) { const r = kho.tao(h.ten, h.thamSo, { taoHam: m.taoHam }); if (!r.ok) { khoNhan = false; loiKho += r.loi; } }
       const r2 = kho.sua(h.ten, h.than);
       if (!r2.ok) { khoNhan = false; loiKho += r2.loi; }
     }
     kiem(m.id + ': kho nhận được các hàm học sinh tạo / sửa', khoNhan, loiKho);
-    const khoNay = kho.ds();
+    const khoNay = suaRieng.length ? tron(kho.ds(), suaRieng) : kho.ds();
 
     const loiGiai = ChamHoc.cham(m, m.loiGiai, khoNay);
-    kiem(m.id + ': lời giải 3 sao với kho lúc đó, vừa khung, dùng ĐÚNG sao.o ô',
-      loiGiai.thang && loiGiai.sao === 3 && loiGiai.soO === m.sao.o,
+    // màn tiết kiệm nhịp: sao.o tính theo lời giải CHUẨN (loiGiaiKhac); lời giải 3 sao dùng ít ô hơn hoặc bằng
+    kiem(m.id + ': lời giải 3 sao với kho lúc đó, vừa khung, ' + (m.tietKiemNhip ? 'dùng không quá sao.o ô (sao.o theo cách chuẩn)' : 'dùng ĐÚNG sao.o ô'),
+      loiGiai.thang && loiGiai.sao === 3 && (m.tietKiemNhip ? loiGiai.soO <= m.sao.o : loiGiai.soO === m.sao.o),
       J({ thang: loiGiai.thang, sao: loiGiai.sao, soO: loiGiai.soO, saoO: m.sao.o, soNhip: loiGiai.soNhip, cd: loiGiai.chanDoan.map((c) => c.ma) }));
     kiem(m.id + ': lời giải chạy đúng sao.nhip nhịp', loiGiai.soNhip === m.sao.nhip, loiGiai.soNhip + ' ≠ ' + m.sao.nhip);
     kiem(m.id + ': lời giải không bị chẩn đoán nào (kể cả thông tin)', loiGiai.chanDoan.length === 0, J(loiGiai.chanDoan.map((c) => c.ma)));
@@ -734,15 +739,17 @@ let khoCuoi = null;
     // ---- đường tắt
     const thuan = nhipTat(m);
     let ghiChu = '';
-    let khongTat = thuan === m.sao.nhip;
+    // nhipTheoLoiGiai: sao.nhip là nhịp của lời giải CHUẨN (viết tự nhiên) nên có thể dài hơn đường ngắn nhất do nhập chung nhịp;
+    // khi đó chỉ đòi BFS <= sao.nhip (lời giải chuẩn chạy đúng sao.nhip đã kiểm ở trên). Còn lại BFS phải đúng bằng sao.nhip.
+    let khongTat = m.nhipTheoLoiGiai === true ? (thuan !== null && thuan <= m.sao.nhip) : thuan === m.sao.nhip;
     if (!khongTat && m.moXuong === false && m.ngoaiLeKhung) {
       const vuaKhung = nhipNganNhat(m, m.khung.chinh - (m.khung.khoaChinh || 0));
       khongTat = vuaKhung === m.sao.nhip;
       ghiChu = ' [ngoại lệ chuỗi 1: đường ' + thuan + ' nhịp không vừa khung viết tay; đường vừa khung ' + vuaKhung + ' nhịp]';
       NGOAI_LE.push(m.id);
     }
-    kiem(m.id + ': không có ĐƯỜNG TẮT — nhịp ngắn nhất (BFS) = sao.nhip' + ghiChu, khongTat, 'BFS = ' + thuan + ', sao.nhip = ' + m.sao.nhip +
-      (thuan !== null && thuan < m.sao.nhip ? ' → ĐƯỜNG TẮT' : ''));
+    kiem(m.id + ': không có ĐƯỜNG TẮT — nhịp ngắn nhất (BFS) ' + (m.nhipTheoLoiGiai === true ? '≤ sao.nhip (chấm theo lời giải chuẩn)' : '= sao.nhip') + ghiChu, khongTat, 'BFS = ' + thuan + ', sao.nhip = ' + m.sao.nhip +
+      (thuan !== null && thuan < m.sao.nhip && m.nhipTheoLoiGiai !== true ? ' → ĐƯỜNG TẮT' : ''));
     if (m.moXuong === false) {
       const vk = nhipNganNhat(m, m.khung.chinh - (m.khung.khoaChinh || 0));
       kiem(m.id + ': đường ngắn nhất viết tay vừa khung (≤ ' + (m.khung.chinh - (m.khung.khoaChinh || 0)) + ' dòng) cũng đúng sao.nhip', vk === m.sao.nhip, 'vừa khung = ' + vk);
@@ -754,8 +761,10 @@ let khoCuoi = null;
       if (!kh) kiem(m.id + ': có loiGiaiKhac', false);
       else {
         const r = ChamHoc.cham(m, kh.baiLam, tron(khoTruoc, kh.hamCuaEmMoi));
-        kiem(m.id + ': loiGiaiKhac (' + kh.moTa + ') vừa khung, nhiều ô hơn, cùng nhịp, đúng 2 sao',
-          r.thang && !maCua(r).includes('tran-khung') && r.soO > m.sao.o && r.soNhip === m.sao.nhip && r.sao === 2 && J(kh.baiLam) !== J(m.loiGiai),
+        // màn tiết kiệm nhịp: lời giải khác = cách CHUẨN, đúng sao.o nhưng chậm hơn sao.nhip (thiếu sao nhanh) → 2 sao
+        const tk = m.tietKiemNhip === true;
+        kiem(m.id + ': loiGiaiKhac (' + kh.moTa + ') vừa khung, ' + (tk ? 'đúng sao.o, chậm hơn sao.nhip' : 'nhiều ô hơn, cùng nhịp') + ', đúng 2 sao',
+          r.thang && !maCua(r).includes('tran-khung') && (tk ? r.soO === m.sao.o && r.soNhip > m.sao.nhip : r.soO > m.sao.o && r.soNhip === m.sao.nhip) && r.sao === 2 && J(kh.baiLam) !== J(m.loiGiai),
           J({ thang: r.thang, soO: r.soO, saoO: m.sao.o, soNhip: r.soNhip, sao: r.sao, cd: maCua(r) }));
         if (m.chuong === 'tay-gap') {
           const hamAlt = r.hamDaDung.length ? r.hamDaDung : [];
@@ -776,7 +785,7 @@ let khoCuoi = null;
   kiem('mọi hàm trong kho cuối đều là hàm cốt truyện (khóa tên): 14 tên taoHam, và kho mặc định chứa được cả 14 lẫn vài hàm tự đặt', tenCotTruyen.length === 14 && KhoHam.SO_HAM_MAC_DINH >= 14 + 2, String(tenCotTruyen.length));
   const choiLai = ds.map((m) => ChamHoc.cham(m, m.loiGiai, tron(day, m.loiGiai.hamCuaEmMoi)));
   kiem('chơi lại mọi màn với kho đầy đủ vẫn 3 sao, cùng số ô và nhịp (hàm thừa trong kho không đổi gì)',
-    choiLai.every((r, i) => r.thang && r.sao === 3 && r.soO === ds[i].sao.o && r.soNhip === ds[i].sao.nhip && maLoi(r).length === 0),
+    choiLai.every((r, i) => r.thang && r.sao === 3 && (ds[i].tietKiemNhip ? r.soO <= ds[i].sao.o : r.soO === ds[i].sao.o) && r.soNhip === ds[i].sao.nhip && maLoi(r).length === 0),
     choiLai.map((r, i) => ds[i].id + ':' + r.sao + '/' + r.soO).join(' '));
   kiem('chơi lại 2.1 khi kho đã có move của em: hàm của màn che, có thông tin che (và chỉ màn đó, vì chỉ 2.1 cho sẵn hàm trùng tên)',
     choiLai.map((r, i) => (maCua(r).includes('ham-man-che-ham-em') ? ds[i].id : null)).filter(Boolean).join() === '2.1');

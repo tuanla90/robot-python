@@ -21,6 +21,11 @@ require(path.join(day, 'man-tay-gap.js'));
 const ManHoc = require(path.join(day, 'man-vong-lap.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const MAU = require(path.join(day, 'thu-vien-mau.js'));
+const tron = (kho, moi) => {                                           // kho + hàm ghi đè / thêm (không đụng vào kho gốc)
+  const kq = kho.map((h) => H(h.ten, h.than.slice(), (h.thamSo || []).slice()));
+  for (const h of moi || []) { const i = kq.findIndex((x) => x.ten === h.ten); const b = H(h.ten, h.than.slice(), (h.thamSo || []).slice()); if (i >= 0) kq[i] = b; else kq.push(b); }
+  return kq;
+};
 
 let dat = 0, hong = 0;
 function kiem(ten, ok, chiTiet) {
@@ -390,8 +395,9 @@ console.log('\n== 14. Bộ dò đường tắt cho dua-vat (BFS) ==');
   // đường tắt: sân thật bỏ tường thì có đường tắt
   const m7 = ManHoc.timMa('tay-gap.7');
   const rong = Object.assign({}, m7, { san: ['...', '..D', '...', 'o..', '...'] });
-  kiem('mở hành lang của tay-gap.7 (bỏ tường) thì có ĐƯỜNG TẮT (' + nhipDuaVatNganNhat(rong).nhip + ' < ' + m7.sao.nhip + ')', nhipDuaVatNganNhat(rong).nhip < m7.sao.nhip, String(nhipDuaVatNganNhat(rong).nhip));
-  kiem('  hành lang gốc của tay-gap.7 không có đường tắt (= ' + m7.sao.nhip + ')', nhipDuaVatNganNhat(m7).nhip === m7.sao.nhip);
+  const bfs7 = nhipDuaVatNganNhat(m7).nhip;
+  kiem('mở hành lang của tay-gap.7 (bỏ tường) thì có ĐƯỜNG TẮT (' + nhipDuaVatNganNhat(rong).nhip + ' < ' + bfs7 + ' của sân gốc)', nhipDuaVatNganNhat(rong).nhip < bfs7, String(nhipDuaVatNganNhat(rong).nhip));
+  kiem('  tay-gap.7 chấm sao theo lời giải chuẩn (nhipTheoLoiGiai): BFS sân gốc ' + bfs7 + ' ≤ sao.nhip ' + m7.sao.nhip + ', chênh đúng 1 nhịp (một lần pick() tốn thêm nhịp nâng tay)', m7.nhipTheoLoiGiai === true && bfs7 <= m7.sao.nhip && m7.sao.nhip - bfs7 === 1, J([bfs7, m7.sao.nhip]));
   kiem('bộ dò từ chối sân có băng chuyền (chưa hỗ trợ), báo lỗi rõ', (() => { try { nhipDuaVatNganNhat(man(['.>o.D'], { x: 0, y: 0, huong: 1 })); return false; } catch (err) { return /băng chuyền/.test(err.message); } })());
 
   // kiểm chéo: chuỗi BFS chạy trong mô phỏng thật phải thắng đúng nhịp đó
@@ -399,8 +405,9 @@ console.log('\n== 14. Bộ dò đường tắt cho dua-vat (BFS) ==');
   for (const m of ds) {
     const k = nhipDuaVatNganNhat(m);
     const r = SanHoc.chay({ san: m.san, batDau: m.batDau, loaiRobot: 'banh', hamGoc: m.hamGoc, mucTieu: 'dua-vat' }, chuoiThanhMa(k.chuoi));
-    kiem(m.id + ': BFS = ' + k.nhip + ' nhịp (' + k.soTrangThai + ' trạng thái, không bị cắt); chuỗi hành động của BFS chạy trong SanHoc thắng đúng nhịp đó',
-      k.nhip === m.sao.nhip && k.catNgang === false && r.thang && r.nhip === k.nhip, J([k.nhip, r.thang, r.nhip]));
+    const theoLoiGiai = m.nhipTheoLoiGiai === true;
+    kiem(m.id + ': BFS = ' + k.nhip + ' nhịp (' + k.soTrangThai + ' trạng thái, không bị cắt), ' + (theoLoiGiai ? '≤ sao.nhip ' + m.sao.nhip + ' (chấm theo lời giải chuẩn)' : '= sao.nhip') + '; chuỗi hành động của BFS chạy trong SanHoc thắng đúng nhịp đó',
+      (theoLoiGiai ? k.nhip !== null && k.nhip <= m.sao.nhip : k.nhip === m.sao.nhip) && k.catNgang === false && r.thang && r.nhip === k.nhip, J([k.nhip, r.thang, r.nhip]));
   }
 }
 
@@ -465,13 +472,18 @@ console.log('\n== 16. Chương tay-gap: dữ liệu 10 màn, bảng tóm tắt =
   const bangTom = [];
   for (const m of ds) {
     const truoc = kho.ds();
-    for (const h of m.loiGiai.hamCuaEmMoi) { if (!kho.tim(h.ten)) kho.tao(h.ten, h.thamSo); kho.sua(h.ten, h.than); }
-    const r = ChamHoc.cham(m, m.loiGiai, kho.ds());
-    const hamMan = m.loiGiai.hamCuaMan.map((h) => h.ten), hamMoi = m.loiGiai.hamCuaEmMoi.map((h) => h.ten);
+    const tenTruoc = truoc.map((h) => h.ten);
+    // màn "Tiết kiệm nhịp" (tietKiemNhip): lời giải SỬA riêng pick() / drop() có sẵn trong kho; không ghi vào kho dùng chung cho các màn sau
+    const suaRieng = m.tietKiemNhip === true ? m.loiGiai.hamCuaEmMoi.filter((h) => tenTruoc.includes(h.ten)) : [];
+    for (const h of m.loiGiai.hamCuaEmMoi) { if (suaRieng.includes(h)) continue; if (!kho.tim(h.ten)) kho.tao(h.ten, h.thamSo); kho.sua(h.ten, h.than); }
+    const khoChoMan = suaRieng.length ? tron(kho.ds(), suaRieng) : kho.ds();
+    const r = ChamHoc.cham(m, m.loiGiai, khoChoMan);
+    const hamMan = m.loiGiai.hamCuaMan.map((h) => h.ten), hamMoi = m.loiGiai.hamCuaEmMoi.map((h) => h.ten).filter((t) => !tenTruoc.includes(t) || !suaRieng.some((h) => h.ten === t));
     const tuKho = r.hamDaDung.filter((t) => !hamMan.includes(t) && !hamMoi.includes(t));
     kiem(m.id + ': hamCuaEmCan [' + m.hamCuaEmCan.join(', ') + '] khớp đúng các hàm lấy từ kho mà lời giải gọi tới (không thừa, không thiếu)',
       J(m.hamCuaEmCan.slice().sort()) === J(tuKho.slice().sort()), J([m.hamCuaEmCan, tuKho]));
-    kiem(m.id + ': lời giải thắng 3 sao, không chẩn đoán (kể cả thông tin), thắng ở cuối nhịp ' + r.soNhip + ' và đúng sao.o ' + m.sao.o + ' (' + r.soO + ' ô)', r.thang && r.sao === 3 && r.chanDoan.length === 0 && r.soNhip === m.sao.nhip && r.soO === m.sao.o && r.theoSan[0].vet.slice(-1)[0].suKien.some((e) => e.ma === 'xong-dua-vat'));
+    kiem(m.id + ': lời giải thắng 3 sao, không chẩn đoán (kể cả thông tin), thắng ở cuối nhịp ' + r.soNhip + ' và ' + (m.tietKiemNhip ? 'ít hơn hoặc bằng sao.o ' + m.sao.o + ' (sao.o theo lời giải chuẩn; ' + r.soO + ' ô)' : 'đúng sao.o ' + m.sao.o + ' (' + r.soO + ' ô)'),
+      r.thang && r.sao === 3 && r.chanDoan.length === 0 && r.soNhip === m.sao.nhip && (m.tietKiemNhip ? r.soO <= m.sao.o : r.soO === m.sao.o) && r.theoSan[0].vet.slice(-1)[0].suKien.some((e) => e.ma === 'xong-dua-vat'), J([r.sao, r.soNhip, r.soO, maCua(r)]));
     kiem(m.id + ': lời giải KHÔNG dùng cấu trúc chưa học (for)', !/\bfor\b/.test(JSON.stringify(m.loiGiai)));
     bangTom.push({ m, r });
   }
@@ -489,6 +501,44 @@ console.log('\n== 16. Chương tay-gap: dữ liệu 10 màn, bảng tóm tắt =
   kiem('3.9: hai vật, hai đích; 3.10: ba vật, ba đích, có huy hiệu', SanHoc.docSan(wantMan('3.9').san).vat.length === 2 && SanHoc.docSan(wantMan('3.9').san).dich.length === 2 && SanHoc.docSan(wantMan('3.10').san).vat.length === 3 && SanHoc.docSan(wantMan('3.10').san).dich.length === 3);
   kiem('3.5 và 3.6, 3.10 buộc phải gói hàm: không gói thì tran-khung (lời sai tran-khung có sẵn)', ['3.5', '3.6', '3.10'].every((id) => wantMan(id).loiSai.some((l) => l.phaiCoMa.includes('tran-khung'))));
   kiem('mọi lời giải khác (loiGiaiKhac) có cấu trúc khác lời giải (khác dòng chương trình, hoặc thân hàm)', ds.every((m) => J(m.loiGiaiKhac.baiLam.chinh) !== J(m.loiGiai.chinh) || J(m.loiGiaiKhac.hamCuaEmMoi) !== J(m.loiGiai.hamCuaEmMoi) || J(m.loiGiaiKhac.baiLam.hamCuaMan) !== J(m.loiGiai.hamCuaMan)));
+
+  /* ---- cách chấm sao theo quyết định mới: pick() / drop() chuẩn làm trọn việc, viết tự nhiên là 3 sao ---- */
+  const thanMau = (ten) => MAU.find((x) => x.ten === ten).than;
+  kiem('thư viện mẫu: pick() = hạ tay, kẹp, wait, nâng tay, wait; drop() = hạ tay, thả, wait, nâng tay, wait (trả tay về nâng)',
+    J(thanMau('pick')) === J(['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()']) && J(thanMau('drop')) === J(['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()']));
+  kiem('pick() / drop() do lời giải 3.5 và 3.6 tạo ra khớp đúng thư viện mẫu (cách chuẩn)',
+    J(wantMan('3.5').loiGiai.hamCuaEmMoi[0].than) === J(thanMau('pick')) && J(wantMan('3.6').loiGiai.hamCuaEmMoi[0].than) === J(thanMau('drop')));
+  const goiPickDrop = (m) => { const t = JSON.stringify([m.loiGiai.chinh, m.loiGiai.hamCuaEmMoi, m.loiGiai.hamCuaMan]); return t.includes('"pick()"') || t.includes('"drop()"'); };
+  const manPD = ds.filter((m) => goiPickDrop(m) && !m.tietKiemNhip);
+  kiem('có màn dùng pick() / drop(): 3.5, 3.6, 3.7, 3.8, 3.10 (3.9 là màn tiết kiệm nhịp)', J(manPD.map((m) => m.id)) === J(['3.5', '3.6', '3.7', '3.8', '3.10']), J(manPD.map((m) => m.id)));
+  const khoMau = MAU.map((h) => H(h.ten, h.than.slice(), h.thamSo.slice()));
+  for (const m of manPD) {
+    const r = ChamHoc.cham(m, m.loiGiai, tron(khoMau, m.loiGiai.hamCuaEmMoi));
+    kiem(m.id + ': dùng pick() / drop() CHUẨN của thư viện mẫu (làm trọn việc) → 3 sao, đúng sao.nhip ' + m.sao.nhip + ' và sao.o ' + m.sao.o, r.thang && r.sao === 3 && r.soNhip === m.sao.nhip && r.soO === m.sao.o, J([r.sao, r.soNhip, r.soO, maCua(r)]));
+    const gop = tron(khoMau, [H('pick', ['arm_down()', 'grab()', 'wait()', 'arm_up()']), H('drop', ['arm_down()', 'release()', 'wait()', 'arm_up()'])].concat(m.loiGiai.hamCuaEmMoi.filter((h) => !['pick', 'drop'].includes(h.ten))));
+    const rg = ChamHoc.cham(m, m.loiGiai, gop);
+    kiem(m.id + ': pick() / drop() bản gộp (nâng tay chung nhịp với lệnh kế) cũng 3 sao, ít nhịp hơn hoặc bằng (' + rg.soNhip + ' ≤ ' + m.sao.nhip + ')', rg.thang && rg.sao === 3 && rg.soNhip <= m.sao.nhip && rg.soO <= m.sao.o, J([rg.sao, rg.soNhip, rg.soO, maCua(rg)]));
+  }
+  const nhipBfs = (m) => nhipDuaVatNganNhat(m).nhip;
+  const kcNhip = ds.map((m) => m.sao.nhip - nhipBfs(m));
+  kiem('cờ nhipTheoLoiGiai đúng chỗ: có cờ (3.3, 3.5, 3.6, 3.7, 3.8, 3.10) thì sao.nhip > BFS; không cờ (3.1, 3.2, 3.4, 3.9) thì sao.nhip = BFS',
+    ds.every((m, i) => (m.nhipTheoLoiGiai === true ? kcNhip[i] > 0 : kcNhip[i] === 0)) && J(ds.filter((m) => m.nhipTheoLoiGiai).map((m) => m.id)) === J(['3.3', '3.5', '3.6', '3.7', '3.8', '3.10']), J(kcNhip));
+  const tk = ds.filter((m) => m.tietKiemNhip);
+  kiem('đúng MỘT màn "Tiết kiệm nhịp" (3.9): sao.nhip = BFS; đề bài nói tới số nhịp, gợi ý nhắc lệnh tay và lệnh bánh chạy chung một nhịp',
+    tk.length === 1 && tk[0].id === '3.9' && tk[0].ten === 'Tiết kiệm nhịp' && tk[0].sao.nhip === nhipBfs(tk[0]) && tk[0].deBai.includes('nhịp') && tk[0].goiY[0].includes('arm_up()') && tk[0].goiY[0].includes('cùng nhịp'));
+  {
+    const m9 = wantMan('3.9');
+    const std = ChamHoc.cham(m9, m9.loiGiaiKhac.baiLam, tron(khoMau, m9.loiGiaiKhac.hamCuaEmMoi));
+    kiem('3.9: cách chuẩn (pick() / drop() đầy đủ) thắng nhưng đúng 2 sao (ô = sao.o ' + m9.sao.o + ', chậm: ' + std.soNhip + ' > ' + m9.sao.nhip + ' nhịp)',
+      std.thang && std.sao === 2 && std.soO === m9.sao.o && std.soNhip > m9.sao.nhip && std.chanDoan.length === 0, J([std.sao, std.soO, std.soNhip, maCua(std)]));
+    const fast = ChamHoc.cham(m9, m9.loiGiai, tron(khoMau, m9.loiGiai.hamCuaEmMoi));
+    kiem('3.9: sửa pick() / drop() thành bản gộp → 3 sao, ' + fast.soNhip + ' nhịp = BFS, ít ô hơn cách chuẩn (' + fast.soO + ' < ' + m9.sao.o + ')', fast.thang && fast.sao === 3 && fast.soNhip === nhipBfs(m9) && fast.soO < m9.sao.o);
+    // người chơi thật: bản sửa ở 3.9 ở lại trong kho; các màn khác vẫn 3 sao (nhanh hơn hoặc bằng, ít ô hơn)
+    const khoSau = tron(khoMau, m9.loiGiai.hamCuaEmMoi);
+    const tiep = manPD.map((m) => ChamHoc.cham(m, m.loiGiai, tron(khoSau, m.loiGiai.hamCuaEmMoi.filter((h) => !['pick', 'drop'].includes(h.ten)))));
+    kiem('sau khi sửa pick() / drop() ở 3.9, các màn còn lại dùng chúng vẫn 3 sao (nhịp và ô không vượt sao.nhip, sao.o)',
+      tiep.every((r, i) => { const m = manPD[i]; return r.thang && r.sao === 3 && r.soNhip <= m.sao.nhip && r.soO <= m.sao.o; }), J(tiep.map((r) => [r.sao, r.soNhip, r.soO])));
+  }
 
   console.log('\n  Bảng 10 màn tay-gap (sân in lưới: o vật · D đích · # tường · xe ^ > v < theo hướng bắt đầu)');
   const mui = ['^', '>', 'v', '<'];
