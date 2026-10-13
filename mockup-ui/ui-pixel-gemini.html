@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockup UI Pixel Art - Robot Học Code</title>
+  <!-- Google Fonts: VT323 (Monospace/Số) + Pixelify Sans & Baloo 2 (Tiếng Việt pixel) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Pixelify+Sans:wght@500;600;700&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #191224; --ink: #1a1226; --cream: #fff7e6; --yellow: #ffd23f; --yellow-d: #d49511;
+      --orange: #ff8b3d; --red: #f2485e; --red-d: #b8283d; --pink: #ff7597; --cyan: #38e1ff;
+      --blue: #3b82f6; --green: #46d16a; --lav: #b89ced; --gray: #64748b; --gray-d: #334155;
+      --font-pixel: "Pixelify Sans", "Baloo 2", sans-serif;
+      --font-code: "VT323", Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(circle at 20% 25%, #38204f 0%, transparent 45%), radial-gradient(circle at 80% 75%, #1e3357 0%, transparent 50%),
+        repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(255,255,255,0.02) 31px, rgba(255,255,255,0.02) 32px),
+        repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(255,255,255,0.02) 31px, rgba(255,255,255,0.02) 32px);
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 16px 10px; font-family: var(--font-pixel); color: var(--cream); user-select: none;
+    }
+    .top-header { margin-bottom: 12px; text-align: center; }
+    .top-header h1 {
+      font-size: 22px; color: var(--yellow); letter-spacing: 1px;
+      text-shadow: 2px 2px 0 var(--ink), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink), 0 3px 0 #7c48d8;
+    }
+    .top-header p { font-size: 13px; color: var(--lav); margin-top: 3px; }
+    .stage-container { display: flex; flex-direction: row; gap: 28px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    
+    /* Vỏ điện thoại pixel */
+    .phone-case {
+      width: 384px; height: 664px; background: #161022; border: 4px solid #3d2b56; border-radius: 36px; padding: 8px;
+      box-shadow: 0 0 0 4px #0c0814, 0 12px 0 #0d0917, 0 20px 30px rgba(0,0,0,0.6), inset 0 2px 3px rgba(255,255,255,0.15);
+      position: relative;
+    }
+    .phone-speaker {
+      position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 50px; height: 5px;
+      background: #0a0612; border-radius: 3px; border: 1px solid #302046;
+    }
+    /* Màn hình chuẩn 360x640 - KHÔNG ĐƯỢC CUỘN */
+    .screen {
+      width: 360px; height: 640px; background: #251d33; border-radius: 26px; overflow: hidden;
+      position: relative; display: flex; flex-direction: column; box-shadow: inset 0 0 0 2px var(--ink);
+    }
+    canvas.px { image-rendering: pixelated; image-rendering: crisp-edges; display: inline-block; vertical-align: middle; }
+    .px-btn {
+      font-family: var(--font-pixel); border: 2px solid var(--ink); border-radius: 6px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; position: relative;
+      box-shadow: 0 3px 0 var(--ink); transition: transform 0.06s, box-shadow 0.06s;
+    }
+    .px-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+
+    /* ========== MÀN TRÁI: CHỌN MÀN (360x640) ========== */
+    .screen-left { background: #271f38; padding: 14px 14px 12px; justify-content: space-between; }
+    .left-header { background: #332849; border: 2px solid var(--ink); border-radius: 12px; padding: 8px 10px; box-shadow: 0 3px 0 var(--ink); }
+    .left-header-row { display: flex; align-items: center; justify-content: space-between; }
+    .nav-arrow { width: 28px; height: 28px; background: var(--cream); color: var(--ink); font-size: 18px; font-weight: 800; border-radius: 6px; }
+    .chapter-title { font-size: 16px; font-weight: 700; color: var(--yellow); text-shadow: 1px 1px 0 var(--ink); }
+    .progress-bar-wrap {
+      display: flex; align-items: center; gap: 8px; margin-top: 6px; background: #1e162b;
+      padding: 4px 8px; border-radius: 8px; border: 1px solid #4a3866;
+    }
+    .progress-track { flex: 1; height: 12px; background: #140d1f; border: 1px solid #36254e; border-radius: 4px; display: flex; gap: 2px; padding: 2px; }
+    .prog-seg { flex: 1; border-radius: 2px; background: #312147; }
+    .prog-seg.active { background: linear-gradient(180deg, #5fe885 0%, #2bb854 100%); box-shadow: 0 0 4px rgba(95,232,133,0.6); }
+    .prog-seg.current { background: var(--yellow); }
+    .prog-text { font-family: var(--font-code); font-size: 18px; color: var(--yellow); line-height: 1; }
+
+    /* Lưới 3x3 */
+    .grid-section {
+      background: #201830; border: 2px solid var(--ink); border-radius: 14px; padding: 10px 8px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 3px 0 var(--ink);
+    }
+    .grid-row { display: flex; align-items: center; margin-bottom: 8px; }
+    .grid-row:last-child { margin-bottom: 0; }
+    .row-label { width: 62px; font-size: 11px; font-weight: 700; color: var(--lav); text-shadow: 1px 1px 0 var(--ink); line-height: 1.2; padding-right: 4px; }
+    .row-cells { flex: 1; display: flex; justify-content: space-between; gap: 6px; }
+    .lvl-cell {
+      flex: 1; height: 60px; background: #3c2f54; border: 2px solid var(--ink); border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+      box-shadow: 0 3px 0 var(--ink); cursor: pointer; transition: transform 0.08s;
+    }
+    .lvl-cell:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+    .lvl-cell.cleared { background: linear-gradient(180deg, #f7d98c 0%, #e6be60 100%); color: var(--ink); }
+    .lvl-cell.cleared .lvl-num { color: var(--ink); text-shadow: 0 1px 0 #fff8; }
+    .lvl-cell.current {
+      background: linear-gradient(180deg, #6c4edb 0%, #4d31b3 100%); border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(56,225,255,0.7), 0 3px 0 var(--ink); animation: pulseCell 1.2s infinite alternate;
+    }
+    @keyframes pulseCell {
+      from { border-color: var(--cyan); box-shadow: 0 0 6px var(--cyan), 0 3px 0 var(--ink); }
+      to { border-color: var(--yellow); box-shadow: 0 0 14px var(--yellow), 0 3px 0 var(--ink); }
+    }
+    .lvl-cell.locked { background: #251c35; cursor: not-allowed; opacity: 0.85; }
+    .lvl-num { font-family: var(--font-code); font-size: 26px; font-weight: 700; line-height: 1; color: var(--cream); }
+    .cell-stars { display: flex; gap: 2px; margin-top: 2px; }
+
+    /* Nút TRÙM */
+    .boss-card {
+      background: linear-gradient(135deg, #7c1a2e 0%, #4a1329 100%); border: 2px solid #ff4d6d; border-radius: 12px;
+      padding: 8px 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 3px 0 var(--ink), 0 0 8px rgba(242,72,94,0.4);
+      position: relative; cursor: pointer;
+    }
+    .boss-icon-wrap {
+      width: 44px; height: 44px; background: #2a0b16; border: 2px solid #ff7597; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .boss-info { flex: 1; }
+    .boss-title { font-size: 15px; font-weight: 700; color: #ffb3c1; text-shadow: 1px 1px 0 var(--ink); display: flex; align-items: center; gap: 6px; }
+    .boss-badge { background: #ff2a55; color: #fff; font-size: 9px; padding: 1px 4px; border-radius: 3px; border: 1px solid var(--ink); }
+    .boss-reward { font-size: 11px; color: var(--yellow); margin-top: 2px; }
+    .boss-reward code { font-family: var(--font-code); font-size: 14px; background: #200813; padding: 0 4px; border-radius: 4px; border: 1px solid #731e33; }
+
+    /* Đáy Màn Trái: Thư viện */
+    .lib-footer { background: #201830; border: 2px solid var(--ink); border-radius: 12px; padding: 8px 10px; box-shadow: 0 3px 0 var(--ink); }
+    .lib-title { font-size: 11px; font-weight: 700; color: var(--lav); margin-bottom: 5px; }
+    .lib-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .lib-pill {
+      background: #392850; border: 2px solid var(--ink); border-radius: 14px; padding: 2px 10px;
+      display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 0 var(--ink);
+    }
+    .lib-pill code { font-family: var(--font-code); font-size: 15px; color: var(--cyan); }
+
+    /* ========== MÀN PHẢI: MÀN CHƠI (360x640) ========== */
+    .screen-right { background: #231b30; justify-content: space-between; padding: 8px 10px 10px; }
+    .right-topbar {
+      height: 38px; background: #302445; border: 2px solid var(--ink); border-radius: 10px;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 10px; box-shadow: 0 2px 0 var(--ink);
+    }
+    .level-name { font-size: 14px; font-weight: 700; color: var(--yellow); }
+    .top-stars { display: flex; gap: 4px; align-items: center; }
+    .menu-btn { width: 26px; height: 26px; background: #44335f; border: 1px solid var(--ink); border-radius: 6px; box-shadow: 0 2px 0 var(--ink); cursor: pointer; }
+
+    /* Khối Sân ~252px */
+    .arena-section { height: 250px; display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+    .arena-board-wrap {
+      width: 246px; height: 246px; background: #171b2d; border: 3px solid var(--ink); border-radius: 10px;
+      box-shadow: inset 0 0 0 2px #2f385c, 0 3px 0 var(--ink); position: relative; overflow: hidden;
+    }
+    #arenaCanvas { width: 240px; height: 240px; position: absolute; top: 0; left: 0; }
+    .arena-controls { flex: 1; height: 246px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+    .action-btn {
+      flex: 1; background: #392b4f; border: 2px solid var(--ink); border-radius: 8px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      box-shadow: 0 3px 0 var(--ink); cursor: pointer; padding: 2px;
+    }
+    .action-btn.btn-play { background: linear-gradient(180deg, #44cc63 0%, #279e43 100%); color: #fff; }
+    .action-btn.btn-step { background: linear-gradient(180deg, #4da4f7 0%, #2570ce 100%); color: #fff; }
+    .action-btn.btn-reset { background: linear-gradient(180deg, #f78d4d 0%, #c75716 100%); color: #fff; }
+    .action-btn.btn-hint { background: linear-gradient(180deg, #e4be42 0%, #ba921c 100%); color: var(--ink); }
+    .btn-lbl { font-size: 10px; font-weight: 700; line-height: 1; }
+
+    /* Khung Code ~230px (2 cột x 8 dòng) */
+    .code-section {
+      height: 226px; background: #191424; border: 2px solid var(--ink); border-radius: 10px;
+      padding: 6px; display: flex; gap: 6px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 3px 0 var(--ink); margin-top: 4px;
+    }
+    .code-col { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .col-header {
+      font-size: 11px; font-weight: 700; color: var(--lav); display: flex; align-items: center;
+      justify-content: space-between; padding: 0 4px 2px; border-bottom: 1px solid #332449;
+    }
+    .col-header .tag { font-family: var(--font-code); font-size: 14px; color: var(--yellow); }
+    .slot-list { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 2px; }
+    .code-slot {
+      height: 20px; background: #251d33; border: 1px solid #382b4d; border-radius: 4px; padding: 0 5px;
+      display: flex; align-items: center; font-family: var(--font-code); font-size: 15px; color: #e5e0f0;
+      line-height: 1; white-space: pre; position: relative;
+    }
+    .code-slot.indent { padding-left: 14px; color: #72ecff; }
+    .code-slot.def { color: #ff90b3; font-weight: 700; }
+    .code-slot.empty { background: #1a1524; border: 1px dashed #362947; opacity: 0.5; }
+    .code-slot.locked { background: #171120; border: 1px solid #291e36; display: flex; justify-content: center; align-items: center; opacity: 0.7; }
+    .code-slot.active-run {
+      background: #3f2a63 !important; border: 1px solid var(--yellow) !important;
+      box-shadow: 0 0 6px rgba(255, 210, 63, 0.7); color: var(--yellow) !important; font-weight: bold;
+    }
+    .code-slot.active-run::before { content: "▶"; position: absolute; left: 1px; font-size: 8px; color: var(--yellow); }
+
+    /* Khay Lệnh Đáy ~100px */
+    .tray-section {
+      height: 98px; background: #281e39; border: 2px solid var(--ink); border-radius: 10px;
+      padding: 6px; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; box-shadow: 0 2px 0 var(--ink); margin-top: 4px;
+    }
+    .tray-row { flex: 1; display: flex; gap: 5px; }
+    .cmd-card {
+      flex: 1; background: #3f2f59; border: 2px solid var(--ink); border-radius: 6px; display: flex;
+      align-items: center; justify-content: center; font-family: var(--font-code); font-size: 15px;
+      color: var(--cream); box-shadow: 0 2px 0 var(--ink); cursor: pointer; transition: transform 0.05s;
+    }
+    .cmd-card:active { transform: translateY(2px); box-shadow: 0 0 0 var(--ink); }
+    .cmd-card.cmd-def { color: #ff90b3; }
+    .cmd-card.cmd-for { color: #bda0ff; }
+    .cmd-card.cmd-move { color: #58e697; }
+    .cmd-card.cmd-del { color: #ff6879; font-size: 18px; }
+
+    /* Modal Gợi Ý / Thắng Cuộc */
+    .pixel-modal {
+      position: absolute; inset: 0; background: rgba(18, 12, 28, 0.85); backdrop-filter: blur(2px);
+      display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100;
+    }
+    .pixel-modal.show { display: flex; }
+    .modal-box {
+      width: 320px; background: #2d2242; border: 3px solid var(--ink); border-radius: 14px; padding: 14px;
+      box-shadow: 0 0 0 2px var(--yellow), 0 8px 16px rgba(0,0,0,0.6); text-align: center;
+    }
+    .modal-box h3 { font-size: 17px; color: var(--yellow); margin-bottom: 8px; }
+    .modal-box p { font-size: 12px; line-height: 1.5; color: var(--cream); margin-bottom: 12px; text-align: left; }
+    .modal-box ul { font-size: 12px; line-height: 1.6; color: var(--lav); text-align: left; margin-left: 18px; margin-bottom: 14px; }
+    .modal-btn { padding: 6px 20px; background: var(--yellow); color: var(--ink); font-weight: 800; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="top-header">
+    <h1>ROBOTICS CODE CRAFT · PIXEL ART MOCKUP</h1>
+    <p>Giao diện kép 360×640 chuẩn Pixel 16-bit · Dựng hoàn toàn bằng Canvas Code</p>
+  </div>
+
+  <div class="stage-container">
+    <!-- MÀN TRÁI: CHỌN MÀN -->
+    <div class="phone-case">
+      <div class="phone-speaker"></div>
+      <div class="screen screen-left">
+        <div class="left-header">
+          <div class="left-header-row">
+            <button class="px-btn nav-arrow" onclick="playBeep(440)">‹</button>
+            <div class="chapter-title">Chuỗi 2 · Xưởng hàm</div>
+            <button class="px-btn nav-arrow" onclick="playBeep(440)">›</button>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-track" id="leftProgressTrack">
+              <div class="prog-seg active"></div><div class="prog-seg active"></div><div class="prog-seg active"></div>
+              <div class="prog-seg active"></div><div class="prog-seg active"></div><div class="prog-seg active"></div>
+              <div class="prog-seg current"></div><div class="prog-seg"></div><div class="prog-seg"></div><div class="prog-seg"></div>
+            </div>
+            <div class="prog-text">6/10</div>
+          </div>
+        </div>
+
+        <div class="grid-section">
+          <!-- Hàng 1: Làm quen -->
+          <div class="grid-row">
+            <div class="row-label">Làm quen</div>
+            <div class="row-cells">
+              <div class="lvl-cell cleared" onclick="onSelectLevel(1)"><div class="lvl-num">1</div><div class="cell-stars" id="stars-1"></div></div>
+              <div class="lvl-cell cleared" onclick="onSelectLevel(2)"><div class="lvl-num">2</div><div class="cell-stars" id="stars-2"></div></div>
+              <div class="lvl-cell cleared" onclick="onSelectLevel(3)"><div class="lvl-num">3</div><div class="cell-stars" id="stars-3"></div></div>
+            </div>
+          </div>
+          <!-- Hàng 2: Luyện -->
+          <div class="grid-row">
+            <div class="row-label">Luyện</div>
+            <div class="row-cells">
+              <div class="lvl-cell cleared" onclick="onSelectLevel(4)"><div class="lvl-num">4</div><div class="cell-stars" id="stars-4"></div></div>
+              <div class="lvl-cell cleared" onclick="onSelectLevel(5)"><div class="lvl-num">5</div><div class="cell-stars" id="stars-5"></div></div>
+              <div class="lvl-cell cleared" onclick="onSelectLevel(6)"><div class="lvl-num">6</div><div class="cell-stars" id="stars-6"></div></div>
+            </div>
+          </div>
+          <!-- Hàng 3: Biến thể -->
+          <div class="grid-row">
+            <div class="row-label">Biến thể</div>
+            <div class="row-cells">
+              <div class="lvl-cell current" onclick="onSelectLevel(7)"><div class="lvl-num">7</div><div class="cell-stars" id="stars-7"></div></div>
+              <div class="lvl-cell locked" onclick="playBeep(200)"><div class="lvl-num" style="opacity:0.3">8</div><div id="lock-8"></div></div>
+              <div class="lvl-cell locked" onclick="playBeep(200)"><div class="lvl-num" style="opacity:0.3">9</div><div id="lock-9"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút TRÙM -->
+        <div class="boss-card px-btn" onclick="playBeep(300)">
+          <div class="boss-icon-wrap" id="bossIconSlot"></div>
+          <div class="boss-info">
+            <div class="boss-title"><span>TRÙM · Đường dài</span><span class="boss-badge">KHÓ</span></div>
+            <div class="boss-reward">Thưởng: <code>move()</code></div>
+          </div>
+          <div id="bossLockSlot"></div>
+        </div>
+
+        <!-- Thư viện Đáy Màn Trái -->
+        <div class="lib-footer">
+          <div class="lib-title">📚 Thư viện hàm đã mở:</div>
+          <div class="lib-pills">
+            <div class="lib-pill"><canvas class="px" id="pillIcon1" width="10" height="10"></canvas><code>move</code></div>
+            <div class="lib-pill"><canvas class="px" id="pillIcon2" width="10" height="10"></canvas><code>turn_right</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÀN PHẢI: MÀN CHƠI -->
+    <div class="phone-case">
+      <div class="phone-speaker"></div>
+      <div class="screen screen-right">
+        <!-- 1. Thanh trên 40px -->
+        <div class="right-topbar">
+          <div class="level-name">2.4 · turn_right()</div>
+          <div class="top-stars" id="topStarsSlot"></div>
+          <button class="px-btn menu-btn" id="menuBtnSlot" onclick="playBeep(520)"></button>
+        </div>
+
+        <!-- 2. Khối sân ~252px -->
+        <div class="arena-section">
+          <div class="arena-board-wrap"><canvas id="arenaCanvas" width="240" height="240"></canvas></div>
+          <div class="arena-controls">
+            <button class="px-btn action-btn btn-play" id="btnRun" title="Chạy"><span id="iconPlay"></span><span class="btn-lbl">CHẠY</span></button>
+            <button class="px-btn action-btn btn-step" id="btnStep" title="Nhịp"><span id="iconStep"></span><span class="btn-lbl">NHỊP</span></button>
+            <button class="px-btn action-btn btn-reset" id="btnReset" title="Lại"><span id="iconReset"></span><span class="btn-lbl">LẠI</span></button>
+            <button class="px-btn action-btn btn-hint" id="btnHint" title="Gợi ý"><span id="iconHint"></span><span class="btn-lbl">GỢI Ý</span></button>
+          </div>
+        </div>
+
+        <!-- 3. Khung code ~230px: 2 Cột x 8 Dòng -->
+        <div class="code-section">
+          <div class="code-col">
+            <div class="col-header"><span>CHÍNH</span><span class="tag">5/8</span></div>
+            <div class="slot-list" id="mainSlots">
+              <div class="code-slot" data-line="0">move()</div>
+              <div class="code-slot" data-line="1">move()</div>
+              <div class="code-slot" data-line="2">turn_right()</div>
+              <div class="code-slot" data-line="3">move()</div>
+              <div class="code-slot" data-line="4">move()</div>
+              <div class="code-slot empty" data-line="5">-- trống --</div>
+              <div class="code-slot empty" data-line="6">-- trống --</div>
+              <div class="code-slot locked" data-line="7"><span id="mainLockSlot"></span></div>
+            </div>
+          </div>
+          <div class="code-col">
+            <div class="col-header"><span>HÀM</span><span class="tag">7/8</span></div>
+            <div class="slot-list" id="funcSlots">
+              <div class="code-slot def" data-fline="0">def move():</div>
+              <div class="code-slot indent" data-fline="1">left_move()</div>
+              <div class="code-slot indent" data-fline="2">right_move()</div>
+              <div class="code-slot indent" data-fline="3">wait()</div>
+              <div class="code-slot def" data-fline="4">def turn_right():</div>
+              <div class="code-slot indent" data-fline="5">left_move()</div>
+              <div class="code-slot indent" data-fline="6">wait()</div>
+              <div class="code-slot empty" data-fline="7">-- trống --</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Khay lệnh đáy ~100px -->
+        <div class="tray-section">
+          <div class="tray-row">
+            <button class="cmd-card" onclick="onCommandCard('left_move')">left_move</button>
+            <button class="cmd-card" onclick="onCommandCard('right_move')">right_move</button>
+            <button class="cmd-card" onclick="onCommandCard('wait')">wait</button>
+          </div>
+          <div class="tray-row">
+            <button class="cmd-card cmd-def" onclick="onCommandCard('def')">def</button>
+            <button class="cmd-card cmd-for" onclick="onCommandCard('for')">for</button>
+            <button class="cmd-card cmd-move" onclick="onCommandCard('move')">move</button>
+            <button class="cmd-card cmd-del" onclick="onCommandCard('backspace')">⌫</button>
+          </div>
+        </div>
+
+        <!-- Modal Gợi Ý -->
+        <div class="pixel-modal" id="hintModal">
+          <div class="modal-box">
+            <h3>💡 QUY TẮC NHỊP &amp; 2 BÁNH</h3>
+            <p>Robot được điều khiển bằng hai bánh độc lập qua cơ chế nhịp xung:</p>
+            <ul>
+              <li><strong>Cả hai bánh cùng quay:</strong> Tiến thẳng 1 ô.</li>
+              <li><strong>Chỉ bánh trái quay:</strong> Quay phải 90°.</li>
+              <li><strong>Chỉ bánh phải quay:</strong> Quay trái 90°.</li>
+              <li><code>wait()</code> trôi 1 nhịp thời gian để thực thi động cơ!</li>
+            </ul>
+            <button class="px-btn modal-btn" onclick="toggleHint(false)">ĐÃ HIỂU!</button>
+          </div>
+        </div>
+
+        <!-- Modal Thắng Cuộc -->
+        <div class="pixel-modal" id="winModal">
+          <div class="modal-box">
+            <h3 style="color:#5fe885">🏆 VỀ ĐÍCH THÀNH CÔNG!</h3>
+            <p>Tuyệt vời! Robot đã theo đúng lệnh hàm để vượt qua chướng ngại và tới lá cờ đích an toàn.</p>
+            <button class="px-btn modal-btn" style="background:#5fe885" onclick="toggleWin(false)">TIẾP TỤC</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* 1. Retro Audio Synth */
+    let audioCtx = null;
+    function getAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+    function playBeep(freq = 440, type = 'square', dur = 0.08) {
+      try {
+        const ctx = getAudio();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + dur);
+      } catch (e) {}
+    }
+    function playWinSound() {
+      try {
+        [440, 554, 659, 880].forEach((n, idx) => setTimeout(() => playBeep(n, 'triangle', 0.18), idx * 110));
+      } catch(e) {}
+    }
+
+    /* 2. Pixel Engine: Painter & Bảng màu C */
+    const C = {
+      out: '#191224', cream: '#fff6e3', yellow: '#ffd23f', yellowD: '#d99718', orange: '#ff8c38',
+      red: '#f2485e', redD: '#ab1d32', cyan: '#38e1ff', blue: '#3b82f6', green: '#4ade80',
+      greenD: '#15803d', gray: '#64748b', grayL: '#cbd5e1', grayD: '#334155', white: '#ffffff',
+      floor1: '#222942', floor2: '#1c2237'
+    };
+
+    class Painter {
+      constructor(w, h) { this.w = w; this.h = h; this.buf = new Array(w * h).fill(null); }
+      px(x, y, c) { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < this.w && y < this.h) this.buf[y * this.w + x] = c; return this; }
+      get(x, y) { return (x < 0 || y < 0 || x >= this.w || y >= this.h) ? null : this.buf[y * this.w + x]; }
+      rect(x, y, w, h, c) { for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) this.px(x + i, y + j, c); return this; }
+      ell(cx, cy, rx, ry, c) {
+        for (let y = Math.floor(cy - ry - 1); y <= Math.ceil(cy + ry + 1); y++)
+          for (let x = Math.floor(cx - rx - 1); x <= Math.ceil(cx + rx + 1); x++) {
+            const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
+            if (dx * dx + dy * dy <= 1) this.px(x, y, c);
+          }
+        return this;
+      }
+      circ(cx, cy, r, c) { return this.ell(cx, cy, r, r, c); }
+      line(x0, y0, x1, y1, c) {
+        let dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1, err = dx + dy;
+        for (;;) { this.px(x0, y0, c); if (x0 === x1 && y0 === y1) break; let e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } }
+        return this;
+      }
+      outline(c = C.out) {
+        const add = [];
+        for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) {
+          if (this.get(x, y)) continue;
+          if (this.get(x - 1, y) || this.get(x + 1, y) || this.get(x, y - 1) || this.get(x, y + 1)) add.push([x, y]);
+        }
+        add.forEach(([x, y]) => this.px(x, y, c));
+        return this;
+      }
+      canvas() {
+        const cv = document.createElement('canvas'); cv.width = this.w; cv.height = this.h;
+        const g = cv.getContext('2d'), id = g.createImageData(this.w, this.h);
+        for (let i = 0; i < this.buf.length; i++) {
+          const c = this.buf[i]; if (!c) continue;
+          const n = parseInt(c.slice(1), 16);
+          id.data[i * 4] = n >> 16; id.data[i * 4 + 1] = (n >> 8) & 255; id.data[i * 4 + 2] = n & 255; id.data[i * 4 + 3] = 255;
+        }
+        g.putImageData(id, 0, 0); return cv;
+      }
+    }
+    function makeSprite(w, h, fn, outline = true) {
+      const p = new Painter(w, h); fn(p); if (outline) p.outline(); return p.canvas();
+    }
+
+    /* 3. Khởi tạo Sprites Pixel Art */
+    function createStarSprite(lit = true) {
+      return makeSprite(12, 12, p => {
+        const col = lit ? C.yellow : C.grayD, high = lit ? C.white : C.gray;
+        p.px(5, 1, col).px(6, 1, col).rect(4, 2, 4, 1, col).rect(1, 3, 10, 2, col).rect(2, 5, 8, 2, col)
+         .rect(3, 7, 6, 2, col).rect(2, 9, 3, 2, col).rect(7, 9, 3, 2, col);
+        if (lit) p.px(5, 2, high).px(3, 4, high).px(4, 4, high);
+      });
+    }
+    function createLockSprite(color = C.yellow) {
+      return makeSprite(10, 12, p => {
+        p.rect(3, 1, 4, 4, C.grayL).rect(4, 2, 2, 3, null).rect(2, 5, 6, 6, color)
+         .rect(3, 6, 4, 4, color === C.yellow ? C.yellowD : C.redD).px(4, 7, C.out).px(5, 7, C.out).px(4, 8, C.out);
+      });
+    }
+    function createBossSprite() {
+      return makeSprite(24, 24, p => {
+        p.rect(6, 6, 12, 12, C.redD).rect(8, 8, 8, 8, C.red).rect(10, 10, 4, 4, C.yellow)
+         .rect(2, 8, 4, 8, C.grayD).rect(18, 8, 4, 8, C.grayD).px(2, 6, C.red).px(3, 6, C.red)
+         .px(20, 6, C.red).px(21, 6, C.red).rect(9, 7, 2, 1, C.cyan).rect(13, 7, 2, 1, C.cyan)
+         .line(8, 5, 6, 2, C.yellow).line(15, 5, 17, 2, C.yellow);
+      });
+    }
+    const IconSprites = {
+      play: makeSprite(16, 16, p => { for (let i = 0; i < 7; i++) p.rect(4 + i, 3 + i, 1, 10 - i * 2, C.white); }, false),
+      step: makeSprite(16, 16, p => { for (let i = 0; i < 5; i++) p.rect(2 + i, 4 + i, 1, 8 - i * 2, C.white); p.rect(9, 4, 2, 8, C.white); p.rect(12, 4, 2, 8, C.white); }, false),
+      reset: makeSprite(16, 16, p => { p.circ(8, 8, 5, C.white); p.circ(8, 8, 3, null); p.rect(7, 2, 4, 4, null); p.rect(8, 1, 4, 2, C.white); p.px(10, 3, C.white); }, false),
+      hint: makeSprite(16, 16, p => { p.circ(8, 6, 4, C.out); p.circ(8, 6, 3, C.yellow); p.rect(6, 10, 4, 3, C.grayL); p.px(7, 13, C.yellow); p.px(6, 5, C.white); }, false),
+      menu: makeSprite(16, 16, p => { p.rect(2, 3, 12, 2, C.white); p.rect(2, 7, 12, 2, C.white); p.rect(2, 11, 12, 2, C.white); }, false)
+    };
+    const ConveyorFrames = [];
+    for (let f = 0; f < 4; f++) {
+      ConveyorFrames.push(makeSprite(24, 24, p => {
+        p.rect(0, 0, 24, 24, '#24304f').rect(0, 0, 24, 2, '#3b4c78').rect(0, 22, 24, 2, '#3b4c78');
+        for (let x = -8; x < 28; x += 8) {
+          const ox = x + f * 2;
+          p.px(ox + 2, 8, C.cyan).px(ox + 3, 9, C.cyan).px(ox + 4, 10, C.cyan).px(ox + 4, 11, C.cyan).px(ox + 3, 12, C.cyan).px(ox + 2, 13, C.cyan);
+        }
+      }, false));
+    }
+    const FlagFrames = [];
+    for (let f = 0; f < 4; f++) {
+      FlagFrames.push(makeSprite(24, 24, p => {
+        p.rect(5, 3, 2, 18, C.grayL).rect(3, 20, 6, 2, C.grayD).circ(6, 3, 1.5, C.yellow);
+        const wave = Math.sin(f * Math.PI / 2) * 1.5;
+        for (let y = 4; y <= 11; y++) {
+          const shift = Math.round(wave * ((y - 4) / 7));
+          p.rect(7, y, 10 + shift, 1, ((y + f) % 2 === 0) ? C.green : C.yellow);
+        }
+      }, true));
+    }
+    const WallSprite = makeSprite(24, 24, p => {
+      p.rect(1, 1, 22, 22, '#502a3a').rect(2, 2, 20, 20, '#753b52').rect(3, 3, 18, 18, '#8c4864')
+       .px(4, 4, C.yellow).px(19, 4, C.yellow).px(4, 19, C.yellow).px(19, 19, C.yellow)
+       .line(8, 8, 15, 15, C.red).line(8, 15, 15, 8, C.red);
+    }, true);
+
+    function drawRobotSprite(leftActive = false, rightActive = false) {
+      return makeSprite(24, 24, p => {
+        // Bánh trái
+        const lColor = leftActive ? C.yellow : '#475569', lGlow = leftActive ? C.white : '#1e293b';
+        p.rect(2, 5, 4, 14, lColor).rect(3, 6, 2, 12, lGlow);
+        for (let y = 6; y <= 18; y += 3) { p.px(2, y, leftActive ? C.orange : C.out); p.px(5, y, leftActive ? C.orange : C.out); }
+        // Bánh phải
+        const rColor = rightActive ? C.yellow : '#475569', rGlow = rightActive ? C.white : '#1e293b';
+        p.rect(18, 5, 4, 14, rColor).rect(19, 6, 2, 12, rGlow);
+        for (let y = 6; y <= 18; y += 3) { p.px(18, y, rightActive ? C.orange : C.out); p.px(21, y, rightActive ? C.orange : C.out); }
+        // Thân & Khung
+        p.rect(5, 10, 14, 4, '#334155').rect(6, 6, 12, 13, C.blue).rect(7, 7, 10, 11, C.cyan).rect(8, 8, 8, 9, '#1e293b');
+        // Mũi tên chỉ hướng trước (Front Indicator)
+        p.px(11, 3, C.yellow).px(12, 3, C.yellow).px(10, 4, C.yellow).px(13, 4, C.yellow).rect(10, 5, 4, 2, C.yellow);
+        // Đèn pha trước
+        p.px(7, 5, C.white).px(16, 5, C.white);
+        // Đèn báo nhịp
+        p.px(11, 12, leftActive || rightActive ? C.green : C.red).px(12, 12, leftActive || rightActive ? C.green : C.red);
+      }, true);
+    }
+
+    /* 4. Bản Đồ Sân 5x5 & Hệ Thống Mô Phỏng */
+    const TILE_SIZE = 48;
+    const MAP = {
+      w: 5, h: 5,
+      start: { x: 0, y: 1, dir: 0 },
+      goal: { x: 2, y: 3 },
+      walls: [{ x: 3, y: 0 }, { x: 0, y: 2 }, { x: 1, y: 2 }, { x: 3, y: 3 }, { x: 0, y: 0 }],
+      conveyors: [{ x: 3, y: 1 }, { x: 4, y: 1 }]
+    };
+
+    const robot = {
+      x: 0, y: 1, dir: 0, targetX: 0, targetY: 0, renderX: 0, renderY: 1,
+      renderRot: 0, targetRot: 0, leftWheel: false, rightWheel: false
+    };
+
+    const EXECUTION_STEPS = [
+      { mLine: 0, fLine: 0, action: 'call' }, { mLine: 0, fLine: 1, action: 'left_on' },
+      { mLine: 0, fLine: 2, action: 'right_on' }, { mLine: 0, fLine: 3, action: 'wait_beat' },
+      { mLine: 1, fLine: 0, action: 'call' }, { mLine: 1, fLine: 1, action: 'left_on' },
+      { mLine: 1, fLine: 2, action: 'right_on' }, { mLine: 1, fLine: 3, action: 'wait_beat' },
+      { mLine: 2, fLine: 4, action: 'call' }, { mLine: 2, fLine: 5, action: 'left_on' },
+      { mLine: 2, fLine: 6, action: 'wait_beat' },
+      { mLine: 3, fLine: 0, action: 'call' }, { mLine: 3, fLine: 1, action: 'left_on' },
+      { mLine: 3, fLine: 2, action: 'right_on' }, { mLine: 3, fLine: 3, action: 'wait_beat' },
+      { mLine: 4, fLine: 0, action: 'call' }, { mLine: 4, fLine: 1, action: 'left_on' },
+      { mLine: 4, fLine: 2, action: 'right_on' }, { mLine: 4, fLine: 3, action: 'wait_beat' }
+    ];
+
+    let currentStepIdx = -1, isRunning = false, runTimer = null, animFrame = 0;
+
+    function resetSimulation() {
+      if (runTimer) clearTimeout(runTimer);
+      isRunning = false; currentStepIdx = -1;
+      robot.x = MAP.start.x; robot.y = MAP.start.y; robot.dir = MAP.start.dir;
+      robot.targetX = robot.x; robot.targetY = robot.y; robot.renderX = robot.x; robot.renderY = robot.y;
+      robot.targetRot = robot.dir * Math.PI / 2; robot.renderRot = robot.targetRot;
+      robot.leftWheel = false; robot.rightWheel = false;
+      document.querySelectorAll('.code-slot').forEach(s => s.classList.remove('active-run'));
+      playBeep(350, 'sine', 0.06);
+    }
+
+    function updateHighlights(step) {
+      document.querySelectorAll('.code-slot').forEach(s => s.classList.remove('active-run'));
+      if (!step) return;
+      if (step.mLine !== undefined) {
+        const m = document.querySelector(`#mainSlots [data-line="${step.mLine}"]`);
+        if (m) m.classList.add('active-run');
+      }
+      if (step.fLine !== undefined) {
+        const f = document.querySelector(`#funcSlots [data-fline="${step.fLine}"]`);
+        if (f) f.classList.add('active-run');
+      }
+    }
+
+    function executeNextStep() {
+      if (currentStepIdx >= EXECUTION_STEPS.length - 1) { isRunning = false; return false; }
+      currentStepIdx++;
+      const step = EXECUTION_STEPS[currentStepIdx];
+      updateHighlights(step);
+
+      if (step.action === 'call') playBeep(480, 'square', 0.05);
+      else if (step.action === 'left_on') { robot.leftWheel = true; playBeep(580, 'triangle', 0.08); }
+      else if (step.action === 'right_on') { robot.rightWheel = true; playBeep(640, 'triangle', 0.08); }
+      else if (step.action === 'wait_beat') {
+        if (robot.leftWheel && robot.rightWheel) {
+          const dx = Math.round(Math.cos(robot.dir * Math.PI / 2)), dy = Math.round(Math.sin(robot.dir * Math.PI / 2));
+          robot.targetX = Math.max(0, Math.min(MAP.w - 1, robot.x + dx));
+          robot.targetY = Math.max(0, Math.min(MAP.h - 1, robot.y + dy));
+          robot.x = robot.targetX; robot.y = robot.targetY;
+          playBeep(720, 'sawtooth', 0.12);
+        } else if (robot.leftWheel && !robot.rightWheel) {
+          robot.dir = (robot.dir + 1) % 4; robot.targetRot = robot.dir * Math.PI / 2; playBeep(520, 'sine', 0.1);
+        } else if (!robot.leftWheel && robot.rightWheel) {
+          robot.dir = (robot.dir + 3) % 4; robot.targetRot = robot.dir * Math.PI / 2; playBeep(520, 'sine', 0.1);
+        }
+        setTimeout(() => { robot.leftWheel = false; robot.rightWheel = false; }, 220);
+        if (robot.x === MAP.goal.x && robot.y === MAP.goal.y) {
+          setTimeout(() => { playWinSound(); toggleWin(true); }, 400);
+        }
+      }
+      return true;
+    }
+
+    function startRunLoop() {
+      if (isRunning) return;
+      if (currentStepIdx >= EXECUTION_STEPS.length - 1) resetSimulation();
+      isRunning = true;
+      function loop() {
+        if (!isRunning) return;
+        const hasNext = executeNextStep();
+        if (hasNext) {
+          const step = EXECUTION_STEPS[currentStepIdx];
+          runTimer = setTimeout(loop, step.action === 'wait_beat' ? 620 : 340);
+        } else { isRunning = false; }
+      }
+      loop();
+    }
+
+    /* 5. Render Sân Đấu Trên Canvas */
+    const arenaCanvas = document.getElementById('arenaCanvas');
+    const ctx = arenaCanvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+
+    function renderArena() {
+      animFrame++;
+      const flagF = Math.floor(animFrame / 10) % 4, convF = Math.floor(animFrame / 6) % 4;
+      ctx.fillStyle = C.floor2; ctx.fillRect(0, 0, 240, 240);
+
+      for (let y = 0; y < MAP.h; y++) {
+        for (let x = 0; x < MAP.w; x++) {
+          const px = x * TILE_SIZE, py = y * TILE_SIZE;
+          ctx.fillStyle = (x + y) % 2 === 0 ? C.floor1 : '#1e243b'; ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+          ctx.strokeStyle = '#2f3b60'; ctx.lineWidth = 1; ctx.strokeRect(px + 0.5, py + 0.5, TILE_SIZE - 1, TILE_SIZE - 1);
+          ctx.fillStyle = '#405180'; ctx.fillRect(px + 2, py + 2, 2, 2);
+        }
+      }
+      MAP.conveyors.forEach(c => ctx.drawImage(ConveyorFrames[convF], 0, 0, 24, 24, c.x * TILE_SIZE, c.y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+      MAP.walls.forEach(w => ctx.drawImage(WallSprite, 0, 0, 24, 24, w.x * TILE_SIZE, w.y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+
+      const gpx = MAP.goal.x * TILE_SIZE, gpy = MAP.goal.y * TILE_SIZE;
+      ctx.fillStyle = 'rgba(70, 209, 106, 0.2)'; ctx.fillRect(gpx + 4, gpy + 4, TILE_SIZE - 8, TILE_SIZE - 8);
+      ctx.drawImage(FlagFrames[flagF], 0, 0, 24, 24, gpx, gpy, TILE_SIZE, TILE_SIZE);
+
+      robot.renderX += (robot.targetX - robot.renderX) * 0.25;
+      robot.renderY += (robot.targetY - robot.renderY) * 0.25;
+      let rotDiff = robot.targetRot - robot.renderRot;
+      while (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
+      while (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
+      robot.renderRot += rotDiff * 0.3;
+
+      const rx = robot.renderX * TILE_SIZE + TILE_SIZE / 2, ry = robot.renderY * TILE_SIZE + TILE_SIZE / 2;
+      ctx.save(); ctx.translate(Math.round(rx), Math.round(ry));
+      ctx.rotate(robot.renderRot + Math.PI / 2);
+      ctx.drawImage(drawRobotSprite(robot.leftWheel, robot.rightWheel), 0, 0, 24, 24, -24, -24, 48, 48);
+      ctx.restore();
+
+      requestAnimationFrame(renderArena);
+    }
+
+    /* 6. Khởi tạo Giao diện & Sự kiện */
+    function initUIElements() {
+      const starLit = createStarSprite(true), starDim = createStarSprite(false);
+      const lockYel = createLockSprite(C.yellow), lockRed = createLockSprite(C.red);
+      const starConfig = { 1: 3, 2: 3, 3: 3, 4: 3, 5: 2, 6: 2, 7: 0 };
+
+      for (let l = 1; l <= 7; l++) {
+        const el = document.getElementById(`stars-${l}`);
+        if (!el) continue;
+        const count = starConfig[l] || 0;
+        for (let i = 0; i < 3; i++) {
+          const img = document.createElement('img'); img.className = 'px';
+          img.src = (i < count ? starLit : starDim).toDataURL(); img.style.width = '12px'; img.style.height = '12px';
+          el.appendChild(img);
+        }
+      }
+      [8, 9].forEach(id => {
+        const el = document.getElementById(`lock-${id}`);
+        if (!el) return;
+        const img = document.createElement('img'); img.className = 'px';
+        img.src = lockYel.toDataURL(); img.style.width = '14px'; img.style.height = '16px';
+        el.appendChild(img);
+      });
+
+      const bImg = document.createElement('img'); bImg.className = 'px'; bImg.src = createBossSprite().toDataURL();
+      bImg.style.width = '36px'; bImg.style.height = '36px'; document.getElementById('bossIconSlot').appendChild(bImg);
+
+      const bLockImg = document.createElement('img'); bLockImg.className = 'px'; bLockImg.src = lockRed.toDataURL();
+      bLockImg.style.width = '16px'; bLockImg.style.height = '18px'; document.getElementById('bossLockSlot').appendChild(bLockImg);
+
+      const p1 = document.getElementById('pillIcon1').getContext('2d'); p1.fillStyle = C.cyan; p1.fillRect(2, 2, 6, 6);
+      const p2 = document.getElementById('pillIcon2').getContext('2d'); p2.fillStyle = C.yellow; p2.fillRect(2, 2, 6, 6);
+
+      [true, true, false].forEach(isLit => {
+        const img = document.createElement('img'); img.className = 'px';
+        img.src = (isLit ? starLit : starDim).toDataURL(); img.style.width = '14px'; img.style.height = '14px';
+        document.getElementById('topStarsSlot').appendChild(img);
+      });
+
+      const menuImg = document.createElement('img'); menuImg.className = 'px';
+      menuImg.src = IconSprites.menu.toDataURL(); menuImg.style.width = '16px'; menuImg.style.height = '16px';
+      document.getElementById('menuBtnSlot').appendChild(menuImg);
+
+      [['iconPlay', IconSprites.play], ['iconStep', IconSprites.step], ['iconReset', IconSprites.reset], ['iconHint', IconSprites.hint]].forEach(([id, spr]) => {
+        const el = document.getElementById(id);
+        const img = document.createElement('img'); img.className = 'px';
+        img.src = spr.toDataURL(); img.style.width = '16px'; img.style.height = '16px';
+        el.appendChild(img);
+      });
+
+      const lImg = document.createElement('img'); lImg.className = 'px';
+      lImg.src = lockYel.toDataURL(); lImg.style.width = '12px'; lImg.style.height = '14px';
+      document.getElementById('mainLockSlot').appendChild(lImg);
+    }
+
+    function onSelectLevel(lvl) { playBeep(400 + lvl * 30, 'square', 0.08); }
+    function onCommandCard(cmd) { playBeep(360, 'sine', 0.07); }
+    function toggleHint(show) { playBeep(450, 'triangle', 0.06); document.getElementById('hintModal').classList.toggle('show', show); }
+    function toggleWin(show) { document.getElementById('winModal').classList.toggle('show', show); if (!show) resetSimulation(); }
+
+    document.getElementById('btnRun').addEventListener('click', () => startRunLoop());
+    document.getElementById('btnStep').addEventListener('click', () => { if (isRunning) { clearTimeout(runTimer); isRunning = false; } executeNextStep(); });
+    document.getElementById('btnReset').addEventListener('click', () => resetSimulation());
+    document.getElementById('btnHint').addEventListener('click', () => toggleHint(true));
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initUIElements(); resetSimulation(); requestAnimationFrame(renderArena);
+    });
+  </script>
+</body>
+</html>
