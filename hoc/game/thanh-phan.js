@@ -34,7 +34,7 @@
   /* ------------------------------------------------------------- Editor */
   /**
    * Khung 10 ô. tuyChon: { tong: 10, dung: số ô dùng được, lay: () => mảng dòng (sửa tại chỗ),
-   *   bang: phần tử panel (để nháy đỏ), dem: phần tử đếm, khiDoi: fn, khiKhoa: fn }
+   *   bang: phần tử panel (để nháy đỏ), dem: phần tử đếm, khiDoi: fn, khiKhoa: fn, khiBam: fn(i) khi chạm một ô }
    */
   function Editor(host, tuyChon) {
     var tong = tuyChon.tong || 10, dung = tuyChon.dung === undefined ? tong : tuyChon.dung;
@@ -46,6 +46,7 @@
       r.appendChild(tb); r.appendChild(s); host.appendChild(r); rows.push(r); strips.push(s);
       (function (i) {
         r.addEventListener('click', function () {
+          tuyChon.khiBam && tuyChon.khiBam(i);
           if (i >= dung) { tuyChon.khiKhoa && tuyChon.khiKhoa(); return; }
           sel = i; ed.render();
         });
@@ -96,6 +97,8 @@
       runIdx = -1; loiSet = {}; sel = Math.min(lay().length, Math.max(0, dung - 1)); this.render();
     };
     this.dung = function () { return dung; };
+    /** Phần tử của ô thứ i (để vẽ mũi tên chỉ tới). */
+    this.hangEl = function (i) { return rows[i] || null; };
     this.render();
   }
 
@@ -175,15 +178,87 @@
     this.lai = function () { if (lastSpec) this.dung(lastSpec); };
   }
 
+  /* ------------------------------------------------- chặn bấm khi chuyển cảnh */
+  /**
+   * Trong lúc có hiệu ứng chuyển (Xưởng trượt, hộp mở/đóng, đổi màn) và một lúc sau đó,
+   * phủ một lớp trong suốt để cú bấm "đến muộn" không rơi xuống lớp bên dưới.
+   */
+  var Chan = (function () {
+    var el = null, hen = null, den = 0;
+    function lopChan() {
+      if (!el) { el = document.createElement('div'); el.id = 'lop-chan'; (document.getElementById('stage') || document.body).appendChild(el); }
+      return el;
+    }
+    function giu(ms) {
+      var e = lopChan(), t1 = Date.now() + ms;
+      if (t1 > den) den = t1;
+      e.classList.add('on');
+      clearTimeout(hen);
+      hen = setTimeout(function () { e.classList.remove('on'); }, Math.max(0, den - Date.now()));
+    }
+    function dang() { return Date.now() < den; }
+    document.addEventListener('click', function (ev) {
+      if (dang()) { ev.stopPropagation(); ev.preventDefault(); }
+    }, true);
+    return { giu: giu, dang: dang };
+  })();
+  var CHAN_MS = 300;       // thời gian chặn thêm sau hiệu ứng
+  var XUONG_MS = 300;      // Xưởng trượt .3s
+
+  /* ------------------------------------------------------------ Bong bóng */
+  function vuaChu(el, max, min) {
+    var s = max; el.style.fontSize = s + 'px';
+    while (el.scrollHeight > el.clientHeight + 1 && s > min) { s -= 1; el.style.fontSize = s + 'px'; }
+  }
+  /** Vẽ nội dung bong bóng b. o: { kieu: 'de'|'goi'|'loi'|'tin', tieuDe, chu, ma, pager: {i,n,truoc,sau} }. */
+  function bongVe(b, o) {
+    var duoi = b.classList.contains('duoi');
+    b.innerHTML = ''; b.className = 'bong ' + (duoi ? 'duoi ' : '') + 'show ' + o.kieu;
+    b.appendChild(h('div', 'bg-td', o.tieuDe));
+    var nd = h('div', 'bg-nd', o.chu); b.appendChild(nd);
+    if (o.ma) b.setAttribute('data-ma', o.ma); else b.removeAttribute('data-ma');
+    var ch = h('div', 'bg-ch');
+    if (o.pager) {
+      var tr = h('button', 'bt g-wd pg', '‹'); tr.setAttribute('data-nut', 'cd-truoc'); tr.setAttribute('aria-label', t('choi.truoc'));
+      var sa = h('button', 'bt g-wd pg', '›'); sa.setAttribute('data-nut', 'cd-sau'); sa.setAttribute('aria-label', t('choi.tiep'));
+      tr.addEventListener('click', function (ev) { ev.stopPropagation(); o.pager.truoc(); });
+      sa.addEventListener('click', function (ev) { ev.stopPropagation(); o.pager.sau(); });
+      ch.appendChild(tr); ch.appendChild(h('span', 'so', t('choi.chanDoanSo', { i: o.pager.i, n: o.pager.n }))); ch.appendChild(sa);
+    }
+    ch.appendChild(h('span', 'an', t('choi.anBong')));
+    b.appendChild(ch);
+    vuaChu(nd, 13, 9);
+    return b;
+  }
+  function bongAn(b) {
+    b.className = b.classList.contains('duoi') ? 'bong duoi' : 'bong';
+    b.innerHTML = ''; b.removeAttribute('data-ma'); b.removeAttribute('data-ca');
+  }
+  /** Mũi tên từ bong bóng (nằm ở cột phải) sang ô code hangEl ở cột trái. Không có ô thì không vẽ. */
+  function bongMui(b, hangEl) {
+    var cu = b.querySelector('.bg-mui'); if (cu) b.removeChild(cu);
+    if (!hangEl || !b.classList.contains('show')) return;
+    var m = Ve.mui(b.classList.contains('tin') ? '#4aa0ff' : '#ff5a4a', 2);
+    m.className += ' bg-mui';
+    b.appendChild(m);
+    var rb = b.getBoundingClientRect(), rh = hangEl.getBoundingClientRect();
+    var k = b.offsetHeight ? rb.height / b.offsetHeight : 1;
+    var y = (rh.top + rh.height / 2 - rb.top) / k - m.offsetHeight / 2;
+    y = Math.max(2, Math.min(b.offsetHeight - m.offsetHeight - 2, y));
+    m.style.top = Math.round(y) + 'px';
+  }
+
   /* -------------------------------------------------------------- Hộp */
   var lop = null;
   function goc() { return lop || (lop = document.getElementById('lop-hop')); }
   function dong() {
-    var g = goc(); g.innerHTML = ''; g.classList.remove('mo');
+    var g = goc();
+    if (g.classList.contains('mo')) Chan.giu(CHAN_MS);
+    g.innerHTML = ''; g.classList.remove('mo');
   }
   /** Mở một hộp: dựng nội dung trong khung gỗ. Trả về phần tử thân hộp. */
   function mo(tieuDe, cls) {
-    var g = goc(); g.innerHTML = ''; g.classList.add('mo');
+    var g = goc(); g.innerHTML = ''; g.classList.add('mo'); Chan.giu(CHAN_MS);
     var hop = h('div', 'hop chalk-box ' + (cls || ''));
     hop.appendChild(h('div', 'hop-td', tieuDe));
     var than = h('div', 'hop-than'); hop.appendChild(than);
@@ -218,5 +293,6 @@
     m.than.appendChild(hang);
   }
 
-  window.TP = { h: h, esc: esc, mauDong: mauDong, lopMau: lopMau, Editor: Editor, Palette: Palette, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
+  window.TP = { h: h, esc: esc, mauDong: mauDong, lopMau: lopMau, Editor: Editor, Palette: Palette, Chan: Chan, XUONG_MS: XUONG_MS,
+    bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

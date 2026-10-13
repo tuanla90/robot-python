@@ -163,10 +163,27 @@
     return p.canvas();
   }
 
-  function spriteLock(tran) {
-    var p = new Painter(9, 10);
-    p.map(['..sss....'.slice(0, 9), '.s...s...', '.s...s...', 'bbbbbbbbb', 'bbbbkbbbb', 'bbbkkkbbb', 'bbbbkbbbb', 'bbbbbbbbb']
-      .map(function (s) { return (s + '         ').slice(0, 9); }), { s: '#d8d8e4', b: tran ? '#9a9bb0' : '#7c7d88', k: K.ink }, 0, 1);
+  /** Ổ khóa: quai thép vòng cung, thân vàng bo góc, lỗ khóa (chấm tròn + vạch dọc). nho = bản gọn cho ô code. */
+  function spriteLock(tran, nho) {
+    var big = [
+      '..ssssss..', '.ssssssss.', '.ss....ss.', '.ss....ss.', '.ss....ss.',
+      '.hhhhhhhh.', 'bbbbbbbbbb', 'bbbkkkkbbb', 'bbbkkkkbbb', 'bbbbkkbbbb', 'bbbbkkbbbb', '.dddddddd.'
+    ];
+    var small = [
+      '..ssss..', '.ss..ss.', '.ss..ss.',
+      '.hhhhhh.', 'bbbkkbbb', 'bbkkkkbb', 'bbbkkbbb', 'bbbkkbbb', '.dddddd.'
+    ];
+    var rows = nho ? small : big, w = rows[0].length;
+    var pal = tran ? { s: '#e4e5ee', h: '#e8c46a', b: '#c9a23c', d: '#8c6a1c', k: K.ink }
+                   : { s: '#e4e5ee', h: '#ffe27a', b: '#f2b533', d: '#b87a14', k: K.ink };
+    var p = new Painter(w + 2, rows.length + 2);
+    p.map(rows, pal, 1, 1);
+    p.outline(K.ink); return p.canvas();
+  }
+  /** Mũi tên chỉ sang trái (từ bong bóng sang ô code): 8×7, viền tối 1px. */
+  function spriteMui(mau) {
+    var p = new Painter(10, 9);
+    p.map(['...x....', '..xx....', '.xxxxxxx', 'xxxxxxxx', '.xxxxxxx', '..xx....', '...x....'], { x: mau || '#ff5a4a' }, 1, 1);
     p.outline(K.ink); return p.canvas();
   }
   function spriteStar(bat) {
@@ -320,7 +337,8 @@
   }
   function ico(ten, s, tuyChon) { return mk(icon(ten, tuyChon), s || 2); }
   function sao(bat, s) { return mk(spriteStar(bat), s || 2); }
-  function khoa(s, tran) { return mk(spriteLock(tran), s || 2); }
+  function mui(mau, s) { return mk(spriteMui(mau), s || 2); }
+  function khoa(s, tran) { return mk(spriteLock(tran, tran), s || 2); }
 
   /** Điền icon vào mọi [data-i] chưa có nội dung. data-s tỉ lệ, data-l màu viền, data-f màu tô. */
   function hydrate(goc) {
@@ -352,7 +370,7 @@
 
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
-    datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, hydrate: hydrate, khungGo: khungGo,
+    datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
     tiles: tiles, makeConv: makeConv, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

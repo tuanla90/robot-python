@@ -36,7 +36,8 @@
             '<button class="bt g-wd del" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="1" data-l="#3a2008"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div></div>' +
+          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
+          '<div class="bong duoi" data-nut="bong-duoi"></div></div>' +
       '</div>';
     Ve.hydrate(host);
     Ve.khungGo(host.querySelector('.deco'));
@@ -44,11 +45,12 @@
     E.nm = q('.plate2 .nm'); E.tag = q('.plate2 .tag'); E.plate = q('.plate2');
     E.m = q('.result .m'); E.dg = q('.result .dg'); E.kq = q('.result');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]');
-    E.canvas = q('.ffr canvas');
+    E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong');
+    E.bongD.addEventListener('click', function () { anBongD(); });
     S.field = new SanVe.Field(E.canvas, { kich: 168 });
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'), dem: q('.p-prog .ct'),
-      khiDoi: khiSuaThan
+      khiDoi: khiSuaThan, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) { S.ed.chen(txt); },
@@ -63,6 +65,7 @@
     q('[data-nut="thu"]').addEventListener('click', thu);
     E.xoaHam.addEventListener('click', xoaHam);
     E.kq.addEventListener('click', function () {
+      if (S.ketThu && S.coBong) { hienBongD(); return; }
       if (E.kq.classList.contains('dai') && S.ketThu) TP.Hop.doc(t('choi.chanDoan'), S.ketThu.chanDoan.map(function (c) { return c.loi; }).join('\n\n'));
     });
   }
@@ -90,12 +93,15 @@
     S.field.nap({ san: ChamHoc.SAN_THU, batDau: ChamHoc.BAT_DAU_THU, loaiRobot: man.loaiRobot || 'banh' });
     lamPal();
     tinhNhanh();
+    anBongD();
+    TP.Chan.giu(TP.XUONG_MS + 300);
     E.host.classList.add('open');
     E.host.setAttribute('data-ham', ten); E.host.setAttribute('data-loai', loai);
     S.pal.vua();
   }
   function dong() {
     S.rid++; S.busy = false;
+    TP.Chan.giu(TP.XUONG_MS + 300);
     E.host.classList.remove('open');
     E.host.removeAttribute('data-ham');
     A.khiVe();
@@ -144,8 +150,30 @@
     var man = A.man();
     return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds());
   }
-  function hienKetQua(kq) {
-    S.ketThu = kq;
+  function anBongD() { TP.bongAn(E.bongD); }
+  /** Bong bóng chẩn đoán đè lên kho khối (nửa phải), mũi tên sang dòng lỗi của thân hàm; sân thử vẫn thấy. */
+  function hienBongD() {
+    var ds = S.ketThu ? S.ketThu.chanDoan : [];
+    if (!ds.length) return;
+    if (S.cdi >= ds.length) S.cdi = 0;
+    var i = S.cdi, c = ds[i];
+    TP.bongVe(E.bongD, {
+      kieu: c.muc === 'loi' ? 'loi' : 'tin', tieuDe: t(c.muc === 'loi' ? 'choi.chanDoan' : 'choi.thongTin'), chu: c.loi,
+      ma: ds.map(function (x) { return x.ma; }).join(' '),
+      pager: ds.length > 1 ? {
+        i: i + 1, n: ds.length,
+        truoc: function () { S.cdi = (S.cdi + ds.length - 1) % ds.length; hienBongD(); },
+        sau: function () { S.cdi = (S.cdi + 1) % ds.length; hienBongD(); }
+      } : null
+    });
+    E.bongD.setAttribute('data-ca', c.ma);
+    var dong = null;
+    [c.cho, c.choTruoc].forEach(function (cho) { if (dong === null && cho && cho.ten === S.ten && cho.dong > 0) dong = cho.dong - 1; });
+    TP.bongMui(E.bongD, dong === null ? null : S.ed.hangEl(dong));
+  }
+  /** baoBong: true khi người chơi bấm "Thử hàm" — lỗi hiện ở bong bóng trên kho khối; còn lúc tự tính khi sửa thì chỉ ở khung kết quả. */
+  function hienKetQua(kq, baoBong) {
+    S.ketThu = kq; S.coBong = false; S.cdi = 0; anBongD();
     var loi = kq.chanDoan.filter(function (c) { return c.muc === 'loi'; });
     var tin = kq.chanDoan.filter(function (c) { return c.muc !== 'loi'; });
     var ds = loi.concat(tin);
@@ -154,19 +182,28 @@
     E.m.style.display = loi.length ? 'none' : '';
     E.dg.innerHTML = '';
     E.dg.removeAttribute('data-ma');
-    if (ds.length) {
+    if (baoBong && loi.length) {
+      S.coBong = true;
+      E.dg.className = 'dg loi';
+      E.dg.textContent = t('choi.xemLoi');
+      E.dg.setAttribute('data-ma', ds.map(function (c) { return c.ma; }).join(' '));
+      E.kq.classList.add('dai');
+    } else if (ds.length) {
       var d0 = ds[0];
       E.dg.className = 'dg ' + (d0.muc === 'loi' ? 'loi' : 'tin');
       E.dg.textContent = d0.loi;
       E.dg.setAttribute('data-ma', ds.map(function (c) { return c.ma; }).join(' '));
     } else { E.dg.className = 'dg'; }
-    E.kq.classList.remove('dai');
-    vuaChu(E.dg, 13, 9);
-    if (E.dg.scrollHeight > E.dg.clientHeight + 1) E.kq.classList.add('dai');
+    if (!S.coBong) {
+      E.kq.classList.remove('dai');
+      vuaChu(E.dg, 13, 9);
+      if (E.dg.scrollHeight > E.dg.clientHeight + 1) E.kq.classList.add('dai');
+    }
     // đánh dấu dòng / khối có lỗi
     var rows = [], bricks = [];
     ds.forEach(function (c) { gomLoi(c.cho, rows, bricks); });
     S.ed.datLoi(rows); S.pal.datLoi(bricks);
+    if (S.coBong) hienBongD();
   }
   function gomLoi(cho, rows, bricks) {
     if (!cho) return;
@@ -192,6 +229,7 @@
     if (S.busy) return;
     if (!S.than || !S.than.length) { E.m.style.display = ''; E.m.textContent = t('xuong.trong'); return; }
     var my = ++S.rid, kq = chay();
+    anBongD();
     S.busy = true; E.side.classList.add('busy');
     S.field.datLai();
     S.field.nap({ san: ChamHoc.SAN_THU, batDau: ChamHoc.BAT_DAU_THU, loaiRobot: A.man().loaiRobot || 'banh' });
@@ -207,7 +245,7 @@
     }
     sang(null);
     S.busy = false; E.side.classList.remove('busy');
-    hienKetQua(kq);
+    hienKetQua(kq, true);
   }
   function sang(e) {
     if (!e) { S.ed.datChay(null); S.pal.datSang(null); return; }
@@ -234,6 +272,7 @@
       var r = KhoHam.xoa(ten);
       if (!r.ok) return;
       Luu.ghiKho();
+      TP.Chan.giu(TP.XUONG_MS + 300);
       E.host.classList.remove('open'); E.host.removeAttribute('data-ham');
       S.rid++;
       A.khiVe();
@@ -263,9 +302,13 @@
     if (goiY.length) {
       m.than.appendChild(h('div', 'hop-chu nho', t('ten.goiY')));
       var chips = h('div', 'hop-chips');
+      // chạm tên gợi ý chỉ ĐIỀN tên vào ô và tô sáng chip; bấm "Tạo hàm" mới tạo
       goiY.forEach(function (n) {
         var c = h('button', 'bt g-gr chip', n + '()'); c.setAttribute('data-goi-y', n);
-        c.addEventListener('click', function () { tao(n); });
+        c.addEventListener('click', function () {
+          inp.value = n; loi.textContent = ''; loi.classList.remove('co');
+          sangChip(n);
+        });
         chips.appendChild(c);
       });
       m.than.appendChild(chips);
@@ -276,7 +319,11 @@
     hang.appendChild(TP.Hop.nut('g-wd', t('chung.huy'), function () { TP.Hop.dong(); }, 'huy'));
     hang.appendChild(TP.Hop.nut('g-gr', t('ten.tao'), function () { tao(inp.value); }, 'tao'));
     m.than.appendChild(hang);
-    inp.addEventListener('input', function () { loi.textContent = ''; loi.classList.remove('co'); });
+    function sangChip(n) {
+      var cs = m.than.querySelectorAll('.chip');
+      for (var i = 0; i < cs.length; i++) cs[i].classList.toggle('on', cs[i].getAttribute('data-goi-y') === n);
+    }
+    inp.addEventListener('input', function () { loi.textContent = ''; loi.classList.remove('co'); sangChip(inp.value.trim()); });
     inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tao(inp.value); });
   }
 

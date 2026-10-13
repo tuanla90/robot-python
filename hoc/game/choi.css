@@ -102,6 +102,14 @@ body.dien-thoai .screen{clip-path:none}
 .bong.loi{background:#ffe2dd;box-shadow:0 0 0 2px #7a1a14,inset 0 2px 0 #fff,inset 0 -3px 0 #f0b4aa}.bong.loi .bg-td{color:#b0231c}
 .bong.tin{background:#dff2ff;box-shadow:0 0 0 2px #14407a,inset 0 2px 0 #fff,inset 0 -3px 0 #a8d0f0}.bong.tin .bg-td{color:#1456b0}
 
+/* bong bóng chẩn đoán: đè lên cột KHỐI LỆNH (nửa dưới, bên phải); sân và cột CHƯƠNG TRÌNH vẫn thấy */
+.bong.duoi{left:3px;right:3px;top:32px;bottom:5px;z-index:8;padding:6px 7px 4px}
+.bong.duoi .bg-nd{font-size:13px}
+.bong.duoi .bg-ch{height:auto;min-height:22px;flex-wrap:wrap;row-gap:2px}
+.bong.duoi .bg-ch .an{flex:1 1 100%;margin-left:0;text-align:right}
+.bg-mui{position:absolute;left:-18px;top:0;pointer-events:none}
+#lop-chan{position:absolute;left:0;top:0;width:360px;height:var(--sh,640px);z-index:90;display:none;background:transparent}
+#lop-chan.on{display:block}
 .side{flex:none;width:108px;display:flex;flex-direction:column;gap:5px}
 .cbtn{flex:none;height:34px;display:flex;align-items:center;gap:7px;padding:2px 8px 0;font:800 15px/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4);white-space:nowrap}
 .cbtn.dark{color:#3a2400;text-shadow:0 2px 0 rgba(255,255,255,.4)}
@@ -250,6 +258,7 @@ body.dien-thoai .screen{clip-path:none}
 .hop-hang{display:flex;gap:12px;margin-top:6px}
 .hop-nut{flex:1;height:36px;display:flex;align-items:center;justify-content:center;padding-top:2px;font:800 15px/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}
 .hop-chips{display:flex;flex-wrap:wrap;gap:12px 10px;margin:4px 0 12px}
+.chip.on{box-shadow:0 0 0 2px #fff,0 0 0 4px #ffd95a,0 4px 0 4px var(--ink),inset 0 3px 0 var(--hi,#fff8),inset 0 -4px 0 var(--lo,#0004)}
 .chip{height:28px;padding:0 10px;display:flex;align-items:center;font:700 14px/1 var(--mono);color:var(--ink)}
 .hop-in{display:block;width:100%;height:38px;padding:0 10px;border:0;border-radius:0;outline:0;background:#fff8e0;color:#2a1c0e;font:700 16px/1 var(--mono);
   box-shadow:inset 0 0 0 2px var(--ink),inset 0 3px 0 #fffdf0,0 0 0 2px #7fc4a6;margin-top:2px}
@@ -298,8 +307,8 @@ body.dien-thoai .screen{clip-path:none}
 .c-man.cur .num{color:var(--ink);text-shadow:2px 2px 0 #fff3a8}
 .c-man.cur .go{position:absolute;bottom:8px;left:0;right:0;text-align:center;font:800 17px/22px var(--px);color:var(--ink);padding-top:2px}
 .c-man.lock{--c:#6a5a6e;--hi:#8e7e92;--lo:#473a4c}
-.c-man.lock .num{color:#b9a9bd;font-size:26px}
-.c-man.lock .lk{position:absolute;bottom:9px;left:0;right:0;display:flex;justify-content:center}
+.c-man.lock .num{color:#b9a9bd;font-size:26px;height:34px;line-height:34px;top:-3px}
+.c-man.lock .lk{position:absolute;bottom:5px;left:0;right:0;display:flex;justify-content:center}
 .c-man.nope,.c-trum.nope{animation:shake .25s steps(2) 2}
 @keyframes blink{0%{box-shadow:0 0 0 2px var(--ink),0 4px 0 2px var(--ink),inset 0 3px 0 var(--hi),inset 0 -4px 0 var(--lo)}
   50%{box-shadow:0 0 0 2px #fff,0 4px 0 2px #fff,inset 0 3px 0 var(--hi),inset 0 -4px 0 var(--lo)}}

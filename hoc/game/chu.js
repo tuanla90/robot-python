@@ -77,6 +77,7 @@
       'choi.tiep': 'tiếp',
       'choi.truoc': 'trước',
       'choi.chanDoanSo': '{i}/{n}',
+      'choi.xemLoi': 'Có lỗi: xem hộp báo ở khối lệnh',
       'choi.loiLuu': 'Không lưu được bài làm trên máy này.',
 
       /* ---- bảng thắng */

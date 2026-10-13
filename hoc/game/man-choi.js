@@ -43,14 +43,15 @@
             '<button class="bt g-wd del" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="1" data-l="#3a2008"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div></div>' +
+          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
+          '<div class="bong duoi" data-nut="bong-duoi"></div></div>' +
       '</div>' +
       '<div class="ovwrap"><div class="ws-ov"></div></div>';
     deco.insertAdjacentHTML('afterend', html);
     Ve.hydrate(host);
     var q = function (s) { return host.querySelector(s); };
     E.n = q('.plaque .n'); E.t = q('.plaque .t'); E.sao = q('.top .stars');
-    E.toast = q('.toast'); E.bong = q('.bong'); E.clock = q('.clock .v'); E.side = q('.side');
+    E.toast = q('.toast'); E.bong = q('.ffr .bong'); E.bongD = q('.p-pal .bong'); E.clock = q('.clock .v'); E.side = q('.side');
     E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov');
 
     S.field = new SanVe.Field(q('#field'), { kich: 210, lamps: { T: q('.lamp.lt'), P: q('.lamp.lp') } });
@@ -59,7 +60,7 @@
 
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
-      khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }
+      khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) { if (!S.ed.chen(txt)) toast(t('choi.dayKhung'), 'bad'); },
@@ -87,7 +88,8 @@
       if (!S.bai.chinh.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
     });
-    E.bong.addEventListener('click', function () { anBong(); });
+    E.bong.addEventListener('click', function () { anBongTren(); });
+    E.bongD.addEventListener('click', function () { anBongD(); });
     veToc();
   }
 
@@ -114,7 +116,7 @@
     };
   }
   function vao(m) {
-    roi();
+    roi(); anBongD();
     S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0;
     var k = KhungCode.khungDayDu(m.khung);
     S.khung = k;
@@ -174,29 +176,12 @@
   function anToast() { clearTimeout(toastHen); E.toast.className = 'toast'; }
 
   /* ------------------------------------------------------------- bong bóng */
-  function vuaChu(el, max, min) {
-    var s = max; el.style.fontSize = s + 'px';
-    while (el.scrollHeight > el.clientHeight + 1 && s > min) { s -= 1; el.style.fontSize = s + 'px'; }
-  }
-  function bong(o) {
-    // o: { kieu: 'de'|'goi'|'loi'|'tin', tieuDe, chu, ma, pager: {i,n,truoc,sau} }
-    var b = E.bong; b.innerHTML = ''; b.className = 'bong show ' + o.kieu;
-    b.appendChild(h('div', 'bg-td', o.tieuDe));
-    var nd = h('div', 'bg-nd', o.chu); b.appendChild(nd);
-    if (o.ma) b.setAttribute('data-ma', o.ma); else b.removeAttribute('data-ma');
-    var ch = h('div', 'bg-ch');
-    if (o.pager) {
-      var tr = h('button', 'bt g-wd pg', '‹'); tr.setAttribute('data-nut', 'cd-truoc'); tr.setAttribute('aria-label', t('choi.truoc'));
-      var sa = h('button', 'bt g-wd pg', '›'); sa.setAttribute('data-nut', 'cd-sau'); sa.setAttribute('aria-label', t('choi.tiep'));
-      tr.addEventListener('click', function (ev) { ev.stopPropagation(); o.pager.truoc(); });
-      sa.addEventListener('click', function (ev) { ev.stopPropagation(); o.pager.sau(); });
-      ch.appendChild(tr); ch.appendChild(h('span', 'so', t('choi.chanDoanSo', { i: o.pager.i, n: o.pager.n }))); ch.appendChild(sa);
-    }
-    ch.appendChild(h('span', 'an', t('choi.anBong')));
-    b.appendChild(ch);
-    vuaChu(nd, 13, 9);
-  }
-  function anBong() { E.bong.className = 'bong'; E.bong.innerHTML = ''; E.bong.removeAttribute('data-ma'); }
+  // Đề bài / gợi ý: bong bóng đè lên sân (E.bong). Chẩn đoán sau khi chạy: bong bóng đè lên cột KHỐI LỆNH (E.bongD),
+  // để sân (robot dừng ở đâu) và dòng code tô đỏ ở cột CHƯƠNG TRÌNH vẫn thấy được.
+  function bong(o) { TP.bongVe(E.bong, o); }
+  function anBongTren() { TP.bongAn(E.bong); }
+  function anBongD() { TP.bongAn(E.bongD); }
+  function anBong() { anBongTren(); anBongD(); }
   function hienDeBai() { bong({ kieu: 'de', tieuDe: S.man.id + ' · ' + S.man.ten, chu: S.man.deBai }); }
   function goiY() {
     var ds = S.man.goiY || [];
@@ -208,7 +193,7 @@
     var ds = S.cd;
     if (!ds.length) return;
     var i = S.cdi, c = ds[i];
-    bong({
+    TP.bongVe(E.bongD, {
       kieu: c.muc === 'loi' ? 'loi' : 'tin', tieuDe: t(c.muc === 'loi' ? 'choi.chanDoan' : 'choi.thongTin'), chu: c.loi,
       ma: ds.map(function (x) { return x.ma; }).join(' '),
       pager: ds.length > 1 ? {
@@ -217,7 +202,11 @@
         sau: function () { S.cdi = (S.cdi + 1) % ds.length; hienChanDoan(); }
       } : null
     });
-    E.bong.setAttribute('data-ca', c.ma);
+    E.bongD.setAttribute('data-ca', c.ma);
+    // mũi tên sang dòng code bị tô đỏ (nếu lỗi có vị trí dòng)
+    var dong = null;
+    [c.cho, c.choTruoc].forEach(function (cho) { if (dong === null && cho && cho.cot === 'chinh' && cho.dong > 0) dong = cho.dong - 1; });
+    TP.bongMui(E.bongD, dong === null ? null : S.ed.hangEl(dong));
   }
 
   /* ----------------------------------------------------------- sửa chương trình */

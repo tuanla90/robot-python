@@ -57,6 +57,7 @@
 
   /* ---------------------------------------------------------------- màn hình */
   App.hien = function (ten) {
+    TP.Chan.giu(400);                                  // cú bấm đến muộn không rơi xuống màn mới
     document.getElementById('sc-chon').classList.toggle('hidden', ten !== 'chon');
     document.getElementById('sc-choi').classList.toggle('hidden', ten !== 'choi');
     if (ten === 'chon') Chon.ve();
