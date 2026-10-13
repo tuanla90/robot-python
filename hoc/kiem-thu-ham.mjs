@@ -1,6 +1,7 @@
 /* ============================================================================
    kiem-thu-ham.mjs — máy kiểm "sân thử" của Xưởng hàm: sân cố định (mặc định 5×5, xe ở (2,2) quay lên)
-   do người chơi sắp (xe, vật, tường); tọa độ là tọa độ thật của sân thử.
+   do người chơi sắp (xe, vật, tường); tọa độ là tọa độ thật của sân thử. Màn có tay gắp (chương tay-gap) thì
+   vật là vật thật: thử pick() / drop() ngay trong Xưởng. Cũng kiểm khóa tên hàm cốt truyện của kho.
    Chạy: node robotics/hoc/kiem-thu-ham.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
@@ -11,7 +12,8 @@ const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const ChamHoc = require(path.join(day, 'cham.js'));
 require(path.join(day, 'man-chuoi-2.js'));
-const ManHoc = require(path.join(day, 'man-vong-lap.js'));        // nối cả ba chương
+require(path.join(day, 'man-tay-gap.js'));
+const ManHoc = require(path.join(day, 'man-vong-lap.js'));        // nối cả bốn chương
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 
 let dat = 0, hong = 0;
@@ -90,6 +92,53 @@ console.log('\n== Vật: chỉ là ô có vật, không chặn đường ==');
   kiem('kq.sanThu.vat trả lại đúng cho giao diện vẽ', J(kq.sanThu.vat) === J(sanThu.vat), J(kq.sanThu));
 }
 
+console.log('\n== Vật thật khi màn có tay gắp: thử pick() / drop() trong Xưởng ==');
+{
+  const mTay = ManHoc.timMa('tay-gap.5');
+  const T_MOVE = ['left_move()', 'right_move()', 'wait()'];
+  const pick = H('pick', ['arm_down()', 'grab()', 'wait()']);
+  const drop = H('drop', ['arm_down()', 'release()', 'wait()']);
+  const move = H('move', T_MOVE);
+  const duoiXe = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }], tuong: [] };
+  const thuT = (ten, kho, sanThu, tuyChon) => ChamHoc.thuHam(mTay, {}, ten, kho, Object.assign({ sanThu }, tuyChon || {}));
+  const a = thuT('pick', [pick], duoiXe);
+  kiem('thử pick() với vật dưới xe: 1 nhịp, tay { duoi, kep, cam 1 }, vật 1 ở trạng thái cam, không chẩn đoán',
+    a.soNhip === 1 && J(a.tay) === J({ tuThe: 'duoi', kep: true, cam: 1 }) && J(a.vat) === J([{ id: 1, x: 2, y: 2, trangThai: 'cam' }]) && a.chanDoan.length === 0, J([a.tay, a.vat, a.chanDoan]));
+  const na = a.vet.find((e) => e.loai === 'nhip');
+  kiem('vết nhịp có robot.tay và vat; sự kiện nhat-vat',
+    J(na.robot.tay) === J({ tuThe: 'duoi', kep: true, cam: 1 }) && J(na.vat) === J([{ id: 1, x: 2, y: 2, trangThai: 'cam' }]) && na.suKien.some((e) => e.ma === 'nhat-vat' && e.id === 1), J(na));
+  kiem('kq.sanThu.vat vẫn trả lại cho giao diện (vị trí ban đầu)', J(a.sanThu.vat) === J([{ x: 2, y: 2 }]));
+  const b = thuT('chuyen', [pick, drop, move, H('chuyen', ['pick()', 'arm_up()', 'move()', 'drop()'])], duoiXe);
+  kiem('pick, nâng tay, move, drop: vật được đặt xuống ô (2,1) đi theo xe; tay hạ; 3 nhịp; không chẩn đoán',
+    b.soNhip === 3 && J(b.vat) === J([{ id: 1, x: 2, y: 1, trangThai: 'dat' }]) && J(b.robot) === J({ x: 2, y: 1, huong: 0 }) && J(b.tay) === J({ tuThe: 'duoi', kep: false, cam: null }) && b.chanDoan.length === 0, J([b.soNhip, b.vat, b.robot, b.tay, b.chanDoan]));
+  kiem('  vết: nhịp 2 vật đang cầm đi theo xe; nhịp 3 có sự kiện dat-vat',
+    (() => { const n = b.vet.filter((e) => e.loai === 'nhip'); return n[1].vat[0].trangThai === 'cam' && n[1].vat[0].y === 1 && n[2].suKien.some((e) => e.ma === 'dat-vat'); })());
+  const c = thuT('vo', [pick, H('vo', ['pick()', 'arm_up()', 'release()', 'wait()', 'wait()'])], duoiXe);
+  kiem('thả từ trên cao: vat-vo, vật vỡ; sân thử không có đích nên KHÔNG dừng sớm (vẫn chạy hết hàm: 3 nhịp)',
+    maCua(c).join() === 'vat-vo' && c.vat[0].trangThai === 'vo' && c.soNhip === 3 && c.chanDoan[0].muc === 'loi', J([c.chanDoan, c.soNhip]));
+  const kh = thuT('hut', [H('hut', ['grab()', 'wait()'])], duoiXe);
+  kiem('kẹp khi tay chưa hạ: kep-hut là THÔNG TIN (muc thong-tin), không cầm được', maCua(kh).join() === 'kep-hut' && kh.chanDoan[0].muc === 'thong-tin' && kh.tay.cam === null && kh.vat[0].trangThai === 'dat', J(kh.chanDoan));
+  const khong = thuT('hut2', [H('hut2', ['arm_down()', 'grab()', 'wait()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }], tuong: [] });
+  kiem('hạ tay kẹp ở ô không có vật: kep-hut (khong-co-vat)', khong.chanDoan.length === 1 && khong.chanDoan[0].lyDo === 'khong-co-vat', J(khong.chanDoan));
+  const vuong = thuT('vg', [move, pick, H('vg', ['pick()', 'move()'])], duoiXe);
+  kiem('tay hạ mà đi: tay-vuong, xe đứng yên (lệnh ghi rõ ở hàm move)', maCua(vuong).includes('tay-vuong') && J(vuong.robot) === J({ x: 2, y: 2, huong: 0 }) && /hàm move/.test(vuong.chanDoan.find((x) => x.ma === 'tay-vuong').loi), J(vuong.chanDoan));
+  const ocv = thuT('o', [pick, drop, move, H('o', ['pick()', 'arm_up()', 'move()', 'drop()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }, { x: 2, y: 1 }], tuong: [] });
+  kiem('đặt vật xuống ô đã có vật: o-co-vat, vật vẫn ở tay', maCua(ocv).join() === 'o-co-vat' && ocv.tay.cam === 1 && ocv.vat[1].trangThai === 'dat', J([ocv.chanDoan, ocv.tay]));
+  const tuong = thuT('t', [move, pick, drop, H('t', ['pick()', 'arm_up()', 'move()', 'move()', 'drop()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }], tuong: [{ x: 2, y: 0 }] });
+  kiem('vật không chặn xe còn tường vẫn chặn: xe đang cầm vật đâm tường (2,0) thì đứng yên ở (2,1), vật nằm ở (2,1)',
+    maCua(tuong).join() === 'dam-tuong' && J(tuong.robot) === J({ x: 2, y: 1, huong: 0 }) && tuong.vat[0].x === 2 && tuong.vat[0].y === 1 && tuong.vat[0].trangThai === 'dat', J([tuong.chanDoan, tuong.robot, tuong.vat]));
+  const dung = thuT('p', [pick], duoiXe);
+  kiem('sân thử không có điều kiện thắng: kết quả không có `thang`, không có chua-dua-vat / chua-toi-co', dung.thang === undefined && !maCua(dung).includes('chua-dua-vat') && !maCua(dung).includes('chua-toi-co'));
+  // màn không có tay gắp: vật chỉ là ô có vật (hành vi cũ), không có tay trong vết
+  const cu = ChamHoc.thuHam(man, {}, 'tien', [H('tien', TIEN)], { sanThu: duoiXe });
+  kiem('màn không có tay gắp (2.4): vật dưới xe vẫn chỉ là ô có vật, tay null, vết không có tay / vat',
+    cu.tay === null && cu.chanDoan.length === 0 && cu.vet.filter((e) => e.loai === 'nhip').every((e) => e.robot.tay === undefined && e.vat === undefined) && J(cu.vat) === J([{ id: 1, x: 2, y: 2, trangThai: 'dat' }]), J(cu));
+  const mo = thuT('lenh', [H('lenh', ['arm_down()', 'wait()'])], duoiXe);
+  kiem('lệnh tay gọi thẳng trong hàm thử: tay đổi tư thế sau wait()', mo.tay.tuThe === 'duoi' && mo.soNhip === 1);
+  const ng = ChamHoc.thuHam(man, {}, 'lenh2', [H('lenh2', ['arm_down()', 'wait()'])]);
+  kiem('màn không có tay gắp gọi arm_down(): ham-chua-co', maCua(ng).includes('ham-chua-co'), J(ng.chanDoan));
+}
+
 console.log('\n== chuanSanThu: sửa số liệu bậy ==');
 {
   const c = ChamHoc.chuanSanThu({
@@ -101,6 +150,9 @@ console.log('\n== chuanSanThu: sửa số liệu bậy ==');
   kiem('tường đè lên xe, ô trùng, vật ngoài sân, số lạ đều bị bỏ', J(c.tuong) === J([{ x: 4, y: 4 }]) && J(c.vat) === J([{ x: 0, y: 0 }]), J(c));
   const m = ChamHoc.chuanSanThu(null);
   kiem('null → mặc định', J(m) === J(ChamHoc.SAN_THU_MAC_DINH), J(m));
+  const d = ChamHoc.chuanSanThu({ rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }, { x: 2, y: 2 }, { x: 1, y: 2 }], tuong: [{ x: 2, y: 2 }, { x: 1, y: 2 }] });
+  kiem('vật được nằm ngay dưới xe (để thử pick() tại chỗ); tường đè lên xe thì bị bỏ; vật đè lên tường bị bỏ; vật trùng nhau bị bỏ',
+    J(d.vat) === J([{ x: 2, y: 2 }]) && J(d.tuong) === J([{ x: 1, y: 2 }]), J(d));
 }
 
 console.log('\n== Còn lại: lỗi thật vẫn báo; nhịp tối đa ==');
@@ -112,13 +164,13 @@ console.log('\n== Còn lại: lỗi thật vẫn báo; nhịp tối đa ==');
 console.log('\n== Kho hàm: khóa tên các hàm theo cốt truyện (taoHam của bất kỳ màn nào) ==');
 {
   const tenCuaTruyen = [...new Set(ManHoc.danhSach.flatMap((m) => m.taoHam || []))];
-  kiem('các màn khai taoHam: move, turn_right, turn_left, u_turn, corner, stair, two',
-    ['move', 'turn_right', 'turn_left', 'u_turn', 'corner', 'stair', 'two'].every((n) => tenCuaTruyen.includes(n)), J(tenCuaTruyen));
+  kiem('các màn khai taoHam: move, turn_right, turn_left, u_turn, corner, stair, two, pick, drop, carry (và side, row, bend_left, bend_right)',
+    ['move', 'turn_right', 'turn_left', 'u_turn', 'corner', 'stair', 'two', 'pick', 'drop', 'carry', 'side', 'row', 'bend_left', 'bend_right'].every((n) => tenCuaTruyen.includes(n)) && tenCuaTruyen.length === 14, J(tenCuaTruyen));
   const kho = KhoHam.moi();
   kiem('kho mới chưa khóa tên nào (đúng với các test cũ)', !kho.tenCoDinh('move') && kho.dsTenCoDinh().length === 0);
   kho.datTenCoDinh(tenCuaTruyen);
   kiem('sau datTenCoDinh: tenCoDinh true với hàm cốt truyện, false với tên khác', kho.tenCoDinh('move') && kho.tenCoDinh('two') && !kho.tenCoDinh('tu_toi'));
-  kho.tao('move', []); kho.tao('tu_toi', []);
+  kho.tao('move', [], { taoHam: ['move'] }); kho.tao('tu_toi', []);
   kho.sua('move', ['left_move()', 'right_move()', 'wait()']);
   const dt = kho.doiTen('move', 'tien');
   kiem('đổi tên hàm cốt truyện: { ok:false, ma:"ten-co-dinh" }, tên và thân giữ nguyên',
@@ -138,6 +190,28 @@ console.log('\n== Kho hàm: khóa tên các hàm theo cốt truyện (taoHam c�
   kho2.docLuu(luu);
   kiem('khóa không nằm trong dữ liệu lưu: kho nạp từ đĩa vẫn khóa nhờ tuyChon.tenCoDinh', kho2.tenCoDinh('move') && kho2.xoa('move').ma === 'ten-co-dinh');
   kiem('KhoHam mặc định có đủ hàm datTenCoDinh / tenCoDinh để giao diện dùng', typeof KhoHam.datTenCoDinh === 'function' && typeof KhoHam.tenCoDinh === 'function');
+}
+
+console.log('\n== Kho hàm: tên hàm cốt truyện chỉ tạo đúng ở màn yêu cầu nó (ten-danh-cho-cot-truyen) ==');
+{
+  const tenCuaTruyen = [...new Set(ManHoc.danhSach.flatMap((m) => m.taoHam || []))];
+  const k = KhoHam.moi({ tenCoDinh: tenCuaTruyen });
+  const r = k.kiemTen('pick');
+  kiem('chiếm tên cốt truyện ở màn khác (kiemTen không nói màn nào): ten-danh-cho-cot-truyen, có lời tiếng Việt', !r.ok && r.ma === 'ten-danh-cho-cot-truyen' && /màn khác/.test(r.loi), J(r));
+  kiem('tao("pick") không kèm tuyChon: bị từ chối, kho không thêm gì', k.tao('pick', []).ma === 'ten-danh-cho-cot-truyen' && k.soHam() === 0);
+  kiem('tao("pick", [], { taoHam: ["drop"] }) (màn đang chơi dạy hàm khác): vẫn bị từ chối', k.tao('pick', [], { taoHam: ['drop'] }).ma === 'ten-danh-cho-cot-truyen' && k.soHam() === 0);
+  kiem('kiemTen("pick", undefined, { taoHam: ["pick"] }) và tao(…) ở đúng màn yêu cầu nó: ok', k.kiemTen('pick', undefined, { taoHam: ['pick'] }).ok && k.tao('pick', [], { taoHam: ['pick'] }).ok && k.soHam() === 1);
+  kiem('kho đã có pick thì tạo lại là ten-da-co (không còn là "dành cho cốt truyện")', k.tao('pick', [], { taoHam: ['pick'] }).ma === 'ten-da-co' && k.kiemTen('pick').ma === 'ten-da-co');
+  kiem('tên tự đặt (không phải tên cốt truyện) tạo tự do, không cần tuyChon', k.tao('tu_toi', []).ok && k.kiemTen('lay_vat').ok);
+  const d = k.doiTen('tu_toi', 'drop');
+  kiem('đổi tên hàm tự đặt sang tên cốt truyện chưa có trong kho: bị từ chối, hàm giữ nguyên tên cũ', d.ma === 'ten-danh-cho-cot-truyen' && !!k.tim('tu_toi') && !k.tim('drop'), J(d));
+  const d2 = k.doiTen('tu_toi', 'drop', { taoHam: ['drop'] });
+  kiem('đổi tên sang đúng tên màn đang yêu cầu: được', d2.ok && !!k.tim('drop') && !k.tim('tu_toi'), J(d2));
+  kiem('hàm cốt truyện đã có trong kho vẫn bị khóa đổi tên / xóa (ten-co-dinh)', k.doiTen('pick', 'nhat').ma === 'ten-co-dinh' && k.xoa('pick').ma === 'ten-co-dinh');
+  const k2 = KhoHam.moi();
+  kiem('kho chưa khóa tên nào (datTenCoDinh chưa gọi): tên bất kỳ tạo tự do — chỉ chặn khi giao diện đã khóa danh sách cốt truyện', k2.tao('pick', []).ok);
+  const k3 = KhoHam.moi({ tenCoDinh: tenCuaTruyen });
+  kiem('hàm gốc vẫn chặn trước: "grab" là ten-trung-ham-goc, không phải ten-danh-cho-cot-truyen', k3.kiemTen('grab').ma === 'ten-trung-ham-goc');
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);

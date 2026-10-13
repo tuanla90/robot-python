@@ -13,6 +13,8 @@
             khung, maMau { chinh, hamCuaMan }, hamCuaEmCan [tên], taoHam [tên],
             sao { o, nhip }, loiGiai { chinh, hamCuaMan, hamCuaEmMoi },
             loiGiaiKhac (từ 1.3), loiSai [{ moTa, baiLam, hamCuaEmMoi, phaiCoMa }], goiY.
+   - mucTieu (tuỳ chọn): 'toi-co' (mặc định, tới ô F) hoặc 'dua-vat' (chương tay-gap: đưa mọi vật o
+     lên ô đích D; xem man-tay-gap.js và san-hoc.js).
    - hamCuaEmCan: các hàm của em màn này giả định học sinh đã có (kho lúc tới màn).
    - taoHam: các hàm màn này là nơi học sinh LẦN ĐẦU tạo.
    - loiGiai.hamCuaEmMoi: hàm của em học sinh tạo hoặc sửa ở màn này (trộn vào kho khi chấm).

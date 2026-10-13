@@ -12,7 +12,7 @@
    Nạp tệp này TRƯỚC các tệp màn (man-chuoi-1.js trở đi).
    Chương mới: thêm mã vào `thuTu`, thêm tên vào `ten`, rồi viết tệp màn của chương
    (mỗi màn khai `chuong` và `so`, xem man-chuoi-1.js).
-   Mã dự kiến sau này: 'tay-gap', 'bang-chuyen' (chưa có màn thì CHƯA thêm vào mảng).
+   Mã dự kiến sau này: 'bang-chuyen' (chưa có màn thì CHƯA thêm vào mảng).
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */
@@ -22,10 +22,11 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'vong-lap'],
+    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap'],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',
+      'tay-gap': 'Tay gắp',
       'vong-lap': 'Vòng lặp'
     }
   };

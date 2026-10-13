@@ -350,9 +350,10 @@
     inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocomplete', 'off'); inp.setAttribute('spellcheck', 'false'); inp.setAttribute('data-nut', 'o-ten');
     function tao(ten) {
       ten = String(ten).trim();
-      var kt = KhoHam.kiemTen(ten);
+      var tc = { taoHam: man.taoHam || [] };
+      var kt = KhoHam.kiemTen(ten, undefined, tc);
       if (!kt.ok) { loi.textContent = kt.loi; loi.classList.add('co'); return; }
-      var r = KhoHam.tao(ten, []);
+      var r = KhoHam.tao(ten, [], tc);
       if (!r.ok) { loi.textContent = r.loi; loi.classList.add('co'); return; }
       var g = Luu.ghiKho();
       TP.Hop.dong();

@@ -7,21 +7,25 @@
 
    Dùng:
      var kho = KhoHam.moi({ soHamToiDa: 12 });     // một kho độc lập
-     kho.tao('move', [])         → { ok:true, ham } | { ok:false, ma, loi }
+     kho.tao('move', [], { taoHam: ['move'] })  → { ok:true, ham } | { ok:false, ma, loi }
+                                   tuyChon.taoHam = tên các hàm cốt truyện màn ĐANG CHƠI yêu cầu tạo (man.taoHam).
+                                   Tên cốt truyện (xem datTenCoDinh) mà kho chưa có chỉ tạo / đổi sang được
+                                   khi nằm trong tuyChon.taoHam; còn lại → 'ten-danh-cho-cot-truyen'.
      kho.sua('move', [dòng…])    → thay thân hàm (tham số thứ ba tuỳ chọn: thamSo mới)
-     kho.doiTen('cu', 'moi')     → đổi tên + sửa chỗ gọi trong thân các hàm khác của kho
+     kho.doiTen('cu', 'moi', tuyChon)  → đổi tên + sửa chỗ gọi trong thân các hàm khác của kho
      kho.xoa('move')             → { ok, conDung: [hàm khác còn gọi nó] }
      kho.datTenCoDinh([tên…])    → khóa tên các hàm THEO CỐT TRUYỆN (tên nằm trong taoHam của một màn nào đó):
                                    không đổi tên được, không xóa được (mã 'ten-co-dinh'); thân vẫn sửa tự do.
                                    Lõi không tự biết danh sách màn, nên giao diện gọi lúc khởi động (ung-dung.js).
      kho.tenCoDinh('move')       → true nếu tên đang bị khóa;  kho.dsTenCoDinh() → bản sao danh sách
      kho.ds()                    → bản sao các hàm (mảng), truyền thẳng cho cham()
-     kho.kiemTen('ten')          → { ok } | { ok:false, ma, loi }
+     kho.kiemTen('ten', boQua, tuyChon)  → { ok } | { ok:false, ma, loi }   (boQua: tên được phép trùng, vd tên cũ khi đổi tên)
      kho.docLuu(luu) / kho.ghiLuu(luu)   → luu là đối tượng có getItem / setItem
    Cũng có kho mặc định dùng thẳng: KhoHam.tao(...), KhoHam.ds()… (KhoHam.macDinh).
 
    Mã lỗi: ten-rong, ten-sai-cu-phap, ten-la-tu-khoa, ten-trung-ham-goc, ten-da-co,
-   het-cho, ten-co-dinh, khong-co-ham, tham-so-sai, than-sai, luu-hong, phien-ban-la, khong-ghi-duoc.
+   ten-danh-cho-cot-truyen, het-cho, ten-co-dinh, khong-co-ham, tham-so-sai, than-sai, luu-hong,
+   phien-ban-la, khong-ghi-duoc.
    Dữ liệu lưu: JSON { phienBan: 1, ham: [...] } ở khóa KhoHam.KHOA_LUU.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.KhoHam).
@@ -33,10 +37,11 @@
 
   var PHIEN_BAN = 1;
   var KHOA_LUU = 'duong-hoc:kho-ham';
-  var SO_HAM_MAC_DINH = 12;
+  var SO_HAM_MAC_DINH = 16;      // 13 hàm cốt truyện (xuong-ham 7, tay-gap 2, vong-lap 4) + chỗ cho hàm tự đặt
 
-  // hàm gốc của cả hai loại robot (xe bánh, nhện) + hàm nội bộ của nhân chạy code
+  // hàm gốc của cả hai loại robot (xe bánh có tay gắp, nhện) + hàm nội bộ của nhân chạy code
   var HAM_GOC_MAC_DINH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait',
+    'arm_down', 'arm_up', 'grab', 'release',
     'go_up', 'go_down', 'go_left', 'go_right', 'print', 'range'];
   // từ khóa Python (nhân chạy code chỉ hiểu một phần, nhưng cấm cả bộ cho khỏi nhầm)
   var TU_KHOA = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',
@@ -72,7 +77,7 @@
 
     /** Tên hợp lệ: định danh Python, không trùng từ khóa, hàm gốc, hàm đã có.
      *  boQua: tên một hàm được phép trùng (chính nó khi đổi tên). */
-    function kiemTen(ten, boQua) {
+    function kiemTen(ten, boQua, tuyChon) {
       if (ten === undefined || ten === null || String(ten).trim() === '') {
         return loi('ten-rong', 'Tên hàm không được để trống.');
       }
@@ -88,6 +93,11 @@
       }
       if (ten !== boQua && tim(ten)) {
         return loi('ten-da-co', 'Đã có hàm tên "' + ten + '" trong kho của em.');
+      }
+      // tên hàm cốt truyện mà kho chưa có: chỉ tạo đúng ở màn yêu cầu nó (tránh chiếm tên của màn khác)
+      if (ten !== boQua && !tim(ten) && tenCoDinh(ten) &&
+          !(tuyChon && Array.isArray(tuyChon.taoHam) && tuyChon.taoHam.indexOf(ten) >= 0)) {
+        return loi('ten-danh-cho-cot-truyen', 'Tên "' + ten + '" dành cho một hàm ở màn khác trong cốt truyện, hãy đặt tên khác.');
       }
       return { ok: true };
     }
@@ -113,8 +123,8 @@
       return { ok: true };
     }
 
-    function tao(ten, thamSo) {
-      var r = kiemTen(ten);
+    function tao(ten, thamSo, tuyChon) {
+      var r = kiemTen(ten, undefined, tuyChon);
       if (!r.ok) return r;
       thamSo = thamSo || [];
       if (!Array.isArray(thamSo)) return loi('tham-so-sai', 'Đối số phải là danh sách tên.');
@@ -161,12 +171,12 @@
       return loi('ten-co-dinh', 'Hàm ' + ten + ' cần cho các màn sau, nên không ' + viec + ' được. Em vẫn sửa thân hàm thoải mái.');
     }
 
-    function doiTen(cu, moiTen) {
+    function doiTen(cu, moiTen, tuyChon) {
       var h = tim(cu);
       if (!h) return loi('khong-co-ham', 'Không có hàm "' + cu + '" trong kho.');
       if (tenCoDinh(cu)) return loiCoDinh(cu, 'đổi tên');
       if (cu === moiTen) return { ok: true, capNhat: [] };
-      var r = kiemTen(moiTen, cu);
+      var r = kiemTen(moiTen, cu, tuyChon);
       if (!r.ok) return r;
       var capNhat = aiGoi(cu);
       var re = new RegExp('(^|[^A-Za-z0-9_])' + escRe(cu) + '(\\s*\\()', 'g');

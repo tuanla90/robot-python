@@ -1,6 +1,7 @@
 /* ============================================================================
    man-vong-lap.js — "Đường học": CHƯƠNG `vong-lap` · VÒNG LẶP for (10 màn).
-   Xe hai bánh, Xưởng hàm mở (moXuong true), được dùng hàm của em. Hàm gốc như chuỗi 2.
+   Xe hai bánh, Xưởng hàm mở (moXuong true), được dùng hàm của em. Hàm gốc như chương tay-gap
+   (bánh, wait, 4 lệnh tay); các màn ở đây chỉ dùng bánh.
    Chương trình 10 ô; mỗi hàm một khung riêng 10 ô (dòng def không tốn ô).
    Cấu trúc mới: `for i in range(n):` (cauTruc ['for']). Dòng `for ...:` chiếm 1 ô, mỗi dòng trong
    thân for cũng 1 ô; thân for thụt 4 dấu cách. Thân hàm vẫn viết ở mức thụt lề 0.
@@ -25,7 +26,8 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  var HAM_GOC = ['left_move', 'right_move', 'wait'];
+  // đứng sau chương tay-gap nên cũng có 4 lệnh tay (chưa màn nào dùng tới vật; sân không có vật)
+  var HAM_GOC = ['left_move', 'right_move', 'wait', 'arm_down', 'arm_up', 'grab', 'release'];
 
   var T_MOVE = ['left_move()', 'right_move()', 'wait()'];
   function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
