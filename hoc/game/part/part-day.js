@@ -1,0 +1,2 @@
+(function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
+P.dangKy({loai:'tay',ma:'day',ten:'Tấm gạt đẩy',hamGoc:['push'],gan:'tay',diemNeo:{x:12,y:17},ve:function(p){p.rect(10,16,4,8,C.ink);p.rect(11,17,2,6,C.thep);p.rect(11,17,1,5,C.thepSang);p.rect(9,13,6,4,C.ink);p.rect(10,14,4,2,C.thep);p.rect(5,10,14,4,C.ink);p.rect(6,11,12,2,C.vang);p.rect(7,11,10,1,C.vangSang);p.rect(7,13,10,1,C.vangToi);p.rect(8,11,1,2,C.thep);p.rect(15,11,1,2,C.thep);}});})(typeof window!=='undefined'?window:globalThis);

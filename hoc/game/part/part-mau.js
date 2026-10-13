@@ -1,0 +1,2 @@
+(function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
+P.dangKy({loai:'cam-bien',ma:'mau',ten:'Cảm biến màu',hamGoc:['color'],gan:'duoi',diemNeo:{x:12,y:3},ve:function(p,s){s=s||{};var a=s.bat?'#ff4fb0':'#7a5268';if(s.bat){p.rect(8,1,8,1,'#ff9ddb');p.rect(9,0,6,1,'#ffe4f3');}p.rect(8,2,8,4,C.ink);p.rect(9,3,6,2,C.thep);p.rect(10,3,4,1,C.thepSang);p.rect(11,4,2,1,a);p.rect(9,6,6,1,a);}});})(typeof window!=='undefined'?window:globalThis);
