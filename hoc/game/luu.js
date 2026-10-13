@@ -1,8 +1,9 @@
 /* ============================================================================
    luu.js — "Đường học": LƯU (window.Luu). Mọi thứ bọc try/catch; hỏng thì chạy không lưu.
      kho hàm  : KhoHam.ghiLuu(Luu.kho)   (khóa của lõi)
-     tiến độ  : duong-hoc:tien-do = { phienBan: 1, sao: { '1.1': 3, … } }
-     bản nháp : duong-hoc:nhap:<id> = { chinh, hamCuaMan }
+     tiến độ  : duong-hoc:tien-do = { phienBan: 1, sao: { 'hai-banh.1': 3, … } }   (khóa = m.ma, cố định khi đổi thứ tự chương)
+     bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
+     Dữ liệu cũ theo id ('1.1'…'2.10') được chuyển một lần sang ma (chuyenCu).
    ========================================================================== */
 (function () {
   'use strict';
@@ -94,11 +95,37 @@
     return r;
   }
 
+  /** Dữ liệu cũ lưu theo id hiển thị cũ: chuỗi 1 = chương hai-banh, chuỗi 2 = xuong-ham. Chuyển sang khóa `ma`, chạy một lần
+   *  (khóa cũ bị xóa). Cố tình dùng bảng cố định, không dùng ManHoc.tim(id) vì id đổi theo thứ tự chương. */
+  var CU = { 1: 'hai-banh', 2: 'xuong-ham' };
+  function chuyenCu() {
+    try {
+      var doi = false;
+      Object.keys(CU).forEach(function (n) {
+        for (var so = 1; so <= 10; so++) {
+          var id = n + '.' + so, ma = CU[n] + '.' + so;
+          if (tienDo.sao[id] !== undefined) {
+            if (tienDo.sao[id] > (tienDo.sao[ma] || 0)) tienDo.sao[ma] = tienDo.sao[id];
+            delete tienDo.sao[id]; doi = true;
+          }
+          var nh = kho.getItem(KHOA_NHAP + id);
+          if (nh !== null && nh !== undefined) {
+            if (kho.getItem(KHOA_NHAP + ma) === null) kho.setItem(KHOA_NHAP + ma, nh);
+            kho.removeItem(KHOA_NHAP + id);
+          }
+        }
+      });
+      if (doi) ghiJson(KHOA_TIEN_DO, tienDo);
+    } catch (e) { /* chạy không chuyển */ }
+  }
+
   docTienDo();
+  chuyenCu();
 
   window.Luu = {
+    chuyenCu: chuyenCu, docTienDo: docTienDo,
     kho: kho, laBoNho: laBoNho,
-    docTienDo: docTienDo, saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
+    saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docKho: docKho, ghiKho: ghiKho,
     get loiKho() { return loiKho; },

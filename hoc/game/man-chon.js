@@ -1,6 +1,6 @@
 /* ============================================================================
    man-chon.js — "Đường học": MÀN CHỌN MÀN (window.Chon).
-   ‹ › đổi chuỗi · lưới 3×3 + nút TRÙM · hàng "Hàm của em" ở đáy.
+   ‹ › đổi chương (theo ManHoc.chuong()) · lưới 3×3 + nút TRÙM · hàng "Hàm của em" ở đáy.
    Giữ lâu tiêu đề 2 giây = bật/tắt "Mở hết" (cho người thử).
    ========================================================================== */
 (function () {
@@ -61,9 +61,9 @@
   }
 
   function doiChuoi(d) {
-    var n = App.chuoi + d, max = App.soChuoi();
-    if (n < 1 || n > max) return;
-    App.chuoi = n; ve();
+    var dsc = App.dsChuong(), i = App.chiSoChuong(App.chuong) + d;
+    if (i < 0 || i >= dsc.length) return;
+    App.chuong = dsc[i].ma; ve();
   }
 
   function lyDoChu(tt) {
@@ -81,23 +81,23 @@
   }
 
   function ve() {
-    var n = App.chuoi, max = App.soChuoi();
+    var n = App.chuong, dsc = App.dsChuong(), vt = App.chiSoChuong(n), cc = dsc[vt];
     el.tieuDe.innerHTML = '';
     el.tieuDe.appendChild(document.createTextNode(t('chon.chuoi', { n: '' })));
-    el.tieuDe.appendChild(h('span', 'd', n));
+    el.tieuDe.appendChild(h('span', 'd', cc.so));
     el.tieuDe.appendChild(document.createTextNode(' · '));
-    el.tieuDe.appendChild(h('em', null, t('chon.tenChuoi.' + n)));
-    el.truoc.classList.toggle('mo-mo', n <= 1); el.sau.classList.toggle('mo-mo', n >= max);
+    el.tieuDe.appendChild(h('em', null, cc.ten));
+    el.truoc.classList.toggle('mo-mo', vt <= 0); el.sau.classList.toggle('mo-mo', vt >= dsc.length - 1);
     if (App.moHet) el.tieuDe.appendChild(h('span', 'c-mh', t('chon.moHetNhan')));
 
-    var ds = App.dsChuoi(n), xong = ds.filter(function (m) { return Luu.daQua(m.id); }).length;
+    var ds = App.dsMan(n), xong = ds.filter(function (m) { return Luu.daQua(m.ma); }).length;
     el.bar.innerHTML = '';
     for (var i = 0; i < ds.length; i++) el.bar.appendChild(h('div', 'seg' + (i < xong ? ' on' : '')));
     el.pl.textContent = t('chon.tienDo', { n: xong, tong: ds.length });
 
     // màn "hiện tại" = màn mở đầu tiên chưa qua
     var cur = null;
-    ds.forEach(function (m) { if (!cur && m.hang !== 'trum' && App.trangThai(m).mo && !Luu.daQua(m.id)) cur = m; });
+    ds.forEach(function (m) { if (!cur && m.hang !== 'trum' && App.trangThai(m).mo && !Luu.daQua(m.ma)) cur = m; });
 
     el.luoi.innerHTML = '';
     HANG.forEach(function (hang) {
@@ -113,9 +113,9 @@
   }
 
   function oMan(m, laCur) {
-    var tt = App.trangThai(m), sao = Luu.saoTot(m.id);
+    var tt = App.trangThai(m), sao = Luu.saoTot(m.ma);
     var b = h('button', 'bt c-man ' + (!tt.mo ? 'lock' : sao > 0 ? 'done' : laCur ? 'cur' : 'open'));
-    b.setAttribute('data-man', m.id);
+    b.setAttribute('data-man', m.ma); b.setAttribute('data-id', m.id);
     b.setAttribute('aria-label', m.id + ' ' + m.ten);
     b.appendChild(h('div', 'num', App.sttCua(m)));
     if (!tt.mo) {
@@ -132,7 +132,7 @@
         return;
       }
       b.classList.add('pr'); setTimeout(function () { b.classList.remove('pr'); }, 120);
-      App.vaoMan(m.id);
+      App.vaoMan(m.ma);
     });
     return b;
   }
@@ -141,9 +141,9 @@
     el.trum.innerHTML = '';
     if (!m) { el.trum.style.display = 'none'; return; }
     el.trum.style.display = '';
-    var tt = App.trangThai(m), sao = Luu.saoTot(m.id), xong = sao > 0;
+    var tt = App.trangThai(m), sao = Luu.saoTot(m.ma), xong = sao > 0;
     el.trum.className = 'bt c-trum ' + (xong ? 'done' : tt.mo ? 'open' : 'lock');
-    el.trum.setAttribute('data-man', m.id);
+    el.trum.setAttribute('data-man', m.ma); el.trum.setAttribute('data-id', m.id);
     el.trum.appendChild(h('div', 'hz'));
     var bs = h('div', 'bs'); bs.setAttribute('data-i', xong && m.huyHieu ? 'huyhieu' : 'trum'); bs.setAttribute('data-s', '3'); bs.setAttribute('data-on', tt.mo || xong ? '1' : '0'); el.trum.appendChild(bs);
     var bx = h('div', 'bx');
@@ -163,7 +163,7 @@
         el.trum.classList.remove('nope'); void el.trum.offsetWidth; el.trum.classList.add('nope');
         thongBao(lyDoChu(tt)); return;
       }
-      App.vaoMan(m.id);
+      App.vaoMan(m.ma);
     };
   }
 

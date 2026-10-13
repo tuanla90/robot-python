@@ -147,6 +147,8 @@
     check: ['......xx', '.....xxx', 'x...xxx.', 'xx.xxx..', 'xxxxx...', '.xxx....', '..x.....'],
     cross: ['xx...xx', 'xxx.xxx', '.xxxxx.', '..xxx..', '.xxxxx.', 'xxx.xxx', 'xx...xx'],
     close: ['xx...xx', 'xxx.xxx', '.xxxxx.', '..xxx..', '.xxxxx.', 'xxx.xxx', 'xx...xx'],
+    thutvao: ['....x..xx', '....xx.xx', '....xxxxx', 'xxxxxxxxx', 'xxxxxxxxx', '....xxxxx', '....xx.xx', '....x..xx'],
+    thutra: ['xx..x....', 'xx.xx....', 'xxxxx....', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxx....', 'xx.xx....', 'xx..x....'],
     x5: ['xx.xx', 'xxxxx', '.xxx.', 'xxxxx', 'xx.xx'],
     help: ['.xxxxx.', 'xxxxxxx', 'xx...xx', '....xxx', '...xxx.', '..xxx..', '.......', '..xxx..', '..xxx..'],
     dot: ['.xx.', 'xxxx', 'xxxx', '.xx.']

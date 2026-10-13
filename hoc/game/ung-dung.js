@@ -5,49 +5,52 @@
   'use strict';
 
   var App = {
-    chuoi: 1,            // chuỗi đang xem ở màn chọn
+    chuong: null,        // mã chương đang xem ở màn chọn (xem ManHoc.chuong())
     moHet: false,        // chế độ thử: mở hết (giữ lâu tiêu đề 2 giây ở màn chọn)
     man: null            // màn đang chơi
   };
 
   /* ---------------------------------------------------------------- dữ liệu */
-  function chuoiCua(m) { return +String(m.id).split('.')[0]; }
-  function sttCua(m) { return +String(m.id).split('.')[1]; }
-  App.chuoiCua = chuoiCua; App.sttCua = sttCua;
-  App.soChuoi = function () {
-    var max = 1; ManHoc.danhSach.forEach(function (m) { if (chuoiCua(m) > max) max = chuoiCua(m); });
-    return max;
+  // Chương và thứ tự chương do lõi giữ (thu-tu-chuong.js → ManHoc.chuong()). Tiến độ lưu theo m.ma, không theo m.id.
+  function chuongCua(m) { return m.chuong; }
+  function sttCua(m) { return m.so; }
+  App.chuongCua = chuongCua; App.sttCua = sttCua;
+  App.dsChuong = function () { return ManHoc.chuong(); };
+  App.chiSoChuong = function (ma) {
+    var ds = ManHoc.chuong();
+    for (var i = 0; i < ds.length; i++) if (ds[i].ma === ma) return i;
+    return -1;
   };
-  App.dsChuoi = function (n) { return ManHoc.danhSach.filter(function (m) { return chuoiCua(m) === n; }); };
-  App.trum = function (n) { return App.dsChuoi(n).filter(function (m) { return m.hang === 'trum'; })[0] || null; };
-  App.dsHang = function (n, hang) { return App.dsChuoi(n).filter(function (m) { return m.hang === hang; }); };
+  App.dsMan = function (ma) { return ManHoc.danhSach.filter(function (m) { return m.chuong === ma; }); };
+  App.trum = function (ma) { return App.dsMan(ma).filter(function (m) { return m.hang === 'trum'; })[0] || null; };
+  App.dsHang = function (ma, hang) { return App.dsMan(ma).filter(function (m) { return m.hang === hang; }); };
 
   /**
    * Mở khóa:
    *  - hàng "Làm quen" chơi lần lượt; xong cả hàng thì mở hàng "Luyện" và "Biến thể";
-   *  - trùm mở khi qua đủ 9 màn; chuỗi n+1 mở khi thắng trùm chuỗi n.
-   * Trả về { mo, lyDo } với lyDo: 'chuoi' | 'hang1' | 'hang23' | 'trum'.
+   *  - trùm mở khi qua đủ 9 màn; chương kế (theo thứ tự trong thu-tu-chuong.js) mở khi thắng trùm của chương ngay trước nó.
+   * Trả về { mo, lyDo } với lyDo: 'chuoi' (kèm chuoi = số chương trước) | 'hang1' | 'hang23' | 'trum'.
    */
   App.trangThai = function (m) {
     if (App.moHet) return { mo: true };
-    var n = chuoiCua(m);
-    if (n > 1) {
-      var tr = App.trum(n - 1);
-      if (tr && !Luu.daQua(tr.id)) return { mo: false, lyDo: 'chuoi', chuoi: n - 1 };
+    var n = m.chuong, dsc = App.dsChuong(), vt = App.chiSoChuong(n);
+    if (vt > 0) {
+      var tr = App.trum(dsc[vt - 1].ma);
+      if (tr && !Luu.daQua(tr.ma)) return { mo: false, lyDo: 'chuoi', chuoi: dsc[vt - 1].so };
     }
     var h1 = App.dsHang(n, 'lam-quen');
     if (m.hang === 'lam-quen') {
       var i = h1.indexOf(m);
-      return i <= 0 || Luu.daQua(h1[i - 1].id) ? { mo: true } : { mo: false, lyDo: 'hang1' };
+      return i <= 0 || Luu.daQua(h1[i - 1].ma) ? { mo: true } : { mo: false, lyDo: 'hang1' };
     }
-    var xongH1 = h1.every(function (x) { return Luu.daQua(x.id); });
+    var xongH1 = h1.every(function (x) { return Luu.daQua(x.ma); });
     if (m.hang === 'trum') {
-      var chin = App.dsChuoi(n).filter(function (x) { return x.hang !== 'trum'; });
-      return chin.every(function (x) { return Luu.daQua(x.id); }) ? { mo: true } : { mo: false, lyDo: 'trum' };
+      var chin = App.dsMan(n).filter(function (x) { return x.hang !== 'trum'; });
+      return chin.every(function (x) { return Luu.daQua(x.ma); }) ? { mo: true } : { mo: false, lyDo: 'trum' };
     }
     return xongH1 ? { mo: true } : { mo: false, lyDo: 'hang23' };
   };
-  /** Màn kế tiếp đã mở (theo thứ tự trong danh sách), hoặc null. */
+  /** Màn kế tiếp đã mở (theo thứ tự trong danh sách; hết chương thì sang màn đầu chương kế), hoặc null. */
   App.manTiep = function (m) {
     var ds = ManHoc.danhSach, i = ds.indexOf(m);
     if (i < 0 || i + 1 >= ds.length) return null;
@@ -62,9 +65,10 @@
     document.getElementById('sc-choi').classList.toggle('hidden', ten !== 'choi');
     if (ten === 'chon') Chon.ve();
   };
-  App.vaoMan = function (id) {
-    var m = ManHoc.tim(id); if (!m) return;
-    App.man = m; App.chuoi = chuoiCua(m);
+  /** Vào màn theo mã cố định (vd 'vong-lap.4'); nhận cả id hiển thị ('3.4') cho tiện thử. */
+  App.vaoMan = function (ma) {
+    var m = ManHoc.timMa(ma) || ManHoc.tim(ma); if (!m) return;
+    App.man = m; App.chuong = m.chuong;
     App.hien('choi');
     Choi.vao(m);
   };
@@ -97,10 +101,10 @@
     Choi.dung(kc);
     Ve.khungGo(kb.querySelector(".deco"));
     Ve.khungGo(kc.querySelector(".deco"));
-    // chuỗi mở ban đầu: chuỗi của màn tiếp theo cần chơi
+    // chương mở ban đầu: chương của màn tiếp theo cần chơi
     var ds = ManHoc.danhSach, dau = null;
-    for (var i = 0; i < ds.length; i++) { if (App.trangThai(ds[i]).mo && !Luu.daQua(ds[i].id)) { dau = ds[i]; break; } }
-    App.chuoi = dau ? chuoiCua(dau) : App.soChuoi();
+    for (var i = 0; i < ds.length; i++) { if (App.trangThai(ds[i]).mo && !Luu.daQua(ds[i].ma)) { dau = ds[i]; break; } }
+    App.chuong = dau ? dau.chuong : App.dsChuong()[App.dsChuong().length - 1].ma;
     App.hien('chon');
     if (!r.ok) App.baoKho = r;
     vua();

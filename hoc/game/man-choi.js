@@ -60,6 +60,7 @@
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
+      thutLe: function () { return TP.coCauTruc(S.man, 'for'); },
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
     });
@@ -102,7 +103,7 @@
   }
   function nhanBan(m) {
     // bài làm: bản nháp nếu có, nếu không thì mã mẫu của màn
-    var nhap = Luu.docNhap(m.id);
+    var nhap = Luu.docNhap(m.ma);
     if (nhap) {
       // hàm của màn mà màn cho sẵn thì luôn phải có mặt (bản nháp hỏng / cũ có thể thiếu)
       (m.maMau.hamCuaMan || []).forEach(function (f) {
@@ -124,7 +125,7 @@
     E.n.textContent = m.id; E.t.textContent = m.ten;
     E.host.querySelector('.lamps').style.display = (m.loaiRobot === 'nhen') ? 'none' : '';
     E.host.querySelector('.plaque .d').style.display = '';
-    sao3(Luu.saoTot(m.id));
+    sao3(Luu.saoTot(m.ma));
     S.si = 0;
     S.field.nap(cauHinhSan(0));
     S.ed.nap(function () { return S.bai.chinh; }, dung.chinh);
@@ -148,6 +149,7 @@
     var m = S.man;
     S.pal.dung({
       goc: m.hamGoc,
+      vong: TP.coCauTruc(m, 'for'),
       em: (m.moXuong !== false && !m.camHamCuaEm) ? KhoHam.ds() : null,
       man: S.bai.hamCuaMan,
       coNutMoi: true
@@ -157,7 +159,7 @@
   function khiDoiHamKho() {
     datLaiChay();
     veKho();
-    Luu.ghiNhap(S.man.id, S.bai);
+    Luu.ghiNhap(S.man.ma, S.bai);
   }
 
   /** Rời màn: dừng phát lại. */
@@ -212,7 +214,7 @@
   }
   function lamLai() {
     var m = S.man; if (!m) return;
-    Luu.xoaNhap(m.id);
+    Luu.xoaNhap(m.ma);
     vao(m);                // nạp lại maMau, dựng lại kho khối, mở lại bong bóng đề bài
   }
   function goiY() {
@@ -220,6 +222,12 @@
     if (!ds.length) { bong({ kieu: 'goi', tieuDe: t('choi.goiY'), chu: t('choi.khongGoiY') }); return; }
     var i = S.goiYi % ds.length; S.goiYi++;
     bong({ kieu: 'goi', tieuDe: t('choi.goiYSo', { i: i + 1, n: ds.length }), chu: ds[i] });
+  }
+  /** Các vị trí (cot, dong, ten) mà một chẩn đoán trỏ tới. Lỗi `cau-truc-chua-hoc` / `tran-khung` ghi cot, dong, ten ngay trên chẩn đoán. */
+  function chiCho(c) {
+    var ds = [c.cho, c.choTruoc];
+    if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
+    return ds;
   }
   function hienChanDoan() {
     var ds = S.cd;
@@ -237,20 +245,20 @@
     E.bongD.setAttribute('data-ca', c.ma);
     // mũi tên sang dòng code bị tô đỏ (nếu lỗi có vị trí dòng)
     var dong = null;
-    [c.cho, c.choTruoc].forEach(function (cho) { if (dong === null && cho && cho.cot === 'chinh' && cho.dong > 0) dong = cho.dong - 1; });
+    chiCho(c).forEach(function (cho) { if (dong === null && cho && cho.cot === 'chinh' && cho.dong > 0) dong = cho.dong - 1; });
     TP.bongMui(E.bongD, dong === null ? null : S.ed.hangEl(dong));
   }
 
   /* ----------------------------------------------------------- sửa chương trình */
   function khiDoi() {
-    Luu.ghiNhap(S.man.id, S.bai);
+    Luu.ghiNhap(S.man.ma, S.bai);
     datLaiChay();
     veKho();
   }
 
   /* -------------------------------------------------------------- chạy / phát lại */
   function datLaiChay() {
-    S.rid++; S.busy = false; S.ket = null; S.vet = null; S.idx = 0; S.nhip = 0;
+    S.rid++; S.busy = false; S.ket = null; S.vet = null; S.lap = null; S.idx = 0; S.nhip = 0;
     E.side.classList.remove('busy');
     E.clock.textContent = '0';
     if (S.si !== 0 && Array.isArray(S.man.san[0])) { S.si = 0; S.field.nap(cauHinhSan(0)); } else S.field.datLai();
@@ -265,7 +273,14 @@
     S.si = si;
     S.field.nap(cauHinhSan(si));
     S.vet = S.ket.vet; S.idx = 0; S.nhip = 0;
+    S.lap = S.ed.lapChoVet(S.vet, dongChinhCua);        // số lượt của các vòng for theo từng sự kiện
     E.clock.textContent = '0';
+  }
+  /** Chỉ số dòng (từ 0) của chương trình mà sự kiện lệnh e đang chạy (kể cả khi lệnh nằm trong hàm được gọi từ dòng đó). */
+  function dongChinhCua(e) {
+    var chuoi = [e.cho].concat(e.ngan || []), dong = null;
+    chuoi.forEach(function (c) { if (c && c.cot === 'chinh') dong = c.dong - 1; });
+    return dong;
   }
   async function chay(tungNhip) {
     if (S.busy) return;
@@ -297,9 +312,7 @@
 
   function sang(e) {
     if (!e) { S.ed.datChay(null); S.pal.datSang(null); return; }
-    var chuoi = [e.cho].concat(e.ngan || []), dong = null;
-    chuoi.forEach(function (c) { if (c && c.cot === 'chinh') dong = c.dong - 1; });
-    S.ed.datChay(dong);
+    S.ed.datChay(dongChinhCua(e), S.lap && S.lap.get(e));
     if (e.cho && (e.cho.cot === 'hamEm' || e.cho.cot === 'hamMan')) S.pal.datSang(e.cho.cot === 'hamEm' ? 'em' : 'man', e.cho.ten);
     else S.pal.datSang(null);
   }
@@ -308,7 +321,7 @@
     var k = S.ket;
     if (k.thang) {
       S.field.mungThang();
-      var tot = Luu.ghiSao(S.man.id, k.sao);
+      var tot = Luu.ghiSao(S.man.ma, k.sao);
       sao3(tot);
       var my = S.rid;
       setTimeout(function () { if (my === S.rid) bangThang(); }, 750);
@@ -320,7 +333,7 @@
     S.cd = loi.concat(tin); S.cdi = 0;
     var rows = [], bricks = [], conTran = false;
     S.cd.forEach(function (c) {
-      [c.cho, c.choTruoc].forEach(function (cho) {
+      chiCho(c).forEach(function (cho) {
         if (!cho) return;
         if (cho.cot === 'chinh' && cho.dong > 0) rows.push(cho.dong - 1);
         else if (cho.cot === 'hamEm' && cho.ten) bricks.push('em:' + cho.ten);
@@ -376,7 +389,7 @@
     hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); datLaiChay(); }, 'choi-lai'));
     hang.appendChild(TP.Hop.nut('g-gr', tiep ? t('thang.manTiep') : t('thang.hetChuoi'), function () {
       TP.Hop.dong();
-      if (tiep) App.vaoMan(tiep.id); else { roi(); App.veChon(); }
+      if (tiep) App.vaoMan(tiep.ma); else { roi(); App.veChon(); }
     }, 'man-tiep'));
     hop.than.appendChild(hang);
   }

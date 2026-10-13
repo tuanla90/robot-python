@@ -51,6 +51,7 @@
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'), dem: q('.p-prog .ct'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
+      thutLe: function () { return TP.coCauTruc(A.man(), 'for'); },
       tt: q('.p-prog .tt'), ttDay: t('xuong.than'), ttNgan: t('xuong.thanNgan'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); }
     });
@@ -114,6 +115,7 @@
     var man = A.man();
     S.pal.dung({
       goc: man.hamGoc,
+      vong: TP.coCauTruc(man, 'for'),
       em: (man.moXuong !== false && !man.camHamCuaEm) ? KhoHam.ds() : null,
       man: A.bai().hamCuaMan,
       coNutMoi: false,
@@ -130,7 +132,7 @@
       var g = Luu.ghiKho();
       if (!g.ok) E.dg.textContent = t('tb.khoGhiLoi', { loi: g.loi });
     } else {
-      Luu.ghiNhap(A.man().id, A.bai());
+      Luu.ghiNhap(A.man().ma, A.bai());
     }
     S.field.datLai();
     S.ed.datChay(null); S.ed.datLoi([]); S.pal.datSang(null); S.pal.datLoi([]);
@@ -225,6 +227,12 @@
   }
   function anBongD() { TP.bongAn(E.bongD); }
   /** Bong bóng chẩn đoán đè lên kho khối (nửa phải), mũi tên sang dòng lỗi của thân hàm; sân thử vẫn thấy. */
+  /** Các vị trí mà một chẩn đoán trỏ tới (xem man-choi.js). */
+  function chiCho(c) {
+    var ds = [c.cho, c.choTruoc];
+    if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
+    return ds;
+  }
   function hienBongD() {
     var ds = S.ketThu ? S.ketThu.chanDoan : [];
     if (!ds.length) return;
@@ -241,7 +249,7 @@
     });
     E.bongD.setAttribute('data-ca', c.ma);
     var dong = null;
-    [c.cho, c.choTruoc].forEach(function (cho) { if (dong === null && cho && cho.ten === S.ten && cho.dong > 0) dong = cho.dong - 1; });
+    chiCho(c).forEach(function (cho) { if (dong === null && cho && cho.ten === S.ten && cho.dong > 0) dong = cho.dong - 1; });
     TP.bongMui(E.bongD, dong === null ? null : S.ed.hangEl(dong));
   }
   /** baoBong: true khi người chơi bấm "Thử hàm" — lỗi hiện ở bong bóng trên kho khối; còn lúc tự tính khi sửa thì chỉ ở khung kết quả. */
@@ -274,7 +282,7 @@
     }
     // đánh dấu dòng / khối có lỗi
     var rows = [], bricks = [];
-    ds.forEach(function (c) { gomLoi(c.cho, rows, bricks); });
+    ds.forEach(function (c) { chiCho(c).forEach(function (cho) { gomLoi(cho, rows, bricks); }); });
     S.ed.datLoi(rows); S.pal.datLoi(bricks);
     if (S.coBong) hienBongD();
   }
@@ -305,11 +313,12 @@
     S.field.datLai();
     napSan(kq);
     var vet = vetTrenSan(kq.vet);
+    var lap = S.ed.lapChoVet(vet, dongTrongHam);        // số lượt của các vòng for trong thân hàm
     var toc = A.toc();
     for (var i = 0; i < vet.length; i++) {
       var e = vet[i];
       if (e.loai === 'lenh') {
-        sang(e);
+        sang(e, lap.get(e));
         await SanVe.ngu(LENH_MS / toc); if (my !== S.rid) return;
       } else {
         await S.field.phatNhip(e, NHIP_MS / toc); if (my !== S.rid) return;
@@ -319,15 +328,17 @@
     S.busy = false; E.side.classList.remove('busy');
     hienKetQua(kq, true);
   }
-  function sang(e) {
+  /** Chỉ số dòng (từ 0) của thân hàm đang mở mà sự kiện lệnh e đang chạy (kể cả khi lệnh nằm trong hàm khác được gọi từ dòng đó). */
+  function dongTrongHam(e) {
+    var chuoi = [e.cho].concat(e.ngan || []), dong = null;
+    chuoi.forEach(function (c) { if (c && c.ten === S.ten && c.dong > 0) dong = c.dong - 1; });
+    return dong;
+  }
+  function sang(e, lap) {
     if (!e) { S.ed.datChay(null); S.pal.datSang(null); return; }
-    var chuoi = [e.cho].concat(e.ngan || []), dong = null, lit = null;
-    chuoi.forEach(function (c) {
-      if (!c) return;
-      if (c.ten === S.ten && c.dong > 0) dong = c.dong - 1;
-    });
+    var dong = dongTrongHam(e), lit = null;
     if (e.cho && (e.cho.cot === 'hamEm' || e.cho.cot === 'hamMan') && e.cho.ten !== S.ten) lit = [e.cho.cot === 'hamEm' ? 'em' : 'man', e.cho.ten];
-    S.ed.datChay(dong);
+    S.ed.datChay(dong, lap);
     if (lit) S.pal.datSang(lit[0], lit[1]); else S.pal.datSang(null);
   }
 
