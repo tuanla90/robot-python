@@ -231,7 +231,7 @@
   /* -------------------------------------------------------- sân thử */
   function napSan() {
     var st = S.st;
-    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, robot: VeRobot.cauHinhCua(A.man()) });
+    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, thung: st.thung, robot: VeRobot.cauHinhCua(A.man()) });
   }
   function datChe(k) {
     S.che = k;
@@ -247,11 +247,13 @@
     if (st.batDau.x === x && st.batDau.y === y) return 'xe';
     function trong(ds) { return ds.some(function (o) { return o.x === x && o.y === y; }); }
     if (trong(st.tuong)) return 'tuong';
+    if (trong(st.thung || [])) return 'thung';
     if (trong(st.vat)) return 'vat';
     return null;
   }
   function coVat(x, y) { return S.st.vat.some(function (o) { return o.x === x && o.y === y; }); }
-  function coTay() { return !!VeRobot.cauHinhCua(A.man()).tay; }
+  function coTay() { var tay = VeRobot.cauHinhCua(A.man()).tay; return !!tay && tay !== 'day'; }        // tay gắp: vật nằm dưới xe được
+  function coDay() { return VeRobot.cauHinhCua(A.man()).tay === 'day'; }           // tấm đẩy: nút Vật đặt THÙNG NẶNG
   function boO(ds, x, y) { return ds.filter(function (o) { return !(o.x === x && o.y === y); }); }
   /** Chạm một ô sân thử theo chế độ đang bật. Ô có xe không đặt được vật hay tường (và ngược lại). */
   function chamSan(ev) {
@@ -259,14 +261,14 @@
     var r = E.canvas.getBoundingClientRect(), st = S.st;
     var x = Math.floor((ev.clientX - r.left) / r.width * st.rong), y = Math.floor((ev.clientY - r.top) / r.height * st.cao);
     if (x < 0 || y < 0 || x >= st.rong || y >= st.cao) return;
-    var co = coGi(x, y), moi = { rong: st.rong, cao: st.cao, batDau: Object.assign({}, st.batDau), vat: st.vat.slice(), tuong: st.tuong.slice() };
+    var co = coGi(x, y), moi = { rong: st.rong, cao: st.cao, batDau: Object.assign({}, st.batDau), vat: st.vat.slice(), tuong: st.tuong.slice(), thung: (st.thung || []).slice() };
     if (S.che === 'xe') {
       if (co === 'xe') { if (A.man().loaiRobot === 'nhen') return; moi.batDau.huong = (moi.batDau.huong + 1) % 4; }       // nhện không có hướng mặt: chạm lại vào nó không xoay
       else if (co === 'vat' && coTay()) { moi.batDau.x = x; moi.batDau.y = y; }          // có tay gắp: xe được đứng trên vật
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else { moi.batDau.x = x; moi.batDau.y = y; }
     } else {
-      var khoa = S.che === 'vat' ? 'vat' : 'tuong';
+      var khoa = S.che === 'vat' ? (coDay() ? 'thung' : 'vat') : 'tuong';
       if (khoa === 'vat' && co === 'xe' && coTay()) {                                    // đặt / bỏ vật ngay dưới xe
         if (coVat(x, y)) moi.vat = boO(moi.vat, x, y); else moi.vat.push({ x: x, y: y });
       }
@@ -300,7 +302,7 @@
   }
   /** Các vị trí mà một chẩn đoán trỏ tới (xem man-choi.js). */
   function chiCho(c) {
-    var ds = [c.cho, c.choTruoc, c.choTruot];
+    var ds = [c.cho, c.choTruoc, c.choTruot, c.choPush];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }

@@ -231,7 +231,7 @@
   }
   /** Các vị trí (cot, dong, ten) mà một chẩn đoán trỏ tới. Lỗi `cau-truc-chua-hoc` / `tran-khung` ghi cot, dong, ten ngay trên chẩn đoán. */
   function chiCho(c) {
-    var ds = [c.cho, c.choTruoc, c.choTruot];
+    var ds = [c.cho, c.choTruoc, c.choTruot, c.choPush];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }
@@ -362,8 +362,8 @@
   function bangThang() {
     var m = S.man, k = S.ket, ss = m.sao || {};
     var okO = ss.o === undefined || k.soO <= ss.o, okN = ss.nhip === undefined || k.soNhip <= ss.nhip;
-    var duaVat = m.mucTieu === 'dua-vat';
-    var hop = TP.Hop.mo(t(duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
+    var duaVat = m.mucTieu === 'dua-vat' || m.mucTieu === 'day-thung';
+    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
     hop.hop.setAttribute('data-sao', k.sao);
     var st = h('div', 'th-sao');
     for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }

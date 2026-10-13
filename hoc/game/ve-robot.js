@@ -58,7 +58,7 @@
   function chuanTay(t) {
     t = t || {};
     return { tuThe: t.tuThe === 'duoi' ? 'duoi' : t.tuThe === 'giua' ? 'giua' : 'tren', kep: t.kep === true || t.kep === 'dong', cam: t.cam !== null && t.cam !== undefined && t.cam !== false,
-      bat: !!t.bat, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBan: !!t.dangBan };
+      bat: !!t.bat, ra: !!t.ra, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBan: !!t.dangBan };
   }
 
   /* ----------------------------------------------------------------- hình tạm */
@@ -137,7 +137,7 @@
     var chay = tt.wl > 0 || tt.wr > 0, h = cfg.than === 'nhen' ? 0 : huong;     // nhện đi 4 hướng không quay mặt
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay },
-      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBan: tay.dangBan },
+      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ra: tay.ra, ngam: tay.ngam, dangNem: tay.dangNem, dangBan: tay.dangBan },
       camBien: { bat: !!cb.bat }
     };
     var raw;
@@ -166,7 +166,7 @@
     huong = ((huong || 0) % 4 + 4) % 4;
     var tay = chuanTay(tt.tay);
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-',
-      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBan ? 'S' : '') : '', tt.loi || '', coPart() ? 'P' : 'x'].join('|');
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + (tay.ra ? 'R' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBan ? 'S' : '') : '', tt.loi || '', coPart() ? 'P' : 'x'].join('|');
     if (cache[khoa]) return cache[khoa];
     var cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien }, huong, tiLe);
     if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)

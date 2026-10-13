@@ -68,6 +68,7 @@
       'choi.khoaO': 'Ô này đang khóa',
       'choi.nhom.goc': 'GỐC',
       'choi.nhom.tay': 'TAY',
+      'choi.nhom.day': 'ĐẨY',
       'choi.nhom.em': 'HÀM CỦA EM',
       'choi.nhom.man': 'HÀM CỦA MÀN',
       'choi.nhom.vong': 'VÒNG LẶP',
@@ -102,6 +103,7 @@
       /* ---- bảng thắng */
       'thang.tieuDe': 'TỚI CỜ!',
       'thang.tieuDe.duaVat': 'ĐỦ HÀNG!',
+      'thang.tieuDe.dayThung': 'ĐÃ XẾP KHO!',
       'thang.o': 'Gọn: {x} ô (cần ≤ {y})',
       'thang.nhip': 'Nhanh: {x} nhịp (cần ≤ {y})',
       'thang.thieuO': 'Còn thiếu sao này: viết gọn hơn.',
@@ -135,6 +137,7 @@
       'xuong.gi.xe': 'xe',
       'xuong.gi.vat': 'vật',
       'xuong.gi.tuong': 'tường',
+      'xuong.gi.thung': 'thùng nặng',
 
       /* ---- hộp đặt tên */
       'ten.tieuDe': 'Đặt tên hàm mới',

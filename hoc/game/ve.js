@@ -331,6 +331,27 @@
     p.outline(K.ink);
     crateCache = p.canvas(); return crateCache;
   }
+  /** Thùng NẶNG (chương tấm đẩy): thùng thép xám, bốn đinh tán ở góc, sọc vàng đen ở mép trên và mép dưới, viền tối. Khác hẳn thùng gỗ. */
+  var thungCache = null;
+  function makeThung() {
+    if (thungCache) return thungCache;
+    var p = new Painter(T, T), x, y;
+    p.rect(1, 1, T - 2, T - 2, '#808ca3');
+    p.rect(1, 1, T - 2, 1, '#c9d3e2'); p.rect(1, 1, 1, T - 2, '#c9d3e2');
+    p.rect(1, T - 2, T - 2, 1, '#444e62'); p.rect(T - 2, 1, 1, T - 2, '#444e62');
+    p.rect(3, 4, T - 6, T - 8, '#6a7690');                                  // tấm giữa lõm
+    p.rect(3, 4, T - 6, 1, '#444e62'); p.rect(3, 4, 1, T - 8, '#444e62');
+    p.rect(3, T - 5, T - 6, 1, '#a3afc4'); p.rect(T - 4, 4, 1, T - 8, '#a3afc4');
+    for (x = 2; x < T - 2; x++) {                                           // sọc vàng đen chéo: hàng 2 (trên) và hàng 11 (dưới)
+      var c = ((x >> 1) & 1) ? '#1b120a' : '#ffcf30';
+      p.px(x, 2, c); p.px(T - 1 - x, T - 3, c);
+    }
+    [[1, 1], [T - 2, 1], [1, T - 2], [T - 2, T - 2]].forEach(function (q) { p.px(q[0], q[1], '#f4f7fb'); });
+    [[4, 6], [T - 5, 6], [4, T - 7], [T - 5, T - 7]].forEach(function (q) { p.px(q[0], q[1], '#d6dde8'); p.px(q[0] + 1, q[1] + 1, '#3e4658'); });
+    for (y = 6; y < T - 6; y++) p.px(T >> 1, y, '#566179');                 // gân giữa
+    p.outline(K.ink);
+    thungCache = p.canvas(); return thungCache;
+  }
   var convCache = {};
   function makeConv(d, frame) {
     var key = d + '_' + frame; if (convCache[key]) return convCache[key];
@@ -406,7 +427,7 @@
   function tiles() {
     if (tileCache) return tileCache;
     tileCache = {
-      crate: makeCrate(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
+      crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
       flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)]
     };
     return tileCache;
@@ -455,6 +476,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeThung: makeThung, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();
