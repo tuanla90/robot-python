@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const day = path.dirname(fileURLToPath(import.meta.url));
+const THU_MUC = day;                                              // 'day' bị che ở mục 13 (kho đầy đủ)
 const require = createRequire(import.meta.url);
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const KhungCode = require(path.join(day, 'khung-code.js'));
@@ -783,6 +784,65 @@ let khoCuoi = null;
     bang(m210.taoHam, ['stair', 'two']) && m210.loiGiai.hamCuaEmMoi.some((h) => h.ten === 'two' && bang(h.than, ['stair()', 'stair()'])) && m210.loiGiai.chinh.length === 3);
   kiem('2.10: stair() gọi nhiều tầng (two → stair → move → left_move): vết có ngan 3 tầng',
     ChamHoc.cham(m210, m210.loiGiai, kho.ds()).vet.some((e) => e.loai === 'lenh' && e.ngan.length === 3));
+  // ---- hai màn cuối chuỗi 1: luyện thao tác sửa code (xóa dòng, kéo đổi chỗ)
+  const dayCon = (con, me) => { let i = 0; for (const x of me) if (i < con.length && x === con[i]) i++; return i === con.length; };
+  const demLoai = (ds) => ds.reduce((a, x) => { a[x] = (a[x] || 0) + 1; return a; }, {});
+  /** me có đủ các dòng của con (đếm theo loại)? Trả về phần dư của me, hoặc null nếu thiếu. */
+  const phanDu = (con, me) => { const c = demLoai(me); for (const x of con) { if (!c[x]) return null; c[x]--; } return Object.keys(c).filter((k) => c[k] > 0).map((k) => k + '×' + c[k]); };
+  const bo1Dong = (ds) => ds.map((_, i) => ds.slice(0, i).concat(ds.slice(i + 1)));
+  const m19 = ManHoc.tim('1.9');
+  const r19 = ChamHoc.cham(m19, m19.maMau, []);
+  kiem('1.9: hang bien-the, tên "Dọn dòng thừa", có veMaMau dạy xóa dòng', m19.hang === 'bien-the' && m19.ten === 'Dọn dòng thừa' && /thùng rác/.test(m19.veMaMau) && /✕/.test(m19.veMaMau) && /chạm hai lần/.test(m19.veMaMau));
+  kiem('1.9: maMau ĐẦY khung (đúng 10 dòng, không viết thêm được), chạy thì KHÔNG thắng',
+    m19.maMau.chinh.length === 10 && m19.maMau.chinh.length === m19.khung.chinh && !maCua(r19).includes('tran-khung') && !r19.thang && r19.sao === 0, J([m19.maMau.chinh.length, r19.thang]));
+  kiem('1.9: chạy maMau thấy ngay xe không rẽ mà đâm tường (chẩn đoán dam-tuong + chua-toi-co)', maCua(r19).includes('dam-tuong') && maCua(r19).includes('chua-toi-co'), J(maCua(r19)));
+  kiem('1.9: lời giải sinh từ maMau CHỈ bằng thao tác xóa: là dãy con, ít hơn đúng 2 dòng (còn 8 dòng)',
+    dayCon(m19.loiGiai.chinh, m19.maMau.chinh) && m19.maMau.chinh.length - m19.loiGiai.chinh.length === 2 && m19.loiGiai.chinh.length === 8);
+  kiem('1.9: hai dòng thừa là đúng một left_move() và một wait()', J((phanDu(m19.loiGiai.chinh, m19.maMau.chinh) || []).sort()) === J(['left_move()×1', 'wait()×1']), J(phanDu(m19.loiGiai.chinh, m19.maMau.chinh)));
+  kiem('1.9: xóa riêng một dòng nào của maMau cũng chưa đủ 3 sao (phải xóa cả hai dòng thừa)',
+    bo1Dong(m19.maMau.chinh).every((c) => ChamHoc.cham(m19, { chinh: c }, []).sao < 3));
+  kiem('1.9: mọi cách xóa 2 dòng ra 3 sao đều cho đúng chương trình lời giải (không lời giải 8 dòng nào khác)',
+    (() => { const ds = m19.maMau.chinh; const kq = new Set(); for (let i = 0; i < ds.length; i++) for (let j = i + 1; j < ds.length; j++) {
+      const c = ds.filter((_, k) => k !== i && k !== j); if (ChamHoc.cham(m19, { chinh: c }, []).sao === 3) kq.add(J(c)); } return kq.size === 1 && kq.has(J(m19.loiGiai.chinh)); })());
+  const m110 = ManHoc.tim('1.10');
+  const r110 = ChamHoc.cham(m110, m110.maMau, []);
+  kiem('1.10: hang trum, tên "Xếp lại cho đúng", giữ huy hiệu hai-banh, có veMaMau dạy kéo đổi chỗ',
+    m110.hang === 'trum' && m110.ten === 'Xếp lại cho đúng' && m110.huyHieu.ma === 'hai-banh' && m110.huyHieu.ten === 'Huy hiệu Hai bánh' && /Nhấn giữ/.test(m110.veMaMau) && /kéo/.test(m110.veMaMau));
+  kiem('1.10: maMau vừa khung, chạy thì KHÔNG thắng, xe rẽ trước khi tiến nên đâm tường',
+    m110.maMau.chinh.length <= m110.khung.chinh && !maCua(r110).includes('tran-khung') && !r110.thang && maCua(r110).includes('dam-tuong'), J([m110.maMau.chinh.length, maCua(r110)]));
+  kiem('1.10: lời giải là hoán vị của một tập con của maMau: đủ dòng, thừa đúng 1 dòng (wait())',
+    m110.maMau.chinh.length - m110.loiGiai.chinh.length === 1 && J(phanDu(m110.loiGiai.chinh, m110.maMau.chinh)) === J(['wait()×1']), J(phanDu(m110.loiGiai.chinh, m110.maMau.chinh)));
+  kiem('1.10: lời giải KHÔNG phải dãy con của maMau (chỉ xóa là chưa đủ, phải đổi thứ tự)', !dayCon(m110.loiGiai.chinh, m110.maMau.chinh));
+  kiem('1.10: chỉ xóa một dòng (không đổi chỗ) thì không bao giờ thắng',
+    bo1Dong(m110.maMau.chinh).every((c) => !ChamHoc.cham(m110, { chinh: c }, []).thang));
+  kiem('1.10: chỉ đổi chỗ hai dòng cạnh nhau (một lần kéo, không xóa) thì không ra 3 sao',
+    (() => { const ds = m110.maMau.chinh; for (let i = 0; i + 1 < ds.length; i++) { const c = ds.slice(); const t = c[i]; c[i] = c[i + 1]; c[i + 1] = t; if (ChamHoc.cham(m110, { chinh: c }, []).sao === 3) return false; } return true; })());
+  kiem('hai màn cuối chuỗi 1 không còn băng chuyền trên sân', ['1.9', '1.10'].every((id) => !/[><^v]/.test(ManHoc.tim(id).san.join(''))));
+  kiem('hai màn cuối: deBai là mục tiêu (không nói về code có sẵn), veMaMau mới nói về code có sẵn',
+    ['1.9', '1.10'].every((id) => { const m = ManHoc.tim(id); return !/có sẵn|dòng thừa|xáo/.test(m.deBai) && /có sẵn/.test(m.veMaMau); }));
+
+  // ---- kho màn băng chuyền (tách khỏi chuỗi 1, chờ chương riêng)
+  {
+    const BC = require(path.join(THU_MUC, 'man-bang-chuyen.js'));
+    const nguonBC = require('node:fs').readFileSync(path.join(THU_MUC, 'man-bang-chuyen.js'), 'utf8');
+    const choiHtml = require('node:fs').readFileSync(path.join(THU_MUC, 'game', 'choi.html'), 'utf8');
+    kiem('kho băng chuyền: bc.1 và bc.2, KHÔNG nằm trong ManHoc, KHÔNG nạp trong game/choi.html',
+      J(BC.danhSach.map((m) => m.id)) === J(['bc.1', 'bc.2']) && BC.tim('bc.1').ten === 'Băng chuyền' && BC.tim('bc.2').ten === 'Thuận hay nghịch' &&
+      BC.danhSach.every((m) => ManHoc.tim(m.id) === null && !ManHoc.danhSach.includes(m)) && !/man-bang-chuyen/.test(choiHtml));
+    kiem('kho băng chuyền: đầu tệp ghi "kho màn băng chuyền, chờ chương riêng"; xuất window.ManBangChuyen', /kho màn băng chuyền, chờ chương riêng/.test(nguonBC) && /window\.ManBangChuyen = /.test(nguonBC));
+    for (const m of BC.danhSach) {
+      const r = ChamHoc.cham(m, m.loiGiai, []);
+      kiem(m.id + ': lời giải 3 sao, đúng sao.o và sao.nhip, sạch chẩn đoán', r.thang && r.sao === 3 && r.soO === m.sao.o && r.soNhip === m.sao.nhip && r.chanDoan.length === 0, J([r.sao, r.soO, r.soNhip, maCua(r)]));
+      kiem(m.id + ': không đường tắt (BFS có tính băng chuyền), đường viết tay vừa khung cũng bằng sao.nhip', nhipNganNhat(m) === m.sao.nhip && nhipNganNhat(m, m.khung.chinh) === m.sao.nhip, nhipNganNhat(m) + ' / ' + nhipNganNhat(m, m.khung.chinh));
+      const kh = ChamHoc.cham(m, m.loiGiaiKhac.baiLam, []);
+      kiem(m.id + ': loiGiaiKhac đúng 2 sao, cùng nhịp', kh.sao === 2 && kh.soNhip === m.sao.nhip, J([kh.sao, kh.soO]));
+      m.loiSai.forEach((ls, i) => {
+        const rs = ChamHoc.cham(m, ls.baiLam, []);
+        const thieu = ls.phaiCoMa.filter((x) => !maCua(rs).includes(x));
+        kiem(m.id + ' lời sai #' + (i + 1) + ': không đủ 3 sao, đủ mã ' + ls.phaiCoMa.join('+'), rs.sao < 3 && thieu.length === 0, 'thiếu ' + thieu.join() + ' · có ' + maCua(rs).join());
+      });
+    }
+  }
   console.log('  (màn dùng ngoại lệ "đường nhanh hơn không vừa khung viết tay": ' + (NGOAI_LE.length ? NGOAI_LE.join(', ') : 'không có') + ')');
 
   console.log('\n  Bảng 20 màn (lời giải mẫu, tính theo cách đếm mới)');

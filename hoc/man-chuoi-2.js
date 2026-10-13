@@ -73,7 +73,8 @@
 
     man({
       id: '2.2', ten: 'Tạo hàm move', hang: 'lam-quen', taoHam: ['move'],
-      deBai: 'Chương trình đã gọi move() sẵn, nhưng em chưa có hàm move(). Mở Xưởng hàm, tạo hàm move() và viết thân hàm: "tiến một ô".',
+      deBai: 'Tạo hàm move() trong Xưởng hàm, thân hàm là "tiến một ô", rồi đưa xe tới cờ.',
+      veMaMau: 'Chương trình có sẵn đã gọi move(): nó chỉ chạy được khi em có hàm move().',
       san: ['.....', '...F.', '.....', '.....', '.....'],
       batDau: { x: 1, y: 3, huong: 0 },
       maMau: { chinh: CHINH_22.slice() },
@@ -224,7 +225,8 @@
 
     man({
       id: '2.8', ten: 'Sửa hàm lỗi', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
-      deBai: 'Màn cho sẵn hàm step_right() định "rẽ phải rồi đi một ô", nhưng xe cứ đi sai chỗ. Đọc kỹ thân hàm, tìm và sửa chỗ nhầm.',
+      deBai: 'Dùng hàm step_right() của màn để đưa xe tới cờ. Xe đi sai chỗ thì mở hàm ra xem thân hàm.',
+      veMaMau: 'Hàm step_right() có sẵn định "rẽ phải rồi đi một ô", nhưng xe cứ đi sai chỗ. Đọc kỹ thân hàm, tìm chỗ nhầm.',
       san: ['#####', '#####', '#...#', '#.#F#', '#.###'],
       batDau: { x: 1, y: 4, huong: 0 },
       maMau: {

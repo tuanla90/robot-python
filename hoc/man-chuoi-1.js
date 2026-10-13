@@ -5,7 +5,8 @@
    (camHamCuaEm true) để ai chơi lại chuỗi này cũng không dùng hàm đã tạo ở chuỗi sau.
    Gộp vào window.ManHoc (xem man-chuoi-2.js để nối tiếp chuỗi 2).
 
-   Mỗi màn: id, ten, hang, deBai, san, batDau, loaiRobot, hamGoc, moXuong, camHamCuaEm,
+   Mỗi màn: id, ten, hang, deBai (mục tiêu, luôn đúng), veMaMau (nói về code có sẵn, chỉ hiện
+            khi bài làm còn là code mẫu), san, batDau, loaiRobot, hamGoc, moXuong, camHamCuaEm,
             khung, maMau { chinh, hamCuaMan }, hamCuaEmCan [tên], taoHam [tên],
             sao { o, nhip }, loiGiai { chinh, hamCuaMan, hamCuaEmMoi },
             loiGiaiKhac (từ 1.3), loiSai [{ moTa, baiLam, hamCuaEmMoi, phaiCoMa }], goiY.
@@ -19,6 +20,9 @@
    - huyHieu (màn trùm): thắng thì nhận huy hiệu. Trùm KHÔNG mở khóa gì khác.
    Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên.
    Dòng chú thích (#) cũng là một ô.
+   Hai màn cuối là LUYỆN SỬA CODE: 1.9 maMau đầy 10 ô, lời giải = xóa 2 dòng thừa; 1.10 maMau bị
+   xáo thứ tự + 1 dòng thừa, lời giải = kéo đổi chỗ + xóa. (Máy kiểm: lời giải là dãy con / hoán vị
+   của tập con của maMau.) Hai màn băng chuyền cũ nằm ở man-bang-chuyen.js, chờ chương riêng.
    ========================================================================== */
 (function () {
   'use strict';
@@ -63,7 +67,8 @@
   var DS = [
     man({
       id: '1.1', ten: 'Bước đầu tiên', hang: 'lam-quen',
-      deBai: 'Xe hai bánh đứng ngay trước lá cờ. Chương trình đã viết sẵn, bấm chạy xem xe làm gì.',
+      deBai: 'Xe hai bánh đứng ngay trước lá cờ. Đưa xe tới cờ.',
+      veMaMau: 'Chương trình đã viết sẵn, bấm Chạy xem xe làm gì.',
       san: ['.....', '.....', '.....', '..F..', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
       maMau: { chinh: TIEN.slice() },
@@ -79,7 +84,8 @@
 
     man({
       id: '1.2', ten: 'Ba bước', hang: 'lam-quen',
-      deBai: 'Lá cờ cách xe ba ô. Chương trình có sẵn mới đưa xe đi được một ô.',
+      deBai: 'Lá cờ cách xe ba ô. Đưa xe tới cờ.',
+      veMaMau: 'Chương trình có sẵn mới đưa xe đi được một ô.',
       san: ['.....', '..F..', '.....', '.....', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
       maMau: { chinh: TIEN.slice() },
@@ -96,7 +102,8 @@
 
     man({
       id: '1.3', ten: 'Đố: rẽ phải', hang: 'lam-quen',
-      deBai: 'Lá cờ nằm bên phải xe. Chạy thử chương trình có sẵn, xem nó làm xe xoay thế nào rồi viết tiếp.',
+      deBai: 'Lá cờ nằm bên phải xe. Đưa xe tới cờ.',
+      veMaMau: 'Chạy thử chương trình có sẵn, xem nó làm xe xoay thế nào rồi viết tiếp.',
       san: ['.....', '.....', '.....', '..F..', '.....'],
       batDau: { x: 0, y: 3, huong: 0 },
       maMau: { chinh: QUAY_PHAI.slice() },
@@ -194,7 +201,8 @@
 
     man({
       id: '1.8', ten: 'Lạch bạch', hang: 'bien-the',
-      deBai: 'Chương trình này làm xe quay qua quay lại tại chỗ, không tiến. Sửa lại cho xe tới cờ cách hai ô.',
+      deBai: 'Lá cờ ở ngay phía trước, cách xe hai ô. Đưa xe tới cờ.',
+      veMaMau: 'Chương trình có sẵn làm xe quay qua quay lại tại chỗ, không tiến. Sửa lại cho đúng.',
       san: ['.....', '.....', '..F..', '.....', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
       maMau: { chinh: ['left_move()', 'wait()', 'right_move()', 'wait()'] },
@@ -214,46 +222,52 @@
     }),
 
     man({
-      id: '1.9', ten: 'Băng chuyền', hang: 'bien-the',
-      deBai: 'Ba ô băng chuyền chạy sang phải sẽ đẩy xe đi. Đứng chờ trên băng cũng tiến được; rẽ đúng lúc còn nhanh hơn.',
-      san: ['.....', '.....', '.....', '>>>F.', '.....'],
-      batDau: { x: 0, y: 4, huong: 0 },
-      maMau: { chinh: [] },
-      sao: { o: 9, nhip: 4 },
-      loiGiai: { chinh: nhieu(TIEN, QUAY_PHAI, TIEN, ['wait()']) },
+      id: '1.9', ten: 'Dọn dòng thừa', hang: 'bien-the',
+      deBai: 'Xe đang quay mặt sang trái. Đi một ô thẳng, rẽ trái rồi đi tiếp một ô tới cờ.',
+      veMaMau: 'Chương trình có sẵn đã đầy 10 ô và có hai dòng thừa. Chạy thử để tìm ra chúng. Xóa một dòng: kéo nó vào thùng rác, hoặc rê chuột lên số dòng rồi bấm ✕ (điện thoại: chạm hai lần vào dòng).',
+      san: ['.....', '.#...', '..F..', '.....', '.....'],
+      batDau: { x: 3, y: 1, huong: 3 },
+      // tiến, wait() thừa, left_move() thừa dính vào lệnh rẽ (hai bánh cùng quay: xe tiến thay vì rẽ), rẽ trái, tiến
+      maMau: { chinh: nhieu(TIEN, ['wait()'], ['left_move()'], QUAY_TRAI, TIEN) },
+      sao: { o: 8, nhip: 3 },
+      loiGiai: { chinh: nhieu(TIEN, QUAY_TRAI, TIEN) },
       loiGiaiKhac: {
-        moTa: 'Cùng đường đi, thêm một dòng chú thích',
-        baiLam: { chinh: nhieu(['# lên băng'], TIEN, QUAY_PHAI, TIEN, ['wait()']) }
+        moTa: 'Xóa hai dòng thừa, thêm hai dòng chú thích',
+        baiLam: { chinh: nhieu(['# đi một ô'], TIEN, ['# rẽ trái'], QUAY_TRAI, TIEN) }
       },
       loiSai: [
-        { moTa: 'Cố tự lái dọc băng: không đủ ô',
-          baiLam: { chinh: nhieu(TIEN, QUAY_PHAI, TIEN, TIEN) }, phaiCoMa: ['tran-khung'] },
-        { moTa: 'Lên băng rồi chờ chưa đủ lâu, băng chưa đưa tới cờ',
-          baiLam: { chinh: nhieu(TIEN, ['wait()', 'wait()', 'wait()']) }, phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chỉ xóa wait() thừa: left_move() thừa vẫn làm xe không rẽ mà đâm tường',
+          baiLam: { chinh: nhieu(TIEN, ['left_move()'], QUAY_TRAI, TIEN) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Chỉ xóa left_move() thừa: xe tới cờ nhưng chậm một nhịp vì còn wait() thừa',
+          baiLam: { chinh: nhieu(TIEN, ['wait()'], QUAY_TRAI, TIEN) }, phaiCoMa: [] }
       ],
-      goiY: ['Cứ hai nhịp đứng trên băng, băng đẩy xe một ô.', 'Quay đúng lúc băng đang đẩy thì không mất thêm nhịp.']
+      goiY: ['Chạy thử, xem xe sai ở nhịp nào rồi nhìn các dòng của nhịp đó.',
+        'Xe rẽ khi chỉ một bánh quay, và tiến khi cả hai bánh cùng quay.']
     }),
 
     man({
-      id: '1.10', ten: 'Thuận hay nghịch', hang: 'trum',
-      deBai: 'Hai cột băng chuyền: một cột chạy xuống, một cột chạy lên. Chọn cột nào để băng đưa xe tới cờ?',
-      san: ['v....', 'v....', 'v....', 'vF...', '.^...'],
-      batDau: { x: 0, y: 4, huong: 0 },
-      maMau: { chinh: [] },
-      sao: { o: 6, nhip: 3 },
+      id: '1.10', ten: 'Xếp lại cho đúng', hang: 'trum',
+      deBai: 'Xe đang quay mặt sang phải. Đi một ô thẳng, rẽ phải rồi đi tiếp một ô tới cờ.',
+      veMaMau: 'Các dòng có sẵn bị xáo trộn và thừa một dòng. Nhấn giữ một dòng rồi kéo lên hoặc xuống để đổi chỗ.',
+      san: ['.....', '..#..', '#F...', '.....', '.....'],
+      batDau: { x: 0, y: 1, huong: 1 },
       huyHieu: { ma: 'hai-banh', ten: 'Huy hiệu Hai bánh' },
-      loiGiai: { chinh: nhieu(QUAY_PHAI, TIEN, ['wait()']) },
+      // lệnh rẽ bị kéo lên đầu; wait() thừa chen giữa hai lệnh bánh của lần tiến cuối (xe lạch bạch như ở 1.8)
+      maMau: { chinh: nhieu(QUAY_PHAI, TIEN, ['left_move()', 'wait()', 'right_move()', 'wait()']) },
+      sao: { o: 8, nhip: 3 },
+      loiGiai: { chinh: nhieu(TIEN, QUAY_PHAI, TIEN) },
       loiGiaiKhac: {
         moTa: 'Cùng đường đi, ghi chú từng đoạn',
-        baiLam: { chinh: nhieu(['# quay sang cột phải'], QUAY_PHAI, ['# lên băng'], TIEN, ['# chờ băng đẩy'], ['wait()']) }
+        baiLam: { chinh: nhieu(['# đi'], TIEN, ['# rẽ phải'], QUAY_PHAI, TIEN) }
       },
       loiSai: [
-        { moTa: 'Lao thẳng vào băng ngược chiều: bị đẩy lùi, không tới được',
-          baiLam: { chinh: nhieu(TIEN, TIEN, QUAY_PHAI) }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Cố lái bằng tay từng ô: hết ô',
-          baiLam: { chinh: lap(TIEN, 4) }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Xóa wait() thừa nhưng chưa xếp lại: xe rẽ trước khi tiến, đâm tường',
+          baiLam: { chinh: nhieu(QUAY_PHAI, TIEN, TIEN) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Xếp lại đúng nhưng quên xóa wait() thừa: xe lạch bạch trước cờ',
+          baiLam: { chinh: nhieu(TIEN, QUAY_PHAI, ['left_move()', 'wait()', 'right_move()', 'wait()']) }, phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Đi cùng chiều băng thì băng giúp xe; đi ngược chiều thì băng kéo xe lại.']
+      goiY: ['Chạy thử và so từng nhịp của xe với đường cần đi.',
+        'Một nhịp gồm các lệnh bánh rồi wait(). Nhịp nào cũng phải đúng việc và đúng chỗ.']
     })
   ];
 
