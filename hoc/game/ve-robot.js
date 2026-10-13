@@ -3,19 +3,26 @@
    Mọi chỗ vẽ robot (sân chính, sân thử ở Xưởng) đều gọi VeRobot.ve(); muốn đổi hình robot chỉ sửa tệp này
    (hoặc nạp bộ PART, xem dưới).
 
-   VeRobot.ve(cauHinh, trangThai, huong) → canvas (vẽ ở tâm ô: đặt sao cho tâm canvas trùng tâm ô)
-     cauHinh   = { than: 'hai-banh' | 'nhen', tay: 'kep' | null, camBien: [{ ma, o }] }   (VeRobot.cauHinhCua(man) suy từ màn)
+   VeRobot.ve(cauHinh, trangThai, huong, tiLe) → canvas (tâm canvas = tâm THÂN xe; đặt sao cho trùng tâm ô)
+     cauHinh   = { than: 'hai-banh' | 'xich' | 'nhen' | 'omni' | 'drone', tay: 'kep' | 'day' | 'nam-cham' | 'nem' | 'bong' | null, camBien: [{ ma, o }] }
+                 VeRobot.cauHinhCua(man) (= cauHinhRobot) suy từ màn: man.robot = { than, tay, camBien } nếu có; không thì
+                 than = 'nhen' khi man.loaiRobot === 'nhen', còn lại 'hai-banh'; tay theo lệnh tay trong man.hamGoc.
+     tiLe      = số pixel màn hình trên MỖI pixel của part (có thể lẻ, < 1 khi ô sân nhỏ); mặc định 1.
+                 VeRobot.tiLeChoO(canhO, cauHinh) chọn tiLe cho một ô sân cạnh canhO pixel màn hình.
      trangThai = { wl, wr: 0|1|2 (bánh trái / phải: đứng / quay chậm / quay), ph: 0|1 (nhịp lật khung bánh),
                    tay: { tuThe: 'tren'|'giua'|'duoi', kep: bool (true = đóng), cam: id | null },
                    loi: 'tay' (tay nháy đỏ) | null }
      huong     = 0 lên, 1 phải, 2 xuống, 3 trái.
 
-   CHỖ GHÉP PART (bộ part/ do Codex vẽ): nếu window.Part có Part.ghep thì VeRobot dùng nó:
+   GHÉP PART (bộ part/ do Codex vẽ, nạp mặc định ở choi.html; thêm ?part=0 vào địa chỉ để tắt, so với hình tạm):
+     nếu window.Part có Part.ghep thì VeRobot dùng nó:
      Part.ghep(cauHinh, { than: { banh: {trai, phai} }, tay: { tuThe: 'tren'|'duoi', kep: 'mo'|'dong', cam: bool } }, huong)
      (hàm veGhep() ở dưới đổi trangThai của game sang trangThai của part: 'giua' → 'tren'; kep true → 'dong'; cam id → true).
-     Ảnh part to 40×40 (xe 24×24 giữa ảnh); veGhep() thu về TI_LE_PART (mặc định 0.75) rồi trả canvas có tâm = tâm xe.
-     Part ném lỗi (cấu hình không ghép được) hoặc chưa nạp → rơi về hình TẠM bên dưới. Tắt hẳn part: VeRobot.dungPart = false.
-     Ô sân hiện 14px; khi ô sân to lên cho vừa hình part thì đổi TI_LE_PART = 1 và Ve.T.
+     Ảnh part 40×40, thân 24×24 nằm lệch về cuối ảnh (tay nhô lên trước mũi). veGhep() đệm ảnh thành 58×58 sao cho TÂM THÂN
+     = tâm canvas (đúng cả 4 hướng) rồi phóng nguyên lần (hoặc thu nhỏ khi ô quá nhỏ). Hình trả về có cờ .laPart = true.
+     Part ném lỗi (cấu hình không ghép được) hoặc chưa nạp → rơi về hình TẠM bên dưới (không có cờ .laPart; đơn vị = pixel sân).
+     Tắt hẳn part: VeRobot.dungPart = false (hoặc ?part=0).
+     Cách vẽ lên sân (san-ve.js): robot vẽ trên LỚP PHỦ cả sân (có lề tràn ra), nên tay kẹp nhô ra mép sân vẫn không bị cắt.
    Hình TẠM: xe hai bánh như cũ (Ve.makeRobot), tay kẹp Ở PHÍA TRƯỚC mũi xe như xe nâng (hai thanh nối vào mũi, hai ngàm ở đầu thanh); cảm biến sẽ ở hai bên hông:
      nâng = thanh ngắn, màu sáng; hạ = thanh dài ra phía trước, màu tối; kẹp mở = ngàm ngắn, đóng = hai ngàm chạm nhau;
      đang cầm = thùng gỗ nhỏ giữa hai ngàm (đi theo xe, xoay theo hướng xe).
@@ -23,23 +30,35 @@
 (function () {
   'use strict';
 
-  var TI_LE_PART = 0.75;
   var CAN = 34;                      // cạnh canvas hình tạm có tay (xe 16 + viền ở giữa, càng nhô 8px phía trước; tâm canvas = tâm xe)
   var ND = { ink: '#1b120a' };
   var cache = {};
 
   /* ---------------------------------------------------------------- cấu hình */
-  /** Cấu hình robot của một màn: có lệnh tay trong hamGoc thì có tay kẹp. */
+  /** Lệnh gốc của tay → mã part tay (tay nào mở ra lệnh nào). Màn có lệnh tay mà không khai man.robot.tay thì lấy theo bảng này. */
+  var TAY_THEO_LENH = {
+    arm_down: 'kep', arm_up: 'kep', grab: 'kep', release: 'kep',
+    push: 'day', magnet_on: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', shoot: 'bong'
+  };
+  function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }
+  /**
+   * Cấu hình robot của một màn — MỘT CHỖ DUY NHẤT. Chương sau (nhện, xích, omni, cảm biến…) chỉ cần thêm vào dữ liệu màn:
+   *   man.robot = { than: 'xich', tay: 'day' | null, camBien: [{ ma: 'khoang-cach', o: 'hong' }] }   (trường nào thiếu thì suy từ màn)
+   * than: man.robot.than, hoặc 'nhen' nếu man.loaiRobot === 'nhen', hoặc 'hai-banh'.
+   * tay : man.robot.tay (null = không tay), hoặc theo lệnh tay có trong man.hamGoc (kẹp: arm_down/arm_up/grab/release...).
+   */
   function cauHinhCua(man) {
-    var goc = (man && man.hamGoc) || [];
-    var coTay = goc.some(function (t) { return t === 'arm_down' || t === 'arm_up' || t === 'grab' || t === 'release'; });
-    var loai = man && man.loaiRobot === 'nhen' ? 'nhen' : 'hai-banh';
-    return { than: loai, tay: loai === 'hai-banh' && coTay ? 'kep' : null, camBien: [] };
+    var r = (man && man.robot) || {}, goc = (man && man.hamGoc) || [];
+    var than = r.than || (man && man.loaiRobot === 'nhen' ? 'nhen' : 'hai-banh'), tay = null;
+    if (r.tay !== undefined) tay = r.tay || null;
+    else for (var i = 0; i < goc.length && !tay; i++) tay = TAY_THEO_LENH[goc[i]] || null;
+    return { than: than, tay: tay, camBien: copyCam(r.camBien) };
   }
 
   function chuanTay(t) {
     t = t || {};
-    return { tuThe: t.tuThe === 'duoi' ? 'duoi' : t.tuThe === 'giua' ? 'giua' : 'tren', kep: t.kep === true || t.kep === 'dong', cam: t.cam !== null && t.cam !== undefined && t.cam !== false };
+    return { tuThe: t.tuThe === 'duoi' ? 'duoi' : t.tuThe === 'giua' ? 'giua' : 'tren', kep: t.kep === true || t.kep === 'dong', cam: t.cam !== null && t.cam !== undefined && t.cam !== false,
+      bat: !!t.bat, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBan: !!t.dangBan };
   }
 
   /* ----------------------------------------------------------------- hình tạm */
@@ -89,44 +108,80 @@
   }
 
   /* --------------------------------------------------------------- ghép PART */
-  function veGhep(cauHinh, tt, huong) {
-    var P = (typeof window !== 'undefined') ? window.Part : null;
-    if (!P || typeof P.ghep !== 'function' || VeRobot.dungPart === false) return null;
-    var tay = chuanTay(tt.tay);
-    var cfg = { than: cauHinh.than === 'nhen' ? 'nhen' : (cauHinh.than || 'hai-banh'), tay: cauHinh.tay || null, camBien: cauHinh.camBien || [] };
+  var DEM = 58, TAM_THAN = [[20, 29], [11, 20], [20, 11], [29, 20]];   // ảnh part 40×40; thân tâm (20,29) khi hướng lên, xoay theo hướng
+  var REACH = 26;                    // từ tâm thân tới mép xa nhất của ảnh part (pixel part), mọi hướng
+
+  /** Bề ngang thân (pixel part): xích 24, còn lại 20. Đo từ part nếu có. */
+  var rongThan = {}, daBao = {};
+  function beNgangThan(ma) {
+    if (rongThan[ma]) return rongThan[ma];
+    var w = 20, P = window.Part;
+    try {
+      var d = P.lay('than', ma), q = P._veMot(d, {}), x0 = 99, x1 = -1, x, y;
+      for (y = 0; y < q.h; y++) for (x = 0; x < q.w; x++) if (q.get(x, y)) { if (x < x0) x0 = x; if (x > x1) x1 = x; }
+      if (x1 >= x0) w = x1 - x0 + 1;
+    } catch (e) { /* giữ 20 */ }
+    return (rongThan[ma] = w);
+  }
+  function coPart() { var P = (typeof window !== 'undefined') ? window.Part : null; return !!(P && typeof P.ghep === 'function' && VeRobot.dungPart !== false); }
+  /** Chọn tiLe (px màn hình / px part) cho một ô sân cạnh canhO px màn hình: nguyên lần cho vừa thân; ô quá nhỏ (< 1) thì thu lẻ. */
+  function tiLeChoO(canhO, cauHinh) {
+    var w = coPart() ? beNgangThan((cauHinh && cauHinh.than) || 'hai-banh') : 20, n = Math.floor((canhO - 2) / w);
+    return n >= 1 ? n : Math.max(0.3, (canhO - 1) / w);
+  }
+
+  function veGhep(cauHinh, tt, huong, tiLe) {
+    if (!coPart()) return null;
+    var P = window.Part, tay = chuanTay(tt.tay), cb = tt.camBien || {};
+    var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [] };
+    var chay = tt.wl > 0 || tt.wr > 0, h = cfg.than === 'nhen' ? 0 : huong;     // nhện đi 4 hướng không quay mặt
     var st = {
-      than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 } },
-      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam }
+      than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay },
+      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBan: tay.dangBan },
+      camBien: { bat: !!cb.bat }
     };
     var raw;
-    try { raw = P.ghep(cfg, st, huong); } catch (e) { return null; }
+    try { raw = P.ghep(cfg, st, h); }
+    catch (e) {                                                       // cấu hình không ghép được: báo một lần (lỗi dữ liệu màn), vẽ hình tạm
+      var kb = cfg.than + '/' + cfg.tay + '/' + JSON.stringify(cfg.camBien);
+      if (!daBao[kb]) { daBao[kb] = 1; if (typeof console !== 'undefined' && console.warn) console.warn('VeRobot: Part không ghép được (' + kb + '): ' + e.message); }
+      return null;
+    }
     if (!raw || !raw.width) return null;
-    var n = Math.max(1, Math.round(raw.width * VeRobot.TI_LE_PART));
+    var tam = TAM_THAN[h], n = Math.max(1, Math.round(DEM * tiLe));
+    var dem = ctxMoi(DEM);                                            // đệm: tâm thân ra giữa canvas
+    dem.g.drawImage(raw, DEM / 2 - tam[0], DEM / 2 - tam[1]);
     var o = ctxMoi(n);
-    o.g.drawImage(raw, 0, 0, raw.width, raw.height, 0, 0, n, n);
+    o.g.imageSmoothingEnabled = tiLe < 1; if (tiLe < 1) o.g.imageSmoothingQuality = 'high';
+    o.g.drawImage(dem.cv, 0, 0, DEM, DEM, 0, 0, n, n);
+    o.cv.laPart = true;
     return o.cv;
   }
 
   /* ------------------------------------------------------------------- chính */
-  function ve(cauHinh, trangThai, huong) {
+  function ve(cauHinh, trangThai, huong, tiLe) {
     cauHinh = cauHinh || { than: 'hai-banh', tay: null, camBien: [] };
+    tiLe = tiLe > 0 ? tiLe : 1;
     var tt = trangThai || {}, wl = tt.wl || 0, wr = tt.wr || 0, ph = tt.ph ? 1 : 0;
     huong = ((huong || 0) % 4 + 4) % 4;
-    var tay = cauHinh.tay ? chuanTay(tt.tay) : null;
-    var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph,
-      tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') : '', tt.loi || '', VeRobot.dungPart === false ? 'x' : (typeof window !== 'undefined' && window.Part ? 'P' : 'x')].join('|');
+    var tay = chuanTay(tt.tay);
+    var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-',
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBan ? 'S' : '') : '', tt.loi || '', coPart() ? 'P' : 'x'].join('|');
     if (cache[khoa]) return cache[khoa];
-    var cv = null;
-    if (cauHinh.than !== 'nhen') cv = veGhep(cauHinh, { wl: wl, wr: wr, tay: tay, loi: tt.loi }, huong);
-    if (!cv) {
+    var cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien }, huong, tiLe);
+    if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)
       if (cauHinh.than === 'nhen') cv = Ve.makeNhen(wl > 0 || wr > 0 ? ph : 0);
-      else if (!tay) cv = Ve.makeRobot(huong, wl, wr, ph);
+      else if (!cauHinh.tay) cv = Ve.makeRobot(huong, wl, wr, ph);
       else cv = veTamTay(huong, wl, wr, ph, tay, tt.loi === 'tay');
     }
     cache[khoa] = cv;
     return cv;
   }
 
-  var VeRobot = { ve: ve, cauHinhCua: cauHinhCua, chuanTay: chuanTay, dungPart: true, TI_LE_PART: TI_LE_PART };
+  var VeRobot = {
+    ve: ve, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart,
+    REACH: REACH,                                                     // tâm thân → mép xa nhất của hình part (pixel part)
+    dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
+  };
   window.VeRobot = VeRobot;
 })();

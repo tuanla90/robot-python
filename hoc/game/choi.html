@@ -27,16 +27,26 @@
 <script src="../man-chuoi-2.js"></script>
 <script src="../man-tay-gap.js"></script>
 <script src="../man-vong-lap.js"></script>
+<script src="../man-bang-chuyen.js"></script>
 <!-- giao diện -->
 <script src="chu.js"></script>
 <script src="ve.js"></script>
-<!-- bộ PART (hình robot ghép, Codex vẽ): thêm ?part=1 vào địa chỉ để thử; không có thì VeRobot dùng hình tạm -->
-<script>
-if (/[?&]part=1/.test(location.search)) {
-  ['part', 'part-hai-banh', 'part-omni', 'part-xich', 'part-nhen', 'part-drone', 'part-kep', 'part-day', 'part-nam-cham', 'part-camera', 'part-khoang-cach', 'part-mau', 'part-cham']
-    .forEach(function (n) { document.write('<script src="part/' + n + '.js"><\/script>'); });
-}
-</script>
+<!-- bộ PART (hình robot ghép, Codex vẽ): nạp mặc định; VeRobot dùng Part.ghep, hình tạm chỉ là dự phòng. Thêm ?part=0 vào địa chỉ để tắt (so với hình tạm) -->
+<script src="part/part.js"></script>
+<script src="part/part-hai-banh.js"></script>
+<script src="part/part-xich.js"></script>
+<script src="part/part-nhen.js"></script>
+<script src="part/part-omni.js"></script>
+<script src="part/part-drone.js"></script>
+<script src="part/part-kep.js"></script>
+<script src="part/part-day.js"></script>
+<script src="part/part-nam-cham.js"></script>
+<script src="part/part-nem.js"></script>
+<script src="part/part-bong.js"></script>
+<script src="part/part-khoang-cach.js"></script>
+<script src="part/part-mau.js"></script>
+<script src="part/part-cham.js"></script>
+<script src="part/part-camera.js"></script>
 <script src="ve-robot.js"></script>
 <script src="luu.js"></script>
 <script src="san-ve.js"></script>

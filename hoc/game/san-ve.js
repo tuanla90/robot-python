@@ -2,7 +2,8 @@
    san-ve.js — "Đường học": VẼ SÂN VÀ PHÁT LẠI VẾT (window.SanVe).
    Vẽ từ cấu hình sân của lõi { san, batDau, loaiRobot }: tường #, cờ F, bậc thang S,
    băng chuyền > < ^ v, vật o (thùng gỗ), ô đích D (khung vàng nét đứt), X (đích có sẵn vật, khung vàng đặc), robot.
-   Robot luôn vẽ qua VeRobot.ve() (ve-robot.js). Phát lại từng sự kiện 'nhip' của vết (kể cả tay gắp và vật).
+   Robot luôn vẽ qua VeRobot.ve() (ve-robot.js), trên LỚP PHỦ cả sân (một canvas thứ hai nằm đè lên canvas sân, có lề tràn ra ngoài sân
+   để tay kẹp nhô ra mép sân không bị cắt; độ phân giải = pixel thiết bị nên hình part luôn nguyên lần, rõ nét). Hạt, chớp đỏ, dấu ?/! cũng vẽ ở lớp phủ. Phát lại từng sự kiện 'nhip' của vết (kể cả tay gắp và vật).
    Không chứa luật chơi: mọi kết quả (vị trí, hướng, sự kiện) đến từ lõi (SanHoc).
    ========================================================================== */
 (function () {
@@ -24,6 +25,7 @@
     this.coNhoNhat = tuyChon.coNhoNhat || 0;   // >0: sân đông ô thì thu nhỏ ô (không nguyên lần) tới cỡ này (px màn hình)
     this.lamps = tuyChon.lamps || null;        // { T, P } phần tử đèn bánh
     this.rid = 0; this.cfg = null;
+    this.lop = null; this.lg = null; this.lopOK = false; this.lopKhoa = ''; this.dem = 0;   // lớp phủ robot
     this.lst = { L: -1, R: -1 };
     this.clearFx();
     FIELDS.push(this);
@@ -50,6 +52,7 @@
       this.k = k;
       this.cv.style.width = (w * T * k) + 'px'; this.cv.style.height = (h * T * k) + 'px';
       this.g = this.cv.getContext('2d'); this.g.imageSmoothingEnabled = false;
+      this.lopKhoa = ''; this.doiCo();
       this.datLai();
     },
     /** Thêm một vật ban đầu (mỗi ô tối đa một, không nằm trong tường / ngoài sân), id = thứ tự thêm. */
@@ -129,23 +132,81 @@
         }
       }
     },
-    /** Vật nằm ngay dưới xe bị thân xe che hết: hiện thùng nhỏ ở góc ô để người chơi biết. */
-    veVatDuoiXe: function (g, cx, cy) {
+    /** Vật nằm ngay dưới xe (xe đứng đúng giữa ô, chưa cầm): thân xe che hết thùng nên robot được vẽ hơi trong suốt, thùng lộ ra. */
+    vatDuoiXe: function () {
       var v = this.vis, o = this.vatTaiO(Math.round(v.x), Math.round(v.y));
-      if (!o || Math.abs(v.x - o.x) > 0.01 || Math.abs(v.y - o.y) > 0.01) return;
-      var x = cx + 3, y = cy + 1;
-      g.fillStyle = '#1b120a'; g.fillRect(x - 1, y - 1, 9, 9);
-      g.fillStyle = '#c98a45'; g.fillRect(x, y, 7, 7);
-      g.fillStyle = '#e8b574'; g.fillRect(x, y, 7, 1); g.fillRect(x, y, 1, 7);
-      g.fillStyle = '#8a5a24'; g.fillRect(x, y + 6, 7, 1); g.fillRect(x + 6, y, 1, 7);
-      g.fillRect(x + 2, y + 2, 1, 1); g.fillRect(x + 4, y + 2, 1, 1); g.fillRect(x + 3, y + 3, 1, 1); g.fillRect(x + 2, y + 4, 1, 1); g.fillRect(x + 4, y + 4, 1, 1);
+      return (o && Math.abs(v.x - o.x) < 0.01 && Math.abs(v.y - o.y) < 0.01) ? o : null;
+    },
+
+    /* ---- LỚP PHỦ ROBOT */
+    taoLop: function () {
+      if (this.lop) return;
+      var l = document.createElement('canvas'); l.className = 'tex lop-robot';
+      this.cv.parentNode.insertBefore(l, this.cv.nextSibling);
+      this.lop = l; this.lg = l.getContext('2d');
+    },
+    /** Đo lại cỡ hiển thị của sân (kể cả co giãn khung 360×640 và devicePixelRatio) rồi dựng lớp phủ: lề tràn ra, độ phân giải = pixel thiết bị,
+     *  tỉ lệ robot (pixel thiết bị / pixel part) nguyên lần cho vừa một ô. Gọi khi nạp sân và cứ ~30 khung một lần (đổi cỡ cửa sổ). */
+    doiCo: function () {
+      var cv = this.cv, ow = cv.offsetWidth, c = this.cfg;
+      if (!c) return;
+      if (!ow) { this.lopOK = false; return; }
+      this.taoLop();
+      var r = cv.getBoundingClientRect(), f = Math.max(0.5, (r.width / ow) * (window.devicePixelRatio || 1));
+      var khoa = [ow, cv.offsetHeight, cv.offsetLeft, cv.offsetTop, f.toFixed(3), c.robot.than, c.robot.tay].join('|');
+      if (khoa === this.lopKhoa && this.lopOK) return;
+      this.lopKhoa = khoa;
+      var kk = ow / cv.width, S = T * kk * f, p = VeRobot.tiLeChoO(S, c.robot);
+      var mc = Math.max(4, Math.ceil((VeRobot.REACH * p - S / 2) / f) + 3);          // lề (px CSS): tay nhô ra khi xe sát mép sân
+      var cw = ow + 2 * mc, ch = cv.offsetHeight + 2 * mc, l = this.lop;
+      l.width = Math.max(1, Math.round(cw * f)); l.height = Math.max(1, Math.round(ch * f));
+      l.style.width = cw + 'px'; l.style.height = ch + 'px';
+      l.style.left = (cv.offsetLeft - mc) + 'px'; l.style.top = (cv.offsetTop - mc) + 'px';
+      this.kk = kk; this.u = l.width / cw; this.mc = mc; this.p = p;
+      this.lopOK = true;
+    },
+    /** Vẽ robot + hạt + chớp đỏ + dấu nổi lên lớp phủ. */
+    veLop: function (now) {
+      var v = this.vis, c = this.cfg, g = this.lg;
+      if ((this.dem = (this.dem + 1) % 30) === 0 || !this.lopOK) this.doiCo();
+      var ok = this.lopOK, kk = this.kk, u = this.u, ku = kk * u, mcu = this.mc * u, i;
+      var rx = v.x * T + v.dx, ry = v.y * T + v.dy, cx = rx + 7, cy = ry + 7;           // tâm ô (pixel sân)
+      if (ok) {
+        g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, this.lop.width, this.lop.height);
+        var X = Math.round(mcu + cx * ku), Y = Math.round(mcu + cy * ku - v.hop * ku), p = this.p;
+        var ph = (now / 90 | 0) & 1, duoi = this.vatDuoiXe();
+        var spr = VeRobot.ve(c.robot, { wl: this.wh.L, wr: this.wh.R, ph: ph, tay: v.tay, camBien: v.camBien, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
+        g.imageSmoothingEnabled = false;
+        var w = spr.width, h = spr.height, sc = spr.laPart ? 1 : ku;
+        g.fillStyle = 'rgba(0,30,10,.35)';                                                // bóng dưới thân
+        if (spr.laPart) g.fillRect(Math.round(X - 9 * p), Math.round(Y + 7 * p), Math.round(18 * p), Math.max(1, Math.round(2.5 * p)));
+        else g.fillRect(Math.round(X - 5 * ku), Math.round(Y + 6 * ku), Math.round(10 * ku), Math.max(1, Math.round(2 * ku)));
+        if (duoi) g.globalAlpha = 0.66;
+        g.drawImage(spr, 0, 0, w, h, Math.round(X - w * sc / 2), Math.round(Y - h * sc / 2), Math.round(w * sc), Math.round(h * sc));
+        g.globalAlpha = 1;
+        g.setTransform(ku, 0, 0, ku, mcu, mcu);                                           // từ đây vẽ theo pixel sân
+        var tx = Math.round(v.x), ty = Math.round(v.y);                                   // ô đích đã có vật dưới xe: khung vàng đặc nằm TRÊN xe
+        if (this.vatTaiO(tx, ty) && this.vatTaiDich(this.vatTaiO(tx, ty)) && Math.abs(v.x - tx) < 0.01 && Math.abs(v.y - ty) < 0.01) {
+          g.strokeStyle = '#ffd23f'; g.lineWidth = 2; g.strokeRect(tx * T + 1, ty * T + 1, T - 2, T - 2); g.lineWidth = 1;
+        }
+        if (v.bao && v.baoDen > now) this.veDau(g, v.bao, cx, cy, now, c.robot.tay ? 25 : 21);
+        if (this.flash > now) { g.fillStyle = 'rgba(255,60,50,.32)'; g.fillRect(0, 0, this.cv.width, this.cv.height); }
+      }
+      for (i = this.parts.length - 1; i >= 0; i--) {
+        var q = this.parts[i]; q.life--; q.vy += 0.05; q.x += q.vx; q.y += q.vy;
+        if (q.life <= 0) { this.parts.splice(i, 1); continue; }
+        if (!ok) continue;
+        if (q.mo) g.globalAlpha = Math.min(1, q.life / 18);
+        g.fillStyle = q.c; g.fillRect(Math.round(q.x), Math.round(q.y), q.s, q.s);
+        if (q.mo) g.globalAlpha = 1;
+      }
     },
     /** Dấu '?' (kẹp hụt) / '!' (ô đã có vật) nổi trên xe. */
-    veDau: function (g, kieu, cx, cy, now) {
+    veDau: function (g, kieu, cx, cy, now, cao) {
       var Q = ['.##.', '#..#', '...#', '..#.', '.#..', '....', '.#..'], B = ['.#.', '.#.', '.#.', '.#.', '...', '.#.', '...'];
       var rows = kieu === '!' ? B : Q, w = rows[0].length;
       var bob = Math.round(Math.sin(now / 110));
-      var x = Math.round(cx - w / 2) + 6, y = Math.max(1, cy - 21 + bob);
+      var x = Math.round(cx - w / 2) + 6, y = Math.max(1, cy - (cao || 21) + bob);
       var i, j;
       g.fillStyle = '#1b120a';
       for (j = 0; j < rows.length; j++) for (i = 0; i < w; i++) if (rows[j][i] === '#') {
@@ -189,23 +250,7 @@
         var fy = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 3) : 0;
         g.drawImage(TL.flags[ff], Math.max(0, Math.min(this.cv.width - 18, c.co.x * T - 2)), Math.max(0, Math.min(this.cv.height - 18, c.co.y * T - 2)) + fy);
       }
-      var v = this.vis, rx = Math.round(v.x * T + v.dx), ry = Math.round(v.y * T + v.dy);
-      // tâm xe = tâm ô (kẹp cách mép sân 9px như trước, để thân xe không bị cắt)
-      var cx = Math.max(9, Math.min(this.cv.width - 9, rx + 7)), cy = Math.max(9, Math.min(this.cv.height - 9, ry + 7));
-      g.fillStyle = 'rgba(0,30,10,.35)'; g.fillRect(cx - 5, cy + 6, 10, 2);
-      var ph = (now / 90 | 0) & 1;
-      var spr = VeRobot.ve(c.robot, { wl: this.wh.L, wr: this.wh.R, ph: ph, tay: v.tay, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d);
-      g.drawImage(spr, Math.round(cx - spr.width / 2), Math.round(cy - spr.height / 2) - Math.round(v.hop));
-      this.veVatDuoiXe(g, cx, cy);
-      if (v.bao && v.baoDen > now) this.veDau(g, v.bao, cx, cy, now);
-      if (this.flash > now) { g.fillStyle = 'rgba(255,60,50,.32)'; g.fillRect(0, 0, this.cv.width, this.cv.height); }
-      for (var i = this.parts.length - 1; i >= 0; i--) {
-        var q = this.parts[i]; q.life--; q.vy += 0.05; q.x += q.vx; q.y += q.vy;
-        if (q.life <= 0) { this.parts.splice(i, 1); continue; }
-        if (q.mo) g.globalAlpha = Math.min(1, q.life / 18);
-        g.fillStyle = q.c; g.fillRect(Math.round(q.x), Math.round(q.y), q.s, q.s);
-        if (q.mo) g.globalAlpha = 1;
-      }
+      this.veLop(now);
       if (this.lamps) {
         var wl = this.wh.L > 0 ? 1 : 0, wr = this.wh.R > 0 ? 1 : 0;
         if (wl !== this.lst.L) { this.lst.L = wl; this.lamps.T.classList.toggle('on', !!wl); }
@@ -233,6 +278,7 @@
     phatNhip: async function (e, ms) {
       var my = this.rid, v = this.vis, self = this, evs = e.suKien || [];
       var b = (e.robot && e.robot.banh) || { trai: 0, phai: 0 };
+      v.camBien = (e.robot && e.robot.camBien) ? { bat: true } : null;       // cảm biến sáng trong nhịp có lệnh đọc cảm biến (lõi chưa có: chương sau điền e.robot.camBien)
       this.wh.L = b.trai !== 0 ? 2 : 0; this.wh.R = b.phai !== 0 ? 2 : 0;
       var list = evs.filter(function (s) { return s.ma !== 'toi-co' && !HIEU_UNG[s.ma]; });
       var tgian = ms;
@@ -283,6 +329,7 @@
       // đồng bộ với vết (an toàn nếu có sự kiện lạ)
       v.x = e.robot.x; v.y = e.robot.y; v.d = e.robot.huong; v.hop = 0; v.dx = 0; v.dy = 0;
       if (e.robot.tay) v.tay = { tuThe: e.robot.tay.tuThe, kep: e.robot.tay.kep, cam: e.robot.tay.cam };
+      v.camBien = null;
       this.wh.L = 0; this.wh.R = 0;
     },
 

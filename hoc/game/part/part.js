@@ -22,8 +22,7 @@
   function doiCam(cams){var out=[];cams.forEach(function(c){var o=c.o==='truoc'?'hong':c.o;if(o==='hong'){out.push({ma:c.ma,o:'hongTrai'});out.push({ma:c.ma,o:'hongPhai'});}else out.push({ma:c.ma,o:o});});return out;}
   function ghep(cauHinh,trangThai,huong){
     cauHinh=cauHinh||{};var than=chon('than',cauHinh.than),tay=cauHinh.tay?chon('tay',cauHinh.tay):null,cams=doiCam(cauHinh.camBien||[]),st=trangThai||{},i;
-    if(than.ma==='drone'){if(tay&&tay.ma!=='nam-cham')throw new Error('Drone không gắn được '+tay.ten+'.');for(i=0;i<cams.length;i++)if(['camera','khoang-cach','mau'].indexOf(cams[i].ma)<0)throw new Error('Drone không gắn được '+chon('cam-bien',cams[i].ma).ten+'.');}
-    else if(!tay)throw new Error('Thân '+than.ma+' cần có tay.');
+    if(than.ma==='drone'){if(tay&&tay.ma!=='nam-cham')throw new Error('Drone không gắn được '+tay.ten+'.');for(i=0;i<cams.length;i++)if(['camera','khoang-cach','mau'].indexOf(cams[i].ma)<0)throw new Error('Drone không gắn được '+chon('cam-bien',cams[i].ma).ten+'.');}  /* robot không tay (chương đầu): chỉ có thân */
     if(tay&&!oTay(than,tay).length)throw new Error((than.ma==='drone'?'Drone':'Tay '+tay.ma)+' không gắn được vào ổ này.');
     var p=new Painter(40,40),goc={x:8,y:17},camera=false;
     for(i=0;i<cams.length;i++){var d=chon('cam-bien',cams[i].ma),o=than.oGan[cams[i].o];if(!o)throw new Error('Thân '+than.ma+' không có ổ "'+cams[i].o+'".');if(gan(d).indexOf(cams[i].o)<0)throw new Error('Cảm biến '+d.ma+' không gắn được vào ổ '+cams[i].o+'.');if(d.ma==='camera'){camera=true;continue;}}
