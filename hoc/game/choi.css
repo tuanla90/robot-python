@@ -501,6 +501,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 /* ---------- nhện: nhóm CHÂN (xanh dương), nhóm ĐIỀU KIỆN (xanh ngọc: if / elif / else), chuỗi chữ chỉ đường ---------- */
 .gl.g-chan{color:#b4ccff}.gl.g-chan::after{background:#4a6ed0}
 .brick.chan{--c:#5b8cff;--hi:#b4ccff;--lo:#2f58c4;--stud:var(--st-cy)}
+.gl.g-truot{color:#c4ee9c}.gl.g-truot::after{background:#7cc23a}
+.brick.truot{--c:#b6e04c;--hi:#e8f9aa;--lo:#7aa522;--stud:var(--st-gr)}
+.strip .sl,.keo-dong .sl{color:#3f7d12}
 .gl.g-dk{color:#9ff0e2}.gl.g-dk::after{background:#1fa08f}
 .brick.dk{--c:#2fc2ad;--hi:#9ff0e2;--lo:#128474;--stud:var(--st-gr)}
 .pal .brick.dk .tx{padding-right:4px;font-size:.86em}

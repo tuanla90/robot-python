@@ -300,7 +300,7 @@
   }
   /** Các vị trí mà một chẩn đoán trỏ tới (xem man-choi.js). */
   function chiCho(c) {
-    var ds = [c.cho, c.choTruoc];
+    var ds = [c.cho, c.choTruoc, c.choTruot];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }

@@ -231,7 +231,7 @@
   }
   /** Các vị trí (cot, dong, ten) mà một chẩn đoán trỏ tới. Lỗi `cau-truc-chua-hoc` / `tran-khung` ghi cot, dong, ten ngay trên chẩn đoán. */
   function chiCho(c) {
-    var ds = [c.cho, c.choTruoc];
+    var ds = [c.cho, c.choTruoc, c.choTruot];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }
@@ -355,6 +355,7 @@
     if (!S.bai.chinh.length && !k.vet.length && !S.bai.hamCuaMan.length) toast(t('choi.trong'), 'bad');
     hienChanDoan();
     S.field.chopDo(200);
+    S.field.quayVe();                  // xích dừng giữa lúc quay dở: xoay ngược về thẳng kèm dấu ?
   }
 
   /* ------------------------------------------------------------- bảng thắng */

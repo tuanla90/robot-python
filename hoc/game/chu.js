@@ -73,6 +73,7 @@
       'choi.nhom.vong': 'VÒNG LẶP',
       'choi.nhom.bien': 'BIẾN',
       'choi.nhom.chan': 'CHÂN',
+      'choi.nhom.truot': 'TRƯỢT',
       'choi.nhom.dk': 'ĐIỀU KIỆN',
       'choi.chonChuoi': 'Chọn chữ chỉ đường',
       'choi.xoaChu': 'Xóa chữ cuối',

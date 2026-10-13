@@ -37,6 +37,7 @@
     if (ten === 'wait') return 'yl';
     if (TAY_TEN.indexOf(ten) >= 0) return 'tay';
     if (/^go_/.test(ten)) return 'chan';
+    if (/^slide_/.test(ten)) return 'truot';
     return 'gr';
   }
   /* ---- thụt lề: mỗi dòng trong mảng giữ dấu cách đầu dòng (4 dấu cách = 1 bậc); khung vẽ bậc bằng lề trái */
@@ -125,7 +126,7 @@
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = m[1] === 'left_move' || m[1] === 'right_move' || m[1] === 'left_back' || m[1] === 'right_back' ? 'mv'
-      : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : 'fn';
+      : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : /^slide_/.test(m[1]) ? 'sl' : 'fn';
     var args = m[2].trim() === '' ? '' : m[2].split(',').map(function (x, k) { return oDoiSo(x.trim(), k); }).join('<span class="pu">, </span>');
     return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' + args + '<span class="pu">)</span>';
   }
@@ -736,23 +737,25 @@
     if (i > dau && dau >= 0) { var x = kq.splice(i, 1)[0]; kq.splice(dau, 0, x); }
     return kq;
   }
-  /** Hàm của em dùng được với robot của màn: nhện thì bỏ hàm gọi lệnh bánh (trực tiếp hay qua hàm khác) vì nhện không có bánh. Màn khác: giữ nguyên. */
-  var LENH_BANH = ['left_move', 'right_move', 'left_back', 'right_back'];
+  /** Hàm của em dùng được với robot của màn: hàm gọi (trực tiếp hay qua hàm khác của em) một lệnh gốc mà màn không có trong `hamGoc` thì ẩn khỏi kho
+   *  (vd. nhện bỏ hàm dùng lệnh bánh; xích / omni bỏ go(d); xe không tay bỏ pick()). Màn không khai hamGoc: giữ nguyên. */
+  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right'];
   function locHamTheoRobot(man, ds) {
-    if (!ds || !man || man.loaiRobot !== 'nhen') return ds;
+    if (!ds || !man || !man.hamGoc || !man.hamGoc.length) return ds;
+    var co = {}; man.hamGoc.forEach(function (n) { co[n] = true; });
     var theoTen = {}; ds.forEach(function (f) { theoTen[f.ten] = f; });
-    function dungBanh(f, da) {
+    function dungLenhThieu(f, da) {
       return (f.than || []).some(function (dong) {
         var re = /([A-Za-z_]\w*)\(/g, m, s = boChuThich(dong);
         while ((m = re.exec(s))) {
-          if (LENH_BANH.indexOf(m[1]) >= 0) return true;
+          if (LENH_GOC.indexOf(m[1]) >= 0 && !co[m[1]]) return true;
           var g = theoTen[m[1]];
-          if (g && !da[m[1]]) { da[m[1]] = true; if (dungBanh(g, da)) return true; }
+          if (g && !da[m[1]]) { da[m[1]] = true; if (dungLenhThieu(g, da)) return true; }
         }
         return false;
       });
     }
-    return ds.filter(function (f) { var da = {}; da[f.ten] = true; return !dungBanh(f, da); });
+    return ds.filter(function (f) { var da = {}; da[f.ten] = true; return !dungLenhThieu(f, da); });
   }
 
   /* ------------------------------------------------- kiểu của đối số hàm: số / một chữ / chuỗi ghép */
@@ -899,7 +902,8 @@
       var boQua = spec.boQua || null;
       var gocTay = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) >= 0; });
       var gocChan = (spec.goc || []).filter(function (n) { return /^go_/.test(n); });                      // nhện: go_up / go_down / go_left / go_right (nhóm CHÂN, kèm wait)
-      var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh)
+      var gocTruot = (spec.goc || []).filter(function (n) { return /^slide_/.test(n); });                  // omni: slide_left / slide_right (nhóm TRƯỢT)
+      var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !/^slide_/.test(n) && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh)
       if (gocChan.length && (spec.goc || []).indexOf('wait') >= 0) gocChan.push('wait');
       function lop(them) { return (host.firstChild ? 'g2 ' : 'g1 ') + them; }       // nhóm đầu tiên là g1 (không cách trên), các nhóm sau g2
       function nhomGoc() {
@@ -912,6 +916,11 @@
         nhan(t('choi.nhom.chan'), lop('g-chan'));
         var cot2 = h('div', 'g-2c'); host.appendChild(cot2);                                   // lệnh gốc của nhện xếp hai cột cho gọn
         gocChan.forEach(function (n) { gach(n, n === 'wait' ? 'yl' : 'chan', 'goc', null, cot2); });
+      }
+      function nhomTruot() {
+        if (!gocTruot.length) return;
+        nhan(t('choi.nhom.truot'), lop('g-truot'));
+        gocTruot.forEach(function (n) { gach(n, 'truot', 'goc'); });
       }
       function nhomTay() {
         if (!gocTay.length) return;
@@ -963,9 +972,9 @@
       // (BIẾN, VÒNG LẶP, hàm của màn, hàm của em), khối gốc / tay xuống cuối. Kho của em đã dài: hàm của màn (ít, đề bài thường cần ngay) lên trước hàm của em.
       var coTS = !!(spec.bien && spec.bien.length) || [spec.em, spec.man].some(function (l) { return (l || []).some(function (f) { return f.thamSo && f.thamSo.length; }); });
       var thuTu = gocChan.length ? [nhomBien, nhomChan, nhomTay, nhomVong, nhomDk, nhomMan, nhomEm, nhomGoc]      // nhện: chân (lệnh chính) lên đầu
-        : coTS ? [nhomBien, nhomVong, nhomMan, nhomEm, nhomGoc, nhomTay]
-        : (spec.em && spec.em.length > 8) ? [nhomGoc, nhomTay, nhomVong, nhomBien, nhomMan, nhomEm]
-        : [nhomGoc, nhomTay, nhomVong, nhomBien, nhomEm, nhomMan];
+        : coTS ? [nhomBien, nhomVong, nhomMan, nhomEm, nhomTruot, nhomGoc, nhomTay]
+        : (spec.em && spec.em.length > 8) ? [nhomGoc, nhomTruot, nhomTay, nhomVong, nhomBien, nhomMan, nhomEm]
+        : [nhomGoc, nhomTruot, nhomTay, nhomVong, nhomBien, nhomEm, nhomMan];
       thuTu.forEach(function (f) { f(); });
       this.vua();
       if (cuonCu && host.classList.contains('cuon')) { host.scrollTop = cuonCu; veCuon(); }
