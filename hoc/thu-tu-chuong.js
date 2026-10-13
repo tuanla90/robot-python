@@ -19,6 +19,7 @@
    Chương 9 'omni' (Bánh omni) nằm ở man-omni.js.
    Chương 10 'tam-day' (Tấm đẩy) nằm ở man-tam-day.js.
    Chương 11 'khoang-cach' (Cảm biến khoảng cách) nằm ở man-khoang-cach.js.
+   Chương 12 'mau' (Cảm biến màu) nằm ở man-mau.js.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */
@@ -28,7 +29,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'khoang-cach'],
+    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'khoang-cach', 'mau'],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',
@@ -40,7 +41,8 @@
       'xich': 'Bánh xích',
       'omni': 'Bánh omni',
       'tam-day': 'Tấm đẩy',
-      'khoang-cach': 'Cảm biến khoảng cách'
+      'khoang-cach': 'Cảm biến khoảng cách',
+      'mau': 'Cảm biến màu'
     }
   };
 

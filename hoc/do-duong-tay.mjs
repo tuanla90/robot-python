@@ -6,6 +6,8 @@
    bộ đếm băng chuyền).
    Vật giống hệt nhau (chỉ cần "mọi vật nằm trên ô đích") nên vị trí các vật được xếp tăng dần để
    gộp các trạng thái tương đương. Vật đã vỡ thì bỏ trạng thái đó (không bao giờ thắng được nữa).
+   MÀU (chương mau): man.mau / man.vatMau (lớp màu của MỘT sân, xem san-hoc.js) cho ô đích có màu và vật có màu. Ô đích có màu chỉ
+   tính khi vật cùng màu nằm trên nó. Có vật mang màu thì các vật không còn "giống hệt nhau": không xếp tăng dần nữa.
 
    Một HÀNH ĐỘNG = một nhịp = tổ hợp hợp lệ của:
      tay đổi tư thế   : không | arm_down | arm_up                 (3)
@@ -42,7 +44,7 @@ for (const tuThe of [null, 'duoi', 'tren']) {
 
 /** Dựng ngữ cảnh từ một màn (hoặc cấu hình tương tự: san, batDau). */
 export function dungNguCanh(man) {
-  const san = SanHoc.docSan(man.san);
+  const san = SanHoc.docSan(man.san, man.mau, man.vatMau);
   const rong = san.rong, cao = san.cao;
   const o = (x, y) => y * rong + x;
   const chan = new Uint8Array(rong * cao);
@@ -51,7 +53,11 @@ export function dungNguCanh(man) {
   for (const d of san.dich) dich[o(d.x, d.y)] = 1;
   const bang = new Int8Array(rong * cao).fill(-1);                    // hướng đẩy của ô băng (0..3), -1 = không phải băng
   for (let y = 0; y < cao; y++) for (let x = 0; x < rong; x++) { const h = SanHoc.BANG[san.o[y][x]]; if (h !== undefined) bang[o(x, y)] = h; }
-  return { san, rong, cao, o, chan, bang, dich, vat0: san.vat.map((v) => o(v.x, v.y)), bd: man.batDau };
+  const ma = (m) => (m ? SanHoc.MAU_TEN.indexOf(m) + 1 : 0);          // 0 = không màu, 1..4 = red, green, blue, yellow
+  const mauDich = new Uint8Array(rong * cao);
+  for (const d of san.dich) mauDich[o(d.x, d.y)] = ma(d.mau);
+  const mauVat = san.vat.map((v) => ma(v.mau));
+  return { san, rong, cao, o, chan, bang, dich, mauDich, mauVat, coMau: mauVat.some((m) => m > 0), vat0: san.vat.map((v) => o(v.x, v.y)), bd: man.batDau };
 }
 
 /** Trạng thái đầu. pos[i]: ô của vật i, -1 = đang cầm, -2 = vỡ. */
@@ -101,7 +107,7 @@ export function buocMotNhip(ctx, S, a) {
 
 export function laThang(ctx, S) {
   if (!S.pos.length) return false;
-  return S.pos.every((p) => p >= 0 && ctx.dich[p]);
+  return S.pos.every((p, i) => p >= 0 && ctx.dich[p] && (ctx.mauDich[p] === 0 || ctx.mauDich[p] === ctx.mauVat[i]));
 }
 
 function khoa(ctx, S) {
@@ -109,7 +115,8 @@ function khoa(ctx, S) {
   // bộ đếm băng) rồi MỖI vật một chữ số (0 = đang cầm, p + 1 = nằm ở ô p), xếp tăng dần để các vật giống nhau gộp được.
   // (Bản cũ chỉ ghi các vật nằm dưới đất nên có thể trùng khóa giữa các trạng thái khác nhau.)
   const cell = S.y * ctx.rong + S.x;
-  const chuSo = S.pos.map((p) => p + 1).sort((a, b) => a - b);               // vỡ (-2) đã bị loại trước khi tới đây
+  const chuSo = S.pos.map((p) => p + 1);                                     // vỡ (-2) đã bị loại trước khi tới đây
+  if (!ctx.coMau) chuSo.sort((a, b) => a - b);                               // vật có màu thì phân biệt từng vật, không xếp lại
   let k = (((cell * 4 + S.h) * 2 + S.t) * 2 + (S.cam >= 0 ? 1 : 0)) * 2 + S.d;        // (độ đóng của kẹp không ảnh hưởng luật nên không vào khóa)
   for (const c of chuSo) k = k * (ctx.rong * ctx.cao + 1) + c;
   return k;

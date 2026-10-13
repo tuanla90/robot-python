@@ -41,6 +41,8 @@
      là vật thật: học sinh thử pick() / drop() trong Xưởng được; vết có `vat` và `robot.tay` từng nhịp,
      `kq.vat` là trạng thái cuối. Màn không có tay gắp thì vật chỉ là ô có vật — KHÔNG chặn đường.
      Xe đi qua ô vật không bị chặn. Sân thử chưa có ô đích nên không có điều kiện thắng.
+   tuyChon.sanThu.mau = [{ x, y, mau: 'red'|'green'|'blue'|'yellow' (hay 'r' 'g' 'b' 'y') }] (tuỳ chọn): ô sàn màu cho color() trong Xưởng (bỏ ô tường, ô ngoài sân, ô trùng);
+   vật trong sân thử cũng có thể mang `mau`. Chuẩn hóa trả lại ở `kq.sanThu.mau`.
    tuyChon.sanThu.thung = [{ x, y }] (tuỳ chọn): thùng nặng trong sân thử, chuẩn hóa như vật (ô ngoài sân, ô trùng, ô tường, ô xe bị bỏ);
    chỉ có nghĩa với màn có tấm đẩy (hamGoc có push). Kết quả có thêm `thung` (trạng thái cuối).
    Trả về { vet, robot: {x,y,huong}, batDau, sanThu, soNhip, chanDoan, py, anhXa, tay, vat, thung }.
@@ -62,6 +64,16 @@
    NHIỀU SÂN: mặc định soNhip = số nhịp của sân DÀI NHẤT. man.nhipTheo === 'tong' thì soNhip = TỔNG nhịp mọi sân (dùng cho sao.nhip), để chương trình
    viết cứng số bước (bước thừa chỉ húc tường ở sân ngắn) mất sao nhịp. Kết quả luôn có thêm nhipMax, nhipTong.
 
+   CẢM BIẾN MÀU (chương mau; luật đầy đủ ở san-hoc.js, phần CẢM BIẾN MÀU): hamGoc có color thì robot có cảm biến màu (man.robot.camBien = [{ ma:'mau', o:'hong' }],
+   có thể kèm khoang-cach ở màn phối hợp). color() trả chuỗi "red" | "green" | "blue" | "yellow" | "none" của ô dưới xe (vật có màu nằm trên sàn dưới xe thì trả
+   màu vật). Màn khai lớp màu bằng man.mau (mảng chuỗi cùng cỡ sân, ký tự r g b y) và man.vatMau (màu từng vật); màn nhiều sân thì hai trường này là mảng song song
+   với man.san (như batDau). Ô đích có màu chỉ nhận vật cùng màu. Mỗi lần đọc là một mục lệnh trong vết có `docCamBien` { cam:'mau', ham:'color', tu, o, mau, nguon:'san'|'vat', idVat, nhip }.
+   Kết quả có `mauO` (lớp màu sàn của sân đang xem, null nếu không màu), mỗi mục theoSan cũng vậy; vật / đích có `mau` khi có màu. Mã chẩn đoán mới:
+   - chua-gan-cam-bien (lỗi): gọi color() khi màn không cho (như cảm biến khoảng cách; lời nói rõ "cảm biến màu").
+   - ten-mau-sai (lỗi): một chuỗi trong phép so sánh gần giống tên màu nhưng không đúng (chữ hoa chữ thường, gõ nhầm một chữ): color() chỉ trả chữ thường
+     "red", "green", "blue", "yellow", "none". Chỉ báo khi chưa thắng.
+   - mau-thieu-nhay (lỗi): viết red / green / blue / yellow / none không có dấu nháy (Python tưởng là tên biến).
+   - dat-sai-mau (lỗi): thả vật xuống ô đích khác màu (vật vẫn nằm đó, nhặt lên lại được).
    TẤM ĐẨY / THÙNG NẶNG / MỤC TIÊU day-thung (man.mucTieu === 'day-thung'; luật đầy đủ ở san-hoc.js):
    - thắng khi MỌI thùng nặng (ký hiệu H, h) nằm trên ô đích (D, X, h). Kết quả có thêm `thung`, `thungBanDau` [{id,x,y}] (cuối / đầu), ở
      mỗi mục theoSan cũng vậy; vết nhịp có `thung` (vị trí thùng cuối nhịp) và sự kiện 'thung-di' {id, tu, den, nguon:'xe'|'truot'|'bang'}.
@@ -85,6 +97,13 @@
   var LY_DO_THUNG = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe' };
   // Sân thử mặc định của Xưởng hàm: 5×5 trống, xe ở giữa quay lên (hướng 0).
   var SAN_THU_MAC_DINH = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [], tuong: [], thung: [] };
+  var MAU_CHU = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };       // tên màu → ký tự trong lớp màu của SanHoc
+  function chuanMau(m) {                                                // 'red' | 'r' … → tên màu, hoặc null
+    if (typeof m !== 'string') return null;
+    if (MAU_CHU[m]) return m;
+    for (var k in MAU_CHU) if (MAU_CHU[k] === m) return k;
+    return null;
+  }
   var CO_TOI_DA = 12;
 
   /** Chuẩn hóa cấu hình sân thử (xem đầu tệp). Luôn trả về bản mới, hợp lệ. */
@@ -110,7 +129,33 @@
     var thung = loc(c.thung);                                    // thùng nặng: không đè tường, không đè xe
     delete thay[bd.x + ',' + bd.y];                              // vật có thể nằm ngay dưới xe
     var vat = loc(c.vat);                                        // tường được ưu tiên hơn vật
-    return { rong: rong, cao: cao, batDau: bd, vat: vat, tuong: tuong, thung: thung };
+    // màu: vật có thể mang màu (mau: 'red' | 'r' …); ô sàn màu { x, y, mau } (không đè tường; mỗi ô một màu, ô sau không đè ô trước)
+    var tuongKhoa = {};
+    tuong.forEach(function (o) { tuongKhoa[o.x + ',' + o.y] = true; });
+    (Array.isArray(c.vat) ? c.vat : []).forEach(function (src) {
+      if (!src || typeof src.x !== 'number' || typeof src.y !== 'number') return;
+      var mv = chuanMau(src.mau);
+      if (!mv) return;
+      vat.forEach(function (v) { if (v.x === Math.floor(src.x) && v.y === Math.floor(src.y) && !v.mau) v.mau = mv; });
+    });
+    var mauSan = [], daMau = {};
+    (Array.isArray(c.mau) ? c.mau : []).forEach(function (o) {
+      if (!o || typeof o.x !== 'number' || typeof o.y !== 'number') return;
+      var x = Math.floor(o.x), y = Math.floor(o.y), k = x + ',' + y, mo = chuanMau(o.mau);
+      if (!mo || x < 0 || y < 0 || x >= rong || y >= cao || tuongKhoa[k] || daMau[k]) return;
+      daMau[k] = true; mauSan.push({ x: x, y: y, mau: mo });
+    });
+    var kq = { rong: rong, cao: cao, batDau: bd, vat: vat, tuong: tuong, thung: thung };
+    if (mauSan.length) kq.mau = mauSan;                          // chỉ có khi sân thử có ô màu (các sân thử cũ giữ nguyên dạng)
+    return kq;
+  }
+  /** Lớp màu sàn của sân thử (mảng chuỗi r g b y / '.'), hoặc null nếu sân thử không có ô màu. */
+  function lopMauSanThu(st) {
+    if (!st.mau || !st.mau.length) return null;
+    var rows = [];
+    for (var y = 0; y < st.cao; y++) { var d = ''; for (var x = 0; x < st.rong; x++) d += '.'; rows.push(d); }
+    st.mau.forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + MAU_CHU[o.mau] + rows[o.y].slice(o.x + 1); });
+    return rows;
   }
   /** Sân thử dạng mảng chuỗi cho SanHoc ('.' sàn, '#' tường). */
   function hangSanThu(st) {
@@ -149,6 +194,37 @@
 
   function tenCua(ds) { return ds.map(function (h) { return h.ten; }); }
 
+  var TEN_MAU_VI = { red: 'đỏ (red)', green: 'xanh lá (green)', blue: 'xanh dương (blue)', yellow: 'vàng (yellow)', none: 'không màu (none)' };
+  var TEN_MAU_HOP_LE = ['red', 'green', 'blue', 'yellow', 'none'];
+  /** Khoảng cách sửa giữa a và b, tính cả đổi chỗ hai chữ liền nhau (bản OSA). */
+  function khoangSua(a, b) {
+    var d = [], i, j;
+    for (i = 0; i <= a.length; i++) { d.push([i]); }
+    for (j = 1; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++) {
+      var cp = a[i - 1] === b[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cp);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+    return d[a.length][b.length];
+  }
+  /** Các chuỗi trong phép so sánh (dòng có ==, != hay in) gần giống một tên màu nhưng không đúng tên nào. */
+  function chuoiMauSai(dong) {
+    var kq = [];
+    dong.forEach(function (d, i) {
+      var s = String(d).replace(/#.*$/, '');
+      if (!/==|!=|\bin\b/.test(s)) return;
+      var re = /(["'])((?:(?!\1).)*)\1/g, m;
+      while ((m = re.exec(s))) {
+        var t = m[2];
+        if (TEN_MAU_HOP_LE.indexOf(t) >= 0) continue;
+        var l = t.trim().toLowerCase();
+        if (TEN_MAU_HOP_LE.some(function (n) { return l === n || (l.length > 2 && khoangSua(l, n) <= 1); })) kq.push({ dongPy: i + 1, chuoi: t });
+      }
+    });
+    return kq;
+  }
+
   /** Dòng Python (không tính chú thích) có phải câu lệnh while không. */
   function laDongWhile(s) { return /^\s*while\b/.test(String(s).replace(/#.*$/, '')); }
   function coWhile(g) { return g.dong.some(laDongWhile); }
@@ -184,12 +260,15 @@
     if (l && l.loai !== 'qua-nhieu-nhip' && l.loai !== 'infinite-loop') {
       var m = g.anhXa[l.dong] || null;
       var tn = /tên "([^"]+)"/.exec(l.thongDiep || '');
-      if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.CAM_BIEN_HAM[tn[1]] !== undefined && hamGoc.indexOf(tn[1]) < 0) {
-        var dsCam = hamGoc.filter(function (t) { return SanHoc.CAM_BIEN_HAM[t] !== undefined; });
+      if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.laHamCamBien(tn[1]) && hamGoc.indexOf(tn[1]) < 0) {
+        var dsCam = hamGoc.filter(function (t) { return SanHoc.laHamCamBien(t); });
         them('chua-gan-cam-bien', 'Ở ' + viTri(m) + ': ' + (dsCam.length
           ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
-          : 'robot này chưa gắn cảm biến khoảng cách nên chưa có hàm ' + tn[1] + '().') +
+          : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
           ' Hàm gốc dùng được ở màn này: ' + (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.', { ten: tn[1], cho: cho(m) });
+      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến( hay hàm)? tên/.test(l.thongDiep) && SanHoc.MAU_TEN.concat(['none']).indexOf(tn[1]) >= 0 && hamGoc.indexOf('color') >= 0) {
+        them('mau-thieu-nhay', 'Ở ' + viTri(m) + ': ' + tn[1] + ' đang viết không có dấu nháy nên Python tưởng đó là tên một biến hay một hàm và không tìm thấy. ' +
+          'Tên màu là một chuỗi chữ, phải đặt trong dấu nháy: "' + tn[1] + '".', { ten: tn[1], cho: cho(m) });
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep)) {
         var ten = tn[1], s;
         if (bc.biCam.indexOf(ten) >= 0) {
@@ -373,6 +452,22 @@
           (kh.lyDo === 'tay-nang' ? 'vật nằm dưới đất mà tay đang nâng.' : 'ô (' + kh.o.x + ', ' + kh.o.y + ') không có vật nào để gắp.')
       });
     }
+    var datSaiMau = res.suKien.filter(function (e) { return e.ma === 'dat-sai-mau'; });
+    if (datSaiMau.length) {
+      var sm = datSaiMau[0];
+      them('dat-sai-mau', 'Ở nhịp ' + sm.nhip + ', vật ' + (sm.mauVat === 'none' ? 'không màu' : 'màu ' + TEN_MAU_VI[sm.mauVat]) + ' được thả xuống ô đích màu ' + TEN_MAU_VI[sm.mauDich] +
+        ' ở (' + sm.o.x + ', ' + sm.o.y + '): ô đích màu nào thì chỉ nhận vật cùng màu, nên vật này chưa được tính.' +
+        (datSaiMau.length > 1 ? ' Chuyện này xảy ra ' + datSaiMau.length + ' lần.' : '') + ' Nhặt vật lên và mang tới đúng ô đích.', { nhip: sm.nhip, id: sm.id, o: sm.o, mauVat: sm.mauVat, mauDich: sm.mauDich });
+    }
+    if (!sanThu && !res.thang && hamGoc.indexOf('color') >= 0) {
+      var cs = chuoiMauSai(g.dong);
+      if (cs.length) {
+        var c0 = cs[0], mcs = g.anhXa[c0.dongPy] || null;
+        them('ten-mau-sai', 'Ở ' + viTri(mcs) + ': so sánh với "' + c0.chuoi + '", nhưng color() chỉ trả về các chữ thường "red", "green", "blue", "yellow" hoặc "none". ' +
+          'Hai chuỗi chỉ bằng nhau khi giống từng chữ, kể cả chữ hoa chữ thường, nên phép so sánh này không khớp với màu nào.' +
+          (cs.length > 1 ? ' Còn ' + (cs.length - 1) + ' chỗ tương tự.' : ''), { chuoi: c0.chuoi, cho: cho(mcs), soCho: cs.length });
+      }
+    }
     var quen = res.suKien.filter(function (e) { return e.ma === 'quen-wait'; });
     if (quen.length) {
       var q = quen[0], mq = g.anhXa[q.lenh[0].dongPy] || null;
@@ -393,9 +488,9 @@
     // --- chạy xong mà chưa tới cờ
     if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'dua-vat') {
       if (!res.dungSom) {
-        var chuaXong = res.vat.filter(function (v) { return !(v.trangThai === 'dat' && res.dich.some(function (d) { return d.x === v.x && d.y === v.y; })); }).length;
+        var chuaXong = res.vat.filter(function (v) { return !(v.trangThai === 'dat' && res.dich.some(function (d) { return d.x === v.x && d.y === v.y && (!d.mau || d.mau === v.mau); })); }).length;
         them('chua-dua-vat', 'Chương trình chạy xong mà chưa đưa hết vật tới ô đích: còn ' + chuaXong + ' trong ' + res.vat.length +
-          ' vật chưa nằm yên trên đích. Thử chạy lại và theo dõi tay cùng xe từng nhịp.', { conLai: chuaXong, tong: res.vat.length });
+          ' vật chưa nằm yên trên đích.' + (res.dich.some(function (d) { return d.mau; }) ? ' Đích có màu chỉ tính vật cùng màu.' : '') + ' Thử chạy lại và theo dõi tay cùng xe từng nhịp.', { conLai: chuaXong, tong: res.vat.length });
       }
     } else if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'day-thung') {
       if (!res.dungSom) {
@@ -538,14 +633,16 @@
     var thangHet = true, nhipMax = 0, nhipTong = 0, gom = [], dsMa = {}, dung = {};
     dsSan.forEach(function (rows, i) {
       var bd = Array.isArray(man.batDau) ? man.batDau[i] : man.batDau;
+      var lm = SanHoc.lopMauCuaSan(man, i);
       var res = SanHoc.chay({
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
-        hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co'
+        hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
+        mau: lm.mau, vatMau: lm.vatMau
       }, g.ma);
       var cd = chanDoanSan(man, res, g, false, bc);
       var vet = chuyenVet(res.vet, g);
       hamTrongVet(vet, dung);
-      ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau });
+      ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
@@ -563,7 +660,7 @@
     var viec = ketQua.theoSan.filter(function (s) { return !s.thang; })[0] || ketQua.theoSan[0];
     ketQua.vet = viec.vet;
     ketQua.vatBanDau = viec.vatBanDau; ketQua.dich = viec.dich; ketQua.tay = viec.tay; ketQua.vat = viec.vat;
-    ketQua.thungBanDau = viec.thungBanDau; ketQua.thung = viec.thung;
+    ketQua.thungBanDau = viec.thungBanDau; ketQua.thung = viec.thung; ketQua.mauO = viec.mauO;
 
     // hàm thực sự được gọi (hợp mọi sân) → số ô
     var daDung = tap.em.concat(tap.man).filter(function (h) {
@@ -614,7 +711,7 @@
     var nhipToiDa = tuyChon.nhipToiDa || 100;
     var res = SanHoc.chay({
       san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
-      hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung
+      hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st)
     }, g.ma);
     res.nhipToiDa = nhipToiDa;
     ketQua.chanDoan = chanDoanSan(man, res, g, true, bc);
