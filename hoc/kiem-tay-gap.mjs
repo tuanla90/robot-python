@@ -494,8 +494,15 @@ console.log('\n== 16. Chương tay-gap: dữ liệu 10 màn, bảng tóm tắt =
   const wantMan = (id) => ds.find((m) => m.id === id);
   kiem('3.3 là "đố": maMau dùng arm_up() trước grab() → kẹp hụt; sửa đúng một lệnh là thắng',
     (() => { const m = wantMan('3.3'); const r = ChamHoc.cham(m, m.maMau, kho.ds()); return !r.thang && maCua(r).includes('kep-hut') && m.maMau.chinh[0] === 'arm_up()' && m.maMau.chinh[1] === 'grab()' && m.loiGiai.chinh[0] === 'arm_down()' && m.maMau.chinh.slice(1).join() === m.loiGiai.chinh.slice(1).join(); })());
-  kiem('3.4 là "đố": maMau quên arm_up() sau khi nhặt → xe kẹt (tay-vuong); thêm đúng một dòng arm_up() là thắng',
-    (() => { const m = wantMan('3.4'); const r = ChamHoc.cham(m, m.maMau, kho.ds()); return !r.thang && maCua(r).includes('tay-vuong') && m.loiGiai.chinh.length === m.maMau.chinh.length + 1 && m.loiGiai.chinh.filter((x) => x === 'arm_up()').length === 1 && m.maMau.chinh.filter((x) => x === 'arm_up()').length === 0; })());
+  kiem('3.4 là "đố": maMau quên nâng tay sau khi nhặt → xe kẹt (tay-vuong); thêm arm_up() + wait() (cách chuẩn) là thắng, chỉ thêm arm_up() ngay trước lệnh đi (gộp nhịp) cũng thắng',
+    (() => {
+      const m = wantMan('3.4'); const r = ChamHoc.cham(m, m.maMau, kho.ds());
+      const chuan = m.maMau.chinh.slice(); chuan.splice(3, 0, 'arm_up()', 'wait()');           // sau nhặt (3 dòng) chèn nâng tay + wait
+      const gop = m.maMau.chinh.slice(); gop.splice(3, 0, 'arm_up()');                         // chỉ arm_up() ngay trước lệnh đi
+      const rc = ChamHoc.cham(m, { chinh: chuan }, kho.ds()), rg = ChamHoc.cham(m, { chinh: gop }, kho.ds());
+      return !r.thang && maCua(r).includes('tay-vuong') && J(chuan) === J(m.loiGiai.chinh) && m.maMau.chinh.filter((x) => x === 'arm_up()').length === 0 &&
+        rc.thang && rc.sao === 3 && rg.thang && rg.sao === 3 && rg.soNhip < rc.soNhip;
+    })());
   kiem('3.8 sửa hàm của màn: drop_nhanh() thiếu arm_down() → thả từ trên cao, vật vỡ; sửa thân hàm là thắng',
     (() => { const m = wantMan('3.8'); const r = ChamHoc.cham(m, m.maMau, kho.ds()); return !r.thang && maCua(r).includes('vat-vo') && m.maMau.hamCuaMan[0].ten === 'drop_nhanh' && m.loiGiai.hamCuaMan[0].than.includes('arm_down()') && !m.maMau.hamCuaMan[0].than.includes('arm_down()') && m.loiGiai.chinh.join() === m.maMau.chinh.join(); })());
   kiem('3.9: hai vật, hai đích; 3.10: ba vật, ba đích, có huy hiệu', SanHoc.docSan(wantMan('3.9').san).vat.length === 2 && SanHoc.docSan(wantMan('3.9').san).dich.length === 2 && SanHoc.docSan(wantMan('3.10').san).vat.length === 3 && SanHoc.docSan(wantMan('3.10').san).dich.length === 3);
@@ -521,8 +528,17 @@ console.log('\n== 16. Chương tay-gap: dữ liệu 10 màn, bảng tóm tắt =
   }
   const nhipBfs = (m) => nhipDuaVatNganNhat(m).nhip;
   const kcNhip = ds.map((m) => m.sao.nhip - nhipBfs(m));
-  kiem('cờ nhipTheoLoiGiai đúng chỗ: có cờ (3.3, 3.5, 3.6, 3.7, 3.8, 3.10) thì sao.nhip > BFS; không cờ (3.1, 3.2, 3.4, 3.9) thì sao.nhip = BFS',
-    ds.every((m, i) => (m.nhipTheoLoiGiai === true ? kcNhip[i] > 0 : kcNhip[i] === 0)) && J(ds.filter((m) => m.nhipTheoLoiGiai).map((m) => m.id)) === J(['3.3', '3.5', '3.6', '3.7', '3.8', '3.10']), J(kcNhip));
+  kiem('cờ nhipTheoLoiGiai đúng chỗ: có cờ (mọi màn trừ 3.9) thì sao.nhip > BFS; 3.9 không cờ thì sao.nhip = BFS',
+    ds.every((m, i) => (m.nhipTheoLoiGiai === true ? kcNhip[i] > 0 : kcNhip[i] === 0)) && J(ds.filter((m) => m.nhipTheoLoiGiai).map((m) => m.id)) === J(['3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.10']), J(kcNhip));
+  {
+    const T_P = ['arm_down()', 'grab()', 'wait()'], T_T = ['arm_down()', 'release()', 'wait()'];
+    const gop31 = ChamHoc.cham(wantMan('3.1'), { chinh: [...T_P, 'arm_up()', 'move()', ...T_T] }, khoMau);
+    const gop32 = ChamHoc.cham(wantMan('3.2'), { chinh: ['move()', ...T_P, 'arm_up()', 'move()', ...T_T] }, khoMau);
+    kiem('3.1 / 3.2: cách gộp arm_up() với lệnh đi (không dùng wait() riêng) vẫn 3 sao, nhanh hơn một nhịp so với sao.nhip',
+      [gop31, gop32].every((r, i) => r.thang && r.sao === 3 && r.soNhip === wantMan(i ? '3.2' : '3.1').sao.nhip - 1), J([gop31.sao, gop31.soNhip, gop32.sao, gop32.soNhip]));
+    kiem('3.1 / 3.2 / 3.4: lời giải chuẩn viết tự nhiên vừa khung 10 ô (9, 10, 10 dòng chương trình)',
+      J(['3.1', '3.2', '3.4'].map((id) => wantMan(id).loiGiai.chinh.length)) === J([9, 10, 10]));
+  }
   const tk = ds.filter((m) => m.tietKiemNhip);
   kiem('đúng MỘT màn "Tiết kiệm nhịp" (3.9): sao.nhip = BFS; đề bài nói tới số nhịp, gợi ý nhắc lệnh tay và lệnh bánh chạy chung một nhịp',
     tk.length === 1 && tk[0].id === '3.9' && tk[0].ten === 'Tiết kiệm nhịp' && tk[0].sao.nhip === nhipBfs(tk[0]) && tk[0].deBai.includes('nhịp') && tk[0].goiY[0].includes('arm_up()') && tk[0].goiY[0].includes('cùng nhịp'));

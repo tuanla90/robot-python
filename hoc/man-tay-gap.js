@@ -25,8 +25,8 @@
    được 2 sao; muốn 3 sao phải sửa thân pick() / drop() (bỏ wait() cuối) để nâng tay chung nhịp với
    lệnh đi kế tiếp. sao.o của màn này tính theo lời giải chuẩn (lời giải 3 sao dùng ít ô hơn).
 
-   Màn 3.1 / 3.2 / 3.4 chưa có hàm: viết cách chuẩn (nhặt 5 dòng) tràn khung 10 ô, nên ba màn này đòi
-   nhập chung nâng tay + đi (BFS = sao.nhip, không cần cờ).
+   Màn 3.1 / 3.2 / 3.4 chưa dạy tạo hàm nhưng học sinh ĐÃ CÓ move() (turn_left...) từ chương 2: viết cách chuẩn
+   (nhặt 5 dòng + move()) vừa khít 9-10 ô, nên ba màn này cũng chấm theo cách chuẩn (nhipTheoLoiGiai).
    Lời giải của mọi màn vừa khít 10 ô hoặc ít hơn; không gói hàm thì tràn khung (màn 5, 6, 10).
 
    Sân dựng thành HÀNH LANG (mọi ô ngoài đường đi là tường), trừ màn 1–4 (sân trống nhỏ);
@@ -68,55 +68,57 @@
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
     man({
-      so: 1, ten: 'Nhặt và đặt', hang: 'lam-quen',
+      so: 1, ten: 'Nhặt và đặt', hang: 'lam-quen', hamCuaEmCan: ['move'],
       deBai: 'Xe có thêm tay gắp. Một vật nằm ngay dưới xe, ô đích (khung vàng) ở ngay phía trước. Đưa vật tới ô đích.',
-      veMaMau: 'Chương trình có sẵn hạ tay, kẹp vật rồi nâng tay lên. Trong mỗi nhịp, tay đổi tư thế trước, sau đó mới tới bánh.',
+      veMaMau: 'Chương trình có sẵn hạ tay, kẹp vật rồi nâng tay lên. Trong mỗi nhịp, tay đổi tư thế trước, sau đó mới tới bánh. Em còn thiếu việc đi tới ô đích và đặt vật xuống.',
       san: ['.....', '.....', '..D..', '..o..', '.....'],
       batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: nhieu(NHAT_1, ['wait()']) },
-      sao: { o: 10, nhip: 3 },
-      loiGiai: { chinh: nhieu(NHAT_1, TIEN, T_THA) },
+      maMau: { chinh: T_PICK_DAY.slice() },
+      sao: { o: 12, nhip: 4 },
+      nhipTheoLoiGiai: true,
+      loiGiai: { chinh: nhieu(T_PICK_DAY, ['move()'], T_THA) },
       loiGiaiKhac: {
-        moTa: 'Gói hai lệnh bánh vào hàm go(), chỉ gọi một lần',
-        baiLam: { chinh: nhieu(NHAT_1, ['go()', 'wait()'], T_THA) },
-        hamCuaEmMoi: [H('go', ['left_move()', 'right_move()'])]
+        moTa: 'Gói việc thả vào hàm put(), chỉ gọi một lần',
+        baiLam: { chinh: nhieu(T_PICK_DAY, ['move()', 'put()']) },
+        hamCuaEmMoi: [H('put', T_THA)]
       },
       loiSai: [
-        { moTa: 'Không sửa gì: nhặt xong xe đứng yên', baiLam: { chinh: nhieu(NHAT_1, ['wait()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên nâng tay trước khi đi: tay vướng sàn', baiLam: { chinh: nhieu(T_PICK, TIEN, T_THA) },
+        { moTa: 'Không sửa gì: nhặt xong xe đứng yên', baiLam: { chinh: T_PICK_DAY.slice() }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên nâng tay trước khi đi: tay vướng sàn', baiLam: { chinh: nhieu(T_PICK, ['move()'], T_THA) },
           phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
-        { moTa: 'Thả mà không hạ tay: vật rơi vỡ', baiLam: { chinh: nhieu(NHAT_1, TIEN, ['release()', 'wait()']) },
+        { moTa: 'Thả mà không hạ tay: vật rơi vỡ', baiLam: { chinh: nhieu(T_PICK_DAY, ['move()', 'release()', 'wait()']) },
           phaiCoMa: ['vat-vo'] },
         { moTa: 'Nâng tay và hạ tay chung một nhịp: lệnh hạ tay bị bỏ',
           baiLam: { chinh: nhieu(NHAT_1, ['left_move()', 'right_move()', 'arm_down()', 'release()', 'wait()']) }, phaiCoMa: ['tay-goi-lai', 'vat-vo'] },
-        { moTa: 'Nhịp cuối thiếu wait()', baiLam: { chinh: nhieu(NHAT_1, TIEN, ['arm_down()', 'release()']) },
+        { moTa: 'Nhịp cuối thiếu wait()', baiLam: { chinh: nhieu(T_PICK_DAY, ['move()', 'arm_down()', 'release()']) },
           phaiCoMa: ['quen-wait', 'chua-dua-vat'] }
       ],
       goiY: ['Tay hạ sát đất thì xe không đi được; tay còn nâng cao mà thả thì vật vỡ.',
-        'Chương trình có 10 ô, mà một nhịp chứa được cả lệnh tay lẫn lệnh bánh.']
+        'Hàm move() em đã có trong kho: gọi một lần là xe tiến một ô.']
     }),
 
     man({
       so: 2, ten: 'Tự nhặt, tự đặt', hang: 'lam-quen', hamCuaEmCan: ['move'],
-      deBai: 'Vật nằm cách xe một ô, ô đích cách vật hai ô, cùng một hàng thẳng. Đưa xe tới vật, nhặt rồi đặt vật lên ô đích.',
-      san: ['.....', '..D..', '.....', '..o..', '.....'],
+      deBai: 'Vật nằm cách xe một ô, ô đích cách vật một ô, cùng một hàng thẳng. Đưa xe tới vật, nhặt rồi đặt vật lên ô đích.',
+      san: ['.....', '.....', '..D..', '..o..', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
       maMau: { chinh: [] },
       sao: { o: 13, nhip: 5 },
-      loiGiai: { chinh: nhieu(['move()'], NHAT_1, ['move()', 'move()'], T_THA) },
+      nhipTheoLoiGiai: true,
+      loiGiai: { chinh: nhieu(['move()'], T_PICK_DAY, ['move()'], T_THA) },
       loiGiaiKhac: {
         moTa: 'Gói việc nhặt vào hàm take(), chỉ gọi một lần',
-        baiLam: { chinh: nhieu(['move()', 'take()', 'arm_up()', 'move()', 'move()'], T_THA) },
-        hamCuaEmMoi: [H('take', T_PICK)]
+        baiLam: { chinh: nhieu(['move()', 'take()', 'move()'], T_THA) },
+        hamCuaEmMoi: [H('take', T_PICK_DAY)]
       },
       loiSai: [
-        { moTa: 'Nhặt xong không nâng tay: xe không đi được', baiLam: { chinh: nhieu(['move()'], T_PICK, ['move()', 'move()'], T_THA) },
+        { moTa: 'Nhặt xong không nâng tay: xe không đi được', baiLam: { chinh: nhieu(['move()'], T_PICK, ['move()'], T_THA) },
           phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
-        { moTa: 'Kẹp mà chưa hạ tay: kẹp hụt', baiLam: { chinh: nhieu(['move()', 'grab()', 'wait()', 'arm_up()', 'move()', 'move()'], T_THA) },
+        { moTa: 'Kẹp mà chưa hạ tay: kẹp hụt', baiLam: { chinh: nhieu(['move()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'move()'], T_THA) },
           phaiCoMa: ['kep-hut', 'chua-dua-vat'] },
-        { moTa: 'Đi lố một ô trước khi nhặt: ô đó không có vật', baiLam: { chinh: nhieu(['move()', 'move()'], NHAT_1, ['move()'], T_THA) },
+        { moTa: 'Đi lố một ô trước khi nhặt: ô đó không có vật', baiLam: { chinh: nhieu(['move()', 'move()'], T_PICK, ['arm_up()', 'move()'], T_THA) },
           phaiCoMa: ['kep-hut', 'chua-dua-vat'] },
-        { moTa: 'Nâng tay và hạ tay chung một nhịp', baiLam: { chinh: nhieu(['move()'], T_PICK, ['arm_up()', 'arm_down()', 'move()', 'move()', 'release()', 'wait()']) },
+        { moTa: 'Nâng tay và hạ tay chung một nhịp', baiLam: { chinh: nhieu(['move()'], T_PICK, ['arm_up()', 'arm_down()', 'move()', 'release()', 'wait()']) },
           phaiCoMa: ['tay-goi-lai', 'vat-vo'] }
       ],
       goiY: ['Trong một nhịp: tay đổi tư thế, rồi kẹp hoặc thả, rồi mới tới bánh.',
@@ -152,25 +154,26 @@
 
     /* ------------------------------------------------------------- hàng 2 */
     man({
-      so: 4, ten: 'Đố: xe kẹt', hang: 'luyen', hamCuaEmCan: ['move', 'turn_left'],
-      deBai: 'Vật nằm dưới xe. Đi lên một ô, rẽ trái, đi tiếp một ô tới ô đích rồi đặt vật xuống.',
+      so: 4, ten: 'Đố: xe kẹt', hang: 'luyen', hamCuaEmCan: ['move'],
+      deBai: 'Vật nằm dưới xe. Đi lên hai ô tới ô đích rồi đặt vật xuống.',
       veMaMau: 'Chương trình có sẵn nhặt được vật, nhưng xe đứng yên không đi nổi. Chạy thử và xem tay cùng xe ở từng nhịp.',
-      san: ['....', '....', '.D..', '..o.'],
+      san: ['....', '..D.', '....', '..o.'],
       batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: nhieu(T_PICK, ['move()', 'turn_left()', 'move()'], T_THA) },
-      sao: { o: 15, nhip: 5 },
-      loiGiai: { chinh: nhieu(NHAT_1, ['move()', 'turn_left()', 'move()'], T_THA) },
+      maMau: { chinh: nhieu(T_PICK, ['move()', 'move()'], T_THA) },
+      sao: { o: 13, nhip: 5 },
+      nhipTheoLoiGiai: true,
+      loiGiai: { chinh: nhieu(T_PICK_DAY, ['move()', 'move()'], T_THA) },
       loiGiaiKhac: {
-        moTa: 'Gói việc nhặt vào hàm take(), chỉ gọi một lần',
-        baiLam: { chinh: nhieu(['take()', 'arm_up()', 'move()', 'turn_left()', 'move()'], T_THA) },
-        hamCuaEmMoi: [H('take', T_PICK)]
+        moTa: 'Gói hai bước đi vào hàm go2(), chỉ gọi một lần',
+        baiLam: { chinh: nhieu(T_PICK_DAY, ['go2()'], T_THA) },
+        hamCuaEmMoi: [H('go2', ['move()', 'move()'])]
       },
       loiSai: [
-        { moTa: 'Không sửa gì: tay còn hạ nên xe không nhúc nhích', baiLam: { chinh: nhieu(T_PICK, ['move()', 'turn_left()', 'move()'], T_THA) },
+        { moTa: 'Không sửa gì: tay còn hạ nên xe không nhúc nhích', baiLam: { chinh: nhieu(T_PICK, ['move()', 'move()'], T_THA) },
           phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
-        { moTa: 'Nâng tay chậm một bước: lệnh đi đầu tiên vẫn bị chặn', baiLam: { chinh: nhieu(T_PICK, ['move()', 'arm_up()', 'turn_left()', 'move()'], T_THA) },
+        { moTa: 'Nâng tay chậm một bước: lệnh đi đầu tiên vẫn bị chặn', baiLam: { chinh: nhieu(T_PICK, ['move()', 'arm_up()', 'move()'], T_THA) },
           phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
-        { moTa: 'Thả mà không hạ tay: vật rơi vỡ', baiLam: { chinh: nhieu(NHAT_1, ['move()', 'turn_left()', 'move()', 'release()', 'wait()']) },
+        { moTa: 'Thả mà không hạ tay: vật rơi vỡ', baiLam: { chinh: nhieu(T_PICK_DAY, ['move()', 'move()', 'release()', 'wait()']) },
           phaiCoMa: ['vat-vo'] }
       ],
       goiY: ['Xe không nhúc nhích: đọc chẩn đoán xem tay đang ở tư thế nào.',
