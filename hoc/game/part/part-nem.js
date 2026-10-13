@@ -1,9 +1,9 @@
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
-  P.dangKy({loai:'tay',ma:'nem',ten:'Máy ném bên hông',hamGoc:['aim','throw'],gan:'tayPhai',diemNeo:{x:12,y:12},ve:function(p,s){
-    s=s||{};var ngam=Math.max(1,Math.min(3,+s.ngam||1)),throwing=!!s.dangNem;
-    p.rect(11,11,5,3,C.ink);p.rect(13,12,3,1,C.thep);p.rect(15,13,5,5,C.ink);p.rect(16,14,3,3,C.go);p.rect(17,14,1,2,C.goSang);
-    p.rect(17,throwing?5:8,2,throwing?9:6,C.ink);p.rect(18,throwing?5:9,3,2,C.goSang);p.rect(20,throwing?4:8,2,3,C.ink);p.rect(20,throwing?5:9,1,1,C.vang);
-    for(var i=0;i<ngam;i++)p.px(20+i,7-i,C.xanh);
-    if(s.cam){p.rect(16,15,3,2,C.ink);p.rect(17,15,1,1,C.vangSang);}
+  P.dangKy({loai:'tay',ma:'nem',ten:'Máy ném trước mũi',hamGoc:['aim','throw'],gan:'tay',diemNeo:{x:12,y:23},ve:function(p,s){
+    s=s||{};var n=Math.max(1,Math.min(3,+s.ngam||1)),up=!!s.dangNem,top=up?4:8;
+    p.rect(7,22,10,2,C.ink);p.rect(8,22,8,1,C.thepSang);p.rect(8,18,8,4,C.ink);p.rect(9,19,6,2,C.go);
+    p.rect(11,top,2,15,C.ink);p.rect(12,top+1,1,13,C.goSang);p.rect(8,top-3,7,5,C.ink);p.rect(9,top-2,5,2,C.vang);
+    for(var i=0;i<n;i++)p.px(12+i,top-3-i,C.xanh);
+    if(s.cam){p.rect(10,top,3,2,C.ink);p.px(11,top,C.goSang);}
   }});
 })(typeof window!=='undefined'?window:globalThis);

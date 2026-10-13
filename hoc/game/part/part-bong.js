@@ -1,7 +1,7 @@
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
-  P.dangKy({loai:'tay',ma:'bong',ten:'Ống bắn bóng đồ chơi',hamGoc:['shoot'],gan:['tayTrai','tayPhai'],diemNeo:{x:12,y:12},ve:function(p,s){
-    s=s||{};var left=s.ben==='trai',tube=left?4:16,inside=left?8:11,blue=left?5:17,ball=left?5:18;
-    p.rect(inside,11,5,3,C.ink);p.rect(left?8:13,12,3,1,C.thep);p.rect(tube,8,4,7,C.ink);p.rect(blue,8,2,6,C.xanhDuong);p.rect(blue,9,2,1,'#9bd8ff');p.rect(tube,6,4,3,C.ink);p.rect(blue,6,2,2,C.xanhDuong);
-    p.rect(left?4:17,15,3,2,C.ink);p.rect(left?5:18,15,1,1,C.vangToi);if(s.dangBan){p.rect(left?5:17,4,2,2,C.ink);p.rect(ball,4,1,1,C.vangSang);}else p.px(ball,7,C.vang);
+  P.dangKy({loai:'tay',ma:'bong',ten:'Ống phóng bóng đồ chơi trước mũi',hamGoc:['shoot'],gan:'tay',diemNeo:{x:12,y:23},ve:function(p,s){
+    s=s||{};p.rect(7,22,10,2,C.ink);p.rect(8,22,8,1,C.thepSang);p.rect(9,18,6,4,C.ink);p.rect(10,19,4,2,C.thep);
+    p.rect(9,7,6,12,C.ink);p.rect(10,8,4,10,C.xanhDuong);p.rect(11,8,2,9,'#9bd8ff');p.rect(8,5,8,4,C.ink);p.rect(9,5,6,2,C.vang);
+    if(s.dangBan){p.rect(11,2,2,3,C.ink);p.px(12,1,C.vangSang);}else p.px(12,6,C.vangSang);
   }});
 })(typeof window!=='undefined'?window:globalThis);
