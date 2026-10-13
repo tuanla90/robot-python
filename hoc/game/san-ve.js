@@ -28,10 +28,10 @@
   }
   Field.prototype = {
     /** Nạp một sân: cfg = { san: [chuỗi], batDau: {x,y,huong}, loaiRobot,
-     *  danhDau: {x,y} (tuỳ chọn: vòng mờ đánh dấu ô xuất phát), cat: {trai,phai,tren,duoi} (tuỳ chọn: cạnh nào bị cắt → vẽ dấu …) }. */
+     *  danhDau: {x,y} (tuỳ chọn: vòng mờ đánh dấu ô xuất phát), vat: [{x,y}] (tuỳ chọn: khối hàng vẽ trên sàn, không ảnh hưởng luật), cat: {trai,phai,tren,duoi} (tuỳ chọn: cạnh nào bị cắt → vẽ dấu …) }. */
     nap: function (cfg) {
       var rows = cfg.san, w = rows[0].length, h = rows.length;
-      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: cfg.loaiRobot || 'banh', co: null, dd: cfg.danhDau || null, cat: cfg.cat || null };
+      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: cfg.loaiRobot || 'banh', co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [] };
       for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) if (rows[y][x] === 'F' && !this.cfg.co) this.cfg.co = { x: x, y: y };
       this.cv.width = w * T; this.cv.height = h * T;
       var thoGoc = this.kich / (Math.max(w, h) * T), k = Math.max(1, Math.floor(thoGoc));
@@ -75,6 +75,7 @@
         else t = TL.rug[(x + y * 2) & 3];
         g.drawImage(t, x * T, y * T);
       }
+      for (var vi = 0; vi < c.vat.length; vi++) g.drawImage(TL.crate, c.vat[vi].x * T, c.vat[vi].y * T);
       if (c.dd) {                                              // vòng mờ nét đứt: ô xuất phát
         g.save(); g.strokeStyle = 'rgba(255,246,227,.7)'; g.lineWidth = 1; g.setLineDash([2, 2]);
         g.strokeRect(c.dd.x * T + 1.5, c.dd.y * T + 1.5, T - 3, T - 3); g.restore();

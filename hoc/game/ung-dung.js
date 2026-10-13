@@ -95,6 +95,8 @@
   function boot() {
     document.title = t('chung.tenGame');
     Ve.datChatLieu();
+    // hàm theo cốt truyện (tên nằm trong taoHam của một màn nào đó): kho khóa tên, không cho đổi tên / xóa
+    KhoHam.datTenCoDinh([].concat.apply([], ManHoc.danhSach.map(function (m) { return m.taoHam || []; })));
     var r = Luu.docKho();
     var kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi');
     Chon.dung(kb);

@@ -27,13 +27,20 @@
    - man.hamGoc: hàm gốc cho phép.
 
    thuHam(man, baiLam, tenHam, hamCuaEm, tuyChon) — "sân thử" của Xưởng hàm: chạy riêng
-   một hàm (của em hoặc của màn) trên sân trống RẤT RỘNG (41×41, robot ở chính giữa quay lên,
-   không tường, không cờ, không băng) để hàm bình thường không bao giờ chạm biên.
-   Để thử bản đang soạn của một hàm của em, đưa bản đó vào mảng hamCuaEm.
-   TỌA ĐỘ trả về (vet, robot, batDau, khung, den/tu trong sự kiện) đã được DỊCH về khung
-   quy ước: xuất phát luôn là BAT_DAU_THU = (1, 1) quay lên (hướng 0); đi lên thì y giảm,
-   sang phải thì x tăng; có thể âm hay vượt 2 — giao diện tự lấy `khung` mà vẽ.
-   khung = { minX, maxX, minY, maxY }: vùng bao mọi ô robot đã đứng, kể cả ô xuất phát.
+   một hàm (của em hoặc của màn) trên một sân thử CỐ ĐỊNH do người chơi sắp (mặc định 5×5 trống,
+   xe ở giữa (2, 2) quay lên). Để thử bản đang soạn của một hàm của em, đưa bản đó vào mảng hamCuaEm.
+   tuyChon.sanThu = { rong: 5, cao: 5, batDau: { x, y, huong }, vat: [{ x, y }], tuong: [{ x, y }] }
+   (không truyền thì dùng SAN_THU_MAC_DINH; chuanSanThu() sửa số liệu bậy: ô ngoài sân, ô trùng,
+   vật/tường đè lên xe, vật đè lên tường đều bị bỏ). Tọa độ là tọa độ THẬT của sân thử: x sang phải,
+   y xuống dưới, (0, 0) là góc trên trái; không còn phép dịch tọa độ.
+   - Tường chặn như sân thường (san-hoc 'dam-tuong', vat = 'tuong'); ra khỏi sân là 'dam-tuong'
+     với vat = 'ngoai-san', lời "ra ngoài sân thử".
+   - VẬT (khối hàng): lõi CHƯA có tay gắp, nên vật chỉ là ô có vật — KHÔNG chặn đường, không đổi luật.
+     Lõi giữ nguyên chỗ, chuẩn hóa rồi trả lại ở `kq.sanThu.vat`; giao diện tự vẽ. Chương Tay gắp
+     sau này nối vào đúng chỗ này (đưa `vat` xuống SanHoc.chay như một lớp riêng cạnh `san`).
+   Trả về { vet, robot: {x,y,huong}, batDau, sanThu, soNhip, chanDoan, py, anhXa }.
+   Chỉ chặn bởi lỗi khung thuộc về chính hàm này (tràn ô của nó) hoặc lỗi chung
+   (trùng tên); lỗi của chương trình chính hay của hàm khác không cản.
 
    Mã chẩn đoán: quen-wait, banh-goi-lai, dam-tuong, chua-toi-co, tran-khung,
    def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le,
@@ -47,11 +54,43 @@
   var KhungCode = laNode ? require('./khung-code.js') : window.KhungCode;
 
   var LOAI_VAT = { 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)' };
-  var SAN_THU = ['...', '...', '...'];                       // sân 3×3 cũ — giữ làm khung tối thiểu khi vẽ
-  var BAT_DAU_THU = { x: 1, y: 1, huong: 0 };                // gốc quy ước của tọa độ sân thử
-  var CO_SAN_RONG = 41;                                      // sân chạy thật: 41×41, robot ở giữa
-  var SAN_RONG = (function () { var r = [], d = ''; for (var i = 0; i < CO_SAN_RONG; i++) d += '.'; for (var j = 0; j < CO_SAN_RONG; j++) r.push(d); return r; })();
-  var GIUA_RONG = (CO_SAN_RONG - 1) / 2;
+  // Sân thử mặc định của Xưởng hàm: 5×5 trống, xe ở giữa quay lên (hướng 0).
+  var SAN_THU_MAC_DINH = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [], tuong: [] };
+  var CO_TOI_DA = 12;
+
+  /** Chuẩn hóa cấu hình sân thử (xem đầu tệp). Luôn trả về bản mới, hợp lệ. */
+  function chuanSanThu(c) {
+    c = c || {};
+    function so(v, mac, lo, hi) { v = Math.floor(Number(v)); return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : mac; }
+    var rong = so(c.rong, 5, 1, CO_TOI_DA), cao = so(c.cao, 5, 1, CO_TOI_DA);
+    var b = c.batDau || {};
+    var bd = { x: so(b.x, Math.floor((rong - 1) / 2), 0, rong - 1), y: so(b.y, Math.floor((cao - 1) / 2), 0, cao - 1), huong: ((so(b.huong, 0, 0, 1e6) % 4) + 4) % 4 };
+    var thay = {};
+    thay[bd.x + ',' + bd.y] = true;                              // ô có xe: không đặt gì khác
+    function loc(ds) {
+      var kq = [];
+      (Array.isArray(ds) ? ds : []).forEach(function (o) {
+        if (!o || typeof o.x !== 'number' || typeof o.y !== 'number') return;
+        var x = Math.floor(o.x), y = Math.floor(o.y), k = x + ',' + y;
+        if (x < 0 || y < 0 || x >= rong || y >= cao || thay[k]) return;
+        thay[k] = true; kq.push({ x: x, y: y });
+      });
+      return kq;
+    }
+    var tuong = loc(c.tuong), vat = loc(c.vat);                  // tường được ưu tiên hơn vật
+    return { rong: rong, cao: cao, batDau: bd, vat: vat, tuong: tuong };
+  }
+  /** Sân thử dạng mảng chuỗi cho SanHoc ('.' sàn, '#' tường). */
+  function hangSanThu(st) {
+    var rows = [];
+    for (var y = 0; y < st.cao; y++) {
+      var d = '';
+      for (var x = 0; x < st.rong; x++) d += '.';
+      rows.push(d);
+    }
+    st.tuong.forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + '#' + rows[o.y].slice(o.x + 1); });
+    return rows;
+  }
 
   function viTri(m) {
     if (!m) return 'một dòng không xác định';
@@ -128,13 +167,19 @@
     var tuong = res.suKien.filter(function (e) { return e.ma === 'dam-tuong'; });
     if (tuong.length) {
       var e0 = tuong[0];
-      var s2 = sanThu && e0.vat === 'ngoai-san'
-        ? 'Ở nhịp ' + e0.nhip + ', robot đi quá xa: ra khỏi sân thử (chỉ rộng ' + GIUA_RONG + ' ô mỗi phía quanh chỗ xuất phát) nên nó đứng yên.' +
-          ' Kiểm tra vòng lặp hoặc số lần lặp xem có đi mãi không.'
-        : 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là ' +
-        (LOAI_VAT[e0.vat] || e0.vat) + ' nên nó đứng yên (vẫn mất một nhịp).' +
-        (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-        ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.';
+      var s2;
+      if (sanThu) {
+        s2 = e0.vat === 'ngoai-san'
+          ? 'Xe đi ra ngoài sân thử (ở nhịp ' + e0.nhip + '). Đặt xe chỗ khác rồi thử lại.'
+          : 'Xe đâm vào tường ở nhịp ' + e0.nhip + ' nên đứng yên (vẫn mất một nhịp).' +
+            (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
+            ' Đặt xe hoặc tường chỗ khác, rồi thử lại.';
+      } else {
+        s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là ' +
+          (LOAI_VAT[e0.vat] || e0.vat) + ' nên nó đứng yên (vẫn mất một nhịp).' +
+          (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
+          ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.';
+      }
       them('dam-tuong', s2, { nhip: e0.nhip, den: e0.den, soLan: tuong.length });
     }
     var goiLai = res.suKien.filter(function (e) { return e.ma === 'banh-goi-lai'; });
@@ -319,20 +364,14 @@
 
   function gan(c) { if (!c.muc) c.muc = 'loi'; return c; }
 
-  /**
-   * "Sân thử" của Xưởng hàm: chạy riêng hàm `tenHam` (của em hoặc của màn).
-   * tuyChon: { doiSo: [giá trị mặc định cho đối số], nhipToiDa: 100 }.
-   * Trả về { vet, robot: {x,y,huong}, batDau, khung, soNhip, chanDoan, py, anhXa } (tọa độ đã dịch, xem đầu tệp).
-   * Chỉ chặn bởi lỗi khung thuộc về chính hàm này (tràn ô của nó) hoặc lỗi chung
-   * (trùng tên); lỗi của chương trình chính hay của hàm khác không cản.
-   */
+  /** "Sân thử" của Xưởng hàm: xem mô tả ở đầu tệp. */
   function thuHam(man, baiLam, tenHam, hamCuaEm, tuyChon) {
     tuyChon = tuyChon || {};
     baiLam = chuanHoa(baiLam);
     var cam = !!man.camHamCuaEm;
     var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
-    var ketQua = { vet: [], robot: Object.assign({}, BAT_DAU_THU), batDau: Object.assign({}, BAT_DAU_THU), soNhip: 0, chanDoan: [], py: '', anhXa: [],
-      khung: { minX: BAT_DAU_THU.x, maxX: BAT_DAU_THU.x, minY: BAT_DAU_THU.y, maxY: BAT_DAU_THU.y } };
+    var st = chuanSanThu(tuyChon.sanThu || SAN_THU_MAC_DINH);
+    var ketQua = { vet: [], robot: Object.assign({}, st.batDau), batDau: Object.assign({}, st.batDau), sanThu: st, soNhip: 0, chanDoan: [], py: '', anhXa: [] };
     var khung = Object.assign({ chinh: 10, moiHam: 10 }, man.khung || {}, { moXuong: man.moXuong !== false });
 
     var tap = KhungCode.tapHamDung(baiLam, kho, { goc: [tenHam] });
@@ -359,37 +398,18 @@
 
     var nhipToiDa = tuyChon.nhipToiDa || 100;
     var res = SanHoc.chay({
-      san: SAN_RONG, batDau: { x: GIUA_RONG, y: GIUA_RONG, huong: 0 }, loaiRobot: man.loaiRobot || 'banh',
+      san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa
     }, g.ma);
     res.nhipToiDa = nhipToiDa;
-    // dịch mọi tọa độ về khung quy ước (xuất phát = BAT_DAU_THU)
-    var dx = BAT_DAU_THU.x - GIUA_RONG, dy = BAT_DAU_THU.y - GIUA_RONG;
-    dich(res.vet, dx, dy); dich(res.suKien, dx, dy); dich(res.robot, dx, dy);
-    var kh = { minX: BAT_DAU_THU.x, maxX: BAT_DAU_THU.x, minY: BAT_DAU_THU.y, maxY: BAT_DAU_THU.y };
-    function ghiKhung(p) {
-      if (p.x < kh.minX) kh.minX = p.x; if (p.x > kh.maxX) kh.maxX = p.x;
-      if (p.y < kh.minY) kh.minY = p.y; if (p.y > kh.maxY) kh.maxY = p.y;
-    }
-    ghiKhung(res.robot);
-    res.vet.forEach(function (e) { if (e.loai === 'nhip' && e.robot) ghiKhung(e.robot); });
     ketQua.chanDoan = chanDoanSan(man, res, g, true, bc);
     ketQua.vet = chuyenVet(res.vet, g);
     ketQua.robot = res.robot;
     ketQua.soNhip = res.nhip;
-    ketQua.khung = kh;
     return xong();
   }
 
-  /** Dịch (x, y) của mọi đối tượng có hai số x, y bên trong v (sâu), tại chỗ. */
-  function dich(v, dx, dy) {
-    if (!v || typeof v !== 'object') return;
-    if (Array.isArray(v)) { v.forEach(function (e) { dich(e, dx, dy); }); return; }
-    if (typeof v.x === 'number' && typeof v.y === 'number') { v.x += dx; v.y += dy; }
-    for (var k in v) if (v[k] && typeof v[k] === 'object') dich(v[k], dx, dy);
-  }
-
-  var API = { cham: cham, thuHam: thuHam, SAN_THU: SAN_THU, BAT_DAU_THU: BAT_DAU_THU };
+  var API = { cham: cham, thuHam: thuHam, chuanSanThu: chuanSanThu, hangSanThu: hangSanThu, SAN_THU_MAC_DINH: SAN_THU_MAC_DINH };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.ChamHoc = API;
 })();

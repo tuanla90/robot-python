@@ -3,6 +3,7 @@
      kho hàm  : KhoHam.ghiLuu(Luu.kho)   (khóa của lõi)
      tiến độ  : duong-hoc:tien-do = { phienBan: 1, sao: { 'hai-banh.1': 3, … } }   (khóa = m.ma, cố định khi đổi thứ tự chương)
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
+     sân thử  : duong-hoc:san-thu:<tenHam> = cách sắp sân thử của Xưởng (xe, vật, tường), riêng từng hàm
      Dữ liệu cũ theo id ('1.1'…'2.10') được chuyển một lần sang ma (chuyenCu).
    ========================================================================== */
 (function () {
@@ -10,6 +11,7 @@
 
   var KHOA_TIEN_DO = 'duong-hoc:tien-do';
   var KHOA_NHAP = 'duong-hoc:nhap:';
+  var KHOA_SAN_THU = 'duong-hoc:san-thu:';
 
   // chỗ lưu: localStorage nếu dùng được, không thì bộ nhớ tạm (mất khi tải lại)
   function bo() {
@@ -82,6 +84,15 @@
   /** Bỏ bản nháp của một màn ("Làm lại từ đầu"). Không đụng tới sao hay kho hàm. */
   function xoaNhap(id) { try { kho.removeItem(KHOA_NHAP + id); return true; } catch (e) { return false; } }
 
+  /* ---- cách sắp sân thử của Xưởng hàm: duong-hoc:san-thu:<tenHam> = { rong, cao, batDau: {x,y,huong}, vat: [{x,y}], tuong: [{x,y}] }
+        (lưu riêng từng hàm; dữ liệu hỏng thì trả null, người dùng thấy sân mặc định; chuẩn hóa số liệu là việc của ChamHoc.chuanSanThu) */
+  function docSanThu(ten) {
+    var d = docJson(KHOA_SAN_THU + ten);
+    return d && typeof d === 'object' && !Array.isArray(d) ? d : null;
+  }
+  function ghiSanThu(ten, cfg) { return ghiJson(KHOA_SAN_THU + ten, cfg); }
+  function xoaSanThu(ten) { try { kho.removeItem(KHOA_SAN_THU + ten); return true; } catch (e) { return false; } }
+
   /* ---- kho hàm của em */
   var loiKho = null;
   function docKho() {
@@ -127,6 +138,7 @@
     kho: kho, laBoNho: laBoNho,
     saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
+    docSanThu: docSanThu, ghiSanThu: ghiSanThu, xoaSanThu: xoaSanThu,
     docKho: docKho, ghiKho: ghiKho,
     get loiKho() { return loiKho; },
     KHOA_TIEN_DO: KHOA_TIEN_DO, KHOA_NHAP: KHOA_NHAP

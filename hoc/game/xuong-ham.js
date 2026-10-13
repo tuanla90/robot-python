@@ -1,7 +1,13 @@
 /* ============================================================================
    xuong-ham.js — "Đường học": XƯỞNG HÀM (window.Xuong).
-   Lớp phủ trượt lên đè màn chơi: bảng tên vàng `def ten():`, sân thử (vẽ đúng vùng robot đã đi, nới 1 ô viền, tối thiểu 3×3) + "Thử hàm",
-   THÂN HÀM 10 ô + kho khối (Gốc, hàm khác của em, hàm của màn; không có chính nó).
+   Lớp phủ trượt lên đè màn chơi. Từ trên xuống:
+   - thanh trên: ‹ | TÊN HÀM to bằng font code (xanh lá = hàm của em, cam = hàm của màn) | 🗑 xóa hàm của em;
+   - khối giữa: SÂN THỬ 5×5 cố định (cỡ như sân chính) + cột nút Thử / Lại / Đặt xe / Vật / Tường.
+     Nút chế độ bật thì sáng viền, bấm lại để tắt; chạm ô sân để đặt xe (chạm xe thì xoay 90°),
+     thêm / bớt vật (khối hàng), thêm / bớt tường. Cách sắp lưu RIÊNG từng hàm (Luu.docSanThu);
+   - nửa dưới: khung thân hàm (tiêu đề là chữ `def`) + kho khối (Gốc, hàm khác của em, hàm của màn; không có chính nó).
+   Chạy = ChamHoc.thuHam(..., { sanThu }) rồi phát lại vết; lỗi hiện ở bong bóng trên kho khối,
+   chạy xong không lỗi thì toast "Xong: n nhịp" 2 giây ở đáy sân thử.
    Hộp đặt tên cho "＋ Hàm mới". Sửa hàm của em → KhoHam.sua + lưu ngay;
    sửa hàm của màn → chỉ vào bản nháp của màn.
    ========================================================================== */
@@ -11,29 +17,30 @@
   var h = TP.h;
   var A = null;        // app: { man(), bai(), khiDoiHam(), khiVe(), toc() }
   var E = {};          // phần tử
-  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null };
-  var NHIP_MS = 230, LENH_MS = 45;
-  var CO_SAN = 168, CO_O_NHO = 12;                       // khung sân (px) và cỡ ô nhỏ nhất (px màn hình)
-  var MAX_O = Math.floor(CO_SAN / CO_O_NHO);             // quá số ô này thì chỉ vẽ phần quanh vị trí cuối
+  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null };
+  var NHIP_MS = 230, LENH_MS = 45, TOAST_MS = 2000;
+  var CHE = { xe: 'che-xe', vat: 'che-vat', tuong: 'che-tuong' };
 
   /* -------------------------------------------------------------- dựng DOM */
   function dung(host, app) {
     A = app; E.host = host;
     host.innerHTML =
       '<div class="deco"></div>' +
-      '<div class="top"><button class="bt g-or back" data-nut="ve"><span data-i="back" data-s="2"></span>' + t('xuong.ve') + '</button>' +
-        '<div class="plaque"><span class="t t-xuong">' + t('xuong.tieuDe') + '</span></div>' +
+      '<div class="top"><button class="bt g-or menu" data-nut="ve" aria-label="' + t('xuong.ve') + '"><span data-i="back" data-s="2" data-l="#5a2f08"></span></button>' +
+        '<div class="tenham chalk"><span class="nm"></span></div>' +
         '<button class="bt g-rd menu" data-nut="xoa-ham" aria-label="' + t('xuong.xoaHam') + '"><span data-i="trash" data-s="2"></span></button></div>' +
-      '<div class="plate2"><span class="tag"></span><span class="nm"></span><i class="rvt a"></i><i class="rvt b"></i></div>' +
-      '<div class="fblock w">' +
-        '<div class="ffr w"><canvas class="tex"></canvas></div>' +
-        '<div class="side w">' +
-          '<button class="bt g-gr runb" data-nut="thu"><span data-i="play" data-s="2" data-l="#14561e"></span>' + t('xuong.thu') + '</button>' +
-          '<div class="result chalk" data-nut="ket-qua"><span class="k">' + t('xuong.ketQua') + '</span><span class="m"></span><span class="dg"></span></div>' +
+      '<div class="fblock">' +
+        '<div class="ffr sua"><canvas class="tex"></canvas><div class="toast"></div></div>' +
+        '<div class="side xu">' +
+          '<button class="bt g-gr cbtn" data-nut="thu"><span data-i="play" data-s="2" data-l="#14561e"></span>' + t('xuong.thu') + '</button>' +
+          '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="2" data-l="#0f2f6a"></span>' + t('xuong.lai') + '</button>' +
+          '<button class="bt g-yl cbtn dark mode" data-nut="' + CHE.xe + '" data-che="xe"><span data-i="car" data-s="2" data-l="#6a4400"></span>' + t('xuong.datXe') + '</button>' +
+          '<button class="bt g-or cbtn mode" data-nut="' + CHE.vat + '" data-che="vat"><span data-i="box" data-s="2" data-l="#5a2f08"></span>' + t('xuong.vat') + '</button>' +
+          '<button class="bt g-gy cbtn mode" data-nut="' + CHE.tuong + '" data-che="tuong"><span data-i="wall" data-s="2" data-l="#2d3340"></span>' + t('xuong.tuong') + '</button>' +
         '</div></div>' +
-      '<div class="low w">' +
+      '<div class="low">' +
         '<div class="pan p-prog"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt">' + t('xuong.than') + '</span><span class="ct">0/10</span>' +
+          '<div class="board chalk"><div class="bh"><span class="tt code">' + t('xuong.def') + '</span>' +
             '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="#4a0e0c"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
@@ -43,16 +50,16 @@
     Ve.hydrate(host);
     Ve.khungGo(host.querySelector('.deco'));
     var q = function (s) { return host.querySelector(s); };
-    E.nm = q('.plate2 .nm'); E.tag = q('.plate2 .tag'); E.plate = q('.plate2');
-    E.m = q('.result .m'); E.dg = q('.result .dg'); E.kq = q('.result');
+    E.tenham = q('.tenham'); E.nm = q('.tenham .nm'); E.ffr = q('.ffr'); E.toast = q('.toast');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]');
     E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong');
-    S.field = new SanVe.Field(E.canvas, { kich: CO_SAN, coNhoNhat: CO_O_NHO });
+    S.field = new SanVe.Field(E.canvas, { kich: 210 });
+    S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
     S.ed = new TP.Editor(q('.rows'), {
-      tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'), dem: q('.p-prog .ct'),
+      tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
       thutLe: function () { return TP.coCauTruc(A.man(), 'for'); },
-      tt: q('.p-prog .tt'), ttDay: t('xuong.than'), ttNgan: t('xuong.thanNgan'),
+      tt: q('.p-prog .tt'), ttDay: t('xuong.def'), ttNgan: t('xuong.def'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
@@ -66,11 +73,12 @@
     });
     q('[data-nut="ve"]').addEventListener('click', dong);
     q('[data-nut="thu"]').addEventListener('click', thu);
-    E.xoaHam.addEventListener('click', xoaHam);
-    E.kq.addEventListener('click', function () {
-      if (S.ketThu && S.coBong) { hienBongD(); return; }
-      if (E.kq.classList.contains('dai') && S.ketThu) TP.Hop.doc(t('choi.chanDoan'), S.ketThu.chanDoan.map(function (c) { return c.loi; }).join('\n\n'));
+    q('[data-nut="lai"]').addEventListener('click', lai);
+    Object.keys(CHE).forEach(function (k) {
+      q('[data-nut="' + CHE[k] + '"]').addEventListener('click', function () { if (!S.busy) datChe(S.che === k ? null : k); });
     });
+    E.canvas.addEventListener('click', chamSan);
+    E.xoaHam.addEventListener('click', xoaHam);
   }
 
   /* --------------------------------------------------------------- mở / đóng */
@@ -85,22 +93,28 @@
     var f = hamHienTai();
     if (!f) return;
     S.than = loai === 'em' ? f.than.slice() : f.than;        // hàm của màn: sửa thẳng vào bản nháp
-    var man = A.man();
-    E.nm.innerHTML = '';
-    var b = h('b', null, 'def'); E.nm.appendChild(b); E.nm.appendChild(document.createTextNode(' ' + ten));
-    E.nm.appendChild(h('i', null, '(' + (f.thamSo || []).join(', ') + '):'));
-    E.plate.classList.toggle('ma', loai === 'man');
-    E.tag.textContent = loai === 'man' ? t('xuong.nhanMan') : t('xuong.nhanEm');
+    E.nm.textContent = ten + '(' + (f.thamSo || []).join(', ') + ')';
+    E.host.setAttribute('data-loai', loai);                   // màu tên hàm: xanh lá (của em) / cam (của màn)
+    E.host.setAttribute('data-ham', ten);
     E.xoaHam.style.display = loai === 'em' ? 'flex' : 'none';
+    E.xoaHam.classList.toggle('nhat', loai === 'em' && KhoHam.tenCoDinh(ten));       // hàm theo cốt truyện: nút xóa mờ, chạm chỉ báo
     S.ed.nap(function () { return S.than; }, 10);
-    napSan(null);
+    S.st = ChamHoc.chuanSanThu(Luu.docSanThu(ten) || ChamHoc.SAN_THU_MAC_DINH);
+    datChe(null);
+    napSan();
     lamPal();
-    tinhNhanh();
-    anBongD();
+    xoaKetThu();
+    anToast();
     TP.Chan.giu(TP.XUONG_MS + 300);
     E.host.classList.add('open');
-    E.host.setAttribute('data-ham', ten); E.host.setAttribute('data-loai', loai);
     S.pal.vua();
+    vuaTen();
+  }
+  /** Tên hàm dài thì co chữ cho vừa thanh (không cắt, không xuống dòng). */
+  function vuaTen() {
+    E.nm.style.fontSize = '';
+    var s = parseFloat(getComputedStyle(E.nm).fontSize) || 24;
+    while (E.tenham.scrollWidth > E.tenham.clientWidth + 1 && s > 10) { s -= 1; E.nm.style.fontSize = s + 'px'; }
   }
   function dong() {
     S.rid++; S.busy = false;
@@ -128,111 +142,97 @@
     S.rid++; S.busy = false; E.side.classList.remove('busy');
     if (S.loai === 'em') {
       var r = KhoHam.sua(S.ten, S.than);
-      if (!r.ok) { E.m.textContent = r.loi; return; }
+      if (!r.ok) { toast(r.loi, 'bad', 3500); return; }
       var g = Luu.ghiKho();
-      if (!g.ok) E.dg.textContent = t('tb.khoGhiLoi', { loi: g.loi });
+      if (!g.ok) toast(t('tb.khoGhiLoi', { loi: g.loi }), 'bad', 3500);
     } else {
       Luu.ghiNhap(A.man().ma, A.bai());
     }
     S.field.datLai();
-    S.ed.datChay(null); S.ed.datLoi([]); S.pal.datSang(null); S.pal.datLoi([]);
+    xoaKetThu();
     A.khiDoiHam();            // màn chơi vẽ lại kho khối, hủy lượt chạy cũ
     lamPal();
-    tinhNhanh();
+  }
+
+  /* ------------------------------------------------------------- toast */
+  var toastHen = null;
+  function toast(chu, kieu, ms) {
+    var tt = E.toast; tt.textContent = chu; tt.className = 'toast show ' + (kieu || '');
+    clearTimeout(toastHen);
+    toastHen = setTimeout(function () { tt.className = 'toast'; }, ms || TOAST_MS);
+  }
+  function anToast() { clearTimeout(toastHen); E.toast.className = 'toast'; }
+
+  /* -------------------------------------------------------- sân thử */
+  function napSan() {
+    var st = S.st;
+    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat });
+  }
+  function datChe(k) {
+    S.che = k;
+    Object.keys(CHE).forEach(function (x) {
+      var b = E.host.querySelector('[data-nut="' + CHE[x] + '"]');
+      if (b) b.classList.toggle('on', x === k);
+    });
+    E.ffr.classList.toggle('sua', !!k);
+  }
+  /** Gì đang ở ô (x, y) của sân thử: 'xe' | 'tuong' | 'vat' | null. */
+  function coGi(x, y) {
+    var st = S.st;
+    if (st.batDau.x === x && st.batDau.y === y) return 'xe';
+    function trong(ds) { return ds.some(function (o) { return o.x === x && o.y === y; }); }
+    if (trong(st.tuong)) return 'tuong';
+    if (trong(st.vat)) return 'vat';
+    return null;
+  }
+  function boO(ds, x, y) { return ds.filter(function (o) { return !(o.x === x && o.y === y); }); }
+  /** Chạm một ô sân thử theo chế độ đang bật. Ô có xe không đặt được vật hay tường (và ngược lại). */
+  function chamSan(ev) {
+    if (S.busy || !S.che || !S.st) return;
+    var r = E.canvas.getBoundingClientRect(), st = S.st;
+    var x = Math.floor((ev.clientX - r.left) / r.width * st.rong), y = Math.floor((ev.clientY - r.top) / r.height * st.cao);
+    if (x < 0 || y < 0 || x >= st.rong || y >= st.cao) return;
+    var co = coGi(x, y), moi = { rong: st.rong, cao: st.cao, batDau: Object.assign({}, st.batDau), vat: st.vat.slice(), tuong: st.tuong.slice() };
+    if (S.che === 'xe') {
+      if (co === 'xe') moi.batDau.huong = (moi.batDau.huong + 1) % 4;
+      else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
+      else { moi.batDau.x = x; moi.batDau.y = y; }
+    } else {
+      var khoa = S.che === 'vat' ? 'vat' : 'tuong';
+      if (co === khoa) moi[khoa] = boO(moi[khoa], x, y);
+      else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
+      else moi[khoa].push({ x: x, y: y });
+    }
+    S.st = ChamHoc.chuanSanThu(moi);
+    Luu.ghiSanThu(S.ten, S.st);
+    napSan();
+    xoaKetThu();
+    anToast();
+  }
+  function lai() {
+    S.rid++; S.busy = false; E.side.classList.remove('busy');
+    S.field.datLai();
+    S.ed.datChay(null); S.pal.datSang(null);
+    anToast();
   }
 
   /* ------------------------------------------------------- kết quả thử */
-  /** Các đoạn đi liền một hướng (lên/phải/xuống/trái) theo thứ tự thật trong vết: [{h: 0..3, n}]. */
-  function cacDoan(kq) {
-    var b = ChamHoc.BAT_DAU_THU, tr = { x: b.x, y: b.y }, ds = [];
-    kq.vet.forEach(function (e) {
-      if (e.loai !== 'nhip' || !e.robot) return;
-      var dx = e.robot.x - tr.x, dy = e.robot.y - tr.y;
-      tr = { x: e.robot.x, y: e.robot.y };
-      if (!dx && !dy) return;
-      var hg = dy < 0 ? 0 : dx > 0 ? 1 : dy > 0 ? 2 : 3, n = Math.abs(dx) + Math.abs(dy);
-      if (ds.length && ds[ds.length - 1].h === hg) ds[ds.length - 1].n += n; else ds.push({ h: hg, n: n });
-    });
-    return ds;
-  }
-  var TEN_O = ['len', 'phai', 'xuong', 'trai'];
-  function oDi(d) { return t('xuong.o.' + TEN_O[d.h], { n: d.n }); }
-  /** Lời tả kết quả theo vị trí TƯƠNG ĐỐI so với chỗ xuất phát (không nói tọa độ). */
-  function mota(kq) {
-    var r = kq.robot, b = ChamHoc.BAT_DAU_THU, dx = r.x - b.x, dy = r.y - b.y, dd = (r.huong - b.huong + 4) % 4;
-    var mat = dd === 1 ? 'phai' : dd === 3 ? 'trai' : dd === 2 ? 'dau' : null;
-    if (!dx && !dy) {
-      var ds0 = cacDoan(kq);
-      if (ds0.length) return t('xuong.vongVe') + (mat ? ', ' + t('xuong.quayMat.' + mat) : '');
-      return mat ? t('xuong.quayTaiCho.' + mat) : t('xuong.dungYen');
-    }
-    var ds = cacDoan(kq), viec;
-    if (ds.length === 1 && !mat && ds[0].h === 0) viec = t('xuong.tien', { n: ds[0].n });
-    else if (ds.length === 1 && !mat && ds[0].h === 2) viec = t('xuong.lui', { n: ds[0].n });
-    else if (ds.length >= 1 && ds.length <= 3) {
-      viec = t('xuong.di', { ds: ds.map(oDi).reduce(function (a, c) { return t('xuong.roi', { a: a, b: c }); }) });
-    } else {
-      var net = [];
-      if (dy) net.push(oDi({ h: dy < 0 ? 0 : 2, n: Math.abs(dy) }));
-      if (dx) net.push(oDi({ h: dx > 0 ? 1 : 3, n: Math.abs(dx) }));
-      return t('xuong.vong', { ds: net.join(' và ') }) + (mat ? ', ' + t('xuong.quayMat.' + mat) : '');
-    }
-    return t('xuong.robot', { viec: viec + (mat ? ', ' + t('xuong.quayMat.' + mat) : '') });
-  }
-
-  /* -------------------------------------------- vẽ đúng vùng robot đã đi */
-  /** Cấu hình sân vẽ từ `kq.khung` (tọa độ quy ước của lõi): nới 1 ô viền, tối thiểu 3×3;
-   *  quá MAX_O ô thì chỉ lấy MAX_O ô quanh vị trí cuối, đánh dấu cạnh bị cắt. ox, oy: tọa độ quy ước của ô (0,0) của sân vẽ. */
-  function cauHinhSan(kq) {
-    var kh = kq ? kq.khung : { minX: 1, maxX: 1, minY: 1, maxY: 1 }, r = kq ? kq.robot : ChamHoc.BAT_DAU_THU, b = ChamHoc.BAT_DAU_THU;
-    var lo = { x: kh.minX - 1, y: kh.minY - 1 }, hi = { x: kh.maxX + 1, y: kh.maxY + 1 }, cat = { trai: false, phai: false, tren: false, duoi: false }, coCat = false;
-    if (hi.x - lo.x + 1 > MAX_O) {
-      var a = Math.max(lo.x, Math.min(hi.x - MAX_O + 1, r.x - Math.floor(MAX_O / 2)));
-      cat.trai = a > lo.x; cat.phai = a + MAX_O - 1 < hi.x; lo.x = a; hi.x = a + MAX_O - 1; coCat = true;
-    }
-    if (hi.y - lo.y + 1 > MAX_O) {
-      var c = Math.max(lo.y, Math.min(hi.y - MAX_O + 1, r.y - Math.floor(MAX_O / 2)));
-      cat.tren = c > lo.y; cat.duoi = c + MAX_O - 1 < hi.y; lo.y = c; hi.y = c + MAX_O - 1; coCat = true;
-    }
-    var w = hi.x - lo.x + 1, hh = hi.y - lo.y + 1, d = '', rows = [];
-    for (var i = 0; i < w; i++) d += '.';
-    for (var j = 0; j < hh; j++) rows.push(d);
-    var sx = b.x - lo.x, sy = b.y - lo.y, trong = sx >= 0 && sy >= 0 && sx < w && sy < hh;
-    return {
-      san: rows, batDau: { x: sx, y: sy, huong: b.huong }, loaiRobot: A.man().loaiRobot || 'banh',
-      danhDau: trong ? { x: sx, y: sy } : null, cat: coCat ? cat : null, ox: lo.x, oy: lo.y
-    };
-  }
-  function napSan(kq) {
-    S.cs = cauHinhSan(kq);
-    S.field.nap(S.cs);
-    E.canvas.title = S.cs.cat ? t('xuong.vungCat') : '';
-  }
-  /** Bản sao vết với tọa độ quy ước đổi sang tọa độ của sân vẽ. */
-  function vetTrenSan(vet) {
-    var ox = S.cs.ox, oy = S.cs.oy;
-    function dich(v) {
-      if (!v || typeof v !== 'object') return v;
-      if (Array.isArray(v)) return v.map(dich);
-      var o = {};
-      for (var k in v) o[k] = dich(v[k]);
-      if (typeof v.x === 'number' && typeof v.y === 'number') { o.x = v.x - ox; o.y = v.y - oy; }
-      return o;
-    }
-    return dich(vet);
-  }
   function chay() {
     var man = A.man();
-    return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds());
+    return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds(), { sanThu: S.st });
   }
-  function anBongD() { TP.bongAn(E.bongD); }
-  /** Bong bóng chẩn đoán đè lên kho khối (nửa phải), mũi tên sang dòng lỗi của thân hàm; sân thử vẫn thấy. */
+  function anBongD() { TP.bongAn(E.bongD); S.coBong = false; }
+  function xoaKetThu() {
+    S.ketThu = null; anBongD();
+    S.ed.datChay(null); S.ed.datLoi([]); S.pal.datSang(null); S.pal.datLoi([]);
+  }
   /** Các vị trí mà một chẩn đoán trỏ tới (xem man-choi.js). */
   function chiCho(c) {
     var ds = [c.cho, c.choTruoc];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }
+  /** Bong bóng chẩn đoán đè lên kho khối (nửa phải), mũi tên sang dòng lỗi của thân hàm; sân thử vẫn thấy. */
   function hienBongD() {
     var ds = S.ketThu ? S.ketThu.chanDoan : [];
     if (!ds.length) return;
@@ -247,44 +247,28 @@
         sau: function () { S.cdi = (S.cdi + 1) % ds.length; hienBongD(); }
       } : null
     });
+    S.coBong = true;
     E.bongD.setAttribute('data-ca', c.ma);
     var dong = null;
     chiCho(c).forEach(function (cho) { if (dong === null && cho && cho.ten === S.ten && cho.dong > 0) dong = cho.dong - 1; });
     TP.bongMui(E.bongD, dong === null ? null : S.ed.hangEl(dong));
   }
-  /** baoBong: true khi người chơi bấm "Thử hàm" — lỗi hiện ở bong bóng trên kho khối; còn lúc tự tính khi sửa thì chỉ ở khung kết quả. */
-  function hienKetQua(kq, baoBong) {
-    S.ketThu = kq; S.coBong = false; S.cdi = 0; anBongD();
+  /** Chạy xong: lỗi (hoặc lưu ý) hiện ở bong bóng trên kho khối; không lỗi thì toast "Xong: n nhịp". */
+  function hienKetQua(kq) {
+    S.ketThu = kq; S.cdi = 0; anBongD();
     var loi = kq.chanDoan.filter(function (c) { return c.muc === 'loi'; });
     var tin = kq.chanDoan.filter(function (c) { return c.muc !== 'loi'; });
     var ds = loi.concat(tin);
-    S.ketThu.chanDoan = ds;
-    E.m.textContent = loi.length ? '' : mota(kq);
-    E.m.style.display = loi.length ? 'none' : '';
-    E.dg.innerHTML = '';
-    E.dg.removeAttribute('data-ma');
-    if (baoBong && loi.length) {
-      S.coBong = true;
-      E.dg.className = 'dg loi';
-      E.dg.textContent = t('choi.xemLoi');
-      E.dg.setAttribute('data-ma', ds.map(function (c) { return c.ma; }).join(' '));
-      E.kq.classList.add('dai');
-    } else if (ds.length) {
-      var d0 = ds[0];
-      E.dg.className = 'dg ' + (d0.muc === 'loi' ? 'loi' : 'tin');
-      TP.vanBan(E.dg, d0.loi);
-      E.dg.setAttribute('data-ma', ds.map(function (c) { return c.ma; }).join(' '));
-    } else { E.dg.className = 'dg'; }
-    if (!S.coBong) {
-      E.kq.classList.remove('dai');
-      vuaChu(E.dg, 13, 9);
-      if (E.dg.scrollHeight > E.dg.clientHeight + 1) E.kq.classList.add('dai');
-    }
-    // đánh dấu dòng / khối có lỗi
+    kq.chanDoan = ds;
     var rows = [], bricks = [];
     ds.forEach(function (c) { chiCho(c).forEach(function (cho) { gomLoi(cho, rows, bricks); }); });
     S.ed.datLoi(rows); S.pal.datLoi(bricks);
-    if (S.coBong) hienBongD();
+    if (ds.length) hienBongD();
+    if (loi.length) {
+      if (loi.some(function (c) { return c.ma === 'dam-tuong'; })) S.field.chopDo(450);
+    } else {
+      toast(t('xuong.xong', { n: kq.soNhip }), 'win');
+    }
   }
   function gomLoi(cho, rows, bricks) {
     if (!cho) return;
@@ -292,27 +276,17 @@
     else if (cho.cot === 'hamEm') bricks.push('em:' + cho.ten);
     else if (cho.cot === 'hamMan') bricks.push('man:' + cho.ten);
   }
-  function tinhNhanh() {
-    if (!S.than || !S.than.length) {
-      E.m.style.display = ''; E.m.textContent = t('xuong.bamThu'); E.dg.textContent = ''; E.dg.className = 'dg';
-      S.ketThu = null; E.kq.classList.remove('dai'); return;
-    }
-    var kq = chay();
-    napSan(kq);
-    hienKetQua(kq);
-  }
-  function vuaChu(el, max, min) { TP.vuaChu(el, max, min); }
 
   /* --------------------------------------------------------------- thử hàm */
   async function thu() {
     if (S.busy) return;
-    if (!S.than || !S.than.length) { E.m.style.display = ''; E.m.textContent = t('xuong.trong'); return; }
+    if (!S.than || !S.than.length) { toast(t('xuong.trong'), 'bad'); return; }
     var my = ++S.rid, kq = chay();
-    anBongD(); S.ed.anHoan();
+    anBongD(); S.ed.anHoan(); anToast();
+    S.ed.datLoi([]); S.pal.datLoi([]);
     S.busy = true; E.side.classList.add('busy');
     S.field.datLai();
-    napSan(kq);
-    var vet = vetTrenSan(kq.vet);
+    var vet = kq.vet;
     var lap = S.ed.lapChoVet(vet, dongTrongHam);        // số lượt của các vòng for trong thân hàm
     var toc = A.toc();
     for (var i = 0; i < vet.length; i++) {
@@ -326,7 +300,7 @@
     }
     sang(null);
     S.busy = false; E.side.classList.remove('busy');
-    hienKetQua(kq, true);
+    hienKetQua(kq);
   }
   /** Chỉ số dòng (từ 0) của thân hàm đang mở mà sự kiện lệnh e đang chạy (kể cả khi lệnh nằm trong hàm khác được gọi từ dòng đó). */
   function dongTrongHam(e) {
@@ -346,6 +320,7 @@
   function xoaHam() {
     if (S.loai !== 'em') return;
     var ten = S.ten;
+    if (KhoHam.tenCoDinh(ten)) { toast(t('xuong.hamCoDinh'), 'bad', 2600); return; }
     var goi = KhoHam.ds().filter(function (f) { return f.ten !== ten && KhungCode.tenDuocGoi(f.than).indexOf(ten) >= 0; }).map(function (f) { return f.ten; });
     TP.Hop.xacNhan({
       tieuDe: t('xuong.xoaHam'), noiDung: t('xuong.xoaHoi', { ten: ten }),
@@ -355,6 +330,7 @@
       var r = KhoHam.xoa(ten);
       if (!r.ok) return;
       Luu.ghiKho();
+      Luu.xoaSanThu(ten);
       TP.Chan.giu(TP.XUONG_MS + 300);
       E.host.classList.remove('open'); E.host.removeAttribute('data-ham');
       S.rid++;
@@ -366,7 +342,9 @@
   function moiHam(taoXong) {
     var man = A.man();
     var m = TP.Hop.mo(t('ten.tieuDe'), 'hop-ten');
-    var goiY = (man.taoHam || []).filter(function (n) { return !KhoHam.tim(n); });
+    // hàm THEO CỐT TRUYỆN còn thiếu ở màn này (tên trong taoHam): điền sẵn đúng tên, ô chỉ đọc, chỉ có nút "Tạo hàm";
+    // đủ rồi thì hộp như thường, em tự đặt tên cho hàm riêng của mình
+    var coDinh = (man.taoHam || []).filter(function (n) { return !KhoHam.tim(n); })[0] || null;
     var loi = h('div', 'hop-loi');
     var inp = h('input', 'hop-in'); inp.type = 'text'; inp.maxLength = 24; inp.placeholder = t('ten.mauGo');
     inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocomplete', 'off'); inp.setAttribute('spellcheck', 'false'); inp.setAttribute('data-nut', 'o-ten');
@@ -382,31 +360,16 @@
       if (!g.ok) A.baoLoi && A.baoLoi(t('tb.khoGhiLoi', { loi: g.loi }));
       taoXong && taoXong(ten);
     }
-    if (goiY.length) {
-      m.than.appendChild(h('div', 'hop-chu nho', t('ten.goiY')));
-      var chips = h('div', 'hop-chips');
-      // chạm tên gợi ý chỉ ĐIỀN tên vào ô và tô sáng chip; bấm "Tạo hàm" mới tạo
-      goiY.forEach(function (n) {
-        var c = h('button', 'bt g-gr chip', n + '()'); c.setAttribute('data-goi-y', n);
-        c.addEventListener('click', function () {
-          inp.value = n; loi.textContent = ''; loi.classList.remove('co');
-          sangChip(n);
-        });
-        chips.appendChild(c);
-      });
-      m.than.appendChild(chips);
-      m.than.appendChild(h('div', 'hop-chu nho', t('ten.hoacGo')));
+    if (coDinh) {
+      m.than.appendChild(h('div', 'hop-chu nho', t('ten.coDinh')));
+      inp.value = coDinh; inp.readOnly = true; inp.setAttribute('data-co-dinh', coDinh);
     }
     m.than.appendChild(inp); m.than.appendChild(loi);
     var hang = h('div', 'hop-hang');
-    hang.appendChild(TP.Hop.nut('g-wd', t('chung.huy'), function () { TP.Hop.dong(); }, 'huy'));
+    if (!coDinh) hang.appendChild(TP.Hop.nut('g-wd', t('chung.huy'), function () { TP.Hop.dong(); }, 'huy'));
     hang.appendChild(TP.Hop.nut('g-gr', t('ten.tao'), function () { tao(inp.value); }, 'tao'));
     m.than.appendChild(hang);
-    function sangChip(n) {
-      var cs = m.than.querySelectorAll('.chip');
-      for (var i = 0; i < cs.length; i++) cs[i].classList.toggle('on', cs[i].getAttribute('data-goi-y') === n);
-    }
-    inp.addEventListener('input', function () { loi.textContent = ''; loi.classList.remove('co'); sangChip(inp.value.trim()); });
+    inp.addEventListener('input', function () { loi.textContent = ''; loi.classList.remove('co'); });
     inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tao(inp.value); });
   }
 

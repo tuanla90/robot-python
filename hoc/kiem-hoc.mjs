@@ -510,16 +510,17 @@ console.log('\n== 11. Sân thử của Xưởng hàm (thuHam) ==');
   const man = ManHoc.tim('2.4');
   const tr = H('turn_right', ['left_move()', 'wait()']);
   const a = ChamHoc.thuHam(man, { chinh: [] }, 'turn_right', [tr]);
-  kiem('chạy riêng turn_right: robot ở giữa sân 3×3, quay phải, 1 nhịp, không chẩn đoán',
-    bang(a.batDau, { x: 1, y: 1, huong: 0 }) && bang(a.robot, { x: 1, y: 1, huong: 1 }) && a.soNhip === 1 && a.chanDoan.length === 0, J(a));
+  kiem('chạy riêng turn_right: robot ở giữa sân thử 5×5 (2,2), quay phải, 1 nhịp, không chẩn đoán',
+    bang(a.batDau, { x: 2, y: 2, huong: 0 }) && bang(a.robot, { x: 2, y: 2, huong: 1 }) && a.soNhip === 1 && a.chanDoan.length === 0, J(a));
   kiem('sân thử không có cờ: không báo chua-toi-co', !maCua(a).includes('chua-toi-co') && a.vet.filter((e) => e.loai === 'nhip')[0].suKien.every((s) => s.ma !== 'toi-co'));
-  kiem('sân thử là 3×3 trống', bang(ChamHoc.SAN_THU, ['...', '...', '...']));
+  kiem('sân thử mặc định là 5×5 trống, xe (2,2) quay lên (đổi từ 3×3 / 41×41 cũ; cấu hình tùy ý: xem kiem-thu-ham.mjs)',
+    bang(ChamHoc.SAN_THU_MAC_DINH, { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [], tuong: [] }));
   const mv = H('move', T_MOVE);
   const b = ChamHoc.thuHam(man, {}, 'move', [mv, tr]);
-  kiem('chạy riêng move: tiến lên một ô (1,1)→(1,0)', bang(b.robot, { x: 1, y: 0, huong: 0 }) && b.soNhip === 1);
+  kiem('chạy riêng move: tiến lên một ô (2,2)→(2,1)', bang(b.robot, { x: 2, y: 1, huong: 0 }) && b.soNhip === 1);
   const c = ChamHoc.thuHam(man, {}, 'hai', [H('hai', ['move()', 'move()']), mv]);
-  kiem('tiến hai ô trên sân thử rộng: KHÔNG đâm tường, robot ở (1,-1) quay lên, khung bao cả ba ô (y âm = đi lên)',
-    !maCua(c).includes('dam-tuong') && bang(c.robot, { x: 1, y: -1, huong: 0 }) && c.soNhip === 2 && bang(c.khung, { minX: 1, maxX: 1, minY: -1, maxY: 1 }), J([c.chanDoan, c.robot, c.khung]));
+  kiem('tiến hai ô trên sân thử 5×5: không đâm tường, robot ở (2,0) quay lên',
+    !maCua(c).includes('dam-tuong') && bang(c.robot, { x: 2, y: 0, huong: 0 }) && c.soNhip === 2, J([c.chanDoan, c.robot]));
   kiem('vết của sân thử: cho / ngan đúng cột, tên hàm, không có dòng gọi giả',
     bang(c.vet[0].cho, { cot: 'hamEm', dong: 1, ten: 'move' }) && bang(c.vet[0].ngan, [{ cot: 'hamEm', dong: 1, ten: 'hai' }]), J(c.vet[0]));
   kiem('quen-wait bắt được ở sân thử', maCua(ChamHoc.thuHam(man, {}, 'sai', [H('sai', ['left_move()', 'right_move()'])])).join() === 'quen-wait');
@@ -545,8 +546,8 @@ console.log('\n== 11. Sân thử của Xưởng hàm (thuHam) ==');
   const m28 = ManHoc.tim('2.8');
   const sr = H('step_right', ['turn_right()', 'move()']);
   const j = ChamHoc.thuHam(m28, { chinh: [], hamCuaMan: [sr] }, 'step_right', mau('move', 'turn_right'));
-  kiem('thử được cả hàm của màn (step_right gọi hàm của em): quay phải rồi tiến → (2,1) hướng phải',
-    bang(j.robot, { x: 2, y: 1, huong: 1 }) && j.soNhip === 2 && j.chanDoan.length === 0, J(j));
+  kiem('thử được cả hàm của màn (step_right gọi hàm của em): quay phải rồi tiến → (3,2) hướng phải',
+    bang(j.robot, { x: 3, y: 2, huong: 1 }) && j.soNhip === 2 && j.chanDoan.length === 0, J(j));
   kiem('vết thử hàm của màn: cho/ngan có cột hamMan', j.vet.some((x) => x.loai === 'lenh' && x.ngan.some((y) => y.cot === 'hamMan' && y.ten === 'step_right')));
   const jx = ChamHoc.thuHam(m28, { chinh: [], hamCuaMan: [sr] }, 'step_right', mau('move'));
   kiem('hàm của màn gọi hàm của em chưa có trong kho: ham-chua-co ghi đúng chỗ (hàm step_right của màn)',
@@ -555,7 +556,7 @@ console.log('\n== 11. Sân thử của Xưởng hàm (thuHam) ==');
   kiem('hàm của màn tràn khung: tran-khung cot hamMan', maCua(jb).join() === 'tran-khung' && jb.chanDoan[0].cot === 'hamMan');
   // hàm của màn che hàm của em
   const ch = ChamHoc.thuHam(ManHoc.tim('2.1'), { chinh: [], hamCuaMan: [H('move', T_MOVE)] }, 'move', [H('move', ['left_move()'])]);
-  kiem('thử hàm bị che: chạy bản của màn, kèm chẩn đoán thông tin', bang(ch.robot, { x: 1, y: 0, huong: 0 }) && ch.chanDoan.length === 1 && ch.chanDoan[0].muc === 'thong-tin', J(ch));
+  kiem('thử hàm bị che: chạy bản của màn, kèm chẩn đoán thông tin', bang(ch.robot, { x: 2, y: 1, huong: 0 }) && ch.chanDoan.length === 1 && ch.chanDoan[0].muc === 'thong-tin', J(ch));
   // màn cấm hàm của em
   const cam = ChamHoc.thuHam(ManHoc.tim('1.1'), {}, 'move', mau('move'));
   kiem('màn cấm hàm của em: sân thử cũng không thấy hàm của em', maCua(cam).join() === 'ham-chua-co', J(cam.chanDoan));

@@ -142,7 +142,6 @@
     next: ['xx...', 'xxx..', '.xxx.', '..xxx', '..xxx', '.xxx.', 'xxx..', 'xx...'],
     del: ['..xxxxxxxx', '.xxxxxxxxx', 'xxx.xx.xxx', 'xxxx..xxxx', 'xxx.xx.xxx', '.xxxxxxxxx', '..xxxxxxxx'],
     trash: ['...xxx...', 'xxxxxxxxx', '.........', '.xxxxxxx.', '.xx.x.xx.', '.xx.x.xx.', '.xx.x.xx.', '.xx.x.xx.', '.xxxxxxx.'],
-    edit: ['......xx', '.....xxx', '....xxx.', '...xxx..', '..xxx...', '.xxx....', 'xxx.....', 'xx......'],
     plus: ['...xx...', '...xx...', '...xx...', 'xxxxxxxx', 'xxxxxxxx', '...xx...', '...xx...', '...xx...'],
     check: ['......xx', '.....xxx', 'x...xxx.', 'xx.xxx..', 'xxxxx...', '.xxx....', '..x.....'],
     cross: ['xx...xx', 'xxx.xxx', '.xxxxx.', '..xxx..', '.xxxxx.', 'xxx.xxx', 'xx...xx'],
@@ -151,7 +150,11 @@
     thutra: ['xx..x....', 'xx.xx....', 'xxxxx....', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxx....', 'xx.xx....', 'xx..x....'],
     x5: ['xx.xx', 'xxxxx', '.xxx.', 'xxxxx', 'xx.xx'],
     help: ['.xxxxx.', 'xxxxxxx', 'xx...xx', '....xxx', '...xxx.', '..xxx..', '.......', '..xxx..', '..xxx..'],
-    dot: ['.xx.', 'xxxx', 'xxxx', '.xx.']
+    dot: ['.xx.', 'xxxx', 'xxxx', '.xx.'],
+    // Xưởng hàm: đặt xe (xe nhìn từ bên hông), khối hàng (thùng gỗ có chữ X), tường (gạch xây so le)
+    car: ['...xxxxxx...', '..xx.xx.xx..', '.xxx.xx.xxx.', 'xxxxxxxxxxxx', 'xxxxxxxxxxxx', '.xxx....xxx.', '.xxx....xxx.', '..x......x..'],
+    box: ['xxxxxxxxxxx', 'xx.......xx', 'x.x.....x.x', 'x..x...x..x', 'x...x.x...x', 'x....x....x', 'x...x.x...x', 'x..x...x..x', 'x.x.....x.x', 'xx.......xx', 'xxxxxxxxxxx'],
+    wall: ['xxxxx.xxxxxx', 'xxxxx.xxxxxx', '............', 'xxx.xxxxx.xx', 'xxx.xxxxx.xx', '............', 'xxxxx.xxxxxx', 'xxxxx.xxxxxx']
   };
   function icon(ten, tuyChon) {
     tuyChon = tuyChon || {};
@@ -185,6 +188,26 @@
   function spriteMui(mau) {
     var p = new Painter(10, 9);
     p.map(['...x....', '..xx....', '.xxxxxxx', 'xxxxxxxx', '.xxxxxxx', '..xx....', '...x....'], { x: mau || '#ff5a4a' }, 1, 1);
+    p.outline(K.ink); return p.canvas();
+  }
+  /** Cây bút chì nằm chéo (đầu chì ở dưới trái, tẩy ở trên phải) cho nút sửa hàm ✎: 9×9 gồm viền tối 1px,
+   *  tẩy hồng, vòng kim loại, thân vàng có sọc cam, ngòi gỗ nhạt, đầu chì đen. Mỗi pixel nằm trên một đường chéo i+j = 5, 6 hoặc 7
+   *  (i sang phải, j xuống), vị trí dọc thân a = i - j: -6 chì, -5..-3 gỗ, -2..2 thân (sọc xen kẽ), 3 vòng kim loại, 4..6 tẩy. */
+  function spriteBut() {
+    var p = new Painter(9, 9);
+    var MAU = { chi: '#2a2a35', go: '#f2c98a', vang: '#ffd23f', soc: '#e08a12', kim: '#d6dce6', te: '#ff8fa8' };
+    for (var j = 0; j < 7; j++) for (var i = 0; i < 7; i++) {
+      var tong = i + j;
+      if (tong < 5 || tong > 7) continue;
+      var a = i - j, c;
+      if (a <= -6) c = MAU.chi;
+      else if (a <= -3) c = (tong === 7 ? '#d9a868' : MAU.go);
+      else if (a <= 2) c = (a % 2 === 0) ? MAU.vang : MAU.soc;
+      else if (a === 3) c = MAU.kim;
+      else c = MAU.te;
+      if (a >= -2 && a <= 2 && tong === 7 && c === MAU.vang) c = '#e8b320';          // cạnh dưới của thân hơi tối: có khối
+      p.px(i + 1, j + 1, c);
+    }
     p.outline(K.ink); return p.canvas();
   }
   function spriteStar(bat) {
@@ -293,6 +316,20 @@
     p.rect(0, 0, T, 1, '#4a2e10'); p.rect(0, T - 1, T, 1, '#4a2e10'); p.rect(0, 0, 1, T, '#4a2e10'); p.rect(T - 1, 0, 1, T, '#4a2e10');
     return p.canvas();
   }
+  /** Khối hàng (thùng gỗ) trên sàn sân thử: vẽ trong ô T×T, chừa mép để thấy cỏ quanh. */
+  var crateCache = null;
+  function makeCrate() {
+    if (crateCache) return crateCache;
+    var p = new Painter(T, T);
+    p.rect(1, 1, T - 2, T - 2, '#c98a45');
+    p.rect(1, 1, T - 2, 1, '#e8b574'); p.rect(1, 1, 1, T - 2, '#e8b574');
+    p.rect(1, T - 2, T - 2, 1, '#8a5a24'); p.rect(T - 2, 1, 1, T - 2, '#8a5a24');
+    p.rect(2, 2, T - 4, 1, '#a8692a'); p.rect(2, T - 3, T - 4, 1, '#a8692a'); p.rect(2, 2, 1, T - 4, '#a8692a'); p.rect(T - 3, 2, 1, T - 4, '#a8692a');
+    for (var i = 3; i < T - 3; i++) { p.px(i, i, '#8a5a24'); p.px(T - 1 - i, i, '#8a5a24'); }
+    [[2, 2], [T - 3, 2], [2, T - 3], [T - 3, T - 3]].forEach(function (q) { p.px(q[0], q[1], '#ffe9bd'); });
+    p.outline(K.ink);
+    crateCache = p.canvas(); return crateCache;
+  }
   var convCache = {};
   function makeConv(d, frame) {
     var key = d + '_' + frame; if (convCache[key]) return convCache[key];
@@ -368,7 +405,7 @@
   function tiles() {
     if (tileCache) return tileCache;
     tileCache = {
-      rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
+      crate: makeCrate(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
       flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)]
     };
     return tileCache;
@@ -381,7 +418,7 @@
     c.style.width = cv.width * s + 'px'; c.style.height = cv.height * s + 'px'; c.className = 'pxi';
     return c;
   }
-  function ico(ten, s, tuyChon) { return mk(icon(ten, tuyChon), s || 2); }
+  function ico(ten, s, tuyChon) { return mk(ten === 'edit' ? spriteBut() : icon(ten, tuyChon), s || 2); }
   function sao(bat, s) { return mk(spriteStar(bat), s || 2); }
   function mui(mau, s) { return mk(spriteMui(mau), s || 2); }
   function khoa(s, tran) { return mk(spriteLock(tran, tran), s || 2); }
@@ -417,6 +454,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

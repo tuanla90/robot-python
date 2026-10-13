@@ -11,13 +11,17 @@
      kho.sua('move', [dòng…])    → thay thân hàm (tham số thứ ba tuỳ chọn: thamSo mới)
      kho.doiTen('cu', 'moi')     → đổi tên + sửa chỗ gọi trong thân các hàm khác của kho
      kho.xoa('move')             → { ok, conDung: [hàm khác còn gọi nó] }
+     kho.datTenCoDinh([tên…])    → khóa tên các hàm THEO CỐT TRUYỆN (tên nằm trong taoHam của một màn nào đó):
+                                   không đổi tên được, không xóa được (mã 'ten-co-dinh'); thân vẫn sửa tự do.
+                                   Lõi không tự biết danh sách màn, nên giao diện gọi lúc khởi động (ung-dung.js).
+     kho.tenCoDinh('move')       → true nếu tên đang bị khóa;  kho.dsTenCoDinh() → bản sao danh sách
      kho.ds()                    → bản sao các hàm (mảng), truyền thẳng cho cham()
      kho.kiemTen('ten')          → { ok } | { ok:false, ma, loi }
      kho.docLuu(luu) / kho.ghiLuu(luu)   → luu là đối tượng có getItem / setItem
    Cũng có kho mặc định dùng thẳng: KhoHam.tao(...), KhoHam.ds()… (KhoHam.macDinh).
 
    Mã lỗi: ten-rong, ten-sai-cu-phap, ten-la-tu-khoa, ten-trung-ham-goc, ten-da-co,
-   het-cho, khong-co-ham, tham-so-sai, than-sai, luu-hong, phien-ban-la, khong-ghi-duoc.
+   het-cho, ten-co-dinh, khong-co-ham, tham-so-sai, than-sai, luu-hong, phien-ban-la, khong-ghi-duoc.
    Dữ liệu lưu: JSON { phienBan: 1, ham: [...] } ở khóa KhoHam.KHOA_LUU.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.KhoHam).
@@ -58,6 +62,7 @@
     var toiDa = tuyChon.soHamToiDa === undefined ? SO_HAM_MAC_DINH : tuyChon.soHamToiDa;
     var hamGoc = tuyChon.hamGoc || HAM_GOC_MAC_DINH;
     var ham = [];
+    var coDinh = (tuyChon.tenCoDinh || []).map(String);     // tên hàm theo cốt truyện (xem datTenCoDinh)
     var phienBanDoc = PHIEN_BAN;       // phiên bản của dữ liệu đã đọc (mới hơn bản này → không ghi đè)
 
     function tim(ten) {
@@ -146,9 +151,20 @@
       }).map(function (h) { return h.ten; });
     }
 
+    function tenCoDinh(ten) { return coDinh.indexOf(String(ten)) >= 0; }
+    function datTenCoDinh(dsTen) {
+      coDinh = [];
+      (Array.isArray(dsTen) ? dsTen : []).forEach(function (n) { n = String(n); if (coDinh.indexOf(n) < 0) coDinh.push(n); });
+      return coDinh.slice();
+    }
+    function loiCoDinh(ten, viec) {
+      return loi('ten-co-dinh', 'Hàm ' + ten + ' cần cho các màn sau, nên không ' + viec + ' được. Em vẫn sửa thân hàm thoải mái.');
+    }
+
     function doiTen(cu, moiTen) {
       var h = tim(cu);
       if (!h) return loi('khong-co-ham', 'Không có hàm "' + cu + '" trong kho.');
+      if (tenCoDinh(cu)) return loiCoDinh(cu, 'đổi tên');
       if (cu === moiTen) return { ok: true, capNhat: [] };
       var r = kiemTen(moiTen, cu);
       if (!r.ok) return r;
@@ -168,6 +184,7 @@
     function xoa(ten) {
       var h = tim(ten);
       if (!h) return loi('khong-co-ham', 'Không có hàm "' + ten + '" trong kho.');
+      if (tenCoDinh(ten)) return loiCoDinh(ten, 'xóa');
       var conDung = aiGoi(ten);
       ham.splice(ham.indexOf(h), 1);
       return { ok: true, conDung: conDung };
@@ -223,6 +240,7 @@
 
     return {
       tao: tao, sua: sua, doiTen: doiTen, xoa: xoa, ds: ds, kiemTen: kiemTen,
+      datTenCoDinh: datTenCoDinh, tenCoDinh: tenCoDinh, dsTenCoDinh: function () { return coDinh.slice(); },
       tim: function (ten) { var h = tim(ten); return h ? saoChep(h) : null; },
       soHam: function () { return ham.length; },
       soHamToiDa: function () { return toiDa; },
