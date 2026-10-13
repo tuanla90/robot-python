@@ -66,21 +66,47 @@
   /** Màn có cấu trúc `k` (vd. 'for') không. Chưa có trường cauTruc thì coi như []. */
   function coCauTruc(man, k) { return !!(man && Array.isArray(man.cauTruc) && man.cauTruc.indexOf(k) >= 0); }
 
+  /* ---- đối số của một dòng: `for i in range(n):` (một đối số) hoặc lời gọi `ten(a, b)`. Số hoặc tên biến đơn giản là "ô chạm được" (.num). */
+  var RE_FOR_DS = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+range\()([^)]*)(\):.*)$/;
+  var RE_GOI_DS = /^(\s*[A-Za-z_]\w*\()([^)]*)(\).*)$/;
+  var RE_SO = /^\d+$/, RE_BIEN = /^[A-Za-z_]\w*$/;
+  /** { tien, ds: [chuỗi đối số], hau, laFor } hoặc null nếu dòng không có ngoặc đối số. */
+  function tachDoiSo(dong) {
+    dong = chuoi(dong);
+    var lf = RE_FOR_DS.exec(dong), m = lf || RE_GOI_DS.exec(dong);
+    if (!m) return null;
+    var ds = m[2].trim() === '' ? [] : m[2].split(',').map(function (x) { return x.trim(); });
+    return { tien: m[1], ds: ds, hau: m[3], laFor: !!lf };
+  }
+  /** Thay đối số thứ k của dòng bằng v (số hoặc tên biến); dòng không đổi nếu không có đối số k. */
+  function thayDoiSo(dong, k, v) {
+    var d = tachDoiSo(dong);
+    if (!d || k < 0 || k >= d.ds.length) return dong;
+    d.ds[k] = String(v);
+    return d.tien + d.ds.join(', ') + d.hau;
+  }
+  /** Ô chạm được của đối số: số (data-so) hoặc tên biến (data-bien); k = thứ tự trong dòng. */
+  function oDoiSo(v, k) {
+    if (RE_SO.test(v)) return '<span class="num" data-k="' + k + '" data-so="' + v + '">' + v + '</span>';
+    if (RE_BIEN.test(v)) return '<span class="num bien" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';
+    return '<span class="ar">' + esc(v) + '</span>';
+  }
+
   /** Tô màu một dòng code (ngôn ngữ giữ nguyên tiếng Anh). Dấu cách đầu dòng bị bỏ: bậc thụt do khung vẽ bằng lề. */
   function mauDong(text) {
     text = boThut(text);
     if (/^#/.test(text)) return '<span class="cm">' + esc(text) + '</span>';
-    var f = /^for\s+([A-Za-z_]\w*)\s+in\s+range\((\d+)\):\s*$/.exec(text);
+    var f = /^for\s+([A-Za-z_]\w*)\s+in\s+range\(\s*(\d+|[A-Za-z_]\w*)\s*\):\s*$/.exec(text);
     if (f) {
       return '<span class="kw">for </span><span class="vr">' + esc(f[1]) + ' </span><span class="kw">in </span><span class="fn">range</span>' +
-        '<span class="pu">(</span><span class="num" data-so="' + f[2] + '">' + f[2] + '</span><span class="pu">):</span>';
+        '<span class="pu">(</span>' + oDoiSo(f[2], 0) + '<span class="pu">):</span>';
     }
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = m[1] === 'left_move' || m[1] === 'right_move' || m[1] === 'left_back' || m[1] === 'right_back' ? 'mv'
       : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : 'fn';
-    return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' +
-      (m[2] ? '<span class="ar">' + esc(m[2]) + '</span>' : '') + '<span class="pu">)</span>';
+    var args = m[2].trim() === '' ? '' : m[2].split(',').map(function (x, k) { return oDoiSo(x.trim(), k); }).join('<span class="pu">, </span>');
+    return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' + args + '<span class="pu">)</span>';
   }
 
   /* ------------------------------------------------------------- Editor */
@@ -107,6 +133,7 @@
     function dangChay() { return !!(tuyChon.dangChay && tuyChon.dangChay()); }
     function choXoa() { return !xt && !dangChay() && !Chan.dang(); }
     function thutLe() { return !!(tuyChon.thutLe && tuyChon.thutLe()); }
+    function bienDuoc() { return (tuyChon.bienDuoc && tuyChon.bienDuoc()) || []; }       // tên các đối số của hàm đang sửa (dùng trong thân hàm)
     function veXx() {
       var n = lay().length, ok = choXoa();
       for (var i = 0; i < tong; i++) rows[i].classList.toggle('xx', ok && i === hov && i < dung && i < n);
@@ -143,10 +170,10 @@
         r.addEventListener('click', function (ev) {
           var arr = lay(), kieu = ev.pointerType || kieuCuoi;
           var so = ev.target.closest && ev.target.closest('.num');
-          if (so && !xt && i < dung && i < arr.length && !dangChay() && !Chan.dang()) {      // chạm con số trong range(n): bộ chọn 1–9
+          if (so && !xt && i < dung && i < arr.length && !dangChay() && !Chan.dang()) {      // chạm con số trong range(n) / lời gọi hàm: bộ chọn 1–9 (+ biến của hàm)
             cham = null; tuyChon.khiBam && tuyChon.khiBam(i);          // không đổi ô đang chọn: khối kế tiếp vẫn chèn vào chỗ cũ
-            var el = strips[i].querySelector('.num') || so;
-            chonSo({ neo: el, so: +el.getAttribute('data-so'), khiChon: function (n) { ed.datSo(i, n); } });
+            var kk = +so.getAttribute('data-k') || 0;
+            chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), bien: bienDuoc(), khiChon: function (v) { ed.datSo(i, v, kk); } });
             return;
           }
           if (i < dung && i < arr.length && choXoa()) {
@@ -322,14 +349,33 @@
       arr.splice(i, 1); chuanHoaBac(arr); sel = Math.min(i, dung - 1);
       this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
     };
-    /** Đổi số trong `range(n)` ở dòng i. */
-    this.datSo = function (i, n) {
+    /** Đổi đối số thứ k (mặc định 0) của dòng i: số trong `range(n)` hoặc trong lời gọi hàm; v là số hoặc tên biến. */
+    this.datSo = function (i, v, k) {
       var arr = lay(); if (i < 0 || i >= arr.length) return;
-      var s = String(arr[i]).replace(/range\(\s*\d+\s*\)/, 'range(' + n + ')');
+      var s = thayDoiSo(arr[i], k || 0, v);
       if (s === arr[i]) return;
       this.anHoan(); arr[i] = s;
       this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
     };
+    /** Thay một đối số của dòng i bằng biến `ten`: ưu tiên đối số còn là số cụ thể, rồi đến đối số biến khác tên. Trả về có đổi được không. */
+    this.datBienTai = function (i, ten) {
+      var arr = lay(); if (i < 0 || i >= arr.length || i >= dung || dangChay() || Chan.dang() || xt) return false;
+      var d = tachDoiSo(arr[i]); if (!d || !d.ds.length) return false;
+      var k = -1, j;
+      for (j = 0; j < d.ds.length && k < 0; j++) if (RE_SO.test(d.ds[j])) k = j;
+      for (j = 0; j < d.ds.length && k < 0; j++) if (d.ds[j] !== ten && RE_BIEN.test(d.ds[j])) k = j;
+      if (k < 0) return false;
+      this.datSo(i, ten, k); this.hieuUng(i);
+      return true;
+    };
+    /** Thẻ biến ở kho: thay vào dòng đang chọn, hoặc dòng có đối số gần nhất phía trên nó. */
+    this.datBien = function (ten) {
+      var arr = lay();
+      for (var i = Math.min(sel, arr.length - 1); i >= 0; i--) if (this.datBienTai(i, ten)) { sel = Math.min(i + 1, dung - 1); this.render(); return true; }
+      return false;
+    };
+    /** Đánh dấu dòng i là chỗ sắp thả thẻ biến (-1 = bỏ). */
+    this.danhDauDich = function (i) { rows.forEach(function (r, k) { r.classList.toggle('dich', k === i); }); };
     this.chon = function (i) { if (i >= 0 && i < dung) { sel = i; this.render(); } };
     this.chonHienTai = function () { return sel; };
     this.xoaHet = function () {
@@ -371,7 +417,12 @@
         if (d !== null && d !== undefined && d >= 0 && d < n) evs.push({ e: e, d: d });
       });
       function laF(i) { return /^\s*for\s/.test(arr[i] || ''); }
-      function soLan(f) { var m = /range\(\s*(\d+)\s*\)/.exec(arr[f] || ''); return m ? +m[1] : 0; }
+      function soLan(f) {
+        var m = /range\(\s*(\w+)\s*\)/.exec(arr[f] || ''); if (!m) return 0;
+        if (RE_SO.test(m[1])) return +m[1];
+        var gb = tuyChon.giaBien && tuyChon.giaBien();                // đối số của hàm đang thử: n → giá trị ở ô số cạnh nút Thử
+        return gb && gb[m[1]] > 0 ? +gb[m[1]] : 0;
+      }
       function cuoi(f) {
         var g = f;
         while (g + 1 < n && (lv[g + 1] > lv[f] || !boThut(arr[g + 1]).trim())) g++;
@@ -445,7 +496,8 @@
     window.removeEventListener('pointerdown', c.ngoai, true);
     window.removeEventListener('keydown', c.phim, true);
   }
-  /** Bảng nhỏ 3×3 nút số 1–9 ngay cạnh con số `neo`. o: { neo, so, khiChon(n) }. Chạm ngoài bảng / Esc thì đóng. */
+  /** Bảng nhỏ 3×3 nút số 1–9 ngay cạnh con số `neo`. o: { neo, so, khiChon(v), bien: [tên biến], hien: tên biến đang dùng }.
+   *  Có `bien` thì thêm một hàng nút tên biến dưới 9 số; khiChon nhận số hoặc tên biến. Chạm ngoài bảng / Esc thì đóng. */
   function chonSo(o) {
     dongChonSo();
     var st = document.getElementById('stage'), rs = st.getBoundingClientRect(), k = st.offsetWidth ? rs.width / st.offsetWidth : 1;
@@ -457,6 +509,15 @@
         b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(n); });
         el.appendChild(b);
       })(n);
+    }
+    if (o.bien && o.bien.length) {
+      var hb = h('div', 'cs-bien'); hb.setAttribute('data-nut', 'chon-bien');
+      o.bien.forEach(function (ten) {
+        var b = h('button', 'bt g-pk cs bien' + (ten === o.hien ? ' on' : ''), ten); b.setAttribute('data-bien', ten);
+        b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(ten); });
+        hb.appendChild(b);
+      });
+      el.appendChild(hb);
     }
     st.appendChild(el);
     var ra = o.neo.getBoundingClientRect(), w = el.offsetWidth, hh = el.offsetHeight;
@@ -479,20 +540,50 @@
   /* ------------------------------------------------------------ Palette */
   /**
    * Kho khối chia 3 nhóm. cb: { khiChen(text), khiSua(loai, ten), khiMoi() }.
-   * dung({ goc: [tên], vong: bool (có khối `for`), em: [{ten,thamSo}] | null, man: [{ten,thamSo}], coNutMoi, boQua }).
+   * dung({ goc: [tên], vong: bool (có khối `for`), bien: [tên đối số] (nhóm BIẾN, khi sửa hàm có tham số), em: [{ten,thamSo}] | null, man: [{ten,thamSo}], coNutMoi, boQua }).
+   * cb.khiBien(ten): chạm thẻ biến.
    * em === null → ẩn cả nhóm "hàm của em". Nhóm rỗng thì ẩn (trừ "hàm của em" có nút Hàm mới).
    */
   function Palette(host, cb) {
     this.host = host;
-    var bricks = {}, lastSpec = null;
+    var bricks = {}, lastSpec = null, pal = this;
+    // Kho dài quá cỡ (nhiều hàm của em): hai nút ▲ ▼ ở tiêu đề cuộn từng trang, không có thanh cuộn
+    var bh = host.parentNode && host.parentNode.querySelector ? host.parentNode.querySelector('.bh') : null;
+    var cuonEl = null, nutLen = null, nutXuong = null;
+    if (bh) {
+      cuonEl = h('span', 'cuon-nut'); cuonEl.style.display = 'none';
+      [['len', 'choi.palLen', -1], ['xuong', 'choi.palXuong', 1]].forEach(function (c) {
+        var b = h('button', 'bt g-wd cuon-b ' + c[0]); b.setAttribute('data-nut', 'pal-' + c[0]); b.setAttribute('aria-label', t(c[1]));
+        b.appendChild(h('i', 'tam'));
+        b.addEventListener('click', function (ev) { ev.stopPropagation(); pal.cuon(c[2]); });
+        cuonEl.appendChild(b);
+        if (c[2] < 0) nutLen = b; else nutXuong = b;
+      });
+      bh.appendChild(cuonEl);
+    }
+    host.addEventListener('wheel', function (ev) {
+      if (!host.classList.contains('cuon')) return;
+      ev.preventDefault(); host.scrollTop += ev.deltaY; veCuon();
+    }, { passive: false });
+    function veCuon() {
+      if (!cuonEl) return;
+      var tran = host.classList.contains('cuon');
+      cuonEl.style.display = tran ? '' : 'none';
+      if (!tran) return;
+      nutLen.disabled = host.scrollTop <= 0;
+      nutXuong.disabled = host.scrollTop + host.clientHeight >= host.scrollHeight - 1;
+    }
+    /** Cuộn kho khối một trang: d = -1 lên, 1 xuống. */
+    this.cuon = function (d) { host.scrollTop += d * Math.max(40, host.clientHeight - 34); veCuon(); };
     function nhan(chu, cls) { var g = h('div', 'gl ' + cls); g.appendChild(document.createTextNode(chu)); host.appendChild(g); return g; }
     function gach(ten, lop, loai, hamTS) {
       var d = h('div', 'brick ' + lop); d.setAttribute('role', 'button');
-      var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function () { return '1'; }).join(', ') : '') + ')';
+      var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function () { return '1'; }).join(', ') : '') + ')';    // chèn: mỗi đối số là 1; hiện: tên đối số
+      var hien = '(' + (hamTS || []).join(', ') + ')';
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', loai); d.setAttribute('data-goi', goi);
       var sp = h('span', 'tx');
       if (loai === 'goc') sp.textContent = ten;
-      else { sp.appendChild(document.createTextNode(ten)); sp.appendChild(h('span', 'pn', goi.slice(ten.length))); }
+      else { sp.appendChild(document.createTextNode(ten)); sp.appendChild(h('span', 'pn' + (hamTS && hamTS.length ? ' co' : ''), hien)); }
       d.appendChild(sp);
       if (loai !== 'goc') {
         var e = h('span', 'ed'); e.setAttribute('role', 'button'); e.setAttribute('aria-label', t('choi.suaHam', { ten: ten }));
@@ -504,6 +595,14 @@
       d.addEventListener('click', function () { cb.khiChen(goi); });
       host.appendChild(d); bricks[loai + ':' + ten] = d;
     }
+    /** Thẻ biến (nhóm BIẾN): tên một đối số của hàm đang sửa. Chạm hoặc kéo vào dòng có số thì thay số đó bằng biến. */
+    function gachBien(ten) {
+      var d = h('div', 'brick bien'); d.setAttribute('role', 'button');
+      d.setAttribute('data-ten', ten); d.setAttribute('data-loai', 'bien'); d.setAttribute('data-goi', ten);
+      d.appendChild(h('span', 'tx', ten));
+      d.addEventListener('click', function () { cb.khiBien && cb.khiBien(ten); });
+      host.appendChild(d); bricks['bien:' + ten] = d;
+    }
     /** Khối tím `for i in range(2):` (nhóm VÒNG LẶP). */
     function gachVong() {
       var goi = 'for i in range(2):';
@@ -514,25 +613,36 @@
       host.appendChild(d); bricks['vong:for'] = d;
     }
     this.dung = function (spec) {
+      var cuonCu = host.scrollTop;                          // dựng lại (sau mỗi lần sửa) thì giữ chỗ đang xem
       lastSpec = spec; host.innerHTML = ''; bricks = {};
       host.classList.remove('d1', 'd2', 'd3');
       var boQua = spec.boQua || null;
       var gocTay = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) >= 0; });
       var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0; });
-      if (gocThuong.length) {
-        nhan(t('choi.nhom.goc'), 'g1');
+      function lop(them) { return (host.firstChild ? 'g2 ' : 'g1 ') + them; }       // nhóm đầu tiên là g1 (không cách trên), các nhóm sau g2
+      function nhomGoc() {
+        if (!gocThuong.length) return;
+        nhan(t('choi.nhom.goc'), lop(''));
         gocThuong.forEach(function (n) { gach(n, lopMau(n) === 'gr' ? 'pu' : lopMau(n), 'goc'); });
       }
-      if (gocTay.length) {
-        nhan(t('choi.nhom.tay'), (gocThuong.length ? 'g2 ' : 'g1 ') + 'g-tay');
+      function nhomTay() {
+        if (!gocTay.length) return;
+        nhan(t('choi.nhom.tay'), lop('g-tay'));
         gocTay.forEach(function (n) { gach(n, 'tay', 'goc'); });
       }
-      if (spec.vong) {
-        nhan(t('choi.nhom.vong'), 'g2 g-vl');
+      function nhomVong() {
+        if (!spec.vong) return;
+        nhan(t('choi.nhom.vong'), lop('g-vl'));
         gachVong();
       }
-      if (spec.em) {
-        var g2 = nhan(t('choi.nhom.em'), 'g2 g-em');
+      function nhomBien() {
+        if (!spec.bien || !spec.bien.length) return;
+        nhan(t('choi.nhom.bien'), lop('g-bien'));
+        spec.bien.forEach(gachBien);
+      }
+      function nhomEm() {
+        if (!spec.em) return;
+        var g2 = nhan(t('choi.nhom.em'), lop('g-em'));
         if (spec.coNutMoi && cb.khiMoi) {
           var nb = h('button', 'nb'); nb.setAttribute('data-nut', 'ham-moi');
           nb.appendChild(Ve.ico('plus', 1, { line: '#0e3a12', fill: '#e8ffe0' }));
@@ -540,27 +650,41 @@
           nb.addEventListener('click', function () { cb.khiMoi(); });
           g2.appendChild(nb);
         }
-        spec.em.forEach(function (f) { if (f.ten !== boQua) gach(f.ten, 'gr', 'em', f.thamSo); });
+        var ds = spec.em.filter(function (f) { return f.ten !== boQua; });
+        if (coTS) ds = ds.filter(function (f) { return f.thamSo && f.thamSo.length; }).concat(ds.filter(function (f) { return !(f.thamSo && f.thamSo.length); }));   // hàm có tham số (chủ đề của chương) lên đầu
+        ds.forEach(function (f) { gach(f.ten, 'gr', 'em', f.thamSo); });
       }
-      if (spec.man && spec.man.length) {
+      function nhomMan() {
+        if (!spec.man || !spec.man.length) return;
         var list = spec.man.filter(function (f) { return f.ten !== boQua; });
         if (list.length) {
-          var g3 = nhan(t('choi.nhom.man'), 'g3 g-ma');
+          var g3 = nhan(t('choi.nhom.man'), lop('g-ma'));
           g3.appendChild(h('span', 'tg', t('choi.nhom.chiMan')));
           list.forEach(function (f) { gach(f.ten, 'or', 'man', f.thamSo); });
         }
       }
+      // Thứ tự nhóm. Có hàm có tham số (từ chương Hàm có tham số): kho dài nên chỉ thấy được một trang, nên lên trước những gì chương này dùng
+      // (BIẾN, VÒNG LẶP, hàm của màn, hàm của em), khối gốc / tay xuống cuối. Kho của em đã dài: hàm của màn (ít, đề bài thường cần ngay) lên trước hàm của em.
+      var coTS = !!(spec.bien && spec.bien.length) || [spec.em, spec.man].some(function (l) { return (l || []).some(function (f) { return f.thamSo && f.thamSo.length; }); });
+      var thuTu = coTS ? [nhomBien, nhomVong, nhomMan, nhomEm, nhomGoc, nhomTay]
+        : (spec.em && spec.em.length > 8) ? [nhomGoc, nhomTay, nhomVong, nhomBien, nhomMan, nhomEm]
+        : [nhomGoc, nhomTay, nhomVong, nhomBien, nhomEm, nhomMan];
+      thuTu.forEach(function (f) { f(); });
       this.vua();
+      if (cuonCu && host.classList.contains('cuon')) { host.scrollTop = cuonCu; veCuon(); }
     };
-    /** Co khối lại cho vừa khung (không bao giờ có thanh cuộn). */
+    /** Co khối lại cho vừa khung; co hết cỡ mà vẫn dài thì bật chế độ cuộn từng trang (nút ▲ ▼ ở tiêu đề). */
     this.vua = function () {
       if (!host.clientHeight) return;
-      ['d1', 'd2', 'd3'].forEach(function (c) { host.classList.remove(c); });
-      var bac = ['d1', 'd2', 'd3'];
+      ['d1', 'd2', 'd3', 'cuon'].forEach(function (c) { host.classList.remove(c); });
+      host.scrollTop = 0;
+      var bac = host.querySelector('.pn.co') ? ['d1', 'd2'] : ['d1', 'd2', 'd3'];     // có hàm có tham số: giữ một cột (thấy đủ tên + đối số), dài thì cuộn trang
       for (var i = 0; i < bac.length && host.scrollHeight > host.clientHeight + 1; i++) {
         if (i) host.classList.remove(bac[i - 1]);
         host.classList.add(bac[i]);
       }
+      if (host.scrollHeight > host.clientHeight + 1) host.classList.add('cuon');
+      veCuon();
     };
     this.datSang = function (loai, ten) {
       Object.keys(bricks).forEach(function (k) { bricks[k].classList.toggle('lit', !!loai && k === loai + ':' + ten); });
@@ -568,6 +692,11 @@
     this.datLoi = function (ds) {
       var set = {}; (ds || []).forEach(function (k) { set[k] = true; });
       Object.keys(bricks).forEach(function (k) { bricks[k].classList.toggle('err', !!set[k]); });
+      var dau = Object.keys(bricks).filter(function (k) { return set[k]; })[0];
+      if (dau && host.classList.contains('cuon')) {         // khối báo lỗi / đang sáng nằm ngoài tầm nhìn thì cuộn tới
+        var b = bricks[dau], hr = host.getBoundingClientRect(), br = b.getBoundingClientRect(), k = host.offsetHeight ? hr.height / host.offsetHeight : 1;
+        if (br.top < hr.top || br.bottom > hr.bottom) { host.scrollTop += (br.top - hr.top) / k - 20; veCuon(); }
+      }
     };
     this.lai = function () { if (lastSpec) this.dung(lastSpec); };
   }
@@ -676,6 +805,7 @@
       pal.host.addEventListener('pointerdown', function (ev) {
         var b = ev.target.closest && ev.target.closest('.brick'); if (!b || ev.target.closest('.ed')) return;
         bat(ev, 'chen', -1, b, b.getAttribute('data-goi'));
+        if (cur && b.getAttribute('data-loai') === 'bien') cur.bien = true;       // thẻ biến: thả lên một dòng thì thay số của dòng, không chèn dòng mới
       });
     }
 
@@ -721,7 +851,13 @@
       c.bac = null;
       if (c.loai === 'doi' && trong(rk, c.x, c.y)) vung = 'thung';
       else if (trong(rp, c.x, c.y)) vung = 'khung';
+      var dich = -1;
       if (vung === 'thung') xem = lap(arr, c.tu, null);
+      else if (vung === 'khung' && c.bien) {
+        dich = hangGan(ed.hinhHoc(), c.y);
+        if (dich >= dung || dich >= n) dich = -1;
+        xem = lap(arr, -1, null);
+      }
       else if (vung === 'khung') {
         var idx = hangGan(ed.hinhHoc(), c.y);
         if (idx >= dung) { loi = 'khoa'; xem = c.loai === 'doi' ? lap(arr, c.tu, c.tu, bacCua(c.txt)) : lap(arr, -1, null); }
@@ -730,7 +866,8 @@
         else { slot = Math.min(idx, n); c.bac = ed.bacMacDinh(slot); xem = lap(arr, -1, slot, c.bac); }
       } else xem = c.loai === 'doi' ? lap(arr, c.tu, c.tu, bacCua(c.txt)) : lap(arr, -1, null);
       var key = vung + '|' + slot + '|' + loi + '|' + c.bac;
-      c.vung = vung; c.slot = slot; c.loi = loi;
+      c.vung = vung; c.slot = slot; c.loi = loi; c.dich = dich;
+      ed.danhDauDich(c.bien ? dich : -1);
       var g = c.ghost.classList;
       g.toggle('bad', !!loi); g.toggle('vao-thung', vung === 'thung');
       c.thung.classList.toggle('on', vung === 'thung');
@@ -756,9 +893,10 @@
       if (!c.started) { ketThuc(); return; }                 // chạm nhanh: để click xử lý như cũ
       ev.preventDefault();
       capNhat(false);
-      var ed = c.ed, vung = c.vung, slot = c.slot, loi = c.loi, loai = c.loai, tu = c.tu, txt = c.txt, cf = c.cfg, bac = c.bac;
+      var ed = c.ed, vung = c.vung, slot = c.slot, loi = c.loi, loai = c.loai, tu = c.tu, txt = c.txt, cf = c.cfg, bac = c.bac, laBien = c.bien, dichBien = c.dich;
       nuotClick(); ketThuc();
-      if (vung === 'thung') ed.xoaTai(tu);
+      if (laBien) { if (vung === 'khung' && !(dichBien >= 0 && ed.datBienTai(dichBien, txt))) cf.khiKhongSo && cf.khiKhongSo(txt); }
+      else if (vung === 'thung') ed.xoaTai(tu);
       else if (loai === 'doi') { if (slot !== null) ed.doiCho(tu, slot, bac); }
       else if (loi === 'day') { ed.nhay(); cf.khiDay && cf.khiDay(); }
       else if (loi === 'khoa') cf.khiKhoa && cf.khiKhoa();
@@ -779,7 +917,7 @@
         if (c.ghost && c.ghost.parentNode) c.ghost.parentNode.removeChild(c.ghost);
         document.body.classList.remove('dang-keo');
         c.panP.classList.remove('keo-dich', 'keo-co-cho'); c.panK.classList.remove('keo-thung'); c.thung.classList.remove('on');
-        c.ed.xemTruoc(null);
+        c.ed.xemTruoc(null); c.ed.danhDauDich(-1);
       }
     }
     return { gan: gan, dang: function () { return !!(cur && cur.started); } };
@@ -882,6 +1020,6 @@
     m.than.appendChild(hang);
   }
 
-  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
+  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

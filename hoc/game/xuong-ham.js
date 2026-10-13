@@ -17,9 +17,10 @@
   var h = TP.h;
   var A = null;        // app: { man(), bai(), khiDoiHam(), khiVe(), toc() }
   var E = {};          // phần tử
-  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null };
+  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null, doiSo: {} };   // doiSo: 'loai:tên hàm' → giá trị thử của từng đối số
   var NHIP_MS = 230, LENH_MS = 45, TOAST_MS = 2000;
   var CHE = { xe: 'che-xe', vat: 'che-vat', tuong: 'che-tuong' };
+  var DS_GOI_Y = ['n', 'k', 'a', 'b', 'd', 'x'], DS_TOI_DA = 2, DS_THU_MAC_DINH = 2;     // gợi ý tên đối số, số đối số tối đa của hàm mới, giá trị thử mặc định
 
   /* -------------------------------------------------------------- dựng DOM */
   function dung(host, app) {
@@ -32,7 +33,7 @@
       '<div class="fblock">' +
         '<div class="ffr sua"><canvas class="tex"></canvas><div class="toast"></div></div>' +
         '<div class="side xu">' +
-          '<button class="bt g-gr cbtn" data-nut="thu"><span data-i="play" data-s="2" data-l="#14561e"></span>' + t('xuong.thu') + '</button>' +
+          '<div class="thu-hang"><button class="bt g-gr cbtn" data-nut="thu"><span data-i="play" data-s="2" data-l="#14561e"></span><span class="cl">' + t('xuong.thu') + '</span></button><span class="dso"></span></div>' +
           '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="2" data-l="#0f2f6a"></span>' + t('xuong.lai') + '</button>' +
           '<button class="bt g-yl cbtn dark mode" data-nut="' + CHE.xe + '" data-che="xe"><span data-i="car" data-s="2" data-l="#6a4400"></span>' + t('xuong.datXe') + '</button>' +
           '<button class="bt g-or cbtn mode" data-nut="' + CHE.vat + '" data-che="vat"><span data-i="box" data-s="2" data-l="#5a2f08"></span>' + t('xuong.vat') + '</button>' +
@@ -51,7 +52,7 @@
     Ve.khungGo(host.querySelector('.deco'));
     var q = function (s) { return host.querySelector(s); };
     E.tenham = q('.tenham'); E.nm = q('.tenham .nm'); E.ffr = q('.ffr'); E.toast = q('.toast');
-    E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]');
+    E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]'); E.thuHang = q('.thu-hang'); E.dso = q('.dso');
     E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong');
     S.field = new SanVe.Field(E.canvas, { kich: 210 });
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
@@ -59,14 +60,17 @@
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
       thutLe: function () { return TP.coCauTruc(A.man(), 'for'); },
+      bienDuoc: function () { var f = hamHienTai(); return f ? (f.thamSo || []) : []; },       // thân hàm có tham số: chọn được biến ở bộ chọn số
+      giaBien: giaBienThu,                                                                     // để hiện số lượt của range(n) khi Thử
       tt: q('.p-prog .tt'), ttDay: t('xuong.def'), ttNgan: t('xuong.def'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) { S.ed.chen(txt); },
-      khiSua: function (loai, ten) { mo(loai, ten); }
+      khiSua: function (loai, ten) { mo(loai, ten); },
+      khiBien: function (ten) { thayBien(ten); }
     });
-    TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; } });
+    TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiKhongSo: function (ten) { toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000); } });
     q('[data-nut="xoa-het"]').addEventListener('click', function () {
       if (!S.than || !S.than.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
@@ -102,6 +106,7 @@
     S.st = ChamHoc.chuanSanThu(Luu.docSanThu(ten) || ChamHoc.SAN_THU_MAC_DINH);
     datChe(null);
     napSan();
+    dungDoiSo();
     lamPal();
     xoaKetThu();
     anToast();
@@ -132,9 +137,51 @@
       vong: TP.coCauTruc(man, 'for'),
       em: (man.moXuong !== false && !man.camHamCuaEm) ? KhoHam.ds() : null,
       man: A.bai().hamCuaMan,
+      bien: (hamHienTai() || {}).thamSo || [],          // hàm có tham số: nhóm BIẾN có thẻ cho từng đối số
       coNutMoi: false,
       boQua: S.ten
     });
+  }
+  /** Thẻ biến ở kho: thay vào dòng đang chọn (hoặc dòng có số gần nhất phía trên); không có dòng nào thì nhắc. */
+  function thayBien(ten) {
+    if (S.busy) return;
+    if (!S.ed.datBien(ten)) toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000);
+  }
+
+  /* ----------------------------------------- ô số cạnh nút Thử (đối số khi thử) */
+  function thamSoHienTai() { var f = hamHienTai(); return f ? (f.thamSo || []) : []; }
+  /** Giá trị thử của từng đối số (nhớ theo hàm; mặc định 2). */
+  function doiSoHienTai() {
+    var nho = S.doiSo[S.loai + ':' + S.ten] || [];
+    return thamSoHienTai().map(function (_, k) { return nho[k] > 0 ? nho[k] : DS_THU_MAC_DINH; });
+  }
+  function giaBienThu() {
+    var v = doiSoHienTai(), o = {};
+    thamSoHienTai().forEach(function (ten, k) { o[ten] = v[k]; });
+    return o;
+  }
+  function dungDoiSo() {
+    var ts = thamSoHienTai(), v = doiSoHienTai();
+    E.dso.innerHTML = '';
+    E.thuHang.classList.toggle('co-ds', ts.length > 0);
+    E.thuHang.classList.toggle('ds2', ts.length > 1);
+    ts.forEach(function (ten, k) {
+      var b = h('button', 'bt g-pu dso-o'); b.setAttribute('data-nut', 'doi-so'); b.setAttribute('data-k', k); b.setAttribute('data-ten', ten);
+      b.setAttribute('aria-label', t('xuong.doiSo', { ten: ten }));
+      b.appendChild(h('span', 'k', ten)); b.appendChild(h('span', 'v', String(v[k])));
+      b.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (S.busy) return;
+        TP.chonSo({ neo: b, so: doiSoHienTai()[k], khiChon: function (n) { datDoiSo(k, n); } });
+      });
+      E.dso.appendChild(b);
+    });
+  }
+  function datDoiSo(k, n) {
+    var v = doiSoHienTai(); v[k] = n; S.doiSo[S.loai + ':' + S.ten] = v;
+    S.rid++; S.busy = false; E.side.classList.remove('busy');
+    S.field.datLai(); xoaKetThu(); anToast();
+    dungDoiSo();
   }
 
   /* -------------------------------------------------------- sửa thân hàm */
@@ -225,7 +272,7 @@
   /* ------------------------------------------------------- kết quả thử */
   function chay() {
     var man = A.man();
-    return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds(), { sanThu: S.st });
+    return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds(), { sanThu: S.st, doiSo: doiSoHienTai() });
   }
   function anBongD() { TP.bongAn(E.bongD); S.coBong = false; }
   function xoaKetThu() {
@@ -345,22 +392,39 @@
   }
 
   /* ---------------------------------------------------------- hộp đặt tên */
+  /** Đối số gợi ý của hàm cốt truyện `ten` ở màn này, lấy theo lời giải (vd. forward → ['n'], step → ['a', 'b']). */
+  function thamSoGoiY(man, ten) {
+    var f = ((man.loiGiai && man.loiGiai.hamCuaEmMoi) || []).filter(function (x) { return x.ten === ten; })[0];
+    return f && f.thamSo ? f.thamSo.slice() : [];
+  }
+  /** Từ chương "Hàm có tham số" trở đi, hộp hàm mới có chỗ khai đối số (trước đó chưa học nên không hiện). */
+  function coChoKhaiDoiSo(man) {
+    var th = (window.ThuTuChuong && ThuTuChuong.thuTu) || [], a = th.indexOf('tham-so');
+    return a >= 0 && th.indexOf(man.chuong) >= a;
+  }
+
   function moiHam(taoXong) {
     var man = A.man();
     var m = TP.Hop.mo(t('ten.tieuDe'), 'hop-ten');
-    // hàm THEO CỐT TRUYỆN còn thiếu ở màn này (tên trong taoHam): điền sẵn đúng tên, ô chỉ đọc, chỉ có nút "Tạo hàm";
-    // đủ rồi thì hộp như thường, em tự đặt tên cho hàm riêng của mình
+    // hàm THEO CỐT TRUYỆN còn thiếu ở màn này (tên trong taoHam): điền sẵn đúng tên VÀ đối số, ô chỉ đọc, chỉ có nút "Tạo hàm";
+    // đủ rồi thì hộp như thường, em tự đặt tên (và đối số) cho hàm riêng của mình
     var coDinh = (man.taoHam || []).filter(function (n) { return !KhoHam.tim(n); })[0] || null;
+    var dsTen = coDinh ? thamSoGoiY(man, coDinh) : [], chon = 0;
+    var hienDs = dsTen.length > 0 || coChoKhaiDoiSo(man);
     var loi = h('div', 'hop-loi');
+    function baoLoi(chu) { loi.textContent = chu; loi.classList.add('co'); }
+    function xoaLoi() { loi.textContent = ''; loi.classList.remove('co'); }
     var inp = h('input', 'hop-in'); inp.type = 'text'; inp.maxLength = 24; inp.placeholder = t('ten.mauGo');
     inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocomplete', 'off'); inp.setAttribute('spellcheck', 'false'); inp.setAttribute('data-nut', 'o-ten');
     function tao(ten) {
       ten = String(ten).trim();
       var tc = { taoHam: man.taoHam || [] };
       var kt = KhoHam.kiemTen(ten, undefined, tc);
-      if (!kt.ok) { loi.textContent = kt.loi; loi.classList.add('co'); return; }
-      var r = KhoHam.tao(ten, [], tc);
-      if (!r.ok) { loi.textContent = r.loi; loi.classList.add('co'); return; }
+      if (!kt.ok) return baoLoi(kt.loi);
+      var thamSo = dsTen.map(function (x) { return String(x).trim(); });
+      if (thamSo.some(function (x) { return !x; })) return baoLoi(t('ten.doiSoTrong'));
+      var r = KhoHam.tao(ten, thamSo, tc);
+      if (!r.ok) return baoLoi(r.loi);
       var g = Luu.ghiKho();
       TP.Hop.dong();
       A.khiDoiHam();
@@ -368,15 +432,76 @@
       taoXong && taoXong(ten);
     }
     if (coDinh) {
-      m.than.appendChild(h('div', 'hop-chu nho', t('ten.coDinh')));
+      m.than.appendChild(h('div', 'hop-chu nho', t(dsTen.length ? 'ten.coDinhDoiSo' : 'ten.coDinh')));
       inp.value = coDinh; inp.readOnly = true; inp.setAttribute('data-co-dinh', coDinh);
     }
-    m.than.appendChild(inp); m.than.appendChild(loi);
+    m.than.appendChild(inp);
+
+    // ---- khai đối số: ten( [n] [k] )  [+ đối số]  và hàng chip tên gợi ý
+    if (hienDs) {
+      var dsEl = h('span', 'ds-ds'), them = h('button', 'bt g-gr ds-them', t('ten.themDoiSo')), chips = h('div', 'ds-chips');
+      them.setAttribute('data-nut', 'them-doi-so');
+      var hang0 = h('div', 'hop-ds');
+      hang0.appendChild(h('span', 'ngoac', '(')); hang0.appendChild(dsEl); hang0.appendChild(h('span', 'ngoac', ')')); hang0.appendChild(them);
+      m.than.appendChild(h('div', 'hop-chu nho ds-nhan', t(coDinh ? 'ten.doiSoCoDinh' : 'ten.doiSo', { n: DS_TOI_DA })));
+      m.than.appendChild(hang0);
+      var veChip = function () {
+        Array.prototype.forEach.call(chips.children, function (c) {
+          var n = c.getAttribute('data-ds');
+          c.classList.toggle('on', dsTen[chon] === n);
+          c.classList.toggle('dung', dsTen.some(function (x, k) { return x === n && k !== chon; }));
+        });
+      };
+      var danhDau = function () { Array.prototype.forEach.call(dsEl.children, function (o, k) { o.classList.toggle('on', k === chon); }); veChip(); };
+      var veDs = function () {
+        dsEl.innerHTML = '';
+        dsTen.forEach(function (n, k) {
+          var o = h('span', 'ds-o' + (k === chon ? ' on' : ''));
+          var ip = h('input', 'ds-in'); ip.type = 'text'; ip.maxLength = 6; ip.value = n; ip.readOnly = !!coDinh;
+          ip.setAttribute('autocapitalize', 'off'); ip.setAttribute('autocomplete', 'off'); ip.setAttribute('spellcheck', 'false');
+          ip.setAttribute('data-nut', 'o-doi-so'); ip.setAttribute('data-k', k);
+          ip.addEventListener('focus', function () { chon = k; danhDau(); });
+          ip.addEventListener('input', function () { dsTen[k] = ip.value; xoaLoi(); veChip(); });
+          ip.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tao(inp.value); });
+          o.appendChild(ip);
+          if (!coDinh) {
+            var x = h('button', 'ds-x', '\u00d7'); x.setAttribute('data-nut', 'bo-doi-so'); x.setAttribute('aria-label', t('ten.boDoiSo', { ten: n }));
+            x.addEventListener('click', function () { xoaLoi(); dsTen.splice(k, 1); chon = Math.max(0, Math.min(chon, dsTen.length - 1)); veDs(); });
+            o.appendChild(x);
+          }
+          dsEl.appendChild(o);
+        });
+        them.style.display = (!coDinh && dsTen.length < DS_TOI_DA) ? '' : 'none';
+        veChip();
+      };
+      var datTen = function (n) {
+        xoaLoi();
+        if (!dsTen.length) { dsTen.push(n); chon = 0; veDs(); return; }
+        if (dsTen.some(function (x, k) { return x === n && k !== chon; })) return;
+        dsTen[chon] = n; veDs();
+      };
+      them.addEventListener('click', function () {
+        xoaLoi();
+        var moi = DS_GOI_Y.filter(function (x) { return dsTen.indexOf(x) < 0; })[0];
+        dsTen.push(moi); chon = dsTen.length - 1; veDs();
+      });
+      if (!coDinh) {
+        DS_GOI_Y.forEach(function (n) {
+          var c = h('button', 'bt g-wd ds-chip', n); c.setAttribute('data-ds', n); c.setAttribute('data-nut', 'chip-doi-so');
+          c.addEventListener('click', function () { datTen(n); });
+          chips.appendChild(c);
+        });
+        m.than.appendChild(chips);
+      }
+      veDs();
+    }
+
+    m.than.appendChild(loi);
     var hang = h('div', 'hop-hang');
     if (!coDinh) hang.appendChild(TP.Hop.nut('g-wd', t('chung.huy'), function () { TP.Hop.dong(); }, 'huy'));
     hang.appendChild(TP.Hop.nut('g-gr', t('ten.tao'), function () { tao(inp.value); }, 'tao'));
     m.than.appendChild(hang);
-    inp.addEventListener('input', function () { loi.textContent = ''; loi.classList.remove('co'); });
+    inp.addEventListener('input', xoaLoi);
     inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tao(inp.value); });
   }
 

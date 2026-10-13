@@ -108,6 +108,7 @@
     R.setProperty('--st-gr', 'url(' + texStud('#c8fac2', '#4cc24f', '#2a8a35') + ')');
     R.setProperty('--st-pu', 'url(' + texStud('#e6d8ff', '#a070e6', '#6a3fb4') + ')');
     R.setProperty('--st-or', 'url(' + texStud('#ffe0b8', '#e08a3a', '#9c5418') + ')');
+    R.setProperty('--st-pk', 'url(' + texStud('#ffd0e4', '#ee5a9c', '#b02e6c') + ')');
   }
 
   /* ---------------------------------------------------------------- icon

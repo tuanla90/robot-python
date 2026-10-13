@@ -175,7 +175,7 @@
     if (!ds.length) {
       pills.appendChild(h('div', 'pill ghost', t('chon.hamRong')));
     } else {
-      ds.forEach(function (f) { var p = h('div', 'pill', f.ten + '()'); p.setAttribute('data-ham', f.ten); pills.appendChild(p); });
+      ds.forEach(function (f) { var p = h('div', 'pill', f.ten + '(' + (f.thamSo || []).join(', ') + ')'); p.setAttribute('data-ham', f.ten); pills.appendChild(p); });
     }
     el.thu.appendChild(h('div', 'c-thu-goi', ds.length ? t('chon.hamGoiYCo') : t('chon.hamGoiY')));
     // không bao giờ tràn: bớt viên thuốc cuối cho tới khi vừa, thêm "+n"
