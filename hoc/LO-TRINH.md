@@ -43,3 +43,4 @@ Thứ tự làm qua đêm 14/10:
 
 ## Nhật ký
 - 14/10: chương 1–4 chơi được. Chương 5 đang làm lõi. Bộ part lượt 5 xong (`cd6a347`).
+- 14/10 (tối): core Python có chuỗi ký tự (`"..."`, `'...'`, `==`/`!=`/`<`, `+` nối, `*` lặp, `in`/`not in`, `len`/`str`/`int`, `for c in "UURR":`, hàm game nhận/trả chuỗi; chuỗi + số là lỗi chạy tiếng Việt; chuỗi chưa đóng báo đúng dòng); máy kiểm `kiem-chuoi.mjs` (99). Chương 6 `tham-so` (Hàm có tham số) xong lõi: 10 màn `man-tham-so.js` (forward(n), right(k), deliver(n), step(a, b), run(n) của màn), máy kiểm `kiem-tham-so.mjs` (113); kho hàm tăng lên 20 chỗ. Giao diện chưa có ô nhập tham số trong Xưởng.

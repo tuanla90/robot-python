@@ -13,6 +13,7 @@
    Chương mới: thêm mã vào `thuTu`, thêm tên vào `ten`, rồi viết tệp màn của chương
    (mỗi màn khai `chuong` và `so`, xem man-chuoi-1.js).
    Chương 5 'bang-chuyen' (Băng chuyền) nằm ở man-bang-chuyen.js.
+   Chương 6 'tham-so' (Hàm có tham số) nằm ở man-tham-so.js.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */
@@ -22,13 +23,14 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen'],
+    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so'],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',
       'tay-gap': 'Tay gắp',
       'vong-lap': 'Vòng lặp',
-      'bang-chuyen': 'Băng chuyền'
+      'bang-chuyen': 'Băng chuyền',
+      'tham-so': 'Hàm có tham số'
     }
   };
 

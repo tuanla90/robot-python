@@ -100,7 +100,7 @@ console.log('\n== 1. Băng chuyền và xe có tay gắp: những chỗ chương
 console.log('\n== 2. Chương bang-chuyen: dữ liệu 10 màn ==');
 {
   kiem('đúng 10 màn, số 1..10, id 5.1…5.10 (chương thứ 5), mã bang-chuyen.1…', ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '5.' + (i + 1) && m.ma === 'bang-chuyen.' + (i + 1)));
-  kiem('chương đứng cuối thứ tự chương, tên "Băng chuyền"', ThuTu.thuTu[ThuTu.thuTu.length - 1] === 'bang-chuyen' && ThuTu.ten['bang-chuyen'] === 'Băng chuyền');
+  kiem('chương đứng thứ 5 trong thứ tự chương (sau vong-lap, trước tham-so), tên "Băng chuyền"', ThuTu.thuTu[4] === 'bang-chuyen' && ThuTu.ten['bang-chuyen'] === 'Băng chuyền');
   kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ màn 10 có huy hiệu bang-chuyen',
     J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
       ds.filter((m) => m.huyHieu).length === 1 && ds[9].huyHieu.ma === 'bang-chuyen' && ds[9].huyHieu.ten === 'Huy hiệu Băng chuyền');
