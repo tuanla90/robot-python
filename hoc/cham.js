@@ -52,7 +52,7 @@
    - vật vỡ thì chương trình dừng ngay cuối nhịp đó.
 
    Mã chẩn đoán: quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong, tay-vuong, vat-vo, o-co-vat,
-   kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
+   kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
    def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le,
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
    ========================================================================== */
@@ -190,7 +190,7 @@
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là ' +
           (LOAI_VAT[e0.vat] || e0.vat) + ' nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          (man.loaiRobot === 'nhen' ? ' Kiểm tra lại hướng của lệnh go_* (nhện không quay, đi thẳng theo hướng em chọn).' : ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.');
+          (man.loaiRobot === 'nhen' ? ' Kiểm tra lại hướng của lệnh go_* (nhện không quay, đi thẳng theo hướng em chọn).' : man.loaiRobot === 'omni' ? ' Kiểm tra lại robot đang quay mặt hướng nào: slide_left() và slide_right() tính theo hướng mặt của xe.' : ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.');
       }
       them('dam-tuong', s2, { nhip: e0.nhip, den: e0.den, soLan: tuong.length });
     }
@@ -203,6 +203,12 @@
         ' trong nhịp này rồi, nên lệnh ' + b0.ten + '() này bị bỏ qua. ' +
         'Mỗi nhịp một bánh chỉ nhận một lệnh; wait() mới sang nhịp kế.', { cho: cho(mb), choTruoc: cho(mt), nhip: b0.nhip });
     }
+    var slideGoiLai = res.suKien.filter(function (e) { return e.ma === 'slide-goi-lai'; });
+    if (slideGoiLai.length) {
+      var s0 = slideGoiLai[0], ms = g.anhXa[s0.dongPy] || null, mst = s0.truoc ? (g.anhXa[s0.truoc.dongPy] || null) : null;
+      them('slide-goi-lai', 'Ở ' + viTri(ms) + ': xe đã nhận lệnh ' + s0.truoc.ten + '() (ở ' + viTri(mst) + ') trong nhịp này rồi, nên lệnh ' + s0.ten + '() này bị bỏ qua. ' +
+        'Mỗi nhịp xe omni chỉ trượt một lần, sang một bên; wait() mới sang nhịp kế.', { cho: cho(ms), choTruoc: cho(mst), nhip: s0.nhip });
+    }
     var tayGoiLai = res.suKien.filter(function (e) { return e.ma === 'tay-goi-lai'; });
     if (tayGoiLai.length) {
       var t0 = tayGoiLai[0], mt0 = g.anhXa[t0.dongPy] || null, mtt = t0.truoc ? (g.anhXa[t0.truoc.dongPy] || null) : null;
@@ -214,11 +220,21 @@
     var vuong = res.suKien.filter(function (e) { return e.ma === 'tay-vuong'; });
     if (vuong.length) {
       var ml = vuong[0].lenh ? (g.anhXa[vuong[0].lenh.dongPy] || null) : null;
-      var laNhen = man.loaiRobot === 'nhen';
-      them('tay-vuong', 'Ở nhịp ' + vuong[0].nhip + ', tay đang hạ sát đất nên ' + (laNhen ? 'nhện không bước được' : 'xe không đi hay quay được') + ' (tay vướng sàn): ' +
-        (laNhen ? 'lệnh' : 'lệnh bánh') + (vuong[0].lenh ? ' ' + vuong[0].lenh.ten + '() (ở ' + viTri(ml) + ')' : '') + ' của nhịp đó bị bỏ.' +
+      var laNhen = man.loaiRobot === 'nhen', laTruot = vuong[0].lenh && /^slide_/.test(vuong[0].lenh.ten);
+      them('tay-vuong', 'Ở nhịp ' + vuong[0].nhip + ', tay đang hạ sát đất nên ' + (laNhen ? 'nhện không bước được' : man.loaiRobot === 'omni' ? 'xe không đi, quay hay trượt được' : 'xe không đi hay quay được') + ' (tay vướng sàn): ' +
+        (laNhen ? 'lệnh' : laTruot ? 'lệnh trượt' : 'lệnh bánh') + (vuong[0].lenh ? ' ' + vuong[0].lenh.ten + '() (ở ' + viTri(ml) + ')' : '') + ' của nhịp đó bị bỏ.' +
         (vuong.length > 1 ? ' Chuyện này xảy ra ' + vuong.length + ' lần.' : '') +
         (laNhen ? ' Xem lại tư thế tay trước khi cho nhện bước.' : ' Xem lại tư thế tay trước khi cho xe chạy.'), { nhip: vuong[0].nhip, soLan: vuong.length, cho: cho(ml) });
+    }
+    var omniCheo = res.suKien.filter(function (e) { return e.ma === 'omni-khong-cheo'; });
+    if (omniCheo.length) {
+      var oc = omniCheo[0], moc = oc.lenh ? (g.anhXa[oc.lenh.dongPy] || null) : null, mos = oc.truot ? (g.anhXa[oc.truot.dongPy] || null) : null;
+      cd.push({
+        ma: 'omni-khong-cheo', muc: 'thong-tin', nhip: oc.nhip, soLan: omniCheo.length, cho: cho(moc), choTruot: cho(mos),
+        loi: 'Ở nhịp ' + oc.nhip + ': lệnh ' + (oc.lenh ? oc.lenh.ten + '() (ở ' + viTri(moc) + ') ' : 'bánh ') + 'và lệnh ' + oc.truot.ten + '() (ở ' + viTri(mos) + ') nằm chung một nhịp, nên xe chỉ trượt còn lệnh bánh bị bỏ.' +
+          (omniCheo.length > 1 ? ' Chuyện này xảy ra ' + omniCheo.length + ' lần.' : '') +
+          ' Bánh omni không đi chéo: một nhịp chỉ trượt ngang HOẶC tiến/quay.'
+      });
     }
     var xichDo = res.suKien.filter(function (e) { return e.ma === 'xich-quay-do'; });
     if (xichDo.length) {

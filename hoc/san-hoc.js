@@ -12,7 +12,7 @@
    (o / D / X đều là sàn: xe đi qua ô vật không bị chặn.)
    Hướng robot: 0 lên, 1 phải, 2 xuống, 3 trái.
 
-   Ba loại robot:
+   Bốn loại robot (banh, nhen, xich, omni; xich và omni xem bên dưới):
      'banh' (xe bánh): left_move / right_move / left_back / right_back chỉ RA LỆNH
         cho bánh trong nhịp hiện tại; wait() kết thúc nhịp và robot làm theo tổ hợp.
      'nhen' (nhện): go_up / go_down / go_left / go_right, mỗi lệnh 2 nhịp, sang ô mới
@@ -54,6 +54,18 @@
           chỉ ghi 'bang-khong-day' (thông tin cho hoạt cảnh), vị trí không đổi.
         Vết nhịp của xích có thêm robot.quayDo (0, +1, -1) cho hoạt cảnh xoay dở.
 
+   'omni' (xe BÁNH OMNI): có MỌI lệnh bánh của xe hai bánh (left_move / right_move / left_back / right_back, wait và tay gắp
+        nếu có) với đúng luật cũ (tiến / lùi 1 ô, quay 90° trong 1 nhịp), nên move(), turn_right(), turn_left() cũ chạy ĐÚNG. Thêm HAI
+        lệnh gốc: slide_left() / slide_right(): trượt ngang 1 ô sang trái / phải SO VỚI HƯỚNG MẶT, không đổi hướng (cũng chỉ RA LỆNH,
+        wait() cho nhịp trôi). Luật riêng:
+        - KHÔNG ĐI CHÉO: nhịp có slide mà còn lệnh bánh thì chỉ làm slide, lệnh bánh bị bỏ (sự kiện 'omni-khong-cheo' {nhip, lenh, truot}).
+        - slide_left() và slide_right() cùng một nhịp: lệnh gọi sau bị bỏ (sự kiện 'slide-goi-lai', kiểu 'banh-goi-lai').
+        - Tay hạ sát đất thì slide cũng bị chặn ('tay-vuong'), như lệnh bánh.
+        - Không leo được bậc thang S (như xe bánh).
+        - Băng chuyền đẩy omni MẠNH HƠN: bánh nhỏ trơn, đứng trên băng chỉ 1 nhịp đã bị đẩy 1 ô (không phải 2). Đi xuôi băng = 2 ô / nhịp
+          (1 ô tự đi + 1 ô băng đẩy); đi ngược băng thì đứng im (bước lên ô băng rồi bị đẩy lùi về chỗ cũ).
+        Vết nhịp của omni có thêm robot.truot (0, -1 trái, +1 phải) cho hoạt cảnh trượt.
+
    Băng chuyền: mỗi nhịp, SAU khi robot làm xong hành động, nếu robot đang đứng trên
    ô băng thì demBang++; đủ 2 thì đẩy 1 ô theo mũi tên (bị chặn thì đứng yên) và
    demBang = 0. Không đứng trên băng thì demBang = 0.
@@ -76,8 +88,11 @@
   var HAM_GOC = {
     banh: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'],
     nhen: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'],
-    xich: ['left_move', 'right_move', 'left_back', 'right_back', 'wait']       // cùng bộ lệnh với xe bánh
+    xich: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'],      // cùng bộ lệnh với xe bánh
+    omni: ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait']   // bộ lệnh xe bánh + hai lệnh trượt ngang
   };
+  // omni: lệnh trượt → bên trượt so với hướng mặt (-1 trái, +1 phải)
+  var OMNI_TRUOT = { slide_left: -1, slide_right: 1 };
   // xích quay chậm: tổ hợp (bánh trái, bánh phải) → chiều quay (+1 phải, -1 trái); cần 2 nhịp liên tiếp cùng tổ hợp mới đủ 90°
   var XICH_QUAY = { '1,0': 1, '0,-1': 1, '1,-1': 1, '0,1': -1, '-1,0': -1, '-1,1': -1 };
   var NHEN_HUONG = { go_up: 0, go_right: 1, go_down: 2, go_left: 3 };
@@ -123,7 +138,7 @@
     var c = oTai(san, x, y);
     if (c === null) return 'ngoai-san';
     if (c === '#') return 'tuong';
-    if (c === 'S' && loai === 'banh') return 'bac-thang';
+    if (c === 'S' && (loai === 'banh' || loai === 'omni')) return 'bac-thang';
     return null;
   }
 
@@ -131,7 +146,7 @@
 
   /**
    * Chạy một chương trình Python trên một sân.
-   * cfg: { san: [chuỗi], batDau: {x,y,huong}, loaiRobot: 'banh'|'nhen'|'xich',
+   * cfg: { san: [chuỗi], batDau: {x,y,huong}, loaiRobot: 'banh'|'nhen'|'xich'|'omni',
    *        hamGoc: [tên hàm gốc được phép] (mặc định: đủ bộ của loại robot, chưa có lệnh tay),
    *        nhipToiDa: 200,
    *        mucTieu: 'toi-co' (mặc định) | 'dua-vat',
@@ -157,8 +172,8 @@
   function chay(cfg, code, opt) {
     opt = opt || {};
     var loai = cfg.loaiRobot || 'banh';
-    if (loai !== 'banh' && loai !== 'nhen' && loai !== 'xich') throw new Error('Loại robot lạ: ' + loai);
-    var laBanh = loai === 'banh' || loai === 'xich';                        // dùng chung bộ lệnh bánh
+    if (loai !== 'banh' && loai !== 'nhen' && loai !== 'xich' && loai !== 'omni') throw new Error('Loại robot lạ: ' + loai);
+    var laBanh = loai === 'banh' || loai === 'xich' || loai === 'omni';      // dùng chung bộ lệnh bánh
     var mucTieu = cfg.mucTieu || 'toi-co';
     if (mucTieu !== 'toi-co' && mucTieu !== 'dua-vat') throw new Error('Mục tiêu lạ: ' + mucTieu);
     var san = docSan(cfg.san);
@@ -183,6 +198,7 @@
     var lenh = { trai: 0, phai: 0 };            // lệnh bánh đang chờ wait()
     var lenhTon = [];                           // các lệnh (bánh và tay) chưa wait(): {ten, dongPy}
     var tayCho = { 'tu-the': null, 'kep': null };   // lệnh tay đang chờ wait(), theo nhóm: {ten, dongPy}
+    var truotCho = null;                        // omni: lệnh trượt đang chờ wait(): {ten, dongPy, bien:-1|+1}
     var vet = [], suKienChan = [];
     var thang = false, loi = null, dungSom = null;
 
@@ -292,6 +308,7 @@
       nhip++;
       var sk = [];
       var banhGhi = { trai: 0, phai: 0 };
+      var truotGhi = 0;
       var coVo = false;
 
       function thuDi(huongDi, soBuoc, ma) {
@@ -313,13 +330,22 @@
       }
 
       if (hanhDong.kieu === 'banh') {
-        var t = hanhDong.trai, p = hanhDong.phai;
-        banhGhi = { trai: t, phai: p };
+        var t = hanhDong.trai, p = hanhDong.phai, tr = hanhDong.truot || null;
+        if (tr) banhGhi = { trai: 0, phai: 0 };                               // omni trượt: bánh chạy dọc đứng yên, chỉ trượt ngang
+        else banhGhi = { trai: t, phai: p };
         apTay();
-        if (coTay && tay.tuThe === 'duoi' && (t !== 0 || p !== 0)) {        // (c) bánh chạy — nhưng tay vướng sàn
-          var ev = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: hanhDong.lenhBanh || null };
+        if (coTay && tay.tuThe === 'duoi' && (tr || t !== 0 || p !== 0)) {   // (c) bánh chạy — nhưng tay vướng sàn
+          var ev = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : hanhDong.lenhBanh) || null };
           sk.push(ev); suKienChan.push(ev);
           if (loai === 'xich') xichThoi(sk);                                // bánh không chạy: quay dở (nếu có) mất
+        }
+        else if (tr) {                                                      // omni: trượt ngang; lệnh bánh cùng nhịp (nếu có) bị bỏ
+          if (t !== 0 || p !== 0) {
+            var ec = { ma: 'omni-khong-cheo', nhip: nhip, lenh: hanhDong.lenhBanh || null, truot: { ten: tr.ten, dongPy: tr.dongPy } };
+            sk.push(ec); suKienChan.push(ec);
+          }
+          truotGhi = tr.bien;
+          thuDi((rb.huong + (tr.bien > 0 ? 1 : 3)) % 4, 1, 'truot');
         }
         else if (loai === 'xich') xichBanh(t, p, hanhDong.lenhBanh, sk, thuDi);
         else if (t === 1 && p === 1) thuDi(rb.huong, 1, 'tien');
@@ -343,7 +369,7 @@
       if (c !== null && BANG[c] !== undefined) {
         demBang++;
         if (demBang >= 2 && loai === 'xich') { sk.push({ ma: 'bang-khong-day' }); demBang = 0; }     // xích bám chắc, băng không đẩy được
-        else if (demBang >= 2) {
+        else if (demBang >= (loai === 'omni' ? 1 : 2)) {                    // omni: bánh nhỏ trơn, 1 nhịp trên băng đã bị đẩy
           var hd = BANG[c], vb = VEC[hd], bx = rb.x + vb[0], by = rb.y + vb[1];
           var lyB = lyDoChan(san, loai, bx, by);
           if (lyB) sk.push({ ma: 'bang-chan', den: { x: bx, y: by }, vat: lyB });
@@ -359,6 +385,7 @@
       if (!thang && coVo && mucTieu === 'dua-vat') dungSom = 'vat-vo';       // vật vỡ: không thể thắng nữa
       var r = chup(); r.banh = banhGhi;
       if (loai === 'xich') r.quayDo = quayDo ? quayDo.huong : 0;
+      if (loai === 'omni') r.truot = truotGhi;
       var mucVet = { loai: 'nhip', nhip: nhip, robot: r, suKien: sk };
       if (coTay) { r.tay = chupTay(); mucVet.vat = chupVat(); }
       vet.push(mucVet);
@@ -379,8 +406,8 @@
         if (laBanh) {
           var lenhBanh = null;                                   // lệnh bánh đầu tiên của nhịp (để chỉ ra khi tay vướng sàn)
           lenhTon.forEach(function (x) { if (!lenhBanh && BANH_LENH[x.ten]) lenhBanh = { ten: x.ten, dongPy: x.dongPy }; });
-          var h = { kieu: 'banh', trai: lenh.trai, phai: lenh.phai, lenhBanh: lenhBanh, tay: rutTay() };
-          lenh.trai = 0; lenh.phai = 0; lenhTon = [];
+          var h = { kieu: 'banh', trai: lenh.trai, phai: lenh.phai, lenhBanh: lenhBanh, tay: rutTay(), truot: truotCho };
+          lenh.trai = 0; lenh.phai = 0; lenhTon = []; truotCho = null;
           return motNhip(h);
         }
         var hw = { kieu: 'nhen', huong: null, tay: rutTay() };
@@ -395,6 +422,15 @@
           return false;
         }
         tayCho[nhom] = { ten: yc.ten, dongPy: yc.dong };
+        lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
+        return false;
+      }
+      if (OMNI_TRUOT[yc.ten] !== undefined) {                    // omni: slide_left / slide_right chỉ ra lệnh, chờ nhịp
+        if (truotCho) {
+          suKienChan.push({ ma: 'slide-goi-lai', nhip: nhip + 1, ten: yc.ten, dongPy: yc.dong, truoc: { ten: truotCho.ten, dongPy: truotCho.dongPy } });
+          return false;
+        }
+        truotCho = { ten: yc.ten, dongPy: yc.dong, bien: OMNI_TRUOT[yc.ten] };
         lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
         return false;
       }
@@ -449,7 +485,7 @@
   }
 
   var API = {
-    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, BANG: BANG, XICH_QUAY: XICH_QUAY,
+    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };
   if (laNode) module.exports = API;
