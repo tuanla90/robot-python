@@ -5,7 +5,10 @@
    (camHamCuaEm true) để ai chơi lại chuỗi này cũng không dùng hàm đã tạo ở chuỗi sau.
    Gộp vào window.ManHoc (xem man-chuoi-2.js để nối tiếp chuỗi 2).
 
-   Mỗi màn: id, ten, hang, deBai (mục tiêu, luôn đúng), veMaMau (nói về code có sẵn, chỉ hiện
+   Mỗi màn: chuong (mã chương, vd 'hai-banh'), so (1–10 trong chương), ma (= chuong + '.' + so,
+            cố định, dùng làm khóa lưu tiến độ; do ManHoc.them điền), id (số HIỂN THỊ "1.3", do ManHoc
+            TÍNH từ vị trí chương trong thu-tu-chuong.js — đổi thứ tự chương thì id đổi theo),
+            cauTruc (cấu trúc Python dùng ở màn: [] hoặc ['for']), ten, hang, deBai (mục tiêu, luôn đúng), veMaMau (nói về code có sẵn, chỉ hiện
             khi bài làm còn là code mẫu), san, batDau, loaiRobot, hamGoc, moXuong, camHamCuaEm,
             khung, maMau { chinh, hamCuaMan }, hamCuaEmCan [tên], taoHam [tên],
             sao { o, nhip }, loiGiai { chinh, hamCuaMan, hamCuaEmMoi },
@@ -41,6 +44,9 @@
 
   /** Điền các trường mặc định (hàm của màn rỗng, hàm của em rỗng…) cho dữ liệu viết gọn. */
   function chuanHoaMan(m) {
+    // cauTruc: cấu trúc Python màn cho dùng (mặc định không có). Chép vào khung để máy chấm bắt `for` khi màn chưa học.
+    if (!m.cauTruc) m.cauTruc = [];
+    m.khung = Object.assign({}, m.khung, { cauTruc: m.cauTruc.slice() });
     function bai(b) { if (!b.hamCuaMan) b.hamCuaMan = []; return b; }
     bai(m.maMau);
     bai(m.loiGiai);
@@ -59,6 +65,7 @@
   }
 
   function man(m) {
+    m.chuong = 'hai-banh';
     m.loaiRobot = 'banh'; m.hamGoc = HAM_GOC; m.khung = KHUNG;
     m.moXuong = false; m.camHamCuaEm = true;
     return chuanHoaMan(m);
@@ -66,7 +73,7 @@
 
   var DS = [
     man({
-      id: '1.1', ten: 'Bước đầu tiên', hang: 'lam-quen',
+      so: 1, ten: 'Bước đầu tiên', hang: 'lam-quen',
       deBai: 'Xe hai bánh đứng ngay trước lá cờ. Đưa xe tới cờ.',
       veMaMau: 'Chương trình đã viết sẵn, bấm Chạy xem xe làm gì.',
       san: ['.....', '.....', '.....', '..F..', '.....'],
@@ -83,7 +90,7 @@
     }),
 
     man({
-      id: '1.2', ten: 'Ba bước', hang: 'lam-quen',
+      so: 2, ten: 'Ba bước', hang: 'lam-quen',
       deBai: 'Lá cờ cách xe ba ô. Đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn mới đưa xe đi được một ô.',
       san: ['.....', '..F..', '.....', '.....', '.....'],
@@ -101,7 +108,7 @@
     }),
 
     man({
-      id: '1.3', ten: 'Đố: rẽ phải', hang: 'lam-quen',
+      so: 3, ten: 'Đố: rẽ phải', hang: 'lam-quen',
       deBai: 'Lá cờ nằm bên phải xe. Đưa xe tới cờ.',
       veMaMau: 'Chạy thử chương trình có sẵn, xem nó làm xe xoay thế nào rồi viết tiếp.',
       san: ['.....', '.....', '.....', '..F..', '.....'],
@@ -122,7 +129,7 @@
     }),
 
     man({
-      id: '1.4', ten: 'Rẽ trái', hang: 'luyen',
+      so: 4, ten: 'Rẽ trái', hang: 'luyen',
       deBai: 'Lá cờ nằm bên trái xe, cách hai ô. Bánh nào quay thì xe rẽ trái? Tự suy ra rồi viết.',
       san: ['.....', '.....', '.....', '.F...', '.....'],
       batDau: { x: 3, y: 3, huong: 0 },
@@ -141,7 +148,7 @@
     }),
 
     man({
-      id: '1.5', ten: 'Chữ L', hang: 'luyen',
+      so: 5, ten: 'Chữ L', hang: 'luyen',
       deBai: 'Đi một ô lên trên, rẽ phải, rồi đi tiếp một ô tới cờ.',
       san: ['.....', '.#...', '..F..', '.....', '.....'],
       batDau: { x: 1, y: 3, huong: 0 },
@@ -161,7 +168,7 @@
     }),
 
     man({
-      id: '1.6', ten: 'Chữ L ngược', hang: 'luyen',
+      so: 6, ten: 'Chữ L ngược', hang: 'luyen',
       deBai: 'Lần này xe quay mặt sang phải ngay từ đầu. Đi một ô, rẽ trái, đi tiếp một ô.',
       san: ['.....', '.....', '..F#.', '.....', '.....'],
       batDau: { x: 1, y: 3, huong: 1 },
@@ -180,7 +187,7 @@
     }),
 
     man({
-      id: '1.7', ten: 'Quay đầu', hang: 'bien-the',
+      so: 7, ten: 'Quay đầu', hang: 'bien-the',
       deBai: 'Lá cờ ở ngay phía sau xe, hai bên là tường. Xe phải quay lại trước khi đi.',
       san: ['.#.#.', '..F..', '.....', '.....', '.....'],
       batDau: { x: 2, y: 0, huong: 0 },
@@ -200,7 +207,7 @@
     }),
 
     man({
-      id: '1.8', ten: 'Lạch bạch', hang: 'bien-the',
+      so: 8, ten: 'Lạch bạch', hang: 'bien-the',
       deBai: 'Lá cờ ở ngay phía trước, cách xe hai ô. Đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn làm xe quay qua quay lại tại chỗ, không tiến. Sửa lại cho đúng.',
       san: ['.....', '.....', '..F..', '.....', '.....'],
@@ -222,7 +229,7 @@
     }),
 
     man({
-      id: '1.9', ten: 'Dọn dòng thừa', hang: 'bien-the',
+      so: 9, ten: 'Dọn dòng thừa', hang: 'bien-the',
       deBai: 'Xe đang quay mặt sang trái. Đi một ô thẳng, rẽ trái rồi đi tiếp một ô tới cờ.',
       veMaMau: 'Chương trình có sẵn đã đầy 10 ô và có hai dòng thừa. Chạy thử để tìm ra chúng. Xóa một dòng: kéo nó vào thùng rác, hoặc rê chuột lên số dòng rồi bấm ✕ (điện thoại: chạm hai lần vào dòng).',
       san: ['.....', '.#...', '..F..', '.....', '.....'],
@@ -246,7 +253,7 @@
     }),
 
     man({
-      id: '1.10', ten: 'Xếp lại cho đúng', hang: 'trum',
+      so: 10, ten: 'Xếp lại cho đúng', hang: 'trum',
       deBai: 'Xe đang quay mặt sang phải. Đi một ô thẳng, rẽ phải rồi đi tiếp một ô tới cờ.',
       veMaMau: 'Các dòng có sẵn bị xáo trộn và thừa một dòng. Nhấn giữ một dòng rồi kéo lên hoặc xuống để đổi chỗ.',
       san: ['.....', '..#..', '#F...', '.....', '.....'],
@@ -271,11 +278,48 @@
     })
   ];
 
+  /* ---------------------------------------------------------------- sổ màn / sổ chương */
+
+  var ThuTu = laNode ? require('./thu-tu-chuong.js') : window.ThuTuChuong;
   var ManHoc = (typeof window !== 'undefined' && window.ManHoc) || { danhSach: [] };
   ManHoc.danhSach = ManHoc.danhSach || [];
-  ManHoc.them = ManHoc.them || function (ds) { ds.forEach(function (m) { ManHoc.danhSach.push(m); }); };
-  ManHoc.tim = ManHoc.tim || function (id) { return ManHoc.danhSach.filter(function (m) { return m.id === id; })[0] || null; };
-  ManHoc.chuanHoa = ManHoc.chuanHoa || chuanHoaMan;
+
+  /** Tính lại id hiển thị và xếp lại danhSach (tại chỗ) theo thứ tự chương rồi theo `so`.
+   *  Tự gọi sau mỗi lần thêm màn; gọi lại khi đổi mảng ThuTuChuong.thuTu. */
+  ManHoc.tinhLai = function () {
+    var tt = ThuTu.thuTu;
+    ManHoc.danhSach.forEach(function (m) {
+      if (tt.indexOf(m.chuong) < 0) throw new Error('Màn "' + m.ma + '": chương "' + m.chuong + '" không có trong thu-tu-chuong.js.');
+    });
+    ManHoc.danhSach.sort(function (a, b) { return (tt.indexOf(a.chuong) - tt.indexOf(b.chuong)) || (a.so - b.so); });
+    ManHoc.danhSach.forEach(function (m) { m.id = (tt.indexOf(m.chuong) + 1) + '.' + m.so; });
+    return ManHoc.danhSach;
+  };
+  ManHoc.them = function (ds) {
+    ds.forEach(function (m) {
+      if (typeof m.chuong !== 'string' || !m.chuong) throw new Error('Màn thiếu `chuong`.');
+      if (!(m.so >= 1) || m.so !== Math.floor(m.so)) throw new Error('Màn của chương "' + m.chuong + '" thiếu `so` (số nguyên từ 1).');
+      if (ThuTu.thuTu.indexOf(m.chuong) < 0) throw new Error('Chương "' + m.chuong + '" không có trong thu-tu-chuong.js.');
+      m.ma = m.chuong + '.' + m.so;
+      if (ManHoc.timMa(m.ma)) throw new Error('Trùng mã màn: ' + m.ma);
+      ManHoc.danhSach.push(m);
+    });
+    ManHoc.tinhLai();
+  };
+  /** Tìm theo id hiển thị ("3.4"). Id đổi khi đổi thứ tự chương. */
+  ManHoc.tim = function (id) { return ManHoc.danhSach.filter(function (m) { return m.id === id; })[0] || null; };
+  /** Tìm theo mã cố định ("vong-lap.4"). */
+  ManHoc.timMa = function (ma) { return ManHoc.danhSach.filter(function (m) { return m.ma === ma; })[0] || null; };
+  /** Các chương CÓ MÀN, theo thứ tự: [{ ma, ten, so (số chương hiển thị, từ 1), soMan }]. */
+  ManHoc.chuong = function () {
+    var kq = [];
+    ThuTu.thuTu.forEach(function (ma, i) {
+      var n = ManHoc.danhSach.filter(function (m) { return m.chuong === ma; }).length;
+      if (n) kq.push({ ma: ma, ten: ThuTu.ten[ma] || ma, so: i + 1, soMan: n });
+    });
+    return kq;
+  };
+  ManHoc.chuanHoa = chuanHoaMan;
   ManHoc.them(DS);
 
   if (laNode) module.exports = ManHoc;

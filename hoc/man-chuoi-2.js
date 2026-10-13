@@ -36,6 +36,7 @@
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
 
   function man(m) {
+    m.chuong = 'xuong-ham';
     m.loaiRobot = 'banh'; m.hamGoc = HAM_GOC;
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = Object.assign({ chinh: 10, moiHam: 10 }, m.khung || {});
@@ -51,7 +52,7 @@
   var DS = [
     /* ------------------------------------------------ hàng 1: thiếu chỗ thật */
     man({
-      id: '2.1', ten: 'Gọi hàm', hang: 'lam-quen',
+      so: 1, ten: 'Gọi hàm', hang: 'lam-quen',
       deBai: 'Cờ cách xe bốn ô. Viết tay bốn lần "tiến một ô" là 12 dòng, quá 10 ô. Màn này cho sẵn hàm move(), chỉ việc gọi nó.',
       san: ['..F..', '.....', '.....', '.....', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
@@ -72,7 +73,7 @@
     }),
 
     man({
-      id: '2.2', ten: 'Tạo hàm move', hang: 'lam-quen', taoHam: ['move'],
+      so: 2, ten: 'Tạo hàm move', hang: 'lam-quen', taoHam: ['move'],
       deBai: 'Tạo hàm move() trong Xưởng hàm, thân hàm là "tiến một ô", rồi đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn đã gọi move(): nó chỉ chạy được khi em có hàm move().',
       san: ['.....', '...F.', '.....', '.....', '.....'],
@@ -97,7 +98,7 @@
     }),
 
     man({
-      id: '2.3', ten: 'Dùng move của em', hang: 'lam-quen', hamCuaEmCan: ['move'],
+      so: 3, ten: 'Dùng move của em', hang: 'lam-quen', hamCuaEmCan: ['move'],
       deBai: 'Hàm move() của em đã nằm sẵn trên khay. Dùng nó để xe đi lên ba ô, rẽ phải, đi tiếp hai ô.',
       san: ['.....', '..F..', '.....', '.....', '.....'],
       batDau: { x: 0, y: 4, huong: 0 },
@@ -121,7 +122,7 @@
 
     /* ------------------------------------------------------------- hàng 2 */
     man({
-      id: '2.4', ten: 'Tạo hàm rẽ phải', hang: 'luyen', hamCuaEmCan: ['move'], taoHam: ['turn_right'],
+      so: 4, ten: 'Tạo hàm rẽ phải', hang: 'luyen', hamCuaEmCan: ['move'], taoHam: ['turn_right'],
       deBai: 'Tạo thêm hàm turn_right() rồi dẫn xe đi lên hai ô, rẽ phải, đi hai ô, rẽ phải, đi hai ô.',
       san: ['#####', '#...#', '#.#.#', '#.#F#', '#####'],
       batDau: { x: 1, y: 3, huong: 0 },
@@ -145,7 +146,7 @@
     }),
 
     man({
-      id: '2.5', ten: 'Tạo hàm rẽ trái', hang: 'luyen', hamCuaEmCan: ['move'], taoHam: ['turn_left'],
+      so: 5, ten: 'Tạo hàm rẽ trái', hang: 'luyen', hamCuaEmCan: ['move'], taoHam: ['turn_left'],
       deBai: 'Tương tự màn trước nhưng rẽ trái. Tạo hàm turn_left() rồi dùng nó: đi lên ba ô, rẽ trái, đi hai ô, rẽ trái, đi một ô.',
       san: ['#####', '#...#', '#F#.#', '###.#', '###.#'],
       batDau: { x: 3, y: 4, huong: 0 },
@@ -169,7 +170,7 @@
     }),
 
     man({
-      id: '2.6', ten: 'Bậc thang', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
+      so: 6, ten: 'Bậc thang', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
       deBai: 'Xe leo một cầu thang hẹp: đi, rẽ phải, đi, rẽ trái, ... Chương trình chỉ có 10 ô: lấy các hàm trong kho của em ra dùng.',
       san: ['#####', '##F##', '#..##', '..###', '.####'],
       batDau: { x: 0, y: 4, huong: 0 },
@@ -197,7 +198,7 @@
 
     /* ------------------------------------------------------------- hàng 3 */
     man({
-      id: '2.7', ten: 'Quay đầu bằng hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['u_turn'],
+      so: 7, ten: 'Quay đầu bằng hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['u_turn'],
       deBai: 'Xe đứng ở cuối ngõ cụt, cờ ở cuối lối ra. Tạo hàm u_turn() gọi turn_right() hai lần (hàm gọi hàm), rồi dùng nó.',
       san: ['#.###', '#.###', '#.###', '#.F##', '#####'],
       batDau: { x: 1, y: 0, huong: 0 },
@@ -224,7 +225,7 @@
     }),
 
     man({
-      id: '2.8', ten: 'Sửa hàm lỗi', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
+      so: 8, ten: 'Sửa hàm lỗi', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
       deBai: 'Dùng hàm step_right() của màn để đưa xe tới cờ. Xe đi sai chỗ thì mở hàm ra xem thân hàm.',
       veMaMau: 'Hàm step_right() có sẵn định "rẽ phải rồi đi một ô", nhưng xe cứ đi sai chỗ. Đọc kỹ thân hàm, tìm chỗ nhầm.',
       san: ['#####', '#####', '#...#', '#.#F#', '#.###'],
@@ -259,7 +260,7 @@
     }),
 
     man({
-      id: '2.9', ten: 'Hàm gọi hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right'], taoHam: ['corner'],
+      so: 9, ten: 'Hàm gọi hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right'], taoHam: ['corner'],
       deBai: 'Gói "đi hai ô rồi rẽ phải" thành hàm corner() (trong đó gọi move() và turn_right()), rồi đi vòng ba góc tới cờ.',
       san: ['#####', '#####', '...##', '.#.##', '.#F##'],
       batDau: { x: 0, y: 4, huong: 0 },
@@ -288,7 +289,7 @@
 
     /* ------------------------------------------------------------- trùm */
     man({
-      id: '2.10', ten: 'Cầu thang dài', hang: 'trum', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['stair', 'two'],
+      so: 10, ten: 'Cầu thang dài', hang: 'trum', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['stair', 'two'],
       deBai: 'Leo cầu thang sáu bậc tới cờ. Chương trình có 10 ô nhưng nếu gọi từng bậc thì vừa sát; để hàm gọi hàm sẽ gọn hơn.',
       san: ['#####.F', '####..#', '###..##', '##..###', '#..####', '..#####', '.######'],
       batDau: { x: 0, y: 6, huong: 0 },

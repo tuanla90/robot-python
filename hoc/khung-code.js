@@ -15,6 +15,11 @@
      { chinh: 10, moiHam: 10, khoaChinh: k, khoaHam: k, moXuong: true|false }
      - moXuong: false = màn chưa mở Xưởng hàm (chuỗi 1). Mặc định true.
      - khoa*: số ô bị khóa ở cuối khung → số ô dùng được = số ô − số ô khóa.
+     - cauTruc: danh sách cấu trúc Python màn cho dùng (vd ['for']). Có khai (kể cả []) thì
+       bài làm dùng `for` mà 'for' vắng ở đây bị báo 'cau-truc-chua-hoc'. Không khai thì không kiểm.
+       Chỉ kiểm CHƯƠNG TRÌNH và HÀM CỦA MÀN (bài làm của màn); hàm của em không bị kiểm.
+   Dòng thụt lề: mỗi dòng (chương trình hay thân hàm) vẫn là MỘT ô; `for ...:` là một ô và mỗi
+   dòng trong thân for là một ô. Thân hàm viết ở mức thụt lề 0, khối lồng trong đó thụt thêm 4 dấu cách.
      (Số hàm của em tối đa cả game do kho-ham.js giữ, không còn theo màn.)
 
    Hàm của màn che hàm của em cùng tên (trong màn đó).
@@ -45,6 +50,8 @@
   function layThan(h) { return (h && h.than) ? h.than : []; }
   function soDong(ds) { var n = 0; (ds || []).forEach(function (s) { if (!laTrong(s)) n++; }); return n; }
   function laDef(s) { return /^\s*def\b/.test(String(s)); }
+  function boChuThich(s) { var t = String(s === undefined || s === null ? '' : s), k = t.indexOf('#'); return k >= 0 ? t.slice(0, k) : t; }
+  function laFor(s) { return /^\s*for\b/.test(boChuThich(s)); }
 
   /** Khung đầy đủ (điền mặc định). */
   function khungDayDu(khung) {
@@ -54,7 +61,8 @@
       moiHam: khung.moiHam === undefined ? 10 : khung.moiHam,
       khoaChinh: khung.khoaChinh || 0,
       khoaHam: khung.khoaHam || 0,
-      moXuong: khung.moXuong !== false
+      moXuong: khung.moXuong !== false,
+      cauTruc: Array.isArray(khung.cauTruc) ? khung.cauTruc.slice() : undefined
     };
   }
 
@@ -149,7 +157,7 @@
    * hamGoc (tuỳ chọn): danh sách tên hàm gốc, để bắt hàm trùng tên hàm gốc.
    * hamEmDung (tuỳ chọn): các hàm của em sẽ được ghép vào bài (đã bỏ hàm bị che).
    * Mã: tran-khung (cot 'chinh' | 'hamMan' | 'hamEm' kèm ten), def-trong-chuong-trinh,
-   *     ham-trung-ten.
+   *     cau-truc-chua-hoc, ham-trung-ten.
    */
   function kiemTra(khung, baiLam, hamGoc, hamEmDung) {
     var k = khungDayDu(khung), dung = soODung(k), loi = [];
@@ -184,6 +192,22 @@
         loi: 'Dòng ' + dChinh[0] + ' của chương trình đang định nghĩa hàm (def). ' +
           (mo ? 'Chương trình chỉ chứa các lệnh chạy; hàm được tạo trong Xưởng hàm.' : 'Màn này chưa có Xưởng hàm nên chưa tự viết hàm được.')
       });
+    }
+
+    // 2b. cấu trúc chưa học: `for` ở màn có khai cauTruc mà không có 'for' trong đó
+    if (k.cauTruc && k.cauTruc.indexOf('for') < 0) {
+      var vi = null, dFor = dongDau(chinh, laFor);
+      if (dFor.length) vi = { cot: 'chinh', dong: dFor[0], noi: 'chương trình, dòng ' + dFor[0] };
+      else hamMan.forEach(function (h) {
+        var d = dongDau(layThan(h), laFor);
+        if (!vi && d.length) vi = { cot: 'hamMan', ten: h.ten, dong: d[0], noi: 'hàm ' + h.ten + ' của màn, dòng ' + d[0] };
+      });
+      if (vi) {
+        var ct = { ma: 'cau-truc-chua-hoc', cot: vi.cot, dong: vi.dong, cauTruc: 'for',
+          loi: 'Ở ' + vi.noi + ': vòng lặp for chưa được dùng ở màn này, hãy viết theo cách khác.' };
+        if (vi.ten) ct.ten = vi.ten;
+        loi.push(ct);
+      }
     }
 
     // 3. trùng tên (hai hàm của màn cùng tên, hai hàm của em cùng tên, hoặc trùng hàm gốc).

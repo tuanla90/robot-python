@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-hoc.mjs — máy kiểm "Đường học": luật sân, khung riêng từng hàm, máy chấm,
-   hàm của em (kho bền) + hàm của màn (tạm), cách đếm ô, sân thử, kho hàm, đi tuần tự
-   20 màn như một học sinh thật và bộ dò đường tắt (BFS).
+   hàm của em (kho bền) + hàm của màn (tạm), cách đếm ô, sân thử, kho hàm, sổ chương
+   (đổi thứ tự), chương vòng lặp, đi tuần tự 30 màn như một học sinh thật và bộ dò đường tắt (BFS).
    Chạy: node robotics/hoc/kiem-hoc.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
@@ -14,7 +14,9 @@ const require = createRequire(import.meta.url);
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const KhungCode = require(path.join(day, 'khung-code.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
-const ManHoc = require(path.join(day, 'man-chuoi-2.js'));      // nối cả chuỗi 1
+const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
+require(path.join(day, 'man-chuoi-2.js'));
+const ManHoc = require(path.join(day, 'man-vong-lap.js'));      // nối cả chuỗi 1 và 2 (cùng một sổ màn)
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const MAU = require(path.join(day, 'thu-vien-mau.js'));          // bộ hàm của em mẫu (mảng)
 
@@ -516,7 +518,8 @@ console.log('\n== 11. Sân thử của Xưởng hàm (thuHam) ==');
   const b = ChamHoc.thuHam(man, {}, 'move', [mv, tr]);
   kiem('chạy riêng move: tiến lên một ô (1,1)→(1,0)', bang(b.robot, { x: 1, y: 0, huong: 0 }) && b.soNhip === 1);
   const c = ChamHoc.thuHam(man, {}, 'hai', [H('hai', ['move()', 'move()']), mv]);
-  kiem('tiến hai ô trên sân 3×3: đâm ra ngoài sân → dam-tuong, chạy tiếp', maCua(c).includes('dam-tuong') && bang(c.robot, { x: 1, y: 0, huong: 0 }) && c.soNhip === 2, J(c.chanDoan));
+  kiem('tiến hai ô trên sân thử rộng: KHÔNG đâm tường, robot ở (1,-1) quay lên, khung bao cả ba ô (y âm = đi lên)',
+    !maCua(c).includes('dam-tuong') && bang(c.robot, { x: 1, y: -1, huong: 0 }) && c.soNhip === 2 && bang(c.khung, { minX: 1, maxX: 1, minY: -1, maxY: 1 }), J([c.chanDoan, c.robot, c.khung]));
   kiem('vết của sân thử: cho / ngan đúng cột, tên hàm, không có dòng gọi giả',
     bang(c.vet[0].cho, { cot: 'hamEm', dong: 1, ten: 'move' }) && bang(c.vet[0].ngan, [{ cot: 'hamEm', dong: 1, ten: 'hai' }]), J(c.vet[0]));
   kiem('quen-wait bắt được ở sân thử', maCua(ChamHoc.thuHam(man, {}, 'sai', [H('sai', ['left_move()', 'right_move()'])])).join() === 'quen-wait');
@@ -619,29 +622,32 @@ function nhipNganNhat(man, gioiHanDong) {
 }
 
 
-console.log('\n== 13. Hai mươi màn: đi tuần tự như một học sinh thật (kho rỗng → mỗi màn → kho lớn dần) ==');
+console.log('\n== 13. Ba mươi màn: đi tuần tự như một học sinh thật (kho rỗng → mỗi màn → kho lớn dần) ==');
 const NGOAI_LE = [];
 const BANG_TOM = [];
 const KHO_TRUOC = {};
 let khoCuoi = null;
 {
   const ds = ManHoc.danhSach;
-  const TRUONG = ['id', 'ten', 'hang', 'deBai', 'san', 'batDau', 'loaiRobot', 'hamGoc', 'moXuong', 'camHamCuaEm', 'khung', 'maMau',
+  const TRUONG = ['id', 'ma', 'chuong', 'so', 'cauTruc', 'ten', 'hang', 'deBai', 'san', 'batDau', 'loaiRobot', 'hamGoc', 'moXuong', 'camHamCuaEm', 'khung', 'maMau',
     'hamCuaEmCan', 'taoHam', 'sao', 'loiGiai', 'loiSai', 'goiY'];
-  kiem('có đúng 20 màn', ds.length === 20, String(ds.length));
-  const ids = ['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10'];
+  kiem('có đúng 30 màn', ds.length === 30, String(ds.length));
+  const ids = ['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10',
+    '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10'];
   kiem('đúng mã màn và thứ tự', J(ds.map((m) => m.id)) === J(ids));
   kiem('ManHoc.tim trả đúng màn', ManHoc.tim('2.7').ten === ds[16].ten && ManHoc.tim('9.9') === null);
   kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm (mỗi chuỗi)',
-    [0, 10].every((o) => J(ds.slice(o, o + 10).map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum'])));
+    [0, 10, 20].every((o) => J(ds.slice(o, o + 10).map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum'])));
   kiem('chuỗi 1: chương trình 10 ô, chưa mở Xưởng hàm, cấm hàm của em, hàm gốc left_move/right_move/wait (không có left_back)',
     ds.slice(0, 10).every((m) => m.khung.chinh === 10 && m.moXuong === false && m.camHamCuaEm === true && J(m.hamGoc) === J(['left_move', 'right_move', 'wait'])));
   kiem('chuỗi 2: chương trình 10 ô, mỗi hàm 10 ô, Xưởng mở, được dùng hàm của em',
-    ds.slice(10).every((m) => m.khung.chinh === 10 && m.khung.moiHam === 10 && m.moXuong === true && m.camHamCuaEm === false));
+    ds.slice(10, 20).every((m) => m.khung.chinh === 10 && m.khung.moiHam === 10 && m.moXuong === true && m.camHamCuaEm === false));
+  kiem('chương vong-lap: chương trình 10 ô, mỗi hàm 10 ô, Xưởng mở, được dùng hàm của em, hàm gốc như chuỗi 2',
+    ds.slice(20).every((m) => m.khung.chinh === 10 && m.khung.moiHam === 10 && m.moXuong === true && m.camHamCuaEm === false && J(m.hamGoc) === J(['left_move', 'right_move', 'wait'])));
   kiem('bỏ thư viện theo trùm và số hàm theo màn: không còn thuVien / moThuVien / khung.soHam',
     ds.every((m) => m.thuVien === undefined && m.moThuVien === undefined && m.khung.soHam === undefined));
-  kiem('trùm chỉ nhận huy hiệu: 1.10 và 2.10 có huyHieu, các màn khác không',
-    ds.every((m) => (m.id === '1.10' || m.id === '2.10') === !!(m.huyHieu && m.huyHieu.ma && m.huyHieu.ten)));
+  kiem('trùm chỉ nhận huy hiệu: 1.10, 2.10 và 3.10 có huyHieu, các màn khác không',
+    ds.every((m) => (m.id === '1.10' || m.id === '2.10' || m.id === '3.10') === !!(m.huyHieu && m.huyHieu.ma && m.huyHieu.ten)));
   kiem('sân tối đa 7×7', ds.every((m) => m.san.length <= 7 && m.san[0].length <= 7));
   kiem('màn bắt buộc có hàm vì thiếu chỗ thật chỉ ở hàng 1 chuỗi 2 (tay viết > 10 dòng): 2.1 và 2.3',
     ['2.1', '2.3'].every((id) => ManHoc.tim(id).loiSai.some((l) => l.phaiCoMa.includes('tran-khung'))));
@@ -693,7 +699,7 @@ let khoCuoi = null;
     // lời giải còn đúng khi học sinh đã có cả kho đầy đủ (chơi lại) — thử sau vòng lặp. Với move lỗi:
     const laHamManMove = m.loiGiai.hamCuaMan.some((h) => h.ten === 'move');
     if (loiGiai.hamDaDung.includes('move') && !laHamManMove) {
-      soManDungMove++;
+      if (m.chuong === 'xuong-ham') soManDungMove++;
       const hong = ChamHoc.cham(m, m.loiGiai, tron(khoNay, [H('move', ['left_move()', 'right_move()'])]));
       kiem(m.id + ': sửa move() trong kho thành bản lỗi (thiếu wait) → không thắng, chẩn đoán nhắc "hàm move"',
         !hong.thang && hong.sao === 0 && hong.chanDoan.some((c) => /hàm move/.test(c.loi)), J(hong.chanDoan.map((c) => c.loi)));
@@ -736,12 +742,12 @@ let khoCuoi = null;
       }
     }
   }
-  kiem('có đúng 9 màn dùng move của em (2.2–2.10) trong bài move-lỗi', soManDungMove === 9, String(soManDungMove));
+  kiem('có đúng 9 màn xuong-ham (2.2–2.10) dùng move của em trong bài move-lỗi', soManDungMove === 9, String(soManDungMove));
 
   // ---- chơi lại với kho đầy đủ
   const day = kho.ds();
-  kiem('kho cuối game: move, turn_right, turn_left, u_turn, corner, stair, two (7 hàm, trong giới hạn 12)',
-    J(day.map((h) => h.ten)) === J(['move', 'turn_right', 'turn_left', 'u_turn', 'corner', 'stair', 'two']) && day.length <= KhoHam.SO_HAM_MAC_DINH, J(day.map((h) => h.ten)));
+  kiem('kho cuối game: move, turn_right, turn_left, u_turn, corner, stair, two (xuong-ham) + side, row, bend_left, bend_right (vong-lap) = 11 hàm, trong giới hạn 12',
+    J(day.map((h) => h.ten)) === J(['move', 'turn_right', 'turn_left', 'u_turn', 'corner', 'stair', 'two', 'side', 'row', 'bend_left', 'bend_right']) && day.length <= KhoHam.SO_HAM_MAC_DINH, J(day.map((h) => h.ten)));
   const choiLai = ds.map((m) => ChamHoc.cham(m, m.loiGiai, tron(day, m.loiGiai.hamCuaEmMoi)));
   kiem('chơi lại mọi màn với kho đầy đủ vẫn 3 sao, cùng số ô và nhịp (hàm thừa trong kho không đổi gì)',
     choiLai.every((r, i) => r.thang && r.sao === 3 && r.soO === ds[i].sao.o && r.soNhip === ds[i].sao.nhip && maLoi(r).length === 0),
@@ -845,7 +851,7 @@ let khoCuoi = null;
   }
   console.log('  (màn dùng ngoại lệ "đường nhanh hơn không vừa khung viết tay": ' + (NGOAI_LE.length ? NGOAI_LE.join(', ') : 'không có') + ')');
 
-  console.log('\n  Bảng 20 màn (lời giải mẫu, tính theo cách đếm mới)');
+  console.log('\n  Bảng 30 màn (lời giải mẫu, tính theo cách đếm mới)');
   console.log('  màn   | ô  | nhịp | hàm tạo mới       | hàm dùng (đã gọi tới)');
   for (const b of BANG_TOM) {
     console.log('  ' + b.id.padEnd(5) + ' | ' + String(b.o).padEnd(2) + ' | ' + String(b.nhip).padEnd(4) + ' | ' + (b.tao || '-').padEnd(17) + ' | ' + (b.dung || '-'));
@@ -1074,6 +1080,159 @@ console.log('\n== 15. KhoHam: tạo, sửa, đổi tên, xóa, tên sai, lưu / 
   kiem('kho mặc định dùng thẳng KhoHam.tao / ds / xoa', KhoHam.ds().length === 1 && KhoHam.xoa('mac_dinh').ok && KhoHam.ds().length === 0 && KhoHam.macDinh.soHam() === 0);
   kiem('hai kho độc lập không chia sẻ dữ liệu', KhoHam.moi().soHam() === 0 && k.soHam() === 2);
   kiem('hàm gốc mặc định của kho phủ cả xe bánh lẫn nhện', ['left_move', 'right_back', 'wait', 'go_up', 'go_right'].every((t) => KhoHam.HAM_GOC_MAC_DINH.includes(t)));
+}
+
+/* ================================================================ SỔ CHƯƠNG */
+console.log('\n== 16. Sổ chương: mã cố định, id tính theo thứ tự chương, đổi thứ tự ==');
+{
+  const ds = ManHoc.danhSach;
+  const dsMa = ds.map((m) => m.ma);
+  kiem('mọi màn có chuong (trong thu-tu-chuong), so nguyên 1–10, ma = chuong + "." + so, ma không trùng',
+    ds.every((m) => ThuTu.thuTu.includes(m.chuong) && Number.isInteger(m.so) && m.so >= 1 && m.so <= 10 && m.ma === m.chuong + '.' + m.so) &&
+      new Set(dsMa).size === ds.length);
+  kiem('thứ tự chương hiện tại: hai-banh, xuong-ham, vong-lap; có tên hiển thị cho từng chương',
+    bang(ThuTu.thuTu, ['hai-banh', 'xuong-ham', 'vong-lap']) && ThuTu.thuTu.every((c) => typeof ThuTu.ten[c] === 'string' && ThuTu.ten[c].length > 2));
+  kiem('id chuỗi 1 và 2 giữ nguyên (1.1…2.10), vong-lap là 3.1…3.10',
+    ds.every((m) => m.id === ({ 'hai-banh': 1, 'xuong-ham': 2, 'vong-lap': 3 })[m.chuong] + '.' + m.so));
+  kiem('danhSach xếp theo thứ tự chương rồi theo so', bang(ds.map((m) => m.chuong + '.' + m.so), [].concat(
+    ...ThuTu.thuTu.map((c) => Array.from({ length: 10 }, (_, i) => c + '.' + (i + 1))))));
+  kiem('ManHoc.chuong(): ba chương theo thứ tự, mỗi chương { ma, ten, so, soMan }',
+    bang(ManHoc.chuong(), [{ ma: 'hai-banh', ten: 'Hai bánh', so: 1, soMan: 10 }, { ma: 'xuong-ham', ten: 'Xưởng hàm', so: 2, soMan: 10 }, { ma: 'vong-lap', ten: 'Vòng lặp', so: 3, soMan: 10 }]), J(ManHoc.chuong()));
+  kiem('tim(id) và timMa(ma) tìm cùng một màn; id lạ / mã lạ → null',
+    ManHoc.tim('3.4') === ManHoc.timMa('vong-lap.4') && ManHoc.tim('3.4').ten === 'Lặp một cụm' && ManHoc.tim('9.9') === null && ManHoc.timMa('khong.co') === null);
+  kiem('thêm màn sai (chương lạ, thiếu so, trùng mã) → ném lỗi và không làm bẩn sổ',
+    (() => {
+      const n = ds.length;
+      const thu = (m) => { try { ManHoc.them([m]); return false; } catch (e) { return true; } };
+      return thu({ chuong: 'la-hoac', so: 1 }) && thu({ chuong: 'vong-lap' }) && thu({ chuong: 'vong-lap', so: 4 }) && ds.length === n;
+    })());
+
+  // đảo hai chương rồi kiểm id
+  const gocTT = ThuTu.thuTu.slice();
+  try {
+    ThuTu.thuTu.splice(0, ThuTu.thuTu.length, 'hai-banh', 'vong-lap', 'xuong-ham');
+    ManHoc.tinhLai();
+    kiem('đảo xuong-ham ↔ vong-lap: id của vong-lap thành 2.x, xuong-ham thành 3.x, hai-banh vẫn 1.x',
+      ds.filter((m) => m.chuong === 'vong-lap').every((m) => m.id === '2.' + m.so) && ds.filter((m) => m.chuong === 'xuong-ham').every((m) => m.id === '3.' + m.so) &&
+        ds.filter((m) => m.chuong === 'hai-banh').every((m) => m.id === '1.' + m.so));
+    kiem('đảo: ma KHÔNG đổi (khóa lưu tiến độ), danhSach xếp lại: hai-banh, vong-lap, xuong-ham',
+      ds.every((m) => m.ma === m.chuong + '.' + m.so) && bang(ds.map((m) => m.chuong).filter((c, i, a) => a.indexOf(c) === i), ['hai-banh', 'vong-lap', 'xuong-ham']));
+    kiem('đảo: tim("2.4") giờ là màn 4 của vong-lap, tim("3.4") là màn 4 của xuong-ham, timMa không đổi',
+      ManHoc.tim('2.4').ma === 'vong-lap.4' && ManHoc.tim('3.4').ma === 'xuong-ham.4' && ManHoc.timMa('xuong-ham.4').id === '3.4');
+    kiem('đảo: ManHoc.chuong() đổi theo (so của vong-lap = 2)',
+      bang(ManHoc.chuong().map((c) => c.ma + ':' + c.so), ['hai-banh:1', 'vong-lap:2', 'xuong-ham:3']));
+    ThuTu.thuTu.splice(0, ThuTu.thuTu.length, 'vong-lap', 'xuong-ham', 'hai-banh');
+    ManHoc.tinhLai();
+    kiem('đảo ngược cả ba: vong-lap 1.x, xuong-ham 2.x, hai-banh 3.x; màn đầu danhSach là vong-lap.1',
+      ManHoc.timMa('hai-banh.10').id === '3.10' && ManHoc.timMa('vong-lap.1').id === '1.1' && ds[0].ma === 'vong-lap.1');
+  } finally {
+    ThuTu.thuTu.splice(0, ThuTu.thuTu.length, ...gocTT);
+    ManHoc.tinhLai();
+  }
+  kiem('trả thứ tự về cũ: id về như ban đầu', ds.every((m) => m.id === ({ 'hai-banh': 1, 'xuong-ham': 2, 'vong-lap': 3 })[m.chuong] + '.' + m.so) && ManHoc.tim('2.7').ma === 'xuong-ham.7');
+}
+
+/* ======================================================= CHƯƠNG VÒNG LẶP for */
+console.log('\n== 17. Dòng thụt lề trong khung; cauTruc; chương vong-lap ==');
+{
+  // khung code với dòng thụt lề
+  const chinh = ['for i in range(2):', '    move()', '', '    turn_right()', 'move()'];
+  kiem('thụt lề: mỗi dòng (kể cả for và thân for) là một ô; dòng trống không tính', KhungCode.soDong(chinh) === 4);
+  const g = KhungCode.ghep({ chinh, hamCuaMan: [] }, [H('side', ['for i in range(3):', '    move()'])]);
+  kiem('ghép: thân hàm có for thụt thêm 4, chương trình giữ nguyên thụt lề của học sinh',
+    bang(g.dong, ['def side():', '    for i in range(3):', '        move()'].concat(chinh)), J(g.dong));
+  kiem('ánh xạ dòng thụt lề: dòng Python → số ô (kể cả ô trống) của chương trình', bang(g.anhXa[4], { cot: 'chinh', dong: 1 }) && bang(g.anhXa[7], { cot: 'chinh', dong: 4 }) && bang(g.anhXa[3], { cot: 'hamEm', ten: 'side', dong: 2 }), J(g.anhXa));
+  kiem('demO đếm dòng thụt lề như dòng thường: 4 ô chương trình + 2 ô thân side', KhungCode.demO({ chinh }, [H('side', ['for i in range(3):', '    move()'])]) === 6);
+  const t = KhungCode.kiemTra({ chinh: 4 }, { chinh: ['for i in range(2):', '    a()', '    b()', '    c()', 'd()'] });
+  kiem('tràn khung tính cả dòng for và dòng thụt lề (5 dòng > 4 ô)', t.length === 1 && t[0].ma === 'tran-khung' && t[0].can === 5, J(t));
+
+  // cauTruc
+  kiem('cauTruc: hai-banh và xuong-ham [], vong-lap ["for"]; khung màn mang theo cauTruc',
+    ManHoc.danhSach.every((m) => bang(m.cauTruc, m.chuong === 'vong-lap' ? ['for'] : []) && bang(m.khung.cauTruc, m.cauTruc)));
+  kiem('khungDayDu không tự thêm cauTruc (không khai thì không kiểm)', KhungCode.khungDayDu({ chinh: 10 }).cauTruc === undefined);
+  const ct = (kh, bai) => KhungCode.kiemTra(kh, bai).map((e) => e.ma);
+  kiem('cau-truc-chua-hoc: for trong chương trình khi cauTruc [] → bị báo, nêu dòng', (() => {
+    const r = KhungCode.kiemTra({ chinh: 10, cauTruc: [] }, { chinh: ['move()', 'for i in range(2):', '    move()'] });
+    return r.length === 1 && r[0].ma === 'cau-truc-chua-hoc' && r[0].cot === 'chinh' && r[0].dong === 2 && /chương trình, dòng 2/.test(r[0].loi);
+  })());
+  kiem('cau-truc-chua-hoc: có "for" trong cauTruc, hoặc không khai cauTruc → không báo',
+    ct({ chinh: 10, cauTruc: ['for'] }, { chinh: ['for i in range(2):', '    move()'] }).length === 0 && ct({ chinh: 10 }, { chinh: ['for i in range(2):', '    move()'] }).length === 0);
+  kiem('cau-truc-chua-hoc: chữ "for" trong chú thích hay tên biến (before) không bị báo',
+    ct({ chinh: 10, cauTruc: [] }, { chinh: ['# for i in range(2):', 'before()', 'move()  # for'] }).length === 0);
+  const ctm = KhungCode.kiemTra({ chinh: 10, cauTruc: [] }, { chinh: ['f()'], hamCuaMan: [H('f', ['for i in range(2):', '    wait()'])] });
+  kiem('cau-truc-chua-hoc: for trong hàm của màn → báo, cot hamMan kèm tên hàm', ctm.length === 1 && ctm[0].cot === 'hamMan' && ctm[0].ten === 'f' && /hàm f của màn, dòng 1/.test(ctm[0].loi), J(ctm));
+  kiem('cau-truc-chua-hoc: hàm của em không bị kiểm (kho dùng ở mọi màn; sân thử Xưởng cũng chạy được)',
+    KhungCode.kiemTra({ chinh: 10, cauTruc: [] }, { chinh: ['f()'] }, [], [H('f', ['for i in range(2):', '    wait()'])]).length === 0);
+  const hb = ManHoc.timMa('hai-banh.2'), vl = ManHoc.timMa('vong-lap.1'), xh = ManHoc.timMa('xuong-ham.3');
+  const forBai = { chinh: ['for i in range(3):', '    left_move()', '    right_move()', '    wait()'] };
+  const rHb = ChamHoc.cham(hb, forBai, []);
+  kiem('qua máy chấm: màn hai-banh dùng for → chỉ cau-truc-chua-hoc, không chạy, 0 sao', maCua(rHb).join() === 'cau-truc-chua-hoc' && rHb.sao === 0 && rHb.vet.length === 0, J(maCua(rHb)));
+  const rXh = ChamHoc.cham(xh, { chinh: ['for i in range(2):', '    move()'] }, EM);
+  kiem('qua máy chấm: màn xuong-ham dùng for → cau-truc-chua-hoc', maCua(rXh).join() === 'cau-truc-chua-hoc', J(maCua(rXh)));
+  const rVl = ChamHoc.cham(vl, vl.loiGiai, EM);
+  kiem('qua máy chấm: màn vong-lap dùng for → bình thường, 3 sao; chiTietO.chinh = 2 (for + thân)', rVl.sao === 3 && rVl.chiTietO.chinh === 2 && rVl.chanDoan.length === 0, J(rVl.chanDoan));
+  const rThieu = ChamHoc.cham(vl, { chinh: ['for i in range(3):'] }, EM);
+  kiem('vong-lap: for không có thân → báo lỗi cú pháp ở dòng for, nêu cần dòng thụt vào', maCua(rThieu).join() === 'loi-cu-phap' && /thụt vào/.test(rThieu.chanDoan[0].loi) && /dòng 1/.test(rThieu.chanDoan[0].loi), J(rThieu.chanDoan));
+  const rThua = ChamHoc.cham(vl, { chinh: ['move()', '    move()'] }, EM);
+  kiem('vong-lap: dòng thụt lề thừa (không có for) → loi-thut-le', maCua(rThua).join() === 'loi-thut-le', J(rThua.chanDoan));
+  const rHamFor = ChamHoc.cham(ManHoc.timMa('vong-lap.6'), { chinh: ['side()'] }, tron(EM, [H('side', ['for i in range(3):', '    move()'])]));
+  kiem('hàm của em có for: ô được tính theo vết (side 2 ô + move 3 ô + 1 ô chương trình)', rHamFor.soO === 6 && bang(rHamFor.hamDaDung, ['move', 'side']), J([rHamFor.soO, rHamFor.hamDaDung]));
+
+  // 3.7 lệch một, 3.8 thụt lề
+  const m37 = ManHoc.timMa('vong-lap.7'), m38 = ManHoc.timMa('vong-lap.8');
+  const so37 = (n) => ChamHoc.cham(m37, { chinh: ['for i in range(' + n + '):', '    move()', 'turn_right()', 'for i in range(3):', '    move()'] }, EM);
+  kiem('3.7: maMau và lời giải chỉ khác đúng một chỗ: số trong range đầu tiên (5 → 4)',
+    m37.maMau.chinh.length === m37.loiGiai.chinh.length && m37.maMau.chinh.filter((s, i) => s !== m37.loiGiai.chinh[i]).join() === 'for i in range(5):' && m37.loiGiai.chinh[0] === 'for i in range(4):');
+  kiem('3.7: range(5) xe đi lố một ô, rẽ rồi chạy qua hàng của cờ: chua-toi-co, robot ở (3,0), KHÔNG đâm tường',
+    (() => { const r = so37(5); return !r.thang && maCua(r).join() === 'chua-toi-co' && bang(r.chanDoan[0].robot, { x: 3, y: 0, huong: 1 }); })());
+  kiem('3.7: range(4) thắng 3 sao; range(3) và range(6) đều trượt', so37(4).sao === 3 && !so37(3).thang && !so37(6).thang);
+  kiem('3.7: lời giải thắng ở nhịp thứ 8, mất đúng một nhịp so với đường tắt không có (BFS = 8)', so37(4).soNhip === 8 && nhipNganNhat(m37) === 8);
+  const bo4 = (ds, i) => ds.map((s, k) => (k === i ? s.replace(/^ {4}/, '') : s));
+  kiem('3.8: maMau và lời giải giống nhau từng chữ, chỉ khác độ thụt của đúng một dòng (turn_left)',
+    m38.maMau.chinh.length === 5 && m38.maMau.chinh[2] === '    turn_left()' && bang(bo4(m38.maMau.chinh, 2), m38.loiGiai.chinh) &&
+      m38.maMau.chinh.filter((s, i) => s !== m38.loiGiai.chinh[i]).length === 1);
+  const r38 = ChamHoc.cham(m38, m38.maMau, EM);
+  kiem('3.8: chạy maMau: chương trình hợp lệ nhưng xe quay vòng rồi đâm tường (dam-tuong + chua-toi-co), không có lỗi cú pháp',
+    !r38.thang && maCua(r38).includes('dam-tuong') && maCua(r38).includes('chua-toi-co') && !maCua(r38).some((c) => /loi-/.test(c)), J(maCua(r38)));
+  kiem('3.8: thụt turn_left ra ngoài vòng lặp → 3 sao', ChamHoc.cham(m38, { chinh: bo4(m38.maMau.chinh, 2) }, EM).sao === 3);
+  kiem('3.8: thụt nhầm dòng move() đầu ra ngoài thì vòng for không có thân: lỗi, không thắng', !ChamHoc.cham(m38, { chinh: bo4(m38.maMau.chinh, 1) }, EM).thang);
+  kiem('3.8: thụt turn_left VÀO sâu hơn (hai bậc) → loi-thut-le', maCua(ChamHoc.cham(m38, { chinh: ['for i in range(4):', '    move()', '        turn_left()', 'for i in range(3):', '    move()'] }, EM)).includes('loi-thut-le'));
+
+  // cần for: trải for của lời giải ra thì tràn khung hoặc mất sao
+  function traiFor(ds) {
+    const kq = [];
+    for (let i = 0; i < ds.length; i++) {
+      const mk = /^for (\w+) in range\((\d+)\):$/.exec(ds[i]);
+      if (!mk) { kq.push(ds[i]); continue; }
+      const than = [];
+      let j = i + 1;
+      while (j < ds.length && /^ {4}/.test(ds[j])) { than.push(ds[j].slice(4)); j++; }
+      const trong = traiFor(than);
+      for (let k = 0; k < +mk[2]; k++) kq.push(...trong);
+      i = j - 1;
+    }
+    return kq;
+  }
+  kiem('traiFor tự kiểm: trải for lồng nhau', bang(traiFor(['for i in range(2):', '    a()', '    for j in range(2):', '        b()', 'c()']), ['a()', 'b()', 'b()', 'a()', 'b()', 'b()', 'c()']));
+  const dsVl = ManHoc.danhSach.filter((m) => m.chuong === 'vong-lap');
+  const khoVl = (m) => tron(khoCuoi.ds(), m.loiGiai.hamCuaEmMoi);
+  const bangFor = [];
+  kiem('mọi màn vong-lap khai canFor ("tran-khung" hoặc "mat-sao") và lời giải có dùng for',
+    dsVl.every((m) => ['tran-khung', 'mat-sao'].includes(m.canFor) && m.loiGiai.chinh.concat(...m.loiGiai.hamCuaEmMoi.map((h) => h.than)).some((s) => /^\s*for\b/.test(s))));
+  for (const m of dsVl) {
+    const bai = {
+      chinh: traiFor(m.loiGiai.chinh),
+      hamCuaMan: m.loiGiai.hamCuaMan.map((h) => H(h.ten, traiFor(h.than)))
+    };
+    const emKhong = m.loiGiai.hamCuaEmMoi.map((h) => H(h.ten, traiFor(h.than), h.thamSo));
+    const r = ChamHoc.cham(Object.assign({}, m, { cauTruc: [], khung: Object.assign({}, m.khung, { cauTruc: ['for'] }) }), bai, tron(khoCuoi.ds(), emKhong));
+    const tran = maCua(r).includes('tran-khung');
+    bangFor.push({ id: m.id, canFor: m.canFor, tran, thang: r.thang, sao: r.sao, o: r.soO, saoO: m.sao.o });
+    if (m.canFor === 'tran-khung') kiem(m.id + ': CẦN for (tràn khung): trải for ra thì tran-khung, không chạy', tran && !r.thang && r.sao === 0, J(maCua(r)));
+    else kiem(m.id + ': for giúp đạt 3 sao: trải for ra vẫn vừa khung, thắng nhưng ' + r.soO + ' ô > ' + m.sao.o + ' → dưới 3 sao', !tran && r.thang && r.soO > m.sao.o && r.sao < 3, J([maCua(r), r.thang, r.soO, r.sao]));
+  }
+  console.log('\n  Bảng chương vong-lap: viết không dùng for thì?');
+  for (const b of bangFor) console.log('  ' + b.id.padEnd(5) + ' | ' + b.canFor.padEnd(10) + ' | ' + (b.tran ? 'tràn khung' : 'ô ' + b.o + ' > ' + b.saoO + ' → ' + b.sao + ' sao'));
 }
 
 console.log('\n---------------------------------------------');
