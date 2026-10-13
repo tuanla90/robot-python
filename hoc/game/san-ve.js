@@ -19,6 +19,7 @@
     tuyChon = tuyChon || {};
     this.cv = cv; this.g = cv.getContext('2d');
     this.kich = tuyChon.kich || 210;           // cạnh khung (px màn hình) dành cho sân
+    this.coNhoNhat = tuyChon.coNhoNhat || 0;   // >0: sân đông ô thì thu nhỏ ô (không nguyên lần) tới cỡ này (px màn hình)
     this.lamps = tuyChon.lamps || null;        // { T, P } phần tử đèn bánh
     this.rid = 0; this.cfg = null;
     this.lst = { L: -1, R: -1 };
@@ -26,13 +27,15 @@
     FIELDS.push(this);
   }
   Field.prototype = {
-    /** Nạp một sân: cfg = { san: [chuỗi], batDau: {x,y,huong}, loaiRobot }. */
+    /** Nạp một sân: cfg = { san: [chuỗi], batDau: {x,y,huong}, loaiRobot,
+     *  danhDau: {x,y} (tuỳ chọn: vòng mờ đánh dấu ô xuất phát), cat: {trai,phai,tren,duoi} (tuỳ chọn: cạnh nào bị cắt → vẽ dấu …) }. */
     nap: function (cfg) {
       var rows = cfg.san, w = rows[0].length, h = rows.length;
-      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: cfg.loaiRobot || 'banh', co: null };
+      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: cfg.loaiRobot || 'banh', co: null, dd: cfg.danhDau || null, cat: cfg.cat || null };
       for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) if (rows[y][x] === 'F' && !this.cfg.co) this.cfg.co = { x: x, y: y };
       this.cv.width = w * T; this.cv.height = h * T;
-      var k = Math.max(1, Math.floor(this.kich / (Math.max(w, h) * T)));
+      var thoGoc = this.kich / (Math.max(w, h) * T), k = Math.max(1, Math.floor(thoGoc));
+      if (this.coNhoNhat && thoGoc < 1) k = Math.max(thoGoc, this.coNhoNhat / T);   // ô nhỏ lại cho vừa khung, không dưới coNhoNhat
       this.k = k;
       this.cv.style.width = (w * T * k) + 'px'; this.cv.style.height = (h * T * k) + 'px';
       this.g = this.cv.getContext('2d'); this.g.imageSmoothingEnabled = false;
@@ -71,6 +74,20 @@
         else if (ch === 'F') t = TL.pad;
         else t = TL.rug[(x + y * 2) & 3];
         g.drawImage(t, x * T, y * T);
+      }
+      if (c.dd) {                                              // vòng mờ nét đứt: ô xuất phát
+        g.save(); g.strokeStyle = 'rgba(255,246,227,.7)'; g.lineWidth = 1; g.setLineDash([2, 2]);
+        g.strokeRect(c.dd.x * T + 1.5, c.dd.y * T + 1.5, T - 3, T - 3); g.restore();
+      }
+      if (c.cat) {                                             // dấu … ở cạnh bị cắt
+        g.fillStyle = 'rgba(255,246,227,.85)';
+        var cw = this.cv.width, ch2 = this.cv.height, m = 3;
+        for (var q2 = -1; q2 <= 1; q2++) {
+          if (c.cat.tren) g.fillRect(cw / 2 + q2 * 4 - 1, m, 2, 2);
+          if (c.cat.duoi) g.fillRect(cw / 2 + q2 * 4 - 1, ch2 - m - 2, 2, 2);
+          if (c.cat.trai) g.fillRect(m, ch2 / 2 + q2 * 4 - 1, 2, 2);
+          if (c.cat.phai) g.fillRect(cw - m - 2, ch2 / 2 + q2 * 4 - 1, 2, 2);
+        }
       }
       if (c.co) {
         var fy = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 3) : 0;

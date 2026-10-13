@@ -1,6 +1,6 @@
 /* ============================================================================
    xuong-ham.js — "Đường học": XƯỞNG HÀM (window.Xuong).
-   Lớp phủ trượt lên đè màn chơi: bảng tên vàng `def ten():`, sân thử 3×3 + "Thử hàm",
+   Lớp phủ trượt lên đè màn chơi: bảng tên vàng `def ten():`, sân thử (vẽ đúng vùng robot đã đi, nới 1 ô viền, tối thiểu 3×3) + "Thử hàm",
    THÂN HÀM 10 ô + kho khối (Gốc, hàm khác của em, hàm của màn; không có chính nó).
    Hộp đặt tên cho "＋ Hàm mới". Sửa hàm của em → KhoHam.sua + lưu ngay;
    sửa hàm của màn → chỉ vào bản nháp của màn.
@@ -13,6 +13,8 @@
   var E = {};          // phần tử
   var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null };
   var NHIP_MS = 230, LENH_MS = 45;
+  var CO_SAN = 168, CO_O_NHO = 12;                       // khung sân (px) và cỡ ô nhỏ nhất (px màn hình)
+  var MAX_O = Math.floor(CO_SAN / CO_O_NHO);             // quá số ô này thì chỉ vẽ phần quanh vị trí cuối
 
   /* -------------------------------------------------------------- dựng DOM */
   function dung(host, app) {
@@ -45,7 +47,7 @@
     E.m = q('.result .m'); E.dg = q('.result .dg'); E.kq = q('.result');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]');
     E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong');
-    S.field = new SanVe.Field(E.canvas, { kich: 168 });
+    S.field = new SanVe.Field(E.canvas, { kich: CO_SAN, coNhoNhat: CO_O_NHO });
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'), dem: q('.p-prog .ct'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
@@ -90,7 +92,7 @@
     E.tag.textContent = loai === 'man' ? t('xuong.nhanMan') : t('xuong.nhanEm');
     E.xoaHam.style.display = loai === 'em' ? 'flex' : 'none';
     S.ed.nap(function () { return S.than; }, 10);
-    S.field.nap({ san: ChamHoc.SAN_THU, batDau: ChamHoc.BAT_DAU_THU, loaiRobot: man.loaiRobot || 'banh' });
+    napSan(null);
     lamPal();
     tinhNhanh();
     anBongD();
@@ -138,13 +140,84 @@
   }
 
   /* ------------------------------------------------------- kết quả thử */
-  function mota(r) {
-    var b = ChamHoc.BAT_DAU_THU, dx = r.x - b.x, dy = r.y - b.y, dd = (r.huong - b.huong + 4) % 4, p = [];
-    if (dy < 0) p.push(t('xuong.tien', { n: -dy })); else if (dy > 0) p.push(t('xuong.lui', { n: dy }));
-    if (dx > 0) p.push(t('xuong.sangPhai', { n: dx })); else if (dx < 0) p.push(t('xuong.sangTrai', { n: -dx }));
-    if (dd === 1) p.push(t('xuong.quayPhai')); else if (dd === 3) p.push(t('xuong.quayTrai')); else if (dd === 2) p.push(t('xuong.quayDau'));
-    if (!p.length) return t('xuong.dungYen');
-    return t('xuong.robot', { viec: p.join(', ') });
+  /** Các đoạn đi liền một hướng (lên/phải/xuống/trái) theo thứ tự thật trong vết: [{h: 0..3, n}]. */
+  function cacDoan(kq) {
+    var b = ChamHoc.BAT_DAU_THU, tr = { x: b.x, y: b.y }, ds = [];
+    kq.vet.forEach(function (e) {
+      if (e.loai !== 'nhip' || !e.robot) return;
+      var dx = e.robot.x - tr.x, dy = e.robot.y - tr.y;
+      tr = { x: e.robot.x, y: e.robot.y };
+      if (!dx && !dy) return;
+      var hg = dy < 0 ? 0 : dx > 0 ? 1 : dy > 0 ? 2 : 3, n = Math.abs(dx) + Math.abs(dy);
+      if (ds.length && ds[ds.length - 1].h === hg) ds[ds.length - 1].n += n; else ds.push({ h: hg, n: n });
+    });
+    return ds;
+  }
+  var TEN_O = ['len', 'phai', 'xuong', 'trai'];
+  function oDi(d) { return t('xuong.o.' + TEN_O[d.h], { n: d.n }); }
+  /** Lời tả kết quả theo vị trí TƯƠNG ĐỐI so với chỗ xuất phát (không nói tọa độ). */
+  function mota(kq) {
+    var r = kq.robot, b = ChamHoc.BAT_DAU_THU, dx = r.x - b.x, dy = r.y - b.y, dd = (r.huong - b.huong + 4) % 4;
+    var mat = dd === 1 ? 'phai' : dd === 3 ? 'trai' : dd === 2 ? 'dau' : null;
+    if (!dx && !dy) {
+      var ds0 = cacDoan(kq);
+      if (ds0.length) return t('xuong.vongVe') + (mat ? ', ' + t('xuong.quayMat.' + mat) : '');
+      return mat ? t('xuong.quayTaiCho.' + mat) : t('xuong.dungYen');
+    }
+    var ds = cacDoan(kq), viec;
+    if (ds.length === 1 && !mat && ds[0].h === 0) viec = t('xuong.tien', { n: ds[0].n });
+    else if (ds.length === 1 && !mat && ds[0].h === 2) viec = t('xuong.lui', { n: ds[0].n });
+    else if (ds.length >= 1 && ds.length <= 3) {
+      viec = t('xuong.di', { ds: ds.map(oDi).reduce(function (a, c) { return t('xuong.roi', { a: a, b: c }); }) });
+    } else {
+      var net = [];
+      if (dy) net.push(oDi({ h: dy < 0 ? 0 : 2, n: Math.abs(dy) }));
+      if (dx) net.push(oDi({ h: dx > 0 ? 1 : 3, n: Math.abs(dx) }));
+      return t('xuong.vong', { ds: net.join(' và ') }) + (mat ? ', ' + t('xuong.quayMat.' + mat) : '');
+    }
+    return t('xuong.robot', { viec: viec + (mat ? ', ' + t('xuong.quayMat.' + mat) : '') });
+  }
+
+  /* -------------------------------------------- vẽ đúng vùng robot đã đi */
+  /** Cấu hình sân vẽ từ `kq.khung` (tọa độ quy ước của lõi): nới 1 ô viền, tối thiểu 3×3;
+   *  quá MAX_O ô thì chỉ lấy MAX_O ô quanh vị trí cuối, đánh dấu cạnh bị cắt. ox, oy: tọa độ quy ước của ô (0,0) của sân vẽ. */
+  function cauHinhSan(kq) {
+    var kh = kq ? kq.khung : { minX: 1, maxX: 1, minY: 1, maxY: 1 }, r = kq ? kq.robot : ChamHoc.BAT_DAU_THU, b = ChamHoc.BAT_DAU_THU;
+    var lo = { x: kh.minX - 1, y: kh.minY - 1 }, hi = { x: kh.maxX + 1, y: kh.maxY + 1 }, cat = { trai: false, phai: false, tren: false, duoi: false }, coCat = false;
+    if (hi.x - lo.x + 1 > MAX_O) {
+      var a = Math.max(lo.x, Math.min(hi.x - MAX_O + 1, r.x - Math.floor(MAX_O / 2)));
+      cat.trai = a > lo.x; cat.phai = a + MAX_O - 1 < hi.x; lo.x = a; hi.x = a + MAX_O - 1; coCat = true;
+    }
+    if (hi.y - lo.y + 1 > MAX_O) {
+      var c = Math.max(lo.y, Math.min(hi.y - MAX_O + 1, r.y - Math.floor(MAX_O / 2)));
+      cat.tren = c > lo.y; cat.duoi = c + MAX_O - 1 < hi.y; lo.y = c; hi.y = c + MAX_O - 1; coCat = true;
+    }
+    var w = hi.x - lo.x + 1, hh = hi.y - lo.y + 1, d = '', rows = [];
+    for (var i = 0; i < w; i++) d += '.';
+    for (var j = 0; j < hh; j++) rows.push(d);
+    var sx = b.x - lo.x, sy = b.y - lo.y, trong = sx >= 0 && sy >= 0 && sx < w && sy < hh;
+    return {
+      san: rows, batDau: { x: sx, y: sy, huong: b.huong }, loaiRobot: A.man().loaiRobot || 'banh',
+      danhDau: trong ? { x: sx, y: sy } : null, cat: coCat ? cat : null, ox: lo.x, oy: lo.y
+    };
+  }
+  function napSan(kq) {
+    S.cs = cauHinhSan(kq);
+    S.field.nap(S.cs);
+    E.canvas.title = S.cs.cat ? t('xuong.vungCat') : '';
+  }
+  /** Bản sao vết với tọa độ quy ước đổi sang tọa độ của sân vẽ. */
+  function vetTrenSan(vet) {
+    var ox = S.cs.ox, oy = S.cs.oy;
+    function dich(v) {
+      if (!v || typeof v !== 'object') return v;
+      if (Array.isArray(v)) return v.map(dich);
+      var o = {};
+      for (var k in v) o[k] = dich(v[k]);
+      if (typeof v.x === 'number' && typeof v.y === 'number') { o.x = v.x - ox; o.y = v.y - oy; }
+      return o;
+    }
+    return dich(vet);
   }
   function chay() {
     var man = A.man();
@@ -178,7 +251,7 @@
     var tin = kq.chanDoan.filter(function (c) { return c.muc !== 'loi'; });
     var ds = loi.concat(tin);
     S.ketThu.chanDoan = ds;
-    E.m.textContent = loi.length ? '' : mota(kq.robot);
+    E.m.textContent = loi.length ? '' : mota(kq);
     E.m.style.display = loi.length ? 'none' : '';
     E.dg.innerHTML = '';
     E.dg.removeAttribute('data-ma');
@@ -216,7 +289,9 @@
       E.m.style.display = ''; E.m.textContent = t('xuong.bamThu'); E.dg.textContent = ''; E.dg.className = 'dg';
       S.ketThu = null; E.kq.classList.remove('dai'); return;
     }
-    hienKetQua(chay());
+    var kq = chay();
+    napSan(kq);
+    hienKetQua(kq);
   }
   function vuaChu(el, max, min) { TP.vuaChu(el, max, min); }
 
@@ -228,10 +303,11 @@
     anBongD(); S.ed.anHoan();
     S.busy = true; E.side.classList.add('busy');
     S.field.datLai();
-    S.field.nap({ san: ChamHoc.SAN_THU, batDau: ChamHoc.BAT_DAU_THU, loaiRobot: A.man().loaiRobot || 'banh' });
+    napSan(kq);
+    var vet = vetTrenSan(kq.vet);
     var toc = A.toc();
-    for (var i = 0; i < kq.vet.length; i++) {
-      var e = kq.vet[i];
+    for (var i = 0; i < vet.length; i++) {
+      var e = vet[i];
       if (e.loai === 'lenh') {
         sang(e);
         await SanVe.ngu(LENH_MS / toc); if (my !== S.rid) return;
