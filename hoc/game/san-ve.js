@@ -4,6 +4,8 @@
    băng chuyền > < ^ v, vật o (thùng gỗ), ô đích D (khung vàng nét đứt), X (đích có sẵn vật, khung vàng đặc), robot.
    Robot luôn vẽ qua VeRobot.ve() (ve-robot.js), trên LỚP PHỦ cả sân (một canvas thứ hai nằm đè lên canvas sân, có lề tràn ra ngoài sân
    để tay kẹp nhô ra mép sân không bị cắt; độ phân giải = pixel thiết bị nên hình part luôn nguyên lần, rõ nét). Hạt, chớp đỏ, dấu ?/! cũng vẽ ở lớp phủ. Phát lại từng sự kiện 'nhip' của vết (kể cả tay gắp và vật).
+   Chương cảm biến màu: ô sàn màu (ký hiệu r g b y trong sân hoặc lớp cfg.mau), vật có màu (cfg.vatMau, hay vat[i].mau), đích có màu (khung nét đứt tô màu đích;
+   vật đúng màu nằm trên thì khung đặc, sai màu thì dấu ✗), vòng sáng + bong chữ màu khi cảm biến màu đọc (docCamBien.cam === 'mau').
    Không chứa luật chơi: mọi kết quả (vị trí, hướng, sự kiện) đến từ lõi (SanHoc).
    ========================================================================== */
 (function () {
@@ -13,6 +15,24 @@
   var BANG = { '>': 1, 'v': 2, '<': 3, '^': 0 };
   var DX = [0, 1, 0, -1], DY = [-1, 0, 1, 0];
   var FIELDS = [];
+  var MAU_KY = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
+  var MAU_RA = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
+  function chuanMau(m) { return typeof m === 'string' ? (MAU_KY[m] || (MAU_RA[m] ? m : null)) : null; }
+  /** Lớp màu (mảng chuỗi r g b y '.') + ký hiệu r g b y trong hàng sân → mảng hàng tên màu / null; null nếu sân không có ô màu. */
+  function dungLopMau(rows, lop) {
+    var h = rows.length, w = rows[0].length, kq = [], co = false;
+    for (var y = 0; y < h; y++) {
+      var hang = [];
+      for (var x = 0; x < w; x++) {
+        var m = MAU_KY[rows[y][x]] || (lop && lop[y] ? MAU_KY[lop[y][x]] : null) || null;
+        if (m && rows[y][x] === '#') m = null;
+        if (m) co = true;
+        hang.push(m);
+      }
+      kq.push(hang);
+    }
+    return co ? kq : null;
+  }
   var HIEU_UNG = { 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'o-co-vat': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'day-dung-yen': 1, 'doc-cam-bien': 1 };   // sự kiện tức thì của tay (không chiếm thời gian của nhịp)
 
   function ngu(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
@@ -36,17 +56,17 @@
     nap: function (cfg) {
       var rows = cfg.san, w = rows[0].length, h = rows.length;
       var loai = cfg.loaiRobot || 'banh';
-      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [],
+      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null,
         robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [] };
       this.vat0 = []; this.thung0 = [];
       for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
         var ch = rows[y][x];
         if (ch === 'F' && !this.cfg.co) this.cfg.co = { x: x, y: y };
-        if (ch === 'D' || ch === 'X' || ch === 'h') this.cfg.dich.push({ x: x, y: y });
-        if (ch === 'o' || ch === 'X') this.themVat(x, y);
+        if (ch === 'D' || ch === 'X' || ch === 'h') this.cfg.dich.push({ x: x, y: y, mau: this.mauNen(x, y) });
+        if (ch === 'o' || ch === 'X') this.themVat(x, y, this.cfg.vatMau && this.cfg.vatMau[y] ? MAU_KY[this.cfg.vatMau[y][x]] : null);
         if (ch === 'H' || ch === 'h') this.themThung(x, y);
       }
-      (cfg.vat || []).forEach(function (o) { this.themVat(Math.floor(o.x), Math.floor(o.y)); }, this);   // cùng thứ tự với SanHoc.chay: id 1, 2, ...
+      (cfg.vat || []).forEach(function (o) { this.themVat(Math.floor(o.x), Math.floor(o.y), chuanMau(o.mau)); }, this);   // cùng thứ tự với SanHoc.chay: id 1, 2, ...
       (cfg.thung || []).forEach(function (o) { this.themThung(Math.floor(o.x), Math.floor(o.y)); }, this);   // thùng nặng thêm ngoài sân (sân thử của Xưởng): cùng thứ tự với SanHoc.chay
       this.cv.width = w * T; this.cv.height = h * T;
       var thoGoc = this.kich / (Math.max(w, h) * T), k = Math.max(1, Math.floor(thoGoc));
@@ -57,12 +77,17 @@
       this.lopKhoa = ''; this.doiCo();
       this.datLai();
     },
-    /** Thêm một vật ban đầu (mỗi ô tối đa một, không nằm trong tường / ngoài sân), id = thứ tự thêm. */
-    themVat: function (x, y) {
+    /** Màu sàn của ô (x, y) (tên màu của lõi) hoặc null. */
+    mauNen: function (x, y) {
+      var m = this.cfg.mauO;
+      return m && m[y] && m[y][x] ? m[y][x] : null;
+    },
+    /** Thêm một vật ban đầu (mỗi ô tối đa một, không nằm trong tường / ngoài sân), id = thứ tự thêm. mau: tên màu của vật hoặc null. */
+    themVat: function (x, y, mau) {
       var c = this.cfg;
       if (!(x >= 0 && y >= 0 && x < c.w && y < c.h) || c.rows[y][x] === '#') return;
       for (var i = 0; i < this.vat0.length; i++) if (this.vat0[i].x === x && this.vat0[i].y === y) return;
-      this.vat0.push({ id: this.vat0.length + 1, x: x, y: y });
+      this.vat0.push({ id: this.vat0.length + 1, x: x, y: y, mau: mau || null });
     },
     /** Thêm một thùng nặng ban đầu (mỗi ô tối đa một, không nằm trong tường / ngoài sân), id = thứ tự thêm. */
     themThung: function (x, y) {
@@ -75,7 +100,7 @@
       this.rid++;
       var b = this.cfg.bd;
       this.vis = { x: b.x, y: b.y, d: b.huong || 0, goc: 0, chan: 0, hop: 0, dx: 0, dy: 0, tay: { tuThe: 'tren', kep: false, cam: null }, tayDo: 0, bao: null, baoDen: 0, ra: 0 };
-      this.objs = this.vat0.map(function (o) { return { id: o.id, x: o.x, y: o.y, tt: 'dat', voLuc: 0 }; });
+      this.objs = this.vat0.map(function (o) { return { id: o.id, x: o.x, y: o.y, tt: 'dat', voLuc: 0, mau: o.mau || null }; });
       this.thungs = this.thung0.map(function (o) { return { id: o.id, x: o.x, y: o.y, dx: 0, dy: 0, ket: false }; });
       this.clearFx();
     },
@@ -90,8 +115,9 @@
       var now = performance.now(), key = d.tu.x + ',' + d.tu.y + '>' + d.o.x + ',' + d.o.y, ds = this.docs, i;
       ms = Math.max(140, ms || 360);
       for (i = ds.length - 1; i >= 0; i--) if (ds[i].key === key) { ds.splice(i, 1); break; }
-      ds.push({ key: key, tu: d.tu, o: d.o, huong: d.huong, trong: !!d.trong, vat: d.vat || null, t0: now, ms: ms });
+      ds.push({ key: key, tu: d.tu, o: d.o, huong: d.huong, trong: !!d.trong, vat: d.vat || null, cam: d.cam || null, mau: d.mau || null, t0: now, ms: ms });
       while (ds.length > 6) ds.shift();
+      if (d.cam === 'mau' && this.vis) this.vis.bongMau = { mau: d.mau || 'none', den: now + Math.max(ms, 300) };      // bong chữ màu vừa đọc nổi trên xe trong khoảng một nhịp
     },
     /** Còn tia cảm biến đang sáng không (cảm biến trên thân xe sáng cùng lúc). */
     camBienSang: function (now) {
@@ -104,6 +130,7 @@
       for (i = ds.length - 1; i >= 0; i--) if (now - ds[i].t0 >= ds[i].ms) ds.splice(i, 1);
       for (i = 0; i < ds.length; i++) {
         var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45), rgb = d.trong ? '93,255,122' : '255,74,60';
+        if (d.cam === 'mau') continue;                                           // cảm biến màu: vòng sáng vẽ dưới robot (veVongMauDuoi)
         var vx = DX[d.huong], vy = DY[d.huong], x0 = d.tu.x * T + 7 + vx * 5, y0 = d.tu.y * T + 7 + vy * 5;
         var cx = d.o.x * T + 7, cy = d.o.y * T + 7, x1 = d.trong ? cx : cx - vx * 6, y1 = d.trong ? cy : cy - vy * 6;
         g.fillStyle = 'rgba(' + rgb + ',' + (0.3 * a).toFixed(3) + ')'; g.fillRect(d.o.x * T, d.o.y * T, T, T);     // ô được đo ám nhẹ
@@ -116,6 +143,37 @@
         else { g.beginPath(); g.moveTo(x1 - 2.5, y1 - 2.5); g.lineTo(x1 + 2.5, y1 + 2.5); g.moveTo(x1 + 2.5, y1 - 2.5); g.lineTo(x1 - 2.5, y1 + 2.5); g.stroke(); }
         g.restore();
       }
+    },
+    /** Màu hiển thị của một lần đọc màu: 'none' (ô không màu) là xám nhạt. */
+    mauHien: function (mau) { return Ve.MAU[mau] ? Ve.MAU[mau].vi : '#d8dfeb'; },
+    /** Vòng sáng của cảm biến màu ở ô vừa đọc (vẽ DƯỚI robot): vòng nở ra rồi mờ dần, tô màu vừa đọc được (ô không màu: xám nhạt). */
+    veVongMauDuoi: function (g, now) {
+      var ds = this.docs, i;
+      for (i = 0; i < ds.length; i++) {
+        var d = ds[i]; if (d.cam !== 'mau') continue;
+        var u = Math.min(1, (now - d.t0) / d.ms), a = u < 0.5 ? 1 : Math.max(0, 1 - (u - 0.5) / 0.5), col = this.mauHien(d.mau), cx = d.o.x * T + 7, cy = d.o.y * T + 7 + 1;
+        g.save();
+        g.globalAlpha = (d.mau === 'none' ? 0.32 : 0.5) * a; g.fillStyle = col;
+        g.beginPath(); g.ellipse(cx, cy, 6.2, 5.2, 0, 0, 6.2832); g.fill();
+        g.globalAlpha = 0.95 * a; g.strokeStyle = col; g.lineWidth = 1.2;
+        g.beginPath(); g.ellipse(cx, cy, 4 + u * 3.4, 3.4 + u * 2.8, 0, 0, 6.2832); g.stroke();
+        g.restore();
+      }
+    },
+    /** Bong chữ màu cảm biến vừa đọc, nổi trên xe: "red" ... (một nhịp). cao = khoảng cách từ tâm xe tới đáy bong. */
+    veBongMau: function (g, cx, cy, now, cao) {
+      var b = this.vis.bongMau; if (!b || b.den <= now) return;
+      var col = this.mauHien(b.mau), txt = '"' + b.mau + '"';
+      g.save();
+      g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'center';
+      var w = Math.ceil(g.measureText(txt).width) + 5, hh = 9, x = Math.round(cx - w / 2), y = Math.max(1, Math.round(cy - cao - hh));
+      x = Math.max(1, Math.min(this.cv.width - w - 1, x));
+      g.globalAlpha = Math.min(1, (b.den - now) / 120);
+      g.fillStyle = '#1b120a'; g.fillRect(x - 1, y - 1, w + 2, hh + 2);
+      g.fillStyle = '#2a2236'; g.fillRect(x, y, w, hh);
+      g.fillStyle = col; g.fillRect(x, y, w, 1); g.fillRect(x, y + hh - 1, w, 1); g.fillRect(x, y, 1, hh); g.fillRect(x + w - 1, y, 1, hh);
+      g.fillText(txt, Math.round(x + w / 2), y + hh / 2 + 0.5);
+      g.restore();
     },
     /** Phun hạt. Tùy chọn: sz = cạnh hạt (px sân), mo = true thì hạt mờ dần khi sắp hết. */
     burst: function (cx, cy, n, cols, sp, sz, mo) {
@@ -138,25 +196,53 @@
     chopDo: function (ms) { this.flash = performance.now() + (ms || 160); },
 
     /* ---- ô đích, vật, dấu nổi */
-    /** Ô đích còn trống: nền vàng nhạt + khung nét đứt chạy chậm. */
+    /** Ô đích còn trống: nền vàng nhạt + khung nét đứt chạy chậm. Đích có màu: ô đã là tấm màu, khung nét đứt tô màu đích (sáng hơn nền). */
     veDichTrong: function (g, now) {
       var ds = this.cfg.dich; if (!ds.length) return;
       g.save(); g.lineWidth = 1; g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5);
       for (var i = 0; i < ds.length; i++) {
-        var d = ds[i], x = d.x * T, y = d.y * T;
-        if (this.vatTaiO(d.x, d.y) || this.thungTaiO(d.x, d.y)) continue;
+        var d = ds[i], x = d.x * T, y = d.y * T, vo = this.vatTaiO(d.x, d.y);
+        if ((vo && this.vatDungMau(vo, d)) || this.thungTaiO(d.x, d.y)) continue;
+        if (d.mau) {
+          g.setLineDash([]); g.strokeStyle = '#1b120a'; g.strokeRect(x + 2.5, y + 2.5, T - 5, T - 5);     // viền tối trong để khung sáng nổi trên nền cùng màu
+          g.setLineDash([3, 2]); g.strokeStyle = Ve.MAU[d.mau].vi; g.lineWidth = 1.5; g.strokeRect(x + 1.25, y + 1.25, T - 2.5, T - 2.5); g.lineWidth = 1;
+          continue;
+        }
         g.fillStyle = 'rgba(255,210,63,.22)'; g.fillRect(x, y, T, T);
         g.strokeStyle = '#ffd23f'; g.strokeRect(x + 1.5, y + 1.5, T - 3, T - 3);
       }
       g.restore();
     },
-    /** Ô đích đã có vật nằm: khung vàng đặc đè lên viền thùng. */
+    /** Vật o có hợp ô đích d không (đích không màu nhận mọi vật; đích có màu chỉ nhận vật cùng màu). */
+    vatDungMau: function (o, d) { return !d.mau || o.mau === d.mau; },
+    /** Khung đặc của ô đích đã có vật nằm (đích có màu: màu đích, có viền tối cho nổi). */
+    veKhungDay: function (g, d) {
+      if (d.mau) {
+        g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.strokeRect(d.x * T + 1.5, d.y * T + 1.5, T - 3, T - 3);
+        g.lineWidth = 2; g.strokeStyle = Ve.MAU[d.mau].vi;
+      } else { g.lineWidth = 2; g.strokeStyle = '#ffd23f'; }
+      g.strokeRect(d.x * T + 1, d.y * T + 1, T - 2, T - 2); g.lineWidth = 1;
+    },
+    /** Dấu ✗ nhỏ ở góc trên phải ô (x, y): vật thả sai màu đích. */
+    veDauSai: function (g, x, y) {
+      var X = [[0, 0], [1, 1], [2, 2], [3, 3], [0, 3], [1, 2], [2, 1], [3, 0]], i, ox = x * T + T - 6, oy = y * T + 2;
+      g.fillStyle = '#1b120a';
+      for (i = 0; i < X.length; i++) { g.fillRect(ox + X[i][0] - 1, oy + X[i][1], 3, 1); g.fillRect(ox + X[i][0], oy + X[i][1] - 1, 1, 3); }
+      g.fillStyle = '#ff4a3c';
+      for (i = 0; i < X.length; i++) g.fillRect(ox + X[i][0], oy + X[i][1], 1, 1);
+    },
+    /** Ô đích đã có vật nằm: khung đặc đè lên viền thùng (đích có màu mà vật sai màu: giữ khung nét đứt, thêm ✗). */
     veDichDay: function (g) {
       var ds = this.cfg.dich;
       for (var i = 0; i < ds.length; i++) {
-        var d = ds[i];
-        if (!this.vatTaiO(d.x, d.y) && !this.thungTaiO(d.x, d.y)) continue;
-        g.strokeStyle = '#ffd23f'; g.lineWidth = 2; g.strokeRect(d.x * T + 1, d.y * T + 1, T - 2, T - 2); g.lineWidth = 1;
+        var d = ds[i], o = this.vatTaiO(d.x, d.y);
+        if (!o && !this.thungTaiO(d.x, d.y)) continue;
+        if (o && !this.vatDungMau(o, d)) {
+          g.save(); g.lineWidth = 1; g.setLineDash([3, 2]); g.strokeStyle = Ve.MAU[d.mau].vi; g.strokeRect(d.x * T + 1.25, d.y * T + 1.25, T - 2.5, T - 2.5); g.restore();
+          this.veDauSai(g, d.x, d.y);
+          continue;
+        }
+        this.veKhungDay(g, d);
       }
     },
     /** Thùng nặng đang nằm đúng ô (x, y) (đã dừng hẳn, không đang trượt). */
@@ -192,6 +278,10 @@
       for (var i = 0; i < this.objs.length; i++) { var o = this.objs[i]; if (o.tt === 'dat' && o.x === x && o.y === y) return o; }
       return null;
     },
+    dichTaiO: function (x, y) {
+      for (var i = 0; i < this.cfg.dich.length; i++) if (this.cfg.dich[i].x === x && this.cfg.dich[i].y === y) return this.cfg.dich[i];
+      return null;
+    },
     vatTaiDich: function (o) {
       for (var i = 0; i < this.cfg.dich.length; i++) if (this.cfg.dich[i].x === o.x && this.cfg.dich[i].y === o.y) return true;
       return false;
@@ -201,10 +291,11 @@
       var nhun = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 2) : 0;
       for (var i = 0; i < this.objs.length; i++) {
         var o = this.objs[i];
-        if (o.tt === 'dat') g.drawImage(TL.crate, o.x * T, o.y * T + (this.vatTaiDich(o) ? nhun : 0));
+        var hinh = (o.mau && TL.crateMau[o.mau]) || TL.crate;
+        if (o.tt === 'dat') g.drawImage(hinh, o.x * T, o.y * T + (this.vatTaiDich(o) ? nhun : 0));
         else if (o.tt === 'vo' && o.voLuc) {
           var k = (now - o.voLuc) / 800;
-          if (k < 1) { g.globalAlpha = 0.7 * (1 - k); g.drawImage(TL.crate, o.x * T, o.y * T - Math.round(k * 4)); g.globalAlpha = 1; }
+          if (k < 1) { g.globalAlpha = 0.7 * (1 - k); g.drawImage(hinh, o.x * T, o.y * T - Math.round(k * 4)); g.globalAlpha = 1; }
         }
       }
     },
@@ -251,6 +342,7 @@
         g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, this.lop.width, this.lop.height);
         var X = Math.round(mcu + cx * ku), Y = Math.round(mcu + cy * ku - v.hop * ku), p = this.p;
         var ph = (now / 90 | 0) & 1, duoi = this.vatDuoiXe();
+        if (this.docs.length) { g.setTransform(ku, 0, 0, ku, mcu, mcu); this.veVongMauDuoi(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // cảm biến màu vừa đọc: vòng sáng dưới gầm
         var wL = this.wh.L, wR = this.wh.R, phC = ph;
         if (c.robot.than === 'nhen') { wL = wR = v.chan ? 2 : 0; if (v.chan === 1) phC = 1; }   // nhện: chan 1 = nhấc chân (khung `buoc` đứng yên), 2 = chân bước luân phiên
         var spr = VeRobot.ve(c.robot, { wl: wL, wr: wR, ph: phC, tay: v.ra ? { tuThe: v.tay.tuThe, kep: v.tay.kep, cam: v.tay.cam, ra: true } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
@@ -269,9 +361,11 @@
         g.setTransform(ku, 0, 0, ku, mcu, mcu);                                           // từ đây vẽ theo pixel sân
         var tx = Math.round(v.x), ty = Math.round(v.y);                                   // ô đích đã có vật dưới xe: khung vàng đặc nằm TRÊN xe
         if (this.vatTaiO(tx, ty) && this.vatTaiDich(this.vatTaiO(tx, ty)) && Math.abs(v.x - tx) < 0.01 && Math.abs(v.y - ty) < 0.01) {
-          g.strokeStyle = '#ffd23f'; g.lineWidth = 2; g.strokeRect(tx * T + 1, ty * T + 1, T - 2, T - 2); g.lineWidth = 1;
+          var dd = this.dichTaiO(tx, ty);
+          if (dd && !this.vatDungMau(this.vatTaiO(tx, ty), dd)) this.veDauSai(g, tx, ty); else this.veKhungDay(g, dd || { x: tx, y: ty });
         }
         if (this.docs.length) this.veTia(g, now);
+        if (v.bongMau && v.bongMau.den > now) this.veBongMau(g, cx, cy, now, c.robot.tay ? 24 : 20);
         if (v.bao && v.baoDen > now) this.veDau(g, v.bao, cx, cy, now, c.robot.tay ? 25 : 21);
         if (this.flash > now) { g.fillStyle = 'rgba(255,60,50,.32)'; g.fillRect(0, 0, this.cv.width, this.cv.height); }
       }
@@ -310,6 +404,8 @@
         else if (ch === 'S') t = TL.stair;
         else if (ch === 'F') t = TL.pad;
         else t = TL.rug[(x + y * 2) & 3];
+        var mn = (ch === '#' || ch === 'S' || BANG[ch] !== undefined) ? null : this.mauNen(x, y);
+        if (mn) t = TL.mau[mn][(x + y) & 1];                  // sàn tô màu (kể cả dưới cờ và ô đích)
         g.drawImage(t, x * T, y * T);
       }
       this.veDichTrong(g, now);
@@ -573,17 +669,24 @@
    * Ảnh nhỏ của một sân (cho dải chọn sân): vẽ lên canvas cv, mỗi ô vuông nguyên px CSS (vừa khung rong × cao px CSS), hai px canvas mỗi px CSS.
    * rows = hàng sân của lõi, bd = { x, y, huong } ô xuất phát (chấm xanh lơ có mũi chỉ hướng mặt). Không có luật chơi, chỉ để nhận ra sân.
    */
-  function thuSan(cv, rows, bd, rong, cao) {
+  function thuSan(cv, rows, bd, rong, cao, lopMau) {
     var w = rows[0].length, h = rows.length, c = Math.max(2, Math.floor(Math.min((rong || 29) / w, (cao || 28) / h))), q = 2, s = c * q;
     cv.width = w * s; cv.height = h * s; cv.style.width = (w * c) + 'px'; cv.style.height = (h * c) + 'px';
     var g = cv.getContext('2d'), x, y, ch, px, py;
+    var mauO = dungLopMau(rows, lopMau && lopMau.mau), vm = lopMau && lopMau.vatMau;       // sân có ô màu / vật màu (chương cảm biến màu)
     for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
       ch = rows[y][x]; px = x * s; py = y * s;
       if (ch === '#') { g.fillStyle = '#4a5368'; g.fillRect(px, py, s, s); g.fillStyle = '#7a85a3'; g.fillRect(px, py, s, Math.max(1, s >> 3)); continue; }
-      g.fillStyle = BANG[ch] !== undefined ? '#2f5fb0' : ch === 'S' ? '#9aa0b0' : '#2f7a46'; g.fillRect(px, py, s, s);
+      var mn = mauO && mauO[y][x] && BANG[ch] === undefined && ch !== 'S' ? mauO[y][x] : null;
+      g.fillStyle = mn ? Ve.MAU[mn].n : BANG[ch] !== undefined ? '#2f5fb0' : ch === 'S' ? '#9aa0b0' : '#2f7a46'; g.fillRect(px, py, s, s);
+      if (mn) { g.fillStyle = Ve.MAU[mn].t; g.fillRect(px, py, s, 1); g.fillRect(px, py + s - 1, s, 1); g.fillRect(px, py, 1, s); g.fillRect(px + s - 1, py, 1, s); }
       if (ch === 'H' || ch === 'h') { g.fillStyle = '#8d97a8'; g.fillRect(px + (s >> 3), py + (s >> 3), s - (s >> 2), s - (s >> 2)); }
-      if (ch === 'o' || ch === 'X') { g.fillStyle = '#c98a45'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
-      if (ch === 'D' || ch === 'X' || ch === 'h') { g.strokeStyle = '#ffd23f'; g.lineWidth = Math.max(1, s >> 3); g.strokeRect(px + g.lineWidth / 2, py + g.lineWidth / 2, s - g.lineWidth, s - g.lineWidth); }
+      if (ch === 'o' || ch === 'X') {
+        var mv = vm && vm[y] ? MAU_KY[vm[y][x]] : null;
+        g.fillStyle = '#c98a45'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1);
+        if (mv) { g.fillStyle = Ve.MAU[mv].s; g.fillRect(px + (s >> 2), py + (s >> 1) - 1, s >> 1, Math.max(2, s >> 3)); }
+      }
+      if (ch === 'D' || ch === 'X' || ch === 'h') { g.strokeStyle = mn ? Ve.MAU[mn].vi : '#ffd23f'; g.lineWidth = Math.max(1, s >> 3); g.strokeRect(px + g.lineWidth / 2, py + g.lineWidth / 2, s - g.lineWidth, s - g.lineWidth); }
       if (ch === 'F') {
         g.fillStyle = '#fff6e3'; g.fillRect(px + (s >> 1) - 1, py + 1, Math.max(1, s >> 3), s - 2);
         g.fillStyle = '#ff4a3c'; g.fillRect(px + (s >> 1), py + 1, s >> 1, s >> 1);

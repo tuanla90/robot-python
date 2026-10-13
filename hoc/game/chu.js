@@ -78,6 +78,10 @@
       'choi.nhom.dk': 'ĐIỀU KIỆN',
       'choi.chonChuoi': 'Chọn chữ chỉ đường',
       'choi.chonDieuKien': 'Chọn điều kiện',
+      'choi.chonMau': 'Chọn màu',
+      'choi.ghepAnd': '+ and',
+      'choi.ghepOr': '+ or',
+      'choi.boVe': 'bỏ vế này',
       'choi.san': 'Sân {n}',
       'choi.sanTien': 'Sân {n}: ',
       'choi.sanQua': 'Sân {n}: tới cờ',
@@ -132,6 +136,9 @@
       'xuong.datXe': 'Đặt xe',
       'xuong.vat': 'Vật',
       'xuong.tuong': 'Tường',
+      'xuong.mau': 'Màu',
+      'xuong.mauSan': 'Chạm ô để đổi màu sàn',
+      'xuong.mauVat': 'Chạm vật để đổi màu',
       'xuong.def': 'def',
       'xuong.xong': 'Xong: {n} nhịp',
       'xuong.xoaHam': 'Xóa hàm này',
@@ -148,6 +155,7 @@
       'xuong.gi.vat': 'vật',
       'xuong.gi.tuong': 'tường',
       'xuong.gi.thung': 'thùng nặng',
+      'xuong.gi.mau': 'màu',
 
       /* ---- hộp đặt tên */
       'ten.tieuDe': 'Đặt tên hàm mới',

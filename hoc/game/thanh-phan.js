@@ -79,9 +79,65 @@
   var RE_DK = /^(\s*(?:while|if|elif)\s+)((?:not\s+)?[A-Za-z_]\w*\(\)|True|False)(\s*:.*)$/;                        // while front_clear(): / if not right_clear(): / while True:
   var RE_GOI_DS = /^(\s*([A-Za-z_]\w*)\()([^)]*)(\).*)$/;
   var RE_SO = /^\d+$/, RE_BIEN = /^[A-Za-z_]\w*$/, RE_CHUOI = /^"[^"]*"$/;
+
+  /* ---- chương CẢM BIẾN MÀU: điều kiện của while / if / elif gồm một hay hai vế nối bằng and / or.
+     Vế là: lời gọi cảm biến (`front_clear()`, `not left_clear()`) hoặc phép so sánh màu `color() != "red"` / `c == "green"` / `color() != c`.
+     Chế độ này chỉ bật ở màn có color() (TP.datCheMau): các chương cũ giữ nguyên cách tách dòng. */
+  var CHE_MAU = false;
+  var MAU_DS = ['red', 'green', 'blue', 'yellow', 'none'];                                   // các giá trị color() có thể trả về
+  var MAU_LOP = { red: 'g-rd', green: 'g-gr', blue: 'g-bl', yellow: 'g-yl', none: 'g-gy' };
+  var RE_DKM = /^(\s*(?:while|if|elif)\s+)([^:]+?)(\s*:.*)$/;
+  var RE_CL_SS = /^(color\(\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;
+  var RE_CL_CAM = /^(?:not\s+)?[A-Za-z_]\w*\(\)$|^(?:True|False)$/;
+  var RE_GAN_MAU = /^\s*([A-Za-z_]\w*)\s*=\s*color\(\)\s*(#.*)?$/;                           // c = color()
+  function datCheMau(b) { CHE_MAU = !!b; }
+  /** Màn có cảm biến màu (hamGoc có color). */
+  function coMauCua(man) { return ((man && man.hamGoc) || []).indexOf('color') >= 0; }
+  /** Tách điều kiện màu của một dòng while / if / elif: { loai: 'dkm', tien, hau, ds: [chữ từng ô], tok: [{ vt: 'cam' | 'lhs' | 'op' | 'rhs' | 'noi', ci: vế, t }], cl: [vế], nx: [and | or] } hoặc null. */
+  function tachDKM(dong) {
+    var m = RE_DKM.exec(chuoi(dong)); if (!m) return null;
+    var parts = m[2].trim().split(/\s+(and|or)\s+/), cl = [], nx = [], tok = [], i;
+    for (i = 0; i < parts.length; i++) { if (i % 2) nx.push(parts[i]); else cl.push(parts[i].trim()); }
+    if (cl.length > 2) return null;
+    for (i = 0; i < cl.length; i++) {
+      var ss = RE_CL_SS.exec(cl[i]);
+      if (i) tok.push({ vt: 'noi', ci: i, t: nx[i - 1] });
+      if (ss) tok.push({ vt: 'lhs', ci: i, t: ss[1] }, { vt: 'op', ci: i, t: ss[2] }, { vt: 'rhs', ci: i, t: ss[3] });
+      else if (RE_CL_CAM.test(cl[i])) tok.push({ vt: 'cam', ci: i, t: cl[i] });
+      else return null;
+    }
+    return { loai: 'dkm', ten: '', tien: m[1], ds: tok.map(function (x) { return x.t; }), noi: ' ', hau: m[3], laFor: false, tok: tok, cl: cl, nx: nx };
+  }
+  function ghepDKM(d, cl, nx) {
+    var kq = cl[0];
+    for (var i = 1; i < cl.length; i++) kq += ' ' + nx[i - 1] + ' ' + cl[i];
+    return d.tien + kq + d.hau;
+  }
+  /** Thay vế ci của dòng bằng chuỗi `str` (vd. `color() != "red"`). */
+  function thayVe(dong, ci, str) {
+    var d = tachDKM(dong); if (!d || ci < 0 || ci >= d.cl.length) return dong;
+    d.cl[ci] = str; return ghepDKM(d, d.cl, d.nx);
+  }
+  /** Nối thêm một vế (nx = 'and' | 'or') vào cuối điều kiện (tối đa hai vế). */
+  function themVe(dong, nx, str) {
+    var d = tachDKM(dong); if (!d || d.cl.length >= 2) return dong;
+    d.cl.push(str); d.nx.push(nx); return ghepDKM(d, d.cl, d.nx);
+  }
+  /** Bỏ vế ci (cùng chữ nối của nó) khỏi điều kiện có hai vế. */
+  function boVe(dong, ci) {
+    var d = tachDKM(dong); if (!d || d.cl.length < 2) return dong;
+    d.cl.splice(ci, 1); d.nx.splice(ci === 0 ? 0 : ci - 1, 1); return ghepDKM(d, d.cl, d.nx);
+  }
+  /** Tên biến đã gán bằng color() ở các dòng phía trên dòng i (hoặc mọi dòng nếu i âm). */
+  function bienGanMau(arr, i) {
+    var kq = [], j, m;
+    for (j = 0; j < arr.length && (i < 0 || j < i); j++) if ((m = RE_GAN_MAU.exec(chuoi(arr[j]))) && kq.indexOf(m[1]) < 0) kq.push(m[1]);
+    return kq;
+  }
   /** { loai: 'range' | 'forChuoi' | 'if' | 'dk' (điều kiện cảm biến của while / if / elif) | 'goi', ten (tên hàm được gọi), tien, ds: [chuỗi đối số], noi (chuỗi nối các đối số), hau, laFor } hoặc null nếu dòng không có ngoặc đối số. */
   function tachDoiSo(dong) {
     dong = chuoi(dong);
+    if (CHE_MAU) { var dm = tachDKM(dong); if (dm) return dm; }
     var m = RE_FOR_DS.exec(dong);
     if (m) return { loai: 'range', ten: '', tien: m[1], ds: m[2].trim() === '' ? [] : m[2].split(',').map(function (x) { return x.trim(); }), noi: ', ', hau: m[3], laFor: true };
     m = RE_FOR_CH.exec(dong);
@@ -109,12 +165,33 @@
     return '<span class="ar">' + esc(v) + '</span>';
   }
 
+  /** Ô chạm được của một phần điều kiện màu (xem tachDKM): vế cảm biến / vế trái (teal), phép so sánh (== / !=), vế phải (màu hay biến), chữ nối and / or. */
+  function oDkm(o, k) {
+    var t = o.t, base = '<span class="num dkc dkm ' + o.vt;
+    var at = '" data-k="' + k + '" data-so="0" data-vt="' + o.vt + '" data-dkm="' + esc(t) + '">' + esc(t) + '</span>';
+    if (o.vt === 'rhs') {
+      var chu = RE_CHUOI.exec(t) ? t.slice(1, -1) : null;
+      if (chu !== null) return base + ' chuoi-mau ' + (MAU_DS.indexOf(chu) >= 0 ? 'mc-' + chu : 'mc-sai') + at.replace('data-so="0"', 'data-so="0" data-chuoi="' + esc(chu) + '"');
+      return base + ' bien' + at;
+    }
+    return base + at;
+  }
   /** Ô chạm được của điều kiện (front_clear(), not right_clear(), True…): bấm để chọn điều kiện khác. */
   function oDieuKien(v) { return '<span class="num dkc" data-k="0" data-so="0" data-dk="' + esc(v) + '">' + esc(v) + '</span>'; }
   /** Tô màu một dòng code (ngôn ngữ giữ nguyên tiếng Anh). Dấu cách đầu dòng bị bỏ: bậc thụt do khung vẽ bằng lề. */
   function mauDong(text) {
     text = boThut(text);
     if (/^#/.test(text)) return '<span class="cm">' + esc(text) + '</span>';
+    if (CHE_MAU) {
+      var dkm = tachDKM(text);
+      if (dkm) {
+        var kw = /^\s*(\w+)/.exec(dkm.tien)[1], ht = '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span>';
+        dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '<span class="ngat"></span>' : ''); });       // điều kiện hai vế: xuống dòng sau and / or (hai dòng nhỏ trong một ô)
+        return ht + '<span class="pu">:</span>';
+      }
+      var gm = RE_GAN_MAU.exec(text);
+      if (gm) return '<span class="vr">' + esc(gm[1]) + '</span><span class="pu"> = </span><span class="fn">color</span><span class="pu">()</span>';
+    }
     var f = /^for\s+([A-Za-z_]\w*)\s+in\s+range\(\s*(\d+|[A-Za-z_]\w*)\s*\):\s*$/.exec(text);
     if (f) {
       return '<span class="kw">for </span><span class="vr">' + esc(f[1]) + ' </span><span class="kw">in </span><span class="fn">range</span>' +
@@ -181,6 +258,7 @@
       if (!d || d.loai === 'range') return 'so';
       if (d.loai === 'forChuoi') return 'ghep';
       if (d.loai === 'dk') return 'dk';
+      if (d.loai === 'dkm') return 'dkm';
       if (d.loai === 'if') return k === 0 ? 'bien' : 'dl';
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
       return kd === 'don' || kd === 'ghep' ? kd : 'so';
@@ -227,6 +305,7 @@
     /** Mở bộ chọn cho ô .num đang chạm (số 1–9 / chữ U D L R / bộ ghép chuỗi). */
     function moBoChon(so, i, kk) {
       var arr = lay(), d = tachDoiSo(arr[i]), kd = kieuArg(d, kk);
+      if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
         if (camDuoc().length) chonDieuKien({ neo: so, ds: camDuoc(), gia: d.ds[kk], khiChon: function (v) { ed.datSo(i, v, kk); } });
         return;
@@ -239,6 +318,25 @@
       var bien = kd === 'dl' ? [] : bienTam(kd, i);
       if (kd === 'bien' && !bien.length) return;
       chonChuoi({ neo: so, kieu: kd, gia: laChu ? gia.slice(1, -1) : '', hien: laChu ? null : gia, bien: bien, khiChon: function (v) { ed.datSo(i, v, kk); } });
+    }
+    /** Chạm một ô của điều kiện màu (while / if / elif): == / != và and / or đổi ngay; vế phải chọn màu; vế trái / vế cảm biến mở bảng điều kiện. */
+    function moDkm(so, i, d, kk) {
+      var o = d.tok[kk]; if (!o) return;
+      if (o.vt === 'op') { ed.datSo(i, o.t === '==' ? '!=' : '==', kk); return; }
+      if (o.vt === 'noi') { ed.datSo(i, o.t === 'and' ? 'or' : 'and', kk); return; }
+      var bien = bienGanMau(lay(), i);
+      if (o.vt === 'rhs') {
+        chonMau({ neo: so, gia: o.t, bien: bien, khiChon: function (v) { ed.datSo(i, v, kk); } });
+        return;
+      }
+      var cam = camDuoc(), cl = d.cl[o.ci], coDong = d.cl.length;
+      chonDkm({
+        neo: so, cam: cam, bien: bien, gia: cl,
+        ghep: cam.length ? { coThem: coDong < 2 && o.ci === coDong - 1, coBo: coDong > 1 } : null,
+        khiChon: function (v) { ed.datVe(i, o.ci, v); },
+        khiGhep: function (nx) { ed.themVe(i, nx, /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== 'color()' ? 'color() != "red"' : (cam[0] + '()')); },
+        khiBo: function () { ed.boVe(i, o.ci); }
+      });
     }
     function veXx() {
       var n = lay().length, ok = choXoa();
@@ -337,7 +435,7 @@
       for (i = 0; i < tong; i++) {
         var khoa = i >= dung, t = tx[i], slot = sl[i];
         var laFor = !slot && t !== undefined && /^\s*for\s/.test(t), laIf = !slot && t !== undefined && laRe(t), laWh = !slot && t !== undefined && /^\s*while\s/.test(t);
-        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : ''))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') +
+        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : ''))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && CHE_MAU && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
           (!xt && runIdx === i ? ' on' : '') + (!xt && loiSet[i] ? ' err' : '');
         strips[i].innerHTML = '';
         var bac = lv[i];
@@ -466,6 +564,15 @@
       var s = thayDoiSo(arr[i], k || 0, v);
       if (s === arr[i]) return;
       this.anHoan(); arr[i] = s;
+      this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
+    };
+    /** Đổi vế ci của điều kiện màu ở dòng i; themVe thêm một vế; boVe bỏ một vế. */
+    this.datVe = function (i, ci, str) { this.suaDong(i, thayVe(lay()[i], ci, str)); };
+    this.themVe = function (i, nx, str) { this.suaDong(i, themVe(lay()[i], nx, str)); };
+    this.boVe = function (i, ci) { this.suaDong(i, boVe(lay()[i], ci)); };
+    this.suaDong = function (i, dongMoi) {
+      var arr = lay(); if (i < 0 || i >= arr.length || dongMoi === arr[i]) return;
+      this.anHoan(); arr[i] = dongMoi;
       this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
     };
     /** Thay một đối số của dòng i bằng biến `ten`: ưu tiên đối số còn là số cụ thể, rồi đến đối số biến khác tên. Trả về có đổi được không. */
@@ -774,6 +881,79 @@
     window.addEventListener('pointerdown', c.ngoai, true);
     window.addEventListener('keydown', c.phim, true);
   }
+  /** Đặt bảng chọn el cạnh neo, đóng khi chạm ra ngoài / Esc / Enter. */
+  function moBang(el, neo) {
+    var st = document.getElementById('stage');
+    st.appendChild(el);
+    datViTri(el, neo, true);
+    var c = {
+      el: el,
+      ngoai: function (ev) { if (!el.contains(ev.target)) dongChonSo(); },
+      phim: function (ev) { if (ev.key === 'Escape' || ev.key === 'Enter') { ev.preventDefault(); dongChonSo(); } }
+    };
+    chonCur = c;
+    window.addEventListener('pointerdown', c.ngoai, true);
+    window.addEventListener('keydown', c.phim, true);
+  }
+  /** Nút một màu trong bảng chọn màu: nền theo màu (g-rd, g-gr, g-bl, g-yl; none xám). */
+  function nutMau(ten, on) {
+    var b = h('button', 'bt ' + MAU_LOP[ten] + ' cs mau-nut' + (on ? ' on' : ''), ten); b.setAttribute('data-mau', ten);
+    return b;
+  }
+  /**
+   * Bảng chọn MÀU cho vế phải của phép so sánh màu (`"red"`). o: { neo, gia: vế phải hiện tại ("red" hay tên biến), bien: [tên biến gán bằng color()], khiChon(v) }.
+   * Năm nút red / green / blue / yellow / none; có biến `c` (gán c = color()) thì thêm nút `c`. khiChon nhận chuỗi có nháy ("red") hoặc tên biến.
+   */
+  function chonMau(o) {
+    dongChonSo();
+    var el = h('div', 'chon-so chon-chuoi mau'); el.setAttribute('data-nut', 'chon-mau'); el.setAttribute('aria-label', t('choi.chonMau'));
+    var hien = RE_CHUOI.test(o.gia) ? o.gia.slice(1, -1) : null;
+    MAU_DS.forEach(function (ten) {
+      var b = nutMau(ten, ten === hien);
+      b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon('"' + ten + '"'); });
+      el.appendChild(b);
+    });
+    (o.bien || []).forEach(function (ten) {
+      var b = h('button', 'bt g-pk cs bien' + (ten === o.gia ? ' on' : ''), ten); b.setAttribute('data-bien', ten);
+      b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(ten); });
+      el.appendChild(b);
+    });
+    moBang(el, o.neo);
+  }
+  /**
+   * Bảng chọn ĐIỀU KIỆN của màn có cảm biến màu. o: { neo, cam: [hàm cảm biến khoảng cách], bien: [biến c = color()], gia: vế đang có, khiChon(vế), ghep: { coThem, coBo } | null, khiGhep(and|or), khiBo() }.
+   * Hàng cảm biến: `front_clear()` | `not front_clear()`. Hàng màu: `color() == "red"` | `color() != "red"` (giữ màu đang so nếu có). Có biến c: `c == "red"`, `c != "red"`, `color() == c`, `color() != c`.
+   * Màn có cả hai loại cảm biến thì thêm hàng ghép: `+ and` / `+ or` thêm một vế nữa, `bỏ vế` bỏ vế này.
+   */
+  function chonDkm(o) {
+    dongChonSo();
+    var el = h('div', 'chon-so chon-chuoi dkb dkm-bang'); el.setAttribute('data-nut', 'chon-dk');
+    el.setAttribute('aria-label', t('choi.chonDieuKien'));
+    var ss = RE_CL_SS.exec(o.gia || ''), mauDang = ss && RE_CHUOI.test(ss[3]) ? ss[3] : '"red"';
+    function nut(v, cls) {
+      var b = h('button', 'bt ' + (cls || 'g-cy') + ' cs dk-nut' + (v === o.gia ? ' on' : ''), v); b.setAttribute('data-dk', v);
+      b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(v); });
+      el.appendChild(b);
+    }
+    (o.cam || []).forEach(function (ten) { nut(ten + '()'); nut('not ' + ten + '()'); });
+    nut('color() == ' + mauDang, 'g-pk'); nut('color() != ' + mauDang, 'g-pk');
+    (o.bien || []).forEach(function (v) {
+      nut(v + ' == ' + mauDang, 'g-pu'); nut(v + ' != ' + mauDang, 'g-pu');
+      nut('color() == ' + v, 'g-pu'); nut('color() != ' + v, 'g-pu');
+    });
+    if (o.ghep) {
+      var hg = h('div', 'cs-bien'); hg.setAttribute('data-nut', 'chon-ghep');
+      function nutG(ma, chu, cls, fn) {
+        var b = h('button', 'bt ' + cls + ' cs ghep-nut', chu); b.setAttribute('data-ghep', ma);
+        b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); fn(); });
+        hg.appendChild(b);
+      }
+      if (o.ghep.coThem) { nutG('and', t('choi.ghepAnd'), 'g-or', function () { o.khiGhep('and'); }); nutG('or', t('choi.ghepOr'), 'g-or', function () { o.khiGhep('or'); }); }
+      if (o.ghep.coBo) nutG('bo', t('choi.boVe'), 'g-rd', o.khiBo);
+      if (hg.children.length) el.appendChild(hg);
+    }
+    moBang(el, o.neo);
+  }
   /** Hàm cảm biến khoảng cách mà màn cho dùng (front_clear, left_clear, right_clear), theo hamGoc của màn. */
   var CAM_BIEN_TEN = ['front_clear', 'left_clear', 'right_clear'];
   function camBienCua(man) { return ((man && man.hamGoc) || []).filter(function (n) { return CAM_BIEN_TEN.indexOf(n) >= 0; }); }
@@ -931,10 +1111,11 @@
     /** Khối rẽ nhánh (nhóm ĐIỀU KIỆN): `if d == "U":`, `elif d == "D":`, `else:`. */
     function gachDk(goi) {
       var d = h('div', 'brick dk'); d.setAttribute('role', 'button');
-      d.setAttribute('data-ten', goi.split(/[ :]/)[0]); d.setAttribute('data-loai', 'dk'); d.setAttribute('data-goi', goi);
+      var khoa = goi.split(/[ :]/)[0] + (RE_GAN_MAU.test(goi) ? '=' : '');
+      d.setAttribute('data-ten', khoa); d.setAttribute('data-loai', 'dk'); d.setAttribute('data-goi', goi);
       d.appendChild(h('span', 'tx', goi));
       d.addEventListener('click', function () { cb.khiChen(goi); });
-      host.appendChild(d); bricks['dk:' + goi.split(/[ :]/)[0]] = d;
+      host.appendChild(d); bricks['dk:' + khoa] = d;
     }
     /** Khối tím `for i in range(2):` (nhóm VÒNG LẶP). */
     function gachVong(goi, khoa, lopThem) {
@@ -954,7 +1135,7 @@
       var gocDay = (spec.goc || []).filter(function (n) { return DAY_TEN.indexOf(n) >= 0; });                // tấm đẩy: push (nhóm ĐẨY)
       var gocChan = (spec.goc || []).filter(function (n) { return /^go_/.test(n); });                      // nhện: go_up / go_down / go_left / go_right (nhóm CHÂN, kèm wait)
       var gocTruot = (spec.goc || []).filter(function (n) { return /^slide_/.test(n); });                  // omni: slide_left / slide_right (nhóm TRƯỢT)
-      var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh); hàm cảm biến là ĐIỀU KIỆN, không phải lệnh
+      var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && n !== 'color' && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh); hàm cảm biến là ĐIỀU KIỆN, không phải lệnh
       if (gocChan.length && (spec.goc || []).indexOf('wait') >= 0) gocChan.push('wait');
       function lop(them) { return (host.firstChild ? 'g2 ' : 'g1 ') + them; }       // nhóm đầu tiên là g1 (không cách trên), các nhóm sau g2
       function nhomGoc() {
@@ -990,16 +1171,17 @@
         nhan(t('choi.nhom.vong'), lop('g-vl'));
         gachVong();
         if (spec.chuoi) gachVong('for c in "R":', 'forc');
-        if (spec.vongWhile) gachVong('while ' + ((spec.cam || [])[0] || 'front_clear') + '():', 'while', 'wh');         // vòng while: khối xanh dương
+        if (spec.vongWhile) gachVong(spec.mau && !(spec.cam || []).length ? 'while color() != "red":' : 'while ' + ((spec.cam || [])[0] || 'front_clear') + '():', 'while', 'wh');         // vòng while: khối xanh dương
       }
       function nhomDk() {
         var cam = spec.cam || [];
-        if (!spec.dieuKien && !cam.length) return;
+        if (!spec.dieuKien && !cam.length && !spec.mau) return;
         nhan(t('choi.nhom.dk'), lop('g-dk'));
-        (cam.length ? (cam.indexOf('right_clear') >= 0 ? ['if right_clear():', 'elif front_clear():', 'else:'] : ['if ' + cam[0] + '():', 'else:'])
+        (spec.mau ? (cam.length ? ['if ' + cam[0] + '():'] : []).concat(['if color() == "red":', 'elif color() == "blue":', 'else:', 'c = color()'])          // cảm biến màu: so màu + gán biến
+          : cam.length ? (cam.indexOf('right_clear') >= 0 ? ['if right_clear():', 'elif front_clear():', 'else:'] : ['if ' + cam[0] + '():', 'else:'])
           : ['if d == "U":', 'elif d == "D":', 'else:']).forEach(gachDk);
       }
-      function nhomDkCam() { if ((spec.cam || []).length) nhomDk(); }                     // màn có cảm biến: nhóm ĐIỀU KIỆN nằm cạnh VÒNG LẶP
+      function nhomDkCam() { if ((spec.cam || []).length || spec.mau) nhomDk(); }                     // màn có cảm biến: nhóm ĐIỀU KIỆN nằm cạnh VÒNG LẶP
       function nhomBien() {
         if (!spec.bien || !spec.bien.length) return;
         nhan(t('choi.nhom.bien'), lop('g-bien'));
@@ -1386,6 +1568,6 @@
     m.than.appendChild(hang);
   }
 
-  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, camBienCua: camBienCua, taoKieu: taoKieu, locHamTheoRobot: locHamTheoRobot, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
+  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonDkm: chonDkm, datCheMau: datCheMau, coMauCua: coMauCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, locHamTheoRobot: locHamTheoRobot, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

@@ -155,6 +155,7 @@
     // Xưởng hàm: đặt xe (xe nhìn từ bên hông), khối hàng (thùng gỗ có chữ X), tường (gạch xây so le)
     car: ['...xxxxxx...', '..xx.xx.xx..', '.xxx.xx.xxx.', 'xxxxxxxxxxxx', 'xxxxxxxxxxxx', '.xxx....xxx.', '.xxx....xxx.', '..x......x..'],
     box: ['xxxxxxxxxxx', 'xx.......xx', 'x.x.....x.x', 'x..x...x..x', 'x...x.x...x', 'x....x....x', 'x...x.x...x', 'x..x...x..x', 'x.x.....x.x', 'xx.......xx', 'xxxxxxxxxxx'],
+    mau: ['xxx.xxx', 'xxx.xxx', 'xxx.xxx', '.......', 'xxx.xxx', 'xxx.xxx', 'xxx.xxx'],
     wall: ['xxxxx.xxxxxx', 'xxxxx.xxxxxx', '............', 'xxx.xxxxx.xx', 'xxx.xxxxx.xx', '............', 'xxxxx.xxxxxx', 'xxxxx.xxxxxx']
   };
   function icon(ten, tuyChon) {
@@ -319,8 +320,8 @@
   }
   /** Khối hàng (thùng gỗ) trên sàn sân thử: vẽ trong ô T×T, chừa mép để thấy cỏ quanh. */
   var crateCache = null;
-  function makeCrate() {
-    if (crateCache) return crateCache;
+  /** Vẽ thân thùng gỗ vào một Painter T×T (chưa viền): dùng chung cho thùng thường và thùng có dải màu. */
+  function veThanThung() {
     var p = new Painter(T, T);
     p.rect(1, 1, T - 2, T - 2, '#c98a45');
     p.rect(1, 1, T - 2, 1, '#e8b574'); p.rect(1, 1, 1, T - 2, '#e8b574');
@@ -328,6 +329,11 @@
     p.rect(2, 2, T - 4, 1, '#a8692a'); p.rect(2, T - 3, T - 4, 1, '#a8692a'); p.rect(2, 2, 1, T - 4, '#a8692a'); p.rect(T - 3, 2, 1, T - 4, '#a8692a');
     for (var i = 3; i < T - 3; i++) { p.px(i, i, '#8a5a24'); p.px(T - 1 - i, i, '#8a5a24'); }
     [[2, 2], [T - 3, 2], [2, T - 3], [T - 3, T - 3]].forEach(function (q) { p.px(q[0], q[1], '#ffe9bd'); });
+    return p;
+  }
+  function makeCrate() {
+    if (crateCache) return crateCache;
+    var p = veThanThung();
     p.outline(K.ink);
     crateCache = p.canvas(); return crateCache;
   }
@@ -423,10 +429,48 @@
     var q = new Painter(18, 18); q.blit(p, 1, 1); q.outline(K.ink);
     nhenCache[key] = q.canvas(); return nhenCache[key];
   }
+  /* ---- CHƯƠNG CẢM BIẾN MÀU: ô sàn tô màu (tấm sơn pixel), thùng gỗ có dải màu */
+  var MAU = {                                                             // tên màu của lõi → bảng màu: n nền, s sáng, t tối (viền), d đốm
+    red: { n: '#d6493e', s: '#f0847a', t: '#8f2822', d: '#e9675c', vi: '#ff8a7e' },
+    green: { n: '#35c47a', s: '#7cf0aa', t: '#16703f', d: '#52d98e', vi: '#8dffb8' },
+    blue: { n: '#3f7fe0', s: '#7db0f7', t: '#22489c', d: '#5c94ec', vi: '#8fc0ff' },
+    yellow: { n: '#efc531', s: '#ffe784', t: '#a07c10', d: '#f7d556', vi: '#ffe45c' }
+  };
+  var MAU_TEN = ['red', 'green', 'blue', 'yellow'];
+  var matMauCache = {};
+  /** Ô sàn màu `mau`: tấm sơn có viền tối, vạt sáng ở mép trên trái, vạt tối ở mép dưới phải, vài đốm; mỗi màu thêm một dấu nhỏ ở góc (không phụ thuộc phân biệt màu). */
+  function makeMatMau(mau, seed) {
+    var k = mau + (seed || 0);
+    if (matMauCache[k]) return matMauCache[k];
+    var c = MAU[mau], p = new Painter(T, T), r = rng(11 + MAU_TEN.indexOf(mau) * 7 + (seed || 0));
+    p.rect(0, 0, T, T, c.t);
+    p.rect(1, 1, T - 2, T - 2, c.n);
+    for (var i = 0; i < 12; i++) p.px(2 + Math.floor(r() * 10), 2 + Math.floor(r() * 10), c.d);
+    p.rect(1, 1, T - 2, 1, c.s); p.rect(1, 1, 1, T - 2, c.s);
+    p.rect(1, T - 2, T - 2, 1, c.t); p.rect(T - 2, 1, 1, T - 2, c.t);
+    p.rect(2, 2, T - 4, 1, c.d); p.rect(2, 2, 1, T - 4, c.d);
+    matMauCache[k] = p.canvas(); return matMauCache[k];
+  }
+  var thungMauCache = {};
+  /** Thùng gỗ có dải màu quanh thân (dải 4 hàng, viền tối trên dưới): thùng sơn màu. */
+  function makeCrateMau(mau) {
+    if (thungMauCache[mau]) return thungMauCache[mau];
+    var c = MAU[mau], p = veThanThung();
+    p.rect(1, 5, T - 2, 4, c.n);
+    p.rect(1, 5, T - 2, 1, c.s); p.rect(1, 8, T - 2, 1, c.t);
+    p.rect(1, 4, T - 2, 1, K.ink); p.rect(1, 9, T - 2, 1, K.ink);
+    p.px(3, 6, c.s); p.px(10, 7, c.d); p.px(6, 6, c.d);
+    p.outline(K.ink);
+    thungMauCache[mau] = p.canvas(); return thungMauCache[mau];
+  }
+
   var tileCache = null;
   function tiles() {
     if (tileCache) return tileCache;
+    var matMau = {}, thungMau = {};
+    MAU_TEN.forEach(function (m) { matMau[m] = [makeMatMau(m, 0), makeMatMau(m, 1)]; thungMau[m] = makeCrateMau(m); });
     tileCache = {
+      mau: matMau, crateMau: thungMau,
       crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
       flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)]
     };
@@ -476,6 +520,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeThung: makeThung, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

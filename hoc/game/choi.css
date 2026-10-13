@@ -574,3 +574,39 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .fblock.nhieu .clock{gap:4px;padding:0 5px 0 6px;overflow:hidden}
 .fblock.nhieu .clock .tong{min-width:0;overflow:hidden;text-overflow:clip}
 .fblock.nhieu .clock .v{min-width:0}
+
+/* ---- CHƯƠNG 12 · CẢM BIẾN MÀU: điều kiện so màu, bảng chọn màu, nút "Màu" của sân thử */
+.strip .num.dkm{padding:0 2px;margin:0 1px}
+.strip .num.dkm.op,.strip .num.dkm.noi{background:#5a6478;box-shadow:0 0 0 1px #1d2433,inset 0 2px 0 #9aa6bd,inset 0 -2px 0 #3d4658;padding:0 3px}
+.strip .num.dkm.noi{background:#e08a3a;box-shadow:0 0 0 1px #5a2f08,inset 0 2px 0 #ffcf94,inset 0 -2px 0 #a8651f}
+.strip .num.dkm.rhs.bien{background:#d6478a;box-shadow:0 0 0 1px #5a1238,inset 0 2px 0 #f58ab8,inset 0 -2px 0 #a62a68}
+.num.chuoi-mau{flex:0 1 auto;max-width:100%;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.45)}
+.num.mc-red{background:#d6493e;box-shadow:0 0 0 1px #4a0e0c,inset 0 2px 0 #f0847a,inset 0 -2px 0 #8f2822}
+.num.mc-green{background:#2ea565;box-shadow:0 0 0 1px #0a3a1f,inset 0 2px 0 #7cf0aa,inset 0 -2px 0 #16703f}
+.num.mc-blue{background:#3f7fe0;box-shadow:0 0 0 1px #0f2a66,inset 0 2px 0 #7db0f7,inset 0 -2px 0 #22489c}
+.num.mc-yellow{background:#efc531;color:#3a2a00;text-shadow:none;box-shadow:0 0 0 1px #5a4300,inset 0 2px 0 #ffe784,inset 0 -2px 0 #a07c10}
+.num.mc-none{background:#8b93a6;box-shadow:0 0 0 1px #1d2433,inset 0 2px 0 #c3cad8,inset 0 -2px 0 #5d6478}
+.num.mc-sai{background:#e08a3a;box-shadow:0 0 0 1px #5a2f08,inset 0 2px 0 #ffcf94,inset 0 -2px 0 #a8651f}
+.chon-chuoi.mau{display:grid;grid-template-columns:repeat(3,max-content);gap:6px;width:auto}
+.chon-so .cs.mau-nut{padding:2px 7px 0;font:var(--wm) calc(12px*var(--km))/1 var(--mono);white-space:nowrap}
+.chon-so .cs.mau-nut.g-yl,.chon-so .cs.mau-nut.g-gy{color:#2a2000;text-shadow:none}
+.chon-so .cs.mau-nut.on{outline:2px solid #fff;outline-offset:1px}
+.chon-chuoi.mau .cs.bien{grid-column:auto;flex:none}
+.chon-chuoi.dkm-bang{grid-template-columns:repeat(2,max-content)}
+.chon-chuoi.dkm-bang .cs-bien{grid-column:1/-1}
+.chon-so .cs.ghep-nut{padding:2px 8px 0;font:var(--wm) calc(11px*var(--km))/1 var(--mono);white-space:nowrap;color:#3a1c00}
+.chon-so .cs.ghep-nut.g-rd{color:#fff}
+.chon-so .cs.mau-nut.on.g-rd{--c:#e8504a;--hi:#ffaaa2;--lo:#a52a2c;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.chon-so .cs.mau-nut.on.g-gr{--c:#4cc24f;--hi:#a6f2a0;--lo:#2a8a35;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.chon-so .cs.mau-nut.on.g-bl{--c:#3b82e0;--hi:#9cc6ff;--lo:#1f56a8;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.chon-so .cs.mau-nut.on.g-yl{--c:#ffc933;--hi:#fff09a;--lo:#cf8f10}
+.chon-so .cs.mau-nut.on.g-gy{--c:#8d95a6;--hi:#d0d6e4;--lo:#565e70}
+/* Xưởng của màn có cảm biến màu: sáu nút (thêm Màu) nên nút thấp lại cho vừa cột */
+.side.xu.co-mau{gap:3px}
+.side.xu.co-mau .cbtn,.side.xu.co-mau .thu-hang{height:31px}
+.side.xu.co-mau .cbtn{padding-top:1px}
+/* điều kiện hai vế (front_clear() and color() != "yellow"): hai dòng nhỏ trong một ô code */
+.strip.hai{flex-wrap:wrap;align-content:center;justify-content:flex-start;row-gap:1px;font-size:9px!important;line-height:12px}
+.strip.hai .ngat{flex-basis:100%;height:0;margin:0}
+.strip.hai .num{line-height:11px;margin-top:0;margin-bottom:0}
+.strip.hai .kw{margin-right:1px}
