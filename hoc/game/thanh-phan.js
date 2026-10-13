@@ -31,9 +31,11 @@
   function hv(tag, cls, noi) { return vanBan(h(tag, cls), noi); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
+  var TAY_TEN = ['arm_down', 'arm_up', 'grab', 'release'];     // lệnh tay gắp: nhóm TAY (màu cam) trong kho khối
   function lopMau(ten) {
     if (ten === 'left_move' || ten === 'right_move' || ten === 'left_back' || ten === 'right_back') return 'cy';
     if (ten === 'wait') return 'yl';
+    if (TAY_TEN.indexOf(ten) >= 0) return 'tay';
     if (/^go_/.test(ten)) return 'pu';
     return 'gr';
   }
@@ -76,7 +78,7 @@
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = m[1] === 'left_move' || m[1] === 'right_move' || m[1] === 'left_back' || m[1] === 'right_back' ? 'mv'
-      : m[1] === 'wait' ? 'wt' : /^go_/.test(m[1]) ? 'mv' : 'fn';
+      : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : 'fn';
     return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' +
       (m[2] ? '<span class="ar">' + esc(m[2]) + '</span>' : '') + '<span class="pu">)</span>';
   }
@@ -515,9 +517,15 @@
       lastSpec = spec; host.innerHTML = ''; bricks = {};
       host.classList.remove('d1', 'd2', 'd3');
       var boQua = spec.boQua || null;
-      if (spec.goc && spec.goc.length) {
+      var gocTay = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) >= 0; });
+      var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0; });
+      if (gocThuong.length) {
         nhan(t('choi.nhom.goc'), 'g1');
-        spec.goc.forEach(function (n) { gach(n, lopMau(n) === 'gr' ? 'pu' : lopMau(n), 'goc'); });
+        gocThuong.forEach(function (n) { gach(n, lopMau(n) === 'gr' ? 'pu' : lopMau(n), 'goc'); });
+      }
+      if (gocTay.length) {
+        nhan(t('choi.nhom.tay'), (gocThuong.length ? 'g2 ' : 'g1 ') + 'g-tay');
+        gocTay.forEach(function (n) { gach(n, 'tay', 'goc'); });
       }
       if (spec.vong) {
         nhan(t('choi.nhom.vong'), 'g2 g-vl');

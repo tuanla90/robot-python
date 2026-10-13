@@ -166,7 +166,7 @@
   /* -------------------------------------------------------- sân thử */
   function napSan() {
     var st = S.st;
-    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat });
+    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, robot: VeRobot.cauHinhCua(A.man()) });
   }
   function datChe(k) {
     S.che = k;
@@ -176,7 +176,7 @@
     });
     E.ffr.classList.toggle('sua', !!k);
   }
-  /** Gì đang ở ô (x, y) của sân thử: 'xe' | 'tuong' | 'vat' | null. */
+  /** Gì đang ở ô (x, y) của sân thử: 'xe' | 'tuong' | 'vat' | null. (Màn có tay gắp: vật được nằm dưới xe, ô đó trả 'xe'; hỏi coVat để biết có vật.) */
   function coGi(x, y) {
     var st = S.st;
     if (st.batDau.x === x && st.batDau.y === y) return 'xe';
@@ -185,6 +185,8 @@
     if (trong(st.vat)) return 'vat';
     return null;
   }
+  function coVat(x, y) { return S.st.vat.some(function (o) { return o.x === x && o.y === y; }); }
+  function coTay() { return !!VeRobot.cauHinhCua(A.man()).tay; }
   function boO(ds, x, y) { return ds.filter(function (o) { return !(o.x === x && o.y === y); }); }
   /** Chạm một ô sân thử theo chế độ đang bật. Ô có xe không đặt được vật hay tường (và ngược lại). */
   function chamSan(ev) {
@@ -195,11 +197,15 @@
     var co = coGi(x, y), moi = { rong: st.rong, cao: st.cao, batDau: Object.assign({}, st.batDau), vat: st.vat.slice(), tuong: st.tuong.slice() };
     if (S.che === 'xe') {
       if (co === 'xe') moi.batDau.huong = (moi.batDau.huong + 1) % 4;
+      else if (co === 'vat' && coTay()) { moi.batDau.x = x; moi.batDau.y = y; }          // có tay gắp: xe được đứng trên vật
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else { moi.batDau.x = x; moi.batDau.y = y; }
     } else {
       var khoa = S.che === 'vat' ? 'vat' : 'tuong';
-      if (co === khoa) moi[khoa] = boO(moi[khoa], x, y);
+      if (khoa === 'vat' && co === 'xe' && coTay()) {                                    // đặt / bỏ vật ngay dưới xe
+        if (coVat(x, y)) moi.vat = boO(moi.vat, x, y); else moi.vat.push({ x: x, y: y });
+      }
+      else if (co === khoa) moi[khoa] = boO(moi[khoa], x, y);
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else moi[khoa].push({ x: x, y: y });
     }

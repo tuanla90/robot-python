@@ -25,10 +25,19 @@
 <script src="../thu-tu-chuong.js"></script>
 <script src="../man-chuoi-1.js"></script>
 <script src="../man-chuoi-2.js"></script>
+<script src="../man-tay-gap.js"></script>
 <script src="../man-vong-lap.js"></script>
 <!-- giao diện -->
 <script src="chu.js"></script>
 <script src="ve.js"></script>
+<!-- bộ PART (hình robot ghép, Codex vẽ): thêm ?part=1 vào địa chỉ để thử; không có thì VeRobot dùng hình tạm -->
+<script>
+if (/[?&]part=1/.test(location.search)) {
+  ['part', 'part-hai-banh', 'part-omni', 'part-xich', 'part-nhen', 'part-drone', 'part-kep', 'part-day', 'part-nam-cham', 'part-camera', 'part-khoang-cach', 'part-mau', 'part-cham']
+    .forEach(function (n) { document.write('<script src="part/' + n + '.js"><\/script>'); });
+}
+</script>
+<script src="ve-robot.js"></script>
 <script src="luu.js"></script>
 <script src="san-ve.js"></script>
 <script src="thanh-phan.js"></script>

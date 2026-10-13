@@ -67,6 +67,7 @@
       'choi.xoaHetCo': 'Xóa hết',
       'choi.khoaO': 'Ô này đang khóa',
       'choi.nhom.goc': 'GỐC',
+      'choi.nhom.tay': 'TAY',
       'choi.nhom.em': 'HÀM CỦA EM',
       'choi.nhom.man': 'HÀM CỦA MÀN',
       'choi.nhom.vong': 'VÒNG LẶP',
@@ -91,10 +92,12 @@
 
       /* ---- bảng thắng */
       'thang.tieuDe': 'TỚI CỜ!',
+      'thang.tieuDe.duaVat': 'ĐỦ HÀNG!',
       'thang.o': 'Gọn: {x} ô (cần ≤ {y})',
       'thang.nhip': 'Nhanh: {x} nhịp (cần ≤ {y})',
       'thang.thieuO': 'Còn thiếu sao này: viết gọn hơn.',
       'thang.thieuNhip': 'Còn thiếu sao này: đi đường ngắn hơn.',
+      'thang.thieuNhipVat': 'Còn thiếu sao này: làm đủ việc trong ít nhịp hơn.',
       'thang.duSao': 'Đủ 3 sao!',
       'thang.huyHieu': 'Huy hiệu mới',
       'thang.manTiep': 'Màn tiếp',

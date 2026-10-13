@@ -142,7 +142,8 @@
     return {
       san: nhieu ? m.san[i] : m.san,
       batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau,
-      loaiRobot: m.loaiRobot || 'banh'
+      loaiRobot: m.loaiRobot || 'banh',
+      robot: VeRobot.cauHinhCua(m)
     };
   }
   function veKho() {
@@ -355,7 +356,8 @@
   function bangThang() {
     var m = S.man, k = S.ket, ss = m.sao || {};
     var okO = ss.o === undefined || k.soO <= ss.o, okN = ss.nhip === undefined || k.soNhip <= ss.nhip;
-    var hop = TP.Hop.mo(t('thang.tieuDe'), 'hop-thang');
+    var duaVat = m.mucTieu === 'dua-vat';
+    var hop = TP.Hop.mo(t(duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
     hop.hop.setAttribute('data-sao', k.sao);
     var st = h('div', 'th-sao');
     for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }
@@ -368,7 +370,7 @@
     if (ss.o !== undefined) hop.than.appendChild(dong(okO, t('thang.o', { x: k.soO, y: ss.o })));
     if (ss.nhip !== undefined) hop.than.appendChild(dong(okN, t('thang.nhip', { x: k.soNhip, y: ss.nhip })));
     if (!okO) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuO')));
-    else if (!okN) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuNhip')));
+    else if (!okN) hop.than.appendChild(h('div', 'th-ghi', t(duaVat ? 'thang.thieuNhipVat' : 'thang.thieuNhip')));
     else hop.than.appendChild(h('div', 'th-ghi tot', t('thang.duSao')));
     // thắng mà vẫn có lưu ý (vd. bánh bị gọi lại, hàm của màn che hàm của em): cho học sinh thấy
     var luu = k.chanDoan.slice(0, 2);
