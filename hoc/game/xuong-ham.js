@@ -60,7 +60,8 @@
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
-      thutLe: function () { return TP.coCauTruc(A.man(), 'for') || TP.coCauTruc(A.man(), 'if'); },
+      thutLe: function () { return TP.coCauTruc(A.man(), 'for') || TP.coCauTruc(A.man(), 'if') || TP.coCauTruc(A.man(), 'while'); },
+      camBien: function () { return TP.camBienCua(A.man()); },                                 // điều kiện while / if chạm đổi được: front_clear() …
       bienDuoc: function () { var f = hamHienTai(); return f ? (f.thamSo || []) : []; },       // thân hàm có tham số: chọn được biến ở bộ chọn số
       kieuBien: kieuBienHam,                                                                   // kiểu của từng đối số (số / một chữ / chuỗi) để bộ chọn chỉ liệt kê biến hợp kiểu
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
@@ -139,6 +140,8 @@
     S.pal.dung({
       goc: man.hamGoc,
       vong: TP.coCauTruc(man, 'for'),
+      vongWhile: TP.coCauTruc(man, 'while'),
+      cam: TP.camBienCua(man),
       chuoi: TP.coCauTruc(man, 'for') && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
       dieuKien: TP.coCauTruc(man, 'if'),
       em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
@@ -362,19 +365,26 @@
     S.field.datLai();
     var vet = kq.vet;
     var lap = S.ed.lapChoVet(vet, dongTrongHam);        // số lượt của các vòng for trong thân hàm
-    var toc = A.toc();
+    var cap = kq.chanDoan.some(function (c) { return c.ma === 'vong-vo-han'; }) ? { nhip: 6, lenh: 36 } : null;       // while chạy mãi: chỉ phát lại vài nhịp rồi dừng
+    var nhipDa = 0, lenhDem = 0, capDung = false;
     for (var i = 0; i < vet.length; i++) {
       var e = vet[i];
+      var toc = A.toc() * (nhipDa < 60 ? 1 : nhipDa < 120 ? 3 : 6);          // phát lại dài thì tự tăng tốc
+      if (cap) toc = Math.max(toc, 2.5);
       if (e.loai === 'lenh') {
-        sang(e, lap.get(e));
+        sang(e, lap.get(e), toc);
         await SanVe.ngu(LENH_MS / toc); if (my !== S.rid) return;
+        if (cap && ++lenhDem >= cap.lenh) { capDung = true; break; }
       } else {
         await S.field.phatNhip(e, NHIP_MS / toc); if (my !== S.rid) return;
+        nhipDa++; lenhDem = 0;
+        if (cap && nhipDa >= cap.nhip) { capDung = true; break; }
       }
     }
     sang(null);
     S.busy = false; E.side.classList.remove('busy');
     hienKetQua(kq);
+    if (capDung) toast(t('choi.vongVoHan'), 'bad', 2600);
   }
   /** Chỉ số dòng (từ 0) của thân hàm đang mở mà sự kiện lệnh e đang chạy (kể cả khi lệnh nằm trong hàm khác được gọi từ dòng đó). */
   function dongTrongHam(e) {
@@ -382,8 +392,9 @@
     chuoi.forEach(function (c) { if (c && c.ten === S.ten && c.dong > 0) dong = c.dong - 1; });
     return dong;
   }
-  function sang(e, lap) {
+  function sang(e, lap, toc) {
     if (!e) { S.ed.datChay(null); S.pal.datSang(null); return; }
+    if (e.docCamBien) S.field.docCamBien(e.docCamBien, 380 / (toc || 1));       // đọc cảm biến: cảm biến ở hông nháy, tia tới ô được đo
     var dong = dongTrongHam(e), lit = null;
     if (e.cho && (e.cho.cot === 'hamEm' || e.cho.cot === 'hamMan') && e.cho.ten !== S.ten) lit = [e.cho.cot === 'hamEm' ? 'em' : 'man', e.cho.ten];
     S.ed.datChay(dong, lap);

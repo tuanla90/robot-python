@@ -13,7 +13,7 @@
   var BANG = { '>': 1, 'v': 2, '<': 3, '^': 0 };
   var DX = [0, 1, 0, -1], DY = [-1, 0, 1, 0];
   var FIELDS = [];
-  var HIEU_UNG = { 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'o-co-vat': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'day-dung-yen': 1 };   // sự kiện tức thì của tay (không chiếm thời gian của nhịp)
+  var HIEU_UNG = { 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'o-co-vat': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'day-dung-yen': 1, 'doc-cam-bien': 1 };   // sự kiện tức thì của tay (không chiếm thời gian của nhịp)
 
   function ngu(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
@@ -79,7 +79,44 @@
       this.thungs = this.thung0.map(function (o) { return { id: o.id, x: o.x, y: o.y, dx: 0, dy: 0, ket: false }; });
       this.clearFx();
     },
-    clearFx: function () { this.wh = { L: 0, R: 0 }; this.parts = []; this.bounce = 0; this.flash = 0; },
+    clearFx: function () { this.wh = { L: 0, R: 0 }; this.parts = []; this.bounce = 0; this.flash = 0; this.docs = []; },
+    /**
+     * Cảm biến khoảng cách vừa đọc (mục lệnh có `docCamBien` của vết): cảm biến ở hông sáng và một tia mờ chạy tới ô được đo
+     * (xanh nếu trống, đỏ nếu chặn) trong ms mili giây. Đọc nhiều lần liên tiếp thì GỘP: cảm biến sáng liền một lượt, mỗi ô được đo một tia
+     * (đọc lại đúng ô cũ chỉ làm tia sáng lại).
+     */
+    docCamBien: function (d, ms) {
+      if (!d || !d.o || !d.tu) return;
+      var now = performance.now(), key = d.tu.x + ',' + d.tu.y + '>' + d.o.x + ',' + d.o.y, ds = this.docs, i;
+      ms = Math.max(140, ms || 360);
+      for (i = ds.length - 1; i >= 0; i--) if (ds[i].key === key) { ds.splice(i, 1); break; }
+      ds.push({ key: key, tu: d.tu, o: d.o, huong: d.huong, trong: !!d.trong, vat: d.vat || null, t0: now, ms: ms });
+      while (ds.length > 6) ds.shift();
+    },
+    /** Còn tia cảm biến đang sáng không (cảm biến trên thân xe sáng cùng lúc). */
+    camBienSang: function (now) {
+      for (var i = 0; i < this.docs.length; i++) if (now - this.docs[i].t0 < this.docs[i].ms * 0.85) return true;
+      return false;
+    },
+    /** Vẽ các tia cảm biến (theo pixel sân): vệt mờ dần từ mũi xe tới ô được đo; ô bị chặn có dấu X ở sát mép ô đó. */
+    veTia: function (g, now) {
+      var ds = this.docs, i;
+      for (i = ds.length - 1; i >= 0; i--) if (now - ds[i].t0 >= ds[i].ms) ds.splice(i, 1);
+      for (i = 0; i < ds.length; i++) {
+        var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45), rgb = d.trong ? '93,255,122' : '255,74,60';
+        var vx = DX[d.huong], vy = DY[d.huong], x0 = d.tu.x * T + 7 + vx * 5, y0 = d.tu.y * T + 7 + vy * 5;
+        var cx = d.o.x * T + 7, cy = d.o.y * T + 7, x1 = d.trong ? cx : cx - vx * 6, y1 = d.trong ? cy : cy - vy * 6;
+        g.fillStyle = 'rgba(' + rgb + ',' + (0.3 * a).toFixed(3) + ')'; g.fillRect(d.o.x * T, d.o.y * T, T, T);     // ô được đo ám nhẹ
+        g.save();
+        g.strokeStyle = 'rgba(' + rgb + ',' + (0.95 * a).toFixed(3) + ')'; g.lineWidth = 1.5; g.setLineDash([3, 1]); g.lineDashOffset = -((now / 40) % 3);
+        g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+        g.setLineDash([]); g.lineWidth = 1;
+        g.lineWidth = 1.5;
+        if (d.trong) g.strokeRect(Math.round(cx) - 3, Math.round(cy) - 3, 6, 6);
+        else { g.beginPath(); g.moveTo(x1 - 2.5, y1 - 2.5); g.lineTo(x1 + 2.5, y1 + 2.5); g.moveTo(x1 + 2.5, y1 - 2.5); g.lineTo(x1 - 2.5, y1 + 2.5); g.stroke(); }
+        g.restore();
+      }
+    },
     /** Phun hạt. Tùy chọn: sz = cạnh hạt (px sân), mo = true thì hạt mờ dần khi sắp hết. */
     burst: function (cx, cy, n, cols, sp, sz, mo) {
       for (var i = 0; i < n; i++) {
@@ -216,7 +253,7 @@
         var ph = (now / 90 | 0) & 1, duoi = this.vatDuoiXe();
         var wL = this.wh.L, wR = this.wh.R, phC = ph;
         if (c.robot.than === 'nhen') { wL = wR = v.chan ? 2 : 0; if (v.chan === 1) phC = 1; }   // nhện: chan 1 = nhấc chân (khung `buoc` đứng yên), 2 = chân bước luân phiên
-        var spr = VeRobot.ve(c.robot, { wl: wL, wr: wR, ph: phC, tay: v.ra ? { tuThe: v.tay.tuThe, kep: v.tay.kep, cam: v.tay.cam, ra: true } : v.tay, camBien: v.camBien, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
+        var spr = VeRobot.ve(c.robot, { wl: wL, wr: wR, ph: phC, tay: v.ra ? { tuThe: v.tay.tuThe, kep: v.tay.kep, cam: v.tay.cam, ra: true } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
         g.imageSmoothingEnabled = false;
         var w = spr.width, h = spr.height, sc = spr.laPart ? 1 : ku;
         g.fillStyle = 'rgba(0,30,10,.35)';                                                // bóng dưới thân
@@ -234,6 +271,7 @@
         if (this.vatTaiO(tx, ty) && this.vatTaiDich(this.vatTaiO(tx, ty)) && Math.abs(v.x - tx) < 0.01 && Math.abs(v.y - ty) < 0.01) {
           g.strokeStyle = '#ffd23f'; g.lineWidth = 2; g.strokeRect(tx * T + 1, ty * T + 1, T - 2, T - 2); g.lineWidth = 1;
         }
+        if (this.docs.length) this.veTia(g, now);
         if (v.bao && v.baoDen > now) this.veDau(g, v.bao, cx, cy, now, c.robot.tay ? 25 : 21);
         if (this.flash > now) { g.fillStyle = 'rgba(255,60,50,.32)'; g.fillRect(0, 0, this.cv.width, this.cv.height); }
       }
@@ -531,7 +569,34 @@
     }
   };
 
+  /**
+   * Ảnh nhỏ của một sân (cho dải chọn sân): vẽ lên canvas cv, mỗi ô vuông nguyên px CSS (vừa khung rong × cao px CSS), hai px canvas mỗi px CSS.
+   * rows = hàng sân của lõi, bd = { x, y, huong } ô xuất phát (chấm xanh lơ có mũi chỉ hướng mặt). Không có luật chơi, chỉ để nhận ra sân.
+   */
+  function thuSan(cv, rows, bd, rong, cao) {
+    var w = rows[0].length, h = rows.length, c = Math.max(2, Math.floor(Math.min((rong || 29) / w, (cao || 28) / h))), q = 2, s = c * q;
+    cv.width = w * s; cv.height = h * s; cv.style.width = (w * c) + 'px'; cv.style.height = (h * c) + 'px';
+    var g = cv.getContext('2d'), x, y, ch, px, py;
+    for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+      ch = rows[y][x]; px = x * s; py = y * s;
+      if (ch === '#') { g.fillStyle = '#4a5368'; g.fillRect(px, py, s, s); g.fillStyle = '#7a85a3'; g.fillRect(px, py, s, Math.max(1, s >> 3)); continue; }
+      g.fillStyle = BANG[ch] !== undefined ? '#2f5fb0' : ch === 'S' ? '#9aa0b0' : '#2f7a46'; g.fillRect(px, py, s, s);
+      if (ch === 'H' || ch === 'h') { g.fillStyle = '#8d97a8'; g.fillRect(px + (s >> 3), py + (s >> 3), s - (s >> 2), s - (s >> 2)); }
+      if (ch === 'o' || ch === 'X') { g.fillStyle = '#c98a45'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
+      if (ch === 'D' || ch === 'X' || ch === 'h') { g.strokeStyle = '#ffd23f'; g.lineWidth = Math.max(1, s >> 3); g.strokeRect(px + g.lineWidth / 2, py + g.lineWidth / 2, s - g.lineWidth, s - g.lineWidth); }
+      if (ch === 'F') {
+        g.fillStyle = '#fff6e3'; g.fillRect(px + (s >> 1) - 1, py + 1, Math.max(1, s >> 3), s - 2);
+        g.fillStyle = '#ff4a3c'; g.fillRect(px + (s >> 1), py + 1, s >> 1, s >> 1);
+      }
+    }
+    if (bd) {
+      var cx = bd.x * s + s / 2, cy = bd.y * s + s / 2, r = s * 0.28;
+      g.fillStyle = '#7ff0ff'; g.fillRect(Math.round(cx - r), Math.round(cy - r), Math.round(r * 2), Math.round(r * 2));
+      g.fillStyle = '#1b120a'; g.fillRect(Math.round(cx + DX[bd.huong || 0] * r - 1), Math.round(cy + DY[bd.huong || 0] * r - 1), 2, 2);
+    }
+  }
+
   (function loop(now) { FIELDS.forEach(function (f) { f.draw(now || performance.now()); }); requestAnimationFrame(loop); })();
 
-  window.SanVe = { Field: Field, ngu: ngu, ease: ease, DX: DX, DY: DY };
+  window.SanVe = { Field: Field, ngu: ngu, ease: ease, DX: DX, DY: DY, thuSan: thuSan };
 })();

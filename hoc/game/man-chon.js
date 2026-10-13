@@ -34,6 +34,7 @@
     el.thu = h('div', 'c-thu chalk'); host.appendChild(el.thu);
     el.tb = h('div', 'c-tb'); host.appendChild(el.tb);
     Ve.hydrate(host);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(vuaTieuDe);
 
     el.truoc.addEventListener('click', function () { doiChuoi(-1); });
     el.sau.addEventListener('click', function () { doiChuoi(1); });
@@ -80,6 +81,15 @@
     return d;
   }
 
+  /** Tiêu đề chương dài ("Chương 11 · Cảm biến khoảng cách") thì co chữ (hệ số --ts) cho vừa giữa hai nút ‹ ›, không đè lên nút. */
+  function vuaTieuDe() {
+    var td = el.tieuDe; if (!td) return;
+    td.style.removeProperty('--ts');
+    if (!td.clientWidth) return;
+    var ts = 1;
+    while (td.scrollWidth > td.clientWidth + 1 && ts > 0.5) { ts = Math.round((ts - 0.04) * 100) / 100; td.style.setProperty('--ts', ts); }
+  }
+
   function ve() {
     var n = App.chuong, dsc = App.dsChuong(), vt = App.chiSoChuong(n), cc = dsc[vt];
     el.tieuDe.innerHTML = '';
@@ -89,6 +99,7 @@
     el.tieuDe.appendChild(h('em', null, cc.ten));
     el.truoc.classList.toggle('mo-mo', vt <= 0); el.sau.classList.toggle('mo-mo', vt >= dsc.length - 1);
     if (App.moHet) el.tieuDe.appendChild(h('span', 'c-mh', t('chon.moHetNhan')));
+    vuaTieuDe();
 
     var ds = App.dsMan(n), xong = ds.filter(function (m) { return Luu.daQua(m.ma); }).length;
     el.bar.innerHTML = '';

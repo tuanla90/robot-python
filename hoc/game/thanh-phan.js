@@ -76,9 +76,10 @@
   var RE_FOR_DS = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+range\()([^)]*)(\):.*)$/;
   var RE_FOR_CH = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+)("[^"]*"|[A-Za-z_]\w*)(\s*:.*)$/;                       // for c in "UUR": / for c in path:
   var RE_IF_DS = /^(\s*(?:if|elif)\s+)([A-Za-z_]\w*)(\s*==\s*)("[^"]*"|[A-Za-z_]\w*)(\s*:.*)$/;            // if d == "U": / elif d == "D":
+  var RE_DK = /^(\s*(?:while|if|elif)\s+)((?:not\s+)?[A-Za-z_]\w*\(\)|True|False)(\s*:.*)$/;                        // while front_clear(): / if not right_clear(): / while True:
   var RE_GOI_DS = /^(\s*([A-Za-z_]\w*)\()([^)]*)(\).*)$/;
   var RE_SO = /^\d+$/, RE_BIEN = /^[A-Za-z_]\w*$/, RE_CHUOI = /^"[^"]*"$/;
-  /** { loai: 'range' | 'forChuoi' | 'if' | 'goi', ten (tên hàm được gọi), tien, ds: [chuỗi đối số], noi (chuỗi nối các đối số), hau, laFor } hoặc null nếu dòng không có ngoặc đối số. */
+  /** { loai: 'range' | 'forChuoi' | 'if' | 'dk' (điều kiện cảm biến của while / if / elif) | 'goi', ten (tên hàm được gọi), tien, ds: [chuỗi đối số], noi (chuỗi nối các đối số), hau, laFor } hoặc null nếu dòng không có ngoặc đối số. */
   function tachDoiSo(dong) {
     dong = chuoi(dong);
     var m = RE_FOR_DS.exec(dong);
@@ -87,6 +88,8 @@
     if (m) return { loai: 'forChuoi', ten: '', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: true };
     m = RE_IF_DS.exec(dong);
     if (m) return { loai: 'if', ten: '', tien: m[1], ds: [m[2], m[4]], noi: m[3], hau: m[5], laFor: false };
+    m = RE_DK.exec(dong);
+    if (m) return { loai: 'dk', ten: '', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
     m = RE_GOI_DS.exec(dong);
     if (!m) return null;
     return { loai: 'goi', ten: m[2], tien: m[1], ds: m[3].trim() === '' ? [] : m[3].split(',').map(function (x) { return x.trim(); }), noi: ', ', hau: m[4], laFor: false };
@@ -106,6 +109,8 @@
     return '<span class="ar">' + esc(v) + '</span>';
   }
 
+  /** Ô chạm được của điều kiện (front_clear(), not right_clear(), True…): bấm để chọn điều kiện khác. */
+  function oDieuKien(v) { return '<span class="num dkc" data-k="0" data-so="0" data-dk="' + esc(v) + '">' + esc(v) + '</span>'; }
   /** Tô màu một dòng code (ngôn ngữ giữ nguyên tiếng Anh). Dấu cách đầu dòng bị bỏ: bậc thụt do khung vẽ bằng lề. */
   function mauDong(text) {
     text = boThut(text);
@@ -123,6 +128,8 @@
     if (ic) {
       return '<span class="kw if">' + ic[1] + ' </span>' + oDoiSo(ic[2], 0) + '<span class="pu"> == </span>' + oDoiSo(ic[3], 1) + '<span class="pu">:</span>';
     }
+    var dk = /^(while|if|elif)\s+((?:not\s+)?[A-Za-z_]\w*\(\)|True|False)\s*:\s*$/.exec(text);
+    if (dk) return '<span class="kw ' + (dk[1] === 'while' ? 'wh' : 'if') + '">' + dk[1] + ' </span>' + oDieuKien(dk[2]) + '<span class="pu">:</span>';
     if (/^else\s*:\s*$/.test(text)) return '<span class="kw if">else</span><span class="pu">:</span>';
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
@@ -135,7 +142,7 @@
   /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi tự rút gọn bằng "…" (CSS .num.chuoi). */
   function vuaDong(el) {
     el.style.fontSize = '';
-    if (!el.clientWidth || !el.querySelector('.chuoi')) return;
+    if (!el.clientWidth || !el.querySelector('.chuoi, .dkc')) return;
     el.classList.add('ko-cat');                                                    // đo với chuỗi chưa bị cắt
     var fs = parseFloat(getComputedStyle(el).fontSize) || 15;
     while (el.scrollWidth > el.clientWidth + 1 && fs > 9) { fs -= 0.5; el.style.fontSize = fs + "px"; }
@@ -166,12 +173,14 @@
     function dangChay() { return !!(tuyChon.dangChay && tuyChon.dangChay()); }
     function choXoa() { return !xt && !dangChay() && !Chan.dang(); }
     function thutLe() { return !!(tuyChon.thutLe && tuyChon.thutLe()); }
+    function camDuoc() { return (tuyChon.camBien && tuyChon.camBien()) || []; }                  // hàm cảm biến của màn (front_clear…): điều kiện chạm đổi được
     function bienDuoc() { return (tuyChon.bienDuoc && tuyChon.bienDuoc()) || []; }       // tên các đối số của hàm đang sửa (dùng trong thân hàm)
     function kieuBienCua(ten) { return (tuyChon.kieuBien && tuyChon.kieuBien(ten)) || 'so'; }   // 'so' | 'don' (một chữ) | 'ghep' (chuỗi chữ) của một đối số của hàm đang sửa
     /** Kiểu ô của đối số k trong dòng đã tách d: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi ghép) | 'bien' (ô biến của if) | 'dl' (chữ so sánh của if). */
     function kieuArg(d, k) {
       if (!d || d.loai === 'range') return 'so';
       if (d.loai === 'forChuoi') return 'ghep';
+      if (d.loai === 'dk') return 'dk';
       if (d.loai === 'if') return k === 0 ? 'bien' : 'dl';
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
       return kd === 'don' || kd === 'ghep' ? kd : 'so';
@@ -218,6 +227,10 @@
     /** Mở bộ chọn cho ô .num đang chạm (số 1–9 / chữ U D L R / bộ ghép chuỗi). */
     function moBoChon(so, i, kk) {
       var arr = lay(), d = tachDoiSo(arr[i]), kd = kieuArg(d, kk);
+      if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
+        if (camDuoc().length) chonDieuKien({ neo: so, ds: camDuoc(), gia: d.ds[kk], khiChon: function (v) { ed.datSo(i, v, kk); } });
+        return;
+      }
       if (kd === 'so') {
         chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), bien: bienTam('so', i), khiChon: function (v) { ed.datSo(i, v, kk); } });
         return;
@@ -323,8 +336,8 @@
       var cuoiDong = arr.length;                                    // ô trống đang chọn: hiện sẵn bậc thụt mặc định
       for (i = 0; i < tong; i++) {
         var khoa = i >= dung, t = tx[i], slot = sl[i];
-        var laFor = !slot && t !== undefined && /^\s*for\s/.test(t), laIf = !slot && t !== undefined && laRe(t);
-        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : ''))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') +
+        var laFor = !slot && t !== undefined && /^\s*for\s/.test(t), laIf = !slot && t !== undefined && laRe(t), laWh = !slot && t !== undefined && /^\s*while\s/.test(t);
+        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : ''))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') +
           (!xt && runIdx === i ? ' on' : '') + (!xt && loiSet[i] ? ' err' : '');
         strips[i].innerHTML = '';
         var bac = lv[i];
@@ -344,7 +357,7 @@
         var g = f;
         while (g + 1 < gioiHan && tx[g + 1] !== undefined && lv[g + 1] > lv[f]) g++;
         for (var j = f + 1; j <= g; j++) {
-          var sg = h('i', 'bk' + (laRe(tx[f]) ? ' if' : '') + (j === g ? ' cuoi' : '')); sg.style.left = (Math.min(lv[f], 2) + 1) * BUOC_PX - 8 + 'px';
+          var sg = h('i', 'bk' + (laRe(tx[f]) ? ' if' : /^\s*while\s/.test(tx[f]) ? ' wh' : '') + (j === g ? ' cuoi' : '')); sg.style.left = (Math.min(lv[f], 2) + 1) * BUOC_PX - 8 + 'px';
           brks[j].appendChild(sg);
         }
       }
@@ -529,6 +542,11 @@
         while (g > f && !boThut(arr[g]).trim()) g--;
         return g;
       }
+      function coRe(f) {                                            // thân vòng có if / elif / else / while: các lượt không giống nhau, không hiện số lượt
+        var g = cuoi(f);
+        for (var j = f + 1; j <= g; j++) if (/^\s*(if|elif|else|while)\b/.test(arr[j] || '')) return true;
+        return false;
+      }
       function ngoai(d, da) {                                       // vòng ngoài cùng chứa dòng d mà chưa nằm trong da
         for (var f = 0; f < d; f++) if (laF(f) && !da[f] && cuoi(f) >= d) return f;
         return -1;
@@ -541,7 +559,7 @@
           var j = i + 1;
           while (j < b && ngoai(evs[j].d, da) === f) j++;
           var so = soLan(f), dem = j - i;
-          if (so > 0 && dem % so === 0) {
+          if (so > 0 && dem % so === 0 && !coRe(f)) {
             var moi = {}; for (var kk in da) moi[kk] = true; moi[f] = true;
             var phan = dem / so;
             for (var k = 0; k < so; k++) {
@@ -729,6 +747,37 @@
     window.addEventListener('keydown', c.phim, true);
   }
 
+  /**
+   * Bảng chọn ĐIỀU KIỆN cảm biến cạnh ô `neo` (cho dòng `while …:` / `if …:` / `elif …:`). o: { neo, ds: [tên hàm cảm biến của màn], gia: điều kiện đang có, khiChon(v) }.
+   * Mỗi hàm một hàng hai nút: `front_clear()` | `not front_clear()`. khiChon nhận chuỗi điều kiện ("not left_clear()"). Chạm ngoài bảng / Esc thì đóng.
+   */
+  function chonDieuKien(o) {
+    dongChonSo();
+    var st = document.getElementById('stage');
+    var el = h('div', 'chon-so chon-chuoi dkb'); el.setAttribute('data-nut', 'chon-dk');
+    el.setAttribute('aria-label', t('choi.chonDieuKien'));
+    o.ds.forEach(function (ten) {
+      [ten + '()', 'not ' + ten + '()'].forEach(function (v) {
+        var b = h('button', 'bt g-cy cs dk-nut' + (v === o.gia ? ' on' : ''), v); b.setAttribute('data-dk', v);
+        b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(v); });
+        el.appendChild(b);
+      });
+    });
+    st.appendChild(el);
+    datViTri(el, o.neo, true);
+    var c = {
+      el: el,
+      ngoai: function (ev) { if (!el.contains(ev.target)) dongChonSo(); },
+      phim: function (ev) { if (ev.key === 'Escape' || ev.key === 'Enter') { ev.preventDefault(); dongChonSo(); } }
+    };
+    chonCur = c;
+    window.addEventListener('pointerdown', c.ngoai, true);
+    window.addEventListener('keydown', c.phim, true);
+  }
+  /** Hàm cảm biến khoảng cách mà màn cho dùng (front_clear, left_clear, right_clear), theo hamGoc của màn. */
+  var CAM_BIEN_TEN = ['front_clear', 'left_clear', 'right_clear'];
+  function camBienCua(man) { return ((man && man.hamGoc) || []).filter(function (n) { return CAM_BIEN_TEN.indexOf(n) >= 0; }); }
+
   /** Chẩn đoán cụ thể lên trước câu chung chung: `nhen-khong-buoc` (nhện chưa bước lần nào) đứng trước `chua-toi-co` / `chua-dua-vat`. Trả về mảng mới. */
   function xepChanDoan(ds) {
     var kq = ds.slice(), i = -1, j;
@@ -888,10 +937,10 @@
       host.appendChild(d); bricks['dk:' + goi.split(/[ :]/)[0]] = d;
     }
     /** Khối tím `for i in range(2):` (nhóm VÒNG LẶP). */
-    function gachVong(goi, khoa) {
+    function gachVong(goi, khoa, lopThem) {
       goi = goi || 'for i in range(2):';
-      var d = h('div', 'brick pu vong'); d.setAttribute('role', 'button');
-      d.setAttribute('data-ten', 'for'); d.setAttribute('data-loai', 'vong'); d.setAttribute('data-goi', goi);
+      var d = h('div', 'brick ' + (lopThem || 'pu') + ' vong'); d.setAttribute('role', 'button');
+      d.setAttribute('data-ten', khoa === 'while' ? 'while' : 'for'); d.setAttribute('data-loai', 'vong'); d.setAttribute('data-goi', goi);
       var sp = h('span', 'tx'); sp.textContent = goi; d.appendChild(sp);
       d.addEventListener('click', function () { cb.khiChen(goi); });
       host.appendChild(d); bricks['vong:' + (khoa || 'for')] = d;
@@ -905,7 +954,7 @@
       var gocDay = (spec.goc || []).filter(function (n) { return DAY_TEN.indexOf(n) >= 0; });                // tấm đẩy: push (nhóm ĐẨY)
       var gocChan = (spec.goc || []).filter(function (n) { return /^go_/.test(n); });                      // nhện: go_up / go_down / go_left / go_right (nhóm CHÂN, kèm wait)
       var gocTruot = (spec.goc || []).filter(function (n) { return /^slide_/.test(n); });                  // omni: slide_left / slide_right (nhóm TRƯỢT)
-      var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !/^slide_/.test(n) && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh)
+      var gocThuong = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh); hàm cảm biến là ĐIỀU KIỆN, không phải lệnh
       if (gocChan.length && (spec.goc || []).indexOf('wait') >= 0) gocChan.push('wait');
       function lop(them) { return (host.firstChild ? 'g2 ' : 'g1 ') + them; }       // nhóm đầu tiên là g1 (không cách trên), các nhóm sau g2
       function nhomGoc() {
@@ -941,12 +990,16 @@
         nhan(t('choi.nhom.vong'), lop('g-vl'));
         gachVong();
         if (spec.chuoi) gachVong('for c in "R":', 'forc');
+        if (spec.vongWhile) gachVong('while ' + ((spec.cam || [])[0] || 'front_clear') + '():', 'while', 'wh');         // vòng while: khối xanh dương
       }
       function nhomDk() {
-        if (!spec.dieuKien) return;
+        var cam = spec.cam || [];
+        if (!spec.dieuKien && !cam.length) return;
         nhan(t('choi.nhom.dk'), lop('g-dk'));
-        ['if d == "U":', 'elif d == "D":', 'else:'].forEach(gachDk);
+        (cam.length ? (cam.indexOf('right_clear') >= 0 ? ['if right_clear():', 'elif front_clear():', 'else:'] : ['if ' + cam[0] + '():', 'else:'])
+          : ['if d == "U":', 'elif d == "D":', 'else:']).forEach(gachDk);
       }
+      function nhomDkCam() { if ((spec.cam || []).length) nhomDk(); }                     // màn có cảm biến: nhóm ĐIỀU KIỆN nằm cạnh VÒNG LẶP
       function nhomBien() {
         if (!spec.bien || !spec.bien.length) return;
         nhan(t('choi.nhom.bien'), lop('g-bien'));
@@ -979,9 +1032,9 @@
       // (BIẾN, VÒNG LẶP, hàm của màn, hàm của em), khối gốc / tay xuống cuối. Kho của em đã dài: hàm của màn (ít, đề bài thường cần ngay) lên trước hàm của em.
       var coTS = !!(spec.bien && spec.bien.length) || [spec.em, spec.man].some(function (l) { return (l || []).some(function (f) { return f.thamSo && f.thamSo.length; }); });
       var thuTu = gocChan.length ? [nhomBien, nhomChan, nhomTay, nhomVong, nhomDk, nhomMan, nhomEm, nhomGoc]      // nhện: chân (lệnh chính) lên đầu
-        : coTS ? [nhomBien, nhomDay, nhomVong, nhomMan, nhomEm, nhomTruot, nhomGoc, nhomTay]
-        : (spec.em && spec.em.length > 8) ? [nhomGoc, nhomDay, nhomTruot, nhomTay, nhomVong, nhomBien, nhomMan, nhomEm]
-        : [nhomGoc, nhomDay, nhomTruot, nhomTay, nhomVong, nhomBien, nhomEm, nhomMan];
+        : coTS ? [nhomBien, nhomDay, nhomVong, nhomDkCam, nhomMan, nhomEm, nhomTruot, nhomGoc, nhomTay]
+        : (spec.em && spec.em.length > 8) ? [nhomGoc, nhomDay, nhomTruot, nhomTay, nhomVong, nhomDkCam, nhomBien, nhomMan, nhomEm]
+        : [nhomGoc, nhomDay, nhomTruot, nhomTay, nhomVong, nhomDkCam, nhomBien, nhomEm, nhomMan];
       thuTu.forEach(function (f) { f(); });
       this.vua();
       if (cuonCu && host.classList.contains('cuon')) { host.scrollTop = cuonCu; veCuon(); }
@@ -1129,7 +1182,7 @@
     function datGhost() {
       var c = cur, si = stageInfo(), g;
       if (c.loai === 'doi') {
-        g = h('div', 'keo-bong keo-dong' + (/^\s*for\s/.test(c.txt) ? ' for' : '') + (laRe(c.txt) ? ' if' : '')); g.innerHTML = mauDong(c.txt);
+        g = h('div', 'keo-bong keo-dong' + (/^\s*for\s/.test(c.txt) ? ' for' : '') + (laRe(c.txt) ? ' if' : '') + (/^\s*while\s/.test(c.txt) ? ' wh' : '')); g.innerHTML = mauDong(c.txt);
       } else {
         g = c.el.cloneNode(true); g.className += ' keo-bong';
         var ned = g.querySelector('.ed'); if (ned) ned.parentNode.removeChild(ned);
@@ -1333,6 +1386,6 @@
     m.than.appendChild(hang);
   }
 
-  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, taoKieu: taoKieu, locHamTheoRobot: locHamTheoRobot, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
+  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, camBienCua: camBienCua, taoKieu: taoKieu, locHamTheoRobot: locHamTheoRobot, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();
