@@ -157,8 +157,10 @@ console.log('\n== chuanSanThu: sửa số liệu bậy ==');
 
 console.log('\n== Còn lại: lỗi thật vẫn báo; nhịp tối đa ==');
 {
-  const g = ChamHoc.thuHam(man, {}, 'lap', [H('lap', ['while True:', '    wait()'])], { nhipToiDa: 20 });
+  const g = ChamHoc.thuHam(man, {}, 'lap', [H('lap', ['for i in range(500):', '    wait()'])], { nhipToiDa: 20 });
   kiem('chạy mãi: qua-nhieu-nhip', maCua(g).join() === 'qua-nhieu-nhip' && g.soNhip === 20, J(g.chanDoan));
+  const gw = ChamHoc.thuHam(man, {}, 'lap', [H('lap', ['while True:', '    wait()'])], { nhipToiDa: 20 });
+  kiem('chạy mãi bằng while: vong-vo-han (hàm lap, dòng 1)', maCua(gw).join() === 'vong-vo-han' && gw.soNhip === 20 && /hàm lap, dòng 1/.test(gw.chanDoan[0].loi), J(gw.chanDoan));
 }
 
 console.log('\n== Kho hàm: khóa tên các hàm theo cốt truyện (taoHam của bất kỳ màn nào) ==');

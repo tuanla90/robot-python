@@ -87,6 +87,20 @@
         vuông góc là tường hoặc mép sân; ô băng dẫn ra khỏi góc thì không chết) thì dừng ngay cuối nhịp đó (dungSom = 'thung-ket').
         Thùng nặng chỉ thiết kế để đi với mục tiêu 'day-thung' hoặc 'toi-co' (làm vật chắn); không đi chung vật nhẹ 'o'.
 
+   CẢM BIẾN KHOẢNG CÁCH (chương `khoang-cach`; xe bánh, xích, omni; nhện thì không vì không có hướng mặt). Robot gắn cảm biến
+        khi hamGoc có front_clear / left_clear / right_clear. Ba hàm gốc này TRẢ VỀ True / False (1 / 0 trong nhân):
+        - front_clear(): ô NGAY TRƯỚC MẶT xe đi vào được → True; là tường, mép sân, thùng nặng, hay (với xe bánh / omni) bậc thang S
+          → False. Xích leo được bậc thang nên S là ô trống với xích.
+        - left_clear() / right_clear(): cùng phép đo cho ô bên TRÁI / bên PHẢI so với hướng mặt (cùng một cảm biến, hai bên hông).
+        - ĐỌC CẢM BIẾN KHÔNG TỐN NHỊP và không đổi gì trên sân; đọc ở trạng thái HIỆN TẠI (lệnh bánh chưa wait() thì chưa chạy).
+        - Mỗi lần đọc ghi một mục lệnh trong vết (loai 'lenh') có trường `docCamBien` và một sự kiện 'doc-cam-bien' ở nhịp KẾ TIẾP
+          (hoặc ở kết quả cuối nếu hết nhịp): { ma, cam:'khoang-cach', ham, tu:{x,y}, huong (hướng tuyệt đối đo), o:{x,y} ô được đo,
+          trong: true|false, vat: null | 'tuong' | 'ngoai-san' | 'bac-thang' | 'thung-nang' }. Giao diện dùng để nháy cảm biến.
+        - Gọi hàm cảm biến khi hamGoc không có: nhân báo "chưa có hàm" (cham.js đổi thành chẩn đoán chua-gan-cam-bien).
+        - Chống vòng lặp vô hạn không có nhịp: quá 1000 lần đọc cảm biến liên tiếp mà chưa có nhịp nào thì dừng, loi.loai 'infinite-loop'
+          (cham.js: vong-vo-han). Vòng lặp có nhịp thì bị chặn bởi nhipToiDa ('qua-nhieu-nhip'); vòng không có lời gọi nào bị chặn bởi
+          ngân sách lệnh của nhân ('infinite-loop').
+
    Băng chuyền: mỗi nhịp, SAU khi robot làm xong hành động, nếu robot đang đứng trên
    ô băng thì demBang++; đủ 2 thì đẩy 1 ô theo mũi tên (bị chặn thì đứng yên) và
    demBang = 0. Không đứng trên băng thì demBang = 0.
@@ -122,6 +136,10 @@
   var TAY_LENH = ['arm_down', 'arm_up', 'grab', 'release'];
   var TAY_NHOM = { arm_down: 'tu-the', arm_up: 'tu-the', grab: 'kep', release: 'kep' };
   var TAY_DAY = ['push'];                       // tay tấm đẩy (chương tam-day): một lệnh gốc push()
+  // cảm biến khoảng cách (chương khoang-cach): hàm gốc trả True / False. Giá trị = lệch hướng so với hướng mặt (0 trước, 1 phải, 3 trái)
+  var CAM_BIEN_HAM = { front_clear: 0, right_clear: 1, left_clear: 3 };
+  var DOC_LIEN_TIEP_TOI_DA = 1000;              // đọc cảm biến liên tiếp không có nhịp: quá số này coi là vòng lặp vô hạn
+  var DOC_TOI_DA_MOI_NHIP = 50;                 // số sự kiện 'doc-cam-bien' tối đa gắn vào một nhịp (vết lệnh vẫn đủ)
   var BANH_LENH = {
     left_move: ['trai', 1], left_back: ['trai', -1],
     right_move: ['phai', 1], right_back: ['phai', -1]
@@ -192,6 +210,7 @@
    *     Trong vet.suKien của nhịp còn có 'nhat-vat', 'dat-vat' (thông tin cho hoạt cảnh) và 'xong-dua-vat'.
    *   - tay, vat: trạng thái CUỐI (tay null nếu không có tay gắp); vatBanDau: vật lúc xuất phát;
    *     dich: các ô đích [{x,y}]; dungSom: null | 'vat-vo' (dừng sớm vì vật vỡ, chỉ ở mục tiêu dua-vat)
+   *   - soLanDoc: số lần đọc cảm biến; docConLai: các sự kiện 'doc-cam-bien' chưa gắn vào nhịp nào (đọc sau nhịp cuối).
    */
   function chay(cfg, code, opt) {
     opt = opt || {};
@@ -208,7 +227,7 @@
 
     var hamGoc = cfg.hamGoc || HAM_GOC[loai];
     hamGoc.forEach(function (t) {
-      if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && TAY_DAY.indexOf(t) < 0) {
+      if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && TAY_DAY.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined) {
         throw new Error('Hàm gốc "' + t + '" không thuộc loại robot ' + loai + '.');
       }
     });
@@ -218,6 +237,8 @@
     var coDay = hamGoc.some(function (t) { return TAY_DAY.indexOf(t) >= 0; });     // tay tấm đẩy (push)
     if (coDay && loai === 'nhen') throw new Error('Nhện không gắn tấm đẩy (push).');
     if (coDay && coTay) throw new Error('Một robot chỉ có một tay: push không đi chung với arm_down, arm_up, grab, release.');
+    var coCamBien = hamGoc.some(function (t) { return CAM_BIEN_HAM[t] !== undefined; });     // cảm biến khoảng cách (front_clear…)
+    if (coCamBien && loai === 'nhen') throw new Error('Nhện không gắn cảm biến khoảng cách (nhện không có hướng mặt).');
 
     var rb = { x: bd.x, y: bd.y, huong: bd.huong || 0 };
     var nhip = 0, demBang = 0;
@@ -229,6 +250,7 @@
     var pushCho = null;                         // tấm đẩy: lệnh push() đang chờ wait(): {ten, dongPy}
     var vet = [], suKienChan = [];
     var thang = false, loi = null, dungSom = null;
+    var docCho = [], docLienTiep = 0, soLanDoc = 0, traVe = 0;       // cảm biến: sự kiện chờ gắn vào nhịp kế, số lần đọc liên tiếp chưa có nhịp, tổng số lần đọc, giá trị trả về cho nhân
 
     // ---- tay gắp, vật, ô đích
     var tay = { tuThe: 'tren', kep: false, cam: null };
@@ -387,7 +409,7 @@
         return true;
       }
       nhip++;
-      var sk = [];
+      var sk = docCho; docCho = []; docLienTiep = 0;          // các lần đọc cảm biến từ nhịp trước tới giờ gắn vào nhịp này
       var banhGhi = { trai: 0, phai: 0 };
       var truotGhi = 0;
       var coVo = false;
@@ -563,9 +585,30 @@
       return { tuThe: tt ? (tt.ten === 'arm_down' ? 'duoi' : 'tren') : null, kep: kk ? (kk.ten === 'grab' ? 'kep' : 'tha') : null };
     }
 
+    /** Đọc cảm biến khoảng cách: ô ngay trước / bên phải / bên trái xe có đi vào được không. Không tốn nhịp, không đổi sân. */
+    function docCamBien(yc) {
+      var h = (rb.huong + CAM_BIEN_HAM[yc.ten]) % 4, v = VEC[h], x = rb.x + v[0], y = rb.y + v[1];
+      var ly = lyDoChan(san, loai, x, y);
+      if (!ly && thungTai(x, y)) ly = 'thung-nang';
+      return { ma: 'doc-cam-bien', cam: 'khoang-cach', ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: h, o: { x: x, y: y }, trong: !ly, vat: ly || null, nhip: nhip };
+    }
+
     /** Xử lý một lời gọi hàm gốc nhân nhường ra. Trả về true nếu phải dừng. */
     function xuLy(yc) {
       vet.push({ loai: 'lenh', ten: yc.ten, dongPy: yc.dong, nganPy: yc.ngan });
+      if (CAM_BIEN_HAM[yc.ten] !== undefined) {                 // cảm biến: đọc xong trả True / False cho chương trình, không tốn nhịp
+        var ed = docCamBien(yc);
+        vet[vet.length - 1].docCamBien = Object.assign({}, ed);
+        soLanDoc++;
+        if (docCho.length < DOC_TOI_DA_MOI_NHIP) docCho.push(ed);
+        traVe = ed.trong;
+        docLienTiep++;
+        if (docLienTiep > DOC_LIEN_TIEP_TOI_DA) {
+          loi = { loai: 'infinite-loop', dong: yc.dong, thongDiep: 'Đọc cảm biến ' + DOC_LIEN_TIEP_TOI_DA + ' lần liên tiếp mà robot chưa chạy nhịp nào — có vòng lặp không có đường ra.' };
+          return true;
+        }
+        return false;
+      }
       if (yc.ten === 'wait') {
         if (laBanh) {
           var lenhBanh = null;                                   // lệnh bánh đầu tiên của nhịp (để chỉ ra khi tay vướng sàn)
@@ -631,8 +674,9 @@
     try {
       var r = g.next();
       while (!r.done) {
+        traVe = 0;
         if (xuLy(r.value)) { g.return(); break; }
-        r = g.next(0);
+        r = g.next(traVe);
       }
     } catch (e) {
       if (e && e.cuaGame) loi = { loai: e.loai, dong: e.dong, thongDiep: e.thongDiep };
@@ -654,12 +698,13 @@
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
       tay: coTay ? chupTay() : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
       thung: chupThung(), thungBanDau: thungBanDau,
+      soLanDoc: soLanDoc, docConLai: docCho,
       quayDo: loai === 'xich' ? (quayDo ? quayDo.huong : 0) : undefined
     };
   }
 
   var API = {
-    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, TAY_DAY: TAY_DAY, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT,
+    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, TAY_DAY: TAY_DAY, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };
   if (laNode) module.exports = API;

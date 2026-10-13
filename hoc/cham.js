@@ -53,6 +53,15 @@
      theoSan, `tay` / `vat` cuối cùng; vết nhịp có `robot.tay` và `vat` (xem san-hoc.js).
    - vật vỡ thì chương trình dừng ngay cuối nhịp đó.
 
+   CẢM BIẾN KHOẢNG CÁCH (chương khoang-cach; luật đầy đủ ở san-hoc.js): hamGoc có front_clear / left_clear / right_clear thì robot có cảm biến
+   (man.robot.camBien = [{ ma:'khoang-cach', o:'hong' }]). Mỗi lần đọc là một mục lệnh trong vết có `docCamBien` { ma:'doc-cam-bien', ham, tu, huong, o,
+   trong, vat, nhip } (cũng nằm trong suKien của nhịp kế tiếp), để giao diện nháy cảm biến. Mã chẩn đoán mới:
+   - vong-vo-han (lỗi): vòng while chạy mãi — hoặc nhân bắt vòng không có nhịp (loaiCore 'infinite-loop'), hoặc robot chạy quá nhipToiDa mà chương
+     trình có `while` (loaiCore 'qua-nhieu-nhip'); `cho` trỏ tới dòng while. Chương trình KHÔNG có while mà quá nhịp thì vẫn là qua-nhieu-nhip.
+   - chua-gan-cam-bien (lỗi): gọi front_clear / left_clear / right_clear mà màn không cho (robot chưa gắn cảm biến, hay màn này chưa mở hàm đó).
+   NHIỀU SÂN: mặc định soNhip = số nhịp của sân DÀI NHẤT. man.nhipTheo === 'tong' thì soNhip = TỔNG nhịp mọi sân (dùng cho sao.nhip), để chương trình
+   viết cứng số bước (bước thừa chỉ húc tường ở sân ngắn) mất sao nhịp. Kết quả luôn có thêm nhipMax, nhipTong.
+
    TẤM ĐẨY / THÙNG NẶNG / MỤC TIÊU day-thung (man.mucTieu === 'day-thung'; luật đầy đủ ở san-hoc.js):
    - thắng khi MỌI thùng nặng (ký hiệu H, h) nằm trên ô đích (D, X, h). Kết quả có thêm `thung`, `thungBanDau` [{id,x,y}] (cuối / đầu), ở
      mỗi mục theoSan cũng vậy; vết nhịp có `thung` (vị trí thùng cuối nhịp) và sự kiện 'thung-di' {id, tu, den, nguon:'xe'|'truot'|'bang'}.
@@ -140,6 +149,27 @@
 
   function tenCua(ds) { return ds.map(function (h) { return h.ten; }); }
 
+  /** Dòng Python (không tính chú thích) có phải câu lệnh while không. */
+  function laDongWhile(s) { return /^\s*while\b/.test(String(s).replace(/#.*$/, '')); }
+  function coWhile(g) { return g.dong.some(laDongWhile); }
+  /** Dòng Python cuối cùng mà chương trình gọi một hàm gốc (để biết vòng nào đang chạy mãi). */
+  function ultLenhPy(res) {
+    for (var i = res.vet.length - 1; i >= 0; i--) if (res.vet[i].loai === 'lenh') return res.vet[i].dongPy;
+    return 0;
+  }
+  /** Ánh xạ tới dòng while đang bao quanh dòng Python `dong` (hoặc chính nó); không thấy thì lấy while đầu tiên. */
+  function viTriWhile(g, dong) {
+    var ds = g.dong, j = Math.min(dong || 0, ds.length);
+    function thut(s) { return /^\s*/.exec(s)[0].length; }
+    if (j >= 1 && laDongWhile(ds[j - 1])) return g.anhXa[j] || null;
+    if (j >= 1) {
+      var t = thut(ds[j - 1]);
+      for (var k = j - 1; k >= 1; k--) if (laDongWhile(ds[k - 1]) && thut(ds[k - 1]) < t) return g.anhXa[k] || null;
+    }
+    for (var q = 1; q <= ds.length; q++) if (laDongWhile(ds[q - 1])) return g.anhXa[q] || null;
+    return g.anhXa[j] || null;
+  }
+
   /**
    * Chẩn đoán từ kết quả chạy MỘT sân. sanThu = true: sân thử, không có cờ để "chưa tới".
    * bc (bối cảnh): { hamMan: [tên], hamEm: [tên], biCam: [tên hàm của em bị cấm mà bài đang gọi] }.
@@ -151,10 +181,16 @@
 
     // --- lỗi của nhân chạy code
     var l = res.loi;
-    if (l && l.loai !== 'qua-nhieu-nhip') {
+    if (l && l.loai !== 'qua-nhieu-nhip' && l.loai !== 'infinite-loop') {
       var m = g.anhXa[l.dong] || null;
       var tn = /tên "([^"]+)"/.exec(l.thongDiep || '');
-      if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep)) {
+      if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.CAM_BIEN_HAM[tn[1]] !== undefined && hamGoc.indexOf(tn[1]) < 0) {
+        var dsCam = hamGoc.filter(function (t) { return SanHoc.CAM_BIEN_HAM[t] !== undefined; });
+        them('chua-gan-cam-bien', 'Ở ' + viTri(m) + ': ' + (dsCam.length
+          ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
+          : 'robot này chưa gắn cảm biến khoảng cách nên chưa có hàm ' + tn[1] + '().') +
+          ' Hàm gốc dùng được ở màn này: ' + (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.', { ten: tn[1], cho: cho(m) });
+      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep)) {
         var ten = tn[1], s;
         if (bc.biCam.indexOf(ten) >= 0) {
           s = 'Ở ' + viTri(m) + ': màn này không cho dùng hàm của em, nên "' + ten + '" chưa có. Hàm gốc dùng được ở màn này: ' +
@@ -180,7 +216,15 @@
         them('loi-chay', 'Ở ' + viTri(m) + ': ' + l.thongDiep, { cho: cho(m), loaiCore: l.loai });
       }
     }
-    if (l && l.loai === 'qua-nhieu-nhip') {
+    if (l && l.loai === 'infinite-loop') {
+      var mw = viTriWhile(g, l.dong);
+      them('vong-vo-han', 'Ở ' + viTri(mw) + ': vòng while chạy mãi không dừng: điều kiện không bao giờ sai và bên trong không có lệnh nào cho robot chạy tiếp, nên chương trình bị ngắt. ' +
+        'Xem lại điều kiện của vòng while và những gì nằm trong thân vòng.', { cho: cho(mw), loaiCore: 'infinite-loop' });
+    } else if (l && l.loai === 'qua-nhieu-nhip' && coWhile(g)) {
+      var mw2 = viTriWhile(g, ultLenhPy(res));
+      them('vong-vo-han', 'Robot đã chạy quá ' + (res.nhipToiDa || man.nhipToiDa || 200) + ' nhịp mà vòng while vẫn chưa dừng (ở ' + viTri(mw2) + '): điều kiện không bao giờ sai.' +
+        ' Xem lại điều kiện của vòng while, và xem trong thân vòng có lệnh nào làm điều kiện đổi không.', { cho: cho(mw2), loaiCore: 'qua-nhieu-nhip', nhip: res.nhip });
+    } else if (l && l.loai === 'qua-nhieu-nhip') {
       them('qua-nhieu-nhip', 'Robot đã chạy quá ' + (res.nhipToiDa || man.nhipToiDa || 200) + ' nhịp' +
         (sanThu ? '. ' : ' mà chưa tới cờ. ') +
         'Xem chương trình có đoạn nào lặp mãi hoặc đi vòng không cần thiết không.', { nhip: res.nhip });
@@ -426,10 +470,12 @@
   function chuyenVet(vet, g) {
     return vet.map(function (e) {
       if (e.loai === 'lenh') {
-        return {
+        var mucLenh = {
           loai: 'lenh', ten: e.ten, cho: cho(g.anhXa[e.dongPy]),
           ngan: e.nganPy.map(function (d) { return cho(g.anhXa[d]); }).filter(function (x) { return x && x.cot !== 'thu'; })
         };
+        if (e.docCamBien) mucLenh.docCamBien = e.docCamBien;             // đọc cảm biến: giao diện nháy cảm biến
+        return mucLenh;
       }
       return e;
     });
@@ -489,7 +535,7 @@
     // 3. chạy từng sân
     var nhieu = Array.isArray(man.san[0]);
     var dsSan = nhieu ? man.san : [man.san];
-    var thangHet = true, nhipMax = 0, gom = [], dsMa = {}, dung = {};
+    var thangHet = true, nhipMax = 0, nhipTong = 0, gom = [], dsMa = {}, dung = {};
     dsSan.forEach(function (rows, i) {
       var bd = Array.isArray(man.batDau) ? man.batDau[i] : man.batDau;
       var res = SanHoc.chay({
@@ -502,6 +548,7 @@
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
+      nhipTong += res.nhip;
       cd.forEach(function (c) {
         if (dsMa[c.ma]) return;
         dsMa[c.ma] = true;
@@ -509,7 +556,8 @@
       });
     });
     ketQua.thang = thangHet;
-    ketQua.soNhip = nhipMax;
+    ketQua.nhipMax = nhipMax; ketQua.nhipTong = nhipTong;
+    ketQua.soNhip = man.nhipTheo === 'tong' ? nhipTong : nhipMax;       // nhiều sân: mặc định sân dài nhất; nhipTheo 'tong' = tổng mọi sân
     ketQua.chanDoan = gom;
     ketQua.batDau = Array.isArray(man.batDau) ? man.batDau[0] : man.batDau;
     var viec = ketQua.theoSan.filter(function (s) { return !s.thang; })[0] || ketQua.theoSan[0];
@@ -524,7 +572,7 @@
     dienO(ketQua, daDung);
     if (thangHet) {
       var sao = man.sao || {};
-      ketQua.sao = 1 + (sao.o !== undefined && ketQua.soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && nhipMax <= sao.nhip ? 1 : 0);
+      ketQua.sao = 1 + (sao.o !== undefined && ketQua.soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && ketQua.soNhip <= sao.nhip ? 1 : 0);
     }
     return xong();
   }
