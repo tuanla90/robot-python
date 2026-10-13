@@ -4,7 +4,7 @@
    ra ngoài), đổi tham số thì xe đi đúng số ô (sân thử của Xưởng hàm: forward, right, deliver, step), kho hàm giữ
    tham số, dữ liệu 10 màn, hamCuaEmCan đủ và không thừa, từng màn "đúng số thì thắng, sai số thì trượt",
    canThamSo (khai triển lời gọi hàm có tham số ra thì tràn khung hoặc mất sao) và bảng 10 màn.
-   Các kiểm chung cho cả 60 màn (đi tuần tự, sao, lời sai, đường tắt BFS…) nằm ở kiem-hoc.mjs.
+   Các kiểm chung cho cả 70 màn (đi tuần tự, sao, lời sai, đường tắt BFS…) nằm ở kiem-hoc.mjs.
    Chạy: node robotics/hoc/kiem-tham-so.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
@@ -174,7 +174,7 @@ console.log('\n== 3. Kho hàm: tham số được giữ, tên đối số hợp 
 console.log('\n== 4. Chương tham-so: dữ liệu 10 màn ==');
 {
   kiem('đúng 10 màn, số 1..10, id 6.1…6.10 (chương thứ 6), mã tham-so.1…', ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '6.' + (i + 1) && m.ma === 'tham-so.' + (i + 1)));
-  kiem('chương đứng cuối thứ tự chương (sau bang-chuyen), tên "Hàm có tham số"', ThuTu.thuTu[ThuTu.thuTu.length - 1] === 'tham-so' && ThuTu.thuTu[ThuTu.thuTu.length - 2] === 'bang-chuyen' && ThuTu.ten['tham-so'] === 'Hàm có tham số');
+  kiem('chương đứng thứ 6 trong thứ tự chương (sau bang-chuyen, trước nhen), tên "Hàm có tham số"', ThuTu.thuTu[5] === 'tham-so' && ThuTu.thuTu[4] === 'bang-chuyen' && ThuTu.thuTu[6] === 'nhen' && ThuTu.ten['tham-so'] === 'Hàm có tham số');
   kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ màn 10 có huy hiệu tham-so',
     J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
       ds.filter((m) => m.huyHieu).length === 1 && ds[9].huyHieu.ma === 'tham-so' && ds[9].huyHieu.ten === 'Huy hiệu Hàm có tham số');

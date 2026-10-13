@@ -16,9 +16,12 @@
      'banh' (xe bánh): left_move / right_move / left_back / right_back chỉ RA LỆNH
         cho bánh trong nhịp hiện tại; wait() kết thúc nhịp và robot làm theo tổ hợp.
      'nhen' (nhện): go_up / go_down / go_left / go_right, mỗi lệnh 2 nhịp, sang ô mới
-        ở CUỐI nhịp thứ hai; wait() = 1 nhịp đứng yên. Không có hướng mặt.
+        ở CUỐI nhịp thứ hai; wait() = 1 nhịp đứng yên. Không có hướng mặt (đi 4 hướng TUYỆT ĐỐI
+        theo màn hình). Qua được bậc thang S. Nhện bị băng chuyền đẩy như xe: đứng trên băng
+        đủ 2 nhịp thì bị đẩy (kể cả giữa hai nhịp của một bước). Đi NGƯỢC băng: nhịp 2 bước sang
+        ô băng, nhịp kế bị đẩy lùi về → đứng im (kẹt).
 
-   TAY GẮP (chỉ xe bánh, chỉ khi hamGoc có lệnh tay): arm_down / arm_up / grab / release cũng
+   TAY GẮP (hamGoc có lệnh tay; xe bánh VÀ nhện): arm_down / arm_up / grab / release cũng
    chỉ RA LỆNH; wait() cho nhịp trôi. Trong MỘT nhịp:
      (a) tay đổi tư thế  →  (b) kẹp / thả, ở tư thế MỚI  →  (c) bánh chạy  →  (d) băng chuyền.
    Tay: { tuThe: 'tren'|'duoi' (mặc định 'tren'), kep: true|false, cam: id vật đang cầm | null }.
@@ -27,6 +30,11 @@
    - Tay 'duoi' thì xe KHÔNG đi, KHÔNG quay được: lệnh bánh của nhịp đó bị bỏ ('tay-vuong', kèm
      `lenh` = lệnh bánh bị chặn {ten, dongPy}).
    - Xe đi thì vật đang cầm đi theo.
+   - NHỆN CÓ TAY: lệnh tay đang chờ xảy ra ở NHỊP ĐẦU của bước go_* kế tiếp (hoặc ở nhịp của wait()
+     kế tiếp), theo đúng thứ tự (a)(b) ở trên; nhịp thứ hai của bước chỉ là bước chân. Tay 'duoi' ở
+     nhịp thứ hai thì chân bị vướng: bước bị bỏ, nhện đứng im ('tay-vuong', `lenh` = lệnh go_* bị bỏ)
+     — nhịp đã mất. Nên "arm_up(); go_up()" nâng tay ở nhịp đầu rồi bước ngay trong cùng bước 2 nhịp
+     (không cần wait() riêng); còn "arm_down(); grab(); go_up()" thì bước bị vướng.
    - release: tay 'duoi' → vật nằm xuống ô hiện tại ('dat-vat'); tay 'tren' → vật rơi VỠ, biến
      mất ('vat-vo'). Không cầm gì thì không sao. Ô đã có vật nằm sẵn thì không đặt được ('o-co-vat',
      vật vẫn ở tay). Mỗi ô tối đa một vật đang nằm.
@@ -144,13 +152,13 @@
 
     var hamGoc = cfg.hamGoc || HAM_GOC[loai];
     hamGoc.forEach(function (t) {
-      if (HAM_GOC[loai].indexOf(t) < 0 && !(loai === 'banh' && TAY_LENH.indexOf(t) >= 0)) {
+      if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0) {
         throw new Error('Hàm gốc "' + t + '" không thuộc loại robot ' + loai + '.');
       }
     });
     var api = {};
     hamGoc.forEach(function (t) { api[t] = function () { return 0; }; });   // chỉ để nhân biết tên
-    var coTay = loai === 'banh' && hamGoc.some(function (t) { return TAY_LENH.indexOf(t) >= 0; });
+    var coTay = hamGoc.some(function (t) { return TAY_LENH.indexOf(t) >= 0; });
 
     var rb = { x: bd.x, y: bd.y, huong: bd.huong || 0 };
     var nhip = 0, demBang = 0;
@@ -228,7 +236,7 @@
       return vats.every(function (v) { return v.trangThai === 'dat' && dichSet[v.x + ',' + v.y]; });
     }
 
-    /** Một nhịp trôi qua. hanhDong: {kieu:'banh', trai, phai, tay:{tuThe,kep}} | {kieu:'nhen', huong|null}.
+    /** Một nhịp trôi qua. hanhDong: {kieu:'banh', trai, phai, tay:{tuThe,kep}} | {kieu:'nhen', huong|null, buoc:1|2, tay, lenhDi}.
      *  Trả về true nếu phải dừng (thắng, vật vỡ hoặc hết nhịp). */
     function motNhip(hanhDong) {
       if (nhip >= nhipToiDa) {
@@ -251,14 +259,17 @@
         }
       }
 
+      function apTay() {
+        if (!coTay) return;
+        var lt = hanhDong.tay || {};
+        if (lt.tuThe) tay.tuThe = lt.tuThe;                                 // (a) tay đổi tư thế
+        if (lt.kep) coVo = kepHoacTha(lt.kep, sk);                          // (b) kẹp / thả ở tư thế mới
+      }
+
       if (hanhDong.kieu === 'banh') {
         var t = hanhDong.trai, p = hanhDong.phai;
         banhGhi = { trai: t, phai: p };
-        if (coTay) {
-          var lt = hanhDong.tay || {};
-          if (lt.tuThe) tay.tuThe = lt.tuThe;                               // (a) tay đổi tư thế
-          if (lt.kep) coVo = kepHoacTha(lt.kep, sk);                        // (b) kẹp / thả ở tư thế mới
-        }
+        apTay();
         if (coTay && tay.tuThe === 'duoi' && (t !== 0 || p !== 0)) {        // (c) bánh chạy — nhưng tay vướng sàn
           var ev = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: hanhDong.lenhBanh || null };
           sk.push(ev); suKienChan.push(ev);
@@ -270,9 +281,13 @@
         else if ((t === 0 && p === 1) || (t === -1 && p === 0)) { rb.huong = (rb.huong + 3) % 4; sk.push({ ma: 'quay-trai' }); }
         else sk.push({ ma: 'dung-yen' });
       } else {
-        if (hanhDong.huong === null || hanhDong.huong === undefined) sk.push({ ma: 'dung-yen' });
-        else if (hanhDong.buoc === 2) thuDi(hanhDong.huong, 1, 'di');
-        else sk.push({ ma: 'chuan-bi' });         // nhịp thứ nhất của lệnh go_*: chưa rời ô
+        if (hanhDong.huong === null || hanhDong.huong === undefined) { apTay(); sk.push({ ma: 'dung-yen' }); }
+        else if (hanhDong.buoc === 2) {
+          if (coTay && tay.tuThe === 'duoi') {                              // tay hạ sát đất: chân vướng, bước bị bỏ
+            var evn = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: hanhDong.lenhDi || null };
+            sk.push(evn); suKienChan.push(evn);
+          } else thuDi(hanhDong.huong, 1, 'di');
+        } else { apTay(); sk.push({ ma: 'chuan-bi' }); }   // nhịp thứ nhất của lệnh go_*: chưa rời ô (tay làm việc ở nhịp này)
       }
 
       // băng chuyền — sau hành động của nhịp
@@ -300,33 +315,40 @@
       return thang || !!dungSom;
     }
 
+    /** Lấy các lệnh tay đang chờ thành {tuThe, kep} cho nhịp này, và xóa chúng khỏi hàng chờ. */
+    function rutTay() {
+      var tt = tayCho['tu-the'], kk = tayCho['kep'];
+      tayCho = { 'tu-the': null, 'kep': null };
+      return { tuThe: tt ? (tt.ten === 'arm_down' ? 'duoi' : 'tren') : null, kep: kk ? (kk.ten === 'grab' ? 'kep' : 'tha') : null };
+    }
+
     /** Xử lý một lời gọi hàm gốc nhân nhường ra. Trả về true nếu phải dừng. */
     function xuLy(yc) {
       vet.push({ loai: 'lenh', ten: yc.ten, dongPy: yc.dong, nganPy: yc.ngan });
       if (yc.ten === 'wait') {
         if (loai === 'banh') {
-          var tt = tayCho['tu-the'], kk = tayCho['kep'];
           var lenhBanh = null;                                   // lệnh bánh đầu tiên của nhịp (để chỉ ra khi tay vướng sàn)
           lenhTon.forEach(function (x) { if (!lenhBanh && BANH_LENH[x.ten]) lenhBanh = { ten: x.ten, dongPy: x.dongPy }; });
-          var h = { kieu: 'banh', trai: lenh.trai, phai: lenh.phai, lenhBanh: lenhBanh,
-            tay: { tuThe: tt ? (tt.ten === 'arm_down' ? 'duoi' : 'tren') : null, kep: kk ? (kk.ten === 'grab' ? 'kep' : 'tha') : null } };
-          lenh.trai = 0; lenh.phai = 0; lenhTon = []; tayCho = { 'tu-the': null, 'kep': null };
+          var h = { kieu: 'banh', trai: lenh.trai, phai: lenh.phai, lenhBanh: lenhBanh, tay: rutTay() };
+          lenh.trai = 0; lenh.phai = 0; lenhTon = [];
           return motNhip(h);
         }
-        return motNhip({ kieu: 'nhen', huong: null });
+        var hw = { kieu: 'nhen', huong: null, tay: rutTay() };
+        lenhTon = [];
+        return motNhip(hw);
       }
-      if (loai === 'banh') {
-        if (TAY_NHOM[yc.ten]) {
-          var nhom = TAY_NHOM[yc.ten];
-          if (tayCho[nhom]) {
-            suKienChan.push({ ma: 'tay-goi-lai', nhip: nhip + 1, nhom: nhom, ten: yc.ten, dongPy: yc.dong,
-              truoc: { ten: tayCho[nhom].ten, dongPy: tayCho[nhom].dongPy } });
-            return false;
-          }
-          tayCho[nhom] = { ten: yc.ten, dongPy: yc.dong };
-          lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
+      if (TAY_NHOM[yc.ten]) {                                    // lệnh tay (xe bánh và nhện): chỉ ra lệnh, chờ nhịp
+        var nhom = TAY_NHOM[yc.ten];
+        if (tayCho[nhom]) {
+          suKienChan.push({ ma: 'tay-goi-lai', nhip: nhip + 1, nhom: nhom, ten: yc.ten, dongPy: yc.dong,
+            truoc: { ten: tayCho[nhom].ten, dongPy: tayCho[nhom].dongPy } });
           return false;
         }
+        tayCho[nhom] = { ten: yc.ten, dongPy: yc.dong };
+        lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
+        return false;
+      }
+      if (loai === 'banh') {
         var bl = BANH_LENH[yc.ten];
         if (lenh[bl[0]] !== 0) {
           // lệnh nào đã giữ bánh này trong nhịp (để chẩn đoán chỉ ra cả nơi gây ra)
@@ -340,7 +362,10 @@
         return false;
       }
       var hh = NHEN_HUONG[yc.ten];
-      return motNhip({ kieu: 'nhen', huong: hh, buoc: 1 }) || motNhip({ kieu: 'nhen', huong: hh, buoc: 2 });
+      var tayBuoc = rutTay();                                    // lệnh tay đang chờ làm ở nhịp ĐẦU của bước
+      lenhTon = [];
+      return motNhip({ kieu: 'nhen', huong: hh, buoc: 1, tay: tayBuoc }) ||
+        motNhip({ kieu: 'nhen', huong: hh, buoc: 2, lenhDi: { ten: yc.ten, dongPy: yc.dong } });
     }
 
     var g = Core.chayCodeGen(code, api, { nganSachLenh: opt.nganSachLenh || 20000 });

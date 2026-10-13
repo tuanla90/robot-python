@@ -22,7 +22,7 @@ Quy ước chung (đã chốt, áp mọi chương):
 | 4 | Vòng lặp (`vong-lap`) | — | — | `for`, thụt lề, `for` lồng | — |
 | 5 | Băng chuyền (`bang-chuyen`) | địa hình băng chuyền | đứng trên băng đủ 2 nhịp thì bị đẩy 1 ô | `for` để đếm | mang vật qua băng |
 | 6 | Hàm có tham số (`tham-so`) | — | — | `def move(n)`, `turn(k)`, `range(n)` | tay gắp + đường dài |
-| 7 | Thân nhện (`nhen`) | thân nhện | đi 4 hướng theo màn hình, 2 nhịp/ô, leo bậc thang, đứng trên băng ngược thì kẹt | chuỗi ký tự, `if/elif`, `go("up")`, `for c in "UURR"` | nhện + tay kẹp; bậc thang + băng |
+| 7 | Thân nhện (`nhen`) | thân nhện | đi 4 hướng theo màn hình, 2 nhịp/ô, leo bậc thang, đứng trên băng ngược thì kẹt | chuỗi ký tự, `if/elif`, `go("U")` ("U" lên, "D" xuống, "L" trái, "R" phải), `for c in "UURR"`, `walk(path)` | nhện + tay kẹp; bậc thang + băng |
 | 8 | Bánh xích (`xich`) | thân bánh xích | cùng lệnh với hai bánh nhưng quay 2 nhịp; leo bậc thang; không bị băng đẩy | hàm phụ thuộc phần cứng: sửa lại `turn_*` cho thân mới | xích qua băng; xích + tay kẹp leo bậc |
 | 9 | Bánh omni (`omni`) | thân omni | đi ngang được theo hướng mặt; quay riêng; bánh nhỏ bị băng đẩy mỗi nhịp | hướng tương đối và tuyệt đối, ít lệnh nhất | omni + tay kẹp trong hành lang hẹp |
 | 10 | Tấm đẩy (`tam-day`) | tay tấm đẩy | thùng NẶNG không gắp được, chỉ đẩy; đẩy vào tường hay góc thì kẹt (kiểu Sokoban) | lập kế hoạch, hàm `push_to` | đẩy thùng lên băng chuyền |
@@ -44,3 +44,4 @@ Thứ tự làm qua đêm 14/10:
 ## Nhật ký
 - 14/10: chương 1–4 chơi được. Chương 5 đang làm lõi. Bộ part lượt 5 xong (`cd6a347`).
 - 14/10 (tối): core Python có chuỗi ký tự (`"..."`, `'...'`, `==`/`!=`/`<`, `+` nối, `*` lặp, `in`/`not in`, `len`/`str`/`int`, `for c in "UURR":`, hàm game nhận/trả chuỗi; chuỗi + số là lỗi chạy tiếng Việt; chuỗi chưa đóng báo đúng dòng); máy kiểm `kiem-chuoi.mjs` (99). Chương 6 `tham-so` (Hàm có tham số) xong lõi: 10 màn `man-tham-so.js` (forward(n), right(k), deliver(n), step(a, b), run(n) của màn), máy kiểm `kiem-tham-so.mjs` (113); kho hàm tăng lên 20 chỗ. Giao diện chưa có ô nhập tham số trong Xưởng.
+- 14/10 (đêm): chương 7 `nhen` (Thân nhện) xong lõi: 10 màn `man-nhen.js` (go(d) bằng if/elif, walk(path), bring(path); nhện + tay kẹp ở 6, 9, 10; sửa `go_sai`; băng ngược chặn nhện), máy kiểm `kiem-nhen.mjs` (130) và bộ dò đường tắt cho nhện `do-duong-nhen.mjs`. Luật nhện + tay (`san-hoc.js`): lệnh tay làm ở NHỊP ĐẦU của bước `go_*` kế tiếp (hoặc ở nhịp `wait()`), nhịp hai là bước chân; tay đang hạ ở nhịp hai thì chân vướng, bước bị bỏ (`tay-vuong`). `cauTruc` kiểm thêm `if`; chẩn đoán mới `nhen-khong-buoc`; kho tăng lên 23 chỗ. Giao diện chưa có: ô nhập chuỗi (chạm chọn U/D/L/R), bộ ghép chuỗi trong `for c in "…"`, nhóm khối `go_*`, vẽ nhện bằng part.

@@ -15,8 +15,9 @@
      { chinh: 10, moiHam: 10, khoaChinh: k, khoaHam: k, moXuong: true|false }
      - moXuong: false = màn chưa mở Xưởng hàm (chuỗi 1). Mặc định true.
      - khoa*: số ô bị khóa ở cuối khung → số ô dùng được = số ô − số ô khóa.
-     - cauTruc: danh sách cấu trúc Python màn cho dùng (vd ['for']). Có khai (kể cả []) thì
-       bài làm dùng `for` mà 'for' vắng ở đây bị báo 'cau-truc-chua-hoc'. Không khai thì không kiểm.
+     - cauTruc: danh sách cấu trúc Python màn cho dùng (vd ['for'], ['for', 'if']). Có khai (kể cả []) thì
+       bài làm dùng `for` (hoặc `if`) mà 'for' (hoặc 'if') vắng ở đây bị báo 'cau-truc-chua-hoc'.
+       Không khai thì không kiểm.
        Chỉ kiểm CHƯƠNG TRÌNH và HÀM CỦA MÀN (bài làm của màn); hàm của em không bị kiểm.
    Dòng thụt lề: mỗi dòng (chương trình hay thân hàm) vẫn là MỘT ô; `for ...:` là một ô và mỗi
    dòng trong thân for là một ô. Thân hàm viết ở mức thụt lề 0, khối lồng trong đó thụt thêm 4 dấu cách.
@@ -52,6 +53,7 @@
   function laDef(s) { return /^\s*def\b/.test(String(s)); }
   function boChuThich(s) { var t = String(s === undefined || s === null ? '' : s), k = t.indexOf('#'); return k >= 0 ? t.slice(0, k) : t; }
   function laFor(s) { return /^\s*for\b/.test(boChuThich(s)); }
+  function laIf(s) { return /^\s*if\b/.test(boChuThich(s)); }
 
   /** Khung đầy đủ (điền mặc định). */
   function khungDayDu(khung) {
@@ -194,20 +196,23 @@
       });
     }
 
-    // 2b. cấu trúc chưa học: `for` ở màn có khai cauTruc mà không có 'for' trong đó
-    if (k.cauTruc && k.cauTruc.indexOf('for') < 0) {
-      var vi = null, dFor = dongDau(chinh, laFor);
-      if (dFor.length) vi = { cot: 'chinh', dong: dFor[0], noi: 'chương trình, dòng ' + dFor[0] };
-      else hamMan.forEach(function (h) {
-        var d = dongDau(layThan(h), laFor);
-        if (!vi && d.length) vi = { cot: 'hamMan', ten: h.ten, dong: d[0], noi: 'hàm ' + h.ten + ' của màn, dòng ' + d[0] };
+    // 2b. cấu trúc chưa học: `for` / `if` ở màn có khai cauTruc mà không có tên đó trong đó
+    if (k.cauTruc) {
+      [['for', laFor, 'vòng lặp for'], ['if', laIf, 'lệnh rẽ nhánh if']].forEach(function (cau) {
+        if (k.cauTruc.indexOf(cau[0]) >= 0) return;
+        var vi = null, dCau = dongDau(chinh, cau[1]);
+        if (dCau.length) vi = { cot: 'chinh', dong: dCau[0], noi: 'chương trình, dòng ' + dCau[0] };
+        else hamMan.forEach(function (h) {
+          var d = dongDau(layThan(h), cau[1]);
+          if (!vi && d.length) vi = { cot: 'hamMan', ten: h.ten, dong: d[0], noi: 'hàm ' + h.ten + ' của màn, dòng ' + d[0] };
+        });
+        if (vi) {
+          var ct = { ma: 'cau-truc-chua-hoc', cot: vi.cot, dong: vi.dong, cauTruc: cau[0],
+            loi: 'Ở ' + vi.noi + ': ' + cau[2] + ' chưa được dùng ở màn này, hãy viết theo cách khác.' };
+          if (vi.ten) ct.ten = vi.ten;
+          loi.push(ct);
+        }
       });
-      if (vi) {
-        var ct = { ma: 'cau-truc-chua-hoc', cot: vi.cot, dong: vi.dong, cauTruc: 'for',
-          loi: 'Ở ' + vi.noi + ': vòng lặp for chưa được dùng ở màn này, hãy viết theo cách khác.' };
-        if (vi.ten) ct.ten = vi.ten;
-        loi.push(ct);
-      }
     }
 
     // 3. trùng tên (hai hàm của màn cùng tên, hai hàm của em cùng tên, hoặc trùng hàm gốc).

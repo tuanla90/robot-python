@@ -62,9 +62,10 @@ console.log('\n== 1. Lệnh tay CHỈ RA LỆNH; wait() cho nhịp trôi ==');
   kiem('lệnh tay và lệnh bánh cùng chờ một wait(): chỉ một nhịp', d.nhip === 1);
   const e = chay(SAN, XE, L('arm_up()', 'left_move()', 'right_move()', 'wait()', 'arm_down()', 'wait()'));
   kiem('arm_up + bánh cùng nhịp (tay đã nâng): xe đi, rồi hạ tay ở nhịp sau', vt(e.robot) === '2,1' && e.tay.tuThe === 'duoi' && e.nhip === 2, vt(e.robot));
-  kiem('hàm gốc có lệnh tay: arm_down, arm_up, grab, release thuộc TAY_LENH; xe nhện không dùng được',
+  kiem('hàm gốc có lệnh tay: arm_down, arm_up, grab, release thuộc TAY_LENH; nhện cũng dùng được (chương nhen), tên lạ vẫn bị từ chối',
     J(SanHoc.TAY_LENH) === J(['arm_down', 'arm_up', 'grab', 'release']) &&
-      (() => { try { SanHoc.chay({ san: SAN, batDau: XE, loaiRobot: 'nhen', hamGoc: ['arm_down'] }, 'wait()'); return false; } catch (err) { return true; } })());
+      (() => { try { const k = SanHoc.chay({ san: SAN, batDau: XE, loaiRobot: 'nhen', hamGoc: ['arm_down', 'wait'] }, 'wait()'); return k.tay !== null; } catch (err) { return false; } })() &&
+      (() => { try { SanHoc.chay({ san: SAN, batDau: XE, loaiRobot: 'nhen', hamGoc: ['left_move'] }, 'wait()'); return false; } catch (err) { return true; } })());
   kiem('không khai hamGoc lệnh tay: gọi arm_down() là lỗi chạy (loi runtime), vết không có tay',
     (() => { const k = SanHoc.chay({ san: SAN, batDau: XE, loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'wait'] }, 'arm_down()\nwait()'); return k.loi && k.loi.loai === 'runtime-error' && k.tay === null; })());
 }
