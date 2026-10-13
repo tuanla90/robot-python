@@ -2,7 +2,8 @@
    do-duong-tay.mjs — BỘ DÒ ĐƯỜNG TẮT cho màn mục tiêu `dua-vat` (xe có tay gắp).
    Dùng trong máy kiểm (kiem-hoc.mjs, kiem-tay-gap.mjs); không nằm trong game.
 
-   BFS trên TRẠNG THÁI: (ô xe, hướng, tư thế tay, đang cầm hay không, vị trí các vật nằm dưới đất).
+   BFS trên TRẠNG THÁI: (ô xe, hướng, tư thế tay, đang cầm hay không, vị trí các vật nằm dưới đất,
+   bộ đếm băng chuyền).
    Vật giống hệt nhau (chỉ cần "mọi vật nằm trên ô đích") nên vị trí các vật được xếp tăng dần để
    gộp các trạng thái tương đương. Vật đã vỡ thì bỏ trạng thái đó (không bao giờ thắng được nữa).
 
@@ -12,7 +13,9 @@
      bánh             : đứng yên | tiến | quay phải | quay trái   (4)     → 36 tổ hợp
    (không có lùi/quay đầu vì màn không cho left_back / right_back; một nhịp không gọi lại cùng nhóm lệnh)
    Thứ tự trong nhịp: (a) tư thế → (b) kẹp / thả ở tư thế mới → (c) bánh (bị chặn nếu tay 'duoi').
-   Sân không có băng chuyền (báo lỗi nếu có).
+   Băng chuyền (>, <, ^, v) có tính: (d) sau bánh, nếu xe đứng trên ô băng thì đếm +1; đủ 2 nhịp liền
+   thì đẩy xe 1 ô theo mũi tên (bị chặn thì đứng yên) rồi đếm về 0; không đứng trên băng thì đếm về 0.
+   Vật đang cầm đi theo xe; vật nằm dưới đất KHÔNG bị băng đẩy (giống san-hoc.js).
 
    GIỚI HẠN: dừng khi mở quá `toiDaTrangThai` (mặc định 3 000 000) trạng thái. Khi đó trả về
    { nhip: null, catNgang: true }: kết quả không còn là bằng chứng "không có đường tắt".
@@ -40,24 +43,25 @@ for (const tuThe of [null, 'duoi', 'tren']) {
 /** Dựng ngữ cảnh từ một màn (hoặc cấu hình tương tự: san, batDau). */
 export function dungNguCanh(man) {
   const san = SanHoc.docSan(man.san);
-  for (const hang of san.o) if (/[><^v]/.test(hang)) throw new Error('Bộ dò đua-vat chưa hỗ trợ băng chuyền.');
   const rong = san.rong, cao = san.cao;
   const o = (x, y) => y * rong + x;
   const chan = new Uint8Array(rong * cao);
   for (let y = 0; y < cao; y++) for (let x = 0; x < rong; x++) chan[o(x, y)] = SanHoc.lyDoChan(san, man.loaiRobot || 'banh', x, y) ? 1 : 0;
   const dich = new Uint8Array(rong * cao);
   for (const d of san.dich) dich[o(d.x, d.y)] = 1;
-  return { san, rong, cao, o, chan, dich, vat0: san.vat.map((v) => o(v.x, v.y)), bd: man.batDau };
+  const bang = new Int8Array(rong * cao).fill(-1);                    // hướng đẩy của ô băng (0..3), -1 = không phải băng
+  for (let y = 0; y < cao; y++) for (let x = 0; x < rong; x++) { const h = SanHoc.BANG[san.o[y][x]]; if (h !== undefined) bang[o(x, y)] = h; }
+  return { san, rong, cao, o, chan, bang, dich, vat0: san.vat.map((v) => o(v.x, v.y)), bd: man.batDau };
 }
 
 /** Trạng thái đầu. pos[i]: ô của vật i, -1 = đang cầm, -2 = vỡ. */
 export function trangThaiDau(ctx) {
-  return { x: ctx.bd.x, y: ctx.bd.y, h: ctx.bd.huong || 0, t: 0, kep: 0, cam: -1, pos: ctx.vat0.slice() };
+  return { x: ctx.bd.x, y: ctx.bd.y, h: ctx.bd.huong || 0, t: 0, kep: 0, cam: -1, d: 0, pos: ctx.vat0.slice() };
 }
 
 /** Một nhịp. Trả về trạng thái mới (bản sao). Vật vỡ → pos[i] = -2. */
 export function buocMotNhip(ctx, S, a) {
-  const N = { x: S.x, y: S.y, h: S.h, t: S.t, kep: S.kep, cam: S.cam, pos: S.pos.slice() };
+  const N = { x: S.x, y: S.y, h: S.h, t: S.t, kep: S.kep, cam: S.cam, d: S.d, pos: S.pos.slice() };
   const { rong } = ctx;
   // (a) tư thế
   if (a.tuThe === 'duoi') N.t = 1; else if (a.tuThe === 'tren') N.t = 0;
@@ -82,6 +86,16 @@ export function buocMotNhip(ctx, S, a) {
     } else if (a.banh === 'phai') N.h = (N.h + 1) % 4;
     else if (a.banh === 'trai') N.h = (N.h + 3) % 4;
   }
+  // (d) băng chuyền
+  const hb = ctx.bang[N.y * rong + N.x];
+  if (hb >= 0) {
+    N.d++;
+    if (N.d >= 2) {
+      const v = SanHoc.VEC[hb], nx = N.x + v[0], ny = N.y + v[1];
+      if (nx >= 0 && ny >= 0 && nx < ctx.rong && ny < ctx.cao && !ctx.chan[ny * rong + nx]) { N.x = nx; N.y = ny; }
+      N.d = 0;
+    }
+  } else N.d = 0;
   return N;
 }
 
@@ -91,10 +105,13 @@ export function laThang(ctx, S) {
 }
 
 function khoa(ctx, S) {
+  // Khóa số, KHÔNG bao giờ trùng giữa hai trạng thái khác nhau: phần đầu (ô xe, hướng, tay, cầm hay không,
+  // bộ đếm băng) rồi MỖI vật một chữ số (0 = đang cầm, p + 1 = nằm ở ô p), xếp tăng dần để các vật giống nhau gộp được.
+  // (Bản cũ chỉ ghi các vật nằm dưới đất nên có thể trùng khóa giữa các trạng thái khác nhau.)
   const cell = S.y * ctx.rong + S.x;
-  const mat = S.pos.filter((p) => p >= 0).sort((a, b) => a - b);
-  let k = ((cell * 4 + S.h) * 2 + S.t) * 2 + (S.cam >= 0 ? 1 : 0);        // (độ đóng của kẹp không ảnh hưởng luật nên không vào khóa)
-  for (const p of mat) k = k * (ctx.rong * ctx.cao + 1) + p + 1;
+  const chuSo = S.pos.map((p) => p + 1).sort((a, b) => a - b);               // vỡ (-2) đã bị loại trước khi tới đây
+  let k = (((cell * 4 + S.h) * 2 + S.t) * 2 + (S.cam >= 0 ? 1 : 0)) * 2 + S.d;        // (độ đóng của kẹp không ảnh hưởng luật nên không vào khóa)
+  for (const c of chuSo) k = k * (ctx.rong * ctx.cao + 1) + c;
   return k;
 }
 

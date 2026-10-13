@@ -398,7 +398,12 @@ console.log('\n== 14. Bộ dò đường tắt cho dua-vat (BFS) ==');
   const bfs7 = nhipDuaVatNganNhat(m7).nhip;
   kiem('mở hành lang của tay-gap.7 (bỏ tường) thì có ĐƯỜNG TẮT (' + nhipDuaVatNganNhat(rong).nhip + ' < ' + bfs7 + ' của sân gốc)', nhipDuaVatNganNhat(rong).nhip < bfs7, String(nhipDuaVatNganNhat(rong).nhip));
   kiem('  tay-gap.7 chấm sao theo lời giải chuẩn (nhipTheoLoiGiai): BFS sân gốc ' + bfs7 + ' ≤ sao.nhip ' + m7.sao.nhip + ', chênh đúng 1 nhịp (một lần pick() tốn thêm nhịp nâng tay)', m7.nhipTheoLoiGiai === true && bfs7 <= m7.sao.nhip && m7.sao.nhip - bfs7 === 1, J([bfs7, m7.sao.nhip]));
-  kiem('bộ dò từ chối sân có băng chuyền (chưa hỗ trợ), báo lỗi rõ', (() => { try { nhipDuaVatNganNhat(man(['.>o.D'], { x: 0, y: 0, huong: 1 })); return false; } catch (err) { return /băng chuyền/.test(err.message); } })());
+  // bộ dò có tính băng chuyền (chương bang-chuyen): chuỗi BFS chạy trong SanHoc phải thắng đúng nhịp đó; kiểm sâu hơn ở kiem-bang-chuyen.mjs
+  for (const [ten, san, bd] of [['băng thuận', ['o>>>D'], { x: 0, y: 0, huong: 1 }], ['băng ngược', ['D<<<o'], { x: 4, y: 0, huong: 3 }], ['băng rẽ góc', ['o>v.', '###D'], { x: 0, y: 0, huong: 1 }]]) {
+    const k = nhipDuaVatNganNhat(man(san, bd));
+    const r = SanHoc.chay({ san, batDau: bd, loaiRobot: 'banh', hamGoc: HG, mucTieu: 'dua-vat' }, chuoiThanhMa(k.chuoi));
+    kiem('bộ dò có tính băng chuyền (' + ten + '): BFS ' + k.nhip + ' nhịp, chuỗi của BFS chạy trong SanHoc thắng đúng nhịp đó', k.nhip !== null && !k.catNgang && r.thang && r.nhip === k.nhip, J([k.nhip, r.thang, r.nhip]));
+  }
 
   // kiểm chéo: chuỗi BFS chạy trong mô phỏng thật phải thắng đúng nhịp đó
   const ds = ManHoc.danhSach.filter((m) => m.chuong === 'tay-gap');
@@ -418,7 +423,10 @@ console.log('\n== 15. Kiểm ngẫu nhiên: mô hình của bộ dò = mô phỏ
     { san: ['.....', '.o...', '..D..', '...o.', '..D..'], bd: { x: 1, y: 1, huong: 0 } },
     { san: ['#o.D#', '..#..', 'o.D.o', '.#...', 'X....'], bd: { x: 2, y: 2, huong: 1 } },
     { san: ['..o..', '.#.#.', 'DoD..', '.....', '..o..'], bd: { x: 2, y: 4, huong: 3 } },
-    { san: ['ooD..', 'o.o..', '..D..', '.....', '.....'], bd: { x: 0, y: 0, huong: 1 } }
+    { san: ['ooD..', 'o.o..', '..D..', '.....', '.....'], bd: { x: 0, y: 0, huong: 1 } },
+    // có băng chuyền: xe, vật đang cầm đi theo băng; vật nằm dưới đất không bị băng đẩy
+    { san: ['.o>>D', '.>v.o', 'D<<..', '.....', '..o..'], bd: { x: 0, y: 0, huong: 1 } },
+    { san: ['o.v.D', '.>>v.', 'D^<<o', '.#...', '.....'], bd: { x: 2, y: 3, huong: 0 } }
   ];
   let soChay = 0, soNhip = 0, lech = '';
   const dem = { nhat: 0, dat: 0, vo: 0, oco: 0, vuong: 0, kephut: 0 };
