@@ -1,14 +1,22 @@
 /* ============================================================================
    man-chuoi-1.js — "Đường học": CHUỖI 1 · HAI BÁNH (10 màn, chỉ có chương trình 10 ô,
-   chưa mở Xưởng hàm). Hàm gốc: left_move, right_move, wait. Chưa có left_back / right_back.
+   chưa mở Xưởng hàm: moXuong false). Hàm gốc: left_move, right_move, wait. Chưa có
+   left_back / right_back. Kho hàm của em chưa có gì, và các màn cấm hàm của em
+   (camHamCuaEm true) để ai chơi lại chuỗi này cũng không dùng hàm đã tạo ở chuỗi sau.
    Gộp vào window.ManHoc (xem man-chuoi-2.js để nối tiếp chuỗi 2).
 
-   Mỗi màn: id, ten, hang, deBai, san, batDau, loaiRobot, hamGoc, thuVien, khung,
-            maMau { chinh, ham }, sao { o, nhip }, loiGiai, loiGiaiKhac (từ 1.3),
-            loiSai [{ moTa, baiLam, phaiCoMa }], goiY.
-   - sao.o: số ô của lời giải GỌN (3 sao). sao.nhip: số nhịp của đường NGẮN NHẤT
-     (máy kiểm dò bằng BFS để chắc không có đường tắt).
+   Mỗi màn: id, ten, hang, deBai, san, batDau, loaiRobot, hamGoc, moXuong, camHamCuaEm,
+            khung, maMau { chinh, hamCuaMan }, hamCuaEmCan [tên], taoHam [tên],
+            sao { o, nhip }, loiGiai { chinh, hamCuaMan, hamCuaEmMoi },
+            loiGiaiKhac (từ 1.3), loiSai [{ moTa, baiLam, hamCuaEmMoi, phaiCoMa }], goiY.
+   - hamCuaEmCan: các hàm của em màn này giả định học sinh đã có (kho lúc tới màn).
+   - taoHam: các hàm màn này là nơi học sinh LẦN ĐẦU tạo.
+   - loiGiai.hamCuaEmMoi: hàm của em học sinh tạo hoặc sửa ở màn này (trộn vào kho khi chấm).
+     loiGiaiKhac / loiSai cũng có hamCuaEmMoi (mặc định rỗng) — trộn vào kho theo tên.
+   - sao.o: số ô của lời giải GỌN (3 sao) = ô chương trình + thân các hàm thực sự được gọi.
+     sao.nhip: số nhịp của đường NGẮN NHẤT (máy kiểm dò bằng BFS để chắc không có đường tắt).
    - loiGiaiKhac: một lời giải khác vừa khung, cùng số nhịp, nhiều ô hơn → đúng 2 sao.
+   - huyHieu (màn trùm): thắng thì nhận huy hiệu. Trùm KHÔNG mở khóa gì khác.
    Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên.
    Dòng chú thích (#) cũng là một ô.
    ========================================================================== */
@@ -18,7 +26,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var HAM_GOC = ['left_move', 'right_move', 'wait'];
-  var KHUNG = { chinh: 10, moiHam: 10, soHam: 0 };
+  var KHUNG = { chinh: 10, moiHam: 10 };
 
   // ba dòng "tiến một ô", hai dòng "quay phải", hai dòng "quay trái"
   var TIEN = ['left_move()', 'right_move()', 'wait()'];
@@ -27,10 +35,29 @@
   function lap(ds, n) { var kq = []; for (var i = 0; i < n; i++) kq = kq.concat(ds); return kq; }
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
 
-  function man(m) {
-    m.loaiRobot = 'banh'; m.hamGoc = HAM_GOC; m.thuVien = []; m.khung = KHUNG;
-    if (!m.maMau.ham) m.maMau.ham = [];
+  /** Điền các trường mặc định (hàm của màn rỗng, hàm của em rỗng…) cho dữ liệu viết gọn. */
+  function chuanHoaMan(m) {
+    function bai(b) { if (!b.hamCuaMan) b.hamCuaMan = []; return b; }
+    bai(m.maMau);
+    bai(m.loiGiai);
+    if (!m.loiGiai.hamCuaEmMoi) m.loiGiai.hamCuaEmMoi = [];
+    if (m.loiGiaiKhac) {
+      bai(m.loiGiaiKhac.baiLam);
+      if (!m.loiGiaiKhac.hamCuaEmMoi) m.loiGiaiKhac.hamCuaEmMoi = [];
+    }
+    m.loiSai.forEach(function (ls) {
+      bai(ls.baiLam);
+      if (!ls.hamCuaEmMoi) ls.hamCuaEmMoi = [];
+    });
+    if (!m.hamCuaEmCan) m.hamCuaEmCan = [];
+    if (!m.taoHam) m.taoHam = [];
     return m;
+  }
+
+  function man(m) {
+    m.loaiRobot = 'banh'; m.hamGoc = HAM_GOC; m.khung = KHUNG;
+    m.moXuong = false; m.camHamCuaEm = true;
+    return chuanHoaMan(m);
   }
 
   var DS = [
@@ -214,6 +241,7 @@
       batDau: { x: 0, y: 4, huong: 0 },
       maMau: { chinh: [] },
       sao: { o: 6, nhip: 3 },
+      huyHieu: { ma: 'hai-banh', ten: 'Huy hiệu Hai bánh' },
       loiGiai: { chinh: nhieu(QUAY_PHAI, TIEN, ['wait()']) },
       loiGiaiKhac: {
         moTa: 'Cùng đường đi, ghi chú từng đoạn',
@@ -233,6 +261,7 @@
   ManHoc.danhSach = ManHoc.danhSach || [];
   ManHoc.them = ManHoc.them || function (ds) { ds.forEach(function (m) { ManHoc.danhSach.push(m); }); };
   ManHoc.tim = ManHoc.tim || function (id) { return ManHoc.danhSach.filter(function (m) { return m.id === id; })[0] || null; };
+  ManHoc.chuanHoa = ManHoc.chuanHoa || chuanHoaMan;
   ManHoc.them(DS);
 
   if (laNode) module.exports = ManHoc;

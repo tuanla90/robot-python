@@ -1,27 +1,38 @@
 /* ============================================================================
    cham.js — "Đường học": MÁY CHẤM (window.ChamHoc).
 
-   cham(man, baiLam, thuVien) → {
+   cham(man, baiLam, hamCuaEm) → {
      thang, sao (0–3), soO, soNhip,
-     chanDoan: [{ ma, loi, … }],      // lời tiếng Việt cho học sinh, KHÔNG nói đáp án
+     hamDaDung: [tên…],                // hàm (của em + của màn) THỰC SỰ được gọi tới
+     chiTietO: { chinh, ham: [{ ten, cot:'hamEm'|'hamMan', o }] },
+     chanDoan: [{ ma, muc, loi, … }],  // lời tiếng Việt cho học sinh, KHÔNG nói đáp án
+                                       // muc: 'loi' | 'thong-tin' (thông tin, không phải lỗi)
      vet: [ { loai:'lenh', ten, cho:{cot,ten?,dong}, ngan:[{cot,ten?,dong}…] },
             { loai:'nhip', nhip, robot:{x,y,huong,banh:{trai,phai}}, suKien:[…] } ],
      theoSan: [ { thang, soNhip, chanDoan, vet } ],     // mỗi sân một mục
      py, anhXa, batDau
    }
-   baiLam = { chinh: [dòng], ham: [ { ten, thamSo, than: [dòng] } ] } (xem khung-code.js).
+   baiLam = { chinh: [dòng], hamCuaMan: [ { ten, thamSo, than: [dòng] } ] } — hàm CỦA MÀN
+     (tạm, bản học sinh đang sửa); xem khung-code.js.
+   hamCuaEm = [ { ten, thamSo, than } ] — KHO hàm của em (bền), xem kho-ham.js.
+   - Hàm của màn che hàm của em cùng tên (chẩn đoán 'ham-man-che-ham-em', muc 'thong-tin').
+   - man.camHamCuaEm: màn cấm hàm của em → kho bị bỏ qua. man.moXuong === false: chưa mở Xưởng.
+   - Hàm của em chỉ được ghép vào mã Python nếu bài làm gọi tới nó (kể cả gián tiếp).
+   - soO = ô chương trình + thân các hàm THỰC SỰ được gọi khi chạy (dò từ vết, kể cả gọi
+     gián tiếp, mỗi hàm tính một lần; nhiều sân lấy HỢP). Hàm không được gọi thì không
+     tính; dòng def không tốn ô. Chưa chạy được (lỗi khung, cú pháp…) thì dò tĩnh.
    - sao: 1 nếu thắng; +1 nếu soO ≤ man.sao.o; +1 nếu soNhip ≤ man.sao.nhip.
    - man.san có thể là MỘT sân (mảng chuỗi) hoặc MỘT MẢNG sân (cùng khung); thắng khi
      thắng TẤT CẢ sân. man.batDau cũng có thể là mảng song song với man.san.
-   - man.hamGoc: hàm gốc cho phép. man.thuVien: tên hàm thư viện được dùng ở màn;
-     mã nguồn thư viện truyền vào qua tham số `thuVien` ({ tên: 'def …' }).
+   - man.hamGoc: hàm gốc cho phép.
 
-   thuHam(man, baiLam, tenHam, thuVien, tuyChon) — "sân thử" của Xưởng hàm: chạy
-   riêng một hàm trên sân 3×3 trống (robot ở giữa quay lên, không có cờ).
+   thuHam(man, baiLam, tenHam, hamCuaEm, tuyChon) — "sân thử" của Xưởng hàm: chạy riêng
+   một hàm (của em hoặc của màn) trên sân 3×3 trống (robot ở giữa quay lên, không có cờ).
+   Để thử bản đang soạn của một hàm của em, đưa bản đó vào mảng hamCuaEm.
 
    Mã chẩn đoán: quen-wait, banh-goi-lai, dam-tuong, chua-toi-co, tran-khung,
-   def-trong-chuong-trinh, chua-mo-xuong, qua-nhieu-ham, ham-trung-ten, ham-chua-co,
-   loi-cu-phap, loi-thut-le, loi-chay, qua-nhieu-nhip.
+   def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le,
+   loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
    ========================================================================== */
 (function () {
   'use strict';
@@ -36,8 +47,8 @@
 
   function viTri(m) {
     if (!m) return 'một dòng không xác định';
-    if (m.cot === 'thuvien') return 'hàm thư viện ' + m.ten;
-    if (m.cot === 'ham') return m.dong === 0 ? 'hàm ' + m.ten + ' (phần tên hàm)' : 'hàm ' + m.ten + ', dòng ' + m.dong;
+    if (m.cot === 'hamEm') return m.dong === 0 ? 'hàm ' + m.ten + ' (phần tên hàm)' : 'hàm ' + m.ten + ', dòng ' + m.dong;
+    if (m.cot === 'hamMan') return m.dong === 0 ? 'hàm ' + m.ten + ' của màn (phần tên hàm)' : 'hàm ' + m.ten + ' của màn, dòng ' + m.dong;
     if (m.cot === 'thu') return 'lời gọi thử hàm';
     return 'chương trình, dòng ' + m.dong;
   }
@@ -57,11 +68,16 @@
     return dongPy;
   }
 
-  /** Chẩn đoán từ kết quả chạy MỘT sân. sanThu = true: sân thử, không có cờ để "chưa tới". */
-  function chanDoanSan(man, res, g, sanThu) {
-    var cd = [], hamGoc = man.hamGoc || [], thuVien = man.thuVien || [];
-    var mo = man.khung && man.khung.soHam > 0;
-    function them(ma, loi, extra) { var o = { ma: ma, loi: loi }; for (var k in extra) o[k] = extra[k]; cd.push(o); }
+  function tenCua(ds) { return ds.map(function (h) { return h.ten; }); }
+
+  /**
+   * Chẩn đoán từ kết quả chạy MỘT sân. sanThu = true: sân thử, không có cờ để "chưa tới".
+   * bc (bối cảnh): { hamMan: [tên], hamEm: [tên], biCam: [tên hàm của em bị cấm mà bài đang gọi] }.
+   */
+  function chanDoanSan(man, res, g, sanThu, bc) {
+    var cd = [], hamGoc = man.hamGoc || [];
+    var mo = man.moXuong !== false;
+    function them(ma, loi, extra) { var o = { ma: ma, muc: 'loi', loi: loi }; for (var k in extra) o[k] = extra[k]; cd.push(o); }
 
     // --- lỗi của nhân chạy code
     var l = res.loi;
@@ -69,17 +85,23 @@
       var m = g.anhXa[l.dong] || null;
       var tn = /tên "([^"]+)"/.exec(l.thongDiep || '');
       if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep)) {
-        var s = 'Ở ' + viTri(m) + ': không có hàm tên "' + tn[1] + '". Hàm gốc dùng được ở màn này: ' +
-          (hamGoc.length ? hamGoc.join(', ') : '(không có)') +
-          (thuVien.length ? '; thư viện: ' + thuVien.join(', ') : '') + '.';
-        if (mo) s += ' Nếu đó là hàm của bạn thì cần tạo nó trong Xưởng hàm, và kiểm tra lại chính tả.';
-        else s += ' Kiểm tra lại chính tả.';
-        them('ham-chua-co', s, { ten: tn[1], cho: cho(m) });
+        var ten = tn[1], s;
+        if (bc.biCam.indexOf(ten) >= 0) {
+          s = 'Ở ' + viTri(m) + ': màn này không cho dùng hàm của em, nên "' + ten + '" chưa có. Hàm gốc dùng được ở màn này: ' +
+            (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.';
+        } else {
+          s = 'Ở ' + viTri(m) + ': không có hàm tên "' + ten + '". Hàm gốc dùng được ở màn này: ' +
+            (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.';
+          if (bc.hamMan.length) s += ' Hàm của màn: ' + bc.hamMan.join(', ') + '.';
+          if (bc.hamEm.length) s += ' Hàm của em: ' + bc.hamEm.slice(0, 6).join(", ") + (bc.hamEm.length > 6 ? ', …' : '') + '.';
+          s += mo ? ' Nếu đó là hàm của bạn thì cần tạo nó trong Xưởng hàm, và kiểm tra lại chính tả.' : ' Kiểm tra lại chính tả.';
+        }
+        them('ham-chua-co', s, { ten: ten, cho: cho(m) });
       } else if (l.loai === 'syntax-error' || l.loai === 'indent-error') {
         var mm = m, td = l.thongDiep;
         if (/^Thiếu dòng thụt lề/.test(td)) {
           mm = g.anhXa[dongDefThieuThan(g.dong, l.dong)] || m;
-          td = mm && mm.cot === 'ham' && mm.dong === 0
+          td = mm && (mm.cot === 'hamEm' || mm.cot === 'hamMan') && mm.dong === 0
             ? 'hàm này chưa có dòng nào trong thân.'
             : 'dòng này kết thúc bằng dấu ":" nên phải có ít nhất một dòng thụt vào ngay bên dưới làm thân.';
         }
@@ -107,16 +129,18 @@
     var goiLai = res.suKien.filter(function (e) { return e.ma === 'banh-goi-lai'; });
     if (goiLai.length) {
       var b0 = goiLai[0], mb = g.anhXa[b0.dongPy] || null;
+      var mt = b0.truoc ? (g.anhXa[b0.truoc.dongPy] || null) : null;     // lệnh đã giữ bánh này trong nhịp
       them('banh-goi-lai', 'Ở ' + viTri(mb) + ': bánh ' + (b0.banh === 'trai' ? 'trái' : 'phải') +
-        ' đã nhận lệnh trong nhịp này rồi, nên lệnh ' + b0.ten + '() này bị bỏ qua. ' +
-        'Mỗi nhịp một bánh chỉ nhận một lệnh; wait() mới sang nhịp kế.', { cho: cho(mb), nhip: b0.nhip });
+        ' đã nhận lệnh' + (mt ? ' ' + b0.truoc.ten + '() (ở ' + viTri(mt) + ')' : '') +
+        ' trong nhịp này rồi, nên lệnh ' + b0.ten + '() này bị bỏ qua. ' +
+        'Mỗi nhịp một bánh chỉ nhận một lệnh; wait() mới sang nhịp kế.', { cho: cho(mb), choTruoc: cho(mt), nhip: b0.nhip });
     }
     var quen = res.suKien.filter(function (e) { return e.ma === 'quen-wait'; });
     if (quen.length) {
-      var q = quen[0];
+      var q = quen[0], mq = g.anhXa[q.lenh[0].dongPy] || null;
       them('quen-wait', 'Chương trình kết thúc khi còn lệnh bánh (' +
-        q.lenh.map(function (x) { return x.ten + '()'; }).join(', ') + ') chưa có wait() theo sau, nên những lệnh đó không chạy. ' +
-        'Lệnh bánh chỉ có tác dụng khi nhịp kết thúc bằng wait().', { lenh: q.lenh.map(function (x) { return x.ten; }) });
+        q.lenh.map(function (x) { return x.ten + '()'; }).join(', ') + ', bắt đầu từ ' + viTri(mq) + ') chưa có wait() theo sau, nên những lệnh đó không chạy. ' +
+        'Lệnh bánh chỉ có tác dụng khi nhịp kết thúc bằng wait().', { lenh: q.lenh.map(function (x) { return x.ten; }), cho: cho(mq) });
     }
 
     // --- chạy xong mà chưa tới cờ
@@ -129,43 +153,53 @@
     return cd;
   }
 
+  /* ------------------------------------------------------------ chuẩn bị bài */
+
   function chuanHoa(baiLam) {
     return {
       chinh: ((baiLam && baiLam.chinh) || []).slice(),
-      ham: ((baiLam && baiLam.ham) || []).map(function (h) {
-        return { ten: h.ten, thamSo: (h.thamSo || []).slice(), than: (h.than || []).slice() };
-      })
+      hamCuaMan: ((baiLam && baiLam.hamCuaMan) || []).map(saoHam)
     };
+  }
+  function saoHam(h) { return { ten: h.ten, thamSo: (h.thamSo || []).slice(), than: (h.than || []).slice() }; }
+
+  /** Chẩn đoán loại "thông tin": hàm của màn che hàm của em cùng tên. */
+  function thongTinChe(che) {
+    return che.map(function (ten) {
+      return {
+        ma: 'ham-man-che-ham-em', muc: 'thong-tin', ten: ten,
+        loi: 'Màn này có sẵn hàm ' + ten + '() riêng, nên trong màn này hàm ' + ten + '() của em được thay bằng hàm của màn.'
+      };
+    });
   }
 
   /** Dòng đầu của mỗi khối (chương trình, thân từng hàm) mà thụt lề → Python sẽ hiểu sai khối. */
-  function loiDauKhoi(baiLam, chiHam) {
+  function loiDauKhoi(baiLam, hamEmDung, chiHam) {
     var kq = [];
     function xet(ds, tenKhoi, cotInfo) {
       for (var i = 0; i < ds.length; i++) {
         if (KhungCode.laTrong(ds[i])) continue;
         if (/^\s/.test(ds[i])) {
+          var c = { cot: cotInfo.cot, dong: i + 1 };
+          if (cotInfo.ten) c.ten = cotInfo.ten;
           kq.push({
-            ma: 'loi-thut-le', cho: { cot: cotInfo.cot, ten: cotInfo.ten, dong: i + 1 },
+            ma: 'loi-thut-le', muc: 'loi', cho: c,
             loi: 'Ở ' + tenKhoi + ', dòng ' + (i + 1) + ': dòng đầu tiên không được thụt lề — chưa có khối nào cần nó.'
           });
         }
         break;
       }
     }
-    baiLam.ham.forEach(function (h) {
+    hamEmDung.forEach(function (h) {
       if (chiHam !== undefined && h.ten !== chiHam) return;
-      xet(h.than, 'hàm ' + h.ten, { cot: 'ham', ten: h.ten });
+      xet(h.than, 'hàm ' + h.ten, { cot: 'hamEm', ten: h.ten });
+    });
+    baiLam.hamCuaMan.forEach(function (h) {
+      if (chiHam !== undefined && h.ten !== chiHam) return;
+      xet(h.than, 'hàm ' + h.ten + ' của màn', { cot: 'hamMan', ten: h.ten });
     });
     if (chiHam === undefined) xet(baiLam.chinh, 'chương trình', { cot: 'chinh' });
     return kq;
-  }
-
-  function dsThuVienCua(man, thuVien) {
-    return (man.thuVien || []).map(function (ten) {
-      if (typeof thuVien[ten] !== 'string') throw new Error('Thiếu mã nguồn thư viện "' + ten + '".');
-      return { ten: ten, ma: thuVien[ten] };
-    });
   }
 
   function chuyenVet(vet, g) {
@@ -180,35 +214,70 @@
     });
   }
 
-  function cham(man, baiLam, thuVien) {
+  /** Các hàm (cot + ten) xuất hiện trong vết: nơi đặt lệnh và mọi khung đang mở. */
+  function hamTrongVet(vet, dung) {
+    function ghi(m) { if (m && (m.cot === 'hamEm' || m.cot === 'hamMan')) dung[m.cot + ':' + m.ten] = true; }
+    vet.forEach(function (e) {
+      if (e.loai !== 'lenh') return;
+      ghi(e.cho);
+      e.ngan.forEach(ghi);
+    });
+  }
+
+  /* ------------------------------------------------------------------- chấm */
+
+  function cham(man, baiLam, hamCuaEm) {
     baiLam = chuanHoa(baiLam);
-    thuVien = thuVien || {};
-    var khung = man.khung || { chinh: 10, moiHam: 10, soHam: 0 };
-    var soO = KhungCode.soO(baiLam);
-    var ketQua = { thang: false, sao: 0, soO: soO, soNhip: 0, chanDoan: [], vet: [], theoSan: [], py: '', anhXa: [] };
+    var cam = !!man.camHamCuaEm;
+    var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
+    var biCamTen = cam ? tenCua(hamCuaEm || []) : [];
+    var khung = Object.assign({ chinh: 10, moiHam: 10 }, man.khung || {}, { moXuong: man.moXuong !== false });
+
+    // hàm nào được ghép: mọi hàm của màn; hàm của em chỉ khi bài làm gọi tới (trực tiếp hay gián tiếp)
+    var tap = KhungCode.tapHamDung(baiLam, kho, { tatCaHamMan: true });
+    var tinh = KhungCode.tapHamDung(baiLam, kho);             // chỉ những hàm với tới được từ chương trình
+    var thongTin = cam ? [] : thongTinChe(tap.che);
+    var bc = {
+      hamMan: tenCua(baiLam.hamCuaMan), biCam: biCamTen,
+      hamEm: tenCua(kho).filter(function (t) { return tap.che.indexOf(t) < 0; })
+    };
+
+    function chiTiet(dsHam) {
+      return dsHam.map(function (h) { return { ten: h.ten, cot: tap.em.indexOf(h) >= 0 ? 'hamEm' : 'hamMan', o: KhungCode.soOHam(h) }; });
+    }
+    function dienO(kq, dsHam) {
+      kq.soO = KhungCode.demO(baiLam, dsHam);
+      kq.hamDaDung = tenCua(dsHam);
+      kq.chiTietO = { chinh: KhungCode.soDong(baiLam.chinh), ham: chiTiet(dsHam) };
+    }
+    var ketQua = { thang: false, sao: 0, soO: 0, soNhip: 0, hamDaDung: [], chiTietO: null, chanDoan: [], vet: [], theoSan: [], py: '', anhXa: [] };
+    var tinhDs = tinh.em.concat(tinh.man);
+    dienO(ketQua, tinhDs);                                      // tạm: dò tĩnh, chạy xong sẽ thay bằng dò theo vết
+    function xong() { ketQua.chanDoan = ketQua.chanDoan.concat(thongTin); return ketQua; }
 
     // 1. khung
-    var loiKhung = KhungCode.kiemTra(khung, baiLam, man.hamGoc);
-    if (loiKhung.length) { ketQua.chanDoan = loiKhung; return ketQua; }
+    var loiKhung = KhungCode.kiemTra(khung, baiLam, man.hamGoc, tap.em);
+    if (loiKhung.length) { ketQua.chanDoan = loiKhung.map(gan); return xong(); }
 
     // 2. ghép Python
-    var g = KhungCode.ghep(baiLam, dsThuVienCua(man, thuVien));
+    var g = KhungCode.ghep(baiLam, tap.em);
     ketQua.py = g.ma; ketQua.anhXa = g.anhXa;
-    var loiDau = loiDauKhoi(baiLam);
-    if (loiDau.length) { ketQua.chanDoan = loiDau; return ketQua; }
+    var loiDau = loiDauKhoi(baiLam, tap.em);
+    if (loiDau.length) { ketQua.chanDoan = loiDau; return xong(); }
 
     // 3. chạy từng sân
     var nhieu = Array.isArray(man.san[0]);
     var dsSan = nhieu ? man.san : [man.san];
-    var thangHet = true, nhipMax = 0, gom = [], dsMa = {};
+    var thangHet = true, nhipMax = 0, gom = [], dsMa = {}, dung = {};
     dsSan.forEach(function (rows, i) {
       var bd = Array.isArray(man.batDau) ? man.batDau[i] : man.batDau;
       var res = SanHoc.chay({
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200
       }, g.ma);
-      var cd = chanDoanSan(man, res, g, false);
+      var cd = chanDoanSan(man, res, g, false, bc);
       var vet = chuyenVet(res.vet, g);
+      hamTrongVet(vet, dung);
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
@@ -224,39 +293,57 @@
     ketQua.batDau = Array.isArray(man.batDau) ? man.batDau[0] : man.batDau;
     var viec = ketQua.theoSan.filter(function (s) { return !s.thang; })[0] || ketQua.theoSan[0];
     ketQua.vet = viec.vet;
+
+    // hàm thực sự được gọi (hợp mọi sân) → số ô
+    var daDung = tap.em.concat(tap.man).filter(function (h) {
+      return dung[(tap.em.indexOf(h) >= 0 ? 'hamEm' : 'hamMan') + ':' + h.ten];
+    });
+    dienO(ketQua, daDung);
     if (thangHet) {
       var sao = man.sao || {};
-      ketQua.sao = 1 + (sao.o !== undefined && soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && nhipMax <= sao.nhip ? 1 : 0);
+      ketQua.sao = 1 + (sao.o !== undefined && ketQua.soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && nhipMax <= sao.nhip ? 1 : 0);
     }
-    return ketQua;
+    return xong();
   }
 
+  function gan(c) { if (!c.muc) c.muc = 'loi'; return c; }
+
   /**
-   * "Sân thử" của Xưởng hàm: chạy riêng hàm `tenHam` (của em, hoặc hàm thư viện / hàm gốc).
+   * "Sân thử" của Xưởng hàm: chạy riêng hàm `tenHam` (của em hoặc của màn).
    * tuyChon: { doiSo: [giá trị mặc định cho đối số], nhipToiDa: 100 }.
    * Trả về { vet, robot: {x,y,huong}, batDau, soNhip, chanDoan, py, anhXa }.
    * Chỉ chặn bởi lỗi khung thuộc về chính hàm này (tràn ô của nó) hoặc lỗi chung
-   * (quá số hàm, trùng tên); lỗi của chương trình chính hay của hàm khác không cản.
+   * (trùng tên); lỗi của chương trình chính hay của hàm khác không cản.
    */
-  function thuHam(man, baiLam, tenHam, thuVien, tuyChon) {
+  function thuHam(man, baiLam, tenHam, hamCuaEm, tuyChon) {
     tuyChon = tuyChon || {};
     baiLam = chuanHoa(baiLam);
-    thuVien = thuVien || {};
+    var cam = !!man.camHamCuaEm;
+    var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
     var ketQua = { vet: [], robot: Object.assign({}, BAT_DAU_THU), batDau: Object.assign({}, BAT_DAU_THU), soNhip: 0, chanDoan: [], py: '', anhXa: [] };
-    var khung = man.khung || { chinh: 10, moiHam: 10, soHam: 0 };
+    var khung = Object.assign({ chinh: 10, moiHam: 10 }, man.khung || {}, { moXuong: man.moXuong !== false });
 
-    var loiKhung = KhungCode.kiemTra(khung, { chinh: [], ham: baiLam.ham }, man.hamGoc).filter(function (e) {
+    var tap = KhungCode.tapHamDung(baiLam, kho, { goc: [tenHam] });
+    var thongTin = cam ? [] : thongTinChe(tap.che);
+    var bc = {
+      hamMan: tenCua(baiLam.hamCuaMan), biCam: cam ? tenCua(hamCuaEm || []) : [],
+      hamEm: tenCua(kho).filter(function (t) { return tap.che.indexOf(t) < 0; })
+    };
+    function xong() { ketQua.chanDoan = ketQua.chanDoan.concat(thongTin); return ketQua; }
+
+    var rieng = { chinh: [], hamCuaMan: tap.man };
+    var loiKhung = KhungCode.kiemTra(khung, rieng, man.hamGoc, tap.em).filter(function (e) {
       return e.ma !== 'tran-khung' || e.ten === tenHam;
     });
-    if (loiKhung.length) { ketQua.chanDoan = loiKhung; return ketQua; }
+    if (loiKhung.length) { ketQua.chanDoan = loiKhung.map(gan); return xong(); }
 
     var doiSo = (tuyChon.doiSo || []).map(String);
-    var rieng = { chinh: [tenHam + '(' + doiSo.join(', ') + ')'], ham: baiLam.ham };
-    var g = KhungCode.ghep(rieng, dsThuVienCua(man, thuVien));
+    rieng.chinh = [tenHam + '(' + doiSo.join(', ') + ')'];
+    var g = KhungCode.ghep(rieng, tap.em);
     g.anhXa[g.anhXa.length - 1] = { cot: 'thu', dong: 1 };
     ketQua.py = g.ma; ketQua.anhXa = g.anhXa;
-    var loiDau = loiDauKhoi(baiLam, tenHam);
-    if (loiDau.length) { ketQua.chanDoan = loiDau; return ketQua; }
+    var loiDau = loiDauKhoi({ chinh: [], hamCuaMan: tap.man }, tap.em, tenHam);
+    if (loiDau.length) { ketQua.chanDoan = loiDau; return xong(); }
 
     var nhipToiDa = tuyChon.nhipToiDa || 100;
     var res = SanHoc.chay({
@@ -264,11 +351,11 @@
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa
     }, g.ma);
     res.nhipToiDa = nhipToiDa;
-    ketQua.chanDoan = chanDoanSan(man, res, g, true);
+    ketQua.chanDoan = chanDoanSan(man, res, g, true, bc);
     ketQua.vet = chuyenVet(res.vet, g);
     ketQua.robot = res.robot;
     ketQua.soNhip = res.nhip;
-    return ketQua;
+    return xong();
   }
 
   var API = { cham: cham, thuHam: thuHam, SAN_THU: SAN_THU, BAT_DAU_THU: BAT_DAU_THU };

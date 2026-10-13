@@ -1,26 +1,36 @@
 /* ============================================================================
    khung-code.js — "Đường học": KHUNG CODE, MỖI HÀM MỘT KHUNG RIÊNG (window.KhungCode).
 
-   Bài làm của học sinh:
-     { chinh: [dòng], ham: [ { ten, thamSo: [], than: [dòng] } ] }
-   - chinh: CHƯƠNG TRÌNH (màn chơi nửa trái). Mỗi dòng là một ô; dòng trống không tính ô.
-   - ham: các hàm học sinh tạo trong "Xưởng hàm". Tên hàm là tiêu đề, dòng `def`
-     KHÔNG tốn ô. Thân hàm viết ở mức thụt lề 0 (khối lồng bên trong như for / if
-     thì thụt thêm như Python); mỗi hàm có khung riêng.
+   Bài làm của học sinh ở một màn:
+     { chinh: [dòng], hamCuaMan: [ { ten, thamSo: [], than: [dòng] } ] }
+   - chinh: CHƯƠNG TRÌNH (nửa trái của màn). Mỗi dòng là một ô; dòng trống không tính ô.
+   - hamCuaMan: HÀM CỦA MÀN (tạm) — màn cho sẵn để dạy, chỉ sống trong màn đó, không
+     được lưu; học sinh sửa được trong màn. Bản đang sửa nằm ở đây.
+   HÀM CỦA EM (bền) không nằm trong bài làm mà là KHO riêng (xem kho-ham.js):
+     hamCuaEm = [ { ten, thamSo, than } ]
+   Tên hàm là tiêu đề, dòng `def` KHÔNG tốn ô. Thân hàm viết ở mức thụt lề 0 (khối lồng
+   bên trong như for / if thì thụt thêm như Python); mỗi hàm có khung riêng.
+
    Khung của màn:
-     { chinh: 10, moiHam: 10, soHam: n, khoaChinh: k, khoaHam: k }
-     - soHam: số hàm tối đa được tạo; 0 = chưa mở Xưởng hàm.
+     { chinh: 10, moiHam: 10, khoaChinh: k, khoaHam: k, moXuong: true|false }
+     - moXuong: false = màn chưa mở Xưởng hàm (chuỗi 1). Mặc định true.
      - khoa*: số ô bị khóa ở cuối khung → số ô dùng được = số ô − số ô khóa.
-   Hàm đã vào THƯ VIỆN thì không chiếm ô.
+     (Số hàm của em tối đa cả game do kho-ham.js giữ, không còn theo màn.)
 
-   soO (để chấm sao) = ô chương trình + tổng ô thân các hàm học sinh tạo.
+   Hàm của màn che hàm của em cùng tên (trong màn đó).
+   Hàm của em chỉ được ghép vào mã Python nếu bài làm GỌI TỚI nó (thẳng hay gián tiếp),
+   để một hàm dở dang trong kho không làm hỏng mọi màn khác.
 
-   Ghép thành Python thật theo thứ tự: THƯ VIỆN → các hàm của em (dòng def + thân
-   thụt 4) → CHƯƠNG TRÌNH, kèm bảng ánh xạ từ số dòng Python sang
-     { cot: 'chinh', dong }  |  { cot: 'ham', ten, dong }  |  { cot: 'thuvien', ten, dong }
-   `dong` của chinh / thân hàm là số thứ tự ô (từ 1) trong mảng bài làm, kể cả ô
-   trống, nên khớp đúng vị trí học sinh thấy trên khung. Dòng def của hàm học
-   sinh có dong = 0 (phần tiêu đề).
+   soO (để chấm sao) = ô chương trình + thân các hàm (của em và của màn) THỰC SỰ được
+   gọi khi chạy; mỗi hàm tính một lần. Phần "thực sự được gọi" do máy chấm dò từ vết
+   chạy (cham.js); ở đây chỉ có phép cộng demO() và bản dò TĨNH (tapHamDung) dùng khi
+   chưa chạy được.
+
+   Ghép thành Python thật theo thứ tự: HÀM CỦA EM → HÀM CỦA MÀN → CHƯƠNG TRÌNH, kèm bảng
+   ánh xạ từ số dòng Python sang
+     { cot: 'chinh', dong } | { cot: 'hamEm', ten, dong } | { cot: 'hamMan', ten, dong }
+   `dong` của chinh / thân hàm là số thứ tự ô (từ 1) trong mảng, kể cả ô trống, nên khớp
+   đúng vị trí học sinh thấy trên khung. Dòng def của hàm có dong = 0 (phần tiêu đề).
 
    Chạy được trong Node (module.exports) và trình duyệt (window.KhungCode).
    ========================================================================== */
@@ -31,7 +41,7 @@
 
   function laTrong(s) { return s === undefined || s === null || String(s).trim() === ''; }
   function layChinh(baiLam) { return (baiLam && baiLam.chinh) ? baiLam.chinh : []; }
-  function layHam(baiLam) { return (baiLam && baiLam.ham) ? baiLam.ham : []; }
+  function layHamMan(baiLam) { return (baiLam && baiLam.hamCuaMan) ? baiLam.hamCuaMan : []; }
   function layThan(h) { return (h && h.than) ? h.than : []; }
   function soDong(ds) { var n = 0; (ds || []).forEach(function (s) { if (!laTrong(s)) n++; }); return n; }
   function laDef(s) { return /^\s*def\b/.test(String(s)); }
@@ -42,9 +52,9 @@
     return {
       chinh: khung.chinh === undefined ? 10 : khung.chinh,
       moiHam: khung.moiHam === undefined ? 10 : khung.moiHam,
-      soHam: khung.soHam || 0,
       khoaChinh: khung.khoaChinh || 0,
-      khoaHam: khung.khoaHam || 0
+      khoaHam: khung.khoaHam || 0,
+      moXuong: khung.moXuong !== false
     };
   }
 
@@ -53,18 +63,79 @@
     var k = khungDayDu(khung);
     return {
       chinh: Math.max(0, k.chinh - k.khoaChinh),
-      moiHam: k.soHam > 0 ? Math.max(0, k.moiHam - k.khoaHam) : 0
+      moiHam: Math.max(0, k.moiHam - k.khoaHam)
     };
   }
 
   /** Số ô thân của một hàm. */
   function soOHam(h) { return soDong(layThan(h)); }
 
-  /** Số ô bài làm đang dùng: chương trình + thân mọi hàm (thư viện không tính). */
-  function soO(baiLam) {
-    var n = soDong(layChinh(baiLam));
-    layHam(baiLam).forEach(function (h) { n += soOHam(h); });
+  /** Số ô của chương trình + thân các hàm trong `dsHam` (mỗi hàm tính MỘT lần, theo tên). */
+  function demO(baiLam, dsHam) {
+    var n = soDong(layChinh(baiLam)), thay = {};
+    (dsHam || []).forEach(function (h) {
+      if (thay[h.ten]) return;
+      thay[h.ten] = true; n += soOHam(h);
+    });
     return n;
+  }
+
+  /* ---------------------------------------------------- dò hàm được gọi (TĨNH) */
+
+  /** Tên các hàm xuất hiện dạng `ten(` trong các dòng (bỏ phần chú thích). */
+  function tenDuocGoi(dong) {
+    var kq = [], re = /([A-Za-z_][A-Za-z0-9_]*)\s*\(/g;
+    (dong || []).forEach(function (s) {
+      var t = String(s === undefined || s === null ? '' : s), k = t.indexOf('#');
+      if (k >= 0) t = t.slice(0, k);
+      var m;
+      re.lastIndex = 0;
+      while ((m = re.exec(t))) { if (kq.indexOf(m[1]) < 0) kq.push(m[1]); }
+    });
+    return kq;
+  }
+
+  /**
+   * Những hàm "với tới được" bằng cách đọc chữ (không chạy), xuất phát từ `tuyChon.goc`
+   * (mặc định: các tên được gọi trong chương trình), đi theo lời gọi trong thân hàm.
+   * tuyChon.tatCaHamMan: mọi hàm của màn đều tính là với tới được (để còn bắt lỗi trong
+   * đó), kể cả khi chưa ai gọi.
+   * Trả về { man: [hàm của màn], em: [hàm của em], che: [tên hàm của em bị hàm của màn che] }.
+   * `em` đã bỏ các hàm bị che.
+   */
+  function tapHamDung(baiLam, hamCuaEm, tuyChon) {
+    tuyChon = tuyChon || {};
+    var hamMan = layHamMan(baiLam), em = hamCuaEm || [];
+    var tenMan = {}, tenEm = {}, che = [];
+    hamMan.forEach(function (h) { if (!tenMan[h.ten]) tenMan[h.ten] = h; });
+    em.forEach(function (h) {
+      if (tenMan[h.ten]) { if (che.indexOf(h.ten) < 0) che.push(h.ten); return; }
+      if (!tenEm[h.ten]) tenEm[h.ten] = h;
+    });
+    var hang = (tuyChon.goc || tenDuocGoi(layChinh(baiLam))).slice();
+    var thamMan = {}, thamEm = {};
+    if (tuyChon.tatCaHamMan) {
+      hamMan.forEach(function (h) { thamMan[h.ten] = true; hang = hang.concat(tenDuocGoi(layThan(h))); });
+    }
+    while (hang.length) {
+      var n = hang.pop();
+      if (tenMan[n]) {
+        if (!thamMan[n]) { thamMan[n] = true; hang = hang.concat(tenDuocGoi(layThan(tenMan[n]))); }
+      } else if (tenEm[n]) {
+        if (!thamEm[n]) { thamEm[n] = true; hang = hang.concat(tenDuocGoi(layThan(tenEm[n]))); }
+      }
+    }
+    return {
+      man: hamMan.filter(function (h) { return thamMan[h.ten]; }),
+      em: em.filter(function (h) { return !tenMan[h.ten] && thamEm[h.ten]; }),
+      che: che
+    };
+  }
+
+  /** soO tính TĨNH: chương trình + các hàm với tới được từ chương trình. */
+  function soO(baiLam, hamCuaEm) {
+    var t = tapHamDung(baiLam, hamCuaEm);
+    return demO(baiLam, t.man.concat(t.em));
   }
 
   function dongDau(ds, loc) {
@@ -76,14 +147,15 @@
   /**
    * Kiểm hợp lệ theo khung. Trả về mảng { ma, loi, … }; rỗng = hợp lệ.
    * hamGoc (tuỳ chọn): danh sách tên hàm gốc, để bắt hàm trùng tên hàm gốc.
-   * Mã: tran-khung (cot 'chinh' | 'ham' kèm ten), def-trong-chuong-trinh,
-   *     chua-mo-xuong, qua-nhieu-ham, ham-trung-ten.
+   * hamEmDung (tuỳ chọn): các hàm của em sẽ được ghép vào bài (đã bỏ hàm bị che).
+   * Mã: tran-khung (cot 'chinh' | 'hamMan' | 'hamEm' kèm ten), def-trong-chuong-trinh,
+   *     ham-trung-ten.
    */
-  function kiemTra(khung, baiLam, hamGoc) {
+  function kiemTra(khung, baiLam, hamGoc, hamEmDung) {
     var k = khungDayDu(khung), dung = soODung(k), loi = [];
-    var chinh = layChinh(baiLam), ham = layHam(baiLam), mo = k.soHam > 0;
+    var chinh = layChinh(baiLam), hamMan = layHamMan(baiLam), hamEm = hamEmDung || [], mo = k.moXuong;
 
-    // 1. tràn khung — chương trình rồi tới từng hàm
+    // 1. tràn khung — chương trình, rồi hàm của màn, rồi hàm của em
     function tran(ten, can, co, tong, khoa) {
       var s = (ten === null ? 'Chương trình' : 'Hàm "' + ten + '"') + ' có ' + can + ' dòng nhưng chỉ có ' + co +
         ' ô dùng được' + (khoa ? ' (' + tong + ' ô, ' + khoa + ' ô đang khóa)' : '') + ' — thừa ' + (can - co) + ' dòng.';
@@ -95,14 +167,14 @@
     if (nChinh > dung.chinh) {
       loi.push({ ma: 'tran-khung', loi: tran(null, nChinh, dung.chinh, k.chinh, k.khoaChinh), cot: 'chinh', can: nChinh, co: dung.chinh });
     }
-    if (mo) {
-      ham.forEach(function (h) {
+    [['hamMan', hamMan], ['hamEm', hamEm]].forEach(function (nhom) {
+      nhom[1].forEach(function (h) {
         var n = soOHam(h);
         if (n > dung.moiHam) {
-          loi.push({ ma: 'tran-khung', loi: tran(h.ten, n, dung.moiHam, k.moiHam, k.khoaHam), cot: 'ham', ten: h.ten, can: n, co: dung.moiHam });
+          loi.push({ ma: 'tran-khung', loi: tran(h.ten, n, dung.moiHam, k.moiHam, k.khoaHam), cot: nhom[0], ten: h.ten, can: n, co: dung.moiHam });
         }
       });
-    }
+    });
 
     // 2. def trong chương trình
     var dChinh = dongDau(chinh, laDef);
@@ -114,23 +186,13 @@
       });
     }
 
-    // 3. Xưởng hàm chưa mở / quá số hàm
-    if (!mo && ham.length > 0) {
-      loi.push({ ma: 'chua-mo-xuong', loi: 'Màn này chưa mở Xưởng hàm, nhưng bài làm đang có ' + ham.length + ' hàm. Viết các lệnh vào chương trình.' });
-    }
-    if (mo && ham.length > k.soHam) {
-      loi.push({
-        ma: 'qua-nhieu-ham', can: ham.length, co: k.soHam,
-        loi: 'Màn này chỉ cho tạo tối đa ' + k.soHam + ' hàm, bài làm đang có ' + ham.length + ' hàm.'
-      });
-    }
-
-    // 4. trùng tên
-    var thay = {}, trung = [];
-    ham.forEach(function (h) {
-      if (thay[h.ten]) { if (trung.indexOf(h.ten) < 0) trung.push(h.ten); } else thay[h.ten] = true;
-      if ((hamGoc || []).indexOf(h.ten) >= 0 && trung.indexOf(h.ten) < 0) trung.push(h.ten);
-    });
+    // 3. trùng tên (hai hàm của màn cùng tên, hai hàm của em cùng tên, hoặc trùng hàm gốc).
+    //    Hàm của màn trùng tên hàm của em là CHE, không phải lỗi.
+    var thayMan = {}, thayEm = {}, trung = [];
+    function ghiTrung(t) { if (trung.indexOf(t) < 0) trung.push(t); }
+    hamMan.forEach(function (h) { if (thayMan[h.ten]) ghiTrung(h.ten); else thayMan[h.ten] = true; });
+    hamEm.forEach(function (h) { if (thayEm[h.ten]) ghiTrung(h.ten); else thayEm[h.ten] = true; });
+    hamMan.concat(hamEm).forEach(function (h) { if ((hamGoc || []).indexOf(h.ten) >= 0) ghiTrung(h.ten); });
     if (trung.length) {
       loi.push({
         ma: 'ham-trung-ten', ten: trung[0], danhSach: trung,
@@ -140,62 +202,41 @@
     return loi;
   }
 
-  /** Tách mã của một hàm thư viện thành mảng dòng (bỏ dòng trống cuối). */
-  function tachDong(ma) {
-    var ds = String(ma).replace(/\r\n?/g, '\n').split('\n');
-    while (ds.length && laTrong(ds[ds.length - 1])) ds.pop();
-    return ds;
-  }
-
   function dongDef(h) { return 'def ' + h.ten + '(' + (h.thamSo || []).join(', ') + '):'; }
 
   /**
-   * Ghép bài làm + thư viện thành Python thật.
-   * dsThuVien: [{ ten, ma }] — các hàm thư viện đã có (không tính ô).
+   * Ghép bài làm + các hàm của em thành Python thật.
+   * hamEmDung: các hàm của em cần ghép (đã bỏ hàm bị che; xem tapHamDung).
    * Trả về { ma, dong: [chuỗi], anhXa } — anhXa[số dòng Python (từ 1)] như mô tả đầu tệp.
    */
-  function ghep(baiLam, dsThuVien) {
+  function ghep(baiLam, hamEmDung) {
     var dong = [], anhXa = [null];
-    (dsThuVien || []).forEach(function (h) {
-      tachDong(h.ma).forEach(function (s, i) {
-        dong.push(s); anhXa.push({ cot: 'thuvien', ten: h.ten, dong: i + 1 });
-      });
-    });
-    layHam(baiLam).forEach(function (h) {
-      dong.push(dongDef(h)); anhXa.push({ cot: 'ham', ten: h.ten, dong: 0 });
+    function themHam(h, cot) {
+      dong.push(dongDef(h)); anhXa.push({ cot: cot, ten: h.ten, dong: 0 });
       layThan(h).forEach(function (s, i) {
         var t = (s === undefined || s === null) ? '' : String(s);
-        dong.push(laTrong(t) ? '' : '    ' + t); anhXa.push({ cot: 'ham', ten: h.ten, dong: i + 1 });
+        dong.push(laTrong(t) ? '' : '    ' + t); anhXa.push({ cot: cot, ten: h.ten, dong: i + 1 });
       });
-    });
+    }
+    (hamEmDung || []).forEach(function (h) { themHam(h, 'hamEm'); });
+    layHamMan(baiLam).forEach(function (h) { themHam(h, 'hamMan'); });
     layChinh(baiLam).forEach(function (s, i) {
       dong.push(String(s === undefined || s === null ? '' : s)); anhXa.push({ cot: 'chinh', dong: i + 1 });
     });
     return { ma: dong.join('\n'), dong: dong, anhXa: anhXa };
   }
 
-  function toanBo(baiLam) {
-    var ds = layChinh(baiLam).slice();
-    layHam(baiLam).forEach(function (h) { ds = ds.concat(layThan(h)); });
-    return ds.join('\n');
-  }
-
-  /** Tên các hàm thư viện (trong `tenThuVien`) mà bài làm có gọi. */
-  function thuVienDung(baiLam, tenThuVien) {
-    var chuoi = toanBo(baiLam), tuViet = layHam(baiLam).map(function (h) { return h.ten; });
-    return (tenThuVien || []).filter(function (t) {
-      return new RegExp('(^|[^A-Za-z0-9_])' + t + '\\s*\\(').test(chuoi) && tuViet.indexOf(t) < 0;
-    });
-  }
-
-  /** Xuất tệp .py đọc được: các hàm của em + chương trình, kèm một dòng chú thích về thư viện. */
-  function xuatPy(baiLam, tenThuVien) {
-    var dung = thuVienDung(baiLam, tenThuVien);
-    var ghiChu = dung.length
-      ? '# Dùng hàm thư viện của game: ' + dung.join(', ') + ' (chưa có trong tệp này)'
-      : '# Không dùng hàm thư viện nào của game';
+  /**
+   * Xuất tệp .py đọc được: hàm của em đang dùng + hàm của màn + chương trình.
+   * Hàm của em xuất ra là bản đầy đủ nên tệp chạy được một mình.
+   */
+  function xuatPy(baiLam, hamCuaEm) {
+    var t = tapHamDung(baiLam, hamCuaEm, { tatCaHamMan: true });
+    var ghiChu = t.em.length
+      ? '# Hàm của em dùng trong bài: ' + t.em.map(function (h) { return h.ten; }).join(', ')
+      : '# Bài này không dùng hàm nào của em';
     var phan = [ghiChu];
-    layHam(baiLam).forEach(function (h) {
+    t.em.concat(t.man).forEach(function (h) {
       var than = layThan(h).filter(function (s) { return !laTrong(s); }).map(function (s) { return '    ' + s; });
       phan.push('', [dongDef(h)].concat(than).join('\n'));
     });
@@ -205,8 +246,9 @@
   }
 
   var API = {
-    laTrong: laTrong, soDong: soDong, soO: soO, soOHam: soOHam, soODung: soODung, khungDayDu: khungDayDu,
-    kiemTra: kiemTra, ghep: ghep, thuVienDung: thuVienDung, xuatPy: xuatPy
+    laTrong: laTrong, soDong: soDong, soO: soO, demO: demO, soOHam: soOHam, soODung: soODung, khungDayDu: khungDayDu,
+    tenDuocGoi: tenDuocGoi, tapHamDung: tapHamDung,
+    kiemTra: kiemTra, ghep: ghep, xuatPy: xuatPy
   };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.KhungCode = API;

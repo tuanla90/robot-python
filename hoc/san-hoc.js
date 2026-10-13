@@ -93,7 +93,8 @@
    *     `dong` là số dòng của mã Python (đổi sang cột/dòng là việc của ChamHoc).
    *   - vet: dãy { loai:'lenh', ten, dongPy, nganPy } và
    *          { loai:'nhip', nhip, robot:{x,y,huong,banh:{trai,phai}}, suKien:[…] }
-   *   - suKien: các mốc chẩn đoán { ma:'dam-tuong'|'banh-goi-lai'|'quen-wait', … }
+   *   - suKien: các mốc chẩn đoán { ma:'dam-tuong'|'banh-goi-lai'|'quen-wait', … };
+   *     'banh-goi-lai' có thêm `truoc` = lệnh đã giữ bánh đó trong nhịp {ten, dongPy}
    */
   function chay(cfg, code, opt) {
     opt = opt || {};
@@ -191,7 +192,10 @@
       if (loai === 'banh') {
         var bl = BANH_LENH[yc.ten];
         if (lenh[bl[0]] !== 0) {
-          suKienChan.push({ ma: 'banh-goi-lai', nhip: nhip + 1, banh: bl[0], ten: yc.ten, dongPy: yc.dong });
+          // lệnh nào đã giữ bánh này trong nhịp (để chẩn đoán chỉ ra cả nơi gây ra)
+          var truoc = null;
+          lenhTon.forEach(function (x) { if (!truoc && BANH_LENH[x.ten][0] === bl[0]) truoc = { ten: x.ten, dongPy: x.dongPy }; });
+          suKienChan.push({ ma: 'banh-goi-lai', nhip: nhip + 1, banh: bl[0], ten: yc.ten, dongPy: yc.dong, truoc: truoc });
           return false;
         }
         lenh[bl[0]] = bl[1];
