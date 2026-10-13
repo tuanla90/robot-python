@@ -12,6 +12,23 @@
     if (noi !== undefined && noi !== null) e.textContent = noi;
     return e;
   }
+  /**
+   * Điền văn bản vào el; các lời gọi như `wait()`, `move()` và mọi dấu ngoặc tròn được tách ra, hiện bằng phông code (VT323)
+   * vì ở Handjet dấu ngoặc tròn trông giống ngoặc vuông. textContent vẫn đúng như chuỗi gốc.
+   */
+  function vanBan(el, s) {
+    s = String(s === undefined || s === null ? '' : s);
+    el.textContent = '';
+    var re = /[A-Za-z_][A-Za-z0-9_]*\(\)|[()]/g, i = 0, m;
+    while ((m = re.exec(s))) {
+      if (m.index > i) el.appendChild(document.createTextNode(s.slice(i, m.index)));
+      var k = document.createElement('span'); k.className = 'kc'; k.textContent = m[0]; el.appendChild(k);
+      i = m.index + m[0].length;
+    }
+    if (i < s.length) el.appendChild(document.createTextNode(s.slice(i)));
+    return el;
+  }
+  function hv(tag, cls, noi) { return vanBan(h(tag, cls), noi); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   function lopMau(ten) {
@@ -206,17 +223,24 @@
   var XUONG_MS = 300;      // Xưởng trượt .3s
 
   /* ------------------------------------------------------------ Bong bóng */
+  /** Co cỡ chữ (đơn vị gốc, nhân với hệ số --kp của phông) cho vừa khung el, không xuống dưới min. */
   function vuaChu(el, max, min) {
-    var s = max; el.style.fontSize = s + 'px';
-    while (el.scrollHeight > el.clientHeight + 1 && s > min) { s -= 1; el.style.fontSize = s + 'px'; }
+    var k = parseFloat(getComputedStyle(document.body).getPropertyValue('--kp')) || 1;
+    var s = max; el.style.fontSize = (s * k) + 'px';
+    while (el.scrollHeight > el.clientHeight + 1 && s > min) { s -= 1; el.style.fontSize = (s * k) + 'px'; }
   }
   /** Vẽ nội dung bong bóng b. o: { kieu: 'de'|'goi'|'loi'|'tin', tieuDe, chu, ma, pager: {i,n,truoc,sau} }. */
   function bongVe(b, o) {
     var duoi = b.classList.contains('duoi');
     b.innerHTML = ''; b.className = 'bong ' + (duoi ? 'duoi ' : '') + 'show ' + o.kieu;
     b.appendChild(h('div', 'bg-td', o.tieuDe));
-    var nd = h('div', 'bg-nd', o.chu); b.appendChild(nd);
+    var nd = hv('div', 'bg-nd', o.chu); b.appendChild(nd);
     if (o.ma) b.setAttribute('data-ma', o.ma); else b.removeAttribute('data-ma');
+    // nút X đỏ ở góc trên phải: cách DUY NHẤT để ẩn bong bóng bằng cách chạm vào bong bóng (chạm thân thì không ẩn)
+    var nx = h('button', 'bt g-rd bg-x'); nx.setAttribute('data-nut', 'bong-x'); nx.setAttribute('aria-label', t('choi.anBong'));
+    nx.appendChild(Ve.ico('close', 2, { line: '#4a0e0c' }));
+    nx.addEventListener('click', function (ev) { ev.stopPropagation(); bongAn(b); });
+    b.appendChild(nx);
     var ch = h('div', 'bg-ch');
     if (o.pager) {
       var tr = h('button', 'bt g-wd pg', '‹'); tr.setAttribute('data-nut', 'cd-truoc'); tr.setAttribute('aria-label', t('choi.truoc'));
@@ -225,8 +249,7 @@
       sa.addEventListener('click', function (ev) { ev.stopPropagation(); o.pager.sau(); });
       ch.appendChild(tr); ch.appendChild(h('span', 'so', t('choi.chanDoanSo', { i: o.pager.i, n: o.pager.n }))); ch.appendChild(sa);
     }
-    ch.appendChild(h('span', 'an', t('choi.anBong')));
-    b.appendChild(ch);
+    if (o.pager) b.appendChild(ch);
     vuaChu(nd, 13, 9);
     return b;
   }
@@ -276,8 +299,8 @@
   function xacNhan(o) {
     return new Promise(function (xong) {
       var m = mo(o.tieuDe || t('chung.xacNhan'), 'hop-nho');
-      m.than.appendChild(h('div', 'hop-chu', o.noiDung));
-      if (o.canhBao) m.than.appendChild(h('div', 'hop-chu canh', o.canhBao));
+      m.than.appendChild(hv('div', 'hop-chu', o.noiDung));
+      if (o.canhBao) m.than.appendChild(hv('div', 'hop-chu canh', o.canhBao));
       var hang = h('div', 'hop-hang');
       hang.appendChild(nut('g-wd', t('chung.huy'), function () { dong(); xong(false); }, 'huy'));
       hang.appendChild(nut(o.mau || 'g-rd', o.co || t('chung.dongY'), function () { dong(); xong(true); }, 'co'));
@@ -287,12 +310,12 @@
   /** Hộp chỉ đọc một đoạn chữ dài. */
   function doc(tieuDe, noiDung) {
     var m = mo(tieuDe, 'hop-nho');
-    m.than.appendChild(h('div', 'hop-chu', noiDung));
+    m.than.appendChild(hv('div', 'hop-chu', noiDung));
     var hang = h('div', 'hop-hang');
     hang.appendChild(nut('g-gr', t('chung.dong'), function () { dong(); }, 'dong'));
     m.than.appendChild(hang);
   }
 
-  window.TP = { h: h, esc: esc, mauDong: mauDong, lopMau: lopMau, Editor: Editor, Palette: Palette, Chan: Chan, XUONG_MS: XUONG_MS,
+  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, lopMau: lopMau, Editor: Editor, Palette: Palette, Chan: Chan, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

@@ -112,33 +112,31 @@
 
   /* ---------------------------------------------------------------- icon
      Icon pixel màu TRẮNG, viền tối 1px (màu viền chọn theo nút), nổi rõ trên nền nút màu. */
-  function tamGiac(cao, rong, he) {
-    var rows = [], mid = (cao - 1) / 2;
-    for (var y = 0; y < cao; y++) {
-      var half = Math.min(y, cao - 1 - y), w = Math.min(rong, Math.max(1, Math.round(1 + half * he)));
-      rows.push(new Array(w + 1).join('x') + new Array(rong - w + 1).join('.'));
-    }
-    return rows;
+  /** Tam giác pixel ĐẶC kiểu ký tự ▶ của Galmuri11: mỗi hàng dài thêm theo mẫu `bac`, hai nửa đối xứng, đỉnh dày 2 hàng. */
+  function tamGiac(bac) {
+    var rong = bac[bac.length - 1], rows = [];
+    for (var i = 0; i < bac.length; i++) rows.push(new Array(bac[i] + 1).join('x') + new Array(rong - bac[i] + 1).join('.'));
+    return rows.concat(rows.slice().reverse());
   }
+  /** Mũi tên quay lại ↻: vành đặc dày 3 pixel hở góc trên bên phải; đầu mũi tên là tam giác đặc cùng kiểu, chỉ sang phải. */
   function vong() {
-    // mũi tên quay lại: vành tròn hở góc trên phải, đầu mũi tên chỉ sang phải
     var W = 13, H = 14, cx = 6.5, cy = 7.5, g = [];
     for (var y = 0; y < H; y++) {
       var r = [];
       for (var x = 0; x < W; x++) {
         var dx = x + 0.5 - cx, dy = y + 0.5 - cy, d = Math.sqrt(dx * dx + dy * dy), ang = Math.atan2(dy, dx) * 180 / Math.PI;
-        r.push(d >= 3.4 && d <= 6.2 && !(ang > -88 && ang < -14) ? 'x' : '.');
+        r.push(d >= 3.2 && d <= 6.3 && !(ang > -88 && ang < -12) ? 'x' : '.');
       }
       g.push(r);
     }
-    [[7, 0], [7, 1], [8, 1], [7, 2], [8, 2], [9, 2], [7, 3], [8, 3], [9, 3], [10, 3], [7, 4], [8, 4], [9, 4], [7, 5], [8, 5], [7, 6]].forEach(function (q) { g[q[1]][q[0]] = 'x'; });
+    [2, 4, 5, 6, 5, 4, 2].forEach(function (w, j) { for (var i = 0; i < w; i++) g[j + 0][6 + i] = 'x'; });
     return g.map(function (r) { return r.join(''); });
   }
   var HINH = {
-    play: tamGiac(11, 9, 1.6),
-    step: tamGiac(11, 7, 1.2).map(function (s) { return s + '.xx'; }),
+    play: tamGiac([2, 4, 6, 8, 10, 12]),
+    step: tamGiac([2, 3, 5, 6, 8, 9]).map(function (s) { return s + '.xx'; }),
     reset: vong(),
-    bulb: ['...xxxxx...', '..xxxxxxx..', '.xxxxxxxxx.', '.xxxxxxxxx.', '.xxxxxxxxx.', '.xxxxxxxxx.', '..xxxxxxx..', '...xxxxx...', '...xxxxx...', '....xxx....', '...xxxxx...', '....xxx....'],
+    bulb: ['...xxxxxx...', '..xxxxxxxx..', '.xxxxxxxxxx.', '.xxxxxxxxxx.', '.xxxxxxxxxx.', '.xxxxxxxxxx.', '..xxxxxxxx..', '...xxxxxx...', '....xxxx....', '............', '...xxxxxx...', '....xxxx....'],
     menu: ['xxxxxxxxxx', 'xxxxxxxxxx', '..........', 'xxxxxxxxxx', 'xxxxxxxxxx', '..........', 'xxxxxxxxxx', 'xxxxxxxxxx'],
     back: ['...xx', '..xxx', '.xxx.', 'xxx..', 'xxx..', '.xxx.', '..xxx', '...xx'],
     next: ['xx...', 'xxx..', '.xxx.', '..xxx', '..xxx', '.xxx.', 'xxx..', 'xx...'],
@@ -156,8 +154,8 @@
     tuyChon = tuyChon || {};
     var rows = HINH[ten];
     if (!rows) throw new Error('Không có icon ' + ten);
-    var p = new Painter(rows[0].length, rows.length);
-    p.map(rows, { x: tuyChon.fill || '#ffffff' });
+    var p = new Painter(rows[0].length + 2, rows.length + 2);     // chừa 1 pixel quanh cho viền tối
+    p.map(rows, { x: tuyChon.fill || '#ffffff' }, 1, 1);
     if (tuyChon.shade) p.shade(tuyChon.shade);
     p.outline(tuyChon.line || '#3a2410');
     return p.canvas();
@@ -197,20 +195,65 @@
     p.map(['.OO.', 'OhgO', 'OgsO', '.OO.'], { O: '#2a1608', h: '#f2f2f6', g: '#a9aebd', s: '#4e5364' });
     return p.canvas();
   }
-  function spriteTrum() {
-    var p = new Painter(20, 20);
-    p.rect(3, 4, 14, 13, '#e0407a'); p.rect(3, 4, 14, 2, '#ff7aa8'); p.rect(3, 15, 14, 2, '#a02050');
-    p.rect(1, 8, 2, 5, '#a02050'); p.rect(17, 8, 2, 5, '#a02050');
-    p.rect(4, 1, 2, 3, '#ffd23f'); p.rect(14, 1, 2, 3, '#ffd23f'); p.px(5, 0, '#ffd23f'); p.px(14, 0, '#ffd23f');
-    p.rect(5, 8, 4, 3, '#fff6e3'); p.rect(11, 8, 4, 3, '#fff6e3'); p.rect(6, 9, 2, 2, '#1b120a'); p.rect(12, 9, 2, 2, '#1b120a');
-    p.rect(6, 13, 8, 2, '#1b120a'); p.px(7, 13, '#fff6e3'); p.px(9, 13, '#fff6e3'); p.px(11, 13, '#fff6e3');
+  /**
+   * Trùm: ROBOT ĐỐI THỦ cỡ lớn, cùng nét và bảng màu với robot hai bánh của người chơi
+   * (viền tối 1px, mép sáng trên / tối dưới, bánh đen sọc) nhưng thân thép xám đinh tán, bánh xích dày,
+   * kính đỏ phát sáng, ăng-ten có đèn và hai càng kẹp. bat = false: tắt đèn, tắt mắt (trùm chưa mở).
+   */
+  function spriteTrum(bat) {
+    bat = bat !== false;
+    var p = new Painter(24, 24);
+    var C = {
+      s: '#9aa3b5', h: '#d3dae8', e: '#f4f7ff', m: '#7a849b', d: '#4f576d',
+      n: '#26324e', N: '#46567c',
+      r: bat ? '#ff4a3c' : '#6a2a30', g: bat ? '#ffc0b0' : '#8a4a52', q: bat ? '#a52a2c' : '#4a1c22',
+      t: '#4a4a5a', u: '#8a8a9c', v: '#2e2e3a', y: '#ffcf30', k: '#3a3020'
+    };
+    function R(x, y, w, h, c) { p.rect(x + 1, y + 1, w, h, C[c]); }
+    function P(x, y, c) { p.px(x + 1, y + 1, C[c]); }
+    function X(x, y) { p.px(x + 1, y + 1, null); }
+    // ăng-ten + đèn
+    R(10, 4, 2, 3, 'm'); R(10, 4, 1, 3, 's');
+    R(9, 1, 4, 3, 'r'); R(10, 0, 2, 1, 'r'); R(9, 3, 4, 1, 'q'); P(10, 1, 'g'); P(10, 2, 'g');
+    // bánh xích dày hai bên (sọc ngang như bánh của robot hai bánh, hai đầu bo tròn)
+    [0, 18].forEach(function (x0) {
+      for (var y = 10; y < 22; y++) R(x0, y, 4, 1, (y % 2 === 0) ? 'u' : 'v');
+      R(x0, 10, 4, 1, 't'); R(x0, 21, 4, 1, 't');
+      R(x0 === 0 ? 3 : 18, 10, 1, 12, 't');
+      X(x0, 10); X(x0 + 3, 10); X(x0, 21); X(x0 + 3, 21);
+    });
+    // càng kẹp hai bên (cánh tay từ vai, hai ngàm hướng lên)
+    [[0, 3], [18, 21]].forEach(function (c, i) {
+      var x0 = c[0];
+      R(x0, 3, 1, 3, 'd'); R(x0 + 3, 3, 1, 3, 'd');           // hai ngàm
+      R(x0, 6, 4, 2, 'm'); R(x0, 6, 4, 1, 's');               // lòng bàn càng
+      R(x0 + 1, 8, 2, 1, 'd');                                 // cổ tay
+      R(i === 0 ? 3 : 17, 8, 2, 2, 'm');                       // vai nối vào thân
+    });
+    // thân: hộp thép, mép sáng trên, mép tối dưới
+    R(4, 7, 14, 13, 's');
+    R(5, 7, 12, 1, 'h'); R(4, 8, 1, 10, 'h'); R(17, 8, 1, 11, 'm'); R(5, 19, 12, 1, 'm');
+    X(4, 7); X(17, 7); X(4, 19); X(17, 19);
+    // kính: dải tối, hai mắt đỏ phát sáng (mép trong hơi cụp xuống cho dữ vừa phải mà vẫn dễ thương)
+    R(6, 9, 10, 5, 'n'); R(6, 9, 10, 1, 'N');
+    R(7, 10, 3, 3, 'r'); R(12, 10, 3, 3, 'r'); R(7, 12, 3, 1, 'q'); R(12, 12, 3, 1, 'q');
+    P(9, 10, 'n'); P(12, 10, 'n'); P(7, 10, 'g'); P(14, 10, 'g'); P(7, 11, 'g'); P(14, 11, 'g');
+    // lưới miệng
+    R(7, 15, 8, 2, 'n'); [8, 10, 12].forEach(function (x) { R(x, 15, 1, 2, 'm'); });
+    // tấm chân bụng sọc vàng - đen (dải cảnh báo)
+    R(4, 17, 14, 1, 'd');
+    for (var x = 5; x < 17; x++) R(x, 18, 1, 2, ((x >> 1) & 1) ? 'k' : 'y');
+    // đinh tán bốn góc thân
+    [[5, 8], [16, 8], [5, 16], [16, 16]].forEach(function (q) { P(q[0], q[1], 'e'); });
     p.outline(K.ink); return p.canvas();
   }
   function spriteHuyHieu() {
     var p = new Painter(16, 18);
     p.map(['.yyyyyyyyyyyy.', 'yyyyyyyyyyyyyy', 'yyyywwyyyyyyyy', 'yyywwwwyyyyyyy', 'yyyyyyyyyyyyyy', 'yyyyyyyyyyyyyy', '.yyyyyyyyyyyy.', '..yyyyyyyyyy..', '...yyyyyyyy...', '....yyyyyy....', '.....yyyy.....', '......yy......']
       .map(function (s) { return (s + '                ').slice(0, 14); }), { y: '#ffcf30', w: '#fff6c0' }, 1, 1);
-    p.rect(5, 4, 6, 6, '#e8a92a'); p.rect(6, 5, 4, 4, '#ff6a3a'); p.px(7, 6, '#ffd23f'); p.px(8, 7, '#ffd23f');
+    // giữa huy hiệu: đầu robot trùm đã hạ (thép xám, mắt đỏ)
+    p.rect(4, 3, 8, 8, K.ink); p.rect(5, 4, 6, 6, '#7a849b'); p.rect(5, 4, 6, 1, '#d3dae8'); p.rect(5, 9, 6, 1, '#4f576d');
+    p.rect(6, 6, 1, 2, '#ff4a3c'); p.rect(9, 6, 1, 2, '#ff4a3c'); p.px(6, 6, '#ffc0b0'); p.px(9, 6, '#ffc0b0'); p.rect(7, 8, 2, 1, '#26324e');
     p.outline(K.ink); return p.canvas();
   }
 
@@ -350,7 +393,7 @@
       var node;
       if (ten === 'star') node = sao(el.getAttribute('data-on') !== '0', s);
       else if (ten === 'lock') node = khoa(s);
-      else if (ten === 'trum') node = mk(spriteTrum(), s);
+      else if (ten === 'trum') node = mk(spriteTrum(el.getAttribute('data-on') !== '0'), s);
       else if (ten === 'huyhieu') node = mk(spriteHuyHieu(), s);
       else node = ico(ten, s, opt);
       el.appendChild(node); el.style.display = 'flex';
@@ -371,6 +414,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    tiles: tiles, makeConv: makeConv, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

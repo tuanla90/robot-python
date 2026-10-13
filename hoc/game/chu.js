@@ -69,7 +69,7 @@
       'choi.suaHam': 'Sửa hàm {ten}',
       'choi.dayKhung': 'Đầy khung rồi: xóa bớt một dòng.',
       'choi.trong': 'Chương trình còn trống.',
-      'choi.anBong': 'Chạm để ẩn',
+      'choi.anBong': 'Ẩn',
       'choi.goiYSo': 'Gợi ý {i}/{n}',
       'choi.khongGoiY': 'Màn này chưa có gợi ý.',
       'choi.chanDoan': 'Chưa được',

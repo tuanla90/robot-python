@@ -88,8 +88,6 @@
       if (!S.bai.chinh.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
     });
-    E.bong.addEventListener('click', function () { anBongTren(); });
-    E.bongD.addEventListener('click', function () { anBongD(); });
     veToc();
   }
 
@@ -318,7 +316,7 @@
     function dong(ok, chu) {
       var d = h('div', 'th-dong ' + (ok ? 'ok' : 'chua'));
       var ic = h('span', 'ic'); ic.appendChild(Ve.ico(ok ? 'check' : 'cross', 2, { fill: ok ? '#7cff86' : '#ff8a80', shade: ok ? '#3cc24a' : '#d04a40', line: '#0e2a14' }));
-      d.appendChild(ic); d.appendChild(h('span', null, chu)); return d;
+      d.appendChild(ic); d.appendChild(TP.vanBan(h('span'), chu)); return d;
     }
     if (ss.o !== undefined) hop.than.appendChild(dong(okO, t('thang.o', { x: k.soO, y: ss.o })));
     if (ss.nhip !== undefined) hop.than.appendChild(dong(okN, t('thang.nhip', { x: k.soNhip, y: ss.nhip })));
@@ -330,7 +328,7 @@
     if (luu.length) {
       var lw = h('div', 'th-luu'); lw.setAttribute('data-ma', k.chanDoan.map(function (x) { return x.ma; }).join(' '));
       lw.appendChild(h('span', 'k', t('choi.thongTin')));
-      luu.forEach(function (x) { lw.appendChild(h('p', null, x.loi)); });
+      luu.forEach(function (x) { lw.appendChild(TP.vanBan(h('p'), x.loi)); });
       hop.than.appendChild(lw);
     }
     if (m.huyHieu) {

@@ -46,7 +46,6 @@
     E.m = q('.result .m'); E.dg = q('.result .dg'); E.kq = q('.result');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]');
     E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong');
-    E.bongD.addEventListener('click', function () { anBongD(); });
     S.field = new SanVe.Field(E.canvas, { kich: 168 });
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'), dem: q('.p-prog .ct'),
@@ -191,7 +190,7 @@
     } else if (ds.length) {
       var d0 = ds[0];
       E.dg.className = 'dg ' + (d0.muc === 'loi' ? 'loi' : 'tin');
-      E.dg.textContent = d0.loi;
+      TP.vanBan(E.dg, d0.loi);
       E.dg.setAttribute('data-ma', ds.map(function (c) { return c.ma; }).join(' '));
     } else { E.dg.className = 'dg'; }
     if (!S.coBong) {
@@ -218,11 +217,7 @@
     }
     hienKetQua(chay());
   }
-  function vuaChu(el, max, min) {
-    var s = max;
-    el.style.fontSize = s + 'px';
-    while (el.scrollHeight > el.clientHeight + 1 && s > min) { s -= 1; el.style.fontSize = s + 'px'; }
-  }
+  function vuaChu(el, max, min) { TP.vuaChu(el, max, min); }
 
   /* --------------------------------------------------------------- thử hàm */
   async function thu() {

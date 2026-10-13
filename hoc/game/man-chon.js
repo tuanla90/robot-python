@@ -145,7 +145,7 @@
     el.trum.className = 'bt c-trum ' + (xong ? 'done' : tt.mo ? 'open' : 'lock');
     el.trum.setAttribute('data-man', m.id);
     el.trum.appendChild(h('div', 'hz'));
-    var bs = h('div', 'bs'); bs.setAttribute('data-i', xong && m.huyHieu ? 'huyhieu' : 'trum'); bs.setAttribute('data-s', xong ? '3' : '3'); el.trum.appendChild(bs);
+    var bs = h('div', 'bs'); bs.setAttribute('data-i', xong && m.huyHieu ? 'huyhieu' : 'trum'); bs.setAttribute('data-s', '3'); bs.setAttribute('data-on', tt.mo || xong ? '1' : '0'); el.trum.appendChild(bs);
     var bx = h('div', 'bx');
     var bt = h('div', 'bt2'); bt.appendChild(h('em', null, t('chon.trum'))); bt.appendChild(document.createTextNode(' · ' + m.ten)); bx.appendChild(bt);
     if (m.huyHieu) {

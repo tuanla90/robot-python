@@ -118,7 +118,7 @@
     try {
       if (!document.fonts || !document.fonts.load) { fb(); return; }
       var hen = setTimeout(fb, 3000);
-      Promise.all([document.fonts.load('700 16px "Baloo 2"', t('choi.chay')), document.fonts.load('700 16px "JetBrains Mono"', 'move')]).then(function (r) {
+      Promise.all([document.fonts.load('600 16px "Handjet"', t('choi.chay') + ' ạịợữỳĐ'), document.fonts.load('400 16px "VT323"', 'turn_right()')]).then(function (r) {
         clearTimeout(hen);
         if (!r[0].length || !r[1].length) fb(); else document.body.classList.remove('fb');
       }).catch(function () { clearTimeout(hen); fb(); });
