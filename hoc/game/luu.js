@@ -78,6 +78,9 @@
     });
   }
 
+  /** Bỏ bản nháp của một màn ("Làm lại từ đầu"). Không đụng tới sao hay kho hàm. */
+  function xoaNhap(id) { try { kho.removeItem(KHOA_NHAP + id); return true; } catch (e) { return false; } }
+
   /* ---- kho hàm của em */
   var loiKho = null;
   function docKho() {
@@ -96,7 +99,7 @@
   window.Luu = {
     kho: kho, laBoNho: laBoNho,
     docTienDo: docTienDo, saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
-    docNhap: docNhap, ghiNhap: ghiNhap,
+    docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docKho: docKho, ghiKho: ghiKho,
     get loiKho() { return loiKho; },
     KHOA_TIEN_DO: KHOA_TIEN_DO, KHOA_NHAP: KHOA_NHAP

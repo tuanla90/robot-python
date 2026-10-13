@@ -51,26 +51,59 @@
   /* ------------------------------------------------------------- Editor */
   /**
    * Khung 10 ô. tuyChon: { tong: 10, dung: số ô dùng được, lay: () => mảng dòng (sửa tại chỗ),
-   *   bang: phần tử panel (để nháy đỏ), dem: phần tử đếm, khiDoi: fn, khiKhoa: fn, khiBam: fn(i) khi chạm một ô,
-   *   nutXoaDong / nutXoaHet: nút ở tiêu đề khung (Editor tự làm mờ khi không có gì để xóa) }
+   *   bang: phần tử panel (để nháy đỏ + chứa thông báo "Đã xóa · Hoàn tác"), dem: phần tử đếm, khiDoi: fn, khiKhoa: fn,
+   *   khiBam: fn(i) khi chạm một ô, dangChay: () => bool (đang chạy / phát lại thì tắt xóa nhanh),
+   *   nutXoaHet: nút thùng rác ở tiêu đề (Editor tự làm mờ khi không có gì để xóa),
+   *   tt / ttDay / ttNgan: phần tử tiêu đề + chữ đầy đủ + chữ rút gọn (dùng khi tiêu đề không vừa) }
+   * Xóa một dòng: chuột rê lên dòng có code thì ô số thứ tự đổi thành ✕ (bấm để xóa);
+   * cảm ứng chạm HAI lần liên tiếp (≤ 350 ms) vào dòng có code. Mọi lần xóa đều hiện "Đã xóa · Hoàn tác" ~3 giây.
    */
   function Editor(host, tuyChon) {
     var tong = tuyChon.tong || 10, dung = tuyChon.dung === undefined ? tong : tuyChon.dung;
     var lay = tuyChon.lay, sel = 0, runIdx = -1, loiSet = {}, ed = this;
     var rows = [], strips = [], xt = null, viTri = null;
+    var hov = -1, kieuCuoi = 'mouse', cham = null, hoan = null, hoanHen = null, hoanEl = null;
     this.host = host; this.tong = tong;
     host.innerHTML = '';
+    function dangChay() { return !!(tuyChon.dangChay && tuyChon.dangChay()); }
+    function choXoa() { return !xt && !dangChay() && !Chan.dang(); }
+    function veXx() {
+      var n = lay().length, ok = choXoa();
+      for (var i = 0; i < tong; i++) rows[i].classList.toggle('xx', ok && i === hov && i < dung && i < n);
+    }
     for (var i = 0; i < tong; i++) {
-      var r = h('div', 'row'), tb = h('div', 'tab', i + 1), s = h('div', 'strip empty');
+      var r = h('div', 'row'), tb = h('div', 'tab'), s = h('div', 'strip empty');
+      tb.appendChild(h('span', 'tn', i + 1));
+      var xi = Ve.ico('x5', 2, { fill: '#fff', line: '#5a0e0c' }); xi.className += ' tx'; tb.appendChild(xi);
       r.appendChild(tb); r.appendChild(s); host.appendChild(r); rows.push(r); strips.push(s);
       (function (i) {
-        r.addEventListener('click', function () {
+        r.addEventListener('click', function (ev) {
+          var arr = lay(), kieu = ev.pointerType || kieuCuoi;
+          if (i < dung && i < arr.length && choXoa()) {
+            if (kieu === 'mouse') {
+              if (rows[i].classList.contains('xx') && ev.target.closest && ev.target.closest('.tab')) { ev.stopPropagation(); ed.xoaTai(i); return; }
+            } else {
+              var bay = Date.now();
+              if (cham && cham.i === i && bay - cham.t <= 350) { cham = null; ed.xoaTai(i); return; }
+              cham = { i: i, t: bay };
+            }
+          } else cham = null;
           tuyChon.khiBam && tuyChon.khiBam(i);
           if (i >= dung) { tuyChon.khiKhoa && tuyChon.khiKhoa(); return; }
           sel = i; ed.render();
         });
       })(i);
     }
+    host.addEventListener('pointerdown', function (ev) {
+      kieuCuoi = ev.pointerType || 'mouse';
+      if (kieuCuoi !== 'mouse' && hov !== -1) { hov = -1; veXx(); }
+    }, true);
+    host.addEventListener('pointermove', function (ev) {
+      if (ev.pointerType !== 'mouse') return;
+      var row = ev.target.closest && ev.target.closest('.row'), k = row ? rows.indexOf(row) : -1;
+      if (k !== hov) { hov = k; veXx(); }
+    });
+    host.addEventListener('pointerleave', function () { if (hov !== -1) { hov = -1; veXx(); } });
     sel = Math.min(lay().length, dung - 1);
     if (sel < 0) sel = 0;
 
@@ -88,20 +121,52 @@
         rows[i].classList.toggle('run', !xt && runIdx === i);
       }
       if (tuyChon.dem) tuyChon.dem.textContent = arr.length + '/' + dung;
-      if (tuyChon.nutXoaDong) tuyChon.nutXoaDong.disabled = !ed.coChon();
       if (tuyChon.nutXoaHet) tuyChon.nutXoaHet.disabled = !arr.length;
+      veXx();
+    };
+    /** Tiêu đề đầy đủ nếu vừa, không vừa thì dùng chữ rút gọn. */
+    this.vuaTieuDe = function () {
+      var el = tuyChon.tt; if (!el) return;
+      el.textContent = tuyChon.ttDay;
+      if (el.clientWidth && el.scrollWidth > el.clientWidth) el.textContent = tuyChon.ttNgan;
     };
     this.nhay = function () {
       var p = tuyChon.bang; if (!p) return;
       p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
     };
-    /** Có đang chọn một dòng code thật (không phải ô trống / ô khóa) không. */
-    this.coChon = function () { return sel >= 0 && sel < dung && sel < lay().length; };
+
+    /* ---- hoàn tác sau khi xóa */
+    function luuHoan(arr, selSau) { hoan = { arr: arr.slice(), sel: selSau }; }
+    function hienHoan() {
+      var pan = tuyChon.bang; if (!pan) return;
+      if (!hoanEl) {
+        hoanEl = h('div', 'hoan-tac'); hoanEl.setAttribute('data-nut', 'da-xoa');
+        hoanEl.appendChild(h('span', 'ht', t('choi.daXoa')));
+        var b = h('button', 'bt g-bl hoan-nut', t('choi.hoanTac')); b.setAttribute('data-nut', 'hoan-tac');
+        b.addEventListener('click', function (ev) { ev.stopPropagation(); ed.hoanTac(); });
+        hoanEl.appendChild(b); pan.appendChild(hoanEl);
+      }
+      hoanEl.classList.add('show');
+      clearTimeout(hoanHen); hoanHen = setTimeout(function () { ed.anHoan(); }, 3000);
+    }
+    this.anHoan = function () {
+      clearTimeout(hoanHen); hoan = null;
+      if (hoanEl) hoanEl.classList.remove('show');
+    };
+    this.hoanTac = function () {
+      if (!hoan || dangChay()) return;
+      var s = hoan, arr = lay(); this.anHoan();
+      arr.length = 0; Array.prototype.push.apply(arr, s.arr);
+      sel = Math.max(0, Math.min(s.sel, dung - 1));
+      this.render(); this.hieuUng(Math.min(s.sel, arr.length - 1)); tuyChon.khiDoi && tuyChon.khiDoi();
+    };
+
     this.chen = function (txt) { return this.chenTai(txt, Math.min(sel, lay().length)); };
     /** Chèn vào vị trí at (0..số dòng). Đầy khung thì nháy đỏ, không chèn. */
     this.chenTai = function (txt, at) {
       var arr = lay();
       if (arr.length >= dung) { this.nhay(); return false; }
+      this.anHoan();
       at = Math.max(0, Math.min(at, arr.length));
       arr.splice(at, 0, txt);
       sel = Math.min(at + 1, dung - 1);
@@ -112,30 +177,30 @@
     this.doiCho = function (tu, den) {
       var arr = lay(); if (tu < 0 || tu >= arr.length) return;
       den = Math.max(0, Math.min(den, arr.length - 1));
+      if (tu !== den) this.anHoan();
       var x = arr.splice(tu, 1)[0]; arr.splice(den, 0, x);
       sel = den; this.render(); this.hieuUng(den);
       if (tu !== den) tuyChon.khiDoi && tuyChon.khiDoi();
     };
     this.xoaTai = function (i) {
       var arr = lay(); if (i < 0 || i >= arr.length) return;
+      luuHoan(arr, i);
       arr.splice(i, 1); sel = Math.min(i, dung - 1);
-      this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
+      this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
     };
     this.chon = function (i) { if (i >= 0 && i < dung) { sel = i; this.render(); } };
-    this.xoaDong = function () {
-      var arr = lay(); if (!arr.length) return;
-      if (sel < arr.length) arr.splice(sel, 1); else { arr.pop(); sel = arr.length; }
-      this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
-    };
     this.xoaHet = function () {
       var arr = lay(); if (!arr.length) return;
-      arr.length = 0; sel = 0; this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
+      luuHoan(arr, 0);
+      arr.length = 0; sel = 0; this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
     };
     this.datChay = function (idx) { runIdx = idx === null || idx === undefined ? -1 : idx; this.render(); };
     this.datLoi = function (ds) { loiSet = {}; (ds || []).forEach(function (i) { loiSet[i] = true; }); this.render(); };
     this.nap = function (layMoi, dungMoi) {
+      this.anHoan();
       lay = layMoi; if (dungMoi !== undefined) dung = dungMoi;
       runIdx = -1; loiSet = {}; xt = null; viTri = null; sel = Math.min(lay().length, Math.max(0, dung - 1)); this.render();
+      this.vuaTieuDe();
     };
     this.dung = function () { return dung; };
     this.mang = function () { return lay(); };
@@ -169,6 +234,8 @@
       setTimeout(function () { e.classList.remove('cam'); }, 420);
     };
     this.render();
+    this.vuaTieuDe();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ed.vuaTieuDe(); });
   }
 
   /* ------------------------------------------------------------ Palette */
@@ -461,13 +528,14 @@
     var s = max; el.style.fontSize = (s * k) + 'px';
     while (el.scrollHeight > el.clientHeight + 1 && s > min) { s -= 1; el.style.fontSize = (s * k) + 'px'; }
   }
-  /** Vẽ nội dung bong bóng b. o: { kieu: 'de'|'goi'|'loi'|'tin', tieuDe, chu, ma, pager: {i,n,truoc,sau} }. */
+  /** Vẽ nội dung bong bóng b. o: { kieu: 'de'|'goi'|'loi'|'tin', tieuDe, chu, phu, ma, pager: {i,n,truoc,sau} }. */
   function bongVe(b, o) {
     var duoi = b.classList.contains('duoi');
     b.innerHTML = ''; b.className = 'bong ' + (duoi ? 'duoi ' : '') + 'show ' + o.kieu;
     var pan = b.closest('.pan'); if (pan) pan.classList.add('co-bong');
     b.appendChild(h('div', 'bg-td', o.tieuDe));
     var nd = hv('div', 'bg-nd', o.chu); b.appendChild(nd);
+    if (o.phu) nd.appendChild(hv('div', 'bg-phu', o.phu));      // dòng phụ (chữ nghiêng, nhạt hơn) cùng co cỡ với thân
     if (o.ma) b.setAttribute('data-ma', o.ma); else b.removeAttribute('data-ma');
     // nút X đỏ ở góc trên phải: cách DUY NHẤT để ẩn bong bóng bằng cách chạm vào bong bóng (chạm thân thì không ẩn)
     var nx = h('button', 'bt g-rd bg-x'); nx.setAttribute('data-nut', 'bong-x'); nx.setAttribute('aria-label', t('choi.anBong'));

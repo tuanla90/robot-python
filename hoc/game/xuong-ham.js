@@ -31,9 +31,8 @@
         '</div></div>' +
       '<div class="low w">' +
         '<div class="pan p-prog"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt">' + t('xuong.thanNgan') + '</span><span class="ct">0/10</span>' +
-            '<button class="bt g-rd del dong" data-nut="xoa-dong" aria-label="' + t('choi.xoaDong') + '">' + t('choi.xoaDongNut') + '</button>' +
-            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '">' + t('choi.xoaHetNut') + '</button></div>' +
+          '<div class="board chalk"><div class="bh"><span class="tt">' + t('xuong.than') + '</span><span class="ct">0/10</span>' +
+            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="#4a0e0c"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
@@ -49,7 +48,8 @@
     S.field = new SanVe.Field(E.canvas, { kich: 168 });
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'), dem: q('.p-prog .ct'),
-      nutXoaDong: q('[data-nut="xoa-dong"]'), nutXoaHet: q('[data-nut="xoa-het"]'),
+      nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
+      tt: q('.p-prog .tt'), ttDay: t('xuong.than'), ttNgan: t('xuong.thanNgan'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
@@ -57,7 +57,6 @@
       khiSua: function (loai, ten) { mo(loai, ten); }
     });
     TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; } });
-    q('[data-nut="xoa-dong"]').addEventListener('click', function () { S.ed.xoaDong(); });
     q('[data-nut="xoa-het"]').addEventListener('click', function () {
       if (!S.than || !S.than.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
@@ -226,7 +225,7 @@
     if (S.busy) return;
     if (!S.than || !S.than.length) { E.m.style.display = ''; E.m.textContent = t('xuong.trong'); return; }
     var my = ++S.rid, kq = chay();
-    anBongD();
+    anBongD(); S.ed.anHoan();
     S.busy = true; E.side.classList.add('busy');
     S.field.datLai();
     S.field.nap({ san: ChamHoc.SAN_THU, batDau: ChamHoc.BAT_DAU_THU, loaiRobot: A.man().loaiRobot || 'banh' });

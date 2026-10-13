@@ -38,9 +38,8 @@
       '</div>' +
       '<div class="low">' +
         '<div class="pan p-prog" id="pan-main"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.chuongTrinhNgan') + '</span><span class="ct">0/10</span>' +
-            '<button class="bt g-rd del dong" data-nut="xoa-dong" aria-label="' + t('choi.xoaDong') + '">' + t('choi.xoaDongNut') + '</button>' +
-            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '">' + t('choi.xoaHetNut') + '</button></div>' +
+          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.chuongTrinh') + '</span><span class="ct">0/10</span>' +
+            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="#4a0e0c"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
@@ -60,7 +59,8 @@
 
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
-      nutXoaDong: q('[data-nut="xoa-dong"]'), nutXoaHet: q('[data-nut="xoa-het"]'),
+      nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
+      tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
@@ -79,14 +79,13 @@
       baoLoi: function (s) { toast(s, 'bad'); }
     });
 
-    q('[data-nut="menu"]').addEventListener('click', function () { roi(); App.veChon(); });
+    q('[data-nut="menu"]').addEventListener('click', moMenu);
     q('[data-nut="chay"]').addEventListener('click', function () { chay(false); });
     q('[data-nut="nhip"]').addEventListener('click', function () { chay(true); });
     q('[data-nut="lai"]').addEventListener('click', function () { datLaiChay(); });
     q('[data-nut="goi-y"]').addEventListener('click', goiY);
     q('[data-nut="de-bai"]').addEventListener('click', function () { hienDeBai(); });
     E.btnToc.addEventListener('click', function () { S.toc = S.toc === 1 ? 2 : 1; veToc(); });
-    q('[data-nut="xoa-dong"]').addEventListener('click', function () { S.ed.xoaDong(); });
     q('[data-nut="xoa-het"]').addEventListener('click', function () {
       if (!S.bai.chinh.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
@@ -182,7 +181,40 @@
   function bong(o) { TP.bongVe(E.bongD, o); }
   function anBongD() { TP.bongAn(E.bongD); }
   function anBong() { anBongD(); }
-  function hienDeBai() { bong({ kieu: 'de', tieuDe: S.man.id + ' · ' + S.man.ten, chu: S.man.deBai }); }
+  /** Bài làm hiện tại còn y nguyên code mẫu của màn (bỏ qua dòng trống cuối; hàm của màn so tên + thân) không. */
+  function trungMaMau() {
+    var mm = S.man.maMau || {}, b = S.bai;
+    function cat(a) { a = (a || []).slice(); while (a.length && !String(a[a.length - 1]).trim()) a.pop(); return a; }
+    function bang(a, c) { a = cat(a); c = cat(c); return a.length === c.length && a.every(function (x, i) { return x === c[i]; }); }
+    if (!bang(b.chinh, mm.chinh)) return false;
+    var hb = b.hamCuaMan || [], hm = mm.hamCuaMan || [];
+    if (hb.length !== hm.length) return false;
+    return hm.every(function (f) {
+      var g = hb.filter(function (x) { return x.ten === f.ten; })[0];
+      return !!g && bang(g.than, f.than);
+    });
+  }
+  /** Đề bài = mục tiêu (luôn đúng). Câu nói về code mẫu (veMaMau) chỉ hiện khi bài làm còn là code mẫu. */
+  function hienDeBai() {
+    var m = S.man;
+    bong({ kieu: 'de', tieuDe: m.id + ' · ' + m.ten, chu: m.deBai, phu: m.veMaMau && trungMaMau() ? m.veMaMau : null });
+  }
+  /** Menu ☰: về màn chọn / làm lại từ đầu (nạp lại code mẫu, bỏ bản nháp; không đụng kho hàm của em và sao). */
+  function moMenu() {
+    var m = TP.Hop.mo(t('choi.menu'), 'hop-nho hop-menu');
+    var hang = h('div', 'hop-hang cot');
+    hang.appendChild(TP.Hop.nut('g-pu', t('menu.veChon'), function () { TP.Hop.dong(); roi(); App.veChon(); }, 'menu-ve-chon'));
+    hang.appendChild(TP.Hop.nut('g-or', t('menu.lamLai'), function () {
+      TP.Hop.xacNhan({ tieuDe: t('menu.lamLai'), noiDung: t('menu.lamLaiHoi'), co: t('menu.lamLaiCo') }).then(function (ok) { if (ok) lamLai(); });
+    }, 'menu-lam-lai'));
+    hang.appendChild(TP.Hop.nut('g-wd', t('chung.dong'), function () { TP.Hop.dong(); }, 'menu-dong'));
+    m.than.appendChild(hang);
+  }
+  function lamLai() {
+    var m = S.man; if (!m) return;
+    Luu.xoaNhap(m.id);
+    vao(m);                // nạp lại maMau, dựng lại kho khối, mở lại bong bóng đề bài
+  }
   function goiY() {
     var ds = S.man.goiY || [];
     if (!ds.length) { bong({ kieu: 'goi', tieuDe: t('choi.goiY'), chu: t('choi.khongGoiY') }); return; }
@@ -239,7 +271,7 @@
     if (S.busy) return;
     if (!S.ket) chuanBi();
     else if (S.idx >= S.vet.length) { datLaiChay(); chuanBi(); }
-    anBong(); anToast();
+    anBong(); anToast(); S.ed.anHoan();
     S.ed.datLoi([]); S.pal.datLoi([]);
     var my = ++S.rid; S.busy = true; E.side.classList.add('busy');
     var vet = S.vet;
