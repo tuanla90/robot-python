@@ -17,6 +17,7 @@
    Chương 7 'nhen' (Thân nhện) nằm ở man-nhen.js.
    Chương 8 'xich' (Bánh xích) nằm ở man-xich.js.
    Chương 9 'omni' (Bánh omni) nằm ở man-omni.js.
+   Chương 10 'tam-day' (Tấm đẩy) nằm ở man-tam-day.js.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */
@@ -26,7 +27,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni'],
+    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day'],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',
@@ -36,7 +37,8 @@
       'tham-so': 'Hàm có tham số',
       'nhen': 'Thân nhện',
       'xich': 'Bánh xích',
-      'omni': 'Bánh omni'
+      'omni': 'Bánh omni',
+      'tam-day': 'Tấm đẩy'
     }
   };
 

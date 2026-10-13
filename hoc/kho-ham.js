@@ -37,13 +37,13 @@
 
   var PHIEN_BAN = 1;
   var KHOA_LUU = 'duong-hoc:kho-ham';
-  var SO_HAM_MAC_DINH = 27;      // 25 hàm cốt truyện (xuong-ham 7, tay-gap 3, vong-lap 4, tham-so 4: forward, right, deliver, step, nhen 3: go, walk, bring, xich 2: tr_right, tr_left, omni 2: slide_r, slide_l) + 2 chỗ cho hàm tự đặt.
+  var SO_HAM_MAC_DINH = 28;      // 26 hàm cốt truyện (xuong-ham 7, tay-gap 3, vong-lap 4, tham-so 4: forward, right, deliver, step, nhen 3: go, walk, bring, xich 2: tr_right, tr_left, omni 2: slide_r, slide_l, tam-day 1: shove) + 2 chỗ cho hàm tự đặt.
                                // Chương sau thêm hàm cốt truyện nào thì tăng số này tương ứng (kiem-hoc.mjs kiểm: >= số hàm cốt truyện + 2).
 
-  // hàm gốc của mọi loại robot (xe bánh có tay gắp, nhện, omni) + hàm nội bộ của nhân chạy code (print, range, len, str, int)
+  // hàm gốc của mọi loại robot (xe bánh có tay gắp, nhện, omni, tấm đẩy push) + hàm nội bộ của nhân chạy code (print, range, len, str, int)
   var HAM_GOC_MAC_DINH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'arm_down', 'arm_up', 'grab', 'release',
-    'slide_left', 'slide_right',
+    'slide_left', 'slide_right', 'push',
     'go_up', 'go_down', 'go_left', 'go_right', 'print', 'range', 'len', 'str', 'int'];
   // từ khóa Python (nhân chạy code chỉ hiểu một phần, nhưng cấm cả bộ cho khỏi nhầm)
   var TU_KHOA = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',
