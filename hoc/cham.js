@@ -52,7 +52,7 @@
    - vật vỡ thì chương trình dừng ngay cuối nhịp đó.
 
    Mã chẩn đoán: quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong, tay-vuong, vat-vo, o-co-vat,
-   kep-hut (thông tin), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
+   kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
    def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le,
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
    ========================================================================== */
@@ -219,6 +219,19 @@
         (laNhen ? 'lệnh' : 'lệnh bánh') + (vuong[0].lenh ? ' ' + vuong[0].lenh.ten + '() (ở ' + viTri(ml) + ')' : '') + ' của nhịp đó bị bỏ.' +
         (vuong.length > 1 ? ' Chuyện này xảy ra ' + vuong.length + ' lần.' : '') +
         (laNhen ? ' Xem lại tư thế tay trước khi cho nhện bước.' : ' Xem lại tư thế tay trước khi cho xe chạy.'), { nhip: vuong[0].nhip, soLan: vuong.length, cho: cho(ml) });
+    }
+    var xichDo = res.suKien.filter(function (e) { return e.ma === 'xich-quay-do'; });
+    if (xichDo.length) {
+      var xd = xichDo[0], mxd = xd.lenh ? (g.anhXa[xd.lenh.dongPy] || null) : null;
+      var mat = xd.cuoi
+        ? 'chương trình kết thúc khi xe xích mới quay nửa vòng ' + (xd.huong > 0 ? 'sang phải' : 'sang trái') + ' (ở nhịp ' + xd.nhipNua + ')'
+        : 'xe xích mới quay nửa vòng ' + (xd.huong > 0 ? 'sang phải' : 'sang trái') + ' ở nhịp ' + xd.nhipNua + ', nhịp kế lại làm việc khác nên phần quay dở mất';
+      cd.push({
+        ma: 'xich-quay-do', muc: 'thong-tin', nhip: xd.nhip, nhipNua: xd.nhipNua, soLan: xichDo.length, cuoi: !!xd.cuoi, cho: cho(mxd),
+        loi: 'Ở nhịp ' + xd.nhip + ': ' + mat + (mxd ? ' (lệnh ' + xd.lenh.ten + '() ở ' + viTri(mxd) + ')' : '') + ', xe vẫn quay mặt như cũ.' +
+          (xichDo.length > 1 ? ' Chuyện này xảy ra ' + xichDo.length + ' lần.' : '') +
+          ' Xe xích cần 2 nhịp liên tiếp cùng một lệnh để quay đủ 90°.'
+      });
     }
     var vatVo = res.suKien.filter(function (e) { return e.ma === 'vat-vo'; });
     if (vatVo.length) {

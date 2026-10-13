@@ -15,6 +15,7 @@
    Chương 5 'bang-chuyen' (Băng chuyền) nằm ở man-bang-chuyen.js.
    Chương 6 'tham-so' (Hàm có tham số) nằm ở man-tham-so.js.
    Chương 7 'nhen' (Thân nhện) nằm ở man-nhen.js.
+   Chương 8 'xich' (Bánh xích) nằm ở man-xich.js.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */
@@ -24,7 +25,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen'],
+    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich'],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',
@@ -32,7 +33,8 @@
       'vong-lap': 'Vòng lặp',
       'bang-chuyen': 'Băng chuyền',
       'tham-so': 'Hàm có tham số',
-      'nhen': 'Thân nhện'
+      'nhen': 'Thân nhện',
+      'xich': 'Bánh xích'
     }
   };
 

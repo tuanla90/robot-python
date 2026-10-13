@@ -12,7 +12,7 @@
    (o / D / X đều là sàn: xe đi qua ô vật không bị chặn.)
    Hướng robot: 0 lên, 1 phải, 2 xuống, 3 trái.
 
-   Hai loại robot:
+   Ba loại robot:
      'banh' (xe bánh): left_move / right_move / left_back / right_back chỉ RA LỆNH
         cho bánh trong nhịp hiện tại; wait() kết thúc nhịp và robot làm theo tổ hợp.
      'nhen' (nhện): go_up / go_down / go_left / go_right, mỗi lệnh 2 nhịp, sang ô mới
@@ -41,6 +41,19 @@
    Mục tiêu 'dua-vat' (cfg.mucTieu): thắng NGAY khi MỌI vật trên sân đều đang nằm trên ô đích.
    Có vật vỡ thì không thể thắng nữa: dừng ngay cuối nhịp đó (dungSom = 'vat-vo').
 
+   'xich' (xe BÁNH XÍCH): CÙNG bộ lệnh với xe bánh (left_move / right_move / left_back / right_back / wait và tay gắp
+        nếu có), cũng chỉ RA LỆNH, wait() cho nhịp trôi. Khác xe bánh ở ba chỗ:
+        - Tiến / lùi (hai bên cùng chiều): 1 ô mỗi nhịp, như xe bánh.
+        - QUAY CHẬM: một nhịp chỉ một bên xích chạy ((1,0) (0,-1) quay phải; (0,1) (-1,0) quay trái), hay hai bên ngược
+          chiều ((1,-1) quay phải tại chỗ; (-1,1) quay trái tại chỗ), thì xe mới "nhích nửa vòng" (quayDo = +1 phải / -1 trái,
+          sự kiện 'quay-nua'). Phải có 2 nhịp LIÊN TIẾP CÙNG tổ hợp (cùng cặp trai, phai) mới quay đủ 90° ('quay-phai' /
+          'quay-trai'). Nhịp kế KHÔNG cùng tổ hợp (tiến, lùi, đứng yên, tay vướng, hay một tổ hợp quay khác) thì phần quay dở
+          MẤT, hướng xe không đổi: sự kiện 'xich-quay-do' {nhip, nhipNua, huong, lenh}. Chương trình dừng khi còn quay dở
+          (chưa thắng) cũng ghi 'xich-quay-do' với cuoi: true. Không có "quay đầu" 180° trong một nhịp.
+        - Leo được bậc thang S như đi trên sàn; băng chuyền KHÔNG đẩy được xích (bám chắc): xích đứng đủ 2 nhịp trên băng
+          chỉ ghi 'bang-khong-day' (thông tin cho hoạt cảnh), vị trí không đổi.
+        Vết nhịp của xích có thêm robot.quayDo (0, +1, -1) cho hoạt cảnh xoay dở.
+
    Băng chuyền: mỗi nhịp, SAU khi robot làm xong hành động, nếu robot đang đứng trên
    ô băng thì demBang++; đủ 2 thì đẩy 1 ô theo mũi tên (bị chặn thì đứng yên) và
    demBang = 0. Không đứng trên băng thì demBang = 0.
@@ -62,8 +75,11 @@
 
   var HAM_GOC = {
     banh: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'],
-    nhen: ['go_up', 'go_down', 'go_left', 'go_right', 'wait']
+    nhen: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'],
+    xich: ['left_move', 'right_move', 'left_back', 'right_back', 'wait']       // cùng bộ lệnh với xe bánh
   };
+  // xích quay chậm: tổ hợp (bánh trái, bánh phải) → chiều quay (+1 phải, -1 trái); cần 2 nhịp liên tiếp cùng tổ hợp mới đủ 90°
+  var XICH_QUAY = { '1,0': 1, '0,-1': 1, '1,-1': 1, '0,1': -1, '-1,0': -1, '-1,1': -1 };
   var NHEN_HUONG = { go_up: 0, go_right: 1, go_down: 2, go_left: 3 };
   // lệnh tay gắp của xe bánh. Hai nhóm: tư thế (arm_down / arm_up) và kẹp (grab / release);
   // mỗi nhịp mỗi nhóm nhận MỘT lệnh, lệnh sau bị bỏ ('tay-goi-lai').
@@ -115,7 +131,7 @@
 
   /**
    * Chạy một chương trình Python trên một sân.
-   * cfg: { san: [chuỗi], batDau: {x,y,huong}, loaiRobot: 'banh'|'nhen',
+   * cfg: { san: [chuỗi], batDau: {x,y,huong}, loaiRobot: 'banh'|'nhen'|'xich',
    *        hamGoc: [tên hàm gốc được phép] (mặc định: đủ bộ của loại robot, chưa có lệnh tay),
    *        nhipToiDa: 200,
    *        mucTieu: 'toi-co' (mặc định) | 'dua-vat',
@@ -131,7 +147,7 @@
    *          { loai:'nhip', nhip, robot:{x,y,huong,banh:{trai,phai}, tay}, vat, suKien:[…] }
    *          `tay` = { tuThe, kep, cam } và `vat` = [{ id, x, y, trangThai:'dat'|'cam'|'vo' }]
    *          chỉ có khi hamGoc có lệnh tay (xe bánh có tay gắp). Vật đang cầm có (x, y) của xe.
-   *   - suKien: các mốc chẩn đoán { ma:'dam-tuong'|'banh-goi-lai'|'quen-wait'|'tay-goi-lai'|
+   *   - suKien: các mốc chẩn đoán { ma:'dam-tuong'|'banh-goi-lai'|'quen-wait'|'tay-goi-lai'|'xich-quay-do'|
    *     'tay-vuong'|'kep-hut'|'vat-vo'|'o-co-vat', … };
    *     'banh-goi-lai' / 'tay-goi-lai' có thêm `truoc` = lệnh đã giữ bánh / nhóm đó trong nhịp {ten, dongPy}
    *     Trong vet.suKien của nhịp còn có 'nhat-vat', 'dat-vat' (thông tin cho hoạt cảnh) và 'xong-dua-vat'.
@@ -141,7 +157,8 @@
   function chay(cfg, code, opt) {
     opt = opt || {};
     var loai = cfg.loaiRobot || 'banh';
-    if (loai !== 'banh' && loai !== 'nhen') throw new Error('Loại robot lạ: ' + loai);
+    if (loai !== 'banh' && loai !== 'nhen' && loai !== 'xich') throw new Error('Loại robot lạ: ' + loai);
+    var laBanh = loai === 'banh' || loai === 'xich';                        // dùng chung bộ lệnh bánh
     var mucTieu = cfg.mucTieu || 'toi-co';
     if (mucTieu !== 'toi-co' && mucTieu !== 'dua-vat') throw new Error('Mục tiêu lạ: ' + mucTieu);
     var san = docSan(cfg.san);
@@ -162,6 +179,7 @@
 
     var rb = { x: bd.x, y: bd.y, huong: bd.huong || 0 };
     var nhip = 0, demBang = 0;
+    var quayDo = null;                          // xích: phần quay dở { khoa:'t,p', huong:+1|-1, nhip, lenh:{ten,dongPy}|null }
     var lenh = { trai: 0, phai: 0 };            // lệnh bánh đang chờ wait()
     var lenhTon = [];                           // các lệnh (bánh và tay) chưa wait(): {ten, dongPy}
     var tayCho = { 'tu-the': null, 'kep': null };   // lệnh tay đang chờ wait(), theo nhóm: {ten, dongPy}
@@ -236,6 +254,34 @@
       return vats.every(function (v) { return v.trangThai === 'dat' && dichSet[v.x + ',' + v.y]; });
     }
 
+    /** Xích: bỏ phần quay dở (nhịp này không cùng tổ hợp), ghi sự kiện. */
+    function xichThoi(sk) {
+      if (!quayDo) return;
+      var e = { ma: 'xich-quay-do', nhip: nhip, nhipNua: quayDo.nhip, huong: quayDo.huong, lenh: quayDo.lenh };
+      sk.push(e); suKienChan.push(e);
+      quayDo = null;
+    }
+
+    /** Xích: một nhịp với tổ hợp bánh (t, p). thuDi: hàm đi 1 ô của nhịp. */
+    function xichBanh(t, p, lenhBanh, sk, thuDi) {
+      var khoa = t + ',' + p, q = XICH_QUAY[khoa];
+      if (q === undefined) {                                                // tiến, lùi hoặc đứng yên: không quay
+        xichThoi(sk);
+        if (t === 1 && p === 1) thuDi(rb.huong, 1, 'tien');
+        else if (t === -1 && p === -1) thuDi(rb.huong, -1, 'lui');
+        else sk.push({ ma: 'dung-yen' });
+        return;
+      }
+      if (quayDo && quayDo.khoa === khoa) {                                 // nhịp thứ hai cùng tổ hợp: quay đủ 90°
+        rb.huong = (rb.huong + (q > 0 ? 1 : 3)) % 4; quayDo = null;
+        sk.push({ ma: q > 0 ? 'quay-phai' : 'quay-trai' });
+        return;
+      }
+      xichThoi(sk);                                                         // tổ hợp khác: quay dở cũ mất, bắt đầu quay dở mới
+      quayDo = { khoa: khoa, huong: q, nhip: nhip, lenh: lenhBanh || null };
+      sk.push({ ma: 'quay-nua', huong: q });
+    }
+
     /** Một nhịp trôi qua. hanhDong: {kieu:'banh', trai, phai, tay:{tuThe,kep}} | {kieu:'nhen', huong|null, buoc:1|2, tay, lenhDi}.
      *  Trả về true nếu phải dừng (thắng, vật vỡ hoặc hết nhịp). */
     function motNhip(hanhDong) {
@@ -273,7 +319,9 @@
         if (coTay && tay.tuThe === 'duoi' && (t !== 0 || p !== 0)) {        // (c) bánh chạy — nhưng tay vướng sàn
           var ev = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: hanhDong.lenhBanh || null };
           sk.push(ev); suKienChan.push(ev);
+          if (loai === 'xich') xichThoi(sk);                                // bánh không chạy: quay dở (nếu có) mất
         }
+        else if (loai === 'xich') xichBanh(t, p, hanhDong.lenhBanh, sk, thuDi);
         else if (t === 1 && p === 1) thuDi(rb.huong, 1, 'tien');
         else if (t === -1 && p === -1) thuDi(rb.huong, -1, 'lui');
         else if ((t === 1 && p === -1) || (t === -1 && p === 1)) { rb.huong = (rb.huong + 2) % 4; sk.push({ ma: 'quay-dau' }); }
@@ -294,7 +342,8 @@
       var c = oTai(san, rb.x, rb.y);
       if (c !== null && BANG[c] !== undefined) {
         demBang++;
-        if (demBang >= 2) {
+        if (demBang >= 2 && loai === 'xich') { sk.push({ ma: 'bang-khong-day' }); demBang = 0; }     // xích bám chắc, băng không đẩy được
+        else if (demBang >= 2) {
           var hd = BANG[c], vb = VEC[hd], bx = rb.x + vb[0], by = rb.y + vb[1];
           var lyB = lyDoChan(san, loai, bx, by);
           if (lyB) sk.push({ ma: 'bang-chan', den: { x: bx, y: by }, vat: lyB });
@@ -309,6 +358,7 @@
       } else if (duaVatXong()) { thang = true; sk.push({ ma: 'xong-dua-vat' }); }
       if (!thang && coVo && mucTieu === 'dua-vat') dungSom = 'vat-vo';       // vật vỡ: không thể thắng nữa
       var r = chup(); r.banh = banhGhi;
+      if (loai === 'xich') r.quayDo = quayDo ? quayDo.huong : 0;
       var mucVet = { loai: 'nhip', nhip: nhip, robot: r, suKien: sk };
       if (coTay) { r.tay = chupTay(); mucVet.vat = chupVat(); }
       vet.push(mucVet);
@@ -326,7 +376,7 @@
     function xuLy(yc) {
       vet.push({ loai: 'lenh', ten: yc.ten, dongPy: yc.dong, nganPy: yc.ngan });
       if (yc.ten === 'wait') {
-        if (loai === 'banh') {
+        if (laBanh) {
           var lenhBanh = null;                                   // lệnh bánh đầu tiên của nhịp (để chỉ ra khi tay vướng sàn)
           lenhTon.forEach(function (x) { if (!lenhBanh && BANH_LENH[x.ten]) lenhBanh = { ten: x.ten, dongPy: x.dongPy }; });
           var h = { kieu: 'banh', trai: lenh.trai, phai: lenh.phai, lenhBanh: lenhBanh, tay: rutTay() };
@@ -348,7 +398,7 @@
         lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
         return false;
       }
-      if (loai === 'banh') {
+      if (laBanh) {
         var bl = BANH_LENH[yc.ten];
         if (lenh[bl[0]] !== 0) {
           // lệnh nào đã giữ bánh này trong nhịp (để chẩn đoán chỉ ra cả nơi gây ra)
@@ -380,6 +430,11 @@
       else throw e;
     }
 
+    // xích: chương trình hết khi còn quay dở (chưa thắng) → ghi lại, để chẩn đoán nói rõ
+    if (loai === 'xich' && quayDo && !thang && !loi && !dungSom) {
+      suKienChan.push({ ma: 'xich-quay-do', nhip: nhip, nhipNua: quayDo.nhip, huong: quayDo.huong, lenh: quayDo.lenh, cuoi: true });
+    }
+
     // chương trình hết mà còn lệnh chưa wait() → lệnh đó không chạy
     if (!thang && !loi && !dungSom && lenhTon.length) {
       suKienChan.push({ ma: 'quen-wait', nhip: nhip, lenh: lenhTon.slice() });
@@ -388,12 +443,13 @@
     return {
       thang: thang, nhip: nhip, robot: chup(), loi: loi, vet: vet,
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
-      tay: coTay ? chupTay() : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom
+      tay: coTay ? chupTay() : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
+      quayDo: loai === 'xich' ? (quayDo ? quayDo.huong : 0) : undefined
     };
   }
 
   var API = {
-    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, BANG: BANG,
+    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, BANG: BANG, XICH_QUAY: XICH_QUAY,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };
   if (laNode) module.exports = API;
