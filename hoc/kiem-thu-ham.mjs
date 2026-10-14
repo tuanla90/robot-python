@@ -84,56 +84,69 @@ console.log('\n== Tường chặn như sân thường ==');
   kiem('đi vòng tránh tường (quay phải, 1 ô, quay trái, 1 ô): không lỗi, xe ở (3,1)', quanh.chanDoan.length === 0 && J(quanh.robot) === J({ x: 3, y: 1, huong: 0 }), J(quanh.chanDoan) + J(quanh.robot));
 }
 
-console.log('\n== Vật: chỉ là ô có vật, không chặn đường ==');
+console.log('\n== Vật chiếm ô (luật 14/10): xe không đi xuyên vật ==');
 {
   const sanThu = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }, { x: 0, y: 0 }], tuong: [] };
   const kq = thu(lap(2, TIEN), sanThu);
-  kiem('xe đi xuyên ô có vật, không chẩn đoán, tới (2,0)', kq.chanDoan.length === 0 && J(kq.robot) === J({ x: 2, y: 0, huong: 0 }), J(kq.chanDoan) + J(kq.robot));
+  kiem('xe tiến vào ô có vật: dam-tuong (vướng vật), xe đứng yên ở (2,2)', maCua(kq).join() === 'dam-tuong' && J(kq.robot) === J({ x: 2, y: 2, huong: 0 }) && kq.chanDoan[0].muc === 'loi', J(kq.chanDoan) + J(kq.robot));
+  kiem('  lời nói "vướng vật", không lộ chữ "tường"', /vướng vật/.test(kq.chanDoan[0].loi) && !/đâm vào tường/.test(kq.chanDoan[0].loi), kq.chanDoan[0].loi);
   kiem('kq.sanThu.vat trả lại đúng cho giao diện vẽ', J(kq.sanThu.vat) === J(sanThu.vat), J(kq.sanThu));
+  const quanh = thu([...QP, ...TIEN, ...['right_move()', 'wait()'], ...TIEN], sanThu);
+  kiem('đi vòng qua vật (quay phải, 1 ô, quay trái, 1 ô): không lỗi, xe ở (3,1)', quanh.chanDoan.length === 0 && J(quanh.robot) === J({ x: 3, y: 1, huong: 0 }), J(quanh.chanDoan) + J(quanh.robot));
 }
 
-console.log('\n== Vật thật khi màn có tay gắp: thử pick() / drop() trong Xưởng ==');
+console.log('\n== Vật thật khi màn có tay gắp: thử pick() / drop() trong Xưởng (ô TRƯỚC MẶT) ==');
 {
   const mTay = ManHoc.timMa('tay-gap.5');
   const T_MOVE = ['left_move()', 'right_move()', 'wait()'];
   const pick = H('pick', ['arm_down()', 'grab()', 'wait()']);
   const drop = H('drop', ['arm_down()', 'release()', 'wait()']);
   const move = H('move', T_MOVE);
-  const duoiXe = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }], tuong: [] };
+  const truocXe = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }], tuong: [] };
   const thuT = (ten, kho, sanThu, tuyChon) => ChamHoc.thuHam(mTay, {}, ten, kho, Object.assign({ sanThu }, tuyChon || {}));
-  const a = thuT('pick', [pick], duoiXe);
-  kiem('thử pick() với vật dưới xe: 1 nhịp, tay { duoi, kep, cam 1 }, vật 1 ở trạng thái cam, không chẩn đoán',
+  const a = thuT('pick', [pick], truocXe);
+  kiem('thử pick() với vật ngay trước mặt: 1 nhịp, tay { duoi, kep, cam 1 }, vật 1 ở trạng thái cam (vẽ ở ô xe), không chẩn đoán',
     a.soNhip === 1 && J(a.tay) === J({ tuThe: 'duoi', kep: true, cam: 1 }) && J(a.vat) === J([{ id: 1, x: 2, y: 2, trangThai: 'cam' }]) && a.chanDoan.length === 0, J([a.tay, a.vat, a.chanDoan]));
   const na = a.vet.find((e) => e.loai === 'nhip');
-  kiem('vết nhịp có robot.tay và vat; sự kiện nhat-vat',
-    J(na.robot.tay) === J({ tuThe: 'duoi', kep: true, cam: 1 }) && J(na.vat) === J([{ id: 1, x: 2, y: 2, trangThai: 'cam' }]) && na.suKien.some((e) => e.ma === 'nhat-vat' && e.id === 1), J(na));
-  kiem('kq.sanThu.vat vẫn trả lại cho giao diện (vị trí ban đầu)', J(a.sanThu.vat) === J([{ x: 2, y: 2 }]));
-  const b = thuT('chuyen', [pick, drop, move, H('chuyen', ['pick()', 'arm_up()', 'move()', 'drop()'])], duoiXe);
-  kiem('pick, nâng tay, move, drop: vật được đặt xuống ô (2,1) đi theo xe; tay hạ; 3 nhịp; không chẩn đoán',
-    b.soNhip === 3 && J(b.vat) === J([{ id: 1, x: 2, y: 1, trangThai: 'dat' }]) && J(b.robot) === J({ x: 2, y: 1, huong: 0 }) && J(b.tay) === J({ tuThe: 'duoi', kep: false, cam: null }) && b.chanDoan.length === 0, J([b.soNhip, b.vat, b.robot, b.tay, b.chanDoan]));
-  kiem('  vết: nhịp 2 vật đang cầm đi theo xe; nhịp 3 có sự kiện dat-vat',
-    (() => { const n = b.vet.filter((e) => e.loai === 'nhip'); return n[1].vat[0].trangThai === 'cam' && n[1].vat[0].y === 1 && n[2].suKien.some((e) => e.ma === 'dat-vat'); })());
-  const c = thuT('vo', [pick, H('vo', ['pick()', 'arm_up()', 'release()', 'wait()', 'wait()'])], duoiXe);
-  kiem('thả từ trên cao: vat-vo, vật vỡ; sân thử không có đích nên KHÔNG dừng sớm (vẫn chạy hết hàm: 3 nhịp)',
-    maCua(c).join() === 'vat-vo' && c.vat[0].trangThai === 'vo' && c.soNhip === 3 && c.chanDoan[0].muc === 'loi', J([c.chanDoan, c.soNhip]));
-  const kh = thuT('hut', [H('hut', ['grab()', 'wait()'])], duoiXe);
-  kiem('kẹp khi tay chưa hạ: kep-hut là THÔNG TIN (muc thong-tin), không cầm được', maCua(kh).join() === 'kep-hut' && kh.chanDoan[0].muc === 'thong-tin' && kh.tay.cam === null && kh.vat[0].trangThai === 'dat', J(kh.chanDoan));
-  const khong = thuT('hut2', [H('hut2', ['arm_down()', 'grab()', 'wait()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }], tuong: [] });
-  kiem('hạ tay kẹp ở ô không có vật: kep-hut (khong-co-vat)', khong.chanDoan.length === 1 && khong.chanDoan[0].lyDo === 'khong-co-vat', J(khong.chanDoan));
-  const vuong = thuT('vg', [move, pick, H('vg', ['pick()', 'move()'])], duoiXe);
+  kiem('vết nhịp có robot.tay và vat; sự kiện nhat-vat nêu ô vật nằm (2,1)',
+    J(na.robot.tay) === J({ tuThe: 'duoi', kep: true, cam: 1 }) && J(na.vat) === J([{ id: 1, x: 2, y: 2, trangThai: 'cam' }]) && na.suKien.some((e) => e.ma === 'nhat-vat' && e.id === 1 && J(e.o) === J({ x: 2, y: 1 })), J(na));
+  kiem('kq.sanThu.vat vẫn trả lại cho giao diện (vị trí ban đầu)', J(a.sanThu.vat) === J([{ x: 2, y: 1 }]));
+  const b = thuT('chuyen', [pick, drop, move, H('chuyen', ['pick()', 'arm_up()', 'move()', 'drop()'])], truocXe);
+  kiem('pick, nâng tay, move, drop: vật được đặt xuống ô trước mặt (2,0); xe ở (2,1); tay hạ; 3 nhịp; không chẩn đoán',
+    b.soNhip === 3 && J(b.vat) === J([{ id: 1, x: 2, y: 0, trangThai: 'dat' }]) && J(b.robot) === J({ x: 2, y: 1, huong: 0 }) && J(b.tay) === J({ tuThe: 'duoi', kep: false, cam: null }) && b.chanDoan.length === 0, J([b.soNhip, b.vat, b.robot, b.tay, b.chanDoan]));
+  kiem('  vết: nhịp 2 vật đang cầm đi theo xe; nhịp 3 có sự kiện dat-vat ở ô (2,0)',
+    (() => { const n = b.vet.filter((e) => e.loai === 'nhip'); return n[1].vat[0].trangThai === 'cam' && n[1].vat[0].y === 1 && n[2].suKien.some((e) => e.ma === 'dat-vat' && e.o.y === 0); })());
+  const c = thuT('vo', [pick, H('vo', ['pick()', 'arm_up()', 'release()', 'wait()', 'wait()'])], truocXe);
+  kiem('thả từ trên cao: vat-vo, vật vỡ ở ô trước mặt (2,1); sân thử không có đích nên KHÔNG dừng sớm (vẫn chạy hết hàm: 3 nhịp)',
+    maCua(c).join() === 'vat-vo' && c.vat[0].trangThai === 'vo' && c.vat[0].y === 1 && c.soNhip === 3 && c.chanDoan[0].muc === 'loi', J([c.chanDoan, c.soNhip, c.vat]));
+  const kh = thuT('hut', [H('hut', ['grab()', 'wait()'])], truocXe);
+  kiem('kẹp khi tay chưa hạ: kep-hut (tay-nang) là THÔNG TIN (muc thong-tin), không cầm được', maCua(kh).join() === 'kep-hut' && kh.chanDoan[0].lyDo === 'tay-nang' && kh.chanDoan[0].muc === 'thong-tin' && kh.tay.cam === null && kh.vat[0].trangThai === 'dat', J(kh.chanDoan));
+  const khong = thuT('hut2', [H('hut2', ['arm_down()', 'grab()', 'wait()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 0, y: 0 }], tuong: [] });
+  kiem('hạ tay kẹp khi ô trước mặt không có vật: kep-hut (khong-co-vat), lời nói rõ "ô trước mặt"', khong.chanDoan.length === 1 && khong.chanDoan[0].lyDo === 'khong-co-vat' && /trước mặt/.test(khong.chanDoan[0].loi), J(khong.chanDoan));
+  const xaRoi = thuT('hut3', [H('hut3', ['arm_down()', 'grab()', 'wait()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 0 }], tuong: [] });
+  kiem('vật cách xe hai ô (không sát): kẹp hụt, không với tới', xaRoi.chanDoan.length === 1 && xaRoi.chanDoan[0].lyDo === 'khong-co-vat' && xaRoi.tay.cam === null, J(xaRoi.chanDoan));
+  const vuong = thuT('vg', [move, pick, H('vg', ['pick()', 'move()'])], truocXe);
   kiem('tay hạ mà đi: tay-vuong, xe đứng yên (lệnh ghi rõ ở hàm move)', maCua(vuong).includes('tay-vuong') && J(vuong.robot) === J({ x: 2, y: 2, huong: 0 }) && /hàm move/.test(vuong.chanDoan.find((x) => x.ma === 'tay-vuong').loi), J(vuong.chanDoan));
-  const ocv = thuT('o', [pick, drop, move, H('o', ['pick()', 'arm_up()', 'move()', 'drop()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }, { x: 2, y: 1 }], tuong: [] });
-  kiem('đặt vật xuống ô đã có vật: o-co-vat, vật vẫn ở tay', maCua(ocv).join() === 'o-co-vat' && ocv.tay.cam === 1 && ocv.vat[1].trangThai === 'dat', J([ocv.chanDoan, ocv.tay]));
-  const tuong = thuT('t', [move, pick, drop, H('t', ['pick()', 'arm_up()', 'move()', 'move()', 'drop()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }], tuong: [{ x: 2, y: 0 }] });
-  kiem('vật không chặn xe còn tường vẫn chặn: xe đang cầm vật đâm tường (2,0) thì đứng yên ở (2,1), vật nằm ở (2,1)',
-    maCua(tuong).join() === 'dam-tuong' && J(tuong.robot) === J({ x: 2, y: 1, huong: 0 }) && tuong.vat[0].x === 2 && tuong.vat[0].y === 1 && tuong.vat[0].trangThai === 'dat', J([tuong.chanDoan, tuong.robot, tuong.vat]));
-  const dung = thuT('p', [pick], duoiXe);
+  const ocv = thuT('o', [pick, drop, move, H('o', ['pick()', 'arm_up()', 'move()', 'drop()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }, { x: 2, y: 0 }], tuong: [] });
+  kiem('đặt vật xuống ô trước mặt đã có vật: tha-bi-chan (kieu kep, vat "vat"), vật vẫn ở tay, kẹp vẫn đóng',
+    maCua(ocv).join() === 'tha-bi-chan' && ocv.chanDoan[0].vat === 'vat' && ocv.chanDoan[0].kieu === 'kep' && ocv.tay.cam === 1 && ocv.tay.kep === true && ocv.vat[1].trangThai === 'dat', J([ocv.chanDoan, ocv.tay]));
+  kiem('  lời nói nhắc release() và "ô ngay trước mặt xe"', /release\(\)/.test(ocv.chanDoan[0].loi) && /trước mặt/.test(ocv.chanDoan[0].loi), ocv.chanDoan[0].loi);
+  const thuongTha = thuT('t', [pick, drop, move, H('t', ['pick()', 'arm_up()', 'move()', 'drop()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }], tuong: [{ x: 2, y: 0 }] });
+  kiem('thả vào tường ngay trước mặt: tha-bi-chan (tuong), vật vẫn ở tay', maCua(thuongTha).join() === 'tha-bi-chan' && thuongTha.chanDoan[0].vat === 'tuong' && thuongTha.tay.cam === 1, J(thuongTha.chanDoan));
+  const raNgoai = thuT('r', [pick, drop, move, H('r', ['pick()', 'arm_up()', 'move()', 'move()', 'drop()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }], tuong: [] });
+  kiem('thả khi ô trước mặt là mép sân: tha-bi-chan (ngoai-san), vật vẫn ở tay', maCua(raNgoai).join() === 'tha-bi-chan' && raNgoai.chanDoan[0].vat === 'ngoai-san' && raNgoai.tay.cam === 1, J(raNgoai.chanDoan));
+  const chanXe = thuT('c', [H('c', ['move()'])].concat([move]), truocXe);
+  kiem('vật chặn xe: tiến vào ô vật thì dam-tuong (vướng vật), xe đứng yên', maCua(chanXe).join() === 'dam-tuong' && chanXe.chanDoan[0].muc === 'loi' && J(chanXe.robot) === J({ x: 2, y: 2, huong: 0 }), J(chanXe.chanDoan));
+  const xeCamTuong = thuT('t2', [pick, drop, move, H('t2', ['pick()', 'arm_up()', 'move()', 'move()'])], { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }], tuong: [{ x: 2, y: 0 }] });
+  kiem('xe đang cầm vật đâm tường (2,0) thì đứng yên ở (2,1); vật vẫn trong kẹp, vẽ ở ô xe',
+    maCua(xeCamTuong).join() === 'dam-tuong' && J(xeCamTuong.robot) === J({ x: 2, y: 1, huong: 0 }) && xeCamTuong.vat[0].x === 2 && xeCamTuong.vat[0].y === 1 && xeCamTuong.vat[0].trangThai === 'cam', J([xeCamTuong.chanDoan, xeCamTuong.robot, xeCamTuong.vat]));
+  const dung = thuT('p', [pick], truocXe);
   kiem('sân thử không có điều kiện thắng: kết quả không có `thang`, không có chua-dua-vat / chua-toi-co', dung.thang === undefined && !maCua(dung).includes('chua-dua-vat') && !maCua(dung).includes('chua-toi-co'));
-  // màn không có tay gắp: vật chỉ là ô có vật (hành vi cũ), không có tay trong vết
-  const cu = ChamHoc.thuHam(man, {}, 'tien', [H('tien', TIEN)], { sanThu: duoiXe });
-  kiem('màn không có tay gắp (2.4): vật dưới xe vẫn chỉ là ô có vật, tay null, vết không có tay / vat',
-    cu.tay === null && cu.chanDoan.length === 0 && cu.vet.filter((e) => e.loai === 'nhip').every((e) => e.robot.tay === undefined && e.vat === undefined) && J(cu.vat) === J([{ id: 1, x: 2, y: 2, trangThai: 'dat' }]), J(cu));
-  const mo = thuT('lenh', [H('lenh', ['arm_down()', 'wait()'])], duoiXe);
+  // màn không có tay gắp: vật vẫn chiếm ô (xe vướng vật), không có tay trong vết
+  const cu = ChamHoc.thuHam(man, {}, 'tien', [H('tien', TIEN)], { sanThu: truocXe });
+  kiem('màn không có tay gắp (2.4): vật vẫn chiếm ô (xe vướng vật), tay null, vết không có tay / vat',
+    cu.tay === null && maCua(cu).join() === 'dam-tuong' && cu.vet.filter((e) => e.loai === 'nhip').every((e) => e.robot.tay === undefined && e.vat === undefined) && J(cu.vat) === J([{ id: 1, x: 2, y: 1, trangThai: 'dat' }]), J(cu));
+  const mo = thuT('lenh', [H('lenh', ['arm_down()', 'wait()'])], truocXe);
   kiem('lệnh tay gọi thẳng trong hàm thử: tay đổi tư thế sau wait()', mo.tay.tuThe === 'duoi' && mo.soNhip === 1);
   const ng = ChamHoc.thuHam(man, {}, 'lenh2', [H('lenh2', ['arm_down()', 'wait()'])]);
   kiem('màn không có tay gắp gọi arm_down(): ham-chua-co', maCua(ng).includes('ham-chua-co'), J(ng.chanDoan));
@@ -150,9 +163,9 @@ console.log('\n== chuanSanThu: sửa số liệu bậy ==');
   kiem('tường đè lên xe, ô trùng, vật ngoài sân, số lạ đều bị bỏ', J(c.tuong) === J([{ x: 4, y: 4 }]) && J(c.vat) === J([{ x: 0, y: 0 }]), J(c));
   const m = ChamHoc.chuanSanThu(null);
   kiem('null → mặc định', J(m) === J(ChamHoc.SAN_THU_MAC_DINH), J(m));
-  const d = ChamHoc.chuanSanThu({ rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }, { x: 2, y: 2 }, { x: 1, y: 2 }], tuong: [{ x: 2, y: 2 }, { x: 1, y: 2 }] });
-  kiem('vật được nằm ngay dưới xe (để thử pick() tại chỗ); tường đè lên xe thì bị bỏ; vật đè lên tường bị bỏ; vật trùng nhau bị bỏ',
-    J(d.vat) === J([{ x: 2, y: 2 }]) && J(d.tuong) === J([{ x: 1, y: 2 }]), J(d));
+  const d = ChamHoc.chuanSanThu({ rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }, { x: 2, y: 2 }, { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: 2 }], tuong: [{ x: 2, y: 2 }, { x: 1, y: 2 }] });
+  kiem('vật CHIẾM Ô nên không nằm dưới xe được (bị bỏ); tường đè lên xe thì bị bỏ; vật đè lên tường bị bỏ; vật trùng nhau chỉ giữ một',
+    J(d.vat) === J([{ x: 3, y: 2 }]) && J(d.tuong) === J([{ x: 1, y: 2 }]), J(d));
 }
 
 console.log('\n== Còn lại: lỗi thật vẫn báo; nhịp tối đa ==');

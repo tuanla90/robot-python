@@ -31,7 +31,7 @@
    xe ở giữa (2, 2) quay lên). Để thử bản đang soạn của một hàm của em, đưa bản đó vào mảng hamCuaEm.
    tuyChon.sanThu = { rong: 5, cao: 5, batDau: { x, y, huong }, vat: [{ x, y }], tuong: [{ x, y }] }
    (không truyền thì dùng SAN_THU_MAC_DINH; chuanSanThu() sửa số liệu bậy: ô ngoài sân, ô trùng,
-   tường đè lên xe, vật đè lên tường đều bị bỏ). Vật ĐƯỢC nằm dưới xe (để thử pick() ngay tại chỗ).
+   tường đè lên xe, vật đè lên tường hay lên xe đều bị bỏ). Vật CHIẾM Ô như ở sân thật (14/10): không nằm dưới xe được; thử pick() thì đặt vật ở ô TRƯỚC MẶT xe.
    Tọa độ là tọa độ THẬT của sân thử: x sang phải,
    y xuống dưới, (0, 0) là góc trên trái; không còn phép dịch tọa độ.
    - Tường chặn như sân thường (san-hoc 'dam-tuong', vat = 'tuong'); ra khỏi sân là 'dam-tuong'
@@ -39,8 +39,8 @@
    - VẬT (khối hàng): chuẩn hóa rồi trả lại ở `kq.sanThu.vat`, và được đưa xuống SanHoc.chay như một
      lớp riêng cạnh `san`. Màn có tay gắp (man.hamGoc có arm_down / arm_up / grab / release) thì vật
      là vật thật: học sinh thử pick() / drop() trong Xưởng được; vết có `vat` và `robot.tay` từng nhịp,
-     `kq.vat` là trạng thái cuối. Màn không có tay gắp thì vật chỉ là ô có vật — KHÔNG chặn đường.
-     Xe đi qua ô vật không bị chặn. Sân thử chưa có ô đích nên không có điều kiện thắng.
+     `kq.vat` là trạng thái cuối. Vật nằm đất chiếm ô: xe đâm vào vật thì đứng im ('dam-tuong', vat 'vat').
+     Sân thử chưa có ô đích nên không có điều kiện thắng.
    tuyChon.sanThu.mau = [{ x, y, mau: 'red'|'green'|'blue'|'yellow' (hay 'r' 'g' 'b' 'y') }] (tuỳ chọn): ô sàn màu cho color() trong Xưởng (bỏ ô tường, ô ngoài sân, ô trùng);
    vật trong sân thử cũng có thể mang `mau`. Chuẩn hóa trả lại ở `kq.sanThu.mau`.
    tuyChon.sanThu.thung = [{ x, y }] (tuỳ chọn): thùng nặng trong sân thử, chuẩn hóa như vật (ô ngoài sân, ô trùng, ô tường, ô xe bị bỏ);
@@ -65,8 +65,7 @@
    viết cứng số bước (bước thừa chỉ húc tường ở sân ngắn) mất sao nhịp. Kết quả luôn có thêm nhipMax, nhipTong.
 
    CẢM BIẾN MÀU (chương mau; luật đầy đủ ở san-hoc.js, phần CẢM BIẾN MÀU): hamGoc có color thì robot có cảm biến màu (man.robot.camBien = [{ ma:'mau', o:'hong' }],
-   có thể kèm khoang-cach ở màn phối hợp). color() trả chuỗi "red" | "green" | "blue" | "yellow" | "none" của ô dưới xe (vật có màu nằm trên sàn dưới xe thì trả
-   màu vật). Màn khai lớp màu bằng man.mau (mảng chuỗi cùng cỡ sân, ký tự r g b y) và man.vatMau (màu từng vật); màn nhiều sân thì hai trường này là mảng song song
+   có thể kèm khoang-cach ở màn phối hợp). color() trả chuỗi "red" | "green" | "blue" | "yellow" | "none" của VẬT ĐANG MANG (cầm / dính / trong rổ; "none" nếu vật không màu), không mang gì thì của ô sàn dưới xe. Màn khai lớp màu bằng man.mau (mảng chuỗi cùng cỡ sân, ký tự r g b y) và man.vatMau (màu từng vật); màn nhiều sân thì hai trường này là mảng song song
    với man.san (như batDau). Ô đích có màu chỉ nhận vật cùng màu. Mỗi lần đọc là một mục lệnh trong vết có `docCamBien` { cam:'mau', ham:'color', tu, o, mau, nguon:'san'|'vat', idVat, nhip }.
    Kết quả có `mauO` (lớp màu sàn của sân đang xem, null nếu không màu), mỗi mục theoSan cũng vậy; vật / đích có `mau` khi có màu. Mã chẩn đoán mới:
    - chua-gan-cam-bien (lỗi): gọi color() khi màn không cho (như cảm biến khoảng cách; lời nói rõ "cảm biến màu").
@@ -87,7 +86,7 @@
    - thùng kẹt góc → dừng ngay cuối nhịp đó (chẩn đoán thung-ket).
    Mã chẩn đoán: thung-chan, thung-ket (lỗi), push-goi-lai (lỗi), day-hut (thông tin), day-dung-yen (thông tin), chua-day-thung, và dam-tuong với
    vat 'thung-nang' (xe không có tấm đẩy, hay lùi / trượt vào thùng). Các mã khác:
-   quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong, tay-vuong, vat-vo, o-co-vat,
+   quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong (vat 'vat' = vướng vật nằm đất), tay-vuong, vat-vo, tha-bi-chan (tay kẹp, kieu 'kep': ô trước mặt không phải sàn trống),
    kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
    def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le,
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
@@ -99,10 +98,10 @@
   var SanHoc = laNode ? require('./san-hoc.js') : window.SanHoc;
   var KhungCode = laNode ? require('./khung-code.js') : window.KhungCode;
 
-  var LOAI_VAT = { 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng' };
+  var LOAI_VAT = { 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
   // lý do magnet_off() không thả được vật (san-hoc.js 'tha-bi-chan')
-  var LY_THA = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
+  var LY_THA = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn', 'rao': 'hàng rào thấp' };
   // lý do vật ném vỡ (san-hoc.js 'nem-vo')
   var LY_NEM = { 'ngoai-san': 'ngoài sân', 'tuong': 'tường cao', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
   var LY_DO_THUNG = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe' };
@@ -138,7 +137,6 @@
     }
     var tuong = loc(c.tuong);
     var thung = loc(c.thung);                                    // thùng nặng: không đè tường, không đè xe
-    delete thay[bd.x + ',' + bd.y];                              // vật có thể nằm ngay dưới xe
     var vat = loc(c.vat);                                        // tường được ưu tiên hơn vật
     // màu: vật có thể mang màu (mau: 'red' | 'r' …); ô sàn màu { x, y, mau } (không đè tường; mỗi ô một màu, ô sau không đè ô trước)
     var tuongKhoa = {};
@@ -336,7 +334,10 @@
       var e0 = tuong[0];
       var s2;
       if (sanThu) {
-        s2 = e0.vat === 'thung-nang'
+        s2 = e0.vat === 'vat'
+          ? 'Xe vướng vật ở nhịp ' + e0.nhip + ': ô (' + e0.den.x + ', ' + e0.den.y + ') có một vật nằm đất nên xe đứng yên (vẫn mất một nhịp).' +
+            (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') + ' Vật chiếm ô: gắp nó lên hoặc đặt vật chỗ khác.'
+          : e0.vat === 'thung-nang'
           ? 'Xe đâm vào thùng nặng ở nhịp ' + e0.nhip + ' nên đứng yên (vẫn mất một nhịp).' +
             (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
             (e0.coDay ? ' Tấm đẩy chỉ đẩy khi xe TIẾN thẳng vào thùng; lùi hay trượt thì thùng cản như tường.' : ' Xe không có tấm đẩy thì thùng nặng cản đường như tường: cần tấm đẩy để đẩy thùng nặng.')
@@ -345,6 +346,10 @@
           : 'Xe đâm vào tường ở nhịp ' + e0.nhip + ' nên đứng yên (vẫn mất một nhịp).' +
             (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
             ' Đặt xe hoặc tường chỗ khác, rồi thử lại.';
+      } else if (e0.vat === 'vat') {
+        s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ô đó có một vật nằm đất: vật chiếm ô nên xe vướng vật và đứng yên (vẫn mất một nhịp).' +
+          (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
+          ' Muốn đi qua ô đó phải gắp vật lên trước (hạ tay, grab()), hoặc đi đường vòng.';
       } else if (e0.vat === 'thung-nang') {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là thùng nặng nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
@@ -418,13 +423,13 @@
     if (nemHut.length) {
       var nh0 = nemHut[0];
       cd.push({ ma: 'nem-hut', muc: 'thong-tin', nhip: nh0.nhip, soLan: nemHut.length, cho: cho(nh0.lenh ? (g.anhXa[nh0.lenh.dongPy] || null) : null),
-        loi: 'Ở nhịp ' + nh0.nhip + ', throw() không ném được gì: rổ đang trống.' + (nemHut.length > 1 ? ' Chuyện này xảy ra ' + nemHut.length + ' lần.' : '') + ' Rổ phải có vật (nạp bằng load() khi xe đứng trên ô có vật) thì mới ném được.' });
+        loi: 'Ở nhịp ' + nh0.nhip + ', throw() không ném được gì: rổ đang trống.' + (nemHut.length > 1 ? ' Chuyện này xảy ra ' + nemHut.length + ' lần.' : '') + ' Rổ phải có vật (nạp bằng load() khi vật nằm ngay trước mặt xe) thì mới ném được.' });
     }
     var napHut = res.suKien.filter(function (e) { return e.ma === 'nap-hut'; });
     if (napHut.length) {
       var np0 = napHut[0];
       cd.push({ ma: 'nap-hut', muc: 'thong-tin', nhip: np0.nhip, soLan: napHut.length, o: np0.o, cho: cho(np0.lenh ? (g.anhXa[np0.lenh.dongPy] || null) : null),
-        loi: 'Ở nhịp ' + np0.nhip + ', load() không nạp được gì: ô (' + np0.o.x + ', ' + np0.o.y + ') dưới xe không có vật nằm.' + (napHut.length > 1 ? ' Chuyện này xảy ra ' + napHut.length + ' lần.' : '') + ' load() chỉ nạp vật nằm ngay dưới xe.' });
+        loi: 'Ở nhịp ' + np0.nhip + ', load() không nạp được gì: ô (' + np0.o.x + ', ' + np0.o.y + ') ngay trước mặt xe không có vật nằm.' + (napHut.length > 1 ? ' Chuyện này xảy ra ' + napHut.length + ' lần.' : '') + ' load() chỉ nạp vật nằm ở ô ngay trước mặt xe.' });
     }
     var nemDung = res.suKien.filter(function (e) { return e.ma === 'nem-dung-yen'; });
     if (nemDung.length) {
@@ -436,9 +441,15 @@
     var thaChan = res.suKien.filter(function (e) { return e.ma === 'tha-bi-chan'; });
     if (thaChan.length) {
       var tb0 = thaChan[0], mtb = tb0.lenh ? (g.anhXa[tb0.lenh.dongPy] || null) : null;
+      if (tb0.kieu === 'kep') {
+        them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', release() không thả được vật: ô ngay trước mặt xe, (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
+          ' nên vật vẫn nằm trong kẹp.' + (thaChan.length > 1 ? ' Chuyện này xảy ra ' + thaChan.length + ' lần.' : '') +
+          ' Vật chỉ đặt xuống được ô sàn trống ngay trước mặt: xoay hay đi tới chỗ khác rồi thả.', { nhip: tb0.nhip, soLan: thaChan.length, o: tb0.o, vat: tb0.vat, kieu: 'kep' });
+      } else {
       them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', magnet_off() không thả được vật: ô ngay trước mũi xe, (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
         ' nên vật vẫn dính ở nam châm (nam châm vẫn bật).' + (thaChan.length > 1 ? ' Chuyện này xảy ra ' + thaChan.length + ' lần.' : '') +
         ' Vật chỉ thả được xuống ô trống ngay trước mặt: xoay hay đi tới chỗ khác rồi thả.', { nhip: tb0.nhip, soLan: thaChan.length, o: tb0.o, vat: tb0.vat, cho: cho(mtb) });
+      }
     }
     var hutGo = res.suKien.filter(function (e) { return e.ma === 'hut-go'; });
     if (hutGo.length) {
@@ -512,15 +523,9 @@
     }
     var vatVo = res.suKien.filter(function (e) { return e.ma === 'vat-vo'; });
     if (vatVo.length) {
-      them('vat-vo', 'Ở nhịp ' + vatVo[0].nhip + ', vật bị thả từ trên cao nên rơi vỡ' +
+      them('vat-vo', 'Ở nhịp ' + vatVo[0].nhip + ', vật bị thả từ trên cao nên rơi xuống ô trước mặt và vỡ' +
         (sanThu ? '.' : '; vật vỡ rồi thì không đưa tới đích được nữa, chương trình dừng ở đó.'),
         { nhip: vatVo[0].nhip, id: vatVo[0].id, o: vatVo[0].o });
-    }
-    var oCoVat = res.suKien.filter(function (e) { return e.ma === 'o-co-vat'; });
-    if (oCoVat.length) {
-      them('o-co-vat', 'Ở nhịp ' + oCoVat[0].nhip + ', ô (' + oCoVat[0].o.x + ', ' + oCoVat[0].o.y +
-        ') đã có một vật nằm sẵn nên không đặt thêm được; vật vẫn ở trên tay. Mỗi ô chỉ chứa một vật.',
-        { nhip: oCoVat[0].nhip, id: oCoVat[0].id, o: oCoVat[0].o });
     }
     var kepHut = res.suKien.filter(function (e) { return e.ma === 'kep-hut'; });
     if (kepHut.length) {
@@ -528,9 +533,9 @@
       cd.push({
         ma: 'kep-hut', muc: 'thong-tin', nhip: kh.nhip, lyDo: kh.lyDo, o: kh.o,
         loi: kh.lyDo === 'qua-nang'
-          ? 'Ở nhịp ' + kh.nhip + ', tay kẹp không gắp nổi thùng nặng ở ô (' + kh.o.x + ', ' + kh.o.y + '): thùng nặng chỉ đẩy được, không nhấc được.'
+          ? 'Ở nhịp ' + kh.nhip + ', tay kẹp không gắp nổi thùng nặng ở ô trước mặt (' + kh.o.x + ', ' + kh.o.y + '): thùng nặng chỉ đẩy được, không nhấc được.'
           : 'Ở nhịp ' + kh.nhip + ', tay kẹp vào không khí: ' +
-          (kh.lyDo === 'tay-nang' ? 'vật nằm dưới đất mà tay đang nâng.' : 'ô (' + kh.o.x + ', ' + kh.o.y + ') không có vật nào để gắp.')
+          (kh.lyDo === 'tay-nang' ? 'vật nằm trước mặt xe, ở ô (' + kh.o.x + ', ' + kh.o.y + '), mà tay đang nâng (hạ tay trước khi gắp).' : 'ô ngay trước mặt xe, (' + kh.o.x + ', ' + kh.o.y + '), không có vật nào để gắp. Tay gắp vật ở ô TRƯỚC mặt, không phải ô xe đứng.')
       });
     }
     var datSaiMau = res.suKien.filter(function (e) { return e.ma === 'dat-sai-mau'; });

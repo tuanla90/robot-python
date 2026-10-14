@@ -11,6 +11,7 @@
      - Băng chuyền KHÔNG đẩy được xích; bậc thang S đi như sàn.
    Một HÀNH ĐỘNG = tư thế tay (không | hạ | nâng) × kẹp/thả (không | kẹp | thả) × tổ hợp bánh (9). Màn không có lệnh tay
    thì chỉ còn 9 tổ hợp bánh.
+   LUẬT VẬT (14/10): vật nằm đất chiếm ô (xe không tiến / lùi vào ô có vật); grab / release làm ở Ô TRƯỚC MẶT; release chỉ đặt được xuống ô sàn trống.
    Mục tiêu 'toi-co': thắng khi xích chạm cờ F. 'dua-vat': mọi vật nằm trên ô đích.
 
    Hàm xuất:
@@ -67,16 +68,17 @@ export function buocMotNhip(ctx, S, a) {
   const N = { x: S.x, y: S.y, h: S.h, q: S.q, t: S.t, cam: S.cam, pos: S.pos.slice() };
   const { rong } = ctx;
   if (a.tuThe === 'duoi') N.t = 1; else if (a.tuThe === 'tren') N.t = 0;
-  const cell = N.y * rong + N.x;
+  const vf = SanHoc.VEC[N.h], fx = N.x + vf[0], fy = N.y + vf[1];
+  const front = (fx >= 0 && fy >= 0 && fx < ctx.rong && fy < ctx.cao) ? fy * rong + fx : -1;     // ô trước mặt
   if (a.kep === 'kep') {
     if (N.cam < 0) {
-      const i = N.pos.indexOf(cell);
+      const i = front >= 0 ? N.pos.indexOf(front) : -1;
       if (i >= 0 && N.t === 1) { N.pos[i] = -1; N.cam = i; }
     }
   } else if (a.kep === 'tha') {
     if (N.cam >= 0) {
       if (N.t === 0) { N.pos[N.cam] = -2; N.cam = -1; }
-      else if (N.pos.indexOf(cell) < 0) { N.pos[N.cam] = cell; N.cam = -1; }
+      else if (front >= 0 && !ctx.chan[front] && N.pos.indexOf(front) < 0) { N.pos[N.cam] = front; N.cam = -1; }
     }
   }
   const [t, p] = TO_HOP[a.banh];
@@ -86,8 +88,8 @@ export function buocMotNhip(ctx, S, a) {
     const q = CHIEU_QUAY[a.banh];
     if (q === 0) {
       N.q = -1;
-      if (t === 1 && p === 1) { const v = SanHoc.VEC[N.h], nx = N.x + v[0], ny = N.y + v[1]; if (!ngoai(ctx, nx, ny)) { N.x = nx; N.y = ny; } }
-      else if (t === -1 && p === -1) { const v = SanHoc.VEC[N.h], nx = N.x - v[0], ny = N.y - v[1]; if (!ngoai(ctx, nx, ny)) { N.x = nx; N.y = ny; } }
+      if (t === 1 && p === 1) { const v = SanHoc.VEC[N.h], nx = N.x + v[0], ny = N.y + v[1]; if (!ngoai(ctx, nx, ny) && N.pos.indexOf(ny * rong + nx) < 0) { N.x = nx; N.y = ny; } }
+      else if (t === -1 && p === -1) { const v = SanHoc.VEC[N.h], nx = N.x - v[0], ny = N.y - v[1]; if (!ngoai(ctx, nx, ny) && N.pos.indexOf(ny * rong + nx) < 0) { N.x = nx; N.y = ny; } }
     } else if (S.q === a.banh) { N.h = (N.h + (q > 0 ? 1 : 3)) % 4; N.q = -1; }
     else N.q = a.banh;
   }

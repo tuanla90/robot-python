@@ -69,21 +69,22 @@ export function buocMotNhip(ctx, S, a) {
   const N = { x: S.x, y: S.y, h: S.h, t: S.t, cam: S.cam, pos: S.pos.slice() };
   const { rong } = ctx;
   if (a.tuThe === 'duoi') N.t = 1; else if (a.tuThe === 'tren') N.t = 0;
-  const cell = N.y * rong + N.x;
+  const vf = SanHoc.VEC[N.h], fx = N.x + vf[0], fy = N.y + vf[1];
+  const front = (fx >= 0 && fy >= 0 && fx < ctx.rong && fy < ctx.cao) ? fy * rong + fx : -1;     // ô trước mặt (luật vật 14/10: gắp / thả ở ô trước)
   if (a.kep === 'kep') {
     if (N.cam < 0) {
-      const i = N.pos.indexOf(cell);
+      const i = front >= 0 ? N.pos.indexOf(front) : -1;
       if (i >= 0 && N.t === 1) { N.pos[i] = -1; N.cam = i; }
     }
   } else if (a.kep === 'tha') {
     if (N.cam >= 0) {
       if (N.t === 0) { N.pos[N.cam] = -2; N.cam = -1; }
-      else if (N.pos.indexOf(cell) < 0) { N.pos[N.cam] = cell; N.cam = -1; }
+      else if (front >= 0 && !ctx.chan[front] && N.pos.indexOf(front) < 0) { N.pos[N.cam] = front; N.cam = -1; }
     }
   }
   const tuDi = (huongDi, soBuoc) => {
     const v = SanHoc.VEC[huongDi], nx = N.x + v[0] * soBuoc, ny = N.y + v[1] * soBuoc;
-    if (!ngoai(ctx, nx, ny)) { N.x = nx; N.y = ny; }
+    if (!ngoai(ctx, nx, ny) && N.pos.indexOf(ny * rong + nx) < 0) { N.x = nx; N.y = ny; }      // vật nằm đất chiếm ô
   };
   if (a.banh >= SLIDE_TRAI) {
     if (!(ctx.coTay && N.t === 1)) tuDi((N.h + (a.banh === SLIDE_PHAI ? 1 : 3)) % 4, 1);     // tay vướng sàn thì không trượt

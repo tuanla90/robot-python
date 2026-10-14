@@ -18,7 +18,7 @@
    lời giải chuẩn. Không có tuyChon này, magnet_on() / magnet_off() gộp được vào nhịp đi / quay (vd "magnet_on()  move()" là MỘT nhịp): đường ngắn hơn, là bài
    tối ưu riêng (như gộp pick() / drop() ở chương tay gắp).
    Băng chuyền: đứng trên ô băng sau hành động thì đếm +1; đủ ngưỡng (2; omni: 1) thì đẩy 1 ô theo mũi tên (bị chặn thì đứng yên).
-   Vật nằm dưới đất KHÔNG bị băng đẩy; vật dính đi theo xe.
+   Vật nằm dưới đất KHÔNG bị băng đẩy; vật dính đi theo xe. Luật vật 14/10: vật nằm đất CHIẾM Ô — xe (và băng chuyền) không đưa xe vào ô có vật.
    Thắng: mọi vật cần (man.vatCan === 'sat' thì chỉ vật sắt) nằm trên ô đích (ô đích có màu thì cùng màu vật).
    Một sân. Nhiều sân: nhipNamChamTatCa() cộng nhịp từng sân.
 
@@ -116,7 +116,7 @@ export function buocMotNhip(ctx, S, a) {
   // (b) bánh
   const tuDi = (huongDi, soBuoc) => {
     const v = VEC[huongDi], nx = N.x + v[0] * soBuoc, ny = N.y + v[1] * soBuoc;
-    if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx]) { N.x = nx; N.y = ny; }
+    if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx] && N.pos.indexOf(ny * rong + nx) < 0) { N.x = nx; N.y = ny; }
   };
   if (a.banh === SLIDE_TRAI) tuDi((N.h + 3) % 4, 1);
   else if (a.banh === SLIDE_PHAI) tuDi((N.h + 1) % 4, 1);
@@ -134,7 +134,7 @@ export function buocMotNhip(ctx, S, a) {
     N.d++;
     if (N.d >= ctx.nguong) {
       const v = VEC[hb], nx = N.x + v[0], ny = N.y + v[1];
-      if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx]) { N.x = nx; N.y = ny; }
+      if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx] && N.pos.indexOf(ny * rong + nx) < 0) { N.x = nx; N.y = ny; }
       N.d = 0;
     }
   } else N.d = 0;

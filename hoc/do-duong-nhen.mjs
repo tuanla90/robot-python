@@ -10,6 +10,8 @@
      - Băng chuyền: sau hành động của MỖI nhịp, đứng trên băng thì đếm +1; đủ 2 thì đẩy 1 ô theo mũi tên.
    Một HÀNH ĐỘNG tự do (bước đang rảnh) = tư thế tay (không | hạ | nâng) × kẹp/thả (không | kẹp | thả) × chân
    (đứng chờ | lên | xuống | trái | phải). Màn không có lệnh tay thì chỉ còn 5 chân.
+   LUẬT VẬT (14/10): vật nằm đất chiếm ô (nhện không bước vào, băng không đẩy vào); grab / release làm ở Ô TRƯỚC MẶT = cạnh gắn tay, CỐ ĐỊNH theo
+   man.batDau.huong (mặc định 0 = lên) vì nhện không quay. release chỉ đặt được xuống ô sàn trống; tay 'tren' thả thì vật vỡ.
    Mục tiêu 'toi-co': thắng khi nhện chạm cờ F (cuối bất kỳ nhịp nào). 'dua-vat': mọi vật nằm trên ô đích.
 
    Hàm xuất:
@@ -41,7 +43,7 @@ export function dungNguCanh(man) {
   for (let y = 0; y < cao; y++) for (let x = 0; x < rong; x++) { const h = SanHoc.BANG[san.o[y][x]]; if (h !== undefined) bang[o(x, y)] = h; }
   const co = san.co ? o(san.co.x, san.co.y) : -1;
   const coTay = (man.hamGoc || SanHoc.HAM_GOC.nhen).some((t) => SanHoc.TAY_LENH.indexOf(t) >= 0);
-  return { san, rong, cao, o, chan, dich, bang, co, coTay, mucTieu: man.mucTieu || 'toi-co', vat0: san.vat.map((v) => o(v.x, v.y)), bd: man.batDau };
+  return { san, rong, cao, o, chan, dich, bang, co, coTay, mucTieu: man.mucTieu || 'toi-co', vat0: san.vat.map((v) => o(v.x, v.y)), bd: man.batDau, huong: (man.batDau && man.batDau.huong) || 0 };
 }
 
 export function trangThaiDau(ctx) {
@@ -58,6 +60,8 @@ export function hanhDongTuDo(ctx) {
 }
 
 function ngoai(ctx, x, y) { return x < 0 || y < 0 || x >= ctx.rong || y >= ctx.cao || ctx.chan[y * ctx.rong + x]; }
+/** Ô (x, y) có vật nằm đất (chiếm ô) không. */
+function coVat(ctx, S, x, y) { return S.pos.indexOf(y * ctx.rong + x) >= 0; }
 
 /** Một nhịp. a = hành động tự do {tuThe, kep, chan} nếu S.p < 0; nếu S.p >= 0 thì a bị bỏ qua (nhịp 2 bắt buộc). */
 export function buocMotNhip(ctx, S, a) {
@@ -65,23 +69,24 @@ export function buocMotNhip(ctx, S, a) {
   const { rong } = ctx;
   if (S.p < 0) {
     if (a.tuThe === 'duoi') N.t = 1; else if (a.tuThe === 'tren') N.t = 0;
-    const cell = N.y * rong + N.x;
+    const vf = SanHoc.VEC[ctx.huong], fx = N.x + vf[0], fy = N.y + vf[1];
+    const front = (fx >= 0 && fy >= 0 && fx < ctx.rong && fy < ctx.cao) ? fy * rong + fx : -1;     // ô trước mặt (cạnh gắn tay, cố định)
     if (a.kep === 'kep') {
       if (N.cam < 0) {
-        const i = N.pos.indexOf(cell);
+        const i = front >= 0 ? N.pos.indexOf(front) : -1;
         if (i >= 0 && N.t === 1) { N.pos[i] = -1; N.cam = i; }
       }
     } else if (a.kep === 'tha') {
       if (N.cam >= 0) {
         if (N.t === 0) { N.pos[N.cam] = -2; N.cam = -1; }
-        else if (N.pos.indexOf(cell) < 0) { N.pos[N.cam] = cell; N.cam = -1; }
+        else if (front >= 0 && !ctx.chan[front] && N.pos.indexOf(front) < 0) { N.pos[N.cam] = front; N.cam = -1; }
       }
     }
     if (a.chan >= 0) N.p = a.chan;          // nhịp 1 của bước: chuẩn bị
   } else {
     if (N.t === 0) {
       const v = SanHoc.VEC[S.p], nx = N.x + v[0], ny = N.y + v[1];
-      if (!ngoai(ctx, nx, ny)) { N.x = nx; N.y = ny; }
+      if (!ngoai(ctx, nx, ny) && !coVat(ctx, N, nx, ny)) { N.x = nx; N.y = ny; }
     }
     N.p = -1;
   }
@@ -90,7 +95,7 @@ export function buocMotNhip(ctx, S, a) {
     N.d++;
     if (N.d >= 2) {
       const v = SanHoc.VEC[hb], nx = N.x + v[0], ny = N.y + v[1];
-      if (!ngoai(ctx, nx, ny)) { N.x = nx; N.y = ny; }
+      if (!ngoai(ctx, nx, ny) && !coVat(ctx, N, nx, ny)) { N.x = nx; N.y = ny; }
       N.d = 0;
     }
   } else N.d = 0;

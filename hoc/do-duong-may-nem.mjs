@@ -8,6 +8,7 @@
    Luật y hệt san-hoc.js (phần MÁY NÉM). aim(n) KHÔNG tốn nhịp nên không là một hành động: throw() ghép với tầm n nào cũng là MỘT nhịp, nên có ba
    hành động throw tầm 1, 2, 3. Nhịp có load() hay throw() thì xe đứng yên (không gộp với lệnh bánh), nên không có "đường gộp nhịp" như nam châm:
    BFS này cho đúng số nhịp của lời giải chuẩn.
+   LUẬT VẬT (14/10): vật nằm đất CHIẾM Ô (xe và băng chuyền không đưa xe vào ô có vật); load() nạp vật ở Ô TRƯỚC MẶT xe.
    Một HÀNH ĐỘNG = một trong: bánh (đứng yên | tiến | quay phải | quay trái; omni thêm trượt trái | phải) | load | throw tầm 1 | 2 | 3.
    (tuyChon.dayDu = true: thêm lùi và quay đầu — chín tổ hợp bánh — để thử đường tắt "lậu".)
    Băng chuyền: đứng trên ô băng sau hành động thì đếm +1; đủ ngưỡng (2; omni: 1) thì đẩy 1 ô theo mũi tên (bị chặn thì đứng yên). Vật nằm
@@ -93,7 +94,11 @@ export function buocMotNhip(ctx, S, a) {
   const { rong } = ctx;
   const VEC = SanHoc.VEC;
   if (a.nem === 'load') {
-    if (N.pos.indexOf(-1) < 0) { const i = N.pos.indexOf(N.y * rong + N.x); if (i >= 0) N.pos[i] = -1; }
+    if (N.pos.indexOf(-1) < 0) {                                  // load(): nạp vật ở Ô TRƯỚC MẶT (luật vật 14/10)
+      const v = VEC[N.h], fx = N.x + v[0], fy = N.y + v[1];
+      const i = trong(ctx, fx, fy) ? N.pos.indexOf(fy * rong + fx) : -1;
+      if (i >= 0) N.pos[i] = -1;
+    }
   } else if (a.nem === 'throw') {
     const i = N.pos.indexOf(-1);
     if (i >= 0) {
@@ -104,7 +109,7 @@ export function buocMotNhip(ctx, S, a) {
   } else {
     const tuDi = (huongDi, soBuoc) => {
       const v = VEC[huongDi], nx = N.x + v[0] * soBuoc, ny = N.y + v[1] * soBuoc;
-      if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx]) { N.x = nx; N.y = ny; }
+      if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx] && N.pos.indexOf(ny * rong + nx) < 0) { N.x = nx; N.y = ny; }
     };
     if (a.banh === SLIDE_TRAI) tuDi((N.h + 3) % 4, 1);
     else if (a.banh === SLIDE_PHAI) tuDi((N.h + 1) % 4, 1);
@@ -122,7 +127,7 @@ export function buocMotNhip(ctx, S, a) {
     N.d++;
     if (N.d >= ctx.nguong) {
       const v = VEC[hb], nx = N.x + v[0], ny = N.y + v[1];
-      if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx]) { N.x = nx; N.y = ny; }
+      if (trong(ctx, nx, ny) && !ctx.chan[ny * rong + nx] && N.pos.indexOf(ny * rong + nx) < 0) { N.x = nx; N.y = ny; }
       N.d = 0;
     }
   } else N.d = 0;

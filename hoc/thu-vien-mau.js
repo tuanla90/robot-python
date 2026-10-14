@@ -3,7 +3,7 @@
    (Tên tệp giữ từ thời "thư viện theo trùm"; nay là kho hàm của em, xem kho-ham.js.)
    Dạng mảng [ { ten, thamSo, than } ] — đúng dạng ChamHoc.cham(man, baiLam, hamCuaEm) nhận.
    Dựng từ hàm gốc thấp hơn: move ← left_move/right_move/wait, u_turn ← turn_right,
-   pick / drop ← arm_down/grab/release/arm_up/wait (làm trọn việc, trả tay về nâng).
+   pick / drop ← arm_down/grab/release/arm_up/wait (làm trọn việc, trả tay về nâng); gắp / thả ở Ô TRƯỚC MẶT (luật vật 14/10).
    Ở game thật học sinh tự viết các hàm này từng bước (chuỗi 2).
    ========================================================================== */
 (function () {
