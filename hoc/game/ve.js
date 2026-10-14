@@ -158,7 +158,9 @@
     mau: ['xxx.xxx', 'xxx.xxx', 'xxx.xxx', '.......', 'xxx.xxx', 'xxx.xxx', 'xxx.xxx'],
     rao: ['.x...x...x.', 'xxxxxxxxxxx', '.x...x...x.', '.x...x...x.', 'xxxxxxxxxxx', '.x...x...x.', '.x...x...x.'],
     ro: ['..xxxxxxx..', '.x.......x.', 'x.........x', 'xxxxxxxxxxx', 'x.x.x.x.x.x', 'xxxxxxxxxxx', '.x.x.x.x.x.', '..xxxxxxx..'],
-    wall: ['xxxxx.xxxxxx', 'xxxxx.xxxxxx', '............', 'xxx.xxxxx.xx', 'xxx.xxxxx.xx', '............', 'xxxxx.xxxxxx', 'xxxxx.xxxxxx']
+    wall: ['xxxxx.xxxxxx', 'xxxxx.xxxxxx', '............', 'xxx.xxxxx.xx', 'xxx.xxxxx.xx', '............', 'xxxxx.xxxxxx', 'xxxxx.xxxxxx'],
+    nutban: ['xxxxxxxxxxx', 'x.........x', 'x..xxxxx..x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x..xxxxx..x', 'x.........x', 'xxxxxxxxxxx'],
+    cua: ['xxxxxxxxxxx', 'xx...x...xx', 'xx...x...xx', 'xx.x.x.x.xx', 'xx...x...xx', 'xx...x...xx', 'xx...x...xx', 'xxxxxxxxxxx']
   };
   function icon(ten, tuyChon) {
     tuyChon = tuyChon || {};
@@ -353,6 +355,77 @@
     for (y = 0; y < T - 2; y++) for (x = 0; x < T; x++) if (p.get(x, y) && !p.get(x, y + 2)) g.fillRect(x, y + 2, 1, 1);
     g.drawImage(p.canvas(), 0, 0);
     raoCache[mask] = cv; return cv;
+  }
+  /** NÚT BẮN (chương súng bóng, ký hiệu `N`): nằm trên tường nên nền là ô tường; một tấm thép nhỏ có nút tròn. Tắt: nút đỏ nâu nổi, đèn xám.
+   *  Bật: nút xanh lá lún xuống, đèn vàng sáng, vòng sáng quanh tấm. loe (0..1): vừa bị bóng trúng, ánh trắng lóe lên. */
+  var nutCache = {};
+  function makeNut(bat, loe) {
+    var khoa = (bat ? 1 : 0) + '_' + (loe ? 1 : 0);
+    if (nutCache[khoa]) return nutCache[khoa];
+    var p = new Painter(T, T);
+    p.rect(2, 2, 10, 10, K.ink);
+    p.rect(3, 3, 8, 8, bat ? '#9fe9b4' : '#6b7488');
+    p.rect(3, 3, 8, 1, bat ? '#e4ffec' : '#a3acc0'); p.rect(3, 3, 1, 8, bat ? '#e4ffec' : '#a3acc0');
+    p.rect(3, 10, 8, 1, bat ? '#3f9a5a' : '#444c5e'); p.rect(10, 3, 1, 8, bat ? '#3f9a5a' : '#444c5e');
+    p.ell(7, bat ? 7.5 : 7, 3, 3, K.ink);
+    p.ell(7, bat ? 7.5 : 7, 2.2, 2.2, bat ? '#3fd45c' : '#c04a38');
+    p.px(6, bat ? 6 : 5, bat ? '#d6ffde' : '#ee9a88'); p.px(7, bat ? 6 : 5, bat ? '#d6ffde' : '#ee9a88');
+    p.rect(6, 1, 2, 1, bat ? '#fff27a' : '#555d70');                   // đèn nhỏ ở mép trên tấm
+    if (loe) { p.rect(3, 3, 8, 8, '#ffffff'); p.ell(7, 7, 3, 3, '#ffffcc'); }
+    var cv = document.createElement('canvas'); cv.width = T; cv.height = T;
+    var g = cv.getContext('2d');
+    g.drawImage(makeWall(), 0, 0);
+    if (bat) { g.fillStyle = 'rgba(120,255,160,.35)'; g.fillRect(1, 1, T - 2, 1); g.fillRect(1, T - 2, T - 2, 1); g.fillRect(1, 1, 1, T - 2); g.fillRect(T - 2, 1, 1, T - 2); }
+    g.drawImage(p.canvas(), 0, 0);
+    nutCache[khoa] = cv; return cv;
+  }
+  /** CỬA (chương súng bóng, `C` đóng / `c` mở), vẽ thẳng lên g tại (px, py) trên nền sàn đã có. k = độ mở 0 (đóng) .. 1 (mở); hai cánh cửa trượt vào hai cột khung.
+   *  o = { doc: true nếu đi qua cửa theo chiều dọc (cánh trượt ngang), nhip: { mo, dong, pha, p } nếu là cửa nhịp (khung xanh lơ + hàng đèn đếm nhịp ở mép trên), ket: 0..1 cửa đang kẹt (đỏ), rung: lệch px }.
+   *  Cửa đóng giống tường nhưng có khung cửa (cột khung màu vàng cam, hoặc xanh lơ nếu là cửa nhịp) và khe giữa hai cánh. */
+  function veCua(g, px, py, k, o) {
+    o = o || {};
+    var nhip = o.nhip, khung = nhip ? ['#38c6de', '#a8f0ff', '#1b8aa4'] : ['#f2b533', '#ffe27a', '#b87a14'];
+    var doc = o.doc !== false, ox = Math.round(o.rung || 0);
+    var P = new Painter(T, T), i;
+    // quy ước vẽ cho cửa đi theo chiều dọc (cánh trượt ngang); cửa đi ngang thì xoay 90° ở cuối
+    var rong = Math.max(0, Math.min(4, Math.round(4 * (1 - k))));          // bề ngang mỗi cánh còn lại (0..4)
+    P.rect(0, 0, 1, T, K.ink); P.rect(1, 0, 1, T, khung[1]); P.rect(2, 0, 1, T, khung[0]);          // cột khung trái
+    P.rect(T - 1, 0, 1, T, K.ink); P.rect(T - 2, 0, 1, T, khung[2]); P.rect(T - 3, 0, 1, T, khung[0]);   // cột khung phải
+    // hai cánh: trái x = 3 .. 3 + rong - 1, phải x = T - 4 - rong + 1 .. T - 4
+    function canh(x0, w) {
+      if (w <= 0) return;
+      P.rect(x0, 0, w, T, K.ink);
+      if (w > 2) {
+        P.rect(x0 + 1, 1, w - 2, T - 2, '#9aa3b6');
+        P.rect(x0 + 1, 1, w - 2, 1, '#d0d6e4');
+        for (var y = 3; y < T - 2; y += 3) P.rect(x0 + 1, y, w - 2, 1, '#6b7488');
+      } else if (w === 2) { P.rect(x0, 1, 1, T - 2, '#d0d6e4'); P.rect(x0 + 1, 1, 1, T - 2, '#6b7488'); P.rect(x0, 0, 2, 1, K.ink); }
+    }
+    canh(3, rong); canh(T - 3 - rong, rong);
+    if (rong >= 4) {                                                       // đóng hẳn: khe giữa + đèn đỏ
+      P.rect(6, 0, 2, T, K.ink); P.rect(6, 1, 1, T - 2, '#4c5568'); P.rect(7, 1, 1, T - 2, '#2d3340');
+      P.rect(5, 6, 4, 2, K.ink); P.rect(6, 6, 2, 1, '#ff5a4a'); P.px(6, 7, '#a82418'); P.px(7, 7, '#a82418');
+    } else if (rong <= 0) {                                                // mở hẳn: đèn xanh trên cột khung
+      P.px(1, 6, '#7cff86'); P.px(T - 2, 6, '#7cff86');
+    }
+    var cv = document.createElement('canvas'); cv.width = T; cv.height = T;
+    var c2 = cv.getContext('2d'), src = P.canvas();
+    if (doc) c2.drawImage(src, 0, 0);
+    else { c2.translate(T / 2, T / 2); c2.rotate(Math.PI / 2); c2.translate(-T / 2, -T / 2); c2.drawImage(src, 0, 0); c2.setTransform(1, 0, 0, 1, 0, 0); }
+    if (k < 1) { c2.fillStyle = 'rgba(0,28,10,' + (0.3 * (1 - k)).toFixed(3) + ')'; if (doc) c2.fillRect(3 + rong, 1, T - 6 - 2 * rong, T - 2); else c2.fillRect(1, 3 + rong, T - 2, T - 6 - 2 * rong); }
+    if (o.ket > 0) { c2.fillStyle = 'rgba(255,40,30,' + (0.18 + 0.32 * o.ket).toFixed(3) + ')'; c2.fillRect(0, 0, T, T); }
+    g.drawImage(cv, px + ox, py);
+    if (nhip) {                                                            // hàng đèn đếm nhịp ở mép trên: xanh lá = mở, đỏ = đóng, đèn đang sáng có viền trắng và nhấp nháy khi sắp đổi
+      var chu = nhip.mo + nhip.dong, n = Math.min(chu, 6), w = n > 4 ? 1 : 2, gap = 1, tong = n * w + (n - 1) * gap, x0 = px + Math.floor((T - tong) / 2) + ox;
+      g.fillStyle = K.ink; g.fillRect(x0 - 1, py, tong + 2, 4);
+      for (i = 0; i < n; i++) {
+        var dang = i === nhip.p, mo = i < nhip.mo, sapDoi = dang && (((nhip.p + 1) % chu) === 0 || ((nhip.p + 1) % chu) === nhip.mo);
+        var tat = dang && sapDoi && (Math.floor(((o.now || 0) / 160)) & 1);
+        g.fillStyle = dang ? (tat ? (mo ? '#2e7a3c' : '#7a2a22') : (mo ? '#7cff86' : '#ff6a5a')) : (mo ? '#2e7a3c' : '#7a2a22');
+        g.fillRect(x0 + i * (w + gap), py + 1, w, 2);
+        if (dang && !tat) { g.fillStyle = '#ffffff'; g.fillRect(x0 + i * (w + gap), py + 1, w, 1); }
+      }
+    }
   }
   /** Khối hàng (thùng gỗ) trên sàn sân thử: vẽ trong ô T×T, chừa mép để thấy cỏ quanh. */
   var crateCache = null;
@@ -553,7 +626,7 @@
     tileCache = {
       mau: matMau, crateMau: thungMau, sat: makeSat(), satMau: satMau,
       crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
-      flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)], rao: makeRao
+      flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)], rao: makeRao, nut: makeNut
     };
     return tileCache;
   }
@@ -601,6 +674,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeSat: makeSat, makeVatNho: makeVatNho, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeNut: makeNut, veCua: veCua, makeSat: makeSat, makeVatNho: makeVatNho, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

@@ -19,7 +19,7 @@
   var E = {};          // phần tử
   var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null, doiSo: {} };   // doiSo: 'loai:tên hàm' → giá trị thử của từng đối số
   var NHIP_MS = 230, LENH_MS = 45, TOAST_MS = 2000;
-  var CHE = { xe: 'che-xe', vat: 'che-vat', tuong: 'che-tuong', mau: 'che-mau', rao: 'che-rao' };
+  var CHE = { xe: 'che-xe', vat: 'che-vat', tuong: 'che-tuong', mau: 'che-mau', rao: 'che-rao', nut: 'che-nut', cua: 'che-cua' };
   var MAU_VONG = [null, 'red', 'green', 'blue', 'yellow'];                 // chạm ô (chế độ Màu): không màu → đỏ → xanh lá → xanh dương → vàng → không màu
   var MAU_KY = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
   function mauKeTiep(m) { return MAU_VONG[(MAU_VONG.indexOf(m || null) + 1) % MAU_VONG.length]; }
@@ -43,6 +43,8 @@
           '<button class="bt g-gy cbtn mode" data-nut="' + CHE.tuong + '" data-che="tuong"><span data-i="wall" data-s="2" data-l="#2d3340"></span>' + t('xuong.tuong') + '</button>' +
           '<button class="bt g-wd cbtn mode nut-rao" data-nut="' + CHE.rao + '" data-che="rao"><span data-i="rao" data-s="2" data-l="#3a1c00"></span>' + t('xuong.rao') + '</button>' +
           '<button class="bt g-pu cbtn mode nut-ro" data-nut="nut-ro" aria-pressed="false"><span data-i="ro" data-s="2" data-l="#2a1050"></span>' + t('xuong.ro') + '</button>' +
+          '<button class="bt g-rd cbtn mode nut-nutban" data-nut="' + CHE.nut + '" data-che="nut"><span data-i="nutban" data-s="2" data-l="#4a0e0c"></span>' + t('xuong.nut') + '</button>' +
+          '<button class="bt g-cy cbtn mode nut-cua" data-nut="' + CHE.cua + '" data-che="cua"><span data-i="cua" data-s="2" data-l="#0a3f4a"></span>' + t('xuong.cua') + '</button>' +
           '<button class="bt g-pk cbtn mode nut-mau" data-nut="' + CHE.mau + '" data-che="mau"><span data-i="mau" data-s="2" data-l="#5a1238"></span>' + t('xuong.mau') + '</button>' +
         '</div></div>' +
       '<div class="low">' +
@@ -59,7 +61,7 @@
     var q = function (s) { return host.querySelector(s); };
     E.tenham = q('.tenham'); E.nm = q('.tenham .nm'); E.ffr = q('.ffr'); E.toast = q('.toast');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]'); E.thuHang = q('.thu-hang'); E.dso = q('.dso');
-    E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong'); E.nutMau = q('.nut-mau'); E.nutRao = q('.nut-rao'); E.nutRo = q('.nut-ro');
+    E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong'); E.nutMau = q('.nut-mau'); E.nutRao = q('.nut-rao'); E.nutRo = q('.nut-ro'); E.nutNut = q('.nut-nutban'); E.nutCua = q('.nut-cua');
     S.field = new SanVe.Field(E.canvas, { kich: 210 });
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
     S.kieu = TP.taoKieu(function () { return { man: A.man(), hamCuaMan: A.bai().hamCuaMan, kho: KhoHam.ds() }; });     // kiểu đối số của hàm: số / một chữ / chuỗi ghép
@@ -120,8 +122,9 @@
     S.st = ChamHoc.chuanSanThu(Luu.docSanThu(ten) || ChamHoc.SAN_THU_MAC_DINH);
     E.nutMau.style.display = TP.coMauCua(A.man()) ? '' : 'none';              // nút Màu chỉ có ở màn có cảm biến màu
     E.nutRao.style.display = E.nutRo.style.display = coNem() ? '' : 'none';     // nút Rào và Rổ chỉ có ở màn máy ném
-    E.side.classList.toggle('co-mau', TP.coMauCua(A.man()) || coNem());
-    E.side.classList.toggle('co-nem', coNem());
+    E.nutNut.style.display = E.nutCua.style.display = coSung() ? '' : 'none';   // nút Nút và Cửa chỉ có ở màn súng bóng
+    E.side.classList.toggle('co-mau', TP.coMauCua(A.man()) || coNem() || coSung());
+    E.side.classList.toggle('co-nem', coNem() || coSung());
     datChe(null);
     napSan();
     dungDoiSo();
@@ -248,14 +251,14 @@
   /* -------------------------------------------------------- sân thử */
   function napSan() {
     var st = S.st;
-    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, thung: st.thung, robot: VeRobot.cauHinhCua(A.man()), mau: lopMauSan(st), roBanDau: st.ro === true && coNem() ? true : undefined });
+    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, thung: st.thung, robot: VeRobot.cauHinhCua(A.man()), mau: lopMauSan(st), roBanDau: st.ro === true && coNem() ? true : undefined, danToiDa: coSung() ? A.man().danToiDa : undefined });
     veNutRo();
   }
   /** Nút Rổ sáng khi sân thử cho rổ có sẵn một vật. */
   function veNutRo() { var on = !!(S.st && S.st.ro); E.nutRo.classList.toggle('on', on); E.nutRo.setAttribute('aria-pressed', on ? 'true' : 'false'); }
   /** Bật / tắt "rổ có sẵn vật" của sân thử (lưu cùng sân thử). */
   function datRo() {
-    var st = S.st, moi = { rong: st.rong, cao: st.cao, batDau: Object.assign({}, st.batDau), vat: st.vat.slice(), tuong: st.tuong.slice(), thung: (st.thung || []).slice(), mau: (st.mau || []).slice(), rao: (st.rao || []).slice(), ro: !st.ro };
+    var st = S.st, moi = banSao(st); moi.ro = !st.ro;
     S.st = ChamHoc.chuanSanThu(moi);
     Luu.ghiSanThu(S.ten, S.st);
     napSan(); xoaKetThu(); toast(t(S.st.ro ? 'xuong.roCo' : 'xuong.roTrong'), '', 2200);
@@ -272,24 +275,36 @@
     S.che = k;
     if (k === 'vat' && coNamCham()) toast(t('xuong.vatGoiY'), '', 2600);
     if (k === 'rao') toast(t('xuong.raoGoiY'), '', 2600);
+    if (k === 'nut') toast(t('xuong.nutGoiY'), '', 2600);
+    if (k === 'cua') toast(t('xuong.cuaGoiY'), '', 2600);
     Object.keys(CHE).forEach(function (x) {
       var b = E.host.querySelector('[data-nut="' + CHE[x] + '"]');
       if (b) b.classList.toggle('on', x === k);
     });
     E.ffr.classList.toggle('sua', !!k);
   }
-  /** Gì đang ở ô (x, y) của sân thử: 'xe' | 'tuong' | 'rao' | 'thung' | 'vat' | null. (Luật vật 14/10: vật chiếm ô, không nằm dưới xe được; lõi chuanSanThu cũng bỏ vật đè xe.) */
+  /** Bản sao sâu của cấu hình sân thử để sửa (mọi danh sách ô, kể cả nút và cửa của chương súng bóng). */
+  function banSao(st) {
+    var m = Object.assign({}, st);
+    m.batDau = Object.assign({}, st.batDau);
+    ['vat', 'tuong', 'thung', 'mau', 'rao', 'nut', 'cua', 'sac'].forEach(function (k) { if (st[k]) m[k] = st[k].map(function (o) { return Object.assign({}, o); }); });
+    return m;
+  }
+  /** Gì đang ở ô (x, y) của sân thử: 'xe' | 'tuong' | 'nut' | 'cua' | 'rao' | 'thung' | 'vat' | null. (Luật vật 14/10: vật chiếm ô, không nằm dưới xe được; lõi chuanSanThu cũng bỏ vật đè xe.) */
   function coGi(x, y) {
     var st = S.st;
     if (st.batDau.x === x && st.batDau.y === y) return 'xe';
     function trong(ds) { return ds.some(function (o) { return o.x === x && o.y === y; }); }
     if (trong(st.tuong)) return 'tuong';
+    if (trong(st.nut || [])) return 'nut';
+    if (trong(st.cua || [])) return 'cua';
     if (trong(st.rao || [])) return 'rao';
     if (trong(st.thung || [])) return 'thung';
     if (trong(st.vat)) return 'vat';
     return null;
   }
   function coVat(x, y) { return S.st.vat.some(function (o) { return o.x === x && o.y === y; }); }
+  function coSung() { return VeRobot.cauHinhCua(A.man()).tay === 'bong'; }                    // súng bóng: có nút Nút (nút bắn) và Cửa
   function coNem() { return VeRobot.cauHinhCua(A.man()).tay === 'nem'; }                       // máy ném: có nút Rào / Rổ
   function coNamCham() { return VeRobot.cauHinhCua(A.man()).tay === 'nam-cham'; }      // nam châm: nút Vật đặt vật GỖ, chạm lại thì thành SẮT, chạm nữa thì bỏ
   function coDay() { return VeRobot.cauHinhCua(A.man()).tay === 'day'; }           // tấm đẩy: nút Vật đặt THÙNG NẶNG
@@ -300,9 +315,9 @@
     var r = E.canvas.getBoundingClientRect(), st = S.st;
     var x = Math.floor((ev.clientX - r.left) / r.width * st.rong), y = Math.floor((ev.clientY - r.top) / r.height * st.cao);
     if (x < 0 || y < 0 || x >= st.rong || y >= st.cao) return;
-    var co = coGi(x, y), moi = { rong: st.rong, cao: st.cao, batDau: Object.assign({}, st.batDau), vat: st.vat.slice(), tuong: st.tuong.slice(), thung: (st.thung || []).slice(), mau: (st.mau || []).slice(), rao: (st.rao || []).slice(), ro: st.ro };
+    var co = coGi(x, y), moi = banSao(st);
     if (S.che === 'mau') {                                                             // chế độ Màu: chạm vật thì đổi màu vật, chạm ô khác thì đổi màu sàn
-      if (co === 'tuong' || co === 'thung' || co === 'rao') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
+      if (co === 'tuong' || co === 'thung' || co === 'rao' || co === 'nut' || co === 'cua') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       var vi = -1;
       moi.vat.forEach(function (o, k) { if (o.x === x && o.y === y) vi = k; });
       if (vi >= 0) moi.vat[vi] = { x: x, y: y, mau: mauKeTiep(moi.vat[vi].mau) || undefined, chat: moi.vat[vi].chat };      // đổi màu vật giữ nguyên chất sắt / gỗ
@@ -319,6 +334,16 @@
         else { moi.vat[vj] = { x: x, y: y, mau: cu.mau, chat: 'sat' }; toast(t('xuong.vatSat'), ''); }
       } else if (!co) { moi.vat.push({ x: x, y: y }); toast(t('xuong.vatGo'), ''); }
       else return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
+    } else if (S.che === 'nut') {                                                      // chế độ Nút (súng bóng): ô trống → nút bắn (nằm như tường), chạm nút → bỏ
+      if (co === 'nut') moi.nut = boO(moi.nut || [], x, y);
+      else if (co || coVat(x, y)) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + (co || 'vat')) }), 'bad');
+      else { moi.nut = (moi.nut || []).concat([{ x: x, y: y }]); toast(t('xuong.nutDat'), ''); }
+    } else if (S.che === 'cua') {                                                      // chế độ Cửa: ô trống → cửa đóng → chạm → cửa mở → chạm → bỏ
+      var cj = (moi.cua || []).filter(function (o) { return o.x === x && o.y === y; })[0];
+      if (cj && !cj.mo) { cj.mo = true; toast(t('xuong.cuaMo'), ''); }
+      else if (cj) { moi.cua = boO(moi.cua, x, y); toast(t('xuong.cuaBo'), ''); }
+      else if (co || coVat(x, y)) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + (co || 'vat')) }), 'bad');
+      else { moi.cua = (moi.cua || []).concat([{ x: x, y: y, mo: false }]); toast(t('xuong.cuaDong'), ''); }
     } else if (S.che === 'rao') {                                                      // chế độ Rào: ô trống → hàng rào, chạm hàng rào → bỏ; không đặt lên xe / vật / tường / thùng
       if (co === 'rao') moi.rao = boO(moi.rao, x, y);
       else if (co || coVat(x, y)) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + (co || 'vat')) }), 'bad');
@@ -329,7 +354,7 @@
       else { moi.batDau.x = x; moi.batDau.y = y; }
     } else {
       var khoa = S.che === 'vat' ? (coDay() ? 'thung' : 'vat') : 'tuong';
-      if (co === 'rao') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.rao') }), 'bad');
+      if (co === 'rao' || co === 'nut' || co === 'cua') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       if (co === khoa) moi[khoa] = boO(moi[khoa], x, y);
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else moi[khoa].push({ x: x, y: y });
@@ -360,7 +385,7 @@
   }
   /** Các vị trí mà một chẩn đoán trỏ tới (xem man-choi.js). */
   function chiCho(c) {
-    var ds = [c.cho || TP.choBoSung(c, S.ketThu && S.ketThu.vet), c.choTruoc, c.choTruot, c.choPush];
+    var ds = [c.cho || TP.choBoSung(c, S.ketThu && S.ketThu.vet), c.choTruoc, c.choTruot, c.choPush, c.choNem, c.choBan];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }
