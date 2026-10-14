@@ -81,6 +81,7 @@
       'choi.nhom.chan': 'CHÂN',
       'choi.nhom.truot': 'TRƯỢT',
       'choi.nhom.dk': 'ĐIỀU KIỆN',
+      'choi.nhom.dem': 'ĐẾM',
       'choi.chonChuoi': 'Chọn chữ chỉ đường',
       'choi.chonDieuKien': 'Chọn điều kiện',
       'choi.chonMau': 'Chọn màu',

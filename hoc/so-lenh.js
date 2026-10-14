@@ -66,15 +66,37 @@
     m('drop', 'tay', 'Đặt vật xuống ô trước mặt rồi nâng tay lên', 'tay-gap', 'tay-gap.6'),
     m('carry', 'tay', 'Nhặt vật, đi một ô, rẽ trái, đặt vật xuống rồi quay lại', 'tay-gap', 'tay-gap.10'),
     // chương 5 · Chế lệnh tay (agent che-tay thêm mục ở đây, nhóm 'tay')
+    m('pass_back', 'tay', 'Chuyền vật trước mặt ra ô sau lưng, xe giữ chỗ và hướng', 'che-tay', 'che-tay.1'),
+    m('put_right', 'tay', 'Đặt vật trước mặt sang ô bên phải, xe giữ chỗ và hướng', 'che-tay', 'che-tay.2'),
+    m('grab_back', 'tay', 'Nhặt vật sau lưng rồi quay về, tay vẫn đang cầm vật', 'che-tay', 'che-tay.4'),
+    m('drag', 'tay', 'Nhặt vật, lùi hai ô rồi đặt vật xuống trước mặt', 'che-tay', 'che-tay.5'),
+    m('swap', 'tay', 'Đổi chỗ vật ở trước mặt với vật ở bên phải', 'che-tay', 'che-tay.6'),
+    m('put_back', 'tay', 'Đi ngược lại go_get(): đặt vật về chỗ cũ rồi về chỗ xuất phát', 'che-tay', 'che-tay.7'),
+    m('fixed_pick', 'tay', 'Nhặt vật khi dây tay bị đấu ngược', 'che-tay', 'che-tay.8'),
+    m('fixed_drop', 'tay', 'Đặt vật xuống khi dây tay bị đấu ngược', 'che-tay', 'che-tay.8'),
     // chương 6 · Vòng lặp
     m('side', 'lap', 'Đi thẳng ba ô', 'vong-lap', 'vong-lap.6'),
     m('row', 'lap', 'Đi thẳng sáu ô', 'vong-lap', 'vong-lap.10'),
     m('bend_left', 'lap', 'Rẽ trái, đi hai ô rồi rẽ trái nữa', 'vong-lap', 'vong-lap.10'),
     m('bend_right', 'lap', 'Rẽ phải, đi hai ô rồi rẽ phải nữa', 'vong-lap', 'vong-lap.10'),
-    // chương 7 · Chế lệnh có for (agent che-lap thêm mục ở đây, nhóm 'lap')
+    // chương 7 · Chế lệnh có for
+    m('dash', 'lap', 'Chạy thẳng bốn ô', 'che-lap', 'che-lap.1'),
+    m('square', 'lap', 'Đi một vòng vuông cạnh hai ô, về đúng chỗ cũ', 'che-lap', 'che-lap.2'),
+    m('zigzag', 'lap', 'Lên ba bậc chéo sang phải, giữ nguyên hướng', 'che-lap', 'che-lap.4'),
+    m('sweep', 'lap', 'Dời ba vật thẳng hàng sang ô bên phải mỗi vật', 'che-lap', 'che-lap.5'),
+    m('ring', 'lap', 'Đi một vòng vuông cạnh ba ô, về đúng chỗ cũ', 'che-lap', 'che-lap.6'),
+    m('come_home', 'lap', 'Đi ngược lại go_round(): cùng số lần, lệnh ngược, thứ tự ngược', 'che-lap', 'che-lap.7'),
+    m('reverse_run', 'lap', 'Lùi một mạch sáu ô khi chỉ còn số lùi', 'che-lap', 'che-lap.9'),
     // chương 8 · Cảm biến khoảng cách
     m('go_wall', 'cam-bien', 'Đi thẳng cho tới khi trước mặt là tường', 'khoang-cach', 'khoang-cach.5'),
-    // chương 9 · Chế lệnh có if, while (agent che-cam-bien thêm mục ở đây, nhóm 'cam-bien')
+    // chương 9 · Chế lệnh có if, while
+    m('safe_move', 'cam-bien', 'Tiến một ô nếu trước mặt trống, không thì đứng yên', 'che-cam-bien', 'che-cam-bien.1'),
+    m('face_open', 'cam-bien', 'Quay phải cho tới khi trước mặt trống', 'che-cam-bien', 'che-cam-bien.2'),
+    m('to_gap', 'cam-bien', 'Đi thẳng cho tới khi bên phải xe có cửa mở', 'che-cam-bien', 'che-cam-bien.4'),
+    m('bounce', 'cam-bien', 'Đi tới tường rồi lùi về đúng chỗ cũ, đếm số ô bằng biến n', 'che-cam-bien', 'che-cam-bien.5'),
+    m('follow_right', 'cam-bien', 'Một bước bám tường bên tay phải', 'che-cam-bien', 'che-cam-bien.6'),
+    m('safe_move2', 'cam-bien', 'Tiến một ô nếu trống, khi cảm biến bị lắp ngược', 'che-cam-bien', 'che-cam-bien.7'),
+    m('fetch_back', 'cam-bien', 'Đi tới vật, nhặt, lùi về chỗ cũ rồi đặt vật xuống', 'che-cam-bien', 'che-cam-bien.9'),
     // chương 10 · Robot hoàn thiện (agent robot-hoan-thien thêm mục ở đây nếu chương có hàm cốt truyện)
     // đợt 2: hàm có tham số
     m('forward', 'tham-so', 'Tiến n ô liền nhau', 'tham-so', 'tham-so.3'),

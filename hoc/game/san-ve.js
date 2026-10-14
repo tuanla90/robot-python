@@ -33,6 +33,7 @@
   var FIELDS = [];
   var MAU_KY = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
   var MAU_RA = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
+  var MAU_VIEN = { red: '#ff5a4a', green: '#5fe06a', blue: '#4aa8ff', yellow: '#ffd23f' };         // màu khung của vật mờ có màu (bóng mờ che-tay)
   function chuanMau(m) { return typeof m === 'string' ? (MAU_KY[m] || (MAU_RA[m] ? m : null)) : null; }
   /** Lớp màu (mảng chuỗi r g b y '.') + ký hiệu r g b y trong hàng sân → mảng hàng tên màu / null; null nếu sân không có ô màu. */
   function dungLopMau(rows, lop) {
@@ -57,8 +58,9 @@
   /** Bóng mờ của lõi (man.bongMo, một sân) → { x, y, d, diQua: [{x,y}], vat: [{x,y}] } hoặc null. Ô sai dạng bị bỏ; huong theo quy ước của lõi (0 lên, 1 phải, 2 xuống, 3 trái). */
   function chuanBongMo(b) {
     if (!b || typeof b !== 'object' || Array.isArray(b) || !isFinite(b.x) || !isFinite(b.y)) return null;
-    function dsO(a) { return (Array.isArray(a) ? a : []).filter(function (o) { return o && isFinite(o.x) && isFinite(o.y); }).map(function (o) { return { x: Math.floor(o.x), y: Math.floor(o.y) }; }); }
-    return { x: Math.floor(b.x), y: Math.floor(b.y), d: (((b.huong || 0) % 4) + 4) % 4, diQua: dsO(b.diQua), vat: dsO(b.vat) };
+    function dsO(a) { return (Array.isArray(a) ? a : []).filter(function (o) { return o && isFinite(o.x) && isFinite(o.y); }).map(function (o) { var r = { x: Math.floor(o.x), y: Math.floor(o.y) }, m = chuanMau(o.mau); if (m) r.mau = m; return r; }); }   // vật mờ có thể mang màu (chấm theo màu)
+    return { x: Math.floor(b.x), y: Math.floor(b.y), d: (((b.huong || 0) % 4) + 4) % 4, diQua: dsO(b.diQua), vat: dsO(b.vat),
+      cam: !!b.cam, camMau: chuanMau(b.cam && typeof b.cam === 'object' ? b.cam.mau : b.camMau) };            // cam: xe mờ đang cầm một vật (tay kẹp khép, vật mờ trong kẹp)
   }
   var bienCache = typeof WeakMap === 'function' ? new WeakMap() : null;
   /** Viền nét đứt quanh hình bóng của sprite (canvas cùng cỡ): những pixel TRONG suốt sát hình, cắt thành các đoạn theo đường chéo, độ dày ~ nửa pixel part. */
@@ -411,10 +413,11 @@
       var nhay = this.bmNhay > now && ((now / 150 | 0) & 1) === 0, i, o;
       for (i = 0; i < b.vat.length; i++) {
         o = b.vat[i];
-        g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = '#ffd23f';
+        g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = o.mau ? MAU_VIEN[o.mau] : '#ffd23f';       // vật mờ có màu: khung nét đứt tô màu đó (đổi chỗ hai vật khác màu vẫn đọc được)
         g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore();
+        if (this.vatTaiO(o.x, o.y)) continue;                                                              // ô đã có vật thật nằm đó: chỉ giữ khung, khỏi vẽ vật mờ chồng lên (màu trộn lẫn)
         g.globalAlpha = nhay ? 0.85 : 0.45;
-        this.veMotVat(g, { chat: 'go', mau: null }, 8, o.x * T + 7, o.y * T + 6, 8, 2);
+        this.veMotVat(g, { chat: 'go', mau: o.mau || null }, 8, o.x * T + 7, o.y * T + 6, 8, 2);        // vật mờ có màu thì vẽ dải màu như vật thật
         g.globalAlpha = 1;
       }
       for (i = 0; i < b.diQua.length; i++) this.veDiQua(g, b.diQua[i], now, nhay);
@@ -446,10 +449,15 @@
       var b = this.cfg.bm, c = this.cfg, p = this.p; if (!b || !p) return;
       var nhay = this.bmNhay > now && ((now / 150 | 0) & 1) === 0;
       var X = Math.round(mcu + (b.x * T + 7) * ku), Y = Math.round(mcu + (b.y * T + 7) * ku);
-      var spr = VeRobot.ve(c.robot, { wl: 0, wr: 0, ph: 0, tay: c.robot.tay ? { tuThe: 'tren', kep: false, cam: null } : null, camBien: null }, b.d, p);
+      var camVat = !!b.cam && c.robot.tay === 'kep';                              // xe mờ đang CẦM vật: kẹp khép, vật mờ nằm giữa hai càng
+      var spr = VeRobot.ve(c.robot, { wl: 0, wr: 0, ph: 0, tay: c.robot.tay ? { tuThe: 'tren', kep: camVat, cam: camVat ? 1 : null } : null, camBien: null }, b.d, p);
       var w = spr.width, h = spr.height, sc = spr.laPart ? 1 : ku, dw = Math.round(w * sc), dh = Math.round(h * sc), x0 = Math.round(X - dw / 2), y0 = Math.round(Y - dh / 2);
       g.imageSmoothingEnabled = false;
       g.globalAlpha = nhay ? 0.7 : 0.35;
+      if (camVat) {                                                                  // vật mờ trong kẹp: vẽ TRƯỚC hình xe để hai càng đè lên mép vật như xe thật (tamVatKep, tay nâng)
+        var vk = VeRobot.vatKep(c.robot, 'tren'), ang = b.d * Math.PI / 2, A = vk.ahead * p, nv = 10;
+        this.veMotVat(g, { chat: 'go', mau: b.camMau || null }, nv, X + Math.sin(ang) * A, Y - Math.cos(ang) * A, nv * p, 4.5 * p);
+      }
       g.drawImage(spr, 0, 0, w, h, x0, y0, dw, dh);
       g.globalAlpha = nhay ? 1 : 0.9;
       if (spr.laPart) g.drawImage(vienDut(spr, p), x0, y0);

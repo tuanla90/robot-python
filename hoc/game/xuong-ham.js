@@ -200,6 +200,7 @@
       lamMoi: !!lamMoi,
       the: lamMoi ? (S.theMo || TP.theMacDinh({ man: man, kho: KhoHam.ds(), hamMan: A.bai().hamCuaMan, dangSua: hamHienTai() })) : undefined,
       vong: TP.coCauTruc(man, 'for'),
+      bienDem: !!man.bienDem,
       vongWhile: TP.coCauTruc(man, 'while') && TP.coDieuKienCua(man),
       cam: TP.camBienCua(man),
       mau: TP.coMauCua(man),

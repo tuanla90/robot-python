@@ -93,6 +93,9 @@
   var RE_CL_SS = /^(color\(\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;
   var RE_CL_CAM = /^(?:not\s+)?[A-Za-z_]\w*\(\)$|^(?:True|False)$/;
   var RE_GAN_MAU = /^\s*([A-Za-z_]\w*)\s*=\s*color\(\)\s*(#.*)?$/;                           // c = color()
+  /* ---- BIẾN ĐẾM (chương che-cam-bien, man.bienDem): `n = 0` đặt biến về một số, `n = n + 1` tăng biến; `for i in range(n):` lấy n làm số lần lặp (ô biến chạm đổi được) */
+  var RE_GAN_DEM = /^\s*([A-Za-z_]\w*)\s*=\s*(\d+)\s*$/;
+  var RE_TANG_DEM = /^\s*([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*\+\s*(\d+)\s*$/;
   var RE_CL_PIN = /^battery\(\)\s*(<=|>=|<|>|==|!=)\s*(\d+)$/;                                  // battery() < 3: đo pin so với một số
   var PIN_SS = ['<', '<=', '>', '>='];                                                          // vòng đổi phép so sánh khi chạm
   function datCheMau(b, pin) { CHE_MAU = !!b; CHE_PIN = !!pin; }
@@ -229,6 +232,10 @@
     var dk = /^(while|if|elif)\s+((?:not\s+)?[A-Za-z_]\w*\(\)|True|False)\s*:\s*$/.exec(text);
     if (dk) return '<span class="kw ' + (dk[1] === 'while' ? 'wh' : 'if') + '">' + dk[1] + ' </span>' + oDieuKien(dk[2]) + '<span class="pu">:</span>';
     if (/^else\s*:\s*$/.test(text)) return '<span class="kw if">else</span><span class="pu">:</span>';
+    var gd = RE_GAN_DEM.exec(text);                                                  // n = 0
+    if (gd) return '<span class="vr dem">' + esc(gd[1]) + '</span><span class="pu"> = </span><span class="lit">' + gd[2] + '</span>';
+    var td = RE_TANG_DEM.exec(text);                                                 // n = n + 1
+    if (td && td[1] === td[2]) return '<span class="vr dem">' + esc(td[1]) + '</span><span class="pu"> = </span><span class="vr dem">' + esc(td[2]) + '</span><span class="pu"> + </span><span class="lit">' + td[3] + '</span>';
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = m[1] === 'left_move' || m[1] === 'right_move' || m[1] === 'left_back' || m[1] === 'right_back' ? 'mv'
@@ -311,6 +318,7 @@
         if (fr) [fr[1], fr[1] + ' + 1', '3 - ' + fr[1]].forEach(function (b) { if (kq.indexOf(b) < 0) kq.push(b); });
       }
       bienDuoc().forEach(function (ten) { if (hopKieu(slot, kieuBienCua(ten)) && kq.indexOf(ten) < 0) kq.push(ten); });
+      if (slot === 'so') for (j = 0; j < i && j < arr.length; j++) { var gd = RE_GAN_DEM.exec(chuoi(arr[j])); if (gd && kq.indexOf(gd[1]) < 0) kq.push(gd[1]); }       // biến đếm đã gán (n = 0) ở các dòng phía trên
       return kq;
     }
     /** Khối `if d == "U":` mặc định của kho: đổi `d` thành biến có thật ở chỗ chèn (biến vòng for, rồi đối số của hàm đang sửa). */
@@ -1179,7 +1187,7 @@
    * Cấu trúc Python không có thẻ riêng: khối `for` nằm cuối phần lệnh gốc của MỌI thẻ lệnh (Thân, Tay, Cảm biến); `while` / `if` đọc cảm biến ở thẻ CẢM BIẾN; `if d == …` (chuỗi chỉ đường)
    * và `while` mẫu (khay không có cảm biến) ở thẻ THÂN. Khối BIẾN (đối số của hàm đang sửa) hiện ở đầu MỌI thẻ. Hàm của em có lệnh tay / cảm biến mà khay không có thẻ đó thì rơi về THÂN.
    * cb: { khiChen(text), khiSua(loai, ten), khiMoi(khoaThe) }.
-   * dung({ goc: [tên], loai: loại robot, vong: bool (có khối `for`), bien: [tên đối số] (khi sửa hàm có tham số), em: [{ten,thamSo,than}] | null, man: [{ten,thamSo,than}], coNutMoi, boQua,
+   * dung({ goc: [tên], loai: loại robot, vong: bool (có khối `for`), bienDem: bool (man.bienDem: nhóm ĐẾM `n = 0`, `n = n + 1`, `for i in range(n):`, ở thẻ CẢM BIẾN), bien: [tên đối số] (khi sửa hàm có tham số), em: [{ten,thamSo,than}] | null, man: [{ten,thamSo,than}], coNutMoi, boQua,
    *         the: khóa thẻ mặc định ('than' | 'tay' | 'cam'), lamMoi: bool (true = bỏ thẻ đang chọn, dùng `the`; false / không có = giữ thẻ đang chọn) }).
    * cb.khiBien(ten): chạm thẻ biến. em === null → ẩn cả nhóm "hàm của em".
    * Khay dài quá cỡ thì khối co một mức (.d1) rồi cuộn bằng ▲ ▼ (và lăn chuột), không co thêm.
@@ -1318,6 +1326,14 @@
       d.addEventListener('click', function () { cb.khiChen(goi); });
       host.appendChild(d); bricks['vong:' + (khoa || 'for')] = d;
     }
+    /** Khối biến đếm (nhóm ĐẾM, hồng như thẻ biến): chạm hay kéo vào khung là chèn một dòng. khoa: gan (n = 0) | tang (n = n + 1) | lap (for i in range(n):). */
+    function gachDem(goi, khoa) {
+      var d = h('div', 'brick dem'); d.setAttribute('role', 'button');
+      d.setAttribute('data-ten', 'dem-' + khoa); d.setAttribute('data-loai', 'dem'); d.setAttribute('data-goi', goi);
+      d.appendChild(h('span', 'tx', goi));
+      d.addEventListener('click', function () { cb.khiChen(goi); });
+      host.appendChild(d); bricks['dem:' + khoa] = d;
+    }
     this.dung = function (spec) {
       var cuonCu = host.scrollTop, khoaCu = spec.lamMoi ? null : theChon;           // dựng lại (sau mỗi lần sửa) thì giữ thẻ đang chọn và chỗ đang xem
       lastSpec = Object.assign({}, spec, { lamMoi: false });
@@ -1421,6 +1437,12 @@
         gachVong();
         if (spec.chuoi) gachVong('for c in "R":', 'forc');
       }
+      /** Nhóm ĐẾM (man.bienDem, chương che-cam-bien): ba khối hồng `n = 0`, `n = n + 1`, `for i in range(n):`. Ở thẻ CẢM BIẾN (không có cảm biến thì ở THÂN), ngay dưới khối `for`. */
+      function nhomDem() {
+        if (!spec.bienDem) return;
+        nhan(t('choi.nhom.dem'), lop('g-dem'));
+        gachDem('n = 0', 'gan'); gachDem('n = n + 1', 'tang'); gachDem('for i in range(n):', 'lap');
+      }
 
       /* ---- các thẻ, theo thứ tự: Thân · Tay · Cảm biến · Của màn */
       var loaiTay = [];                                                                       // tên thẻ TAY theo bộ phận thật; nhiều loại dụng cụ cùng lúc thì tên chung "Tay"
@@ -1435,6 +1457,7 @@
       the.push({ khoa: 'than', ten: tenThe.than, ve: function () {
         nhomBien(); nhomChan(nThan > 1); nhomGoc(nThan > 1); nhomTruot(nThan > 1);
         khoiFor();
+        if (!coCam) nhomDem();
         if (whileTrongThan) gachVong(chuWhile, 'while', 'wh');
         if (dkTrongThan) dsDk.forEach(gachDk);
         nhomEm(emThe.than);
@@ -1459,6 +1482,7 @@
           if (whileTrongCam) gachVong(chuWhile, 'while', 'wh');
           if (dkTrongCam) dsDk.forEach(gachDk);
           khoiFor();
+          nhomDem();
           nhomEm(emThe.cam);
         } });
       }

@@ -243,9 +243,17 @@
         - Kết quả chạy có `bongMo` { x, y, huong, diQua, vat } (null nếu không phải mục tiêu bong-mo) và `diQua` [{x,y,da}] (trạng thái CUỐI; mảng rỗng nếu không có ô diQua).
           cham.js nói bằng lời chỗ lệch (lech-bong-mo, chua-qua-diem).
         - Màn nhiều sân: bongMo là mảng song song với san (SanHoc.lopMauCuaSan(m, i).bongMo).
+        - VẬT MỜ CÓ MÀU và XE MỜ CẦM VẬT (chương che-tay, cần robot có tay kẹp): bongMo.vat = [{ x, y, mau? }]: mau (red, green, blue, yellow) khai thì vật nằm ô đó phải CÙNG MÀU (chấm theo màu,
+          nên hai vật khác màu đổi chỗ mới thắng; màu vật khai bằng lớp vatMau như mọi vật). bongMo.cam = true (hay { mau }): lúc xong tay phải ĐANG CẦM một vật (đúng màu nếu khai); vật đang cầm
+          không tính vào bongMo.vat, còn mọi vật khác phải nằm đất đúng các ô trong bongMo.vat (vật vỡ thì không thắng). Kết quả `bongMo` có thêm `cam` (true/false) và `camMau` (màu hay null).
 
    ĐẤU DÂY NGƯỢC (cfg.daoChieu = ['trai'] hay ['phai'], chỉ xe bánh / xích / omni): lệnh gốc của bánh bị đảo chạy thành LỆNH NGƯỢC của nó (left_move() làm bánh trái quay lùi,
         left_back() làm bánh trái quay tới). Vết lệnh vẫn ghi tên lệnh người chơi gọi; tổ hợp bánh thật nằm ở vết nhịp (robot.banh). Bảng LENH_NGUOC liệt kê các cặp lệnh ngược.
+        - 'cam' (chương che-cam-bien, cần hamGoc có front_clear / left_clear / right_clear): CẢM BIẾN KHOẢNG CÁCH LẮP NGƯỢC. Cả ba hàm cảm biến trả NGƯỢC: front_clear() là False
+          khi ô trước mặt trống và True khi là tường / vật / mép sân (tương tự left_clear / right_clear). Đọc vẫn không tốn nhịp. Mục lệnh `docCamBien` của lần đọc có `trong` = giá trị
+          TRẢ VỀ cho chương trình (đã đảo), `thuc` = ô đó thật sự trống hay không, `daoNguoc: true`. Ghép được với ['trai'] / ['phai'] (['cam', 'trai']).
+        - 'tay' / 'kep' (chương che-tay, cần robot có tay kẹp): TAY LẮP NGƯỢC. 'tay': arm_up() làm tay HẠ và arm_down() làm tay NÂNG. 'kep': grab() làm kẹp MỞ / thả và release() làm kẹp ĐÓNG / kẹp.
+          Vết lệnh vẫn ghi tên lệnh người chơi gọi. Mọi luật tay khác (một nhịp một lệnh mỗi nhóm, tay hạ thì xe không đi, thả khi tay nâng thì vật vỡ…) áp dụng cho tư thế THẬT. Ghép được với bánh (['tay', 'trai']).
 
    KHAY VÀ PHẦN CỨNG (luật chế lệnh, 14/10): hai tập lệnh gốc khác nhau.
         - cfg.hamGoc = KHAY: lệnh hiện trên khay, dùng được trong CHƯƠNG TRÌNH CHÍNH và HÀM CỦA MÀN.
@@ -330,7 +338,9 @@
   };
   // đấu dây ngược / hỏng (cfg.daoChieu): bánh nào bị đảo thì lệnh của bánh đó chạy thành lệnh ngược
   var DAO_CHIEU_BANH = ['trai', 'phai'];
+  var DAO_CHIEU_CAM = 'cam';                    // cảm biến khoảng cách lắp ngược: front_clear() / left_clear() / right_clear() trả NGƯỢC (xem phần ĐẤU DÂY NGƯỢC)
   // mục tiêu: 'toi-co' | 'dua-vat' | 'day-thung' | 'bong-mo' (đến đúng tư thế của "xe mờ" khi chạy xong, xem phần BÓNG MỜ)
+  var DAO_CHIEU_TAY = ['tay', 'kep'];           // tay kẹp lắp ngược (chương che-tay): 'tay' đổi chỗ arm_up ↔ arm_down, 'kep' đổi chỗ grab ↔ release (xem phần ĐẤU DÂY NGƯỢC)
   var MUC_TIEU = ['toi-co', 'dua-vat', 'day-thung', 'bong-mo'];
 
   /** Phần cứng mặc định của loại robot: trọn bộ lệnh của loại đó (xe bánh có cả bánh lùi) cộng các lệnh khay đã gắn thêm (tay, cảm biến…). */
@@ -580,12 +590,14 @@
     san.sac.forEach(function (q) { sacSet[q.x + ',' + q.y] = true; });
 
     // đấu dây ngược (xem phần ĐẤU DÂY NGƯỢC): cfg.daoChieu = ['trai'] | ['phai'] | cả hai
-    var dao = { trai: false, phai: false };
+    var dao = { trai: false, phai: false, cam: false, tay: false, kep: false };
     if (cfg.daoChieu !== undefined && cfg.daoChieu !== null) {
       if (!Array.isArray(cfg.daoChieu)) throw new Error('daoChieu phải là mảng, vd ["trai"].');
       if (cfg.daoChieu.length && !laBanh) throw new Error('daoChieu chỉ dùng cho robot có hai bánh (xe bánh, xích, omni).');
       cfg.daoChieu.forEach(function (b) {
-        if (DAO_CHIEU_BANH.indexOf(b) < 0) throw new Error('daoChieu lạ: "' + b + '" (chỉ có "trai" hoặc "phai").');
+        if (DAO_CHIEU_BANH.indexOf(b) < 0 && b !== DAO_CHIEU_CAM && DAO_CHIEU_TAY.indexOf(b) < 0) throw new Error('daoChieu lạ: "' + b + '" (chỉ có "trai", "phai", "cam", "tay" hoặc "kep").');
+        if (DAO_CHIEU_TAY.indexOf(b) >= 0 && !coTay) throw new Error('daoChieu "' + b + '" cần robot có tay kẹp (hamGoc có arm_down, arm_up, grab, release).');
+        if (b === DAO_CHIEU_CAM && !coCamBien) throw new Error('daoChieu "cam" cần robot có cảm biến khoảng cách (hamGoc có front_clear / left_clear / right_clear).');
         dao[b] = true;
       });
     }
@@ -607,9 +619,18 @@
         diQuaTai[q.x + ',' + q.y] = diQua[diQua.length - 1];
       });
       (bm.vat || []).forEach(function (q) {
-        if (!q || !laSoNguyen(q.x) || !laSoNguyen(q.y)) throw new Error('bongMo.vat phải là mảng ô { x, y }.');
-        bongMo.vat.push({ x: q.x, y: q.y });
+        if (!q || !laSoNguyen(q.x) || !laSoNguyen(q.y)) throw new Error('bongMo.vat phải là mảng ô { x, y, mau? }.');
+        if (q.mau !== undefined && q.mau !== null && MAU_TEN.indexOf(q.mau) < 0) throw new Error('bongMo.vat: màu lạ "' + q.mau + '" (chỉ có red, green, blue, yellow).');
+        var qv = { x: q.x, y: q.y }; if (q.mau) qv.mau = q.mau;                                // vật mờ có màu: chấm cả màu, không chỉ ô
+        bongMo.vat.push(qv);
       });
+      bongMo.cam = false; bongMo.camMau = null;                                              // cam: lúc xong xe phải ĐANG CẦM một vật (không tính vào bongMo.vat); camMau: màu vật phải cầm (tuỳ chọn)
+      if (bm.cam) {
+        if (!coTay) throw new Error('bongMo.cam cần robot có tay kẹp (hamGoc có arm_down, arm_up, grab, release).');
+        var camMau = typeof bm.cam === 'object' ? bm.cam.mau : null;
+        if (camMau && MAU_TEN.indexOf(camMau) < 0) throw new Error('bongMo.cam: màu lạ "' + camMau + '" (chỉ có red, green, blue, yellow).');
+        bongMo.cam = true; bongMo.camMau = camMau || null;
+      }
     } else if (cfg.bongMo) throw new Error('bongMo chỉ dùng với mục tiêu "bong-mo".');
 
     var rb = { x: bd.x, y: bd.y, huong: bd.huong || 0 };
@@ -773,10 +794,14 @@
       if (!bongMo || rb.x !== bongMo.x || rb.y !== bongMo.y) return false;
       if (bongMo.huong !== null && rb.huong !== bongMo.huong) return false;
       if (!diQua.every(function (q) { return q.da; })) return false;
-      if (bongMo.vat.length) {
+      if (bongMo.cam) {                                                    // xe mờ đang cầm vật: lúc xong tay phải đang giữ một vật (đúng màu nếu khai)
+        if (tay.cam === null) return false;
+        if (bongMo.camMau && vatTheoId(tay.cam).mau !== bongMo.camMau) return false;
+      }
+      if (bongMo.vat.length || bongMo.cam) {                               // vật mờ: mọi vật còn lại nằm đất đúng ô (và đúng màu nếu khai), không thừa không thiếu, không vỡ
         var dat = vats.filter(function (v) { return v.trangThai === 'dat'; });
-        if (dat.length !== vats.length || dat.length !== bongMo.vat.length) return false;
-        if (!bongMo.vat.every(function (q) { return dat.some(function (v) { return v.x === q.x && v.y === q.y; }); })) return false;
+        if (dat.length + (bongMo.cam ? 1 : 0) !== vats.length || dat.length !== bongMo.vat.length) return false;
+        if (!bongMo.vat.every(function (q) { return dat.some(function (v) { return v.x === q.x && v.y === q.y && (!q.mau || v.mau === q.mau); }); })) return false;
       }
       return true;
     }
@@ -1315,7 +1340,7 @@
     function rutTay() {
       var tt = tayCho['tu-the'], kk = tayCho['kep'];
       tayCho = { 'tu-the': null, 'kep': null };
-      return { tuThe: tt ? (tt.ten === 'arm_down' ? 'duoi' : 'tren') : null, kep: kk ? (kk.ten === 'grab' ? 'kep' : 'tha') : null,
+      return { tuThe: tt ? ((tt.ten === 'arm_down') !== dao.tay ? 'duoi' : 'tren') : null, kep: kk ? ((kk.ten === 'grab') !== dao.kep ? 'kep' : 'tha') : null,       // daoChieu 'tay' / 'kep': arm_up ↔ arm_down, grab ↔ release đổi chỗ
         lenhTuThe: tt ? { ten: tt.ten, dongPy: tt.dongPy } : null, lenhKep: kk ? { ten: kk.ten, dongPy: kk.dongPy } : null };
     }
 
@@ -1326,7 +1351,9 @@
       if (!ly && cuaDong(x, y)) ly = 'cua';
       if (!ly && thungTai(x, y)) ly = 'thung-nang';
       if (!ly && vatNamTai(x, y)) ly = 'vat';
-      return { ma: 'doc-cam-bien', cam: 'khoang-cach', ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: h, o: { x: x, y: y }, trong: !ly, vat: ly || null, nhip: nhip };
+      var kq = { ma: 'doc-cam-bien', cam: 'khoang-cach', ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: h, o: { x: x, y: y }, trong: !ly, vat: ly || null, nhip: nhip };
+      if (dao.cam) { kq.thuc = kq.trong; kq.trong = !kq.trong; kq.daoNguoc = true; }          // cảm biến lắp ngược (daoChieu 'cam'): `trong` là giá trị TRẢ VỀ cho chương trình (ngược); `thuc` là ô thật sự trống hay không
+      return kq;
     }
 
     /** Đọc cảm biến màu ở bụng: màu SÀN ô ngay dưới xe ("none" nếu sàn không màu). Vật đang mang không tính. Không tốn nhịp, không đổi sân. */

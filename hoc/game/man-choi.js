@@ -185,6 +185,7 @@
       lamMoi: !!lamMoi,
       the: lamMoi ? TP.theMacDinh({ man: m, kho: KhoHam.ds(), hamMan: S.bai.hamCuaMan, dangSua: null }) : undefined,
       vong: TP.coCauTruc(m, 'for'),
+      bienDem: !!m.bienDem,                                                                     // chương che-cam-bien từ màn dạy biến đếm: nhóm ĐẾM (n = 0, n = n + 1, for i in range(n):)
       vongWhile: TP.coCauTruc(m, 'while') && TP.coDieuKienCua(m),
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC
       mau: TP.coMauCua(m),                                                                      // cảm biến màu: khối so màu + gán c = color()

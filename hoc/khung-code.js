@@ -19,6 +19,8 @@
        bài làm dùng `for` (hoặc `if`) mà 'for' (hoặc 'if') vắng ở đây bị báo 'cau-truc-chua-hoc'.
        Không khai thì không kiểm. `while` chỉ bị kiểm khi khung có `chanWhile: true` (chương khoang-cach, màn chưa dạy while);
        các chương cũ không đặt cờ này nên vẫn dùng được `while` (vd 6.2 viết lại forward bằng while).
+       BIẾN ĐẾM (chương che-cam-bien): `chanBien: true` thì dòng gán biến (`n = 0`, `n = n + 1`, `n += 1`) và `for i in range(n)` với n là biến bị báo 'cau-truc-chua-hoc'
+       (cauTruc 'bien') trong chương trình / hàm của màn — dùng cho các màn chưa dạy biến đếm; các chương khác không đặt cờ này nên vẫn gán biến tự do (vd khoang-cach 6: `co_duong = front_clear()`).
        Chỉ kiểm CHƯƠNG TRÌNH và HÀM CỦA MÀN (bài làm của màn); hàm của em không bị kiểm.
      - gioiHanHam: n (cham.js đưa man.gioiHanHam vào đây; không khai thì không kiểm) = chương trình CHÍNH được gọi trực tiếp tối đa n hàm của em KHÁC NHAU
        (hàm gọi bên trong hàm khác và hàm của màn không tính). Vượt thì lỗi khung `qua-gioi-han-ham`. Không có giới hạn chung số hàm mang vào màn.
@@ -58,6 +60,8 @@
   function laFor(s) { return /^\s*for\b/.test(boChuThich(s)); }
   function laIf(s) { return /^\s*if\b/.test(boChuThich(s)); }
   function laWhile(s) { return /^\s*while\b/.test(boChuThich(s)); }
+  /** Dòng dùng BIẾN ĐẾM: phép gán (`n = 0`, `n = n + 1`, `n += 1`; không tính `==`) hay `for i in range(n)` với n là biến. */
+  function laBienDem(s) { var t = boChuThich(s); return /^\s*[A-Za-z_]\w*\s*(\+=|-=|=(?!=))/.test(t) || /^\s*for\b.*\brange\(\s*[A-Za-z_]\w*\s*\)/.test(t); }
 
   /** Khung đầy đủ (điền mặc định). */
   function khungDayDu(khung) {
@@ -229,6 +233,7 @@
     if (k.cauTruc) {
       var dsCau = [['for', laFor, 'vòng lặp for'], ['if', laIf, 'lệnh rẽ nhánh if']];
       if (khung && khung.chanWhile) dsCau.push(['while', laWhile, 'vòng lặp while']);
+      if (khung && khung.chanBien) dsCau.push(['bien', laBienDem, 'biến đếm (gán biến, range(n))']);
       dsCau.forEach(function (cau) {
         if (k.cauTruc.indexOf(cau[0]) >= 0) return;
         var vi = null, dCau = dongDau(chinh, cau[1]);

@@ -94,10 +94,16 @@
    BÓNG MỜ / CHẾ LỆNH (chương che-xe, kế hoạch "Chế lệnh" 14/10; luật đầy đủ ở san-hoc.js, phần BÓNG MỜ, ĐẤU DÂY NGƯỢC, KHAY VÀ PHẦN CỨNG):
    - man.mucTieu = 'bong-mo' + man.bongMo = { x, y, huong, diQua?: [{x,y}], vat?: [{x,y}] } (màn nhiều sân: mảng song song với man.san): thắng khi chương trình chạy XONG mà xe đúng tư thế
      của "xe mờ", đã đi qua mọi ô diQua (◆) và vật đúng ô. Kết quả có thêm `bongMo` và `diQua` [{x,y,da}] (của sân đang xem; mỗi mục theoSan cũng vậy); sự kiện vết 'qua-diem' { nhip, o }.
-     Mã chẩn đoán: lech-bong-mo (lỗi; nói bằng lời xe lệch bóng mờ ở đâu, hay đúng ô mà sai hướng), chua-qua-diem (lỗi; chưa ghé hết các điểm ◆).
+     Mã chẩn đoán: lech-bong-mo (lỗi; nói bằng lời xe lệch bóng mờ ở đâu, hay đúng ô mà sai hướng; chương che-tay còn nói vật nào chưa nằm đúng ô / đúng màu và xe cầm thiếu hay thừa vật:
+     kèm soVatLech, camLech), chua-qua-diem (lỗi; chưa ghé hết các điểm ◆).
+   - bongMo.vat = [{ x, y, mau? }] (mau: vật nằm ô đó phải cùng màu) và bongMo.cam = true | { mau } (xong chương trình tay phải đang cầm vật): xem san-hoc.js, phần BÓNG MỜ.
    - man.chinhCoDinh === true: máy chấm LUÔN dùng man.maMau.chinh làm chương trình chính (bỏ qua chương trình chính gửi lên); người chơi chỉ sửa hàm.
      man.khoaHamMan = [tên hàm của màn]: các hàm của màn này cũng khóa (máy chấm lấy bản trong man.maMau.hamCuaMan, giao diện chỉ cho xem).
-   - man.daoChieu = ['trai'] | ['phai'] (đấu dây ngược) đưa xuống lõi; man.canhBao (chuỗi ngắn) là nhãn ⚠ của giao diện, cũng được trích vào lời lenh-goc-hong.
+   - man.daoChieu = ['trai'] | ['phai'] (đấu dây ngược; chương che-tay thêm 'tay' = arm_up ↔ arm_down đổi chỗ, 'kep' = grab ↔ release đổi chỗ) đưa xuống lõi; man.canhBao (chuỗi ngắn) là nhãn ⚠ của giao diện, cũng được trích vào lời lenh-goc-hong.
+     man.daoChieu có 'cam' (chương che-cam-bien): cảm biến khoảng cách lắp ngược, front_clear() / left_clear() / right_clear() trả NGƯỢC. Mã chẩn đoán cam-bien-nguoc (mức thông tin, một lần):
+     kể lại lần hỏi cảm biến đầu tiên ("ô trước mặt đang trống mà front_clear() lại trả về False"), chỉ khi chưa thắng hay trong sân thử của Xưởng.
+   - man.bienDem (chương che-cam-bien): màn cho dùng BIẾN ĐẾM (n = 0, n = n + 1, for i in range(n)): khay hiện nhóm ĐẾM. Màn khai khung.chanBien = true (chưa dạy biến) thì
+     khung-code.js báo cau-truc-chua-hoc (cauTruc 'bien') cho dòng gán biến trong chương trình / hàm của màn.
    - man.phanCung (mặc định: trọn bộ lệnh loại robot + khay) đưa xuống lõi: hàm của em gọi được mọi lệnh phần cứng, chương trình chính và hàm của màn chỉ dùng lệnh trên khay (man.hamGoc).
      Mã chẩn đoán: lenh-chua-mo (lỗi; lệnh có trong phần cứng nhưng chưa có trên khay mà chương trình chính / hàm của màn gõ thẳng), lenh-goc-hong (lỗi; gọi lệnh không thuộc phần cứng vì màn hỏng).
    CHẨN ĐOÁN CÓ `cho` (dòng lệnh gây ra, { cot, dong, ten? } hoặc null): mọi mã gắn với một lệnh đều ghi `cho` — dam-tuong (lệnh bánh / trượt / go_* của nhịp), kep-hut và tha-bi-chan kieu 'kep' và vat-vo (lệnh grab / release),
@@ -315,6 +321,37 @@
     for (var q = 1; q <= ds.length; q++) if (laDongWhile(ds[q - 1])) return g.anhXa[q] || null;
     return g.anhXa[j] || null;
   }
+  /**
+   * Vòng while "chạy mãi" theo CHUỖI LỜI GỌI của lệnh cuối cùng: từ dòng lệnh đó rồi tới từng nơi gọi (trong ra ngoài), tìm khối while bao quanh gần nhất TRONG CÙNG MỘT HÀM
+   * (leo lên các khối cha theo thụt lề, dừng ở dòng def). Nhờ vậy `while …: move()` mà move() chạy mãi thì chỉ vào while của hàm gọi move(), không phải while đầu tiên của cả chương trình.
+   * Trả về vị trí (như g.anhXa[..]) hoặc null nếu không tầng nào có while bao quanh.
+   */
+  function viTriWhileTheoNgan(g, res) {
+    var ds = g.dong;
+    function thut(s) { return /^\s*/.exec(s)[0].length; }
+    function whileBaoQuanh(dong) {
+      if (!dong || dong > ds.length) return 0;
+      if (laDongWhile(ds[dong - 1])) return dong;
+      var t = thut(ds[dong - 1]);
+      for (var k = dong - 1; k >= 1 && t > 0; k--) {
+        if (!String(ds[k - 1]).trim()) continue;
+        var tk = thut(ds[k - 1]);
+        if (tk >= t) continue;
+        if (laDongWhile(ds[k - 1])) return k;
+        if (/^\s*def\b/.test(ds[k - 1])) return 0;
+        t = tk;
+      }
+      return 0;
+    }
+    for (var i = res.vet.length - 1; i >= 0; i--) {
+      var e = res.vet[i];
+      if (e.loai !== 'lenh') continue;
+      var dongs = [e.dongPy].concat((e.nganPy || []).slice().reverse());
+      for (var q = 0; q < dongs.length; q++) { var w = whileBaoQuanh(dongs[q]); if (w) return g.anhXa[w] || null; }
+      return null;
+    }
+    return null;
+  }
 
   // tên bộ phận cho lời lenh-goc-hong khi màn không khai canhBao
   var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải' };
@@ -326,7 +363,23 @@
   function soO(n) { return (n < SO_CHU.length ? SO_CHU[n] : String(n)) + ' ô'; }
   var MAT_QUAY = ['lên', 'sang phải', 'xuống', 'sang trái'];       // "quay mặt ..." theo hướng màn hình
   /** Nói bằng lời xe đang lệch bóng mờ ở đâu (theo hướng màn hình: trái / phải / trên / dưới). */
-  function lechBongMo(bm, r) {
+  var MAU_NGAN = { red: 'đỏ', green: 'xanh lá', blue: 'xanh dương', yellow: 'vàng' };
+  /** Vật mờ / xe mờ cầm vật (chương che-tay): nói bằng lời vật nào chưa nằm đúng ô, xe cầm thiếu / thừa vật. res = kết quả chạy (res.vat, res.tay). Trả { cau: [câu], soVatLech, camLech }. */
+  function lechVatBongMo(bm, res) {
+    var cau = [], soVatLech = 0, camLech = false, tay = res.tay || null, vat = res.vat || [];
+    var dangCam = tay && tay.cam !== null && tay.cam !== undefined ? vat.filter(function (v) { return v.id === tay.cam; })[0] : null;
+    if (bm.cam) {
+      if (!dangCam) { camLech = true; cau.push('Xe chưa cầm vật nào, còn xe mờ thì đang cầm một vật.'); }
+      else if (bm.camMau && dangCam.mau !== bm.camMau) { camLech = true; cau.push('Xe đang cầm vật ' + (dangCam.mau ? 'màu ' + MAU_NGAN[dangCam.mau] : 'không màu') + ', còn xe mờ cầm vật màu ' + MAU_NGAN[bm.camMau] + '.'); }
+    } else if (dangCam && bm.vat && bm.vat.length) { camLech = true; cau.push('Xe còn đang cầm một vật, còn bóng mờ thì không cầm gì.'); }
+    var dat = vat.filter(function (v) { return v.trangThai === 'dat'; });
+    var chua = (bm.vat || []).filter(function (q) { return !dat.some(function (v) { return v.x === q.x && v.y === q.y && (!q.mau || v.mau === q.mau); }); });
+    soVatLech = chua.length;
+    if (chua.length === 1) cau.push((chua[0].mau ? 'Vật màu ' + MAU_NGAN[chua[0].mau] : 'Một vật') + ' chưa nằm đúng ô như bóng mờ.');
+    else if (chua.length > 1) cau.push('Còn ' + soO(chua.length).replace(' ô', ' vật') + ' chưa nằm đúng ô như bóng mờ.');
+    return { cau: cau, soVatLech: soVatLech, camLech: camLech };
+  }
+  function lechBongMo(bm, r, res) {
     var dx = r.x - bm.x, dy = r.y - bm.y;
     var saiHuong = bm.huong !== null && bm.huong !== undefined && r.huong !== bm.huong;
     var lech = dx !== 0 || dy !== 0 || saiHuong, loi = '';
@@ -338,8 +391,10 @@
       if (dy !== 0) phan.push(soO(Math.abs(dy)) + (dy < 0 ? ' về phía trên' : ' về phía dưới'));
       loi = 'Xe dừng lệch ' + phan.join(' và ') + ' so với bóng mờ' + (saiHuong ? ', lại còn quay mặt ' + MAT_QUAY[r.huong] + ' trong khi bóng mờ quay mặt ' + MAT_QUAY[bm.huong] : '') + '.';
     }
-    if (bm.vat && bm.vat.length && !lech) { lech = true; loi = 'Xe đúng chỗ rồi nhưng vật chưa nằm đúng ô như trên màn.'; }
-    return { lech: lech, loi: loi, dx: dx, dy: dy, saiHuong: saiHuong };
+    var lv = res ? lechVatBongMo(bm, res) : { cau: [], soVatLech: 0, camLech: false };         // vật mờ / xe mờ cầm vật (chương che-tay)
+    if (lv.cau.length) { loi = (loi ? loi + ' ' : (lech ? '' : 'Xe đúng chỗ rồi. ')) + lv.cau.join(' '); lech = true; }
+    else if (!res && bm.vat && bm.vat.length && !lech) { lech = true; loi = 'Xe đúng chỗ rồi nhưng vật chưa nằm đúng ô như trên màn.'; }
+    return { lech: lech, loi: loi, dx: dx, dy: dy, saiHuong: saiHuong, soVatLech: lv.soVatLech, camLech: lv.camLech };
   }
 
   /**
@@ -403,7 +458,7 @@
       them('vong-vo-han', 'Ở ' + viTri(mw) + ': vòng while chạy mãi không dừng: điều kiện không bao giờ sai và bên trong không có lệnh nào cho robot chạy tiếp, nên chương trình bị ngắt. ' +
         'Xem lại điều kiện của vòng while và những gì nằm trong thân vòng.', { cho: cho(mw), loaiCore: 'infinite-loop' });
     } else if (l && l.loai === 'qua-nhieu-nhip' && coWhile(g)) {
-      var mw2 = viTriWhile(g, ultLenhPy(res));
+      var mw2 = viTriWhileTheoNgan(g, res) || viTriWhile(g, ultLenhPy(res));
       them('vong-vo-han', 'Robot đã chạy quá ' + (res.nhipToiDa || man.nhipToiDa || 200) + ' nhịp mà vòng while vẫn chưa dừng (ở ' + viTri(mw2) + '): điều kiện không bao giờ sai.' +
         ' Xem lại điều kiện của vòng while, và xem trong thân vòng có lệnh nào làm điều kiện đổi không.', { cho: cho(mw2), loaiCore: 'qua-nhieu-nhip', nhip: res.nhip });
     } else if (l && l.loai === 'qua-nhieu-nhip') {
@@ -748,8 +803,8 @@
       if (!res.dungSom) {
         var rbm = res.robot, bmo = res.bongMo;
         if (bmo) {
-          var dxy = lechBongMo(bmo, rbm);
-          if (dxy.lech) them('lech-bong-mo', dxy.loi, { robot: { x: rbm.x, y: rbm.y, huong: rbm.huong }, bongMo: { x: bmo.x, y: bmo.y, huong: bmo.huong }, dx: dxy.dx, dy: dxy.dy, saiHuong: dxy.saiHuong });
+          var dxy = lechBongMo(bmo, rbm, res);
+          if (dxy.lech) them('lech-bong-mo', dxy.loi, { robot: { x: rbm.x, y: rbm.y, huong: rbm.huong }, bongMo: { x: bmo.x, y: bmo.y, huong: bmo.huong }, dx: dxy.dx, dy: dxy.dy, saiHuong: dxy.saiHuong, soVatLech: dxy.soVatLech, camLech: dxy.camLech });
           var chuaQua = (res.diQua || []).filter(function (q) { return !q.da; });
           if (chuaQua.length) them('chua-qua-diem', 'Xe chưa đi qua điểm ◆' + (chuaQua.length > 1 ? ' (còn thiếu ' + chuaQua.length + ' điểm)' : '') + ' trên đường. Chương trình phải đưa xe ghé qua mọi điểm ◆ rồi mới tới bóng mờ.', { conLai: chuaQua.length, o: { x: chuaQua[0].x, y: chuaQua[0].y } });
         }
@@ -771,6 +826,18 @@
         !res.vet.some(function (e) { return e.loai === 'lenh' && /^go_/.test(e.ten); })) {
       them('drone-khong-bay', 'Chương trình chạy xong mà drone chưa bay đi đâu: không có lệnh go_up(), go_down(), go_left() hay go_right() nào được chạy. ' +
         'Nếu em dùng hàm để bay, kiểm tra hàm đó có thật sự gọi go_* không, và chữ em đưa vào có khớp một nhánh if / elif không (chữ hoa và chữ thường là khác nhau).', {});
+    }
+    // cảm biến lắp ngược (man.daoChieu có 'cam'): chương trình đã hỏi cảm biến mà chưa thắng (hay đang thử ở Xưởng) → kể lại CHÍNH lần hỏi đầu tiên, một lần, mức thông tin
+    if (man.daoChieu && man.daoChieu.indexOf('cam') >= 0 && (sanThu || (!res.thang && !res.loi))) {
+      var docNguoc = null;
+      res.vet.forEach(function (e) { if (!docNguoc && e.loai === 'lenh' && e.docCamBien && e.docCamBien.daoNguoc) docNguoc = e; });
+      if (docNguoc) {
+        var dn = docNguoc.docCamBien, mDn = g.anhXa[docNguoc.dongPy] || null;
+        var oDo = dn.ham === 'left_clear' ? 'bên trái' : dn.ham === 'right_clear' ? 'bên phải' : 'trước mặt';
+        them('cam-bien-nguoc', 'Cảm biến này lắp ngược. Ở ' + viTri(mDn) + ', ô ' + oDo + (dn.thuc ? ' đang trống mà ' : ' bị chặn mà ') + dn.ham + '() lại trả về ' + (dn.trong ? 'True' : 'False') + '.',
+          { ten: dn.ham, cho: sanThu ? null : cho(mDn), thuc: dn.thuc, traVe: dn.trong, nhip: dn.nhip });       // sân thử: không tô đỏ dòng (code có thể đã đúng, chỉ là cảm biến vẫn ngược)
+        cd[cd.length - 1].muc = 'thong-tin';
+      }
     }
     return cd;
   }

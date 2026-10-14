@@ -539,6 +539,13 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .strip.wh:not(.on):not(.err){background:#dce8ff;box-shadow:inset 0 0 0 2px var(--ink),inset 0 4px 0 #f1f6ff,inset 0 -4px 0 #a9c0f0}
 .keo-dong.wh{background:#dce8ff;font-size:calc(10px*var(--km))}
 .strip .kw.wh,.keo-dong .kw.wh{color:#2a56c8}
+/* BIẾN ĐẾM (chương che-cam-bien): dòng `n = 0`, `n = n + 1` (tên biến đậm hồng, số là chữ thường không chạm được) và nhóm ĐẾM trên khay (hồng như thẻ biến) */
+.strip .vr.dem,.keo-dong .vr.dem{color:#b01f68;font-weight:700}
+.strip .lit,.keo-dong .lit{color:#1b120a}
+.gl.g-dem{color:#ffb4d4}.gl.g-dem::after{background:#c2407f}
+.brick.dem{--c:#ee5a9c;--hi:#ffb4d4;--lo:#b02e6c;--stud:var(--st-pk)}
+.brick.dem .tx{padding-right:4px}
+.pal .brick.dem .tx{font-size:.84em}
 .bk.wh{background:#6f96f2;box-shadow:inset 1px 0 0 #1c3a8a,inset -1px 0 0 #1c3a8a,inset 2px 0 0 #bcd0ff}
 .bk.wh.cuoi::after{background:#6f96f2;box-shadow:inset 0 1px 0 #1c3a8a,inset 0 -1px 0 #1c3a8a}
 .brick.wh{--c:#5b86f4;--hi:#bcd0ff;--lo:#2f56bc;--stud:var(--st-cy)}

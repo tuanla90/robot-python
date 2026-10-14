@@ -24,7 +24,7 @@ const ChamHoc = require(path.join(day, 'cham.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
 const SoLenh = require(path.join(day, 'so-lenh.js'));
-for (const f of ['man-chuoi-2', 'man-che-xe', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach', 'man-mau', 'man-nam-cham', 'man-may-nem', 'man-sung-bong']) require(path.join(day, f + '.js'));
+for (const f of ['man-chuoi-2', 'man-che-xe', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach', 'man-mau', 'man-nam-cham', 'man-may-nem', 'man-sung-bong', 'man-che-tay', 'man-che-lap', 'man-che-cam-bien', 'man-robot-hoan-thien']) require(path.join(day, f + '.js'));
 const ManHoc = require(path.join(day, 'man-drone.js'));
 const { nhipCheXeNganNhat, nhipCheXeTatCa, toHopChoPhep, hieuQua } = await import('./do-duong-che-xe.mjs');
 
@@ -112,7 +112,7 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
     }));
 
   kiem('SoLenh.ds: mỗi mục { ten, nhom, moTa, chuong, man }; nhóm có trong tenNhom và thuTuNhom; moTa là MỘT câu ngắn (≤ 80 chữ cái, không xuống dòng, không dấu chấm cuối); tên không trùng',
-    SoLenh.ds.every((h) => typeof h.ten === 'string' && /^[a-z_]+$/.test(h.ten) && SoLenh.tenNhom[h.nhom] && SoLenh.thuTuNhom.includes(h.nhom) && typeof h.moTa === 'string' && h.moTa.length >= 8 && h.moTa.length <= 80 && !/[\n]/.test(h.moTa) && !/[.]$/.test(h.moTa) && typeof h.chuong === 'string' && typeof h.man === 'string') &&
+    SoLenh.ds.every((h) => typeof h.ten === 'string' && /^[a-z_][a-z_0-9]*$/.test(h.ten) && SoLenh.tenNhom[h.nhom] && SoLenh.thuTuNhom.includes(h.nhom) && typeof h.moTa === 'string' && h.moTa.length >= 8 && h.moTa.length <= 80 && !/[\n]/.test(h.moTa) && !/[.]$/.test(h.moTa) && typeof h.chuong === 'string' && typeof h.man === 'string') &&
       new Set(SoLenh.ds.map((h) => h.ten)).size === SoLenh.ds.length);
   kiem('nhóm của Sổ lệnh đủ 15 loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, day, mau, nam-cham, nem, bong, drone, tham-so, bang-chuyen; mỗi nhóm có tên hiển thị',
     J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'bong', 'cam-bien', 'day', 'drone', 'lap', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'tay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
@@ -126,7 +126,7 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
     SoLenh.ds.every((h) => dau[h.ten] && dau[h.ten].chuong === h.chuong && dau[h.ten].ma === h.man) && J(SoLenh.ds.map((h) => h.ten)) === J(Object.keys(dau)), J(SoLenh.ds.filter((h) => !(dau[h.ten] && dau[h.ten].ma === h.man)).map((h) => h.ten + '@' + h.man + '≠' + (dau[h.ten] && dau[h.ten].ma))));
   kiem('chương của mọi mục có tên hiển thị trong ThuTuChuong', SoLenh.ds.every((h) => typeof ThuTu.ten[h.chuong] === 'string'));
   kiem('nhóm của hàm đợt 2 ứng với chương: drone → drone, tam-day → day, may-nem → nem, sung-bong → bong…; hàm đợt 1 thuộc xe / tay / lap / cam-bien',
-    SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'vong-lap': 'lap', 'khoang-cach': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'xich': 'xich', 'omni': 'omni', 'tam-day': 'day', 'mau': 'mau', 'nam-cham': 'nam-cham', 'may-nem': 'nem', 'sung-bong': 'bong', 'drone': 'drone' })[h.chuong] === h.nhom));
+    SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'xich': 'xich', 'omni': 'omni', 'tam-day': 'day', 'mau': 'mau', 'nam-cham': 'nam-cham', 'may-nem': 'nem', 'sung-bong': 'bong', 'drone': 'drone' })[h.chuong] === h.nhom));
   kiem('hàm chế ở che-xe có trong Sổ lệnh với lời lớp 5 (vd dodge_right: "Né sang phải một ô, giữ hướng")',
     ['dodge_right', 'dodge_left', 'back', 'park', 'come_back', 'fixed_move'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).chuong === 'che-xe') && SoLenh.tim('dodge_right').moTa === 'Né sang phải một ô, giữ hướng');
   kiem('SoLenh.theoNhom / theoChuong / tim', SoLenh.theoNhom('xe').length === 13 && SoLenh.theoChuong('che-xe').length === 6 && SoLenh.tim('khong-co') === null);
@@ -455,7 +455,7 @@ console.log('\n== 9. Chơi lại các chương cũ với u_turn một nhịp và
     kiem('chương ' + ch + ': cả 10 lời giải vẫn thắng, không chẩn đoán lỗi, không chậm hơn sao.nhip (dùng bản hàm sửa trong kho)',
       bangKq.every((r, i) => r.thang && maLoi(r).length === 0 && r.soNhip <= dsCh[i].sao.nhip), J(bangKq.map((r, i) => dsCh[i].id + ':' + r.thang + '/' + r.soNhip + '≤' + dsCh[i].sao.nhip)));
   }
-  const dsKhac = tatCa.filter((m) => !['hai-banh', 'che-xe'].includes(m.chuong));
+  const dsKhac = tatCa.filter((m) => !['hai-banh', 'che-xe'].includes(m.chuong) && m.ma !== 'che-tay.9');           // che-tay.9 (bánh phải kẹt số lùi) tự sửa lại turn_right / u_turn bằng bánh khác: kiem-che-tay.mjs kiểm riêng
   const loiKhac = dsKhac.filter((m) => { const r = ChamHoc.cham(m, m.loiGiai, tron(nhanh, m.loiGiai.hamCuaEmMoi.filter((h) => !SUA[h.ten]))); return !(r.thang && maLoi(r).length === 0); }).map((m) => m.id);
   kiem('mọi chương còn lại (' + dsKhac.length + ' màn, kể cả đợt 2: xích, omni, băng chuyền…) cũng vẫn thắng với kho đó', loiKhac.length === 0, loiKhac.join());
   const xichSan = ['.....', '.....', '.....', '.....', '.....'], xichBd = { x: 2, y: 3, huong: 0 };
