@@ -120,11 +120,70 @@ Mỗi màn chế lệnh: `mucTieu 'bong-mo'`, `chinhCoDinh`, sân thoáng (vài 
 
 Tên trên là đề xuất; giữ tiếng Anh, khóa theo cốt truyện (`taoHam`). Lời đề bài lớp 5, theo `docs/huong-dan-viet-noi-dung.md` của repo.
 
-## 5. Các chương sau (phác, chi tiết sau khi user chơi `che-xe`)
-- `che-tay`: `grab_back` (nhặt sau lưng), `drop_back`, `pass_back` (chuyền ra sau), `drop_right`, `swap`; màn dây tay đấu ngược (`arm_up` thành hạ).
-- `che-lap`: `dash` (3 ô), `square` (vòng vuông về chỗ cũ, có ◆), `zigzag`, hàm có `for` nhặt cả hàng; sửa `range` lệch một.
-- `che-cam-bien`: `safe_move` (if), `to_gap` (while), `turn_to_open`, `bounce` (tới tường rồi về đúng chỗ cũ trên 3 sân dài khác nhau → **biến đếm** `n = n + 1`).
-- `robot-hoan-thien`: thân + tay + cảm biến khoảng cách, nhiệm vụ nhiều sân; trùm = cổng mở đợt 2.
+## 5. Bốn chương mới của đợt 1 (user duyệt làm 14/10)
+
+Thứ tự đợt 1 (đã đăng ký ở `thu-tu-chuong.js`, tệp màn rỗng đã có, đã gắn vào `choi.html` và `kiem-hoc.mjs`):
+1 hai-banh · 2 xuong-ham · 3 che-xe · 4 tay-gap · **5 che-tay** · 6 vong-lap · **7 che-lap** · 8 khoang-cach · **9 che-cam-bien** · **10 robot-hoan-thien**; đợt 2 từ 11.
+
+Khuôn chung (như che-xe): 10 màn = làm quen 1–3, luyện 4–6, biến thể 7–9, trùm 10 (huy hiệu riêng). Màn chế lệnh: `mucTieu 'bong-mo'`,
+`chinhCoDinh`, sân thoáng, `congThucKhac` ≥ 1 công thức khác (đều thắng). Có màn "dùng" (chương trình chính tự viết). Hàng biến thể dùng các kiểu:
+Đường về (lệnh ngược theo thứ tự ngược), lắp ngược (`daoChieu`), hỏng (`phanCung`), sửa hàm lỗi (hàm của màn). Trùm có thể khai
+`gioiHanHam` (giới hạn theo nhiệm vụ, user chốt). Tên hàm tiếng Anh, khóa theo `taoHam`; mô tả mỗi hàm thêm vào `so-lenh.js` ở chỗ đánh dấu.
+Lời đề bài / gợi ý theo `docs/huong-dan-viet-noi-dung.md` (lớp 5, câu ngắn, không rao cơ chế thừa). Bảng dưới là ĐỀ XUẤT: agent được đổi
+sân, tên, thứ tự nếu cần cho đúng luật / vừa khung 10 ô, nhưng phải ghi lý do trong báo cáo.
+
+### 5.1 Chương 5 `che-tay` — Chế lệnh tay (robot banh + tay kẹp; bánh có cả số lùi)
+Hàm có sẵn: chương 2–4 (move, turn_right/left bản bánh lùi, u_turn 1 nhịp, dodge_*, back, park…, pick, drop, carry).
+| # | Tên | Việc | Chế |
+|---|---|---|---|
+| 1 | Chuyền ra sau | vật trước mặt → ô sau lưng; xe giữ ô và hướng | `pass_back` (pick, u_turn, drop, u_turn) |
+| 2 | Đặt sang phải | vật trước mặt → ô bên phải xe; xe giữ hướng | `put_right` (pick, turn_right, drop, turn_left) |
+| 3 | Dọn đường (dùng) | vật nằm chắn lối (vật chiếm ô), dẹp sang bên rồi tới cờ | — |
+| 4 | Nhặt sau lưng | vật sau lưng; xong thì đang CẦM vật, mặt như cũ (`bongMo.cam`) | `grab_back` |
+| 5 | Lùi mang hàng | nhặt vật trước mặt, lùi 2 ô, đặt xuống trước mặt | `drag` (pick, back, back, drop) |
+| 6 | Đổi chỗ | hai vật khác màu ở trước mặt và bên phải đổi chỗ (bóng mờ vật có màu, chấm theo màu); ≤ 10 dòng nhờ hàm vừa chế | `swap` |
+| 7 | Đặt lại chỗ cũ | hàm của màn `go_get()` khóa (move, move, pick); chế `put_back()` đưa vật về chỗ cũ, xe về chỗ + hướng cũ (pick ↔ drop là cặp ngược) | `put_back` |
+| 8 | Tay lắp ngược | `daoChieu ['tay']`: arm_up ↔ arm_down đổi chỗ; pick/drop của em hỏng; chế bản dùng được rồi đưa vật về đích | `fixed_pick`, `fixed_drop` |
+| 9 | Cần cẩu | bánh phải hỏng (`phanCung` chỉ bánh trái + tay): xe chỉ xoay tại chỗ; chuyển các vật quanh xe vào đích. turn_right của em (bánh lùi phải) hỏng → sửa lại bằng bánh trái | sửa `turn_right`, `u_turn` |
+| 10 | Kho đồ (trùm) | nhiều vật, nhiều đích, `gioiHanHam` ~4; huy hiệu `che-tay` | — |
+Lõi cần thêm: `bongMo.cam` (xe đang cầm vật lúc xong), `bongMo.vat` có `mau` (chấm theo màu), `daoChieu` cho `'tay'` (arm_up↔arm_down) và `'kep'` (grab↔release); giao diện vẽ bóng mờ vật có màu, xe mờ cầm vật.
+
+### 5.2 Chương 7 `che-lap` — Chế lệnh có `for` (cauTruc ['for'])
+Chỉ dùng hàm của chương 2–4 và 6 (KHÔNG dùng hàm của che-tay — hai chương làm song song).
+| # | Tên | Việc | Chế |
+|---|---|---|---|
+| 1 | Chạy nước rút | bóng mờ 4 ô trước | `dash` (for i in range(4): move()) |
+| 2 | Vòng vuông | đi một vòng vuông về đúng chỗ cũ, ◆ ở ba góc | `square` (for 4: corner()) |
+| 3 | Tuần tra (dùng) | đi qua các ◆ bằng dash / square | — |
+| 4 | Bậc chéo | lên 3 bậc chéo phải, giữ hướng | `zigzag` (for 3: stair() / move()+dodge_right()) |
+| 5 | Dọn hàng | 3 vật thẳng hàng trước mặt → dời mỗi vật sang cột phải | `sweep` (for có pick/drop) |
+| 6 | Vòng lồng | vòng vuông cạnh 3 ô (for lồng), ◆ | `ring` |
+| 7 | Đường về vòng lặp | hàm của màn `go_round()` khóa có for; chế `come_home()`: cùng số lần lặp, thân đảo thứ tự + lệnh ngược | `come_home` |
+| 8 | Lệch một | hàm của màn dùng `range` sai một → sửa | sửa hàm của màn |
+| 9 | Số lùi đường dài | chỉ còn số lùi (`phanCung`), đi xa bằng for | `reverse_run` |
+| 10 | Tuần tra kho (trùm) | nhiều ◆, `gioiHanHam` ~3; huy hiệu `che-lap` | — |
+
+### 5.3 Chương 9 `che-cam-bien` — Chế lệnh có `if` / `while` + BIẾN ĐẾM (cauTruc for/if/while)
+Chỉ dùng hàm của chương 2–4, 6, 8 (KHÔNG dùng hàm của che-tay / che-lap). Màn chế lệnh có cảm biến dùng 3 sân (`bongMo` mảng song song `san`).
+| # | Tên | Việc | Chế |
+|---|---|---|---|
+| 1 | Đi cẩn thận | trống thì tiến một ô, có tường thì đứng yên (3 sân) | `safe_move` (if front_clear(): move()) |
+| 2 | Tìm lối mở | quay tới khi trước mặt trống (3 sân, hướng khác nhau) | `face_open` (while not front_clear(): turn_right()) |
+| 3 | Mê cung nhỏ (dùng) | go_wall + face_open, 3 sân | — |
+| 4 | Cửa hông | đi tới khi bên phải trống (3 sân dài ngắn khác) | `to_gap` (while not right_clear(): move()) |
+| 5 | Đi rồi về | tới tường rồi về ĐÚNG chỗ cũ, mặt như cũ (3 sân dài khác) → BIẾN ĐẾM `n = 0`, `n = n + 1`, `range(n)` | `bounce` |
+| 6 | Bám tường | một bước bám tường phải (if/elif/else); chương trình chính cố định lặp nó | `follow_right` |
+| 7 | Cảm biến lắp ngược | `daoChieu ['cam']`: front_clear() trả ngược → chế bản đúng bằng `not` | `safe_move2` |
+| 8 | Sửa hàm lỗi | hàm của màn sai điều kiện (left_clear thay right_clear, hoặc quên move trong while) | sửa hàm của màn |
+| 9 | Lấy rồi về | đi tới vật, nhặt, về chỗ cũ (đếm bước), đặt xuống (3 sân) | `fetch_back` |
+| 10 | Mê cung kho (trùm) | mê cung + mang hàng, 3 sân, `gioiHanHam`; huy hiệu `che-cam-bien` | — |
+Lõi / giao diện cần thêm: `daoChieu` cho `'cam'` (cảm biến khoảng cách trả ngược); khối gán biến đếm trên khay (`n = 0`, `n = n + 1`,
+`for i in range(n):` với n là biến) — lõi Python đã hiểu gán / cộng, cần khối giao diện và máy kiểm.
+
+### 5.4 Chương 10 `robot-hoan-thien` — Robot hoàn thiện (làm SAU ba chương trên)
+Xe + tay kẹp + cảm biến khoảng cách; mỗi màn là một NHIỆM VỤ ghép cả ba bộ phận, phần lớn 3 sân (chống viết cứng), chương trình chính tự viết,
+dùng mọi hàm đã chế (gồm che-tay, che-lap, che-cam-bien). Hàng biến thể có hỏng hóc / lắp ngược; vài màn khai `gioiHanHam`.
+Trùm = cổng mở đợt 2: đổi `ThuTuChuong.congDot2` thành `'robot-hoan-thien'`; huy hiệu riêng.
 
 ## 6. Xong khi
 - Chơi trên trình duyệt (thao tác như người chơi) hết chương `che-xe`; ở mỗi màn chế lệnh, thử cả 2 cách đều thắng.

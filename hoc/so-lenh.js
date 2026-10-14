@@ -65,13 +65,17 @@
     m('pick', 'tay', 'Nhặt vật ở ô trước mặt rồi nâng tay lên', 'tay-gap', 'tay-gap.5'),
     m('drop', 'tay', 'Đặt vật xuống ô trước mặt rồi nâng tay lên', 'tay-gap', 'tay-gap.6'),
     m('carry', 'tay', 'Nhặt vật, đi một ô, rẽ trái, đặt vật xuống rồi quay lại', 'tay-gap', 'tay-gap.10'),
-    // chương 5 · Vòng lặp
+    // chương 5 · Chế lệnh tay (agent che-tay thêm mục ở đây, nhóm 'tay')
+    // chương 6 · Vòng lặp
     m('side', 'lap', 'Đi thẳng ba ô', 'vong-lap', 'vong-lap.6'),
     m('row', 'lap', 'Đi thẳng sáu ô', 'vong-lap', 'vong-lap.10'),
     m('bend_left', 'lap', 'Rẽ trái, đi hai ô rồi rẽ trái nữa', 'vong-lap', 'vong-lap.10'),
     m('bend_right', 'lap', 'Rẽ phải, đi hai ô rồi rẽ phải nữa', 'vong-lap', 'vong-lap.10'),
-    // chương 6 · Cảm biến khoảng cách
+    // chương 7 · Chế lệnh có for (agent che-lap thêm mục ở đây, nhóm 'lap')
+    // chương 8 · Cảm biến khoảng cách
     m('go_wall', 'cam-bien', 'Đi thẳng cho tới khi trước mặt là tường', 'khoang-cach', 'khoang-cach.5'),
+    // chương 9 · Chế lệnh có if, while (agent che-cam-bien thêm mục ở đây, nhóm 'cam-bien')
+    // chương 10 · Robot hoàn thiện (agent robot-hoan-thien thêm mục ở đây nếu chương có hàm cốt truyện)
     // đợt 2: hàm có tham số
     m('forward', 'tham-so', 'Tiến n ô liền nhau', 'tham-so', 'tham-so.3'),
     m('right', 'tham-so', 'Quay phải k lần', 'tham-so', 'tham-so.4'),

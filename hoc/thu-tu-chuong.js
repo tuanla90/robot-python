@@ -37,7 +37,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'vong-lap', 'khoang-cach',
+    thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien',
       'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'may-nem', 'sung-bong', 'drone'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
     dot2: ['bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'may-nem', 'sung-bong', 'drone'],
@@ -48,7 +48,11 @@
       'xuong-ham': 'Xưởng hàm',
       'che-xe': 'Chế lệnh xe',
       'tay-gap': 'Tay gắp',
+      'che-tay': 'Chế lệnh tay',
       'vong-lap': 'Vòng lặp',
+      'che-lap': 'Chế lệnh có for',
+      'che-cam-bien': 'Chế lệnh có if, while',
+      'robot-hoan-thien': 'Robot hoàn thiện',
       'bang-chuyen': 'Băng chuyền',
       'tham-so': 'Hàm có tham số',
       'nhen': 'Thân nhện',

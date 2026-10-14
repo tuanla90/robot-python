@@ -265,7 +265,7 @@ console.log('\n== 3. Cửa nhịp: chu kỳ mo + dong, pha; front_clear() chờ 
   kiem('tiến vào cửa nhịp đang đóng: dam-tuong vat "cua"; chẩn đoán chỉ cửa đang đóng và có `cho` trỏ dòng lệnh', (() => {
     const m1 = Object.assign({}, man(6), { san: [['#.C.F#'], ['#.C.F#'], ['#.C.F#']].map((x) => x[0]).slice(0, 1), batDau: xe, cuaNhip: undefined });
     const m6 = Object.assign({}, man(6));
-    const r = ChamHoc.cham(m6, { chinh: ['move()', 'move()'] }, khoTruoc('16.6'));
+    const r = ChamHoc.cham(m6, { chinh: ['move()', 'move()'] }, khoTruoc('20.6'));
     const c2 = r.chanDoan.find((x) => x.ma === 'dam-tuong');
     void m1;
     return c2 && /cửa/.test(c2.loi) && c2.cho && c2.cho.dong === 1 && /Sân/.test(c2.loi);
@@ -503,7 +503,7 @@ const BANG = [];
 function bang(a, b) { return J(a) === J(b); }
 {
   const SAO_NHIP = [4, 5, 8, 6, 15, 15, 7, 10, 9, 24];
-  kiem('đúng 10 màn sung-bong, id 16.1…16.10, mã sung-bong.1…10, tên chương "Súng bóng"', ds.length === 10 && ds.every((m, i) => m.id === '16.' + (i + 1) && m.ma === 'sung-bong.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'sung-bong').ten === 'Súng bóng');
+  kiem('đúng 10 màn sung-bong, id 20.1…20.10, mã sung-bong.1…10, tên chương "Súng bóng"', ds.length === 10 && ds.every((m, i) => m.id === '20.' + (i + 1) && m.ma === 'sung-bong.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'sung-bong').ten === 'Súng bóng');
   kiem('hang: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', bang(ds.map((m) => m.hang), ['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
   kiem('sao.nhip đúng bảng chốt (4 5 8 6 15 15 7 10 9 24)', bang(ds.map((m) => m.sao.nhip), SAO_NHIP), J(ds.map((m) => m.sao.nhip)));
   kiem('chỉ 16.5 tạo hàm (hit_right); chỉ 16.8 có hàm của màn (fire_left); huy hiệu sung-bong ở 16.10', bang(ds.map((m) => m.taoHam), [[], [], [], [], ['hit_right'], [], [], [], [], []]) &&
@@ -556,53 +556,53 @@ function bang(a, b) { return J(a) === J(b); }
 
   // 16.1 – 16.3
   const m1 = man(1), m2 = man(2), m3 = man(3);
-  kiem('16.1: maMau đã bắn trúng nút (cửa mở) nhưng xe chưa tới cờ; tới cờ phải quay trái rồi đi 2 ô', (() => { const r = ChamHoc.cham(m1, m1.maMau, khoTruoc('16.1')); return !r.thang && r.theoSan[0].vet.filter((e) => e.loai === 'nhip')[0].cua[0].mo === true && maCua(r).includes('chua-toi-co'); })());
-  kiem('16.2: bóng bay thẳng nên quay phải thay vì quay trái làm bóng ra khỏi sân (ban-hut); bắn mà không quay bị cửa chặn (ban-bi-chan)', maCua(ChamHoc.cham(m2, m2.loiSai[1].baiLam, khoTruoc('16.2'))).includes('ban-hut') && maCua(ChamHoc.cham(m2, m2.loiSai[0].baiLam, khoTruoc('16.2'))).includes('ban-bi-chan'));
+  kiem('16.1: maMau đã bắn trúng nút (cửa mở) nhưng xe chưa tới cờ; tới cờ phải quay trái rồi đi 2 ô', (() => { const r = ChamHoc.cham(m1, m1.maMau, khoTruoc('20.1')); return !r.thang && r.theoSan[0].vet.filter((e) => e.loai === 'nhip')[0].cua[0].mo === true && maCua(r).includes('chua-toi-co'); })());
+  kiem('16.2: bóng bay thẳng nên quay phải thay vì quay trái làm bóng ra khỏi sân (ban-hut); bắn mà không quay bị cửa chặn (ban-bi-chan)', maCua(ChamHoc.cham(m2, m2.loiSai[1].baiLam, khoTruoc('20.2'))).includes('ban-hut') && maCua(ChamHoc.cham(m2, m2.loiSai[0].baiLam, khoTruoc('20.2'))).includes('ban-bi-chan'));
   kiem('16.3: maMau bắn hai lần (cửa mở rồi đóng lại, ban-nut-lai); xóa một cặp shoot() + wait() là thắng', (() => {
-    const r = ChamHoc.cham(m3, m3.maMau, khoTruoc('16.3'));
+    const r = ChamHoc.cham(m3, m3.maMau, khoTruoc('20.3'));
     const s = m3.maMau.chinh.slice(); s.splice(2, 2);
-    return !r.thang && maCua(r).includes('ban-nut-lai') && ChamHoc.cham(m3, { chinh: s }, khoTruoc('16.3')).sao === 3;
+    return !r.thang && maCua(r).includes('ban-nut-lai') && ChamHoc.cham(m3, { chinh: s }, khoTruoc('20.3')).sao === 3;
   })());
   // 16.4
   const m4 = man(4);
-  const khong = ChamHoc.cham(m4, { chinh: ['forward(9)'] }, khoTruoc('16.4'));
-  kiem('16.4: không tắt băng vẫn tới cờ được nhưng chậm (nhịp ' + khong.soNhip + ' > ' + m4.sao.nhip + '): chỉ một hay hai sao; bắn nút tắt băng cho đúng sao.nhip', khong.thang && khong.soNhip > m4.sao.nhip && khong.sao < 3 && ChamHoc.cham(m4, m4.loiGiai, khoTruoc('16.4')).soNhip === m4.sao.nhip, J([khong.thang, khong.soNhip]));
+  const khong = ChamHoc.cham(m4, { chinh: ['forward(9)'] }, khoTruoc('20.4'));
+  kiem('16.4: không tắt băng vẫn tới cờ được nhưng chậm (nhịp ' + khong.soNhip + ' > ' + m4.sao.nhip + '): chỉ một hay hai sao; bắn nút tắt băng cho đúng sao.nhip', khong.thang && khong.soNhip > m4.sao.nhip && khong.sao < 3 && ChamHoc.cham(m4, m4.loiGiai, khoTruoc('20.4')).soNhip === m4.sao.nhip, J([khong.thang, khong.soNhip]));
   // 16.5
   const m5 = man(5);
   const khaiTrien = nhieu3(['turn_right()', 'shoot()', 'wait()', 'turn_left()', 'forward(2)']);
   function nhieu3(d) { return d.concat(d, d); }
-  const r5 = ChamHoc.cham(m5, { chinh: khaiTrien }, khoTruoc('16.5'));
+  const r5 = ChamHoc.cham(m5, { chinh: khaiTrien }, khoTruoc('20.5'));
   kiem('16.5: không dùng hit_right, khai triển 3 lần ' + khaiTrien.length + ' dòng > 10 ô: tran-khung, không chạy', khaiTrien.length > m5.khung.chinh && maCua(r5).includes('tran-khung') && !r5.thang);
   kiem('16.5: hit_right() thân đúng 4 dòng turn_right(), shoot(), wait(), turn_left(); khóa tên trong kho', bang(m5.loiGiai.hamCuaEmMoi[0].than, ['turn_right()', 'shoot()', 'wait()', 'turn_left()']) && m5.loiGiai.hamCuaEmMoi[0].thamSo.length === 0);
   kiem('16.5: noi khớp ba nút ba cửa; bỏ noi (mặc định) thì bắn nút đầu mở cả ba cửa rồi nút sau đóng lại (kiểm bằng cách bỏ noi: không thắng)', (() => {
     const bo = Object.assign({}, m5, { noi: undefined });
-    return ChamHoc.cham(m5, m5.loiGiai, tron(khoTruoc('16.5'), m5.loiGiai.hamCuaEmMoi)).thang && !ChamHoc.cham(bo, bo.loiGiai, tron(khoTruoc('16.5'), m5.loiGiai.hamCuaEmMoi)).thang;
+    return ChamHoc.cham(m5, m5.loiGiai, tron(khoTruoc('20.5'), m5.loiGiai.hamCuaEmMoi)).thang && !ChamHoc.cham(bo, bo.loiGiai, tron(khoTruoc('20.5'), m5.loiGiai.hamCuaEmMoi)).thang;
   })());
   // 16.6
   const m6 = man(6);
-  const r6 = ChamHoc.cham(m6, m6.loiGiai, khoTruoc('16.6'));
+  const r6 = ChamHoc.cham(m6, m6.loiGiai, khoTruoc('20.6'));
   kiem('16.6: nhịp từng sân 4, 6, 5 (chờ 0, 2, 1); tổng 15; một chương trình duy nhất thắng cả ba; chờ cố định không thắng đủ ba', bang(r6.theoSan.map((s) => s.soNhip), [4, 6, 5]) && r6.soNhip === 15 && r6.theoSan.every((s) => s.thang) &&
-    [0, 1, 2, 3].every((k) => !ChamHoc.cham(m6, { chinh: WAIT.repeat(k).split('\n').filter(Boolean).concat(['forward(4)']) }, khoTruoc('16.6')).thang), J(r6.theoSan.map((s) => s.soNhip)));
+    [0, 1, 2, 3].every((k) => !ChamHoc.cham(m6, { chinh: WAIT.repeat(k).split('\n').filter(Boolean).concat(['forward(4)']) }, khoTruoc('20.6')).thang), J(r6.theoSan.map((s) => s.soNhip)));
   // 16.7
   const m7 = man(7);
   kiem('16.7: xe đâm hàng rào (dam-tuong vat "rao") nếu đi bắn thay vì đứng bắn; thiếu một nút thì cửa kia chặn; noi bắt cả hai nút', (() => {
-    const r = ChamHoc.cham(m7, m7.loiSai[3].baiLam, khoTruoc('16.7'));
+    const r = ChamHoc.cham(m7, m7.loiSai[3].baiLam, khoTruoc('20.7'));
     const dt = r.theoSan[0].chanDoan.find((c) => c.ma === 'dam-tuong');
-    return dt && /hàng rào/.test(dt.loi) && !ChamHoc.cham(m7, m7.loiSai[0].baiLam, khoTruoc('16.7')).thang && !ChamHoc.cham(m7, m7.loiSai[1].baiLam, khoTruoc('16.7')).thang;
+    return dt && /hàng rào/.test(dt.loi) && !ChamHoc.cham(m7, m7.loiSai[0].baiLam, khoTruoc('20.7')).thang && !ChamHoc.cham(m7, m7.loiSai[1].baiLam, khoTruoc('20.7')).thang;
   })());
   // 16.8
   const m8 = man(8);
   kiem('16.8: maMau gọi fire_left() thiếu wait() (ban-dung-yen, xe còn quay mặt lên rồi đâm nút); lời giải chỉ thêm wait() vào hàm của màn, chương trình giữ nguyên', bang(m8.maMau.hamCuaMan[0].than, ['turn_left()', 'shoot()', 'turn_right()']) && bang(m8.loiGiai.hamCuaMan[0].than, ['turn_left()', 'shoot()', 'wait()', 'turn_right()']) &&
-    bang(m8.maMau.chinh, m8.loiGiai.chinh) && maCua(ChamHoc.cham(m8, m8.maMau, khoTruoc('16.8'))).includes('ban-dung-yen') && !tenCotTruyen.includes('fire_left'));
+    bang(m8.maMau.chinh, m8.loiGiai.chinh) && maCua(ChamHoc.cham(m8, m8.maMau, khoTruoc('20.8'))).includes('ban-dung-yen') && !tenCotTruyen.includes('fire_left'));
   // 16.9
   const m9 = man(9);
-  const r9 = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('16.9'));
+  const r9 = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('20.9'));
   kiem('16.9: omni không đổi hướng mặt suốt lượt chạy (huong 1 mọi nhịp), bóng luôn bay sang phải; slide_right() nhầm hướng làm xe đâm ra ngoài sân', r9.thang && nhipVet({ vet: r9.vet }).every((n) => n.robot.huong === 1) && ev({ vet: r9.vet }, 'ban').every((b) => b.huong === 1 && b.trung === 'nut') &&
-    ChamHoc.cham(m9, m9.loiSai[0].baiLam, khoTruoc('16.9')).theoSan[0].chanDoan.some((c) => c.ma === 'dam-tuong'));
+    ChamHoc.cham(m9, m9.loiSai[0].baiLam, khoTruoc('20.9')).theoSan[0].chanDoan.some((c) => c.ma === 'dam-tuong'));
   // 16.10
   const m10 = man(10);
-  const r10 = ChamHoc.cham(m10, m10.loiGiai, khoTruoc('16.10'));
-  kiem('16.10: nhịp từng sân 7, 8, 9 (chờ cửa 0, 1, 2 nhịp), tổng 24; không tắt băng thì chờ trên băng bị đẩy lùi (không thắng đủ ba sân)', bang(r10.theoSan.map((s) => s.soNhip), [7, 8, 9]) && r10.soNhip === 24 && !ChamHoc.cham(m10, m10.loiSai[1].baiLam, khoTruoc('16.10')).thang);
+  const r10 = ChamHoc.cham(m10, m10.loiGiai, khoTruoc('20.10'));
+  kiem('16.10: nhịp từng sân 7, 8, 9 (chờ cửa 0, 1, 2 nhịp), tổng 24; không tắt băng thì chờ trên băng bị đẩy lùi (không thắng đủ ba sân)', bang(r10.theoSan.map((s) => s.soNhip), [7, 8, 9]) && r10.soNhip === 24 && !ChamHoc.cham(m10, m10.loiSai[1].baiLam, khoTruoc('20.10')).thang);
 }
 
 console.log('\n== Bảng 10 màn chương Súng bóng (lời giải mẫu) ==');

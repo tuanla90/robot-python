@@ -153,10 +153,10 @@ console.log('\n== 3. Robot không có cảm biến; nhện không gắn cảm bi
   kiem('qua máy chấm (chương vong-lap, không có cảm biến): chua-gan-cam-bien, nói thẳng robot chưa gắn cảm biến khoảng cách, nêu hàm gốc dùng được',
     maCua(r).join() === 'chua-gan-cam-bien' && /chưa gắn cảm biến khoảng cách/.test(r.chanDoan[0].loi) && /front_clear\(\)/.test(r.chanDoan[0].loi) && /left_move/.test(r.chanDoan[0].loi) && r.chanDoan[0].ten === 'front_clear', J(r.chanDoan));
   const m1 = man(1);
-  const r2 = ChamHoc.cham(m1, { chinh: ['if right_clear():', '    move()'] }, khoTruoc('6.1'));
+  const r2 = ChamHoc.cham(m1, { chinh: ['if right_clear():', '    move()'] }, khoTruoc('8.1'));
   kiem('qua máy chấm (6.1 chỉ mở front_clear): gọi right_clear → chua-gan-cam-bien, nói màn này mới dùng được front_clear()',
     maCua(r2).join() === 'chua-gan-cam-bien' && /mới dùng được front_clear\(\)/.test(r2.chanDoan[0].loi) && !/chưa gắn cảm biến khoảng cách/.test(r2.chanDoan[0].loi), J(r2.chanDoan));
-  const r3 = ChamHoc.cham(man(7), { chinh: ['if rigth_clear():', '    move()'] }, khoTruoc('6.7'));
+  const r3 = ChamHoc.cham(man(7), { chinh: ['if rigth_clear():', '    move()'] }, khoTruoc('8.7'));
   kiem('gõ sai tên hàm cảm biến (rigth_clear) vẫn là ham-chua-co như mọi hàm lạ', maCua(r3).join() === 'ham-chua-co', J(r3.chanDoan));
   const nhenLoi = (() => { try { SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'front_clear'] }, 'wait()'); return false; } catch (e) { return /Nhện/.test(e.message); } })();
   kiem('nhện không có hướng mặt nên không gắn cảm biến: cấu hình sai bị từ chối', nhenLoi);
@@ -169,7 +169,7 @@ console.log('\n== 3. Robot không có cảm biến; nhện không gắn cảm bi
 console.log('\n== 4. Vòng while chạy mãi: vong-vo-han ==');
 {
   const m2 = man(2);
-  const kho = khoTruoc('6.2');
+  const kho = khoTruoc('8.2');
   const a = ChamHoc.cham(m2, { chinh: ['while front_clear():', '    pass'] }, kho);
   kiem('while front_clear(): pass → vong-vo-han (loaiCore infinite-loop), trỏ đúng dòng while của chương trình, không thắng, 0 sao',
     maCua(a).join() === 'vong-vo-han' && a.chanDoan[0].loaiCore === 'infinite-loop' && a.chanDoan[0].cho.cot === 'chinh' && a.chanDoan[0].cho.dong === 1 && !a.thang && a.sao === 0, J(a.chanDoan));
@@ -180,7 +180,7 @@ console.log('\n== 4. Vòng while chạy mãi: vong-vo-han ==');
   kiem('while True với thân không có lệnh robot → vong-vo-han ở dòng 2 (dòng while, không phải dòng thân)', maCua(c).join() === 'vong-vo-han' && c.chanDoan[0].cho.dong === 2, J(c.chanDoan));
   const d = ChamHoc.cham(ManHoc.timMa('vong-lap.1'), { chinh: LAP500() }, []);
   kiem('quá nhịp mà chương trình KHÔNG có while vẫn là qua-nhieu-nhip', maCua(d).join() === 'qua-nhieu-nhip', J(d.chanDoan));
-  const e = ChamHoc.cham(man(8), man(8).maMau, khoTruoc('6.8'));
+  const e = ChamHoc.cham(man(8), man(8).maMau, khoTruoc('8.8'));
   kiem('6.8 chạy maMau (while True: move()): vong-vo-han ở dòng 1 của chương trình, kèm dam-tuong (xe húc tường), không thắng ở sân nào',
     maCua(e).includes('vong-vo-han') && maCua(e).includes('dam-tuong') && e.theoSan.every((s) => !s.thang) && e.chanDoan.find((x) => x.ma === 'vong-vo-han').cho.dong === 1, J(maCua(e)));
   const msgs = [a, b, c, e].map((r) => r.chanDoan.find((x) => x.ma === 'vong-vo-han').loi);
@@ -197,7 +197,7 @@ console.log('\n== 5. Chấm nhiều sân: thắng tất cả; tổng nhịp; c�
   const kho = (id) => khoTruoc(id);
   // 5a: thắng tất cả mới thắng
   const m4 = man(4);
-  const khoc = kho('6.4');
+  const khoc = kho('8.4');
   const sanDau = ChamHoc.cham(m4, { chinh: ['move()', 'move()', 'turn_right()', 'move()', 'move()'] }, khoc);
   kiem('6.4: đếm cứng theo sân 1 (2 ô): thắng sân 1, trượt sân 2 và 3 → không thắng, 0 sao', !sanDau.thang && sanDau.sao === 0 && sanDau.theoSan.map((s) => s.thang).join() === 'true,false,false', sanDau.theoSan.map((s) => s.thang).join());
   kiem('chẩn đoán gom từ các sân trượt và ghi rõ sân nào ("Sân 2: …")', sanDau.chanDoan.some((c) => /^Sân 2:/.test(c.loi) && c.san === 1), J(sanDau.chanDoan.map((c) => c.loi.slice(0, 40))));
@@ -243,7 +243,7 @@ console.log('\n== 5. Chấm nhiều sân: thắng tất cả; tổng nhịp; c�
   // 5e: sân khác nhau thật (tường đặt khác), cùng khung
   kiem('mỗi màn nhiều sân: 3 sân khác nhau từng ô, cùng kích thước, đều ≤ 7×7', ds.filter((x) => x.so >= 4).every((m) => new Set(m.san.map((s) => s.join('/'))).size === 3 && m.san.every((s) => s.length === m.san[0].length && s[0].length === m.san[0][0].length && s.length <= 7 && s[0].length <= 7)));
   // 5f: chung chương trình
-  const m5 = man(5), k5 = kho('6.5');
+  const m5 = man(5), k5 = kho('8.5');
   const doiSan = ChamHoc.cham(m5, { chinh: ['go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'go_wall()'] }, tron(k5, [H('go_wall', ['while front_clear():', '    move()'])]));
   kiem('6.5: một go_wall() dùng ở cả ba sân: hamDaDung gồm go_wall, move, turn_right (mỗi hàm tính một lần theo HỢP ba sân)', doiSan.sao === 3 && J(doiSan.hamDaDung) === J(['move', 'turn_right', 'go_wall']), J(doiSan.hamDaDung));
   const khongHam = ChamHoc.cham(m5, { chinh: m5.loiGiaiKhac.baiLam.chinh.slice(0, 0).concat(['while front_clear():', '    move()', 'turn_right()', 'while front_clear():', '    move()', 'turn_right()', 'while front_clear():', '    move()']) }, tron(k5, []));
@@ -254,12 +254,12 @@ function LAPK(k) { return k ? ['for i in range(' + k + '):', '    move()'] : [];
 /* ========================================================= 6. CỜ chanWhile Ở MÀN 1 */
 console.log('\n== 6. Màn 1 chưa dạy while; từ màn 2 dùng được ==');
 {
-  const r = ChamHoc.cham(man(1), { chinh: ['while front_clear():', '    move()'] }, khoTruoc('6.1'));
+  const r = ChamHoc.cham(man(1), { chinh: ['while front_clear():', '    move()'] }, khoTruoc('8.1'));
   kiem('6.1: dùng while → chỉ cau-truc-chua-hoc (không chạy, 0 sao), nêu "vòng lặp while" và dòng 1', maCua(r).join() === 'cau-truc-chua-hoc' && /vòng lặp while/.test(r.chanDoan[0].loi) && r.chanDoan[0].dong === 1 && r.sao === 0 && r.vet.length === 0, J(r.chanDoan));
-  const ok = ChamHoc.cham(man(2), man(2).loiGiai, khoTruoc('6.2'));
+  const ok = ChamHoc.cham(man(2), man(2).loiGiai, khoTruoc('8.2'));
   kiem('6.2: while được dùng, 3 sao', ok.sao === 3 && ok.chanDoan.length === 0);
   kiem('6.1: khung khai chanWhile, cauTruc ["for","if"]; 6.2–6.10 cauTruc ["for","if","while"], không chanWhile', man(1).khung.chanWhile === true && J(man(1).cauTruc) === '["for","if"]' && ds.slice(1).every((m) => J(m.cauTruc) === '["for","if","while"]' && m.khung.chanWhile === undefined));
-  const cu = ChamHoc.cham(ManHoc.timMa('tham-so.2'), { chinh: ['forward(3)'] }, tron(khoTruoc('8.2'), []));
+  const cu = ChamHoc.cham(ManHoc.timMa('tham-so.2'), { chinh: ['forward(3)'] }, tron(khoTruoc('12.2'), []));
   kiem('các chương cũ không bị chặn while (chanWhile chỉ ở 6.1): 8.2 vẫn dùng được while thay for', ManHoc.timMa('tham-so.2').khung.chanWhile === undefined && !maCua(cu).includes('cau-truc-chua-hoc'));
 }
 
@@ -269,17 +269,17 @@ console.log('\n== 7. Hàm go_wall của em; thử hàm trong Xưởng ==');
   kiem('go_wall là hàm cốt truyện tạo ở 6.5 (taoHam), tên bị khóa trong kho và không trùng hàm gốc', J(man(5).taoHam) === '["go_wall"]' && tenCotTruyen.includes('go_wall') && ds.filter((m) => m.so !== 5).every((m) => m.taoHam.length === 0));
   const kho = KhoHam.moi({ tenCoDinh: tenCotTruyen });
   kiem('trước 6.5 không đặt được tên go_wall (ten-danh-cho-cot-truyen); ở 6.5 (taoHam) thì đặt được', kho.tao('go_wall', []).ma === 'ten-danh-cho-cot-truyen' && kho.tao('go_wall', [], { taoHam: ['go_wall'] }).ok);
-  const t = ChamHoc.thuHam(man(5), { chinh: [] }, 'go_wall', tron(khoTruoc('6.5'), [H('go_wall', ['while front_clear():', '    move()'])]));
+  const t = ChamHoc.thuHam(man(5), { chinh: [] }, 'go_wall', tron(khoTruoc('8.5'), [H('go_wall', ['while front_clear():', '    move()'])]));
   kiem('thử go_wall trong sân thử 5×5 mặc định (xe ở giữa, mặt lên): đi hai ô tới mép trên, 2 nhịp, không chẩn đoán', t.robot.x === 2 && t.robot.y === 0 && t.soNhip === 2 && t.chanDoan.length === 0, J([t.robot, t.soNhip, t.chanDoan]));
-  const tt = ChamHoc.thuHam(man(5), { chinh: [] }, 'go_wall', tron(khoTruoc('6.5'), [H('go_wall', ['while front_clear():', '    move()'])]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 4, huong: 0 }, tuong: [{ x: 2, y: 1 }] } });
+  const tt = ChamHoc.thuHam(man(5), { chinh: [] }, 'go_wall', tron(khoTruoc('8.5'), [H('go_wall', ['while front_clear():', '    move()'])]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 4, huong: 0 }, tuong: [{ x: 2, y: 1 }] } });
   kiem('sân thử có tường: go_wall dừng sát tường (xe ở (2,2)), 2 nhịp', tt.robot.y === 2 && tt.soNhip === 2 && tt.chanDoan.length === 0, J(tt.robot));
 }
 
 /* ========================================================== 8. DỮ LIỆU 10 MÀN + BẢNG */
 console.log('\n== 8. Dữ liệu 10 màn ==');
 {
-  kiem('đúng 10 màn, id 6.1…6.10, mã khoang-cach.1…10, chương đứng thứ 6 sau vong-lap (cuối đợt 1, chương cổng mở đợt 2), tên "Cảm biến khoảng cách"',
-    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '6.' + (i + 1) && m.ma === 'khoang-cach.' + (i + 1)) && ThuTu.thuTu[5] === 'khoang-cach' && ThuTu.thuTu[4] === 'vong-lap' && ThuTu.congDot2 === 'khoang-cach' && !ThuTu.laDot2('khoang-cach') && ThuTu.ten['khoang-cach'] === 'Cảm biến khoảng cách');
+  kiem('đúng 10 màn, id 8.1…8.10, mã khoang-cach.1…10, chương đứng thứ 6 sau vong-lap (cuối đợt 1, chương cổng mở đợt 2), tên "Cảm biến khoảng cách"',
+    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '8.' + (i + 1) && m.ma === 'khoang-cach.' + (i + 1)) && ThuTu.thuTu[7] === 'khoang-cach' && ThuTu.thuTu[5] === 'vong-lap' && ThuTu.congDot2 === 'khoang-cach' && !ThuTu.laDot2('khoang-cach') && ThuTu.ten['khoang-cach'] === 'Cảm biến khoảng cách');
   kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ màn 10 có huy hiệu "khoang-cach"', J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
     ds.every((m) => !!m.huyHieu === (m.so === 10)) && ds[9].huyHieu.ma === 'khoang-cach');
   kiem('hamGoc: 1–6, 8, 9 chỉ mở front_clear; 7 và 10 mở thêm left_clear, right_clear (bám tường); 9 có thêm 4 lệnh tay kẹp; mọi màn đủ 5 lệnh bánh',

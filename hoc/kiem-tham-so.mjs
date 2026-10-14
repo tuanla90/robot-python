@@ -74,10 +74,10 @@ const rs = (f, ns) => ns.map((n) => { const r = f(n); return n + ':' + (r.thang 
 /* ================================================== 1. HÀM CÓ THAM SỐ Ở NHÂN PYTHON */
 console.log('\n== 1. Hàm có tham số ở nhân Python: gọi đúng / thiếu / thừa đối số ==');
 {
-  const m33 = man('8.3');
+  const m33 = man('12.3');
   const FW = [H('forward', FOR('n', ['move()']), ['n'])];
-  const kho = tron(khoTruoc('8.3'), FW);
-  const chay = (chinh, hamEm = FW) => ChamHoc.cham(m33, { chinh }, tron(khoTruoc('8.3'), hamEm));
+  const kho = tron(khoTruoc('12.3'), FW);
+  const chay = (chinh, hamEm = FW) => ChamHoc.cham(m33, { chinh }, tron(khoTruoc('12.3'), hamEm));
 
   const dung = chay(['forward(5)', 'turn_left()', 'forward(3)', 'turn_left()', 'forward(1)']);
   kiem('forward(n) đúng chữ ký: xe đi đúng 5, 3, 1 ô và thắng 3 sao', dung.thang && dung.sao === 3 && dung.soNhip === 11, J([dung.thang, dung.sao, dung.soNhip, maCua(dung)]));
@@ -87,9 +87,9 @@ console.log('\n== 1. Hàm có tham số ở nhân Python: gọi đúng / thiếu
   const thua = chay(['forward(5, 2)', 'turn_left()', 'forward(3)']);
   kiem('gọi forward(5, 2) thừa đối số: loi-chay, "cần 1 đối số, đang có 2", dòng 1', maCua(thua).join() === 'loi-chay' && /cần 1 đối số, đang có 2/.test(loiCua(thua)) && /dòng 1/.test(loiCua(thua)), loiCua(thua));
   kiem('lỗi gọi sai đối số dừng chương trình ngay: các lệnh đã chạy trước đó vẫn tính, xe không thắng', !thieu.thang && thieu.sao === 0 && thieu.soNhip >= 6, String(thieu.soNhip));
-  const trongHam = ChamHoc.cham(man('8.6'), { chinh: ['deliver(3)'] }, tron(khoTruoc('8.6'), [H('deliver', ['pick()', 'forward()', 'drop()'], ['n'])]));
+  const trongHam = ChamHoc.cham(man('12.6'), { chinh: ['deliver(3)'] }, tron(khoTruoc('12.6'), [H('deliver', ['pick()', 'forward()', 'drop()'], ['n'])]));
   kiem('gọi forward() thiếu đối số bên TRONG thân deliver: chỉ đúng "hàm deliver, dòng 2"', /hàm deliver, dòng 2/.test(loiCua(trongHam)) && /cần 1 đối số, đang có 0/.test(loiCua(trongHam)), loiCua(trongHam));
-  const step1 = ChamHoc.cham(man('8.8'), { chinh: ['step(3)'] }, tron(khoTruoc('8.8'), [H('step', FOR('a', ['move()']), ['a', 'b'])]));
+  const step1 = ChamHoc.cham(man('12.8'), { chinh: ['step(3)'] }, tron(khoTruoc('12.8'), [H('step', FOR('a', ['move()']), ['a', 'b'])]));
   kiem('hàm hai tham số gọi với một số: "cần 2 đối số, đang có 1"', /cần 2 đối số, đang có 1/.test(loiCua(step1)), loiCua(step1));
   const bieuThuc = chay(['forward(2 + 3)', 'turn_left()', 'forward(6 // 2)', 'turn_left()', 'forward(1)']);
   kiem('đối số là biểu thức: forward(2 + 3), forward(6 // 2) chạy đúng như forward(5), forward(3)', bieuThuc.thang && bieuThuc.sao === 3 && bieuThuc.soNhip === 11, J([bieuThuc.thang, maCua(bieuThuc)]));
@@ -112,7 +112,7 @@ console.log('\n== 1. Hàm có tham số ở nhân Python: gọi đúng / thiếu
 console.log('\n== 2. Đổi tham số thì xe đi đúng số ô: forward, right, deliver, step trên sân thử ==');
 {
   const kho = tron(KHO, []);
-  const mT = man('8.10');
+  const mT = man('12.10');
   const thu = (ten, doiSo, sanThu, hamEm = kho) => ChamHoc.thuHam(mT, {}, ten, hamEm, { sanThu, doiSo, nhipToiDa: 200 });
   const SAN = { rong: 11, cao: 11, batDau: { x: 5, y: 10, huong: 0 }, vat: [], tuong: [] };
   const fw = [0, 1, 2, 5, 8, 10].map((n) => thu('forward', [n], SAN));
@@ -141,8 +141,8 @@ console.log('\n== 2. Đổi tham số thì xe đi đúng số ô: forward, right
 console.log('\n== 3. Kho hàm: tham số được giữ, tên đối số hợp lệ, tên cốt truyện bị khóa ==');
 {
   const tenMoi = ['forward', 'right', 'deliver', 'step'];
-  kiem('bốn hàm cốt truyện mới: forward, right, deliver, step — chỉ tạo ở đúng màn của nó (8.3, 8.4, 8.6, 8.8), tổng 18 tên khóa',
-    J(ds.flatMap((m) => m.taoHam)) === J(tenMoi) && ds.filter((m) => m.taoHam.length).map((m) => m.id).join() === '8.3,8.4,8.6,8.8' && tenCotTruyen.length === 18, J(tenCotTruyen));
+  kiem('bốn hàm cốt truyện mới: forward, right, deliver, step — chỉ tạo ở đúng màn của nó (12.3, 12.4, 12.6, 12.8), tổng 18 tên khóa',
+    J(ds.flatMap((m) => m.taoHam)) === J(tenMoi) && ds.filter((m) => m.taoHam.length).map((m) => m.id).join() === '12.3,12.4,12.6,12.8' && tenCotTruyen.length === 18, J(tenCotTruyen));
   const truoc = new Set(tatCa.filter((m) => m.chuong !== 'tham-so').flatMap((m) => m.taoHam));
   kiem('không trùng tên hàm cốt truyện chương trước (move, turn_right, … bend_right) và không trùng tên hàm gốc', tenMoi.every((t) => !truoc.has(t) && !KhoHam.HAM_GOC_MAC_DINH.includes(t)), J([...truoc]));
   const kho = KhoHam.moi({ tenCoDinh: tenCotTruyen });
@@ -173,8 +173,8 @@ console.log('\n== 3. Kho hàm: tham số được giữ, tên đối số hợp 
 /* ====================================================== 4. DỮ LIỆU 10 MÀN */
 console.log('\n== 4. Chương tham-so: dữ liệu 10 màn ==');
 {
-  kiem('đúng 10 màn, số 1..10, id 8.1…8.10 (chương thứ 8), mã tham-so.1…', ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '8.' + (i + 1) && m.ma === 'tham-so.' + (i + 1)));
-  kiem('chương đứng thứ 8 trong thứ tự chương (sau bang-chuyen, trước nhen), tên "Hàm có tham số"', ThuTu.thuTu[7] === 'tham-so' && ThuTu.thuTu[6] === 'bang-chuyen' && ThuTu.thuTu[8] === 'nhen' && ThuTu.ten['tham-so'] === 'Hàm có tham số');
+  kiem('đúng 10 màn, số 1..10, id 12.1…12.10 (chương thứ 8), mã tham-so.1…', ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '12.' + (i + 1) && m.ma === 'tham-so.' + (i + 1)));
+  kiem('chương đứng thứ 8 trong thứ tự chương (sau bang-chuyen, trước nhen), tên "Hàm có tham số"', ThuTu.thuTu[11] === 'tham-so' && ThuTu.thuTu[10] === 'bang-chuyen' && ThuTu.thuTu[12] === 'nhen' && ThuTu.ten['tham-so'] === 'Hàm có tham số');
   kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ màn 10 có huy hiệu tham-so',
     J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
       ds.filter((m) => m.huyHieu).length === 1 && ds[9].huyHieu.ma === 'tham-so' && ds[9].huyHieu.ten === 'Huy hiệu Hàm có tham số');
@@ -222,14 +222,14 @@ for (const m of ds) {
 console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trượt hoặc chậm ==');
 {
   // 8.1: forward(n) có sẵn, đổi số từng đoạn
-  const f1 = (a, b, c) => chamMan('8.1', ['forward(' + a + ')', 'turn_right()', 'forward(' + b + ')', 'turn_left()', 'forward(' + c + ')']);
+  const f1 = (a, b, c) => chamMan('12.1', ['forward(' + a + ')', 'turn_right()', 'forward(' + b + ')', 'turn_left()', 'forward(' + c + ')']);
   kiem('8.1: (4, 3, 2) thắng 3 sao 11 nhịp; sai một số ở đoạn đầu / giữa / cuối thì trượt; đoạn cuối dư vẫn tới (thắng ngay khi chạm cờ)',
     f1(4, 3, 2).sao === 3 && f1(4, 3, 2).soNhip === 11 && !f1(3, 3, 2).thang && !f1(4, 2, 2).thang && !f1(4, 3, 1).thang && f1(4, 3, 5).thang && f1(4, 3, 5).soNhip === 11, rs((c) => f1(4, 3, c), [1, 2, 5]));
   kiem('8.1: đoạn đầu dư một ô (5): vẫn tới cờ nhưng chậm một nhịp, còn 2 sao', f1(5, 3, 2).thang && f1(5, 3, 2).soNhip === 12 && f1(5, 3, 2).sao === 2 && maCua(f1(5, 3, 2)).includes('dam-tuong'), J([f1(5, 3, 2).soNhip, f1(5, 3, 2).sao]));
 
   // 8.2: sửa thân forward của màn
-  const m2 = man('8.2');
-  const sua2 = (than) => chamMan('8.2', m2.loiGiai.chinh, { hamCuaMan: [H('forward', than, ['n'])] });
+  const m2 = man('12.2');
+  const sua2 = (than) => chamMan('12.2', m2.loiGiai.chinh, { hamCuaMan: [H('forward', than, ['n'])] });
   const mm = ChamHoc.cham(m2, m2.maMau, KHO);
   kiem('8.2: maMau (thân chỉ có move()): xe nhích 1 ô mỗi lần gọi, trượt, chẩn đoán dam-tuong + chua-toi-co', !mm.thang && maCua(mm).includes('dam-tuong') && maCua(mm).includes('chua-toi-co'), J(maCua(mm)));
   kiem('8.2: for i in range(n) → 3 sao 12 nhịp; range(3) trượt; range(n + 1) vẫn tới nhưng chậm; range(2 * n) thừa gấp đôi',
@@ -239,28 +239,28 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
   kiem('8.2: while thay cho for cũng đúng nhịp nhưng nhiều ô hơn (4 ô thân hàm thay vì 2): 2 sao', wh.thang && wh.soNhip === 12 && wh.soO === m2.sao.o + 2 && wh.sao === 2, J([wh.thang, wh.soO, wh.soNhip, wh.sao]));
 
   // 8.3: tạo forward
-  const m3 = man('8.3');
-  const t3 = (than, thamSo = ['n']) => ChamHoc.cham(m3, { chinh: m3.loiGiai.chinh }, tron(khoTruoc('8.3'), [H('forward', than, thamSo)]));
+  const m3 = man('12.3');
+  const t3 = (than, thamSo = ['n']) => ChamHoc.cham(m3, { chinh: m3.loiGiai.chinh }, tron(khoTruoc('12.3'), [H('forward', than, thamSo)]));
   kiem('8.3: forward(n) với range(n) → 3 sao (12 ô, 11 nhịp); thân hàm có chú thích hoặc dòng trống không đổi nhịp', t3(FOR('n', ['move()'])).sao === 3 && t3(FOR('n', ['move()'])).soO === 12 && t3(['# lặp n lần'].concat(FOR('n', ['move()']))).soNhip === 11);
   kiem('8.3: tạo forward KHÔNG có đối số rồi gọi forward(5) → loi-chay "cần 0 đối số, đang có 1"', (() => { const r = t3(['move()'], []); return /cần 0 đối số, đang có 1/.test(loiCua(r)); })());
   kiem('8.3: tên đối số khác (đặt là "so") vẫn chạy đúng — tên đối số do em chọn, miễn thân hàm dùng cùng tên', t3(FOR('so', ['move()']), ['so']).sao === 3);
   kiem('8.3: tên đối số khác tên dùng trong thân (def forward(so) mà range(n)) → loi-chay', maCua(t3(FOR('n', ['move()']), ['so'])).join() === 'loi-chay');
 
   // 8.4: right(k)
-  const m4 = man('8.4');
-  const r4 = (chinh, k = FOR('k', ['turn_right()'])) => ChamHoc.cham(m4, { chinh }, tron(khoTruoc('8.4'), [H('right', k, ['k'])]));
+  const m4 = man('12.4');
+  const r4 = (chinh, k = FOR('k', ['turn_right()'])) => ChamHoc.cham(m4, { chinh }, tron(khoTruoc('12.4'), [H('right', k, ['k'])]));
   kiem('8.4: lời giải right(2)…right(3) thắng 3 sao, 15 nhịp (right(3) tốn 3 nhịp); đường nhanh nhất chỉ 13 nhịp nhờ turn_left()', r4(m4.loiGiai.chinh).sao === 3 && r4(m4.loiGiai.chinh).soNhip === 15, J([r4(m4.loiGiai.chinh).soNhip]));
   const nhanh = r4(['right(2)', 'forward(4)', 'right(1)', 'forward(3)', 'turn_left()', 'forward(2)']);
   kiem('8.4: thay right(3) bằng turn_left() thì 13 nhịp (nhanh hơn) nhưng thêm ô của turn_left: 17 ô > 15 → 2 sao', nhanh.thang && nhanh.soNhip === 13 && nhanh.soO === 17 && nhanh.sao === 2, J([nhanh.soNhip, nhanh.soO, nhanh.sao]));
-  const cu = ChamHoc.cham(m4, { chinh: ['u_turn()', 'forward(4)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(2)'] }, tron(khoTruoc('8.4'), m4.loiGiai.hamCuaEmMoi));
+  const cu = ChamHoc.cham(m4, { chinh: ['u_turn()', 'forward(4)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(2)'] }, tron(khoTruoc('12.4'), m4.loiGiai.hamCuaEmMoi));
   kiem('8.4: dùng ba hàm cũ (u_turn, turn_right, turn_left): 13 nhịp nhưng 17 ô → 2 sao — right(k) thay được cả ba bằng hai hàm', cu.thang && cu.soNhip === 13 && cu.soO === 17 && cu.sao === 2, J([cu.soO, cu.soNhip, cu.sao]));
   const bo4 = r4(['turn_right()', 'turn_right()', 'forward(4)', 'turn_right()', 'forward(3)', 'turn_right()', 'turn_right()', 'turn_right()', 'forward(2)']);
   kiem('8.4: bỏ right(k), quay bằng turn_right() từng dòng (vẫn dùng forward): vừa khung 9 dòng, 15 nhịp nhưng 16 ô > 15 → 2 sao', bo4.thang && bo4.soNhip === 15 && bo4.soO === 16 && bo4.sao === 2, J([bo4.soO, bo4.soNhip, bo4.sao]));
   kiem('8.4: right(1) chỉ quay một lần dù k bằng mấy → trượt; right(k) với range(k) và k = 0 thì không quay', !r4(m4.loiGiai.chinh, ['turn_right()']).thang && r4(['right(0)', 'right(2)', 'forward(4)', 'right(1)', 'forward(3)', 'right(3)', 'forward(2)']).soNhip === 15);
 
   // 8.5
-  const m5 = man('8.5');
-  const c5 = (chinh) => chamMan('8.5', chinh);
+  const m5 = man('12.5');
+  const c5 = (chinh) => chamMan('12.5', chinh);
   const lech5 = (i, d) => { const ch = m5.loiGiai.chinh.slice(); ch[i] = 'forward(' + (+/\d+/.exec(ch[i]) + d) + ')'; return c5(ch); };
   kiem('8.5: năm đoạn 4-3-2-3-4 → 3 sao, 20 nhịp, 18 ô; thiếu một ô ở đoạn nào cũng trượt; dư một ô ở bốn đoạn đầu thì đâm tường, chỉ 2 sao',
     c5(m5.loiGiai.chinh).sao === 3 && c5(m5.loiGiai.chinh).soNhip === 20 && c5(m5.loiGiai.chinh).soO === 18 &&
@@ -269,8 +269,8 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
   kiem('8.5: đổi chỗ hai khúc rẽ cuối (turn_left cho turn_right) → trượt', !c5(m5.loiGiai.chinh.map((s, i) => (i === 7 ? 'turn_left()' : s))).thang);
 
   // 8.6
-  const m6 = man('8.6');
-  const d6 = (chinh, than = T_DELIVER) => ChamHoc.cham(m6, { chinh }, tron(khoTruoc('8.6'), [H('deliver', than, ['n'])]));
+  const m6 = man('12.6');
+  const d6 = (chinh, than = T_DELIVER) => ChamHoc.cham(m6, { chinh }, tron(khoTruoc('12.6'), [H('deliver', than, ['n'])]));
   const T_DELIVER = ['pick()', 'forward(n)', 'drop()'];
   kiem('8.6: deliver(3), turn_right(), forward(1), deliver(2), turn_right(), forward(1), deliver(3) → 3 sao, 23 nhịp, 27 ô', d6(m6.loiGiai.chinh).sao === 3 && d6(m6.loiGiai.chinh).soNhip === 23 && d6(m6.loiGiai.chinh).soO === 27, J([d6(m6.loiGiai.chinh).sao, d6(m6.loiGiai.chinh).soNhip, d6(m6.loiGiai.chinh).soO]));
   const lech6 = (i, d) => { const ch = m6.loiGiai.chinh.slice(); ch[i] = ch[i].replace(/\d+/, (x) => +x + d); return d6(ch); };
@@ -281,8 +281,8 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
   kiem('8.6: deliver() thả bằng release() khi tay nâng → vat-vo, dừng ngay', maCua(d6(m6.loiGiai.chinh, ['pick()', 'forward(n)', 'release()', 'wait()'])).includes('vat-vo'));
 
   // 8.7
-  const m7 = man('8.7');
-  const run7 = (than) => chamMan('8.7', m7.loiGiai.chinh, { hamCuaMan: [H('run', than, ['n'])] });
+  const m7 = man('12.7');
+  const run7 = (than) => chamMan('12.7', m7.loiGiai.chinh, { hamCuaMan: [H('run', than, ['n'])] });
   const mm7 = ChamHoc.cham(m7, m7.maMau, KHO);
   kiem('8.7: maMau (run luôn đi 3 ô): trượt, dam-tuong; run(3) là lần duy nhất đúng', !mm7.thang && maCua(mm7).includes('dam-tuong'), J(maCua(mm7)));
   kiem('8.7: range(n) rồi turn_right() → 3 sao (13 ô, 22 nhịp); range(n) không có rẽ → trượt; rẽ nằm trong vòng lặp → trượt',
@@ -294,15 +294,15 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
   kiem('8.7: sửa nửa vời (range(3) giữ nguyên) vẫn trượt: lần gọi run(1), run(2) lệch', !sai3.thang);
 
   // 8.8
-  const m8 = man('8.8');
-  const s8 = (chinh) => chamMan('8.8', chinh);
+  const m8 = man('12.8');
+  const s8 = (chinh) => chamMan('12.8', chinh);
   kiem('8.8: step(3, 1), step(2, 2), step(1, 3) → 3 sao, 17 nhịp, 16 ô; chỉ cần 3 dòng chương trình', s8(m8.loiGiai.chinh).sao === 3 && s8(m8.loiGiai.chinh).soNhip === 17 && s8(m8.loiGiai.chinh).soO === 16 && m8.loiGiai.chinh.length === 3);
   kiem('8.8: đổi chỗ hai số của một bậc (step(1, 3) thay step(3, 1)) → trượt; đổi chỗ hai số mọi bậc → trượt',
     !s8(['step(1, 3)', 'step(2, 2)', 'step(1, 3)']).thang && !s8(['step(1, 3)', 'step(2, 2)', 'step(3, 1)']).thang);
   kiem('8.8: step(2, 2) ở giữa đổi chỗ hai số không đổi gì (2, 2) — cả hai cách đều thắng', s8(['step(3, 1)', 'step(2, 2)', 'step(1, 3)']).thang);
 
   // 8.9: số lần gọi KHÔNG bằng số ô
-  const f9 = (a, b, c, d) => chamMan('8.9', ['forward(' + a + ')', 'turn_right()', 'forward(' + b + ')', 'turn_left()', 'forward(' + c + ')', 'turn_left()', 'forward(' + d + ')']);
+  const f9 = (a, b, c, d) => chamMan('12.9', ['forward(' + a + ')', 'turn_right()', 'forward(' + b + ')', 'turn_left()', 'forward(' + c + ')', 'turn_left()', 'forward(' + d + ')']);
   kiem('8.9: (2, 3, 6, 2): đoạn xuôi băng 5 ô chỉ cần 3 lần, đoạn ngược băng 4 ô cần 6 lần → 3 sao, 16 nhịp', f9(2, 3, 6, 2).sao === 3 && f9(2, 3, 6, 2).soNhip === 16, J([f9(2, 3, 6, 2).sao, f9(2, 3, 6, 2).soNhip]));
   kiem('8.9: đếm theo số ô (2, 5, 4, 2) trượt; thiếu một lần ở đoạn xuôi băng (2, 2, 6, 2) hay ở đoạn ngược băng (2, 3, 5, 2) đều trượt',
     !f9(2, 5, 4, 2).thang && !f9(2, 2, 6, 2).thang && !f9(2, 3, 5, 2).thang);
@@ -310,8 +310,8 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
     f9(2, 4, 6, 2).thang && f9(2, 4, 6, 2).sao === 2 && f9(2, 3, 7, 2).thang && f9(2, 3, 7, 2).sao === 2);
 
   // 8.10
-  const m10 = man('8.10');
-  const b10 = (a, b, c, d, e) => chamMan('8.10', ['deliver(' + a + ')', 'turn_right()', 'forward(' + b + ')', 'turn_right()', 'deliver(' + c + ')', 'turn_left()', 'forward(' + d + ')', 'turn_left()', 'deliver(' + e + ')']);
+  const m10 = man('12.10');
+  const b10 = (a, b, c, d, e) => chamMan('12.10', ['deliver(' + a + ')', 'turn_right()', 'forward(' + b + ')', 'turn_right()', 'deliver(' + c + ')', 'turn_left()', 'forward(' + d + ')', 'turn_left()', 'deliver(' + e + ')']);
   kiem('8.10: (4, 2, 5, 2, 3): ba chuyến qua băng → 3 sao, 31 nhịp, 31 ô; chuyến đầu vật dịch 5 ô chỉ cần 4 lần, chuyến giữa 4 ô ngược băng cần 5 lần, chuyến cuối 4 ô cần 3 lần',
     b10(4, 2, 5, 2, 3).sao === 3 && b10(4, 2, 5, 2, 3).soNhip === 31 && b10(4, 2, 5, 2, 3).soO === 31, J([b10(4, 2, 5, 2, 3).sao, b10(4, 2, 5, 2, 3).soNhip]));
   kiem('8.10: đếm theo số ô (5, 2, 4, 2, 4) trượt; thiếu một ở chuyến đầu (3, 2, 5, 2, 3), chuyến giữa (4, 2, 4, 2, 3) hay chuyến cuối (4, 2, 5, 2, 2) trượt',
