@@ -159,8 +159,12 @@
   }
   function dangMo() { return E.host.classList.contains('open'); }
 
+  /** Drone: hàm đang sửa có đối số chuỗi (go(d), walk(path)) thì Xưởng cho hiện khối mẫu `if d == "U":` dù màn chưa có battery() — để sửa / viết go(d) như ở chương nhện. */
+  function hamChuoiDrone(man) {
+    return man.loaiRobot === 'drone' && TP.coCauTruc(man, 'if') && thamSoHienTai().some(function (n) { return kieuBienHam(n) !== 'so'; });
+  }
   function lamPal() {
-    var man = A.man();
+    var man = A.man(), chuoiDr = hamChuoiDrone(man);
     S.pal.dung({
       goc: man.hamGoc,
       vong: TP.coCauTruc(man, 'for'),
@@ -169,7 +173,8 @@
       mau: TP.coMauCua(man),
       pin: TP.coPinCua(man),
       chuoi: TP.coCauTruc(man, 'for') && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
-      dieuKien: TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man),
+      dieuKien: (TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man)) || chuoiDr,
+      thamSoChuoi: chuoiDr,                              // khối mẫu `if d == "U":` thay cho khối battery()
       em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
       man: A.bai().hamCuaMan,
       bien: (hamHienTai() || {}).thamSo || [],          // hàm có tham số: nhóm BIẾN có thẻ cho từng đối số

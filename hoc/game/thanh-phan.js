@@ -1244,7 +1244,7 @@
         var cam = spec.cam || [];
         if (!spec.dieuKien && !cam.length && !spec.mau && !spec.pin) return;
         nhan(t('choi.nhom.dk'), lop('g-dk'));
-        (spec.pin ? ['if battery() < 3:', 'else:'] : spec.mau ? (cam.length ? ['if ' + camDau + '():'] : []).concat(['if color() == "red":', 'elif color() == "blue":', 'else:', 'c = color()'])          // cảm biến màu: so màu + gán biến
+        (spec.thamSoChuoi ? ['if d == "U":', 'elif d == "D":', 'else:'] : spec.pin ? ['if battery() < 3:', 'else:'] : spec.mau ? (cam.length ? ['if ' + camDau + '():'] : []).concat(['if color() == "red":', 'elif color() == "blue":', 'else:', 'c = color()'])          // cảm biến màu: so màu + gán biến
           : cam.length ? (cam.indexOf('right_clear') >= 0 ? ['if right_clear():', 'elif front_clear():', 'else:'] : ['if ' + camDau + '():', 'else:'])
           : ['if d == "U":', 'elif d == "D":', 'else:']).forEach(gachDk);
       }

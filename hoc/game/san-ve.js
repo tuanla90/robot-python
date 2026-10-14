@@ -6,6 +6,7 @@
    để tay kẹp nhô ra mép sân không bị cắt; độ phân giải = pixel thiết bị nên hình part luôn nguyên lần, rõ nét). Hạt, chớp đỏ, dấu ?/! cũng vẽ ở lớp phủ. Phát lại từng sự kiện 'nhip' của vết (kể cả tay gắp và vật).
    Chương cảm biến màu: ô sàn màu (ký hiệu r g b y trong sân hoặc lớp cfg.mau), vật có màu (cfg.vatMau, hay vat[i].mau), đích có màu (khung nét đứt tô màu đích;
    vật đúng màu nằm trên thì khung đặc, sai màu thì dấu ✗), vòng sáng + bong chữ màu khi cảm biến màu đọc (docCamBien.cam === 'mau').
+   CAMERA (docCamBien.cam === 'camera', color() đọc ô TRƯỚC MẶT): hai tia từ đôi mắt trên thân tới ô được nhìn, ô đó nháy khung theo màu đọc được (nguon 'san' tô cả ô, 'vat' bốn góc ôm vật, 'chan' khung xám + X), hai đốm mắt sáng rực, bong chữ màu nổi trên xe.
    Chương nam châm: vật có chất (vatChat s sắt / g gỗ, hay vat[i].chat; sắt vẽ khối kim loại xám xanh, gỗ vẫn là thùng gỗ); tay nam châm (robot.tay === 'nam-cham'):
    vòng sóng tỏa 2 ô phía trước khi bật (dừng ở vật gỗ / tường), vật sắt bị hút bay về ô sát mũi xe rồi DÍNH (vẽ trên lớp phủ, theo xe và quay theo xe),
    thả thì rơi xuống, hut-go = sóng chạm vật gỗ rồi tắt + dấu ?, tha-bi-chan = vật rung + dấu !, cảm biến từ front_metal() = tia bạc (sắt) / nâu (gỗ).
@@ -168,10 +169,15 @@
       var now = performance.now(), key = d.tu.x + ',' + d.tu.y + '>' + (d.o ? d.o.x + ',' + d.o.y : '-' + d.huong), ds = this.docs, i;
       ms = Math.max(140, ms || 360);
       for (i = ds.length - 1; i >= 0; i--) if (ds[i].key === key) { ds.splice(i, 1); break; }
-      ds.push({ key: key, tu: d.tu, o: d.o, huong: d.huong, trong: !!d.trong, vat: d.vat || null, cam: d.cam || null, mau: d.mau || null, chat: d.chat || null, dai: d.cam === 'tu' ? this.tamTrong(d.tu, d.huong) : 0, t0: now, ms: ms });
+      ds.push({ key: key, tu: d.tu, o: d.o, huong: d.huong, trong: !!d.trong, vat: d.vat || null, cam: d.cam || null, mau: d.mau || null, nguon: d.nguon || null, chat: d.chat || null, dai: d.cam === 'tu' ? this.tamTrong(d.tu, d.huong) : 0, t0: now, ms: ms });
       while (ds.length > 6) ds.shift();
       if (d.cam === 'pin' && this.vis && this.vis.dr) this.vis.dr.nhay = now + Math.max(ms, 320);                 // đọc battery(): thanh pin nháy, đèn thân sáng
-      if (d.cam === 'mau' && this.vis) this.vis.bongMau = { mau: d.mau || 'none', den: now + Math.max(ms, 300) };      // bong chữ màu vừa đọc nổi trên xe trong khoảng một nhịp
+      if ((d.cam === 'mau' || d.cam === 'camera') && this.vis) this.vis.bongMau = { mau: d.mau || 'none', den: now + Math.max(ms, 300) };      // bong chữ màu vừa đọc nổi trên xe trong khoảng một nhịp (cảm biến bụng và camera)
+    },
+    /** Camera đang đọc không (hai đốm mắt trên thân sáng rực trong lúc tia còn chạy). */
+    camMatSang: function (now) {
+      for (var i = 0; i < this.docs.length; i++) if (this.docs[i].cam === 'camera' && now - this.docs[i].t0 < this.docs[i].ms * 0.85) return true;
+      return false;
     },
     /** Còn tia cảm biến đang sáng không (cảm biến trên thân xe sáng cùng lúc). */
     camBienSang: function (now) {
@@ -185,6 +191,7 @@
       for (i = 0; i < ds.length; i++) {
         var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45), rgb = d.trong ? '93,255,122' : '255,74,60';
         if (d.cam === 'mau' || d.cam === 'pin') continue;                         // cảm biến màu: vòng sáng vẽ dưới robot (veVongMauDuoi); cảm biến pin: thanh pin nháy (veThanhPin)
+        if (d.cam === 'camera') { this.veTiaCamera(g, d, now, u, a); continue; }   // camera: hai tia từ đôi mắt tới ô trước mặt, ô đó nháy khung theo màu đọc được
         if (d.cam === 'tu') { this.veTiaTu(g, d, u, a); continue; }              // cảm biến từ: tia bạc tới vật sắt / tia nâu tới vật gỗ
         var vx = DX[d.huong], vy = DY[d.huong], x0 = d.tu.x * T + 7 + vx * 5, y0 = d.tu.y * T + 7 + vy * 5;
         var cx = d.o.x * T + 7, cy = d.o.y * T + 7, x1 = d.trong ? cx : cx - vx * 6, y1 = d.trong ? cy : cy - vy * 6;
@@ -198,6 +205,44 @@
         else { g.beginPath(); g.moveTo(x1 - 2.5, y1 - 2.5); g.lineTo(x1 + 2.5, y1 + 2.5); g.moveTo(x1 + 2.5, y1 - 2.5); g.lineTo(x1 - 2.5, y1 + 2.5); g.stroke(); }
         g.restore();
       }
+    },
+    /**
+     * Tia của CAMERA (luật color() 14/10): từ hai con mắt trên thân (cách tâm thân 2,5 pixel part, hai bên) một mũi tia mờ chụm lại ở tâm ô được nhìn (d.o, ô trước mặt),
+     * ô đó nháy khung theo màu đọc được: nguon 'san' = cả ô tô màu sàn; 'vat' = bốn góc ôm quanh vật (màu vật); 'chan' = tường / rào / thùng / cửa / mép: khung xám + dấu X. Màu 'none' là xám nhạt.
+     */
+    veTiaCamera: function (g, d, now, u, a) {
+      var vx = DX[d.huong], vy = DY[d.huong], e = 2.5 * (this.pp || 0.7), tx = d.tu.x * T + 7, ty = d.tu.y * T + 7;
+      var cx = d.o.x * T + 7, cy = d.o.y * T + 7, chan = d.nguon === 'chan', vat = d.nguon === 'vat';
+      var col = chan ? '#aab3c4' : this.mauHien(d.mau), nhay = u < 0.55 ? (((now / 80) | 0) & 1 ? 1 : 0.6) : 1, ox = d.o.x * T, oy = d.o.y * T, i;
+      g.save();
+      g.globalAlpha = 0.3 * a; g.fillStyle = col;                                     // mũi tia: tam giác hẹp từ hai mắt tới tâm ô
+      g.beginPath(); g.moveTo(tx + vy * e, ty - vx * e); g.lineTo(tx - vy * e, ty + vx * e); g.lineTo(cx, cy); g.closePath(); g.fill();
+      g.setLineDash([3, 1]); g.lineDashOffset = -((now / 40) % 3);
+      g.globalAlpha = 0.95 * a; g.lineWidth = 3; g.strokeStyle = '#1b120a';
+      g.beginPath(); g.moveTo(tx + vx * 3, ty + vy * 3); g.lineTo(cx - vx * (vat ? 5 : 2), cy - vy * (vat ? 5 : 2)); g.stroke();
+      g.lineWidth = 1.5; g.strokeStyle = col;
+      g.beginPath(); g.moveTo(tx + vx * 3, ty + vy * 3); g.lineTo(cx - vx * (vat ? 5 : 2), cy - vy * (vat ? 5 : 2)); g.stroke();
+      g.setLineDash([]);
+      g.globalAlpha = a * nhay;
+      if (vat) {                                                                      // bốn góc ôm vật (khung 12×12 quanh tâm ô)
+        var L = [[-6, -6, 1, 1], [5, -6, -1, 1], [-6, 5, 1, -1], [5, 5, -1, -1]];
+        for (i = 0; i < 4; i++) {
+          var px = Math.round(cx + L[i][0]), py = Math.round(cy + L[i][1]), hx = L[i][2] > 0 ? px : px - 2, vy2 = L[i][3] > 0 ? py : py - 2;
+          g.fillStyle = '#1b120a'; g.fillRect(hx - 1, py - 1, 5, 3); g.fillRect(px - 1, vy2 - 1, 3, 5);
+          g.fillStyle = col; g.fillRect(hx, py, 3, 1); g.fillRect(px, vy2, 1, 3);
+        }
+        g.fillStyle = col; g.globalAlpha = 0.16 * a * nhay; g.fillRect(ox + 1, oy + 1, T - 2, T - 2);
+      } else {
+        g.fillStyle = col; g.globalAlpha = (chan ? 0.26 : 0.38) * a * nhay; g.fillRect(ox, oy, T, T);
+        g.globalAlpha = a * nhay; g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.strokeRect(ox + 1.5, oy + 1.5, T - 3, T - 3);
+        g.lineWidth = 1.5; g.strokeStyle = col; if (chan) g.setLineDash([3, 2]); g.strokeRect(ox + 1.5, oy + 1.5, T - 3, T - 3); g.setLineDash([]);
+      }
+      if (chan) {                                                                     // dấu X: không nhìn thấy màu gì
+        g.globalAlpha = a; g.lineCap = 'butt';
+        g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
+        g.lineWidth = 1.5; g.strokeStyle = col; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
+      }
+      g.restore();
     },
     /** Số pixel (từ mũi xe) mà tia / sóng nam châm đi được theo hướng h từ ô `tu`, tối đa 2 ô: tường, mép sân, thùng nặng chắn thì dừng sát mép ô đó (không xét vật). */
     tamTrong: function (tu, h) {
@@ -462,6 +507,7 @@
       l.style.width = cw + 'px'; l.style.height = ch + 'px';
       l.style.left = (cv.offsetLeft - mc) + 'px'; l.style.top = (cv.offsetTop - mc) + 'px';
       this.kk = kk; this.u = l.width / cw; this.mc = mc; this.p = p;
+      this.pp = p / (kk * this.u);                                                   // camera: 1 pixel part = bao nhiêu pixel sân
       this.mz = 24 * p / (kk * this.u);                                              // súng bóng: từ tâm xe tới miệng súng (pixel sân) = 24 pixel part
       this.bk = 23.5 * p / (kk * this.u);                                            // máy ném: từ tâm xe tới rổ ở đầu cần (pixel sân) = 23,5 pixel part
       this.lopOK = true;
@@ -485,7 +531,7 @@
         var wL = this.wh.L, wR = this.wh.R, phC = ph;
         if (v.dr) { wL = wR = (v.dr.roi || (v.dr.nguy && ((now / 110 | 0) & 1))) ? 0 : 2; phC = wL ? (now / 70 | 0) & 1 : 0; }          // drone: cánh quạt quay không ngừng (tắt khi rơi / nằm đất), hai cặp cánh đổi nhau
         if (c.robot.than === 'nhen') { wL = wR = v.chan ? 2 : 0; if (v.chan === 1) phC = 1; }   // nhện: chan 1 = nhấc chân (khung `buoc` đứng yên), 2 = chân bước luân phiên
-        var spr = VeRobot.ve(c.robot, { wl: wL, wr: wR, ph: phC, tay: v.sung ? { tuThe: 'tren', kep: false, cam: null, dangBan: v.sung.ban > now } : v.nem ? { tuThe: 'tren', kep: false, cam: !!this.vatRo(), ngam: v.nem.tam, dangNem: v.nem.dang > now } : v.nc ? { tuThe: 'tren', kep: false, cam: null, bat: v.nc.bat } : v.ra ? { tuThe: v.tay.tuThe, kep: v.tay.kep, cam: v.tay.cam, ra: true } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
+        var spr = VeRobot.ve(c.robot, { wl: wL, wr: wR, ph: phC, tay: v.sung ? { tuThe: 'tren', kep: false, cam: null, dangBan: v.sung.ban > now } : v.nem ? { tuThe: 'tren', kep: false, cam: !!this.vatRo(), ngam: v.nem.tam, dangNem: v.nem.dang > now } : v.nc ? { tuThe: 'tren', kep: false, cam: null, bat: v.nc.bat } : v.ra ? { tuThe: v.tay.tuThe, kep: v.tay.kep, cam: v.tay.cam, ra: true } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true, mat: this.camMatSang(now) } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null }, v.d, p);
         g.imageSmoothingEnabled = false;
         if (spr.laPart && c.robot.tay === 'kep') this.veVatKep(g, X, Y, now);                 // vật trong kẹp: dưới ảnh part, hai càng đè lên mép vật
         var w = spr.width, h = spr.height, sc = spr.laPart ? 1 : ku;

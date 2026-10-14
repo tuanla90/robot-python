@@ -14,6 +14,12 @@
     if(c){var h=n>=10?3:2,y0=oy+((n-h)>>1),cs=h===3?[c[1],c[0],c[2]]:[c[0],c[0]];for(i=0;i<h;i++)p.rect(ox+1,y0+i,m,1,cs[i]);}
     return p;
   }
+  /* Con mắt của camera (vẽ lên thân): tắt = xanh dịu, sáng (đang đọc) = lõi trắng + viền xanh bao quanh. Mỗi thân gọi hai lần, một mắt trái một mắt phải. */
+  function veMat(p,x,y,w,h,sang){
+    if(sang){p.rect(x-1,y-1,w+2,h+2,'#2c8fa4');p.rect(x,y,w,h,K.xanh);p.rect(x,y,w,1,'#ffffff');if(w>2)p.px(x+1,y+1,'#ffffff');}
+    else p.rect(x,y,w,h,'#3fa9bb');
+    return p;
+  }
   function Painter(w,h){this.w=w;this.h=h;this.buf=new Array(w*h).fill(null);}
   Painter.prototype.px=function(x,y,c){x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<this.w&&y<this.h)this.buf[y*this.w+x]=c;return this;};
   Painter.prototype.get=function(x,y){return x>=0&&y>=0&&x<this.w&&y<this.h?this.buf[y*this.w+x]:null;};
@@ -34,15 +40,18 @@
   function doiCam(cams){var out=[];cams.forEach(function(c){var o=c.o==='truoc'?'hong':c.o;if(o==='hong'){out.push({ma:c.ma,o:'hongTrai'});out.push({ma:c.ma,o:'hongPhai'});}else out.push({ma:c.ma,o:o});});return out;}
   function ghep(cauHinh,trangThai,huong){
     cauHinh=cauHinh||{};var than=chon('than',cauHinh.than),tay=cauHinh.tay?chon('tay',cauHinh.tay):null,cams=doiCam(cauHinh.camBien||[]),st=trangThai||{},i;
-    if(than.ma==='drone'){if(tay&&tay.ma!=='nam-cham')throw new Error('Drone không gắn được '+tay.ten+'.');for(i=0;i<cams.length;i++)if(['camera','khoang-cach','mau'].indexOf(cams[i].ma)<0)throw new Error('Drone không gắn được '+chon('cam-bien',cams[i].ma).ten+'.');}  /* robot không tay (chương đầu): chỉ có thân */
+    if(than.ma==='drone'&&cams.some(function(c){return c.ma==='camera';}))throw new Error('Drone không gắn được camera: drone không có hướng mặt để nhìn "phía trước".');
+    if(than.ma==='drone'){if(tay&&tay.ma!=='nam-cham')throw new Error('Drone không gắn được '+tay.ten+'.');for(i=0;i<cams.length;i++)if(['khoang-cach','mau'].indexOf(cams[i].ma)<0)throw new Error('Drone không gắn được '+chon('cam-bien',cams[i].ma).ten+'.');}  /* robot không tay (chương đầu): chỉ có thân */
+    var coMau=cams.some(function(c){return c.ma==='mau';}),coCam=cams.some(function(c){return c.ma==='camera';});
+    if(coCam&&coMau)throw new Error('Robot không gắn được cả cảm biến màu lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
     if(tay&&!oTay(than,tay).length)throw new Error((than.ma==='drone'?'Drone':'Tay '+tay.ma)+' không gắn được vào ổ này.');
     var p=new Painter(40,40),goc={x:8,y:17},camera=false;
     for(i=0;i<cams.length;i++){var d=chon('cam-bien',cams[i].ma),o=than.oGan[cams[i].o];if(!o)throw new Error('Thân '+than.ma+' không có ổ "'+cams[i].o+'".');if(gan(d).indexOf(cams[i].o)<0)throw new Error('Cảm biến '+d.ma+' không gắn được vào ổ '+cams[i].o+'.');if(d.ma==='camera'){camera=true;continue;}}
-    var ts=Object.assign({},state(st,'than'),{camera:camera});p.blit(veMot(than,ts),goc.x,goc.y);
+    var ts=Object.assign({},state(st,'than'),{camera:camera,camSang:camera&&!!state(st,'camBien').mat});p.blit(veMot(than,ts),goc.x,goc.y);
     if(tay){var os=oTay(than,tay);for(i=0;i<os.length;i++){var oT=os[i],port=than.oGan[oT],tayState=Object.assign({},state(st,'tay'),{duoi:oT==='duoi'});dat(p,tay,{x:goc.x+port.x,y:goc.y+port.y},oT==='duoi'&&tay.diemNeoDuoi?tay.diemNeoDuoi:tay.diemNeo,tayState);}}
     for(i=0;i<cams.length;i++){var cb=chon('cam-bien',cams[i].ma);if(cb.ma==='camera')continue;var pc=than.oGan[cams[i].o];dat(p,cb,{x:goc.x+pc.x,y:goc.y+pc.y},cb.diemNeo,Object.assign({},state(st,'camBien'),{ben:cams[i].o==='hongTrai'?'trai':'phai'}));}
     huong=((huong||0)%4+4)%4;while(huong--)p=rot90(p);return p.canvas();
   }
   function hamGoc(c){var a=[],them=function(d){d.hamGoc.forEach(function(h){if(a.indexOf(h)<0)a.push(h);});};them(chon('than',c.than));if(c.tay)them(chon('tay',c.tay));(c.camBien||[]).forEach(function(x){them(chon('cam-bien',x.ma));});return a;}
-  return{K:K,veVatNho:veVatNho,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
+  return{K:K,veVatNho:veVatNho,veMat:veMat,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
 });

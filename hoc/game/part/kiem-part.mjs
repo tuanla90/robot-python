@@ -41,7 +41,17 @@ for(const than of Part.ds('than').filter(x=>x.ma!=='drone'))for(const tay of Par
   const cams=cb.ma==='camera'?[{ma:cb.ma,o:'tren'}]:[{ma:cb.ma,o:'hong'}];
   assert.doesNotThrow(()=>Part.ghep({than:than.ma,tay:tay.ma,camBien:cams},{camBien:{bat:true}}));
 }
-assert.doesNotThrow(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'camera',o:'tren'},{ma:'khoang-cach',o:'hong'},{ma:'mau',o:'hong'}]}));
+assert.doesNotThrow(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'khoang-cach',o:'hong'},{ma:'mau',o:'hong'}]}));
+/* Luật color() 14/10: camera nhìn ô trước mặt, cảm biến màu đọc ô dưới xe — không ghép cùng nhau; drone không có camera. */
+assert.throws(()=>Part.ghep({than:'hai-banh',tay:null,camBien:[{ma:'camera',o:'tren'},{ma:'mau',o:'hong'}]}),/cả cảm biến màu lẫn camera/);
+assert.throws(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'camera',o:'tren'}]}),/Drone không gắn được camera/);
+assert.deepEqual(Part.hamGoc({than:'hai-banh',camBien:[{ma:'camera',o:'tren'}]}).filter(h=>h==='color'),['color'],'camera mở hàm gốc color');
+for(const than of ['hai-banh','xich','nhen','omni']){
+  const tat=Part.ghep({than,tay:null,camBien:[{ma:'camera',o:'tren'}]},{}),sang=Part.ghep({than,tay:null,camBien:[{ma:'camera',o:'tren'}]},{camBien:{mat:true}}),khong=Part.ghep({than,tay:null,camBien:[]},{});
+  assert.notDeepEqual(tat.buf,khong.buf,`${than}: gắn camera phải hiện đôi mắt`);assert.notDeepEqual(tat.buf,sang.buf,`${than}: mắt phải sáng lên khi đọc`);
+  assert.equal(tat.buf.filter(Boolean).length,khong.buf.filter(Boolean).length,`${than}: đôi mắt nằm trong thân, không thêm cột camera`);
+}
+
 for(const bad of ['kep','day','nem','bong'])assert.throws(()=>Part.ghep({than:'drone',tay:bad}),/Drone không gắn được/);
 assert.throws(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'cham',o:'hong'}]}),/Drone không gắn được/);
 
