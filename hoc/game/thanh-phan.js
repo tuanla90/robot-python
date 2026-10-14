@@ -1,6 +1,6 @@
 /* ============================================================================
    thanh-phan.js — "Đường học": THÀNH PHẦN GIAO DIỆN DÙNG CHUNG (window.TP).
-   h() dựng DOM · Editor (khung 10 ô) · Palette (kho khối chia 3 nhóm) · Hop (hộp thoại).
+   h() dựng DOM · Editor (khung 10 ô) · Palette (khay khối lệnh theo thẻ bộ phận: Thân / Tay / Cảm biến / Của màn) · Hop (hộp thoại).
    Mọi chữ lấy qua t('khoa') trong chu.js.
    ========================================================================== */
 (function () {
@@ -254,6 +254,7 @@
    *   khiBam: fn(i) khi chạm một ô, dangChay: () => bool (đang chạy / phát lại thì tắt xóa nhanh),
    *   nutXoaHet: nút thùng rác ở tiêu đề (Editor tự làm mờ khi không có gì để xóa),
    *   thutLe: () => bool (màn có khối lồng như `for`: tiêu đề có thêm hai nút ⇤ ⇥, đặt ngay trước nutXoaHet),
+   *   chiDoc: () => bool (màn khai chinhCoDinh: khung CHỈ ĐỌC — không chọn ô, sửa số, chèn, xóa, kéo; panel `bang` thêm lớp .co-dinh, host thêm .chi-doc) + khiChiDoc: fn (chạm / thả vào khung chỉ đọc),
    *   tt / ttDay / ttNgan: phần tử tiêu đề + chữ đầy đủ + chữ rút gọn (dùng khi tiêu đề không vừa) }
    * Xóa một dòng: chuột rê lên dòng có code thì ô số thứ tự đổi thành ✕ (bấm để xóa);
    * cảm ứng chạm HAI lần liên tiếp (≤ 350 ms) vào dòng có code. Mọi lần xóa đều hiện "Đã xóa · Hoàn tác" ~3 giây.
@@ -269,7 +270,11 @@
     this.host = host; this.tong = tong;
     host.innerHTML = '';
     function dangChay() { return !!(tuyChon.dangChay && tuyChon.dangChay()); }
-    function choXoa() { return !xt && !dangChay() && !Chan.dang(); }
+    /** Chương trình chính CỐ ĐỊNH (man.chinhCoDinh): khung chỉ đọc, không sửa / chèn / xóa / kéo; chạm hay thả vào thì báo khiChiDoc. */
+    function chiDoc() { return !!(tuyChon.chiDoc && tuyChon.chiDoc()); }
+    function baoChiDoc() { if (tuyChon.khiChiDoc) tuyChon.khiChiDoc(); }
+    this.chiDoc = chiDoc;
+    function choXoa() { return !xt && !dangChay() && !Chan.dang() && !chiDoc(); }
     function thutLe() { return !!(tuyChon.thutLe && tuyChon.thutLe()); }
     function soToiDa(ten, k) { return tuyChon.soToiDa ? (tuyChon.soToiDa(ten, k) || 9) : 9; }      // đối số số lớn nhất chọn được (aim: 3); mặc định 9
     function camDuoc() { return (tuyChon.camBien && tuyChon.camBien()) || []; }                  // hàm cảm biến của màn (front_clear…): điều kiện chạm đổi được
@@ -374,7 +379,7 @@
     /** Thụt lề dòng đang chọn thêm d bậc (-1 ra, +1 vào) nếu hợp lệ. */
     function doiBac(d) {
       var arr = lay();
-      if (dangChay() || Chan.dang() || xt || sel >= dung || sel >= arr.length || !boThut(arr[sel]).trim()) return false;
+      if (chiDoc() || dangChay() || Chan.dang() || xt || sel >= dung || sel >= arr.length || !boThut(arr[sel]).trim()) return false;
       var nb = bacCua(arr[sel]) + d;
       if (nb < 0 || nb > toiDaBac(arr, sel)) return false;
       ed.anHoan();
@@ -402,6 +407,7 @@
       (function (i) {
         r.addEventListener('click', function (ev) {
           var arr = lay(), kieu = ev.pointerType || kieuCuoi;
+          if (chiDoc()) { cham = null; tuyChon.khiBam && tuyChon.khiBam(i); baoChiDoc(); return; }       // chương trình chính cố định: chạm chỉ báo, không chọn ô / mở bộ chọn số / xóa
           var so = ev.target.closest && ev.target.closest('.num');
           if (so && !xt && i < dung && i < arr.length && !dangChay() && !Chan.dang()) {      // chạm con số trong range(n) / lời gọi hàm: bộ chọn 1–9 (+ biến của hàm)
             cham = null; tuyChon.khiBam && tuyChon.khiBam(i);          // không đổi ô đang chọn: khối kế tiếp vẫn chèn vào chỗ cũ
@@ -473,7 +479,7 @@
         if (khoa) strips[i].appendChild(Ve.khoa(2, true));
         else if (t !== undefined && !slot) { strips[i].innerHTML = mauDong(t); vuaDong(strips[i]); }
         if (!khoa && !xt && lapSet[i]) strips[i].appendChild(h('span', 'lap', lapSet[i]));
-        rows[i].classList.toggle('sel', !xt && i === sel && !khoa);
+        rows[i].classList.toggle('sel', !xt && i === sel && !khoa && !chiDoc());
         rows[i].classList.toggle('run', !xt && runIdx === i);
         brks[i].innerHTML = '';
       }
@@ -489,7 +495,10 @@
         }
       }
       if (tuyChon.dem) tuyChon.dem.textContent = arr.length + '/' + dung;
-      if (tuyChon.nutXoaHet) tuyChon.nutXoaHet.disabled = !arr.length;
+      var cd = chiDoc();
+      host.classList.toggle('chi-doc', cd);
+      if (tuyChon.bang) tuyChon.bang.classList.toggle('co-dinh', cd);
+      if (tuyChon.nutXoaHet) tuyChon.nutXoaHet.disabled = !arr.length || cd;
       veXx();
       veThut();
     };
@@ -523,7 +532,7 @@
       if (hoanEl) hoanEl.classList.remove('show');
     };
     this.hoanTac = function () {
-      if (!hoan || dangChay()) return;
+      if (!hoan || dangChay() || chiDoc()) return;
       var s = hoan, arr = lay(); this.anHoan();
       arr.length = 0; Array.prototype.push.apply(arr, s.arr);
       sel = Math.max(0, Math.min(s.sel, dung - 1));
@@ -557,6 +566,7 @@
     /** Chèn vào vị trí at (0..số dòng). Đầy khung thì nháy đỏ, không chèn. bac (tùy chọn): bậc thụt; mặc định xem bacMacDinh. */
     this.chenTai = function (txt, at, bac) {
       var arr = lay();
+      if (chiDoc()) { baoChiDoc(); return false; }
       if (arr.length >= dung) { this.nhay(); return false; }
       this.anHoan();
       at = Math.max(0, Math.min(at, arr.length));
@@ -569,7 +579,7 @@
     };
     /** Đổi dòng tu sang vị trí den (tính trong danh sách sau khi đã bỏ dòng tu); bac (tùy chọn) = bậc thụt mới (kéo ngang). */
     this.doiCho = function (tu, den, bac) {
-      var arr = lay(); if (tu < 0 || tu >= arr.length) return;
+      var arr = lay(); if (chiDoc() || tu < 0 || tu >= arr.length) return;
       den = Math.max(0, Math.min(den, arr.length - 1));
       var truoc = arr.join('\n');
       var x = arr.splice(tu, 1)[0];
@@ -582,14 +592,14 @@
       if (doi) tuyChon.khiDoi && tuyChon.khiDoi();
     };
     this.xoaTai = function (i) {
-      var arr = lay(); if (i < 0 || i >= arr.length) return;
+      var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return;
       luuHoan(arr, i);
       arr.splice(i, 1); chuanHoaBac(arr); sel = Math.min(i, dung - 1);
       this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
     };
     /** Đổi đối số thứ k (mặc định 0) của dòng i: số trong `range(n)` hoặc trong lời gọi hàm; v là số hoặc tên biến. */
     this.datSo = function (i, v, k) {
-      var arr = lay(); if (i < 0 || i >= arr.length) return;
+      var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return;
       var s = thayDoiSo(arr[i], k || 0, v);
       if (s === arr[i]) return;
       this.anHoan(); arr[i] = s;
@@ -600,13 +610,13 @@
     this.themVe = function (i, nx, str) { this.suaDong(i, themVe(lay()[i], nx, str)); };
     this.boVe = function (i, ci) { this.suaDong(i, boVe(lay()[i], ci)); };
     this.suaDong = function (i, dongMoi) {
-      var arr = lay(); if (i < 0 || i >= arr.length || dongMoi === arr[i]) return;
+      var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length || dongMoi === arr[i]) return;
       this.anHoan(); arr[i] = dongMoi;
       this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
     };
     /** Thay một đối số của dòng i bằng biến `ten`: ưu tiên đối số còn là số cụ thể, rồi đến đối số biến khác tên. Trả về có đổi được không. */
     this.datBienTai = function (i, ten, kieu) {
-      var arr = lay(); if (i < 0 || i >= arr.length || i >= dung || dangChay() || Chan.dang() || xt) return false;
+      var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length || i >= dung || dangChay() || Chan.dang() || xt) return false;
       var d = tachDoiSo(arr[i]); if (!d || !d.ds.length) return false;
       var kb = kieu || 'so';
       function hop(j) { return hopKieu(kieuArg(d, j), kb); }                       // ô cùng kiểu với biến
@@ -628,7 +638,7 @@
     this.chon = function (i) { if (i >= 0 && i < dung) { sel = i; this.render(); } };
     this.chonHienTai = function () { return sel; };
     this.xoaHet = function () {
-      var arr = lay(); if (!arr.length) return;
+      var arr = lay(); if (chiDoc() || !arr.length) return;
       luuHoan(arr, 0);
       arr.length = 0; sel = 0; this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
     };
@@ -1001,10 +1011,36 @@
   }
   /** Hàm của em dùng được với robot của màn: hàm gọi (trực tiếp hay qua hàm khác của em) một lệnh gốc mà màn không có trong `hamGoc` thì ẩn khỏi kho
    *  (vd. nhện bỏ hàm dùng lệnh bánh; xích / omni bỏ go(d); xe không tay bỏ pick()). Màn không khai hamGoc: giữ nguyên. */
-  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'push', 'magnet_on', 'magnet_off', 'front_metal', 'aim', 'throw', 'load', 'shoot', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'battery'];
+  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'push', 'magnet_on', 'magnet_off', 'front_metal', 'aim', 'throw', 'load', 'shoot', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color'];
+  /** Lệnh gốc mà THÂN HÀM CỦA EM được gọi ở màn này: các lệnh trên khay (hamGoc) cộng PHẦN CỨNG robot (SanHoc.phanCungCua(man) của lõi: man.phanCung nếu màn khai — màn hỏng —,
+   *  không thì trọn bộ lệnh loại robot, vd. xe bánh luôn có bánh lùi dù khay chưa cho dùng). Lõi cũ chưa có SanHoc.phanCungCua thì dùng man.phanCung nếu có, không thì chỉ hamGoc như trước. */
+  function lenhDuocGoi(man) {
+    var co = {}, ph = null;
+    ((man && man.hamGoc) || []).forEach(function (n) { co[n] = true; });
+    try {
+      if (man && window.SanHoc && typeof SanHoc.phanCungCua === 'function') ph = SanHoc.phanCungCua(man);
+      else if (man && Array.isArray(man.phanCung)) ph = man.phanCung;
+    } catch (e) { ph = null; }
+    (ph || []).forEach(function (n) { if (typeof n === 'string') co[n] = true; });
+    return co;
+  }
+  /** Như lenhDuocGoi nhưng KHÔNG tính bộ phận hỏng (man.phanCung): lọc khay theo LOẠI robot, không theo chỗ hỏng.
+   *  Hàm dùng bộ phận hỏng vẫn phải hiện để người chơi mở ra sửa (vd. 3.9 "Chỉ còn số lùi" sửa turn_left / turn_right). */
+  function lenhCuaLoaiRobot(man) {
+    var co = {};
+    ((man && man.hamGoc) || []).forEach(function (n) { co[n] = true; });
+    try {
+      if (man && window.SanHoc && typeof SanHoc.phanCungMacDinh === 'function') {
+        SanHoc.phanCungMacDinh(man.loaiRobot || 'banh', man.hamGoc).forEach(function (n) { co[n] = true; });
+        return co;
+      }
+    } catch (e) { /* lõi cũ: rơi xuống cách cũ */ }
+    return lenhDuocGoi(man);
+  }
   function locHamTheoRobot(man, ds) {
     if (!ds || !man || !man.hamGoc || !man.hamGoc.length) return ds;
-    var co = {}; man.hamGoc.forEach(function (n) { co[n] = true; });
+    var co = lenhCuaLoaiRobot(man), bat = {};
+    (man.taoHam || []).concat(man.hamCuaEmCan || []).forEach(function (n) { bat[n] = true; });   // hàm màn này bắt chế / sửa / cần dùng: luôn hiện để mở được trong Xưởng
     var theoTen = {}; ds.forEach(function (f) { theoTen[f.ten] = f; });
     function dungLenhThieu(f, da) {
       return (f.than || []).some(function (dong) {
@@ -1017,7 +1053,7 @@
         return false;
       });
     }
-    return ds.filter(function (f) { var da = {}; da[f.ten] = true; return !dungLenhThieu(f, da); });
+    return ds.filter(function (f) { var da = {}; da[f.ten] = true; return bat[f.ten] || !dungLenhThieu(f, da); });
   }
 
   /* ------------------------------------------------- kiểu của đối số hàm: số / một chữ / chuỗi ghép */
@@ -1089,46 +1125,154 @@
     };
   }
   /* ------------------------------------------------------------ Palette */
+  /** Lệnh đọc cảm biến (thân hàm gọi một trong số này thì hàm đó thuộc thẻ CẢM BIẾN) và mọi lệnh tay / dụng cụ (thẻ TAY). */
+  var CAM_TEN_TAT_CA = CAM_BIEN_TEN.concat(['color', 'battery']);
+  var LENH_TAY_TAT_CA = TAY_TEN.concat(NC_TEN, NEM_TEN, SUNG_TEN, DAY_TEN);
+  var RE_DK_CAM = /\b(front_clear|left_clear|right_clear|front_metal|color|battery)\s*\(/;       // khối điều kiện có đọc cảm biến
   /**
-   * Kho khối chia 3 nhóm. cb: { khiChen(text), khiSua(loai, ten), khiMoi() }.
-   * dung({ goc: [tên], vong: bool (có khối `for`), bien: [tên đối số] (nhóm BIẾN, khi sửa hàm có tham số), em: [{ten,thamSo}] | null, man: [{ten,thamSo}], coNutMoi, boQua }).
-   * cb.khiBien(ten): chạm thẻ biến.
-   * em === null → ẩn cả nhóm "hàm của em". Nhóm rỗng thì ẩn (trừ "hàm của em" có nút Hàm mới).
+   * Hàm f = { ten, than } thuộc thẻ nào của khay, theo các lệnh gốc nó gọi (kể cả gián tiếp qua hàm khác, tìm bằng tim(ten) → hàm | null):
+   * có lệnh cảm biến → 'cam'; không có mà có lệnh tay / dụng cụ → 'tay'; còn lại → 'than'.
+   */
+  function theCuaHam(f, tim) {
+    var thay = {}, cam = false, tay = false;
+    function duyet(g) {
+      if (!g || thay[g.ten]) return;
+      thay[g.ten] = true;
+      (g.than || []).forEach(function (dong) {
+        var re = /([A-Za-z_]\w*)\s*\(/g, m, s = boChuThich(dong);
+        while ((m = re.exec(s))) {
+          if (CAM_TEN_TAT_CA.indexOf(m[1]) >= 0) cam = true;
+          else if (LENH_TAY_TAT_CA.indexOf(m[1]) >= 0) tay = true;
+          else duyet(tim(m[1]));
+        }
+      });
+    }
+    duyet(f);
+    return cam ? 'cam' : tay ? 'tay' : 'than';
+  }
+  /**
+   * Thẻ mặc định khi vào màn / mở Xưởng: thẻ chứa hàm đang sửa (o.dangSua = { ten, than }), không có thì hàm màn bắt chế (man.taoHam: hàm còn thiếu hay còn trống trước, không thì hàm đầu tiên);
+   * hàm còn trống thì theo lời giải của màn (man.loiGiai.hamCuaEmMoi) để biết nó thuộc bộ phận nào; không có gì thì 'than'. Trả về 'than' | 'tay' | 'cam'.
+   * o = { man, kho: [hàm của em], hamMan: [hàm của màn], dangSua: { ten, than } | null }.
+   */
+  function theMacDinh(o) {
+    var man = o.man || {}, kho = o.kho || [], hamMan = o.hamMan || [], lg = (man.loiGiai && man.loiGiai.hamCuaEmMoi) || [];
+    function theo(ds, ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }
+    function tim(ten) { return theo(hamMan, ten) || theo(kho, ten) || theo(lg, ten); }
+    function coThan(f) { return !!f && (f.than || []).some(coY); }
+    function loai(ten, f) {
+      if (coThan(f)) return theCuaHam(f, tim);
+      var g = theo(lg, ten);
+      return g ? theCuaHam(g, tim) : 'than';
+    }
+    if (o.dangSua) return loai(o.dangSua.ten, o.dangSua);
+    var ds = man.taoHam || [], ten = null, i;
+    for (i = 0; i < ds.length && ten === null; i++) if (!coThan(theo(kho, ds[i]))) ten = ds[i];
+    if (ten === null) ten = ds[0];
+    return ten === undefined || ten === null ? 'than' : loai(ten, theo(kho, ten));
+  }
+  /**
+   * Khay khối lệnh THEO THẺ BỘ PHẬN (quyết định 14/10). Thanh tiêu đề: ◀ [tên thẻ] ▶ chuyển thẻ (vòng tròn: ◀ ở thẻ đầu sang thẻ cuối) và ▲ ▼ cuộn trong một thẻ dài.
+   * Thẻ theo thứ tự: THÂN (Xe / Nhện / Drone: lệnh gốc thân + hàm của em chỉ dùng lệnh thân) · TAY (tay kẹp, nam châm, máy ném, súng bóng, tấm đẩy: khi khay có lệnh tay / dụng cụ;
+   * hàm của em có lệnh tay mà không có lệnh cảm biến) · CẢM BIẾN (khi khay có cảm biến: các khối `while` / `if` đọc cảm biến + hàm của em có lệnh cảm biến) · CỦA MÀN (hàm của màn).
+   * Chỉ một thẻ thì ẩn ◀ ▶. Mỗi thẻ: lệnh gốc của bộ phận trước, rồi hàm của em thuộc bộ phận đó.
+   * Cấu trúc Python không có thẻ riêng: khối `for` nằm cuối phần lệnh gốc của MỌI thẻ lệnh (Thân, Tay, Cảm biến); `while` / `if` đọc cảm biến ở thẻ CẢM BIẾN; `if d == …` (chuỗi chỉ đường)
+   * và `while` mẫu (khay không có cảm biến) ở thẻ THÂN. Khối BIẾN (đối số của hàm đang sửa) hiện ở đầu MỌI thẻ. Hàm của em có lệnh tay / cảm biến mà khay không có thẻ đó thì rơi về THÂN.
+   * cb: { khiChen(text), khiSua(loai, ten), khiMoi(khoaThe) }.
+   * dung({ goc: [tên], loai: loại robot, vong: bool (có khối `for`), bien: [tên đối số] (khi sửa hàm có tham số), em: [{ten,thamSo,than}] | null, man: [{ten,thamSo,than}], coNutMoi, boQua,
+   *         the: khóa thẻ mặc định ('than' | 'tay' | 'cam'), lamMoi: bool (true = bỏ thẻ đang chọn, dùng `the`; false / không có = giữ thẻ đang chọn) }).
+   * cb.khiBien(ten): chạm thẻ biến. em === null → ẩn cả nhóm "hàm của em".
+   * Khay dài quá cỡ thì khối co một mức (.d1) rồi cuộn bằng ▲ ▼ (và lăn chuột), không co thêm.
    */
   function Palette(host, cb) {
     this.host = host;
     var bricks = {}, lastSpec = null, pal = this;
-    // Kho dài quá cỡ (nhiều hàm của em): hai nút ▲ ▼ ở tiêu đề cuộn từng trang, không có thanh cuộn
+    var the = [], theChon = null, viTri = {}, loiSet = {}, sangKhoa = null;      // các thẻ của khay · khóa thẻ đang chọn · khối (em:ten / man:ten) → khóa thẻ chứa nó · khối đang tô lỗi / đang sáng
     var bh = host.parentNode && host.parentNode.querySelector ? host.parentNode.querySelector('.bh') : null;
-    var cuonEl = null, nutLen = null, nutXuong = null;
+    var tieuDe = bh ? bh.querySelector('.tt') : null;
+    var cuonEl = null, nutLen = null, nutXuong = null, theEl = null, theTen = null, theCham = null;
+    function nutTam(lopNut, nhanChu, dataNut, fn) {
+      var b = h('button', 'bt g-wd cuon-b ' + lopNut); b.setAttribute('data-nut', dataNut); b.setAttribute('aria-label', t(nhanChu));
+      b.appendChild(h('i', 'tam'));
+      b.addEventListener('click', function (ev) { ev.stopPropagation(); fn(); });
+      return b;
+    }
     if (bh) {
+      theEl = h('span', 'pal-the'); theEl.style.display = 'none';
+      theEl.appendChild(nutTam('trai', 'choi.theTruoc', 'pal-the-truoc', function () { pal.buoc(-1); }));
+      var giua = h('span', 'the-giua'); theTen = h('span', 'the-chu'); theCham = h('span', 'the-cham');
+      giua.appendChild(theTen); giua.appendChild(theCham); theEl.appendChild(giua);
+      theEl.appendChild(nutTam('phai', 'choi.theSau', 'pal-the-sau', function () { pal.buoc(1); }));
+      bh.appendChild(theEl);
       cuonEl = h('span', 'cuon-nut'); cuonEl.style.display = 'none';
-      [['len', 'choi.palLen', -1], ['xuong', 'choi.palXuong', 1]].forEach(function (c) {
-        var b = h('button', 'bt g-wd cuon-b ' + c[0]); b.setAttribute('data-nut', 'pal-' + c[0]); b.setAttribute('aria-label', t(c[1]));
-        b.appendChild(h('i', 'tam'));
-        b.addEventListener('click', function (ev) { ev.stopPropagation(); pal.cuon(c[2]); });
-        cuonEl.appendChild(b);
-        if (c[2] < 0) nutLen = b; else nutXuong = b;
-      });
+      nutLen = nutTam('len', 'choi.palLen', 'pal-len', function () { pal.cuon(-1); });
+      nutXuong = nutTam('xuong', 'choi.palXuong', 'pal-xuong', function () { pal.cuon(1); });
+      cuonEl.appendChild(nutLen); cuonEl.appendChild(nutXuong);
       bh.appendChild(cuonEl);
     }
     host.addEventListener('wheel', function (ev) {
       if (!host.classList.contains('cuon')) return;
       ev.preventDefault(); host.scrollTop += ev.deltaY; veCuon();
     }, { passive: false });
+    /** Nút ▲ ▼: thẻ dài thì sáng theo chỗ đang xem; khay nhiều thẻ thì luôn có mặt (mờ khi không có gì để cuộn) cho vị trí các nút không nhảy; một thẻ thì chỉ hiện khi tràn. */
     function veCuon() {
       if (!cuonEl) return;
       var tran = host.classList.contains('cuon');
-      cuonEl.style.display = tran ? '' : 'none';
-      if (!tran) return;
-      nutLen.disabled = host.scrollTop <= 0;
-      nutXuong.disabled = host.scrollTop + host.clientHeight >= host.scrollHeight - 1;
+      cuonEl.style.display = (tran || the.length > 1) ? '' : 'none';
+      nutLen.disabled = !tran || host.scrollTop <= 0;
+      nutXuong.disabled = !tran || host.scrollTop + host.clientHeight >= host.scrollHeight - 1;
     }
-    /** Cuộn kho khối một trang: d = -1 lên, 1 xuống. */
+    /** Cuộn khay một trang: d = -1 lên, 1 xuống. */
     this.cuon = function (d) { host.scrollTop += d * Math.max(40, host.clientHeight - 34); veCuon(); };
+    function chiSo(khoa) { for (var i = 0; i < the.length; i++) if (the[i].khoa === khoa) return i; return -1; }
+    /** Tiêu đề: tên thẻ + chấm chỉ thẻ (• ○ ○); một thẻ thì chữ KHỐI LỆNH và ẩn ◀ ▶. */
+    function veTieuDe() {
+      if (!theEl) return;
+      var nhieu = the.length > 1, i = chiSo(theChon);
+      theEl.style.display = nhieu ? '' : 'none';
+      if (tieuDe) tieuDe.style.display = nhieu ? 'none' : '';
+      if (i < 0) return;
+      theEl.setAttribute('data-the', theChon);
+      theTen.textContent = the[i].ten; theTen.className = 'the-chu k-' + theChon;
+      vuaTenThe();
+      theCham.innerHTML = '';
+      the.forEach(function (x, k) { theCham.appendChild(h('i', k === i ? 'on' : '')); });
+      theEl.setAttribute('aria-label', t('choi.theSo', { ten: the[i].ten, i: i + 1, n: the.length }));
+    }
+    /** Tên thẻ dài thì co chữ cho vừa ô (đo được khi khay đã hiện: Xưởng gọi lại qua vua() sau khi mở). */
+    function vuaTenThe() {
+      if (!theTen || !the.length) return;
+      theTen.style.fontSize = '';
+      var fs = parseFloat(getComputedStyle(theTen).fontSize) || 11;
+      while (theTen.clientWidth && theTen.scrollWidth > theTen.clientWidth + 1 && fs > 8) { fs -= 0.5; theTen.style.fontSize = fs + 'px'; }
+    }
+    function danhDau() {
+      Object.keys(bricks).forEach(function (k) { bricks[k].classList.toggle('lit', k === sangKhoa); bricks[k].classList.toggle('err', !!loiSet[k]); });
+    }
+    /** Vẽ thẻ đang chọn vào host (cuonDat: giữ chỗ đang cuộn khi vẽ lại cùng một thẻ). */
+    function veThe(cuonDat) {
+      host.innerHTML = ''; bricks = {};
+      host.classList.remove('d1', 'cuon');
+      var i = chiSo(theChon);
+      if (i >= 0) the[i].ve();
+      veTieuDe();
+      pal.vua();
+      if (cuonDat && host.classList.contains('cuon')) host.scrollTop = cuonDat;
+      veCuon();
+      danhDau();
+    }
+    /** Sang thẻ kế (d = 1) / thẻ trước (d = -1), vòng tròn. */
+    this.buoc = function (d) {
+      if (the.length < 2) return;
+      theChon = the[(chiSo(theChon) + d + the.length) % the.length].khoa;
+      veThe(0);
+    };
+    this.chonThe = function (khoa) { if (khoa !== theChon && chiSo(khoa) >= 0) { theChon = khoa; veThe(0); } };
+    this.theHienTai = function () { return theChon; };
+    this.dsThe = function () { return the.map(function (x) { return x.khoa; }); };
     function nhan(chu, cls) { var g = h('div', 'gl ' + cls); g.appendChild(document.createTextNode(chu)); host.appendChild(g); return g; }
-    function gach(ten, lop, loai, hamTS, cha) {
-      var d = h('div', 'brick ' + lop); d.setAttribute('role', 'button');
+    function gach(ten, lopGach, loai, hamTS, cha) {
+      var d = h('div', 'brick ' + lopGach); d.setAttribute('role', 'button');
       // chèn: mỗi đối số là 1 (số), "U" (một chữ) hoặc "R" (chuỗi chữ) tùy kiểu; hiện: tên đối số
       var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function (_, k) { var kd = cb.kieuDoiSo ? cb.kieuDoiSo(ten, k) : 'so'; return kd === 'don' ? '"U"' : kd === 'ghep' ? '"R"' : '1'; }).join(', ') : '') + ')';
       if (loai === 'goc' && ten === 'aim') goi = 'aim(1)';                       // aim(n): thẻ chèn sẵn tầm 1, chạm số để chọn 1 / 2 / 3
@@ -1149,12 +1293,12 @@
       (cha || host).appendChild(d); bricks[loai + ':' + ten] = d;
     }
     /** Thẻ biến (nhóm BIẾN): tên một đối số của hàm đang sửa. Chạm hoặc kéo vào dòng có số thì thay số đó bằng biến. */
-    function gachBien(ten) {
+    function gachBien(ten, cha) {
       var d = h('div', 'brick bien'); d.setAttribute('role', 'button');
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', 'bien'); d.setAttribute('data-goi', ten);
       d.appendChild(h('span', 'tx', ten));
       d.addEventListener('click', function () { cb.khiBien && cb.khiBien(ten); });
-      host.appendChild(d); bricks['bien:' + ten] = d;
+      (cha || host).appendChild(d); bricks['bien:' + ten] = d;
     }
     /** Khối rẽ nhánh (nhóm ĐIỀU KIỆN): `if d == "U":`, `elif d == "D":`, `else:`. */
     function gachDk(goi) {
@@ -1165,7 +1309,7 @@
       d.addEventListener('click', function () { cb.khiChen(goi); });
       host.appendChild(d); bricks['dk:' + khoa] = d;
     }
-    /** Khối tím `for i in range(2):` (nhóm VÒNG LẶP). */
+    /** Khối tím `for i in range(2):` (nhóm VÒNG LẶP); khối `while …:` màu xanh dương. */
     function gachVong(goi, khoa, lopThem) {
       goi = goi || 'for i in range(2):';
       var d = h('div', 'brick ' + (lopThem || 'pu') + ' vong'); d.setAttribute('role', 'button');
@@ -1175,140 +1319,184 @@
       host.appendChild(d); bricks['vong:' + (khoa || 'for')] = d;
     }
     this.dung = function (spec) {
-      var cuonCu = host.scrollTop;                          // dựng lại (sau mỗi lần sửa) thì giữ chỗ đang xem
-      lastSpec = spec; host.innerHTML = ''; bricks = {};
-      host.classList.remove('d1', 'd2', 'd3');
-      var boQua = spec.boQua || null;
-      var gocTay = (spec.goc || []).filter(function (n) { return TAY_TEN.indexOf(n) >= 0; });
-      var gocNem = (spec.goc || []).filter(function (n) { return NEM_TEN.indexOf(n) >= 0; });                // máy ném: aim / throw / load (nhóm MÁY NÉM)
-      var gocSung = (spec.goc || []).filter(function (n) { return SUNG_TEN.indexOf(n) >= 0; });                // súng bóng: shoot (nhóm SÚNG BÓNG)
-      var gocNC = (spec.goc || []).filter(function (n) { return NC_TEN.indexOf(n) >= 0; });                  // nam châm: magnet_on / magnet_off (nhóm NAM CHÂM)
-      var camDau = (spec.cam || []).indexOf('front_metal') >= 0 ? 'front_metal' : (spec.cam || [])[0];       // màn có cảm biến từ: khối mẫu của while / if dùng front_metal()
-      var gocDay = (spec.goc || []).filter(function (n) { return DAY_TEN.indexOf(n) >= 0; });                // tấm đẩy: push (nhóm ĐẨY)
-      var gocChan = (spec.goc || []).filter(function (n) { return /^go_/.test(n); });                      // nhện: go_up / go_down / go_left / go_right (nhóm CHÂN, kèm wait)
-      var gocTruot = (spec.goc || []).filter(function (n) { return /^slide_/.test(n); });                  // omni: slide_left / slide_right (nhóm TRƯỢT)
-      var gocThuong = (spec.goc || []).filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && n !== 'color' && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh); hàm cảm biến là ĐIỀU KIỆN, không phải lệnh
-      if (gocChan.length && (spec.goc || []).indexOf('wait') >= 0) gocChan.push('wait');
-      function lop(them) { return (host.firstChild ? 'g2 ' : 'g1 ') + them; }       // nhóm đầu tiên là g1 (không cách trên), các nhóm sau g2
-      function nhomGoc() {
-        if (!gocThuong.length) return;
-        nhan(t('choi.nhom.goc'), lop(''));
-        gocThuong.forEach(function (n) { gach(n, lopMau(n) === 'gr' ? 'pu' : lopMau(n), 'goc'); });
-      }
-      function nhomChan() {
-        if (!gocChan.length) return;
-        nhan(t('choi.nhom.chan'), lop('g-chan'));
-        var cot2 = h('div', 'g-2c'); host.appendChild(cot2);                                   // lệnh gốc của nhện xếp hai cột cho gọn
-        gocChan.forEach(function (n) { gach(n, n === 'wait' ? 'yl' : 'chan', 'goc', null, cot2); });
-      }
-      function nhomTruot() {
-        if (!gocTruot.length) return;
-        nhan(t('choi.nhom.truot'), lop('g-truot'));
-        gocTruot.forEach(function (n) { gach(n, 'truot', 'goc'); });
-      }
-      function nhomTay() {
-        if (!gocTay.length) return;
-        nhan(t('choi.nhom.tay'), lop('g-tay'));
-        var cot2 = null;
-        if (gocChan.length) { cot2 = h('div', 'g-2c'); host.appendChild(cot2); }
-        gocTay.forEach(function (n) { gach(n, 'tay', 'goc', null, cot2); });
-      }
-      function nhomDay() {
-        if (!gocDay.length) return;
-        nhan(t('choi.nhom.day'), lop('g-tay'));
-        gocDay.forEach(function (n) { gach(n, 'tay', 'goc'); });
-      }
-      function nhomMayNem() {
-        if (!gocNem.length) return;
-        nhan(t('choi.nhom.mayNem'), lop('g-tay'));
-        gocNem.forEach(function (n) { gach(n, 'tay', 'goc'); });
-      }
-      function nhomSungBong() {
-        if (!gocSung.length) return;
-        nhan(t('choi.nhom.sungBong'), lop('g-tay'));
-        gocSung.forEach(function (n) { gach(n, 'tay', 'goc'); });
-      }
-      function nhomNamCham() {
-        if (!gocNC.length) return;
-        nhan(t('choi.nhom.namCham'), lop('g-tay'));
-        gocNC.forEach(function (n) { gach(n, 'tay', 'goc'); });
-      }
-      function nhomVong() {
-        if (!spec.vong) return;
-        nhan(t('choi.nhom.vong'), lop('g-vl'));
-        gachVong();
-        if (spec.chuoi) gachVong('for c in "R":', 'forc');
-        if (spec.vongWhile) gachVong(spec.pin ? 'while battery() > 2:' : spec.mau && !(spec.cam || []).length ? 'while color() != "red":' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():', 'while', 'wh');         // vòng while: khối xanh dương
-      }
-      function nhomDk() {
-        var cam = spec.cam || [];
-        if (!spec.dieuKien && !cam.length && !spec.mau && !spec.pin) return;
-        nhan(t('choi.nhom.dk'), lop('g-dk'));
-        (spec.thamSoChuoi ? ['if d == "U":', 'elif d == "D":', 'else:'] : spec.pin ? ['if battery() < 3:', 'else:'] : spec.mau ? (cam.length ? ['if ' + camDau + '():'] : []).concat(['if color() == "red":', 'elif color() == "blue":', 'else:', 'c = color()'])          // cảm biến màu: so màu + gán biến
+      var cuonCu = host.scrollTop, khoaCu = spec.lamMoi ? null : theChon;           // dựng lại (sau mỗi lần sửa) thì giữ thẻ đang chọn và chỗ đang xem
+      lastSpec = Object.assign({}, spec, { lamMoi: false });
+      loiSet = {}; sangKhoa = null; viTri = {};
+      var boQua = spec.boQua || null, goc = spec.goc || [], cam = spec.cam || [];
+      var gocTay = goc.filter(function (n) { return TAY_TEN.indexOf(n) >= 0; });
+      var gocNem = goc.filter(function (n) { return NEM_TEN.indexOf(n) >= 0; });                // máy ném: aim / throw / load
+      var gocSung = goc.filter(function (n) { return SUNG_TEN.indexOf(n) >= 0; });              // súng bóng: shoot
+      var gocNC = goc.filter(function (n) { return NC_TEN.indexOf(n) >= 0; });                  // nam châm: magnet_on / magnet_off
+      var camDau = cam.indexOf('front_metal') >= 0 ? 'front_metal' : cam[0];                    // màn có cảm biến từ: khối mẫu của while / if dùng front_metal()
+      var gocDay = goc.filter(function (n) { return DAY_TEN.indexOf(n) >= 0; });                // tấm đẩy: push
+      var gocChan = goc.filter(function (n) { return /^go_/.test(n); });                        // nhện / drone: go_up / go_down / go_left / go_right (kèm wait)
+      var gocTruot = goc.filter(function (n) { return /^slide_/.test(n); });                    // omni: slide_left / slide_right
+      var gocThuong = goc.filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && !/^go_/.test(n) && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && n !== 'color' && !(gocChan.length && n === 'wait'); });   // lệnh bánh (và wait của xe bánh); hàm cảm biến là ĐIỀU KIỆN, không phải lệnh
+      if (gocChan.length && goc.indexOf('wait') >= 0) gocChan.push('wait');
+      var coTay = gocTay.length + gocNem.length + gocSung.length + gocNC.length + gocDay.length > 0;
+      var coCam = cam.length > 0 || !!spec.mau || !!spec.pin;
+      var coBien = !!(spec.bien && spec.bien.length);
+      var coTS = coBien || [spec.em, spec.man].some(function (l) { return (l || []).some(function (f) { return f.thamSo && f.thamSo.length; }); });
+
+      /* ---- khối cấu trúc Python: không có thẻ riêng. `for` nằm ở cuối phần lệnh gốc của MỌI thẻ lệnh (Thân, Tay, Cảm biến) nên không phải đổi thẻ để lấy;
+         `while` / `if` đọc cảm biến ở thẻ CẢM BIẾN; `if d == …` (chuỗi chỉ đường) và `while` mẫu khi khay không có cảm biến ở thẻ THÂN */
+      var dsDk = [];
+      if (gocChan.length ? (spec.dieuKien || coCam) : coCam) {
+        dsDk = spec.thamSoChuoi ? ['if d == "U":', 'elif d == "D":', 'else:'] : spec.pin ? ['if battery() < 3:', 'else:'] : spec.mau ? (cam.length ? ['if ' + camDau + '():'] : []).concat(['if color() == "red":', 'elif color() == "blue":', 'else:', 'c = color()'])          // cảm biến màu: so màu + gán biến
           : cam.length ? (cam.indexOf('right_clear') >= 0 ? ['if right_clear():', 'elif front_clear():', 'else:'] : ['if ' + camDau + '():', 'else:'])
-          : ['if d == "U":', 'elif d == "D":', 'else:']).forEach(gachDk);
+          : ['if d == "U":', 'elif d == "D":', 'else:'];
       }
-      function nhomDkCam() { if ((spec.cam || []).length || spec.mau || spec.pin) nhomDk(); }                     // màn có cảm biến: nhóm ĐIỀU KIỆN nằm cạnh VÒNG LẶP
+      var dkCam = dsDk.some(function (s) { return RE_DK_CAM.test(s); });
+      var chuWhile = spec.vong && spec.vongWhile ? (spec.pin ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while color() != "red":' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương
+      var dkTrongCam = coCam && dkCam, whileTrongCam = coCam && !!chuWhile;
+      var dkTrongThan = dsDk.length > 0 && !dkTrongCam, whileTrongThan = !!chuWhile && !whileTrongCam;
+
+      /* ---- hàm của em chia vào thẻ theo lệnh gốc nó gọi (kể cả gián tiếp); thẻ không có thì rơi về THÂN */
+      var hamMan = spec.man || [], emTat = spec.em || [];
+      function tim(ten) {
+        var i;
+        for (i = 0; i < hamMan.length; i++) if (hamMan[i].ten === ten) return hamMan[i];
+        for (i = 0; i < emTat.length; i++) if (emTat[i].ten === ten) return emTat[i];
+        return null;
+      }
+      var emThe = { than: [], tay: [], cam: [] };
+      emTat.filter(function (f) { return f.ten !== boQua; }).forEach(function (f) {
+        var k = theCuaHam(f, tim);
+        if ((k === 'tay' && !coTay) || (k === 'cam' && !coCam)) k = 'than';
+        emThe[k].push(f); viTri['em:' + f.ten] = k;
+      });
+      var dsMan = hamMan.filter(function (f) { return f.ten !== boQua; });
+      dsMan.forEach(function (f) { viTri['man:' + f.ten] = 'man'; });
+
+      function lop(them) { return (host.firstChild ? 'g2 ' : 'g1 ') + them; }       // nhóm đầu tiên là g1 (không cách trên), các nhóm sau g2
+      /** Nhóm BIẾN (đối số của hàm đang sửa): ở đầu mọi thẻ, hai đối số xếp một hàng. */
       function nhomBien() {
-        if (!spec.bien || !spec.bien.length) return;
+        if (!coBien) return;
         nhan(t('choi.nhom.bien'), lop('g-bien'));
-        spec.bien.forEach(gachBien);
+        var cot = spec.bien.length > 1 ? h('div', 'g-2c') : null;
+        if (cot) host.appendChild(cot);
+        spec.bien.forEach(function (n) { gachBien(n, cot); });
       }
-      function nhomEm() {
-        if (!spec.em) return;
+      /** Nhóm HÀM CỦA EM của thẻ: có nút Hàm mới (màn chơi) nên thẻ nào cũng có tiêu đề này; không có nút và không có hàm nào thì ẩn. */
+      function nhomEm(ds) {
+        if (!spec.em || (!ds.length && !(spec.coNutMoi && cb.khiMoi))) return;
         var g2 = nhan(t('choi.nhom.em'), lop('g-em'));
         if (spec.coNutMoi && cb.khiMoi) {
           var nb = h('button', 'nb'); nb.setAttribute('data-nut', 'ham-moi');
           nb.appendChild(Ve.ico('plus', 1, { line: '#0e3a12', fill: '#e8ffe0' }));
           nb.appendChild(document.createTextNode(t('choi.hamMoi')));
-          nb.addEventListener('click', function () { cb.khiMoi(); });
+          nb.addEventListener('click', function () { cb.khiMoi(theChon); });                // truyền thẻ đang xem: hàm mới mở ở Xưởng sẽ hiện đúng thẻ đó
           g2.appendChild(nb);
         }
-        var ds = spec.em.filter(function (f) { return f.ten !== boQua; });
         if (coTS) ds = ds.filter(function (f) { return f.thamSo && f.thamSo.length; }).concat(ds.filter(function (f) { return !(f.thamSo && f.thamSo.length); }));   // hàm có tham số (chủ đề của chương) lên đầu
         ds.forEach(function (f) { gach(f.ten, 'gr', 'em', f.thamSo); });
       }
-      function nhomMan() {
-        if (!spec.man || !spec.man.length) return;
-        var list = spec.man.filter(function (f) { return f.ten !== boQua; });
-        if (list.length) {
-          var g3 = nhan(t('choi.nhom.man'), lop('g-ma'));
-          g3.appendChild(h('span', 'tg', t('choi.nhom.chiMan')));
-          list.forEach(function (f) { gach(f.ten, 'or', 'man', f.thamSo); });
-        }
+      /** Mỗi thẻ gom nhiều nhóm: tiêu đề nhóm chỉ hiện khi thẻ có từ hai nhóm trở lên (một nhóm thì tên thẻ đã nói đủ). */
+      function nhomGoc(coNhan) {
+        if (!gocThuong.length) return;
+        if (coNhan) nhan(t('choi.nhom.goc'), lop(''));
+        gocThuong.forEach(function (n) { gach(n, lopMau(n) === 'gr' ? 'pu' : lopMau(n), 'goc'); });
       }
-      // Thứ tự nhóm. Có hàm có tham số (từ chương Hàm có tham số): kho dài nên chỉ thấy được một trang, nên lên trước những gì chương này dùng
-      // (BIẾN, VÒNG LẶP, hàm của màn, hàm của em), khối gốc / tay xuống cuối. Kho của em đã dài: hàm của màn (ít, đề bài thường cần ngay) lên trước hàm của em.
-      var coTS = !!(spec.bien && spec.bien.length) || [spec.em, spec.man].some(function (l) { return (l || []).some(function (f) { return f.thamSo && f.thamSo.length; }); });
-      var thuTu = gocChan.length ? [nhomBien, nhomChan, nhomNamCham, nhomTay, nhomVong, nhomDk, nhomMan, nhomEm, nhomGoc]      // nhện / drone: chân (lệnh chính) lên đầu, drone có nam châm treo ngay sau
-        : coTS ? [nhomBien, nhomDay, nhomNamCham, nhomMayNem, nhomSungBong, nhomVong, nhomDkCam, nhomMan, nhomEm, nhomTruot, nhomGoc, nhomTay]
-        : (spec.em && spec.em.length > 8) ? [nhomGoc, nhomDay, nhomNamCham, nhomMayNem, nhomSungBong, nhomTruot, nhomTay, nhomVong, nhomDkCam, nhomBien, nhomMan, nhomEm]
-        : [nhomGoc, nhomDay, nhomNamCham, nhomMayNem, nhomSungBong, nhomTruot, nhomTay, nhomVong, nhomDkCam, nhomBien, nhomEm, nhomMan];
-      thuTu.forEach(function (f) { f(); });
-      this.vua();
-      if (cuonCu && host.classList.contains('cuon')) { host.scrollTop = cuonCu; veCuon(); }
+      function nhomChan(coNhan) {
+        if (!gocChan.length) return;
+        if (coNhan) nhan(t('choi.nhom.chan'), lop('g-chan'));
+        var cot2 = h('div', 'g-2c'); host.appendChild(cot2);                                   // lệnh gốc của nhện xếp hai cột cho gọn
+        gocChan.forEach(function (n) { gach(n, n === 'wait' ? 'yl' : 'chan', 'goc', null, cot2); });
+      }
+      function nhomTruot(coNhan) {
+        if (!gocTruot.length) return;
+        if (coNhan) nhan(t('choi.nhom.truot'), lop('g-truot'));
+        gocTruot.forEach(function (n) { gach(n, 'truot', 'goc'); });
+      }
+      function nhomLenhTay(ds, khoaNhan, coNhan, hai) {
+        if (!ds.length) return;
+        if (coNhan) nhan(t(khoaNhan), lop('g-tay'));
+        var cot2 = null;
+        if (hai) { cot2 = h('div', 'g-2c'); host.appendChild(cot2); }
+        ds.forEach(function (n) { gach(n, 'tay', 'goc', null, cot2); });
+      }
+      /** Khối `for` (và `for c in "R":` ở chương chuỗi chữ): cuối phần lệnh gốc của mọi thẻ lệnh, không tiêu đề riêng (khối tím tự nói). */
+      function khoiFor() {
+        if (!spec.vong) return;
+        gachVong();
+        if (spec.chuoi) gachVong('for c in "R":', 'forc');
+      }
+
+      /* ---- các thẻ, theo thứ tự: Thân · Tay · Cảm biến · Của màn */
+      var loaiTay = [];                                                                       // tên thẻ TAY theo bộ phận thật; nhiều loại dụng cụ cùng lúc thì tên chung "Tay"
+      if (gocTay.length) loaiTay.push('Kep'); if (gocNC.length) loaiTay.push('NamCham'); if (gocNem.length) loaiTay.push('Nem'); if (gocSung.length) loaiTay.push('Sung'); if (gocDay.length) loaiTay.push('Day');
+      var tenThe = {
+        than: t(spec.loai === 'nhen' ? 'choi.the.nhen' : spec.loai === 'drone' ? 'choi.the.drone' : 'choi.the.xe'),
+        tay: t('choi.the.tay' + (loaiTay.length === 1 ? loaiTay[0] : '')),
+        cam: t('choi.the.cam'), man: t('choi.the.man')
+      };
+      the = [];
+      var nThan = [gocChan, gocThuong, gocTruot].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
+      the.push({ khoa: 'than', ten: tenThe.than, ve: function () {
+        nhomBien(); nhomChan(nThan > 1); nhomGoc(nThan > 1); nhomTruot(nThan > 1);
+        khoiFor();
+        if (whileTrongThan) gachVong(chuWhile, 'while', 'wh');
+        if (dkTrongThan) dsDk.forEach(gachDk);
+        nhomEm(emThe.than);
+      } });
+      if (coTay) {
+        var nTay = [gocTay, gocDay, gocNC, gocNem, gocSung].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
+        the.push({ khoa: 'tay', ten: tenThe.tay, ve: function () {
+          nhomBien();
+          nhomLenhTay(gocTay, 'choi.nhom.tay', nTay > 1, !!gocChan.length);
+          nhomLenhTay(gocDay, 'choi.nhom.day', nTay > 1);
+          nhomLenhTay(gocNC, 'choi.nhom.namCham', nTay > 1);
+          nhomLenhTay(gocNem, 'choi.nhom.mayNem', nTay > 1);
+          nhomLenhTay(gocSung, 'choi.nhom.sungBong', nTay > 1);
+          khoiFor();
+          nhomEm(emThe.tay);
+        } });
+      }
+      if (coCam) {
+        the.push({ khoa: 'cam', ten: tenThe.cam, ve: function () {
+          nhomBien();
+          if (coBien && (whileTrongCam || dkTrongCam)) nhan(t('choi.nhom.dk'), lop('g-dk'));
+          if (whileTrongCam) gachVong(chuWhile, 'while', 'wh');
+          if (dkTrongCam) dsDk.forEach(gachDk);
+          khoiFor();
+          nhomEm(emThe.cam);
+        } });
+      }
+      if (dsMan.length) {
+        the.push({ khoa: 'man', ten: tenThe.man, ve: function () {
+          nhomBien();
+          if (coBien) { var g3 = nhan(t('choi.nhom.man'), lop('g-ma')); g3.appendChild(h('span', 'tg', t('choi.nhom.chiMan'))); }
+          dsMan.forEach(function (f) { gach(f.ten, 'or', 'man', f.thamSo); });
+        } });
+      }
+      /* thẻ chọn: giữ thẻ đang chọn khi vẽ lại; không có (vào màn / mở Xưởng, hay thẻ cũ không còn) thì thẻ mặc định `spec.the`, không có nữa thì THÂN */
+      var ds = the.map(function (x) { return x.khoa; });
+      theChon = (khoaCu && ds.indexOf(khoaCu) >= 0) ? khoaCu : (spec.the && ds.indexOf(spec.the) >= 0 ? spec.the : ds[0]);
+      veThe(theChon === khoaCu ? cuonCu : 0);
     };
-    /** Co khối lại cho vừa khung; co hết cỡ mà vẫn dài thì bật chế độ cuộn từng trang (nút ▲ ▼ ở tiêu đề). */
+    /** Khay vừa khung: khối giữ cỡ dễ chạm (một mức co .d1, không co thêm); vẫn dài thì bật chế độ cuộn từng trang (nút ▲ ▼ ở tiêu đề). */
     this.vua = function () {
       if (!host.clientHeight) return;
-      ['d1', 'd2', 'd3', 'cuon'].forEach(function (c) { host.classList.remove(c); });
-      host.scrollTop = 0;
-      var bac = host.querySelector('.pn.co') ? ['d1', 'd2'] : ['d1', 'd2', 'd3'];     // có hàm có tham số: giữ một cột (thấy đủ tên + đối số), dài thì cuộn trang
-      for (var i = 0; i < bac.length && host.scrollHeight > host.clientHeight + 1; i++) {
-        if (i) host.classList.remove(bac[i - 1]);
-        host.classList.add(bac[i]);
-      }
+      host.classList.remove('d1');
+      host.classList.add('cuon'); host.scrollTop = 0; host.classList.remove('cuon');       // .pal mặc định overflow:clip không nhận scrollTop; .cuon (overflow:hidden) mới đặt lại được chỗ đang xem
+      if (host.scrollHeight > host.clientHeight + 1) host.classList.add('d1');
       if (host.scrollHeight > host.clientHeight + 1) host.classList.add('cuon');
       veCuon();
+      vuaTenThe();
     };
     this.datSang = function (loai, ten) {
-      Object.keys(bricks).forEach(function (k) { bricks[k].classList.toggle('lit', !!loai && k === loai + ':' + ten); });
+      sangKhoa = loai ? loai + ':' + ten : null;
+      danhDau();
     };
     this.datLoi = function (ds) {
-      var set = {}; (ds || []).forEach(function (k) { set[k] = true; });
-      Object.keys(bricks).forEach(function (k) { bricks[k].classList.toggle('err', !!set[k]); });
-      var dau = Object.keys(bricks).filter(function (k) { return set[k]; })[0];
-      if (dau && host.classList.contains('cuon')) {         // khối báo lỗi / đang sáng nằm ngoài tầm nhìn thì cuộn tới
+      loiSet = {}; (ds || []).forEach(function (k) { loiSet[k] = true; });
+      if (!Object.keys(bricks).some(function (k) { return loiSet[k]; })) {            // khối báo lỗi nằm ở thẻ khác: sang thẻ đó
+        var k2 = (ds || []).filter(function (k) { return viTri[k] && viTri[k] !== theChon && chiSo(viTri[k]) >= 0; })[0];
+        if (k2) { theChon = viTri[k2]; veThe(0); }
+      }
+      danhDau();
+      var dau = Object.keys(bricks).filter(function (k) { return loiSet[k]; })[0];
+      if (dau && host.classList.contains('cuon')) {         // khối báo lỗi nằm ngoài tầm nhìn thì cuộn tới
         var b = bricks[dau], hr = host.getBoundingClientRect(), br = b.getBoundingClientRect(), k = host.offsetHeight ? hr.height / host.offsetHeight : 1;
         if (br.top < hr.top || br.bottom > hr.bottom) { host.scrollTop += (br.top - hr.top) / k - 20; veCuon(); }
       }
@@ -1415,6 +1603,7 @@
         var row = ev.target.closest && ev.target.closest('.row'); if (!row) return;
         var i = ed.chiSo(row), arr = ed.mang();
         if (i < 0 || i >= ed.dung() || i >= arr.length) return;       // chỉ dòng code thật mới kéo được
+        if (ed.chiDoc && ed.chiDoc()) return;                        // chương trình chính cố định: không kéo dòng
         bat(ev, 'doi', i, row.querySelector('.strip') || row, arr[i]);
       });
       pal.host.addEventListener('pointerdown', function (ev) {
@@ -1468,6 +1657,7 @@
       else if (trong(rp, c.x, c.y)) vung = 'khung';
       var dich = -1;
       if (vung === 'thung') xem = lap(arr, c.tu, null);
+      else if (vung === 'khung' && ed.chiDoc && ed.chiDoc()) { loi = 'chidoc'; xem = lap(arr, -1, null); }        // chương trình chính cố định: thả vào là báo, không chèn
       else if (vung === 'khung' && c.bien) {
         dich = hangGan(ed.hinhHoc(), c.y);
         if (dich >= dung || dich >= n) dich = -1;
@@ -1510,6 +1700,7 @@
       capNhat(false);
       var ed = c.ed, vung = c.vung, slot = c.slot, loi = c.loi, loai = c.loai, tu = c.tu, txt = c.txt, cf = c.cfg, bac = c.bac, laBien = c.bien, dichBien = c.dich, kieuB = c.kieuB;
       nuotClick(); ketThuc();
+      if (loi === 'chidoc') { if (cf.khiChiDoc) cf.khiChiDoc(); return; }
       if (laBien) { if (vung === 'khung' && !(dichBien >= 0 && ed.datBienTai(dichBien, txt, kieuB))) cf.khiKhongSo && cf.khiKhongSo(txt); }
       else if (vung === 'thung') ed.xoaTai(tu);
       else if (loai === 'doi') { if (slot !== null) ed.doiCho(tu, slot, bac); }
@@ -1652,6 +1843,6 @@
     return null;
   }
 
-  window.TP = { h: h, esc: esc, choBoSung: choBoSung, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonDkm: chonDkm, datCheMau: datCheMau, coMauCua: coMauCua, coPinCua: coPinCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
+  window.TP = { h: h, esc: esc, choBoSung: choBoSung, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonDkm: chonDkm, datCheMau: datCheMau, coMauCua: coMauCua, coPinCua: coPinCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, theCuaHam: theCuaHam, theMacDinh: theMacDinh, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

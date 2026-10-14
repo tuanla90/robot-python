@@ -162,7 +162,10 @@
     nutban: ['xxxxxxxxxxx', 'x.........x', 'x..xxxxx..x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x..xxxxx..x', 'x.........x', 'xxxxxxxxxxx'],
     sac: ['.....xxxx', '....xxxx.', '...xxxx..', '..xxxx...', '.xxxxxxxx', 'xxxxxxxx.', '....xxx..', '...xxx...', '..xxx....', '..xx.....', '..x......'],
     pin: ['xxxxxxxxxx..', 'x........x..', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x........x..', 'xxxxxxxxxx..'],
-    cua: ['xxxxxxxxxxx', 'xx...x...xx', 'xx...x...xx', 'xx.x.x.x.xx', 'xx...x...xx', 'xx...x...xx', 'xx...x...xx', 'xxxxxxxxxxx']
+    cua: ['xxxxxxxxxxx', 'xx...x...xx', 'xx...x...xx', 'xx.x.x.x.xx', 'xx...x...xx', 'xx...x...xx', 'xx...x...xx', 'xxxxxxxxxxx'],
+    // sổ lệnh (quyển sách mở) và nhãn cảnh báo (tam giác có dấu !)
+    book: ['.xxxxxxxxx.', 'xxxxxxxxxxx', 'xx.......xx', 'xx.xxxxx.xx', 'xx.......xx', 'xx.xxx...xx', 'xx.......xx', 'xxxxxxxxxxx', '.xxxxxxxxx.'],
+    canhbao: ['.....xx.....', '....xxxx....', '....xxxx....', '...xxxxxx...', '...xx..xx...', '..xxx..xxx..', '..xxx..xxx..', '.xxxxxxxxxx.', '.xxxx..xxxx.', 'xxxxxxxxxxxx']
   };
   function icon(ten, tuyChon) {
     tuyChon = tuyChon || {};
@@ -538,16 +541,17 @@
     var q = p; for (var r = 0; r < d; r++) q = rot90(q);
     convCache[key] = q.canvas(); return convCache[key];
   }
+  /** Cờ 12×13 (gọn trong một ô 14 px: trước là 16×16 tràn quá ô, to hơn xe). */
   function makeFlag(frame) {
-    var p = new Painter(16, 16);
-    p.rect(2, 13, 7, 2, '#4a4f60'); p.rect(2, 13, 7, 1, '#7a8094'); p.rect(3, 14, 5, 1, '#2e3240');
-    p.rect(4, 1, 1, 12, '#eef0f6');
+    var p = new Painter(12, 13);
+    p.rect(1, 10, 6, 2, '#4a4f60'); p.rect(1, 10, 6, 1, '#7a8094'); p.rect(2, 11, 4, 1, '#2e3240');
+    p.rect(3, 2, 1, 8, '#eef0f6');
     var wave = [0, 1, 0, -1][frame % 4];
-    for (var c = 0; c < 9; c++) {
-      var yo = (c > 2 ? wave : 0) + (c > 5 ? wave : 0);
-      for (var r = 0; r < 6; r++) p.px(5 + c, 2 + r + yo, r === 0 ? '#ff7a68' : (r === 5 ? '#b32020' : '#e8352e'));
+    for (var c = 0; c < 7; c++) {
+      var yo = (c > 2 ? wave : 0) + (c > 4 ? wave : 0);
+      for (var r = 0; r < 5; r++) p.px(4 + c, 3 + r + yo, r === 0 ? '#ff7a68' : (r === 4 ? '#b32020' : '#e8352e'));
     }
-    p.rect(3, 0, 3, 1, '#ffd23f');
+    p.rect(2, 1, 3, 1, '#ffd23f');
     p.outline(K.ink);
     return p.canvas();
   }

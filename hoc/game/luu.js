@@ -4,6 +4,7 @@
      tiến độ  : duong-hoc:tien-do = { phienBan: 1, sao: { 'hai-banh.1': 3, … } }   (khóa = m.ma, cố định khi đổi thứ tự chương)
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
      sân thử  : duong-hoc:san-thu:<tenHam> = cách sắp sân thử của Xưởng (xe, vật, tường), riêng từng hàm
+     đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, … }   (bảng / lời chào chỉ hiện một lần)
      Dữ liệu cũ theo id ('1.1'…'2.10') được chuyển một lần sang ma (chuyenCu).
    ========================================================================== */
 (function () {
@@ -12,6 +13,7 @@
   var KHOA_TIEN_DO = 'duong-hoc:tien-do';
   var KHOA_NHAP = 'duong-hoc:nhap:';
   var KHOA_SAN_THU = 'duong-hoc:san-thu:';
+  var KHOA_DA_XEM = 'duong-hoc:da-xem';
 
   // chỗ lưu: localStorage nếu dùng được, không thì bộ nhớ tạm (mất khi tải lại)
   function bo() {
@@ -93,6 +95,25 @@
   function ghiSanThu(ten, cfg) { return ghiJson(KHOA_SAN_THU + ten, cfg); }
   function xoaSanThu(ten) { try { kho.removeItem(KHOA_SAN_THU + ten); return true; } catch (e) { return false; } }
 
+  /* ---- cờ "đã xem" (bảng chỉ hiện một lần, vd. 'mo-khoa-dot2' khi vừa mở các chương bộ phận mới) */
+  function daXem(ten) {
+    var d = docJson(KHOA_DA_XEM);
+    return !!(d && typeof d === 'object' && d[ten] === true);
+  }
+  function datDaXem(ten) {
+    var d = docJson(KHOA_DA_XEM);
+    if (!d || typeof d !== 'object' || Array.isArray(d)) d = {};
+    d[ten] = true;
+    return ghiJson(KHOA_DA_XEM, d);
+  }
+
+  /** Xóa sao / tiến độ và cờ "đã xem" (bảng Gỡ lỗi, go-loi.js). Bản nháp xóa từng màn bằng xoaNhap; kho hàm và sân thử không bị đụng tới. */
+  function xoaTienDo() {
+    try { kho.removeItem(KHOA_TIEN_DO); kho.removeItem(KHOA_DA_XEM); } catch (e) { /* bỏ qua */ }
+    docTienDo();
+    return true;
+  }
+
   /* ---- kho hàm của em */
   var loiKho = null;
   function docKho() {
@@ -139,6 +160,7 @@
     saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docSanThu: docSanThu, ghiSanThu: ghiSanThu, xoaSanThu: xoaSanThu,
+    daXem: daXem, datDaXem: datDaXem, xoaTienDo: xoaTienDo,
     docKho: docKho, ghiKho: ghiKho,
     get loiKho() { return loiKho; },
     KHOA_TIEN_DO: KHOA_TIEN_DO, KHOA_NHAP: KHOA_NHAP

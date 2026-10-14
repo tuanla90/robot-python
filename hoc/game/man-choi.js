@@ -2,6 +2,8 @@
    man-choi.js — "Đường học": MÀN CHƠI (window.Choi).
    Sân + cột nút ▶ ⏭ ↺ 💡 + đồng hồ NHỊP; nửa dưới: CHƯƠNG TRÌNH (10 ô) | KHỐI LỆNH.
    Chạy = ChamHoc.cham(...) rồi phát lại `vet`. Mọi luật và lời chẩn đoán đến từ lõi.
+   Màn chế lệnh (14/10): mục tiêu 'bong-mo' (SanVe vẽ xe mờ + ô ◆ theo man.bongMo, ◆ sáng khi vết có 'qua-diem'), man.chinhCoDinh (khung chương trình chính chỉ đọc, có ổ khóa),
+   man.canhBao (nhãn ⚠ trên sân). Thắng trùm chương cổng đợt 2 lần đầu: bảng "Mở khóa bộ phận mới!" (App.moKhoaDot2) trước khi sang màn / màn chọn.
    ========================================================================== */
 (function () {
   'use strict';
@@ -40,7 +42,7 @@
       '</div>' +
       '<div class="low">' +
         '<div class="pan p-prog" id="pan-main"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.chuongTrinh') + '</span><span class="ct">0/10</span>' +
+          '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.chuongTrinh') + '</span><span class="ham-dem" data-nut="ham-dem" style="display:none" title="' + t('choi.hamDemNhan') + '"></span><span class="ct">0/10</span><span class="chinh-khoa" data-nut="chinh-khoa"><span class="ck-ic"></span><span class="ck-chu">' + t('choi.chinhKhoaNhan') + '</span></span>' +
             '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="#4a0e0c"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
@@ -54,7 +56,8 @@
     E.n = q('.plaque .n'); E.t = q('.plaque .t'); E.sao = q('.top .stars');
     E.toast = q('.toast'); E.bongD = q('.p-pal .bong'); E.clock = q('.clock .v'); E.side = q('.side');
     E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov');
-    E.fb = q('.fblock'); E.bar = q('.sanbar'); E.tong = q('.clock .tong');
+    E.fb = q('.fblock'); E.bar = q('.sanbar'); E.tong = q('.clock .tong'); E.hamDem = q('.p-prog .ham-dem');
+    q('.chinh-khoa .ck-ic').appendChild(Ve.khoa(2, true));                       // ổ khóa nhỏ ở tiêu đề khung chương trình (chỉ hiện khi màn có chinhCoDinh)
 
     S.field = new SanVe.Field(q('#field'), { kich: 210, lamps: { T: q('.lamp.lt'), P: q('.lamp.lp') } });
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
@@ -70,16 +73,21 @@
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
       soToiDa: function (ten, k) { return S.soMax(ten, k); },                                    // aim(n) chỉ nhận 1–3
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
+      chiDoc: function () { return !!(S.man && S.man.chinhCoDinh); },                           // chương trình chính cố định (màn chế lệnh): chỉ đọc, sửa hàm trong Xưởng
+      khiChiDoc: baoChinhCoDinh,
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
     });
     S.pal = new TP.Palette(q('.pal'), {
-      khiChen: function (txt) { if (!S.ed.chen(txt)) toast(t('choi.dayKhung'), 'bad'); },
+      khiChen: function (txt) {
+        if (S.man && S.man.chinhCoDinh) { baoChinhCoDinh(); return; }
+        if (!S.ed.chen(txt)) toast(t('choi.dayKhung'), 'bad');
+      },
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
-      khiMoi: function () { Xuong.moiHam(function (ten) { Xuong.mo('em', ten); }); },
+      khiMoi: function (the) { Xuong.moiHam(function (ten) { Xuong.mo('em', ten, the); }); },          // hàm mới (còn trống) mở ở Xưởng với khay đúng thẻ em đang xem
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); }
     });
 
-    TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiDay: function () { toast(t('choi.dayKhung'), 'bad'); }, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); } });
+    TP.Keo.gan({ ed: S.ed, pal: S.pal, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiDay: function () { toast(t('choi.dayKhung'), 'bad'); }, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiChiDoc: baoChinhCoDinh });
 
     Xuong.dung(E.ov, {
       man: function () { return S.man; }, bai: function () { return S.bai; },
@@ -113,6 +121,7 @@
   function nhanBan(m) {
     // bài làm: bản nháp nếu có, nếu không thì mã mẫu của màn
     var nhap = Luu.docNhap(m.ma);
+    if (nhap && m.chinhCoDinh) nhap.chinh = m.maMau.chinh.slice();                     // chương trình chính cố định: bản nháp cũ (nếu có) không được lệch khỏi chương trình của màn
     if (nhap) {
       // hàm của màn mà màn cho sẵn thì luôn phải có mặt (bản nháp hỏng / cũ có thể thiếu)
       (m.maMau.hamCuaMan || []).forEach(function (f) {
@@ -128,11 +137,13 @@
   function vao(m) {
     roi(); anBongD();
     S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0;
+    S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
     TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m));      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
     var k = KhungCode.khungDayDu(m.khung);
     S.khung = k;
     var dung = KhungCode.soODung(k);
     E.n.textContent = m.id; E.t.textContent = m.ten;
+    SanVe.datCanhBao(E.ffr, m.canhBao);                                                // nhãn ⚠ trên sân ("Dây bánh trái đấu ngược"); màn không có thì ẩn
     E.host.querySelector('.lamps').style.display = (m.loaiRobot === 'nhen' || m.loaiRobot === 'drone') ? 'none' : '';
     E.host.querySelector('.plaque .d').style.display = '';
     sao3(Luu.saoTot(m.ma));
@@ -142,7 +153,8 @@
     dungSanBar();
     S.ed.nap(function () { return S.bai.chinh; }, dung.chinh);
     S.ed.datLoi([]);
-    veKho();
+    veKho(true);
+    veHamDem();
     veDongHo();
     E.side.classList.remove('busy');
     E.ov.classList.remove('open');
@@ -160,13 +172,18 @@
       vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem,   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
       roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau,           // máy ném: rổ có sẵn một vật lúc xuất phát
       cuaNhip: lm.cuaNhip || undefined, danToiDa: m.danToiDa,                      // súng bóng: chu kỳ cửa nhịp của sân này, số đạn tối đa (không khai = vô hạn)
-      pin: Array.isArray(m.pin) ? m.pin[i] : m.pin                                 // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
+      pin: Array.isArray(m.pin) ? m.pin[i] : m.pin,                                // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
+      bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo                     // mục tiêu 'bong-mo': xe mờ (+ vật mờ, ô ◆) của sân này; màn nhiều sân thì mảng song song với san
     };
   }
-  function veKho() {
+  /** Vẽ khay khối lệnh. lamMoi (vào màn): bỏ thẻ đang chọn, chọn thẻ chứa hàm màn bắt chế (man.taoHam), không có thì thẻ THÂN; không thì giữ thẻ đang chọn. */
+  function veKho(lamMoi) {
     var m = S.man;
     S.pal.dung({
       goc: m.hamGoc,
+      loai: m.loaiRobot,                                                                        // tên thẻ THÂN: Xe / Nhện / Drone
+      lamMoi: !!lamMoi,
+      the: lamMoi ? TP.theMacDinh({ man: m, kho: KhoHam.ds(), hamMan: S.bai.hamCuaMan, dangSua: null }) : undefined,
       vong: TP.coCauTruc(m, 'for'),
       vongWhile: TP.coCauTruc(m, 'while') && TP.coDieuKienCua(m),
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC
@@ -183,7 +200,19 @@
   function khiDoiHamKho() {
     datLaiChay();
     veKho();
+    veHamDem();
     Luu.ghiNhap(S.man.ma, S.bai);
+  }
+  /** Bộ đếm "Hàm 2/3" ở tiêu đề khung chương trình: chỉ có ở màn khai man.gioiHanHam; đỏ khi chương trình chính gọi quá số hàm của em được mang. */
+  function veHamDem() {
+    var el = E.hamDem, gh = S.man ? S.man.gioiHanHam : undefined;
+    if (!el) return;
+    if (typeof gh !== 'number') { el.style.display = 'none'; el.classList.remove('qua'); return; }
+    var kho = S.man.camHamCuaEm ? [] : KhoHam.ds();
+    var k = KhungCode.hamEmTrucTiep({ chinh: S.bai.chinh, hamCuaMan: S.bai.hamCuaMan }, kho).length;
+    el.textContent = t('choi.hamDem', { k: k, n: gh });
+    el.classList.toggle('qua', k > gh);
+    el.style.display = '';
   }
 
   /** Rời màn: dừng phát lại. */
@@ -200,6 +229,8 @@
     if (ms !== 0) toastHen = setTimeout(function () { tt.className = 'toast'; }, ms || 2200);
   }
   function anToast() { clearTimeout(toastHen); E.toast.className = 'toast'; }
+  /** Chạm / kéo thả vào chương trình chính khi màn khai chinhCoDinh: nhắc rằng chỉ sửa được hàm trong Xưởng. */
+  function baoChinhCoDinh() { toast(t('choi.chinhCoDinh'), '', 2800); }
 
   /* ------------------------------------------------------------- bong bóng */
   // Mọi bong bóng (đề bài, gợi ý, chẩn đoán sau khi chạy) đè lên cột KHỐI LỆNH (E.bongD), kho khối tạm ẩn khi bong bóng mở;
@@ -233,6 +264,7 @@
     hang.appendChild(TP.Hop.nut('g-or', t('menu.lamLai'), function () {
       TP.Hop.xacNhan({ tieuDe: t('menu.lamLai'), noiDung: t('menu.lamLaiHoi'), co: t('menu.lamLaiCo') }).then(function (ok) { if (ok) lamLai(); });
     }, 'menu-lam-lai'));
+    if (window.GoLoi && GoLoi.laBat()) hang.appendChild(TP.Hop.nut('g-cy', t('go.menu'), function () { GoLoi.mo(); }, 'menu-go-loi'));   // chỉ khi đang ở chế độ gỡ lỗi (?debug=1 / #debug / đã mở bảng / "Mở hết")
     hang.appendChild(TP.Hop.nut('g-wd', t('chung.dong'), function () { TP.Hop.dong(); }, 'menu-dong'));
     m.than.appendChild(hang);
   }
@@ -278,6 +310,7 @@
     Luu.ghiNhap(S.man.ma, S.bai);
     datLaiChay();
     veKho();
+    veHamDem();
   }
 
   /* -------------------------------------------------------------- chạy / phát lại */
@@ -289,8 +322,15 @@
     S.ed.datChay(null); S.ed.datLoi([]); S.pal.datSang(null); S.pal.datLoi([]);
     anToast(); anBong();
   }
+  /** Lỗi khung (quá giới hạn hàm của màn, tràn ô, cấu trúc chưa học…): lõi chưa chạy sân nào, kết quả không có theoSan; vẫn có chẩn đoán để hiện. */
+  function loiKhung() { return !!S.ket && !(S.ket.theoSan || []).length; }
   function chuanBi() {
     S.ket = ChamHoc.cham(S.man, { chinh: S.bai.chinh, hamCuaMan: S.bai.hamCuaMan }, KhoHam.ds());
+    if (loiKhung()) {                                                                       // không có sân nào để phát lại: sân về chỗ xuất phát, Chạy sẽ hiện chẩn đoán
+      S.vet = []; S.idx = 0; S.nhip = 0; S.lap = null; S.cap = null; S.marks = null;
+      S.field.datLai(); veDongHo(); veSanBar();
+      return;
+    }
     var si = 0;
     if (nhieuSan()) { var k = S.ket.theoSan.map(function (x) { return x.thang; }).indexOf(false); si = k < 0 ? 0 : k; }      // mặc định xem sân trượt đầu tiên (thắng hết thì sân 1)
     S.marks = null;
@@ -342,7 +382,7 @@
     anToast();
     S.field.nap(cauHinhSan(i));
     S.ed.datChay(null); S.pal.datSang(null);
-    if (S.ket) datVet(i); else { S.si = i; S.nhip = 0; veDongHo(); veSanBar(); }
+    if (S.ket && !loiKhung()) datVet(i); else { S.si = i; S.nhip = 0; veDongHo(); veSanBar(); }
     if (S.ket && !S.ket.thang && E.bongD.hasAttribute('data-ca')) { dungChanDoan(S.ket); hienChanDoan(); }      // đang mở chẩn đoán: đổi sang chẩn đoán của sân này
   }
   /** Chỉ số dòng (từ 0) của chương trình mà sự kiện lệnh e đang chạy (kể cả khi lệnh nằm trong hàm được gọi từ dòng đó). */
@@ -396,7 +436,7 @@
 
   /** Chẩn đoán để hiện khi đang xem sân si: của chính sân đó trước (kèm "Sân N:"), rồi những mã chỉ có ở sân khác. Một sân thì giữ nguyên. */
   function chanDoanXem(k, si) {
-    if (!nhieuSan()) return k.chanDoan;
+    if (!nhieuSan() || !(k.theoSan || []).length) return k.chanDoan;
     var rieng = (k.theoSan[si].chanDoan || []).map(function (c) { return Object.assign({}, c, { loi: t('choi.sanTien', { n: si + 1 }) + c.loi, san: si }); });
     var co = {}; rieng.forEach(function (c) { co[c.ma] = true; });
     return rieng.concat(k.chanDoan.filter(function (c) { return c.san !== si && !co[c.ma]; }));
@@ -440,9 +480,10 @@
     // chưa thắng: bong bóng chẩn đoán (lỗi trước, thông tin sau), đánh dấu dòng / khối
     var conTran = dungChanDoan(k);
     if (conTran) S.ed.nhay();
+    if (S.cd.some(function (c) { return c.ma === 'lech-bong-mo' || c.ma === 'chua-qua-diem'; })) S.field.nhayBongMo(1500);      // bóng mờ nháy: chỗ xe cần tới (và ô ◆ chưa qua) hiện rõ
     if (!S.bai.chinh.length && !k.vet.length && !S.bai.hamCuaMan.length) toast(t('choi.trong'), 'bad');
     hienChanDoan();
-    if (!(nhieuSan() && k.theoSan[S.si].thang)) S.field.chopDo(200);          // sân đang xem đã tới cờ (sân khác trượt) thì không chớp đỏ
+    if (!(nhieuSan() && k.theoSan[S.si] && k.theoSan[S.si].thang)) S.field.chopDo(200);          // sân đang xem đã tới cờ (sân khác trượt) thì không chớp đỏ
     S.field.quayVe();                  // xích dừng giữa lúc quay dở: xoay ngược về thẳng kèm dấu ?
     if (capDung) toast(t('choi.vongVoHan'), 'bad', 2600);
   }
@@ -452,7 +493,7 @@
     var m = S.man, k = S.ket, ss = m.sao || {};
     var okO = ss.o === undefined || k.soO <= ss.o, okN = ss.nhip === undefined || k.soNhip <= ss.nhip;
     var duaVat = m.mucTieu === 'dua-vat' || m.mucTieu === 'day-thung';
-    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
+    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
     hop.hop.setAttribute('data-sao', k.sao);
     var st = h('div', 'th-sao');
     for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }
@@ -488,7 +529,8 @@
     hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); datLaiChay(); }, 'choi-lai'));
     hang.appendChild(TP.Hop.nut('g-gr', tiep ? t('thang.manTiep') : t('thang.hetChuoi'), function () {
       TP.Hop.dong();
-      if (tiep) App.vaoMan(tiep.ma); else { roi(); App.veChon(); }
+      var di = function () { if (tiep) App.vaoMan(tiep.ma); else { roi(); App.veChon(); } };
+      if (App.moKhoaDot2) App.moKhoaDot2(di); else di();           // vừa thắng trùm chương cổng lần đầu: bảng "Mở khóa bộ phận mới!" rồi mới đi tiếp
     }, 'man-tiep'));
     hop.than.appendChild(hang);
   }

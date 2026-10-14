@@ -37,7 +37,7 @@
 
   var PHIEN_BAN = 1;
   var KHOA_LUU = 'duong-hoc:kho-ham';
-  var SO_HAM_MAC_DINH = 35;      // 33 hàm cốt truyện (xuong-ham 7, tay-gap 3, vong-lap 4, tham-so 4: forward, right, deliver, step, nhen 3: go, walk, bring, xich 2: tr_right, tr_left, omni 2: slide_r, slide_l, tam-day 1: shove, khoang-cach 1: go_wall, mau 1: read_turn, nam-cham 1: fetch, may-nem 1: toss, sung-bong 1: hit_right, drone 2: recharge, ship) + 2 chỗ cho hàm tự đặt.
+  var SO_HAM_MAC_DINH = 200;     // KHÔNG giới hạn chung số hàm (user chốt 14/10: giới hạn chỉ theo từng màn, man.gioiHanHam), 200 chỉ là trần an toàn cho chỗ lưu. Hiện có 39 hàm cốt truyện (xuong-ham 7, che-xe 6, tay-gap 3, vong-lap 4, tham-so 4, nhen 3, xich 2, omni 2, tam-day 1, khoang-cach 1, mau 1, nam-cham 1, may-nem 1, sung-bong 1, drone 2); u_turn, turn_right, turn_left được SỬA ở che-xe chứ không tạo mới.
                                // Chương sau thêm hàm cốt truyện nào thì tăng số này tương ứng (kiem-hoc.mjs kiểm: >= số hàm cốt truyện + 2).
 
   // hàm gốc của mọi loại robot (xe bánh có tay gắp, nhện và drone (go_up…), omni, tấm đẩy push, cảm biến khoảng cách, cảm biến màu color, nam châm magnet_on / magnet_off, cảm biến từ front_metal, đo pin battery của drone) + hàm nội bộ của nhân chạy code (print, range, len, str, int)

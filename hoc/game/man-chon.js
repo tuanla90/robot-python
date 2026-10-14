@@ -1,7 +1,7 @@
 /* ============================================================================
    man-chon.js — "Đường học": MÀN CHỌN MÀN (window.Chon).
    ‹ › đổi chương (theo ManHoc.chuong()) · lưới 3×3 + nút TRÙM · hàng "Hàm của em" ở đáy.
-   Giữ lâu tiêu đề 2 giây = bật/tắt "Mở hết" (cho người thử).
+   Giữ lâu tiêu đề 2 giây = mở bảng Gỡ lỗi (go-loi.js: "Mở hết", chọn màn bất kỳ… cho người thử); địa chỉ có ?debug=1 / #debug thì thêm nút 🐞 ở hàng "Hàm của em".
    ========================================================================== */
 (function () {
   'use strict';
@@ -39,15 +39,13 @@
     el.truoc.addEventListener('click', function () { doiChuoi(-1); });
     el.sau.addEventListener('click', function () { doiChuoi(1); });
 
-    // giữ lâu tiêu đề: bật/tắt "Mở hết"
+    // giữ lâu tiêu đề 2 giây: mở bảng Gỡ lỗi (go-loi.js: chọn màn bất kỳ, "Mở hết", nạp hàm chuẩn, xóa tiến độ)
     var hen = null;
     function bat() {
       clearTimeout(hen);
       hen = setTimeout(function () {
         hen = null;
-        App.moHet = !App.moHet;
-        thongBao(t(App.moHet ? 'chon.moHet.bat' : 'chon.moHet.tat'));
-        ve();
+        if (window.GoLoi) GoLoi.mo(App.chuong);
       }, GIU_LAU_MS);
     }
     function thoi() { clearTimeout(hen); hen = null; }
@@ -69,6 +67,8 @@
 
   function lyDoChu(tt) {
     if (tt.lyDo === 'chuoi') return t('chon.khoaChuoi', { n: tt.chuoi });
+    if (tt.lyDo === 'dot2') return t('chon.khoaDot2', { ten: App.tenChuong(tt.cong) });
+    if (tt.lyDo === 'can-ham') return t('chon.khoaCanHam', { ham: tt.ham, ten: App.tenChuong(tt.canChuong) });
     if (tt.lyDo === 'hang1') return t('chon.khoaHang1');
     if (tt.lyDo === 'hang23') return t('chon.khoaHang23');
     if (tt.lyDo === 'trum') return t('chon.trumKhoa');
@@ -178,7 +178,16 @@
   function veHam() {
     var ds = KhoHam.ds();
     el.thu.innerHTML = '';
-    el.thu.appendChild(h('div', 'c-thu-td', t('chon.hamCuaEm')));
+    var hd = h('div', 'c-thu-hd'); el.thu.appendChild(hd);
+    hd.appendChild(h('div', 'c-thu-td', t('chon.hamCuaEm')));
+    if (window.GoLoi) GoLoi.nutBug(hd);                                              // nút 🐞 mở bảng Gỡ lỗi: chỉ có khi địa chỉ có ?debug=1 hoặc #debug
+    if (window.SoLenh && window.SoLenhMan) {                                         // Sổ lệnh (so-lenh.js của lõi + man-so-lenh.js): đặt cạnh hàng "Hàm của em"; lõi chưa có dữ liệu thì ẩn nút
+      var bs = h('button', 'bt g-cy c-so'); bs.setAttribute('data-nut', 'so-lenh'); bs.setAttribute('aria-label', t('chon.soLenh'));
+      var ib = h('span', 'c-so-ic'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', '#07303a'); bs.appendChild(ib);
+      bs.appendChild(h('span', 'c-so-chu', t('chon.soLenh')));
+      bs.addEventListener('click', function () { SoLenhMan.mo(); });
+      hd.appendChild(bs); Ve.hydrate(hd);
+    }
     var pills = h('div', 'c-pills'); el.thu.appendChild(pills);
     if (!ds.length) {
       pills.appendChild(h('div', 'pill ghost', t('chon.hamRong')));

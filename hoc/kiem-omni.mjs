@@ -341,32 +341,32 @@ console.log('\n== 5. Bộ dò đường tắt cho omni (BFS theo nhịp) và so 
 /* ====================================================== 6. DỮ LIỆU 10 MÀN */
 console.log('\n== 6. Dữ liệu 10 màn: omni, tay kẹp ở 6 và 10, hàm slide_r / slide_l, băng ở 7 và 10, hướng mặt ở 5 và 10 ==');
 {
-  kiem('đúng 10 màn, số 1..10, id 9.1…9.10 (chương thứ 9, sau xich), mã omni.1…, tên "Bánh omni"',
-    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '9.' + (i + 1) && m.ma === 'omni.' + (i + 1)) && ThuTu.thuTu[8] === 'omni' && ThuTu.thuTu[7] === 'xich' && ThuTu.ten.omni === 'Bánh omni');
-  kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ 9.10 có huy hiệu omni',
+  kiem('đúng 10 màn, số 1..10, id 11.1…11.10 (chương thứ 11, sau xich), mã omni.1…, tên "Bánh omni"',
+    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '11.' + (i + 1) && m.ma === 'omni.' + (i + 1)) && ThuTu.thuTu[10] === 'omni' && ThuTu.thuTu[9] === 'xich' && ThuTu.ten.omni === 'Bánh omni');
+  kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ 11.10 có huy hiệu omni',
     J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
       ds.filter((m) => m.huyHieu).length === 1 && ds[9].huyHieu.ma === 'omni' && ds[9].huyHieu.ten === 'Huy hiệu Bánh omni');
   kiem('mọi màn: loaiRobot omni, robot { than: "omni", tay }, cauTruc ["for","if"], Xưởng mở, được dùng hàm của em, chương trình 10 ô + mỗi hàm 10 ô',
     ds.every((m) => m.loaiRobot === 'omni' && m.robot && m.robot.than === 'omni' && J(m.cauTruc) === '["for","if"]' && m.moXuong === true && m.camHamCuaEm === false && m.khung.chinh === 10 && m.khung.moiHam === 10));
-  kiem('tay kẹp chỉ ở 9.6 và 9.10 (robot.tay "kep", hamGoc có 4 lệnh tay, mục tiêu dua-vat); các màn khác tay null, hamGoc = bộ lệnh omni',
-    ds.every((m) => { const co = ['9.6', '9.10'].includes(m.id); return co ? m.robot.tay === 'kep' && J(m.hamGoc) === J(OMNI_TAY) && m.mucTieu === 'dua-vat' : m.robot.tay === null && J(m.hamGoc) === J(OMNI) && m.mucTieu === undefined; }));
+  kiem('tay kẹp chỉ ở 11.6 và 11.10 (robot.tay "kep", hamGoc có 4 lệnh tay, mục tiêu dua-vat); các màn khác tay null, hamGoc = bộ lệnh omni',
+    ds.every((m) => { const co = ['11.6', '11.10'].includes(m.id); return co ? m.robot.tay === 'kep' && J(m.hamGoc) === J(OMNI_TAY) && m.mucTieu === 'dua-vat' : m.robot.tay === null && J(m.hamGoc) === J(OMNI) && m.mucTieu === undefined; }));
   kiem('sân tối đa 7×7; màn tới cờ có đúng một cờ F; màn dua-vat có vật và ô đích',
     ds.every((m) => m.san.length <= 7 && m.san[0].length <= 7 && (m.mucTieu === 'dua-vat' ? /o/.test(m.san.join('')) && /D/.test(m.san.join('')) : (m.san.join('').match(/F/g) || []).length === 1)));
-  kiem('không màn nào có bậc thang S (omni không leo được); băng chuyền chỉ ở 9.7 và 9.10',
-    ds.every((m) => !/S/.test(m.san.join(''))) && J(ds.filter((m) => /[<>^v]/.test(m.san.join(''))).map((m) => m.id)) === '["9.7","9.10"]');
-  kiem('hướng mặt: 9.5 quay sang trái (huong 3), 9.10 quay sang phải (huong 1), các màn còn lại quay lên (huong 0)',
-    ds.every((m) => m.batDau.huong === ({ '9.5': 3, '9.10': 1 }[m.id] || 0)));
-  kiem('hàm cốt truyện mới: 9.3 tạo slide_r, 9.4 tạo slide_l; các màn khác không tạo; tên không trùng hàm cốt truyện chương trước và không phải hàm gốc',
-    ds.every((m) => J(m.taoHam) === J({ '9.3': ['slide_r'], '9.4': ['slide_l'] }[m.id] || [])) &&
+  kiem('không màn nào có bậc thang S (omni không leo được); băng chuyền chỉ ở 11.7 và 11.10',
+    ds.every((m) => !/S/.test(m.san.join(''))) && J(ds.filter((m) => /[<>^v]/.test(m.san.join(''))).map((m) => m.id)) === '["11.7","11.10"]');
+  kiem('hướng mặt: 11.5 quay sang trái (huong 3), 11.10 quay sang phải (huong 1), các màn còn lại quay lên (huong 0)',
+    ds.every((m) => m.batDau.huong === ({ '11.5': 3, '11.10': 1 }[m.id] || 0)));
+  kiem('hàm cốt truyện mới: 11.3 tạo slide_r, 11.4 tạo slide_l; các màn khác không tạo; tên không trùng hàm cốt truyện chương trước và không phải hàm gốc',
+    ds.every((m) => J(m.taoHam) === J({ '11.3': ['slide_r'], '11.4': ['slide_l'] }[m.id] || [])) &&
       (() => { const cu = tatCa.filter((m) => m.chuong !== 'omni').flatMap((m) => m.taoHam); return ['slide_r', 'slide_l'].every((t) => !cu.includes(t) && !KhoHam.HAM_GOC_MAC_DINH.includes(t) && tenCotTruyen.includes(t)); })());
   kiem('KhoHam.HAM_GOC_MAC_DINH có slide_left và slide_right (không đặt tên hàm trùng lệnh gốc)', ['slide_left', 'slide_right'].every((t) => KhoHam.HAM_GOC_MAC_DINH.includes(t)) && KhoHam.moi().tao('slide_left').ma === 'ten-trung-ham-goc');
   kiem('slide_r(n) và slide_l(n): một tham số n, 3 ô mỗi hàm (for i in range(n): lệnh trượt + wait), dùng slide_right / slide_left', (() => {
-    const a = man('9.3').loiGiai.hamCuaEmMoi[0], b = man('9.4').loiGiai.hamCuaEmMoi[0];
+    const a = man('11.3').loiGiai.hamCuaEmMoi[0], b = man('11.4').loiGiai.hamCuaEmMoi[0];
     return a.ten === 'slide_r' && J(a.thamSo) === '["n"]' && KhungCode.soOHam(a) === 3 && a.than[0] === 'for i in range(n):' && a.than[1].trim() === 'slide_right()' &&
       b.ten === 'slide_l' && J(b.thamSo) === '["n"]' && KhungCode.soOHam(b) === 3 && b.than[0] === 'for i in range(n):' && b.than[1].trim() === 'slide_left()';
   })());
-  kiem('hamCuaEmCan đúng: 9.1 [], 9.2 [move], 9.3 [move, forward], 9.4 [move, forward, slide_r], 9.5 [move, forward, slide_r, slide_l], 9.6 [move, forward, pick, drop], 9.7 [move, forward, slide_r], 9.8 [move, forward, slide_r], 9.9 [move, slide_r], 9.10 [move, forward, slide_r, slide_l, pick, drop]',
-    ds.every((m) => J(m.hamCuaEmCan) === J({ '9.1': [], '9.2': ['move'], '9.3': ['move', 'forward'], '9.4': ['move', 'forward', 'slide_r'], '9.5': ['move', 'forward', 'slide_r', 'slide_l'], '9.6': ['move', 'forward', 'pick', 'drop'], '9.7': ['move', 'forward', 'slide_r'], '9.8': ['move', 'forward', 'slide_r'], '9.9': ['move', 'slide_r'], '9.10': ['move', 'forward', 'slide_r', 'slide_l', 'pick', 'drop'] }[m.id])));
+  kiem('hamCuaEmCan đúng: 11.1 [], 11.2 [move], 11.3 [move, forward], 11.4 [move, forward, slide_r], 11.5 [move, forward, slide_r, slide_l], 11.6 [move, forward, pick, drop], 11.7 [move, forward, slide_r], 11.8 [move, forward, slide_r], 11.9 [move, slide_r], 11.10 [move, forward, slide_r, slide_l, pick, drop]',
+    ds.every((m) => J(m.hamCuaEmCan) === J({ '11.1': [], '11.2': ['move'], '11.3': ['move', 'forward'], '11.4': ['move', 'forward', 'slide_r'], '11.5': ['move', 'forward', 'slide_r', 'slide_l'], '11.6': ['move', 'forward', 'pick', 'drop'], '11.7': ['move', 'forward', 'slide_r'], '11.8': ['move', 'forward', 'slide_r'], '11.9': ['move', 'slide_r'], '11.10': ['move', 'forward', 'slide_r', 'slide_l', 'pick', 'drop'] }[m.id])));
   kiem('kho lúc tới mỗi màn có đủ hàm cần: ⊆ kho thật (chạy tuần tự)', ds.every((m) => { const t = khoTruoc(m.id).map((h) => h.ten); return m.hamCuaEmCan.every((x) => t.includes(x)); }));
   kiem('lời giải 3 sao với kho thật; ô và nhịp khớp sao của đề, không chẩn đoán nào', ds.every((m) => { const r = chamGiai(m); return r.thang && r.sao === 3 && r.soO === m.sao.o && r.soNhip === m.sao.nhip && r.chanDoan.length === 0; }));
 
@@ -377,8 +377,8 @@ console.log('\n== 6. Dữ liệu 10 màn: omni, tay kẹp ở 6 và 10, hàm sli
     kiem(m.id + ' không có ĐƯỜNG TẮT: BFS ' + b.nhip + (tk ? ' ≤ ' : ' = ') + 'nhịp lời giải ' + r.soNhip + ' (sao.nhip ' + m.sao.nhip + ')',
       b.nhip !== null && !b.catNgang && r.soNhip === m.sao.nhip && (tk ? b.nhip <= m.sao.nhip : b.nhip === m.sao.nhip), J([b.nhip, r.soNhip, m.sao.nhip]));
   }
-  kiem('nhipTheoLoiGiai chỉ ở màn có pick / drop (9.6, 9.10); chênh BFS đúng 1 nhịp (nâng tay của pick() gộp được vào nhịp trượt)',
-    ds.every((m) => (m.nhipTheoLoiGiai === true) === ['9.6', '9.10'].includes(m.id)) && ['9.6', '9.10'].every((id) => { const m = man(id); return m.sao.nhip - nhipOmniNganNhat(m).nhip === 1; }));
+  kiem('nhipTheoLoiGiai chỉ ở màn có pick / drop (11.6, 11.10); chênh BFS đúng 1 nhịp (nâng tay của pick() gộp được vào nhịp trượt)',
+    ds.every((m) => (m.nhipTheoLoiGiai === true) === ['11.6', '11.10'].includes(m.id)) && ['11.6', '11.10'].every((id) => { const m = man(id); return m.sao.nhip - nhipOmniNganNhat(m).nhip === 1; }));
 
   // canHam: không dùng hàm trượt (và hàm tiến) thì tràn khung
   const trai = (dsd, tenHam, than) => dsd.flatMap((s) => (s.replace(/\(.*\)/, '') === tenHam ? than(s) : [s]));
@@ -396,78 +396,78 @@ console.log('\n== 6. Dữ liệu 10 màn: omni, tay kẹp ở 6 và 10, hàm sli
     kiem(m.id + ' canHam ' + m.canHam + ': viết thẳng các vòng trượt (giữ forward / pick / drop của kho) thì ' + KhungCode.soDong(chinh) + ' dòng > 10 ô, tran-khung, không chạy',
       m.canHam === 'tran-khung' && KhungCode.soDong(chinh) > m.khung.chinh && maCua(r).includes('tran-khung') && !r.thang && r.sao === 0, J([KhungCode.soDong(chinh), maCua(r)]));
   }
-  kiem('canHam chỉ ở 9.3, 9.4, 9.10', J(ds.filter((m) => m.canHam).map((m) => m.id)) === J(['9.3', '9.4', '9.10']));
+  kiem('canHam chỉ ở 11.3, 11.4, 11.10', J(ds.filter((m) => m.canHam).map((m) => m.id)) === J(['11.3', '11.4', '11.10']));
 
-  // 9.1
-  const m91 = man('9.1');
-  { const r = ChamHoc.cham(m91, m91.maMau, khoTruoc('9.1')); const n = r.theoSan[0].vet.filter((e) => e.loai === 'nhip');
-    kiem('9.1: maMau trượt xe một ô sang phải (robot.truot +1) mà mặt xe vẫn quay lên (huong 0); chưa tới cờ', !r.thang && n.length === 1 && n[0].robot.x === 1 && n[0].robot.huong === 0 && n[0].robot.truot === 1); }
-  kiem('9.1: xe hai bánh cùng sân cần quay: 5 nhịp (1 quay + 4 tiến) > omni 4 nhịp', nhipBanhNganNhat(m91) === 5 && nhipOmniNganNhat(m91).nhip === 4);
-  kiem('9.1: lời giải chỉ dùng hàm gốc, không dùng hàm của em (hamDaDung rỗng)', chamGiai(m91).hamDaDung.length === 0);
-  // 9.2
-  const m92 = man('9.2');
-  kiem('9.2: tường chắn giữa cột giữa; lời giải trượt PHẢI rồi TRÁI: vòng bên trái (trượt trái rồi phải) cũng 6 nhịp (đối xứng)',
+  // 11.1
+  const m91 = man('11.1');
+  { const r = ChamHoc.cham(m91, m91.maMau, khoTruoc('11.1')); const n = r.theoSan[0].vet.filter((e) => e.loai === 'nhip');
+    kiem('11.1: maMau trượt xe một ô sang phải (robot.truot +1) mà mặt xe vẫn quay lên (huong 0); chưa tới cờ', !r.thang && n.length === 1 && n[0].robot.x === 1 && n[0].robot.huong === 0 && n[0].robot.truot === 1); }
+  kiem('11.1: xe hai bánh cùng sân cần quay: 5 nhịp (1 quay + 4 tiến) > omni 4 nhịp', nhipBanhNganNhat(m91) === 5 && nhipOmniNganNhat(m91).nhip === 4);
+  kiem('11.1: lời giải chỉ dùng hàm gốc, không dùng hàm của em (hamDaDung rỗng)', chamGiai(m91).hamDaDung.length === 0);
+  // 11.2
+  const m92 = man('11.2');
+  kiem('11.2: tường chắn giữa cột giữa; lời giải trượt PHẢI rồi TRÁI: vòng bên trái (trượt trái rồi phải) cũng 6 nhịp (đối xứng)',
     m92.san[2] === '.#.' && m92.san[0] === '#F#' && chamGiai(m92).soNhip === 6 && (() => {
       const doi = { chinh: m92.loiGiai.chinh.map((s) => (s === 'slide_right()' ? 'slide_left()' : s === 'slide_left()' ? 'slide_right()' : s)) };
-      const r = ChamHoc.cham(m92, doi, khoTruoc('9.2'));
+      const r = ChamHoc.cham(m92, doi, khoTruoc('11.2'));
       return r.thang && r.soNhip === 6 && r.sao === 3;
     })());
-  kiem('9.2: xe hai bánh phải quay: nhiều nhịp hơn omni (BFS bánh ' + nhipBanhNganNhat(m92) + ' > 6)', nhipBanhNganNhat(m92) > 6);
-  // 9.3 / 9.4
-  for (const id of ['9.3', '9.4']) {
+  kiem('11.2: xe hai bánh phải quay: nhiều nhịp hơn omni (BFS bánh ' + nhipBanhNganNhat(m92) + ' > 6)', nhipBanhNganNhat(m92) > 6);
+  // 11.3 / 11.4
+  for (const id of ['11.3', '11.4']) {
     const m = man(id);
     kiem(id + ': hành lang một ô rộng, mặt xe luôn quay lên (lời giải không gọi turn_*); omni ' + m.sao.nhip + ' nhịp < xe hai bánh ' + nhipBanhNganNhat(m) + ' nhịp', nhipVet(chamGiai(m).theoSan[0]).every((n) => n.robot.huong === 0) && nhipBanhNganNhat(m) > m.sao.nhip);
   }
-  kiem('9.3: ba đoạn trượt phải (3, 2, 1 ô) xen kẽ ba đoạn lên: lời giải gọi slide_r với ba số khác nhau', (() => { const c = man('9.3').loiGiai.chinh.filter((s) => /^slide_r\(/.test(s)); return J(c) === '["slide_r(3)","slide_r(2)","slide_r(1)"]'; })());
-  kiem('9.4: hành lang uốn rắn: trái, phải, trái, mỗi đoạn dài 4 ô, hai lần slide_l', (() => { const c = man('9.4').loiGiai.chinh.filter((s) => /^slide_[lr]\(/.test(s)); return J(c) === '["slide_l(4)","slide_r(4)","slide_l(4)"]'; })());
-  // 9.5
-  const m95 = man('9.5');
-  kiem('9.5: xe quay mặt sang trái; slide_right() đi LÊN, slide_left() đi XUỐNG; lời giải chạy ra đúng đường', (() => {
+  kiem('11.3: ba đoạn trượt phải (3, 2, 1 ô) xen kẽ ba đoạn lên: lời giải gọi slide_r với ba số khác nhau', (() => { const c = man('11.3').loiGiai.chinh.filter((s) => /^slide_r\(/.test(s)); return J(c) === '["slide_r(3)","slide_r(2)","slide_r(1)"]'; })());
+  kiem('11.4: hành lang uốn rắn: trái, phải, trái, mỗi đoạn dài 4 ô, hai lần slide_l', (() => { const c = man('11.4').loiGiai.chinh.filter((s) => /^slide_[lr]\(/.test(s)); return J(c) === '["slide_l(4)","slide_r(4)","slide_l(4)"]'; })());
+  // 11.5
+  const m95 = man('11.5');
+  kiem('11.5: xe quay mặt sang trái; slide_right() đi LÊN, slide_left() đi XUỐNG; lời giải chạy ra đúng đường', (() => {
     const r = chamGiai(m95);
     const n = nhipVet(r.theoSan[0]);
     return m95.batDau.huong === 3 && n[2].robot.truot === 1 && n[2].robot.y === 3 && n[4].robot.y === 1 && r.thang && n[n.length - 2].robot.truot === -1 && n[n.length - 1].robot.y === 3;
   })());
-  kiem('9.5: nhịp ít hơn xe hai bánh (' + nhipBanhNganNhat(m95) + ' > 10)', nhipBanhNganNhat(m95) > 10);
-  kiem('9.5: nghĩ theo màn hình (slide_left là sang trái) thì xe đâm tường: lời sai 1 có dam-tuong', ChamHoc.cham(m95, m95.loiSai[0].baiLam, khoTruoc('9.5')).chanDoan.some((c) => c.ma === 'dam-tuong'));
-  // 9.6
-  const m96 = man('9.6');
-  kiem('9.6: vật ở góc trên BÊN TRÁI, ô đích ở góc trên bên phải, cùng hàng (trước mặt xe khi trượt tới cột đó); xe không quay lần nào (mặt lên suốt)', (() => {
+  kiem('11.5: nhịp ít hơn xe hai bánh (' + nhipBanhNganNhat(m95) + ' > 10)', nhipBanhNganNhat(m95) > 10);
+  kiem('11.5: nghĩ theo màn hình (slide_left là sang trái) thì xe đâm tường: lời sai 1 có dam-tuong', ChamHoc.cham(m95, m95.loiSai[0].baiLam, khoTruoc('11.5')).chanDoan.some((c) => c.ma === 'dam-tuong'));
+  // 11.6
+  const m96 = man('11.6');
+  kiem('11.6: vật ở góc trên BÊN TRÁI, ô đích ở góc trên bên phải, cùng hàng (trước mặt xe khi trượt tới cột đó); xe không quay lần nào (mặt lên suốt)', (() => {
     const s = SanHoc.docSan(m96.san), r = chamGiai(m96);
     return s.vat[0].x === 0 && s.dich[0].x === 2 && s.vat[0].y === 1 && s.dich[0].y === 1 && nhipVet(r.theoSan[0]).every((n) => n.robot.huong === 0);
   })());
-  kiem('9.6: lời giải viết thẳng slide_left / slide_right 9 dòng (trong khung 10), ít ô hơn dùng slide_l(1) / slide_r(2)', man('9.6').loiGiai.chinh.length === 9 && man('9.6').loiGiaiKhac.baiLam.chinh.length === 5 && ChamHoc.cham(m96, m96.loiGiaiKhac.baiLam, khoTruoc('9.6')).soO > m96.sao.o);
-  // 9.7
-  const m97 = man('9.7'), b97 = nhipOmniNganNhat(m97);
-  kiem('9.7: BFS ' + b97.nhip + ' nhịp = 3 trượt xuôi băng ngang + 2 tiến xuôi băng dọc; lời giải không tự đi hết ô: 6 ô ngang trong 3 nhịp, 4 ô dọc trong 2', b97.nhip === 5 && m97.loiGiai.chinh.join() === 'slide_r(3),move(),move()');
-  kiem('9.7: băng cột trái ngược chiều: lên cột trái xe đứng im (forward(4) bỏ xe ở ô xuất phát)', (() => { const r = ChamHoc.cham(m97, { chinh: ['forward(4)'] }, khoTruoc('9.7')); return !r.thang && vt(r.theoSan[0].robot) === '0,4'; })());
-  kiem('9.7: đổi mọi băng thành sàn thì BFS tăng (băng giúp): đường 10 nhịp > 5', (() => { const phang = Object.assign({}, m97, { san: m97.san.map((r) => r.replace(/[<>^v]/g, '.')) }); return nhipOmniNganNhat(phang).nhip === 10; })());
-  kiem('9.7: xe hai bánh cùng sân cần nhiều nhịp hơn omni (băng yếu hơn, lại phải quay): ' + nhipBanhNganNhat(m97) + ' > 5', nhipBanhNganNhat(m97) > 5);
-  kiem('9.7: đếm theo ô thay vì nhịp (slide_r(6)): xe đâm tường 3 lần (dam-tuong), vẫn tới cờ nhưng chậm → chỉ 2 sao', (() => { const r = ChamHoc.cham(m97, m97.loiSai[1].baiLam, khoTruoc('9.7')); return r.thang && r.sao === 2 && maCua(r).includes('dam-tuong'); })());
-  kiem('9.7: lời sai (slide_r(3), move()): xe dừng sát cờ, chưa tới', !ChamHoc.cham(m97, m97.loiSai[3].baiLam, khoTruoc('9.7')).thang);
-  // 9.8
-  const m98 = man('9.8');
-  kiem('9.8: hàm của màn side_r nhầm slide_left (cùng tên khác slide_r của em, không đè); lời giải sửa thành slide_right; không tạo hàm của em', m98.maMau.hamCuaMan.length === 1 && m98.maMau.hamCuaMan[0].ten === 'side_r' && m98.maMau.hamCuaMan[0].than[1].trim() === 'slide_left()' && m98.loiGiai.hamCuaMan[0].ten === 'side_r' && m98.loiGiai.hamCuaMan[0].than[1].trim() === 'slide_right()' && m98.loiGiai.hamCuaEmMoi.length === 0);
-  kiem('9.8: maMau KHÔNG thắng (xe trượt trái, đâm tường), lời giải thắng', !ChamHoc.cham(m98, m98.maMau, khoTruoc('9.8')).thang && chamGiai(m98).thang && maCua(ChamHoc.cham(m98, m98.maMau, khoTruoc('9.8'))).includes('dam-tuong'));
-  kiem('9.8: bỏ side_r, tự gọi slide_r của em (có từ 9.3) cũng tới cờ với đúng số nhịp, nhưng ít ô hơn thì không: đi đường của em tốn thêm hàm', (() => {
-    const r = ChamHoc.cham(m98, { chinh: m98.loiGiai.chinh.map((s) => s.replace('side_r', 'slide_r')) }, khoTruoc('9.8'));
+  kiem('11.6: lời giải viết thẳng slide_left / slide_right 9 dòng (trong khung 10), ít ô hơn dùng slide_l(1) / slide_r(2)', man('11.6').loiGiai.chinh.length === 9 && man('11.6').loiGiaiKhac.baiLam.chinh.length === 5 && ChamHoc.cham(m96, m96.loiGiaiKhac.baiLam, khoTruoc('11.6')).soO > m96.sao.o);
+  // 11.7
+  const m97 = man('11.7'), b97 = nhipOmniNganNhat(m97);
+  kiem('11.7: BFS ' + b97.nhip + ' nhịp = 3 trượt xuôi băng ngang + 2 tiến xuôi băng dọc; lời giải không tự đi hết ô: 6 ô ngang trong 3 nhịp, 4 ô dọc trong 2', b97.nhip === 5 && m97.loiGiai.chinh.join() === 'slide_r(3),move(),move()');
+  kiem('11.7: băng cột trái ngược chiều: lên cột trái xe đứng im (forward(4) bỏ xe ở ô xuất phát)', (() => { const r = ChamHoc.cham(m97, { chinh: ['forward(4)'] }, khoTruoc('11.7')); return !r.thang && vt(r.theoSan[0].robot) === '0,4'; })());
+  kiem('11.7: đổi mọi băng thành sàn thì BFS tăng (băng giúp): đường 10 nhịp > 5', (() => { const phang = Object.assign({}, m97, { san: m97.san.map((r) => r.replace(/[<>^v]/g, '.')) }); return nhipOmniNganNhat(phang).nhip === 10; })());
+  kiem('11.7: xe hai bánh cùng sân cần nhiều nhịp hơn omni (băng yếu hơn, lại phải quay): ' + nhipBanhNganNhat(m97) + ' > 5', nhipBanhNganNhat(m97) > 5);
+  kiem('11.7: đếm theo ô thay vì nhịp (slide_r(6)): xe đâm tường 3 lần (dam-tuong), vẫn tới cờ nhưng chậm → chỉ 2 sao', (() => { const r = ChamHoc.cham(m97, m97.loiSai[1].baiLam, khoTruoc('11.7')); return r.thang && r.sao === 2 && maCua(r).includes('dam-tuong'); })());
+  kiem('11.7: lời sai (slide_r(3), move()): xe dừng sát cờ, chưa tới', !ChamHoc.cham(m97, m97.loiSai[3].baiLam, khoTruoc('11.7')).thang);
+  // 11.8
+  const m98 = man('11.8');
+  kiem('11.8: hàm của màn side_r nhầm slide_left (cùng tên khác slide_r của em, không đè); lời giải sửa thành slide_right; không tạo hàm của em', m98.maMau.hamCuaMan.length === 1 && m98.maMau.hamCuaMan[0].ten === 'side_r' && m98.maMau.hamCuaMan[0].than[1].trim() === 'slide_left()' && m98.loiGiai.hamCuaMan[0].ten === 'side_r' && m98.loiGiai.hamCuaMan[0].than[1].trim() === 'slide_right()' && m98.loiGiai.hamCuaEmMoi.length === 0);
+  kiem('11.8: maMau KHÔNG thắng (xe trượt trái, đâm tường), lời giải thắng', !ChamHoc.cham(m98, m98.maMau, khoTruoc('11.8')).thang && chamGiai(m98).thang && maCua(ChamHoc.cham(m98, m98.maMau, khoTruoc('11.8'))).includes('dam-tuong'));
+  kiem('11.8: bỏ side_r, tự gọi slide_r của em (có từ 11.3) cũng tới cờ với đúng số nhịp, nhưng ít ô hơn thì không: đi đường của em tốn thêm hàm', (() => {
+    const r = ChamHoc.cham(m98, { chinh: m98.loiGiai.chinh.map((s) => s.replace('side_r', 'slide_r')) }, khoTruoc('11.8'));
     return r.thang && r.soNhip === m98.sao.nhip && r.soO > 0;
   })());
-  kiem('9.8: sân là bậc thang năm đoạn (phải 2, lên 2, phải 2, lên 2, phải 2), không đường tắt', m98.san.length === 5 && J(m98.san) === J(['####..F', '####.##', '##...##', '##.####', '...####']));
-  // 9.9
-  const m99 = man('9.9');
-  kiem('9.9: maMau gộp slide_right() và move() trong cùng nhịp: chạy ra omni-khong-cheo (thông tin) + dam-tuong + chua-toi-co, xe chỉ trượt ngang rồi đâm tường', (() => { const r = ChamHoc.cham(m99, m99.maMau, khoTruoc('9.9')); return !r.thang && ['omni-khong-cheo', 'dam-tuong', 'chua-toi-co'].every((c) => maCua(r).includes(c)) && r.chanDoan.find((c) => c.ma === 'omni-khong-cheo').muc === 'thong-tin'; })());
-  kiem('9.9: sửa bằng một dòng wait() chen giữa slide_right() và move() → thắng 3 sao', (() => { const r = chamGiai(m99); return r.thang && r.sao === 3 && J(m99.loiGiai.chinh) === J(['for i in range(4):', '    slide_right()', '    wait()', '    move()']); })());
-  kiem('9.9: cầu thang chéo: 4 bậc, mỗi bậc 1 trượt phải + 1 tiến, không có đường đi chéo trong sân', m99.san.join('|') === '####F|###..|##..#|#..##|..###' && nhipOmniNganNhat(m99).nhip === 8);
-  kiem('9.9: xe hai bánh cùng sân: quay phải rồi tiến, quay trái rồi tiến: ' + nhipBanhNganNhat(m99) + ' nhịp > 8 (omni ít nhịp hơn)', nhipBanhNganNhat(m99) > 8);
-  // 9.10
-  const m910 = man('9.10');
-  kiem('9.10: trùm — xe quay mặt sang phải, trượt lên cho vật ở trước mặt rồi nhặt, trượt xuống, tiến, xuống theo băng chuyền (2 nhịp xuôi băng), tiến tới sát ô đích ở cuối đáy sân và thả; huy hiệu omni',
+  kiem('11.8: sân là bậc thang năm đoạn (phải 2, lên 2, phải 2, lên 2, phải 2), không đường tắt', m98.san.length === 5 && J(m98.san) === J(['####..F', '####.##', '##...##', '##.####', '...####']));
+  // 11.9
+  const m99 = man('11.9');
+  kiem('11.9: maMau gộp slide_right() và move() trong cùng nhịp: chạy ra omni-khong-cheo (thông tin) + dam-tuong + chua-toi-co, xe chỉ trượt ngang rồi đâm tường', (() => { const r = ChamHoc.cham(m99, m99.maMau, khoTruoc('11.9')); return !r.thang && ['omni-khong-cheo', 'dam-tuong', 'chua-toi-co'].every((c) => maCua(r).includes(c)) && r.chanDoan.find((c) => c.ma === 'omni-khong-cheo').muc === 'thong-tin'; })());
+  kiem('11.9: sửa bằng một dòng wait() chen giữa slide_right() và move() → thắng 3 sao', (() => { const r = chamGiai(m99); return r.thang && r.sao === 3 && J(m99.loiGiai.chinh) === J(['for i in range(4):', '    slide_right()', '    wait()', '    move()']); })());
+  kiem('11.9: cầu thang chéo: 4 bậc, mỗi bậc 1 trượt phải + 1 tiến, không có đường đi chéo trong sân', m99.san.join('|') === '####F|###..|##..#|#..##|..###' && nhipOmniNganNhat(m99).nhip === 8);
+  kiem('11.9: xe hai bánh cùng sân: quay phải rồi tiến, quay trái rồi tiến: ' + nhipBanhNganNhat(m99) + ' nhịp > 8 (omni ít nhịp hơn)', nhipBanhNganNhat(m99) > 8);
+  // 11.10
+  const m910 = man('11.10');
+  kiem('11.10: trùm — xe quay mặt sang phải, trượt lên cho vật ở trước mặt rồi nhặt, trượt xuống, tiến, xuống theo băng chuyền (2 nhịp xuôi băng), tiến tới sát ô đích ở cuối đáy sân và thả; huy hiệu omni',
     m910.batDau.huong === 1 && /v/.test(m910.san.join('')) && m910.huyHieu.ma === 'omni' && m910.loiGiai.chinh.join() === CHINH_10_CHUAN);
-  kiem('9.10: lời giải dùng đủ pick, drop, slide_r, slide_l, forward (kho hoàn chỉnh của chương), 7 dòng', ['pick', 'drop', 'slide_r', 'slide_l', 'forward'].every((t) => chamGiai(m910).hamDaDung.includes(t)) && m910.loiGiai.chinh.length === 7);
-  kiem('9.10: băng chuyền dọc chỉ có tác dụng với xe thật sự đứng trên băng; bỏ băng (đổi thành sàn) làm BFS tăng', (() => { const phang = Object.assign({}, m910, { san: m910.san.map((r) => r.replace(/[<>^v]/g, '.')) }); return nhipOmniNganNhat(phang).nhip > nhipOmniNganNhat(m910).nhip; })());
+  kiem('11.10: lời giải dùng đủ pick, drop, slide_r, slide_l, forward (kho hoàn chỉnh của chương), 7 dòng', ['pick', 'drop', 'slide_r', 'slide_l', 'forward'].every((t) => chamGiai(m910).hamDaDung.includes(t)) && m910.loiGiai.chinh.length === 7);
+  kiem('11.10: băng chuyền dọc chỉ có tác dụng với xe thật sự đứng trên băng; bỏ băng (đổi thành sàn) làm BFS tăng', (() => { const phang = Object.assign({}, m910, { san: m910.san.map((r) => r.replace(/[<>^v]/g, '.')) }); return nhipOmniNganNhat(phang).nhip > nhipOmniNganNhat(m910).nhip; })());
 
   // khai triển ra lệnh gốc cho cùng kết quả (hàm không đổi luật)
-  for (const m of ds.filter((x) => x.id !== '9.8')) {
+  for (const m of ds.filter((x) => x.id !== '11.8')) {
     const r = chamGiai(m);
     const raw = r.vet.filter((e) => e.loai === 'lenh').map((e) => e.ten + '()').join('\n') + '\n';
     const k = SanHoc.chay({ san: m.san, batDau: m.batDau, loaiRobot: 'omni', hamGoc: m.hamGoc, mucTieu: m.mucTieu || 'toi-co' }, raw);
@@ -478,7 +478,7 @@ console.log('\n== 6. Dữ liệu 10 màn: omni, tay kẹp ở 6 và 10, hàm sli
 /* ====================================================== 7. CHẨN ĐOÁN CHO OMNI + XƯỞNG HÀM */
 console.log('\n== 7. Chẩn đoán omni-khong-cheo (thông tin) và slide-goi-lai (lỗi); sân thử của Xưởng hàm với omni ==');
 {
-  const m9 = man('9.9'), k9 = khoTruoc('9.9');
+  const m9 = man('11.9'), k9 = khoTruoc('11.9');
   const r = ChamHoc.cham(m9, m9.maMau, k9);
   const c = r.chanDoan.find((x) => x.ma === 'omni-khong-cheo');
   kiem('chẩn đoán omni-khong-cheo: mức thông tin (không phải lỗi), nói rõ "Bánh omni không đi chéo: một nhịp chỉ trượt ngang HOẶC tiến/quay"', c && c.muc === 'thong-tin' && /Bánh omni không đi chéo: một nhịp chỉ trượt ngang HOẶC tiến\/quay/.test(c.loi), c && c.loi);
@@ -487,37 +487,37 @@ console.log('\n== 7. Chẩn đoán omni-khong-cheo (thông tin) và slide-goi-la
   kiem('chỉ omni-khong-cheo là thông tin; dam-tuong và chua-toi-co là lỗi', r.chanDoan.filter((x) => x.muc === 'thong-tin').map((x) => x.ma).join() === 'omni-khong-cheo' && r.chanDoan.filter((x) => x.muc === 'loi').map((x) => x.ma).sort().join() === 'chua-toi-co,dam-tuong');
   kiem('lời giải đúng không có omni-khong-cheo; xe bánh, nhện, xích (màn cũ) không bao giờ có omni-khong-cheo hay slide-goi-lai',
     maCua(chamGiai(m9)).length === 0 && tatCa.filter((m) => m.loaiRobot !== 'omni').every((m) => { const q = maCua(ChamHoc.cham(m, m.maMau, khoTruoc(m.id))); return !q.includes('omni-khong-cheo') && !q.includes('slide-goi-lai'); }));
-  const m1 = man('9.1');
+  const m1 = man('11.1');
   const sg = ChamHoc.cham(m1, { chinh: LAP2(4, 'slide_right()') }, []).chanDoan.find((x) => x.ma === 'slide-goi-lai');
   kiem('chẩn đoán slide-goi-lai: mức lỗi, nêu lệnh bị bỏ (chương trình, dòng 2) và lệnh đã giữ nhịp (chương trình, dòng 1), nhắc wait()', sg && sg.muc === 'loi' && /chương trình, dòng 2/.test(sg.loi) && /chương trình, dòng 1/.test(sg.loi) && /wait\(\)/.test(sg.loi) && sg.nhip === 1, sg && sg.loi);
   const dt = ChamHoc.cham(m1, { chinh: LAP2(5, 'slide_left()', true) }, []).chanDoan.find((x) => x.ma === 'dam-tuong');
   kiem('dam-tuong của omni: lời nhắc nói slide tính theo hướng mặt xe (và vẫn nói quay mặt), không nói go_*', dt && /hướng mặt/.test(dt.loi) && /quay mặt/.test(dt.loi) && !/go_\*/.test(dt.loi), dt && dt.loi);
   kiem('chua-toi-co của omni nói quay mặt hướng nào (omni có hướng mặt)', (() => { const x = ChamHoc.cham(m1, { chinh: ['slide_right()', 'wait()'] }, []).chanDoan.find((y) => y.ma === 'chua-toi-co'); return x && /quay mặt hướng lên/.test(x.loi); })());
   kiem('tay-vuong với lệnh trượt: lời nhắc nêu "xe không đi hay quay được" và lệnh slide bị bỏ', (() => {
-    const m = man('9.6');
-    const q = ChamHoc.cham(m, { chinh: ['arm_down()', 'slide_left()', 'wait()'] }, khoTruoc('9.6')).chanDoan.find((x) => x.ma === 'tay-vuong');
+    const m = man('11.6');
+    const q = ChamHoc.cham(m, { chinh: ['arm_down()', 'slide_left()', 'wait()'] }, khoTruoc('11.6')).chanDoan.find((x) => x.ma === 'tay-vuong');
     return q && /slide_left\(\)/.test(q.loi) && /tay đang hạ sát đất/.test(q.loi);
   })());
   // Xưởng hàm
-  const k3 = khoTruoc('9.5');
-  const t1 = ChamHoc.thuHam(man('9.5'), { chinh: [] }, 'slide_r', k3, { doiSo: [2] });
+  const k3 = khoTruoc('11.5');
+  const t1 = ChamHoc.thuHam(man('11.5'), { chinh: [] }, 'slide_r', k3, { doiSo: [2] });
   kiem('Xưởng hàm: thử slide_r(2) trên sân thử 5×5 mặc định (xe ở (2,2) mặt lên): xe trượt sang phải tới (4,2), 2 nhịp, mặt vẫn lên', vt(t1.robot) === '4,2' && t1.robot.huong === 0 && t1.soNhip === 2 && !t1.chanDoan.length, J([t1.robot, t1.soNhip, maCua(t1)]));
-  const t2 = ChamHoc.thuHam(man('9.5'), { chinh: [] }, 'slide_l', k3, { doiSo: [4] });
+  const t2 = ChamHoc.thuHam(man('11.5'), { chinh: [] }, 'slide_l', k3, { doiSo: [4] });
   kiem('Xưởng hàm: thử slide_l(4) trượt ra khỏi sân thử: dừng ở (0,2), báo dam-tuong ngoài sân thử', vt(t2.robot) === '0,2' && maCua(t2).includes('dam-tuong') && /ngoài sân thử/.test(t2.chanDoan.find((x) => x.ma === 'dam-tuong').loi), J(maCua(t2)));
-  const t3 = ChamHoc.thuHam(man('9.5'), { chinh: [] }, 'slide_r', k3, { doiSo: [2], sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 3 } } });
+  const t3 = ChamHoc.thuHam(man('11.5'), { chinh: [] }, 'slide_r', k3, { doiSo: [2], sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 3 } } });
   kiem('Xưởng hàm: xếp xe quay mặt sang trái rồi thử slide_r(2): xe đi LÊN tới (2,0)', vt(t3.robot) === '2,0' && t3.robot.huong === 3);
-  const t4 = ChamHoc.thuHam(man('9.5'), { chinh: [] }, 'slide_r', k3, { doiSo: [2], sanThu: { rong: 5, cao: 5, batDau: { x: 1, y: 2, huong: 0 }, tuong: [{ x: 3, y: 2 }] } });
+  const t4 = ChamHoc.thuHam(man('11.5'), { chinh: [] }, 'slide_r', k3, { doiSo: [2], sanThu: { rong: 5, cao: 5, batDau: { x: 1, y: 2, huong: 0 }, tuong: [{ x: 3, y: 2 }] } });
   kiem('Xưởng hàm: tường chặn trượt: dừng sát tường (2,2), báo dam-tuong', vt(t4.robot) === '2,2' && maCua(t4).includes('dam-tuong'));
-  const t5 = ChamHoc.thuHam(man('9.8'), { chinh: [], hamCuaMan: [H('side_r', ['for i in range(n):', '    slide_left()', '    wait()'], ['n'])] }, 'side_r', khoTruoc('9.8'), { doiSo: [1] });
-  kiem('Xưởng hàm: thử side_r(1) của màn 9.8 (bản sai): xe trượt sang trái, tới (1,2)', vt(t5.robot) === '1,2');
-  const t6 = ChamHoc.thuHam(man('9.6'), { chinh: [] }, 'pick', khoTruoc('9.6'), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }] } });
+  const t5 = ChamHoc.thuHam(man('11.8'), { chinh: [], hamCuaMan: [H('side_r', ['for i in range(n):', '    slide_left()', '    wait()'], ['n'])] }, 'side_r', khoTruoc('11.8'), { doiSo: [1] });
+  kiem('Xưởng hàm: thử side_r(1) của màn 11.8 (bản sai): xe trượt sang trái, tới (1,2)', vt(t5.robot) === '1,2');
+  const t6 = ChamHoc.thuHam(man('11.6'), { chinh: [] }, 'pick', khoTruoc('11.6'), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }] } });
   kiem('Xưởng hàm: thử pick() với vật ở ô trước mặt omni có tay: nhặt được vật', t6.tay && t6.tay.cam === 1 && t6.vat[0].trangThai === 'cam');
   kiem('hàm gốc slide_left / slide_right chặn tên hàm của em: tạo hàm tên slide_right báo ten-trung-ham-goc', KhoHam.moi({ tenCoDinh: tenCotTruyen }).tao('slide_right').ma === 'ten-trung-ham-goc');
   // lỗi cũ vẫn còn
-  const hc = ChamHoc.cham(man('9.3'), man('9.3').maMau, khoTruoc('9.3'));
+  const hc = ChamHoc.cham(man('11.3'), man('11.3').maMau, khoTruoc('11.3'));
   kiem('gọi slide_r() khi chưa tạo hàm: ham-chua-co, kèm lời "cần tạo nó trong Xưởng hàm"', maCua(hc).includes('ham-chua-co') && /Xưởng hàm/.test(hc.chanDoan.find((x) => x.ma === 'ham-chua-co').loi));
-  kiem('9.2: lời giải chấm với kho đầy đủ (có cả slide_r, slide_l) vẫn 3 sao, không chẩn đoán', (() => { const m = man('9.2'); const day2 = KhoHam.moi({ tenCoDinh: tenCotTruyen }); for (const x of tatCa) { if (x.tietKiemNhip) continue; for (const h of x.loiGiai.hamCuaEmMoi) { if (!day2.tim(h.ten)) day2.tao(h.ten, h.thamSo, { taoHam: x.taoHam }); day2.sua(h.ten, h.than); } } const q = ChamHoc.cham(m, m.loiGiai, day2.ds()); return q.sao === 3 && q.chanDoan.length === 0; })());
-  kiem('tên hàm của màn 9.8 (side_r) không có trong kho; kho không bị đổi bởi màn 9.8', !KhoHam.moi({ tenCoDinh: tenCotTruyen }).tim('side_r') && !khoTruoc('9.9').some((h) => h.ten === 'side_r'));
+  kiem('11.2: lời giải chấm với kho đầy đủ (có cả slide_r, slide_l) vẫn 3 sao, không chẩn đoán', (() => { const m = man('11.2'); const day2 = KhoHam.moi({ tenCoDinh: tenCotTruyen }); for (const x of tatCa) { if (x.tietKiemNhip) continue; for (const h of x.loiGiai.hamCuaEmMoi) { if (!day2.tim(h.ten)) day2.tao(h.ten, h.thamSo, { taoHam: x.taoHam }); day2.sua(h.ten, h.than); } } const q = ChamHoc.cham(m, m.loiGiai, day2.ds()); return q.sao === 3 && q.chanDoan.length === 0; })());
+  kiem('tên hàm của màn 11.8 (side_r) không có trong kho; kho không bị đổi bởi màn 11.8', !KhoHam.moi({ tenCoDinh: tenCotTruyen }).tim('side_r') && !khoTruoc('11.9').some((h) => h.ten === 'side_r'));
 }
 
 /* ====================================================== 8. BẢNG 10 MÀN */

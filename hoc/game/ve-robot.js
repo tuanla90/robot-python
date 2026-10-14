@@ -127,10 +127,14 @@
     return (rongThan[ma] = w);
   }
   function coPart() { var P = (typeof window !== 'undefined') ? window.Part : null; return !!(P && typeof P.ghep === 'function' && VeRobot.dungPart !== false); }
-  /** Chọn tiLe (px màn hình / px part) cho một ô sân cạnh canhO px màn hình: nguyên lần cho vừa thân; ô quá nhỏ (< 1) thì thu lẻ. */
+  /** Chọn tiLe (px màn hình / px part) cho một ô sân cạnh canhO px màn hình, sao cho thân xe chiếm khoảng 80–90% bề ngang ô trên MỌI máy
+   *  (trước đây lấy số nguyên lớn nhất vừa ô: máy tính tỉ lệ thấp thì xe chỉ còn nửa ô, cờ to hơn xe).
+   *  Ưu tiên số nguyên (nét pixel đều); số nguyên nào cũng ngoài khoảng đó thì dùng tỉ lệ lẻ ~85% ô (veGhep vẽ lớn rồi thu lại cho khỏi méo). */
+  var THAN_MIN = 0.8, THAN_MAX = 0.9, THAN_DICH = 0.85;        // 14/10 user: xe tầm 85% ô (trước 0,6–0,85 rồi 0,66–0,84)
   function tiLeChoO(canhO, cauHinh) {
-    var w = coPart() ? beNgangThan((cauHinh && cauHinh.than) || 'hai-banh') : 20, n = Math.floor((canhO - 2) / w);
-    return n >= 1 ? n : Math.max(0.3, (canhO - 1) / w);
+    var w = coPart() ? beNgangThan((cauHinh && cauHinh.than) || 'hai-banh') : 20, n = Math.floor(THAN_MAX * canhO / w);
+    if (n >= 1 && n * w >= THAN_MIN * canhO) return n;
+    return Math.max(0.3, THAN_DICH * canhO / w);
   }
 
   function veGhep(cauHinh, tt, huong, tiLe) {
@@ -154,9 +158,15 @@
     var tam = TAM_THAN[h], n = Math.max(1, Math.round(DEM * tiLe));
     var dem = ctxMoi(DEM);                                            // đệm: tâm thân ra giữa canvas
     dem.g.drawImage(raw, DEM / 2 - tam[0], DEM / 2 - tam[1]);
-    var o = ctxMoi(n);
-    o.g.imageSmoothingEnabled = tiLe < 1; if (tiLe < 1) o.g.imageSmoothingQuality = 'high';
-    o.g.drawImage(dem.cv, 0, 0, DEM, DEM, 0, 0, n, n);
+    var o = ctxMoi(n), nguon = dem.cv, cn = DEM, le = tiLe > 1 && Math.abs(tiLe - Math.round(tiLe)) > 1e-6;
+    if (le) {                                                         // tỉ lệ lẻ > 1: phóng nguyên lần (pixel đều) lên trước, rồi thu mịn về cỡ đích — đỡ méo hơn phóng lẻ thẳng
+      var N = Math.ceil(tiLe), lon = ctxMoi(DEM * N);
+      lon.g.imageSmoothingEnabled = false;
+      lon.g.drawImage(dem.cv, 0, 0, DEM, DEM, 0, 0, DEM * N, DEM * N);
+      nguon = lon.cv; cn = DEM * N;
+    }
+    o.g.imageSmoothingEnabled = tiLe < 1 || le; if (tiLe < 1 || le) o.g.imageSmoothingQuality = 'high';
+    o.g.drawImage(nguon, 0, 0, cn, cn, 0, 0, n, n);
     o.cv.laPart = true;
     return o.cv;
   }

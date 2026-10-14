@@ -234,6 +234,28 @@
         - color() của drone (cảm biến màu ở bụng) luôn trả màu ô sàn dưới drone, kể cả khi đang dính vật; vật đang dính không tính. Drone không gắn camera.
         Vết nhịp của drone có robot.pin (null nếu không khai pin), robot.dangMang (id vật đang dính hoặc null) và robot.namCham nếu có nam châm. Kết quả có `pin` (còn lại), `pinToiDa`, `sac` [{x,y}].
 
+   BÓNG MỜ (chương `che-xe`, kế hoạch "Chế lệnh" 14/10; mọi loại robot): cfg.mucTieu = 'bong-mo' + cfg.bongMo = { x, y, huong, diQua?: [{x,y}], vat?: [{x,y}] }.
+        "Xe mờ" là tư thế ĐÍCH. KHÁC 'toi-co' ở chỗ thắng chỉ xét KHI CHƯƠNG TRÌNH CHẠY XONG (không thắng giữa đường; đi ngang qua bóng mờ rồi đi tiếp thì chưa thắng):
+        robot đúng ô (x, y) và đúng hướng `huong` (nhện và drone không có hướng mặt nên bỏ qua huong), đã đi qua mọi ô `diQua`, và (nếu khai `vat`) mọi vật đang nằm đất
+        đúng các ô đó, không thừa không thiếu. Chương trình dừng vì lỗi (loi) hoặc quá nhịp thì không thắng.
+        - "Đã đi qua" ô diQua: cuối một nhịp robot đứng ở ô đó (kể cả bị băng đẩy tới). Lần đầu ghi sự kiện của nhịp { ma:'qua-diem', nhip, o:{x,y} }; vết nhịp có `diQua`
+          [{x,y,da}] khi sân có ô diQua. Chương trình chạy xong mà đạt tư thế thì nhịp cuối ghi { ma:'toi-bong-mo' }.
+        - Kết quả chạy có `bongMo` { x, y, huong, diQua, vat } (null nếu không phải mục tiêu bong-mo) và `diQua` [{x,y,da}] (trạng thái CUỐI; mảng rỗng nếu không có ô diQua).
+          cham.js nói bằng lời chỗ lệch (lech-bong-mo, chua-qua-diem).
+        - Màn nhiều sân: bongMo là mảng song song với san (SanHoc.lopMauCuaSan(m, i).bongMo).
+
+   ĐẤU DÂY NGƯỢC (cfg.daoChieu = ['trai'] hay ['phai'], chỉ xe bánh / xích / omni): lệnh gốc của bánh bị đảo chạy thành LỆNH NGƯỢC của nó (left_move() làm bánh trái quay lùi,
+        left_back() làm bánh trái quay tới). Vết lệnh vẫn ghi tên lệnh người chơi gọi; tổ hợp bánh thật nằm ở vết nhịp (robot.banh). Bảng LENH_NGUOC liệt kê các cặp lệnh ngược.
+
+   KHAY VÀ PHẦN CỨNG (luật chế lệnh, 14/10): hai tập lệnh gốc khác nhau.
+        - cfg.hamGoc = KHAY: lệnh hiện trên khay, dùng được trong CHƯƠNG TRÌNH CHÍNH và HÀM CỦA MÀN.
+        - cfg.phanCung = PHẦN CỨNG: lệnh robot thật sự làm được; mặc định (cham.js, phanCungMacDinh) = trọn bộ lệnh của loại robot (xe bánh có cả left_back / right_back) + lệnh khay.
+          Thân HÀM CỦA EM được gọi mọi lệnh thuộc phần cứng, kể cả lệnh chưa mở trên khay (nên hàm của em dùng được ở mọi màn sau).
+        - Chương trình chính / hàm của màn gọi lệnh thuộc phần cứng mà KHÔNG có trên khay: dừng với loi { loai:'runtime-error', ma:'lenh-chua-mo', dong, ten, thongDiep }.
+          Cần cfg.nguonDong(dongPy) → 'chinh' | 'hamMan' | 'hamEm' | null (cham.js đưa xuống từ bảng ánh xạ dòng; không đưa thì không kiểm).
+        - Gọi lệnh KHÔNG thuộc phần cứng (màn hỏng khai phanCung hẹp hơn) thì nhân báo "chưa có hàm", cham.js đổi thành chẩn đoán lenh-goc-hong.
+        - Không khai cfg.phanCung thì phần cứng = khay (SanHoc.chay gọi thẳng giữ hành vi cũ).
+
    Băng chuyền: mỗi nhịp, SAU khi robot làm xong hành động, nếu robot đang đứng trên
    ô băng thì demBang++; đủ 2 thì đẩy 1 ô theo mũi tên (bị chặn thì đứng yên) và
    demBang = 0. Không đứng trên băng thì demBang = 0.
@@ -295,6 +317,32 @@
     left_move: ['trai', 1], left_back: ['trai', -1],
     right_move: ['phai', 1], right_back: ['phai', -1]
   };
+  // LỆNH NGƯỢC (kế hoạch "Chế lệnh" 14/10): mỗi lệnh gốc CHUYỂN ĐỘNG có một lệnh ngược. wait() và lệnh cảm biến không có; bắn / ném không hoàn tác được.
+  // Dùng cho màn "Đường về" (chế hàm đi ngược), màn đấu dây ngược (daoChieu) và Sổ lệnh.
+  var LENH_NGUOC = {
+    left_move: 'left_back', left_back: 'left_move',
+    right_move: 'right_back', right_back: 'right_move',
+    arm_up: 'arm_down', arm_down: 'arm_up',
+    grab: 'release', release: 'grab',
+    go_up: 'go_down', go_down: 'go_up',
+    go_left: 'go_right', go_right: 'go_left',
+    slide_left: 'slide_right', slide_right: 'slide_left'
+  };
+  // đấu dây ngược / hỏng (cfg.daoChieu): bánh nào bị đảo thì lệnh của bánh đó chạy thành lệnh ngược
+  var DAO_CHIEU_BANH = ['trai', 'phai'];
+  // mục tiêu: 'toi-co' | 'dua-vat' | 'day-thung' | 'bong-mo' (đến đúng tư thế của "xe mờ" khi chạy xong, xem phần BÓNG MỜ)
+  var MUC_TIEU = ['toi-co', 'dua-vat', 'day-thung', 'bong-mo'];
+
+  /** Phần cứng mặc định của loại robot: trọn bộ lệnh của loại đó (xe bánh có cả bánh lùi) cộng các lệnh khay đã gắn thêm (tay, cảm biến…). */
+  function phanCungMacDinh(loai, hamGoc) {
+    var kq = (HAM_GOC[loai] || []).slice();
+    (hamGoc || []).forEach(function (t) { if (kq.indexOf(t) < 0) kq.push(t); });
+    return kq;
+  }
+  /** Phần cứng của một màn: man.phanCung nếu màn khai (màn hỏng), không thì mặc định của loại robot + khay (man.hamGoc). */
+  function phanCungCua(man) {
+    return man.phanCung ? man.phanCung.slice() : phanCungMacDinh(man.loaiRobot || 'banh', man.hamGoc);
+  }
 
   /* ------------------------------------------------------------------- sân */
 
@@ -406,7 +454,7 @@
   function lopMauCuaSan(m, i) {
     var nhieu = Array.isArray(m.san[0]);
     function lay(l) { return l ? (nhieu ? (l[i] || null) : l) : null; }
-    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi) };
+    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), bongMo: lay(m.bongMo) };
   }
   function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0; }
 
@@ -466,7 +514,7 @@
     var laBanh = loai === 'banh' || loai === 'xich' || loai === 'omni';      // dùng chung bộ lệnh bánh
     var laDrone = loai === 'drone';                                          // drone: bay 4 hướng tuyệt đối, 1 nhịp / ô, có pin tuỳ chọn
     var mucTieu = cfg.mucTieu || 'toi-co';
-    if (mucTieu !== 'toi-co' && mucTieu !== 'dua-vat' && mucTieu !== 'day-thung') throw new Error('Mục tiêu lạ: ' + mucTieu);
+    if (MUC_TIEU.indexOf(mucTieu) < 0) throw new Error('Mục tiêu lạ: ' + mucTieu);
     var vatCan = cfg.vatCan || null;                                          // 'sat': chỉ vật sắt phải về đích (chương nam-cham)
     if (vatCan !== null && vatCan !== 'sat') throw new Error('vatCan lạ: ' + vatCan);
     var san = docSan(cfg.san, cfg.mau, cfg.vatMau, cfg.vatChat);
@@ -475,14 +523,21 @@
     if (lyDoChan(san, loai, bd.x, bd.y)) throw new Error('Robot xuất phát trong chỗ không đứng được.');
     var nhipToiDa = cfg.nhipToiDa || 200;
 
-    var hamGoc = cfg.hamGoc || HAM_GOC[loai];
-    hamGoc.forEach(function (t) {
+    var hamGoc = cfg.hamGoc || HAM_GOC[loai];                                  // KHAY (xem phần KHAY VÀ PHẦN CỨNG)
+    function kiemTenGoc(t) {
       if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && TAY_DAY.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined && CAM_MAU_HAM.indexOf(t) < 0 && TAY_NAM_CHAM.indexOf(t) < 0 && CAM_TU_HAM.indexOf(t) < 0 && TAY_NEM.indexOf(t) < 0 && TAY_BONG.indexOf(t) < 0 && CAM_PIN_HAM.indexOf(t) < 0) {
         throw new Error('Hàm gốc "' + t + '" không thuộc loại robot ' + loai + '.');
       }
-    });
+    }
+    hamGoc.forEach(kiemTenGoc);
+    var phanCung = cfg.phanCung ? cfg.phanCung.slice() : hamGoc.slice();       // PHẦN CỨNG: không khai thì bằng khay
+    phanCung.forEach(kiemTenGoc);
+    hamGoc.forEach(function (t) { if (phanCung.indexOf(t) < 0) throw new Error('Khay có lệnh "' + t + '" mà phần cứng của robot không có.'); });
+    var khayThieu = {};                                                        // lệnh có trong phần cứng nhưng chưa mở trên khay: chỉ hàm của em được gọi
+    phanCung.forEach(function (t) { if (hamGoc.indexOf(t) < 0) khayThieu[t] = true; });
+    var nguonDong = typeof cfg.nguonDong === 'function' ? cfg.nguonDong : null;
     var api = {};
-    hamGoc.forEach(function (t) { api[t] = function () { return 0; }; });   // chỉ để nhân biết tên
+    phanCung.forEach(function (t) { api[t] = function () { return 0; }; });    // chỉ để nhân biết tên
     var coTay = hamGoc.some(function (t) { return TAY_LENH.indexOf(t) >= 0; });
     var coDay = hamGoc.some(function (t) { return TAY_DAY.indexOf(t) >= 0; });     // tay tấm đẩy (push)
     if (coDay && loai === 'nhen') throw new Error('Nhện không gắn tấm đẩy (push).');
@@ -523,6 +578,39 @@
     if (coPinCamBien && pinToiDa === null) throw new Error('battery() cần màn khai pin (cfg.pin): drone không khai pin thì pin vô hạn.');
     var sacSet = {};
     san.sac.forEach(function (q) { sacSet[q.x + ',' + q.y] = true; });
+
+    // đấu dây ngược (xem phần ĐẤU DÂY NGƯỢC): cfg.daoChieu = ['trai'] | ['phai'] | cả hai
+    var dao = { trai: false, phai: false };
+    if (cfg.daoChieu !== undefined && cfg.daoChieu !== null) {
+      if (!Array.isArray(cfg.daoChieu)) throw new Error('daoChieu phải là mảng, vd ["trai"].');
+      if (cfg.daoChieu.length && !laBanh) throw new Error('daoChieu chỉ dùng cho robot có hai bánh (xe bánh, xích, omni).');
+      cfg.daoChieu.forEach(function (b) {
+        if (DAO_CHIEU_BANH.indexOf(b) < 0) throw new Error('daoChieu lạ: "' + b + '" (chỉ có "trai" hoặc "phai").');
+        dao[b] = true;
+      });
+    }
+
+    // bóng mờ (xem phần BÓNG MỜ): tư thế đích, các ô phải đi qua, vị trí vật
+    var bongMo = null, diQua = [], diQuaTai = {};
+    if (mucTieu === 'bong-mo') {
+      var bm = cfg.bongMo;
+      if (!bm || typeof bm !== 'object' || !laSoNguyen(bm.x) || !laSoNguyen(bm.y)) throw new Error('Mục tiêu bong-mo cần cfg.bongMo { x, y, huong }.');
+      if (lyDoChan(san, loai, bm.x, bm.y)) throw new Error('Bóng mờ nằm trong chỗ không đứng được: (' + bm.x + ', ' + bm.y + ').');
+      var coHuong = loai !== 'nhen' && loai !== 'drone';
+      if (coHuong && !(laSoNguyen(bm.huong) && bm.huong >= 0 && bm.huong <= 3)) throw new Error('bongMo.huong phải là 0, 1, 2 hoặc 3.');
+      bongMo = { x: bm.x, y: bm.y, huong: coHuong ? bm.huong : null, diQua: [], vat: [] };
+      (bm.diQua || []).forEach(function (q) {
+        if (!q || !laSoNguyen(q.x) || !laSoNguyen(q.y)) throw new Error('bongMo.diQua phải là mảng ô { x, y }.');
+        if (lyDoChan(san, loai, q.x, q.y)) throw new Error('Ô diQua nằm trong chỗ không đứng được: (' + q.x + ', ' + q.y + ').');
+        bongMo.diQua.push({ x: q.x, y: q.y });
+        diQua.push({ x: q.x, y: q.y, da: false });
+        diQuaTai[q.x + ',' + q.y] = diQua[diQua.length - 1];
+      });
+      (bm.vat || []).forEach(function (q) {
+        if (!q || !laSoNguyen(q.x) || !laSoNguyen(q.y)) throw new Error('bongMo.vat phải là mảng ô { x, y }.');
+        bongMo.vat.push({ x: q.x, y: q.y });
+      });
+    } else if (cfg.bongMo) throw new Error('bongMo chỉ dùng với mục tiêu "bong-mo".');
 
     var rb = { x: bd.x, y: bd.y, huong: bd.huong || 0 };
     var nhip = 0, demBang = 0;
@@ -679,6 +767,19 @@
     if (cuaTai[bd.x + ',' + bd.y] && !cuaTai[bd.x + ',' + bd.y].mo) throw new Error('Robot xuất phát trong ô cửa đang đóng.');
     function cuaDong(x, y) { var d = cuaTai[x + ',' + y]; return !!d && !d.mo; }
     function chupCua() { return cuas.map(function (d) { return { x: d.x, y: d.y, mo: d.mo }; }); }
+    function chupDiQua() { return diQua.map(function (q) { return { x: q.x, y: q.y, da: q.da }; }); }
+    /** Bóng mờ: robot đang ở đúng tư thế đích, đã qua mọi ô diQua, vật (nếu khai) nằm đúng các ô đó (không thừa không thiếu). */
+    function bongMoDat() {
+      if (!bongMo || rb.x !== bongMo.x || rb.y !== bongMo.y) return false;
+      if (bongMo.huong !== null && rb.huong !== bongMo.huong) return false;
+      if (!diQua.every(function (q) { return q.da; })) return false;
+      if (bongMo.vat.length) {
+        var dat = vats.filter(function (v) { return v.trangThai === 'dat'; });
+        if (dat.length !== vats.length || dat.length !== bongMo.vat.length) return false;
+        if (!bongMo.vat.every(function (q) { return dat.some(function (v) { return v.x === q.x && v.y === q.y; }); })) return false;
+      }
+      return true;
+    }
     function chupNut() { return nuts.map(function (n) { return { x: n.x, y: n.y, bat: n.bat }; }); }
     function chupBangTat() { return bangO.filter(function (q) { return bangTat[q.x + ',' + q.y]; }).map(function (q) { return { x: q.x, y: q.y }; }); }
     var cuaBanDau = chupCua(), nutBanDau = chupNut();
@@ -1168,8 +1269,14 @@
         }
       }
 
+      if (diQua.length) {                                                    // bóng mờ: cuối nhịp robot đứng ở ô diQua nào thì ô đó "đã đi qua"
+        var dq = diQuaTai[rb.x + ',' + rb.y];
+        if (dq && !dq.da) { dq.da = true; sk.push({ ma: 'qua-diem', nhip: nhip, o: { x: rb.x, y: rb.y } }); }
+      }
       if (mucTieu === 'toi-co') {
         if (san.co && rb.x === san.co.x && rb.y === san.co.y) { thang = true; sk.push({ ma: 'toi-co' }); }
+      } else if (mucTieu === 'bong-mo') {
+        // thắng xét KHI CHƯƠNG TRÌNH CHẠY XONG (xem sau vòng chạy), không thắng giữa đường
       } else if (mucTieu === 'day-thung') {
         if (dayThungXong()) { thang = true; sk.push({ ma: 'xong-day-thung' }); }
         else {
@@ -1197,6 +1304,7 @@
       if (coNem) { r.nem = chupNem(); mucVet.vat = chupVat(); }
       if (thungs.length) mucVet.thung = chupThung();
       if (coBong) r.sung = { dan: dan };
+      if (diQua.length) mucVet.diQua = chupDiQua();
       if (cuas.length) mucVet.cua = chupCua();
       if (nuts.length) { mucVet.nut = chupNut(); mucVet.bangTat = chupBangTat(); }
       vet.push(mucVet);
@@ -1253,6 +1361,13 @@
 
     /** Xử lý một lời gọi hàm gốc nhân nhường ra. Trả về true nếu phải dừng. */
     function xuLy(yc) {
+      if (nguonDong && khayThieu[yc.ten]) {                      // lệnh có trong phần cứng nhưng chưa mở trên khay: chương trình chính và hàm của màn không dùng được
+        var ngLenh = nguonDong(yc.dong);
+        if (ngLenh === 'chinh' || ngLenh === 'hamMan') {
+          loi = { loai: 'runtime-error', ma: 'lenh-chua-mo', dong: yc.dong, ten: yc.ten, thongDiep: 'Lệnh ' + yc.ten + '() chưa có trên khay ở màn này.' };
+          return true;
+        }
+      }
       vet.push({ loai: 'lenh', ten: yc.ten, dongPy: yc.dong, nganPy: yc.ngan });
       if (CAM_BIEN_HAM[yc.ten] !== undefined || CAM_MAU_HAM.indexOf(yc.ten) >= 0 || CAM_TU_HAM.indexOf(yc.ten) >= 0 || CAM_PIN_HAM.indexOf(yc.ten) >= 0) {     // cảm biến: đọc xong trả về cho chương trình (khoảng cách / từ: True / False; màu: chuỗi; pin: số), không tốn nhịp
         var laMau = CAM_MAU_HAM.indexOf(yc.ten) >= 0, laPin = CAM_PIN_HAM.indexOf(yc.ten) >= 0;
@@ -1364,7 +1479,7 @@
           suKienChan.push({ ma: 'banh-goi-lai', nhip: nhip + 1, banh: bl[0], ten: yc.ten, dongPy: yc.dong, truoc: truoc });
           return false;
         }
-        lenh[bl[0]] = bl[1];
+        lenh[bl[0]] = dao[bl[0]] ? -bl[1] : bl[1];                 // đấu dây ngược: bánh bị đảo quay theo chiều ngược lại
         lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
         return false;
       }
@@ -1398,6 +1513,12 @@
       suKienChan.push({ ma: 'xich-quay-do', nhip: nhip, nhipNua: quayDo.nhip, huong: quayDo.huong, lenh: quayDo.lenh, cuoi: true });
     }
 
+    // bóng mờ: chương trình chạy xong (không lỗi, không dừng sớm) mà xe đúng tư thế đích thì thắng
+    if (mucTieu === 'bong-mo' && !thang && !loi && !dungSom && bongMoDat()) {
+      thang = true;
+      for (var iv = vet.length - 1; iv >= 0; iv--) if (vet[iv].loai === 'nhip') { vet[iv].suKien.push({ ma: 'toi-bong-mo' }); break; }
+    }
+
     // chương trình hết mà còn lệnh chưa wait() → lệnh đó không chạy
     if (!thang && !loi && !dungSom && lenhTon.length) {
       suKienChan.push({ ma: 'quen-wait', nhip: nhip, lenh: lenhTon.slice() });
@@ -1409,6 +1530,7 @@
       tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coBong ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
       cua: chupCua(), nut: chupNut(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau,
       thung: chupThung(), thungBanDau: thungBanDau,
+      bongMo: bongMo, diQua: chupDiQua(),
       soLanDoc: soLanDoc, docConLai: docCho, mauO: san.mau,
       pin: pin, pinToiDa: pinToiDa, sac: san.sac.slice(),
       quayDo: loai === 'xich' ? (quayDo ? quayDo.huong : 0) : undefined
@@ -1416,7 +1538,7 @@
   }
 
   var API = {
-    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, TAY_DAY: TAY_DAY, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
+    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_NHOM: TAY_NHOM, TAY_DAY: TAY_DAY, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
     TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_BONG: TAY_BONG, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, CAM_MAU_HAM: CAM_MAU_HAM, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };

@@ -20,6 +20,8 @@
        Không khai thì không kiểm. `while` chỉ bị kiểm khi khung có `chanWhile: true` (chương khoang-cach, màn chưa dạy while);
        các chương cũ không đặt cờ này nên vẫn dùng được `while` (vd 6.2 viết lại forward bằng while).
        Chỉ kiểm CHƯƠNG TRÌNH và HÀM CỦA MÀN (bài làm của màn); hàm của em không bị kiểm.
+     - gioiHanHam: n (cham.js đưa man.gioiHanHam vào đây; không khai thì không kiểm) = chương trình CHÍNH được gọi trực tiếp tối đa n hàm của em KHÁC NHAU
+       (hàm gọi bên trong hàm khác và hàm của màn không tính). Vượt thì lỗi khung `qua-gioi-han-ham`. Không có giới hạn chung số hàm mang vào màn.
    Dòng thụt lề: mỗi dòng (chương trình hay thân hàm) vẫn là MỘT ô; `for ...:` là một ô và mỗi
    dòng trong thân for là một ô. Thân hàm viết ở mức thụt lề 0, khối lồng trong đó thụt thêm 4 dấu cách.
      (Số hàm của em tối đa cả game do kho-ham.js giữ, không còn theo màn.)
@@ -157,6 +159,18 @@
   }
 
   /**
+   * Tên các HÀM CỦA EM mà CHƯƠNG TRÌNH CHÍNH gọi TRỰC TIẾP, mỗi tên một lần, theo thứ tự xuất hiện. Hàm gọi bên trong hàm khác không tính;
+   * hàm của màn không tính (và che hàm của em cùng tên); lệnh gốc / range / print không tính vì không nằm trong `hamCuaEm`.
+   * Dùng cho giới hạn theo màn (man.gioiHanHam, mã `qua-gioi-han-ham`) và bộ đếm "Hàm 2/3" của giao diện.
+   */
+  function hamEmTrucTiep(baiLam, hamCuaEm) {
+    var tenMan = {}, tenEm = {};
+    layHamMan(baiLam).forEach(function (h) { tenMan[h.ten] = true; });
+    (hamCuaEm || []).forEach(function (h) { if (!tenMan[h.ten]) tenEm[h.ten] = true; });
+    return tenDuocGoi(layChinh(baiLam)).filter(function (n) { return tenEm[n]; });
+  }
+
+  /**
    * Kiểm hợp lệ theo khung. Trả về mảng { ma, loi, … }; rỗng = hợp lệ.
    * hamGoc (tuỳ chọn): danh sách tên hàm gốc, để bắt hàm trùng tên hàm gốc.
    * hamEmDung (tuỳ chọn): các hàm của em sẽ được ghép vào bài (đã bỏ hàm bị che).
@@ -187,6 +201,19 @@
         }
       });
     });
+
+    // 1b. giới hạn số hàm của em theo màn (khung.gioiHanHam = n, từ man.gioiHanHam; không khai thì không kiểm): chương trình chính gọi trực tiếp tối đa n hàm của em KHÁC NHAU
+    var gh = khung && khung.gioiHanHam;
+    if (typeof gh === 'number' && gh >= 0) {
+      var dung2 = hamEmTrucTiep(baiLam, hamEm);
+      if (dung2.length > gh) {
+        var quaTen = dung2[gh], dQua = dongDau(chinh, function (s) { return tenDuocGoi([s]).indexOf(quaTen) >= 0; })[0];      // dòng đầu tiên gọi hàm thứ gh + 1
+        loi.push({
+          ma: 'qua-gioi-han-ham', cot: 'chinh', dong: dQua, cho: { cot: 'chinh', dong: dQua }, gioiHan: gh, dang: dung2.length, ham: dung2.slice(),
+          loi: 'Màn này chỉ mang được ' + gh + ' hàm của em. Chương trình đang dùng ' + dung2.length + ' hàm: ' + dung2.join(', ') + '.'
+        });
+      }
+    }
 
     // 2. def trong chương trình
     var dChinh = dongDau(chinh, laDef);
@@ -280,7 +307,7 @@
 
   var API = {
     laTrong: laTrong, soDong: soDong, soO: soO, demO: demO, soOHam: soOHam, soODung: soODung, khungDayDu: khungDayDu,
-    tenDuocGoi: tenDuocGoi, tapHamDung: tapHamDung,
+    tenDuocGoi: tenDuocGoi, tapHamDung: tapHamDung, hamEmTrucTiep: hamEmTrucTiep,
     kiemTra: kiemTra, ghep: ghep, xuatPy: xuatPy
   };
   if (laNode) module.exports = API;

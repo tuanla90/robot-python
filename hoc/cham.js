@@ -91,6 +91,15 @@
    - drone-khong-bay (lỗi): chạy xong mà chưa có lệnh go_* nào chạy (thường do hàm đi nhận chữ không khớp nhánh nào).
    dam-tuong, tha-bi-chan, hut-go, quen-wait, chua-toi-co đổi lời cho drone (tường cao / mép sân / cửa đóng mới chặn; thả và hút ở ô dưới bụng). chua-gan-cam-bien biết battery.
    Sân thử Xưởng nhận thêm sanThu.pin (số nguyên 1–999; không có thì lấy man.pin) và sanThu.sac = [{ x, y }] (ô sạc).
+   BÓNG MỜ / CHẾ LỆNH (chương che-xe, kế hoạch "Chế lệnh" 14/10; luật đầy đủ ở san-hoc.js, phần BÓNG MỜ, ĐẤU DÂY NGƯỢC, KHAY VÀ PHẦN CỨNG):
+   - man.mucTieu = 'bong-mo' + man.bongMo = { x, y, huong, diQua?: [{x,y}], vat?: [{x,y}] } (màn nhiều sân: mảng song song với man.san): thắng khi chương trình chạy XONG mà xe đúng tư thế
+     của "xe mờ", đã đi qua mọi ô diQua (◆) và vật đúng ô. Kết quả có thêm `bongMo` và `diQua` [{x,y,da}] (của sân đang xem; mỗi mục theoSan cũng vậy); sự kiện vết 'qua-diem' { nhip, o }.
+     Mã chẩn đoán: lech-bong-mo (lỗi; nói bằng lời xe lệch bóng mờ ở đâu, hay đúng ô mà sai hướng), chua-qua-diem (lỗi; chưa ghé hết các điểm ◆).
+   - man.chinhCoDinh === true: máy chấm LUÔN dùng man.maMau.chinh làm chương trình chính (bỏ qua chương trình chính gửi lên); người chơi chỉ sửa hàm.
+     man.khoaHamMan = [tên hàm của màn]: các hàm của màn này cũng khóa (máy chấm lấy bản trong man.maMau.hamCuaMan, giao diện chỉ cho xem).
+   - man.daoChieu = ['trai'] | ['phai'] (đấu dây ngược) đưa xuống lõi; man.canhBao (chuỗi ngắn) là nhãn ⚠ của giao diện, cũng được trích vào lời lenh-goc-hong.
+   - man.phanCung (mặc định: trọn bộ lệnh loại robot + khay) đưa xuống lõi: hàm của em gọi được mọi lệnh phần cứng, chương trình chính và hàm của màn chỉ dùng lệnh trên khay (man.hamGoc).
+     Mã chẩn đoán: lenh-chua-mo (lỗi; lệnh có trong phần cứng nhưng chưa có trên khay mà chương trình chính / hàm của màn gõ thẳng), lenh-goc-hong (lỗi; gọi lệnh không thuộc phần cứng vì màn hỏng).
    CHẨN ĐOÁN CÓ `cho` (dòng lệnh gây ra, { cot, dong, ten? } hoặc null): mọi mã gắn với một lệnh đều ghi `cho` — dam-tuong (lệnh bánh / trượt / go_* của nhịp), kep-hut và tha-bi-chan kieu 'kep' và vat-vo (lệnh grab / release),
    tha-bi-chan của nam châm, các mã của tay (tay-goi-lai…), máy ném, tấm đẩy, súng bóng (ban-*, het-dan, cua-ket). Giao diện không cần tự tra từ vết.
    SÚNG BÓNG (chương sung-bong; luật đầy đủ ở san-hoc.js, phần SÚNG BÓNG): hamGoc có shoot thì robot có tay súng bóng (man.robot.tay = 'bong'). Ký hiệu sân N nút bắn, C cửa đóng, c cửa mở;
@@ -108,7 +117,7 @@
    vat 'thung-nang' (xe không có tấm đẩy, hay lùi / trượt vào thùng). Các mã khác:
    quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong (vat 'vat' = vướng vật nằm đất), tay-vuong, vat-vo, tha-bi-chan (tay kẹp, kieu 'kep': ô trước mặt không phải sàn trống),
    kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
-   def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le,
+   def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
    ========================================================================== */
 (function () {
@@ -307,6 +316,32 @@
     return g.anhXa[j] || null;
   }
 
+  // tên bộ phận cho lời lenh-goc-hong khi màn không khai canhBao
+  var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải' };
+  /** Lệnh `ten` là lệnh gốc của loại robot nhưng phần cứng màn (man.phanCung) không có: bộ phận đó hỏng. */
+  function lenhHong(man, ten) {
+    return !!man.phanCung && man.phanCung.indexOf(ten) < 0 && (SanHoc.HAM_GOC[man.loaiRobot || 'banh'] || []).indexOf(ten) >= 0;
+  }
+  var SO_CHU = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy'];
+  function soO(n) { return (n < SO_CHU.length ? SO_CHU[n] : String(n)) + ' ô'; }
+  var MAT_QUAY = ['lên', 'sang phải', 'xuống', 'sang trái'];       // "quay mặt ..." theo hướng màn hình
+  /** Nói bằng lời xe đang lệch bóng mờ ở đâu (theo hướng màn hình: trái / phải / trên / dưới). */
+  function lechBongMo(bm, r) {
+    var dx = r.x - bm.x, dy = r.y - bm.y;
+    var saiHuong = bm.huong !== null && bm.huong !== undefined && r.huong !== bm.huong;
+    var lech = dx !== 0 || dy !== 0 || saiHuong, loi = '';
+    if (dx === 0 && dy === 0) {
+      if (saiHuong) loi = 'Xe đứng đúng chỗ của bóng mờ nhưng quay mặt ' + MAT_QUAY[r.huong] + ', còn bóng mờ quay mặt ' + MAT_QUAY[bm.huong] + '.';
+    } else {
+      var phan = [];
+      if (dx !== 0) phan.push(soO(Math.abs(dx)) + (dx < 0 ? ' về bên trái' : ' về bên phải'));
+      if (dy !== 0) phan.push(soO(Math.abs(dy)) + (dy < 0 ? ' về phía trên' : ' về phía dưới'));
+      loi = 'Xe dừng lệch ' + phan.join(' và ') + ' so với bóng mờ' + (saiHuong ? ', lại còn quay mặt ' + MAT_QUAY[r.huong] + ' trong khi bóng mờ quay mặt ' + MAT_QUAY[bm.huong] : '') + '.';
+    }
+    if (bm.vat && bm.vat.length && !lech) { lech = true; loi = 'Xe đúng chỗ rồi nhưng vật chưa nằm đúng ô như trên màn.'; }
+    return { lech: lech, loi: loi, dx: dx, dy: dy, saiHuong: saiHuong };
+  }
+
   /**
    * Chẩn đoán từ kết quả chạy MỘT sân. sanThu = true: sân thử, không có cờ để "chưa tới".
    * bc (bối cảnh): { hamMan: [tên], hamEm: [tên], biCam: [tên hàm của em bị cấm mà bài đang gọi] }.
@@ -332,6 +367,11 @@
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến( hay hàm)? tên/.test(l.thongDiep) && SanHoc.MAU_TEN.concat(['none']).indexOf(tn[1]) >= 0 && hamGoc.indexOf('color') >= 0) {
         them('mau-thieu-nhay', 'Ở ' + viTri(m) + ': ' + tn[1] + ' đang viết không có dấu nháy nên Python tưởng đó là tên một biến hay một hàm và không tìm thấy. ' +
           'Tên màu là một chuỗi chữ, phải đặt trong dấu nháy: "' + tn[1] + '".', { ten: tn[1], cho: cho(m) });
+      } else if (l.ma === 'lenh-chua-mo') {
+        them('lenh-chua-mo', 'Ở ' + viTri(m) + ': lệnh ' + l.ten + '() chưa có trên khay ở màn này. Lệnh dùng được ở màn này: ' + (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.', { ten: l.ten, cho: cho(m) });
+      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && lenhHong(man, tn[1])) {
+        var ph = SanHoc.phanCungCua(man);
+        them('lenh-goc-hong', 'Ở ' + viTri(m) + ': ' + (man.canhBao ? man.canhBao : (TEN_BANH_HONG[tn[1]] ? TEN_BANH_HONG[tn[1]] + ' hỏng' : 'Bộ phận này hỏng')) + ': ' + tn[1] + '() không chạy được ở màn này. Lệnh còn chạy được: ' + ph.join(', ') + '.', { ten: tn[1], cho: cho(m) });
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep)) {
         var ten = tn[1], s;
         if (bc.biCam.indexOf(ten) >= 0) {
@@ -704,6 +744,16 @@
         them('chua-day-thung', 'Chương trình chạy xong mà chưa đưa hết thùng nặng tới ô đích: còn ' + chuaThung + ' trong ' + res.thung.length +
           ' thùng chưa nằm trên đích. Thử chạy lại và theo dõi xe cùng thùng từng nhịp.', { conLai: chuaThung, tong: res.thung.length });
       }
+    } else if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'bong-mo') {
+      if (!res.dungSom) {
+        var rbm = res.robot, bmo = res.bongMo;
+        if (bmo) {
+          var dxy = lechBongMo(bmo, rbm);
+          if (dxy.lech) them('lech-bong-mo', dxy.loi, { robot: { x: rbm.x, y: rbm.y, huong: rbm.huong }, bongMo: { x: bmo.x, y: bmo.y, huong: bmo.huong }, dx: dxy.dx, dy: dxy.dy, saiHuong: dxy.saiHuong });
+          var chuaQua = (res.diQua || []).filter(function (q) { return !q.da; });
+          if (chuaQua.length) them('chua-qua-diem', 'Xe chưa đi qua điểm ◆' + (chuaQua.length > 1 ? ' (còn thiếu ' + chuaQua.length + ' điểm)' : '') + ' trên đường. Chương trình phải đưa xe ghé qua mọi điểm ◆ rồi mới tới bóng mờ.', { conLai: chuaQua.length, o: { x: chuaQua[0].x, y: chuaQua[0].y } });
+        }
+      }
     } else if (!sanThu && !res.thang && !res.loi) {
       var r = res.robot;
       them('chua-toi-co', 'Chương trình chạy xong mà robot chưa tới cờ: robot đang ở ô (' + r.x + ', ' + r.y + ')' +
@@ -801,12 +851,26 @@
 
   /* ------------------------------------------------------------------- chấm */
 
+  /** man.chinhCoDinh: chương trình chính luôn là bản mẫu của màn; man.khoaHamMan: các hàm của màn này luôn là bản mẫu (người chơi chỉ xem). */
+  function ganCoDinh(man, baiLam) {
+    if (man.chinhCoDinh === true && man.maMau && man.maMau.chinh) baiLam.chinh = man.maMau.chinh.slice();
+    (man.khoaHamMan || []).forEach(function (ten) {
+      var mau = ((man.maMau && man.maMau.hamCuaMan) || []).filter(function (h) { return h.ten === ten; })[0];
+      if (!mau) return;
+      var vi = -1;
+      baiLam.hamCuaMan.forEach(function (h, i) { if (h.ten === ten && vi < 0) vi = i; });
+      if (vi >= 0) baiLam.hamCuaMan[vi] = saoHam(mau); else baiLam.hamCuaMan.push(saoHam(mau));
+    });
+    return baiLam;
+  }
+
   function cham(man, baiLam, hamCuaEm) {
-    baiLam = chuanHoa(baiLam);
+    baiLam = ganCoDinh(man, chuanHoa(baiLam));
     var cam = !!man.camHamCuaEm;
     var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
     var biCamTen = cam ? tenCua(hamCuaEm || []) : [];
     var khung = Object.assign({ chinh: 10, moiHam: 10 }, man.khung || {}, { moXuong: man.moXuong !== false });
+    if (man.gioiHanHam !== undefined) khung.gioiHanHam = man.gioiHanHam;       // giới hạn theo màn: số hàm của em KHÁC NHAU mà chương trình chính được gọi trực tiếp (lỗi khung qua-gioi-han-ham)
 
     // hàm nào được ghép: mọi hàm của màn; hàm của em chỉ khi bài làm gọi tới (trực tiếp hay gián tiếp)
     var tap = KhungCode.tapHamDung(baiLam, kho, { tatCaHamMan: true });
@@ -825,7 +889,7 @@
       kq.hamDaDung = tenCua(dsHam);
       kq.chiTietO = { chinh: KhungCode.soDong(baiLam.chinh), ham: chiTiet(dsHam) };
     }
-    var ketQua = { thang: false, sao: 0, soO: 0, soNhip: 0, hamDaDung: [], chiTietO: null, chanDoan: [], vet: [], theoSan: [], py: '', anhXa: [], pin: null, pinToiDa: null, sac: [] };
+    var ketQua = { thang: false, sao: 0, soO: 0, soNhip: 0, hamDaDung: [], chiTietO: null, chanDoan: [], vet: [], theoSan: [], py: '', anhXa: [], pin: null, pinToiDa: null, sac: [], bongMo: null, diQua: [] };
     var tinhDs = tinh.em.concat(tinh.man);
     dienO(ketQua, tinhDs);                                      // tạm: dò tĩnh, chạy xong sẽ thay bằng dò theo vết
     function xong() { ketQua.chanDoan = ketQua.chanDoan.concat(thongTin); return ketQua; }
@@ -853,14 +917,15 @@
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: man.danToiDa,
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
-        camBien: man.robot ? man.robot.camBien : undefined
+        camBien: man.robot ? man.robot.camBien : undefined,
+        bongMo: lm.bongMo || undefined, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
       }, g.ma);
       var cd = chanDoanSan(man, res, g, false, bc);
       var vet = chuyenVet(res.vet, g);
       hamTrongVet(vet, dung);
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
-        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac });
+        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
@@ -880,6 +945,7 @@
     ketQua.vatBanDau = viec.vatBanDau; ketQua.dich = viec.dich; ketQua.tay = viec.tay; ketQua.namCham = viec.namCham; ketQua.nem = viec.nem; ketQua.vat = viec.vat;
     ketQua.thungBanDau = viec.thungBanDau; ketQua.thung = viec.thung; ketQua.mauO = viec.mauO;
     ketQua.pin = viec.pin; ketQua.pinToiDa = viec.pinToiDa; ketQua.sac = viec.sac;
+    ketQua.bongMo = viec.bongMo; ketQua.diQua = viec.diQua;
     ketQua.sung = viec.sung; ketQua.cua = viec.cua; ketQua.nut = viec.nut; ketQua.bangTat = viec.bangTat; ketQua.cuaBanDau = viec.cuaBanDau; ketQua.nutBanDau = viec.nutBanDau;
 
     // hàm thực sự được gọi (hợp mọi sân) → số ô
@@ -895,6 +961,9 @@
   }
 
   function gan(c) { if (!c.muc) c.muc = 'loi'; return c; }
+
+  /** Cho lõi biết một dòng Python nằm ở đâu: 'chinh' | 'hamMan' | 'hamEm' | 'thu' (khay và phần cứng: xem san-hoc.js). */
+  function nguonDongCua(g) { return function (dongPy) { var m = g.anhXa[dongPy]; return m ? m.cot : null; }; }
 
   /** "Sân thử" của Xưởng hàm: xem mô tả ở đầu tệp. */
   function thuHam(man, baiLam, tenHam, hamCuaEm, tuyChon) {
@@ -933,6 +1002,7 @@
       san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st), roBanDau: st.ro === true ? true : undefined,
       danToiDa: man.danToiDa, camBien: man.robot ? man.robot.camBien : undefined,
+      daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g),
       pin: man.loaiRobot === 'drone' ? (st.pin !== undefined ? st.pin : (Array.isArray(man.pin) ? man.pin[0] : man.pin)) : undefined
     }, g.ma);
     res.nhipToiDa = nhipToiDa;

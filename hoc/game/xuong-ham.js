@@ -84,7 +84,8 @@
       soToiDa: function (ten, k) { return S.soMax(ten, k); },                                  // aim(n) chỉ nhận 1–3
       giaBien: giaBienThu,                                                                     // để hiện số lượt của range(n) khi Thử
       tt: q('.p-prog .tt'), ttDay: t('xuong.def'), ttNgan: t('xuong.def'),
-      khiDoi: khiSuaThan, khiBam: function () { anBongD(); }
+      khiDoi: khiSuaThan, khiBam: function () { anBongD(); },
+      chiDoc: hamKhoa, khiChiDoc: baoHamKhoa                                                   // hàm của màn bị khóa (man.khoaHamMan, vd. go_out() ở 3.7): chỉ xem
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) { S.ed.chen(txt); },
@@ -92,8 +93,9 @@
       khiBien: function (ten) { thayBien(ten); },
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); }
     });
-    TP.Keo.gan({ ed: S.ed, pal: S.pal, kieuBien: kieuBienHam, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiKhongSo: function (ten) { toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000); } });
+    TP.Keo.gan({ ed: S.ed, pal: S.pal, kieuBien: kieuBienHam, khiKeoDong: function () { anBongD(); }, dangChay: function () { return S.busy; }, khiKhongSo: function (ten) { toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000); }, khiChiDoc: baoHamKhoa });
     q('[data-nut="xoa-het"]').addEventListener('click', function () {
+      if (hamKhoa()) { baoHamKhoa(); return; }
       if (!S.than || !S.than.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
     });
@@ -122,14 +124,21 @@
   }
 
   /* --------------------------------------------------------------- mở / đóng */
+  /** Hàm của màn mà màn khóa (man.khoaHamMan): chỉ xem thân hàm, không sửa / chèn / xóa / kéo (máy chấm luôn dùng bản mẫu). */
+  function hamKhoa() {
+    var m = A.man && A.man();
+    return S.loai === 'man' && !!(m && m.khoaHamMan && m.khoaHamMan.indexOf(S.ten) >= 0);
+  }
+  function baoHamKhoa() { toast(t('xuong.hamKhoa'), '', 2800); }
   function hamHienTai() {
     if (S.loai === 'em') return KhoHam.tim(S.ten);
     var m = A.bai().hamCuaMan.filter(function (f) { return f.ten === S.ten; })[0];
     return m || null;
   }
-  function mo(loai, ten) {
+  /** Mở Xưởng sửa hàm `ten`. the (tùy chọn): thẻ khay muốn mở sẵn ('than' | 'tay' | 'cam'), dùng cho hàm mới còn trống tạo từ một thẻ; không có thì theo hàm đang sửa. */
+  function mo(loai, ten, the) {
     S.rid++; S.busy = false; E.side.classList.remove('busy');
-    S.loai = loai; S.ten = ten;
+    S.loai = loai; S.ten = ten; S.theMo = the || null;
     var f = hamHienTai();
     if (!f) return;
     S.than = loai === 'em' ? f.than.slice() : f.than;        // hàm của màn: sửa thẳng vào bản nháp
@@ -138,6 +147,8 @@
     E.host.setAttribute('data-ham', ten);
     E.xoaHam.style.display = loai === 'em' ? 'flex' : 'none';
     E.xoaHam.classList.toggle('nhat', loai === 'em' && KhoHam.tenCoDinh(ten));       // hàm theo cốt truyện: nút xóa mờ, chạm chỉ báo
+    E.host.classList.toggle('ham-khoa', hamKhoa());                                    // hàm của màn bị khóa: ẩn nút xóa hết, tiêu đề có ổ khóa
+    if (hamKhoa()) setTimeout(baoHamKhoa, TP.XUONG_MS || 0);
     S.ed.nap(function () { return S.than; }, 10);
     S.st = ChamHoc.chuanSanThu(Luu.docSanThu(ten) || ChamHoc.SAN_THU_MAC_DINH);
     E.nutMau.style.display = TP.coMauCua(A.man()) ? '' : 'none';              // nút Màu chỉ có ở màn có cảm biến màu
@@ -151,8 +162,9 @@
     E.side.classList.toggle('co-nem', coNem() || coPin());                       // bảy nút (thêm Ô và Rổ / Pin): thấp hơn nữa; súng bóng chỉ sáu nút
     datChe(null);
     napSan();
+    SanVe.datCanhBao(E.ffr, A.man().canhBao);                                   // màn đấu dây ngược / bộ phận hỏng: sân thử cũng nhắc (lõi đưa daoChieu / phanCung xuống sân thử)
     dungDoiSo();
-    lamPal();
+    lamPal(true);
     xoaKetThu();
     anToast();
     TP.Chan.giu(TP.XUONG_MS + 300);
@@ -179,10 +191,14 @@
   function hamChuoiDrone(man) {
     return man.loaiRobot === 'drone' && TP.coCauTruc(man, 'if') && thamSoHienTai().some(function (n) { return kieuBienHam(n) !== 'so'; });
   }
-  function lamPal() {
+  /** Vẽ khay của Xưởng. lamMoi (mở Xưởng): bỏ thẻ đang chọn, chọn thẻ chứa hàm đang sửa (theo lệnh gốc nó gọi; hàm còn trống thì theo hàm màn bắt chế); không thì giữ thẻ đang chọn. */
+  function lamPal(lamMoi) {
     var man = A.man(), chuoiDr = hamChuoiDrone(man);
     S.pal.dung({
       goc: man.hamGoc,
+      loai: man.loaiRobot,
+      lamMoi: !!lamMoi,
+      the: lamMoi ? (S.theMo || TP.theMacDinh({ man: man, kho: KhoHam.ds(), hamMan: A.bai().hamCuaMan, dangSua: hamHienTai() })) : undefined,
       vong: TP.coCauTruc(man, 'for'),
       vongWhile: TP.coCauTruc(man, 'while') && TP.coDieuKienCua(man),
       cam: TP.camBienCua(man),
