@@ -65,10 +65,10 @@
   // thân các hàm của chương
   var T_FETCH = ['magnet_on()', 'wait()', 'u_turn()', 'move()', 'magnet_off()', 'wait()'];
   function hFetch(than) { return H('fetch', [], than || T_FETCH); }
-  // 8: load() của màn: hút vật trước mặt, mang sang phải một ô, QUÊN thả
+  // 8: haul() của màn: hút vật trước mặt, mang sang phải một ô, QUÊN thả
   var T_LOAD_SAI = ['magnet_on()', 'wait()', 'turn_right()', 'move()'];
   var T_LOAD = T_LOAD_SAI.concat(['magnet_off()', 'wait()']);
-  function hLoad(than) { return H('load', [], than || T_LOAD); }
+  function hLoad(than) { return H('haul', [], than || T_LOAD); }
 
   /**
    * m.cb: 'kc' (front_clear + front_metal, màn 6) | 'kc-mau' (front_clear + front_metal + color, màn 10) | không có.
@@ -184,9 +184,9 @@
   // 7: tiến một ô, hút, qua làn băng (3 ô: băng đẩy xe lên một hàng), thả
   var CHINH_7 = ['move()', 'magnet_on()', 'wait()', 'for i in range(3):', '    move()', 'magnet_off()', 'wait()'];
   var CHINH_7_KHAC = ['move()', 'magnet_on()', 'wait()', 'move()', 'move()', 'move()', 'magnet_off()', 'wait()'];
-  // 8: hai lần load(), giữa hai lần rẽ trái rồi tiến một ô
-  var CHINH_8 = LAP(2, ['load()', 'turn_left()', 'move()']);
-  var CHINH_8_KHAC = LAP(2, ['load()', 'turn_left()', 'forward(1)']);
+  // 8: hai lần haul(), giữa hai lần rẽ trái rồi tiến một ô
+  var CHINH_8 = LAP(2, ['haul()', 'turn_left()', 'move()']);
+  var CHINH_8_KHAC = LAP(2, ['haul()', 'turn_left()', 'forward(1)']);
   // 9: omni: hút, trượt phải, thả, trượt phải; lặp ba lần
   var CHINH_9 = LAP(3, ['magnet_on()', 'wait()', 'slide_r(1)', 'magnet_off()', 'wait()', 'slide_r(1)']);
   var CHINH_9_KHAC = LAP(3, ['magnet_on()', 'wait()', 'slide_r(1)', 'magnet_off()', 'wait()', 'slide_right()', 'wait()']);
@@ -349,24 +349,24 @@
     }),
 
     man({
-      so: 8, ten: 'Sửa hàm load()', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'forward'],
-      deBai: 'Chương trình dùng hàm load() của màn: hút vật trước mặt rồi mang sang phải một ô. Nhưng vật không rơi xuống đích. Sửa hàm load để cả hai vật sắt nằm trên hai ô đích.',
-      veMaMau: 'Chạy thử: sau mỗi lần load() vật vẫn dính ở xe. Xem hàm load còn thiếu lệnh nào.',
+      so: 8, ten: 'Sửa hàm haul()', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'forward'],
+      deBai: 'Chương trình dùng hàm haul() của màn: hút vật trước mặt rồi mang sang phải một ô. Nhưng vật không rơi xuống đích. Sửa hàm haul để cả hai vật sắt nằm trên hai ô đích.',
+      veMaMau: 'Chạy thử: sau mỗi lần haul() vật vẫn dính ở xe. Xem hàm haul còn thiếu lệnh nào.',
       san: SAN_8, vatChat: CHAT_8,
       batDau: BD_8,
       maMau: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad(T_LOAD_SAI)] },
       sao: { o: 17, nhip: 10 },
       loiGiai: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad()] },
-      loiGiaiKhac: { moTa: 'Sửa load như vậy, tiến bằng forward(1) trong chương trình', baiLam: { chinh: CHINH_8_KHAC.slice(), hamCuaMan: [hLoad()] } },
+      loiGiaiKhac: { moTa: 'Sửa haul như vậy, tiến bằng forward(1) trong chương trình', baiLam: { chinh: CHINH_8_KHAC.slice(), hamCuaMan: [hLoad()] } },
       loiSai: [
-        { moTa: 'Chưa sửa gì: vật dính mãi ở xe, lần load thứ hai không hút thêm được', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad(T_LOAD_SAI)] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chưa sửa gì: vật dính mãi ở xe, lần haul thứ hai không hút thêm được', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad(T_LOAD_SAI)] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Thêm magnet_off() nhưng đặt trước khi rẽ: vật rơi lại chỗ cũ', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad(['magnet_on()', 'wait()', 'magnet_off()', 'wait()', 'turn_right()', 'move()'])] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Thêm magnet_on() thay cho magnet_off(): nam châm vẫn giữ vật', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad(T_LOAD_SAI.concat(['magnet_on()', 'wait()']))] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Bật và tắt nam châm cùng một nhịp trong load(): lệnh sau bị bỏ', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad(T_LOAD_SAI.concat(['magnet_on()', 'magnet_off()', 'wait()']))] }, phaiCoMa: ['magnet-goi-lai', 'chua-dua-vat'] },
-        { moTa: 'Chỉ gọi load() một lần', baiLam: { chinh: ['load()'], hamCuaMan: [hLoad()] }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Bật và tắt nam châm cùng một nhịp trong haul(): lệnh sau bị bỏ', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLoad(T_LOAD_SAI.concat(['magnet_on()', 'magnet_off()', 'wait()']))] }, phaiCoMa: ['magnet-goi-lai', 'chua-dua-vat'] },
+        { moTa: 'Chỉ gọi haul() một lần', baiLam: { chinh: ['haul()'], hamCuaMan: [hLoad()] }, phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Sau khi load() xong, vật vẫn dính ở nam châm. Lệnh nào làm vật rơi xuống ô ngay trước mũi xe?',
-        'Thêm lệnh vào CUỐI hàm load, khi xe đã quay sang phải và đứng sát ô đích.']
+      goiY: ['Sau khi haul() xong, vật vẫn dính ở nam châm. Lệnh nào làm vật rơi xuống ô ngay trước mũi xe?',
+        'Thêm lệnh vào CUỐI hàm haul, khi xe đã quay sang phải và đứng sát ô đích.']
     }),
 
     man({

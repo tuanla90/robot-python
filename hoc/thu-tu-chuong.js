@@ -22,6 +22,7 @@
    Chương 12 'mau' (Cảm biến màu) nằm ở man-mau.js.
    Chương 13 'nam-cham' (Nam châm) nằm ở man-nam-cham.js.
    Chương 14 'may-nem' (Máy ném) nằm ở man-may-nem.js.
+   Chương 15 'sung-bong' (Súng bóng) nằm ở man-sung-bong.js.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */
@@ -31,7 +32,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'khoang-cach', 'mau', 'nam-cham', 'may-nem'],
+    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'khoang-cach', 'mau', 'nam-cham', 'may-nem', 'sung-bong'],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',
@@ -46,7 +47,8 @@
       'khoang-cach': 'Cảm biến khoảng cách',
       'mau': 'Cảm biến màu',
       'nam-cham': 'Nam châm',
-      'may-nem': 'Máy ném'
+      'may-nem': 'Máy ném',
+      'sung-bong': 'Súng bóng'
     }
   };
 

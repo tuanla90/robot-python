@@ -516,7 +516,7 @@ const BANG = [];
   kiem('đúng 10 màn nam-cham, id 13.1…13.10, mã nam-cham.1…10, tên chương "Nam châm"', ds.length === 10 && ds.every((m, i) => m.id === '13.' + (i + 1) && m.ma === 'nam-cham.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'nam-cham').ten === 'Nam châm');
   kiem('hang: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
   kiem('sao.nhip và sao.o đúng bảng chốt', J(ds.map((m) => m.sao.nhip)) === J(SAO_NHIP) && J(ds.map((m) => m.sao.o)) === J(SAO_O), J([ds.map((m) => m.sao.nhip), ds.map((m) => m.sao.o)]));
-  kiem('chỉ 13.3 tạo hàm (fetch); chỉ 13.8 có hàm của màn (load); huy hiệu nam-cham ở 13.10', J(ds.map((m) => m.taoHam)) === J([[], [], ['fetch'], [], [], [], [], [], [], []]) &&
+  kiem('chỉ 13.3 tạo hàm (fetch); chỉ 13.8 có hàm của màn (haul); huy hiệu nam-cham ở 13.10', J(ds.map((m) => m.taoHam)) === J([[], [], ['fetch'], [], [], [], [], [], [], []]) &&
     ds.every((m) => (m.so === 8) === (m.maMau.hamCuaMan.length === 1 && m.loiGiai.hamCuaMan.length === 1)) && ds[9].huyHieu.ma === 'nam-cham' && ds.slice(0, 9).every((m) => !m.huyHieu));
   kiem('mọi màn: mucTieu dua-vat, vatCan sat, nhipTheoLoiGiai, Xưởng mở, khung 10/10, cauTruc for/if/while', ds.every((m) => m.mucTieu === 'dua-vat' && m.vatCan === 'sat' && m.nhipTheoLoiGiai === true && m.moXuong && m.khung.chinh === 10 && m.khung.moiHam === 10 && J(m.cauTruc) === '["for","if","while"]'));
   kiem('cảm biến: 13.6 có front_clear + front_metal (camBien khoang-cach); 13.10 thêm color (camBien khoang-cach + mau); các màn còn lại không có cảm biến nào; 13.9 là omni',
@@ -577,9 +577,9 @@ const BANG = [];
     const c = nhipNamChamNganNhat(m2, { tachNhip: true }).chuoi;
     return c.findIndex((a) => a.banh === BoDo.TIEN) < c.findIndex((a) => a.nc === 'on') && !ChamHoc.cham(m2, m2.maMau, khoTruoc('13.2')).thang && maCua(ChamHoc.cham(m2, m2.maMau, khoTruoc('13.2'))).includes('hut-go');
   })());
-  // 13.8: hàm của màn load() bị sai, sửa là thêm hai dòng
+  // 13.8: hàm của màn haul() bị sai, sửa là thêm hai dòng
   const m8 = man(8);
-  kiem('13.8: maMau gọi load() sai (thiếu magnet_off, wait), lời giải sửa thành 6 dòng; sửa xong chương trình chính giữ nguyên', bang(m8.maMau.hamCuaMan[0].than, ['magnet_on()', 'wait()', 'turn_right()', 'move()']) && bang(m8.loiGiai.hamCuaMan[0].than, ['magnet_on()', 'wait()', 'turn_right()', 'move()', 'magnet_off()', 'wait()']) && bang(m8.maMau.chinh, m8.loiGiai.chinh));
+  kiem('13.8: maMau gọi haul() sai (thiếu magnet_off, wait), lời giải sửa thành 6 dòng; sửa xong chương trình chính giữ nguyên', bang(m8.maMau.hamCuaMan[0].than, ['magnet_on()', 'wait()', 'turn_right()', 'move()']) && bang(m8.loiGiai.hamCuaMan[0].than, ['magnet_on()', 'wait()', 'turn_right()', 'move()', 'magnet_off()', 'wait()']) && bang(m8.maMau.chinh, m8.loiGiai.chinh));
   // 13.6 và 13.10 phải dùng cảm biến: viết cứng thì trượt
   for (const so of [6, 10]) {
     const m = man(so);
