@@ -115,8 +115,18 @@
           (cham.js: vong-vo-han). Vòng lặp có nhịp thì bị chặn bởi nhipToiDa ('qua-nhieu-nhip'); vòng không có lời gọi nào bị chặn bởi
           ngân sách lệnh của nhân ('infinite-loop').
 
-   CẢM BIẾN MÀU (chương `mau`; mọi loại robot trừ khi cấu hình khác — chương 12 dùng xe hai bánh). Robot gắn cảm biến màu khi hamGoc có
-        hàm gốc color(). color() TRẢ VỀ MỘT CHUỖI chữ thường: "red", "green", "blue", "yellow" hoặc "none" (ô không có màu).
+   CẢM BIẾN MÀU / CAMERA (chương `mau`; xe bánh, xích, omni, nhện — chương 12 dùng xe hai bánh). Robot đọc màu khi hamGoc có hàm gốc color().
+        color() TRẢ VỀ MỘT CHUỖI chữ thường: "red", "green", "blue", "yellow" hoặc "none" (không có màu). CÙNG TÊN HÀM, KẾT QUẢ PHỤ THUỘC PHẦN CỨNG
+        (luật 14/10): cfg.camBien (copy của man.robot.camBien, mảng { ma, o }) cho biết robot gắn gì —
+        · CẢM BIẾN MÀU Ở BỤNG ({ ma:'mau' }; cũng là mặc định khi cfg.camBien không khai gì về màu): color() = màu SÀN của ô NGAY DƯỚI XE. LUÔN LUÔN, kể cả
+          khi đang cầm / dính / nhận vật vào rổ (vật đang mang KHÔNG tính). Vật nằm đất chiếm ô nên không bao giờ nằm dưới xe.
+        · CAMERA ({ ma:'camera' }): color() = màu của thứ ở Ô TRƯỚC MẶT (cùng ô với gắp / thả / nạp; nhện: mặt trước cố định như luật tay):
+            - có VẬT nằm đất ở đó → màu vật ("none" nếu vật không màu);
+            - không có vật → màu SÀN ô đó ("none" nếu sàn không màu, cả ô băng chuyền, bậc thang, ô đích, ô cờ);
+            - tường, hàng rào, thùng nặng, nút bắn, cửa đóng, mép sân / ngoài sân → "none". Cửa mở là sàn thường.
+            Vật đang cầm / dính / trong rổ KHÔNG tính (nó đi theo xe, không nằm ở ô trước).
+        · Một robot KHÔNG gắn cả hai (cfg.camBien có cả 'mau' lẫn 'camera' và hamGoc có color → chay() ném lỗi cấu hình tiếng Việt), để color() không mơ hồ.
+          Drone không gắn camera (không có hướng mặt để nhìn "phía trước"): cfg.camBien có 'camera' trên drone → lỗi cấu hình.
         - Màu ô: ký hiệu r / g / b / y trong sân (sàn màu, đi lại như sàn thường), HOẶC lớp `mau` riêng (cfg.mau: mảng chuỗi cùng cỡ sân,
           mỗi ký tự r g b y hay '.'), dùng khi ô vừa có màu vừa có thứ khác (cờ F, ô đích D, ô X…). Hai cách cộng lại; một ô mà hai nơi ghi
           hai màu khác nhau, hay màu trên ô tường, là lỗi cấu hình.
@@ -124,10 +134,10 @@
         - ĐÍCH CÓ MÀU: ô đích (D / X / h) mà ô đó có màu thì chỉ nhận vật CÙNG MÀU. Mục tiêu 'dua-vat' thắng khi mọi vật nằm trên đích và,
           nếu đích có màu, vật đúng màu đích (đích không màu nhận mọi vật như cũ). Thả vật xuống đích khác màu thì ghi 'dat-sai-mau'
           (lỗi) — vật vẫn nằm đó, nhặt lên lại được; không dừng sớm.
-        - color(): đang MANG một vật (cầm bằng kẹp, dính nam châm, hay nằm trong rổ máy ném) thì trả màu CỦA VẬT ĐANG MANG ("none" nếu vật không màu);
-          không mang gì thì trả màu SÀN ô ngay dưới xe. Vật nằm đất chiếm ô nên không bao giờ nằm dưới xe: đọc màu vật = gắp nó lên rồi color().
         - ĐỌC KHÔNG TỐN NHỊP, như cảm biến khoảng cách (đọc ở trạng thái hiện tại), ghi mục lệnh có `docCamBien` và sự kiện 'doc-cam-bien' ở nhịp
-          kế tiếp: { ma, cam:'mau', ham:'color', tu:{x,y}, o:{x,y} (cùng ô), mau:'red'|…|'none', nguon:'san'|'vat' (vật đang mang), idVat: số|null, nhip }.
+          kế tiếp: { ma, cam:'mau'|'camera', ham:'color', tu:{x,y}, o:{x,y} (ô được đọc: cùng ô xe với 'mau', ô trước mặt với 'camera'; ngoài sân thì toạ độ ngoài sân),
+          mau:'red'|…|'none', nguon:'san'|'vat'|'chan', idVat: số|null, nhip }. nguon 'vat' chỉ có ở camera (đọc màu một vật nằm đất ở ô trước), 'chan' chỉ có ở camera (ô trước là tường,
+          rào, thùng, nút, cửa đóng, ngoài sân: không đọc được gì → "none"); 'mau' luôn là nguon 'san'. Camera còn ghi `huong` (hướng nhìn).
         - Gọi color() khi hamGoc không có: nhân báo "chưa có hàm" (cham.js đổi thành chẩn đoán chua-gan-cam-bien).
         - Đọc màu cũng tính vào giới hạn 1000 lần đọc liên tiếp không có nhịp ('infinite-loop').
         Kết quả chạy có `mauO` (null nếu sân không màu; không thì mảng hàng, mỗi hàng mảng màu hay null), và `vat[i].mau`, `dich[i].mau` chỉ khi có màu.
@@ -175,7 +185,7 @@
         - cfg.roBanDau: true | { mau } — rổ CÓ SẴN một vật lúc xuất phát (vật thêm, id cuối cùng, trangThai 'ro'); dùng ở các màn đầu chưa dạy load().
         - Kết quả có `nem` { tam, ro } (null nếu robot không có máy ném); vết nhịp có robot.nem; mục lệnh aim có `aimTam`. Tay nhận vật nào cũng được: vật sắt hay
           gỗ, có màu hay không đều ném như nhau. Mục tiêu dua-vat như cũ (mọi vật nằm trên đích, đúng màu nếu đích có màu); vật còn trong rổ chưa tính.
-        - Cảm biến (front_clear, color…) dùng chung được với máy ném.
+        - Cảm biến (front_clear, color…) dùng chung được với máy ném. color() của cảm biến bụng đọc sàn dưới xe kể cả khi vật nằm trong rổ; color() của camera đọc ô trước (nơi load() lấy vật).
 
    SÚNG BÓNG (chương `sung-bong`; xe bánh, xích, omni; nhện thì không vì không có hướng mặt). Robot gắn tay súng bóng khi hamGoc có shoot
         (một robot một tay: không đi chung tay kẹp, tấm đẩy, nam châm, máy ném).
@@ -208,7 +218,7 @@
         - BAY QUA: hàng rào thấp '=', băng chuyền (băng KHÔNG đẩy drone), vật nằm đất, thùng nặng, bậc thang S. KHÔNG qua: tường cao '#', nút 'N' (nút nằm trong tường),
           cửa đóng 'C', mép sân: đâm thì đứng yên, vẫn mất 1 nhịp ('dam-tuong'). Vật nằm đất KHÔNG chiếm ô với drone (drone ở trên vật). Cuối mỗi nhịp, nếu drone đang ở trên
           ô băng / rào / bậc thang / thùng / vật thì ghi sự kiện 'bay-qua' { nhip, o, tren: ['bang'|'rao'|'bac-thang'|'thung-nang'|'vat'] } cho giao diện vẽ bóng drone.
-        - Chỉ đi với: nam châm treo (magnet_on / magnet_off), cảm biến màu color(), đo pin battery(). KHÔNG gắn: tay kẹp, tấm đẩy, máy ném, súng bóng, cảm biến khoảng cách,
+        - Chỉ đi với: nam châm treo (magnet_on / magnet_off), cảm biến màu ở bụng color(), đo pin battery(). KHÔNG gắn: tay kẹp, tấm đẩy, máy ném, súng bóng, cảm biến khoảng cách,
           cảm biến từ front_metal (drone không có hướng mặt để đo "trước"): ghép sai thì chay() báo lỗi cấu hình tiếng Việt.
         - PIN (cfg.pin = số nguyên 1–999, tuỳ chọn): pin lúc đầu cũng là pin ĐẦY. Mỗi nhịp drone đã bay (kể cả wait() lơ lửng, kể cả nhịp đâm tường) tốn 1 pin. Cuối nhịp, drone đang
           ở trên ô sạc P thì pin đầy lại (sự kiện 'sac-pin' { nhip, o, tu, den } trong vết nhịp, KHÔNG phải chẩn đoán). Thứ tự cuối nhịp: tốn pin → sạc (nếu ở P) → xét thắng → xét hết pin. Pin về 0 mà chưa thắng
@@ -221,7 +231,7 @@
           ('hut-vat' { id, tu, den (cùng ô), soO: 0 }, 'dinh-vat'). Vật GỖ không hút được ('hut-go', thông tin). magnet_off() thả vật xuống ô dưới drone nếu ô đó nhận được (sàn, ô đích,
           ô màu, ô băng; KHÔNG phải hàng rào, thùng nặng, vật khác, bậc thang): bị chặn thì vật vẫn dính và nam châm vẫn bật ('tha-bi-chan', lỗi). Quên wait()/go_* sau lệnh nam châm
           → 'quen-wait'; hai lệnh nam châm chưa trôi nhịp → lệnh sau bị bỏ ('magnet-goi-lai').
-        - color() của drone trả màu vật đang dính nếu có, không thì màu ô sàn dưới drone.
+        - color() của drone (cảm biến màu ở bụng) luôn trả màu ô sàn dưới drone, kể cả khi đang dính vật; vật đang dính không tính. Drone không gắn camera.
         Vết nhịp của drone có robot.pin (null nếu không khai pin), robot.dangMang (id vật đang dính hoặc null) và robot.namCham nếu có nam châm. Kết quả có `pin` (còn lại), `pinToiDa`, `sac` [{x,y}].
 
    Băng chuyền: mỗi nhịp, SAU khi robot làm xong hành động, nếu robot đang đứng trên
@@ -428,6 +438,7 @@
    *        mucTieu: 'toi-co' (mặc định) | 'dua-vat',
    *        vat: [{x,y,mau?}] (vật thêm vào ngoài các ô 'o' / 'X' của sân), dich: [{x,y,mau?}] (ô đích thêm),
    *        mau: [chuỗi] (lớp màu sàn), vatMau: [chuỗi] (lớp màu vật): xem phần CẢM BIẾN MÀU,
+   *        camBien: [{ ma:'mau'|'camera'|'khoang-cach'|'pin', o }] (cảm biến robot gắn; chỉ 'mau' / 'camera' đổi nghĩa của color(), xem CẢM BIẾN MÀU / CAMERA),
    *        vatChat: [chuỗi] (lớp chất vật sắt / gỗ), vatCan: 'sat' (chỉ vật sắt phải về đích): xem phần NAM CHÂM }
    * opt: { nganSachLenh: 20000 }
    * Trả về:
@@ -488,6 +499,13 @@
     var coCamBien = hamGoc.some(function (t) { return CAM_BIEN_HAM[t] !== undefined; });     // cảm biến khoảng cách (front_clear…)
     var coCamTu = hamGoc.some(function (t) { return CAM_TU_HAM.indexOf(t) >= 0; });         // cảm biến từ front_metal (gắn vào cảm biến khoảng cách)
     if ((coCamBien || coCamTu) && loai === 'nhen') throw new Error('Nhện không gắn cảm biến khoảng cách (nhện không có hướng mặt).');
+    var coColor = hamGoc.some(function (t) { return CAM_MAU_HAM.indexOf(t) >= 0; });            // đọc màu color()
+    var dsCamBien = Array.isArray(cfg.camBien) ? cfg.camBien : [];
+    var coCamMauBung = dsCamBien.some(function (c) { return c && c.ma === 'mau'; });
+    var coCamera = dsCamBien.some(function (c) { return c && c.ma === 'camera'; });
+    if (coCamera && loai === 'drone') throw new Error('Drone không gắn camera: drone không có hướng mặt để nhìn "phía trước".');
+    if (coColor && coCamMauBung && coCamera) throw new Error('Robot gắn cả cảm biến màu ở bụng lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
+    var camNhin = coColor && coCamera;                                       // color() đọc Ô TRƯỚC MẶT (camera); không thì đọc sàn dưới xe (cảm biến bụng)
     var coPinCamBien = hamGoc.some(function (t) { return CAM_PIN_HAM.indexOf(t) >= 0; });                  // đo pin battery()
     if (laDrone) {
       if (coTay) throw new Error('Drone không gắn tay kẹp (arm_down, arm_up, grab, release): thân drone chỉ gắn được nam châm treo.');
@@ -1203,11 +1221,22 @@
       return { ma: 'doc-cam-bien', cam: 'khoang-cach', ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: h, o: { x: x, y: y }, trong: !ly, vat: ly || null, nhip: nhip };
     }
 
-    /** Đọc cảm biến màu: màu vật nằm trên sàn dưới gầm xe (nếu có màu), không thì màu sàn; "none" nếu không có màu. Không tốn nhịp, không đổi sân. */
+    /** Đọc cảm biến màu ở bụng: màu SÀN ô ngay dưới xe ("none" nếu sàn không màu). Vật đang mang không tính. Không tốn nhịp, không đổi sân. */
     function docMau(yc) {
-      var idMang = tay.cam !== null ? tay.cam : nc.cam !== null ? nc.cam : nem.ro, v = idMang !== null ? vatTheoId(idMang) : null, m, nguon = 'san';
-      if (v) { m = v.mau || 'none'; nguon = 'vat'; } else m = mauNen(rb.x, rb.y) || 'none';
-      return { ma: 'doc-cam-bien', cam: 'mau', ham: yc.ten, tu: { x: rb.x, y: rb.y }, o: { x: rb.x, y: rb.y }, mau: m, nguon: nguon, idVat: nguon === 'vat' ? v.id : null, nhip: nhip };
+      if (camNhin) return docCamera(yc);
+      return { ma: 'doc-cam-bien', cam: 'mau', ham: yc.ten, tu: { x: rb.x, y: rb.y }, o: { x: rb.x, y: rb.y }, mau: mauNen(rb.x, rb.y) || 'none', nguon: 'san', idVat: null, nhip: nhip };
+    }
+
+    /** Đọc camera: màu thứ ở Ô TRƯỚC MẶT: vật nằm đất → màu vật; không có vật → màu sàn; tường / rào / thùng / nút / cửa đóng / ngoài sân → "none". Không tốn nhịp. */
+    function docCamera(yc) {
+      var o = oTruoc(), m = 'none', nguon = 'san', idVat = null;
+      var c = oTai(san, o.x, o.y);
+      if (c === null || c === '#' || c === '=' || c === 'N' || cuaDong(o.x, o.y) || thungTai(o.x, o.y)) nguon = 'chan';
+      else {
+        var v = vatNamTai(o.x, o.y);
+        if (v) { m = v.mau || 'none'; nguon = 'vat'; idVat = v.id; } else m = mauNen(o.x, o.y) || 'none';
+      }
+      return { ma: 'doc-cam-bien', cam: 'camera', ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: rb.huong, o: o, mau: m, nguon: nguon, idVat: idVat, nhip: nhip };
     }
 
     /** Đọc pin battery() của drone: số pin còn lại. Không tốn nhịp, không đổi sân. */

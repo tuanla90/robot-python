@@ -2,7 +2,7 @@
    kiem-may-nem.mjs — máy kiểm chương `may-nem` (Máy ném) của "Đường học".
    Gồm: ném 1–3 ô theo bốn hướng, bay qua hàng rào / tường cao / băng / vật / thùng, rơi vào tường cao, hàng rào, bậc thang, mép sân,
    ô đã có vật thì vỡ (nem-vo, dừng sớm), ô băng / ô đích thì nằm yên, đích có màu, aim(n) (không tốn nhịp, giữ nguyên tầm, tầm sai là lỗi
-   tam-sai, throw nhớ tầm lúc gọi), nạp (load, vật ở Ô TRƯỚC MẶT; vật nằm đất chiếm ô), rổ đầy / rổ trống / một lệnh tay mỗi nhịp / xe đứng yên trong nhịp nạp-ném / quên wait, color() đọc màu vật trong rổ,
+   tam-sai, throw nhớ tầm lúc gọi), nạp (load, vật ở Ô TRƯỚC MẶT; vật nằm đất chiếm ô), rổ đầy / rổ trống / một lệnh tay mỗi nhịp / xe đứng yên trong nhịp nạp-ném / quên wait, color() theo phần cứng (cảm biến bụng đọc sàn kể cả khi vật trong rổ; camera đọc ô trước mặt),
    roBanDau, tường thấp '=' (xe không đi qua, cảm biến, thả, thùng), omni và xích, nhện / các tay khác không đi chung, sân thử của Xưởng,
    chẩn đoán tiếng Việt, bộ dò đường tắt (so chéo với san-hoc.js bằng chương trình ngẫu nhiên), dữ liệu 10 màn (BFS = sao.nhip) và bảng 10 màn.
    Các kiểm chung cho cả 140 màn (đi tuần tự, sao, lời sai, đường tắt BFS trên từng sân…) nằm ở kiem-hoc.mjs.
@@ -251,10 +251,16 @@ console.log('\n== 4. load(): nạp vật ở ô TRƯỚC MẶT vào rổ; vật 
   kiem('ném vật xanh dương xuống ô đích đỏ: dat-sai-mau (lỗi), vật nằm đó nhưng chưa tính, không thắng', maSK(p, 'dat-sai-mau').length === 1 && !p.thang && vatCua(p, 1).trangThai === 'dat' && maSK(p, 'dat-sai-mau')[0].mauDich === 'red' && maSK(p, 'dat-sai-mau')[0].mauVat === 'blue');
   const q = chay(SM, xe, NAP + aim(3) + NEMW, { mau, vatMau: VM('r') });
   kiem('ném vật đỏ xuống ô đích đỏ: thắng', q.thang && maSK(q, 'dat-sai-mau').length === 0);
-  const docMau = (code) => chay(SM, xe, code, { mau, vatMau: VM('y') }).vet.filter((e) => e.loai === 'lenh' && e.docCamBien).map((e) => e.docCamBien);
+  const docMau = (code, extra) => chay(SM, xe, code, Object.assign({ mau, vatMau: VM('y') }, extra || {})).vet.filter((e) => e.loai === 'lenh' && e.docCamBien).map((e) => e.docCamBien);
   const truoc = docMau('c = color()\n' + NAP), sau = docMau(NAP + 'c = color()\n');
-  kiem('color() TRƯỚC khi nạp: vật còn nằm đất ở ô trước mặt nên chỉ thấy màu sàn ("none", nguon "san"); SAU khi nạp (vật trong rổ): màu vật ("yellow", nguon "vat", idVat 1)',
-    truoc[0].mau === 'none' && truoc[0].nguon === 'san' && sau[0].mau === 'yellow' && sau[0].nguon === 'vat' && sau[0].idVat === 1, J([truoc, sau]));
+  kiem('color() CẢM BIẾN BỤNG (mặc định): luôn là màu SÀN dưới xe ("none"), cả TRƯỚC khi nạp lẫn SAU khi nạp (vật trong rổ không tính); nguon "san"',
+    truoc[0].mau === 'none' && truoc[0].nguon === 'san' && truoc[0].cam === 'mau' && sau[0].mau === 'none' && sau[0].nguon === 'san' && sau[0].idVat === null, J([truoc, sau]));
+  const CAM = { camBien: [{ ma: 'camera', o: 'tren' }] };
+  const ctruoc = docMau('c = color()\n' + NAP, CAM), csau = docMau(NAP + 'c = color()\n', CAM);
+  kiem('color() CAMERA: TRƯỚC khi nạp thấy vật nằm ở ô trước mặt ("yellow", nguon "vat", idVat 1, cam "camera"); SAU khi nạp (vật trong rổ, ô trước trống) thấy màu sàn ô đó ("none", nguon "san")',
+    ctruoc[0].mau === 'yellow' && ctruoc[0].nguon === 'vat' && ctruoc[0].idVat === 1 && ctruoc[0].cam === 'camera' && csau[0].mau === 'none' && csau[0].nguon === 'san' && csau[0].cam === 'camera', J([ctruoc, csau]));
+  const rcam = chay(SM, xe, 'c = color()\n' + NAP + aim(3) + NEMW, Object.assign({ mau, vatMau: VM('r') }, CAM));
+  kiem('xe máy ném gắn camera ném vật đỏ tầm 3 xuống đích đỏ: vẫn thắng (camera không đổi gì về ném)', rcam.thang);
 }
 
 /* ============================================================================ 5. TƯỜNG THẤP '=' */
@@ -408,7 +414,7 @@ function bang(a, b) { return J(a) === J(b); }
   kiem('mọi màn: mucTieu dua-vat, Xưởng mở, khung 10/10, cauTruc for/if/while, KHÔNG nhipTheoLoiGiai (nhịp ném / nạp không gộp được nên BFS = sao.nhip)', ds.every((m) => m.mucTieu === 'dua-vat' && m.moXuong && m.khung.chinh === 10 && m.khung.moiHam === 10 && J(m.cauTruc) === '["for","if","while"]' && !m.nhipTheoLoiGiai));
   kiem('hàm gốc: 14.1 và 14.2 chưa có load (rổ sẵn vật, aim + throw); từ 14.3 có load; 14.6 có front_clear; 14.7 có color; 14.9 là omni',
     ds.every((m) => m.hamGoc.includes('aim') && m.hamGoc.includes('throw') && (m.so >= 3) === m.hamGoc.includes('load') && (m.so === 6) === m.hamGoc.includes('front_clear') && (m.so === 7) === m.hamGoc.includes('color') && (m.so === 9) === (m.loaiRobot === 'omni') && (m.so === 9) === m.hamGoc.includes('slide_left')));
-  kiem('robot.tay "nem" ở mọi màn; than hai-banh (omni ở 14.9); camBien khoang-cach ở 14.6, mau ở 14.7', ds.every((m) => m.robot.tay === 'nem' && m.robot.than === (m.so === 9 ? 'omni' : 'hai-banh') && J(m.robot.camBien) === J(m.so === 6 ? [{ ma: 'khoang-cach', o: 'hong' }] : m.so === 7 ? [{ ma: 'mau', o: 'hong' }] : [])));
+  kiem('robot.tay "nem" ở mọi màn; than hai-banh (omni ở 14.9); camBien khoang-cach ở 14.6, camera ở 14.7', ds.every((m) => m.robot.tay === 'nem' && m.robot.than === (m.so === 9 ? 'omni' : 'hai-banh') && J(m.robot.camBien) === J(m.so === 6 ? [{ ma: 'khoang-cach', o: 'hong' }] : m.so === 7 ? [{ ma: 'camera', o: 'tren' }] : [])));
   kiem('roBanDau: 14.1, 14.2 (true), 14.6 (mảng 3 sân); các màn khác rổ trống lúc đầu, vật nằm ở Ô TRƯỚC MẶT xe (ô o ngay trước mũi xe theo hướng xuất phát), ô xe đứng là sàn trống', ds.every((m) => {
     const dsS = sanCua(m), bds = bdCua(m);
     if (m.so === 1 || m.so === 2 || m.so === 6) return !!m.roBanDau && !/o/.test(dsS.join(''));

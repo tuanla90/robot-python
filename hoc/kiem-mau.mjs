@@ -1,8 +1,9 @@
 /* ============================================================================
    kiem-mau.mjs — máy kiểm chương `mau` (Cảm biến màu) của "Đường học".
    Gồm: color() ở mọi màu và mọi loại ô (ký hiệu r g b y, lớp màu riêng, cộng hai cách, xung đột, ô tường), ô màu đi lại như sàn thường,
-   đọc màu không tốn nhịp và ghi sự kiện doc-cam-bien (cam 'mau'), color() lúc cầm vật (màu vật đang cầm) và lúc tay không (màu sàn; vật nằm đất chiếm ô nên không nằm dưới xe), robot không gắn cảm biến
-   màu (chua-gan-cam-bien), chuỗi trả về dùng trong biểu thức, chống vòng lặp vô hạn, đích có màu (đúng / sai màu, dat-sai-mau, vật không màu),
+   đọc màu không tốn nhịp và ghi sự kiện doc-cam-bien (cam 'mau'), color() phụ thuộc phần cứng (14/10): cảm biến BỤNG luôn đọc màu sàn dưới xe (cả lúc cầm / dính / nạp rổ),
+   CAMERA đọc ô trước mặt (vật nằm đó → màu vật, không thì màu sàn; tường, rào, thùng, cửa đóng, nút, mép sân → "none"; bốn hướng; nhện mặt cố định), ghép cả hai hay camera trên drone → lỗi,
+   robot không gắn cảm biến màu (chua-gan-cam-bien), chuỗi trả về dùng trong biểu thức, chống vòng lặp vô hạn, đích có màu (đúng / sai màu, dat-sai-mau, vật không màu),
    chẩn đoán so chuỗi sai (ten-mau-sai) và quên nháy (mau-thieu-nhay), chấm NHIỀU SÂN có lớp màu, sân thử của Xưởng có ô màu, bộ dò đường tắt
    có màu, dữ liệu 10 màn và bảng 10 màn.
    Các kiểm chung cho cả 120 màn (đi tuần tự, sao, lời sai, đường tắt BFS trên từng sân…) nằm ở kiem-hoc.mjs.
@@ -159,7 +160,7 @@ console.log('\n== 2. Đọc màu không tốn nhịp; sự kiện doc-cam-bien (
   kiem('nhện gắn được cảm biến màu (không phụ thuộc hướng mặt): đọc "red"', nh.loi === null && doc(nh)[0].mau === 'red');
 }
 
-console.log('\n== 3. color() lúc cầm vật: màu vật; lúc tay không: màu sàn ==');
+console.log('\n== 3. color() phụ thuộc phần cứng: cảm biến BỤNG đọc sàn dưới xe (kể cả lúc cầm vật), CAMERA đọc ô trước mặt ==');
 {
   // xe ở (1,2) mặt lên, sàn dưới xe VÀNG; vật xanh dương ở (1,1) ngay trước mặt; vật không màu ở (3,1) trên sàn đỏ, xe thứ hai đứng ở (3,2) sàn xanh lá
   const rows = ['.....', '.o.o.', '..F..'];
@@ -168,21 +169,94 @@ console.log('\n== 3. color() lúc cầm vật: màu vật; lúc tay không: màu
   const base = { mau, vatMau: vm };
   const nhat = L('arm_down()', 'grab()', 'wait()');
   const a = chay(rows, { x: 1, y: 2, huong: 0 }, 'c = color()', base);
-  kiem('chưa nhặt: vật ngay trước mặt không đổi color(): vẫn là màu sàn dưới xe "yellow", nguon "san", idVat null', doc(a)[0].mau === 'yellow' && doc(a)[0].nguon === 'san' && doc(a)[0].idVat === null, J(doc(a)));
+  kiem('BỤNG, chưa nhặt: vật ngay trước mặt không đổi color(): màu sàn dưới xe "yellow", nguon "san", idVat null, cam "mau"', doc(a)[0].mau === 'yellow' && doc(a)[0].nguon === 'san' && doc(a)[0].idVat === null && doc(a)[0].cam === 'mau', J(doc(a)));
   const c = chay(rows, { x: 1, y: 2, huong: 0 }, L('a = color()', 'arm_down()', 'grab()', 'wait()', 'b = color()', 'arm_up()', 'wait()', 'c = color()'), base);
   const dc = doc(c);
-  kiem('nhặt vật lên (kẹp xong): color() là màu VẬT đang cầm "blue", nguon "vat", idVat 1; đọc trước khi nhặt là màu sàn "yellow"; nâng tay vẫn cầm', dc[0].mau === 'yellow' && dc[1].mau === 'blue' && dc[1].nguon === 'vat' && dc[1].idVat === 1 && dc[2].mau === 'blue' && c.vat[0].trangThai === 'cam', J(dc.map((e) => e.mau + '/' + e.nguon)));
+  kiem('BỤNG, nhặt vật lên (kẹp xong): color() vẫn là màu SÀN "yellow" (vật đang cầm "blue" không tính), nguon "san", idVat null; nâng tay vẫn thế', dc.length === 3 && dc.every((e) => e.mau === 'yellow' && e.nguon === 'san' && e.idVat === null) && c.vat[0].trangThai === 'cam', J(dc.map((e) => e.mau + '/' + e.nguon)));
   const b = chay(rows, { x: 3, y: 2, huong: 0 }, L(nhat, 'x = color()'), base);
-  kiem('vật KHÔNG màu đang cầm: color() = "none" (không phải màu sàn xanh lá của ô xe), nguon "vat"', doc(b)[0].mau === 'none' && doc(b)[0].nguon === 'vat' && doc(b)[0].idVat === 2, J(doc(b)));
+  kiem('BỤNG, cầm vật KHÔNG màu: color() vẫn là màu sàn ô xe "green" (không phải "none" của vật)', doc(b)[0].mau === 'green' && doc(b)[0].nguon === 'san' && b.vat[1].trangThai === 'cam', J(doc(b)));
   const d = chay(rows, { x: 1, y: 2, huong: 0 }, L(nhat, 'x = color()', 'release()', 'wait()', 'y = color()'), base);
-  kiem('thả vật xuống lại ô trước mặt (tay hạ): vật nằm đất, color() lại là màu sàn "yellow"', doc(d)[0].mau === 'blue' && doc(d)[1].mau === 'yellow' && doc(d)[1].nguon === 'san' && d.vat[0].trangThai === 'dat', J(doc(d).map((x) => x.mau)));
+  kiem('BỤNG, thả vật xuống rồi đọc lại: vẫn "yellow" (trước và sau khi thả như nhau)', doc(d)[0].mau === 'yellow' && doc(d)[1].mau === 'yellow' && doc(d)[1].nguon === 'san' && d.vat[0].trangThai === 'dat', J(doc(d).map((x) => x.mau)));
   const e = chay(rows, { x: 1, y: 2, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'left_move()', 'wait()', 'x = color()'), base);
-  kiem('vật đang cầm đi theo xe: xe rẽ sang hướng khác, color() vẫn là màu vật "blue" (xe không đọc được sàn khi đang cầm)', doc(e)[0].mau === 'blue' && doc(e)[0].nguon === 'vat' && e.robot.huong === 1 && e.vat[0].trangThai === 'cam', J([doc(e), e.robot]));
+  kiem('BỤNG, vật đang cầm đi theo xe: xe rẽ sang hướng khác, color() vẫn là màu sàn dưới xe "yellow" (xe đọc được vạch kẻ khi đang cầm)', doc(e)[0].mau === 'yellow' && doc(e)[0].nguon === 'san' && e.robot.huong === 1 && e.vat[0].trangThai === 'cam', J([doc(e), e.robot]));
+  // xe đi mang vật qua ô màu: sàn dưới xe đổi, color() đổi theo
+  const dm = chay(['.....', '.o...', '.....'], { x: 1, y: 2, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'left_move()', 'wait()', 'x = color()', TIEN, 'y = color()'), { mau: ['.....', '.....', '.rb..'], vatMau: ['.....', '.g...', '.....'] });
+  kiem('BỤNG, xe mang vật đi qua các ô màu: đọc đúng màu từng ô sàn đi qua (mỗi lần "san"), không bao giờ màu vật "green"', (() => { const x = doc(dm); return x.length === 2 && x[0].mau === 'red' && x[1].mau === 'blue' && x.every((q) => q.nguon === 'san') && dm.vat[0].trangThai === 'cam'; })(), J(doc(dm)));
   const g = chay(rows, { x: 1, y: 2, huong: 0 }, L('grab()', 'wait()', 'x = color()'), base);
-  kiem('tay nâng mà kẹp: kẹp vào không khí, không cầm gì nên color() vẫn là màu sàn "yellow"', doc(g)[0].mau === 'yellow' && doc(g)[0].nguon === 'san' && g.vat[0].trangThai === 'dat', J(doc(g)));
+  kiem('BỤNG, tay nâng mà kẹp: kẹp vào không khí, color() vẫn là màu sàn "yellow"', doc(g)[0].mau === 'yellow' && doc(g)[0].nguon === 'san' && g.vat[0].trangThai === 'dat', J(doc(g)));
   const h = chay(rows, { x: 1, y: 1, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'x = color()'), base);
-  kiem('xe xuất phát ngay trên ô có vật (cấu hình không nên làm): vật không gắp được, color() là màu sàn dưới xe, không phải màu vật', doc(h)[0].nguon === 'san' && doc(h)[0].mau === 'none' && h.vat[0].trangThai === 'dat', J(doc(h)));
+  kiem('BỤNG, xe xuất phát ngay trên ô có vật (cấu hình không nên làm): vật không gắp được, color() là màu sàn dưới xe, không phải màu vật', doc(h)[0].nguon === 'san' && doc(h)[0].mau === 'none' && h.vat[0].trangThai === 'dat', J(doc(h)));
   kiem('vật mang màu trong kết quả: vat[i].mau chỉ khi có màu; vết nhịp cũng vậy', a.vat[0].mau === 'blue' && !('mau' in a.vat[1]) && a.vatBanDau[0].mau === 'blue' && nhipVet(d)[0].vat[0].mau === 'blue');
+  // robot không khai camBien nhưng có color: mặc định là cảm biến bụng (tương thích các cấu hình cũ)
+  kiem('cfg.camBien không khai (hay chỉ khai cảm biến khoảng cách): color() là cảm biến BỤNG (mặc định)', doc(chay(rows, { x: 1, y: 2, huong: 0 }, 'c = color()', Object.assign({ camBien: [{ ma: 'khoang-cach', o: 'hong' }] }, base)))[0].cam === 'mau');
+}
+
+console.log('\n== 3b. CAMERA: color() đọc Ô TRƯỚC MẶT (vật → màu vật; không vật → màu sàn; chắn / ngoài sân → "none") ==');
+{
+  const CAM = { camBien: [{ ma: 'camera', o: 'tren' }] };
+  const camChay = (rows, bd, code, extra) => chay(rows, bd, code, Object.assign({}, CAM, extra || {}));
+  // bốn hướng: xe ở giữa sân 5×5 (2,2); trên (2,1) vật đỏ; phải (3,2) sàn xanh lá; dưới (2,3) tường; trái (1,2) vật xanh dương trên sàn vàng
+  const san4 = ['.....', '..o..', '.o...', '..#..', '.....'];
+  const vm4 = ['.....', '..r..', '.b...', '.....', '.....'];
+  const mauSan = ['.....', '.....', '.y.g.', '.....', '.....'];
+  const TEN = [['red', 'vat', 2, 1], ['green', 'san', 3, 2], ['none', 'chan', 2, 3], ['blue', 'vat', 1, 2]];   // theo hướng 0 phải-trên-dưới-trái: lên, phải, xuống, trái
+  let ok = 0, sai = [];
+  for (let h = 0; h < 4; h++) {
+    const kq = camChay(san4, { x: 2, y: 2, huong: h }, 'c = color()', { mau: mauSan, vatMau: vm4 });
+    const x = doc(kq)[0], [mm, ng, ox, oy] = TEN[h];
+    if (x && x.cam === 'camera' && x.mau === mm && x.nguon === ng && x.o.x === ox && x.o.y === oy && x.huong === h && x.tu.x === 2 && x.tu.y === 2 && x.ham === 'color') ok++; else sai.push('h' + h + ':' + J(x));
+  }
+  kiem('CAMERA × 4 hướng mặt: lên → vật đỏ, phải → sàn xanh lá, xuống → tường "none" (nguon chan), trái → vật xanh dương (vật che sàn vàng); đúng ô được nhìn, huong, cam "camera"', ok === 4, sai.join(' | '));
+  const sanXe = doc(camChay(san4, { x: 2, y: 2, huong: 0 }, 'c = color()', { mau: mauSan, vatMau: vm4 }));
+  kiem('CAMERA không đọc sàn dưới xe: xe đứng trên ô vàng, mặt về vật đỏ → "red" chứ không phải sàn dưới xe', sanXe[0].mau === 'red' && doc(camChay(san4, { x: 1, y: 2, huong: 1 }, 'c = color()', { mau: mauSan, vatMau: vm4 }))[0].mau === 'none', J(sanXe));
+  // mép sân (ngoài sân) bốn hướng
+  const mep = [0, 1, 2, 3].map((h) => doc(camChay(['...', '...', '...'], { x: [1, 2, 1, 0][h], y: [0, 1, 2, 1][h], huong: h }, 'c = color()', { mau: ['rrr', 'rrr', 'rrr'] }))[0]);
+  kiem('CAMERA nhìn ra ngoài sân (4 hướng, sàn trong sân toàn đỏ): "none", nguon "chan", ô được nhìn nằm ngoài sân', mep.every((x) => x.mau === 'none' && x.nguon === 'chan') && J(mep.map((x) => [x.o.x, x.o.y])) === J([[1, -1], [3, 1], [1, 3], [-1, 1]]), J(mep));
+  // các thứ chắn: tường, hàng rào, thùng nặng, cửa đóng, nút bắn → none/chan; cửa mở, bậc thang, băng, đích, cờ là sàn
+  const hang = (ky, mauLop) => doc(camChay(['...', '.' + ky + '.', '...'], { x: 1, y: 2, huong: 0 }, 'c = color()', mauLop ? { mau: ['...', '.' + mauLop + '.', '...'] } : {}))[0];
+  const chan = ['#', '=', 'H', 'C', 'N'].map((ky) => hang(ky));
+  kiem('CAMERA: tường #, hàng rào =, thùng nặng H, cửa đóng C, nút bắn N ở ô trước mặt → "none", nguon "chan"', chan.every((x) => x.mau === 'none' && x.nguon === 'chan'), J(chan));
+  const san = [['c', null], ['S', null], ['>', 'r'], ['D', 'b'], ['F', 'g'], ['.', 'y'], ['.', null]].map(([ky, ml]) => hang(ky, ml));
+  kiem('CAMERA: cửa mở c, bậc thang S, ô băng >, đích D, cờ F, sàn thường là SÀN: đọc màu sàn của lớp màu (hay "none" nếu không màu), nguon "san"', J(san.map((x) => x.mau)) === J(['none', 'none', 'red', 'blue', 'green', 'yellow', 'none']) && san.every((x) => x.nguon === 'san'), J(san.map((x) => [x.mau, x.nguon])));
+  // vật không màu, vật trên sàn màu, nhiều vật
+  const v1 = doc(camChay(['...', '.o.', '...'], { x: 1, y: 2, huong: 0 }, 'c = color()', { mau: ['...', '.y.', '...'] }))[0];
+  kiem('CAMERA: vật KHÔNG màu nằm trên sàn vàng → "none" (nguon "vat", idVat 1; vật che sàn, không phải "yellow")', v1.mau === 'none' && v1.nguon === 'vat' && v1.idVat === 1, J(v1));
+  const v2 = doc(camChay(['...', '.o.', '...'], { x: 1, y: 2, huong: 0 }, 'c = color()', { mau: ['...', '.y.', '...'], vatMau: ['...', '.r.', '...'] }))[0];
+  kiem('CAMERA: vật đỏ nằm trên sàn vàng → "red" (nguon "vat")', v2.mau === 'red' && v2.nguon === 'vat' && v2.idVat === 1, J(v2));
+  // trước / sau khi nhặt (tay kẹp)
+  const nhatCam = L('arm_down()', 'grab()', 'wait()');
+  const tn = camChay(['...', '.o.', '...'], { x: 1, y: 2, huong: 0 }, L('a = color()', nhatCam, 'b = color()', 'arm_up()', 'wait()', 'c = color()'), { mau: ['...', '.y.', '...'], vatMau: ['...', '.r.', '...'] });
+  const dn = doc(tn);
+  kiem('CAMERA, nhìn rồi nhặt: trước khi nhặt "red" (nguon vat); nhặt xong ô trước mặt TRỐNG nên thấy màu sàn "yellow" (nguon san); vật đang cầm không tính', dn[0].mau === 'red' && dn[0].nguon === 'vat' && dn[1].mau === 'yellow' && dn[1].nguon === 'san' && dn[2].mau === 'yellow' && tn.vat[0].trangThai === 'cam', J(dn.map((x) => x.mau + '/' + x.nguon)));
+  const th = camChay(['...', '.o.', '...'], { x: 1, y: 2, huong: 0 }, L(nhatCam, 'arm_down()', 'release()', 'wait()', 'x = color()'), { vatMau: ['...', '.r.', '...'] });
+  kiem('CAMERA, nhặt rồi thả xuống ô trước mặt: vật nằm đất lại, camera lại thấy "red" (nguon vat)', doc(th)[0].mau === 'red' && doc(th)[0].nguon === 'vat' && th.vat[0].trangThai === 'dat', J(doc(th)));
+  // nhìn xa không thấy: vật cách 2 ô thì camera chỉ thấy ô trước mặt (không phải vật)
+  const xa = doc(camChay(['...', '.o.', '...', '...'], { x: 1, y: 3, huong: 0 }, 'c = color()', { vatMau: ['...', '.r.', '...', '...'] }))[0];
+  kiem('CAMERA chỉ nhìn ĐÚNG ô liền trước mặt: vật cách xe 2 ô không thấy ("none", nguon san)', xa.mau === 'none' && xa.nguon === 'san' && xa.o.y === 2, J(xa));
+  // nhện: mặt trước CỐ ĐỊNH theo hướng ban đầu
+  const nh = SanHoc.chay(Object.assign({ san: ['...', '...', '...'], batDau: { x: 1, y: 1, huong: 1 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'color'] }, CAM, { mau: ['..g', '.y.', '..b'] }), L('a = color()', 'go_down()', 'b = color()', 'go_left()', 'c = color()'));
+  const dnh = doc(nh);
+  kiem('CAMERA trên NHỆN: mặt trước cố định theo huong lúc xuất phát (phải): luôn nhìn ô bên phải xe dù nhện đi lên / xuống / sang trái', nh.loi === null && dnh.length === 3 && dnh.every((x) => x.huong === 1) && J(dnh.map((x) => x.o)) === J([{ x: 2, y: 1 }, { x: 2, y: 2 }, { x: 1, y: 2 }]) && J(dnh.map((x) => x.mau)) === J(['none', 'blue', 'none']), J(dnh.map((x) => [x.mau, x.o])));
+  // nhện + camera: vật bên phải đọc được
+  const nh2 = SanHoc.chay(Object.assign({ san: ['...', '.o.', '...'], batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'color'] }, CAM, { vatMau: ['...', '.g.', '...'] }), 'a = color()');
+  kiem('CAMERA trên NHỆN: vật xanh lá ở ô bên phải → "green" (nguon vat)', doc(nh2)[0].mau === 'green' && doc(nh2)[0].nguon === 'vat', J(doc(nh2)));
+  // gắn cả hai → lỗi; camera trên drone → lỗi; camera mà không có color() thì không sao
+  const ca = loi(() => chay(['...', '...'], { x: 1, y: 1, huong: 0 }, 'c = color()', { camBien: [{ ma: 'mau', o: 'hong' }, { ma: 'camera', o: 'tren' }] }));
+  kiem('ghép CẢ cảm biến màu bụng lẫn camera mà có color(): lỗi cấu hình tiếng Việt, nói rõ không biết đọc ô nào', !!ca && /cả cảm biến màu ở bụng lẫn camera/.test(ca) && /không biết đọc ô nào/.test(ca), ca);
+  kiem('ghép cả hai nhưng hamGoc KHÔNG có color(): không lỗi (color() không dùng nên không mơ hồ)', loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH, camBien: [{ ma: 'mau', o: 'hong' }, { ma: 'camera', o: 'tren' }] }, 'wait()')) === null);
+  const cd = loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'color'], camBien: [{ ma: 'camera', o: 'tren' }] }, 'c = color()'));
+  kiem('camera trên DRONE: lỗi cấu hình tiếng Việt (drone không có hướng mặt)', !!cd && /Drone không gắn camera/.test(cd) && /hướng mặt/.test(cd), cd);
+  const cd2 = loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'], camBien: [{ ma: 'camera', o: 'tren' }] }, 'wait()'));
+  kiem('camera trên DRONE lỗi cả khi chưa dùng color()', !!cd2 && /Drone không gắn camera/.test(cd2));
+  const dr = SanHoc.chay({ san: ['...', '.o.', '...'], batDau: { x: 1, y: 2, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'color', 'magnet_on', 'magnet_off'], camBien: [{ ma: 'mau', o: 'than' }], mau: ['...', '.r.', 'g..'], vatMau: ['...', '.b.', '...'], vatChat: ['...', '.s.', '...'] }, L('a = color()', 'go_up()', 'b = color()'));
+  kiem('DRONE (cảm biến bụng): color() là màu sàn ô dưới drone, bay lên trên ô có vật cũng đọc sàn "red" (vật không tính)', dr.loi === null && doc(dr)[1].mau === 'red' && doc(dr)[1].cam === 'mau' && doc(dr)[0].mau === 'none', J(doc(dr)));
+  // qua máy chấm: 12.8 gắn camera, 12.10 gắn cảm biến bụng
+  const m8 = man(8), r8 = ChamHoc.cham(m8, m8.loiGiai, khoTruoc('12.8'));
+  const dr8 = r8.theoSan.map((sn) => sn.vet.filter((e) => e.loai === 'lenh' && e.docCamBien).map((e) => e.docCamBien)[0]);
+  kiem('12.8 qua máy chấm: robot gắn camera; lần đọc color() đầu ở mỗi sân: cam "camera", nguon "vat", idVat 1, màu vật đỏ / xanh dương / đỏ, đúng ô trước mặt xe (3,1)', J(m8.robot.camBien) === J([{ ma: 'camera', o: 'tren' }]) && dr8.length === 3 && dr8.every((x) => x && x.cam === 'camera' && x.nguon === 'vat' && x.idVat === 1 && x.o.x === 3 && x.o.y === 1) && J(dr8.map((x) => x.mau)) === J(['red', 'blue', 'red']), J(dr8));
+  const m10 = man(10), r10 = ChamHoc.cham(m10, m10.loiGiai, tron(khoTruoc('12.10'), m10.loiGiai.hamCuaEmMoi));
+  const dr10 = r10.theoSan.map((sn) => { let daNhat = false, truoc = 0, sau = 0, saiNguon = 0; for (const e of sn.vet) { if (e.loai === 'lenh' && e.ten === 'grab') daNhat = true; if (e.loai === 'lenh' && e.docCamBien) { if (e.docCamBien.cam !== 'mau' || e.docCamBien.nguon !== 'san') saiNguon++; if (daNhat) sau++; else truoc++; } } return { truoc, sau, saiNguon }; });
+  kiem('12.10 qua máy chấm: robot gắn cảm biến bụng; mọi lần đọc là cam "mau", nguon "san"; có đọc color() cả TRƯỚC lẫn SAU khi nhặt (đọc vạch kẻ lúc đang mang hàng)', J(m10.robot.camBien) === J([{ ma: 'mau', o: 'hong' }]) && r10.thang && dr10.every((x) => x.saiNguon === 0 && x.truoc > 0 && x.sau > 0), J(dr10));
 }
 
 /* ==================================================================== 4. ĐÍCH CÓ MÀU */
@@ -312,7 +386,7 @@ console.log('\n== 6. Chấm nhiều sân có lớp màu; cứng số trượt s�
     kiem(m.id + ': lời giải thắng cả 3 sân, 3 sao; tổng nhịp = sao.nhip (' + m.sao.nhip + ')', rr.thang && rr.sao === 3 && rr.theoSan.length === 3 && rr.theoSan.every((s) => s.thang) && rr.soNhip === m.sao.nhip && rr.nhipTong === m.sao.nhip, J([rr.thang, rr.sao, rr.soNhip]));
     const cungLoai = [];
     sanCua(m).forEach((rows, i) => {
-      const cfg = (j) => { const lm = SanHoc.lopMauCuaSan(m, j); return { san: sanCua(m)[j], batDau: bdCua(m)[j], loaiRobot: 'banh', hamGoc: m.hamGoc, mucTieu: m.mucTieu || 'toi-co', mau: lm.mau, vatMau: lm.vatMau }; };
+      const cfg = (j) => { const lm = SanHoc.lopMauCuaSan(m, j); return { san: sanCua(m)[j], batDau: bdCua(m)[j], loaiRobot: 'banh', hamGoc: m.hamGoc, mucTieu: m.mucTieu || 'toi-co', mau: lm.mau, vatMau: lm.vatMau, camBien: m.robot.camBien }; };
       const res = SanHoc.chay(cfg(i), rr.py);
       const code = res.vet.filter((e) => e.loai === 'lenh' && !e.docCamBien).map((e) => e.ten + '()').join('\n');
       let thangHet = true, tong = 0, trat = [];
@@ -330,7 +404,7 @@ console.log('\n== 6. Chấm nhiều sân có lớp màu; cứng số trượt s�
   kiem('mỗi màn nhiều sân: 3 sân khác nhau từng ô (hoặc khác lớp màu), cùng kích thước, đều ≤ 7×7', ds.filter((x) => x.so >= 4).every((m) => new Set(m.san.map((s) => s.join('/')) .map((k, i) => k + '|' + J(m.mau && m.mau[i]) + '|' + J(m.vatMau && m.vatMau[i]))).size === 3 && m.san.every((s) => s.length === m.san[0].length && s[0].length === m.san[0][0].length && s.length <= 7 && s[0].length <= 7)));
   // hành lang một lối: mọi sân vạch kẻ chỉ có một đường (không có ô nào kề quá hai ô đi được trừ ngã ba / vòng đã khai)
   const gom = (rows) => { const ky = (c) => c !== '#'; let sai = 0; rows.forEach((r, y) => [...r].forEach((c, x) => { if (!ky(c)) return; const k = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => rows[y + dy] && rows[y + dy][x + dx] && ky(rows[y + dy][x + dx])).length; if (k > 2) sai++; })); return sai; };
-  kiem('sân vạch kẻ 1–6, 9 là hành lang một lối (không ô nào kề hơn hai ô đi được): không có đường tắt nào giữa các khúc', ds.filter((m) => [1, 2, 3, 4, 5, 6, 9].includes(m.so)).every((m) => sanCua(m).every((rows) => gom(rows) === 0)));
+  kiem('sân vạch kẻ 1–6, 9, 10 là hành lang một lối (không ô nào kề hơn hai ô đi được): không có đường tắt nào giữa các khúc', ds.filter((m) => [1, 2, 3, 4, 5, 6, 9, 10].includes(m.so)).every((m) => sanCua(m).every((rows) => gom(rows) === 0)));
   // đánh giá: mỗi ô màu nhiễu nằm trên đoạn thẳng, không phải khúc rẽ ở 12.4
   const nhieu = sanCua(m4).map((rows) => rows.join('').replace(/[#.FrbR]/g, '').length);
   kiem('12.4: mỗi sân đều có ô nhiễu (vàng / xanh lá) trên đoạn thẳng, để chương trình "ô nào có màu cũng rẽ" bị bắt', nhieu.every((n) => n >= 1), J(nhieu));
@@ -353,6 +427,13 @@ console.log('\n== 7. Sân thử của Xưởng hàm có ô màu ==');
   const m8 = man(8);
   const t4 = ChamHoc.thuHam(m8, { chinh: [] }, 'pick', khoTruoc('12.8'), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1, mau: 'red' }, { x: 1, y: 2 }] } });
   kiem('vật trong sân thử mang màu (mau: "red"), nằm ở ô trước mặt xe; pick() nhặt được; kết quả vat[0].mau = red', t4.vat.length === 2 && t4.vat[0].mau === 'red' && !('mau' in t4.vat[1]) && t4.vat[0].trangThai === 'cam' && t4.vat[1].trangThai === 'dat', J(t4.vat));
+  // 12.8 gắn camera: hàm thử trong Xưởng đọc color() cũng theo camera (ô trước mặt), không phải sàn dưới xe
+  const tCam = ChamHoc.thuHam(m8, { chinh: [] }, 'look', tron(khoTruoc('12.8'), [H('look', ['c = color()'])]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1, mau: 'blue' }], mau: [{ x: 2, y: 2, mau: 'red' }] } });
+  const dCam = tCam.vet.filter((e) => e.loai === 'lenh' && e.docCamBien).map((e) => e.docCamBien);
+  kiem('sân thử của Xưởng ở màn camera (12.8): color() thấy vật xanh dương ở ô trước mặt (cam "camera", nguon "vat"), không phải sàn đỏ dưới xe', dCam.length === 1 && dCam[0].cam === 'camera' && dCam[0].mau === 'blue' && dCam[0].nguon === 'vat', J(dCam));
+  const tBung = ChamHoc.thuHam(man(5), { chinh: [] }, 'look', tron(khoTruoc('12.5'), [H('look', ['c = color()'])]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, mau: [{ x: 2, y: 2, mau: 'red' }, { x: 2, y: 1, mau: 'green' }] } });
+  const dBung = tBung.vet.filter((e) => e.loai === 'lenh' && e.docCamBien).map((e) => e.docCamBien);
+  kiem('sân thử ở màn cảm biến bụng (12.5): color() là sàn dưới xe "red", không phải ô trước mặt "green"', dBung.length === 1 && dBung[0].cam === 'mau' && dBung[0].mau === 'red', J(dBung));
 }
 
 /* ========================================================= 8. BỘ DÒ ĐƯỜNG TẮT CÓ MÀU */
@@ -396,20 +477,26 @@ console.log('\n== 9. Dữ liệu 10 màn ==');
     ds.every((m) => !!m.huyHieu === (m.so === 10)) && ds[9].huyHieu.ma === 'mau' && ds[9].huyHieu.ten === 'Huy hiệu Cảm biến màu');
   kiem('hamGoc: mọi màn đủ 5 lệnh bánh và color; 7 có thêm front_clear (và chỉ 7); 8 và 10 có thêm 4 lệnh tay kẹp',
     ds.every((m) => BANH.every((t) => m.hamGoc.includes(t)) && m.hamGoc.includes('color') && m.hamGoc.includes('front_clear') === (m.so === 7) && !m.hamGoc.includes('left_clear') && TAY.every((t) => m.hamGoc.includes(t)) === (m.so === 8 || m.so === 10)));
-  kiem('robot.camBien: [{ ma: "mau", o: "hong" }] ở mọi màn; thêm { ma: "khoang-cach", o: "hong" } ở màn 7; có tay kẹp ("kep") ở 8 và 10',
-    ds.every((m) => J(m.robot.camBien) === J(m.so === 7 ? [{ ma: 'mau', o: 'hong' }, { ma: 'khoang-cach', o: 'hong' }] : [{ ma: 'mau', o: 'hong' }]) && m.robot.than === 'hai-banh' && (m.robot.tay === 'kep') === (m.so === 8 || m.so === 10)));
+  kiem('robot.camBien: [{ ma: "mau", o: "hong" }] ở mọi màn TRỪ 12.8 (camera [{ ma: "camera", o: "tren" }]); thêm { ma: "khoang-cach", o: "hong" } ở màn 7; có tay kẹp ("kep") ở 8 và 10; không màn nào gắn cả hai',
+    ds.every((m) => J(m.robot.camBien) === J(m.so === 7 ? [{ ma: 'mau', o: 'hong' }, { ma: 'khoang-cach', o: 'hong' }] : m.so === 8 ? [{ ma: 'camera', o: 'tren' }] : [{ ma: 'mau', o: 'hong' }]) && m.robot.than === 'hai-banh' && (m.robot.tay === 'kep') === (m.so === 8 || m.so === 10)));
   kiem('12.1–12.3: một sân; 12.4–12.10: ba sân (mảng), batDau mảng 3 phần tử, nhipTheo "tong"', ds.every((m) => (m.so <= 3 ? !Array.isArray(m.san[0]) && !Array.isArray(m.batDau) && m.nhipTheo === undefined : m.san.length === 3 && Array.isArray(m.batDau) && m.batDau.length === 3 && m.nhipTheo === 'tong')));
-  kiem('mọi xe xuất phát trong ô đi được và không đứng trên vật; 12.8: vật nằm ở ô ngay TRƯỚC mặt xe ở cả ba sân; 12.10: vật nằm ở ô ngay trước mặt xe khi xe tới ô vàng (vạch dừng), cách đúng một ô lên của ô vàng', ds.every((m) => sanCua(m).every((rows, i) => {
+  kiem('mọi xe xuất phát trong ô đi được và không đứng trên vật; 12.8: vật nằm ở ô ngay TRƯỚC mặt xe ở cả ba sân; 12.10: mỗi sân đúng một vật nằm ngay cạnh ô xanh lá (chỗ nhặt), đúng một ô xanh lá, đúng một ô vàng cạnh đúng một ô đích D (chỗ thả), vật và ô đích không nằm sát nhau', ds.every((m) => sanCua(m).every((rows, i) => {
     const b = bdCua(m)[i]; const c = rows[b.y][b.x]; if (c === '#' || c === 'o' || c === 'X') return false;
     if (m.so === 8) { const v = VEC[b.huong]; return rows[b.y + v[1]][b.x + v[0]] === 'o'; }
-    if (m.so === 10) { const o = rows.join('').indexOf('o'), ox = o % rows[0].length, oy = Math.floor(o / rows[0].length); return rows.join('').split('o').length === 2 && rows[oy + 1][ox] === 'y'; }
+    if (m.so === 10) {
+      const k = rows.join(''), W = rows[0].length, vi = (ch) => { const r = []; for (let q = 0; q < k.length; q++) if (k[q] === ch) r.push({ x: q % W, y: Math.floor(q / W) }); return r; };
+      const o = vi('o'), g = vi('g'), D = vi('D'), kề = (a, d) => Math.abs(a.x - d.x) + Math.abs(a.y - d.y) === 1;
+      const vang = vi('y').filter((y) => D.some((d) => kề(y, d)));
+      return o.length === 1 && g.length === 1 && D.length === 1 && kề(o[0], g[0]) && vang.length === 1 && !kề(o[0], D[0]);
+    }
     return true;
   })));
   kiem('lớp màu / lớp màu vật khai đúng cỡ sân (docSan không ném lỗi) ở mọi sân của mọi màn', ds.every((m) => sanCua(m).every((rows, i) => { const lm = SanHoc.lopMauCuaSan(m, i); try { SanHoc.docSan(rows, lm.mau, lm.vatMau); return true; } catch (e) { return false; } })));
-  kiem('12.8 và 12.10: mỗi sân có đúng một vật có màu và hai đích có màu khác nhau', [8, 10].every((so) => sanCua(man(so)).every((rows, i) => { const lm = SanHoc.lopMauCuaSan(man(so), i); const s = SanHoc.docSan(rows, lm.mau, lm.vatMau); return s.vat.length === 1 && !!s.vat[0].mau && s.dich.length === 2 && s.dich.every((d) => d.mau) && s.dich[0].mau !== s.dich[1].mau && s.dich.some((d) => d.mau === s.vat[0].mau); })));
-  kiem('màu đích 12.8 là đỏ / xanh dương; màu đích 12.10 là xanh lá / vàng (không trùng đỏ / xanh dương của vạch kẻ, để read_turn không rẽ nhầm ở ô đích sai)', (() => {
+  kiem('12.8: mỗi sân có đúng một vật có màu và hai đích có màu khác nhau (một đích cùng màu vật); 12.10: mỗi sân đúng một vật KHÔNG màu và đúng một ô đích không màu (cảm biến bụng chỉ đọc sàn nên không phân loại theo màu vật)', sanCua(man(8)).every((rows, i) => { const lm = SanHoc.lopMauCuaSan(man(8), i); const s = SanHoc.docSan(rows, lm.mau, lm.vatMau); return s.vat.length === 1 && !!s.vat[0].mau && s.dich.length === 2 && s.dich.every((d) => d.mau) && s.dich[0].mau !== s.dich[1].mau && s.dich.some((d) => d.mau === s.vat[0].mau); }) &&
+    sanCua(man(10)).every((rows, i) => { const lm = SanHoc.lopMauCuaSan(man(10), i); const s = SanHoc.docSan(rows, lm.mau, lm.vatMau); return s.vat.length === 1 && !s.vat[0].mau && s.dich.length === 1 && !s.dich[0].mau; }));
+  kiem('màu đích 12.8 là đỏ / xanh dương; 12.10 không có đích màu', (() => {
     const mauDich = (so) => [...new Set(sanCua(man(so)).flatMap((rows, i) => { const lm = SanHoc.lopMauCuaSan(man(so), i); return SanHoc.docSan(rows, lm.mau, lm.vatMau).dich.map((d) => d.mau); }))].sort().join();
-    return mauDich(8) === 'blue,red' && mauDich(10) === 'green,yellow';
+    return mauDich(8) === 'blue,red' && mauDich(10) === '';
   })());
   kiem('read_turn là hàm cốt truyện tạo ở 12.5 (taoHam), tên bị khóa trong kho; không màn nào khác tạo hàm; 12.9 cho sẵn go_by_color của màn (hàm có lỗi)',
     J(man(5).taoHam) === '["read_turn"]' && tenCotTruyen.includes('read_turn') && ds.filter((m) => m.so !== 5).every((m) => m.taoHam.length === 0) && man(9).maMau.hamCuaMan.length === 1 && man(9).maMau.hamCuaMan[0].ten === 'go_by_color' && !tenCotTruyen.includes('go_by_color'));
@@ -427,14 +514,14 @@ console.log('\n== 9. Dữ liệu 10 màn ==');
 console.log('\n== Bảng 10 màn chương Cảm biến màu (lời giải mẫu) ==');
 {
   console.log('  màn   | tên                  | sân | ô  | nhịp (tổng = từng sân)     | hàm dùng');
-  const OLO = [10, 9, 13, 13, 14, 10, 10, 24, 14, 31], NHIP = [6, 17, 11, 40, 40, 21, 16, 15, 36, 35];
+  const OLO = [10, 9, 13, 13, 14, 10, 10, 25, 14, 29], NHIP = [6, 17, 11, 40, 40, 21, 16, 15, 36, 36];
   const kq = [];
   for (const m of ds) {
     const r = ChamHoc.cham(m, m.loiGiai, tron(khoTruoc(m.id), m.loiGiai.hamCuaEmMoi));
     kq.push(r);
     console.log('  ' + m.id.padEnd(5) + ' | ' + m.ten.padEnd(20) + ' | ' + String(sanCua(m).length).padEnd(3) + ' | ' + String(r.soO).padEnd(2) + ' | ' + (String(r.soNhip) + ' (' + r.theoSan.map((s) => s.soNhip).join('+') + ')').padEnd(26) + ' | ' + r.hamDaDung.join(', '));
   }
-  kiem('bảng 10 màn: số ô 10, 9, 13, 13, 14, 10, 10, 24, 14, 31 và số nhịp (tổng) 6, 17, 11, 40, 40, 21, 16, 15, 36, 35 — đều 3 sao', kq.every((r, i) => r.sao === 3 && r.soO === OLO[i] && r.soNhip === NHIP[i]), kq.map((r) => r.soO + '/' + r.soNhip).join(' '));
+  kiem('bảng 10 màn: số ô 10, 9, 13, 13, 14, 10, 10, 25, 14, 29 và số nhịp (tổng) 6, 17, 11, 40, 40, 21, 16, 15, 36, 36 — đều 3 sao', kq.every((r, i) => r.sao === 3 && r.soO === OLO[i] && r.soNhip === NHIP[i]), kq.map((r) => r.soO + '/' + r.soNhip).join(' '));
 }
 
 console.log('\n---------------------------------------------');

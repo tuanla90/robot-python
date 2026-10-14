@@ -2,7 +2,7 @@
    kiem-tay-gap.mjs — máy kiểm LUẬT TAY GẮP và chương `tay-gap` của "Đường học".
    Gồm: lệnh tay chạy theo nhịp, thứ tự (tư thế → kẹp / thả → bánh → băng chuyền), trạng thái tay,
    grab / release Ở Ô TRƯỚC MẶT, vật chiếm ô (mọi thân đứng im khi gặp vật), tay vướng sàn, vật đi theo xe, thả bị chặn (tha-bi-chan),
-   color() trả màu vật đang mang, load() ở ô trước, mục tiêu dua-vat, ký hiệu sân,
+   color() theo phần cứng (cảm biến bụng đọc sàn dưới xe kể cả khi mang vật; camera đọc ô trước mặt), load() ở ô trước, mục tiêu dua-vat, ký hiệu sân,
    vết cho giao diện, chẩn đoán qua máy chấm, bộ dò đường tắt dua-vat (kiểm chéo với mô phỏng và kiểm
    ngẫu nhiên), và bảng 10 màn.
    Chạy: node robotics/hoc/kiem-tay-gap.mjs        (trượt thì thoát mã 1)
@@ -697,24 +697,36 @@ console.log('\n== 17. Luật vật mới (14/10): vật chiếm ô với MỌI t
   kiem('nhện đi sang phải (go_right) KHÔNG quay: mặt vẫn hướng lên, nên thả vật xuống ô phía trên chỗ mới (2,0), không phải bên phải', nDi.thang === false && vt(nDi.vat[0]) === '2,0' && nDi.vat[0].trangThai === 'dat' && vt(nDi.robot) === '2,1', J([nDi.vat, nDi.robot, nDi.suKien]));
   kiem('  nhện giữ nguyên huong của batDau suốt cuộc chạy (không đổi hướng khi đi)', nDi.robot.huong === 0 && nDi.vet.filter((e) => e.loai === 'nhip').every((n) => n.robot.huong === 0));
 
-  // ---- color() trả màu VẬT ĐANG MANG
+  // ---- color() PHỤ THUỘC PHẦN CỨNG (14/10): cảm biến BỤNG luôn đọc sàn dưới xe, kể cả khi đang mang vật (kẹp / dính / rổ); CAMERA đọc ô trước mặt, vật mang không tính
   const HM = BANH.concat(TAY, ['color']);
   const sanM = ['.o.', '...', '...'];
   const mauSan = ['...', '.r.', '...'];                                  // sàn dưới xe (1,1) đỏ
   const c1 = run('banh', HM, sanM, { x: 1, y: 1, huong: 0 }, L('color()', 'arm_down()', 'grab()', 'wait()', 'color()', 'arm_up()', 'wait()', 'arm_down()', 'release()', 'wait()', 'color()'), { vatMau: ['.b.', '...', '...'], mau: mauSan });
   const d1 = doc(c1);
-  kiem('color(): chưa mang gì thì trả màu SÀN dưới xe (red, nguồn san) dù có vật xanh nằm ngay trước mặt; mang vật xanh (kẹp) thì trả "blue" (nguồn vat, idVat 1); thả xong lại trả màu sàn',
-    d1.length === 3 && d1[0].mau === 'red' && d1[0].nguon === 'san' && d1[1].mau === 'blue' && d1[1].nguon === 'vat' && d1[1].idVat === 1 && d1[2].mau === 'red' && d1[2].nguon === 'san', J(d1.map((x) => [x.mau, x.nguon, x.idVat])));
+  kiem('BỤNG: color() luôn là màu SÀN dưới xe (red, nguồn san): chưa nhặt, đang cầm vật xanh (kẹp), và sau khi thả — vật đang mang không tính',
+    d1.length === 3 && d1.every((x) => x.mau === 'red' && x.nguon === 'san' && x.idVat === null && x.cam === 'mau'), J(d1.map((x) => [x.mau, x.nguon, x.idVat])));
   const c2 = run('banh', HM, sanM, { x: 1, y: 1, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'color()'), { mau: mauSan });
-  kiem('mang vật KHÔNG màu: color() trả "none" (nguồn vat), dù sàn dưới xe đỏ', doc(c2)[0].mau === 'none' && doc(c2)[0].nguon === 'vat');
+  kiem('BỤNG, mang vật KHÔNG màu: color() vẫn là sàn dưới xe "red" (không phải "none" của vật)', doc(c2)[0].mau === 'red' && doc(c2)[0].nguon === 'san');
   const HMN = ['left_move', 'right_move', 'wait', 'magnet_on', 'magnet_off', 'color'];
   const c3 = run('banh', HMN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'magnet_on()', 'wait()', 'color()'), { vatMau: ['.g.', '...', '...'], vatChat: ['.s.', '...', '...'], mau: mauSan });
-  kiem('nam châm: vật sắt xanh lá dính vào mũi xe thì color() trả "green"; trước khi dính trả màu sàn "red"', doc(c3)[0].mau === 'red' && doc(c3)[1].mau === 'green' && doc(c3)[1].nguon === 'vat', J(doc(c3).map((x) => [x.mau, x.nguon])));
+  kiem('BỤNG, nam châm: vật sắt xanh lá dính vào mũi xe rồi mà color() vẫn trả màu sàn "red" (trước và sau khi dính)', doc(c3)[0].mau === 'red' && doc(c3)[1].mau === 'red' && doc(c3)[1].nguon === 'san' && c3.vat[0].trangThai === 'cam', J(doc(c3).map((x) => [x.mau, x.nguon])));
   const HN = ['left_move', 'right_move', 'wait', 'aim', 'throw', 'load', 'color'];
   const c4 = run('banh', HN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'load()', 'wait()', 'color()'), { vatMau: ['.y.', '...', '...'], mau: mauSan });
-  kiem('máy ném: load() nạp vật vàng vào rổ thì color() trả "yellow"; trước đó trả màu sàn "red"', doc(c4)[0].mau === 'red' && doc(c4)[1].mau === 'yellow' && doc(c4)[1].nguon === 'vat', J(doc(c4).map((x) => [x.mau, x.nguon])));
+  kiem('BỤNG, máy ném: load() nạp vật vàng vào rổ mà color() vẫn trả màu sàn "red" (trước và sau khi nạp)', doc(c4)[0].mau === 'red' && doc(c4)[1].mau === 'red' && doc(c4)[1].nguon === 'san' && c4.vat[0].trangThai === 'ro', J(doc(c4).map((x) => [x.mau, x.nguon])));
   const c5 = run('banh', HN, ['...', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()'), { roBanDau: { mau: 'blue' }, mau: mauSan });
-  kiem('máy ném, rổ có sẵn vật xanh dương: color() trả "blue"', doc(c5)[0].mau === 'blue');
+  kiem('BỤNG, máy ném, rổ có sẵn vật xanh dương: color() trả màu sàn "red" (vật trong rổ không tính)', doc(c5)[0].mau === 'red' && doc(c5)[0].nguon === 'san');
+  // CAMERA: đọc ô trước mặt; vật đang mang (kẹp, dính, rổ) không tính
+  const CAMC = { camBien: [{ ma: 'camera', o: 'tren' }] };
+  const cam1 = run('banh', HM, sanM, { x: 1, y: 1, huong: 0 }, L('color()', 'arm_down()', 'grab()', 'wait()', 'color()', 'arm_up()', 'wait()', 'arm_down()', 'release()', 'wait()', 'color()'), Object.assign({ vatMau: ['.b.', '...', '...'], mau: ['.y.', '.r.', '...'] }, CAMC));
+  const ec1 = doc(cam1);
+  kiem('CAMERA, tay kẹp: nhìn ô trước mặt — vật xanh → "blue" (nguồn vat, idVat 1); nhặt xong ô trống → màu sàn ô đó "yellow" (vật đang cầm không tính); thả xuống lại → "blue"',
+    ec1.length === 3 && ec1[0].mau === 'blue' && ec1[0].nguon === 'vat' && ec1[0].idVat === 1 && ec1[1].mau === 'yellow' && ec1[1].nguon === 'san' && ec1[2].mau === 'blue' && ec1.every((x) => x.cam === 'camera'), J(ec1.map((x) => [x.mau, x.nguon, x.idVat])));
+  const cam3 = run('banh', HMN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'magnet_on()', 'wait()', 'color()'), Object.assign({ vatMau: ['.g.', '...', '...'], vatChat: ['.s.', '...', '...'], mau: ['.y.', '.r.', '...'] }, CAMC));
+  kiem('CAMERA, nam châm: trước khi hút thấy vật "green"; vật sắt dính vào mũi xe (lơ lửng, không nằm ở ô trước) thì camera thấy sàn ô trước "yellow"', doc(cam3)[0].mau === 'green' && doc(cam3)[0].nguon === 'vat' && doc(cam3)[1].mau === 'yellow' && doc(cam3)[1].nguon === 'san' && cam3.vat[0].trangThai === 'cam', J(doc(cam3).map((x) => [x.mau, x.nguon])));
+  const cam4 = run('banh', HN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'load()', 'wait()', 'color()'), Object.assign({ vatMau: ['.y.', '...', '...'], mau: ['.b.', '.r.', '...'] }, CAMC));
+  kiem('CAMERA, máy ném: trước khi nạp thấy vật "yellow"; load() vào rổ thì ô trước trống, camera thấy sàn "blue"', doc(cam4)[0].mau === 'yellow' && doc(cam4)[0].nguon === 'vat' && doc(cam4)[1].mau === 'blue' && doc(cam4)[1].nguon === 'san' && cam4.vat[0].trangThai === 'ro', J(doc(cam4).map((x) => [x.mau, x.nguon])));
+  const cam5 = run('banh', HN, ['...', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()'), Object.assign({ roBanDau: { mau: 'blue' }, mau: ['.g.', '.r.', '...'] }, CAMC));
+  kiem('CAMERA, máy ném, rổ có sẵn vật xanh dương: ô trước trống, camera thấy sàn "green" (vật trong rổ không tính)', doc(cam5)[0].mau === 'green' && doc(cam5)[0].nguon === 'san');
 
   // ---- load() ở ô TRƯỚC MẶT
   const l1 = run('banh', HN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('load()', 'wait()', 'left_move()', 'right_move()', 'wait()'));

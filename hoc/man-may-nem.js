@@ -1,8 +1,8 @@
 /* ============================================================================
    man-may-nem.js — "Đường học": CHƯƠNG `may-nem` · MÁY NÉM (10 màn).
    Robot là XE HAI BÁNH (loaiRobot 'banh'; màn 9 là XE OMNI) gắn MÁY NÉM ở mũi xe:
-   robot { than: 'hai-banh' | 'omni', tay: 'nem', camBien: [] | [{ ma: 'khoang-cach', o: 'hong' }] (6) | [{ ma: 'mau', o: 'hong' }] (7) }.
-   hamGoc: bộ lệnh bánh + aim, throw (màn 1–2), thêm load (màn 3–10); màn 6 thêm front_clear, màn 7 thêm color, màn 9 là bộ lệnh omni.
+   robot { than: 'hai-banh' | 'omni', tay: 'nem', camBien: [] | [{ ma: 'khoang-cach', o: 'hong' }] (6) | [{ ma: 'camera', o: 'tren' }] (7: CAMERA nhìn ô trước mặt, không phải cảm biến màu ở bụng) }.
+   hamGoc: bộ lệnh bánh + aim, throw (màn 1–2), thêm load (màn 3–10); màn 6 thêm front_clear, màn 7 thêm color (xe gắn camera nên color() đọc Ô TRƯỚC MẶT: màu vật nằm ở đó), màn 9 là bộ lệnh omni.
    LUẬT ĐÃ CHỐT (đầy đủ ở san-hoc.js, phần MÁY NÉM):
        aim(n)    đặt tầm n = 1, 2 hoặc 3 ô: có hiệu lực NGAY, KHÔNG tốn nhịp, giữ nguyên tới lần aim kế. n sai (0, 4, 2.5, chữ…) là LỖI dừng chương trình (tam-sai).
        load()    nạp vật nằm ở Ô TRƯỚC MẶT xe vào rổ (rổ chứa một vật) \\ chỉ RA LỆNH, wait() cho nhịp trôi; mỗi nhịp một lệnh tay;
@@ -19,7 +19,7 @@
    Hàm của em MỚI (tên cốt truyện, bị khóa trong kho, xem KhoHam.datTenCoDinh):
      may-nem.4   toss(n) = aim(n), throw(), wait()      (3 ô; ném một vật tới ô cách xe n ô)
    Hàm CỦA MÀN (tạm): màn 8 cho sẵn lob(n) đặt NHẦM tầm cố định 2.
-   Học thêm: tham số n của aim(n) và tính khoảng cách; ném thay vì đi vòng; if theo khoảng cách (front_clear) hay theo màu (color: nạp vật vào rổ rồi mới đọc được màu vật).
+   Học thêm: tham số n của aim(n) và tính khoảng cách; ném thay vì đi vòng; if theo khoảng cách (front_clear) hay theo màu (color của camera: nhìn màu vật ở ô trước mặt TRƯỚC khi load(), vì nạp xong ô đó trống).
    Vì tầm giữ nguyên tới lần aim kế, ở các vòng for lặp lại cùng một tầm thì đặt aim(n) một lần ngoài vòng là gọn nhất (5, 9);
    toss(n) có lợi khi gọi ở nhiều chỗ khác tầm (4).
 
@@ -71,7 +71,7 @@
     m.chuong = 'may-nem';
     m.cauTruc = ['for', 'if', 'while'];
     m.loaiRobot = omni ? 'omni' : 'banh';
-    m.robot = { than: omni ? 'omni' : 'hai-banh', tay: 'nem', camBien: cb === 'kc' ? [{ ma: 'khoang-cach', o: 'hong' }] : cb === 'mau' ? [{ ma: 'mau', o: 'hong' }] : [] };
+    m.robot = { than: omni ? 'omni' : 'hai-banh', tay: 'nem', camBien: cb === 'kc' ? [{ ma: 'khoang-cach', o: 'hong' }] : cb === 'mau' ? [{ ma: 'camera', o: 'tren' }] : [] };
     m.hamGoc = nhieu(omni ? OMNI : BANH, ['aim', 'throw'], coLoad ? ['load'] : [], cb === 'kc' ? ['front_clear'] : [], cb === 'mau' ? ['color'] : []);
     m.mucTieu = 'dua-vat';
     m.moXuong = true; m.camHamCuaEm = false;
@@ -107,7 +107,8 @@
     ['.....', '.....', '..D..', '..#..', '.....']
   ];
   var BD_6 = { x: 2, y: 4, huong: 0 };
-  // 7: hai sân giống nhau, vật ngay trước mũi xe MÀU KHÁC nhau (đỏ / xanh dương); trên cùng hướng xe: đích đỏ cách xe 2 ô, đích xanh dương cách 3 ô
+  // 7: hai sân giống nhau, vật ngay trước mũi xe MÀU KHÁC nhau (đỏ / xanh dương); trên cùng hướng xe: đích đỏ cách xe 2 ô, đích xanh dương cách 3 ô.
+  // Xe gắn CAMERA: color() thấy màu vật ở ô trước mặt (2,3); nạp vật vào rổ rồi thì ô đó trống, camera chỉ thấy sàn không màu.
   var SAN_7 = ['.....', '..D..', '..D..', '..o..', '.....'];
   var MAU_7 = lop(5, 5, { '2,2': 'r', '2,1': 'b' });
   var VMAU_7 = [lop(5, 5, { '2,3': 'r' }), lop(5, 5, { '2,3': 'b' })];
@@ -137,9 +138,9 @@
   // 6: tầm 3 nếu ô 1 trống, không thì tầm 2
   var CHINH_6 = ['if front_clear():', '    aim(3)', 'else:', '    aim(2)', 'throw()', 'wait()'];
   var CHINH_6_KHAC = ['if front_clear():', '    toss(3)', 'else:', '    toss(2)'];
-  // 7: nạp vật vào rổ rồi mới đọc màu vật (color() thấy vật trong rổ)
-  var CHINH_7 = ['load()', 'wait()', 'c = color()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'];
-  var CHINH_7_KHAC = ['load()', 'wait()', 'c = color()', 'if c == "red":', '    toss(2)', 'else:', '    toss(3)'];
+  // 7: camera nhìn màu vật ở ô trước mặt (ghi vào biến) TRƯỚC khi nạp; nạp xong ô đó trống
+  var CHINH_7 = ['c = color()', 'load()', 'wait()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'];
+  var CHINH_7_KHAC = ['c = color()', 'load()', 'wait()', 'if c == "red":', '    toss(2)', 'else:', '    toss(3)'];
   // 8: lặp hai lần, lob(3)
   var CHINH_8 = LAP(2, ['load()', 'wait()', 'turn_left()', 'lob(3)', 'turn_right()', 'forward(2)']);
   // 9: omni; tầm 3 đặt một lần
@@ -279,7 +280,7 @@
     /* ------------------------------------------------------------- hàng 3: biến thể */
     man({
       so: 7, ten: 'Đích đúng màu', hang: 'bien-the', hamCuaEmCan: ['toss'], cb: 'mau',
-      deBai: 'Vật nằm ngay trước mũi xe có màu đỏ hoặc xanh dương, ở hai sân. Ô đích màu nào chỉ nhận vật màu đó: đích đỏ cách xe 2 ô, đích xanh dương cách xe 3 ô, cùng hướng với vật. Nạp vật vào rổ rồi đọc màu vật bằng color(), rồi ném vào đúng đích ở cả hai sân.',
+      deBai: 'Xe màn này gắn camera: color() cho biết màu của thứ ở ô ngay trước mặt xe. Vật nằm ngay trước mũi xe có màu đỏ hoặc xanh dương, ở hai sân; ô đích màu nào chỉ nhận vật màu đó: đích đỏ cách xe 2 ô, đích xanh dương cách xe 3 ô, cùng hướng với vật. Nhìn màu vật để chọn tầm, nạp vật vào rổ rồi ném vào đúng đích ở cả hai sân.',
       veMaMau: 'Chương trình có sẵn nạp vật rồi ném với tầm 2. Chạy thử, xem vật màu nào rơi đúng đích, màu nào sai.',
       san: [SAN_7, SAN_7], mau: [MAU_7, MAU_7], vatMau: VMAU_7, batDau: BD_7,
       maMau: { chinh: ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()'] },
@@ -289,11 +290,11 @@
       loiSai: [
         { moTa: 'Tầm cố định 2: vật xanh dương rơi xuống đích đỏ nên không được tính', baiLam: { chinh: ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
         { moTa: 'Tầm cố định 3: vật đỏ rơi xuống đích xanh dương nên không được tính', baiLam: { chinh: ['load()', 'wait()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
-        { moTa: 'Đọc màu TRƯỚC khi nạp: vật còn nằm đất, chưa vào rổ nên color() chỉ thấy sàn, luôn là "none"', baiLam: { chinh: ['c = color()', 'load()', 'wait()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
-        { moTa: 'Viết hoa "Red": không khớp màu nào nên luôn chọn nhánh else', baiLam: { chinh: ['load()', 'wait()', 'c = color()', 'if c == "Red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['ten-mau-sai', 'chua-dua-vat'] },
-        { moTa: 'Đảo hai nhánh: vật nào cũng rơi nhầm đích', baiLam: { chinh: ['load()', 'wait()', 'c = color()', 'if c == "red":', '    aim(3)', 'else:', '    aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] }
+        { moTa: 'Nhìn màu SAU khi nạp: vật đã vào rổ, ô trước mặt trống nên camera chỉ thấy sàn không màu, luôn là "none"', baiLam: { chinh: ['load()', 'wait()', 'c = color()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
+        { moTa: 'Viết hoa "Red": không khớp màu nào nên luôn chọn nhánh else', baiLam: { chinh: ['c = color()', 'load()', 'wait()', 'if c == "Red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['ten-mau-sai', 'chua-dua-vat'] },
+        { moTa: 'Đảo hai nhánh: vật nào cũng rơi nhầm đích', baiLam: { chinh: ['c = color()', 'load()', 'wait()', 'if c == "red":', '    aim(3)', 'else:', '    aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] }
       ],
-      goiY: ['Màu vật chỉ đọc được khi vật đã nằm trong rổ: load() rồi wait(), sau đó color() trả về "red" hay "blue" của vật.',
+      goiY: ['Camera nhìn ô ngay trước mũi xe, nơi vật đang nằm. load() lấy vật đi nên màu vật phải được nhìn (và ghi vào một biến) TRƯỚC khi load().',
         'Lưu màu vào một biến, rồi dùng if ... else để chọn tầm cho đích đỏ hay đích xanh dương.']
     }),
 

@@ -256,7 +256,13 @@ console.log('\n== 4. Nam châm treo: hút vật sắt ở ô DƯỚI drone, th�
   const kmau = chay(dat1(dat1(S, 3, 2, 'D'), 3, 2, 'D'), bd, ON + RIGHT + OFF, { vatChat: CH, mau: ['.....', '.....', '...r.', '.....', '.....'], vatMau: ['.....', '.....', '..b..', '.....', '.....'], mucTieu: 'dua-vat' });
   void Mau;
   kiem('thả xuống ô đích khác màu: dat-sai-mau, vật nằm đó nhưng chưa thắng', !kmau.thang && maSK(kmau, 'dat-sai-mau').length === 1 && !!vatTai(kmau, 3, 2));
-  kiem('color() khi chưa mang vật là màu sàn dưới drone (luật màu-vật-đang-mang sẽ đổi sau: chương drone không dùng và không kiểm)', chay(S, bd, 'c = color()\n', { vatChat: CH, mau: ['.....', '.....', '..y..', '.....', '.....'] }).vet.filter((e) => e.docCamBien)[0].docCamBien.mau === 'yellow');
+  kiem('color() khi chưa mang vật là màu sàn dưới drone ', chay(S, bd, 'c = color()\n', { vatChat: CH, mau: ['.....', '.....', '..y..', '.....', '.....'] }).vet.filter((e) => e.docCamBien)[0].docCamBien.mau === 'yellow');
+  kiem('color() của drone (cảm biến bụng) là màu sàn dưới drone, cả khi chưa mang vật' + String.fromCharCode(44) + ' lẫn khi đang DÍNH vật sắt (vật dính không tính, nguon "san"), cả lúc bay qua ô có vật', (() => {
+    const k = chay(S, bd, 'c = color()' + String.fromCharCode(10) + ON + 'd = color()' + String.fromCharCode(10) + RIGHT + 'e = color()' + String.fromCharCode(10), { vatChat: CH, mau: ['.....', '.....', '..y.g', '.....', '.....'], vatMau: ['.....', '.....', '..b..', '.....', '.....'] });
+    const x = k.vet.filter((e) => e.docCamBien).map((e) => e.docCamBien);
+    return x.length === 3 && x[0].mau === 'yellow' && x[1].mau === 'yellow' && x[2].mau === 'none' && x.every((q) => q.nguon === 'san' && q.cam === 'mau' && q.idVat === null);
+  })());
+  kiem('drone KHÔNG gắn camera (không có hướng mặt): cfg.camBien có camera → lỗi cấu hình tiếng Việt, cả khi hamGoc không có color()', /Drone không gắn camera/.test(loi(() => chay(S, bd, 'wait()' + String.fromCharCode(10), { camBien: [{ ma: 'camera', o: 'tren' }] }))) && /Drone không gắn camera/.test(loi(() => SanHoc.chay({ san: S, batDau: bd, loaiRobot: 'drone', hamGoc: BAY, camBien: [{ ma: 'camera', o: 'tren' }] }, ''))));
   // gọi lại, quên wait
   const kl = chay(S, bd, 'magnet_on()\nmagnet_off()\nwait()\n', { vatChat: CH });
   kiem('hai lệnh nam châm chưa trôi nhịp: lệnh sau bị bỏ (magnet-goi-lai, lỗi)', maSK(kl, 'magnet-goi-lai').length === 1 && maSK(kl, 'magnet-goi-lai')[0].truoc.ten === 'magnet_on');
