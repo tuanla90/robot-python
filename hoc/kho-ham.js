@@ -37,7 +37,7 @@
 
   var PHIEN_BAN = 1;
   var KHOA_LUU = 'duong-hoc:kho-ham';
-  var SO_HAM_MAC_DINH = 31;      // 29 hàm cốt truyện (xuong-ham 7, tay-gap 3, vong-lap 4, tham-so 4: forward, right, deliver, step, nhen 3: go, walk, bring, xich 2: tr_right, tr_left, omni 2: slide_r, slide_l, tam-day 1: shove, khoang-cach 1: go_wall, mau 1: read_turn, nam-cham 1: fetch) + 2 chỗ cho hàm tự đặt.
+  var SO_HAM_MAC_DINH = 32;      // 30 hàm cốt truyện (xuong-ham 7, tay-gap 3, vong-lap 4, tham-so 4: forward, right, deliver, step, nhen 3: go, walk, bring, xich 2: tr_right, tr_left, omni 2: slide_r, slide_l, tam-day 1: shove, khoang-cach 1: go_wall, mau 1: read_turn, nam-cham 1: fetch, may-nem 1: toss) + 2 chỗ cho hàm tự đặt.
                                // Chương sau thêm hàm cốt truyện nào thì tăng số này tương ứng (kiem-hoc.mjs kiểm: >= số hàm cốt truyện + 2).
 
   // hàm gốc của mọi loại robot (xe bánh có tay gắp, nhện, omni, tấm đẩy push, cảm biến khoảng cách, cảm biến màu color, nam châm magnet_on / magnet_off, cảm biến từ front_metal) + hàm nội bộ của nhân chạy code (print, range, len, str, int)

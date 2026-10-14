@@ -99,10 +99,12 @@
   var SanHoc = laNode ? require('./san-hoc.js') : window.SanHoc;
   var KhungCode = laNode ? require('./khung-code.js') : window.KhungCode;
 
-  var LOAI_VAT = { 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng' };
+  var LOAI_VAT = { 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
   // lý do magnet_off() không thả được vật (san-hoc.js 'tha-bi-chan')
   var LY_THA = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
+  // lý do vật ném vỡ (san-hoc.js 'nem-vo')
+  var LY_NEM = { 'ngoai-san': 'ngoài sân', 'tuong': 'tường cao', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
   var LY_DO_THUNG = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe' };
   // Sân thử mặc định của Xưởng hàm: 5×5 trống, xe ở giữa quay lên (hướng 0).
   var SAN_THU_MAC_DINH = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [], tuong: [], thung: [] };
@@ -159,6 +161,9 @@
       vat.forEach(function (v) { if (v.x === Math.floor(src.x) && v.y === Math.floor(src.y)) v.chat = 'sat'; });
     });
     var kq = { rong: rong, cao: cao, batDau: bd, vat: vat, tuong: tuong, thung: thung };
+    var rao = loc(c.rao);                                        // hàng rào thấp (máy ném): không đè tường, thùng, xe; vật có thể nằm dưới
+    if (rao.length) kq.rao = rao.filter(function (o) { return !(o.x === bd.x && o.y === bd.y); });
+    if (c.ro === true) kq.ro = true;                             // rổ máy ném có sẵn một vật
     if (mauSan.length) kq.mau = mauSan;                          // chỉ có khi sân thử có ô màu (các sân thử cũ giữ nguyên dạng)
     return kq;
   }
@@ -179,6 +184,7 @@
       rows.push(d);
     }
     st.tuong.forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + '#' + rows[o.y].slice(o.x + 1); });
+    (st.rao || []).forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + '=' + rows[o.y].slice(o.x + 1); });
     return rows;
   }
 
@@ -273,7 +279,9 @@
     if (l && l.loai !== 'qua-nhieu-nhip' && l.loai !== 'infinite-loop') {
       var m = g.anhXa[l.dong] || null;
       var tn = /tên "([^"]+)"/.exec(l.thongDiep || '');
-      if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.laHamCamBien(tn[1]) && hamGoc.indexOf(tn[1]) < 0) {
+      if (l.ma === 'tam-sai') {
+        them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.', { cho: cho(m), tam: l.tamDat });
+      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.laHamCamBien(tn[1]) && hamGoc.indexOf(tn[1]) < 0) {
         var dsCam = hamGoc.filter(function (t) { return SanHoc.laHamCamBien(t); });
         them('chua-gan-cam-bien', 'Ở ' + viTri(m) + ': ' + (dsCam.length
           ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
@@ -386,6 +394,44 @@
         loi: 'Ở nhịp ' + dy0.nhip + ': lệnh push() (ở ' + viTri(mdyp) + ') và lệnh ' + (dy0.lenh ? dy0.lenh.ten + '() (ở ' + viTri(mdy) + ') ' : 'bánh ') + 'nằm chung một nhịp, nên xe đứng yên và lệnh kia bị bỏ.' +
           (dayDungYen.length > 1 ? ' Chuyện này xảy ra ' + dayDungYen.length + ' lần.' : '') + ' Nhịp có push() chỉ đẩy, không đi.'
       });
+    }
+    var nemVo = res.suKien.filter(function (e) { return e.ma === 'nem-vo'; });
+    if (nemVo.length) {
+      var nv0 = nemVo[0], mnv = nv0.lenh ? (g.anhXa[nv0.lenh.dongPy] || null) : null;
+      them('nem-vo', 'Ở nhịp ' + nv0.nhip + ', vật ném (tầm ' + nv0.tam + ') rơi xuống ô (' + nv0.o.x + ', ' + nv0.o.y + '), là ' + (LY_NEM[nv0.lyDo] || nv0.lyDo) + ' nên vỡ' +
+        (sanThu ? '.' : '; vật vỡ rồi thì không đưa tới đích được nữa, chương trình dừng ở đó.') + (nemVo.length > 1 ? ' Chuyện này xảy ra ' + nemVo.length + ' lần.' : '') +
+        ' Ô rơi phải là sàn trống: xem lại tầm n trong aim(n).', { nhip: nv0.nhip, soLan: nemVo.length, o: nv0.o, lyDo: nv0.lyDo, tam: nv0.tam, cho: cho(mnv) });
+    }
+    var roDay = res.suKien.filter(function (e) { return e.ma === 'ro-day'; });
+    if (roDay.length) {
+      var rd0 = roDay[0], mrd = rd0.lenh ? (g.anhXa[rd0.lenh.dongPy] || null) : null;
+      them('ro-day', 'Ở nhịp ' + rd0.nhip + ', load() không nạp thêm được vì rổ đã có một vật.' + (roDay.length > 1 ? ' Chuyện này xảy ra ' + roDay.length + ' lần.' : '') +
+        ' Rổ chỉ chứa một vật: ném nó đi (throw()) rồi mới nạp vật khác.', { nhip: rd0.nhip, soLan: roDay.length, cho: cho(mrd) });
+    }
+    var nemGoiLai = res.suKien.filter(function (e) { return e.ma === 'nem-goi-lai'; });
+    if (nemGoiLai.length) {
+      var nl0 = nemGoiLai[0], mnl = g.anhXa[nl0.dongPy] || null, mnlt = nl0.truoc ? (g.anhXa[nl0.truoc.dongPy] || null) : null;
+      them('nem-goi-lai', 'Ở ' + viTri(mnl) + ': máy ném đã nhận lệnh ' + nl0.truoc.ten + '() (ở ' + viTri(mnlt) + ') trong nhịp này rồi, nên lệnh ' + nl0.ten + '() này bị bỏ qua. ' +
+        'Mỗi nhịp máy ném chỉ nạp hoặc ném một lần; wait() mới sang nhịp kế.', { cho: cho(mnl), choTruoc: cho(mnlt), nhip: nl0.nhip });
+    }
+    var nemHut = res.suKien.filter(function (e) { return e.ma === 'nem-hut'; });
+    if (nemHut.length) {
+      var nh0 = nemHut[0];
+      cd.push({ ma: 'nem-hut', muc: 'thong-tin', nhip: nh0.nhip, soLan: nemHut.length, cho: cho(nh0.lenh ? (g.anhXa[nh0.lenh.dongPy] || null) : null),
+        loi: 'Ở nhịp ' + nh0.nhip + ', throw() không ném được gì: rổ đang trống.' + (nemHut.length > 1 ? ' Chuyện này xảy ra ' + nemHut.length + ' lần.' : '') + ' Rổ phải có vật (nạp bằng load() khi xe đứng trên ô có vật) thì mới ném được.' });
+    }
+    var napHut = res.suKien.filter(function (e) { return e.ma === 'nap-hut'; });
+    if (napHut.length) {
+      var np0 = napHut[0];
+      cd.push({ ma: 'nap-hut', muc: 'thong-tin', nhip: np0.nhip, soLan: napHut.length, o: np0.o, cho: cho(np0.lenh ? (g.anhXa[np0.lenh.dongPy] || null) : null),
+        loi: 'Ở nhịp ' + np0.nhip + ', load() không nạp được gì: ô (' + np0.o.x + ', ' + np0.o.y + ') dưới xe không có vật nằm.' + (napHut.length > 1 ? ' Chuyện này xảy ra ' + napHut.length + ' lần.' : '') + ' load() chỉ nạp vật nằm ngay dưới xe.' });
+    }
+    var nemDung = res.suKien.filter(function (e) { return e.ma === 'nem-dung-yen'; });
+    if (nemDung.length) {
+      var nd0 = nemDung[0], mnd = nd0.lenh ? (g.anhXa[nd0.lenh.dongPy] || null) : null, mndn = nd0.nem ? (g.anhXa[nd0.nem.dongPy] || null) : null;
+      cd.push({ ma: 'nem-dung-yen', muc: 'thong-tin', nhip: nd0.nhip, soLan: nemDung.length, cho: cho(mnd), choNem: cho(mndn),
+        loi: 'Ở nhịp ' + nd0.nhip + ': lệnh ' + (nd0.nem ? nd0.nem.ten + '() (ở ' + viTri(mndn) + ') ' : 'máy ném ') + 'và lệnh ' + (nd0.lenh ? nd0.lenh.ten + '() (ở ' + viTri(mnd) + ') ' : 'bánh ') + 'nằm chung một nhịp, nên xe đứng yên và lệnh bánh bị bỏ.' +
+          (nemDung.length > 1 ? ' Chuyện này xảy ra ' + nemDung.length + ' lần.' : '') + ' Nhịp có load() hay throw() chỉ nạp hoặc ném, xe không đi.' });
     }
     var thaChan = res.suKien.filter(function (e) { return e.ma === 'tha-bi-chan'; });
     if (thaChan.length) {
@@ -506,7 +552,7 @@
     var quen = res.suKien.filter(function (e) { return e.ma === 'quen-wait'; });
     if (quen.length) {
       var q = quen[0], mq = g.anhXa[q.lenh[0].dongPy] || null;
-      var soTay = q.lenh.filter(function (x) { return SanHoc.TAY_LENH.indexOf(x.ten) >= 0 || SanHoc.TAY_DAY.indexOf(x.ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(x.ten) >= 0; }).length;
+      var soTay = q.lenh.filter(function (x) { return SanHoc.TAY_LENH.indexOf(x.ten) >= 0 || SanHoc.TAY_DAY.indexOf(x.ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(x.ten) >= 0 || SanHoc.TAY_NEM.indexOf(x.ten) >= 0; }).length;
       var loaiLenh = soTay === 0 ? 'bánh' : soTay === q.lenh.length ? 'tay' : 'bánh và tay';
       if (man.loaiRobot === 'nhen') {
         // nhện: lệnh tay làm ở nhịp đầu của bước go_* kế tiếp hoặc ở nhịp wait() kế tiếp
@@ -605,6 +651,7 @@
           loai: 'lenh', ten: e.ten, cho: cho(g.anhXa[e.dongPy]),
           ngan: e.nganPy.map(function (d) { return cho(g.anhXa[d]); }).filter(function (x) { return x && x.cot !== 'thu'; })
         };
+        if (e.aimTam !== undefined) mucLenh.aimTam = e.aimTam;           // aim(n): giao diện đổi số ngắm trên xe
         if (e.docCamBien) mucLenh.docCamBien = e.docCamBien;             // đọc cảm biến: giao diện nháy cảm biến
         return mucLenh;
       }
@@ -673,12 +720,12 @@
       var res = SanHoc.chay({
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
-        mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined
+        mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau
       }, g.ma);
       var cd = chanDoanSan(man, res, g, false, bc);
       var vet = chuyenVet(res.vet, g);
       hamTrongVet(vet, dung);
-      ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, namCham: res.namCham, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO });
+      ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
@@ -695,7 +742,7 @@
     ketQua.batDau = Array.isArray(man.batDau) ? man.batDau[0] : man.batDau;
     var viec = ketQua.theoSan.filter(function (s) { return !s.thang; })[0] || ketQua.theoSan[0];
     ketQua.vet = viec.vet;
-    ketQua.vatBanDau = viec.vatBanDau; ketQua.dich = viec.dich; ketQua.tay = viec.tay; ketQua.namCham = viec.namCham; ketQua.vat = viec.vat;
+    ketQua.vatBanDau = viec.vatBanDau; ketQua.dich = viec.dich; ketQua.tay = viec.tay; ketQua.namCham = viec.namCham; ketQua.nem = viec.nem; ketQua.vat = viec.vat;
     ketQua.thungBanDau = viec.thungBanDau; ketQua.thung = viec.thung; ketQua.mauO = viec.mauO;
 
     // hàm thực sự được gọi (hợp mọi sân) → số ô
@@ -719,7 +766,7 @@
     var cam = !!man.camHamCuaEm;
     var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
     var st = chuanSanThu(tuyChon.sanThu || SAN_THU_MAC_DINH);
-    var ketQua = { vet: [], robot: Object.assign({}, st.batDau), batDau: Object.assign({}, st.batDau), sanThu: st, soNhip: 0, chanDoan: [], py: '', anhXa: [], tay: null, namCham: null, vat: [], thung: [] };
+    var ketQua = { vet: [], robot: Object.assign({}, st.batDau), batDau: Object.assign({}, st.batDau), sanThu: st, soNhip: 0, chanDoan: [], py: '', anhXa: [], tay: null, namCham: null, nem: null, vat: [], thung: [] };
     var khung = Object.assign({ chinh: 10, moiHam: 10 }, man.khung || {}, { moXuong: man.moXuong !== false });
 
     var tap = KhungCode.tapHamDung(baiLam, kho, { goc: [tenHam] });
@@ -747,14 +794,14 @@
     var nhipToiDa = tuyChon.nhipToiDa || 100;
     var res = SanHoc.chay({
       san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
-      hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st)
+      hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st), roBanDau: st.ro === true ? true : undefined
     }, g.ma);
     res.nhipToiDa = nhipToiDa;
     ketQua.chanDoan = chanDoanSan(man, res, g, true, bc);
     ketQua.vet = chuyenVet(res.vet, g);
     ketQua.robot = res.robot;
     ketQua.soNhip = res.nhip;
-    ketQua.tay = res.tay; ketQua.namCham = res.namCham; ketQua.vat = res.vat; ketQua.thung = res.thung;
+    ketQua.tay = res.tay; ketQua.namCham = res.namCham; ketQua.nem = res.nem; ketQua.vat = res.vat; ketQua.thung = res.thung;
     return xong();
   }
 

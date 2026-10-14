@@ -21,6 +21,7 @@
    Chương 11 'khoang-cach' (Cảm biến khoảng cách) nằm ở man-khoang-cach.js.
    Chương 12 'mau' (Cảm biến màu) nằm ở man-mau.js.
    Chương 13 'nam-cham' (Nam châm) nằm ở man-nam-cham.js.
+   Chương 14 'may-nem' (Máy ném) nằm ở man-may-nem.js.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */
@@ -30,7 +31,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'khoang-cach', 'mau', 'nam-cham'],
+    thuTu: ['hai-banh', 'xuong-ham', 'tay-gap', 'vong-lap', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'khoang-cach', 'mau', 'nam-cham', 'may-nem'],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',
@@ -44,7 +45,8 @@
       'tam-day': 'Tấm đẩy',
       'khoang-cach': 'Cảm biến khoảng cách',
       'mau': 'Cảm biến màu',
-      'nam-cham': 'Nam châm'
+      'nam-cham': 'Nam châm',
+      'may-nem': 'Máy ném'
     }
   };
 
