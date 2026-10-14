@@ -181,16 +181,39 @@
     return cv;
   }
 
-  /** Vật trong tay kẹp (luật vật 14/10): tâm vật cách tâm thân bao nhiêu pixel PART về phía mũi xe (tay nâng; tay hạ xa thêm 1) và cạnh vật (pixel part).
+  /** BÓNG CỦA TAY (chỉ part kẹp): ảnh đen một màu = đúng phần pixel mà hình có tay khác hình không tay (hai càng + cụm giữa), cùng cỡ với VeRobot.ve().
+   *  san-ve.js vẽ nó DƯỚI robot, lệch phải-dưới: tay hạ lệch ít (bóng sát), tay nâng lệch nhiều (bóng xa). Không có part / không có tay: null. */
+  var cacheBong = {};
+  function bongTay(cauHinh, trangThai, huong, tiLe) {
+    if (!cauHinh || cauHinh.tay !== 'kep' || !coPart()) return null;
+    var cv = ve(cauHinh, trangThai, huong, tiLe);
+    if (!cv || !cv.laPart) return null;
+    var tt = trangThai || {}, k = [cauHinh.than, JSON.stringify(cauHinh.camBien || []), ((huong || 0) % 4 + 4) % 4, tt.wl || 0, tt.wr || 0, tt.ph ? 1 : 0, tiLe, cv.width, chuanTay(tt.tay).tuThe, chuanTay(tt.tay).kep, chuanTay(tt.tay).cam].join('|');
+    if (cacheBong[k] !== undefined) return cacheBong[k];
+    var khong = ve({ than: cauHinh.than, tay: null, camBien: cauHinh.camBien }, { wl: tt.wl, wr: tt.wr, ph: tt.ph, tay: null, camBien: tt.camBien }, huong, tiLe), r = null;
+    try {
+      if (khong && khong.width === cv.width) {
+        var o = ctxMoi(cv.width), a = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height), b = khong.getContext('2d').getImageData(0, 0, cv.width, cv.height), d = o.g.createImageData(cv.width, cv.height), i, co = false;
+        for (i = 0; i < cv.width * cv.height; i++) {
+          var j = i * 4;
+          if (a.data[j + 3] > 100 && (b.data[j + 3] < 100 || Math.abs(a.data[j] - b.data[j]) + Math.abs(a.data[j + 1] - b.data[j + 1]) + Math.abs(a.data[j + 2] - b.data[j + 2]) > 24)) { d.data[j + 3] = 255; co = true; }
+        }
+        if (co) { o.g.putImageData(d, 0, 0); r = o.cv; }
+      }
+    } catch (e) { r = null; }
+    return (cacheBong[k] = r);
+  }
+
+  /** Vật trong tay kẹp (luật vật 14/10): tâm vật cách tâm thân bao nhiêu pixel PART về phía mũi xe (tay nâng; tay hạ xa thêm 2: càng dài ra chạm đất) và cạnh vật (pixel part).
    *  Part kẹp chừa khe giữa hai càng cho vật (cột 7..16, hàng 8..17 của ảnh tay); thân hai bánh có ổ tay ở y = 4, các thân khác y = 5. */
   function vatKep(cauHinh, tuThe) {
     var oy = 4, P = (typeof window !== 'undefined') ? window.Part : null;
     try { var d = P && P.lay('than', (cauHinh && cauHinh.than) || 'hai-banh'); if (d && d.oGan && d.oGan.tay) oy = d.oGan.tay.y; } catch (e) { /* giữ 4 */ }
-    return { ahead: 22 - oy + (tuThe === 'duoi' ? 1 : 0), n: 10 };
+    return { ahead: 22 - oy + (tuThe === 'duoi' ? 2 : 0), n: 10 };
   }
 
   var VeRobot = {
-    ve: ve, vatKep: vatKep, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart,
+    ve: ve, bongTay: bongTay, vatKep: vatKep, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart,
     REACH: REACH,                                                     // tâm thân → mép xa nhất của hình part (pixel part)
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };

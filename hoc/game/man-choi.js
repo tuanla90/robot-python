@@ -478,7 +478,7 @@
       hop.than.appendChild(lw);
     }
     if (m.huyHieu) {
-      var hh = h('div', 'th-huy'); var hi = h('span'); hi.setAttribute('data-i', 'huyhieu'); hi.setAttribute('data-s', '3'); hh.appendChild(hi);
+      var hh = h('div', 'th-huy'); var hi = h('span'); hi.setAttribute('data-i', 'huyhieu'); hi.setAttribute('data-s', '2'); hi.setAttribute('data-ma', m.huyHieu.ma); hi.setAttribute('data-tt', 'xong'); hh.appendChild(hi);
       var tx = h('div', 'tx'); tx.appendChild(h('div', 'k', t('thang.huyHieu'))); tx.appendChild(h('div', 'v', m.huyHieu.ten)); hh.appendChild(tx);
       hh.setAttribute('data-huy-hieu', m.huyHieu.ma);
       hop.than.appendChild(hh); Ve.hydrate(hh);

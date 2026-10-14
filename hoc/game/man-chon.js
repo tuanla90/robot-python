@@ -156,18 +156,15 @@
     el.trum.className = 'bt c-trum ' + (xong ? 'done' : tt.mo ? 'open' : 'lock');
     el.trum.setAttribute('data-man', m.ma); el.trum.setAttribute('data-id', m.id);
     el.trum.appendChild(h('div', 'hz'));
-    var bs = h('div', 'bs'); bs.setAttribute('data-i', xong && m.huyHieu ? 'huyhieu' : 'trum'); bs.setAttribute('data-s', '3'); bs.setAttribute('data-on', tt.mo || xong ? '1' : '0'); el.trum.appendChild(bs);
+    var bs = h('div', 'bs'); bs.setAttribute('data-i', 'huyhieu'); bs.setAttribute('data-s', '2'); bs.setAttribute('data-ma', (m.huyHieu && m.huyHieu.ma) || m.chuong); bs.setAttribute('data-tt', xong ? 'xong' : tt.mo ? 'mo' : 'khoa'); el.trum.appendChild(bs);
     var bx = h('div', 'bx');
     var bt = h('div', 'bt2'); bt.appendChild(h('em', null, t('chon.trum'))); bt.appendChild(document.createTextNode(' · ' + m.ten)); bx.appendChild(bt);
     if (m.huyHieu) {
       bx.appendChild(h('div', 'rw', m.huyHieu.ten));
     }
-    bx.appendChild(h('div', 'why', xong ? t('chon.trumXong') : tt.mo ? t('chon.trumMo') : t('chon.trumKhoa')));
+    if (!tt.mo) bx.appendChild(h('div', 'why', t('chon.trumKhoa')));
     el.trum.appendChild(bx);
-    var bl = h('div', 'bl');
-    if (!tt.mo) bl.appendChild(Ve.khoa(3));
-    else bl.appendChild(saoHang(sao, 2));
-    el.trum.appendChild(bl);
+    if (tt.mo) { var bl = h('div', 'bl'); bl.appendChild(saoHang(sao, 2)); el.trum.appendChild(bl); }
     Ve.hydrate(el.trum);
     el.trum.onclick = function () {
       if (!tt.mo) {

@@ -673,7 +673,7 @@
       if (ten === 'star') node = sao(el.getAttribute('data-on') !== '0', s);
       else if (ten === 'lock') node = khoa(s);
       else if (ten === 'trum') node = mk(spriteTrum(el.getAttribute('data-on') !== '0'), s);
-      else if (ten === 'huyhieu') node = mk(spriteHuyHieu(), s);
+      else if (ten === 'huyhieu') node = mk(window.HuyHieu && el.getAttribute('data-ma') ? HuyHieu.ve(el.getAttribute('data-ma'), el.getAttribute('data-tt') || 'xong') : spriteHuyHieu(), s);
       else node = ico(ten, s, opt);
       el.appendChild(node); el.style.display = 'flex';
     }

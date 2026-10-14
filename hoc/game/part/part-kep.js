@@ -4,19 +4,23 @@
        đóng    hai càng chạm nhau giữa (9..14), kẹp vào không khí;
        ôm vật  (s.cam) càng khép vào 4..7 và 16..19, khe giữa 8 pixel đúng bằng vật n=10 (cột 7..16) trừ viền: càng đè lên viền vật như đang ghì.
      Vật trong kẹp KHÔNG vẽ ở đây (san-ve.js vẽ ngay dưới ảnh part để có bóng đổ, rung đỏ, trượt vào / ra); khe giữa hai càng để trống, trừ khi s.vat
-     ('go'|'sat') cho trang xem part: khi đó vẽ vật 10×10 ở cột 7..16, hàng 8..17 (tay hạ: lùi 1 pixel về phía trước).
+     ('go'|'sat') cho trang xem part: khi đó vẽ vật 10×10 ở cột 7..16, hàng 8..17 (tay hạ: lùi 2 pixel về phía trước, càng dài thêm 2).
      Thanh ngang nối hai càng vào cụm giữa nên càng mở rộng vẫn dính liền thân. */
   P.dangKy({loai:'tay',ma:'kep',ten:'Tay kẹp trước mũi',hamGoc:['arm_down','arm_up','grab','release'],gan:'tay',diemNeo:{x:12,y:23},ve:function(p,s){
-    s=s||{};var open=s.kep!=='dong',low=s.tuThe==='duoi',a=low?1:0,hold=!open&&!!s.cam,
-      l=open?2-a:hold?4:9-a,r=open?21+a:hold?19:14+a;
+    s=s||{};var open=s.kep!=='dong',low=s.tuThe==='duoi',a=low?1:0,e=low?2:0,hold=!open&&!!s.cam,
+      l=open?2-a:hold?4:9-a,r=open?21+a:hold?19:14+a,
+      cL=low?C.vang:C.vangSang,cR=low?'#b07510':C.vang,tip=low?'#fff6e3':C.vangSang,i;
     p.rect(7,22,10,2,C.ink);p.rect(8,22,8,1,C.thepSang);
     p.rect(l,19,r-l+1,3,C.ink);p.rect(l+1,20,r-l-1,1,C.thep);
-    p.rect(9,18,2,4,C.ink);p.rect(13,18,2,4,C.ink);p.rect(10,19,4,2,'#ff8a35');
-    if(s.vat){var v=typeof s.vat==='object'?s.vat:{chat:s.vat};P.veVatNho(p,7,8-a,10,v.chat,v.mau);}
-    p.rect(l,9-a,4,12+a,C.ink);p.rect(r-3,9-a,4,12+a,C.ink);
-    p.rect(l+1,10-a,2,9+a,C.vang);p.rect(r-2,10-a,2,9+a,C.vangToi);
-    p.rect(l,8-a,5,3,C.ink);p.rect(r-4,8-a,5,3,C.ink);
-    p.rect(l+1,8-a,3,1,C.vangSang);p.rect(r-3,8-a,3,1,C.vangSang);
+    p.rect(9,18,2,4,C.ink);p.rect(13,18,2,4,C.ink);
+    /* CHỈ BÁO CỐ ĐỊNH trên cụm giữa (hàng 22..23, nằm sát thân, không bị càng che): tay nâng = mũi tên LÊN xanh lá, tay hạ = mũi tên XUỐNG cam */
+    if(low){p.rect(10,22,4,1,'#ff8a35');p.rect(11,23,2,1,'#ff8a35');}else{p.rect(11,22,2,1,C.la);p.rect(10,23,4,1,C.la);}
+    if(s.vat){var v=typeof s.vat==='object'?s.vat:{chat:s.vat};P.veVatNho(p,7,8-e,10,v.chat,v.mau);}
+    /* tay hạ: càng DÀI ra thêm 2 pixel tới chạm đất, màu đậm, đầu càng sáng như vừa chạm; tay nâng: càng ngắn hơn, màu sáng */
+    p.rect(l,9-e,4,12+e,C.ink);p.rect(r-3,9-e,4,12+e,C.ink);
+    p.rect(l+1,10-e,2,9+e,cL);p.rect(r-2,10-e,2,9+e,cR);
+    p.rect(l,8-e,5,3,C.ink);p.rect(r-4,8-e,5,3,C.ink);
+    p.rect(l+1,8-e,3,1,tip);p.rect(r-3,8-e,3,1,tip);
     if(low){p.rect(l-1,21,5,1,C.ink);p.rect(r-4,21,5,1,C.ink);p.rect(8,23,8,1,C.den);}
   }});
 })(typeof window!=='undefined'?window:globalThis);
