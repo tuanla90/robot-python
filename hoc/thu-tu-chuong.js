@@ -14,8 +14,9 @@
    (mỗi màn khai `chuong` và `so`, xem man-chuoi-1.js).
    THỨ TỰ MỚI (kế hoạch "Chế lệnh", 14/10, xem KE-HOACH-CHE-LENH.md): đợt 1 = hai-banh, xuong-ham, che-xe, tay-gap, vong-lap, khoang-cach (mỗi part chỉ mở vài
    lệnh gốc, người chơi tự chế hàm); đợt 2 = các chương còn lại, mở CÙNG LÚC khi thắng trùm của chương cổng (congDot2). Chỉ liệt kê chương ĐÃ CÓ tệp màn;
-   chương chế lệnh sau (che-tay, che-lap, che-cam-bien, robot-hoan-thien) sẽ chen vào khi có. Số chương hiển thị (id màn) đổi theo vị trí trong mảng.
+   ba chương chế lệnh (che-tay, che-lap, che-cam-bien) và robot-hoan-thien đã có tệp màn và nằm đúng vị trí trong mảng. Số chương hiển thị (id màn) đổi theo vị trí trong mảng.
    Chương 3 'che-xe' (Chế lệnh xe) nằm ở man-che-xe.js.
+   Chương 10 'robot-hoan-thien' (Robot hoàn thiện, chương cổng mở đợt 2) nằm ở man-robot-hoan-thien.js.
    Chương 'bang-chuyen' (Băng chuyền) nằm ở man-bang-chuyen.js.
    Chương 6 'tham-so' (Hàm có tham số) nằm ở man-tham-so.js.
    Chương 7 'nhen' (Thân nhện) nằm ở man-nhen.js.
@@ -41,8 +42,8 @@
       'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'may-nem', 'sung-bong', 'drone'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
     dot2: ['bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'may-nem', 'sung-bong', 'drone'],
-    // chương cổng: thắng trùm chương này thì mở cả đợt 2. TẠM là chương cuối đợt 1 đang có; khi có 'robot-hoan-thien' thì đổi sang đó.
-    congDot2: 'khoang-cach',
+    // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
+    congDot2: 'robot-hoan-thien',
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',

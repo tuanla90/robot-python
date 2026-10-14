@@ -278,8 +278,8 @@ console.log('\n== 7. Hàm go_wall của em; thử hàm trong Xưởng ==');
 /* ========================================================== 8. DỮ LIỆU 10 MÀN + BẢNG */
 console.log('\n== 8. Dữ liệu 10 màn ==');
 {
-  kiem('đúng 10 màn, id 8.1…8.10, mã khoang-cach.1…10, chương đứng thứ 6 sau vong-lap (cuối đợt 1, chương cổng mở đợt 2), tên "Cảm biến khoảng cách"',
-    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '8.' + (i + 1) && m.ma === 'khoang-cach.' + (i + 1)) && ThuTu.thuTu[7] === 'khoang-cach' && ThuTu.thuTu[5] === 'vong-lap' && ThuTu.congDot2 === 'khoang-cach' && !ThuTu.laDot2('khoang-cach') && ThuTu.ten['khoang-cach'] === 'Cảm biến khoảng cách');
+  kiem('đúng 10 màn, id 8.1…8.10, mã khoang-cach.1…10, chương đứng thứ 6 sau vong-lap (đợt 1; chương cổng mở đợt 2 là robot-hoan-thien, chương 10), tên "Cảm biến khoảng cách"',
+    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '8.' + (i + 1) && m.ma === 'khoang-cach.' + (i + 1)) && ThuTu.thuTu[7] === 'khoang-cach' && ThuTu.thuTu[5] === 'vong-lap' && ThuTu.congDot2 === 'robot-hoan-thien' && !ThuTu.laDot2('khoang-cach') && ThuTu.ten['khoang-cach'] === 'Cảm biến khoảng cách');
   kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ màn 10 có huy hiệu "khoang-cach"', J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
     ds.every((m) => !!m.huyHieu === (m.so === 10)) && ds[9].huyHieu.ma === 'khoang-cach');
   kiem('hamGoc: 1–6, 8, 9 chỉ mở front_clear; 7 và 10 mở thêm left_clear, right_clear (bám tường); 9 có thêm 4 lệnh tay kẹp; mọi màn đủ 5 lệnh bánh',

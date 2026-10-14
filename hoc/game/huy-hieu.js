@@ -172,6 +172,107 @@
     return p;
   };
 
+  /* ---------------------------------------------- bốn chương "Chế lệnh" + Robot hoàn thiện
+     Bốn huy hiệu che-xe, che-tay, che-lap, che-cam-bien dùng chung một mô-típ: BÁNH RĂNG VÀNG nhỏ ở góc trên phải ("tự chế lệnh"),
+     hình chính của chương nằm dưới trái. robot-hoan-thien (huy hiệu lớn nhất đợt 1) là robot đủ bộ có NGÔI SAO nổi phía trên tay kẹp.
+     Mọi hình dựng trên tấm vẽ 26×26 (tâm tấm ở (13,13) = tâm đĩa), phải nằm gọn trong bán kính BK. Trạng thái "xong" đóng sao vàng
+     ở góc dưới phải nên chi tiết chính đừng dồn vào đó. */
+  var KK = (typeof Part !== 'undefined' && Part.K) || {}, T26 = 26;
+  var RANG = ['..X.X.X..', '.XXXXXXX.', 'XXXXXXXXX', '.XXXoXXX.', 'XXXoooXXX', '.XXXoXXX.', 'XXXXXXXXX', '.XXXXXXX.', '..X.X.X..'];
+  /** bánh răng vàng 11×11 (thân 9×9 + viền tối), 8 răng, lỗ giữa tối. */
+  function banhRang() {
+    var q = P(11, 11);
+    RANG.forEach(function (row, j) {
+      for (var i = 0; i < 9; i++) {
+        var c = row.charAt(i);
+        if (c === 'X') q.px(i + 1, j + 1, i + j <= 4 ? KK.vangSang : i + j >= 12 ? KK.vangToi : KK.vang);
+        else if (c === 'o') q.px(i + 1, j + 1, INK);
+      }
+    });
+    return q.outline(INK);
+  }
+  function themBanhRang(p) { return chep(p, banhRang(), 14, 2, 1); }
+  /** sao vàng 9×9 (thân 7×7 + viền tối), sáng trái-trên, tối phải-dưới. */
+  function saoNho() {
+    var m = ['...X...', '..XXX..', 'XXXXXXX', '.XXXXX.', '..XXX..', '.XX.XX.', '.X...X.'], q = P(9, 9);
+    m.forEach(function (row, j) { for (var i = 0; i < 7; i++) if (row.charAt(i) === 'X') q.px(i + 1, j + 1, i + j <= 3 ? '#fff3b0' : i + j >= 8 ? '#e5a416' : KK.vang); });
+    return q.outline(INK);
+  }
+
+  HINH['che-xe'] = function () {                                // xe nhìn ngang (quay sang phải) + bánh răng
+    var p = P(T26, T26), x0 = 3, y0 = 9;
+    p.rect(x0, y0 + 4, 19, 6, INK); p.rect(x0 + 1, y0 + 5, 17, 4, KK.vang);          // thân
+    p.rect(x0 + 1, y0 + 5, 17, 1, KK.vangSang); p.rect(x0 + 1, y0 + 8, 17, 1, KK.vangToi);
+    p.rect(x0 + 4, y0, 10, 5, INK); p.rect(x0 + 5, y0 + 1, 8, 4, KK.vang);            // cabin
+    p.rect(x0 + 6, y0 + 1, 6, 3, KK.kinh); p.rect(x0 + 6, y0 + 1, 2, 1, KK.xanh); p.px(x0 + 8, y0 + 2, KK.xanh);
+    p.rect(x0 + 18, y0 + 5, 1, 2, '#fff3b0');                                         // đèn trước
+    [4, 14].forEach(function (cx) {                                                   // hai bánh
+      p.ell(x0 + cx + 0.5, y0 + 9.5, 2.9, 2.9, INK); p.ell(x0 + cx + 0.5, y0 + 9.5, 1.9, 1.9, KK.den); p.px(x0 + cx, y0 + 9, KK.thepSang);
+    });
+    themBanhRang(p);
+    return p;
+  };
+
+  HINH['che-tay'] = function () {                               // càng kẹp mở, sắp gắp khối sắt + bánh răng
+    var p = P(T26, T26), k = cat(partTho('tay', 'kep', { kep: 'mo' })), q = P(k.w, k.h - 3), y;
+    for (y = 0; y < k.h; y++) if (y < 5 || y > 7) for (var x = 0; x < k.w; x++) q.px(x, y < 5 ? y : y - 3, k.get(x, y));   // rút ngắn hai càng 3 hàng cho khỏi chạm bánh răng
+    chep(p, q, 3, 24 - q.h, 1);
+    Part.veVatNho(p, 9, 14, 8, 'sat');
+    themBanhRang(p);
+    return p;
+  };
+
+  HINH['che-lap'] = function () {                               // mũi tên vòng nhỏ + bánh răng
+    var p = P(T26, T26), cx = 9.5, cy = 16.5, ri = 4.6, ro = 7.8;
+    for (var y = 0; y < T26; y++) for (var x = 0; x < T26; x++) {
+      var dx = x + 0.5 - cx, dy = y + 0.5 - cy, r = Math.sqrt(dx * dx + dy * dy), a = Math.atan2(dy, dx) * 180 / Math.PI;
+      if (r < ri || r > ro) continue;
+      if (a > -85 && a < -20) continue;
+      var lit = (-dx - dy) / (r * 1.414) > 0.35;
+      p.px(x, y, r > ro - 1 ? '#2b5fb8' : lit ? '#8fc0ff' : '#3f7fe0');
+    }
+    function pos(deg, rr) { return [cx + Math.cos(deg * Math.PI / 180) * rr, cy + Math.sin(deg * Math.PI / 180) * rr]; }
+    tamGiac(p, pos(-85, 2.4), pos(-85, 10.6), pos(-52, 6.6), '#3f7fe0');
+    p.outline(INK);
+    themBanhRang(p);
+    return p;
+  };
+
+  HINH['che-cam-bien'] = function () {                          // cảm biến + sóng + dấu ? + bánh răng
+    var p = P(T26, T26), sx = 2, sy = 9, sh = 11;
+    p.rect(sx, sy, 4, sh, INK); p.rect(sx + 1, sy + 1, 2, sh - 2, KK.thep);              // thân cảm biến (tai xanh lơ)
+    p.rect(sx + 1, sy + 1, 2, 4, KK.xanh); p.px(sx + 1, sy + 1, '#ffffff'); p.rect(sx + 1, sy + sh - 3, 2, 2, KK.thepToi);
+    var cx = sx + 4, cy = sy + 3;
+    [3.5, 6.5].forEach(function (r) {
+      for (var a = -55; a <= 55; a += 3) {
+        var x = Math.round(cx + Math.cos(a * Math.PI / 180) * r), y = Math.round(cy + Math.sin(a * Math.PI / 180) * r);
+        p.px(x, y, '#1f7f95'); p.px(x + 1, y, '#3fd0e8'); p.px(x, y - 1, '#1f7f95');
+      }
+    });
+    var h = ['.XXX.', 'XX.XX', '...XX', '..XX.', '.XX..', '.XX..', '.....', '.XX..', '.XX..'], q = P(7, 11);
+    h.forEach(function (row, j) { for (var i = 0; i < 5; i++) if (row.charAt(i) === 'X') q.px(i + 1, j + 1, j <= 2 ? KK.vangSang : j >= 7 ? KK.vangToi : KK.vang); });
+    chep(p, q.outline(INK), 14, 13, 1);
+    themBanhRang(p);
+    return p;
+  };
+
+  HINH['robot-hoan-thien'] = function () {                      // robot đủ bộ nhìn từ trên (hướng lên) đúng dáng robot trong game, thu nhỏ; sao nổi phía trên
+    var p = P(T26, T26), r = P(23, 14), CY = '#3fd0e8';
+    r.rect(3, 7, 3, 7, INK); r.rect(4, 8, 1, 5, KK.denSang); r.px(4, 9, KK.thepSang); r.px(4, 11, KK.thepSang);       // bánh trái
+    r.rect(17, 7, 3, 7, INK); r.rect(18, 8, 1, 5, KK.denSang); r.px(18, 9, KK.thepSang); r.px(18, 11, KK.thepSang);   // bánh phải
+    r.rect(5, 6, 13, 8, INK); r.rect(6, 7, 11, 6, KK.vang);                                                          // thân
+    r.rect(6, 7, 11, 1, KK.vangSang); r.rect(6, 12, 11, 1, KK.vangToi);
+    r.rect(8, 8, 7, 4, KK.kinh); r.rect(9, 9, 2, 2, KK.xanh); r.rect(12, 9, 2, 2, KK.xanh);                          // kính + hai mắt
+    r.rect(0, 7, 4, 7, INK); r.rect(1, 8, 2, 5, CY); r.rect(1, 8, 2, 1, '#c9fbff'); r.px(1, 8, '#ffffff'); r.rect(1, 12, 2, 1, KK.thep);   // cảm biến trái (tai xanh lơ)
+    r.rect(19, 7, 4, 7, INK); r.rect(20, 8, 2, 5, CY); r.rect(20, 8, 2, 1, '#c9fbff'); r.px(20, 8, '#ffffff'); r.rect(20, 12, 2, 1, KK.thep); // cảm biến phải
+    r.rect(5, 0, 4, 6, INK); r.rect(6, 1, 2, 4, KK.vangSang);                                                        // tay kẹp: hai càng + thanh nối
+    r.rect(14, 0, 4, 6, INK); r.rect(15, 1, 2, 4, KK.vang); r.rect(15, 4, 2, 1, KK.vangToi);
+    r.rect(9, 4, 5, 3, INK); r.rect(10, 5, 3, 1, KK.thep);
+    chep(p, r, 1, 9, 1);
+    chep(p, saoNho(), 8, 0, 1);
+    return p;
+  };
+
   /* ---------------------------------------------------------------- vành + đĩa */
   var PAL = {
     khoa: { hi: '#b7bac4', md: '#8b8f9c', lo: '#555966', d1: '#7d818e', d2: '#6a6e7b' },

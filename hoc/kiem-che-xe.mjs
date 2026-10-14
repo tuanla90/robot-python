@@ -455,7 +455,7 @@ console.log('\n== 9. Chơi lại các chương cũ với u_turn một nhịp và
     kiem('chương ' + ch + ': cả 10 lời giải vẫn thắng, không chẩn đoán lỗi, không chậm hơn sao.nhip (dùng bản hàm sửa trong kho)',
       bangKq.every((r, i) => r.thang && maLoi(r).length === 0 && r.soNhip <= dsCh[i].sao.nhip), J(bangKq.map((r, i) => dsCh[i].id + ':' + r.thang + '/' + r.soNhip + '≤' + dsCh[i].sao.nhip)));
   }
-  const dsKhac = tatCa.filter((m) => !['hai-banh', 'che-xe'].includes(m.chuong) && m.ma !== 'che-tay.9');           // che-tay.9 (bánh phải kẹt số lùi) tự sửa lại turn_right / u_turn bằng bánh khác: kiem-che-tay.mjs kiểm riêng
+  const dsKhac = tatCa.filter((m) => !['hai-banh', 'che-xe'].includes(m.chuong) && m.ma !== 'che-tay.9' && m.ma !== 'robot-hoan-thien.9');           // che-tay.9 (bánh phải kẹt số lùi) tự sửa lại turn_right / u_turn bằng bánh khác: kiem-che-tay.mjs kiểm riêng; robot-hoan-thien.9 (cũng bánh phải kẹt số lùi) dùng u_turn đã sửa đó của kho: kiem-robot-hoan-thien.mjs kiểm riêng
   const loiKhac = dsKhac.filter((m) => { const r = ChamHoc.cham(m, m.loiGiai, tron(nhanh, m.loiGiai.hamCuaEmMoi.filter((h) => !SUA[h.ten]))); return !(r.thang && maLoi(r).length === 0); }).map((m) => m.id);
   kiem('mọi chương còn lại (' + dsKhac.length + ' màn, kể cả đợt 2: xích, omni, băng chuyền…) cũng vẫn thắng với kho đó', loiKhac.length === 0, loiKhac.join());
   const xichSan = ['.....', '.....', '.....', '.....', '.....'], xichBd = { x: 2, y: 3, huong: 0 };
