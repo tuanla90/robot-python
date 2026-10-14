@@ -337,6 +337,39 @@
     p.outline(K.ink);
     crateCache = p.canvas(); return crateCache;
   }
+  /** Vật SẮT (chương nam châm): khối kim loại xám xanh có ánh bạc, đinh tán ở góc, bu lông sáu cạnh ở giữa. Khác thùng gỗ (nâu, nan chéo) và thùng nặng (xám thép, sọc vàng đen). */
+  var sat = null;
+  function veThanSat() {
+    var p = new Painter(T, T), x, y;
+    p.rect(1, 1, T - 2, T - 2, '#7f97b2');                                   // thân xám xanh
+    for (y = 2; y < T - 2; y += 2) p.rect(2, y, T - 4, 1, '#8aa2bd');       // thớ kim loại ngang (đánh bóng)
+    p.rect(1, 1, T - 2, 1, '#dcecfa'); p.rect(1, 1, 1, T - 2, '#dcecfa');    // mép sáng trên trái: ánh bạc
+    p.rect(1, T - 2, T - 2, 1, '#3f536c'); p.rect(T - 2, 1, 1, T - 2, '#3f536c');   // mép tối dưới phải
+    p.rect(2, 2, T - 4, 1, '#b4cde4'); p.rect(2, 2, 1, T - 4, '#b4cde4');
+    p.rect(2, T - 3, T - 4, 1, '#566e8a'); p.rect(T - 3, 2, 1, T - 4, '#566e8a');
+    [[2, 2], [T - 3, 2], [2, T - 3], [T - 3, T - 3]].forEach(function (q) { p.px(q[0], q[1], '#ffffff'); p.px(q[0] + (q[0] > 6 ? -1 : 1), q[1], '#3f536c'); });
+    p.rect(4, 3, 6, 6, '#3f536c');                                           // ổ bu lông
+    p.rect(5, 3, 4, 6, '#a9c0d8'); p.rect(4, 4, 6, 4, '#a9c0d8');            // đầu bu lông sáu cạnh
+    p.rect(6, 5, 2, 2, '#4a5f7a');                                           // lỗ giữa
+    p.px(5, 4, '#ffffff'); p.px(6, 3, '#ffffff'); p.px(9, 7, '#6f87a3');
+    p.px(11, 4, '#ffffff'); p.px(3, 11, '#c9dcef');                          // hai điểm lóe sáng
+    return p;
+  }
+  function makeSat() {
+    if (sat) return sat;
+    var p = veThanSat(); p.outline(K.ink);
+    sat = p.canvas(); return sat;
+  }
+  /** Bản có dải màu (vật sắt mang màu): dải 3 hàng quanh thân. */
+  var satMauCache = {};
+  function makeSatMau(mau) {
+    if (satMauCache[mau]) return satMauCache[mau];
+    var c = MAU[mau], p = veThanSat();
+    p.rect(1, 10, T - 2, 3, c.n); p.rect(1, 10, T - 2, 1, c.s); p.rect(1, 12, T - 2, 1, c.t);
+    p.rect(1, 9, T - 2, 1, K.ink);
+    p.outline(K.ink);
+    satMauCache[mau] = p.canvas(); return satMauCache[mau];
+  }
   /** Thùng NẶNG (chương tấm đẩy): thùng thép xám, bốn đinh tán ở góc, sọc vàng đen ở mép trên và mép dưới, viền tối. Khác hẳn thùng gỗ. */
   var thungCache = null;
   function makeThung() {
@@ -467,10 +500,10 @@
   var tileCache = null;
   function tiles() {
     if (tileCache) return tileCache;
-    var matMau = {}, thungMau = {};
-    MAU_TEN.forEach(function (m) { matMau[m] = [makeMatMau(m, 0), makeMatMau(m, 1)]; thungMau[m] = makeCrateMau(m); });
+    var matMau = {}, thungMau = {}, satMau = {};
+    MAU_TEN.forEach(function (m) { matMau[m] = [makeMatMau(m, 0), makeMatMau(m, 1)]; thungMau[m] = makeCrateMau(m); satMau[m] = makeSatMau(m); });
     tileCache = {
-      mau: matMau, crateMau: thungMau,
+      mau: matMau, crateMau: thungMau, sat: makeSat(), satMau: satMau,
       crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
       flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)]
     };
@@ -520,6 +553,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeSat: makeSat, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

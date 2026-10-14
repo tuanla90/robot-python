@@ -146,11 +146,11 @@
     S.pal.dung({
       goc: man.hamGoc,
       vong: TP.coCauTruc(man, 'for'),
-      vongWhile: TP.coCauTruc(man, 'while'),
+      vongWhile: TP.coCauTruc(man, 'while') && TP.coDieuKienCua(man),
       cam: TP.camBienCua(man),
       mau: TP.coMauCua(man),
       chuoi: TP.coCauTruc(man, 'for') && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
-      dieuKien: TP.coCauTruc(man, 'if'),
+      dieuKien: TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man),
       em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
       man: A.bai().hamCuaMan,
       bien: (hamHienTai() || {}).thamSo || [],          // hàm có tham số: nhóm BIẾN có thẻ cho từng đối số
@@ -253,6 +253,7 @@
   }
   function datChe(k) {
     S.che = k;
+    if (k === 'vat' && coNamCham()) toast(t('xuong.vatGoiY'), '', 2600);
     Object.keys(CHE).forEach(function (x) {
       var b = E.host.querySelector('[data-nut="' + CHE[x] + '"]');
       if (b) b.classList.toggle('on', x === k);
@@ -271,6 +272,7 @@
   }
   function coVat(x, y) { return S.st.vat.some(function (o) { return o.x === x && o.y === y; }); }
   function coTay() { var tay = VeRobot.cauHinhCua(A.man()).tay; return !!tay && tay !== 'day'; }        // tay gắp: vật nằm dưới xe được
+  function coNamCham() { return VeRobot.cauHinhCua(A.man()).tay === 'nam-cham'; }      // nam châm: nút Vật đặt vật GỖ, chạm lại thì thành SẮT, chạm nữa thì bỏ
   function coDay() { return VeRobot.cauHinhCua(A.man()).tay === 'day'; }           // tấm đẩy: nút Vật đặt THÙNG NẶNG
   function boO(ds, x, y) { return ds.filter(function (o) { return !(o.x === x && o.y === y); }); }
   /** Chạm một ô sân thử theo chế độ đang bật. Ô có xe không đặt được vật hay tường (và ngược lại). */
@@ -284,11 +286,20 @@
       if (co === 'tuong' || co === 'thung') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       var vi = -1;
       moi.vat.forEach(function (o, k) { if (o.x === x && o.y === y) vi = k; });
-      if (vi >= 0) moi.vat[vi] = { x: x, y: y, mau: mauKeTiep(moi.vat[vi].mau) || undefined };
+      if (vi >= 0) moi.vat[vi] = { x: x, y: y, mau: mauKeTiep(moi.vat[vi].mau) || undefined, chat: moi.vat[vi].chat };      // đổi màu vật giữ nguyên chất sắt / gỗ
       else {
         var mc = null; moi.mau = moi.mau.filter(function (o) { if (o.x === x && o.y === y) { mc = o.mau; return false; } return true; });
         var mm = mauKeTiep(mc); if (mm) moi.mau.push({ x: x, y: y, mau: mm });
       }
+    } else if (S.che === 'vat' && coNamCham()) {                                      // chế độ Vật ở màn nam châm: ô trống → vật gỗ → chạm → vật sắt → chạm → bỏ
+      var vj = -1;
+      moi.vat.forEach(function (o, k) { if (o.x === x && o.y === y) vj = k; });
+      if (vj >= 0) {
+        var cu = moi.vat[vj];
+        if (cu.chat === 'sat') { moi.vat = boO(moi.vat, x, y); toast(t('xuong.vatBo'), ''); }
+        else { moi.vat[vj] = { x: x, y: y, mau: cu.mau, chat: 'sat' }; toast(t('xuong.vatSat'), ''); }
+      } else if (!co || co === 'xe') { moi.vat.push({ x: x, y: y }); toast(t('xuong.vatGo'), ''); }
+      else return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
     } else if (S.che === 'xe') {
       if (co === 'xe') { if (A.man().loaiRobot === 'nhen') return; moi.batDau.huong = (moi.batDau.huong + 1) % 4; }       // nhện không có hướng mặt: chạm lại vào nó không xoay
       else if (co === 'vat' && coTay()) { moi.batDau.x = x; moi.batDau.y = y; }          // có tay gắp: xe được đứng trên vật

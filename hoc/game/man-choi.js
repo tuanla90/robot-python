@@ -154,7 +154,8 @@
       batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau,
       loaiRobot: m.loaiRobot || 'banh',
       robot: VeRobot.cauHinhCua(m),
-      mau: lm.mau, vatMau: lm.vatMau                    // lớp màu sàn / màu vật (chương cảm biến màu); null nếu màn không có
+      mau: lm.mau, vatMau: lm.vatMau,                   // lớp màu sàn / màu vật (chương cảm biến màu); null nếu màn không có
+      vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
     };
   }
   function veKho() {
@@ -162,11 +163,11 @@
     S.pal.dung({
       goc: m.hamGoc,
       vong: TP.coCauTruc(m, 'for'),
-      vongWhile: TP.coCauTruc(m, 'while'),
+      vongWhile: TP.coCauTruc(m, 'while') && TP.coDieuKienCua(m),
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC
       mau: TP.coMauCua(m),                                                                      // cảm biến màu: khối so màu + gán c = color()
       chuoi: TP.coCauTruc(m, 'for') && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R":
-      dieuKien: TP.coCauTruc(m, 'if'),
+      dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
       em: (m.moXuong !== false && !m.camHamCuaEm) ? TP.locHamTheoRobot(m, KhoHam.ds()) : null,      // nhện: bỏ hàm dùng lệnh bánh
       man: S.bai.hamCuaMan,
       coNutMoi: true
@@ -307,7 +308,7 @@
     if (!nhieuSan()) return;
     S.man.san.forEach(function (rows, i) {
       var b = h('button', 'sanbt'); b.setAttribute('data-nut', 'san-' + (i + 1)); b.setAttribute('data-san', i);
-      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau });
+      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau, vatChat: ch.vatChat, vatThem: ch.vatThem });
       b.appendChild(cv); b.appendChild(h('span', 'sn', String(i + 1))); b.appendChild(h('span', 'dau'));
       b.addEventListener('click', function () { xemSan(i); });
       E.bar.appendChild(b); S.nut.push(b);
@@ -407,7 +408,7 @@
         else if (cho.cot === 'hamEm' && cho.ten) bricks.push('em:' + cho.ten);
         else if (cho.cot === 'hamMan' && cho.ten) bricks.push('man:' + cho.ten);
       });
-      if (c.ma === 'dat-sai-mau') (S.bai.chinh || []).forEach(function (d, i) { if (/^\s*drop\(\)/.test(d)) rows.push(i); });      // thả vật sai màu đích: tô các dòng drop() của chương trình
+      if (c.ma === 'dat-sai-mau') (S.bai.chinh || []).forEach(function (d, i) { if (/^\s*(drop|magnet_off)\(\)/.test(d)) rows.push(i); });      // thả vật sai màu đích: tô các dòng drop() của chương trình
       if (c.ma === 'tran-khung') {
         conTran = true;
         if (c.cot === 'hamEm') bricks.push('em:' + c.ten); else if (c.cot === 'hamMan') bricks.push('man:' + c.ten);
