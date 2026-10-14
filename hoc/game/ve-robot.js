@@ -134,7 +134,7 @@
     if (!coPart()) return null;
     var P = window.Part, tay = chuanTay(tt.tay), cb = tt.camBien || {};
     var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [] };
-    var chay = tt.wl > 0 || tt.wr > 0, h = cfg.than === 'nhen' ? 0 : huong;     // nhện đi 4 hướng không quay mặt
+    var chay = tt.wl > 0 || tt.wr > 0, h = (cfg.than === 'nhen' && !cfg.tay) ? 0 : huong;     // nhện đi 4 hướng không quay mặt; nhện CÓ TAY: ảnh quay theo cạnh gắn tay (cố định theo batDau.huong, san-ve.js truyền vào `huong`)
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay },
       tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ra: tay.ra, ngam: tay.ngam, dangNem: tay.dangNem, dangBan: tay.dangBan },
@@ -178,8 +178,16 @@
     return cv;
   }
 
+  /** Vật trong tay kẹp (luật vật 14/10): tâm vật cách tâm thân bao nhiêu pixel PART về phía mũi xe (tay nâng; tay hạ xa thêm 1) và cạnh vật (pixel part).
+   *  Part kẹp chừa khe giữa hai càng cho vật (cột 7..16, hàng 8..17 của ảnh tay); thân hai bánh có ổ tay ở y = 4, các thân khác y = 5. */
+  function vatKep(cauHinh, tuThe) {
+    var oy = 4, P = (typeof window !== 'undefined') ? window.Part : null;
+    try { var d = P && P.lay('than', (cauHinh && cauHinh.than) || 'hai-banh'); if (d && d.oGan && d.oGan.tay) oy = d.oGan.tay.y; } catch (e) { /* giữ 4 */ }
+    return { ahead: 22 - oy + (tuThe === 'duoi' ? 1 : 0), n: 10 };
+  }
+
   var VeRobot = {
-    ve: ve, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart,
+    ve: ve, vatKep: vatKep, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart,
     REACH: REACH,                                                     // tâm thân → mép xa nhất của hình part (pixel part)
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };

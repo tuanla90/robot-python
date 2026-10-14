@@ -278,7 +278,7 @@
     });
     E.ffr.classList.toggle('sua', !!k);
   }
-  /** Gì đang ở ô (x, y) của sân thử: 'xe' | 'tuong' | 'vat' | null. (Màn có tay gắp: vật được nằm dưới xe, ô đó trả 'xe'; hỏi coVat để biết có vật.) */
+  /** Gì đang ở ô (x, y) của sân thử: 'xe' | 'tuong' | 'rao' | 'thung' | 'vat' | null. (Luật vật 14/10: vật chiếm ô, không nằm dưới xe được; lõi chuanSanThu cũng bỏ vật đè xe.) */
   function coGi(x, y) {
     var st = S.st;
     if (st.batDau.x === x && st.batDau.y === y) return 'xe';
@@ -290,8 +290,7 @@
     return null;
   }
   function coVat(x, y) { return S.st.vat.some(function (o) { return o.x === x && o.y === y; }); }
-  function coTay() { var tay = VeRobot.cauHinhCua(A.man()).tay; return !!tay && tay !== 'day'; }        // tay gắp: vật nằm dưới xe được
-  function coNem() { return VeRobot.cauHinhCua(A.man()).tay === 'nem'; }                       // máy ném: có nút Rào / Rổ, chạm vật dưới xe được
+  function coNem() { return VeRobot.cauHinhCua(A.man()).tay === 'nem'; }                       // máy ném: có nút Rào / Rổ
   function coNamCham() { return VeRobot.cauHinhCua(A.man()).tay === 'nam-cham'; }      // nam châm: nút Vật đặt vật GỖ, chạm lại thì thành SẮT, chạm nữa thì bỏ
   function coDay() { return VeRobot.cauHinhCua(A.man()).tay === 'day'; }           // tấm đẩy: nút Vật đặt THÙNG NẶNG
   function boO(ds, x, y) { return ds.filter(function (o) { return !(o.x === x && o.y === y); }); }
@@ -318,7 +317,7 @@
         var cu = moi.vat[vj];
         if (cu.chat === 'sat') { moi.vat = boO(moi.vat, x, y); toast(t('xuong.vatBo'), ''); }
         else { moi.vat[vj] = { x: x, y: y, mau: cu.mau, chat: 'sat' }; toast(t('xuong.vatSat'), ''); }
-      } else if (!co || co === 'xe') { moi.vat.push({ x: x, y: y }); toast(t('xuong.vatGo'), ''); }
+      } else if (!co) { moi.vat.push({ x: x, y: y }); toast(t('xuong.vatGo'), ''); }
       else return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
     } else if (S.che === 'rao') {                                                      // chế độ Rào: ô trống → hàng rào, chạm hàng rào → bỏ; không đặt lên xe / vật / tường / thùng
       if (co === 'rao') moi.rao = boO(moi.rao, x, y);
@@ -326,16 +325,12 @@
       else moi.rao.push({ x: x, y: y });
     } else if (S.che === 'xe') {
       if (co === 'xe') { if (A.man().loaiRobot === 'nhen') return; moi.batDau.huong = (moi.batDau.huong + 1) % 4; }       // nhện không có hướng mặt: chạm lại vào nó không xoay
-      else if (co === 'vat' && coTay()) { moi.batDau.x = x; moi.batDau.y = y; }          // có tay gắp: xe được đứng trên vật
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else { moi.batDau.x = x; moi.batDau.y = y; }
     } else {
       var khoa = S.che === 'vat' ? (coDay() ? 'thung' : 'vat') : 'tuong';
       if (co === 'rao') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.rao') }), 'bad');
-      if (khoa === 'vat' && co === 'xe' && coTay()) {                                    // đặt / bỏ vật ngay dưới xe
-        if (coVat(x, y)) moi.vat = boO(moi.vat, x, y); else moi.vat.push({ x: x, y: y });
-      }
-      else if (co === khoa) moi[khoa] = boO(moi[khoa], x, y);
+      if (co === khoa) moi[khoa] = boO(moi[khoa], x, y);
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else moi[khoa].push({ x: x, y: y });
     }
@@ -365,7 +360,7 @@
   }
   /** Các vị trí mà một chẩn đoán trỏ tới (xem man-choi.js). */
   function chiCho(c) {
-    var ds = [c.cho, c.choTruoc, c.choTruot, c.choPush];
+    var ds = [c.cho || TP.choBoSung(c, S.ketThu && S.ketThu.vet), c.choTruoc, c.choTruot, c.choPush];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }

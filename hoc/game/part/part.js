@@ -2,6 +2,18 @@
 (function(root,factory){var api=factory(root);if(typeof module==='object'&&module.exports)module.exports=api;root.Part=api;})(typeof window!=='undefined'?window:globalThis,function(root){
   'use strict';
   var K={ink:'#1b120a',vang:'#ffcf30',vangSang:'#ffe888',vangToi:'#d99418',thep:'#9aa3b5',thepSang:'#dbe3ed',thepToi:'#596274',kinh:'#26324e',xanh:'#7ff0ff',den:'#292a35',denSang:'#565968',go:'#c9853d',goSang:'#e5ad62',tim:'#56406f',timSang:'#9070b5',la:'#a8dc72',laSang:'#dcffad',do:'#df4b4b',xanhDuong:'#4f8dff'};
+  /* VẬT NHỎ (luật vật 14/10): vẽ một vật n×n (n=8: vật nằm đất ≈ 57% ô; n=10: vật trong kẹp ≈ 45% ô tính theo pixel part) vào bất kỳ Painter có px/rect.
+     chat 'sat' (khối sắt) hay gỗ (thùng nan chéo); mau: 'red'|'green'|'blue'|'yellow'|null (dải màu quanh thân). Dùng chung cho ve.js (vật trên sân) và tay kẹp (xem trang). */
+  var MAU_VAT={red:['#d6493e','#f0847a','#8f2822'],green:['#35c47a','#7cf0aa','#16703f'],blue:['#3f7fe0','#7db0f7','#22489c'],yellow:['#efc531','#ffe784','#a07c10']};
+  function veVatNho(p,ox,oy,n,chat,mau){
+    n=n||8;var m=n-2,sat=chat==='sat',base=sat?'#7f97b2':'#c98a45',lit=sat?'#dcecfa':'#e8b574',dk=sat?'#3f536c':'#8a5a24',mid=sat?'#a9c0d8':'#a8692a',i,c=MAU_VAT[mau];
+    for(i=1;i<n-1;i++){p.px(ox+i,oy,K.ink);p.px(ox+i,oy+n-1,K.ink);p.px(ox,oy+i,K.ink);p.px(ox+n-1,oy+i,K.ink);}
+    p.rect(ox+1,oy+1,m,m,base);p.rect(ox+1,oy+1,m,1,lit);p.rect(ox+1,oy+1,1,m,lit);p.rect(ox+1,oy+n-2,m,1,dk);p.rect(ox+n-2,oy+1,1,m,dk);
+    if(sat){var q=(n>>1)-1;p.rect(ox+q,oy+q,2,2,mid);p.px(ox+q,oy+q,'#ffffff');p.px(ox+q+1,oy+q+1,'#4a5f7a');p.px(ox+2,oy+2,'#ffffff');p.px(ox+n-3,oy+n-3,'#6f87a3');}
+    else for(i=2;i<n-2;i++){p.px(ox+i,oy+i,mid);p.px(ox+n-1-i,oy+i,mid);}
+    if(c){var h=n>=10?3:2,y0=oy+((n-h)>>1),cs=h===3?[c[1],c[0],c[2]]:[c[0],c[0]];for(i=0;i<h;i++)p.rect(ox+1,y0+i,m,1,cs[i]);}
+    return p;
+  }
   function Painter(w,h){this.w=w;this.h=h;this.buf=new Array(w*h).fill(null);}
   Painter.prototype.px=function(x,y,c){x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<this.w&&y<this.h)this.buf[y*this.w+x]=c;return this;};
   Painter.prototype.get=function(x,y){return x>=0&&y>=0&&x<this.w&&y<this.h?this.buf[y*this.w+x]:null;};
@@ -32,5 +44,5 @@
     huong=((huong||0)%4+4)%4;while(huong--)p=rot90(p);return p.canvas();
   }
   function hamGoc(c){var a=[],them=function(d){d.hamGoc.forEach(function(h){if(a.indexOf(h)<0)a.push(h);});};them(chon('than',c.than));if(c.tay)them(chon('tay',c.tay));(c.camBien||[]).forEach(function(x){them(chon('cam-bien',x.ma));});return a;}
-  return{K:K,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
+  return{K:K,veVatNho:veVatNho,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
 });

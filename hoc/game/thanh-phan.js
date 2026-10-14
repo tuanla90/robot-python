@@ -1611,6 +1611,22 @@
     m.than.appendChild(hang);
   }
 
-  window.TP = { h: h, esc: esc, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonDkm: chonDkm, datCheMau: datCheMau, coMauCua: coMauCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
+  /** Vị trí dòng / khối để tô cho các chẩn đoán lõi KHÔNG ghi sẵn `cho` (luật vật 14/10): thả bị chặn bằng kẹp (tha-bi-chan kieu 'kep'), vật vỡ (vat-vo) → lệnh release();
+   *  kẹp hụt (kep-hut) → grab(); xe vướng vật / tường (dam-tuong) → lệnh bánh của nhịp đó. Tìm trong vết: các mục 'lenh' nằm ngay trước mục 'nhip' mang số nhịp của chẩn đoán.
+   *  Trả về { cot, dong, ten? } hay null (lõi đã có cho thì không đụng tới). */
+  var LENH_BANH = /^(left_move|right_move|left_back|right_back|slide_left|slide_right|go_up|go_down|go_left|go_right)$/;
+  function choBoSung(c, vet) {
+    if (!c || c.cho || !vet || c.nhip === undefined || c.nhip === null) return null;
+    var re = (c.ma === 'tha-bi-chan' && c.kieu === 'kep') || c.ma === 'vat-vo' ? /^release$/ : c.ma === 'kep-hut' ? /^grab$/ : c.ma === 'dam-tuong' ? LENH_BANH : null;
+    if (!re) return null;
+    for (var i = 0; i < vet.length; i++) {
+      if (vet[i].loai !== 'nhip' || vet[i].nhip !== c.nhip) continue;
+      for (var j = i - 1; j >= 0 && vet[j].loai === 'lenh'; j--) if (re.test(vet[j].ten) && vet[j].cho) return vet[j].cho;
+      break;
+    }
+    return null;
+  }
+
+  window.TP = { h: h, esc: esc, choBoSung: choBoSung, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonDkm: chonDkm, datCheMau: datCheMau, coMauCua: coMauCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

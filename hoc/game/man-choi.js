@@ -246,7 +246,7 @@
   }
   /** Các vị trí (cot, dong, ten) mà một chẩn đoán trỏ tới. Lỗi `cau-truc-chua-hoc` / `tran-khung` ghi cot, dong, ten ngay trên chẩn đoán. */
   function chiCho(c) {
-    var ds = [c.cho, c.choTruoc, c.choTruot, c.choPush];
+    var ds = [c.cho || TP.choBoSung(c, S.vet), c.choTruoc, c.choTruot, c.choPush];
     if (c.ma === 'cau-truc-chua-hoc' && c.cot && c.dong > 0) ds.push({ cot: c.cot, dong: c.dong, ten: c.ten });
     return ds;
   }

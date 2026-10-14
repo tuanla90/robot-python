@@ -533,6 +533,18 @@
     thungMauCache[mau] = p.canvas(); return thungMauCache[mau];
   }
 
+  /** VẬT NHỎ (luật vật 14/10): vật n×n pixel gồm viền tối; n = 8 cho vật nằm đất (≈ 57% ô 14×14), n = 10 cho vật trong kẹp tính theo pixel part.
+   *  Hình vẽ nằm ở part/part.js (Part.veVatNho) để tay kẹp và sân dùng chung một kiểu; chưa nạp part thì vẽ khối phẳng. mau: tên màu ('red'…) hoặc null. */
+  var vatNhoCache = {};
+  function makeVatNho(n, chat, mau) {
+    var k = n + '|' + (chat === 'sat' ? 's' : 'g') + '|' + (mau || '');
+    if (vatNhoCache[k]) return vatNhoCache[k];
+    var p = new Painter(n, n), P = (typeof window !== 'undefined') ? window.Part : null;
+    if (P && P.veVatNho) P.veVatNho(p, 0, 0, n, chat, mau);
+    else { p.rect(0, 0, n, n, K.ink); p.rect(1, 1, n - 2, n - 2, chat === 'sat' ? '#7f97b2' : '#c98a45'); }
+    vatNhoCache[k] = p.canvas(); return vatNhoCache[k];
+  }
+
   var tileCache = null;
   function tiles() {
     if (tileCache) return tileCache;
@@ -589,6 +601,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeSat: makeSat, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeSat: makeSat, makeVatNho: makeVatNho, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();
