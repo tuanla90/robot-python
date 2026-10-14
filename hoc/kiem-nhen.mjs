@@ -134,12 +134,23 @@ function lapLenh(l, n) { return Array(n).fill(l).join('\n') + '\n'; }
 /* ====================================================== 3. TAY KẸP CỦA NHỆN */
 console.log('\n== 3. Tay kẹp của nhện: lệnh tay làm ở nhịp đầu của bước; tay hạ thì chân vướng ==');
 {
-  const S = ['.......', '.......', '..o....', '.......', '.......'];
+  // LUẬT VẬT (14/10): vật chiếm ô; tay kẹp ở cạnh TRƯỚC cố định (huong 0 = trên): nhặt / thả ở ô ngay TRÊN ô nhện đứng.
+  const S = ['.......', '..o....', '.......', '.......', '.......'];
   const bd = { x: 2, y: 2, huong: 0 };
   const T0 = { tuThe: 'tren', kep: false, cam: null };
   kiem('nhện có tay: tay mặc định nâng, kẹp mở, không cầm gì', J(nhenTay(S, bd, 'wait()').tay) === J(T0));
   const a = nhenTay(S, bd, L('arm_down()', 'grab()', 'wait()'));
-  kiem('arm_down + grab + wait: một nhịp, nhặt được vật ở ô đứng', a.nhip === 1 && a.tay.cam === 1 && a.tay.tuThe === 'duoi' && a.vat[0].trangThai === 'cam' && maSK(a, 'kep-hut').length === 0);
+  kiem('arm_down + grab + wait: một nhịp, nhặt được vật ở ô ngay trên đầu nhện (ô trước mặt)', a.nhip === 1 && a.tay.cam === 1 && a.tay.tuThe === 'duoi' && a.vat[0].trangThai === 'cam' && maSK(a, 'kep-hut').length === 0);
+  const a2 = nhenTay(S, { x: 2, y: 1, huong: 0 }, L('arm_down()', 'grab()', 'wait()'));
+  kiem('vật nằm đất chiếm ô: nhện xuất phát trên ô vật thì grab với ô trước mặt (không có vật) → kep-hut khong-co-vat, vật vẫn nằm', maSK(a2, 'kep-hut').length === 1 && maSK(a2, 'kep-hut')[0].lyDo === 'khong-co-vat' && a2.tay.cam === null && a2.vat[0].trangThai === 'dat');
+  const a3 = nhenTay(S, { x: 2, y: 3, huong: 0 }, L('go_up()', 'go_up()'));
+  kiem('vật chiếm ô: nhện đi lên vào ô có vật thì đứng im, dam-tuong vat "vat" (vẫn mất 2 nhịp mỗi bước)', vt(a3.robot) === '2,2' && maSK(a3, 'dam-tuong').length === 1 && maSK(a3, 'dam-tuong')[0].vat === 'vat' && a3.nhip === 4);
+  const a4 = nhenTay(S, { x: 1, y: 1, huong: 0 }, L('go_right()'));
+  kiem('vật chiếm ô: nhện đi ngang vào ô có vật cũng bị chặn (hướng đi không quan trọng)', vt(a4.robot) === '1,1' && maSK(a4, 'dam-tuong')[0].vat === 'vat');
+  const a5 = nhenTay(S, bd, L('go_right()', 'arm_down()', 'grab()', 'wait()'));
+  kiem('tay cố định phía TRÊN: nhện đi sang phải rồi grab thì ô trước mặt (3,1) không có vật → kep-hut khong-co-vat (nhện không quay theo hướng đi)', maSK(a5, 'kep-hut').length === 1 && maSK(a5, 'kep-hut')[0].lyDo === 'khong-co-vat' && maSK(a5, 'kep-hut')[0].o && vt(maSK(a5, 'kep-hut')[0].o) === '3,1');
+  const a6 = nhenTay(['.o....', '......'], { x: 0, y: 0, huong: 1 }, L('arm_down()', 'grab()', 'wait()'));
+  kiem('batDau.huong 1: tay ở cạnh PHẢI, nhặt được vật ở ô bên phải nhện', a6.tay.cam === 1 && a6.vat[0].trangThai === 'cam');
   const b = nhenTay(S, bd, L('arm_down()', 'grab()', 'go_right()'));
   kiem('arm_down + grab + go_right: tay làm ở NHỊP ĐẦU, nhịp hai chân vướng (tay-vuong), nhện đứng im, mất 2 nhịp',
     b.nhip === 2 && vt(b.robot) === '2,2' && b.tay.cam === 1 && maSK(b, 'tay-vuong').length === 1 && maSK(b, 'tay-vuong')[0].nhip === 2 && maSK(b, 'tay-vuong')[0].lenh && maSK(b, 'tay-vuong')[0].lenh.ten === 'go_right', J(b.suKien));
@@ -148,9 +159,9 @@ console.log('\n== 3. Tay kẹp của nhện: lệnh tay làm ở nhịp đầu c
   kiem('arm_up() chờ rồi go_right(): tay nâng ở nhịp đầu, chân bước ngay trong cùng bước (không cần wait() riêng): 1 + 2 nhịp', c.nhip === 3 && vt(c.robot) === '3,2' && c.tay.tuThe === 'tren' && c.tay.cam === 1 && c.vat[0].x === 3);
   const c2 = nhenTay(S, bd, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'go_right()'));
   kiem('cách cũ pick() có wait() sau arm_up(): chậm hơn đúng 1 nhịp, cùng kết quả', c2.nhip === 4 && vt(c2.robot) === '3,2' && c2.tay.cam === 1);
-  const d = nhenTay(S, bd, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'go_right()', 'arm_down()', 'release()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 3, y: 2 }] });
-  kiem('mang vật một ô rồi thả ở ô đích: thắng NGAY (dua-vat), vật đi theo nhện', d.thang && d.nhip === 4 && d.vat[0].trangThai === 'dat' && d.vat[0].x === 3 && nhipVet(d).some((n) => n.suKien.some((e) => e.ma === 'xong-dua-vat')), J([d.thang, d.nhip, d.vat]));
-  const e = nhenTay(S, bd, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'release()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 5, y: 2 }] });
+  const d = nhenTay(S, bd, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'go_right()', 'arm_down()', 'release()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 3, y: 1 }] });
+  kiem('mang vật sang phải một ô rồi thả xuống ô trước mặt (3,1) là ô đích: thắng NGAY (dua-vat), vật đi theo nhện', d.thang && d.nhip === 4 && d.vat[0].trangThai === 'dat' && d.vat[0].x === 3 && d.vat[0].y === 1 && nhipVet(d).some((n) => n.suKien.some((e) => e.ma === 'xong-dua-vat')), J([d.thang, d.nhip, d.vat]));
+  const e = nhenTay(S, bd, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'release()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 5, y: 1 }] });
   kiem('release() khi tay đang nâng: vật rơi VỠ, chạy dừng ngay (dungSom vat-vo)', e.dungSom === 'vat-vo' && !e.thang && maSK(e, 'vat-vo').length === 1 && e.vat[0].trangThai === 'vo');
   const f = nhenTay(S, bd, L('arm_down()', 'arm_down()', 'wait()'));
   kiem('hai lệnh tư thế cùng nhịp: lệnh sau bị bỏ (tay-goi-lai)', maSK(f, 'tay-goi-lai').length === 1 && maSK(f, 'tay-goi-lai')[0].nhom === 'tu-the');
@@ -165,7 +176,7 @@ console.log('\n== 3. Tay kẹp của nhện: lệnh tay làm ở nhịp đầu c
   void bang;
   const bangTay = nhenTay(['...>>>.'], { x: 3, y: 0, huong: 0 }, L('arm_down()', 'wait()', 'wait()'));
   kiem('tay hạ không cản băng chuyền: nhện đứng trên băng vẫn bị đẩy sau 2 nhịp', vt(bangTay.robot) === '4,0' && bangTay.tay.tuThe === 'duoi');
-  const cam = nhenTay(['o>>>>>.'], { x: 0, y: 0, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'go_right()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 6, y: 0 }] });
+  const cam = nhenTay(['o......', '.>>>>>.'], { x: 0, y: 1, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'go_right()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 6, y: 0 }] });
   kiem('vật đang cầm đi theo nhện cả khi băng đẩy', cam.vat[0].trangThai === 'cam' && cam.vat[0].x === cam.robot.x && cam.robot.x >= 2, J([cam.robot, cam.vat]));
   // xe bánh vẫn chạy như cũ với cùng cấu trúc xuLy
   const xe = SanHoc.chay({ san: S, batDau: bd, loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'wait', 'arm_down', 'arm_up', 'grab', 'release'] }, L('arm_down()', 'grab()', 'wait()'));
@@ -219,12 +230,15 @@ console.log('\n== 5. Bộ dò đường tắt cho nhện (BFS theo nhịp) và s
   kiem('băng ngược chiều chắn đường hẹp → null (kẹt mãi)', bfs(['.<<<F'], { x: 0, y: 0, huong: 0 }).nhip === null);
   kiem('băng xuôi chiều: nhanh hơn đi bộ (cùng 3 ô trong hành lang)', bfs(['.>>F'], { x: 0, y: 0, huong: 0 }).nhip < 6, String(bfs(['.>>F'], { x: 0, y: 0, huong: 0 }).nhip));
   kiem('BFS biết chờ trên băng: chờ cho băng đẩy cũng là hành động', (() => { const b = bfs(['>>>>F'], { x: 0, y: 0, huong: 0 }); return b.nhip !== null && b.nhip <= 8; })());
-  const co = bfs(['.o.D'], { x: 0, y: 0, huong: 0 }, { hamGoc: NHEN_TAY, mucTieu: 'dua-vat' });
-  kiem('dua-vat: đi 1 bước (2) + nhặt (1: hạ tay + kẹp) + đi 2 bước (4) + thả (1) = 8 nhịp, nâng tay gộp vào nhịp đầu của bước', co.nhip === 8, String(co.nhip));
+  // tay ở cạnh trước CỐ ĐỊNH (batDau.huong 1 = bên phải): vật '.o.D' nằm ngay phải nhện, ô đích cách hai ô
+  const co = bfs(['.o.D'], { x: 0, y: 0, huong: 1 }, { hamGoc: NHEN_TAY, mucTieu: 'dua-vat' });
+  kiem('dua-vat (tay bên phải): nhặt vật ở ô trước mặt (1: hạ tay + kẹp) + đi 2 bước (4) + thả xuống ô đích trước mặt (1) = 6 nhịp, nâng tay gộp vào nhịp đầu của bước', co.nhip === 6, String(co.nhip));
   kiem('chuoiThanhMa: mã sinh từ BFS chạy trong san-hoc.js cho đúng số nhịp (dua-vat)', (() => {
-    const r = nhenTay(['.o.D'], { x: 0, y: 0, huong: 0 }, chuoiThanhMa(co.chuoi), { mucTieu: 'dua-vat' });
+    const r = nhenTay(['.o.D'], { x: 0, y: 0, huong: 1 }, chuoiThanhMa(co.chuoi), { mucTieu: 'dua-vat' });
     return r.thang && r.nhip === co.nhip;
   })());
+  kiem('vật chiếm ô: sân hành lang một ô rộng có vật chắn lối (tay huong 0 lên) → BFS null (không bước qua vật, tay không với tới ô đích trên đường thẳng)', bfs(['.o.F'], { x: 0, y: 0, huong: 0 }, { hamGoc: NHEN_TAY }).nhip === null);
+  kiem('vật chiếm ô: có tay bên phải thì nhặt vật chắn lối rồi đi tiếp tới cờ (vật cầm không chiếm ô)', bfs(['.o.F'], { x: 0, y: 0, huong: 1 }, { hamGoc: NHEN_TAY }).nhip !== null);
   // so chéo: chương trình ngẫu nhiên (xorshift cố định)
   let seed = 123456789;
   const rnd = (n) => { seed ^= seed << 13; seed >>>= 0; seed ^= seed >>> 17; seed ^= seed << 5; seed >>>= 0; return seed % n; };
@@ -330,9 +344,9 @@ console.log('\n== 6. Dữ liệu 10 màn: nhện, tay kẹp ở 6, 9, 10, hàm c
   // 7.10: số chữ ≠ số ô ở hai chặng có băng
   const m710 = man('7.10');
   const chang = (chuoi, mau) => { const r = ChamHoc.cham(m710, { chinh: chuoi }, tron(khoTruoc('7.10'), m710.loiGiai.hamCuaEmMoi)); return r; };
-  kiem('7.10: chặng đầu "RR" qua hai ô băng xuôi thả vật đúng ô đích (3 ô, 2 chữ); "RRR" đi quá một ô nên vật nằm ngoài đích',
-    chang(['walk("RR")', 'bring("RR")']).vat[0].x === 5 && chang(['walk("RR")', 'bring("RRR")']).vat[0].x === 6);
-  kiem('7.10: viết theo số ô (bring("RRR"), bring("LLL") ở chặng băng) không thắng; viết theo số chữ thắng', !chang(['walk("RR")', 'bring("RRR")', 'walk("DDD")', 'bring("LLL")', 'walk("DD")', 'bring("LLL")']).thang && chamGiai(m710).thang);
+  kiem('7.10: chặng đầu "RR" qua một ô băng xuôi thả vật đúng ô đích (3 ô, 2 chữ); "RRR" đi quá một ô, ô trước mặt là tường nên thả bị chặn (tha-bi-chan), vật vẫn ở tay',
+    (() => { const a = chang(['walk("RR")', 'bring("RR")']), b = chang(['walk("RR")', 'bring("RRR")']); return a.vat[0].x === 5 && a.vat[0].y === 0 && a.vat[0].trangThai === 'dat' && b.vat[0].trangThai === 'cam' && b.chanDoan.some((c) => c.ma === 'tha-bi-chan'); })());
+  kiem('7.10: viết theo số ô (bring("RRR"), bring("LLL") ở chặng băng) không thắng; viết theo số chữ thắng', !chang(['walk("RR")', 'bring("RRR")', 'walk("DDD")', 'bring("LLL")', 'walk("L")', 'bring("L")']).thang && chamGiai(m710).thang);
   // canHam: không dùng hàm / chuỗi thì tràn khung
   for (const m of ds.filter((x) => x.canHam)) {
     const r = chamGiai(m);
@@ -379,8 +393,8 @@ console.log('\n== 7. Chẩn đoán cho nhện và sân thử của Xưởng hàm
   const wk = tron(khoTruoc('7.10'), [H('walk', ['for c in path:', '    go(c)'], ['path'])]);
   const thu2 = ChamHoc.thuHam(man('7.10'), { chinh: [] }, 'walk', wk, { doiSo: ['"RRD"'] });
   kiem('Xưởng hàm: thử walk("RRD"): 3 bước = 6 nhịp, tới (4,3)', vt(thu2.robot) === '4,3' && thu2.soNhip === 6, J([thu2.robot, thu2.soNhip]));
-  const thu3 = ChamHoc.thuHam(man('7.9'), { chinh: [] }, 'pick', khoTruoc('7.9'), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }] } });
-  kiem('Xưởng hàm: thử pick() ngay trên vật (sân thử) với nhện có tay: nhặt được vật', thu3.tay && thu3.tay.cam === 1 && thu3.vat[0].trangThai === 'cam', J(thu3.tay));
+  const thu3 = ChamHoc.thuHam(man('7.9'), { chinh: [] }, 'pick', khoTruoc('7.9'), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }] } });
+  kiem('Xưởng hàm: thử pick() với vật ở ô ngay trên nhện (ô trước mặt, sân thử) với nhện có tay: nhặt được vật', thu3.tay && thu3.tay.cam === 1 && thu3.vat[0].trangThai === 'cam', J(thu3.tay));
   const thu4 = ChamHoc.thuHam(m5, { chinh: [] }, 'go', tron(kho5, [H('go', ['if d == "U":', '    go_up()'], ['d'])]), { doiSo: ['"D"'] });
   kiem('Xưởng hàm: thử go("D") với bản go() thiếu nhánh: nhện đứng im, 0 nhịp, không báo lỗi', vt(thu4.robot) === '2,2' && thu4.soNhip === 0, J([thu4.robot, thu4.soNhip]));
 }

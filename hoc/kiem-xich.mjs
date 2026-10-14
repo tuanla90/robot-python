@@ -163,18 +163,27 @@ console.log('\n== 2. Bậc thang: xích leo được; băng chuyền không đ�
   })());
   kiem('xích trên băng vẫn quay được 90° bình thường (bám chắc): quay phải 2 nhịp tại ô băng', (() => { const x = xich(BANG_TRAI, { x: 2, y: 2, huong: 1 }, QP + QP); return x.robot.huong === 2 && vt(x.robot) === '2,2'; })());
   kiem('xích có tay kẹp: vật đang cầm đi theo, băng không đẩy xe', (() => {
-    const x = xichTay(['o>>>>.'], { x: 0, y: 0, huong: 1 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'wait()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 5, y: 0 }] });
-    return vt(x.robot) === '1,0' && x.vat[0].trangThai === 'cam' && x.vat[0].x === 1;
+    const x = xichTay(['.o>>>.'], { x: 0, y: 0, huong: 1 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'wait()', 'wait()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 5, y: 0 }] });
+    return vt(x.robot) === '2,0' && x.vat[0].trangThai === 'cam' && x.vat[0].x === 2;
   })());
 }
 
 /* ====================================================== 3. TAY KẸP CỦA XÍCH */
 console.log('\n== 3. Tay kẹp của xích: như xe bánh; tay hạ thì xe không đi hay quay, quay dở cũng mất ==');
 {
-  const S = ['.......', '.......', '..o....', '.......', '.......'];
+  // LUẬT VẬT (14/10): vật chiếm ô; gắp / thả ở ô TRƯỚC MẶT (mũi xe, huong 0 = lên)
+  const S = ['.......', '..o....', '.......', '.......', '.......'];
   const bd = { x: 2, y: 2, huong: 0 };
   const a = xichTay(S, bd, L('arm_down()', 'grab()', 'wait()'));
-  kiem('arm_down + grab + wait: một nhịp nhặt được vật dưới xe', a.nhip === 1 && a.tay.cam === 1 && a.vat[0].trangThai === 'cam');
+  kiem('arm_down + grab + wait: một nhịp nhặt được vật ở ô ngay trước mũi xe', a.nhip === 1 && a.tay.cam === 1 && a.vat[0].trangThai === 'cam');
+  const a2 = xichTay(S, bd, L('left_move()', 'right_move()', 'wait()'));
+  kiem('vật chiếm ô: xích tiến vào ô có vật thì đứng im, dam-tuong vat "vat" (tay không với thì xe cũng không đi xuyên)', vt(a2.robot) === '2,2' && maSK(a2, 'dam-tuong').length === 1 && maSK(a2, 'dam-tuong')[0].vat === 'vat');
+  const a3 = xichTay(S, { x: 2, y: 0, huong: 0 }, L('left_back()', 'right_back()', 'wait()'));
+  kiem('vật chiếm ô: xích LÙI vào ô có vật cũng bị chặn', vt(a3.robot) === '2,0' && maSK(a3, 'dam-tuong')[0].vat === 'vat');
+  const a4 = xichTay(S, bd, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'arm_down()', 'release()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 2, y: 0 }] });
+  kiem('nhặt rồi tiến một ô vào ô vật vừa nằm (đã trống), thả xuống ô trước mặt (2,0) là ô đích: thắng', a4.thang && vt(a4.robot) === '2,1' && a4.vat[0].x === 2 && a4.vat[0].y === 0 && a4.vat[0].trangThai === 'dat', J([a4.thang, a4.robot, a4.vat]));
+  const a5 = xichTay(['###', '.o.', '...'], { x: 1, y: 2, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'arm_down()', 'release()', 'wait()'));
+  kiem('thả vào ô trước mặt là tường: tha-bi-chan (vat "tuong"), vật vẫn ở tay', (() => { const e = maSK(a5, 'tha-bi-chan'); return e.length === 1 && e[0].vat === 'tuong' && a5.tay.cam === 1 && a5.vat[0].trangThai === 'cam'; })(), J(a5.suKien));
   const b = xichTay(S, bd, L('arm_down()', 'left_move()', 'wait()'));
   kiem('tay hạ mà ra lệnh quay: lệnh bánh bị bỏ (tay-vuong), xe không quay (cũng không "nhích nửa vòng")', maSK(b, 'tay-vuong').length === 1 && b.robot.huong === 0 && b.quayDo === 0 && !maSK(b, 'xich-quay-do').length);
   const c = xichTay(S, bd, L('left_move()', 'wait()', 'arm_down()', 'left_move()', 'wait()', 'arm_up()', 'left_move()', 'wait()'));
@@ -185,7 +194,7 @@ console.log('\n== 3. Tay kẹp của xích: như xe bánh; tay hạ thì xe khô
   kiem('nâng tay ở cùng nhịp với nửa vòng quay đầu: vẫn tính, quay đủ 90° ở nhịp 3 (pick() xong rồi quay được)', e.robot.huong === 1 && e.tay.tuThe === 'tren' && e.tay.cam === 1 && e.nhip === 3, J([e.robot, e.nhip]));
   const f = xichTay(S, bd, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'left_move()', 'wait()', 'left_move()', 'wait()'));
   kiem('pick() như trong kho (hạ, kẹp, nâng, mỗi nhóm một nhịp) rồi quay 90°: 4 nhịp, không chẩn đoán', f.nhip === 4 && f.robot.huong === 1 && !f.suKien.length);
-  const g = xichTay(S, bd, L('arm_down()', 'grab()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 2, y: 2 }] });
+  const g = xichTay(S, bd, L('arm_down()', 'grab()', 'wait()'), { mucTieu: 'dua-vat', dich: [{ x: 2, y: 1 }] });
   kiem('mục tiêu dua-vat với xích: nhặt rồi không đặt xuống đích thì chưa thắng', !g.thang);
   kiem('không khai lệnh tay thì xích gọi arm_down() là lỗi chạy', (() => { const r = xich(S, bd, 'arm_down()\nwait()'); return r.loi && r.loi.loai === 'runtime-error' && r.tay === null; })());
   kiem('xích chỉ nhận lệnh bánh: go_up() là lỗi chạy (tên lạ)', (() => { const r = xich(S, bd, 'go_up()'); return r.loi && r.loi.loai === 'runtime-error'; })());
@@ -208,7 +217,8 @@ console.log('\n== 4. Bộ dò đường tắt cho xích (BFS theo nhịp) và so
   kiem('băng chuyền không ảnh hưởng: đường qua băng = đường qua sàn', bfs(['.<<F'], { x: 0, y: 0, huong: 1 }).nhip === 3 && bfs(['.>>F'], { x: 0, y: 0, huong: 1 }).nhip === 3);
   kiem('cờ bị tường vây kín → null', bfs(['.....', '.###.', '.#F#.', '.###.', '.....'], { x: 0, y: 0, huong: 1 }).nhip === null);
   const co = bfs(['.o.D'], { x: 0, y: 0, huong: 1 }, { hamGoc: XICH_TAY, mucTieu: 'dua-vat' });
-  kiem('dua-vat: đi 1 (1) + nhặt (1: hạ tay + kẹp) + đi 2 (2) + thả (1) = 5 nhịp, nâng tay gộp vào nhịp đi', co.nhip === 5, String(co.nhip));
+  kiem('dua-vat: nhặt vật ngay trước mũi xe (1: hạ tay + kẹp) + đi 2 ô (2) + thả xuống ô đích trước mũi xe (1) = 4 nhịp, nâng tay gộp vào nhịp đi', co.nhip === 4, String(co.nhip));
+  kiem('vật chiếm ô: hành lang bị vật chắn, xe không có tay thì BFS null; có tay thì nhặt đi được', bfs(['.o.F'], { x: 0, y: 0, huong: 1 }).nhip === null && bfs(['.o.F'], { x: 0, y: 0, huong: 1 }, { hamGoc: XICH_TAY }).nhip !== null);
   kiem('chuoiThanhMa: mã sinh từ BFS chạy trong san-hoc.js cho đúng số nhịp (dua-vat)', (() => {
     const r = xichTay(['.o.D'], { x: 0, y: 0, huong: 1 }, chuoiThanhMa(co.chuoi), { mucTieu: 'dua-vat' });
     return r.thang && r.nhip === co.nhip;
@@ -405,8 +415,8 @@ console.log('\n== 6. Chẩn đoán xich-quay-do (thông tin) và sân thử củ
   kiem('Xưởng hàm: thử tr_left() bản thiếu một nhịp: quay dở, xich-quay-do kiểu "kết thúc"', thu4.robot.huong === 0 && maSK({ suKien: thu4.chanDoan }, 'x').length === 0 && thu4.chanDoan.some((x) => x.ma === 'xich-quay-do' && x.cuoi === true), J(maCua(thu4)));
   const thu5 = ChamHoc.thuHam(man('8.8'), { chinh: [], hamCuaMan: [H('tr_sai', ['left_move()', 'wait()'])] }, 'tr_sai', khoTruoc('8.8'), {});
   kiem('Xưởng hàm: thử tr_sai() của màn 8.8 (bản sai): quay nửa vòng, báo xich-quay-do', thu5.robot.huong === 0 && maCua(thu5).includes('xich-quay-do'));
-  const thu6 = ChamHoc.thuHam(man('8.7'), { chinh: [] }, 'pick', khoTruoc('8.7'), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 2 }] } });
-  kiem('Xưởng hàm: thử pick() ngay trên vật với xích có tay: nhặt được vật', thu6.tay && thu6.tay.cam === 1 && thu6.vat[0].trangThai === 'cam');
+  const thu6 = ChamHoc.thuHam(man('8.7'), { chinh: [] }, 'pick', khoTruoc('8.7'), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 1 }] } });
+  kiem('Xưởng hàm: thử pick() với vật ở ô ngay trước mũi xích (sân thử) có tay: nhặt được vật', thu6.tay && thu6.tay.cam === 1 && thu6.vat[0].trangThai === 'cam');
   // lỗi cũ vẫn còn
   const hc = ChamHoc.cham(man('8.3'), man('8.3').maMau, khoTruoc('8.3'));
   kiem('gọi tr_right() khi chưa tạo hàm: ham-chua-co, kèm lời "cần tạo nó trong Xưởng hàm"', maCua(hc).includes('ham-chua-co') && /Xưởng hàm/.test(hc.chanDoan.find((x) => x.ma === 'ham-chua-co').loi));

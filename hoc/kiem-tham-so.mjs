@@ -124,10 +124,10 @@ console.log('\n== 2. Đổi tham số thì xe đi đúng số ô: forward, right
   const rk = [0, 1, 2, 3, 4, 5, 8].map((k) => thu('right', [k], SAN_Q));
   kiem('right(k): k = 0, 1, 2, 3, 4, 5, 8 → hướng cuối = k mod 4 (0 lên, 1 phải, 2 xuống, 3 trái), k nhịp, đứng nguyên chỗ',
     rk.every((r, i) => { const k = [0, 1, 2, 3, 4, 5, 8][i]; return r.robot.huong === k % 4 && r.soNhip === k && vt(r.robot) === '2,2'; }), J(rk.map((r) => r.robot.huong)));
-  const SAN_D = { rong: 11, cao: 11, batDau: { x: 5, y: 10, huong: 0 }, vat: [{ x: 5, y: 10 }], tuong: [] };
+  const SAN_D = { rong: 11, cao: 11, batDau: { x: 5, y: 10, huong: 0 }, vat: [{ x: 5, y: 9 }], tuong: [] };
   const dv = [1, 3, 6].map((n) => thu('deliver', [n], SAN_D));
-  kiem('deliver(n): vật đang dưới xe được mang đi n ô rồi đặt xuống (trạng thái "dat", y = 10 − n), xe đứng cạnh vật',
-    dv.every((r, i) => { const n = [1, 3, 6][i]; return r.vat.length === 1 && r.vat[0].trangThai === 'dat' && r.vat[0].y === 10 - n && r.robot.y === 10 - n && r.chanDoan.length === 0; }), J(dv.map((r) => r.vat)));
+  kiem('deliver(n): vật ở ô TRƯỚC MẶT (y = 9) được nhặt, mang đi n ô rồi đặt xuống ô trước mặt (trạng thái "dat", y = 9 − n), xe đứng sát vật (y = 10 − n)',
+    dv.every((r, i) => { const n = [1, 3, 6][i]; return r.vat.length === 1 && r.vat[0].trangThai === 'dat' && r.vat[0].y === 9 - n && r.robot.y === 10 - n && r.chanDoan.length === 0; }), J(dv.map((r) => r.vat)));
   kiem('deliver(n) tốn 2 nhịp nhặt + n nhịp đi + 2 nhịp thả = n + 4 nhịp (tay trở lại tư thế nâng)', dv.every((r, i) => r.soNhip === [1, 3, 6][i] + 4), J(dv.map((r) => r.soNhip)));
   const SAN_S = { rong: 11, cao: 11, batDau: { x: 0, y: 0, huong: 1 }, vat: [], tuong: [] };
   const st = [[3, 1], [1, 3], [2, 2], [4, 5], [0, 2]].map(([a, b]) => ({ a, b, r: thu('step', [a, b], SAN_S) }));
@@ -272,11 +272,12 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
   const m6 = man('6.6');
   const d6 = (chinh, than = T_DELIVER) => ChamHoc.cham(m6, { chinh }, tron(khoTruoc('6.6'), [H('deliver', than, ['n'])]));
   const T_DELIVER = ['pick()', 'forward(n)', 'drop()'];
-  kiem('6.6: deliver(3), forward(1), deliver(2), turn_right(), forward(1), deliver(3) → 3 sao, 22 nhịp, 26 ô', d6(m6.loiGiai.chinh).sao === 3 && d6(m6.loiGiai.chinh).soNhip === 22 && d6(m6.loiGiai.chinh).soO === 26, J([d6(m6.loiGiai.chinh).sao, d6(m6.loiGiai.chinh).soNhip, d6(m6.loiGiai.chinh).soO]));
+  kiem('6.6: deliver(3), turn_right(), forward(1), deliver(2), turn_right(), forward(1), deliver(3) → 3 sao, 23 nhịp, 27 ô', d6(m6.loiGiai.chinh).sao === 3 && d6(m6.loiGiai.chinh).soNhip === 23 && d6(m6.loiGiai.chinh).soO === 27, J([d6(m6.loiGiai.chinh).sao, d6(m6.loiGiai.chinh).soNhip, d6(m6.loiGiai.chinh).soO]));
   const lech6 = (i, d) => { const ch = m6.loiGiai.chinh.slice(); ch[i] = ch[i].replace(/\d+/, (x) => +x + d); return d6(ch); };
   kiem('6.6: thiếu một ô ở bất kỳ chuyến nào (n − 1) → không đưa hết vật tới đích; dư một ô thì nhiều lắm cũng chỉ 2 sao',
-    [0, 2, 5].every((i) => !lech6(i, -1).thang && lech6(i, 1).sao < 3), J([0, 2, 5].map((i) => [lech6(i, -1).thang, lech6(i, 1).sao])));
-  kiem('6.6: forward(1) giữa hai chuyến: thiếu hay dư một ô đều trượt (xe tới sai vật)', [1, 4].every((i) => [-1, 1].every((d) => !lech6(i, d).thang)));
+    [0, 3, 6].every((i) => !lech6(i, -1).thang && lech6(i, 1).sao < 3), J([0, 3, 6].map((i) => [lech6(i, -1).thang, lech6(i, 1).sao])));
+  kiem('6.6: forward(1) sau khúc rẽ: forward(0) thì xe còn đứng ở góc, trượt; forward(2) thì xe đâm vào vật chiếm ô (đứng im 1 nhịp, dam-tuong) nên chậm, 2 sao',
+    [2, 5].every((i) => { const ch = m6.loiGiai.chinh.slice(); ch[i] = 'forward(0)'; const thieu = d6(ch); ch[i] = 'forward(2)'; const du = d6(ch); return !thieu.thang && du.thang && du.sao === 2 && maCua(du).includes('dam-tuong'); }));
   kiem('6.6: deliver() thả bằng release() khi tay nâng → vat-vo, dừng ngay', maCua(d6(m6.loiGiai.chinh, ['pick()', 'forward(n)', 'release()', 'wait()'])).includes('vat-vo'));
 
   // 6.7
@@ -311,12 +312,12 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
   // 6.10
   const m10 = man('6.10');
   const b10 = (a, b, c, d, e) => chamMan('6.10', ['deliver(' + a + ')', 'turn_right()', 'forward(' + b + ')', 'turn_right()', 'deliver(' + c + ')', 'turn_left()', 'forward(' + d + ')', 'turn_left()', 'deliver(' + e + ')']);
-  kiem('6.10: (5, 2, 5, 2, 3): ba chuyến qua băng → 3 sao, 32 nhịp, 31 ô; chuyến đầu 6 ô chỉ cần 5 lần, chuyến giữa 4 ô cần 5 lần, chuyến cuối 4 ô cần 3 lần',
-    b10(5, 2, 5, 2, 3).sao === 3 && b10(5, 2, 5, 2, 3).soNhip === 32 && b10(5, 2, 5, 2, 3).soO === 31, J([b10(5, 2, 5, 2, 3).sao, b10(5, 2, 5, 2, 3).soNhip]));
-  kiem('6.10: đếm theo số ô (6, 2, 4, 2, 4) trượt; thiếu một ở chuyến giữa (5, 2, 4, 2, 3) hay chuyến cuối (5, 2, 5, 2, 2) trượt',
-    !b10(6, 2, 4, 2, 4).thang && !b10(5, 2, 4, 2, 3).thang && !b10(5, 2, 5, 2, 2).thang);
-  kiem('6.10: đoạn nối thiếu một ô (forward(1)) → trượt; dư một ô (forward(3)) → đâm tường, chậm, 2 sao',
-    !b10(5, 1, 5, 2, 3).thang && !b10(5, 2, 5, 1, 3).thang && b10(5, 3, 5, 2, 3).sao === 2 && b10(5, 2, 5, 3, 3).sao === 2);
+  kiem('6.10: (4, 2, 5, 2, 3): ba chuyến qua băng → 3 sao, 31 nhịp, 31 ô; chuyến đầu vật dịch 5 ô chỉ cần 4 lần, chuyến giữa 4 ô ngược băng cần 5 lần, chuyến cuối 4 ô cần 3 lần',
+    b10(4, 2, 5, 2, 3).sao === 3 && b10(4, 2, 5, 2, 3).soNhip === 31 && b10(4, 2, 5, 2, 3).soO === 31, J([b10(4, 2, 5, 2, 3).sao, b10(4, 2, 5, 2, 3).soNhip]));
+  kiem('6.10: đếm theo số ô (5, 2, 4, 2, 4) trượt; thiếu một ở chuyến đầu (3, 2, 5, 2, 3), chuyến giữa (4, 2, 4, 2, 3) hay chuyến cuối (4, 2, 5, 2, 2) trượt',
+    !b10(5, 2, 4, 2, 4).thang && !b10(3, 2, 5, 2, 3).thang && !b10(4, 2, 4, 2, 3).thang && !b10(4, 2, 5, 2, 2).thang);
+  kiem('6.10: đoạn nối thiếu một ô (forward(1)) → trượt; dư một ô (forward(3)) → xe đâm vật chiếm ô, chậm, 2 sao',
+    !b10(4, 1, 5, 2, 3).thang && !b10(4, 2, 5, 1, 3).thang && b10(4, 3, 5, 2, 3).sao === 2 && b10(4, 2, 5, 3, 3).sao === 2);
 }
 
 /* ================================== 7. CANTHAMSO: KHAI TRIỂN LỜI GỌI HÀM CÓ THAM SỐ THÌ TRÀN KHUNG / MẤT SAO */

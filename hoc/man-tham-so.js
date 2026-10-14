@@ -11,6 +11,8 @@
      tham-so.3  forward(n)    = for i in range(n): move()
      tham-so.4  right(k)      = for i in range(k): turn_right()          (quay phải k lần)
      tham-so.6  deliver(n)    = pick(); forward(n); drop()                (nhặt, tiến n ô, thả)
+                (LUẬT VẬT 14/10: pick() nhặt vật ở Ô TRƯỚC MẶT, drop() đặt xuống ô trước mặt: vật dịch đúng n ô khi không có băng.
+                 Ô đích có vật là ô bị chiếm, nên mỗi đích nằm cuối đoạn, ngoài đường xe còn đi.)
      tham-so.8  step(a, b)    = forward(a); turn_right(); forward(b); turn_left()   (một bậc thang)
    Tên không trùng hàm cốt truyện chương trước (move, turn_right, turn_left, u_turn, corner, stair, two,
    pick, drop, carry, side, row, bend_left, bend_right).
@@ -81,8 +83,8 @@
   var CHINH_4 = ['right(2)', 'forward(4)', 'right(1)', 'forward(3)', 'right(3)', 'forward(2)'];
   // 6.5: năm đoạn dài ngắn khác nhau, bốn khúc rẽ
   var CHINH_5 = ['forward(4)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(2)', 'turn_right()', 'forward(3)', 'turn_right()', 'forward(4)'];
-  // 6.6: ba chuyến giao hàng, một khúc rẽ
-  var CHINH_6 = ['deliver(3)', 'forward(1)', 'deliver(2)', 'turn_right()', 'forward(1)', 'deliver(3)'];
+  // 6.6: ba chuyến giao hàng, hai khúc rẽ phải (mỗi vật dịch n ô: ba - hai - ba)
+  var CHINH_6 = ['deliver(3)', 'turn_right()', 'forward(1)', 'deliver(2)', 'turn_right()', 'forward(1)', 'deliver(3)'];
   // 6.7: xoắn ốc từ giữa ra
   var CHINH_7 = ['run(1)', 'run(2)', 'run(4)', 'run(5)', 'run(6)'];
   // 6.8: ba bậc thang
@@ -90,7 +92,7 @@
   // 6.9: hai đoạn băng chuyền (xuôi chiều rồi ngược chiều)
   var CHINH_9 = ['forward(2)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(6)', 'turn_left()', 'forward(2)'];
   // 6.10: ba chuyến, ba đoạn có băng chuyền
-  var CHINH_10 = ['deliver(5)', 'turn_right()', 'forward(2)', 'turn_right()', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'];
+  var CHINH_10 = ['deliver(4)', 'turn_right()', 'forward(2)', 'turn_right()', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'];
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -213,27 +215,27 @@
     man({
       so: 6, ten: 'Giao hàng deliver', hang: 'luyen', canThamSo: 'tran-khung', hamCuaEmCan: ['move', 'forward', 'turn_right', 'pick', 'drop'], taoHam: ['deliver'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Ba vật nằm rải trên đường, mỗi vật có ô đích (khung vàng) ở phía trước nó. Tạo hàm deliver(n): nhặt vật, tiến n ô rồi đặt xuống; dùng nó đưa cả ba vật tới đích.',
+      deBai: 'Ba vật nằm trên một đường gấp khúc, mỗi vật có ô đích (khung vàng) cùng hàng với nó, cách vài ô. Tạo hàm deliver(n): nhặt vật ở ô trước mặt, tiến n ô rồi đặt vật xuống ô trước mặt; dùng nó đưa cả ba vật tới đích.',
       veMaMau: 'Chương trình có sẵn đã gọi deliver(n) với số ô của từng chuyến, nhưng em chưa có hàm đó. Tạo hàm deliver với một đối số n.',
-      san: ['o..Do.D', '######o', '######.', '######.', '######D'],
-      batDau: { x: 0, y: 0, huong: 1 },
+      san: ['##.o..D', '#####.#', '#####o#', 'D..o..#', '#####D#'],
+      batDau: { x: 2, y: 0, huong: 1 },
       maMau: { chinh: CHINH_6.slice() },
-      sao: { o: 26, nhip: 22 },
+      sao: { o: 27, nhip: 23 },
       loiGiai: { chinh: CHINH_6.slice(), hamCuaEmMoi: [hDeliver()] },
       loiGiaiKhac: {
         moTa: 'Chuyến thứ hai viết thẳng pick(), forward(2), drop()',
-        baiLam: { chinh: ['deliver(3)', 'forward(1)', 'pick()', 'forward(2)', 'drop()', 'turn_right()', 'forward(1)', 'deliver(3)'] },
+        baiLam: { chinh: ['deliver(3)', 'turn_right()', 'forward(1)', 'pick()', 'forward(2)', 'drop()', 'turn_right()', 'forward(1)', 'deliver(3)'] },
         hamCuaEmMoi: [hDeliver()]
       },
       loiSai: [
         { moTa: 'Gọi deliver() mà chưa tạo hàm', baiLam: { chinh: CHINH_6.slice() }, phaiCoMa: ['ham-chua-co'] },
         { moTa: 'deliver() quên đặt vật xuống: tay vẫn cầm vật', baiLam: { chinh: CHINH_6.slice() }, hamCuaEmMoi: [H('deliver', ['n'], ['pick()', 'forward(n)'])], phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'deliver() thả bằng release() khi tay còn nâng: vật vỡ', baiLam: { chinh: CHINH_6.slice() }, hamCuaEmMoi: [H('deliver', ['n'], ['pick()', 'forward(n)', 'release()', 'wait()'])], phaiCoMa: ['vat-vo'] },
-        { moTa: 'Chuyến đầu đếm thiếu một ô: vật đặt sai chỗ', baiLam: { chinh: ['deliver(2)', 'forward(1)', 'deliver(2)', 'turn_right()', 'forward(1)', 'deliver(3)'] }, hamCuaEmMoi: [hDeliver()], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Gọi deliver() không có số', baiLam: { chinh: ['deliver()', 'forward(1)', 'deliver(2)', 'turn_right()', 'forward(1)', 'deliver(3)'] }, hamCuaEmMoi: [hDeliver()], phaiCoMa: ['loi-chay'] }
+        { moTa: 'Chuyến đầu đếm thiếu một ô: vật đặt sai chỗ', baiLam: { chinh: ['deliver(2)', 'turn_right()', 'forward(1)', 'deliver(2)', 'turn_right()', 'forward(1)', 'deliver(3)'] }, hamCuaEmMoi: [hDeliver()], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Gọi deliver() không có số', baiLam: { chinh: ['deliver()', 'turn_right()', 'forward(1)', 'deliver(2)', 'turn_right()', 'forward(1)', 'deliver(3)'] }, hamCuaEmMoi: [hDeliver()], phaiCoMa: ['loi-chay'] }
       ],
       goiY: ['Đếm khoảng cách từ mỗi vật tới ô đích của nó: đó là số n của chuyến.',
-        'Giữa các chuyến, xe còn phải đi tới vật kế tiếp.']
+        'Sau mỗi chuyến xe đứng sát ô đích; muốn tới sát vật kế tiếp, xe phải rẽ phải rồi tiến một ô.']
     }),
 
     /* ------------------------------------------------------------- hàng 3 */
@@ -313,24 +315,24 @@
       so: 10, ten: 'Ba chuyến dài', hang: 'trum', canThamSo: 'tran-khung', hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'pick', 'drop', 'deliver'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
       deBai: 'Ba vật nằm ở đầu ba đoạn đường dài, có băng chuyền chạy xuôi hoặc ngược chiều xe. Đưa mỗi vật tới ô đích ở cuối đoạn của nó.',
-      san: ['o.>>>.D', '######.', '##D>>.o', '##.####', '##o>>>D'],
+      san: ['.o>>>.D', '#####.#', 'D.>>o.#', '#.#####', '#.o>>.D'],
       batDau: { x: 0, y: 0, huong: 1 },
       maMau: { chinh: [] },
-      sao: { o: 31, nhip: 32 },
+      sao: { o: 31, nhip: 31 },
       huyHieu: { ma: 'tham-so', ten: 'Huy hiệu Hàm có tham số' },
       loiGiai: { chinh: CHINH_10.slice() },
       loiGiaiKhac: {
         moTa: 'Hai khúc rẽ phải gọi qua right(1)',
-        baiLam: { chinh: ['deliver(5)', 'right(1)', 'forward(2)', 'right(1)', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }
+        baiLam: { chinh: ['deliver(4)', 'right(1)', 'forward(2)', 'right(1)', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }
       },
       loiSai: [
-        { moTa: 'Đếm theo số ô: chuyến đầu deliver(6), băng đã đưa xe đi xa nên xe đâm tường một nhịp, chậm hơn', baiLam: { chinh: ['deliver(6)', 'turn_right()', 'forward(2)', 'turn_right()', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }, phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Chuyến giữa ngược băng nhưng đếm theo số ô: deliver(4) thiếu lần', baiLam: { chinh: ['deliver(5)', 'turn_right()', 'forward(2)', 'turn_right()', 'deliver(4)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên rẽ lần thứ hai giữa hai chuyến: xe đâm tường', baiLam: { chinh: ['deliver(5)', 'turn_right()', 'forward(2)', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Không dùng deliver(), viết nhặt - tiến - thả cho từng chuyến: quá 10 ô', baiLam: { chinh: ['pick()', 'forward(5)', 'drop()', 'turn_right()', 'forward(2)', 'turn_right()', 'pick()', 'forward(5)', 'drop()', 'turn_left()', 'forward(2)', 'turn_left()', 'pick()', 'forward(3)', 'drop()'] }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Đếm theo số ô: chuyến đầu deliver(5), băng đã đưa xe đi xa nên xe bước vào ô đích, không còn chỗ đặt vật', baiLam: { chinh: ['deliver(5)', 'turn_right()', 'forward(2)', 'turn_right()', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }, phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Chuyến giữa ngược băng nhưng đếm theo số ô: deliver(4) thiếu lần', baiLam: { chinh: ['deliver(4)', 'turn_right()', 'forward(2)', 'turn_right()', 'deliver(4)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên rẽ lần thứ hai giữa hai chuyến: xe đâm tường', baiLam: { chinh: ['deliver(4)', 'turn_right()', 'forward(2)', 'deliver(5)', 'turn_left()', 'forward(2)', 'turn_left()', 'deliver(3)'] }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Không dùng deliver(), viết nhặt - tiến - thả cho từng chuyến: quá 10 ô', baiLam: { chinh: ['pick()', 'forward(4)', 'drop()', 'turn_right()', 'forward(2)', 'turn_right()', 'pick()', 'forward(5)', 'drop()', 'turn_left()', 'forward(2)', 'turn_left()', 'pick()', 'forward(3)', 'drop()'] }, phaiCoMa: ['tran-khung'] }
       ],
       goiY: ['Mỗi đoạn là một chuyến deliver() với số n riêng: đoạn có băng chuyền cần số n khác số ô.',
-        'Giữa hai chuyến, xe phải rẽ hai lần và đi sang đoạn kế.']
+        'Sau mỗi chuyến xe đứng sát ô đích; muốn tới sát vật kế tiếp, xe phải rẽ rồi tiến hai ô.']
     })
   ];
 

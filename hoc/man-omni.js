@@ -87,9 +87,9 @@
   var CHINH_4 = ['slide_l(4)', 'forward(2)', 'slide_r(4)', 'forward(2)', 'slide_l(4)', 'forward(2)'];
   // 5: xe quay mặt sang TRÁI: tiến (sang trái) 2, slide_right (đi LÊN) 3, tiến 3, slide_left (đi XUỐNG) 2
   var CHINH_5 = ['forward(2)', 'slide_r(3)', 'forward(3)', 'slide_l(2)'];
-  // 6: tiến 2, trượt trái, pick, trượt phải, tiến 1, trượt phải, drop (viết thẳng slide_*: vừa khít 10 dòng)
-  var CHINH_6 = ['forward(2)', 'slide_left()', 'wait()', 'pick()', 'slide_right()', 'wait()', 'move()', 'slide_right()', 'wait()', 'drop()'];
-  var CHINH_6_KHAC = ['forward(2)', 'slide_l(1)', 'pick()', 'slide_r(1)', 'move()', 'slide_r(1)', 'drop()'];
+  // 6: tiến 2, trượt trái (vật ở NGAY TRƯỚC MẶT), pick, trượt phải hai lần (ô đích ở ngay trước mặt), drop
+  var CHINH_6 = ['forward(2)', 'slide_left()', 'wait()', 'pick()', 'slide_right()', 'wait()', 'slide_right()', 'wait()', 'drop()'];
+  var CHINH_6_KHAC = ['forward(2)', 'slide_l(1)', 'pick()', 'slide_r(2)', 'drop()'];
   // 7: trượt xuôi băng ngang 3 nhịp (6 ô), rồi lên xuôi băng dọc 2 nhịp
   var CHINH_7 = ['slide_r(3)', 'move()', 'move()'];
   // 8: bậc thang: phải 2, lên 2, phải 2, lên 2, phải 2
@@ -97,9 +97,9 @@
   // 9: bốn bậc thang: mỗi bậc một lần trượt phải rồi một lần tiến
   var CHINH_9_CHEO = LAP(4, ['slide_right()', 'move()']);                                     // maMau: gộp trượt với tiến trong một nhịp
   var CHINH_9 = LAP(4, ['slide_right()', 'wait()', 'move()']);
-  // 10: xe quay mặt sang PHẢI: tiến 2, slide_left (đi LÊN) nhặt, slide_right (đi XUỐNG) 3 ô theo băng, tiến 3, slide_left, thả
-  var CHINH_10 = ['forward(2)', 'slide_l(1)', 'pick()', 'slide_r(3)', 'forward(3)', 'slide_l(1)', 'drop()'];
-  var CHINH_10_KHAC = ['forward(2)', 'slide_l(1)', 'pick()', 'slide_r(1)', 'slide_r(2)', 'forward(3)', 'slide_l(1)', 'drop()'];
+  // 10: xe quay mặt sang PHẢI: slide_left (đi LÊN) cho vật ở ngay trước mặt, nhặt, slide_right (đi XUỐNG), tiến 2, slide_right 2 nhịp theo băng, tiến 3, thả
+  var CHINH_10 = ['slide_l(1)', 'pick()', 'slide_r(1)', 'forward(2)', 'slide_r(2)', 'forward(3)', 'drop()'];
+  var CHINH_10_KHAC = ['slide_l(1)', 'pick()', 'slide_r(1)', 'forward(2)', 'slide_r(1)', 'slide_r(1)', 'forward(3)', 'drop()'];
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -225,25 +225,25 @@
     man({
       so: 6, ten: 'Nhặt bên cạnh', hang: 'luyen', hamCuaEmCan: ['move', 'forward', 'pick', 'drop'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Vật nằm trong một hốc ở bên cạnh hành lang, ô đích nằm trong hốc bên kia. Xe omni trượt sang nhặt, trượt ra, rồi trượt sang thả, không cần quay mặt.',
+      deBai: 'Vật nằm ở góc trên bên trái, ô đích ở góc trên bên phải. Xe omni trượt sang trái để vật ở ngay trước mặt rồi nhặt, trượt sang phải tới khi ô đích ở ngay trước mặt rồi thả, không cần quay mặt.',
       veMaMau: 'Chương trình có sẵn đưa xe tiến hai ô tới ngang chỗ vật. Chạy thử rồi viết tiếp phần còn lại.',
-      san: ['###', '#.D', 'o.#', '#.#', '#.#'],
+      san: ['###', 'o#D', '...', '#.#', '#.#'],
       batDau: { x: 1, y: 4, huong: 0 },
       maMau: { chinh: ['forward(2)'] },
-      sao: { o: 25, nhip: 9 },
+      sao: { o: 24, nhip: 8 },
       loiGiai: { chinh: CHINH_6.slice() },
       loiGiaiKhac: {
-        moTa: 'Mỗi lần trượt gọi slide_l(1) hoặc slide_r(1) thay vì hai dòng slide và wait()',
+        moTa: 'Mỗi lần trượt gọi slide_l(1) hoặc slide_r(2) thay vì các dòng slide và wait()',
         baiLam: { chinh: CHINH_6_KHAC.slice() }
       },
       loiSai: [
         { moTa: 'Quên pick(): xe trượt qua lại tay không', baiLam: { chinh: CHINH_6.filter(function (s) { return s !== 'pick()'; }) }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên drop(): vật vẫn nằm trên tay', baiLam: { chinh: CHINH_6.slice(0, -1) }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Hạ tay và kẹp rồi trượt luôn: tay vướng sàn nên xe không trượt được', baiLam: { chinh: ['forward(2)', 'slide_left()', 'wait()', 'arm_down()', 'grab()', 'wait()', 'slide_right()', 'wait()'] }, phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
-        { moTa: 'Trượt sang phải ở hốc bên kia trước: ô đích chưa có vật, còn vật thì nằm hốc trái', baiLam: { chinh: ['forward(2)', 'slide_right()', 'wait()', 'pick()'] }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Trượt sang phải trước: trước mặt là ô đích trống, còn vật thì nằm ở góc trái', baiLam: { chinh: ['forward(2)', 'slide_right()', 'wait()', 'pick()'] }, phaiCoMa: ['kep-hut', 'chua-dua-vat'] }
       ],
       goiY: ['pick() và drop() tự hạ tay, kẹp hoặc thả rồi nâng tay lên lại, nên xe trượt được ngay sau đó.',
-        'Vật ở hốc bên trái xe, ô đích ở hốc bên phải: trượt sang trái nhặt, trượt về, tiến một ô, trượt sang phải thả.']
+        'Xe chỉ gắp và thả ở ô ngay trước mặt. Trượt sang trái một ô để vật ở trước mặt; mang vật trượt sang phải hai ô thì ô đích ở trước mặt.']
     }, true),
 
     /* ------------------------------------------------------------- hàng 3: biến thể */
@@ -319,12 +319,12 @@
     man({
       so: 10, ten: 'Hành trình omni', hang: 'trum', canHam: 'tran-khung', hamCuaEmCan: ['move', 'forward', 'slide_r', 'slide_l', 'pick', 'drop'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Xe omni quay mặt sang phải. Nhặt vật ở hốc phía trên, nhờ băng chuyền đưa xuống đáy sân, rồi mang tới ô đích ở hốc bên kia và thả.',
-      veMaMau: 'Chương trình có sẵn đưa xe tiến hai ô tới ngang chỗ vật. Chạy thử rồi viết tiếp phần còn lại.',
-      san: ['##o####', '...####', '##v####', '##v####', '##v##D#', '##....#'],
+      deBai: 'Xe omni quay mặt sang phải. Trượt lên để vật ở ngay trước mặt rồi nhặt, nhờ băng chuyền đưa xuống đáy sân, rồi mang tới tận cuối đáy sân, ô đích nằm ngay trước mặt xe, và thả.',
+      veMaMau: 'Chương trình có sẵn đưa xe tiến hai ô. Chạy thử rồi viết tiếp phần còn lại.',
+      san: ['.o#####', '...####', '##v####', '##v####', '##v####', '##....D'],
       batDau: { x: 0, y: 1, huong: 1 },
       maMau: { chinh: ['forward(2)'] },
-      sao: { o: 28, nhip: 13 },
+      sao: { o: 28, nhip: 12 },
       huyHieu: { ma: 'omni', ten: 'Huy hiệu Bánh omni' },
       loiGiai: { chinh: CHINH_10.slice() },
       loiGiaiKhac: {
@@ -334,10 +334,10 @@
       loiSai: [
         { moTa: 'Quên pick(): xe đi hết đường tay không', baiLam: { chinh: CHINH_10.filter(function (s) { return s !== 'pick()'; }) }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên drop(): vật vẫn nằm trên tay', baiLam: { chinh: CHINH_10.slice(0, -1) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Nghĩ slide_right() là sang phải màn hình: thực ra xe quay mặt sang phải nên trượt phải là đi xuống', baiLam: { chinh: ['forward(2)', 'slide_r(1)', 'pick()', 'slide_l(3)', 'forward(3)', 'slide_r(1)', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nghĩ slide_right() là sang phải màn hình: thực ra xe quay mặt sang phải nên trượt phải là đi xuống', baiLam: { chinh: ['slide_r(1)', 'pick()', 'slide_l(1)', 'forward(2)', 'slide_l(2)', 'forward(3)', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Thả bằng release() khi tay còn nâng: vật rơi vỡ', baiLam: { chinh: nhieu(CHINH_10.slice(0, -1), ['release()', 'wait()']) }, phaiCoMa: ['vat-vo'] }
       ],
-      goiY: ['Mặt xe quay sang phải: tiến là đi sang phải màn hình, slide_left() đi lên, slide_right() đi xuống.',
+      goiY: ['Mặt xe quay sang phải: tiến là đi sang phải màn hình, slide_left() đi lên, slide_right() đi xuống. Vật và ô đích đều phải ở ngay trước mặt khi gắp và thả.',
         'Băng chuyền xuôi chiều đẩy xe thêm một ô mỗi nhịp: đếm nhịp để xe dừng đúng ở đáy sân.']
     }, true)
   ];

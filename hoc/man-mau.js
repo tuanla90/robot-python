@@ -10,8 +10,9 @@
    - Ô màu: ký hiệu r g b y trong sân (sàn màu, đi lại như sàn thường), hay lớp \`mau\` riêng (man.mau, mảng chuỗi cùng cỡ sân)
      khi ô vừa có màu vừa là cờ F / ô đích D. Màn nhiều sân thì man.mau và man.vatMau là mảng song song với man.san.
    - Vật có màu: lớp man.vatMau (ký tự r g b y đặt đúng ô có vật). Ô đích có màu chỉ nhận vật CÙNG MÀU; thả sai màu thì 'dat-sai-mau'.
-   - color() dưới xe có vật nằm trên sàn mà vật có màu thì trả màu CỦA VẬT; không thì màu sàn. Vật đang cầm không tính
-     (muốn biết màu vật phải đọc TRƯỚC khi nhặt).
+   - color() khi đang CẦM vật (luật vật 14/10) trả màu CỦA VẬT đang cầm ("none" nếu vật không màu); không cầm gì thì trả màu SÀN dưới xe.
+     Vật nằm đất chiếm ô nên không bao giờ nằm dưới xe: muốn biết màu vật phải NHẶT nó lên rồi mới đọc color().
+     Hệ quả: lúc đang cầm vật, xe không đọc được màu sàn (vạch kẻ, ô đích): đọc vạch kẻ khi tay không, đọc màu vật sau khi nhặt.
 
    Chương này tiếp tục dùng NHIỀU SÂN từ hàng Luyện (màn 4–10: \`san\` là mảng 3 sân, \`batDau\` mảng song song, nhipTheo 'tong'),
    cauTruc ['for', 'if', 'while'] (while đã học ở chương 11). Mục tiêu: tới cờ ('toi-co'); 8 và 10 là 'dua-vat' (tay kẹp).
@@ -124,15 +125,16 @@
     ['#######', '#..F###', '#.#####', '#g#####', '#.#####', '#.#####', '#######'],
     ['#######', '#.#####', '#.#####', '#.#####', '#y.F###', '#.#####', '#######']
   ];
-  // 8: hành lang ngang; vật nằm dưới xe, đích xanh dương bên trái, đích đỏ bên phải (dài ngắn khác nhau)
+  // 8: xe đứng giữa hành lang ngang, mặt hướng lên; vật nằm trong ngách ngay TRƯỚC mặt (3,1); đích xanh dương bên trái (1,2), đích đỏ bên phải (5,2).
+  // Màu sàn dưới xe (3,2) chỉ là nhiễu: vàng, xanh lá, không màu. Màu vật (đỏ, xanh dương, đỏ) chỉ đọc được sau khi nhặt.
   var SAN_8 = [
-    ['#######', '#D.o.D#', '#######'],
-    ['#######', '#Do..D#', '#######'],
-    ['#######', '#D..oD#', '#######']
+    ['#######', '###o###', '#D...D#', '#######'],
+    ['#######', '###o###', '#D...D#', '#######'],
+    ['#######', '###o###', '#D...D#', '#######']
   ];
-  var MAU_8 = [lop(7, 3, { '1,1': 'b', '5,1': 'r', '4,1': 'y' }), lop(7, 3, { '1,1': 'b', '5,1': 'r', '4,1': 'g' }), lop(7, 3, { '1,1': 'b', '5,1': 'r', '2,1': 'y' })];
-  var VAT_MAU_8 = [lop(7, 3, { '3,1': 'r' }), lop(7, 3, { '2,1': 'b' }), lop(7, 3, { '4,1': 'r' })];
-  var BD_8 = [{ x: 3, y: 1, huong: 0 }, { x: 2, y: 1, huong: 0 }, { x: 4, y: 1, huong: 0 }];
+  var MAU_8 = [lop(7, 4, { '1,2': 'b', '5,2': 'r', '3,2': 'y' }), lop(7, 4, { '1,2': 'b', '5,2': 'r', '3,2': 'g' }), lop(7, 4, { '1,2': 'b', '5,2': 'r' })];
+  var VAT_MAU_8 = [lop(7, 4, { '3,1': 'r' }), lop(7, 4, { '3,1': 'b' }), lop(7, 4, { '3,1': 'r' })];
+  var BD_8 = { x: 3, y: 2, huong: 0 };
   // 9: ba vạch kẻ dài hơn, có cả đỏ và xanh dương
   var SAN_9 = [
     ['#######', '###r.F#', '#rgb###', '#.#####', '#.#####', '#.#####', '#######'],
@@ -140,19 +142,21 @@
     ['#######', '#######', '#r.g.r#', '#.###.#', '#r.b#F#', '###.###', '#######']
   ];
   var BD_9 = [{ x: 1, y: 5, huong: 0 }, { x: 5, y: 5, huong: 0 }, { x: 3, y: 5, huong: 0 }];
-  // 10: xe đứng giữa chân chữ U trên một vật; hai vạch kẻ dài, bên trái dẫn tới đích vàng, bên phải dẫn tới đích xanh lá (đỏ / xanh dương chỉ hướng rẽ)
+  // 10: hai nửa. Nửa dưới là vạch kẻ (đỏ rẽ phải, xanh dương rẽ trái) dẫn xe tay không tới ô vàng "vạch dừng" (3,2); sát mặt xe, trong ngách (3,1), là vật.
+  // Nhặt vật, đọc màu (color() lúc đang cầm = màu vật), rẽ về đích cùng màu: đích vàng ở (1,2) bên trái, đích xanh lá ở (5,2) bên phải, mỗi đích cách vạch dừng hai ô.
+  // Lúc đang cầm vật xe không đọc được màu sàn, nên mọi vạch kẻ phải đọc TRƯỚC khi nhặt. Ô xanh lá (3,3) ở sân 3 là nhiễu trên đoạn thẳng.
   var SAN_10 = [
-    ['#######', '#rD#Db#', '#.###.#', '#.###.#', '#.###.#', '#r.o.b#', '#######'],
-    ['#######', '#######', '#######', '#rD#Db#', '#.###.#', '#r.o.b#', '#######'],
-    ['#######', '##D#D##', '##.#.##', '#rb#rb#', '#.###.#', '#r.o.b#', '#######']
+    ['#######', '###o###', '#D.y.D#', '###.###', '#r.b###', '#.#####', '#######'],
+    ['#######', '###o###', '#D.y.D#', '###.###', '###r.b#', '#####.#', '#######'],
+    ['#######', '###o###', '#D.y.D#', '###g###', '##rb###', '##.####', '#######']
   ];
   var MAU_10 = [
-    lop(7, 7, { '2,1': 'y', '4,1': 'g' }),
-    lop(7, 7, { '2,3': 'y', '4,3': 'g' }),
-    lop(7, 7, { '2,1': 'y', '4,1': 'g' })
+    lop(7, 7, { '1,2': 'y', '5,2': 'g' }),
+    lop(7, 7, { '1,2': 'y', '5,2': 'g' }),
+    lop(7, 7, { '1,2': 'y', '5,2': 'g' })
   ];
-  var VAT_MAU_10 = [lop(7, 7, { '3,5': 'g' }), lop(7, 7, { '3,5': 'y' }), lop(7, 7, { '3,5': 'g' })];
-  var BD_10 = { x: 3, y: 5, huong: 0 };
+  var VAT_MAU_10 = [lop(7, 7, { '3,1': 'g' }), lop(7, 7, { '3,1': 'y' }), lop(7, 7, { '3,1': 'g' })];
+  var BD_10 = [{ x: 1, y: 5, huong: 0 }, { x: 5, y: 5, huong: 0 }, { x: 2, y: 5, huong: 0 }];
 
   /* ------------------------------------------------------------- chương trình dùng lại */
 
@@ -172,15 +176,15 @@
   var CHINH_6 = ['while color() != "yellow":', '    move()', 'turn_right()', 'while color() != "blue":', '    move()'];
   // 7: đi tới khi gặp tường hoặc ô vàng
   var CHINH_7 = ['while front_clear() and color() != "yellow":', '    move()', 'turn_right()', 'move()', 'move()'];
-  // 8: đọc màu vật trước khi nhặt, rẽ về phía đích cùng màu, đi tới ô đích
-  var CHINH_8 = ['c = color()', 'pick()', 'if c == "red":', '    turn_right()', 'elif c == "blue":', '    turn_left()', 'while color() != c:', '    move()', 'drop()'];
+  // 8: nhặt vật trước mặt, đọc màu vật đang cầm, rẽ về phía đích cùng màu, đi một ô tới sát đích, thả
+  var CHINH_8 = ['pick()', 'if color() == "red":', '    turn_right()', 'elif color() == "blue":', '    turn_left()', 'move()', 'drop()'];
   // 9: gọi hàm của màn go_by_color() cho mỗi bước
   var CHINH_9 = LAP(40, 'go_by_color()');
   var T_GO_BY_COLOR = ['if color() == "red":', '    turn_right()', 'elif color() == "blue":', '    turn_left()', 'move()'];
   var T_GO_BY_COLOR_SAI = ['if color() == red:', '    turn_right()', 'elif color() == "Blue":', '    turn_left()', 'move()'];
   function hGoByColor(than) { return H('go_by_color', [], than || T_GO_BY_COLOR); }
-  // 10: đọc màu vật, nhặt, rẽ về phía đích cùng màu, theo vạch kẻ tới ô đích
-  var CHINH_10 = ['c = color()', 'pick()', 'if c == "green":', '    turn_right()', 'else:', '    turn_left()', 'while color() != c:', '    read_turn()', '    move()', 'drop()'];
+  // 10: theo vạch kẻ (tay không) tới ô vàng, nhặt vật trước mặt, đọc màu vật, rẽ về đích cùng màu, đi một ô, thả
+  var CHINH_10 = ['while color() != "yellow":', '    read_turn()', '    move()', 'pick()', 'if color() == "green":', '    turn_right()', 'else:', '    turn_left()', 'move()', 'drop()'];
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -342,26 +346,26 @@
     man({
       so: 8, ten: 'Phân loại theo màu', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'pick', 'drop'], nhipTheoLoiGiai: true,
       tay: true,
-      deBai: 'Vật nằm dưới chân xe; đích xanh dương ("blue") ở bên trái, đích đỏ ("red") ở bên phải, mỗi đích chỉ nhận vật cùng màu. Đọc màu vật, nhặt rồi mang tới đích cùng màu.',
-      veMaMau: 'Chương trình có sẵn mới đọc màu và nhặt vật. Chạy thử rồi viết tiếp. Khi tay đã cầm vật thì color() không còn thấy màu của vật nữa.',
+      deBai: 'Vật nằm ngay trước mặt xe. Nhặt vật lên, color() sẽ cho biết màu của vật đang cầm. Đích xanh dương ("blue") ở bên trái, đích đỏ ("red") ở bên phải, mỗi đích chỉ nhận vật cùng màu: mang vật tới đích của nó.',
+      veMaMau: 'Chương trình có sẵn mới nhặt vật và ghi màu. Chạy thử rồi viết tiếp. Màu của vật chỉ đọc được SAU khi nhặt; trước khi nhặt, color() chỉ thấy màu sàn dưới xe.',
       san: SAN_8, mau: MAU_8, vatMau: VAT_MAU_8,
       batDau: BD_8,
-      maMau: { chinh: ['c = color()', 'pick()'] },
-      sao: { o: 26, nhip: 16 },
+      maMau: { chinh: ['pick()', 'c = color()'] },
+      sao: { o: 24, nhip: 15 },
       loiGiai: { chinh: CHINH_8.slice() },
       loiGiaiKhac: {
-        moTa: 'Đi tới đích bằng vòng for chứa if thay cho while',
-        baiLam: { chinh: ['c = color()', 'pick()', 'if c == "red":', '    turn_right()', 'elif c == "blue":', '    turn_left()', 'for i in range(5):', '    if color() != c:', '        move()', 'drop()'] }
+        moTa: 'Ghi màu vật vào biến, nhánh else cho đích còn lại',
+        baiLam: { chinh: ['pick()', 'c = color()', 'if c == "red":', '    turn_right()', 'else:', '    turn_left()', 'move()', 'drop()'] }
       },
       loiSai: [
-        { moTa: 'Luôn rẽ phải: vật xanh dương bị mang tới đích đỏ', baiLam: { chinh: ['pick()', 'turn_right()', 'while color() != "red":', '    move()', 'drop()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
-        { moTa: 'Đọc màu SAU khi nhặt: color() chỉ thấy sàn "none", không nhánh nào chạy', baiLam: { chinh: ['pick()', 'c = color()', 'if c == "red":', '    turn_right()', 'elif c == "blue":', '    turn_left()', 'while color() != c:', '    move()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đếm cứng theo sân đầu (2 ô sang phải): sân khác đích gần hay xa hơn', baiLam: { chinh: ['pick()', 'turn_right()', 'move()', 'move()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Viết hoa "Red": vật đỏ không nhánh nào nhận nên xe đứng yên', baiLam: { chinh: ['c = color()', 'pick()', 'if c == "Red":', '    turn_right()', 'elif c == "blue":', '    turn_left()', 'while color() != c:', '    move()', 'drop()'] }, phaiCoMa: ['ten-mau-sai', 'vong-vo-han'] },
-        { moTa: 'Quên thả vật xuống ở đích', baiLam: { chinh: ['c = color()', 'pick()', 'if c == "red":', '    turn_right()', 'elif c == "blue":', '    turn_left()', 'while color() != c:', '    move()'] }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Luôn rẽ phải: vật xanh dương bị mang tới đích đỏ', baiLam: { chinh: ['pick()', 'turn_right()', 'move()', 'drop()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
+        { moTa: 'Đọc màu TRƯỚC khi nhặt: color() chỉ thấy sàn dưới xe (vàng, xanh lá, không màu), không nhánh nào chạy', baiLam: { chinh: ['c = color()', 'pick()', 'if c == "red":', '    turn_right()', 'elif c == "blue":', '    turn_left()', 'move()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên đi tới đích: thả vật ngay trước mũi xe, ô đó không phải ô đích', baiLam: { chinh: ['pick()', 'if color() == "red":', '    turn_right()', 'elif color() == "blue":', '    turn_left()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Viết hoa "Red": vật đỏ không nhánh nào nhận nên xe không rẽ', baiLam: { chinh: ['pick()', 'if color() == "Red":', '    turn_right()', 'elif color() == "blue":', '    turn_left()', 'move()', 'drop()'] }, phaiCoMa: ['ten-mau-sai', 'chua-dua-vat'] },
+        { moTa: 'Quên thả vật xuống ở đích', baiLam: { chinh: ['pick()', 'if color() == "red":', '    turn_right()', 'elif color() == "blue":', '    turn_left()', 'move()'] }, phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Màu của vật chỉ đọc được khi xe đang đứng trên vật: ghi nó vào một biến TRƯỚC khi nhặt.',
-        'Đích cùng màu với vật: đi tới khi color() bằng màu đã ghi nhớ.']
+      goiY: ['Xe nhặt vật ở ô ngay trước mặt. Sau khi nhặt, color() là màu của vật đang cầm, dùng nó để chọn hướng rẽ.',
+        'Đích cùng màu với vật: đỏ bên phải, xanh dương bên trái. Rẽ xong tiến một ô là xe đứng sát đích, rồi thả.']
     }),
 
     man({
@@ -392,28 +396,28 @@
     man({
       so: 10, ten: 'Vạch kẻ và phân loại', hang: 'trum', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'pick', 'drop', 'read_turn'], nhipTheoLoiGiai: true,
       tay: true,
-      deBai: 'Vật nằm dưới chân xe. Hai vạch kẻ dài dẫn tới hai đích: đích xanh lá ("green") ở bên phải, đích vàng ("yellow") ở bên trái, mỗi đích chỉ nhận vật cùng màu. Đọc màu vật, nhặt, rồi theo vạch kẻ (đỏ "red" rẽ phải, xanh dương "blue" rẽ trái) tới đích của nó.',
-      veMaMau: 'Chương trình có sẵn mới đọc màu vật và nhặt. Chạy thử rồi viết tiếp.',
+      deBai: 'Theo vạch kẻ (đỏ "red" rẽ phải, xanh dương "blue" rẽ trái) tới ô vàng ("yellow"): vật nằm ngay trước mặt xe ở đó. Nhặt vật, đọc màu của nó, rồi mang tới đích cùng màu: đích xanh lá ("green") ở bên phải, đích vàng ("yellow") ở bên trái.',
+      veMaMau: 'Chương trình có sẵn mới theo vạch kẻ tới ô vàng. Chạy thử rồi viết tiếp. Cầm vật rồi thì color() là màu của vật, không còn thấy vạch kẻ nữa.',
       san: SAN_10, mau: MAU_10, vatMau: VAT_MAU_10,
       batDau: BD_10,
-      maMau: { chinh: ['c = color()', 'pick()'] },
-      sao: { o: 31, nhip: 38 },
+      maMau: { chinh: ['while color() != "yellow":', '    read_turn()', '    move()'] },
+      sao: { o: 31, nhip: 35 },
       huyHieu: { ma: 'mau', ten: 'Huy hiệu Cảm biến màu' },
       loiGiai: { chinh: CHINH_10.slice() },
       loiGiaiKhac: {
         moTa: 'Mỗi bước tiến dùng forward(1) thay cho move()',
-        baiLam: { chinh: ['c = color()', 'pick()', 'if c == "green":', '    turn_right()', 'else:', '    turn_left()', 'while color() != c:', '    read_turn()', '    forward(1)', 'drop()'] }
+        baiLam: { chinh: ['while color() != "yellow":', '    read_turn()', '    forward(1)', 'pick()', 'if color() == "green":', '    turn_right()', 'else:', '    turn_left()', 'forward(1)', 'drop()'] }
       },
       loiSai: [
-        { moTa: 'Luôn rẽ phải: vật vàng đi vào vạch bên phải, không gặp ô vàng nào, xe húc tường mãi', baiLam: { chinh: ['c = color()', 'pick()', 'turn_right()', 'while color() != c:', '    read_turn()', '    move()', 'drop()'] }, phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Luôn đi tới ô xanh lá rồi thả: vật vàng bị thả xuống đích xanh lá', baiLam: { chinh: ['pick()', 'turn_right()', 'while color() != "green":', '    read_turn()', '    move()', 'drop()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
-        { moTa: 'Đọc màu vật SAU khi nhặt: color() chỉ thấy sàn "none", vòng while không chạy lần nào', baiLam: { chinh: ['pick()', 'c = color()', 'if c == "green":', '    turn_right()', 'else:', '    turn_left()', 'while color() != c:', '    read_turn()', '    move()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên read_turn() trong vòng: xe đi thẳng, không theo vạch', baiLam: { chinh: ['c = color()', 'pick()', 'if c == "green":', '    turn_right()', 'else:', '    turn_left()', 'while color() != c:', '    move()', 'drop()'] }, phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Viết hoa "Green": vật xanh lá không nhánh nào nhận nên xe rẽ trái nhầm', baiLam: { chinh: ['c = color()', 'pick()', 'if c == "Green":', '    turn_right()', 'else:', '    turn_left()', 'while color() != c:', '    read_turn()', '    move()', 'drop()'] }, phaiCoMa: ['ten-mau-sai', 'vong-vo-han'] },
-        { moTa: 'Quên thả vật xuống ở đích', baiLam: { chinh: ['c = color()', 'pick()', 'if c == "green":', '    turn_right()', 'else:', '    turn_left()', 'while color() != c:', '    read_turn()', '    move()'] }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Luôn rẽ phải: vật vàng bị mang tới đích xanh lá', baiLam: { chinh: ['while color() != "yellow":', '    read_turn()', '    move()', 'pick()', 'turn_right()', 'move()', 'drop()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
+        { moTa: 'Gõ nhầm "yelow": không khớp màu nào nên xe không dừng được ở ô vàng, đi quá chỗ nhặt', baiLam: { chinh: ['while color() != "yelow":', '    read_turn()', '    move()', 'pick()', 'if color() == "green":', '    turn_right()', 'else:', '    turn_left()', 'move()', 'drop()'] }, phaiCoMa: ['ten-mau-sai'] },
+        { moTa: 'Quên read_turn() trong vòng: xe đi thẳng, không theo vạch', baiLam: { chinh: ['while color() != "yellow":', '    move()', 'pick()', 'if color() == "green":', '    turn_right()', 'else:', '    turn_left()', 'move()', 'drop()'] }, phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Đọc màu TRƯỚC khi nhặt: c là màu sàn ô vàng (luôn "yellow"), xe luôn rẽ trái nên vật xanh lá bị mang tới đích vàng', baiLam: { chinh: ['while color() != "yellow":', '    read_turn()', '    move()', 'c = color()', 'pick()', 'if c == "yellow":', '    turn_left()', 'move()', 'drop()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
+        { moTa: 'Viết hoa "Green": vật xanh lá không nhánh nào nhận nên xe rẽ trái nhầm', baiLam: { chinh: ['while color() != "yellow":', '    read_turn()', '    move()', 'pick()', 'if color() == "Green":', '    turn_right()', 'else:', '    turn_left()', 'move()', 'drop()'] }, phaiCoMa: ['ten-mau-sai', 'chua-dua-vat'] },
+        { moTa: 'Quên thả vật xuống ở đích', baiLam: { chinh: ['while color() != "yellow":', '    read_turn()', '    move()', 'pick()', 'if color() == "green":', '    turn_right()', 'else:', '    turn_left()', 'move()'] }, phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Ghi màu vật vào một biến TRƯỚC khi nhặt. Màu đó cho biết rẽ bên nào ngay từ đầu, và cũng là màu ô cần tìm.',
-        'Vòng while đi theo vạch (read_turn rồi move) cho tới khi color() bằng màu đã ghi nhớ.']
+      goiY: ['Hai việc, hai lúc: khi tay còn không, color() đọc vạch kẻ (đỏ, xanh dương) và ô vàng; sau khi nhặt vật, color() đọc màu của vật.',
+        'Vòng while đi theo vạch (read_turn rồi move) cho tới ô vàng. Rồi nhặt, chọn hướng theo màu vật, tiến một ô, thả.']
     })
   ];
 

@@ -12,6 +12,8 @@
      Hệ quả: turn_right() / turn_left() / u_turn() của xe bánh (1 nhịp) quay sai trên xích.
    - Leo được bậc thang S như đi trên sàn (xe bánh thì không).
    - Băng chuyền KHÔNG đẩy được xích (bám chắc), xuôi hay ngược chiều đều vậy.
+   - LUẬT VẬT (14/10): vật nằm đất CHIẾM Ô (xe không tiến / lùi vào được); pick() / drop() nhặt và thả ở Ô TRƯỚC MŨI XE, nên xe dừng
+     SÁT vật (mũi xe hướng về vật) rồi mới nhặt, và dừng sát ô đích rồi mới thả. Vật đang cầm thì không chiếm ô.
 
    BÀI HỌC: code phụ thuộc phần cứng. Mỗi thân cần bộ hàm quay riêng. Học sinh KHÔNG sửa đè hàm cũ (xe bánh ở chương
    khác vẫn cần chúng) mà tạo hàm mới cho xích.
@@ -86,15 +88,15 @@
   var CHINH_5 = nhieu(LAP(3, 'move()'), ['tr_left()'], LAP(3, 'move()'), ['tr_right()'], LAP(3, 'move()'));
   // 6: xuống 3, quẹo trái, sang phải 4, quẹo phải, xuống 2
   var CHINH_6 = nhieu(LAP(3, 'move()'), ['tr_left()'], LAP(4, 'move()'), ['tr_right()'], LAP(2, 'move()'));
-  // 7: tới vật, nhặt, mang sang phải 3 (qua bậc thang), quẹo trái, lên 3 (qua bậc thang), thả
-  var CHINH_7 = nhieu(['move()', 'pick()'], LAP(3, 'move()'), ['tr_left()'], LAP(3, 'move()'), ['drop()']);
+  // 7: tiến sát vật, nhặt (vật ở ô trước mũi xe), mang sang phải 3 (qua bậc thang), quẹo trái, lên 2 (qua bậc thang) tới sát ô đích, thả xuống ô trước mũi xe
+  var CHINH_7 = nhieu(['move()', 'pick()'], LAP(3, 'move()'), ['tr_left()'], LAP(2, 'move()'), ['drop()']);
   // 8: vòng quanh sân 4×4: 3 lần (đi 3 ô, quẹo phải) rồi đi 1 ô
   var CHINH_8 = nhieu(['for i in range(3):', '    for j in range(3):', '        move()', '    tr_sai()'], ['move()']);
   // 9: đường dài ít khúc quẹo (17 nhịp) và đường ngắn gấp khúc (19 nhịp)
   var CHINH_9 = nhieu(LAP(6, 'move()'), ['tr_right()'], LAP(4, 'move()'), ['tr_right()'], LAP(3, 'move()'));
   var CHINH_9_NGAN = nhieu(['tr_right()', 'move()', 'move()'], LAP(2, ['tr_left()', 'move()', 'tr_right()', 'move()']), ['tr_left()', 'move()']);
-  // 10: tới vật, nhặt, leo cầu thang 3 nấc (quẹo trái, 1 ô, quẹo phải, 1 ô) rồi thả
-  var CHINH_10 = nhieu(LAP(3, 'move()'), ['pick()'], LAP(3, ['tr_left()', 'move()', 'tr_right()', 'move()']), ['drop()']);
+  // 10: tiến sát vật, nhặt, bước vào ô vật vừa nằm, leo cầu thang 3 nấc (quẹo trái, 1 ô, quẹo phải, 1 ô) tới sát ô đích rồi thả xuống ô trước mũi xe
+  var CHINH_10 = nhieu(['move()', 'pick()', 'move()'], LAP(3, ['tr_left()', 'move()', 'tr_right()', 'move()']), ['drop()']);
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -245,25 +247,25 @@
     man({
       so: 7, ten: 'Xích gắp hàng', hang: 'bien-the', hamCuaEmCan: ['move', 'tr_left', 'pick', 'drop'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Xe xích gắn tay kẹp, dùng pick() và drop() như xe hai bánh. Nhặt vật, mang qua các bậc thang tới ô đích (khung vàng) rồi thả.',
-      veMaMau: 'Chương trình có sẵn đưa xe tới chỗ vật và nhặt nó. Chạy thử rồi viết tiếp phần còn lại.',
-      san: ['####D', '####.', '####S', '.oS..'],
+      deBai: 'Xe xích gắn tay kẹp, dùng pick() và drop() như xe hai bánh: nhặt và thả ở ô ngay trước mũi xe, còn vật nằm đất chiếm ô nên xe phải dừng sát vật. Nhặt vật, mang qua các bậc thang, dừng sát ô đích (khung vàng) rồi thả.',
+      veMaMau: 'Chương trình có sẵn đưa xe tới sát vật và nhặt nó. Chạy thử rồi viết tiếp phần còn lại.',
+      san: ['####D', '####.', '####S', '..oS.'],
       batDau: { x: 0, y: 3, huong: 1 },
       maMau: { chinh: ['move()', 'pick()'] },
-      sao: { o: 24, nhip: 12 },
+      sao: { o: 24, nhip: 11 },
       loiGiai: { chinh: CHINH_7.slice() },
       loiGiaiKhac: {
-        moTa: 'Đoạn sau khúc quẹo gọi move() từng lần một',
-        baiLam: { chinh: nhieu(CHINH_7.slice(0, 5), lap('move()', 3), ['drop()']) }
+        moTa: 'Đoạn sau khi nhặt vật (trước khúc quẹo) gọi move() từng lần một',
+        baiLam: { chinh: nhieu(['move()', 'pick()'], lap('move()', 3), ['tr_left()'], LAP(2, 'move()'), ['drop()']) }
       },
       loiSai: [
         { moTa: 'Quên pick(): xe tới đích tay không', baiLam: { chinh: CHINH_7.filter(function (s) { return s !== 'pick()'; }) }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên drop(): vật vẫn nằm trên tay', baiLam: { chinh: CHINH_7.slice(0, -1) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Hạ tay và kẹp rồi quay luôn: tay vướng sàn nên xe không quay được', baiLam: { chinh: nhieu(['move()', 'arm_down()', 'grab()'], LAP(3, 'move()'), ['tr_left()'], LAP(3, 'move()'), ['drop()']) }, phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
+        { moTa: 'Hạ tay và kẹp rồi quay luôn: tay vướng sàn nên xe không quay được', baiLam: { chinh: nhieu(['move()', 'arm_down()', 'grab()'], LAP(3, 'move()'), ['tr_left()'], LAP(2, 'move()'), ['drop()']) }, phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
         { moTa: 'Thả bằng release() khi tay còn nâng: vật rơi vỡ', baiLam: { chinh: nhieu(CHINH_7.slice(0, -1), ['release()', 'wait()']) }, phaiCoMa: ['vat-vo'] }
       ],
       goiY: ['pick() và drop() tự hạ tay, kẹp hoặc thả rồi nâng tay lên lại, nên xe quay và đi được ngay sau đó.',
-        'Đếm ô từ xe tới vật, rồi từ vật tới ô đích; chú ý ô nào là bậc thang.']
+        'Dừng sát vật mới nhặt được, và dừng sát ô đích (mũi xe hướng về nó) mới thả đúng chỗ; chú ý ô nào là bậc thang.']
     }, true),
 
     man({
@@ -315,24 +317,24 @@
     man({
       so: 10, ten: 'Cầu thang dài', hang: 'trum', canHam: 'tran-khung', hamCuaEmCan: ['move', 'tr_right', 'tr_left', 'pick', 'drop'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Mang vật qua con đường dài có bậc thang và băng chuyền tới ô đích. Dùng vòng lặp cùng các hàm quay của xe xích cho gọn.',
-      veMaMau: 'Chương trình có sẵn đưa xe tới chỗ vật rồi nhặt nó. Viết tiếp phần leo lên ô đích và thả vật.',
-      san: ['#####>D', '####S^#', '###S<##', '.S.o###'],
+      deBai: 'Mang vật qua con đường dài có bậc thang và băng chuyền tới ô đích: nhặt và thả đều ở ô ngay trước mũi xe, nên xe dừng sát vật và dừng sát ô đích. Dùng vòng lặp cùng các hàm quay của xe xích cho gọn.',
+      veMaMau: 'Chương trình có sẵn đưa xe tới sát vật rồi nhặt nó. Viết tiếp phần leo lên sát ô đích và thả vật.',
+      san: ['####.>D', '###S^##', '##S<###', '.So####'],
       batDau: { x: 0, y: 3, huong: 1 },
-      maMau: { chinh: nhieu(LAP(3, 'move()'), ['pick()']) },
-      sao: { o: 28, nhip: 24 },
+      maMau: { chinh: ['move()', 'pick()'] },
+      sao: { o: 28, nhip: 23 },
       huyHieu: { ma: 'xich', ten: 'Huy hiệu Bánh xích' },
       loiGiai: { chinh: CHINH_10.slice() },
       loiGiaiKhac: {
-        moTa: 'Đoạn đầu gọi move() từng lần một',
-        baiLam: { chinh: nhieu(lap('move()', 3), CHINH_10.slice(2)) }
+        moTa: 'Bước đầu tiên viết trong một vòng lặp một lần',
+        baiLam: { chinh: nhieu(LAP(1, 'move()'), CHINH_10.slice(1)) }
       },
       loiSai: [
         { moTa: 'Quên pick(): xe leo tới đích tay không', baiLam: { chinh: CHINH_10.filter(function (s) { return s !== 'pick()'; }) }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên drop(): vật vẫn nằm trên tay', baiLam: { chinh: CHINH_10.slice(0, -1) }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Dùng turn_left() và turn_right() cũ: xe chỉ quay nửa vòng, đâm tường', baiLam: { chinh: CHINH_10.map(function (s) { return s.replace('tr_left', 'turn_left').replace('tr_right', 'turn_right'); }) }, phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-dua-vat'] },
         { moTa: 'Đổi thứ tự quay trong vòng lặp (phải rồi trái): xe đâm tường', baiLam: { chinh: CHINH_10.map(function (s) { return s === '    tr_left()' ? '    tr_right()' : s === '    tr_right()' ? '    tr_left()' : s; }) }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Không dùng vòng lặp cho cầu thang: quá 10 ô', baiLam: { chinh: nhieu(LAP(3, 'move()'), ['pick()'], ['tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()', 'move()'], ['drop()']) }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Không dùng vòng lặp cho cầu thang: quá 10 ô', baiLam: { chinh: nhieu(['move()', 'pick()', 'move()'], ['tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()', 'move()'], ['drop()']) }, phaiCoMa: ['tran-khung'] }
       ],
       goiY: ['Mỗi bậc cầu thang là: quẹo trái, đi một ô, quẹo phải, đi một ô. Đặt bốn dòng đó vào một vòng for.',
         'Băng chuyền không đẩy được xe xích; nhớ pick() trước khi leo và drop() khi tới ô đích.']

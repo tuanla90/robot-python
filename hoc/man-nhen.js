@@ -15,6 +15,9 @@
      go_* kế tiếp hoặc ở nhịp wait() kế tiếp (đúng thứ tự: tay đổi tư thế, rồi kẹp / thả). Tay đang hạ ở
      nhịp thứ hai của bước thì chân vướng: bước bị bỏ ('tay-vuong'). Nên pick() / drop() của kho (hạ tay,
      kẹp / thả, nâng tay) chạy được với nhện như với xe bánh.
+   - LUẬT VẬT (14/10): vật nằm đất CHIẾM Ô, nhện không bước vào được. Nhện không quay nên tay kẹp luôn ở một cạnh CỐ ĐỊNH theo
+     batDau.huong (các màn ở đây đều huong 0 = phía trên): grab / release làm ở ô ngay TRÊN ô nhện đứng. Màn dựng hành lang có
+     "hốc" phía trên đường đi: vật và ô đích nằm trong hốc, nhện đứng dưới hốc để nhặt / thả (không nhặt / thả khi đứng trên băng).
 
    Python học thêm: CHUỖI KÝ TỰ làm đối số, `if / elif` so sánh chuỗi (`d == "U"`), `for c in "UURR":`.
    Quy ước chữ chỉ đường: "U" lên, "D" xuống, "L" trái, "R" phải (chữ HOA; chữ thường không khớp nhánh nào).
@@ -81,12 +84,12 @@
   var C5 = 'URRDRRDDLLDLD';           // 5: 13 bước
   var C7 = 'DDRRUURRDDDL';            // 7: 12 bước
 
-  // 6: đi tới vật, nhặt, mang tới đích, thả
-  var CHINH_6 = nhieu(DI('DRRDR'), ['pick()'], DI('DDLLD'), ['drop()']);
+  // 6: đi tới chỗ đứng DƯỚI vật, nhặt, mang tới chỗ đứng DƯỚI ô đích, thả
+  var CHINH_6 = nhieu(DI('DRRDDDR'), ['pick()'], DI('DLL'), ['drop()']);
   // 9: hai vật, tám dòng
-  var CHINH_9 = ['walk("RRR")', 'pick()', 'walk("DDL")', 'drop()', 'walk("LDD")', 'pick()', 'walk("RRR")', 'drop()'];
-  // 10: ba vật, sáu dòng (chữ ít hơn số ô ở hai chỗ có băng xuôi chiều)
-  var CHINH_10 = ['walk("RR")', 'bring("RR")', 'walk("RDD")', 'bring("LL")', 'walk("DD")', 'bring("LLL")'];
+  var CHINH_9 = ['walk("RR")', 'pick()', 'walk("RR")', 'drop()', 'walk("LLDDDRR")', 'pick()', 'walk("LLLL")', 'drop()'];
+  // 10: ba vật, sáu dòng (chữ ít hơn số ô ở chặng đầu và chặng giữa có băng xuôi chiều)
+  var CHINH_10 = ['walk("RR")', 'bring("RR")', 'walk("RDDDL")', 'bring("LL")', 'walk("L")', 'bring("L")'];
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -209,25 +212,26 @@
     man({
       so: 6, ten: 'Nhện nhặt hàng', hang: 'luyen', canHam: 'tran-khung', hamCuaEmCan: ['go', 'pick', 'drop'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Nhện cũng có tay kẹp: pick() và drop() dùng như ở xe bánh. Nhặt vật rồi mang tới ô đích (khung vàng).',
-      veMaMau: 'Chương trình có sẵn đưa nhện tới chỗ vật rồi dừng. Viết tiếp phần nhặt vật và mang tới đích.',
-      san: ['.###', 'S..#', '##.o', '###.', '#...', '#D##'],
+      deBai: 'Nhện cũng có tay kẹp gắn phía trên đầu và không quay: pick() nhặt vật ở ô ngay trên đầu nhện, drop() đặt vật xuống ô đó. Vật nằm đất chiếm ô nên nhện không bước vào được. Nhặt vật rồi mang tới ô đích (khung vàng).',
+      veMaMau: 'Chương trình có sẵn đưa nhện tới chỗ ngay dưới vật rồi dừng. Viết tiếp phần nhặt vật, mang tới chỗ ngay dưới ô đích và đặt vật xuống.',
+      san: ['.###', 'S..#', '##.#', '##.o', '#D..', '#...'],
       batDau: { x: 0, y: 0, huong: 0 },
-      maMau: { chinh: DI('DRRDR') },
+      maMau: { chinh: DI('DRRDDDR') },
       sao: { o: 24, nhip: 23 },
       loiGiai: { chinh: CHINH_6.slice() },
       loiGiaiKhac: {
-        moTa: 'Đoạn đi tới vật chia làm hai chuỗi',
-        baiLam: { chinh: nhieu(DI('DRR'), DI('DR'), ['pick()'], DI('DDLLD'), ['drop()']) }
+        moTa: 'Đoạn đi tới chỗ dưới vật chia làm hai chuỗi',
+        baiLam: { chinh: nhieu(DI('DRR'), DI('DDDR'), ['pick()'], DI('DLL'), ['drop()']) }
       },
       loiSai: [
-        { moTa: 'Quên pick(): nhện tới đích tay không', baiLam: { chinh: nhieu(DI('DRRDR'), DI('DDLLD'), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên drop(): vật vẫn nằm trên tay', baiLam: { chinh: nhieu(DI('DRRDR'), ['pick()'], DI('DDLLD')) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Hạ tay và kẹp rồi bước luôn: tay vướng sàn nên nhện không bước được', baiLam: { chinh: nhieu(DI('DRRDR'), ['arm_down()', 'grab()'], DI('DDLLD'), ['drop()']) }, phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
-        { moTa: 'Thả bằng release() khi tay còn nâng: vật rơi vỡ', baiLam: { chinh: nhieu(DI('DRRDR'), ['pick()'], DI('DDLLD'), ['release()', 'wait()']) }, phaiCoMa: ['vat-vo'] }
+        { moTa: 'Quên pick(): nhện tới chỗ dưới ô đích tay không', baiLam: { chinh: nhieu(DI('DRRDDDR'), DI('DLL'), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên drop(): vật vẫn nằm trên tay', baiLam: { chinh: nhieu(DI('DRRDDDR'), ['pick()'], DI('DLL')) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Hạ tay và kẹp rồi bước luôn: tay vướng sàn nên nhện không bước được', baiLam: { chinh: nhieu(DI('DRRDDDR'), ['arm_down()', 'grab()'], DI('DLL'), ['drop()']) }, phaiCoMa: ['tay-vuong', 'chua-dua-vat'] },
+        { moTa: 'Thả bằng release() khi tay còn nâng: vật rơi vỡ', baiLam: { chinh: nhieu(DI('DRRDDDR'), ['pick()'], DI('DLL'), ['release()', 'wait()']) }, phaiCoMa: ['vat-vo'] },
+        { moTa: 'Đi thẳng vào vật: vật chiếm ô nên nhện không vào được, tay không với tới', baiLam: { chinh: nhieu(DI('DRRDDR'), ['pick()'], DI('DDLL'), ['drop()']) }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
       goiY: ['pick() và drop() tự hạ tay, kẹp hoặc thả, rồi nâng tay lên lại, nên gọi xong là nhện bước tiếp được.',
-        'Đếm số bước từ chỗ nhện đứng tới vật, rồi từ vật tới ô đích.']
+        'Tay kẹp ở phía trên đầu nhện: đứng ngay DƯỚI vật mới nhặt được, và đứng ngay DƯỚI ô đích mới thả đúng chỗ.']
     }, true),
 
     /* ------------------------------------------------------------- hàng 3: biến thể */
@@ -278,24 +282,24 @@
     man({
       so: 9, ten: 'Hàm walk(path)', hang: 'bien-the', canHam: 'tran-khung', hamCuaEmCan: ['go', 'pick', 'drop'], taoHam: ['walk'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Tạo hàm walk(path): đi theo từng chữ của chuỗi path. Dùng nó cùng pick() và drop() để đưa hai vật tới hai ô đích.',
+      deBai: 'Tạo hàm walk(path): đi theo từng chữ của chuỗi path. Dùng nó cùng pick() và drop() để đưa hai vật tới hai ô đích. Nhớ tay kẹp ở phía trên đầu nhện: đứng ngay dưới vật để nhặt, đứng ngay dưới ô đích để thả.',
       veMaMau: 'Chương trình có sẵn gọi walk() cho từng đoạn đường, nhưng em chưa có hàm đó. Tạo hàm walk với một đối số path.',
-      san: ['..So#', '###.#', '#.D.#', '#.###', '#o..D'],
-      batDau: { x: 0, y: 0, huong: 0 },
+      san: ['##o#D', '..S..', '##.##', 'D#.#o', '.....'],
+      batDau: { x: 0, y: 1, huong: 0 },
       maMau: { chinh: CHINH_9.slice() },
-      sao: { o: 28, nhip: 31 },
+      sao: { o: 28, nhip: 37 },
       loiGiai: { chinh: CHINH_9.slice(), hamCuaEmMoi: [hWalk()] },
       loiGiaiKhac: {
-        moTa: 'Đoạn đầu tiên gọi walk() hai lần: "RR" rồi "R"',
-        baiLam: { chinh: nhieu(['walk("RR")', 'walk("R")'], CHINH_9.slice(1)) },
+        moTa: 'Đoạn thứ ba chia làm hai lần: "LLDDD" rồi "RR"',
+        baiLam: { chinh: nhieu(CHINH_9.slice(0, 4), ['walk("LLDDD")', 'walk("RR")'], CHINH_9.slice(5)) },
         hamCuaEmMoi: [hWalk()]
       },
       loiSai: [
         { moTa: 'Gọi walk() mà chưa tạo hàm', baiLam: { chinh: CHINH_9.slice() }, phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Gọi walk(RRR) quên dấu nháy quanh chuỗi', baiLam: { chinh: ['walk(RRR)'].concat(CHINH_9.slice(1)) }, hamCuaEmMoi: [hWalk()], phaiCoMa: ['loi-chay'] },
+        { moTa: 'Gọi walk(RR) quên dấu nháy quanh chuỗi', baiLam: { chinh: ['walk(RR)'].concat(CHINH_9.slice(1)) }, hamCuaEmMoi: [hWalk()], phaiCoMa: ['loi-chay'] },
         { moTa: 'Gọi walk() không đưa chuỗi vào', baiLam: { chinh: ['walk()'].concat(CHINH_9.slice(1)) }, hamCuaEmMoi: [hWalk()], phaiCoMa: ['loi-chay'] },
-        { moTa: 'Thiếu một chữ ở đoạn mang vật thứ nhất: vật đặt sai chỗ', baiLam: { chinh: CHINH_9.map(function (s) { return s === 'walk("DDL")' ? 'walk("DD")' : s; }) }, hamCuaEmMoi: [hWalk()], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Không dùng walk(): mỗi đoạn một vòng for, quá 10 ô', baiLam: { chinh: nhieu(DI('RRR'), ['pick()'], DI('DDL'), ['drop()'], DI('LDD'), ['pick()'], DI('RRR'), ['drop()']) }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Thiếu một chữ ở đoạn mang vật thứ hai: nhện dừng sai chỗ, vật đặt không tới ô đích', baiLam: { chinh: CHINH_9.map(function (s) { return s === 'walk("LLLL")' ? 'walk("LLL")' : s; }) }, hamCuaEmMoi: [hWalk()], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không dùng walk(): mỗi đoạn một vòng for, quá 10 ô', baiLam: { chinh: nhieu(DI('RR'), ['pick()'], DI('RR'), ['drop()'], DI('LLDDDRR'), ['pick()'], DI('LLLL'), ['drop()']) }, phaiCoMa: ['tran-khung'] }
       ],
       goiY: ['walk(path) chỉ cần đi qua từng chữ của path và mỗi chữ gọi go(): giống chương trình ở màn trước.',
         'Mỗi đoạn đường là một lần gọi walk() với chuỗi của đoạn đó; giữa các đoạn là pick() hoặc drop().']
@@ -303,14 +307,14 @@
 
     /* ------------------------------------------------------------- trùm */
     man({
-      so: 10, ten: 'Ba vật, ba băng', hang: 'trum', canHam: 'tran-khung', hamCuaEmCan: ['go', 'walk', 'pick', 'drop'], taoHam: ['bring'],
+      so: 10, ten: 'Ba vật, hai băng', hang: 'trum', canHam: 'tran-khung', hamCuaEmCan: ['go', 'walk', 'pick', 'drop'], taoHam: ['bring'],
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      deBai: 'Ba vật nằm rải trên đường có bậc thang và băng chuyền xuôi chiều. Tạo hàm bring(path): nhặt vật, đi theo path rồi thả; dùng nó cùng walk() để đưa mỗi vật tới ô đích.',
+      deBai: 'Ba vật nằm rải trên đường có bậc thang và băng chuyền xuôi chiều. Tạo hàm bring(path): nhặt vật, đi theo path rồi thả; dùng nó cùng walk() để đưa mỗi vật tới ô đích. Tay kẹp ở phía trên đầu nhện: nhặt và thả đều ở ô ngay trên đầu, nên đứng dưới vật để nhặt, đứng dưới ô đích để thả, và đừng nhặt hay thả khi đang đứng trên băng.',
       veMaMau: 'Chương trình có sẵn đã gọi bring() cho ba chuyến, nhưng em chưa có hàm đó. Tạo hàm bring với một đối số path.',
-      san: ['..o>>D.', '######S', '###D<<o', '###S###', 'D..o###'],
-      batDau: { x: 0, y: 0, huong: 0 },
+      san: ['##o##D#', '...>...', '######S', 'DoD##o.', '....<..'],
+      batDau: { x: 0, y: 1, huong: 0 },
       maMau: { chinh: CHINH_10.slice() },
-      sao: { o: 29, nhip: 39 },
+      sao: { o: 29, nhip: 37 },
       huyHieu: { ma: 'nhen', ten: 'Huy hiệu Thân nhện' },
       loiGiai: { chinh: CHINH_10.slice(), hamCuaEmMoi: [hBring()] },
       loiGiaiKhac: {
@@ -322,7 +326,7 @@
         { moTa: 'Gọi bring() mà chưa tạo hàm', baiLam: { chinh: CHINH_10.slice() }, phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Đếm theo số ô: bring("RRR") ở chặng đầu, băng đã đưa nhện đi xa nên vật thả sai chỗ', baiLam: { chinh: CHINH_10.map(function (s) { return s === 'bring("RR")' ? 'bring("RRR")' : s; }) }, hamCuaEmMoi: [hBring()], phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'bring() quên thả vật: vật vẫn trên tay', baiLam: { chinh: CHINH_10.slice() }, hamCuaEmMoi: [H('bring', ['path'], ['pick()', 'walk(path)'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Không dùng bring(): mỗi chuyến viết walk, pick, walk, drop riêng, quá 10 ô', baiLam: { chinh: ['walk("RR")', 'pick()', 'walk("RR")', 'drop()', 'walk("RDD")', 'pick()', 'walk("LL")', 'drop()', 'walk("DD")', 'pick()', 'walk("LLL")', 'drop()'] }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Không dùng bring(): mỗi chuyến viết walk, pick, walk, drop riêng, quá 10 ô', baiLam: { chinh: ['walk("RR")', 'pick()', 'walk("RR")', 'drop()', 'walk("RDDDL")', 'pick()', 'walk("LL")', 'drop()', 'walk("L")', 'pick()', 'walk("L")', 'drop()'] }, phaiCoMa: ['tran-khung'] }
       ],
       goiY: ['Băng chuyền xuôi chiều đẩy nhện thêm một ô: ở hai chặng có băng, số chữ trong chuỗi ít hơn số ô.',
         'Mỗi chuyến là: đi tới vật (walk), rồi bring() để nhặt, mang và thả.']

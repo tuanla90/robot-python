@@ -121,11 +121,11 @@
     ['#..F###', '#.#####', '#.#####', '#.#####', '#.#####', '#.#####', '#######'],
     ['#######', '#######', '#.....F', '#.#####', '#.#####', '#.#####', '#######']
   ];
-  // 9: hành lang đứng, vật nằm dưới chân xe, ô đích D sát tường cuối (dài 2 / 4 / 6 ô)
+  // 9: hành lang đứng, vật nằm ngay TRƯỚC MẶT xe (vật chiếm ô), ô đích D ở ngách bên phải ô cuối hành lang (xe đi 2 / 4 / 6 ô tới tường)
   var SAN_9 = [
-    ['###', '###', '###', '###', '#D#', '#.#', '#o#'],
-    ['###', '###', '#D#', '#.#', '#.#', '#.#', '#o#'],
-    ['#D#', '#.#', '#.#', '#.#', '#.#', '#.#', '#o#']
+    ['####', '####', '####', '####', '#.D#', '#o##', '#.##'],
+    ['####', '####', '#.D#', '#.##', '#.##', '#o##', '#.##'],
+    ['#.D#', '#.##', '#.##', '#.##', '#.##', '#o##', '#.##']
   ];
   // 10: ba mê cung hành lang: rẽ trái / phải xen kẽ, có ngõ cụt giả ở chỗ rẽ và dọc đường
   var SAN_10 = [
@@ -155,8 +155,8 @@
   var CHINH_7 = LAP(60, ['if right_clear():', '    turn_right()', '    move()', 'elif front_clear():', '    move()', 'else:', '    turn_left()']);
   // 8: sửa True → front_clear()
   var CHINH_8 = nhieu(VONG_WHILE, ['turn_right()'], VONG_WHILE);
-  // 9: nhặt vật, đi tới tường, thả
-  var CHINH_9 = ['pick()', 'go_wall()', 'drop()'];
+  // 9: nhặt vật trước mặt, đi tới tường, quay phải (ô đích ở ngay trước mặt), thả
+  var CHINH_9 = ['pick()', 'go_wall()', 'turn_right()', 'drop()'];
   // 10: tới tường, rồi lặp: rẽ về phía còn trống (ưu tiên bên phải), lại tới tường
   var CHINH_10 = nhieu(['go_wall()'], LAP(20, ['if right_clear():', '    turn_right()', 'else:', '    turn_left()', 'go_wall()']));
 
@@ -333,24 +333,25 @@
     }),
 
     man({
-      so: 9, ten: 'Mang vật tới tường', hang: 'bien-the', hamCuaEmCan: ['pick', 'drop', 'go_wall'], nhipTheoLoiGiai: true,
+      so: 9, ten: 'Mang vật tới tường', hang: 'bien-the', hamCuaEmCan: ['turn_right', 'pick', 'drop', 'go_wall'], nhipTheoLoiGiai: true,
       tay: true,
-      deBai: 'Một vật nằm dưới chân xe, ô đích ở sát tường cuối hành lang. Hành lang dài ngắn khác nhau ở ba sân: nhặt vật, mang tới tường rồi thả xuống ô đích.',
+      deBai: 'Một vật nằm ngay trước mặt xe, ô đích nằm ngay bên phải ô cuối hành lang. Hành lang dài ngắn khác nhau ở ba sân: nhặt vật, mang tới tường, quay phải rồi thả xuống ô đích.',
       veMaMau: 'Chương trình có sẵn mới nhặt vật. Chạy thử rồi viết tiếp.',
       san: SAN_9,
       batDau: BD_DUNG,
       maMau: { chinh: ['pick()'] },
-      sao: { o: 18, nhip: 21 },
+      sao: { o: 21, nhip: 24 },
       loiGiai: { chinh: CHINH_9.slice() },
-      loiGiaiKhac: { moTa: 'Đi tới tường bằng vòng for chứa biến cảm biến thay cho go_wall()', baiLam: { chinh: nhieu(['pick()'], LAP(9, ['co_duong = front_clear()', 'if co_duong:', '    move()']), ['drop()']) } },
+      loiGiaiKhac: { moTa: 'Đi tới tường bằng vòng for chứa biến cảm biến thay cho go_wall()', baiLam: { chinh: nhieu(['pick()'], LAP(9, ['co_duong = front_clear()', 'if co_duong:', '    move()']), ['turn_right()', 'drop()']) } },
       loiSai: [
-        { moTa: 'Quên nhặt vật: thả xuống ô đích không có gì', baiLam: { chinh: ['go_wall()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đếm cứng theo sân đầu (2 ô): sân dài hơn vật bị thả giữa đường', baiLam: { chinh: ['pick()', 'move()', 'move()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đếm cứng theo sân dài nhất (6 ô): thắng cả ba sân nhưng xe húc tường ở sân ngắn nên mất nhịp', baiLam: { chinh: nhieu(['pick()'], LAP(6, 'move()'), ['drop()']) }, phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Quên thả vật ở cuối', baiLam: { chinh: ['pick()', 'go_wall()'] }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên nhặt vật: vật nằm chắn trước mặt nên go_wall() không đi được, xe thả tay không', baiLam: { chinh: ['go_wall()', 'turn_right()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đếm cứng theo sân đầu (2 ô): sân dài hơn xe quay phải giữa đường, trước mặt là tường nên không thả được', baiLam: { chinh: ['pick()', 'move()', 'move()', 'turn_right()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đếm cứng theo sân dài nhất (6 ô): thắng cả ba sân nhưng xe húc tường ở sân ngắn nên mất nhịp', baiLam: { chinh: nhieu(['pick()'], LAP(6, 'move()'), ['turn_right()', 'drop()']) }, phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quên quay phải: tới tường rồi thả, trước mặt là tường nên vật vẫn ở tay', baiLam: { chinh: ['pick()', 'go_wall()', 'drop()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên thả vật ở cuối', baiLam: { chinh: ['pick()', 'go_wall()', 'turn_right()'] }, phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Nhặt xong thì đưa xe tới tường rồi mới thả; hàm em đã có sẵn cho cả ba việc.',
-        'Ô đích nằm sát tường cuối hành lang ở cả ba sân.']
+      goiY: ['Nhặt xong thì đưa xe tới tường rồi quay phải, ô đích ở ngay trước mặt mới thả; hàm em đã có sẵn cho các việc này.',
+        'Ô đích nằm ngay bên phải ô cuối hành lang ở cả ba sân.']
     }),
 
     /* ------------------------------------------------------------- trùm */

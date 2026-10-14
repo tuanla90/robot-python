@@ -224,16 +224,17 @@ console.log('\n== 4. Băng chuyền đẩy thùng: nằm đủ 2 nhịp liên ti
 console.log('\n== 5. Tay kẹp gắp thùng nặng thì hụt (kep-hut, qua-nang) ==');
 {
   const TAY = SanHoc.HAM_GOC.banh.concat(['arm_down', 'arm_up', 'grab', 'release']);
-  const g = SanHoc.chay({ san: ['...'], batDau: E(1, 0), loaiRobot: 'banh', hamGoc: TAY, thung: [{ x: 1, y: 0 }] }, L('arm_down()', 'grab()', 'wait()'));
-  kiem('xe có tay kẹp xuất phát trên ô thùng: arm_down + grab → kẹp hụt, lyDo qua-nang, tay đóng nhưng không cầm gì', (() => { const e = maSK(g, 'kep-hut')[0]; return e && e.lyDo === 'qua-nang' && g.tay.cam === null && g.tay.kep === true && xy(g.thung) === '1,0'; })(), J(g.suKien));
+  // luật vật mới: tay gắp ở ô TRƯỚC MẶT; thùng nặng chiếm ô nên xe đứng sát thùng
+  const g = SanHoc.chay({ san: ['...'], batDau: E(1, 0), loaiRobot: 'banh', hamGoc: TAY, thung: [{ x: 2, y: 0 }] }, L('arm_down()', 'grab()', 'wait()'));
+  kiem('xe có tay kẹp đứng sát thùng (thùng ở ô trước mặt): arm_down + grab → kẹp hụt, lyDo qua-nang, tay đóng nhưng không cầm gì', (() => { const e = maSK(g, 'kep-hut')[0]; return e && e.lyDo === 'qua-nang' && g.tay.cam === null && g.tay.kep === true && xy(g.thung) === '2,0'; })(), J(g.suKien));
   kiem('kep-hut qua-nang vào chẩn đoán (thông tin) nói thùng nặng chỉ đẩy, không nhấc', (() => {
-    const mTay = { loaiRobot: 'banh', hamGoc: TAY, moXuong: true, khung: { chinh: 10, moiHam: 10 }, mucTieu: 'day-thung', san: ['.H.', '...', '..D'], batDau: E(1, 0) };
+    const mTay = { loaiRobot: 'banh', hamGoc: TAY, moXuong: true, khung: { chinh: 10, moiHam: 10 }, mucTieu: 'day-thung', san: ['.H.', '...', '..D'], batDau: E(0, 0) };
     const kq = ChamHoc.cham(mTay, { chinh: ['arm_down()', 'grab()', 'wait()'] }, []);
     const c = kq.chanDoan.find((x) => x.ma === 'kep-hut');
     return c && c.muc === 'thong-tin' && c.lyDo === 'qua-nang' && /thùng nặng/.test(c.loi) && /không nhấc/.test(c.loi);
   })());
   kiem('xe có tay kẹp ĐI VÀO ô thùng thì không vào được (thùng cản như tường, không có tấm đẩy)', (() => { const r = SanHoc.chay({ san: f3('.H.'), batDau: E1(0), loaiRobot: 'banh', hamGoc: TAY }, TIEN); const e = maSK(r, 'dam-tuong')[0]; return vt(r.robot) === '0,1' && e && e.vat === 'thung-nang' && e.coDay === false; })());
-  kiem('vật nhẹ (o) vẫn gắp được như cũ khi sân cũng có thùng nặng ở chỗ khác', (() => { const r = SanHoc.chay({ san: ['.o.H'], batDau: E(1, 0), loaiRobot: 'banh', hamGoc: TAY, mucTieu: 'dua-vat' }, L('arm_down()', 'grab()', 'wait()')); return r.tay.cam === 1; })());
+  kiem('vật nhẹ (o) vẫn gắp được như cũ khi sân cũng có thùng nặng ở chỗ khác', (() => { const r = SanHoc.chay({ san: ['.o.H'], batDau: E(0, 0), loaiRobot: 'banh', hamGoc: TAY, mucTieu: 'dua-vat' }, L('arm_down()', 'grab()', 'wait()')); return r.tay.cam === 1; })());
 }
 
 /* ====================================================== 6. BỘ DÒ ĐƯỜNG TẮT VÀ SO CHÉO */

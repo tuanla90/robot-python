@@ -12,6 +12,8 @@
      ô sát mũi xe rồi DÍNH, đi theo xe. Là GỖ thì không hút, và còn chắn vật sắt đứng sau nó (chẩn đoán thông tin hut-go). Mỗi lần dính một vật.
    - magnet_off() thả vật xuống ô ngay trước mũi xe nếu ô đó trống (không tường, mép sân, bậc thang, vật); bị chặn thì vật vẫn dính (tha-bi-chan).
    - Vật dính lơ lửng ở mũi xe, không chiếm ô; xe đi qua mọi ô xe đi được. Bậc thang S không chắn nam châm (hút xuyên qua được).
+   - LUẬT VẬT 14/10: vật nằm đất (gỗ hay sắt) CHIẾM Ô: xe không đi xuyên qua, front_clear() = False trước vật, vật gỗ chắn cả đường hút. Màn có vật gỗ dựng
+     sao cho xe vòng được (13.2) hay vật gỗ nằm ngoài lối đi (13.6, 13.10). color() lúc đang dính vật là màu VẬT (13.10: hút xong đọc màu vật để chọn đích).
    - Vật nằm dưới đất không bị băng chuyền kéo (luật chung của sân); vật nằm trên băng vẫn hút được. Vật đặt ở ô không viết được bằng ký hiệu
      o (vd trên băng) khai ở `vatThem: [{ x, y, chat?, mau? }]` (màn nhiều sân thì mảng song song với san).
    - Mục tiêu 'dua-vat' + vatCan 'sat': chỉ vật SẮT phải nằm trên ô đích; vật gỗ để yên ở đâu cũng được (dùng ở cả 10 màn).
@@ -101,8 +103,9 @@
   var SAN_1 = ['.....', '..o..', '.....', '....D', '.....'];
   var CHAT_1 = ['.....', '..s..', '.....', '.....', '.....'];
   var BD_1 = { x: 2, y: 3, huong: 0 };
-  // 2: vật gỗ ngay trước mặt chắn vật sắt đứng sau nó
-  var SAN_2 = ['.....', '..o..', '..o.D', '.....', '.....'];
+  // 2: vật gỗ (2,2) ngay trước mặt xe chiếm ô và chắn đường hút của vật sắt (2,1) đứng sau nó; phải vòng sang phải, đứng ở (4,1) quay mặt sang trái:
+  // vật sắt cách xe 2 ô, ô đích (3,1) nằm giữa xe và vật sắt (ngay trước mũi xe)
+  var SAN_2 = ['.....', '..oD.', '..o..', '.....', '.....'];
   var CHAT_2 = ['.....', '..s..', '.....', '.....', '.....'];
   // 3: ba vật sắt ở hàng trên, ba đích ở hàng dưới; xe đứng giữa
   var SAN_3 = ['.o.o.o.', '.......', '.......', '.......', '.D.D.D.'];
@@ -116,18 +119,19 @@
   var SAN_5 = ['..o..', '..oD.', '..oD.', '...D.'];
   var CHAT_5 = ['..s..', '..s..', '..s..', '.....'];
   var BD_5 = { x: 2, y: 3, huong: 0 };
-  // 6: hành lang (ô 1–5), đích ở ô phía trên đầu hành lang (1, 0), xe bắt đầu ở ô 2 quay mặt sang phải; ba sân khác nhau chỗ đặt vật gỗ / vật sắt
+  // 6: hành lang (ô 1–5), xe quay mặt sang phải. Vật gỗ chiếm ô nên không nằm giữa xe và vật sắt: nó là "tường nhỏ" ở cuối hành lang (sân 2) hay nằm sau vật sắt (sân 3).
+  // Đích ở ô phía trên ô cuối hành lang mà xe dừng được (sát tường hay sát vật gỗ): (1,0) sân 1 và 3, (2,0) sân 2.
   var SAN_6 = [
-    ['#D#####', '#..o.o#', '#######'],
-    ['#D#####', '#..oo.#', '#######'],
-    ['#D#####', '#..oo.#', '#######']
+    ['#D#####', '#....o#', '#######'],
+    ['##D####', '#o...o#', '#######'],
+    ['#D#####', '#...oo#', '#######']
   ];
   var CHAT_6 = [
     ['.......', '.....s.', '.......'],
-    ['.......', '...s...', '.......'],
+    ['.......', '.....s.', '.......'],
     ['.......', '....s..', '.......']
   ];
-  var BD_6 = { x: 2, y: 1, huong: 1 };
+  var BD_6 = [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }];
   // 7: làn băng chuyền hai ô (cột 3, 4) chạy lên cả chiều cao sân; vật sắt nằm trên băng (vatThem); đích bên kia làn, ở hàng trên hàng xe một ô
   var SAN_7 = ['o..^^..', '...^^..', '...^^.D', '...^^..', '...^^..'];
   var CHAT_7 = ['.......', '.......', '.......', '.......', '.......'];
@@ -141,26 +145,29 @@
   var SAN_9 = ['o.o.o.', '.D.D.D', '......'];
   var CHAT_9 = ['s.s.s.', '......', '......'];
   var BD_9 = { x: 0, y: 2, huong: 0 };
-  // 10: kho = ba hành lang ngang; đích nằm ngay phía trên một ô vàng; vật gỗ (hay vật sắt) nằm ở nửa phải; có làn băng chuyền
+  // 10: kho = ba hành lang ngang, xe ở (0,1) quay sang phải. Vật sắt có MÀU (đỏ / xanh dương), vật gỗ nằm sau vật sắt. Xe dừng ở ô đầu tiên mà vật sắt vào tầm 2 ô (p = 3, 3, 2);
+  // hai ô đích có màu nằm sát hai bên ô đó: đích xanh dương ở trên (rẽ trái), đích đỏ ở dưới (rẽ phải), như 12.8. Sân 2 có làn băng đẩy xe tới ô p.
   var SAN_10 = [
-    ['##D####', '....oo.', '#######'],
-    ['###D###', '.>>..oo', '#######'],
-    ['#D#####', '...<<oo', '#######']
+    ['###D###', '.....oo', '###D###'],
+    ['###D###', '.>>..oo', '###D###'],
+    ['##D####', '....ooo', '##D####']
   ];
-  var MAU_10 = [lop(7, 3, { '2,1': 'y' }), lop(7, 3, { '3,1': 'y' }), lop(7, 3, { '1,1': 'y' })];
+  var MAU_10 = [lop(7, 3, { '3,0': 'b', '3,2': 'r' }), lop(7, 3, { '3,0': 'b', '3,2': 'r' }), lop(7, 3, { '2,0': 'b', '2,2': 'r' })];
   var CHAT_10 = [
     ['.......', '.....s.', '.......'],
-    ['.......', '......s', '.......'],
-    ['.......', '......s', '.......']
+    ['.......', '.....s.', '.......'],
+    ['.......', '....s..', '.......']
   ];
+  var VAT_MAU_10 = [lop(7, 3, { '5,1': 'r' }), lop(7, 3, { '5,1': 'b' }), lop(7, 3, { '4,1': 'b' })];
   var BD_10 = { x: 0, y: 1, huong: 1 };
 
   /* ------------------------------------------------------------- chương trình dùng lại */
 
   // 1: hút (2 ô), rẽ phải, tiến một ô, thả
   var CHINH_1 = ['magnet_on()', 'wait()', 'turn_right()', 'move()', 'magnet_off()', 'wait()'];
-  // 2: tiến một ô (lên ô vật gỗ), hút vật sắt ngay sau nó, rẽ phải, tiến một ô, thả
-  var CHINH_2 = ['move()', 'magnet_on()', 'wait()', 'turn_right()', 'move()', 'magnet_off()', 'wait()'];
+  // 2: vòng sang phải qua vật gỗ (rẽ phải, hai ô, rẽ trái, hai ô lên), rẽ trái cho mũi xe quay về phía vật sắt, hút (vật bay về mũi xe, trên ô đích), thả
+  var CHINH_2 = ['turn_right()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'magnet_on()', 'wait()', 'magnet_off()', 'wait()'];
+  var CHINH_2_KHAC = ['turn_right()', 'forward(2)', 'turn_left()', 'move()', 'move()', 'turn_left()', 'magnet_on()', 'wait()', 'magnet_off()', 'wait()'];
   // 3: ba chuyến fetch(); giữa hai chuyến: rẽ trái, đi sang hai cột, rẽ trái, tiến một ô
   var CHINH_3 = nhieu(LAP(2, ['fetch()', 'turn_left()', 'move()', 'move()', 'turn_left()', 'move()']), ['fetch()']);
   var CHINH_3_KHAC = nhieu(LAP(2, ['fetch()', 'turn_left()', 'forward(2)', 'turn_left()', 'move()']), ['fetch()']);
@@ -171,7 +178,7 @@
   // nhịp hút kế tiếp và vẫn thắng, nên máy kiểm 'sửa move() thành bản lỗi' không bắt được; lời giải khác dùng move())
   var CHINH_5 = LAP(3, ['magnet_on()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()', 'left_move()', 'right_move()', 'wait()']);
   var CHINH_5_KHAC = LAP(3, ['magnet_on()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()', 'move()']);
-  // 6: đi tới khi front_metal(), hút, quay đầu, về tới tường, rẽ phải, thả
+  // 6: đi tới khi front_metal(), hút, quay đầu, về tới tường (hay vật gỗ), rẽ phải, thả
   var CHINH_6 = ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while front_clear():', '    move()', 'turn_right()', 'magnet_off()', 'wait()'];
   var CHINH_6_KHAC = ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'go_wall()', 'turn_right()', 'magnet_off()', 'wait()'];
   // 7: tiến một ô, hút, qua làn băng (3 ô: băng đẩy xe lên một hàng), thả
@@ -183,9 +190,9 @@
   // 9: omni: hút, trượt phải, thả, trượt phải; lặp ba lần
   var CHINH_9 = LAP(3, ['magnet_on()', 'wait()', 'slide_r(1)', 'magnet_off()', 'wait()', 'slide_r(1)']);
   var CHINH_9_KHAC = LAP(3, ['magnet_on()', 'wait()', 'slide_r(1)', 'magnet_off()', 'wait()', 'slide_right()', 'wait()']);
-  // 10: tìm vật sắt, hút, quay đầu, về tới ô vàng, rẽ phải, thả
-  var CHINH_10 = ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while color() != "yellow":', '    move()', 'turn_right()', 'magnet_off()', 'wait()'];
-  var CHINH_10_KHAC = ['while not front_metal():', '    forward(1)', 'magnet_on()', 'wait()', 'u_turn()', 'while color() != "yellow":', '    forward(1)', 'turn_right()', 'magnet_off()', 'wait()'];
+  // 10: tìm vật sắt, hút, đọc màu vật đang dính (đỏ rẽ phải, còn lại rẽ trái), thả vào đích bên đó
+  var CHINH_10 = ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'if color() == "red":', '    turn_right()', 'else:', '    turn_left()', 'magnet_off()', 'wait()'];
+  var CHINH_10_KHAC = ['while not front_metal():', '    forward(1)', 'magnet_on()', 'wait()', 'if color() == "red":', '    turn_right()', 'else:', '    turn_left()', 'magnet_off()', 'wait()'];
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -212,24 +219,25 @@
     }),
 
     man({
-      so: 2, ten: 'Vật gỗ không dính', hang: 'lam-quen', hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Nam châm chỉ hút vật sắt. Vật gỗ không bị hút, và còn chắn đường hút của vật sắt đứng sau nó. Đưa vật sắt tới ô đích, vật gỗ để yên cũng được.',
+      so: 2, ten: 'Vật gỗ không dính', hang: 'lam-quen', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'forward'],
+      deBai: 'Nam châm chỉ hút vật sắt. Vật gỗ không bị hút, chiếm ô như một khối chắn: xe không đi xuyên qua, và đường hút của nam châm cũng bị chắn. Vòng sang bên để hút vật sắt từ hướng khác; ô đích nằm ngay cạnh vật sắt.',
       veMaMau: 'Chương trình có sẵn bật nam châm ngay chỗ xe đang đứng. Chạy thử và xem vật nào nằm ngay trước mặt xe.',
       san: SAN_2, vatChat: CHAT_2,
       batDau: BD_1,
       maMau: { chinh: ['magnet_on()', 'wait()'] },
-      sao: { o: 12, nhip: 5 },
+      sao: { o: 18, nhip: 9 },
       loiGiai: { chinh: CHINH_2.slice() },
-      loiGiaiKhac: { moTa: 'Tiến bằng forward(1) thay cho move()', baiLam: { chinh: ['forward(1)', 'magnet_on()', 'wait()', 'turn_right()', 'forward(1)', 'magnet_off()', 'wait()'] } },
+      loiGiaiKhac: { moTa: 'Tiến bằng forward(1) thay cho move()', baiLam: { chinh: CHINH_2_KHAC.slice() } },
       loiSai: [
         { moTa: 'Chưa sửa gì: vật gỗ chắn đường hút, nam châm không dính vật nào', baiLam: { chinh: ['magnet_on()', 'wait()'] }, phaiCoMa: ['hut-go', 'chua-dua-vat'] },
         { moTa: 'Hút từ chỗ cũ rồi vẫn mang đi: vật gỗ chắn nên không có vật nào dính, thả ra cũng trống', baiLam: { chinh: ['magnet_on()', 'wait()', 'turn_right()', 'move()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['hut-go', 'chua-dua-vat'] },
-        { moTa: 'Rẽ phải ngay từ đầu: phía trước không còn vật nào', baiLam: { chinh: ['turn_right()', 'magnet_on()', 'wait()', 'move()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Tiến lên rồi quên bật nam châm', baiLam: { chinh: ['move()', 'turn_right()', 'move()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên magnet_off(): vật sắt vẫn dính ở xe', baiLam: { chinh: ['move()', 'magnet_on()', 'wait()', 'turn_right()', 'move()'] }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đi thẳng lên: vật gỗ chiếm ô nên xe đâm vào vật', baiLam: { chinh: ['move()', 'magnet_on()', 'wait()', 'turn_right()', 'move()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Vòng sang bên nhưng quên bật nam châm', baiLam: { chinh: ['turn_right()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Dừng sớm một ô, vẫn ở hàng của vật gỗ: nam châm lại gặp vật gỗ chắn', baiLam: { chinh: ['turn_right()', 'forward(2)', 'turn_left()', 'forward(1)', 'turn_left()', 'magnet_on()', 'wait()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['hut-go', 'chua-dua-vat'] },
+        { moTa: 'Quên magnet_off(): vật sắt vẫn dính ở xe', baiLam: { chinh: ['turn_right()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'magnet_on()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Vật gỗ ngay trước mặt xe chắn đường hút. Xe đi qua được ô có vật, nên hãy đổi chỗ đứng.',
-        'Đứng ngay trên ô vật gỗ thì vật sắt chỉ còn cách xe một ô, và không còn gì chắn.']
+      goiY: ['Vật gỗ ngay trước mặt xe chiếm ô và chắn đường hút. Xe không đi xuyên qua nó, nên hãy sang hàng của vật sắt và quay mặt vào nó từ bên hông, cách nó 2 ô.',
+        'Ô đích nằm ngay trước mũi xe, giữa xe và vật sắt: hút xong thì tắt nam châm, vật rơi xuống đích.']
     }),
 
     man({
@@ -298,7 +306,7 @@
 
     man({
       so: 6, ten: 'Sắt hay gỗ?', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'u_turn', 'go_wall'], cb: 'kc',
-      deBai: 'Mỗi hành lang có một vật sắt lẫn một vật gỗ, đặt khác nhau ở ba sân. Cảm biến từ front_metal() trả True khi vật đầu tiên trong 2 ô trước mặt là sắt, tức là bật nam châm lúc đó sẽ hút được. Mang vật sắt về ô đích ở phía trên đầu hành lang, ở cả ba sân.',
+      deBai: 'Cảm biến từ front_metal() trả True khi vật đầu tiên trong 2 ô trước mặt là sắt, tức là bật nam châm lúc đó sẽ hút được. Vật sắt nằm xa gần khác nhau ở ba sân; vật gỗ nằm yên và chắn đường như một bức tường nhỏ. Mang vật sắt về ô đích nằm phía trên ô cuối hành lang, sát tường hay sát vật gỗ.',
       veMaMau: 'Chương trình có sẵn mới đi tới khi front_metal() báo vật sắt đã trong tầm, chưa hút. Chạy thử, xem xe dừng ở đâu ở từng sân rồi viết tiếp.',
       san: SAN_6, vatChat: CHAT_6,
       batDau: BD_6,
@@ -309,13 +317,13 @@
       loiSai: [
         { moTa: 'Viết cứng số bước của sân đầu: các sân khác vật nằm chỗ khác', baiLam: { chinh: ['move()', 'move()', 'magnet_on()', 'wait()', 'u_turn()', 'move()', 'move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Đảo điều kiện: while front_metal() chỉ chạy khi vật sắt đã trong tầm', baiLam: { chinh: ['while front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while front_clear():', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Hút ngay từ đầu, không dò: vật gỗ đứng trước nên không dính gì', baiLam: { chinh: ['magnet_on()', 'wait()', 'u_turn()', 'while front_clear():', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['hut-go', 'chua-dua-vat'] },
+        { moTa: 'Hút ngay từ đầu, không dò: vật sắt còn xa quá 2 ô nên không dính gì', baiLam: { chinh: ['magnet_on()', 'wait()', 'u_turn()', 'while front_clear():', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên quay đầu sau khi hút: xe lại tiến về phía cuối hành lang', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'while front_clear():', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Không rẽ phải trước khi thả: ô trước mũi xe là tường', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while front_clear():', '    move()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
-        { moTa: 'Dùng nhầm front_clear() thay cho front_metal(): xe chạy tới tường rồi mới hút, vật đã nằm sau lưng', baiLam: { chinh: ['while front_clear():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while front_clear():', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Rẽ trái thay vì rẽ phải ở cuối hành lang: mũi xe quay xuống tường, không thả được', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while front_clear():', '    move()', 'turn_left()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] }
       ],
-      goiY: ['Vật gỗ đứng trước cũng làm front_metal() trả False, nên xe cứ tiến từng ô cho tới khi vật sắt đầu tiên vào tầm.',
-        'Về bằng vòng while front_clear(): move() cho tới tường, rồi rẽ phải để mũi xe quay vào ô đích.']
+      goiY: ['Vật sắt chỉ hút được khi nằm trong 2 ô trước mặt, nên xe tiến từng ô cho tới khi front_metal() báo True.',
+        'Về bằng vòng while front_clear(): move() cho tới khi mũi xe chạm tường hay vật gỗ, rồi rẽ phải để mũi xe quay vào ô đích.']
     }),
 
     /* ------------------------------------------------------------- hàng 3: biến thể */
@@ -384,26 +392,26 @@
 
     /* ------------------------------------------------------------- trùm */
     man({
-      so: 10, ten: 'Kho sắt và gỗ', hang: 'trum', hamCuaEmCan: ['move', 'turn_right', 'u_turn', 'forward'], cb: 'kc-mau',
-      deBai: 'Ba hành lang trong kho, mỗi nơi có một vật sắt lẫn vật gỗ, có khi cả làn băng chuyền. Ô đích nằm ngay phía trên một ô vàng ("yellow"). Tìm vật sắt bằng front_metal(), hút, rồi quay về ô vàng và thả vật vào đích.',
+      so: 10, ten: 'Kho sắt và gỗ', hang: 'trum', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'forward'], cb: 'kc-mau',
+      deBai: 'Ba hành lang trong kho, mỗi nơi có một vật sắt đỏ ("red") hoặc xanh dương ("blue") lẫn vật gỗ, có khi cả làn băng chuyền. Tìm vật sắt bằng front_metal() rồi hút nó; khi đang dính vật, color() là màu của vật. Đích đỏ nằm bên phải xe, đích xanh dương bên trái, mỗi đích chỉ nhận vật cùng màu.',
       veMaMau: 'Chương trình có sẵn mới đi tới khi front_metal() báo có vật sắt trong tầm. Chạy thử rồi viết tiếp.',
-      san: SAN_10, mau: MAU_10, vatChat: CHAT_10,
+      san: SAN_10, mau: MAU_10, vatChat: CHAT_10, vatMau: VAT_MAU_10,
       batDau: BD_10,
       maMau: { chinh: ['while not front_metal():', '    move()'] },
-      sao: { o: 17, nhip: 36 },
+      sao: { o: 17, nhip: 16 },
       huyHieu: { ma: 'nam-cham', ten: 'Huy hiệu Nam châm' },
       loiGiai: { chinh: CHINH_10.slice() },
       loiGiaiKhac: { moTa: 'Mỗi bước tiến dùng forward(1) thay cho move()', baiLam: { chinh: CHINH_10_KHAC.slice() } },
       loiSai: [
-        { moTa: 'Viết cứng số bước theo sân đầu: các sân khác vật và ô vàng nằm chỗ khác', baiLam: { chinh: ['forward(4)', 'magnet_on()', 'wait()', 'u_turn()', 'forward(2)', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Hút ngay từ đầu, không dò: chưa có vật nào trong tầm, xe quay đầu rồi chạy mãi về phía tường', baiLam: { chinh: ['magnet_on()', 'wait()', 'u_turn()', 'while color() != "yellow":', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Viết hoa "Yellow": không khớp màu nào nên xe không dừng ở ô vàng', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while color() != "Yellow":', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['ten-mau-sai'] },
-        { moTa: 'Quên quay đầu sau khi hút: xe tiến tiếp về phía cuối hành lang', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'while color() != "yellow":', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Quên rẽ phải ở ô vàng: ô trước mũi xe không phải ô đích', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while color() != "yellow":', '    move()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đảo điều kiện: while front_metal() không chạy lần nào khi chưa thấy vật sắt, nên không bao giờ hút được', baiLam: { chinh: ['while front_metal():', '    move()', 'magnet_on()', 'wait()', 'u_turn()', 'while color() != "yellow":', '    move()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Viết cứng số bước theo sân đầu: các sân khác vật sắt nằm chỗ khác hay có băng chuyền', baiLam: { chinh: ['forward(3)', 'magnet_on()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Luôn rẽ phải: vật xanh dương bị thả vào đích đỏ', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
+        { moTa: 'Hút ngay từ đầu, không dò: chưa có vật nào trong tầm nam châm', baiLam: { chinh: ['magnet_on()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Viết hoa "Red": vật đỏ không nhánh nào nhận nên xe rẽ trái nhầm', baiLam: { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'if color() == "Red":', '    turn_right()', 'else:', '    turn_left()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['ten-mau-sai', 'dat-sai-mau'] },
+        { moTa: 'Đọc màu TRƯỚC khi hút: lúc chưa dính vật, color() chỉ thấy màu sàn "none"', baiLam: { chinh: ['while not front_metal():', '    move()', 'if color() == "red":', '    turn_right()', 'else:', '    turn_left()', 'magnet_on()', 'wait()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đảo điều kiện: while front_metal() không chạy lần nào khi chưa thấy vật sắt, nên xe không đi được', baiLam: { chinh: ['while front_metal():', '    move()', 'magnet_on()', 'wait()', 'if color() == "red":', '    turn_right()', 'else:', '    turn_left()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Dò vật sắt bằng while not front_metal(): move(); rồi hút, quay đầu, và quay về bằng while color() != "yellow": move().',
-        'Ở ô vàng, rẽ phải thì mũi xe quay đúng vào ô đích phía trên; rồi mới thả.']
+      goiY: ['Dò vật sắt bằng while not front_metal(): move(); hút xong thì vật dính ở mũi xe và color() là màu của vật.',
+        'Đỏ rẽ phải, xanh dương rẽ trái: mũi xe quay vào đích cùng màu bên hông, rồi mới thả.']
     })
   ];
 

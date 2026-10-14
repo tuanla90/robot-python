@@ -752,9 +752,10 @@ let khoCuoi = null;
         !Array.isArray(m.san[0]) && m.nhipTheo === undefined)));
   kiem('màn mục tiêu dua-vat có ô đích (D/X) và vật (o/X, hoặc rổ có sẵn vật roBanDau) trong sân; màn day-thung có thùng nặng (H/h), ô đích (D/h) và không có vật nhẹ; màn mục tiêu tới cờ không có ký hiệu nào trong o, D, X, H, h; mọi màn tay-gap là dua-vat',
     ds.every((m) => { const k = m.san.join(''); return m.mucTieu === 'dua-vat' ? /[DX]/.test(k) && (/[oX]/.test(k) || !!m.roBanDau) : m.mucTieu === 'day-thung' ? /[Hh]/.test(k) && /[Dh]/.test(k) && !/[oX]/.test(k) : !/[oDXHh]/.test(k) && m.chuong !== 'tay-gap'; }));
-  kiem('màn nhiều sân (chương khoang-cach): mọi sân đều có chữ F (hoặc D + o ở màn 9) và đọc được; dua-vat thì sân nào cũng có vật nằm dưới chân xe', ds.slice(100, 110).every((m) => (Array.isArray(m.san[0]) ? m.san : [m.san]).every((rows, i) => {
+  kiem('màn nhiều sân (chương khoang-cach): mọi sân đều có chữ F (hoặc D + o ở màn 9) và đọc được; dua-vat thì sân nào cũng có vật nằm ở ô ngay trước mặt xe', ds.slice(100, 110).every((m) => (Array.isArray(m.san[0]) ? m.san : [m.san]).every((rows, i) => {
     const k = rows.join(''), bd = Array.isArray(m.batDau) ? m.batDau[i] : m.batDau;
-    return m.so === 9 ? /D/.test(k) && rows[bd.y][bd.x] === 'o' : /F/.test(k);
+    const V = [[0, -1], [1, 0], [0, 1], [-1, 0]][bd.huong || 0];
+    return m.so === 9 ? /D/.test(k) && rows[bd.y + V[1]][bd.x + V[0]] === 'o' : /F/.test(k);
   })));
   kiem('bỏ thư viện theo trùm và số hàm theo màn: không còn thuVien / moThuVien / khung.soHam',
     ds.every((m) => m.thuVien === undefined && m.moThuVien === undefined && m.khung.soHam === undefined));

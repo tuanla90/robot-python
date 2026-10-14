@@ -232,7 +232,7 @@ console.log('\n== 3. magnet_off(): thả xuống ô trước mũi; bị chặn t
   kiem('vật đang dính (ở mũi xe) trên ô trước đích thì chưa tính: chưa thắng', !dangDinh.thang);
   // thứ tự trong nhịp: thả TRƯỚC khi bánh chạy
   const tt = chay(['.o.', '...', '.D.', '...'], { x: 1, y: 2, huong: 0 }, L(HUT, 'magnet_off()', 'left_move()', 'right_move()', 'wait()'), { vatChat: ['.s.', '...', '...', '...'], mucTieu: 'dua-vat', vatCan: 'sat' });
-  kiem('thả chung nhịp với lệnh đi: thả TRƯỚC (xuống ô trước mũi cũ (1,1)), rồi xe mới đi tới (1,1) đè lên vật', vatCua(tt, 1).x === 1 && vatCua(tt, 1).y === 1 && tt.robot.y === 1 && tt.namCham.cam === null, J([tt.robot, tt.vat]));
+  kiem('thả chung nhịp với lệnh đi: thả TRƯỚC (xuống ô trước mũi cũ (1,1)), rồi xe mới đi: vật vừa thả chiếm ô nên xe đâm vật (dam-tuong, vat "vat"), đứng yên ở (1,2)', vatCua(tt, 1).x === 1 && vatCua(tt, 1).y === 1 && vatCua(tt, 1).trangThai === 'dat' && tt.robot.y === 2 && tt.namCham.cam === null && maSK(tt, 'dam-tuong').length === 1 && maSK(tt, 'dam-tuong')[0].vat === 'vat', J([tt.robot, tt.vat, maSK(tt, 'dam-tuong')]));
 }
 
 /* ============================================================================ 4. THỨ TỰ LỆNH, GỘP NHỊP, QUÊN WAIT */
@@ -373,10 +373,13 @@ console.log('\n== 7. Lớp vatChat / vatThem; vatCan "sat"; đích có màu ==')
   kiem('đích đỏ, vật sắt xanh dương: thả xuống đích khác màu → dat-sai-mau, chưa thắng; vật vẫn nằm đó', !dm.thang && maSK(dm, 'dat-sai-mau').length === 1 && maSK(dm, 'dat-sai-mau')[0].mauVat === 'blue' && maSK(dm, 'dat-sai-mau')[0].mauDich === 'red' && vatCua(dm, 1).trangThai === 'dat');
   const dm2 = SanHoc.chay({ san: ['.o.', '.D.', '...'], mau: ['...', '.r.', '...'], vatMau: ['.r.', '...', '...'], vatChat: ['.s.', '...', '...'], batDau: { x: 1, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NC), mucTieu: 'dua-vat', vatCan: 'sat' }, L(HUT, THA));
   kiem('đích đỏ, vật sắt đỏ: thắng', dm2.thang === true);
-  // color() không thấy vật đang dính
+  // color() lúc đang dính vật là màu của vật (luật vật 14/10)
   const cm = SanHoc.chay({ san: ['.o.', '...', '...'], vatMau: ['.r.', '...', '...'], vatChat: ['.s.', '...', '...'], batDau: { x: 1, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NC, ['color']) }, L('a = color()', HUT, 'b = color()'));
   const dc = doc(cm);
-  kiem('color() dưới xe: vật dính ở mũi xe không tính (vật sắt đỏ dính rồi vẫn đọc màu sàn "none")', dc.length === 2 && dc[0].mau === 'none' && dc[1].mau === 'none');
+  kiem('color(): chưa dính vật thì là màu sàn "none"; vật sắt đỏ dính ở mũi xe thì color() là màu VẬT "red" (nguon "vat", idVat 1)', dc.length === 2 && dc[0].mau === 'none' && dc[0].nguon === 'san' && dc[1].mau === 'red' && dc[1].nguon === 'vat' && dc[1].idVat === 1, J(dc));
+  const cm2 = SanHoc.chay({ san: ['.o.', '...', '...'], mau: ['...', '...', '.g.'], vatChat: ['.s.', '...', '...'], batDau: { x: 1, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NC, ['color']) }, L(HUT, 'a = color()', 'magnet_off()', 'wait()', 'b = color()'));
+  const dc2 = doc(cm2);
+  kiem('vật sắt KHÔNG màu đang dính: color() = "none" (không phải màu sàn "green" dưới xe); thả vật xong thì color() lại là màu sàn "green"', dc2.length === 2 && dc2[0].mau === 'none' && dc2[0].nguon === 'vat' && dc2[1].mau === 'green' && dc2[1].nguon === 'san', J(dc2));
 }
 
 /* ============================================================================ 8. CHẨN ĐOÁN, SÂN THỬ */
@@ -410,7 +413,7 @@ console.log('\n== 8. Chẩn đoán tiếng Việt; chấm nhiều sân có vatCh
   // nhiều sân có vatChat
   const r7 = ChamHoc.cham(m6, m6.loiGiai, tron(khoTruoc('13.6'), []));
   kiem('13.6 (3 sân, vatChat song song): lời giải thắng cả ba, mỗi sân một mục theoSan, soNhip = tổng', r7.thang && r7.theoSan.length === 3 && r7.theoSan.every((s) => s.thang) && r7.soNhip === r7.theoSan.reduce((a, s) => a + s.soNhip, 0) && r7.nhipTong === r7.soNhip, J(r7.theoSan.map((s) => s.soNhip)));
-  kiem('kết quả cham có namCham (trạng thái cuối) và vật có chat', r7.namCham && r7.namCham.bat === false && r7.vat.some((v) => v.chat === 'sat') && r7.vat.some((v) => v.chat === 'go'), J(r7.vat));
+  kiem('kết quả cham có namCham (trạng thái cuối) và vật có chat', r7.namCham && r7.namCham.bat === false && r7.vat.some((v) => v.chat === 'sat') && r7.theoSan.some((s) => s.vat.some((v) => v.chat === 'go')), J(r7.vat));
 
   // sân thử
   const st = ChamHoc.chuanSanThu({ rong: 5, cao: 5, batDau: { x: 2, y: 4, huong: 0 }, vat: [{ x: 2, y: 2, chat: 'sat' }, { x: 1, y: 1 }, { x: 9, y: 9, chat: 'sat' }] });
@@ -430,10 +433,11 @@ console.log('\n== 9. Bộ dò đường tắt nam châm (do-duong-nam-cham.mjs):
   const mk = (rows, chat, bd, extra) => Object.assign({ san: rows, vatChat: chat, batDau: bd, loaiRobot: 'banh', vatCan: 'sat' }, extra || {});
   const a = mk(['.....', '..o..', '.....', '....D', '.....'], ['.....', '..s..', '.....', '.....', '.....'], { x: 2, y: 3, huong: 0 });
   kiem('bộ dò: màn 13.1 kiểu: hút, rẽ phải, tiến, thả = 4 nhịp tách; gộp cũng 4', nhipNamChamNganNhat(a, { tachNhip: true }).nhip === 4 && nhipNamChamNganNhat(a).nhip === 4);
-  const b = mk(['.....', '..o..', '..o.D', '.....', '.....'], ['.....', '..s..', '.....', '.....', '.....'], { x: 2, y: 3, huong: 0 });
+  const b = mk(['.....', '..oD.', '..o..', '.....', '.....'], ['.....', '..s..', '.....', '.....', '.....'], { x: 2, y: 3, huong: 0 });
   const bTach = nhipNamChamNganNhat(b, { tachNhip: true });
   const iOn = bTach.chuoi.findIndex((a) => a.nc === 'on'), iTien = bTach.chuoi.findIndex((a) => a.banh === BoDo.TIEN);
-  kiem('bộ dò: gỗ ngay trước mặt chắn sắt: tách 5, gộp 4; đường ngắn nhất tiến lên một ô (lên ô vật gỗ) TRƯỚC khi magnet_on', bTach.nhip === 5 && nhipNamChamNganNhat(b).nhip === 4 && iTien >= 0 && iTien < iOn, J(bTach.chuoi));
+  kiem('bộ dò: gỗ ngay trước mặt chiếm ô và chắn sắt đứng sau: không đi xuyên, không hút xuyên; tách 9, gộp < 9; đường ngắn nhất rẽ sang bên và tiến TRƯỚC khi magnet_on', bTach.nhip === 9 && nhipNamChamNganNhat(b).nhip < 9 && iTien >= 0 && iTien < iOn && bTach.chuoi.slice(0, iOn).every((a) => a.nc === null), J(bTach.chuoi));
+  kiem('bộ dò: gỗ chiếm ô chặn xe cả khi lối thẳng duy nhất (hành lang một ô rộng, cột bị gỗ chắn, hai bên tường) → null', nhipNamChamNganNhat(mk(['#D#', '#o#', '#o#', '#.#'], ['...', '.s.', '...', '...'], { x: 1, y: 3, huong: 0 })).nhip === null);
   const c = mk(['.....', '.###.', '.#o#.', '.###.', '....D'], ['.....', '.....', '..s..', '.....', '.....'], { x: 0, y: 0, huong: 0 });
   kiem('bộ dò: vật sắt nhốt trong tường kín, ngoài tầm nhìn thẳng: không giải được → null', nhipNamChamNganNhat(c).nhip === null);
   const d = mk(['.....', '.....', '..o..', '.....', '..D..'], ['.....', '.....', '..s..', '.....', '.....'], { x: 2, y: 0, huong: 2 });
@@ -507,8 +511,8 @@ console.log('\n== 9. Bộ dò đường tắt nam châm (do-duong-nam-cham.mjs):
 console.log('\n== 10. Dữ liệu 10 màn: sân, vatChat, đường tắt (BFS tách nhịp), cảm biến, canHam ==');
 const BANG = [];
 {
-  const SAO_NHIP = [4, 5, 25, 8, 13, 22, 6, 10, 11, 36];
-  const SAO_O = [11, 12, 23, 15, 14, 17, 10, 17, 10, 17];
+  const SAO_NHIP = [4, 9, 25, 8, 13, 22, 6, 10, 11, 16];
+  const SAO_O = [11, 18, 23, 15, 14, 17, 10, 17, 10, 17];
   kiem('đúng 10 màn nam-cham, id 13.1…13.10, mã nam-cham.1…10, tên chương "Nam châm"', ds.length === 10 && ds.every((m, i) => m.id === '13.' + (i + 1) && m.ma === 'nam-cham.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'nam-cham').ten === 'Nam châm');
   kiem('hang: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
   kiem('sao.nhip và sao.o đúng bảng chốt', J(ds.map((m) => m.sao.nhip)) === J(SAO_NHIP) && J(ds.map((m) => m.sao.o)) === J(SAO_O), J([ds.map((m) => m.sao.nhip), ds.map((m) => m.sao.o)]));
@@ -569,7 +573,7 @@ const BANG = [];
   const m7DungHang = ChamHoc.cham(m7, { chinh: ['move()', 'magnet_on()', 'wait()', 'move()', 'move()', 'move()', 'move()', 'magnet_off()', 'wait()'] }, khoTruoc('13.7'));
   kiem('13.7: tiến thẳng 4 ô (như khi không có băng) không thắng — băng đẩy xe lên hàng trên; chẩn đoán nói ô trước mũi là mép sân', !m7DungHang.thang && maCua(m7DungHang).includes('tha-bi-chan'));
   const m2 = man(2);
-  kiem('13.2: vật gỗ chắn nên đường ngắn nhất (tách nhịp) tiến lên một ô TRƯỚC khi magnet_on; chương trình hút ngay chỗ xuất phát thì hut-go và không thắng', (() => {
+  kiem('13.2: vật gỗ chiếm ô và chắn nên đường ngắn nhất (tách nhịp) vòng sang bên (rẽ, tiến) TRƯỚC khi magnet_on; chương trình hút ngay chỗ xuất phát thì hut-go và không thắng', (() => {
     const c = nhipNamChamNganNhat(m2, { tachNhip: true }).chuoi;
     return c.findIndex((a) => a.banh === BoDo.TIEN) < c.findIndex((a) => a.nc === 'on') && !ChamHoc.cham(m2, m2.maMau, khoTruoc('13.2')).thang && maCua(ChamHoc.cham(m2, m2.maMau, khoTruoc('13.2'))).includes('hut-go');
   })());
@@ -590,13 +594,17 @@ const BANG = [];
   const m9 = man(9);
   const r9 = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('13.9'));
   kiem('13.9: omni không đổi hướng mặt suốt lượt chạy (huong 0 mọi nhịp), nam châm luôn hút lên', nhipVet({ vet: r9.vet }).every((n) => n.robot.huong === 0) && r9.thang);
-  // 13.10: nếu không có ô vàng
+  // 13.10: vật sắt có màu, hai đích có màu hai bên ô xe dừng để hút
   const m10 = man(10);
-  kiem('13.10: cả ba sân có ô vàng (lớp màu) ngay dưới một ô đích; hai sân có làn băng chuyền (> và <)', sanCua(m10).every((rows, i) => {
-    const mauI = m10.mau[i];
-    let y = -1; for (let yy = 0; yy < mauI.length; yy++) { const x = mauI[yy].indexOf('y'); if (x >= 0) y = [x, yy]; }
-    return y !== -1 && rows[y[1] - 1][y[0]] === 'D';
-  }) && m10.san.filter((rows) => /[<>]/.test(rows.join(''))).length === 2);
+  kiem('13.10: mỗi sân có đúng một vật sắt có màu (đỏ hay xanh dương), hai đích hai bên cùng một cột: đích xanh dương ở hàng trên, đích đỏ ở hàng dưới; chỉ sân 2 có làn băng chuyền', sanCua(m10).every((rows, i) => {
+    const lm = SanHoc.lopMauCuaSan(m10, i);
+    const s = SanHoc.docSan(rows, lm.mau, lm.vatMau, m10.vatChat[i]);
+    const trenDuoi = s.dich.length === 2 && s.dich[0].x === s.dich[1].x && s.dich[0].y === 0 && s.dich[1].y === 2 && s.dich[0].mau === 'blue' && s.dich[1].mau === 'red';
+    const sat = s.vat.filter((v) => v.chat === 'sat');
+    return trenDuoi && sat.length === 1 && (sat[0].mau === 'red' || sat[0].mau === 'blue') && s.vat.filter((v) => v.chat !== 'sat').every((v) => !v.mau);
+  }) && m10.san.filter((rows) => /[<>]/.test(rows.join(''))).length === 1 && new Set(sanCua(m10).map((rows, i) => SanHoc.lopMauCuaSan(m10, i).vatMau.join('').replace(/[^rb]/g, ''))).size === 2);
+  const sai10 = ChamHoc.cham(m10, { chinh: ['while not front_metal():', '    move()', 'magnet_on()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()'] }, khoTruoc('13.10'));
+  kiem('13.10: luôn rẽ phải thì vật xanh dương bị thả vào đích đỏ: dat-sai-mau, chưa thắng', !sai10.thang && maCua(sai10).includes('dat-sai-mau'), J(maCua(sai10)));
   // 13.5 thứ tự: đảo thứ tự không thể (thùng gần nhất trước) — thử hút lần đầu thấy vật gần nhất
   const m5 = man(5);
   const k5 = SanHoc.chay({ san: m5.san, vatChat: m5.vatChat, batDau: m5.batDau, loaiRobot: 'banh', hamGoc: m5.hamGoc, mucTieu: 'dua-vat', vatCan: 'sat' }, HUT);

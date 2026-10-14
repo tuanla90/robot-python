@@ -5,19 +5,21 @@
    hamGoc: bộ lệnh bánh + aim, throw (màn 1–2), thêm load (màn 3–10); màn 6 thêm front_clear, màn 7 thêm color, màn 9 là bộ lệnh omni.
    LUẬT ĐÃ CHỐT (đầy đủ ở san-hoc.js, phần MÁY NÉM):
        aim(n)    đặt tầm n = 1, 2 hoặc 3 ô: có hiệu lực NGAY, KHÔNG tốn nhịp, giữ nguyên tới lần aim kế. n sai (0, 4, 2.5, chữ…) là LỖI dừng chương trình (tam-sai).
-       load()    nạp vật nằm DƯỚI xe vào rổ (rổ chứa một vật)           \\ chỉ RA LỆNH, wait() cho nhịp trôi; mỗi nhịp một lệnh tay;
+       load()    nạp vật nằm ở Ô TRƯỚC MẶT xe vào rổ (rổ chứa một vật) \\ chỉ RA LỆNH, wait() cho nhịp trôi; mỗi nhịp một lệnh tay;
        throw()   ném vật trong rổ bay thẳng theo hướng mặt, rơi xuống   /  nhịp có load() hay throw() thì xe đứng yên.
                  ô cách xe đúng `aim` ô (throw nhớ tầm LÚC GỌI)
    - Vật bay QUA hàng rào '=', tường '#', băng, vật khác. Ô rơi là tường cao, hàng rào, bậc thang, mép sân, hay ô đã có vật khác thì vật VỠ (nem-vo).
      Ô rơi là sàn trống (kể cả ô băng, ô đích) thì vật nằm đó. Vật vỡ thì không thắng được nữa (dừng ngay).
-   - Màn 1–2: rổ có sẵn một vật (man.roBanDau). Từ màn 3 rổ trống lúc đầu, xe nạp vật nằm dưới chân bằng load().
+   - Vật nằm đất CHIẾM Ô (luật 14/10): xe không đi vào ô có vật; muốn nạp thì quay mũi xe về phía vật rồi load().
+   - Màn 1–2: rổ có sẵn một vật (man.roBanDau). Từ màn 3 rổ trống lúc đầu, xe nạp vật nằm ngay trước mũi bằng load()
+     (màn 3, 4, 5, 8, 10 xe nạp rồi quay sang phải ném, màn 4, 5, 8, 10 xe quay mặt xuống nạp; màn 7 và 9 vật nằm đúng hướng ném).
    - Mục tiêu: dua-vat (mọi vật nằm trên ô đích; đích có màu chỉ nhận vật cùng màu). Nhịp: aim không tốn, load / throw mỗi lệnh một nhịp riêng,
      không gộp với lệnh bánh, nên BFS (do-duong-may-nem.mjs) cho ĐÚNG sao.nhip của lời giải chuẩn.
 
    Hàm của em MỚI (tên cốt truyện, bị khóa trong kho, xem KhoHam.datTenCoDinh):
      may-nem.4   toss(n) = aim(n), throw(), wait()      (3 ô; ném một vật tới ô cách xe n ô)
    Hàm CỦA MÀN (tạm): màn 8 cho sẵn lob(n) đặt NHẦM tầm cố định 2.
-   Học thêm: tham số n của aim(n) và tính khoảng cách; ném thay vì đi vòng; if theo khoảng cách (front_clear) hay theo màu (color).
+   Học thêm: tham số n của aim(n) và tính khoảng cách; ném thay vì đi vòng; if theo khoảng cách (front_clear) hay theo màu (color: nạp vật vào rổ rồi mới đọc được màu vật).
    Vì tầm giữ nguyên tới lần aim kế, ở các vòng for lặp lại cùng một tầm thì đặt aim(n) một lần ngoài vòng là gọn nhất (5, 9);
    toss(n) có lợi khi gọi ở nhiều chỗ khác tầm (4).
 
@@ -89,15 +91,15 @@
   // 2: xe quay mặt sang phải; ô 1 hàng rào, ô 2 tường cao, ô 3 đích
   var SAN_2 = ['.....', '.....', '.=#D.', '.....', '.....'];
   var BD_2 = { x: 0, y: 2, huong: 1 };
-  // 3: vật nằm dưới xe (quay mặt lên); đích bên phải xe, cách 3 ô, có hàng rào ở ô 1
-  var SAN_3 = ['.....', '.....', '.....', '.o=.D', '.....'];
+  // 3: vật ngay trước mũi xe (xe quay mặt lên); đích bên phải xe, cách 3 ô, có hàng rào ở ô 1
+  var SAN_3 = ['.....', '.....', '.o...', '..=.D', '.....'];
   var BD_3 = { x: 1, y: 3, huong: 0 };
-  // 4: hai vật ở cột trái; đích đầu cách 2 ô sau hàng rào, đích sau cách 3 ô sau hàng rào và tường cao
-  var SAN_4 = ['.....', 'o=D..', '.....', 'o=#D.', '.....'];
-  var BD_4 = { x: 0, y: 1, huong: 1 };
-  // 5: hai làn băng chuyền (cột 1, 2) giữa xe và đích; ba vật ở cột trái, ba đích sau làn băng (cách 3 ô)
-  var SAN_5 = ['o^^D.', '.^^..', 'o^^D.', '.^^..', 'o^^D.'];
-  var BD_5 = { x: 0, y: 0, huong: 1 };
+  // 4: xe quay mặt xuống, hai vật ở cột trái ngay phía dưới; đích đầu cách 2 ô sau hàng rào, đích sau cách 3 ô sau hàng rào và tường cao
+  var SAN_4 = ['.....', '.=D..', 'o....', '.=#D.', 'o....'];
+  var BD_4 = { x: 0, y: 1, huong: 2 };
+  // 5: hai làn băng chuyền (cột 1, 2) giữa xe và đích; xe quay mặt xuống ở cột trái, ba vật nằm ngay dưới ba chỗ đứng (hàng 0, 2, 4), ba đích sau làn băng (cách 3 ô)
+  var SAN_5 = ['.^^D.', 'o^^..', '.^^D.', 'o^^..', '.^^D.', 'o^^..'];
+  var BD_5 = { x: 0, y: 0, huong: 2 };
   // 6: ba sân; xe ở đáy quay mặt lên, rổ có sẵn vật. S1: hàng rào sát mũi xe, đích ô 2. S2: ô 1 trống, hàng rào ô 2, đích ô 3. S3: tường cao sát mũi xe, đích ô 2
   var SAN_6 = [
     ['.....', '.....', '..D..', '..=..', '.....'],
@@ -105,20 +107,20 @@
     ['.....', '.....', '..D..', '..#..', '.....']
   ];
   var BD_6 = { x: 2, y: 4, huong: 0 };
-  // 7: hai sân giống nhau, vật dưới xe MÀU KHÁC nhau (đỏ / xanh dương); đích đỏ cách 2 ô, đích xanh dương cách 3 ô, hàng rào ở ô 1
-  var SAN_7 = ['.....', '..D..', '..D..', '..=..', '..o..'];
+  // 7: hai sân giống nhau, vật ngay trước mũi xe MÀU KHÁC nhau (đỏ / xanh dương); trên cùng hướng xe: đích đỏ cách xe 2 ô, đích xanh dương cách 3 ô
+  var SAN_7 = ['.....', '..D..', '..D..', '..o..', '.....'];
   var MAU_7 = lop(5, 5, { '2,2': 'r', '2,1': 'b' });
-  var VMAU_7 = [lop(5, 5, { '2,4': 'r' }), lop(5, 5, { '2,4': 'b' })];
+  var VMAU_7 = [lop(5, 5, { '2,3': 'r' }), lop(5, 5, { '2,3': 'b' })];
   var BD_7 = { x: 2, y: 4, huong: 0 };
-  // 8: như 4 nhưng cả hai đích cách 3 ô (hàng rào rồi tường cao)
-  var SAN_8 = ['.....', 'o=#D.', '.....', 'o=#D.', '.....'];
-  var BD_8 = { x: 0, y: 1, huong: 1 };
-  // 9: xe omni quay mặt lên ở hàng dưới; ba vật dưới ba chỗ đứng, cả hàng rào chắn ở giữa, ba đích cách 2 ô
-  var SAN_9 = ['.....', 'D.D.D', '=====', 'o.o.o'];
+  // 8: như 4 nhưng cả hai đích cách 3 ô (hàng rào rồi tường cao); xe quay mặt xuống, vật ngay phía dưới
+  var SAN_8 = ['.=#D.', 'o....', '.=#D.', 'o....', '.....'];
+  var BD_8 = { x: 0, y: 0, huong: 2 };
+  // 9: xe omni quay mặt lên ở hàng dưới; ba vật ngay trước mũi xe ở ba chỗ đứng, hàng rào chắn ngang ở giữa, ba đích cách xe 3 ô
+  var SAN_9 = ['D.D.D', '=====', 'o.o.o', '.....'];
   var BD_9 = { x: 0, y: 3, huong: 0 };
-  // 10: kho hàng 7×5: ba vật ở cột trái; đích hàng trên cách 3 ô (hàng rào, băng), hàng giữa cách 2 ô (hàng rào), hàng dưới cách 1 ô
-  var SAN_10 = ['o=>D...', '.......', 'o=D....', '.......', 'oD.....'];
-  var BD_10 = { x: 0, y: 0, huong: 1 };
+  // 10: kho hàng 7×6: xe quay mặt xuống ở cột trái, ba vật ngay dưới ba chỗ đứng; đích hàng trên cách 3 ô (hàng rào, băng), hàng giữa cách 2 ô (hàng rào), hàng dưới cách 1 ô
+  var SAN_10 = ['.=>D...', 'o......', '.=D....', 'o......', '.D.....', 'o......'];
+  var BD_10 = { x: 0, y: 0, huong: 2 };
 
   /* ------------------------------------------------------------- chương trình dùng lại */
 
@@ -127,25 +129,25 @@
   var CHINH_2 = ['aim(3)', 'throw()', 'wait()'];
   // 3: nạp, rẽ phải, ném tầm 3
   var CHINH_3 = ['load()', 'wait()', 'turn_right()', 'aim(3)', 'throw()', 'wait()'];
-  // 4: nạp, toss(2), xuống hai ô, nạp, toss(3)
-  var CHINH_4 = ['load()', 'wait()', 'toss(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'load()', 'wait()', 'toss(3)'];
-  // 5: đặt tầm 3 một lần ngoài vòng; mỗi vòng nạp, ném, xuống hai ô
-  var CHINH_5 = nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()']));
-  var CHINH_5_KHAC = LAP(3, ['load()', 'wait()', 'toss(3)', 'turn_right()', 'forward(2)', 'turn_left()']);
+  // 4: xe quay mặt xuống: nạp, quay sang phải, toss(2), quay xuống, xuống hai ô, nạp, quay sang phải, toss(3)
+  var CHINH_4 = ['load()', 'wait()', 'turn_left()', 'toss(2)', 'turn_right()', 'forward(2)', 'load()', 'wait()', 'turn_left()', 'toss(3)'];
+  // 5: đặt tầm 3 một lần ngoài vòng; mỗi vòng nạp vật phía dưới, quay sang phải ném, quay xuống, đi xuống hai ô
+  var CHINH_5 = nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()', 'turn_right()', 'forward(2)']));
+  var CHINH_5_KHAC = LAP(3, ['load()', 'wait()', 'turn_left()', 'toss(3)', 'turn_right()', 'forward(2)']);
   // 6: tầm 3 nếu ô 1 trống, không thì tầm 2
   var CHINH_6 = ['if front_clear():', '    aim(3)', 'else:', '    aim(2)', 'throw()', 'wait()'];
   var CHINH_6_KHAC = ['if front_clear():', '    toss(3)', 'else:', '    toss(2)'];
-  // 7: đọc màu vật TRƯỚC khi nạp
-  var CHINH_7 = ['c = color()', 'load()', 'wait()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'];
-  var CHINH_7_KHAC = ['c = color()', 'load()', 'wait()', 'if c == "red":', '    toss(2)', 'else:', '    toss(3)'];
+  // 7: nạp vật vào rổ rồi mới đọc màu vật (color() thấy vật trong rổ)
+  var CHINH_7 = ['load()', 'wait()', 'c = color()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'];
+  var CHINH_7_KHAC = ['load()', 'wait()', 'c = color()', 'if c == "red":', '    toss(2)', 'else:', '    toss(3)'];
   // 8: lặp hai lần, lob(3)
-  var CHINH_8 = LAP(2, ['load()', 'wait()', 'lob(3)', 'turn_right()', 'forward(2)', 'turn_left()']);
-  // 9: omni; tầm 2 đặt một lần
-  var CHINH_9 = nhieu(['aim(2)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)']));
-  var CHINH_9_KHAC = LAP(3, ['load()', 'wait()', 'toss(2)', 'slide_r(2)']);
+  var CHINH_8 = LAP(2, ['load()', 'wait()', 'turn_left()', 'lob(3)', 'turn_right()', 'forward(2)']);
+  // 9: omni; tầm 3 đặt một lần
+  var CHINH_9 = nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)']));
+  var CHINH_9_KHAC = LAP(3, ['load()', 'wait()', 'toss(3)', 'slide_r(2)']);
   // 10: tầm 3, 2, 1 theo vòng
-  var CHINH_10 = LAP(3, ['load()', 'wait()', 'aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()']);
-  var CHINH_10_KHAC = LAP(3, ['load()', 'wait()', 'toss(3 - i)', 'turn_right()', 'forward(2)', 'turn_left()']);
+  var CHINH_10 = LAP(3, ['load()', 'wait()', 'turn_left()', 'aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)']);
+  var CHINH_10_KHAC = LAP(3, ['load()', 'wait()', 'turn_left()', 'toss(3 - i)', 'turn_right()', 'forward(2)']);
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -192,7 +194,7 @@
 
     man({
       so: 3, ten: 'Nạp rồi ném', hang: 'lam-quen', hamCuaEmCan: ['turn_right', 'right'],
-      deBai: 'Rổ máy ném lúc đầu trống. Xe đứng trên vật thì load() rồi wait() nạp vật vào rổ (rổ chỉ chứa một vật). Nạp vật, quay xe về phía đích rồi ném vật vào ô đích.',
+      deBai: 'Rổ máy ném lúc đầu trống. Vật nằm ngay trước mũi xe thì load() rồi wait() nạp vật vào rổ (rổ chỉ chứa một vật). Nạp vật, quay xe về phía đích rồi ném vật vào ô đích.',
       veMaMau: 'Chương trình có sẵn ném ngay trong khi rổ còn trống. Chạy thử, xem chuyện gì xảy ra với throw().',
       san: SAN_3, batDau: BD_3,
       maMau: { chinh: ['aim(3)', 'throw()', 'wait()'] },
@@ -205,52 +207,53 @@
         { moTa: 'Quên wait() sau load(): lệnh quay bị bỏ vì nhịp nạp vật xe không đi', baiLam: { chinh: ['load()', 'turn_right()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['nem-dung-yen', 'chua-dua-vat'] },
         { moTa: 'Tầm 2: vật rơi vào ô trống trước đích', baiLam: { chinh: ['load()', 'wait()', 'turn_right()', 'aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Tầm 1: vật rơi vào hàng rào nên vỡ', baiLam: { chinh: ['load()', 'wait()', 'turn_right()', 'aim(1)', 'throw()', 'wait()'] }, phaiCoMa: ['nem-vo'] },
-        { moTa: 'Nạp hai lần: rổ đã có vật', baiLam: { chinh: ['load()', 'wait()', 'load()', 'wait()', 'turn_right()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['ro-day'] }
+        { moTa: 'Nạp hai lần: rổ đã có vật', baiLam: { chinh: ['load()', 'wait()', 'load()', 'wait()', 'turn_right()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['ro-day'] },
+        { moTa: 'Quay xe sang phải trước khi nạp: vật không còn ở trước mũi xe nên load() không nạp được', baiLam: { chinh: ['turn_right()', 'load()', 'wait()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['nap-hut', 'nem-hut', 'chua-dua-vat'] }
       ],
-      goiY: ['Nạp vật khi xe đang đứng đúng trên nó: load() rồi wait(). Muốn ném sang phải thì xe phải quay mặt sang phải trước.',
+      goiY: ['Nạp vật khi nó nằm ngay trước mũi xe: load() rồi wait(). Muốn ném sang phải thì xe phải quay mặt sang phải trước.',
         'Máy ném luôn ném thẳng theo hướng mặt xe. Hàng rào ở ngay ô sát mũi xe, đích cách xe 3 ô.']
     }),
 
     /* ------------------------------------------------------------- hàng 2: luyện */
     man({
       so: 4, ten: 'Hàm toss(n)', hang: 'luyen', hamCuaEmCan: ['turn_right', 'turn_left', 'forward', 'right'], taoHam: ['toss'],
-      deBai: 'Hai vật ở cột trái: một vật ném tới đích cách 2 ô, một vật ném tới đích cách 3 ô. Mỗi lần ném phải đặt tầm, ném rồi wait(); tạo hàm toss(n) làm trọn ba việc đó để dùng cho cả hai vật.',
+      deBai: 'Xe quay mặt xuống, hai vật nằm ở cột trái ngay phía dưới chỗ xe đứng. Nạp vật rồi quay sang phải: một vật ném tới đích cách 2 ô, một vật ném tới đích cách 3 ô. Mỗi lần ném phải đặt tầm, ném rồi wait(); tạo hàm toss(n) làm trọn ba việc đó để dùng cho cả hai vật.',
       veMaMau: 'Chương trình có sẵn mới ném được vật đầu tiên bằng cách viết thẳng từng lệnh. Chạy thử, gói phần ném thành hàm toss(n) rồi viết tiếp cho vật thứ hai.',
       san: SAN_4, batDau: BD_4,
-      maMau: { chinh: ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()'] },
-      sao: { o: 21, nhip: 8 },
+      maMau: { chinh: ['load()', 'wait()', 'turn_left()', 'aim(2)', 'throw()', 'wait()'] },
+      sao: { o: 22, nhip: 9 },
       loiGiai: { chinh: CHINH_4.slice(), hamCuaEmMoi: [hToss()] },
-      loiGiaiKhac: { moTa: 'Quay xuống bằng right(1) thay cho turn_right()', baiLam: { chinh: ['load()', 'wait()', 'toss(2)', 'right(1)', 'forward(2)', 'turn_left()', 'load()', 'wait()', 'toss(3)'] }, hamCuaEmMoi: [hToss()] },
+      loiGiaiKhac: { moTa: 'Quay xuống bằng right(1) thay cho turn_right()', baiLam: { chinh: ['load()', 'wait()', 'turn_left()', 'toss(2)', 'right(1)', 'forward(2)', 'load()', 'wait()', 'turn_left()', 'toss(3)'] }, hamCuaEmMoi: [hToss()] },
       loiSai: [
         { moTa: 'Gọi toss() mà chưa tạo hàm', baiLam: { chinh: CHINH_4.slice() }, phaiCoMa: ['ham-chua-co'] },
         { moTa: 'toss(n) quên wait(): lệnh ném chưa chạy khi xe đã quay đi', baiLam: { chinh: CHINH_4.slice() }, hamCuaEmMoi: [hToss(['aim(n)', 'throw()'])], phaiCoMa: ['nem-dung-yen', 'chua-dua-vat'] },
         { moTa: 'toss(n) quên throw(): chỉ đặt tầm, không ném', baiLam: { chinh: CHINH_4.slice() }, hamCuaEmMoi: [hToss(['aim(n)', 'wait()'])], phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'toss(n) đặt tầm cố định 2 thay vì n: vật thứ hai rơi vào tường cao', baiLam: { chinh: CHINH_4.slice() }, hamCuaEmMoi: [hToss(['aim(2)', 'throw()', 'wait()'])], phaiCoMa: ['nem-vo'] },
-        { moTa: 'Quên nạp vật thứ hai: rổ trống nên throw() không ném gì', baiLam: { chinh: ['load()', 'wait()', 'toss(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'toss(3)'] }, hamCuaEmMoi: [hToss()], phaiCoMa: ['nem-hut', 'chua-dua-vat'] },
-        { moTa: 'Không dùng hàm, viết thẳng aim, throw, wait cho cả hai vật: tràn khung 10 ô', baiLam: { chinh: ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()', 'load()', 'wait()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Quên nạp vật thứ hai: rổ trống nên throw() không ném gì', baiLam: { chinh: ['load()', 'wait()', 'turn_left()', 'toss(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'toss(3)'] }, hamCuaEmMoi: [hToss()], phaiCoMa: ['nem-hut', 'chua-dua-vat'] },
+        { moTa: 'Không dùng hàm, viết thẳng aim, throw, wait cho cả hai vật: tràn khung 10 ô', baiLam: { chinh: ['load()', 'wait()', 'turn_left()', 'aim(2)', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'load()', 'wait()', 'turn_left()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['tran-khung'] }
       ],
       goiY: ['Mỗi lần ném đều gồm aim(n), throw(), wait(): gói ba dòng đó vào một hàm có tham số n tên toss.',
-        'Giữa hai vật xe phải đi xuống hai ô trong khi quay mặt xuống, rồi quay mặt sang phải lại trước khi nạp vật thứ hai.']
+        'Nạp vật phía dưới xong xe phải quay sang phải để ném. Giữa hai vật xe quay mặt xuống lại và đi xuống hai ô, rồi nạp vật thứ hai, lại quay sang phải.']
     }),
 
     man({
       so: 5, ten: 'Ném qua làn băng', hang: 'luyen', hamCuaEmCan: ['turn_right', 'turn_left', 'forward'],
-      deBai: 'Hai làn băng chuyền chắn giữa xe và các ô đích, cách xe 3 ô. Xe đứng trên băng sẽ bị đẩy đi lệch, nhưng vật ném bay qua băng được. Ném cả ba vật ở cột trái qua làn băng tới ba ô đích.',
+      deBai: 'Hai làn băng chuyền chắn giữa xe và các ô đích, cách xe 3 ô: xe đứng trên băng sẽ bị đẩy đi lệch, nhưng vật ném bay qua băng được. Xe quay mặt xuống, ba vật nằm ở cột trái ngay phía dưới ba chỗ xe sẽ đứng. Nạp từng vật, quay sang phải rồi ném qua làn băng tới ba ô đích.',
       veMaMau: 'Chương trình có sẵn đã ném được vật đầu tiên. Chạy thử, rồi lặp lại cho hai vật còn lại ở dưới.',
       san: SAN_5, batDau: BD_5,
-      maMau: { chinh: ['aim(3)', 'load()', 'wait()', 'throw()', 'wait()'] },
-      sao: { o: 18, nhip: 14 },
+      maMau: { chinh: ['aim(3)', 'load()', 'wait()', 'turn_left()', 'throw()', 'wait()'] },
+      sao: { o: 18, nhip: 15 },
       loiGiai: { chinh: CHINH_5.slice() },
       loiGiaiKhac: { moTa: 'Ném bằng toss(3) trong vòng lặp', baiLam: { chinh: CHINH_5_KHAC.slice() }, hamCuaEmMoi: [] },
       loiSai: [
-        { moTa: 'Quên đặt tầm: tầm mặc định 1 làm vật rơi xuống làn băng, không tới đích', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đặt tầm 2: vật rơi vào ô băng, không tới đích', baiLam: { chinh: nhieu(['aim(2)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()'])) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chỉ lặp hai lần: còn một vật chưa ném', baiLam: { chinh: nhieu(['aim(3)'], LAP(2, ['load()', 'wait()', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()'])) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên quay lại mặt sang phải sau khi đi xuống: vật kế bay xuống phía dưới', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'turn_right()', 'forward(2)'])) }, phaiCoMa: ['nem-vo'] },
-        { moTa: 'Nạp xong nhưng quên throw(): rổ đầy, lần nạp sau báo rổ đã có vật', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()'])) }, phaiCoMa: ['ro-day'] }
+        { moTa: 'Quên đặt tầm: tầm mặc định 1 làm vật rơi xuống làn băng, không tới đích', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()', 'turn_right()', 'forward(2)']) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đặt tầm 2: vật rơi vào ô băng, không tới đích', baiLam: { chinh: nhieu(['aim(2)'], LAP(3, ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()', 'turn_right()', 'forward(2)'])) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chỉ lặp hai lần: còn một vật chưa ném', baiLam: { chinh: nhieu(['aim(3)'], LAP(2, ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()', 'turn_right()', 'forward(2)'])) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên quay sang phải trước khi ném: xe còn quay mặt xuống nên vật bay xuống rơi trúng vật khác và vỡ', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'turn_right()', 'forward(2)'])) }, phaiCoMa: ['nem-vo'] },
+        { moTa: 'Nạp xong nhưng quên throw(): rổ đầy, lần nạp sau báo rổ đã có vật', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'turn_left()', 'turn_right()', 'forward(2)'])) }, phaiCoMa: ['ro-day'] }
       ],
       goiY: ['Xe đứng yên ở cột trái, làn băng không đụng tới xe. Tầm ném giữ nguyên tới lần aim kế nên chỉ cần đặt một lần.',
-        'Mỗi vòng: nạp, ném, rồi đi xuống hai ô sang vật kế (nhớ quay mặt lại sang phải).']
+        'Mỗi vòng: nạp vật phía dưới, quay sang phải ném, rồi quay mặt xuống và đi xuống hai ô sang vật kế.']
     }),
 
     man({
@@ -276,7 +279,7 @@
     /* ------------------------------------------------------------- hàng 3: biến thể */
     man({
       so: 7, ten: 'Đích đúng màu', hang: 'bien-the', hamCuaEmCan: ['toss'], cb: 'mau',
-      deBai: 'Vật nằm dưới xe có màu đỏ hoặc xanh dương, ở hai sân. Ô đích màu nào chỉ nhận vật màu đó: đích đỏ cách xe 2 ô, đích xanh dương cách xe 3 ô, hàng rào ở giữa. Đọc màu vật bằng color() trước khi nạp, rồi ném vào đúng đích ở cả hai sân.',
+      deBai: 'Vật nằm ngay trước mũi xe có màu đỏ hoặc xanh dương, ở hai sân. Ô đích màu nào chỉ nhận vật màu đó: đích đỏ cách xe 2 ô, đích xanh dương cách xe 3 ô, cùng hướng với vật. Nạp vật vào rổ rồi đọc màu vật bằng color(), rồi ném vào đúng đích ở cả hai sân.',
       veMaMau: 'Chương trình có sẵn nạp vật rồi ném với tầm 2. Chạy thử, xem vật màu nào rơi đúng đích, màu nào sai.',
       san: [SAN_7, SAN_7], mau: [MAU_7, MAU_7], vatMau: VMAU_7, batDau: BD_7,
       maMau: { chinh: ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()'] },
@@ -286,29 +289,29 @@
       loiSai: [
         { moTa: 'Tầm cố định 2: vật xanh dương rơi xuống đích đỏ nên không được tính', baiLam: { chinh: ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
         { moTa: 'Tầm cố định 3: vật đỏ rơi xuống đích xanh dương nên không được tính', baiLam: { chinh: ['load()', 'wait()', 'aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
-        { moTa: 'Đọc màu SAU khi nạp: vật đã vào rổ nên color() chỉ thấy sàn, luôn là "none"', baiLam: { chinh: ['load()', 'wait()', 'c = color()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
-        { moTa: 'Viết hoa "Red": không khớp màu nào nên luôn chọn nhánh else', baiLam: { chinh: ['c = color()', 'load()', 'wait()', 'if c == "Red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['ten-mau-sai', 'chua-dua-vat'] },
-        { moTa: 'Đảo hai nhánh: vật nào cũng rơi nhầm đích', baiLam: { chinh: ['c = color()', 'load()', 'wait()', 'if c == "red":', '    aim(3)', 'else:', '    aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] }
+        { moTa: 'Đọc màu TRƯỚC khi nạp: vật còn nằm đất, chưa vào rổ nên color() chỉ thấy sàn, luôn là "none"', baiLam: { chinh: ['c = color()', 'load()', 'wait()', 'if c == "red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] },
+        { moTa: 'Viết hoa "Red": không khớp màu nào nên luôn chọn nhánh else', baiLam: { chinh: ['load()', 'wait()', 'c = color()', 'if c == "Red":', '    aim(2)', 'else:', '    aim(3)', 'throw()', 'wait()'] }, phaiCoMa: ['ten-mau-sai', 'chua-dua-vat'] },
+        { moTa: 'Đảo hai nhánh: vật nào cũng rơi nhầm đích', baiLam: { chinh: ['load()', 'wait()', 'c = color()', 'if c == "red":', '    aim(3)', 'else:', '    aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['dat-sai-mau', 'chua-dua-vat'] }
       ],
-      goiY: ['Màu vật chỉ đọc được lúc nó còn nằm dưới xe: color() trả về "red" hay "blue" của vật.',
-        'Lưu màu vào một biến trước khi nạp, rồi dùng if ... else để chọn tầm cho đích đỏ hay đích xanh dương.']
+      goiY: ['Màu vật chỉ đọc được khi vật đã nằm trong rổ: load() rồi wait(), sau đó color() trả về "red" hay "blue" của vật.',
+        'Lưu màu vào một biến, rồi dùng if ... else để chọn tầm cho đích đỏ hay đích xanh dương.']
     }),
 
     man({
       so: 8, ten: 'Sửa tầm ném', hang: 'bien-the', hamCuaEmCan: ['turn_right', 'turn_left', 'forward', 'right'],
-      deBai: 'Màn cho sẵn hàm lob(n) để ném vật tới ô cách xe n ô, nhưng hàm đang làm vật vỡ. Sửa lỗi trong lob(n) rồi chạy chương trình để ném cả hai vật qua hàng rào và tường cao vào hai ô đích.',
+      deBai: 'Màn cho sẵn hàm lob(n) để ném vật tới ô cách xe n ô, nhưng hàm đang làm vật vỡ. Sửa lỗi trong lob(n) rồi chạy chương trình để ném cả hai vật qua hàng rào và tường cao vào hai ô đích. Xe quay mặt xuống nạp vật ngay phía dưới, rồi quay sang phải mới ném.',
       veMaMau: 'Chương trình có sẵn gọi lob(3) cho từng vật. Chạy thử, xem vật rơi xuống đâu rồi sửa hàm lob.',
       san: SAN_8, batDau: BD_8,
-      maMau: { chinh: LAP(2, ['load()', 'wait()', 'lob(3)', 'turn_right()', 'forward(2)', 'turn_left()']), hamCuaMan: [hLob(T_LOB_SAI)] },
-      sao: { o: 19, nhip: 8 },
+      maMau: { chinh: LAP(2, ['load()', 'wait()', 'turn_left()', 'lob(3)', 'turn_right()', 'forward(2)']), hamCuaMan: [hLob(T_LOB_SAI)] },
+      sao: { o: 19, nhip: 9 },
       loiGiai: { chinh: CHINH_8.slice(), hamCuaMan: [hLob()] },
-      loiGiaiKhac: { moTa: 'Sửa lob bằng tầm cố định 3 và quay xuống bằng right(1)', baiLam: { chinh: LAP(2, ['load()', 'wait()', 'lob(3)', 'right(1)', 'forward(2)', 'turn_left()']), hamCuaMan: [hLob(['aim(3)', 'throw()', 'wait()'])] } },
+      loiGiaiKhac: { moTa: 'Sửa lob bằng tầm cố định 3 và quay xuống bằng right(1)', baiLam: { chinh: LAP(2, ['load()', 'wait()', 'turn_left()', 'lob(3)', 'right(1)', 'forward(2)']), hamCuaMan: [hLob(['aim(3)', 'throw()', 'wait()'])] } },
       loiSai: [
         { moTa: 'Chưa sửa lob(n): tầm cố định 2 làm vật rơi vào tường cao nên vỡ', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLob(T_LOB_SAI)] }, phaiCoMa: ['nem-vo'] },
         { moTa: 'Sửa lob(n) thành aim(1): vật rơi vào hàng rào', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLob(['aim(1)', 'throw()', 'wait()'])] }, phaiCoMa: ['nem-vo'] },
         { moTa: 'Sửa lob(n) quên wait(): xe quay đi trước khi ném chạy', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLob(['aim(n)', 'throw()'])] }, phaiCoMa: ['nem-dung-yen', 'chua-dua-vat'] },
         { moTa: 'Sửa lob(n) bỏ throw(): chỉ đặt tầm, không ném', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hLob(['aim(n)', 'wait()'])] }, phaiCoMa: ['ro-day'] },
-        { moTa: 'Gọi lob(2) trong chương trình: tầm 2 rơi vào tường cao', baiLam: { chinh: LAP(2, ['load()', 'wait()', 'lob(2)', 'turn_right()', 'forward(2)', 'turn_left()']), hamCuaMan: [hLob()] }, phaiCoMa: ['nem-vo'] }
+        { moTa: 'Gọi lob(2) trong chương trình: tầm 2 rơi vào tường cao', baiLam: { chinh: LAP(2, ['load()', 'wait()', 'turn_left()', 'lob(2)', 'turn_right()', 'forward(2)']), hamCuaMan: [hLob()] }, phaiCoMa: ['nem-vo'] }
       ],
       goiY: ['Chạy thử, xem ô vật rơi xuống: lob(3) đặt tầm bao nhiêu? Hàm lob đang bỏ qua tham số n.',
         'Cho aim() dùng chính tham số n của hàm, không phải một số cố định.']
@@ -316,19 +319,19 @@
 
     man({
       so: 9, ten: 'Omni ném sang ngang', hang: 'bien-the', hamCuaEmCan: ['toss', 'slide_r'], omni: true,
-      deBai: 'Xe omni quay mặt lên, hàng rào chắn ngang nên xe không đi lên được. Ba vật nằm dưới ba chỗ đứng ở hàng dưới, ba đích cách xe 2 ô. Xe omni trượt ngang mà không phải quay: nạp, ném rồi trượt tới vật kế.',
+      deBai: 'Xe omni quay mặt lên, hàng rào chắn ngang nên xe không đi lên được. Ba vật nằm ngay trước mũi xe ở ba chỗ đứng của hàng dưới, ba đích cách xe 3 ô, bên kia hàng rào. Xe omni trượt ngang mà không phải quay: nạp, ném rồi trượt tới chỗ đứng kế.',
       veMaMau: 'Chương trình có sẵn nạp và ném vật đầu tiên. Chạy thử, rồi lặp lại cho hai vật còn lại.',
       san: SAN_9, batDau: BD_9,
-      maMau: { chinh: ['aim(2)', 'load()', 'wait()', 'throw()', 'wait()'] },
+      maMau: { chinh: ['aim(3)', 'load()', 'wait()', 'throw()', 'wait()'] },
       sao: { o: 10, nhip: 10 },
       loiGiai: { chinh: CHINH_9.slice() },
-      loiGiaiKhac: { moTa: 'Ném bằng toss(2) trong vòng lặp', baiLam: { chinh: CHINH_9_KHAC.slice() } },
+      loiGiaiKhac: { moTa: 'Ném bằng toss(3) trong vòng lặp', baiLam: { chinh: CHINH_9_KHAC.slice() } },
       loiSai: [
-        { moTa: 'Quên đặt tầm: tầm mặc định 1 làm vật rơi vào hàng rào', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)']) }, phaiCoMa: ['nem-vo'] },
-        { moTa: 'Đặt tầm 3: vật bay quá hàng đích, rơi ra hàng trên cùng', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)'])) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Trượt một ô thay vì hai: lần nạp kế tiếp không có vật dưới xe', baiLam: { chinh: nhieu(['aim(2)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(1)'])) }, phaiCoMa: ['nap-hut', 'nem-hut', 'chua-dua-vat'] },
-        { moTa: 'Quên nạp vật: rổ trống nên throw() không ném gì', baiLam: { chinh: nhieu(['aim(2)'], LAP(3, ['throw()', 'wait()', 'slide_r(2)'])) }, phaiCoMa: ['nem-hut', 'chua-dua-vat'] },
-        { moTa: 'Chỉ lặp hai lần: còn một vật chưa ném', baiLam: { chinh: nhieu(['aim(2)'], LAP(2, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)'])) }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên đặt tầm: tầm mặc định 1 làm vật rơi lại đúng ô vừa nhặt, không tới đích', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)']) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đặt tầm 2: vật rơi vào hàng rào nên vỡ', baiLam: { chinh: nhieu(['aim(2)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)'])) }, phaiCoMa: ['nem-vo'] },
+        { moTa: 'Trượt một ô thay vì hai: lần nạp kế tiếp không có vật trước mũi xe', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(1)'])) }, phaiCoMa: ['nap-hut', 'nem-hut', 'chua-dua-vat'] },
+        { moTa: 'Quên nạp vật: rổ trống nên throw() không ném gì', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['throw()', 'wait()', 'slide_r(2)'])) }, phaiCoMa: ['nem-hut', 'chua-dua-vat'] },
+        { moTa: 'Chỉ lặp hai lần: còn một vật chưa ném', baiLam: { chinh: nhieu(['aim(3)'], LAP(2, ['load()', 'wait()', 'throw()', 'wait()', 'slide_r(2)'])) }, phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Hàng rào chắn ngang nên xe chỉ đi ngang được: slide_r(n) trượt sang phải n ô mà vẫn quay mặt lên.',
         'Ba chỗ đứng cách nhau hai ô. Nhớ đặt tầm một lần trước vòng lặp: tầm giữ nguyên cho tới lần aim kế.']
@@ -337,20 +340,20 @@
     /* ------------------------------------------------------------- trùm */
     man({
       so: 10, ten: 'Kho hàng có rào', hang: 'trum', hamCuaEmCan: ['turn_right', 'turn_left', 'forward', 'toss'],
-      deBai: 'Trong kho, ba vật nằm ở cột trái, ba ô đích nằm sau hàng rào: có hàng cách 3 ô (cả làn băng), có hàng cách 2 ô, có hàng cách 1 ô. Nạp từng vật rồi đặt tầm đúng cho mỗi hàng để ném vào đích.',
+      deBai: 'Trong kho, xe quay mặt xuống, ba vật nằm ở cột trái ngay phía dưới ba chỗ xe đứng. Ba ô đích nằm bên phải: có hàng cách 3 ô (sau hàng rào và làn băng), có hàng cách 2 ô (sau hàng rào), có hàng cách 1 ô. Nạp từng vật, quay sang phải rồi đặt tầm đúng cho mỗi hàng để ném vào đích.',
       veMaMau: 'Chương trình có sẵn ném vật đầu tiên bằng tầm 3 rồi dừng. Chạy thử rồi dùng vòng lặp cho cả ba hàng.',
       san: SAN_10, batDau: BD_10,
-      maMau: { chinh: ['load()', 'wait()', 'aim(3)', 'throw()', 'wait()'] },
-      sao: { o: 18, nhip: 14 },
+      maMau: { chinh: ['load()', 'wait()', 'turn_left()', 'aim(3)', 'throw()', 'wait()'] },
+      sao: { o: 18, nhip: 15 },
       huyHieu: { ma: 'may-nem', ten: 'Huy hiệu Máy ném' },
       loiGiai: { chinh: CHINH_10.slice() },
       loiGiaiKhac: { moTa: 'Ném bằng toss(3 - i) trong vòng lặp', baiLam: { chinh: CHINH_10_KHAC.slice() } },
       loiSai: [
-        { moTa: 'Tầm cố định 3 cho cả ba hàng: hàng giữa vật rơi quá đích, hàng dưới rơi xuống mép sân', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()'])) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Tầm tăng dần 1, 2, 3 (đảo thứ tự): hàng trên vật rơi vào hàng rào nên vỡ', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'aim(i + 1)', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()']) }, phaiCoMa: ['nem-vo'] },
-        { moTa: 'Quên quay lại mặt sang phải sau khi đi xuống: vật kế bay xuống phía dưới', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)']) }, phaiCoMa: ['nem-vo'] },
-        { moTa: 'Chỉ lặp hai lần: hàng dưới chưa có vật', baiLam: { chinh: LAP(2, ['load()', 'wait()', 'aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên nạp vật: rổ trống nên throw() không ném gì', baiLam: { chinh: LAP(3, ['aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'turn_left()']) }, phaiCoMa: ['nem-hut', 'chua-dua-vat'] }
+        { moTa: 'Tầm cố định 3 cho cả ba hàng: hàng giữa và hàng dưới vật rơi quá ô đích', baiLam: { chinh: nhieu(['aim(3)'], LAP(3, ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()', 'turn_right()', 'forward(2)'])) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Tầm tăng dần 1, 2, 3 (đảo thứ tự): hàng trên vật rơi vào hàng rào nên vỡ', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'turn_left()', 'aim(i + 1)', 'throw()', 'wait()', 'turn_right()', 'forward(2)']) }, phaiCoMa: ['nem-vo'] },
+        { moTa: 'Quên quay sang phải trước khi ném: xe còn quay mặt xuống nên vật bay xuống rơi trúng vật khác và vỡ', baiLam: { chinh: LAP(3, ['load()', 'wait()', 'aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)']) }, phaiCoMa: ['nem-vo'] },
+        { moTa: 'Chỉ lặp hai lần: hàng dưới chưa có vật', baiLam: { chinh: LAP(2, ['load()', 'wait()', 'turn_left()', 'aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)']) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên nạp vật: rổ trống nên throw() không ném gì', baiLam: { chinh: LAP(3, ['turn_left()', 'aim(3 - i)', 'throw()', 'wait()', 'turn_right()', 'forward(2)']) }, phaiCoMa: ['nem-hut', 'chua-dua-vat'] }
       ],
       goiY: ['Hàng trên cần tầm 3, hàng giữa tầm 2, hàng dưới tầm 1: tầm giảm dần 3, 2, 1 theo mỗi vòng lặp.',
         'Dùng biến của vòng for để tính tầm: i chạy 0, 1, 2 thì 3 - i chạy 3, 2, 1.']

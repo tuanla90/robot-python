@@ -74,7 +74,7 @@ console.log('\n== 1. front_clear / left_clear / right_clear ở mọi loại ô 
   const OFF = { front_clear: 0, right_clear: 1, left_clear: 3 };
   // ký hiệu → [xe bánh / omni, xích]: có đi vào được không
   const BANG_KY_HIEU = [
-    ['.', true, true], ['#', false, false], ['S', false, true], ['o', true, true], ['D', true, true], ['X', true, true],
+    ['.', true, true], ['#', false, false], ['S', false, true], ['o', false, false], ['D', true, true], ['X', false, false],
     ['>', true, true], ['<', true, true], ['^', true, true], ['v', true, true], ['F', true, true], ['H', false, false], ['h', false, false]
   ];
   let tong = 0, dung = 0, sai = [];
@@ -93,11 +93,11 @@ console.log('\n== 1. front_clear / left_clear / right_clear ở mọi loại ô 
       }
     }
   }
-  kiem('13 loại ô × 3 loại robot (bánh, omni, xích) × 4 hướng mặt × 3 hàm = ' + tong + ' phép đo đúng (trống: sàn, vật o, đích D / X, băng, cờ; chặn: tường, thùng nặng H / h; bậc thang S chặn bánh và omni nhưng không chặn xích)', dung === tong && tong === 13 * 3 * 4 * 3, sai.slice(0, 3).join(' | '));
+  kiem('13 loại ô × 3 loại robot (bánh, omni, xích) × 4 hướng mặt × 3 hàm = ' + tong + ' phép đo đúng (trống: sàn, đích D, băng, cờ; chặn: tường, vật nằm đất o và đích có vật sẵn X (vật chiếm ô, luật 14/10), thùng nặng H / h; bậc thang S chặn bánh và omni nhưng không chặn xích)', dung === tong && tong === 13 * 3 * 4 * 3, sai.slice(0, 3).join(' | '));
   // lý do bị chặn
   const lyDo = (ky, loai) => { const rows = ['.....', '.....', '..' + '.' + '..', '.....', '.....']; rows[1] = '..' + ky + '..'; return doc(chay(rows, { x: 2, y: 2, huong: 0 }, loai, 'front_clear()'))[0].vat; };
-  kiem('lý do chặn: tường → "tuong", thùng nặng → "thung-nang", bậc thang với xe bánh → "bac-thang", ô trống → null',
-    lyDo('#', 'banh') === 'tuong' && lyDo('H', 'banh') === 'thung-nang' && lyDo('h', 'banh') === 'thung-nang' && lyDo('S', 'banh') === 'bac-thang' && lyDo('S', 'omni') === 'bac-thang' && lyDo('.', 'banh') === null && lyDo('S', 'xich') === null);
+  kiem('lý do chặn: tường → "tuong", vật nằm đất → "vat", thùng nặng → "thung-nang", bậc thang với xe bánh → "bac-thang", ô trống → null',
+    lyDo('#', 'banh') === 'tuong' && lyDo('o', 'banh') === 'vat' && lyDo('o', 'xich') === 'vat' && lyDo('H', 'banh') === 'thung-nang' && lyDo('h', 'banh') === 'thung-nang' && lyDo('S', 'banh') === 'bac-thang' && lyDo('S', 'omni') === 'bac-thang' && lyDo('.', 'banh') === null && lyDo('S', 'xich') === null);
   // mép sân
   const mep = chay(['...', '...', '...'], { x: 0, y: 0, huong: 0 }, 'banh', 'front_clear()\nleft_clear()\nright_clear()');
   const dm = doc(mep);
@@ -286,7 +286,7 @@ console.log('\n== 8. Dữ liệu 10 màn ==');
     ds.every((m) => BANH.every((t) => m.hamGoc.includes(t)) && m.hamGoc.includes('front_clear') && m.hamGoc.includes('left_clear') === (m.so === 7 || m.so === 10) && m.hamGoc.includes('right_clear') === (m.so === 7 || m.so === 10) && m.hamGoc.includes('grab') === (m.so === 9)));
   kiem('robot.camBien = [{ ma: "khoang-cach", o: "hong" }] ở mọi màn; có tay kẹp ("kep") chỉ ở màn 9', ds.every((m) => J(m.robot.camBien) === J([{ ma: 'khoang-cach', o: 'hong' }]) && m.robot.than === 'hai-banh' && (m.robot.tay === 'kep') === (m.so === 9)));
   kiem('11.1–11.3: một sân; 11.4–11.10: ba sân (mảng), batDau mảng 3 phần tử, nhipTheo "tong"', ds.every((m) => (m.so <= 3 ? !Array.isArray(m.san[0]) && !Array.isArray(m.batDau) && m.nhipTheo === undefined : m.san.length === 3 && Array.isArray(m.batDau) && m.batDau.length === 3 && m.nhipTheo === 'tong')));
-  kiem('mọi xe xuất phát trong ô đi được; 11.9: vật nằm ngay dưới chân xe ở cả ba sân', ds.every((m) => sanCua(m).every((rows, i) => { const b = bdCua(m)[i]; const c = rows[b.y][b.x]; return c !== '#' && (m.so !== 9 || c === 'o'); })));
+  kiem('mọi xe xuất phát trong ô đi được; 11.9: vật nằm ở ô NGAY TRƯỚC MẶT xe ở cả ba sân (vật chiếm ô, tay gắp ở ô trước mặt)', ds.every((m) => sanCua(m).every((rows, i) => { const b = bdCua(m)[i]; const c = rows[b.y][b.x]; const v = VEC[b.huong]; return c !== '#' && (m.so !== 9 || (c !== 'o' && rows[b.y + v[1]][b.x + v[0]] === 'o')); })));
   kiem('lời giải: màn 1–3 chỉ dùng cờ chanWhile, mọi màn có loiGiaiKhac đúng 2 sao (kiem-hoc.mjs kiểm chi tiết) và đủ trường mới (robot, nhipTheo, hamGoc)', ds.every((m) => m.loiGiaiKhac && m.loiSai.length >= 4 && m.robot && m.hamGoc.length >= 6));
   kiem('mỗi màn có ít nhất một lời sai báo vong-vo-han hoặc ít nhất một lời sai cứng số trượt sân khác (4–6, 9, 10: cứng số; 2, 5, 7, 8: vong-vo-han)',
     [4, 6, 9, 10].every((so) => man(so).loiSai.some((l) => /cứng|Cứng|Đếm cứng|Viết cứng/.test(l.moTa))) && [2, 5, 7, 8].every((so) => man(so).loiSai.some((l) => l.phaiCoMa.includes('vong-vo-han'))));
@@ -295,14 +295,14 @@ console.log('\n== 8. Dữ liệu 10 màn ==');
 console.log('\n== Bảng 10 màn chương Cảm biến khoảng cách (lời giải mẫu) ==');
 {
   console.log('  màn   | tên                  | sân | ô  | nhịp (tổng = từng sân)     | hàm dùng');
-  const OLO = [6, 5, 10, 10, 12, 10, 15, 10, 18, 16], NHIP = [3, 4, 8, 20, 32, 34, 70, 24, 21, 45];
+  const OLO = [6, 5, 10, 10, 12, 10, 15, 10, 21, 16], NHIP = [3, 4, 8, 20, 32, 34, 70, 24, 24, 45];
   const kq = [];
   for (const m of ds) {
     const r = ChamHoc.cham(m, m.loiGiai, tron(khoTruoc(m.id), m.loiGiai.hamCuaEmMoi));
     kq.push(r);
     console.log('  ' + m.id.padEnd(5) + ' | ' + m.ten.padEnd(20) + ' | ' + String(sanCua(m).length).padEnd(3) + ' | ' + String(r.soO).padEnd(2) + ' | ' + (String(r.soNhip) + ' (' + r.theoSan.map((s) => s.soNhip).join('+') + ')').padEnd(26) + ' | ' + r.hamDaDung.join(', '));
   }
-  kiem('bảng 10 màn: số ô 6, 5, 10, 10, 12, 10, 15, 10, 18, 16 và số nhịp (tổng) 3, 4, 8, 20, 32, 34, 70, 24, 21, 45 — đều 3 sao', kq.every((r, i) => r.sao === 3 && r.soO === OLO[i] && r.soNhip === NHIP[i]), kq.map((r) => r.soO + '/' + r.soNhip).join(' '));
+  kiem('bảng 10 màn: số ô 6, 5, 10, 10, 12, 10, 15, 10, 21, 16 và số nhịp (tổng) 3, 4, 8, 20, 32, 34, 70, 24, 24, 45 — đều 3 sao', kq.every((r, i) => r.sao === 3 && r.soO === OLO[i] && r.soNhip === NHIP[i]), kq.map((r) => r.soO + '/' + r.soNhip).join(' '));
 }
 
 console.log('\n---------------------------------------------');

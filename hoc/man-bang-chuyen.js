@@ -9,6 +9,8 @@
    trên băng cũng được đếm. Tay hạ sát đất không cản băng đẩy; vật xe đang cầm đi theo xe; vật nằm dưới
    đất không bị băng đẩy.
      - Đi cùng chiều băng: 3 ô / 2 nhịp.   - Đi ngược chiều băng: 1 ô / 2 nhịp.   - Đứng chờ: 1 ô / 2 nhịp.
+   LUẬT VẬT (14/10): vật nằm đất CHIẾM Ô; pick() / drop() làm ở Ô TRƯỚC MẶT xe, nên xe đứng sát vật / ô đích, mặt quay về nó; ô đích đã có vật là ô bị chiếm
+   nên mỗi đích nằm cuối đoạn, ngoài đường xe còn đi.
    Các màn không tạo hàm mới (taoHam rỗng): chỉ dùng kho từ chương trước.
    Hàm của em các màn giả định: move, turn_right, turn_left, pick, drop, carry, bend_left, bend_right.
 
@@ -55,7 +57,7 @@
 
   // 5.6: một bậc thang (đi, rẽ phải, đi, rẽ trái); ô băng nằm giữa hàng đẩy xe cả lúc xe đang quay
   var CUM_BAC = ['move()', 'turn_right()', 'move()', 'turn_left()'];
-  // 5.10: một chuyến chở qua đoạn băng 3 ô rồi rẽ phải đi tới vật kế tiếp
+  // 5.10: một chuyến chở rồi rẽ phải, tiến một ô tới sát vật kế tiếp
   var CHUYEN = ['carry()', 'turn_right()', 'move()'];
 
   var DS = [
@@ -147,19 +149,19 @@
 
     man({
       so: 5, ten: 'Chở qua băng', hang: 'luyen', canFor: 'mat-sao', hamCuaEmCan: ['move', 'turn_right', 'pick', 'drop'],
-      deBai: 'Xe đứng trên vật. Mang vật đi qua đoạn băng chuyền, rẽ xuống rồi đặt vật lên ô đích.',
-      san: ['o.>>>>.', '######.', '######D'],
+      deBai: 'Vật nằm ngay trước mặt xe. Nhặt vật, mang đi qua đoạn băng chuyền, rẽ xuống rồi đặt vật lên ô đích.',
+      san: ['.o>>>>.', '######.', '######D'],
       batDau: { x: 0, y: 0, huong: 1 },
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
       maMau: { chinh: [] },
-      sao: { o: 22, nhip: 11 },
-      loiGiai: { chinh: nhieu(['pick()'], FOR(5, ['move()']), ['turn_right()'], FOR(2, ['move()']), ['drop()']) },
-      loiGiaiKhac: { moTa: 'Không dùng vòng lặp: gọi move() từng lần', baiLam: { chinh: nhieu(['pick()'], lap('move()', 5), ['turn_right()'], lap('move()', 2), ['drop()']) } },
+      sao: { o: 21, nhip: 10 },
+      loiGiai: { chinh: nhieu(['pick()'], FOR(5, ['move()']), ['turn_right()', 'move()', 'drop()']) },
+      loiGiaiKhac: { moTa: 'Không dùng vòng lặp: gọi move() từng lần', baiLam: { chinh: nhieu(['pick()'], lap('move()', 5), ['turn_right()', 'move()', 'drop()']) } },
       loiSai: [
-        { moTa: 'Đếm theo số ô: lặp sáu lần, xe đâm vào mép sân một nhịp', baiLam: { chinh: nhieu(['pick()'], FOR(6, ['move()']), ['turn_right()'], FOR(2, ['move()']), ['drop()']) }, phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Lặp thiếu hai lần: xe rẽ khi còn ở giữa băng, rồi đâm tường', baiLam: { chinh: nhieu(['pick()'], FOR(3, ['move()']), ['turn_right()'], FOR(2, ['move()']), ['drop()']) }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Quên pick(): xe đi tay không rồi thả, chẳng có vật nào', baiLam: { chinh: nhieu(FOR(5, ['move()']), ['turn_right()'], FOR(2, ['move()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Thả vật bằng release() khi tay còn nâng: vật vỡ', baiLam: { chinh: nhieu(['pick()'], FOR(5, ['move()']), ['turn_right()'], FOR(2, ['move()']), ['release()', 'wait()']) }, phaiCoMa: ['vat-vo'] }
+        { moTa: 'Đếm theo số ô: lặp sáu lần, xe đâm vào mép sân một nhịp', baiLam: { chinh: nhieu(['pick()'], FOR(6, ['move()']), ['turn_right()', 'move()', 'drop()']) }, phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Lặp thiếu hai lần: xe rẽ khi còn ở giữa băng, rồi đâm tường', baiLam: { chinh: nhieu(['pick()'], FOR(3, ['move()']), ['turn_right()', 'move()', 'drop()']) }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Quên pick(): vật chiếm ô nên xe đâm vào vật ngay từ nhịp đầu', baiLam: { chinh: nhieu(FOR(5, ['move()']), ['turn_right()', 'move()', 'drop()']) }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Thả vật bằng release() khi tay còn nâng: vật vỡ', baiLam: { chinh: nhieu(['pick()'], FOR(5, ['move()']), ['turn_right()', 'move()', 'release()', 'wait()']) }, phaiCoMa: ['vat-vo'] }
       ],
       goiY: ['Băng chuyền đẩy cả xe lẫn vật xe đang cầm. Cứ hai nhịp đứng trên băng là xe được đẩy một ô.',
         'Số lần gọi move() ít hơn số ô xe phải đi; thử đếm theo từng nhịp.']
@@ -225,46 +227,46 @@
     }),
 
     man({
-      so: 9, ten: 'Chờ băng', hang: 'bien-the', canFor: 'mat-sao', hamCuaEmCan: ['move', 'pick', 'drop'],
-      deBai: 'Xe đứng trên vật, đường tới ô đích là một lối băng chuyền có khúc cua. Mang vật tới ô đích.',
-      veMaMau: 'Chương trình có sẵn mang vật lên băng, chờ rồi thả, nhưng thả sớm quá. Chạy thử, xem xe đã tới đâu lúc thả rồi chỉnh số lần chờ.',
-      san: ['o>>v###', '###v###', '###D###'],
+      so: 9, ten: 'Chờ băng', hang: 'bien-the', canFor: 'tran-khung', hamCuaEmCan: ['move', 'pick', 'drop'],
+      deBai: 'Vật nằm ngay trước mặt xe, đường tới ô đích là một lối băng chuyền có khúc cua. Nhặt vật, để băng đưa xe tới sát ô đích rồi đặt vật lên đó.',
+      veMaMau: 'Chương trình có sẵn nhặt vật, cho xe lên băng, chờ rồi thả, nhưng thả sớm quá. Chạy thử, xem xe đã tới đâu lúc thả rồi chỉnh số lần chờ.',
+      san: ['.o>>v##', '####>.D'],
       batDau: { x: 0, y: 0, huong: 1 },
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
-      maMau: { chinh: nhieu(['pick()', 'move()'], FOR(4, ['wait()']), ['drop()']) },
-      sao: { o: 18, nhip: 11 },
-      loiGiai: { chinh: nhieu(['pick()', 'move()'], FOR(7, ['wait()']), ['drop()']) },
-      loiGiaiKhac: { moTa: 'Chờ viết thành ba lần hai wait() rồi thêm một wait()', baiLam: { chinh: nhieu(['pick()', 'move()'], FOR(3, ['wait()', 'wait()']), ['wait()', 'drop()']) } },
+      maMau: { chinh: nhieu(['pick()'], FOR(2, ['move()']), FOR(4, ['wait()']), ['drop()']) },
+      sao: { o: 19, nhip: 12 },
+      loiGiai: { chinh: nhieu(['pick()'], FOR(2, ['move()']), FOR(7, ['wait()']), ['drop()']) },
+      loiGiaiKhac: { moTa: 'Chờ viết thành ba lần hai wait() rồi thêm một wait()', baiLam: { chinh: nhieu(['pick()'], FOR(2, ['move()']), FOR(3, ['wait()', 'wait()']), ['wait()', 'drop()']) } },
       loiSai: [
-        { moTa: 'Không sửa gì: chờ bốn nhịp rồi thả, vật bị đặt giữa lối băng', baiLam: { chinh: nhieu(['pick()', 'move()'], FOR(4, ['wait()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chờ thiếu một nhịp: thả khi xe còn đứng trên ô băng cuối', baiLam: { chinh: nhieu(['pick()', 'move()'], FOR(6, ['wait()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chờ dư vài nhịp: vật vẫn tới đích nhưng chậm', baiLam: { chinh: nhieu(['pick()', 'move()'], FOR(9, ['wait()']), ['drop()']) }, phaiCoMa: [] },
-        { moTa: 'Quên cho xe lên băng: đứng chờ ngay chỗ cũ', baiLam: { chinh: nhieu(['pick()'], FOR(7, ['wait()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không sửa gì: chờ bốn nhịp rồi thả, xe còn ở khúc cua, ô trước mặt là tường nên vật không thả được', baiLam: { chinh: nhieu(['pick()'], FOR(2, ['move()']), FOR(4, ['wait()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chờ thiếu một nhịp: thả khi xe còn đứng trên ô băng cuối, vật nằm xuống ô trống trước ô đích', baiLam: { chinh: nhieu(['pick()'], FOR(2, ['move()']), FOR(6, ['wait()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chờ dư vài nhịp: vật vẫn tới đích nhưng chậm', baiLam: { chinh: nhieu(['pick()'], FOR(2, ['move()']), FOR(9, ['wait()']), ['drop()']) }, phaiCoMa: [] },
+        { moTa: 'Quên cho xe lên băng: đứng chờ ngay chỗ cũ rồi thả vật xuống chỗ vừa nhặt', baiLam: { chinh: nhieu(['pick()'], FOR(7, ['wait()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Băng chuyền tự đưa xe và vật đi, kể cả qua khúc cua; cứ hai nhịp xe đứng trên băng là đi thêm một ô.',
-        'Đếm các ô băng từ chỗ xe lên đến ô đích, mỗi ô mất hai nhịp chờ.']
+        'Đếm các ô băng từ chỗ xe lên đến ô đứng sát ô đích, mỗi ô mất hai nhịp chờ. Chỉ thả khi xe đã đứng sát ô đích, mặt quay về nó.']
     }),
 
     /* ------------------------------------------------------------- trùm */
     man({
-      so: 10, ten: 'Ba chuyến băng', hang: 'trum', canFor: 'tran-khung', hamCuaEmCan: ['move', 'turn_right', 'pick', 'drop', 'carry'],
-      deBai: 'Ba vật nằm trên một đường dài có nhiều đoạn băng chuyền, mỗi vật có một ô đích riêng. Đưa cả ba vật tới ô đích.',
-      san: ['###o>>D', '######o', '######v', '######v', '##D>>oD'],
-      batDau: { x: 3, y: 0, huong: 1 },
+      so: 10, ten: 'Ba chuyến băng', hang: 'trum', canFor: 'tran-khung', hamCuaEmCan: ['move', 'turn_left', 'turn_right', 'pick', 'drop', 'carry'],
+      deBai: 'Ba vật nằm rải trên một đường gấp khúc, mỗi vật có một ô đích riêng; đoạn cuối có hai ô băng chuyền chạy ngược chiều xe. Đưa cả ba vật tới ô đích.',
+      san: ['##D####', '##v####', '##v####', '##o####', '##.#.##', '##o.oD#', '##D####'],
+      batDau: { x: 4, y: 4, huong: 2 },
       mucTieu: 'dua-vat', nhipTheoLoiGiai: true,
       maMau: { chinh: [] },
-      sao: { o: 27, nhip: 23 },
+      sao: { o: 30, nhip: 25 },
       huyHieu: { ma: 'bang-chuyen', ten: 'Huy hiệu Băng chuyền' },
       loiGiai: { chinh: nhieu(FOR(2, CHUYEN), ['pick()'], FOR(4, ['move()']), ['drop()']) },
       loiGiaiKhac: { moTa: 'Không dùng vòng lặp cho hai chuyến đầu', baiLam: { chinh: nhieu(CHUYEN, CHUYEN, ['pick()'], FOR(4, ['move()']), ['drop()']) } },
       loiSai: [
-        { moTa: 'Chuyến cuối cũng dùng carry(): đi ngược băng, hai bước không đủ', baiLam: { chinh: FOR(3, CHUYEN) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chuyến cuối cũng dùng carry(): xe rẽ trái rồi thả vào tường, vật không tới đích', baiLam: { chinh: FOR(3, CHUYEN) }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Chuyến cuối đi bốn bước nhưng thả bằng release() khi tay còn nâng: vật vỡ', baiLam: { chinh: nhieu(FOR(2, CHUYEN), ['pick()'], FOR(4, ['move()']), ['release()', 'wait()']) }, phaiCoMa: ['vat-vo'] },
         { moTa: 'Quên rẽ giữa hai chuyến: xe đâm tường', baiLam: { chinh: nhieu(FOR(2, ['carry()', 'move()']), ['pick()'], FOR(4, ['move()']), ['drop()']) }, phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Chuyến cuối đi thiếu một bước: vật bị thả giữa băng', baiLam: { chinh: nhieu(FOR(2, CHUYEN), ['pick()'], FOR(3, ['move()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chuyến cuối đi thiếu một bước: vật bị thả xuống ô băng, chưa tới ô đích', baiLam: { chinh: nhieu(FOR(2, CHUYEN), ['pick()'], FOR(3, ['move()']), ['drop()']) }, phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Có những chuyến giống hệt nhau, và có một chuyến băng chạy ngược chiều xe.',
-        'Xe chở xong một chuyến vẫn phải rẽ rồi đi tới vật kế tiếp.']
+        'Chở xong một chuyến, xe vẫn phải rẽ rồi tiến một ô tới sát vật kế tiếp.']
     })
   ];
 

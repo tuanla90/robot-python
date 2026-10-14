@@ -80,14 +80,16 @@ console.log('\n== 1. Băng chuyền và xe có tay gắp: những chỗ chương
   const d1 = chay(dai, { x: 3, y: 5, huong: 0 }, L(...lap(MOVE.trim(), 5)));
   kiem('đi thẳng qua dải 4 hàng băng ngang: lệch phải 2 ô (3 → 5)', vt(d1.robot) === '5,0', vt(d1.robot));
   // tay gắp: xe cầm vật đi theo băng; tay hạ không cản băng; vật dưới đất không bị đẩy
-  const MANG = ['o>>>.', '.....'];
-  const c = chay(MANG, { x: 0, y: 0, huong: 1 }, L('arm_down()', 'grab()', 'wait()') + L('arm_up()', 'left_move()', 'right_move()', 'wait()') + 'wait()\nwait()\n', { mucTieu: 'dua-vat' });
+  const MANG = ['.o>>>.', '......'];
+  const c = chay(MANG, { x: 0, y: 0, huong: 1 }, L('arm_down()', 'grab()', 'wait()') + L('arm_up()', 'left_move()', 'right_move()', 'wait()') + MOVE + 'wait()\nwait()\n', { mucTieu: 'dua-vat' });
   const nc = nhipVet(c);
   kiem('xe cầm vật đi theo băng: vật cùng ô với xe sau mỗi lần băng đẩy', nc.every((n) => n.vat.every((v) => v.trangThai !== 'cam' || (v.x === n.robot.x && v.y === n.robot.y))) && nc[nc.length - 1].robot.x >= 2, J(nc.map((n) => n.robot.x)));
   const d = chay(['>>>>>'], { x: 0, y: 0, huong: 1 }, L('arm_down()', 'wait()', 'wait()'));
   kiem('tay hạ sát đất không cản băng: xe vẫn bị đẩy 1 ô sau 2 nhịp', vt(d.robot) === '1,0' && d.tay.tuThe === 'duoi', vt(d.robot));
-  const e = chay(['.>>>.'], { x: 0, y: 0, huong: 1 }, L('left_move()', 'right_move()', 'wait()', 'wait()', 'wait()'), { vat: [{ x: 2, y: 0 }], dich: [{ x: 4, y: 0 }], mucTieu: 'dua-vat' });
+  const e = chay(['.>>>.'], { x: 0, y: 0, huong: 1 }, L('wait()', 'wait()', 'wait()', 'wait()'), { vat: [{ x: 2, y: 0 }], dich: [{ x: 4, y: 0 }], mucTieu: 'dua-vat' });
   kiem('vật nằm dưới đất trên ô băng KHÔNG bị băng đẩy', e.vat[0].x === 2 && e.vat[0].trangThai === 'dat', J(e.vat));
+  const e2 = chay(['>o...'], { x: 0, y: 0, huong: 1 }, L('wait()', 'wait()', 'wait()', 'wait()'), { vat: [{ x: 1, y: 0 }], dich: [{ x: 4, y: 0 }], mucTieu: 'dua-vat' });
+  kiem('vật chiếm ô: băng chuyền không đẩy xe vào ô có vật (xe đứng im như gặp tường), vật vẫn ở chỗ cũ', vt(e2.robot) === '0,0' && e2.vat[0].x === 1 && e2.vat[0].trangThai === 'dat' && e2.nhip === 4, J([vt(e2.robot), e2.vat[0]]));
   const f = chay(['>>#'], { x: 0, y: 0, huong: 1 }, L('wait()', 'wait()', 'wait()', 'wait()'));
   kiem('băng đẩy vào tường: đứng yên, nhịp vẫn tính', vt(f.robot) === '1,0' && f.nhip === 4, vt(f.robot));
   // bẫy 5.6: quay trên ô băng
@@ -170,9 +172,11 @@ console.log('\n== 4. Từng màn: số đếm đúng thì thắng, sai một th�
   kiem('5.4: cách bù TRƯỚC (lệch trái 2 ô rồi đi thẳng) cũng tới cờ nhưng chậm hơn 1 nhịp (10), chỉ 2 sao', truoc.thang && truoc.soNhip === 10 && truoc.sao < 3, J([truoc.thang, truoc.soNhip, truoc.sao]));
 
   // 5.5
-  const f5 = (n) => chamMan('5.5', ['pick()'].concat(FOR(n, ['move()']), ['turn_right()'], FOR(2, ['move()']), ['drop()']));
-  kiem('5.5: lặp n lần move() rồi rẽ: n = 5 là lời giải (11 nhịp, 3 sao); n = 4 rẽ ngay trên băng nên xe bị đẩy tới ô rẽ, nhanh hơn 1 nhịp (10); n = 3 trượt; n = 6 thừa 1 nhịp',
-    f5(5).sao === 3 && f5(5).soNhip === 11 && f5(4).thang && f5(4).soNhip === 10 && f5(4).sao === 3 && !f5(3).thang && f5(6).thang && f5(6).soNhip === 12 && f5(6).sao === 2, rs('5.5', f5, [3, 4, 5, 6]));
+  const f5 = (n) => chamMan('5.5', ['pick()'].concat(FOR(n, ['move()']), ['turn_right()', 'move()', 'drop()']));
+  kiem('5.5: nhặt vật ở ô trước mặt, lặp n lần move() rồi rẽ: n = 5 là lời giải (10 nhịp, 3 sao); n = 4 rẽ ngay trên băng nên xe bị đẩy tới ô rẽ, nhanh hơn 1 nhịp (9); n = 3 trượt (đâm tường); n = 6 đâm mép sân, thừa 1 nhịp (11, 2 sao)',
+    f5(5).sao === 3 && f5(5).soNhip === 10 && f5(4).thang && f5(4).soNhip === 9 && f5(4).sao === 3 && !f5(3).thang && f5(6).thang && f5(6).soNhip === 11 && f5(6).sao === 2, rs('5.5', f5, [3, 4, 5, 6]));
+  kiem('5.5: vật chiếm ô: không pick() thì xe đâm vào vật ngay nhịp đầu (xe đứng im), chưa đưa được vật',
+    (() => { const r = chamMan('5.5', FOR(5, ['move()']).concat(['turn_right()', 'move()', 'drop()'])); return !r.thang && maCua(r).includes('dam-tuong') && vt(r.theoSan[0].robot) === '0,0'; })());
 
   // 5.6
   const bacLoi = chamMan('5.6', FOR(3, ['move()', 'move()', 'turn_right()', 'move()', 'turn_left()']));
@@ -193,22 +197,27 @@ console.log('\n== 4. Từng màn: số đếm đúng thì thắng, sai một th�
     maCua(chamMan('5.8', FOR(5, ['move()']).concat(['bend_right()'], FOR(10, ['move()']), ['bend_left()'], FOR(4, ['move()'])))).includes('dam-tuong'));
 
   // 5.9
-  const f9 = (n) => chamMan('5.9', ['pick()', 'move()'].concat(FOR(n, ['wait()']), ['drop()']));
-  kiem('5.9: chờ n nhịp: n ≤ 6 thì thả vật trên băng (chưa tới đích), n = 7 là 3 sao (11 nhịp), n lớn hơn vẫn tới nhưng chậm — thiếu MỘT nhịp chờ thì vật không tới',
-    [0, 2, 4, 5, 6].every((n) => !f9(n).thang && maCua(f9(n)).includes('chua-dua-vat')) && f9(7).sao === 3 && f9(7).soNhip === 11 && f9(8).thang && f9(8).soNhip === 12 && f9(8).sao === 2 && f9(20).thang, rs('5.9', f9, [5, 6, 7, 8, 9]));
+  const f9 = (n) => chamMan('5.9', ['pick()'].concat(FOR(2, ['move()']), FOR(n, ['wait()']), ['drop()']));
+  kiem('5.9: chờ n nhịp: n ≤ 6 thì thả khi xe chưa đứng sát ô đích (chưa tới đích), n = 7 là 3 sao (12 nhịp), n lớn hơn vẫn tới nhưng chậm — thiếu MỘT nhịp chờ thì vật không tới',
+    [0, 2, 4, 5, 6].every((n) => !f9(n).thang && maCua(f9(n)).includes('chua-dua-vat')) && f9(7).sao === 3 && f9(7).soNhip === 12 && f9(8).thang && f9(8).soNhip === 13 && f9(8).sao === 2 && f9(20).thang, rs('5.9', f9, [5, 6, 7, 8, 9]));
   const m9 = ManHoc.tim('5.9');
   const sua9 = ChamHoc.cham(m9, m9.maMau, KHO);
-  kiem('5.9: maMau (chờ 4 nhịp) trượt vì thả sớm giữa lối băng; sửa 4 → 7 là xong', !sua9.thang && maCua(sua9).join() === 'chua-dua-vat' && f9(7).sao === 3);
+  kiem('5.9: maMau (chờ 4 nhịp) trượt vì thả sớm: xe còn ở khúc cua, ô trước mặt là tường nên vật không thả được; sửa 4 → 7 là xong', !sua9.thang && maCua(sua9).includes('tha-bi-chan') && maCua(sua9).includes('chua-dua-vat') && f9(7).sao === 3);
 
   // 5.10
   const f10 = (chinh) => chamMan('5.10', chinh);
   const CH = ['carry()', 'turn_right()', 'move()'];
-  kiem('5.10: ba chuyến: hai chuyến carry() + chuyến cuối đi 4 bước = 3 sao (23 nhịp); chuyến cuối dùng carry() thì trượt (băng ngược, 2 bước không đủ); 3 hoặc 5 bước đều trượt hoặc chậm',
-    f10(FOR(2, CH).concat(['pick()'], FOR(4, ['move()']), ['drop()'])).sao === 3 && f10(FOR(2, CH).concat(['pick()'], FOR(4, ['move()']), ['drop()'])).soNhip === 23 &&
+  const lg10 = FOR(2, CH).concat(['pick()'], FOR(4, ['move()']), ['drop()']);
+  kiem('5.10: ba chuyến: hai chuyến carry() + chuyến cuối đi 4 bước ngược băng = 3 sao (25 nhịp); chuyến cuối dùng carry() thì trượt (xe rẽ trái, thả vào tường); 3 bước thả xuống ô băng nên trượt; 5 bước xe vào ô đích, không còn chỗ thả',
+    f10(lg10).sao === 3 && f10(lg10).soNhip === 25 &&
       !f10(FOR(3, CH)).thang && !f10(FOR(2, CH).concat(['pick()'], FOR(3, ['move()']), ['drop()'])).thang &&
-      f10(FOR(2, CH).concat(['pick()'], FOR(5, ['move()']), ['drop()'])).sao < 3);
-  kiem('5.10: carry() chạy nguyên vẹn trên đoạn băng xuôi 3 ô (hai move() = 3 ô nhờ băng), cả ngang lẫn dọc',
-    (() => { const r = f10(FOR(2, CH).concat(['pick()'], FOR(4, ['move()']), ['drop()'])); const v = r.theoSan[0].vat; return r.thang && v.every((x) => x.trangThai === 'dat'); })());
+      !f10(FOR(2, CH).concat(['pick()'], FOR(5, ['move()']), ['drop()'])).thang, J([f10(lg10).sao, f10(lg10).soNhip]));
+  kiem('5.10: hai chuyến đầu (carry, rẽ, tiến) đặt vật 1 lên đích (5,5), vật 2 lên đích (2,6); vật 3 còn ở (2,3), không vật vỡ; cả ba chuyến xong thì mọi vật nằm đất',
+    (() => {
+      const r = f10(FOR(2, CH)); const v = r.theoSan[0].vat.map((x) => x.x + ',' + x.y).sort().join(' ');
+      const t = f10(lg10);
+      return !maCua(r).includes('vat-vo') && v === '2,3 2,6 5,5' && t.thang && t.theoSan[0].vat.every((x) => x.trangThai === 'dat');
+    })(), J(f10(FOR(2, CH)).theoSan[0].vat.map((x) => [x.x, x.y, x.trangThai])));
 }
 
 /* ================================== 5. CANFOR: TRẢI FOR RA THÌ TRÀN KHUNG / MẤT SAO */
