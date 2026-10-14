@@ -160,6 +160,8 @@
     ro: ['..xxxxxxx..', '.x.......x.', 'x.........x', 'xxxxxxxxxxx', 'x.x.x.x.x.x', 'xxxxxxxxxxx', '.x.x.x.x.x.', '..xxxxxxx..'],
     wall: ['xxxxx.xxxxxx', 'xxxxx.xxxxxx', '............', 'xxx.xxxxx.xx', 'xxx.xxxxx.xx', '............', 'xxxxx.xxxxxx', 'xxxxx.xxxxxx'],
     nutban: ['xxxxxxxxxxx', 'x.........x', 'x..xxxxx..x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x..xxxxx..x', 'x.........x', 'xxxxxxxxxxx'],
+    sac: ['.....xxxx', '....xxxx.', '...xxxx..', '..xxxx...', '.xxxxxxxx', 'xxxxxxxx.', '....xxx..', '...xxx...', '..xxx....', '..xx.....', '..x......'],
+    pin: ['xxxxxxxxxx..', 'x........x..', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x........x..', 'xxxxxxxxxx..'],
     cua: ['xxxxxxxxxxx', 'xx...x...xx', 'xx...x...xx', 'xx.x.x.x.xx', 'xx...x...xx', 'xx...x...xx', 'xx...x...xx', 'xxxxxxxxxxx']
   };
   function icon(ten, tuyChon) {
@@ -500,6 +502,23 @@
     p.outline(K.ink);
     thungCache = p.canvas(); return thungCache;
   }
+  /** Ô SẠC của drone (ký hiệu `P`): đế thép tối nằm trên sàn, vòng xanh lơ ở trong và tia chớp vàng ở giữa (khác ô sàn, ô đích khung vàng nét đứt và cờ).
+   *  frame 0 / 1: bốn đèn ở góc nháy luân phiên (đế đang chờ). */
+  var sacCache = {};
+  function makeSac(frame) {
+    frame = frame & 1;
+    if (sacCache[frame]) return sacCache[frame];
+    var p = new Painter(T, T), i;
+    p.rect(1, 1, 12, 12, K.ink);
+    p.rect(2, 2, 10, 10, '#566078');
+    p.rect(2, 2, 10, 1, '#9aa6c2'); p.rect(2, 2, 1, 10, '#9aa6c2');
+    p.rect(2, 11, 10, 1, '#363e52'); p.rect(11, 2, 1, 10, '#363e52');
+    for (i = 3; i <= 10; i++) { p.px(i, 3, '#1593b3'); p.px(i, 10, '#1593b3'); p.px(3, i, '#1593b3'); p.px(10, i, '#1593b3'); }     // vòng xanh lơ
+    p.rect(4, 4, 6, 6, '#2b3347');
+    [[1, 1], [12, 1], [1, 12], [12, 12]].forEach(function (q, k) { p.px(q[0], q[1], (k + frame) % 2 ? '#ffe84a' : '#5ff0ff'); });
+    ['...##', '..##.', '.###.', '..##.', '.##..', '.#...'].forEach(function (row, y) { for (var x = 0; x < row.length; x++) if (row.charAt(x) === '#') p.px(5 + x - 1, 4 + y, y < 2 ? '#fff6a8' : '#ffd23f'); });     // tia chớp vàng 5×6
+    sacCache[frame] = p.canvas(); return sacCache[frame];
+  }
   var convCache = {};
   function makeConv(d, frame) {
     var key = d + '_' + frame; if (convCache[key]) return convCache[key];
@@ -625,7 +644,7 @@
     MAU_TEN.forEach(function (m) { matMau[m] = [makeMatMau(m, 0), makeMatMau(m, 1)]; thungMau[m] = makeCrateMau(m); satMau[m] = makeSatMau(m); });
     tileCache = {
       mau: matMau, crateMau: thungMau, sat: makeSat(), satMau: satMau,
-      crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
+      crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(), sac: [makeSac(0), makeSac(1)],
       flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)], rao: makeRao, nut: makeNut
     };
     return tileCache;
@@ -674,6 +693,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeNut: makeNut, veCua: veCua, makeSat: makeSat, makeVatNho: makeVatNho, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeNut: makeNut, veCua: veCua, makeSat: makeSat, makeVatNho: makeVatNho, makeThung: makeThung, makeSac: makeSac, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

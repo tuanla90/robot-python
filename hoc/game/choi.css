@@ -620,3 +620,11 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .side.xu.co-nem{gap:2px;padding-bottom:3px}
 .side.xu.co-nem .cbtn,.side.xu.co-nem .thu-hang{height:28px}
 .side.xu.co-nem .cbtn{padding-top:0;font-size:13px}
+
+/* Chương drone: bộ chọn pin 1–15 (lưới 5 cột); số của phép so sánh pin (battery() < 3) là ô số tím như range(n); nút Pin ở Xưởng hiện số pin thử */
+.chon-so.rong{grid-template-columns:repeat(5,24px)}
+.strip .num.dkm.rhs.pinso{background:#8a4fd8;padding:0 3px}
+.cbtn.nut-pin{gap:5px}
+.cbtn.nut-pin .pin-chu{flex:none}
+.cbtn.nut-pin .pin-so{margin-left:auto;font:var(--wm) calc(15px*var(--km))/1 var(--mono);color:#fff6a8;text-shadow:0 2px 0 rgba(0,0,0,.5);padding-top:1px}
+.side.xu.co-nem .cbtn.nut-pin .pin-so{font-size:14px}

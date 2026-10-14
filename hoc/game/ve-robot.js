@@ -23,6 +23,8 @@
      Part ném lỗi (cấu hình không ghép được) hoặc chưa nạp → rơi về hình TẠM bên dưới (không có cờ .laPart; đơn vị = pixel sân).
      Tắt hẳn part: VeRobot.dungPart = false (hoặc ?part=0).
      Cách vẽ lên sân (san-ve.js): robot vẽ trên LỚP PHỦ cả sân (có lề tràn ra), nên tay kẹp nhô ra mép sân vẫn không bị cắt.
+   Drone (than 'drone'): bay cao, không có mặt trước nên huong luôn 0 và ảnh không xoay; cánh quạt quay theo pha ph (trangThai.wl / wr > 0 = đang quay); trangThai.camBien.bat sáng đèn thân (đang đo pin).
+   Nam châm treo dưới bụng drone là tay 'nam-cham' gắn vào ổ 'duoi' (không phải ổ 'tay' ở mũi); camBien { ma: 'pin' } không phải part nên cauHinhCua bỏ khỏi cấu hình ghép và đặt cờ pin: true.
    Hình TẠM: xe hai bánh như cũ (Ve.makeRobot), tay kẹp Ở PHÍA TRƯỚC mũi xe như xe nâng (hai thanh nối vào mũi, hai ngàm ở đầu thanh); cảm biến sẽ ở hai bên hông:
      nâng = thanh ngắn, màu sáng; hạ = thanh dài ra phía trước, màu tối; kẹp mở = ngàm ngắn, đóng = hai ngàm chạm nhau;
      đang cầm = thùng gỗ nhỏ giữa hai ngàm (đi theo xe, xoay theo hướng xe).
@@ -52,7 +54,7 @@
     var than = r.than || (man && man.loaiRobot === 'nhen' ? 'nhen' : 'hai-banh'), tay = null;
     if (r.tay !== undefined) tay = r.tay || null;
     else for (var i = 0; i < goc.length && !tay; i++) tay = TAY_THEO_LENH[goc[i]] || null;
-    return { than: than, tay: tay, camBien: copyCam(r.camBien) };
+    return { than: than, tay: tay, camBien: copyCam(r.camBien).filter(function (c) { return c.ma !== 'pin'; }), pin: !!(r.camBien || []).some(function (c) { return c.ma === 'pin'; }) };       // pin: drone có pin (đo battery()); chưa là bộ PART nên không đưa vào ghép hình
   }
 
   function chuanTay(t) {
@@ -134,9 +136,9 @@
     if (!coPart()) return null;
     var P = window.Part, tay = chuanTay(tt.tay), cb = tt.camBien || {};
     var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [] };
-    var chay = tt.wl > 0 || tt.wr > 0, h = (cfg.than === 'nhen' && !cfg.tay) ? 0 : huong;     // nhện đi 4 hướng không quay mặt; nhện CÓ TAY: ảnh quay theo cạnh gắn tay (cố định theo batDau.huong, san-ve.js truyền vào `huong`)
+    var chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || cfg.than === 'drone') ? 0 : huong;     // drone bay 4 hướng, không có mặt trước (cánh quạt luôn quay); nhện đi 4 hướng không quay mặt; nhện CÓ TAY: ảnh quay theo cạnh gắn tay (cố định theo batDau.huong, san-ve.js truyền vào `huong`)
     var st = {
-      than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay },
+      than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat },       // drone: buoc = pha cánh quạt, doc = đèn thân sáng khi đo pin
       tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ra: tay.ra, ngam: tay.ngam, dangNem: tay.dangNem, dangBan: tay.dangBan },
       camBien: { bat: !!cb.bat }
     };
@@ -170,7 +172,7 @@
     if (cache[khoa]) return cache[khoa];
     var cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien }, huong, tiLe);
     if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)
-      if (cauHinh.than === 'nhen') cv = Ve.makeNhen(wl > 0 || wr > 0 ? ph : 0);
+      if (cauHinh.than === 'nhen' || cauHinh.than === 'drone') cv = Ve.makeNhen(wl > 0 || wr > 0 ? ph : 0);       // chưa nạp part: drone tạm dùng hình nhện
       else if (!cauHinh.tay) cv = Ve.makeRobot(huong, wl, wr, ph);
       else cv = veTamTay(huong, wl, wr, ph, tay, tt.loi === 'tay');
     }

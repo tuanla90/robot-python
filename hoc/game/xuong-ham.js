@@ -19,7 +19,7 @@
   var E = {};          // phần tử
   var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null, doiSo: {} };   // doiSo: 'loai:tên hàm' → giá trị thử của từng đối số
   var NHIP_MS = 230, LENH_MS = 45, TOAST_MS = 2000;
-  var CHE = { xe: 'che-xe', vat: 'che-vat', tuong: 'che-tuong', mau: 'che-mau', rao: 'che-rao', nut: 'che-nut', cua: 'che-cua' };
+  var CHE = { xe: 'che-xe', vat: 'che-vat', tuong: 'che-tuong', mau: 'che-mau', rao: 'che-rao', nut: 'che-nut', cua: 'che-cua', sac: 'che-sac' };
   var MAU_VONG = [null, 'red', 'green', 'blue', 'yellow'];                 // chạm ô (chế độ Màu): không màu → đỏ → xanh lá → xanh dương → vàng → không màu
   var MAU_KY = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
   function mauKeTiep(m) { return MAU_VONG[(MAU_VONG.indexOf(m || null) + 1) % MAU_VONG.length]; }
@@ -45,6 +45,8 @@
           '<button class="bt g-pu cbtn mode nut-ro" data-nut="nut-ro" aria-pressed="false"><span data-i="ro" data-s="2" data-l="#2a1050"></span>' + t('xuong.ro') + '</button>' +
           '<button class="bt g-rd cbtn mode nut-nutban" data-nut="' + CHE.nut + '" data-che="nut"><span data-i="nutban" data-s="2" data-l="#4a0e0c"></span>' + t('xuong.nut') + '</button>' +
           '<button class="bt g-cy cbtn mode nut-cua" data-nut="' + CHE.cua + '" data-che="cua"><span data-i="cua" data-s="2" data-l="#0a3f4a"></span>' + t('xuong.cua') + '</button>' +
+          '<button class="bt g-yl cbtn dark mode nut-sac" data-nut="' + CHE.sac + '" data-che="sac"><span data-i="sac" data-s="2" data-l="#6a4400"></span>' + t('xuong.sac') + '</button>' +
+          '<button class="bt g-gr cbtn nut-pin" data-nut="nut-pin" aria-label="' + t('choi.chonPin') + '"><span data-i="pin" data-s="2" data-l="#14561e"></span><span class="pin-chu">' + t('xuong.pin') + '</span><span class="pin-so"></span></button>' +
           '<button class="bt g-pk cbtn mode nut-mau" data-nut="' + CHE.mau + '" data-che="mau"><span data-i="mau" data-s="2" data-l="#5a1238"></span>' + t('xuong.mau') + '</button>' +
         '</div></div>' +
       '<div class="low">' +
@@ -61,7 +63,7 @@
     var q = function (s) { return host.querySelector(s); };
     E.tenham = q('.tenham'); E.nm = q('.tenham .nm'); E.ffr = q('.ffr'); E.toast = q('.toast');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]'); E.thuHang = q('.thu-hang'); E.dso = q('.dso');
-    E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong'); E.nutMau = q('.nut-mau'); E.nutRao = q('.nut-rao'); E.nutRo = q('.nut-ro'); E.nutNut = q('.nut-nutban'); E.nutCua = q('.nut-cua');
+    E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong'); E.nutMau = q('.nut-mau'); E.nutRao = q('.nut-rao'); E.nutRo = q('.nut-ro'); E.nutNut = q('.nut-nutban'); E.nutCua = q('.nut-cua'); E.nutSac = q('.nut-sac'); E.nutPin = q('.nut-pin');
     S.field = new SanVe.Field(E.canvas, { kich: 210 });
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
     S.kieu = TP.taoKieu(function () { return { man: A.man(), hamCuaMan: A.bai().hamCuaMan, kho: KhoHam.ds() }; });     // kiểu đối số của hàm: số / một chữ / chuỗi ghép
@@ -97,6 +99,11 @@
       q('[data-nut="' + CHE[k] + '"]').addEventListener('click', function () { if (!S.busy) datChe(S.che === k ? null : k); });
     });
     E.nutRo.addEventListener('click', function () { if (!S.busy) datRo(); });
+    E.nutPin.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      if (S.busy) return;
+      TP.chonSo({ neo: E.nutPin, so: pinSanThu(), toiDa: 15, khiChon: datPin });          // pin thử 1–15 (bộ chọn số)
+    });
     E.canvas.addEventListener('click', chamSan);
     E.xoaHam.addEventListener('click', xoaHam);
   }
@@ -123,8 +130,9 @@
     E.nutMau.style.display = TP.coMauCua(A.man()) ? '' : 'none';              // nút Màu chỉ có ở màn có cảm biến màu
     E.nutRao.style.display = E.nutRo.style.display = coNem() ? '' : 'none';     // nút Rào và Rổ chỉ có ở màn máy ném
     E.nutNut.style.display = E.nutCua.style.display = coSung() ? '' : 'none';   // nút Nút và Cửa chỉ có ở màn súng bóng
-    E.side.classList.toggle('co-mau', TP.coMauCua(A.man()) || coNem() || coSung());
-    E.side.classList.toggle('co-nem', coNem() || coSung());
+    E.nutSac.style.display = E.nutPin.style.display = coPin() ? '' : 'none';   // nút Sạc (đặt ô sạc) và Pin (pin thử) chỉ có ở màn drone có pin
+    E.side.classList.toggle('co-mau', TP.coMauCua(A.man()) || coNem() || coSung() || coPin());
+    E.side.classList.toggle('co-nem', coNem() || coSung() || coPin());
     datChe(null);
     napSan();
     dungDoiSo();
@@ -159,6 +167,7 @@
       vongWhile: TP.coCauTruc(man, 'while') && TP.coDieuKienCua(man),
       cam: TP.camBienCua(man),
       mau: TP.coMauCua(man),
+      pin: TP.coPinCua(man),
       chuoi: TP.coCauTruc(man, 'for') && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
       dieuKien: TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man),
       em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
@@ -251,8 +260,21 @@
   /* -------------------------------------------------------- sân thử */
   function napSan() {
     var st = S.st;
-    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, thung: st.thung, robot: VeRobot.cauHinhCua(A.man()), mau: lopMauSan(st), roBanDau: st.ro === true && coNem() ? true : undefined, danToiDa: coSung() ? A.man().danToiDa : undefined });
-    veNutRo();
+    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, thung: st.thung, robot: VeRobot.cauHinhCua(A.man()), mau: lopMauSan(st), roBanDau: st.ro === true && coNem() ? true : undefined, danToiDa: coSung() ? A.man().danToiDa : undefined, pin: coPin() ? pinSanThu() : undefined });
+    veNutRo(); vePin();
+  }
+  /** Màn drone có pin (man.pin): Xưởng có nút Sạc và Pin. */
+  function coPin() { var m = A.man(); return m.loaiRobot === 'drone' && (typeof m.pin === 'number' || Array.isArray(m.pin)); }
+  /** Pin của sân thử: sanThu.pin, không có thì pin của màn (sân đầu tiên nếu màn nhiều sân). */
+  function pinSanThu() { var m = A.man(), st = S.st; return st && typeof st.pin === 'number' ? st.pin : (Array.isArray(m.pin) ? m.pin[0] : m.pin); }
+  /** Số pin thử hiện trên nút Pin. */
+  function vePin() { E.nutPin.querySelector('.pin-so').textContent = coPin() ? String(pinSanThu()) : ''; }
+  /** Đổi pin thử (lưu cùng sân thử). */
+  function datPin(n) {
+    var moi = banSao(S.st); moi.pin = n;
+    S.st = ChamHoc.chuanSanThu(moi);
+    Luu.ghiSanThu(S.ten, S.st);
+    napSan(); xoaKetThu(); toast(t('xuong.pinDat', { n: n }), '', 2000);
   }
   /** Nút Rổ sáng khi sân thử cho rổ có sẵn một vật. */
   function veNutRo() { var on = !!(S.st && S.st.ro); E.nutRo.classList.toggle('on', on); E.nutRo.setAttribute('aria-pressed', on ? 'true' : 'false'); }
@@ -275,6 +297,7 @@
     S.che = k;
     if (k === 'vat' && coNamCham()) toast(t('xuong.vatGoiY'), '', 2600);
     if (k === 'rao') toast(t('xuong.raoGoiY'), '', 2600);
+    if (k === 'sac') toast(t('xuong.sacGoiY'), '', 2600);
     if (k === 'nut') toast(t('xuong.nutGoiY'), '', 2600);
     if (k === 'cua') toast(t('xuong.cuaGoiY'), '', 2600);
     Object.keys(CHE).forEach(function (x) {
@@ -334,6 +357,10 @@
         else { moi.vat[vj] = { x: x, y: y, mau: cu.mau, chat: 'sat' }; toast(t('xuong.vatSat'), ''); }
       } else if (!co) { moi.vat.push({ x: x, y: y }); toast(t('xuong.vatGo'), ''); }
       else return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
+    } else if (S.che === 'sac') {                                                      // chế độ Sạc (drone): ô trống → ô sạc, chạm ô sạc → bỏ; không đặt lên tường / thùng / rào / nút / cửa
+      if ((moi.sac || []).some(function (o) { return o.x === x && o.y === y; })) { moi.sac = boO(moi.sac, x, y); toast(t('xuong.sacBo'), ''); }
+      else if (co === 'tuong' || co === 'thung' || co === 'rao' || co === 'nut' || co === 'cua') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
+      else { moi.sac = (moi.sac || []).concat([{ x: x, y: y }]); toast(t('xuong.sacDat'), ''); }
     } else if (S.che === 'nut') {                                                      // chế độ Nút (súng bóng): ô trống → nút bắn (nằm như tường), chạm nút → bỏ
       if (co === 'nut') moi.nut = boO(moi.nut || [], x, y);
       else if (co || coVat(x, y)) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + (co || 'vat')) }), 'bad');
@@ -349,7 +376,7 @@
       else if (co || coVat(x, y)) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + (co || 'vat')) }), 'bad');
       else moi.rao.push({ x: x, y: y });
     } else if (S.che === 'xe') {
-      if (co === 'xe') { if (A.man().loaiRobot === 'nhen') return; moi.batDau.huong = (moi.batDau.huong + 1) % 4; }       // nhện không có hướng mặt: chạm lại vào nó không xoay
+      if (co === 'xe') { if (A.man().loaiRobot === 'nhen' || A.man().loaiRobot === 'drone') return; moi.batDau.huong = (moi.batDau.huong + 1) % 4; }       // nhện không có hướng mặt: chạm lại vào nó không xoay
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else { moi.batDau.x = x; moi.batDau.y = y; }
     } else {

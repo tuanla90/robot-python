@@ -128,12 +128,12 @@
   function vao(m) {
     roi(); anBongD();
     S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0;
-    TP.datCheMau(TP.coMauCua(m));                      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or)
+    TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m));      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
     var k = KhungCode.khungDayDu(m.khung);
     S.khung = k;
     var dung = KhungCode.soODung(k);
     E.n.textContent = m.id; E.t.textContent = m.ten;
-    E.host.querySelector('.lamps').style.display = (m.loaiRobot === 'nhen') ? 'none' : '';
+    E.host.querySelector('.lamps').style.display = (m.loaiRobot === 'nhen' || m.loaiRobot === 'drone') ? 'none' : '';
     E.host.querySelector('.plaque .d').style.display = '';
     sao3(Luu.saoTot(m.ma));
     S.si = 0; S.marks = null; S.cap = null;
@@ -159,7 +159,8 @@
       mau: lm.mau, vatMau: lm.vatMau,                   // lớp màu sàn / màu vật (chương cảm biến màu); null nếu màn không có
       vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem,   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
       roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau,           // máy ném: rổ có sẵn một vật lúc xuất phát
-      cuaNhip: lm.cuaNhip || undefined, danToiDa: m.danToiDa                       // súng bóng: chu kỳ cửa nhịp của sân này, số đạn tối đa (không khai = vô hạn)
+      cuaNhip: lm.cuaNhip || undefined, danToiDa: m.danToiDa,                      // súng bóng: chu kỳ cửa nhịp của sân này, số đạn tối đa (không khai = vô hạn)
+      pin: Array.isArray(m.pin) ? m.pin[i] : m.pin                                 // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
     };
   }
   function veKho() {
@@ -170,6 +171,7 @@
       vongWhile: TP.coCauTruc(m, 'while') && TP.coDieuKienCua(m),
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC
       mau: TP.coMauCua(m),                                                                      // cảm biến màu: khối so màu + gán c = color()
+      pin: TP.coPinCua(m),                                                                      // drone đo pin: khối so sánh battery() < 3
       chuoi: TP.coCauTruc(m, 'for') && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R":
       dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
       em: (m.moXuong !== false && !m.camHamCuaEm) ? TP.locHamTheoRobot(m, KhoHam.ds()) : null,      // nhện: bỏ hàm dùng lệnh bánh
