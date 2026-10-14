@@ -38,7 +38,7 @@
   /** Lệnh gốc của tay → mã part tay (tay nào mở ra lệnh nào). Màn có lệnh tay mà không khai man.robot.tay thì lấy theo bảng này. */
   var TAY_THEO_LENH = {
     arm_down: 'kep', arm_up: 'kep', grab: 'kep', release: 'kep',
-    push: 'day', magnet_on: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', shoot: 'bong'
+    push: 'day', magnet_on: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', shoot: 'bong'
   };
   function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }
   /**

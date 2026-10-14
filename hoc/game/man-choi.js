@@ -61,12 +61,14 @@
     E.ffr = q('.ffr');
 
     S.kieu = TP.taoKieu(function () { return { man: S.man, hamCuaMan: S.bai ? S.bai.hamCuaMan : [], kho: KhoHam.ds() }; });     // kiểu đối số của hàm: số / một chữ / chuỗi ghép
+    S.soMax = TP.taoSoToiDa(function () { return { man: S.man, hamCuaMan: S.bai ? S.bai.hamCuaMan : [], kho: KhoHam.ds() }; });       // số lớn nhất chọn được của đối số (aim: 3)
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
       thutLe: function () { return TP.coCauTruc(S.man, 'for') || TP.coCauTruc(S.man, 'if') || TP.coCauTruc(S.man, 'while'); },
       camBien: function () { return TP.camBienCua(S.man); },                                    // điều kiện while / if chạm đổi được: front_clear() …
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
+      soToiDa: function (ten, k) { return S.soMax(ten, k); },                                    // aim(n) chỉ nhận 1–3
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
     });
@@ -155,7 +157,8 @@
       loaiRobot: m.loaiRobot || 'banh',
       robot: VeRobot.cauHinhCua(m),
       mau: lm.mau, vatMau: lm.vatMau,                   // lớp màu sàn / màu vật (chương cảm biến màu); null nếu màn không có
-      vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
+      vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem,   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
+      roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau            // máy ném: rổ có sẵn một vật lúc xuất phát
     };
   }
   function veKho() {
@@ -382,6 +385,7 @@
   function sang(e, toc) {
     if (!e) { S.ed.datChay(null); S.pal.datSang(null); return; }
     if (e.docCamBien) S.field.docCamBien(e.docCamBien, 380 / (toc || 1));
+    if (e.aimTam) S.field.datTam(e.aimTam);                       // aim(n) vừa chạy: cần ném đổi số ngắm, vòng ở ô rơi nháy
     S.ed.datChay(dongChinhCua(e), S.lap && S.lap.get(e));
     if (e.cho && (e.cho.cot === 'hamEm' || e.cho.cot === 'hamMan')) S.pal.datSang(e.cho.cot === 'hamEm' ? 'em' : 'man', e.cho.ten);
     else S.pal.datSang(null);
@@ -408,7 +412,7 @@
         else if (cho.cot === 'hamEm' && cho.ten) bricks.push('em:' + cho.ten);
         else if (cho.cot === 'hamMan' && cho.ten) bricks.push('man:' + cho.ten);
       });
-      if (c.ma === 'dat-sai-mau') (S.bai.chinh || []).forEach(function (d, i) { if (/^\s*(drop|magnet_off)\(\)/.test(d)) rows.push(i); });      // thả vật sai màu đích: tô các dòng drop() của chương trình
+      if (c.ma === 'dat-sai-mau') (S.bai.chinh || []).forEach(function (d, i) { if (/^\s*(drop|magnet_off|throw)\(\)/.test(d)) rows.push(i); });      // thả vật sai màu đích: tô các dòng drop() của chương trình
       if (c.ma === 'tran-khung') {
         conTran = true;
         if (c.cot === 'hamEm') bricks.push('em:' + c.ten); else if (c.cot === 'hamMan') bricks.push('man:' + c.ten);

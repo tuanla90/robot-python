@@ -610,3 +610,13 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .strip.hai .ngat{flex-basis:100%;height:0;margin:0}
 .strip.hai .num{line-height:11px;margin-top:0;margin-bottom:0}
 .strip.hai .kw{margin-right:1px}
+
+/* Chương máy ném: bộ chọn số của aim(n) chỉ có 1 / 2 / 3 (một hàng); biểu thức tầm (i, i + 1, 3 - i) xếp thành hàng dọc cho vừa bảng */
+.chon-so.hep{grid-template-columns:repeat(3,24px)}
+.chon-so.hep .cs-bien{flex-wrap:wrap}
+.chon-so.hep .cs.bien{flex:1 1 100%;min-width:0}
+.num.bien.bth{white-space:nowrap}
+/* Xưởng của màn máy ném: bảy nút (thêm Rào, Rổ) nên nút thấp hơn nữa */
+.side.xu.co-nem{gap:2px;padding-bottom:3px}
+.side.xu.co-nem .cbtn,.side.xu.co-nem .thu-hang{height:28px}
+.side.xu.co-nem .cbtn{padding-top:0;font-size:13px}

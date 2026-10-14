@@ -156,6 +156,8 @@
     car: ['...xxxxxx...', '..xx.xx.xx..', '.xxx.xx.xxx.', 'xxxxxxxxxxxx', 'xxxxxxxxxxxx', '.xxx....xxx.', '.xxx....xxx.', '..x......x..'],
     box: ['xxxxxxxxxxx', 'xx.......xx', 'x.x.....x.x', 'x..x...x..x', 'x...x.x...x', 'x....x....x', 'x...x.x...x', 'x..x...x..x', 'x.x.....x.x', 'xx.......xx', 'xxxxxxxxxxx'],
     mau: ['xxx.xxx', 'xxx.xxx', 'xxx.xxx', '.......', 'xxx.xxx', 'xxx.xxx', 'xxx.xxx'],
+    rao: ['.x...x...x.', 'xxxxxxxxxxx', '.x...x...x.', '.x...x...x.', 'xxxxxxxxxxx', '.x...x...x.', '.x...x...x.'],
+    ro: ['..xxxxxxx..', '.x.......x.', 'x.........x', 'xxxxxxxxxxx', 'x.x.x.x.x.x', 'xxxxxxxxxxx', '.x.x.x.x.x.', '..xxxxxxx..'],
     wall: ['xxxxx.xxxxxx', 'xxxxx.xxxxxx', '............', 'xxx.xxxxx.xx', 'xxx.xxxxx.xx', '............', 'xxxxx.xxxxxx', 'xxxxx.xxxxxx']
   };
   function icon(ten, tuyChon) {
@@ -317,6 +319,40 @@
     }
     p.rect(0, 0, T, 1, '#4a2e10'); p.rect(0, T - 1, T, 1, '#4a2e10'); p.rect(0, 0, 1, T, '#4a2e10'); p.rect(T - 1, 0, 1, T, '#4a2e10');
     return p.canvas();
+  }
+  /** Hàng rào THẤP (chương máy ném, ký hiệu `=`): chỉ vẽ cọc gỗ + thanh ngang, nền trong suốt nên thấy sàn phía sau (khác tường cao # đặc kín, xám). mask: 1 trái, 2 phải, 4 trên, 8 dưới
+   *  = ô kề bên cũng là hàng rào (thanh nối liền sang ô đó); không ô kề nào thì thanh nằm ngang, hai đầu chừa mép. Có bóng đổ nhẹ xuống sàn. */
+  var raoCache = {};
+  function makeRao(mask) {
+    mask = mask | 0;
+    if (raoCache[mask]) return raoCache[mask];
+    var p = new Painter(T, T), ngang = (mask & 3) || !(mask & 12), doc = (mask & 12) > 0, xa, xb, ya, yb, x, y;
+    function thanh(x, y, w, h, doc) {                                     // thanh gỗ trắng ngà 4 px: viền tối, mép sáng, mép bóng, viền tối (giữa hai thanh thấy sàn)
+      var i;
+      for (i = 0; i < (doc ? w : h); i++) {
+        var c = i === 0 || i === (doc ? w : h) - 1 ? K.ink : i === 1 ? '#fff6e3' : '#cfc3a5';
+        if (doc) p.rect(x + i, y, 1, h, c); else p.rect(x, y + i, w, 1, c);
+      }
+    }
+    function coc(x, y, w, h) {                                            // cọc 3 px bản: viền tối, mặt trên sáng, thân ngà, mép phải tối
+      p.rect(x, y, w, h, K.ink); p.rect(x + 1, y + 1, w - 2, h - 2, '#efe5cc'); p.rect(x + 1, y + 1, w - 2, 2, '#ffffff'); p.rect(x + w - 2, y + 3, 1, h - 4, '#cfc3a5');
+    }
+    if (ngang) {
+      xa = (mask & 1) ? 0 : 2; xb = (mask & 2) ? T : 12;
+      thanh(xa, 2, xb - xa, 4, false); thanh(xa, 8, xb - xa, 4, false);
+    }
+    if (doc) {
+      ya = (mask & 4) ? 0 : 2; yb = (mask & 8) ? T : 12;
+      thanh(2, ya, 4, yb - ya, true); thanh(8, ya, 4, yb - ya, true);
+    }
+    if (ngang) { if (!(mask & 1)) coc(0, 1, 4, 12); coc(10, 1, 4, 12); }
+    if (doc) { if (!(mask & 4)) coc(1, 0, 12, 4); coc(1, 10, 12, 4); }
+    var cv = document.createElement('canvas'); cv.width = T; cv.height = T;
+    var g = cv.getContext('2d');
+    g.fillStyle = 'rgba(0,28,10,.34)';                                         // bóng đổ: lệch xuống 2 px, chỉ chỗ sàn trống
+    for (y = 0; y < T - 2; y++) for (x = 0; x < T; x++) if (p.get(x, y) && !p.get(x, y + 2)) g.fillRect(x, y + 2, 1, 1);
+    g.drawImage(p.canvas(), 0, 0);
+    raoCache[mask] = cv; return cv;
   }
   /** Khối hàng (thùng gỗ) trên sàn sân thử: vẽ trong ô T×T, chừa mép để thấy cỏ quanh. */
   var crateCache = null;
@@ -505,7 +541,7 @@
     tileCache = {
       mau: matMau, crateMau: thungMau, sat: makeSat(), satMau: satMau,
       crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(),
-      flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)]
+      flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)], rao: makeRao
     };
     return tileCache;
   }
@@ -553,6 +589,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeSat: makeSat, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeSat: makeSat, makeThung: makeThung, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();
