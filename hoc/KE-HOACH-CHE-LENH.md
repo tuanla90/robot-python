@@ -233,6 +233,54 @@ chơi thử rồi mới làm xích, omni, tấm đẩy, máy ném, súng bóng, 
 - Part mới vẽ bằng code trong `game/part/` (dáng khác tay kẹp thường), hoạt cảnh xoay tay.
 - Chế: nhặt / đặt bên hông không cần quay xe (nhanh hơn `put_right` của che-tay), đổi chỗ nhanh, phân loại hai bên…
 
+## 5c. ĐỢT 2 phần còn lại: mỗi bộ phận hai cụm 10 màn (user chốt 15/10 tối)
+
+Thứ tự (đã đăng ký ở `thu-tu-chuong.js`, tệp màn rỗng đã có, đã gắn `choi.html`, gói ở `ThuTuChuong.goi`):
+… 13 nhen · 14 che-nhen · 15 xich · **16 che-xich** · 17 omni · **18 che-omni** · **19 sung-hoi** · **20 che-sung-hoi** · 21 mau · **22 che-mau** · 23 nam-cham · 24 che-nam-cham ·
+25 tay-xoay · 26 che-tay-xoay · 27 may-nem · **28 che-may-nem** · 29 drone · **30 che-drone** · (31 tam-day, 32 sung-bong: TẠM, xóa khi chương Súng hơi xong).
+Mã màn: `<chương>.<so>`; id hiển thị tự tính theo vị trí. Máy kiểm KHÔNG ghi cứng số chương: dùng `ThuTu.thuTu.indexOf(ma) + 1`.
+
+Luật chung cho mọi chương mới (ngoài khuôn 5b):
+- **Chỉ dùng luật lõi đã có** (trừ chương Súng hơi). Không thêm ký hiệu sân mới. Không sửa màn của chương cũ (việc "màn gặp khó" — yếu tố môi trường xuất hiện trước bộ phận gỡ nó — do điều phối làm).
+- **Mỗi bộ phận một lệnh mỗi nhịp, một kiểu đi mỗi nhịp** (`game/thanh-phan.js`: `BO_PHAN_LENH`, `KIEU_DI`): khay không cho chèn lệnh thứ hai của cùng bộ phận trong một nhịp,
+  không cho chạy bánh cùng nhịp với trượt / bắn. Lời giải, `congThucKhac`, `loiGiaiKhac` phải gõ được theo luật này (kiem-khay quét mọi màn).
+- Hàm cốt truyện mới: tên tiếng Anh, không trùng hàm cốt truyện / hàm của màn / lệnh gốc nào đã có; mục Sổ lệnh (`so-lenh.js`) đặt đúng thứ tự chương; huy hiệu `HINH['che-…']` trong
+  `game/huy-hieu.js` (khuôn: hình bộ phận + `themBanhRang`).
+- Máy kiểm riêng `kiem-<chương>.mjs` + bộ dò `do-duong-<chương>.mjs` (BFS, đối chiếu `SanHoc.chay` bằng chương trình ngẫu nhiên); gắn bộ dò vào `nhipTat` của `kiem-hoc.mjs` (sửa một dòng).
+- Lời đề bài / gợi ý theo `docs/huong-dan-viet-noi-dung.md` (lớp 5, câu ngắn). Bảng dưới là ĐỀ XUẤT: được đổi sân / tên / thứ tự nếu cần cho đúng luật, ghi lý do trong báo cáo.
+
+### 5c.1 `che-xich` — Chế lệnh xích
+Xích: tiến / lùi 1 ô mỗi nhịp; quay CHẬM (hai nhịp liền cùng tổ hợp mới đủ 90°); leo bậc S; băng chuyền không đẩy được. Hàm có sẵn: `tr_right`, `tr_left` (xich.3, .4) + hàm các chương trước.
+Chế: quay đầu xích (`spin`), leo n bậc (`climb(n)`), vượt làn băng đứng vững, lùi rồi quay… Biến thể: một bên xích lắp ngược (`daoChieu`), một bên xích hỏng (`phanCung`), đường về. Trùm `gioiHanHam`.
+
+### 5c.2 `che-omni` — Chế lệnh omni
+Omni: `slide_left` / `slide_right` (không đi chéo: nhịp có trượt thì bánh nghỉ); băng đẩy omni mạnh hơn (1 nhịp). Hàm có sẵn: `slide_r(n)`, `slide_l(n)`.
+Chế: né vật bằng trượt (`dodge`), đi chéo bằng tiến + trượt xen kẽ (`zig(n)`), cưỡi băng xuôi (`ride(n)`), quét hàng bên… Biến thể: trượt hỏng một phía (`phanCung`), đường về, hàm của màn sai. Trùm.
+
+### 5c.3 `sung-hoi` + `che-sung-hoi` — SÚNG HƠI (bộ phận mới, THAY tấm đẩy và súng bóng; user chốt 15/10)
+- Lệnh gốc (cặp lệnh ngược): `shoot()` bắn bóng ra TRƯỚC mũi xe; `shoot_back()` bắn bóng ra SAU đuôi xe. Chỉ ra lệnh, `wait()` cho nhịp trôi. Một nhịp một phát (cùng bộ phận).
+- **Giật (phản lực)**: bắn ra trước thì xe giật LÙI 1 ô; bắn ra sau thì xe giật TỚI 1 ô. Ô xe giật vào bị chặn (tường, cửa đóng, nút, hàng rào, bậc thang, vật, mép sân) thì xe đứng yên.
+  Ô đó có THÙNG NẶNG thì thùng nhận lực: TRƯỢT thẳng theo hướng giật tới khi gặp vật cản (như `push()` cũ), xe đứng yên. Nhịp bắn thì bánh / trượt nghỉ (một kiểu đi mỗi nhịp; khay đã chặn).
+- Bóng: luật bóng cũ của súng bóng (bay thẳng tới vật cản đầu tiên; trúng nút N thì nút đổi, cửa / băng đổi theo; bay qua hàng rào, băng, cửa mở). Bóng ra sau bay từ ô sau đuôi.
+- Xe húc thùng nặng bằng bánh = đâm như tường (không còn tấm đẩy); chỉ cú giật mới dời thùng.
+- Thứ tự trong nhịp: bắn (bóng bay) → giật (xe / thùng) → băng chuyền → cửa đổi cuối nhịp. Chẩn đoán lời người: "Bắn thì xe giật lùi một ô", "Sau lưng là tường nên xe không lùi"…
+- Chương `sung-hoi` (làm quen, giữ ý hay của hai chương cũ: thùng trượt, nút, cửa, băng bật tắt), chương `che-sung-hoi` (chế: lùi nhanh bằng giật, đẩy thùng ra khỏi đường bắn rồi bắn nút,
+  mở cửa rồi đi…; biến thể súng lắp ngược `daoChieu` (shoot ↔ shoot_back), nòng sau hỏng `phanCung`, đường về; trùm).
+- Dọn: xóa chương `tam-day`, `sung-bong` (tệp màn, máy kiểm, bộ dò, mục Sổ lệnh, hai gói TẠM, hai mã trong `thuTu` / `dot2`); `push()` và tay `day` / `bong` thay bằng tay súng hơi
+  (giữ ô thùng nặng H, nút N, cửa C / c của lõi). Đèn bộ phận, sprite, sân thử Xưởng, nhóm Sổ lệnh, `BO_PHAN_LENH.sung = ['shoot', 'shoot_back']` (bỏ `day`).
+
+### 5c.4 `che-mau` — Chế lệnh màu
+`color()` đọc màu ô dưới xe; vật màu; camera (màn mau.8). Hàm có sẵn: `read_turn`. Màn chế lệnh có cảm biến dùng 3 sân (bóng mờ mảng song song `san`).
+Chế: đi theo vạch màu (`follow`), dừng ở màu c (`stop_on(c)`), phân loại vật theo màu (`sort_color`)… Biến thể: hàm của màn đọc nhầm màu, đường về, hỏng. Trùm.
+
+### 5c.5 `che-may-nem` — Chế lệnh máy ném
+`aim(n)` (tầm 1–3), `load()`, `throw()`; rổ; ném qua hàng rào. Hàm có sẵn: `toss`.
+Chế: ném xa qua rào (`lob(n)`), nạp rồi ném liên tiếp, nhặt rồi ném… Biến thể: tầm ném lệch (hàm của màn sai), hỏng, đường về. Trùm.
+
+### 5c.6 `che-drone` — Chế lệnh drone
+Drone: `go_*` 1 nhịp, bay qua hàng rào / hố / băng / vật; pin + ô sạc P; nam châm treo. Hàm có sẵn: `go`, `walk`, `recharge`, `ship`.
+Chế: bay theo chuỗi có sạc (`fly(path)`), về sạc khi pin thấp, chở hàng qua tường thấp (`airlift`)… Biến thể: pin yếu, cánh hỏng một hướng (`phanCung`), đường về. Trùm.
+
 ## 6. Xong khi
 - Chơi trên trình duyệt (thao tác như người chơi) hết chương `che-xe`; ở mỗi màn chế lệnh, thử cả 2 cách đều thắng.
 - Máy kiểm mới `kiem-che-xe.mjs` xanh (BFS nhịp ngắn nhất tới bóng mờ, congThucKhac đều thắng, loiSai đúng mã);

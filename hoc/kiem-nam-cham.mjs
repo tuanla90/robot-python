@@ -488,43 +488,43 @@ console.log('\n== 9. Chẩn đoán tiếng Việt; chấm nhiều sân có vatCh
 {
   const run = (m, chinh, kho) => ChamHoc.cham(m, { chinh }, kho || []);
   const cd = (r, ma) => r.chanDoan.find((c) => c.ma === ma);
-  const r1 = run(man(1), ['magnet_n()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()'], khoTruoc('19.1'));
+  const r1 = run(man(1), ['magnet_n()', 'wait()', 'turn_right()', 'magnet_off()', 'wait()'], khoTruoc('23.1'));
   kiem('tha-bi-chan: không có vì thả được xuống ô trống (đây là thả sớm, chưa tới đích)', !cd(r1, 'tha-bi-chan') && cd(r1, 'chua-dua-vat'));
-  const r2 = run(man(7), man(7).maMau.chinh, khoTruoc('19.7'));
+  const r2 = run(man(7), man(7).maMau.chinh, khoTruoc('23.7'));
   const tb2 = cd(r2, 'tha-bi-chan');
   kiem('tha-bi-chan (lỗi): nói ô trước mũi là gì (mép sân), vật vẫn dính, nam châm vẫn bật, chỉ dòng lệnh magnet_off', tb2 && tb2.muc === 'loi' && /mép sân/.test(tb2.loi) && /vẫn dính/.test(tb2.loi) && tb2.cho && tb2.cho.cot === 'chinh' && tb2.cho.dong === 8, J(tb2));
-  const r3 = run(man(2), ['magnet_n()', 'wait()'], khoTruoc('19.2'));
+  const r3 = run(man(2), ['magnet_n()', 'wait()'], khoTruoc('23.2'));
   const hg = cd(r3, 'hut-go');
   kiem('hut-go (thông tin, không phải lỗi): nói vật gỗ chắn; cực nào cũng không làm gì được; gợi ý front_metal / front_pole', hg && hg.muc === 'thong-tin' && /vật GỖ/.test(hg.loi) && /cực nào cũng/.test(hg.loi) && /front_metal/.test(hg.loi) && /front_pole/.test(hg.loi) && hg.khoang === 1, J(hg));
-  const r4 = run(man(1), ['magnet_n()', 'magnet_off()', 'wait()'], khoTruoc('19.1'));
+  const r4 = run(man(1), ['magnet_n()', 'magnet_off()', 'wait()'], khoTruoc('23.1'));
   const ml = cd(r4, 'magnet-goi-lai');
   kiem('magnet-goi-lai (lỗi): nói lệnh trước giữ nam châm, chỉ cả hai dòng, nhắc ba lệnh (cực N, cực S, ngắt điện)', ml && ml.muc === 'loi' && /magnet_n/.test(ml.loi) && /magnet_off/.test(ml.loi) && /cực N, bật cực S hoặc ngắt/.test(ml.loi) && ml.cho.dong === 2 && ml.choTruoc.dong === 1, J(ml));
-  const qw = cd(run(man(1), ['magnet_n()'], khoTruoc('19.1')), 'quen-wait');
+  const qw = cd(run(man(1), ['magnet_n()'], khoTruoc('23.1')), 'quen-wait');
   kiem('quen-wait tính magnet_n là lệnh tay: "chưa có wait() theo sau"', qw && /lệnh tay/.test(qw.loi) && /magnet_n\(\)/.test(qw.loi), J(qw && qw.loi));
   // cực
-  const r5 = run(man(3), man(3).maMau.chinh, khoTruoc('19.3'));
+  const r5 = run(man(3), man(3).maMau.chinh, khoTruoc('23.3'));
   const dv = cd(r5, 'day-vat');
-  kiem('day-vat (thông tin): bật cực N với vật chữ N → nói "cực giống nhau thì đẩy nhau", vật đi mấy ô, nhắc bật cực KHÁC chữ; chỉ khi chưa thắng', dv && dv.muc === 'thong-tin' && /cực giống nhau thì đẩy nhau/.test(dv.loi) && /cực N/.test(dv.loi) && /KHÁC chữ/.test(dv.loi) && dv.soO === 1 && !cd(run(man(3), man(3).loiGiai.chinh, khoTruoc('19.3')), 'day-vat'), J(dv));
-  const r6 = run(man(2), ['turn_right()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'magnet_s()', 'wait()', 'magnet_n()', 'wait()'], khoTruoc('19.2'));
+  kiem('day-vat (thông tin): bật cực N với vật chữ N → nói "cực giống nhau thì đẩy nhau", vật đi mấy ô, nhắc bật cực KHÁC chữ; chỉ khi chưa thắng', dv && dv.muc === 'thong-tin' && /cực giống nhau thì đẩy nhau/.test(dv.loi) && /cực N/.test(dv.loi) && /KHÁC chữ/.test(dv.loi) && dv.soO === 1 && !cd(run(man(3), man(3).loiGiai.chinh, khoTruoc('23.3')), 'day-vat'), J(dv));
+  const r6 = run(man(2), ['turn_right()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'magnet_s()', 'wait()', 'magnet_n()', 'wait()'], khoTruoc('23.2'));
   const sd = cd(r6, 'sat-khong-day');
   kiem('sat-khong-day (thông tin): đổi cực khi đang dính sắt → "sắt bị hút bởi cực nào cũng được và không bao giờ bị đẩy", chỉ dòng magnet_n', sd && sd.muc === 'thong-tin' && /cực nào cũng được/.test(sd.loi) && /không bao giờ bị đẩy/.test(sd.loi) && /vật nam châm/.test(sd.loi) && sd.cho && sd.cho.dong === 8 && sd.cuc === 'N', J(sd));
   const mNT = Object.assign({}, man(3), { san: ['...', '.o.', '...', '...', '...'], vatChat: ['...', '.s.', '...', '...', '...'], batDau: { x: 1, y: 4, huong: 0 }, vatCan: 'tu' });
   const nt = cd(run(mNT, ['magnet_n()', 'wait()']), 'ngoai-tam');
   kiem('ngoai-tam (thông tin): vật sắt cách 3 ô → "ngoài tầm hút của sắt (chỉ 2 ô)", nhắc vật nam châm xa hơn tới 3 ô', nt && nt.muc === 'thong-tin' && /ngoài tầm hút của sắt/.test(nt.loi) && /chỉ 2 ô/.test(nt.loi) && /tới 3 ô/.test(nt.loi) && nt.khoang === 3, J(nt));
   const mDay = Object.assign({}, man(4));
-  const rBC = run(mDay, ['move()', 'move()', 'turn_right()', 'magnet_n()', 'wait()', 'wait()'], khoTruoc('19.4'));
-  const dbc = cd(run(Object.assign({}, mDay, { san: ['......', '......', '.o#...', '......', '......'], vatChat: ['......', '......', '.N....', '......', '......'] }), ['move()', 'move()', 'turn_right()', 'magnet_n()', 'wait()'], khoTruoc('19.4')), 'day-bi-chan');
+  const rBC = run(mDay, ['move()', 'move()', 'turn_right()', 'magnet_n()', 'wait()', 'wait()'], khoTruoc('23.4'));
+  const dbc = cd(run(Object.assign({}, mDay, { san: ['......', '......', '.o#...', '......', '......'], vatChat: ['......', '......', '.N....', '......', '......'] }), ['move()', 'move()', 'turn_right()', 'magnet_n()', 'wait()'], khoTruoc('23.4')), 'day-bi-chan');
   kiem('day-bi-chan (thông tin): vật nam châm sát tường không nhúc nhích được → nói ô sau là tường', dbc && dbc.muc === 'thong-tin' && /không nhúc nhích được/.test(dbc.loi) && /tường/.test(dbc.loi) && dbc.tuMui === false, J(dbc));
   void rBC;
   const m6 = man(6);
-  const r7 = ChamHoc.cham(Object.assign({}, m6, { hamGoc: m6.hamGoc.filter((t) => t !== 'front_pole') }), { chinh: ['while front_pole() == "none":', '    move()'] }, khoTruoc('19.6'));
+  const r7 = ChamHoc.cham(Object.assign({}, m6, { hamGoc: m6.hamGoc.filter((t) => t !== 'front_pole') }), { chinh: ['while front_pole() == "none":', '    move()'] }, khoTruoc('23.6'));
   const cg = cd(r7, 'chua-gan-cam-bien');
   kiem('chua-gan-cam-bien (màn chưa cho front_pole): nói robot chưa gắn cảm biến từ nên chưa có front_pole()', cg && /front_pole\(\)/.test(cg.loi) && /cảm biến từ/.test(cg.loi) && cg.ten === 'front_pole', J(cg && cg.loi));
   const r7b = ChamHoc.cham(Object.assign({}, m6, { hamGoc: ['left_move', 'right_move', 'wait', 'magnet_n', 'magnet_s', 'magnet_off'], robot: { than: 'hai-banh', tay: 'nam-cham', camBien: [] } }), { chinh: ['a = front_pole()'] }, []);
   kiem('chua-gan-cam-bien (robot chưa gắn cảm biến nào): nói rõ cảm biến từ (kim loại) và tên hàm', cd(r7b, 'chua-gan-cam-bien') && /từ \(kim loại\)/.test(cd(r7b, 'chua-gan-cam-bien').loi) && /front_pole/.test(cd(r7b, 'chua-gan-cam-bien').loi), J(r7b.chanDoan.map((c) => c.loi)));
 
   // nhiều sân có vatChat
-  const r8 = ChamHoc.cham(m6, m6.loiGiai, tron(khoTruoc('19.6'), m6.loiGiai.hamCuaEmMoi));
+  const r8 = ChamHoc.cham(m6, m6.loiGiai, tron(khoTruoc('23.6'), m6.loiGiai.hamCuaEmMoi));
   kiem('19.6 (3 sân, vatChat song song): lời giải thắng cả ba, mỗi sân một mục theoSan, soNhip = tổng', r8.thang && r8.theoSan.length === 3 && r8.theoSan.every((s) => s.thang) && r8.soNhip === r8.theoSan.reduce((a, s) => a + s.soNhip, 0) && r8.nhipTong === r8.soNhip, J(r8.theoSan.map((s) => s.soNhip)));
   kiem('kết quả cham có namCham (trạng thái cuối, cuc null sau khi thả) và vật có chat / cuc', r8.namCham && r8.namCham.bat === false && r8.namCham.cuc === null && r8.vat.some((v) => v.chat === 'nam-cham' && v.cuc) && r8.theoSan.some((s) => s.vat.some((v) => v.cuc === 'S')), J(r8.vat));
 
@@ -533,11 +533,11 @@ console.log('\n== 9. Chẩn đoán tiếng Việt; chấm nhiều sân có vatCh
   kiem('chuanSanThu: vật giữ chat "sat", vật nam châm giữ chat + cuc (thiếu cực thì thành gỗ), vật thường không có trường chat, vật ngoài sân bị bỏ', st.vat.length === 4 && st.vat[0].chat === 'sat' && !('chat' in st.vat[1]) && st.vat[2].chat === 'nam-cham' && st.vat[2].cuc === 'S' && !('chat' in st.vat[3]), J(st.vat));
   const hF = () => H('fetch', ['magnet_n()', 'wait()', 'u_turn()', 'move()', 'magnet_off()', 'wait()']);
   const mT = man(5);
-  const kT = ChamHoc.thuHam(mT, { chinh: [] }, 'fetch', tron(khoTruoc('19.5'), [hF()]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 0, chat: 'sat' }] } });
+  const kT = ChamHoc.thuHam(mT, { chinh: [] }, 'fetch', tron(khoTruoc('23.5'), [hF()]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 0, chat: 'sat' }] } });
   kiem('Xưởng: thử fetch() trên sân thử 5×5 (xe (2,2) quay lên, vật sắt (2,0)): hút, quay đầu, tiến một ô, thả — nam châm tắt, vật nằm yên ở (2, 4), xe ở (2, 3) quay xuống, không chẩn đoán', kT.namCham && kT.namCham.cam === null && kT.namCham.bat === false && kT.vat[0].trangThai === 'dat' && kT.vat[0].x === 2 && kT.vat[0].y === 4 && kT.robot.y === 3 && kT.robot.huong === 2 && maCua(kT).length === 0, J([kT.vat, kT.robot, maCua(kT)]));
-  const kT2 = ChamHoc.thuHam(mT, { chinh: [] }, 'fetch', tron(khoTruoc('19.5'), [hF()]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 0 }] } });
+  const kT2 = ChamHoc.thuHam(mT, { chinh: [] }, 'fetch', tron(khoTruoc('23.5'), [hF()]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [{ x: 2, y: 0 }] } });
   kiem('Xưởng: vật gỗ trong sân thử không dính; có hut-go (thông tin) và vật vẫn nằm ở (2, 0)', maCua(kT2).includes('hut-go') && kT2.vat[0].trangThai === 'dat' && kT2.vat[0].y === 0 && kT2.chanDoan.find((c) => c.ma === 'hut-go').muc === 'thong-tin');
-  const kG = ChamHoc.thuHam(man(6), { chinh: [] }, 'grip', tron(khoTruoc('19.6'), [H('grip', man(6).loiGiai.hamCuaEmMoi[0].than)]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 3, huong: 0 }, vat: [{ x: 2, y: 1, chat: 'nam-cham', cuc: 'N' }] } });
+  const kG = ChamHoc.thuHam(man(6), { chinh: [] }, 'grip', tron(khoTruoc('23.6'), [H('grip', man(6).loiGiai.hamCuaEmMoi[0].than)]), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 3, huong: 0 }, vat: [{ x: 2, y: 1, chat: 'nam-cham', cuc: 'N' }] } });
   kiem('Xưởng: thử grip() với vật nam châm chữ N cách 2 ô: grip bật cực S, vật bị hút dính vào xe (cuc "S")', kG.namCham && kG.namCham.cam === 1 && kG.namCham.cuc === 'S' && maCua(kG).length === 0, J([kG.namCham, maCua(kG)]));
 }
 
@@ -638,7 +638,7 @@ const BANG = [];
 {
   const SAO_NHIP = [4, 9, 4, 4, 25, 15, 6, 10, 11, 34];
   const SAO_O = [11, 18, 11, 10, 23, 16, 10, 17, 10, 22];
-  kiem('đúng 10 màn nam-cham, id 19.1…19.10, mã nam-cham.1…10, tên chương "Nam châm"', ds.length === 10 && ds.every((m, i) => m.id === '19.' + (i + 1) && m.ma === 'nam-cham.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'nam-cham').ten === 'Nam châm');
+  kiem('đúng 10 màn nam-cham, id 23.1…23.10, mã nam-cham.1…10, tên chương "Nam châm"', ds.length === 10 && ds.every((m, i) => m.id === '23.' + (i + 1) && m.ma === 'nam-cham.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'nam-cham').ten === 'Nam châm');
   kiem('hang: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
   kiem('sao.nhip và sao.o đúng bảng chốt', J(ds.map((m) => m.sao.nhip)) === J(SAO_NHIP) && J(ds.map((m) => m.sao.o)) === J(SAO_O), J([ds.map((m) => m.sao.nhip), ds.map((m) => m.sao.o)]));
   kiem('hàm cốt truyện: fetch ở 19.5, grip ở 19.6; chỉ 19.8 có hàm của màn (haul); huy hiệu nam-cham ở 19.10', J(ds.map((m) => m.taoHam)) === J([[], [], [], [], ['fetch'], ['grip'], [], [], [], []]) &&
@@ -685,7 +685,7 @@ const BANG = [];
   // 19.5: canHam tran-khung
   const m5 = man(5);
   const khaiTrien = ['for i in range(3):'].concat(m5.loiGiai.hamCuaEmMoi[0].than.map((s) => '    ' + s), ['    turn_left()', '    move()', '    move()', '    turn_left()', '    move()']);
-  const r5 = ChamHoc.cham(m5, { chinh: khaiTrien }, khoTruoc('19.5'));
+  const r5 = ChamHoc.cham(m5, { chinh: khaiTrien }, khoTruoc('23.5'));
   kiem('19.5 canHam "tran-khung": không dùng fetch, viết thẳng cả vòng thì ' + khaiTrien.length + ' dòng > 10 ô, tran-khung, không chạy', m5.canHam === 'tran-khung' && khaiTrien.length > m5.khung.chinh && maCua(r5).includes('tran-khung') && !r5.thang && r5.sao === 0);
   kiem('19.5: fetch() thân đúng 6 dòng ≤ 10 ô, gọi u_turn và move của kho; maMau là chuyến lấy vật viết thẳng (6 dòng)', bang(m5.loiGiai.hamCuaEmMoi[0].than, ['magnet_n()', 'wait()', 'u_turn()', 'move()', 'magnet_off()', 'wait()']) && bang(m5.maMau.chinh, m5.loiGiai.hamCuaEmMoi[0].than));
   // 19.1–19.4: bài học từng màn
@@ -698,7 +698,7 @@ const BANG = [];
   kiem('19.2: vật gỗ chiếm ô và chắn nên đường ngắn nhất (tách nhịp) vòng sang bên (rẽ, tiến) TRƯỚC khi bật nam châm; chương trình hút ngay chỗ xuất phát thì hut-go và không thắng', (() => {
     const c = nhipNamChamNganNhat(m2, { tachNhip: true }).chuoi;
     const ca = (a) => a.nc === 'n' || a.nc === 's';
-    return c.findIndex((a) => a.banh === BoDo.TIEN) < c.findIndex(ca) && !ChamHoc.cham(m2, m2.maMau, khoTruoc('19.2')).thang && maCua(ChamHoc.cham(m2, m2.maMau, khoTruoc('19.2'))).includes('hut-go');
+    return c.findIndex((a) => a.banh === BoDo.TIEN) < c.findIndex(ca) && !ChamHoc.cham(m2, m2.maMau, khoTruoc('23.2')).thang && maCua(ChamHoc.cham(m2, m2.maMau, khoTruoc('23.2'))).includes('hut-go');
   })());
   const m3 = man(3);
   kiem('19.3: vật nam châm chữ N cách xe 3 ô (ngoài tầm sắt): bật S hút được; bật N (cùng cực) thì đẩy, không thắng; vật sắt giả thế cùng chỗ thì KHÔNG hút được ở xa 3 ô', (() => {
@@ -735,11 +735,11 @@ const BANG = [];
       co[0].chat === ['sat', 'nam-cham', 'nam-cham'][i] && (i === 0 || co[0].cuc === ['', 'N', 'S'][i]) && !/[<>^v]/.test(rows.join(''));
   }));
   kiem('19.10: lời giải thắng ba sân; mọi lần đọc color() là cảm biến bụng (cam "mau", nguon "san") và ở MỖI sân có đọc color() lúc xe ĐANG DÍNH vật; grip() hút bằng cực N (sắt), cực S (vật N), cực N (vật S)', (() => {
-    const r = ChamHoc.cham(m10, m10.loiGiai, khoTruoc('19.10'));
+    const r = ChamHoc.cham(m10, m10.loiGiai, khoTruoc('23.10'));
     const cuc = r.theoSan.map((sn) => sn.vet.filter((e) => e.loai === 'lenh' && /^magnet_[ns]$/.test(e.ten)).map((e) => e.ten)[0]);
     return r.thang && J(cuc) === J(['magnet_n', 'magnet_s', 'magnet_n']) && r.theoSan.every((sn) => { let hut = false, sau = 0, sai = 0; for (const e of sn.vet) { if (e.loai === 'lenh' && /^magnet_[ns]$/.test(e.ten)) hut = true; if (e.loai === 'lenh' && e.docCamBien && e.ten === 'color') { if (e.docCamBien.cam !== 'mau' || e.docCamBien.nguon !== 'san') sai++; if (hut) sau++; } } return sai === 0 && sau >= 1; });
   })());
-  const sai10 = ChamHoc.cham(m10, { chinh: ['go_wall()', 'grip()', 'turn_right()', 'magnet_off()', 'wait()'] }, khoTruoc('19.10'));
+  const sai10 = ChamHoc.cham(m10, { chinh: ['go_wall()', 'grip()', 'turn_right()', 'magnet_off()', 'wait()'] }, khoTruoc('23.10'));
   kiem('19.10: hút rồi rẽ phải thả ngay (không mang về ô vàng) thì không thắng (chua-dua-vat)', !sai10.thang && maCua(sai10).includes('chua-dua-vat'), J(maCua(sai10)));
   // 19.5, 19.7, 19.8, 19.9 giữ luật cũ
   const k5 = SanHoc.chay({ san: man(5).san, vatChat: man(5).vatChat, batDau: man(5).batDau, loaiRobot: 'banh', hamGoc: man(5).hamGoc, mucTieu: 'dua-vat', vatCan: 'tu' }, N);
@@ -747,14 +747,14 @@ const BANG = [];
   const m7 = man(7);
   const m7KhongBang = Object.assign({}, m7, { san: m7.san.map((r) => r.replace(/\^/g, '.')) });
   kiem('19.7: bỏ làn băng thì đường tối ưu khác: BFS tách ≠ ' + m7.sao.nhip, nhipNamChamNganNhat(m7KhongBang, { tachNhip: true }).nhip !== m7.sao.nhip);
-  const m7DungHang = ChamHoc.cham(m7, { chinh: ['move()', 'magnet_n()', 'wait()', 'move()', 'move()', 'move()', 'move()', 'magnet_off()', 'wait()'] }, khoTruoc('19.7'));
+  const m7DungHang = ChamHoc.cham(m7, { chinh: ['move()', 'magnet_n()', 'wait()', 'move()', 'move()', 'move()', 'move()', 'magnet_off()', 'wait()'] }, khoTruoc('23.7'));
   kiem('19.7: tiến thẳng 4 ô (như khi không có băng) không thắng — băng đẩy xe lên hàng trên; chẩn đoán nói ô trước mũi là mép sân', !m7DungHang.thang && maCua(m7DungHang).includes('tha-bi-chan'));
   const m8 = man(8);
   kiem('19.8: maMau gọi haul() sai (thiếu magnet_off, wait), lời giải sửa thành 6 dòng; sửa xong chương trình chính giữ nguyên', bang(m8.maMau.hamCuaMan[0].than, ['magnet_n()', 'wait()', 'turn_right()', 'move()']) && bang(m8.loiGiai.hamCuaMan[0].than, ['magnet_n()', 'wait()', 'turn_right()', 'move()', 'magnet_off()', 'wait()']) && bang(m8.maMau.chinh, m8.loiGiai.chinh));
   const m9 = man(9);
-  const r9 = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('19.9'));
+  const r9 = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('23.9'));
   kiem('19.9: omni không đổi hướng mặt suốt lượt chạy (huong 0 mọi nhịp), nam châm luôn hút lên', nhipVet({ vet: r9.vet }).every((n) => n.robot.huong === 0) && r9.thang);
-  const k4 = ChamHoc.cham(m4, { chinh: ['move()', 'move()', 'move()'] }, khoTruoc('19.4'));
+  const k4 = ChamHoc.cham(m4, { chinh: ['move()', 'move()', 'move()'] }, khoTruoc('23.4'));
   kiem('19.4: xe không đâm bậc thang vì sân không có bậc thang; đi thẳng lên vượt hàng vật thì không thắng', !k4.thang);
 }
 

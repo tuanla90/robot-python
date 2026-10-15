@@ -38,10 +38,14 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
+    // 15/10 tối: mỗi bộ phận hai chương (làm quen + chế lệnh) — thêm che-xich, che-omni, che-mau, che-may-nem, che-drone; SÚNG HƠI (sung-hoi + che-sung-hoi:
+    // shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới đẩy thùng) thay TẤM ĐẨY và SÚNG BÓNG. tam-day / sung-bong để TẠM ở cuối cho tới khi chương Súng hơi xong (xóa khi đó).
     thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien',
-      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'sung-bong', 'drone'],
+      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
+      'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'tam-day', 'sung-bong'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
-    dot2: ['bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'sung-bong', 'drone'],
+    dot2: ['bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
+      'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'tam-day', 'sung-bong'],
     // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
     // (15/10: màn chọn đã chuyển sang GÓI mở bằng tổng sao, xem `goi` dưới; dot2 / congDot2 chỉ còn dùng để ghi nhãn và cho máy kiểm.)
     congDot2: 'robot-hoan-thien',
@@ -58,15 +62,17 @@
       { ma: 'bang-chuyen', ten: 'Băng chuyền', chuong: ['bang-chuyen'] },
       { ma: 'tham-so', ten: 'Hàm có tham số', chuong: ['tham-so'] },
       { ma: 'nhen', ten: 'Thân nhện', chuong: ['nhen', 'che-nhen'] },
-      { ma: 'xich', ten: 'Bánh xích', chuong: ['xich'] },
-      { ma: 'omni', ten: 'Bánh omni', chuong: ['omni'] },
-      { ma: 'tam-day', ten: 'Tấm đẩy', chuong: ['tam-day'] },
-      { ma: 'mau', ten: 'Cảm biến màu', chuong: ['mau'] },
+      { ma: 'xich', ten: 'Bánh xích', chuong: ['xich', 'che-xich'] },
+      { ma: 'omni', ten: 'Bánh omni', chuong: ['omni', 'che-omni'] },
+      { ma: 'sung-hoi', ten: 'Súng hơi', chuong: ['sung-hoi', 'che-sung-hoi'], hinh: 'sung-bong' },
+      { ma: 'mau', ten: 'Cảm biến màu', chuong: ['mau', 'che-mau'] },
       { ma: 'nam-cham', ten: 'Nam châm', chuong: ['nam-cham', 'che-nam-cham'] },
       { ma: 'tay-xoay', ten: 'Tay xoay', chuong: ['tay-xoay', 'che-tay-xoay'] },
-      { ma: 'may-nem', ten: 'Máy ném', chuong: ['may-nem'] },
-      { ma: 'sung-bong', ten: 'Súng bóng', chuong: ['sung-bong'] },
-      { ma: 'drone', ten: 'Drone', chuong: ['drone'] }
+      { ma: 'may-nem', ten: 'Máy ném', chuong: ['may-nem', 'che-may-nem'] },
+      { ma: 'drone', ten: 'Drone', chuong: ['drone', 'che-drone'] },
+      // TẠM (chương cũ; chương Súng hơi xong thì xóa cả hai gói này và hai chương này trong thuTu / dot2)
+      { ma: 'tam-day', ten: 'Tấm đẩy (cũ)', chuong: ['tam-day'] },
+      { ma: 'sung-bong', ten: 'Súng bóng (cũ)', chuong: ['sung-bong'] }
     ],
     ten: {
       'hai-banh': 'Hai bánh',
@@ -93,7 +99,14 @@
       'che-tay-xoay': 'Chế lệnh tay xoay',
       'may-nem': 'Máy ném',
       'sung-bong': 'Súng bóng',
-      'drone': 'Drone'
+      'drone': 'Drone',
+      'che-xich': 'Chế lệnh xích',
+      'che-omni': 'Chế lệnh omni',
+      'sung-hoi': 'Súng hơi',
+      'che-sung-hoi': 'Chế lệnh súng hơi',
+      'che-mau': 'Chế lệnh màu',
+      'che-may-nem': 'Chế lệnh máy ném',
+      'che-drone': 'Chế lệnh drone'
     }
   };
 

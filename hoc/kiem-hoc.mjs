@@ -1335,10 +1335,11 @@ console.log('\n== 16. Sổ chương: mã cố định, id tính theo thứ tự 
     ds.every((m) => ThuTu.thuTu.includes(m.chuong) && Number.isInteger(m.so) && m.so >= 1 && m.so <= 10 && m.ma === m.chuong + '.' + m.so) &&
       new Set(dsMa).size === ds.length);
   const THU_TU_MOI = ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien',
-    'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'sung-bong', 'drone'];
+    'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
+    'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'tam-day', 'sung-bong'];
   const SO_DOT1 = 10;                                                            // 10 chương đợt 1, còn lại là đợt 2
   const coMan = (c) => ds.some((m) => m.chuong === c);
-  const TEN_CHUONG = { 'hai-banh': 'Hai bánh', 'xuong-ham': 'Xưởng hàm', 'che-xe': 'Chế lệnh xe', 'tay-gap': 'Tay gắp', 'che-tay': 'Chế lệnh tay', 'vong-lap': 'Vòng lặp',
+  const TEN_CHUONG = { 'che-xich': 'Chế lệnh xích', 'che-omni': 'Chế lệnh omni', 'sung-hoi': 'Súng hơi', 'che-sung-hoi': 'Chế lệnh súng hơi', 'che-mau': 'Chế lệnh màu', 'che-may-nem': 'Chế lệnh máy ném', 'che-drone': 'Chế lệnh drone', 'hai-banh': 'Hai bánh', 'xuong-ham': 'Xưởng hàm', 'che-xe': 'Chế lệnh xe', 'tay-gap': 'Tay gắp', 'che-tay': 'Chế lệnh tay', 'vong-lap': 'Vòng lặp',
     'che-lap': 'Chế lệnh có for', 'che-cam-bien': 'Chế lệnh có if, while', 'robot-hoan-thien': 'Robot hoàn thiện', 'khoang-cach': 'Cảm biến khoảng cách', 'bang-chuyen': 'Băng chuyền', 'tham-so': 'Hàm có tham số', 'nhen': 'Thân nhện', 'che-nhen': 'Chế lệnh nhện', 'xich': 'Bánh xích', 'omni': 'Bánh omni', 'tam-day': 'Tấm đẩy', 'mau': 'Cảm biến màu', 'nam-cham': 'Nam châm', 'che-nam-cham': 'Chế lệnh nam châm', 'tay-xoay': 'Tay xoay', 'che-tay-xoay': 'Chế lệnh tay xoay', 'may-nem': 'Máy ném', 'sung-bong': 'Súng bóng', 'drone': 'Drone' };
   const SO_CHUONG = {};
   THU_TU_MOI.forEach((c, i) => { SO_CHUONG[c] = i + 1; });
@@ -1346,8 +1347,9 @@ console.log('\n== 16. Sổ chương: mã cố định, id tính theo thứ tự 
     bang(ThuTu.thuTu, THU_TU_MOI) && ThuTu.thuTu.every((c) => typeof ThuTu.ten[c] === 'string' && ThuTu.ten[c].length > 2 && ThuTu.ten[c] === TEN_CHUONG[c]));
   kiem('đợt 2 và chương cổng: dot2 = 11 chương đợt 2 (đúng thứ tự trong thuTu), congDot2 = robot-hoan-thien (khi chương này có màn; trước đó tạm là khoang-cach), laDot2(ma) đúng; chương đợt 1 không nằm trong dot2',
     bang(ThuTu.dot2, THU_TU_MOI.slice(SO_DOT1)) && (ThuTu.congDot2 === (coMan('robot-hoan-thien') ? 'robot-hoan-thien' : 'khoang-cach')) && !ThuTu.dot2.includes(ThuTu.congDot2) && THU_TU_MOI.every((c) => ThuTu.laDot2(c) === (THU_TU_MOI.indexOf(c) >= SO_DOT1)) && !ThuTu.laDot2('la-hoac'));
-  kiem('id chương 1 và 2 giữ nguyên (1.1…2.10), che-xe là 3.x, tay-gap 4.x, vong-lap 5.x, khoang-cach 6.x (cuối đợt 1), rồi đợt 2: bang-chuyen 7.x, tham-so 8.x, nhen 9.x, xich 10.x, omni 11.x, tam-day 12.x, mau 13.x, nam-cham 14.x, may-nem 15.x, sung-bong 16.x, drone 17.x (mã màn giữ nguyên)',
-    ds.every((m) => m.id === SO_CHUONG[m.chuong] + '.' + m.so) && ManHoc.timMa('che-xe.4').id === '3.4' && ManHoc.timMa('tay-gap.5').id === '4.5' && ManHoc.timMa('vong-lap.4').id === '6.4' && ManHoc.timMa('khoang-cach.4').id === '8.4' && ManHoc.timMa('bang-chuyen.6').id === '11.6' && ManHoc.timMa('tham-so.8').id === '12.8' && ManHoc.timMa('nhen.4').id === '13.4' && ManHoc.timMa('xich.4').id === '15.4' && ManHoc.timMa('omni.4').id === '16.4' && ManHoc.timMa('tam-day.4').id === '17.4' && ManHoc.timMa('mau.4').id === '18.4' && ManHoc.timMa('nam-cham.4').id === '19.4' && ManHoc.timMa('may-nem.4').id === '23.4' && ManHoc.timMa('sung-bong.4').id === '24.4' && ManHoc.timMa('drone.4').id === '25.4');
+  kiem('id = vị trí chương trong thuTu + "." + so (mã màn giữ nguyên): chương 1 và 2 giữ nguyên (1.1…2.10), che-xe 3.x, tay-gap 4.x, vong-lap 6.x, khoang-cach 8.x, bang-chuyen 11.x, tham-so 12.x, nhen 13.x, xich 15.x; chương đợt 2 sau đó theo SO_CHUONG',
+    ds.every((m) => m.id === SO_CHUONG[m.chuong] + '.' + m.so) && ManHoc.timMa('che-xe.4').id === '3.4' && ManHoc.timMa('tay-gap.5').id === '4.5' && ManHoc.timMa('vong-lap.4').id === '6.4' && ManHoc.timMa('khoang-cach.4').id === '8.4' && ManHoc.timMa('bang-chuyen.6').id === '11.6' && ManHoc.timMa('tham-so.8').id === '12.8' && ManHoc.timMa('nhen.4').id === '13.4' && ManHoc.timMa('xich.4').id === '15.4' &&
+      ['omni', 'mau', 'nam-cham', 'may-nem', 'drone', 'tam-day', 'sung-bong'].every((c) => ManHoc.timMa(c + '.4').id === (THU_TU_MOI.indexOf(c) + 1) + '.4'));
   kiem('danhSach xếp theo thứ tự chương rồi theo so', bang(ds.map((m) => m.chuong + '.' + m.so), [].concat(
     ...ThuTu.thuTu.filter(coMan).map((c) => Array.from({ length: 10 }, (_, i) => c + '.' + (i + 1))))));
   kiem('ManHoc.chuong(): các chương CÓ MÀN theo thứ tự, mỗi chương { ma, ten, so (vị trí trong thuTu, kể cả chương chưa có màn), soMan }',
@@ -1381,12 +1383,13 @@ console.log('\n== 16. Sổ chương: mã cố định, id tính theo thứ tự 
       bang(ManHoc.chuong().map((c) => c.ma + ':' + c.so), doi.map((c, i) => c + ':' + (i + 1)).filter((x) => coMan(x.split(':')[0]))));
     const nguoc = gocTT.slice().reverse();
     datTT(nguoc);
-    kiem('đảo ngược toàn bộ: drone 1.x … hai-banh 21.x; màn đầu danhSach là drone.1; mã giữ nguyên',
-      idDung(nguoc) && ManHoc.timMa('hai-banh.10').id === '25.10' && ManHoc.timMa('drone.1').id === '1.1' && ManHoc.timMa('che-xe.1').id === '23.1' && ManHoc.timMa('khoang-cach.1').id === (THU_TU_MOI.length - THU_TU_MOI.indexOf('khoang-cach')) + '.1' && ds[0].ma === 'drone.1');
+    const vtNguoc = (c) => THU_TU_MOI.length - THU_TU_MOI.indexOf(c);                // vị trí (từ 1) của chương c khi đảo ngược
+    kiem('đảo ngược toàn bộ: chương cuối thành 1.x … hai-banh thành chương cuối; màn đầu danhSach là màn 1 của chương cuối CÓ màn; mã giữ nguyên',
+      idDung(nguoc) && ManHoc.timMa('hai-banh.10').id === vtNguoc('hai-banh') + '.10' && ManHoc.timMa('drone.1').id === vtNguoc('drone') + '.1' && ManHoc.timMa('che-xe.1').id === vtNguoc('che-xe') + '.1' && ManHoc.timMa('khoang-cach.1').id === vtNguoc('khoang-cach') + '.1' && ds[0].ma === nguoc.filter(coMan)[0] + '.1');
     const xoay = gocTT.slice(2).concat(gocTT.slice(0, 2));                              // đưa hai chương đầu xuống cuối
     datTT(xoay);
     kiem('xoay vòng (hai chương đầu xuống cuối): id và danhSach theo đúng thứ tự mới, mã màn giữ nguyên',
-      idDung(xoay) && ManHoc.timMa('che-xe.3').id === '1.3' && ManHoc.timMa('hai-banh.3').id === '24.3' && ManHoc.timMa('xuong-ham.3').id === '25.3' && ds[0].ma === 'che-xe.1');
+      idDung(xoay) && ManHoc.timMa('che-xe.3').id === '1.3' && ManHoc.timMa('hai-banh.3').id === (THU_TU_MOI.length - 1) + '.3' && ManHoc.timMa('xuong-ham.3').id === THU_TU_MOI.length + '.3' && ds[0].ma === 'che-xe.1');
   } finally {
     datTT(gocTT);
   }

@@ -113,7 +113,6 @@
     m('slide_r', 'omni', 'Trượt sang phải n ô, mặt xe không đổi', 'omni', 'omni.3'),
     m('slide_l', 'omni', 'Trượt sang trái n ô, mặt xe không đổi', 'omni', 'omni.4'),
     // đợt 2: tấm đẩy, cảm biến màu, nam châm, máy ném, súng bóng, drone
-    m('shove', 'day', 'Đẩy thùng n ô rồi vòng ra sau thùng cho lần đẩy kế', 'tam-day', 'tam-day.6'),
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
     m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.5'),
     m('grip', 'nam-cham', 'Bật cực khác chữ trên vật nam châm trước mặt để kéo nó về', 'nam-cham', 'nam-cham.6'),
@@ -133,9 +132,11 @@
     m('swap_sides', 'tay-xoay', 'Đổi chỗ vật bên trái với vật bên phải, ô trước mặt trống làm chỗ cất tạm', 'che-tay-xoay', 'che-tay-xoay.5'),
     m('sort_two', 'tay-xoay', 'Vật trước mặt sang trái, tiến một ô, vật kế sang phải, tiến một ô', 'che-tay-xoay', 'che-tay-xoay.6'),
     m('toss', 'nem', 'Đặt tầm n, ném vật, rồi chờ một nhịp', 'may-nem', 'may-nem.4'),
-    m('hit_right', 'bong', 'Quay phải, bắn một phát, rồi quay lại', 'sung-bong', 'sung-bong.5'),
     m('recharge', 'drone', 'Nếu pin còn dưới 3 thì bay lên ô sạc rồi bay xuống', 'drone', 'drone.5'),
-    m('ship', 'drone', 'Hút vật dưới bụng, bay theo chuỗi đường rồi thả vật', 'drone', 'drone.10')
+    m('ship', 'drone', 'Hút vật dưới bụng, bay theo chuỗi đường rồi thả vật', 'drone', 'drone.10'),
+    // TẠM: hai chương cũ tam-day / sung-bong đang đứng cuối thuTu (chờ chương Súng hơi thay)
+    m('shove', 'day', 'Đẩy thùng n ô rồi vòng ra sau thùng cho lần đẩy kế', 'tam-day', 'tam-day.6'),
+    m('hit_right', 'bong', 'Quay phải, bắn một phát, rồi quay lại', 'sung-bong', 'sung-bong.5')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có

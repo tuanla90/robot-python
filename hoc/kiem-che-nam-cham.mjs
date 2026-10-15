@@ -172,8 +172,8 @@ console.log('\n== 4. Sổ lệnh: năm hàm mới của che-nam-cham (fixed_grip
 console.log('\n== 5. Chương che-nam-cham: dữ liệu và luật từng màn ==');
 const BANG = [];
 {
-  kiem('đúng 10 màn, số 1..10, mã che-nam-cham.1…, id 20.1…20.10 (chương thứ 20: sau nam-cham, trước tay-xoay), tên "Chế lệnh nam châm"',
-    che.length === 10 && che.every((m, i) => m.so === i + 1 && m.id === '20.' + (i + 1) && m.ma === 'che-nam-cham.' + (i + 1)) && ThuTu.thuTu[19] === 'che-nam-cham' && ThuTu.thuTu[18] === 'nam-cham' && ThuTu.ten['che-nam-cham'] === 'Chế lệnh nam châm' && ThuTu.laDot2('che-nam-cham'));
+  kiem('đúng 10 màn, số 1..10, mã che-nam-cham.1…, id theo vị trí trong thuTu (ngay sau nam-cham), tên "Chế lệnh nam châm"',
+    che.length === 10 && che.every((m, i) => m.so === i + 1 && m.id === (ThuTu.thuTu.indexOf('che-nam-cham') + 1) + '.' + (i + 1) && m.ma === 'che-nam-cham.' + (i + 1)) && ThuTu.thuTu.indexOf('che-nam-cham') === ThuTu.thuTu.indexOf('nam-cham') + 1 && ThuTu.ten['che-nam-cham'] === 'Chế lệnh nam châm' && ThuTu.laDot2('che-nam-cham'));
   kiem('tên các màn: Đá vật, Kéo lại gần, Dọn đường, Chuyền sang làn, Phân loại, Bắn vật, Dây cực đấu ngược, Chỉ còn cực N, Đường về, Kho từ; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-nam-cham "Huy hiệu Chế lệnh nam châm"',
     J(che.map((m) => m.ten)) === J(['Đá vật', 'Kéo lại gần', 'Dọn đường', 'Chuyền sang làn', 'Phân loại', 'Bắn vật', 'Dây cực đấu ngược', 'Chỉ còn cực N', 'Đường về', 'Kho từ']) &&
       J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-nam-cham' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh nam châm');
