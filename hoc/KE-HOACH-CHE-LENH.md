@@ -201,6 +201,38 @@ Xe + tay kẹp + cảm biến khoảng cách; mỗi màn là một NHIỆM VỤ 
 dùng mọi hàm đã chế (gồm che-tay, che-lap, che-cam-bien). Hàng biến thể có hỏng hóc / lắp ngược; vài màn khai `gioiHanHam`.
 Trùm = cổng mở đợt 2: đổi `ThuTuChuong.congDot2` thành `'robot-hoan-thien'`; huy hiệu riêng.
 
+## 5b. ĐỢT 2 làm lại theo khuôn (user chốt 15/10)
+
+Mỗi bộ phận HAI chương (như đợt 1): chương làm quen `<part>` (lệnh gốc đổi trạng thái, luật riêng, địa hình mới) và chương chế lệnh `che-<part>`
+(bóng mờ + chinhCoDinh, Sổ lệnh, lắp ngược `daoChieu` / hỏng `phanCung`, hàm của màn cho việc chỉ đúng một màn, trùm `gioiHanHam`).
+Giữ MÃ màn cũ của chương làm quen (`nhen.1…10`, `nam-cham.1…10`) để không mất tiến độ, nội dung được viết lại. Màn làm quen có hướng dẫn sáng nút
+(`game/huong-dan-man.js`). Hàm cốt truyện chương sau còn dùng thì giữ tên (drone dùng `go`, `walk` của nhện). Làm trước: nhện, nam châm, tay xoay;
+chơi thử rồi mới làm xích, omni, tấm đẩy, máy ném, súng bóng, drone, cảm biến màu. Thứ tự (đã đăng ký, tệp màn chương mới đang rỗng):
+… 13 nhen · 14 che-nhen · 15 xich · 16 omni · 17 tam-day · 18 mau · 19 nam-cham · 20 che-nam-cham · 21 tay-xoay · 22 che-tay-xoay · 23 may-nem · 24 sung-bong · 25 drone.
+
+### 5b.1 Nhện (`nhen` + `che-nhen`)
+- Lệnh gốc: `go_up/go_down/go_left/go_right` (bước 4 hướng, 2 nhịp / ô như cũ), `wait()`, MỚI `crouch()` (co chân) / `stand()` (duỗi chân) — chỉ ra lệnh.
+  Cặp ngược: lên↔xuống, trái↔phải, co↔duỗi.
+- Co chân: nhện thấp, chui qua ô GẦM THẤP (ký hiệu mới); đứng thì không vào được gầm (đâm).
+- NHẢY = động tác người chơi chế: đang co mà ra `stand()` trong cùng nhịp với một bước → nhện bật qua MỘT ô (ô HỐ — ký hiệu mới — hoặc vật thấp) và đáp ở ô kế.
+  Hố: đi vào là rơi (thua, chẩn đoán rõ).
+- Python giữ ở đây: chuỗi (`go(d)` bằng if/elif, `walk(path)`, `for c in path`). Chế: `crawl(d)`, `jump(d)`, `go`, `walk`, `bring`…
+
+### 5b.2 Nam châm (`nam-cham` + `che-nam-cham`) — user chốt 15/10
+- Lệnh gốc: `magnet_n()` bật cực N, `magnet_s()` bật cực S, `magnet_off()` ngắt điện (chỉ ra lệnh). Cặp ngược: N ↔ S. BỎ `magnet_on` / `magnet_off` cũ
+  (đổi mọi chỗ dùng: chương nam-cham, nam châm treo của drone, màn ghép omni…; `magnet_off` giữ tên, nghĩa = ngắt điện).
+- Vật: GỖ (không tương tác) · SẮT (bị hút bởi cả N lẫn S trong tầm 2 ô, KHÔNG BAO GIỜ bị đẩy — nam châm đẩy sắt là sai vật lý) ·
+  NAM CHÂM (vật có ghi N hoặc S = cực quay về phía xe; tay khác cực → hút, CÙNG cực → ĐẨY ra xa; tầm tác dụng 3 ô, xa hơn sắt).
+- Vật đang dính ở mũi xe: sắt vẫn dính khi đổi cực; vật nam châm đổi sang cùng cực thì bị bắn ra. `magnet_off()` thả vật xuống ô trước mũi.
+- Cảm biến từ: giữ `front_metal()` hoặc mở rộng (ví dụ trả cực) — chọn tối thiểu, ghi rõ.
+- Chế: kéo vật về, đẩy / đá vật nam châm ra xa, chuyền vật sang làn khác, phân loại theo cực…
+
+### 5b.3 Tay xoay (`tay-xoay` + `che-tay-xoay`) — bộ phận MỚI
+- Tay kẹp đời 2: ngoài `arm_up/arm_down/grab/release` có thêm `arm_left()` / `arm_right()` xoay khớp tay một nấc (trái ← trước → phải). Cặp ngược: trái↔phải.
+- `grab` / `release` làm ở ô mà tay đang chỉ (trước mặt / bên trái / bên phải xe). Luật tay hạ thì xe không đi giữ nguyên.
+- Part mới vẽ bằng code trong `game/part/` (dáng khác tay kẹp thường), hoạt cảnh xoay tay.
+- Chế: nhặt / đặt bên hông không cần quay xe (nhanh hơn `put_right` của che-tay), đổi chỗ nhanh, phân loại hai bên…
+
 ## 6. Xong khi
 - Chơi trên trình duyệt (thao tác như người chơi) hết chương `che-xe`; ở mỗi màn chế lệnh, thử cả 2 cách đều thắng.
 - Máy kiểm mới `kiem-che-xe.mjs` xanh (BFS nhịp ngắn nhất tới bóng mờ, congThucKhac đều thắng, loiSai đúng mã);

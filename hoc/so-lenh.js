@@ -101,6 +101,7 @@
     m('go', 'nhen', 'Nhện đi một bước theo một chữ: U lên, D xuống, L trái, R phải', 'nhen', 'nhen.4'),
     m('walk', 'nhen', 'Nhện đi hết một chuỗi chỉ đường', 'nhen', 'nhen.9'),
     m('bring', 'nhen', 'Nhặt vật, đi theo chuỗi chỉ đường rồi đặt vật xuống', 'nhen', 'nhen.10'),
+    // chương Chế lệnh nhện (agent nhện thêm mục ở đây, nhóm 'nhen')
     // đợt 2: bánh xích, bánh omni
     m('tr_right', 'xich', 'Xe xích quay phải một góc vuông (hai nhịp)', 'xich', 'xich.3'),
     m('tr_left', 'xich', 'Xe xích quay trái một góc vuông (hai nhịp)', 'xich', 'xich.4'),
@@ -110,6 +111,8 @@
     m('shove', 'day', 'Đẩy thùng n ô rồi vòng ra sau thùng cho lần đẩy kế', 'tam-day', 'tam-day.6'),
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
     m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.3'),
+    // chương Chế lệnh nam châm (agent nam châm thêm mục ở đây, nhóm 'nam-cham')
+    // chương Tay xoay + Chế lệnh tay xoay (agent tay xoay thêm mục ở đây, nhóm mới 'tay-xoay')
     m('toss', 'nem', 'Đặt tầm n, ném vật, rồi chờ một nhịp', 'may-nem', 'may-nem.4'),
     m('hit_right', 'bong', 'Quay phải, bắn một phát, rồi quay lại', 'sung-bong', 'sung-bong.5'),
     m('recharge', 'drone', 'Nếu pin còn dưới 3 thì bay lên ô sạc rồi bay xuống', 'drone', 'drone.5'),

@@ -221,8 +221,8 @@ console.log('\n== 4. Luật riêng từng màn ==');
 /* ================================================================= 5. CỔNG ĐỢT 2, SỔ LỆNH, THẺ SCRIPT */
 console.log('\n== 5. Cổng đợt 2, Sổ lệnh, game/choi.html ==');
 {
-  kiem('chương cổng mở đợt 2 là robot-hoan-thien (ThuTuChuong.congDot2), không còn là khoang-cach; dot2 gồm 11 chương đợt 2 và không chứa chương cổng; trùm của chương này (robot-hoan-thien.10) là màn có huy hiệu',
-    ThuTu.congDot2 === 'robot-hoan-thien' && ThuTu.dot2.length === 11 && !ThuTu.dot2.includes(ThuTu.congDot2) && ThuTu.thuTu.indexOf(ThuTu.congDot2) === 9 && ThuTu.thuTu.slice(10).join() === ThuTu.dot2.join() && !!man(10).huyHieu);
+  kiem('chương cổng mở đợt 2 là robot-hoan-thien (ThuTuChuong.congDot2), không còn là khoang-cach; dot2 là mọi chương sau chương cổng và không chứa chương cổng; trùm của chương này (robot-hoan-thien.10) là màn có huy hiệu',
+    ThuTu.congDot2 === 'robot-hoan-thien' && !ThuTu.dot2.includes(ThuTu.congDot2) && ThuTu.thuTu.indexOf(ThuTu.congDot2) === 9 && ThuTu.thuTu.slice(10).join() === ThuTu.dot2.join() && !!man(10).huyHieu);
   kiem('chương không thêm hàm cốt truyện: Sổ lệnh không có mục nào của chương robot-hoan-thien; mọi hàm cốt truyện (taoHam) của cả game vẫn có mặt trong Sổ lệnh',
     SoLenh.theoChuong('robot-hoan-thien').length === 0 && tenCotTruyen.every((t) => SoLenh.tim(t)));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');

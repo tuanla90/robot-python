@@ -39,9 +39,9 @@
 
   var API = {
     thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien',
-      'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'may-nem', 'sung-bong', 'drone'],
+      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'sung-bong', 'drone'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
-    dot2: ['bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'may-nem', 'sung-bong', 'drone'],
+    dot2: ['bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'sung-bong', 'drone'],
     // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
     congDot2: 'robot-hoan-thien',
     ten: {
@@ -57,12 +57,16 @@
       'bang-chuyen': 'Băng chuyền',
       'tham-so': 'Hàm có tham số',
       'nhen': 'Thân nhện',
+      'che-nhen': 'Chế lệnh nhện',
       'xich': 'Bánh xích',
       'omni': 'Bánh omni',
       'tam-day': 'Tấm đẩy',
       'khoang-cach': 'Cảm biến khoảng cách',
       'mau': 'Cảm biến màu',
       'nam-cham': 'Nam châm',
+      'che-nam-cham': 'Chế lệnh nam châm',
+      'tay-xoay': 'Tay xoay',
+      'che-tay-xoay': 'Chế lệnh tay xoay',
       'may-nem': 'Máy ném',
       'sung-bong': 'Súng bóng',
       'drone': 'Drone'
