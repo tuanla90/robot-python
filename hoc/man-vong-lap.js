@@ -53,7 +53,6 @@
 
   // cụm của màn 5 (bậc thang) và vòng lồng của màn 9
   var CUM_BAC = ['move()', 'turn_right()', 'move()', 'turn_left()'];
-  var CUM_LONG = nhieu(FOR(5, ['move()'], 'j'), ['turn_right()'], FOR(3, ['move()'], 'j'), ['turn_right()']);
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -214,24 +213,26 @@
     }),
 
     man({
+      // 15/10 user: bản cũ 5 – 3 – 5 với lời giải lặp cụm "5, rẽ, 3, rẽ" HAI lần chỉ đúng nhờ xe tới cờ giữa vòng (code không khớp đường đi).
+      // Nay ba đoạn đều 5 ô: code khớp đúng đường. Bỏ hẳn for thì tràn khung; một vòng ngoài không lồng vẫn vừa nhưng chỉ 2 sao (loiGiaiKhac).
       so: 9, ten: 'Vòng lặp lồng nhau', hang: 'bien-the', canFor: 'tran-khung', hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Hành lang hình chữ U dựng đứng: lên năm ô, rẽ phải, ba ô, rẽ phải, xuống năm ô tới cờ. Cụm "năm ô, rẽ, ba ô, rẽ" lặp lại, mà mỗi đoạn thẳng cũng là một vòng lặp.',
-      san: ['....', '.##.', '.##.', '.##.', '.##.', '.##F'],
+      deBai: 'Hành lang hình chữ U úp ngược: lên năm ô, rẽ phải, sang năm ô, rẽ phải, xuống năm ô tới cờ. Ba đoạn giống hệt nhau là "đi năm ô rồi rẽ phải", mà đi năm ô cũng là một vòng lặp.',
+      san: ['......', '.####.', '.####.', '.####.', '.####.', '.####F'],
       batDau: { x: 0, y: 5, huong: 0 },
       maMau: { chinh: [] },
-      sao: { o: 12, nhip: 15 },
-      loiGiai: { chinh: FOR(2, CUM_LONG) },
+      sao: { o: 9, nhip: 17 },
+      loiGiai: { chinh: FOR(3, nhieu(FOR(5, ['move()'], 'j'), ['turn_right()'])) },
       loiGiaiKhac: {
-        moTa: 'Một vòng ngoài, đoạn năm ô dùng vòng trong, đoạn ba ô gọi move() từng lần',
-        baiLam: { chinh: FOR(2, nhieu(FOR(5, ['move()'], 'j'), ['turn_right()'], lap('move()', 3), ['turn_right()'])) }
+        moTa: 'Không lồng vòng lặp: vòng ngoài gọi move() năm lần rồi rẽ',
+        baiLam: { chinh: FOR(3, nhieu(lap('move()', 5), ['turn_right()'])) }
       },
       loiSai: [
-        { moTa: 'Không lồng vòng lặp: một vòng for chứa hết các lệnh, quá 10 ô', baiLam: { chinh: FOR(2, nhieu(lap('move()', 5), ['turn_right()'], lap('move()', 3), ['turn_right()'])) }, phaiCoMa: ['tran-khung'] },
-        { moTa: 'Vòng ngoài chỉ lặp một lần: xe dừng giữa đường', baiLam: { chinh: FOR(1, CUM_LONG) }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Vòng trong không thụt lề vào vòng ngoài', baiLam: { chinh: ['for i in range(2):', 'for j in range(5):', '    move()'] }, phaiCoMa: ['loi-cu-phap'] }
+        { moTa: 'Vòng ngoài chỉ lặp hai lần: xe dừng ở góc trên bên phải', baiLam: { chinh: FOR(2, nhieu(FOR(5, ['move()'], 'j'), ['turn_right()'])) }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Vòng trong lặp bốn lần: xe rẽ sớm một ô rồi đâm tường', baiLam: { chinh: FOR(3, nhieu(FOR(4, ['move()'], 'j'), ['turn_right()'])) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Vòng trong không thụt lề vào vòng ngoài', baiLam: { chinh: ['for i in range(3):', 'for j in range(5):', '    move()'] }, phaiCoMa: ['loi-cu-phap'] }
       ],
       goiY: ['Vòng lặp có thể nằm trong thân một vòng lặp khác, thụt vào thêm một bậc.',
-        'Vòng ngoài lặp cụm hai đoạn; mỗi đoạn là một vòng trong riêng.']
+        'Ba đoạn giống nhau thì vòng ngoài lặp ba lần; mỗi đoạn năm ô là một vòng trong.']
     }),
 
     /* ------------------------------------------------------------- trùm */
