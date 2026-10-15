@@ -22,6 +22,8 @@
    CỠ SÂN (15/10): sân tự co giãn theo số ô (Field.canhO): cạnh ô = số nguyên px lớn nhất mà cả sân còn lọt khung `kich` (210) cả ngang lẫn dọc, trần `oToiDa` (84 px = 2 lần ô sân 5×5), sàn T (14 px);
    mỗi lần nạp sân (đổi sân trong màn nhiều sân, sân thử Xưởng) tính lại, lớp phủ robot dựng lại theo cỡ ô mới (doiCo), mọi hiệu ứng vẽ theo pixel sân nên co giãn cùng ô.
    KHUNG ÔM SÂN (15/10): vùng .ffr luôn 218×218 (cột nút bên cạnh không nhảy) nhưng khung gỗ viền sân là div .khung-san tự đặt theo canvas thật (datKhung: canvas + 4 px mỗi phía, kể cả khi sân dính đáy vì nhãn ⚠), phần còn lại của vùng là nền bàn xưởng; toast bám đáy khung qua --kw / --kdy.
+   SÂN THỬ, CHẾ ĐỘ ĐẶT XE (15/10): Field.datSuaXe(bat) = viền vàng nhấp nháy quanh xe + mũi tên ↻ (xoay) ở góc sau-phải; Field.datKeoXe({x, y, tx, ty, hopLe, ngoai}) = xe đi theo ngón tay, ô đích sáng vàng / đỏ,
+   khung nét đứt ở chỗ cũ; Field.xoayXe() = hoạt cảnh xe xoay 90°. Việc chạm / kéo nằm ở xuong-ham.js (pointer events); ở đây chỉ vẽ.
    Không chứa luật chơi: mọi kết quả (vị trí, hướng, sự kiện) đến từ lõi (SanHoc).
    ========================================================================== */
 (function () {
@@ -101,6 +103,7 @@
     this.rid = 0; this.cfg = null;
     this.lop = null; this.lg = null; this.lopOK = false; this.lopKhoa = ''; this.dem = 0;   // lớp phủ robot
     this.khung = null; this.khungKhoa = '';                                                   // khung gỗ ôm sát sân (xem datKhung)
+    this.suaXe = false; this.keoXe = null;                                                    // sân thử Xưởng, chế độ Đặt xe (xem datSuaXe / datKeoXe)
     this.clearFx();
     FIELDS.push(this);
   }
@@ -239,6 +242,7 @@
       this.vis.nc = this.cfg.robot.tay === 'nam-cham' ? { bat: false, ang: null, rung: 0 } : null;       // tay nam châm: bat = đang bật; ang = góc mũi xe khi đang quay (null: theo hướng xe); rung = tới lúc nào vật dính còn rung
       this.vis.sung = this.cfg.robot.tay === 'bong' ? { dan: this.cfg.danToiDa, ban: 0, het: 0 } : null;      // súng bóng: dan = số viên còn (null: vô hạn); ban = tới lúc nào nòng còn lóe; het = hết đạn, nhấp nháy đỏ
       this.vis.dr = this.cfg.robot.than === 'drone' ? { alt: ALT, roi: false, nguy: false, pin: this.cfg.pin, pinMax: this.cfg.pin, nhay: 0, sacLoe: 0 } : null;          // drone: alt = độ cao, roi = đã rơi xuống đất, nguy = đang rơi, pin / pinMax (null: pin vô hạn, ẩn thanh pin), nhay = tới lúc nào thanh pin còn nháy (đọc battery()), sacLoe = tới lúc nào ô sạc còn lóe
+      this.keoXe = null;                                                                                        // nạp lại / thử lại thì hết cảnh kéo xe dở (chế độ Đặt xe vẫn bật: this.suaXe)
       this.sacO = null;                                                                                         // ô sạc đang lóe: { x, y }
       this.bong = null;                                                                                         // quả bóng đang bay: { x, y, r, a } (pixel sân)
       this.datLaiCua();
@@ -498,6 +502,60 @@
     },
     /** Bóng mờ nháy ms mili giây (thua vì lệch bóng mờ / chưa qua ◆): hút mắt người chơi tới chỗ cần tới. */
     nhayBongMo: function (ms) { if (this.cfg && this.cfg.bm) this.bmNhay = performance.now() + (ms || 1200); },
+
+    /* ---- SÂN THỬ XƯỞNG, CHẾ ĐỘ ĐẶT XE: kéo thả xe tới ô khác, chạm xe để xoay (việc chạm / kéo nằm ở xuong-ham.js; ở đây chỉ vẽ) */
+    /** Bật / tắt chế độ sửa vị trí xe: bật thì xe có viền vàng nhấp nháy + mũi tên vòng (nhện, drone không có). Tắt thì hủy luôn cảnh kéo dở. */
+    datSuaXe: function (bat) { this.suaXe = !!bat; if (!bat) this.keoXe = null; },
+    /** Đang kéo xe: o = { x, y (tọa độ ô THỰC của xe, đã kẹp trong sân: xe đi theo ngón tay), tx, ty (ô sẽ thả xuống), hopLe (thả được), ngoai (ngón tay ra ngoài sân: không vẽ ô đích) }.
+     *  o = null: hết kéo, người gọi tự datLai() (về chỗ cũ) hay nap() lại sân (chỗ mới). */
+    datKeoXe: function (o) {
+      this.keoXe = o || null;
+      if (o && this.vis) { this.vis.x = o.x; this.vis.y = o.y; }
+    },
+    /** Xe vừa xoay 90° theo chiều kim đồng hồ (sân đã nạp lại với hướng mới): quay lại từ hướng cũ, hơi nhảy lên, đổi hướng ở nửa chừng, như lúc xe rẽ phải khi chạy. */
+    xoayXe: function (ms) {
+      var v = this.vis, self = this, my = this.rid, moi = v.d, cu = (moi + 3) % 4;
+      v.d = cu;
+      return this.tween(ms || 190, my, function (k) {
+        v.hop = Math.sin(k * Math.PI) * 2;
+        if (k > 0.5) v.d = moi;
+        if (Math.random() < 0.4) self.burst(v.x * T + 11, v.y * T + 12, 1, ['#fff6e3', '#ffd95a'], 0.6);
+      }).then(function () { if (my === self.rid) { v.d = moi; v.hop = 0; } });
+    },
+    /** Vẽ (pixel sân, DƯỚI thân xe): đang kéo thì ô đích (vàng nếu thả được, đỏ nếu không) + khung nét đứt mờ ở chỗ cũ (xe sẽ về đó nếu thả hỏng); không kéo thì khung vàng nhấp nháy quanh ô xe. */
+    veSuaXe: function (g, now) {
+      var b = this.cfg.bd, k = this.keoXe;
+      if (k) {
+        if (!k.ngoai) {
+          g.fillStyle = k.hopLe ? 'rgba(255,217,90,.3)' : 'rgba(255,60,48,.36)'; g.fillRect(k.tx * T, k.ty * T, T, T);
+          g.strokeStyle = k.hopLe ? '#ffd95a' : '#ff5a4a'; g.lineWidth = 1; g.strokeRect(k.tx * T + 0.5, k.ty * T + 0.5, T - 1, T - 1);
+        }
+        g.save(); g.setLineDash([2, 2]); g.strokeStyle = 'rgba(255,246,227,.6)'; g.lineWidth = 1; g.strokeRect(b.x * T + 1.5, b.y * T + 1.5, T - 3, T - 3); g.restore();
+        return;
+      }
+      var sang = ((now / 330) | 0) & 1;                                                  // nháy từng nấc như viền hướng dẫn (steps), không mờ dần
+      g.strokeStyle = sang ? '#ffd95a' : 'rgba(255,217,90,.35)'; g.lineWidth = 1; g.strokeRect(b.x * T + 0.5, b.y * T + 0.5, T - 1, T - 1);
+      g.fillStyle = sang ? 'rgba(255,217,90,.22)' : 'rgba(255,217,90,.08)'; g.fillRect(b.x * T, b.y * T, T, T);
+    },
+    /** Mũi tên vòng nhỏ (↻), viền tối + lõi vàng: gợi ý "chạm xe để xoay theo chiều kim đồng hồ". Nằm ở góc SAU-PHẢI của ô xe (xe quay lên: góc dưới phải; quay phải: dưới trái; xuống: trên trái; trái: trên phải)
+     *  để khỏi đè lên tay kẹp / cần ở phía trước mũi xe. Vẽ TRÊN thân xe. */
+    veMuiTenXoay: function (g, b) {
+      var d = ((b.huong || 0) % 4 + 4) % 4, sx = (d === 0 || d === 3) ? 1 : -1, sy = (d === 0 || d === 1) ? 1 : -1;
+      var cx = b.x * T + (sx > 0 ? T - 3.8 : 3.8), cy = b.y * T + (sy > 0 ? T - 3.8 : 3.8), r = 2.1, a0 = Math.PI * 0.85, a1 = Math.PI * 2.1, i;
+      var px = cx + r * Math.cos(a1), py = cy + r * Math.sin(a1), tx = -Math.sin(a1), ty = Math.cos(a1), nx = Math.cos(a1), ny = Math.sin(a1);
+      g.save(); g.lineCap = 'butt';
+      for (i = 0; i < 2; i++) {
+        g.strokeStyle = g.fillStyle = i ? '#ffd95a' : '#1b120a'; g.lineWidth = i ? 1 : 2.2;
+        g.beginPath(); g.arc(cx, cy, r, a0, a1); g.stroke();
+        var e = i ? 0 : 0.7;                                                           // lượt viền tối to hơn lượt vàng một chút
+        g.beginPath();
+        g.moveTo(px + tx * (2.2 + e), py + ty * (2.2 + e));
+        g.lineTo(px + nx * (1.7 + e), py + ny * (1.7 + e));
+        g.lineTo(px - nx * (1.7 + e), py - ny * (1.7 + e));
+        g.closePath(); g.fill();
+      }
+      g.restore();
+    },
     /** Xe mờ ở tư thế đích, vẽ trên lớp phủ DƯỚI robot thật: hình robot độ đục 0,35 + viền nét đứt vàng quanh hình bóng. (mx, my, ku) như veLop: gốc pixel thiết bị của tọa độ ô (đã trừ góc cửa sổ vẽ), pixel thiết bị trên pixel sân. */
     veBongMoXe: function (g, mx, my, ku, now) {
       var b = this.cfg.bm, c = this.cfg, p = this.p; if (!b || !p) return;
@@ -743,6 +801,7 @@
         if (v.nc) { g.setTransform(ku, 0, 0, ku, mx, my); if (!v.dr) this.veSongTu(g, cx, cy - v.hop, now); this.veVatTu(g, cx, cy - v.hop, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // nam châm: sóng hút ở phía trước, vật dính / đang bị hút bay (dưới thân xe: hai càng nam châm ôm lên vật)
         if (v.nem) { g.setTransform(ku, 0, 0, ku, mx, my); this.veNgam(g, cx, cy - v.hop, now); this.veOVo(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // máy ném: vạch ngắm + ô rơi vỡ dưới thân xe
         if (this.canhBao) { g.setTransform(ku, 0, 0, ku, mx, my); this.veOCanhBao(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }          // ô trước mặt bị chặn khi thả (kẹp lẫn nam châm): ô đỏ nhấp nháy dưới thân xe
+        if (this.suaXe) { g.setTransform(ku, 0, 0, ku, mx, my); this.veSuaXe(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // sân thử, chế độ Đặt xe: viền nhấp nháy quanh xe, hoặc ô đích + chỗ cũ khi đang kéo (dưới thân xe)
         if (c.bm) this.veBongMoXe(g, mx, my, ku, now);                                                         // bóng mờ: xe mờ ở tư thế đích, nằm DƯỚI robot thật
         var wL = this.wh.L, wR = this.wh.R, phC = ph;
         if (v.dr) { wL = wR = (v.dr.roi || (v.dr.nguy && ((now / 110 | 0) & 1))) ? 0 : 2; phC = wL ? (now / 70 | 0) & 1 : 0; }          // drone: cánh quạt quay không ngừng (tắt khi rơi / nằm đất), hai cặp cánh đổi nhau
@@ -776,6 +835,7 @@
         g.globalAlpha = 1;
         g.setTransform(ku, 0, 0, ku, mx, my);                                           // từ đây vẽ theo pixel sân
         if (v.dr) this.veThanhPin(g, cx, cy, now);                                        // drone: thanh pin nhỏ nổi trên đỉnh
+        if (this.suaXe && !this.keoXe && !v.dr && c.robot.than !== 'nhen') this.veMuiTenXoay(g, c.bd);       // chế độ Đặt xe: mũi tên vòng ở góc ô xe gợi ý "chạm để xoay" (nhện, drone không xoay)
         var tx = Math.round(v.x), ty = Math.round(v.y);                                   // ô đích đã có vật dưới xe: khung vàng đặc nằm TRÊN xe
         if (this.vatTaiO(tx, ty) && this.vatTaiDich(this.vatTaiO(tx, ty)) && Math.abs(v.x - tx) < 0.01 && Math.abs(v.y - ty) < 0.01) {
           var dd = this.dichTaiO(tx, ty);

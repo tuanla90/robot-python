@@ -348,7 +348,7 @@ console.log('\n== 6. game/choi.html ==');
       'choi.hamKhoaNhan', 'choi.meoXoa', 'choi.meoXoa2', 'choi.meoThe', 'choi.nhipNhan', 'xuong.hamKhoaEm', 'xuong.chiXem', 'choi.den.banhT', 'choi.den.banhP', 'choi.den.truot', 'choi.den.tay', 'choi.den.kep', 'choi.den.namCham', 'choi.den.nem', 'choi.den.sung', 'choi.den.day', 'choi.den.camBien', 'choi.den.chan', 'choi.den.canh'].every((x) => ctx.t(x) !== x));
   kiem('bộ đếm: t("choi.hamDem") = "Hàm 2/3"', ctx.t('choi.hamDem', { k: 2, n: 3 }) === 'Hàm 2/3');
   const css = fs.readFileSync(path.join(day, 'game', 'choi.css'), 'utf8');
-  kiem('choi.css không còn mức co .pal.d1 / .pal.d2 / .pal.d3 (khối giữ cỡ dễ chạm, cao ≥ 30px)', !/\.pal\.d[123]\b/.test(css) && /\.brick\{[^}]*height:(3[0-9]|[4-9]\d)px/.test(css));
+  kiem('choi.css không còn mức co .pal.d1 / .pal.d2 / .pal.d3 (khối giữ cỡ dễ chạm, cao ≥ 28px = ngang một dòng khung chương trình, user 15/10)', !/\.pal\.d[123]\b/.test(css) && /\.brick\{[^}]*height:(2[89]|[3-9]\d)px/.test(css));
   kiem('choi.html nạp huong-dan.js và den-bo-phan.js (trước thanh-phan.js / man-choi.js), có tệp trên đĩa', html.indexOf('huong-dan.js') > 0 && html.indexOf('huong-dan.js') < html.indexOf('thanh-phan.js') && html.indexOf('den-bo-phan.js') > 0 && html.indexOf('den-bo-phan.js') < html.indexOf('man-choi.js') && fs.existsSync(path.join(day, 'game', 'huong-dan.js')) && fs.existsSync(path.join(day, 'game', 'den-bo-phan.js')));
 }
 

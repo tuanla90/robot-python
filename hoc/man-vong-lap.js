@@ -237,34 +237,38 @@
 
     /* ------------------------------------------------------------- trùm */
     man({
+      // 15/10 user: bản cũ bốn hàng với lời giải lặp cụm "hàng, rẽ trái, hàng, rẽ phải" HAI lần: lần rẽ phải cuối (cả hai bước đi) không bao giờ chạy
+      // vì xe tới cờ trước. Nay năm hàng: row() rồi lặp hai lần "rẽ trái, hàng, rẽ phải, hàng" — code khớp đúng đường, không dư lệnh nào.
       so: 10, ten: 'Đường ngoằn ngoèo', hang: 'trum', canFor: 'mat-sao', hamCuaEmCan: ['move', 'turn_left', 'turn_right'], taoHam: ['row', 'bend_left', 'bend_right'],
-      deBai: 'Hành lang ngoằn ngoèo gồm bốn hàng dài sáu ô, nối nhau ở hai đầu. Gói từng phần thành hàm và dùng vòng lặp để đưa xe tới cờ.',
-      san: ['F......', '######.', '.......', '.######', '.......', '######.', '.......'],
-      batDau: { x: 0, y: 6, huong: 1 },
+      deBai: 'Hành lang ngoằn ngoèo gồm năm hàng, mỗi hàng đi sáu ô, nối nhau ở hai đầu. Gói từng phần thành hàm và dùng vòng lặp để đưa xe tới cờ.',
+      san: ['......F', '.######', '.......', '######.', '.......', '.######', '.......', '######.', '.......'],
+      batDau: { x: 0, y: 8, huong: 1 },
       maMau: { chinh: [] },
-      sao: { o: 22, nhip: 36 },
+      sao: { o: 23, nhip: 46 },
       huyHieu: { ma: 'vong-lap', ten: 'Huy hiệu Vòng lặp' },
       loiGiai: {
-        chinh: FOR(2, ['row()', 'bend_left()', 'row()', 'bend_right()']),
+        chinh: ['row()'].concat(FOR(2, ['bend_left()', 'row()', 'bend_right()', 'row()'])),
         hamCuaEmMoi: [hRow(), hBendL(), hBendR()]
       },
       loiGiaiKhac: {
-        moTa: 'Không dùng vòng lặp ngoài: gọi hàm bảy lần',
-        baiLam: { chinh: ['row()', 'bend_left()', 'row()', 'bend_right()', 'row()', 'bend_left()', 'row()'] },
+        moTa: 'Không dùng vòng lặp ngoài: gọi hàm chín lần',
+        baiLam: { chinh: ['row()', 'bend_left()', 'row()', 'bend_right()', 'row()', 'bend_left()', 'row()', 'bend_right()', 'row()'] },
         hamCuaEmMoi: [hRow(), hBendL(), hBendR()]
       },
       loiSai: [
-        { moTa: 'Không gói chỗ rẽ thành hàm: vòng ngoài vượt 10 ô', baiLam: { chinh: FOR(2, ['row()', 'turn_left()', 'move()', 'move()', 'turn_left()', 'row()', 'turn_right()', 'move()', 'move()', 'turn_right()']) },
+        { moTa: 'Không gói chỗ rẽ thành hàm: vòng ngoài vượt 10 ô', baiLam: { chinh: ['row()'].concat(FOR(2, ['turn_left()', 'move()', 'move()', 'turn_left()', 'row()', 'turn_right()', 'move()', 'move()', 'turn_right()', 'row()'])) },
           hamCuaEmMoi: [hRow()], phaiCoMa: ['tran-khung'] },
-        { moTa: 'bend_right() rẽ nhầm sang trái: xe đâm tường', baiLam: { chinh: FOR(2, ['row()', 'bend_left()', 'row()', 'bend_right()']) },
+        { moTa: 'bend_right() rẽ nhầm sang trái: xe đâm tường', baiLam: { chinh: ['row()'].concat(FOR(2, ['bend_left()', 'row()', 'bend_right()', 'row()'])) },
           hamCuaEmMoi: [hRow(), hBendL(), H('bend_right', ['turn_left()', 'move()', 'move()', 'turn_left()'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'row() lặp thiếu một ô: xe rẽ sớm một ô', baiLam: { chinh: FOR(2, ['row()', 'bend_left()', 'row()', 'bend_right()']) },
+        { moTa: 'row() lặp thiếu một ô: xe rẽ sớm một ô', baiLam: { chinh: ['row()'].concat(FOR(2, ['bend_left()', 'row()', 'bend_right()', 'row()'])) },
           hamCuaEmMoi: [H('row', FOR(5, ['move()'])), hBendL(), hBendR()], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Chưa tạo hàm row() mà đã gọi', baiLam: { chinh: FOR(2, ['row()', 'bend_left()', 'row()', 'bend_right()']) },
+        { moTa: 'Vòng ngoài chỉ lặp một lần: xe dừng giữa đường', baiLam: { chinh: ['row()'].concat(FOR(1, ['bend_left()', 'row()', 'bend_right()', 'row()'])) },
+          hamCuaEmMoi: [hRow(), hBendL(), hBendR()], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chưa tạo hàm row() mà đã gọi', baiLam: { chinh: ['row()'].concat(FOR(2, ['bend_left()', 'row()', 'bend_right()', 'row()'])) },
           hamCuaEmMoi: [hBendL(), hBendR()], phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Bốn hàng, ba chỗ rẽ: hai kiểu rẽ thay phiên nhau, mỗi kiểu một hàm.',
-        'Hai hàng liền nhau với hai chỗ rẽ là một cụm có thể lặp lại.']
+      goiY: ['Năm hàng, bốn chỗ rẽ: hai kiểu rẽ thay phiên nhau, mỗi kiểu một hàm.',
+        'Sau hàng đầu tiên, cụm "rẽ trái, hàng, rẽ phải, hàng" lặp lại hai lần.']
     })
   ];
 

@@ -816,7 +816,7 @@ let khoCuoi = null;
     J(ds.filter((m) => m.huyHieu).map((m) => m.huyHieu.ma)) === J(['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien', 'bang-chuyen', 'tham-so', 'nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'may-nem', 'sung-bong', 'drone']) &&
       cap('robot-hoan-thien')[9].huyHieu.ma === 'robot-hoan-thien' && cap('robot-hoan-thien')[9].huyHieu.ten === 'Huy hiệu Robot hoàn thiện' &&
       cap('che-xe')[9].huyHieu.ma === 'che-xe' && cap('che-xe')[9].huyHieu.ten === 'Huy hiệu Chế lệnh xe' && cap('che-tay')[9].huyHieu.ma === 'che-tay' && cap('che-tay')[9].huyHieu.ten === 'Huy hiệu Chế lệnh tay');
-  kiem('sân tối đa 7×7', ds.every((m) => m.san.length <= 7 && m.san[0].length <= 7));
+  kiem('sân tối đa 7 cột × 9 hàng (6.10 cần năm hàng để code khớp đường; sân tự co giãn nên vẫn vừa khung)', ds.every((m) => m.san.length <= 9 && m.san[0].length <= 7));
   kiem('màn bắt buộc có hàm vì thiếu chỗ thật chỉ ở hàng 1 chuỗi 2 (tay viết > 10 dòng): 2.1 và 2.3',
     ['2.1', '2.3'].every((id) => ManHoc.tim(id).loiSai.some((l) => l.phaiCoMa.includes('tran-khung'))));
   kiem('lời giải, lời giải khác, lời sai, maMau đều có hamCuaMan; hamCuaEmMoi mặc định rỗng',

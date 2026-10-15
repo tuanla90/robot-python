@@ -3,8 +3,8 @@
    Lớp phủ trượt lên đè màn chơi. Từ trên xuống:
    - thanh trên: ‹ | TÊN HÀM to bằng font code (xanh lá = hàm của em, cam = hàm của màn) | 🗑 xóa hàm của em;
    - khối giữa: SÂN THỬ 5×5 cố định (cỡ như sân chính) + cột nút Thử / Lại / Đặt xe / Vật / Tường.
-     Nút chế độ bật thì sáng viền, bấm lại để tắt; chạm ô sân để đặt xe (chạm xe thì xoay 90°),
-     thêm / bớt vật (khối hàng), thêm / bớt tường. Cách sắp lưu RIÊNG từng hàm (Luu.docSanThu);
+     Nút chế độ bật thì sáng viền, bấm lại để tắt; chế độ Đặt xe: KÉO xe tới ô khác (bóng mờ ô đích, thả chỗ không hợp lệ thì về chỗ cũ), CHẠM xe thì xoay 90° theo chiều kim đồng hồ,
+     chạm ô trống thì đặt xe vào đó; bấm Thử cũng thoát chế độ. Thêm / bớt vật (khối hàng), thêm / bớt tường. Cách sắp lưu RIÊNG từng hàm (Luu.docSanThu);
    - nửa dưới: khung thân hàm (tiêu đề là chữ `def`) + kho khối (Gốc, hàm khác của em, hàm của màn; không có chính nó).
    Chạy = ChamHoc.thuHam(..., { sanThu }) rồi phát lại vết; lỗi hiện ở bong bóng trên kho khối,
    chạy xong không lỗi thì toast "Xong: n nhịp" 2 giây ở đáy sân thử.
@@ -17,8 +17,8 @@
   var h = TP.h;
   var A = null;        // app: { man(), bai(), khiDoiHam(), khiVe(), toc() }
   var E = {};          // phần tử
-  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null, doiSo: {} };   // doiSo: 'loai:tên hàm' → giá trị thử của từng đối số
-  var NHIP_MS = 230, LENH_MS = 45, TOAST_MS = 2000;
+  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null, keo: null, doiSo: {} };   // doiSo: 'loai:tên hàm' → giá trị thử của từng đối số
+  var NHIP_MS = 230, LENH_MS = 45, TOAST_MS = 2000, KEO_NGUONG = 6;     // KEO_NGUONG: ngón tay / chuột đi quá chừng này px (màn hình) từ lúc bấm xuống thì là KÉO, ít hơn là CHẠM
   var CHE = { xe: 'che-xe', vat: 'che-vat', tuong: 'che-tuong', mau: 'che-mau' };
   /* Các loại Ô đặc biệt của từng chương (hàng rào, nút bắn, cửa, ô sạc) gộp vào MỘT nút chọn theo vòng "Ô: Rào → Nút → Cửa" (nút .nut-o): chạm khi chưa ở chế độ ô = bật loại đang chọn;
      chạm khi đang ở chế độ ô = chuyển sang loại kế tiếp (chương chỉ có một loại thì chạm lại = tắt, như nút chế độ thường). Chế độ trong S.che vẫn là 'rao' | 'nut' | 'cua' | 'sac'. */
@@ -122,6 +122,7 @@
       TP.chonSo({ neo: E.nutPin, so: pinSanThu(), toiDa: 15, khiChon: datPin });          // pin thử 1–15 (bộ chọn số)
     });
     E.canvas.addEventListener('click', chamSan);
+    ['pointerdown', 'pointermove', 'pointerup', 'pointercancel'].forEach(function (loai) { E.canvas.addEventListener(loai, xeCon); });       // chế độ Đặt xe: kéo thả / chạm xe (chuột và cảm ứng)
     E.xoaHam.addEventListener('click', xoaHam);
   }
 
@@ -166,6 +167,7 @@
     E.nutPin.style.display = coPin() ? '' : 'none';                             // nút Pin (pin thử) chỉ có ở màn drone có pin
     E.side.classList.toggle('co-mau', TP.coMauCua(A.man()) || dO.length > 0);
     E.side.classList.toggle('co-nem', coNem() || coPin());                       // bảy nút (thêm Ô và Rổ / Pin): thấp hơn nữa; súng bóng chỉ sáu nút
+    S.keo = null;
     datChe(null);
     napSan();
     SanVe.datCanhBao(E.ffr, A.man().canhBao);                                   // màn đấu dây ngược / bộ phận hỏng: sân thử cũng nhắc (lõi đưa daoChieu / phanCung xuống sân thử)
@@ -189,6 +191,7 @@
     TP.Chan.giu(TP.XUONG_MS + 300);
     E.host.classList.remove('open');
     E.host.removeAttribute('data-ham');
+    datChe(null);                                                                      // thoát chế độ sân thử (Đặt xe …), tắt bong bóng hướng dẫn kéo xe
     A.khiVe();
     if (window.HuongDan) HuongDan.bao('dong-xuong');                                  // hướng dẫn từng bước (huong-dan-man.js): đã bấm Về sân
   }
@@ -340,7 +343,12 @@
     return rows;
   }
   function datChe(k) {
+    huyKeoXe();                                                                      // đang kéo xe dở mà đổi chế độ: xe về chỗ cũ
     S.che = k;
+    S.field.datSuaXe(k === 'xe');                                                   // viền nhấp nháy quanh xe khi đang sửa vị trí
+    E.canvas.style.touchAction = k === 'xe' ? 'none' : '';                           // kéo xe bằng ngón tay: trình duyệt không được cuộn / thu phóng giữa chừng
+    E.canvas.style.cursor = k === 'xe' ? 'grab' : '';
+    if (k === 'xe') goiYXe(); else if (window.HuongDan) HuongDan.dung('sua-xe');
     if (k === 'vat' && coNamCham()) toast(t('xuong.vatGoiY'), '', 2600);
     if (k === 'rao') toast(t('xuong.raoGoiY'), '', 2600);
     if (k === 'sac') toast(t('xuong.sacGoiY'), '', 2600);
@@ -391,7 +399,7 @@
   function boO(ds, x, y) { return ds.filter(function (o) { return !(o.x === x && o.y === y); }); }
   /** Chạm một ô sân thử theo chế độ đang bật. Ô có xe không đặt được vật hay tường (và ngược lại). */
   function chamSan(ev) {
-    if (S.busy || !S.che || !S.st) return;
+    if (S.busy || !S.che || S.che === 'xe' || !S.st) return;                           // chế độ Đặt xe không dùng click: có pointer riêng (xeCon)
     var r = E.canvas.getBoundingClientRect(), st = S.st;
     var x = Math.floor((ev.clientX - r.left) / r.width * st.rong), y = Math.floor((ev.clientY - r.top) / r.height * st.cao);
     if (x < 0 || y < 0 || x >= st.rong || y >= st.cao) return;
@@ -432,10 +440,6 @@
       if (co === 'rao') moi.rao = boO(moi.rao || [], x, y);
       else if (co || coVat(x, y)) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + (co || 'vat')) }), 'bad');
       else moi.rao = (moi.rao || []).concat([{ x: x, y: y }]);          // sân thử chưa có hàng rào nào (súng bóng) thì chưa có mảng rao
-    } else if (S.che === 'xe') {
-      if (co === 'xe') { if (A.man().loaiRobot === 'nhen' || A.man().loaiRobot === 'drone') return; moi.batDau.huong = (moi.batDau.huong + 1) % 4; }       // nhện không có hướng mặt: chạm lại vào nó không xoay
-      else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
-      else { moi.batDau.x = x; moi.batDau.y = y; }
     } else {
       var khoa = S.che === 'vat' ? (coDay() ? 'thung' : 'vat') : 'tuong';
       if (co === 'rao' || co === 'nut' || co === 'cua') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
@@ -443,11 +447,101 @@
       else if (co) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       else moi[khoa].push({ x: x, y: y });
     }
+    apSan(moi);
+  }
+  /** Áp cách sắp mới của sân thử: chuẩn hóa, lưu (riêng từng hàm), vẽ lại, xóa kết quả thử cũ. */
+  function apSan(moi) {
     S.st = ChamHoc.chuanSanThu(moi);
     Luu.ghiSanThu(S.ten, S.st);
     napSan();
     xoaKetThu();
     anToast();
+  }
+
+  /* ------------------------------------- chế độ Đặt xe: kéo thả xe, chạm xe để xoay */
+  /** Gợi ý khi vào chế độ Đặt xe: lần đầu là bong bóng hướng dẫn chỉ vào sân (cờ 'meo-sua-xe', tự tắt khi kéo / xoay lần đầu hay sau 9 giây), các lần sau là toast ngắn. */
+  function goiYXe() {
+    if (window.HuongDan && HuongDan.chay({
+      id: 'sua-xe', co: 'meo-sua-xe', luuKhi: 'bat-dau',
+      buoc: [{ dich: function () { return E.canvas; }, chu: t('xuong.suaXeHd'), xong: 'sua-xe', huong: 'duoi', han: 9000, rong: 170, xuong: true }]
+    })) return;
+    toast(t('xuong.xeGoiY'), '', 2600);
+  }
+  function baoSuaXe() { if (window.HuongDan) HuongDan.bao('sua-xe'); }
+  /** Điểm chạm → tọa độ ô THỰC trong sân thử (px, py: 0 … rộng / cao) và ô chứa nó (x, y; có thể nằm ngoài sân). */
+  function oCuaDiem(ev) {
+    var r = E.canvas.getBoundingClientRect(), st = S.st;
+    var px = (ev.clientX - r.left) / r.width * st.rong, py = (ev.clientY - r.top) / r.height * st.cao;
+    return { px: px, py: py, x: Math.floor(px), y: Math.floor(py) };
+  }
+  function trongSan(x, y) { return x >= 0 && y >= 0 && x < S.st.rong && y < S.st.cao; }
+  function kep(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  /** Pointer trên sân thử, chỉ ở chế độ Đặt xe. Bấm xuống ô xe rồi đi quá KEO_NGUONG px = KÉO (xe đi theo ngón tay, ô đích sáng vàng / đỏ, thả ở ô hợp lệ thì xe nằm đó,
+   *  thả chỗ không hợp lệ hay ngoài sân thì về chỗ cũ); thả ra mà chưa kéo = CHẠM: chạm xe thì xoay 90° theo chiều kim đồng hồ, chạm ô trống thì đặt xe vào đó (như cách cũ). */
+  function xeCon(ev) {
+    if (S.che !== 'xe' || S.busy || !S.st) { if (S.keo && ev.type === 'pointercancel') huyKeoXe(); return; }
+    var st = S.st, b = st.batDau, k = S.keo, o, kt;
+    if (ev.type === 'pointerdown') {
+      if (k || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+      o = oCuaDiem(ev);
+      if (!trongSan(o.x, o.y)) return;
+      S.keo = { id: ev.pointerId, sx: ev.clientX, sy: ev.clientY, x: o.x, y: o.y, laXe: o.x === b.x && o.y === b.y, keo: false, lx: o.px - (b.x + 0.5), ly: o.py - (b.y + 0.5), tx: b.x, ty: b.y, hopLe: true, ngoai: false };
+      try { E.canvas.setPointerCapture(ev.pointerId); } catch (e) { /* không bắt được con trỏ: vẫn nhận pointerup trong sân */ }
+      ev.preventDefault();
+      return;
+    }
+    if (!k || ev.pointerId !== k.id) return;
+    if (ev.type === 'pointercancel') { huyKeoXe(); return; }
+    if (ev.type === 'pointermove') {
+      if (!k.keo) {
+        if (!k.laXe || Math.hypot(ev.clientX - k.sx, ev.clientY - k.sy) <= KEO_NGUONG) return;
+        k.keo = true; anToast(); E.canvas.style.cursor = 'grabbing';
+        if (window.HuongDan) HuongDan.dung('sua-xe');                                // đã biết cách kéo: tắt bong bóng hướng dẫn
+      }
+      o = oCuaDiem(ev);
+      var cx = o.px - k.lx, cy = o.py - k.ly;                                       // tâm xe (ô thực): ngón tay trừ chỗ đã nắm lúc đầu nên xe không nhảy
+      k.ngoai = o.px < -0.4 || o.py < -0.4 || o.px > st.rong + 0.4 || o.py > st.cao + 0.4;
+      k.tx = kep(Math.floor(cx), 0, st.rong - 1); k.ty = kep(Math.floor(cy), 0, st.cao - 1);
+      kt = coGi(k.tx, k.ty);
+      k.hopLe = !k.ngoai && (kt === null || kt === 'xe');
+      S.field.datKeoXe({ x: kep(cx - 0.5, 0, st.rong - 1), y: kep(cy - 0.5, 0, st.cao - 1), tx: k.tx, ty: k.ty, hopLe: k.hopLe, ngoai: k.ngoai });
+      ev.preventDefault();
+      return;
+    }
+    // pointerup
+    S.keo = null;
+    try { E.canvas.releasePointerCapture(ev.pointerId); } catch (e) { /* đã nhả */ }
+    E.canvas.style.cursor = 'grab';
+    if (!k.keo) {                                                                    // CHẠM (chưa kéo)
+      if (!k.laXe && Math.hypot(ev.clientX - k.sx, ev.clientY - k.sy) > KEO_NGUONG) return;       // bấm ô trống rồi lướt đi: không phải chạm
+      if (k.laXe) return xoayXe();
+      kt = coGi(k.x, k.y);
+      if (kt) return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + kt) }), 'bad');
+      var moi = banSao(st); moi.batDau.x = k.x; moi.batDau.y = k.y;                 // ô trống: đặt xe vào đó
+      baoSuaXe(); apSan(moi);
+      return;
+    }
+    S.field.datKeoXe(null);                                                          // THẢ sau khi kéo
+    if (k.hopLe && (k.tx !== b.x || k.ty !== b.y)) {
+      var mo2 = banSao(st); mo2.batDau.x = k.tx; mo2.batDau.y = k.ty;
+      baoSuaXe(); apSan(mo2);
+    } else {
+      S.field.datLai();                                                              // về chỗ cũ (thả ngoài sân, hay vào ô đã có gì: nói rõ là gì)
+      if (!k.ngoai && !k.hopLe) toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + coGi(k.tx, k.ty)) }), 'bad');
+    }
+  }
+  function huyKeoXe() {
+    var k = S.keo; S.keo = null;
+    if (k && k.keo) { S.field.datKeoXe(null); S.field.datLai(); }
+    if (E.canvas) E.canvas.style.cursor = S.che === 'xe' ? 'grab' : '';
+  }
+  /** Chạm vào xe: xoay 90° theo chiều kim đồng hồ (lên → phải → xuống → trái). Nhện không có hướng mặt, drone mặt cố định: không xoay, chỉ kéo thả. */
+  function xoayXe() {
+    var lr = A.man().loaiRobot;
+    if (lr === 'nhen' || lr === 'drone') return toast(t('xuong.khongXoay'), '', 2200);
+    var moi = banSao(S.st); moi.batDau.huong = (moi.batDau.huong + 1) % 4;
+    baoSuaXe(); apSan(moi);
+    S.field.xoayXe();
   }
   function lai() {
     S.rid++; S.busy = false; E.side.classList.remove('busy');
@@ -521,6 +615,7 @@
   /* --------------------------------------------------------------- thử hàm */
   async function thu() {
     if (S.busy) return;
+    if (S.che === 'xe') datChe(null);                                                  // bấm Thử thì thoát chế độ Đặt xe
     if (!S.than || !S.than.length) { toast(t('xuong.trong'), 'bad'); return; }
     if (window.HuongDan) HuongDan.bao('thu');                                          // hướng dẫn từng bước: đã bấm Thử (thân hàm không trống)
     var my = ++S.rid, kq = chay();
