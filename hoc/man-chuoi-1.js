@@ -322,6 +322,32 @@
     return kq;
   };
   ManHoc.chuanHoa = chuanHoaMan;
+
+  /* ---- hàm CỐT TRUYỆN (tên nằm trong `taoHam` của một màn nào đó; giao diện cũng khóa tên bằng KhoHam.datTenCoDinh) chỉ SỬA được ở màn cần sửa nó.
+        Các màn khác: mở trong Xưởng chỉ XEM, trên khay hiện ổ khóa. Hàm người chơi tự đặt (không phải tên cốt truyện) luôn sửa được. */
+  /** Tên mọi hàm cốt truyện: gộp `taoHam` của mọi màn (theo thứ tự màn). */
+  ManHoc.hamCotTruyen = function () {
+    var kq = [];
+    ManHoc.danhSach.forEach(function (m) { (m.taoHam || []).forEach(function (n) { if (kq.indexOf(n) < 0) kq.push(n); }); });
+    return kq;
+  };
+  /** Tên các hàm cốt truyện màn `m` cho SỬA: `m.taoHam` (màn bắt chế) và mọi hàm có trong `hamCuaEmMoi` của lời giải (`loiGiai`, `loiGiaiKhac`, `congThucKhac`)
+   *  — tức màn đó chế hoặc sửa hàm ấy (vd. che-xe.5 sửa `u_turn`, che-xe.9 sửa `turn_right` / `turn_left`). Trả về mảng tên không trùng. */
+  ManHoc.hamSuaDuoc = function (m) {
+    var kq = [];
+    function them(n) { if (typeof n === 'string' && kq.indexOf(n) < 0) kq.push(n); }
+    function tuDs(ds) { (Array.isArray(ds) ? ds : []).forEach(function (f) { if (f) them(f.ten); }); }
+    function tuCt(c) { (Array.isArray(c) ? c : [c]).forEach(function (x) { if (x) tuDs(x.hamCuaEmMoi); }); }
+    if (!m) return kq;
+    (m.taoHam || []).forEach(them);
+    tuCt(m.loiGiai); tuCt(m.loiGiaiKhac); tuCt(m.congThucKhac);
+    return kq;
+  };
+  /** Hàm của em tên `ten` có bị KHÓA ở màn `m` (chỉ xem) không: là hàm cốt truyện mà màn này không bắt chế / sửa. Tên tự đặt thì không bao giờ khóa. */
+  ManHoc.hamEmKhoa = function (m, ten) {
+    return ManHoc.hamCotTruyen().indexOf(ten) >= 0 && ManHoc.hamSuaDuoc(m).indexOf(ten) < 0;
+  };
+
   ManHoc.them(DS);
 
   if (laNode) module.exports = ManHoc;

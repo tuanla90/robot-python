@@ -3,6 +3,7 @@
    Chương thứ 3 (sau Xưởng hàm). Robot là XE HAI BÁNH, chưa có part nào khác: robot { than: 'hai-banh', tay: null, camBien: [] }.
    Luật thiết kế: lệnh gốc chỉ đổi MỘT trạng thái (một bánh quay tới hay lùi); động tác hay (né, đỗ lùi, đường về…) là thứ NGƯỜI CHƠI TỰ CHẾ.
    Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (máy kiểm kiem-che-xe.mjs chạy từng cách).
+   Màn dùng HÀM CỦA MÀN (3.7, 3.8: hàm chỉ đúng cho màn đó, không vào kho) khai cách khác bằng `{ moTa, baiLam: { chinh, hamCuaMan } }`.
 
    Mục tiêu mới `bong-mo` (san-hoc.js, phần BÓNG MỜ): xe phải đứng đúng tư thế của "xe mờ" khi chương trình CHẠY XONG (đi ngang qua rồi đi tiếp thì chưa thắng);
    `bongMo: { x, y, huong, diQua?: [{x,y}] }`, diQua là điểm ◆ xe phải ghé qua. Chẩn đoán lech-bong-mo / chua-qua-diem nói bằng lời xe lệch ở đâu.
@@ -17,8 +18,9 @@
      che-xe.2 dodge_left()  = turn_left(), move(), turn_right()          né sang trái một ô, giữ hướng (3 nhịp)
      che-xe.4 back()        = left_back(), right_back(), wait()          lùi một ô (1 nhịp)
      che-xe.6 park()        = turn_left(), back()                        lùi vào chỗ đỗ bên PHẢI, đầu xe quay ra đường (2 nhịp)
-     che-xe.7 come_back()   = back(), turn_left(), back(), back()        đi ngược lại đường go_out() (lệnh ngược theo thứ tự ngược)
-     che-xe.8 fixed_move()  = left_back(), right_move(), wait()          tiến một ô khi bánh trái đấu ngược
+   HÀM CỦA MÀN (15/10: hàm chỉ đúng cho MỘT màn thì không vào kho, người chơi tự viết / sửa thân trong màn; `maMau.hamCuaMan`, không `taoHam`):
+     che-xe.7 come_back()   thân ban đầu `pass`; lời giải back(), turn_left(), back(), back()   đi ngược lại đường go_out() (lệnh ngược theo thứ tự ngược)
+     che-xe.8 fixed_move()  thân ban đầu = move() cũ (left_move, right_move, wait: chạy sai vì dây bánh trái đấu ngược); lời giải left_back(), right_move(), wait()
    Hàm của em được SỬA ở chương này (không tính là tạo mới):
      che-xe.5 u_turn()      = left_move(), right_back(), wait()          quay đầu trong MỘT nhịp (trái tiến + phải lùi); trước đó là turn_right() hai lần = 2 nhịp
      che-xe.9 turn_right()  = right_back(), wait()   turn_left() = left_back(), wait()   rẽ bằng bánh lùi (bánh tiến hỏng), vẫn đúng ở mọi màn khác
@@ -47,7 +49,9 @@
   var T_BACK = ['left_back()', 'right_back()', 'wait()'];
   var T_PARK = ['turn_left()', 'back()'];
   var T_COME_BACK = ['back()', 'turn_left()', 'back()', 'back()'];
+  var T_COME_BACK_TRONG = ['pass'];                                  // thân ban đầu của come_back() ở 3.7: chưa làm gì (lõi hiểu pass), người chơi viết thay nó
   var T_FIXED_MOVE = ['left_back()', 'right_move()', 'wait()'];
+  var T_FIXED_MOVE_CU = ['left_move()', 'right_move()', 'wait()'];   // thân ban đầu của fixed_move() ở 3.8: move() cũ, chạy sai vì bánh trái đấu ngược
   var T_U_TURN_NHANH = ['left_move()', 'right_back()', 'wait()'];
   var T_TURN_RIGHT_LUI = ['right_back()', 'wait()'];
   var T_TURN_LEFT_LUI = ['left_back()', 'wait()'];
@@ -264,61 +268,61 @@
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Đường về', hang: 'bien-the',
-      hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'back', 'u_turn'], taoHam: ['come_back'],
-      deBai: 'Lệnh go_out() của màn đưa xe ra khỏi chỗ đỗ. Chế lệnh come_back() để xe về đúng chỗ cũ và đúng hướng cũ, như bóng mờ.',
-      veMaMau: 'Chương trình chính bị khóa: go_out() rồi come_back(). Hàm go_out() của màn cũng bị khóa, em chỉ xem được thân hàm.',
+      hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'back', 'u_turn'],
+      deBai: 'Hàm go_out() của màn đưa xe ra khỏi chỗ đỗ. Viết thân hàm come_back() của màn để xe về đúng chỗ cũ và đúng hướng cũ, như bóng mờ.',
+      veMaMau: 'Chương trình chính bị khóa: go_out() rồi come_back(). Hàm go_out() cũng bị khóa, em chỉ xem được thân hàm. Thân hàm come_back() đang chỉ có dòng pass, nghĩa là chưa làm gì: em viết lệnh thay cho nó.',
       san: ['.....', '...#.', '.....', '.....', '.....'],
       batDau: { x: 1, y: 3, huong: 0 },
       bongMo: { x: 1, y: 3, huong: 0 },
       chinhCoDinh: true, khoaHamMan: ['go_out'],
-      maMau: { chinh: C_7.slice(), hamCuaMan: [hGoOut()] },
+      maMau: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', T_COME_BACK_TRONG)] },
       sao: { o: 20, nhip: 8 },
-      loiGiai: { chinh: C_7.slice(), hamCuaMan: [hGoOut()], hamCuaEmMoi: [H('come_back', T_COME_BACK)] },
+      loiGiai: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', T_COME_BACK)] },
       loiGiaiKhac: {
-        moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
-        baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut()] },
-        hamCuaEmMoi: [H('come_back', nhieu(['# đi ngược lại go_out()'], T_COME_BACK))]
+        moTa: 'Cùng cách viết, thêm một dòng chú thích trong hàm',
+        baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', nhieu(['# đi ngược lại go_out()'], T_COME_BACK))] }
       },
       congThucKhac: [
-        { moTa: 'Quay đầu, đi lại đường cũ rồi quay đầu lần nữa', hamCuaEmMoi: [H('come_back', ['u_turn()', 'move()', 'turn_left()', 'move()', 'move()', 'u_turn()'])] },
-        { moTa: 'Lùi bằng lệnh bánh, rẽ bằng hàm turn_left()', hamCuaEmMoi: [H('come_back', ['left_back()', 'right_back()', 'wait()', 'turn_left()', 'back()', 'back()'])] }
+        { moTa: 'Quay đầu, đi lại đường cũ rồi quay đầu lần nữa', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', ['u_turn()', 'move()', 'turn_left()', 'move()', 'move()', 'u_turn()'])] } },
+        { moTa: 'Lùi bằng lệnh bánh, rẽ bằng hàm turn_left()', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', ['left_back()', 'right_back()', 'wait()', 'turn_left()', 'back()', 'back()'])] } }
       ],
       loiSai: [
-        { moTa: 'Đi tiếp thay vì đi ngược lại', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut()] }, hamCuaEmMoi: [H('come_back', ['move()', 'move()', 'turn_left()', 'move()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Đúng lệnh ngược nhưng sai thứ tự', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut()] }, hamCuaEmMoi: [H('come_back', ['back()', 'back()', 'back()', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên đổi turn_right() thành lệnh ngược turn_left()', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut()] }, hamCuaEmMoi: [H('come_back', ['back()', 'turn_right()', 'back()', 'back()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Gọi come_back() mà chưa chế hàm', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut()] }, phaiCoMa: ['ham-chua-co'] }
+        { moTa: 'Để nguyên thân pass: xe không làm gì thêm, đứng lại chỗ go_out() dừng', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', T_COME_BACK_TRONG)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đi tiếp thay vì đi ngược lại', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', ['move()', 'move()', 'turn_left()', 'move()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đúng lệnh ngược nhưng sai thứ tự', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', ['back()', 'back()', 'back()', 'turn_left()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên đổi turn_right() thành lệnh ngược turn_left()', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut(), H('come_back', ['back()', 'turn_right()', 'back()', 'back()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Xóa mất hàm come_back() của màn: lệnh gọi nó không còn hàm nào', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoOut()] }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Đi ngược lại từng bước, theo thứ tự ngược.', 'Mỗi lệnh có một lệnh ngược: tiến thì lùi, quay phải thì quay trái.']
     }),
 
     man({
       so: 8, ten: 'Đấu dây ngược', hang: 'bien-the', mucTieu: 'toi-co',
-      hamCuaEmCan: ['move'], taoHam: ['fixed_move'],
+      hamCuaEmCan: ['move'],
       daoChieu: ['trai'], canhBao: 'Dây bánh trái đấu ngược',
-      deBai: 'Dây bánh trái bị đấu ngược nên xe chạy sai. Chế lệnh fixed_move() để xe tiến thẳng đúng một ô, rồi đưa xe tới cờ.',
-      veMaMau: 'Chương trình chính bị khóa, gọi fixed_move() ba lần. Thử move() trong sân thử của Xưởng hàm trước để thấy xe làm gì.',
+      deBai: 'Dây bánh trái bị đấu ngược nên hàm fixed_move() của màn chạy sai. Sửa hàm đó để xe tiến thẳng đúng một ô, rồi đưa xe tới cờ.',
+      veMaMau: 'Chương trình chính bị khóa, gọi fixed_move() ba lần. Thân hàm fixed_move() của màn đang giống move() của em. Thử nó trong sân thử của Xưởng hàm trước để thấy xe làm gì.',
       san: ['###', '#F#', '#.#', '#.#', '#.#'],
       batDau: { x: 1, y: 4, huong: 0 },
       chinhCoDinh: true,
-      maMau: { chinh: C_8.slice() },
+      maMau: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', T_FIXED_MOVE_CU)] },
       sao: { o: 6, nhip: 3 },
-      loiGiai: { chinh: C_8.slice(), hamCuaEmMoi: [H('fixed_move', T_FIXED_MOVE)] },
+      loiGiai: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', T_FIXED_MOVE)] },
       loiGiaiKhac: {
-        moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
-        baiLam: { chinh: C_8.slice() },
-        hamCuaEmMoi: [H('fixed_move', nhieu(['# bánh trái đấu ngược'], T_FIXED_MOVE))]
+        moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm',
+        baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', nhieu(['# bánh trái đấu ngược'], T_FIXED_MOVE))] }
       },
       congThucKhac: [
-        { moTa: 'Quay đầu bằng move(), lùi một ô, rồi quay đầu lại (chậm hơn nhưng vẫn tới)', hamCuaEmMoi: [H('fixed_move', ['move()', 'left_move()', 'right_back()', 'wait()', 'move()'])] },
-        { moTa: 'Đổi chỗ hai lệnh bánh trong nhịp', hamCuaEmMoi: [H('fixed_move', ['right_move()', 'left_back()', 'wait()'])] }
+        { moTa: 'Quay đầu bằng move(), lùi một ô, rồi quay đầu lại (chậm hơn nhưng vẫn tới)', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', ['move()', 'left_move()', 'right_back()', 'wait()', 'move()'])] } },
+        { moTa: 'Đổi chỗ hai lệnh bánh trong nhịp', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', ['right_move()', 'left_back()', 'wait()'])] } }
       ],
       loiSai: [
-        { moTa: 'Vẫn dùng move() như cũ: bánh trái ngược nên xe chỉ quay đầu tại chỗ', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('fixed_move', ['move()'])], phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Hai bánh cùng lùi: vì bánh trái ngược nên xe quay đầu', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('fixed_move', ['left_back()', 'right_back()', 'wait()'])], phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên wait(): lệnh bánh dính sang lần gọi kế', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('fixed_move', ['left_back()', 'right_move()'])], phaiCoMa: ['banh-goi-lai', 'chua-toi-co'] }
+        { moTa: 'Để nguyên thân cũ (giống move()): bánh trái ngược nên xe chỉ quay đầu tại chỗ', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', T_FIXED_MOVE_CU)] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gọi move() của em: bánh trái ngược nên xe chỉ quay đầu tại chỗ', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', ['move()'])] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Hai bánh cùng lùi: vì bánh trái ngược nên xe quay đầu', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', ['left_back()', 'right_back()', 'wait()'])] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên wait(): lệnh bánh dính sang lần gọi kế', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_move', ['left_back()', 'right_move()'])] }, phaiCoMa: ['banh-goi-lai', 'chua-toi-co'] }
       ],
-      goiY: ['Thử gọi move() trong sân thử của Xưởng hàm: bánh trái giờ quay ngược chiều với lệnh.', 'Muốn bánh trái quay tới thì phải ra lệnh cho nó quay lùi.']
+      goiY: ['Thử hàm fixed_move() trong sân thử của Xưởng hàm: bánh trái giờ quay ngược chiều với lệnh.', 'Muốn bánh trái quay tới thì phải ra lệnh cho nó quay lùi.']
     }),
 
     man({

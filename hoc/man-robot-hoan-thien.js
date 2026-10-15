@@ -18,7 +18,7 @@
      5  Dọn dãy thùng         go_wall, while not front_clear(): put_right, move, go_wall      số thùng mỗi sân một khác (cảm biến phân biệt thùng với chỗ trống)
      6  Giao hàng quanh góc   pick, go_wall, face_open, go_wall, back, drop    hành lang chữ L
      7  Mắt xe lắp ngược      daoChieu ['cam']: tự viết hai vòng while … not front_clear() (go_wall cũ sai)
-     8  Tay xe lắp ngược      daoChieu ['tay']: fixed_pick / fixed_drop (che-tay.8) dựng lại việc quét ba thùng
+     8  Tay xe lắp ngược      daoChieu ['tay']: fixed_pick / fixed_drop là hàm CỦA MÀN cho sẵn, đúng, khóa (15/10; người chơi đã học viết chúng ở che-tay.8, nay không còn trong kho); dựng lại việc quét ba thùng
      9  Kẹt số lùi            phanCung không có right_back: back() hỏng; đếm bước bằng biến n, quay đầu rồi đi lại
      10 Ca làm ở kho (trùm)    go_wall, pass_back, bounce, to_gap, turn_right, fetch_back    gioiHanHam 6; huy hiệu `robot-hoan-thien`
 
@@ -50,6 +50,11 @@
   var W_MOVE = ['left_move()', 'right_move()', 'wait()'];
   var W_U_TURN = ['left_back()', 'right_move()', 'wait()'];
   var W_RIGHT = ['left_move()', 'wait()'];
+
+  // hàm CỦA MÀN ở 10.8 (cho sẵn, đúng, khóa): tay lắp ngược nên arm_up() mới là HẠ tay, arm_down() là NÂNG tay
+  var T_FIXED_PICK = ['arm_up()', 'grab()', 'wait()', 'arm_down()', 'wait()'];
+  var T_FIXED_DROP = ['arm_up()', 'release()', 'wait()', 'arm_down()', 'wait()'];
+  function hamMan8() { return [H('fixed_pick', T_FIXED_PICK), H('fixed_drop', T_FIXED_DROP)]; }
 
   // chương trình chính của từng màn (lời giải chuẩn)
   var L_1 = ['go_wall()', 'pick()', 'go_wall()', 'back()', 'drop()'];
@@ -368,21 +373,23 @@
     man({
       so: 8, ten: 'Tay xe lắp ngược', hang: 'bien-the',
       daoChieu: ['tay'], canhBao: 'Dây tay đấu ngược',
-      hamCuaEmCan: ['go_wall', 'fixed_pick', 'fixed_drop', 'move', 'turn_right', 'turn_left', 'u_turn'],
-      deBai: 'Dây tay kẹp bị đấu ngược nên pick() và drop() chạy sai. Dùng fixed_pick() và fixed_drop() em đã chế để dời ba thùng sang bên phải rồi đưa xe về chỗ xuất phát, giống vật mờ và xe mờ.',
+      hamCuaEmCan: ['go_wall', 'move', 'turn_right', 'turn_left', 'u_turn'],
+      khoaHamMan: ['fixed_pick', 'fixed_drop'],
+      maMau: { chinh: [], hamCuaMan: hamMan8() },
+      deBai: 'Dây tay kẹp bị đấu ngược nên pick() và drop() chạy sai. Màn cho sẵn hai hàm fixed_pick() và fixed_drop() chạy đúng: dùng chúng để dời ba thùng sang bên phải rồi đưa xe về chỗ xuất phát, giống vật mờ và xe mờ.',
       san: SAN_8, batDau: BD_8, bongMo: BM_8,
       sao: { o: 31, nhip: 81 },
-      loiGiai: { chinh: L_8.slice() },
-      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# tay đấu ngược nên dùng fixed_pick và fixed_drop'], L_8) } },
+      loiGiai: { chinh: L_8.slice(), hamCuaMan: hamMan8() },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# tay đấu ngược nên dùng fixed_pick và fixed_drop'], L_8), hamCuaMan: hamMan8() } },
       congThucKhac: [
-        { moTa: 'Quay đầu bằng hai lần quay phải (đúng chỗ nhưng chậm hơn một nhịp nên ít sao hơn)', baiLam: { chinh: nhieu(['go_wall()'], LAP(3, ['fixed_pick()', 'move()', 'turn_right()', 'fixed_drop()', 'turn_left()']), ['turn_right()', 'turn_right()', 'go_wall()']) } }
+        { moTa: 'Quay đầu bằng hai lần quay phải (đúng chỗ nhưng chậm hơn một nhịp nên ít sao hơn)', baiLam: { chinh: nhieu(['go_wall()'], LAP(3, ['fixed_pick()', 'move()', 'turn_right()', 'fixed_drop()', 'turn_left()']), ['turn_right()', 'turn_right()', 'go_wall()']), hamCuaMan: hamMan8() } }
       ],
       loiSai: [
-        { moTa: 'Dùng pick() và drop() cũ: tay đi ngược nên kẹp hụt', baiLam: { chinh: nhieu(['go_wall()'], LAP(3, ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()']), ['u_turn()', 'go_wall()']) }, phaiCoMa: ['kep-hut', 'lech-bong-mo'] },
-        { moTa: 'Chỉ dời hai thùng rồi về: thùng cuối còn nguyên chỗ cũ', baiLam: { chinh: nhieu(['go_wall()'], LAP(2, ['fixed_pick()', 'move()', 'turn_right()', 'fixed_drop()', 'turn_left()']), ['u_turn()', 'go_wall()']) }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Dời ba thùng nhưng quên đưa xe về chỗ xuất phát', baiLam: { chinh: nhieu(['go_wall()'], LAP(3, ['fixed_pick()', 'move()', 'turn_right()', 'fixed_drop()', 'turn_left()'])) }, phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Dùng pick() và drop() cũ: tay đi ngược nên kẹp hụt', baiLam: { chinh: nhieu(['go_wall()'], LAP(3, ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()']), ['u_turn()', 'go_wall()']), hamCuaMan: hamMan8() }, phaiCoMa: ['kep-hut', 'lech-bong-mo'] },
+        { moTa: 'Chỉ dời hai thùng rồi về: thùng cuối còn nguyên chỗ cũ', baiLam: { chinh: nhieu(['go_wall()'], LAP(2, ['fixed_pick()', 'move()', 'turn_right()', 'fixed_drop()', 'turn_left()']), ['u_turn()', 'go_wall()']), hamCuaMan: hamMan8() }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Dời ba thùng nhưng quên đưa xe về chỗ xuất phát', baiLam: { chinh: nhieu(['go_wall()'], LAP(3, ['fixed_pick()', 'move()', 'turn_right()', 'fixed_drop()', 'turn_left()'])), hamCuaMan: hamMan8() }, phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Cách làm vẫn là nhặt, tiến, rẽ phải, đặt, quay lại, chỉ đổi hai lệnh tay thành hai lệnh sửa dây.', 'Nhặt xong một thùng thì thùng kế tiếp phải nằm ngay trước mặt.']
+      goiY: ['Cách làm vẫn là nhặt, tiến, rẽ phải, đặt, quay lại, chỉ đổi hai lệnh tay thành hai hàm của màn.', 'Nhặt xong một thùng thì thùng kế tiếp phải nằm ngay trước mặt.']
     }),
 
     man({

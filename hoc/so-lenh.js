@@ -17,6 +17,8 @@
    SoLenh.tim(ten) / SoLenh.theoNhom(nhom) / SoLenh.theoChuong(chuong)   tiện tra cứu.
 
    Thêm chương chế hàm mới: thêm mục vào `ds` (và nhóm mới vào tenNhom / thuTuNhom nếu cần). kiem-che-xe.mjs kiểm mọi tên trong taoHam đều có ở đây.
+   HÀM CỦA MÀN (15/10) KHÔNG có ở đây: hàm chỉ đúng cho một màn (xe đang hỏng, đường đi riêng của màn: come_back, fixed_move, put_back, fixed_pick, fixed_drop,
+   come_home, reverse_run, safe_move2) sống trong màn (`maMau.hamCuaMan`), không vào kho hàm của em, nên không có mục Sổ lệnh. Sổ lệnh chỉ giữ hàm dùng lại được.
    Chạy được trong Node (module.exports) và trình duyệt (window.SoLenh).
    ========================================================================== */
 (function () {
@@ -59,8 +61,6 @@
     m('dodge_left', 'xe', 'Né sang trái một ô, giữ hướng', 'che-xe', 'che-xe.2'),
     m('back', 'xe', 'Lùi một ô, mặt vẫn quay như cũ', 'che-xe', 'che-xe.4'),
     m('park', 'xe', 'Lùi vào chỗ đỗ bên phải, đầu xe quay ra đường', 'che-xe', 'che-xe.6'),
-    m('come_back', 'xe', 'Đi ngược lại đường go_out() để về chỗ cũ', 'che-xe', 'che-xe.7'),
-    m('fixed_move', 'xe', 'Tiến một ô khi dây bánh trái bị đấu ngược', 'che-xe', 'che-xe.8'),
     // chương 4 · Tay gắp
     m('pick', 'tay', 'Nhặt vật ở ô trước mặt rồi nâng tay lên', 'tay-gap', 'tay-gap.5'),
     m('drop', 'tay', 'Đặt vật xuống ô trước mặt rồi nâng tay lên', 'tay-gap', 'tay-gap.6'),
@@ -71,9 +71,6 @@
     m('grab_back', 'tay', 'Nhặt vật sau lưng rồi quay về, tay vẫn đang cầm vật', 'che-tay', 'che-tay.4'),
     m('drag', 'tay', 'Nhặt vật, lùi hai ô rồi đặt vật xuống trước mặt', 'che-tay', 'che-tay.5'),
     m('swap', 'tay', 'Đổi chỗ vật ở trước mặt với vật ở bên phải', 'che-tay', 'che-tay.6'),
-    m('put_back', 'tay', 'Đi ngược lại go_get(): đặt vật về chỗ cũ rồi về chỗ xuất phát', 'che-tay', 'che-tay.7'),
-    m('fixed_pick', 'tay', 'Nhặt vật khi dây tay bị đấu ngược', 'che-tay', 'che-tay.8'),
-    m('fixed_drop', 'tay', 'Đặt vật xuống khi dây tay bị đấu ngược', 'che-tay', 'che-tay.8'),
     // chương 6 · Vòng lặp
     m('side', 'lap', 'Đi thẳng ba ô', 'vong-lap', 'vong-lap.6'),
     m('row', 'lap', 'Đi thẳng sáu ô', 'vong-lap', 'vong-lap.10'),
@@ -85,8 +82,6 @@
     m('zigzag', 'lap', 'Lên ba bậc chéo sang phải, giữ nguyên hướng', 'che-lap', 'che-lap.4'),
     m('sweep', 'lap', 'Dời ba vật thẳng hàng sang ô bên phải mỗi vật', 'che-lap', 'che-lap.5'),
     m('ring', 'lap', 'Đi một vòng vuông cạnh ba ô, về đúng chỗ cũ', 'che-lap', 'che-lap.6'),
-    m('come_home', 'lap', 'Đi ngược lại go_round(): cùng số lần, lệnh ngược, thứ tự ngược', 'che-lap', 'che-lap.7'),
-    m('reverse_run', 'lap', 'Lùi một mạch sáu ô khi chỉ còn số lùi', 'che-lap', 'che-lap.9'),
     // chương 8 · Cảm biến khoảng cách
     m('go_wall', 'cam-bien', 'Đi thẳng cho tới khi trước mặt là tường', 'khoang-cach', 'khoang-cach.5'),
     // chương 9 · Chế lệnh có if, while
@@ -95,7 +90,6 @@
     m('to_gap', 'cam-bien', 'Đi thẳng cho tới khi bên phải xe có cửa mở', 'che-cam-bien', 'che-cam-bien.4'),
     m('bounce', 'cam-bien', 'Đi tới tường rồi lùi về đúng chỗ cũ, đếm số ô bằng biến n', 'che-cam-bien', 'che-cam-bien.5'),
     m('follow_right', 'cam-bien', 'Một bước bám tường bên tay phải', 'che-cam-bien', 'che-cam-bien.6'),
-    m('safe_move2', 'cam-bien', 'Tiến một ô nếu trống, khi cảm biến bị lắp ngược', 'che-cam-bien', 'che-cam-bien.7'),
     m('fetch_back', 'cam-bien', 'Đi tới vật, nhặt, lùi về chỗ cũ rồi đặt vật xuống', 'che-cam-bien', 'che-cam-bien.9'),
     // chương 10 · Robot hoàn thiện (agent robot-hoan-thien thêm mục ở đây nếu chương có hàm cốt truyện)
     // đợt 2: hàm có tham số

@@ -163,6 +163,20 @@
     sac: ['.....xxxx', '....xxxx.', '...xxxx..', '..xxxx...', '.xxxxxxxx', 'xxxxxxxx.', '....xxx..', '...xxx...', '..xxx....', '..xx.....', '..x......'],
     pin: ['xxxxxxxxxx..', 'x........x..', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x........x..', 'xxxxxxxxxx..'],
     cua: ['xxxxxxxxxxx', 'xx...x...xx', 'xx...x...xx', 'xx.x.x.x.xx', 'xx...x...xx', 'xx...x...xx', 'xx...x...xx', 'xxxxxxxxxxx'],
+    // đèn theo bộ phận robot (den-bo-phan.js): hình nhỏ 9 pixel, sáng trong nhịp bộ phận đó chạy
+    denBanh: ['..xxxxx..', '.xx...xx.', 'xx..x..xx', 'x..xxx..x', 'xx..x..xx', '.xx...xx.', '..xxxxx..'],
+    denTayLen: ['....x....', '...xxx...', '..xxxxx..', '....x....', '....x....', '....x....', '.xxxxxxx.'],
+    denTayXuong: ['.xxxxxxx.', '....x....', '....x....', '....x....', '..xxxxx..', '...xxx...', '....x....'],
+    denKepMo: ['x.......x', 'xx.....xx', '.xx...xx.', '..xx.xx..', '...xxx...', '....x....', '....x....'],
+    denKepDong: ['...x.x...', '...x.x...', '...xxx...', '..xxxxx..', '...xxx...', '....x....', '....x....'],
+    denNamCham: ['xx.....xx', 'xx.....xx', 'xx.....xx', 'xx.....xx', 'xxx...xxx', '.xxxxxxx.', '..xxxxx..'],
+    denNem: ['......xx.', '.....xxxx', '....xx.xx', '...xx....', '..xx.....', 'xxxxxxxxx', '.x.....x.'],
+    denSung: ['xxxxxxxx.', 'xxxxxxxxx', 'xxxxxxxx.', '..xxx....', '..xx.....', '..xx.....'],
+    denDay: ['x..x.....', 'x..xx....', 'x..xxx...', 'xxxxxxxx.', 'x..xxx...', 'x..xx....', 'x..x.....'],
+    denCam: ['..xxxxx..', '.x.....x.', 'x..xxx..x', 'x.xxxxx.x', 'x..xxx..x', '.x.....x.', '..xxxxx..'],
+    denTruot: ['..x...x..', '.xx...xx.', 'xxxxxxxxx', '.xx...xx.', '..x...x..'],
+    denChan: ['x.x...x.x', '.x.xxx.x.', '..xxxxx..', '.x.xxx.x.', 'x.x...x.x'],
+    denCanh: ['xxx...xxx', '.xx...xx.', '....x....', '..xxxxx..', '....x....', '.xx...xx.', 'xxx...xxx'],
     // sổ lệnh (quyển sách mở) và nhãn cảnh báo (tam giác có dấu !)
     book: ['.xxxxxxxxx.', 'xxxxxxxxxxx', 'xx.......xx', 'xx.xxxxx.xx', 'xx.......xx', 'xx.xxx...xx', 'xx.......xx', 'xxxxxxxxxxx', '.xxxxxxxxx.'],
     canhbao: ['.....xx.....', '....xxxx....', '....xxxx....', '...xxxxxx...', '...xx..xx...', '..xxx..xxx..', '..xxx..xxx..', '.xxxxxxxxxx.', '.xxxx..xxxx.', 'xxxxxxxxxxxx']

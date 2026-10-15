@@ -82,15 +82,20 @@ body.dien-thoai .screen{clip-path:none}
 .fblock{flex:none;height:218px;display:flex;gap:6px;margin-bottom:6px;margin-left:8px}
 /* sân (kèm lớp phủ robot tràn ra ngoài khung) nằm TRÊN thanh trên, cột nút và khung code: tay kẹp, dấu, tia ở mép sân không bị che; margin-left chừa chỗ cho càng nhô ra ở mép trái */
 .screen>.fblock,.ws-ov>.fblock{z-index:3}
-.ffr{position:relative;flex:none;width:218px;height:218px;padding:4px;display:flex;align-items:center;justify-content:center;
+/* .ffr = VÙNG dành cho sân (luôn 218×218, cột nút bên cạnh không nhảy), không còn là khung: nền là bàn xưởng của màn hình. Khung gỗ là .khung-san (san-ve.js, Field.datKhung) ôm sát canvas sân sau khi cắt
+   (canvas + 4 px mỗi phía, canh giữa hoặc dính đáy theo vị trí thật của canvas); sân 5×5 vẫn kín cả vùng như trước. */
+.ffr{position:relative;flex:none;width:218px;height:218px;padding:4px;display:flex;align-items:center;justify-content:center}
+.ffr canvas{display:block;flex:none;background:#16341f}
+.ffr canvas:not(.lop-robot){position:relative;z-index:1}
+.ffr .khung-san{position:absolute;z-index:0;display:none;pointer-events:none;
   background-color:#8e5528;background-image:var(--woodL);background-size:192px 120px;
   box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 rgba(255,210,150,.55),inset 0 -3px 0 rgba(50,25,8,.55)}
-.ffr canvas{display:block;flex:none;background:#16341f}
 /* lớp phủ robot (san-ve.js): to hơn sân, lề tràn ra để tay kẹp không bị cắt; không chặn chạm */
 .ffr canvas.lop-robot{position:absolute;z-index:2;background:none;pointer-events:none;cursor:default}
 .ffr.rung{animation:rung .3s steps(2) 1}
 @keyframes rung{0%{transform:translateX(-3px)}25%{transform:translateX(3px)}50%{transform:translateX(-2px)}75%{transform:translateX(2px)}100%{transform:translateX(0)}}
-.toast{position:absolute;left:10px;right:10px;bottom:10px;padding:5px 6px 3px;text-align:center;font:600 calc(13px*var(--kp))/1.15 var(--px);color:var(--ink);background:#ffd95a;box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fff2a6;display:none;pointer-events:none;z-index:3}
+/* toast bám đáy KHUNG sân: --kw (bề ngang khung) và --kdy (khung cách đáy vùng .ffr bao nhiêu) do san-ve.js đặt; sân kín cả vùng thì như cũ (rộng 198, cách đáy 10); sân hẹp thì toast rộng tối thiểu 150 canh giữa */
+.toast{position:absolute;left:0;right:0;margin:0 auto;width:clamp(150px,calc(var(--kw,218px) - 20px),198px);bottom:calc(var(--kdy,0px) + 10px);padding:5px 6px 3px;text-align:center;font:600 calc(13px*var(--kp))/1.15 var(--px);color:var(--ink);background:#ffd95a;box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fff2a6;display:none;pointer-events:none;z-index:3}
 .toast.win{background:#6fe06a;box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #c8ffc2}
 .toast.bad{background:#ff6a60;color:#fff;box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #ffb0a8}
 .toast.show{display:block}
@@ -132,12 +137,21 @@ body.dien-thoai .screen{clip-path:none}
   box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink),inset 0 2px 0 var(--hi,#fff8),inset 0 -3px 0 var(--lo,#0004)}
 .mini .bt:active{transform:translateY(2px)}
 .mini .g-cy{color:#07303a;text-shadow:0 1px 0 rgba(255,255,255,.4)}
-.clock{flex:none;height:26px;display:flex;align-items:center;padding:0 6px 0 8px;gap:6px;margin-top:3px}
+/* ô đồng hồ NHỊP hai dòng: "NHỊP n" ở trên, hàng ĐÈN THEO BỘ PHẬN (den-bo-phan.js) ở dưới; cột nút của màn chơi thu thấp một chút cho đủ chỗ (Xưởng không đổi) */
+#sc-choi .side{gap:4px}
+#sc-choi .side .cbtn{height:32px}
+#sc-choi .side .mini{height:22px}
+.clock{flex:none;height:40px;display:flex;flex-wrap:wrap;align-content:center;align-items:center;padding:2px 6px 2px 8px;gap:2px 6px;margin-top:3px}
 .clock .l{font:700 calc(11px*var(--kp))/1 var(--px);color:#9fd3b8;padding-top:2px}
 .clock .v{font:var(--wm) calc(17px*var(--km))/1 var(--mono);color:#ffd95a;min-width:24px}
-.clock .lamps{margin-left:auto;display:flex;gap:4px}
-.lamp{width:14px;height:14px;background:#12382c;box-shadow:0 0 0 2px var(--ink);font:600 calc(10px*var(--kp))/14px var(--px);color:#4f8a73;text-align:center}
-.lamp.on{background:#5ff0ff;color:#06323a;box-shadow:0 0 0 2px var(--ink),0 0 0 3px #bdfaff}
+.clock .den-bo{flex:0 0 100%;display:flex;align-items:center;gap:3px;min-height:15px;padding-left:1px}
+.den{position:relative;flex:none;width:14px;height:14px;display:flex;align-items:center;justify-content:center;background:#12382c;box-shadow:0 0 0 2px var(--ink)}
+.den canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+.den.sang{background:#0f4a56;box-shadow:0 0 0 2px var(--ink),0 0 0 3px #bdfaff}
+.den-bo.n6,.den-bo.n7{gap:2px}
+.den-bo.n6 .den{width:12px;height:12px}
+.den-bo.n7 .den{width:11px;height:11px}
+.den-bo.n7{gap:2px}
 
 /* ---------- nửa dưới: chương trình | kho khối ---------- */
 .low{flex:1 1 auto;min-height:344px;display:flex;gap:6px}
@@ -176,7 +190,10 @@ body.dien-thoai .screen{clip-path:none}
 .row.xx .tab{background:#e03a34;box-shadow:inset 0 0 0 2px var(--ink),inset 0 3px 0 #ff9a90,inset 0 -3px 0 #8c1a18;cursor:pointer}
 .row.xx .tab .tn{display:none}
 .row.xx .tab .tx{display:block}
-body.dang-keo .row.xx .tab{background:#0e3a2b;box-shadow:inset 0 0 0 2px var(--ink)}
+/* cảm ứng: chạm một dòng có code thì dòng được chọn VÀ ô số đổi thành nút ✕ đỏ rộng hơn (bấm ✕ là xóa, có "Đã xóa · Hoàn tác") */
+.row.xc .tab{width:28px;animation:xcnhay .7s steps(1) infinite}
+@keyframes xcnhay{0%{background:#e03a34}50%{background:#ff5a4e}}
+body.dang-keo .row.xx .tab{background:#0e3a2b;box-shadow:inset 0 0 0 2px var(--ink);animation:none}
 body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{display:none}
 .row.sel .tab{background:#ffd95a;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .row.sel .strip{box-shadow:inset 0 0 0 2px var(--ink),0 0 0 2px #fff,inset 0 4px 0 #fffbe8,inset 0 -4px 0 #d9c58e;animation:selb .7s steps(1) infinite}
@@ -189,7 +206,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .strip.on .pu{color:#5a3a10}
 
 /* kho khối lệnh */
-.pal{flex:1;min-height:0;overflow:hidden;overflow:clip;padding:0 1px;touch-action:none}
+.pal{flex:1;min-height:0;overflow:hidden;overflow:clip;padding:0 1px 8px;touch-action:none}
 .gl{display:flex;align-items:center;gap:4px;margin:2px 0 0;height:16px;min-width:0;overflow:hidden;font:700 calc(10px*var(--kp))/1 var(--px);color:#a8dcc0;letter-spacing:0;white-space:nowrap}
 .gl::after{content:"";flex:1;min-width:0;height:2px;background:#2f7a5c}
 .gl.g-em{color:#9ff08f}.gl.g-em::after{background:#3f9a3a}
@@ -199,12 +216,14 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .gl .tg{order:3;flex:none;font:700 calc(9px*var(--kp))/1 var(--px);padding:2px 3px 1px;color:#2a1400;background:#e08a3a;box-shadow:0 0 0 1px var(--ink),inset 0 2px 0 #ffcf94}
 .gl .nb{order:3;height:16px;display:flex;align-items:center;gap:2px;padding:1px 4px 0;font:700 calc(10px*var(--kp))/1 var(--px);letter-spacing:0;flex:none;color:#e8ffe0;border:1px dashed #7fc4a6;background:rgba(255,255,255,.06)}
 .gl .nb:active{background:rgba(255,255,255,.25)}
-.brick{position:relative;display:flex;align-items:center;width:100%;height:26px;margin-top:12px;padding:0 0 0 8px;text-align:left;cursor:pointer;
-  font:var(--wm) calc(12.5px*var(--km))/1 var(--mono);color:var(--ink);white-space:nowrap;
+/* khối ở khay: cao 34px (cỡ chạm đủ lớn trên điện thoại), cách nhau 14px; KHÔNG tự co nhỏ khi khay dài (khay dài thì cuộn bằng vuốt dọc / lăn chuột / ▲ ▼) */
+.brick{position:relative;display:flex;align-items:center;width:100%;height:34px;margin-top:14px;padding:0 4px 0 7px;text-align:left;cursor:pointer;
+  font:var(--wm) calc(13.5px*var(--km))/1 var(--mono);color:var(--ink);white-space:nowrap;
   background:var(--c);box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink),inset 0 3px 0 var(--hi),inset 0 -4px 0 var(--lo);transition:transform .05s}
 .brick .tx{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .brick::before{content:"";position:absolute;left:5px;right:5px;top:-10px;height:8px;background:var(--stud) 0 0 repeat-x;background-size:16px 8px;image-rendering:pixelated}
 .brick:active{transform:translateY(2px)}
+.brick.giu{transform:translateY(-3px);filter:brightness(1.12)}                   /* giữ khối ~300 ms (cảm ứng): khối nhô lên, giờ kéo hướng nào cũng được */
 .brick.cy{--c:#38c6de;--hi:#9aeefa;--lo:#1b8aa4;--stud:var(--st-cy)}
 .brick.yl{--c:#ffc933;--hi:#fff09a;--lo:#cf8f10;--stud:var(--st-yl)}
 .brick.gr{--c:#4cc24f;--hi:#a6f2a0;--lo:#2a8a35;--stud:var(--st-gr)}
@@ -214,17 +233,12 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .brick.lit{box-shadow:0 0 0 2px #fff,0 0 0 4px #ff9a2e,0 3px 0 4px var(--ink),inset 0 3px 0 var(--hi),inset 0 -4px 0 var(--lo);animation:litp .5s steps(1) infinite}
 .brick.err{box-shadow:0 0 0 2px #fff,0 0 0 4px #ff3b30,0 3px 0 4px var(--ink),inset 0 3px 0 var(--hi),inset 0 -4px 0 var(--lo)}
 @keyframes litp{0%{filter:brightness(1.18)}50%{filter:brightness(1.0)}}
-.brick .ed{position:absolute;right:3px;top:3px;bottom:4px;width:22px;display:flex;align-items:center;justify-content:center;background:rgba(0,40,10,.28);box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+.brick .ed{position:absolute;right:3px;top:3px;bottom:4px;width:27px;display:flex;align-items:center;justify-content:center;background:rgba(0,40,10,.28);box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
 .brick .ed:active{background:rgba(255,255,255,.4)}
 .brick.or .ed{background:rgba(70,25,0,.3)}
-.brick .tx{padding-right:26px}
-.brick[data-loai="goc"] .tx{padding-right:4px}
-/* khay dài quá cỡ: khối co MỘT mức (.d1, vẫn dễ chạm), dài hơn nữa thì cuộn bằng ▲ ▼ ở tiêu đề (không co thêm) */
-.pal.d1 .brick{height:18px;margin-top:6px;font-size:calc(11px*var(--km))}
-.pal.d1 .brick::before{display:none}
-.pal.d1 .brick .ed{top:2px;bottom:3px;width:18px}
-.pal.d1 .brick .tx{padding-right:20px}
-.pal.d1 .gl.g2,.pal.d1 .gl.g3{margin-top:4px}
+.brick .ed.khoa{background:rgba(50,30,0,.42);box-shadow:inset 0 0 0 2px rgba(0,0,0,.45)}          /* hàm bị khóa ở màn này: ổ khóa thay bút chì (mở ở Xưởng chỉ xem) */
+.brick.khoa{filter:saturate(.8) brightness(.96)}
+.brick[data-loai="em"],.brick[data-loai="man"]{padding-right:33px}                 /* chừa chỗ cho nút ✎ / ổ khóa bên phải (khối lệnh gốc không có nút) */
 
 /* ---------- Xưởng hàm ---------- */
 /* thanh trên: ‹ | tên hàm to bằng font code (xanh lá = hàm của em, cam = hàm của màn) | 🗑 */
@@ -416,6 +430,13 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
   color:#fff;background:#5a2fb4;box-shadow:0 0 0 1px var(--ink);pointer-events:none}
 .brk{position:absolute;left:20px;top:0;bottom:0;width:0;pointer-events:none;z-index:0}
 .bk{position:absolute;top:-2px;bottom:0;width:4px;background:#b48cf0;box-shadow:inset 1px 0 0 #3a1c80,inset -1px 0 0 #3a1c80,inset 2px 0 0 #d9c4ff}
+/* ngoặc nhịp (nhomNhip): vạch nâu đậm mảnh ở mép PHẢI các dòng lệnh gốc cùng một nhịp, mở về bên trái như "]", nhãn "nhịp k" ở dòng wait(); không đụng ngoặc tím / xanh của for / if / while (bên trái) */
+.nj{position:absolute;right:0;top:0;bottom:0;width:0;pointer-events:none;z-index:3}
+.njb{position:absolute;right:4px;top:-2px;bottom:0;width:2px;background:#4a3114}
+.njb.dau{top:4px}.njb.cuoi{bottom:4px}
+.njb.dau::before,.njb.cuoi::after{content:"";position:absolute;right:0;width:8px;height:2px;background:#4a3114}
+.njb.dau::before{top:0}.njb.cuoi::after{bottom:0}
+.njn{position:absolute;right:15px;top:50%;margin-top:-7px;padding:2px 4px 1px;font:var(--wm) calc(8.5px*var(--km))/1 var(--mono);color:#ffe9a8;background:#4a3114;white-space:nowrap}
 .bk.cuoi::after{content:"";position:absolute;left:100%;bottom:0;width:6px;height:4px;background:#b48cf0;box-shadow:inset 0 1px 0 #3a1c80,inset 0 -1px 0 #3a1c80}
 .bh .thut{flex:none;margin-left:auto;display:flex;gap:4px;margin-bottom:3px}
 .bh .thut.off{display:none}
@@ -487,16 +508,28 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .bh .pal-the{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:3px;margin-bottom:3px}
 .pal-the .the-giua{position:relative;flex:1;min-width:0;height:22px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1px #0a2a1f}
 .pal-the .the-chu{max-width:100%;overflow:hidden;white-space:nowrap;padding:2px 1px 0;font:700 calc(11px*var(--kp))/1 var(--px);color:#e8ffe0}
-.the-chu.k-than{color:#9aeefa}.the-chu.k-tay{color:#ffb050}.the-chu.k-cam{color:#9ff0e2}.the-chu.k-man{color:#ffbf80}.the-chu.k-py{color:#d9c4ff}
+.the-chu.k-than{color:#9aeefa}.the-chu.k-tay{color:#ffb050}.the-chu.k-cam{color:#9ff0e2}.the-chu.k-py{color:#d9c4ff}
 .pal-the .the-cham{position:absolute;left:0;right:0;bottom:1px;display:flex;justify-content:center;gap:2px;pointer-events:none}
 .the-cham i{display:block;width:4px;height:2px;background:#4f8a73}
 .the-cham i.on{background:#ffd95a}
 .cuon-b.trai .tam,.cuon-b.phai .tam{margin-top:0;border-top:5px solid transparent;border-bottom:5px solid transparent}
 .cuon-b.trai .tam{border-left:0;border-right:6px solid #fff3d6;margin-right:1px}
 .cuon-b.phai .tam{border-right:0;border-left:6px solid #fff3d6;margin-left:1px}
-.pal-the .cuon-b{width:20px}
+.pal-the .cuon-b{width:22px;height:26px}
 .bh .cuon-nut{gap:3px}
-.bh .cuon-nut .cuon-b{width:20px}
+.bh .cuon-nut .cuon-b{width:20px;height:26px}
+/* ---------- khung hướng dẫn (huong-dan.js): viền nhấp nháy quanh nút / khối / dòng phải chạm + bong bóng ngắn có mũi tên; không chặn bấm ---------- */
+.screen>.hd-vien{position:absolute;z-index:25;pointer-events:none;animation:hdvien .6s steps(1) infinite}
+@keyframes hdvien{
+  0%{box-shadow:0 0 0 3px #ffd95a,0 0 0 5px var(--ink)}
+  50%{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--ink)}}
+.screen>.hd-bong{position:absolute;z-index:26;pointer-events:none;padding:6px 7px 4px;background:#fff3b0;color:#3a2200;text-align:left;
+  font:600 calc(12px*var(--kp))/1.15 var(--px);box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fffbe0,inset 0 -2px 0 #e8c860;animation:hdnhay 1s steps(1) infinite}
+.hd-bong .hd-mui{position:absolute;width:11px;height:11px;background:#fff3b0;transform:rotate(45deg)}
+.hd-bong.duoi .hd-mui{top:-6px;box-shadow:-2px -2px 0 var(--ink)}
+.hd-bong.tren .hd-mui{bottom:-6px;box-shadow:2px 2px 0 var(--ink)}
+.hd-bong .kc{font-family:var(--mono)}
+@keyframes hdnhay{0%{margin-top:0}50%{margin-top:3px}}
 
 /* ---------- nhện: nhóm CHÂN (xanh dương), nhóm ĐIỀU KIỆN (xanh ngọc: if / elif / else), chuỗi chữ chỉ đường ---------- */
 .gl.g-chan{color:#b4ccff}.gl.g-chan::after{background:#4a6ed0}
@@ -532,7 +565,8 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .dso-o.chu .v{max-width:100%;padding:0 1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:calc(11px*var(--km))}
 .pal .g-2c{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:7px;align-content:start}
 .pal .g-2c .brick{min-width:0}
-.pal .g-2c .brick .tx{padding-right:2px;font-size:.92em}
+.pal .g-2c .brick{padding-left:5px;padding-right:3px}
+.pal .g-2c .brick .tx{padding-right:0;font-size:.8em}
 
 /* ---------- chương 11: while (xanh dương), điều kiện cảm biến (ô xanh lơ), dải sân nhỏ ---------- */
 .strip.wh{font-size:calc(10px*var(--km))}
@@ -558,9 +592,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 /* nhiều sân: dải ảnh nhỏ các sân nằm ở đầu cột nút (sân chính giữ nguyên cỡ); nút co thấp lại cho đủ chỗ */
 .sanbar{flex:none;display:none;gap:5px;height:30px}
 .fblock.nhieu .side{gap:4px}
-.fblock.nhieu .side .cbtn{height:29px}
-.fblock.nhieu .side .mini{height:22px}
-.fblock.nhieu .side .clock{height:24px;margin-top:0}
+#sc-choi .fblock.nhieu .side .cbtn{height:26px}
+#sc-choi .fblock.nhieu .side .mini{height:20px}
+.fblock.nhieu .side .clock{height:38px;margin-top:0}
 .fblock.nhieu .sanbar{display:flex}
 .sanbt{position:relative;flex:1;min-width:0;height:30px;padding:0;display:flex;align-items:center;justify-content:center;background:#0e3a2b;box-shadow:0 0 0 2px var(--ink);cursor:pointer}
 .sanbt canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
@@ -573,10 +607,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .sanbt .dau canvas{width:7px!important;height:7px!important}
 .side.busy .sanbt{filter:saturate(.5) brightness(.8);pointer-events:none}
 .clock .tong{display:none;margin-left:auto;font:600 calc(11px*var(--kp))/1 var(--px);color:#9fd3b8;padding-top:2px;white-space:nowrap}
-.fblock.nhieu .clock .lamps{display:none}
 .fblock.nhieu .clock .tong{display:block}
 .th-theo{margin:0 0 2px;font:500 calc(12px*var(--kp))/1.2 var(--px);color:#cfe9db}
-.fblock.nhieu .clock{gap:4px;padding:0 5px 0 6px;overflow:hidden}
+.fblock.nhieu .clock{gap:2px 4px;padding:2px 5px 2px 6px;overflow:hidden}
 .fblock.nhieu .clock .tong{min-width:0;overflow:hidden;text-overflow:clip}
 .fblock.nhieu .clock .v{min-width:0}
 

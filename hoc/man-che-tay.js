@@ -3,6 +3,7 @@
    Chương thứ 5 (sau Tay gắp). Robot là XE HAI BÁNH GẮN TAY KẸP: robot { than: 'hai-banh', tay: 'kep', camBien: [] }.
    Luật thiết kế như che-xe: lệnh gốc chỉ đổi MỘT trạng thái (tay lên / xuống, kẹp đóng / mở); động tác hay (chuyền vật ra sau, đặt sang phải, nhặt sau lưng…)
    là thứ NGƯỜI CHƠI TỰ CHẾ. Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (kiem-che-tay.mjs chạy từng cách).
+   Màn dùng HÀM CỦA MÀN (5.7, 5.8: hàm chỉ đúng cho màn đó, không vào kho) khai cách khác bằng `{ moTa, baiLam: { chinh, hamCuaMan } }`.
 
    Mục tiêu `bong-mo` (san-hoc.js, phần BÓNG MỜ): xe phải đứng đúng tư thế của "xe mờ" khi chương trình CHẠY XONG, và VẬT MỜ cho biết mỗi vật phải nằm ở ô nào (vật có màu
    thì chấm theo màu: `bongMo.vat = [{ x, y, mau }]`); xe mờ cầm vật (`bongMo.cam: true`) nghĩa là lúc xong tay phải đang kẹp một vật.
@@ -23,9 +24,10 @@
      che-tay.5 drag()       = pick(), back(), back(), drop()                      nhặt vật trước mặt, lùi hai ô, đặt vật xuống trước mặt (6 nhịp)
      che-tay.6 swap()       = pass_back(), turn_right(), pick(), turn_left(), drop(), u_turn(), pick(), turn_left(), drop(), turn_left()
                               vật trước mặt và vật bên phải đổi chỗ (đúng 10 dòng nhờ các hàm vừa chế; viết thẳng thì tràn khung)
-     che-tay.7 put_back()   = drop(), back(), back()                              đi NGƯỢC lại go_get() = move(), move(), pick() của màn: đặt vật về chỗ cũ, xe về chỗ cũ
-     che-tay.8 fixed_pick() = arm_up(), grab(), wait(), arm_down(), wait()        tay lắp ngược (daoChieu 'tay'): arm_up() mới là HẠ tay, arm_down() là NÂNG tay
-               fixed_drop() = arm_up(), release(), wait(), arm_down(), wait()
+   HÀM CỦA MÀN (15/10: hàm chỉ đúng cho MỘT màn thì không vào kho, người chơi tự viết / sửa thân trong màn; `maMau.hamCuaMan`, không `taoHam`, không có trong Sổ lệnh):
+     che-tay.7 put_back()   thân ban đầu `pass`; lời giải drop(), back(), back()   đi NGƯỢC lại go_get() = move(), move(), pick() của màn: đặt vật về chỗ cũ, xe về chỗ cũ
+     che-tay.8 fixed_pick() thân ban đầu = pick() cũ (arm_down, grab, wait, arm_up, wait: tay đấu ngược nên kẹp hụt); lời giải arm_up(), grab(), wait(), arm_down(), wait()
+               fixed_drop() thân ban đầu = drop() cũ; lời giải arm_up(), release(), wait(), arm_down(), wait()     tay lắp ngược (daoChieu 'tay'): arm_up() mới là HẠ tay, arm_down() là NÂNG tay
    Hàm của em được SỬA ở chương này (không tính là tạo mới):
      che-tay.9 turn_right() = left_move(), wait()   u_turn() = left_back(), right_move(), wait()    bánh phải KẸT SỐ LÙI (không có right_back): rẽ phải bằng bánh trái tiến,
                quay đầu bằng trái lùi + phải tiến. Cả hai vẫn MỘT nhịp như bản che-xe nên kho dùng chung không đổi nhịp, và vẫn đúng ở mọi màn khác (phần cứng mặc định đủ bánh).
@@ -54,8 +56,11 @@
   var T_DRAG = ['pick()', 'back()', 'back()', 'drop()'];
   var T_SWAP = ['pass_back()', 'turn_right()', 'pick()', 'turn_left()', 'drop()', 'u_turn()', 'pick()', 'turn_left()', 'drop()', 'turn_left()'];
   var T_PUT_BACK = ['drop()', 'back()', 'back()'];
+  var T_PUT_BACK_TRONG = ['pass'];                                                       // thân ban đầu của put_back() ở 5.7: chưa làm gì (lõi hiểu pass), người chơi viết thay nó
   var T_FIXED_PICK = ['arm_up()', 'grab()', 'wait()', 'arm_down()', 'wait()'];
   var T_FIXED_DROP = ['arm_up()', 'release()', 'wait()', 'arm_down()', 'wait()'];
+  var T_FIXED_PICK_CU = ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()'];            // thân ban đầu của fixed_pick() ở 5.8: pick() cũ, chạy sai vì tay đấu ngược
+  var T_FIXED_DROP_CU = ['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'];         // thân ban đầu của fixed_drop() ở 5.8: drop() cũ
   var T_TURN_RIGHT_BANH_TRAI = ['left_move()', 'wait()'];
   var T_U_TURN_DOI_BANH = ['left_back()', 'right_move()', 'wait()'];
 
@@ -277,61 +282,60 @@
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Đặt lại chỗ cũ', hang: 'bien-the',
-      hamCuaEmCan: ['move', 'pick', 'drop', 'back', 'u_turn'], taoHam: ['put_back'],
-      deBai: 'Lệnh go_get() của màn đưa xe lên nhặt một vật. Chế lệnh put_back() để xe đặt vật về đúng chỗ cũ rồi về đúng chỗ và hướng xuất phát, như xe mờ.',
-      veMaMau: 'Chương trình chính bị khóa: go_get() rồi put_back(). Hàm go_get() của màn cũng bị khóa, em chỉ xem được thân hàm. Điểm ◆ là chỗ xe đứng nhặt vật.',
+      hamCuaEmCan: ['move', 'pick', 'drop', 'back', 'u_turn'],
+      deBai: 'Hàm go_get() của màn đưa xe lên nhặt một vật. Viết thân hàm put_back() của màn để xe đặt vật về đúng chỗ cũ rồi về đúng chỗ và hướng xuất phát, như xe mờ.',
+      veMaMau: 'Chương trình chính bị khóa: go_get() rồi put_back(). Hàm go_get() cũng bị khóa, em chỉ xem được thân hàm. Thân hàm put_back() đang chỉ có dòng pass, nghĩa là chưa làm gì: em viết lệnh thay cho nó. Điểm ◆ là chỗ xe đứng nhặt vật.',
       san: ['.....', '..o..', '.....', '.....', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
       bongMo: { x: 2, y: 4, huong: 0, diQua: [{ x: 2, y: 2 }], vat: [{ x: 2, y: 1 }] },       // ◆ ở chỗ go_get() dừng nhặt vật: chương trình rỗng hay go_get() hỏng thì không qua ◆, không thể "thắng" chỉ vì xe chưa rời chỗ
       chinhCoDinh: true, khoaHamMan: ['go_get'],
-      maMau: { chinh: C_7.slice(), hamCuaMan: [hGoGet()] },
+      maMau: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', T_PUT_BACK_TRONG)] },
       sao: { o: 24, nhip: 8 },
-      loiGiai: { chinh: C_7.slice(), hamCuaMan: [hGoGet()], hamCuaEmMoi: [H('put_back', T_PUT_BACK)] },
+      loiGiai: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', T_PUT_BACK)] },
       loiGiaiKhac: {
-        moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
-        baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet()] },
-        hamCuaEmMoi: [H('put_back', nhieu(['# làm ngược lại go_get()'], T_PUT_BACK))]
+        moTa: 'Cùng cách viết, thêm một dòng chú thích trong hàm',
+        baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', nhieu(['# làm ngược lại go_get()'], T_PUT_BACK))] }
       },
       congThucKhac: [
-        { moTa: 'Đặt vật, quay đầu, đi lại đường cũ rồi quay đầu lần nữa (chậm hơn hai nhịp)', hamCuaEmMoi: [H('put_back', ['drop()', 'u_turn()', 'move()', 'move()', 'u_turn()'])] },
-        { moTa: 'Đặt vật rồi lùi bằng lệnh bánh viết thẳng, không gọi back()', hamCuaEmMoi: [H('put_back', ['drop()', 'left_back()', 'right_back()', 'wait()', 'left_back()', 'right_back()', 'wait()'])] }
+        { moTa: 'Đặt vật, quay đầu, đi lại đường cũ rồi quay đầu lần nữa (chậm hơn hai nhịp)', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', ['drop()', 'u_turn()', 'move()', 'move()', 'u_turn()'])] } },
+        { moTa: 'Đặt vật rồi lùi bằng lệnh bánh viết thẳng, không gọi back()', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', ['drop()', 'left_back()', 'right_back()', 'wait()', 'left_back()', 'right_back()', 'wait()'])] } }
       ],
       loiSai: [
-        { moTa: 'Đặt vật rồi để xe đứng yên ở chỗ nhặt: xe chưa về', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet()] }, hamCuaEmMoi: [H('put_back', ['drop()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Đi tiếp thay vì đi ngược lại: xe đâm vào chỗ đặt vật', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet()] }, hamCuaEmMoi: [H('put_back', ['drop()', 'move()', 'move()'])], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Lùi trước rồi mới đặt: sai thứ tự, vật đặt giữa đường', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet()] }, hamCuaEmMoi: [H('put_back', ['back()', 'back()', 'drop()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Gọi put_back() mà chưa chế hàm', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet()] }, phaiCoMa: ['ham-chua-co'] }
+        { moTa: 'Để nguyên thân pass: xe cầm vật đứng ở chỗ go_get() dừng, chưa đặt gì', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', T_PUT_BACK_TRONG)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đặt vật rồi để xe đứng yên ở chỗ nhặt: xe chưa về', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', ['drop()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đi tiếp thay vì đi ngược lại: xe đâm vào chỗ đặt vật', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', ['drop()', 'move()', 'move()'])] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Lùi trước rồi mới đặt: sai thứ tự, vật đặt giữa đường', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet(), H('put_back', ['back()', 'back()', 'drop()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Xóa mất hàm put_back() của màn: lệnh gọi nó không còn hàm nào', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoGet()] }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Làm ngược lại go_get() từng bước, theo thứ tự ngược.', 'Mỗi lệnh có một lệnh ngược: nhặt thì đặt, tiến thì lùi.']
     }),
 
     man({
       so: 8, ten: 'Tay lắp ngược', hang: 'bien-the',
-      hamCuaEmCan: ['move'], taoHam: ['fixed_pick', 'fixed_drop'],
+      hamCuaEmCan: ['move'],
       daoChieu: ['tay'], canhBao: 'Dây tay đấu ngược',
-      deBai: 'Dây tay kẹp bị đấu ngược, nên pick() và drop() của em chạy sai. Chế fixed_pick() và fixed_drop() cho tay chạy đúng, rồi dùng chúng đưa vật lên hai ô như vật mờ.',
-      veMaMau: 'Chương trình chính bị khóa: nhặt, tiến hai ô, đặt. Thử pick() trong sân thử của Xưởng hàm trước để thấy tay làm gì.',
+      deBai: 'Dây tay kẹp bị đấu ngược nên hai hàm fixed_pick() và fixed_drop() của màn chạy sai. Sửa chúng cho tay chạy đúng, để chương trình đưa vật lên hai ô như vật mờ.',
+      veMaMau: 'Chương trình chính bị khóa: nhặt, tiến hai ô, đặt. Hai hàm của màn đang giống pick() và drop() cũ. Thử chúng trong sân thử của Xưởng hàm trước để thấy tay làm gì.',
       san: ['.....', '.....', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
       bongMo: { x: 2, y: 2, huong: 0, vat: [{ x: 2, y: 1 }] },
       chinhCoDinh: true,
-      maMau: { chinh: C_8.slice() },
+      maMau: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', T_FIXED_PICK_CU), H('fixed_drop', T_FIXED_DROP_CU)] },
       sao: { o: 17, nhip: 6 },
-      loiGiai: { chinh: C_8.slice(), hamCuaEmMoi: [H('fixed_pick', T_FIXED_PICK), H('fixed_drop', T_FIXED_DROP)] },
+      loiGiai: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', T_FIXED_PICK), H('fixed_drop', T_FIXED_DROP)] },
       loiGiaiKhac: {
-        moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
-        baiLam: { chinh: C_8.slice() },
-        hamCuaEmMoi: [H('fixed_pick', nhieu(['# tay đấu ngược'], T_FIXED_PICK)), H('fixed_drop', T_FIXED_DROP)]
+        moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm',
+        baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', nhieu(['# tay đấu ngược'], T_FIXED_PICK)), H('fixed_drop', T_FIXED_DROP)] }
       },
       congThucKhac: [
-        { moTa: 'fixed_pick() bỏ wait() cuối: nâng tay chạy chung nhịp với lệnh đi kế (nhanh hơn một nhịp)', hamCuaEmMoi: [H('fixed_pick', ['arm_up()', 'grab()', 'wait()', 'arm_down()']), H('fixed_drop', T_FIXED_DROP)] },
-        { moTa: 'Mỗi lệnh tay một nhịp riêng (chậm hơn nhưng vẫn đúng)', hamCuaEmMoi: [H('fixed_pick', ['arm_up()', 'wait()', 'grab()', 'wait()', 'arm_down()', 'wait()']), H('fixed_drop', ['arm_up()', 'wait()', 'release()', 'wait()', 'arm_down()', 'wait()'])] }
+        { moTa: 'fixed_pick() bỏ wait() cuối: nâng tay chạy chung nhịp với lệnh đi kế (nhanh hơn một nhịp)', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', ['arm_up()', 'grab()', 'wait()', 'arm_down()']), H('fixed_drop', T_FIXED_DROP)] } },
+        { moTa: 'Mỗi lệnh tay một nhịp riêng (chậm hơn nhưng vẫn đúng)', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', ['arm_up()', 'wait()', 'grab()', 'wait()', 'arm_down()', 'wait()']), H('fixed_drop', ['arm_up()', 'wait()', 'release()', 'wait()', 'arm_down()', 'wait()'])] } }
       ],
       loiSai: [
-        { moTa: 'Chép nguyên pick() và drop() cũ: tay đi ngược nên kẹp hụt', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('fixed_pick', ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()']), H('fixed_drop', ['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'])], phaiCoMa: ['kep-hut', 'lech-bong-mo'] },
-        { moTa: 'Chỉ sửa fixed_pick(), fixed_drop() còn như cũ: thả khi tay còn nâng, vật vỡ', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('fixed_pick', T_FIXED_PICK), H('fixed_drop', ['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'])], phaiCoMa: ['vat-vo'] },
-        { moTa: 'Quên nâng tay sau khi nhặt: tay còn hạ nên xe không đi được', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('fixed_pick', ['arm_up()', 'grab()', 'wait()']), H('fixed_drop', T_FIXED_DROP)], phaiCoMa: ['tay-vuong', 'lech-bong-mo'] },
-        { moTa: 'Gọi fixed_pick() mà chưa chế hàm', baiLam: { chinh: C_8.slice() }, phaiCoMa: ['ham-chua-co'] }
+        { moTa: 'Để nguyên hai hàm của màn (còn là pick() và drop() cũ): tay đi ngược nên kẹp hụt', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', T_FIXED_PICK_CU), H('fixed_drop', T_FIXED_DROP_CU)] }, phaiCoMa: ['kep-hut', 'lech-bong-mo'] },
+        { moTa: 'Chỉ sửa fixed_pick(), fixed_drop() còn như cũ: thả khi tay còn nâng, vật vỡ', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', T_FIXED_PICK), H('fixed_drop', T_FIXED_DROP_CU)] }, phaiCoMa: ['vat-vo'] },
+        { moTa: 'Quên nâng tay sau khi nhặt: tay còn hạ nên xe không đi được', baiLam: { chinh: C_8.slice(), hamCuaMan: [H('fixed_pick', ['arm_up()', 'grab()', 'wait()']), H('fixed_drop', T_FIXED_DROP)] }, phaiCoMa: ['tay-vuong', 'lech-bong-mo'] },
+        { moTa: 'Xóa mất hai hàm của màn: lệnh gọi chúng không còn hàm nào', baiLam: { chinh: C_8.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Thử gọi arm_down() ở sân thử: tay đang đi lên hay đi xuống?', 'Muốn hạ tay xuống thì phải ra lệnh cho tay đi lên.']
     }),

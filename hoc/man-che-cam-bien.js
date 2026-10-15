@@ -17,9 +17,11 @@
      che-cam-bien.4 to_gap()       = while not right_clear(): move()                 đi thẳng cho tới khi bên phải xe trống (có cửa)
      che-cam-bien.5 bounce()       = n = 0; while front_clear(): move(), n = n + 1; for i in range(n): back()   tới tường rồi lùi về đúng chỗ cũ (BIẾN ĐẾM)
      che-cam-bien.6 follow_right() = một bước bám tường phải (if / elif / else)
-     che-cam-bien.7 safe_move2()   = if not front_clear(): move()                    như safe_move() khi cảm biến lắp ngược (daoChieu ['cam'])
      che-cam-bien.9 fetch_back()   = đếm bước tới vật, pick(), lùi n ô, drop()       lấy vật cuối hành lang về đặt trước chỗ cũ
-   Màn 8 sửa hàm to_door() của màn (hỏng điều kiện left_clear); màn 3 và 10 là màn dùng.
+   HÀM CỦA MÀN (15/10: hàm chỉ đúng cho MỘT màn thì không vào kho, người chơi tự viết / sửa thân trong màn; `maMau.hamCuaMan`, không `taoHam`, không có trong Sổ lệnh):
+     che-cam-bien.7 safe_move2()   thân ban đầu = safe_move() (if front_clear(): move(); sai vì cảm biến lắp ngược, daoChieu ['cam']); lời giải if not front_clear(): move()
+     che-cam-bien.8 to_door()      hỏng điều kiện left_clear; sửa thành right_clear
+   Màn 3 và 10 là màn dùng.
 
    BIẾN ĐẾM (man.bienDem = true từ màn 5): khay hiện nhóm ĐẾM (n = 0, n = n + 1, for i in range(n)); khung.chanBien = true ở 1–4 (chưa dạy biến): khung-code.js báo cau-truc-chua-hoc
    nếu chương trình / hàm của màn dùng gán biến hay range(biến). cauTruc luôn ['for', 'if', 'while'] (chương này dạy if, while sau khi đã học ở chương 8).
@@ -56,6 +58,8 @@
   var T_BOUNCE = ['n = 0', 'while front_clear():', '    move()', '    n = n + 1', 'for i in range(n):', '    back()'];
   var T_FOLLOW_RIGHT = ['if right_clear():', '    turn_right()', '    move()', 'elif front_clear():', '    move()', 'else:', '    turn_left()'];
   var T_SAFE_MOVE2 = ['if not front_clear():', '    move()'];
+  // thân ban đầu của safe_move2() ở 9.7: chép safe_move(), chạy sai vì cảm biến lắp ngược
+  var T_SAFE_MOVE2_CU = T_SAFE_MOVE;
   var T_FETCH_BACK = ['n = 0', 'while front_clear():', '    move()', '    n = n + 1', 'pick()', 'for i in range(n):', '    back()', 'drop()'];
   // hàm của màn 8 (hỏng: hỏi bên trái trong khi cửa ở bên phải) và bản sửa
   var T_TO_DOOR_HONG = ['while not left_clear():', '    move()'];
@@ -360,31 +364,30 @@
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Cảm biến lắp ngược', hang: 'bien-the',
-      hamCuaEmCan: ['move', 'safe_move'], taoHam: ['safe_move2'],
+      hamCuaEmCan: ['move'],
       daoChieu: ['cam'], canhBao: 'Cảm biến lắp ngược',
-      deBai: 'Cảm biến của xe bị lắp ngược: front_clear() báo True khi trước mặt bị chắn và False khi trống. Chế lệnh safe_move2() để xe vẫn tiến một ô khi trống và đứng yên khi bị chắn, giống safe_move().',
-      veMaMau: 'Chương trình chính bị khóa, gọi safe_move2() ba lần. Hàm safe_move() cũ của em sẽ sai với cảm biến này: thử nó trong sân thử của Xưởng hàm.',
+      deBai: 'Cảm biến của xe bị lắp ngược: front_clear() báo True khi trước mặt bị chắn và False khi trống. Hàm safe_move2() của màn viết theo cách cũ nên chạy sai: sửa nó để xe vẫn tiến một ô khi trống và đứng yên khi bị chắn.',
+      veMaMau: 'Chương trình chính bị khóa, gọi safe_move2() ba lần. Thân hàm safe_move2() của màn đang giống safe_move() cũ của em, sẽ sai với cảm biến này: thử nó trong sân thử của Xưởng hàm.',
       san: SAN_7, batDau: BD_7, bongMo: BM_7,
       chinhCoDinh: true,
-      maMau: { chinh: C_7.slice() },
+      maMau: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', T_SAFE_MOVE2_CU)] },
       sao: { o: 8, nhip: 4 },
-      loiGiai: { chinh: C_7.slice(), hamCuaEmMoi: [H('safe_move2', T_SAFE_MOVE2)] },
+      loiGiai: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', T_SAFE_MOVE2)] },
       loiGiaiKhac: {
-        moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
-        baiLam: { chinh: C_7.slice() },
-        hamCuaEmMoi: [H('safe_move2', nhieu(['# cảm biến báo ngược nên có not'], T_SAFE_MOVE2))]
+        moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm',
+        baiLam: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', nhieu(['# cảm biến báo ngược nên có not'], T_SAFE_MOVE2))] }
       },
       congThucKhac: [
-        { moTa: 'Viết thẳng lệnh bánh trong nhánh if, không gọi move()', hamCuaEmMoi: [H('safe_move2', nhieu(['if not front_clear():'], W_MOVE.map(function (s) { return '    ' + s; })))] },
-        { moTa: 'Nhánh if chờ khi cảm biến báo True, nhánh else mới tiến (sân bị chắn tốn thêm nhịp nên ít sao hơn)', hamCuaEmMoi: [H('safe_move2', ['if front_clear():', '    wait()', 'else:', '    move()'])] }
+        { moTa: 'Viết thẳng lệnh bánh trong nhánh if, không gọi move()', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', nhieu(['if not front_clear():'], W_MOVE.map(function (s) { return '    ' + s; })))] } },
+        { moTa: 'Nhánh if chờ khi cảm biến báo True, nhánh else mới tiến (sân bị chắn tốn thêm nhịp nên ít sao hơn)', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', ['if front_clear():', '    wait()', 'else:', '    move()'])] } }
       ],
       loiSai: [
-        { moTa: 'Dùng nguyên safe_move() cũ: cảm biến báo ngược nên xe đứng yên ở chỗ trống', baiLam: { chinh: C_7.slice() }, hamCuaEmMoi: [H('safe_move2', ['if front_clear():', '    move()'])], phaiCoMa: ['lech-bong-mo', 'cam-bien-nguoc'] },
-        { moTa: 'Không hỏi cảm biến, gọi move() thẳng: xe húc khối chắn nên tốn thêm nhịp, thiếu sao', baiLam: { chinh: C_7.slice() }, hamCuaEmMoi: [H('safe_move2', ['move()'])], phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Nhánh if chỉ chờ, không bao giờ tiến', baiLam: { chinh: C_7.slice() }, hamCuaEmMoi: [H('safe_move2', ['if not front_clear():', '    wait()'])], phaiCoMa: ['lech-bong-mo', 'cam-bien-nguoc'] },
-        { moTa: 'Gọi safe_move2() mà chưa chế hàm', baiLam: { chinh: C_7.slice() }, phaiCoMa: ['ham-chua-co'] }
+        { moTa: 'Để nguyên thân cũ (giống safe_move()): cảm biến báo ngược nên xe đứng yên ở chỗ trống', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', T_SAFE_MOVE2_CU)] }, phaiCoMa: ['lech-bong-mo', 'cam-bien-nguoc'] },
+        { moTa: 'Không hỏi cảm biến, gọi move() thẳng: xe húc khối chắn nên tốn thêm nhịp, thiếu sao', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', ['move()'])] }, phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Nhánh if chỉ chờ, không bao giờ tiến', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('safe_move2', ['if not front_clear():', '    wait()'])] }, phaiCoMa: ['lech-bong-mo', 'cam-bien-nguoc'] },
+        { moTa: 'Xóa mất hàm safe_move2() của màn: lệnh gọi nó không còn hàm nào', baiLam: { chinh: C_7.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Thử safe_move() cũ trong sân thử: cảm biến báo True ở chỗ nào, False ở chỗ nào?', 'Muốn có câu trả lời đúng thì đảo kết quả của cảm biến bằng not.']
+      goiY: ['Thử hàm safe_move2() trong sân thử: cảm biến báo True ở chỗ nào, False ở chỗ nào?', 'Muốn có câu trả lời đúng thì đảo kết quả của cảm biến bằng not.']
     }),
 
     man({

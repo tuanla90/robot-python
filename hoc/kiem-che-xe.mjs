@@ -128,8 +128,9 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('nhóm của hàm đợt 2 ứng với chương: drone → drone, tam-day → day, may-nem → nem, sung-bong → bong…; hàm đợt 1 thuộc xe / tay / lap / cam-bien',
     SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'xich': 'xich', 'omni': 'omni', 'tam-day': 'day', 'mau': 'mau', 'nam-cham': 'nam-cham', 'may-nem': 'nem', 'sung-bong': 'bong', 'drone': 'drone' })[h.chuong] === h.nhom));
   kiem('hàm chế ở che-xe có trong Sổ lệnh với lời lớp 5 (vd dodge_right: "Né sang phải một ô, giữ hướng")',
-    ['dodge_right', 'dodge_left', 'back', 'park', 'come_back', 'fixed_move'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).chuong === 'che-xe') && SoLenh.tim('dodge_right').moTa === 'Né sang phải một ô, giữ hướng');
-  kiem('SoLenh.theoNhom / theoChuong / tim', SoLenh.theoNhom('xe').length === 13 && SoLenh.theoChuong('che-xe').length === 6 && SoLenh.tim('khong-co') === null);
+    ['dodge_right', 'dodge_left', 'back', 'park'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).chuong === 'che-xe') && SoLenh.tim('dodge_right').moTa === 'Né sang phải một ô, giữ hướng');
+  kiem('hàm CỦA MÀN (come_back, fixed_move: chỉ đúng cho một màn, 15/10) không còn là hàm cốt truyện: không trong taoHam của màn nào, không trong Sổ lệnh, không là tên khóa của kho', ['come_back', 'fixed_move'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null));
+  kiem('SoLenh.theoNhom / theoChuong / tim', SoLenh.theoNhom('xe').length === 11 && SoLenh.theoChuong('che-xe').length === 4 && SoLenh.tim('khong-co') === null);
   kiem('SoLenh.lenhGoc: mỗi mục { ten, nguoc, moTa }; nguoc khớp SanHoc.LENH_NGUOC (null nếu không có); phủ mọi lệnh gốc của game (trừ print, range, len, str, int)',
     SoLenh.lenhGoc.every((l) => l.moTa && (l.nguoc === (SanHoc.LENH_NGUOC[l.ten] || null))) &&
       KhoHam.HAM_GOC_MAC_DINH.filter((t) => !['print', 'range', 'len', 'str', 'int'].includes(t)).every((t) => SoLenh.lenhGoc.some((l) => l.ten === t)) &&
@@ -283,12 +284,14 @@ console.log('\n== 6. chinhCoDinh và khoaHamMan ==');
   kiem('3.3 và 3.10 KHÔNG chinhCoDinh (người chơi tự viết chương trình chính): chương trình rỗng không thắng; maMau.chinh rỗng',
     [man(3), man(10)].every((m) => m.chinhCoDinh !== true && m.maMau.chinh.length === 0 && !ChamHoc.cham(m, { chinh: [] }, khoTruoc(m.id)).thang) && m3.loiGiai.chinh.length <= m3.khung.chinh);
   const m7 = man(7), k7 = tron(khoTruoc(m7.id), m7.loiGiai.hamCuaEmMoi);
-  const goOutHong = ChamHoc.cham(m7, { chinh: [], hamCuaMan: [H('go_out', ['move()'])] }, k7);
+  const comeBack = m7.loiGiai.hamCuaMan.find((h) => h.ten === 'come_back');
+  const goOutHong = ChamHoc.cham(m7, { chinh: [], hamCuaMan: [H('go_out', ['move()']), comeBack] }, k7);
   const goOutChuan = ChamHoc.cham(m7, m7.loiGiai, k7);
   kiem('khoaHamMan ["go_out"]: gửi go_out bị sửa lên, máy chấm vẫn dùng bản mẫu của màn (cùng kết quả, 3 sao)', ganDoi(goOutHong) === ganDoi(goOutChuan) && goOutChuan.sao === 3);
-  const goOutThieu = ChamHoc.cham(m7, { chinh: [], hamCuaMan: [] }, k7);
-  kiem('khoaHamMan: gửi lên không có go_out thì máy chấm vẫn đặt bản mẫu vào (người chơi không xóa được)', ganDoi(goOutThieu) === ganDoi(goOutChuan));
-  kiem('bản mẫu của màn và bài làm gốc không bị đụng khi chấm (không tác dụng phụ)', J(m7.maMau.hamCuaMan[0].than) === J(['move()', 'move()', 'turn_right()', 'move()']) && J(m1.maMau.chinh) === J(['dodge_right()']));
+  const goOutThieu = ChamHoc.cham(m7, { chinh: [], hamCuaMan: [comeBack] }, k7);
+  kiem('khoaHamMan: gửi lên không có go_out thì máy chấm vẫn đặt bản mẫu vào (người chơi không xóa được)', J([goOutThieu.thang, goOutThieu.sao, goOutThieu.soO, goOutThieu.soNhip, goOutThieu.chanDoan.map((c) => c.ma)]) === J([goOutChuan.thang, goOutChuan.sao, goOutChuan.soO, goOutChuan.soNhip, goOutChuan.chanDoan.map((c) => c.ma)]) && goOutThieu.py.includes('def go_out():'));
+  kiem('khoaHamMan chỉ khóa go_out: come_back (hàm của màn người chơi viết) KHÔNG khóa — gửi bản khác lên thì máy chấm dùng bản đó (pass thì thua, bản đúng thì thắng)', J(m7.khoaHamMan) === '["go_out"]' && !ChamHoc.cham(m7, { chinh: [], hamCuaMan: [H('come_back', ['pass'])] }, k7).thang && goOutChuan.thang);
+  kiem('bản mẫu của màn và bài làm gốc không bị đụng khi chấm (không tác dụng phụ)', J(m7.maMau.hamCuaMan[0].than) === J(['move()', 'move()', 'turn_right()', 'move()']) && J(m7.maMau.hamCuaMan[1].than) === J(['pass']) && J(m1.maMau.chinh) === J(['dodge_right()']));
 }
 
 /* ================================================================= 7. CHẨN ĐOÁN BẰNG LỜI */
@@ -338,8 +341,8 @@ console.log('\n== 8. Chương che-xe: dữ liệu và luật từng màn ==');
   kiem('tên các màn: Né phải, Né trái, Đường né, Bánh lùi, Quay đầu một nhịp, Đỗ lùi, Đường về, Đấu dây ngược, Chỉ còn số lùi, Bãi đỗ xe; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-xe',
     J(che.map((m) => m.ten)) === J(['Né phải', 'Né trái', 'Đường né', 'Bánh lùi', 'Quay đầu một nhịp', 'Đỗ lùi', 'Đường về', 'Đấu dây ngược', 'Chỉ còn số lùi', 'Bãi đỗ xe']) &&
       J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-xe' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh xe');
-  kiem('lệnh chế ở từng màn (taoHam): dodge_right, dodge_left, —, back, —, park, come_back, fixed_move, —, —; 3.5 sửa u_turn, 3.9 sửa turn_right và turn_left',
-    J(che.map((m) => m.taoHam)) === J([['dodge_right'], ['dodge_left'], [], ['back'], [], ['park'], ['come_back'], ['fixed_move'], [], []]) &&
+  kiem('lệnh chế ở từng màn (taoHam): dodge_right, dodge_left, —, back, —, park, —, —, —, —; 3.5 sửa u_turn, 3.9 sửa turn_right và turn_left; 3.7 và 3.8 viết / sửa HÀM CỦA MÀN (come_back, fixed_move), không tạo hàm của em',
+    J(che.map((m) => m.taoHam)) === J([['dodge_right'], ['dodge_left'], [], ['back'], [], ['park'], [], [], [], []]) && che.filter((m) => [7, 8].includes(m.so)).every((m) => m.loiGiai.hamCuaEmMoi.length === 0 && (m.congThucKhac || []).every((c) => !c.hamCuaEmMoi || c.hamCuaEmMoi.length === 0)) &&
       J(man(5).loiGiai.hamCuaEmMoi.map((h) => h.ten)) === '["u_turn"]' && J(man(9).loiGiai.hamCuaEmMoi.map((h) => h.ten)) === '["turn_right","turn_left"]');
   kiem('3.1–3.3: khay chỉ left_move, right_move, wait nhưng phần cứng vẫn có bánh lùi (mặc định xe bánh); từ 3.4 khay mở left_back, right_back',
     [1, 2, 3].every((i) => J(man(i).hamGoc) === J(['left_move', 'right_move', 'wait']) && SanHoc.phanCungCua(man(i)).includes('left_back') && SanHoc.phanCungCua(man(i)).includes('right_back')) &&
@@ -372,7 +375,7 @@ console.log('\n== 8. Chương che-xe: dữ liệu và luật từng màn ==');
     }
 
     // cách chế khác: đều thắng
-    kiem(m.id + ': có ít nhất 1 công thức khác (congThucKhac), khác cách 1', Array.isArray(m.congThucKhac) && m.congThucKhac.length >= 1 && m.congThucKhac.every((c) => c.moTa && Array.isArray(c.hamCuaEmMoi) && c.hamCuaEmMoi.length >= 1 && J(c.hamCuaEmMoi) !== J(m.loiGiai.hamCuaEmMoi)));
+    kiem(m.id + ': có ít nhất 1 công thức khác (congThucKhac), khác cách 1 (hàm của em mới, hay — màn dùng hàm của màn — baiLam.hamCuaMan khác)', Array.isArray(m.congThucKhac) && m.congThucKhac.length >= 1 && m.congThucKhac.every((c) => c.moTa && (c.baiLam ? J(c.baiLam.hamCuaMan) !== J(m.loiGiai.hamCuaMan) : Array.isArray(c.hamCuaEmMoi) && c.hamCuaEmMoi.length >= 1 && J(c.hamCuaEmMoi) !== J(m.loiGiai.hamCuaEmMoi))));
     m.congThucKhac.forEach((c, i) => {
       const rc = ChamHoc.cham(m, c.baiLam || m.loiGiai, tron(khoNay, c.hamCuaEmMoi));
       kiem(m.id + ' công thức khác #' + (i + 1) + ' (' + c.moTa + '): thắng, không lỗi — ' + rc.sao + ' sao, ' + rc.soO + ' ô, ' + rc.soNhip + ' nhịp', rc.thang && maLoi(rc).length === 0, J({ thang: rc.thang, cd: rc.chanDoan.map((x) => x.ma) }));
@@ -390,7 +393,8 @@ console.log('\n== 8. Chương che-xe: dữ liệu và luật từng màn ==');
         rs.sao < 3 && thieu.length === 0 && (ls.phaiCoMa.length ? !rs.thang : rs.thang), 'thiếu ' + thieu.join() + ' · có ' + co.join() + ' · sao ' + rs.sao);
     });
     // hàm của em dùng được ở mọi màn: tên taoHam / sửa có trong đề bài
-    const suaTen = m.loiGiai.hamCuaEmMoi.map((h) => h.ten);
+    const khoaTen = m.khoaHamMan || [];
+    const suaTen = m.loiGiai.hamCuaEmMoi.map((h) => h.ten).concat(m.loiGiai.hamCuaMan.filter((h) => !khoaTen.includes(h.ten)).map((h) => h.ten));          // hàm em chế / sửa + hàm của màn người chơi viết / sửa
     kiem(m.id + ': đề bài nhắc tên lệnh cần chế / sửa (' + suaTen.join(', ') + ')', suaTen.every((t) => (m.deBai + ' ' + (m.veMaMau || '')).includes(t + '()')) || m.so === 3 || m.so === 10, m.deBai);
     kiem(m.id + ': gợi ý 1–2 câu, không nói tên nút; đề 1–3 câu', m.goiY.length >= 1 && m.goiY.length <= 2 && (m.deBai.match(/[.?!](\s|$)/g) || []).length <= 3);
   }
@@ -416,11 +420,18 @@ console.log('\n== 8. Chương che-xe: dữ liệu và luật từng màn ==');
   kiem('3.7 Đường về: go_out() của màn đưa xe ra (2,1) quay phải sau 4 nhịp; come_back() phải đưa về ô và hướng ban đầu; hàm của màn go_out khóa và xem được (có trong maMau, khoaHamMan)',
     pre.theoSan[0].soNhip === 4 && vt(pre.theoSan[0].robot) === '2,1' && pre.theoSan[0].robot.huong === 1 && J(m7.bongMo) === J({ x: m7.batDau.x, y: m7.batDau.y, huong: m7.batDau.huong }) && J(m7.khoaHamMan) === '["go_out"]' && m7.maMau.hamCuaMan.some((h) => h.ten === 'go_out'));
   kiem('3.7: come_back() là lệnh ngược của go_out() theo thứ tự ngược: go_out = move, move, turn_right, move → come_back = back, turn_left, back, back (move↔back, turn_right↔turn_left)',
-    J(m7.loiGiai.hamCuaEmMoi[0].than) === J(['back()', 'turn_left()', 'back()', 'back()']) && J(m7.maMau.hamCuaMan[0].than) === J(['move()', 'move()', 'turn_right()', 'move()']));
+    J(m7.loiGiai.hamCuaMan.find((h) => h.ten === 'come_back').than) === J(['back()', 'turn_left()', 'back()', 'back()']) && J(m7.maMau.hamCuaMan[0].than) === J(['move()', 'move()', 'turn_right()', 'move()']));
+  const cb7 = m7.maMau.hamCuaMan.find((h) => h.ten === 'come_back'), r7 = ChamHoc.cham(m7, m7.maMau, k7);
+  kiem('3.7: come_back() là HÀM CỦA MÀN: thân ban đầu chỉ có `pass` (hợp lệ, không phải lỗi cú pháp); để nguyên thì không thắng, xe đứng lại ở (2,1) quay phải: lech-bong-mo; không còn hàm của em mới, không taoHam; hamCuaEmCan vẫn đủ back, turn_left',
+    J(cb7.than) === J(['pass']) && m7.taoHam.length === 0 && m7.loiGiai.hamCuaEmMoi.length === 0 && !r7.thang && J(maCua(r7)) === '["lech-bong-mo"]' && vt(r7.theoSan[0].robot) === '2,1' && ['back', 'turn_left'].every((t) => m7.hamCuaEmCan.includes(t)) && !maCua(r7).includes('loi-cu-phap'));
   const m8 = man(8), k8 = khoTruoc(m8.id);
   const thuMove = ChamHoc.thuHam(m8, { chinh: [] }, 'move', k8);
   kiem('3.8 Đấu dây ngược: daoChieu ["trai"], canhBao có chữ; move() cũ của em thành quay đầu (sân thử: hướng cuối xuống); fixed_move() = left_back + right_move tiến thẳng',
-    J(m8.daoChieu) === '["trai"]' && /đấu ngược/.test(m8.canhBao) && thuMove.robot.huong === 2 && ChamHoc.cham(m8, m8.loiGiai, tron(k8, m8.loiGiai.hamCuaEmMoi)).sao === 3, J(thuMove.robot));
+    J(m8.daoChieu) === '["trai"]' && /đấu ngược/.test(m8.canhBao) && thuMove.robot.huong === 2 && ChamHoc.cham(m8, m8.loiGiai, k8).sao === 3, J(thuMove.robot));
+  const thuFm = ChamHoc.thuHam(m8, { chinh: [], hamCuaMan: m8.maMau.hamCuaMan }, 'fixed_move', k8);
+  kiem('3.8: fixed_move() là HÀM CỦA MÀN: thân ban đầu = move() cũ (left_move, right_move, wait); trong sân thử nó quay đầu (hướng cuối xuống) vì bánh trái ngược; sửa thành left_back, right_move, wait thì tiến thẳng một ô; không taoHam, không hàm của em mới',
+    J(m8.maMau.hamCuaMan.map((h) => h.ten)) === '["fixed_move"]' && J(m8.maMau.hamCuaMan[0].than) === J(['left_move()', 'right_move()', 'wait()']) && thuFm.robot.huong === 2 && m8.khoaHamMan === undefined && m8.taoHam.length === 0 && m8.loiGiai.hamCuaEmMoi.length === 0 &&
+      (() => { const t = ChamHoc.thuHam(m8, { chinh: [], hamCuaMan: m8.loiGiai.hamCuaMan }, 'fixed_move', k8); return t.robot.huong === 0 && t.robot.y === 1 && maLoi(t).length === 0; })(), J(thuFm.robot));
   const m9 = man(9), k9 = khoTruoc(m9.id);
   const hopPhep = toHopChoPhep(m9).sort();
   kiem('3.9 Chỉ còn số lùi: phần cứng chỉ còn lùi, quay phải, quay trái, đứng yên (không tiến, không quay đầu); BFS = 7 và chuỗi không dùng bánh tiến',

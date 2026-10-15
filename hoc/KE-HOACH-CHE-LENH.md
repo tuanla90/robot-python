@@ -16,6 +16,12 @@ Sau mỗi lần học cú pháp mới (`def`, `for`, `if`/`while`) có một **c
    và Sổ lệnh (hiện cặp lệnh ngược).
 3. Chương 1, 2, Tay gắp, Vòng lặp, Cảm biến khoảng cách **giữ nguyên** nội dung (chỉ đổi vị trí trong thứ tự).
    Code chương đợt 2 giữ nguyên, chỉ khóa chờ mở.
+4. **Hàm chỉ đúng cho MỘT màn thì là HÀM CỦA MÀN, không phải hàm của em (user + điều phối chốt 15/10).** Hàm chỉ đúng khi xe đang hỏng / lắp ngược, hay chỉ đúng cho đường đi riêng của một màn
+   (không màn nào sau đó cần) thì KHÔNG vào kho, KHÔNG có mục Sổ lệnh, KHÔNG có trong `taoHam`: nó sống trong màn (`maMau.hamCuaMan`, như `step_right` ở xuong-ham.8), người chơi tự viết / sửa thân ngay trong màn;
+   máy chấm dùng bản người chơi gửi lên (trừ hàm khai `khoaHamMan`). Thân ban đầu: màn xe hỏng / lắp ngược là bản "cũ" đang chạy sai (`fixed_move` = move() cũ, `fixed_pick` / `fixed_drop` = pick() / drop() cũ, `safe_move2` = safe_move() cũ,
+   `reverse_run` = bản đi tiến); màn Đường về là `pass` (lõi hiểu; hợp lệ, chưa làm gì) để người chơi viết thay. Kho chỉ giữ hàm dùng lại được. Áp dụng: che-xe.7 `come_back`, che-xe.8 `fixed_move`, che-tay.7 `put_back`,
+   che-tay.8 `fixed_pick` + `fixed_drop`, che-lap.7 `come_home`, che-lap.9 `reverse_run`, che-cam-bien.7 `safe_move2`; robot-hoan-thien.8 dùng lại `fixed_pick` / `fixed_drop` dưới dạng hàm của màn CHO SẴN, đúng, khóa (`khoaHamMan`).
+   Kiểm: `kiem-hoc.mjs` mục 14b (tám tên không còn là hàm cốt truyện; lời giải sửa hàm của màn thì thắng; để nguyên thân ban đầu thì thua đúng mã).
 
 ## 2. Thứ tự chương
 
@@ -75,23 +81,33 @@ và hàm của em dùng ở MỌI màn sau (kể cả chơi lại chương 2, ta
   chưa chế thì "???" + moTa + "chế ở chương …". Có thêm một trang "Lệnh gốc" liệt kê cặp lệnh ngược.
 
 ### 3.4b Khay theo thẻ bộ phận + giới hạn theo màn (user chốt 14/10)
-- Khay (màn chơi và Xưởng): ◀ [tên thẻ] ▶ chuyển thẻ theo BỘ PHẬN của robot trên màn (Thân / Tay / Cảm biến…, thêm thẻ "Của màn"
-  khi có hàm của màn); ▲▼ cuộn trong một thẻ. Mỗi thẻ: lệnh gốc của bộ phận trước, rồi hàm của em thuộc bộ phận đó.
+- Khay (màn chơi và Xưởng): ◀ [tên thẻ] ▶ chuyển thẻ theo BỘ PHẬN của robot trên màn (Thân / Tay / Cảm biến…; 15/10: bỏ thẻ "Của màn", hàm của màn nằm trong thẻ bộ phận của nó, màu cam, xem 3.4c); ▲▼ cuộn trong một thẻ.
+  Mỗi thẻ: lệnh gốc của bộ phận trước, rồi hàm của màn, rồi hàm của em thuộc bộ phận đó.
 - Hàm của em xếp vào thẻ theo lệnh gốc nó gọi (kể cả gián tiếp): có cảm biến → Cảm biến; không có mà có lệnh tay / dụng cụ → Tay; còn lại → Thân.
 - KHÔNG giới hạn chung số hàm mang vào màn. Màn nào muốn thì khai `man.gioiHanHam = n`: chương trình chính được gọi trực tiếp
   tối đa n hàm của em KHÁC NHAU (hàm gọi bên trong hàm khác không tính); vượt thì lỗi khung `qua-gioi-han-ham`; giao diện hiện bộ đếm "Hàm 2/3".
 - **Đã làm (14/10)** — `game/thanh-phan.js` (Palette), `khung-code.js` + `cham.js` (giới hạn), `man-so-lenh.js`, máy kiểm `kiem-khay.mjs`:
   - Thẻ theo thứ tự: **Thân** (tên "Xe" cho banh / xich / omni, "Nhện", "Drone") · **Tay** (khi khay có lệnh tay / dụng cụ; tên theo bộ phận thật: "Tay kẹp", "Nam châm", "Máy ném", "Súng bóng", "Tấm đẩy"; nhiều loại cùng lúc thì "Tay")
-    · **Cảm biến** (khi khay có front_clear / left_clear / right_clear / front_metal / color / battery) · **Của màn** (khi có hàm của màn). Tối đa 4 thẻ. Một thẻ thì ẩn ◀ ▶ và hiện lại chữ KHỐI LỆNH. ◀ ▶ đi vòng tròn.
+    · **Cảm biến** (khi khay có front_clear / left_clear / right_clear / front_metal / color / battery) · ~~Của màn~~ (bỏ 15/10, xem 3.4c). Tối đa 3 thẻ. Một thẻ thì ẩn ◀ ▶ và hiện lại chữ KHỐI LỆNH. ◀ ▶ đi vòng tròn.
   - Hàm của em vào thẻ theo lệnh gốc nó gọi (kể cả gián tiếp): cảm biến > tay > thân. Hàm tay / cảm biến mà khay không có thẻ đó thì nằm ở thẻ Thân (như khay cũ). `locHamTheoRobot` giữ nguyên.
   - Cấu trúc Python KHÔNG có thẻ riêng: khối `for` (và `for c in "R":`) nằm cuối phần lệnh gốc của MỌI thẻ lệnh (Thân, Tay, Cảm biến) nên không phải đổi thẻ; `while` / `if` / `elif` / `else` đọc cảm biến và `c = color()` ở thẻ Cảm biến;
     `if d == "U":` (chuỗi chỉ đường của nhện / drone) và `while` mẫu của màn không có cảm biến ở thẻ Thân; khối BIẾN (đối số của hàm đang sửa) ở đầu mọi thẻ.
   - Thẻ mặc định khi vào màn / mở Xưởng: thẻ chứa hàm đang sửa; ở màn chơi thì hàm màn bắt chế (`taoHam`; hàm còn trống thì theo lời giải của màn); không có thì Thân. "Hàm mới" tạo từ một thẻ thì Xưởng mở sẵn thẻ đó. Vẽ lại khay giữ thẻ đang chọn;
     khối báo lỗi ở thẻ khác thì tự sang thẻ đó.
-  - Khối không co quá mức `.d1`; tràn thì cuộn bằng ▲ ▼ (và lăn chuột). Khay nhiều thẻ thì ▲ ▼ luôn có mặt (mờ khi không cuộn được) để ◀ ▶ không nhảy chỗ.
+  - ~~Khối không co quá mức `.d1`~~ (15/10: khối KHÔNG tự co nữa, xem 3.4c); tràn thì cuộn bằng vuốt dọc, ▲ ▼ và lăn chuột. Khay nhiều thẻ thì ▲ ▼ luôn có mặt (mờ khi không cuộn được) để ◀ ▶ không nhảy chỗ.
   - `man.gioiHanHam = n` (không khai thì không kiểm); tiêu đề khung chương trình hiện "Hàm k/n" (đỏ khi k > n). Chưa màn thật nào khai.
   - Sổ lệnh: chỉ thẻ nhóm đã mở + "Lệnh gốc" + "Hàm của em"; các nhóm chưa mở gộp thành một dòng mờ "Còn N nhóm chưa mở".
   - Lưu ý ngoài phạm vi: kho hàm của em có trần chung `KhoHam.SO_HAM_MAC_DINH = 41` (39 hàm cốt truyện + 2 chỗ tự đặt) — đây là trần kho, không phải giới hạn hàm mang vào màn; nếu muốn người chơi tự chế thoải mái hơn thì nâng số này.
+
+### 3.4c Sửa theo lần chơi thử trên điện thoại (15/10)
+- **Khối to, dễ chạm**: bỏ hẳn việc tự co khay (`.pal.d1` …); khối cao 34 px (khung 360), chữ to hơn, cách nhau 14 px; tên dài thì co chữ tới 78% rồi cắt "…". Ngón tay rung dưới 14 px (khung 360) vẫn là CHẠM.
+- **Vuốt dọc để cuộn khay** (cảm ứng; có quán tính nhẹ; lăn chuột và ▲ ▼ vẫn có): vuốt chủ yếu dọc (quá 1,5 lần chiều ngang) = cuộn; kéo ngang hoặc giữ ~300 ms (khối nhô lên) rồi kéo = kéo khối sang chương trình; chạm = chèn. Khay không cuộn được thì kéo hướng nào cũng là kéo khối.
+- **Xóa dòng trên cảm ứng**: chạm một dòng có code thì dòng được chọn VÀ ô số đổi thành nút ✕ đỏ rộng hơn (bấm ✕ là xóa, có "Đã xóa · Hoàn tác"); chạm hai lần liên tiếp vẫn xóa; chuột rê thì ✕ hiện như cũ. Lần đầu chèn một khối: hướng dẫn "Chèn nhầm? Chạm vào dòng rồi bấm ✕ để xóa." (cờ `meo-xoa`).
+- **Hàm của màn vào thẻ bộ phận**: trong mỗi thẻ: lệnh gốc → khối cấu trúc → HÀM CỦA MÀN (cam; ổ khóa nếu `khoaHamMan`) → HÀM CỦA EM. Thẻ mặc định khi vào màn: thẻ chứa hàm màn bắt chế (`taoHam`), không có thì hàm của màn cho sửa, rồi hàm của em mà lời giải sửa.
+- **Khóa hàm cốt truyện**: hàm CỐT TRUYỆN (tên nằm trong `taoHam` của một màn nào đó; `ManHoc.hamCotTruyen()`) chỉ SỬA được ở màn cần sửa nó: `man.taoHam` hoặc tên trong `hamCuaEmMoi` của `loiGiai` / `loiGiaiKhac` / `congThucKhac` (`ManHoc.hamSuaDuoc(man)`, `App.hamSuaDuoc`). Màn khác: khay có ổ khóa thay bút chì, mở ở Xưởng chỉ XEM (`chiDoc`, "Chỉ xem", toast). Hàm tự đặt luôn sửa được; bảng Gỡ lỗi "Mở hết" không mở khóa này. `TP.khoaKhay(man)` trả về khóa khối ('em:u_turn', 'man:go_out').
+- **Khung hướng dẫn** `game/huong-dan.js` (`window.HuongDan`): chuỗi bước { dich, chu, xong }, làm sáng đích (viền nhấp nháy + bong bóng mũi tên, không chặn bấm), sự kiện qua `HuongDan.bao`, hạn `han`, cờ đã xem qua `Luu`; màn khai `man.huongDan`. Cách dùng ghi ở đầu tệp. Đang dùng cho hướng dẫn xóa dòng (`xoa-dong`) và ◀ ▶ (`doi-the`: lần đầu khay có từ 2 thẻ, và lần đầu có thẻ Cảm biến).
+- **Ngoặc nhịp** (Editor, chương trình chính và thân hàm trong Xưởng): code vẫn là Python thật; khung vẽ ngoặc mảnh nâu bên phải gom lệnh gốc "chỉ ra lệnh" (bánh, trượt, tay, kẹp, đẩy, nam châm, ném, bắn) + `wait()` thuộc cùng một nhịp, nhãn "nhịp k" ở dòng `wait()` (`TP.nhomNhip`). Dòng khác (hàm của em, for / if / while, chú thích, dòng trống) ngắt nhóm. Nhện / drone (`go_*` tự trôi nhịp) không vẽ.
+- **Đèn theo bộ phận** (`game/den-bo-phan.js`, `window.DenBoPhan`; thay hai đèn T / P): dòng thứ hai trong ô đồng hồ NHỊP, mỗi bộ phận robot có trên màn một biểu tượng pixel: bánh trái, bánh phải, trượt (omni), tay (lên / xuống), kẹp (mở / đóng), nam châm, máy ném, súng bóng, tấm đẩy, cảm biến, chân (nhện), cánh quạt (drone). Sáng trong nhịp bộ phận đó chạy, tính từ vết (`robot.banh`, `robot.truot`, các mục `lenh` ngay trước nhịp, sự kiện). Cột nút màn chơi thu thấp (nút 32 px, 26 px ở màn nhiều sân).
 
 ### 3.5 Mở khóa đợt 2
 - `ThuTuChuong`: thêm `dot2: [...]`, `congDot2: 'mã chương'`. `App.trangThai`: chương đợt 2 mở khi trùm của chương cổng đã qua
@@ -113,8 +129,8 @@ Mỗi màn chế lệnh: `mucTieu 'bong-mo'`, `chinhCoDinh`, sân thoáng (vài 
 | 4 | luyện | Bánh lùi | bóng mờ 1 ô sau lưng, cùng hướng; mở `left_back`/`right_back` | `back` | left_back, right_back, wait | u_turn, move, u_turn |
 | 5 | luyện | Quay đầu 1 nhịp | sửa `u_turn` của em: trái tiến + phải lùi = quay đầu trong 1 nhịp (sao nhịp chỉ đạt bằng cách này) | sửa `u_turn` | left_move, right_back, wait | turn_right ×2 (thắng, ít sao) |
 | 6 | luyện | Đỗ lùi | lùi vào chỗ đỗ bên cạnh, đầu xe quay ra đường | `park` | turn_left, back | turn_right, move, u_turn |
-| 7 | biến thể | Đường về | hàm của màn `go_out()` (khóa, xem được); chế `come_back()` đưa xe về đúng chỗ + hướng ban đầu. Gợi ý: đi ngược thứ tự, đổi từng lệnh thành lệnh ngược | `come_back` | lệnh ngược theo thứ tự ngược | u_turn + đi lại + u_turn |
-| 8 | biến thể | Đấu dây ngược | `daoChieu ['trai']`: `move()` của em thành quay đầu. Tới cờ | `fixed_move` | left_back, right_move, wait | … |
+| 7 | biến thể | Đường về | hàm của màn `go_out()` (khóa, xem được); chế `come_back()` đưa xe về đúng chỗ + hướng ban đầu. Gợi ý: đi ngược thứ tự, đổi từng lệnh thành lệnh ngược | `come_back` *(hàm của màn, thân ban đầu `pass`)* | lệnh ngược theo thứ tự ngược | u_turn + đi lại + u_turn |
+| 8 | biến thể | Đấu dây ngược | `daoChieu ['trai']`: `move()` của em thành quay đầu. Tới cờ | `fixed_move` *(hàm của màn, thân ban đầu = move() cũ; người chơi sửa)* | left_back, right_move, wait | … |
 | 9 | biến thể | Chỉ còn số lùi | `hamGoc = [left_back, right_back, wait]`; tới cờ bằng cách đi lùi. Sửa `turn_right`/`turn_left` của em sang bánh lùi (vẫn đúng ở mọi màn khác) | sửa `turn_right`, `turn_left` | right_back, wait | |
 | 10 | trùm | Bãi đỗ xe | ra khỏi bãi, né xe đỗ, lùi vào chỗ trống: bóng mờ + ◆; tự viết chương trình chính | huy hiệu `che-xe` | | |
 
@@ -142,8 +158,8 @@ Hàm có sẵn: chương 2–4 (move, turn_right/left bản bánh lùi, u_turn 1
 | 4 | Nhặt sau lưng | vật sau lưng; xong thì đang CẦM vật, mặt như cũ (`bongMo.cam`) | `grab_back` |
 | 5 | Lùi mang hàng | nhặt vật trước mặt, lùi 2 ô, đặt xuống trước mặt | `drag` (pick, back, back, drop) |
 | 6 | Đổi chỗ | hai vật khác màu ở trước mặt và bên phải đổi chỗ (bóng mờ vật có màu, chấm theo màu); ≤ 10 dòng nhờ hàm vừa chế | `swap` |
-| 7 | Đặt lại chỗ cũ | hàm của màn `go_get()` khóa (move, move, pick); chế `put_back()` đưa vật về chỗ cũ, xe về chỗ + hướng cũ (pick ↔ drop là cặp ngược) | `put_back` |
-| 8 | Tay lắp ngược | `daoChieu ['tay']`: arm_up ↔ arm_down đổi chỗ; pick/drop của em hỏng; chế bản dùng được rồi đưa vật về đích | `fixed_pick`, `fixed_drop` |
+| 7 | Đặt lại chỗ cũ | hàm của màn `go_get()` khóa (move, move, pick); chế `put_back()` đưa vật về chỗ cũ, xe về chỗ + hướng cũ (pick ↔ drop là cặp ngược) | `put_back` *(hàm của màn, thân ban đầu `pass`)* |
+| 8 | Tay lắp ngược | `daoChieu ['tay']`: arm_up ↔ arm_down đổi chỗ; pick/drop của em hỏng; chế bản dùng được rồi đưa vật về đích | `fixed_pick`, `fixed_drop` *(hàm của màn, thân ban đầu = pick() / drop() cũ; người chơi sửa)* |
 | 9 | Cần cẩu | bánh phải hỏng (`phanCung` chỉ bánh trái + tay): xe chỉ xoay tại chỗ; chuyển các vật quanh xe vào đích. turn_right của em (bánh lùi phải) hỏng → sửa lại bằng bánh trái | sửa `turn_right`, `u_turn` |
 | 10 | Kho đồ (trùm) | nhiều vật, nhiều đích, `gioiHanHam` ~4; huy hiệu `che-tay` | — |
 Lõi cần thêm: `bongMo.cam` (xe đang cầm vật lúc xong), `bongMo.vat` có `mau` (chấm theo màu), `daoChieu` cho `'tay'` (arm_up↔arm_down) và `'kep'` (grab↔release); giao diện vẽ bóng mờ vật có màu, xe mờ cầm vật.
@@ -158,9 +174,9 @@ Chỉ dùng hàm của chương 2–4 và 6 (KHÔNG dùng hàm của che-tay —
 | 4 | Bậc chéo | lên 3 bậc chéo phải, giữ hướng | `zigzag` (for 3: stair() / move()+dodge_right()) |
 | 5 | Dọn hàng | 3 vật thẳng hàng trước mặt → dời mỗi vật sang cột phải | `sweep` (for có pick/drop) |
 | 6 | Vòng lồng | vòng vuông cạnh 3 ô (for lồng), ◆ | `ring` |
-| 7 | Đường về vòng lặp | hàm của màn `go_round()` khóa có for; chế `come_home()`: cùng số lần lặp, thân đảo thứ tự + lệnh ngược | `come_home` |
+| 7 | Đường về vòng lặp | hàm của màn `go_round()` khóa có for; chế `come_home()`: cùng số lần lặp, thân đảo thứ tự + lệnh ngược | `come_home` *(hàm của màn, thân ban đầu `pass`)* |
 | 8 | Lệch một | hàm của màn dùng `range` sai một → sửa | sửa hàm của màn |
-| 9 | Số lùi đường dài | chỉ còn số lùi (`phanCung`), đi xa bằng for | `reverse_run` |
+| 9 | Số lùi đường dài | chỉ còn số lùi (`phanCung`), đi xa bằng for | `reverse_run` *(hàm của màn, thân ban đầu = for 6 lần move(); người chơi sửa sang back())* |
 | 10 | Tuần tra kho (trùm) | nhiều ◆, `gioiHanHam` ~3; huy hiệu `che-lap` | — |
 
 ### 5.3 Chương 9 `che-cam-bien` — Chế lệnh có `if` / `while` + BIẾN ĐẾM (cauTruc for/if/while)
@@ -173,7 +189,7 @@ Chỉ dùng hàm của chương 2–4, 6, 8 (KHÔNG dùng hàm của che-tay / c
 | 4 | Cửa hông | đi tới khi bên phải trống (3 sân dài ngắn khác) | `to_gap` (while not right_clear(): move()) |
 | 5 | Đi rồi về | tới tường rồi về ĐÚNG chỗ cũ, mặt như cũ (3 sân dài khác) → BIẾN ĐẾM `n = 0`, `n = n + 1`, `range(n)` | `bounce` |
 | 6 | Bám tường | một bước bám tường phải (if/elif/else); chương trình chính cố định lặp nó | `follow_right` |
-| 7 | Cảm biến lắp ngược | `daoChieu ['cam']`: front_clear() trả ngược → chế bản đúng bằng `not` | `safe_move2` |
+| 7 | Cảm biến lắp ngược | `daoChieu ['cam']`: front_clear() trả ngược → chế bản đúng bằng `not` | `safe_move2` *(hàm của màn, thân ban đầu = safe_move() cũ; người chơi sửa)* |
 | 8 | Sửa hàm lỗi | hàm của màn sai điều kiện (left_clear thay right_clear, hoặc quên move trong while) | sửa hàm của màn |
 | 9 | Lấy rồi về | đi tới vật, nhặt, về chỗ cũ (đếm bước), đặt xuống (3 sân) | `fetch_back` |
 | 10 | Mê cung kho (trùm) | mê cung + mang hàng, 3 sân, `gioiHanHam`; huy hiệu `che-cam-bien` | — |

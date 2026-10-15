@@ -97,6 +97,19 @@
     App.vaoMan(m.ma);
   }
 
+  /** Địa chỉ có `man=<mã hoặc id>` (vd `choi.html?debug=1&man=vong-lap.10` hay `#man=6.10`): vào thẳng màn đó lúc mở trang
+   *  (như chạm màn trong bảng Gỡ lỗi; công tắc "Nạp hàm chuẩn" bật thì nạp kho trước). */
+  function vaoTuDiaChi() {
+    try {
+      var q = (location.search || '') + '&' + (location.hash || '').replace(/^#/, '');
+      var k = /[?&]man=([^&]+)/.exec(q);
+      if (!k) return;
+      var ma = decodeURIComponent(k[1]), m = ManHoc.timMa(ma) || ManHoc.tim(ma);
+      if (m) { S.daMo = true; vaoNgay(m); }
+    } catch (e) { /* bỏ qua */ }
+  }
+  if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('load', function () { setTimeout(vaoTuDiaChi, 50); });
+
   /* ---------------------------------------------------------------- xóa tiến độ */
   /** Xóa sao / tiến độ, cờ đã xem, bản nháp mọi màn; kemKho thì xóa cả kho hàm (và sân thử của từng hàm). Bảng cài đặt của chính Gỡ lỗi không bị xóa. */
   function xoaTienDo(kemKho) {

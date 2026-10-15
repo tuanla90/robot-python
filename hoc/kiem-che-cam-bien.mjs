@@ -112,13 +112,15 @@ console.log('\n== 2. Chẩn đoán cam-bien-nguoc ==');
   const cd = cu.chanDoan.find((c) => c.ma === 'cam-bien-nguoc');
   kiem('safe_move() cũ với cảm biến ngược: có cam-bien-nguoc, mức thông tin (không phải lỗi), kể lần hỏi đầu tiên bằng lời ("ô trước mặt đang trống mà front_clear() lại trả về False")',
     !!cd && cd.muc === 'thong-tin' && /ô trước mặt đang trống mà front_clear\(\) lại trả về False/.test(cd.loi) && cd.thuc === true && cd.traVe === false && cd.ten === 'front_clear', J(cd));
-  kiem('cam-bien-nguoc nêu dòng đã hỏi (cho trỏ vào hàm của em safe_move2, dòng 1) và chỉ ghi MỘT lần cho mỗi sân', J(cd.cho) === J({ cot: 'hamEm', dong: 1, ten: 'safe_move2' }) && cu.theoSan.every((s) => s.chanDoan.filter((c) => c.ma === 'cam-bien-nguoc').length <= 1));
+  kiem('cam-bien-nguoc nêu dòng đã hỏi (cho trỏ vào hàm CỦA MÀN safe_move2, dòng 1) và chỉ ghi MỘT lần cho mỗi sân', J(cd.cho) === J({ cot: 'hamMan', dong: 1, ten: 'safe_move2' }) && cu.theoSan.every((s) => s.chanDoan.filter((c) => c.ma === 'cam-bien-nguoc').length <= 1));
   const thang = ChamHoc.cham(m7, m7.loiGiai, tron(k7, m7.loiGiai.hamCuaEmMoi));
   kiem('lời giải đúng (thắng): không có cam-bien-nguoc nào', thang.thang && !maCua(thang).includes('cam-bien-nguoc') && thang.chanDoan.length === 0);
   const chuaHoi = ChamHoc.cham(m7, m7.loiSai[3].baiLam, k7);
   kiem('chưa chế hàm (không hề hỏi cảm biến): chỉ ham-chua-co, không có cam-bien-nguoc', J(maCua(chuaHoi)) === '["ham-chua-co"]');
   const thu = ChamHoc.thuHam(m7, { chinh: [] }, 'safe_move', k7);
   kiem('sân thử trong Xưởng: thử safe_move() cũ cũng nói cảm biến lắp ngược (xe ở giữa sân trống: trước mặt trống mà trả False), nhưng KHÔNG tô đỏ dòng nào (cho null: code có thể đã đúng)', maCua(thu).includes('cam-bien-nguoc') && thu.robot.y === 2 && thu.robot.x === 2 && thu.chanDoan.find((c) => c.ma === 'cam-bien-nguoc').cho === null, J(thu.chanDoan));
+  const thuM = ChamHoc.thuHam(m7, { chinh: [], hamCuaMan: m7.maMau.hamCuaMan }, 'safe_move2', k7);
+  kiem('sân thử trong Xưởng: thử safe_move2() của màn (thân ban đầu = safe_move() cũ) cũng nói cảm biến lắp ngược, không tô đỏ dòng nào', maCua(thuM).includes('cam-bien-nguoc') && thuM.robot.y === 2 && thuM.chanDoan.find((c) => c.ma === 'cam-bien-nguoc').cho === null, J(thuM.chanDoan));
   kiem('màn khác (không đảo "cam") không bao giờ có cam-bien-nguoc, kể cả sân thử', !maCua(ChamHoc.thuHam(man(1), { chinh: [] }, 'move', khoTruoc(man(1).id))).includes('cam-bien-nguoc') && !maCua(ChamHoc.cham(man(1), man(1).loiSai[1].baiLam, tron(khoTruoc(man(1).id), man(1).loiSai[1].hamCuaEmMoi))).includes('cam-bien-nguoc'));
 }
 
@@ -184,8 +186,9 @@ console.log('\n== 4. Chương che-cam-bien: dữ liệu ==');
   kiem('tên các màn: Đi cẩn thận, Tìm lối mở, Mê cung nhỏ, Cửa hông, Đi rồi về, Bám tường, Cảm biến lắp ngược, Sửa hàm lỗi, Lấy rồi về, Kho hàng; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-cam-bien',
     J(che.map((m) => m.ten)) === J(['Đi cẩn thận', 'Tìm lối mở', 'Mê cung nhỏ', 'Cửa hông', 'Đi rồi về', 'Bám tường', 'Cảm biến lắp ngược', 'Sửa hàm lỗi', 'Lấy rồi về', 'Kho hàng']) &&
       J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-cam-bien' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh cảm biến');
-  kiem('lệnh chế ở từng màn (taoHam): safe_move, face_open, —, to_gap, bounce, follow_right, safe_move2, —, fetch_back, —; không màn nào sửa hàm cũ',
-    J(che.map((m) => m.taoHam)) === J([['safe_move'], ['face_open'], [], ['to_gap'], ['bounce'], ['follow_right'], ['safe_move2'], [], ['fetch_back'], []]) &&
+  kiem('lệnh chế ở từng màn (taoHam): safe_move, face_open, —, to_gap, bounce, follow_right, —, —, fetch_back, —; 9.7 (safe_move2) và 9.8 (to_door) viết / sửa hàm CỦA MÀN (15/10: hàm chỉ đúng cho một màn không vào kho); không màn nào sửa hàm cũ',
+    J(che.map((m) => m.taoHam)) === J([['safe_move'], ['face_open'], [], ['to_gap'], ['bounce'], ['follow_right'], [], [], ['fetch_back'], []]) &&
+      [7, 8].every((i) => man(i).loiGiai.hamCuaEmMoi.length === 0 && man(i).congThucKhac.every((c) => !c.hamCuaEmMoi || c.hamCuaEmMoi.length === 0)) && J(man(7).loiGiai.hamCuaMan.map((h) => h.ten)) === '["safe_move2"]' &&
       che.every((m) => m.loiGiai.hamCuaEmMoi.every((h) => m.taoHam.includes(h.ten))));
   kiem('xe hai bánh (loaiRobot banh), robot { than "hai-banh", tay null (1–8) | "kep" (9, 10), camBien [khoang-cach ở hông] }, Xưởng mở, được dùng hàm của em, chương trình 10 ô, mỗi hàm 10 ô, cauTruc ["for","if","while"] cả ở khung',
     che.every((m) => m.loaiRobot === 'banh' && m.robot.than === 'hai-banh' && m.robot.tay === (m.so >= 9 ? 'kep' : null) && J(m.robot.camBien) === '[{"ma":"khoang-cach","o":"hong"}]' && m.moXuong === true && m.camHamCuaEm === false && m.khung.chinh === 10 && m.khung.moiHam === 10 && J(m.cauTruc) === '["for","if","while"]' && J(m.khung.cauTruc) === J(m.cauTruc)));
@@ -210,7 +213,7 @@ console.log('\n== 4. Chương che-cam-bien: dữ liệu ==');
   const tatCaCode = (m) => [m.maMau, m.loiGiai, m.loiGiaiKhac, ...(m.congThucKhac || []), ...m.loiSai].flatMap((x) => [x, { chinh: [], hamCuaMan: [], hamCuaEmMoi: [] }]).flatMap((x) => dungTen(x));
   const nhacTen = che.filter((m) => tatCaCode(m).some((s) => [...cam].some((t) => new RegExp('\\b' + t + '\\(').test(s)))).map((m) => m.id);
   kiem('không màn nào gọi hàm của che-tay / che-lap (' + [...cam].join(', ') + ') trong bài mẫu, lời giải, công thức khác hay lời sai', nhacTen.length === 0 && che.every((m) => m.hamCuaEmCan.every((t) => !cam.has(t))), nhacTen.join());
-  const cho = new Set(['move', 'turn_right', 'turn_left', 'u_turn', 'corner', 'stair', 'two', 'dodge_right', 'dodge_left', 'back', 'park', 'come_back', 'fixed_move', 'pick', 'drop', 'carry', 'side', 'row', 'bend_left', 'bend_right', 'go_wall'].concat(che.flatMap((m) => m.taoHam)));
+  const cho = new Set(['move', 'turn_right', 'turn_left', 'u_turn', 'corner', 'stair', 'two', 'dodge_right', 'dodge_left', 'back', 'park', 'pick', 'drop', 'carry', 'side', 'row', 'bend_left', 'bend_right', 'go_wall'].concat(che.flatMap((m) => m.taoHam)));
   kiem('hamCuaEmCan chỉ gồm hàm của chương 2, 3, 4, 6, 8 và hàm chế trong chính chương này', che.every((m) => m.hamCuaEmCan.every((t) => cho.has(t))), J(che.map((m) => m.hamCuaEmCan.filter((t) => !cho.has(t)))));
 }
 
@@ -264,7 +267,8 @@ const FAIL = new Set(['lech-bong-mo', 'chua-qua-diem', 'chua-toi-co', 'chua-dua-
         rs.sao < 3 && thieu.length === 0 && (khongThang ? !rs.thang : rs.thang), 'thiếu ' + thieu.join() + ' · có ' + co.join() + ' · thang ' + rs.thang + ' · sao ' + rs.sao);
     });
     // đề bài, gợi ý
-    const tenChe = m.loiGiai.hamCuaEmMoi.map((h) => h.ten);
+    const maMauThan = {}; m.maMau.hamCuaMan.forEach((h) => { maMauThan[h.ten] = J(h.than); });
+    const tenChe = m.loiGiai.hamCuaEmMoi.map((h) => h.ten).concat(m.loiGiai.hamCuaMan.filter((h) => maMauThan[h.ten] !== J(h.than)).map((h) => h.ten));          // hàm em chế + hàm của màn người chơi viết / sửa (thân khác bản ban đầu)
     kiem(m.id + ': đề bài nhắc tên lệnh cần chế (' + (tenChe.join(', ') || 'màn dùng / sửa hàm') + ')', tenChe.every((t) => (m.deBai + ' ' + (m.veMaMau || '')).includes(t + '()')), m.deBai);
     kiem(m.id + ': đề 1–3 câu, gợi ý 1–2 câu, không nói tên nút', m.goiY.length >= 1 && m.goiY.length <= 2 && (m.deBai.match(/[.?!](\s|$)/g) || []).length <= 3 && m.goiY.every((g) => !/\bnút\b/i.test(g)), m.deBai);
   }
@@ -307,7 +311,11 @@ console.log('\n== 6. Luật riêng từng màn ==');
   const m7 = man(7);
   const cu7 = ch(m7, m7.loiSai[0].baiLam, m7.loiSai[0].hamCuaEmMoi);
   kiem('7: safe_move() cũ (if front_clear(): move()) với cảm biến ngược thua ở sân trống phía trước; safe_move2() = if not front_clear(): move() thắng 3 sao 4 nhịp; ba sân: trống ba ô / chắn sau một ô / chắn sát mặt',
-    !cu7.thang && cu7.theoSan.map((s) => s.thang).join() === 'false,false,true' && J(m7.loiGiai.hamCuaEmMoi[0].than) === J(['if not front_clear():', '    move()']) && ch(m7, m7.loiGiai, m7.loiGiai.hamCuaEmMoi).sao === 3 && J(ch(m7, m7.loiGiai, m7.loiGiai.hamCuaEmMoi).theoSan.map((s) => s.soNhip)) === '[3,1,0]');
+    !cu7.thang && cu7.theoSan.map((s) => s.thang).join() === 'false,false,true' && J(m7.loiGiai.hamCuaMan[0].than) === J(['if not front_clear():', '    move()']) && ch(m7, m7.loiGiai, m7.loiGiai.hamCuaEmMoi).sao === 3 && J(ch(m7, m7.loiGiai, m7.loiGiai.hamCuaEmMoi).theoSan.map((s) => s.soNhip)) === '[3,1,0]');
+  const r7m = ChamHoc.cham(m7, m7.maMau, khoTruoc(m7.id));
+  kiem('7: safe_move2() là HÀM CỦA MÀN, không khóa: thân ban đầu = safe_move() cũ (if front_clear(): move()); để nguyên thì thua như safe_move() cũ (lech-bong-mo + cam-bien-nguoc); sửa thêm not thì thắng 3 sao; không vào kho, không taoHam, không hàm của em mới; hamCuaEmCan chỉ move',
+    J(m7.maMau.hamCuaMan.map((h) => h.ten)) === '["safe_move2"]' && J(m7.maMau.hamCuaMan[0].than) === J(['if front_clear():', '    move()']) && m7.khoaHamMan === undefined && m7.taoHam.length === 0 && J(m7.hamCuaEmCan) === '["move"]' && !r7m.thang && maCua(r7m).includes('lech-bong-mo') && maCua(r7m).includes('cam-bien-nguoc') &&
+      J(m7.maMau.hamCuaMan[0].than.map((s) => s.replace('if front_clear()', 'if not front_clear()'))) === J(m7.loiGiai.hamCuaMan[0].than) && !khoTruoc(m7.id).some((h) => h.ten === 'safe_move2'));
   const m8 = man(8);
   const hong8 = ChamHoc.cham(m8, m8.maMau, khoTruoc(m8.id));
   kiem('8: hàm to_door() của màn hỏng (hỏi left_clear trong khi cửa ở bên phải): chạy mãi → vong-vo-han, trỏ vào dòng while của hàm của màn; hàm của màn SỬA ĐƯỢC (không khoaHamMan) và nằm trong maMau',
@@ -328,11 +336,12 @@ console.log('\n== 6. Luật riêng từng màn ==');
 /* ================================================================= 7. SỔ LỆNH VÀ THẺ SCRIPT */
 console.log('\n== 7. Sổ lệnh, game/choi.html ==');
 {
-  const moi = ['safe_move', 'face_open', 'to_gap', 'bounce', 'follow_right', 'safe_move2', 'fetch_back'];
-  kiem('Sổ lệnh có bảy hàm của chương, nhóm cam-bien, chuong che-cam-bien, man khớp màn tạo hàm, lời lớp 5 (≤ 80 chữ, không dấu chấm cuối); theo thứ tự chế',
+  const moi = ['safe_move', 'face_open', 'to_gap', 'bounce', 'follow_right', 'fetch_back'];
+  kiem('safe_move2 (hàm của màn, 15/10) không có trong Sổ lệnh và không là hàm cốt truyện', SoLenh.tim('safe_move2') === null && !tenCotTruyen.includes('safe_move2'));
+  kiem('Sổ lệnh có sáu hàm của chương, nhóm cam-bien, chuong che-cam-bien, man khớp màn tạo hàm, lời lớp 5 (≤ 80 chữ, không dấu chấm cuối); theo thứ tự chế',
     moi.every((t, i) => { const h = SoLenh.tim(t); return h && h.nhom === 'cam-bien' && h.chuong === 'che-cam-bien' && h.man === che.find((m) => m.taoHam.includes(t)).ma && h.moTa.length <= 80 && !/[.]$/.test(h.moTa); }) &&
       J(SoLenh.theoChuong('che-cam-bien').map((h) => h.ten)) === J(moi) && SoLenh.tim('safe_move').moTa === 'Tiến một ô nếu trước mặt trống, không thì đứng yên');
-  kiem('nhóm cam-bien của Sổ lệnh: go_wall (khoang-cach) rồi bảy hàm của che-cam-bien', J(SoLenh.theoNhom('cam-bien').map((h) => h.ten)) === J(['go_wall'].concat(moi)));
+  kiem('nhóm cam-bien của Sổ lệnh: go_wall (khoang-cach) rồi sáu hàm của che-cam-bien', J(SoLenh.theoNhom('cam-bien').map((h) => h.ten)) === J(['go_wall'].concat(moi)));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   const vtri = (f) => tags.indexOf('../' + f);

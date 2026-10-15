@@ -4,7 +4,7 @@
    - daoChieu 'tay' / 'kep' (tay lắp ngược): arm_up ↔ arm_down, grab ↔ release đổi chỗ; cấu hình sai bị từ chối;
    - bongMo.vat có màu (chấm theo màu) và bongMo.cam (xe mờ cầm vật): thắng / không thắng, cấu hình sai;
    - chẩn đoán lech-bong-mo nói bằng lời vật nào chưa đúng ô / đúng màu, xe cầm thiếu hay thừa vật;
-   - Sổ lệnh có đủ tám hàm mới (so-lenh.js);
+   - Sổ lệnh có đủ năm hàm mới (so-lenh.js); put_back, fixed_pick, fixed_drop là HÀM CỦA MÀN (15/10: chỉ đúng cho một màn) nên không có ở đó, không vào kho;
    - 10 màn che-tay: lời giải 3 sao, mọi công thức khác thắng, lời giải khác đúng 2 sao, lời sai đúng mã, chinhCoDinh chặn chương trình chính gửi lên,
      nhịp: đường ngắn nhất BFS (do-duong-che-tay.mjs, gộp nâng tay với lệnh bánh) và BFS "cách viết chuẩn" (pick / drop là khối 2 nhịp) không dài hơn sao.nhip;
    - bộ dò đường BFS kiểm chéo với SanHoc.chay bằng chương trình ngẫu nhiên và bằng chính đường BFS tìm được;
@@ -176,18 +176,20 @@ console.log('\n== 2. bongMo.vat có màu (chấm theo màu) và bongMo.cam (xe m
 }
 
 /* ================================================================= 3. SỔ LỆNH */
-console.log('\n== 3. Sổ lệnh: tám hàm mới của che-tay ==');
+console.log('\n== 3. Sổ lệnh: năm hàm mới của che-tay (put_back, fixed_pick, fixed_drop là hàm của màn) ==');
 {
-  const moi = ['pass_back', 'put_right', 'grab_back', 'drag', 'swap', 'put_back', 'fixed_pick', 'fixed_drop'];
-  kiem('SoLenh.theoChuong("che-tay") đúng tám hàm theo thứ tự chế: pass_back, put_right, grab_back, drag, swap, put_back, fixed_pick, fixed_drop; nhóm tay',
+  const moi = ['pass_back', 'put_right', 'grab_back', 'drag', 'swap'];
+  kiem('SoLenh.theoChuong("che-tay") đúng năm hàm theo thứ tự chế: pass_back, put_right, grab_back, drag, swap; nhóm tay',
     J(SoLenh.theoChuong('che-tay').map((h) => h.ten)) === J(moi) && SoLenh.theoChuong('che-tay').every((h) => h.nhom === 'tay'));
   const dau = {};
   for (const m of tatCa) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
+  kiem('put_back, fixed_pick, fixed_drop là hàm CỦA MÀN: không là hàm cốt truyện (không trong taoHam của màn nào), không trong Sổ lệnh, không trong hamCuaEmMoi của lời giải nào',
+    ['put_back', 'fixed_pick', 'fixed_drop'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null && tatCa.every((m) => !m.loiGiai.hamCuaEmMoi.some((h) => h.ten === t))));
   kiem('mỗi hàm có chuong và man đúng màn đầu tiên chế nó (taoHam của màn che-tay)', moi.every((t) => dau[t] && SoLenh.tim(t) && SoLenh.tim(t).man === dau[t].ma && SoLenh.tim(t).chuong === 'che-tay'));
   kiem('moTa là MỘT câu ngắn lớp 5: 8–80 chữ, không xuống dòng, không dấu chấm cuối; pass_back: "Chuyền vật trước mặt ra ô sau lưng, xe giữ chỗ và hướng"',
     moi.every((t) => { const d = SoLenh.tim(t).moTa; return d.length >= 8 && d.length <= 80 && !/\n/.test(d) && !/[.]$/.test(d); }) && SoLenh.tim('pass_back').moTa === 'Chuyền vật trước mặt ra ô sau lưng, xe giữ chỗ và hướng');
   kiem('tên hàm cốt truyện không trùng với lệnh gốc hay hàm của chương khác', moi.every((t) => SoLenh.ds.filter((h) => h.ten === t).length === 1 && !KhoHam.HAM_GOC_MAC_DINH.includes(t)));
-  kiem('thứ tự trong Sổ lệnh: hàm của che-tay đứng sau carry (tay-gap) và trước hàm của vong-lap', SoLenh.ds.findIndex((h) => h.ten === 'pass_back') > SoLenh.ds.findIndex((h) => h.ten === 'carry') && SoLenh.ds.findIndex((h) => h.ten === 'fixed_drop') < SoLenh.ds.findIndex((h) => h.ten === 'side'));
+  kiem('thứ tự trong Sổ lệnh: hàm của che-tay đứng sau carry (tay-gap) và trước hàm của vong-lap', SoLenh.ds.findIndex((h) => h.ten === 'pass_back') > SoLenh.ds.findIndex((h) => h.ten === 'carry') && SoLenh.ds.findIndex((h) => h.ten === 'swap') < SoLenh.ds.findIndex((h) => h.ten === 'side'));
 }
 
 /* ================================================================= 4. MƯỜI MÀN CHE-TAY */
@@ -203,8 +205,9 @@ console.log('\n== 4. Chương che-tay: dữ liệu và luật từng màn ==');
     che.every((m) => m.loaiRobot === 'banh' && J(m.robot) === J({ than: 'hai-banh', tay: 'kep', camBien: [] }) && m.khung.chinh === 10 && m.khung.moiHam === 10 && m.moXuong === true && m.camHamCuaEm === false && J(m.cauTruc) === '[]'));
   kiem('khay: đủ bánh (cả lùi) và bốn lệnh tay ở mọi màn trừ 5.9; 5.9 hỏng bánh phải: khay = phần cứng = trừ right_back',
     che.every((m) => J(m.hamGoc) === J(m.so === 9 ? BANH_TAY_HONG : BANH_TAY)) && J(man(9).phanCung) === J(BANH_TAY_HONG) && che.every((m) => m.so === 9 || m.phanCung === undefined) && /kẹt số lùi/.test(man(9).canhBao));
-  kiem('lệnh chế ở từng màn (taoHam): pass_back, put_right, —, grab_back, drag, swap, put_back, fixed_pick+fixed_drop, —, —; 5.9 sửa turn_right và u_turn (không tạo mới)',
-    J(che.map((m) => m.taoHam)) === J([['pass_back'], ['put_right'], [], ['grab_back'], ['drag'], ['swap'], ['put_back'], ['fixed_pick', 'fixed_drop'], [], []]) && J(man(9).loiGiai.hamCuaEmMoi.map((h) => h.ten)) === '["turn_right","u_turn"]');
+  kiem('lệnh chế ở từng màn (taoHam): pass_back, put_right, —, grab_back, drag, swap, —, —, —, —; 5.7 viết put_back và 5.8 sửa fixed_pick, fixed_drop là HÀM CỦA MÀN (không hàm của em mới); 5.9 sửa turn_right và u_turn (không tạo mới)',
+    J(che.map((m) => m.taoHam)) === J([['pass_back'], ['put_right'], [], ['grab_back'], ['drag'], ['swap'], [], [], [], []]) && J(man(9).loiGiai.hamCuaEmMoi.map((h) => h.ten)) === '["turn_right","u_turn"]' &&
+      [7, 8].every((i) => man(i).loiGiai.hamCuaEmMoi.length === 0 && man(i).congThucKhac.every((c) => !c.hamCuaEmMoi || c.hamCuaEmMoi.length === 0)) && J(man(7).loiGiai.hamCuaMan.map((h) => h.ten)) === '["go_get","put_back"]' && J(man(8).loiGiai.hamCuaMan.map((h) => h.ten)) === '["fixed_pick","fixed_drop"]');
   kiem('mục tiêu: 5.3 tới cờ (có chữ F, vật chỉ là chướng ngại), còn lại bong-mo có bongMo; chinhCoDinh ở mọi màn trừ 5.3 và 5.10; bongMo.cam chỉ ở 5.4; bongMo.vat có màu chỉ ở 5.6 và 5.10; khoaHamMan ["go_get"] chỉ ở 5.7; daoChieu ["tay"] chỉ ở 5.8; gioiHanHam 4 chỉ ở 5.10',
     che.every((m) => (m.so === 3 ? m.mucTieu === undefined && /F/.test(m.san.join('')) && m.bongMo === undefined : m.mucTieu === 'bong-mo' && !!m.bongMo && !/F/.test(m.san.join(''))) &&
       (m.chinhCoDinh === true) === ![3, 10].includes(m.so) && ((m.bongMo && m.bongMo.cam) === true) === (m.so === 4) &&
@@ -231,7 +234,7 @@ console.log('\n== 4. Chương che-tay: dữ liệu và luật từng màn ==');
     if (m.chinhCoDinh) {
       const gui = ChamHoc.cham(m, { chinh: ['wait()', 'wait()', 'wait()'], hamCuaMan: m.loiGiai.hamCuaMan }, khoNay);
       kiem(m.id + ': chinhCoDinh — chương trình chính gửi lên bị bỏ qua (kết quả y hệt lời giải)', J([gui.thang, gui.soO, gui.soNhip, gui.py]) === J([r.thang, r.soO, r.soNhip, r.py]) && m.maMau.chinh.length >= 1 && m.maMau.chinh.length <= m.khung.chinh);
-      const trong = ChamHoc.cham(m, { chinh: [], hamCuaMan: [] }, khoNay);
+      const trong = ChamHoc.cham(m, { chinh: [], hamCuaMan: m.loiGiai.hamCuaMan }, khoNay);
       kiem(m.id + ': chinhCoDinh — chương trình chính RỖNG gửi lên vẫn chạy bản mẫu (cùng nhịp, cùng sao)', trong.thang === r.thang && trong.sao === r.sao && trong.soNhip === r.soNhip);
     } else {
       kiem(m.id + ': người chơi tự viết chương trình chính (maMau.chinh rỗng, lời giải ≤ 10 dòng, gọi hàm đã chế)', m.maMau.chinh.length === 0 && m.loiGiai.chinh.length >= 1 && m.loiGiai.chinh.length <= 10 && !ChamHoc.cham(m, { chinh: [] }, khoNay).thang);
@@ -262,8 +265,9 @@ console.log('\n== 4. Chương che-tay: dữ liệu và luật từng màn ==');
         rs.sao < 3 && thieu.length === 0 && (ls.phaiCoMa.length ? !rs.thang : rs.thang), 'thiếu ' + thieu.join() + ' · có ' + co.join() + ' · sao ' + rs.sao);
     });
     // đề bài nhắc tên lệnh cần chế / sửa; đề 1–3 câu; gợi ý 1–2 câu
-    const suaTen = m.loiGiai.hamCuaEmMoi.map((h) => h.ten);
-    kiem(m.id + ': đề bài nhắc tên lệnh cần chế / sửa (' + (suaTen.join(', ') || 'màn dùng') + ')', suaTen.every((t) => (m.deBai + ' ' + (m.veMaMau || '')).includes(t + '()')) && (m.taoHam.length || m.so === 3 || m.so === 9 || m.so === 10 ? true : false), m.deBai);
+    const khoaTen = m.khoaHamMan || [];
+    const suaTen = m.loiGiai.hamCuaEmMoi.map((h) => h.ten).concat(m.loiGiai.hamCuaMan.filter((h) => !khoaTen.includes(h.ten)).map((h) => h.ten));          // hàm em chế / sửa + hàm của màn người chơi viết / sửa
+    kiem(m.id + ': đề bài nhắc tên lệnh cần chế / sửa (' + (suaTen.join(', ') || 'màn dùng') + ')', suaTen.every((t) => (m.deBai + ' ' + (m.veMaMau || '')).includes(t + '()')) && (m.taoHam.length || [3, 7, 8, 9, 10].includes(m.so) ? true : false), m.deBai);
     kiem(m.id + ': gợi ý 1–2 câu, không nói tên nút; đề 1–3 câu', m.goiY.length >= 1 && m.goiY.length <= 2 && (m.deBai.match(/[.?!](\s|$)/g) || []).length <= 3 && !/bấm|nút/i.test(m.goiY.join(' ')));
   }
 
@@ -294,12 +298,20 @@ console.log('\n== 4. Chương che-tay: dữ liệu và luật từng màn ==');
   kiem('5.7 Đặt lại chỗ cũ: go_get() của màn đưa xe lên 2 ô tới ◆ và nhặt vật (xe cầm vật, 4 nhịp, đã qua ◆); put_back() phải đặt vật về ô cũ và đưa xe về ô và hướng ban đầu; go_get khóa và xem được',
     pre.theoSan[0].soNhip === 4 && vt(pre.theoSan[0].robot) === '2,2' && pre.theoSan[0].tay.cam !== null && pre.theoSan[0].diQua[0].da === true && J(m7.bongMo) === J({ x: m7.batDau.x, y: m7.batDau.y, huong: m7.batDau.huong, diQua: [{ x: 2, y: 2 }], vat: [{ x: 2, y: 1 }] }) && J(m7.khoaHamMan) === '["go_get"]' && m7.maMau.hamCuaMan.some((h) => h.ten === 'go_get'));
   kiem('5.7: put_back() là lệnh ngược của go_get() theo thứ tự ngược: go_get = move, move, pick → put_back = drop, back, back (pick↔drop, move↔back); sửa go_get gửi lên vẫn bị bản mẫu thay',
-    J(m7.loiGiai.hamCuaEmMoi[0].than) === J(['drop()', 'back()', 'back()']) && J(m7.maMau.hamCuaMan[0].than) === J(['move()', 'move()', 'pick()']) && (() => { const a = ChamHoc.cham(m7, { chinh: [], hamCuaMan: [H('go_get', ['move()'])] }, tron(k7, m7.loiGiai.hamCuaEmMoi)); const b = ChamHoc.cham(m7, m7.loiGiai, tron(k7, m7.loiGiai.hamCuaEmMoi)); return J([a.thang, a.soO, a.soNhip]) === J([b.thang, b.soO, b.soNhip]) && b.sao === 3; })());
-  kiem('5.7: BFS tính cả đoạn go_get() cố định (4 nhịp chạy thật + phần còn lại ngắn nhất = ' + nhipCheTayTatCa(m7, k7) + ' ≤ sao.nhip 8); không tính đoạn đó thì xe phải tự đi qua ◆ rồi về: 4 nhịp (nên chương trình rỗng hay go_get() hỏng KHÔNG thắng chỉ vì xe chưa rời chỗ)', nhipCheTayNganNhat(m7).nhip === 4 && nhipCheTayTatCa(m7, k7) === 7 && !ChamHoc.cham(m7, { chinh: [], hamCuaMan: [] }, tron(k7, [H('put_back', [])])).thang);
+    J(m7.loiGiai.hamCuaMan.find((h) => h.ten === 'put_back').than) === J(['drop()', 'back()', 'back()']) && J(m7.maMau.hamCuaMan[0].than) === J(['move()', 'move()', 'pick()']) && (() => { const pb = m7.loiGiai.hamCuaMan.find((h) => h.ten === 'put_back'); const a = ChamHoc.cham(m7, { chinh: [], hamCuaMan: [H('go_get', ['move()']), pb] }, k7); const b = ChamHoc.cham(m7, m7.loiGiai, k7); return J([a.thang, a.soO, a.soNhip]) === J([b.thang, b.soO, b.soNhip]) && b.sao === 3; })());
+  const r7p = ChamHoc.cham(m7, m7.maMau, k7);
+  kiem('5.7: put_back() là HÀM CỦA MÀN, thân ban đầu chỉ có `pass` (hợp lệ); để nguyên thì không thắng: xe cầm vật đứng ở chỗ go_get() dừng, lech-bong-mo (không phải lỗi cú pháp); put_back KHÔNG khóa (khoaHamMan chỉ go_get); không vào kho, không taoHam',
+    J(m7.maMau.hamCuaMan.map((h) => h.ten)) === '["go_get","put_back"]' && J(m7.maMau.hamCuaMan[1].than) === J(['pass']) && !r7p.thang && J(maCua(r7p)) === '["lech-bong-mo"]' && J(m7.khoaHamMan) === '["go_get"]' && m7.taoHam.length === 0 && !k7.some((h) => h.ten === 'put_back'));
+  kiem('5.7: BFS tính cả đoạn go_get() cố định (4 nhịp chạy thật + phần còn lại ngắn nhất = ' + nhipCheTayTatCa(m7, k7) + ' ≤ sao.nhip 8); không tính đoạn đó thì xe phải tự đi qua ◆ rồi về: 4 nhịp (nên chương trình rỗng hay go_get() hỏng KHÔNG thắng chỉ vì xe chưa rời chỗ)', nhipCheTayNganNhat(m7).nhip === 4 && nhipCheTayTatCa(m7, k7) === 7 && !ChamHoc.cham(Object.assign({}, m7, { chinhCoDinh: false }), { chinh: [], hamCuaMan: m7.maMau.hamCuaMan }, k7).thang);
   const m8 = man(8), k8 = khoTruoc(m8.id);
   const thuPick = ChamHoc.thuHam(m8, { chinh: [] }, 'pick', k8);
   kiem('5.8 Tay lắp ngược: daoChieu ["tay"] + canhBao "Dây tay đấu ngược"; pick() cũ trong sân thử cho tay HẠ mà không nhặt gì; fixed_pick / fixed_drop bằng arm_up rồi arm_down chạy đúng',
-    J(m8.daoChieu) === '["tay"]' && /đấu ngược/.test(m8.canhBao) && thuPick.tay.tuThe === 'duoi' && thuPick.tay.cam === null && ChamHoc.cham(m8, m8.loiGiai, tron(k8, m8.loiGiai.hamCuaEmMoi)).sao === 3);
+    J(m8.daoChieu) === '["tay"]' && /đấu ngược/.test(m8.canhBao) && thuPick.tay.tuThe === 'duoi' && thuPick.tay.cam === null && ChamHoc.cham(m8, m8.loiGiai, k8).sao === 3);
+  const thuFp = ChamHoc.thuHam(m8, { chinh: [], hamCuaMan: m8.maMau.hamCuaMan }, 'fixed_pick', k8), thuFpDung = ChamHoc.thuHam(m8, { chinh: [], hamCuaMan: m8.loiGiai.hamCuaMan }, 'fixed_pick', k8);
+  const r8m = ChamHoc.cham(m8, m8.maMau, k8);
+  kiem('5.8: fixed_pick() và fixed_drop() là HÀM CỦA MÀN, không khóa; thân ban đầu = pick() / drop() cũ (arm_down, grab, wait, arm_up, wait) nên chạy sai: sân thử cho tay HẠ mà không nhặt gì; để nguyên thì kep-hut + lech-bong-mo; sửa thì thắng 3 sao; không vào kho, không taoHam, không hàm của em mới',
+    J(m8.maMau.hamCuaMan.map((h) => h.ten)) === '["fixed_pick","fixed_drop"]' && J(m8.maMau.hamCuaMan[0].than) === J(['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()']) && J(m8.maMau.hamCuaMan[1].than) === J(['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()']) && m8.khoaHamMan === undefined && m8.taoHam.length === 0 && m8.loiGiai.hamCuaEmMoi.length === 0 &&
+      thuFp.tay.tuThe === 'duoi' && thuFp.tay.cam === null && thuFpDung.tay.tuThe === 'tren' && !r8m.thang && maCua(r8m).includes('kep-hut') && !k8.some((h) => h.ten === 'fixed_pick' || h.ten === 'fixed_drop'), J(maCua(r8m)));
   const m9 = man(9), k9 = khoTruoc(m9.id);
   const cu = ChamHoc.cham(m9, m9.maMau, k9);
   const cd9 = cu.chanDoan.find((c) => c.ma === 'lenh-goc-hong');
@@ -407,7 +419,7 @@ console.log('\n== 6. Bản sửa turn_right / u_turn của 5.9 (bánh trái / tr
   const pt = ChamHoc.thuHam(man(1), { chinh: [] }, 'turn_right', kho9), ul = ChamHoc.thuHam(man(1), { chinh: [] }, 'u_turn', kho9);
   kiem('trên phần cứng đủ bánh: turn_right sửa quay PHẢI một nhịp, u_turn sửa quay đầu một nhịp', pt.robot.huong === 1 && pt.soNhip === 1 && ul.robot.huong === 2 && ul.soNhip === 1 && maLoi(pt).length === 0 && maLoi(ul).length === 0);
   const cuoi = khoTruoc('het');
-  kiem('kho cuối game vẫn có đủ tám hàm của che-tay và tên cốt truyện khóa', ['pass_back', 'put_right', 'grab_back', 'drag', 'swap', 'put_back', 'fixed_pick', 'fixed_drop'].every((t) => cuoi.some((h) => h.ten === t)));
+  kiem('kho cuối game vẫn có đủ năm hàm của che-tay và tên cốt truyện khóa; put_back, fixed_pick, fixed_drop (hàm của màn) không có trong kho', ['pass_back', 'put_right', 'grab_back', 'drag', 'swap'].every((t) => cuoi.some((h) => h.ten === t)) && ['put_back', 'fixed_pick', 'fixed_drop'].every((t) => !cuoi.some((h) => h.ten === t)));
 }
 
 /* ================================================================= 7. THẺ SCRIPT CỦA GAME */

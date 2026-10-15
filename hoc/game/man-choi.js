@@ -37,7 +37,7 @@
           '<button class="bt g-pu cbtn" data-nut="goi-y"><span data-i="bulb" data-s="2" data-l="#2f1a6a"></span>' + t('choi.goiY') + '</button>' +
           '<div class="mini"><button class="bt g-wd" data-nut="toc"></button><button class="bt g-cy" data-nut="de-bai">' + t('choi.deBai') + '</button></div>' +
           '<div class="clock chalk"><span class="l">' + t('choi.nhipDong') + '</span><span class="v">0</span><span class="tong"></span>' +
-            '<span class="lamps"><span class="lamp lt">' + t('choi.banhTrai') + '</span><span class="lamp lp">' + t('choi.banhPhai') + '</span></span></div>' +
+            '</div>' +
         '</div>' +
       '</div>' +
       '<div class="low">' +
@@ -56,10 +56,11 @@
     E.n = q('.plaque .n'); E.t = q('.plaque .t'); E.sao = q('.top .stars');
     E.toast = q('.toast'); E.bongD = q('.p-pal .bong'); E.clock = q('.clock .v'); E.side = q('.side');
     E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov');
+    DenBoPhan.dung(q('.clock'));                                                      // vùng đèn theo bộ phận: dòng thứ hai trong ô đồng hồ NHỊP
     E.fb = q('.fblock'); E.bar = q('.sanbar'); E.tong = q('.clock .tong'); E.hamDem = q('.p-prog .ham-dem');
     q('.chinh-khoa .ck-ic').appendChild(Ve.khoa(2, true));                       // ổ khóa nhỏ ở tiêu đề khung chương trình (chỉ hiện khi màn có chinhCoDinh)
 
-    S.field = new SanVe.Field(q('#field'), { kich: 210, lamps: { T: q('.lamp.lt'), P: q('.lamp.lp') } });
+    S.field = new SanVe.Field(q('#field'), { kich: 210, catMep: true });          // catMep: bỏ hàng / cột mép toàn tường khi vẽ (sân thử Xưởng không bật)
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
     E.ffr = q('.ffr');
 
@@ -68,6 +69,7 @@
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
+      veNhip: function () { return !!S.man && S.man.loaiRobot !== 'nhen' && S.man.loaiRobot !== 'drone'; },        // ngoặc nhịp bên phải các dòng lệnh gốc + wait() cùng một nhịp (nhện / drone: go_* tự trôi nhịp, không vẽ)
       thutLe: function () { return TP.coCauTruc(S.man, 'for') || TP.coCauTruc(S.man, 'if') || TP.coCauTruc(S.man, 'while'); },
       camBien: function () { return TP.camBienCua(S.man); },                                    // điều kiện while / if chạm đổi được: front_clear() …
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
@@ -84,6 +86,7 @@
       },
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
       khiMoi: function (the) { Xuong.moiHam(function (ten) { Xuong.mo('em', ten, the); }); },          // hàm mới (còn trống) mở ở Xưởng với khay đúng thẻ em đang xem
+      goiYThe: true,                                                                                    // lần đầu khay có từ hai thẻ (hay có thẻ Cảm biến): ◀ ▶ nhấp nháy + bong bóng "Bấm ▶ để sang thẻ …"
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); }
     });
 
@@ -144,7 +147,7 @@
     var dung = KhungCode.soODung(k);
     E.n.textContent = m.id; E.t.textContent = m.ten;
     SanVe.datCanhBao(E.ffr, m.canhBao);                                                // nhãn ⚠ trên sân ("Dây bánh trái đấu ngược"); màn không có thì ẩn
-    E.host.querySelector('.lamps').style.display = (m.loaiRobot === 'nhen' || m.loaiRobot === 'drone') ? 'none' : '';
+    DenBoPhan.nap(m);                                                                  // đèn theo bộ phận cạnh đồng hồ NHỊP: chỉ các bộ phận robot của màn có (den-bo-phan.js)
     E.host.querySelector('.plaque .d').style.display = '';
     sao3(Luu.saoTot(m.ma));
     S.si = 0; S.marks = null; S.cap = null;
@@ -160,6 +163,7 @@
     E.ov.classList.remove('open');
     TP.Hop.dong();
     hienDeBai();
+    if (window.HuongDan) HuongDan.vaoMan(m);                                            // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
   }
   function cauHinhSan(i) {
     var m = S.man, nhieu = Array.isArray(m.san[0]), lm = SanHoc.lopMauCuaSan(m, i);
@@ -194,6 +198,7 @@
       dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
       em: (m.moXuong !== false && !m.camHamCuaEm) ? TP.locHamTheoRobot(m, KhoHam.ds()) : null,      // nhện: bỏ hàm dùng lệnh bánh
       man: S.bai.hamCuaMan,
+      khoa: TP.khoaKhay(m),                                                                     // hàm bị khóa ở màn này (hàm của màn khóa, hàm cốt truyện màn không sửa): ổ khóa thay bút chì, mở ở Xưởng chỉ xem
       coNutMoi: true
     });
   }
@@ -218,6 +223,7 @@
 
   /** Rời màn: dừng phát lại. */
   function roi() {
+    if (window.HuongDan) HuongDan.dung();                                              // rời màn: dừng mọi hướng dẫn đang sáng (chưa xong thì lần sau còn)
     S.rid++; S.busy = false;
     if (E.side) E.side.classList.remove('busy');
   }
@@ -321,6 +327,7 @@
     if (S.si !== 0 && nhieuSan()) { S.si = 0; S.field.nap(cauHinhSan(0)); } else S.field.datLai();
     veDongHo(); veSanBar();
     S.ed.datChay(null); S.ed.datLoi([]); S.pal.datSang(null); S.pal.datLoi([]);
+    DenBoPhan.tat();
     anToast(); anBong();
   }
   /** Lỗi khung (quá giới hạn hàm của màn, tràn ô, cấu trúc chưa học…): lõi chưa chạy sân nào, kết quả không có theoSan; vẫn có chẩn đoán để hiện. */
@@ -380,6 +387,7 @@
   /** Xem sân i (chạm ảnh nhỏ): nạp sân, và nếu đã chạy thì chuẩn bị phát lại vết của sân đó (nút Chạy phát lại). */
   function xemSan(i) {
     if (S.busy || !nhieuSan() || i === S.si || i < 0 || i >= S.man.san.length) return;
+    if (window.HuongDan) HuongDan.bao('xem-san', { i: i });                           // hướng dẫn từng bước: đã chạm ảnh nhỏ của một sân
     anToast();
     S.field.nap(cauHinhSan(i));
     S.ed.datChay(null); S.pal.datSang(null);
@@ -394,22 +402,26 @@
   }
   async function chay(tungNhip) {
     if (S.busy) return;
+    if (window.HuongDan) HuongDan.bao('chay', { tungNhip: !!tungNhip });
     if (!S.ket) chuanBi();
     else if (S.idx >= S.vet.length) { datLaiChay(); chuanBi(); }
     anBong(); anToast(); S.ed.anHoan();
     S.ed.datLoi([]); S.pal.datLoi([]);
     var my = ++S.rid; S.busy = true; E.side.classList.add('busy');
-    var vet = S.vet, cap = S.cap, lenhDem = 0, capDung = false;
+    var vet = S.vet, cap = S.cap, lenhDem = 0, capDung = false, lenhNhip = [];      // lenhNhip: các lệnh chạy trong nhịp sắp phát (để đèn bộ phận sáng đúng)
     while (S.idx < vet.length) {
       var e = vet[S.idx++];
       var toc = S.toc * (S.nhip < 60 ? 1 : S.nhip < 120 ? 3 : 6);        // phát lại dài (quá ~60 nhịp) thì tự tăng tốc
       if (cap) toc = Math.max(toc, 2.5);                                // vòng while chạy mãi: phát lại nhanh vài nhịp
       if (e.loai === 'lenh') {
+        lenhNhip.push(e);
         sang(e, toc);
         await SanVe.ngu(LENH_MS / toc); if (my !== S.rid) return;
         if (cap && ++lenhDem >= cap.lenh) { capDung = true; break; }
       } else {
+        DenBoPhan.bat(e, lenhNhip);
         await S.field.phatNhip(e, NHIP_MS / toc); if (my !== S.rid) return;
+        DenBoPhan.tat(true); lenhNhip = [];
         S.nhip++; lenhDem = 0; E.clock.textContent = String(S.nhip);
         if (cap && S.nhip >= cap.nhip) { capDung = true; break; }
         if (tungNhip) {
@@ -471,6 +483,7 @@
     if (nhieuSan()) { S.marks = k.theoSan.map(function (x) { return !!x.thang; }); veSanBar(); }        // ✓ / ✗ trên từng ảnh nhỏ
     veDongHo();
     if (k.thang) {
+      if (window.HuongDan) HuongDan.xongMan(S.man);                                    // thắng rồi: hướng dẫn từng bước của màn (huong-dan-man.js) thôi, lưu cờ
       S.field.mungThang();
       var tot = Luu.ghiSao(S.man.ma, k.sao);
       sao3(tot);

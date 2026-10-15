@@ -56,7 +56,7 @@
         '</div></div>' +
       '<div class="low">' +
         '<div class="pan p-prog"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
-          '<div class="board chalk"><div class="bh"><span class="tt code">' + t('xuong.def') + '</span>' +
+          '<div class="board chalk"><div class="bh"><span class="tt code">' + t('xuong.def') + '</span><span class="chinh-khoa" data-nut="ham-khoa"><span class="ck-ic"></span><span class="ck-chu">' + t('xuong.chiXem') + '</span></span>' +
             '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="#4a0e0c"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
@@ -68,6 +68,7 @@
     var q = function (s) { return host.querySelector(s); };
     E.tenham = q('.tenham'); E.nm = q('.tenham .nm'); E.ffr = q('.ffr'); E.toast = q('.toast');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]'); E.thuHang = q('.thu-hang'); E.dso = q('.dso');
+    q('.chinh-khoa .ck-ic').appendChild(Ve.khoa(2, true));                       // ổ khóa nhỏ + "Chỉ xem" ở tiêu đề khung thân hàm khi hàm bị khóa (hiện nhờ lớp .co-dinh của khung)
     E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong'); E.nutMau = q('.nut-mau'); E.nutO = q('.nut-o'); E.nutRo = q('.nut-ro'); E.nutPin = q('.nut-pin');
     S.field = new SanVe.Field(E.canvas, { kich: 210 });
     S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
@@ -76,6 +77,7 @@
     S.ed = new TP.Editor(q('.rows'), {
       tong: 10, dung: 10, lay: function () { return S.than || []; }, bang: q('.p-prog'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
+      veNhip: function () { var m = A.man(); return !!m && m.loaiRobot !== 'nhen' && m.loaiRobot !== 'drone'; },        // ngoặc nhịp như khung chương trình chính
       thutLe: function () { return TP.coCauTruc(A.man(), 'for') || TP.coCauTruc(A.man(), 'if') || TP.coCauTruc(A.man(), 'while'); },
       camBien: function () { return TP.camBienCua(A.man()); },                                 // điều kiện while / if chạm đổi được: front_clear() …
       bienDuoc: function () { var f = hamHienTai(); return f ? (f.thamSo || []) : []; },       // thân hàm có tham số: chọn được biến ở bộ chọn số
@@ -124,12 +126,15 @@
   }
 
   /* --------------------------------------------------------------- mở / đóng */
-  /** Hàm của màn mà màn khóa (man.khoaHamMan): chỉ xem thân hàm, không sửa / chèn / xóa / kéo (máy chấm luôn dùng bản mẫu). */
+  /** Hàm đang mở bị KHÓA (chỉ xem thân hàm, không sửa / chèn / xóa / kéo): hàm của màn mà màn khóa (man.khoaHamMan, máy chấm luôn dùng bản mẫu),
+   *  hoặc hàm CỐT TRUYỆN của em mà màn này không bắt chế / sửa (TP.khoaKhay / ManHoc.hamSuaDuoc). Hàm tự đặt không bao giờ khóa. Bảng Gỡ lỗi "Mở hết" không mở khóa này. */
   function hamKhoa() {
     var m = A.man && A.man();
-    return S.loai === 'man' && !!(m && m.khoaHamMan && m.khoaHamMan.indexOf(S.ten) >= 0);
+    if (!m) return false;
+    if (S.loai === 'man') return !!(m.khoaHamMan && m.khoaHamMan.indexOf(S.ten) >= 0);
+    return S.loai === 'em' && TP.khoaKhay(m).indexOf('em:' + S.ten) >= 0;
   }
-  function baoHamKhoa() { toast(t('xuong.hamKhoa'), '', 2800); }
+  function baoHamKhoa() { toast(S.loai === 'em' ? t('xuong.hamKhoaEm', { ten: S.ten }) : t('xuong.hamKhoa'), '', 2800); }
   function hamHienTai() {
     if (S.loai === 'em') return KhoHam.tim(S.ten);
     var m = A.bai().hamCuaMan.filter(function (f) { return f.ten === S.ten; })[0];
@@ -138,6 +143,7 @@
   /** Mở Xưởng sửa hàm `ten`. the (tùy chọn): thẻ khay muốn mở sẵn ('than' | 'tay' | 'cam'), dùng cho hàm mới còn trống tạo từ một thẻ; không có thì theo hàm đang sửa. */
   function mo(loai, ten, the) {
     S.rid++; S.busy = false; E.side.classList.remove('busy');
+    if (window.HuongDan) HuongDan.bao('mo-xuong', { loai: loai, ten: ten });
     S.loai = loai; S.ten = ten; S.theMo = the || null;
     var f = hamHienTai();
     if (!f) return;
@@ -184,6 +190,7 @@
     E.host.classList.remove('open');
     E.host.removeAttribute('data-ham');
     A.khiVe();
+    if (window.HuongDan) HuongDan.bao('dong-xuong');                                  // hướng dẫn từng bước (huong-dan-man.js): đã bấm Về sân
   }
   function dangMo() { return E.host.classList.contains('open'); }
 
@@ -210,6 +217,7 @@
       thamSoChuoi: chuoiDr,                              // khối mẫu `if d == "U":` thay cho khối battery()
       em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
       man: A.bai().hamCuaMan,
+      khoa: TP.khoaKhay(man),                            // hàm bị khóa ở màn này: ổ khóa thay bút chì (mở ra chỉ xem)
       bien: (hamHienTai() || {}).thamSo || [],          // hàm có tham số: nhóm BIẾN có thẻ cho từng đối số
       coNutMoi: false,
       boQua: S.ten
@@ -514,6 +522,7 @@
   async function thu() {
     if (S.busy) return;
     if (!S.than || !S.than.length) { toast(t('xuong.trong'), 'bad'); return; }
+    if (window.HuongDan) HuongDan.bao('thu');                                          // hướng dẫn từng bước: đã bấm Thử (thân hàm không trống)
     var my = ++S.rid, kq = chay();
     anBongD(); S.ed.anHoan(); anToast();
     S.ed.datLoi([]); S.pal.datLoi([]);
@@ -617,6 +626,7 @@
       TP.Hop.dong();
       A.khiDoiHam();
       if (!g.ok) A.baoLoi && A.baoLoi(t('tb.khoGhiLoi', { loi: g.loi }));
+      if (window.HuongDan) HuongDan.bao('tao-ham', { ten: ten });                      // hướng dẫn từng bước: hàm đã tạo
       taoXong && taoXong(ten);
     }
     if (coDinh) {

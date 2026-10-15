@@ -37,6 +37,7 @@ require(path.join(day, 'man-may-nem.js'));
 require(path.join(day, 'man-sung-bong.js'));
 const ManHoc = require(path.join(day, 'man-drone.js'));            // nối cả mười bảy chương (cùng một sổ màn)
 const KhoHam = require(path.join(day, 'kho-ham.js'));
+const SoLenh = require(path.join(day, 'so-lenh.js'));
 const MAU = require(path.join(day, 'thu-vien-mau.js'));          // bộ hàm của em mẫu (mảng)
 const { nhipDuaVatNganNhat } = await import('./do-duong-tay.mjs');   // bộ dò đường tắt cho mục tiêu dua-vat
 const { nhipNhenNganNhat } = await import('./do-duong-nhen.mjs');     // bộ dò đường tắt cho nhện (chương nhen)
@@ -1144,6 +1145,48 @@ console.log('\n== 14. Hàm của em bền, hàm của màn tạm, cách đếm �
   kiem('hàm của em gọi hàm của em (kho tự nhất quán) chạy đúng ở màn khác', tc.sao === 3 && tc.soO === 13, J([tc.sao, tc.soO]));
 }
 function lap4() { return dong(4); }
+
+/* ================================================================ HÀM CỦA MÀN DÙNG MỘT LẦN (15/10) */
+console.log('\n== 14b. Hàm CỦA MÀN dùng một lần (15/10): không vào kho, người chơi tự viết / sửa thân trong màn ==');
+{
+  // hàm chỉ đúng cho MỘT màn (xe đang hỏng / lắp ngược, hay đường đi riêng của màn) không phải hàm của em: sống trong màn (maMau.hamCuaMan)
+  const MOT_LAN = [
+    { ma: 'che-xe.7', ham: ['come_back'], thua: ['lech-bong-mo'], khoa: ['go_out'] },
+    { ma: 'che-xe.8', ham: ['fixed_move'], thua: ['chua-toi-co'], khoa: [] },
+    { ma: 'che-tay.7', ham: ['put_back'], thua: ['lech-bong-mo'], khoa: ['go_get'] },
+    { ma: 'che-tay.8', ham: ['fixed_pick', 'fixed_drop'], thua: ['kep-hut', 'lech-bong-mo'], khoa: [] },
+    { ma: 'che-lap.7', ham: ['come_home'], thua: ['lech-bong-mo'], khoa: ['go_round'] },
+    { ma: 'che-lap.9', ham: ['reverse_run'], thua: ['lenh-goc-hong'], khoa: [] },
+    { ma: 'che-cam-bien.7', ham: ['safe_move2'], thua: ['lech-bong-mo', 'cam-bien-nguoc'], khoa: [] }
+  ];
+  const TEN = [].concat(...MOT_LAN.map((e) => e.ham));
+  const dsAll = ManHoc.danhSach;
+  kiem('8 tên come_back, fixed_move, put_back, fixed_pick, fixed_drop, come_home, reverse_run, safe_move2 KHÔNG còn là hàm cốt truyện: không trong taoHam của màn nào, không trong hamCuaEmMoi của lời giải / công thức khác / lời sai nào, không trong kho cuối game, không trong Sổ lệnh',
+    TEN.length === 8 && TEN.every((t) => dsAll.every((m) => !m.taoHam.includes(t) && !m.loiGiai.hamCuaEmMoi.some((h) => h.ten === t) && (!m.loiGiaiKhac || !m.loiGiaiKhac.hamCuaEmMoi.some((h) => h.ten === t)) &&
+      (m.congThucKhac || []).every((c) => !(c.hamCuaEmMoi || []).some((h) => h.ten === t)) && m.loiSai.every((l) => !l.hamCuaEmMoi.some((h) => h.ten === t))) && !khoCuoi.ds().some((h) => h.ten === t) && SoLenh.tim(t) === null));
+  for (const e of MOT_LAN) {
+    const m = ManHoc.timMa(e.ma), kho = KHO_TRUOC[m.id];
+    const ban = (b, t) => b.hamCuaMan.find((h) => h.ten === t);
+    kiem(e.ma + ': ' + e.ham.join(' + ') + ' là hàm của màn: có trong maMau.hamCuaMan và loiGiai.hamCuaMan, KHÔNG khóa' + (e.khoa.length ? ' (khóa chỉ ' + e.khoa.join(', ') + ')' : '') + ', không taoHam, không trong hamCuaEmCan, không trong kho lúc tới màn; mọi lời giải khác / công thức khác / lời sai viết bằng hamCuaMan',
+      e.ham.every((t) => !!ban(m.maMau, t) && !!ban(m.loiGiai, t) && !(m.khoaHamMan || []).includes(t) && !m.hamCuaEmCan.includes(t) && !kho.some((h) => h.ten === t)) && J(m.khoaHamMan || []) === J(e.khoa) && m.taoHam.length === 0 && m.loiGiai.hamCuaEmMoi.length === 0 &&
+        e.ham.every((t) => !m.loiGiaiKhac || !!ban(m.loiGiaiKhac.baiLam, t)) && m.congThucKhac.every((c) => c.baiLam && e.ham.every((t) => !!ban(c.baiLam, t))));
+    kiem(e.ma + ': thân ban đầu của ' + e.ham.join(', ') + ' KHÁC lời giải (người chơi phải viết / sửa)', e.ham.every((t) => J(ban(m.maMau, t).than) !== J(ban(m.loiGiai, t).than)));
+    const xong = ChamHoc.cham(m, m.loiGiai, kho), cu = ChamHoc.cham(m, m.maMau, kho);
+    kiem(e.ma + ': lời giải (sửa / viết hàm của màn) thắng 3 sao, ' + xong.soO + ' ô = sao.o, ' + xong.soNhip + ' nhịp = sao.nhip, không chẩn đoán nào', xong.thang && xong.sao === 3 && xong.soO === m.sao.o && xong.soNhip === m.sao.nhip && xong.chanDoan.length === 0, J(maCua(xong)));
+    kiem(e.ma + ': để NGUYÊN thân ban đầu (maMau) thì thua, đúng mã ' + e.thua.join(' + '), !cu.thang && e.thua.every((x) => maCua(cu).includes(x)) && !maCua(cu).includes('loi-cu-phap') && !maCua(cu).includes('ham-chua-co'), J(maCua(cu)));
+    // chỉ sửa một phần (có nhiều hàm) hay gửi bài làm không có hàm của màn đó thì không thắng
+    kiem(e.ma + ': gửi lên mà không có hàm của màn người chơi viết (' + e.ham.join(', ') + ') thì không thắng, ham-chua-co (hàm không khóa nên máy chấm không tự đặt bản mẫu / lời giải)',
+      (() => { const r = ChamHoc.cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: m.loiGiai.hamCuaMan.filter((h) => !e.ham.includes(h.ten)) }, kho); return !r.thang && maCua(r).includes('ham-chua-co'); })());
+  }
+  // robot-hoan-thien.8: fixed_pick / fixed_drop thành hàm của màn CHO SẴN, đúng, KHÓA (người chơi đã học viết chúng ở che-tay.8)
+  const m = ManHoc.timMa('robot-hoan-thien.8'), kho = KHO_TRUOC[m.id];
+  const fp = m.maMau.hamCuaMan.find((h) => h.ten === 'fixed_pick'), fd = m.maMau.hamCuaMan.find((h) => h.ten === 'fixed_drop');
+  const gl = ChamHoc.cham(m, m.loiGiai, kho);
+  kiem('robot-hoan-thien.8: fixed_pick, fixed_drop là hàm của màn cho sẵn, ĐÚNG (arm_up, grab / release, wait, arm_down, wait) và KHÓA; bỏ khỏi hamCuaEmCan; không trong kho; lời giải thắng 3 sao; gửi bản sửa bậy lên thì máy chấm vẫn đặt bản mẫu',
+    !!fp && !!fd && J(fp.than) === J(['arm_up()', 'grab()', 'wait()', 'arm_down()', 'wait()']) && J(fd.than) === J(['arm_up()', 'release()', 'wait()', 'arm_down()', 'wait()']) && J(m.khoaHamMan) === '["fixed_pick","fixed_drop"]' &&
+      !m.hamCuaEmCan.some((t) => /^fixed_/.test(t)) && !kho.some((h) => /^fixed_/.test(h.ten)) && gl.thang && gl.sao === 3 && gl.chanDoan.length === 0 &&
+      J(ChamHoc.cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: [H('fixed_pick', ['wait()']), H('fixed_drop', ['wait()'])] }, kho).sao) === '3');
+}
 
 /* ================================================================ KHO HÀM */
 console.log('\n== 15. KhoHam: tạo, sửa, đổi tên, xóa, tên sai, lưu / đọc, phiên bản ==');

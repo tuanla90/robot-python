@@ -11,9 +11,11 @@
      che-lap.4 zigzag()      = for i in range(3): stair()                         lên ba bậc chéo phải, giữ hướng
      che-lap.5 sweep()       = for i in range(3): pick(), move(), turn_right(), drop(), turn_left()   dời ba vật thẳng hàng sang cột bên phải
      che-lap.6 ring()        = for i in range(4): { for j in range(3): move() ; turn_right() }       vòng vuông cạnh ba ô (for lồng)
-     che-lap.7 come_home()   = for i in range(2): { turn_left() ; for j in range(4): back() }        đi ngược lại go_round(): CÙNG số lần lặp, đảo thứ tự, mỗi lệnh thành lệnh ngược
-     che-lap.9 reverse_run() = for i in range(6): back()                          lùi sáu ô (chỉ còn số lùi)
-   Màn 8 sửa hàm CỦA MÀN go_far() (range sai một); màn 3 và 10 không chế hàm mới.
+   HÀM CỦA MÀN (15/10: hàm chỉ đúng cho MỘT màn thì không vào kho, người chơi tự viết / sửa thân trong màn; `maMau.hamCuaMan`, không `taoHam`, không có trong Sổ lệnh):
+     che-lap.7 come_home()   thân ban đầu `pass`; lời giải for i in range(2): { turn_left() ; for j in range(4): back() }   đi ngược lại go_round(): CÙNG số lần lặp, đảo thứ tự, mỗi lệnh thành lệnh ngược
+     che-lap.8 go_far()      range(5) sai một; sửa thành range(4)
+     che-lap.9 reverse_run() thân ban đầu = for i in range(6): move() (xe chỉ còn số lùi nên báo hỏng); lời giải for i in range(6): back()   lùi sáu ô
+   Màn 3 và 10 không chế hàm mới.
 
    VÌ SAO CÓ for MỚI ĐƯỢC SAO Ô (canFor, như chương vong-lap): viết không dùng for thì (a) 'mat-sao': vẫn thắng nhưng nhiều ô hơn sao.o nên tụt dưới 3 sao, hay
    (b) 'tran-khung': thân hàm vượt khung 10 ô nên không chạy. kiem-che-lap.mjs tự trải for của lời giải để chứng minh từng màn.
@@ -50,6 +52,8 @@
   var T_RING = FOR(4, nhieu(FOR(3, ['move()'], 'j'), ['turn_right()']));
   var T_COME_HOME = FOR(2, nhieu(['turn_left()'], FOR(4, ['back()'], 'j')));
   var T_REVERSE_RUN = FOR(6, ['back()']);
+  var T_REVERSE_RUN_TIEN = FOR(6, ['move()']);                // thân ban đầu của reverse_run() ở 7.9: bản đi tiến, xe chỉ còn số lùi nên báo hỏng
+  var T_COME_HOME_TRONG = ['pass'];                          // thân ban đầu của come_home() ở 7.7: chưa làm gì (lõi hiểu pass), người chơi viết thay nó
   // hàm của màn 7 (khóa): đi hết hành lang chữ L bằng hai vòng for lồng nhau
   var T_GO_ROUND = FOR(2, nhieu(FOR(4, ['move()'], 'j'), ['turn_right()']));
   // hàm của màn 8 (bản sai và bản đúng): lên N ô, rẽ phải, đi hai ô
@@ -274,33 +278,33 @@
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Đường về vòng lặp', hang: 'bien-the', canFor: 'mat-sao',
-      hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'back'], taoHam: ['come_home'],
-      deBai: 'Hàm go_round() của màn đưa xe đi hết hành lang chữ L. Chế lệnh come_home() để xe về đúng chỗ cũ và đúng hướng cũ, như bóng mờ.',
-      veMaMau: 'Chương trình chính bị khóa: go_round() rồi come_home(). Thân hàm go_round() cũng bị khóa, em chỉ xem được.',
+      hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'back'],
+      deBai: 'Hàm go_round() của màn đưa xe đi hết hành lang chữ L. Viết thân hàm come_home() của màn để xe về đúng chỗ cũ và đúng hướng cũ, như bóng mờ.',
+      veMaMau: 'Chương trình chính bị khóa: go_round() rồi come_home(). Thân hàm go_round() cũng bị khóa, em chỉ xem được. Thân hàm come_home() đang chỉ có dòng pass, nghĩa là chưa làm gì: em viết lệnh thay cho nó.',
       san: ['.....', '.####', '.####', '.####', '.####'],
       batDau: { x: 0, y: 4, huong: 0 },
       bongMo: { x: 0, y: 4, huong: 0 },
       chinhCoDinh: true, khoaHamMan: ['go_round'],
-      maMau: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] },
+      maMau: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', T_COME_HOME_TRONG)] },
       sao: { o: 20, nhip: 20 },
-      loiGiai: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)], hamCuaEmMoi: [H('come_home', T_COME_HOME)] },
+      loiGiai: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', T_COME_HOME)] },
       loiGiaiKhac: {
-        moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
-        baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] },
-        hamCuaEmMoi: [H('come_home', nhieu(['# đi ngược lại go_round()'], T_COME_HOME))]
+        moTa: 'Cùng cách viết, thêm một dòng chú thích trong hàm',
+        baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', nhieu(['# đi ngược lại go_round()'], T_COME_HOME))] }
       },
       congThucKhac: [
         { moTa: 'Vòng trong viết thẳng lệnh lùi của hai bánh thay cho back() (ít ô hơn nhưng cùng nhịp)',
-          hamCuaEmMoi: [H('come_home', FOR(2, nhieu(['turn_left()'], FOR(4, ['left_back()', 'right_back()', 'wait()'], 'j'))))] },
+          baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', FOR(2, nhieu(['turn_left()'], FOR(4, ['left_back()', 'right_back()', 'wait()'], 'j'))))] } },
         { moTa: 'Đi tiến thay vì lùi: rẽ phải, đi bốn ô, rẽ trái, đi bốn ô, quay đầu (chậm hơn một nhịp, ít sao hơn)',
-          hamCuaEmMoi: [H('come_home', nhieu(['turn_right()'], FOR(4, ['move()']), ['turn_left()'], FOR(4, ['move()']), ['u_turn()']))] }
+          baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', nhieu(['turn_right()'], FOR(4, ['move()']), ['turn_left()'], FOR(4, ['move()']), ['u_turn()']))] } }
       ],
       loiSai: [
-        { moTa: 'Không đảo thứ tự: lùi bốn ô trước rồi mới quay', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] }, hamCuaEmMoi: [H('come_home', FOR(2, nhieu(FOR(4, ['back()'], 'j'), ['turn_left()'])))], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên đổi move() thành lệnh ngược: đi tiếp thay vì lùi, đâm tường', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] }, hamCuaEmMoi: [H('come_home', FOR(2, nhieu(['turn_left()'], FOR(4, ['move()'], 'j'))))], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Quên đổi turn_right() thành lệnh ngược turn_left()', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] }, hamCuaEmMoi: [H('come_home', FOR(2, nhieu(['turn_right()'], FOR(4, ['back()'], 'j'))))], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Lặp một lần thay vì hai: xe mới về giữa đường', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] }, hamCuaEmMoi: [H('come_home', FOR(1, nhieu(['turn_left()'], FOR(4, ['back()'], 'j'))))], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Gọi come_home() mà chưa chế hàm', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] }, phaiCoMa: ['ham-chua-co'] }
+        { moTa: 'Để nguyên thân pass: xe không làm gì thêm, đứng lại chỗ go_round() dừng', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', T_COME_HOME_TRONG)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Không đảo thứ tự: lùi bốn ô trước rồi mới quay', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', FOR(2, nhieu(FOR(4, ['back()'], 'j'), ['turn_left()'])))] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên đổi move() thành lệnh ngược: đi tiếp thay vì lùi, đâm tường', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', FOR(2, nhieu(['turn_left()'], FOR(4, ['move()'], 'j'))))] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Quên đổi turn_right() thành lệnh ngược turn_left()', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', FOR(2, nhieu(['turn_right()'], FOR(4, ['back()'], 'j'))))] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Lặp một lần thay vì hai: xe mới về giữa đường', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND), H('come_home', FOR(1, nhieu(['turn_left()'], FOR(4, ['back()'], 'j'))))] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Xóa mất hàm come_home() của màn: lệnh gọi nó không còn hàm nào', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('go_round', T_GO_ROUND)] }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Lặp đúng số lần như go_round(), nhưng làm từng bước theo thứ tự ngược lại.', 'Mỗi lệnh có một lệnh ngược: tiến thì lùi, quay phải thì quay trái.']
     }),
@@ -338,32 +342,31 @@
 
     man({
       so: 9, ten: 'Số lùi đường dài', hang: 'bien-the', canFor: 'mat-sao', hamGoc: BANH_LUI,
-      hamCuaEmCan: ['back'], taoHam: ['reverse_run'],
+      hamCuaEmCan: ['back'],
       phanCung: BANH_LUI, canhBao: 'Xe chỉ còn số lùi',
-      deBai: 'Hộp số của xe kẹt, chỉ còn lệnh lùi. Bóng mờ nằm cách xe sáu ô ở phía sau. Chế lệnh reverse_run() để xe lùi một mạch tới bóng mờ.',
-      veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi reverse_run(). Mở Xưởng hàm, tạo reverse_run() rồi bấm Chạy.',
+      deBai: 'Hộp số của xe kẹt, chỉ còn lệnh lùi. Bóng mờ nằm cách xe sáu ô ở phía sau. Hàm reverse_run() của màn đang cho xe tiến nên chạy không được: sửa nó để xe lùi một mạch tới bóng mờ.',
+      veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi reverse_run(). Thân hàm reverse_run() của màn đang là vòng lặp với move(). Chạy thử để xem hàm báo gì rồi sửa.',
       san: ['.......', '.......', '.......'],
       batDau: { x: 6, y: 1, huong: 1 },
       bongMo: { x: 0, y: 1, huong: 1 },
       chinhCoDinh: true,
-      maMau: { chinh: C_9.slice() },
+      maMau: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', T_REVERSE_RUN_TIEN)] },
       sao: { o: 6, nhip: 6 },
-      loiGiai: { chinh: C_9.slice(), hamCuaEmMoi: [H('reverse_run', T_REVERSE_RUN)] },
+      loiGiai: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', T_REVERSE_RUN)] },
       loiGiaiKhac: {
-        moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
-        baiLam: { chinh: C_9.slice() },
-        hamCuaEmMoi: [H('reverse_run', nhieu(['# lùi sáu ô'], T_REVERSE_RUN))]
+        moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm',
+        baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', nhieu(['# lùi sáu ô'], T_REVERSE_RUN))] }
       },
       congThucKhac: [
-        { moTa: 'Không dùng for: gọi back() sáu lần (thắng nhưng nhiều ô hơn, dưới 3 sao)', hamCuaEmMoi: [H('reverse_run', lap('back()', 6))] },
-        { moTa: 'Vòng for ba lần, mỗi lần hai back()', hamCuaEmMoi: [H('reverse_run', FOR(3, ['back()', 'back()']))] },
-        { moTa: 'Vòng for viết thẳng lệnh lùi của hai bánh', hamCuaEmMoi: [H('reverse_run', FOR(6, ['left_back()', 'right_back()', 'wait()']))] }
+        { moTa: 'Không dùng for: gọi back() sáu lần (thắng nhưng nhiều ô hơn, dưới 3 sao)', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', lap('back()', 6))] } },
+        { moTa: 'Vòng for ba lần, mỗi lần hai back()', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', FOR(3, ['back()', 'back()']))] } },
+        { moTa: 'Vòng for viết thẳng lệnh lùi của hai bánh', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', FOR(6, ['left_back()', 'right_back()', 'wait()']))] } }
       ],
       loiSai: [
-        { moTa: 'Dùng move(): bánh tiến đã hỏng', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('reverse_run', FOR(6, ['move()']))], phaiCoMa: ['lenh-goc-hong'] },
-        { moTa: 'Lặp thiếu một lần: range(5)', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('reverse_run', FOR(5, ['back()']))], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên wait() trong thân vòng lặp: lệnh bánh dính sang nhịp kế', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('reverse_run', FOR(6, ['left_back()', 'right_back()']))], phaiCoMa: ['banh-goi-lai', 'lech-bong-mo'] },
-        { moTa: 'Dòng back() không thụt lề vào thân vòng lặp', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('reverse_run', ['for i in range(6):', 'back()'])], phaiCoMa: ['loi-cu-phap'] }
+        { moTa: 'Để nguyên thân cũ (vòng lặp với move()): bánh tiến đã hỏng', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', T_REVERSE_RUN_TIEN)] }, phaiCoMa: ['lenh-goc-hong'] },
+        { moTa: 'Lặp thiếu một lần: range(5)', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', FOR(5, ['back()']))] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên wait() trong thân vòng lặp: lệnh bánh dính sang nhịp kế', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', FOR(6, ['left_back()', 'right_back()']))] }, phaiCoMa: ['banh-goi-lai', 'lech-bong-mo'] },
+        { moTa: 'Dòng back() không thụt lề vào thân vòng lặp', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('reverse_run', ['for i in range(6):', 'back()'])] }, phaiCoMa: ['loi-cu-phap'] }
       ],
       goiY: ['Thử move() trong sân thử của Xưởng hàm: bánh tiến đã hỏng, báo gì?', 'Lùi một ô em đã có back(); sáu ô thì sao?']
     }),

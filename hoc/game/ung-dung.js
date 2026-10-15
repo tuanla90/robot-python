@@ -38,6 +38,14 @@
   };
   App.congDot2 = function () { return (window.ThuTuChuong && ThuTuChuong.congDot2) || null; };
 
+  /** Hàm cốt truyện màn m cho SỬA (m.taoHam + hàm có trong hamCuaEmMoi của lời giải); xem ManHoc.hamSuaDuoc. Bảng Gỡ lỗi "Mở hết" không mở khóa cái này. */
+  App.hamSuaDuoc = function (m) { return ManHoc.hamSuaDuoc(m); };
+  /** Tên các hàm của em đang BỊ KHÓA ở màn m (hàm cốt truyện mà màn không cho sửa: mở ở Xưởng chỉ xem, khay có ổ khóa). Mặc định xét mọi hàm trong kho. */
+  App.hamEmKhoa = function (m, ds) {
+    var coTruyen = ManHoc.hamCotTruyen(), sua = ManHoc.hamSuaDuoc(m);
+    return (ds || KhoHam.ds()).map(function (f) { return f.ten; }).filter(function (n) { return coTruyen.indexOf(n) >= 0 && sua.indexOf(n) < 0; });
+  };
+
   /**
    * Mở khóa:
    *  - hàng "Làm quen" chơi lần lượt; xong cả hàng thì mở hàng "Luyện" và "Biến thể";
