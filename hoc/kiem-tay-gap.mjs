@@ -63,8 +63,8 @@ console.log('\n== 1. Lệnh tay CHỈ RA LỆNH; wait() cho nhịp trôi ==');
   kiem('lệnh tay và lệnh bánh cùng chờ một wait(): chỉ một nhịp', d.nhip === 1);
   const e = chay(SAN, XE, L('arm_up()', 'left_move()', 'right_move()', 'wait()', 'arm_down()', 'wait()'));
   kiem('arm_up + bánh cùng nhịp (tay đã nâng): xe đi, rồi hạ tay ở nhịp sau', vt(e.robot) === '2,1' && e.tay.tuThe === 'duoi' && e.nhip === 2, vt(e.robot));
-  kiem('hàm gốc có lệnh tay: arm_down, arm_up, grab, release thuộc TAY_LENH; nhện cũng dùng được (chương nhen), tên lạ vẫn bị từ chối',
-    J(SanHoc.TAY_LENH) === J(['arm_down', 'arm_up', 'grab', 'release']) &&
+  kiem('hàm gốc có lệnh tay: arm_down, arm_up, grab, release (và arm_left, arm_right của tay xoay) thuộc TAY_LENH; nhện cũng dùng được (chương nhen), tên lạ vẫn bị từ chối',
+    J(SanHoc.TAY_LENH) === J(['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right']) &&
       (() => { try { const k = SanHoc.chay({ san: SAN, batDau: XE, loaiRobot: 'nhen', hamGoc: ['arm_down', 'wait'] }, 'wait()'); return k.tay !== null; } catch (err) { return false; } })() &&
       (() => { try { SanHoc.chay({ san: SAN, batDau: XE, loaiRobot: 'nhen', hamGoc: ['left_move'] }, 'wait()'); return false; } catch (err) { return true; } })());
   kiem('không khai hamGoc lệnh tay: gọi arm_down() là lỗi chạy (loi runtime), vết không có tay',
@@ -707,8 +707,8 @@ console.log('\n== 17. Luật vật mới (14/10): vật chiếm ô với MỌI t
     d1.length === 3 && d1.every((x) => x.mau === 'red' && x.nguon === 'san' && x.idVat === null && x.cam === 'mau'), J(d1.map((x) => [x.mau, x.nguon, x.idVat])));
   const c2 = run('banh', HM, sanM, { x: 1, y: 1, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'color()'), { mau: mauSan });
   kiem('BỤNG, mang vật KHÔNG màu: color() vẫn là sàn dưới xe "red" (không phải "none" của vật)', doc(c2)[0].mau === 'red' && doc(c2)[0].nguon === 'san');
-  const HMN = ['left_move', 'right_move', 'wait', 'magnet_on', 'magnet_off', 'color'];
-  const c3 = run('banh', HMN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'magnet_on()', 'wait()', 'color()'), { vatMau: ['.g.', '...', '...'], vatChat: ['.s.', '...', '...'], mau: mauSan });
+  const HMN = ['left_move', 'right_move', 'wait', 'magnet_n', 'magnet_off', 'color'];
+  const c3 = run('banh', HMN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'magnet_n()', 'wait()', 'color()'), { vatMau: ['.g.', '...', '...'], vatChat: ['.s.', '...', '...'], mau: mauSan });
   kiem('BỤNG, nam châm: vật sắt xanh lá dính vào mũi xe rồi mà color() vẫn trả màu sàn "red" (trước và sau khi dính)', doc(c3)[0].mau === 'red' && doc(c3)[1].mau === 'red' && doc(c3)[1].nguon === 'san' && c3.vat[0].trangThai === 'cam', J(doc(c3).map((x) => [x.mau, x.nguon])));
   const HN = ['left_move', 'right_move', 'wait', 'aim', 'throw', 'load', 'color'];
   const c4 = run('banh', HN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'load()', 'wait()', 'color()'), { vatMau: ['.y.', '...', '...'], mau: mauSan });
@@ -721,7 +721,7 @@ console.log('\n== 17. Luật vật mới (14/10): vật chiếm ô với MỌI t
   const ec1 = doc(cam1);
   kiem('CAMERA, tay kẹp: nhìn ô trước mặt — vật xanh → "blue" (nguồn vat, idVat 1); nhặt xong ô trống → màu sàn ô đó "yellow" (vật đang cầm không tính); thả xuống lại → "blue"',
     ec1.length === 3 && ec1[0].mau === 'blue' && ec1[0].nguon === 'vat' && ec1[0].idVat === 1 && ec1[1].mau === 'yellow' && ec1[1].nguon === 'san' && ec1[2].mau === 'blue' && ec1.every((x) => x.cam === 'camera'), J(ec1.map((x) => [x.mau, x.nguon, x.idVat])));
-  const cam3 = run('banh', HMN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'magnet_on()', 'wait()', 'color()'), Object.assign({ vatMau: ['.g.', '...', '...'], vatChat: ['.s.', '...', '...'], mau: ['.y.', '.r.', '...'] }, CAMC));
+  const cam3 = run('banh', HMN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'magnet_n()', 'wait()', 'color()'), Object.assign({ vatMau: ['.g.', '...', '...'], vatChat: ['.s.', '...', '...'], mau: ['.y.', '.r.', '...'] }, CAMC));
   kiem('CAMERA, nam châm: trước khi hút thấy vật "green"; vật sắt dính vào mũi xe (lơ lửng, không nằm ở ô trước) thì camera thấy sàn ô trước "yellow"', doc(cam3)[0].mau === 'green' && doc(cam3)[0].nguon === 'vat' && doc(cam3)[1].mau === 'yellow' && doc(cam3)[1].nguon === 'san' && cam3.vat[0].trangThai === 'cam', J(doc(cam3).map((x) => [x.mau, x.nguon])));
   const cam4 = run('banh', HN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('color()', 'load()', 'wait()', 'color()'), Object.assign({ vatMau: ['.y.', '...', '...'], mau: ['.b.', '.r.', '...'] }, CAMC));
   kiem('CAMERA, máy ném: trước khi nạp thấy vật "yellow"; load() vào rổ thì ô trước trống, camera thấy sàn "blue"', doc(cam4)[0].mau === 'yellow' && doc(cam4)[0].nguon === 'vat' && doc(cam4)[1].mau === 'blue' && doc(cam4)[1].nguon === 'san' && cam4.vat[0].trangThai === 'ro', J(doc(cam4).map((x) => [x.mau, x.nguon])));
@@ -738,12 +738,12 @@ console.log('\n== 17. Luật vật mới (14/10): vật chiếm ô với MỌI t
   const l4 = run('banh', HN, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('load()', 'wait()', 'aim(1)', 'throw()', 'wait()'));
   kiem('nạp xong ném tầm 1: vật rơi xuống ô cách xe 1 ô (1,0), ô vật cũ — nằm đó (nem-roi)', l4.vet.filter((e) => e.loai === 'nhip')[1].suKien.some((e) => e.ma === 'nem-roi' && vt(e.o) === '1,0') && l4.vat[0].trangThai === 'dat' && vt(l4.vat[0]) === '1,0', J(l4.suKien));
   // ---- nam châm: vật nằm đất chặn xe; thả ra ô trước mặt như cũ
-  const HNC = ['left_move', 'right_move', 'wait', 'magnet_on', 'magnet_off'];
+  const HNC = ['left_move', 'right_move', 'wait', 'magnet_n', 'magnet_off'];
   const n1 = run('banh', HNC, ['.o.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('left_move()', 'right_move()', 'wait()'));
   kiem('nam châm: vật gỗ nằm đất chặn xe (dam-tuong vat "vat")', damVat(n1).length === 1 && vt(n1.robot) === '1,1');
-  const n2 = run('banh', HNC, ['.o.', '...', '...'], { x: 1, y: 2, huong: 0 }, L('magnet_on()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'magnet_off()', 'wait()'), { vatChat: ['.s.', '...', '...'] });
+  const n2 = run('banh', HNC, ['.o.', '...', '...'], { x: 1, y: 2, huong: 0 }, L('magnet_n()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'magnet_off()', 'wait()'), { vatChat: ['.s.', '...', '...'] });
   kiem('nam châm: hút vật sắt từ 2 ô, tiến 1 ô, magnet_off() thả xuống ô trước mặt (1,0) như cũ', n2.vat[0].trangThai === 'dat' && vt(n2.vat[0]) === '1,0' && vt(n2.robot) === '1,1', J([n2.vat, n2.robot, n2.suKien]));
-  const n3 = run('banh', HNC, ['.o.', '...', '...'], { x: 1, y: 2, huong: 0 }, L('magnet_on()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'magnet_off()', 'wait()', 'left_move()', 'right_move()', 'wait()'), { vatChat: ['.s.', '...', '...'] });
+  const n3 = run('banh', HNC, ['.o.', '...', '...'], { x: 1, y: 2, huong: 0 }, L('magnet_n()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'magnet_off()', 'wait()', 'left_move()', 'right_move()', 'wait()'), { vatChat: ['.s.', '...', '...'] });
   kiem('  vật vừa thả nằm đất lại chặn xe: tiến tiếp thì dam-tuong (vat "vat")', damVat(n3).length === 1 && vt(n3.robot) === '1,1');
 
   // ---- cảm biến khoảng cách: ô có vật là KHÔNG trống

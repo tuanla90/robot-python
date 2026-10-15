@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url),Part=require('./part.js');
 ['hai-banh','xich','nhen','omni','drone'].forEach(x=>require('./part-'+x+'.js'));
-['kep','day','nam-cham','nem','bong'].forEach(x=>require('./part-'+x+'.js'));
+['kep','day','nam-cham','nem','bong','tay-xoay'].forEach(x=>require('./part-'+x+'.js'));
 ['khoang-cach','mau','cham','camera'].forEach(x=>require('./part-'+x+'.js'));
 
 for(const loai of ['than','tay','cam-bien'])for(const d of Part.ds(loai)){
@@ -25,7 +25,7 @@ function lienMotKhoi(cauHinh,trangThai={}){
 }
 function tayKhongAnSau(than,tay,trangThai={}){
   const body=Part._veMot(than,{}),arm=Part._veMot(tay,trangThai),port=than.oGan.tay;
-  for(let y=0;y<24;y++)for(let x=0;x<24;x++)if(arm.get(x,y)){
+  for(let y=0;y<arm.h;y++)for(let x=0;x<arm.w;x++)if(arm.get(x,y)){
     const bx=x+port.x-tay.diemNeo.x,by=y+port.y-tay.diemNeo.y;
     if(!body.get(bx,by))continue;
     let front=24;for(let yy=0;yy<24;yy++)if(body.get(bx,yy)){front=yy;break;}
@@ -55,10 +55,38 @@ for(const than of ['hai-banh','xich','nhen','omni']){
 for(const bad of ['kep','day','nem','bong'])assert.throws(()=>Part.ghep({than:'drone',tay:bad}),/Drone không gắn được/);
 assert.throws(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'cham',o:'hong'}]}),/Drone không gắn được/);
 
-function silhouette(d){return Part._veMot(d,{}).buf.map(Boolean)}
+function silhouette(d){const q=Part._veMot(d,{}),n=d.diemNeo||{x:12,y:12},W=64,out=new Array(W*W).fill(false);for(let y=0;y<q.h;y++)for(let x=0;x<q.w;x++)if(q.get(x,y)){const X=x-n.x+32,Y=y-n.y+32;if(X>=0&&Y>=0&&X<W&&Y<W)out[Y*W+X]=true}return out}   /* neo theo điểm gắn: tay xoay có tấm vẽ rộng hơn 24×24 */
 function khacDang(a,b){let diff=0,union=0;for(let i=0;i<a.length;i++){if(a[i]||b[i])union++;if(a[i]!==b[i])diff++}return diff/union}
 function checkKhac(loai){const a=Part.ds(loai);for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++)assert.ok(khacDang(silhouette(a[i]),silhouette(a[j]))>=.25,`${loai} ${a[i].ma}/${a[j].ma} chưa khác dáng 25%`)}
 checkKhac('than');checkKhac('tay');checkKhac('cam-bien');
 const c={than:'hai-banh',tay:'nem',camBien:[{ma:'camera',o:'tren'}]},a=Part._veMot(Part.lay('than','hai-banh'),{});let q=a;for(let i=0;i<4;i++)q=Part.rot90(q);assert.deepEqual(q.buf,a.buf,'quay 4 lần phải trở về ảnh gốc');
 const hs=Part.hamGoc(c);assert.equal(hs.length,new Set(hs).size,'hàm gốc gộp bộ trùng');assert.ok(hs.includes('aim')&&hs.includes('throw'),'máy ném phải có aim, throw');assert.ok(Part.hamGoc({than:'omni',tay:'bong'}).includes('shoot'),'ống bóng phải có shoot');
+/* TAY XOAY (15/10): khớp ba nấc trái / trước / phải + góc giữa chừng; mọi tư thế nối liền thân, không lấn sâu vào thân, hai nấc trái / phải đối xứng gương, và thật sự khác nhau. */
+{
+  const xoay=Part.lay('tay','xoay');
+  assert.ok(xoay&&xoay.kich&&xoay.kich.w>24,'tay xoay có tấm vẽ rộng hơn 24×24 để vươn sang hai bên');
+  assert.deepEqual(Part.hamGoc({than:'hai-banh',tay:'xoay'}).filter(h=>h.startsWith('arm_')).sort(),['arm_down','arm_left','arm_right','arm_up'],'tay xoay mở arm_left / arm_right (cùng bốn lệnh tay)');
+  assert.ok(Part.hamGoc({than:'hai-banh',tay:'xoay'}).includes('grab')&&Part.hamGoc({than:'hai-banh',tay:'xoay'}).includes('release'),'tay xoay vẫn kẹp / thả');
+  const tuThes=['tren','duoi'],kieps=[{kep:'mo'},{kep:'dong'},{kep:'dong',cam:true}],gocs=[{xoay:'trai'},{xoay:'truoc'},{xoay:'phai'},{goc:-45},{goc:45},{goc:-20},{goc:70}];
+  for(const t of ['hai-banh','xich','omni'])for(const tuThe of tuThes)for(const k of kieps)for(const g of gocs){
+    const st={tay:Object.assign({tuThe},k,g)};
+    lienMotKhoi({than:t,tay:'xoay'},st);
+    if(t!=='xich'||(!g.xoay&&!g.goc)||g.xoay==='truoc')tayKhongAnSau(Part.lay('than',t),xoay,st.tay);   /* xích: hai dải xích dài hơn mũi xe 4 hàng, tay vươn sang bên thì nằm trên dải xích (tay đặt cao hơn) — không tính lấn thân */
+  }
+  const anh=(st)=>Part.ghep({than:'hai-banh',tay:'xoay'},{tay:st});
+  const L=anh({xoay:'trai'}),F=anh({xoay:'truoc'}),R=anh({xoay:'phai'});
+  assert.notDeepEqual(L.buf,F.buf,'nấc trái khác nấc trước');assert.notDeepEqual(R.buf,F.buf,'nấc phải khác nấc trước');assert.notDeepEqual(L.buf,R.buf,'nấc trái khác nấc phải');
+  const guong=(a)=>{const b=new Array(a.buf.length);for(let y=0;y<40;y++)for(let x=0;x<40;x++)b[y*40+39-x]=a.buf[y*40+x];return b};
+  const gt=guong(L).map(Boolean),rr=R.buf.map(Boolean);let lech=0;for(let i=0;i<rr.length;i++)if(gt[i]!==rr[i])lech++;
+  assert.ok(lech===0,`tay xoay: nấc phải phải là ảnh gương của nấc trái (lệch ${lech} pixel)`);
+  assert.deepEqual(anh({xoay:'trai'}).buf,anh({goc:-90}).buf,'goc -90 = nấc trái');assert.deepEqual(anh({xoay:'phai'}).buf,anh({goc:90}).buf,'goc 90 = nấc phải');
+  const giua=anh({goc:-45}),dem=(a)=>a.buf.filter(Boolean).length;assert.ok(dem(giua)>dem(F)*0.8,'góc giữa chừng không mất hình');
+  /* cánh tay nằm trong tấm 40×40 ở mọi nấc (không bị cắt cụt): hàng 0 và cột 0 / 39 không có pixel của tay */
+  for(const st of [{xoay:'trai',tuThe:'duoi'},{xoay:'phai',tuThe:'duoi'},{xoay:'truoc',tuThe:'duoi'},{xoay:'trai',kep:'dong',cam:true}]){
+    const a=anh(st);for(let i=0;i<40;i++){assert.ok(!a.buf[i],`tay xoay chạm mép trên (${JSON.stringify(st)})`);assert.ok(!a.buf[i*40],`tay xoay chạm mép trái`);assert.ok(!a.buf[i*40+39],`tay xoay chạm mép phải`);}
+  }
+  /* tay hạ khác tay nâng, kẹp đóng khác kẹp mở, có vật thì chừa khe */
+  assert.notDeepEqual(anh({tuThe:'duoi'}).buf,anh({tuThe:'tren'}).buf,'tay hạ khác tay nâng');assert.notDeepEqual(anh({kep:'dong'}).buf,anh({kep:'mo'}).buf,'kẹp đóng khác kẹp mở');
+  assert.notDeepEqual(anh({kep:'dong',cam:true}).buf,anh({kep:'dong'}).buf,'kẹp ôm vật chừa khe');
+}
 console.log(`OK: ${Part.ds('than').length+Part.ds('tay').length+Part.ds('cam-bien').length} PART, tay trước mũi, cảm biến hông, nối liền, drone và silhouette đã kiểm.`);

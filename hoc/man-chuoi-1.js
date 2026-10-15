@@ -233,7 +233,7 @@
     man({
       so: 9, ten: 'Dọn dòng thừa', hang: 'bien-the',
       deBai: 'Xe đang quay mặt sang trái. Đi một ô thẳng, rẽ trái rồi đi tiếp một ô tới cờ.',
-      veMaMau: 'Chương trình có sẵn đã đầy 10 ô và có hai dòng thừa. Chạy thử để tìm ra chúng. Xóa một dòng: kéo nó vào thùng rác, hoặc rê chuột lên số dòng rồi bấm ✕ (điện thoại: chạm hai lần vào dòng).',
+      veMaMau: 'Chương trình có sẵn đã đầy 10 ô và có hai dòng thừa. Chạy thử để tìm ra chúng rồi xóa đi.',
       san: ['.....', '.#...', '..F..', '.....', '.....'],
       batDau: { x: 3, y: 1, huong: 3 },
       // tiến, wait() thừa, left_move() thừa dính vào lệnh rẽ (hai bánh cùng quay: xe tiến thay vì rẽ), rẽ trái, tiến

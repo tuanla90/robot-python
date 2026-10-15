@@ -6,9 +6,9 @@
    Dữ liệu lấy từ VẾT của lõi, không tự suy ra luật: với mỗi sự kiện 'nhip' e và các mục 'lenh' đứng ngay trước nó (các lệnh chạy trong nhịp đó):
      bánh trái / phải: e.robot.banh.trai / .phai ≠ 0 (omni trượt: e.robot.truot ≠ 0 thì cả hai bánh + đèn trượt);
      tay: có lệnh arm_up / arm_down; kẹp: có lệnh grab / release (hình tay lên / xuống, kẹp mở / đóng theo e.robot.tay);
-     nam châm: có magnet_on / magnet_off hoặc nam châm đang bật (e.robot.namCham.bat); máy ném: load / throw; súng bóng: shoot; tấm đẩy: push;
+     nam châm: có magnet_n / magnet_s / magnet_off hoặc nam châm đang bật (e.robot.namCham.bat); máy ném: load / throw; súng bóng: shoot; tấm đẩy: push;
      cảm biến: có lệnh đọc cảm biến (mục 'lenh' có docCamBien, hay front_clear / left_clear / right_clear / front_metal / color / battery) hoặc e.robot.camBien;
-     nhện: chân sáng ở nhịp chuẩn bị ('chuan-bi') và nhịp bước ('di'); drone: cánh sáng ở nhịp bay ('di') và nhịp lơ lửng ('dung-yen').
+     nhện: chân sáng ở nhịp chuẩn bị ('chuan-bi'), nhịp bước ('di'), nhịp nhảy ('nhay') và nhịp co / duỗi chân ('doi-chan'); drone: cánh sáng ở nhịp bay ('di') và nhịp lơ lửng ('dung-yen').
    Dùng:  DenBoPhan.dung(phanTuClock)  (một lần, dựng vùng đèn)  ·  DenBoPhan.nap(man)  (vào màn: chọn các bộ phận có trên màn)  ·
           DenBoPhan.bat(e, lenhTruoc)  (sáng theo nhịp e)  ·  DenBoPhan.tat()  (tắt hết, tay lên / kẹp mở như lúc đầu).
    DenBoPhan.phan(e, lenhTruoc) (thuần túy, kiểm trong Node): trả về { banhT, banhP, truot, tay, kep, namCham, nem, sung, day, camBien, chan, canh } (true = sáng).
@@ -17,14 +17,15 @@
 (function () {
   'use strict';
 
-  var CAM_BIEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'color', 'battery'];
-  var TAY_LEN = ['arm_up', 'arm_down'], KEP_LEN = ['grab', 'release'], NC_LEN = ['magnet_on', 'magnet_off'], NEM_LEN = ['load', 'throw'];
+  var CAM_BIEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole', 'color', 'battery'];
+  var TAY_LEN = ['arm_up', 'arm_down'], KEP_LEN = ['grab', 'release'], NC_LEN = ['magnet_n', 'magnet_s', 'magnet_off'], NEM_LEN = ['load', 'throw'];
   // khóa → { hinh: [tên hình khi trạng thái A, B], mau: màu khi sáng, nhan: khóa chữ }
   var BP = {
     banhT: { hinh: ['denBanh'], mau: '#5ff0ff', nhan: 'choi.den.banhT' },
     banhP: { hinh: ['denBanh'], mau: '#5ff0ff', nhan: 'choi.den.banhP' },
     truot: { hinh: ['denTruot'], mau: '#b6e04c', nhan: 'choi.den.truot' },
     tay: { hinh: ['denTayLen', 'denTayXuong'], mau: '#ffb050', nhan: 'choi.den.tay' },
+    xoay: { hinh: ['denXoay'], mau: '#ffb050', nhan: 'choi.den.xoay' },
     kep: { hinh: ['denKepMo', 'denKepDong'], mau: '#ffb050', nhan: 'choi.den.kep' },
     namCham: { hinh: ['denNamCham'], mau: '#ff7a6a', nhan: 'choi.den.namCham' },
     nem: { hinh: ['denNem'], mau: '#ffb050', nhan: 'choi.den.nem' },
@@ -34,7 +35,7 @@
     chan: { hinh: ['denChan'], mau: '#8fb4ff', nhan: 'choi.den.chan' },
     canh: { hinh: ['denCanh'], mau: '#8fb4ff', nhan: 'choi.den.canh' }
   };
-  var THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'kep', 'namCham', 'nem', 'sung', 'day', 'camBien', 'chan', 'canh'];
+  var THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'day', 'camBien', 'chan', 'canh'];
 
   function coTrong(ds, tenLenh) { return (ds || []).some(function (e) { return tenLenh.indexOf(e && e.ten) >= 0; }); }
 
@@ -46,6 +47,7 @@
     else if (loai === 'drone') kq.push('canh');
     else { kq.push('banhT', 'banhP'); if (loai === 'omni' || co(['slide_left', 'slide_right'])) kq.push('truot'); }
     if (co(TAY_LEN)) kq.push('tay');
+    if (co(['arm_left', 'arm_right'])) kq.push('xoay');           // tay xoay: khớp xoay có đèn riêng
     if (co(KEP_LEN)) kq.push('kep');
     if (co(NC_LEN)) kq.push('namCham');
     if (co(['aim', 'load', 'throw'])) kq.push('nem');
@@ -64,13 +66,14 @@
     kq.banhP = banh.phai !== 0 || truot;
     kq.truot = truot;
     kq.tay = coTrong(lenhTruoc, TAY_LEN);
+    kq.xoay = coTrong(lenhTruoc, ['arm_left', 'arm_right']);
     kq.kep = coTrong(lenhTruoc, KEP_LEN);
     kq.namCham = coTrong(lenhTruoc, NC_LEN) || !!(rb.namCham && rb.namCham.bat);
     kq.nem = coTrong(lenhTruoc, NEM_LEN);
     kq.sung = coTrong(lenhTruoc, ['shoot']);
     kq.day = coTrong(lenhTruoc, ['push']);
     kq.camBien = (lenhTruoc || []).some(function (x) { return x && (x.docCamBien || CAM_BIEN.indexOf(x.ten) >= 0); }) || coSk('doc-cam-bien') || !!rb.camBien;
-    kq.chan = coSk('chuan-bi') || coSk('di');
+    kq.chan = coSk('chuan-bi') || coSk('di') || coSk('doi-chan') || coSk('nhay');
     kq.canh = coSk('di') || coSk('dung-yen');
     return kq;
   }

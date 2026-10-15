@@ -25,7 +25,8 @@ const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
 const KhungCode = require(path.join(day, 'khung-code.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
-for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1', 'man-chuoi-2', 'man-che-xe', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach', 'man-mau', 'man-nam-cham', 'man-may-nem', 'man-sung-bong']) require(path.join(day, f + '.js'));
+for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1']) require(path.join(day, f + '.js'));
+for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f)).sort()) require(path.join(day, f));          // MỌI tệp màn (kể cả chương mới), để các kiểm "mọi màn" phủ hết
 const ManHoc = require(path.join(day, 'man-drone.js'));
 
 let dat = 0, hong = 0;
@@ -190,8 +191,8 @@ console.log('\n== 2. TP.theCuaHam: hàm của em → thẻ theo lệnh gốc nó
   kiem('hàm còn trống → "than"', the('rong') === 'than');
   const loop = [H('a', ['b()']), H('b', ['a()', 'grab()'])];
   kiem('hàm gọi vòng quanh nhau không treo; vẫn thấy lệnh tay ở hàm kia → "tay"', TP.theCuaHam(loop[0], (t) => loop.find((f) => f.ten === t) || null) === 'tay');
-  kiem('lệnh của mọi bộ phận: nam châm (magnet_on), máy ném (aim), súng bóng (shoot), tấm đẩy (push) → "tay"; color / battery / front_metal → "cam"',
-    ['magnet_on', 'magnet_off', 'aim', 'throw', 'load', 'shoot', 'push'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'tay') && ['color', 'battery', 'front_metal', 'left_clear', 'right_clear'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'cam'));
+  kiem('lệnh của mọi bộ phận: nam châm (magnet_n, magnet_s), máy ném (aim), súng bóng (shoot), tấm đẩy (push) → "tay"; color / battery / front_metal → "cam"',
+    ['magnet_n', 'magnet_s', 'magnet_off', 'aim', 'throw', 'load', 'shoot', 'push'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'tay') && ['color', 'battery', 'front_metal', 'front_pole', 'left_clear', 'right_clear'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'cam'));
   kiem('chú thích không tính: "move()  # grab()" vẫn là "than"', TP.theCuaHam(H('x', ['move()  # grab()']), () => null) === 'than');
 }
 
@@ -327,7 +328,7 @@ console.log('\n== 5. Mọi màn: khay không mất khối nào so với kho cũ 
     const tat = new Set(), q = quetThe(k);
     for (const ds of Object.values(q)) for (const t of ds) tat.add(t);
     const can = [];
-    for (const n of (m.hamGoc || [])) { if (['front_clear', 'left_clear', 'right_clear', 'color', 'front_metal', 'battery'].includes(n)) continue; can.push(n); }
+    for (const n of (m.hamGoc || [])) { if (['front_clear', 'left_clear', 'right_clear', 'color', 'front_metal', 'front_pole', 'battery'].includes(n)) continue; can.push(n); }
     for (const f of hm(m)) can.push(f.ten);
     if (spec.em) for (const f of spec.em) can.push(f.ten);
     const thieu = can.filter((n) => !tat.has(n));
@@ -417,7 +418,7 @@ console.log('\n== 8. TP.nhomNhip: ngoặc nhịp gom lệnh gốc + wait() ==');
   kiem('aim(n) tác dụng ngay: không ngắt nhóm, không vào nhóm khi đứng đầu (aim, throw, wait → nhóm từ throw)', g(['aim(2)', 'throw()', 'wait()']) === G([1, 2, 1]) && g(['throw()', 'aim(3)', 'wait()']) === G([0, 2, 1]));
   kiem('lệnh cảm biến đứng riêng (front_clear()) không phải lệnh ra lệnh: ngắt nhóm', g(['front_clear()', 'wait()']) === G([1, 1, 1]));
   kiem('mọi lệnh gốc "chỉ ra lệnh" đều gom: bánh, trượt, tay, kẹp, đẩy, nam châm, ném, bắn',
-    ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'grab', 'release', 'push', 'magnet_on', 'magnet_off', 'load', 'throw', 'shoot'].every((l) => g([l + '()', 'wait()']) === G([0, 1, 1])));
+    ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'grab', 'release', 'push', 'magnet_n', 'magnet_s', 'magnet_off', 'load', 'throw', 'shoot'].every((l) => g([l + '()', 'wait()']) === G([0, 1, 1])));
   kiem('có chú thích sau lệnh (left_move()  # trái) vẫn là lệnh gốc', g(['left_move()  # trái', 'wait()']) === G([0, 1, 1]));
   const nguonTP = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8'), mc = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), xh = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
   kiem('Editor vẽ ngoặc nhịp chỉ khi tuyChon.veNhip(); màn chơi và Xưởng đều truyền veNhip, trừ nhện / drone (go_* tự trôi nhịp)',
@@ -482,6 +483,47 @@ console.log('\n== 9. HuongDan: chuỗi bước, sự kiện, hạn, cờ đã xe
   kiem('xong "bam": click (giai đoạn bắt) trúng đích hoặc bên trong đích → qua bước; click chỗ khác thì không', bam.length >= 0 && (HuongDan.bam({ target: new El('i') }), HuongDan.buocHienTai('v2') === 0) && (HuongDan.bam({ target: nut }), HuongDan.buocHienTai('v2') === 1) && (HuongDan.bam({ target: nut }), !HuongDan.dangChay('v2')));
   HuongDan.dung(); doc.querySelector = docCu.qs; doc.addEventListener = docCu.ae;
   const nguonHD = fs.readFileSync(path.join(day, 'game', 'huong-dan.js'), 'utf8');
+  kiem('huong-dan.js: một chuỗi một lúc (chuỗi mới đang hiện thì chuỗi cũ ẩn, không đếm hạn; nhịp vẽ chuỗi mới trước) và ẩn khi đang kéo (body.dang-keo)',
+    /function biChuoiMoiChe\(c\)/.test(nguonHD) && /if \(biChuoiMoiChe\(c\)\) \{ gaHet\(c\); c\.dangHien = false; return false; \}/.test(nguonHD) && /CHUOI\.slice\(\)\.reverse\(\)\.forEach\(function \(c\)/.test(nguonHD) && /contains\('dang-keo'\)\) return true/.test(nguonHD));
+  { const nx = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
+    kiem('sân thử Xưởng: chế độ Vật ở MỌI màn có vật (trừ tấm đẩy) chạm vật thì đổi gỗ → sắt → nam châm N → nam châm S → bỏ (không còn riêng màn nam châm)',
+      nx.includes("S.che === 'vat' && !coDay()") && !nx.includes('coNamCham') && nx.includes("chat: 'sat'") && nx.includes("cuc: 'N'") && nx.includes("cuc: 'S'")); }
+  { // MỖI BỘ PHẬN MỘT LỆNH MỖI NHỊP (thanh-phan.js: lenhCungNhip / lyDoCamNhip, Editor.chenTai, Palette.datCamNhip)
+    const J = (x) => JSON.stringify(x), L = (a, at, b) => TP.lenhCungNhip(a, at, b || 0), C = (ten, ds) => TP.lyDoCamNhip(ten, ds);
+    const hai = ['left_move()', 'right_move()', 'wait()'];
+    kiem('lenhCungNhip: chèn sau wait() là nhịp mới (rỗng); chèn trước wait() / đầu khung lấy các lệnh gốc liền đó', J(L(hai, 3)) === '[]' && J(L(hai, 2)) === '["right_move","left_move"]' && J(L(hai, 0)) === '["left_move","right_move"]', J([L(hai, 3), L(hai, 2), L(hai, 0)]));
+    kiem('lenhCungNhip: chỉ dòng cùng bậc thụt (trong for), dừng ở dòng khác (lời gọi hàm), ranh nhịp go_*() của nhện / drone, bỏ qua aim()',
+      J(L(['for i in range(2):', '    left_move()', '    wait()'], 2, 1)) === '["left_move"]' && J(L(['move()', 'left_move()'], 2)) === '["left_move"]'
+      && J(L(['crouch()', 'go_right()', 'stand()'], 1)) === '["crouch"]' && J(L(['crouch()', 'go_right()', 'stand()'], 3)) === '["stand"]' && J(L(['aim(2)', 'load()'], 2)) === '["load","aim"]');
+    const camDu = [['left_back', ['left_move']], ['left_move', ['left_move']], ['arm_up', ['arm_down']], ['release', ['grab']], ['magnet_s', ['magnet_n']], ['magnet_off', ['magnet_s']], ['stand', ['crouch']], ['arm_right', ['arm_left']], ['throw', ['load']], ['shoot', ['shoot']], ['push', ['push']], ['slide_right', ['slide_left']]];
+    kiem('cùng bộ phận trong một nhịp thì cấm: bánh trái, tay lên / xuống, gắp / thả, nam châm N / S / ngắt, chân nhện co / duỗi, khớp xoay, máy ném, súng, tấm đẩy, trượt',
+      camDu.every(([a, ds]) => !!C(a, ds)), camDu.filter(([a, ds]) => !C(a, ds)).map((x) => x[0]).join(', '));
+    const duoc = [['right_move', ['left_move']], ['grab', ['arm_down']], ['arm_left', ['arm_down', 'grab']], ['wait', ['left_move']], ['move', ['left_move']], ['left_move', []], ['magnet_n', ['left_move', 'right_move']]];
+    kiem('khác bộ phận thì được (hai bánh, tay + kẹp + khớp xoay, nam châm + bánh); wait() và lời gọi hàm luôn được', duoc.every(([a, ds]) => C(a, ds) === null), duoc.filter(([a, ds]) => C(a, ds) !== null).map((x) => x[0]).join(', '));
+    kiem('một nhịp một kiểu đi: trượt (omni không đi chéo) hay bắn / đẩy (xe đứng yên) không đi chung lệnh bánh',
+      !!C('left_move', ['slide_left']) && !!C('slide_right', ['right_move']) && !!C('left_move', ['shoot']) && !!C('push', ['left_back']) && C('grab', ['slide_left']) === null);
+    kiem('câu báo nói tên bộ phận và lệnh đã có ("Bánh trái đã có left_move()…", "Tay đã có arm_down()…") và cách sửa (thêm wait())',
+      /^Bánh trái đã có left_move\(\)/.test(C('left_back', ['left_move'])) && /^Tay đã có arm_down\(\)/.test(C('arm_up', ['arm_down'])) && /wait\(\)/.test(C('arm_up', ['arm_down'])) && /slide_left\(\)/.test(C('left_move', ['slide_left'])));
+    const nTP = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8'), nC = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), nX = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
+    const lenhNhip = JSON.parse(/var LENH_NHIP = (\[[^\]]*\])/.exec(nTP)[1].replace(/'/g, '"'));
+    const bp = new Set(Object.values(TP.BO_PHAN_LENH).flat());
+    { // lời giải / công thức khác / lời giải khác của MỌI màn gõ được theo thứ tự từ trên xuống mà không bị chặn (không có hai lệnh cùng bộ phận trong một nhịp)
+      const nap = (arr) => { const loi = []; (arr || []).forEach((d, i) => { const m = /^\s*([A-Za-z_]\w*)\s*\([^()]*\)\s*(#.*)?$/.exec(d); if (!m) return; const ly = C(m[1], L(arr.slice(0, i), i, TP.bacCua(d))); if (ly) loi.push((i + 1) + ':' + m[1]); }); return loi; };
+      const sai = [];
+      ManHoc.danhSach.forEach((m) => {
+        [['loiGiai', m.loiGiai], ['loiGiaiKhac', m.loiGiaiKhac && m.loiGiaiKhac.baiLam]].concat((m.congThucKhac || []).map((c, i) => ['congThucKhac' + i, c.baiLam || c])).forEach(([ten, b]) => {
+          if (!b) return;
+          [['chinh', b.chinh]].concat((b.hamCuaEmMoi || []).concat(b.hamCuaMan || []).map((h) => [h.ten, h.than])).forEach(([k, arr]) => { const l = nap(arr); if (l.length) sai.push(m.ma + ' ' + ten + ' ' + k + ' ' + l.join(',')); });
+        });
+      });
+      kiem('lời giải, lời giải khác, công thức khác của mọi màn không có hai lệnh cùng bộ phận (hay khác kiểu đi) trong một nhịp — người chơi gõ được', sai.length === 0, sai.slice(0, 6).join(' · '));
+    }
+    kiem('mọi lệnh gốc trong một nhịp (LENH_NHIP) đều thuộc một bộ phận', lenhNhip.every((l) => bp.has(l)), lenhNhip.filter((l) => !bp.has(l)).join(', '));
+    kiem('Editor.chenTai kiểm trước khi chèn (khiCamNhip, trả null), render báo khay (khiNhip → Palette.datCamNhip); khung chính và Xưởng đều nối; khung chính chỉ báo "đầy khung" khi chen() === false',
+      /var lyCam = lyDoCamNhip\(tenDon\(txt\), lenhCungNhip\(arr, at, b\)\);/.test(nTP) && nTP.indexOf('var lyCam') < nTP.indexOf("arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));")
+      && /if \(!xt && tuyChon\.khiNhip\) tuyChon\.khiNhip\(this\.camNhip\(\)\);/.test(nTP) && /this\.datCamNhip = function/.test(nTP)
+      && [nC, nX].every((s) => /khiCamNhip: function \(ly\)/.test(s) && /khiNhip: function \(cam\) \{ if \(S\.pal\) S\.pal\.datCamNhip\(cam\); \}/.test(s)) && /S\.ed\.chen\(txt\) === false/.test(nC));
+  }
   kiem('cách dùng ghi ở đầu tệp huong-dan.js (CÁCH DÙNG, MỘT BƯỚC, dich / chu / xong / man.huongDan)', /CÁCH DÙNG/.test(nguonHD) && /MỘT BƯỚC/.test(nguonHD) && /man\.huongDan/.test(nguonHD) && /'chen-khoi'/.test(nguonHD) && /'doi-the'/.test(nguonHD));
 
   // hai hướng dẫn dựng trên khung: xóa dòng (Editor) và ◀ ▶ (Palette)
@@ -515,14 +557,14 @@ console.log('\n== 10. DenBoPhan: bộ phận có trên màn, bộ phận sáng t
   kiem('xe + tay + cảm biến (khoang-cach.9): thêm cảm biến ở cuối', dsBp('khoang-cach.9') === '["banhT","banhP","tay","kep","camBien"]');
   kiem('omni (omni.3): thêm đèn trượt; xích (xich.3) như bánh; nhện (nhen.4): chỉ chân; drone (drone.5): cánh quạt (+ cảm biến pin)', dsBp('omni.3') === '["banhT","banhP","truot"]' && dsBp('xich.3') === '["banhT","banhP"]' && dsBp('nhen.4') === '["chan"]' && J(DenBoPhan.boPhanCuaMan(man('drone.5'))).includes('"canh"') && !J(DenBoPhan.boPhanCuaMan(man('drone.5'))).includes('banh'));
   kiem('nam châm / máy ném / súng bóng / tấm đẩy có đèn riêng', ['nam-cham.3', 'may-nem.4', 'sung-bong.5', 'tam-day.6'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|') === 'namCham|nem|sung|day', ['nam-cham.3', 'may-nem.4', 'sung-bong.5', 'tam-day.6'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|'));
-  const THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'kep', 'namCham', 'nem', 'sung', 'day', 'camBien', 'chan', 'canh'];
+  const THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'day', 'camBien', 'chan', 'canh'];      // như den-bo-phan.js (xoay: khớp tay xoay)
   kiem('mọi màn: có ít nhất một bộ phận, đúng thứ tự hiển thị, không quá 7 (vừa ô đồng hồ), xe bánh có đủ hai bánh', ManHoc.danhSach.every((m) => { const d = DenBoPhan.boPhanCuaMan(m); const idx = d.map((k) => THU_TU.indexOf(k)); return d.length >= 1 && d.length <= 7 && idx.every((i, j) => i >= 0 && (j === 0 || idx[j - 1] < i)) && (['nhen', 'drone'].includes(m.loaiRobot) || (d.includes('banhT') && d.includes('banhP'))); }));
   // phan() thuần túy
   const P = (e, l) => DenBoPhan.phan(e, l);
   kiem('bánh trái / phải theo robot.banh: chỉ trái chạy → banhT sáng, banhP tắt; đứng yên → cả hai tắt', P({ robot: { banh: { trai: 1, phai: 0 } } }, []).banhT === true && P({ robot: { banh: { trai: 1, phai: 0 } } }, []).banhP === false && !P({ robot: { banh: { trai: 0, phai: 0 } } }, []).banhT);
   kiem('omni trượt (robot.truot ≠ 0): đèn trượt + cả hai bánh sáng', (() => { const r = P({ robot: { banh: { trai: 0, phai: 0 }, truot: 1 } }, []); return r.truot && r.banhT && r.banhP; })());
   kiem('tay: lệnh arm_up / arm_down; kẹp: grab / release; không lẫn nhau', (() => { const r = P({ robot: {} }, [{ ten: 'arm_down' }, { ten: 'wait' }]), r2 = P({ robot: {} }, [{ ten: 'release' }]); return r.tay && !r.kep && r2.kep && !r2.tay; })());
-  kiem('nam châm: lệnh magnet_on / off hoặc nam châm đang bật; máy ném: load / throw; súng: shoot; đẩy: push', (() => { const a = P({ robot: { namCham: { bat: true } } }, []), b = P({ robot: {} }, [{ ten: 'magnet_off' }]), c = P({ robot: {} }, [{ ten: 'throw' }]), d = P({ robot: {} }, [{ ten: 'shoot' }]), e = P({ robot: {} }, [{ ten: 'push' }]); return a.namCham && b.namCham && c.nem && d.sung && e.day && !c.sung; })());
+  kiem('nam châm: lệnh magnet_n / magnet_s / off hoặc nam châm đang bật; máy ném: load / throw; súng: shoot; đẩy: push', (() => { const a = P({ robot: { namCham: { bat: true } } }, []), b = P({ robot: {} }, [{ ten: 'magnet_off' }]), c = P({ robot: {} }, [{ ten: 'throw' }]), d = P({ robot: {} }, [{ ten: 'shoot' }]), e = P({ robot: {} }, [{ ten: 'push' }]); return a.namCham && b.namCham && c.nem && d.sung && e.day && !c.sung; })());
   kiem('cảm biến: mục lệnh có docCamBien hoặc front_clear / color / battery…, hoặc sự kiện doc-cam-bien; nhện: chuan-bi / di; drone: di / dung-yen', (() => { return P({ robot: {} }, [{ ten: 'front_clear', docCamBien: {} }]).camBien && P({ robot: {} }, [{ ten: 'color' }]).camBien && P({ robot: {}, suKien: [{ ma: 'doc-cam-bien' }] }, []).camBien && !P({ robot: {} }, [{ ten: 'wait' }]).camBien && P({ robot: {}, suKien: [{ ma: 'chuan-bi' }] }, []).chan && P({ robot: {}, suKien: [{ ma: 'di' }] }, []).chan && P({ robot: {}, suKien: [{ ma: 'dung-yen' }] }, []).canh && !P({ robot: {}, suKien: [{ ma: 'dung-yen' }] }, []).chan; })());
   // theo vết thật của lời giải
   function khoDen(m) {

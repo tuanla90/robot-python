@@ -66,14 +66,14 @@ const sanCua = (m) => (Array.isArray(m.san[0]) ? m.san : [m.san]);
 const bdCua = (m) => (Array.isArray(m.batDau) ? m.batDau : sanCua(m).map(() => m.batDau));
 
 const BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
-const NC = ['magnet_on', 'magnet_off'];
+const NC = ['magnet_n', 'magnet_s', 'magnet_off'];
 function chay(rows, bd, code, extra) {
   extra = extra || {};
   const hamGoc = BAY.concat(NC, ['color'], extra.pin !== undefined ? ['battery'] : []);
   return SanHoc.chay(Object.assign({ san: rows, batDau: bd, loaiRobot: 'drone', hamGoc }, extra), code);
 }
 const UP = 'go_up()\n', DOWN = 'go_down()\n', LEFT = 'go_left()\n', RIGHT = 'go_right()\n', WAIT = 'wait()\n';
-const ON = L('magnet_on()', 'wait()'), OFF = L('magnet_off()', 'wait()');
+const ON = L('magnet_n()', 'wait()'), OFF = L('magnet_off()', 'wait()');
 const trong = (n, c = '.') => Array.from({ length: n }, () => c.repeat(n));
 const dat1 = (rows, x, y, ch) => rows.map((r, j) => (j === y ? r.slice(0, x) + ch + r.slice(x + 1) : r));
 const BD = { x: 2, y: 2, huong: 0 };
@@ -98,7 +98,7 @@ console.log('\n== 1. go_*(): bay 1 ô mỗi lệnh, 1 nhịp, tự trôi nhịp;
   kiem('huong ban đầu không ảnh hưởng: đi theo hướng TUYỆT ĐỐI theo màn hình (batDau.huong 2 vẫn go_right sang phải)', k4.robot.x === 0 && k4.robot.y === 1 && nhipVet(k4)[0].robot.x === 1);
   const k5 = chay(['..F'], { x: 0, y: 0, huong: 0 }, RIGHT + RIGHT + RIGHT);
   kiem('tới cờ thì thắng ngay (dừng ở nhịp đó, lệnh sau không chạy)', k5.thang && k5.nhip === 2);
-  kiem('hamGoc của drone: go_up, go_down, go_left, go_right, wait; nhện cùng bộ lệnh; xe bánh không có go_*', J(SanHoc.HAM_GOC.drone) === J(SanHoc.HAM_GOC.nhen) && J(SanHoc.HAM_GOC.drone) === J(BAY) && SanHoc.HAM_GOC.banh.indexOf('go_up') < 0);
+  kiem('hamGoc của drone: go_up, go_down, go_left, go_right, wait; nhện cùng bộ lệnh đi (và thêm crouch, stand cho chân); xe bánh không có go_*', J(SanHoc.HAM_GOC.drone) === J(SanHoc.HAM_GOC.nhen.slice(0, 5)) && J(SanHoc.HAM_GOC.nhen.slice(5)) === '["crouch","stand"]' && J(SanHoc.HAM_GOC.drone) === J(BAY) && SanHoc.HAM_GOC.banh.indexOf('go_up') < 0);
   const nhen = SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'nhen' }, RIGHT + RIGHT);
   const dr = SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'drone' }, RIGHT + RIGHT);
   kiem('so với nhện: cùng hai lệnh, nhện mất 4 nhịp, drone mất 2 nhịp (nhanh gấp đôi)', nhen.nhip === 4 && dr.nhip === 2 && nhen.robot.x === dr.robot.x);
@@ -217,7 +217,7 @@ console.log('\n== 4. Nam châm treo: hút vật sắt ở ô DƯỚI drone, th�
   const bd = { x: 2, y: 2, huong: 0 };
   const bdTruoc = { x: 2, y: 3, huong: 0 };
   const a = chay(S, bd, ON, { vatChat: CH });
-  kiem('hút: drone đứng trên vật sắt, magnet_on() + wait(): vật dính dưới bụng (trangThai cam, x y = ô drone), namCham { bat, cam }, sự kiện hut-vat (soO 0, tu = den) + dinh-vat', a.vat[0].trangThai === 'cam' && a.namCham.bat === true && a.namCham.cam === 1 && ev(a, 'hut-vat').length === 1 && ev(a, 'hut-vat')[0].soO === 0 && ev(a, 'dinh-vat').length === 1 && a.nhip === 1);
+  kiem('hút: drone đứng trên vật sắt, magnet_n() + wait(): vật dính dưới bụng (trangThai cam, x y = ô drone), namCham { bat, cam }, sự kiện hut-vat (soO 0, tu = den) + dinh-vat', a.vat[0].trangThai === 'cam' && a.namCham.bat === true && a.namCham.cam === 1 && ev(a, 'hut-vat').length === 1 && ev(a, 'hut-vat')[0].soO === 0 && ev(a, 'dinh-vat').length === 1 && a.nhip === 1);
   const b = chay(S, bdTruoc, ON, { vatChat: CH });
   kiem('KHÁC nam châm gắn mũi xe: vật sắt ở ô TRƯỚC (cách 1 ô) không bị hút, chỉ hút ô ngay dưới', b.vat[0].trangThai === 'dat' && b.namCham.cam === null && maSK(b, 'hut-go').length === 0);
   const c = chay(S, { x: 2, y: 4, huong: 0 }, ON, { vatChat: CH });
@@ -225,9 +225,9 @@ console.log('\n== 4. Nam châm treo: hút vật sắt ở ô DƯỚI drone, th�
   const d = chay(S, bd, ON, {});
   kiem('vật GỖ (mặc định) không hút: hut-go (thông tin) ghi ô dưới drone, khoảng 0; vật ở yên', d.vat[0].trangThai === 'dat' && maSK(d, 'hut-go').length === 1 && maSK(d, 'hut-go')[0].khoang === 0 && maSK(d, 'hut-go')[0].o.x === 2);
   // gộp lệnh nam châm với lệnh bay
-  const e = chay(S, bdTruoc, 'magnet_on()\ngo_up()\n', { vatChat: CH });
-  kiem('lệnh nam châm làm ở nhịp kế (go_*): "magnet_on(); go_up()" là MỘT nhịp: bật, bay lên ô vật, hút ở cuối nhịp', e.nhip === 1 && e.vat[0].trangThai === 'cam' && e.robot.y === 2 && e.lenhTon.length === 0);
-  const f = chay(S, bdTruoc, 'magnet_on()\n' + UP + 'go_up()\n' + 'go_up()\n', { vatChat: CH });
+  const e = chay(S, bdTruoc, 'magnet_n()\ngo_up()\n', { vatChat: CH });
+  kiem('lệnh nam châm làm ở nhịp kế (go_*): "magnet_n(); go_up()" là MỘT nhịp: bật, bay lên ô vật, hút ở cuối nhịp', e.nhip === 1 && e.vat[0].trangThai === 'cam' && e.robot.y === 2 && e.lenhTon.length === 0);
+  const f = chay(S, bdTruoc, 'magnet_n()\n' + UP + 'go_up()\n' + 'go_up()\n', { vatChat: CH });
   kiem('nam châm bật suốt: bay qua vật sắt là hút, vật dính đi theo drone tới ô kế (vat.x y bằng ô drone từng nhịp)', f.vat[0].trangThai === 'cam' && f.vat[0].y === 0 && J(nhipVet(f).map((n) => [n.vat[0].trangThai, n.vat[0].x, n.vat[0].y])) === J([['cam', 2, 2], ['cam', 2, 1], ['cam', 2, 0]]), J(nhipVet(f).map((n) => n.vat[0])));
   // thả
   const g = chay(S, bd, ON + RIGHT + OFF, { vatChat: CH });
@@ -264,22 +264,22 @@ console.log('\n== 4. Nam châm treo: hút vật sắt ở ô DƯỚI drone, th�
   })());
   kiem('drone KHÔNG gắn camera (không có hướng mặt): cfg.camBien có camera → lỗi cấu hình tiếng Việt, cả khi hamGoc không có color()', /Drone không gắn camera/.test(loi(() => chay(S, bd, 'wait()' + String.fromCharCode(10), { camBien: [{ ma: 'camera', o: 'tren' }] }))) && /Drone không gắn camera/.test(loi(() => SanHoc.chay({ san: S, batDau: bd, loaiRobot: 'drone', hamGoc: BAY, camBien: [{ ma: 'camera', o: 'tren' }] }, ''))));
   // gọi lại, quên wait
-  const kl = chay(S, bd, 'magnet_on()\nmagnet_off()\nwait()\n', { vatChat: CH });
-  kiem('hai lệnh nam châm chưa trôi nhịp: lệnh sau bị bỏ (magnet-goi-lai, lỗi)', maSK(kl, 'magnet-goi-lai').length === 1 && maSK(kl, 'magnet-goi-lai')[0].truoc.ten === 'magnet_on');
-  const kq = chay(S, bd, 'magnet_on()\n', { vatChat: CH });
-  kiem('magnet_on() không có go_* hay wait() theo sau: quen-wait, chưa hút, 0 nhịp; chẩn đoán nói "lệnh nam châm" và có `cho`', maSK(kq, 'quen-wait').length === 1 && kq.nhip === 0 && kq.vat[0].trangThai === 'dat' &&
-    (() => { const r = ChamHoc.cham(Object.assign({}, man(7), { san: S, vatChat: CH, batDau: bd }), { chinh: ['magnet_on()'] }, []); const c2 = r.chanDoan.find((x) => x.ma === 'quen-wait'); return c2 && /lệnh nam châm/.test(c2.loi) && c2.cho && c2.cho.dong === 1; })());
+  const kl = chay(S, bd, 'magnet_n()\nmagnet_off()\nwait()\n', { vatChat: CH });
+  kiem('hai lệnh nam châm chưa trôi nhịp: lệnh sau bị bỏ (magnet-goi-lai, lỗi)', maSK(kl, 'magnet-goi-lai').length === 1 && maSK(kl, 'magnet-goi-lai')[0].truoc.ten === 'magnet_n');
+  const kq = chay(S, bd, 'magnet_n()\n', { vatChat: CH });
+  kiem('magnet_n() không có go_* hay wait() theo sau: quen-wait, chưa hút, 0 nhịp; chẩn đoán nói "lệnh nam châm" và có `cho`', maSK(kq, 'quen-wait').length === 1 && kq.nhip === 0 && kq.vat[0].trangThai === 'dat' &&
+    (() => { const r = ChamHoc.cham(Object.assign({}, man(7), { san: S, vatChat: CH, batDau: bd }), { chinh: ['magnet_n()'] }, []); const c2 = r.chanDoan.find((x) => x.ma === 'quen-wait'); return c2 && /lệnh nam châm/.test(c2.loi) && c2.cho && c2.cho.dong === 1; })());
   const kt = chay(S, bd, ON + OFF + ON, { vatChat: CH });
   kiem('hút rồi thả rồi hút lại ngay tại chỗ: thả xuống ô dưới (vẫn là ô của vật cũ), bật lại thì hút lại được: dính', kt.vat[0].trangThai === 'cam' && ev(kt, 'tha-vat').length === 1 && ev(kt, 'hut-vat').length === 2);
   const hai = chay(['.oo..'], { x: 1, y: 0, huong: 0 }, ON + RIGHT + ON, { vatChat: ['.ss..'] });
   kiem('đang dính một vật thì không hút thêm vật khác (mỗi lần một vật)', hai.vat[0].trangThai === 'cam' && hai.vat[1].trangThai === 'dat' && ev(hai, 'hut-vat').length === 1);
   kiem('robot { namCham } và vet.vat có `chat` khi robot có nam châm; chẩn đoán thả-bị-chặn lời cho drone nói "ô ngay dưới drone"', (() => {
-    const r = ChamHoc.cham(Object.assign({}, man(7), { san: dat1(S, 3, 2, '='), vatChat: CH, batDau: bd, mucTieu: 'dua-vat' }), { chinh: ['magnet_on()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'] }, []);
+    const r = ChamHoc.cham(Object.assign({}, man(7), { san: dat1(S, 3, 2, '='), vatChat: CH, batDau: bd, mucTieu: 'dua-vat' }), { chinh: ['magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'] }, []);
     const c2 = r.chanDoan.find((x) => x.ma === 'tha-bi-chan');
     return nhipVet(a)[0].robot.namCham.cam === 1 && nhipVet(a)[0].vat[0].chat === 'sat' && c2 && /ô ngay dưới drone/.test(c2.loi) && c2.cho && c2.cho.dong === 4;
   })());
   kiem('chẩn đoán hut-go lời cho drone: nói vật ngay dưới drone', (() => {
-    const r = ChamHoc.cham(Object.assign({}, man(7), { san: S, vatChat: ['.....', '.....', '.....', '.....', '.....'], batDau: bd }), { chinh: ['magnet_on()', 'wait()'] }, []);
+    const r = ChamHoc.cham(Object.assign({}, man(7), { san: S, vatChat: ['.....', '.....', '.....', '.....', '.....'], batDau: bd }), { chinh: ['magnet_n()', 'wait()'] }, []);
     const c2 = r.chanDoan.find((x) => x.ma === 'hut-go');
     return c2 && c2.muc === 'thong-tin' && /ngay dưới drone/.test(c2.loi);
   })());
@@ -321,7 +321,7 @@ console.log('\n== 6. Ghép sai: drone không gắn tay kẹp, tấm đẩy, máy
   kiem('cảm biến từ front_metal → lỗi', /Drone không gắn cảm biến khoảng cách hay cảm biến từ/.test(loi(cfg(BAY.concat(['front_metal'])))));
   kiem('lệnh của xe bánh (left_move…) không thuộc drone → lỗi cấu hình', /không thuộc loại robot drone/.test(loi(cfg(BAY.concat(['left_move'])))));
   kiem('nam châm, màu và đo pin hợp lệ với drone; hamGoc mặc định của drone chạy được', loi(cfg(BAY.concat(NC, ['color']))) === null && SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'drone' }, 'go_up()\n').nhip === 1);
-  kiem('nhện / xe bánh không có nam châm treo kiểu drone: nhện vẫn không gắn nam châm', /Nhện không gắn nam châm/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'magnet_on', 'magnet_off'] }, ''))));
+  kiem('nhện / xe bánh không có nam châm treo kiểu drone: nhện vẫn không gắn nam châm', /Nhện không gắn nam châm/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'magnet_n', 'magnet_off'] }, ''))));
   kiem('lyDoChan / loại robot lạ vẫn báo lỗi; loại "drone" được nhận', /Loại robot lạ/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'bay' }, ''))));
   kiem('drone xuất phát trên cửa đóng → lỗi; trên cửa mở, nút → xem lyDoChan', /cửa đang đóng/.test(loi(() => chay(['C.'], { x: 0, y: 0, huong: 0 }, ''))));
 }
@@ -344,7 +344,7 @@ console.log('\n== 7. Sân thử Xưởng hàm: sanThu.pin, sanThu.sac, battery()
   kiem('chuanSanThu: sac nhận ô xe, bỏ ô tường / hàng rào / ngoài sân / trùng (còn (2,2), (0,0)); pin hợp lệ giữ lại; pin lạ (0, 1.5, 1000, chuỗi) bị bỏ; sân thử cũ không có sac / pin', cs.sac.length === 2 && cs.pin === 7 && [0, 1.5, 1000, '5'].every((p) => ChamHoc.chuanSanThu({ pin: p }).pin === undefined) && ChamHoc.chuanSanThu({}).sac === undefined && ChamHoc.chuanSanThu({}).pin === undefined, J(cs));
   const hs = ChamHoc.hangSanThu(cs);
   kiem('hangSanThu vẽ P cho ô sạc', hs[2][2] === 'P' && hs[0][0] === 'P' && hs[1][1] === '#' && hs[3][3] === '=');
-  const r5 = ChamHoc.thuHam(Object.assign({}, man(7)), { chinh: [], hamCuaMan: [] }, 'fly', [H('fly', ['go_right()', 'magnet_on()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'])], { sanThu: { rong: 5, cao: 5, batDau: { x: 0, y: 2, huong: 0 }, vat: [{ x: 1, y: 2, chat: 'sat' }] } });
+  const r5 = ChamHoc.thuHam(Object.assign({}, man(7)), { chinh: [], hamCuaMan: [] }, 'fly', [H('fly', ['go_right()', 'magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'])], { sanThu: { rong: 5, cao: 5, batDau: { x: 0, y: 2, huong: 0 }, vat: [{ x: 1, y: 2, chat: 'sat' }] } });
   kiem('sân thử màn nam châm treo: vật sắt đặt sẵn, thử hàm hút rồi thả: vật nằm ở (2, 2), namCham tắt', r5.vat.length === 1 && r5.vat[0].chat === 'sat' && r5.vat[0].x === 2 && r5.vat[0].trangThai === 'dat' && r5.namCham && r5.namCham.bat === false, J(r5.vat));
   kiem('sân thử màn drone không pin: thuHam không truyền pin cho SanHoc, pin null', ChamHoc.thuHam(man(7), { chinh: [], hamCuaMan: [] }, 'f', [H('f', ['go_up()'])], {}).pin === null);
 }
@@ -403,7 +403,7 @@ console.log('\n== 9. Bộ dò đường tắt có pin (BFS có giới hạn) + s
   kiem('bộ dò: loại robot khác drone → lỗi rõ; sân có cửa / nút → lỗi rõ (chưa hỗ trợ)', /chỉ biết drone/.test(loi(() => nhipDroneNganNhat(Object.assign({}, a, { loaiRobot: 'banh' })))) && /chưa hỗ trợ cửa và nút/.test(loi(() => nhipDroneNganNhat({ loaiRobot: 'drone', san: ['.C.F'], batDau: { x: 0, y: 0, huong: 0 } }))));
   const nc1 = { loaiRobot: 'drone', san: ['#######', '..o=..D', '#######'], batDau: { x: 0, y: 1, huong: 0 }, mucTieu: 'dua-vat', vatCan: 'sat', vatChat: ['.......', '..s....', '.......'] };
   const tach = nhipDroneNganNhat(nc1, { tachNhip: true }), gop = nhipDroneNganNhat(nc1);
-  kiem('bộ dò nam châm: màn 17.7 — gộp lệnh nam châm với lệnh bay 7 nhịp, tách nhịp (magnet_on / off đứng một mình) 8 nhịp', gop.nhip === 7 && tach.nhip === 8, J([gop.nhip, tach.nhip]));
+  kiem('bộ dò nam châm: màn 17.7 — gộp lệnh nam châm với lệnh bay 7 nhịp, tách nhịp (magnet_n / off đứng một mình) 8 nhịp', gop.nhip === 7 && tach.nhip === 8, J([gop.nhip, tach.nhip]));
   const sh = SanHoc.chay(Object.assign({}, nc1, { hamGoc: BAY.concat(NC) }), chuoiThanhMa(tach.chuoi));
   kiem('chuỗi hành động của bộ dò đổi sang Python rồi chạy thật trên san-hoc.js: thắng đúng số nhịp bộ dò báo (cả bản gộp)', sh.thang && sh.nhip === tach.nhip && SanHoc.chay(Object.assign({}, nc1, { hamGoc: BAY.concat(NC) }), chuoiThanhMa(gop.chuoi)).nhip === gop.nhip);
   kiem('bộ dò: vật gỗ không hút được (không bao giờ về đích); vatCan "sat" bỏ qua vật gỗ', nhipDroneNganNhat(Object.assign({}, nc1, { vatChat: ['.......', '.......', '.......'] })).nhip === null && nhipDroneNganNhat(Object.assign({}, nc1, { san: ['#######', '..oo..D'.replace('o', 'o'), '#######'], vatChat: ['.......', '..s....', '.......'] })).nhip !== null);
@@ -539,9 +539,9 @@ function bang(a, b) { return J(a) === J(b); }
     return J(q.theoSan.map((s) => s.thang)) === J([true, true, false]) && J(q2.theoSan.map((s) => s.thang)) === J([true, false, false]) && bang(m6.hamCuaEmCan, ['recharge']);
   })());
   const r7 = ChamHoc.cham(m7, m7.loiGiai, []);
-  kiem('17.7: hút vật sắt dưới bụng ở (2, 1), bay qua hàng rào (3, 1) khi đang mang vật, thả lên đích (6, 1); 8 nhịp; viết gộp "magnet_on(); go_right()" nhanh hơn một nhịp (7)', r7.thang && r7.soNhip === 8 && ChamHoc.cham(m7, { chinh: ['go_right()', 'magnet_on()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()'] }, []).soNhip === 7 &&
+  kiem('17.7: hút vật sắt dưới bụng ở (2, 1), bay qua hàng rào (3, 1) khi đang mang vật, thả lên đích (6, 1); 8 nhịp; viết gộp "magnet_n(); go_right()" nhanh hơn một nhịp (7)', r7.thang && r7.soNhip === 8 && ChamHoc.cham(m7, { chinh: ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()'] }, []).soNhip === 7 &&
     ev({ vet: r7.vet }, 'bay-qua').some((e) => e.tren.indexOf('rao') >= 0));
-  kiem('17.8: maMau gọi ferry() thả vật TRƯỚC khi bay (vật ở yên chỗ cũ); lời giải chỉ đổi thứ tự thân ferry, chương trình giữ nguyên; ferry không vào kho', bang(m8.maMau.hamCuaMan[0].than, ['magnet_on()', 'wait()', 'magnet_off()', 'wait()', 'walk(path)']) && bang(m8.loiGiai.hamCuaMan[0].than, ['magnet_on()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()']) &&
+  kiem('17.8: maMau gọi ferry() thả vật TRƯỚC khi bay (vật ở yên chỗ cũ); lời giải chỉ đổi thứ tự thân ferry, chương trình giữ nguyên; ferry không vào kho', bang(m8.maMau.hamCuaMan[0].than, ['magnet_n()', 'wait()', 'magnet_off()', 'wait()', 'walk(path)']) && bang(m8.loiGiai.hamCuaMan[0].than, ['magnet_n()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()']) &&
     bang(m8.maMau.chinh, m8.loiGiai.chinh) && maCua(ChamHoc.cham(m8, m8.maMau, khoTruoc('25.8'))).includes('chua-dua-vat') && m8.loiGiai.hamCuaEmMoi.length === 0);
   kiem('17.9: hai vật sắt (một nằm trên băng) và một vật gỗ giữa hai vật sắt; vật gỗ không bị đụng tới (ở yên (3, 1)); bật nam châm trên vật gỗ → hut-go', (() => {
     const r = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('25.9'));
@@ -549,7 +549,7 @@ function bang(a, b) { return J(a) === J(b); }
     return r.thang && r.vat.some((v) => v.x === 3 && v.y === 1 && v.trangThai === 'dat' && v.chat === 'go') && r.vat.filter((v) => v.chat === 'sat').every((v) => v.y === 0) && maCua(rg).includes('hut-go');
   })());
   const r10 = ChamHoc.cham(m10, m10.loiGiai, tron(khoTruoc('25.10'), m10.loiGiai.hamCuaEmMoi));
-  kiem('17.10: pin 14, hai chuyến bay thẳng cần 16 pin nên chuyến thứ nhất ghé ô sạc (U L U D R R U); sac-pin đúng 1 lần; 20 nhịp; ship() = hút, walk(path), thả (5 ô)', r10.thang && r10.soNhip === 20 && ev({ vet: r10.vet }, 'sac-pin').length === 1 && bang(m10.loiGiai.hamCuaEmMoi[0].than, ['magnet_on()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()']) && bang(m10.loiGiai.hamCuaEmMoi[0].thamSo, ['path']) && bang(m10.hamCuaEmCan, ['go', 'walk']) && m10.canHam === 'tran-khung');
+  kiem('17.10: pin 14, hai chuyến bay thẳng cần 16 pin nên chuyến thứ nhất ghé ô sạc (U L U D R R U); sac-pin đúng 1 lần; 20 nhịp; ship() = hút, walk(path), thả (5 ô)', r10.thang && r10.soNhip === 20 && ev({ vet: r10.vet }, 'sac-pin').length === 1 && bang(m10.loiGiai.hamCuaEmMoi[0].than, ['magnet_n()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()']) && bang(m10.loiGiai.hamCuaEmMoi[0].thamSo, ['path']) && bang(m10.hamCuaEmCan, ['go', 'walk']) && m10.canHam === 'tran-khung');
   const khong = ChamHoc.cham(m10, m10.loiSai[4].baiLam, khoTruoc('25.10'));
   kiem('17.10: không dùng ship(), viết thẳng 12 dòng > 10 ô: tran-khung, không chạy', khong.chiTietO.chinh >= 12 && maCua(khong).includes('tran-khung') && !khong.thang);
 }

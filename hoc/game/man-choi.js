@@ -3,7 +3,7 @@
    Sân + cột nút ▶ ⏭ ↺ 💡 + đồng hồ NHỊP; nửa dưới: CHƯƠNG TRÌNH (10 ô) | KHỐI LỆNH.
    Chạy = ChamHoc.cham(...) rồi phát lại `vet`. Mọi luật và lời chẩn đoán đến từ lõi.
    Màn chế lệnh (14/10): mục tiêu 'bong-mo' (SanVe vẽ xe mờ + ô ◆ theo man.bongMo, ◆ sáng khi vết có 'qua-diem'), man.chinhCoDinh (khung chương trình chính chỉ đọc, có ổ khóa),
-   man.canhBao (nhãn ⚠ trên sân). Thắng trùm chương cổng đợt 2 lần đầu: bảng "Mở khóa bộ phận mới!" (App.moKhoaDot2) trước khi sang màn / màn chọn.
+   man.canhBao (nhãn ⚠ trên sân). Thắng màn mà tổng sao vừa đủ mở gói mới: bảng "Mở gói mới!" (App.baoGoiMoi, tên cũ App.moKhoaDot2) trước khi sang màn / màn chọn.
    ========================================================================== */
 (function () {
   'use strict';
@@ -77,12 +77,14 @@
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
       chiDoc: function () { return !!(S.man && S.man.chinhCoDinh); },                           // chương trình chính cố định (màn chế lệnh): chỉ đọc, sửa hàm trong Xưởng
       khiChiDoc: baoChinhCoDinh,
-      khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); }
+      khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); },
+      khiCamNhip: function (ly) { toast(ly, 'bad', 3400); },                                  // mỗi bộ phận một lệnh mỗi nhịp: chèn bị từ chối
+      khiNhip: function (cam) { if (S.pal) S.pal.datCamNhip(cam); }                          // khay làm mờ khối của bộ phận đã có lệnh trong nhịp đang soạn
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) {
         if (S.man && S.man.chinhCoDinh) { baoChinhCoDinh(); return; }
-        if (!S.ed.chen(txt)) toast(t('choi.dayKhung'), 'bad');
+        if (S.ed.chen(txt) === false) toast(t('choi.dayKhung'), 'bad');           // null = bộ phận đã có lệnh trong nhịp (khiCamNhip đã báo)
       },
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
       khiMoi: function (the) { Xuong.moiHam(function (ten) { Xuong.mo('em', ten, the); }); },          // hàm mới (còn trống) mở ở Xưởng với khay đúng thẻ em đang xem
@@ -544,7 +546,7 @@
     hang.appendChild(TP.Hop.nut('g-gr', tiep ? t('thang.manTiep') : t('thang.hetChuoi'), function () {
       TP.Hop.dong();
       var di = function () { if (tiep) App.vaoMan(tiep.ma); else { roi(); App.veChon(); } };
-      if (App.moKhoaDot2) App.moKhoaDot2(di); else di();           // vừa thắng trùm chương cổng lần đầu: bảng "Mở khóa bộ phận mới!" rồi mới đi tiếp
+      if (App.baoGoiMoi) App.baoGoiMoi(di); else di();             // tổng sao vừa đủ mở gói mới: bảng "Mở gói mới!" rồi mới đi tiếp
     }, 'man-tiep'));
     hop.than.appendChild(hang);
   }

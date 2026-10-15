@@ -39,11 +39,12 @@
     'day': 'Tấm đẩy',
     'mau': 'Cảm biến màu',
     'nam-cham': 'Nam châm',
+    'tay-xoay': 'Tay xoay',
     'nem': 'Máy ném',
     'bong': 'Súng bóng',
     'drone': 'Drone'
   };
-  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'xich', 'omni', 'day', 'mau', 'nam-cham', 'nem', 'bong', 'drone'];
+  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'xich', 'omni', 'day', 'mau', 'nam-cham', 'tay-xoay', 'nem', 'bong', 'drone'];
 
   function m(ten, nhom, moTa, chuong, man) { return { ten: ten, nhom: nhom, moTa: moTa, chuong: chuong, man: man }; }
 
@@ -99,9 +100,13 @@
     m('step', 'tham-so', 'Đi ngang a ô rồi đi xuống b ô, làm trọn một bậc thang', 'tham-so', 'tham-so.8'),
     // đợt 2: thân nhện
     m('go', 'nhen', 'Nhện đi một bước theo một chữ: U lên, D xuống, L trái, R phải', 'nhen', 'nhen.4'),
-    m('walk', 'nhen', 'Nhện đi hết một chuỗi chỉ đường', 'nhen', 'nhen.9'),
-    m('bring', 'nhen', 'Nhặt vật, đi theo chuỗi chỉ đường rồi đặt vật xuống', 'nhen', 'nhen.10'),
-    // chương Chế lệnh nhện (agent nhện thêm mục ở đây, nhóm 'nhen')
+    m('walk', 'nhen', 'Nhện đi hết một chuỗi chỉ đường', 'nhen', 'nhen.6'),
+    // chương 14 · Chế lệnh nhện
+    m('crawl', 'nhen', 'Co chân, bò qua gầm thấp theo hướng d rồi duỗi chân lại', 'che-nhen', 'che-nhen.1'),
+    m('jump', 'nhen', 'Nhảy qua một ô theo hướng d, đáp xuống ô bên kia', 'che-nhen', 'che-nhen.2'),
+    m('leap', 'nhen', 'Nhảy liên tiếp theo từng chữ của chuỗi chỉ đường', 'che-nhen', 'che-nhen.4'),
+    m('crawl_jump', 'nhen', 'Bò qua gầm rồi nhảy luôn qua cái hố ngay sau gầm', 'che-nhen', 'che-nhen.5'),
+    m('bring', 'nhen', 'Nhặt vật, đi theo chuỗi chỉ đường rồi đặt vật xuống', 'che-nhen', 'che-nhen.6'),
     // đợt 2: bánh xích, bánh omni
     m('tr_right', 'xich', 'Xe xích quay phải một góc vuông (hai nhịp)', 'xich', 'xich.3'),
     m('tr_left', 'xich', 'Xe xích quay trái một góc vuông (hai nhịp)', 'xich', 'xich.4'),
@@ -110,9 +115,23 @@
     // đợt 2: tấm đẩy, cảm biến màu, nam châm, máy ném, súng bóng, drone
     m('shove', 'day', 'Đẩy thùng n ô rồi vòng ra sau thùng cho lần đẩy kế', 'tam-day', 'tam-day.6'),
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
-    m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.3'),
-    // chương Chế lệnh nam châm (agent nam châm thêm mục ở đây, nhóm 'nam-cham')
-    // chương Tay xoay + Chế lệnh tay xoay (agent tay xoay thêm mục ở đây, nhóm mới 'tay-xoay')
+    m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.5'),
+    m('grip', 'nam-cham', 'Bật cực khác chữ trên vật nam châm trước mặt để kéo nó về', 'nam-cham', 'nam-cham.6'),
+    // chương Chế lệnh nam châm (kick, reel, lane, sort, fling; fixed_grip, go_pull, put_back là hàm của màn nên không có ở đây)
+    m('kick', 'nam-cham', 'Đá vật nam châm chữ N ra xa bằng cực N rồi ngắt điện', 'che-nam-cham', 'che-nam-cham.1'),
+    m('reel', 'nam-cham', 'Kéo vật nam châm về rồi thả sát trước mũi xe', 'che-nam-cham', 'che-nam-cham.2'),
+    m('lane', 'nam-cham', 'Chuyền vật trước mặt sang ô bên phải, xe giữ chỗ và hướng', 'che-nam-cham', 'che-nam-cham.4'),
+    m('sort', 'nam-cham', 'Vật chữ N chuyền sang phải, vật chữ S chuyền sang trái', 'che-nam-cham', 'che-nam-cham.5'),
+    m('fling', 'nam-cham', 'Hút vật chữ N rồi đổi cực để bắn nó ra xa', 'che-nam-cham', 'che-nam-cham.6'),
+    // chương Tay xoay + Chế lệnh tay xoay (nhóm mới 'tay-xoay'; tay-xoay.6 / tay-xoay.10 rồi sáu hàm của che-tay-xoay)
+    m('clear_left', 'tay-xoay', 'Nhặt vật trước mặt, đặt sang ô bên trái, tay về phía trước', 'tay-xoay', 'tay-xoay.6'),
+    m('relay', 'tay-xoay', 'Chuyền vật bên trái sang ô bên phải, tay về phía trước', 'tay-xoay', 'tay-xoay.10'),
+    m('pick_left', 'tay-xoay', 'Nhặt vật bên trái xe, tay về phía trước và đang cầm vật', 'che-tay-xoay', 'che-tay-xoay.1'),
+    m('drop_right', 'tay-xoay', 'Đặt vật đang cầm sang ô bên phải xe, tay về phía trước', 'che-tay-xoay', 'che-tay-xoay.2'),
+    m('pick_right', 'tay-xoay', 'Nhặt vật bên phải xe, tay về phía trước và đang cầm vật', 'che-tay-xoay', 'che-tay-xoay.4'),
+    m('drop_left', 'tay-xoay', 'Đặt vật đang cầm sang ô bên trái xe, tay về phía trước', 'che-tay-xoay', 'che-tay-xoay.4'),
+    m('swap_sides', 'tay-xoay', 'Đổi chỗ vật bên trái với vật bên phải, ô trước mặt trống làm chỗ cất tạm', 'che-tay-xoay', 'che-tay-xoay.5'),
+    m('sort_two', 'tay-xoay', 'Vật trước mặt sang trái, tiến một ô, vật kế sang phải, tiến một ô', 'che-tay-xoay', 'che-tay-xoay.6'),
     m('toss', 'nem', 'Đặt tầm n, ném vật, rồi chờ một nhịp', 'may-nem', 'may-nem.4'),
     m('hit_right', 'bong', 'Quay phải, bắn một phát, rồi quay lại', 'sung-bong', 'sung-bong.5'),
     m('recharge', 'drone', 'Nếu pin còn dưới 3 thì bay lên ô sạc rồi bay xuống', 'drone', 'drone.5'),
@@ -129,12 +148,16 @@
     g('wait', null, 'Hết một nhịp: xe làm theo các lệnh đã ra'),
     g('arm_down', 'arm_up', 'Hạ tay xuống sát đất'),
     g('arm_up', 'arm_down', 'Nâng tay lên'),
+    g('arm_left', 'arm_right', 'Tay xoay: xoay khớp một nấc sang trái'),
+    g('arm_right', 'arm_left', 'Tay xoay: xoay khớp một nấc sang phải'),
     g('grab', 'release', 'Kẹp lại'),
     g('release', 'grab', 'Mở kẹp'),
     g('go_up', 'go_down', 'Nhện hay drone đi lên một ô'),
     g('go_down', 'go_up', 'Nhện hay drone đi xuống một ô'),
     g('go_left', 'go_right', 'Nhện hay drone đi sang trái một ô'),
     g('go_right', 'go_left', 'Nhện hay drone đi sang phải một ô'),
+    g('crouch', 'stand', 'Nhện co chân lại (chui được gầm thấp)'),
+    g('stand', 'crouch', 'Nhện duỗi chân ra; duỗi ngay trước một bước đi lúc đang co là nhảy'),
     g('slide_left', 'slide_right', 'Xe omni trượt sang trái một ô'),
     g('slide_right', 'slide_left', 'Xe omni trượt sang phải một ô'),
     g('push', null, 'Đẩy thùng nặng trượt thẳng tới vật cản'),
@@ -142,9 +165,11 @@
     g('left_clear', null, 'Hỏi: ô bên trái có trống không'),
     g('right_clear', null, 'Hỏi: ô bên phải có trống không'),
     g('color', null, 'Đọc màu'),
-    g('magnet_on', null, 'Bật nam châm'),
-    g('magnet_off', null, 'Tắt nam châm, thả vật đang dính'),
+    g('magnet_n', 'magnet_s', 'Bật nam châm cực N (đỏ)'),
+    g('magnet_s', 'magnet_n', 'Bật nam châm cực S (xanh dương)'),
+    g('magnet_off', null, 'Ngắt điện nam châm, thả vật đang dính'),
     g('front_metal', null, 'Hỏi: vật trước mặt có phải sắt không'),
+    g('front_pole', null, 'Hỏi: vật nam châm trước mặt có chữ N hay S'),
     g('aim', null, 'Đặt tầm ném'),
     g('throw', null, 'Ném vật trong rổ'),
     g('load', null, 'Nạp vật ở ô trước mặt vào rổ'),

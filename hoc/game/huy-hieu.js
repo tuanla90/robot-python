@@ -256,6 +256,31 @@
     return p;
   };
 
+  HINH['che-nhen'] = function () {                             // nhện CO chân (thân thấp) + bánh răng
+    var p = P(T26, T26), t = cat(partTho('than', 'nhen', { co: true }));
+    chep(p, t, Math.max(0, 10 - (t.w >> 1)), Math.max(0, T26 - 2 - t.h), 1);
+    themBanhRang(p);
+    return p;
+  };
+  HINH['che-nam-cham'] = function () {                          // nam châm đang bật + bánh răng
+    var p = P(T26, T26), t = cat(partTho('tay', 'nam-cham', { bat: true, cuc: 'N' }));
+    chep(p, t, Math.max(0, 10 - (t.w >> 1)), Math.max(0, T26 - 1 - t.h), 1);
+    themBanhRang(p);
+    return p;
+  };
+  HINH['tay-xoay'] = function () {                              // tay xoay (khớp tròn) + vật gỗ bên cạnh
+    var p = P(30, 26), t = cat(partTho('tay', 'xoay', { kep: 'mo' }));
+    chep(p, t, 0, Math.max(0, 26 - t.h), 1);
+    Part.veVatNho(p, 21, 2, 8, 'go');
+    return cat(p);
+  };
+  HINH['che-tay-xoay'] = function () {                          // tay xoay + bánh răng
+    var p = P(T26, T26), t = cat(partTho('tay', 'xoay', { kep: 'mo' }));
+    chep(p, t, Math.max(0, 10 - (t.w >> 1)), Math.max(0, T26 - t.h), 1);
+    themBanhRang(p);
+    return p;
+  };
+
   HINH['robot-hoan-thien'] = function () {                      // robot đủ bộ nhìn từ trên (hướng lên) đúng dáng robot trong game, thu nhỏ; sao nổi phía trên
     var p = P(T26, T26), r = P(23, 14), CY = '#3fd0e8';
     r.rect(3, 7, 3, 7, INK); r.rect(4, 8, 1, 5, KK.denSang); r.px(4, 9, KK.thepSang); r.px(4, 11, KK.thepSang);       // bánh trái

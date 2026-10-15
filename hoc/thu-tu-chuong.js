@@ -43,7 +43,31 @@
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
     dot2: ['bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'omni', 'tam-day', 'mau', 'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'sung-bong', 'drone'],
     // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
+    // (15/10: màn chọn đã chuyển sang GÓI mở bằng tổng sao, xem `goi` dưới; dot2 / congDot2 chỉ còn dùng để ghi nhãn và cho máy kiểm.)
     congDot2: 'robot-hoan-thien',
+    // GÓI (kiểu hộp của Cut the Rope, user chốt 15/10): mỗi gói là MỘT bộ phận (chương làm quen + chương chế lệnh của nó) hoặc MỘT logic mới.
+    // Màn hình: khởi đầu → chọn gói (lướt ngang) → lưới màn của gói. Gói mở khi TỔNG SAO đủ (luật ở game/mo-goi.js); khai `sao: n` thì dùng đúng n.
+    // `hinh`: mã chương lấy huy hiệu làm hình hộp (mặc định chương đầu). Chương không có trong gói nào thì tự thành một gói riêng, đứng đúng chỗ trong `thuTu`.
+    goi: [
+      { ma: 'xe', ten: 'Xe hai bánh', chuong: ['hai-banh'] },
+      { ma: 'ham', ten: 'Xưởng hàm', chuong: ['xuong-ham', 'che-xe'] },
+      { ma: 'tay-gap', ten: 'Tay gắp', chuong: ['tay-gap', 'che-tay'] },
+      { ma: 'vong-lap', ten: 'Vòng lặp', chuong: ['vong-lap', 'che-lap'] },
+      { ma: 'cam-bien', ten: 'Cảm biến', chuong: ['khoang-cach', 'che-cam-bien'] },
+      { ma: 'robot', ten: 'Robot hoàn thiện', chuong: ['robot-hoan-thien'] },
+      { ma: 'bang-chuyen', ten: 'Băng chuyền', chuong: ['bang-chuyen'] },
+      { ma: 'tham-so', ten: 'Hàm có tham số', chuong: ['tham-so'] },
+      { ma: 'nhen', ten: 'Thân nhện', chuong: ['nhen', 'che-nhen'] },
+      { ma: 'xich', ten: 'Bánh xích', chuong: ['xich'] },
+      { ma: 'omni', ten: 'Bánh omni', chuong: ['omni'] },
+      { ma: 'tam-day', ten: 'Tấm đẩy', chuong: ['tam-day'] },
+      { ma: 'mau', ten: 'Cảm biến màu', chuong: ['mau'] },
+      { ma: 'nam-cham', ten: 'Nam châm', chuong: ['nam-cham', 'che-nam-cham'] },
+      { ma: 'tay-xoay', ten: 'Tay xoay', chuong: ['tay-xoay', 'che-tay-xoay'] },
+      { ma: 'may-nem', ten: 'Máy ném', chuong: ['may-nem'] },
+      { ma: 'sung-bong', ten: 'Súng bóng', chuong: ['sung-bong'] },
+      { ma: 'drone', ten: 'Drone', chuong: ['drone'] }
+    ],
     ten: {
       'hai-banh': 'Hai bánh',
       'xuong-ham': 'Xưởng hàm',

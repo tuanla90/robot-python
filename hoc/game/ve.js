@@ -167,6 +167,7 @@
     denBanh: ['..xxxxx..', '.xx...xx.', 'xx..x..xx', 'x..xxx..x', 'xx..x..xx', '.xx...xx.', '..xxxxx..'],
     denTayLen: ['....x....', '...xxx...', '..xxxxx..', '....x....', '....x....', '....x....', '.xxxxxxx.'],
     denTayXuong: ['.xxxxxxx.', '....x....', '....x....', '....x....', '..xxxxx..', '...xxx...', '....x....'],
+    denXoay: ['..xxxxx..', '.xx...xx.', 'xxx...xxx', '.x.....x.', '....x....', '...xxx...', '....x....'],
     denKepMo: ['x.......x', 'xx.....xx', '.xx...xx.', '..xx.xx..', '...xxx...', '....x....', '....x....'],
     denKepDong: ['...x.x...', '...x.x...', '...xxx...', '..xxxxx..', '...xxx...', '....x....', '....x....'],
     denNamCham: ['xx.....xx', 'xx.....xx', 'xx.....xx', 'xx.....xx', 'xxx...xxx', '.xxxxxxx.', '..xxxxx..'],
@@ -339,6 +340,41 @@
       p.rect(1, y0 + 2, T - 2, 1, bands[b][2]);
     }
     p.rect(0, 0, T, 1, '#4a2e10'); p.rect(0, T - 1, T, 1, '#4a2e10'); p.rect(0, 0, 1, T, '#4a2e10'); p.rect(T - 1, 0, 1, T, '#4a2e10');
+    return p.canvas();
+  }
+  /** HỐ (chương nhện, ký hiệu `u`): sàn cỏ có một cái hố tròn, bờ đất sáng ở phía trên-trái, thành hố tối dần xuống đáy đen. Nhện đặt chân vào là rơi. */
+  function makeHo() {
+    var p = new Painter(T, T), r = rng(41), i;
+    p.rect(0, 0, T, T, '#43a24c');
+    for (i = 0; i < 12; i++) p.px(1 + Math.floor(r() * 12), 1 + Math.floor(r() * 12), r() < 0.5 ? '#52b25c' : '#37873f');
+    p.rect(0, 0, T, 1, '#6ccb72'); p.rect(0, 0, 1, T, '#6ccb72'); p.rect(0, T - 1, T, 1, '#2c7436'); p.rect(T - 1, 0, 1, T, '#2c7436');
+    p.ell(7, 7, 6.4, 6.2, '#4a2e10');            // viền đất tối
+    p.ell(7, 7, 5.6, 5.4, '#a8742f');            // bờ đất
+    p.ell(7.3, 7.6, 4.8, 4.6, '#2a1a0c');        // thành hố
+    p.ell(7.5, 8.2, 3.6, 3.3, '#120a05');        // đáy
+    p.ell(7.2, 8.4, 1.9, 1.6, '#040201');        // sâu nhất
+    [[3, 3], [4, 2], [2, 4], [5, 2], [2, 5]].forEach(function (q) { p.px(q[0], q[1], '#d9a05a'); });   // bờ đất sáng ở phía ánh sáng
+    [[9, 10], [10, 9], [8, 11]].forEach(function (q) { p.px(q[0], q[1], '#5a3a14'); });                // sỏi đáy
+    return p.canvas();
+  }
+  /** GẦM THẤP (chương nhện, ký hiệu `n`): một mái ván gỗ thấp phủ trọn ô, hai mép trên dưới có vạch vàng-đen báo "thấp". mai = true: chỉ riêng mái (nền trong suốt),
+   *  vẽ ĐÈ lên nhện khi nhện đang chui trong gầm cho thấy nhện nằm dưới mái. */
+  function makeGam(mai) {
+    var p = new Painter(T, T), x, y;
+    if (!mai) {
+      p.rect(0, 0, T, T, '#43a24c');
+      p.rect(0, 0, T, 1, '#6ccb72'); p.rect(0, 0, 1, T, '#6ccb72'); p.rect(0, T - 1, T, 1, '#2c7436'); p.rect(T - 1, 0, 1, T, '#2c7436');
+    }
+    p.rect(0, 1, T, T - 2, K.ink);
+    p.rect(1, 2, T - 2, T - 4, '#b87a38');
+    for (y = 0; y < 3; y++) p.rect(1, 4 + y * 3, T - 2, 1, '#8a5a24');           // khe giữa các tấm ván
+    p.rect(1, 2, T - 2, 1, '#e3b06a');                                            // mép trên sáng
+    p.rect(1, T - 3, T - 2, 1, '#7a4a1a');                                        // mép dưới tối
+    for (x = 1; x < T - 1; x++) {                                                 // vạch vàng - đen ở hai mép: báo hiệu gầm thấp
+      var vang = (((x >> 1) & 1) === 0);
+      p.px(x, 1, vang ? '#ffd23f' : K.ink); p.px(x, T - 2, vang ? K.ink : '#ffd23f');
+    }
+    [[2, 6], [11, 6], [2, 9], [11, 9]].forEach(function (q) { p.px(q[0], q[1], '#4a2e10'); p.px(q[0] + 1, q[1], '#d9a05a'); });   // đinh
     return p.canvas();
   }
   /** Hàng rào THẤP (chương máy ném, ký hiệu `=`): chỉ vẽ cọc gỗ + thanh ngang, nền trong suốt nên thấy sàn phía sau (khác tường cao # đặc kín, xám). mask: 1 trái, 2 phải, 4 trên, 8 dưới
@@ -646,12 +682,13 @@
   /** VẬT NHỎ (luật vật 14/10): vật n×n pixel gồm viền tối; n = 8 cho vật nằm đất (≈ 57% ô 14×14), n = 10 cho vật trong kẹp tính theo pixel part.
    *  Hình vẽ nằm ở part/part.js (Part.veVatNho) để tay kẹp và sân dùng chung một kiểu; chưa nạp part thì vẽ khối phẳng. mau: tên màu ('red'…) hoặc null. */
   var vatNhoCache = {};
-  function makeVatNho(n, chat, mau) {
-    var k = n + '|' + (chat === 'sat' ? 's' : 'g') + '|' + (mau || '');
+  function makeVatNho(n, chat, mau, cuc) {
+    var nc = chat === 'nam-cham' && (cuc === 'N' || cuc === 'S');
+    var k = n + '|' + (nc ? 'n' + cuc : chat === 'sat' ? 's' : 'g') + '|' + (nc ? '' : (mau || ''));
     if (vatNhoCache[k]) return vatNhoCache[k];
     var p = new Painter(n, n), P = (typeof window !== 'undefined') ? window.Part : null;
-    if (P && P.veVatNho) P.veVatNho(p, 0, 0, n, chat, mau);
-    else { p.rect(0, 0, n, n, K.ink); p.rect(1, 1, n - 2, n - 2, chat === 'sat' ? '#7f97b2' : '#c98a45'); }
+    if (P && P.veVatNho) P.veVatNho(p, 0, 0, n, chat, mau, cuc);
+    else { p.rect(0, 0, n, n, K.ink); p.rect(1, 1, n - 2, n - 2, nc ? (cuc === 'N' ? '#d6493e' : '#3f7fe0') : chat === 'sat' ? '#7f97b2' : '#c98a45'); }
     vatNhoCache[k] = p.canvas(); return vatNhoCache[k];
   }
 
@@ -662,7 +699,7 @@
     MAU_TEN.forEach(function (m) { matMau[m] = [makeMatMau(m, 0), makeMatMau(m, 1)]; thungMau[m] = makeCrateMau(m); satMau[m] = makeSatMau(m); });
     tileCache = {
       mau: matMau, crateMau: thungMau, sat: makeSat(), satMau: satMau,
-      crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(), sac: [makeSac(0), makeSac(1)],
+      crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(), ho: makeHo(), gam: makeGam(false), gamMai: makeGam(true), sac: [makeSac(0), makeSac(1)],
       flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)], rao: makeRao, nut: makeNut
     };
     return tileCache;

@@ -1,74 +1,56 @@
 /* ============================================================================
-   man-chon.js — "Đường học": MÀN CHỌN MÀN (window.Chon).
-   ‹ › đổi chương (theo ManHoc.chuong()) · lưới 3×3 + nút TRÙM · hàng "Hàm của em" ở đáy.
-   Giữ lâu tiêu đề 2 giây = mở bảng Gỡ lỗi (go-loi.js: "Mở hết", chọn màn bất kỳ… cho người thử); địa chỉ có ?debug=1 / #debug thì thêm nút 🐞 ở hàng "Hàm của em".
+   man-chon.js — "Đường học": LƯỚI MÀN CỦA MỘT GÓI (window.Chon), kiểu lưới màn trong hộp của Cut the Rope.
+   Thanh trên: ◀ (về chọn gói) · "GÓI n" · nút Sổ lệnh. Dải bìa: huy hiệu gói · tên gói · sao của gói · thanh tiến độ (mỗi màn một vạch).
+   Mỗi chương của gói một khối: dòng "Chương 4 · Tay gắp   7/10" + lưới 5×2 ô màn (ô 10 = thử thách, vẽ bằng huy hiệu của chương).
+   Ô: số màn + sao / ổ khóa / "CHƠI!" (màn nên chơi). Chạm ô khóa thì rung + báo lý do (luật ở game/mo-goi.js).
+   Giữ lâu tiêu đề 2 giây = mở bảng Gỡ lỗi (go-loi.js); địa chỉ có ?debug=1 / #debug thì thêm nút 🐞 trên thanh trên.
    ========================================================================== */
 (function () {
   'use strict';
 
   var h = TP.h;
   var el = {};
-  var HANG = ['lam-quen', 'luyen', 'bien-the'];
   var GIU_LAU_MS = 2000;
 
   function dung(host) {
     host.innerHTML = '';
-    var deco = h('div', 'deco'); host.appendChild(deco);
+    host.appendChild(h('div', 'deco'));
 
     var dau = h('div', 'c-dau');
-    var r1 = h('div', 'c-r1');
-    el.truoc = h('button', 'bt g-pu nav'); el.truoc.setAttribute('aria-label', t('chon.truoc')); el.truoc.setAttribute('data-nut', 'truoc');
-    var ic1 = h('span'); ic1.setAttribute('data-i', 'back'); ic1.setAttribute('data-s', '2'); el.truoc.appendChild(ic1);
+    el.ve = h('button', 'bt g-pu nav'); el.ve.setAttribute('aria-label', t('chon.veGoi')); el.ve.setAttribute('data-nut', 've-goi');
+    var ic1 = h('span'); ic1.setAttribute('data-i', 'back'); ic1.setAttribute('data-s', '2'); el.ve.appendChild(ic1);
     el.tieuDe = h('div', 'c-td'); el.tieuDe.setAttribute('data-nut', 'tieu-de');
-    el.sau = h('button', 'bt g-pu nav'); el.sau.setAttribute('aria-label', t('chon.sau')); el.sau.setAttribute('data-nut', 'sau');
-    var ic2 = h('span'); ic2.setAttribute('data-i', 'next'); ic2.setAttribute('data-s', '2'); el.sau.appendChild(ic2);
-    r1.appendChild(el.truoc); r1.appendChild(el.tieuDe); r1.appendChild(el.sau);
-    var r2 = h('div', 'c-r2');
-    el.bar = h('div', 'c-bar'); el.pl = h('div', 'c-pl');
-    r2.appendChild(el.bar); r2.appendChild(el.pl);
-    dau.appendChild(r1); dau.appendChild(r2);
+    el.phai = h('div', 'c-phai');
+    dau.appendChild(el.ve); dau.appendChild(el.tieuDe); dau.appendChild(el.phai);
     host.appendChild(dau);
 
-    el.luoi = h('div', 'c-luoi'); host.appendChild(el.luoi);
-    el.trum = h('button', 'bt c-trum'); el.trum.setAttribute('data-nut', 'trum'); host.appendChild(el.trum);
-    el.thu = h('div', 'c-thu chalk'); host.appendChild(el.thu);
+    el.bia = h('div', 'c-bia'); host.appendChild(el.bia);
+    el.than = h('div', 'c-than'); host.appendChild(el.than);
     el.tb = h('div', 'c-tb'); host.appendChild(el.tb);
     Ve.hydrate(host);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(vuaTieuDe);
 
-    el.truoc.addEventListener('click', function () { doiChuoi(-1); });
-    el.sau.addEventListener('click', function () { doiChuoi(1); });
+    el.ve.addEventListener('click', function () { App.veGoi(); });
 
     // giữ lâu tiêu đề 2 giây: mở bảng Gỡ lỗi (go-loi.js: chọn màn bất kỳ, "Mở hết", nạp hàm chuẩn, xóa tiến độ)
     var hen = null;
-    function bat() {
+    el.tieuDe.addEventListener('pointerdown', function () {
       clearTimeout(hen);
-      hen = setTimeout(function () {
-        hen = null;
-        if (window.GoLoi) GoLoi.mo(App.chuong);
-      }, GIU_LAU_MS);
-    }
-    function thoi() { clearTimeout(hen); hen = null; }
-    el.tieuDe.addEventListener('pointerdown', bat);
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (s) { el.tieuDe.addEventListener(s, thoi); });
+      hen = setTimeout(function () { hen = null; if (window.GoLoi) GoLoi.mo(App.chuong); }, GIU_LAU_MS);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (s) { el.tieuDe.addEventListener(s, function () { clearTimeout(hen); hen = null; }); });
   }
 
   var tbHen = null;
   function thongBao(chu) {
     el.tb.textContent = chu; el.tb.classList.add('hien');
-    clearTimeout(tbHen); tbHen = setTimeout(function () { el.tb.classList.remove('hien'); }, 2400);
-  }
-
-  function doiChuoi(d) {
-    var dsc = App.dsChuong(), i = App.chiSoChuong(App.chuong) + d;
-    if (i < 0 || i >= dsc.length) return;
-    App.chuong = dsc[i].ma; ve();
+    clearTimeout(tbHen); tbHen = setTimeout(function () { el.tb.classList.remove('hien'); }, 2600);
   }
 
   function lyDoChu(tt) {
+    if (tt.lyDo === 'sao') return t('chon.khoaSao', { can: tt.can, co: tt.co });
     if (tt.lyDo === 'chuoi') return t('chon.khoaChuoi', { n: tt.chuoi });
-    if (tt.lyDo === 'dot2') return t('chon.khoaDot2', { ten: App.tenChuong(tt.cong) });
-    if (tt.lyDo === 'can-ham') return t('chon.khoaCanHam', { ham: tt.ham, ten: App.tenChuong(tt.canChuong) });
+    if (tt.lyDo === 'can-ham') { var cm = ManHoc.timMa(tt.canMan); return t('chon.khoaCanHam', { ham: tt.ham, id: cm ? cm.id : tt.canMan, ten: App.tenChuong(tt.canChuong) }); }
     if (tt.lyDo === 'hang1') return t('chon.khoaHang1');
     if (tt.lyDo === 'hang23') return t('chon.khoaHang23');
     if (tt.lyDo === 'trum') return t('chon.trumKhoa');
@@ -81,7 +63,7 @@
     return d;
   }
 
-  /** Tiêu đề chương dài ("Chương 11 · Cảm biến khoảng cách") thì co chữ (hệ số --ts) cho vừa giữa hai nút ‹ ›, không đè lên nút. */
+  /** Tiêu đề dài ("Gói 5 · Cảm biến khoảng cách") thì co chữ (hệ số --ts) cho vừa chỗ, không đè lên nút. */
   function vuaTieuDe() {
     var td = el.tieuDe; if (!td) return;
     td.style.removeProperty('--ts');
@@ -90,51 +72,86 @@
     while (td.scrollWidth > td.clientWidth + 1 && ts > 0.5) { ts = Math.round((ts - 0.04) * 100) / 100; td.style.setProperty('--ts', ts); }
   }
 
+  function goiDangXem() {
+    var g = App.goiTheoMa(App.goi) || App.goiCua(App.chuong);
+    if (!g || g.sapCo) g = App.dsGoi().filter(function (x) { return !x.sapCo; })[0];
+    return g;
+  }
+
   function ve() {
-    var n = App.chuong, dsc = App.dsChuong(), vt = App.chiSoChuong(n), cc = dsc[vt];
+    var g = goiDangXem(); if (!g) return;
+    App.goi = g.ma;
     el.tieuDe.innerHTML = '';
-    el.tieuDe.appendChild(document.createTextNode(t('chon.chuoi', { n: '' })));
-    el.tieuDe.appendChild(h('span', 'd', cc.so));
-    el.tieuDe.appendChild(document.createTextNode(' · '));
-    el.tieuDe.appendChild(h('em', null, cc.ten));
-    el.truoc.classList.toggle('mo-mo', vt <= 0); el.sau.classList.toggle('mo-mo', vt >= dsc.length - 1);
+    el.tieuDe.appendChild(document.createTextNode(t('goi.so', { n: '' })));
+    el.tieuDe.appendChild(h('span', 'd', g.so));
     if (App.moHet) el.tieuDe.appendChild(h('span', 'c-mh', t('chon.moHetNhan')));
+
+    // dải bìa gói
+    el.bia.innerHTML = '';
+    var hinh = h('div', 'c-bia-hinh'), coHinh = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0, quaHet = App.soQua(g) === g.man.length;
+    hinh.appendChild(coHinh ? Ve.mk(HuyHieu.ve(g.hinh, quaHet ? 'xong' : 'mo'), 2) : Ve.ico('plus', 4, { fill: '#ffd95a', line: '#1b120a' }));
+    el.bia.appendChild(hinh);
+    var bx = h('div', 'c-bia-bx');
+    bx.appendChild(h('div', 'c-bia-ten', g.ten));
+    var sg = h('div', 'c-saog'); sg.appendChild(Ve.sao(true, 2)); sg.appendChild(h('span', null, App.saoGoi(g) + '/' + g.saoToiDa)); bx.appendChild(sg);
+    var vach = h('div', 'c-bar');
+    g.man.forEach(function (m) { vach.appendChild(h('div', 'seg' + (Luu.daQua(m.ma) ? ' on' : ''))); });
+    bx.appendChild(vach);
+    el.bia.appendChild(bx);
+
+    el.phai.innerHTML = '';
+    if (window.SoLenh && window.SoLenhMan) {                                         // Sổ lệnh (thư viện hàm): một nút nhỏ, bấm mới mở
+      var bs = h('button', 'bt g-cy c-so'); bs.setAttribute('data-nut', 'so-lenh'); bs.setAttribute('aria-label', t('chon.soLenh'));
+      var ib = h('span'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', '#07303a'); bs.appendChild(ib);
+      bs.addEventListener('click', function () { SoLenhMan.mo(); });
+      el.phai.appendChild(bs);
+    }
+    if (window.GoLoi) GoLoi.nutBug(el.phai);                                         // 🐞: chỉ có khi địa chỉ có ?debug=1 hoặc #debug
+    Ve.hydrate(el.phai);
     vuaTieuDe();
 
-    var ds = App.dsMan(n), xong = ds.filter(function (m) { return Luu.daQua(m.ma); }).length;
-    el.bar.innerHTML = '';
-    for (var i = 0; i < ds.length; i++) el.bar.appendChild(h('div', 'seg' + (i < xong ? ' on' : '')));
-    el.pl.textContent = t('chon.tienDo', { n: xong, tong: ds.length });
-
-    // màn "hiện tại" = màn mở đầu tiên chưa qua
+    // màn "hiện tại" = màn mở đầu tiên chưa qua (trong gói)
     var cur = null;
-    ds.forEach(function (m) { if (!cur && m.hang !== 'trum' && App.trangThai(m).mo && !Luu.daQua(m.ma)) cur = m; });
+    g.man.forEach(function (m) { if (!cur && App.trangThai(m).mo && !Luu.daQua(m.ma)) cur = m; });
 
-    el.luoi.innerHTML = '';
-    HANG.forEach(function (hang) {
-      var row = h('div', 'c-hang');
-      row.appendChild(h('div', 'c-nhan', t('chon.hang.' + hang)));
-      var cells = h('div', 'c-o');
-      App.dsHang(n, hang).forEach(function (m) { cells.appendChild(oMan(m, m === cur)); });
-      row.appendChild(cells); el.luoi.appendChild(row);
+    el.than.innerHTML = '';
+    el.than.classList.toggle('mot', g.chuong.length === 1);
+    var dsc = App.dsChuong();
+    g.chuong.forEach(function (c) {
+      var cc = dsc.filter(function (x) { return x.ma === c; })[0];
+      var ds = App.dsMan(c).slice().sort(function (a, b) { return a.so - b.so; });
+      var xong = ds.filter(function (m) { return Luu.daQua(m.ma); }).length;
+      var khoi = h('div', 'c-ch'); khoi.setAttribute('data-chuong', c);
+      var hd = h('div', 'c-ch-hd');
+      hd.appendChild(document.createTextNode(t('chon.chuoi', { n: '' })));
+      hd.appendChild(h('span', 'd', cc ? cc.so : ''));
+      hd.appendChild(document.createTextNode(' · '));
+      hd.appendChild(h('em', null, App.tenChuong(c)));
+      hd.appendChild(h('span', 'c-ch-dem', t('chon.tienDo', { n: xong, tong: ds.length })));
+      khoi.appendChild(hd);
+      var luoi = h('div', 'c-l5');
+      ds.forEach(function (m) { luoi.appendChild(oMan(m, m === cur)); });
+      khoi.appendChild(luoi);
+      el.than.appendChild(khoi);
     });
-
-    veTrum(App.trum(n));
-    veHam();
   }
 
   function oMan(m, laCur) {
-    var tt = App.trangThai(m), sao = Luu.saoTot(m.ma);
-    var b = h('button', 'bt c-man ' + (!tt.mo ? 'lock' : sao > 0 ? 'done' : laCur ? 'cur' : 'open'));
+    var tt = App.trangThai(m), sao = Luu.saoTot(m.ma), trum = m.hang === 'trum';
+    var b = h('button', 'bt c-man ' + (!tt.mo ? 'lock' : sao > 0 ? 'done' : laCur ? 'cur' : 'open') + (trum ? ' trum' : ''));
     b.setAttribute('data-man', m.ma); b.setAttribute('data-id', m.id);
     b.setAttribute('aria-label', m.id + ' ' + m.ten);
-    b.appendChild(h('div', 'num', App.sttCua(m)));
-    if (!tt.mo) {
-      var lk = h('div', 'lk'); lk.appendChild(Ve.khoa(3)); b.appendChild(lk);
-    } else if (sao > 0 || !laCur) {
-      b.appendChild(saoHang(sao, 2));
+    if (trum) {
+      var bs = h('div', 'bs'); bs.setAttribute('data-i', 'huyhieu'); bs.setAttribute('data-s', '1');
+      bs.setAttribute('data-ma', (m.huyHieu && m.huyHieu.ma) || m.chuong); bs.setAttribute('data-tt', sao > 0 ? 'xong' : tt.mo ? 'mo' : 'khoa');
+      b.appendChild(bs);
+      if (tt.mo) b.appendChild(saoHang(sao, 1.5));
+      Ve.hydrate(b);
     } else {
-      b.appendChild(h('div', 'go', t('chon.choi')));
+      b.appendChild(h('div', 'num', App.sttCua(m)));
+      if (!tt.mo) { var lk = h('div', 'lk'); lk.appendChild(Ve.khoa(2)); b.appendChild(lk); }
+      else if (sao > 0 || !laCur) b.appendChild(saoHang(sao, 1.5));
+      else b.appendChild(h('div', 'go', t('chon.choi')));
     }
     b.addEventListener('click', function () {
       if (!tt.mo) {
@@ -146,64 +163,6 @@
       App.vaoMan(m.ma);
     });
     return b;
-  }
-
-  function veTrum(m) {
-    el.trum.innerHTML = '';
-    if (!m) { el.trum.style.display = 'none'; return; }
-    el.trum.style.display = '';
-    var tt = App.trangThai(m), sao = Luu.saoTot(m.ma), xong = sao > 0;
-    el.trum.className = 'bt c-trum ' + (xong ? 'done' : tt.mo ? 'open' : 'lock');
-    el.trum.setAttribute('data-man', m.ma); el.trum.setAttribute('data-id', m.id);
-    el.trum.appendChild(h('div', 'hz'));
-    var bs = h('div', 'bs'); bs.setAttribute('data-i', 'huyhieu'); bs.setAttribute('data-s', '2'); bs.setAttribute('data-ma', (m.huyHieu && m.huyHieu.ma) || m.chuong); bs.setAttribute('data-tt', xong ? 'xong' : tt.mo ? 'mo' : 'khoa'); el.trum.appendChild(bs);
-    var bx = h('div', 'bx');
-    var bt = h('div', 'bt2'); bt.appendChild(h('em', null, t('chon.trum'))); bt.appendChild(document.createTextNode(' · ' + m.ten)); bx.appendChild(bt);
-    if (m.huyHieu) {
-      bx.appendChild(h('div', 'rw', m.huyHieu.ten));
-    }
-    if (!tt.mo) bx.appendChild(h('div', 'why', t('chon.trumKhoa')));
-    el.trum.appendChild(bx);
-    if (tt.mo) { var bl = h('div', 'bl'); bl.appendChild(saoHang(sao, 2)); el.trum.appendChild(bl); }
-    Ve.hydrate(el.trum);
-    el.trum.onclick = function () {
-      if (!tt.mo) {
-        el.trum.classList.remove('nope'); void el.trum.offsetWidth; el.trum.classList.add('nope');
-        thongBao(lyDoChu(tt)); return;
-      }
-      App.vaoMan(m.ma);
-    };
-  }
-
-  function veHam() {
-    var ds = KhoHam.ds();
-    el.thu.innerHTML = '';
-    var hd = h('div', 'c-thu-hd'); el.thu.appendChild(hd);
-    hd.appendChild(h('div', 'c-thu-td', t('chon.hamCuaEm')));
-    if (window.GoLoi) GoLoi.nutBug(hd);                                              // nút 🐞 mở bảng Gỡ lỗi: chỉ có khi địa chỉ có ?debug=1 hoặc #debug
-    if (window.SoLenh && window.SoLenhMan) {                                         // Sổ lệnh (so-lenh.js của lõi + man-so-lenh.js): đặt cạnh hàng "Hàm của em"; lõi chưa có dữ liệu thì ẩn nút
-      var bs = h('button', 'bt g-cy c-so'); bs.setAttribute('data-nut', 'so-lenh'); bs.setAttribute('aria-label', t('chon.soLenh'));
-      var ib = h('span', 'c-so-ic'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', '#07303a'); bs.appendChild(ib);
-      bs.appendChild(h('span', 'c-so-chu', t('chon.soLenh')));
-      bs.addEventListener('click', function () { SoLenhMan.mo(); });
-      hd.appendChild(bs); Ve.hydrate(hd);
-    }
-    var pills = h('div', 'c-pills'); el.thu.appendChild(pills);
-    if (!ds.length) {
-      pills.appendChild(h('div', 'pill ghost', t('chon.hamRong')));
-    } else {
-      ds.forEach(function (f) { var p = h('div', 'pill', f.ten + '(' + (f.thamSo || []).join(', ') + ')'); p.setAttribute('data-ham', f.ten); pills.appendChild(p); });
-    }
-    el.thu.appendChild(h('div', 'c-thu-goi', ds.length ? t('chon.hamGoiYCo') : t('chon.hamGoiY')));
-    // không bao giờ tràn: bớt viên thuốc cuối cho tới khi vừa, thêm "+n"
-    var bo = 0, them = null;
-    while (pills.scrollHeight > pills.clientHeight + 1) {
-      var ham = pills.querySelectorAll('.pill[data-ham]');
-      if (ham.length <= 1) break;
-      pills.removeChild(ham[ham.length - 1]); bo++;
-      if (!them) them = h('div', 'pill them'); them.textContent = '+' + bo;
-      pills.appendChild(them);
-    }
   }
 
   window.Chon = { dung: dung, ve: ve, thongBao: thongBao };

@@ -7,14 +7,14 @@
    - BAY QUA hàng rào thấp (=), băng chuyền (băng không đẩy drone), vật nằm đất, thùng nặng, bậc thang S. Không qua tường cao (#), cửa đóng, mép sân.
    - PIN (màn khai pin): mỗi nhịp bay tốn 1 pin, kể cả wait() và nhịp đâm tường; về 0 mà chưa tới đích thì drone hạ cánh khẩn (het-pin). Ô sạc P:
      cuối nhịp drone đang ở trên P thì pin đầy lại. battery() (từ màn 5) trả pin còn lại, không tốn nhịp.
-   - NAM CHÂM TREO dưới bụng (từ màn 7): magnet_on() / magnet_off() chỉ ra lệnh, làm ở nhịp kế (go_*() hay wait()). Hút vật SẮT ở ô ngay DƯỚI drone (cuối nhịp),
+   - NAM CHÂM TREO dưới bụng (từ màn 7): magnet_n() / magnet_s() / magnet_off() chỉ ra lệnh, làm ở nhịp kế (go_*() hay wait()). Cực N hay S đều hút vật SẮT ở ô ngay DƯỚI drone (cuối nhịp),
      thả vật xuống ô ngay dưới drone (đầu nhịp, trước khi bay) nếu ô đó nhận được (không phải hàng rào, vật khác, bậc thang). Vật gỗ không hút (hut-go).
-     Lời giải chuẩn viết "magnet_on()  wait()" / "magnet_off()  wait()" (nhịp riêng) nên các màn nam châm khai nhipTheoLoiGiai; kiem-drone.mjs kiểm BFS "tách nhịp" = sao.nhip.
+     Lời giải chuẩn viết "magnet_n()  wait()" / "magnet_off()  wait()" (nhịp riêng) nên các màn nam châm khai nhipTheoLoiGiai; kiem-drone.mjs kiểm BFS "tách nhịp" = sao.nhip.
    - Mục tiêu: tới cờ (1–6); đưa vật sắt lên ô đích (7–10, mucTieu 'dua-vat' + vatCan 'sat').
 
    Hàm của em MỚI (tên cốt truyện, bị khóa trong kho, xem KhoHam.datTenCoDinh):
      drone.5   recharge() = if battery() < 3: go_up(), go_down()     (3 ô)   ghé ô sạc ngay phía trên khi pin thấp
-     drone.10  ship(path) = magnet_on(), wait(), walk(path), magnet_off(), wait()   (5 ô)   hút vật dưới bụng, bay theo path, thả
+     drone.10  ship(path) = magnet_n(), wait(), walk(path), magnet_off(), wait()   (5 ô)   hút vật dưới bụng, bay theo path, thả
    Hàm CỦA MÀN (tạm): màn 8 cho sẵn ferry(path) thả vật TRƯỚC khi bay (sai thứ tự).
    Dùng lại hàm go(d), walk(path) của chương nhện (hamCuaEmCan ['go', 'walk'] ở màn 2, 8, 9, 10).
 
@@ -30,7 +30,7 @@
   var ManHoc = laNode ? require('./man-sung-bong.js') : window.ManHoc;
 
   var BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
-  var NC = ['magnet_on', 'magnet_off'];
+  var NC = ['magnet_n', 'magnet_s', 'magnet_off'];
 
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
   function lap(s, n) { var kq = []; for (var i = 0; i < n; i++) kq.push(s); return kq; }
@@ -44,11 +44,11 @@
   // thân các hàm của chương
   var T_RECHARGE = ['if battery() < 3:', '    go_up()', '    go_down()'];
   function hRecharge(than) { return H('recharge', [], than || T_RECHARGE); }
-  var T_SHIP = ['magnet_on()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()'];
+  var T_SHIP = ['magnet_n()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()'];
   function hShip(than) { return H('ship', ['path'], than || T_SHIP); }
   // 8: ferry(path) của màn thả vật TRƯỚC khi bay
-  var T_FERRY_SAI = ['magnet_on()', 'wait()', 'magnet_off()', 'wait()', 'walk(path)'];
-  var T_FERRY = ['magnet_on()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()'];
+  var T_FERRY_SAI = ['magnet_n()', 'wait()', 'magnet_off()', 'wait()', 'walk(path)'];
+  var T_FERRY = ['magnet_n()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()'];
   function hFerry(than) { return H('ferry', ['path'], than || T_FERRY); }
 
   /**
@@ -110,14 +110,14 @@
   var CHINH_5 = LAP(3, ['go_right()', 'go_right()', 'recharge()']);
   var CHINH_5_KHAC = ['go_right()', 'go_right()', 'recharge()', 'go_right()', 'go_right()', 'recharge()', 'go_right()', 'go_right()'];
   // 7: bay tới trên vật, hút; bay qua rào tới ô đích, thả
-  var CHINH_7 = nhieu(LAP(2, 'go_right()'), ['magnet_on()', 'wait()'], LAP(4, 'go_right()'), ['magnet_off()', 'wait()']);
-  var CHINH_7_KHAC = nhieu(lap('go_right()', 2), ['magnet_on()', 'wait()'], lap('go_right()', 4), ['magnet_off()', 'wait()']);
+  var CHINH_7 = nhieu(LAP(2, 'go_right()'), ['magnet_n()', 'wait()'], LAP(4, 'go_right()'), ['magnet_off()', 'wait()']);
+  var CHINH_7_KHAC = nhieu(lap('go_right()', 2), ['magnet_n()', 'wait()'], lap('go_right()', 4), ['magnet_off()', 'wait()']);
   // 8
   var CHINH_8 = [W('R'), 'ferry("RRU")', W('DRR'), 'ferry("U")'];
   var CHINH_8_KHAC = [W('R'), 'ferry("RRU")', W('D'), W('RR'), 'ferry("U")'];
   // 9: bay tới trên vật sắt thứ nhất, rồi lặp hai lần: hút, lên ô đích, thả, xuống và sang vật kế
-  var CHINH_9 = nhieu([W('RR')], LAP(2, ['magnet_on()', 'wait()', 'go_up()', 'magnet_off()', 'wait()', W('DRR')]));
-  var CHINH_9_KHAC = nhieu([W('R'), W('R')], LAP(2, ['magnet_on()', 'wait()', 'go_up()', 'magnet_off()', 'wait()', W('DRR')]));
+  var CHINH_9 = nhieu([W('RR')], LAP(2, ['magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()', W('DRR')]));
+  var CHINH_9_KHAC = nhieu([W('R'), W('R')], LAP(2, ['magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()', W('DRR')]));
   // 10: tới vật 1, chuyến 1 qua ô sạc (U L U D R R U), tới vật 2, chuyến 2
   var CHINH_10 = [W('RRD'), 'ship("ULUDRRU")', W('DRD'), 'ship("URU")'];
   var CHINH_10_KHAC = [W('RR'), W('D'), 'ship("ULUDRRU")', W('DRD'), 'ship("URU")'];
@@ -242,20 +242,20 @@
     /* ------------------------------------------------------------- hàng 3: biến thể */
     man({
       so: 7, ten: 'Nam châm treo', hang: 'bien-the', nam: true,
-      deBai: 'Nam châm treo dưới bụng drone: magnet_on() bật, magnet_off() tắt, và cũng cần wait() cho nhịp trôi. Nó hút vật sắt nằm ngay dưới drone, và thả vật xuống ô ngay dưới drone. Hút vật sắt, bay qua hàng rào, thả vật lên ô đích D.',
+      deBai: 'Nam châm treo dưới bụng drone: magnet_n() bật cực N, magnet_s() bật cực S, magnet_off() ngắt điện, và cũng cần wait() cho nhịp trôi. Cực nào cũng hút vật sắt nằm ngay dưới drone, ngắt điện thì vật rơi xuống ô ngay dưới drone. Hút vật sắt, bay qua hàng rào, thả vật lên ô đích D.',
       veMaMau: 'Chương trình có sẵn mới bay tới trên vật sắt và hút nó. Chạy thử rồi viết tiếp.',
       san: SAN_7, vatChat: CHAT_7, batDau: BD1,
-      maMau: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_on()', 'wait()']) },
+      maMau: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_n()', 'wait()']) },
       sao: { o: 8, nhip: 8 },
       loiGiai: { chinh: CHINH_7.slice() },
       loiGiaiKhac: { moTa: 'Viết từng lệnh bay một, không dùng vòng lặp', baiLam: { chinh: CHINH_7_KHAC.slice() } },
       loiSai: [
         { moTa: 'Quên bật nam châm: drone bay qua vật mà không hút', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), LAP(4, 'go_right()'), ['magnet_off()', 'wait()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Thả khi đang ở trên hàng rào: hàng rào không nhận vật', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_on()', 'wait()', 'go_right()', 'magnet_off()', 'wait()']) }, phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
-        { moTa: 'Thả sớm một ô: vật rơi xuống ô trống chưa phải ô đích', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_on()', 'wait()'], LAP(3, 'go_right()'), ['magnet_off()', 'wait()']) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên magnet_off(): vật vẫn dính dưới bụng drone', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_on()', 'wait()'], LAP(4, 'go_right()')) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Thiếu wait() sau magnet_off(): lệnh thả chưa kịp chạy', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_on()', 'wait()'], LAP(4, 'go_right()'), ['magnet_off()']) }, phaiCoMa: ['quen-wait', 'chua-dua-vat'] },
-        { moTa: 'magnet_on() và magnet_off() cùng một nhịp: lệnh sau bị bỏ', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_on()', 'magnet_off()', 'wait()']) }, phaiCoMa: ['magnet-goi-lai', 'chua-dua-vat'] }
+        { moTa: 'Thả khi đang ở trên hàng rào: hàng rào không nhận vật', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()']) }, phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
+        { moTa: 'Thả sớm một ô: vật rơi xuống ô trống chưa phải ô đích', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_n()', 'wait()'], LAP(3, 'go_right()'), ['magnet_off()', 'wait()']) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên magnet_off(): vật vẫn dính dưới bụng drone', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_n()', 'wait()'], LAP(4, 'go_right()')) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Thiếu wait() sau magnet_off(): lệnh thả chưa kịp chạy', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_n()', 'wait()'], LAP(4, 'go_right()'), ['magnet_off()']) }, phaiCoMa: ['quen-wait', 'chua-dua-vat'] },
+        { moTa: 'magnet_n() và magnet_off() cùng một nhịp: lệnh sau bị bỏ', baiLam: { chinh: nhieu(LAP(2, 'go_right()'), ['magnet_n()', 'magnet_off()', 'wait()']) }, phaiCoMa: ['magnet-goi-lai', 'chua-dua-vat'] }
       ],
       goiY: ['Nam châm chỉ hút vật nằm ngay dưới bụng drone: bay tới đúng ô có vật rồi mới bật.',
         'Vật rơi xuống ô ngay dưới drone khi tắt nam châm: drone phải đang ở trên ô đích. Hàng rào không nhận vật.']
@@ -272,8 +272,8 @@
       loiGiaiKhac: { moTa: 'Sửa như vậy, đoạn walk("DRR") chia làm hai lần gọi', baiLam: { chinh: CHINH_8_KHAC.slice(), hamCuaMan: [hFerry()] } },
       loiSai: [
         { moTa: 'Chưa sửa gì: ferry() thả vật ngay chỗ cũ rồi mới bay', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hFerry(T_FERRY_SAI)] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Xóa hai dòng thả: vật dính theo drone nhưng không bao giờ rơi xuống đích', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hFerry(['magnet_on()', 'wait()', 'walk(path)'])] }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Thả bằng magnet_off() mà thiếu wait(): lần thả cuối không kịp chạy', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hFerry(['magnet_on()', 'wait()', 'walk(path)', 'magnet_off()'])] }, phaiCoMa: ['quen-wait', 'chua-dua-vat'] },
+        { moTa: 'Xóa hai dòng thả: vật dính theo drone nhưng không bao giờ rơi xuống đích', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hFerry(['magnet_n()', 'wait()', 'walk(path)'])] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Thả bằng magnet_off() mà thiếu wait(): lần thả cuối không kịp chạy', baiLam: { chinh: CHINH_8.slice(), hamCuaMan: [hFerry(['magnet_n()', 'wait()', 'walk(path)', 'magnet_off()'])] }, phaiCoMa: ['quen-wait', 'chua-dua-vat'] },
         { moTa: 'Chỉ gọi ferry() cho vật thứ nhất', baiLam: { chinh: [W('R'), 'ferry("RRU")'], hamCuaMan: [hFerry()] }, phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Chạy thử và xem vật nằm ở đâu sau mỗi lần ferry(): hàm thả vật vào lúc nào?',
@@ -285,15 +285,15 @@
       deBai: 'Vật gỗ không bị nam châm hút, còn vật sắt nằm trên làn băng chuyền vẫn hút được. Drone bay qua vật gỗ thoải mái. Đưa hai vật sắt tới hai ô đích; vật gỗ để yên cũng được.',
       veMaMau: 'Chương trình có sẵn mới bay tới trên vật sắt thứ nhất và hút nó. Chạy thử rồi viết tiếp.',
       san: SAN_9, vatChat: CHAT_9, vatThem: THEM_9, batDau: BD1,
-      maMau: { chinh: [W('RR'), 'magnet_on()', 'wait()'] },
+      maMau: { chinh: [W('RR'), 'magnet_n()', 'wait()'] },
       sao: { o: 18, nhip: 11 },
       loiGiai: { chinh: CHINH_9.slice() },
       loiGiaiKhac: { moTa: 'Đoạn walk("RR") đầu tiên chia làm hai lần gọi', baiLam: { chinh: CHINH_9_KHAC.slice() } },
       loiSai: [
-        { moTa: 'Quên bay lên ô đích: nam châm tắt ngay chỗ hút, vật nằm lại ô cũ', baiLam: { chinh: nhieu([W('RR')], LAP(2, ['magnet_on()', 'wait()', 'magnet_off()', 'wait()', W('DRR')])) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Bật nam châm khi đang ở trên vật gỗ: không hút được gì', baiLam: { chinh: [W('RRR'), 'magnet_on()', 'wait()', 'go_up()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['hut-go', 'chua-dua-vat'] },
-        { moTa: 'Chỉ lặp một lần: còn một vật sắt chưa tới đích', baiLam: { chinh: nhieu([W('RR')], LAP(1, ['magnet_on()', 'wait()', 'go_up()', 'magnet_off()', 'wait()'])) }, phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên magnet_off(): vật thứ nhất dính mãi nên không hút thêm được vật thứ hai', baiLam: { chinh: nhieu([W('RR')], LAP(2, ['magnet_on()', 'wait()', 'go_up()', W('DRR')])) }, phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên bay lên ô đích: nam châm tắt ngay chỗ hút, vật nằm lại ô cũ', baiLam: { chinh: nhieu([W('RR')], LAP(2, ['magnet_n()', 'wait()', 'magnet_off()', 'wait()', W('DRR')])) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Bật nam châm khi đang ở trên vật gỗ: không hút được gì', baiLam: { chinh: [W('RRR'), 'magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['hut-go', 'chua-dua-vat'] },
+        { moTa: 'Chỉ lặp một lần: còn một vật sắt chưa tới đích', baiLam: { chinh: nhieu([W('RR')], LAP(1, ['magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()'])) }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên magnet_off(): vật thứ nhất dính mãi nên không hút thêm được vật thứ hai', baiLam: { chinh: nhieu([W('RR')], LAP(2, ['magnet_n()', 'wait()', 'go_up()', W('DRR')])) }, phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Vật gỗ nằm giữa hai vật sắt chỉ là chỗ bay qua. Hai lượt hút và thả giống hệt nhau, cách nhau một đoạn bay về.',
         'Từ ô đích bay xuống một ô, rồi sang phải hai ô là tới vật sắt kế tiếp.']
@@ -313,9 +313,9 @@
       loiSai: [
         { moTa: 'Gọi ship() mà chưa tạo hàm', baiLam: { chinh: CHINH_10.slice() }, phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Không ghé ô sạc: hai chuyến bay thẳng cần 16 pin, hết pin trước khi xong', baiLam: { chinh: [W('RRD'), 'ship("URU")', W('DRD'), 'ship("URU")'] }, hamCuaEmMoi: [hShip()], phaiCoMa: ['het-pin'] },
-        { moTa: 'ship() quên wait() sau magnet_on(): drone bay đi ngay nên chưa hút được vật dưới bụng', baiLam: { chinh: CHINH_10.slice() }, hamCuaEmMoi: [hShip(['magnet_on()', 'walk(path)', 'magnet_off()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'ship() quên magnet_off(): vật dính mãi dưới bụng', baiLam: { chinh: CHINH_10.slice() }, hamCuaEmMoi: [hShip(['magnet_on()', 'wait()', 'walk(path)'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Không dùng ship(): mỗi chuyến viết walk, hút, walk, thả riêng, quá 10 ô', baiLam: { chinh: [W('RRD'), 'magnet_on()', 'wait()', W('ULUDRRU'), 'magnet_off()', 'wait()', W('DRD'), 'magnet_on()', 'wait()', W('URU'), 'magnet_off()', 'wait()'] }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'ship() quên wait() sau magnet_n(): drone bay đi ngay nên chưa hút được vật dưới bụng', baiLam: { chinh: CHINH_10.slice() }, hamCuaEmMoi: [hShip(['magnet_n()', 'walk(path)', 'magnet_off()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'ship() quên magnet_off(): vật dính mãi dưới bụng', baiLam: { chinh: CHINH_10.slice() }, hamCuaEmMoi: [hShip(['magnet_n()', 'wait()', 'walk(path)'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không dùng ship(): mỗi chuyến viết walk, hút, walk, thả riêng, quá 10 ô', baiLam: { chinh: [W('RRD'), 'magnet_n()', 'wait()', W('ULUDRRU'), 'magnet_off()', 'wait()', W('DRD'), 'magnet_n()', 'wait()', W('URU'), 'magnet_off()', 'wait()'] }, phaiCoMa: ['tran-khung'] }
       ],
       goiY: ['Hút rồi bay đi rồi thả: ba việc đó lặp lại ở mỗi chuyến, nên gói chúng vào hàm ship(path).',
         'Hết pin thì drone rơi: ô sạc P nằm trong ngách phía trên hành lang. Chuyến thứ nhất ghé qua đó giữa đường.']

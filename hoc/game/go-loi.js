@@ -1,6 +1,6 @@
 /* ============================================================================
    go-loi.js — "Đường học": BẢNG GỠ LỖI "chơi một màn bất kỳ" (window.GoLoi). Chỉ để người làm game thử màn.
-   Mở bằng: giữ lâu tiêu đề màn chọn 2 giây · nút 🐞 ở hàng "Hàm của em" (khi địa chỉ có ?debug=1 hoặc #debug) · mục "Gỡ lỗi" trong menu ☰ của màn chơi.
+   Mở bằng: giữ lâu logo màn khởi đầu / tiêu đề màn chọn gói / tiêu đề lưới màn 2 giây · nút 🐞 ở hàng "Hàm của em" (khi địa chỉ có ?debug=1 hoặc #debug) · mục "Gỡ lỗi" trong menu ☰ của màn chơi.
    Trong bảng: ‹ Chương N · tên › chọn chương (mọi chương, kể cả đợt 2) · lưới các màn của chương (số, tên, sao): chạm một màn là vào màn đó NGAY, bỏ qua khóa ·
    công tắc "Mở hết" (lưu ở localStorage, App.moHet đọc lại lúc khởi động) · "Nạp hàm chuẩn khi vào màn" (mặc định BẬT) · "Xóa tiến độ" (kèm "Xóa cả kho hàm" nếu bật).
 
@@ -8,6 +8,7 @@
    trộn loiGiai.hamCuaEmMoi của từng màn vào kho theo tên, màn sau ghi đè màn trước (che-xe.5 sửa u_turn, che-xe.9 sửa turn_right / turn_left).
    Màn "tiết kiệm nhịp" (tietKiemNhip: tay-gap.9) sửa riêng hàm có sẵn, không ghi vào kho dùng chung (giống kiem-hoc.mjs). Hàm trong man.taoHam của X không nạp sẵn (người chơi tự chế ở màn).
    Ghi vào kho thật qua KhoHam (tao / sua) rồi Luu.ghiKho(): chỉ thêm / thay hàm cốt truyện, hàm tự đặt khác của người chơi giữ nguyên. Vào màn xong khay tự vẽ lại (Choi.vao).
+   "Mở hết" đang bật mà vào màn từ lưới màn thường (App.vaoMan): napKhiMoHet(m) chỉ THÊM hàm cốt truyện còn thiếu (không thay hàm đã có), để nhảy cóc tới chương sau vẫn có move()…
    ========================================================================== */
 (function () {
   'use strict';
@@ -33,7 +34,7 @@
   function datMoHet(b) {
     var c = docCai(); c.moHet = !!b; ghiCai(c);
     App.moHet = c.moHet;
-    if (window.Chon) Chon.ve();
+    if (window.App && App.veLai) App.veLai(); else if (window.Chon) Chon.ve();
   }
   function datNapHam(b) { var c = docCai(); c.napHam = !!b; ghiCai(c); }
 
@@ -68,8 +69,9 @@
     return ds.filter(function (f) { return tao.indexOf(f.ten) < 0; });
   }
 
-  /** Nạp kho tham chiếu vào kho thật của người chơi. Trả về { them, thay, giu, loi } (tên hàm đã thêm / đã thay / số hàm đã đúng sẵn / lỗi). */
-  function napHamChuan(m) {
+  /** Nạp kho tham chiếu vào kho thật của người chơi. Trả về { them, thay, giu, loi } (tên hàm đã thêm / đã thay / số hàm đã đúng sẵn / lỗi).
+   *  chiThem: chỉ thêm hàm còn thiếu, hàm đã có (kể cả khác bản chuẩn) giữ nguyên. */
+  function napHamChuan(m, chiThem) {
     var ref = khoThamChieu(m), kq = { them: [], thay: [], giu: 0, loi: [] };
     ref.forEach(function (f) {
       var co = KhoHam.tim(f.ten), viec;
@@ -77,7 +79,7 @@
         var r = KhoHam.tao(f.ten, f.thamSo, { taoHam: [f.ten] });
         if (!r.ok) { kq.loi.push(f.ten + ': ' + r.loi); return; }
         viec = kq.them;
-      } else if (giongHam(co, f)) { kq.giu++; return; }
+      } else if (chiThem || giongHam(co, f)) { kq.giu++; return; }
       else viec = kq.thay;
       var r2 = KhoHam.sua(f.ten, f.than, f.thamSo);
       if (!r2.ok) { kq.loi.push(f.ten + ': ' + r2.loi); return; }
@@ -95,6 +97,14 @@
       try { console.info('[GoLoi] ' + m.id + ' ' + m.ma + ': nạp hàm chuẩn — thêm ' + kq.them.length + ', thay ' + kq.thay.length + ', sẵn ' + kq.giu + (kq.loi.length ? ', LỖI ' + kq.loi.join('; ') : '')); } catch (e) { /* bỏ qua */ }
     }
     App.vaoMan(m.ma);
+  }
+
+  /** "Mở hết" đang bật, vào màn từ lưới màn thường: công tắc "Nạp hàm chuẩn" bật thì thêm hàm cốt truyện còn thiếu (không thay hàm đã có). */
+  function napKhiMoHet(m) {
+    if (!docCai().napHam) return null;
+    var kq = napHamChuan(m, true);
+    if (kq.them.length || kq.loi.length) { try { console.info('[GoLoi] Mở hết, ' + m.id + ' ' + m.ma + ': thêm ' + kq.them.length + ' hàm còn thiếu' + (kq.loi.length ? ', LỖI ' + kq.loi.join('; ') : '')); } catch (e) { /* bỏ qua */ } }
+    return kq;
   }
 
   /** Địa chỉ có `man=<mã hoặc id>` (vd `choi.html?debug=1&man=vong-lap.10` hay `#man=6.10`): vào thẳng màn đó lúc mở trang
@@ -123,7 +133,7 @@
       KhoHam.docLuu({ getItem: function () { return null; } });          // "không có gì được lưu" → kho rỗng (tên cố định vẫn khóa)
       Luu.ghiKho();
     }
-    if (window.Chon) Chon.ve();
+    if (window.App && App.veLai) App.veLai(); else if (window.Chon) Chon.ve();
     var dangChoi = !document.getElementById('sc-choi').classList.contains('hidden');
     if (dangChoi) App.veChon();                                          // sao ở màn đang chơi đã cũ: về màn chọn
   }
@@ -221,7 +231,7 @@
     veChuong();
   }
 
-  /** Nút 🐞 trên màn chọn (đặt cạnh nút Sổ lệnh); chỉ có khi địa chỉ mang cờ debug. */
+  /** Nút 🐞 (màn khởi đầu, chọn gói, lưới màn: cạnh nút Sổ lệnh); chỉ có khi địa chỉ mang cờ debug. */
   function nutBug(cha) {
     if (!coCo()) return null;
     var b = h('button', 'bt g-wd go-bug', '🐞'); b.setAttribute('data-nut', 'go-loi'); b.setAttribute('aria-label', t('chon.goLoi'));
@@ -231,11 +241,11 @@
   }
 
   // thêm #debug vào địa chỉ khi đang ở màn chọn: vẽ lại để nút 🐞 hiện
-  window.addEventListener('hashchange', function () { if (window.Chon) Chon.ve(); });
+  window.addEventListener('hashchange', function () { if (window.App && App.veLai) App.veLai(); else if (window.Chon) Chon.ve(); });
 
   window.GoLoi = {
     mo: mo, nutBug: nutBug, coCo: coCo, laBat: laBat,
     docMoHet: docMoHet, datMoHet: datMoHet,
-    khoThamChieu: khoThamChieu, napHamChuan: napHamChuan, vaoNgay: vaoNgay, xoaTienDo: xoaTienDo
+    khoThamChieu: khoThamChieu, napHamChuan: napHamChuan, napKhiMoHet: napKhiMoHet, vaoNgay: vaoNgay, xoaTienDo: xoaTienDo
   };
 })();

@@ -1,11 +1,14 @@
 /* ============================================================================
    ung-dung.js — "Đường học": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
+   Bốn màn hình (kiểu Cut the Rope, 15/10): 'dau' khởi đầu (man-dau.js) → 'goi' chọn gói (man-goi.js) → 'chon' lưới màn của gói (man-chon.js) → 'choi' màn chơi.
+   Luật mở khóa (gói mở bằng tổng sao, chương / hàng / thử thách trong gói) ở game/mo-goi.js; App chỉ gọi qua.
    ========================================================================== */
 (function () {
   'use strict';
 
   var App = {
-    chuong: null,        // mã chương đang xem ở màn chọn (xem ManHoc.chuong())
+    goi: null,           // mã gói đang xem (ThuTuChuong.goi, xem MoGoi.dsGoi())
+    chuong: null,        // mã chương đang xem / vừa chơi (xem ManHoc.chuong())
     moHet: !!(window.GoLoi && GoLoi.docMoHet()),   // chế độ thử: mở hết (bật / tắt trong bảng Gỡ lỗi, go-loi.js; giữ ở localStorage nên tải lại vẫn còn)
     man: null            // màn đang chơi
   };
@@ -46,57 +49,20 @@
     return (ds || KhoHam.ds()).map(function (f) { return f.ten; }).filter(function (n) { return coTruyen.indexOf(n) >= 0 && sua.indexOf(n) < 0; });
   };
 
-  /**
-   * Mở khóa:
-   *  - hàng "Làm quen" chơi lần lượt; xong cả hàng thì mở hàng "Luyện" và "Biến thể";
-   *  - trùm mở khi qua đủ 9 màn; chương kế đợt 1 (theo thứ tự trong thu-tu-chuong.js) mở khi thắng trùm của chương ngay trước nó;
-   *  - chương ĐỢT 2 (ThuTuChuong.dot2) mở CÙNG LÚC khi thắng trùm của chương cổng (ThuTuChuong.congDot2), không cần chương đợt 2 đứng trước.
-   * Trả về { mo, lyDo } với lyDo: 'chuoi' (kèm chuoi = số chương trước) | 'dot2' (kèm cong = mã chương cổng) | 'can-ham' (đợt 2: kèm canChuong, ham — xem chuongCanTruoc) | 'hang1' | 'hang23' | 'trum'.
-   */
-  /**
-   * Chương phải xong trước (đợt 2): các chương KHÁC nơi lần đầu chế (taoHam) một hàm mà màn trong chương này cần (hamCuaEmCan).
-   * Đợt 2 mở cùng lúc, nhưng vd. omni cần forward() của tham-so, drone cần go() / walk() của nhện: chưa xong chương đó thì chưa mở.
-   * Trả về [{ chuong, ham }] (mỗi chương một lần, kèm một tên hàm để nói lý do).
-   */
-  App.chuongCanTruoc = function (ma) {
-    var noiTao = {};
-    ManHoc.danhSach.forEach(function (x) { (x.taoHam || []).forEach(function (t) { if (!noiTao[t]) noiTao[t] = x.chuong; }); });
-    var kq = [], da = {};
-    App.dsMan(ma).forEach(function (x) {
-      (x.hamCuaEmCan || []).forEach(function (t) {
-        var c = noiTao[t];
-        if (c && c !== ma && !da[c]) { da[c] = true; kq.push({ chuong: c, ham: t }); }
-      });
-    });
-    return kq;
-  };
-  App.trangThai = function (m) {
-    if (App.moHet) return { mo: true };
-    var n = m.chuong, dsc = App.dsChuong(), vt = App.chiSoChuong(n);
-    if (App.laDot2(n)) {
-      var cong = App.congDot2(), trCong = cong && App.trum(cong);
-      if (!trCong || !Luu.daQua(trCong.ma)) return { mo: false, lyDo: 'dot2', cong: cong };
-      var can = App.chuongCanTruoc(n);
-      for (var c = 0; c < can.length; c++) {
-        var trc = App.trum(can[c].chuong);
-        if (trc && !Luu.daQua(trc.ma)) return { mo: false, lyDo: 'can-ham', canChuong: can[c].chuong, ham: can[c].ham };
-      }
-    } else if (vt > 0) {
-      var tr = App.trum(dsc[vt - 1].ma);
-      if (tr && !Luu.daQua(tr.ma)) return { mo: false, lyDo: 'chuoi', chuoi: dsc[vt - 1].so };
-    }
-    var h1 = App.dsHang(n, 'lam-quen');
-    if (m.hang === 'lam-quen') {
-      var i = h1.indexOf(m);
-      return i <= 0 || Luu.daQua(h1[i - 1].ma) ? { mo: true } : { mo: false, lyDo: 'hang1' };
-    }
-    var xongH1 = h1.every(function (x) { return Luu.daQua(x.ma); });
-    if (m.hang === 'trum') {
-      var chin = App.dsMan(n).filter(function (x) { return x.hang !== 'trum'; });
-      return chin.every(function (x) { return Luu.daQua(x.ma); }) ? { mo: true } : { mo: false, lyDo: 'trum' };
-    }
-    return xongH1 ? { mo: true } : { mo: false, lyDo: 'hang23' };
-  };
+  /* ---------------------------------------------------------------- gói + mở khóa (game/mo-goi.js) */
+  App.dsGoi = function () { return MoGoi.dsGoi(); };
+  App.goiCua = function (maChuong) { return MoGoi.goiCua(maChuong); };
+  App.goiTheoMa = function (ma) { return MoGoi.goiTheoMa(ma); };
+  App.tongSao = function () { return MoGoi.tongSao(Luu); };
+  App.saoGoi = function (g) { return MoGoi.saoGoi(g, Luu); };
+  App.soQua = function (g) { return MoGoi.soQua(g, Luu); };
+  App.goiMo = function (g) { return MoGoi.goiMo(g, Luu, App.moHet); };
+  /** Hàm em chương ma cần mà chế ở chương khác: [{ chuong, ham }] (giữ dạng cũ cho chỗ khác gọi). */
+  App.chuongCanTruoc = function (ma) { return MoGoi.canHam(ma).map(function (x) { return { chuong: x.man.chuong, ham: x.ham }; }); };
+  /** { mo } hoặc { mo: false, lyDo: 'sao' | 'chuoi' | 'can-ham' | 'hang1' | 'hang23' | 'trum', … } — xem mo-goi.js. */
+  App.trangThai = function (m) { return MoGoi.trangThai(m, Luu, App.moHet); };
+  /** Màn nên chơi tiếp (màn mở đầu tiên chưa qua), hoặc null. */
+  App.manTiepTheo = function () { return MoGoi.manTiepTheo(Luu, App.moHet); };
   /** Chương đã mở chưa (màn đầu chương mở)? Chương chưa có màn nào thì chưa mở. */
   App.chuongMo = function (ma) {
     var ds = App.dsMan(ma);
@@ -105,16 +71,23 @@
     return !!App.trangThai(dau).mo;
   };
   /**
-   * Thắng trùm chương cổng LẦN ĐẦU: hiện bảng "Mở khóa bộ phận mới!" (bang-mo-khoa.js) một lần duy nhất (cờ 'mo-khoa-dot2' trong Luu), rồi gọi khiXong.
-   * Không có gì để hiện (đã xem, chưa thắng trùm, lõi chưa khai đợt 2, chưa nạp bảng) thì gọi khiXong ngay. Trả về true nếu đã mở bảng.
+   * Gói vừa đủ sao để mở (chưa báo lần nào: cờ 'goi-mo:<mã>' trong Luu): hiện bảng "Mở gói mới!" (bang-mo-khoa.js) rồi gọi khiXong.
+   * Không có gì để báo thì gọi khiXong ngay. Trả về true nếu đã mở bảng. Gọi sau khi thắng một màn và khi về màn chọn gói / lưới màn.
    */
-  App.moKhoaDot2 = function (khiXong) {
-    var cong = App.congDot2(), tr = cong && App.trum(cong), ds = (window.ThuTuChuong && ThuTuChuong.dot2) || [];
-    if (!tr || !Luu.daQua(tr.ma) || !ds.length || Luu.daXem('mo-khoa-dot2') || !window.MoKhoa) { if (khiXong) khiXong(); return false; }
-    Luu.datDaXem('mo-khoa-dot2');
-    MoKhoa.mo(function () { if (khiXong) khiXong(); });
+  App.baoGoiMoi = function (khiXong) {
+    var moi = App.dsGoi().filter(function (g) { return !g.sapCo && g.saoCan > 0 && MoGoi.goiMo(g, Luu) && !Luu.daXem('goi-mo:' + g.ma); });
+    if (!moi.length || !window.MoKhoa) { if (khiXong) khiXong(); return false; }
+    moi.forEach(function (g) { Luu.datDaXem('goi-mo:' + g.ma); });
+    MoKhoa.mo(moi, function () { if (App.manHinh === 'goi' && window.ChonGoi) ChonGoi.ve(moi[0].ma); if (khiXong) khiXong(); });
     return true;
   };
+  App.moKhoaDot2 = App.baoGoiMoi;                                     // tên cũ (man-choi.js gọi sau khi thắng màn)
+  /** Lần đầu chạy bản có gói: các gói đã mở sẵn (tiến độ cũ) coi như đã báo, khỏi bảng "Mở gói mới!" dài một lần. */
+  function ghiGoiDaMo() {
+    if (Luu.daXem('goi-khoi-tao')) return;
+    App.dsGoi().forEach(function (g) { if (!g.sapCo && MoGoi.goiMo(g, Luu)) Luu.datDaXem('goi-mo:' + g.ma); });
+    Luu.datDaXem('goi-khoi-tao');
+  }
   /** Màn kế tiếp đã mở (theo thứ tự trong danh sách; hết chương thì sang màn đầu chương kế), hoặc null. */
   App.manTiep = function (m) {
     var ds = ManHoc.danhSach, i = ds.indexOf(m);
@@ -124,24 +97,53 @@
   };
 
   /* ---------------------------------------------------------------- màn hình */
+  var MAN_HINH = { dau: 'sc-dau', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi' };
+  App.manHinh = null;
+  /** Hiện một màn hình: 'dau' (khởi đầu) | 'goi' (chọn gói) | 'chon' (lưới màn của gói App.goi) | 'choi'. */
   App.hien = function (ten) {
     TP.Chan.giu(400);                                  // cú bấm đến muộn không rơi xuống màn mới
-    document.getElementById('sc-chon').classList.toggle('hidden', ten !== 'chon');
-    document.getElementById('sc-choi').classList.toggle('hidden', ten !== 'choi');
-    if (ten === 'chon') { Chon.ve(); App.moKhoaDot2(); }          // an toàn: bảng mở khóa chưa kịp hiện (vd. mở lại game sau khi đã thắng trùm cổng) thì hiện ở màn chọn
+    Object.keys(MAN_HINH).forEach(function (k) { var e = document.getElementById(MAN_HINH[k]); if (e) e.classList.toggle('hidden', k !== ten); });
+    App.manHinh = ten;
+    if (window.Dau) Dau.chay(ten === 'dau');           // robot ở màn khởi đầu chỉ chạy hoạt hình khi đang thấy
+    if (ten === 'dau') Dau.ve();
+    else if (ten === 'goi') { ChonGoi.ve(); App.baoGoiMoi(); }
+    else if (ten === 'chon') { Chon.ve(); App.baoGoiMoi(); }   // an toàn: bảng "Mở gói mới!" chưa kịp hiện (vd mở lại game) thì hiện ở đây
+  };
+  /** Vẽ lại màn hình đang thấy (sau khi bảng Gỡ lỗi đổi tiến độ / "Mở hết"). */
+  App.veLai = function () {
+    if (App.manHinh === 'dau') Dau.ve();
+    else if (App.manHinh === 'goi') ChonGoi.ve();
+    else if (App.manHinh === 'chon') Chon.ve();
+  };
+  /** Báo nhanh (dải vàng) trên màn hình đang thấy. */
+  App.thongBao = function (chu) {
+    var m = App.manHinh === 'dau' ? window.Dau : App.manHinh === 'goi' ? window.ChonGoi : window.Chon;
+    if (m && m.thongBao) m.thongBao(chu);
   };
   /** Vào màn theo mã cố định (vd 'vong-lap.4'); nhận cả id hiển thị ('3.4') cho tiện thử. */
   App.vaoMan = function (ma) {
     var m = ManHoc.timMa(ma) || ManHoc.tim(ma); if (!m) return;
+    if (App.moHet && window.GoLoi && GoLoi.napKhiMoHet) GoLoi.napKhiMoHet(m);   // "Mở hết" (gỡ lỗi): nhảy cóc vẫn có hàm cốt truyện các màn trước
     App.man = m; App.chuong = m.chuong;
+    var g = App.goiCua(m.chuong); if (g) App.goi = g.ma;
     App.hien('choi');
     Choi.vao(m);
   };
+  /** Mở lưới màn của gói ma (chương xem = chương đầu của gói, trừ khi chương đang xem nằm trong gói). */
+  App.vaoGoi = function (ma) {
+    var g = App.goiTheoMa(ma); if (!g || g.sapCo) return;
+    App.goi = g.ma;
+    if (g.chuong.indexOf(App.chuong) < 0) App.chuong = g.chuong[0];
+    App.hien('chon');
+  };
+  /** Từ màn chơi về lưới màn của gói đang chơi. */
   App.veChon = function () {
     TP.Hop.dong();
     Choi.roi && Choi.roi();
     App.hien('chon');
   };
+  App.veGoi = function () { App.hien('goi'); };
+  App.veDau = function () { App.hien('dau'); };
 
   /* --------------------------------------------------------- co giãn khung */
   function vua() {
@@ -163,23 +165,25 @@
     // hàm theo cốt truyện (tên nằm trong taoHam của một màn nào đó): kho khóa tên, không cho đổi tên / xóa
     KhoHam.datTenCoDinh([].concat.apply([], ManHoc.danhSach.map(function (m) { return m.taoHam || []; })));
     var r = Luu.docKho();
-    var kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi');
+    var kd = document.getElementById('sc-dau'), kg = document.getElementById('sc-goi'), kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi');
+    Dau.dung(kd);
+    ChonGoi.dung(kg);
     Chon.dung(kb);
     Choi.dung(kc);
-    Ve.khungGo(kb.querySelector(".deco"));
-    Ve.khungGo(kc.querySelector(".deco"));
-    // chương mở ban đầu: chương của màn tiếp theo cần chơi
-    var ds = ManHoc.danhSach, dau = null;
-    for (var i = 0; i < ds.length; i++) { if (App.trangThai(ds[i]).mo && !Luu.daQua(ds[i].ma)) { dau = ds[i]; break; } }
-    App.chuong = dau ? dau.chuong : App.dsChuong()[App.dsChuong().length - 1].ma;
-    App.hien('chon');
+    [kd, kg, kb, kc].forEach(function (k) { Ve.khungGo(k.querySelector('.deco')); });
+    ghiGoiDaMo();
+    // gói / chương mở ban đầu: của màn tiếp theo cần chơi
+    var dau = App.manTiepTheo(), dsc = App.dsChuong();
+    App.chuong = dau ? dau.chuong : dsc[dsc.length - 1].ma;
+    App.goi = (App.goiCua(App.chuong) || App.dsGoi()[0]).ma;
+    App.hien('dau');
     if (!r.ok) App.baoKho = r;
     vua();
     window.addEventListener('resize', vua);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', vua);
     document.body.classList.add('san-sang');
-    if (App.baoKho) Chon.thongBao(t('tb.khoDoc', { loi: App.baoKho.loi }));
-    else if (Luu.laBoNho) Chon.thongBao(t('choi.loiLuu'));
+    if (App.baoKho) App.thongBao(t('tb.khoDoc', { loi: App.baoKho.loi }));
+    else if (Luu.laBoNho) App.thongBao(t('choi.loiLuu'));
     phongDuPhong();
   }
 

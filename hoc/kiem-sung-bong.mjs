@@ -309,7 +309,7 @@ console.log('\n== 4. shoot(): chỉ ra lệnh, xe đứng yên, gọi lại, qu�
   kiem('xích mang súng: bắn như xe bánh; nhịp bắn làm mất phần quay dở của xích (xich-quay-do)', nutTai(xich, 4, 0).bat === true &&
     maSK(chay(['....N', '.....'], { x: 0, y: 1, huong: 0 }, L('left_move()', 'wait()') + BAN, { loaiRobot: 'xich', hamGoc: BANH.concat(['shoot']) }), 'xich-quay-do').length === 1);
   kiem('nhện không gắn súng (nhện không có hướng mặt) → lỗi cấu hình', /Nhện không gắn súng bóng/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'shoot'] }, ''))));
-  for (const tay of [['arm_down', 'arm_up', 'grab', 'release'], ['push'], ['magnet_on', 'magnet_off'], ['aim', 'throw', 'load']]) {
+  for (const tay of [['arm_down', 'arm_up', 'grab', 'release'], ['push'], ['magnet_n', 'magnet_off'], ['aim', 'throw', 'load']]) {
     kiem('súng bóng không đi chung ' + tay[0] + ' (một robot một tay) → lỗi cấu hình', /một robot chỉ có một tay/i.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['shoot'], tay) }, ''))));
   }
   kiem('robot không có súng: shoot() là hàm lạ; hàm gốc shoot hợp lệ; sung null', (() => {

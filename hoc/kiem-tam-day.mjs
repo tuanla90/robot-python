@@ -344,7 +344,7 @@ console.log('\n== 7. Dữ liệu 10 màn: tấm đẩy, thân hai bánh (xích �
   kiem('thùng nằm sẵn trên đích (h) chỉ ở 12.9', J(ds.filter((m) => /h/.test(m.san.join(''))).map((m) => m.id)) === '["17.9"]');
   kiem('hàm cốt truyện mới: 12.6 tạo shove; các màn khác không tạo; tên không trùng hàm cốt truyện chương trước và không phải hàm gốc',
     ds.every((m) => J(m.taoHam) === J({ '17.6': ['shove'] }[m.id] || [])) &&
-      (() => { const cu = tatCa.filter((m) => m.chuong !== 'tam-day').flatMap((m) => m.taoHam); return !cu.includes('shove') && !KhoHam.HAM_GOC_MAC_DINH.includes('shove') && tenCotTruyen.includes('shove') && tenCotTruyen.length === 26; })());
+      (() => { const cu = tatCa.filter((m) => m.chuong !== 'tam-day').flatMap((m) => m.taoHam); return !cu.includes('shove') && !KhoHam.HAM_GOC_MAC_DINH.includes('shove') && tenCotTruyen.includes('shove') && tenCotTruyen.length === 25; })());
   kiem('shove(n): một tham số n, 6 ô: forward(n), turn_left(), move(), turn_right(), move(), turn_right()', (() => { const h = man('17.6').loiGiai.hamCuaEmMoi[0]; return h.ten === 'shove' && J(h.thamSo) === '["n"]' && KungOk(h) && J(h.than) === J(['forward(n)', 'turn_left()', 'move()', 'turn_right()', 'move()', 'turn_right()']); })());
   function KungOk(h) { return KhungCode.soOHam(h) === 6; }
   kiem('hamCuaEmCan đúng từng màn', ds.every((m) => J(m.hamCuaEmCan) === J({

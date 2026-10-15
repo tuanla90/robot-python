@@ -18,7 +18,8 @@ import { createRequire } from 'node:module';
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
-for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1', 'man-chuoi-2', 'man-che-xe', 'man-tay-gap', 'man-che-tay', 'man-vong-lap', 'man-che-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach', 'man-che-cam-bien', 'man-robot-hoan-thien', 'man-mau', 'man-nam-cham', 'man-may-nem', 'man-sung-bong']) require(path.join(day, f + '.js'));
+for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1']) require(path.join(day, f + '.js'));
+for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f)).sort()) require(path.join(day, f));          // MỌI tệp màn (kể cả chương mới)
 const ManHoc = require(path.join(day, 'man-drone.js'));
 const doc = (f) => fs.readFileSync(path.join(day, 'game', f), 'utf8');
 
@@ -43,8 +44,8 @@ console.log('== 1. HuongDanMan: màn có thật, màn làm quen đều có hư�
 kiem('huong-dan-man.js đặt window.HuongDanMan (mã màn → mảng bước)', !!HDM && typeof HDM === 'object' && maCo.length > 0 && maCo.every((m) => Array.isArray(HDM[m]) && HDM[m].length > 0));
 const khongCo = maCo.filter((m) => !ManHoc.timMa(m));
 kiem('mọi mã trong HuongDanMan là màn có thật (ManHoc.timMa)', khongCo.length === 0, khongCo.join(', '));
-const PHAI_CO = ['hai-banh.1', 'hai-banh.2', 'hai-banh.9', 'hai-banh.10', 'xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'che-xe.1', 'che-xe.4', 'tay-gap.1', 'tay-gap.5',
-  'vong-lap.1', 'vong-lap.2', 'vong-lap.3', 'vong-lap.8', 'khoang-cach.1', 'khoang-cach.2', 'che-cam-bien.5'];
+const PHAI_CO = ['hai-banh.1', 'hai-banh.2', 'hai-banh.10', 'xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'che-xe.1', 'che-xe.4', 'tay-gap.1', 'tay-gap.5',
+  'vong-lap.1', 'vong-lap.2', 'vong-lap.3', 'vong-lap.8', 'khoang-cach.1', 'khoang-cach.2', 'che-cam-bien.5', 'nhen.2', 'nhen.3'];
 const thieu = PHAI_CO.filter((m) => !HDM[m]);
 kiem('có hướng dẫn cho các màn có thao tác mới (nút Chạy / chèn khối / xóa / kéo / Xưởng / thụt lề / for / if / while / đếm)', thieu.length === 0, thieu.join(', '));
 const thuTu = ctx.ThuTuChuong || require(path.join(day, 'thu-tu-chuong.js'));

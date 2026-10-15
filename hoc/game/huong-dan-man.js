@@ -130,15 +130,6 @@
       daLam: function () { var i = dongCo(re); return i < 0 || bac(dsChinh()[i]) >= bacCan; }
     };
   }
-  /** Chạm dòng → bấm ✕ đỏ: nút ✕ (ô số dòng đang hiện ✕, hay dòng đang chọn nếu chuột chưa rê qua). */
-  function nutX() {
-    var t = document.querySelector('#pan-main .rows .row.xc .tab') || document.querySelector('#pan-main .rows .row.xx .tab');
-    if (!t) {
-      var r = document.querySelector('#pan-main .rows .row.sel');
-      t = r && r.querySelector('.strip:not(.empty)') ? r.querySelector('.tab') : null;
-    }
-    return t || [];
-  }
 
   var H = {};
 
@@ -151,10 +142,7 @@
     { khongAn: true, dich: ['nut:chay', 'nut:nhip'], neo: function () { return timDich('nut:chay')[0]; }, rong: 170, xong: 'chay',
       chu: 'Đủ ba ô rồi thì bấm Chạy. Bấm Nhịp để xem xe đi từng nhịp một.' }
   ];
-  H['hai-banh.9'] = [
-    { dich: '#pan-main .rows', chu: 'Dòng nào thừa thì chạm vào dòng đó.', xong: ['chon-dong', 'xoa-dong'], han: 25000, huong: 'tren' },
-    { dich: nutX, chu: 'Bấm ✕ đỏ để xóa dòng. Xóa nhầm thì bấm Hoàn tác.', xong: ['xoa-dong', 'hoan-tac'], han: 20000, rong: 160 }
-  ];
+  // 1.9 (Dọn dòng thừa): không dạy xóa lại. Cách xóa đã dạy một lần ở hướng dẫn chung của thanh-phan.js (lần đầu chèn khối, màn 1.2).
   H['hai-banh.10'] = [
     { dich: '#pan-main .rows', chu: 'Nhấn giữ một dòng, rồi kéo lên hoặc xuống để đổi chỗ.', xong: 'doi-cho', han: 30000, huong: 'tren', rong: 160 }
   ];
@@ -272,6 +260,51 @@
       'Ba khối hồng để đếm: n = 0 lúc đầu, n = n + 1 mỗi ô xe đi thêm, for i in range(n) lặp đúng n lần.', CHU_THE,
       { xuong: true, xong: 'dong-xuong', huong: 'tren', rong: 180, daLam: function () { var t = chuThan('bounce'); return /n = 0/.test(t) && /n = n \+ 1/.test(t) && /range\(n\)/.test(t); } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi bounce(). Bấm Chạy.'));
+
+  /* ============================================================ Nam châm (cực N, cực S): wait() cho lệnh chạy, magnet_off() thả vật; hàm fetch() và grip() */
+  H['nam-cham.1'] = [
+    khoiTheo(['khoi:wait'], 'magnet_n() chỉ ra lệnh. Chạm wait() ngay sau nó để nhịp trôi và nam châm chạy.', 'Khối wait() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*wait\(\)/) >= 0; } }),
+    khoiTheo(['khoi:magnet_off'], 'Xe tới sát ô đích thì ngắt điện: chạm magnet_off(), rồi wait() để vật rơi xuống.', 'Khối của nam châm nằm ở thẻ Nam châm. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*magnet_off\(\)/) >= 0; } }),
+    buocChay('Bấm Chạy.')
+  ];
+  H['nam-cham.5'] = [
+    buocTaoHam('fetch', 'Gói cả chuyến lấy vật thành hàm fetch(): bấm Hàm mới.', CHU_TAO),
+    buocThanHam('fetch', ['.p-pal .pal'], 'Ghép các khối thành thân hàm: hút vật, quay đầu, tiến một ô rồi thả.', 1, 'tren')
+  ].concat(buocThuVeChay('Chương trình gọi được fetch() rồi. Bấm Chạy.'));
+  H['nam-cham.6'] = [
+    buocTaoHam('grip', 'Gói việc kéo vật về thành hàm grip(): bấm Hàm mới.', CHU_TAO),
+    buocThanHam('grip', ['.p-pal .pal'], 'Ghép các khối thành thân hàm: hỏi chữ trên vật rồi bật cực khác với nó.', 1, 'tren')
+  ].concat(buocThuVeChay('Chương trình gọi được grip() rồi. Bấm Chạy.'));
+
+  /* ============================================================ Chương 21 · Tay xoay (làm quen): lệnh gốc mới arm_left / arm_right, thẻ Tay xoay */
+  H['tay-xoay.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tay xoay sang trái rồi nhặt vật ở bên hông xe.', xong: 'chay', daLam: daChay },
+    khoiTheo(['khoi:arm_up', 'khoi:arm_right'], 'Nâng tay (arm_up), rồi xoay sang phải (arm_right) để đưa vật về phía trước.', 'Khối của tay nằm ở thẻ Tay xoay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*arm_right\(\)/) >= 0; } }),
+    khoiTheo(['khoi:arm_down', 'khoi:release'], 'Hạ tay (arm_down), rồi mở kẹp (release) để đặt vật xuống ô đích.', 'Khối của tay nằm ở thẻ Tay xoay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*release\(\)/) >= 0; } }),
+    buocChay('Bấm Chạy.')
+  ];
+  H['tay-xoay.6'] = [
+    buocTaoHam('clear_left', 'Gói việc dọn vật thành hàm clear_left(): bấm Hàm mới.', CHU_TAO),
+    buocThanHam('clear_left', ['.p-pal .pal'], 'Ghép các khối thành thân hàm: nhặt vật, đặt sang trái rồi xoay tay về.', 1, 'tren')
+  ].concat(buocThuVeChay('Chương trình gọi được clear_left() rồi. Bấm Chạy.'));
+
+  /* ============================================================ Chương 13 · Thân nhện (co chân, gầm, hố, nhảy) */
+  H['nhen.2'] = [
+    buocCoDong('khoi:crouch', 'Gầm thấp: nhện phải co chân mới chui qua. Chạm crouch() để co chân.', /^\s*crouch\(\)/),
+    khoiTheo(['khoi:stand'], 'Chui xong thì duỗi chân lại: chạm stand().', 'Khối này nằm ở thẻ khác của khay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*stand\(\)/) >= 0; } }),
+    buocChay('Bấm Chạy.')
+  ];
+  H['nhen.3'] = [
+    buocCoDong('khoi:crouch', 'Muốn nhảy qua hố, nhện phải co chân trước. Chạm crouch().', /^\s*crouch\(\)/),
+    khoiTheo(['khoi:stand'], 'Rồi chạm stand() NGAY TRƯỚC một bước đi: nhện sẽ bật qua hố.', 'Khối này nằm ở thẻ khác của khay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*stand\(\)/) >= 0; } }),
+    buocChay('Bấm Chạy.')
+  ];
 
   window.HuongDanMan = H;
 })();

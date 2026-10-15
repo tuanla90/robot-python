@@ -1,6 +1,6 @@
 /* ============================================================================
    man-so-lenh.js — "Đường học": SỔ LỆNH (window.SoLenhMan).
-   Mở từ nút "Sổ lệnh" cạnh hàng "Hàm của em" ở màn chọn. Dữ liệu do lõi giữ ở window.SoLenh (robotics/hoc/so-lenh.js):
+   Mở từ nút "Sổ lệnh" (quyển sách) ở màn khởi đầu, màn chọn gói và thanh trên của lưới màn; trang "Hàm của em" là thư viện hàm của người chơi. Dữ liệu do lõi giữ ở window.SoLenh (robotics/hoc/so-lenh.js):
      SoLenh.ds        = [{ ten, nhom, moTa, chuong }]   hàm theo cốt truyện người chơi tự chế (nhom: 'xe' | 'tay' | 'lap' | 'cam-bien' …)
      SoLenh.tenNhom   = { nhom: 'tên hiển thị' }        (hoặc hàm nhom → tên)
      SoLenh.lenhGoc   = [{ ten, nguoc, moTa }]          cặp lệnh gốc và lệnh ngược của nó

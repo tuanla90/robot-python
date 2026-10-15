@@ -4,7 +4,8 @@
    Một CHUỖI hướng dẫn gồm các BƯỚC. Mỗi bước LÀM SÁNG nút / khối / dòng người chơi phải chạm (viền vàng nhấp nháy quanh đích)
    và hiện một bong bóng ngắn có mũi tên chỉ vào đích. Bước xong thì chuyển sang bước kế; hết chuỗi thì lưu cờ "đã xem" (Luu) để không hiện lại.
    Bong bóng và viền không chặn bấm (pointer-events: none). Chúng tự ẩn khi đích không thấy được (khay bị bong bóng đề bài đè lên, màn khác, Xưởng đang mở…),
-   hoặc khi có bong bóng đề bài / chẩn đoán (.bong) hay hộp thoại đang mở; hết cản thì hiện lại.
+   hoặc khi có bong bóng đề bài / chẩn đoán (.bong) hay hộp thoại đang mở, hay khi đang nhấn giữ kéo một khối; hết cản thì hiện lại.
+   Nhiều chuỗi cùng chạy thì chỉ chuỗi chạy SAU CÙNG (đang thấy đích) hiện; các chuỗi cũ tạm ẩn, không đếm hạn, tới lượt thì hiện lại.
 
    ── CÁCH DÙNG ────────────────────────────────────────────────────────────────────────────────
    1) Chạy một chuỗi từ mã:
@@ -20,7 +21,7 @@
       Màn chơi gọi HuongDan.vaoMan(man) mỗi khi vào màn (cờ mặc định 'hd:' + man.ma, nên mỗi màn một lần); rời màn thì HuongDan.dung().
       Thắng màn thì HuongDan.xongMan(man): dừng và lưu cờ (đã thắng thì không cần hướng dẫn lại).
    3) Mã game báo sự kiện cho các điều kiện "xong" bằng  HuongDan.bao('ten-su-kien', chiTiet).
-      Sự kiện đang được báo: 'chen-khoi' (chèn một dòng vào chương trình; chiTiet.dong từ 0) · 'chon-dong' (chạm một dòng có code; hiện ✕ trên cảm ứng) · 'xoa-dong' ·
+      Sự kiện đang được báo: 'chen-khoi' (chèn một dòng vào chương trình; chiTiet.dong từ 0) · 'chon-dong' (chạm một dòng có code; hiện ✕ trên cảm ứng) · 'cam-nhip' (chèn bị từ chối: bộ phận đã có lệnh trong nhịp) · 'xoa-dong' ·
       'hoan-tac' · 'doi-cho' (kéo một dòng sang chỗ khác) · 'doi-bac' (thụt vào / thụt ra một dòng) · 'doi-so' (đổi số trong range(n) / lời gọi hàm) ·
       'doi-the' (người chơi bấm ◀ ▶ đổi thẻ khay) · 'chay' (bấm Chạy / Nhịp) · 'xem-san' (chạm ảnh nhỏ của một sân) · 'mo-xuong' (mở Xưởng hàm) ·
       'tao-ham' (bấm "Tạo hàm" ở hộp đặt tên) · 'thu' (bấm Thử trong Xưởng) · 'dong-xuong' (bấm Về sân). Thêm sự kiện mới: chỉ cần gọi HuongDan.bao ở chỗ đó.
@@ -153,10 +154,24 @@
     if (!b.phu && hop && hop.classList && hop.classList.contains('mo')) return true;  // đang có hộp thoại (bước `phu` thì chính là việc trên hộp, không ẩn)
     if (!b.khongAn && goc.querySelector('.bong.show')) return true;                   // đang có bong bóng đề bài / chẩn đoán
     if (!b.khongAn && goc.querySelector('.side.busy')) return true;                   // đang chạy chương trình (phát lại): không che sân / đồng hồ
+    if (document.body && document.body.classList && document.body.classList.contains('dang-keo')) return true;   // đang nhấn giữ kéo một khối / một dòng: viền và bong bóng không che chỗ thả
     return false;
   }
-  /** Vẽ (hay ẩn) viền + bong bóng của bước hiện tại của chuỗi c. Trả về true nếu đang hiện. */
+  /**
+   * Chỉ MỘT chuỗi hiện một lúc: chuỗi chạy SAU (mới hơn) đang hiện thì chuỗi cũ tạm ẩn và không đếm hạn `han`
+   * (vd hướng dẫn chung "xóa dòng" bật lên giữa hướng dẫn "chạm khối" của màn 1.2: chỉ còn bong bóng xóa dòng; xóa xong / hết hạn thì bong bóng của màn hiện lại).
+   * Chuỗi mới không thấy đích (Xưởng đang mở…) thì chuỗi cũ vẫn hiện.
+   */
+  function biChuoiMoiChe(c) { for (var i = CHUOI.indexOf(c) + 1; i < CHUOI.length; i++) if (CHUOI[i].dangHien) return true; return false; }
   function ve(c) {
+    if (biChuoiMoiChe(c)) { gaHet(c); c.dangHien = false; return false; }
+    c.dangHien = veMot(c);
+    return c.dangHien;
+  }
+  /** Vẽ lại mọi chuỗi, chuỗi mới trước (để chuỗi cũ biết có bị che không). Không đếm hạn. */
+  function veLai() { CHUOI.slice().reverse().forEach(ve); }
+  /** Vẽ (hay ẩn) viền + bong bóng của bước hiện tại của chuỗi c. Trả về true nếu đang hiện. */
+  function veMot(c) {
     var b = c.buoc[c.i], man = khungHien();
     if (!b || !man || !man.getBoundingClientRect) { gaHet(c); return false; }
     var goc = (b.phu && sanKhau()) || man;                            // bước `phu`: tìm đích và vẽ ở #stage (nổi trên hộp thoại / bảng chọn số)
@@ -213,7 +228,7 @@
   function dungChuoi(c) {
     gaHet(c);
     var i = CHUOI.indexOf(c); if (i >= 0) CHUOI.splice(i, 1);
-    if (!CHUOI.length) tatDongHo();
+    if (!CHUOI.length) tatDongHo(); else veLai();                 // chuỗi vừa dừng có thể đang che chuỗi cũ: hiện lại ngay
   }
   /** Việc của bước b đã làm xong theo cách khác (b.daLam trả về true)? */
   function daLamSan(b) { if (!b || typeof b.daLam !== 'function') return false; try { return !!b.daLam(); } catch (e) { return false; } }
@@ -267,7 +282,7 @@
 
   /** Một nhịp đồng hồ: vẽ lại viền / bong bóng (đích dịch chỗ, khay vẽ lại) và đếm hạn `han` (chỉ tính lúc đích đang được thấy). */
   function nhip() {
-    CHUOI.slice().forEach(function (c) {
+    CHUOI.slice().reverse().forEach(function (c) {                // chuỗi mới trước: chuỗi cũ biết mình có bị che không (một chuỗi một lúc)
       if (CHUOI.indexOf(c) < 0) return;
       if (daLamSan(c.buoc[c.i])) { qua(c); return; }
       var hien = ve(c), b = c.buoc[c.i];
@@ -286,12 +301,13 @@
     var cu = tim(o.id);
     if (cu) return cu.tay;                                       // đang chạy: giữ nguyên
     if (daXem(o.co)) return null;                                // đã xem rồi
-    var c = { id: o.id, co: o.co || null, luuKhi: o.luuKhi === 'bat-dau' ? 'bat-dau' : 'xong', buoc: o.buoc, i: -1, thay: 0, vien: [], bong: null, khiXong: o.khiXong, tay: null };
+    var c = { id: o.id, co: o.co || null, luuKhi: o.luuKhi === 'bat-dau' ? 'bat-dau' : 'xong', buoc: o.buoc, i: -1, thay: 0, vien: [], bong: null, dangHien: false, khiXong: o.khiXong, tay: null };
     c.tay = { id: o.id, dung: function () { dungChuoi(c); } };
     CHUOI.push(c);
     if (c.luuKhi === 'bat-dau') datXem(c.co);
     batDongHo();
     vaoBuoc(c, 0);
+    if (CHUOI.indexOf(c) >= 0) veLai();                            // chuỗi mới đang hiện: ẩn ngay chuỗi cũ (khỏi hai bong bóng một khung hình)
     return c.tay;
   }
   /** Hướng dẫn của màn: man.huongDan (màn tự khai) hoặc window.HuongDanMan[man.ma] (game/huong-dan-man.js); dạng [bước…] hoặc { co, luuKhi, buoc }. */

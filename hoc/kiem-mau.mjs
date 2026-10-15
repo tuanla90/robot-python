@@ -248,7 +248,7 @@ console.log('\n== 3b. CAMERA: color() đọc Ô TRƯỚC MẶT (vật → màu v
   kiem('camera trên DRONE: lỗi cấu hình tiếng Việt (drone không có hướng mặt)', !!cd && /Drone không gắn camera/.test(cd) && /hướng mặt/.test(cd), cd);
   const cd2 = loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'], camBien: [{ ma: 'camera', o: 'tren' }] }, 'wait()'));
   kiem('camera trên DRONE lỗi cả khi chưa dùng color()', !!cd2 && /Drone không gắn camera/.test(cd2));
-  const dr = SanHoc.chay({ san: ['...', '.o.', '...'], batDau: { x: 1, y: 2, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'color', 'magnet_on', 'magnet_off'], camBien: [{ ma: 'mau', o: 'than' }], mau: ['...', '.r.', 'g..'], vatMau: ['...', '.b.', '...'], vatChat: ['...', '.s.', '...'] }, L('a = color()', 'go_up()', 'b = color()'));
+  const dr = SanHoc.chay({ san: ['...', '.o.', '...'], batDau: { x: 1, y: 2, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'color', 'magnet_n', 'magnet_off'], camBien: [{ ma: 'mau', o: 'than' }], mau: ['...', '.r.', 'g..'], vatMau: ['...', '.b.', '...'], vatChat: ['...', '.s.', '...'] }, L('a = color()', 'go_up()', 'b = color()'));
   kiem('DRONE (cảm biến bụng): color() là màu sàn ô dưới drone, bay lên trên ô có vật cũng đọc sàn "red" (vật không tính)', dr.loi === null && doc(dr)[1].mau === 'red' && doc(dr)[1].cam === 'mau' && doc(dr)[0].mau === 'none', J(doc(dr)));
   // qua máy chấm: 13.8 gắn camera, 13.10 gắn cảm biến bụng
   const m8 = man(8), r8 = ChamHoc.cham(m8, m8.loiGiai, khoTruoc('18.8'));

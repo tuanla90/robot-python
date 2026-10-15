@@ -87,7 +87,9 @@
       giaBien: giaBienThu,                                                                     // để hiện số lượt của range(n) khi Thử
       tt: q('.p-prog .tt'), ttDay: t('xuong.def'), ttNgan: t('xuong.def'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); },
-      chiDoc: hamKhoa, khiChiDoc: baoHamKhoa                                                   // hàm của màn bị khóa (man.khoaHamMan, vd. go_out() ở 3.7): chỉ xem
+      chiDoc: hamKhoa, khiChiDoc: baoHamKhoa,                                                  // hàm của màn bị khóa (man.khoaHamMan, vd. go_out() ở 3.7): chỉ xem
+      khiCamNhip: function (ly) { toast(ly, 'bad', 3400); },                                  // mỗi bộ phận một lệnh mỗi nhịp (như khung chương trình chính)
+      khiNhip: function (cam) { if (S.pal) S.pal.datCamNhip(cam); }
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) { S.ed.chen(txt); },
@@ -349,7 +351,7 @@
     E.canvas.style.touchAction = k === 'xe' ? 'none' : '';                           // kéo xe bằng ngón tay: trình duyệt không được cuộn / thu phóng giữa chừng
     E.canvas.style.cursor = k === 'xe' ? 'grab' : '';
     if (k === 'xe') goiYXe(); else if (window.HuongDan) HuongDan.dung('sua-xe');
-    if (k === 'vat' && coNamCham()) toast(t('xuong.vatGoiY'), '', 2600);
+    if (k === 'vat' && !coDay()) toast(t('xuong.vatGoiY'), '', 2600);
     if (k === 'rao') toast(t('xuong.raoGoiY'), '', 2600);
     if (k === 'sac') toast(t('xuong.sacGoiY'), '', 2600);
     if (k === 'nut') toast(t('xuong.nutGoiY'), '', 2600);
@@ -394,7 +396,6 @@
   }
   function coSung() { return VeRobot.cauHinhCua(A.man()).tay === 'bong'; }                    // súng bóng: có nút Nút (nút bắn) và Cửa
   function coNem() { return VeRobot.cauHinhCua(A.man()).tay === 'nem'; }                       // máy ném: có nút Rào / Rổ
-  function coNamCham() { return VeRobot.cauHinhCua(A.man()).tay === 'nam-cham'; }      // nam châm: nút Vật đặt vật GỖ, chạm lại thì thành SẮT, chạm nữa thì bỏ
   function coDay() { return VeRobot.cauHinhCua(A.man()).tay === 'day'; }           // tấm đẩy: nút Vật đặt THÙNG NẶNG
   function boO(ds, x, y) { return ds.filter(function (o) { return !(o.x === x && o.y === y); }); }
   /** Chạm một ô sân thử theo chế độ đang bật. Ô có xe không đặt được vật hay tường (và ngược lại). */
@@ -408,17 +409,19 @@
       if (co === 'tuong' || co === 'thung' || co === 'rao' || co === 'nut' || co === 'cua') return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');
       var vi = -1;
       moi.vat.forEach(function (o, k) { if (o.x === x && o.y === y) vi = k; });
-      if (vi >= 0) moi.vat[vi] = { x: x, y: y, mau: mauKeTiep(moi.vat[vi].mau) || undefined, chat: moi.vat[vi].chat };      // đổi màu vật giữ nguyên chất sắt / gỗ
+      if (vi >= 0) moi.vat[vi] = { x: x, y: y, mau: mauKeTiep(moi.vat[vi].mau) || undefined, chat: moi.vat[vi].chat, cuc: moi.vat[vi].cuc };      // đổi màu vật giữ nguyên chất sắt / gỗ / nam châm (và chữ cực)
       else {
         var mc = null; moi.mau = moi.mau.filter(function (o) { if (o.x === x && o.y === y) { mc = o.mau; return false; } return true; });
         var mm = mauKeTiep(mc); if (mm) moi.mau.push({ x: x, y: y, mau: mm });
       }
-    } else if (S.che === 'vat' && coNamCham()) {                                      // chế độ Vật ở màn nam châm: ô trống → vật gỗ → chạm → vật sắt → chạm → bỏ
+    } else if (S.che === 'vat' && !coDay()) {                                         // chế độ Vật (mọi màn có vật, trừ tấm đẩy): ô trống → vật gỗ → chạm → sắt → nam châm N → nam châm S → bỏ. Tay kẹp gắp mọi chất như nhau; nam châm thì khác
       var vj = -1;
       moi.vat.forEach(function (o, k) { if (o.x === x && o.y === y) vj = k; });
       if (vj >= 0) {
         var cu = moi.vat[vj];
-        if (cu.chat === 'sat') { moi.vat = boO(moi.vat, x, y); toast(t('xuong.vatBo'), ''); }
+        if (cu.chat === 'nam-cham' && cu.cuc === 'S') { moi.vat = boO(moi.vat, x, y); toast(t('xuong.vatBo'), ''); }
+        else if (cu.chat === 'nam-cham') { moi.vat[vj] = { x: x, y: y, mau: cu.mau, chat: 'nam-cham', cuc: 'S' }; toast(t('xuong.vatS'), ''); }
+        else if (cu.chat === 'sat') { moi.vat[vj] = { x: x, y: y, mau: cu.mau, chat: 'nam-cham', cuc: 'N' }; toast(t('xuong.vatN'), ''); }
         else { moi.vat[vj] = { x: x, y: y, mau: cu.mau, chat: 'sat' }; toast(t('xuong.vatSat'), ''); }
       } else if (!co) { moi.vat.push({ x: x, y: y }); toast(t('xuong.vatGo'), ''); }
       else return toast(t('xuong.oDaCo', { gi: t('xuong.gi.' + co) }), 'bad');

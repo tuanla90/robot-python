@@ -300,7 +300,7 @@ console.log('\n== 6. Thân xe: omni và xích mang máy ném; nhện không gắ
   const xich = chay(['.....', 'D....', 'o....', '.....'], { x: 0, y: 3, huong: 0 }, NAP + aim(2) + NEMW, { loaiRobot: 'xich', hamGoc: BANH.concat(NEM) });
   kiem('xích mang máy ném: nạp rồi ném (cùng luật xe bánh)', xich.thang && xich.nhip === 2);
   kiem('nhện không gắn máy ném (không có hướng mặt) → ném lỗi cấu hình', /Nhện không gắn máy ném/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'aim', 'throw'] }, ''))));
-  for (const tay of [['arm_down', 'arm_up', 'grab', 'release'], ['push'], ['magnet_on', 'magnet_off']]) {
+  for (const tay of [['arm_down', 'arm_up', 'grab', 'release'], ['push'], ['magnet_n', 'magnet_off']]) {
     kiem('máy ném không đi chung ' + tay[0] + ' (một robot một tay) → ném lỗi cấu hình', /một robot chỉ có một tay/i.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NEM, tay) }, ''))));
   }
   kiem('hàm gốc lạ vẫn bị từ chối, load / aim / throw là hàm gốc hợp lệ', /không thuộc loại robot/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['fire']) }, ''))) && !loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NEM) }, '')));

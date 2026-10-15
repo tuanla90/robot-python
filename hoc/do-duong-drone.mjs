@@ -8,8 +8,8 @@
    Thứ tự trong nhịp: (a) lệnh nam châm (tắt = thả xuống ô DƯỚI drone nếu ô đó nhận được) → (b) bay (tường cao / mép sân chặn; hàng rào, băng, vật, thùng, bậc thang thì bay qua)
    → (c) HÚT vật sắt ở ô dưới drone → (d) tốn 1 pin; đứng trên ô sạc P thì pin đầy → (e) thắng? → (f) pin về 0 mà chưa thắng thì rơi (bỏ trạng thái đó).
    Băng chuyền KHÔNG đẩy drone. Cửa C / c chưa hỗ trợ (chương này không dùng): dựng ngữ cảnh sẽ báo lỗi.
-   tuyChon.tachNhip = true: lệnh nam châm phải đứng MỘT MÌNH trong nhịp (bay đứng yên), đúng cách viết "magnet_on()  wait()" của lời giải chuẩn. Không có tuyChon này,
-   lệnh nam châm gộp được vào nhịp bay ("magnet_on(); go_right()" là MỘT nhịp): đường ngắn hơn, là bài tối ưu riêng.
+   tuyChon.tachNhip = true: lệnh nam châm phải đứng MỘT MÌNH trong nhịp (bay đứng yên), đúng cách viết "magnet_n()  wait()" của lời giải chuẩn. Không có tuyChon này,
+   lệnh nam châm gộp được vào nhịp bay ("magnet_n(); go_right()" là MỘT nhịp): đường ngắn hơn, là bài tối ưu riêng.
    Mục tiêu 'toi-co' (cờ F) hoặc 'dua-vat' (mọi vật cần nằm trên ô đích, đúng màu; man.vatCan === 'sat' thì chỉ vật sắt).
    BFS CÓ GIỚI HẠN: tuyChon.toiDaTrangThai (mặc định 400000) và tuyChon.toiDaMs (mặc định 8000); vượt thì trả { nhip: null, catNgang: true }.
 
@@ -183,7 +183,7 @@ export function nhipDroneTatCa(man, tuyChon = {}) {
 export function chuoiThanhMa(chuoi) {
   const dong = [];
   for (const a of chuoi) {
-    if (a.nc === 'on') dong.push('magnet_on()'); else if (a.nc === 'off') dong.push('magnet_off()');
+    if (a.nc === 'on') dong.push('magnet_n()'); else if (a.nc === 'off') dong.push('magnet_off()');
     dong.push(a.bay >= 0 ? TEN_LENH[a.bay] + '()' : 'wait()');
   }
   return dong.join('\n') + '\n';
