@@ -60,7 +60,10 @@
     host.appendChild(E.xong);
     Ve.hydrate(host);
 
-    E.ve.addEventListener('click', function () { if (S.tuyChon && S.tuyChon.khiVe) S.tuyChon.khiVe(); });
+    E.ve.addEventListener('click', function () {
+      if (window.HuongDan && S.m) HuongDan.dung('man:' + S.m.ma);        // rời màn Lắp robot: hướng dẫn chưa xong thì lần sau còn
+      if (S.tuyChon && S.tuyChon.khiVe) S.tuyChon.khiVe();
+    });
     E.de.addEventListener('click', moDe);
     E.loi.addEventListener('click', function () { if (E.loi.classList.contains('de')) moDe(); });
     E.san.addEventListener('click', moDe);
@@ -105,6 +108,7 @@
     datCao();
     veKhe(true);
     ve();
+    if (window.HuongDan) HuongDan.vaoMan(S.m);                         // hướng dẫn màn Lắp robot của màn (huong-dan-man.js, vd 'rap-nao.1'): sáng khe thân, thẻ part, thanh xu, nút Lắp xong
   }
 
   function ve() { veRobot(); veXu(); veKheTrangThai(); veNut(); veLoi(); }
@@ -286,6 +290,7 @@
     var r = LapRap.kiemCachLap(S.m, S.cach);
     if (!r.ok) { rung(E.xong); datLoi(r.ma === 'vuot-ngan-sach' ? t('lap.thieu', { n: r.thieu }) : r.lyDo, 'bad', 4200); return; }
     Luu.ghiLap(S.m.ma, S.cach);
+    if (window.HuongDan) HuongDan.xongMan(S.m);                        // bấm Lắp xong = đã biết dùng màn này: dừng hướng dẫn và lưu cờ
     var cb = S.tuyChon && S.tuyChon.khiXong;
     if (cb) cb(Object.assign({}, S.cach));
   }

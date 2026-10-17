@@ -379,6 +379,32 @@
     return p;
   };
 
+  HINH['rap-nao'] = function () {                               // lắp ráp thân + não: thân xích nhìn từ trên + đồng xu vàng nổi ở góc (ngân sách)
+    var p = P(T26, T26), t = thanPart('xich');
+    chep(p, t, Math.max(0, 14 - (t.w >> 1)), Math.max(0, T26 - t.h), 1);
+    p.ell(8.5, 8.5, 6.5, 6.5, INK); p.ell(8.5, 8.5, 5.6, 5.6, '#e5a416'); p.ell(8.5, 8.5, 4.4, 4.4, '#ffcf30');
+    p.rect(6, 6, 2, 1, '#fff3b0'); p.rect(5, 7, 1, 3, '#fff3b0');                                   // ánh sáng
+    p.rect(8, 6, 2, 6, '#e5a416'); p.rect(8, 6, 1, 6, '#c27a10');                                    // khe giữa đồng xu
+    return p;
+  };
+
+  HINH['rap-du'] = function () {                                // lắp ráp đủ bộ: robot ghép đủ ba part (hai bánh + tay kẹp + cảm biến khoảng cách, đúng hình robot trong game) + đồng xu vàng ở góc
+    var p = P(T26, T26), r = cat(tuCanvas(Part.ghep({ than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] })));
+    chep(p, r, Math.max(0, (T26 - r.w) >> 1), Math.max(0, T26 - r.h), 1);
+    p.ell(21, 4.5, 4.5, 4.5, INK); p.ell(21, 4.5, 3.7, 3.7, '#e5a416'); p.ell(21, 4.5, 2.6, 2.6, '#ffcf30');
+    p.rect(19, 3, 1, 1, '#fff3b0'); p.rect(20, 3, 1, 3, '#c27a10');
+    return p;
+  };
+
+  HINH['rap-tay'] = function () {                               // lắp ráp thân + tay: thân omni ở dưới, tay nam châm gắn phía trên, đồng xu vàng ở góc
+    var p = P(T26, T26), t = thanPart('omni'), a = cat(partTho('tay', 'nam-cham', { bat: true }));
+    chep(p, t, Math.max(0, (T26 - t.w) >> 1), Math.max(0, T26 - t.h), 1);
+    chep(p, a, Math.max(0, (T26 - a.w) >> 1), Math.max(0, T26 - t.h - a.h + 3), 1);
+    p.ell(21.5, 4.5, 4.5, 4.5, INK); p.ell(21.5, 4.5, 3.7, 3.7, '#e5a416'); p.ell(21.5, 4.5, 2.6, 2.6, '#ffcf30');
+    p.rect(20, 3, 1, 1, '#fff3b0'); p.rect(21, 3, 1, 3, '#c27a10');
+    return p;
+  };
+
   /* ---------------------------------------------------------------- vành + đĩa */
   var PAL = {
     khoa: { hi: '#b7bac4', md: '#8b8f9c', lo: '#555966', d1: '#7d818e', d2: '#6a6e7b' },

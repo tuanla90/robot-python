@@ -45,8 +45,11 @@ require(path.join(day, 'man-tay-xoay.js'));
 require(path.join(day, 'man-che-tay-xoay.js'));
 require(path.join(day, 'man-may-nem.js'));
 require(path.join(day, 'man-che-may-nem.js'));
+require(path.join(day, 'man-rap-tay.js'));                                   // 17/10: chương lắp ráp Thân + Tay (kiem-rap-tay.mjs kiểm riêng)
 require(path.join(day, 'man-drone.js'));
 require(path.join(day, 'man-che-drone.js'));
+require(path.join(day, 'man-rap-nao.js'));                                   // 17/10: chương lắp ráp Thân + Não (kiem-rap-nao.mjs kiểm riêng)
+require(path.join(day, 'man-rap-du.js'));                                    // 17/10: chương lắp ráp Đủ bộ (kiem-rap-du.mjs kiểm riêng); đứng cuối chuỗi
 const ManHoc = require(path.join(day, 'man-flycam.js'));            // nối cả các chương (cùng một sổ màn); flycam (17/10) đứng cuối chuỗi che-drone
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const SoLenh = require(path.join(day, 'so-lenh.js'));
@@ -72,6 +75,9 @@ const { nhipNamChamTatCa } = await import('./do-duong-nam-cham.mjs');
 const { nhipTayXoayTatCa } = await import('./do-duong-tay-xoay.mjs');          // bộ dò đường tắt cho tay xoay (chương tay-xoay và che-tay-xoay; màn nhiều vật khai khongDoBFS thì lấy sao.nhip; kiem-tay-xoay / kiem-che-tay-xoay kiểm thêm)
 const { nhipCheMauTatCa } = await import('./do-duong-che-mau.mjs');   // bộ dò đường tắt cho chế lệnh màu (chương che-mau: nhiều sân, bóng mờ + vật màu + ◆, tay kẹp, đoạn cố định go_out; kiem-che-mau.mjs kiểm thêm)
 const { nhipCheMayNemTatCa } = await import('./do-duong-che-may-nem.mjs');       // bộ dò đường tắt cho chế lệnh máy ném (chương che-may-nem: bóng mờ, vật mờ có màu, rổ chở vật, đoạn cố định go_load; kiem-che-may-nem.mjs kiểm thêm)
+const { nhipRapNaoTatCa } = await import('./do-duong-rap-nao.mjs');       // bộ dò đường tắt cho chương lắp ráp Thân + Não (rap-nao: BFS theo thân của cách lắp mẫu đầu = robot mặc định của màn, nhiều sân cộng lại; kiem-rap-nao.mjs dò mọi cách lắp)
+const { nhipRapTayTatCa } = await import('./do-duong-rap-tay.mjs');       // bộ dò đường tắt cho chương lắp ráp Thân + Tay (rap-tay: BFS chạy thật SanHoc.chay cho robot mặc định = cachLap[0]; kiem-rap-tay.mjs dò mọi cách lắp)
+const { nhipRapDuTatCa } = await import('./do-duong-rap-du.mjs');       // bộ dò đường tắt cho chương lắp ráp Đủ bộ (rap-du: BFS chạy thật SanHoc.chay cho robot mặc định = cachLap[0]; kiem-rap-du.mjs dò mọi cách lắp)
 const { nhipCheNamChamTatCa } = await import('./do-duong-che-nam-cham.mjs');       // bộ dò đường tắt cho chế lệnh nam châm (chương che-nam-cham: bóng mờ, nam châm có cực, nhiều sân, đoạn cố định go_pull; kiem-che-nam-cham.mjs kiểm thêm) // bộ dò đường tắt cho nam châm (chương nam-cham; BFS gộp nhịp, kiem-nam-cham.mjs kiểm thêm BFS tách nhịp)
 
 let dat = 0, hong = 0;
@@ -682,7 +688,7 @@ function nhipTatKhoangCach(m) {
   return tong;
 }
 const sanCuaMan = (m) => (Array.isArray(m.san[0]) ? m.san[0] : m.san);
-const nhipTat = (m, kho) => (m.chuong === 'che-omni' ? nhipCheOmniTatCa(m, kho) : m.chuong === 'che-mau' ? nhipCheMauTatCa(m, kho) : m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? nhipTayXoayTatCa(m, kho) : m.chuong === 'che-may-nem' ? nhipCheMayNemTatCa(m, kho) : m.chuong === 'che-nam-cham' ? nhipCheNamChamTatCa(m, kho) : m.chuong === 'robot-hoan-thien' ? nhipRobotHoanThienTatCa(m) : m.chuong === 'che-tay' ? nhipCheTayTatCa(m, kho) : m.chuong === 'che-lap' ?nhipCheLapTatCa(m, kho) : m.chuong === 'che-cam-bien' || m.chuong === 'list' || m.chuong === 'che-list' ? nhipCheCamBienTatCa(m) : m.chuong === 'che-xe' ? nhipCheXeTatCa(m, kho) : m.chuong === 'che-nhen' ? nhipCheNhenTatCa(m, kho) : m.chuong === 'che-xich' ? nhipCheXichTatCa(m, kho) : m.chuong === 'che-drone' || m.chuong === 'flycam' ? nhipCheDroneTatCa(m, kho) : m.chuong === 'drone' ? nhipDroneTatCa(m) : m.chuong === 'sung-hoi' ? nhipSungHoiTatCa(m) : m.chuong === 'che-sung-hoi' ? nhipCheSungHoiTatCa(m, kho) : m.chuong === 'may-nem' ? nhipMayNemTatCa(m) : m.chuong === 'nam-cham' ? nhipNamChamTatCa(m) : m.chuong === 'khoang-cach' || m.chuong === 'mau' ? nhipTatKhoangCach(m) : m.loaiRobot === 'nhen' ? nhipNhenNganNhat(m).nhip : m.loaiRobot === 'xich' ? nhipXichNganNhat(m).nhip : m.loaiRobot === 'omni' ? nhipOmniNganNhat(m).nhip : m.mucTieu === 'dua-vat' ? nhipDuaVatNganNhat(m).nhip : nhipNganNhat(m));
+const nhipTat = (m, kho) => (m.chuong === 'rap-du' ? nhipRapDuTatCa(m) : m.chuong === 'rap-nao' ? nhipRapNaoTatCa(m) : m.chuong === 'rap-tay' ? nhipRapTayTatCa(m) : m.chuong === 'che-omni' ? nhipCheOmniTatCa(m, kho) : m.chuong === 'che-mau' ? nhipCheMauTatCa(m, kho) : m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? nhipTayXoayTatCa(m, kho) : m.chuong === 'che-may-nem' ? nhipCheMayNemTatCa(m, kho) : m.chuong === 'che-nam-cham' ? nhipCheNamChamTatCa(m, kho) : m.chuong === 'robot-hoan-thien' ? nhipRobotHoanThienTatCa(m) : m.chuong === 'che-tay' ? nhipCheTayTatCa(m, kho) : m.chuong === 'che-lap' ?nhipCheLapTatCa(m, kho) : m.chuong === 'che-cam-bien' || m.chuong === 'list' || m.chuong === 'che-list' ? nhipCheCamBienTatCa(m) : m.chuong === 'che-xe' ? nhipCheXeTatCa(m, kho) : m.chuong === 'che-nhen' ? nhipCheNhenTatCa(m, kho) : m.chuong === 'che-xich' ? nhipCheXichTatCa(m, kho) : m.chuong === 'che-drone' || m.chuong === 'flycam' ? nhipCheDroneTatCa(m, kho) : m.chuong === 'drone' ? nhipDroneTatCa(m) : m.chuong === 'sung-hoi' ? nhipSungHoiTatCa(m) : m.chuong === 'che-sung-hoi' ? nhipCheSungHoiTatCa(m, kho) : m.chuong === 'may-nem' ? nhipMayNemTatCa(m) : m.chuong === 'nam-cham' ? nhipNamChamTatCa(m) : m.chuong === 'khoang-cach' || m.chuong === 'mau' ? nhipTatKhoangCach(m) : m.loaiRobot === 'nhen' ? nhipNhenNganNhat(m).nhip : m.loaiRobot === 'xich' ? nhipXichNganNhat(m).nhip : m.loaiRobot === 'omni' ? nhipOmniNganNhat(m).nhip : m.mucTieu === 'dua-vat' ? nhipDuaVatNganNhat(m).nhip : nhipNganNhat(m));
 
 {
   // kiểm chính bộ dò: sân tự dựng có đường tắt thì phải bắt được
@@ -810,7 +816,7 @@ let khoCuoi = null;
       (m.so >= 7 ? /[DX]/.test(sanCuaMan(m).join('')) && /[oX]/.test(sanCuaMan(m).join('')) : /F/.test(sanCuaMan(m).join('')))));
   kiem('color() phụ thuộc phần cứng (14/10): mọi màn có hàm color trong hamGoc gắn ĐÚNG MỘT cảm biến màu (mau ở hông HOẶC camera ở thân, không cả hai); chỉ mau.8 (13.8) và may-nem.7 (15.7) gắn camera; không màn nào gắn camera "camera" (nhìn phía trước) lên drone — camera NHÌN XUỐNG của drone là camera-bay (look()), kiểm ở phép kiểm kế; màn không có color thì không gắn camera / mau',
     ds.every((m) => { const cs = ((m.robot && m.robot.camBien) || []).map((c) => c.ma); const nMau = cs.filter((x) => x === 'mau').length, nCam = cs.filter((x) => x === 'camera').length; const coColor = m.hamGoc.includes('color') || (!!m.phanCung && /Cảm biến màu hỏng/.test(m.canhBao || ''));
-      return coColor ? nMau + nCam === 1 && (nCam === 1) === (m.ma === 'mau.8' || m.ma === 'may-nem.7' || m.ma === 'che-may-nem.6' || m.ma === 'che-mau.6') && !(nCam && m.loaiRobot === 'drone') : nMau + nCam === 0; }));
+      return coColor ? nMau + nCam === 1 && (nCam === 1) === (m.ma === 'mau.8' || m.ma === 'may-nem.7' || m.ma === 'che-may-nem.6' || m.ma === 'che-mau.6' || m.ma === 'rap-du.8' || m.ma === 'rap-nao.9' || m.ma === 'rap-nao.10') && !(nCam && m.loaiRobot === 'drone') : nMau + nCam === 0; }));
   // 16/10: camera NHÌN XUỐNG của drone (part camera-bay, hàm look(); kiem-camera-drone.mjs kiểm lõi): chỉ drone, chỉ ổ bung; màn có look() trong hamGoc (hay phần cứng hỏng look) gắn đúng một camera-bay; màn không có look thì không gắn camera-bay
   kiem('look() / camera-bay (16/10): màn có look trong hamGoc là màn drone gắn ĐÚNG MỘT camera nhìn xuống { ma "camera-bay", o "bung" }; camera-bay chỉ có ở màn drone có look; hamGoc có look thì robot.camBien phải có camera-bay (lõi ném lỗi cấu hình nếu thiếu)',
     ds.every((m) => { const cb = (m.robot && m.robot.camBien) || [], bay = cb.filter((c) => c.ma === 'camera-bay'); const coLook = m.hamGoc.includes('look') || (!!m.phanCung && /Camera dưới bụng/.test(m.canhBao || ''));
@@ -825,6 +831,12 @@ let khoCuoi = null;
   })));
   kiem('bỏ thư viện theo trùm và số hàm theo màn: không còn thuVien / moThuVien / khung.soHam',
     ds.every((m) => m.thuVien === undefined && m.moThuVien === undefined && m.khung.soHam === undefined));
+  // 17/10: khung chương trình của giao diện có đúng 10 dòng (game/man-choi.js, TP.Editor tong: 10) — màn khai khung lớn hơn thì người chơi không gõ được lời giải
+  kiem('khung chương trình chính mọi màn ≤ 10 dòng; lời giải, lời giải khác và mọi cách lắp mẫu (lắp ráp) có chương trình chính vừa khung',
+    (() => { const dem = (l) => (l || []).filter((x) => String(x).trim()).length; const sai = [];
+      ds.forEach((m) => { const k = (m.khung && m.khung.chinh) || 10; if (k > 10) sai.push(m.ma + ' khung ' + k);
+        [m.loiGiai].concat(m.loiGiaiKhac || [], ((m.lapRap && m.lapRap.cachLap) || []).map((c) => c.loiGiai)).forEach((lg) => { const b = lg && (lg.chinh || (lg.baiLam && lg.baiLam.chinh)); if (b && dem(b) > k) sai.push(m.ma + ' lời giải ' + dem(b) + ' dòng'); }); });
+      if (sai.length) console.log('     ' + sai.slice(0, 8).join(' | ')); return sai.length === 0; })());
   kiem('trùm chỉ nhận huy hiệu: mọi màn trùm (x.10) có huyHieu, các màn khác không',
     ds.every((m) => (m.hang === 'trum' && m.so === 10) === !!(m.huyHieu && m.huyHieu.ma && m.huyHieu.ten)));
   kiem('mã huy hiệu theo thứ tự chương: mỗi chương có màn đúng MỘT huy hiệu, mã = mã chương, theo thứ tự thu-tu-chuong.js; mọi mã có hình trong game/huy-hieu.js',
@@ -850,7 +862,7 @@ let khoCuoi = null;
   let soManDungMove = 0;
   for (const m of ds) {
     const khoThat = kho.ds();
-    const khoTruoc = (m.chuong === 'che-xe' || m.chuong === 'che-tay' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-sung-hoi' || m.chuong === 'che-may-nem') ? khoThat : khoCo.ds();      // che-xe, che-tay (5.1–5.8 dùng u_turn một nhịp của 3.5) và robot-hoan-thien (dùng pass_back, swap, grab_back, u_turn…) tính sao theo kho THẬT
+    const khoTruoc = (m.chuong === 'che-xe' || m.chuong === 'che-tay' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-sung-hoi' || m.chuong === 'che-may-nem' || m.chuong === 'rap-tay' || m.chuong === 'rap-du') ? khoThat : khoCo.ds();      // che-xe, che-tay (5.1–5.8 dùng u_turn một nhịp của 3.5) và robot-hoan-thien (dùng pass_back, swap, grab_back, u_turn…) tính sao theo kho THẬT
     KHO_TRUOC[m.id] = khoTruoc;
     const tenTruoc = khoTruoc.map((h) => h.ten);
     kiem(m.id + ' ' + m.ten + ': đủ trường, đề 1–3 câu, gợi ý 1–2 câu, ≥1 lời sai',
@@ -876,15 +888,15 @@ let khoCuoi = null;
       if (!kho.tim(h.ten)) { const r = kho.tao(h.ten, h.thamSo, { taoHam: m.taoHam }); if (!r.ok) { khoNhan = false; loiKho += r.loi; } }
       const r2 = kho.sua(h.ten, h.than);
       if (!r2.ok) { khoNhan = false; loiKho += r2.loi; }
-      if ((m.chuong !== 'che-xe' && m.chuong !== 'che-tay' && m.chuong !== 'robot-hoan-thien' && m.chuong !== 'che-nam-cham' && m.chuong !== 'che-sung-hoi' && m.chuong !== 'che-may-nem') || !khoCo.tim(h.ten)) {                    // kho cổ điển: nhận hàm mới, không nhận bản sửa hàm cũ của che-xe
+      if ((m.chuong !== 'che-xe' && m.chuong !== 'che-tay' && m.chuong !== 'robot-hoan-thien' && m.chuong !== 'che-nam-cham' && m.chuong !== 'che-sung-hoi' && m.chuong !== 'che-may-nem' && m.chuong !== 'rap-tay' && m.chuong !== 'rap-du') || !khoCo.tim(h.ten)) {                    // kho cổ điển: nhận hàm mới, không nhận bản sửa hàm cũ của che-xe
         if (!khoCo.tim(h.ten)) khoCo.tao(h.ten, h.thamSo, { taoHam: m.taoHam });
         khoCo.sua(h.ten, h.than);
       }
     }
     kiem(m.id + ': kho nhận được các hàm học sinh tạo / sửa', khoNhan, loiKho);
-    const khoDung = (m.chuong === 'che-xe' || m.chuong === 'che-tay' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-sung-hoi' || m.chuong === 'che-may-nem') ? kho : khoCo;
+    const khoDung = (m.chuong === 'che-xe' || m.chuong === 'che-tay' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-sung-hoi' || m.chuong === 'che-may-nem' || m.chuong === 'rap-tay' || m.chuong === 'rap-du') ? kho : khoCo;
     const khoNay = suaRieng.length ? tron(khoDung.ds(), suaRieng) : khoDung.ds();
-    const khacKho = m.chuong !== 'che-xe' && m.chuong !== 'che-tay' && m.chuong !== 'robot-hoan-thien' && m.chuong !== 'che-nam-cham' && m.chuong !== 'che-sung-hoi' && m.chuong !== 'che-may-nem' && J(kho.ds()) !== J(khoCo.ds());   // học sinh thật đã có hàm sửa của che-xe
+    const khacKho = m.chuong !== 'che-xe' && m.chuong !== 'che-tay' && m.chuong !== 'robot-hoan-thien' && m.chuong !== 'che-nam-cham' && m.chuong !== 'che-sung-hoi' && m.chuong !== 'che-may-nem' && m.chuong !== 'rap-tay' && m.chuong !== 'rap-du' && J(kho.ds()) !== J(khoCo.ds());   // học sinh thật đã có hàm sửa của che-xe
 
     const loiGiai = ChamHoc.cham(m, m.loiGiai, khoNay);
     // màn tiết kiệm nhịp: sao.o tính theo lời giải CHUẨN (loiGiaiKhac); lời giải 3 sao dùng ít ô hơn hoặc bằng
@@ -1418,7 +1430,7 @@ console.log('\n== 17. Dòng thụt lề trong khung; cauTruc; chương vong-lap 
 
   // cauTruc
   kiem('cauTruc: hai-banh, xuong-ham và tay-gap [], vong-lap, che-lap, bang-chuyen và tham-so ["for"], nhen, xich, che-xich, omni ["for","if"], sung-hoi và che-sung-hoi ["for","if","while"], khoang-cach ["for","if","while"] (màn 1: ["for","if"]), mau, nam-cham, tay-xoay và may-nem ["for","if","while"]; khung màn mang theo cauTruc',
-    ManHoc.danhSach.every((m) => bang(m.cauTruc, m.chuong === 'flycam' && m.so <= 2 ? ['for', 'if', 'while'] : m.chuong === 'flycam' || (m.chuong === 'che-list' && [4, 5, 6, 8, 9, 10].includes(m.so)) ? ['for', 'if', 'while', 'list'] : m.chuong === 'list' || m.chuong === 'che-list' ? ['for', 'list'] : m.chuong === 'mau' || m.chuong === 'nam-cham' || m.chuong === 'may-nem' || m.chuong === 'sung-hoi' || m.chuong === 'che-sung-hoi' || m.chuong === 'drone' || m.chuong === 'che-drone' || m.chuong === 'che-cam-bien' || m.chuong === 'che-mau' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-may-nem' || m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? ['for', 'if', 'while'] : m.chuong === 'khoang-cach' ? (m.so === 1 ? ['for', 'if'] : ['for', 'if', 'while']) : (m.chuong === 'nhen' || m.chuong === 'che-nhen' || m.chuong === 'xich' || m.chuong === 'che-xich' || m.chuong === 'omni') ? ['for', 'if'] : (m.chuong === 'vong-lap' || m.chuong === 'che-lap' || m.chuong === 'che-omni' || m.chuong === 'bang-chuyen' || m.chuong === 'tham-so') ? ['for'] : []) && bang(m.khung.cauTruc, m.cauTruc)));
+    ManHoc.danhSach.every((m) => bang(m.cauTruc, m.chuong === 'flycam' && m.so <= 2 ? ['for', 'if', 'while'] : m.chuong === 'flycam' || m.chuong === 'rap-du' || (m.chuong === 'che-list' && [4, 5, 6, 8, 9, 10].includes(m.so)) ? ['for', 'if', 'while', 'list'] : m.chuong === 'list' || m.chuong === 'che-list' ? ['for', 'list'] : m.chuong === 'mau' || m.chuong === 'rap-nao' || m.chuong === 'rap-tay' || m.chuong === 'nam-cham' || m.chuong === 'may-nem' || m.chuong === 'sung-hoi' || m.chuong === 'che-sung-hoi' || m.chuong === 'drone' || m.chuong === 'che-drone' || m.chuong === 'che-cam-bien' || m.chuong === 'che-mau' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-may-nem' || m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? ['for', 'if', 'while'] : m.chuong === 'khoang-cach' ? (m.so === 1 ? ['for', 'if'] : ['for', 'if', 'while']) : (m.chuong === 'nhen' || m.chuong === 'che-nhen' || m.chuong === 'xich' || m.chuong === 'che-xich' || m.chuong === 'omni') ? ['for', 'if'] : (m.chuong === 'vong-lap' || m.chuong === 'che-lap' || m.chuong === 'che-omni' || m.chuong === 'bang-chuyen' || m.chuong === 'tham-so') ? ['for'] : []) && bang(m.khung.cauTruc, m.cauTruc)));
   kiem('khungDayDu không tự thêm cauTruc (không khai thì không kiểm)', KhungCode.khungDayDu({ chinh: 10 }).cauTruc === undefined);
   const ct = (kh, bai) => KhungCode.kiemTra(kh, bai).map((e) => e.ma);
   kiem('cau-truc-chua-hoc: for trong chương trình khi cauTruc [] → bị báo, nêu dòng', (() => {

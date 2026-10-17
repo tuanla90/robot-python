@@ -396,5 +396,14 @@
       { xuong: true, xong: 'chen-khoi', huong: 'tren', daLam: function () { return soDongThan('seek_red') >= 1; } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
 
+  /* ============================================================ Lắp ráp: Thân + Não · màn Lắp robot (man-lap.js gọi HuongDan.vaoMan khi mở màn Lắp robot của màn đầu chương) */
+  H['rap-nao.1'] = [
+    { dich: '.lr-khe[data-khe="than"] .lr-hang', chu: 'Đây là khe Thân. Mỗi thẻ là một thân robot, có giá và việc nó làm được.', rong: 170, han: 22000, xong: 'bam' },
+    { dich: '.lr-khe[data-khe="than"] .lr-the[data-ma="xich"]', chu: 'Chạm thẻ Bánh xích để gắn nó vào robot.', rong: 160, han: 45000, xong: 'bam',
+      daLam: function () { try { return LapRobot.trangThai().cach.than === 'xich'; } catch (e) { return false; } } },
+    { dich: '.lr-xu-hang', chu: 'Đây là số xu còn lại. Thẻ nào đắt quá thì nút Lắp xong bị khóa.', rong: 170, han: 20000, xong: 'bam' },
+    { dich: 'nut:lap-xong', chu: 'Đủ xu rồi thì bấm Lắp xong để vào màn.', rong: 150, han: 60000, xong: 'bam', huong: 'tren' }
+  ];
+
   window.HuongDanMan = H;
 })();

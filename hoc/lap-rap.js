@@ -37,6 +37,7 @@
      dsKhe(man) → các khe màn có (khe có danh sách rỗng bị ẩn)
      kiemDuLieu(man) → mảng lỗi dữ liệu lapRap của màn (rỗng = ổn); máy kiểm các chương lắp ráp dùng
      kiemCanMan(man) → kiemDuLieu + mọi cách mẫu thắng + cachLap[0] đạt 3 sao + không cách nào hơn hẳn cách khác (mảng lỗi; rỗng = ổn)
+     khoMau(man) → kho tham chiếu lúc tới màn (mọi hàm của em các màn thường trước đó tạo / sửa); màn khai lapRap.dungKho: true thì thongKeMau / kiemCanMan chạy lời giải mẫu trên kho này (lời giải được dùng pick(), forward(n)…)
      thongKeMau(man, kho?) → chạy lời giải từng cách mẫu qua máy chấm: [{ cach, ten, gia, thang, nhip, o, sao, loi }] (bảng "Cách lắp khác")
      part() → bộ Part đã nạp (Node: tự nạp game/part)
      honHan(a, b) · cachBiHonHan(thongKe) → các cặp { hon, kem }: cách hơn hẳn cách khác ở cả giá, nhịp, ô (luật cân màn: phải rỗng)
@@ -210,7 +211,9 @@
 
   /* -------------------------------------------------------------------- apDung */
   /** Có pin không: màn khai pin (số hay mảng theo từng sân). */
-  function coPinMan(man) { return man.pin !== undefined && man.pin !== null; }
+  // pin của màn lắp ráp chỉ có nghĩa với drone. macDinh cất pin sang `pinDrone` khi cách mẫu đầu tiên KHÔNG phải drone (để bản mặc định của màn không mang pin cho xe thường: lõi ném lỗi), apDung đọc cả hai.
+  function pinCua(man) { return man.pinDrone !== undefined ? man.pinDrone : man.pin; }
+  function coPinMan(man) { var p = pinCua(man); return p !== undefined && p !== null; }
   /** Hợp lệnh gốc các part của cách lắp + wait (thân nào cũng có wait). battery chỉ khi drone có pin. */
   function hamGocCua(man, c) {
     var goc = [];
@@ -230,8 +233,9 @@
     kq.manGoc = man.manGoc || man;
     kq.cachLapDaChon = c;
     kq.loaiRobot = th.loai;
-    if (c.than === 'drone' && coPinMan(man)) ch.camBien.push({ ma: 'pin', o: 'than' });
-    else delete kq.pin;                                                                    // pin chỉ dành cho drone: thân khác thì lõi ném lỗi nếu còn pin
+    if (c.than === 'drone' && coPinMan(man)) { ch.camBien.push({ ma: 'pin', o: 'than' }); kq.pin = pinCua(man); }
+    else delete kq.pin;
+    delete kq.pinDrone;                                                                    // pin chỉ dành cho drone: thân khác thì lõi ném lỗi nếu còn pin
     kq.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
     kq.hamGoc = hamGocCua(man, c);
     if (cach && cach.loiGiai) {                                                            // cách mẫu: máy kiểm / máy chấm chạy lời giải của chính cách này
@@ -251,6 +255,7 @@
     var a = apDung(man, L.cachLap[0]);
     ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
     if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
+    if (a.loaiRobot !== 'drone' && man.pin !== undefined && man.pinDrone === undefined) { man.pinDrone = man.pin; delete man.pin; }          // bản mặc định không phải drone thì không mang pin
     return man;
   }
 
@@ -283,10 +288,32 @@
     if (typeof window !== 'undefined' && window.ChamHoc) return window.ChamHoc;
     return laNode ? require('./cham.js') : null;
   }
+  /**
+   * KHO THAM CHIẾU lúc tới màn `man` (dùng khi màn khai `lapRap.dungKho: true`): mọi hàm của em mà các màn THƯỜNG đứng trước tạo / sửa (loiGiai.hamCuaEmMoi theo thứ tự màn;
+   * bản sửa riêng của màn tietKiemNhip không vào kho), như người chơi đã đi hết các chương trước. Lời giải mẫu dùng kho (pick(), forward(n), turn_right()…) chạy trên kho này,
+   * nên bảng "Cách lắp khác" và máy kiểm không phụ thuộc kho thật của người chơi.
+   */
+  function khoMau(man) {
+    var MH = (typeof window !== 'undefined' && window.ManHoc) || (laNode ? require('./man-chuoi-1.js') : null);
+    var ds = [], chi = {}, ma = (man && (man.manGoc || man).ma) || null;
+    if (!MH) return ds;
+    for (var i = 0; i < MH.danhSach.length; i++) {
+      var x = MH.danhSach[i];
+      if (x.ma === ma) break;
+      if (x.lapRap) continue;
+      ((x.loiGiai && x.loiGiai.hamCuaEmMoi) || []).forEach(function (f) {
+        var h = { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: (f.than || []).slice() }, k = chi[f.ten];
+        if (k === undefined) { chi[f.ten] = ds.length; ds.push(h); }
+        else if (x.tietKiemNhip !== true) ds[k] = h;
+      });
+    }
+    return ds;
+  }
   /** Chạy lời giải của từng cách lắp mẫu qua máy chấm: nhịp, ô, sao. Cho bảng "Cách lắp khác" và máy kiểm. kho (tuỳ chọn): các hàm của em có sẵn ở kho lúc tới màn, cộng thêm vào hamCuaEmMoi của lời giải. */
   function thongKeMau(man, kho) {
     var L = lapRapCua(man), cham = chamHoc(), kq = [];
     if (!L || !cham) return kq;
+    if (kho === undefined && L.dungKho) kho = khoMau(man);                                 // màn có lời giải mẫu dùng kho (lapRap.dungKho): chạy trên kho tham chiếu
     (L.cachLap || []).forEach(function (cl) {
       var c = chuanCach(cl), mau = { cach: c, ten: moTa(c), gia: giaCach(c), thang: false, nhip: null, o: null, sao: 0, loi: null, ghiChu: cl.ghiChu || '' };
       try {
@@ -318,10 +345,10 @@
    * (sao.nhip / sao.o ứng với cách tốt nhất), không cách mẫu nào hơn hẳn cách khác ở cả giá, nhịp lẫn ô. Trả về mảng lỗi (rỗng = ổn).
    * (Chạy BFS / dò đường ngắn nhất cho TỪNG cách lắp hợp lệ là việc riêng của từng chương: bộ dò đường của chương đó.)
    */
-  function kiemCanMan(man) {
+  function kiemCanMan(man, kho) {
     var loi = kiemDuLieu(man), ma = (man && man.ma) || '(màn)';
     if (loi.length) return loi;
-    var tk = thongKeMau(man);
+    var tk = thongKeMau(man, kho);
     tk.forEach(function (x, i) {
       if (x.loi) loi.push(ma + ': cachLap[' + i + '] (' + x.ten + ') chấm lỗi: ' + x.loi);
       else if (!x.thang) loi.push(ma + ': cachLap[' + i + '] (' + x.ten + ') không thắng.');
@@ -358,7 +385,7 @@
     KHE: KHE, TEN_KHE: TEN_KHE, DANH_MUC: DANH_MUC,
     tim: tim, tenCua: tenCua, moTa: moTa, chuanCach: chuanCach, giaCach: giaCach, cauHinhCua: cauHinhCua,
     kiemGhep: kiemGhep, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, dsKhe: dsKhe,
-    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, part: P
+    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, part: P
   };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.LapRap = API;
