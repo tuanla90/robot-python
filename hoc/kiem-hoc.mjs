@@ -1341,11 +1341,11 @@ console.log('\n== 16. Sổ chương: mã cố định, id tính theo thứ tự 
     ds.every((m) => ThuTu.thuTu.includes(m.chuong) && Number.isInteger(m.so) && m.so >= 1 && m.so <= 10 && m.ma === m.chuong + '.' + m.so) &&
       new Set(dsMa).size === ds.length);
   const THU_TU_MOI = ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien',
-    'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
-    'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'flycam'];   // 17/10: gói List sau gói Nhện, Flycam cuối gói Drone
+    'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'rap-nao',
+    'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'];   // 17/10: ba chương lắp ráp   // 17/10: gói List sau gói Nhện, Flycam cuối gói Drone
   const SO_DOT1 = 10;                                                            // 10 chương đợt 1, còn lại là đợt 2
   const coMan = (c) => ds.some((m) => m.chuong === c);
-  const TEN_CHUONG = { 'list': 'Danh sách', 'che-list': 'Chế lệnh danh sách', 'flycam': 'Flycam', 'che-xich': 'Chế lệnh xích', 'che-omni': 'Chế lệnh omni', 'sung-hoi': 'Súng hơi', 'che-sung-hoi': 'Chế lệnh súng hơi', 'che-mau': 'Chế lệnh màu', 'che-may-nem': 'Chế lệnh máy ném', 'che-drone': 'Chế lệnh drone', 'hai-banh': 'Hai bánh', 'xuong-ham': 'Xưởng hàm', 'che-xe': 'Chế lệnh xe', 'tay-gap': 'Tay gắp', 'che-tay': 'Chế lệnh tay', 'vong-lap': 'Vòng lặp',
+  const TEN_CHUONG = { 'rap-nao': 'Lắp ráp: Thân + Não', 'rap-tay': 'Lắp ráp: Thân + Tay', 'rap-du': 'Lắp ráp: Đủ bộ', 'list': 'Danh sách', 'che-list': 'Chế lệnh danh sách', 'flycam': 'Flycam', 'che-xich': 'Chế lệnh xích', 'che-omni': 'Chế lệnh omni', 'sung-hoi': 'Súng hơi', 'che-sung-hoi': 'Chế lệnh súng hơi', 'che-mau': 'Chế lệnh màu', 'che-may-nem': 'Chế lệnh máy ném', 'che-drone': 'Chế lệnh drone', 'hai-banh': 'Hai bánh', 'xuong-ham': 'Xưởng hàm', 'che-xe': 'Chế lệnh xe', 'tay-gap': 'Tay gắp', 'che-tay': 'Chế lệnh tay', 'vong-lap': 'Vòng lặp',
     'che-lap': 'Chế lệnh có for', 'che-cam-bien': 'Chế lệnh có if, while', 'robot-hoan-thien': 'Robot hoàn thiện', 'khoang-cach': 'Cảm biến khoảng cách', 'bang-chuyen': 'Băng chuyền', 'tham-so': 'Hàm có tham số', 'nhen': 'Thân nhện', 'che-nhen': 'Chế lệnh nhện', 'xich': 'Bánh xích', 'omni': 'Bánh omni', 'mau': 'Cảm biến màu', 'nam-cham': 'Nam châm', 'che-nam-cham': 'Chế lệnh nam châm', 'tay-xoay': 'Tay xoay', 'che-tay-xoay': 'Chế lệnh tay xoay', 'may-nem': 'Máy ném', 'drone': 'Drone' };
   const SO_CHUONG = {};
   THU_TU_MOI.forEach((c, i) => { SO_CHUONG[c] = i + 1; });

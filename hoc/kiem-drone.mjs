@@ -472,7 +472,7 @@ const BANG = [];
 function bang(a, b) { return J(a) === J(b); }
 {
   const SAO_NHIP = [7, 10, 6, 8, 8, 24, 8, 12, 11, 20];
-  kiem('đúng 10 màn drone, id 31.1…31.10, mã drone.1…10, tên chương "Drone"', ds.length === 10 && ds.every((m, i) => m.id === '31.' + (i + 1) && m.ma === 'drone.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'drone').ten === 'Drone');
+  kiem('đúng 10 màn drone, id theo vị trí trong thuTu, mã drone.1…10, tên chương "Drone"', ds.length === 10 && ds.every((m, i) => m.id === (require(path.join(day, 'thu-tu-chuong.js')).thuTu.indexOf('drone') + 1) + '.' + (i + 1) && m.ma === 'drone.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'drone').ten === 'Drone');
   kiem('hang: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', bang(ds.map((m) => m.hang), ['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
   kiem('sao.nhip đúng bảng chốt (7 10 6 8 8 24 8 12 11 20)', bang(ds.map((m) => m.sao.nhip), SAO_NHIP), J(ds.map((m) => m.sao.nhip)));
   kiem('chỉ 19.5 tạo recharge và 19.10 tạo ship; chỉ 19.8 có hàm của màn (ferry); huy hiệu drone ở 17.10; tên recharge, ship bị khóa trong kho; battery là hàm gốc của kho', bang(ds.map((m) => m.taoHam), [[], [], [], [], ['recharge'], [], [], [], [], ['ship']]) &&

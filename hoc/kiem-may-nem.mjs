@@ -406,7 +406,7 @@ const BANG = [];
 function bang(a, b) { return J(a) === J(b); }
 {
   const SAO_NHIP = [1, 1, 3, 9, 15, 3, 4, 9, 10, 15];
-  kiem('đúng 10 màn may-nem, id 29.1…29.10, mã may-nem.1…10, tên chương "Máy ném"', ds.length === 10 && ds.every((m, i) => m.id === '29.' + (i + 1) && m.ma === 'may-nem.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'may-nem').ten === 'Máy ném');
+  kiem('đúng 10 màn may-nem, id theo vị trí trong thuTu, mã may-nem.1…10, tên chương "Máy ném"', ds.length === 10 && ds.every((m, i) => m.id === (require(path.join(day, 'thu-tu-chuong.js')).thuTu.indexOf('may-nem') + 1) + '.' + (i + 1) && m.ma === 'may-nem.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'may-nem').ten === 'Máy ném');
   kiem('hang: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
   kiem('sao.nhip đúng bảng chốt (1 1 3 9 15 3 4 9 10 15)', J(ds.map((m) => m.sao.nhip)) === J(SAO_NHIP), J(ds.map((m) => m.sao.nhip)));
   kiem('chỉ 17.4 tạo hàm (toss); chỉ 17.8 có hàm của màn (lob); huy hiệu may-nem ở 15.10', J(ds.map((m) => m.taoHam)) === J([[], [], [], ['toss'], [], [], [], [], [], []]) &&
