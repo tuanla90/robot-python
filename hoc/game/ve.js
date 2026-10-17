@@ -184,6 +184,9 @@
     denChan: ['x.x.....x.x', '.x.x...x.x.', '..x.xxx.x..', '...xxwxx...', '..xxxxxxx..', '...xxwxx...', '..x.xxx.x..', '.x.x...x.x.', 'x.x.....x.x'],
     denCanh: ['www.....www', 'wxw.....wxw', 'www.....www', '...x...x...', '....xxx....', '....xox....', '....xxx....', '...x...x...', 'www.....www', 'wxw.....wxw', 'www.....www'],
     denLogic: ['..x.x.x.x..', '.xxxxxxxxx.', 'xxxxxxxxxxx', '.xxwwwwwxx.', 'xxxw...wxxx', '.xxw.w.wxx.', 'xxxw...wxxx', '.xxwwwwwxx.', 'xxxxxxxxxxx', '.xxxxxxxxx.', '..x.x.x.x..'],
+    // chế độ lắp ráp (17/10): đồng xu (giá part, ngân sách; đổi màu tô cho xu đã tiêu) và bánh răng (nút "Lắp lại")
+    xu: ['...xxxxx...', '..xwwxxxx..', '.xwxxxoxxx.', 'xwxxxxoxxxo', 'xwxxxxoxxxo', 'xxxxxxoxxxo', 'xxxxxxoxxxo', 'xxxxxxoxxxo', '.xxxxxoxxo.', '..xxxxxxo..', '...xxxxx...'],
+    banhRang: ['....xxx....', '..x.xxx.x..', '.xxxxxxxxx.', '..xxx.xxx..', 'xxxx...xxxx', 'xxx.....xxx', 'xxxx...xxxx', '..xxx.xxx..', '.xxxxxxxxx.', '..x.xxx.x..', '....xxx....'],
     // sổ lệnh (quyển sách mở) và nhãn cảnh báo (tam giác có dấu !)
     book: ['.xxxxxxxxx.', 'xxxxxxxxxxx', 'xx.......xx', 'xx.xxxxx.xx', 'xx.......xx', 'xx.xxx...xx', 'xx.......xx', 'xxxxxxxxxxx', '.xxxxxxxxx.'],
     canhbao: ['.....xx.....', '....xxxx....', '....xxxx....', '...xxxxxx...', '...xx..xx...', '..xxx..xxx..', '..xxx..xxx..', '.xxxxxxxxxx.', '.xxxx..xxxx.', 'xxxxxxxxxxxx']

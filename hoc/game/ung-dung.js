@@ -1,6 +1,7 @@
 /* ============================================================================
    ung-dung.js — "Đường học": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
    Bốn màn hình (kiểu Cut the Rope, 15/10): 'dau' khởi đầu (man-dau.js) → 'goi' chọn gói (man-goi.js) → 'chon' lưới màn của gói (man-chon.js) → 'choi' màn chơi.
+   Thêm màn 'lap' (17/10, chế độ lắp ráp, man-lap.js): màn có man.lapRap thì App.vaoMan mở màn Lắp robot TRƯỚC, "Lắp xong" mới vào 'choi' (Choi.vao(m, cachLap)); trong màn chơi App.lapLai quay về đó đổi part.
    Luật mở khóa (gói mở bằng tổng sao, chương / hàng / thử thách trong gói) ở game/mo-goi.js; App chỉ gọi qua.
    ========================================================================== */
 (function () {
@@ -90,6 +91,7 @@
   }
   /** Màn kế tiếp đã mở (theo thứ tự trong danh sách; hết chương thì sang màn đầu chương kế), hoặc null. */
   App.manTiep = function (m) {
+    m = (m && m.manGoc) || m;                          // màn lắp ráp đang chơi là bản đã gắn robot: tìm theo màn gốc
     var ds = ManHoc.danhSach, i = ds.indexOf(m);
     if (i < 0 || i + 1 >= ds.length) return null;
     var k = ds[i + 1];
@@ -97,9 +99,9 @@
   };
 
   /* ---------------------------------------------------------------- màn hình */
-  var MAN_HINH = { dau: 'sc-dau', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi' };
+  var MAN_HINH = { dau: 'sc-dau', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi', lap: 'sc-lap' };
   App.manHinh = null;
-  /** Hiện một màn hình: 'dau' (khởi đầu) | 'goi' (chọn gói) | 'chon' (lưới màn của gói App.goi) | 'choi'. */
+  /** Hiện một màn hình: 'dau' (khởi đầu) | 'goi' (chọn gói) | 'chon' (lưới màn của gói App.goi) | 'choi' | 'lap' (Lắp robot, màn lắp ráp). */
   App.hien = function (ten) {
     TP.Chan.giu(400);                                  // cú bấm đến muộn không rơi xuống màn mới
     Object.keys(MAN_HINH).forEach(function (k) { var e = document.getElementById(MAN_HINH[k]); if (e) e.classList.toggle('hidden', k !== ten); });
@@ -126,8 +128,23 @@
     if (App.moHet && window.GoLoi && GoLoi.napKhiMoHet) GoLoi.napKhiMoHet(m);   // "Mở hết" (gỡ lỗi): nhảy cóc vẫn có hàm cốt truyện các màn trước
     App.man = m; App.chuong = m.chuong;
     var g = App.goiCua(m.chuong); if (g) App.goi = g.ma;
+    if (m.lapRap && window.LapRobot) {                 // màn lắp ráp (lap-rap.js): chọn part trước, "Lắp xong" mới vào màn chơi; ◀ về lưới màn
+      App.hien('lap');
+      LapRobot.vao(m, { cach: Luu.docLap(m.ma), khiVe: function () { App.veChon(); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(m, cach); } });
+      return;
+    }
     App.hien('choi');
     Choi.vao(m);
+  };
+  /** Màn lắp ráp đang chơi: quay về màn Lắp robot để đổi part. "Lắp xong" → vào lại màn chơi với robot mới (chương trình đang viết được giữ, dòng gọi lệnh part đã tháo bị tô đỏ);
+   *  ◀ → về màn chơi, không đổi gì. */
+  App.lapLai = function () {
+    var c = window.Choi && Choi.trangThai(), m = c && c.man;
+    if (!m || !m.lapRap || !window.LapRobot) return;
+    var goc = m.manGoc || m;
+    TP.Hop.dong(); Choi.roi && Choi.roi();
+    App.hien('lap');
+    LapRobot.vao(goc, { cach: m.cachLapDaChon, khiVe: function () { App.hien('choi'); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(goc, cach); } });
   };
   /** Mở lưới màn của gói ma (chương xem = chương đầu của gói, trừ khi chương đang xem nằm trong gói). */
   App.vaoGoi = function (ma) {
@@ -165,12 +182,13 @@
     // hàm theo cốt truyện (tên nằm trong taoHam của một màn nào đó): kho khóa tên, không cho đổi tên / xóa
     KhoHam.datTenCoDinh([].concat.apply([], ManHoc.danhSach.map(function (m) { return m.taoHam || []; })));
     var r = Luu.docKho();
-    var kd = document.getElementById('sc-dau'), kg = document.getElementById('sc-goi'), kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi');
+    var kd = document.getElementById('sc-dau'), kg = document.getElementById('sc-goi'), kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi'), kl = document.getElementById('sc-lap');
     Dau.dung(kd);
     ChonGoi.dung(kg);
     Chon.dung(kb);
     Choi.dung(kc);
-    [kd, kg, kb, kc].forEach(function (k) { Ve.khungGo(k.querySelector('.deco')); });
+    if (kl && window.LapRobot) LapRobot.dung(kl);
+    [kd, kg, kb, kc, kl].forEach(function (k) { if (k) Ve.khungGo(k.querySelector('.deco')); });
     ghiGoiDaMo();
     // gói / chương mở ban đầu: của màn tiếp theo cần chơi
     var dau = App.manTiepTheo(), dsc = App.dsChuong();

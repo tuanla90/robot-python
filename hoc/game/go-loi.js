@@ -129,7 +129,7 @@
   /** Xóa sao / tiến độ, cờ đã xem, bản nháp mọi màn; kemKho thì xóa cả kho hàm (và sân thử của từng hàm). Bảng cài đặt của chính Gỡ lỗi không bị xóa. */
   function xoaTienDo(kemKho) {
     Luu.xoaTienDo();
-    ManHoc.danhSach.forEach(function (m) { Luu.xoaNhap(m.ma); });
+    ManHoc.danhSach.forEach(function (m) { Luu.xoaNhap(m.ma); if (Luu.xoaLap) Luu.xoaLap(m.ma); });
     if (kemKho) {
       var ten = {};
       KhoHam.ds().forEach(function (f) { ten[f.ten] = true; });

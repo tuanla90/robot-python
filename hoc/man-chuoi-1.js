@@ -46,6 +46,8 @@
 
   /** Điền các trường mặc định (hàm của màn rỗng, hàm của em rỗng…) cho dữ liệu viết gọn. */
   function chuanHoaMan(m) {
+    // màn lắp ráp (17/10, lap-rap.js): điền robot mặc định = cách lắp mẫu đầu tiên (loaiRobot, robot, hamGoc, loiGiai) cho mọi nơi đọc thẳng danh sách màn; giao diện chơi bản LapRap.apDung theo cách người chơi chọn
+    if (m.lapRap) { var LR = laNode ? require('./lap-rap.js') : window.LapRap; if (LR) LR.macDinh(m); }
     // cauTruc: cấu trúc Python màn cho dùng (mặc định không có). Chép vào khung để máy chấm bắt `for` khi màn chưa học.
     if (!m.cauTruc) m.cauTruc = [];
     m.khung = Object.assign({}, m.khung, { cauTruc: m.cauTruc.slice() });

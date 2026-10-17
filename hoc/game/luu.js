@@ -4,6 +4,7 @@
      tiến độ  : duong-hoc:tien-do = { phienBan: 1, sao: { 'hai-banh.1': 3, … } }   (khóa = m.ma, cố định khi đổi thứ tự chương)
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
      sân thử  : duong-hoc:san-thu:<tenHam> = cách sắp sân thử của Xưởng (xe, vật, tường), riêng từng hàm
+     cách lắp : duong-hoc:lap:<ma> = { than, tay, camBien } (màn lắp ráp, lap-rap.js: mỗi khe một mã part hay null), riêng từng màn
      đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, … }   (bảng / lời chào chỉ hiện một lần)
      Dữ liệu cũ theo id ('1.1'…'2.10') được chuyển một lần sang ma (chuyenCu).
    ========================================================================== */
@@ -95,6 +96,18 @@
   function ghiSanThu(ten, cfg) { return ghiJson(KHOA_SAN_THU + ten, cfg); }
   function xoaSanThu(ten) { try { kho.removeItem(KHOA_SAN_THU + ten); return true; } catch (e) { return false; } }
 
+  /* ---- cách lắp robot của màn lắp ráp (chế độ lắp ráp, lap-rap.js): duong-hoc:lap:<ma> = { than, tay, camBien }, mỗi khe một mã part hay null.
+        Chỉ kiểm dạng; cách lắp còn hợp lệ với màn hay không là việc của LapRap.kiemCachLap (giao diện tự bỏ cách cũ nếu hỏng). */
+  var KHOA_LAP = 'duong-hoc:lap:';
+  function motMa(v) { return typeof v === 'string' && v ? v : null; }
+  function docLap(id) {
+    var d = docJson(KHOA_LAP + id);
+    if (!d || typeof d !== 'object' || Array.isArray(d) || !motMa(d.than)) return null;
+    return { than: d.than, tay: motMa(d.tay), camBien: motMa(d.camBien) };
+  }
+  function ghiLap(id, c) { return ghiJson(KHOA_LAP + id, { than: motMa(c && c.than), tay: motMa(c && c.tay), camBien: motMa(c && c.camBien) }); }
+  function xoaLap(id) { try { kho.removeItem(KHOA_LAP + id); return true; } catch (e) { return false; } }
+
   /* ---- cờ "đã xem" (bảng chỉ hiện một lần, vd. 'mo-khoa-dot2' khi vừa mở các chương bộ phận mới) */
   function daXem(ten) {
     var d = docJson(KHOA_DA_XEM);
@@ -160,6 +173,7 @@
     saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docSanThu: docSanThu, ghiSanThu: ghiSanThu, xoaSanThu: xoaSanThu,
+    docLap: docLap, ghiLap: ghiLap, xoaLap: xoaLap,
     daXem: daXem, datDaXem: datDaXem, xoaTienDo: xoaTienDo,
     docKho: docKho, ghiKho: ghiKho,
     get loiKho() { return loiKho; },

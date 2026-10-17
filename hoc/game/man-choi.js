@@ -4,6 +4,8 @@
    Chạy = ChamHoc.cham(...) rồi phát lại `vet`. Mọi luật và lời chẩn đoán đến từ lõi.
    Màn chế lệnh (14/10): mục tiêu 'bong-mo' (SanVe vẽ xe mờ + ô ◆ theo man.bongMo, ◆ sáng khi vết có 'qua-diem'), man.chinhCoDinh (khung chương trình chính chỉ đọc, có ổ khóa),
    man.canhBao (nhãn ⚠ trên sân). Thắng màn mà tổng sao vừa đủ mở gói mới: bảng "Mở gói mới!" (App.baoGoiMoi, tên cũ App.moKhoaDot2) trước khi sang màn / màn chọn.
+   Màn lắp ráp (17/10, man.lapRap, lõi lap-rap.js): vao(m, cachLap) gắn robot đã chọn vào màn (LapRap.apDung: loaiRobot, robot, hamGoc) rồi chơi như màn thường; khay, đèn nhịp, Xưởng hàm đều theo
+   robot đó. Nút "Lắp lại" ở thanh trên (chỉ màn lắp ráp) → App.lapLai; chương trình đang viết được giữ, dòng gọi lệnh của part đã tháo bị tô đỏ. Bảng thắng thêm mục "Cách lắp khác".
    ========================================================================== */
 (function () {
   'use strict';
@@ -25,6 +27,7 @@
       '<div class="top">' +
         '<div class="plaque"><span class="n"></span><span class="d"></span><span class="t"></span></div>' +
         '<div class="stars"></div>' +
+        '<button class="bt g-or lap-lai" data-nut="lap-lai" style="display:none" aria-label="' + t('lap.lapLaiNhan') + '"><span data-i="banhRang" data-s="1" data-l="#4a2a08"></span><span class="ll-chu">' + t('lap.lapLai') + '</span></button>' +
         '<button class="bt g-pu menu" data-nut="menu" aria-label="' + t('choi.menu') + '"><span data-i="menu" data-s="2" data-l="#2f1a6a"></span></button>' +
       '</div>' +
       '<div class="fblock">' +
@@ -55,7 +58,7 @@
     var q = function (s) { return host.querySelector(s); };
     E.n = q('.plaque .n'); E.t = q('.plaque .t'); E.sao = q('.top .stars');
     E.toast = q('.toast'); E.bongD = q('.p-pal .bong'); E.clock = q('.clock .v'); E.side = q('.side');
-    E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov');
+    E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov'); E.lapLai = q('[data-nut="lap-lai"]');
     DenBoPhan.dung(q('.clock'));                                                      // vùng đèn theo bộ phận: dòng thứ hai trong ô đồng hồ NHỊP
     E.fb = q('.fblock'); E.bar = q('.sanbar'); E.tong = q('.clock .tong'); E.hamDem = q('.p-prog .ham-dem');
     q('.chinh-khoa .ck-ic').appendChild(Ve.khoa(2, true));                       // ổ khóa nhỏ ở tiêu đề khung chương trình (chỉ hiện khi màn có chinhCoDinh)
@@ -104,6 +107,7 @@
     });
 
     q('[data-nut="menu"]').addEventListener('click', moMenu);
+    E.lapLai.addEventListener('click', function () { if (window.App && App.lapLai) App.lapLai(); });
     q('[data-nut="chay"]').addEventListener('click', function () { chay(false); });
     q('[data-nut="nhip"]').addEventListener('click', function () { chay(true); });
     q('[data-nut="lai"]').addEventListener('click', function () { datLaiChay(); });
@@ -140,9 +144,17 @@
       hamCuaMan: (m.maMau.hamCuaMan || []).map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; })
     };
   }
-  function vao(m) {
+  /** Vào màn m. Màn lắp ráp (m.lapRap): `cach` = cách lắp đã chọn ở màn Lắp robot (không có thì lấy cách đã lưu, rồi cách mặc định); S.man là bản đã gắn robot
+   *  (LapRap.apDung), còn màn gốc ở S.man.manGoc. Vào màn mà chương trình (bản nháp) còn dòng gọi lệnh của part không gắn thì tô đỏ và báo (baoLenhMat). */
+  function vao(m, cach) {
+    var goc = m.manGoc || m;
+    if (goc.lapRap) {
+      var c = cach || Luu.docLap(goc.ma) || LapRap.cachMacDinh(goc);
+      try { m = LapRap.apDung(goc, c); } catch (e) { m = LapRap.apDung(goc, LapRap.cachMacDinh(goc)); }
+    }
     roi(); anBongD();
     S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0;
+    E.lapLai.style.display = goc.lapRap ? '' : 'none';
     S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
     TP.datCheList(TP.coListCua(m));                    // màn có cauTruc 'list': dòng danh sách (a = [1, 2], for n in a:, a.append(1)) tách thành ô phần tử chạm được
     TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m));      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
@@ -168,6 +180,14 @@
     TP.Hop.dong();
     hienDeBai();
     if (window.HuongDan) HuongDan.vaoMan(m);                                            // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
+    if (goc.lapRap) baoLenhMat();                                                       // robot đã đổi (hay bản nháp cũ): dòng gọi lệnh của part đang không gắn thì tô đỏ
+  }
+  /** Sau "Lắp lại": dòng của chương trình chính gọi lệnh của part đã tháo thì tô đỏ và báo tên lệnh (chương trình vẫn giữ nguyên). */
+  function baoLenhMat() {
+    var rows = LapRap.lenhKhongCon(S.man, S.bai.chinh);
+    if (!rows.length) return;
+    S.ed.datLoi(rows.slice());
+    toast(t('lap.lenhMat', { ds: rows.ten.join(', ') }), 'bad', 4800);                  // tên lệnh không kèm ngoặc: phông Handjet vẽ "()" như "[]"
   }
   function cauHinhSan(i) {
     var m = S.man, nhieu = Array.isArray(m.san[0]), lm = SanHoc.lopMauCuaSan(m, i);
@@ -529,6 +549,7 @@
     if (!okO) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuO')));
     else if (!okN) hop.than.appendChild(h('div', 'th-ghi', t(tong ? 'thang.thieuNhipTong' : duaVat ? 'thang.thieuNhipVat' : 'thang.thieuNhip')));
     else hop.than.appendChild(h('div', 'th-ghi tot', t('thang.duSao')));
+    if (m.lapRap) { var cl = khoiCachLap(m); if (cl) hop.than.appendChild(cl); }        // màn lắp ráp: các cách lắp mẫu (part, giá, nhịp, ô) để thấy đánh đổi
     // thắng mà vẫn có lưu ý (vd. bánh bị gọi lại, hàm của màn che hàm của em): cho học sinh thấy
     var luu = k.chanDoan.slice(0, 2);
     if (luu.length) {
@@ -544,7 +565,8 @@
       hop.than.appendChild(hh); Ve.hydrate(hh);
     }
     var tiep = App.manTiep(m);
-    var hang = h('div', 'hop-hang');
+    var hang = h('div', 'hop-hang' + (m.lapRap ? ' ba' : ''));
+    if (m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('thang.lapLai'), function () { TP.Hop.dong(); if (window.App && App.lapLai) App.lapLai(); }, 'lap-lai'));
     hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); datLaiChay(); }, 'choi-lai'));
     hang.appendChild(TP.Hop.nut('g-gr', tiep ? t('thang.manTiep') : t('thang.hetChuoi'), function () {
       TP.Hop.dong();
@@ -552,6 +574,33 @@
       if (App.baoGoiMoi) App.baoGoiMoi(di); else di();             // tổng sao vừa đủ mở gói mới: bảng "Mở gói mới!" rồi mới đi tiếp
     }, 'man-tiep'));
     hop.than.appendChild(hang);
+  }
+
+  /** Mục "Cách lắp khác" của bảng thắng (màn lắp ráp): dòng "Em lắp" rồi từng cách lắp MẪU của màn — tên part, xu, nhịp, ô (LapRap.thongKeMau chạy lời giải mẫu qua máy chấm); cách giống cách em lắp có chữ "Em". */
+  var tkMau = {};
+  function khoiCachLap(m) {
+    var goc = m.manGoc || m, ds;
+    try { ds = tkMau[goc.ma] || (tkMau[goc.ma] = LapRap.thongKeMau(goc)); } catch (e) { return null; }
+    if (!ds || !ds.length) return null;
+    var em = LapRap.chuanCach(m.cachLapDaChon), khoa = function (c) { return c.than + '|' + c.tay + '|' + c.camBien; };
+    var w = h('div', 'th-cach'); w.setAttribute('data-cach', ds.map(function (x) { return khoa(x.cach); }).join(' '));
+    w.appendChild(h('div', 'k', t('thang.cachKhac')));
+    var dEm = h('div', 'th-cach-em'); dEm.appendChild(h('span', 'c', t('thang.cachEm') + ': '));
+    dEm.appendChild(h('span', 'ten', LapRap.moTa(em) + ' · ' + LapRap.giaCach(em) + ' xu'));
+    w.appendChild(dEm);
+    ds.forEach(function (x) {
+      var cung = khoa(x.cach) === khoa(em);
+      var d = h('div', 'th-cach-dong' + (cung ? ' cung' : '') + (x.thang ? '' : ' hong'));
+      var hd = h('div', 'hd'); hd.appendChild(h('span', 'ten', x.ten));
+      if (cung) hd.appendChild(h('span', 'chip', t('thang.cachEm')));
+      d.appendChild(hd);
+      var so = h('div', 'so'); so.appendChild(Ve.ico('xu', 1, { fill: '#ffcf30', toi: '#c27a10', sang: '#fff2a6', line: '#1b120a' }));
+      so.appendChild(h('span', null, x.thang ? t('thang.cachSo', { xu: x.gia, nhip: x.nhip, o: x.o }) : t('thang.cachChua', { xu: x.gia })));
+      d.appendChild(so);
+      if (x.ghiChu) d.appendChild(h('div', 'gc', x.ghiChu));
+      w.appendChild(d);
+    });
+    return w;
   }
 
   window.Choi = {
