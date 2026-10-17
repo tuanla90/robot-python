@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
-for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach', 'man-mau', 'man-nam-cham', 'man-may-nem', 'man-sung-bong']) require(path.join(day, f + '.js'));
+for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-khoang-cach', 'man-mau', 'man-nam-cham', 'man-may-nem']) require(path.join(day, f + '.js'));
 const ManHoc = require(path.join(day, 'man-drone.js'));
 const BoDo = await import('./do-duong-drone.mjs');
 const { nhipDroneNganNhat, nhipDroneTatCa, buocMotNhip, dungNguCanh, trangThaiDau, laThang, chuoiThanhMa, hanhDongTuDo } = BoDo;
@@ -314,9 +314,9 @@ console.log('\n== 6. Ghép sai: drone không gắn tay kẹp, tấm đẩy, máy
 {
   const cfg = (hamGoc) => () => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'drone', hamGoc }, '');
   kiem('tay kẹp (arm_down, arm_up, grab, release) → lỗi cấu hình nói rõ', /Drone không gắn tay kẹp/.test(loi(cfg(BAY.concat(['arm_down', 'arm_up', 'grab', 'release'])))));
-  kiem('tấm đẩy push → lỗi', /Drone không gắn tấm đẩy/.test(loi(cfg(BAY.concat(['push'])))));
+  kiem('súng hơi shoot_back → lỗi', /Drone không gắn súng hơi/.test(loi(cfg(BAY.concat(['shoot_back'])))));
   kiem('máy ném aim / throw / load → lỗi', /Drone không gắn máy ném/.test(loi(cfg(BAY.concat(['aim', 'throw', 'load'])))));
-  kiem('súng bóng shoot → lỗi', /Drone không gắn súng bóng/.test(loi(cfg(BAY.concat(['shoot'])))));
+  kiem('súng hơi shoot → lỗi', /Drone không gắn súng hơi/.test(loi(cfg(BAY.concat(['shoot'])))));
   kiem('cảm biến khoảng cách front_clear / left_clear / right_clear → lỗi (drone không có hướng mặt)', ['front_clear', 'left_clear', 'right_clear'].every((t) => /Drone không gắn cảm biến khoảng cách/.test(loi(cfg(BAY.concat([t]))))));
   kiem('cảm biến từ front_metal → lỗi', /Drone không gắn cảm biến khoảng cách hay cảm biến từ/.test(loi(cfg(BAY.concat(['front_metal'])))));
   kiem('lệnh của xe bánh (left_move…) không thuộc drone → lỗi cấu hình', /không thuộc loại robot drone/.test(loi(cfg(BAY.concat(['left_move'])))));

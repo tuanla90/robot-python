@@ -188,7 +188,7 @@
     /* ------------------------------------------------ hàng 1: làm quen */
     man({
       so: 1, ten: 'Hút vật sắt', hang: 'lam-quen', hamCuaEmCan: ['move', 'turn_right'], nc1: true,
-      deBai: 'Tay nam châm ở mũi xe: magnet_n() bật cực N, magnet_off() ngắt điện, còn wait() cho nhịp trôi. Cực N hút vật sắt cách xe tới 2 ô, ngắt điện thì vật rơi xuống ô ngay trước mũi xe. Hút vật sắt rồi thả vào ô đích.',
+      deBai: 'Tay nam châm ở mũi xe: magnet_n() bật cực N, magnet_off() ngắt điện, còn wait() cho nhịp trôi. Cực N hút vật sắt cách xe tới 2 ô (tay kẹp ở màn Hàm đặt drop phải lái sát mới gắp được), ngắt điện thì vật rơi xuống ô ngay trước mũi xe. Hút vật sắt rồi thả vào ô đích.',
       veMaMau: 'Chương trình có sẵn mới ra lệnh bật nam châm, chưa có wait() nên nam châm chưa chạy. Chạy thử rồi viết tiếp.',
       san: SAN_1, vatChat: CHAT_1,
       batDau: BD_1,

@@ -11,9 +11,9 @@
      o  vật nằm trên sàn     D  ô đích (khung vàng)     X  ô đích đã có vật sẵn
      H  thùng nặng trên sàn  h  thùng nặng nằm sẵn trên ô đích
    VẬT NẰM ĐẤT CHIẾM Ô (luật mới 14/10): o / X là sàn có một VẬT đứng trên đó; xe KHÔNG đi vào được ô có vật nằm (xem phần TAY GẮP).
-   D chỉ là sàn có khung đích. H / h là sàn có THÙNG NẶNG chiếm ô, xem phần TẤM ĐẨY.
+   D chỉ là sàn có khung đích. H / h là sàn có THÙNG NẶNG chiếm ô, xem phần THÙNG NẶNG + SÚNG HƠI.
      r  g  b  y  sàn MÀU (đỏ, xanh lá, xanh dương, vàng): đi lại như sàn thường, xem phần CẢM BIẾN MÀU.
-     N  nút bắn (như tường, bóng trúng thì đổi)   C  cửa đóng   c  cửa mở: xem phần SÚNG BÓNG.
+     N  nút bắn (như tường, bóng trúng thì đổi)   C  cửa đóng   c  cửa mở: xem phần SÚNG HƠI.
      n  GẦM THẤP (chương nhện: chỉ nhện đang CO CHÂN chui qua được; đứng thì đâm)   u  HỐ (đi vào là rơi: thua; nhện bật qua được): xem phần CHÂN NHỆN.
    Hướng robot: 0 lên, 1 phải, 2 xuống, 3 trái.
 
@@ -101,25 +101,43 @@
           (1 ô tự đi + 1 ô băng đẩy); đi ngược băng thì đứng im (bước lên ô băng rồi bị đẩy lùi về chỗ cũ).
         Vết nhịp của omni có thêm robot.truot (0, -1 trái, +1 phải) cho hoạt cảnh trượt.
 
-   THÙNG NẶNG + TẤM ĐẨY (chương `tam-day`; xe bánh, xích, omni; nhện thì không). Ký hiệu sân: H thùng nặng trên sàn, h thùng nặng
-        nằm sẵn trên ô đích (D, X, h đều là ô đích). Thùng nặng chiếm ô: xe KHÔNG đi xuyên được và tay kẹp KHÔNG gắp được
-        (grab ngay ô có thùng → 'kep-hut', lyDo 'qua-nang'; chỉ xảy ra khi xe xuất phát trên ô thùng, vì xe không vào được ô thùng).
-        Robot gắn tấm đẩy khi hamGoc có 'push' (không đi chung với 4 lệnh tay kẹp):
-        - TIẾN vào ô có thùng: thùng bị đẩy 1 ô cùng hướng nếu ô sau thùng trống (không tường, không mép sân, không bậc thang S,
-          không thùng khác); xe vào ô cũ của thùng ('thung-di' nguon 'xe'). Ô sau thùng bị chặn thì xe và thùng đứng im,
-          mất 1 nhịp ('thung-chan' {o, den, vat, kieu:'tien'}).
-        - KHÔNG có tấm đẩy thì xe đâm thùng như đâm tường ('dam-tuong', vat 'thung-nang', coDay false). Có tấm đẩy mà LÙI hay
-          TRƯỢT (omni) vào thùng cũng đâm (coDay true, kieu 'lui' | 'truot'): tấm đẩy chỉ đẩy khi xe TIẾN thẳng.
-        - Lệnh gốc push() (chỉ ra lệnh, wait() cho nhịp trôi): đẩy mạnh. Ô ngay trước mặt xe có thùng thì thùng TRƯỢT thẳng
-          cho tới khi gặp tường / mép / bậc thang / thùng khác (không dừng ở ô đích); xe đứng yên; tốn 1 nhịp
-          ('thung-di' nguon 'truot' {soO}). Thùng bị chặn ngay thì 'thung-chan' kieu 'push'. Không có thùng ngay trước mặt thì
-          không làm gì ('day-hut', thông tin). Nhịp có push() thì lệnh bánh / trượt cùng nhịp bị bỏ ('day-dung-yen', thông tin);
-          hai push() cùng nhịp thì lệnh sau bị bỏ ('push-goi-lai').
-        - Băng chuyền đẩy thùng như đẩy xe bánh: thùng nằm trên băng đủ 2 nhịp LIÊN TIẾP thì bị đẩy 1 ô theo mũi tên nếu ô kế trống
-          (không tường, bậc thang, thùng, xe); bị chặn thì đứng yên. Băng chuyền KHÔNG đẩy xe vào thùng (xe bị chặn: 'bang-chan').
-        Mục tiêu 'day-thung': thắng NGAY khi MỌI thùng nặng nằm trên ô đích. Thùng nằm ở GÓC chết mà không phải ô đích (hai cạnh
-        vuông góc là tường hoặc mép sân; ô băng dẫn ra khỏi góc thì không chết) thì dừng ngay cuối nhịp đó (dungSom = 'thung-ket').
-        Thùng nặng chỉ thiết kế để đi với mục tiêu 'day-thung' hoặc 'toi-co' (làm vật chắn); không đi chung vật nhẹ 'o'.
+   THÙNG NẶNG + SÚNG HƠI (chương `sung-hoi` và `che-sung-hoi`, 15/10; xe bánh, xích, omni; nhện và drone thì không vì không có hướng mặt). Ký hiệu sân: H thùng nặng trên sàn,
+        h thùng nặng nằm sẵn trên ô đích (D, X, h đều là ô đích). Thùng nặng chiếm ô: xe KHÔNG đi xuyên được (xe húc thùng bằng bánh = đâm như tường, 'dam-tuong' vat 'thung-nang')
+        và tay kẹp KHÔNG gắp được (grab ngay ô có thùng → 'kep-hut', lyDo 'qua-nang'). CHỈ CÚ GIẬT của súng hơi mới dời được thùng (băng chuyền cũng đẩy được). Thay tấm đẩy push() và súng bóng cũ.
+        Robot gắn SÚNG HƠI khi hamGoc có shoot hay shoot_back (man.robot.tay = 'hoi'; một robot một tay: không đi chung tay kẹp, tay xoay, nam châm, máy ném). Hai lệnh gốc, đều chỉ RA LỆNH
+        (wait() cho nhịp trôi), mỗi nhịp một phát, cặp lệnh ngược (LENH_NGUOC): shoot ↔ shoot_back.
+            shoot()       bắn bóng ra TRƯỚC mũi xe;  xe GIẬT LÙI một ô (về phía đuôi)
+            shoot_back()  bắn bóng ra SAU đuôi xe;   xe GIẬT TỚI một ô (về phía mũi)
+        - Nhịp có bắn thì xe không tự đi: lệnh bánh / trượt cùng nhịp bị bỏ ('ban-dung-yen', thông tin). Hai phát cùng nhịp: phát sau bị bỏ ('ban-goi-lai', lỗi). Quên wait() sau lệnh bắn →
+          'quen-wait'. Đạn vô hạn, trừ khi màn khai cfg.danToiDa = n: mỗi phát tốn 1 viên, hết đạn thì không bắn VÀ không giật ('het-dan', lỗi) nhưng vẫn mất nhịp.
+        - THỨ TỰ TRONG NHỊP: (a) bắn: bóng bay (nút đổi, băng chuyền nối nút đổi NGAY) → (b) GIẬT: xe (hay thùng) → (c) băng chuyền (theo trạng thái MỚI) → (d) cửa đổi ở CUỐI nhịp.
+        - BÓNG bay THẲNG theo hướng bắn (shoot: hướng mặt; shoot_back: hướng ngược mặt, bay từ ô sát đuôi xe), ô tới ô TRONG CÙNG NHỊP, dừng ở vật cản đầu tiên: tường cao '#', nút 'N' (trung 'nut'),
+          cửa đóng (trung 'cua'), thùng nặng (trung 'thung'), vật nằm đất (trung 'vat'), bậc thang S (trung 'bac-thang'). Bóng bay QUA hàng rào '=', băng chuyền, cửa mở, ô màu, ô đích, cờ.
+          Ra khỏi sân không trúng gì: 'ban-hut' (thông tin), trung null. Sự kiện của nhịp 'ban' { nhip, tu: ô xe, huong: hướng BAY (tuyệt đối), sau: true nếu bắn ra sau, den: ô bóng tới (ô vật cản; ô cuối cùng trong
+          sân nếu hụt), cuoi: ô trống cuối cùng bóng bay qua, o: ô vật cản | null, trung, soO: số ô bóng bay qua trước khi dừng }.
+        - GIẬT: ô xe giật vào là ô sát đuôi (bắn ra trước) hay sát mũi (bắn ra sau). Sự kiện 'giat' { nhip, tu, den, huong: hướng giật, di: true nếu xe THẬT SỰ dời, vat: null | lý do không dời, thung: id thùng bị đẩy | null }.
+            · ô đó đi vào được → xe dời sang đó (di true).
+            · ô đó bị chặn (tường, mép sân 'ngoai-san', cửa đóng 'cua', nút 'nut', hàng rào 'rao', bậc thang 'bac-thang', vật nằm đất 'vat') → xe ĐỨNG YÊN ('giat-chan' {nhip, tu, den, vat, huong, lenh}, thông tin).
+            · ô đó có THÙNG NẶNG → thùng nhận lực: TRƯỢT thẳng theo hướng giật cho tới khi gặp vật cản (tường, mép sân, bậc thang, hàng rào, nút, cửa đóng, thùng khác, vật nằm đất; không dừng ở ô đích),
+              xe ĐỨNG YÊN ('thung-di' nguon 'giat' {id, tu, den, soO}). Thùng bị chặn ngay thì cả hai đứng yên ('thung-chan' kieu 'giat').
+          Giật cũng tốn đúng nhịp của lệnh bắn: không có "bắn mà không giật".
+        - Băng chuyền đẩy thùng như đẩy xe bánh: thùng nằm trên băng đủ 2 nhịp LIÊN TIẾP thì bị đẩy 1 ô theo mũi tên nếu ô kế trống (không tường, bậc thang, thùng, xe, cửa đóng); bị chặn thì đứng yên.
+          Băng chuyền KHÔNG đẩy xe vào thùng (xe bị chặn: 'bang-chan').
+        - NÚT: bóng trúng N thì nút ĐỔI trạng thái (bat true ↔ false, sự kiện 'nut-doi' { o, bat }). Bắn hai lần là về như cũ. Mỗi nút điều khiển một nhóm: mặc định MỌI cửa thường (không phải cửa nhịp)
+          và MỌI băng chuyền của sân; cfg.noi = [{ nut: {x,y}, cua: [{x,y}], bang: [{x,y}] }] khai nhóm riêng (nút không có trong noi thì không điều khiển gì; cửa nhịp không điều khiển bằng nút).
+          · BĂNG CHUYỀN đổi NGAY khi nút đổi ('bang-doi' { o, bat: true = băng đang chạy }): băng tắt thì không đẩy xe / thùng (như sàn thường), đếm demBang về 0.
+          · CỬA đổi ở CUỐI nhịp ('cua-doi' { o, mo }): nút đổi thì cửa đổi (đóng ↔ mở). Cửa không đóng xuống ô đang có xe, vật hay thùng: giữ mở và ghi 'cua-ket' (thông tin).
+          · CỬA NHỊP (cfg.cuaNhip = [{ x, y, mo, dong, pha }], ô đó phải là C hay c): tự đóng mở theo chu kỳ mo + dong nhịp. Sau t nhịp đã trôi, p = (t + pha) mod (mo + dong); p < mo thì cửa mở. Đổi ở cuối nhịp như mọi cửa.
+            Nút không điều khiển cửa nhịp. front_clear() là False khi cửa trước mặt đang đóng, nên `while not front_clear(): wait()` chờ được.
+        - Ký hiệu sân: N NÚT BẮN nằm trên tường, chiếm ô như tường (xe không đi vào, lyDoChan 'nut'); C CỬA ĐÓNG lúc đầu, c CỬA MỞ lúc đầu (cửa mở là sàn). Cửa đóng chặn xe (dam-tuong vat 'cua',
+          front_clear() = False), chặn bóng và chặn thùng. Vật và thùng không đặt lên ô N / C / c được. Lớp màu không được tô ô N / C / c. Tiến vào cửa đóng: dam-tuong vat 'cua'.
+        - Cảm biến khoảng cách coi cửa đóng là KHÔNG trống (vat 'cua') và nút N là không trống (vat 'nut'), thùng nặng là không trống (vat 'thung-nang').
+        - daoChieu 'sung' (chương che-sung-hoi): SÚNG LẮP NGƯỢC, shoot() bắn ra SAU (xe giật TỚI) và shoot_back() bắn ra TRƯỚC (xe giật LÙI). Vết lệnh vẫn ghi tên lệnh người chơi gọi.
+          Màn hỏng khai phanCung thiếu shoot_back (nòng sau hỏng) hay thiếu shoot (nòng trước hỏng): gọi lệnh đó → 'lenh-goc-hong'.
+        - Mục tiêu 'day-thung': thắng NGAY khi MỌI thùng nặng nằm trên ô đích. Thùng nằm ở GÓC chết mà không phải ô đích (hai cạnh vuông góc là tường hoặc mép sân; ô băng dẫn ra khỏi góc thì không chết)
+          thì dừng ngay cuối nhịp đó (dungSom = 'thung-ket'). Thùng nặng chỉ thiết kế để đi với mục tiêu 'day-thung', 'toi-co' hoặc 'bong-mo' (làm vật chắn); không đi chung vật nhẹ 'o' trong mục tiêu day-thung.
+        Kết quả chạy có `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}] (ô băng đang tắt) — trạng thái CUỐI; cuaBanDau / nutBanDau lúc xuất phát; sung { dan } (null nếu robot không có súng; dan = số viên
+        còn lại hay null nếu vô hạn). Vết nhịp có `thung` (vị trí thùng cuối nhịp), `cua`, `nut`, `bangTat` (cuối nhịp, chỉ khi sân có cửa / nút) và robot.sung.
 
    CẢM BIẾN KHOẢNG CÁCH (chương `khoang-cach`; xe bánh, xích, omni; nhện thì không vì không có hướng mặt). Robot gắn cảm biến
         khi hamGoc có front_clear / left_clear / right_clear. Ba hàm gốc này TRẢ VỀ True / False (1 / 0 trong nhân):
@@ -216,30 +234,6 @@
           gỗ, có màu hay không đều ném như nhau. Mục tiêu dua-vat như cũ (mọi vật nằm trên đích, đúng màu nếu đích có màu); vật còn trong rổ chưa tính.
         - Cảm biến (front_clear, color…) dùng chung được với máy ném. color() của cảm biến bụng đọc sàn dưới xe kể cả khi vật nằm trong rổ; color() của camera đọc ô trước (nơi load() lấy vật).
 
-   SÚNG BÓNG (chương `sung-bong`; xe bánh, xích, omni; nhện thì không vì không có hướng mặt). Robot gắn tay súng bóng khi hamGoc có shoot
-        (một robot một tay: không đi chung tay kẹp, tấm đẩy, nam châm, máy ném).
-        Ký hiệu sân MỚI:  N  NÚT BẮN: nằm trên tường, chiếm ô như tường (xe không đi vào, lyDoChan 'nut'); trạng thái bat true/false (lúc đầu false).
-                          C  CỬA ĐÓNG lúc đầu;  c  CỬA MỞ lúc đầu (cửa mở là sàn). Cửa đóng chặn xe (dam-tuong vat 'cua', front_clear() = False) và chặn bóng.
-                          Vật và thùng không đặt lên ô N / C / c được. Lớp màu không được tô ô N / C / c.
-        - shoot() chỉ RA LỆNH, wait() cho nhịp trôi. Nhịp có shoot thì xe ĐỨNG YÊN: lệnh bánh / trượt cùng nhịp bị bỏ ('ban-dung-yen', thông tin). Hai shoot cùng nhịp:
-          lệnh sau bị bỏ ('ban-goi-lai', lỗi). Quên wait() sau shoot() → 'quen-wait'. Đạn vô hạn, trừ khi màn khai cfg.danToiDa = n: mỗi phát tốn 1 viên,
-          hết đạn thì shoot() không bắn ('het-dan', lỗi) nhưng vẫn mất nhịp.
-        - BÓNG bay THẲNG theo hướng mặt, từ ô trước mặt, đi ô tới ô TRONG CÙNG NHỊP, dừng ở vật cản đầu tiên: tường cao '#', nút 'N' (trung 'nut'), cửa đóng
-          (trung 'cua'), thùng nặng (trung 'thung'), vật nằm đất (trung 'vat'), bậc thang S (trung 'bac-thang'). Bóng bay QUA hàng rào '=', băng chuyền, cửa mở, ô màu, ô đích, cờ.
-          Ra khỏi sân không trúng gì: 'ban-hut' (thông tin), trung null. Sự kiện của nhịp 'ban' { nhip, tu: ô xe, huong, den: ô bóng tới (ô vật cản; ô cuối cùng trong sân nếu hụt),
-          cuoi: ô trống cuối cùng bóng bay qua, o: ô vật cản | null, trung, soO: số ô bóng bay qua trước khi dừng }.
-        - NÚT: bóng trúng N thì nút ĐỔI trạng thái (bat true ↔ false, sự kiện 'nut-doi' { o, bat }). Bắn hai lần là về như cũ. Mỗi nút điều khiển một nhóm: mặc định
-          MỌI cửa thường (không phải cửa nhịp) và MỌI băng chuyền của sân; cfg.noi = [{ nut: {x,y}, cua: [{x,y}], bang: [{x,y}] }] khai nhóm riêng (nút không có trong noi
-          thì không điều khiển gì; cửa nhịp không điều khiển bằng nút).
-          · BĂNG CHUYỀN đổi NGAY khi nút đổi ('bang-doi' { o, bat: true = băng đang chạy }): băng tắt thì không đẩy xe / thùng (như sàn thường), đếm demBang về 0. Thứ tự trong nhịp:
-            lệnh tay (bắn) → bánh → băng chuyền (theo trạng thái MỚI) → cửa đổi.
-          · CỬA đổi ở CUỐI nhịp ('cua-doi' { o, mo }): nút đổi thì cửa đổi (đóng ↔ mở). Cửa không đóng xuống ô đang có xe, vật hay thùng: giữ mở và ghi 'cua-ket' (thông tin).
-        - CỬA NHỊP (cfg.cuaNhip = [{ x, y, mo, dong, pha }], ô đó phải là C hay c): tự đóng mở theo chu kỳ mo + dong nhịp. Sau t nhịp đã trôi, p = (t + pha) mod (mo + dong);
-          p < mo thì cửa mở. Đổi ở cuối nhịp như mọi cửa. Nút không điều khiển cửa nhịp. front_clear() là False khi cửa trước mặt đang đóng, nên `while not front_clear(): wait()` chờ được.
-        - Tiến vào cửa đóng: dam-tuong vat 'cua'. Cảm biến khoảng cách coi cửa đóng là KHÔNG trống (vat 'cua') và nút N là không trống (vat 'nut').
-        Kết quả chạy có `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}] (ô băng đang tắt) — trạng thái CUỐI; cuaBanDau / nutBanDau lúc xuất phát; sung { dan } (null nếu robot
-        không có súng; dan = số viên còn lại hay null nếu vô hạn). Vết nhịp có `cua`, `nut`, `bangTat` (cuối nhịp, chỉ khi sân có cửa / nút) và robot.sung.
-
    DRONE (chương `drone`; loaiRobot 'drone'). Thân drone nhìn từ trên xuống, BAY nên không có hướng mặt (như nhện): cùng bốn lệnh gốc go_up / go_down / go_left / go_right
         và wait() của nhện, nên go(d) / walk(path) của chương nhện chạy được trên drone mà không sửa. Ký hiệu sân MỚI:  P  Ô SẠC (sàn bình thường; xem PIN).
         - Mỗi lệnh go_*() bay 1 ô và tự tốn đúng 1 NHỊP (nhện: 2 nhịp), không cần wait() sau nó. LƯU Ý so với đề xuất ban đầu ("go_* chỉ ra lệnh, wait() cho nhịp trôi"):
@@ -288,6 +282,8 @@
         - Kết quả chạy có `bongMo` { x, y, huong, diQua, vat } (null nếu không phải mục tiêu bong-mo) và `diQua` [{x,y,da}] (trạng thái CUỐI; mảng rỗng nếu không có ô diQua).
           cham.js nói bằng lời chỗ lệch (lech-bong-mo, chua-qua-diem).
         - Màn nhiều sân: bongMo là mảng song song với san (SanHoc.lopMauCuaSan(m, i).bongMo).
+        - THÙNG MỜ (chương che-sung-hoi, 15/10): bongMo.thung = [{ x, y }]: lúc xong mọi THÙNG NẶNG phải nằm đúng các ô đó, không thừa không thiếu (chấm theo ô, như bongMo.vat; không khai thì không xét thùng).
+          Kết quả `bongMo` có thêm `thung`. Thùng mờ chỉ có nghĩa khi sân có thùng nặng (H, h).
         - VẬT MỜ CÓ MÀU và XE MỜ CẦM VẬT (chương che-tay, cần robot có tay kẹp): bongMo.vat = [{ x, y, mau? }]: mau (red, green, blue, yellow) khai thì vật nằm ô đó phải CÙNG MÀU (chấm theo màu,
           nên hai vật khác màu đổi chỗ mới thắng; màu vật khai bằng lớp vatMau như mọi vật). bongMo.cam = true (hay { mau }): lúc xong tay phải ĐANG CẦM một vật (đúng màu nếu khai); vật đang cầm
           không tính vào bongMo.vat, còn mọi vật khác phải nằm đất đúng các ô trong bongMo.vat (vật vỡ thì không thắng). Kết quả `bongMo` có thêm `cam` (true/false) và `camMau` (màu hay null).
@@ -348,7 +344,6 @@
   var XOAY_NAC = ['trai', 'truoc', 'phai'];     // ba nấc của khớp, từ trái sang phải; lúc đầu 'truoc'
   var TAY_LENH = ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'];
   var TAY_NHOM = { arm_down: 'tu-the', arm_up: 'tu-the', grab: 'kep', release: 'kep', arm_left: 'xoay', arm_right: 'xoay' };
-  var TAY_DAY = ['push'];                       // tay tấm đẩy (chương tam-day): một lệnh gốc push()
   // cảm biến khoảng cách (chương khoang-cach): hàm gốc trả True / False. Giá trị = lệch hướng so với hướng mặt (0 trước, 1 phải, 3 trái)
   var CAM_BIEN_HAM = { front_clear: 0, right_clear: 1, left_clear: 3 };
   // cảm biến màu (chương mau): hàm gốc color() trả chuỗi. Ký hiệu r g b y ↔ tên màu
@@ -368,8 +363,8 @@
   // tay máy ném (chương may-nem): aim(n) đặt tầm (đổi ngay, không tốn nhịp), load() nạp vật ở ô TRƯỚC MẶT vào rổ, throw() ném vật trong rổ; ký hiệu '=' là tường thấp (hàng rào)
   var TAY_NEM = ['aim', 'throw', 'load'];
   var TAM_NEM_TOI_DA = 3;                       // aim(n): n = 1, 2 hoặc 3 ô
-  // tay súng bóng (chương sung-bong): một lệnh gốc shoot(); ký hiệu N nút bắn, C cửa đóng, c cửa mở
-  var TAY_BONG = ['shoot'];
+  // tay SÚNG HƠI (chương sung-hoi, che-sung-hoi): hai lệnh gốc shoot() (bắn ra trước, xe giật lùi) và shoot_back() (bắn ra sau, xe giật tới); ký hiệu N nút bắn, C cửa đóng, c cửa mở
+  var TAY_HOI = ['shoot', 'shoot_back'];
   var CHAT_KY = { s: 'sat', g: 'go', N: 'N', S: 'S' };   // ký tự lớp vatChat → chất: s sắt, g gỗ; N / S = vật NAM CHÂM có cực N / S (docSan đổi thành chat 'nam-cham' + cuc)
   var TAM_HUT = 2;                              // nam châm hút vật SẮT trong 2 ô trước mặt (cực nào cũng hút sắt)
   var TAM_CUC = 3;                              // tầm tác dụng với VẬT NAM CHÂM (hút khác cực, đẩy cùng cực): 3 ô, xa hơn sắt
@@ -392,13 +387,15 @@
     magnet_n: 'magnet_s', magnet_s: 'magnet_n',
     slide_left: 'slide_right', slide_right: 'slide_left',
     crouch: 'stand', stand: 'crouch',
-    arm_left: 'arm_right', arm_right: 'arm_left'
+    arm_left: 'arm_right', arm_right: 'arm_left',
+    shoot: 'shoot_back', shoot_back: 'shoot'
   };
   // đấu dây ngược / hỏng (cfg.daoChieu): bánh nào bị đảo thì lệnh của bánh đó chạy thành lệnh ngược
   var DAO_CHIEU_BANH = ['trai', 'phai'];
   var DAO_CHIEU_CUC = 'cuc';                    // dây cực nam châm đấu ngược (chương che-nam-cham): magnet_n() bật cực S thật, magnet_s() bật cực N thật (xem phần NAM CHÂM)
   var DAO_CHIEU_CAM = 'cam';                    // cảm biến khoảng cách lắp ngược: front_clear() / left_clear() / right_clear() trả NGƯỢC (xem phần ĐẤU DÂY NGƯỢC)
   // mục tiêu: 'toi-co' | 'dua-vat' | 'day-thung' | 'bong-mo' (đến đúng tư thế của "xe mờ" khi chạy xong, xem phần BÓNG MỜ)
+  var DAO_CHIEU_SUNG = 'sung';                  // súng hơi lắp ngược (chương che-sung-hoi): shoot() bắn ra sau (xe giật tới), shoot_back() bắn ra trước (xe giật lùi)
   var DAO_CHIEU_TAY = ['tay', 'kep', 'xoay'];   // tay kẹp lắp ngược (chương che-tay): 'tay' đổi chỗ arm_up ↔ arm_down, 'kep' đổi chỗ grab ↔ release; 'xoay' (chương che-tay-xoay) đổi chỗ arm_left ↔ arm_right (xem phần ĐẤU DÂY NGƯỢC)
   var MUC_TIEU = ['toi-co', 'dua-vat', 'day-thung', 'bong-mo'];
 
@@ -535,7 +532,7 @@
   }
 
   /** Robot loại `loai` có vào được ô (x, y) không? Trả về null nếu được,
-   *  hoặc lý do bị chặn: 'ngoai-san' | 'tuong' | 'rao' | 'nut' | 'bac-thang'. Drone bay qua '=' và 'S'. (Cửa đóng là trạng thái động: chay() tự xét thêm, xem SÚNG BÓNG.) */
+   *  hoặc lý do bị chặn: 'ngoai-san' | 'tuong' | 'rao' | 'nut' | 'bac-thang'. Drone bay qua '=' và 'S'. (Cửa đóng là trạng thái động: chay() tự xét thêm, xem SÚNG HƠI.) */
   function lyDoChan(san, loai, x, y) {
     var c = oTai(san, x, y);
     if (c === null) return 'ngoai-san';
@@ -602,7 +599,7 @@
 
     var hamGoc = cfg.hamGoc || HAM_GOC[loai];                                  // KHAY (xem phần KHAY VÀ PHẦN CỨNG)
     function kiemTenGoc(t) {
-      if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && TAY_DAY.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined && CAM_MAU_HAM.indexOf(t) < 0 && TAY_NAM_CHAM.indexOf(t) < 0 && CAM_TU_HAM.indexOf(t) < 0 && TAY_NEM.indexOf(t) < 0 && TAY_BONG.indexOf(t) < 0 && CAM_PIN_HAM.indexOf(t) < 0) {
+      if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined && CAM_MAU_HAM.indexOf(t) < 0 && TAY_NAM_CHAM.indexOf(t) < 0 && CAM_TU_HAM.indexOf(t) < 0 && TAY_NEM.indexOf(t) < 0 && TAY_HOI.indexOf(t) < 0 && CAM_PIN_HAM.indexOf(t) < 0) {
         throw new Error('Hàm gốc "' + t + '" không thuộc loại robot ' + loai + '.');
       }
     }
@@ -618,18 +615,15 @@
     var coTay = hamGoc.some(function (t) { return TAY_LENH.indexOf(t) >= 0; });
     var coXoay = hamGoc.some(function (t) { return TAY_XOAY.indexOf(t) >= 0; });           // tay XOAY: khớp xoay giữa trái / trước / phải (xem phần TAY XOAY)
     if (coXoay && !laBanh) throw new Error('Tay xoay chỉ gắn lên xe có bánh (xe bánh, xích, omni): nhện và drone không có.');
-    var coDay = hamGoc.some(function (t) { return TAY_DAY.indexOf(t) >= 0; });     // tay tấm đẩy (push)
-    if (coDay && loai === 'nhen') throw new Error('Nhện không gắn tấm đẩy (push).');
-    if (coDay && coTay) throw new Error('Một robot chỉ có một tay: push không đi chung với arm_down, arm_up, grab, release.');
     var coNamCham = hamGoc.some(function (t) { return TAY_NAM_CHAM.indexOf(t) >= 0; });     // tay nam châm (magnet_n / magnet_s / magnet_off)
     if (coNamCham && loai === 'nhen') throw new Error('Nhện không gắn nam châm (nhện không có hướng mặt).');
-    if (coNamCham && (coTay || coDay)) throw new Error('Một robot chỉ có một tay: nam châm không đi chung với tay kẹp hay tấm đẩy.');
+    if (coNamCham && coTay) throw new Error('Một robot chỉ có một tay: nam châm không đi chung với tay kẹp.');
     var coNem = hamGoc.some(function (t) { return TAY_NEM.indexOf(t) >= 0; });                  // tay máy ném (aim / throw / load)
     if (coNem && loai === 'nhen') throw new Error('Nhện không gắn máy ném (nhện không có hướng mặt).');
-    if (coNem && (coTay || coDay || coNamCham)) throw new Error('Một robot chỉ có một tay: máy ném không đi chung với tay kẹp, tấm đẩy hay nam châm.');
-    var coBong = hamGoc.some(function (t) { return TAY_BONG.indexOf(t) >= 0; });                  // tay súng bóng (shoot)
-    if (coBong && loai === 'nhen') throw new Error('Nhện không gắn súng bóng (nhện không có hướng mặt).');
-    if (coBong && (coTay || coDay || coNamCham || coNem)) throw new Error('Một robot chỉ có một tay: súng bóng không đi chung với tay kẹp, tấm đẩy, nam châm hay máy ném.');
+    if (coNem && (coTay || coNamCham)) throw new Error('Một robot chỉ có một tay: máy ném không đi chung với tay kẹp hay nam châm.');
+    var coHoi = hamGoc.some(function (t) { return TAY_HOI.indexOf(t) >= 0; });                  // tay súng hơi (shoot / shoot_back)
+    if (coHoi && loai === 'nhen') throw new Error('Nhện không gắn súng hơi (nhện không có hướng mặt).');
+    if (coHoi && (coTay || coNamCham || coNem)) throw new Error('Một robot chỉ có một tay: súng hơi không đi chung với tay kẹp, nam châm hay máy ném.');
     var coCamBien = hamGoc.some(function (t) { return CAM_BIEN_HAM[t] !== undefined; });     // cảm biến khoảng cách (front_clear…)
     var coCamTu = hamGoc.some(function (t) { return CAM_TU_HAM.indexOf(t) >= 0; });         // cảm biến từ front_metal (gắn vào cảm biến khoảng cách)
     if ((coCamBien || coCamTu) && loai === 'nhen') throw new Error('Nhện không gắn cảm biến khoảng cách (nhện không có hướng mặt).');
@@ -643,9 +637,8 @@
     var coPinCamBien = hamGoc.some(function (t) { return CAM_PIN_HAM.indexOf(t) >= 0; });                  // đo pin battery()
     if (laDrone) {
       if (coTay) throw new Error('Drone không gắn tay kẹp (arm_down, arm_up, grab, release): thân drone chỉ gắn được nam châm treo.');
-      if (coDay) throw new Error('Drone không gắn tấm đẩy (push): thân drone chỉ gắn được nam châm treo.');
       if (coNem) throw new Error('Drone không gắn máy ném (aim, throw, load): thân drone chỉ gắn được nam châm treo.');
-      if (coBong) throw new Error('Drone không gắn súng bóng (shoot): thân drone chỉ gắn được nam châm treo.');
+      if (coHoi) throw new Error('Drone không gắn súng hơi (shoot, shoot_back): thân drone chỉ gắn được nam châm treo.');
       if (coCamBien || coCamTu) throw new Error('Drone không gắn cảm biến khoảng cách hay cảm biến từ (drone không có hướng mặt để đo "phía trước").');
     } else if (coPinCamBien) throw new Error('battery() chỉ dành cho drone (robot có pin).');
     var pinToiDa = null, pin = null;                                         // drone: pin đầy = pin lúc đầu; null = pin vô hạn
@@ -659,15 +652,16 @@
     san.sac.forEach(function (q) { sacSet[q.x + ',' + q.y] = true; });
 
     // đấu dây ngược (xem phần ĐẤU DÂY NGƯỢC): cfg.daoChieu = ['trai'] | ['phai'] | cả hai
-    var dao = { trai: false, phai: false, cam: false, tay: false, kep: false, xoay: false, chan: false };
+    var dao = { trai: false, phai: false, cam: false, tay: false, kep: false, xoay: false, chan: false, sung: false };
     if (cfg.daoChieu !== undefined && cfg.daoChieu !== null) {
       if (!Array.isArray(cfg.daoChieu)) throw new Error('daoChieu phải là mảng, vd ["trai"].');
       if (cfg.daoChieu.length && !laBanh && !(loai === 'nhen' && cfg.daoChieu.every(function (b) { return b === DAO_CHIEU_CHAN; }))) throw new Error('daoChieu chỉ dùng cho robot có hai bánh (xe bánh, xích, omni); nhện chỉ có daoChieu "chan".');
       cfg.daoChieu.forEach(function (b) {
-        if (DAO_CHIEU_BANH.indexOf(b) < 0 && b !== DAO_CHIEU_CAM && b !== DAO_CHIEU_CUC && b !== DAO_CHIEU_CHAN && DAO_CHIEU_TAY.indexOf(b) < 0) throw new Error('daoChieu lạ: "' + b + '" (chỉ có "trai", "phai", "cam", "tay", "kep", "xoay", "cuc" hoặc "chan").');
+        if (DAO_CHIEU_BANH.indexOf(b) < 0 && b !== DAO_CHIEU_CAM && b !== DAO_CHIEU_CUC && b !== DAO_CHIEU_CHAN && b !== DAO_CHIEU_SUNG && DAO_CHIEU_TAY.indexOf(b) < 0) throw new Error('daoChieu lạ: "' + b + '" (chỉ có "trai", "phai", "cam", "tay", "kep", "xoay", "cuc", "sung" hoặc "chan").');
         if (b === DAO_CHIEU_CHAN && loai !== 'nhen') throw new Error('daoChieu "chan" chỉ dùng cho nhện (chân co / duỗi).');
         if (DAO_CHIEU_TAY.indexOf(b) >= 0 && !coTay) throw new Error('daoChieu "' + b + '" cần robot có tay kẹp (hamGoc có arm_down, arm_up, grab, release).');
         if (b === 'xoay' && !coXoay) throw new Error('daoChieu "xoay" cần robot có tay xoay (hamGoc có arm_left, arm_right).');
+        if (b === DAO_CHIEU_SUNG && !coHoi) throw new Error('daoChieu "sung" cần robot có súng hơi (hamGoc có shoot, shoot_back).');
         if (b === DAO_CHIEU_CUC && !coNamCham) throw new Error('daoChieu "cuc" cần robot có tay nam châm (hamGoc có magnet_n, magnet_s, magnet_off).');
         if (b === DAO_CHIEU_CAM && !coCamBien) throw new Error('daoChieu "cam" cần robot có cảm biến khoảng cách (hamGoc có front_clear / left_clear / right_clear).');
         dao[b] = true;
@@ -696,6 +690,16 @@
         var qv = { x: q.x, y: q.y }; if (q.mau) qv.mau = q.mau;                                // vật mờ có màu: chấm cả màu, không chỉ ô
         bongMo.vat.push(qv);
       });
+      bongMo.thung = null;                                                                   // thùng mờ (chương che-sung-hoi): lúc xong mọi thùng nặng nằm đúng các ô này; null = không xét
+      if (bm.thung !== undefined && bm.thung !== null) {
+        if (!Array.isArray(bm.thung)) throw new Error('bongMo.thung phải là mảng ô { x, y }.');
+        bongMo.thung = [];
+        bm.thung.forEach(function (q) {
+          if (!q || !laSoNguyen(q.x) || !laSoNguyen(q.y)) throw new Error('bongMo.thung phải là mảng ô { x, y }.');
+          if (lyDoChan(san, loai, q.x, q.y) || oTai(san, q.x, q.y) === 'S') throw new Error('Thùng mờ nằm trong chỗ thùng không đứng được: (' + q.x + ', ' + q.y + ').');
+          bongMo.thung.push({ x: q.x, y: q.y });
+        });
+      }
       bongMo.cam = false; bongMo.camMau = null;                                              // cam: lúc xong xe phải ĐANG CẦM một vật (không tính vào bongMo.vat); camMau: màu vật phải cầm (tuỳ chọn)
       if (bm.cam) {
         if (!coTay && !coNamCham) throw new Error('bongMo.cam cần robot có tay kẹp hay nam châm (hamGoc có arm_down, arm_up, grab, release hoặc magnet_n, magnet_s, magnet_off).');
@@ -727,15 +731,14 @@
     var chanCho = null;                         // nhện: lệnh crouch() / stand() đang chờ nhịp: {ten, dongPy}
     var nhayBuoc = false;                       // nhện: nhịp đầu của bước vừa duỗi chân từ lúc đang co → nhịp thứ hai của bước là cú NHẢY (bật qua một ô)
     var truotCho = null;                        // omni: lệnh trượt đang chờ wait(): {ten, dongPy, bien:-1|+1}
-    var pushCho = null;                         // tấm đẩy: lệnh push() đang chờ wait(): {ten, dongPy}
     var ncCho = null;                           // nam châm: lệnh magnet_n() / magnet_s() / magnet_off() đang chờ wait(): {ten, dongPy, cuc} (cuc null = ngắt; đã tính daoChieu 'cuc')
     var nc = { cuc: null, bat: false, cam: null, lenhCuc: null };   // nam châm: cực đang bật (null = tắt), bat = có cực, id vật đang dính, lenhCuc = lệnh magnet_n / magnet_s đã đặt cực đó {ten, dongPy} (để chẩn đoán chỉ đúng dòng)
     var nem = { tam: 1, ro: null };             // máy ném: tầm đang đặt (1–3), id vật trong rổ
     var nemCho = null;                          // máy ném: lệnh load() / throw() đang chờ wait(): {ten, dongPy, tam}
-    var bongCho = null;                         // súng bóng: lệnh shoot() đang chờ wait(): {ten, dongPy}
-    var dan = null;                             // súng bóng: số viên còn lại (null = vô hạn)
+    var hoiCho = null;                          // súng hơi: lệnh shoot() / shoot_back() đang chờ wait(): {ten, dongPy, sau} (sau = bắn ra SAU thật, đã tính daoChieu 'sung')
+    var dan = null;                             // súng hơi: số viên còn lại (null = vô hạn)
     if (cfg.danToiDa !== undefined && cfg.danToiDa !== null) {
-      if (!coBong) throw new Error('danToiDa chỉ dùng cho robot có súng bóng (hamGoc có shoot).');
+      if (!coHoi) throw new Error('danToiDa chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
       if (typeof cfg.danToiDa !== 'number' || Math.floor(cfg.danToiDa) !== cfg.danToiDa || cfg.danToiDa < 0) throw new Error('danToiDa phải là số nguyên không âm.');
       dan = cfg.danToiDa;
     }
@@ -801,6 +804,7 @@
       if (c === '#' || c === 'N') return 'tuong';
       if (c === '=') return 'rao';
       if (c === 'S') return 'bac-thang';
+      if (cuaDong(x, y)) return 'cua';                                    // cửa đang đóng chặn thùng như chặn xe
       if (thungTai(x, y)) return 'thung-nang';
       if (rb.x === x && rb.y === y && !laDrone) return 'xe';              // drone lơ lửng trên thùng, không chiếm ô
       if (vatNamTai(x, y)) return 'vat';
@@ -887,6 +891,10 @@
       if (!bongMo || rb.x !== bongMo.x || rb.y !== bongMo.y) return false;
       if (bongMo.huong !== null && rb.huong !== bongMo.huong) return false;
       if (!diQua.every(function (q) { return q.da; })) return false;
+      if (bongMo.thung) {                                                  // thùng mờ: thùng thật nằm đúng các ô đó, không thừa không thiếu
+        if (thungs.length !== bongMo.thung.length) return false;
+        if (!bongMo.thung.every(function (q) { return !!thungTai(q.x, q.y); })) return false;
+      }
       if (bongMo.xoay && tay.xoay !== bongMo.xoay) return false;           // tay xoay: lúc xong khớp phải ở đúng nấc của xe mờ
       if (bongMo.chan && chan !== bongMo.chan) return false;               // nhện: lúc xong chân phải ở đúng tư thế (co / duỗi) của bóng mờ
       if (bongMo.cam) {                                                    // xe mờ đang cầm vật: lúc xong tay phải đang giữ một vật (đúng màu nếu khai)
@@ -1048,7 +1056,7 @@
       var banhGhi = { trai: 0, phai: 0 };
       var truotGhi = 0;
       // lệnh đi / bánh gây ra chuyện của nhịp này (cho chẩn đoán trỏ đúng dòng): lệnh trượt, lệnh bánh đầu tiên, hay lệnh go_* của nhện
-      var lenhNhip = (hanhDong.kieu === 'banh' ? (hanhDong.truot ? { ten: hanhDong.truot.ten, dongPy: hanhDong.truot.dongPy } : hanhDong.lenhBanh) : hanhDong.lenhDi) || (hanhDong.bong ? { ten: hanhDong.bong.ten, dongPy: hanhDong.bong.dongPy } : null) || null;
+      var lenhNhip = (hanhDong.kieu === 'banh' ? (hanhDong.truot ? { ten: hanhDong.truot.ten, dongPy: hanhDong.truot.dongPy } : hanhDong.lenhBanh) : hanhDong.lenhDi) || (hanhDong.hoi ? { ten: hanhDong.hoi.ten, dongPy: hanhDong.hoi.dongPy } : null) || null;
       var coVo = false;
 
       function thuDi(huongDi, soBuoc, ma) {
@@ -1057,20 +1065,8 @@
         if (!ly && cuaDong(nx, ny)) ly = 'cua';                           // cửa đang đóng chặn như tường
         if (!ly && loai === 'nhen' && chan !== 'co' && oTai(san, nx, ny) === 'n') ly = 'gam-thap';       // gầm thấp: nhện phải đang co chân mới chui vào được
         var tn = (ly || laDrone) ? null : thungTai(nx, ny);               // drone bay qua thùng nặng
-        if (tn) {                                                         // ô có thùng nặng
-          if (coDay && ma === 'tien') {                                   // tấm đẩy: tiến thì đẩy thùng 1 ô nếu ô sau thùng trống
-            var bx = nx + v[0], by = ny + v[1], lyT = oThungChan(bx, by);
-            if (lyT) {
-              var ec = { ma: 'thung-chan', nhip: nhip, id: tn.id, o: { x: nx, y: ny }, den: { x: bx, y: by }, vat: lyT, kieu: 'tien', lenh: lenhNhip };
-              sk.push(ec); suKienChan.push(ec);
-              return;
-            }
-            tn.x = bx; tn.y = by; tn.dem = 0;
-            sk.push({ ma: 'thung-di', id: tn.id, tu: { x: nx, y: ny }, den: { x: bx, y: by }, nguon: 'xe' });
-            rb.x = nx; rb.y = ny; sk.push({ ma: ma, den: { x: nx, y: ny } });
-            return;
-          }
-          var et = { ma: 'dam-tuong', nhip: nhip, den: { x: nx, y: ny }, tu: { x: rb.x, y: rb.y }, vat: 'thung-nang', coDay: coDay, kieu: ma, lenh: lenhNhip };
+        if (tn) {                                                         // ô có thùng nặng: xe húc bằng bánh = đâm như tường (chỉ cú giật của súng hơi mới dời được thùng)
+          var et = { ma: 'dam-tuong', nhip: nhip, den: { x: nx, y: ny }, tu: { x: rb.x, y: rb.y }, vat: 'thung-nang', kieu: ma, lenh: lenhNhip };
           sk.push(et); suKienChan.push(et);
           return;
         }
@@ -1127,25 +1123,6 @@
         var tu = { x: rb.x, y: rb.y };
         rb.x = dx; rb.y = dy;
         sk.push({ ma: 'nhay', tu: tu, qua: { x: mx, y: my }, den: { x: dx, y: dy } });
-      }
-
-      /** push(): thùng ngay trước mặt xe trượt thẳng tới khi gặp vật cản. */
-      function pushManh(lenhPush) {
-        var v = VEC[rb.huong], fx = rb.x + v[0], fy = rb.y + v[1], tn = thungTai(fx, fy);
-        if (!tn) {
-          var eh = { ma: 'day-hut', nhip: nhip, o: { x: fx, y: fy }, lenh: lenhPush || null };
-          sk.push(eh); suKienChan.push(eh);
-          return;
-        }
-        var cx = fx, cy = fy, soO = 0;
-        while (!oThungChan(cx + v[0], cy + v[1])) { cx += v[0]; cy += v[1]; soO++; }
-        if (!soO) {
-          var ec2 = { ma: 'thung-chan', nhip: nhip, id: tn.id, o: { x: fx, y: fy }, den: { x: fx + v[0], y: fy + v[1] }, vat: oThungChan(fx + v[0], fy + v[1]), kieu: 'push', lenh: lenhPush || null };
-          sk.push(ec2); suKienChan.push(ec2);
-          return;
-        }
-        tn.x = cx; tn.y = cy; tn.dem = 0;
-        sk.push({ ma: 'thung-di', id: tn.id, tu: { x: fx, y: fy }, den: { x: cx, y: cy }, nguon: 'truot', soO: soO });
       }
 
       /** Băng chuyền đẩy thùng nặng: nằm trên băng đủ 2 nhịp liên tiếp thì bị đẩy 1 ô theo mũi tên nếu ô kế trống. */
@@ -1276,18 +1253,19 @@
         }
       }
 
-      /** SÚNG BÓNG: shoot() bắn một quả bóng thẳng theo hướng mặt, bay ô tới ô trong cùng nhịp, dừng ở vật cản đầu tiên; trúng nút N thì nút đổi (băng đổi ngay, cửa đổi cuối nhịp). */
-      function banBong(l) {
+      /** SÚNG HƠI (a): bắn một quả bóng thẳng theo hướng `hb` (shoot: hướng mặt; shoot_back: ngược mặt, bay từ ô sát đuôi), bay ô tới ô trong cùng nhịp, dừng ở vật cản đầu tiên; trúng nút N thì nút đổi
+       *  (băng đổi ngay, cửa đổi cuối nhịp). Trả về false nếu hết đạn (không bắn, không giật), không thì { trung, o, cuoi, soO } (thông tin 'ban-hut' / 'ban-bi-chan' do thongTinBan ghi SAU cú giật). */
+      function banBong(l, hb) {
         var lenhGhi = l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null;
         if (dan !== null) {
           if (dan <= 0) {
             var eh = { ma: 'het-dan', nhip: nhip, lenh: lenhGhi };
             sk.push(eh); suKienChan.push(eh);
-            return;
+            return false;
           }
           dan--;
         }
-        var v = VEC[rb.huong], x = rb.x, y = rb.y, d = 0, cuoi = { x: rb.x, y: rb.y }, trung = null, oVC = null;
+        var v = VEC[hb], x = rb.x, y = rb.y, d = 0, cuoi = { x: rb.x, y: rb.y }, trung = null, oVC = null;
         for (;;) {
           x += v[0]; y += v[1]; d++;
           var c = oTai(san, x, y);
@@ -1302,19 +1280,9 @@
           if (ly) { trung = ly; oVC = { x: x, y: y }; break; }
           cuoi = { x: x, y: y };
         }
-        sk.push({ ma: 'ban', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: rb.huong, den: oVC || cuoi, cuoi: cuoi, o: oVC, trung: trung, soO: d - 1 });
-        if (trung === null) {
-          var ek = { ma: 'ban-hut', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: rb.huong, cuoi: cuoi, soO: d - 1, lenh: lenhGhi };
-          sk.push(ek); suKienChan.push(ek);
-          return;
-        }
-        if (trung !== 'nut') {
-          if (nuts.length) {                                                    // sân có nút mà bóng bị chặn ở thứ khác: thông tin
-            var eb = { ma: 'ban-bi-chan', nhip: nhip, o: oVC, vat: trung, lenh: lenhGhi };
-            sk.push(eb); suKienChan.push(eb);
-          }
-          return;
-        }
+        sk.push({ ma: 'ban', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, den: oVC || cuoi, cuoi: cuoi, o: oVC, trung: trung, soO: d - 1 });
+        var kqBan = { trung: trung, o: oVC, cuoi: cuoi, soO: d - 1 };
+        if (trung !== 'nut') return kqBan;
         var n = nutTai[oVC.x + ',' + oVC.y];
         n.bat = !n.bat;
         sk.push({ ma: 'nut-doi', nhip: nhip, o: { x: n.x, y: n.y }, bat: n.bat });
@@ -1325,6 +1293,56 @@
           sk.push({ ma: 'bang-doi', nhip: nhip, o: { x: +kp[0], y: +kp[1] }, bat: !bangTat[k] });
         });
         n.cua.forEach(function (dc) { dc.doi = !dc.doi; });                     // cửa đổi ở CUỐI nhịp
+        return kqBan;
+      }
+
+      /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật của phát bắn đó chẳng dời được gì
+       *  (xe và thùng đứng yên): phát bắn mà xe / thùng đi được một đoạn là phát bắn có ích, bóng đập vào tường là chuyện thường. */
+      function thongTinBan(kb, l, hb, giatCoDoi) {
+        if (kb.trung === 'nut' || giatCoDoi) return;
+        var lenhGhi = l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null;
+        if (kb.trung === null) {
+          var ek = { ma: 'ban-hut', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, cuoi: kb.cuoi, soO: kb.soO, lenh: lenhGhi };
+          sk.push(ek); suKienChan.push(ek);
+        } else if (nuts.length) {                                              // sân có nút mà bóng bị chặn ở thứ khác
+          var eb = { ma: 'ban-bi-chan', nhip: nhip, o: kb.o, vat: kb.trung, sau: !!l.sau, lenh: lenhGhi };
+          sk.push(eb); suKienChan.push(eb);
+        }
+      }
+
+      /** SÚNG HƠI (b): GIẬT. Bóng bay theo hướng `hb` thì xe giật ngược lại 1 ô. Ô giật vào bị chặn (tường, mép sân, cửa đóng, nút, hàng rào, bậc thang, vật nằm đất) thì xe đứng yên;
+       *  có THÙNG NẶNG thì thùng trượt thẳng theo hướng giật tới vật cản đầu tiên, xe đứng yên. Trả về true nếu xe hay thùng dời được. */
+      function giatXe(hb, lenhGhi) {
+        var hg = (hb + 2) % 4, v = VEC[hg], tu = { x: rb.x, y: rb.y }, nx = rb.x + v[0], ny = rb.y + v[1];
+        var ly = lyDoChan(san, loai, nx, ny);
+        if (!ly && cuaDong(nx, ny)) ly = 'cua';
+        var tn = ly ? null : thungTai(nx, ny);
+        if (tn) {                                                              // thùng nặng ngay sau xe: nhận lực, trượt thẳng ra xa
+          var cx = nx, cy = ny, soO = 0;
+          while (!oThungChan(cx + v[0], cy + v[1])) { cx += v[0]; cy += v[1]; soO++; }
+          if (!soO) {
+            var ec = { ma: 'thung-chan', nhip: nhip, id: tn.id, o: { x: nx, y: ny }, den: { x: nx + v[0], y: ny + v[1] }, vat: oThungChan(nx + v[0], ny + v[1]), kieu: 'giat', lenh: lenhGhi };
+            sk.push(ec); suKienChan.push(ec);
+          } else {
+            tn.x = cx; tn.y = cy; tn.dem = 0;
+            sk.push({ ma: 'thung-di', id: tn.id, tu: { x: nx, y: ny }, den: { x: cx, y: cy }, nguon: 'giat', soO: soO });
+          }
+          sk.push({ ma: 'giat', nhip: nhip, tu: tu, den: tu, huong: hg, di: false, vat: 'thung-nang', thung: tn.id });
+          return soO > 0;
+        }
+        if (!ly) {
+          var vn = vatNamTai(nx, ny);
+          if (vn) ly = 'vat';
+        }
+        if (ly) {                                                              // bị chặn: xe đứng yên (rung tại chỗ)
+          sk.push({ ma: 'giat', nhip: nhip, tu: tu, den: tu, huong: hg, di: false, vat: ly, thung: null });
+          var eg = { ma: 'giat-chan', nhip: nhip, tu: tu, den: { x: nx, y: ny }, vat: ly, huong: hg, lenh: lenhGhi };
+          sk.push(eg); suKienChan.push(eg);
+          return false;
+        }
+        rb.x = nx; rb.y = ny;
+        sk.push({ ma: 'giat', nhip: nhip, tu: tu, den: { x: nx, y: ny }, huong: hg, di: true, vat: null, thung: null });
+        return true;
       }
 
       /** Cuối nhịp: cửa đổi theo nút (đã bị bắn trong nhịp) hay theo chu kỳ (cửa nhịp). Cửa không đóng xuống ô đang có xe / vật / thùng: giữ mở ('cua-ket'). */
@@ -1442,23 +1460,17 @@
           if (loai === 'xich') xichThoi(sk);
           apNem(hanhDong.nem);
         }
-        else if (coBong && hanhDong.bong) {                                        // nhịp có shoot(): xe đứng yên, lệnh bánh / trượt bị bỏ
+        else if (coHoi && hanhDong.hoi) {                                          // nhịp có shoot() / shoot_back(): bắn rồi giật; lệnh bánh / trượt cùng nhịp bị bỏ
           banhGhi = { trai: 0, phai: 0 };
+          var lh = hanhDong.hoi;
           if (t !== 0 || p !== 0 || tr) {
-            var eby = { ma: 'ban-dung-yen', nhip: nhip, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : hanhDong.lenhBanh) || null, ban: { ten: 'shoot', dongPy: hanhDong.bong.dongPy } };
+            var eby = { ma: 'ban-dung-yen', nhip: nhip, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : hanhDong.lenhBanh) || null, ban: { ten: lh.ten, dongPy: lh.dongPy } };
             sk.push(eby); suKienChan.push(eby);
           }
           if (loai === 'xich') xichThoi(sk);
-          banBong(hanhDong.bong);
-        }
-        else if (coDay && hanhDong.push) {                                         // nhịp có push(): xe đứng yên, lệnh bánh / trượt bị bỏ
-          banhGhi = { trai: 0, phai: 0 };
-          if (t !== 0 || p !== 0 || tr) {
-            var ey = { ma: 'day-dung-yen', nhip: nhip, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : hanhDong.lenhBanh) || null, push: { ten: 'push', dongPy: hanhDong.push.dongPy } };
-            sk.push(ey); suKienChan.push(ey);
-          }
-          if (loai === 'xich') xichThoi(sk);
-          pushManh(hanhDong.push);
+          var hb = lh.sau ? (rb.huong + 2) % 4 : rb.huong;
+          var kb = banBong(lh, hb);
+          if (kb) thongTinBan(kb, lh, hb, giatXe(hb, lh.dongPy ? { ten: lh.ten, dongPy: lh.dongPy } : null));
         }
         else if (coTay && tay.tuThe === 'duoi' && (tr || t !== 0 || p !== 0)) {   // (c) bánh chạy — nhưng tay vướng sàn
           var ev = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : hanhDong.lenhBanh) || null };
@@ -1567,7 +1579,7 @@
       if (coNamCham) { r.namCham = chupNamCham(); mucVet.vat = chupVat(); }
       if (coNem) { r.nem = chupNem(); mucVet.vat = chupVat(); }
       if (thungs.length) mucVet.thung = chupThung();
-      if (coBong) r.sung = { dan: dan };
+      if (coHoi) r.sung = { dan: dan };
       if (diQua.length) mucVet.diQua = chupDiQua();
       if (cuas.length) mucVet.cua = chupCua();
       if (nuts.length) { mucVet.nut = chupNut(); mucVet.bangTat = chupBangTat(); }
@@ -1660,8 +1672,8 @@
         if (laBanh) {
           var lenhBanh = null;                                   // lệnh bánh đầu tiên của nhịp (để chỉ ra khi tay vướng sàn)
           lenhTon.forEach(function (x) { if (!lenhBanh && BANH_LENH[x.ten]) lenhBanh = { ten: x.ten, dongPy: x.dongPy }; });
-          var h = { kieu: 'banh', trai: lenh.trai, phai: lenh.phai, lenhBanh: lenhBanh, tay: rutTay(), truot: truotCho, push: pushCho, nc: ncCho, nem: nemCho, bong: bongCho };
-          lenh.trai = 0; lenh.phai = 0; lenhTon = []; truotCho = null; pushCho = null; ncCho = null; nemCho = null; bongCho = null;
+          var h = { kieu: 'banh', trai: lenh.trai, phai: lenh.phai, lenhBanh: lenhBanh, tay: rutTay(), truot: truotCho, nc: ncCho, nem: nemCho, hoi: hoiCho };
+          lenh.trai = 0; lenh.phai = 0; lenhTon = []; truotCho = null; ncCho = null; nemCho = null; hoiCho = null;
           return motNhip(h);
         }
         var hw = { kieu: 'nhen', huong: null, tay: rutTay(), chan: chanCho };
@@ -1721,21 +1733,12 @@
         lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
         return false;
       }
-      if (yc.ten === 'shoot') {                                  // súng bóng: shoot() chỉ ra lệnh, chờ nhịp
-        if (bongCho) {
-          suKienChan.push({ ma: 'ban-goi-lai', nhip: nhip + 1, ten: yc.ten, dongPy: yc.dong, truoc: { ten: bongCho.ten, dongPy: bongCho.dongPy } });
+      if (TAY_HOI.indexOf(yc.ten) >= 0) {                        // súng hơi: shoot() / shoot_back() chỉ ra lệnh, chờ nhịp (bắn rồi giật)
+        if (hoiCho) {
+          suKienChan.push({ ma: 'ban-goi-lai', nhip: nhip + 1, ten: yc.ten, dongPy: yc.dong, truoc: { ten: hoiCho.ten, dongPy: hoiCho.dongPy } });
           return false;
         }
-        bongCho = { ten: yc.ten, dongPy: yc.dong };
-        lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
-        return false;
-      }
-      if (yc.ten === 'push') {                                   // tấm đẩy: push() chỉ ra lệnh, chờ nhịp
-        if (pushCho) {
-          suKienChan.push({ ma: 'push-goi-lai', nhip: nhip + 1, ten: yc.ten, dongPy: yc.dong, truoc: { ten: pushCho.ten, dongPy: pushCho.dongPy } });
-          return false;
-        }
-        pushCho = { ten: yc.ten, dongPy: yc.dong };
+        hoiCho = { ten: yc.ten, dongPy: yc.dong, sau: (yc.ten === 'shoot_back') !== dao.sung };        // daoChieu 'sung': shoot() bắn ra sau, shoot_back() bắn ra trước
         lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
         return false;
       }
@@ -1806,7 +1809,7 @@
     return {
       thang: thang, nhip: nhip, robot: chup(), loi: loi, vet: vet,
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
-      tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coBong ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
+      tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coHoi ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
       cua: chupCua(), nut: chupNut(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau,
       thung: chupThung(), thungBanDau: thungBanDau,
       bongMo: bongMo, diQua: chupDiQua(),
@@ -1818,8 +1821,8 @@
   }
 
   var API = {
-    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_XOAY: TAY_XOAY, XOAY_NAC: XOAY_NAC, TAY_NHOM: TAY_NHOM,TAY_DAY: TAY_DAY, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
-    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_BONG: TAY_BONG, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan,
+    VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_XOAY: TAY_XOAY, XOAY_NAC: XOAY_NAC, TAY_NHOM: TAY_NHOM, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
+    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan,
     CHAN_LENH: CHAN_LENH,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };

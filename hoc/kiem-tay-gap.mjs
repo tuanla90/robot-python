@@ -755,11 +755,11 @@ console.log('\n== 17. Luật vật mới (14/10): vật chiếm ô với MỌI t
   kiem('vật ở sau lưng không ảnh hưởng front_clear()', doc(k2)[0].trong === true);
 
   // ---- thùng nặng không bị đẩy vào ô có vật; thùng vẫn chiếm ô
-  const HP = ['left_move', 'right_move', 'wait', 'push'];
-  const t1 = run('banh', HP, ['.Ho.'], { x: 0, y: 0, huong: 1 }, L('left_move()', 'right_move()', 'wait()'));
-  kiem('tấm đẩy: tiến vào thùng mà ô sau thùng có vật thì thung-chan (vat "vat"): xe và thùng đứng yên', maSK(t1, 'thung-chan').length === 1 && maSK(t1, 'thung-chan')[0].vat === 'vat' && vt(t1.robot) === '0,0' && vt(t1.thung[0]) === '1,0', J(t1.suKien));
-  const t2 = run('banh', HP, ['.H.o'], { x: 0, y: 0, huong: 1 }, L('push()', 'wait()'));
-  kiem('push(): thùng trượt tới sát vật thì dừng (ô vật chặn như tường) ở (2,0)', vt(t2.thung[0]) === '2,0', J(t2.suKien));
+  const HP = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'shoot', 'shoot_back'];
+  const t1 = run('banh', HP, ['.Ho.'], { x: 0, y: 0, huong: 1 }, L('shoot_back()', 'wait()'));
+  kiem('súng hơi: cú giật vào thùng mà ô sau thùng có vật thì thung-chan (vat "vat"): xe và thùng đứng yên', maSK(t1, 'thung-chan').length === 1 && maSK(t1, 'thung-chan')[0].vat === 'vat' && vt(t1.robot) === '0,0' && vt(t1.thung[0]) === '1,0', J(t1.suKien));
+  const t2 = run('banh', HP, ['.H.o'], { x: 0, y: 0, huong: 1 }, L('shoot_back()', 'wait()'));
+  kiem('shoot_back(): thùng trượt tới sát vật thì dừng (ô vật chặn như tường) ở (2,0)', vt(t2.thung[0]) === '2,0', J(t2.suKien));
   // ---- tay 'tren' + release: vật vỡ ở ô trước mặt (hay ô xe nếu ô trước ngoài sân)
   const v2 = run('banh', BANH.concat(TAY), ['...', '.o.', '...'], { x: 1, y: 2, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'arm_up()', 'release()', 'wait()'));
   kiem('xe cầm vật tới sát mép sân rồi thả từ tay nâng: vật vỡ, ô vỡ = ô xe đứng (vì ô trước ngoài sân)', v2.vat[0].trangThai === 'vo' && maSK(v2, 'vat-vo').length === 1 && vt(maSK(v2, 'vat-vo')[0].o) === '1,0', J(v2.suKien));

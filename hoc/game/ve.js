@@ -162,22 +162,28 @@
     nutban: ['xxxxxxxxxxx', 'x.........x', 'x..xxxxx..x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x.xxxxxxx.x', 'x..xxxxx..x', 'x.........x', 'xxxxxxxxxxx'],
     sac: ['.....xxxx', '....xxxx.', '...xxxx..', '..xxxx...', '.xxxxxxxx', 'xxxxxxxx.', '....xxx..', '...xxx...', '..xxx....', '..xx.....', '..x......'],
     pin: ['xxxxxxxxxx..', 'x........x..', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x.xx.xx..xxx', 'x........x..', 'xxxxxxxxxx..'],
+    thung: ['xxxxxxxxxxx', 'xoxxxxxxxox', 'xxoxxxxxoxx', 'xxxoxxxoxxx', 'xxxxoxoxxxx', 'xxxxxoxxxxx', 'xxxxoxoxxxx', 'xxxoxxxoxxx', 'xxoxxxxxoxx', 'xoxxxxxxxox', 'xxxxxxxxxxx'],
+    bac: ['........xxx', '........xxx', '.....xxxxxx', '.....xxxxxx', '..xxxxxxxxx', '..xxxxxxxxx', 'xxxxxxxxxxx', 'xxxxxxxxxxx'],
+    gam: ['xxxxxxxxxxx', 'xxxxxxxxxxx', 'xxooooooxxx', 'xo.......ox', 'x.........x', 'x.........x'],
+    ho: ['...xxxxx...', '.xxooooxxx.', 'xxoooooooxx', 'xooooooooox', 'xxoooooooxx', '.xxooooxxx.', '...xxxxx...'],
+    bang: ['xxxxxxxxxxx', 'xwxxxwxxxwx', 'xxwxxxwxxxw', 'xwxxxwxxxwx', 'xxxxxxxxxxx', '.o.......o.'],
     cua: ['xxxxxxxxxxx', 'xx...x...xx', 'xx...x...xx', 'xx.x.x.x.xx', 'xx...x...xx', 'xx...x...xx', 'xx...x...xx', 'xxxxxxxxxxx'],
-    // đèn theo bộ phận robot (den-bo-phan.js): hình nhỏ 9 pixel, sáng trong nhịp bộ phận đó chạy
-    denBanh: ['..xxxxx..', '.xx...xx.', 'xx..x..xx', 'x..xxx..x', 'xx..x..xx', '.xx...xx.', '..xxxxx..'],
-    denTayLen: ['....x....', '...xxx...', '..xxxxx..', '....x....', '....x....', '....x....', '.xxxxxxx.'],
-    denTayXuong: ['.xxxxxxx.', '....x....', '....x....', '....x....', '..xxxxx..', '...xxx...', '....x....'],
-    denXoay: ['..xxxxx..', '.xx...xx.', 'xxx...xxx', '.x.....x.', '....x....', '...xxx...', '....x....'],
-    denKepMo: ['x.......x', 'xx.....xx', '.xx...xx.', '..xx.xx..', '...xxx...', '....x....', '....x....'],
-    denKepDong: ['...x.x...', '...x.x...', '...xxx...', '..xxxxx..', '...xxx...', '....x....', '....x....'],
-    denNamCham: ['xx.....xx', 'xx.....xx', 'xx.....xx', 'xx.....xx', 'xxx...xxx', '.xxxxxxx.', '..xxxxx..'],
-    denNem: ['......xx.', '.....xxxx', '....xx.xx', '...xx....', '..xx.....', 'xxxxxxxxx', '.x.....x.'],
-    denSung: ['xxxxxxxx.', 'xxxxxxxxx', 'xxxxxxxx.', '..xxx....', '..xx.....', '..xx.....'],
-    denDay: ['x..x.....', 'x..xx....', 'x..xxx...', 'xxxxxxxx.', 'x..xxx...', 'x..xx....', 'x..x.....'],
-    denCam: ['..xxxxx..', '.x.....x.', 'x..xxx..x', 'x.xxxxx.x', 'x..xxx..x', '.x.....x.', '..xxxxx..'],
-    denTruot: ['..x...x..', '.xx...xx.', 'xxxxxxxxx', '.xx...xx.', '..x...x..'],
-    denChan: ['x.x...x.x', '.x.xxx.x.', '..xxxxx..', '.x.xxx.x.', 'x.x...x.x'],
-    denCanh: ['xxx...xxx', '.xx...xx.', '....x....', '..xxxxx..', '....x....', '.xx...xx.', 'xxx...xxx'],
+    // ICON BỘ PHẬN 11×11 (15/10): dùng chung cho đèn nhịp (den-bo-phan.js) và tên thẻ khay (thanh-phan.js); x = màu chính, o = chi tiết tối, w = chi tiết sáng
+    denBanh: ['...xxxxx...', '..xxxxxxx..', '.xxx...xxx.', 'xxx.....xxx', 'xx...w...xx', 'xx..wow..xx', 'xx...w...xx', 'xxx.....xxx', '.xxx...xxx.', '..xxxxxxx..', '...xxxxx...'],
+    denXich: ['..xxxxxxx..', '.xoxoxoxox.', 'xx.......xx', 'x..w...w..x', 'x.wow.wow.x', 'x..w...w..x', 'xx.......xx', '.xoxoxoxox.', '..xxxxxxx..'],
+    denTruot: ['....x......', '...xx......', '..xxxxxxxx.', '...xx......', '....x......', '...........', '......x....', '......xx...', '.xxxxxxxx..', '......xx...', '......x....'],
+    denTayLen: ['.....x.....', '....xxx....', '...xxxxx...', '.....x.....', '.....x.....', '....xwx....', '.....x.....', '.....x.....', '.....x.....', '..xxxxxxx..', '..xxxxxxx..'],
+    denTayXuong: ['..xxxxxxx..', '..xxxxxxx..', '.....x.....', '.....x.....', '.....x.....', '....xwx....', '.....x.....', '.....x.....', '...xxxxx...', '....xxx....', '.....x.....'],
+    denXoay: ['...xxxxx...', '.xxx...xxx.', 'xxx.....xxx', '.x.......x.', '...........', '....xwx....', '.....x.....', '.....x.....', '.....x.....', '...xxxxx...'],
+    denKepMo: ['x.........x', 'xx.......xx', '.xx.....xx.', '..xx...xx..', '...xx.xx...', '....xxx....', '....xwx....', '.....x.....', '.....x.....', '....xxx....'],
+    denKepDong: ['...xx.xx...', '...x.w.x...', '...x.w.x...', '...xx.xx...', '...xxxxx...', '....xxx....', '....xwx....', '.....x.....', '.....x.....', '....xxx....'],
+    denNamCham: ['www.....www', 'www.....www', 'xxx.....xxx', 'xxx.....xxx', 'xxx.....xxx', 'xxxx...xxxx', '.xxxxxxxxx.', '..xxxxxxx..'],
+    denNem: ['........ww.', '.......wwww', '.......xww.', '......xx...', '.....xx....', '....xx.....', '...xx......', '..xxx......', 'xxxxxxxxxxx', '.w.......w.'],
+    denSung: ['....xxx....', '...xxxxx...', 'w.xxxwxxx.w', 'wwxxwwwxxww', 'w.xxxwxxx.w', '...xxxxx...', '....xxx....'],
+    denCam: ['...xxxxx...', '.xxwwwwwxx.', 'xxwwooowwxx', 'xwwwooowwwx', 'xxwwooowwxx', '.xxwwwwwxx.', '...xxxxx...'],
+    denChan: ['x.x.....x.x', '.x.x...x.x.', '..x.xxx.x..', '...xxwxx...', '..xxxxxxx..', '...xxwxx...', '..x.xxx.x..', '.x.x...x.x.', 'x.x.....x.x'],
+    denCanh: ['www.....www', 'wxw.....wxw', 'www.....www', '...x...x...', '....xxx....', '....xox....', '....xxx....', '...x...x...', 'www.....www', 'wxw.....wxw', 'www.....www'],
+    denLogic: ['..x.x.x.x..', '.xxxxxxxxx.', 'xxxxxxxxxxx', '.xxwwwwwxx.', 'xxxw...wxxx', '.xxw.w.wxx.', 'xxxw...wxxx', '.xxwwwwwxx.', 'xxxxxxxxxxx', '.xxxxxxxxx.', '..x.x.x.x..'],
     // sổ lệnh (quyển sách mở) và nhãn cảnh báo (tam giác có dấu !)
     book: ['.xxxxxxxxx.', 'xxxxxxxxxxx', 'xx.......xx', 'xx.xxxxx.xx', 'xx.......xx', 'xx.xxx...xx', 'xx.......xx', 'xxxxxxxxxxx', '.xxxxxxxxx.'],
     canhbao: ['.....xx.....', '....xxxx....', '....xxxx....', '...xxxxxx...', '...xx..xx...', '..xxx..xxx..', '..xxx..xxx..', '.xxxxxxxxxx.', '.xxxx..xxxx.', 'xxxxxxxxxxxx']
@@ -187,7 +193,7 @@
     var rows = HINH[ten];
     if (!rows) throw new Error('Không có icon ' + ten);
     var p = new Painter(rows[0].length + 2, rows.length + 2);     // chừa 1 pixel quanh cho viền tối
-    p.map(rows, { x: tuyChon.fill || '#ffffff' }, 1, 1);
+    p.map(rows, { x: tuyChon.fill || '#ffffff', o: tuyChon.toi || tuyChon.line || '#3a2410', w: tuyChon.sang || '#ffffff' }, 1, 1);     // o / w: chi tiết tối / sáng của icon bộ phận
     if (tuyChon.shade) p.shade(tuyChon.shade);
     p.outline(tuyChon.line || '#3a2410');
     return p.canvas();
@@ -411,7 +417,7 @@
     g.drawImage(p.canvas(), 0, 0);
     raoCache[mask] = cv; return cv;
   }
-  /** NÚT BẮN (chương súng bóng, ký hiệu `N`): nằm trên tường nên nền là ô tường; một tấm thép nhỏ có nút tròn. Tắt: nút đỏ nâu nổi, đèn xám.
+  /** NÚT BẮN (chương súng hơi, ký hiệu `N`): nằm trên tường nên nền là ô tường; một tấm thép nhỏ có nút tròn. Tắt: nút đỏ nâu nổi, đèn xám.
    *  Bật: nút xanh lá lún xuống, đèn vàng sáng, vòng sáng quanh tấm. loe (0..1): vừa bị bóng trúng, ánh trắng lóe lên. */
   var nutCache = {};
   function makeNut(bat, loe) {
@@ -434,7 +440,7 @@
     g.drawImage(p.canvas(), 0, 0);
     nutCache[khoa] = cv; return cv;
   }
-  /** CỬA (chương súng bóng, `C` đóng / `c` mở), vẽ thẳng lên g tại (px, py) trên nền sàn đã có. k = độ mở 0 (đóng) .. 1 (mở); hai cánh cửa trượt vào hai cột khung.
+  /** CỬA (chương súng hơi, `C` đóng / `c` mở), vẽ thẳng lên g tại (px, py) trên nền sàn đã có. k = độ mở 0 (đóng) .. 1 (mở); hai cánh cửa trượt vào hai cột khung.
    *  o = { doc: true nếu đi qua cửa theo chiều dọc (cánh trượt ngang), nhip: { mo, dong, pha, p } nếu là cửa nhịp (khung xanh lơ + hàng đèn đếm nhịp ở mép trên), ket: 0..1 cửa đang kẹt (đỏ), rung: lệch px }.
    *  Cửa đóng giống tường nhưng có khung cửa (cột khung màu vàng cam, hoặc xanh lơ nếu là cửa nhịp) và khe giữa hai cánh. */
   function veCua(g, px, py, k, o) {
@@ -534,7 +540,7 @@
     p.outline(K.ink);
     satMauCache[mau] = p.canvas(); return satMauCache[mau];
   }
-  /** Thùng NẶNG (chương tấm đẩy): thùng thép xám, bốn đinh tán ở góc, sọc vàng đen ở mép trên và mép dưới, viền tối. Khác hẳn thùng gỗ. */
+  /** Thùng NẶNG (chương súng hơi): thùng thép xám, bốn đinh tán ở góc, sọc vàng đen ở mép trên và mép dưới, viền tối. Khác hẳn thùng gỗ. */
   var thungCache = null;
   function makeThung() {
     if (thungCache) return thungCache;

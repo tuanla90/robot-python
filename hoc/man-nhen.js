@@ -102,7 +102,7 @@
 
     man({
       so: 2, ten: 'Chui gầm', hang: 'lam-quen', mucTieu: 'bong-mo',
-      deBai: 'Ô có vòm thấp là gầm: nhện đứng thẳng thì đụng đầu. Gọi crouch() để co chân, gọi stand() để duỗi chân. Chui qua gầm rồi đứng đúng chỗ bóng mờ, chân duỗi thẳng như bóng mờ.',
+      deBai: 'Ô có vòm thấp là gầm (xe bánh phải đi vòng ở màn Sửa số cố định): nhện đứng thẳng thì đụng đầu. Gọi crouch() để co chân, gọi stand() để duỗi chân. Chui qua gầm rồi đứng đúng chỗ bóng mờ, chân duỗi thẳng như bóng mờ.',
       veMaMau: 'Chương trình có sẵn đi thẳng hai ô. Chạy thử: nhện có qua được gầm không?',
       san: ['#####', '..n..', '#####'],
       batDau: { x: 0, y: 1, huong: 0 },
@@ -127,7 +127,7 @@
 
     man({
       so: 3, ten: 'Cái hố', hang: 'lam-quen',
-      deBai: 'Hố sâu: nhện bước vào là rơi. Muốn qua hố, nhện phải nhảy: đang co chân thì gọi stand() ngay trước một bước đi, nhện sẽ bật qua một ô. Đưa nhện qua hố tới cờ.',
+      deBai: 'Hố sâu (xe bánh phải tránh ở màn Tạo hàm forward): nhện bước vào là rơi. Muốn qua hố, nhện phải nhảy: đang co chân thì gọi stand() ngay trước một bước đi, nhện sẽ bật qua một ô. Đưa nhện qua hố tới cờ.',
       veMaMau: 'Chương trình có sẵn đi thẳng hai ô. Chạy thử xem nhện làm gì ở chỗ hố.',
       san: ['#####', '..u.F', '#####'],
       batDau: { x: 0, y: 1, huong: 0 },

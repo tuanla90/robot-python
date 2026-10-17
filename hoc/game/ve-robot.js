@@ -4,7 +4,7 @@
    (hoặc nạp bộ PART, xem dưới).
 
    VeRobot.ve(cauHinh, trangThai, huong, tiLe) → canvas (tâm canvas = tâm THÂN xe; đặt sao cho trùng tâm ô)
-     cauHinh   = { than: 'hai-banh' | 'xich' | 'nhen' | 'omni' | 'drone', tay: 'kep' | 'day' | 'nam-cham' | 'nem' | 'bong' | null, camBien: [{ ma, o }] }
+     cauHinh   = { than: 'hai-banh' | 'xich' | 'nhen' | 'omni' | 'drone', tay: 'kep' | 'xoay' | 'nam-cham' | 'nem' | 'hoi' | null, camBien: [{ ma, o }] }
                  VeRobot.cauHinhCua(man) (= cauHinhRobot) suy từ màn: man.robot = { than, tay, camBien } nếu có; không thì
                  than = 'nhen' khi man.loaiRobot === 'nhen', còn lại 'hai-banh'; tay theo lệnh tay trong man.hamGoc.
      tiLe      = số pixel màn hình trên MỖI pixel của part (có thể lẻ, < 1 khi ô sân nhỏ); mặc định 1.
@@ -42,12 +42,12 @@
   /** Lệnh gốc của tay → mã part tay (tay nào mở ra lệnh nào). Màn có lệnh tay mà không khai man.robot.tay thì lấy theo bảng này. */
   var TAY_THEO_LENH = {
     arm_down: 'kep', arm_up: 'kep', grab: 'kep', release: 'kep', arm_left: 'xoay', arm_right: 'xoay',
-    push: 'day', magnet_n: 'nam-cham', magnet_s: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', shoot: 'bong'
+    magnet_n: 'nam-cham', magnet_s: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', shoot: 'hoi', shoot_back: 'hoi'
   };
   function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }
   /**
    * Cấu hình robot của một màn — MỘT CHỖ DUY NHẤT. Chương sau (nhện, xích, omni, cảm biến…) chỉ cần thêm vào dữ liệu màn:
-   *   man.robot = { than: 'xich', tay: 'day' | null, camBien: [{ ma: 'khoang-cach', o: 'hong' }] }   (trường nào thiếu thì suy từ màn)
+   *   man.robot = { than: 'xich', tay: 'hoi' | null, camBien: [{ ma: 'khoang-cach', o: 'hong' }] }   (trường nào thiếu thì suy từ màn)
    * than: man.robot.than, hoặc 'nhen' nếu man.loaiRobot === 'nhen', hoặc 'hai-banh'.
    * tay : man.robot.tay (null = không tay), hoặc theo lệnh tay có trong man.hamGoc (kẹp: arm_down/arm_up/grab/release...).
    */
@@ -63,7 +63,7 @@
   function chuanTay(t) {
     t = t || {};
     return { tuThe: t.tuThe === 'duoi' ? 'duoi' : t.tuThe === 'giua' ? 'giua' : 'tren', kep: t.kep === true || t.kep === 'dong', cam: t.cam !== null && t.cam !== undefined && t.cam !== false,
-      bat: !!t.bat, ra: !!t.ra, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBan: !!t.dangBan,
+      bat: !!t.bat, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBanTruoc: !!t.dangBanTruoc, dangBanSau: !!t.dangBanSau,
       xoay: t.xoay === 'trai' || t.xoay === 'phai' ? t.xoay : 'truoc', goc: typeof t.goc === 'number' ? Math.round(t.goc / 5) * 5 : null };       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
   }
 
@@ -147,7 +147,7 @@
     var chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || cfg.than === 'drone') ? 0 : huong;     // drone bay 4 hướng, không có mặt trước (cánh quạt luôn quay); nhện đi 4 hướng không quay mặt; nhện CÓ TAY: ảnh quay theo cạnh gắn tay (cố định theo batDau.huong, san-ve.js truyền vào `huong`)
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },       // drone: buoc = pha cánh quạt, doc = đèn thân sáng khi đo pin
-      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ra: tay.ra, ngam: tay.ngam, dangNem: tay.dangNem, dangBan: tay.dangBan, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc },
+      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBanTruoc: tay.dangBanTruoc, dangBanSau: tay.dangBanSau, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc },
       camBien: { bat: !!cb.bat, mat: !!cb.mat }                                  // mat: camera đang đọc (hai đốm mắt trên thân sáng lên)
     };
     var raw;
@@ -182,7 +182,7 @@
     huong = ((huong || 0) % 4 + 4) % 4;
     var tay = chuanTay(tt.tay);
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
-      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + (tay.ra ? 'R' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBan ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') : '', tt.loi || '', coPart() ? 'P' : 'x'].join('|');
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') : '', tt.loi || '', coPart() ? 'P' : 'x'].join('|');
     if (cache[khoa]) return cache[khoa];
     var cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien, co: tt.co }, huong, tiLe);
     if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)

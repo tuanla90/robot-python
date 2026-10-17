@@ -229,9 +229,9 @@ console.log('\n== Kho hàm: tên hàm cốt truyện chỉ tạo đúng ở màn
   kiem('hàm gốc vẫn chặn trước: "grab" là ten-trung-ham-goc, không phải ten-danh-cho-cot-truyen', k3.kiemTen('grab').ma === 'ten-trung-ham-goc');
 }
 
-console.log('\n== Sân thử có THÙNG NẶNG (màn có tấm đẩy, hamGoc có push) ==');
+console.log('\n== Sân thử có THÙNG NẶNG (màn có súng hơi, hamGoc có shoot / shoot_back) ==');
 {
-  const mDay = { loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'push'], moXuong: true, camHamCuaEm: false, khung: { chinh: 10, moiHam: 10 } };
+  const mDay = { loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'shoot', 'shoot_back'], moXuong: true, camHamCuaEm: false, khung: { chinh: 10, moiHam: 10 } };
   const xy = (ds) => ds.map((t) => ({ x: t.x, y: t.y }));
   const thuD = (than, sanThu) => ChamHoc.thuHam(mDay, {}, 'h', [H('h', than)], { sanThu });
   const st = { rong: 5, cao: 5, batDau: { x: 2, y: 4, huong: 0 }, vat: [], tuong: [{ x: 0, y: 0 }], thung: [{ x: 2, y: 2 }] };
@@ -240,15 +240,15 @@ console.log('\n== Sân thử có THÙNG NẶNG (màn có tấm đẩy, hamGoc c�
   const a = thuD(TIEN, st);
   kiem('tiến một ô: thùng chưa đụng, không chẩn đoán', J(xy(a.thung)) === J([{ x: 2, y: 2 }]) && a.chanDoan.length === 0, J(a.chanDoan));
   const b = thuD([...TIEN, ...TIEN], st);
-  kiem('tiến hai ô: tấm đẩy đẩy thùng lên 1 ô (2,1); kq.thung trả cho giao diện vẽ; vết nhịp có thung',
-    J(xy(b.thung)) === J([{ x: 2, y: 1 }]) && b.robot.y === 2 && b.vet.filter((e) => e.loai === 'nhip').every((e) => Array.isArray(e.thung)), J([xy(b.thung), b.robot]));
-  const d = thuD(['push()', 'wait()'], st);
-  kiem('push() ở xe chưa sát thùng: day-hut (thông tin), thùng đứng yên', maCua(d).join() === 'day-hut' && d.chanDoan[0].muc === 'thong-tin' && J(xy(d.thung)) === J([{ x: 2, y: 2 }]), J(d.chanDoan));
-  const e = thuD([...TIEN, 'push()', 'wait()'], st);
-  kiem('tiến một ô rồi push(): thùng trượt tới mép trên (2,0), không chẩn đoán', J(xy(e.thung)) === J([{ x: 2, y: 0 }]) && e.chanDoan.length === 0, J([xy(e.thung), e.chanDoan]));
+  kiem('tiến hai ô: xe húc thùng bằng bánh = đâm như tường (dam-tuong), thùng đứng yên ở (2,2), xe dừng ở (2,3); kq.thung trả cho giao diện vẽ; vết nhịp có thung',
+    maCua(b).includes('dam-tuong') && J(xy(b.thung)) === J([{ x: 2, y: 2 }]) && b.robot.y === 3 && b.vet.filter((e) => e.loai === 'nhip').every((e) => Array.isArray(e.thung)), J([xy(b.thung), b.robot, b.chanDoan.map((x) => x.ma)]));
+  const d = thuD(['shoot_back()', 'wait()'], st);
+  kiem('shoot_back() ở xe chưa sát thùng: xe giật tới một ô (2,3), thùng đứng yên, không chẩn đoán (cú giật dời được xe)', J(xy(d.thung)) === J([{ x: 2, y: 2 }]) && d.robot.y === 3 && d.chanDoan.length === 0, J(d.chanDoan));
+  const e = thuD([...TIEN, 'shoot_back()', 'wait()'], st);
+  kiem('tiến một ô rồi shoot_back(): cú giật đẩy thùng trượt tới mép trên (2,0), xe đứng yên ở (2,3), không chẩn đoán', J(xy(e.thung)) === J([{ x: 2, y: 0 }]) && e.robot.y === 3 && e.chanDoan.length === 0, J([xy(e.thung), e.robot, e.chanDoan]));
   const f = ChamHoc.thuHam(man, {}, 'h', [H('h', [...TIEN, ...TIEN])], { sanThu: st });
-  kiem('màn KHÔNG có tấm đẩy: xe đâm thùng nặng như tường (dam-tuong, nói rõ cần tấm đẩy)',
-    maCua(f).includes('dam-tuong') && /tấm đẩy/.test(f.chanDoan[0].loi) && J(xy(f.thung)) === J([{ x: 2, y: 2 }]) && f.robot.y === 3, J(f.chanDoan));
+  kiem('màn KHÔNG có súng hơi: xe đâm thùng nặng như tường (dam-tuong, nói rõ chỉ cú giật của súng hơi mới dời được thùng)',
+    maCua(f).includes('dam-tuong') && /súng hơi/.test(f.chanDoan[0].loi) && J(xy(f.thung)) === J([{ x: 2, y: 2 }]) && f.robot.y === 3, J(f.chanDoan));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);

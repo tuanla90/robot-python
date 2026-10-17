@@ -58,7 +58,7 @@
     var p=new Painter(40,40),goc={x:8,y:17},camera=false;
     for(i=0;i<cams.length;i++){var d=chon('cam-bien',cams[i].ma),o=than.oGan[cams[i].o];if(!o)throw new Error('Thân '+than.ma+' không có ổ "'+cams[i].o+'".');if(gan(d).indexOf(cams[i].o)<0)throw new Error('Cảm biến '+d.ma+' không gắn được vào ổ '+cams[i].o+'.');if(d.ma==='camera'){camera=true;continue;}}
     var ts=Object.assign({},state(st,'than'),{camera:camera,camSang:camera&&!!state(st,'camBien').mat});p.blit(veMot(than,ts),goc.x,goc.y);
-    if(tay){var os=oTay(than,tay);for(i=0;i<os.length;i++){var oT=os[i],port=than.oGan[oT],tayState=Object.assign({},state(st,'tay'),{duoi:oT==='duoi'});dat(p,tay,{x:goc.x+port.x,y:goc.y+port.y},oT==='duoi'&&tay.diemNeoDuoi?tay.diemNeoDuoi:tay.diemNeo,tayState);}}
+    if(tay){var os=oTay(than,tay);for(i=0;i<os.length;i++){var oT=os[i],port=than.oGan[oT],tayState=Object.assign({},state(st,'tay'),{duoi:oT==='duoi',than:than.ma});dat(p,tay,{x:goc.x+port.x,y:goc.y+port.y},oT==='duoi'&&tay.diemNeoDuoi?tay.diemNeoDuoi:tay.diemNeo,tayState);}}
     for(i=0;i<cams.length;i++){var cb=chon('cam-bien',cams[i].ma);if(cb.ma==='camera')continue;var pc=than.oGan[cams[i].o];dat(p,cb,{x:goc.x+pc.x,y:goc.y+pc.y},cb.diemNeo,Object.assign({},state(st,'camBien'),{ben:cams[i].o==='hongTrai'?'trai':'phai'}));}
     huong=((huong||0)%4+4)%4;while(huong--)p=rot90(p);return p.canvas();
   }

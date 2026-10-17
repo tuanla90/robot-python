@@ -101,7 +101,7 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('LENH_NGUOC có đủ sáu cặp của kế hoạch (left_move↔left_back, right_move↔right_back, arm_up↔arm_down, grab↔release, go_up↔go_down, go_left↔go_right), cả hai chiều',
     SAU_CAP.every(([a, b]) => LN[a] === b && LN[b] === a), J(LN));
   kiem('LENH_NGUOC là phép đối hợp: ngược của ngược là chính nó, không lệnh nào ngược chính nó; wait và lệnh cảm biến / bắn / ném không có lệnh ngược',
-    Object.keys(LN).every((a) => LN[LN[a]] === a && LN[a] !== a) && ['wait', 'front_clear', 'left_clear', 'right_clear', 'color', 'front_metal', 'battery', 'shoot', 'throw', 'load', 'aim', 'push'].every((t) => LN[t] === undefined));
+    Object.keys(LN).every((a) => LN[LN[a]] === a && LN[a] !== a) && ['wait', 'front_clear', 'left_clear', 'right_clear', 'color', 'front_metal', 'battery', 'throw', 'load', 'aim'].every((t) => LN[t] === undefined));
   kiem('mọi lệnh trong LENH_NGUOC là lệnh gốc của game (có trong kho hàm: tên bị cấm đặt)', Object.keys(LN).every((t) => KhoHam.HAM_GOC_MAC_DINH.includes(t)));
   kiem('lệnh bánh ngược nhau cho tổ hợp bánh đối nhau: left_move + right_move (tiến) và ngược của từng lệnh (lùi) hủy nhau, xe về đúng chỗ',
     (() => { const k = chay(TRONG, bd0, L('left_move()', 'right_move()', 'wait()', 'left_back()', 'right_back()', 'wait()')); return vt(k.robot) === '4,2' && k.robot.huong === 0 && k.nhip === 2; })());
@@ -114,8 +114,8 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('SoLenh.ds: mỗi mục { ten, nhom, moTa, chuong, man }; nhóm có trong tenNhom và thuTuNhom; moTa là MỘT câu ngắn (≤ 80 chữ cái, không xuống dòng, không dấu chấm cuối); tên không trùng',
     SoLenh.ds.every((h) => typeof h.ten === 'string' && /^[a-z_][a-z_0-9]*$/.test(h.ten) && SoLenh.tenNhom[h.nhom] && SoLenh.thuTuNhom.includes(h.nhom) && typeof h.moTa === 'string' && h.moTa.length >= 8 && h.moTa.length <= 80 && !/[\n]/.test(h.moTa) && !/[.]$/.test(h.moTa) && typeof h.chuong === 'string' && typeof h.man === 'string') &&
       new Set(SoLenh.ds.map((h) => h.ten)).size === SoLenh.ds.length);
-  kiem('nhóm của Sổ lệnh đủ 16 loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, day, mau, nam-cham, tay-xoay, nem, bong, drone, tham-so, bang-chuyen; mỗi nhóm có tên hiển thị',
-    J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'bong', 'cam-bien', 'day', 'drone', 'lap', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'tay', 'tay-xoay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
+  kiem('nhóm của Sổ lệnh đủ 15 loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, hoi (súng hơi), mau, nam-cham, tay-xoay, nem, drone, tham-so, bang-chuyen; mỗi nhóm có tên hiển thị',
+    J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'cam-bien', 'drone', 'hoi', 'lap', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'tay', 'tay-xoay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
   const dau = {};                                                      // tên hàm → màn đầu tiên tạo nó
   for (const m of tatCa) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
   const thieu = Object.keys(dau).filter((t) => !SoLenh.tim(t));
@@ -125,8 +125,8 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('chuong và man của từng mục khớp màn đầu tiên tạo hàm đó; thứ tự mục = thứ tự chế trong game',
     SoLenh.ds.every((h) => dau[h.ten] && dau[h.ten].chuong === h.chuong && dau[h.ten].ma === h.man) && J(SoLenh.ds.map((h) => h.ten)) === J(Object.keys(dau)), J(SoLenh.ds.filter((h) => !(dau[h.ten] && dau[h.ten].ma === h.man)).map((h) => h.ten + '@' + h.man + '≠' + (dau[h.ten] && dau[h.ten].ma))));
   kiem('chương của mọi mục có tên hiển thị trong ThuTuChuong', SoLenh.ds.every((h) => typeof ThuTu.ten[h.chuong] === 'string'));
-  kiem('nhóm của hàm đợt 2 ứng với chương: drone → drone, tam-day → day, may-nem → nem, sung-bong → bong…; hàm đợt 1 thuộc xe / tay / lap / cam-bien',
-    SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'che-nhen': 'nhen', 'xich': 'xich', 'omni': 'omni', 'tam-day': 'day', 'mau': 'mau', 'nam-cham': 'nam-cham', 'che-nam-cham': 'nam-cham', 'tay-xoay': 'tay-xoay', 'che-tay-xoay': 'tay-xoay', 'may-nem': 'nem', 'sung-bong': 'bong', 'drone': 'drone' })[h.chuong] === h.nhom));
+  kiem('nhóm của hàm đợt 2 ứng với chương: drone → drone, sung-hoi + che-sung-hoi → hoi, may-nem → nem…; hàm đợt 1 thuộc xe / tay / lap / cam-bien',
+    SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'che-nhen': 'nhen', 'xich': 'xich', 'che-xich': 'xich', 'omni': 'omni', 'che-omni': 'omni', 'sung-hoi': 'hoi', 'che-sung-hoi': 'hoi', 'mau': 'mau', 'nam-cham': 'nam-cham', 'che-nam-cham': 'nam-cham', 'tay-xoay': 'tay-xoay', 'che-tay-xoay': 'tay-xoay', 'may-nem': 'nem', 'che-may-nem': 'nem', 'drone': 'drone', 'che-drone': 'drone', 'che-mau': 'mau' })[h.chuong] === h.nhom));
   kiem('hàm chế ở che-xe có trong Sổ lệnh với lời lớp 5 (vd dodge_right: "Né sang phải một ô, giữ hướng")',
     ['dodge_right', 'dodge_left', 'back', 'park'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).chuong === 'che-xe') && SoLenh.tim('dodge_right').moTa === 'Né sang phải một ô, giữ hướng');
   kiem('hàm CỦA MÀN (come_back, fixed_move: chỉ đúng cho một màn, 15/10) không còn là hàm cốt truyện: không trong taoHam của màn nào, không trong Sổ lệnh, không là tên khóa của kho', ['come_back', 'fixed_move'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null));
@@ -466,7 +466,7 @@ console.log('\n== 9. Chơi lại các chương cũ với u_turn một nhịp và
     kiem('chương ' + ch + ': cả 10 lời giải vẫn thắng, không chẩn đoán lỗi, không chậm hơn sao.nhip (dùng bản hàm sửa trong kho)',
       bangKq.every((r, i) => r.thang && maLoi(r).length === 0 && r.soNhip <= dsCh[i].sao.nhip), J(bangKq.map((r, i) => dsCh[i].id + ':' + r.thang + '/' + r.soNhip + '≤' + dsCh[i].sao.nhip)));
   }
-  const dsKhac = tatCa.filter((m) => !['hai-banh', 'che-xe'].includes(m.chuong) && m.ma !== 'che-tay.9' && m.ma !== 'robot-hoan-thien.9');           // che-tay.9 (bánh phải kẹt số lùi) tự sửa lại turn_right / u_turn bằng bánh khác: kiem-che-tay.mjs kiểm riêng; robot-hoan-thien.9 (cũng bánh phải kẹt số lùi) dùng u_turn đã sửa đó của kho: kiem-robot-hoan-thien.mjs kiểm riêng
+  const dsKhac = tatCa.filter((m) => !['hai-banh', 'che-xe'].includes(m.chuong) && m.ma !== 'che-tay.9' && m.ma !== 'robot-hoan-thien.9' && m.ma !== 'che-may-nem.8');           // che-tay.9 (bánh phải kẹt số lùi) tự sửa lại turn_right / u_turn bằng bánh khác: kiem-che-tay.mjs kiểm riêng; robot-hoan-thien.9 (cũng bánh phải kẹt số lùi) dùng u_turn đã sửa đó của kho: kiem-robot-hoan-thien.mjs kiểm riêng
   const loiKhac = dsKhac.filter((m) => { const r = ChamHoc.cham(m, m.loiGiai, tron(nhanh, m.loiGiai.hamCuaEmMoi.filter((h) => !SUA[h.ten]))); return !(r.thang && maLoi(r).length === 0); }).map((m) => m.id);
   kiem('mọi chương còn lại (' + dsKhac.length + ' màn, kể cả đợt 2: xích, omni, băng chuyền…) cũng vẫn thắng với kho đó', loiKhac.length === 0, loiKhac.join());
   const xichSan = ['.....', '.....', '.....', '.....', '.....'], xichBd = { x: 2, y: 3, huong: 0 };

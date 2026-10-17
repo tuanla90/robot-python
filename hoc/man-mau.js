@@ -187,7 +187,7 @@
     /* ------------------------------------------------ hàng 1: làm quen */
     man({
       so: 1, ten: 'Đi tới ô đỏ', hang: 'lam-quen', hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Cảm biến màu ở bụng xe: color() trả về tên màu của ô dưới xe, là một chuỗi chữ thường: "red", "green", "blue", "yellow" hoặc "none" (ô không màu). Đưa xe đi thẳng tới ô đỏ, rẽ phải rồi đi hai ô tới cờ.',
+      deBai: 'Giờ xe đọc được ô sơn màu như ở màn Sửa hàm side_r. Cảm biến màu ở bụng xe: color() trả về tên màu của ô dưới xe, là một chuỗi chữ thường: "red", "green", "blue", "yellow" hoặc "none" (ô không màu). Đưa xe đi thẳng tới ô đỏ, rẽ phải rồi đi hai ô tới cờ.',
       veMaMau: 'Chương trình có sẵn dùng if nên xe chỉ đi được một ô. Chạy thử rồi sửa.',
       san: SAN_1,
       batDau: BD_1,

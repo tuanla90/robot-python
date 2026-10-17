@@ -177,7 +177,7 @@
       so: 4, ten: 'Hàm tr_left()', hang: 'luyen', canHam: 'tran-khung', hamCuaEmCan: ['move', 'tr_right'], taoHam: ['tr_left'],
       deBai: 'Quay trái cũng cần hai nhịp liên tiếp cùng một lệnh. Tạo hàm tr_left() quay trái 90°, rồi đưa xe qua đường gấp khúc tới cờ.',
       veMaMau: 'Chương trình có sẵn gọi tr_left() ở hai chỗ, nhưng em chưa có hàm đó. Tạo hàm tr_left không có đối số.',
-      san: ['####F', '##...', '...##'],
+      san: ['###HF', '##...', '...##'],                                               // thùng nặng H cạnh cờ: xích không đẩy được (màn gặp khó trước Súng hơi)
       batDau: { x: 0, y: 2, huong: 1 },
       maMau: { chinh: CHINH_4.slice() },
       sao: { o: 18, nhip: 12 },
@@ -200,7 +200,7 @@
 
     man({
       so: 5, ten: 'Bậc thang', hang: 'luyen', canHam: 'tran-khung', hamCuaEmCan: ['move', 'tr_right', 'tr_left'],
-      deBai: 'Ô S là bậc thang: xe hai bánh không leo được, còn xe xích leo như đi trên sàn. Đưa xe xích qua các bậc thang tới cờ.',
+      deBai: 'Ô S là bậc thang, như ở màn Bậc thang của Xưởng hàm: xe hai bánh không leo được, còn xe xích leo như đi trên sàn. Đưa xe xích qua các bậc thang tới cờ.',
       veMaMau: 'Chương trình có sẵn đưa xe tới chân khúc quẹo đầu tiên. Chạy thử rồi viết tiếp.',
       san: ['#######', '###...F', '###.###', '###S###', '.SS.###'],
       batDau: { x: 0, y: 4, huong: 1 },
@@ -223,7 +223,7 @@
 
     man({
       so: 6, ten: 'Băng chuyền bất lực', hang: 'luyen', hamCuaEmCan: ['move', 'tr_right', 'tr_left'],
-      deBai: 'Xe xích bám chắc nên băng chuyền, xuôi hay ngược chiều, đều không đẩy được nó. Đi qua các băng chuyền tới cờ như đi trên sàn.',
+      deBai: 'Băng chuyền từng đẩy xe hai bánh trôi đi. Xe xích bám chắc nên băng chuyền, xuôi hay ngược chiều, đều không đẩy được nó. Đi qua các băng chuyền tới cờ như đi trên sàn.',
       veMaMau: 'Chương trình có sẵn đưa xe xuống ba ô trên băng chuyền ngược chiều. Chạy thử rồi viết tiếp.',
       san: ['.####', '^####', '^####', '^><<<', '####^', '####F'],
       batDau: { x: 0, y: 0, huong: 2 },
@@ -250,6 +250,7 @@
       deBai: 'Xe xích gắn tay kẹp, dùng pick() và drop() như xe hai bánh: nhặt và thả ở ô ngay trước mũi xe, còn vật nằm đất chiếm ô nên xe phải dừng sát vật. Nhặt vật, mang qua các bậc thang, dừng sát ô đích (khung vàng) rồi thả.',
       veMaMau: 'Chương trình có sẵn đưa xe tới sát vật và nhặt nó. Chạy thử rồi viết tiếp phần còn lại.',
       san: ['####D', '####.', '####S', '..oS.'],
+      vatChat: ['.....', '.....', '.....', '..N..'],                                     // vật nam châm chữ N: tay kẹp gắp như vật thường (màn gặp khó trước Nam châm)
       batDau: { x: 0, y: 3, huong: 1 },
       maMau: { chinh: ['move()', 'pick()'] },
       sao: { o: 24, nhip: 11 },

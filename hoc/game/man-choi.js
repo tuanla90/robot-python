@@ -31,11 +31,11 @@
         '<div class="ffr"><canvas class="tex" id="field"></canvas><div class="toast"></div></div>' +
         '<div class="side">' +
           '<div class="sanbar"></div>' +
-          '<button class="bt g-gr cbtn" data-nut="chay"><span data-i="play" data-s="2" data-l="#14561e"></span>' + t('choi.chay') + '</button>' +
-          '<button class="bt g-yl cbtn dark" data-nut="nhip"><span data-i="step" data-s="2" data-l="#6a4400"></span>' + t('choi.nhip') + '</button>' +
-          '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="2" data-l="#0f2f6a"></span>' + t('choi.lai') + '</button>' +
-          '<button class="bt g-pu cbtn" data-nut="goi-y"><span data-i="bulb" data-s="2" data-l="#2f1a6a"></span>' + t('choi.goiY') + '</button>' +
-          '<div class="mini"><button class="bt g-wd" data-nut="toc"></button><button class="bt g-cy" data-nut="de-bai">' + t('choi.deBai') + '</button></div>' +
+          '<button class="bt g-gr cbtn" data-nut="chay"><span data-i="play" data-s="1.5" data-l="#14561e"></span>' + t('choi.chay') + '</button>' +
+          '<button class="bt g-am cbtn" data-nut="nhip"><span data-i="step" data-s="1.5" data-l="#6a4400"></span>' + t('choi.nhip') + '</button>' +
+          '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="1.5" data-l="#0f2f6a"></span>' + t('choi.lai') + '</button>' +
+          '<button class="bt g-pu cbtn" data-nut="goi-y"><span data-i="bulb" data-s="1.5" data-l="#2f1a6a"></span>' + t('choi.goiY') + '</button>' +
+          '<div class="mini"><button class="bt g-wd" data-nut="toc"></button><button class="bt g-te" data-nut="de-bai">' + t('choi.deBai') + '</button></div>' +
           '<div class="clock chalk"><span class="l">' + t('choi.nhipDong') + '</span><span class="v">0</span><span class="tong"></span>' +
             '</div>' +
         '</div>' +

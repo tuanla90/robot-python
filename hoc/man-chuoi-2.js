@@ -172,7 +172,7 @@
     man({
       so: 6, ten: 'Bậc thang', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
       deBai: 'Xe leo một cầu thang hẹp: đi, rẽ phải, đi, rẽ trái, ... Chương trình chỉ có 10 ô: lấy các hàm trong kho của em ra dùng.',
-      san: ['#####', '##F##', '#..##', '..###', '.####'],
+      san: ['#####', '##F##', '#..##', '..S##', '.S###'],                              // bậc thang S: xe bánh không leo được (màn gặp khó trước Nhện, Xích)
       batDau: { x: 0, y: 4, huong: 0 },
       maMau: { chinh: [] },
       sao: { o: 16, nhip: 9 },

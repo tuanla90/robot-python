@@ -17,7 +17,7 @@ const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
 const KhungCode = require(path.join(day, 'khung-code.js'));
 const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
-for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day']) require(path.join(day, f + '.js'));
+for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni']) require(path.join(day, f + '.js'));
 const ManHoc = require(path.join(day, 'man-khoang-cach.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 

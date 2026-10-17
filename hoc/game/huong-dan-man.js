@@ -99,7 +99,7 @@
   /** Ba bước sau khi đã có thân hàm: Thử (trong Xưởng) → Về sân → Chạy. */
   function buocThuVeChay(chuChay) {
     return [
-      { xuong: true, khongAn: true, dich: 'nut:thu', chu: 'Bấm Thử: xe chạy thử hàm này trên sân nhỏ.', xong: ['thu', 'dong-xuong'], daLam: function () { return !xuongMo(); } },
+      { xuong: true, khongAn: true, dich: 'nut:thu', chu: 'Bấm Chạy: xe chạy thử hàm này trên sân nhỏ.', xong: ['thu', 'dong-xuong'], daLam: function () { return !xuongMo(); } },
       { xuong: true, khongAn: true, dich: 'nut:ve', chu: 'Hàm chạy đúng rồi thì bấm Về sân.', xong: 'dong-xuong', daLam: function () { return !xuongMo(); } },
       buocChay(chuChay)
     ];
@@ -196,7 +196,8 @@
     buocChay('Bấm Chạy.')
   ];
   H['vong-lap.2'] = [
-    buocCoDong('khoi:vong:for', 'Chạm khối for: nó lặp lại những dòng thụt vào bên dưới.', /^\s*for\b/),
+    khoiTheo(['khoi:vong:for'], 'Chạm khối for: nó lặp lại những dòng thụt vào bên dưới.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*for\b/) >= 0; } }),
     khoiTheo(['khoi:em:move'], 'Chạm move(): dòng mới tự thụt vào, nằm trong vòng lặp.', 'move() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để quay lại thẻ đó.',
       { daLam: function () { return dongCo(/^\s*move\(\)/) >= 0; } }),
     buocThutVao(/^\s*move\(\)/, 1, 'move() đang đứng ngoài vòng lặp. Chạm vào dòng này.', 'Bấm ⇥ để thụt vào: move() phải nằm trong vòng lặp.'),
@@ -229,7 +230,8 @@
   /* ============================================================ Chương 8 · Cảm biến khoảng cách */
   H['khoang-cach.1'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: xe hỏi cảm biến front_clear() rồi mới tiến một ô.', xong: 'chay', daLam: daChay },
-    buocCoDong('khoi:vong:for', 'if chỉ hỏi cảm biến một lần. Bọc nó trong vòng for để hỏi nhiều lần: chạm khối for.', /^\s*for\b/),
+    khoiTheo(['khoi:vong:for'], 'if chỉ hỏi cảm biến một lần. Bọc nó trong vòng for để hỏi nhiều lần: chạm khối for.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return dongCo(/^\s*for\b/) >= 0; } }),
     buocThutVao(/^\s*if\s/, 1, 'if đang đứng ngoài vòng for. Chạm vào dòng này.', 'Bấm ⇥ để thụt vào: if phải nằm trong vòng for.'),
     buocThutVao(/^\s*move\(\)/, 2, 'move() phải nằm trong if. Chạm vào dòng này.', 'Bấm ⇥ để thụt vào: move() chỉ chạy khi if đúng.'),
     buocDoiSo(1, 'Chạm số này để đổi số lần xe hỏi cảm biến.', 'Chọn số lần hỏi, bằng số ô xe cần đi.', daDoiSoLap),
@@ -239,7 +241,7 @@
     { dich: 'nut:xoa-het', chu: 'Bài này cần while thay cho if. Bấm thùng rác để xóa chương trình cũ.', huong: 'duoi', rong: 160, han: 20000,
       daLam: function () { return hopMo() || soDongChinh() === 0 || dongCo(/^\s*while\b/) >= 0; } },                      // bấm thùng rác thì hộp hỏi lại mở: bước qua (kiểm theo nhịp đồng hồ, không đợi cú bấm)
     { phu: true, dich: 'nut:co', chu: 'Bấm Xóa hết để dọn sạch.', huong: 'duoi', rong: 150, daLam: function () { return !hopMo(); } },
-    khoiTheo(['khoi:vong:while'], 'while hỏi cảm biến lại sau mỗi bước, if chỉ hỏi một lần. Chạm khối while.', 'Khối while nằm ở thẻ Cảm biến. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+    khoiTheo(['khoi:vong:while'], 'while hỏi cảm biến lại sau mỗi bước, if chỉ hỏi một lần. Chạm khối while.', 'Khối while nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
       { daLam: function () { return dongCo(/^\s*while\s+front_clear\(\)/) >= 0; } }),
     khoiTheo(['khoi:em:move'], 'Rồi chạm move(): dòng mới tự thụt vào, nằm trong while.', 'move() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để quay lại thẻ đó.',
       { daLam: function () { var w = dongCo(/^\s*while\s+front_clear\(\)/); return w >= 0 && /^\s+move\(\)/.test(String(dsChinh()[w + 1] || '')); } }),
@@ -263,7 +265,7 @@
 
   /* ============================================================ Nam châm (cực N, cực S): wait() cho lệnh chạy, magnet_off() thả vật; hàm fetch() và grip() */
   H['nam-cham.1'] = [
-    khoiTheo(['khoi:wait'], 'magnet_n() chỉ ra lệnh. Chạm wait() ngay sau nó để nhịp trôi và nam châm chạy.', 'Khối wait() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+    khoiTheo(['khoi:wait'], 'magnet_n() chỉ ra lệnh. Chạm wait() ngay sau nó để nhịp trôi và nam châm chạy.', 'Khối wait() nằm ở hàng dưới cùng của khay.',
       { daLam: function () { return dongCo(/^\s*wait\(\)/) >= 0; } }),
     khoiTheo(['khoi:magnet_off'], 'Xe tới sát ô đích thì ngắt điện: chạm magnet_off(), rồi wait() để vật rơi xuống.', 'Khối của nam châm nằm ở thẻ Nam châm. Bấm ◀ hoặc ▶ để sang thẻ đó.',
       { daLam: function () { return dongCo(/^\s*magnet_off\(\)/) >= 0; } }),
@@ -291,6 +293,42 @@
     buocTaoHam('clear_left', 'Gói việc dọn vật thành hàm clear_left(): bấm Hàm mới.', CHU_TAO),
     buocThanHam('clear_left', ['.p-pal .pal'], 'Ghép các khối thành thân hàm: nhặt vật, đặt sang trái rồi xoay tay về.', 1, 'tren')
   ].concat(buocThuVeChay('Chương trình gọi được clear_left() rồi. Bấm Chạy.'));
+
+  /* ============================================================ Chương 19 · Súng hơi (làm quen): shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới */
+  var CHU_THE_SUNG = 'Khối của súng nằm ở thẻ Súng hơi. Bấm ◀ hoặc ▶ để sang thẻ đó.';
+  H['sung-hoi.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bắn một phát ra trước thì xe bị giật lùi một ô.', xong: 'chay', daLam: daChay },
+    khoiTheo(['khoi:shoot'], 'Cờ còn cách ba ô. Chạm shoot() để bắn thêm, nhớ wait() sau mỗi phát.', CHU_THE_SUNG,
+      { daLam: function () { return soDongChinh() >= 6 || dongCo(/^\s*for\b/) >= 0; } }),
+    buocChay('Bấm Chạy.')
+  ];
+  H['sung-hoi.2'] = [
+    khoiTheo(['khoi:shoot_back'], 'Lệnh mới shoot_back() bắn ra sau, xe giật tới. Chạm nó rồi chạm wait().', CHU_THE_SUNG,
+      { daLam: function () { return dongCo(/^\s*shoot_back\(\)/) >= 0; } }),
+    buocChay('Bấm Chạy.')
+  ];
+  H['sung-hoi.3'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bóng bay ra sau trúng nút, cửa mở, xe được giật tới một ô.', xong: 'chay', daLam: daChay },
+    buocChay('Rồi viết tiếp đoạn đi qua cửa. Bấm Chạy.')
+  ];
+  H['sung-hoi.4'] = [
+    khoiTheo(['khoi:shoot'], 'Thùng nằm sau xe: chạm shoot(), cú giật đẩy xe lùi đúng vào thùng.', CHU_THE_SUNG,
+      { daLam: function () { return dongCo(/^\s*shoot\(\)/) >= 0; } }),
+    buocChay('Chạm wait() rồi bấm Chạy.')
+  ];
+
+  /* ============================================================ Chương 20 · Chế lệnh súng hơi: thẻ Súng hơi trong Xưởng */
+  H['che-sung-hoi.1'] = [
+    { khongAn: true, dich: '#field', chu: 'Xe mờ là chỗ xe phải tới. Xe chỉ cần lùi một ô.', xong: 'bam', han: 7000, rong: 160, huong: 'duoi' },
+    buocTaoHam('jet_back', 'Chế hàm jet_back() trong Xưởng: bấm Hàm mới.', CHU_TAO),
+    khoiTheo(['khoi:shoot'], 'Chạm shoot() rồi wait(): xe bắn một phát và bị giật lùi một ô.', CHU_THE_SUNG,
+      { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('jet_back') >= 2; } })
+  ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
+  H['che-sung-hoi.2'] = [
+    buocTaoHam('jet_fwd', 'Chế hàm jet_fwd() trong Xưởng: bấm Hàm mới.', CHU_TAO),
+    khoiTheo(['khoi:shoot_back'], 'Chạm shoot_back() rồi wait(): bắn ra sau thì xe được giật tới một ô.', CHU_THE_SUNG,
+      { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('jet_fwd') >= 2; } })
+  ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
 
   /* ============================================================ Chương 13 · Thân nhện (co chân, gầm, hố, nhảy) */
   H['nhen.2'] = [

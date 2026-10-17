@@ -154,7 +154,7 @@
       so: 3, ten: 'Đường né', hang: 'lam-quen', hamGoc: BANH_TIEN, mucTieu: 'toi-co',
       hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'dodge_right', 'dodge_left'],
       deBai: 'Hành lang hẹp có các vật cản nằm so le. Dùng dodge_right() và dodge_left() em đã chế để đưa xe tới cờ; chương trình chỉ có 10 ô.',
-      san: ['##F#', '#..#', '#.##', '#..#', '##.#', '#..#', '#..#'],
+      san: ['##F#', '#..#', '#.o#', '#..#', '##.#', '#..#', '#..#'],                  // vật gỗ chắn lối thẳng (màn gặp khó trước Tay gắp)
       batDau: { x: 1, y: 6, huong: 0 },
       maMau: { chinh: [] },
       sao: { o: 22, nhip: 15 },

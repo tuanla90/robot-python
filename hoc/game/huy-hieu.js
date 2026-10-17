@@ -95,12 +95,6 @@
   HINH['tay-gap'] = function () {                               // càng kẹp ôm thùng
     return cat(partTho('tay', 'kep', { kep: 'dong', cam: true, vat: 'go' }));
   };
-  HINH['tam-day'] = function () {                               // tấm đẩy + thùng nặng
-    var p = P(24, 24);
-    chep(p, partTho('tay', 'day', {}), 0, 3, 1);
-    Part.veVatNho(p, 7, 1, 10, 'sat');
-    return cat(p);
-  };
   HINH['nam-cham'] = function () {                              // nam châm + vật sắt
     var p = P(24, 24);
     chep(p, partTho('tay', 'nam-cham', { bat: true }), 0, 0, 1);
@@ -116,14 +110,24 @@
     p.rect(21, 20, 8, 1, '#3f9a48'); p.rect(22, 21, 6, 1, '#2c7436');
     return cat(p);
   };
-  HINH['sung-bong'] = function () {                             // nút + bóng
-    var p = P(28, 24);
-    chep(p, Ve.makeNut(true, 0), 0, 10, 1);
-    var bx = 17, by = 1;
-    p.ell(bx + 4, by + 4, 4.5, 4.5, INK); p.ell(bx + 4, by + 4, 3.5, 3.5, '#ff8a35'); p.rect(bx + 2, by + 2, 2, 2, '#ffe0a0');
-    p.rect(bx + 5, by + 5, 2, 2, '#c8501a');
-    [[13, 9], [11, 11], [9, 13]].forEach(function (q) { p.rect(q[0], q[1], 2, 2, '#ffd23f'); });
-    return cat(p);
+  /** Nòng trước của súng hơi (không có đế): bỏ hai hàng đế dưới cùng của hình part, để ghép với bóng. */
+  function nongTruoc() {
+    var q = partTho('tay', 'hoi', { chiTruoc: true }), r = P(q.w, 22);
+    for (var y = 0; y < 22; y++) for (var x = 0; x < q.w; x++) r.px(x, y, q.get(x, y));
+    return cat(r);
+  }
+  HINH['sung-hoi'] = function () {                              // súng hơi nằm ngang, vừa bắn ra một quả bóng
+    var g = Part.rot90(nongTruoc()), p = P(g.w + 9, g.h), bx = g.w + 2, by = (g.h - 7) >> 1;
+    chep(p, g, 0, 0, 1);
+    var M = ['..XXX..', '.XwyyX.', 'XwyyyyX', 'XyyyyyX', 'XyyyydX', '.XdddX.', '..XXX..'], CB = { X: INK, w: '#fffbd0', y: '#ffe14a', d: '#d19a1a' };
+    for (var j = 0; j < 7; j++) for (var i = 0; i < 7; i++) if (M[j].charAt(i) !== '.') p.px(bx + i, by + j, CB[M[j].charAt(i)]);
+    return p;
+  };
+  HINH['che-sung-hoi'] = function () {                          // súng hơi (nòng trước, đứng) + bánh răng
+    var p = P(T26, T26), t = nongTruoc();
+    chep(p, t, Math.max(0, 8 - (t.w >> 1)), Math.max(0, T26 - 1 - t.h), 1);
+    themBanhRang(p);
+    return p;
   };
   HINH['khoang-cach'] = function () {                           // cảm biến + sóng
     var p = P(30, 24), s = cat(partTho('cam-bien', 'khoang-cach', { ben: 'phai', bat: false }));
@@ -262,9 +266,51 @@
     themBanhRang(p);
     return p;
   };
+  HINH['che-mau'] = function () {                               // bốn ô màu (đỏ, xanh lá, vàng, xanh dương) nhỏ + bánh răng
+    var p = P(T26, T26), ten = ['red', 'green', 'yellow', 'blue'];
+    ten.forEach(function (m, i) {
+      var c = Ve.MAU[m], x = 4 + (i % 2) * 7, y = 10 + Math.floor(i / 2) * 7;
+      p.rect(x, y, 6, 6, INK); p.rect(x + 1, y + 1, 4, 4, c.n);
+      p.rect(x + 1, y + 1, 4, 1, c.s); p.rect(x + 1, y + 1, 1, 4, c.s); p.rect(x + 1, y + 4, 4, 1, c.t); p.rect(x + 4, y + 1, 1, 4, c.t);
+    });
+    themBanhRang(p);
+    return p;
+  };
+  HINH['che-xich'] = function () {                              // xe xích nhìn ngang (quay sang phải): thân thấp trên một dải xích + bánh răng
+    var p = P(T26, T26), x0 = 4, y0 = 12;
+    p.rect(x0 + 2, y0, 14, 5, INK); p.rect(x0 + 3, y0 + 1, 12, 3, KK.vang);            // thân
+    p.rect(x0 + 3, y0 + 1, 12, 1, KK.vangSang); p.rect(x0 + 3, y0 + 3, 12, 1, KK.vangToi);
+    p.rect(x0 + 6, y0 + 1, 5, 2, KK.kinh); p.rect(x0 + 6, y0 + 1, 2, 1, KK.xanh);       // cửa kính
+    p.rect(x0, y0 + 4, 18, 7, INK); p.rect(x0 + 1, y0 + 5, 16, 5, KK.den);              // dải xích
+    for (var i = 1; i < 16; i += 3) { p.rect(x0 + 1 + i, y0 + 5, 1, 1, KK.denSang); p.rect(x0 + 1 + i, y0 + 9, 1, 1, KK.denSang); }      // mắt xích
+    [3.5, 14.5].forEach(function (cx) { p.ell(x0 + cx, y0 + 7.5, 2.4, 2.4, INK); p.ell(x0 + cx, y0 + 7.5, 1.5, 1.5, KK.thepSang); });     // hai bánh dẫn
+    themBanhRang(p);
+    return p;
+  };
+  HINH['che-omni'] = function () {                              // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
+    var p = P(T26, T26), t = thanPart('omni');
+    chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
+    themBanhRang(p);
+    return p;
+  };
   HINH['che-nam-cham'] = function () {                          // nam châm đang bật + bánh răng
     var p = P(T26, T26), t = cat(partTho('tay', 'nam-cham', { bat: true, cuc: 'N' }));
     chep(p, t, Math.max(0, 10 - (t.w >> 1)), Math.max(0, T26 - 1 - t.h), 1);
+    themBanhRang(p);
+    return p;
+  };
+  HINH['che-may-nem'] = function () {                           // máy ném + vòng cung vật bay thấp + vật rơi xuống đất + bánh răng
+    var p = P(T26, T26), m = cat(partTho('tay', 'nem', { dangNem: true, cam: true }));
+    chep(p, m, 0, T26 - 1 - m.h, 1);
+    [[9, 14], [12, 12], [15, 12], [18, 14]].forEach(function (q) { p.rect(q[0] - 1, q[1] - 1, 4, 4, INK); p.rect(q[0], q[1], 2, 2, '#ffd23f'); });
+    Part.veVatNho(p, 17, 17, 7, 'go');
+    p.rect(16, 24, 9, 1, '#3f9a48'); p.rect(17, 25, 7, 1, '#2c7436');
+    themBanhRang(p);
+    return p;
+  };
+  HINH['che-drone'] = function () {                             // thân drone nhìn từ trên (bốn cánh quạt) + bánh răng
+    var p = P(T26, T26), t = thanPart('drone');
+    chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
     themBanhRang(p);
     return p;
   };

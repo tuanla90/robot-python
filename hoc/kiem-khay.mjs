@@ -149,7 +149,8 @@ function noiDung(host) {
   (function di(n) { for (const c of n.children) { if (c._cls.has('gl')) kq.push('## ' + c.children[0].textContent); else if (c._cls.has('brick')) kq.push(c.getAttribute('data-ten')); else di(c); } })(host);
   return kq;
 }
-const tenThe = (k) => (k.bh.querySelector('.the-chu') || { textContent: '' }).textContent;
+const tenThe = (k) => { const e = k.bh.querySelector('.the-chu'); return e ? (e.getAttribute('title') || e.textContent) : ''; };     // tiêu đề thẻ là icon (15/10): tên ở title
+const ghimCo = (k) => (k.pal.ghim ? noiDung(k.pal.ghim) : []);                                  // hàng ghim dưới khay: ['wait'] khi màn có wait()
 const coThe = (k) => k.bh.querySelector('.pal-the').style.display !== 'none';
 const tatCaThe = (k) => { const ds = k.pal.dsThe(); return ds; };
 /** Spec của khay màn chơi: y như veKho của game/man-choi.js. */
@@ -192,7 +193,7 @@ console.log('\n== 2. TP.theCuaHam: hàm của em → thẻ theo lệnh gốc nó
   const loop = [H('a', ['b()']), H('b', ['a()', 'grab()'])];
   kiem('hàm gọi vòng quanh nhau không treo; vẫn thấy lệnh tay ở hàm kia → "tay"', TP.theCuaHam(loop[0], (t) => loop.find((f) => f.ten === t) || null) === 'tay');
   kiem('lệnh của mọi bộ phận: nam châm (magnet_n, magnet_s), máy ném (aim), súng bóng (shoot), tấm đẩy (push) → "tay"; color / battery / front_metal → "cam"',
-    ['magnet_n', 'magnet_s', 'magnet_off', 'aim', 'throw', 'load', 'shoot', 'push'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'tay') && ['color', 'battery', 'front_metal', 'front_pole', 'left_clear', 'right_clear'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'cam'));
+    ['magnet_n', 'magnet_s', 'magnet_off', 'aim', 'throw', 'load', 'shoot', 'shoot_back'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'tay') && ['color', 'battery', 'front_metal', 'front_pole', 'left_clear', 'right_clear'].every((l) => TP.theCuaHam(H('x', [l + '()']), () => null) === 'cam'));
   kiem('chú thích không tính: "move()  # grab()" vẫn là "than"', TP.theCuaHam(H('x', ['move()  # grab()']), () => null) === 'than');
 }
 
@@ -223,7 +224,7 @@ console.log('\n== 4. Palette: thẻ, tên thẻ, chỗ đặt hàm của em và 
   const m15 = man('hai-banh.5');
   let k = khayMoi(); k.host.clientHeight = 400;
   k.pal.dung(specMan(m15, KHO_CH, []));
-  kiem('hai-banh.5 (xe, chỉ lệnh gốc): MỘT thẻ, ẩn ◀ ▶, vẫn thấy tiêu đề KHỐI LỆNH, không có hàm của em', tatCaThe(k).length === 1 && !coThe(k) && k.bh.querySelector('.tt').style.display !== 'none' && J(noiDung(k.host)) === J(['left_move', 'right_move', 'wait']), J(noiDung(k.host)));
+  kiem('hai-banh.5 (xe, chỉ lệnh gốc): MỘT thẻ, ẩn ◀ ▶, vẫn thấy tiêu đề KHỐI LỆNH, không có hàm của em', tatCaThe(k).length === 1 && !coThe(k) && k.bh.querySelector('.tt').style.display !== 'none' && J(noiDung(k.host)) === J(['left_move', 'right_move']) && J(ghimCo(k)) === '["wait"]', J(noiDung(k.host)) + ' ghim ' + J(ghimCo(k)));
 
   // 4.2 xe có hàm của màn: hàm của màn nằm TRONG thẻ Thân (không còn thẻ "Của màn")
   const m37 = man('che-xe.7');
@@ -231,7 +232,7 @@ console.log('\n== 4. Palette: thẻ, tên thẻ, chỗ đặt hàm của em và 
   kiem('che-xe.7 (xe + hàm go_out của màn): MỘT thẻ "Xe" (go_out là hàm thân nên nằm trong thẻ Thân; không còn thẻ "Của màn"), ẩn ◀ ▶', J(tatCaThe(k)) === '["than"]' && !coThe(k) && k.pal.theHienTai() === 'than', J(tatCaThe(k)));
   let q = quetThe(k);
   kiem('thẻ Xe: lệnh gốc bánh, rồi HÀM CỦA MÀN (go_out), rồi HÀM CỦA EM (move, turn_right, u_turn, dodge_right…); hàm tay và hàm cảm biến bị lọc theo robot (xe này không có tay, không có cảm biến)',
-    J(q.than.slice(0, 7)) === J(['left_move', 'right_move', 'left_back', 'right_back', 'wait', '## HÀM CỦA MÀN', 'go_out']) && q.than.indexOf('## HÀM CỦA MÀN') < q.than.indexOf('## HÀM CỦA EM') && q.than.indexOf('move') > q.than.indexOf('## HÀM CỦA EM') && !q.than.includes('pick') && !q.than.includes('carry') && !q.than.includes('go_wall') && q.than.includes('dodge_right'), J(q.than));
+    J(q.than.slice(0, 6)) === J(['left_move', 'right_move', 'left_back', 'right_back', '## HÀM CỦA MÀN', 'go_out']) && q.than.indexOf('## HÀM CỦA MÀN') < q.than.indexOf('## HÀM CÓ SẴN') && q.than.indexOf('move') > q.than.indexOf('## HÀM CÓ SẴN') && !q.than.includes('pick') && !q.than.includes('carry') && !q.than.includes('go_wall') && q.than.includes('dodge_right'), J(q.than));
   kiem('hàm của màn vẽ màu cam (lớp "or", data-loai "man"); hàm của em lớp "gr"',
     (() => { let man_ = null, em_ = null; (function di(n) { for (const c of n.children) { if (c._cls.has('brick')) { if (c.getAttribute('data-ten') === 'go_out') man_ = c; if (c.getAttribute('data-ten') === 'move') em_ = c; } else di(c); } })(k.host); return !!man_ && man_._cls.has('or') && man_.getAttribute('data-loai') === 'man' && !!em_ && em_._cls.has('gr') && em_.getAttribute('data-loai') === 'em'; })());
   // hàm của màn theo thẻ bộ phận như hàm của em: go_drop (lệnh tay) ở thẻ Tay, go_see (lệnh cảm biến) ở thẻ Cảm biến, go_move (chỉ bánh) ở thẻ Xe
@@ -240,7 +241,7 @@ console.log('\n== 4. Palette: thẻ, tên thẻ, chỗ đặt hàm của em và 
   q = quetThe(k);
   kiem('hàm của màn vào thẻ bộ phận theo CÙNG luật với hàm của em: go_move ở Xe, go_drop ở Tay kẹp, go_see ở Cảm biến; mỗi thẻ có nhóm HÀM CỦA MÀN trên nhóm HÀM CỦA EM',
     q.than.includes('go_move') && !q.than.includes('go_drop') && q.tay.includes('go_drop') && !q.tay.includes('go_move') && q.cam.includes('go_see') && !q.cam.includes('go_drop') &&
-    q.tay.indexOf('## HÀM CỦA MÀN') < q.tay.indexOf('## HÀM CỦA EM'), J(q));
+    q.tay.indexOf('## HÀM CỦA MÀN') < q.tay.indexOf('## HÀM CÓ SẴN'), J(q));
   kiem('không còn thẻ "man": mọi khóa thẻ là than / tay / cam', tatCaThe(k).every((x) => ['than', 'tay', 'cam'].includes(x)));
   k.pal.datLoi(['man:go_drop']);
   kiem('datLoi một hàm của màn nằm ở thẻ khác thì tự sang thẻ chứa nó (go_drop → Tay kẹp)', k.pal.theHienTai() === 'tay');
@@ -251,7 +252,7 @@ console.log('\n== 4. Palette: thẻ, tên thẻ, chỗ đặt hàm của em và 
   kiem('tay-gap.5: hai thẻ Xe và "Tay kẹp" (tên theo bộ phận thật); mở sẵn "Tay kẹp" vì màn bắt chế pick', J(tatCaThe(k)) === '["than","tay"]' && k.pal.theHienTai() === 'tay' && tenThe(k) === 'Tay kẹp', J(tatCaThe(k)) + k.pal.theHienTai() + '/' + tenThe(k));
   q = quetThe(k);
   kiem('thẻ Tay kẹp: bốn lệnh tay trước, rồi HÀM CỦA EM chỉ gồm hàm có lệnh tay (pick, drop, carry; safe_pick có cả cảm biến nên không vào đây)',
-    J(q.tay.slice(0, 6)) === J(['arm_down', 'arm_up', 'grab', 'release', '## HÀM CỦA EM', 'pick']) && q.tay.includes('carry') && q.tay.includes('drop') && !q.tay.includes('move') && !q.tay.includes('safe_pick') && !q.tay.includes('go_wall'), J(q.tay));
+    J(q.tay.slice(0, 6)) === J(['arm_down', 'arm_up', 'grab', 'release', '## HÀM CÓ SẴN', 'pick']) && q.tay.includes('carry') && q.tay.includes('drop') && !q.tay.includes('move') && !q.tay.includes('safe_pick') && !q.tay.includes('go_wall'), J(q.tay));
   kiem('thẻ Xe của màn tay: không có hàm tay (pick, drop, carry); hàm có cảm biến (go_wall, safe_pick) bị ẩn vì màn không gắn cảm biến',
     !q.than.includes('pick') && !q.than.includes('carry') && !q.than.includes('go_wall') && !q.than.includes('safe_pick') && q.than.includes('move'), J(q.than));
   kiem('ở màn tay-gap.5 không có `for` (chương chưa học vòng lặp): không thẻ nào có khối for', !J(q).includes('"for"'));
@@ -259,13 +260,21 @@ console.log('\n== 4. Palette: thẻ, tên thẻ, chỗ đặt hàm của em và 
   // 4.4 tay + vòng lặp + cảm biến
   const m69 = man('khoang-cach.9');
   k = khayMoi(); k.pal.dung(specMan(m69, KHO_CH, hm(m69)));
-  kiem('khoang-cach.9 (xe + tay + cảm biến): ba thẻ Xe, Tay kẹp, Cảm biến theo thứ tự', J(tatCaThe(k)) === '["than","tay","cam"]', J(tatCaThe(k)));
+  kiem('khoang-cach.9 (xe + tay + cảm biến): ba thẻ Xe, Tay kẹp, Logic theo thứ tự', J(tatCaThe(k)) === '["than","tay","cam"]', J(tatCaThe(k)));
   q = quetThe(k);
-  kiem('thẻ Cảm biến: khối đọc cảm biến (while front_clear, if, else) trước, rồi `for`, rồi HÀM CỦA EM có go_wall, safe_move, safe_pick',
-    J(q.cam.slice(0, 5)) === J(['while', 'if', 'else:'.replace(':', ''), 'for', '## HÀM CỦA EM']) && ['go_wall', 'safe_move', 'safe_pick'].every((t) => q.cam.includes(t)) && !q.cam.includes('pick'), J(q.cam));
-  kiem('`for` nằm trong MỌI thẻ lệnh (Xe, Tay kẹp, Cảm biến) nên không phải đổi thẻ để lấy; mỗi thẻ đúng một khối for', ['than', 'tay', 'cam'].every((x) => q[x].filter((t) => t === 'for').length === 1), J(q));
-  kiem('khối `while` / `if` đọc cảm biến chỉ ở thẻ Cảm biến, không lẫn sang thẻ Xe / Tay', !q.than.includes('while') && !q.than.includes('if') && !q.tay.includes('while') && !q.tay.includes('if'));
-  kiem('thẻ Xe có `for` ngay sau lệnh gốc, trước HÀM CỦA EM', J(q.than.slice(4, 8)) === J(['wait', 'for', '## HÀM CỦA EM', 'move']), J(q.than.slice(0, 9)));
+  kiem('thẻ Logic: `for`, rồi khối đọc cảm biến (while front_clear, if, else), rồi HÀM CỦA EM có go_wall, safe_move, safe_pick',
+    J(q.cam.slice(0, 5)) === J(['for', 'while', 'if', 'else', '## HÀM CÓ SẴN']) && ['go_wall', 'safe_move', 'safe_pick'].every((t) => q.cam.includes(t)) && !q.cam.includes('pick'), J(q.cam));
+  kiem('`for` chỉ ở thẻ Logic (đúng một khối); thẻ Xe / Tay kẹp chỉ còn lệnh của bộ phận (15/10)', q.cam.filter((t) => t === 'for').length === 1 && !q.than.includes('for') && !q.tay.includes('for'), J(q));
+  kiem('khối `while` / `if` đọc cảm biến chỉ ở thẻ Logic, không lẫn sang thẻ Xe / Tay', !q.than.includes('while') && !q.than.includes('if') && !q.tay.includes('while') && !q.tay.includes('if'));
+  kiem('thẻ Xe: lệnh gốc bánh rồi HÀM CỦA EM, không for / wait; wait() ở hàng ghim dưới khay, thẻ nào cũng thấy', J(q.than.slice(0, 6)) === J(['left_move', 'right_move', 'left_back', 'right_back', '## HÀM CÓ SẴN', 'move']) && J(ghimCo(k)) === '["wait"]', J(q.than.slice(0, 9)) + ' ghim ' + J(ghimCo(k)));
+  k.pal.chonThe('tay');
+  kiem('đổi sang thẻ Tay kẹp: hàng ghim vẫn có wait()', J(ghimCo(k)) === '["wait"]');
+  kiem('tiêu đề thẻ là icon (lớp co-ic), tên thẻ ở title', k.bh.querySelector('.the-chu')._cls.has('co-ic') && tenThe(k) === 'Tay kẹp', tenThe(k));
+  {
+    const k11 = khayMoi(); k11.pal.dung(specMan(man('hai-banh.1'), KHO_CH, []));
+    const kv = khayMoi(); kv.pal.dung(specMan(man('vong-lap.2'), KHO_CH, []));
+    kiem('màn chưa học cấu trúc (1.1): không có thẻ Logic; màn đầu Vòng lặp: có thẻ Logic chứa for', !k11.pal.dsThe().includes('cam') && kv.pal.dsThe().includes('cam') && quetThe(kv).cam.includes('for'), J(k11.pal.dsThe()) + ' / ' + J(kv.pal.dsThe()));
+  }
 
   // 4.5 đổi thẻ ◀ ▶ vòng tròn, giữ thẻ khi vẽ lại
   k = khayMoi(); k.pal.dung(specMan(m69, KHO_CH, hm(m69)));
@@ -287,7 +296,7 @@ console.log('\n== 4. Palette: thẻ, tên thẻ, chỗ đặt hàm của em và 
   // 4.6 khối lỗi ở thẻ khác
   k = khayMoi(); k.pal.dung(specMan(m69, KHO_CH, hm(m69), { the: 'than' }));
   k.pal.datLoi(['em:go_wall']);
-  kiem('datLoi: khối báo lỗi (em:go_wall) nằm ở thẻ khác thì tự sang thẻ Cảm biến và tô đỏ khối đó', k.pal.theHienTai() === 'cam');
+  kiem('datLoi: khối báo lỗi (em:go_wall) nằm ở thẻ khác thì tự sang thẻ Logic và tô đỏ khối đó', k.pal.theHienTai() === 'cam');
   (function di(n) { for (const c of n.children) { if (c._cls.has('brick') && c.getAttribute('data-ten') === 'go_wall') kiem('khối go_wall có lớp err', c._cls.has('err')); else di(c); } })(k.host);
   k.pal.datLoi([]);
   (function di(n) { for (const c of n.children) { if (c._cls.has('brick')) { if (c._cls.has('err')) kiem('datLoi([]) xóa hết tô đỏ', false); } else di(c); } })(k.host);
@@ -327,6 +336,7 @@ console.log('\n== 5. Mọi màn: khay không mất khối nào so với kho cũ 
     k.pal.dung(spec);
     const tat = new Set(), q = quetThe(k);
     for (const ds of Object.values(q)) for (const t of ds) tat.add(t);
+    for (const t of ghimCo(k)) tat.add(t);
     const can = [];
     for (const n of (m.hamGoc || [])) { if (['front_clear', 'left_clear', 'right_clear', 'color', 'front_metal', 'front_pole', 'battery'].includes(n)) continue; can.push(n); }
     for (const f of hm(m)) can.push(f.ten);
@@ -345,8 +355,8 @@ console.log('\n== 6. game/choi.html ==');
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   kiem('choi.html nạp khung-code.js trước cham.js (cham.js dùng KhungCode.kiemTra với gioiHanHam)', html.indexOf('../khung-code.js') > 0 && html.indexOf('../khung-code.js') < html.indexOf('../cham.js'));
   kiem('chữ của khay có trong chu.js: tên thẻ, nút ◀ ▶, bộ đếm Hàm k/n, Sổ lệnh "Còn N nhóm chưa mở"',
-    ['choi.the.xe', 'choi.the.nhen', 'choi.the.drone', 'choi.the.tay', 'choi.the.tayKep', 'choi.the.tayNamCham', 'choi.the.tayNem', 'choi.the.taySung', 'choi.the.tayDay', 'choi.the.cam', 'choi.theTruoc', 'choi.theSau', 'choi.hamDem', 'so.conKhoa',
-      'choi.hamKhoaNhan', 'choi.meoXoa', 'choi.meoXoa2', 'choi.meoThe', 'choi.nhipNhan', 'xuong.hamKhoaEm', 'xuong.chiXem', 'choi.den.banhT', 'choi.den.banhP', 'choi.den.truot', 'choi.den.tay', 'choi.den.kep', 'choi.den.namCham', 'choi.den.nem', 'choi.den.sung', 'choi.den.day', 'choi.den.camBien', 'choi.den.chan', 'choi.den.canh'].every((x) => ctx.t(x) !== x));
+    ['choi.the.xe', 'choi.the.nhen', 'choi.the.drone', 'choi.the.tay', 'choi.the.tayKep', 'choi.the.tayNamCham', 'choi.the.tayNem', 'choi.the.taySung', 'choi.the.cam', 'choi.theTruoc', 'choi.theSau', 'choi.hamDem', 'so.conKhoa',
+      'choi.hamKhoaNhan', 'choi.meoXoa', 'choi.meoXoa2', 'choi.meoThe', 'choi.nhipNhan', 'xuong.hamKhoaEm', 'xuong.chiXem', 'choi.den.banhT', 'choi.den.banhP', 'choi.den.truot', 'choi.den.tay', 'choi.den.kep', 'choi.den.namCham', 'choi.den.nem', 'choi.den.sung', 'choi.den.camBien', 'choi.den.chan', 'choi.den.canh'].every((x) => ctx.t(x) !== x));
   kiem('bộ đếm: t("choi.hamDem") = "Hàm 2/3"', ctx.t('choi.hamDem', { k: 2, n: 3 }) === 'Hàm 2/3');
   const css = fs.readFileSync(path.join(day, 'game', 'choi.css'), 'utf8');
   kiem('choi.css không còn mức co .pal.d1 / .pal.d2 / .pal.d3 (khối giữ cỡ dễ chạm, cao ≥ 28px = ngang một dòng khung chương trình, user 15/10)', !/\.pal\.d[123]\b/.test(css) && /\.brick\{[^}]*height:(2[89]|[3-9]\d)px/.test(css));
@@ -418,7 +428,7 @@ console.log('\n== 8. TP.nhomNhip: ngoặc nhịp gom lệnh gốc + wait() ==');
   kiem('aim(n) tác dụng ngay: không ngắt nhóm, không vào nhóm khi đứng đầu (aim, throw, wait → nhóm từ throw)', g(['aim(2)', 'throw()', 'wait()']) === G([1, 2, 1]) && g(['throw()', 'aim(3)', 'wait()']) === G([0, 2, 1]));
   kiem('lệnh cảm biến đứng riêng (front_clear()) không phải lệnh ra lệnh: ngắt nhóm', g(['front_clear()', 'wait()']) === G([1, 1, 1]));
   kiem('mọi lệnh gốc "chỉ ra lệnh" đều gom: bánh, trượt, tay, kẹp, đẩy, nam châm, ném, bắn',
-    ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'grab', 'release', 'push', 'magnet_n', 'magnet_s', 'magnet_off', 'load', 'throw', 'shoot'].every((l) => g([l + '()', 'wait()']) === G([0, 1, 1])));
+    ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'grab', 'release', 'magnet_n', 'magnet_s', 'magnet_off', 'load', 'throw', 'shoot', 'shoot_back'].every((l) => g([l + '()', 'wait()']) === G([0, 1, 1])));
   kiem('có chú thích sau lệnh (left_move()  # trái) vẫn là lệnh gốc', g(['left_move()  # trái', 'wait()']) === G([0, 1, 1]));
   const nguonTP = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8'), mc = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), xh = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
   kiem('Editor vẽ ngoặc nhịp chỉ khi tuyChon.veNhip(); màn chơi và Xưởng đều truyền veNhip, trừ nhện / drone (go_* tự trôi nhịp)',
@@ -486,8 +496,14 @@ console.log('\n== 9. HuongDan: chuỗi bước, sự kiện, hạn, cờ đã xe
   kiem('huong-dan.js: một chuỗi một lúc (chuỗi mới đang hiện thì chuỗi cũ ẩn, không đếm hạn; nhịp vẽ chuỗi mới trước) và ẩn khi đang kéo (body.dang-keo)',
     /function biChuoiMoiChe\(c\)/.test(nguonHD) && /if \(biChuoiMoiChe\(c\)\) \{ gaHet\(c\); c\.dangHien = false; return false; \}/.test(nguonHD) && /CHUOI\.slice\(\)\.reverse\(\)\.forEach\(function \(c\)/.test(nguonHD) && /contains\('dang-keo'\)\) return true/.test(nguonHD));
   { const nx = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
-    kiem('sân thử Xưởng: chế độ Vật ở MỌI màn có vật (trừ tấm đẩy) chạm vật thì đổi gỗ → sắt → nam châm N → nam châm S → bỏ (không còn riêng màn nam châm)',
-      nx.includes("S.che === 'vat' && !coDay()") && !nx.includes('coNamCham') && nx.includes("chat: 'sat'") && nx.includes("cuc: 'N'") && nx.includes("cuc: 'S'")); }
+    kiem('sân thử Xưởng: Đặt vật loại Vật ở MỌI màn (súng hơi có thêm loại Thùng nặng) chạm vật thì đổi gỗ → sắt → nam châm N → nam châm S → bỏ (không còn riêng màn nam châm)',
+      nx.includes("} else if (che === 'vat') {") && nx.includes("if (coSung() || /[Hh]/.test(k)) ds.push('thung');") && !nx.includes('coNamCham') && nx.includes("chat: 'sat'") && nx.includes("cuc: 'N'") && nx.includes("cuc: 'S'")); }
+  { const nx = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8'), nc = fs.readFileSync(path.join(day, 'cham.js'), 'utf8');
+    kiem('Xưởng (15/10): năm nút Chạy / Lại / Đặt xe / Đặt vật / Đặt sàn (không còn nút Tường, Ô, Rổ, Pin, Màu riêng); đối số thử, pin, rổ ở thanh tên hàm',
+      nx.includes("data-nut=\"' + CHE.vat + '\" data-che=\"vat\"") && nx.includes("data-nut=\"' + CHE.san + '\" data-che=\"san\"") && !nx.includes('CHE.tuong') && !nx.includes('nut-o') && nx.includes('<span class="dso"></span>') && nx.includes("chip('nut-pin'") && nx.includes("chip('nut-ro'"));
+    kiem('sân thử nhận ký hiệu sân (bậc thang S, gầm n, hố u, băng chuyền < > ^ v) qua sanThu.ky: chuanSanThu lọc, hangSanThu vẽ vào hàng',
+      (() => { const st = ChamHoc.chuanSanThu({ rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, tuong: [{ x: 0, y: 0 }], ky: [{ x: 1, y: 1, ky: 'S' }, { x: 2, y: 2, ky: 'u' }, { x: 0, y: 0, ky: 'n' }, { x: 3, y: 1, ky: '>' }, { x: 4, y: 4, ky: 'Q' }] }); const r = ChamHoc.hangSanThu(st); return st.ky.length === 2 && r[1] === '.S.>.' && r[0][0] === '#'; })() && nc.includes("'Snu<>^v'"));
+  }
   { // MỖI BỘ PHẬN MỘT LỆNH MỖI NHỊP (thanh-phan.js: lenhCungNhip / lyDoCamNhip, Editor.chenTai, Palette.datCamNhip)
     const J = (x) => JSON.stringify(x), L = (a, at, b) => TP.lenhCungNhip(a, at, b || 0), C = (ten, ds) => TP.lyDoCamNhip(ten, ds);
     const hai = ['left_move()', 'right_move()', 'wait()'];
@@ -495,13 +511,13 @@ console.log('\n== 9. HuongDan: chuỗi bước, sự kiện, hạn, cờ đã xe
     kiem('lenhCungNhip: chỉ dòng cùng bậc thụt (trong for), dừng ở dòng khác (lời gọi hàm), ranh nhịp go_*() của nhện / drone, bỏ qua aim()',
       J(L(['for i in range(2):', '    left_move()', '    wait()'], 2, 1)) === '["left_move"]' && J(L(['move()', 'left_move()'], 2)) === '["left_move"]'
       && J(L(['crouch()', 'go_right()', 'stand()'], 1)) === '["crouch"]' && J(L(['crouch()', 'go_right()', 'stand()'], 3)) === '["stand"]' && J(L(['aim(2)', 'load()'], 2)) === '["load","aim"]');
-    const camDu = [['left_back', ['left_move']], ['left_move', ['left_move']], ['arm_up', ['arm_down']], ['release', ['grab']], ['magnet_s', ['magnet_n']], ['magnet_off', ['magnet_s']], ['stand', ['crouch']], ['arm_right', ['arm_left']], ['throw', ['load']], ['shoot', ['shoot']], ['push', ['push']], ['slide_right', ['slide_left']]];
-    kiem('cùng bộ phận trong một nhịp thì cấm: bánh trái, tay lên / xuống, gắp / thả, nam châm N / S / ngắt, chân nhện co / duỗi, khớp xoay, máy ném, súng, tấm đẩy, trượt',
+    const camDu = [['left_back', ['left_move']], ['left_move', ['left_move']], ['arm_up', ['arm_down']], ['release', ['grab']], ['magnet_s', ['magnet_n']], ['magnet_off', ['magnet_s']], ['stand', ['crouch']], ['arm_right', ['arm_left']], ['throw', ['load']], ['shoot', ['shoot']], ['shoot_back', ['shoot']], ['shoot', ['shoot_back']], ['slide_right', ['slide_left']]];
+    kiem('cùng bộ phận trong một nhịp thì cấm: bánh trái, tay lên / xuống, gắp / thả, nam châm N / S / ngắt, chân nhện co / duỗi, khớp xoay, máy ném, súng hơi (hai nòng cùng một bộ phận), trượt',
       camDu.every(([a, ds]) => !!C(a, ds)), camDu.filter(([a, ds]) => !C(a, ds)).map((x) => x[0]).join(', '));
     const duoc = [['right_move', ['left_move']], ['grab', ['arm_down']], ['arm_left', ['arm_down', 'grab']], ['wait', ['left_move']], ['move', ['left_move']], ['left_move', []], ['magnet_n', ['left_move', 'right_move']]];
     kiem('khác bộ phận thì được (hai bánh, tay + kẹp + khớp xoay, nam châm + bánh); wait() và lời gọi hàm luôn được', duoc.every(([a, ds]) => C(a, ds) === null), duoc.filter(([a, ds]) => C(a, ds) !== null).map((x) => x[0]).join(', '));
     kiem('một nhịp một kiểu đi: trượt (omni không đi chéo) hay bắn / đẩy (xe đứng yên) không đi chung lệnh bánh',
-      !!C('left_move', ['slide_left']) && !!C('slide_right', ['right_move']) && !!C('left_move', ['shoot']) && !!C('push', ['left_back']) && C('grab', ['slide_left']) === null);
+      !!C('left_move', ['slide_left']) && !!C('slide_right', ['right_move']) && !!C('left_move', ['shoot']) && !!C('shoot_back', ['left_back']) && C('grab', ['slide_left']) === null);
     kiem('câu báo nói tên bộ phận và lệnh đã có ("Bánh trái đã có left_move()…", "Tay đã có arm_down()…") và cách sửa (thêm wait())',
       /^Bánh trái đã có left_move\(\)/.test(C('left_back', ['left_move'])) && /^Tay đã có arm_down\(\)/.test(C('arm_up', ['arm_down'])) && /wait\(\)/.test(C('arm_up', ['arm_down'])) && /slide_left\(\)/.test(C('left_move', ['slide_left'])));
     const nTP = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8'), nC = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), nX = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
@@ -556,15 +572,15 @@ console.log('\n== 10. DenBoPhan: bộ phận có trên màn, bộ phận sáng t
   kiem('tay gắp (tay-gap.1): bánh trái, bánh phải, tay, kẹp', dsBp('tay-gap.1') === '["banhT","banhP","tay","kep"]');
   kiem('xe + tay + cảm biến (khoang-cach.9): thêm cảm biến ở cuối', dsBp('khoang-cach.9') === '["banhT","banhP","tay","kep","camBien"]');
   kiem('omni (omni.3): thêm đèn trượt; xích (xich.3) như bánh; nhện (nhen.4): chỉ chân; drone (drone.5): cánh quạt (+ cảm biến pin)', dsBp('omni.3') === '["banhT","banhP","truot"]' && dsBp('xich.3') === '["banhT","banhP"]' && dsBp('nhen.4') === '["chan"]' && J(DenBoPhan.boPhanCuaMan(man('drone.5'))).includes('"canh"') && !J(DenBoPhan.boPhanCuaMan(man('drone.5'))).includes('banh'));
-  kiem('nam châm / máy ném / súng bóng / tấm đẩy có đèn riêng', ['nam-cham.3', 'may-nem.4', 'sung-bong.5', 'tam-day.6'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|') === 'namCham|nem|sung|day', ['nam-cham.3', 'may-nem.4', 'sung-bong.5', 'tam-day.6'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|'));
-  const THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'day', 'camBien', 'chan', 'canh'];      // như den-bo-phan.js (xoay: khớp tay xoay)
+  kiem('nam châm / máy ném / súng hơi có đèn riêng; không còn đèn tấm đẩy', ['nam-cham.3', 'may-nem.4', 'sung-hoi.3'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|') === 'namCham|nem|sung', ['nam-cham.3', 'may-nem.4', 'sung-hoi.3'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|'));
+  const THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'camBien', 'chan', 'canh'];      // như den-bo-phan.js (xoay: khớp tay xoay)
   kiem('mọi màn: có ít nhất một bộ phận, đúng thứ tự hiển thị, không quá 7 (vừa ô đồng hồ), xe bánh có đủ hai bánh', ManHoc.danhSach.every((m) => { const d = DenBoPhan.boPhanCuaMan(m); const idx = d.map((k) => THU_TU.indexOf(k)); return d.length >= 1 && d.length <= 7 && idx.every((i, j) => i >= 0 && (j === 0 || idx[j - 1] < i)) && (['nhen', 'drone'].includes(m.loaiRobot) || (d.includes('banhT') && d.includes('banhP'))); }));
   // phan() thuần túy
   const P = (e, l) => DenBoPhan.phan(e, l);
   kiem('bánh trái / phải theo robot.banh: chỉ trái chạy → banhT sáng, banhP tắt; đứng yên → cả hai tắt', P({ robot: { banh: { trai: 1, phai: 0 } } }, []).banhT === true && P({ robot: { banh: { trai: 1, phai: 0 } } }, []).banhP === false && !P({ robot: { banh: { trai: 0, phai: 0 } } }, []).banhT);
   kiem('omni trượt (robot.truot ≠ 0): đèn trượt + cả hai bánh sáng', (() => { const r = P({ robot: { banh: { trai: 0, phai: 0 }, truot: 1 } }, []); return r.truot && r.banhT && r.banhP; })());
   kiem('tay: lệnh arm_up / arm_down; kẹp: grab / release; không lẫn nhau', (() => { const r = P({ robot: {} }, [{ ten: 'arm_down' }, { ten: 'wait' }]), r2 = P({ robot: {} }, [{ ten: 'release' }]); return r.tay && !r.kep && r2.kep && !r2.tay; })());
-  kiem('nam châm: lệnh magnet_n / magnet_s / off hoặc nam châm đang bật; máy ném: load / throw; súng: shoot; đẩy: push', (() => { const a = P({ robot: { namCham: { bat: true } } }, []), b = P({ robot: {} }, [{ ten: 'magnet_off' }]), c = P({ robot: {} }, [{ ten: 'throw' }]), d = P({ robot: {} }, [{ ten: 'shoot' }]), e = P({ robot: {} }, [{ ten: 'push' }]); return a.namCham && b.namCham && c.nem && d.sung && e.day && !c.sung; })());
+  kiem('nam châm: lệnh magnet_n / magnet_s / off hoặc nam châm đang bật; máy ném: load / throw; súng hơi: shoot hay shoot_back', (() => { const a = P({ robot: { namCham: { bat: true } } }, []), b = P({ robot: {} }, [{ ten: 'magnet_off' }]), c = P({ robot: {} }, [{ ten: 'throw' }]), d = P({ robot: {} }, [{ ten: 'shoot' }]), e = P({ robot: {} }, [{ ten: 'shoot_back' }]); return a.namCham && b.namCham && c.nem && d.sung && e.sung && e.day === undefined && !c.sung; })());
   kiem('cảm biến: mục lệnh có docCamBien hoặc front_clear / color / battery…, hoặc sự kiện doc-cam-bien; nhện: chuan-bi / di; drone: di / dung-yen', (() => { return P({ robot: {} }, [{ ten: 'front_clear', docCamBien: {} }]).camBien && P({ robot: {} }, [{ ten: 'color' }]).camBien && P({ robot: {}, suKien: [{ ma: 'doc-cam-bien' }] }, []).camBien && !P({ robot: {} }, [{ ten: 'wait' }]).camBien && P({ robot: {}, suKien: [{ ma: 'chuan-bi' }] }, []).chan && P({ robot: {}, suKien: [{ ma: 'di' }] }, []).chan && P({ robot: {}, suKien: [{ ma: 'dung-yen' }] }, []).canh && !P({ robot: {}, suKien: [{ ma: 'dung-yen' }] }, []).chan; })());
   // theo vết thật của lời giải
   function khoDen(m) {
@@ -589,7 +605,7 @@ console.log('\n== 10. DenBoPhan: bộ phận có trên màn, bộ phận sáng t
   kiem('nhện (nhen.4): đèn chân sáng ở nhịp chuẩn bị và nhịp bước, không đèn bánh nào có trong danh sách', dem(ds, 'chan') >= 4 && !DenBoPhan.boPhanCuaMan(man('nhen.4')).includes('banhT'));
   ds = nhipSang('drone.5');
   kiem('drone (drone.5): cánh quạt sáng khi bay, cảm biến pin nháy khi gọi battery()', dem(ds, 'canh') >= 4 && dem(ds, 'camBien') >= 1);
-  for (const [ma, k] of [['omni.3', 'truot'], ['nam-cham.3', 'namCham'], ['may-nem.4', 'nem'], ['sung-bong.5', 'sung'], ['tam-day.2', 'day']]) {
+  for (const [ma, k] of [['omni.3', 'truot'], ['nam-cham.3', 'namCham'], ['may-nem.4', 'nem'], ['sung-hoi.3', 'sung'], ['sung-hoi.5', 'sung']]) {
     ds = nhipSang(ma);
     kiem(ma + ' (vết thật): đèn "' + k + '" sáng ít nhất một nhịp', dem(ds, k) >= 1, J(ds.map((x) => Object.keys(x.sang).filter((q) => x.sang[q]).join('+'))));
   }

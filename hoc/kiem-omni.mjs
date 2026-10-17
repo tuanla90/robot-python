@@ -82,6 +82,8 @@ const SR = L('slide_right()', 'wait()'), SL = L('slide_left()', 'wait()');
 const CHINH_10_CHUAN = 'slide_l(1),pick(),slide_r(1),forward(2),slide_r(2),forward(3),drop()';
 
 /** Số nhịp ngắn nhất của XE HAI BÁNH (tiến, quay trái, quay phải, chờ; băng đẩy sau 2 nhịp) trên một sân. null nếu không tới. */
+/** Ô xe hai bánh (không tay) không vào: luật chặn của lõi + hố u + vật / thùng nặng / cửa đóng (màn gặp khó, 15/10). */
+const chanBanh = (san, x, y) => { const c = san.o[y] && san.o[y][x]; return !!SanHoc.lyDoChan(san, 'banh', x, y) || 'uoXHhC'.includes(c); };
 function nhipBanhNganNhat(m) {
   const san = SanHoc.docSan(m.san), bd = m.batDau;
   const khoa = (s) => [s.x, s.y, s.h, s.d].join();
@@ -91,12 +93,12 @@ function nhipBanhNganNhat(m) {
     const tiep = [];
     for (const s of lop) for (const a of ['tien', 'trai', 'phai', 'cho']) {
       let { x, y, h, d } = s;
-      if (a === 'tien') { const v = SanHoc.VEC[h]; if (!SanHoc.lyDoChan(san, 'banh', x + v[0], y + v[1])) { x += v[0]; y += v[1]; } }
+      if (a === 'tien') { const v = SanHoc.VEC[h]; if (!chanBanh(san, x + v[0], y + v[1])) { x += v[0]; y += v[1]; } }
       else if (a === 'trai') h = (h + 3) % 4; else if (a === 'phai') h = (h + 1) % 4;
       const o = san.o[y][x];
       if (SanHoc.BANG[o] !== undefined) {
         d++;
-        if (d >= 2) { const v = SanHoc.VEC[SanHoc.BANG[o]]; if (!SanHoc.lyDoChan(san, 'banh', x + v[0], y + v[1])) { x += v[0]; y += v[1]; } d = 0; }
+        if (d >= 2) { const v = SanHoc.VEC[SanHoc.BANG[o]]; if (!chanBanh(san, x + v[0], y + v[1])) { x += v[0]; y += v[1]; } d = 0; }
       } else d = 0;
       if (san.o[y][x] === 'F') return b;
       const n = { x, y, h, d };
@@ -452,7 +454,7 @@ console.log('\n== 6. Dữ liệu 10 màn: omni, tay kẹp ở 6 và 10, hàm sli
     const r = ChamHoc.cham(m98, { chinh: m98.loiGiai.chinh.map((s) => s.replace('side_r', 'slide_r')) }, khoTruoc('17.8'));
     return r.thang && r.soNhip === m98.sao.nhip && r.soO > 0;
   })());
-  kiem('11.8: sân là bậc thang năm đoạn (phải 2, lên 2, phải 2, lên 2, phải 2), không đường tắt', m98.san.length === 5 && J(m98.san) === J(['####..F', '####.##', '##...##', '##.####', '...####']));
+  kiem('11.8: sân là bậc thang năm đoạn (phải 2, lên 2, phải 2, lên 2, phải 2), không đường tắt; hai ô sơn màu r / b (màn gặp khó trước Cảm biến màu)', m98.san.length === 5 && J(m98.san) === J(['####..F', '####b##', '##.r.##', '##.####', '...####']));
   // 11.9
   const m99 = man('17.9');
   kiem('11.9: maMau gộp slide_right() và move() trong cùng nhịp: chạy ra omni-khong-cheo (thông tin) + dam-tuong + chua-toi-co, xe chỉ trượt ngang rồi đâm tường', (() => { const r = ChamHoc.cham(m99, m99.maMau, khoTruoc('17.9')); return !r.thang && ['omni-khong-cheo', 'dam-tuong', 'chua-toi-co'].every((c) => maCua(r).includes(c)) && r.chanDoan.find((c) => c.ma === 'omni-khong-cheo').muc === 'thong-tin'; })());

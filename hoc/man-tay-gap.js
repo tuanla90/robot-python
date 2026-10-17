@@ -73,7 +73,7 @@
     /* ------------------------------------------------ hàng 1: làm quen */
     man({
       so: 1, ten: 'Nhặt và đặt', hang: 'lam-quen', hamCuaEmCan: ['move'],
-      deBai: 'Xe có thêm tay gắp. Một vật nằm ngay trước mặt xe, ô đích (khung vàng) nằm ngay sau vật. Đưa vật tới ô đích.',
+      deBai: 'Thùng gỗ chắn lối ở màn Đường né giờ dời được: xe có thêm tay gắp. Một vật nằm ngay trước mặt xe, ô đích (khung vàng) nằm ngay sau vật. Đưa vật tới ô đích.',
       veMaMau: 'Chương trình có sẵn hạ tay, kẹp vật rồi nâng tay lên. Tay gắp vật ở ô ngay trước mặt xe. Trong mỗi nhịp, tay đổi tư thế trước, sau đó mới tới bánh. Em còn thiếu việc đi tiếp một ô tới sát ô đích và đặt vật xuống.',
       san: ['.....', '.....', '..D..', '..o..', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
@@ -229,6 +229,7 @@
       so: 6, ten: 'Hàm đặt drop', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'pick'], taoHam: ['drop'],
       deBai: 'Vật nằm ngay trước mặt xe. Nhặt vật, đi lên bốn ô, rẽ phải, đi tiếp một ô tới sát ô đích rồi thả. Tạo hàm drop() để gói việc đặt vật xuống và trả tay về tư thế nâng, giống pick().',
       san: ['###', '..D', '.##', '.##', 'o##', '.##'],
+      vatChat: ['...', '...', '...', '...', 's..', '...'],                                // vật sắt: tay kẹp gắp như vật gỗ (màn gặp khó trước Nam châm)
       batDau: { x: 0, y: 5, huong: 0 },
       maMau: { chinh: [] },
       sao: { o: 23, nhip: 9 },

@@ -196,7 +196,9 @@
     var rn;
     if (neo && neo.getBoundingClientRect && thay(neo)) rn = neo.getBoundingClientRect();
     else if (ds.length > 1) {                                          // nhiều đích mà không chỉ rõ neo: bong bóng đặt theo khung bao quanh tất cả (không đè lên đích nào)
-      var rs = ds.map(function (e) { return e.getBoundingClientRect(); });
+      var dsBao = ds.filter(function (e) { return !(e.closest && e.closest('.pal-ghim')); });      // khối ở hàng ghim (wait) nằm tận đáy khay: không tính vào khung bao, kẻo bong bóng "dưới" rơi ra ngoài màn
+      if (!dsBao.length) dsBao = ds;
+      var rs = dsBao.map(function (e) { return e.getBoundingClientRect(); });
       var l = Math.min.apply(null, rs.map(function (r) { return r.left; })), tp = Math.min.apply(null, rs.map(function (r) { return r.top; }));
       var rr = Math.max.apply(null, rs.map(function (r) { return r.right; })), bt = Math.max.apply(null, rs.map(function (r) { return r.bottom; }));
       rn = { left: l, top: tp, right: rr, bottom: bt, width: rr - l, height: bt - tp };

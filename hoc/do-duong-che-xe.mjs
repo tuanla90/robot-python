@@ -53,13 +53,14 @@ export function toHopChoPhep(man, tuyChon = {}) {
 
 export function nhipCheXeNganNhat(man, tuyChon = {}) {
   const san = SanHoc.docSan(man.san);
-  if (san.vat.length || san.thung.length || /[><^v]/.test(man.san.join(''))) throw new Error('Bộ dò che-xe không hỗ trợ vật, thùng, băng chuyền.');
+  const coTay = (man.hamGoc || []).includes('grab');
+  if (((san.vat.length || san.thung.length) && coTay) || /[><^v]/.test(man.san.join(''))) throw new Error('Bộ dò che-xe không hỗ trợ vật (khi có tay gắp), thùng, băng chuyền.');
   const bm = man.bongMo, laBongMo = (man.mucTieu || 'toi-co') === 'bong-mo';
   const diQua = laBongMo ? (bm.diQua || []) : [];
   const bd = tuyChon.batDau || man.batDau;
   const choPhep = toHopChoPhep(man, tuyChon);
   const rong = san.rong, cao = san.cao;
-  const chan = (x, y) => !!SanHoc.lyDoChan(san, 'banh', x, y);
+  const chan = (x, y) => { const c = san.o[y] && san.o[y][x]; return !!SanHoc.lyDoChan(san, 'banh', x, y) || c === 'u' || (!coTay && 'oXHhC'.includes(c)); };      // hố: vào là rơi; vật / thùng / cửa đóng: tường khi không có tay (màn gặp khó)
   const maDiQua = (x, y) => { for (let i = 0; i < diQua.length; i++) if (diQua[i].x === x && diQua[i].y === y) return 1 << i; return 0; };
   let mask0 = 0;
   (tuyChon.daQua || []).forEach((q) => { mask0 |= maDiQua(q.x, q.y); });

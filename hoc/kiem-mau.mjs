@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
 const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
-for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach']) require(path.join(day, f + '.js'));
+for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-khoang-cach']) require(path.join(day, f + '.js'));
 const ManHoc = require(path.join(day, 'man-mau.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const { nhipDuaVatNganNhat } = await import('./do-duong-tay.mjs');

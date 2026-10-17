@@ -343,7 +343,7 @@ console.log('\n== 6. Chương tay-xoay (chương 21): mười màn ==');
 console.log('\n== 7. Giao diện: part tay xoay, VeRobot, đèn khớp xoay, khay, hướng dẫn ==');
 {
   const Part = require(path.join(day, 'game', 'part', 'part.js'));
-  for (const x of ['hai-banh', 'xich', 'nhen', 'omni', 'drone', 'kep', 'day', 'nam-cham', 'nem', 'bong', 'tay-xoay', 'khoang-cach', 'mau', 'cham', 'camera']) require(path.join(day, 'game', 'part', 'part-' + x + '.js'));
+  for (const x of ['hai-banh', 'xich', 'nhen', 'omni', 'drone', 'kep', 'nam-cham', 'nem', 'hoi', 'tay-xoay', 'khoang-cach', 'mau', 'cham', 'camera']) require(path.join(day, 'game', 'part', 'part-' + x + '.js'));
   const px = Part.lay('tay', 'xoay');
   kiem('part tay xoay đã đăng ký: loại tay, mã "xoay", gắn ở ổ "tay", có điểm neo, tấm vẽ rộng hơn 24×24, mở sáu hàm gốc (bốn lệnh tay + arm_left / arm_right)', !!px && px.gan === 'tay' && px.diemNeo.y === 23 && px.kich.w > 24 && J(Part.hamGoc({ than: 'hai-banh', tay: 'xoay' }).filter((h) => /^(arm|grab|release)/.test(h)).sort()) === J(['arm_down', 'arm_left', 'arm_right', 'arm_up', 'grab', 'release']));
   const anh = (st, than) => Part.ghep({ than: than || 'hai-banh', tay: 'xoay' }, { tay: st });

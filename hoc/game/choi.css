@@ -63,6 +63,8 @@ body.dien-thoai .screen{clip-path:none}
 .g-cy{--c:#38c6de;--hi:#9aeefa;--lo:#1b8aa4}
 .g-or{--c:#e08a3a;--hi:#ffcf94;--lo:#9c5418}
 .g-wd{--c:#c07a3a;--hi:#f0b878;--lo:#7c4a20}
+.g-am{--c:#e9a21c;--hi:#ffd879;--lo:#a96a08}                     /* vàng hổ phách: nền vàng mà chữ trắng vẫn đọc rõ (Nhịp, Đặt xe) */
+.g-te{--c:#1e9fb4;--hi:#7fe0ee;--lo:#0c6474}                     /* xanh ngọc đậm: chữ trắng (Đề bài) */
 .chalk{background-color:#1d5a44;background-image:var(--chalk);background-size:48px 48px;image-rendering:pixelated;box-shadow:inset 0 0 0 2px var(--ink),inset 0 3px 0 rgba(0,0,0,.28)}
 
 /* ---------- thanh trên ---------- */
@@ -109,6 +111,7 @@ body.dien-thoai .screen{clip-path:none}
 .bong .bg-ch{flex:none;height:22px;display:flex;align-items:center;gap:6px;padding-top:2px}
 .kc{font-family:var(--mono);font-size:1.15em;font-weight:var(--wm);line-height:1}
 .fb .kc{font-size:1em}
+.kc.ngoac,.hd-bong .kc.ngoac{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.92em;font-weight:500}
 .bong .bg-x{position:absolute;right:4px;top:4px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;z-index:2;
   box-shadow:0 0 0 2px var(--ink),0 2px 0 2px var(--ink),inset 0 2px 0 var(--hi),inset 0 -3px 0 var(--lo)}
 .bong .bg-x:active{transform:translateY(2px)}
@@ -144,14 +147,14 @@ body.dien-thoai .screen{clip-path:none}
 .clock{flex:none;height:40px;display:flex;flex-wrap:wrap;align-content:center;align-items:center;padding:2px 6px 2px 8px;gap:2px 6px;margin-top:3px}
 .clock .l{font:700 calc(11px*var(--kp))/1 var(--px);color:#9fd3b8;padding-top:2px}
 .clock .v{font:var(--wm) calc(17px*var(--km))/1 var(--mono);color:#ffd95a;min-width:24px}
-.clock .den-bo{flex:0 0 100%;display:flex;align-items:center;gap:3px;min-height:15px;padding-left:1px}
-.den{position:relative;flex:none;width:14px;height:14px;display:flex;align-items:center;justify-content:center;background:#12382c;box-shadow:0 0 0 2px var(--ink)}
+.clock .den-bo{flex:0 0 100%;display:flex;flex-wrap:wrap;align-items:center;gap:4px 3px;min-height:17px;padding:1px 0 1px 2px}
+.den{position:relative;flex:none;width:15px;height:15px;display:flex;align-items:center;justify-content:center;background:#12382c;box-shadow:0 0 0 2px var(--ink)}
 .den canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 .den.sang{background:#0f4a56;box-shadow:0 0 0 2px var(--ink),0 0 0 3px #bdfaff}
-.den-bo.n6,.den-bo.n7{gap:2px}
-.den-bo.n6 .den{width:12px;height:12px}
-.den-bo.n7 .den{width:11px;height:11px}
-.den-bo.n7{gap:2px}
+.den-bo.n5{flex-wrap:nowrap;gap:2px;padding-left:1px}                                  /* tối đa cả game là 5 bộ phận (bánh trái, bánh phải, tay, kẹp / xoay, cảm biến): một hàng, không rớt dòng */
+.den-bo.n5 .den{width:14px;height:14px}
+.den-bo.n6,.den-bo.n7{gap:4px 2px}
+.den-bo.n6 .den,.den-bo.n7 .den{width:13px;height:13px}
 
 /* ---------- nửa dưới: chương trình | kho khối ---------- */
 .low{flex:1 1 auto;min-height:344px;display:flex;gap:6px}
@@ -553,6 +556,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 
 /* kho khối dài quá cỡ: cuộn từng trang bằng ▲ ▼ ở tiêu đề (không thanh cuộn) */
 .pal.cuon{overflow:hidden}
+.pal.pal-ghim{flex:none;overflow:visible;padding:4px 1px 1px;margin-top:2px;box-shadow:0 -2px 0 rgba(0,0,0,.35)}
+.pal-the .the-chu.co-ic{display:flex;align-items:center;justify-content:center;padding:0;line-height:0}
+.pal-the .the-chu.co-ic canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 .bh .cuon-nut{flex:none;margin-left:auto;display:flex;gap:4px;margin-bottom:3px}
 .cuon-b{width:22px;height:22px;display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink),inset 0 2px 0 var(--hi),inset 0 -3px 0 var(--lo)}
@@ -561,15 +567,13 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .cuon-b.len .tam{border-bottom:6px solid #fff3d6}
 .cuon-b.xuong .tam{border-top:6px solid #fff3d6;margin-top:1px}
 .cuon-b:disabled{opacity:.38;filter:saturate(.35);cursor:default;pointer-events:none}
-.cuon-b.xuong:not(:disabled){--c:#ffc933;--hi:#fff3a8;--lo:#d89a1a}
-.cuon-b.xuong:not(:disabled) .tam{border-top-color:var(--ink)}
 /* khay theo thẻ bộ phận: ◀ [tên thẻ + chấm] ▶ ở tiêu đề, cạnh ▲ ▼ */
 .bh .pal-the{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:3px;margin-bottom:3px}
-.pal-the .the-giua{position:relative;flex:1;min-width:0;height:22px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1px #0a2a1f}
+.pal-the .the-giua{position:relative;flex:1;min-width:0;height:26px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1px #0a2a1f}
 .pal-the .the-chu{max-width:100%;overflow:hidden;white-space:nowrap;padding:2px 1px 0;font:700 calc(11px*var(--kp))/1 var(--px);color:#e8ffe0}
 .the-chu.k-than{color:#9aeefa}.the-chu.k-tay{color:#ffb050}.the-chu.k-cam{color:#9ff0e2}.the-chu.k-py{color:#d9c4ff}
-.pal-the .the-cham{position:absolute;left:0;right:0;bottom:1px;display:flex;justify-content:center;gap:2px;pointer-events:none}
-.the-cham i{display:block;width:4px;height:2px;background:#4f8a73}
+.pal-the .the-cham{position:absolute;top:0;bottom:0;right:2px;display:flex;flex-direction:column;justify-content:center;gap:2px;pointer-events:none}
+.the-cham i{display:block;width:3px;height:3px;background:#4f8a73}
 .the-cham i.on{background:#ffd95a}
 .cuon-b.trai .tam,.cuon-b.phai .tam{margin-top:0;border-top:5px solid transparent;border-bottom:5px solid transparent}
 .cuon-b.trai .tam{border-left:0;border-right:6px solid #fff3d6;margin-right:1px}
@@ -669,6 +673,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .fblock.nhieu .clock .tong{display:block}
 .th-theo{margin:0 0 2px;font:500 calc(12px*var(--kp))/1.2 var(--px);color:#cfe9db}
 .fblock.nhieu .clock{gap:2px 4px;padding:2px 5px 2px 6px;overflow:hidden}
+.fblock.nhieu .clock .den-bo{min-height:13px;padding:0 0 0 1px;gap:2px}                  /* màn nhiều sân (tối đa 3): hàng nút sân chiếm chỗ, ô NHỊP thấp lại nên đèn nhỏ lại cho khỏi bị cắt */
+.fblock.nhieu .den,.fblock.nhieu .den-bo.n5 .den{width:13px;height:13px}
+.fblock.nhieu .clock .v{font-size:calc(12px*var(--km))}                                  /* số nhịp nhỏ lại một chút: hàng chữ + hàng đèn vừa ô 38px */
 .fblock.nhieu .clock .tong{min-width:0;overflow:hidden;text-overflow:clip}
 .fblock.nhieu .clock .v{min-width:0}
 
@@ -699,9 +706,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .chon-so .cs.mau-nut.on.g-yl{--c:#ffc933;--hi:#fff09a;--lo:#cf8f10}
 .chon-so .cs.mau-nut.on.g-gy{--c:#8d95a6;--hi:#d0d6e4;--lo:#565e70}
 /* Xưởng của màn có cảm biến màu: sáu nút (thêm Màu) nên nút thấp lại cho vừa cột */
-.side.xu.co-mau{gap:3px}
-.side.xu.co-mau .cbtn,.side.xu.co-mau .thu-hang{height:31px}
-.side.xu.co-mau .cbtn{padding-top:1px}
+#sc-choi .side.xu.co-mau{gap:3px}
+#sc-choi .side.xu.co-mau .cbtn,#sc-choi .side.xu.co-mau .thu-hang{height:31px}
+#sc-choi .side.xu.co-mau .cbtn{padding-top:1px}
 /* điều kiện hai vế (front_clear() and color() != "yellow"): hai dòng nhỏ trong một ô code */
 .strip.hai{flex-wrap:wrap;align-content:center;justify-content:flex-start;row-gap:1px;font-size:9px!important;line-height:12px}
 .strip.hai .ngat{flex-basis:100%;height:0;margin:0}
@@ -714,9 +721,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .chon-so.hep .cs.bien{flex:1 1 100%;min-width:0}
 .num.bien.bth{white-space:nowrap}
 /* Xưởng của màn máy ném: bảy nút (thêm Rào, Rổ) nên nút thấp hơn nữa */
-.side.xu.co-nem{gap:2px;padding-bottom:3px}
-.side.xu.co-nem .cbtn,.side.xu.co-nem .thu-hang{height:28px}
-.side.xu.co-nem .cbtn{padding-top:0;font-size:13px}
+#sc-choi .side.xu.co-nem{gap:2px;padding-bottom:3px}
+#sc-choi .side.xu.co-nem .cbtn,#sc-choi .side.xu.co-nem .thu-hang{height:28px}
+#sc-choi .side.xu.co-nem .cbtn{padding-top:0;font-size:13px}
 
 /* Chương drone: bộ chọn pin 1–15 (lưới 5 cột); số của phép so sánh pin (battery() < 3) là ô số tím như range(n); nút Pin ở Xưởng hiện số pin thử */
 .chon-so.rong{grid-template-columns:repeat(5,24px)}
@@ -725,7 +732,7 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .cbtn.nut-o{gap:5px}.cbtn.nut-o .ol{min-width:0;white-space:nowrap}
 .cbtn.nut-pin .pin-chu{flex:none}
 .cbtn.nut-pin .pin-so{margin-left:auto;font:var(--wm) calc(15px*var(--km))/1 var(--mono);color:#fff6a8;text-shadow:0 2px 0 rgba(0,0,0,.5);padding-top:1px}
-.side.xu.co-nem .cbtn.nut-pin .pin-so{font-size:14px}
+#sc-choi .side.xu.co-nem .cbtn.nut-pin .pin-so{font-size:14px}
 
 /* ---------- nhãn cảnh báo trên sân (màn có canhBao): nằm DƯỚI lớp phủ robot nên không che xe ---------- */
 .canh-bao{position:absolute;left:6px;top:6px;z-index:1;pointer-events:none;max-width:calc(100% - 12px);display:flex;align-items:center;gap:4px;padding:3px 6px 1px 4px;
@@ -820,3 +827,18 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .go-tin{margin-top:8px;min-height:16px;font:500 calc(11px*var(--kp))/1.2 var(--px);color:#9fd3b8}
 .go-tin.co{color:#ffd95a}
 .go-chan{margin-top:6px}
+
+/* Xưởng (15/10 khuya): đối số thử / pin / rổ trên thanh tên hàm; nút Đặt vật / Đặt sàn (icon theo loại đang chọn); bảng chọn loại */
+.top .dso{flex:none;display:flex;gap:3px}
+.top .dso-o{height:34px}
+.cbtn.nut-loai{gap:6px}.cbtn.nut-loai .oi{flex:none;display:flex;line-height:0}.cbtn.nut-loai .ol{min-width:0;white-space:nowrap}
+.cbtn.nut-loai .oi canvas{image-rendering:pixelated;image-rendering:crisp-edges}
+.chon-so.muc{width:150px;gap:4px}
+.chon-so.muc .cs.muc-nut{height:30px;justify-content:flex-start;gap:8px;padding:2px 8px 0;font:700 calc(12px*var(--kp))/1 var(--px)}
+.chon-so.muc .cs.muc-nut canvas{flex:none;image-rendering:pixelated;image-rendering:crisp-edges}
+.side.xu .xu-dem{height:30px;margin-top:0;padding:2px 6px 0 8px}
+#sc-choi .side.xu.co-nem .xu-dem{height:26px}
+/* cột nút (màn chơi + Xưởng, 15/10 khuya): icon 1,5× trong cột rộng cố định để chữ các nút thẳng hàng; chữ trắng mọi nút */
+.side .cbtn{gap:6px;padding-left:6px}
+.side .cbtn>span[data-i],.side .cbtn>.oi{flex:none;width:20px;display:flex;align-items:center;justify-content:center;line-height:0}
+.cbtn.g-am,.mini .g-te{color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.55)}

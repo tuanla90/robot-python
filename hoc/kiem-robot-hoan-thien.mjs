@@ -22,7 +22,7 @@ const KhungCode = require(path.join(day, 'khung-code.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
 const SoLenh = require(path.join(day, 'so-lenh.js'));
-for (const f of ['man-chuoi-2', 'man-che-xe', 'man-tay-gap', 'man-che-tay', 'man-vong-lap', 'man-che-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach', 'man-che-cam-bien', 'man-robot-hoan-thien', 'man-mau', 'man-nam-cham', 'man-may-nem', 'man-sung-bong']) require(path.join(day, f + '.js'));
+for (const f of ['man-chuoi-2', 'man-che-xe', 'man-tay-gap', 'man-che-tay', 'man-vong-lap', 'man-che-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-khoang-cach', 'man-che-cam-bien', 'man-robot-hoan-thien', 'man-mau', 'man-nam-cham', 'man-may-nem']) require(path.join(day, f + '.js'));
 const ManHoc = require(path.join(day, 'man-drone.js'));
 const { nhipRobotHoanThienSan, nhipRobotHoanThienTatCa, manCuaSan, soSan, chuoiThanhMa } = await import('./do-duong-robot-hoan-thien.mjs');
 

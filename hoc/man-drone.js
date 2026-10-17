@@ -21,13 +21,13 @@
    Nhiều sân: màn 6 (3 sân cùng bản đồ, pin 7, 5, 4; san là mảng sân, batDau và pin là mảng song song, nhipTheo 'tong'); các màn còn lại một sân.
    cauTruc ['for', 'if', 'while'] (đã học đủ). canHam 'tran-khung' ở màn 10: không dùng ship() thì tràn khung 10 ô.
 
-   Nối tiếp man-sung-bong.js vào cùng window.ManHoc. Thứ tự chương: thu-tu-chuong.js.
+   Nối tiếp man-may-nem.js vào cùng window.ManHoc. Thứ tự chương: thu-tu-chuong.js.
    ========================================================================== */
 (function () {
   'use strict';
 
   var laNode = (typeof module !== 'undefined' && module.exports);
-  var ManHoc = laNode ? require('./man-sung-bong.js') : window.ManHoc;
+  var ManHoc = laNode ? require('./man-may-nem.js') : window.ManHoc;
 
   var BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
   var NC = ['magnet_n', 'magnet_s', 'magnet_off'];

@@ -204,7 +204,7 @@
       so: 5, ten: 'Mặt xe quay sang trái', hang: 'luyen', hamCuaEmCan: ['move', 'forward', 'slide_r', 'slide_l'],
       deBai: 'Lần này xe quay mặt sang trái. slide_left() và slide_right() tính theo hướng mặt của xe, không theo màn hình. Đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn đưa xe tiến hai ô, theo hướng mặt xe. Chạy thử rồi viết tiếp.',
-      san: ['#######', '#....##', '#.##.##', '#F##.##', '####...'],
+      san: ['#######', '#....##', '#.##.##', '#FN#.##', '#..C...'],                  // cửa đóng C chắn lối tắt tới cờ, nút N trên tường cao (màn gặp khó trước Súng hơi)
       batDau: { x: 6, y: 4, huong: 3 },
       maMau: { chinh: ['forward(2)'] },
       sao: { o: 15, nhip: 10 },
@@ -274,7 +274,7 @@
       so: 8, ten: 'Sửa hàm side_r', hang: 'bien-the', hamCuaEmCan: ['move', 'forward', 'slide_r'],
       deBai: 'Hàm side_r(n) của màn muốn trượt xe sang phải n ô, nhưng xe lại trượt đi hướng khác. Tìm chỗ nhầm rồi sửa để xe leo bậc thang tới cờ.',
       veMaMau: 'Chương trình có sẵn dùng side_r() cho các đoạn ngang. Chạy thử, xem xe trượt sang phía nào rồi sửa thân hàm.',
-      san: ['####..F', '####.##', '##...##', '##.####', '...####'],
+      san: ['####..F', '####b##', '##.r.##', '##.####', '...####'],                  // sàn sơn màu r / b: xe chưa đọc được màu (màn gặp khó trước Cảm biến màu)
       batDau: { x: 0, y: 4, huong: 0 },
       maMau: { chinh: CHINH_8.slice(), hamCuaMan: [hSideR(T_SIDE_SAI)] },
       sao: { o: 13, nhip: 10 },

@@ -146,7 +146,7 @@
       so: 3, ten: 'Tạo hàm forward', hang: 'lam-quen', canThamSo: 'tran-khung', hamCuaEmCan: ['move', 'turn_left'], taoHam: ['forward'],
       deBai: 'Tạo trong Xưởng hàm forward(n): tiến n ô. Rồi dùng nó để đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn đã gọi forward(n), nhưng em chưa có hàm đó. Tạo hàm forward với một đối số n.',
-      san: ['####F.', '#####.', '#####.', '......'],
+      san: ['####F.', '####=.', '####u.', '......'],                                 // hàng rào = và hố u chắn lối thẳng lên cờ (màn gặp khó trước Nhện, Máy ném)
       batDau: { x: 0, y: 3, huong: 1 },
       maMau: { chinh: CHINH_3.slice() },
       sao: { o: 12, nhip: 11 },
@@ -243,7 +243,7 @@
       so: 7, ten: 'Sửa số cố định', hang: 'bien-the', canThamSo: 'tran-khung', hamCuaEmCan: ['move', 'turn_right'],
       deBai: 'Xe xuất phát ở giữa một đường xoắn ốc. Hàm run(n) của màn phải đưa xe tiến n ô rồi rẽ phải; dùng nó để đi hết đường tới cờ.',
       veMaMau: 'Chương trình có sẵn đã gọi run(n) với đúng số ô của từng đoạn, nhưng xe không đi theo đường xoắn ốc. Chạy thử, xem xe làm gì mỗi lần gọi run() rồi sửa thân hàm.',
-      san: ['......F', '.######', '.######', '.##..##', '.###.##', '.....##'],
+      san: ['......F', '.###n##', '.###n##', '.##..##', '.###.##', '.....##'],      // gầm thấp n: xe không chui lọt (màn gặp khó trước Nhện)
       batDau: { x: 3, y: 3, huong: 1 },
       maMau: { chinh: CHINH_7.slice(), hamCuaMan: [hRun(3)] },
       sao: { o: 13, nhip: 22 },

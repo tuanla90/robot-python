@@ -36,15 +36,14 @@
     'nhen': 'Thân nhện',
     'xich': 'Bánh xích',
     'omni': 'Bánh omni',
-    'day': 'Tấm đẩy',
+    'hoi': 'Súng hơi',
     'mau': 'Cảm biến màu',
     'nam-cham': 'Nam châm',
     'tay-xoay': 'Tay xoay',
     'nem': 'Máy ném',
-    'bong': 'Súng bóng',
     'drone': 'Drone'
   };
-  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'xich', 'omni', 'day', 'mau', 'nam-cham', 'tay-xoay', 'nem', 'bong', 'drone'];
+  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'xich', 'omni', 'hoi', 'mau', 'nam-cham', 'tay-xoay', 'nem', 'drone'];
 
   function m(ten, nhom, moTa, chuong, man) { return { ten: ten, nhom: nhom, moTa: moTa, chuong: chuong, man: man }; }
 
@@ -110,10 +109,35 @@
     // đợt 2: bánh xích, bánh omni
     m('tr_right', 'xich', 'Xe xích quay phải một góc vuông (hai nhịp)', 'xich', 'xich.3'),
     m('tr_left', 'xich', 'Xe xích quay trái một góc vuông (hai nhịp)', 'xich', 'xich.4'),
+    // chương Chế lệnh xích (spin, sidestep, climb, descend, pick_behind; to_hill, back_home, fixed_drive, fixed_turn là hàm của màn nên không có ở đây; tr_right được SỬA ở che-xich.9 chứ không tạo mới)
+    m('spin', 'xich', 'Quay xe xích nửa vòng tại chỗ, mặt hướng về phía ngược lại', 'che-xich', 'che-xich.1'),
+    m('sidestep', 'xich', 'Né sang phải một ô, mặt xe xích giữ nguyên hướng', 'che-xich', 'che-xich.2'),
+    m('climb', 'xich', 'Leo n bậc: mỗi bậc đi một ô, rẽ trái, đi một ô rồi rẽ phải', 'che-xich', 'che-xich.4'),
+    m('descend', 'xich', 'Lùi xuống n bậc, làm ngược lại climb, không cần quay đầu', 'che-xich', 'che-xich.5'),
+    m('pick_behind', 'xich', 'Nhặt vật sau lưng rồi quay về, tay vẫn đang cầm vật', 'che-xich', 'che-xich.6'),
     m('slide_r', 'omni', 'Trượt sang phải n ô, mặt xe không đổi', 'omni', 'omni.3'),
     m('slide_l', 'omni', 'Trượt sang trái n ô, mặt xe không đổi', 'omni', 'omni.4'),
-    // đợt 2: tấm đẩy, cảm biến màu, nam châm, máy ném, súng bóng, drone
+    // chương Chế lệnh omni (diag, zig, bypass, cross, shift; hop_right, north, east, step_out, step_back là hàm của màn nên không có ở đây)
+    m('diag', 'omni', 'Đi chéo lên phía phải một ô, mặt xe không đổi', 'che-omni', 'che-omni.1'),
+    m('zig', 'omni', 'Đi chéo lên phía phải n bước liền nhau', 'che-omni', 'che-omni.2'),
+    m('bypass', 'omni', 'Vòng qua khối tường chắn ngay trước mặt, đứng ngay sau nó', 'che-omni', 'che-omni.4'),
+    m('cross_belt', 'omni', 'Qua hai băng chuyền chạy xuống rồi về cùng hàng', 'che-omni', 'che-omni.5'),
+    m('shift', 'omni', 'Dời vật trước mặt sang cột bên phải, xe về chỗ cũ', 'che-omni', 'che-omni.6'),
+    // chương Chế lệnh súng hơi (jet_back, jet_fwd, kick_right, tap_right, kick_left, kick_ahead; fixed_jet, fixed_kick, go_out, come_back là hàm CỦA MÀN nên không có ở đây)
+    m('jet_back', 'hoi', 'Lùi một ô bằng cú giật của súng, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.1'),
+    m('jet_fwd', 'hoi', 'Tiến một ô bằng cú giật của nòng sau, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.2'),
+    m('kick_right', 'hoi', 'Đá thùng nặng bên phải xe trượt sang phải, xe giữ chỗ và hướng', 'che-sung-hoi', 'che-sung-hoi.4'),
+    m('tap_right', 'hoi', 'Bắn nút bên phải xe rồi về đúng chỗ cũ, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.5'),
+    m('kick_left', 'hoi', 'Đá thùng nặng bên trái xe trượt sang trái, xe giữ chỗ và hướng', 'che-sung-hoi', 'che-sung-hoi.6'),
+    m('kick_ahead', 'hoi', 'Đá thùng nặng ngay trước mặt trượt đi xa, xe quay mặt như cũ', 'che-sung-hoi', 'che-sung-hoi.8'),
+    // đợt 2: cảm biến màu, nam châm, máy ném, drone
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
+    // chương Chế lệnh màu (go_out, come_back, line_step, trace là hàm của màn nên không có ở đây)
+    m('to_red', 'mau', 'Đi thẳng cho tới khi xe đứng trên ô đỏ', 'che-mau', 'che-mau.1'),
+    m('cross', 'mau', 'Đi thẳng qua hết dải ô cùng màu với ô đang đứng', 'che-mau', 'che-mau.2'),
+    m('stop_line', 'mau', 'Dừng sát trước vạch đỏ: lên vạch rồi lùi lại một ô', 'che-mau', 'che-mau.4'),
+    m('follow_line', 'mau', 'Đi theo vạch kẻ đỏ, xanh dương cho tới khi gặp ô vàng', 'che-mau', 'che-mau.5'),
+    m('sort_color', 'mau', 'Vật đỏ chuyền sang ô bên phải, vật xanh dương sang ô bên trái', 'che-mau', 'che-mau.6'),
     m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.5'),
     m('grip', 'nam-cham', 'Bật cực khác chữ trên vật nam châm trước mặt để kéo nó về', 'nam-cham', 'nam-cham.6'),
     // chương Chế lệnh nam châm (kick, reel, lane, sort, fling; fixed_grip, go_pull, put_back là hàm của màn nên không có ở đây)
@@ -132,11 +156,20 @@
     m('swap_sides', 'tay-xoay', 'Đổi chỗ vật bên trái với vật bên phải, ô trước mặt trống làm chỗ cất tạm', 'che-tay-xoay', 'che-tay-xoay.5'),
     m('sort_two', 'tay-xoay', 'Vật trước mặt sang trái, tiến một ô, vật kế sang phải, tiến một ô', 'che-tay-xoay', 'che-tay-xoay.6'),
     m('toss', 'nem', 'Đặt tầm n, ném vật, rồi chờ một nhịp', 'may-nem', 'may-nem.4'),
+    // chương Chế lệnh máy ném (launch, side_throw, carry_throw, toss_back, split; fixed_toss, go_load, undo_load là hàm của màn nên không có ở đây)
+    m('launch', 'nem', 'Nạp vật trước mặt rồi ném thẳng ra xa n ô', 'che-may-nem', 'che-may-nem.1'),
+    m('side_throw', 'nem', 'Nạp vật trước mặt, ném sang phải n ô, xe giữ chỗ và hướng', 'che-may-nem', 'che-may-nem.2'),
+    m('carry_throw', 'nem', 'Nạp vật, chở vật đi k ô trong rổ rồi ném ra xa ba ô', 'che-may-nem', 'che-may-nem.4'),
+    m('toss_back', 'nem', 'Nạp vật trước mặt rồi ném ra sau lưng n ô, xe giữ chỗ và hướng', 'che-may-nem', 'che-may-nem.5'),
+    m('split', 'nem', 'Vật đỏ ném sang phải, vật xanh dương ném sang trái, đều ở ô thứ hai', 'che-may-nem', 'che-may-nem.6'),
     m('recharge', 'drone', 'Nếu pin còn dưới 3 thì bay lên ô sạc rồi bay xuống', 'drone', 'drone.5'),
     m('ship', 'drone', 'Hút vật dưới bụng, bay theo chuỗi đường rồi thả vật', 'drone', 'drone.10'),
-    // TẠM: hai chương cũ tam-day / sung-bong đang đứng cuối thuTu (chờ chương Súng hơi thay)
-    m('shove', 'day', 'Đẩy thùng n ô rồi vòng ra sau thùng cho lần đẩy kế', 'tam-day', 'tam-day.6'),
-    m('hit_right', 'bong', 'Quay phải, bắn một phát, rồi quay lại', 'sung-bong', 'sung-bong.5')
+    // chương Chế lệnh drone (hurdle, scout, glide, fly, airlift; go_out, come_back, safe_fly, fixed_fly là hàm CỦA MÀN nên không có ở đây)
+    m('hurdle', 'drone', 'Bay vòng qua cột đá ngay bên phải, đáp xuống ô sau cột cùng hàng', 'che-drone', 'che-drone.1'),
+    m('scout', 'drone', 'Bay ra n ô sang phải rồi bay về đúng chỗ cũ', 'che-drone', 'che-drone.2'),
+    m('glide', 'drone', 'Bay xuống n bậc thang: mỗi bậc sang phải một ô rồi xuống một ô', 'che-drone', 'che-drone.4'),
+    m('fly', 'drone', 'Bay theo chuỗi đường, sau mỗi ô xét pin: thấp thì ghé ô sạc ngay phía trên', 'che-drone', 'che-drone.5'),
+    m('airlift', 'drone', 'Hút hộp sắt, chở sang phải n ô, thả xuống rồi bay về chỗ cũ', 'che-drone', 'che-drone.6')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
@@ -161,7 +194,8 @@
     g('stand', 'crouch', 'Nhện duỗi chân ra; duỗi ngay trước một bước đi lúc đang co là nhảy'),
     g('slide_left', 'slide_right', 'Xe omni trượt sang trái một ô'),
     g('slide_right', 'slide_left', 'Xe omni trượt sang phải một ô'),
-    g('push', null, 'Đẩy thùng nặng trượt thẳng tới vật cản'),
+    g('shoot', 'shoot_back', 'Súng hơi: bắn bóng ra trước, xe giật lùi một ô'),
+    g('shoot_back', 'shoot', 'Súng hơi: bắn bóng ra sau, xe giật tới một ô'),
     g('front_clear', null, 'Hỏi: ô trước mặt có trống không'),
     g('left_clear', null, 'Hỏi: ô bên trái có trống không'),
     g('right_clear', null, 'Hỏi: ô bên phải có trống không'),
@@ -174,7 +208,6 @@
     g('aim', null, 'Đặt tầm ném'),
     g('throw', null, 'Ném vật trong rổ'),
     g('load', null, 'Nạp vật ở ô trước mặt vào rổ'),
-    g('shoot', null, 'Bắn một quả bóng thẳng về phía trước'),
     g('battery', null, 'Hỏi: pin còn bao nhiêu')
   ];
 

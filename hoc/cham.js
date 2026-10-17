@@ -44,7 +44,7 @@
    tuyChon.sanThu.mau = [{ x, y, mau: 'red'|'green'|'blue'|'yellow' (hay 'r' 'g' 'b' 'y') }] (tuỳ chọn): ô sàn màu cho color() trong Xưởng (bỏ ô tường, ô ngoài sân, ô trùng);
    vật trong sân thử cũng có thể mang `mau`. Chuẩn hóa trả lại ở `kq.sanThu.mau`.
    tuyChon.sanThu.thung = [{ x, y }] (tuỳ chọn): thùng nặng trong sân thử, chuẩn hóa như vật (ô ngoài sân, ô trùng, ô tường, ô xe bị bỏ);
-   chỉ có nghĩa với màn có tấm đẩy (hamGoc có push). Kết quả có thêm `thung` (trạng thái cuối).
+   chỉ có nghĩa với màn có súng hơi (hamGoc có shoot / shoot_back) hay băng chuyền đẩy thùng. Kết quả có thêm `thung` (trạng thái cuối).
    Trả về { vet, robot: {x,y,huong}, batDau, sanThu, soNhip, chanDoan, py, anhXa, tay, vat, thung }.
    Chỉ chặn bởi lỗi khung thuộc về chính hàm này (tràn ô của nó) hoặc lỗi chung
    (trùng tên); lỗi của chương trình chính hay của hàm khác không cản.
@@ -111,20 +111,23 @@
    - man.phanCung (mặc định: trọn bộ lệnh loại robot + khay) đưa xuống lõi: hàm của em gọi được mọi lệnh phần cứng, chương trình chính và hàm của màn chỉ dùng lệnh trên khay (man.hamGoc).
      Mã chẩn đoán: lenh-chua-mo (lỗi; lệnh có trong phần cứng nhưng chưa có trên khay mà chương trình chính / hàm của màn gõ thẳng), lenh-goc-hong (lỗi; gọi lệnh không thuộc phần cứng vì màn hỏng).
    CHẨN ĐOÁN CÓ `cho` (dòng lệnh gây ra, { cot, dong, ten? } hoặc null): mọi mã gắn với một lệnh đều ghi `cho` — dam-tuong (lệnh bánh / trượt / go_* của nhịp), kep-hut và tha-bi-chan kieu 'kep' và vat-vo (lệnh grab / release),
-   tha-bi-chan của nam châm, các mã của tay (tay-goi-lai…), máy ném, tấm đẩy, súng bóng (ban-*, het-dan, cua-ket). Giao diện không cần tự tra từ vết.
-   SÚNG BÓNG (chương sung-bong; luật đầy đủ ở san-hoc.js, phần SÚNG BÓNG): hamGoc có shoot thì robot có tay súng bóng (man.robot.tay = 'bong'). Ký hiệu sân N nút bắn, C cửa đóng, c cửa mở;
+   tha-bi-chan của nam châm, các mã của tay (tay-goi-lai…), máy ném, súng hơi (ban-*, giat-chan, het-dan, cua-ket). Giao diện không cần tự tra từ vết.
+   SÚNG HƠI (chương sung-hoi và che-sung-hoi; luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI): hamGoc có shoot / shoot_back thì robot có tay súng hơi (man.robot.tay = 'hoi'). shoot() bắn ra trước + xe giật lùi
+   một ô, shoot_back() bắn ra sau + xe giật tới một ô; ô giật vào có thùng nặng thì thùng trượt ra xa, ô bị chặn thì xe đứng yên. Ký hiệu sân N nút bắn, C cửa đóng, c cửa mở;
    man.cuaNhip = [{ x, y, mo, dong, pha }] (cửa tự đóng mở theo chu kỳ), man.noi = [{ nut, cua, bang }] (nút nào điều khiển cửa / băng nào; mặc định mọi nút điều khiển mọi cửa thường và mọi băng),
-   man.danToiDa (số viên; không khai = vô hạn); màn nhiều sân thì cuaNhip và noi là mảng song song với man.san. Kết quả có thêm `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}],
-   `cuaBanDau`, `nutBanDau`, `sung` { dan } (trạng thái cuối, như vet nhịp có cua / nut / bangTat / robot.sung). Mã chẩn đoán mới: ban-goi-lai (lỗi: hai shoot cùng nhịp), het-dan (lỗi),
-   ban-hut (thông tin: bóng bay ra khỏi sân không trúng gì), ban-bi-chan (thông tin: bóng bị tường / cửa đóng / thùng / vật chặn trước khi tới nút), ban-dung-yen (thông tin: lệnh bánh cùng nhịp với shoot bị bỏ),
-   ban-nut-lai (thông tin: cùng một nút bị bắn nhiều lần), cua-ket (thông tin: cửa không đóng được vì xe đang đứng ở ô cửa); dam-tuong với vat 'cua' (cửa đang đóng) hay 'nut'.
+   man.danToiDa (số viên; không khai = vô hạn); màn nhiều sân thì cuaNhip và noi là mảng song song với man.san. man.daoChieu có 'sung': súng lắp ngược (shoot() bắn ra sau, shoot_back() bắn ra trước);
+   man.phanCung thiếu shoot_back (nòng sau hỏng) hay shoot (nòng trước hỏng) = lenh-goc-hong. Kết quả có thêm `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}],
+   `cuaBanDau`, `nutBanDau`, `sung` { dan } (trạng thái cuối, như vet nhịp có cua / nut / bangTat / robot.sung). Mã chẩn đoán mới: ban-goi-lai (lỗi: hai lệnh bắn cùng nhịp), het-dan (lỗi),
+   ban-hut (thông tin: bóng bay ra khỏi sân không trúng gì), ban-bi-chan (thông tin: bóng bị tường / cửa đóng / thùng / vật chặn trước khi tới nút), ban-dung-yen (thông tin: lệnh bánh cùng nhịp với lệnh bắn bị bỏ),
+   giat-chan (thông tin: xe không giật được vì ô giật vào bị chặn), ban-nut-lai (thông tin: cùng một nút bị bắn nhiều lần), cua-ket (thông tin: cửa không đóng được vì xe đang đứng ở ô cửa);
+   dam-tuong với vat 'cua' (cửa đang đóng) hay 'nut'.
    Sân thử Xưởng nhận thêm sanThu.nut = [{ x, y }] (nút bắn) và sanThu.cua = [{ x, y, mo }] (cửa; mo true là cửa mở lúc đầu).
-   TẤM ĐẨY / THÙNG NẶNG / MỤC TIÊU day-thung (man.mucTieu === 'day-thung'; luật đầy đủ ở san-hoc.js):
+   THÙNG NẶNG / MỤC TIÊU day-thung (man.mucTieu === 'day-thung'; luật đầy đủ ở san-hoc.js):
    - thắng khi MỌI thùng nặng (ký hiệu H, h) nằm trên ô đích (D, X, h). Kết quả có thêm `thung`, `thungBanDau` [{id,x,y}] (cuối / đầu), ở
-     mỗi mục theoSan cũng vậy; vết nhịp có `thung` (vị trí thùng cuối nhịp) và sự kiện 'thung-di' {id, tu, den, nguon:'xe'|'truot'|'bang'}.
+     mỗi mục theoSan cũng vậy; vết nhịp có `thung` (vị trí thùng cuối nhịp) và sự kiện 'thung-di' {id, tu, den, nguon:'giat'|'bang'}.
    - thùng kẹt góc → dừng ngay cuối nhịp đó (chẩn đoán thung-ket).
-   Mã chẩn đoán: thung-chan, thung-ket (lỗi), push-goi-lai (lỗi), day-hut (thông tin), day-dung-yen (thông tin), chua-day-thung, và dam-tuong với
-   vat 'thung-nang' (xe không có tấm đẩy, hay lùi / trượt vào thùng). Các mã khác:
+   Mã chẩn đoán: thung-chan (kieu 'giat': thùng bị cú giật mà ô sau nó bị chặn), thung-ket (lỗi), chua-day-thung, và dam-tuong với
+   vat 'thung-nang' (xe húc thùng bằng bánh: thùng cản như tường, chỉ cú giật của súng hơi mới dời được thùng). Các mã khác:
    quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong (vat 'vat' = vướng vật nằm đất), tay-vuong, vat-vo, tha-bi-chan (tay kẹp, kieu 'kep': ô trước mặt không phải sàn trống),
    kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
    def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
@@ -148,8 +151,10 @@
   var LY_THA = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn', 'rao': 'hàng rào thấp', 'cua': 'cửa đang đóng' };
   // lý do vật ném vỡ (san-hoc.js 'nem-vo')
   var LY_BAN = { 'tuong': 'tường cao', 'cua': 'cửa đang đóng', 'thung': 'thùng nặng', 'vat': 'vật nằm đất', 'bac-thang': 'bậc thang' };
+  // lý do xe không giật được (san-hoc.js 'giat-chan'): ô xe giật vào
+  var LY_GIAT = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'cua': 'cửa đang đóng', 'nut': 'nút bắn', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'vat': 'một vật nằm đất' };
   var LY_NEM = { 'ngoai-san': 'ngoài sân', 'tuong': 'tường cao', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
-  var LY_DO_THUNG = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe' };
+  var LY_DO_THUNG = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe', 'cua': 'cửa đang đóng', 'rao': 'hàng rào thấp', 'vat': 'một vật nằm đất' };
   // Sân thử mặc định của Xưởng hàm: 5×5 trống, xe ở giữa quay lên (hướng 0).
   var SAN_THU_MAC_DINH = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [], tuong: [], thung: [] };
   var MAU_CHU = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };       // tên màu → ký tự trong lớp màu của SanHoc
@@ -187,9 +192,16 @@
       if (src && src.mo === true) cuaBan.forEach(function (o) { if (o.x === Math.floor(src.x) && o.y === Math.floor(src.y)) o.mo = true; });
     });
     var thung = loc(c.thung);                                    // thùng nặng: không đè tường, không đè xe
+    var kyO = [];                                                // ký hiệu sân (Xưởng: Đặt vật bậc thang S / gầm n, Đặt sàn hố u / băng chuyền < > ^ v): mỗi ô một ký hiệu, không đè xe / tường / nút / cửa / thùng
+    (Array.isArray(c.ky) ? c.ky : []).forEach(function (o) {
+      if (!o || typeof o.x !== 'number' || typeof o.y !== 'number' || typeof o.ky !== 'string' || o.ky.length !== 1 || 'Snu<>^v'.indexOf(o.ky) < 0) return;
+      var x = Math.floor(o.x), y = Math.floor(o.y), k = x + ',' + y;
+      if (x < 0 || y < 0 || x >= rong || y >= cao || thay[k]) return;
+      thay[k] = true; kyO.push({ x: x, y: y, ky: o.ky });
+    });
     var sacO = [];                                               // ô sạc pin (drone): sàn thường, đè được lên ô xe; không đè tường, hàng rào, nút, cửa
     var khoaSac = {};
-    tuong.forEach(function (o) { khoaSac[o.x + ',' + o.y] = true; });
+    tuong.concat(kyO).forEach(function (o) { khoaSac[o.x + ',' + o.y] = true; });
     (Array.isArray(c.rao) ? c.rao : []).forEach(function (o) { if (o && typeof o.x === 'number' && typeof o.y === 'number') khoaSac[Math.floor(o.x) + ',' + Math.floor(o.y)] = true; });
     nutBan.concat(cuaBan).forEach(function (o) { khoaSac[o.x + ',' + o.y] = true; });
     (Array.isArray(c.sac) ? c.sac : []).forEach(function (o) {
@@ -230,6 +242,7 @@
     if (nutBan.length) kq.nut = nutBan;                          // nút bắn, cửa của sân thử (chỉ có khi sân thử có)
     if (cuaBan.length) kq.cua = cuaBan.map(function (o) { return { x: o.x, y: o.y, mo: o.mo === true }; });
     if (mauSan.length) kq.mau = mauSan;                          // chỉ có khi sân thử có ô màu (các sân thử cũ giữ nguyên dạng)
+    if (kyO.length) kq.ky = kyO;                                 // ký hiệu sân (chỉ có khi sân thử có)
     return kq;
   }
   /** Lớp màu sàn của sân thử (mảng chuỗi r g b y / '.'), hoặc null nếu sân thử không có ô màu. */
@@ -253,6 +266,7 @@
     (st.nut || []).forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + 'N' + rows[o.y].slice(o.x + 1); });
     (st.cua || []).forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + (o.mo ? 'c' : 'C') + rows[o.y].slice(o.x + 1); });
     (st.sac || []).forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + 'P' + rows[o.y].slice(o.x + 1); });
+    (st.ky || []).forEach(function (o) { rows[o.y] = rows[o.y].slice(0, o.x) + o.ky + rows[o.y].slice(o.x + 1); });
     return rows;
   }
 
@@ -368,10 +382,11 @@
   }
 
   // tên bộ phận cho lời lenh-goc-hong khi màn không khai canhBao
-  var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải', arm_left: 'Khớp xoay', arm_right: 'Khớp xoay', magnet_n: 'Cực N của nam châm', magnet_s: 'Cực S của nam châm' };
+  var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải', arm_left: 'Khớp xoay', arm_right: 'Khớp xoay', magnet_n: 'Cực N của nam châm', magnet_s: 'Cực S của nam châm', shoot: 'Nòng trước của súng hơi', shoot_back: 'Nòng sau của súng hơi' };
   /** Lệnh `ten` là lệnh gốc của loại robot nhưng phần cứng màn (man.phanCung) không có: bộ phận đó hỏng. */
   function lenhHong(man, ten) {
-    return !!man.phanCung && man.phanCung.indexOf(ten) < 0 && ((SanHoc.HAM_GOC[man.loaiRobot || 'banh'] || []).indexOf(ten) >= 0 || SanHoc.TAY_XOAY.indexOf(ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(ten) >= 0);       // tay xoay: khớp kẹt một phía (thiếu arm_left / arm_right trong phần cứng) cũng là bộ phận hỏng
+    var camMau = SanHoc.CAM_MAU_HAM.indexOf(ten) >= 0 && ((man.robot && man.robot.camBien) || []).some(function (c) { return c && (c.ma === 'mau' || c.ma === 'camera'); });     // cảm biến màu có gắn mà phần cứng thiếu color(): cảm biến hỏng (che-mau.9)
+    return !!man.phanCung && man.phanCung.indexOf(ten) < 0 && (camMau || (SanHoc.HAM_GOC[man.loaiRobot || 'banh'] || []).indexOf(ten) >= 0 || SanHoc.TAY_XOAY.indexOf(ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(ten) >= 0 || SanHoc.TAY_HOI.indexOf(ten) >= 0);       // tay xoay: khớp kẹt một phía (thiếu arm_left / arm_right trong phần cứng) cũng là bộ phận hỏng
   }
   var SO_CHU = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy'];
   function soO(n) { return (n < SO_CHU.length ? SO_CHU[n] : String(n)) + ' ô'; }
@@ -411,6 +426,11 @@
       var NAC_LOI = { trai: 'bên trái', truoc: 'phía trước', phai: 'bên phải' };
       lv.cau.push('Tay xoay đang chỉ ' + NAC_LOI[res.tay.xoay] + ', còn tay của xe mờ chỉ ' + NAC_LOI[bm.xoay] + '.');
     }
+    if (res && bm.thung && res.thung) {                                                                 // thùng mờ (chương che-sung-hoi): thùng thật chưa nằm đúng các ô thùng mờ
+      var chuaTh = bm.thung.filter(function (q) { return !res.thung.some(function (t) { return t.x === q.x && t.y === q.y; }); }).length;
+      if (chuaTh === 1) lv.cau.push(res.thung.length === 1 ? 'Thùng nặng chưa nằm đúng ô như thùng mờ.' : 'Một thùng nặng chưa nằm đúng ô như thùng mờ.');
+      else if (chuaTh > 1) lv.cau.push('Còn ' + soO(chuaTh).replace(' ô', ' thùng') + ' nặng chưa nằm đúng ô như thùng mờ.');
+    }
     var laNhenBm = !!res && res.chan !== undefined;                                                    // nhện: kết quả có tư thế chân
     if (laNhenBm && bm.chan && res.chan !== bm.chan) lv.cau.push('Chân nhện đang ' + (res.chan === 'co' ? 'co' : 'duỗi') + ', còn bóng mờ có chân ' + (bm.chan === 'co' ? 'co' : 'duỗi') + '.');
     if (lv.cau.length) { loi = (loi ? loi + ' ' : (lech ? '' : 'Xe đúng chỗ rồi. ')) + lv.cau.join(' '); lech = true; }
@@ -435,7 +455,7 @@
       var tn = /tên "([^"]+)"/.exec(l.thongDiep || '');
       if (l.ma === 'tam-sai') {
         them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.', { cho: cho(m), tam: l.tamDat });
-      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.laHamCamBien(tn[1]) && hamGoc.indexOf(tn[1]) < 0) {
+      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.laHamCamBien(tn[1]) && hamGoc.indexOf(tn[1]) < 0 && !lenhHong(man, tn[1])) {
         var dsCam = hamGoc.filter(function (t) { return SanHoc.laHamCamBien(t); });
         them('chua-gan-cam-bien', 'Ở ' + viTri(m) + ': ' + (dsCam.length
           ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
@@ -503,7 +523,7 @@
           : e0.vat === 'thung-nang'
           ? 'Xe đâm vào thùng nặng ở nhịp ' + e0.nhip + ' nên đứng yên (vẫn mất một nhịp).' +
             (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-            (e0.coDay ? ' Tấm đẩy chỉ đẩy khi xe TIẾN thẳng vào thùng; lùi hay trượt thì thùng cản như tường.' : ' Xe không có tấm đẩy thì thùng nặng cản đường như tường: cần tấm đẩy để đẩy thùng nặng.')
+            ' Thùng nặng cản đường xe như tường: xe húc bằng bánh thì không đẩy được, chỉ cú giật của súng hơi mới dời được thùng.'
           : e0.vat === 'ngoai-san'
           ? 'Xe đi ra ngoài sân thử (ở nhịp ' + e0.nhip + '). Đặt xe chỗ khác rồi thử lại.'
           : 'Xe đâm vào tường ở nhịp ' + e0.nhip + ' nên đứng yên (vẫn mất một nhịp).' +
@@ -525,7 +545,7 @@
       } else if (e0.vat === 'thung-nang') {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là thùng nặng nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          (e0.coDay ? ' Tấm đẩy chỉ đẩy khi xe TIẾN thẳng vào thùng; lùi hay trượt thì thùng cản như tường.' : ' Xe không có tấm đẩy thì thùng nặng cản đường như tường: cần tấm đẩy để đẩy thùng nặng.');
+          ' Thùng nặng cản đường xe như tường: xe húc bằng bánh thì không đẩy được, chỉ cú giật của súng hơi mới dời được thùng.';
       } else {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là ' +
           (LOAI_VAT[e0.vat] || e0.vat) + ' nên nó đứng yên (vẫn mất một nhịp).' +
@@ -537,40 +557,16 @@
     var thungChan = res.suKien.filter(function (e) { return e.ma === 'thung-chan'; });
     if (thungChan.length) {
       var tc0 = thungChan[0], mtc = tc0.lenh ? (g.anhXa[tc0.lenh.dongPy] || null) : null;
-      them('thung-chan', 'Ở nhịp ' + tc0.nhip + ', thùng ở ô (' + tc0.o.x + ', ' + tc0.o.y + ') không đẩy được vì ô sau nó, (' + tc0.den.x + ', ' + tc0.den.y + '), là ' +
+      them('thung-chan', 'Ở nhịp ' + tc0.nhip + ', thùng ở ô (' + tc0.o.x + ', ' + tc0.o.y + ') nhận cú giật nhưng không trượt được vì ô sau nó, (' + tc0.den.x + ', ' + tc0.den.y + '), là ' +
         (LY_DO_THUNG[tc0.vat] || tc0.vat) + ': xe và thùng đứng yên (vẫn mất một nhịp).' +
         (thungChan.length > 1 ? ' Chuyện này xảy ra ' + thungChan.length + ' lần.' : '') +
-        ' Xem lại hướng đẩy: thùng chỉ đi được vào ô trống.', { nhip: tc0.nhip, soLan: thungChan.length, cho: cho(mtc), kieu: tc0.kieu });
+        ' Thùng chỉ trượt được vào ô trống: xem lại hướng giật.', { nhip: tc0.nhip, soLan: thungChan.length, cho: cho(mtc), kieu: tc0.kieu });
     }
     var thungKetSk = res.suKien.filter(function (e) { return e.ma === 'thung-ket'; });
     if (thungKetSk.length) {
       var tk0 = thungKetSk[0];
       them('thung-ket', 'Thùng kẹt vào góc ở ô (' + tk0.o.x + ', ' + tk0.o.y + ') từ nhịp ' + tk0.nhip + ', không đẩy ra được nữa nên chương trình dừng ở đó. ' +
         'Hai cạnh vuông góc của góc đó là tường hay mép sân; muốn thùng khỏi kẹt, đẩy nó theo hướng khác trước khi nó chạm góc.', { nhip: tk0.nhip, id: tk0.id, o: tk0.o });
-    }
-    var pushLai = res.suKien.filter(function (e) { return e.ma === 'push-goi-lai'; });
-    if (pushLai.length) {
-      var pl0 = pushLai[0], mpl = g.anhXa[pl0.dongPy] || null, mplt = pl0.truoc ? (g.anhXa[pl0.truoc.dongPy] || null) : null;
-      them('push-goi-lai', 'Ở ' + viTri(mpl) + ': xe đã nhận lệnh push() (ở ' + viTri(mplt) + ') trong nhịp này rồi, nên lệnh push() này bị bỏ qua. ' +
-        'Mỗi nhịp tấm đẩy chỉ đẩy mạnh một lần; wait() mới sang nhịp kế.', { cho: cho(mpl), choTruoc: cho(mplt), nhip: pl0.nhip });
-    }
-    var dayHut = res.suKien.filter(function (e) { return e.ma === 'day-hut'; });
-    if (dayHut.length) {
-      var dh0 = dayHut[0], mdh = dh0.lenh ? (g.anhXa[dh0.lenh.dongPy] || null) : null;
-      cd.push({
-        ma: 'day-hut', muc: 'thong-tin', nhip: dh0.nhip, soLan: dayHut.length, o: dh0.o, cho: cho(mdh),
-        loi: 'Ở nhịp ' + dh0.nhip + ', push() không đẩy được gì: ô ngay trước mặt xe, (' + dh0.o.x + ', ' + dh0.o.y + '), không có thùng nặng.' +
-          (dayHut.length > 1 ? ' Chuyện này xảy ra ' + dayHut.length + ' lần.' : '') + ' push() chỉ đẩy thùng nằm sát trước mặt xe.'
-      });
-    }
-    var dayDungYen = res.suKien.filter(function (e) { return e.ma === 'day-dung-yen'; });
-    if (dayDungYen.length) {
-      var dy0 = dayDungYen[0], mdy = dy0.lenh ? (g.anhXa[dy0.lenh.dongPy] || null) : null, mdyp = dy0.push ? (g.anhXa[dy0.push.dongPy] || null) : null;
-      cd.push({
-        ma: 'day-dung-yen', muc: 'thong-tin', nhip: dy0.nhip, soLan: dayDungYen.length, cho: cho(mdy), choPush: cho(mdyp),
-        loi: 'Ở nhịp ' + dy0.nhip + ': lệnh push() (ở ' + viTri(mdyp) + ') và lệnh ' + (dy0.lenh ? dy0.lenh.ten + '() (ở ' + viTri(mdy) + ') ' : 'bánh ') + 'nằm chung một nhịp, nên xe đứng yên và lệnh kia bị bỏ.' +
-          (dayDungYen.length > 1 ? ' Chuyện này xảy ra ' + dayDungYen.length + ' lần.' : '') + ' Nhịp có push() chỉ đẩy, không đi.'
-      });
     }
     var nemVo = res.suKien.filter(function (e) { return e.ma === 'nem-vo'; });
     if (nemVo.length) {
@@ -613,21 +609,21 @@
     var banLai = res.suKien.filter(function (e) { return e.ma === 'ban-goi-lai'; });
     if (banLai.length) {
       var bl0 = banLai[0], mbl = g.anhXa[bl0.dongPy] || null, mblt = bl0.truoc ? (g.anhXa[bl0.truoc.dongPy] || null) : null;
-      them('ban-goi-lai', 'Ở ' + viTri(mbl) + ': súng đã nhận lệnh shoot() (ở ' + viTri(mblt) + ') trong nhịp này rồi, nên lệnh shoot() này bị bỏ qua. ' +
+      them('ban-goi-lai', 'Ở ' + viTri(mbl) + ': súng đã nhận lệnh ' + bl0.truoc.ten + '() (ở ' + viTri(mblt) + ') trong nhịp này rồi, nên lệnh ' + bl0.ten + '() này bị bỏ qua. ' +
         'Mỗi nhịp súng chỉ bắn một phát; wait() mới sang nhịp kế.', { cho: cho(mbl), choTruoc: cho(mblt), nhip: bl0.nhip });
     }
     var hetDan = res.suKien.filter(function (e) { return e.ma === 'het-dan'; });
     if (hetDan.length) {
       var hd0 = hetDan[0];
-      them('het-dan', 'Ở nhịp ' + hd0.nhip + ', súng đã hết đạn nên shoot() không bắn được gì.' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
+      them('het-dan', 'Ở nhịp ' + hd0.nhip + ', súng đã hết đạn nên không bắn được gì (và xe cũng không giật).' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
         ' Màn này chỉ có ' + (man.danToiDa || 0) + ' viên: dùng cho đúng chỗ.', { nhip: hd0.nhip, soLan: hetDan.length, cho: cho(hd0.lenh ? (g.anhXa[hd0.lenh.dongPy] || null) : null) });
     }
     var banHut = res.suKien.filter(function (e) { return e.ma === 'ban-hut'; });
     if (banHut.length) {
       var bh0 = banHut[0];
       cd.push({ ma: 'ban-hut', muc: 'thong-tin', nhip: bh0.nhip, soLan: banHut.length, huong: bh0.huong, cho: cho(bh0.lenh ? (g.anhXa[bh0.lenh.dongPy] || null) : null),
-        loi: 'Ở nhịp ' + bh0.nhip + ', quả bóng bay thẳng về phía ' + SanHoc.TEN_HUONG[bh0.huong] + ' từ ô (' + bh0.tu.x + ', ' + bh0.tu.y + ') rồi ra khỏi sân mà không trúng gì.' +
-          (banHut.length > 1 ? ' Chuyện này xảy ra ' + banHut.length + ' lần.' : '') + ' Bóng chỉ bay thẳng theo hướng mặt xe: xem xe đang quay mặt về đâu lúc shoot().' });
+        loi: 'Ở nhịp ' + bh0.nhip + ', quả bóng bay thẳng về phía ' + SanHoc.TEN_HUONG[bh0.huong] + (bh0.sau ? ' (ra sau đuôi xe)' : '') + ' từ ô (' + bh0.tu.x + ', ' + bh0.tu.y + ') rồi ra khỏi sân mà không trúng gì.' +
+          (banHut.length > 1 ? ' Chuyện này xảy ra ' + banHut.length + ' lần.' : '') + ' Bóng chỉ bay thẳng: shoot() bắn ra trước mũi xe, shoot_back() bắn ra sau đuôi xe. Xem xe đang quay mặt về đâu.' });
     }
     var banChan = res.suKien.filter(function (e) { return e.ma === 'ban-bi-chan'; });
     if (banChan.length) {
@@ -636,17 +632,24 @@
         loi: 'Ở nhịp ' + bc0.nhip + ', quả bóng dừng ở ô (' + bc0.o.x + ', ' + bc0.o.y + ') vì đó là ' + (LY_BAN[bc0.vat] || bc0.vat) + ', nên không tới được nút.' +
           (banChan.length > 1 ? ' Chuyện này xảy ra ' + banChan.length + ' lần.' : '') + ' Bóng bay thẳng và dừng ở vật cản đầu tiên (hàng rào thấp và băng chuyền thì bóng bay qua).' });
     }
+    var giatChan = res.suKien.filter(function (e) { return e.ma === 'giat-chan'; });
+    if (giatChan.length) {
+      var gc0 = giatChan[0];
+      cd.push({ ma: 'giat-chan', muc: 'thong-tin', nhip: gc0.nhip, soLan: giatChan.length, o: gc0.den, vat: gc0.vat, huong: gc0.huong, cho: cho(gc0.lenh ? (g.anhXa[gc0.lenh.dongPy] || null) : null),
+        loi: 'Ở nhịp ' + gc0.nhip + ', xe định giật về phía ' + SanHoc.TEN_HUONG[gc0.huong] + ' nhưng ô (' + gc0.den.x + ', ' + gc0.den.y + ') là ' + (LY_GIAT[gc0.vat] || gc0.vat) + ' nên xe đứng yên.' +
+          (giatChan.length > 1 ? ' Chuyện này xảy ra ' + giatChan.length + ' lần.' : '') + ' Bắn ra trước thì xe giật lùi một ô, bắn ra sau thì xe giật tới một ô; ô giật vào bị chặn thì xe không nhúc nhích.' });
+    }
     var banDung = res.suKien.filter(function (e) { return e.ma === 'ban-dung-yen'; });
     if (banDung.length) {
       var bd0 = banDung[0], mbd = bd0.lenh ? (g.anhXa[bd0.lenh.dongPy] || null) : null, mbdn = bd0.ban ? (g.anhXa[bd0.ban.dongPy] || null) : null;
       cd.push({ ma: 'ban-dung-yen', muc: 'thong-tin', nhip: bd0.nhip, soLan: banDung.length, cho: cho(mbd), choBan: cho(mbdn),
-        loi: 'Ở nhịp ' + bd0.nhip + ': lệnh shoot() (ở ' + viTri(mbdn) + ') và lệnh ' + (bd0.lenh ? bd0.lenh.ten + '() (ở ' + viTri(mbd) + ') ' : 'bánh ') + 'nằm chung một nhịp, nên xe đứng yên và lệnh kia bị bỏ.' +
-          (banDung.length > 1 ? ' Chuyện này xảy ra ' + banDung.length + ' lần.' : '') + ' Nhịp có shoot() chỉ bắn, xe không đi.' });
+        loi: 'Ở nhịp ' + bd0.nhip + ': lệnh ' + (bd0.ban ? bd0.ban.ten : 'shoot') + '() (ở ' + viTri(mbdn) + ') và lệnh ' + (bd0.lenh ? bd0.lenh.ten + '() (ở ' + viTri(mbd) + ') ' : 'bánh ') + 'nằm chung một nhịp, nên xe không tự đi và lệnh kia bị bỏ.' +
+          (banDung.length > 1 ? ' Chuyện này xảy ra ' + banDung.length + ' lần.' : '') + ' Nhịp có lệnh bắn chỉ bắn (và giật), bánh nghỉ.' });
     }
     var nutDoi = res.suKien.filter(function (e) { return e.ma === 'nut-doi'; }), demNut = {};
     nutDoi.forEach(function (e) { var k = e.o.x + ',' + e.o.y; demNut[k] = (demNut[k] || 0) + 1; });
     var nutLap = Object.keys(demNut).filter(function (k) { return demNut[k] >= 2; })[0];
-    if (nutLap) {
+    if (nutLap && !res.thang) {
       var nl = nutDoi.filter(function (e) { return e.o.x + ',' + e.o.y === nutLap; })[0];
       cd.push({ ma: 'ban-nut-lai', muc: 'thong-tin', o: nl.o, soLan: demNut[nutLap], cho: cho(nl.lenh ? (g.anhXa[nl.lenh.dongPy] || null) : null),
         loi: 'Nút ở (' + nl.o.x + ', ' + nl.o.y + ') bị bắn trúng ' + demNut[nutLap] + ' lần: mỗi phát trúng đổi nút một lần (bật rồi tắt), nên bắn số lần chẵn thì cửa và băng chuyền nối với nút trở về như lúc đầu.' });
@@ -875,7 +878,7 @@
     var quen = res.suKien.filter(function (e) { return e.ma === 'quen-wait'; });
     if (quen.length) {
       var q = quen[0], mq = g.anhXa[q.lenh[0].dongPy] || null;
-      var soTay = q.lenh.filter(function (x) { return SanHoc.TAY_LENH.indexOf(x.ten) >= 0 || SanHoc.TAY_DAY.indexOf(x.ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(x.ten) >= 0 || SanHoc.TAY_NEM.indexOf(x.ten) >= 0 || SanHoc.TAY_BONG.indexOf(x.ten) >= 0; }).length;
+      var soTay = q.lenh.filter(function (x) { return SanHoc.TAY_LENH.indexOf(x.ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(x.ten) >= 0 || SanHoc.TAY_NEM.indexOf(x.ten) >= 0 || SanHoc.TAY_HOI.indexOf(x.ten) >= 0; }).length;
       var loaiLenh = soTay === 0 ? 'bánh' : soTay === q.lenh.length ? 'tay' : 'bánh và tay';
       if (man.loaiRobot === 'drone') {
         // drone: lệnh nam châm làm ở nhịp kế tiếp, là một lệnh bay go_*() hay wait()
@@ -915,9 +918,10 @@
         var rbm = res.robot, bmo = res.bongMo;
         if (bmo) {
           var dxy = lechBongMo(bmo, rbm, res);
+          if (man.loaiRobot === 'drone') dxy.loi = dxy.loi.replace(/\bXe\b/g, 'Drone').replace(/\bxe\b/g, 'drone');       // drone: nói "Drone dừng lệch…", "drone mờ"
           if (dxy.lech) them('lech-bong-mo', dxy.loi, { robot: { x: rbm.x, y: rbm.y, huong: rbm.huong }, bongMo: { x: bmo.x, y: bmo.y, huong: bmo.huong }, dx: dxy.dx, dy: dxy.dy, saiHuong: dxy.saiHuong, soVatLech: dxy.soVatLech, camLech: dxy.camLech });
           var chuaQua = (res.diQua || []).filter(function (q) { return !q.da; });
-          if (chuaQua.length) them('chua-qua-diem', 'Xe chưa đi qua điểm ◆' + (chuaQua.length > 1 ? ' (còn thiếu ' + chuaQua.length + ' điểm)' : '') + ' trên đường. Chương trình phải đưa xe ghé qua mọi điểm ◆ rồi mới tới bóng mờ.', { conLai: chuaQua.length, o: { x: chuaQua[0].x, y: chuaQua[0].y } });
+          if (chuaQua.length) them('chua-qua-diem', (man.loaiRobot === 'drone' ? 'Drone' : 'Xe') + ' chưa đi qua điểm ◆' + (chuaQua.length > 1 ? ' (còn thiếu ' + chuaQua.length + ' điểm)' : '') + ' trên đường. Chương trình phải đưa ' + (man.loaiRobot === 'drone' ? 'drone' : 'xe') + ' ghé qua mọi điểm ◆ rồi mới tới bóng mờ.', { conLai: chuaQua.length, o: { x: chuaQua[0].x, y: chuaQua[0].y } });
         }
       }
     } else if (!sanThu && !res.thang && !res.loi) {

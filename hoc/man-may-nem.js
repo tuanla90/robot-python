@@ -154,7 +154,7 @@
     /* ------------------------------------------------ hàng 1: làm quen */
     man({
       so: 1, ten: 'Ném qua hàng rào', hang: 'lam-quen', coLoad: false, hamCuaEmCan: [],
-      deBai: 'Máy ném ở mũi xe, trong rổ đã có sẵn một vật. aim(n) đặt tầm ném là n ô (n là 1, 2 hoặc 3); throw() rồi wait() ném vật bay thẳng tới ô cách xe n ô, bay qua được hàng rào. Ném vật vào ô đích.',
+      deBai: 'Máy ném ở mũi xe, trong rổ đã có sẵn một vật. aim(n) đặt tầm ném là n ô (n là 1, 2 hoặc 3); throw() rồi wait() ném vật bay thẳng tới ô cách xe n ô, bay qua được hàng rào (rào đã chặn xe hai bánh ở màn Tạo hàm forward). Ném vật vào ô đích.',
       veMaMau: 'Chương trình có sẵn ném ngay với tầm mặc định. Chạy thử, xem vật rơi xuống đâu rồi đặt tầm cho đúng.',
       san: SAN_1, batDau: BD_1, roBanDau: true,
       maMau: { chinh: ['throw()', 'wait()'] },

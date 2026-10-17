@@ -33,13 +33,15 @@ const TO_HOP = [];
 for (let t = -1; t <= 1; t++) for (let p = -1; p <= 1; p++) TO_HOP.push([t, p]);
 const CHIEU_QUAY = TO_HOP.map(([t, p]) => SanHoc.XICH_QUAY[t + ',' + p] || 0);   // 0 nếu không phải tổ hợp quay
 
+/** Ô robot không bước vào ở bộ dò: hố u (vào là rơi); vật o / X, thùng nặng H / h, cửa đóng C khi robot không có tay gắp (màn gặp khó, 15/10). */
+const chanTinh = (san, man, x, y) => { const c = san.o[y] && san.o[y][x]; return c === 'u' || (!(man.hamGoc || []).includes('grab') && 'oXHhC'.includes(c)); };
 /** Dựng ngữ cảnh từ một màn. */
 export function dungNguCanh(man) {
   const san = SanHoc.docSan(man.san);
   const rong = san.rong, cao = san.cao;
   const o = (x, y) => y * rong + x;
   const chan = new Uint8Array(rong * cao);
-  for (let y = 0; y < cao; y++) for (let x = 0; x < rong; x++) chan[o(x, y)] = SanHoc.lyDoChan(san, 'xich', x, y) ? 1 : 0;
+  for (let y = 0; y < cao; y++) for (let x = 0; x < rong; x++) chan[o(x, y)] = SanHoc.lyDoChan(san, 'xich', x, y) || chanTinh(san, man, x, y) ? 1 : 0;
   const dich = new Uint8Array(rong * cao);
   for (const d of san.dich) dich[o(d.x, d.y)] = 1;
   const co = san.co ? o(san.co.x, san.co.y) : -1;

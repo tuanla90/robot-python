@@ -17,7 +17,7 @@ const require = createRequire(import.meta.url);
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
-for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-tam-day', 'man-khoang-cach', 'man-mau']) require(path.join(day, f + '.js'));
+for (const f of ['man-chuoi-2', 'man-tay-gap', 'man-vong-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-khoang-cach', 'man-mau']) require(path.join(day, f + '.js'));
 const ManHoc = require(path.join(day, 'man-nam-cham.js'));
 const BoDo = await import('./do-duong-nam-cham.mjs');
 const { nhipNamChamNganNhat, nhipNamChamTatCa, buocMotNhip, dungNguCanh, trangThaiDau, laThang, chuoiThanhMa, hanhDongTuDo } = BoDo;
@@ -363,7 +363,7 @@ console.log('\n== 6. Omni và xích có nam châm; không có tay nam châm; nh�
   kiem('nhện không gắn nam châm: ném lỗi', /Nhện không gắn nam châm/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'magnet_n', 'magnet_off'] }, 'wait()')) || ''));
   kiem('nhện không gắn cảm biến từ front_metal / front_pole: ném lỗi', ['front_metal', 'front_pole'].every((t) => /Nhện không gắn cảm biến/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', t] }, 'wait()')) || '')));
   kiem('một robot một tay: nam châm không đi chung tay kẹp', /chỉ có một tay/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NC, ['arm_down', 'grab']) }, 'wait()')) || ''));
-  kiem('một robot một tay: nam châm không đi chung tấm đẩy', /chỉ có một tay/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NC, ['push']) }, 'wait()')) || ''));
+  kiem('một robot một tay: nam châm không đi chung súng hơi', /chỉ có một tay/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(NC, ['shoot', 'shoot_back']) }, 'wait()')) || ''));
   kiem('hàm gốc lạ vẫn bị từ chối; magnet_on (cũ) không còn là hàm gốc', /không thuộc loại robot/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['magnet_x']) }, 'wait()')) || '') &&
     /không thuộc loại robot/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['magnet_on']) }, 'wait()')) || ''));
   kiem('vatCan lạ: ném lỗi; vật nam châm thiếu cực: ném lỗi', /vatCan lạ/.test(loi(() => SanHoc.chay({ san: ['...', '...'], batDau: { x: 1, y: 1, huong: 0 }, loaiRobot: 'banh', vatCan: 'dong' }, 'wait()')) || '') &&
