@@ -18,6 +18,8 @@
    tới ô `den` (trúng nút thì nút lóe rồi đổi, băng đổi ngay, cửa đổi ở cuối nhịp; bị chặn thì nảy ra; ra khỏi sân thì bay mất ở mép); giat = xe trượt một ô ngược hướng bắn (di), hay rung tại chỗ nếu ô sau xe bị chặn;
    có thùng nặng sau xe thì thùng trượt thẳng đi (thung-di nguon 'giat', bụi bốc theo), thùng bị chặn ngay thì xe và thùng cùng rung + dấu ! (thung-chan). cua-ket = cửa rung đỏ, ban-hut / ban-bi-chan = dấu ?, het-dan / ban-goi-lai = dấu !,
    số đạn còn (cfg.danToiDa) ở góc sân.
+   CAMERA NHÌN XUỐNG của drone (docCamBien.cam === 'camera-bay', look() đọc vật hay sàn ở ô NGAY DƯỚI drone, 16/10): kính camera ở mép trên khung sáng rực, ô dưới drone tô màu vừa đọc (vòng sáng như cảm biến màu ở bụng xe + vạch quét chạy từ trên xuống),
+   bốn góc ngắm (viewfinder) ôm ô đó ở lớp trên (nguon 'vat' thì ôm vật nhỏ hơn, 'chan' thì góc xám + X), bong chữ màu nổi cạnh drone.
    Chương drone: robot.than === 'drone' (bay cao, không có mặt trước, cánh quạt luôn quay): bóng đổ lệch xuống dưới ô, rơi lên mặt rào / băng / vật / thùng khi bay qua ('bay-qua'),
    ô sạc P (đế sạc, nháy khi 'sac-pin'), thanh pin nhỏ nổi trên drone (robot.pin / cfg.pin; hết pin 'het-pin' thì rơi xuống, khói, dấu !), nam châm treo dưới bụng (vật nhấc lên rồi treo giữa khung
    cánh, thả thì rơi xuống ô dưới), cảm biến pin battery() nháy thanh pin và đèn thân (docCamBien.cam === 'pin').
@@ -275,11 +277,11 @@
       ds.push({ key: key, tu: d.tu, o: d.o, huong: d.huong, trong: !!d.trong, vat: d.vat || null, cam: d.cam || null, mau: d.mau || null, nguon: d.nguon || null, chat: d.chat || null, dai: d.cam === 'tu' ? this.tamTrong(d.tu, d.huong) : 0, t0: now, ms: ms });
       while (ds.length > 6) ds.shift();
       if (d.cam === 'pin' && this.vis && this.vis.dr) this.vis.dr.nhay = now + Math.max(ms, 320);                 // đọc battery(): thanh pin nháy, đèn thân sáng
-      if ((d.cam === 'mau' || d.cam === 'camera') && this.vis) this.vis.bongMau = { mau: d.mau || 'none', den: now + Math.max(ms, 300), o: d.o ? { x: d.o.x, y: d.o.y } : null, tu: d.tu ? { x: d.tu.x, y: d.tu.y } : null };      // bong chữ màu vừa đọc nổi trên xe trong khoảng một nhịp (cảm biến bụng và camera)
+      if ((d.cam === 'mau' || d.cam === 'camera' || d.cam === 'camera-bay') && this.vis) this.vis.bongMau = { mau: d.mau || 'none', den: now + Math.max(ms, 300), o: d.o ? { x: d.o.x, y: d.o.y } : null, tu: d.tu ? { x: d.tu.x, y: d.tu.y } : null };      // bong chữ màu vừa đọc nổi trên xe trong khoảng một nhịp (cảm biến bụng và camera)
     },
     /** Camera đang đọc không (hai đốm mắt trên thân sáng rực trong lúc tia còn chạy). */
     camMatSang: function (now) {
-      for (var i = 0; i < this.docs.length; i++) if (this.docs[i].cam === 'camera' && now - this.docs[i].t0 < this.docs[i].ms * 0.85) return true;
+      for (var i = 0; i < this.docs.length; i++) if ((this.docs[i].cam === 'camera' || this.docs[i].cam === 'camera-bay') && now - this.docs[i].t0 < this.docs[i].ms * 0.85) return true;       // camera ở xe (hai mắt) hay camera nhìn xuống của drone (kính)
       return false;
     },
     /** Còn tia cảm biến đang sáng không (cảm biến trên thân xe sáng cùng lúc). */
@@ -294,7 +296,8 @@
       for (i = 0; i < ds.length; i++) {
         var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45), rgb = d.trong ? '93,255,122' : '255,74,60';
         if (d.cam === 'mau' || d.cam === 'pin') continue;                         // cảm biến màu: vòng sáng vẽ dưới robot (veVongMauDuoi); cảm biến pin: thanh pin nháy (veThanhPin)
-        if (d.cam === 'camera') { this.veTiaCamera(g, d, now, u, a, 'tren'); continue; }   // camera: hai tia từ đôi mắt tới ô trước mặt, ô đó nháy khung theo màu đọc được
+        if (d.cam === 'camera') { this.veTiaCamera(g, d, now, u, a, 'tren'); continue; }
+        if (d.cam === 'camera-bay') { this.veTiaNhin(g, d, now, u, a, 'tren'); continue; }                  // camera nhìn xuống của drone: bốn góc ngắm quanh ô dưới drone   // camera: hai tia từ đôi mắt tới ô trước mặt, ô đó nháy khung theo màu đọc được
         if (d.cam === 'tu') { this.veTiaTu(g, d, u, a); continue; }              // cảm biến từ: tia bạc tới vật sắt / tia nâu tới vật gỗ
         var vx = DX[d.huong], vy = DY[d.huong], x0 = d.tu.x * T + 7 + vx * 5, y0 = d.tu.y * T + 7 + vy * 5;
         var cx = d.o.x * T + 7, cy = d.o.y * T + 7, x1 = d.trong ? cx : cx - vx * 6, y1 = d.trong ? cy : cy - vy * 6;
@@ -351,12 +354,44 @@
       }
       g.restore();
     },
-    /** Phần tia camera vẽ DƯỚI robot (xem veTiaCamera, pha 'duoi'); veTia() không vẽ lại phần này. */
+    /**
+     * Camera NHÌN XUỐNG của drone (look()), hai lớp: pha 'duoi' (vẽ TRƯỚC drone, nên thân drone đè lên): ô ngay dưới drone ám màu vừa đọc được + một vạch quét sáng chạy từ trên xuống trong nửa đầu thời gian đọc
+     * (vòng sáng như cảm biến màu ở bụng xe do veVongMauDuoi vẽ); pha 'tren' (vẽ SAU drone): bốn góc ngắm ôm ô đó theo màu đọc được — nguon 'san' ôm cả ô, 'vat' ôm vật nhỏ hơn (vật che sàn), 'chan' (rào / thùng / cửa)
+     * góc xám + dấu X. Màu 'none' là xám nhạt. Kính camera trên thân drone sáng rực nhờ camMatSang().
+     */
+    veTiaNhin: function (g, d, now, u, a, pha) {
+      var cx = d.o.x * T + 7, cy = d.o.y * T + 7, ox = d.o.x * T, oy = d.o.y * T, chan = d.nguon === 'chan', vat = d.nguon === 'vat';
+      var col = chan ? '#aab3c4' : this.mauHien(d.mau), nhay = u < 0.55 ? (((now / 80) | 0) & 1 ? 1 : 0.6) : 1, i;
+      g.save();
+      if (pha === 'duoi') {
+        g.globalAlpha = (chan ? 0.24 : vat ? 0.2 : 0.4) * a * nhay; g.fillStyle = col; g.fillRect(ox, oy, T, T);
+        if (u < 0.6) {                                                              // vạch quét: từ mép trên xuống mép dưới ô
+          var yy = Math.round(oy + 1 + (T - 3) * (u / 0.6));
+          g.globalAlpha = 0.35 * a; g.fillStyle = '#ffffff'; g.fillRect(ox + 1, yy - 1, T - 2, 3);
+          g.globalAlpha = 0.95 * a; g.fillRect(ox + 1, yy, T - 2, 1);
+        }
+        g.restore(); return;
+      }
+      g.globalAlpha = a * nhay;
+      var m = vat ? 4.5 : 6.5, L = [[-1, -1], [1, -1], [-1, 1], [1, 1]];          // m: nửa cạnh khung ngắm (vật nhỏ hơn ô)
+      for (i = 0; i < 4; i++) {
+        var px = Math.round(cx + L[i][0] * m), py = Math.round(cy + L[i][1] * m), hx = L[i][0] > 0 ? px - 2 : px, vy2 = L[i][1] > 0 ? py - 2 : py;       // (px, py) = đỉnh góc; mỗi góc hai nét dài 3 pixel hướng vào tâm ô, viền mực quanh nét
+        g.fillStyle = '#1b120a'; g.fillRect(hx - 1, py - 1, 5, 3); g.fillRect(px - 1, vy2 - 1, 3, 5);
+        g.fillStyle = col; g.fillRect(hx, py, 3, 1); g.fillRect(px, vy2, 1, 3);
+      }
+      if (chan) {                                                                   // dấu X: nhìn xuống mà không thấy màu gì
+        g.lineCap = 'butt'; g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
+        g.lineWidth = 1.5; g.strokeStyle = col; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
+      }
+      g.restore();
+    },
+    /** Phần tia camera vẽ DƯỚI robot (xem veTiaCamera và veTiaNhin, pha 'duoi'); veTia() không vẽ lại phần này. */
     veTiaCameraDuoi: function (g, now) {
       var ds = this.docs, i;
       for (i = 0; i < ds.length; i++) {
         var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45);
         if (d.cam === 'camera' && u < 1) this.veTiaCamera(g, d, now, u, a, 'duoi');
+        else if (d.cam === 'camera-bay' && u < 1) this.veTiaNhin(g, d, now, u, a, 'duoi');
       }
     },
     /** Số pixel (từ mũi xe) mà tia / sóng nam châm đi được theo hướng h từ ô `tu`, tối đa 3 ô: tường, mép sân, thùng nặng chắn thì dừng sát mép ô đó (không xét vật). */
@@ -406,7 +441,7 @@
     veVongMauDuoi: function (g, now) {
       var ds = this.docs, i;
       for (i = 0; i < ds.length; i++) {
-        var d = ds[i]; if (d.cam !== 'mau') continue;
+        var d = ds[i]; if (d.cam !== 'mau' && d.cam !== 'camera-bay') continue;                  // cảm biến màu ở bụng xe và camera nhìn xuống của drone: cùng vòng sáng ở ô dưới thân
         var u = Math.min(1, (now - d.t0) / d.ms), a = u < 0.5 ? 1 : Math.max(0, 1 - (u - 0.5) / 0.5), col = this.mauHien(d.mau), cx = d.o.x * T + 7, cy = d.o.y * T + 7 + 1;
         g.save();
         g.globalAlpha = (d.mau === 'none' ? 0.32 : 0.5) * a; g.fillStyle = col;

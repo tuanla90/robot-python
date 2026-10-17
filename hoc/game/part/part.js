@@ -51,7 +51,8 @@
   function ghep(cauHinh,trangThai,huong){
     cauHinh=cauHinh||{};var than=chon('than',cauHinh.than),tay=cauHinh.tay?chon('tay',cauHinh.tay):null,cams=doiCam(cauHinh.camBien||[]),st=trangThai||{},i;
     if(than.ma==='drone'&&cams.some(function(c){return c.ma==='camera';}))throw new Error('Drone không gắn được camera: drone không có hướng mặt để nhìn "phía trước".');
-    if(than.ma==='drone'){if(tay&&tay.ma!=='nam-cham')throw new Error('Drone không gắn được '+tay.ten+'.');for(i=0;i<cams.length;i++)if(['khoang-cach','mau'].indexOf(cams[i].ma)<0)throw new Error('Drone không gắn được '+chon('cam-bien',cams[i].ma).ten+'.');}  /* robot không tay (chương đầu): chỉ có thân */
+    if(than.ma==='drone'){if(tay&&tay.ma!=='nam-cham')throw new Error('Drone không gắn được '+tay.ten+'.');for(i=0;i<cams.length;i++)if(['khoang-cach','mau','camera-bay'].indexOf(cams[i].ma)<0)throw new Error('Drone không gắn được '+chon('cam-bien',cams[i].ma).ten+'.');}  /* robot không tay (chương đầu): chỉ có thân */
+    if(than.ma!=='drone'&&cams.some(function(c){return c.ma==='camera-bay';}))throw new Error('Camera nhìn xuống (camera-bay) chỉ gắn được lên drone.');
     var coMau=cams.some(function(c){return c.ma==='mau';}),coCam=cams.some(function(c){return c.ma==='camera';});
     if(coCam&&coMau)throw new Error('Robot không gắn được cả cảm biến màu lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
     if(tay&&!oTay(than,tay).length)throw new Error((than.ma==='drone'?'Drone':'Tay '+tay.ma)+' không gắn được vào ổ này.');

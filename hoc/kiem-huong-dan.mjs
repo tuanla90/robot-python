@@ -52,7 +52,7 @@ const thuTu = ctx.ThuTuChuong || require(path.join(day, 'thu-tu-chuong.js'));
 const sapXep = ManHoc.danhSach.slice().sort((a, b) => (thuTu.thuTu.indexOf(a.chuong) - thuTu.thuTu.indexOf(b.chuong)) || (a.so - b.so));
 const nhieuSanDau = sapXep.find((m) => Array.isArray(m.san[0]));
 kiem('màn nhiều sân ĐẦU TIÊN (theo thứ tự chương) có hướng dẫn dải chọn sân (.sanbar)', !!nhieuSanDau && !!HDM[nhieuSanDau.ma] && HDM[nhieuSanDau.ma].some((b) => b.dich === '.sanbar'), nhieuSanDau && nhieuSanDau.ma);
-kiem('bảng Gỡ lỗi (go-loi.js) không có hướng dẫn: HuongDanMan không đụng tới', !maCo.some((m) => /go-loi/.test(m)) && !/HuongDan/.test(doc('go-loi.js')));
+kiem('bảng Gỡ lỗi (go-loi.js) không có hướng dẫn (HuongDanMan không đụng tới, go-loi không chạy chuỗi nào); chỉ được TẮT hướng dẫn khi Mở hết (HuongDan.dung, tatHuongDan)', !maCo.some((m) => /go-loi/.test(m)) && !/HuongDan\.(chay|bao|vaoMan)/.test(doc('go-loi.js')) && /tatHuongDan/.test(doc('go-loi.js')) && /GoLoi\.tatHuongDan\(\)\) return null/.test(doc('huong-dan.js')));
 
 console.log('\n== 2. Từng bước đúng dạng ==');
 const SU_KIEN = new Set(['chen-khoi', 'chon-dong', 'xoa-dong', 'hoan-tac', 'doi-cho', 'doi-bac', 'doi-so', 'doi-the', 'chay', 'xem-san', 'mo-xuong', 'tao-ham', 'thu', 'dong-xuong']);

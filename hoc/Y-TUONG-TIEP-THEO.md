@@ -90,15 +90,15 @@ NiHiCode dạy 4–12 tuổi, rộng và nông: Python chỉ có ở kiểu đi 
 - Must improve: `for` / `while` / `if` / biến / điều kiện cảm biến chỉ ở thẻ Logic (Thân, Tay chỉ còn lệnh bộ phận + hàm dùng bộ phận đó); `wait()` là hàng ghim ở đáy khay, thẻ nào cũng thấy; thẻ Logic xuất hiện từ gói Vòng lặp; hướng dẫn đang chỉ `wait` / `while` theo thẻ trỏ chỗ mới. Thêm: tên thẻ bộ phận đổi thành ICON đặc trưng (dùng chung với icon ở dải nhịp, vẽ rõ hơn).
 - Done when: mọi máy kiểm xanh (kiem-khay thêm "for chỉ ở Logic, wait ghim"); chơi tay khung 375×812: 1.1 (không thẻ Logic, hướng dẫn chỉ đúng wait ghim), màn đầu Vòng lặp, màn while ở Cảm biến, một màn tay gắp viết `arm_down, wait, grab, wait` không đổi thẻ.
 
-**Việc 2 · Gói List + drone gắn camera** (chưa làm)
+**Việc 2 · Gói List + drone gắn camera** (đang làm 17/10, đặc tả KE-HOACH-LIST-FLYCAM.md)
 - Must keep: chuỗi ở Nhện giữ nguyên; lõi Python cũ chạy y như cũ (mọi máy kiểm cũ xanh, kể cả mockup sân robot dùng chung lõi).
 - Must improve: lõi thêm `[ ]`, `for x in list`, `a[i]`, `len()`, `.append()`; gói List hai chương (làm quen + chế lệnh), đề xuất đặt ngay sau gói Nhện; drone gắn camera nhìn xuống, `look()` trả màu ô / loại vật dưới bụng, bài trinh sát rồi `append`, bay về làm theo.
 - Done when: máy kiểm lõi list + màn mới có lời giải chạy thật, BFS không đường tắt; khối list chạm sửa số được trên điện thoại; chơi tay ≥ 3 màn.
-- Chờ user: gói List sau Nhện?; camera = chương mới "Flycam" trong gói Drone hay sửa vài màn drone sẵn có?
+- User chốt 17/10: gói List đặt NGAY SAU gói Nhện; camera làm CHƯƠNG MỚI "Flycam" trong gói Drone (drone + camera nhìn xuống, `look()`, bài trinh sát rồi `append`).
 
 **Việc 3 · Lắp ráp tổ hợp dần** (chưa làm)
 - Hiểu "Não" = cảm biến (khoảng cách, màu, camera…); Logic thì robot nào cũng có.
 - Must keep: màn thường không đổi (robot cố định theo màn); chỉ chọn part đã học.
 - Must improve: màn chọn part trước khi chơi (khe Thân / Tay / Não, thẻ part có giá + "vượt được gì", hình robot ghép ngay); khay sinh theo part đã chọn; ba chương xen lộ trình: Thân + Não sau gói Màu, Thân + Tay sau gói Máy ném, Thân + Tay + Não sau gói Drone; mỗi màn có ngân sách xu, ≥ 2 cách lắp giải được, thắng rồi xem "cách lắp khác".
 - Done when: máy kiểm BFS từng tổ hợp trong ngân sách, mỗi màn ≥ 2 tổ hợp thắng; mỗi chương chơi tay 2 màn bằng 2 cách lắp khác nhau.
-- Chờ user: "Não" = cảm biến đúng chưa; mỗi chương 5 hay 10 màn.
+- User chốt 17/10: "Não" = cảm biến; mỗi chương lắp ráp 10 màn. Làm sau Việc 2.

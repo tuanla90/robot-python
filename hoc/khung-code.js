@@ -21,6 +21,8 @@
        các chương cũ không đặt cờ này nên vẫn dùng được `while` (vd 6.2 viết lại forward bằng while).
        BIẾN ĐẾM (chương che-cam-bien): `chanBien: true` thì dòng gán biến (`n = 0`, `n = n + 1`, `n += 1`) và `for i in range(n)` với n là biến bị báo 'cau-truc-chua-hoc'
        (cauTruc 'bien') trong chương trình / hàm của màn — dùng cho các màn chưa dạy biến đếm; các chương khác không đặt cờ này nên vẫn gán biến tự do (vd khoang-cach 6: `co_duong = front_clear()`).
+       DANH SÁCH (gói List, cauTruc 'list'): có khai cauTruc mà thiếu 'list' thì dòng dùng danh sách (có dấu [ ] ngoài chuỗi chữ: `a = [2, 3]`, `a[0]`; hay `.append(`) bị báo 'cau-truc-chua-hoc'
+       (cauTruc 'list'). `for x in a` và `x in a` không đoán được từ chữ (a có thể là chuỗi) nên không kiểm riêng: danh sách phải được tạo bằng một dòng có [ ] hoặc truyền từ nơi gọi.
        Chỉ kiểm CHƯƠNG TRÌNH và HÀM CỦA MÀN (bài làm của màn); hàm của em không bị kiểm.
      - gioiHanHam: n (cham.js đưa man.gioiHanHam vào đây; không khai thì không kiểm) = chương trình CHÍNH được gọi trực tiếp tối đa n hàm của em KHÁC NHAU
        (hàm gọi bên trong hàm khác và hàm của màn không tính). Vượt thì lỗi khung `qua-gioi-han-ham`. Không có giới hạn chung số hàm mang vào màn.
@@ -62,6 +64,9 @@
   function laWhile(s) { return /^\s*while\b/.test(boChuThich(s)); }
   /** Dòng dùng BIẾN ĐẾM: phép gán (`n = 0`, `n = n + 1`, `n += 1`; không tính `==`) hay `for i in range(n)` với n là biến. */
   function laBienDem(s) { var t = boChuThich(s); return /^\s*[A-Za-z_]\w*\s*(\+=|-=|=(?!=))/.test(t) || /^\s*for\b.*\brange\(\s*[A-Za-z_]\w*\s*\)/.test(t); }
+
+  /** Dòng dùng DANH SÁCH: dấu [ ] ngoài chuỗi chữ (literal `[1, 2]`, chỉ số `a[0]`) hay lệnh `.append(`. Bỏ chú thích và nội dung trong dấu nháy. */
+  function laList(s) { var t = boChuThich(s).replace(/"[^"]*"|'[^']*'/g, '""'); return /[\[\]]|\.\s*append\s*\(/.test(t); }
 
   /** Khung đầy đủ (điền mặc định). */
   function khungDayDu(khung) {
@@ -234,6 +239,7 @@
       var dsCau = [['for', laFor, 'vòng lặp for'], ['if', laIf, 'lệnh rẽ nhánh if']];
       if (khung && khung.chanWhile) dsCau.push(['while', laWhile, 'vòng lặp while']);
       if (khung && khung.chanBien) dsCau.push(['bien', laBienDem, 'biến đếm (gán biến, range(n))']);
+      dsCau.push(['list', laList, 'danh sách (list)']);
       dsCau.forEach(function (cau) {
         if (k.cauTruc.indexOf(cau[0]) >= 0) return;
         var vi = null, dCau = dongDau(chinh, cau[1]);
@@ -312,7 +318,7 @@
 
   var API = {
     laTrong: laTrong, soDong: soDong, soO: soO, demO: demO, soOHam: soOHam, soODung: soODung, khungDayDu: khungDayDu,
-    tenDuocGoi: tenDuocGoi, tapHamDung: tapHamDung, hamEmTrucTiep: hamEmTrucTiep,
+    laList: laList, tenDuocGoi: tenDuocGoi, tapHamDung: tapHamDung, hamEmTrucTiep: hamEmTrucTiep,
     kiemTra: kiemTra, ghep: ghep, xuatPy: xuatPy
   };
   if (laNode) module.exports = API;

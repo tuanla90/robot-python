@@ -174,8 +174,8 @@ console.log('\n== 3. Sổ lệnh: năm hàm mới của che-drone ==');
   kiem('thứ tự trong Sổ lệnh: nhóm drone — recharge, ship rồi hurdle, scout, glide, fly, airlift (sau ship của chương drone)', idx('hurdle') === idx('ship') + 1 && idx('airlift') === idx('ship') + 5);
   kiem('fly chỉ được tạo ở che-drone.5 (Sổ lệnh man che-drone.5); che-drone.9 không tạo cũng không sửa hàm của em nào (bản bỏ recharge() chỉ đúng khi cánh hỏng nên là hàm của màn fixed_fly)',
     SoLenh.tim('fly').man === 'che-drone.5' && J(man(9).taoHam) === '[]' && man(9).loiGiai.hamCuaEmMoi.length === 0 && man(9).congThucKhac.every((c) => !c.hamCuaEmMoi || c.hamCuaEmMoi.length === 0) && J(man(9).loiGiai.hamCuaMan.map((h) => h.ten)) === '["fixed_fly"]');
-  kiem('chương che-drone ở cuối thứ tự chương, ngay sau drone, thuộc đợt 2, tên "Chế lệnh drone", cùng gói với drone',
-    ThuTu.thuTu[ThuTu.thuTu.length - 1] === 'che-drone' && ThuTu.thuTu.indexOf('che-drone') === ThuTu.thuTu.indexOf('drone') + 1 && ThuTu.laDot2('che-drone') && ThuTu.ten['che-drone'] === 'Chế lệnh drone' &&
+  kiem('chương che-drone ngay sau drone, trước flycam (chương cuối, 17/10), thuộc đợt 2, tên "Chế lệnh drone", cùng gói với drone',
+    ThuTu.thuTu[ThuTu.thuTu.length - 1] === 'flycam' && ThuTu.thuTu[ThuTu.thuTu.length - 2] === 'che-drone' && ThuTu.thuTu.indexOf('che-drone') === ThuTu.thuTu.indexOf('drone') + 1 && ThuTu.laDot2('che-drone') && ThuTu.ten['che-drone'] === 'Chế lệnh drone' &&
       ThuTu.goi.some((g) => g.chuong.includes('drone') && g.chuong.includes('che-drone')));
 }
 

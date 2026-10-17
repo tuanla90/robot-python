@@ -333,7 +333,7 @@ console.log('\n== 8. Bộ dò đường tắt (BFS theo nhịp) + so chéo ngẫ
   const bd = nhipMayNemNganNhat(a);
   kiem('bộ dò: rổ sẵn vật, ném qua rào = 1 nhịp (aim không tốn nhịp)', bd.nhip === 1 && bd.chuoi[0].nem === 'throw' && bd.chuoi[0].tam === 2, J(bd.chuoi));
   const b2 = nhipMayNemNganNhat({ loaiRobot: 'banh', san: ['.....', '.....', '.o...', '..=.D', '.....'], batDau: { x: 1, y: 3, huong: 0 } });
-  kiem('bộ dò: nạp + quay + ném = 3 nhịp (sân 15.3)', b2.nhip === 3);
+  kiem('bộ dò: nạp + quay + ném = 3 nhịp (sân 17.3)', b2.nhip === 3);
   kiem('bộ dò: không có vật cần ném (sân không có vật, rổ trống) → không thắng được: coi như xong ngay (0 vật = chưa thắng) → null', nhipMayNemNganNhat({ loaiRobot: 'banh', san: ['..D..', '.....'], batDau: { x: 2, y: 1, huong: 0 } }).nhip === null);
   kiem('bộ dò: đích ngoài tầm 3 theo hướng nào cũng phải đi (không có đường thẳng): xe đi 1 ô rồi ném tầm 3 (2 nhịp)', nhipMayNemNganNhat({ loaiRobot: 'banh', san: ['D....', '.....', '.....', '.....', '.....'], batDau: { x: 0, y: 4, huong: 0 }, roBanDau: true }).nhip === 2);
   kiem('bộ dò: đích bị tường chặn không rơi vào được (đích là tường) hoặc vật chỉ ném vỡ → null', nhipMayNemNganNhat({ loaiRobot: 'banh', san: ['..D..', '#####', '.....'], batDau: { x: 2, y: 2, huong: 0 }, roBanDau: true }).nhip === 2 || true);
@@ -406,16 +406,16 @@ const BANG = [];
 function bang(a, b) { return J(a) === J(b); }
 {
   const SAO_NHIP = [1, 1, 3, 9, 15, 3, 4, 9, 10, 15];
-  kiem('đúng 10 màn may-nem, id 27.1…27.10, mã may-nem.1…10, tên chương "Máy ném"', ds.length === 10 && ds.every((m, i) => m.id === '27.' + (i + 1) && m.ma === 'may-nem.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'may-nem').ten === 'Máy ném');
+  kiem('đúng 10 màn may-nem, id 29.1…29.10, mã may-nem.1…10, tên chương "Máy ném"', ds.length === 10 && ds.every((m, i) => m.id === '29.' + (i + 1) && m.ma === 'may-nem.' + (i + 1)) && ManHoc.chuong().find((c) => c.ma === 'may-nem').ten === 'Máy ném');
   kiem('hang: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
   kiem('sao.nhip đúng bảng chốt (1 1 3 9 15 3 4 9 10 15)', J(ds.map((m) => m.sao.nhip)) === J(SAO_NHIP), J(ds.map((m) => m.sao.nhip)));
-  kiem('chỉ 15.4 tạo hàm (toss); chỉ 15.8 có hàm của màn (lob); huy hiệu may-nem ở 15.10', J(ds.map((m) => m.taoHam)) === J([[], [], [], ['toss'], [], [], [], [], [], []]) &&
+  kiem('chỉ 17.4 tạo hàm (toss); chỉ 17.8 có hàm của màn (lob); huy hiệu may-nem ở 15.10', J(ds.map((m) => m.taoHam)) === J([[], [], [], ['toss'], [], [], [], [], [], []]) &&
     ds.every((m) => (m.so === 8) === (m.maMau.hamCuaMan.length === 1 && m.loiGiai.hamCuaMan.length === 1)) && ds[9].huyHieu.ma === 'may-nem' && ds.slice(0, 9).every((m) => !m.huyHieu));
   kiem('mọi màn: mucTieu dua-vat, Xưởng mở, khung 10/10, cauTruc for/if/while, KHÔNG nhipTheoLoiGiai (nhịp ném / nạp không gộp được nên BFS = sao.nhip)', ds.every((m) => m.mucTieu === 'dua-vat' && m.moXuong && m.khung.chinh === 10 && m.khung.moiHam === 10 && J(m.cauTruc) === '["for","if","while"]' && !m.nhipTheoLoiGiai));
-  kiem('hàm gốc: 15.1 và 15.2 chưa có load (rổ sẵn vật, aim + throw); từ 15.3 có load; 15.6 có front_clear; 15.7 có color; 15.9 là omni',
+  kiem('hàm gốc: 17.1 và 17.2 chưa có load (rổ sẵn vật, aim + throw); từ 17.3 có load; 17.6 có front_clear; 17.7 có color; 17.9 là omni',
     ds.every((m) => m.hamGoc.includes('aim') && m.hamGoc.includes('throw') && (m.so >= 3) === m.hamGoc.includes('load') && (m.so === 6) === m.hamGoc.includes('front_clear') && (m.so === 7) === m.hamGoc.includes('color') && (m.so === 9) === (m.loaiRobot === 'omni') && (m.so === 9) === m.hamGoc.includes('slide_left')));
-  kiem('robot.tay "nem" ở mọi màn; than hai-banh (omni ở 15.9); camBien khoang-cach ở 15.6, camera ở 15.7', ds.every((m) => m.robot.tay === 'nem' && m.robot.than === (m.so === 9 ? 'omni' : 'hai-banh') && J(m.robot.camBien) === J(m.so === 6 ? [{ ma: 'khoang-cach', o: 'hong' }] : m.so === 7 ? [{ ma: 'camera', o: 'tren' }] : [])));
-  kiem('roBanDau: 15.1, 15.2 (true), 15.6 (mảng 3 sân); các màn khác rổ trống lúc đầu, vật nằm ở Ô TRƯỚC MẶT xe (ô o ngay trước mũi xe theo hướng xuất phát), ô xe đứng là sàn trống', ds.every((m) => {
+  kiem('robot.tay "nem" ở mọi màn; than hai-banh (omni ở 17.9); camBien khoang-cach ở 17.6, camera ở 15.7', ds.every((m) => m.robot.tay === 'nem' && m.robot.than === (m.so === 9 ? 'omni' : 'hai-banh') && J(m.robot.camBien) === J(m.so === 6 ? [{ ma: 'khoang-cach', o: 'hong' }] : m.so === 7 ? [{ ma: 'camera', o: 'tren' }] : [])));
+  kiem('roBanDau: 17.1, 17.2 (true), 17.6 (mảng 3 sân); các màn khác rổ trống lúc đầu, vật nằm ở Ô TRƯỚC MẶT xe (ô o ngay trước mũi xe theo hướng xuất phát), ô xe đứng là sàn trống', ds.every((m) => {
     const dsS = sanCua(m), bds = bdCua(m);
     if (m.so === 1 || m.so === 2 || m.so === 6) return !!m.roBanDau && !/o/.test(dsS.join(''));
     return !m.roBanDau && dsS.every((rows, i) => {
@@ -423,7 +423,7 @@ function bang(a, b) { return J(a) === J(b); }
       return rows[b.y][b.x] === '.' && rows[fy] && rows[fy][fx] === 'o';
     });
   }));
-  kiem('sân có hàng rào "=" ở mọi màn trừ 15.5 (chắn bằng làn băng) và 15.7 (đích thẳng hàng sau vật, không rào); 15.5 có làn băng giữa xe và đích; 15.2, 15.4, 15.8 có cả tường cao', ds.every((m) => m.so === 5 || m.so === 7 || sanCua(m).some((rows) => rows.join('').includes('='))) && /[<>^v]/.test(man(5).san.join('')) && [2, 4, 8].every((s) => man(s).san.join('').includes('#')));
+  kiem('sân có hàng rào "=" ở mọi màn trừ 17.5 (chắn bằng làn băng) và 17.7 (đích thẳng hàng sau vật, không rào); 17.5 có làn băng giữa xe và đích; 17.2, 17.4, 17.8 có cả tường cao', ds.every((m) => m.so === 5 || m.so === 7 || sanCua(m).some((rows) => rows.join('').includes('='))) && /[<>^v]/.test(man(5).san.join('')) && [2, 4, 8].every((s) => man(s).san.join('').includes('#')));
 
   for (const m of ds) {
     const dsSan = sanCua(m), bds = bdCua(m);
@@ -446,44 +446,44 @@ function bang(a, b) { return J(a) === J(b); }
   }
 
   // 15.1/15.2: không đặt tầm thì vỡ ở hàng rào
-  kiem('15.1: maMau (throw ngay, tầm 1) làm vật vỡ ở hàng rào — chẩn đoán nem-vo', maCua(ChamHoc.cham(man(1), man(1).maMau, [])).includes('nem-vo'));
-  kiem('15.2: tầm 2 rơi vào tường cao (lyDo "tuong"), tầm 1 rơi vào hàng rào (lyDo "rao")', (() => {
+  kiem('17.1: maMau (throw ngay, tầm 1) làm vật vỡ ở hàng rào — chẩn đoán nem-vo', maCua(ChamHoc.cham(man(1), man(1).maMau, [])).includes('nem-vo'));
+  kiem('17.2: tầm 2 rơi vào tường cao (lyDo "tuong"), tầm 1 rơi vào hàng rào (lyDo "rao")', (() => {
     const m = man(2);
     const t2 = ChamHoc.cham(m, { chinh: ['aim(2)', 'throw()', 'wait()'] }, []).theoSan[0].vet.flatMap((e) => (e.loai === 'nhip' ? e.suKien : [])).find((e) => e.ma === 'nem-vo');
     const t1 = ChamHoc.cham(m, { chinh: ['aim(1)', 'throw()', 'wait()'] }, []).theoSan[0].vet.flatMap((e) => (e.loai === 'nhip' ? e.suKien : [])).find((e) => e.ma === 'nem-vo');
     return t2 && t2.lyDo === 'tuong' && t1 && t1.lyDo === 'rao';
   })());
-  // 15.4: tran-khung nếu không dùng toss
+  // 17.4: tran-khung nếu không dùng toss
   const m4 = man(4);
   const khaiTrien = ['load()', 'wait()', 'turn_left()', 'aim(2)', 'throw()', 'wait()', 'turn_right()', 'forward(2)', 'load()', 'wait()', 'turn_left()', 'aim(3)', 'throw()', 'wait()'];
-  const r4 = ChamHoc.cham(m4, { chinh: khaiTrien }, khoTruoc('27.4'));
-  kiem('15.4: không dùng toss, khai triển aim / throw / wait cho cả hai vật thì ' + khaiTrien.length + ' dòng > 10 ô: tran-khung, không chạy', khaiTrien.length > m4.khung.chinh && maCua(r4).includes('tran-khung') && !r4.thang && r4.sao === 0);
-  kiem('15.4: toss(n) thân đúng 3 dòng aim(n), throw(), wait(); đánh dấu hàm cốt truyện (tên khóa trong kho)', bang(m4.loiGiai.hamCuaEmMoi[0].than, ['aim(n)', 'throw()', 'wait()']) && bang(m4.loiGiai.hamCuaEmMoi[0].thamSo, ['n']) && tenCotTruyen.includes('toss'));
-  // 15.5: tầm đặt một lần ngoài vòng; toss trong vòng là 2 sao
+  const r4 = ChamHoc.cham(m4, { chinh: khaiTrien }, khoTruoc('29.4'));
+  kiem('17.4: không dùng toss, khai triển aim / throw / wait cho cả hai vật thì ' + khaiTrien.length + ' dòng > 10 ô: tran-khung, không chạy', khaiTrien.length > m4.khung.chinh && maCua(r4).includes('tran-khung') && !r4.thang && r4.sao === 0);
+  kiem('17.4: toss(n) thân đúng 3 dòng aim(n), throw(), wait(); đánh dấu hàm cốt truyện (tên khóa trong kho)', bang(m4.loiGiai.hamCuaEmMoi[0].than, ['aim(n)', 'throw()', 'wait()']) && bang(m4.loiGiai.hamCuaEmMoi[0].thamSo, ['n']) && tenCotTruyen.includes('toss'));
+  // 17.5: tầm đặt một lần ngoài vòng; toss trong vòng là 2 sao
   const m5 = man(5);
-  const aimTrongVong = ChamHoc.cham(m5, { chinh: LAPAIM() }, khoTruoc('27.5'));
+  const aimTrongVong = ChamHoc.cham(m5, { chinh: LAPAIM() }, khoTruoc('29.5'));
   function LAPAIM() { return ['for i in range(3):', '    load()', '    wait()', '    turn_left()', '    aim(3)', '    throw()', '    wait()', '    turn_right()', '    forward(2)']; }
-  kiem('15.5: đặt aim(3) TRONG vòng cũng thắng đúng nhịp, cùng số ô (đặt một lần ngoài vòng hay mỗi vòng đều được: tầm giữ nguyên)', aimTrongVong.thang && aimTrongVong.soNhip === m5.sao.nhip && aimTrongVong.soO === m5.sao.o && aimTrongVong.sao === 3);
-  kiem('15.5: ba vật ở cột trái, đích sau hai làn băng (cách 3 ô): không có đường tắt bằng cách mang vật đi qua băng (BFS = nạp, quay, ném, quay, đi xuống)', nhipMayNemTatCa(m5) === m5.sao.nhip);
-  // 15.6 và 15.7 nhiều sân
+  kiem('17.5: đặt aim(3) TRONG vòng cũng thắng đúng nhịp, cùng số ô (đặt một lần ngoài vòng hay mỗi vòng đều được: tầm giữ nguyên)', aimTrongVong.thang && aimTrongVong.soNhip === m5.sao.nhip && aimTrongVong.soO === m5.sao.o && aimTrongVong.sao === 3);
+  kiem('17.5: ba vật ở cột trái, đích sau hai làn băng (cách 3 ô): không có đường tắt bằng cách mang vật đi qua băng (BFS = nạp, quay, ném, quay, đi xuống)', nhipMayNemTatCa(m5) === m5.sao.nhip);
+  // 17.6 và 17.7 nhiều sân
   const m6 = man(6);
   const cung = ChamHoc.cham(m6, m6.loiSai[0].baiLam, []);
-  kiem('15.6: tầm cố định thắng một sân nhưng trượt các sân khác (cả ba sân phải thắng); một chương trình duy nhất thắng cả ba, nhịp mỗi sân 1', !cung.thang && cung.theoSan.filter((s) => s.thang).length === 2 && ChamHoc.cham(m6, m6.loiGiai, []).theoSan.every((s) => s.thang && s.soNhip === 1));
+  kiem('17.6: tầm cố định thắng một sân nhưng trượt các sân khác (cả ba sân phải thắng); một chương trình duy nhất thắng cả ba, nhịp mỗi sân 1', !cung.thang && cung.theoSan.filter((s) => s.thang).length === 2 && ChamHoc.cham(m6, m6.loiGiai, []).theoSan.every((s) => s.thang && s.soNhip === 1));
   const m7 = man(7);
-  kiem('15.7: một chương trình duy nhất thắng cả hai sân (vật đỏ và vật xanh dương); tầm cố định chỉ thắng một sân', ChamHoc.cham(m7, m7.loiGiai, khoTruoc('27.7')).theoSan.length === 2 && ChamHoc.cham(m7, m7.loiGiai, khoTruoc('27.7')).theoSan.every((s) => s.thang) &&
-    ChamHoc.cham(m7, m7.loiSai[0].baiLam, khoTruoc('27.7')).theoSan.filter((s) => s.thang).length === 1 && ChamHoc.cham(m7, m7.loiSai[1].baiLam, khoTruoc('27.7')).theoSan.filter((s) => s.thang).length === 1);
-  kiem('15.7: đích đỏ và đích xanh dương cùng cột với xe và vật, đích đỏ gần hơn (cách 2), đích xanh dương xa hơn (cách 3), vật trước mũi xe đỏ ở sân 1, xanh dương ở sân 2',
+  kiem('17.7: một chương trình duy nhất thắng cả hai sân (vật đỏ và vật xanh dương); tầm cố định chỉ thắng một sân', ChamHoc.cham(m7, m7.loiGiai, khoTruoc('29.7')).theoSan.length === 2 && ChamHoc.cham(m7, m7.loiGiai, khoTruoc('29.7')).theoSan.every((s) => s.thang) &&
+    ChamHoc.cham(m7, m7.loiSai[0].baiLam, khoTruoc('29.7')).theoSan.filter((s) => s.thang).length === 1 && ChamHoc.cham(m7, m7.loiSai[1].baiLam, khoTruoc('29.7')).theoSan.filter((s) => s.thang).length === 1);
+  kiem('17.7: đích đỏ và đích xanh dương cùng cột với xe và vật, đích đỏ gần hơn (cách 2), đích xanh dương xa hơn (cách 3), vật trước mũi xe đỏ ở sân 1, xanh dương ở sân 2',
     m7.mau[0][2][2] === 'r' && m7.mau[0][1][2] === 'b' && m7.vatMau[0][3][2] === 'r' && m7.vatMau[1][3][2] === 'b');
-  // 15.8: hàm của màn
+  // 17.8: hàm của màn
   const m8 = man(8);
-  kiem('15.8: maMau gọi lob(3) nhưng thân lob(n) bỏ qua n (aim(2)): vật vỡ ở tường cao; lời giải sửa thành aim(n), chương trình giữ nguyên', bang(m8.maMau.hamCuaMan[0].than, ['aim(2)', 'throw()', 'wait()']) && bang(m8.loiGiai.hamCuaMan[0].than, ['aim(n)', 'throw()', 'wait()']) && bang(m8.maMau.chinh, m8.loiGiai.chinh) && maCua(ChamHoc.cham(m8, m8.maMau, khoTruoc('27.8'))).includes('nem-vo'));
-  // 15.9: omni giữ hướng
+  kiem('17.8: maMau gọi lob(3) nhưng thân lob(n) bỏ qua n (aim(2)): vật vỡ ở tường cao; lời giải sửa thành aim(n), chương trình giữ nguyên', bang(m8.maMau.hamCuaMan[0].than, ['aim(2)', 'throw()', 'wait()']) && bang(m8.loiGiai.hamCuaMan[0].than, ['aim(n)', 'throw()', 'wait()']) && bang(m8.maMau.chinh, m8.loiGiai.chinh) && maCua(ChamHoc.cham(m8, m8.maMau, khoTruoc('29.8'))).includes('nem-vo'));
+  // 17.9: omni giữ hướng
   const m9 = man(9);
-  const r9 = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('27.9'));
-  kiem('15.9: omni không đổi hướng mặt suốt lượt chạy (huong 0 mọi nhịp), máy ném luôn ném lên', r9.thang && nhipVet({ vet: r9.vet }).every((n) => n.robot.huong === 0));
-  // 15.10: tầm giảm dần
+  const r9 = ChamHoc.cham(m9, m9.loiGiai, khoTruoc('29.9'));
+  kiem('17.9: omni không đổi hướng mặt suốt lượt chạy (huong 0 mọi nhịp), máy ném luôn ném lên', r9.thang && nhipVet({ vet: r9.vet }).every((n) => n.robot.huong === 0));
+  // 17.10: tầm giảm dần
   const m10 = man(10);
-  kiem('15.10: ba hàng cần tầm 3, 2, 1; đảo thứ tự tầm thì vỡ', ChamHoc.cham(m10, m10.loiGiai, khoTruoc('27.10')).thang && maCua(ChamHoc.cham(m10, m10.loiSai[1].baiLam, khoTruoc('27.10'))).includes('nem-vo'));
+  kiem('17.10: ba hàng cần tầm 3, 2, 1; đảo thứ tự tầm thì vỡ', ChamHoc.cham(m10, m10.loiGiai, khoTruoc('29.10')).thang && maCua(ChamHoc.cham(m10, m10.loiSai[1].baiLam, khoTruoc('29.10'))).includes('nem-vo'));
 }
 
 console.log('\n== Bảng 10 màn chương Máy ném (lời giải mẫu) ==');

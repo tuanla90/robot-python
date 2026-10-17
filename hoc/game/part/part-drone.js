@@ -9,7 +9,7 @@
     else{[[-2,-2],[-1,-1],[1,1],[2,2],[2,-2],[1,-1],[-1,1],[-2,2]].forEach(function(a){p.px(cx+a[0],cy+a[1],C.thepToi);});}
     p.rect(cx,cy,1,1,C.vang);
   }
-  P.dangKy({loai:'than',ma:'drone',ten:'Thân drone',hamGoc:['go_up','go_down','go_left','go_right','wait','battery'],oGan:{hongTrai:{x:5,y:12},hongPhai:{x:19,y:12},duoi:{x:12,y:15},tren:{x:12,y:8}},ghiChu:'Drone gắn cảm biến ở hai bên khung; nam châm treo dưới bụng; đo pin battery().',ve:function(p,s){
+  P.dangKy({loai:'than',ma:'drone',ten:'Thân drone',hamGoc:['go_up','go_down','go_left','go_right','wait','battery'],oGan:{hongTrai:{x:5,y:12},hongPhai:{x:19,y:12},duoi:{x:12,y:15},tren:{x:12,y:8},bung:{x:12,y:3}},ghiChu:'Drone gắn cảm biến ở hai bên khung; nam châm treo dưới bụng; camera nhìn xuống (ổ bung, mép trên khung); đo pin battery().',ve:function(p,s){
     var ph=s.buoc?1:0,quay=s.quat!==false,cs=[[3,4],[20,4],[3,19],[20,19]];
     cs.forEach(function(c){thanh(p,c[0]<10?8:15,c[1]<10?8:15,c[0],c[1],3,C.ink);});
     cs.forEach(function(c){thanh(p,c[0]<10?8:15,c[1]<10?8:15,c[0],c[1],1,C.thepSang);});

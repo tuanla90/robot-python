@@ -3,12 +3,12 @@ import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url),Part=require('./part.js');
 ['hai-banh','xich','nhen','omni','drone'].forEach(x=>require('./part-'+x+'.js'));
 ['kep','nam-cham','nem','hoi','tay-xoay'].forEach(x=>require('./part-'+x+'.js'));
-['khoang-cach','mau','cham','camera'].forEach(x=>require('./part-'+x+'.js'));
+['khoang-cach','mau','cham','camera','camera-bay'].forEach(x=>require('./part-'+x+'.js'));
 
 for(const loai of ['than','tay','cam-bien'])for(const d of Part.ds(loai)){
   assert.ok(d.ma&&d.ten&&Array.isArray(d.hamGoc)&&d.hamGoc.length&&typeof d.ve==='function',`${loai}/${d.ma} thiếu trường`);
   if(loai==='than'){
-    const names=d.ma==='drone'?['hongTrai','hongPhai','duoi','tren']:['tay','hongTrai','hongPhai','tren'];
+    const names=d.ma==='drone'?['hongTrai','hongPhai','duoi','tren','bung']:['tay','hongTrai','hongPhai','tren'];
     const ports=names.map(o=>{assert.ok(d.oGan[o]&&Number.isInteger(d.oGan[o].x)&&Number.isInteger(d.oGan[o].y),`${d.ma} thiếu ổ ${o}`);return`${d.oGan[o].x},${d.oGan[o].y}`});
     assert.equal(new Set(ports).size,ports.length,`${d.ma}: ổ gắn chồng nhau`);
     assert.ok(d.oGan.hongTrai.x<=6&&d.oGan.hongPhai.x>=17,`${d.ma}: cảm biến phải ở hai mép hông`);
@@ -16,7 +16,7 @@ for(const loai of ['than','tay','cam-bien'])for(const d of Part.ds(loai)){
   }else assert.ok(d.diemNeo&&d.gan,`${d.ma} thiếu điểm neo hoặc ổ gắn`);
 }
 for(const tay of Part.ds('tay'))assert.ok((Array.isArray(tay.gan)?tay.gan:[tay.gan]).includes('tay')||tay.ma==='nam-cham',`${tay.ma}: tay phải gắn ở mũi`);
-for(const cb of Part.ds('cam-bien'))assert.ok(cb.ma==='camera'?cb.gan==='tren':(Array.isArray(cb.gan)?cb.gan:[cb.gan]).includes('hong'),`${cb.ma}: cảm biến phải ở hông hoặc trên thân`);
+for(const cb of Part.ds('cam-bien'))assert.ok(cb.ma==='camera'?cb.gan==='tren':cb.ma==='camera-bay'?cb.gan==='bung':(Array.isArray(cb.gan)?cb.gan:[cb.gan]).includes('hong'),`${cb.ma}: cảm biến phải ở hông, trên thân (camera) hoặc ở ổ bụng drone (camera-bay)`);
 
 function lienMotKhoi(cauHinh,trangThai={}){
   const image=Part.ghep(cauHinh,trangThai),mask=image.buf.map(Boolean),first=mask.findIndex(Boolean),seen=new Set([first]),queue=[first];
@@ -38,7 +38,7 @@ for(const than of Part.ds('than').filter(x=>x.ma!=='drone'))for(const tay of Par
   lienMotKhoi({than:than.ma,tay:tay.ma},{tay:{kep:'dong',cam:true,tuThe:'duoi',dangNem:true,dangBanTruoc:true,dangBanSau:true,ngam:3}});
   tayKhongAnSau(than,tay);tayKhongAnSau(than,tay,{kep:'dong',cam:true,tuThe:'duoi',dangNem:true,dangBanTruoc:true,dangBanSau:true,ngam:3});
 }
-for(const than of Part.ds('than').filter(x=>x.ma!=='drone'))for(const tay of Part.ds('tay'))for(const cb of Part.ds('cam-bien')){
+for(const than of Part.ds('than').filter(x=>x.ma!=='drone'))for(const tay of Part.ds('tay'))for(const cb of Part.ds('cam-bien').filter(x=>x.ma!=='camera-bay')){
   const cams=cb.ma==='camera'?[{ma:cb.ma,o:'tren'}]:[{ma:cb.ma,o:'hong'}];
   assert.doesNotThrow(()=>Part.ghep({than:than.ma,tay:tay.ma,camBien:cams},{camBien:{bat:true}}));
 }
@@ -51,6 +51,31 @@ for(const than of ['hai-banh','xich','nhen','omni']){
   const tat=Part.ghep({than,tay:null,camBien:[{ma:'camera',o:'tren'}]},{}),sang=Part.ghep({than,tay:null,camBien:[{ma:'camera',o:'tren'}]},{camBien:{mat:true}}),khong=Part.ghep({than,tay:null,camBien:[]},{});
   assert.notDeepEqual(tat.buf,khong.buf,`${than}: gắn camera phải hiện đôi mắt`);assert.notDeepEqual(tat.buf,sang.buf,`${than}: mắt phải sáng lên khi đọc`);
   assert.equal(tat.buf.filter(Boolean).length,khong.buf.filter(Boolean).length,`${than}: đôi mắt nằm trong thân, không thêm cột camera`);
+}
+
+/* CAMERA NHÌN XUỐNG của drone (16/10, mã camera-bay, ổ bung, mở look()): chỉ drone gắn được; ló ra mép trên khung; sáng lên khi đọc; nối liền thân; không chồng nam châm treo ở ổ duoi. */
+{
+  const bay=Part.lay('cam-bien','camera-bay');
+  assert.ok(bay&&bay.gan==='bung'&&bay.hamGoc.length===1&&bay.hamGoc[0]==='look','camera-bay: gắn ổ bung, mở đúng hàm look');
+  assert.deepEqual(Part.hamGoc({than:'drone',tay:null,camBien:[{ma:'camera-bay',o:'bung'}]}).filter(h=>h==='look'),['look'],'camera-bay mở hàm gốc look');
+  assert.ok(!Part.hamGoc({than:'drone',tay:'nam-cham',camBien:[]}).includes('look'),'drone không camera thì không có look');
+  for(const tay of [null,'nam-cham']){
+    const cfg={than:'drone',tay,camBien:[{ma:'camera-bay',o:'bung'}]},khong=Part.ghep({than:'drone',tay,camBien:[]},{}),tat=Part.ghep(cfg,{}),sang=Part.ghep(cfg,{camBien:{mat:true}}),nhe=Part.ghep(cfg,{camBien:{bat:true}});
+    assert.notDeepEqual(tat.buf,khong.buf,`drone/${tay}: gắn camera nhìn xuống phải hiện cụm ống kính`);
+    assert.notDeepEqual(tat.buf,sang.buf,`drone/${tay}: kính phải sáng lên khi đang đọc look()`);assert.notDeepEqual(tat.buf,nhe.buf,`drone/${tay}: kính sáng nhẹ khi cảm biến bật`);assert.notDeepEqual(sang.buf,nhe.buf);
+    lienMotKhoi(cfg);lienMotKhoi(cfg,{camBien:{mat:true}});lienMotKhoi(cfg,{camBien:{bat:true}});
+    assert.ok(tat.buf.filter(Boolean).length-khong.buf.filter(Boolean).length>=30,`drone/${tay}: cụm ống kính tối thiểu 30 pixel`);
+    for(let i=0;i<40;i++){assert.ok(!sang.buf[i],`drone/${tay}: quầng sáng chạm mép trên ảnh`);assert.ok(!sang.buf[i*40],'quầng sáng chạm mép trái');assert.ok(!sang.buf[i*40+39],'quầng sáng chạm mép phải');}
+  }
+  /* ống kính nằm ở nửa trên của khung, giữa hai cánh quạt trên; nam châm treo ở nửa dưới: hai thứ không đè nhau */
+  {const a=Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'camera-bay',o:'bung'}]},{}),b=Part.ghep({than:'drone',tay:'nam-cham',camBien:[]},{});
+   const them=[];for(let i=0;i<a.buf.length;i++)if(a.buf[i]&&!b.buf[i])them.push(i);
+   assert.ok(them.length&&them.every(i=>{const x=i%40,y=(i-x)/40;return y<=24&&x>=14&&x<=27;}),'camera-bay: pixel thêm nằm ở mép trên khung, giữa hai cánh quạt trên');
+   for(let i=0;i<a.buf.length;i++)if(b.buf[i])assert.equal(a.buf[i],b.buf[i],'camera-bay chỉ thêm pixel, không đổi màu pixel nào của drone');}
+  assert.throws(()=>Part.ghep({than:'hai-banh',tay:null,camBien:[{ma:'camera-bay',o:'bung'}]}),/chỉ gắn được lên drone|không có ổ/,'xe không gắn camera nhìn xuống');
+  for(const t of ['xich','nhen','omni'])assert.throws(()=>Part.ghep({than:t,tay:null,camBien:[{ma:'camera-bay',o:'bung'}]}),/chỉ gắn được lên drone|không có ổ/,`${t}: không gắn camera nhìn xuống`);
+  assert.throws(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'camera-bay',o:'hong'}]}),/không gắn được vào ổ/,'camera-bay không gắn ổ hông');
+  assert.doesNotThrow(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'camera-bay',o:'bung'},{ma:'mau',o:'hong'}]}),'drone gắn được cả cảm biến màu ở hông lẫn camera nhìn xuống');
 }
 
 for(const bad of ['kep','nem','hoi'])assert.throws(()=>Part.ghep({than:'drone',tay:bad}),/Drone không gắn được/);

@@ -26,6 +26,7 @@
    NHỆN CO CHÂN (chương nhen / che-nhen, 15/10): trangThai.co = true → part nhện vẽ tư thế co (chân dang sát đất, thân dẹt); ảnh khác hẳn ảnh đứng nên là một phần của khóa bộ nhớ đệm.
    Drone (than 'drone'): bay cao, không có mặt trước nên huong luôn 0 và ảnh không xoay; cánh quạt quay theo pha ph (trangThai.wl / wr > 0 = đang quay); trangThai.camBien.bat sáng đèn thân (đang đo pin).
    CAMERA (camBien { ma:'camera', o:'tren' }, luật color() 14/10): không cắm cột nào lên thân, chỉ hiện HAI ĐỐM SÁNG Ở MẮT trên thân (trangThai.camBien.mat = true: đang đọc, hai mắt sáng rực). Không ghép cùng cảm biến màu ở bụng; drone không gắn camera (Part.ghep ném lỗi, hình rơi về hình tạm).
+   CAMERA NHÌN XUỐNG của drone (camBien { ma:'camera-bay', o:'bung' }, hàm look(), 16/10): part cụm ống kính ló ra mép trên khung drone (ổ 'bung'); trangThai.camBien.mat = true: đang đọc look() (kính xanh lơ rực, quầng sáng). Màn có look() mà chưa khai camera-bay thì cauHinhCua tự thêm.
    Nam châm treo dưới bụng drone là tay 'nam-cham' gắn vào ổ 'duoi' (không phải ổ 'tay' ở mũi); camBien { ma: 'pin' } không phải part nên cauHinhCua bỏ khỏi cấu hình ghép và đặt cờ pin: true.
    Hình TẠM: xe hai bánh như cũ (Ve.makeRobot), tay kẹp Ở PHÍA TRƯỚC mũi xe như xe nâng (hai thanh nối vào mũi, hai ngàm ở đầu thanh); cảm biến sẽ ở hai bên hông:
      nâng = thanh ngắn, màu sáng; hạ = thanh dài ra phía trước, màu tối; kẹp mở = ngàm ngắn, đóng = hai ngàm chạm nhau;
@@ -57,7 +58,9 @@
     if (r.tay !== undefined) tay = r.tay || null;
     else if (goc.indexOf('arm_left') >= 0 || goc.indexOf('arm_right') >= 0) tay = 'xoay';                    // tay xoay có đủ bốn lệnh tay kẹp + hai lệnh xoay: ưu tiên mã 'xoay'
     else for (var i = 0; i < goc.length && !tay; i++) tay = TAY_THEO_LENH[goc[i]] || null;
-    return { than: than, tay: tay, camBien: copyCam(r.camBien).filter(function (c) { return c.ma !== 'pin'; }), pin: !!(r.camBien || []).some(function (c) { return c.ma === 'pin'; }) };       // pin: drone có pin (đo battery()); chưa là bộ PART nên không đưa vào ghép hình
+    var cam = copyCam(r.camBien).filter(function (c) { return c.ma !== 'pin'; });
+    if (than === 'drone' && goc.indexOf('look') >= 0 && !cam.some(function (c) { return c.ma === 'camera-bay'; })) cam.push({ ma: 'camera-bay', o: 'bung' });       // màn có look() mà chưa khai camera nhìn xuống: lắp camera-bay ở ổ bung (như tay suy từ lệnh tay)
+    return { than: than, tay: tay, camBien: cam, pin: !!(r.camBien || []).some(function (c) { return c.ma === 'pin'; }) };       // pin: drone có pin (đo battery()); chưa là bộ PART nên không đưa vào ghép hình
   }
 
   function chuanTay(t) {

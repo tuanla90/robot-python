@@ -303,6 +303,7 @@
     var cu = tim(o.id);
     if (cu) return cu.tay;                                       // đang chạy: giữ nguyên
     if (daXem(o.co)) return null;                                // đã xem rồi
+    if (window.GoLoi && GoLoi.tatHuongDan && GoLoi.tatHuongDan()) return null;     // gỡ lỗi: đang Mở hết (nhảy cóc thử màn) thì không hiện hướng dẫn, trừ khi tắt công tắc này
     var c = { id: o.id, co: o.co || null, luuKhi: o.luuKhi === 'bat-dau' ? 'bat-dau' : 'xong', buoc: o.buoc, i: -1, thay: 0, vien: [], bong: null, dangHien: false, khiXong: o.khiXong, tay: null };
     c.tay = { id: o.id, dung: function () { dungChuoi(c); } };
     CHUOI.push(c);

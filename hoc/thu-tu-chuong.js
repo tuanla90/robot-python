@@ -40,11 +40,11 @@
     // 15/10 tối: mỗi bộ phận hai chương (làm quen + chế lệnh) — thêm che-xich, che-omni, che-mau, che-may-nem, che-drone; SÚNG HƠI (sung-hoi + che-sung-hoi:
     // shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới đẩy thùng) thay TẤM ĐẨY và SÚNG BÓNG (hai chương cũ tam-day / sung-bong đã xóa).
     thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien',
-      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
-      'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone'],
+      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
+      'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'flycam'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
-    dot2: ['bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
-      'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone'],
+    dot2: ['bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau',
+      'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'flycam'],
     // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
     // (15/10: màn chọn đã chuyển sang GÓI mở bằng tổng sao, xem `goi` dưới; dot2 / congDot2 chỉ còn dùng để ghi nhãn và cho máy kiểm.)
     congDot2: 'robot-hoan-thien',
@@ -61,6 +61,7 @@
       { ma: 'bang-chuyen', ten: 'Băng chuyền', chuong: ['bang-chuyen'] },
       { ma: 'tham-so', ten: 'Hàm có tham số', chuong: ['tham-so'] },
       { ma: 'nhen', ten: 'Thân nhện', chuong: ['nhen', 'che-nhen'] },
+      { ma: 'list', ten: 'Danh sách', chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
       { ma: 'xich', ten: 'Bánh xích', chuong: ['xich', 'che-xich'] },
       { ma: 'omni', ten: 'Bánh omni', chuong: ['omni', 'che-omni'] },
       { ma: 'sung-hoi', ten: 'Súng hơi', chuong: ['sung-hoi', 'che-sung-hoi'] },
@@ -68,7 +69,7 @@
       { ma: 'nam-cham', ten: 'Nam châm', chuong: ['nam-cham', 'che-nam-cham'] },
       { ma: 'tay-xoay', ten: 'Tay xoay', chuong: ['tay-xoay', 'che-tay-xoay'] },
       { ma: 'may-nem', ten: 'Máy ném', chuong: ['may-nem', 'che-may-nem'] },
-      { ma: 'drone', ten: 'Drone', chuong: ['drone', 'che-drone'] }
+      { ma: 'drone', ten: 'Drone', chuong: ['drone', 'che-drone', 'flycam'] }            // flycam: drone gắn camera nhìn xuống, look() + list (17/10)
     ],
     ten: {
       'hai-banh': 'Hai bánh',
@@ -100,7 +101,10 @@
       'che-sung-hoi': 'Chế lệnh súng hơi',
       'che-mau': 'Chế lệnh màu',
       'che-may-nem': 'Chế lệnh máy ném',
-      'che-drone': 'Chế lệnh drone'
+      'che-drone': 'Chế lệnh drone',
+      'list': 'Danh sách',
+      'che-list': 'Chế lệnh danh sách',
+      'flycam': 'Flycam'
     }
   };
 

@@ -842,3 +842,37 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .side .cbtn{gap:6px;padding-left:6px}
 .side .cbtn>span[data-i],.side .cbtn>.oi{flex:none;width:20px;display:flex;align-items:center;justify-content:center;line-height:0}
 .cbtn.g-am,.mini .g-te{color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.55)}
+
+/* ---------- GÓI LIST · danh sách: khối xanh chanh, tên danh sách, ô phần tử (số tím / chip màu), dấu +, bảng chọn phần tử ---------- */
+.brick.ls{--c:#8fc83a;--hi:#d3f08e;--lo:#5a8e1a;--stud:var(--st-gr)}
+.brick.ls .tx{padding-right:4px}
+.pal .brick.ls .tx{font-size:.84em}
+.gl.g-ls{color:#c4ee9c}.gl.g-ls::after{background:#7cc23a}
+.num.lsten{background:#5f9a1c;padding:0 4px;box-shadow:0 0 0 1px #223d05,inset 0 2px 0 #a6dc5a,inset 0 -2px 0 #3f6a0e}
+.strip .num.lsten{flex:none}
+.strip .num.ptu{flex:none;min-width:.8em;padding:0 2px;margin:0 1px}
+.strip .num.ptu.chuoi{flex:0 1 auto;min-width:1.2em}
+.strip .pu.cp{margin:0 -1px 0 0}
+.num.ptu.them{background:#cfeaa0;color:#2e5a08;box-shadow:0 0 0 1px #3f6a0e,inset 0 2px 0 #eefad0,inset 0 -2px 0 #9cc85a;min-width:1.1em}
+.chon-so.chon-ptu{grid-template-columns:repeat(3,1fr);width:126px}
+.chon-so.chon-ptu .cs-bien{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:0}
+.chon-so.chon-ptu .cs-bien.pt-mau{margin-top:2px}
+.chon-so.chon-ptu .cs.mau-nut{padding:2px 4px 0;font-size:calc(11px*var(--km))}
+.chon-so .cs.ptu-them,.chon-so .cs.ptu-bo{flex:1;padding:2px 4px 0;white-space:nowrap;font:var(--wm) calc(11px*var(--km))/1 var(--mono)}
+.chon-so .cs.ptu-them{color:#0e3a12;text-shadow:none}
+.chon-so .cs.ptu-bo{color:#fff}
+.chon-so .cs-bien.xuong{flex-wrap:wrap}
+.chon-so .cs-bien.xuong .cs.bien{flex:1 1 auto;padding:2px 6px 0;white-space:nowrap}
+/* Xưởng: danh sách thử của hàm nằm trên thanh tên hàm (chip rộng hơn ô số, các ô phần tử chạm được) */
+.dso-o.dso-ls{width:auto;min-width:33px;max-width:150px;padding:1px 5px 0;gap:2px}
+.dso-o.dso-ls .v.dls{display:flex;align-items:center;gap:2px;font:var(--wm) calc(12px*var(--km))/1 var(--mono)}
+.dso-ls .dp{flex:none;min-width:15px;height:17px;padding:2px 2px 0;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;background:#8a4fd8;box-shadow:0 0 0 1px #2f1a6a,inset 0 2px 0 #b98cf5,inset 0 -2px 0 #6a3fb4;cursor:pointer}
+.dso-ls .dp.them{background:#cfeaa0;color:#2e5a08;box-shadow:0 0 0 1px #3f6a0e,inset 0 2px 0 #eefad0,inset 0 -2px 0 #9cc85a}
+.dso-ls .dp.mc-red{background:#d6493e;box-shadow:0 0 0 1px #4a0e0c,inset 0 2px 0 #f0847a,inset 0 -2px 0 #8f2822}
+.dso-ls .dp.mc-green{background:#2ea565;box-shadow:0 0 0 1px #0a3a1f,inset 0 2px 0 #7cf0aa,inset 0 -2px 0 #16703f}
+.dso-ls .dp.mc-blue{background:#3f7fe0;box-shadow:0 0 0 1px #0f2a66,inset 0 2px 0 #7db0f7,inset 0 -2px 0 #22489c}
+.dso-ls .dp.mc-yellow{background:#efc531;color:#3a2a00;text-shadow:none;box-shadow:0 0 0 1px #5a4300,inset 0 2px 0 #ffe784,inset 0 -2px 0 #a07c10}
+.dso-ls .dp.mc-none{background:#8b93a6;box-shadow:0 0 0 1px #1d2433,inset 0 2px 0 #c3cad8,inset 0 -2px 0 #5d6478}
+.strip .pg{flex:none;display:inline-flex;align-items:center;white-space:pre}
+.strip .pg .num.ptu.chuoi{flex:none;max-width:none;overflow:visible}
+.keo-dong .pg{display:inline-flex;align-items:center}

@@ -208,7 +208,8 @@
     g('aim', null, 'Đặt tầm ném'),
     g('throw', null, 'Ném vật trong rổ'),
     g('load', null, 'Nạp vật ở ô trước mặt vào rổ'),
-    g('battery', null, 'Hỏi: pin còn bao nhiêu')
+    g('battery', null, 'Hỏi: pin còn bao nhiêu'),
+    g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì')
   ];
 
   function tim(ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }

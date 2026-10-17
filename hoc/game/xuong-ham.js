@@ -42,6 +42,7 @@
   var MAU_VONG = [null, 'red', 'green', 'blue', 'yellow'];                 // chạm ô (chế độ Màu): không màu → đỏ → xanh lá → xanh dương → vàng → không màu
   var MAU_KY = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
   function mauKeTiep(m) { return MAU_VONG[(MAU_VONG.indexOf(m || null) + 1) % MAU_VONG.length]; }
+  var DS_LIST_MAC_DINH = [2, 3, 1], DS_LIST_TOI_DA = 5;                      // danh sách thử mặc định của đối số kiểu list, số ô tối đa trên thanh tên hàm
   var DS_GOI_Y = ['n', 'k', 'a', 'b', 'd', 'x'], DS_TOI_DA = 2, DS_THU_MAC_DINH = 2;     // gợi ý tên đối số, số đối số tối đa của hàm mới, giá trị thử mặc định
 
   /* -------------------------------------------------------------- dựng DOM */
@@ -94,6 +95,8 @@
       kieuBien: kieuBienHam,                                                                   // kiểu của từng đối số (số / một chữ / chuỗi) để bộ chọn chỉ liệt kê biến hợp kiểu
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
       soToiDa: function (ten, k) { return S.soMax(ten, k); },                                  // aim(n) chỉ nhận 1–3
+      kieuPtuList: kieuPtuThu,                                                                 // đối số danh sách: số hay chữ / màu (theo giá trị thử) để bộ chọn liệt kê biến hợp kiểu
+      listChu: function () { return !!TP.coMauCua(A.man()); },                                 // danh sách cho phần tử là màu: bảng chọn phần tử có thêm hàng màu
       giaBien: giaBienThu,                                                                     // để hiện số lượt của range(n) khi Thử
       tt: q('.p-prog .tt'), ttDay: t('xuong.def'), ttNgan: t('xuong.def'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); },
@@ -156,6 +159,7 @@
     S.rid++; S.busy = false; E.side.classList.remove('busy');
     if (window.HuongDan) HuongDan.bao('mo-xuong', { loai: loai, ten: ten });
     S.loai = loai; S.ten = ten; S.theMo = the || null;
+    TP.datCheList(TP.coListCua(A.man()));                     // gói List: ô phần tử danh sách trong khung thân hàm
     var f = hamHienTai();
     if (!f) return;
     S.than = loai === 'em' ? f.than.slice() : f.than;        // hàm của màn: sửa thẳng vào bản nháp
@@ -218,6 +222,7 @@
       the: lamMoi ? (S.theMo || TP.theMacDinh({ man: man, kho: KhoHam.ds(), hamMan: A.bai().hamCuaMan, dangSua: hamHienTai() })) : undefined,
       vong: TP.coCauTruc(man, 'for'),
       bienDem: !!man.bienDem,
+      list: TP.coListCua(man),                           // gói List: nhóm DANH SÁCH ở thẻ Logic
       vongWhile: TP.coCauTruc(man, 'while') && TP.coDieuKienCua(man),
       cam: TP.camBienCua(man),
       mau: TP.coMauCua(man),
@@ -251,6 +256,7 @@
     var nho = S.doiSo[S.loai + ':' + S.ten] || [];
     return thamSoHienTai().map(function (ten, k) {
       var kd = kieuBienHam(ten);
+      if (kd === 'list') return Array.isArray(nho[k]) ? nho[k].slice() : DS_LIST_MAC_DINH.slice();
       if (kd === 'so') return nho[k] > 0 ? +nho[k] : DS_THU_MAC_DINH;
       var v = typeof nho[k] === 'string' ? nho[k] : '';
       return /^[UDLR]+$/.test(v) && (kd === 'ghep' || v.length === 1) ? v : (kd === 'don' ? 'R' : 'RRD');
@@ -258,7 +264,7 @@
   }
   function giaBienThu() {
     var v = doiSoHienTai(), o = {};
-    thamSoHienTai().forEach(function (ten, k) { o[ten] = typeof v[k] === 'string' ? 0 : v[k]; });
+    thamSoHienTai().forEach(function (ten, k) { o[ten] = Array.isArray(v[k]) ? v[k].length : typeof v[k] === 'string' ? 0 : v[k]; });
     return o;
   }
   function dungDoiSo() {
@@ -266,6 +272,7 @@
     E.dso.innerHTML = '';
     ts.forEach(function (ten, k) {
       var kd = kieuBienHam(ten), laChu = kd !== 'so';
+      if (kd === 'list') { E.dso.appendChild(chipList(ten, k, v[k])); return; }
       var b = h('button', 'bt g-pu dso-o' + (laChu ? ' chu' : '')); b.setAttribute('data-nut', 'doi-so'); b.setAttribute('data-k', k); b.setAttribute('data-ten', ten);
       b.setAttribute('aria-label', t(laChu ? 'xuong.doiChuoi' : 'xuong.doiSo', { ten: ten }));
       b.appendChild(h('span', 'k', ten)); b.appendChild(h('span', 'v', String(v[k])));
@@ -288,11 +295,57 @@
     if (coNem()) chip('nut-ro', t('xuong.ro'), S.st && S.st.ro ? '1' : '0', 'g-pu', function () { datRo(); });
     E.dso.style.display = E.dso.firstChild ? '' : 'none';
   }
+  /** Chip của đối số DANH SÁCH ở thanh tên hàm: tên đối số + các ô phần tử (số tím / chip màu). Chạm một ô: bảng chọn giá trị + "thêm ô" (sau ô này) + "bỏ ô"; danh sách rỗng có ô +. */
+  function chipList(ten, k, ds) {
+    var b = h('span', 'bt g-pu dso-o dso-ls'); b.setAttribute('data-nut', 'doi-list'); b.setAttribute('data-k', k); b.setAttribute('data-ten', ten);
+    b.setAttribute('role', 'group'); b.setAttribute('aria-label', t('xuong.doiList', { ten: ten }));
+    b.appendChild(h('span', 'k', ten));
+    var v = h('span', 'v dls');
+    if (!ds.length) {
+      var p = h('span', 'dp them', '+'); p.setAttribute('data-nut', 'ptu-them-thu');
+      p.addEventListener('click', function (ev) { ev.stopPropagation(); if (!S.busy) themPtuThu(k, -1); });
+      v.appendChild(p);
+    }
+    ds.forEach(function (x, j) {
+      var c = h('span', 'dp' + (typeof x === 'string' ? ' mc-' + x : ''), String(x)); c.setAttribute('data-nut', 'ptu-thu'); c.setAttribute('data-j', j);
+      c.addEventListener('click', function (ev) { ev.stopPropagation(); if (!S.busy) moPtuThu(k, j, c); });
+      v.appendChild(c);
+    });
+    b.appendChild(v);
+    return b;
+  }
+  /** Mở bảng chọn phần tử j của danh sách thử (đối số k). */
+  function moPtuThu(k, j, neo) {
+    var ds = doiSoHienTai()[k], x = ds[j];
+    TP.chonPtu({
+      neo: neo, v: typeof x === 'string' ? '"' + x + '"' : String(x), chu: !!TP.coMauCua(A.man()), coThem: ds.length < DS_LIST_TOI_DA, coBo: true,
+      khiChon: function (s) { var d = doiSoHienTai()[k]; d[j] = /^"/.test(s) ? s.replace(/"/g, '') : +s; datDoiSo(k, d); },
+      khiThem: function () { themPtuThu(k, j); },
+      khiBo: function () { var d = doiSoHienTai()[k]; d.splice(j, 1); datDoiSo(k, d); }
+    });
+  }
+  /** Thêm một phần tử ngay sau ô j (-1: danh sách rỗng, thêm ô đầu), rồi mở bảng chọn ở ô mới. */
+  function themPtuThu(k, j) {
+    var d = doiSoHienTai()[k];
+    if (d.length >= DS_LIST_TOI_DA) return;
+    d.splice(j + 1, 0, j >= 0 && typeof d[j] === 'string' ? 'red' : 1);
+    datDoiSo(k, d);
+    var o = E.dso.querySelector ? E.dso.querySelector('[data-k="' + k + '"] [data-j="' + (j + 1) + '"]') : null;
+    if (o) moPtuThu(k, j + 1, o);
+  }
+  /** Kiểu phần tử của danh sách thử (đối số tên `ten` của hàm đang sửa): 'chu' nếu có chữ / màu, không thì 'so'. */
+  function kieuPtuThu(ten) {
+    var k = thamSoHienTai().indexOf(ten);
+    if (k < 0) return null;
+    var v = doiSoHienTai()[k];
+    return Array.isArray(v) && v.some(function (x) { return typeof x === 'string'; }) ? 'chu' : 'so';
+  }
   function datDoiSo(k, n) {
     var v = doiSoHienTai(); v[k] = n; S.doiSo[S.loai + ':' + S.ten] = v;
     S.rid++; S.busy = false; E.side.classList.remove('busy');
     S.field.datLai(); xoaKetThu(); anToast();
     dungDoiSo();
+    vuaTen();                                                       // danh sách thử dài ra / ngắn lại: chip rộng hơn thì tên hàm co lại cho vừa thanh
   }
 
   /* -------------------------------------------------------- sửa thân hàm */
@@ -592,9 +645,11 @@
   }
 
   /* ------------------------------------------------------- kết quả thử */
+  /** Giá trị thử → chữ trong code: số giữ nguyên, chuỗi có nháy, danh sách thành [2, "red"]. */
+  function viDuCode(v) { return Array.isArray(v) ? '[' + v.map(viDuCode).join(', ') + ']' : typeof v === 'string' ? '"' + v + '"' : v; }
   function chay() {
     var man = A.man();
-    var ds = doiSoHienTai().map(function (v) { return typeof v === 'string' ? '"' + v + '"' : v; });      // đối số chữ truyền vào code có nháy: go("R"), walk("RRD")
+    var ds = doiSoHienTai().map(viDuCode);                                                              // đối số chữ truyền vào code có nháy: go("R"), walk("RRD"); danh sách: weave([2, 3, 1])
     return ChamHoc.thuHam(man, { chinh: [], hamCuaMan: A.bai().hamCuaMan }, S.ten, KhoHam.ds(), { sanThu: S.st, doiSo: ds });
   }
   function anBongD() { TP.bongAn(E.bongD); S.coBong = false; }
@@ -750,6 +805,7 @@
 
   function moiHam(taoXong) {
     var man = A.man();
+    var goiY = TP.coListCua(man) ? ['n', 'steps', 'route', 'k', 'a', 'x'] : DS_GOI_Y;           // màn có danh sách: tên gợi ý có steps / route (đối số tên vậy mặc định là danh sách)
     var m = TP.Hop.mo(t('ten.tieuDe'), 'hop-ten');
     // hàm THEO CỐT TRUYỆN còn thiếu ở màn này (tên trong taoHam): điền sẵn đúng tên VÀ đối số, ô chỉ đọc, chỉ có nút "Tạo hàm";
     // đủ rồi thì hộp như thường, em tự đặt tên (và đối số) cho hàm riêng của mình
@@ -828,11 +884,11 @@
       };
       them.addEventListener('click', function () {
         xoaLoi();
-        var moi = DS_GOI_Y.filter(function (x) { return dsTen.indexOf(x) < 0; })[0];
+        var moi = goiY.filter(function (x) { return dsTen.indexOf(x) < 0; })[0];
         dsTen.push(moi); chon = dsTen.length - 1; veDs();
       });
       if (!coDinh) {
-        DS_GOI_Y.forEach(function (n) {
+        goiY.forEach(function (n) {
           var c = h('button', 'bt g-wd ds-chip', n); c.setAttribute('data-ds', n); c.setAttribute('data-nut', 'chip-doi-so');
           c.addEventListener('click', function () { datTen(n); });
           chips.appendChild(c);

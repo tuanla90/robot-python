@@ -14,17 +14,18 @@
   'use strict';
 
   var h = TP.h;
-  var KHOA_CAI = 'duong-hoc:go-loi';          // { moHet: bool, napHam: bool } — riêng, "Xóa tiến độ" không đụng tới
+  var KHOA_CAI = 'duong-hoc:go-loi';          // { moHet: bool, napHam: bool, tatHD: bool } — riêng, "Xóa tiến độ" không đụng tới
   var S = { chuong: null, kemKho: false, tin: '', daMo: false };
 
   /* ---------------------------------------------------------------- cài đặt (localStorage) */
   function docCai() {
-    var c = { moHet: false, napHam: true };
+    var c = { moHet: false, napHam: true, tatHD: true };
     try {
       var d = JSON.parse(Luu.kho.getItem(KHOA_CAI) || 'null');
       if (d && typeof d === 'object') {
         if (typeof d.moHet === 'boolean') c.moHet = d.moHet;
         if (typeof d.napHam === 'boolean') c.napHam = d.napHam;
+        if (typeof d.tatHD === 'boolean') c.tatHD = d.tatHD;
       }
     } catch (e) { /* chạy với mặc định */ }
     return c;
@@ -34,9 +35,13 @@
   function datMoHet(b) {
     var c = docCai(); c.moHet = !!b; ghiCai(c);
     App.moHet = c.moHet;
+    if (c.moHet && c.tatHD && window.HuongDan) HuongDan.dung();            // bật Mở hết: tắt luôn bong bóng đang hiện
     if (window.App && App.veLai) App.veLai(); else if (window.Chon) Chon.ve();
   }
   function datNapHam(b) { var c = docCai(); c.napHam = !!b; ghiCai(c); }
+  /** "Tắt hướng dẫn khi Mở hết" (mặc định BẬT): đang Mở hết để nhảy cóc thử màn thì bong bóng hướng dẫn không hiện (huong-dan.js hỏi tatHuongDan()). Tắt công tắc để thử chính hướng dẫn. */
+  function datTatHD(b) { var c = docCai(); c.tatHD = !!b; ghiCai(c); if (c.tatHD && c.moHet && window.HuongDan) HuongDan.dung(); }
+  function tatHuongDan() { var c = docCai(); return c.moHet && c.tatHD; }
 
   /** Địa chỉ có ?debug=1 hoặc #debug (còn nhận #debug=1)? */
   function coCo() {
@@ -215,6 +220,7 @@
     var cong = h('div', 'go-congs');
     cong.appendChild(congTat('go-mo-het', t('go.moHet'), cai.moHet, function (b) { datMoHet(b); veChuong(); }));          // vẽ lại lưới: ô khóa / mở đổi theo
     cong.appendChild(congTat('go-nap-ham', t('go.napHam'), cai.napHam, function (b) { datNapHam(b); }));
+    cong.appendChild(congTat('go-tat-hd', t('go.tatHD'), cai.tatHD, function (b) { datTatHD(b); }));
     cong.appendChild(congTat('go-xoa-kho', t('go.xoaKho'), S.kemKho, function (b) { S.kemKho = b; }));
 
     var hang = h('div', 'hop-hang go-chan');
@@ -245,7 +251,7 @@
 
   window.GoLoi = {
     mo: mo, nutBug: nutBug, coCo: coCo, laBat: laBat,
-    docMoHet: docMoHet, datMoHet: datMoHet,
+    docMoHet: docMoHet, datMoHet: datMoHet, tatHuongDan: tatHuongDan,
     khoThamChieu: khoThamChieu, napHamChuan: napHamChuan, napKhiMoHet: napKhiMoHet, vaoNgay: vaoNgay, xoaTienDo: xoaTienDo
   };
 })();

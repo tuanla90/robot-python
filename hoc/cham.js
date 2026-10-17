@@ -93,6 +93,10 @@
    - het-pin (lỗi): pin về 0 giữa chừng, drone hạ cánh khẩn, dừng; `cho` trỏ lệnh bay ở nhịp cuối cùng (null nếu là wait()).
    (sac-pin chỉ là sự kiện của vết nhịp, không phải chẩn đoán: lời giải đúng không được có chẩn đoán nào.)
    - drone-khong-bay (lỗi): chạy xong mà chưa có lệnh go_* nào chạy (thường do hàm đi nhận chữ không khớp nhánh nào).
+   CAMERA NHÌN XUỐNG của drone (16/10, chương flycam; luật đầy đủ ở san-hoc.js, phần DRONE): robot.camBien có { ma:'camera-bay', o:'bung' } và hamGoc có `look` thì look() trả chuỗi màu "red" | "green" | "blue" | "yellow" | "none"
+   của VẬT (nếu có vật nằm đất) hay SÀN ở ô NGAY DƯỚI drone; không tốn nhịp. Mục lệnh trong vết có `docCamBien` { cam:'camera-bay', ham:'look', tu, o (= ô drone), mau, nguon:'san'|'vat'|'chan', idVat, nhip }.
+   chua-gan-cam-bien nói rõ "drone này chưa gắn camera nhìn xuống dưới bụng" khi gọi look() mà màn không cho; màn khai phanCung thiếu look (camera hỏng) → lenh-goc-hong;
+   ten-mau-sai và mau-thieu-nhay áp dụng cho cả look().
    dam-tuong, tha-bi-chan, hut-go, quen-wait, chua-toi-co đổi lời cho drone (tường cao / mép sân / cửa đóng mới chặn; thả và hút ở ô dưới bụng). chua-gan-cam-bien biết battery.
    Sân thử Xưởng nhận thêm sanThu.pin (số nguyên 1–999; không có thì lấy man.pin) và sanThu.sac = [{ x, y }] (ô sạc).
    BÓNG MỜ / CHẾ LỆNH (chương che-xe, kế hoạch "Chế lệnh" 14/10; luật đầy đủ ở san-hoc.js, phần BÓNG MỜ, ĐẤU DÂY NGƯỢC, KHAY VÀ PHẦN CỨNG):
@@ -382,11 +386,12 @@
   }
 
   // tên bộ phận cho lời lenh-goc-hong khi màn không khai canhBao
-  var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải', arm_left: 'Khớp xoay', arm_right: 'Khớp xoay', magnet_n: 'Cực N của nam châm', magnet_s: 'Cực S của nam châm', shoot: 'Nòng trước của súng hơi', shoot_back: 'Nòng sau của súng hơi' };
+  var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải', arm_left: 'Khớp xoay', arm_right: 'Khớp xoay', magnet_n: 'Cực N của nam châm', magnet_s: 'Cực S của nam châm', shoot: 'Nòng trước của súng hơi', shoot_back: 'Nòng sau của súng hơi', look: 'Camera dưới bụng drone' };
   /** Lệnh `ten` là lệnh gốc của loại robot nhưng phần cứng màn (man.phanCung) không có: bộ phận đó hỏng. */
   function lenhHong(man, ten) {
     var camMau = SanHoc.CAM_MAU_HAM.indexOf(ten) >= 0 && ((man.robot && man.robot.camBien) || []).some(function (c) { return c && (c.ma === 'mau' || c.ma === 'camera'); });     // cảm biến màu có gắn mà phần cứng thiếu color(): cảm biến hỏng (che-mau.9)
-    return !!man.phanCung && man.phanCung.indexOf(ten) < 0 && (camMau || (SanHoc.HAM_GOC[man.loaiRobot || 'banh'] || []).indexOf(ten) >= 0 || SanHoc.TAY_XOAY.indexOf(ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(ten) >= 0 || SanHoc.TAY_HOI.indexOf(ten) >= 0);       // tay xoay: khớp kẹt một phía (thiếu arm_left / arm_right trong phần cứng) cũng là bộ phận hỏng
+    var camNhin = SanHoc.CAM_NHIN_HAM.indexOf(ten) >= 0 && ((man.robot && man.robot.camBien) || []).some(function (c) { return c && c.ma === SanHoc.MA_CAM_BAY; });     // camera nhìn xuống của drone có gắn mà phần cứng thiếu look(): camera hỏng
+    return !!man.phanCung && man.phanCung.indexOf(ten) < 0 && (camMau || camNhin || (SanHoc.HAM_GOC[man.loaiRobot || 'banh'] || []).indexOf(ten) >= 0 || SanHoc.TAY_XOAY.indexOf(ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(ten) >= 0 || SanHoc.TAY_HOI.indexOf(ten) >= 0);       // tay xoay: khớp kẹt một phía (thiếu arm_left / arm_right trong phần cứng) cũng là bộ phận hỏng
   }
   var SO_CHU = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy'];
   function soO(n) { return (n < SO_CHU.length ? SO_CHU[n] : String(n)) + ' ô'; }
@@ -457,11 +462,15 @@
         them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.', { cho: cho(m), tam: l.tamDat });
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.laHamCamBien(tn[1]) && hamGoc.indexOf(tn[1]) < 0 && !lenhHong(man, tn[1])) {
         var dsCam = hamGoc.filter(function (t) { return SanHoc.laHamCamBien(t); });
-        them('chua-gan-cam-bien', 'Ở ' + viTri(m) + ': ' + (dsCam.length
+        var laNhin = SanHoc.CAM_NHIN_HAM.indexOf(tn[1]) >= 0, camBayGan = ((man.robot && man.robot.camBien) || []).some(function (c) { return c && c.ma === SanHoc.MA_CAM_BAY; });
+        them('chua-gan-cam-bien', 'Ở ' + viTri(m) + ': ' + (laNhin && !camBayGan
+          ? 'drone này chưa gắn camera nhìn xuống dưới bụng nên chưa có hàm ' + tn[1] + '().'                                  // look(): camera nhìn xuống của drone (camera-bay)
+          : laNhin ? 'màn này chưa mở lệnh ' + tn[1] + '() trên khay (camera dưới bụng drone chưa dùng được ở đây).'          // camera có gắn mà khay chưa mở lệnh
+          : dsCam.length
           ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
           : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu ở bụng hay camera (để đọc màu)' : SanHoc.CAM_TU_HAM.indexOf(tn[1]) >= 0 ? 'từ (kim loại)' : SanHoc.CAM_PIN_HAM.indexOf(tn[1]) >= 0 ? 'đo pin (màn này drone chưa có pin để đo)' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
           ' Hàm gốc dùng được ở màn này: ' + (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.', { ten: tn[1], cho: cho(m) });
-      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến( hay hàm)? tên/.test(l.thongDiep) && SanHoc.MAU_TEN.concat(['none']).indexOf(tn[1]) >= 0 && hamGoc.indexOf('color') >= 0) {
+      } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến( hay hàm)? tên/.test(l.thongDiep) && SanHoc.MAU_TEN.concat(['none']).indexOf(tn[1]) >= 0 && (hamGoc.indexOf('color') >= 0 || hamGoc.indexOf('look') >= 0)) {
         them('mau-thieu-nhay', 'Ở ' + viTri(m) + ': ' + tn[1] + ' đang viết không có dấu nháy nên Python tưởng đó là tên một biến hay một hàm và không tìm thấy. ' +
           'Tên màu là một chuỗi chữ, phải đặt trong dấu nháy: "' + tn[1] + '".', { ten: tn[1], cho: cho(m) });
       } else if (l.ma === 'lenh-chua-mo') {
@@ -866,11 +875,11 @@
         ' ở (' + sm.o.x + ', ' + sm.o.y + '): ô đích màu nào thì chỉ nhận vật cùng màu, nên vật này chưa được tính.' +
         (datSaiMau.length > 1 ? ' Chuyện này xảy ra ' + datSaiMau.length + ' lần.' : '') + (smNC ? ' Nhớ: cực N màu đỏ, cực S màu xanh dương. Kéo vật về rồi đưa tới đúng ô đích.' : ' Nhặt vật lên và mang tới đúng ô đích.'), { nhip: sm.nhip, id: sm.id, o: sm.o, mauVat: sm.mauVat, mauDich: sm.mauDich });
     }
-    if (!sanThu && !res.thang && hamGoc.indexOf('color') >= 0) {
-      var cs = chuoiMauSai(g.dong);
+    if (!sanThu && !res.thang && (hamGoc.indexOf('color') >= 0 || hamGoc.indexOf('look') >= 0)) {
+      var cs = chuoiMauSai(g.dong), hamMauTen = ['color', 'look'].filter(function (t) { return hamGoc.indexOf(t) >= 0; }).map(function (t) { return t + '()'; }).join(' và ');     // hàm trả tên màu của màn: color() và / hoặc look()
       if (cs.length) {
         var c0 = cs[0], mcs = g.anhXa[c0.dongPy] || null;
-        them('ten-mau-sai', 'Ở ' + viTri(mcs) + ': so sánh với "' + c0.chuoi + '", nhưng color() chỉ trả về các chữ thường "red", "green", "blue", "yellow" hoặc "none". ' +
+        them('ten-mau-sai', 'Ở ' + viTri(mcs) + ': so sánh với "' + c0.chuoi + '", nhưng ' + hamMauTen + ' chỉ trả về các chữ thường "red", "green", "blue", "yellow" hoặc "none". ' +
           'Hai chuỗi chỉ bằng nhau khi giống từng chữ, kể cả chữ hoa chữ thường, nên phép so sánh này không khớp với màu nào.' +
           (cs.length > 1 ? ' Còn ' + (cs.length - 1) + ' chỗ tương tự.' : ''), { chuoi: c0.chuoi, cho: cho(mcs), soCho: cs.length });
       }
