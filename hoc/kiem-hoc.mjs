@@ -26,6 +26,8 @@ require(path.join(day, 'man-bang-chuyen.js'));
 require(path.join(day, 'man-tham-so.js'));
 require(path.join(day, 'man-nhen.js'));
 require(path.join(day, 'man-che-nhen.js'));
+require(path.join(day, 'man-list.js'));
+require(path.join(day, 'man-che-list.js'));
 require(path.join(day, 'man-xich.js'));
 require(path.join(day, 'man-che-xich.js'));
 require(path.join(day, 'man-omni.js'));
@@ -44,7 +46,8 @@ require(path.join(day, 'man-che-tay-xoay.js'));
 require(path.join(day, 'man-may-nem.js'));
 require(path.join(day, 'man-che-may-nem.js'));
 require(path.join(day, 'man-drone.js'));
-const ManHoc = require(path.join(day, 'man-che-drone.js'));            // nối cả mười bảy chương (cùng một sổ màn)
+require(path.join(day, 'man-che-drone.js'));
+const ManHoc = require(path.join(day, 'man-flycam.js'));            // nối cả các chương (cùng một sổ màn); flycam (17/10) đứng cuối chuỗi che-drone
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const SoLenh = require(path.join(day, 'so-lenh.js'));
 const MAU = require(path.join(day, 'thu-vien-mau.js'));          // bộ hàm của em mẫu (mảng)
@@ -679,7 +682,7 @@ function nhipTatKhoangCach(m) {
   return tong;
 }
 const sanCuaMan = (m) => (Array.isArray(m.san[0]) ? m.san[0] : m.san);
-const nhipTat = (m, kho) => (m.chuong === 'che-omni' ? nhipCheOmniTatCa(m, kho) : m.chuong === 'che-mau' ? nhipCheMauTatCa(m, kho) : m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? nhipTayXoayTatCa(m, kho) : m.chuong === 'che-may-nem' ? nhipCheMayNemTatCa(m, kho) : m.chuong === 'che-nam-cham' ? nhipCheNamChamTatCa(m, kho) : m.chuong === 'robot-hoan-thien' ? nhipRobotHoanThienTatCa(m) : m.chuong === 'che-tay' ? nhipCheTayTatCa(m, kho) : m.chuong === 'che-lap' ?nhipCheLapTatCa(m, kho) : m.chuong === 'che-cam-bien' ? nhipCheCamBienTatCa(m) : m.chuong === 'che-xe' ? nhipCheXeTatCa(m, kho) : m.chuong === 'che-nhen' ? nhipCheNhenTatCa(m, kho) : m.chuong === 'che-xich' ? nhipCheXichTatCa(m, kho) : m.chuong === 'che-drone' ? nhipCheDroneTatCa(m, kho) : m.chuong === 'drone' ? nhipDroneTatCa(m) : m.chuong === 'sung-hoi' ? nhipSungHoiTatCa(m) : m.chuong === 'che-sung-hoi' ? nhipCheSungHoiTatCa(m, kho) : m.chuong === 'may-nem' ? nhipMayNemTatCa(m) : m.chuong === 'nam-cham' ? nhipNamChamTatCa(m) : m.chuong === 'khoang-cach' || m.chuong === 'mau' ? nhipTatKhoangCach(m) : m.loaiRobot === 'nhen' ? nhipNhenNganNhat(m).nhip : m.loaiRobot === 'xich' ? nhipXichNganNhat(m).nhip : m.loaiRobot === 'omni' ? nhipOmniNganNhat(m).nhip : m.mucTieu === 'dua-vat' ? nhipDuaVatNganNhat(m).nhip : nhipNganNhat(m));
+const nhipTat = (m, kho) => (m.chuong === 'che-omni' ? nhipCheOmniTatCa(m, kho) : m.chuong === 'che-mau' ? nhipCheMauTatCa(m, kho) : m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? nhipTayXoayTatCa(m, kho) : m.chuong === 'che-may-nem' ? nhipCheMayNemTatCa(m, kho) : m.chuong === 'che-nam-cham' ? nhipCheNamChamTatCa(m, kho) : m.chuong === 'robot-hoan-thien' ? nhipRobotHoanThienTatCa(m) : m.chuong === 'che-tay' ? nhipCheTayTatCa(m, kho) : m.chuong === 'che-lap' ?nhipCheLapTatCa(m, kho) : m.chuong === 'che-cam-bien' || m.chuong === 'list' || m.chuong === 'che-list' ? nhipCheCamBienTatCa(m) : m.chuong === 'che-xe' ? nhipCheXeTatCa(m, kho) : m.chuong === 'che-nhen' ? nhipCheNhenTatCa(m, kho) : m.chuong === 'che-xich' ? nhipCheXichTatCa(m, kho) : m.chuong === 'che-drone' || m.chuong === 'flycam' ? nhipCheDroneTatCa(m, kho) : m.chuong === 'drone' ? nhipDroneTatCa(m) : m.chuong === 'sung-hoi' ? nhipSungHoiTatCa(m) : m.chuong === 'che-sung-hoi' ? nhipCheSungHoiTatCa(m, kho) : m.chuong === 'may-nem' ? nhipMayNemTatCa(m) : m.chuong === 'nam-cham' ? nhipNamChamTatCa(m) : m.chuong === 'khoang-cach' || m.chuong === 'mau' ? nhipTatKhoangCach(m) : m.loaiRobot === 'nhen' ? nhipNhenNganNhat(m).nhip : m.loaiRobot === 'xich' ? nhipXichNganNhat(m).nhip : m.loaiRobot === 'omni' ? nhipOmniNganNhat(m).nhip : m.mucTieu === 'dua-vat' ? nhipDuaVatNganNhat(m).nhip : nhipNganNhat(m));
 
 {
   // kiểm chính bộ dò: sân tự dựng có đường tắt thì phải bắt được
@@ -1415,7 +1418,7 @@ console.log('\n== 17. Dòng thụt lề trong khung; cauTruc; chương vong-lap 
 
   // cauTruc
   kiem('cauTruc: hai-banh, xuong-ham và tay-gap [], vong-lap, che-lap, bang-chuyen và tham-so ["for"], nhen, xich, che-xich, omni ["for","if"], sung-hoi và che-sung-hoi ["for","if","while"], khoang-cach ["for","if","while"] (màn 1: ["for","if"]), mau, nam-cham, tay-xoay và may-nem ["for","if","while"]; khung màn mang theo cauTruc',
-    ManHoc.danhSach.every((m) => bang(m.cauTruc, m.chuong === 'mau' || m.chuong === 'nam-cham' || m.chuong === 'may-nem' || m.chuong === 'sung-hoi' || m.chuong === 'che-sung-hoi' || m.chuong === 'drone' || m.chuong === 'che-drone' || m.chuong === 'che-cam-bien' || m.chuong === 'che-mau' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-may-nem' || m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? ['for', 'if', 'while'] : m.chuong === 'khoang-cach' ? (m.so === 1 ? ['for', 'if'] : ['for', 'if', 'while']) : (m.chuong === 'nhen' || m.chuong === 'che-nhen' || m.chuong === 'xich' || m.chuong === 'che-xich' || m.chuong === 'omni') ? ['for', 'if'] : (m.chuong === 'vong-lap' || m.chuong === 'che-lap' || m.chuong === 'che-omni' || m.chuong === 'bang-chuyen' || m.chuong === 'tham-so') ? ['for'] : []) && bang(m.khung.cauTruc, m.cauTruc)));
+    ManHoc.danhSach.every((m) => bang(m.cauTruc, m.chuong === 'flycam' && m.so <= 2 ? ['for', 'if', 'while'] : m.chuong === 'flycam' || (m.chuong === 'che-list' && [4, 5, 6, 8, 9, 10].includes(m.so)) ? ['for', 'if', 'while', 'list'] : m.chuong === 'list' || m.chuong === 'che-list' ? ['for', 'list'] : m.chuong === 'mau' || m.chuong === 'nam-cham' || m.chuong === 'may-nem' || m.chuong === 'sung-hoi' || m.chuong === 'che-sung-hoi' || m.chuong === 'drone' || m.chuong === 'che-drone' || m.chuong === 'che-cam-bien' || m.chuong === 'che-mau' || m.chuong === 'robot-hoan-thien' || m.chuong === 'che-nam-cham' || m.chuong === 'che-may-nem' || m.chuong === 'tay-xoay' || m.chuong === 'che-tay-xoay' ? ['for', 'if', 'while'] : m.chuong === 'khoang-cach' ? (m.so === 1 ? ['for', 'if'] : ['for', 'if', 'while']) : (m.chuong === 'nhen' || m.chuong === 'che-nhen' || m.chuong === 'xich' || m.chuong === 'che-xich' || m.chuong === 'omni') ? ['for', 'if'] : (m.chuong === 'vong-lap' || m.chuong === 'che-lap' || m.chuong === 'che-omni' || m.chuong === 'bang-chuyen' || m.chuong === 'tham-so') ? ['for'] : []) && bang(m.khung.cauTruc, m.cauTruc)));
   kiem('khungDayDu không tự thêm cauTruc (không khai thì không kiểm)', KhungCode.khungDayDu({ chinh: 10 }).cauTruc === undefined);
   const ct = (kh, bai) => KhungCode.kiemTra(kh, bai).map((e) => e.ma);
   kiem('cau-truc-chua-hoc: for trong chương trình khi cauTruc [] → bị báo, nêu dòng', (() => {

@@ -34,6 +34,7 @@
     'tham-so': 'Hàm có tham số',
     'bang-chuyen': 'Băng chuyền',
     'nhen': 'Thân nhện',
+    'list': 'Danh sách',
     'xich': 'Bánh xích',
     'omni': 'Bánh omni',
     'hoi': 'Súng hơi',
@@ -43,7 +44,7 @@
     'nem': 'Máy ném',
     'drone': 'Drone'
   };
-  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'xich', 'omni', 'hoi', 'mau', 'nam-cham', 'tay-xoay', 'nem', 'drone'];
+  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'nam-cham', 'tay-xoay', 'nem', 'drone'];
 
   function m(ten, nhom, moTa, chuong, man) { return { ten: ten, nhom: nhom, moTa: moTa, chuong: chuong, man: man }; }
 
@@ -106,6 +107,11 @@
     m('leap', 'nhen', 'Nhảy liên tiếp theo từng chữ của chuỗi chỉ đường', 'che-nhen', 'che-nhen.4'),
     m('crawl_jump', 'nhen', 'Bò qua gầm rồi nhảy luôn qua cái hố ngay sau gầm', 'che-nhen', 'che-nhen.5'),
     m('bring', 'nhen', 'Nhặt vật, đi theo chuỗi chỉ đường rồi đặt vật xuống', 'che-nhen', 'che-nhen.6'),
+    // chương 16 · Chế lệnh danh sách (route, route_left, scan, box; go_out, come_back, scan2, scan3 là hàm CỦA MÀN nên không có ở đây; tour, tour_left của chương Danh sách cũng vậy)
+    m('route', 'list', 'Đi theo từng số trong danh sách, hết mỗi đoạn thì rẽ phải', 'che-list', 'che-list.1'),
+    m('route_left', 'list', 'Đi theo từng số trong danh sách, hết mỗi đoạn thì rẽ trái', 'che-list', 'che-list.2'),
+    m('scan', 'list', 'Đi tới khi trước mặt có tường, ghi số ô đã đi vào danh sách', 'che-list', 'che-list.4'),
+    m('box', 'list', 'Đi nốt ba cạnh hình vuông, mỗi cạnh dài bằng số đầu danh sách', 'che-list', 'che-list.5'),
     // đợt 2: bánh xích, bánh omni
     m('tr_right', 'xich', 'Xe xích quay phải một góc vuông (hai nhịp)', 'xich', 'xich.3'),
     m('tr_left', 'xich', 'Xe xích quay trái một góc vuông (hai nhịp)', 'xich', 'xich.4'),
@@ -169,7 +175,14 @@
     m('scout', 'drone', 'Bay ra n ô sang phải rồi bay về đúng chỗ cũ', 'che-drone', 'che-drone.2'),
     m('glide', 'drone', 'Bay xuống n bậc thang: mỗi bậc sang phải một ô rồi xuống một ô', 'che-drone', 'che-drone.4'),
     m('fly', 'drone', 'Bay theo chuỗi đường, sau mỗi ô xét pin: thấp thì ghé ô sạc ngay phía trên', 'che-drone', 'che-drone.5'),
-    m('airlift', 'drone', 'Hút hộp sắt, chở sang phải n ô, thả xuống rồi bay về chỗ cũ', 'che-drone', 'che-drone.6')
+    m('airlift', 'drone', 'Hút hộp sắt, chở sang phải n ô, thả xuống rồi bay về chỗ cũ', 'che-drone', 'che-drone.6'),
+    // chương Flycam (seek_red, steer, survey, obey, dispatch, patrol; go_out, come_back, scan_row, fetch_red là hàm CỦA MÀN nên không có ở đây)
+    m('seek_red', 'drone', 'Bay sang phải tới khi camera dưới bụng thấy ô đỏ', 'flycam', 'flycam.1'),
+    m('steer', 'drone', 'Nhìn ô bên dưới: đỏ bay lên, xanh dương bay xuống, còn lại bay sang phải', 'flycam', 'flycam.2'),
+    m('survey', 'drone', 'Bay qua các ô có màu, ghi màu từng ô vào danh sách seen', 'flycam', 'flycam.3'),
+    m('obey', 'drone', 'Bay theo từng màu đã ghi: đỏ xuống, xanh dương sang phải, còn lại lên', 'flycam', 'flycam.4'),
+    m('dispatch', 'drone', 'Xuống từng hộp rồi chở đi theo màu đã ghi: đỏ 2 ô, xanh dương 3 ô', 'flycam', 'flycam.5'),
+    m('patrol', 'drone', 'Bay tới ô vàng và ghi màu từng ô, rồi bay về đúng chỗ cũ, ghé sạc dọc đường', 'flycam', 'flycam.6')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có

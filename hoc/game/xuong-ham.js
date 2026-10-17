@@ -42,7 +42,7 @@
   var MAU_VONG = [null, 'red', 'green', 'blue', 'yellow'];                 // chạm ô (chế độ Màu): không màu → đỏ → xanh lá → xanh dương → vàng → không màu
   var MAU_KY = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
   function mauKeTiep(m) { return MAU_VONG[(MAU_VONG.indexOf(m || null) + 1) % MAU_VONG.length]; }
-  var DS_LIST_MAC_DINH = [2, 3, 1], DS_LIST_TOI_DA = 5;                      // danh sách thử mặc định của đối số kiểu list, số ô tối đa trên thanh tên hàm
+  var DS_LIST_MAC_DINH = [2, 3, 1], DS_LIST_MAU_MAC_DINH = ['red', 'blue', 'red'], DS_LIST_TOI_DA = 5;                      // danh sách thử mặc định của đối số kiểu list, số ô tối đa trên thanh tên hàm
   var DS_GOI_Y = ['n', 'k', 'a', 'b', 'd', 'x'], DS_TOI_DA = 2, DS_THU_MAC_DINH = 2;     // gợi ý tên đối số, số đối số tối đa của hàm mới, giá trị thử mặc định
 
   /* -------------------------------------------------------------- dựng DOM */
@@ -171,7 +171,7 @@
     E.host.classList.toggle('ham-khoa', hamKhoa());                                    // hàm của màn bị khóa: ẩn nút xóa hết, tiêu đề có ổ khóa
     if (hamKhoa()) setTimeout(baoHamKhoa, TP.XUONG_MS || 0);
     S.ed.nap(function () { return S.than; }, 10);
-    S.st = ChamHoc.chuanSanThu(Luu.docSanThu(ten) || ChamHoc.SAN_THU_MAC_DINH);
+    S.st = ChamHoc.chuanSanThu(Luu.docSanThu(ten) || sanThuMacDinh(ten));
     var dV = dsVat(), dS = dsSan();
     if (dV.indexOf(S.coVat) < 0) S.coVat = dV[0];
     if (dS.indexOf(S.coSan) < 0) S.coSan = dS[0] || null;
@@ -210,7 +210,7 @@
 
   /** Drone: hàm đang sửa có đối số chuỗi (go(d), walk(path)) thì Xưởng cho hiện khối mẫu `if d == "U":` dù màn chưa có battery() — để sửa / viết go(d) như ở chương nhện. */
   function hamChuoiDrone(man) {
-    return man.loaiRobot === 'drone' && TP.coCauTruc(man, 'if') && thamSoHienTai().some(function (n) { return kieuBienHam(n) !== 'so'; });
+    return man.loaiRobot === 'drone' && TP.coCauTruc(man, 'if') && thamSoHienTai().some(function (n) { var kd = kieuBienHam(n); return kd !== 'so' && kd !== 'list'; });       // đối số một chữ / chuỗi chữ (nhện, drone chương trước): khối if d == "U":; đối số danh sách (flycam) thì không
   }
   /** Vẽ khay của Xưởng. lamMoi (mở Xưởng): bỏ thẻ đang chọn, chọn thẻ chứa hàm đang sửa (theo lệnh gốc nó gọi; hàm còn trống thì theo hàm màn bắt chế); không thì giữ thẻ đang chọn. */
   function lamPal(lamMoi) {
@@ -227,7 +227,7 @@
       cam: TP.camBienCua(man),
       mau: TP.coMauCua(man),
       pin: TP.coPinCua(man),
-      chuoi: TP.coCauTruc(man, 'for') && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
+      chuoi: TP.coCauTruc(man, 'for') && TP.coMauCua(man) !== 'look' && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
       dieuKien: (TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man)) || chuoiDr,
       thamSoChuoi: chuoiDr,                              // khối mẫu `if d == "U":` thay cho khối battery()
       em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
@@ -249,6 +249,15 @@
     return k < 0 ? 'so' : S.kieu(f.ten, k);
   }
 
+  /** Sân thử mặc định của hàm `ten`. Màn drone có camera nhìn xuống (look()): sân có sẵn ô màu để hàm có cái nhìn thấy — dải hai ô màu ngay chỗ drone đứng cho survey() (đỏ, xanh dương; sau đó là ô không màu để vòng lặp dừng), còn lại một ô xanh dương và một ô đỏ ở bên phải (seek_red, steer…). */
+  function sanThuMacDinh(ten) {
+    var mac = ChamHoc.SAN_THU_MAC_DINH;
+    if (TP.coMauCua(A.man()) !== 'look') return mac;
+    var dai = ten === 'survey' ? [{ x: 2, y: 2, mau: 'red' }, { x: 3, y: 2, mau: 'blue' }]
+      : (ten === 'patrol' || ten === 'scan_row' || ten === 'go_out') ? [{ x: 4, y: 2, mau: 'yellow' }]                         // hàm đi tới ô vàng (điểm cuối): có sẵn một ô vàng ở bên phải
+      : [{ x: 3, y: 2, mau: 'blue' }, { x: 4, y: 2, mau: 'red' }];
+    return Object.assign({}, mac, { mau: dai });
+  }
   /* ----------------------------------------- ô số cạnh nút Thử (đối số khi thử) */
   function thamSoHienTai() { var f = hamHienTai(); return f ? (f.thamSo || []) : []; }
   /** Giá trị thử của từng đối số (nhớ theo hàm; số mặc định 2; đối số chữ: "R" cho một chữ, "RRD" cho chuỗi; chuỗi lưu không có nháy). */
@@ -256,7 +265,7 @@
     var nho = S.doiSo[S.loai + ':' + S.ten] || [];
     return thamSoHienTai().map(function (ten, k) {
       var kd = kieuBienHam(ten);
-      if (kd === 'list') return Array.isArray(nho[k]) ? nho[k].slice() : DS_LIST_MAC_DINH.slice();
+      if (kd === 'list') return Array.isArray(nho[k]) ? nho[k].slice() : (TP.coMauCua(A.man()) ? DS_LIST_MAU_MAC_DINH : DS_LIST_MAC_DINH).slice();      // màn có camera look(): danh sách thử mặc định là danh sách MÀU
       if (kd === 'so') return nho[k] > 0 ? +nho[k] : DS_THU_MAC_DINH;
       var v = typeof nho[k] === 'string' ? nho[k] : '';
       return /^[UDLR]+$/.test(v) && (kd === 'ghep' || v.length === 1) ? v : (kd === 'don' ? 'R' : 'RRD');

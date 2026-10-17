@@ -338,7 +338,7 @@ console.log('\n== 5. Mọi màn: khay không mất khối nào so với kho cũ 
     for (const ds of Object.values(q)) for (const t of ds) tat.add(t);
     for (const t of ghimCo(k)) tat.add(t);
     const can = [];
-    for (const n of (m.hamGoc || [])) { if (['front_clear', 'left_clear', 'right_clear', 'color', 'front_metal', 'front_pole', 'battery'].includes(n)) continue; can.push(n); }
+    for (const n of (m.hamGoc || [])) { if (['front_clear', 'left_clear', 'right_clear', 'color', 'look', 'front_metal', 'front_pole', 'battery'].includes(n)) continue; can.push(n); }
     for (const f of hm(m)) can.push(f.ten);
     if (spec.em) for (const f of spec.em) can.push(f.ten);
     const thieu = can.filter((n) => !tat.has(n));

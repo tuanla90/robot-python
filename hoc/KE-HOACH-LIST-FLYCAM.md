@@ -27,6 +27,10 @@ Tập con, đủ cho lớp 5–7:
 - `list`: literal → `for n in a` → `a[i]` → `len(a)` → list làm đối số. `che-list`: chế hàm nhận list (`route(steps)`…), và `append` (đo bằng cảm biến khoảng cách rồi ghi lại, dùng lại sau trong cùng lượt chạy).
 - Lời đề tối đa 3 câu, giọng như các chương trước; màn gặp khó: trước gói List, cho 1–2 màn chương trước có đường nhiều đoạn dài khác nhau (lời giải giữ nguyên) để người chơi thấy viết dài.
 
+### Đã làm (17/10, việc C): gói List
+- `man-list.js` (xe hai bánh, tới cờ, sân hành lang, 10 màn: literal + for n in a · sáu đoạn · sửa danh sách · đường chữ S hai danh sách · a[i] + right(b[i]) · len(a) · lỗi chỉ số · tour(steps) hàm của màn · sửa tour · trùm) và `man-che-list.js` (route, route_left, scan, box; màn đo bằng cảm biến trên BÃI TRỐNG, Đường về, scan2 ghi sai chỗ, scan3 cảm biến lắp ngược, trùm gioiHanHam 3).
+- Máy kiểm: `kiem-list-man.mjs`, `kiem-che-list.mjs`, đồ dùng chung `dung-chung-list.mjs` (đọc hành lang, luật nhập bằng chạm); BFS dùng lại `do-duong-che-cam-bien.mjs`.
+
 ## 4. Camera cho drone + chương Flycam (gói Drone: drone → che-drone → flycam)
 - Part mới: camera nhìn xuống gắn bụng drone. `look()` trả màu ô ngay dưới drone (`"red"`, `"green"`, `"blue"`, `"yellow"`) hoặc `"none"`; không tốn nhịp (như cảm biến khác); đèn bộ phận: sáng đèn cảm biến khi đọc.
 - Vẽ: camera dưới bụng drone; khi `look()` thì tia nhìn xuống ô (như cảm biến màu ở xe).

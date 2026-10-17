@@ -199,7 +199,7 @@
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC
       mau: TP.coMauCua(m),                                                                      // cảm biến màu: khối so màu + gán c = color()
       pin: TP.coPinCua(m),                                                                      // drone đo pin: khối so sánh battery() < 3
-      chuoi: TP.coCauTruc(m, 'for') && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R":
+      chuoi: TP.coCauTruc(m, 'for') && TP.coMauCua(m) !== 'look' && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R": (flycam dùng danh sách màu, không dùng chuỗi chữ)
       dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
       em: (m.moXuong !== false && !m.camHamCuaEm) ? TP.locHamTheoRobot(m, KhoHam.ds()) : null,      // nhện: bỏ hàm dùng lệnh bánh
       man: S.bai.hamCuaMan,

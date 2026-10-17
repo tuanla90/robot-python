@@ -28,6 +28,8 @@
    Chương 14 'may-nem' (Máy ném) nằm ở man-may-nem.js.
    Chương 19 'sung-hoi' (Súng hơi) nằm ở man-sung-hoi.js; chương 20 'che-sung-hoi' (Chế lệnh súng hơi) nằm ở man-che-sung-hoi.js.
    Chương 16 'drone' (Drone) nằm ở man-drone.js.
+   Chương 15 'list' (Danh sách) nằm ở man-list.js; chương 16 'che-list' (Chế lệnh danh sách) nằm ở man-che-list.js (17/10, gói List sau gói Nhện).
+   Chương 'flycam' (Flycam: drone gắn camera nhìn xuống, look() + danh sách; chương CUỐI, cuối gói Drone) nằm ở man-flycam.js.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.ThuTuChuong).
    ========================================================================== */

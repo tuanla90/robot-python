@@ -555,7 +555,13 @@
     function kieuPtuTai(ten, i) {
       var arr = lay(), j, m;
       for (j = Math.min(i, arr.length) - 1; j >= 0; j--) {
-        if ((m = RE_GAN_LS.exec(chuoi(arr[j]))) && m[2] === ten) return catTop(m[4]).some(function (e) { return RE_CHUOI.test(e); }) ? 'chu' : 'so';
+        if ((m = RE_GAN_LS.exec(chuoi(arr[j]))) && m[2] === ten) {
+          var els = catTop(m[4]);
+          if (els.some(function (e) { return RE_CHUOI.test(e); })) return 'chu';
+          if (HAM_MAU === 'look' && !els.length) return 'chu';                                      // màn có camera look(): danh sách rỗng `a = []` là danh sách MÀU (survey(a) sẽ ghi màu vào)
+          var reThem = new RegExp('(^|[^\\w"])' + escRe(ten) + '\\.append\\(\\s*(look\\(\\)|"[^"]*")');
+          return arr.some(function (x) { return reThem.test(chuoi(x)); }) ? 'chu' : 'so';           // a.append(look()) / a.append("red") ở đâu đó: phần tử là màu
+        }
       }
       return (tuyChon.kieuPtuList && tuyChon.kieuPtuList(ten)) || 'so';
     }
@@ -575,6 +581,11 @@
         bienDuoc().forEach(function (p) { dung[p] = true; });
         ten = LIST_TEN_GOI_Y.filter(function (n) { return !dung[n]; })[0];
         return ten && ten !== mg[2] ? mg[1] + ten + txt.slice(mg[1].length + mg[2].length) : txt;
+      }
+      var mc = RE_GOI_LS.exec(txt);                                                              // hàm có đối số danh sách chèn sẵn `survey([2, 3, 1])`: đã có danh sách đặt tên ở trên (a = [], hay đối số danh sách) thì dùng luôn tên đó
+      if (mc && mc[3].indexOf('[2, 3, 1]') >= 0) {
+        var dsTen = tenListTai(at);
+        if (dsTen.length) return mc[1] + mc[3].replace('[2, 3, 1]', dsTen[dsTen.length - 1]) + mc[4];
       }
       ten = mf ? mf[2] : mt ? mt[2] : null;
       if (!ten || KIEU_TEN_GHEP.test(ten)) return txt;
@@ -641,7 +652,7 @@
     /** Chạm một ô của điều kiện màu (while / if / elif): == / != và and / or đổi ngay; vế phải chọn màu; vế trái / vế cảm biến mở bảng điều kiện. */
     function moDkm(so, i, d, kk) {
       var o = d.tok[kk]; if (!o) return;
-      if (RE_CL_PIN.test(d.cl[o.ci])) {                                   // battery() < 3: chạm phép so sánh thì đổi < <= > >=, chạm số thì chọn số; chạm battery() không làm gì
+      if (RE_CL_PIN.test(d.cl[o.ci]) && !(CHE_MAU && o.vt === 'lhs')) {   // battery() < 3: chạm phép so sánh thì đổi < <= > >=, chạm số thì chọn số; chạm battery() không làm gì (trừ màn có cả camera look(): chạm battery() mở bảng chọn để đổi sang look() == …)
         if (o.vt === 'op') ed.datSo(i, PIN_SS[(PIN_SS.indexOf(o.t) + 1) % PIN_SS.length], kk);
         else if (o.vt === 'rhs') chonSo({ neo: so, so: +o.t, toiDa: 15, khiChon: function (v) { ed.datSo(i, v, kk); } });
         return;
@@ -656,7 +667,7 @@
       }
       var cam = camDuoc(), cl = d.cl[o.ci], coDong = d.cl.length;
       chonDkm({
-        neo: so, cam: cam, bien: bien, gia: cl,
+        neo: so, cam: cam, bien: bien, gia: cl, pin: CHE_PIN,
         ghep: cam.length ? { coThem: coDong < 2 && o.ci === coDong - 1, coBo: coDong > 1 } : null,
         khiChon: function (v) { ed.datVe(i, o.ci, v); },
         khiGhep: function (nx) { ed.themVe(i, nx, /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== HAM_MAU + '()' ? HAM_MAU + '() != "red"' : (cam[0] + '()')); },
@@ -1422,6 +1433,7 @@
     }
     (o.cam || []).forEach(function (ten) { nut(ten + '()'); nut('not ' + ten + '()'); });
     nut(HAM_MAU + '() == ' + mauDang, 'g-pk'); nut(HAM_MAU + '() != ' + mauDang, 'g-pk');
+    if (o.pin) { nut('battery() < 3', 'g-or'); nut('battery() > 2', 'g-or'); }                  // drone vừa có camera look() vừa có pin: vế trái cũng chọn được điều kiện pin (while battery() > 2:)
     (o.bien || []).forEach(function (v) {
       nut(v + ' == ' + mauDang, 'g-pu'); nut(v + ' != ' + mauDang, 'g-pu');
       nut(HAM_MAU + '() == ' + v, 'g-pu'); nut(HAM_MAU + '() != ' + v, 'g-pu');
@@ -2025,7 +2037,9 @@
       function nhomList() {
         if (!spec.list) return;
         nhan(t('choi.nhom.list'), lop('g-ls'));
-        gachLs('a = [1, 2]', 'gan'); gachLs('for n in a:', 'for'); gachLs('for n in [1, 2]:', 'forlit'); gachLs('a.append(1)', 'them');
+        var nhin = spec.mau === 'look';                                                          // drone có camera nhìn xuống (look()): danh sách đa phần là danh sách MÀU
+        gachLs('a = [1, 2]', 'gan'); gachLs(nhin ? 'for c in a:' : 'for n in a:', 'for'); gachLs(nhin ? 'for c in ["red", "blue"]:' : 'for n in [1, 2]:', 'forlit'); gachLs('a.append(1)', 'them');
+        if (nhin) gachLs('a.append(look())', 'them-look');                                         // ghi màu camera thấy: seen.append(look())
       }
 
       /* ---- các thẻ, theo thứ tự: Thân · Tay · Cảm biến (hàm của màn nằm trong thẻ bộ phận của nó) */

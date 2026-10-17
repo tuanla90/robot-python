@@ -243,7 +243,7 @@ console.log('\n== 3. Chấm (cham.js) trên màn tạm: dòng danh sách chạy 
   const t2 = ChamHoc.thuHam(M_LIST, { chinh: [], hamCuaMan: [] }, 'weave', KHO.concat([w]), { doiSo: ['[]'] });
   kiem('sân thử với danh sách rỗng "[]": hàm không làm gì, không lỗi', !t2.chanDoan.some((c) => c.ma === 'loi-chay' || c.ma === 'loi-cu-phap') && t2.soNhip === 0, J(t2.chanDoan.map((c) => c.loi)));
   kiem('mọi màn thật vẫn chạy: lời giải 3 sao của mọi màn không có loi-chay / loi-cu-phap vì danh sách (vd. dấu [ ])',
-    ManHoc.danhSach.every((m) => !/\[|\]/.test([].concat(m.loiGiai.chinh, (m.loiGiai.hamCuaEmMoi || []).flatMap((h) => h.than)).join('\n'))));
+    ManHoc.danhSach.filter((m) => (m.cauTruc || []).indexOf('list') < 0).every((m) => !/\[|\]/.test([].concat(m.loiGiai.chinh, (m.loiGiai.hamCuaEmMoi || []).flatMap((h) => h.than)).join('\n'))));       // chỉ các màn CHƯA học list (flycam, gói List có cauTruc "list" thì dùng [ ] thoải mái)
 }
 
 /* ================================================================= DOM GIẢ (đủ cho Palette, Editor và các bảng chọn của game/thanh-phan.js) */

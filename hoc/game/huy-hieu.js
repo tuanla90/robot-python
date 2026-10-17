@@ -266,6 +266,26 @@
     themBanhRang(p);
     return p;
   };
+  /* Danh sách [ 4 2 3 ] (gói List, 17/10): ngoặc vuông vàng + các ô trắng, mỗi ô một chữ số; viền tối quanh. so = mảng chữ số, trả về Painter (6·n + 7) × 13. */
+  var SO_LS = { '1': ['.X.', 'XX.', '.X.', '.X.', 'XXX'], '2': ['XXX', '..X', 'XXX', 'X..', 'XXX'], '3': ['XXX', '..X', 'XXX', '..X', 'XXX'], '4': ['X.X', 'X.X', 'XXX', '..X', '..X'] };
+  function veDsO(so) {
+    var n = so.length, w = 6 * n + 5, p = P(w + 2, 13), ox = 1, oy = 1, V = KK.vang || '#f2c230';
+    p.rect(ox, oy, 1, 11, V); p.rect(ox + 1, oy, 1, 1, V); p.rect(ox + 1, oy + 10, 1, 1, V);                                     // ngoặc [
+    p.rect(ox + w - 1, oy, 1, 11, V); p.rect(ox + w - 2, oy, 1, 1, V); p.rect(ox + w - 2, oy + 10, 1, 1, V);                     // ngoặc ]
+    so.forEach(function (d, i) {
+      var cx = ox + 3 + i * 6;
+      p.rect(cx, oy + 1, 5, 9, '#ffffff'); p.rect(cx, oy + 9, 5, 1, '#c9d6e4');
+      SO_LS[d].forEach(function (row, j) { for (var k = 0; k < 3; k++) if (row.charAt(k) === 'X') p.px(cx + 1 + k, oy + 2 + j, '#1f5a8c'); });
+    });
+    return p.outline(INK);
+  }
+  HINH['list'] = function () { return veDsO(['4', '2', '3']); };                               // [ 4 2 3 ]
+  HINH['che-list'] = function () {                                                              // [ 2 3 ] nhỏ + bánh răng
+    var p = P(T26, T26), t = veDsO(['2', '3']);
+    chep(p, t, 1, T26 - t.h, 1);
+    themBanhRang(p);
+    return p;
+  };
   HINH['che-mau'] = function () {                               // bốn ô màu (đỏ, xanh lá, vàng, xanh dương) nhỏ + bánh răng
     var p = P(T26, T26), ten = ['red', 'green', 'yellow', 'blue'];
     ten.forEach(function (m, i) {
@@ -312,6 +332,21 @@
     var p = P(T26, T26), t = thanPart('drone');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
     themBanhRang(p);
+    return p;
+  };
+  HINH['flycam'] = function () {                                // drone nhìn từ trên + camera dưới bụng đang nhìn (kính sáng) + hai ô màu (đỏ, xanh dương) bên dưới
+    var p = P(T26, T26), w = P(24, 24), k;
+    chep(w, partTho('than', 'drone'), 0, 0, 1);
+    chep(w, partTho('cam-bien', 'camera-bay', { mat: true }), 0, 0, 1);
+    var t = cat(w);
+    chep(p, t, Math.max(0, (T26 - t.w) >> 1), 0, 1);
+    var y0 = Math.min(T26 - 7, t.h + 1);                          // hai ô màu nhỏ ngay dưới camera, nối bằng hai tia nhìn
+    [[5, 'red'], [14, 'blue']].forEach(function (o) {
+      var c = Ve.MAU[o[1]];
+      p.rect(o[0], y0, 7, 7, INK); p.rect(o[0] + 1, y0 + 1, 5, 5, c.n);
+      p.rect(o[0] + 1, y0 + 1, 5, 1, c.s); p.rect(o[0] + 1, y0 + 1, 1, 5, c.s); p.rect(o[0] + 1, y0 + 5, 5, 1, c.t); p.rect(o[0] + 5, y0 + 1, 1, 5, c.t);
+    });
+    for (k = 0; k < 2; k++) { p.px(11 - k * 2, y0 - 2 + k, '#2c8fa4'); p.px(14 + k * 2, y0 - 2 + k, '#2c8fa4'); }
     return p;
   };
   HINH['tay-xoay'] = function () {                              // tay xoay (khớp tròn) + vật gỗ bên cạnh
