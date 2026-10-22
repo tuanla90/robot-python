@@ -1,33 +1,33 @@
-# Vẽ icon app (hoc/game/icon/*.png) từ hình robot pixel của màn khởi đầu (thân hai bánh + tay kẹp + cảm biến khoảng cách).
+# Vẽ icon app (hoc/game/icon/*.png) từ hình robot pixel của màn khởi đầu (thân hai bánh + tay kẹp + cảm biến khoảng cách; thân xe bản 22/10: mũi thuôn, đèn hậu đỏ).
 # Hình robot chép từ VeRobot.ve(..., tỉ lệ 1) trong trình duyệt, cắt sát mép; đổi robot thì chép lại ROBOT / BANG_MAU.
 # Dùng: python -I tools/ve-icon.py   (cần Pillow)
 import os
 from PIL import Image, ImageDraw
 
-BANG_MAU = ['1b120a', '9aa3b5', '7ff0ff', '292a35', '596274', 'ffe888', 'ffcf30', 'd99418', '26324e', 'dbe3ed', 'a8dc72']
+BANG_MAU = ['1b120a', '9aa3b5', '7ff0ff', '596274', '292a35', 'ffe888', 'df4b4b', 'ffcf30', 'd99418', '26324e', 'dbe3ed', 'a8dc72']
 ROBOT = [
     '...aaaaaaaa.....................',
     '...abbbccac.....................',
-    '.aaabbbccaaaaaaa..aaaaaaaaaaaaaa',
-    '.adddedddedddeda..aaaffffffffaaf',
-    '.aaaaaaaaaaaaaaa..aaaffffffffaaf',
-    'aaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaf',
-    'aggggggggggggggga.aba........aaa',
-    'ahhgggiiiiiigffgaaaba...........',
-    'ahhgggiiiiiigffgajaba...........',
-    'ahhgbgiiiiiigffgajaaaa..........',
-    'ahhgbgiiiiiigffgkjaaaa..........',
-    'ahhgbgiiiiiigffgkkaba...........',
-    'ahhgbgiiiiiigffgkkaba...........',
-    'ahhgbgiiiiiigffgkjaaaa..........',
-    'ahhgbgiiiiiigffgajaaaa..........',
-    'ahhgggiiiiiigffgajaba...........',
-    'ahhgggiiiiiigffgaaaba...........',
-    'aggggggggggggggga.aba........aaa',
-    'aaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaf',
-    '.aaaaaaaaaaaaaaa..aaaggggggggaaf',
-    '.adabbbccaaddeda..aaaggggggggaaf',
-    '.aaabbbccacaaaaa..aaaaaaaaaaaaaa',
+    'aaaabbbccaaa......aaaaaaaaaaaaaa',
+    'adeeedeeedea......aaaffffffffaaf',
+    'aaaaaaaaaaaa......aaaffffffffaaf',
+    'aaaaaaaaaaaaaaa...aaaaaaaaaaaaaf',
+    'agghhhhhhhhhhhha..aba........aaa',
+    'aggihhhhhhjjjjjhaaaba...........',
+    'ahiihhhhhhjjjjjhakaba...........',
+    'ahiihihihhjjjjjhakaaaa..........',
+    'ahiihihihhjjjjjhlkaaaa..........',
+    'ahiihihihhjjjjjhllaba...........',
+    'ahiihihihhjjjjjhllaba...........',
+    'ahiihihihhjjjjjhlkaaaa..........',
+    'ahiihihihhjjjjjhakaaaa..........',
+    'ahiihhhhhhjjjjjhakaba...........',
+    'aggihhhhhhjjjjjhaaaba...........',
+    'agghhhhhhhhhhhha..aba........aaa',
+    'aaaaaaaaaaaaaaa...aaaaaaaaaaaaaf',
+    'aaaaaaaaaaaa......aaahhhhhhhhaaf',
+    'adeabbbccaaa......aaahhhhhhhhaaf',
+    'aaaabbbccaca......aaaaaaaaaaaaaa',
     '...aaaaaaaa.....................',
 ]
 GO, VIEN, BANG, VANG = '#2a1d14', '#1b120a', '#1d5a44', '#ffd95a'
