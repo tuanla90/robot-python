@@ -735,7 +735,7 @@
       r.appendChild(tb); r.appendChild(s); r.appendChild(bk); r.appendChild(nj); host.appendChild(r); rows.push(r); strips.push(s); brks.push(bk); njs.push(nj);
       (function (i) {
         r.addEventListener('click', function (ev) {
-          var arr = lay(), kieu = ev.pointerType || kieuCuoi;
+          var arr = lay(), kieu = kieuCuoi;          // kiểu lấy từ pointerdown: Safari iOS báo click của cú chạm là 'mouse', không tin ev.pointerType của click
           if (chiDoc()) { cham = null; tuyChon.khiBam && tuyChon.khiBam(i); baoChiDoc(); return; }       // chương trình chính cố định: chạm chỉ báo, không chọn ô / mở bộ chọn số / xóa
           var so = ev.target.closest && ev.target.closest('.num');
           if (so && !xt && i < dung && i < arr.length && !dangChay() && !Chan.dang()) {      // chạm con số trong range(n) / lời gọi hàm: bộ chọn 1–9 (+ biến của hàm)

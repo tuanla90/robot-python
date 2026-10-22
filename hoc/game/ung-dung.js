@@ -200,9 +200,18 @@
     window.addEventListener('resize', vua);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', vua);
     document.body.classList.add('san-sang');
+    chanNhanGiu();
     if (App.baoKho) App.thongBao(t('tb.khoDoc', { loi: App.baoKho.loi }));
     else if (Luu.laBoNho) App.thongBao(t('choi.loiLuu'));
     phongDuPhong();
+  }
+
+  /** Nhấn giữ trên điện thoại / chuột phải: không hiện menu của trình duyệt, không bôi đen chữ, không kéo ảnh ra ngoài (trừ ô gõ chữ). */
+  function chanNhanGiu() {
+    function oGo(ev) { return ev.target && ev.target.closest && ev.target.closest('input, textarea'); }
+    ['contextmenu', 'selectstart', 'dragstart'].forEach(function (su) {
+      document.addEventListener(su, function (ev) { if (!oGo(ev)) ev.preventDefault(); });
+    });
   }
 
   /** Không tải được phông Google (không mạng): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. */
