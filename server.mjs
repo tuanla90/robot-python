@@ -27,8 +27,10 @@ const types = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.webp': 'image/webp',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
+  '.woff2': 'font/woff2',
 };
-const COMPRESSIBLE = new Set(['.css', '.html', '.js', '.json', '.svg']);
+const COMPRESSIBLE = new Set(['.css', '.html', '.js', '.json', '.svg', '.webmanifest']);
 
 createServer(async (request, response) => {
   if (request.method !== 'GET' && request.method !== 'HEAD') {

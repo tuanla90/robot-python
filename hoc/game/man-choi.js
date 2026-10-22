@@ -64,7 +64,7 @@
     q('.chinh-khoa .ck-ic').appendChild(Ve.khoa(2, true));                       // ổ khóa nhỏ ở tiêu đề khung chương trình (chỉ hiện khi màn có chinhCoDinh)
 
     S.field = new SanVe.Field(q('#field'), { kich: 210, catMep: true });          // catMep: bỏ hàng / cột mép toàn tường khi vẽ (sân thử Xưởng không bật)
-    S.field.onRung = function () { E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
+    S.field.onRung = function () { if (window.AmThanh) AmThanh.phat('dam'); E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
     E.ffr = q('.ffr');
 
     S.kieu = TP.taoKieu(function () { return { man: S.man, hamCuaMan: S.bai ? S.bai.hamCuaMan : [], kho: KhoHam.ds() }; });     // kiểu đối số của hàm: số / một chữ / chuỗi ghép
@@ -262,6 +262,7 @@
   var toastHen = null;
   function toast(chu, kieu, ms) {
     var tt = E.toast; tt.textContent = chu; tt.className = 'toast show ' + (kieu || '');
+    if (kieu === 'bad' && window.AmThanh) AmThanh.phat('loi');
     clearTimeout(toastHen);
     if (ms !== 0) toastHen = setTimeout(function () { tt.className = 'toast'; }, ms || 2200);
   }
@@ -301,6 +302,7 @@
     hang.appendChild(TP.Hop.nut('g-or', t('menu.lamLai'), function () {
       TP.Hop.xacNhan({ tieuDe: t('menu.lamLai'), noiDung: t('menu.lamLaiHoi'), co: t('menu.lamLaiCo') }).then(function (ok) { if (ok) lamLai(); });
     }, 'menu-lam-lai'));
+    if (window.CaiDat) hang.appendChild(TP.Hop.nut('g-te', t('menu.caiDat'), function () { CaiDat.mo(); }, 'menu-cai-dat'));
     if (window.GoLoi && GoLoi.laBat()) hang.appendChild(TP.Hop.nut('g-cy', t('go.menu'), function () { GoLoi.mo(); }, 'menu-go-loi'));   // chỉ khi đang ở chế độ gỡ lỗi (?debug=1 / #debug / đã mở bảng / "Mở hết")
     hang.appendChild(TP.Hop.nut('g-wd', t('chung.dong'), function () { TP.Hop.dong(); }, 'menu-dong'));
     m.than.appendChild(hang);
@@ -449,6 +451,7 @@
         await SanVe.ngu(LENH_MS / toc); if (my !== S.rid) return;
         if (cap && ++lenhDem >= cap.lenh) { capDung = true; break; }
       } else {
+        if (window.AmThanh && lenhNhip.some(function (l) { return /^(left_|right_|slide_|go_)/.test(l.ten); })) AmThanh.phat('buoc');      // nhịp robot đi / bay: tiếng bước (đứng chờ thì im)
         DenBoPhan.bat(e, lenhNhip);
         await S.field.phatNhip(e, NHIP_MS / toc); if (my !== S.rid) return;
         DenBoPhan.tat(true); lenhNhip = [];
@@ -470,6 +473,7 @@
   /** Sáng dòng đang chạy; mục lệnh đọc cảm biến thì cảm biến ở hông nháy và có tia tới ô được đo (toc = hệ số tốc độ). */
   function sang(e, toc) {
     if (!e) { S.ed.datChay(null); S.pal.datSang(null); return; }
+    if (window.AmThanh) { if (e.docCamBien) AmThanh.phat('quet'); else AmThanh.lenh(e.ten); }
     if (e.docCamBien) S.field.docCamBien(e.docCamBien, 380 / (toc || 1));
     if (e.aimTam) S.field.datTam(e.aimTam);                       // aim(n) vừa chạy: cần ném đổi số ngắm, vòng ở ô rơi nháy
     S.ed.datChay(dongChinhCua(e), S.lap && S.lap.get(e));
@@ -516,6 +520,7 @@
     if (k.thang) {
       if (window.HuongDan) HuongDan.xongMan(S.man);                                    // thắng rồi: hướng dẫn từng bước của màn (huong-dan-man.js) thôi, lưu cờ
       S.field.mungThang();
+      if (window.AmThanh) AmThanh.phat('thang');
       var tot = Luu.ghiSao(S.man.ma, k.sao);
       sao3(tot);
       var my = S.rid;
@@ -523,6 +528,7 @@
       return;
     }
     // chưa thắng: bong bóng chẩn đoán (lỗi trước, thông tin sau), đánh dấu dòng / khối
+    if (window.AmThanh) AmThanh.phat('hong');
     var conTran = dungChanDoan(k);
     if (conTran) S.ed.nhay();
     if (S.cd.some(function (c) { return c.ma === 'lech-bong-mo' || c.ma === 'chua-qua-diem'; })) S.field.nhayBongMo(1500);      // bóng mờ nháy: chỗ xe cần tới (và ô ◆ chưa qua) hiện rõ
@@ -544,6 +550,7 @@
     hop.hop.setAttribute('data-sao', k.sao);
     var st = h('div', 'th-sao');
     for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }
+    if (window.AmThanh) for (var si = 0; si < k.sao; si++) setTimeout(AmThanh.sao.bind(null, si), 150 + si * 220);      // tiếng sao khớp lúc từng sao hiện
     hop.than.appendChild(st);
     function dong(ok, chu) {
       var d = h('div', 'th-dong ' + (ok ? 'ok' : 'chua'));

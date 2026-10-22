@@ -204,6 +204,16 @@
     if (App.baoKho) App.thongBao(t('tb.khoDoc', { loi: App.baoKho.loi }));
     else if (Luu.laBoNho) App.thongBao(t('choi.loiLuu'));
     phongDuPhong();
+    if (window.AmThanh) AmThanh.ganNut(document);
+    if (window.GioiThieu && !Luu.daXem('gioi-thieu')) GioiThieu.mo();     // lần đầu chơi: vài trang giới thiệu (gioi-thieu.js)
+    dangKySW();
+  }
+
+  /** Chơi không cần mạng: đăng ký sw.js (chỉ khi trang có manifest, tức là chạy từ máy chủ; bản gói Artifact không có). */
+  function dangKySW() {
+    if (!('serviceWorker' in navigator) || !document.querySelector('link[rel="manifest"]') || !/^https?:$/.test(location.protocol)) return;
+    var dk = function () { navigator.serviceWorker.register('sw.js').catch(function () { /* không đăng ký được thì chơi có mạng như cũ */ }); };
+    if (document.readyState === 'complete') dk(); else window.addEventListener('load', dk);
   }
 
   /** Nhấn giữ trên điện thoại / chuột phải: không hiện menu của trình duyệt, không bôi đen chữ, không kéo ảnh ra ngoài (trừ ô gõ chữ). */
@@ -214,7 +224,7 @@
     });
   }
 
-  /** Không tải được phông Google (không mạng): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. */
+  /** Không tải được phông (font/font.css; bản Artifact vẫn lấy từ Google): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. */
   function phongDuPhong() {
     var fb = function () { document.body.classList.add('fb'); };
     try {

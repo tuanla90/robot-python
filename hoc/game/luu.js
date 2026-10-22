@@ -5,7 +5,8 @@
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
      sân thử  : duong-hoc:san-thu:<tenHam> = cách sắp sân thử của Xưởng (xe, vật, tường), riêng từng hàm
      cách lắp : duong-hoc:lap:<ma> = { than, tay, camBien } (màn lắp ráp, lap-rap.js: mỗi khe một mã part hay null), riêng từng màn
-     đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, … }   (bảng / lời chào chỉ hiện một lần)
+     đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, 'gioi-thieu': true, … }   (bảng / lời chào chỉ hiện một lần)
+     cài đặt  : duong-hoc:cai-dat = { hieuUng, nhac } (mức âm lượng 0..4; xoaHet giữ lại)
      Dữ liệu cũ theo id ('1.1'…'2.10') được chuyển một lần sang ma (chuyenCu).
    ========================================================================== */
 (function () {
@@ -127,6 +128,30 @@
     return true;
   }
 
+  /* ---- cài đặt (cai-dat.js): duong-hoc:cai-dat = { hieuUng: 0..4, nhac: 0..4 } (mức âm lượng, 0 = tắt). Xóa tiến độ không đụng tới. */
+  var KHOA_CAI_DAT = 'duong-hoc:cai-dat';
+  var CAI_DAT_GOC = { hieuUng: 3, nhac: 2 };
+  function docCaiDat() {
+    var d = docJson(KHOA_CAI_DAT), kq = {};
+    Object.keys(CAI_DAT_GOC).forEach(function (k) {
+      var v = d && typeof d === 'object' ? d[k] : undefined;
+      kq[k] = typeof v === 'number' && v >= 0 && v <= 4 ? Math.floor(v) : CAI_DAT_GOC[k];
+    });
+    return kq;
+  }
+  function ghiCaiDat(c) { return ghiJson(KHOA_CAI_DAT, c); }
+
+  /** Xóa SẠCH dữ liệu chơi (sao, bản nháp, kho hàm, sân thử, cách lắp, cờ đã xem); chỉ giữ cài đặt. Gọi xong nên tải lại trang. */
+  function xoaHet() {
+    try {
+      var ds = [];
+      for (var i = 0; i < kho.length; i++) { var k = kho.key(i); if (k && k.indexOf('duong-hoc:') === 0 && k !== KHOA_CAI_DAT) ds.push(k); }
+      ds.forEach(function (k) { kho.removeItem(k); });
+    } catch (e) { return false; }
+    docTienDo();
+    return true;
+  }
+
   /* ---- kho hàm của em */
   var loiKho = null;
   function docKho() {
@@ -174,7 +199,8 @@
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docSanThu: docSanThu, ghiSanThu: ghiSanThu, xoaSanThu: xoaSanThu,
     docLap: docLap, ghiLap: ghiLap, xoaLap: xoaLap,
-    daXem: daXem, datDaXem: datDaXem, xoaTienDo: xoaTienDo,
+    daXem: daXem, datDaXem: datDaXem, xoaTienDo: xoaTienDo, xoaHet: xoaHet,
+    docCaiDat: docCaiDat, ghiCaiDat: ghiCaiDat,
     docKho: docKho, ghiKho: ghiKho,
     get loiKho() { return loiKho; },
     KHOA_TIEN_DO: KHOA_TIEN_DO, KHOA_NHAP: KHOA_NHAP

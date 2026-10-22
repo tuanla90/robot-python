@@ -1,6 +1,6 @@
 /* ============================================================================
    man-dau.js — "Đường học": MÀN KHỞI ĐẦU (window.Dau), kiểu màn tiêu đề của Cut the Rope.
-   Logo · robot hoàn thiện chạy qua lại trên tấm bảng · tổng sao · nút CHƠI (→ chọn gói) · "Chơi tiếp · 4.3" (vào thẳng màn kế) · Sổ lệnh.
+   Logo · robot hoàn thiện chạy qua lại trên tấm bảng · tổng sao · nút CHƠI (→ chọn gói) · "Chơi tiếp · 4.3" (vào thẳng màn kế) · Sổ lệnh · bánh răng Cài đặt (cai-dat.js).
    Giữ logo 2 giây = mở bảng Gỡ lỗi (go-loi.js); dùng được cả trên link Artifact (không thêm ?debug=1 vào địa chỉ được).
    ========================================================================== */
 (function () {
@@ -73,6 +73,12 @@
       bs.appendChild(h('span', null, t('chon.soLenh')));
       bs.addEventListener('click', function () { SoLenhMan.mo(); });
       el.hang.appendChild(bs);
+    }
+    if (window.CaiDat) {
+      var bc = h('button', 'bt g-wd d-cai'); bc.setAttribute('data-nut', 'cai-dat'); bc.setAttribute('aria-label', t('caiDat.nut'));
+      var ic = h('span'); ic.setAttribute('data-i', 'gear'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-l', '#3a2410'); bc.appendChild(ic);
+      bc.addEventListener('click', function () { CaiDat.mo(); });
+      el.hang.appendChild(bc);
     }
     if (window.GoLoi) GoLoi.nutBug(el.hang);                         // 🐞 chỉ khi địa chỉ có ?debug=1 / #debug
     Ve.hydrate(el.hang);

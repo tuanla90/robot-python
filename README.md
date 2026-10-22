@@ -27,7 +27,7 @@ Mở `http://localhost:4180`:
 |---|---|
 | `nhan/` | **nhân chạy Python** dùng chung (`san-robot-core.js`, `window.RobotCore`) + mockup đợt 1 |
 | `hoc/` | **Đường học**: lõi sân (`san-hoc.js`), máy chấm (`cham.js`), khung code, kho hàm, sổ lệnh, lắp ráp, tệp màn `man-*.js`, công cụ đo đường `do-duong-*.mjs` |
-| `hoc/game/` | giao diện Đường học: màn chọn gói, màn chơi, Xưởng hàm, vẽ robot pixel, lưu tiến độ |
+| `hoc/game/` | giao diện Đường học: màn chọn gói, màn chơi, Xưởng hàm, vẽ robot pixel, lưu tiến độ, âm thanh (`am-thanh.js`), cài đặt (`cai-dat.js`), giới thiệu lần đầu (`gioi-thieu.js`) |
 | `hoc/game/part/` | danh mục part (thân, tay, cảm biến) và cách vẽ từng part |
 | `tran/` | **Trận đấu**: nhân trận, lớp màn chơi, giao diện, mockup UI (xem `tran/README.md`) |
 | `docs/thiet-ke/` | GDD v0.1 · v0.2, luật trận v0.1 → v0.4, tư liệu Robocon |
@@ -36,6 +36,14 @@ Mở `http://localhost:4180`:
 Kế hoạch và lộ trình của Đường học nằm trong `hoc/`: `LO-TRINH.md`, `KE-HOACH-CHE-LENH.md`,
 `KE-HOACH-LIST-FLYCAM.md`, `KE-HOACH-LAP-RAP.md`, `Y-TUONG-TIEP-THEO.md`.
 Đổi thứ tự chương: sửa `hoc/thu-tu-chuong.js`.
+
+## Chơi không cần mạng
+
+- Chữ (Handjet, VT323) nằm sẵn trong `hoc/game/font/`, không gọi Google Fonts.
+- `hoc/game/sw.js` (service worker) cất mọi tệp mà `choi.html` nạp. Mở game một lần khi có mạng, lần sau mất mạng vẫn chơi được.
+- `hoc/game/manifest.webmanifest` và `hoc/game/icon/`: cài lên màn hình chính như một app, bọc thành app Android.
+- Vẽ lại icon: `python -I tools/ve-icon.py` (cần Pillow).
+- Âm thanh tổng hợp bằng WebAudio ngay trong game, không có tệp âm thanh.
 
 ## Máy kiểm
 

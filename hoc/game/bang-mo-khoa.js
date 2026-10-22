@@ -18,6 +18,7 @@
   function mo(ds, khiXong) {
     ds = ds || [];
     var hop = TP.Hop.mo(t('moKhoa.tieuDe'), 'hop-mo-khoa');
+    if (window.AmThanh) AmThanh.phat('moKhoa');
     hop.hop.setAttribute('data-hop', 'mo-khoa');
     hop.than.appendChild(h('div', 'mk-loi', t('moKhoa.loi', { sao: window.App ? App.tongSao() : '' })));
     var luoi = h('div', 'mk-luoi');

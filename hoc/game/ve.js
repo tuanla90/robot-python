@@ -188,6 +188,9 @@
     xu: ['...xxxxx...', '..xwwxxxx..', '.xwxxxoxxx.', 'xwxxxxoxxxo', 'xwxxxxoxxxo', 'xxxxxxoxxxo', 'xxxxxxoxxxo', 'xxxxxxoxxxo', '.xxxxxoxxo.', '..xxxxxxo..', '...xxxxx...'],
     banhRang: ['....xxx....', '..x.xxx.x..', '.xxxxxxxxx.', '..xxx.xxx..', 'xxxx...xxxx', 'xxx.....xxx', 'xxxx...xxxx', '..xxx.xxx..', '.xxxxxxxxx.', '..x.xxx.x..', '....xxx....'],
     // sổ lệnh (quyển sách mở) và nhãn cảnh báo (tam giác có dấu !)
+    gear: ['....xxx....', '.xx.xxx.xx.', '.xxxxxxxxx.', '..xxxxxxx..', 'xxxx...xxxx', 'xxxx...xxxx', 'xxxx...xxxx', '..xxxxxxx..', '.xxxxxxxxx.', '.xx.xxx.xx.', '....xxx....'],
+    loa: ['....x....', '...xx..x.', 'xxxxx...x', 'xxxxx.x.x', 'xxxxx.x.x', 'xxxxx...x', '...xx..x.', '....x....'],
+    nhac: ['..xxxxxx', '..xxxxxx', '..x....x', '..x....x', '..x....x', 'xxx..xxx', 'xxx..xxx', '.x....x.'],
     book: ['.xxxxxxxxx.', 'xxxxxxxxxxx', 'xx.......xx', 'xx.xxxxx.xx', 'xx.......xx', 'xx.xxx...xx', 'xx.......xx', 'xxxxxxxxxxx', '.xxxxxxxxx.'],
     canhbao: ['.....xx.....', '....xxxx....', '....xxxx....', '...xxxxxx...', '...xx..xx...', '..xxx..xxx..', '..xxx..xxx..', '.xxxxxxxxxx.', '.xxxx..xxxx.', 'xxxxxxxxxxxx']
   };
