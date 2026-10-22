@@ -28,6 +28,7 @@
       luoi.appendChild(o);
     });
     hop.than.appendChild(luoi);
+    if (window.ThanhCuon) ThanhCuon.gan(luoi);
     var hang = h('div', 'hop-hang');
     hang.appendChild(TP.Hop.nut('g-gr', t('moKhoa.nut'), function () { TP.Hop.dong(); if (khiXong) khiXong(); }, 'mo-khoa-xong'));
     hop.than.appendChild(hang);

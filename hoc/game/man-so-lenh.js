@@ -12,7 +12,7 @@
   'use strict';
 
   var h = TP.h;
-  var TRANG_GOC = '@goc', TRANG_EM = '@em';
+  var TRANG_GOC = '@goc', TRANG_EM = '@em', TRANG_PART = '@part';
   var S = { trang: null, dsEl: null, tabs: null, hop: null };
 
   /* ------------------------------------------------------------ dữ liệu */
@@ -104,10 +104,27 @@
     return the;
   }
 
+  /** Một dòng bộ phận đã gặp (trang "Bộ phận"): hình + tên; chạm mở thẻ giới thiệu, đóng thẻ thì quay lại trang này. */
+  function theBoPhan(ma) {
+    var d = GioiThieuPart.DS[ma];
+    var b = h('button', 'bt so-bp'); b.setAttribute('data-nut', 'so-bo-phan'); b.setAttribute('data-part', ma);
+    var hinh = h('span', 'so-bp-hinh'); hinh.appendChild(ThePart.hinh(ma, 2)); b.appendChild(hinh);
+    var chu = h('span', 'so-bp-chu');
+    chu.appendChild(h('span', 'so-bp-khe', GioiThieuPart.TEN_KHE[d.khe]));
+    chu.appendChild(h('span', 'so-bp-ten', d.ten));
+    b.appendChild(chu);
+    b.addEventListener('click', function () { ThePart.mo(ma, function () { mo(TRANG_PART); }); });
+    return b;
+  }
+
   /* ------------------------------------------------------------ trang */
   function veTrang() {
     var el = S.dsEl; el.innerHTML = ''; el.scrollTop = 0;
-    if (S.trang === TRANG_GOC) {
+    if (S.trang === TRANG_PART) {
+      var gap = window.ThePart ? ThePart.daGap() : [];
+      if (!gap.length) el.appendChild(h('div', 'so-rong', t('so.boPhanRong')));
+      gap.forEach(function (ma) { el.appendChild(theBoPhan(ma)); });
+    } else if (S.trang === TRANG_GOC) {
       var biet = lenhDaBiet(), g = dsGoc();
       if (!g.length) el.appendChild(h('div', 'so-rong', t('so.nhomRong')));
       g.forEach(function (c) { el.appendChild(theGoc(c, biet)); });
@@ -136,6 +153,7 @@
     }
     var conKhoa = 0;
     dsNhom().forEach(function (nh) { if (nhomMo(nh)) them(nh, tenNhom(nh), false); else conKhoa++; });      // chỉ thẻ của nhóm đã mở; nhóm chưa mở gộp thành một dòng mờ
+    them(TRANG_PART, t('so.boPhan'), false);
     them(TRANG_GOC, t('so.lenhGoc'), false);
     them(TRANG_EM, t('so.hamEm'), false);
     if (conKhoa > 0) {
@@ -153,6 +171,7 @@
     S.hop = hop;
     S.tabs = h('div', 'so-tabs'); S.dsEl = h('div', 'so-ds');
     hop.than.appendChild(S.tabs); hop.than.appendChild(S.dsEl);
+    if (window.ThanhCuon) ThanhCuon.gan(S.dsEl);
     var nhom = dsNhom();
     var dau = trang || (nhom.filter(nhomMo)[0]) || TRANG_GOC;                                   // chưa mở nhóm nào thì mở trang "Lệnh gốc"
     S.trang = dau;

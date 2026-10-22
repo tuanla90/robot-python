@@ -298,6 +298,21 @@
       'so.nhom.lap': 'Vòng lặp',
       'so.nhom.cam-bien': 'Cảm biến',
       'so.hamTrong': '(thân hàm còn trống)',
+      'so.boPhan': 'Bộ phận',
+      'so.boPhanRong': 'Chưa gặp bộ phận nào. Vào màn đầu tiên để làm quen chiếc xe.',
+
+      /* ---- thẻ giới thiệu bộ phận (the-part.js) */
+      'part.tieuDe': 'BỘ PHẬN MỚI',
+      'part.tieuDeMoi': 'LỆNH MỚI',
+      'part.tieuDeSo': 'BỘ PHẬN',
+      'part.lenh': 'Lệnh',
+      'part.lenhMoi': 'Lệnh mới mở',
+      'part.ghep': 'Ghép trong một nhịp',
+      'part.gioi': 'Làm tốt',
+      'part.khong': 'Không làm được',
+      'part.luuY': 'Nhớ',
+      'part.hieu': 'Đã hiểu',
+      'part.tiep': 'Tiếp ({i}/{n})',
       'so.hamEmGoiY': 'Hàm em tự tạo ở Xưởng nằm ở đây.',
 
       /* ---- bảng mở khóa bộ phận mới */

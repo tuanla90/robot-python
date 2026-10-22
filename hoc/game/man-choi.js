@@ -178,9 +178,13 @@
     E.side.classList.remove('busy');
     E.ov.classList.remove('open');
     TP.Hop.dong();
-    hienDeBai();
-    if (window.HuongDan) HuongDan.vaoMan(m);                                            // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
-    if (goc.lapRap) baoLenhMat();                                                       // robot đã đổi (hay bản nháp cũ): dòng gọi lệnh của part đang không gắn thì tô đỏ
+    function batDau() {
+      if (S.man !== m) return;
+      hienDeBai();
+      if (window.HuongDan) HuongDan.vaoMan(m);                                          // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
+    }
+    if (window.ThePart) ThePart.choMan(m, batDau); else batDau();                      // bộ phận lần đầu gặp / lệnh mới mở: thẻ giới thiệu trước đề bài và hướng dẫn (the-part.js)
+    if (goc.lapRap) baoLenhMat();                                                      // robot đã đổi (hay bản nháp cũ): dòng gọi lệnh của part đang không gắn thì tô đỏ
   }
   /** Sau "Lắp lại": dòng của chương trình chính gọi lệnh của part đã tháo thì tô đỏ và báo tên lệnh (chương trình vẫn giữ nguyên). */
   function baoLenhMat() {
