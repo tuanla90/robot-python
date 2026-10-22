@@ -304,7 +304,7 @@
     }),
 
     man({
-      so: 9, ten: 'Đường về', hang: 'bien-the', hamCuaEmCan: ['jet_fwd', 'turn_left'],
+      so: 9, ten: 'Đường về', hang: 'bien-the', hamCuaEmCan: ['jet_fwd', 'turn_left', 'jet_back', 'turn_right'],
       deBai: 'Hàm go_out() của màn đưa xe đi một vòng, tới điểm ◆. Viết thân hàm come_back() của màn để đưa xe về đúng chỗ và hướng xuất phát, như xe mờ.',
       veMaMau: 'Chương trình chính bị khóa: go_out() rồi come_back(). Hàm go_out() cũng bị khóa, em chỉ xem được thân hàm. Thân hàm come_back() đang chỉ có dòng pass, nghĩa là chưa làm gì: em viết lệnh thay cho nó. Điểm ◆ là chỗ go_out() dừng.',
       san: SAN_TRONG, batDau: BD_9,

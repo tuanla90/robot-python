@@ -205,6 +205,7 @@
     daXem: daXem, datDaXem: datDaXem, xoaTienDo: xoaTienDo, xoaHet: xoaHet,
     docCaiDat: docCaiDat, ghiCaiDat: ghiCaiDat,
     docKho: docKho, ghiKho: ghiKho,
+    coHam: function (ten) { try { return KhoHam.ds().some(function (f) { return f.ten === ten; }); } catch (e) { return true; } },   // kho của em có hàm này chưa (mo-goi.js: lyDo 'mat-ham')
     get loiKho() { return loiKho; },
     KHOA_TIEN_DO: KHOA_TIEN_DO, KHOA_NHAP: KHOA_NHAP
   };

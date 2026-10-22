@@ -118,7 +118,7 @@
   var DS = [
     /* ------------------------------------------------------------ hàng 1: làm quen */
     man({
-      so: 1, ten: 'Đi chéo', hang: 'lam-quen', taoHam: ['diag'],
+      so: 1, hamCuaEmCan: ['move'], ten: 'Đi chéo', hang: 'lam-quen', taoHam: ['diag'],
       deBai: 'Xe omni không đi chéo được trong một nhịp. Chương trình chính chỉ gọi diag() (diag là đường chéo): em tự chế lệnh này để xe tiến chéo lên phía phải một ô, mặt vẫn quay lên, đúng chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi diag(). Mở Xưởng hàm, tạo diag() rồi bấm Chạy.',
       san: SAN_1,
@@ -297,7 +297,7 @@
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Trượt phải hỏng', hang: 'bien-the', hamGoc: KHAY_HONG, phanCung: KHAY_HONG, canhBao: 'Trượt phải hỏng', nhipTheoLoiGiai: true,
-      hamCuaEmCan: ['dodge_right', 'u_turn', 'turn_right', 'turn_left'],
+      hamCuaEmCan: ['dodge_right', 'u_turn', 'turn_right', 'turn_left', 'move'],
       deBai: 'Bánh trượt phải bị hỏng: slide_right() không chạy được. Hàm hop_right() của màn muốn nhích xe sang phải một ô, nhưng đang gọi đúng lệnh hỏng đó. Sửa thân hop_right() để chương trình đưa xe tới chỗ xe mờ, mặt vẫn quay lên.',
       veMaMau: 'Chương trình chính bị khóa: ba lần hop_right() xen ba lần tiến. Hàm hop_right() đang gọi slide_right(). Thử nó xem xe báo gì, rồi viết lại bằng những lệnh còn chạy.',
       san: SAN_7,
@@ -326,7 +326,7 @@
     }, false),
 
     man({
-      so: 8, ten: 'Sai la bàn', hang: 'bien-the', hamCuaEmCan: ['slide_r', 'u_turn', 'forward'],
+      so: 8, ten: 'Sai la bàn', hang: 'bien-the', hamCuaEmCan: ['slide_r', 'u_turn', 'forward', 'move'],
       deBai: 'Hàm north(n) của màn muốn đưa xe lên phía trên màn hình n ô, còn east(n) muốn đưa xe sang phải màn hình n ô. Nhưng người viết nghĩ xe quay mặt lên, mà xe này đang quay mặt sang trái. Sửa cả hai hàm để xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa: north(2), east(3), north(1). Chạy thử, xem xe đi về phía nào rồi sửa thân hai hàm.',
       san: SAN_8,

@@ -392,7 +392,7 @@
 
     man({
       so: 8, ten: 'Sửa hàm lỗi', hang: 'bien-the', coCo: true, cam: BA_HUONG,
-      hamCuaEmCan: ['turn_right', 'go_wall'],
+      hamCuaEmCan: ['turn_right', 'go_wall', 'move'],
       deBai: 'Hàm to_door() của màn phải đưa xe tới cửa bên phải, nhưng nó chạy mãi không dừng. Tìm chỗ sai trong hàm và sửa, để xe qua cửa rồi tới cờ.',
       veMaMau: 'Chương trình chính bị khóa: to_door(), turn_right(), go_wall(). Mở hàm to_door() của màn trong Xưởng hàm để sửa.',
       san: SAN_8, batDau: BD_8,

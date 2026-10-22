@@ -137,7 +137,7 @@
    vat 'thung-nang' (xe húc thùng bằng bánh: thùng cản như tường, chỉ cú giật của súng hơi mới dời được thùng). Các mã khác:
    quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong (vat 'vat' = vướng vật nằm đất), tay-vuong, vat-vo, tha-bi-chan (tay kẹp, kieu 'kep': ô trước mặt không phải sàn trống),
    kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
-   def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
+   def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, chua-tao-ham (màn batBuocTaoHam: chưa gọi hàm phải tạo, robot tới đích cũng chưa thắng), loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
    CHÂN NHỆN (chương nhen, che-nhen; luật ở san-hoc.js, phần CHÂN NHỆN): roi-ho (lỗi: nhện rơi hố, chương trình dừng), nhay-hut (lỗi: ô giữa hay ô đáp của cú nhảy không hợp lệ, nhện rơi lại ô cũ),
    dau-dung-tran (lỗi: stand() khi đang đứng trong ô gầm), chan-goi-lai (lỗi: hai lệnh chân cùng nhịp); dam-tuong với vat 'gam-thap' (đi vào gầm mà chân đang duỗi); lech-bong-mo nói cả chân co / duỗi lệch bóng mờ
@@ -1160,6 +1160,8 @@
       return dung[(tap.em.indexOf(h) >= 0 ? 'hamEm' : 'hamMan') + ':' + h.ten];
     });
     dienO(ketQua, daDung);
+    var thieu = thangHet ? thieuTaoHam(man, dung) : [];
+    if (thieu.length) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiTaoHam(thieu)); }
     if (thangHet) {
       var sao = man.sao || {}, re = sao.re;
       var laRe = !!(re && typeof man.giaLap === 'number' && man.giaLap <= re.gia);                   // màn lắp ráp: robot lắp rẻ (≤ sao.re.gia xu)
@@ -1289,12 +1291,26 @@
       return dung[(laEm(h) ? 'hamEm' : 'hamMan') + ':' + h.ten];
     });
     dienO(ketQua, daDung);
+    var thieuDoi = thangHet ? thieuTaoHam(man, dung) : [];
+    if (thieuDoi.length) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiTaoHam(thieuDoi)); }
     if (thangHet) {
       var sao = man.sao || {};
       ketQua.re = false; ketQua.nguongO = sao.o;
       ketQua.sao = 1 + (sao.o !== undefined && ketQua.soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && ketQua.soNhip <= sao.nhip ? 1 : 0);
     }
     return xong();
+  }
+
+  /** man.taoHam + man.batBuocTaoHam: màn mà cả bài học là TẠO hàm đó (2.7 u_turn, 4.6 drop). Robot tới đích mà chương trình không gọi hàm của em
+   *  mang đúng tên đó thì CHƯA thắng (22/10: 4.6 qua được bằng cách gói việc khác vào hàm rồi viết thẳng việc thả, màn sau gọi drop() thì lỗi).
+   *  Màn khác không bật cờ: không tạo hàm vẫn thắng (thường chỉ 2 sao, đúng thiết kế); màn sau cần hàm đó thì khóa 'mat-ham' (mo-goi.js). Trả về tên hàm còn thiếu. */
+  function thieuTaoHam(man, dung) {
+    if (man.camHamCuaEm || !man.batBuocTaoHam) return [];
+    return (man.taoHam || []).filter(function (t) { return !dung['hamEm:' + t]; });
+  }
+  function loiTaoHam(thieu) {
+    var ds = thieu.map(function (t) { return t + '()'; }).join(', ');
+    return { muc: 'loi', ma: 'chua-tao-ham', ham: thieu.slice(), loi: 'Robot làm xong việc rồi, nhưng màn này dạy tạo hàm ' + ds + '. Chương trình của em chưa gọi ' + ds + ': tạo hàm đó ở Xưởng hàm rồi dùng nó trong chương trình nhé.' };
   }
 
   function gan(c) { if (!c.muc) c.muc = 'loi'; return c; }

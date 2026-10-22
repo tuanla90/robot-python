@@ -680,7 +680,10 @@
       hh.setAttribute('data-huy-hieu', m.huyHieu.ma);
       hop.than.appendChild(hh); Ve.hydrate(hh);
     }
+    var chuaTao = (m.taoHam || []).filter(function (n) { return !KhoHam.ds().some(function (f) { return f.ten === n; }); });
+    if (chuaTao.length) hop.than.appendChild(TP.vanBan(h('div', 'th-ghi canh'), t('thang.chuaTaoHam', { ham: chuaTao.join('(), ') })));     // qua màn mà chưa tạo hàm màn dạy: màn sau cần nó (mo-goi.js 'mat-ham')
     var tiep = App.manTiep(m);
+    if (tiep && tiep.chuong !== (m.manGoc || m).chuong) tiep = null;               // xong màn cuối chương: về lưới màn của gói, không tự sang chương / gói mới
     var hang = h('div', 'hop-hang' + (m.lapRap ? ' ba' : ''));
     if (m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('thang.lapLai'), function () { TP.Hop.dong(); if (window.App && App.lapLai) App.lapLai(); }, 'lap-lai'));
     hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); datLaiChay(); }, 'choi-lai'));

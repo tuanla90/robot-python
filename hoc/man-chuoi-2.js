@@ -198,7 +198,7 @@
 
     /* ------------------------------------------------------------- hàng 3 */
     man({
-      so: 7, ten: 'Quay đầu bằng hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['u_turn'],
+      so: 7, ten: 'Quay đầu bằng hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['u_turn'], batBuocTaoHam: true,     // 22/10: viết thẳng hai lần turn_right() không được tính thắng (u_turn dùng ở 3.5, 4.9…)
       deBai: 'Xe đứng ở cuối ngõ cụt, cờ ở cuối lối ra. Tạo hàm u_turn() gọi turn_right() hai lần (hàm gọi hàm), rồi dùng nó.',
       san: ['#.###', '#.###', '#.###', '#.F##', '#####'],
       batDau: { x: 1, y: 0, huong: 0 },

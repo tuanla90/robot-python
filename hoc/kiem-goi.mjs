@@ -106,6 +106,26 @@ console.log('\n== 3. Luật mở màn ==');
   kiem('đủ sao nhưng thiếu hàm em chế ở chương khác: lyDo "can-ham" (ham, canChuong, canMan)', r3.lyDo === 'can-ham' && ['pick', 'drop'].includes(r3.ham) && r3.canChuong === 'tay-gap', JSON.stringify(r3));
   kiem('qua màn chế pick / drop thì khoang-cach.1 mở', tt('khoang-cach.1', { ...nhieu, ...tatCa('tay-gap', 1) }).mo, noiPick && noiPick.ma);
   kiem('canHam chỉ kể hàm chế ở chương KHÁC, mỗi hàm một lần', TT.thuTu.every((c) => { const k = MoGoi.canHam(c); return k.every((x) => x.man.chuong !== c) && new Set(k.map((x) => x.ham)).size === k.length; }));
+  // kho thiếu hàm đã "tạo" ở màn đã qua (bản cũ: 4.6 qua được mà không tạo drop): màn cần hàm đó khóa, chỉ về màn tạo hàm
+  const noiDrop = ManHoc.danhSach.find((m) => (m.taoHam || []).includes('drop'));
+  const canDrop = ManHoc.danhSach.find((m) => m !== noiDrop && (m.hamCuaEmCan || []).includes('drop'));
+  const het = Object.fromEntries(ManHoc.danhSach.map((m) => [m.ma, 3]));
+  const thieuDrop = { saoTot: (ma) => het[ma] || 0, coHam: (t) => t !== 'drop' }, duDrop = { saoTot: (ma) => het[ma] || 0, coHam: () => true };
+  const r4 = MoGoi.trangThai(canDrop, thieuDrop);
+  kiem('kho thiếu drop() dù đã qua màn tạo nó: màn cần drop() khóa, lyDo "mat-ham" chỉ về màn tạo (' + (noiDrop && noiDrop.ma) + ')',
+    r4.lyDo === 'mat-ham' && r4.ham === 'drop' && r4.canMan === noiDrop.ma && MoGoi.trangThai(canDrop, duDrop).lyDo !== 'mat-ham', JSON.stringify(r4));
+  // mọi màn thường: hàm của em mà lời giải gọi, tạo ở màn khác, phải khai trong hamCuaEmCan (luật khóa can-ham / mat-ham mới chặn được khi chưa có hàm).
+  // Màn lắp ráp (lapRap) cố ý để trống: hàm trong kho thì dùng, thiếu vẫn giải được.
+  const noiTaoAll = {}; ManHoc.danhSach.forEach((m) => (m.taoHam || []).forEach((t) => { if (!noiTaoAll[t]) noiTaoAll[t] = m; }));
+  const goiTrong = (dong) => [...dong.join('\n').matchAll(/\b([a-z_][a-z0-9_]*)\(/g)].map((x) => x[1]);
+  const thieuKhai = [];
+  ManHoc.danhSach.filter((m) => !m.lapRap).forEach((m) => {
+    const lg = m.loiGiai || {}, moi = (lg.hamCuaEmMoi || []).map((h) => h.ten);
+    const dong = [].concat(lg.chinh || [], ...(lg.hamCuaEmMoi || []).map((h) => h.than || []), ...(lg.doi || []).map((d) => d.chinh || []));
+    const co = new Set((m.hamCuaEmCan || []).concat(((m.maMau && m.maMau.hamCuaMan) || []).map((h) => h.ten), (lg.hamCuaMan || []).map((h) => h.ten)));
+    new Set(goiTrong(dong)).forEach((t) => { if (noiTaoAll[t] && noiTaoAll[t] !== m && !co.has(t) && !moi.includes(t)) thieuKhai.push(m.ma + ':' + t); });
+  });
+  kiem('màn thường gọi hàm của em tạo ở màn khác thì khai trong hamCuaEmCan (22/10: 4.9 thiếu u_turn khi nhảy chương)', !thieuKhai.length, thieuKhai.join(' '));
   kiem('"Mở hết" (moHet) mở mọi màn', ManHoc.danhSach.every((m) => MoGoi.trangThai(m, luu({}), true).mo));
   kiem('tongSao / saoGoi / soQua cộng đúng', MoGoi.tongSao(luu(du)) === 15 && MoGoi.saoGoi(MoGoi.goiTheoMa('xe'), luu(du)) === 15 && MoGoi.soQua(MoGoi.goiTheoMa('xe'), luu(du)) === 5);
 }

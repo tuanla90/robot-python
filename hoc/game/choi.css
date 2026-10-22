@@ -300,6 +300,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .th-dong .ic{flex:none;display:flex}
 .th-ghi{margin:2px 0 4px;font:500 calc(12px*var(--kp))/1.2 var(--px);color:#ffe6a0}
 .th-ghi.tot{color:#9dffa4}
+.th-ghi.canh{color:#ffb38a}                                                 /* qua màn mà chưa tạo hàm màn dạy (man-choi.js bangThang) */
 .th-huy{display:flex;align-items:center;gap:10px;margin:6px 0 4px;padding:6px 8px;background:rgba(255,217,90,.16);box-shadow:inset 0 0 0 2px #ffd95a}
 .th-huy .k{font:600 calc(11px*var(--kp))/1 var(--px);color:#ffe6a0}.th-huy .v{font:700 calc(15px*var(--kp))/1.1 var(--px);color:#fff6d0;margin-top:2px}
 

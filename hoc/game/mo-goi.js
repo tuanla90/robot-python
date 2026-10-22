@@ -15,6 +15,7 @@
      2. m ở chương thứ hai trở đi của gói, chưa thắng thử thách chương ngay trước → 'chuoi'   (chuong = mã, chuoi = số chương hiển thị)
      3. chương của m cần hàm em chế ở MỘT MÀN của chương khác mà màn đó chưa qua  → 'can-ham' (ham, canChuong, canMan)
         (gói mở bằng sao nên có thể tới gói sau mà chưa chế hàm cần dùng; luật này chặn đúng chỗ đó)
+     3b. màn cần hàm em đã "tạo" ở một màn đã qua mà kho không có hàm đó (luu.coHam) → 'mat-ham' (ham, canChuong, canMan): quay lại màn đó tạo hàm
      4. trong chương: hàng Làm quen chơi lần lượt ('hang1'); Luyện + Biến thể mở khi xong Làm quen ('hang23'); thử thách mở khi qua đủ 9 màn ('trum').
    luu = { saoTot(maMan) → 0..3, daXem(cờ)? } (game/luu.js); moHet = true: mở hết (bảng Gỡ lỗi). Gói chưa mở vì MÙA chưa mở → lyDo 'mua' (mua, dieuKien).
    ========================================================================== */
@@ -117,6 +118,17 @@
     return kq;
   }
 
+  /** Màn đầu tiên tạo ra từng hàm (theo taoHam): { tên: màn }. */
+  var noiTaoCache = null, noiTaoKhoa = -1;
+  function noiTaoHam() {
+    var ds = MH().danhSach;
+    if (noiTaoCache && noiTaoKhoa === ds.length) return noiTaoCache;
+    var kq = {};
+    ds.forEach(function (x) { (x.taoHam || []).forEach(function (t) { if (!kq[t]) kq[t] = x; }); });
+    noiTaoCache = kq; noiTaoKhoa = ds.length;
+    return kq;
+  }
+
   function trangThai(m, luu, moHet) {
     if (moHet) return { mo: true };
     var n = m.chuong, g = goiCua(n);
@@ -133,6 +145,14 @@
     var can = canHam(n);
     for (var i = 0; i < can.length; i++) {
       if (!qua(luu, can[i].man.ma)) return { mo: false, lyDo: 'can-ham', ham: can[i].ham, canChuong: can[i].man.chuong, canMan: can[i].man.ma };
+    }
+    // kho của em thiếu hàm mà màn cần (vd đã qua màn tạo hàm từ bản cũ, lúc máy chấm chưa bắt tạo): khóa, chỉ về màn tạo hàm đó (luu.coHam: game/luu.js)
+    if (luu && luu.coHam) {
+      var nt = noiTaoHam(), dsCan = m.hamCuaEmCan || [];
+      for (var j = 0; j < dsCan.length; j++) {
+        var tao = nt[dsCan[j]];
+        if (tao && tao !== m && qua(luu, tao.ma) && !luu.coHam(dsCan[j])) return { mo: false, lyDo: 'mat-ham', ham: dsCan[j], canChuong: tao.chuong, canMan: tao.ma };
+      }
     }
     var ds = manCua(n), h1 = ds.filter(function (x) { return x.hang === 'lam-quen'; });
     if (m.hang === 'lam-quen') {

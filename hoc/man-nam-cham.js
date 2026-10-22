@@ -384,7 +384,7 @@
 
     /* ------------------------------------------------------------- trùm */
     man({
-      so: 10, ten: 'Kho từ', hang: 'trum', hamCuaEmCan: ['go_wall', 'u_turn', 'grip', 'move'], cb: 'tu-mau',
+      so: 10, ten: 'Kho từ', hang: 'trum', hamCuaEmCan: ['go_wall', 'u_turn', 'grip', 'move', 'turn_right'], cb: 'tu-mau',
       deBai: 'Ba hành lang trong kho, mỗi nơi có một vật cần mang về: vật sắt, vật nam châm N hoặc vật nam châm S, kèm vật gỗ phía sau. Tiến sát vật, kéo nó về bằng grip(), mang tới ô vàng ("yellow") rồi thả vào ô đích ngay phía trên. Cảm biến màu ở bụng xe vẫn đọc được sàn khi xe đang dính vật.',
       veMaMau: 'Chương trình có sẵn đi sát vật rồi lúc nào cũng bật cực N. Chạy thử, xem sân nào vật không dính vào xe.',
       san: SAN_10, vatChat: CHAT_10,

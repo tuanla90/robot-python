@@ -52,6 +52,7 @@
     if (tt.lyDo === 'sao') return t('chon.khoaSao', { can: tt.can, co: tt.co });
     if (tt.lyDo === 'chuoi') return t('chon.khoaChuoi', { n: tt.chuoi });
     if (tt.lyDo === 'can-ham') { var cm = ManHoc.timMa(tt.canMan); return t('chon.khoaCanHam', { ham: tt.ham, id: cm ? cm.id : tt.canMan, ten: App.tenChuong(tt.canChuong) }); }
+    if (tt.lyDo === 'mat-ham') { var mm = ManHoc.timMa(tt.canMan); return t('chon.khoaMatHam', { ham: tt.ham, id: mm ? mm.id : tt.canMan }); }
     if (tt.lyDo === 'hang1') return t('chon.khoaHang1');
     if (tt.lyDo === 'hang23') return t('chon.khoaHang23');
     if (tt.lyDo === 'trum') return t('chon.trumKhoa');

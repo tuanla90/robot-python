@@ -828,7 +828,9 @@
     inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocomplete', 'off'); inp.setAttribute('spellcheck', 'false'); inp.setAttribute('data-nut', 'o-ten');
     function tao(ten) {
       ten = String(ten).trim();
-      var tc = { taoHam: man.taoHam || [] };
+      // tên cốt truyện được tạo: hàm màn này dạy tạo, CỘNG hàm màn này cần mà kho chưa có (22/10: thiếu u_turn ở 3.5 thì tạo lại được tại chỗ, không kẹt "tên dành cho màn khác")
+      var thieu = (man.hamCuaEmCan || []).filter(function (n) { return !KhoHam.ds().some(function (f) { return f.ten === n; }); });
+      var tc = { taoHam: (man.taoHam || []).concat(thieu) };
       var kt = KhoHam.kiemTen(ten, undefined, tc);
       if (!kt.ok) return baoLoi(kt.loi);
       var thamSo = dsTen.map(function (x) { return String(x).trim(); });

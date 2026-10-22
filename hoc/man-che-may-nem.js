@@ -371,7 +371,7 @@
     man({
       so: 8, ten: 'Xe chỉ quay phải', hang: 'bien-the', mucTieu: 'bong-mo', hamGoc: KHAY_HONG,
       phanCung: KHAY_HONG, canhBao: 'Bánh hỏng: xe chỉ quay phải',
-      hamCuaEmCan: ['launch', 'turn_right', 'right'],
+      hamCuaEmCan: ['launch', 'turn_right', 'right', 'toss'],
       deBai: 'Bánh phải hỏng hẳn và bánh trái chỉ còn quay tới: xe không đi được, chỉ quay phải được. Ném vật xanh dương ra xa, rồi đưa vật đỏ phía trước vào chỗ vật xanh dương vừa trống, như vật mờ. Em tự viết chương trình; xe quay mặt sang phải như xe mờ.',
       veMaMau: 'Chương trình chính còn trống. Khay chỉ còn bánh trái tiến, nên chỉ turn_right() của em chạy được: các hàm khác quay hay đi sẽ báo hỏng.',
       san: SAN_8, vatMau: VMAU_8,
@@ -396,7 +396,7 @@
     }),
 
     man({
-      so: 9, ten: 'Đường về', hang: 'bien-the', hamCuaEmCan: ['toss', 'back', 'turn_left'],
+      so: 9, ten: 'Đường về', hang: 'bien-the', hamCuaEmCan: ['toss', 'back', 'turn_left', 'move', 'turn_right'],
       deBai: 'Hàm go_load() của màn đưa xe đi tới nạp vật. Viết thân hàm undo_load() của màn để ném vật về đúng chỗ cũ rồi đưa xe về đúng chỗ và hướng xuất phát, như vật mờ.',
       veMaMau: 'Chương trình chính bị khóa: go_load() rồi undo_load(). Hàm go_load() cũng bị khóa, em chỉ xem được thân hàm. Thân hàm undo_load() đang chỉ có dòng pass, nghĩa là chưa làm gì: em viết lệnh thay cho nó. Điểm ◆ là chỗ xe đứng nạp vật.',
       san: SAN_9,

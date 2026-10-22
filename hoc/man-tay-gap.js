@@ -226,7 +226,7 @@
     }),
 
     man({
-      so: 6, ten: 'Hàm đặt drop', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'pick'], taoHam: ['drop'],
+      so: 6, ten: 'Hàm đặt drop', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'pick'], taoHam: ['drop'], batBuocTaoHam: true,     // 22/10: lách 10 ô bằng up4() rồi viết thẳng việc thả không được tính thắng
       deBai: 'Vật nằm ngay trước mặt xe. Nhặt vật, đi lên bốn ô, rẽ phải, đi tiếp một ô tới sát ô đích rồi thả. Tạo hàm drop() để gói việc đặt vật xuống và trả tay về tư thế nâng, giống pick().',
       san: ['###', '..D', '.##', '.##', 'o##', '.##'],
       vatChat: ['...', '...', '...', '...', 's..', '...'],                                // vật sắt: tay kẹp gắp như vật gỗ (màn gặp khó trước Nam châm)
@@ -252,7 +252,10 @@
         { moTa: 'Đi lố một ô: xe đứng lên ô đích rồi thả ra ngoài sân, vật không thả được', baiLam: { chinh: nhieu(['pick()'], lap('move()', 4), ['turn_right()', 'move()', 'move()', 'drop()']) },
           hamCuaEmMoi: [hDrop()], phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
         { moTa: 'Gọi drop() mà chưa tạo hàm', baiLam: { chinh: nhieu(['pick()'], lap('move()', 4), ['turn_right()', 'move()', 'drop()']) },
-          phaiCoMa: ['ham-chua-co'] }
+          phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Lách giới hạn 10 ô: gói đoạn đi lên vào up4() rồi viết thẳng việc thả, không tạo drop() (robot tới đích nhưng chưa thắng)',
+          baiLam: { chinh: nhieu(['pick()', 'up4()', 'turn_right()', 'move()'], T_THA_DAY) }, hamCuaEmMoi: [H('up4', lap('move()', 4))],
+          phaiCoMa: ['chua-tao-ham'] }
       ],
       goiY: ['Việc đặt vật cũng là một nhóm lệnh cố định, giống pick(): gói thành hàm drop().',
         'Chương trình chỉ vừa 10 ô khi đặt vật bằng drop().']

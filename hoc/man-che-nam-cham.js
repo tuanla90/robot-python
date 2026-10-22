@@ -336,7 +336,7 @@
 
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
-      so: 7, ten: 'Dây cực đấu ngược', hang: 'bien-the',
+      so: 7, hamCuaEmCan: ['turn_right'], ten: 'Dây cực đấu ngược', hang: 'bien-the',
       daoChieu: ['cuc'], canhBao: 'Dây cực đấu ngược',
       deBai: 'Dây cực của nam châm bị đấu ngược nên hàm fixed_grip() của màn chạy sai: lệnh magnet_n() bật ra cực S, magnet_s() bật ra cực N. Sửa fixed_grip() cho vật bị kéo về, ở cả hai sân, để chương trình chuyền vật sang phải như vật mờ.',
       veMaMau: 'Chương trình chính bị khóa: kéo vật bằng fixed_grip(), rẽ phải, ngắt điện. Hàm fixed_grip() đang giống grip() cũ. Thử nó trong sân thử của Xưởng hàm để thấy vật đi đâu.',

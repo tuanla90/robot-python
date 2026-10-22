@@ -342,7 +342,7 @@
 
     man({
       so: 9, ten: 'Số lùi đường dài', hang: 'bien-the', canFor: 'mat-sao', hamGoc: BANH_LUI,
-      hamCuaEmCan: ['back'],
+      hamCuaEmCan: ['back', 'move'],
       phanCung: BANH_LUI, canhBao: 'Xe chỉ còn số lùi',
       deBai: 'Hộp số của xe kẹt, chỉ còn lệnh lùi. Bóng mờ nằm cách xe sáu ô ở phía sau. Hàm reverse_run() của màn đang cho xe tiến nên chạy không được: sửa nó để xe lùi một mạch tới bóng mờ.',
       veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi reverse_run(). Thân hàm reverse_run() của màn đang là vòng lặp với move(). Chạy thử để xem hàm báo gì rồi sửa.',

@@ -385,7 +385,7 @@
     }),
 
     man({
-      so: 9, ten: 'Cánh xuống hỏng', hang: 'bien-the', bat: true, pin: 5, hamGoc: BAY_HONG, phanCung: BAY_HONG, canhBao: 'Cánh bay xuống hỏng', hamCuaEmCan: ['go', 'walk'],
+      so: 9, ten: 'Cánh xuống hỏng', hang: 'bien-the', bat: true, pin: 5, hamGoc: BAY_HONG, phanCung: BAY_HONG, canhBao: 'Cánh bay xuống hỏng', hamCuaEmCan: ['go', 'walk', 'recharge'],
       deBai: 'Cánh bay xuống của drone hỏng, go_down() không chạy được, nên recharge() cũng hỏng. May là ô sạc P nằm ngay trên đường bay lên cầu thang. Sửa fixed_fly(path) của màn để drone tới bóng mờ.',
       veMaMau: 'Chương trình chính bị khóa: fixed_fly("RRURRURR"). Hàm fixed_fly(path) của màn đang gọi recharge() mà recharge() cần go_down(): chạy thử, xem lệnh nào bị báo hỏng rồi sửa thân hàm.',
       san: SAN_9,
