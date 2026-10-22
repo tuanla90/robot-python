@@ -46,14 +46,21 @@ console.log('== 1. ThuTuChuong.goi ==');
   kiem('mỗi chương của thuTu nằm đúng một gói', TT.thuTu.every((c) => phang.filter((x) => x === c).length === 1) && phang.every((c) => TT.thuTu.includes(c)),
     TT.thuTu.filter((c) => phang.filter((x) => x === c).length !== 1).join(', '));
   kiem('gói xếp theo đúng thứ tự chương (nối các gói lại = thuTu)', JSON.stringify(phang) === JSON.stringify(TT.thuTu));
-  kiem('gói hai chương = chương làm quen + chương chế lệnh của nó (che-*), riêng gói Xưởng hàm = xuong-ham + che-xe',
-    goi.filter((g) => g.chuong.length === 2).every((g) => /^che-/.test(g.chuong[1])) && JSON.stringify(goi.find((g) => g.ma === 'ham').chuong) === '["xuong-ham","che-xe"]');
+  kiem('gói hai chương = chương làm quen + chương chế lệnh của nó (che-*), riêng gói Xưởng hàm = xuong-ham + che-xe, gói Đường dài = bang-chuyen + tham-so',
+    goi.filter((g) => g.chuong.length === 2 && g.ma !== 'bang-chuyen').every((g) => /^che-/.test(g.chuong[1])) && JSON.stringify(goi.find((g) => g.ma === 'ham').chuong) === '["xuong-ham","che-xe"]' &&
+      JSON.stringify(goi.find((g) => g.ma === 'bang-chuyen').chuong) === '["bang-chuyen","tham-so"]');
+  kiem('loai của gói (nếu khai) là bo-phan / khai-niem / thu-thach', goi.every((g) => g.loai === undefined || ['bo-phan', 'khai-niem', 'thu-thach'].includes(g.loai)));
+  kiem('gói thử thách chỉ có một chương (10 màn); gói bộ phận có chương làm quen (gói nhiều chương: kèm chương chế lệnh)',
+    goi.filter((g) => g.loai === 'thu-thach').every((g) => g.chuong.length === 1) && goi.filter((g) => g.loai === 'bo-phan').every((g) => g.chuong.length === 1 || /^che-/.test(g.chuong[1])),
+    goi.filter((g) => g.loai === 'thu-thach' && g.chuong.length !== 1).map((g) => g.ma).join(', '));
 }
 
 console.log('\n== 2. MoGoi.dsGoi: sao cần ==');
 {
   const ds = MoGoi.dsGoi(), coMan = ds.filter((g) => !g.sapCo);
   kiem('gói đầu là Xe hai bánh, cần 0 sao', ds[0].ma === 'xe' && ds[0].saoCan === 0);
+  kiem('dsGoi mang loai (mặc định khai-niem): Tay gắp là bo-phan, Vòng lặp khai-niem, Robot hoàn thiện thu-thach',
+    MoGoi.goiTheoMa('tay-gap').loai === 'bo-phan' && MoGoi.goiTheoMa('vong-lap').loai === 'khai-niem' && MoGoi.goiTheoMa('robot').loai === 'thu-thach');
   let truoc = 0, dung = true, giam = false, cu = 0;
   for (const g of coMan) {
     const mong = Math.floor(MoGoi.TI_LE_SAO * truoc / 5) * 5;

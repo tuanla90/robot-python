@@ -350,6 +350,8 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .g-the.bt:active{transform:scale(.86) translateY(3px)}
 .g-the.giua.bt:active{transform:translateY(3px)}
 .g-the.dot2{--c:#3f8fa0;--hi:#86d2de;--lo:#215a68}
+.g-the.thu-thach{--c:#e9a21c;--hi:#ffd879;--lo:#a96a08}                     /* gói thử thách: hộp vàng hổ phách */
+.g-the.thu-thach .g-so{letter-spacing:1px}
 .g-the.xong{--c:#3f9a4f;--hi:#8fdc8a;--lo:#22602e}
 .g-the.khoa,.g-the.sap{--c:#6a5a6e;--hi:#8e7e92;--lo:#473a4c}
 .g-the.nope{animation:shake .25s steps(2) 2}
@@ -1089,3 +1091,4 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 @keyframes md-quay{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 @keyframes md-di{from{transform:translateX(0)}to{transform:translateX(var(--d))}}
 @keyframes md-sang{0%,100%{filter:drop-shadow(0 0 0 #ffd95a)}50%{filter:drop-shadow(0 0 8px #ffd95a)}}
+.g-ch.tt{border-radius:0;transform:rotate(45deg) scale(.85)}                    /* chấm của gói thử thách: hình thoi */

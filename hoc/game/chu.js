@@ -322,9 +322,10 @@
 
       /* ---- bảng mở khóa bộ phận mới */
       'moKhoa.tieuDe': 'MỞ GÓI MỚI!',
-      'moKhoa.loi': 'Đủ {sao} ★ rồi! R1 tìm lại được:',            // gói bộ phận (bang-mo-khoa.js: GOI_BO_PHAN)
+      'moKhoa.loi': 'Đủ {sao} ★ rồi! R1 tìm lại được:',            // gói loai 'bo-phan' (thu-tu-chuong.js)
       'moKhoa.loiHoc': 'Đủ {sao} ★ rồi! R1 học thêm được:',        // gói khái niệm: hàm, vòng lặp, danh sách, lắp ráp…
-      'moKhoa.loiCa': 'Đủ {sao} ★ rồi! R1 có thêm:',               // mở cùng lúc cả hai loại
+      'moKhoa.loiThu': 'Đủ {sao} ★ rồi! Thử thách mới đã mở:',      // gói loai 'thu-thach'
+      'moKhoa.loiCa': 'Đủ {sao} ★ rồi! R1 có thêm:',               // mở cùng lúc nhiều loại
       // màn khởi đầu (man-dau.js)
       'dau.phuDe': 'Lập trình robot bằng Python',
       'dau.choi': 'CHƠI',
@@ -334,6 +335,7 @@
       'goi.tieuDe': 'CHỌN GÓI',
       'goi.ve': 'Về màn đầu',
       'goi.so': 'GÓI {n}',
+      'goi.thuThach': 'THỬ THÁCH',
       'goi.moTa': '{c} chương · {m} màn',
       'goi.moTa1': '{m} màn',
       'goi.canSao': 'Cần {n}',

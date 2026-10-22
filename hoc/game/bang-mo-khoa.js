@@ -7,13 +7,13 @@
   'use strict';
 
   var h = TP.h;
-  // gói là một BỘ PHẬN robot rơi mất trong phim mở đầu (mo-dau.js): "R1 tìm lại được"; gói khác (hàm, vòng lặp, danh sách, lắp ráp…): "R1 học thêm được"
-  var GOI_BO_PHAN = ['tay-gap', 'cam-bien', 'nhen', 'xich', 'omni', 'sung-hoi', 'mau', 'nam-cham', 'tay-xoay', 'may-nem', 'drone'];
+  // lời đầu bảng theo g.loai (thu-tu-chuong.js): bộ phận rơi mất trong phim mở đầu (mo-dau.js) → "R1 tìm lại được"; khái niệm → "R1 học thêm được"; thử thách → "Mở thử thách"
+  var LOI = { 'bo-phan': 'moKhoa.loi', 'khai-niem': 'moKhoa.loiHoc', 'thu-thach': 'moKhoa.loiThu' };
 
-  /** Lời đầu bảng theo loại các gói vừa mở. */
+  /** Khóa chữ đầu bảng cho các gói vừa mở: cùng một loại thì lời riêng của loại đó, lẫn loại thì lời chung. */
   function loiDau(ds) {
-    var bp = ds.filter(function (g) { return GOI_BO_PHAN.indexOf(g.ma) >= 0; }).length;
-    return bp === ds.length ? 'moKhoa.loi' : bp === 0 ? 'moKhoa.loiHoc' : 'moKhoa.loiCa';
+    var loai = ds.map(function (g) { return g.loai || 'khai-niem'; }).filter(function (l, i, a) { return a.indexOf(l) === i; });
+    return loai.length === 1 ? LOI[loai[0]] || 'moKhoa.loiHoc' : 'moKhoa.loiCa';
   }
 
   /** Hình của một gói: huy hiệu của chương `hinh` nếu có, không thì dấu + để giữ chỗ. */
@@ -43,5 +43,5 @@
     hop.than.appendChild(hang);
   }
 
-  window.MoKhoa = { mo: mo, hinhGoi: hinhGoi, loiDau: loiDau, GOI_BO_PHAN: GOI_BO_PHAN };
+  window.MoKhoa = { mo: mo, hinhGoi: hinhGoi, loiDau: loiDau };
 })();

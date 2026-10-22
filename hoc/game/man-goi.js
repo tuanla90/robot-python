@@ -1,7 +1,7 @@
 /* ============================================================================
    man-goi.js — "Đường học": MÀN CHỌN GÓI (window.ChonGoi), kiểu chọn hộp của Cut the Rope.
    Một dải hộp lướt ngang (vuốt, hay bấm ◀ ▶, hay chạm hộp bên cạnh); hộp giữa to, hai hộp hai bên ló ra một mép.
-   Hộp: "GÓI n" · huy hiệu · tên · "2 chương · 20 màn" · sao đã lấy / tối đa. Gói chưa đủ sao: xám + ổ khóa + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
+   Hộp: "GÓI n" · huy hiệu · tên · "2 chương · 20 màn" · sao đã lấy / tối đa. Gói thử thách (loai 'thu-thach'): hộp vàng, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + ổ khóa + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
    Chạm hộp giữa đã mở → lưới màn của gói (App.vaoGoi). Gói và luật mở ở game/mo-goi.js.
    ========================================================================== */
 (function () {
@@ -94,7 +94,7 @@
     S.ds.forEach(function (g, k) { el.day.appendChild(the(g, k)); });
     el.cham.innerHTML = '';
     S.ds.forEach(function (g, k) {
-      var d = h('button', 'g-ch ' + (g.sapCo ? 'sap' : App.goiMo(g) ? 'mo' : 'khoa')); d.setAttribute('aria-label', g.ten);
+      var d = h('button', 'g-ch ' + (g.sapCo ? 'sap' : App.goiMo(g) ? 'mo' : 'khoa') + (g.loai === 'thu-thach' ? ' tt' : '')); d.setAttribute('aria-label', g.ten);
       d.addEventListener('click', function () { dat(k, true); });
       el.cham.appendChild(d);
     });
@@ -113,10 +113,11 @@
 
   function the(g, k) {
     var mo = App.goiMo(g), xong = mo && App.soQua(g) === g.man.length;
-    var b = h('div', 'g-the bt ' + (g.sapCo ? 'sap' : !mo ? 'khoa' : xong ? 'xong' : 'mo') + (g.dot === 2 ? ' dot2' : ''));
+    var tt = g.loai === 'thu-thach';
+    var b = h('div', 'g-the bt ' + (g.sapCo ? 'sap' : !mo ? 'khoa' : xong ? 'xong' : 'mo') + (g.dot === 2 ? ' dot2' : '') + (tt ? ' thu-thach' : ''));
     b.setAttribute('data-goi', g.ma); b.setAttribute('role', 'button'); b.setAttribute('aria-label', t('goi.so', { n: g.so }) + ' ' + g.ten);
     b.style.left = (k * BUOC) + 'px';
-    b.appendChild(h('div', 'g-so', t('goi.so', { n: g.so })));
+    b.appendChild(h('div', 'g-so', tt ? t('goi.thuThach') : t('goi.so', { n: g.so })));
     var mat = h('div', 'g-mat chalk');
     var co = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0;
     mat.appendChild(co ? Ve.mk(HuyHieu.ve(g.hinh, g.sapCo || !mo ? 'khoa' : xong ? 'xong' : 'mo'), 3) : Ve.ico('plus', 5, { fill: '#ffd95a', line: '#1b120a' }));

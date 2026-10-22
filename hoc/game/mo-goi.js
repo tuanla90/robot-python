@@ -27,7 +27,7 @@
   function sao(luu, ma) { var s = luu && luu.saoTot ? luu.saoTot(ma) : 0; return s > 0 ? s : 0; }
   function qua(luu, ma) { return sao(luu, ma) > 0; }
 
-  /** Các gói theo thứ tự chương (thuTu): [{ ma, ten, so, chuong (chương CÓ màn), chuongKhai, man, saoToiDa, saoCan, sapCo, hinh, dot }]. */
+  /** Các gói theo thứ tự chương (thuTu): [{ ma, ten, so, chuong (chương CÓ màn), chuongKhai, man, saoToiDa, saoCan, sapCo, hinh, loai, dot }]. */
   function dsGoi() {
     var ds = MH().danhSach, tt = TT();
     var thuTu = (tt.thuTu || []).slice();
@@ -50,6 +50,7 @@
         chuong: coMan, chuongKhai: khai, man: man,
         saoToiDa: man.length * 3, sapCo: !man.length,
         hinh: (g && g.hinh) || khai[0],
+        loai: (g && g.loai) || 'khai-niem',                  // 'bo-phan' | 'khai-niem' | 'thu-thach' (thu-tu-chuong.js)
         dot: khai.some(function (x) { return dot2.indexOf(x) >= 0; }) ? 2 : 1
       };
       goi.saoCan = goi.sapCo ? 0 : (g && typeof g.sao === 'number' ? g.sao : Math.floor(TI_LE_SAO * truoc / 5) * 5);

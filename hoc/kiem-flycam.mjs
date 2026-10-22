@@ -87,9 +87,9 @@ function conSan(m, i) {
 console.log('\n== 1. Chương flycam: dữ liệu và luật từng màn ==');
 const BANG = [];
 {
-  kiem('đúng 10 màn, số 1..10, mã flycam.1…, id theo vị trí trong thuTu (ngay sau che-drone, cùng gói Drone; chương cuối là rap-du), tên "Flycam", đợt 2',
+  kiem('đúng 10 màn, số 1..10, mã flycam.1…, id theo vị trí trong thuTu (ngay sau che-drone, gói riêng Flycam ngay sau gói Drone; chương cuối là rap-du), tên "Flycam", đợt 2',
     fly.length === 10 && fly.every((m, i) => m.so === i + 1 && m.id === VT + '.' + (i + 1) && m.ma === 'flycam.' + (i + 1)) && ThuTu.thuTu.indexOf('flycam') === ThuTu.thuTu.indexOf('che-drone') + 1 &&
-      ThuTu.ten['flycam'] === 'Flycam' && ThuTu.laDot2('flycam') && ThuTu.goi.some((g) => g.chuong.includes('drone') && g.chuong.includes('che-drone') && g.chuong.includes('flycam')));
+      ThuTu.ten['flycam'] === 'Flycam' && ThuTu.laDot2('flycam') && ThuTu.goi.findIndex((g) => g.ma === 'flycam' && J(g.chuong) === '["flycam"]') === ThuTu.goi.findIndex((g) => g.ma === 'drone' && J(g.chuong) === '["drone","che-drone"]') + 1);
   kiem('tên các màn: Tìm ô đỏ, Rẽ theo màu, Đọc đơn, Làm theo đơn, Giao theo đơn, Về nhà có sạc, Đường về, Ghi thiếu, Camera hỏng, Kho đơn hàng; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu flycam',
     J(fly.map((m) => m.ten)) === J(['Tìm ô đỏ', 'Rẽ theo màu', 'Đọc đơn', 'Làm theo đơn', 'Giao theo đơn', 'Về nhà có sạc', 'Đường về', 'Ghi thiếu', 'Camera hỏng', 'Kho đơn hàng']) &&
       J(fly.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && fly.every((m) => !!m.huyHieu === (m.so === 10)) && fly[9].huyHieu.ma === 'flycam' && fly[9].huyHieu.ten === 'Huy hiệu Flycam');
