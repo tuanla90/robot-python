@@ -3,6 +3,8 @@
    Một dải hộp lướt ngang (vuốt, hay bấm ◀ ▶, hay chạm hộp bên cạnh); hộp giữa to, hai hộp hai bên ló ra một mép.
    Hộp: "GÓI n" · huy hiệu · tên · "2 chương · 20 màn" · sao đã lấy / tối đa. Gói thử thách (loai 'thu-thach'): hộp vàng, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + ổ khóa + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
    Chạm hộp giữa đã mở → lưới màn của gói (App.vaoGoi). Gói và luật mở ở game/mo-goi.js.
+   Có từ hai MÙA (ThuTuChuong.mua) thì dưới tiêu đề có hàng nút chọn mùa; dải hộp chỉ hiện gói của mùa đang chọn (App.mua), số gói đếm trong mùa.
+   Một mùa thì không có hàng này (màn hình như cũ).
    ========================================================================== */
 (function () {
   'use strict';
@@ -23,6 +25,8 @@
     el.sao = h('div', 'g-tong');
     dau.appendChild(el.ve); dau.appendChild(el.td); dau.appendChild(el.sao);
     host.appendChild(dau);
+
+    el.mua = h('div', 'g-mua'); host.appendChild(el.mua);
 
     el.khung = h('div', 'g-khung'); el.day = h('div', 'g-day'); el.khung.appendChild(el.day);
     host.appendChild(el.khung);
@@ -81,17 +85,53 @@
     clearTimeout(tbHen); tbHen = setTimeout(function () { el.tb.classList.remove('hien'); }, 2600);
   }
 
+  /** Lời báo mùa chưa mở (theo điều kiện `mo` của mùa). */
+  function loiMua(mu) {
+    if (!mu) return t('chon.khoaMua');
+    var c = mu.mo || {};
+    if (typeof c.sao === 'number') { var mt = App.dsMua().filter(function (x) { return x.ma === (c.mua || App.dsMua()[0].ma); })[0]; return t('goi.khoaMuaSao', { sao: c.sao, mua: mt ? mt.ten : '', ten: mu.ten }); }
+    if (c.goi) { var g = App.goiTheoMa(c.goi); return t('goi.khoaMuaGoi', { goi: g ? g.ten : c.goi, ten: mu.ten }); }
+    return t('goi.khoaMua', { ten: mu.ten });
+  }
+  /** Hàng chọn mùa (chỉ khi có từ hai mùa). */
+  function veMua() {
+    var dsM = App.dsMua();
+    el.mua.innerHTML = '';
+    el.mua.style.display = dsM.length > 1 ? '' : 'none';
+    if (dsM.length < 2) return;
+    dsM.forEach(function (mu) {
+      var mo = App.muaMo(mu);
+      var b = h('button', 'bt ' + (mu.ma === App.mua ? 'g-yl on' : 'g-wd') + ' g-mua-nut' + (mo ? '' : ' khoa'));
+      b.setAttribute('data-mua', mu.ma);
+      if (!mo) { var k = h('span'); k.setAttribute('data-i', 'lock'); k.setAttribute('data-s', '1'); b.appendChild(k); }
+      b.appendChild(h('span', null, mu.ten));
+      b.addEventListener('click', function () {
+        if (!mo) { lac(b); thongBao(loiMua(mu)); return; }
+        if (mu.ma === App.mua) return;
+        App.mua = mu.ma;
+        var dau = mu.goi.filter(function (g) { return !g.sapCo; })[0];
+        ve(dau ? dau.ma : null);
+      });
+      el.mua.appendChild(b);
+    });
+    Ve.hydrate(el.mua);
+  }
+
   /** Vẽ lại; ma (tùy chọn): gói cần đưa ra giữa (mặc định App.goi). */
   function ve(ma) {
-    S.ds = App.dsGoi();
     var dich = ma || App.goi, i = 0;
+    var gDich = App.goiTheoMa(dich);
+    if (gDich) App.mua = gDich.mua;
+    if (!App.mua) App.mua = App.dsMua()[0].ma;
+    S.ds = App.dsGoi().filter(function (g) { return g.mua === App.mua; });
+    veMua();
     S.ds.forEach(function (g, k) { if (g.ma === dich) i = k; });
     el.sao.innerHTML = '';
     el.sao.appendChild(Ve.sao(true, 2));
     el.sao.appendChild(h('span', null, String(App.tongSao())));
 
     el.day.innerHTML = '';
-    S.ds.forEach(function (g, k) { el.day.appendChild(the(g, k)); });
+    S.ds.forEach(function (g, k) { el.day.appendChild(the(g, k)); });          // the(g, k): k = vị trí trong mùa → "GÓI k+1"
     el.cham.innerHTML = '';
     S.ds.forEach(function (g, k) {
       var d = h('button', 'g-ch ' + (g.sapCo ? 'sap' : App.goiMo(g) ? 'mo' : 'khoa') + (g.loai === 'thu-thach' ? ' tt' : '')); d.setAttribute('aria-label', g.ten);
@@ -115,9 +155,9 @@
     var mo = App.goiMo(g), xong = mo && App.soQua(g) === g.man.length;
     var tt = g.loai === 'thu-thach';
     var b = h('div', 'g-the bt ' + (g.sapCo ? 'sap' : !mo ? 'khoa' : xong ? 'xong' : 'mo') + (g.dot === 2 ? ' dot2' : '') + (tt ? ' thu-thach' : ''));
-    b.setAttribute('data-goi', g.ma); b.setAttribute('role', 'button'); b.setAttribute('aria-label', t('goi.so', { n: g.so }) + ' ' + g.ten);
+    b.setAttribute('data-goi', g.ma); b.setAttribute('role', 'button'); b.setAttribute('aria-label', t('goi.so', { n: k + 1 }) + ' ' + g.ten);
     b.style.left = (k * BUOC) + 'px';
-    b.appendChild(h('div', 'g-so', tt ? t('goi.thuThach') : t('goi.so', { n: g.so })));
+    b.appendChild(h('div', 'g-so', tt ? t('goi.thuThach') : t('goi.so', { n: k + 1 })));
     var mat = h('div', 'g-mat chalk');
     var co = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0;
     mat.appendChild(co ? Ve.mk(HuyHieu.ve(g.hinh, g.sapCo || !mo ? 'khoa' : xong ? 'xong' : 'mo'), 3) : Ve.ico('plus', 5, { fill: '#ffd95a', line: '#1b120a' }));
@@ -131,7 +171,8 @@
       var dong = h('div', 'g-dong');
       dong.appendChild(Ve.sao(true, 2));
       if (mo) dong.appendChild(h('span', null, App.saoGoi(g) + '/' + g.saoToiDa));
-      else dong.appendChild(h('span', 'g-can', t('goi.canSao', { n: g.saoCan })));
+      else if (App.muaMo(App.dsMua().filter(function (x) { return x.ma === g.mua; })[0])) dong.appendChild(h('span', 'g-can', t('goi.canSao', { n: g.saoCan })));
+      else dong.appendChild(h('span', 'g-can', t('chon.khoaMua')));
       b.appendChild(dong);
       if (xong) b.appendChild(h('div', 'g-xong', t('goi.xong')));
     }
@@ -139,7 +180,10 @@
       if (S.vuaKeo && Date.now() - S.vuaKeo < 250) return;                // vừa vuốt xong: không tính là chạm
       if (k !== S.i) { dat(k, true); return; }                            // chạm hộp bên cạnh: đưa ra giữa
       if (g.sapCo) { lac(b); thongBao(t('goi.sapCoTb')); return; }
-      if (!App.goiMo(g)) { lac(b); thongBao(t('goi.khoa', { can: g.saoCan, co: App.tongSao() })); return; }
+      if (!App.goiMo(g)) {
+        var mu = App.dsMua().filter(function (x) { return x.ma === g.mua; })[0];
+        lac(b); thongBao(App.muaMo(mu) ? t('goi.khoa', { can: g.saoCan, co: App.saoMua(g.mua) }) : loiMua(mu)); return;
+      }
       App.vaoGoi(g.ma);
     });
     return b;
@@ -163,5 +207,5 @@
     var g = S.ds[S.i]; if (g && !g.sapCo) App.goi = g.ma;
   }
 
-  window.ChonGoi = { dung: dung, ve: ve, thongBao: thongBao };
+  window.ChonGoi = { dung: dung, ve: ve, thongBao: thongBao, loiMua: loiMua };
 })();

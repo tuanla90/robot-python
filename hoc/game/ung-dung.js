@@ -9,6 +9,7 @@
 
   var App = {
     goi: null,           // mã gói đang xem (ThuTuChuong.goi, xem MoGoi.dsGoi())
+    mua: null,           // mã mùa đang xem ở màn chọn gói (ThuTuChuong.mua, xem MoGoi.dsMua())
     chuong: null,        // mã chương đang xem / vừa chơi (xem ManHoc.chuong())
     moHet: !!(window.GoLoi && GoLoi.docMoHet()),   // chế độ thử: mở hết (bật / tắt trong bảng Gỡ lỗi, go-loi.js; giữ ở localStorage nên tải lại vẫn còn)
     man: null            // màn đang chơi
@@ -52,6 +53,10 @@
 
   /* ---------------------------------------------------------------- gói + mở khóa (game/mo-goi.js) */
   App.dsGoi = function () { return MoGoi.dsGoi(); };
+  /** Mùa (ThuTuChuong.mua): danh sách, mùa đã mở chưa, sao trong mùa. Một mùa thì màn chọn gói không hiện hàng chọn mùa. */
+  App.dsMua = function () { return MoGoi.dsMua(); };
+  App.muaMo = function (mu) { return MoGoi.muaMo(mu, Luu, App.moHet); };
+  App.saoMua = function (ma) { return MoGoi.saoMua(ma, Luu); };
   App.goiCua = function (maChuong) { return MoGoi.goiCua(maChuong); };
   App.goiTheoMa = function (ma) { return MoGoi.goiTheoMa(ma); };
   App.tongSao = function () { return MoGoi.tongSao(Luu); };
@@ -78,7 +83,7 @@
   App.baoGoiMoi = function (khiXong) {
     var moi = App.dsGoi().filter(function (g) { return !g.sapCo && g.saoCan > 0 && MoGoi.goiMo(g, Luu) && !Luu.daXem('goi-mo:' + g.ma); });
     if (!moi.length || !window.MoKhoa) { if (khiXong) khiXong(); return false; }
-    moi.forEach(function (g) { Luu.datDaXem('goi-mo:' + g.ma); });
+    moi.forEach(function (g) { Luu.datDaXem('goi-mo:' + g.ma); Luu.datDaXem('mua-mo:' + g.mua); });       // gói / mùa đã mở thì không bao giờ khóa lại (mo-goi.js)
     MoKhoa.mo(moi, function () { if (App.manHinh === 'goi' && window.ChonGoi) ChonGoi.ve(moi[0].ma); if (khiXong) khiXong(); });
     return true;
   };
@@ -86,7 +91,7 @@
   /** Lần đầu chạy bản có gói: các gói đã mở sẵn (tiến độ cũ) coi như đã báo, khỏi bảng "Mở gói mới!" dài một lần. */
   function ghiGoiDaMo() {
     if (Luu.daXem('goi-khoi-tao')) return;
-    App.dsGoi().forEach(function (g) { if (!g.sapCo && MoGoi.goiMo(g, Luu)) Luu.datDaXem('goi-mo:' + g.ma); });
+    App.dsGoi().forEach(function (g) { if (!g.sapCo && MoGoi.goiMo(g, Luu)) { Luu.datDaXem('goi-mo:' + g.ma); Luu.datDaXem('mua-mo:' + g.mua); } });
     Luu.datDaXem('goi-khoi-tao');
   }
   /** Màn kế tiếp đã mở (theo thứ tự trong danh sách; hết chương thì sang màn đầu chương kế), hoặc null. */
@@ -127,7 +132,7 @@
     var m = ManHoc.timMa(ma) || ManHoc.tim(ma); if (!m) return;
     if (App.moHet && window.GoLoi && GoLoi.napKhiMoHet) GoLoi.napKhiMoHet(m);   // "Mở hết" (gỡ lỗi): nhảy cóc vẫn có hàm cốt truyện các màn trước
     App.man = m; App.chuong = m.chuong;
-    var g = App.goiCua(m.chuong); if (g) App.goi = g.ma;
+    var g = App.goiCua(m.chuong); if (g) { App.goi = g.ma; App.mua = g.mua; }
     if (m.lapRap && window.LapRobot) {                 // màn lắp ráp (lap-rap.js): chọn part trước, "Lắp xong" mới vào màn chơi; ◀ về lưới màn
       App.hien('lap');
       LapRobot.vao(m, { cach: Luu.docLap(m.ma), khiVe: function () { App.veChon(); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(m, cach); } });
@@ -194,6 +199,7 @@
     var dau = App.manTiepTheo(), dsc = App.dsChuong();
     App.chuong = dau ? dau.chuong : dsc[dsc.length - 1].ma;
     App.goi = (App.goiCua(App.chuong) || App.dsGoi()[0]).ma;
+    App.mua = App.goiTheoMa(App.goi).mua;
     App.hien('dau');
     if (!r.ok) App.baoKho = r;
     vua();

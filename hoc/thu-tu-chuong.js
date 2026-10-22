@@ -56,29 +56,36 @@
     // `loai` (22/10): 'bo-phan' = một bộ phận robot (phim mở đầu: R1 đi tìm lại) · 'khai-niem' = một ý Python / kiểu sân mới (mặc định)
     //   · 'thu-thach' = chặng tổng hợp 10 màn, không dạy món mới (hộp màu vàng "THỬ THÁCH"). Cỡ gói: món mới 20 màn, thử thách 10 màn.
     // `hinh`: mã chương lấy huy hiệu làm hình hộp (mặc định chương đầu). Chương không có trong gói nào thì tự thành một gói riêng, đứng đúng chỗ trong `thuTu`.
+    // MÙA (22/10, kiểu episode của Angry Birds): mùa 1 là lộ trình chính. GÓI MỞ RỘNG thêm vào MÙA MỚI, không chen vào giữa mùa 1:
+    //   1. thêm chương mới vào CUỐI thuTu, viết tệp màn; 2. thêm mùa vào `mua` với điều kiện `mo` ({ goi: 'cam-bien' } = qua hết gói đó,
+    //   hay { sao: 200, mua: 'mua-1' } = đủ 200 sao ở mùa 1); 3. thêm gói với `mua: '<mã mùa>'` (không khai `sao` thì tự tính trong mùa).
+    // `sao` của 22 gói mùa 1 khai CỨNG (bằng công thức TI_LE_SAO lúc 22/10): sửa danh sách gói sau này không làm đổi ngưỡng đã công bố.
+    mua: [
+      { ma: 'mua-1', ten: 'Xưởng R1' }
+    ],
     goi: [
-      { ma: 'xe', ten: 'Xe hai bánh', chuong: ['hai-banh'] },
-      { ma: 'ham', ten: 'Xưởng hàm', chuong: ['xuong-ham', 'che-xe'] },
-      { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', chuong: ['tay-gap', 'che-tay'] },
-      { ma: 'vong-lap', ten: 'Vòng lặp', chuong: ['vong-lap', 'che-lap'] },
-      { ma: 'cam-bien', ten: 'Cảm biến', loai: 'bo-phan', chuong: ['khoang-cach', 'che-cam-bien'] },
-      { ma: 'robot', ten: 'Robot hoàn thiện', loai: 'thu-thach', chuong: ['robot-hoan-thien'] },
-      { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', chuong: ['hai-robot'] },                 // 22/10 hai robot, hai chương trình, nhịp chung (KE-HOACH-HAI-ROBOT.md)
-      { ma: 'bang-chuyen', ten: 'Đường dài', chuong: ['bang-chuyen', 'tham-so'] },       // 22/10: gộp Băng chuyền + Hàm có tham số (mỗi chương 10 màn đứng lẻ) thành một gói 20 màn
-      { ma: 'nhen', ten: 'Thân nhện', loai: 'bo-phan', chuong: ['nhen', 'che-nhen'] },
-      { ma: 'list', ten: 'Danh sách', chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
-      { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', chuong: ['xich', 'che-xich'] },
-      { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', chuong: ['omni', 'che-omni'] },
-      { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', chuong: ['sung-hoi', 'che-sung-hoi'] },
-      { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', chuong: ['mau', 'che-mau'] },
-      { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
-      { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', chuong: ['nam-cham', 'che-nam-cham'] },
-      { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', chuong: ['tay-xoay', 'che-tay-xoay'] },
-      { ma: 'may-nem', ten: 'Máy ném', loai: 'bo-phan', chuong: ['may-nem', 'che-may-nem'] },
-      { ma: 'rap-tay', ten: 'Lắp ráp: Thân + Tay', loai: 'thu-thach', chuong: ['rap-tay'] },
-      { ma: 'drone', ten: 'Drone', loai: 'bo-phan', chuong: ['drone', 'che-drone'] },
-      { ma: 'flycam', ten: 'Flycam', loai: 'bo-phan', chuong: ['flycam'] },              // 22/10 tách khỏi gói Drone: drone gắn camera nhìn xuống, look() + list (17/10)
-      { ma: 'rap-du', ten: 'Lắp ráp: Đủ bộ', loai: 'thu-thach', chuong: ['rap-du'] }
+      { ma: 'xe', ten: 'Xe hai bánh', sao: 0, chuong: ['hai-banh'] },
+      { ma: 'ham', ten: 'Xưởng hàm', sao: 15, chuong: ['xuong-ham', 'che-xe'] },
+      { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 45, chuong: ['tay-gap', 'che-tay'] },
+      { ma: 'vong-lap', ten: 'Vòng lặp', sao: 75, chuong: ['vong-lap', 'che-lap'] },
+      { ma: 'cam-bien', ten: 'Cảm biến', loai: 'bo-phan', sao: 105, chuong: ['khoang-cach', 'che-cam-bien'] },
+      { ma: 'robot', ten: 'Robot hoàn thiện', loai: 'thu-thach', sao: 135, chuong: ['robot-hoan-thien'] },
+      { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 150, chuong: ['hai-robot'] },                 // 22/10 hai robot, hai chương trình, nhịp chung (KE-HOACH-HAI-ROBOT.md)
+      { ma: 'bang-chuyen', ten: 'Đường dài', sao: 165, chuong: ['bang-chuyen', 'tham-so'] },       // 22/10: gộp Băng chuyền + Hàm có tham số (mỗi chương 10 màn đứng lẻ) thành một gói 20 màn
+      { ma: 'nhen', ten: 'Thân nhện', loai: 'bo-phan', sao: 195, chuong: ['nhen', 'che-nhen'] },
+      { ma: 'list', ten: 'Danh sách', sao: 225, chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
+      { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', sao: 255, chuong: ['xich', 'che-xich'] },
+      { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', sao: 285, chuong: ['omni', 'che-omni'] },
+      { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', sao: 315, chuong: ['sung-hoi', 'che-sung-hoi'] },
+      { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', sao: 345, chuong: ['mau', 'che-mau'] },
+      { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', sao: 375, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
+      { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', sao: 390, chuong: ['nam-cham', 'che-nam-cham'] },
+      { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 420, chuong: ['tay-xoay', 'che-tay-xoay'] },
+      { ma: 'may-nem', ten: 'Máy ném', loai: 'bo-phan', sao: 450, chuong: ['may-nem', 'che-may-nem'] },
+      { ma: 'rap-tay', ten: 'Lắp ráp: Thân + Tay', loai: 'thu-thach', sao: 480, chuong: ['rap-tay'] },
+      { ma: 'drone', ten: 'Drone', loai: 'bo-phan', sao: 495, chuong: ['drone', 'che-drone'] },
+      { ma: 'flycam', ten: 'Flycam', loai: 'bo-phan', sao: 525, chuong: ['flycam'] },              // 22/10 tách khỏi gói Drone: drone gắn camera nhìn xuống, look() + list (17/10)
+      { ma: 'rap-du', ten: 'Lắp ráp: Đủ bộ', loai: 'thu-thach', sao: 540, chuong: ['rap-du'] }
     ],
     ten: {
       'hai-banh': 'Hai bánh',
