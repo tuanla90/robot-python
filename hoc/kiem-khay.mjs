@@ -610,7 +610,7 @@ console.log('\n== 10. DenBoPhan: bộ phận có trên màn, bộ phận sáng t
     kiem(ma + ' (vết thật): đèn "' + k + '" sáng ít nhất một nhịp', dem(ds, k) >= 1, J(ds.map((x) => Object.keys(x.sang).filter((q) => x.sang[q]).join('+'))));
   }
   const nguonMC = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), cssDen = fs.readFileSync(path.join(day, 'game', 'choi.css'), 'utf8');
-  kiem('man-choi.js: đèn nạp theo màn (DenBoPhan.nap), sáng TRƯỚC khi phát nhịp và tắt SAU khi phát xong, tắt khi chạy lại; không còn đèn T / P cũ', /DenBoPhan\.nap\(m\)/.test(nguonMC) && /DenBoPhan\.bat\(e, lenhNhip\)[\s\S]{0,80}phatNhip[\s\S]{0,120}DenBoPhan\.tat\(true\)/.test(nguonMC) && /DenBoPhan\.tat\(\);/.test(nguonMC) && !/class="lamps"/.test(nguonMC) && !/\.lamp\{/.test(cssDen));
+  kiem('man-choi.js: đèn nạp theo màn (DenBoPhan.nap), sáng TRƯỚC khi phát nhịp và tắt SAU khi phát xong, tắt khi chạy lại; không còn đèn T / P cũ', /DenBoPhan\.nap\((m|manXe\(\))\)/.test(nguonMC) && /DenBoPhan\.bat\(e, lenhNhip\)[\s\S]{0,80}phatNhip[\s\S]{0,120}DenBoPhan\.tat\(true\)/.test(nguonMC) && /DenBoPhan\.tat\(\);/.test(nguonMC) && !/class="lamps"/.test(nguonMC) && !/\.lamp\{/.test(cssDen));
 }
 
 console.log('\n---------------------------------------------');

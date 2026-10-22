@@ -162,18 +162,18 @@
     return null;
   }
 
-  var LOAI_VAT = { 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'nút bắn (gắn trên tường: xe không đi vào được, chỉ quả bóng bắn trúng mới đổi nút)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)' };
+  var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'nút bắn (gắn trên tường: xe không đi vào được, chỉ quả bóng bắn trúng mới đổi nút)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)' };
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
-  var LY_NHAY = { 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'nút bắn' };
+  var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'nút bắn' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
   // lý do magnet_off() không thả được vật (san-hoc.js 'tha-bi-chan')
-  var LY_THA = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn', 'rao': 'hàng rào thấp', 'cua': 'cửa đang đóng' };
+  var LY_THA = { 'dong-doi': 'chỗ robot đồng đội đang đứng', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn', 'rao': 'hàng rào thấp', 'cua': 'cửa đang đóng' };
   // lý do vật ném vỡ (san-hoc.js 'nem-vo')
-  var LY_BAN = { 'tuong': 'tường cao', 'cua': 'cửa đang đóng', 'thung': 'thùng nặng', 'vat': 'vật nằm đất', 'bac-thang': 'bậc thang' };
+  var LY_BAN = { 'dong-doi': 'chỗ robot đồng đội đang đứng', 'tuong': 'tường cao', 'cua': 'cửa đang đóng', 'thung': 'thùng nặng', 'vat': 'vật nằm đất', 'bac-thang': 'bậc thang' };
   // lý do xe không giật được (san-hoc.js 'giat-chan'): ô xe giật vào
-  var LY_GIAT = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'cua': 'cửa đang đóng', 'nut': 'nút bắn', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'vat': 'một vật nằm đất' };
-  var LY_NEM = { 'ngoai-san': 'ngoài sân', 'tuong': 'tường cao', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
-  var LY_DO_THUNG = { 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe', 'cua': 'cửa đang đóng', 'rao': 'hàng rào thấp', 'vat': 'một vật nằm đất' };
+  var LY_GIAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'cua': 'cửa đang đóng', 'nut': 'nút bắn', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'vat': 'một vật nằm đất' };
+  var LY_NEM = { 'dong-doi': 'chỗ robot đồng đội đang đứng', 'ngoai-san': 'ngoài sân', 'tuong': 'tường cao', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
+  var LY_DO_THUNG = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe', 'cua': 'cửa đang đóng', 'rao': 'hàng rào thấp', 'vat': 'một vật nằm đất' };
   // Sân thử mặc định của Xưởng hàm: 5×5 trống, xe ở giữa quay lên (hướng 0).
   var SAN_THU_MAC_DINH = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [], tuong: [], thung: [] };
   var MAU_CHU = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };       // tên màu → ký tự trong lớp màu của SanHoc
