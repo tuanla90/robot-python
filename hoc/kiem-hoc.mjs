@@ -3,7 +3,7 @@
    hàm của em (kho bền) + hàm của màn (tạm), cách đếm ô, sân thử, kho hàm, sổ chương
    (đổi thứ tự), chương tay gắp, vòng lặp, băng chuyền, hàm có tham số, thân nhện, bánh xích, bánh omni, tấm đẩy, cảm biến khoảng cách, cảm biến màu, nam châm, máy ném, súng bóng và drone, đi tuần tự 170 màn như một học sinh thật và bộ dò đường tắt
    (BFS; màn dua-vat dùng bộ dò riêng do-duong-tay.mjs). Luật tay gắp chi tiết: kiem-tay-gap.mjs; riêng chương băng chuyền: kiem-bang-chuyen.mjs; chương hàm có tham số: kiem-tham-so.mjs; chương thân nhện (co / duỗi chân, gầm, hố, nhảy): kiem-nhen.mjs; chương chế lệnh nhện: kiem-che-nhen.mjs; chương bánh xích: kiem-xich.mjs; chương bánh omni: kiem-omni.mjs; chương tấm đẩy: kiem-tam-day.mjs; chương cảm biến khoảng cách (nhiều sân): kiem-khoang-cach.mjs; chương cảm biến màu: kiem-mau.mjs; chương nam châm: kiem-nam-cham.mjs; chương súng bóng: kiem-sung-bong.mjs; chương drone: kiem-drone.mjs; chương chế lệnh xe (bóng mờ, đấu dây ngược, khay và phần cứng, sổ lệnh): kiem-che-xe.mjs; chương chế lệnh có if, while + biến đếm (cảm biến lắp ngược, nhiều sân, khối đếm): kiem-che-cam-bien.mjs; chuỗi ký tự của core: kiem-chuoi.mjs.
-   Chạy: node robotics/hoc/kiem-hoc.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-hoc.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

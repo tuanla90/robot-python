@@ -11,7 +11,7 @@
    - 5.9: hai bản sửa (turn_right bằng bánh trái, u_turn bằng trái lùi + phải tiến) vẫn đúng ở MỌI màn khác của game, không chậm hơn;
    - thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-che-tay.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-tay.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

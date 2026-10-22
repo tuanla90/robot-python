@@ -7,7 +7,7 @@
    5. chấm thắng một màn tạm bằng hai cách lắp khác nhau (xích đi thẳng qua bậc · hai bánh đi vòng), lời giải cách này trượt trên robot kia, thongKeMau, không cách nào hơn hẳn;
    6. kiemDuLieu bắt dữ liệu màn sai; lenhKhongCon (Lắp lại đổi part);
    7. giao diện: choi.html nạp lap-rap.js / man-lap.js và có màn sc-lap, chữ lap.* trong chu.js, Luu.docLap / ghiLap, App.vaoMan / lapLai, nút Lắp lại, bảng "Cách lắp khác".
-   Chạy: node robotics/hoc/kiem-lap-rap.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-lap-rap.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

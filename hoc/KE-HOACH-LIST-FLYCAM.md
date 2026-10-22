@@ -3,11 +3,11 @@
 Nguồn: Y-TUONG-TIEP-THEO.md mục B2, C và "Ba dòng từng việc".
 
 ## Ba dòng
-- **Must keep:** chuỗi ở gói Nhện giữ nguyên; bộ chạy Python cũ chạy y như cũ (mọi máy kiểm cũ xanh, kể cả mockup sân robot dùng chung `docs/mockups/san-robot-core.js`); luật nhịp, thẻ Logic, `wait()` ghim, khuôn chương (10 màn, hàng làm quen · luyện · biến thể · trùm, sao theo nhịp + ô, BFS chứng minh không đường tắt).
+- **Must keep:** chuỗi ở gói Nhện giữ nguyên; bộ chạy Python cũ chạy y như cũ (mọi máy kiểm cũ xanh, kể cả mockup sân robot dùng chung `nhan/san-robot-core.js`); luật nhịp, thẻ Logic, `wait()` ghim, khuôn chương (10 màn, hàng làm quen · luyện · biến thể · trùm, sao theo nhịp + ô, BFS chứng minh không đường tắt).
 - **Must improve:** bộ chạy có list; khay có khối list chạm sửa được trên điện thoại (không phải gõ chữ); gói List hai chương ngay sau gói Nhện; chương Flycam (drone gắn camera nhìn xuống) trong gói Drone.
 - **Done when:** máy kiểm lõi list + máy kiểm từng chương mới xanh; lời giải mọi màn chạy thật, BFS không đường tắt; mọi lời giải nhập được bằng chạm trên khung 375×812; chơi tay ≥ 3 màn mỗi chương; toàn bộ `node kiem-*.mjs` + `node game/part/kiem-part.mjs` xanh.
 
-## 1. Lõi list (bộ chạy Python `docs/mockups/san-robot-core.js`)
+## 1. Lõi list (bộ chạy Python `nhan/san-robot-core.js`)
 Tập con, đủ cho lớp 5–7:
 - list literal số / chuỗi / rỗng: `[2, 3, 1]`, `["red", "blue"]`, `[]`; gán `a = [2, 3, 1]`; truyền làm đối số `weave([2, 3, 1])`, tham số hàm nhận list.
 - `for x in a:` (và `for x in [2, 3]:`); `a[i]` với 0 ≤ i < len(a) (chỉ số âm, ngoài tầm: lỗi lời Việt dễ hiểu, chỉ rõ chỉ số và độ dài); `len(a)`; `a.append(x)`; `x in a` / `x not in a`.

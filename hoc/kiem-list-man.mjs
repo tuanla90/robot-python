@@ -9,7 +9,7 @@
    - luật riêng: list.3 chỉ sai ở dòng danh sách; list.7 báo lỗi chỉ số bằng lời Việt đúng; list.8 hai hàm của màn bị khóa và không vào kho; list.9 hàm tour sai steps[0];
    - đường BFS đổi thành lệnh gốc chạy SanHoc.chay: thắng đúng nhịp BFS;
    - huy hiệu list, Sổ lệnh không có hàm nào của chương (tour, tour_left là hàm CỦA MÀN), thẻ script choi.html.
-   Các kiểm chung cho cả game nằm ở kiem-hoc.mjs. Chạy: node robotics/hoc/kiem-list-man.mjs        (trượt thì thoát mã 1)
+   Các kiểm chung cho cả game nằm ở kiem-hoc.mjs. Chạy: node hoc/kiem-list-man.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

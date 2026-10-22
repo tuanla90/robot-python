@@ -5,7 +5,7 @@
    (2) KHE THỨ HAI · BÁNH XE — OMNI đi chậm/quay nhanh, XICH đi nhanh/quay chậm,
        và KHÔNG bánh nào trội trên mọi đề.
 
-   Chạy: node robotics/kiem-tran-v04.mjs
+   Chạy: node tran/kiem-tran-v04.mjs
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

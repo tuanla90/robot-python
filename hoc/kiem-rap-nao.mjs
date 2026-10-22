@@ -12,7 +12,7 @@
    5. bẫy có chủ ý: thân không tới được cờ (BFS null), thẻ quá ngân sách, ghép sai (nhện + khoảng cách…), chương trình "mù" (không cảm biến) không thắng cả ba sân;
    6. giao diện: huong-dan-man.js có hướng dẫn màn Lắp robot ở màn đầu, huy hiệu 'rap-nao', choi.html nạp man-rap-nao.js, kiem-hoc.mjs nạp chương và có nhánh dò đường.
    Id màn KHÔNG ghi cứng số chương: ThuTu.thuTu.indexOf('rap-nao') + 1.
-   Chạy: node robotics/hoc/kiem-rap-nao.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-rap-nao.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

@@ -7,7 +7,7 @@
    chẩn đoán so chuỗi sai (ten-mau-sai) và quên nháy (mau-thieu-nhay), chấm NHIỀU SÂN có lớp màu, sân thử của Xưởng có ô màu, bộ dò đường tắt
    có màu, dữ liệu 10 màn và bảng 10 màn.
    Các kiểm chung cho cả 120 màn (đi tuần tự, sao, lời sai, đường tắt BFS trên từng sân…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-mau.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-mau.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

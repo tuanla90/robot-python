@@ -1,6 +1,6 @@
 /* ============================================================================
    kiem-game.mjs — máy check cho LỚP MÀN CHƠI (5 màn, 2 khe, ô nhớ, lời thoại).
-   Chạy: node robotics/kiem-game.mjs
+   Chạy: node tran/kiem-game.mjs
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

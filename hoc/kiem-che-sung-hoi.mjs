@@ -10,7 +10,7 @@
    - đường BFS đổi thành lệnh gốc rồi chạy SanHoc.chay: thắng đúng số nhịp BFS (so chéo ngẫu nhiên với san-hoc.js: kiem-sung-hoi.mjs);
    - thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs. Luật giật / thùng / nút / cửa / băng: kiem-sung-hoi.mjs.
-   Chạy: node robotics/hoc/kiem-che-sung-hoi.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-sung-hoi.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

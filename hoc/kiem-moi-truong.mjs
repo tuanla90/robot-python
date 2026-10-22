@@ -4,7 +4,7 @@
    ở một GÓI đứng TRƯỚC gói của bộ phận gỡ nỗi đau đó (vd băng chuyền có trước bánh xích): người chơi gặp khó trước, rồi mới có bộ phận giải quyết.
    Gói theo ThuTuChuong.goi (thứ tự gói = thứ tự chương). Chỉ xét chương CÓ màn. Không cần lõi (đọc ký hiệu sân và lớp vatChat).
    Thêm yếu tố mới: thêm một dòng vào YEU_TO.
-   Chạy: node robotics/hoc/kiem-moi-truong.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-moi-truong.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

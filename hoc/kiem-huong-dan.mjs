@@ -8,7 +8,7 @@
    - mọi sự kiện mà bước chờ đều được game báo (HuongDan.bao / baoHd trong thanh-phan.js, xuong-ham.js, man-choi.js);
    - khung: HuongDan.vaoMan lấy bước từ HuongDanMan, man.huongDan được ưu tiên, xongMan dừng chuỗi và lưu cờ, `daLam` làm bước tự qua;
    - game/choi.html nạp huong-dan-man.js sau các tệp màn, trước man-choi.js.
-   Chạy: node robotics/hoc/kiem-huong-dan.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-huong-dan.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

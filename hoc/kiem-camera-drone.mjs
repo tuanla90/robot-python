@@ -12,7 +12,7 @@
       game/choi.html nạp part.
    4. Giao diện (chạy trên DOM giả): đèn bộ phận (den-bo-phan.js: look là cảm biến, đèn camBien sáng), khay thẻ Logic (thanh-phan.js: if look() == "red": / while look() != "none": / c = look()), ô chạm được của dòng
       điều kiện look, hàm của em gọi look() vào thẻ Logic và bị ẩn ở màn không có look().
-   Chạy: node robotics/hoc/kiem-camera-drone.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-camera-drone.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

@@ -2,7 +2,7 @@
    kiem-list.mjs — máy kiểm GÓI LIST: DANH SÁCH (list) của "Đường học" (KE-HOACH-LIST-FLYCAM.md, mục 1 và 2). Chưa có màn nào của gói List:
    mọi màn thử dựng TẠM trong bộ nhớ của máy kiểm (một màn thật được nhân bản rồi thêm 'list' vào cauTruc), không thêm màn vào game.
    Gồm:
-   1. LÕI list của nhân Python (docs/mockups/san-robot-core.js): literal số / chuỗi / rỗng, gán, len, a[i], a.append(x), x in a / x not in a, for x in a / [..],
+   1. LÕI list của nhân Python (nhan/san-robot-core.js): literal số / chuỗi / rỗng, gán, len, a[i], a.append(x), x in a / x not in a, for x in a / [..],
       truyền tham chiếu vào hàm của người chơi, so sánh / nối / đúng sai; những thứ KHÔNG làm báo lỗi lời Việt "Game chưa dạy …" (cắt đoạn, a[i] = x, danh sách lồng,
       lệnh khác .pop .sort, list comprehension), lỗi chỉ số (âm, ngoài tầm, nói rõ chỉ số và độ dài), lỗi kiểu (danh sách + số, for qua số, hàm game nhận danh sách…);
    2. KHUNG: cauTruc 'list' (khung-code.js): màn có khai cauTruc mà thiếu 'list' thì dòng dùng danh sách báo cau-truc-chua-hoc;
@@ -11,7 +11,7 @@
       cờ list đã nối ở man-choi.js / xuong-ham.js;
    5. KHUNG CHƯƠNG TRÌNH (Editor trên DOM giả): dòng danh sách tách thành ô chạm được; chạm một phần tử → bảng chọn số / màu + "thêm ô" + "bỏ ô"; danh sách rỗng có ô +;
       chọn a[0] / a[i] / len(a) ở chỗ cần số; chọn / đổi tên danh sách (đổi theo ở các dòng dưới); khối kho tự đặt tên mới; đối số danh sách của hàm.
-   Chạy: node robotics/hoc/kiem-list.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-list.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -21,7 +21,7 @@ import { createRequire } from 'node:module';
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
-const R = require(path.join(day, '..', '..', 'docs', 'mockups', 'san-robot-core.js'));
+const R = require(path.join(day, '..', 'nhan', 'san-robot-core.js'));
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
 const KhungCode = require(path.join(day, 'khung-code.js'));

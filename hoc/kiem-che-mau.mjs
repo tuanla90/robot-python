@@ -7,7 +7,7 @@
    - bộ dò đường BFS so chéo với SanHoc.chay (đường BFS đổi thành lệnh gốc, hơn 1000 chương trình ngẫu nhiên, đoạn cố định go_out());
    - Sổ lệnh (nhóm 'mau' ngay sau read_turn), huy hiệu, thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs. Id màn KHÔNG ghi cứng: ThuTu.thuTu.indexOf('che-mau') + 1.
-   Chạy: node robotics/hoc/kiem-che-mau.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-mau.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

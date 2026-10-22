@@ -12,7 +12,7 @@
       biến vòng của danh sách rỗng `a = []` so được với màu (`c == "red"`), VÁ battery(): màn có cả pin lẫn camera thì vế trái chọn được `battery() > 2` (và đổi lại);
    6. hướng dẫn bong bóng của flycam.1 (chỉ khối while có look()).
    Các kiểm chung cho cả game nằm ở kiem-hoc.mjs; camera nhìn xuống (lõi) ở kiem-camera-drone.mjs; list (lõi, khay) ở kiem-list.mjs.
-   Chạy: node robotics/hoc/kiem-flycam.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-flycam.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

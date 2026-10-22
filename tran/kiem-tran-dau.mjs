@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-tran-dau.mjs — MÁY CHECK cho "Luật trận v0.1".
 
-   Chạy:  node robotics/kiem-tran-dau.mjs
+   Chạy:  node tran/kiem-tran-dau.mjs
 
    Kiểm 6 điều kiện "pass" ở docs/thiet-ke/luat-tran-v0.1.md §7,
    cộng hai bất biến kỹ thuật (bảo hiểm chống treo, lộ trình độc lập).

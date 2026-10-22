@@ -1,84 +1,55 @@
-# robotics/ — Đội Robot Chấn Hưng · Trận đấu
+# Đội Robot Chấn Hưng
 
-Đây là **dòng 3** của vũ trụ Chấn Hưng: game dạy Python bằng cách **dẫn đội robot đi thi**.
-Thư mục này chứa **nhân trận đấu** (mô phỏng + luật + máy chấm) và **game chơi được**.
+Game dạy Python bằng robot (dòng 3 của vũ trụ Chấn Hưng). Tách ra từ repo `learn-code-by-game`
+ngày 22/10/2026: lịch sử commit của thư mục `robotics/` (nhánh `robotics`) giữ nguyên.
 
----
+Trang tĩnh thuần HTML + JS: không build, không gói npm.
 
-## Chơi ngay
-
-Mở **`choi-tran.html`** bằng trình duyệt (nhấp đúp là được — không cần build, không cần mạng, không cần cài gì).
-
-**Năm màn, mỗi màn một đề:**
-
-| Màn | Đề | Khe | Điều đáng học |
-|---|---|---|---|
-| 1 · Trận tập | 1 khối ở `(4,3)`, hàng nhà | 1 | bàn giao hai robot: R1 lấy khối → trạm giao → R2 mang về nhà |
-| 2 · Hai cột | 2 khối ở `(4,2)`, `(6,2)` lệch hàng | 1 | đề này **chiều tay gắp dài** |
-| 3 · Chung kết | 3 khối dựng cột, đồng hồ 400 tick | 1 | **thắng tuyệt đối** (giao đủ khối); bên **mù** trượt nhịp |
-| 4 · Ô nhớ hẹp | 4 khối, **hạn 24 ô nhớ** mỗi robot | 2 | **copy-paste là hết chỗ** → phải viết `def` rồi gọi |
-| 5 · Nhiều góc | 3 khối chữ chi, đồng hồ 80 tick | 2 | chọn **bánh xe** sai là hết giờ |
-
-**Cách chơi:** chọn phương án cho từng khe → bấm **Nạp mẫu (bản gọn)** (hoặc tự viết) → **▶ Chạy trận**
-→ xem phát lại từng tick trên sân → đọc kết quả, ô nhớ, và bảng chẩn đoán. Tiến độ lưu lại.
-
-Bấm **📝 Cách chơi** trong game để đọc luật đầy đủ.
-
-### Hai khe chọn đề (part là **đề bài**, không phải tài sản)
-
-| Khe | Phương án | THÊM | BỎ |
-|---|---|---|---|
-| 1 · tay gắp | `TAY_DAI` | gắp được khối ở **ô trước mặt** | mỗi bước đi **2 tick** |
-| | `CHAN_NHANH` | mọi hành động **1 tick** | **cảm biến `item_here()`** → robot **MÙ** |
-| 2 · bánh xe | `OMNI` | quay tại chỗ **1 tick** | mỗi bước đi **2 tick** |
-| | `XICH` | đi thẳng **1 tick** | mỗi lần quay **2 tick** |
-
-Cả hai đội chọn từ **cùng một bộ**; **không phương án nào nâng trần**.
-
-### Ô nhớ chương trình
-
-Mỗi **dòng lệnh** là một ô; dùng hàm thư viện thì trả ô (`go_to` 6, `quay_ve` 3). Đồng hồ ô nhớ
-hiện liên tục trên khung code. Ở màn 4: bản copy-paste **37 ô** (bị chặn), bản viết hàm **21 ô** (qua màn).
-
----
-
-## Các tệp
-
-| Tệp | Việc |
-|---|---|
-| `tran-dau.js` | **nhân trận**: luật v0.1 · v0.2 · v0.3 · v0.4 + máy chấm |
-| `tran-game.js` | **lớp màn chơi**: 5 màn, đối thủ do máy viết, chương trình mẫu (gọn/dài), ô nhớ, lời thoại nhân vật |
-| `chuong-trinh.js` | các đoạn logic Python đem ra thi đấu (cùng robot, khác logic / khác phương án) |
-| `choi-tran.html` + `choi-tran.js` | **game**: sân, hai khe, khay thẻ lệnh, đồng hồ ô nhớ, nhân vật dẫn dắt, phát lại |
-| `do-v03.mjs` | công cụ **đo**: quét hình học đề để biết phương án nào thắng đề nào |
-
-## Máy check
+## Chơi
 
 ```bash
-node robotics/kiem-tran-dau.mjs    # 21 — luật v0.1
-node robotics/kiem-tran-v02.mjs    # 38 — luật v0.2 (bàn giao, chạy song song)
-node robotics/kiem-tran-v03.mjs    # 23 — luật v0.3 (khe chọn đề)
-node robotics/kiem-tran-v04.mjs    # 22 — luật v0.4 (hai khe + ô nhớ)
-node robotics/kiem-game.mjs        # 38 — năm màn, mẫu, đối thủ, ô nhớ, lời thoại
-node robotics/kiem-ui-game.mjs     # 40 — giao diện (DOM giả, không cần trình duyệt)
+npm start
 ```
 
-Cộng hai bộ của mockup đợt 1 (`docs/mockups/kiem-core-san-robot.mjs` 74 ·
-`kiem-ui-san-robot.mjs` 33): tổng **289 phép kiểm**.
+Mở `http://localhost:4180`:
 
-## Luật và thiết kế
+| Đường dẫn | Trang |
+|---|---|
+| `/` | **Đường học**: lắp robot từ part, viết Python điều khiển, các gói chương (`hoc/game/choi.html`) |
+| `/tran` | **Trận đấu**: hai đội robot thi theo luật v0.4 (`tran/choi-tran.html`) |
+| `/nhan` | mockup sân robot đợt 1 (`nhan/san-robot-dot-1.html`) |
 
-- [`luat-tran-v0.1.md`](../docs/thiet-ke/luat-tran-v0.1.md) — luật tối giản, 1 robot
-- [`luat-tran-v0.2.md`](../docs/thiet-ke/luat-tran-v0.2.md) — 2 robot + bàn giao + chạy song song thật
-- [`luat-tran-v0.3.md`](../docs/thiet-ke/luat-tran-v0.3.md) — khe chọn đề
-- [`luat-tran-v0.4.md`](../docs/thiet-ke/luat-tran-v0.4.md) — hai khe + ô nhớ chương trình
-- [`doi-robot-chan-hung-GDD-v0.2.md`](../docs/thiet-ke/doi-robot-chan-hung-GDD-v0.2.md) — GDD dòng này
-- [`tham-khao-robocon-v0.1.md`](../docs/thiet-ke/tham-khao-robocon-v0.1.md) — tư liệu Robocon thật
+Đổi cổng bằng biến `PORT`. Trên Railway, `railway.json` chạy `npm start`.
 
-## Còn nợ
+## Thư mục
 
-- Khay thẻ lệnh trong game là **nút chèn khối code**; mockup đợt 1 có **thẻ lệnh lồng nhau** (DOM).
-  Nên gộp thành một trình soạn thẻ thật.
-- **Hàm thư viện chưa bao giờ sai** — chưa có màn buộc người chơi tự viết lại `go_to`.
-- Mới **2 khe** (GDD §4.2 nói 6 khe × 2 robot). Ô nhớ đếm theo **dòng**, chưa theo câu lệnh.
-- Va chạm hai robot cùng ô · cảm biến "đồng đội đang ở đâu" · đồng hồ theo vòng đấu · nhiều màn hơn.
+| Thư mục | Việc |
+|---|---|
+| `nhan/` | **nhân chạy Python** dùng chung (`san-robot-core.js`, `window.RobotCore`) + mockup đợt 1 |
+| `hoc/` | **Đường học**: lõi sân (`san-hoc.js`), máy chấm (`cham.js`), khung code, kho hàm, sổ lệnh, lắp ráp, tệp màn `man-*.js`, công cụ đo đường `do-duong-*.mjs` |
+| `hoc/game/` | giao diện Đường học: màn chọn gói, màn chơi, Xưởng hàm, vẽ robot pixel, lưu tiến độ |
+| `hoc/game/part/` | danh mục part (thân, tay, cảm biến) và cách vẽ từng part |
+| `tran/` | **Trận đấu**: nhân trận, lớp màn chơi, giao diện, mockup UI (xem `tran/README.md`) |
+| `docs/thiet-ke/` | GDD v0.1 · v0.2, luật trận v0.1 → v0.4, tư liệu Robocon |
+| `tools/` | `kiem-tat-ca.mjs` chạy mọi máy kiểm |
+
+Kế hoạch và lộ trình của Đường học nằm trong `hoc/`: `LO-TRINH.md`, `KE-HOACH-CHE-LENH.md`,
+`KE-HOACH-LIST-FLYCAM.md`, `KE-HOACH-LAP-RAP.md`, `Y-TUONG-TIEP-THEO.md`.
+Đổi thứ tự chương: sửa `hoc/thu-tu-chuong.js`.
+
+## Máy kiểm
+
+```bash
+npm test
+```
+
+Chạy lần lượt 52 bộ `kiem-*.mjs` (khoảng 4 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
+Chạy một bộ: `node hoc/kiem-xich.mjs`, hoặc lọc `npm test -- hoc/kiem-xich`.
+
+## Đóng gói thành trang Artifact
+
+```bash
+npm run dong-goi
+```
+
+Ghi ra `dist-artifact/` (mỗi tệp gói < 40KB), rồi đăng `dist-artifact/index.html` kèm thư mục `g/`.

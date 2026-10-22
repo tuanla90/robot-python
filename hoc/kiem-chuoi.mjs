@@ -1,10 +1,10 @@
 /* ============================================================================
    kiem-chuoi.mjs — máy kiểm CHUỖI KÝ TỰ của nhân chạy code Python
-   (docs/mockups/san-robot-core.js), dùng cho chương nhện / màu về sau.
+   (nhan/san-robot-core.js), dùng cho chương nhện / màu về sau.
    Kiểm: literal "..." và '...', thoát \n \\ \' \", == != < giữa chuỗi, + nối, * lặp, len/str/int,
    in / not in, for c in "UURR":, print chuỗi, hàm game nhận và trả chuỗi, lỗi chạy tiếng Việt
    (chuỗi + số...), lỗi cú pháp chuỗi chưa đóng đúng dòng, True/False vẫn là 1/0, chuỗi == số là False.
-   Chạy: node robotics/hoc/kiem-chuoi.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-chuoi.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +12,7 @@ import { createRequire } from 'node:module';
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
-const R = require(path.join(day, '..', '..', 'docs', 'mockups', 'san-robot-core.js'));
+const R = require(path.join(day, '..', 'nhan', 'san-robot-core.js'));
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 

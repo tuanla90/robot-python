@@ -5,7 +5,7 @@
    color() theo phần cứng (cảm biến bụng đọc sàn dưới xe kể cả khi mang vật; camera đọc ô trước mặt), load() ở ô trước, mục tiêu dua-vat, ký hiệu sân,
    vết cho giao diện, chẩn đoán qua máy chấm, bộ dò đường tắt dua-vat (kiểm chéo với mô phỏng và kiểm
    ngẫu nhiên), và bảng 10 màn.
-   Chạy: node robotics/hoc/kiem-tay-gap.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-tay-gap.mjs        (trượt thì thoát mã 1)
    Các kiểm chung cho cả 40 màn (đi tuần tự, đường tắt, sao…) nằm ở kiem-hoc.mjs.
    ========================================================================== */
 import path from 'node:path';

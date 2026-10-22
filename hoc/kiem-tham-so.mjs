@@ -5,7 +5,7 @@
    tham số, dữ liệu 10 màn, hamCuaEmCan đủ và không thừa, từng màn "đúng số thì thắng, sai số thì trượt",
    canThamSo (khai triển lời gọi hàm có tham số ra thì tràn khung hoặc mất sao) và bảng 10 màn.
    Các kiểm chung cho cả 70 màn (đi tuần tự, sao, lời sai, đường tắt BFS…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-tham-so.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-tham-so.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

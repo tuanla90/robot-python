@@ -10,13 +10,13 @@
      cần worker, và kết quả vẫn tất định. (Xem bất biến "lộ trình độc lập".)
 
    Dùng lại nhân chạy code (tập con Python) của đợt 1:
-     docs/mockups/san-robot-core.js
+     nhan/san-robot-core.js
    ========================================================================== */
 (function () {
   'use strict';
 
   var laNode = (typeof module !== 'undefined' && module.exports);
-  var core = laNode ? require('../docs/mockups/san-robot-core.js') : window.RobotCore;
+  var core = laNode ? require('../nhan/san-robot-core.js') : window.RobotCore;
 
   /* ------------------------------------------------------------- LUẬT (dữ liệu) */
 

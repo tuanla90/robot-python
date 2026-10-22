@@ -5,7 +5,7 @@
    bongMo.chan), bộ dò đường tắt cho nhện (do-duong-nhen.mjs) và so chéo với san-hoc.js bằng chương trình ngẫu nhiên, dữ liệu 10 màn, canHam (không dùng hàm / chuỗi thì
    tràn khung), mã chẩn đoán cho nhện (roi-ho, nhay-hut, dau-dung-tran, chan-goi-lai, đâm gầm, lệch chân) và bảng 10 màn.
    Các kiểm chung cho cả mọi màn (đi tuần tự, sao, lời sai, đường tắt BFS…) nằm ở kiem-hoc.mjs. Chương chế lệnh nhện: kiem-che-nhen.mjs.
-   Chạy: node robotics/hoc/kiem-nhen.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-nhen.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

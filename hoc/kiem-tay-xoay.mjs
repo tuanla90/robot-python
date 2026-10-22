@@ -10,7 +10,7 @@
    - 10 màn tay-xoay: lời giải 3 sao (đúng sao.o, sao.nhip), BFS không dài hơn (hoặc bằng khi không nhipTheoLoiGiai), lời giải khác đúng 2 sao, lời sai đúng mã, maMau, daoChieu / phanCung của 21.7 / 21.8, huy hiệu;
    - giao diện (đọc mã nguồn): part tay xoay, VeRobot, đèn khớp xoay, khay, Sổ lệnh, hướng dẫn, thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-tay-xoay.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-tay-xoay.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

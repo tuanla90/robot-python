@@ -10,7 +10,7 @@
    4. bẫy có chủ ý: cách không tới được (BFS null), thẻ quá ngân sách, ghép sai (nhện + nam châm…);
    5. giao diện: choi.html nạp man-rap-tay.js, huy hiệu 'rap-tay', kiem-hoc.mjs nạp chương và có nhánh dò đường.
    Id màn KHÔNG ghi cứng số chương: ThuTu.thuTu.indexOf('rap-tay') + 1.
-   Chạy: node robotics/hoc/kiem-rap-tay.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-rap-tay.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

@@ -1,7 +1,7 @@
 /* ============================================================================
    tran-game.js — LỚP MÀN CHƠI của "Đội Robot Chấn Hưng · Trận đấu".
 
-   Trên nhân trận (robotics/tran-dau.js, luật v0.4), lớp này thêm:
+   Trên nhân trận (tran/tran-dau.js, luật v0.4), lớp này thêm:
      - NĂM MÀN, mỗi màn một ĐỀ (khối nằm ở đâu) + một ĐỐI THỦ do máy viết.
        Màn 1–3 mở KHE 1 (tay gắp). Màn 4–5 mở thêm KHE 2 (bánh xe) và ô nhớ chương trình.
      - Chương trình MẪU sinh theo (phương án × đề) — bản GỌN dùng hàm khi nhiều khối,

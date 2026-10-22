@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-tran-v02.mjs — MÁY CHECK cho "Luật trận v0.2" (2 robot, bàn giao).
 
-   Chạy:  node robotics/kiem-tran-v02.mjs
+   Chạy:  node tran/kiem-tran-v02.mjs
 
    Điều đáng kiểm nhất ở v0.2: bốn chương trình chạy SONG SONG THẬT theo tick
    (không còn tính lộ trình riêng rồi gộp), và bàn giao là BẮT BUỘC.

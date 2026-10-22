@@ -1,0 +1,13 @@
+{
+  "name": "doi-robot-chan-hung",
+  "private": true,
+  "description": "Đội Robot Chấn Hưng: game dạy Python bằng robot (Đường học + Trận đấu). Trang tĩnh, không cần build.",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node tools/kiem-tat-ca.mjs",
+    "dong-goi": "python -I hoc/dong-goi-artifact.py hoc/game dist-artifact"
+  }
+}

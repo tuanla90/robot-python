@@ -44,7 +44,7 @@ NiHiCode dạy 4–12 tuổi, rộng và nông: Python chỉ có ở kiểu đi 
 
 ### B2. Đưa list (mảng) vào flycam (drone) hoặc omni trượt thay vì chuỗi
 
-**Hiện nay:** chuỗi chỉ đường dạy ở gói Nhện (`walk("RRD")`, `for c in path:`), dùng lại ở drone (`fly(path)`, `ship(path)`). Bộ chạy Python của game (docs/mockups/san-robot-core.js) **chưa có list**: không có `[ ]`, không chỉ số `a[i]`, không `len()`, không `.append()`; `for x in …` chỉ lặp được chuỗi và `range`.
+**Hiện nay:** chuỗi chỉ đường dạy ở gói Nhện (`walk("RRD")`, `for c in path:`), dùng lại ở drone (`fly(path)`, `ship(path)`). Bộ chạy Python của game (nhan/san-robot-core.js) **chưa có list**: không có `[ ]`, không chỉ số `a[i]`, không `len()`, không `.append()`; `for x in …` chỉ lặp được chuỗi và `range`.
 
 **Nhận định:** đừng THAY chuỗi ở Nhện. Chuỗi một chữ (U/D/L/R) là dãy dễ nhất, chạm chọn chữ trên điện thoại rất gọn. List chỉ đáng học khi chuỗi KHÔNG làm được, có hai lý do thật:
 - **Mỗi bước mang một con số** (đoạn dài 2, 5, 12 ô; trượt trái là số âm). Chuỗi "253" chỉ chứa chữ số 0–9, phải đổi `int(c)` (chưa dạy) → list số là cách tự nhiên.

@@ -8,7 +8,7 @@
    - 6.7 Đường về (lệnh ngược theo thứ tự ngược; đảo nguyên dòng thì thả khi tay đã nâng → vật vỡ), 6.8 khớp lắp ngược (daoChieu "xoay"), 6.9 khớp kẹt cứng (phanCung không có arm_left / arm_right → lenh-goc-hong,
      sửa bằng quay xe), 6.10 trùm (gioiHanHam 3, huy hiệu che-tay-xoay);
    - kho hàm: các hàm của em từ che-tay-xoay vẫn đúng ở mọi màn sau, đo trên bộ dò BFS không quá chậm (hàm ghép đúng nhịp tối ưu: pick_left + drop_right = 4 nhịp = BFS).
-   Chạy: node robotics/hoc/kiem-che-tay-xoay.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-tay-xoay.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

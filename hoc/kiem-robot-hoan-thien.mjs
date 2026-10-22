@@ -7,7 +7,7 @@
    - luật riêng từng màn (thùng gần xa khác nhau, ngăn kệ, thùng có màu, số thùng khác nhau, hành lang chữ L, cảm biến / tay lắp ngược, bánh phải kẹt số lùi, trùm ◆ + giới hạn 6 hàm);
    - cổng đợt 2 (ThuTuChuong.congDot2), không thêm hàm mới vào Sổ lệnh, thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-robot-hoan-thien.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-robot-hoan-thien.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

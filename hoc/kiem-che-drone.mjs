@@ -10,7 +10,7 @@
      nhịp: đường ngắn nhất BFS không dài hơn sao.nhip (bằng nhau trừ các màn nhipTheoLoiGiai: 5, 6, 8, 10), BFS đổi thành lệnh gốc chạy SanHoc.chay thắng đúng nhịp BFS;
    - huy hiệu che-drone và thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs. Luật drone: kiem-drone.mjs.
-   Chạy: node robotics/hoc/kiem-che-drone.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-drone.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

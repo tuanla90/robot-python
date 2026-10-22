@@ -5,7 +5,7 @@
    từng màn "sai một nhịp thì trượt" (màn 2 sai số lần lặp, màn 9 thiếu một nhịp chờ…), canFor (trải
    for ra thì tràn khung / mất sao), đường tắt (BFS có tính băng; chuỗi BFS chạy lại trong SanHoc) và
    bảng 10 màn. Các kiểm chung cho cả 50 màn (đi tuần tự, sao, lời sai…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-bang-chuyen.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-bang-chuyen.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

@@ -1,4 +1,4 @@
-# Đóng gói robotics/hoc/game/choi.html thành trang Artifact nhiều tệp.
+# Đóng gói hoc/game/choi.html thành trang Artifact nhiều tệp.
 # Mỗi tệp gói < 40KB (máy này lỗi EBADF với tệp chữ lớn), chữ mã hóa ASCII bằng json.
 # Dùng: python -I dong-goi-artifact.py <thu-muc-game> <thu-muc-ra>
 import json, os, re, sys, shutil

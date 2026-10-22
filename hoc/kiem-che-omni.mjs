@@ -8,7 +8,7 @@
    - bộ dò đường: đường BFS đổi thành lệnh gốc rồi chạy SanHoc.chay thắng đúng số nhịp; hơn một nghìn chương trình ngẫu nhiên: từng bước bộ dò và san-hoc.js trùng hoàn toàn;
    - thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs. Luật omni chi tiết: kiem-omni.mjs.
-   Chạy: node robotics/hoc/kiem-che-omni.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-omni.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

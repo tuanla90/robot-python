@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-tran-v03.mjs — MÁY CHECK cho "Luật trận v0.3" (một khe chọn đề).
 
-   Chạy:  node robotics/kiem-tran-v03.mjs
+   Chạy:  node tran/kiem-tran-v03.mjs
 
    Điều đáng kiểm nhất: mỗi phương án phải BỎ một khả năng và THÊM một khả năng,
    phải ĐỔI HÌNH DẠNG bài toán, và KHÔNG phương án nào trội trên mọi đề.

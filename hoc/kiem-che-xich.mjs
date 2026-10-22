@@ -10,7 +10,7 @@
      nhịp: đường ngắn nhất BFS không dài hơn sao.nhip (bằng nhau trừ màn 10), BFS đổi thành lệnh gốc chạy SanHoc.chay thắng đúng nhịp BFS;
    - huy hiệu che-xich và thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs. Luật quay chậm của xích: kiem-xich.mjs.
-   Chạy: node robotics/hoc/kiem-che-xich.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-xich.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

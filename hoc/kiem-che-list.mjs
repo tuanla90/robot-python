@@ -11,7 +11,7 @@
      chinhCoDinh chặn chương trình chính gửi lên, đề ≤ 3 câu và nhắc tên lệnh cần chế / sửa, gợi ý không nói tên nút;
    - luật riêng: 7 (go_out 12 nhịp tới ◆, come_back lệnh ngược, thân ban đầu pass), 8 (append trong vòng while), 9 (cảm biến lắp ngược, chẩn đoán cam-bien-nguoc), 10 (ba hướng xe, gioiHanHam 3);
    - đường BFS đổi thành lệnh gốc chạy SanHoc.chay: thắng đúng nhịp BFS; kho cuối game, huy hiệu, thẻ script choi.html.
-   Chạy: node robotics/hoc/kiem-che-list.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-list.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

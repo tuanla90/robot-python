@@ -1,6 +1,6 @@
 /* ============================================================================
    kiem-ui-game.mjs — TEST KHÓI cho giao diện game (DOM giả, không cần trình duyệt).
-   Chạy: node robotics/kiem-ui-game.mjs
+   Chạy: node tran/kiem-ui-game.mjs
    Kiểm là giao diện CÓ CHẠY: hai khe, ô nhớ chương trình, nhân vật dẫn dắt,
    nạp mẫu, chạy trận, ra kết quả, lưu tiến độ, hiện lỗi.
    ========================================================================== */
@@ -42,7 +42,7 @@ const ls = {
   setItem(k, v) { this._d[k] = String(v); }
 };
 
-for (const f of ['../docs/mockups/san-robot-core.js', 'tran-dau.js', 'tran-game.js', 'choi-tran.js']) {
+for (const f of ['../nhan/san-robot-core.js', 'tran-dau.js', 'tran-game.js', 'choi-tran.js']) {
   const src = fs.readFileSync(path.join(day, f), 'utf8');
   new Function('window', 'document', 'localStorage', 'setTimeout', 'clearTimeout', 'console', src)(
     win, doc, ls, setTimeout, clearTimeout, console);

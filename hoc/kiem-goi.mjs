@@ -7,7 +7,7 @@
      hàng Làm quen lần lượt ('hang1'), Luyện / Biến thể sau Làm quen ('hang23'), thử thách sau 9 màn ('trum'); "Mở hết" mở mọi màn; màn chơi tiếp;
    - game/choi.html có ba màn hình (sc-dau, sc-goi, sc-chon) và nạp mo-goi.js, man-dau.js, man-goi.js trước ung-dung.js;
    - lưới màn không còn khung "Hàm của em": Sổ lệnh (thư viện hàm) là một nút ở cả ba màn hình; mọi khóa chữ t('…') của ba màn hình có trong chu.js.
-   Chạy: node robotics/hoc/kiem-goi.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-goi.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

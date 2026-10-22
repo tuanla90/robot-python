@@ -11,7 +11,7 @@
    - ManHoc.hamSuaDuoc / hamEmKhoa (hàm cốt truyện chỉ sửa được ở màn cần sửa nó), TP.khoaKhay;
    - TP.nhomNhip (ngoặc nhịp), HuongDan (khung hướng dẫn: chuỗi, sự kiện, hạn, cờ), DenBoPhan (đèn theo bộ phận: bộ phận có trên màn, bộ phận sáng theo vết thật);
    - game/choi.html nạp đủ tệp.
-   Chạy: node robotics/hoc/kiem-khay.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-khay.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

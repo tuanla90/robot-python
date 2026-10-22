@@ -5,7 +5,7 @@
    xích, bộ dò đường tắt cho xích (do-duong-xich.mjs) và so chéo với san-hoc.js bằng chương trình ngẫu nhiên, dữ liệu 10 màn,
    canHam (không dùng hàm thì tràn khung), chẩn đoán 'xich-quay-do', Xưởng hàm với xích và bảng 10 màn.
    Các kiểm chung cho cả 80 màn (đi tuần tự, sao, lời sai, đường tắt BFS…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-xich.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-xich.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

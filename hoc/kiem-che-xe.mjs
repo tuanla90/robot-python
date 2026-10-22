@@ -10,7 +10,7 @@
    - kế hoạch 3.3b: lời giải các chương cũ vẫn thắng khi kho có u_turn một nhịp và turn_right / turn_left bằng bánh lùi;
    - thẻ script của game/choi.html.
    Các kiểm chung cho cả 170 màn (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-che-xe.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-xe.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -484,7 +484,7 @@ console.log('\n== 10. game/choi.html nạp man-che-xe.js và so-lenh.js đúng t
   kiem('choi.html có thẻ script ../so-lenh.js và ../man-che-xe.js, mỗi thẻ đúng một lần', tags.filter((t) => t === '../so-lenh.js').length === 1 && tags.filter((t) => t === '../man-che-xe.js').length === 1, J(tags));
   kiem('man-che-xe.js nạp sau man-chuoi-2.js (cùng sổ màn) và trước man-tay-gap.js; so-lenh.js nạp sau thu-tu-chuong.js và trước man-chuoi-1.js',
     vtri('man-che-xe.js') > vtri('man-chuoi-2.js') && vtri('man-che-xe.js') < vtri('man-tay-gap.js') && vtri('so-lenh.js') > vtri('thu-tu-chuong.js') && vtri('so-lenh.js') < vtri('man-chuoi-1.js'));
-  kiem('mọi tệp lõi được nạp đều tồn tại trên đĩa', tags.filter((t) => t.startsWith('../') && !t.includes('docs/mockups')).every((t) => fs.existsSync(path.join(day, 'game', t))));
+  kiem('mọi tệp lõi được nạp đều tồn tại trên đĩa', tags.filter((t) => t.startsWith('../') && !t.includes('/nhan/')).every((t) => fs.existsSync(path.join(day, 'game', t))));
 }
 
 /* ================================================================= BẢNG */

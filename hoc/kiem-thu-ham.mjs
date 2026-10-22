@@ -2,7 +2,7 @@
    kiem-thu-ham.mjs — máy kiểm "sân thử" của Xưởng hàm: sân cố định (mặc định 5×5, xe ở (2,2) quay lên)
    do người chơi sắp (xe, vật, tường); tọa độ là tọa độ thật của sân thử. Màn có tay gắp (chương tay-gap) thì
    vật là vật thật: thử pick() / drop() ngay trong Xưởng. Cũng kiểm khóa tên hàm cốt truyện của kho.
-   Chạy: node robotics/hoc/kiem-thu-ham.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-thu-ham.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

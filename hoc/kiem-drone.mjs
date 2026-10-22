@@ -7,7 +7,7 @@
    chẩn đoán tiếng Việt CÓ `cho` (het-pin, drone-khong-bay, tha-bi-chan / hut-go lời cho drone), bộ dò đường tắt có pin (BFS có giới hạn; so chéo ngẫu nhiên với san-hoc.js),
    dữ liệu 10 màn (BFS tách nhịp = sao.nhip, BFS gộp <= sao.nhip) và bảng 10 màn.
    Các kiểm chung cho cả 170 màn (đi tuần tự, sao, lời sai, đường tắt BFS…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-drone.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-drone.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

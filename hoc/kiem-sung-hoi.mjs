@@ -10,7 +10,7 @@
    - bộ dò đường tắt do-duong-sung-hoi.mjs: so chéo ngẫu nhiên (≥ 1000 chương trình) với SanHoc.chay, rồi dữ liệu 10 màn (BFS = sao.nhip) và bảng 10 màn;
    - dọn chương cũ (tam-day, sung-bong): tệp, thứ tự chương, gói, Sổ lệnh, kho hàm, thẻ script của choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-sung-hoi.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-sung-hoi.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

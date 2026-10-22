@@ -10,7 +10,7 @@
    - đường BFS đổi thành lệnh gốc rồi chạy SanHoc.chay: thắng đúng số nhịp BFS; SO CHÉO NGẪU NHIÊN: hơn một nghìn chương trình ngẫu nhiên chạy trên SanHoc.chay và trên bộ dò cho cùng trạng thái cuối;
    - thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs. Luật máy ném chi tiết: kiem-may-nem.mjs.
-   Chạy: node robotics/hoc/kiem-che-may-nem.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-may-nem.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

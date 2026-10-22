@@ -10,7 +10,7 @@
    5. mọi dòng của mọi lời giải mẫu NHẬP ĐƯỢC BẰNG CHẠM (mẫu khối của khay) và vừa khung 10 ô;
    6. nối vào game: chương đứng cuối thu-tu-chuong.js (gói riêng), huy hiệu rap-du, choi.html, kiem-hoc.mjs (require + nhánh nhipTat).
    Bảng cách lắp / BFS: node kiem-rap-du.mjs --bang. Dò đủ mọi cách (chậm, hàng phút): --day-du.
-   Chạy: node robotics/hoc/kiem-rap-du.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-rap-du.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

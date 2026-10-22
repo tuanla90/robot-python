@@ -2,7 +2,7 @@
    san-hoc.js — "Đường học": MÔ PHỎNG SÂN theo NHỊP cho game dạy Python qua robot.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.SanHoc).
-   Dựa trên nhân chạy code của docs/mockups/san-robot-core.js (window.RobotCore):
+   Dựa trên nhân chạy code của nhan/san-robot-core.js (window.RobotCore):
    nhân nhường ra ngoài từng lời gọi hàm của game, ở đây ta thực hiện chúng.
 
    Sân: mảng chuỗi, (x, y) với y = 0 ở hàng trên.
@@ -323,7 +323,7 @@
   'use strict';
 
   var laNode = (typeof module !== 'undefined' && module.exports);
-  var Core = laNode ? require('../../docs/mockups/san-robot-core.js') : window.RobotCore;
+  var Core = laNode ? require('../nhan/san-robot-core.js') : window.RobotCore;
 
   /* ------------------------------------------------------------------ hằng */
 

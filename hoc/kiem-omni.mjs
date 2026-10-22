@@ -7,7 +7,7 @@
    ngẫu nhiên, dữ liệu 10 màn, canHam (không dùng hàm trượt thì tràn khung), chẩn đoán 'omni-khong-cheo' và 'slide-goi-lai',
    Xưởng hàm với omni, so omni với xe hai bánh trên cùng sân và bảng 10 màn.
    Các kiểm chung cho cả 90 màn (đi tuần tự, sao, lời sai, đường tắt BFS…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-omni.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-omni.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

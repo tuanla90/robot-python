@@ -6,7 +6,7 @@
    roBanDau, tường thấp '=' (xe không đi qua, cảm biến, thả, thùng), omni và xích, nhện / các tay khác không đi chung, sân thử của Xưởng,
    chẩn đoán tiếng Việt, bộ dò đường tắt (so chéo với san-hoc.js bằng chương trình ngẫu nhiên), dữ liệu 10 màn (BFS = sao.nhip) và bảng 10 màn.
    Các kiểm chung cho cả 140 màn (đi tuần tự, sao, lời sai, đường tắt BFS trên từng sân…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-may-nem.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-may-nem.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

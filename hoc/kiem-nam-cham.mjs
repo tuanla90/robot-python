@@ -6,7 +6,7 @@
    cảm biến từ front_metal() và front_pole(), vatCan sat / nam-cham / tu, lớp vatChat (s g N S) / vatThem, màu vật nam châm theo cực, chẩn đoán tiếng Việt, sân thử của Xưởng,
    bộ dò đường tắt (so chéo với san-hoc.js bằng chương trình ngẫu nhiên), dữ liệu 10 màn (sao.nhip = BFS "tách nhịp") và bảng 10 màn.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt BFS trên từng sân…) nằm ở kiem-hoc.mjs. Chương che-nam-cham (daoChieu 'cuc', cực hỏng, bóng mờ): kiem-che-nam-cham.mjs.
-   Chạy: node robotics/hoc/kiem-nam-cham.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-nam-cham.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

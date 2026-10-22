@@ -3,7 +3,7 @@
    Gồm: cấu trúc 10 màn (khay, bóng mờ có chân, chương trình chính khóa, hàm của màn, đấu dây ngược, phần cứng hỏng, giới hạn hàm), hàm chế (crawl, jump, leap, crawl_jump, bring),
    lời giải đúng 3 sao đúng nhịp BFS (do-duong-nhen.mjs / do-duong-che-nhen.mjs), loiGiaiKhac đúng 2 sao, MỌI congThucKhac đều thắng, lời sai nêu đúng mã chẩn đoán,
    hàm của màn không vào kho / Sổ lệnh, khóa go_in, đường về (đảo thứ tự và hướng), chân lắp ngược, khớp duỗi kẹt (lenh-goc-hong), giới hạn ba hàm của trùm, Sổ lệnh, bảng 10 màn.
-   Chạy: node robotics/hoc/kiem-che-nhen.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-nhen.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

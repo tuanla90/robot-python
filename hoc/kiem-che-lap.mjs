@@ -8,7 +8,7 @@
    - luật riêng từng màn (hành lang ép đường, đường về đảo thứ tự + lệnh ngược, lệch một ở hàm của màn, chỉ còn số lùi, giới hạn ba lệnh ở trùm);
    - hàm mới có trong Sổ lệnh (nhóm lap), thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-che-lap.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-lap.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';

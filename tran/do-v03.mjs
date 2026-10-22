@@ -3,7 +3,7 @@
    phương án (dùng chính chương trình mẫu của game). Mục đích: chọn đề mà mỗi
    phương án thắng một kiểu — tức là "part là đề bài" có thật.
 
-   Chạy: node robotics/do-v03.mjs
+   Chạy: node tran/do-v03.mjs
    ========================================================================== */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

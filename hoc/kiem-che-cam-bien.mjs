@@ -9,7 +9,7 @@
      (kể cả vòng lặp vô hạn), sao nhịp theo tổng ba sân, chinhCoDinh, chanBien, gioiHanHam, không dùng hàm của che-tay / che-lap;
    - luật riêng từng màn (cứng số bước chỉ đúng một sân, ◆ ở màn 5, vật mờ ở 9 và 10, hàm của màn hỏng ở 8…), Sổ lệnh, thẻ script của game/choi.html.
    Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
-   Chạy: node robotics/hoc/kiem-che-cam-bien.mjs        (trượt thì thoát mã 1)
+   Chạy: node hoc/kiem-che-cam-bien.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';
