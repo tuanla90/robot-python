@@ -379,7 +379,24 @@
     return p;
   };
 
-  HINH['rap-nao'] = function () {                               // lắp ráp thân + não: thân xích nhìn từ trên + đồng xu vàng nổi ở góc (ngân sách)
+  HINH['hai-robot'] = function () {                             // đội hai robot: hai xe nhỏ nhìn từ trên, sơn vàng (R1) và lam (R2) như trên sân, thùng hàng chuyền ở giữa
+    var p = P(30, 26);
+    function xe(son) {                                          // xe 12×12 quay lên: hai bánh, thân sơn màu đội, kính + hai mắt
+      var q = P(12, 12), s = Part.SON[son];
+      q.rect(0, 3, 3, 8, INK); q.rect(1, 4, 1, 6, KK.denSang); q.px(1, 5, KK.thepSang); q.px(1, 8, KK.thepSang);
+      q.rect(9, 3, 3, 8, INK); q.rect(10, 4, 1, 6, KK.denSang); q.px(10, 5, KK.thepSang); q.px(10, 8, KK.thepSang);
+      q.rect(2, 1, 8, 11, INK); q.rect(3, 2, 6, 9, s[0]); q.rect(3, 2, 6, 1, s[1]); q.rect(3, 10, 6, 1, s[2]);
+      q.rect(4, 4, 4, 3, KK.kinh); q.px(4, 5, KK.xanh); q.px(7, 5, KK.xanh);
+      return q;
+    }
+    chep(p, xe('vang'), 0, 13, 1);
+    chep(p, xe('lam'), 18, 13, 1);
+    Part.veVatNho(p, 11, 3, 8, 'go');
+    p.px(9, 10, INK); p.px(8, 11, INK); p.px(20, 10, INK); p.px(21, 11, INK);    // hai vạch chéo: thùng đi từ xe này sang xe kia
+    return p;
+  };
+
+  HINH['rap-nao'] = function () {                              // lắp ráp thân + não: thân xích nhìn từ trên + đồng xu vàng nổi ở góc (ngân sách)
     var p = P(T26, T26), t = thanPart('xich');
     chep(p, t, Math.max(0, 14 - (t.w >> 1)), Math.max(0, T26 - t.h), 1);
     p.ell(8.5, 8.5, 6.5, 6.5, INK); p.ell(8.5, 8.5, 5.6, 5.6, '#e5a416'); p.ell(8.5, 8.5, 4.4, 4.4, '#ffcf30');

@@ -71,17 +71,20 @@
     var d = docJson(KHOA_NHAP + id);
     if (!d || typeof d !== 'object' || !Array.isArray(d.chinh)) return null;      // không đúng dạng → coi như chưa có bản nháp
     var hm = Array.isArray(d.hamCuaMan) ? d.hamCuaMan : [];
-    return {
+    var kq = {
       chinh: sachDs(d.chinh),
       hamCuaMan: hm.filter(function (h) { return h && typeof h.ten === 'string'; }).map(function (h) {
         return { ten: h.ten, thamSo: Array.isArray(h.thamSo) ? h.thamSo.slice() : [], than: sachDs(h.than) };
       })
     };
+    if (Array.isArray(d.doi)) kq.doi = d.doi.map(function (x) { return { chinh: sachDs(x && x.chinh) }; });      // màn nhiều robot: chương trình chính của từng robot
+    return kq;
   }
   function ghiNhap(id, bai) {
     return ghiJson(KHOA_NHAP + id, {
       chinh: bai.chinh.slice(),
-      hamCuaMan: bai.hamCuaMan.map(function (h) { return { ten: h.ten, thamSo: h.thamSo.slice(), than: h.than.slice() }; })
+      hamCuaMan: bai.hamCuaMan.map(function (h) { return { ten: h.ten, thamSo: h.thamSo.slice(), than: h.than.slice() }; }),
+      doi: bai.doi ? bai.doi.map(function (x) { return { chinh: x.chinh.slice() }; }) : undefined
     });
   }
 

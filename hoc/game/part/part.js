@@ -2,6 +2,15 @@
 (function(root,factory){var api=factory(root);if(typeof module==='object'&&module.exports)module.exports=api;root.Part=api;})(typeof window!=='undefined'?window:globalThis,function(root){
   'use strict';
   var K={ink:'#1b120a',vang:'#ffcf30',vangSang:'#ffe888',vangToi:'#d99418',thep:'#9aa3b5',thepSang:'#dbe3ed',thepToi:'#596274',kinh:'#26324e',xanh:'#7ff0ff',den:'#292a35',denSang:'#565968',go:'#c9853d',goSang:'#e5ad62',tim:'#56406f',timSang:'#9070b5',la:'#a8dc72',laSang:'#dcffad',do:'#df4b4b',xanhDuong:'#4f8dff'};
+  /* MÀU SƠN ĐỘI (22/10, màn nhiều robot): ghep({son:'lam'}) sơn lại LỚP SƠN của từng part bằng bộ ba màu đội [nền, sáng, tối]; kim loại, kính, mắt, cảm biến giữ nguyên.
+     Thiếu son (màn một robot) thì không đổi gì: mỗi thân giữ màu nhận diện riêng (hai bánh vàng, nhện tím, omni xanh lá, xích thép, drone đen).
+     vang = đội của người chơi (R1); lam = đồng đội thứ hai; do = đối thủ; tim = dự phòng. Không dùng xanh lá (trùng nền sân).
+     LOP_SON[mã part]: map tên màu K → ô màu đội (0 nền, 1 sáng, 2 tối); vung [x,y,w,h] (tọa độ trong tấm part) giới hạn chỗ sơn khi màu đó còn dùng cho chi tiết khác (bánh xích, khung drone). Tay thiếu mục thì sơn bộ ba vàng. */
+  var SON={vang:['#ffcf30','#ffe888','#d99418'],lam:['#5aa9ff','#b3dcff','#2c62c4'],do:['#ff5f57','#ffb3ac','#b8302a'],tim:['#b07cff','#dcc4ff','#6f42c1']};
+  var SON_VANG={map:{vang:0,vangSang:1,vangToi:2}};
+  var LOP_SON={'hai-banh':SON_VANG,nhen:{map:{tim:0,timSang:1}},omni:{map:{la:0,laSang:1}},xich:{map:{thepToi:0,thepSang:1,vangToi:2},vung:[6,6,12,13]},drone:{map:{den:0,denSang:1,vangToi:2},vung:[7,7,10,10]},xoay:{map:{tim:0,timSang:1}}};
+  function sonPart(q,d,ten){var s=SON[ten];if(!s)return q;var l=LOP_SON[d.ma]||(d.loai==='tay'?SON_VANG:null);if(!l)return q;var map={},k,v=l.vung||[0,0,q.w,q.h],x,y,c;for(k in l.map)map[K[k]]=s[l.map[k]];
+    for(y=v[1];y<v[1]+v[3];y++)for(x=v[0];x<v[0]+v[2];x++){c=q.get(x,y);if(c&&map[c])q.buf[y*q.w+x]=map[c];}return q;}
   /* VẬT NHỎ (luật vật 14/10): vẽ một vật n×n (n=8: vật nằm đất ≈ 57% ô; n=10: vật trong kẹp ≈ 45% ô tính theo pixel part) vào bất kỳ Painter có px/rect.
      chat 'sat' (khối sắt) hay gỗ (thùng nan chéo); mau: 'red'|'green'|'blue'|'yellow'|null (dải màu quanh thân). Dùng chung cho ve.js (vật trên sân) và tay kẹp (xem trang). */
   var MAU_VAT={red:['#d6493e','#f0847a','#8f2822'],green:['#35c47a','#7cf0aa','#16703f'],blue:['#3f7fe0','#7db0f7','#22489c'],yellow:['#efc531','#ffe784','#a07c10']};
@@ -44,7 +53,7 @@
   function lay(l,m){for(var i=0;i<(all[l]||[]).length;i++)if(all[l][i].ma===m)return all[l][i];return null;}
   function chon(l,x){var m=typeof x==='string'?x:x&&x.ma,d=lay(l,m);if(!d)throw new Error('Không có '+l+' "'+m+'".');return d;}
   function veMot(d,s){var k=d.kich||{w:24,h:24},p=new Painter(k.w,k.h);d.ve(p,s||{});return p;}   /* d.kich: part có tấm vẽ rộng hơn 24×24 (tay xoay vươn sang hai bên); diemNeo tính trong tấm đó */
-  function dat(p,d,o,n,s){var q=veMot(d,s);p.blit(q,o.x-n.x,o.y-n.y);}
+  function dat(p,d,o,n,s,son){var q=sonPart(veMot(d,s),d,son);p.blit(q,o.x-n.x,o.y-n.y);}
   function gan(d){return Array.isArray(d.gan)?d.gan:[d.gan];}
   function oTay(than,tay){return than.ma==='drone'?['duoi']:gan(tay).filter(function(o){return o==='tay'&&than.oGan[o];});}
   function doiCam(cams){var out=[];cams.forEach(function(c){var o=c.o==='truoc'?'hong':c.o;if(o==='hong'){out.push({ma:c.ma,o:'hongTrai'});out.push({ma:c.ma,o:'hongPhai'});}else out.push({ma:c.ma,o:o});});return out;}
@@ -58,11 +67,11 @@
     if(tay&&!oTay(than,tay).length)throw new Error((than.ma==='drone'?'Drone':'Tay '+tay.ma)+' không gắn được vào ổ này.');
     var p=new Painter(40,40),goc={x:8,y:17},camera=false;
     for(i=0;i<cams.length;i++){var d=chon('cam-bien',cams[i].ma),o=than.oGan[cams[i].o];if(!o)throw new Error('Thân '+than.ma+' không có ổ "'+cams[i].o+'".');if(gan(d).indexOf(cams[i].o)<0)throw new Error('Cảm biến '+d.ma+' không gắn được vào ổ '+cams[i].o+'.');if(d.ma==='camera'){camera=true;continue;}}
-    var ts=Object.assign({},state(st,'than'),{camera:camera,camSang:camera&&!!state(st,'camBien').mat});p.blit(veMot(than,ts),goc.x,goc.y);
-    if(tay){var os=oTay(than,tay);for(i=0;i<os.length;i++){var oT=os[i],port=than.oGan[oT],tayState=Object.assign({},state(st,'tay'),{duoi:oT==='duoi',than:than.ma});dat(p,tay,{x:goc.x+port.x,y:goc.y+port.y},oT==='duoi'&&tay.diemNeoDuoi?tay.diemNeoDuoi:tay.diemNeo,tayState);}}
+    var ts=Object.assign({},state(st,'than'),{camera:camera,camSang:camera&&!!state(st,'camBien').mat});p.blit(sonPart(veMot(than,ts),than,cauHinh.son),goc.x,goc.y);
+    if(tay){var os=oTay(than,tay);for(i=0;i<os.length;i++){var oT=os[i],port=than.oGan[oT],tayState=Object.assign({},state(st,'tay'),{duoi:oT==='duoi',than:than.ma});dat(p,tay,{x:goc.x+port.x,y:goc.y+port.y},oT==='duoi'&&tay.diemNeoDuoi?tay.diemNeoDuoi:tay.diemNeo,tayState,cauHinh.son);}}
     for(i=0;i<cams.length;i++){var cb=chon('cam-bien',cams[i].ma);if(cb.ma==='camera')continue;var pc=than.oGan[cams[i].o];dat(p,cb,{x:goc.x+pc.x,y:goc.y+pc.y},cb.diemNeo,Object.assign({},state(st,'camBien'),{ben:cams[i].o==='hongTrai'?'trai':'phai'}));}
     huong=((huong||0)%4+4)%4;while(huong--)p=rot90(p);return p.canvas();
   }
   function hamGoc(c){var a=[],them=function(d){d.hamGoc.forEach(function(h){if(a.indexOf(h)<0)a.push(h);});};them(chon('than',c.than));if(c.tay)them(chon('tay',c.tay));(c.camBien||[]).forEach(function(x){them(chon('cam-bien',x.ma));});return a;}
-  return{K:K,veVatNho:veVatNho,veMat:veMat,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
+  return{K:K,SON:SON,LOP_SON:LOP_SON,veVatNho:veVatNho,veMat:veMat,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
 });

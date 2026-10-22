@@ -77,6 +77,7 @@
       'choi.bp.banhT': 'Bánh trái', 'choi.bp.banhP': 'Bánh phải', 'choi.bp.truot': 'Bánh trượt', 'choi.bp.tay': 'Tay', 'choi.bp.xoay': 'Khớp xoay',
       'choi.bp.kep': 'Kẹp', 'choi.bp.namCham': 'Nam châm', 'choi.bp.nem': 'Máy ném', 'choi.bp.sung': 'Súng hơi', 'choi.bp.chan': 'Chân nhện',
       'choi.chuongTrinh': 'main',
+      'choi.xeTab': 'Chương trình của robot {n}',
       'choi.chuongTrinhNgan': 'main',
       'choi.khoiLenh': 'KHỐI LỆNH',
       'choi.xoaHet': 'Xóa hết chương trình',

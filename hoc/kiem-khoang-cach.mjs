@@ -259,7 +259,7 @@ console.log('\n== 6. Màn 1 chưa dạy while; từ màn 2 dùng được ==');
   const ok = ChamHoc.cham(man(2), man(2).loiGiai, khoTruoc('8.2'));
   kiem('6.2: while được dùng, 3 sao', ok.sao === 3 && ok.chanDoan.length === 0);
   kiem('6.1: khung khai chanWhile, cauTruc ["for","if"]; 6.2–6.10 cauTruc ["for","if","while"], không chanWhile', man(1).khung.chanWhile === true && J(man(1).cauTruc) === '["for","if"]' && ds.slice(1).every((m) => J(m.cauTruc) === '["for","if","while"]' && m.khung.chanWhile === undefined));
-  const cu = ChamHoc.cham(ManHoc.timMa('tham-so.2'), { chinh: ['forward(3)'] }, tron(khoTruoc('12.2'), []));
+  const cu = ChamHoc.cham(ManHoc.timMa('tham-so.2'), { chinh: ['forward(3)'] }, tron(khoTruoc('13.2'), []));
   kiem('các chương cũ không bị chặn while (chanWhile chỉ ở 6.1): 8.2 vẫn dùng được while thay for', ManHoc.timMa('tham-so.2').khung.chanWhile === undefined && !maCua(cu).includes('cau-truc-chua-hoc'));
 }
 
