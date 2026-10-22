@@ -23,7 +23,7 @@ const KhoHam = require(path.join(day, 'kho-ham.js'));
 const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
 const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
 const tags = [...html.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
-for (const t of tags) if (/^\.\.\/(man-[^/]+|lap-rap)\.js$/.test(t) && t !== '../man-thu-doi.js') require(path.join(day, t.slice(3)));
+for (const t of tags) if (/^\.\.\/(man-[^/]+|lap-rap)\.js$/.test(t)) require(path.join(day, t.slice(3)));
 const ManHoc = require(path.join(day, 'man-chuoi-1.js'));
 const { nhipHaiRobotSan, nhipHaiRobotTatCa, soSan, chuoiThanhMaDoi } = await import('./do-duong-hai-robot.mjs');
 

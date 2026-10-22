@@ -121,7 +121,6 @@
       if (!k) return;
       var ma = decodeURIComponent(k[1]), m = ManHoc.timMa(ma) || ManHoc.tim(ma);
       if (m) { S.daMo = true; vaoNgay(m); }
-      else if (window.ManThuDoi && ManThuDoi.tim(ma)) { S.daMo = true; App.hien('choi'); Choi.vao(ManThuDoi.tim(ma)); }      // màn tạm hai robot (man-thu-doi.js), ngoài danh sách màn
     } catch (e) { /* bỏ qua */ }
   }
   if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('load', function () { setTimeout(vaoTuDiaChi, 50); });

@@ -472,6 +472,7 @@
   function Editor(host, tuyChon) {
     var tong = tuyChon.tong || 10, dung = tuyChon.dung === undefined ? tong : tuyChon.dung;
     var lay = tuyChon.lay, sel = 0, runIdx = -1, loiSet = {}, lapSet = {}, ed = this;
+    var daChon = false;                                           // người chơi vừa CHẠM CHỌN một dòng có code (sel = dòng đó): khối mới chèn XUỐNG DƯỚI dòng đó (user 22/10), không đẩy dòng đó xuống
     var rows = [], strips = [], brks = [], njs = [], xt = null, viTri = null;
     var hov = -1, kieuCuoi = 'mouse', cham = null, hoan = null, hoanHen = null, hoanEl = null;
     var nutRa = null, nutVao = null, boThutEl = null, thutCu = null;
@@ -756,7 +757,7 @@
           } else { cham = null; hienX = -1; }
           tuyChon.khiBam && tuyChon.khiBam(i);
           if (i >= dung) { tuyChon.khiKhoa && tuyChon.khiKhoa(); return; }
-          sel = i; ed.render();
+          sel = i; daChon = i < arr.length && coY(arr[i]); ed.render();
         });
       })(i);
     }
@@ -875,7 +876,7 @@
       if (!hoan || dangChay() || chiDoc()) return;
       var s = hoan, arr = lay(); this.anHoan(); hienX = -1;
       arr.length = 0; Array.prototype.push.apply(arr, s.arr);
-      sel = Math.max(0, Math.min(s.sel, dung - 1));
+      sel = Math.max(0, Math.min(s.sel, dung - 1)); daChon = false;
       this.render(); this.hieuUng(Math.min(s.sel, arr.length - 1)); tuyChon.khiDoi && tuyChon.khiDoi();
       baoHd('hoan-tac', { dong: s.sel });
     };
@@ -903,11 +904,18 @@
       return Math.max(0, Math.min(muon, toiDaBac(tmp, Math.max(0, Math.min(den, tmp.length)))));
     };
 
-    this.chen = function (txt) { return this.chenTai(txt, Math.min(sel, lay().length)); };
+    /** Chỗ chèn khối từ khay: vừa chạm chọn một dòng có code thì ngay DƯỚI dòng đó, cùng bậc (thụt thêm một bậc nếu dòng đó mở khối, vd while …:);
+     *  elif / else thì bậc theo if phía trên. Không thì tại con trỏ (ô trống sau dòng vừa chèn), bậc mặc định. → { at, bac } (bac undefined = bacMacDinh). */
+    function choChen(txt) {
+      var arr = lay();
+      if (daChon && sel < arr.length && coY(arr[sel])) return { at: sel + 1, bac: txt && laNhanhPhu(txt) ? undefined : bacCua(arr[sel]) + (moKhoi(arr[sel]) ? 1 : 0) };
+      return { at: Math.min(sel, arr.length), bac: undefined };
+    }
+    this.chen = function (txt) { var c = choChen(txt); return this.chenTai(txt, c.at, c.bac); };
     /** Lệnh gốc nào KHÔNG chèn được ở chỗ chèn hiện tại (dòng đang chọn): { tên lệnh: lý do } (xem lenhCungNhip). Khung chỉ đọc thì rỗng. */
     this.camNhip = function () {
       var arr = lay(), kq = {}; if (chiDoc()) return kq;
-      var at = Math.min(sel, arr.length), ds = lenhCungNhip(arr, at, this.bacMacDinh(at, ''));
+      var c = choChen(''), at = c.at, ds = lenhCungNhip(arr, at, c.bac === undefined ? this.bacMacDinh(at, '') : Math.max(0, Math.min(c.bac, toiDaBac(arr, at))));
       if (!ds.length) return kq;
       Object.keys(BP_CUA).forEach(function (l) { var ly = lyDoCamNhip(l, ds); if (ly) kq[l] = ly; });
       return kq;
@@ -925,7 +933,7 @@
       if (lyCam) { if (tuyChon.khiCamNhip) tuyChon.khiCamNhip(lyCam); baoHd('cam-nhip', { dong: at }); return null; }
       arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));
       chuanHoaBac(arr);
-      sel = Math.min(at + 1, dung - 1);
+      sel = Math.min(at + 1, dung - 1); daChon = false;
       this.render(); this.hieuUng(at); tuyChon.khiDoi && tuyChon.khiDoi();
       baoHd('chen-khoi', { dong: at });
       meoXoaLanDau(at);                                            // lần đầu chèn một khối: hướng dẫn xóa (sau khiDoi vì khay vẽ lại)
@@ -942,14 +950,14 @@
       chuanHoaBac(arr);
       var doi = truoc !== arr.join('\n');
       if (doi) this.anHoan();
-      sel = den; this.render(); this.hieuUng(den);
+      sel = den; daChon = coY(arr[den]); this.render(); this.hieuUng(den);
       if (doi) { tuyChon.khiDoi && tuyChon.khiDoi(); baoHd('doi-cho', { tu: tu, den: den }); }
     };
     this.xoaTai = function (i) {
       var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return;
       hienX = -1;
       luuHoan(arr, i);
-      arr.splice(i, 1); chuanHoaBac(arr); sel = Math.min(i, dung - 1);
+      arr.splice(i, 1); chuanHoaBac(arr); sel = Math.min(i, dung - 1); daChon = false;
       this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
       baoHd('xoa-dong', { dong: i });
     };
@@ -1038,18 +1046,18 @@
     /** Thẻ biến ở kho: thay vào dòng đang chọn, hoặc dòng có đối số gần nhất phía trên nó. kieu = kiểu của biến: 'so' (mặc định), 'don' (một chữ) hoặc 'ghep' (chuỗi chữ). */
     this.datBien = function (ten, kieu) {
       var arr = lay();
-      for (var i = Math.min(sel, arr.length - 1); i >= 0; i--) if (this.datBienTai(i, ten, kieu)) { sel = Math.min(i + 1, dung - 1); this.render(); return true; }
+      for (var i = Math.min(sel, arr.length - 1); i >= 0; i--) if (this.datBienTai(i, ten, kieu)) { sel = Math.min(i + 1, dung - 1); daChon = false; this.render(); return true; }
       return false;
     };
     /** Đánh dấu dòng i là chỗ sắp thả thẻ biến (-1 = bỏ). */
     this.danhDauDich = function (i) { rows.forEach(function (r, k) { r.classList.toggle('dich', k === i); }); };
-    this.chon = function (i) { if (i >= 0 && i < dung) { sel = i; this.render(); } };
+    this.chon = function (i) { if (i >= 0 && i < dung) { sel = i; daChon = false; this.render(); } };
     this.chonHienTai = function () { return sel; };
     this.xoaHet = function () {
       var arr = lay(); if (chiDoc() || !arr.length) return;
       hienX = -1; anMeo();
       luuHoan(arr, 0);
-      arr.length = 0; sel = 0; this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
+      arr.length = 0; sel = 0; daChon = false; this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
     };
     /** idx: dòng đang chạy (hoặc null); lap (tùy chọn): { dòng: 'k/n' } số lượt đang chạy của các vòng for bao quanh. */
     this.datChay = function (idx, lap) {
@@ -1062,7 +1070,7 @@
     this.nap = function (layMoi, dungMoi) {
       this.anHoan(); dongChonSo(); hienX = -1; anMeo();
       lay = layMoi; if (dungMoi !== undefined) dung = dungMoi;
-      runIdx = -1; loiSet = {}; lapSet = {}; xt = null; viTri = null; sel = Math.min(lay().length, Math.max(0, dung - 1)); this.render();
+      runIdx = -1; loiSet = {}; lapSet = {}; xt = null; viTri = null; sel = Math.min(lay().length, Math.max(0, dung - 1)); daChon = false; this.render();
       this.vuaTieuDe();
     };
     this.dung = function () { return dung; };
