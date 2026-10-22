@@ -43,7 +43,7 @@ Kế hoạch và lộ trình của Đường học nằm trong `hoc/`: `LO-TRINH
 npm test
 ```
 
-Chạy lần lượt 54 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
+Chạy lần lượt 55 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
 Chạy một bộ: `node hoc/kiem-xich.mjs`, hoặc lọc `npm test -- hoc/kiem-xich`.
 
 ## Đóng gói thành trang Artifact

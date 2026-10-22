@@ -1071,6 +1071,7 @@
   }
 
   function cham(man, baiLam, hamCuaEm) {
+    if (Array.isArray(man.doi)) return chamDoi(man, baiLam, hamCuaEm);
     baiLam = ganCoDinh(man, chuanHoa(baiLam));
     var cam = !!man.camHamCuaEm;
     var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
@@ -1168,6 +1169,130 @@
     } else {
       var khongQua = lyDoKhongQua(man);
       if (khongQua) ketQua.chanDoan.unshift({ muc: 'loi', ma: 'lap-khong-qua', loi: 'Robot lắp thế này không qua được màn, viết code nào cũng vậy. ' + khongQua + ' Bấm Lắp lại để đổi bộ phận.' });
+    }
+    return xong();
+  }
+
+  /* ------------------------------------------------------------------- chấm NHIỀU ROBOT (KE-HOACH-HAI-ROBOT.md)
+     man.doi = [{ batDau (một sân: ô; nhiều sân: mảng), loaiRobot?, hamGoc?, robot?, daoChieu?, pin? }, …]: phần riêng từng robot, thiếu thì lấy của màn.
+     baiLam = { doi: [{ chinh }, { chinh }], hamCuaMan }: mỗi robot một chương trình chính; hàm của màn và hàm của em dùng chung.
+     soO = ô mọi chương trình chính + thân các hàm thực sự được gọi (mỗi hàm một lần); soNhip = nhịp chung. Sao như một robot.
+     Chẩn đoán của từng robot ghi "R1: …"; lời giống hệt nhau ở mọi robot (vd vật chưa về đích) thì ghi một lần. Kết quả có thêm ketQua.doi (vết, xe của từng robot). */
+  function manCuaXe(man, i) { var o = Object.assign({}, man, man.doi[i]); delete o.doi; return o; }
+  function gopChanDoan(dsTheoXe) {
+    var n = dsTheoXe.length, kq = [], daGop = {};
+    dsTheoXe.forEach(function (ds, i) {
+      ds.forEach(function (c) {
+        var khoa = c.ma + '|' + c.loi;
+        var chung = n > 1 && dsTheoXe.every(function (d) { return d.some(function (x) { return x.ma + '|' + x.loi === khoa; }); });
+        if (chung) { if (!daGop[khoa]) { daGop[khoa] = true; kq.push(c); } }
+        else kq.push(Object.assign({}, c, { loi: 'R' + (i + 1) + ': ' + c.loi, xe: i }));
+      });
+    });
+    return kq;
+  }
+  function chamDoi(man, baiLam, hamCuaEm) {
+    var ds = (baiLam && baiLam.doi) || [];
+    var hamCuaMan = ((baiLam && baiLam.hamCuaMan) || []).map(saoHam);
+    var bais = man.doi.map(function (r, i) { return { chinh: ((ds[i] && ds[i].chinh) || []).slice(), hamCuaMan: hamCuaMan.map(saoHam) }; });
+    var mans = man.doi.map(function (r, i) { return manCuaXe(man, i); });
+    var cam = !!man.camHamCuaEm;
+    var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
+    var biCamTen = cam ? tenCua(hamCuaEm || []) : [];
+    var khung = Object.assign({ chinh: 10, moiHam: 10 }, man.khung || {}, { moXuong: man.moXuong !== false });
+    if (man.gioiHanHam !== undefined) khung.gioiHanHam = man.gioiHanHam;
+    var taps = bais.map(function (b) { return KhungCode.tapHamDung(b, kho, { tatCaHamMan: true }); });
+    var tinhs = bais.map(function (b) { return KhungCode.tapHamDung(b, kho); });
+    var che = [];
+    taps.forEach(function (t) { t.che.forEach(function (x) { if (che.indexOf(x) < 0) che.push(x); }); });
+    var thongTin = cam ? [] : thongTinChe(che);
+    var bc = { hamMan: tenCua(hamCuaMan), biCam: biCamTen, hamEm: tenCua(kho).filter(function (t) { return che.indexOf(t) < 0; }) };
+    function laEm(h) { return taps.some(function (t) { return t.em.indexOf(h) >= 0; }); }
+    function hop(dsDs) { var kq = []; dsDs.forEach(function (d) { d.forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); return kq; }
+    function dienO(kq, dsHam) {
+      var o = 0, thay = {};
+      bais.forEach(function (b) { o += KhungCode.soDong(b.chinh); });
+      dsHam.forEach(function (h) { if (!thay[h.ten]) { thay[h.ten] = true; o += KhungCode.soOHam(h); } });
+      kq.soO = o;
+      kq.hamDaDung = tenCua(dsHam);
+      kq.chiTietO = { chinh: bais.map(function (b) { return KhungCode.soDong(b.chinh); }), ham: dsHam.map(function (h) { return { ten: h.ten, cot: laEm(h) ? 'hamEm' : 'hamMan', o: KhungCode.soOHam(h) }; }) };
+    }
+    var ketQua = { thang: false, sao: 0, soO: 0, soNhip: 0, hamDaDung: [], chiTietO: null, chanDoan: [], vet: [], doi: [], theoSan: [], py: [], anhXa: [], pin: null, pinToiDa: null, sac: [], bongMo: null, diQua: [] };
+    dienO(ketQua, hop(tinhs.map(function (t) { return t.em.concat(t.man); })));     // tạm: dò tĩnh, chạy xong sẽ thay bằng dò theo vết
+    function xong() { ketQua.chanDoan = ketQua.chanDoan.concat(thongTin); return ketQua; }
+
+    // 1. khung từng robot
+    var loiKhung = bais.map(function (b, i) { return KhungCode.kiemTra(khung, b, mans[i].hamGoc, taps[i].em).map(gan); });
+    if (loiKhung.some(function (l) { return l.length; })) { ketQua.chanDoan = gopChanDoan(loiKhung); return xong(); }
+
+    // 2. ghép Python từng robot
+    var gs = bais.map(function (b, i) { return KhungCode.ghep(b, taps[i].em); });
+    ketQua.py = gs.map(function (g) { return g.ma; }); ketQua.anhXa = gs.map(function (g) { return g.anhXa; });
+    var loiDau = bais.map(function (b, i) { return loiDauKhoi(b, taps[i].em); });
+    if (loiDau.some(function (l) { return l.length; })) { ketQua.chanDoan = gopChanDoan(loiDau); return xong(); }
+
+    // 3. chạy chung từng sân
+    var nhieu = Array.isArray(man.san[0]);
+    var dsSan = nhieu ? man.san : [man.san];
+    var thangHet = true, nhipMax = 0, nhipTong = 0, gom = [], dsMa = {}, dung = {};
+    function theoSan(v, i) { return Array.isArray(v) ? v[i] : v; }
+    dsSan.forEach(function (rows, si) {
+      var lm = SanHoc.lopMauCuaSan(man, si);
+      var res = SanHoc.chay({
+        san: rows, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
+        mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, dich: man.dich,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined,
+        doi: mans.map(function (mi, i) {
+          return {
+            batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,
+            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa,
+            daoChieu: mi.daoChieu, phanCung: SanHoc.phanCungCua(mi), nguonDong: nguonDongCua(gs[i])
+          };
+        })
+      }, gs.map(function (g) { return g.ma; }));
+      var cdXe = mans.map(function (mi, i) {
+        var l = res.loi && (res.loi.robot === undefined || res.loi.robot === i) ? res.loi : null;
+        var xongPhan = res.thang || (mi.mucTieu || 'toi-co') === 'toi-co' && res.doi[i].toiCo;        // tới cờ: phần của robot này đã xong
+        return chanDoanSan(mi, Object.assign({}, res, res.doi[i], { thang: xongPhan, nhip: res.nhip, loi: l }), gs[i], false, bc);
+      });
+      var cd = gopChanDoan(cdXe);
+      var doi = res.doi.map(function (d, i) {
+        var vet = chuyenVet(d.vet, gs[i]);
+        hamTrongVet(vet, dung);
+        return { ten: d.ten, loaiRobot: d.loaiRobot, vet: vet, robot: d.robot, batDau: d.batDau, tay: d.tay, namCham: d.namCham, nem: d.nem, sung: d.sung, pin: d.pin, pinToiDa: d.pinToiDa, toiCo: d.toiCo };
+      });
+      ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: doi[0].vet, doi: doi, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung,
+        vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
+        cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
+        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: null, diQua: [] });
+      if (!res.thang) thangHet = false;
+      if (res.nhip > nhipMax) nhipMax = res.nhip;
+      nhipTong += res.nhip;
+      cd.forEach(function (c) {
+        var k = c.ma + '|' + (c.xe === undefined ? '' : c.xe);
+        if (dsMa[k]) return;
+        dsMa[k] = true;
+        gom.push(nhieu ? Object.assign({}, c, { loi: 'Sân ' + (si + 1) + ': ' + c.loi, san: si }) : c);
+      });
+    });
+    ketQua.thang = thangHet;
+    ketQua.nhipMax = nhipMax; ketQua.nhipTong = nhipTong;
+    ketQua.soNhip = man.nhipTheo === 'tong' ? nhipTong : nhipMax;
+    ketQua.chanDoan = gom;
+    ketQua.batDau = mans.map(function (mi) { return Array.isArray(mi.batDau) && nhieu ? mi.batDau[0] : mi.batDau; });
+    var viec = ketQua.theoSan.filter(function (s) { return !s.thang; })[0] || ketQua.theoSan[0];
+    ['vet', 'doi', 'vatBanDau', 'dich', 'tay', 'namCham', 'nem', 'vat', 'thungBanDau', 'thung', 'mauO', 'pin', 'pinToiDa', 'sac', 'sung', 'cua', 'nut', 'bangTat', 'cuaBanDau', 'nutBanDau']
+      .forEach(function (k) { ketQua[k] = viec[k]; });
+
+    // hàm thực sự được gọi (hợp mọi robot, mọi sân) → số ô
+    var daDung = hop(taps.map(function (t) { return t.em.concat(t.man); })).filter(function (h) {
+      return dung[(laEm(h) ? 'hamEm' : 'hamMan') + ':' + h.ten];
+    });
+    dienO(ketQua, daDung);
+    if (thangHet) {
+      var sao = man.sao || {};
+      ketQua.re = false; ketQua.nguongO = sao.o;
+      ketQua.sao = 1 + (sao.o !== undefined && ketQua.soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && ketQua.soNhip <= sao.nhip ? 1 : 0);
     }
     return xong();
   }
