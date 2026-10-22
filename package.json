@@ -8,6 +8,6 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node tools/kiem-tat-ca.mjs",
-    "dong-goi": "python -I hoc/dong-goi-artifact.py hoc/game dist-artifact"
+    "dong-goi": "python -X utf8 -I hoc/dong-goi-artifact.py hoc/game dist-artifact"
   }
 }
