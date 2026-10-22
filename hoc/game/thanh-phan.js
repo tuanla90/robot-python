@@ -1679,6 +1679,7 @@
    * Khối KHÔNG co nhỏ (cỡ chạm đủ lớn trên điện thoại): khay dài thì cuộn bằng vuốt dọc, lăn chuột hay ▲ ▼.
    */
   var MAU_THE = { than: '#9aeefa', tay: '#ffb050', cam: '#d9c4ff' };                       // màu icon tiêu đề thẻ: Thân xanh, Tay cam, Logic tím (như khối for)
+  var HINH_PART = {};                                                                       // bộ đệm hình bộ phận của tiêu đề thẻ (hinhPart), khóa 'than/hai-banh'
   function Palette(host, cb) {
     this.host = host;
     var bricks = {}, lastSpec = null, pal = this;
@@ -1771,11 +1772,36 @@
       theEl.setAttribute('data-the', theChon);
       theTen.className = 'the-chu k-' + theChon;
       theTen.innerHTML = ''; theTen.setAttribute('title', the[i].ten);
-      if (the[i].icon && window.Ve && Ve.ico) { theTen.classList.add('co-ic'); theTen.appendChild(Ve.ico(the[i].icon, 2, { fill: MAU_THE[theChon] || '#e8ffe0', line: '#0a2a1f', toi: '#0a2a1f', sang: '#ffffff' })); }
+      var hp = hinhPart(the[i].part);
+      if (hp) { theTen.classList.add('co-ic', 'co-part'); theTen.appendChild(hp); }
+      else if (the[i].icon && window.Ve && Ve.ico) { theTen.classList.add('co-ic'); theTen.appendChild(Ve.ico(the[i].icon, 2, { fill: MAU_THE[theChon] || '#e8ffe0', line: '#0a2a1f', toi: '#0a2a1f', sang: '#ffffff' })); }
       else { theTen.textContent = the[i].ten; vuaTenThe(); }
       theCham.innerHTML = '';
       the.forEach(function (x, k) { theCham.appendChild(h('i', k === i ? 'on' : '')); });
       theEl.setAttribute('aria-label', t('choi.theSo', { ten: the[i].ten, i: i + 1, n: the.length }));
+    }
+    /** Hình một bộ phận cho tiêu đề thẻ: { loai: 'than' | 'tay', ma } → canvas đã cắt lề trong suốt (bộ PART, part/part.js), hay null nếu chưa nạp bộ PART / không có mã. */
+    function hinhPart(bp) {
+      if (!bp || !bp.ma || !window.Part || !Part._veMot || !window.Ve) return null;
+      var k = bp.loai + '/' + bp.ma;
+      if (!(k in HINH_PART)) {
+        HINH_PART[k] = null;
+        try {
+          var d = Part.lay(bp.loai, bp.ma), cv = d && Part._veMot(d, {}).canvas();
+          if (cv && cv.getContext) HINH_PART[k] = catLe(cv);
+        } catch (e) { /* bộ PART lỗi: dùng icon đèn */ }
+      }
+      return HINH_PART[k] ? Ve.mk(HINH_PART[k], 1) : null;                               // 1× đã cỡ 16–24px, ngang icon đèn cũ; súng hơi (cao 35px) thu lại bằng CSS
+    }
+    /** Cắt lề trong suốt quanh hình bộ phận (tấm vẽ PART 24×24 có lề). */
+    function catLe(cv) {
+      var g = cv.getContext('2d'), w = cv.width, hh = cv.height, d = g.getImageData(0, 0, w, hh).data;
+      var x0 = w, y0 = hh, x1 = -1, y1 = -1;
+      for (var y = 0; y < hh; y++) for (var x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 < 0) return null;
+      var c = document.createElement('canvas'); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
+      var g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(cv, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
+      return c;
     }
     /** Tên thẻ dài thì co chữ cho vừa ô (đo được khi khay đã hiện: Xưởng gọi lại qua vua() sau khi mở). */
     function vuaTenThe() {
@@ -2061,21 +2087,26 @@
         tay: t('choi.the.tay' + (loaiTay.length === 1 ? loaiTay[0] : '')),
         cam: t('choi.the.cam')
       };
-      var icThe = {                                                                           // icon tiêu đề thẻ (ve.js ICON BỘ PHẬN), dùng chung với đèn nhịp
+      var icThe = {                                                                           // icon tiêu đề thẻ (ve.js ICON BỘ PHẬN), dùng chung với đèn nhịp; chỉ dùng khi không vẽ được hình bộ phận
         than: ({ nhen: 'denChan', drone: 'denCanh', xich: 'denXich', omni: 'denTruot' })[spec.loai] || 'denBanh',
         tay: loaiTay.length === 1 ? ({ Kep: 'denKepMo', Xoay: 'denXoay', NamCham: 'denNamCham', Nem: 'denNem', Sung: 'denSung' })[loaiTay[0]] : 'denTayLen',
         cam: 'denLogic'
       };
+      var partThe = {                                                                         // 22/10: tiêu đề thẻ vẽ bằng HÌNH BỘ PHẬN THẬT (bộ PART) thay icon đèn: điều khiển xe thì thấy thân xe, không thấy bánh tròn
+        than: { loai: 'than', ma: ({ nhen: 'nhen', drone: 'drone', xich: 'xich', omni: 'omni' })[spec.loai] || 'hai-banh' },
+        tay: loaiTay.length === 1 ? { loai: 'tay', ma: ({ Kep: 'kep', Xoay: 'xoay', NamCham: 'nam-cham', Nem: 'nem', Sung: 'hoi' })[loaiTay[0]] } : null,
+        cam: null                                                                              // thẻ Logic (for / if / while / biến) không phải phần cứng: giữ icon
+      };
       the = [];
       var nThan = [gocChan, gocThuong, gocTruot].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
-      the.push({ khoa: 'than', ten: tenThe.than, icon: icThe.than, ve: function () {
+      the.push({ khoa: 'than', ten: tenThe.than, icon: icThe.than, part: partThe.than, ve: function () {
         nhomBien(); nhomChan(nThan > 1); nhomGoc(nThan > 1); nhomTruot(nThan > 1);
         nhomMan(manThe.than);
         nhomEm(emThe.than);
       } });
       if (coTay) {
         var nTay = [gocTay, gocNC, gocNem, gocSung].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
-        the.push({ khoa: 'tay', ten: tenThe.tay, icon: icThe.tay, ve: function () {
+        the.push({ khoa: 'tay', ten: tenThe.tay, icon: icThe.tay, part: partThe.tay, ve: function () {
           nhomBien();
           nhomLenhTay(gocTay, 'choi.nhom.tay', nTay > 1, !!gocChan.length || gocTay.length > 4);          // tay xoay có sáu lệnh: xếp hai cột (nâng / hạ, trái / phải, kẹp / thả)
           nhomLenhTay(gocNC, 'choi.nhom.namCham', nTay > 1);

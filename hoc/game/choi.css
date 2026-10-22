@@ -1092,3 +1092,10 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 @keyframes md-di{from{transform:translateX(0)}to{transform:translateX(var(--d))}}
 @keyframes md-sang{0%,100%{filter:drop-shadow(0 0 0 #ffd95a)}50%{filter:drop-shadow(0 0 8px #ffd95a)}}
 .g-ch.tt{border-radius:0;transform:rotate(45deg) scale(.85)}                    /* chấm của gói thử thách: hình thoi */
+.pal-the .the-chu.co-part canvas{width:auto !important;height:auto !important;max-height:26px}                         /* hình bộ phận thật ở tiêu đề thẻ (thanh-phan.js hinhPart), giữ pixel gốc */
+/* hàng chọn mùa ở màn chọn gói (man-goi.js veMua, chỉ khi có từ hai mùa) */
+.g-mua{flex:none;display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.g-mua-nut{height:30px;display:flex;align-items:center;gap:5px;padding:2px 12px 0;font:700 calc(14px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.g-mua-nut.on{color:var(--ink);text-shadow:none}
+.g-mua-nut.khoa{filter:saturate(.3) brightness(.85)}
+.g-mua-nut.nope{animation:shake .25s steps(2) 2}
