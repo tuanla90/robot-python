@@ -1018,7 +1018,7 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .cd-cot .hop-nut{flex:none}
 .cd-ban{margin-top:10px;text-align:center;font:500 calc(12px*var(--kp))/1 var(--px);color:#9fd3b8}
 
-/* ============================================================ GIỚI THIỆU LẦN ĐẦU (gioi-thieu.js) */
+/* ============================================================ MẸO CHƠI SAU PHIM MỞ ĐẦU (gioi-thieu.js) */
 .gt-khung{min-height:236px}
 .gt-hinh{height:120px;margin:0 0 10px;display:flex;align-items:center;justify-content:center;gap:14px;overflow:hidden;position:relative}
 .gt-code{display:flex;flex-direction:column;gap:4px}
@@ -1034,3 +1034,58 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .gt-cham i.on{background:#ffd95a}
 @keyframes gt-nay{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
 .gt-hinh.chalk{background-color:#123f30}
+
+/* ============================================================ PHIM MỞ ĐẦU (mo-dau.js) */
+.md{position:absolute;left:0;top:0;width:360px;height:var(--sh,640px);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background-color:#2a1d14;background-image:var(--woodL);background-size:192px 120px;image-rendering:pixelated}
+.md::before{content:'';position:absolute;inset:0;background:rgba(14,8,3,.55);pointer-events:none}
+.md>*{position:relative}
+.md-bo-qua{position:absolute;top:14px;right:14px;height:30px;padding:2px 12px 0;font:700 calc(13px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.md-khung{width:320px;height:220px;overflow:hidden;cursor:pointer;background-color:#123f30}
+.md-loi{width:304px;min-height:96px;display:flex;align-items:flex-start;justify-content:center;text-align:center;font:600 calc(18px*var(--kp))/1.35 var(--px);color:var(--cream);text-shadow:2px 2px 0 var(--ink)}
+.md-cham{display:flex;gap:8px}
+.md-cham i{display:block;width:8px;height:8px;background:#0e3a2b;box-shadow:0 0 0 2px var(--ink)}
+.md-cham i.on{background:#ffd95a}
+.md-tiep{width:224px;height:52px;display:flex;align-items:center;justify-content:center;padding-top:3px;font:800 calc(22px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.45);letter-spacing:1px}
+.md-a{position:absolute}
+.md-a canvas,.md-a.pxi,.md-a .pxi{image-rendering:pixelated}
+.md-mua{position:absolute;inset:0;opacity:.35;background-image:repeating-linear-gradient(115deg,transparent 0 14px,#9fd3ff 14px 16px,transparent 16px 30px);background-size:60px 60px;animation:md-mua .5s linear infinite}
+.md-duong{position:absolute;left:0;right:0;bottom:0;height:40px;background:#3a3f4a;box-shadow:inset 0 3px 0 #1b120a}
+.md-duong::after{content:'';position:absolute;left:0;right:0;top:18px;height:4px;background:repeating-linear-gradient(90deg,#ffd95a 0 22px,transparent 22px 44px);animation:md-vach .4s linear infinite}
+.md-san{position:absolute;left:0;right:0;bottom:0;height:30px;background:#5a3a1e;box-shadow:inset 0 3px 0 #1b120a}
+.md-xe{left:0;animation:md-chay 3.4s linear infinite}
+.md-nhun{animation:md-nhun .5s steps(2) infinite}
+.md-rung{animation:md-rung .5s steps(5) .1s both}
+.md-bat{animation:md-bat .7s ease-out .1s forwards}
+.md-vx{animation:md-vx .9s linear both}
+.md-vy{animation:md-vy .9s ease-in both}
+.md-ram{left:0;right:0;top:34px;text-align:center;font:800 calc(48px*var(--kp))/1 var(--px);color:#ffd95a;text-shadow:3px 3px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink);animation:md-pop .35s steps(4) .12s both}
+.md-lac{animation:md-lac 1.2s steps(2) infinite}
+.md-mat{animation:md-mat 1.6s steps(8) .3s both}
+.md-hoi{font:800 calc(30px*var(--kp))/1 var(--px);color:#fff;text-shadow:3px 3px 0 var(--ink);animation:md-pop .35s steps(4) both}
+.md-hoi-xa{left:268px;top:22px;animation-delay:1.4s}
+.md-hoi-bi{left:150px;top:44px;animation-delay:.5s}
+.md-hoi-quay{left:84px;top:78px;animation-delay:1.3s}
+.md-quay{animation:md-quay .9s steps(4) 2}
+.md-di{animation:md-di 1.4s steps(5) 1s both}
+.md-code{display:flex;flex-direction:column;gap:4px}
+.md-dong{display:flex;align-items:center;gap:6px;height:22px;padding:0 8px;background:#0e3a2b;box-shadow:inset 0 0 0 2px var(--ink);animation:md-pop .3s steps(3) both}
+.md-dong .so{font:var(--wm) calc(12px*var(--km))/1 var(--mono);color:#8fc9ac}
+.md-dong .kc{color:#eaffe6}
+.md-pop{animation:md-pop .4s steps(4) both}
+.md-tre{animation-delay:.8s}
+.md-pop.md-sang{animation:md-pop .4s steps(4) both,md-sang .8s steps(2) infinite}
+@keyframes md-mua{from{background-position:0 0}to{background-position:-30px 60px}}
+@keyframes md-vach{from{background-position:0 0}to{background-position:-44px 0}}
+@keyframes md-chay{from{transform:translateX(-110px)}to{transform:translateX(340px)}}
+@keyframes md-nhun{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes md-rung{0%,100%{transform:translate(0,0)}20%{transform:translate(-5px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,0)}}
+@keyframes md-bat{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-14px) rotate(-25deg)}}
+@keyframes md-vx{from{transform:translateX(0)}to{transform:translateX(var(--x))}}
+@keyframes md-vy{0%{transform:translateY(0) rotate(0)}40%{transform:translateY(-60px) rotate(calc(var(--r) / 2))}100%{transform:translateY(var(--y)) rotate(var(--r))}}
+@keyframes md-pop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes md-lac{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@keyframes md-mat{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(70px,-90px) rotate(720deg);opacity:0}}
+@keyframes md-quay{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes md-di{from{transform:translateX(0)}to{transform:translateX(var(--d))}}
+@keyframes md-sang{0%,100%{filter:drop-shadow(0 0 0 #ffd95a)}50%{filter:drop-shadow(0 0 8px #ffd95a)}}

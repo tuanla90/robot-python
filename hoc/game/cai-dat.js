@@ -2,7 +2,7 @@
    cai-dat.js — "Đường học": BẢNG CÀI ĐẶT (window.CaiDat).
    Mở từ nút bánh răng ở màn khởi đầu (man-dau.js) và từ menu ☰ trong màn chơi (man-choi.js).
      · Hiệu ứng / Nhạc nền: mức 0..4 (0 = tắt), bấm − / +; đổi là nghe ngay (AmThanh.dat), lưu ở Luu.
-     · Xem lại giới thiệu (gioi-thieu.js) · Thông tin game (phiên bản, quyền riêng tư, giấy phép chữ)
+     · Xem lại phim mở đầu (mo-dau.js) · Thông tin game (phiên bản, quyền riêng tư, giấy phép chữ)
      · Xóa tiến độ: hỏi lại, xóa sạch dữ liệu chơi (Luu.xoaHet, giữ cài đặt) rồi tải lại trang.
    ========================================================================== */
 (function () {
@@ -50,7 +50,7 @@
       hop.than.appendChild(hangAm('nhac', 'nhac', t('caiDat.nhac')));
     }
     var cot = h('div', 'cd-cot');
-    if (window.GioiThieu) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.gioiThieu'), function () { GioiThieu.mo(function () { mo(khiDong); }); }, 'cd-gioi-thieu'));
+    if (window.MoDau) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.gioiThieu'), function () { TP.Hop.dong(); MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(function () { mo(khiDong); }); else mo(khiDong); }); }, 'cd-mo-dau'));
     cot.appendChild(TP.Hop.nut('g-wd', t('caiDat.thongTin'), function () { thongTin(khiDong); }, 'cd-thong-tin'));
     cot.appendChild(TP.Hop.nut('g-rd', t('caiDat.xoa'), function () { xoa(khiDong); }, 'cd-xoa'));
     cot.appendChild(TP.Hop.nut('g-gr', t('chung.dong'), function () { TP.Hop.dong(); if (khiDong) khiDong(); }, 'cd-dong'));

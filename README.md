@@ -27,7 +27,7 @@ Mở `http://localhost:4180`:
 |---|---|
 | `nhan/` | **nhân chạy Python** dùng chung (`san-robot-core.js`, `window.RobotCore`) + mockup đợt 1 |
 | `hoc/` | **Đường học**: lõi sân (`san-hoc.js`), máy chấm (`cham.js`), khung code, kho hàm, sổ lệnh, lắp ráp, tệp màn `man-*.js`, công cụ đo đường `do-duong-*.mjs` |
-| `hoc/game/` | giao diện Đường học: màn chọn gói, màn chơi, Xưởng hàm, vẽ robot pixel, lưu tiến độ, âm thanh (`am-thanh.js`), cài đặt (`cai-dat.js`), giới thiệu lần đầu (`gioi-thieu.js`) |
+| `hoc/game/` | giao diện Đường học: màn chọn gói, màn chơi, Xưởng hàm, vẽ robot pixel, lưu tiến độ, âm thanh (`am-thanh.js`), cài đặt (`cai-dat.js`), phim mở đầu (`mo-dau.js`) và mẹo chơi (`gioi-thieu.js`) |
 | `hoc/game/part/` | danh mục part (thân, tay, cảm biến) và cách vẽ từng part |
 | `tran/` | **Trận đấu**: nhân trận, lớp màn chơi, giao diện, mockup UI (xem `tran/README.md`) |
 | `docs/thiet-ke/` | GDD v0.1 · v0.2, luật trận v0.1 → v0.4, tư liệu Robocon |

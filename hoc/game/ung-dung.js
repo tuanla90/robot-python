@@ -205,7 +205,7 @@
     else if (Luu.laBoNho) App.thongBao(t('choi.loiLuu'));
     phongDuPhong();
     if (window.AmThanh) AmThanh.ganNut(document);
-    if (window.GioiThieu && !Luu.daXem('gioi-thieu')) GioiThieu.mo();     // lần đầu chơi: vài trang giới thiệu (gioi-thieu.js)
+    if (window.MoDau && !Luu.daXem(MoDau.CO)) MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(); });   // lần đầu chơi: phim mở đầu (mo-dau.js) rồi ba trang mẹo (gioi-thieu.js)
     dangKySW();
   }
 

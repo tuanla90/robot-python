@@ -322,7 +322,7 @@
 
       /* ---- bảng mở khóa bộ phận mới */
       'moKhoa.tieuDe': 'MỞ GÓI MỚI!',
-      'moKhoa.loi': 'Em đã có {sao} ★. Gói mới đã mở:',
+      'moKhoa.loi': 'Đủ {sao} ★ rồi! R1 tìm lại được:',
       // màn khởi đầu (man-dau.js)
       'dau.phuDe': 'Lập trình robot bằng Python',
       'dau.choi': 'CHƠI',
@@ -391,7 +391,7 @@
       'caiDat.tat': 'Tắt',
       'caiDat.nho': 'Nhỏ',
       'caiDat.to': 'To',
-      'caiDat.gioiThieu': 'Xem lại giới thiệu',
+      'caiDat.gioiThieu': 'Xem lại phim mở đầu',
       'caiDat.thongTin': 'Thông tin game',
       'caiDat.xoa': 'Xóa tiến độ',
       'caiDat.xoaHoi': 'Xóa hết sao, bài đang viết và các hàm em đã chế? Game sẽ bắt đầu lại từ màn đầu tiên.',
@@ -400,12 +400,21 @@
       'caiDat.phienBan': 'Phiên bản {v}',
       'caiDat.thongTinChu': 'Đội Robot Chấn Hưng: Đường học\nGame học lập trình Python bằng cách điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Handjet, VT323 (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
 
-      /* ---- giới thiệu lần đầu (gioi-thieu.js) */
+      /* ---- phim mở đầu (mo-dau.js) */
+      'md.boQua': 'Bỏ qua',
+      'md.tiep': 'Tiếp',
+      'md.batDau': 'Giúp R1 nào!',
+      'md.1': 'Chiều mưa. Xe chở đồ nghề đang về xưởng robot.',
+      'md.2': 'Xe sụp ổ gà. Rầm!',
+      'md.3': 'Tay gắp chui vào gầm tủ. Bánh xích mắc trên tường. Cánh quạt thì chẳng biết bay đi đâu.',
+      'md.4': 'Chỉ còn lại R1. Một cái thân với hai cái bánh.',
+      'md.5': 'R1 muốn đi nhặt đồ. Có điều R1 chưa biết đi.',
+      'md.6': 'R1 nghe được tiếng Python. Em viết lệnh, R1 làm theo.',
+
+      /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',
       'gt.tiep': 'Tiếp',
       'gt.batDau': 'Bắt đầu!',
-      'gt.1.td': 'Chào kỹ sư nhí!',
-      'gt.1.chu': 'Đội Robot Chấn Hưng cần em. Robot không tự nghĩ được: nó chỉ làm đúng từng dòng Python em viết.',
       'gt.2.td': 'Viết lệnh, bấm Chạy',
       'gt.2.chu': 'Chạm khối lệnh ở khay để thêm dòng code. Bấm ▶ Chạy để xem robot làm theo. Robot làm sai thì đọc lời nhắc, sửa code rồi chạy lại.',
       'gt.3.td': 'Gom sao',

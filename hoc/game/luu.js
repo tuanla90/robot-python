@@ -5,7 +5,7 @@
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
      sân thử  : duong-hoc:san-thu:<tenHam> = cách sắp sân thử của Xưởng (xe, vật, tường), riêng từng hàm
      cách lắp : duong-hoc:lap:<ma> = { than, tay, camBien } (màn lắp ráp, lap-rap.js: mỗi khe một mã part hay null), riêng từng màn
-     đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, 'gioi-thieu': true, … }   (bảng / lời chào chỉ hiện một lần)
+     đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, 'mo-dau': true, 'gioi-thieu': true, … }   (bảng / lời chào chỉ hiện một lần)
      cài đặt  : duong-hoc:cai-dat = { hieuUng, nhac } (mức âm lượng 0..4; xoaHet giữ lại)
      Dữ liệu cũ theo id ('1.1'…'2.10') được chuyển một lần sang ma (chuyenCu).
    ========================================================================== */
