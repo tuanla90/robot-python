@@ -1,8 +1,9 @@
 /* ============================================================================
    mo-dau.js — "Đường học": PHIM MỞ ĐẦU (window.MoDau), kiểu cảnh mở của Cut the Rope.
-   Sáu khung hoạt hình pixel, mỗi khung một câu: xe chở đồ nghề sụp ổ gà, bộ phận văng khắp xưởng,
-   còn lại robot R1 chỉ có thân hai bánh và chưa biết đi; R1 nghe được Python, em viết lệnh cho R1.
-   Truyện này là lý do của luật mở gói: mỗi gói bộ phận là một món đồ tìm lại được (bang-mo-khoa.js).
+   Sáu khung hoạt hình pixel, mỗi khung một câu: xe chở linh kiện sụp ổ gà ở cửa xưởng, bộ phận văng khắp xưởng,
+   còn lại robot R1 chỉ có thân hai bánh, cứ quay mòng mòng; R1 hiểu lệnh Python, em viết lệnh cho R1.
+   Truyện này là lý do của luật mở gói: mỗi gói bộ phận là một món đồ tìm lại được (bang-mo-khoa.js: GOI_BO_PHAN).
+   Lời mỗi khung khớp tranh (góp ý Gemini 22/10): khung 2 đã có chữ RẦM! trên tranh, khung 3 tay gắp nằm dưới thùng gỗ, khung 5 R1 quay tại chỗ.
    Xong phim là ba trang mẹo chơi (gioi-thieu.js: viết lệnh + Chạy, gom sao, mở bộ phận mới).
    ung-dung.js chiếu một lần khi chưa có cờ 'mo-dau' (Luu.daXem); Cài đặt có nút "Xem lại phim mở đầu".
    Chạm khung tranh hoặc nút Tiếp để sang khung; "Bỏ qua" ở góc trên.

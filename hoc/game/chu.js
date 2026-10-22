@@ -322,7 +322,9 @@
 
       /* ---- bảng mở khóa bộ phận mới */
       'moKhoa.tieuDe': 'MỞ GÓI MỚI!',
-      'moKhoa.loi': 'Đủ {sao} ★ rồi! R1 tìm lại được:',
+      'moKhoa.loi': 'Đủ {sao} ★ rồi! R1 tìm lại được:',            // gói bộ phận (bang-mo-khoa.js: GOI_BO_PHAN)
+      'moKhoa.loiHoc': 'Đủ {sao} ★ rồi! R1 học thêm được:',        // gói khái niệm: hàm, vòng lặp, danh sách, lắp ráp…
+      'moKhoa.loiCa': 'Đủ {sao} ★ rồi! R1 có thêm:',               // mở cùng lúc cả hai loại
       // màn khởi đầu (man-dau.js)
       'dau.phuDe': 'Lập trình robot bằng Python',
       'dau.choi': 'CHƠI',
@@ -403,24 +405,24 @@
       /* ---- phim mở đầu (mo-dau.js) */
       'md.boQua': 'Bỏ qua',
       'md.tiep': 'Tiếp',
-      'md.batDau': 'Giúp R1 nào!',
-      'md.1': 'Chiều mưa. Xe chở đồ nghề đang về xưởng robot.',
-      'md.2': 'Xe sụp ổ gà. Rầm!',
-      'md.3': 'Tay gắp chui vào gầm tủ. Bánh xích mắc trên tường. Cánh quạt thì chẳng biết bay đi đâu.',
+      'md.batDau': 'Chỉ đường cho R1!',
+      'md.1': 'Xe chở linh kiện sắp về tới xưởng robot.',
+      'md.2': 'Tới cửa xưởng thì sụp ổ gà. Bật tung nắp thùng!',
+      'md.3': 'Tay gắp chui dưới thùng gỗ. Bánh xích văng lên tường. Cánh quạt bay mất hút.',
       'md.4': 'Chỉ còn lại R1. Một cái thân với hai cái bánh.',
-      'md.5': 'R1 muốn đi nhặt đồ. Có điều R1 chưa biết đi.',
-      'md.6': 'R1 nghe được tiếng Python. Em viết lệnh, R1 làm theo.',
+      'md.5': 'R1 muốn đi tìm đồ, mà cứ quay mòng mòng tại chỗ.',
+      'md.6': 'May mà R1 hiểu lệnh Python. Em viết lệnh, R1 làm theo.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',
       'gt.tiep': 'Tiếp',
-      'gt.batDau': 'Bắt đầu!',
+      'gt.batDau': 'Vào màn 1!',
       'gt.2.td': 'Viết lệnh, bấm Chạy',
-      'gt.2.chu': 'Chạm khối lệnh ở khay để thêm dòng code. Bấm ▶ Chạy để xem robot làm theo. Robot làm sai thì đọc lời nhắc, sửa code rồi chạy lại.',
+      'gt.2.chu': 'Chạm khối lệnh ở khay để thêm dòng code. Bấm ▶ Chạy cho R1 đi. Chưa tới cờ thì đọc lời nhắc, sửa code rồi chạy lại.',
       'gt.3.td': 'Gom sao',
-      'gt.3.chu': 'Đưa robot tới đích là được sao. Code gọn, robot chạy ít nhịp thì được đủ 3 sao.',
+      'gt.3.chu': 'Tới cờ là qua màn. Code gọn, R1 chạy ít nhịp thì được đủ 3 sao.',
       'gt.4.td': 'Mở bộ phận mới',
-      'gt.4.chu': 'Gom đủ sao để mở gói mới: tay gắp, cảm biến, bánh xích, drone… Mỗi bộ phận có lệnh riêng để em học thêm Python.',
+      'gt.4.chu': 'Gom sao để tìm lại tay gắp, cảm biến, bánh xích, drone… Mỗi món lại mở thêm lệnh Python mới.',
 
       /* ---- thông báo chung */
       'tb.khoGhiLoi': 'Không lưu được kho hàm: {loi}',

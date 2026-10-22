@@ -7,6 +7,14 @@
   'use strict';
 
   var h = TP.h;
+  // gói là một BỘ PHẬN robot rơi mất trong phim mở đầu (mo-dau.js): "R1 tìm lại được"; gói khác (hàm, vòng lặp, danh sách, lắp ráp…): "R1 học thêm được"
+  var GOI_BO_PHAN = ['tay-gap', 'cam-bien', 'nhen', 'xich', 'omni', 'sung-hoi', 'mau', 'nam-cham', 'tay-xoay', 'may-nem', 'drone'];
+
+  /** Lời đầu bảng theo loại các gói vừa mở. */
+  function loiDau(ds) {
+    var bp = ds.filter(function (g) { return GOI_BO_PHAN.indexOf(g.ma) >= 0; }).length;
+    return bp === ds.length ? 'moKhoa.loi' : bp === 0 ? 'moKhoa.loiHoc' : 'moKhoa.loiCa';
+  }
 
   /** Hình của một gói: huy hiệu của chương `hinh` nếu có, không thì dấu + để giữ chỗ. */
   function hinhGoi(g) {
@@ -20,7 +28,7 @@
     var hop = TP.Hop.mo(t('moKhoa.tieuDe'), 'hop-mo-khoa');
     if (window.AmThanh) AmThanh.phat('moKhoa');
     hop.hop.setAttribute('data-hop', 'mo-khoa');
-    hop.than.appendChild(h('div', 'mk-loi', t('moKhoa.loi', { sao: window.App ? App.tongSao() : '' })));
+    hop.than.appendChild(h('div', 'mk-loi', t(loiDau(ds), { sao: window.App ? App.tongSao() : '' })));
     var luoi = h('div', 'mk-luoi');
     ds.forEach(function (g, i) {
       var o = h('div', 'mk-o'); o.setAttribute('data-goi', g.ma); o.style.animationDelay = (0.12 + i * 0.07) + 's';
@@ -35,5 +43,5 @@
     hop.than.appendChild(hang);
   }
 
-  window.MoKhoa = { mo: mo, hinhGoi: hinhGoi };
+  window.MoKhoa = { mo: mo, hinhGoi: hinhGoi, loiDau: loiDau, GOI_BO_PHAN: GOI_BO_PHAN };
 })();
