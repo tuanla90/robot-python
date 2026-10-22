@@ -124,7 +124,7 @@
       var rows = cfg.san, w = rows[0].length, h = rows.length;
       var loai = cfg.loaiRobot || 'banh';
       this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
-        robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [],
+        robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [], cacCo: [],
         bm: chuanBongMo(cfg.bongMo) };                    // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
       // nhiều robot (cfg.doi = [{ robot, batDau, loaiRobot, pin, danToiDa }]): mỗi xe một ngữ cảnh (xem chonXe); this.cfg mang phần của xe đang xét
       this.cfgXe = Array.isArray(cfg.doi) ? cfg.doi.map(function (r, i) {
@@ -138,6 +138,7 @@
       for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
         var ch = rows[y][x];
         if (ch === 'F' && !this.cfg.co) this.cfg.co = { x: x, y: y };
+        if (ch === 'F') this.cfg.cacCo.push({ x: x, y: y });                  // màn nhiều robot có nhiều cờ (mỗi robot một cờ): vẽ hết
         if (ch === 'P') this.cfg.sac.push({ x: x, y: y });
         if (ch === 'D' || ch === 'X' || ch === 'h') this.cfg.dich.push({ x: x, y: y, mau: this.mauNen(x, y) });
         if (ch === 'o' || ch === 'X') {
@@ -497,7 +498,7 @@
       function them(x, y, tt) { if (x >= 0 && y >= 0) ds.push({ x: x * T, y: y * T, w: T, h: T, tt: tt }); }
       if (b && b.o) them(b.o.x, b.o.y, 10);
       for (i = 0; i < c.dich.length; i++) them(c.dich[i].x, c.dich[i].y, 6);
-      if (c.co) them(c.co.x, c.co.y, 6);
+      for (i = 0; i < c.cacCo.length; i++) them(c.cacCo[i].x, c.cacCo[i].y, 6);
       for (i = 0; i < this.objs.length; i++) if (this.objs[i].tt === 'dat') them(this.objs[i].x, this.objs[i].y, 3);
       for (i = 0; i < this.thungs.length; i++) them(this.thungs[i].x, this.thungs[i].y, 3);
       function giao(a, r) { var w = Math.min(a.x + a.w, r.x + r.w) - Math.max(a.x, r.x), h = Math.min(a.y + a.h, r.y + r.h) - Math.max(a.y, r.y); return w > 0 && h > 0 ? w * h : 0; }
@@ -538,7 +539,7 @@
       this.bounce = performance.now() + 900;
       var cols = ['#ffd23f', '#fff6e3', '#38c6de', '#ff7ac8', '#6fe06a', '#ff5a4a'];
       var f = this.cfg.co;
-      if (f) { this.burst(f.x * T + 7, f.y * T + 5, 60, cols, 1.2); return; }
+      if (f) { var cc = this.cfg.cacCo; for (var k = 0; k < cc.length; k++) this.burst(cc[k].x * T + 7, cc[k].y * T + 5, Math.floor(60 / cc.length), cols, 1.2); return; }
       if (this.cfg.bm && !this.cfg.dich.length) { this.burst(this.cfg.bm.x * T + 7, this.cfg.bm.y * T + 5, 60, cols, 1.2); return; }      // mục tiêu bóng mờ: pháo giấy ở ô của xe mờ
       var ds = this.cfg.dich;                                   // mục tiêu đưa vật: pháo giấy trên các ô đích
       for (var i = 0; i < ds.length; i++) this.burst(ds[i].x * T + 7, ds[i].y * T + 5, Math.max(12, Math.floor(60 / ds.length)), cols, 1.2);
@@ -1632,9 +1633,10 @@
         }
         g.restore();
       }
-      if (c.co) {
+      for (var ci = 0; ci < c.cacCo.length; ci++) {
+        var co = c.cacCo[ci];
         var fy = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 3) : 0;
-        var fl = TL.flags[ff], fx = c.co.x * T + Math.floor((T - fl.width) / 2), fyy = c.co.y * T + (T - fl.height) - 1;   // cờ gọn trong ô: giữa theo bề ngang, đế cách đáy ô 1 px (sát đáy thì viền đế chạm đường kẻ ô)
+        var fl = TL.flags[ff], fx = co.x * T + Math.floor((T - fl.width) / 2), fyy = co.y * T + (T - fl.height) - 1;   // cờ gọn trong ô: giữa theo bề ngang, đế cách đáy ô 1 px (sát đáy thì viền đế chạm đường kẻ ô)
         g.drawImage(fl, Math.max(c.ox * T, Math.min(c.ox * T + this.cv.width - fl.width, fx)), Math.max(c.oy * T, Math.min(c.oy * T + this.cv.height - fl.height, fyy)) + fy);
       }
       g.restore();

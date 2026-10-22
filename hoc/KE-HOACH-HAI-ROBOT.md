@@ -36,3 +36,17 @@ User chốt 22/10: **hai khung code riêng** (R1, R2); **không thêm lệnh tí
 - Giữ nguyên toàn bộ luật. Các biến riêng của một robot (vị trí, tay, nam châm, lệnh chờ, vết…) được CẤT / NẠP theo robot (đổi ngữ cảnh);
   biến của sân (vật, thùng, cửa, nút, băng, nhịp) dùng chung.
 - `motNhip` tách thành năm pha như trên (`taoNhip`); một robot gọi lần lượt đủ năm pha nên kết quả không đổi.
+
+## Giao diện (xong 22/10, 0a7232c)
+- Khung code có thẻ R1 / R2 (mỗi robot một chương trình; khay theo bộ phận của robot đang chọn); thẻ của robot có lỗi riêng gắn chấm đỏ.
+- Sân vẽ mọi robot, phát lại theo nhịp chung; MÀU ĐỘI: `Part.ghep({ son })` sơn lại lớp sơn từng part (`LOP_SON` trong part.js): R1 vàng, R2 lam,
+  đối thủ (sau này) đỏ; màn một robot giữ màu nhận diện của từng thân. Sân có nhiều cờ thì vẽ hết.
+
+## Chương `hai-robot` · Đội hai robot (10 màn, man-hai-robot.js)
+- Đứng ngay sau Robot hoàn thiện (chương 11, gói riêng ngay sau gói Robot hoàn thiện); id các chương sau tăng 1 (mã màn không đổi).
+- Hai robot giống nhau (hai bánh + kẹp + cảm biến khoảng cách), kho hàm sẵn có, không hàm cốt truyện mới. Mười bài: Hai lá cờ · Chia việc · Bàn giao ·
+  Chờ hàng (3 sân) · Nhường đường (3 sân) · Theo sau (3 sân) · Dọn hai dãy (3 sân) · Nhường lối · Làm mốc (3 sân) · Ca làm đôi (trùm, 3 sân).
+- LƯU Ý THIẾT KẾ: lõi nhận CỜ NÀO / Ô ĐÍCH NÀO cũng được (không có mục tiêu riêng của từng robot). Màn "đổi chỗ" hay "đổi hàng" vì vậy có đường tắt
+  (mỗi robot tới cờ / đích gần mình) — bộ dò đã bắt được và hai màn kiểu đó đã bỏ. Muốn có lại thì cần mục tiêu theo robot (vd cờ có màu R1 / R2).
+- Bộ dò `do-duong-hai-robot.mjs`: BFS trên trạng thái chung của hai robot (luật va chạm y như lõi), tách vùng khi hai robot ở hai vùng không thông nhau.
+  Máy kiểm: `kiem-hai-robot-man.mjs` (đường dò được chạy thật thắng đúng số nhịp) + kiem-hoc.mjs đi tuần tự.

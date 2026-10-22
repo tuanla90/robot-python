@@ -255,6 +255,17 @@
       chu: 'Dấu ✗ là sân xe chưa tới cờ. Chạm ảnh đó để xem xe dừng ở đâu.', xong: 'xem-san' }
   ];
 
+  /* ============================================================ Chương 11 · Đội hai robot */
+  /* màn hai robot đầu tiên: R1 đã có chương trình; chạm thẻ R2 để viết chương trình của R2 (thẻ R1 / R2 ở đầu khung chương trình) */
+  function xeDangChon() { try { return Choi.trangThai().xe || 0; } catch (e) { return 0; } }
+  H['hai-robot.1'] = [
+    { khongAn: true, dich: 'nut:xe-2', chu: 'Mỗi robot một chương trình. R1 đã có sẵn: chạm R2 để viết cho R2.', huong: 'duoi', rong: 170, xong: 'doi-xe',
+      daLam: function () { return xeDangChon() === 1; } },
+    khoiTheo(['khoi:em:go_wall'], 'Chạm go_wall(): R2 cũng đi tới cờ như R1.', 'go_wall() nằm ở thẻ Cảm biến. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { return xeDangChon() === 1 && dongCo(/^\s*go_wall\(\)/) >= 0; } }),
+    buocChay('Bấm Chạy: hai robot chạy cùng lúc.')
+  ];
+
   /* ============================================================ Chương 9 · Chế lệnh có if, while (biến đếm) */
   H['che-cam-bien.5'] = [
     buocTaoHam('bounce', 'Chế hàm bounce() trong Xưởng: bấm Hàm mới.', CHU_TAO),

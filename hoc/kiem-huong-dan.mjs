@@ -55,7 +55,7 @@ kiem('màn nhiều sân ĐẦU TIÊN (theo thứ tự chương) có hướng d�
 kiem('bảng Gỡ lỗi (go-loi.js) không có hướng dẫn (HuongDanMan không đụng tới, go-loi không chạy chuỗi nào); chỉ được TẮT hướng dẫn khi Mở hết (HuongDan.dung, tatHuongDan)', !maCo.some((m) => /go-loi/.test(m)) && !/HuongDan\.(chay|bao|vaoMan)/.test(doc('go-loi.js')) && /tatHuongDan/.test(doc('go-loi.js')) && /GoLoi\.tatHuongDan\(\)\) return null/.test(doc('huong-dan.js')));
 
 console.log('\n== 2. Từng bước đúng dạng ==');
-const SU_KIEN = new Set(['chen-khoi', 'chon-dong', 'xoa-dong', 'hoan-tac', 'doi-cho', 'doi-bac', 'doi-so', 'doi-the', 'chay', 'xem-san', 'mo-xuong', 'tao-ham', 'thu', 'dong-xuong']);
+const SU_KIEN = new Set(['chen-khoi', 'chon-dong', 'xoa-dong', 'hoan-tac', 'doi-cho', 'doi-bac', 'doi-so', 'doi-the', 'doi-xe', 'chay', 'xem-san', 'mo-xuong', 'tao-ham', 'thu', 'dong-xuong']);
 const KHOA_BUOC = new Set(['dich', 'chu', 'xong', 'huong', 'han', 'neo', 'rong', 'xuong', 'khongAn', 'phu', 'daLam']);
 const RE_DICH = [/^nut:[\w-]+$/, /^khoi:(?:(?:em|goc|man|dk|vong|bien|dem):)?[\w=-]+$/, /^(?:dong|x):\d+$/, /^so:\d+(?::\d+)?$/, /^[.#\[].+/];
 const dichHopLe = (s) => typeof s === 'string' && RE_DICH.some((re) => re.test(s));

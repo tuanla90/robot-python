@@ -67,34 +67,34 @@ const loiCua = (r, ma) => (r.chanDoan.find((c) => c.ma === ma) || {}).loi || '';
 console.log('\n== 1. Cấu trúc 10 màn chương Chế lệnh nhện ==');
 {
   const DU = ['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'wait'], KET = ['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'wait'], TAY = DU.concat(['arm_down', 'arm_up', 'grab', 'release']);
-  kiem('đúng 10 màn, số 1..10, id 14.1…14.10 (chương thứ 14, ngay sau nhen), mã che-nhen.1…, tên "Chế lệnh nhện"; thứ tự chương: …nhen, che-nhen, xich…',
-    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '14.' + (i + 1) && m.ma === 'che-nhen.' + (i + 1)) && ThuTu.thuTu[12] === 'nhen' && ThuTu.thuTu[13] === 'che-nhen' && ThuTu.ten['che-nhen'] === 'Chế lệnh nhện' && ThuTu.laDot2('che-nhen'));
+  kiem('đúng 10 màn, số 1..10, id 15.1…15.10 (chương thứ 15, ngay sau nhen), mã che-nhen.1…, tên "Chế lệnh nhện"; thứ tự chương: …nhen, che-nhen, xich…',
+    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === '15.' + (i + 1) && m.ma === 'che-nhen.' + (i + 1)) && ThuTu.thuTu[13] === 'nhen' && ThuTu.thuTu[14] === 'che-nhen' && ThuTu.ten['che-nhen'] === 'Chế lệnh nhện' && ThuTu.laDot2('che-nhen'));
   kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ màn 10 có huy hiệu { ma "che-nhen", ten "Huy hiệu Chế lệnh nhện" }',
     J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
       ds.filter((m) => m.huyHieu).length === 1 && ds[9].huyHieu.ma === 'che-nhen' && ds[9].huyHieu.ten === 'Huy hiệu Chế lệnh nhện');
   kiem('mọi màn: nhện (loaiRobot nhen, robot.than nhen), cauTruc ["for","if"], Xưởng mở, được dùng hàm của em, chương trình 10 ô + mỗi hàm 10 ô; tay "kep" chỉ ở màn 6',
     ds.every((m) => m.loaiRobot === 'nhen' && m.robot.than === 'nhen' && (m.so === 6 ? m.robot.tay === 'kep' : m.robot.tay === null) && J(m.cauTruc) === '["for","if"]' && m.moXuong === true && m.camHamCuaEm === false && m.khung.chinh === 10 && m.khung.moiHam === 10));
-  kiem('khay: màn 1–5, 7, 8, 10 có go_* + crouch + stand + wait; màn 6 thêm 4 lệnh tay; màn 9 chỉ crouch (khớp duỗi kẹt) và phanCung đúng bằng khay', ds.every((m) => J(m.hamGoc) === J(m.so === 6 ? TAY : m.so === 9 ? KET : DU)) && J(man('14.9').phanCung) === J(KET) && ds.filter((m) => m.phanCung).length === 1);
+  kiem('khay: màn 1–5, 7, 8, 10 có go_* + crouch + stand + wait; màn 6 thêm 4 lệnh tay; màn 9 chỉ crouch (khớp duỗi kẹt) và phanCung đúng bằng khay', ds.every((m) => J(m.hamGoc) === J(m.so === 6 ? TAY : m.so === 9 ? KET : DU)) && J(man('15.9').phanCung) === J(KET) && ds.filter((m) => m.phanCung).length === 1);
   kiem('mục tiêu: bóng mờ ở mọi màn trừ 3 và 10 (tới cờ); mọi bóng mờ có bongMo.chan ("co" ở màn 9, "dung" ở các màn khác); màn 6 có vật mờ',
-    ds.every((m) => m.so === 3 || m.so === 10 ? m.mucTieu === undefined && (m.san.join('').match(/F/g) || []).length === 1 : m.mucTieu === 'bong-mo' && m.bongMo.chan === (m.so === 9 ? 'co' : 'dung') && !/F/.test(m.san.join(''))) && man('14.6').bongMo.vat.length === 1);
+    ds.every((m) => m.so === 3 || m.so === 10 ? m.mucTieu === undefined && (m.san.join('').match(/F/g) || []).length === 1 : m.mucTieu === 'bong-mo' && m.bongMo.chan === (m.so === 9 ? 'co' : 'dung') && !/F/.test(m.san.join(''))) && man('15.6').bongMo.vat.length === 1);
   kiem('chinhCoDinh ở mọi màn trừ 3 và 10 (người chơi tự viết); khoaHamMan ["go_in"] chỉ ở màn 7', ds.every((m) => (m.so === 3 || m.so === 10) ? !m.chinhCoDinh : m.chinhCoDinh === true) && ds.every((m) => J(m.khoaHamMan || []) === J(m.so === 7 ? ['go_in'] : [])));
   kiem('đấu dây ngược daoChieu ["chan"] + canhBao chỉ ở màn 8; canhBao ở màn 9 (hỏng); các màn khác không có', ds.every((m) => J(m.daoChieu || []) === J(m.so === 8 ? ['chan'] : []) && (m.so === 8 || m.so === 9 ? typeof m.canhBao === 'string' && m.canhBao.length > 6 : m.canhBao === undefined)));
   kiem('gioiHanHam: 3 ở màn 10 (trùm khai giới hạn theo nhiệm vụ); các màn khác không giới hạn', ds.every((m) => m.gioiHanHam === (m.so === 10 ? 3 : undefined)));
   kiem('sân tối đa 7 cột × 9 hàng; gầm n ở màn 1, 3, 5, 7, 9, 10; hố u ở màn 2, 3, 4, 5, 7, 8, 10; mọi sân trừ màn 6 (nhện giao hàng, bậc thang và vật) có ít nhất một địa hình mới',
     ds.every((m) => m.san.length <= 9 && m.san[0].length <= 7 && (m.so === 6 || /[nu]/.test(m.san.join('')))) && J(ds.filter((m) => /n/.test(m.san.join(''))).map((m) => m.so)) === '[1,3,5,7,9,10]' && J(ds.filter((m) => /u/.test(m.san.join(''))).map((m) => m.so)) === '[2,3,4,5,7,8,10]');
-  kiem('hàm cốt truyện mới: 1 crawl, 2 jump, 4 leap, 5 crawl_jump, 6 bring; các màn khác không tạo (hàm của màn 7–9 không vào kho)', ds.every((m) => J(m.taoHam) === J({ '14.1': ['crawl'], '14.2': ['jump'], '14.4': ['leap'], '14.5': ['crawl_jump'], '14.6': ['bring'] }[m.id] || [])));
+  kiem('hàm cốt truyện mới: 1 crawl, 2 jump, 4 leap, 5 crawl_jump, 6 bring; các màn khác không tạo (hàm của màn 7–9 không vào kho)', ds.every((m) => J(m.taoHam) === J({ '15.1': ['crawl'], '15.2': ['jump'], '15.4': ['leap'], '15.5': ['crawl_jump'], '15.6': ['bring'] }[m.id] || [])));
   kiem('crawl(d) 5 ô, jump(d) 4 ô, leap(path) 2 ô lồng jump, crawl_jump(d) 5 ô, bring(path) 3 ô; tham số d / path',
-    (() => { const h = (id) => hamEm(man(id))[0]; return [['14.1', 'crawl', ['d'], 5], ['14.2', 'jump', ['d'], 4], ['14.4', 'leap', ['path'], 2], ['14.5', 'crawl_jump', ['d'], 5], ['14.6', 'bring', ['path'], 3]].every(([id, ten, ts, so]) => h(id).ten === ten && J(h(id).thamSo) === J(ts) && KhungCode.soOHam(h(id)) === so); })());
+    (() => { const h = (id) => hamEm(man(id))[0]; return [['15.1', 'crawl', ['d'], 5], ['15.2', 'jump', ['d'], 4], ['15.4', 'leap', ['path'], 2], ['15.5', 'crawl_jump', ['d'], 5], ['15.6', 'bring', ['path'], 3]].every(([id, ten, ts, so]) => h(id).ten === ten && J(h(id).thamSo) === J(ts) && KhungCode.soOHam(h(id)) === so); })());
   kiem('hamCuaEmCan đúng: 1 [go], 2 [go], 3 [go, walk, crawl, jump], 4 [go, jump], 5 [go, crawl, jump], 6 [go, walk, pick, drop], 7 [go, walk, crawl, jump], 8 [go], 9 [go], 10 [go, walk, crawl, jump, leap, crawl_jump]',
-    ds.every((m) => J(m.hamCuaEmCan) === J({ '14.1': ['go'], '14.2': ['go'], '14.3': ['go', 'walk', 'crawl', 'jump'], '14.4': ['go', 'jump'], '14.5': ['go', 'crawl', 'jump'], '14.6': ['go', 'walk', 'pick', 'drop'], '14.7': ['go', 'walk', 'crawl', 'jump'], '14.8': ['go'], '14.9': ['go'], '14.10': ['go', 'walk', 'crawl', 'jump', 'leap', 'crawl_jump'] }[m.id])));
+    ds.every((m) => J(m.hamCuaEmCan) === J({ '15.1': ['go'], '15.2': ['go'], '15.3': ['go', 'walk', 'crawl', 'jump'], '15.4': ['go', 'jump'], '15.5': ['go', 'crawl', 'jump'], '15.6': ['go', 'walk', 'pick', 'drop'], '15.7': ['go', 'walk', 'crawl', 'jump'], '15.8': ['go'], '15.9': ['go'], '15.10': ['go', 'walk', 'crawl', 'jump', 'leap', 'crawl_jump'] }[m.id])));
   kiem('hamCuaEmCan ⊆ kho lúc tới màn, và bao hết các hàm của em có sẵn mà lời giải gọi tới (trực tiếp hay gián tiếp; có thể bao thêm hàm cách khác dùng, vd crawl / jump ở màn 5)', ds.every((m) => {
     const kho = khoTruoc(m.id).map((h) => h.ten), r = chamGiai(m);
     const dung = r.hamDaDung.filter((t) => !m.taoHam.includes(t) && r.chiTietO.ham.find((h) => h.ten === t).cot === 'hamEm');
     return m.hamCuaEmCan.every((t) => kho.includes(t)) && dung.every((t) => m.hamCuaEmCan.includes(t));
   }));
   kiem('hàm của màn 7 (go_in khóa, come_back thân `pass`), 8 (fixed_jump thân cũ), 9 (crawl_safe thân cũ) nằm ở maMau.hamCuaMan; không có trong taoHam / Sổ lệnh / tên khóa của kho; không còn bring ở nhen',
-    ['go_in', 'come_back', 'fixed_jump', 'crawl_safe'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null) && man('14.7').maMau.hamCuaMan.map((h) => h.ten).join() === 'go_in,come_back' && J(man('14.7').maMau.hamCuaMan[1].than) === '["pass"]' &&
-      man('14.8').maMau.hamCuaMan[0].ten === 'fixed_jump' && man('14.9').maMau.hamCuaMan[0].ten === 'crawl_safe' && tatCa.filter((m) => m.chuong === 'nhen').every((m) => !m.taoHam.includes('bring')));
+    ['go_in', 'come_back', 'fixed_jump', 'crawl_safe'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null) && man('15.7').maMau.hamCuaMan.map((h) => h.ten).join() === 'go_in,come_back' && J(man('15.7').maMau.hamCuaMan[1].than) === '["pass"]' &&
+      man('15.8').maMau.hamCuaMan[0].ten === 'fixed_jump' && man('15.9').maMau.hamCuaMan[0].ten === 'crawl_safe' && tatCa.filter((m) => m.chuong === 'nhen').every((m) => !m.taoHam.includes('bring')));
   kiem('mọi màn: đề 1–3 câu, gợi ý 1–2 câu, ≥ 1 lời sai; màn chế lệnh (trừ 3 và 10) có ≥ 1 congThucKhac', ds.every((m) => m.deBai.length > 20 && (m.deBai.match(/[.?!](\s|$)/g) || []).length <= 3 && m.goiY.length >= 1 && m.goiY.length <= 2 && m.loiSai.length >= 1 && ((m.congThucKhac || []).length >= 1)));
 }
 
@@ -123,9 +123,9 @@ console.log('\n== 3. Hàm chế: crawl, jump, leap, crawl_jump, bring ==');
 {
   const NC = SanHoc.HAM_GOC.nhen;
   const GO = ['if d == "U":', '    go_up()', 'elif d == "D":', '    go_down()', 'elif d == "L":', '    go_left()', 'elif d == "R":', '    go_right()'];
-  const khoCuoi = khoTruoc('14.10').concat([H('leap', ['for c in path:', '    jump(c)'], ['path']), H('crawl_jump', ['crouch()', 'go(d)', 'go(d)', 'stand()', 'go(d)'], ['d'])]);
+  const khoCuoi = khoTruoc('15.10').concat([H('leap', ['for c in path:', '    jump(c)'], ['path']), H('crawl_jump', ['crouch()', 'go(d)', 'go(d)', 'stand()', 'go(d)'], ['d'])]);
   const hamBai = (id, ten) => { const k = khoTruoc(id).find((h) => h.ten === ten); return k; };
-  const kho10 = tron(khoTruoc('14.10'), man('14.5').loiGiai.hamCuaEmMoi.concat(man('14.4').loiGiai.hamCuaEmMoi));
+  const kho10 = tron(khoTruoc('15.10'), man('15.5').loiGiai.hamCuaEmMoi.concat(man('15.4').loiGiai.hamCuaEmMoi));
   const san5 = ['.....', '.....', '.....', '.....', '.....'], o = { x: 2, y: 2, huong: 0 };
   const chay = (rows, bd, chinh, ex) => ChamHoc.cham(Object.assign({ san: rows, batDau: bd, loaiRobot: 'nhen', hamGoc: NC, moXuong: true, khung: { chinh: 10, moiHam: 10 }, cauTruc: ['for', 'if'], mucTieu: 'toi-co' }, ex || {}), { chinh }, kho10);
   const toi = (r) => vt(r.theoSan[0].robot);
@@ -135,15 +135,15 @@ console.log('\n== 3. Hàm chế: crawl, jump, leap, crawl_jump, bring ==');
     [['U', '2,0'], ['D', '2,4'], ['L', '0,2'], ['R', '4,2']].every(([d, kq]) => { const r = chay(san5, o, ['jump("' + d + '")']); return toi(r) === kq && r.soNhip === 3; }) && toi(chay(san5, { x: 0, y: 2, huong: 0 }, ['jump("R")', 'jump("R")'])) === '4,2');
   kiem('jump(d) qua hàng rào = và qua hố u; không đáp lên rào hay tường: nhện nhảy hụt (nhay-hut)', (() => { const a = chay(['.=.'], { x: 0, y: 0, huong: 0 }, ['jump("R")']), b = chay(['.u.'], { x: 0, y: 0, huong: 0 }, ['jump("R")']), c = chay(['.=='], { x: 0, y: 0, huong: 0 }, ['jump("R")']); return toi(a) === '2,0' && toi(b) === '2,0' && toi(c) === '0,0' && maCua(c).includes('nhay-hut') && !maCua(a).includes('nhay-hut'); })());
   kiem('leap("RRD") trên sân đá lót đường: ba cú nhảy liên tiếp = 9 nhịp; leap("") không làm gì; leap lồng jump (hai tầng vết lệnh: ngan có leap → jump)', (() => {
-    const m4 = man('14.4'), r = chamGiai(m4); const tang = r.vet.filter((e) => e.loai === 'lenh').some((e) => e.ngan.length >= 2); return r.soNhip === 9 && r.thang && tang && chay(['..'], { x: 0, y: 0, huong: 0 }, ['leap("")']).soNhip === 0; })());
+    const m4 = man('15.4'), r = chamGiai(m4); const tang = r.vet.filter((e) => e.loai === 'lenh').some((e) => e.ngan.length >= 2); return r.soNhip === 9 && r.thang && tang && chay(['..'], { x: 0, y: 0, huong: 0 }, ['leap("")']).soNhip === 0; })());
   kiem('crawl_jump(d) = 6 nhịp, nhanh hơn crawl(d) rồi jump(d) = 8 nhịp (chân còn co sau gầm nên nhảy luôn); cả hai cách đều tới đúng chỗ bóng mờ', (() => {
-    const m5 = man('14.5'), a = chamGiai(m5), b = ChamHoc.cham(m5, m5.loiGiai, tron(khoTruoc('14.5'), [H('crawl_jump', ['crawl(d)', 'jump(d)'], ['d'])])); return a.soNhip === 6 && b.thang && b.soNhip === 8 && b.sao === 1; })());
+    const m5 = man('15.5'), a = chamGiai(m5), b = ChamHoc.cham(m5, m5.loiGiai, tron(khoTruoc('15.5'), [H('crawl_jump', ['crawl(d)', 'jump(d)'], ['d'])])); return a.soNhip === 6 && b.thang && b.soNhip === 8 && b.sao === 1; })());
   kiem('bring(path) màn 6: nhặt vật ở ô trên đầu nhện, đi theo path, đặt xuống: vật nằm đúng ô bóng mờ, nhện đúng ô; bring("DLL") thiếu drop() thì vật còn trên tay (lech-bong-mo)', (() => {
-    const m6 = man('14.6'), r = chamGiai(m6), vatCuoi = r.vat.filter((v) => v.trangThai === 'dat'); return r.thang && vatCuoi.length === 1 && vt(vatCuoi[0]) === '1,4' && vt(r.theoSan[0].robot) === '1,5'; })());
+    const m6 = man('15.6'), r = chamGiai(m6), vatCuoi = r.vat.filter((v) => v.trangThai === 'dat'); return r.thang && vatCuoi.length === 1 && vt(vatCuoi[0]) === '1,4' && vt(r.theoSan[0].robot) === '1,5'; })());
   kiem('màn 3 (tự viết): đường dùng hàm đã chế cho kết quả đúng; chương trình 3 dòng vừa khung; thiếu một hàm trong kho (chưa chế jump) thì ham-chua-co',
-    (() => { const m3 = man('14.3'), r = chamGiai(m3); const thieu = ChamHoc.cham(m3, m3.loiGiai, khoTruoc('14.3').filter((h) => h.ten !== 'jump')); return r.thang && m3.loiGiai.chinh.length === 3 && maCua(thieu).includes('ham-chua-co'); })());
+    (() => { const m3 = man('15.3'), r = chamGiai(m3); const thieu = ChamHoc.cham(m3, m3.loiGiai, khoTruoc('15.3').filter((h) => h.ten !== 'jump')); return r.thang && m3.loiGiai.chinh.length === 3 && maCua(thieu).includes('ham-chua-co'); })());
   // Đường về
-  const m7 = man('14.7'), kho7 = khoTruoc('14.7');
+  const m7 = man('15.7'), kho7 = khoTruoc('15.7');
   const goIn = ChamHoc.cham(Object.assign({}, m7, { chinhCoDinh: false, mucTieu: undefined, bongMo: undefined }), { chinh: ['go_in()'], hamCuaMan: m7.maMau.hamCuaMan }, kho7);
   kiem('màn 7: go_in() đưa nhện từ (0,0) vào hang tới (4,2) trong 12 nhịp (walk "RR", crawl "D", jump "R"); lời giải đi ngược lại từng đoạn: jump("L"), crawl("U"), walk("LL") (24 nhịp), chân duỗi', (() => {
     const r = chamGiai(m7); return goIn.theoSan[0].soNhip === 12 && vt(goIn.theoSan[0].robot) === '4,2' && r.thang && r.soNhip === 24 && nhipVet(r.theoSan[0] ? { vet: r.theoSan[0].vet } : r).pop().robot.chan === 'dung'; })());
@@ -153,12 +153,12 @@ console.log('\n== 3. Hàm chế: crawl, jump, leap, crawl_jump, bring ==');
     (() => { const a = ChamHoc.cham(m7, { chinh: C7, hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['walk("LL")', 'crawl("U")', 'jump("L")'], [])] }, kho7), b = ChamHoc.cham(m7, { chinh: C7, hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['jump("R")', 'crawl("D")', 'walk("RR")'], [])] }, kho7);
       return maCua(a).includes('roi-ho') && maCua(b).includes('nhay-hut') && SanHoc.LENH_NGUOC.go_right === 'go_left' && SanHoc.LENH_NGUOC.go_up === 'go_down' && SanHoc.LENH_NGUOC.crouch === 'stand' && SanHoc.LENH_NGUOC.stand === 'crouch'; })());
   // Chân lắp ngược
-  const m8 = man('14.8'), kho8 = khoTruoc('14.8');
+  const m8 = man('15.8'), kho8 = khoTruoc('15.8');
   kiem('màn 8: dây chân đấu ngược — thân cũ của fixed_jump (crouch, wait, stand, go) làm nhện bước thường vào hố (roi-ho); lời giải (stand, wait, crouch, go) nhảy qua cả hai hố trong 6 nhịp; hàm jump(d) của em ở màn này cũng bị ngược (roi-ho)', (() => {
     const cu = ChamHoc.cham(m8, m8.maMau, kho8), moi = chamGiai(m8), jumpEm = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false }), { chinh: ['jump("R")', 'jump("R")'], hamCuaMan: [] }, tron(kho8, [H('jump', ['crouch()', 'wait()', 'stand()', 'go(d)'], ['d'])])); return !cu.thang && maCua(cu).includes('roi-ho') && moi.thang && moi.soNhip === 6 && !jumpEm.thang && maCua(jumpEm).includes('roi-ho'); })());
   kiem('màn 8: canhBao "Dây chân đấu ngược"; vết lệnh ghi tên lệnh người chơi gọi (stand, wait, crouch, go_right) dù chân chạy ngược', (() => { const r = chamGiai(m8), t = r.vet.filter((e) => e.loai === 'lenh').map((e) => e.ten).slice(0, 4); return m8.canhBao === 'Dây chân đấu ngược' && J(t) === '["stand","wait","crouch","go_right"]'; })());
   // Khớp duỗi kẹt
-  const m9 = man('14.9'), kho9 = khoTruoc('14.9');
+  const m9 = man('15.9'), kho9 = khoTruoc('15.9');
   const loiKet = ChamHoc.cham(m9, m9.maMau, kho9);
   kiem('màn 9: gọi stand() khi khớp kẹt → lỗi chạy, chẩn đoán lenh-goc-hong nêu canhBao, tên lệnh stand() và các lệnh còn chạy được; hàm của em có stand (crawl) cũng báo hỏng; lời giải bỏ stand() và wait() thắng 8 nhịp, chân co như bóng mờ',
     (() => { const r = chamGiai(m9), l = loiCua(loiKet, 'lenh-goc-hong'); const crawlEm = ChamHoc.cham(Object.assign({}, m9, { chinhCoDinh: false }), { chinh: ['crawl("R")', 'crawl("R")'], hamCuaMan: [] }, tron(kho9, [H('crawl', ['crouch()', 'go(d)', 'go(d)', 'stand()', 'wait()'], ['d'])])); return maCua(loiKet).includes('lenh-goc-hong') && /Khớp duỗi chân bị kẹt/.test(l) && /stand\(\)/.test(l) && /crouch/.test(l) && !loiKet.thang && r.thang && r.soNhip === 8 && maCua(crawlEm).includes('lenh-goc-hong'); })());
@@ -166,7 +166,7 @@ console.log('\n== 3. Hàm chế: crawl, jump, leap, crawl_jump, bring ==');
     const m1 = Object.assign({}, m9, { hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'wait'], phanCung: undefined, maMau: { chinh: C9, hamCuaMan: [] } });
     const r = ChamHoc.cham(m1, { chinh: C9, hamCuaMan: [H('crawl_safe', ['crouch()', 'go(d)', 'go(d)', 'stand()', 'wait()'], ['d'])] }, kho9); return maCua(r).includes('lech-bong-mo') && /Chân nhện đang duỗi/.test(loiCua(r, 'lech-bong-mo')) && /bóng mờ có chân co/.test(loiCua(r, 'lech-bong-mo')); })());
   // Trùm: giới hạn hàm
-  const m10 = man('14.10'), kho10b = khoTruoc('14.10');
+  const m10 = man('15.10'), kho10b = khoTruoc('15.10');
   kiem('màn 10 (trùm): gioiHanHam 3 — dùng đúng ba hàm khác nhau (leap, walk, crawl_jump) thắng; dùng bốn (leap, walk, crawl, jump) → qua-gioi-han-ham; jump hai lần thay leap vẫn ba hàm', (() => {
     const ok = chamGiai(m10), qua = ChamHoc.cham(m10, { chinh: ['leap("RR")', 'walk("RRDDL")', 'crawl("L")', 'jump("L")', 'walk("LDD")'] }, kho10b), jump2 = ChamHoc.cham(m10, { chinh: ['jump("R")', 'jump("R")', 'walk("RRDDL")', 'crawl_jump("L")', 'walk("LDD")'] }, kho10b);
     return ok.thang && maCua(qua).includes('qua-gioi-han-ham') && !qua.thang && jump2.thang && !maCua(jump2).includes('qua-gioi-han-ham'); })());
@@ -191,10 +191,10 @@ console.log('\n== 4. Sổ lệnh và lệnh gốc ==');
   kiem('kho cuối game: hàm cốt truyện của chương theo thứ tự lần đầu chế (…, go, walk, crawl, jump, leap, crawl_jump, bring, …); tên khóa không trùng hàm gốc / hàm chương khác',
     (() => { const t = tenCotTruyen, i = t.indexOf('go'); return J(t.slice(i, i + 7)) === '["go","walk","crawl","jump","leap","crawl_jump","bring"]' && new Set(t).size === t.length && !['crawl', 'jump', 'leap', 'crawl_jump', 'bring'].some((x) => KhoHam.HAM_GOC_MAC_DINH.includes(x)); })());
   // sân thử của Xưởng hàm
-  const m1 = man('14.1'), ham = H('crawl', ['crouch()', 'go(d)', 'go(d)', 'stand()', 'wait()'], ['d']);
-  const thu = ChamHoc.thuHam(m1, { chinh: [] }, 'crawl', tron(khoTruoc('14.1'), [ham]), { doiSo: ['"R"'] });
+  const m1 = man('15.1'), ham = H('crawl', ['crouch()', 'go(d)', 'go(d)', 'stand()', 'wait()'], ['d']);
+  const thu = ChamHoc.thuHam(m1, { chinh: [] }, 'crawl', tron(khoTruoc('15.1'), [ham]), { doiSo: ['"R"'] });
   kiem('Xưởng hàm: thử crawl("R") trên sân thử 5×5 mặc định: nhện từ (2,2) sang (4,2) trong 5 nhịp, không chẩn đoán', vt(thu.robot) === '4,2' && thu.soNhip === 5 && thu.chanDoan.length === 0, J([thu.robot, thu.soNhip, thu.chanDoan.map((c) => c.ma)]));
-  const thuNhay = ChamHoc.thuHam(man('14.2'), { chinh: [] }, 'jump', tron(khoTruoc('14.2'), [H('jump', ['crouch()', 'wait()', 'stand()', 'go(d)'], ['d'])]), { doiSo: ['"U"'] });
+  const thuNhay = ChamHoc.thuHam(man('15.2'), { chinh: [] }, 'jump', tron(khoTruoc('15.2'), [H('jump', ['crouch()', 'wait()', 'stand()', 'go(d)'], ['d'])]), { doiSo: ['"U"'] });
   kiem('Xưởng hàm: thử jump("U") trên sân thử: nhện bật từ (2,2) lên (2,0) trong 3 nhịp', vt(thuNhay.robot) === '2,0' && thuNhay.soNhip === 3 && thuNhay.chanDoan.length === 0, J([thuNhay.robot, thuNhay.soNhip]));
 }
 

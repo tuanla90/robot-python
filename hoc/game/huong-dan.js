@@ -23,7 +23,7 @@
    3) Mã game báo sự kiện cho các điều kiện "xong" bằng  HuongDan.bao('ten-su-kien', chiTiet).
       Sự kiện đang được báo: 'chen-khoi' (chèn một dòng vào chương trình; chiTiet.dong từ 0) · 'chon-dong' (chạm một dòng có code; hiện ✕ trên cảm ứng) · 'cam-nhip' (chèn bị từ chối: bộ phận đã có lệnh trong nhịp) · 'xoa-dong' ·
       'hoan-tac' · 'doi-cho' (kéo một dòng sang chỗ khác) · 'doi-bac' (thụt vào / thụt ra một dòng) · 'doi-so' (đổi số trong range(n) / lời gọi hàm) ·
-      'doi-the' (người chơi bấm ◀ ▶ đổi thẻ khay) · 'chay' (bấm Chạy / Nhịp) · 'xem-san' (chạm ảnh nhỏ của một sân) · 'mo-xuong' (mở Xưởng hàm) ·
+      'doi-the' (người chơi bấm ◀ ▶ đổi thẻ khay) · 'doi-xe' (màn nhiều robot: chạm thẻ R1 / R2 ở khung code) · 'chay' (bấm Chạy / Nhịp) · 'xem-san' (chạm ảnh nhỏ của một sân) · 'mo-xuong' (mở Xưởng hàm) ·
       'tao-ham' (bấm "Tạo hàm" ở hộp đặt tên) · 'thu' (bấm Thử trong Xưởng) · 'dong-xuong' (bấm Về sân). Thêm sự kiện mới: chỉ cần gọi HuongDan.bao ở chỗ đó.
 
    ── MỘT BƯỚC ─────────────────────────────────────────────────────────────────────────────────

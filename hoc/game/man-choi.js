@@ -714,6 +714,6 @@
 
   window.Choi = {
     dung: dung, vao: vao, roi: roi,
-    trangThai: function () { return { man: S.man, bai: S.bai, ket: S.ket, busy: S.busy }; }
+    trangThai: function () { return { man: S.man, bai: S.bai, ket: S.ket, busy: S.busy, xe: S.xe || 0 }; }          // xe: robot đang chọn ở khung code (màn nhiều robot)
   };
 })();

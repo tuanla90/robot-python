@@ -17,6 +17,7 @@
    ba chương chế lệnh (che-tay, che-lap, che-cam-bien) và robot-hoan-thien đã có tệp màn và nằm đúng vị trí trong mảng. Số chương hiển thị (id màn) đổi theo vị trí trong mảng.
    Chương 3 'che-xe' (Chế lệnh xe) nằm ở man-che-xe.js.
    Chương 10 'robot-hoan-thien' (Robot hoàn thiện, chương cổng mở đợt 2) nằm ở man-robot-hoan-thien.js.
+   Chương 11 'hai-robot' (Đội hai robot: hai robot, hai chương trình, nhịp chung; 22/10, KE-HOACH-HAI-ROBOT.md) nằm ở man-hai-robot.js.
    Chương 'bang-chuyen' (Băng chuyền) nằm ở man-bang-chuyen.js.
    Chương 6 'tham-so' (Hàm có tham số) nằm ở man-tham-so.js.
    Chương 7 'nhen' (Thân nhện) nằm ở man-nhen.js.
@@ -41,11 +42,11 @@
   var API = {
     // 15/10 tối: mỗi bộ phận hai chương (làm quen + chế lệnh) — thêm che-xich, che-omni, che-mau, che-may-nem, che-drone; SÚNG HƠI (sung-hoi + che-sung-hoi:
     // shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới đẩy thùng) thay TẤM ĐẨY và SÚNG BÓNG (hai chương cũ tam-day / sung-bong đã xóa).
-    thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien',
+    thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien', 'hai-robot',
       'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'rap-nao',
       'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
-    dot2: ['bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'rap-nao',
+    dot2: ['hai-robot', 'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'rap-nao',
       'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'],
     // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
     // (15/10: màn chọn đã chuyển sang GÓI mở bằng tổng sao, xem `goi` dưới; dot2 / congDot2 chỉ còn dùng để ghi nhãn và cho máy kiểm.)
@@ -60,6 +61,7 @@
       { ma: 'vong-lap', ten: 'Vòng lặp', chuong: ['vong-lap', 'che-lap'] },
       { ma: 'cam-bien', ten: 'Cảm biến', chuong: ['khoang-cach', 'che-cam-bien'] },
       { ma: 'robot', ten: 'Robot hoàn thiện', chuong: ['robot-hoan-thien'] },
+      { ma: 'hai-robot', ten: 'Đội hai robot', chuong: ['hai-robot'] },                 // 22/10 hai robot, hai chương trình, nhịp chung (KE-HOACH-HAI-ROBOT.md)
       { ma: 'bang-chuyen', ten: 'Băng chuyền', chuong: ['bang-chuyen'] },
       { ma: 'tham-so', ten: 'Hàm có tham số', chuong: ['tham-so'] },
       { ma: 'nhen', ten: 'Thân nhện', chuong: ['nhen', 'che-nhen'] },
@@ -86,6 +88,7 @@
       'che-lap': 'Chế lệnh có for',
       'che-cam-bien': 'Chế lệnh có if, while',
       'robot-hoan-thien': 'Robot hoàn thiện',
+      'hai-robot': 'Đội hai robot',
       'bang-chuyen': 'Băng chuyền',
       'tham-so': 'Hàm có tham số',
       'nhen': 'Thân nhện',
