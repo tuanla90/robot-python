@@ -175,6 +175,9 @@
       'thang.thieuO': 'Còn thiếu sao này: viết gọn hơn.',
       'thang.thieuNhip': 'Còn thiếu sao này: đi đường ngắn hơn.',
       'thang.thieuNhipVat': 'Còn thiếu sao này: làm đủ việc trong ít nhịp hơn.',
+      'thang.re': 'Rẻ: robot {x} xu (cần ≤ {y})',
+      'thang.hoacRe': ' hoặc robot ≤ {y} xu',
+      'thang.thieuNhipRe': 'Còn thiếu sao này: đi ít nhịp hơn, hoặc lắp robot rẻ hơn.',
       'thang.duSao': 'Đủ 3 sao!',
       'thang.huyHieu': 'Nhận huy hiệu',
       'thang.cachKhac': 'Cách lắp khác',
@@ -375,7 +378,8 @@
       'lap.chonThe': 'Chạm một thẻ để chọn part.',
       'lap.boTruoc': 'Bỏ {ten} trước nhé.',
       'lap.doiThan': 'Đổi thân trước nhé.',
-      'lap.lenhMat': 'Robot mới không có lệnh {ds}. Xóa các dòng đỏ nhé.',
+      'lap.saoRe': 'Sao thứ ba: đi ≤ {n} nhịp, hoặc lắp robot ≤ {g} xu.',
+      'lap.lenhMat':'Robot mới không có lệnh {ds}. Xóa các dòng đỏ nhé.',
 
       /* ---- thông báo chung */
       'tb.khoGhiLoi': 'Không lưu được kho hàm: {loi}',

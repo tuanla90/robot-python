@@ -159,6 +159,7 @@
     var khung = h('div', 'lr-hop-san'); khung.appendChild(canvasSan(220, 160));
     hop.than.appendChild(khung);
     hop.than.appendChild(TP.vanBan(h('div', 'hop-chu'), m.deBai || ''));
+    if (m.sao && m.sao.re) hop.than.appendChild(TP.vanBan(h('div', 'hop-chu nho'), t('lap.saoRe', { n: m.sao.nhip, g: m.sao.re.gia })));     // sao thứ ba: nhanh HOẶC rẻ (cham.js)
     var hang = h('div', 'hop-hang');
     hang.appendChild(TP.Hop.nut('g-gr', t('chung.dong'), function () { TP.Hop.dong(); }, 'dong'));
     hop.than.appendChild(hang);

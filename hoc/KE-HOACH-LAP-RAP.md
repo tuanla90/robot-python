@@ -44,3 +44,13 @@ Nguồn: Y-TUONG-TIEP-THEO.md mục B3, C. "Não" = cảm biến (Logic thì rob
 - **Luật cân màn:** cachLap[0] = cách NHANH NHẤT trong ngân sách (3 sao); cách rẻ hơn thì chậm hơn hay dài hơn (từng cặp). `sao.o` = MAX(ô lời giải tự nhiên dùng hàm kho, ô lời giải viết thuần lệnh gốc) — lời giải mặc định là bản dùng hàm kho, bản còn lại nằm ở `cachLap[0].loiGiaiPhu`; màn khai `lapRap.dungKho: true` (không khai hàm nào, hàm kho vẫn bị khóa).
 - **Bộ dò `do-duong-rap-du.mjs`:** BFS chạy thật `SanHoc.chay` cho MỌI (thân, tay) (cảm biến không đổi vật lý), khớp bộ dò viết tay trên sân của chương và 50 sân ngẫu nhiên. Máy kiểm chứng minh không robot nào thắng nhanh hơn robot mặc định.
 - **Đổi lõi `lap-rap.js`:** `pin` của màn chỉ có nghĩa với drone; `macDinh` cất pin sang `pinDrone` khi cách mẫu đầu không phải drone (bản mặc định không mang pin), `apDung` đọc `pinDrone` cho cách drone. Không đổi giá, luật ghép.
+
+## 8. Sửa theo chơi thử (22/10): báo cách lắp không qua, sao "nhanh hoặc rẻ"
+- **Cách lắp không qua được** (dò hết: 17 cách ở 7 màn, có cả ba màn thử thách): khai ở `lapRap.khongQua: [{ than, tay?, camBien?, lyDo }]`
+  (khe không khai = khe nào cũng khớp, `null` = không gắn). Vẫn cho chọn (đánh đổi là bài học), nhưng chạy hỏng thì `cham.js` thêm chẩn đoán
+  `lap-khong-qua` đứng đầu, nói lý do + "Bấm Lắp lại để đổi bộ phận", nút Lắp lại nhấp nháy. `kiem-lap-rap-sao.mjs` dò mọi cách lắp: cách trong
+  danh sách phải được chứng minh không thắng nổi, cách được chứng minh không thắng nổi phải có trong danh sách.
+- **Sao thứ ba = nhanh HOẶC rẻ**: `sao.re = { gia, o }` (gia = giá cách mẫu rẻ nhất, o = ô lời giải của cách đó). Robot ≤ `re.gia` xu thì sao thứ ba có
+  luôn, ngưỡng ô thành max(sao.o, re.o). Cách mẫu đầu (nhanh) và cách mẫu rẻ nhất đều 3 sao; cách nằm giữa (không rẻ nhất, không nhanh nhất) tối đa 2 sao.
+  Bảng thắng hiện "Rẻ: robot x xu (cần ≤ y)" hoặc "Nhanh: … hoặc robot ≤ y xu"; màn Lắp robot nói luật này trong hộp đề bài.
+- Chưa sửa: ở 32.10 và 36.10, cách lắp mặc định (hai bánh, không tay) chính là cách không qua được.

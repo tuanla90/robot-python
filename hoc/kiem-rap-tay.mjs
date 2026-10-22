@@ -106,7 +106,7 @@ for (const m of ds) {
   tk.forEach((x, i) => {
     const rr = ChamHoc.cham(LapRap.apDung(m, m.lapRap.cachLap[i]), { chinh: m.lapRap.cachLap[i].loiGiai.chinh }, kho);
     kiem(m.id + ' cách mẫu #' + (i + 1) + ' (' + x.ten + ', ' + x.gia + ' xu): thắng, ' + x.nhip + ' nhịp, ' + x.o + ' ô, ' + x.sao + ' sao, không chẩn đoán lỗi, vừa khung (' + m.lapRap.cachLap[i].loiGiai.chinh.length + ' dòng)',
-      x.thang && rr.thang && x.nhip === rr.soNhip && x.o === rr.soO && !rr.chanDoan.some((c) => c.muc === 'loi') && !maCua(rr).includes('tran-khung') && x.gia <= m.lapRap.nganSach && (i === 0 ? x.sao === 3 : x.sao <= 2), J({ thang: x.thang, sao: x.sao, cd: maCua(rr) }));
+      x.thang && rr.thang && x.nhip === rr.soNhip && x.o === rr.soO && !rr.chanDoan.some((c) => c.muc === 'loi') && !maCua(rr).includes('tran-khung') && x.gia <= m.lapRap.nganSach && (i === 0 || x.gia <= m.sao.re.gia ? x.sao === 3 : x.sao <= 2), J({ thang: x.thang, sao: x.sao, cd: maCua(rr) }));
   });
   // cân đối giá: cách đầu đắt nhất hoặc nhanh nhất; thứ tự xu giảm thì nhịp tăng
   const sapXep = tk.slice().sort((a, b) => b.gia - a.gia);

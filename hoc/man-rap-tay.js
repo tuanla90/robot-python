@@ -89,7 +89,7 @@
           { than: 'hai-banh', tay: null, camBien: null, ghiChu: 'Không tay, chỉ 2 xu: phải đi vòng qua lối bên phải.', loiGiai: { chinh: ['forward(2)', 'turn_right()', 'forward(3)', 'turn_right()', 'back()', 'back()', 'turn_right()', 'forward(3)'] } }
         ]
       },
-      sao: { o: 13, nhip: 6 }, nhipTheoLoiGiai: true,
+      sao: { o: 13, nhip: 6, re: { gia: 2, o: 18 } }, nhipTheoLoiGiai: true,
       loiGiaiKhac: { moTa: 'Cùng cách làm, đi từng ô bằng move() thay cho forward(2)', baiLam: { chinh: ['move()', 'move()', 'pick()', 'forward(2)'] } },
       congThucKhac: [
         { moTa: 'Đi từng ô bằng move() cả hai đoạn (cùng 13 ô)', dat3sao: true, baiLam: { chinh: ['move()', 'move()', 'pick()', 'move()', 'move()'] } },
@@ -116,7 +116,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Hai bánh không leo được bậc thang: rẻ hơn 1 xu nhưng phải đi vòng.', loiGiai: { chinh: ['pick()', 'forward(2)', 'turn_right()', 'forward(2)', 'turn_right()', 'back()', 'back()', 'turn_right()', 'move()', 'drop()'] } }
         ]
       },
-      sao: { o: 19, nhip: 6 }, nhipTheoLoiGiai: true,
+      sao: { o: 19, nhip: 6, re: { gia: 4, o: 30 } }, nhipTheoLoiGiai: true,
       loiGiaiKhac: { moTa: 'Cùng cách làm, nhặt, đi từng ô rồi thả (nhiều ô hơn deliver)', baiLam: { chinh: ['pick()', 'move()', 'move()', 'forward(1)', 'drop()'] } },
       congThucKhac: [
         { moTa: 'Nhặt, đi ba ô, thả bằng pick(), forward(3), drop() (18 ô)', dat3sao: true, baiLam: { chinh: ['pick()', 'forward(3)', 'drop()'] } },
@@ -142,7 +142,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Kẹp vật đi vòng qua lối hở: rẻ hơn 1 xu nhưng rất chậm.', loiGiai: { chinh: ['pick()', 'forward(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'forward(3)', 'turn_left()', 'move()', 'drop()'] } }
         ]
       },
-      sao: { o: 13, nhip: 4 },
+      sao: { o: 13, nhip: 4, re: { gia: 4, o: 28 } },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# nạp vật, chở tới sát hàng rào rồi ném', 'carry_throw(2)'] } },
       congThucKhac: [
         { moTa: 'Viết thẳng nạp, đi hai ô, ném tầm 3 (ít ô hơn)', dat3sao: true, baiLam: { chinh: ['load()', 'wait()', 'forward(2)', 'toss(3)'] } },
@@ -169,7 +169,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Đi vòng sang bên kia kẹp vật rồi mang về: rẻ hơn 1 xu nhưng rất chậm.', loiGiai: { chinh: ['turn_right()', 'move()', 'turn_left()', 'forward(3)', 'turn_left()', 'pick()', 'turn_left()', 'forward(4)', 'turn_right()', 'drop()'] } }
         ]
       },
-      sao: { o: 15, nhip: 4 },
+      sao: { o: 15, nhip: 4, re: { gia: 4, o: 29 } },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# hút, lùi, quay đầu rồi thả', 'magnet_n()', 'move()', 'back()', 'u_turn()', 'magnet_off()', 'wait()'] } },
       congThucKhac: [
         { moTa: 'Viết thẳng left_move(), right_move(), wait() thay cho move() (14 ô)', dat3sao: true, baiLam: { chinh: ['magnet_n()', 'left_move()', 'right_move()', 'wait()', 'back()', 'u_turn()', 'magnet_off()', 'wait()'] } },
@@ -195,7 +195,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Hai bánh phải quay ở mỗi chỗ gấp: rẻ hơn 2 xu nhưng nhiều nhịp hơn.', loiGiai: { chinh: ['pick()', 'move()', 'turn_right()', 'forward(3)', 'bend_left()', 'forward(3)', 'turn_right()', 'forward(2)', 'drop()'] } }
         ]
       },
-      sao: { o: 29, nhip: 14 }, nhipTheoLoiGiai: true,
+      sao: { o: 29, nhip: 14, re: { gia: 4, o: 32 } }, nhipTheoLoiGiai: true,
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# trượt ngang qua từng chỗ gấp', 'pick()', 'move()', 'cross_belt()', 'slide_l(3)', 'forward(2)', 'drop()'] } },
       congThucKhac: [
         { moTa: 'Viết slide_r(3) và forward(2) riêng thay cho cross_belt() (28 ô)', dat3sao: true, baiLam: { chinh: ['pick()', 'move()', 'slide_r(3)', 'forward(2)', 'slide_l(3)', 'forward(2)', 'drop()'] } },
@@ -221,7 +221,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Tay kẹp phải quay xe mỗi lần: rẻ hơn 1 xu nhưng nhiều nhịp hơn.', loiGiai: { chinh: lap(2, ['forward(2)', 'turn_left()', 'pick()', 'u_turn()', 'drop()', 'turn_left()']) } }
         ]
       },
-      sao: { o: 25, nhip: 11 }, nhipTheoLoiGiai: true,
+      sao: { o: 25, nhip: 11, re: { gia: 4, o: 27 } }, nhipTheoLoiGiai: true,
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# từng cặp vật và ô đích', 'forward(2)', 'pick_left()', 'drop_right()', 'forward(2)', 'pick_left()', 'drop_right()'] } },
       congThucKhac: [
         { moTa: 'Gộp hai cặp bằng vòng for (23 ô)', dat3sao: true, baiLam: { chinh: lap(2, ['forward(2)', 'pick_left()', 'drop_right()']) } },
@@ -248,7 +248,7 @@
           { than: 'hai-banh', tay: null, camBien: null, ghiChu: 'Không tay, chỉ 2 xu: đi vòng qua lối ở xa, gọn nhưng chậm.', loiGiai: { chinh: ['forward(3)', 'turn_right()', 'forward(4)', 'turn_right()', 'back()', 'back()', 'turn_right()', 'forward(4)'] } }
         ]
       },
-      sao: { o: 20, nhip: 9 },
+      sao: { o: 20, nhip: 9, re: { gia: 2, o: 18 } },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# lùi, bắn ra sau trúng nút, rồi lùi thẳng qua cửa', 'forward(2)', 'turn_right()', 'back()', 'jet_fwd()', 'turn_right()', 'back()', 'back()', 'back()'] } },
       congThucKhac: [
         { moTa: 'Lùi ba ô bằng vòng for (19 ô)', dat3sao: true, baiLam: { chinh: nhieu(['forward(2)', 'turn_right()', 'back()', 'jet_fwd()', 'turn_right()'], lap(3, ['back()'])) } },
@@ -275,7 +275,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Hai bánh không qua được hố: rẻ hơn 2 xu nhưng phải đi vòng.', loiGiai: { chinh: ['pick()', 'forward(2)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(3)', 'turn_left()', 'forward(2)', 'drop()'] } }
         ]
       },
-      sao: { o: 27, nhip: 9 }, nhipTheoLoiGiai: true,
+      sao: { o: 27, nhip: 9, re: { gia: 4, o: 28 } }, nhipTheoLoiGiai: true,
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# nhặt vật rồi nhảy qua hố hai lần', 'pick()', 'leap("UU")', 'drop()'] } },
       congThucKhac: [
         { moTa: 'Nhảy hai lần bằng hai lệnh jump() thay cho leap() (26 ô)', dat3sao: true, baiLam: { chinh: ['pick()', 'jump("U")', 'jump("U")', 'drop()'] } }
@@ -295,12 +295,15 @@
       san: SAN_9, batDau: { x: 1, y: 7, huong: 0 },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni'], tay: ['kep'], camBien: [], nganSach: 6, phaiCo: ['tay'],
+        khongQua: [
+          { than: 'omni', lyDo: 'Bánh omni trơn: đi ngược băng chuyền thì bị đẩy về, đứng im tại chỗ.' }
+        ],
         cachLap: [
           { than: 'xich', tay: 'kep', camBien: null, ghiChu: 'Xích bám chắc nên băng không đẩy được: đi thẳng, tốn 5 xu.', loiGiai: { chinh: ['deliver(6)'] } },
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Hai bánh bị băng đẩy lùi một ô sau mỗi hai bước trên băng: rẻ hơn 1 xu nhưng nhiều nhịp hơn.', loiGiai: { chinh: ['deliver(10)'] } }
         ]
       },
-      sao: { o: 19, nhip: 9 }, nhipTheoLoiGiai: true,
+      sao: { o: 19, nhip: 9, re: { gia: 4, o: 19 } }, nhipTheoLoiGiai: true,
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# xích đi thẳng qua làn băng', 'deliver(6)'] } },
       congThucKhac: [
         { moTa: 'Nhặt, đi sáu ô, thả bằng pick(), forward(6), drop() (18 ô)', dat3sao: true, baiLam: { chinh: ['pick()', 'forward(6)', 'drop()'] } },
@@ -322,13 +325,18 @@
       san: SAN_10, batDau: { x: 3, y: 7, huong: 0 },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni', 'nhen'], tay: ['kep', 'xoay', 'nam-cham', 'nem', 'hoi'], camBien: [], nganSach: 5,
+        khongQua: [
+          { than: 'hai-banh', tay: null, lyDo: 'Ba lối đều bị chặn: vật nằm giữa lối trái, cửa đóng ở lối giữa, bậc thang ở lối phải. Xe không gắn tay thì không dời được vật, không mở được cửa.' },
+          { than: 'omni', tay: null, lyDo: 'Ba lối đều bị chặn: vật nằm giữa lối trái, cửa đóng ở lối giữa, bậc thang ở lối phải. Bánh omni không gắn tay thì không dời được vật, không mở được cửa, không leo được bậc.' },
+          { than: 'hai-banh', tay: 'nam-cham', lyDo: 'Vật chắn lối trái là gỗ, nam châm không hút được. Cửa giữa phải bắn nút mới mở, lối phải có bậc thang.' }
+        ],
         cachLap: [
           { than: 'hai-banh', tay: 'hoi', camBien: null, ghiChu: 'Bắn nút mở cửa rồi đi thẳng lối giữa: ít nhịp nhất, tốn 5 xu.', loiGiai: { chinh: nhieu(['move()', 'turn_right()', 'back()', 'jet_fwd()', 'turn_right()'], lap(6, ['back()'])) } },
           { than: 'hai-banh', tay: 'kep', camBien: null, ghiChu: 'Kẹp vật khỏi lối trái rồi đi thẳng: rẻ hơn 1 xu, chậm hơn.', loiGiai: { chinh: ['move()', 'turn_right()', 'back()', 'back()', 'turn_left()', 'forward(2)', 'pick()', 'forward(4)', 'turn_right()', 'forward(2)'] } },
           { than: 'xich', tay: null, camBien: null, ghiChu: 'Xích leo bậc thang ở lối phải, không cần tay: chỉ 3 xu, chậm nhất.', loiGiai: { chinh: nhieu(['move()', 'tr_right()', 'forward(2)', 'tr_right()'], lap(6, ['back()']), ['tr_right()', 'forward(2)']) } }
         ]
       },
-      sao: { o: 17, nhip: 11 },
+      sao: { o: 17, nhip: 11, re: { gia: 3, o: 19 } },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# bắn nút từ hàng dưới rồi lùi thẳng qua cửa'], ['move()', 'turn_right()', 'back()', 'jet_fwd()', 'turn_right()'], lap(6, ['back()'])) } },
       congThucKhac: [
         { moTa: 'Quay mặt sang nút, bắn ra trước rồi quay lại đi lên (cùng 11 nhịp)', dat3sao: true, baiLam: { chinh: ['move()', 'turn_left()', 'jet_back()', 'move()', 'turn_right()', 'forward(6)'] } },

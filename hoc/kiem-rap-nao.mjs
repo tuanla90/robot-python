@@ -123,7 +123,7 @@ for (const m of ds) {
   m.lapRap.cachLap.forEach((cl, i) => {
     const x = tk[i], robot = LapRap.apDung(m, cl), rr = ChamHoc.cham(robot, { chinh: cl.loiGiai.chinh.slice(), hamCuaMan: [] }, kho);
     kiem(m.id + ' cách mẫu #' + (i + 1) + ' (' + x.ten + ', ' + x.gia + ' xu): thắng, ' + x.nhip + ' nhịp, ' + x.o + ' ô, ' + x.sao + ' sao, không chẩn đoán lỗi, vừa khung (' + cl.loiGiai.chinh.length + ' dòng ≤ 10)',
-      x.thang && rr.thang && x.nhip === rr.soNhip && x.o === rr.soO && !rr.chanDoan.some((c) => c.muc === 'loi') && !maCua(rr).includes('tran-khung') && cl.loiGiai.chinh.length <= 10 && x.gia <= m.lapRap.nganSach && (i === 0 ? x.sao === 3 : x.sao <= 2), J({ thang: x.thang, sao: x.sao, cd: maCua(rr) }));
+      x.thang && rr.thang && x.nhip === rr.soNhip && x.o === rr.soO && !rr.chanDoan.some((c) => c.muc === 'loi') && !maCua(rr).includes('tran-khung') && cl.loiGiai.chinh.length <= 10 && x.gia <= m.lapRap.nganSach && (i === 0 || x.gia <= m.sao.re.gia ? x.sao === 3 : x.sao <= 2), J({ thang: x.thang, sao: x.sao, cd: maCua(rr) }));
     const a = ChamHoc.cham(robot, { chinh: cl.loiGiai.chinh.slice(), hamCuaMan: [] }, KHO.that), b = ChamHoc.cham(robot, { chinh: cl.loiGiai.chinh.slice(), hamCuaMan: [] }, KHO.coDien);
     kiem(m.id + ' cách mẫu #' + (i + 1) + ' gọi hàm của kho và chạy GIỐNG HỆT trên kho THẬT lẫn kho CỔ ĐIỂN (cùng thắng, ô, nhịp, hàm dùng; turn_left / u_turn khác nhau giữa hai kho không làm lệch)',
       a.hamDaDung.length >= 1 && a.thang === b.thang && a.soO === b.soO && a.soNhip === b.soNhip && a.sao === b.sao && J(a.hamDaDung) === J(b.hamDaDung), J({ that: [a.soO, a.soNhip], co: [b.soO, b.soNhip] }));

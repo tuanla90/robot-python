@@ -130,7 +130,7 @@
       so: 1, ten: 'Qua bậc thang', hang: 'lam-quen',
       deBai: 'Một bậc thang chắn ngay trước lá cờ. Lắp robot rồi đưa nó tới cờ. Em có 3 xu.',
       san: SAN_1, batDau: { x: 2, y: 4, huong: 0 },
-      sao: { o: 6, nhip: 3 },
+      sao: { o: 6, nhip: 3, re: { gia: 2, o: 15 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni'], tay: [], camBien: [], nganSach: 3, dungKho: true,
         cachLap: [
@@ -155,7 +155,7 @@
       so: 2, ten: 'Hành lang chéo', hang: 'lam-quen',
       deBai: 'Hành lang đi lên theo từng nấc chéo, rẽ liên tục. Lắp robot cho hợp rồi tới cờ. Em có 4 xu.',
       san: SAN_2, batDau: { x: 0, y: 4, huong: 0 },
-      sao: { o: 9, nhip: 6 },
+      sao: { o: 9, nhip: 6, re: { gia: 2, o: 13 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni'], tay: [], camBien: [], nganSach: 4, dungKho: true,
         cachLap: [
@@ -179,7 +179,7 @@
       so: 3, ten: 'Chui gầm', hang: 'lam-quen',
       deBai: 'Tường chắn ngang sân có một ô gầm thấp và một lối hở tận bên phải. Lắp robot tới cờ, em có 4 xu.',
       san: SAN_3, batDau: { x: 0, y: 4, huong: 0 },
-      sao: { o: 12, nhip: 8 },
+      sao: { o: 12, nhip: 8, re: { gia: 2, o: 15 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni', 'nhen'], tay: [], camBien: [], nganSach: 4, dungKho: true,
         cachLap: [
@@ -204,9 +204,12 @@
       so: 4, ten: 'Ngược dòng', hang: 'luyen',
       deBai: 'Băng chuyền chạy ngược chiều xe, cứ hai nhịp đẩy xe lùi một ô. Lắp robot tới cờ, em có 4 xu.',
       san: SAN_4, batDau: { x: 2, y: 8, huong: 0 },
-      sao: { o: 6, nhip: 8 },
+      sao: { o: 6, nhip: 8, re: { gia: 2, o: 6 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni'], tay: [], camBien: [], nganSach: 4, dungKho: true,
+        khongQua: [
+          { than: 'omni', lyDo: 'Bánh omni trơn: đi ngược băng chuyền thì bị đẩy về, đứng im tại chỗ.' }
+        ],
         cachLap: [
           { than: 'xich', camBien: null, tay: null, loiGiai: { chinh: ['forward(8)'] }, ghiChu: 'Băng chuyền không đẩy được bánh xích: đi một mạch, tốn 3 xu.' },
           { than: 'hai-banh', camBien: null, tay: null, loiGiai: { chinh: ['forward(13)'] }, ghiChu: 'Hai bánh vẫn qua được, nhưng bị đẩy lùi nên phải bước thêm nhiều nhịp.' }
@@ -228,7 +231,7 @@
       so: 5, ten: 'Tìm cửa hông', hang: 'luyen',
       deBai: 'Cửa hông dẫn tới cờ nằm ở chỗ khác nhau ở ba sân. Viết một chương trình cho cả ba. Em có 5 xu.',
       san: SAN_5, batDau: BD_5,
-      sao: { o: 11, nhip: 20 },
+      sao: { o: 11, nhip: 20, re: { gia: 3, o: 12 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni'], tay: [], camBien: ['khoang-cach', 'mau'], nganSach: 5, dungKho: true,
         cachLap: [
@@ -253,7 +256,7 @@
       so: 6, ten: 'Mê cung ngõ cụt', hang: 'luyen',
       deBai: 'Ba mê cung có ngõ cụt. Ô đỏ báo rẽ phải, ô xanh dương báo rẽ trái. Tới cờ ít nhịp nhất, em có 4 xu.',
       san: SAN_6, batDau: BD_6,
-      sao: { o: 14, nhip: 55 },
+      sao: { o: 14, nhip: 55, re: { gia: 3, o: 16 } },
       lapRap: {
         than: ['hai-banh'], tay: [], camBien: ['khoang-cach', 'mau', 'camera'], nganSach: 4, dungKho: true,
         cachLap: [
@@ -279,7 +282,7 @@
       so: 7, ten: 'Ba lối đi', hang: 'bien-the', nhipTheoLoiGiai: true,
       deBai: 'Tường có ba lối: gầm thấp, bậc thang và lối hở ở xa. Mỗi thân hợp một lối. Tới cờ nhanh nhất, em có 4 xu.',
       san: SAN_7, batDau: { x: 1, y: 6, huong: 0 },
-      sao: { o: 12, nhip: 12 },
+      sao: { o: 12, nhip: 12, re: { gia: 2, o: 15 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni', 'nhen'], tay: [], camBien: [], nganSach: 4, dungKho: true,
         cachLap: [
@@ -304,7 +307,7 @@
       so: 8, ten: 'Nhảy qua hố', hang: 'bien-the', nhipTheoLoiGiai: true,
       deBai: 'Hàng hố chắn ngang sân, chỉ chừa lối bên phải. Rơi xuống hố là thua. Lắp robot tới cờ, em có 4 xu.',
       san: SAN_8, batDau: { x: 0, y: 6, huong: 0 },
-      sao: { o: 15, nhip: 10 },
+      sao: { o: 15, nhip: 10, re: { gia: 2, o: 15 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni', 'nhen'], tay: [], camBien: [], nganSach: 4, dungKho: true,
         cachLap: [
@@ -329,7 +332,7 @@
       so: 9, ten: 'Hộp chỉ đường', hang: 'bien-the',
       deBai: 'Cuối hành lang có hộp màu: đỏ chỉ sang phải, xanh dương chỉ sang trái, cờ ở lối hộp chỉ. Em có 6 xu.',
       san: SAN_9, vatMau: VAT_MAU_9, batDau: BD_9,
-      sao: { o: 17, nhip: 21 },
+      sao: { o: 17, nhip: 21, re: { gia: 4, o: 21 } },
       lapRap: {
         than: ['hai-banh', 'omni'], tay: [], camBien: ['khoang-cach', 'mau', 'camera'], nganSach: 6, dungKho: true,
         cachLap: [
@@ -355,9 +358,13 @@
       huyHieu: { ma: 'rap-nao', ten: 'Huy hiệu Lắp ráp: Thân + Não' },
       deBai: 'Mỗi kho có bậc thang ở hành lang và hộp chỉ đường ở ngã ba, dài ngắn khác nhau. Em có 6 xu.',
       san: SAN_10, vatMau: VAT_MAU_10, batDau: BD_10,
-      sao: { o: 23, nhip: 39 },
+      sao: { o: 23, nhip: 39, re: { gia: 5, o: 23 } },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni', 'nhen'], tay: [], camBien: ['khoang-cach', 'mau', 'camera'], nganSach: 6, dungKho: true,
+        khongQua: [
+          { than: 'hai-banh', lyDo: 'Đường tới cờ ở sân nào cũng có bậc thang, mà xe hai bánh không leo được bậc thang.' },
+          { than: 'omni', lyDo: 'Đường tới cờ ở sân nào cũng có bậc thang, mà bánh omni không leo được bậc thang.' }
+        ],
         cachLap: [
           { than: 'xich', camBien: 'camera', tay: null, loiGiai: { chinh: ['while color() == "none":', '    move()', 'if color() == "red":', '    sidestep()', 'else:', '    tr_left()', '    move()', '    tr_right()', 'forward(8)'] }, ghiChu: 'Xích leo bậc, camera đọc hộp: ít nhịp nhất, nhưng mỗi lần rẽ mất hai nhịp và chương trình nhiều ô hơn. Tốn 5 xu.' },
           { than: 'nhen', camBien: 'camera', tay: null, loiGiai: { chinh: ['while color() == "none":', '    go("U")', 'if color() == "red":', '    go("R")', 'else:', '    go("L")', 'walk("UUUUUUUU")'] }, ghiChu: 'Nhện không phải quay nên chương trình ngắn gọn hơn, nhưng mỗi ô tốn hai nhịp. Tốn đủ 6 xu.' }

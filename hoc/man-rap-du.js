@@ -113,7 +113,7 @@
           { than: 'hai-banh', tay: null, camBien: null, loiGiai: { chinh: ['forward(3)', 'turn_right()', 'forward(4)', 'turn_right()', 'forward(3)'] }, ghiChu: 'Đi vòng qua cầu: rẻ nhất, nhưng đường dài.' }
         ]
       },
-      sao: { o: 11, nhip: 4 },
+      sao: { o: 11, nhip: 4, re: { gia: 2, o: 12 } },
       loiGiaiKhac: { moTa: 'Cùng đường bay, chia làm hai đoạn walk', baiLam: { chinh: ['walk("RR")', 'walk("RR")'] } },
       loiSai: [
         { moTa: 'Bay sang phải có ba ô: drone dừng cách cờ một ô', baiLam: { chinh: LAP(3, 'go_right()') }, phaiCoMa: ['chua-toi-co'] }
@@ -128,12 +128,15 @@
       san: SAN_2, batDau: { x: 1, y: 2, huong: 1 },
       lapRap: {
         than: ['hai-banh', 'xich'], tay: ['kep', 'nam-cham', 'nem'], camBien: [], nganSach: 5, phaiCo: ['tay'],
+        khongQua: [
+          { than: 'hai-banh', tay: 'nam-cham', lyDo: 'Vật là gỗ, nam châm không hút được. Cần tay kẹp hoặc máy ném để đưa vật sang bên kia rào.' }
+        ],
         cachLap: [
           { than: 'hai-banh', tay: 'nem', camBien: null, loiGiai: { chinh: ['launch(3)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc', chinh: ['load()', 'wait()', 'aim(3)', 'throw()', 'wait()'] }, ghiChu: 'Nạp hộp rồi ném qua rào: chỉ hai nhịp, tốn 5 xu.' },
           { than: 'hai-banh', tay: 'kep', camBien: null, loiGiai: { chinh: ['pick()', 'turn_left()', 'forward(2)', 'turn_right()', 'forward(3)', 'turn_right()', 'move()', 'drop()'] }, ghiChu: 'Kẹp hộp đi vòng qua cầu: rẻ hơn, nhưng đường dài.' }
         ]
       },
-      sao: { o: 7, nhip: 2 },
+      sao: { o: 7, nhip: 2, re: { gia: 4, o: 27 } },
       loiGiaiKhac: { moTa: 'Cùng cách ném viết bằng lệnh gốc, thêm ba dòng chú thích', baiLam: { chinh: ['# nạp hộp rồi ném', '# tầm 3 ô', '# qua hàng rào', 'load()', 'wait()', 'aim(3)', 'throw()', 'wait()'] } },
       loiSai: [
         { moTa: 'Ném tầm 2: hộp rơi đúng lên hàng rào và vỡ', baiLam: { chinh: ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()'] }, phaiCoMa: ['nem-vo'] },
@@ -154,7 +157,7 @@
           { than: 'nhen', tay: null, camBien: null, loiGiai: { chinh: ['crouch()', 'wait()', 'stand()', 'go_right()', 'for i in range(2):', '    go_right()', 'for i in range(5):', '    go_up()'] }, ghiChu: 'Nhện nhảy qua rào ở hàng dưới cùng, không cần mắt: code ngắn nhưng đi chậm.' }
         ]
       },
-      sao: { o: 16, nhip: 33 },
+      sao: { o: 16, nhip: 33, re: { gia: 3, o: 16 } },
       loiGiaiKhac: { moTa: 'Cùng cách đi, ghi chú từng đoạn', baiLam: { chinh: ['# tìm chỗ hở bên phải', 'to_gap()', 'turn_right()', '# đi hết hàng', 'go_wall()', 'turn_left()', 'go_wall()'] } },
       loiSai: [
         { moTa: 'Đi thẳng lên hết hành lang rồi mới rẽ: hàng trên cùng là rào kín', baiLam: { chinh: ['while front_clear():', '    move()', 'turn_right()', 'while front_clear():', '    move()'] }, phaiCoMa: ['chua-toi-co'] },
@@ -176,7 +179,7 @@
           { than: 'hai-banh', tay: null, camBien: null, loiGiai: { chinh: ['u_turn()', 'forward(4)', 'turn_left()', 'forward(4)', 'turn_left()', 'forward(3)'] }, ghiChu: 'Đi vòng dưới cùng: rẻ nhất, đường dài nhất.' }
         ]
       },
-      sao: { o: 12, nhip: 6 },
+      sao: { o: 12, nhip: 6, re: { gia: 2, o: 16 } },
       loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng nút', 'jet_back()', '# qua cửa', 'turn_right()', 'forward(4)'] } },
       loiSai: [
         { moTa: 'Không bắn nút: xe đâm vào cửa đóng', baiLam: { chinh: ['turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] },
@@ -192,13 +195,16 @@
       san: SAN_5, batDau: { x: 0, y: 3, huong: 1 },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni', 'nhen', 'drone'], tay: [], camBien: [], nganSach: 5,
+        khongQua: [
+          { than: 'omni', lyDo: 'Bánh omni trơn: đi ngược băng chuyền thì bị đẩy về, đứng im tại chỗ.' }
+        ],
         cachLap: [
           { than: 'drone', tay: null, camBien: null, loiGiai: { chinh: ['walk("RRRRRRUUU")'] }, loiGiaiPhu: { moTa: 'viết thẳng hai vòng for', chinh: nhieu(LAP(6, 'go_right()'), LAP(3, 'go_up()')) }, ghiChu: 'Bay trên băng, băng không đẩy được: nhanh nhất, tốn 5 xu.' },
           { than: 'xich', tay: null, camBien: null, loiGiai: { chinh: ['forward(6)', 'tr_left()', 'forward(3)'] }, ghiChu: 'Xích bám chắc, băng không đẩy được; chỉ quay hơi chậm.' },
           { than: 'hai-banh', tay: null, camBien: null, loiGiai: { chinh: ['forward(5)', 'forward(5)', 'turn_left()', 'forward(3)'] }, ghiChu: 'Bị băng đẩy lùi nên cứ hai nhịp mới tiến được một ô; rẻ nhất.' }
         ]
       },
-      sao: { o: 11, nhip: 9 },
+      sao: { o: 11, nhip: 9, re: { gia: 2, o: 11 } },
       loiGiaiKhac: { moTa: 'Cùng đường bay, chia hai đoạn walk', baiLam: { chinh: ['walk("RRRRRR")', 'walk("UUU")'] } },
       loiSai: [
         { moTa: 'Bay sang phải có năm ô rồi lên: drone đâm vào tường ở cột năm', baiLam: { chinh: nhieu(LAP(5, 'go_right()'), LAP(3, 'go_up()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
@@ -220,7 +226,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, loiGiai: { chinh: ['pick()', 'turn_left()', 'forward(2)', 'turn_right()', 'forward(6)', 'turn_right()', 'move()', 'drop()'] }, ghiChu: 'Kẹp hộp đi vòng qua cầu trên cùng: rẻ nhất, đường dài nhất.' }
         ]
       },
-      sao: { o: 16, nhip: 8 },
+      sao: { o: 16, nhip: 8, re: { gia: 4, o: 27 } },
       loiGiaiKhac: { moTa: 'Cùng cách chở, ghi chú hai dòng', baiLam: { chinh: ['# hút, bay qua sông, thả', '# ghé ô sạc trên đường', 'ship("RRRRRR")'] } },
       loiSai: [
         { moTa: 'Bay vòng lên hàng trên, không qua ô sạc: pin cạn giữa đường', baiLam: { chinh: nhieu(['magnet_n()', 'go_right()', 'go_up()'], LAP(5, 'go_right()'), ['go_down()', 'magnet_off()', 'wait()']) }, phaiCoMa: ['het-pin'] },
@@ -241,7 +247,7 @@
           { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['move()', 'jet_fwd()'], LAP(2, ['u_turn()', 'move()', 'turn_left()', 'forward(2)', 'turn_left()', 'move()', 'jet_fwd()'])) }, ghiChu: 'Hai bánh phải quay mỗi lần đổi hàng: rẻ hơn, chậm hơn.' }
         ]
       },
-      sao: { o: 18, nhip: 12 },
+      sao: { o: 18, nhip: 12, re: { gia: 5, o: 22 } },
       loiGiaiKhac: { moTa: 'Cùng cách đẩy, ghi chú từng việc', baiLam: { chinh: nhieu(['# thùng hàng đầu'], ['move()', 'jet_fwd()'], ['# hai hàng còn lại'], LAP(2, ['back()', 'slide_r(2)', 'move()', 'jet_fwd()'])) } },
       loiSai: [
         { moTa: 'Bắn ra trước thay vì ra sau: xe giật lùi, thùng đứng yên', baiLam: { chinh: nhieu(['move()', 'shoot()', 'wait()'], LAP(2, ['back()', 'slide_r(2)', 'move()', 'shoot()', 'wait()'])) }, phaiCoMa: ['chua-day-thung'] },
@@ -262,7 +268,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: 'camera', loiGiai: { chinh: ['c = color()', 'pick()', 'if c == "red":', '    turn_left()', 'else:', '    turn_right()', 'drop()'] }, ghiChu: 'Tay kẹp phải quay xe về phía ô đích: rẻ hơn, thêm một nhịp mỗi sân.' }
         ]
       },
-      sao: { o: 17, nhip: 9 },
+      sao: { o: 17, nhip: 9, re: { gia: 6, o: 21 } },
       loiGiaiKhac: { moTa: 'Cùng cách phân loại, ghi chú từng việc', baiLam: { chinh: ['# nhìn màu hộp', 'c = color()', 'pick()', 'if c == "red":', '    arm_left()', 'else:', '    arm_right()', 'drop()'] } },
       loiSai: [
         { moTa: 'Không nhìn màu: luôn xoay trái, hộp xanh dương vào nhầm ô đích', baiLam: { chinh: ['pick()', 'arm_left()', 'drop()'] }, phaiCoMa: ['dat-sai-mau'] },
@@ -283,7 +289,7 @@
           { than: 'hai-banh', tay: 'kep', camBien: null, loiGiai: { chinh: ['forward(2)', 'pick()', 'u_turn()', 'forward(2)', 'drop()'] }, ghiChu: 'Đi tới kẹp hộp rồi mang về: rẻ hơn nhiều, nhưng thêm nhiều nhịp.' }
         ]
       },
-      sao: { o: 12, nhip: 9 },
+      sao: { o: 12, nhip: 9, re: { gia: 4, o: 23 } },
       loiGiaiKhac: { moTa: 'Cùng cách hút, ghi chú một dòng', baiLam: { chinh: ['# đọc cực rồi hút hộp', 'grip()', 'u_turn()', 'magnet_off()', 'wait()'] } },
       loiSai: [
         { moTa: 'Luôn bật cực N: hộp cực N bị đẩy chứ không bị hút', baiLam: { chinh: ['magnet_n()', 'wait()', 'u_turn()', 'magnet_off()', 'wait()'] }, phaiCoMa: ['chua-dua-vat'] },
@@ -300,6 +306,10 @@
       san: SAN_10, batDau: { x: 1, y: 2, huong: 0 },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni', 'nhen', 'drone'], tay: ['hoi'], camBien: [], nganSach: 5,
+        khongQua: [
+          { than: 'hai-banh', tay: null, lyDo: 'Năm lối đều có vật cản: hàng rào, cửa đóng, gầm thấp, bậc thang, hố. Xe hai bánh không gắn súng hơi thì không qua được lối nào.' },
+          { than: 'omni', lyDo: 'Năm lối đều có vật cản: hàng rào, cửa đóng, gầm thấp, bậc thang, hố. Bánh omni không qua được lối nào.' }
+        ],
         cachLap: [
           { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc shoot()', chinh: ['shoot()', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng nút, cửa sắt mở, đi thẳng: nhanh nhất.' },
           { than: 'drone', tay: null, camBien: null, loiGiai: { chinh: nhieu(['go_right()', 'go_up()'], LAP(3, 'go_right()'), LAP(2, 'go_down()')) }, ghiChu: 'Bay qua rào, ghé ô sạc trên đường: code ngắn nhất, đường dài hơn một nhịp.' },
@@ -307,7 +317,7 @@
           { than: 'xich', tay: null, camBien: null, loiGiai: { chinh: nhieu(LAP(3, 'back()'), ['tr_left()'], LAP(4, 'back()'), ['tr_left()'], LAP(2, 'back()')) }, ghiChu: 'Leo bậc thang bằng xích, đi lùi cho khỏi quay: rẻ nhất, đường dài nhất.' }
         ]
       },
-      sao: { o: 12, nhip: 6 },
+      sao: { o: 12, nhip: 6, re: { gia: 3, o: 14 } },
       loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng nút', 'jet_back()', '# qua cửa', 'turn_right()', 'forward(4)'] } },
       loiSai: [
         { moTa: 'Không bắn nút: xe đâm vào tường cạnh cửa đóng', baiLam: { chinh: ['turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] },

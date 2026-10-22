@@ -232,6 +232,7 @@
     var kq = Object.assign({}, man);
     kq.manGoc = man.manGoc || man;
     kq.cachLapDaChon = c;
+    kq.giaLap = giaCach(c);                                                                // máy chấm dùng cho sao "rẻ" (man.sao.re)
     kq.loaiRobot = th.loai;
     if (c.than === 'drone' && coPinMan(man)) { ch.camBien.push({ ma: 'pin', o: 'than' }); kq.pin = pinCua(man); }
     else delete kq.pin;

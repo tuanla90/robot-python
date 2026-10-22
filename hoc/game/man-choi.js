@@ -155,6 +155,7 @@
     roi(); anBongD();
     S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0;
     E.lapLai.style.display = goc.lapRap ? '' : 'none';
+    E.lapLai.classList.remove('nhay');
     S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
     TP.datCheList(TP.coListCua(m));                    // màn có cauTruc 'list': dòng danh sách (a = [1, 2], for n in a:, a.append(1)) tách thành ô phần tử chạm được
     TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m));      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
@@ -489,6 +490,7 @@
     var loi = ds.filter(function (c) { return c.muc === 'loi'; });
     var tin = ds.filter(function (c) { return c.muc !== 'loi'; });
     S.cd = TP.xepChanDoan(loi.concat(tin)); S.cdi = 0;
+    E.lapLai.classList.toggle('nhay', S.cd.some(function (c) { return c.ma === 'lap-khong-qua'; }));   // cách lắp không qua được màn: nút Lắp lại nhấp nháy
     var rows = [], bricks = [], conTran = false;
     S.cd.forEach(function (c) {
       chiCho(c).forEach(function (cho) {
@@ -534,7 +536,9 @@
   /* ------------------------------------------------------------- bảng thắng */
   function bangThang() {
     var m = S.man, k = S.ket, ss = m.sao || {};
-    var okO = ss.o === undefined || k.soO <= ss.o, okN = ss.nhip === undefined || k.soNhip <= ss.nhip;
+    var re = ss.re && typeof m.giaLap === 'number' ? ss.re : null;                       // màn lắp ráp: sao thứ ba = nhanh HOẶC rẻ (cham.js: k.re, k.nguongO)
+    var nguongO = k.nguongO !== undefined ? k.nguongO : ss.o;
+    var okO = nguongO === undefined || k.soO <= nguongO, okN = ss.nhip === undefined || k.soNhip <= ss.nhip || !!(re && k.re);
     var duaVat = m.mucTieu === 'dua-vat' || m.mucTieu === 'day-thung';
     var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
     hop.hop.setAttribute('data-sao', k.sao);
@@ -546,12 +550,13 @@
       var ic = h('span', 'ic'); ic.appendChild(Ve.ico(ok ? 'check' : 'cross', 2, { fill: ok ? '#7cff86' : '#ff8a80', shade: ok ? '#3cc24a' : '#d04a40', line: '#0e2a14' }));
       d.appendChild(ic); d.appendChild(TP.vanBan(h('span'), chu)); return d;
     }
-    if (ss.o !== undefined) hop.than.appendChild(dong(okO, t('thang.o', { x: k.soO, y: ss.o })));
+    if (nguongO !== undefined) hop.than.appendChild(dong(okO, t('thang.o', { x: k.soO, y: nguongO })));
     var nSan = (k.theoSan || []).length, tong = nSan > 1 && m.nhipTheo === 'tong';        // nhiều sân tính sao theo TỔNG nhịp các sân
-    if (ss.nhip !== undefined) hop.than.appendChild(dong(okN, tong ? t('thang.nhipTong', { x: k.soNhip, n: nSan, y: ss.nhip }) : t('thang.nhip', { x: k.soNhip, y: ss.nhip })));
+    if (re && k.re) hop.than.appendChild(dong(true, t('thang.re', { x: m.giaLap, y: re.gia })));
+    else if (ss.nhip !== undefined) hop.than.appendChild(dong(okN, (tong ? t('thang.nhipTong', { x: k.soNhip, n: nSan, y: ss.nhip }) : t('thang.nhip', { x: k.soNhip, y: ss.nhip })) + (re ? t('thang.hoacRe', { y: re.gia }) : '')));
     if (nSan > 1) hop.than.appendChild(h('div', 'th-theo', t('thang.theoSan', { ds: k.theoSan.map(function (x) { return x.soNhip; }).join(' + ') })));
     if (!okO) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuO')));
-    else if (!okN) hop.than.appendChild(h('div', 'th-ghi', t(tong ? 'thang.thieuNhipTong' : duaVat ? 'thang.thieuNhipVat' : 'thang.thieuNhip')));
+    else if (!okN) hop.than.appendChild(h('div', 'th-ghi', t(re ? 'thang.thieuNhipRe' : tong ? 'thang.thieuNhipTong' : duaVat ? 'thang.thieuNhipVat' : 'thang.thieuNhip')));
     else hop.than.appendChild(h('div', 'th-ghi tot', t('thang.duSao')));
     if (m.lapRap) { var cl = khoiCachLap(m); if (cl) hop.than.appendChild(cl); }        // màn lắp ráp: các cách lắp mẫu (part, giá, nhịp, ô) để thấy đánh đổi
     // thắng mà vẫn có lưu ý (vd. bánh bị gọi lại, hàm của màn che hàm của em): cho học sinh thấy

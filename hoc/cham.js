@@ -22,6 +22,9 @@
      gián tiếp, mỗi hàm tính một lần; nhiều sân lấy HỢP). Hàm không được gọi thì không
      tính; dòng def không tốn ô. Chưa chạy được (lỗi khung, cú pháp…) thì dò tĩnh.
    - sao: 1 nếu thắng; +1 nếu soO ≤ man.sao.o; +1 nếu soNhip ≤ man.sao.nhip.
+     Màn lắp ráp (22/10, "nhanh HOẶC rẻ"): man.sao.re = { gia, o }; robot lắp có giá man.giaLap (LapRap.apDung ghi) ≤ re.gia thì là lắp RẺ:
+     sao thứ ba có luôn (rẻ thay cho nhanh), ngưỡng ô thành max(sao.o, re.o) (lời giải của robot rẻ thường dài hơn). ketQua.re, ketQua.nguongO cho bảng thắng.
+     Thua mà cách lắp nằm trong man.manGoc.lapRap.khongQua (robot này không bao giờ tới đích): chẩn đoán 'lap-khong-qua' đứng đầu, nói lý do.
    - man.san có thể là MỘT sân (mảng chuỗi) hoặc MỘT MẢNG sân (cùng khung); thắng khi
      thắng TẤT CẢ sân. man.batDau cũng có thể là mảng song song với man.san.
    - man.hamGoc: hàm gốc cho phép.
@@ -146,6 +149,18 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var SanHoc = laNode ? require('./san-hoc.js') : window.SanHoc;
   var KhungCode = laNode ? require('./khung-code.js') : window.KhungCode;
+
+  /** Màn lắp ráp: lý do nếu cách lắp đang gắn (man.cachLapDaChon) nằm trong lapRap.khongQua của màn gốc: [{ than, tay?, camBien?, lyDo }],
+   *  khe không khai thì khe nào cũng khớp, khai null = không gắn gì. Không có thì null. */
+  function lyDoKhongQua(man) {
+    var goc = man && man.manGoc, c = man && man.cachLapDaChon, ds = goc && goc.lapRap && goc.lapRap.khongQua;
+    if (!ds || !c) return null;
+    for (var i = 0; i < ds.length; i++) {
+      var k = ds[i];
+      if (['than', 'tay', 'camBien'].every(function (kh) { return !(kh in k) || (k[kh] || null) === (c[kh] || null); })) return k.lyDo;
+    }
+    return null;
+  }
 
   var LOAI_VAT = { 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'nút bắn (gắn trên tường: xe không đi vào được, chỉ quả bóng bắn trúng mới đổi nút)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)' };
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
@@ -1145,8 +1160,14 @@
     });
     dienO(ketQua, daDung);
     if (thangHet) {
-      var sao = man.sao || {};
-      ketQua.sao = 1 + (sao.o !== undefined && ketQua.soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && ketQua.soNhip <= sao.nhip ? 1 : 0);
+      var sao = man.sao || {}, re = sao.re;
+      var laRe = !!(re && typeof man.giaLap === 'number' && man.giaLap <= re.gia);                   // màn lắp ráp: robot lắp rẻ (≤ sao.re.gia xu)
+      var nguongO = laRe && re.o !== undefined ? Math.max(sao.o === undefined ? re.o : sao.o, re.o) : sao.o;
+      ketQua.re = laRe; ketQua.nguongO = nguongO;
+      ketQua.sao = 1 + (nguongO !== undefined && ketQua.soO <= nguongO ? 1 : 0) + ((sao.nhip !== undefined && ketQua.soNhip <= sao.nhip) || laRe ? 1 : 0);
+    } else {
+      var khongQua = lyDoKhongQua(man);
+      if (khongQua) ketQua.chanDoan.unshift({ muc: 'loi', ma: 'lap-khong-qua', loi: 'Robot lắp thế này không qua được màn, viết code nào cũng vậy. ' + khongQua + ' Bấm Lắp lại để đổi bộ phận.' });
     }
     return xong();
   }
