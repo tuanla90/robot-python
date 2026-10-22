@@ -199,10 +199,28 @@
     });
     return kq.map(function (x, i) { return { x: x, i: i }; }).sort(function (a, b) { return a.x.gia - b.x.gia || a.i - b.i; }).map(function (e) { return e.x; });
   }
+  /** Lý do nếu cách lắp c nằm trong lapRap.khongQua của màn ({ than, tay?, camBien?, lyDo }; khe không khai = khe nào cũng khớp), không thì null.
+   *  Cùng phép khớp với lyDoKhongQua của cham.js. */
+  function khongQua(man, c) {
+    var L = lapRapCua(man), ds = (L && L.khongQua) || [];
+    c = chuanCach(c);
+    for (var i = 0; i < ds.length; i++) {
+      var k = ds[i];
+      if (KHE.every(function (kh) { return !(kh in k) || (k[kh] || null) === (c[kh] || null); })) return k.lyDo;
+    }
+    return null;
+  }
+  /** Cách lắp chọn sẵn khi vào màn Lắp robot: thân đầu tiên, khe khác trống (trừ khe bắt buộc: part đầu của khe đó).
+   *  Cách đó nằm trong lapRap.khongQua, hay có cách qua được rẻ hơn, thì lấy cách RẺ NHẤT qua được (22/10: không chọn sẵn cách không bao giờ tới đích). */
   function cachMacDinh(man) {
     var L = lapRapCua(man), c = { than: L && L.than && L.than[0] || null, tay: null, camBien: null };
     if (L) phaiCoCua(L).forEach(function (k) { if ((L[k] || []).length) c[k] = L[k][0]; });
-    return c;
+    if (!L || !(L.khongQua || []).length) return c;
+    var qua = dsCachLap(man).filter(function (x) { return !khongQua(man, x); });
+    if (!qua.length) return c;
+    var gocQua = !khongQua(man, c) && kiemCachLap(man, c).ok;
+    if (gocQua && giaCach(c) <= qua[0].gia) return c;
+    return { than: qua[0].than, tay: qua[0].tay, camBien: qua[0].camBien };
   }
   function moTa(c) {
     c = chuanCach(c);
@@ -385,7 +403,7 @@
   var API = {
     KHE: KHE, TEN_KHE: TEN_KHE, DANH_MUC: DANH_MUC,
     tim: tim, tenCua: tenCua, moTa: moTa, chuanCach: chuanCach, giaCach: giaCach, cauHinhCua: cauHinhCua,
-    kiemGhep: kiemGhep, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, dsKhe: dsKhe,
+    kiemGhep: kiemGhep, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
     macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, part: P
   };
   if (laNode) module.exports = API;

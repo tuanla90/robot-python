@@ -55,6 +55,9 @@ const t0 = Date.now();
 for (const m of ds) {
   const kq = m.lapRap.khongQua || [];
   const cach = LapRap.dsCachLap(m);
+  const md = LapRap.cachMacDinh(m), qua = cach.filter((c) => !kq.some((k) => khop(k, c)));
+  kiem(m.ma + ': cách chọn sẵn (' + LapRap.moTa(md) + ') vừa ngân sách, không nằm trong khongQua, rẻ nhất trong các cách qua được',
+    LapRap.kiemCachLap(m, md).ok && !LapRap.khongQua(m, md) && !kq.some((k) => khop(k, md)) && LapRap.giaCach(md) === Math.min(...qua.map((c) => c.gia)), J(md));
   for (const k of kq) {
     kiem(m.ma + ': khongQua ' + J(k) + ' có lý do, khớp ≥ 1 cách lắp vừa ngân sách', !!k.lyDo && !/[()]/.test(k.lyDo) && cach.some((c) => khop(k, c)));
   }
