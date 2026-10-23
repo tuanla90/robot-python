@@ -222,6 +222,13 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .gl .tg{order:3;flex:none;font:700 calc(9px*var(--kp))/1 var(--px);padding:2px 3px 1px;color:#2a1400;background:#e08a3a;box-shadow:0 0 0 1px var(--ink),inset 0 2px 0 #ffcf94}
 .gl .nb{order:3;height:16px;display:flex;align-items:center;gap:2px;padding:1px 4px 0;font:700 calc(10px*var(--kp))/1 var(--px);letter-spacing:0;flex:none;color:#e8ffe0;border:1px dashed #7fc4a6;background:rgba(255,255,255,.06)}
 .gl .nb:active{background:rgba(255,255,255,.25)}
+/* nút "Hàm khác (n)" cuối nhóm hàm của em (thanh-phan.js nhomEm): hàm màn này không dùng tới, thu gọn cho khay ngắn; mở ra thì các khối nằm ngay dưới */
+.pal .nk{display:flex;align-items:center;gap:4px;width:100%;height:22px;margin-top:10px;padding:1px 6px 0;font:700 calc(10px*var(--kp))/1 var(--px);color:#cfeec4;text-align:left;
+  border:1px dashed #5f9a7c;background:rgba(255,255,255,.05);cursor:pointer}
+.pal .nk:active{background:rgba(255,255,255,.2)}
+.pal .nk.mo{color:#9ff08f;border-style:solid}
+.pal .nk .nk-chu{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brick.nhay-ve{animation:blink .4s steps(1) 4}                                   /* về sân từ Xưởng: khối hàm vừa xem nháy (TP.Palette.hienGach) */
 /* khối ở khay: cao 28px = ngang một dòng của khung chương trình (user 15/10), cách nhau 12px (chừa núm 10px ở trên); KHÔNG tự co nhỏ khi khay dài (khay dài thì cuộn bằng vuốt dọc / lăn chuột / ▲ ▼) */
 .brick{position:relative;display:flex;align-items:center;width:100%;height:28px;margin-top:12px;padding:0 4px 0 7px;text-align:left;cursor:pointer;
   font:var(--wm) calc(13px*var(--km))/1 var(--mono);color:var(--ink);white-space:nowrap;
@@ -290,6 +297,10 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .hop-in:focus{box-shadow:inset 0 0 0 2px var(--ink),0 0 0 3px #ffd95a}
 .hop-loi{min-height:34px;margin-top:6px;font:600 calc(13px*var(--kp))/1.2 var(--px);color:#ffb0a8}
 .hop-loi.co{display:block}
+.hop-mo{display:flex;align-items:center;gap:8px;margin:0 0 8px}                /* hộp Hàm mới: "Hàm drop() đã có…" + nút Mở (xuong-ham.js moiHam) */
+.hop-mo .chu{flex:1;min-width:0;font:600 calc(12px*var(--kp))/1.25 var(--px);color:#ffe6a0}
+.hop-loi .hop-mo .chu{color:#ffb0a8}
+.hop-mo .hop-nut{flex:none;padding:2px 10px 0;font-size:calc(13px*var(--kp))}
 .hop-thang .hop-than{padding-top:8px}
 .th-sao{display:flex;justify-content:center;gap:10px;height:52px;align-items:center}
 .th-s{display:block;transform:scale(0);animation:pop .35s steps(5) forwards}
@@ -300,7 +311,6 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .th-dong .ic{flex:none;display:flex}
 .th-ghi{margin:2px 0 4px;font:500 calc(12px*var(--kp))/1.2 var(--px);color:#ffe6a0}
 .th-ghi.tot{color:#9dffa4}
-.th-ghi.canh{color:#ffb38a}                                                 /* qua màn mà chưa tạo hàm màn dạy (man-choi.js bangThang) */
 .th-huy{display:flex;align-items:center;gap:10px;margin:6px 0 4px;padding:6px 8px;background:rgba(255,217,90,.16);box-shadow:inset 0 0 0 2px #ffd95a}
 .th-huy .k{font:600 calc(11px*var(--kp))/1 var(--px);color:#ffe6a0}.th-huy .v{font:700 calc(15px*var(--kp))/1.1 var(--px);color:#fff6d0;margin-top:2px}
 

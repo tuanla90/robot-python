@@ -145,6 +145,9 @@
       'choi.chonSo': 'Số lần lặp',
       'choi.nhom.chiMan': 'chỉ màn này',
       'choi.hamMoi': 'Hàm mới',
+      'choi.hamKhac': 'Hàm khác ({n})',
+      'choi.hamKhacAn': 'Ẩn hàm khác',
+      'choi.hamKhacNhan': '{n} hàm màn này không cần. Chạm để xem hay ẩn.',
       'choi.suaHam': 'Sửa hàm {ten}',
       'choi.hamKhoaNhan': 'Hàm {ten}: chỉ xem, màn này không sửa',
       'choi.hamMan': 'Hàm của màn {ten}',
@@ -189,7 +192,6 @@
       'thang.cachSo': '{xu} xu · {nhip} nhịp · {o} ô',
       'thang.cachChua': '{xu} xu · chưa chạy được',
       'thang.lapLai': 'Lắp lại',
-      'thang.chuaTaoHam': 'Em qua màn mà chưa tạo hàm {ham}(). Các màn sau cần hàm này: mở Xưởng hàm tạo nó rồi chạy lại nhé.',
       'thang.manTiep': 'Màn tiếp',
       'thang.hetChuoi': 'Về màn chọn',
       'thang.choiLai': 'Chơi lại',
@@ -255,6 +257,11 @@
       'xuong.xoaCo': 'Xóa',
       'xuong.trong': 'Thân hàm còn trống.',
       'xuong.hamCoDinh': 'Hàm này cần cho các màn sau, không xóa được.',
+      'xuong.veHam': 'Về hàm {ten}()',
+      'xuong.layLai': 'Lấy lại bản đúng',
+      'xuong.layLaiHoi': 'Hàm {ten}() của em đang khác bản đúng của game. Lấy lại bản đúng thì thân hàm em đang có sẽ mất.',
+      'xuong.layLaiCo': 'Lấy lại',
+      'xuong.layLaiXong': 'Đã lấy lại bản đúng của {ten}()',
       'xuong.oDaCo': 'Ô này đã có {gi}.',
       'xuong.doiSo': 'Giá trị thử của {ten}',
       'xuong.doiChuoi': 'Chuỗi thử của {ten}',
@@ -285,6 +292,8 @@
       'ten.doiSoTrong': 'Đối số chưa có tên.',
       'ten.mauGo': 'ten_ham',
       'ten.tao': 'Tạo hàm',
+      'ten.moHam': 'Mở {ten}()',
+      'ten.dangTrong': 'Hàm {ten}() em tạo rồi, thân còn trống.',
 
       /* ---- sổ lệnh */
       'so.tieuDe': 'SỔ LỆNH',
@@ -431,6 +440,13 @@
       'gt.3.chu': 'Tới cờ là qua màn. Code gọn, R1 chạy ít nhịp thì được đủ 3 sao.',
       'gt.4.td': 'Mở bộ phận mới',
       'gt.4.chu': 'Gom sao để tìm lại tay gắp, cảm biến, bánh xích, drone… Mỗi món lại mở thêm lệnh Python mới.',
+
+      /* ---- vào màn mà hàm khóa bị sửa hỏng (man-choi.js hoiLayLaiHam) */
+      'hong.tieuDe': 'Lấy lại hàm đúng?',
+      'hong.hoi': 'Hàm {ds} trong kho của em đã bị sửa khác bản đúng, nên màn này không giải được. Ở màn này em chỉ xem được hàm đó, không sửa được. Lấy lại bản đúng nhé?',
+      'hong.co': 'Lấy lại',
+      'hong.khong': 'Để sau',
+      'hong.xong': 'Đã lấy lại bản đúng của {ds}',
 
       /* ---- thông báo chung */
       'tb.khoGhiLoi': 'Không lưu được kho hàm: {loi}',

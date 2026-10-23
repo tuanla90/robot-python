@@ -137,7 +137,7 @@
    vat 'thung-nang' (xe húc thùng bằng bánh: thùng cản như tường, chỉ cú giật của súng hơi mới dời được thùng). Các mã khác:
    quen-wait, banh-goi-lai, tay-goi-lai, dam-tuong (vat 'vat' = vướng vật nằm đất), tay-vuong, vat-vo, tha-bi-chan (tay kẹp, kieu 'kep': ô trước mặt không phải sàn trống),
    kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
-   def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, chua-tao-ham (màn batBuocTaoHam: chưa gọi hàm phải tạo, robot tới đích cũng chưa thắng), loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
+   def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, chua-tao-ham (màn có taoHam: chưa gọi hàm phải tạo, robot tới đích cũng chưa thắng; màn khai batBuocTaoHam: false thì bỏ), loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
    CHÂN NHỆN (chương nhen, che-nhen; luật ở san-hoc.js, phần CHÂN NHỆN): roi-ho (lỗi: nhện rơi hố, chương trình dừng), nhay-hut (lỗi: ô giữa hay ô đáp của cú nhảy không hợp lệ, nhện rơi lại ô cũ),
    dau-dung-tran (lỗi: stand() khi đang đứng trong ô gầm), chan-goi-lai (lỗi: hai lệnh chân cùng nhịp); dam-tuong với vat 'gam-thap' (đi vào gầm mà chân đang duỗi); lech-bong-mo nói cả chân co / duỗi lệch bóng mờ
@@ -1301,16 +1301,41 @@
     return xong();
   }
 
-  /** man.taoHam + man.batBuocTaoHam: màn mà cả bài học là TẠO hàm đó (2.7 u_turn, 4.6 drop). Robot tới đích mà chương trình không gọi hàm của em
-   *  mang đúng tên đó thì CHƯA thắng (22/10: 4.6 qua được bằng cách gói việc khác vào hàm rồi viết thẳng việc thả, màn sau gọi drop() thì lỗi).
-   *  Màn khác không bật cờ: không tạo hàm vẫn thắng (thường chỉ 2 sao, đúng thiết kế); màn sau cần hàm đó thì khóa 'mat-ham' (mo-goi.js). Trả về tên hàm còn thiếu. */
+  /** man.taoHam: màn dạy TẠO các hàm đó. Robot tới đích mà chương trình không gọi hàm của em mang đúng tên đó thì CHƯA thắng
+   *  (22/10: 4.6 qua được bằng cách gói việc khác vào hàm rồi viết thẳng việc thả, màn sau gọi drop() thì lỗi; 23/10: áp cho MỌI màn có taoHam,
+   *  trước đây chỉ màn bật batBuocTaoHam nên 2.9, 6.6… vẫn qua được mà kho không có hàm màn sau cần). Màn khai batBuocTaoHam: false thì bỏ kiểm. Trả về tên hàm còn thiếu. */
   function thieuTaoHam(man, dung) {
-    if (man.camHamCuaEm || !man.batBuocTaoHam) return [];
+    if (man.camHamCuaEm || man.batBuocTaoHam === false) return [];
     return (man.taoHam || []).filter(function (t) { return !dung['hamEm:' + t]; });
   }
   function loiTaoHam(thieu) {
     var ds = thieu.map(function (t) { return t + '()'; }).join(', ');
     return { muc: 'loi', ma: 'chua-tao-ham', ham: thieu.slice(), loi: 'Robot làm xong việc rồi, nhưng màn này dạy tạo hàm ' + ds + '. Chương trình của em chưa gọi ' + ds + ': tạo hàm đó ở Xưởng hàm rồi dùng nó trong chương trình nhé.' };
+  }
+
+  /** Hàm của em đã bị SỬA HỎNG cho màn `man` (23/10: sửa nhầm hàm cũ ở màn cho sửa, sang màn sau hàm đó bị khóa chỉ xem nên không giải được).
+   *  kho: kho thật của người chơi · thamChieu: kho tham chiếu lúc tới màn (ManHoc.khoThamChieu) · khoa: tên các hàm màn này khóa (TP.khoaKhay).
+   *  Lời giải mẫu chạy trên kho thật mà không thắng, còn thay các hàm khóa đang khác bản tham chiếu bằng bản đó thì thắng → tên các hàm đã thay mà lời giải dùng tới.
+   *  Hàm em viết khác mà vẫn chạy đúng thì không tính. Không chắc (kho thiếu hàm khác, màn lắp ráp, màn cấm hàm của em…) → []. */
+  function hamHong(man, kho, thamChieu, khoa) {
+    if (!man || !man.loiGiai || man.camHamCuaEm || man.moXuong === false || man.lapRap) return [];
+    var ref = {}, giong = function (a, b) { return JSON.stringify([a.thamSo || [], a.than || []]) === JSON.stringify([b.thamSo || [], b.than || []]); };
+    (thamChieu || []).forEach(function (f) { ref[f.ten] = f; });
+    kho = kho || [];
+    var khac = kho.filter(function (f) { return ref[f.ten] && (khoa || []).indexOf(f.ten) >= 0 && !giong(f, ref[f.ten]); }).map(function (f) { return f.ten; });
+    if (!khac.length) return [];
+    var moi = man.loiGiai.hamCuaEmMoi || [];
+    function chay(ds) {
+      var k = ds.map(saoHam);
+      moi.forEach(function (f) { var i = tenCua(k).indexOf(f.ten); if (i >= 0) k[i] = saoHam(f); else k.push(saoHam(f)); });
+      try { return cham(man, man.loiGiai, k); } catch (e) { return null; }
+    }
+    var r = chay(kho);
+    if (!r || r.thang) return [];
+    var r2 = chay(kho.map(function (f) { return khac.indexOf(f.ten) >= 0 ? ref[f.ten] : f; }));
+    if (!r2 || !r2.thang) return [];
+    var dung = khac.filter(function (t) { return (r2.hamDaDung || []).indexOf(t) >= 0; });
+    return dung.length ? dung : khac;
   }
 
   function gan(c) { if (!c.muc) c.muc = 'loi'; return c; }
@@ -1369,7 +1394,7 @@
     return xong();
   }
 
-  var API = { cham: cham, thuHam: thuHam, chuanSanThu: chuanSanThu, hangSanThu: hangSanThu, SAN_THU_MAC_DINH: SAN_THU_MAC_DINH };
+  var API = { cham: cham, thuHam: thuHam, hamHong: hamHong, chuanSanThu: chuanSanThu, hangSanThu: hangSanThu, SAN_THU_MAC_DINH: SAN_THU_MAC_DINH };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.ChamHoc = API;
 })();

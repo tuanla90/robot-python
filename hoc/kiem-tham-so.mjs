@@ -253,9 +253,9 @@ console.log('\n== 6. Từng màn: số đúng thì thắng, sai số thì trư�
   const nhanh = r4(['right(2)', 'forward(4)', 'right(1)', 'forward(3)', 'turn_left()', 'forward(2)']);
   kiem('8.4: thay right(3) bằng turn_left() thì 13 nhịp (nhanh hơn) nhưng thêm ô của turn_left: 17 ô > 15 → 2 sao', nhanh.thang && nhanh.soNhip === 13 && nhanh.soO === 17 && nhanh.sao === 2, J([nhanh.soNhip, nhanh.soO, nhanh.sao]));
   const cu = ChamHoc.cham(m4, { chinh: ['u_turn()', 'forward(4)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(2)'] }, tron(khoTruoc('13.4'), m4.loiGiai.hamCuaEmMoi));
-  kiem('8.4: dùng ba hàm cũ (u_turn, turn_right, turn_left): 13 nhịp nhưng 17 ô → 2 sao — right(k) thay được cả ba bằng hai hàm', cu.thang && cu.soNhip === 13 && cu.soO === 17 && cu.sao === 2, J([cu.soO, cu.soNhip, cu.sao]));
+  kiem('8.4: dùng ba hàm cũ (u_turn, turn_right, turn_left), không gọi right(k): robot tới cờ (13 nhịp) nhưng CHƯA thắng — màn dạy tạo right(k) (chua-tao-ham; 23/10: right dùng ở 6 màn sau)', !cu.thang && cu.soNhip === 13 && cu.chanDoan[0].ma === 'chua-tao-ham', J([cu.thang, cu.soNhip, cu.chanDoan.map((c) => c.ma)]));
   const bo4 = r4(['turn_right()', 'turn_right()', 'forward(4)', 'turn_right()', 'forward(3)', 'turn_right()', 'turn_right()', 'turn_right()', 'forward(2)']);
-  kiem('8.4: bỏ right(k), quay bằng turn_right() từng dòng (vẫn dùng forward): vừa khung 9 dòng, 15 nhịp nhưng 16 ô > 15 → 2 sao', bo4.thang && bo4.soNhip === 15 && bo4.soO === 16 && bo4.sao === 2, J([bo4.soO, bo4.soNhip, bo4.sao]));
+  kiem('8.4: bỏ right(k), quay bằng turn_right() từng dòng (vẫn dùng forward): vừa khung 9 dòng, robot tới cờ (15 nhịp) nhưng CHƯA thắng (chua-tao-ham)', !bo4.thang && bo4.soNhip === 15 && bo4.chanDoan[0].ma === 'chua-tao-ham', J([bo4.thang, bo4.soNhip, bo4.chanDoan.map((c) => c.ma)]));
   kiem('8.4: right(1) chỉ quay một lần dù k bằng mấy → trượt; right(k) với range(k) và k = 0 thì không quay', !r4(m4.loiGiai.chinh, ['turn_right()']).thang && r4(['right(0)', 'right(2)', 'forward(4)', 'right(1)', 'forward(3)', 'right(3)', 'forward(2)']).soNhip === 15);
 
   // 8.5

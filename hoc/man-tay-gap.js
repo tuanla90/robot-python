@@ -226,7 +226,7 @@
     }),
 
     man({
-      so: 6, ten: 'Hàm đặt drop', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'pick'], taoHam: ['drop'], batBuocTaoHam: true,     // 22/10: lách 10 ô bằng up4() rồi viết thẳng việc thả không được tính thắng
+      so: 6, ten: 'Hàm đặt drop', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'pick'], taoHam: ['drop'],     // lách 10 ô bằng up4() rồi viết thẳng việc thả không được tính thắng (máy chấm: mọi màn có taoHam)
       deBai: 'Vật nằm ngay trước mặt xe. Nhặt vật, đi lên bốn ô, rẽ phải, đi tiếp một ô tới sát ô đích rồi thả. Tạo hàm drop() để gói việc đặt vật xuống và trả tay về tư thế nâng, giống pick().',
       san: ['###', '..D', '.##', '.##', 'o##', '.##'],
       vatChat: ['...', '...', '...', '...', 's..', '...'],                                // vật sắt: tay kẹp gắp như vật gỗ (màn gặp khó trước Nam châm)

@@ -159,8 +159,9 @@
       sao: { o: 14, nhip: 11 },
       loiGiai: { chinh: ['side()', 'turn_right()', 'side()', 'turn_left()', 'side()'], hamCuaEmMoi: [hSide()] },
       loiGiaiKhac: {
-        moTa: 'Không tạo hàm: ba vòng for ngay trong chương trình',
-        baiLam: { chinh: nhieu(FOR(3, ['move()']), ['turn_right()'], FOR(3, ['move()']), ['turn_left()'], FOR(3, ['move()'])) }
+        moTa: 'Gọi side() hai lần, đoạn giữa viết lại vòng for ngay trong chương trình',     // 23/10: phải gọi side() (taoHam) mới thắng
+        baiLam: { chinh: nhieu(['side()', 'turn_right()'], FOR(3, ['move()']), ['turn_left()', 'side()']) },
+        hamCuaEmMoi: [hSide()]
       },
       loiSai: [
         { moTa: 'side() chỉ đi một ô (chưa có vòng lặp trong thân hàm)', baiLam: { chinh: ['side()', 'turn_right()', 'side()', 'turn_left()', 'side()'] },

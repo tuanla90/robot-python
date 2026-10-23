@@ -115,7 +115,7 @@ for (const f of ['the-part.js', 'man-so-lenh.js', 'bang-mo-khoa.js'])
 const css = fs.readFileSync(path.join(day, 'game', 'choi.css'), 'utf8');
 kiem('choi.css: .tc-an ẩn thanh gốc, có .tc-ray / .tc-cuc', /\.tc-an::-webkit-scrollbar\{display:none/.test(css) && css.includes('scrollbar-width:none') && css.includes('.tc-ray{') && css.includes('.tc-cuc{'));
 const choi = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8');
-kiem('man-choi.js: ThePart.choMan chạy trước đề bài và hướng dẫn', /ThePart\.choMan\(m, batDau\)/.test(choi) && /function batDau\(\)\s*\{[\s\S]{0,80}hienDeBai\(\)/.test(choi));
+kiem('man-choi.js: ThePart.choMan chạy trước đề bài và hướng dẫn (giữa hai bước là hộp hỏi lấy lại hàm bị sửa hỏng, nếu có)', /ThePart\.choMan\(m, batDau\)/.test(choi) && /function batDau\(\)\s*\{[\s\S]{0,60}hoiLayLaiHam\(function \(\) \{[\s\S]{0,80}hienDeBai\(\)/.test(choi));
 const so = fs.readFileSync(path.join(day, 'game', 'man-so-lenh.js'), 'utf8');
 kiem('Sổ lệnh có trang "Bộ phận" mở ThePart.mo', so.includes("TRANG_PART = '@part'") && so.includes('ThePart.mo('));
 const chu = fs.readFileSync(path.join(day, 'game', 'chu.js'), 'utf8');

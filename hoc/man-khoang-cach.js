@@ -28,7 +28,7 @@
    Tên không trùng hàm cốt truyện chương trước và không phải hàm gốc.
 
    Trường riêng của chương này:
-   - canHam: 'mat-sao' — 5: viết thẳng hai vòng while (không dùng go_wall) vẫn vừa khung nhưng nhiều ô hơn → mất sao ô.
+   - canHam: 'chua-tao-ham' — 5: viết thẳng các vòng while (không dùng go_wall) thì robot tới cờ nhưng chưa thắng (máy chấm: mọi màn có taoHam phải gọi hàm đó; 23/10, trước đây chỉ mất sao ô).
    - robot.camBien, nhipTheo 'tong' (màn nhiều sân), khung.chanWhile (màn 1).
    - loiSai có lời cứng số trượt ở sân khác và lời có `while` chạy mãi (mã vong-vo-han).
 
@@ -244,7 +244,7 @@
     }),
 
     man({
-      so: 5, ten: 'Hàm go_wall()', hang: 'luyen', canHam: 'mat-sao', hamCuaEmCan: ['move', 'turn_right'], taoHam: ['go_wall'],
+      so: 5, ten: 'Hàm go_wall()', hang: 'luyen', canHam: 'chua-tao-ham', hamCuaEmCan: ['move', 'turn_right'], taoHam: ['go_wall'],
       deBai: 'Tạo hàm go_wall() đi thẳng tới khi trước mặt là tường. Dùng nó cho ba hành lang uốn khúc: mỗi đoạn dài khác nhau, giữa các đoạn xe rẽ phải.',
       veMaMau: 'Chương trình có sẵn gọi go_wall(), nhưng em chưa có hàm đó. Tạo hàm go_wall trong Xưởng hàm rồi chạy lại.',
       san: SAN_5,

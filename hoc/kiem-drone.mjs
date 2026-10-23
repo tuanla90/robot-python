@@ -530,8 +530,10 @@ function bang(a, b) { return J(a) === J(b); }
   kiem('19.4: pin 5, bay vào ngách sạc ở cột 2 (pin đầy lại), xuống, bay 4 ô tới cờ đúng nhịp pin về 0: thắng với pin 0; bay thẳng không ghé thì het-pin', r4k.thang && r4k.pin === 0 && r4k.soNhip === 8 && maCua(ChamHoc.cham(m4, m4.maMau, [])).includes('het-pin'));
   const r5o = ChamHoc.cham(m5, m5.loiGiai, m5.loiGiai.hamCuaEmMoi);
   kiem('19.5: recharge() = if battery() < 3: go_up(), go_down(); khóa tên; chỉ ghé sạc đúng 1 lần (vòng 2, pin 1); pin cuối 2; 3 ô thân hàm', bang(m5.loiGiai.hamCuaEmMoi[0].than, ['if battery() < 3:', '    go_up()', '    go_down()']) && r5o.thang && ev({ vet: r5o.vet }, 'sac-pin').length === 1 && r5o.pin === 2 && m5.loiGiai.hamCuaEmMoi[0].thamSo.length === 0);
-  const r5kk = ChamHoc.cham(m5, { chinh: ['for i in range(3):', '    go_right()', '    go_right()', '    go_up()', '    go_down()'] }, []);
-  kiem('19.5: ghé sạc không điều kiện sau mỗi cặp ô (không dùng battery()) vẫn tới cờ nhưng mất 10 nhịp > 8: chỉ 2 sao', r5kk.thang && r5kk.soNhip === 10 && r5kk.sao === 2);
+  const r5kk = ChamHoc.cham(m5, { chinh: ['for i in range(3):', '    go_right()', '    go_right()', '    recharge()'] }, [H('recharge', ['go_up()', 'go_down()'])]);
+  kiem('19.5: recharge() ghé sạc không điều kiện sau mỗi cặp ô (không dùng battery()) vẫn tới cờ nhưng mất 10 nhịp > 8: chỉ 2 sao', r5kk.thang && r5kk.soNhip === 10 && r5kk.sao === 2);
+  const r5kh = ChamHoc.cham(m5, { chinh: ['for i in range(3):', '    go_right()', '    go_right()', '    go_up()', '    go_down()'] }, []);
+  kiem('19.5: không tạo recharge() (viết thẳng go_up(), go_down()): tới cờ nhưng chưa thắng, chua-tao-ham (23/10: recharge() dùng ở 4 màn sau)', !r5kh.thang && r5kh.chanDoan[0].ma === 'chua-tao-ham');
   kiem('19.6: cùng chương trình thắng cả ba sân: nhịp 6, 8, 10 (pin 7, 5, 4: không, một, hai lần ghé sạc), tổng 24', bang(ChamHoc.cham(m6, m6.loiGiai, khoTruoc('32.6')).theoSan.map((s) => s.soNhip), [6, 8, 10]) && ChamHoc.cham(m6, m6.loiGiai, khoTruoc('32.6')).soNhip === 24);
   kiem('19.6: viết cứng "ghé sạc một lần" thắng sân 1 và 2 nhưng rơi ở sân 3 (pin 4); bay thẳng chỉ thắng sân 1; hamCuaEmCan recharge', (() => {
     const q = ChamHoc.cham(m6, m6.loiSai[1].baiLam, khoTruoc('32.6'));

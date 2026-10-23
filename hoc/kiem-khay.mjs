@@ -10,7 +10,9 @@
      khay KHÔNG tự co nhỏ (không còn d1 / d2 / d3), ổ khóa thay bút chì ở hàm bị khóa;
    - ManHoc.hamSuaDuoc / hamEmKhoa (hàm cốt truyện chỉ sửa được ở màn cần sửa nó), TP.khoaKhay;
    - TP.nhomNhip (ngoặc nhịp), HuongDan (khung hướng dẫn: chuỗi, sự kiện, hạn, cờ), DenBoPhan (đèn theo bộ phận: bộ phận có trên màn, bộ phận sáng theo vết thật);
-   - game/choi.html nạp đủ tệp.
+   - game/choi.html nạp đủ tệp;
+   - hàm của em không kẹt giữa các màn (23/10): mọi màn có taoHam phải gọi hàm đó mới thắng; ManHoc.khoThamChieu + ChamHoc.hamHong (hàm khóa bị sửa hỏng → hỏi lấy lại bản đúng);
+     TP.tachHamKhac + nhóm "Hàm khác" thu gọn; hàm trống đúng thẻ (TP.theHamRong), Palette.hienGach; Xưởng ‹ quay lại hàm trước; hộp Hàm mới mở được hàm đã có.
    Chạy: node hoc/kiem-khay.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
@@ -611,6 +613,84 @@ console.log('\n== 10. DenBoPhan: bộ phận có trên màn, bộ phận sáng t
   }
   const nguonMC = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), cssDen = fs.readFileSync(path.join(day, 'game', 'choi.css'), 'utf8');
   kiem('man-choi.js: đèn nạp theo màn (DenBoPhan.nap), sáng TRƯỚC khi phát nhịp và tắt SAU khi phát xong, tắt khi chạy lại; không còn đèn T / P cũ', /DenBoPhan\.nap\((m|manXe\(\))\)/.test(nguonMC) && /DenBoPhan\.bat\(e, lenhNhip\)[\s\S]{0,80}phatNhip[\s\S]{0,120}DenBoPhan\.tat\(true\)/.test(nguonMC) && /DenBoPhan\.tat\(\);/.test(nguonMC) && !/class="lamps"/.test(nguonMC) && !/\.lamp\{/.test(cssDen));
+}
+
+/* ================================================================= 11. HÀM CỦA EM: KHÔNG KẸT GIỮA CÁC MÀN (23/10) */
+console.log('\n== 11. Hàm của em: bắt tạo hàm, hàm sửa hỏng, nhóm Hàm khác, quay lại hàm trước ==');
+{
+  const khoa = (m) => ManHoc.hamCotTruyen().filter((n) => !ManHoc.hamSuaDuoc(m).includes(n));
+  const tron = (kho, moi) => { const k = kho.map((f) => H(f.ten, f.than.slice(), (f.thamSo || []).slice())); (moi || []).forEach((f) => { const i = k.findIndex((x) => x.ten === f.ten); if (i >= 0) k[i] = f; else k.push(f); }); return k; };
+  const maCd = (r) => r.chanDoan.map((c) => c.ma);
+
+  // lỗi 2: mọi màn có taoHam phải GỌI hàm đó mới thắng (trước 23/10 chỉ 2.7, 4.6)
+  const m29 = man('xuong-ham.9'), m66 = man('vong-lap.6');
+  const r29 = ChamHoc.cham(m29, { chinh: ['move()', 'move()', 'turn_right()', 'move()', 'move()', 'turn_right()', 'move()', 'move()'] }, ManHoc.khoThamChieu(m29));
+  const r66 = ChamHoc.cham(m66, { chinh: ['for i in range(3):', '    move()', 'turn_right()', 'for i in range(3):', '    move()', 'turn_left()', 'for i in range(3):', '    move()'] }, ManHoc.khoThamChieu(m66));
+  kiem('2.9 không gói corner(), 6.6 không tạo side(): robot tới cờ nhưng CHƯA thắng, lỗi chua-tao-ham (trước đây thắng 2 sao, màn 7.2 cần corner thì kẹt)',
+    !r29.thang && maCd(r29)[0] === 'chua-tao-ham' && !r66.thang && maCd(r66)[0] === 'chua-tao-ham', J([maCd(r29), maCd(r66)]));
+  kiem('mọi màn có taoHam: lời giải và lời giải khác đều gọi đủ hàm phải tạo (thắng với cờ mặc định); không màn nào còn khai batBuocTaoHam: true',
+    ManHoc.danhSach.filter((m) => m.taoHam.length && !m.camHamCuaEm).every((m) => {
+      const ref = ManHoc.khoThamChieu(m);
+      return [[m.loiGiai, m.loiGiai.hamCuaEmMoi]].concat(m.loiGiaiKhac ? [[m.loiGiaiKhac.baiLam, m.loiGiaiKhac.hamCuaEmMoi]] : []).every(([b, moi]) => ChamHoc.cham(m, b, tron(ref, moi)).thang);
+    }) && !ManHoc.danhSach.some((m) => m.batBuocTaoHam === true));
+  kiem('màn khai batBuocTaoHam: false thì bỏ kiểm (2.9 giả không gói corner() vẫn thắng)', ChamHoc.cham(Object.assign({}, m29, { batBuocTaoHam: false }), { chinh: ['move()', 'move()', 'turn_right()', 'move()', 'move()', 'turn_right()', 'move()', 'move()'] }, ManHoc.khoThamChieu(m29)).thang);
+
+  // lỗi 1: kho tham chiếu + phát hiện hàm khóa bị sửa hỏng
+  const m36 = man('che-xe.6'), ref36 = ManHoc.khoThamChieu(m36), lg35 = man('che-xe.5').loiGiai.hamCuaEmMoi.find((f) => f.ten === 'u_turn');
+  kiem('ManHoc.khoThamChieu(che-xe.6): có u_turn đúng bản che-xe.5 vừa sửa, không có park (hàm màn đó bắt tạo); GoLoi dùng chung lõi này',
+    J(ref36.find((f) => f.ten === 'u_turn').than) === J(lg35.than) && !ref36.some((f) => f.ten === 'park') && /ManHoc\.khoThamChieu\(m\)/.test(fs.readFileSync(path.join(day, 'game', 'go-loi.js'), 'utf8')));
+  const m49 = man('tay-gap.9'), ref49 = ManHoc.khoThamChieu(m49);
+  const hong49 = ref49.map((f) => (f.ten === 'u_turn' ? H('u_turn', ['turn_right()']) : f));
+  kiem('ChamHoc.hamHong: u_turn bị sửa hỏng ở màn trước, sang 4.9 (u_turn khóa, chỉ xem) → ["u_turn"]; kho đúng → []; u_turn viết khác mà vẫn đúng (thêm chú thích) → []',
+    J(ChamHoc.hamHong(m49, hong49, ref49, khoa(m49))) === '["u_turn"]' && ChamHoc.hamHong(m49, ref49, ref49, khoa(m49)).length === 0 &&
+      ChamHoc.hamHong(m49, ref49.map((f) => (f.ten === 'u_turn' ? H('u_turn', ['# quay đầu', 'turn_right()', 'turn_right()']) : f)), ref49, khoa(m49)).length === 0,
+    J(ChamHoc.hamHong(m49, hong49, ref49, khoa(m49))));
+  kiem('ChamHoc.hamHong không báo hàm màn này cho sửa (u_turn ở che-xe.5), màn cấm hàm của em, màn lắp ráp',
+    ChamHoc.hamHong(man('che-xe.5'), ManHoc.khoThamChieu(man('che-xe.5')).map((f) => (f.ten === 'u_turn' ? H('u_turn', ['wait()']) : f)), ManHoc.khoThamChieu(man('che-xe.5')), khoa(man('che-xe.5'))).length === 0 &&
+      ChamHoc.hamHong(man('hai-banh.3'), [H('move', ['wait()'])], [H('move', ['left_move()'])], ['move']).length === 0 &&
+      ManHoc.danhSach.filter((m) => m.lapRap).every((m) => ChamHoc.hamHong(m, [], [], []).length === 0));
+  kiem('mọi màn thường: phá một hàm khóa mà lời giải màn gọi (lời giải hết thắng) thì hamHong chỉ ra đúng hàm đó; phá mà lời giải vẫn thắng thì không báo; kho tham chiếu nguyên vẹn thì không báo gì',
+    (() => { const sai = []; let soPha = 0; ManHoc.danhSach.forEach((m) => { const ref = ManHoc.khoThamChieu(m), kh = khoa(m);
+      if (ChamHoc.hamHong(m, ref, ref, kh).length) sai.push(m.ma + ' kho đúng');
+      const dung = ChamHoc.cham(m, m.loiGiai, tron(ref, m.loiGiai.hamCuaEmMoi)).hamDaDung || [];
+      (m.hamCuaEmCan || []).filter((t) => kh.includes(t) && dung.includes(t) && ref.some((f) => f.ten === t)).forEach((t) => {
+        const pha = ref.map((f) => (f.ten === t ? H(t, ['wait()'], f.thamSo) : f)), conThang = ChamHoc.cham(m, m.loiGiai, tron(pha, m.loiGiai.hamCuaEmMoi)).thang;
+        const r = ChamHoc.hamHong(m, pha, ref, kh); soPha++;
+        if (conThang ? r.length : J(r) !== J([t])) sai.push(m.ma + ':' + t + '→' + J(r)); }); });
+      if (sai.length) console.log('     ' + sai.slice(0, 8).join(' | ')); return !sai.length && soPha > 300; })());
+  const mc11 = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), xh11 = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
+  kiem('vào màn: hàm khóa bị sửa hỏng thì hỏi "Lấy lại hàm đúng?" trước đề bài (man-choi.js hoiLayLaiHam); Xưởng có nút ↺ lay-lai khi hàm cốt truyện khác bản đúng',
+    /hoiLayLaiHam\(function \(\) \{[\s\S]{0,80}hienDeBai\(\)/.test(mc11) && /ChamHoc\.hamHong\(S\.man, KhoHam\.ds\(\), ref, khoa\)/.test(mc11) && /data-nut="lay-lai"/.test(xh11) && /function veLayLai\(\)/.test(xh11) && /ManHoc\.khoThamChieu\(m\)/.test(xh11));
+
+  // lỗi 3: khay chỉ bày hàm màn này dùng tới, còn lại gom vào "Hàm khác" thu gọn
+  const KHO_DAI = KHO_CH.concat([H('corner', ['move()', 'move()', 'turn_right()']), H('side', ['for i in range(3):', '    move()']), H('tu_dat', ['move()', 'u_turn()'])]);
+  const m410 = man('tay-gap.10'), tach = TP.tachHamKhac(m410, KHO_DAI, { chinh: [], hamCuaMan: [] });
+  kiem('TP.tachHamKhac (tay-gap.10): hàm màn cần / bắt tạo (pick, drop, carry…), hàm chúng gọi (move, turn_left) và hàm em tự đặt (tu_dat, rong) ở nhóm chính; corner, side, dodge_right ở nhóm Hàm khác',
+    ['pick', 'drop', 'carry', 'move', 'turn_left', 'tu_dat', 'rong'].every((t) => tach.chinh.some((f) => f.ten === t)) && ['corner', 'side', 'dodge_right'].every((t) => tach.khac.some((f) => f.ten === t)) && tach.chinh.length + tach.khac.length === KHO_DAI.length,
+    J({ chinh: tach.chinh.map((f) => f.ten), khac: tach.khac.map((f) => f.ten) }));
+  kiem('TP.tachHamKhac: hàm bài làm đang gọi (chương trình gọi corner()) thì không bị gom đi', TP.tachHamKhac(m410, KHO_DAI, { chinh: ['corner()'], hamCuaMan: [] }).chinh.some((f) => f.ten === 'corner'));
+  let k11 = khayMoi(); k11.host.clientHeight = 400;
+  k11.pal.dung(Object.assign(specMan(m410, KHO_DAI, []), { em: tach.chinh, emKhac: tach.khac, the: 'than' }));
+  const nutKhac = (k) => { let b = null; (function di(n) { for (const c of n.children) { if (c.getAttribute && c.getAttribute('data-nut') === 'ham-khac') b = c; else di(c); } })(k.host); return b; };
+  kiem('khay: thẻ Xe có nút "Hàm khác" thu gọn, corner / side chưa hiện; chạm thì mở ra (aria-expanded), chạm lại thu gọn',
+    !!nutKhac(k11) && !noiDung(k11.host).includes('corner') && (nutKhac(k11).click(), noiDung(k11.host).includes('corner') && nutKhac(k11).getAttribute('aria-expanded') === 'true') && (nutKhac(k11).click(), !noiDung(k11.host).includes('corner')),
+    J(noiDung(k11.host)));
+  k11.pal.datLoi(['em:side']);
+  kiem('datLoi một hàm nằm trong nhóm Hàm khác đang thu gọn: nhóm tự mở', noiDung(k11.host).includes('side'));
+
+  // lỗi 4: hàm trống đúng thẻ, hienGach, Xưởng quay lại hàm trước, Hàm mới mở được hàm đã có
+  k11 = khayMoi(); k11.host.clientHeight = 400;
+  const m46 = man('tay-gap.6'), khoDrop = KHO_CH.filter((f) => f.ten !== 'drop').concat([H('drop', [])]);
+  k11.pal.dung(Object.assign(specMan(m46, khoDrop, []), { the: 'than', theRong: (ten) => TP.theHamRong(m46, ten, khoDrop, []) }));
+  kiem('drop() mới tạo còn trống ở 4.6: khay đặt ở thẻ Tay kẹp (theo lời giải màn, TP.theHamRong) như thẻ mở sẵn, không lạc sang thẻ Xe',
+    TP.theHamRong(m46, 'drop', khoDrop, []) === 'tay' && !quetThe(k11).than.includes('drop') && quetThe(k11).tay.includes('drop'));
+  k11.pal.chonThe('than');
+  kiem('Palette.hienGach("em:drop") đang ở thẻ Xe: sang thẻ Tay kẹp, khối drop nháy (lớp nhay-ve)',
+    k11.pal.hienGach('em:drop') === true && k11.pal.theHienTai() === 'tay' && (() => { let b = null; (function di(n) { for (const c of n.children) { if (c._cls && c._cls.has('brick') && c.getAttribute('data-ten') === 'drop') b = c; else di(c); } })(k11.host); return !!b && b._cls.has('nhay-ve'); })());
+  kiem('Xưởng: chạm sang hàm khác thì hàm đang xem vào chuỗi S.lui, nút ‹ (veTruoc) mở lại hàm trước, hết chuỗi mới về sân và báo màn chơi hàm vừa xem (khiVe → hienGach)',
+    /S\.lui\.push\(\{ loai: S\.loai, ten: S\.ten/.test(xh11) && /function veTruoc\(\)[\s\S]{0,200}mo\(p\.loai, p\.ten, p\.the, true\)/.test(xh11) && /data-nut="ve"[\s\S]*addEventListener\('click', function \(\) \{ veTruoc\(\); \}\)/.test(xh11) && /A\.khiVe\(vua\)/.test(xh11) && /S\.pal\.hienGach\(/.test(mc11));
+  kiem('hộp Hàm mới: hàm màn bắt tạo đã có mà thân trống thì có nút "Mở"; gõ trùng tên hàm đã có thì lời báo kèm nút Mở (không còn kẹt "Đã có hàm")',
+    /dangTrong = coDinh \? null/.test(xh11) && /kt\.ma === 'ten-da-co'[\s\S]{0,120}hangMo\(kt\.loi, ten\)/.test(xh11));
 }
 
 console.log('\n---------------------------------------------');

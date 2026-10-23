@@ -405,7 +405,7 @@ console.log('\n== 8. Chương che-xe: dữ liệu và luật từng màn ==');
     !ChamHoc.cham(m3, m3.loiSai[2].baiLam, k3).thang && maCua(ChamHoc.cham(m3, m3.loiSai[2].baiLam, k3)).includes('tran-khung') && maCua(ChamHoc.cham(m3, { chinh: ['left_back()'] }, k3)).join() === 'lenh-chua-mo');
   const m4 = man(4), k4 = khoTruoc(m4.id);
   kiem('3.4 Bánh lùi: khay mở left_back, right_back; chương trình chính gọi thẳng left_back() chạy được; back() chế bằng u_turn, move, u_turn cũng tới (2 nhịp quay đầu cũ + 1 + 2 = 5 nhịp, 1 sao)',
-    m4.hamGoc.includes('left_back') && maLoi(ChamHoc.cham(Object.assign({}, m4, { chinhCoDinh: false }), { chinh: ['left_back()', 'right_back()', 'wait()'] }, k4)).length === 0 && (() => { const r = ChamHoc.cham(m4, m4.loiGiai, tron(k4, m4.congThucKhac[0].hamCuaEmMoi)); return r.thang && r.soNhip === 5 && r.sao === 1; })());
+    m4.hamGoc.includes('left_back') && maLoi(ChamHoc.cham(Object.assign({}, m4, { chinhCoDinh: false, batBuocTaoHam: false }), { chinh: ['left_back()', 'right_back()', 'wait()'] }, k4)).length === 0 && (() => { const r = ChamHoc.cham(m4, m4.loiGiai, tron(k4, m4.congThucKhac[0].hamCuaEmMoi)); return r.thang && r.soNhip === 5 && r.sao === 1; })());
   const m5 = man(5), k5 = khoTruoc(m5.id);
   const cu = ChamHoc.cham(m5, m5.maMau, k5);
   kiem('3.5 Quay đầu một nhịp: u_turn cũ (turn_right ×2) vẫn tới bóng mờ nhưng 4 nhịp > 3, 1 sao; sao nhịp CHỈ đạt bằng u_turn một nhịp; BFS nhịp = 3 cần quay đầu 1 nhịp',

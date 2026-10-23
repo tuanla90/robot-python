@@ -1,7 +1,8 @@
 /* ============================================================================
    xuong-ham.js — "Đường học": XƯỞNG HÀM (window.Xuong).
    Lớp phủ trượt lên đè màn chơi. Từ trên xuống:
-   - thanh trên: ‹ | TÊN HÀM to bằng font code (xanh lá = hàm của em, cam = hàm của màn) | 🗑 xóa hàm của em;
+   - thanh trên: ‹ | TÊN HÀM to bằng font code (xanh lá = hàm của em, cam = hàm của màn) | ↺ lấy lại bản đúng (hàm cốt truyện khác bản của game) | 🗑 xóa hàm của em;
+     chạm bút chì một hàm khác trong kho khối thì Xưởng chuyển sang hàm đó, ‹ quay lại hàm trước (S.lui), hết chuỗi mới về sân;
    - khối giữa: SÂN THỬ 5×5 cố định (cỡ như sân chính) + cột nút Chạy / Lại / Đặt xe / Đặt vật / Đặt sàn (user 15/10: Đặt vật gom mọi thứ ĐỨNG trên ô — vật, thùng,
      tường, rào, nút, cửa, bậc thang, gầm; Đặt sàn gom thứ NẰM dưới sàn — màu, ô sạc, băng chuyền, hố; mỗi nút mở bảng chọn loại). Đối số thử, pin, rổ nằm trên thanh tên hàm.
      Nút chế độ bật thì sáng viền, bấm lại để tắt; chế độ Đặt xe: KÉO xe tới ô khác (bóng mờ ô đích, thả chỗ không hợp lệ thì về chỗ cũ), CHẠM xe thì xoay 90° theo chiều kim đồng hồ,
@@ -16,9 +17,9 @@
   'use strict';
 
   var h = TP.h;
-  var A = null;        // app: { man(), bai(), khiDoiHam(), khiVe(), toc() }
+  var A = null;        // app: { man(), bai(), khiDoiHam(), khiVe({ loai, ten } | null), toc(), theRong(ten), baoLoi(chu) }
   var E = {};          // phần tử
-  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null, keo: null, doiSo: {} };   // doiSo: 'loai:tên hàm' → giá trị thử của từng đối số
+  var S = { loai: null, ten: null, than: null, ed: null, pal: null, field: null, rid: 0, busy: false, ketThu: null, coBong: false, cdi: 0, st: null, che: null, keo: null, doiSo: {}, lui: [] };   // doiSo: 'loai:tên hàm' → giá trị thử của từng đối số; lui: các hàm đã mở trước hàm đang xem [{ loai, ten, the }]
   var NHIP_MS = 230, LENH_MS = 45, TOAST_MS = 2000, KEO_NGUONG = 6;     // KEO_NGUONG: ngón tay / chuột đi quá chừng này px (màn hình) từ lúc bấm xuống thì là KÉO, ít hơn là CHẠM
   var CHE = { xe: 'che-xe', vat: 'che-vat', san: 'che-san' };
   /* Loại thứ đặt được trên sân thử. Chế độ S.che 'vat' (Đặt vật) dùng loại S.coVat, 'san' (Đặt sàn) dùng S.coSan; bảng chọn chỉ có loại màn này dùng tới (dsVat / dsSan).
@@ -52,6 +53,7 @@
       '<div class="deco"></div>' +
       '<div class="top"><button class="bt g-or menu" data-nut="ve" aria-label="' + t('xuong.ve') + '"><span data-i="back" data-s="2" data-l="#5a2f08"></span></button>' +
         '<div class="tenham chalk"><span class="nm"></span></div><span class="dso"></span>' +
+        '<button class="bt g-bl menu" data-nut="lay-lai" aria-label="' + t('xuong.layLai') + '"><span data-i="reset" data-s="2" data-l="#0f2f6a"></span></button>' +
         '<button class="bt g-rd menu" data-nut="xoa-ham" aria-label="' + t('xuong.xoaHam') + '"><span data-i="trash" data-s="2"></span></button></div>' +
       '<div class="fblock">' +
         '<div class="ffr sua"><canvas class="tex"></canvas><div class="toast"></div></div>' +
@@ -77,7 +79,7 @@
     Ve.khungGo(host.querySelector('.deco'));
     var q = function (s) { return host.querySelector(s); };
     E.tenham = q('.tenham'); E.nm = q('.tenham .nm'); E.ffr = q('.ffr'); E.toast = q('.toast');
-    E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]'); E.thuHang = q('.thu-hang'); E.dso = q('.dso');
+    E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]'); E.layLai = q('[data-nut="lay-lai"]'); E.thuHang = q('.thu-hang'); E.dso = q('.dso');
     q('.chinh-khoa .ck-ic').appendChild(Ve.khoa(2, true));                       // ổ khóa nhỏ + "Chỉ xem" ở tiêu đề khung thân hàm khi hàm bị khóa (hiện nhờ lớp .co-dinh của khung)
     E.dem = q('.xu-dem .v');                                                     // ô đếm NHỊP n của lượt chạy đang phát
     E.canvas = q('.ffr canvas'); E.bongD = q('.p-pal .bong'); E.nutVat = q('[data-che="vat"]'); E.nutSan = q('[data-che="san"]');
@@ -116,7 +118,7 @@
       if (!S.than || !S.than.length) return;
       TP.Hop.xacNhan({ noiDung: t('choi.xoaHetHoi'), co: t('choi.xoaHetCo') }).then(function (ok) { if (ok) S.ed.xoaHet(); });
     });
-    q('[data-nut="ve"]').addEventListener('click', dong);
+    q('[data-nut="ve"]').addEventListener('click', function () { veTruoc(); });
     q('[data-nut="thu"]').addEventListener('click', function () { thu(false); });
     q('[data-nut="nhip"]').addEventListener('click', function () { thu(true); });       // chạy từng nhịp: mỗi lần bấm phát tới hết nhịp kế tiếp
     q('[data-nut="lai"]').addEventListener('click', lai);
@@ -137,6 +139,7 @@
     E.canvas.addEventListener('click', chamSan);
     ['pointerdown', 'pointermove', 'pointerup', 'pointercancel'].forEach(function (loai) { E.canvas.addEventListener(loai, xeCon); });       // chế độ Đặt xe: kéo thả / chạm xe (chuột và cảm ứng)
     E.xoaHam.addEventListener('click', xoaHam);
+    E.layLai.addEventListener('click', layLai);
   }
 
   /* --------------------------------------------------------------- mở / đóng */
@@ -149,13 +152,21 @@
     return S.loai === 'em' && TP.khoaKhay(m).indexOf('em:' + S.ten) >= 0;
   }
   function baoHamKhoa() { toast(S.loai === 'em' ? t('xuong.hamKhoaEm', { ten: S.ten }) : t('xuong.hamKhoa'), '', 2800); }
-  function hamHienTai() {
-    if (S.loai === 'em') return KhoHam.tim(S.ten);
-    var m = A.bai().hamCuaMan.filter(function (f) { return f.ten === S.ten; })[0];
-    return m || null;
+  function timHam(loai, ten) {
+    if (loai === 'em') return KhoHam.tim(ten);
+    return A.bai().hamCuaMan.filter(function (f) { return f.ten === ten; })[0] || null;
   }
-  /** Mở Xưởng sửa hàm `ten`. the (tùy chọn): thẻ khay muốn mở sẵn ('than' | 'tay' | 'cam'), dùng cho hàm mới còn trống tạo từ một thẻ; không có thì theo hàm đang sửa. */
-  function mo(loai, ten, the) {
+  function hamHienTai() { return timHam(S.loai, S.ten); }
+  /** Mở Xưởng sửa hàm `ten`. the (tùy chọn): thẻ khay muốn mở sẵn ('than' | 'tay' | 'cam'), dùng cho hàm mới còn trống tạo từ một thẻ; không có thì theo hàm đang sửa.
+   *  Xưởng đang mở một hàm khác (chạm bút chì trong kho khối của Xưởng) thì hàm đó vào chuỗi S.lui để ‹ quay lại (23/10: tạo hàm xong lỡ chạm sang hàm khác, ‹ về thẳng sân,
+   *  không thấy hàm vừa tạo đâu); quayLai = true khi chính ‹ mở lại hàm trước. Mở từ sân thì chuỗi bắt đầu lại. */
+  function mo(loai, ten, the, quayLai) {
+    if (!timHam(loai, ten)) return;
+    if (!dangMo()) S.lui = [];
+    else if (!quayLai && S.ten && !(S.loai === loai && S.ten === ten)) {
+      S.lui = S.lui.filter(function (x) { return !(x.loai === loai && x.ten === ten) && !(x.loai === S.loai && x.ten === S.ten); });
+      S.lui.push({ loai: S.loai, ten: S.ten, the: S.pal.theHienTai() });
+    }
     S.rid++; S.busy = false; E.side.classList.remove('busy');
     if (window.HuongDan) HuongDan.bao('mo-xuong', { loai: loai, ten: ten });
     S.loai = loai; S.ten = ten; S.theMo = the || null;
@@ -168,8 +179,9 @@
     E.host.setAttribute('data-ham', ten);
     E.xoaHam.style.display = loai === 'em' ? 'flex' : 'none';
     E.xoaHam.classList.toggle('nhat', loai === 'em' && KhoHam.tenCoDinh(ten));       // hàm theo cốt truyện: nút xóa mờ, chạm chỉ báo
+    veLayLai();
     E.host.classList.toggle('ham-khoa', hamKhoa());                                    // hàm của màn bị khóa: ẩn nút xóa hết, tiêu đề có ổ khóa
-    if (hamKhoa()) setTimeout(baoHamKhoa, TP.XUONG_MS || 0);
+    if (hamKhoa() && !quayLai) setTimeout(baoHamKhoa, TP.XUONG_MS || 0);              // mở lại bằng ‹ / ↺: em đã thấy lời nhắc này, để chỗ cho toast "Về hàm …" / "Đã lấy lại …"
     S.ed.nap(function () { return S.than; }, 10);
     S.st = ChamHoc.chuanSanThu(Luu.docSanThu(ten) || sanThuMacDinh(ten));
     var dV = dsVat(), dS = dsSan();
@@ -197,13 +209,26 @@
     var s = parseFloat(getComputedStyle(E.nm).fontSize) || 24;
     while (E.tenham.scrollWidth > E.tenham.clientWidth + 1 && s > 10) { s -= 1; E.nm.style.fontSize = s + 'px'; }
   }
+  /** Nút ‹: còn hàm trước trong chuỗi S.lui (hàm đã bị xóa thì bỏ qua) thì mở lại hàm đó ở đúng thẻ khay em đang xem; hết chuỗi thì về sân. */
+  function veTruoc() {
+    while (S.lui.length) {
+      var p = S.lui.pop();
+      if (!timHam(p.loai, p.ten)) continue;
+      mo(p.loai, p.ten, p.the, true);
+      toast(t('xuong.veHam', { ten: p.ten }), '', 1800);
+      return;
+    }
+    dong();
+  }
+  /** Đóng Xưởng về sân. Màn chơi nhận hàm vừa xem (A.khiVe({ loai, ten })) để khay sang đúng thẻ có hàm đó và nháy nó. */
   function dong() {
-    S.rid++; S.busy = false;
+    var vua = S.ten && timHam(S.loai, S.ten) ? { loai: S.loai, ten: S.ten } : null;
+    S.rid++; S.busy = false; S.lui = [];
     TP.Chan.giu(TP.XUONG_MS + 300);
     E.host.classList.remove('open');
     E.host.removeAttribute('data-ham');
     datChe(null);                                                                      // thoát chế độ sân thử (Đặt xe …), tắt bong bóng hướng dẫn kéo xe
-    A.khiVe();
+    A.khiVe(vua);
     if (window.HuongDan) HuongDan.bao('dong-xuong');                                  // hướng dẫn từng bước (huong-dan-man.js): đã bấm Về sân
   }
   function dangMo() { return E.host.classList.contains('open'); }
@@ -215,6 +240,7 @@
   /** Vẽ khay của Xưởng. lamMoi (mở Xưởng): bỏ thẻ đang chọn, chọn thẻ chứa hàm đang sửa (theo lệnh gốc nó gọi; hàm còn trống thì theo hàm màn bắt chế); không thì giữ thẻ đang chọn. */
   function lamPal(lamMoi) {
     var man = A.man(), chuoiDr = hamChuoiDrone(man);
+    var em = (man.moXuong !== false && !man.camHamCuaEm) ? TP.tachHamKhac(man, TP.locHamTheoRobot(man, KhoHam.ds()), A.bai()) : null;
     S.pal.dung({
       goc: man.hamGoc,
       loai: man.loaiRobot,
@@ -230,7 +256,9 @@
       chuoi: TP.coCauTruc(man, 'for') && TP.coMauCua(man) !== 'look' && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
       dieuKien: (TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man)) || chuoiDr,
       thamSoChuoi: chuoiDr,                              // khối mẫu `if d == "U":` thay cho khối battery()
-      em: (man.moXuong !== false && !man.camHamCuaEm) ? TP.locHamTheoRobot(man, KhoHam.ds()) : null,
+      em: em ? em.chinh : null,
+      emKhac: em ? em.khac : [],                         // hàm màn này không dùng tới: nhóm "Hàm khác" thu gọn
+      theRong: A.theRong,                                // hàm còn trống thân: thẻ theo lời giải màn
       man: A.bai().hamCuaMan,
       khoa: TP.khoaKhay(man),                            // hàm bị khóa ở màn này: ổ khóa thay bút chì (mở ra chỉ xem)
       bien: (hamHienTai() || {}).thamSo || [],          // hàm có tham số: nhóm BIẾN có thẻ cho từng đối số
@@ -365,6 +393,7 @@
       if (!r.ok) { toast(r.loi, 'bad', 3500); return; }
       var g = Luu.ghiKho();
       if (!g.ok) toast(t('tb.khoGhiLoi', { loi: g.loi }), 'bad', 3500);
+      veLayLai();
     } else {
       Luu.ghiNhap(A.man().ma, A.bai());
     }
@@ -793,10 +822,34 @@
       if (!r.ok) return;
       Luu.ghiKho();
       Luu.xoaSanThu(ten);
-      TP.Chan.giu(TP.XUONG_MS + 300);
-      E.host.classList.remove('open'); E.host.removeAttribute('data-ham');
-      S.rid++;
-      A.khiVe();
+      A.khiDoiHam();
+      veTruoc();                                                                       // còn hàm trước trong chuỗi thì về hàm đó, không thì về sân
+    });
+  }
+
+  /* ------------------------------------------------- lấy lại bản đúng (23/10) */
+  /** Bản ĐÚNG của hàm cốt truyện đang mở ở màn này: bản trong kho tham chiếu lúc tới màn (ManHoc.khoThamChieu: như đã qua mọi màn trước theo lời giải).
+   *  Hàm màn này bắt tạo (taoHam) hay hàm tự đặt thì không có bản đúng → null. */
+  function banDung() {
+    if (S.loai !== 'em' || !KhoHam.tenCoDinh(S.ten) || !window.ManHoc || !ManHoc.khoThamChieu) return null;
+    var m = A.man();
+    return m ? ManHoc.khoThamChieu(m).filter(function (f) { return f.ten === S.ten; })[0] || null : null;
+  }
+  function khacBan(f, b) { return !!f && !!b && JSON.stringify([f.thamSo || [], f.than || []]) !== JSON.stringify([b.thamSo || [], b.than || []]); }
+  /** Nút ↺ ở thanh trên: chỉ hiện khi hàm cốt truyện đang mở KHÁC bản đúng (kể cả hàm bị khóa chỉ xem ở màn này: sửa nhầm ở màn trước thì lấy lại ở đây). */
+  function veLayLai() { if (E.layLai) E.layLai.style.display = khacBan(hamHienTai(), banDung()) ? 'flex' : 'none'; }
+  function layLai() {
+    var b = banDung(), ten = S.ten;
+    if (S.busy || !khacBan(hamHienTai(), b)) return;
+    TP.Hop.xacNhan({ tieuDe: t('xuong.layLai'), noiDung: t('xuong.layLaiHoi', { ten: ten }), co: t('xuong.layLaiCo'), mau: 'g-bl' }).then(function (ok) {
+      if (!ok || S.ten !== ten || !dangMo()) return;
+      var r = KhoHam.sua(ten, b.than.slice(), (b.thamSo || []).slice());
+      if (!r.ok) { toast(r.loi, 'bad', 3500); return; }
+      var g = Luu.ghiKho();
+      A.khiDoiHam();
+      mo('em', ten, S.pal.theHienTai(), true);                                         // nạp lại thân hàm, đối số, sân thử
+      if (!g.ok) toast(t('tb.khoGhiLoi', { loi: g.loi }), 'bad', 3500);
+      else toast(t('xuong.layLaiXong', { ten: ten }), 'win', 2400);
     });
   }
 
@@ -812,6 +865,10 @@
     return a >= 0 && th.indexOf(man.chuong) >= a;
   }
 
+  /** Thân hàm chưa có dòng lệnh nào (chỉ dòng trống / chú thích). */
+  function thanTrong(f) { return !(f.than || []).some(function (d) { var x = String(d).trim(); return x && x.charAt(0) !== '#'; }); }
+  /** Hộp đặt tên hàm mới. taoXong(ten): mở Xưởng cho hàm vừa tạo — cũng dùng để MỞ hàm đã có (23/10: tạo hàm xong lỡ về sân, bấm Hàm mới lại thì
+   *  không còn kẹt "Đã có hàm tên …": hàm màn bắt tạo đã có mà thân còn trống thì hộp có nút Mở; gõ trùng tên hàm đã có thì lời báo kèm nút Mở). */
   function moiHam(taoXong) {
     var man = A.man();
     var goiY = TP.coListCua(man) ? ['n', 'steps', 'route', 'k', 'a', 'x'] : DS_GOI_Y;           // màn có danh sách: tên gợi ý có steps / route (đối số tên vậy mặc định là danh sách)
@@ -819,10 +876,18 @@
     // hàm THEO CỐT TRUYỆN còn thiếu ở màn này (tên trong taoHam): điền sẵn đúng tên VÀ đối số, ô chỉ đọc, chỉ có nút "Tạo hàm";
     // đủ rồi thì hộp như thường, em tự đặt tên (và đối số) cho hàm riêng của mình
     var coDinh = (man.taoHam || []).filter(function (n) { return !KhoHam.tim(n); })[0] || null;
+    var dangTrong = coDinh ? null : ((man.taoHam || []).filter(function (n) { var f = KhoHam.tim(n); return f && thanTrong(f); })[0] || null);
     var dsTen = coDinh ? thamSoGoiY(man, coDinh) : [], chon = 0;
     var hienDs = dsTen.length > 0 || coChoKhaiDoiSo(man);
     var loi = h('div', 'hop-loi');
     function baoLoi(chu) { loi.textContent = chu; loi.classList.add('co'); }
+    function moCo(ten) { TP.Hop.dong(); taoXong && taoXong(ten); }
+    /** Một hàng: lời nói + nút "Mở ten()" (mở hàm đã có ở Xưởng). */
+    function hangMo(chu, ten) {
+      var d = h('div', 'hop-mo'); d.appendChild(h('span', 'chu', chu));
+      d.appendChild(TP.Hop.nut('g-gr', t('ten.moHam', { ten: ten }), function () { moCo(ten); }, 'mo-ham'));
+      return d;
+    }
     function xoaLoi() { loi.textContent = ''; loi.classList.remove('co'); }
     var inp = h('input', 'hop-in'); inp.type = 'text'; inp.maxLength = 24; inp.placeholder = t('ten.mauGo');
     inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocomplete', 'off'); inp.setAttribute('spellcheck', 'false'); inp.setAttribute('data-nut', 'o-ten');
@@ -832,6 +897,7 @@
       var thieu = (man.hamCuaEmCan || []).filter(function (n) { return !KhoHam.ds().some(function (f) { return f.ten === n; }); });
       var tc = { taoHam: (man.taoHam || []).concat(thieu) };
       var kt = KhoHam.kiemTen(ten, undefined, tc);
+      if (!kt.ok && kt.ma === 'ten-da-co') { xoaLoi(); loi.classList.add('co'); loi.appendChild(hangMo(kt.loi, ten)); return; }
       if (!kt.ok) return baoLoi(kt.loi);
       var thamSo = dsTen.map(function (x) { return String(x).trim(); });
       if (thamSo.some(function (x) { return !x; })) return baoLoi(t('ten.doiSoTrong'));
@@ -848,6 +914,7 @@
       m.than.appendChild(h('div', 'hop-chu nho', t(dsTen.length ? 'ten.coDinhDoiSo' : 'ten.coDinh')));
       inp.value = coDinh; inp.readOnly = true; inp.setAttribute('data-co-dinh', coDinh);
     }
+    if (dangTrong) m.than.appendChild(hangMo(t('ten.dangTrong', { ten: dangTrong }), dangTrong));
     m.than.appendChild(inp);
 
     // ---- khai đối số: ten( [n] [k] )  [+ đối số]  và hàng chip tên gợi ý

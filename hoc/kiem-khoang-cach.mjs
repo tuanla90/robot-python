@@ -247,7 +247,8 @@ console.log('\n== 5. Chấm nhiều sân: thắng tất cả; tổng nhịp; c�
   const doiSan = ChamHoc.cham(m5, { chinh: ['go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'go_wall()'] }, tron(k5, [H('go_wall', ['while front_clear():', '    move()'])]));
   kiem('6.5: một go_wall() dùng ở cả ba sân: hamDaDung gồm go_wall, move, turn_right (mỗi hàm tính một lần theo HỢP ba sân)', doiSan.sao === 3 && J(doiSan.hamDaDung) === J(['move', 'turn_right', 'go_wall']), J(doiSan.hamDaDung));
   const khongHam = ChamHoc.cham(m5, { chinh: m5.loiGiaiKhac.baiLam.chinh.slice(0, 0).concat(['while front_clear():', '    move()', 'turn_right()', 'while front_clear():', '    move()', 'turn_right()', 'while front_clear():', '    move()']) }, tron(k5, []));
-  kiem('6.5 (canHam mat-sao): không dùng go_wall mà viết thẳng ba vòng while vẫn vừa khung và thắng nhưng nhiều ô hơn (13 > 12) → 2 sao', khongHam.thang && khongHam.soO === 13 && khongHam.sao === 2 && m5.canHam === 'mat-sao', J([khongHam.thang, khongHam.soO, khongHam.sao]));
+  kiem('6.5 (canHam chua-tao-ham): không dùng go_wall mà viết thẳng ba vòng while thì vừa khung, robot tới cờ cả ba sân nhưng CHƯA thắng (chua-tao-ham; 23/10: go_wall dùng ở 20 màn sau, trước đây chỉ mất sao ô)',
+    !khongHam.thang && khongHam.theoSan.every((s) => s.thang) && khongHam.chanDoan[0].ma === 'chua-tao-ham' && m5.canHam === 'chua-tao-ham', J([khongHam.thang, khongHam.chanDoan.map((c) => c.ma)]));
 }
 function LAPK(k) { return k ? ['for i in range(' + k + '):', '    move()'] : []; }
 

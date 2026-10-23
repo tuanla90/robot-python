@@ -294,7 +294,7 @@ console.log('\n== 6. Luật riêng từng màn ==');
   const rong5 = ChamHoc.cham(Object.assign({}, m5, { chinhCoDinh: false }), { chinh: [] }, k5);
   kiem('5: bounce() chưa chế thì ham-chua-co; xe đứng yên (chương trình rỗng) KHÔNG thắng nhờ ◆ ở ô sát tường (không có ◆ thì chương trình rỗng thắng 0 nhịp)',
     !rong5.thang && maCua(ChamHoc.cham(m5, m5.loiSai[0].baiLam, [])).includes('ham-chua-co') && m5.bongMo.every((b) => b.diQua.length === 1) &&
-      (() => { const k = ChamHoc.cham(Object.assign({}, m5, { chinhCoDinh: false, bongMo: m5.bongMo.map((b) => ({ x: b.x, y: b.y, huong: b.huong })) }), { chinh: [] }, []); return k.thang && k.soNhip === 0; })());
+      (() => { const k = ChamHoc.cham(Object.assign({}, m5, { chinhCoDinh: false, batBuocTaoHam: false, bongMo: m5.bongMo.map((b) => ({ x: b.x, y: b.y, huong: b.huong })) }), { chinh: [] }, []); return k.thang && k.soNhip === 0; })());
   kiem('5: ◆ nằm ở ô sát tường (ô cuối cùng xe tới được) và bounce() nhớ số ô bằng biến n: không đếm thì xe về sai chỗ (go_wall hai chiều chạy quá ô xuất phát), n = 1 lúc đầu thì lùi dư một ô',
     m5.bongMo.every((b, i) => { const s = SanHoc.docSan(m5.san[i]); return !SanHoc.lyDoChan(s, 'banh', b.diQua[0].x, b.diQua[0].y) && SanHoc.lyDoChan(s, 'banh', b.diQua[0].x, b.diQua[0].y - 1); }) &&
       m5.loiSai.slice(0, 4).every((ls) => !ChamHoc.cham(m5, ls.baiLam, tron(khoTruoc(m5.id), ls.hamCuaEmMoi)).thang));

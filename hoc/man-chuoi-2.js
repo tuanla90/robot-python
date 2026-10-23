@@ -198,7 +198,7 @@
 
     /* ------------------------------------------------------------- hàng 3 */
     man({
-      so: 7, ten: 'Quay đầu bằng hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['u_turn'], batBuocTaoHam: true,     // 22/10: viết thẳng hai lần turn_right() không được tính thắng (u_turn dùng ở 3.5, 4.9…)
+      so: 7, ten: 'Quay đầu bằng hàm', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_right', 'turn_left'], taoHam: ['u_turn'],     // viết thẳng hai lần turn_right() không được tính thắng (máy chấm: mọi màn có taoHam; u_turn dùng ở 3.5, 4.9…)
       deBai: 'Xe đứng ở cuối ngõ cụt, cờ ở cuối lối ra. Tạo hàm u_turn() gọi turn_right() hai lần (hàm gọi hàm), rồi dùng nó.',
       san: ['#.###', '#.###', '#.###', '#.F##', '#####'],
       batDau: { x: 1, y: 0, huong: 0 },
@@ -271,10 +271,9 @@
         hamCuaEmMoi: [H('corner', ['move()', 'move()', 'turn_right()'])]
       },
       loiGiaiKhac: {
-        moTa: 'Không gói thành hàm: gọi move() và turn_right() từng lần',
-        baiLam: {
-          chinh: ['move()', 'move()', 'turn_right()', 'move()', 'move()', 'turn_right()', 'move()', 'move()']
-        }
+        moTa: 'Gọi corner() hai lần rồi đi nốt hai ô bằng move()',                    // 23/10: màn có taoHam phải gọi corner() mới thắng (không gói thành hàm thì chưa thắng)
+        baiLam: { chinh: ['corner()', 'corner()', 'move()', 'move()'] },
+        hamCuaEmMoi: [H('corner', ['move()', 'move()', 'turn_right()'])]
       },
       loiSai: [
         { moTa: 'corner() rẽ trái thay vì rẽ phải: xe đâm tường',
@@ -301,9 +300,9 @@
         hamCuaEmMoi: [H('stair', ['move()', 'turn_right()', 'move()', 'turn_left()']), H('two', ['stair()', 'stair()'])]
       },
       loiGiaiKhac: {
-        moTa: 'Chỉ có hàm stair(), gọi sáu lần ở chương trình',
-        baiLam: { chinh: lap('stair()', 6) },
-        hamCuaEmMoi: [H('stair', ['move()', 'turn_right()', 'move()', 'turn_left()'])]
+        moTa: 'Gọi two() hai lần rồi stair() hai lần',                                   // 23/10: phải gọi cả stair() lẫn two() (taoHam) mới thắng
+        baiLam: { chinh: ['two()', 'two()', 'stair()', 'stair()'] },
+        hamCuaEmMoi: [H('stair', ['move()', 'turn_right()', 'move()', 'turn_left()']), H('two', ['stair()', 'stair()'])]
       },
       loiSai: [
         { moTa: 'Không gói hàm, gọi từng lệnh: quá 10 ô',

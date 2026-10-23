@@ -6,6 +6,8 @@
    man.canhBao (nhãn ⚠ trên sân). Thắng màn mà tổng sao vừa đủ mở gói mới: bảng "Mở gói mới!" (App.baoGoiMoi, tên cũ App.moKhoaDot2) trước khi sang màn / màn chọn.
    Màn lắp ráp (17/10, man.lapRap, lõi lap-rap.js): vao(m, cachLap) gắn robot đã chọn vào màn (LapRap.apDung: loaiRobot, robot, hamGoc) rồi chơi như màn thường; khay, đèn nhịp, Xưởng hàm đều theo
    robot đó. Nút "Lắp lại" ở thanh trên (chỉ màn lắp ráp) → App.lapLai; chương trình đang viết được giữ, dòng gọi lệnh của part đã tháo bị tô đỏ. Bảng thắng thêm mục "Cách lắp khác".
+   Hàm của em (23/10): khay chỉ bày hàm màn này dùng tới, còn lại gom vào nhóm "Hàm khác" thu gọn (TP.tachHamKhac); về sân từ Xưởng thì khay sang thẻ có hàm vừa xem và nháy nó;
+   vào màn mà hàm cốt truyện màn này khóa đã bị sửa hỏng (ChamHoc.hamHong) thì hỏi lấy lại bản đúng trước đề bài.
    ========================================================================== */
 (function () {
   'use strict';
@@ -15,7 +17,8 @@
   var S = {
     man: null, bai: null, ket: null, vet: null, idx: 0, nhip: 0, busy: false, rid: 0,
     toc: 1, goiYi: 0, cdi: 0, cd: [], si: 0, ed: null, pal: null, field: null, khung: null,
-    marks: null, cap: null, nut: []          // marks: sân nào tới cờ (sau khi Chạy); cap: giới hạn phát lại khi vòng while chạy mãi; nut: các ảnh nhỏ của dải sân
+    marks: null, cap: null, nut: [],         // marks: sân nào tới cờ (sau khi Chạy); cap: giới hạn phát lại khi vòng while chạy mãi; nut: các ảnh nhỏ của dải sân
+    theTao: {}                               // hàm mới tạo ở màn này → thẻ khay em đang xem lúc tạo (hàm còn trống thân, lời giải màn không có thì khay để nó ở thẻ đó)
   };
   var NHIP_MS = 230, LENH_MS = 45;
 
@@ -92,7 +95,7 @@
         if (S.ed.chen(txt) === false) toast(t('choi.dayKhung'), 'bad');           // null = bộ phận đã có lệnh trong nhịp (khiCamNhip đã báo)
       },
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
-      khiMoi: function (the) { Xuong.moiHam(function (ten) { Xuong.mo('em', ten, the); }); },          // hàm mới (còn trống) mở ở Xưởng với khay đúng thẻ em đang xem
+      khiMoi: function (the) { Xuong.moiHam(function (ten) { if (!S.theTao[ten]) S.theTao[ten] = the; Xuong.mo('em', ten, the); }); },          // hàm mới (còn trống) mở ở Xưởng với khay đúng thẻ em đang xem
       goiYThe: true,                                                                                    // lần đầu khay có từ hai thẻ (hay có thẻ Cảm biến): ◀ ▶ nhấp nháy + bong bóng "Bấm ▶ để sang thẻ …"
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); }
     });
@@ -103,7 +106,8 @@
       man: function () { return manXe(); }, bai: function () { return S.bai; },
       toc: function () { return S.toc; },
       khiDoiHam: function () { khiDoiHamKho(); },
-      khiVe: function () { khiDoiHamKho(); S.pal.vua(); },
+      khiVe: function (vua) { khiDoiHamKho(); S.pal.vua(); if (vua) S.pal.hienGach((vua.loai === 'man' ? 'man:' : 'em:') + vua.ten); },     // về sân: khay sang thẻ có hàm vừa xem, nháy nó
+      theRong: function (ten) { return theRong(ten); },
       baoLoi: function (s) { toast(s, 'bad'); }
     });
 
@@ -225,7 +229,7 @@
       try { m = LapRap.apDung(goc, c); } catch (e) { m = LapRap.apDung(goc, LapRap.cachMacDinh(goc)); }
     }
     roi(); anBongD();
-    S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0;
+    S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0; S.theTao = {};
     S.xe = 0;                                                                           // nhiều robot: khung code đang xem robot 1
     dungTabXe();
     E.lapLai.style.display = goc.lapRap ? '' : 'none';
@@ -256,13 +260,40 @@
     TP.Hop.dong();
     function batDau() {
       if (S.man !== m) return;
-      hienDeBai();
-      if (window.HuongDan) HuongDan.vaoMan(m);                                          // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
+      hoiLayLaiHam(function () {
+        if (S.man !== m) return;
+        hienDeBai();
+        if (window.HuongDan) HuongDan.vaoMan(m);                                        // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
+      });
     }
     if (window.ThePart && m.doi) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.choMan(manCuaXe(m, 1), batDau); });      // nhiều robot: bộ phận mới của từng robot
     else if (window.ThePart) ThePart.choMan(m, batDau); else batDau();                      // bộ phận lần đầu gặp / lệnh mới mở: thẻ giới thiệu trước đề bài và hướng dẫn (the-part.js)
     if (goc.lapRap) baoLenhMat();                                                      // robot đã đổi (hay bản nháp cũ): dòng gọi lệnh của part đang không gắn thì tô đỏ
   }
+  /** Hàm cốt truyện màn này KHÓA (chỉ xem) mà đã bị sửa hỏng ở màn trước, nên lời giải của màn chạy không được (ChamHoc.hamHong): [bản đúng { ten, thamSo, than }]. */
+  function hamHongCuaMan() {
+    if (!window.ManHoc || !ManHoc.khoThamChieu || !ChamHoc.hamHong) return [];
+    var ref = ManHoc.khoThamChieu(S.man), khoa = TP.khoaKhay(S.man).filter(function (k) { return k.indexOf('em:') === 0; }).map(function (k) { return k.slice(3); });
+    return ChamHoc.hamHong(S.man, KhoHam.ds(), ref, khoa).map(function (ten) { return ref.filter(function (f) { return f.ten === ten; })[0]; }).filter(Boolean);
+  }
+  /** Vào màn (23/10): hàm khóa bị sửa hỏng thì hộp "Lấy lại hàm đúng?" — đồng ý thì thay về bản đúng trong kho (Xưởng cũng có nút ↺ làm việc này). Xong hộp thì tiep(). */
+  function hoiLayLaiHam(tiep) {
+    var hong = [];
+    try { hong = hamHongCuaMan(); } catch (e) { hong = []; }
+    if (!hong.length) { tiep(); return; }
+    var ds = hong.map(function (f) { return f.ten + '()'; }).join(', ');
+    TP.Hop.xacNhan({ tieuDe: t('hong.tieuDe'), noiDung: t('hong.hoi', { ds: ds }), co: t('hong.co'), khong: t('hong.khong'), mau: 'g-gr' }).then(function (ok) {
+      if (ok) {
+        hong.forEach(function (f) { KhoHam.sua(f.ten, f.than.slice(), (f.thamSo || []).slice()); });
+        var g = Luu.ghiKho();
+        khiDoiHamKho();
+        toast(g.ok ? t('hong.xong', { ds: ds }) : t('tb.khoGhiLoi', { loi: g.loi }), g.ok ? '' : 'bad', 2600);
+      }
+      tiep();
+    });
+  }
+  /** Thẻ khay cho hàm còn trống thân: thẻ của bản trong lời giải màn, không có thì thẻ em đang xem lúc tạo hàm. */
+  function theRong(ten) { return TP.theHamRong(manXe(), ten, KhoHam.ds(), S.bai ? S.bai.hamCuaMan : []) || S.theTao[ten] || null; }
   /** Sau "Lắp lại": dòng của chương trình chính gọi lệnh của part đã tháo thì tô đỏ và báo tên lệnh (chương trình vẫn giữ nguyên). */
   function baoLenhMat() {
     var rows = LapRap.lenhKhongCon(S.man, S.bai.chinh);
@@ -293,6 +324,7 @@
   /** Vẽ khay khối lệnh. lamMoi (vào màn): bỏ thẻ đang chọn, chọn thẻ chứa hàm màn bắt chế (man.taoHam), không có thì thẻ THÂN; không thì giữ thẻ đang chọn. */
   function veKho(lamMoi) {
     var m = manXe();
+    var em = (m.moXuong !== false && !m.camHamCuaEm) ? TP.tachHamKhac(m, TP.locHamTheoRobot(m, KhoHam.ds()), S.bai) : null;
     S.pal.dung({
       goc: m.hamGoc,
       loai: m.loaiRobot,                                                                        // tên thẻ THÂN: Xe / Nhện / Drone
@@ -307,7 +339,9 @@
       pin: TP.coPinCua(m),                                                                      // drone đo pin: khối so sánh battery() < 3
       chuoi: TP.coCauTruc(m, 'for') && TP.coMauCua(m) !== 'look' && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R": (flycam dùng danh sách màu, không dùng chuỗi chữ)
       dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
-      em: (m.moXuong !== false && !m.camHamCuaEm) ? TP.locHamTheoRobot(m, KhoHam.ds()) : null,      // nhện: bỏ hàm dùng lệnh bánh
+      em: em ? em.chinh : null,                                                                 // nhện: bỏ hàm dùng lệnh bánh; hàm màn không dùng tới → emKhac
+      emKhac: em ? em.khac : [],                                                                // nhóm "Hàm khác" thu gọn (TP.tachHamKhac)
+      theRong: theRong,
       man: S.bai.hamCuaMan,
       khoa: TP.khoaKhay(m),                                                                     // hàm bị khóa ở màn này (hàm của màn khóa, hàm cốt truyện màn không sửa): ổ khóa thay bút chì, mở ở Xưởng chỉ xem
       coNutMoi: true
@@ -680,8 +714,6 @@
       hh.setAttribute('data-huy-hieu', m.huyHieu.ma);
       hop.than.appendChild(hh); Ve.hydrate(hh);
     }
-    var chuaTao = (m.taoHam || []).filter(function (n) { return !KhoHam.ds().some(function (f) { return f.ten === n; }); });
-    if (chuaTao.length) hop.than.appendChild(TP.vanBan(h('div', 'th-ghi canh'), t('thang.chuaTaoHam', { ham: chuaTao.join('(), ') })));     // qua màn mà chưa tạo hàm màn dạy: màn sau cần nó (mo-goi.js 'mat-ham')
     var tiep = App.manTiep(m);
     if (tiep && tiep.chuong !== (m.manGoc || m).chuong) tiep = null;               // xong màn cuối chương: về lưới màn của gói, không tự sang chương / gói mới
     var hang = h('div', 'hop-hang' + (m.lapRap ? ' ba' : ''));

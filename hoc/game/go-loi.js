@@ -54,25 +54,12 @@
   function laBat() { return coCo() || S.daMo || docCai().moHet; }
 
   /* ---------------------------------------------------------------- kho hàm chuẩn */
-  function saoHam(f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: (f.than || []).slice() }; }
   function giongHam(a, b) {
     return JSON.stringify([a.thamSo || [], a.than || []]) === JSON.stringify([b.thamSo || [], b.than || []]);
   }
 
-  /** Kho tham chiếu LÚC TỚI màn m: [{ ten, thamSo, than }] theo thứ tự hàm xuất hiện; không gồm hàm trong m.taoHam. */
-  function khoThamChieu(m) {
-    var ds = [], chi = {}, tao = m.taoHam || [];
-    for (var i = 0; i < ManHoc.danhSach.length; i++) {
-      var x = ManHoc.danhSach[i];
-      if (x.ma === m.ma) break;
-      ((x.loiGiai && x.loiGiai.hamCuaEmMoi) || []).forEach(function (f) {
-        var k = chi[f.ten];
-        if (k === undefined) { chi[f.ten] = ds.length; ds.push(saoHam(f)); }
-        else if (x.tietKiemNhip !== true) ds[k] = saoHam(f);              // màn sau ghi đè màn trước; màn tiết kiệm nhịp chỉ sửa riêng
-      });
-    }
-    return ds.filter(function (f) { return tao.indexOf(f.ten) < 0; });
-  }
+  /** Kho tham chiếu LÚC TỚI màn m: [{ ten, thamSo, than }] theo thứ tự hàm xuất hiện; không gồm hàm trong m.taoHam (lõi: ManHoc.khoThamChieu). */
+  function khoThamChieu(m) { return ManHoc.khoThamChieu(m); }
 
   /** Nạp kho tham chiếu vào kho thật của người chơi. Trả về { them, thay, giu, loi } (tên hàm đã thêm / đã thay / số hàm đã đúng sẵn / lỗi).
    *  chiThem: chỉ thêm hàm còn thiếu, hàm đã có (kể cả khác bản chuẩn) giữ nguyên. */

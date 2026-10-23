@@ -345,6 +345,22 @@
     tuCt(m.loiGiai); tuCt(m.loiGiaiKhac); tuCt(m.congThucKhac);
     return kq;
   };
+  /** KHO THAM CHIẾU lúc tới màn m: [{ ten, thamSo, than }] như người chơi đã qua MỌI màn đứng trước m (theo thứ tự danhSach): trộn loiGiai.hamCuaEmMoi
+   *  của từng màn theo tên, màn sau ghi đè màn trước (che-xe.5 sửa u_turn, che-xe.9 sửa turn_right / turn_left); màn tietKiemNhip chỉ sửa riêng, không ghi đè.
+   *  Không gồm hàm trong m.taoHam (người chơi tự chế ở màn). Dùng cho "Lấy lại bản đúng" của hàm cốt truyện (game/xuong-ham.js, game/man-choi.js) và bảng Gỡ lỗi. */
+  ManHoc.khoThamChieu = function (m) {
+    var ds = [], chi = {}, tao = (m && m.taoHam) || [], ma = m && (m.manGoc || m).ma;
+    for (var i = 0; i < ManHoc.danhSach.length; i++) {
+      var x = ManHoc.danhSach[i];
+      if (x.ma === ma) break;
+      ((x.loiGiai && x.loiGiai.hamCuaEmMoi) || []).forEach(function (f) {
+        var h = { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: (f.than || []).slice() }, k = chi[f.ten];
+        if (k === undefined) { chi[f.ten] = ds.length; ds.push(h); }
+        else if (x.tietKiemNhip !== true) ds[k] = h;
+      });
+    }
+    return ds.filter(function (f) { return tao.indexOf(f.ten) < 0; });
+  };
   /** Hàm của em tên `ten` có bị KHÓA ở màn `m` (chỉ xem) không: là hàm cốt truyện mà màn này không bắt chế / sửa. Tên tự đặt thì không bao giờ khóa. */
   ManHoc.hamEmKhoa = function (m, ten) {
     return ManHoc.hamCotTruyen().indexOf(ten) >= 0 && ManHoc.hamSuaDuoc(m).indexOf(ten) < 0;
