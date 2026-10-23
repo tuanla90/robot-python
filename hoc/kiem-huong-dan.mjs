@@ -20,7 +20,8 @@ const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1']) require(path.join(day, f + '.js'));
 for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f)).sort()) require(path.join(day, f));          // MỌI tệp màn (kể cả chương mới)
-const ManHoc = require(path.join(day, 'man-drone.js'));
+// Hướng dẫn đi cùng game xuất bản, không đi cùng thứ tự ngân hàng bài gốc.
+const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));
 const doc = (f) => fs.readFileSync(path.join(day, 'game', f), 'utf8');
 
 let dat = 0, hong = 0;
@@ -88,7 +89,7 @@ for (const ma of maCo) {
     if (!xongHopLe(b.xong)) loi.push(ten + ': xong không hợp lệ ' + JSON.stringify(b.xong));
     const ds = Array.isArray(b.xong) ? b.xong : [b.xong];
     ds.forEach((x) => { if (typeof x === 'string' && x !== 'bam') suDung.add(x); else if (x && typeof x === 'object' && typeof x !== 'function') suDung.add(x.su); });
-    if (b.han !== undefined && !(typeof b.han === 'number' && b.han >= 3000 && b.han <= 120000)) loi.push(ten + ': han ngoài khoảng 3–120 giây ' + b.han);
+    if (b.han !== undefined && !(typeof b.han === 'number' && (b.han === 0 || b.han >= 3000 && b.han <= 120000))) loi.push(ten + ': han phải là 0 (đợi thao tác) hoặc 3–120 giây ' + b.han);
     if (b.huong !== undefined && !(typeof b.huong === 'function' || ['tren', 'duoi', 'auto'].includes(b.huong))) loi.push(ten + ': huong lạ ' + b.huong);
     if (typeof b.huong === 'function') { try { const h = b.huong(); if (h !== undefined && !['tren', 'duoi', 'auto'].includes(h)) loi.push(ten + ': huong() trả về ' + h); } catch (e) { loi.push(ten + ': huong() ném lỗi: ' + e.message); } }
     if (b.rong !== undefined && !(typeof b.rong === 'number' && b.rong >= 100 && b.rong <= 200)) loi.push(ten + ': rong ngoài 100–200 ' + b.rong);
@@ -152,6 +153,68 @@ console.log('\n== 5. game/choi.html ==');
   const a = html.indexOf('huong-dan-man.js');
   kiem('choi.html nạp huong-dan-man.js sau mọi tệp màn (man-drone.js), sau huong-dan.js và trước man-choi.js; tệp có trên đĩa', a > 0 && a > html.indexOf('../man-drone.js') && a > html.indexOf('huong-dan.js') && a < html.indexOf('man-choi.js') && fs.existsSync(path.join(day, 'game', 'huong-dan-man.js')));
   kiem('man-choi.js gọi HuongDan.vaoMan(m) khi vào màn (lấy cả HuongDanMan)', /HuongDan\.vaoMan\(m\)/.test(nguon.choi));
+}
+
+console.log('\n== 6. Vị trí hộp và luồng hướng dẫn thực tế ==');
+{
+  const rect = (left, top, right, bottom) => ({ left, top, right, bottom });
+  const cham = (a, b) => Math.min(a.right, b.right) > Math.max(a.left, b.left) && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top);
+  const cacDich = [rect(220, 370, 342, 410), rect(20, 570, 178, 615), rect(240, 65, 340, 95), rect(70, 8, 180, 40)];
+  let dung = true;
+  for (const H of [568, 640, 800]) for (const d0 of cacDich) {
+    const d = rect(d0.left, Math.min(d0.top, H - 45), d0.right, Math.min(d0.bottom, H - 8));
+    const v = HuongDan.viTriBong({ W: 360, H, w: 170, h: 72, neo: d, dich: [d], tranh: [rect(14, 280, 346, H - 10)] });
+    dung &&= !!v && v.left >= 8 && v.top >= 8 && v.right <= 352 && v.bottom <= H - 8 && !cham(v, d);
+  }
+  kiem('hộp ở trong màn, tránh đích sát trên/dưới trên ba chiều cao', dung);
+  const pal = rect(210, 300, 346, 625), code = rect(14, 280, 195, 625), d = rect(220, 385, 342, 420);
+  const v = HuongDan.viTriBong({ W: 360, H: 640, w: 170, h: 72, neo: d, dich: [d], tranh: [pal, code] });
+  kiem('hướng dẫn khối trong khay không che khay hoặc khung code', !!v && !cham(v, pal) && !cham(v, code));
+  kiem('không cố ép hộp đè lên đích khi toàn màn không còn chỗ', HuongDan.viTriBong({ W: 360, H: 640, w: 170, h: 72, neo: rect(0,0,360,640), dich: [rect(0,0,360,640)] }) === null);
+  kiem('6.3 không tự bỏ qua bước bắt buộc theo thời gian', HDM['vong-lap.3'].every(b => !(b.han > 0)));
+  const timCu = HuongDan.timDich;
+  HuongDan.timDich = s => s === 'khoi:wait' ? [{}] : [];
+  kiem('wait ghim không khiến tutorial nhận nhầm đã mở thẻ Tay', JSON.stringify(HDM['tay-gap.1'][1].dich()) === JSON.stringify(['nut:pal-the-sau', 'nut:pal-the-truoc']));
+  HuongDan.timDich = timCu;
+
+  let codeMoi = [];
+  ctx.Choi = { trangThai: () => ({ bai: { chinh: codeMoi } }) };
+  HuongDan.dung(); luuGia.co = { 'hd:vong-lap.3': true };
+  HuongDan.vaoMan(ManHoc.timMa('vong-lap.3'));
+  kiem('6.3 chưa thắng vẫn nhận hướng dẫn mới dù đã xem bản cũ', HuongDan.buocHienTai('man:vong-lap.3') === 0);
+  codeMoi = ['for i in range(2):']; HuongDan.nhip();
+  codeMoi.push('    move()'); HuongDan.nhip();
+  kiem('6.3 hướng dẫn vòng đầu trước lệnh rẽ', HuongDan.buocHienTai('man:vong-lap.3') === 3);
+  codeMoi[0] = 'for i in range(5):'; HuongDan.nhip();
+  codeMoi.push('    turn_right()'); HuongDan.nhip();
+  kiem('6.3 chưa bỏ qua bước đưa lệnh rẽ ra ngoài for', HuongDan.buocHienTai('man:vong-lap.3') === 5);
+  codeMoi[2] = 'turn_right()'; HuongDan.nhip();
+  codeMoi.push('for i in range(2):'); HuongDan.nhip();
+  kiem('6.3 move của vòng đầu không làm bỏ qua move của vòng hai', HuongDan.buocHienTai('man:vong-lap.3') === 8);
+  codeMoi.push('    move()'); HuongDan.nhip();
+  codeMoi[3] = 'for i in range(6):'; HuongDan.nhip();
+  kiem('6.3 chỉ tới bước Chạy sau khi hoàn thành cả hai vòng', HuongDan.buocHienTai('man:vong-lap.3') === 11 && JSON.stringify(codeMoi) === JSON.stringify(ManHoc.timMa('vong-lap.3').loiGiai.chinh));
+  kiem('mẹo xóa chung không chen ngang tutorial màn', HuongDan.chay({ id: 'xoa-dong', buoc: [{ dich: 'nut:chay', chu: 'xóa', xong: 'chay' }] }) === null);
+  HuongDan.bao('chay');
+  kiem('6.3 ghi cờ đúng phiên bản sau khi xem xong', luuGia.co['hd:vong-lap.3:v2'] === true);
+
+  HuongDan.dung(); luuGia.co = {};
+  codeMoi = ['move()', 'move()', 'move()'];
+  HuongDan.vaoMan(ManHoc.timMa('xuong-ham.3'));
+  kiem('2.3 không bảo chạy khi mới ghép ba move đầu', HuongDan.buocHienTai('man:xuong-ham.3') === 1);
+  codeMoi.push('left_move()', 'wait()'); HuongDan.nhip();
+  kiem('2.3 còn hướng dẫn đoạn sau khi đã ghép lệnh rẽ', HuongDan.buocHienTai('man:xuong-ham.3') === 2);
+  codeMoi.push('move()', 'move()'); HuongDan.nhip();
+  kiem('2.3 đủ đường đi mới chỉ nút Chạy', HuongDan.buocHienTai('man:xuong-ham.3') === 3);
+
+  HuongDan.dung(); luuGia.co = {};
+  codeMoi = ManHoc.timMa('tay-gap.1').maMau.chinh.concat(['move()', 'arm_down()', 'release()']);
+  HuongDan.vaoMan(ManHoc.timMa('tay-gap.1'));
+  kiem('4.1 chưa coi thả vật là xong khi thiếu wait()', HuongDan.buocHienTai('man:tay-gap.1') === 1);
+  codeMoi.push('wait()'); HuongDan.nhip();
+  kiem('4.1 đã có wait() mới chỉ nút Chạy', HuongDan.buocHienTai('man:tay-gap.1') === 2);
+  HuongDan.dung();
+  delete ctx.Choi;
 }
 
 console.log('\n---------------------------------------------\nĐẠT ' + dat + ' · HỎNG ' + hong);

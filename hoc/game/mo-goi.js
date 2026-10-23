@@ -65,7 +65,8 @@
       };
       var tr = truoc[goi.mua] || 0;                           // tổng sao tối đa các gói trước, chỉ trong mùa này
       goi.saoCan = goi.sapCo ? 0 : (g && typeof g.sao === 'number' ? g.sao : Math.floor(TI_LE_SAO * tr / 5) * 5);
-      if (!goi.sapCo) truoc[goi.mua] = tr + goi.saoToiDa;
+      // Gói bổ sung không đẩy ngưỡng sao của các gói cũ trong cùng mùa.
+      if (!goi.sapCo && !(g && g.khongTangNguong)) truoc[goi.mua] = tr + goi.saoToiDa;
       kq.push(goi);
     });
     cache = kq; khoaCache = khoa;

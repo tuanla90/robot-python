@@ -45,13 +45,23 @@ Kế hoạch và lộ trình của Đường học nằm trong `hoc/`: `LO-TRINH
 - Vẽ lại icon: `python -I tools/ve-icon.py` (cần Pillow).
 - Âm thanh tổng hợp bằng WebAudio ngay trong game, không có tệp âm thanh.
 
+### Lộ trình xuất bản
+
+Game nạp `hoc/lo-trinh-hoc.js` sau ngân hàng `man-*.js`: **380 màn / 38 chương**, có gói Mê cung riêng sau Cảm biến. Màn 1–9 chỉ chấm một sân; bài nhiều sân nằm ở màn 10. Giữ mã `ma` khi đổi vị trí để sao và tiến độ vẫn thuộc đúng bài. Gói mới không tăng ngưỡng sao mở các gói cũ.
+
+Khi viết công cụ đọc nội dung game, dùng `require('./hoc/lo-trinh-hoc.js')`; đọc riêng `man-*.js` là ngân hàng bài trước khi sắp lộ trình. Xem [bản rà soát và thay đổi](docs/thiet-ke/ra-soat-do-kho-2026-10-23.md).
+
+- Kiểm kê: `node hoc/ra-soat-do-kho.mjs` (`--goc` để xem ngân hàng gốc).
+- Đo lại ngưỡng sao sau khi sửa bài: `node tools/do-lo-trinh.mjs --ghi-sao`.
+- Kiểm tra game xuất bản, mở khóa và bản lưu: `node hoc/kiem-lo-trinh.mjs`.
+
 ## Máy kiểm
 
 ```bash
 npm test
 ```
 
-Chạy lần lượt 55 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
+Chạy lần lượt 57 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
 Chạy một bộ: `node hoc/kiem-xich.mjs`, hoặc lọc `npm test -- hoc/kiem-xich`.
 
 ## Đóng gói thành trang Artifact

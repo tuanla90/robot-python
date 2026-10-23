@@ -51,18 +51,23 @@
    */
   function khoiTheo(ds, chuKhoi, chuThe, o) {
     o = o || {};
+    // wait được ghim ở mọi thẻ: nó không chứng minh các khối tay/cảm biến đã hiện.
+    var chinh = ds.filter(function (s) { return !/^khoi:(?:goc:)?wait$/.test(s); });
+    if (!chinh.length) chinh = ds;
+    function dungThe() { return chinh.some(thay); }
     var b = {
       dich: function () {
         if (o.xuong && !xuongMo()) return [];
-        var k = ds.filter(thay);
+        var k = dungThe() ? ds.filter(thay) : [];
         if (k.length) return k;
         return daCoHuongDanThe() ? [] : ['nut:pal-the-sau', 'nut:pal-the-truoc'];
       },
-      chu: function () { return ds.some(thay) ? chuKhoi : chuThe; },
+      chu: function () { return dungThe() ? chuKhoi : chuThe; },
       rong: 170, han: 45000
     };
     if (o.xuong) b.xuong = true;
-    return gop(b, { huong: o.huong, rong: o.rong || 170, han: o.han || 45000, daLam: o.daLam, xong: o.xong });
+    return gop(b, { huong: o.huong, rong: o.rong || 170,
+      han: o.han === undefined ? (o.daLam || o.xong ? 0 : 45000) : o.han, daLam: o.daLam, xong: o.xong });
   }
   var CHU_THE = 'Khối này nằm ở thẻ khác của khay. Bấm ◀ hoặc ▶ để sang thẻ đó.';
   /** Con số chạm được của dòng (từ 1) / bảng chọn 1–9 đang mở: một bước đổi số. phu: bảng chọn nổi lên trên khay. */
@@ -71,7 +76,7 @@
       phu: true, huong: 'tren',
       dich: function () { return thay('nut:chon-so') ? 'nut:chon-so' : 'so:' + dong; },
       chu: function () { return thay('nut:chon-so') ? chuBang : chuSo; },
-      xong: 'doi-so', daLam: daLam, rong: 160, han: 60000
+      xong: 'doi-so', daLam: daLam, rong: 160, han: 0
     };
   }
   /** range(N) đầu tiên của chương trình chính đã khác số mặc định 2 (người chơi đã đổi số lần lặp). */
@@ -91,7 +96,7 @@
   /** Bước trong Xưởng: ghép khối thành thân hàm `ten`, xong khi thân hàm có từ n dòng (hay người chơi bấm Về sân sớm: phần Xưởng kết thúc). */
   function buocThanHam(ten, dich, chu, n, huong) {
     return {
-      xuong: true, dich: trongXuong(dich), chu: chu, huong: huong, rong: 170, han: 45000,
+      xuong: true, dich: trongXuong(dich), chu: chu, huong: huong, rong: 170, han: 0,
       xong: function (su) { return su === 'dong-xuong' || (su === 'chen-khoi' && soDongThan(ten) >= n); },
       daLam: function () { return soDongThan(ten) >= n; }
     };
@@ -108,14 +113,14 @@
   /** Bước "chạm khối để chèn" cho tới khi chương trình chính có từ n dòng. */
   function buocChen(dich, chu, n, huong) {
     return {
-      dich: dich, chu: chu, rong: 170, han: 40000, huong: huong,
+      dich: dich, chu: chu, rong: 170, han: 0, huong: huong,
       xong: function (su) { return su === 'chen-khoi' && soDongChinh() >= n; },
       daLam: function () { return soDongChinh() >= n; }
     };
   }
   /** Bước "chạm khối này" cho tới khi chương trình chính có dòng khớp re (không cần sự kiện: xét lại mỗi nhịp đồng hồ). */
   function buocCoDong(dich, chu, re, huong) {
-    return { dich: dich, chu: chu, rong: 170, han: 40000, huong: huong, daLam: function () { return dongCo(re) >= 0; } };
+    return { dich: dich, chu: chu, rong: 170, han: 0, huong: huong, daLam: function () { return dongCo(re) >= 0; } };
   }
   /**
    * Dòng khớp re phải THỤT VÀO cho tới bậc bacCan (nằm trong vòng for / if phía trên). Chưa chọn dòng thì sáng dòng đó ("chạm vào dòng này"),
@@ -126,11 +131,41 @@
       dich: function () { var i = dongCo(re); return i < 0 ? [] : (dongChon() === i ? 'nut:thut-vao' : 'dong:' + (i + 1)); },
       chu: function () { var i = dongCo(re); return i >= 0 && dongChon() === i ? chuNut : chuDong; },
       huong: function () { return dongChon() === dongCo(re) ? 'tren' : 'duoi'; },       // nút ⇥ ở đầu khung: bong bóng nằm trên nó; dòng: nằm dưới dòng (chỗ trống, không đè code)
-      rong: 170, han: 45000,
+      rong: 170, han: 0,
       daLam: function () { var i = dongCo(re); return i < 0 || bac(dsChinh()[i]) >= bacCan; }
     };
   }
 
+  function dongFor(thu) {
+    var a = dsChinh(), n = 0;
+    for (var i = 0; i < a.length; i++) if (/^\s*for\b/.test(a[i]) && ++n === thu) return i;
+    return -1;
+  }
+  function dongMoveTrongFor(thu) {
+    var a = dsChinh(), f = dongFor(thu);
+    for (var i = f + 1; f >= 0 && i < a.length; i++) {
+      if (/^\s*for\b/.test(a[i])) break;
+      if (/^\s*move\(\)/.test(a[i])) return i;
+    }
+    return -1;
+  }
+  function buocBacDong(layDong, can, chuDong, chuNut) {
+    return {
+      dich: function () { var i = layDong(); return i < 0 ? [] : dongChon() === i ? (bac(dsChinh()[i]) > can ? 'nut:thut-ra' : 'nut:thut-vao') : 'dong:' + (i + 1); },
+      chu: function () { return dongChon() === layDong() ? chuNut : chuDong; },
+      daLam: function () { var i = layDong(); return i >= 0 && bac(dsChinh()[i]) === can; },
+      rong: 170, han: 0
+    };
+  }
+  function buocSoFor(thu, so) {
+    return {
+      phu: true,
+      dich: function () { return thay('nut:chon-so') ? 'nut:chon-so' : 'so:' + (Math.max(0, dongFor(thu)) + 1); },
+      chu: function () { return thay('nut:chon-so') ? 'Chọn số ' + so + ' cho đoạn đường này.' : 'Chạm số trong vòng for thứ ' + thu + ', đổi thành ' + so + '.'; },
+      daLam: function () { var i = dongFor(thu); return i >= 0 && new RegExp('range\\(\\s*' + so + '\\s*\\)').test(dsChinh()[i]); },
+      rong: 170, han: 0
+    };
+  }
   var H = {};
 
   /* ============================================================ Chương 1 · Hai bánh */
@@ -146,6 +181,10 @@
   H['hai-banh.10'] = [
     { dich: '#pan-main .rows', chu: 'Nhấn giữ một dòng, rồi kéo lên hoặc xuống để đổi chỗ.', xong: 'doi-cho', han: 30000, huong: 'tren', rong: 160 }
   ];
+  H['hai-banh.9'] = [
+    { dich: '#pan-main .rows', chu: 'Chạm một dòng thừa để chọn. Ô số của dòng đó hiện dấu xóa.', xong: 'chon-dong', han: 30000 },
+    { dich: '#pan-main .row.sel .tab', chu: 'Bấm ô số có dấu xóa để bỏ dòng đã chọn. Xóa nhầm có thể Hoàn tác.', xong: ['xoa-dong', 'hoan-tac'], han: 30000 }
+  ];
 
   /* ============================================================ Chương 2 · Xưởng hàm */
   H['xuong-ham.1'] = [
@@ -158,7 +197,11 @@
   ].concat(buocThuVeChay('Chương trình gọi được move() rồi. Bấm Chạy.'));
   H['xuong-ham.3'] = [
     buocChen('khoi:em:move', 'Hàm move() em chế nằm ở đây. Chạm để dùng, như một lệnh có sẵn.', 3, 'duoi'),
-    buocChay('Đủ lệnh rồi thì bấm Chạy.')
+    khoiTheo(['khoi:left_move', 'khoi:wait'], 'Sau ba move(), thêm left_move() rồi wait() để rẽ phải.', CHU_THE,
+      { daLam: function () { var a = dsChinh(); return a.some(function (d, i) { return /^left_move\(\)/.test(d) && /^wait\(\)/.test(a[i + 1] || ''); }); } }),
+    khoiTheo(['khoi:em:move'], 'Sau lệnh rẽ, thêm hai move() để đi tới cờ.', CHU_THE,
+      { daLam: function () { return dsChinh().filter(function (d) { return /^move\(\)/.test(d); }).length >= 5; } }),
+    buocChay('Hai đoạn đường đã đủ lệnh. Bấm Chạy.')
   ];
 
   /* ============================================================ Chương 3 · Chế lệnh xe */
@@ -171,23 +214,23 @@
   H['che-xe.4'] = [
     buocTaoHam('back', 'Chế hàm back() trong Xưởng: bấm Hàm mới.', CHU_TAO),
     {
-      xuong: true, dich: trongXuong(['khoi:left_back', 'khoi:right_back']), rong: 170, han: 45000,
-      chu: 'Xe có thêm hai bánh lùi: left_back() và right_back(). Chạm để dùng chúng.',
-      daLam: function () { return /_back/.test(chuThan('back')); }
+      xuong: true, dich: trongXuong(['khoi:left_back', 'khoi:right_back', 'khoi:wait']), rong: 170, han: 45000,
+      chu: 'Lùi một ô: left_back(), right_back() rồi wait() để hai bánh chạy.',
+      daLam: function () { var c = chuThan('back'); return /left_back/.test(c) && /right_back/.test(c) && /wait/.test(c); }
     }
   ];
 
   /* ============================================================ Chương 4 · Tay gắp */
   H['tay-gap.1'] = [
     buocCoDong('khoi:em:move', 'Cần đi tiếp một ô tới sát ô đích: chạm move().', /^\s*move\(\)/),
-    khoiTheo(['khoi:arm_down', 'khoi:release'], 'Thả vật xuống ô đích: hạ tay (arm_down), rồi mở kẹp (release).', 'Khối của tay nằm ở thẻ Tay kẹp. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { daLam: function () { return dongCo(/^\s*release\(\)/) >= 0; } }),
+    khoiTheo(['khoi:arm_down', 'khoi:release', 'khoi:wait'], 'Thả vật: arm_down(), release() rồi wait() để tay thực hiện.', 'Khối của tay nằm ở thẻ Tay kẹp. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { daLam: function () { var a = dsChinh(), i = dongCo(/^\s*release\(\)/); return i >= 0 && a.slice(i + 1).some(function (d) { return /^\s*wait\(\)/.test(d); }); } }),
     buocChay('Bấm Chạy.')
   ];
   H['tay-gap.5'] = [
     buocTaoHam('pick', 'Gói việc nhặt vật thành hàm pick(): bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:arm_down', 'khoi:grab', 'khoi:arm_up'], 'Nhặt vật: hạ tay, kẹp, rồi nâng tay lại để xe đi tiếp được.', 'Khối của tay nằm ở thẻ Tay kẹp. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { xuong: true, xong: 'dong-xuong', daLam: function () { return soDongThan('pick') >= 3; } })
+    khoiTheo(['khoi:arm_down', 'khoi:grab', 'khoi:arm_up', 'khoi:wait'], 'Nhặt vật: arm_down(), grab(), wait(), arm_up(), wait().', 'Khối của tay nằm ở thẻ Tay kẹp. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('pick'); return /arm_down/.test(c) && /grab/.test(c) && /arm_up/.test(c) && (c.match(/wait/g) || []).length >= 2; } })
   ].concat(buocThuVeChay('Chương trình gọi được pick() rồi. Bấm Chạy.'));
 
   /* ============================================================ Chương 6 · Vòng lặp */
@@ -205,21 +248,18 @@
     buocChay('Bấm Chạy.')
   ];
   H['vong-lap.3'] = [
-    {
-      dich: function () {
-        var t = dongCo(/^\s*turn_right\(\)/);
-        if (t < 0) return khoiTheo(['khoi:em:turn_right'], '', '').dich();
-        return dongChon() === t ? 'nut:thut-ra' : 'dong:' + (t + 1);
-      },
-      chu: function () {
-        var t = dongCo(/^\s*turn_right\(\)/);
-        if (t < 0) return thay('khoi:em:turn_right') ? 'Hết đoạn đầu thì xe rẽ phải: chạm turn_right().' : CHU_THE;
-        return dongChon() === t ? 'Bấm ⇤ để thụt ra: rẽ phải chỉ một lần, nằm ngoài vòng lặp.' : 'turn_right() đang nằm trong vòng lặp. Chạm vào dòng này.';
-      },
-      huong: function () { var t = dongCo(/^\s*turn_right\(\)/); return t < 0 ? undefined : (dongChon() === t ? 'tren' : 'duoi'); },
-      han: 60000, rong: 170,
-      daLam: function () { var t = dongCo(/^turn_right\(\)/); return t >= 0 && dongCo(/^\s*for\b/) >= 0 && dongCo(/^\s+\S/) >= 0 && bac(dsChinh()[t]) === 0; }
-    }
+    khoiTheo(['khoi:vong:for'], 'Đoạn đầu đi lên năm ô. Thêm vòng for thứ nhất.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.', { daLam: function () { return dongFor(1) >= 0; } }),
+    khoiTheo(['khoi:em:move'], 'Thêm move() vào trong vòng for thứ nhất.', 'move() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để quay về thẻ đó.', { daLam: function () { return dongMoveTrongFor(1) >= 0; } }),
+    buocBacDong(function () { return dongMoveTrongFor(1); }, 1, 'Chạm move() của đoạn đầu để đặt nó trong vòng for.', 'Bấm thụt vào để move() nằm trong vòng for.'),
+    buocSoFor(1, 5),
+    khoiTheo(['khoi:em:turn_right'], 'Hết đoạn đầu mới rẽ: thêm turn_right() sau move().', 'turn_right() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để về thẻ đó.', { daLam: function () { return dongCo(/^\s*turn_right\(\)/) >= 0; } }),
+    buocBacDong(function () { return dongCo(/^\s*turn_right\(\)/); }, 0, 'Chạm turn_right(): lệnh rẽ phải nằm ngoài vòng for.', 'Bấm thụt ra để xe chỉ rẽ một lần sau vòng for.'),
+    khoiTheo(['khoi:vong:for'], 'Sau lệnh rẽ, thêm vòng for thứ hai cho đoạn ngang.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.', { daLam: function () { return dongFor(2) >= 0; } }),
+    buocBacDong(function () { return dongFor(2); }, 0, 'Chạm for thứ hai: nó phải đứng ngang hàng với for thứ nhất.', 'Bấm thụt ra để hai vòng for độc lập.'),
+    khoiTheo(['khoi:em:move'], 'Thêm move() vào trong vòng for thứ hai.', 'move() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để quay về thẻ đó.', { daLam: function () { return dongMoveTrongFor(2) >= 0; } }),
+    buocBacDong(function () { return dongMoveTrongFor(2); }, 1, 'Chạm move() của đoạn ngang để đặt nó trong for thứ hai.', 'Bấm thụt vào để move() nằm trong for thứ hai.'),
+    buocSoFor(2, 6),
+    buocChay('Đoạn đầu lặp 5 lần, rẽ một lần, đoạn sau lặp 6 lần. Bấm Chạy.')
   ];
   H['vong-lap.8'] = [
     { dich: '#pan-main .rows', chu: 'Chạm một dòng để chọn nó: hai nút thụt lề sẽ hiện ra.', xong: 'chon-dong', han: 25000, huong: 'tren', rong: 160 },
@@ -248,11 +288,11 @@
     buocChay('Bấm Chạy.')
   ];
   /* màn nhiều sân đầu tiên (3 sân): dải ảnh nhỏ bên trên nút Chạy; chạm một ảnh để xem sân đó, sau khi Chạy có ✓ / ✗ */
-  H['khoang-cach.4'] = [
+  H['khoang-cach.10'] = [
     { khongAn: true, dich: '.sanbar', chu: 'Màn này có ba sân khác nhau. Chạm ảnh nhỏ để xem từng sân.', xong: ['xem-san', 'chay'], han: 12000, rong: 160, huong: 'duoi' },
-    { khongAn: true, dich: 'nut:chay', chu: 'Một chương trình phải đưa xe tới cờ ở cả ba sân. Bấm Chạy.', xong: 'chay', daLam: daChay },
+    { khongAn: true, dich: 'nut:chay', chu: 'Một chương trình phải giao hàng đúng đích ở cả ba sân. Bấm Chạy.', xong: 'chay', daLam: daChay },
     { khongAn: true, dich: function () { var d = document.querySelector('.sanbar .sanbt .dau.sai'); return d ? d.parentNode : []; }, huong: 'duoi', rong: 160, han: 20000,
-      chu: 'Dấu ✗ là sân xe chưa tới cờ. Chạm ảnh đó để xem xe dừng ở đâu.', xong: 'xem-san' }
+      chu: 'Dấu ✗ là sân chưa giao hàng xong. Chạm ảnh đó để xem xe dừng ở đâu.', xong: 'xem-san' }
   ];
 
   /* ============================================================ Chương 11 · Đội hai robot */
@@ -417,4 +457,5 @@
   ];
 
   window.HuongDanMan = H;
+  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.3': 2 };
 })();

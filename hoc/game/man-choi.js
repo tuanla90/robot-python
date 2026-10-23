@@ -262,7 +262,10 @@
       if (S.man !== m) return;
       hoiLayLaiHam(function () {
         if (S.man !== m) return;
-        hienDeBai();
+        // Màn có tutorial cần để khay trống cho người chơi làm theo ngay.
+        // Đề bài vẫn mở được bằng nút riêng, không tự phủ lên các khối cần chạm.
+        if (m.huongDan || (window.HuongDanMan && HuongDanMan[m.ma])) anBongD();
+        else hienDeBai();
         if (window.HuongDan) HuongDan.vaoMan(m);                                        // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
       });
     }

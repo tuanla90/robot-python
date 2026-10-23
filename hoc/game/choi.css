@@ -605,6 +605,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .screen>.hd-bong{position:absolute;z-index:26;pointer-events:none;padding:6px 7px 4px;background:#fff3b0;color:#3a2200;text-align:left;
   font:600 calc(12px*var(--kp))/1.15 var(--px);box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fffbe0,inset 0 -2px 0 #e8c860;animation:hdnhay 1s steps(1) infinite}
 .hd-bong .hd-mui{position:absolute;width:11px;height:11px;background:#fff3b0;transform:rotate(45deg)}
+.hd-bong.ben .hd-mui{display:none}
+/* Chữ đứng yên để đọc và để hình học tránh đè lên đích không bị lệch theo animation. */
+.screen>.hd-bong,#stage>.hd-bong{animation:none}
 .hd-bong.duoi .hd-mui{top:-6px;box-shadow:-2px -2px 0 var(--ink)}
 .hd-bong.tren .hd-mui{bottom:-6px;box-shadow:2px 2px 0 var(--ink)}
 .hd-bong .kc{font-family:var(--mono)}

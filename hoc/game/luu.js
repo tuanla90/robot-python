@@ -54,6 +54,15 @@
         if (typeof n === 'number' && n >= 0 && n <= 3) tienDo.sao[id] = Math.floor(n);
       });
     }
+    if (window.ManHoc && window.ManHoc.phienBanLoTrinh === 2) {
+      tienDo.phienBanLoTrinh = 2;
+      // Người đã chế follow_right() ở bài cũ vẫn được công nhận đã học hàm.
+      // Chỉ chuyển một lần; không cấp lại sao khi người chơi xóa tiến độ sau đó.
+      if (d && d.phienBanLoTrinh !== 2 && tienDo.sao['che-cam-bien.6']) {
+        tienDo.sao['me-cung.6'] = Math.max(tienDo.sao['me-cung.6'] || 0, tienDo.sao['che-cam-bien.6']);
+        ghiJson(KHOA_TIEN_DO, tienDo);
+      }
+    }
   }
   function saoTot(id) { return tienDo.sao[id] || 0; }
   function daQua(id) { return saoTot(id) > 0; }
@@ -67,8 +76,14 @@
   function sachDs(a) {
     return Array.isArray(a) ? a.filter(function (s) { return typeof s === 'string' && s.trim() !== ''; }) : [];
   }
+  function phienBanMan(id) {
+    var m = window.ManHoc && typeof window.ManHoc.timMa === 'function' && window.ManHoc.timMa(id);
+    return m && m.phienBanNoiDung || 1;
+  }
   function docNhap(id) {
     var d = docJson(KHOA_NHAP + id);
+    // Giữ sao; code nháp của nhiệm vụ cũ được giữ trong storage nhưng không nạp nhầm.
+    if (d && (d.phienBanNoiDung || 1) !== phienBanMan(id)) return null;
     if (!d || typeof d !== 'object' || !Array.isArray(d.chinh)) return null;      // không đúng dạng → coi như chưa có bản nháp
     var hm = Array.isArray(d.hamCuaMan) ? d.hamCuaMan : [];
     var kq = {
@@ -82,6 +97,7 @@
   }
   function ghiNhap(id, bai) {
     return ghiJson(KHOA_NHAP + id, {
+      phienBanNoiDung: phienBanMan(id),
       chinh: bai.chinh.slice(),
       hamCuaMan: bai.hamCuaMan.map(function (h) { return { ten: h.ten, thamSo: h.thamSo.slice(), than: h.than.slice() }; }),
       doi: bai.doi ? bai.doi.map(function (x) { return { chinh: x.chinh.slice() }; }) : undefined

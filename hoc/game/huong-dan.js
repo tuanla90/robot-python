@@ -139,7 +139,7 @@
     var st = document.createElement('style');
     st.textContent = '#stage>.hd-vien{position:absolute;z-index:95;pointer-events:none;animation:hdvien .6s steps(1) infinite}' +
       '#stage>.hd-bong{position:absolute;z-index:96;pointer-events:none;padding:6px 7px 4px;background:#fff3b0;color:#3a2200;text-align:left;' +
-      'font:600 calc(12px*var(--kp))/1.15 var(--px);box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fffbe0,inset 0 -2px 0 #e8c860;animation:hdnhay 1s steps(1) infinite}';
+      'font:600 calc(12px*var(--kp))/1.15 var(--px);box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fffbe0,inset 0 -2px 0 #e8c860;animation:none}';
     document.head.appendChild(st);
   }
   function chuBuoc(b) { var c = b.chu; if (typeof c === 'function') { try { c = c(); } catch (e) { c = ''; } } return c === undefined || c === null ? '' : String(c); }
@@ -163,6 +163,40 @@
    * Chuỗi mới không thấy đích (Xưởng đang mở…) thì chuỗi cũ vẫn hiện.
    */
   function biChuoiMoiChe(c) { for (var i = CHUOI.indexOf(c) + 1; i < CHUOI.length; i++) if (CHUOI[i].dangHien) return true; return false; }
+  /** Tọa độ theo px thiết kế: hộp luôn trong màn, không đè lên đích cần bấm. */
+  function viTriBong(o) {
+    var W = o.W, H = o.H, w = o.w, h = o.h, r = o.neo, pad = 8, gap = 10;
+    if (!(w > 0 && h > 0) || w > W - pad * 2 || h > H - pad * 2) return null;
+    function kep(x, a, b) { return Math.max(a, Math.min(b, x)); }
+    function giao(a, b, p) {
+      return Math.max(0, Math.min(a.right, b.right + p) - Math.max(a.left, b.left - p)) *
+        Math.max(0, Math.min(a.bottom, b.bottom + p) - Math.max(a.top, b.top - p));
+    }
+    var cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2, ds = [];
+    function them(x, y) {
+      x = kep(x, pad, W - w - pad); y = kep(y, pad, H - h - pad);
+      ds.push({ left: x, top: y, right: x + w, bottom: y + h });
+    }
+    var duoi = o.huong === 'duoi' || (o.huong !== 'tren' && cy < H / 2);
+    function ngang(y) { them(cx - w / 2, y); them(pad, y); them(W - w - pad, y); }
+    ngang(duoi ? r.bottom + gap : r.top - h - gap);
+    ngang(duoi ? r.top - h - gap : r.bottom + gap);
+    them(r.left - w - gap, cy - h / 2); them(r.right + gap, cy - h / 2);
+    ngang(pad); ngang(H - h - pad);
+    (o.tranh || []).forEach(function (a) { ngang(a.top - h - gap); ngang(a.bottom + gap); });
+    var tot = null, diemTot = Infinity;
+    ds.forEach(function (a, i) {
+      if ((o.dich || [r]).some(function (d) { return giao(a, d, 6) > 0; })) return;
+      var diem = 0;
+      (o.tranh || []).forEach(function (d) { diem += giao(a, d, 4) * (d.trongSo || 30); });
+      if (o.huong === 'tren' && a.bottom > r.top - 6 || o.huong === 'duoi' && a.top < r.bottom + 6) diem += 100;
+      diem += Math.abs((a.left + a.right) / 2 - cx) + Math.abs((a.top + a.bottom) / 2 - cy) + i * 0.01;
+      if (diem < diemTot) { diemTot = diem; tot = a; }
+    });
+    if (!tot) return null;
+    tot.huong = tot.bottom <= r.top - 6 ? 'tren' : tot.top >= r.bottom + 6 ? 'duoi' : 'ben';
+    return tot;
+  }
   function ve(c) {
     if (biChuoiMoiChe(c)) { gaHet(c); c.dangHien = false; return false; }
     c.dangHien = veMot(c);
@@ -213,15 +247,22 @@
       bo.chu = chu;
       if (window.TP && TP.vanBan) TP.vanBan(bo.nd, chu); else bo.nd.textContent = chu;
     }
-    var neoX = (rn.left + rn.width / 2 - rg.left) / k, neoY = (rn.top + rn.height / 2 - rg.top) / k;
+    var neoX = (rn.left + rn.width / 2 - rg.left) / k;
     var hg = b.huong; if (typeof hg === 'function') { try { hg = hg(); } catch (e3) { hg = null; } }
-    var huong = hg === 'tren' || hg === 'duoi' ? hg : (neoY < H * 0.5 ? 'duoi' : 'tren');
-    var bw = Math.min(W - 12, b.rong || 150), trai = Math.max(6, Math.min(W - bw - 6, neoX - bw / 2));
-    bo.el.className = 'hd-bong ' + huong;
-    bo.el.style.width = bw + 'px'; bo.el.style.left = trai + 'px';
-    if (huong === 'tren') { bo.el.style.top = ''; bo.el.style.bottom = ((rg.bottom - rn.top) / k + 9) + 'px'; }
-    else { bo.el.style.bottom = ''; bo.el.style.top = ((rn.bottom - rg.top) / k + 9) + 'px'; }
-    bo.mui.style.left = Math.max(8, Math.min(bw - 20, neoX - trai - 6)) + 'px';
+    var bw = Math.min(W - 16, b.rong || 170);
+    bo.el.className = 'hd-bong'; bo.el.style.width = bw + 'px';
+    function quyDoi(r) { return { left: (r.left - rg.left) / k, top: (r.top - rg.top) / k, right: (r.right - rg.left) / k, bottom: (r.bottom - rg.top) / k }; }
+    var tranh = [];
+    var cacNut = man.querySelectorAll('button,input,.pal .brick,.pal-ghim .brick,.p-prog .strip:not(.empty),.p-prog .bh,.pal-the,.chon-so');
+    Array.prototype.forEach.call(cacNut, function (e) { if (thay(e)) tranh.push(quyDoi(e.getBoundingClientRect())); });
+    var vung = xuongMo(man) ? man.querySelector('.ws-ov.open .low') : man.querySelector('.low');
+    if (vung && thay(vung)) { var rv = quyDoi(vung.getBoundingClientRect()); rv.trongSo = 5; tranh.push(rv); }
+    var viTri = viTriBong({ W: W, H: H, w: bw, h: bo.el.offsetHeight || 50, neo: quyDoi(rn), huong: hg,
+      dich: ds.map(function (e) { return quyDoi(e.getBoundingClientRect()); }), tranh: tranh });
+    if (!viTri) { gaBong(c); return true; }
+    bo.el.className = 'hd-bong ' + viTri.huong;
+    bo.el.style.left = viTri.left + 'px'; bo.el.style.top = viTri.top + 'px'; bo.el.style.bottom = '';
+    bo.mui.style.left = Math.max(8, Math.min(bw - 20, neoX - viTri.left - 6)) + 'px';
     return true;
   }
 
@@ -300,6 +341,8 @@
   /* ----------------------------------------------------------------- API */
   function chay(o) {
     if (!o || !o.id || !Array.isArray(o.buoc) || !o.buoc.length) return null;
+    // Mẹo xóa chung không chen ngang bài đang dạy ghép khối.
+    if (o.id === 'xoa-dong' && CHUOI.some(function (c) { return c.id.indexOf('man:') === 0; })) return null;
     var cu = tim(o.id);
     if (cu) return cu.tay;                                       // đang chạy: giữ nguyên
     if (daXem(o.co)) return null;                                // đã xem rồi
@@ -320,19 +363,29 @@
     var kho = typeof window !== 'undefined' ? window.HuongDanMan : null;
     return kho && man.ma && kho[man.ma] ? kho[man.ma] : null;
   }
+  function coMan(man, o) {
+    if (o.co) return o.co;
+    var vs = window.HuongDanManPhienBan || {}, v = vs[man.ma];
+    var daQua = window.Luu && typeof Luu.daQua === 'function' && Luu.daQua(man.ma);
+    return 'hd:' + man.ma + (v && !daQua ? ':v' + v : '');
+  }
   /** Chuỗi khai cho màn. Cờ mặc định 'hd:' + man.ma (mỗi màn xem một lần). */
   function vaoMan(man) {
     var hd = theoMan(man);
     if (!hd) return null;
     var o = Array.isArray(hd) ? { buoc: hd } : hd;
-    return chay({ id: 'man:' + man.ma, co: o.co || ('hd:' + man.ma), luuKhi: o.luuKhi, buoc: o.buoc || [], khiXong: o.khiXong });
+    if (!daXem(coMan(man, o))) {
+      // Bài có hướng dẫn đổi thẻ theo đúng khối nó cần; không nhắc sang thẻ khác.
+      dung('doi-the'); dung('xoa-dong');
+    }
+    return chay({ id: 'man:' + man.ma, co: coMan(man, o), luuKhi: o.luuKhi, buoc: o.buoc || [], khiXong: o.khiXong });
   }
   /** Thắng màn: dừng chuỗi của màn và lưu cờ "đã xem" (đã thắng thì không cần hướng dẫn lại; chưa xong chuỗi cũng thôi). */
   function xongMan(man) {
     var hd = theoMan(man);
     if (!hd) return;
     dung('man:' + man.ma);
-    datXem((!Array.isArray(hd) && hd.co) || ('hd:' + man.ma));
+    datXem(coMan(man, Array.isArray(hd) ? {} : hd));
   }
   /** Các phần tử khớp một chuỗi đích ('nut:chay', 'khoi:move', 'dong:3', …) đang thấy (màn, Xưởng, hộp thoại, bảng chọn số): cho bước viết `dich: function () {…}`. Không thấy thì mảng rỗng. */
   function timDich(s) { var g = sanKhau() || khungHien(); return g && typeof s === 'string' ? chuoiThanhDich(s, g) : []; }
@@ -344,5 +397,5 @@
   /** Bước hiện tại (số thứ tự từ 0) của chuỗi id, hoặc -1 nếu không chạy. */
   function buocHienTai(id) { var c = tim(id); return c ? c.i : -1; }
 
-  window.HuongDan = { chay: chay, vaoMan: vaoMan, xongMan: xongMan, dung: dung, bao: bao, bam: khiBam, nhip: nhip, dangChay: dangChay, buocHienTai: buocHienTai, timDich: timDich };
+  window.HuongDan = { chay: chay, vaoMan: vaoMan, xongMan: xongMan, dung: dung, bao: bao, bam: khiBam, nhip: nhip, dangChay: dangChay, buocHienTai: buocHienTai, timDich: timDich, viTriBong: viTriBong };
 })();

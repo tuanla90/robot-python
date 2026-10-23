@@ -660,7 +660,7 @@ console.log('\n== 11. Hàm của em: bắt tạo hàm, hàm sửa hỏng, nhóm 
       if (sai.length) console.log('     ' + sai.slice(0, 8).join(' | ')); return !sai.length && soPha > 300; })());
   const mc11 = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), xh11 = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
   kiem('vào màn: hàm khóa bị sửa hỏng thì hỏi "Lấy lại hàm đúng?" trước đề bài (man-choi.js hoiLayLaiHam); Xưởng có nút ↺ lay-lai khi hàm cốt truyện khác bản đúng',
-    /hoiLayLaiHam\(function \(\) \{[\s\S]{0,80}hienDeBai\(\)/.test(mc11) && /ChamHoc\.hamHong\(S\.man, KhoHam\.ds\(\), ref, khoa\)/.test(mc11) && /data-nut="lay-lai"/.test(xh11) && /function veLayLai\(\)/.test(xh11) && /ManHoc\.khoThamChieu\(m\)/.test(xh11));
+    /hoiLayLaiHam\(function \(\) \{[\s\S]{0,300}hienDeBai\(\)/.test(mc11) && /if \(m\.huongDan \|\| \(window\.HuongDanMan && HuongDanMan\[m\.ma\]\)\) anBongD\(\);\s*else hienDeBai\(\)/.test(mc11) && /ChamHoc\.hamHong\(S\.man, KhoHam\.ds\(\), ref, khoa\)/.test(mc11) && /data-nut="lay-lai"/.test(xh11) && /function veLayLai\(\)/.test(xh11) && /ManHoc\.khoThamChieu\(m\)/.test(xh11));
 
   // lỗi 3: khay chỉ bày hàm màn này dùng tới, còn lại gom vào "Hàm khác" thu gọn
   const KHO_DAI = KHO_CH.concat([H('corner', ['move()', 'move()', 'turn_right()']), H('side', ['for i in range(3):', '    move()']), H('tu_dat', ['move()', 'u_turn()'])]);

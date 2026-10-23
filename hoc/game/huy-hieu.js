@@ -481,5 +481,6 @@
     cache[key] = p.canvas(); return cache[key];
   }
 
+  HINH['me-cung'] = HINH['khoang-cach'];
   window.HuyHieu = { ve: ve, DS: Object.keys(HINH) };
 })();
