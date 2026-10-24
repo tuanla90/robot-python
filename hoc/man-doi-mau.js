@@ -28,6 +28,8 @@
      8  Vòng chờ quên nhịp      R1 khóa   hàm của màn stand_by() dùng pass nên vòng chờ không có nhịp: thay bằng wait()
      9  Sửa đường về cờ         —         chia phòng lộn ngược, cờ riêng: R2 né về phía R1, sửa hai nhánh
      10 Ca đêm                  —         trùm ba sân: hộp gần xa, đỏ xanh; R1 go_wall() + show_color(), R2 watch_side() + answer_side()
+   Trùng lời giải CỐ Ý (sân khác): doi-mau.8 = lời giải của 4 (màn sửa lỗi: đáp án là chương trình đúng của màn 4, lỗi nằm ở mẫu);
+   che-doi-mau.4 = 3 và 9 = 6 (sân lộn ngược 180°: cùng chương trình vẫn đúng vì hàm tính trái phải, trước sau theo mũi robot — đó là ý của màn).
    Màn 1–9 ghi cứng được phía (một sân); trùm đổi màu hộp và thời điểm nên phải đọc tín hiệu. Máy kiểm riêng: kiem-doi-mau.mjs.
 
    Tệp chỉ khai báo chương (ManHoc.chuongThem); lo-trinh-hoc.js chèn hai chương ngay sau che-mau. Khung dữ liệu nhiều robot như man-doi-ho-bang.js.
@@ -52,13 +54,13 @@
     'doi-mau.9': { o: 42, nhip: 16 },
     'doi-mau.10': { o: 40, nhip: 33 },
     'che-doi-mau.1': { o: 39, nhip: 14 },
-    'che-doi-mau.2': { o: 34, nhip: 7 },
+    'che-doi-mau.2': { o: 34, nhip: 9 },
     'che-doi-mau.3': { o: 43, nhip: 10 },
     'che-doi-mau.4': { o: 43, nhip: 10 },
     'che-doi-mau.5': { o: 46, nhip: 10 },
     'che-doi-mau.6': { o: 43, nhip: 14 },
     'che-doi-mau.7': { o: 43, nhip: 11 },
-    'che-doi-mau.8': { o: 41, nhip: 14 },
+    'che-doi-mau.8': { o: 41, nhip: 15 },
     'che-doi-mau.9': { o: 43, nhip: 14 },
     'che-doi-mau.10': { o: 47, nhip: 33 }
   };
@@ -160,6 +162,10 @@
   // C1: R1 (1,1) đi phải rồi xuống tới (4,4), bên phải R2 (3,4); cửa kho (4,5), hộp (4,7), đích (3,6) đỏ / (5,6) xanh; nút (3,3) trước mặt R2
   var SAN_C1 = ['#######', '#....##', '####.##', '###N.##', '##...##', '####C##', '###D.D#', '####o##', '#######'];
   // C3: phòng màu đối xứng: hộp (3,4) giữa, R1 (3,5); nút A (3,2) trước mặt R2, nút B (3,6) cuối cột
+  // C2: phòng màu, hành lang dài: R1 (4,7) ở làn xanh, hộp (4,6)
+  var SAN_C2 = ['#######', '##D#D##', '##CNC##', '##...##', '##.N.##', '##.#.##', '##.#o##', '##...##', '#######'];
+  // C8: phòng màu, hành lang dài: R1 (2,7) ở làn đỏ, hộp (2,6)
+  var SAN_C8 = ['#######', '##D#D##', '##CNC##', '##...##', '##.N.##', '##.#.##', '##o#.##', '##...##', '#######'];
   var SAN_C3 = ['#######', '##D#D##', '##CNC##', '##...##', '##.o.##', '##...##', '###N###', '#######'];
   var NOI_C3 = [{ nut: { x: 3, y: 2 }, cua: [{ x: 2, y: 2 }] }, { nut: { x: 3, y: 6 }, cua: [{ x: 4, y: 2 }] }];
   // C4: phòng màu đối xứng lộn ngược: phòng đỏ phía đông (4,6), xanh phía tây (2,6); A (3,5) trước mặt R2 mở cửa đông, B (3,1) mở cửa tây
@@ -319,8 +325,8 @@
       chuong: CHE, so: 2, ten: 'Trả lời theo phía', khoa: 0, dan: 1, noi: NOI_PHONG, taoHam: ['answer_side'],
       deBai: 'Phòng màu: đồng đội đứng bên trái thì bắn nút trước mặt (cửa đỏ), đứng bên phải thì bắn nút sau lưng (cửa xanh). Chế lệnh answer_side() cho R2 làm việc đó; R2 dùng watch_side() để chờ trước.',
       veMaMau: 'R2 đã chờ bằng watch_side(). Tạo answer_side() trong Xưởng hàm rồi gọi nó ngay sau.',
-      san: SAN_4, mau: lop(SAN_4, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_4, { '4,4': 'b' }),
-      bd: [{ x: 4, y: 5, huong: 0 }, { x: 3, y: 3, huong: 0 }],
+      san: SAN_C2, mau: lop(SAN_C2, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_C2, { '4,6': 'b' }),
+      bd: [{ x: 4, y: 7, huong: 0 }, { x: 3, y: 3, huong: 0 }],
       maMau: B(R1_PHONG, ['watch_side()']), loiGiai: Object.assign(B(R1_PHONG, R2_HAM), { hamCuaEmMoi: [H('answer_side', T_ANSWER)] }),
       hamCuaEmCan: ['watch_side', 'pick', 'drop', 'move', 'dodge_left', 'go_wall'],
       goiY: ['Bắn xong phải có wait() thì phát bắn mới chạy.', 'if not left_clear(): shoot() / else: shoot_back() / wait()']
@@ -379,8 +385,8 @@
       chuong: CHE, so: 8, ten: 'Vòng chờ quên nhịp', khoa: 0, dan: 1, noi: NOI_PHONG,
       deBai: 'R2 gọi hàm của màn stand_by() để chờ đồng đội, nhưng chạy là báo vòng lặp không dừng: trong vòng chờ không có nhịp nào trôi. Sửa thân hàm stand_by().',
       veMaMau: 'Chạy thử rồi mở Xưởng hàm, sửa stand_by().',
-      san: SAN_7, mau: lop(SAN_7, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_7, { '2,5': 'b' }),
-      bd: [{ x: 2, y: 6, huong: 0 }, { x: 3, y: 3, huong: 0 }],
+      san: SAN_C8, mau: lop(SAN_C8, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_C8, { '2,6': 'b' }),
+      bd: [{ x: 2, y: 7, huong: 0 }, { x: 3, y: 3, huong: 0 }],
       maMau: B(R1_7, R2_C8, [H('stand_by', T_STAND_HONG)]), loiGiai: B(R1_7, R2_C8, [H('stand_by', T_WATCH)]),
       hamCuaEmCan: ['answer_side', 'pick', 'drop', 'move', 'dodge_right', 'go_wall'],
       goiY: ['pass không làm nhịp trôi: R1 không bao giờ tới.', 'Thay pass bằng wait().']
