@@ -4,7 +4,7 @@
    - đội đúng xích (R1) + nhện (R2), nhện không có cảm biến; mỗi sân có địa hình của part (bậc S, băng, hố, gầm);
    - K3 robot tự động: chương 1 có ≥ 4 màn khóa một robot (cả xích lẫn nhện), chờ thiếu nhịp thì hỏng, chờ dư thì vẫn thắng nhưng mất sao;
    - mọi lời sai khai trong màn (loiSai) không được 3 sao và có đủ mã chẩn đoán;
-   - chương 2: ba hàm chế wait_box / pause / hop_box mới (không trùng kho, không trùng chương khác), robot khóa gọi hàm đó,
+   - chương 2: ba hàm chế wait_box / lift_up / duck mới (không trùng kho, không trùng chương khác); pause / hop_box học ở che-doi-ho-bang thì chỉ dùng lại; robot khóa gọi hàm đó,
      hàm của màn hỏng (mẫu) thì thua, sửa thì thắng; màn đổi chỗ cần cờ riêng;
    - trùm: ba sân khác nhau, lời giải "chỉ đúng một sân" bị chặn ở sân khác.
    ========================================================================== */
@@ -92,14 +92,17 @@ for (const [x, i, dung, cuoi] of [['doi-xich.4', 1, 4, ['go("R")', 'jump("U")']]
 }
 
 console.log('\n— chương 2: hàm phối hợp tự chế');
-const TAO = { 'che-doi-xich.1': 'wait_box', 'che-doi-xich.2': 'pause', 'che-doi-xich.3': 'hop_box' };
+const TAO = { 'che-doi-xich.1': 'wait_box', 'che-doi-xich.2': 'lift_up', 'che-doi-xich.3': 'duck' };
 for (const [x, ten] of Object.entries(TAO)) {
   const m = tim(x);
   kiem(x + ': màn bắt chế ' + ten + '(), tên mới chưa có trong kho', J(m.taoHam) === J([ten]) && !khoTruoc.get(x).some((h) => h.ten === ten) && m.loiGiai.hamCuaEmMoi.some((h) => h.ten === ten));
   kiem(x + ': không chế ' + ten + '() thì chưa thắng (mẫu, kho chưa có hàm)', !cham(m, m.loiGiai, []).thang);
 }
 const tenKhac = M.danhSach.filter((m) => !m.chuong.endsWith('doi-xich')).flatMap((m) => m.taoHam.concat((m.loiGiai.hamCuaEmMoi || []).map((h) => h.ten), (m.loiGiai.hamCuaMan || []).map((h) => h.ten)));
-kiem('wait_box, pause, hop_box không trùng tên hàm của chương nào khác', Object.values(TAO).every((t) => !tenKhac.includes(t)));
+kiem('wait_box, lift_up, duck không trùng tên hàm của chương nào khác', Object.values(TAO).every((t) => !tenKhac.includes(t)));
+kiem('pause và hop_box đã học trước gói (che-doi-ho-bang), chương 2 không bắt chế lại mà dùng như hàm đã có',
+  ['pause', 'hop_box'].every((t) => khoTruoc.get('che-doi-xich.1').some((h) => h.ten === t) && !c2.some((m) => m.taoHam.includes(t))) &&
+  c2.filter((m) => /pause\(|hop_box\(/.test(J(m.loiGiai.doi))).every((m) => /pause|hop_box/.test(J(m.hamCuaEmCan))));
 kiem('chương 2 chỉ màn 1–3 chế hàm mới', c2.filter((m) => m.taoHam.length).map((m) => m.so).join() === '1,2,3');
 { // che-doi-xich.5: nhện tự động gọi pause(8) và hop_box: xích phải kịp giờ
   const m = tim('che-doi-xich.5');

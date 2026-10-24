@@ -8,7 +8,7 @@
    Chương 1 doi-xich (khóa = robot tự động):
      1  Làn bậc, làn gầm        toi-co   hai làn riêng, nhện có sẵn chương trình; em viết xích qua băng ngược và bậc thang (tr_left hai nhịp)
      2  Xích làm chốt           toi-co   xích khóa đỗ ở cuối băng; em viết nhện để băng chở tới chốt rồi bước xuống cờ
-     3  Xích đi ngược băng      dua-vat  xích lấy hộp ở đầu băng ngược (nhện bị đẩy, không tới được), lùi về đặt cho nhện; nhện chờ rồi bật qua hố
+     3  Xích đi ngược băng      dua-vat  xích lấy hộp ở đầu băng ngược (nhện bị đẩy, không tới được), lùi về thả cho nhện; nhện chờ rồi bật qua hố tới đích xích không tới được
      4  Chờ xích quay xong      toi-co   xích khóa quay chậm ở ngã tư; em đếm nhịp (tr_right = 2 nhịp) cho nhện qua ngã tư rồi bật lên cờ
      5  Hộp từ trên dốc         dua-vat  xích khóa mang hộp xuống thả trên đầu nhện; nhện chờ = nhịp xích trừ nhịp nhện chui gầm
      6  Xích biết chờ           dua-vat  xích khóa chờ bằng cảm biến; nhện không cần đếm nhịp nhưng không được đứng vào ô trước mũi xích
@@ -16,16 +16,17 @@
      8  Đứng chắn chỗ đáp       dua-vat  nhện khóa bật qua hố; sửa đường xích: đừng đứng ở chỗ nhện đáp, đón hộp từ bên cạnh (sidestep)
      9  Nhện làm mốc            dua-vat  xích lặp ba hộp: go_wall, lùi một ô, thả; nhện leo vào cuối dãy làm mốc cho cảm biến
      10 Ca ba kho               dua-vat  trùm ba sân: làn nhện như nhau; kho của xích sang phải / trái, bậc / băng, dài ngắn khác nhau (left_clear)
-   Chương 2 che-doi-xich (hàm cốt truyện mới: wait_box() = chờ vật bằng cảm biến, pause(n) = đứng yên n nhịp, hop_box(d) = nhặt, bật qua hố, thả):
+   Chương 2 che-doi-xich (hàm cốt truyện mới: wait_box() = xích chờ vật bằng cảm biến, lift_up(n) = xích nhặt, leo n bậc, thả,
+   duck() = nhện chui lên hốc rồi chui xuống nhường đường; pause(n) và hop_box(d) đã học ở che-doi-ho-bang nên chỉ dùng lại):
      1  Hàm chờ hàng            nhện khóa mang hộp tới; em chế wait_box() cho xích
-     2  Hàm chờ nhịp            xích khóa; em chế pause(n), nhện dùng hai lần: chờ xích qua ngã tư, chờ hộp
-     3  Hàm chở qua hố          em chế hop_box(d), nhện gọi hai lần chuyền hộp qua hai hố tới trước mũi xích
-     4  Chuyền qua ba hố        cả hai: xích lấy hộp dưới băng; nhện pause rồi lặp hop_box ba lần
+     2  Hàm chở lên bậc         nhện khóa mang hai hộp; em chế lift_up(n), xích gọi lift_up(2) rồi lift_up(1)
+     3  Hàm trốn vào hốc        xích khóa chạy ngược hành lang; em chế duck() để nhện nhường đường rồi tới cờ
+     4  Chuyền qua ba hố        cả hai: xích lấy hộp trên băng (nhện bị đẩy xuống hố nên không tự lấy); nhện pause rồi lặp hop_box ba lần
      5  Kịp giờ nhện            nhện khóa gọi pause(8) và hop_box: em sửa đường xích cho kịp trước nhịp 9
      6  Ba hộp về kho           cả hai: nhện dùng bring() mang ba hộp từ ba hốc; xích lặp wait_box, go_wall, lùi, thả, quay về
      7  Sửa hàm canh băng       xích khóa gọi hold() của màn hỏi nhầm right_clear (hố vẫn là ô trống): sửa thành left_clear
-     8  Sửa hàm chuyền hàng     nhện khóa gọi relay(d) của màn nhảy hụt vì gầm trước hố: sửa thành crawl_jump; em viết xích
-     9  Đổi chỗ qua hốc         cờ riêng: hai robot đổi chỗ trong hành lang một làn; nhện chui vào hốc, xích chờ bằng pause(n)
+     8  Sửa hàm chuyền hàng     nhện khóa gọi pass_over(d) của màn nhảy hụt vì gầm trước hố: sửa thành crawl_jump; em viết xích
+     9  Đổi chỗ qua hốc         cờ riêng: hai robot đổi chỗ trong hành lang một làn; nhện duck() vào hốc, xích chờ bằng pause(n)
      10 Ca trực ba băng         trùm ba sân: xích tới chặn cuối băng bằng cảm biến (lối khác nhau, tới muộn nhất ở sân 3); nhện pause đủ cho sân chậm nhất
    Máy kiểm riêng: kiem-doi-xich.mjs (luật chung: kiem-goi-doi.mjs). Lưu ý lõi: robot R2 bước vào ô R1 vừa rời trong cùng nhịp thì được,
    R1 bước vào ô R2 vừa rời thì bị chặn; nhện gắp được hộp xích vừa thả trong cùng nhịp. Lời giải đếm nhịp theo cách "chắc ăn" (không dựa vào hai điều này).
@@ -41,7 +42,7 @@
   var SAO = {
     'doi-xich.1': { o: 33, nhip: 12 },
     'doi-xich.2': { o: 20, nhip: 13 },
-    'doi-xich.3': { o: 45, nhip: 18 },
+    'doi-xich.3': { o: 46, nhip: 20 },
     'doi-xich.4': { o: 27, nhip: 9 },
     'doi-xich.5': { o: 50, nhip: 16 },
     'doi-xich.6': { o: 41, nhip: 20 },
@@ -50,14 +51,14 @@
     'doi-xich.9': { o: 47, nhip: 60 },
     'doi-xich.10': { o: 55, nhip: 64 },
     'che-doi-xich.1': { o: 47, nhip: 25 },
-    'che-doi-xich.2': { o: 47, nhip: 21 },
-    'che-doi-xich.3': { o: 40, nhip: 19 },
-    'che-doi-xich.4': { o: 42, nhip: 28 },
+    'che-doi-xich.2': { o: 68, nhip: 47 },
+    'che-doi-xich.3': { o: 30, nhip: 16 },
+    'che-doi-xich.4': { o: 47, nhip: 30 },
     'che-doi-xich.5': { o: 43, nhip: 21 },
     'che-doi-xich.6': { o: 52, nhip: 65 },
     'che-doi-xich.7': { o: 27, nhip: 14 },
     'che-doi-xich.8': { o: 46, nhip: 18 },
-    'che-doi-xich.9': { o: 28, nhip: 20 },
+    'che-doi-xich.9': { o: 29, nhip: 20 },
     'che-doi-xich.10': { o: 43, nhip: 42 }
   };
   // @sao-cuoi
@@ -82,9 +83,11 @@
   function CHO(n) { return LAP(n, ['wait()']); }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
   var CHO_HANG = ['while front_clear():', '    wait()'];
-  // chương trình khóa của xích ở che-doi-xich.2: nhặt hộp, lên qua ngã tư, sang phải, quay xuống thả lên ô chờ
-  var X_C2_2 = ['pick()', 'forward(5)', 'tr_right()', 'forward(2)', 'tr_right()', 'drop()'];
+  // che-doi-xich.2: xích chờ hộp, chở lên hai bậc, lùi về, chờ hộp thứ hai, chở lên một bậc; nhện khóa mang hai hộp qua hai hố
+  var X_C2_2 = ['wait_box()', 'lift_up(2)', 'descend(2)', 'wait_box()', 'lift_up(1)'];
+  var N_C2_2 = ['pick()', 'leap("RR")', 'drop()', 'leap("LL")', 'go("U")', 'pick()', 'go("D")', 'pause(9)', 'leap("RR")', 'drop()'];
   // che-doi-xich.10: xích đi hết lối dưới, rẽ theo cảm biến, lên chặn ô cuối băng; nhện chờ đủ cho sân xích tới muộn nhất
+  var X_C2_4 = ['go_wall()', 'pick()', 'back()', 'back()', 'tr_right()', 'drop()'];
   var X_C2_10 = ['go_wall()', 'if left_clear():', '    tr_left()', 'else:', '    tr_right()', 'go_wall()'];
   var N_C2_10 = ['pause(4)', 'go("R")', 'pause(3)', 'pick()', 'go("U")', 'drop()'];
 
@@ -144,16 +147,16 @@
     }),
     man({
       so: 3, ten: 'Xích đi ngược băng', xich: { tay: true, cam: true }, nhen: true,
-      deBai: 'Hộp nằm ở đầu băng chuyền chạy ngược: nhện bị đẩy nên không tới được, còn xích thì đi được. Xích lấy hộp, mang về đặt trước mặt nhện; nhện bật qua hố rồi thả hộp vào ô đích.',
+      deBai: 'Hộp nằm ở đầu băng chuyền chạy ngược: nhện bị đẩy nên không tới được, còn xích thì đi được. Xích lấy hộp, mang về thả xuống ô ngay trên đầu nhện; nhện bước xuống, bật qua hố rồi thả hộp vào ô đích mà xích không tới được.',
       veMaMau: 'Xích mới đi tới hộp, nhện mới biết gắp, nhảy và thả. Viết tiếp: xích mang hộp về, nhện chờ đủ nhịp.',
-      san: ['########', '#o<<<..#', '###D#.##', '###.u.##', '########'],
+      san: ['########', '#o<<<..#', '#####.##', '###D#.##', '###.u.##', '########'],
       bd: [{ x: 6, y: 1, huong: 3 }, { x: 5, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pick()'], ['pick()', 'jump("L")', 'drop()']),
-      loiGiai: B(['go_wall()', 'pick()', 'back()', 'back()', 'back()', 'tr_left()', 'drop()'], CHO(12).concat(['pick()', 'jump("L")', 'drop()'])),
+      maMau: B(['go_wall()', 'pick()'], ['pick()', 'go("D")', 'jump("L")', 'drop()']),
+      loiGiai: B(['go_wall()', 'pick()', 'back()', 'back()', 'back()', 'tr_left()', 'drop()'], CHO(12).concat(['pick()', 'go("D")', 'jump("L")', 'drop()'])),
       hamCuaEmCan: ['go_wall', 'pick', 'drop', 'back', 'tr_left', 'jump'],
       loiSai: [
-        { moTa: 'Nhện chờ 8 nhịp: hộp chưa tới, nhện gắp hụt', baiLam: B(['go_wall()', 'pick()', 'back()', 'back()', 'back()', 'tr_left()', 'drop()'], CHO(8).concat(['pick()', 'jump("L")', 'drop()'])), phaiCoMa: ['kep-hut'] },
-        { moTa: 'Xích quay đầu bằng spin() rồi đi về: mất thêm nhịp, nhện gắp hụt', baiLam: B(['go_wall()', 'pick()', 'spin()', 'forward(3)', 'tr_right()', 'drop()'], CHO(12).concat(['pick()', 'jump("L")', 'drop()'])), phaiCoMa: ['kep-hut'] }
+        { moTa: 'Nhện chờ 8 nhịp: hộp chưa tới, nhện gắp hụt', baiLam: B(['go_wall()', 'pick()', 'back()', 'back()', 'back()', 'tr_left()', 'drop()'], CHO(8).concat(['pick()', 'go("D")', 'jump("L")', 'drop()'])), phaiCoMa: ['kep-hut'] },
+        { moTa: 'Xích quay đầu bằng spin() rồi đi về: mất thêm nhịp, nhện gắp hụt', baiLam: B(['go_wall()', 'pick()', 'spin()', 'forward(3)', 'tr_right()', 'drop()'], CHO(12).concat(['pick()', 'go("D")', 'jump("L")', 'drop()'])), phaiCoMa: ['kep-hut'] }
       ],
       goiY: ['Xích nhặt xong thì lùi về, không cần quay đầu.', 'Đếm nhịp của xích: đi 4, nhặt 2, lùi 3, rẽ 2, thả 1 nhịp nữa thì hộp nằm xuống.']
     }),
@@ -285,50 +288,49 @@
       goiY: ['Ô trước mũi có hộp thì front_clear() trả False.', 'while front_clear(): wait()']
     }),
     man({
-      chuong: CHE, so: 2, ten: 'Hàm chờ nhịp', khoa: 0, xich: { tay: true }, nhen: true, taoHam: ['pause'],
-      deBai: 'Xích tự động nhặt hộp, đi lên qua ngã tư rồi đặt hộp lên ô chờ. Nhện không có cảm biến: nó phải chờ xích qua ngã tư, rồi chờ hộp. Em tự chế pause(n) cho nhện đứng yên n nhịp, rồi dùng nó hai lần.',
-      veMaMau: 'Xích đã có chương trình. Viết chương trình nhện và tạo pause có đối số n.',
-      san: ['##########', '####...###', '####.#.#D#', '##.....u.#', '####.#####', '####o#####', '####.#####', '##########'],
-      bd: [{ x: 4, y: 6, huong: 0 }, { x: 2, y: 3, huong: 0 }],
-      maMau: B(X_C2_2, ['go("R")', 'walk("RRR")', 'pick()', 'jump("R")', 'drop()']),
-      loiGiai: Object.assign(B(X_C2_2, ['go("R")', 'pause(3)', 'walk("RRR")', 'pause(4)', 'pick()', 'jump("R")', 'drop()']), { hamCuaEmMoi: [H('pause', ['n'], ['for i in range(n):', '    wait()'])] }),
-      hamCuaEmCan: ['pick', 'drop', 'forward', 'tr_right', 'go', 'walk', 'jump'],
+      chuong: CHE, so: 2, ten: 'Hàm chở lên bậc', khoa: 1, xich: { tay: true, cam: true }, nhen: true, taoHam: ['lift_up'],
+      deBai: 'Nhện tự động bật qua hai hố mang tới hai hộp, từng hộp một. Xích chở hộp thứ nhất lên đích trên cùng, lùi xuống, rồi chở hộp thứ hai lên đích thấp hơn một bậc. Em tự chế lift_up(n): nhặt hộp, leo n bậc, thả hộp.',
+      veMaMau: 'Chương trình xích mới chở được hộp thứ nhất. Tạo lift_up có đối số n, rồi viết lại: chờ hộp, lift_up(2), descend(2), chờ hộp, lift_up(1).',
+      san: ['#########', '######SD#', '#o###SD##', '#o##..###', '#.u.u.###', '#########'],
+      bd: [{ x: 4, y: 3, huong: 1 }, { x: 1, y: 4, huong: 0 }],
+      maMau: B(['wait_box()', 'pick()', 'climb(2)', 'drop()'], N_C2_2),
+      loiGiai: Object.assign(B(X_C2_2, N_C2_2), { hamCuaEmMoi: [H('lift_up', ['n'], ['pick()', 'climb(n)', 'drop()'])] }),
+      hamCuaEmCan: ['wait_box', 'climb', 'descend', 'pick', 'drop', 'leap', 'go', 'pause'],
       loiSai: [
-        { moTa: 'Không chờ ở ngã tư: nhện đứng chắn đường xích', baiLam: B(X_C2_2, ['walk("RRRR")', 'pause(4)', 'pick()', 'jump("R")', 'drop()']), hamCuaEmMoi: [H('pause', ['n'], ['for i in range(n):', '    wait()'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên chờ hộp: nhện gắp hụt', baiLam: B(X_C2_2, ['go("R")', 'pause(3)', 'walk("RRR")', 'pick()', 'jump("R")', 'drop()']), hamCuaEmMoi: [H('pause', ['n'], ['for i in range(n):', '    wait()'])], phaiCoMa: ['kep-hut'] },
-        { moTa: 'pause(n) quên dùng n: luôn chờ một nhịp', baiLam: B(X_C2_2, ['go("R")', 'pause(3)', 'walk("RRR")', 'pause(4)', 'pick()', 'jump("R")', 'drop()']), hamCuaEmMoi: [H('pause', ['n'], ['wait()'])], phaiCoMa: ['kep-hut'] }
+        { moTa: 'Gọi lift_up mà chưa chế hàm', baiLam: B(X_C2_2, N_C2_2), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên dùng n: lần nào cũng leo hai bậc, hộp thứ hai không có chỗ thả', baiLam: B(X_C2_2, N_C2_2), hamCuaEmMoi: [H('lift_up', ['n'], ['pick()', 'climb(2)', 'drop()'])], phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['pause(n) chỉ cần một vòng for chạy n lần, mỗi lần wait().', 'Đếm theo chương trình xích: xích ở ngã tư trong nhịp 5, rời đi ở nhịp 6, đặt hộp xuống ở nhịp 14.']
+      goiY: ['Thân hàm chỉ ba dòng: pick(), climb(n), drop().', 'Hộp thứ nhất lên hai bậc, hộp thứ hai một bậc: cùng một hàm, khác đối số.']
     }),
     man({
-      chuong: CHE, so: 3, ten: 'Hàm chở qua hố', xich: { tay: true, cam: true }, nhen: true, taoHam: ['hop_box'],
-      deBai: 'Nhện chở hộp qua hai hố: mỗi lần nhặt hộp phía trên, bật qua hố, rồi thả hộp lên ô phía trên chỗ đáp. Em tự chế hop_box(d) làm một lần như vậy, gọi hai lần để đưa hộp tới trước mũi xích.',
-      veMaMau: 'Xích đã có chương trình chờ hàng. Tạo hop_box có đối số d, rồi viết chương trình nhện.',
-      san: ['#########', '#####.SD#', '#o#.#.###', '#.u.u.###', '#########'],
-      bd: [{ x: 5, y: 1, huong: 2 }, { x: 1, y: 3, huong: 0 }],
-      maMau: B(['wait_box()', 'pick()', 'tr_left()', 'move()', 'drop()'], []),
-      loiGiai: Object.assign(B(['wait_box()', 'pick()', 'tr_left()', 'move()', 'drop()'], ['hop_box("R")', 'hop_box("R")']), { hamCuaEmMoi: [H('hop_box', ['d'], ['pick()', 'jump(d)', 'drop()'])] }),
-      hamCuaEmCan: ['wait_box', 'pick', 'drop', 'tr_left', 'move', 'jump'],
+      chuong: CHE, so: 3, ten: 'Hàm trốn vào hốc', mucTieu: 'toi-co', khoa: 0, xich: {}, taoHam: ['duck'],
+      deBai: 'Xích tự động chạy ngược hành lang về cờ của nó. Nhện đứng giữa đường, ngay dưới một hốc nhỏ sau gầm thấp. Em tự chế duck(): nhện chui lên hốc rồi chui xuống lại, nhường đường cho xích, sau đó đi tới cờ của nhện.',
+      veMaMau: 'Chạy thử: nhện đứng chắn đường xích. Tạo duck() rồi viết chương trình nhện.',
+      san: ['#########', '###.#####', '###n#####', '##..S>.F#', '##F######', '#########'],
+      bd: [{ x: 7, y: 3, huong: 3 }, { x: 3, y: 3, huong: 0 }], co: [[{ x: 2, y: 4 }], [{ x: 7, y: 3 }]],
+      maMau: B(['forward(5)', 'tr_left()', 'move()'], ['walk("RRR")']),
+      loiGiai: Object.assign(B(['forward(5)', 'tr_left()', 'move()'], ['duck()', 'walk("RRR")']), { hamCuaEmMoi: [H('duck', [], ['crawl("U")', 'crawl("D")'])] }),
+      hamCuaEmCan: ['forward', 'tr_left', 'move', 'crawl', 'walk'],
       loiSai: [
-        { moTa: 'Gọi hop_box("L"): nhện nhảy ngược về tường', baiLam: B(['wait_box()', 'pick()', 'tr_left()', 'move()', 'drop()'], ['hop_box("L")', 'hop_box("L")']), hamCuaEmMoi: [H('hop_box', ['d'], ['pick()', 'jump(d)', 'drop()'])], phaiCoMa: ['nhay-hut'] },
-        { moTa: 'Thả trước khi nhảy: hộp nằm lại chỗ cũ', baiLam: B(['wait_box()', 'pick()', 'tr_left()', 'move()', 'drop()'], ['hop_box("R")', 'hop_box("R")']), hamCuaEmMoi: [H('hop_box', ['d'], ['pick()', 'drop()', 'jump(d)'])], phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Chui lên bằng walk(): đứng thẳng thì đâm gầm', baiLam: B(['forward(5)', 'tr_left()', 'move()'], ['duck()', 'walk("RRR")']), hamCuaEmMoi: [H('duck', [], ['walk("UU")', 'walk("DD")'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chui lên mà quên chui xuống: nhện kẹt trong hốc', baiLam: B(['forward(5)', 'tr_left()', 'move()'], ['duck()', 'walk("RRR")']), hamCuaEmMoi: [H('duck', [], ['crawl("U")'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Ba việc: pick(), jump(d), drop(). Đối số d là chiều nhảy.', 'Lần thứ hai nhện nhặt đúng cái hộp nó vừa thả.']
+      goiY: ['Hốc nằm ngay trên đầu nhện, sau một ô gầm thấp: crawl("U") rồi crawl("D").', 'Ra khỏi hốc thì xích đã đi qua: nhện đi sang phải tới cờ.']
     }),
     man({
       chuong: CHE, so: 4, ten: 'Chuyền qua ba hố', xich: { tay: true, cam: true }, nhen: true,
-      deBai: 'Xích leo xuống băng chuyền lấy hộp rồi đặt sang ô bên phải, ngay trên đầu nhện. Nhện chờ hộp bằng pause(n), rồi chuyền hộp qua ba hố bằng hop_box() trong một vòng lặp.',
+      deBai: 'Xích đi trên băng chuyền tới hộp, lùi về rồi thả hộp xuống ô ngay trên đầu nhện. Băng đẩy nhện về phía hố nên nhện không tự lấy được. Nhện chờ hộp bằng pause(n), rồi chuyền hộp qua ba hố bằng hop_box() trong một vòng lặp.',
       veMaMau: 'Tự viết cả hai chương trình. Nhện không có cảm biến: đếm nhịp của xích.',
-      san: ['###########', '##o########', '##..#.#.#D#', '##v.u.u.u.#', '##v########', '##.########', '###########'],
-      bd: [{ x: 2, y: 5, huong: 0 }, { x: 3, y: 3, huong: 0 }],
+      san: ['###########', '#u<<<<o####', '###.#.#.#D#', '###.u.u.u.#', '###########'],
+      bd: [{ x: 2, y: 1, huong: 1 }, { x: 3, y: 3, huong: 0 }],
       maMau: B([], []),
-      loiGiai: B(['go_wall()', 'pick()', 'tr_right()', 'drop()'], ['pause(8)'].concat(LAP(3, ['hop_box("R")']))),
+      loiGiai: B(X_C2_4, ['pause(10)'].concat(LAP(3, ['hop_box("R")']))),
       hamCuaEmCan: ['go_wall', 'pick', 'tr_right', 'drop', 'pause', 'hop_box'],
       loiSai: [
-        { moTa: 'Lặp hai lần: hộp dừng ở ô giữa', baiLam: B(['go_wall()', 'pick()', 'tr_right()', 'drop()'], ['pause(8)'].concat(LAP(2, ['hop_box("R")']))), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chờ 6 nhịp: quên rẽ của xích mất hai nhịp, nhện gắp hụt', baiLam: B(['go_wall()', 'pick()', 'tr_right()', 'drop()'], ['pause(6)'].concat(LAP(3, ['hop_box("R")']))), phaiCoMa: ['kep-hut'] }
+        { moTa: 'Lặp hai lần: hộp dừng ở ô giữa', baiLam: B(X_C2_4, ['pause(10)'].concat(LAP(2, ['hop_box("R")']))), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chờ 8 nhịp: quên rẽ của xích mất hai nhịp, nhện gắp hụt', baiLam: B(X_C2_4, ['pause(8)'].concat(LAP(3, ['hop_box("R")']))), phaiCoMa: ['kep-hut'] }
       ],
-      goiY: ['Xích: đi 3 nhịp, nhặt 2, rẽ 2, thả ở nhịp 8.', 'Ba lần hop_box("R") giống hệt nhau: một vòng for là đủ.']
+      goiY: ['Xích: đi 3 nhịp, nhặt 2, lùi 2, rẽ 2, thả ở nhịp 10.', 'Ba lần hop_box("R") giống hệt nhau: một vòng for là đủ.']
     }),
     man({
       chuong: CHE, so: 5, ten: 'Kịp giờ nhện', khoa: 1, xich: { tay: true }, nhen: true,
@@ -375,31 +377,31 @@
     }),
     man({
       chuong: CHE, so: 8, ten: 'Sửa hàm chuyền hàng', khoa: 1, xich: { tay: true, cam: true }, nhen: true,
-      deBai: 'Nhện tự động gọi relay("R"): nhặt hộp, vượt chướng ngại rồi thả hộp lên trước mũi xích. Nhưng trước hố còn một gầm thấp nên cú nhảy trong relay() bị hụt. Sửa thân hàm relay(d), rồi viết chương trình xích chở hộp lên kho.',
-      veMaMau: 'Chương trình nhện bị khóa, hàm relay(d) mở để sửa. Chương trình xích còn trống.',
+      deBai: 'Nhện tự động gọi pass_over("R"): nhặt hộp, vượt chướng ngại rồi thả hộp lên trước mũi xích. Nhưng trước hố còn một gầm thấp nên cú nhảy trong pass_over() bị hụt. Sửa thân hàm pass_over(d), rồi viết chương trình xích chở hộp lên kho.',
+      veMaMau: 'Chương trình nhện bị khóa, hàm pass_over(d) mở để sửa. Chương trình xích còn trống.',
       san: ['##########', '#####.SSD#', '#o###.####', '#.n.u.####', '##########'],
       bd: [{ x: 5, y: 1, huong: 2 }, { x: 1, y: 3, huong: 0 }],
-      maMau: B([], ['relay("R")'], [H('relay', ['d'], ['pick()', 'jump(d)', 'drop()'])]),
-      loiGiai: B(['wait_box()', 'pick()', 'tr_left()', 'go_wall()', 'back()', 'drop()'], ['relay("R")'], [H('relay', ['d'], ['pick()', 'crawl_jump(d)', 'drop()'])]),
+      maMau: B([], ['pass_over("R")'], [H('pass_over', ['d'], ['pick()', 'jump(d)', 'drop()'])]),
+      loiGiai: B(['wait_box()', 'pick()', 'tr_left()', 'go_wall()', 'back()', 'drop()'], ['pass_over("R")'], [H('pass_over', ['d'], ['pick()', 'crawl_jump(d)', 'drop()'])]),
       hamCuaEmCan: ['wait_box', 'pick', 'tr_left', 'go_wall', 'back', 'drop', 'crawl_jump'],
       loiSai: [
-        { moTa: 'Chỉ sửa hàm, quên viết chương trình xích', baiLam: B([], ['relay("R")'], [H('relay', ['d'], ['pick()', 'crawl_jump(d)', 'drop()'])]), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chui gầm rồi đi thẳng: nhện rơi xuống hố', baiLam: B(['wait_box()', 'pick()', 'tr_left()', 'go_wall()', 'back()', 'drop()'], ['relay("R")'], [H('relay', ['d'], ['pick()', 'crawl(d)', 'go(d)', 'go(d)', 'drop()'])]), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Chỉ sửa hàm, quên viết chương trình xích', baiLam: B([], ['pass_over("R")'], [H('pass_over', ['d'], ['pick()', 'crawl_jump(d)', 'drop()'])]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chui gầm rồi đi thẳng: nhện rơi xuống hố', baiLam: B(['wait_box()', 'pick()', 'tr_left()', 'go_wall()', 'back()', 'drop()'], ['pass_over("R")'], [H('pass_over', ['d'], ['pick()', 'crawl(d)', 'go(d)', 'go(d)', 'drop()'])]), phaiCoMa: ['roi-ho'] }
       ],
       goiY: ['Gầm thấp ngay trước hố: crawl_jump(d) chui qua gầm rồi bật qua hố.', 'Xích chờ hộp bằng wait_box(), lên kho bằng go_wall(), lùi một ô rồi thả.']
     }),
     man({
       chuong: CHE, so: 9, ten: 'Đổi chỗ qua hốc', mucTieu: 'toi-co', xich: { cam: true },
-      deBai: 'Xích và nhện phải đổi chỗ cho nhau: cờ có vạch vàng của xích ở chỗ nhện đứng, cờ vạch lam của nhện ở chỗ xích đứng. Hành lang chỉ một làn, có một hốc nhỏ sau gầm thấp mà chỉ nhện chui vào được. Nhện vào hốc tránh, xích chờ bằng pause(n) rồi mới đi.',
+      deBai: 'Xích và nhện phải đổi chỗ cho nhau: cờ có vạch vàng của xích ở chỗ nhện đứng, cờ vạch lam của nhện ở chỗ xích đứng. Hành lang chỉ một làn, có một hốc nhỏ sau gầm thấp mà chỉ nhện chui vào được. Nhện dùng duck() vào hốc tránh, xích chờ bằng pause(n) rồi mới đi.',
       veMaMau: 'Chạy thử: hai robot chặn nhau giữa hành lang. Cho nhện vào hốc và cho xích chờ.',
       san: ['########', '###.####', '###n####', '#F..SSF#', '########'],
       bd: [{ x: 1, y: 3, huong: 1 }, { x: 6, y: 3, huong: 0 }], co: [[{ x: 6, y: 3 }], [{ x: 1, y: 3 }]],
       maMau: B(['forward(5)'], ['walk("LLLLL")']),
-      loiGiai: B(['pause(7)', 'forward(5)'], ['walk("LLL")', 'crawl("U")', 'crawl("D")', 'walk("LL")']),
-      hamCuaEmCan: ['pause', 'forward', 'walk', 'crawl'],
+      loiGiai: B(['pause(7)', 'forward(5)'], ['walk("LLL")', 'duck()', 'walk("LL")']),
+      hamCuaEmCan: ['pause', 'forward', 'walk', 'duck'],
       loiSai: [
-        { moTa: 'Xích không chờ: hai robot chặn nhau ở giữa hành lang', baiLam: B(['forward(5)'], ['walk("LLL")', 'crawl("U")', 'crawl("D")', 'walk("LL")']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Xích chờ go_wall(): cảm biến không thấy nhện ở xa nên xích vẫn lao vào hành lang', baiLam: B(['go_wall()'], ['walk("LLL")', 'crawl("U")', 'crawl("D")', 'walk("LL")']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Xích không chờ: hai robot chặn nhau ở giữa hành lang', baiLam: B(['forward(5)'], ['walk("LLL")', 'duck()', 'walk("LL")']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xích chờ go_wall(): cảm biến không thấy nhện ở xa nên xích vẫn lao vào hành lang', baiLam: B(['go_wall()'], ['walk("LLL")', 'duck()', 'walk("LL")']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Nhện rời ô dưới hốc ở nhịp 8: xích chỉ được bước vào ô đó từ nhịp 9.', 'Xích có cảm biến nhưng không thấy nhện trong hốc: dùng pause(n) như nhện.']
     }),
