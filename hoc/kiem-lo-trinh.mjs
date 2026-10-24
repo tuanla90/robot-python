@@ -48,9 +48,9 @@ kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến'
   assert.equal(get('che-cam-bien.6').so, 7);
   assert.equal(TT.thuTu.indexOf('cam-bien-ben'), TT.thuTu.indexOf('che-cam-bien') + 1);
   assert.equal(TT.thuTu.indexOf('me-cung'), TT.thuTu.indexOf('cam-bien-ben') + 1);
-  assert.equal(TT.goi.find(g => g.ma === 'me-cung').chuong[0], 'me-cung');
+  assert.deepEqual(TT.goi.find(g => g.ma === 'me-cung').chuong, ['cam-bien-ben', 'me-cung']);
   assert.equal(get('me-cung.6').taoHam[0], 'follow_right');
-  assert.equal(TT.goi.find(g => g.ma === 'cam-bien-ben').chuong[0], 'cam-bien-ben');
+  assert.ok(!TT.goi.some(g => g.ma === 'cam-bien-ben'));
   assert.ok(!get('che-cam-bien.6').taoHam.includes('follow_right'));
 });
 
@@ -195,22 +195,18 @@ kiem('hai gói phối hợp nằm sau khi đã học đủ bộ phận, không �
     assert.ok(get(c + '.10').huyHieu);
   }
 });
-kiem('cảm biến bên và mê cung trước thử thách, không đẩy ngưỡng cũ', () => {
+kiem('gói Dò đường (cảm biến hai bên + mê cung) trước thử thách, không đẩy ngưỡng cũ', () => {
   const ds = browser.MoGoi.dsGoi().filter(g => g.mua === 'mua-1');
-  const i = ds.findIndex(g => g.ma === 'cam-bien-ben');
+  const i = ds.findIndex(g => g.ma === 'me-cung');
   assert.equal(ds[i].so, 6);
-  assert.equal(ds[i].ten, 'Cảm biến hai bên');
-  assert.equal(ds[i].man.length, 10);
+  assert.equal(ds[i].ten, 'Dò đường');
+  assert.equal(ds[i].man.length, 20);
+  assert.equal(ds[i].man[0].ma, 'cam-bien-ben.1');
+  assert.equal(ds[i].man[19].ma, 'me-cung.10');
   assert.equal(ds[i].saoCan, 135);
   assert.equal(ds[i].loai, 'khai-niem');
-  assert.equal(ds[i + 1].ma, 'me-cung');
-  assert.equal(ds[i + 1].so, 7);
-  assert.equal(ds[i + 1].ten, 'Mê cung');
-  assert.equal(ds[i + 1].loai, 'khai-niem');
-  assert.equal(ds[i + 1].man.length, 10);
-  assert.equal(ds[i + 1].saoCan, 135);
   assert.equal(ds[i - 1].ma, 'cam-bien');
-  assert.equal(ds[i + 2].ma, 'robot');
+  assert.equal(ds[i + 1].ma, 'robot');
   assert.equal(browser.MoGoi.goiTheoMa('robot').saoCan, 135);
   assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 540);
 });

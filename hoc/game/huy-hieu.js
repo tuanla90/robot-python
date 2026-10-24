@@ -482,5 +482,8 @@
   }
 
   HINH['me-cung'] = HINH['khoang-cach'];
+  HINH['cam-bien-ben'] = HINH['khoang-cach'];
+  HINH['doi-ho-bang'] = HINH['hai-robot'];                      // gói thử thách hai robot: dùng lại hình Đội hai robot
+  HINH['doi-gap-nem'] = HINH['hai-robot'];
   window.HuyHieu = { ve: ve, DS: Object.keys(HINH) };
 })();

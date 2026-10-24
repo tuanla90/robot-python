@@ -100,14 +100,14 @@
   xep('khoang-cach', [1, 2, 3, 8, 5, 4, 7, 6, 9, 10]);
   xep('che-cam-bien', [1, 2, 7, 3, 4, 8, 6, 5, 9, 10]);
 
-  // Sau cảm biến là hai gói riêng: Cảm biến hai bên (left_clear, chọn hướng) rồi Mê cung (follow_right được học ở đây).
+  // Sau cảm biến là gói Dò đường gồm hai chương: Cảm biến hai bên (left_clear, chọn hướng) rồi Mê cung (follow_right được học ở đây).
+  // Mã gói giữ 'me-cung' như bản trước để không đổi khóa của gói đã có.
   TT.thuTu.splice(TT.thuTu.indexOf('che-cam-bien') + 1, 0, 'cam-bien-ben', 'me-cung');
   TT.ten['cam-bien-ben'] = 'Cảm biến hai bên';
   TT.ten['me-cung'] = 'Mê cung';
   // Gói mới không đẩy tăng ngưỡng sao của những gói cũ đã mở.
   TT.goi.splice(TT.goi.findIndex(function (g) { return g.ma === 'cam-bien'; }) + 1, 0,
-    { ma: 'cam-bien-ben', ten: 'Cảm biến hai bên', loai: 'khai-niem', sao: 135, mua: 'mua-1', chuong: ['cam-bien-ben'], hinh: 'khoang-cach', khongTangNguong: true },
-    { ma: 'me-cung', ten: 'Mê cung', loai: 'khai-niem', sao: 135, mua: 'mua-1', chuong: ['me-cung'], hinh: 'me-cung', khongTangNguong: true });
+    { ma: 'me-cung', ten: 'Dò đường', loai: 'khai-niem', sao: 135, mua: 'mua-1', chuong: ['cam-bien-ben', 'me-cung'], hinh: 'me-cung', khongTangNguong: true });
   var FOLLOW = ['if right_clear():', '    turn_right()', '    move()', 'elif front_clear():', '    move()', 'else:', '    turn_left()'];
   var A = ['#####', '#..F#', '#####'];
   var B = ['###', '#F#', '#.#', '###'];
