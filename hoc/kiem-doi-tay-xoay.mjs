@@ -2,7 +2,9 @@
    kiem-doi-tay-xoay.mjs — máy kiểm RIÊNG của gói Đội tay xoay và nam châm (hoc/man-doi-tay-xoay.js: chương doi-tay-xoay + che-doi-tay-xoay).
    Luật chung (10 màn khác nhau, mẫu không thắng, cần cả đội, ngưỡng sao…) ở kiem-goi-doi.mjs; ở đây kiểm phần đặc thù:
    - đội: R1 nam châm (cảm biến từ + khoảng cách), R2 tay xoay (cảm biến khoảng cách); robot khóa đúng màn (ch1: 2, 6; ch2: 5, 8);
-   - hàm chế ở chương 2 (load_belt, catch_belt, wait_belt) tên mới, chưa có trong kho; hàm của màn (load_up, wait_box, make_way) không trùng kho;
+   - hàm chế ở chương 2 (load_belt, catch_belt, wait_belt) tên mới, chưa có trong kho; hàm của màn (load_up, wait_cargo, make_way) không trùng kho;
+   - cần cả đội: một robot đi một mình (đồng đội đứng yên) không thắng được ở các màn đã chặn bằng hàng rào hay chỗ đứng của đồng đội
+     (bổ sung cho tools/do-mot-robot.mjs, vốn có thể hết hạn dò);
    - ý của từng màn: lời sai tiêu biểu (không chờ, chờ cứng, sai điều kiện chờ, sai thứ tự, viết thẳng, một robot tự làm hết, lối tắt cờ…)
      phải THUA hay MẤT SAO (thắng dưới 3 sao), cách đúng khác phải thắng.
    ========================================================================== */
@@ -60,19 +62,23 @@ const LOI = {
     { moTa: 'R2 chờ cứng đúng 2 nhịp: thắng (sân này đoán được)', c2: cho(2).concat(['pick_left()', 'drop_right()']), ky: 'thang' }
   ],
   'doi-tay-xoay.3': [
-    { moTa: 'R1 không chờ front_metal(): kéo trúng gỗ', c1: ['reel()'], ky: 'thua' },
-    { moTa: 'R1 chờ ngược điều kiện', c1: ['while front_metal():', '    wait()', 'reel()'], ky: 'thua' },
-    { moTa: 'R2 tự làm hết (dời gỗ, tự vào hành lang chở sắt): mất sao', c1: [], c2: ['forward(2)', 'pick_right()', 'drop_left()', 'turn_right()', 'move()', 'turn_right()', 'pick()', 'u_turn()', 'move()', 'drop_right()'], ky: 'khong3' }
+    { moTa: 'R1 không chờ thấy vật: kéo trúng gỗ', c1: ['reel()'], ky: 'thua' },
+    { moTa: 'R1 chờ ngược điều kiện', c1: ['while front_pole() != "none":', '    wait()', 'reel()'], ky: 'thua' },
+    { moTa: 'R1 chờ bằng front_metal(): vật sau rào là vật nam châm, không phải sắt', c1: ['while not front_metal():', '    wait()', 'reel()'], ky: 'thua' },
+    { moTa: 'R2 tự làm hết: dời gỗ rồi vào ô đích, vật sau hàng rào không với tới', c1: [], c2: ['forward(2)', 'pick()', 'drop_right()', 'move()', 'turn_right()', 'pick()'], ky: 'thua' }
   ],
   'doi-tay-xoay.4': [
     { moTa: 'R1 không chờ băng trống: hai vật ùn lại', c1: lap('for i in range(2):', NAP), ky: 'thua' },
     { moTa: 'R1 chờ bằng front_clear(): không thấy ô bàn giao cách 3 ô', c1: lap('for i in range(2):', ['grip()', 'u_turn()', 'while not front_clear():', '    wait()', 'kick()', 'u_turn()']), ky: 'thua' },
-    { moTa: 'R2 đặt cả hai vật sang trái', c2: ['u_turn()', 'forward(5)', 'turn_left()', 'move()', 'pick()', 'drop_left()'].concat(CHO_VAT, ['pick()', 'drop_left()']), ky: 'thua' }
+    { moTa: 'R2 không dọn gỗ: ô đích trước mặt còn gỗ, vật thứ hai không đặt được', c2: ['pick_left()', 'drop_right()', 'while left_clear():', '    wait()', 'pick_left()', 'drop()'], ky: 'thua' },
+    { moTa: 'R2 đặt cả hai vật sang phải', c2: ['pick()', 'turn_right()', 'move()', 'drop()', 'back()', 'turn_left()', 'pick_left()', 'drop_right()', 'pick_left()', 'drop_right()'], ky: 'thua' },
+    { moTa: 'R1 tự chở vật vào đích: tay xoay đứng chặn lối duy nhất', c1: lap('for i in range(2):', ['grip()', 'u_turn()', 'move()', 'move()', 'turn_right()', 'magnet_off()', 'wait()']), c2: [], ky: 'thua' }
   ],
   'doi-tay-xoay.5': [
     { moTa: 'R2 không chờ ô bàn giao trống: tay vẫn cầm vật thứ hai', c2: ['pick_left()', 'drop_right()', 'pick()', 'drop_right()'], ky: 'thua' },
-    { moTa: 'R1 dừng sớm một ô: vật trượt quá hàng ô đích', c1: ['forward(6)'].concat(lap('for i in range(2):', NAP)), ky: 'thua' },
-    { moTa: 'R1 tự kéo vật trước mặt R2 (quay xuống): không với tới vật còn lại', c1: ['forward(7)', 'turn_right()', 'grip()', 'turn_right()', 'kick()'], c2: [], ky: 'thua' }
+    { moTa: 'R1 dừng sớm một ô: vật trượt quá hàng ô đích', c1: ['forward(5)'].concat(lap('for i in range(2):', NAP)), ky: 'thua' },
+    { moTa: 'R1 một mình: hàng rào chặn, vật của tay xoay ngoài tầm', c1: ['forward(6)', 'turn_right()', 'grip()', 'turn_right()', 'kick()'], c2: [], ky: 'thua' },
+    { moTa: 'R2 một mình: hàng rào chặn đường tới hàng ô đích', c1: [], c2: ['pick_left()', 'turn_right()', 'move()', 'turn_left()', 'move()', 'drop()'], ky: 'thua' }
   ],
   'doi-tay-xoay.6': [
     { moTa: 'R2 không chờ: nhặt hụt', c2: lap('for i in range(3):', ['pick()', 'drop_right()', 'move()']), ky: 'thua' },
@@ -81,9 +87,9 @@ const LOI = {
       c2: cho(3).concat(lap('for i in range(2):', ['pick()', 'drop_right()', 'move()']), cho(2), ['pick()', 'drop_right()']), ky: 'duoi3' }
   ],
   'doi-tay-xoay.7': [
-    { moTa: 'Không sửa: chờ cứng 2 nhịp, hai vật ùn lại', c1: lap('for i in range(2):', ['grip()', 'turn_right()', 'for j in range(2):', '    wait()', 'kick()', 'turn_left()']), ky: 'thua' },
-    { moTa: 'Chờ cứng 6 nhịp: vật thứ hai tới trễ, tay xoay kẹp hụt', c1: lap('for i in range(2):', ['grip()', 'turn_right()', 'for j in range(6):', '    wait()', 'kick()', 'turn_left()']), ky: 'thua' },
-    { moTa: 'Chờ bằng front_clear(): không thấy ô bàn giao', c1: lap('for i in range(2):', ['grip()', 'turn_right()', 'while not front_clear():', '    wait()', 'kick()', 'turn_left()']), ky: 'thua' }
+    { moTa: 'Không sửa: chờ cứng 2 nhịp, ô bàn giao còn vật nên tay vẫn cầm', c2: ['pick_left()', 'drop_right()', 'pick()'].concat(cho(2), ['drop_right()']), ky: 'thua' },
+    { moTa: 'Chờ ngược điều kiện', c2: ['pick_left()', 'drop_right()', 'pick()', 'while right_clear():', '    wait()', 'drop_right()'], ky: 'thua' },
+    { moTa: 'Bỏ hẳn vòng chờ', c2: ['pick_left()', 'drop_right()', 'pick()', 'drop_right()'], ky: 'thua' }
   ],
   'doi-tay-xoay.8': [
     { moTa: 'Không sửa: bắn trước khi quay, vật bay về ô bàn giao', c1: lap('for i in range(2):', ['while front_pole() == "none":', '    wait()', 'grip()', 'kick()', 'turn_left()', 'turn_right()']), ky: 'thua' },
@@ -121,16 +127,18 @@ const LOI = {
     { moTa: 'R1 quay trái thay vì quay phải', c1: lap('for i in range(2):', ['load_belt()']).concat(['turn_left()', 'grip()', 'turn_left()', 'kick()']), ky: 'thua' }
   ],
   'che-doi-tay-xoay.6': [
-    { moTa: 'R2 không chờ ô bàn giao trống', c2: ['pick_right()', 'drop_left()', 'pick()', 'drop_left()'], ky: 'thua' },
-    { moTa: 'R1 kéo rồi bắn ngay, không quay đầu: vật bay về ô bàn giao', c1: ['forward(6)'].concat(lap('for i in range(2):', ['grip()', 'kick()'])), ky: 'thua' }
+    { moTa: 'R2 không chờ ô bàn giao trống', c2: ['pick_left()', 'drop_right()', 'pick()', 'drop_right()'], ky: 'thua' },
+    { moTa: 'R1 kéo rồi bắn ngay, không quay đầu: vật kẹt sau hàng rào', c1: ['forward(6)'].concat(lap('for i in range(2):', ['grip()', 'kick()'])), ky: 'thua' },
+    { moTa: 'R2 một mình: hàng rào chặn đường tới hàng ô đích', c1: [], c2: ['pick_left()', 'turn_right()', 'move()', 'turn_left()', 'move()', 'drop()'], ky: 'thua' }
   ],
   'che-doi-tay-xoay.7': [
     { moTa: 'Không sửa load_up(): cực N còn bật đẩy vật trong kho ra xa', hm: [H('load_up', ['grip()', 'turn_right()', 'magnet_n()', 'wait()', 'turn_left()'])], ky: 'thua' },
+    { moTa: 'R1 một mình chở vật: ô đích dưới tay xoay không với tới', c1: lap('for i in range(2):', ['grip()', 'turn_right()', 'move()', 'move()', 'turn_left()', 'magnet_off()', 'wait()', 'turn_left()']), c2: [], ky: 'thua' },
     { moTa: 'Sửa bằng cách thêm magnet_off()', hm: [H('load_up', ['grip()', 'turn_right()', 'magnet_n()', 'wait()', 'magnet_off()', 'wait()', 'turn_left()'])], ky: 'thang' }
   ],
   'che-doi-tay-xoay.8': [
-    { moTa: 'Không sửa wait_box(): chờ ngược điều kiện', hm: [H('wait_box', ['while not front_clear():', '    wait()'])], ky: 'thua' },
-    { moTa: 'wait_box() chờ bằng front_pole()', hm: [H('wait_box', ['while front_pole() == "none":', '    wait()'])], ky: 'thang' }
+    { moTa: 'Không sửa wait_cargo(): chờ ngược điều kiện', hm: [H('wait_cargo', ['while not front_clear():', '    wait()'])], ky: 'thua' },
+    { moTa: 'wait_cargo() chờ bằng front_pole()', hm: [H('wait_cargo', ['while front_pole() == "none":', '    wait()'])], ky: 'thang' }
   ],
   'che-doi-tay-xoay.9': [
     { moTa: 'Lối tắt cờ: mỗi robot lùi về cờ sau lưng (cờ của đồng đội)', c1: ['back()'], c2: ['back()'], ky: 'thua' },
