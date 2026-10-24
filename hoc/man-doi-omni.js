@@ -14,7 +14,7 @@
      4  Tránh nhau              toi-co   hành lang một làn, hai xe ngược chiều: omni trượt vào hốc, chờ xích qua, trượt ra đi tiếp
      5  Giao hộp chân bậc       dua-vat  xích leo bậc lấy hộp, đặt xuống chân bậc; omni lùi khỏi ô giao, chờ hộp bằng cảm biến, chở hộp sang đích
      6  Canh xe tuần tra        toi-co   xích khóa bounce() (đi tới tường rồi lùi về); omni chờ xích ngang mặt rồi lách ra sau lưng, rời đường ray trước khi xích quay về
-     7  Sửa điều kiện chờ       toi-co   xích khóa; omni đỗ trong hốc hỏi nhầm right_clear() (bên tường): đổi sang left_clear()
+     7  Hỏi nhầm bên hông       toi-co   xích khóa; omni đỗ trong hốc hỏi nhầm right_clear() (bên tường): đổi sang left_clear()
      8  Ai vào trước            toi-co   ngõ cụt hai cờ: omni (cờ gần) chen vào trước nên xích kẹt; sửa: omni chờ xích (cờ xa) vào trước
      9  Ba băng ngang           toi-co   ba hàng băng đẩy sang trái, ngược chiều xích; omni không trượt né trước thì bị đẩy sang làn xích: lặp slide_r(1), forward(2)
      10 Hành lang tránh xe      toi-co   trùm ba sân: xích khóa go_wall() chạy hết hành lang; hốc và giờ xích tới khác nhau, omni tìm hốc, chờ, ra bằng cảm biến
@@ -180,7 +180,7 @@
       goiY: ['Xích ở ngay trước mặt thì front_clear() trả False: while front_clear(): wait() chờ tới lúc đó.', 'Xích ngang mặt thì nhịp sau nó đi tiếp: omni move() lên ngay sau lưng nó rồi trượt trái.']
     }),
     man({
-      so: 7, ten: 'Sửa điều kiện chờ', khoa: true,
+      so: 7, ten: 'Hỏi nhầm bên hông', khoa: true,
       deBai: 'Omni đỗ trong hốc bên phải lối đi, chờ xích tự động đi lên rồi mới ra và lùi xuống cờ dưới cùng. Nhưng omni ra quá sớm và chắn đường xích. Tìm chỗ sai trong vòng chờ của omni.',
       veMaMau: 'Chạy thử xem omni ra lúc nào. Sửa chương trình R2.',
       san: ['#######', '###F###', '###.###', '###..##', '###.###', '###.###', '###.###', '###F###', '#######'],
