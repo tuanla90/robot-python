@@ -20,11 +20,6 @@ function cham(m, lg, truoc = khoTruoc.get(m.ma) || []) {
   const hs = new Map(truoc.map(h => [h.ten, clone(h)]));
   for (const h of lg.hamCuaEmMoi || []) hs.set(h.ten, clone(h));
   for (const h of m.hamCuaEmCan || []) assert.ok(hs.has(h), m.ma + ' cần hàm chưa được học: ' + h);
-  if (m.ma.startsWith('doi-gap-nem.')) {
-    const pick = M.timMa('tay-gap.5').loiGiai.hamCuaEmMoi.find(h => h.ten === 'pick');
-    const drop = M.timMa('tay-gap.6').loiGiai.hamCuaEmMoi.find(h => h.ten === 'drop');
-    [pick, drop].forEach(h => { if (h) hs.set(h.ten, clone(h)); });
-  }
   return Cham.cham(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [], doi: lg.doi }, [...hs.values()]);
 }
 
@@ -36,7 +31,7 @@ kiem('410 mã duy nhất, 41 chương, 10 màn/chương', () => {
 });
 kiem('không còn bài nhiều map trước màn 10, trùm đúng hàng', () => {
   for (const m of M.danhSach) {
-    if (m.so < 10 && m.ma !== 'khoang-cach.7' && !m.ma.startsWith('cam-bien-ben.')) assert.equal(soSan(m), 1, m.ma);
+    if (m.so < 10) assert.equal(soSan(m), 1, m.ma);
     assert.equal(m.hang === 'trum', m.so === 10, m.ma);
   }
   for (const c of ['khoang-cach', 'che-cam-bien', 'robot-hoan-thien', 'hai-robot', 'che-list', 'mau', 'che-mau', 'rap-nao', 'nam-cham', 'che-nam-cham', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'flycam', 'rap-du', 'me-cung', 'cam-bien-ben']) {
@@ -45,8 +40,7 @@ kiem('không còn bài nhiều map trước màn 10, trùm đúng hàng', () => 
 });
 kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến', () => {
   assert.equal(get('khoang-cach.8').so, 4);
-  assert.equal(get('khoang-cach.7').ten, 'Qua hành lang chữ L');
-  assert.ok(/cảm biến phía trước/.test(get('khoang-cach.7').deBai));
+  assert.equal(get('khoang-cach.7').ten, 'Nhìn lối bên phải');
   assert.ok(get('cam-bien-ben.1').deBai.includes('left_clear'));
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'trum');
@@ -69,7 +63,7 @@ for (const m of M.danhSach) {
     assert.equal(r.sao, 3, m.ma + ' sao=' + r.sao);
     assert.equal(r.theoSan.length, soSan(m), m.ma);
     assert.ok(r.theoSan.every(s => s.thang), m.ma);
-    if (m.phienBanNoiDung === 2 && m.ma !== 'khoang-cach.7') {
+    if (m.phienBanNoiDung === 2) {
       assert.equal(r.soNhip, m.sao.nhip, m.ma + ' ngưỡng nhịp chưa đo lại');
       assert.equal(r.soO, m.sao.o, m.ma + ' ngưỡng ô chưa đo lại');
     }
@@ -84,22 +78,39 @@ for (const m of M.danhSach) {
   if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEmMoi || []) kho.set(h.ten, clone(h));
 }
 
-kiem('gói phối hợp hai robot: lời giải 3 sao, mẫu tự động và gói học đúng vai trò từng robot', () => {
+kiem('gói phối hợp hai robot: hai robot đúng vai trò, mẫu chưa giải sẵn', () => {
   for (const c of ['doi-ho-bang', 'doi-gap-nem']) {
     for (let i = 1; i <= 10; i++) {
       const m = get(c + '.' + i);
-      const r = cham(m, m.loiGiai);
-      assert.ok(r.thang && r.sao === 3, m.ma + ': ' + JSON.stringify(r.chanDoan));
       assert.equal(m.maMau.doi.length, 2, m.ma);
       assert.equal(m.doi.length, 2, m.ma);
+      assert.equal(cham(m, m.maMau).thang, false, m.ma + ' mẫu đã giải sẵn');
     }
   }
-  assert.equal(get('doi-ho-bang.1').maMau.doi[0].chinh.length > 0, true);
-  assert.equal(get('doi-ho-bang.1').maMau.doi[1].chinh.length, 0);
-  assert.equal(get('doi-gap-nem.1').maMau.doi[0].chinh.length, 0);
-  assert.equal(get('doi-gap-nem.1').maMau.doi[1].chinh.length > 0, true);
-  assert.deepEqual(get('doi-ho-bang.10').doi.map(d => d.loaiRobot), ['banh','nhen']);
-  assert.deepEqual(get('doi-gap-nem.10').doi.map(d => d.robot.tay), ['kep','nem']);
+  for (let i = 1; i <= 10; i++) {
+    assert.deepEqual(get('doi-ho-bang.' + i).doi.map(d => d.loaiRobot), ['banh', 'nhen']);
+    assert.deepEqual(get('doi-gap-nem.' + i).doi.map(d => d.robot.tay), ['kep', 'nem']);
+  }
+});
+kiem('ba gói mới: mười màn khác nhau, 1–9 một sân, trùm ba sân', () => {
+  for (const c of ['cam-bien-ben', 'doi-ho-bang', 'doi-gap-nem']) {
+    const ds = M.danhSach.filter(m => m.chuong === c);
+    assert.equal(new Set(ds.map(m => JSON.stringify([m.san, m.loiGiai]))).size, 10, c + ' có màn trùng nhau');
+    assert.equal(new Set(ds.map(m => m.ten)).size, 10, c + ' trùng tên màn');
+    for (const m of ds) assert.equal(soSan(m), m.so === 10 ? 3 : 1, m.ma);
+  }
+  for (const m of M.danhSach.filter(m => m.chuong === 'cam-bien-ben')) {
+    const lg = JSON.stringify(m.loiGiai);
+    assert.ok(/left_clear|right_clear/.test(lg), m.ma + ' không dùng cảm biến hai bên');
+  }
+  assert.ok(M.danhSach.filter(m => m.chuong === 'cam-bien-ben').filter(m => /left_clear/.test(JSON.stringify(m.loiGiai))).length >= 8);
+});
+kiem('chương mới không đổi id của ngân hàng bài gốc trong thu-tu-chuong.js', () => {
+  const goc = fs.readFileSync(new URL('./thu-tu-chuong.js', import.meta.url), 'utf8');
+  for (const c of ['cam-bien-ben', 'me-cung', 'doi-ho-bang', 'doi-gap-nem']) assert.ok(!goc.includes("'" + c + "'"), c);
+  assert.equal(TT.thuTu.indexOf('doi-ho-bang'), TT.thuTu.indexOf('che-nhen') + 1);
+  assert.equal(TT.thuTu.indexOf('doi-gap-nem'), TT.thuTu.indexOf('rap-tay') + 1);
+  assert.ok(TT.dot2.includes('doi-ho-bang') && TT.dot2.includes('doi-gap-nem'));
 });
 
 kiem('mê cung: chỉ tiến khi gặp tường thì rẽ phải không giải được trùm', () => {
@@ -183,15 +194,6 @@ kiem('hai gói phối hợp nằm sau khi đã học đủ bộ phận, không �
     assert.equal(get(c + '.10').hang, 'trum');
     assert.ok(get(c + '.10').huyHieu);
   }
-  assert.deepEqual(get('doi-ho-bang.1').doi.map(d => d.loaiRobot), ['banh','nhen']);
-  assert.ok(get('doi-ho-bang.2').san[1].includes('u'));
-  assert.ok(get('doi-ho-bang.2').san[3].includes('>'));
-  assert.deepEqual(get('doi-gap-nem.3').doi.map(d => d.robot.tay), ['kep','nem']);
-  assert.ok(get('doi-gap-nem.3').san[4].includes('='));
-  assert.ok(get('doi-gap-nem.2').maMau.doi[0].chinh.length > 0);
-  assert.equal(get('doi-gap-nem.1').maMau.doi[0].chinh.length, 0);
-  assert.ok(get('doi-gap-nem.1').maMau.doi[1].chinh.length > 0);
-  assert.ok(get('doi-gap-nem.2').maMau.doi[1].chinh.length > 0);
 });
 kiem('cảm biến bên và mê cung trước thử thách, không đẩy ngưỡng cũ', () => {
   const ds = browser.MoGoi.dsGoi().filter(g => g.mua === 'mua-1');

@@ -7,12 +7,11 @@
   var M, TT, SL;
   if (node) {
     ['chuoi-1', 'chuoi-2', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap',
-      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich',
+      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'doi-ho-bang', 'list', 'che-list', 'xich', 'che-xich',
       'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'khoang-cach', 'che-cam-bien',
       'robot-hoan-thien', 'hai-robot', 'mau', 'che-mau', 'rap-nao', 'nam-cham',
       'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'doi-gap-nem',
       'che-drone', 'drone', 'flycam', 'rap-du'].forEach(function (n) { require('./man-' + n + '.js'); });
-    require('./man-doi-ho-bang.js'); require('./man-doi-gap-nem.js');
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -62,13 +61,15 @@
   // Luyện trên một tình huống đủ tiêu biểu; phần khái quát hóa dành cho trùm.
   M.danhSach.forEach(function (m) { if (m.so < 10) motSan(m, 1); });
 
+  // Cảm biến: sửa while trước, quan sát cảm biến hông sau; chưa học tìm đường.
   sua('khoang-cach.7', {
-    ten:'Qua hành lang chữ L', deBai:'Dùng cảm biến phía trước để đi hết hành lang chữ L. Lặp lại câu hỏi sau mỗi bước; khi gặp tường, rẽ phải rồi tiếp tục tới cờ.',
-    veMaMau:'Chương trình chỉ đi một đoạn. Hoàn thành cả đường bằng front_clear().', san:copy(nguon['khoang-cach.8'].san), batDau:copy(nguon['khoang-cach.8'].batDau),
-    maMau:{chinh:['while front_clear():','    move()']}, loiGiai:copy(nguon['khoang-cach.8'].loiGiai), hamCuaEmCan:['move','turn_right'], sao:{o:10,nhip:24},
-    goiY:['Dùng while front_clear() cho đoạn đầu và đoạn sau. Giữa hai đoạn cần turn_right().']
+    ten: 'Nhìn lối bên phải', deBai: 'right_clear() hỏi ô bên phải theo hướng xe đang quay. Nếu bên phải trống, rẽ phải rồi đi tới cờ. Chỉ cần xử lý một góc, chưa cần dò mê cung.',
+    veMaMau: 'Điền lệnh rẽ và tiến vào nhánh if.', san: ['#####', '#..F#', '#####'],
+    batDau: { x: 1, y: 1, huong: 0 }, maMau: bai(['if right_clear():', '    wait()']),
+    loiGiai: bai(['if right_clear():', '    turn_right()', '    go_wall()']),
+    hamCuaEmCan: ['move', 'turn_right', 'go_wall'],
+    goiY: ['Bên phải được tính theo mặt xe, không phải luôn là bên phải màn hình.', 'Rẽ phải trước rồi dùng go_wall().']
   });
-  // Gói cảm biến hai bên: từ quan sát một hướng tới so sánh hai bên, chưa áp dụng quy tắc mê cung.
   // Trùm cảm biến: giao hàng qua ba hành lang; không giấu một thuật toán mê cung.
   var giao = nguon['khoang-cach.9'];
   sua('khoang-cach.10', {
@@ -99,13 +100,13 @@
   xep('khoang-cach', [1, 2, 3, 8, 5, 4, 7, 6, 9, 10]);
   xep('che-cam-bien', [1, 2, 7, 3, 4, 8, 6, 5, 9, 10]);
 
-  // Mê cung là một gói riêng, sau cảm biến; follow_right được học ở đây.
+  // Sau cảm biến là hai gói riêng: Cảm biến hai bên (left_clear, chọn hướng) rồi Mê cung (follow_right được học ở đây).
   TT.thuTu.splice(TT.thuTu.indexOf('che-cam-bien') + 1, 0, 'cam-bien-ben', 'me-cung');
   TT.ten['cam-bien-ben'] = 'Cảm biến hai bên';
   TT.ten['me-cung'] = 'Mê cung';
+  // Gói mới không đẩy tăng ngưỡng sao của những gói cũ đã mở.
   TT.goi.splice(TT.goi.findIndex(function (g) { return g.ma === 'cam-bien'; }) + 1, 0,
     { ma: 'cam-bien-ben', ten: 'Cảm biến hai bên', loai: 'khai-niem', sao: 135, mua: 'mua-1', chuong: ['cam-bien-ben'], hinh: 'khoang-cach', khongTangNguong: true },
-    // Gói mới không đẩy tăng ngưỡng sao của những gói cũ đã mở.
     { ma: 'me-cung', ten: 'Mê cung', loai: 'khai-niem', sao: 135, mua: 'mua-1', chuong: ['me-cung'], hinh: 'me-cung', khongTangNguong: true });
   var FOLLOW = ['if right_clear():', '    turn_right()', '    move()', 'elif front_clear():', '    move()', 'else:', '    turn_left()'];
   var A = ['#####', '#..F#', '#####'];
@@ -113,18 +114,22 @@
   var C = ['#####', '##.##', '#..F#', '#####'];
   var D = ['#####', '#..F#', '#.###', '#.###', '#####'];
   var E = ['#######', '#.....#', '#.#.#F#', '#.#.###', '#######'];
-  function maze(so, ten, deBai, san, bd, lg, mau, goiY) {
+  // Bài một xe cảm biến dựng trên khung của 8.7 gốc (xe hai bánh, ba cảm biến khoảng cách).
+  function baiCamBien(chuong, huyHieu, so, ten, deBai, san, bd, lg, mau, goiY) {
     var m = copy(nguon['khoang-cach.7']);
-    Object.assign(m, { chuong: 'me-cung', so: so, ten: ten, deBai: deBai, san: copy(san), batDau: copy(bd),
+    Object.assign(m, { chuong: chuong, so: so, ten: ten, deBai: deBai, san: copy(san), batDau: copy(bd),
       hang: so <= 3 ? 'lam-quen' : so <= 6 ? 'luyen' : so <= 9 ? 'bien-the' : 'trum',
       loiGiai: lg, maMau: mau, loiSai: [], hamCuaEmCan: ['move', 'turn_left', 'turn_right'], taoHam: [],
       goiY: goiY, veMaMau: 'Chạy thử, quan sát hướng xe rồi hoàn thành quy tắc đang học.', phienBanNoiDung: 2 });
     delete m.ma; delete m.id; delete m.loiGiaiKhac; delete m.huyHieu; delete m.nhipTheo;
     if (so === 10) {
       m.nhipTheo = 'tong';
-      m.huyHieu = { ma: 'me-cung', ten: 'Huy hiệu Mê cung' };
+      m.huyHieu = { ma: chuong, ten: huyHieu };
     }
     return M.chuanHoa(m);
+  }
+  function maze(so, ten, deBai, san, bd, lg, mau, goiY) {
+    return baiCamBien('me-cung', 'Huy hiệu Mê cung', so, ten, deBai, san, bd, lg, mau, goiY);
   }
   var ds = [
     maze(1, 'Bên phải của xe', 'Xe quay lên. Hỏi right_clear(), nếu bên phải trống thì rẽ phải và tiến một ô tới cờ.', ['####', '#.F#', '####'], { x: 1, y: 1, huong: 0 },
@@ -152,24 +157,90 @@
   ds[5].chinhCoDinh = true;
   [6, 7, 9].forEach(function (i) { ds[i].hamCuaEmCan.push('follow_right'); });
   M.them(ds);
-  // Học riêng hai cảm biến cạnh trước thuật toán mê cung: mỗi bài tập trung một quyết định quan sát.
-  var sideTemplates = [
-    ['Bên trái xe','left_clear'],['Bên phải xe','right_clear'],['Trái theo hướng xe','left_clear'],['Phải theo hướng xe','right_clear'],
-    ['Đổi hướng nhìn','left_clear'],['Hỏi cảm biến bên','right_clear'],['Lối trái đang mở','left_clear'],['Lối phải đang mở','right_clear'],
-    ['So sánh hai bên','left_clear'],['Chuẩn bị dò đường','right_clear']
+  // Gói Cảm biến hai bên: left_clear() mới, chọn bên, rời cửa rồi mới hỏi, ngõ cụt; quy tắc bám tường để dành cho gói Mê cung.
+  function ben(so, ten, deBai, veMaMau, san, bd, lg, mau, goiY) {
+    var m = baiCamBien('cam-bien-ben', 'Huy hiệu Cảm biến hai bên', so, ten, deBai, san, bd, lg, mau, goiY);
+    m.veMaMau = veMaMau;
+    return m;
+  }
+  function thut(ds) { return ds.map(function (s) { return '    ' + s; }); }
+  var CHON = ['if left_clear():', '    turn_left()', 'else:', '    turn_right()'];
+  var CHON3 = ['if left_clear():', '    turn_left()', 'elif right_clear():', '    turn_right()', 'else:', '    u_turn()'];
+  var SAN_TRUM = [
+    ['#######', '#F..###', '###.###', '###...#', '#####.#', '#####.#', '#######'],
+    ['########', '######F#', '#......#', '###.####', '###.####', '###.####', '########'],
+    ['######', '#.####', '#.####', '#.####', '#.####', '#...F#', '######']
   ];
-  var side = sideTemplates.map(function (x,i) {
-    var m = copy(nguon['khoang-cach.8']);
-    m.chuong='cam-bien-ben'; m.so=i+1; m.ma=undefined; m.id=undefined; m.ten=x[0];
-    m.deBai='Trong màn này, dùng '+x[1]+'() để hỏi ô cạnh xe. Cảm biến tính theo hướng xe, không theo mép màn hình.';
-    m.veMaMau='Chạy thử rồi hoàn thành chương trình đã có sẵn.';
-    m.hamGoc=m.hamGoc.concat(['left_clear','right_clear']).filter(function (v,j,a) { return a.indexOf(v)===j; });
-    m.loiGiai=copy(nguon['khoang-cach.8'].loiGiai); m.maMau=copy(nguon['khoang-cach.8'].maMau);
-    m.loiSai=[]; m.hang=i<3?'lam-quen':i<6?'luyen':i<9?'bien-the':'trum'; m.phienBanNoiDung=2;
-    m.nhipTheo=undefined; m.nhipTheoLoiGiai=undefined;
-    return M.chuanHoa(m);
+  var dsBen = [
+    ben(1, 'Lối bên trái', 'left_clear() hỏi ô bên trái theo hướng xe đang quay. Xe đi tới tường; nếu bên trái trống thì rẽ trái và đi tiếp tới cờ.',
+      'Điền lệnh rẽ và đi vào nhánh if.', ['#####', '#F..#', '###.#', '###.#', '#####'], { x: 3, y: 3, huong: 0 },
+      bai(['go_wall()', 'if left_clear():', '    turn_left()', '    go_wall()']), bai(['go_wall()', 'if left_clear():', '    wait()']),
+      ['Xe đang quay lên nên bên trái xe trùng phía trái màn hình.', 'Trong nhánh if: turn_left() rồi go_wall().']),
+    ben(2, 'Trái hay phải', 'Cuối hành lang chỉ mở một phía. Nếu bên trái trống thì rẽ trái, còn không thì rẽ phải, rồi đi tới cờ.',
+      'Chương trình mới biết rẽ trái. Thêm nhánh else cho trường hợp còn lại.', ['#####', '#..F#', '#.###', '#.###', '#####'], { x: 1, y: 3, huong: 0 },
+      bai(['go_wall()'].concat(CHON, ['go_wall()'])), bai(['go_wall()', 'if left_clear():', '    turn_left()', 'go_wall()']),
+      ['left_clear() trả False thì nhánh else chạy.', 'Thêm else: rồi turn_right() thụt vào trong.']),
+    ben(3, 'Cửa bên trái', 'Hành lang còn kéo dài qua khỏi cửa. Đi tới khi bên trái trống, rẽ trái vào cửa rồi tới cờ.',
+      'Thêm vòng while ở đầu để xe dừng đúng cửa bên trái.', ['#####', '###.#', '###.#', '#F..#', '###.#', '###.#', '#####'], { x: 3, y: 5, huong: 0 },
+      bai(['while not left_clear():', '    move()', 'turn_left()', 'go_wall()']), bai(['turn_left()', 'go_wall()']),
+      ['go_wall() sẽ chạy quá cửa.', 'Giống to_gap() nhưng hỏi bên trái: while not left_clear(): move()']),
+    ben(4, 'Rời cửa rồi mới hỏi', 'Vào cửa bên phải, rồi tìm cửa bên trái ở hành lang kế tiếp. Ngay sau khi rẽ, ô hành lang cũ nằm cạnh xe nên cảm biến vẫn thấy trống.',
+      'Chạy thử: xe rẽ xong là dừng tìm ngay. Sửa để xe rời cửa trước khi hỏi bên trái.',
+      ['########', '#.###F##', '#.###.##', '#.###.##', '#......#', '#.######', '#.######', '########'], { x: 1, y: 6, huong: 0 },
+      bai(['to_gap()', 'turn_right()', 'move()', 'while not left_clear():', '    move()', 'turn_left()', 'go_wall()']),
+      bai(['to_gap()', 'turn_right()', 'while not left_clear():', '    move()', 'turn_left()', 'go_wall()']),
+      ['Sau turn_right(), bên trái xe là đoạn hành lang vừa đi.', 'Thêm move() ngay sau turn_right().']),
+    ben(5, 'Chế to_left_gap()', 'Tự chế to_left_gap(): đi thẳng cho tới khi bên trái trống. Chương trình chính đã có, dùng hàm hai lần để xoắn vào cờ.',
+      'Chương trình chính đã cố định. Viết thân hàm to_left_gap() trong Xưởng.',
+      ['#######', '#####.#', '#####.#', '#####.#', '#.....#', '##.##.#', '##F##.#', '#######'], { x: 5, y: 6, huong: 0 },
+      Object.assign(bai(['to_left_gap()', 'turn_left()', 'move()', 'to_left_gap()', 'turn_left()', 'go_wall()']),
+        { hamCuaEmMoi: [ham('to_left_gap', ['while not left_clear():', '    move()'])] }),
+      bai(['to_left_gap()', 'turn_left()', 'move()', 'to_left_gap()', 'turn_left()', 'go_wall()']),
+      ['Thân hàm giống bài Cửa bên trái.', 'move() sau mỗi lần rẽ đã có sẵn trong chương trình chính.']),
+    ben(6, 'Khúc quanh liên tiếp', 'Hành lang có năm khúc quanh, lúc trái lúc phải. Viết thẳng từng đoạn sẽ tràn khung. Lặp: đi tới tường rồi rẽ về phía còn trống.',
+      'Chương trình xử lý được một khúc quanh. Đặt nó trong vòng for.',
+      ['########', '##...F##', '##.#####', '##.....#', '######.#', '####...#', '####.###', '####.###', '########'], { x: 4, y: 7, huong: 0 },
+      bai(['for i in range(5):', '    go_wall()'].concat(thut(CHON), ['go_wall()'])), bai(['go_wall()'].concat(CHON)),
+      ['Đếm số khúc quanh để chọn số lần lặp.', 'Sau vòng for còn một đoạn thẳng tới cờ.']),
+    ben(7, 'Sửa hàm tìm cửa', 'Hàm door_left() phải đưa xe tới cửa bên trái, nhưng xe không nhúc nhích. Sửa hàm cho đúng; cửa bên phải chỉ là ngõ cụt.',
+      'Chương trình chính đã cố định. Sửa điều kiện trong door_left().',
+      ['#####', '##.##', '#F.##', '##.##', '##..#', '##.##', '##.##', '#####'], { x: 2, y: 6, huong: 0 },
+      bai(['door_left()', 'turn_left()', 'go_wall()'], [ham('door_left', ['while not left_clear():', '    move()'])]),
+      bai(['door_left()', 'turn_left()', 'go_wall()'], [ham('door_left', ['while left_clear():', '    move()'])]),
+      ['Vòng while chạy khi điều kiện đúng. Lúc xuất phát bên trái là tường.', 'Thiếu chữ not.']),
+    ben(8, 'Ngõ cụt thì quay đầu', 'Xe xuất phát quay mặt vào một ngõ cụt. Thêm nhánh cho trường hợp hai bên đều là tường: quay đầu, rồi vòng lặp đưa xe qua khúc quanh tới cờ.',
+      'Chạy thử để thấy xe kẹt ở ngõ cụt. Thêm nhánh else.', ['#####', '#.###', '#.###', '#.###', '#..F#', '#####'], { x: 1, y: 2, huong: 0 },
+      bai(['for i in range(3):', '    go_wall()'].concat(thut(CHON3))),
+      bai(['for i in range(3):', '    go_wall()'].concat(thut(CHON3.slice(0, 4)))),
+      ['Hai bên đều chặn thì không rẽ được.', 'else: u_turn(). Lượt sau go_wall() đi ngược lại hành lang.']),
+    ben(9, 'Mang hộp qua khúc quanh', 'Nhặt hộp trước mặt, mang qua các khúc quanh rồi thả vào đích ở hốc cuối đường. Hốc đích cũng là một lối bên cạnh xe.',
+      'Bọc phần chọn hướng trong vòng for, giữ pick() ở đầu và drop() ở cuối.',
+      ['#######', '#....##', '#.##.##', '#.##.D#', '#o#####', '#.#####', '#######'], { x: 1, y: 5, huong: 0 },
+      bai(['pick()', 'for i in range(3):', '    go_wall()'].concat(thut(CHON), ['drop()'])),
+      bai(['pick()', 'go_wall()'].concat(CHON, ['drop()'])),
+      ['Lần rẽ thứ ba đưa mũi xe vào hốc đích.', 'Hộp đang cầm không làm cảm biến thấy vướng.']),
+    ben(10, 'Hành lang tự lái', 'Ba hành lang có khúc quanh khác nhau, có cả ngõ cụt. Một chương trình phải tới cờ ở cả ba sân: đi tới tường, hỏi hai bên để chọn hướng, hai bên đều chặn thì quay đầu.',
+      'Chương trình mới chọn được một lần. Lặp nó đủ số lần cho sân dài nhất.', SAN_TRUM, [{ x: 5, y: 5, huong: 0 }, { x: 3, y: 5, huong: 0 }, { x: 1, y: 3, huong: 0 }],
+      bai(['for i in range(4):', '    go_wall()'].concat(thut(CHON3))), bai(['go_wall()'].concat(CHON3)),
+      ['Một chương trình chung, không đếm khúc quanh của riêng sân nào.', 'Hai bên đều là tường thì u_turn().'])
+  ];
+  dsBen[3].hamCuaEmCan.push('to_gap');
+  dsBen[4].taoHam = ['to_left_gap']; dsBen[4].chinhCoDinh = true;
+  dsBen[6].chinhCoDinh = true;
+  [7, 9].forEach(function (i) { dsBen[i].hamCuaEmCan.push('u_turn'); });
+  var tay = nguon['khoang-cach.9'];
+  Object.assign(dsBen[8], { mucTieu: 'dua-vat', robot: copy(tay.robot), hamGoc: copy(tay.hamGoc).concat(['left_clear', 'right_clear']) });
+  dsBen[8].hamCuaEmCan.push('pick', 'drop');
+  dsBen.forEach(function (m) { m.hamCuaEmCan.push('go_wall'); });
+  M.them(dsBen);
+  // Gói thử thách hai robot (man-doi-*.js) chỉ khai báo trong ngân hàng; chèn chương và gói vào lộ trình xuất bản ở đây.
+  (M.chuongThem || []).forEach(function (c) {
+    TT.thuTu.splice(TT.thuTu.indexOf(c.sau) + 1, 0, c.ma);
+    TT.dot2.splice(TT.dot2.indexOf(c.sau) + 1, 0, c.ma);
+    TT.ten[c.ma] = c.ten;
+    TT.goi.splice(TT.goi.findIndex(function (g) { return g.chuong.indexOf(c.sau) >= 0; }) + 1, 0, c.goi);
+    M.them(c.ds);
   });
-  M.them(side);
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
 
   // Trùm máy ném: đọc màu TRƯỚC khi nạp; ba kho đổi thứ tự màu/tầm.

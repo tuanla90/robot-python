@@ -47,7 +47,7 @@ Kế hoạch và lộ trình của Đường học nằm trong `hoc/`: `LO-TRINH
 
 ### Lộ trình xuất bản
 
-Game nạp `hoc/lo-trinh-hoc.js` sau ngân hàng `man-*.js`: **380 màn / 38 chương**, có gói Mê cung riêng sau Cảm biến. Màn 1–9 chỉ chấm một sân; bài nhiều sân nằm ở màn 10. Giữ mã `ma` khi đổi vị trí để sao và tiến độ vẫn thuộc đúng bài. Gói mới không tăng ngưỡng sao mở các gói cũ.
+Game nạp `hoc/lo-trinh-hoc.js` sau ngân hàng `man-*.js`: **410 màn / 41 chương**, có gói Cảm biến hai bên và gói Mê cung riêng sau Cảm biến, cùng hai gói thử thách hai robot khác thân (Đội vượt hố và băng chuyền sau Thân nhện, Đội tay gắp và máy ném sau Lắp ráp: Thân + Tay; khai báo trong `man-doi-*.js`, chèn vào lộ trình ở `lo-trinh-hoc.js`). Màn 1–9 chỉ chấm một sân; bài nhiều sân nằm ở màn 10. Giữ mã `ma` khi đổi vị trí để sao và tiến độ vẫn thuộc đúng bài. Gói mới không tăng ngưỡng sao mở các gói cũ.
 
 Khi viết công cụ đọc nội dung game, dùng `require('./hoc/lo-trinh-hoc.js')`; đọc riêng `man-*.js` là ngân hàng bài trước khi sắp lộ trình. Xem [bản rà soát và thay đổi](docs/thiet-ke/ra-soat-do-kho-2026-10-23.md).
 
