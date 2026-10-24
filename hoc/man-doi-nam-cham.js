@@ -27,7 +27,7 @@
      6  Giao cho kịp            [R2 khóa] gọi hold_on(3); em viết R1 giao trong 3 nhịp (lệnh nam châm chung nhịp với lệnh quay) rồi tránh lối
      7  Sửa thứ tự giao         [R2 khóa] sửa hàm của màn lane_left(): thả trước khi quay nên vật vướng rào
      8  Sửa hàm dò cực          [R1 khóa] sửa hàm của màn scan_wait(n) viết ngược điều kiện; em viết R2 dọn khúc gỗ
-     9  Hốc nhường đường        [R2 khóa] cờ riêng doi[i].co: hai robot đổi chỗ; sửa duck() quên gắp gỗ trong hốc; em viết R1 hút sắt chắn lối, chờ rồi đi
+     9  Hốc nhường đường        [R2 khóa] cờ riêng doi[i].co: hai robot đổi chỗ; sửa tuck_in() quên gắp gỗ trong hốc; em viết R1 hút sắt chắn lối, chờ rồi đi
      10 Ca đêm nam châm         trùm ba sân, mỗi sân hai vật: sắt + gỗ / hai vật nam châm sau rào / gỗ chắn đầu; cả đội dùng hold_on, hand_off, plan_b
 
    Cần cả đội: vật R1 kéo nằm sau rào / hố (R2 không với tới), đích nằm trong hốc chỉ R2 với tới hay R1 không mang được gỗ (tools/do-mot-robot.mjs).
@@ -390,13 +390,13 @@
     man({
       so: 9, chuong: 'che-' + CHUONG, ten: 'Hốc nhường đường', khoa: 1, mucTieu: 'toi-co',
       co: [[{ x: 9, y: 2 }], [{ x: 1, y: 2 }]],
-      deBai: 'Hai robot đổi chỗ: R1 về cờ bên phải, R2 về cờ bên trái, mỗi robot chỉ tính đúng cờ của mình. Lối đi rộng một ô, có một hốc chứa khúc gỗ. R2 tự động gọi duck(): tới hốc, gắp gỗ rồi vào hốc nhường đường, nhưng duck() quên gắp gỗ. Sửa duck(), rồi viết R1: hút vật sắt chắn lối, đi tới khi bị chặn, chờ R2 vào hốc rồi đi tiếp.',
-      veMaMau: 'Chạy thử: R2 đâm vào khúc gỗ. Sửa hàm duck rồi viết chương trình R1.',
+      deBai: 'Hai robot đổi chỗ: R1 về cờ bên phải, R2 về cờ bên trái, mỗi robot chỉ tính đúng cờ của mình. Lối đi rộng một ô, có một hốc chứa khúc gỗ. R2 tự động gọi tuck_in(): tới hốc, gắp gỗ rồi vào hốc nhường đường, nhưng tuck_in() quên gắp gỗ. Sửa tuck_in(), rồi viết R1: hút vật sắt chắn lối, đi tới khi bị chặn, chờ R2 vào hốc rồi đi tiếp.',
+      veMaMau: 'Chạy thử: R2 đâm vào khúc gỗ. Sửa hàm tuck_in rồi viết chương trình R1.',
       san: ['###########', '#####o#####', '#F..o....F#', '###########'],
       vatChat: ['...........', '.....g.....', '....s......', '...........'],
       bd: [{ x: 2, y: 2, huong: 1 }, { x: 8, y: 2, huong: 3 }],
-      maMau: B([], ['duck()', 'for i in range(3):', '    wait()', 'back()', 'turn_left()', 'forward(4)'], [H('duck', [], ['forward(3)', 'turn_right()', 'move()'])]),
-      loiGiai: B(['magnet_n()', 'wait()', 'go_wall()', 'while not front_clear():', '    wait()', 'go_wall()'], ['duck()', 'for i in range(3):', '    wait()', 'back()', 'turn_left()', 'forward(4)'], [H('duck', [], ['forward(3)', 'turn_right()', 'pick()', 'move()'])]),
+      maMau: B([], ['tuck_in()', 'for i in range(3):', '    wait()', 'back()', 'turn_left()', 'forward(4)'], [H('tuck_in', [], ['forward(3)', 'turn_right()', 'move()'])]),
+      loiGiai: B(['magnet_n()', 'wait()', 'go_wall()', 'while not front_clear():', '    wait()', 'go_wall()'], ['tuck_in()', 'for i in range(3):', '    wait()', 'back()', 'turn_left()', 'forward(4)'], [H('tuck_in', [], ['forward(3)', 'turn_right()', 'pick()', 'move()'])]),
       hamCuaEmCan: ['forward', 'turn_right', 'turn_left', 'pick', 'move', 'back', 'go_wall'],
       goiY: ['Gỗ chiếm ô hốc: phải pick() trước khi move() vào hốc.', 'R1: go_wall() dừng sau lưng R2; while not front_clear(): wait(); rồi go_wall() lần nữa.']
     }),

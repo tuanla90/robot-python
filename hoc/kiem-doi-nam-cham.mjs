@@ -150,7 +150,7 @@ const LOI_SAI = {
     { moTa: 'scan_wait chờ quá ít (2 nhịp)', doi: [['scan_wait(2)', 'hand_off()'], null], ket: 'thua' }
   ],
   'che-doi-nam-cham.9': [
-    { moTa: 'Chưa sửa duck: R2 đâm vào khúc gỗ', doi: [null, null], hamMan: [H('duck', [], ['forward(3)', 'turn_right()', 'move()'])], ket: 'thua' },
+    { moTa: 'Chưa sửa tuck_in: R2 đâm vào khúc gỗ', doi: [null, null], hamMan: [H('tuck_in', [], ['forward(3)', 'turn_right()', 'move()'])], ket: 'thua' },
     { moTa: 'R1 không hút vật sắt chắn lối', doi: [['go_wall()', 'while not front_clear():', '    wait()', 'go_wall()'], null], ket: 'thua' },
     { moTa: 'R1 dừng sau lưng R2 rồi thôi', doi: [['magnet_n()', 'wait()', 'go_wall()'], null], ket: 'thua' }
   ],
@@ -223,7 +223,7 @@ kiem('màn 4–6 và trùm dùng các hàm vừa chế (hold_on ở cả bốn; 
 }));
 kiem('trùm chương 2 không trùng thân vòng lặp của màn nào trước nó', ds2.slice(0, 9).every((m) => J(m.loiGiai.doi.map((d) => d.chinh.slice(1))) !== J(man('che-doi-nam-cham.10').loiGiai.doi.map((d) => d.chinh.slice(1)))));
 kiem('một màn luyện có robot khóa gọi hàm vừa chế (che-doi-nam-cham.6)', man('che-doi-nam-cham.6').doi[1].coDinh && J(man('che-doi-nam-cham.6').maMau.doi[1]).includes('hold_on('));
-const HAM_MAN = { 'che-doi-nam-cham.7': 'lane_left', 'che-doi-nam-cham.8': 'scan_wait', 'che-doi-nam-cham.9': 'duck' };
+const HAM_MAN = { 'che-doi-nam-cham.7': 'lane_left', 'che-doi-nam-cham.8': 'scan_wait', 'che-doi-nam-cham.9': 'tuck_in' };
 for (const ma of Object.keys(HAM_MAN)) {
   const m = man(ma), ten = HAM_MAN[ma];
   const mau = m.maMau.hamCuaMan.find((h) => h.ten === ten), lg = m.loiGiai.hamCuaMan.find((h) => h.ten === ten);
