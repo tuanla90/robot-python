@@ -13,7 +13,7 @@
      4  Tắt băng cho bạn      toi-co     R1 chạy tới chỗ ngắm rồi bắn; omni cứ thử đi ngược băng (go_wall) tới khi băng tắt
      5  Chặn thùng giúp bạn   day-thung  omni đứng chắn dưới ô đích để thùng trượt dừng đúng chỗ; súng không có cảm biến nên phải chờ đủ nhịp
      6  Bạn tới thì bắn       toi-co     R1 khóa có cảm biến: chờ thấy omni trước mặt mới quay sang bắn nút; omni tới đúng chỗ rồi chờ cửa
-     7  Sửa điều kiện chờ     toi-co     R1 khóa tựa lưng vào tường bắn theo chu kỳ (cửa mở, đóng, mở); omni viết nhầm `while front_clear()`
+     7  Canh cửa theo chu kỳ  toi-co     R1 khóa tựa lưng vào tường bắn theo chu kỳ (cửa mở, đóng, mở); omni viết nhầm `while front_clear()`
      8  Sửa giờ bắn           toi-co     R2 khóa đi vào khoang giữa hai cửa (một nút: cửa mở đóng lại, cửa đóng mở ra); R1 bắn sớm thì omni kẹt ngoài
      9  Bốn cửa bốn nút       toi-co     mỗi nút một cửa (cfg.noi); viết thẳng tràn khung, hai robot cùng lặp
      10 Ca mở đường           toi-co     trùm ba sân: nút bên trái hay bên phải, cửa xa gần, sân ba là băng chuyền thay cửa; một chương trình mỗi robot
@@ -185,7 +185,7 @@
       goiY: ['Omni chưa tới trước mũi xe súng thì cửa không bao giờ mở.', 'Tới nơi thì chờ bằng while not front_clear(): wait(), không đoán số nhịp.']
     }),
     man({
-      so: 7, ten: 'Sửa điều kiện chờ', khoa: 0,
+      so: 7, ten: 'Canh cửa theo chu kỳ', khoa: 0,
       deBai: 'Xe súng tựa lưng vào tường, cứ ba nhịp bắn nút một lần: cửa mở, đóng, rồi mở lại. Omni tới cửa đúng lúc cửa đang đóng nhưng lại lao vào cửa. Sửa điều kiện chờ của omni.',
       veMaMau: 'R1 bị khóa. Chạy thử, xem omni đâm cửa ở nhịp nào rồi sửa chương trình R2.',
       san: ['#N#######', '#.F.....#', '####C##.#', '####.##.#', '####F##.#', '#########'],
