@@ -10,8 +10,9 @@
       'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich',
       'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'khoang-cach', 'che-cam-bien',
       'robot-hoan-thien', 'hai-robot', 'mau', 'che-mau', 'rap-nao', 'nam-cham',
-      'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay',
+      'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'doi-gap-nem',
       'che-drone', 'drone', 'flycam', 'rap-du'].forEach(function (n) { require('./man-' + n + '.js'); });
+    require('./man-doi-ho-bang.js'); require('./man-doi-gap-nem.js');
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -61,15 +62,13 @@
   // Luyện trên một tình huống đủ tiêu biểu; phần khái quát hóa dành cho trùm.
   M.danhSach.forEach(function (m) { if (m.so < 10) motSan(m, 1); });
 
-  // Cảm biến: sửa while trước, quan sát cảm biến hông sau; chưa học tìm đường.
   sua('khoang-cach.7', {
-    ten: 'Nhìn lối bên phải', deBai: 'right_clear() hỏi ô bên phải theo hướng xe đang quay. Nếu bên phải trống, rẽ phải rồi đi tới cờ. Chỉ cần xử lý một góc, chưa cần dò mê cung.',
-    veMaMau: 'Điền lệnh rẽ và tiến vào nhánh if.', san: ['#####', '#..F#', '#####'],
-    batDau: { x: 1, y: 1, huong: 0 }, maMau: bai(['if right_clear():', '    wait()']),
-    loiGiai: bai(['if right_clear():', '    turn_right()', '    go_wall()']),
-    hamCuaEmCan: ['move', 'turn_right', 'go_wall'],
-    goiY: ['Bên phải được tính theo mặt xe, không phải luôn là bên phải màn hình.', 'Rẽ phải trước rồi dùng go_wall().']
+    ten:'Qua hành lang chữ L', deBai:'Dùng cảm biến phía trước để đi hết hành lang chữ L. Lặp lại câu hỏi sau mỗi bước; khi gặp tường, rẽ phải rồi tiếp tục tới cờ.',
+    veMaMau:'Chương trình chỉ đi một đoạn. Hoàn thành cả đường bằng front_clear().', san:copy(nguon['khoang-cach.8'].san), batDau:copy(nguon['khoang-cach.8'].batDau),
+    maMau:{chinh:['while front_clear():','    move()']}, loiGiai:copy(nguon['khoang-cach.8'].loiGiai), hamCuaEmCan:['move','turn_right'], sao:{o:10,nhip:24},
+    goiY:['Dùng while front_clear() cho đoạn đầu và đoạn sau. Giữa hai đoạn cần turn_right().']
   });
+  // Gói cảm biến hai bên: từ quan sát một hướng tới so sánh hai bên, chưa áp dụng quy tắc mê cung.
   // Trùm cảm biến: giao hàng qua ba hành lang; không giấu một thuật toán mê cung.
   var giao = nguon['khoang-cach.9'];
   sua('khoang-cach.10', {
@@ -101,9 +100,11 @@
   xep('che-cam-bien', [1, 2, 7, 3, 4, 8, 6, 5, 9, 10]);
 
   // Mê cung là một gói riêng, sau cảm biến; follow_right được học ở đây.
-  TT.thuTu.splice(TT.thuTu.indexOf('che-cam-bien') + 1, 0, 'me-cung');
+  TT.thuTu.splice(TT.thuTu.indexOf('che-cam-bien') + 1, 0, 'cam-bien-ben', 'me-cung');
+  TT.ten['cam-bien-ben'] = 'Cảm biến hai bên';
   TT.ten['me-cung'] = 'Mê cung';
   TT.goi.splice(TT.goi.findIndex(function (g) { return g.ma === 'cam-bien'; }) + 1, 0,
+    { ma: 'cam-bien-ben', ten: 'Cảm biến hai bên', loai: 'khai-niem', sao: 135, mua: 'mua-1', chuong: ['cam-bien-ben'], hinh: 'khoang-cach', khongTangNguong: true },
     // Gói mới không đẩy tăng ngưỡng sao của những gói cũ đã mở.
     { ma: 'me-cung', ten: 'Mê cung', loai: 'khai-niem', sao: 135, mua: 'mua-1', chuong: ['me-cung'], hinh: 'me-cung', khongTangNguong: true });
   var FOLLOW = ['if right_clear():', '    turn_right()', '    move()', 'elif front_clear():', '    move()', 'else:', '    turn_left()'];
@@ -151,6 +152,24 @@
   ds[5].chinhCoDinh = true;
   [6, 7, 9].forEach(function (i) { ds[i].hamCuaEmCan.push('follow_right'); });
   M.them(ds);
+  // Học riêng hai cảm biến cạnh trước thuật toán mê cung: mỗi bài tập trung một quyết định quan sát.
+  var sideTemplates = [
+    ['Bên trái xe','left_clear'],['Bên phải xe','right_clear'],['Trái theo hướng xe','left_clear'],['Phải theo hướng xe','right_clear'],
+    ['Đổi hướng nhìn','left_clear'],['Hỏi cảm biến bên','right_clear'],['Lối trái đang mở','left_clear'],['Lối phải đang mở','right_clear'],
+    ['So sánh hai bên','left_clear'],['Chuẩn bị dò đường','right_clear']
+  ];
+  var side = sideTemplates.map(function (x,i) {
+    var m = copy(nguon['khoang-cach.8']);
+    m.chuong='cam-bien-ben'; m.so=i+1; m.ma=undefined; m.id=undefined; m.ten=x[0];
+    m.deBai='Trong màn này, dùng '+x[1]+'() để hỏi ô cạnh xe. Cảm biến tính theo hướng xe, không theo mép màn hình.';
+    m.veMaMau='Chạy thử rồi hoàn thành chương trình đã có sẵn.';
+    m.hamGoc=m.hamGoc.concat(['left_clear','right_clear']).filter(function (v,j,a) { return a.indexOf(v)===j; });
+    m.loiGiai=copy(nguon['khoang-cach.8'].loiGiai); m.maMau=copy(nguon['khoang-cach.8'].maMau);
+    m.loiSai=[]; m.hang=i<3?'lam-quen':i<6?'luyen':i<9?'bien-the':'trum'; m.phienBanNoiDung=2;
+    m.nhipTheo=undefined; m.nhipTheoLoiGiai=undefined;
+    return M.chuanHoa(m);
+  });
+  M.them(side);
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
 
   // Trùm máy ném: đọc màu TRƯỚC khi nạp; ba kho đổi thứ tự màu/tầm.

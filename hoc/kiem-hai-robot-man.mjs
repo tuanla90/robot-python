@@ -55,7 +55,7 @@ function chayChuoi(m, si, chuoi) {
   const nhieu = Array.isArray(m.san[0]);
   return SanHoc.chay({
     san: nhieu ? m.san[si] : m.san, mucTieu: m.mucTieu, nhipToiDa: 200,
-    doi: m.doi.map((d) => ({ batDau: nhieu ? d.batDau[si] : d.batDau, loaiRobot: 'banh', hamGoc: m.hamGoc, camBien: m.robot.camBien }))
+    doi: m.doi.map((d) => ({ batDau: nhieu ? d.batDau[si] : d.batDau, loaiRobot: d.loaiRobot || m.loaiRobot || 'banh', hamGoc: d.hamGoc || m.hamGoc, robot: d.robot || m.robot, camBien: (d.robot || m.robot).camBien }))
   }, chuoiThanhMaDoi(chuoi));
 }
 
@@ -89,9 +89,10 @@ kiem('chương hai-robot đứng ngay sau robot-hoan-thien trong thuTu, thuộc 
     ThuTu.goi.findIndex((g) => g.ma === 'hai-robot') === ThuTu.goi.findIndex((g) => g.ma === 'robot') + 1 && J(ThuTu.goi.find((g) => g.ma === 'hai-robot').chuong) === '["hai-robot"]');
 kiem('10 màn, hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', ds.length === 10 && J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
 kiem('mọi màn: hai robot (man.doi 2 phần, mỗi phần có batDau), robot chung { hai-banh, kep, khoang-cach ở hông }, khay = bánh + tay + ba cảm biến, for / if / while, Xưởng mở, khung 10 ô',
-  ds.every((m) => Array.isArray(m.doi) && m.doi.length === 2 && m.doi.every((d) => d.batDau) && J(m.robot) === J({ than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }) &&
-    J(m.hamGoc) === J(['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear']) &&
+  ds.every((m) => Array.isArray(m.doi) && m.doi.length === 2 && m.doi.every((d) => d.batDau) && (m.doi.some((d) => d.loaiRobot) || J(m.robot) === J({ than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] })) &&
+    (m.doi.some((d) => d.hamGoc) || J(m.hamGoc) === J(['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear'])) &&
     J(m.cauTruc) === '["for","if","while"]' && m.moXuong === true && m.camHamCuaEm === false && m.khung.chinh === 10 && ['toi-co', 'dua-vat'].includes(m.mucTieu)));
+kiem('11.4 và trùm dùng xe dị loại với phần cứng riêng từng xe', man(4).doi[0].loaiRobot === 'omni' && man(4).doi[1].loaiRobot === 'banh' && man(10).doi[0].loaiRobot === 'banh' && man(10).doi[1].loaiRobot === 'omni' && man(10).doi[1].hamGoc.includes('slide_left'));
 kiem('man.batDau cấp ngoài là của R1 (mã đọc màn một robot không vỡ)', ds.every((m) => J(m.batDau) === J(m.doi[0].batDau)));
 kiem('màn nhiều sân: đúng 3 sân cùng khung, batDau mỗi robot là mảng 3, nhipTheo "tong"; màn một sân không có nhipTheo',
   ds.every((m) => (Array.isArray(m.san[0])

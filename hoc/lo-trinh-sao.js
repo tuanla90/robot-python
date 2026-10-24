@@ -15,7 +15,7 @@
   },
   "khoang-cach.7": {
     "o": 10,
-    "nhip": 3
+    "nhip": 9
   },
   "khoang-cach.6": {
     "o": 10,
@@ -64,6 +64,46 @@
   "che-cam-bien.9": {
     "o": 25,
     "nhip": 12
+  },
+  "cam-bien-ben.1": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.2": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.3": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.4": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.5": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.6": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.7": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.8": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.9": {
+    "o": 10,
+    "nhip": 9
+  },
+  "cam-bien-ben.10": {
+    "o": 10,
+    "nhip": 9
   },
   "me-cung.1": {
     "o": 8,

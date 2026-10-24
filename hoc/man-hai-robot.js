@@ -66,6 +66,9 @@
     if (nhieuSan) m.nhipTheo = 'tong';
     m.nhipTheoLoiGiai = true;
     m.doi = bd.map(function (b) { return { batDau: b }; });
+    if (m.loaiR1) { m.doi[0].loaiRobot = m.loaiR1; m.doi[0].robot = sao(m.robotR1); m.doi[0].hamGoc = m.hamGocR1.slice(); delete m.loaiR1; delete m.robotR1; delete m.hamGocR1; }
+    if (m.loaiR2) { m.doi[1].loaiRobot = m.loaiR2; m.doi[1].robot = sao(m.robotR2); m.doi[1].hamGoc = m.hamGocR2.slice(); delete m.loaiR2; delete m.robotR2; delete m.hamGocR2; }
+    if (m.doi[0].loaiRobot) { m.loaiRobot=m.doi[0].loaiRobot; m.robot=sao(m.doi[0].robot); m.hamGoc=m.doi[0].hamGoc.slice(); }
     m.batDau = bd[0];                                                       // cấp ngoài = R1 (mã đọc màn một robot)
     m.maMau = m.maMau || B([], []);
     return ManHoc.chuanHoa(m);
@@ -201,7 +204,7 @@
 
     /* ------------------------------------------------------------ hàng 2: luyện */
     man({
-      so: 4, ten: 'Chờ hàng', hang: 'luyen',
+      so: 4, ten: 'Xe bánh và omni chờ hàng', hang: 'luyen', loaiR1:'omni', robotR1:{than:'omni',tay:'kep',camBien:[{ma:'khoang-cach',o:'hong'}]}, hamGocR1:nhieu(BANH,['slide_left','slide_right'],TAY,BA_HUONG), loaiR2:'banh', robotR2:ROBOT, hamGocR2:nhieu(BANH,TAY,BA_HUONG),
       hamCuaEmCan: ['pick', 'go_wall', 'turn_right', 'drop', 'u_turn', 'move'],
       mucTieu: 'dua-vat',
       deBai: 'Đường của R1 ở mỗi sân dài ngắn khác nhau. R1 mang vật lên ô giao trước mặt R2; R2 mang vật tới ô đích. Một chương trình phải đúng cả ba sân.',
@@ -305,7 +308,7 @@
 
     /* ------------------------------------------------------------ trùm */
     man({
-      so: 10, ten: 'Ca làm đôi', hang: 'trum',
+      so: 10, ten: 'Ca làm đôi: bánh và omni', hang: 'trum', loaiR1:'banh', robotR1:ROBOT, hamGocR1:nhieu(BANH,TAY,BA_HUONG), loaiR2:'omni', robotR2:{than:'omni',tay:'kep',camBien:[{ma:'khoang-cach',o:'hong'}]}, hamGocR2:nhieu(BANH,['slide_left','slide_right'],TAY,BA_HUONG),
       hamCuaEmCan: ['go_wall', 'pick', 'u_turn', 'turn_right', 'drop', 'back'],
       mucTieu: 'dua-vat',
       deBai: 'R1 xuống cuối làn lấy vật, mang về ô giao. R2 nhận vật rồi mang tới ô đích ở cuối hàng trên. Làn của R1 và đường của R2 ở mỗi sân dài ngắn khác nhau.',
