@@ -74,7 +74,9 @@ console.log('— chương doi-drone');
   const m = man('doi-drone.3');
   sai(m, 'xe không chờ: go_wall() kẹt ngay ô đầu, ném hụt', ['go_wall()', 'toss(2)'], null, ['chua-dua-vat']);
   sai(m, 'xe chờ sai điều kiện (while front_clear()): không chờ gì cả', CHO.concat(['go_wall()', 'toss(2)']), null);
-  sai(m, 'drone nhấc hộp chắn mà không đem cất vào đích', null, ['ship("LUU")'], ['chua-dua-vat']);
+  sai(m, 'drone nhấc hộp chắn mà không đem cất vào đích', null, ['ship("UUU")'], ['chua-dua-vat']);
+  // lối tắt cũ (bộ dò một robot tìm ra): xe ném hộp của mình ra lối, nạp hộp chắn rồi đứng trên giếng ném xuống ô đích; nay ô đích xa 4 ô, quá tầm 3
+  sai(m, 'xe làm một mình: dời hộp chắn rồi ném xuống giếng (ô đích quá tầm)', ['toss(2)', 'load()', 'wait()', 'move()', 'turn_right()', 'toss(3)', 'turn_left()', 'load()', 'wait()', 'go_wall()', 'toss(2)'], []);
 }
 {
   const m = man('doi-drone.4');
@@ -170,6 +172,17 @@ const RECEIVE = H('receive', [], CHO.concat(['load()', 'wait()']));
 }
 {
   const m = man('che-doi-drone.6');
+  // bộ dò một robot dò drone ở màn này hết hạn: kiểm bằng loang ô — drone không qua tường cao nên không tới được ô đích nào; xe bị hàng rào chặn, không tới cạnh hộp nào
+  {
+    const san = m.san, o = (x, y) => (san[y] || '')[x] || '#';
+    const loang = (bd, qua) => { const da = new Set([bd.x + ',' + bd.y]), hang = [bd]; while (hang.length) { const p = hang.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const x = p.x + dx, y = p.y + dy, k = x + ',' + y; if (!da.has(k) && qua(o(x, y))) { da.add(k); hang.push({ x, y }); } } } return da; };
+    const dDrone = loang(m.doi[1].batDau, (c) => c !== '#');
+    const dXe = loang(m.doi[0].batDau, (c) => c === '.' || c === 'D' || c === 'P');
+    const hop = []; san.forEach((h, y) => [...h].forEach((c, x) => { if (c === 'o') hop.push({ x, y }); }));
+    const dich = []; san.forEach((h, y) => [...h].forEach((c, x) => { if (c === 'D') dich.push(x + ',' + y); }));
+    kiem(m.ma + ': drone một mình không bay tới ô đích nào (ô đích trong hốc tường cao)', dich.every((k) => !dDrone.has(k)));
+    kiem(m.ma + ': xe một mình không tới cạnh hộp nào (hàng rào chặn)', hop.every((h) => [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => !dXe.has((h.x + dx) + ',' + (h.y + dy)))));
+  }
   sai(m, 'drone bay thẳng về theo hàng hộp (không lên dải ô sạc): hết pin', null, ['for i in range(3):', '    courier("RRRR", "LLLLL")'], ['het-pin']);
   const t = [].concat(...[0, 1, 2].map(() => ['receive()', 'turn_left()', 'toss(2)', 'turn_right()', 'move()']));
   sai(m, 'xe viết thẳng ba chuyến: tràn khung', t, null, ['tran-khung']);

@@ -167,12 +167,13 @@
     }),
     man({
       so: 3, ten: 'Nhấc hộp chắn lối',
-      deBai: 'Rổ của xe đã có một hộp, nhưng một hộp sắt chắn ngay trước mũi xe. Drone bay qua rào, nhấc hộp chắn đem thả vào ô đích bên dưới. Xe chờ tới khi lối trống, tiến sát tường rồi ném hộp của mình vào đích sau tường.',
+      deBai: 'Rổ của xe đã có một hộp, nhưng một hộp sắt chắn ngay trước mũi xe. Drone bay lên qua rào, nhấc hộp chắn đem thả vào ô đích dưới đáy giếng, xa hơn tầm ném của xe. Xe chờ tới khi lối trống, tiến sát tường rồi ném hộp của mình vào đích sau tường.',
       veMaMau: 'Chạy thử: xe kẹt ngay ô đầu nên ném hụt. Viết chương trình drone và thêm vòng chờ cho xe.',
-      san: ['##########', '#.o....#D#', '##=#######', '##D.######', '##########'], vatChat: ['..........', '..s.......', '..........', '..........', '..........'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 3, huong: 0 }], ro: true,
+      san: ['##########', '#.o....#D#', '##=#######', '##.#######', '##.#######', '##D#######', '##########'],
+      vatChat: ['..........', '..s.......', '..........', '..........', '..........', '..........', '..........'],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }], ro: true,
       maMau: B(['go_wall()', 'toss(2)'], []),
-      loiGiai: B(['while not front_clear():', '    wait()', 'go_wall()', 'toss(2)'], ['ship("LUUDD")']),
+      loiGiai: B(['while not front_clear():', '    wait()', 'go_wall()', 'toss(2)'], ['ship("UUUDDDD")']),
       hamCuaEmCan: ['go_wall', 'toss', 'walk', 'go', 'ship'],
       goiY: ['Lúc đầu trước mũi xe có hộp: chờ cho tới khi trước mặt TRỐNG.', 'while not front_clear(): wait() rồi go_wall() và toss(2).']
     }),
