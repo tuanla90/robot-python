@@ -83,7 +83,7 @@
       soToiDa: function (ten, k) { return S.soMax(ten, k); },                                    // aim(n) chỉ nhận 1–3
       listChu: function () { return !!TP.coMauCua(S.man); },                                     // danh sách cho phần tử là màu (màn có color() / look()): bảng chọn phần tử có thêm hàng màu
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
-      chiDoc: function () { return !!(S.man && S.man.chinhCoDinh); },                           // chương trình chính cố định (màn chế lệnh): chỉ đọc, sửa hàm trong Xưởng
+      chiDoc: khungCoDinh,                                                                      // chương trình chính cố định (màn chế lệnh) hay robot tự động khóa (doi[i].coDinh): chỉ đọc
       khiChiDoc: baoChinhCoDinh,
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); },
       khiCamNhip: function (ly) { toast(ly, 'bad', 3400); },                                  // mỗi bộ phận một lệnh mỗi nhịp: chèn bị từ chối
@@ -91,7 +91,7 @@
     });
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) {
-        if (S.man && S.man.chinhCoDinh) { baoChinhCoDinh(); return; }
+        if (khungCoDinh()) { baoChinhCoDinh(); return; }
         if (S.ed.chen(txt) === false) toast(t('choi.dayKhung'), 'bad');           // null = bộ phận đã có lệnh trong nhịp (khiCamNhip đã báo)
       },
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
@@ -142,6 +142,7 @@
       b.setAttribute('data-nut', 'xe-' + (i + 1)); b.setAttribute('aria-label', t('choi.xeTab', { n: i + 1 }));
       b.style.setProperty('--mx', SanVe.MAU_XE[i % SanVe.MAU_XE.length]);
       b.addEventListener('click', function () { chonXeCode(i); });
+      if (r.coDinh) { b.classList.add('khoa'); b.appendChild(Ve.khoa(1, true)); }        // robot tự động: chương trình khóa, vẫn mở xem được
       E.xeTabs.appendChild(b);
     });
     veTabXe();
@@ -203,7 +204,7 @@
     var nhap = Luu.docNhap(m.ma);
     if (m.doi) {                                                                       // nhiều robot: mỗi robot một chương trình chính, hàm của màn dùng chung
       var nd = nhap && nhap.doi && nhap.doi.length === m.doi.length ? nhap.doi : null, md = (m.maMau && m.maMau.doi) || [];
-      var doi = m.doi.map(function (r, i) { return { chinh: nd ? nd[i].chinh.slice() : ((md[i] && md[i].chinh) || []).slice() }; });
+      var doi = m.doi.map(function (r, i) { return { chinh: nd && !r.coDinh ? nd[i].chinh.slice() : ((md[i] && md[i].chinh) || []).slice() }; });   // robot tự động khóa: luôn chạy đúng chương trình của màn
       var hm = nhap ? nhap.hamCuaMan : ((m.maMau && m.maMau.hamCuaMan) || []).map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; });
       return { doi: doi, chinh: doi[0].chinh, hamCuaMan: hm };
     }
@@ -320,7 +321,8 @@
       doi: m.doi ? m.doi.map(function (r, k) {                                       // nhiều robot: hình xe, chỗ xuất phát của từng robot (san-ve.js vẽ đủ, R1 xanh lơ, R2 cam)
         var mk = manCuaXe(m, k);
         return { robot: VeRobot.cauHinhCua(mk), batDau: Array.isArray(mk.batDau) && nhieu ? mk.batDau[i] : mk.batDau, loaiRobot: mk.loaiRobot || 'banh',
-          pin: Array.isArray(mk.pin) ? mk.pin[i] : mk.pin, danToiDa: mk.danToiDa };
+          pin: Array.isArray(mk.pin) ? mk.pin[i] : mk.pin, danToiDa: mk.danToiDa,
+          roBanDau: Array.isArray(mk.roBanDau) ? mk.roBanDau[i] : mk.roBanDau, co: SanHoc.coCuaSan(mk.co, i, nhieu) };          // rổ có sẵn vật, cờ riêng của robot này
       }) : undefined
     };
   }
@@ -386,7 +388,12 @@
   }
   function anToast() { clearTimeout(toastHen); E.toast.className = 'toast'; }
   /** Chạm / kéo thả vào chương trình chính khi màn khai chinhCoDinh: nhắc rằng chỉ sửa được hàm trong Xưởng. */
-  function baoChinhCoDinh() { toast(t('choi.chinhCoDinh'), '', 2800); }
+  function baoChinhCoDinh() {
+    var xeKhoa = S.man && S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh;
+    toast(xeKhoa ? t('choi.xeCoDinh', { n: S.xe + 1 }) : t('choi.chinhCoDinh'), '', 3200);
+  }
+  /** Khung chương trình đang xem chỉ đọc: chương trình chính cố định (màn chế lệnh) hay robot tự động khóa của màn nhiều robot (man.doi[i].coDinh). */
+  function khungCoDinh() { return !!(S.man && (S.man.chinhCoDinh || (S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh))); }
 
   /* ------------------------------------------------------------- bong bóng */
   // Mọi bong bóng (đề bài, gợi ý, chẩn đoán sau khi chạy) đè lên cột KHỐI LỆNH (E.bongD), kho khối tạm ẩn khi bong bóng mở;

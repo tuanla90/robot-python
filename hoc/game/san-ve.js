@@ -130,7 +130,8 @@
       this.cfgXe = Array.isArray(cfg.doi) ? cfg.doi.map(function (r, i) {
         var l = r.loaiRobot || 'banh', rb = r.robot || { than: l === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] };
         return { robot: Object.assign({}, rb, { son: rb.son || SON_XE[i % SON_XE.length] }), bd: r.batDau, loai: l,
-          pin: typeof r.pin === 'number' && r.pin > 0 ? r.pin : null, danToiDa: typeof r.danToiDa === 'number' ? r.danToiDa : null };
+          pin: typeof r.pin === 'number' && r.pin > 0 ? r.pin : null, danToiDa: typeof r.danToiDa === 'number' ? r.danToiDa : null,
+          roBanDau: r.roBanDau || null, co: Array.isArray(r.co) ? r.co : null };
       }) : null;
       this.xe = null; this.xeDang = 0;
       if (this.cfgXe) this.apCfgXe(0);
@@ -138,7 +139,7 @@
       for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
         var ch = rows[y][x];
         if (ch === 'F' && !this.cfg.co) this.cfg.co = { x: x, y: y };
-        if (ch === 'F') this.cfg.cacCo.push({ x: x, y: y });                  // màn nhiều robot có nhiều cờ (mỗi robot một cờ): vẽ hết
+        if (ch === 'F') this.cfg.cacCo.push({ x: x, y: y, chu: this.chuCo(x, y) });       // màn nhiều robot có nhiều cờ (mỗi robot một cờ): vẽ hết; cờ riêng mang màu robot chủ
         if (ch === 'P') this.cfg.sac.push({ x: x, y: y });
         if (ch === 'D' || ch === 'X' || ch === 'h') this.cfg.dich.push({ x: x, y: y, mau: this.mauNen(x, y) });
         if (ch === 'o' || ch === 'X') {
@@ -152,6 +153,11 @@
         var rb = typeof cfg.roBanDau === 'object' ? cfg.roBanDau : {};
         this.vat0.push({ id: this.vat0.length + 1, x: cfg.batDau.x, y: cfg.batDau.y, mau: chuanMau(rb.mau), chat: rb.chat === 'sat' ? 'sat' : 'go', ro: true });
       }
+      (this.cfgXe || []).forEach(function (xe) {                   // nhiều robot: rổ có sẵn vật của từng xe máy ném, cùng thứ tự id với SanHoc.chay (R1 trước)
+        if (!xe.roBanDau || xe.robot.tay !== 'nem') return;
+        var rx = typeof xe.roBanDau === 'object' ? xe.roBanDau : {};
+        this.vat0.push({ id: this.vat0.length + 1, x: xe.bd.x, y: xe.bd.y, mau: chuanMau(rx.mau), chat: rx.chat === 'sat' ? 'sat' : 'go', ro: true });
+      }, this);
       this.dungCua(rows, cfg.cuaNhip);
       (cfg.thung || []).forEach(function (o) { this.themThung(Math.floor(o.x), Math.floor(o.y)); }, this);   // thùng nặng thêm ngoài sân (sân thử của Xưởng): cùng thứ tự với SanHoc.chay
       var cat = cfg.catMep === undefined ? this.catMep : !!cfg.catMep, vg = cat ? this.vungCat() : { ox: 0, oy: 0, vw: w, vh: h };
@@ -218,6 +224,12 @@
       return m && m[y] && m[y][x] ? m[y][x] : null;
     },
     /** Thêm một vật ban đầu (mỗi ô tối đa một, không nằm trong tường / ngoài sân), id = thứ tự thêm. mau: tên màu của vật hoặc null. */
+    /** Robot chủ của cờ (x, y) ở màn nhiều robot có cờ riêng (cfg.doi[i].co); null = cờ chung. */
+    chuCo: function (x, y) {
+      var ds = this.cfgXe || [];
+      for (var i = 0; i < ds.length; i++) if (ds[i].co && ds[i].co.some(function (q) { return q.x === x && q.y === y; })) return i;
+      return null;
+    },
     themVat: function (x, y, mau, chat, cuc) {
       var c = this.cfg;
       if (!(x >= 0 && y >= 0 && x < c.w && y < c.h) || c.rows[y][x] === '#' || c.rows[y][x] === '=') return;
@@ -1638,6 +1650,7 @@
         var fy = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 3) : 0;
         var fl = TL.flags[ff], fx = co.x * T + Math.floor((T - fl.width) / 2), fyy = co.y * T + (T - fl.height) - 1;   // cờ gọn trong ô: giữa theo bề ngang, đế cách đáy ô 1 px (sát đáy thì viền đế chạm đường kẻ ô)
         g.drawImage(fl, Math.max(c.ox * T, Math.min(c.ox * T + this.cv.width - fl.width, fx)), Math.max(c.oy * T, Math.min(c.oy * T + this.cv.height - fl.height, fyy)) + fy);
+        if (co.chu !== null) { g.fillStyle = MAU_XE[co.chu % MAU_XE.length]; g.fillRect(co.x * T + 2, co.y * T + T - 3, T - 4, 2); }    // cờ riêng: vạch màu của robot chủ dưới chân cờ
       }
       g.restore();
       this.veLop(now);

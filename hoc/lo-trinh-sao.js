@@ -201,46 +201,6 @@
     "o": 23,
     "nhip": 8
   },
-  "doi-ho-bang.1": {
-    "o": 21,
-    "nhip": 7
-  },
-  "doi-ho-bang.2": {
-    "o": 27,
-    "nhip": 9
-  },
-  "doi-ho-bang.3": {
-    "o": 37,
-    "nhip": 8
-  },
-  "doi-ho-bang.4": {
-    "o": 44,
-    "nhip": 17
-  },
-  "doi-ho-bang.5": {
-    "o": 39,
-    "nhip": 18
-  },
-  "doi-ho-bang.6": {
-    "o": 50,
-    "nhip": 28
-  },
-  "doi-ho-bang.7": {
-    "o": 44,
-    "nhip": 18
-  },
-  "doi-ho-bang.8": {
-    "o": 41,
-    "nhip": 18
-  },
-  "doi-ho-bang.9": {
-    "o": 38,
-    "nhip": 13
-  },
-  "doi-ho-bang.10": {
-    "o": 51,
-    "nhip": 65
-  },
   "che-list.4": {
     "o": 21,
     "nhip": 14
@@ -360,46 +320,6 @@
   "che-may-nem.6": {
     "o": 16,
     "nhip": 4
-  },
-  "doi-gap-nem.1": {
-    "o": 26,
-    "nhip": 6
-  },
-  "doi-gap-nem.2": {
-    "o": 31,
-    "nhip": 7
-  },
-  "doi-gap-nem.3": {
-    "o": 33,
-    "nhip": 9
-  },
-  "doi-gap-nem.4": {
-    "o": 32,
-    "nhip": 10
-  },
-  "doi-gap-nem.5": {
-    "o": 29,
-    "nhip": 5
-  },
-  "doi-gap-nem.6": {
-    "o": 44,
-    "nhip": 15
-  },
-  "doi-gap-nem.7": {
-    "o": 32,
-    "nhip": 10
-  },
-  "doi-gap-nem.8": {
-    "o": 35,
-    "nhip": 10
-  },
-  "doi-gap-nem.9": {
-    "o": 44,
-    "nhip": 21
-  },
-  "doi-gap-nem.10": {
-    "o": 40,
-    "nhip": 36
   },
   "drone.6": {
     "o": 7,

@@ -530,6 +530,11 @@
   }
 
   /** Lớp màu sàn / màu vật của sân thứ i của màn m (màn một sân hay nhiều sân: m.mau, m.vatMau song song với m.san). */
+  /** Cờ riêng của một robot ở sân si: co = [{x,y}] (một sân, hay mọi sân giống nhau) hoặc [[{x,y}], …] song song với mảng sân. */
+  function coCuaSan(co, si, nhieu) {
+    if (!Array.isArray(co)) return undefined;
+    return nhieu && Array.isArray(co[0]) ? co[si] : co;
+  }
   function lopMauCuaSan(m, i) {
     var nhieu = Array.isArray(m.san[0]);
     function lay(l) { return l ? (nhieu ? (l[i] || null) : l) : null; }
@@ -564,6 +569,7 @@
    *        hamGoc: [tên hàm gốc được phép] (mặc định: đủ bộ của loại robot, chưa có lệnh tay),
    *        nhipToiDa: 200,
    *        mucTieu: 'toi-co' (mặc định) | 'dua-vat',
+   *        doi: [{ batDau, loaiRobot, hamGoc, co?: [{x,y}] … }] (nhiều robot; co = CỜ RIÊNG của robot đó: toi-co chỉ tính khi robot tới một ô trong co, không khai = cờ nào cũng được),
    *        vat: [{x,y,mau?}] (vật thêm vào ngoài các ô 'o' / 'X' của sân), dich: [{x,y,mau?}] (ô đích thêm),
    *        mau: [chuỗi] (lớp màu sàn), vatMau: [chuỗi] (lớp màu vật): xem phần CẢM BIẾN MÀU,
    *        camBien: [{ ma:'mau'|'camera'|'camera-bay'|'khoang-cach'|'pin', o }] (cảm biến robot gắn; chỉ 'mau' / 'camera' đổi nghĩa của color(), xem CẢM BIẾN MÀU / CAMERA; 'camera-bay' = camera nhìn xuống của drone, mở look()),
@@ -614,7 +620,7 @@
       coNamCham, coNem, coHoi, coCamBien, coCamTu, coColor, dsCamBien, coCamMauBung, coCamera, camNhin, coPinCamBien, coLook,
       coCamBay, pinToiDa, pin, dao, rb, demBang, quayDo, lenh, lenhTon, tayCho, chanCho, nhayBuoc,
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
-      soLanDoc, traVe, tay, hangNhip, xeToiCo;
+      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng;
     var nhip = 0, thang = false, dungSom = null;
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
     function khoiRobot(rc) {
@@ -734,6 +740,12 @@
       if (coXoay) tay.xoay = 'truoc';                 // tay xoay: nấc khớp hiện tại 'trai' | 'truoc' | 'phai'
       hangNhip = [];                              // nhiều robot: các nhịp chương trình đã ra, chờ bộ xếp lịch chạy chung (motNhip)
       xeToiCo = false;                            // nhiều robot, mục tiêu toi-co: robot này đã tới một cờ (dừng chương trình, đứng yên)
+      coRieng = null;                             // nhiều robot: cờ riêng của robot này (rc.co); null = cờ nào cũng được
+      if (laDoi && rc.co !== undefined && rc.co !== null) {
+        if (!Array.isArray(rc.co) || !rc.co.length) throw new Error('co của robot phải là mảng ô cờ [{x,y}].');
+        rc.co.forEach(function (q) { if (oTai(san, q.x, q.y) !== 'F') throw new Error('Cờ riêng (' + q.x + ', ' + q.y + ') không phải ô cờ F.'); });
+        coRieng = rc.co;
+      }
     }
     function catRobot() {
       return {
@@ -745,7 +757,7 @@
         quayDo: quayDo, lenh: lenh, lenhTon: lenhTon, tayCho: tayCho, chanCho: chanCho, nhayBuoc: nhayBuoc,
         truotCho: truotCho, ncCho: ncCho, nc: nc, nem: nem, nemCho: nemCho, hoiCho: hoiCho,
         dan: dan, vet: vet, suKienChan: suKienChan, loi: loi, docCho: docCho, docLienTiep: docLienTiep,
-        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo
+        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng
       };
     }
     function napRobot(o) {
@@ -757,7 +769,7 @@
       quayDo = o.quayDo; lenh = o.lenh; lenhTon = o.lenhTon; tayCho = o.tayCho; chanCho = o.chanCho; nhayBuoc = o.nhayBuoc;
       truotCho = o.truotCho; ncCho = o.ncCho; nc = o.nc; nem = o.nem; nemCho = o.nemCho; hoiCho = o.hoiCho;
       dan = o.dan; vet = o.vet; suKienChan = o.suKienChan; loi = o.loi; docCho = o.docCho; docLienTiep = o.docLienTiep;
-      soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo;
+      soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng;
     }
     khoiRobot(dsRc[0]);
 
@@ -1667,7 +1679,7 @@
         }
         if (mucTieu === 'toi-co') {
           if (laDoi) {                                                       // nhiều robot: mỗi robot tới một cờ; tới rồi thì dừng chương trình, đứng yên (thắng: chayDoi)
-            if (!xeToiCo && oTai(san, rb.x, rb.y) === 'F') { xeToiCo = true; sk.push({ ma: 'toi-co' }); }
+            if (!xeToiCo && oTai(san, rb.x, rb.y) === 'F' && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }))) { xeToiCo = true; sk.push({ ma: 'toi-co' }); }
           } else if (san.co && rb.x === san.co.x && rb.y === san.co.y) { thang = true; sk.push({ ma: 'toi-co' }); }
         } else if (mucTieu === 'bong-mo') {
           // thắng xét KHI CHƯƠNG TRÌNH CHẠY XONG (xem sau vòng chạy), không thắng giữa đường
@@ -1953,6 +1965,7 @@
         apRoBanDau(dsRc[i]);
         X.push({ ctx: catRobot() });
       }
+      vatBanDau = chupVat();                                                  // rổ có sẵn vật của R2… cũng là vật lúc xuất phát
       X.forEach(function (a, i) {
         X.forEach(function (b, j) {
           if (j > i && a.ctx.rb.x === b.ctx.rb.x && a.ctx.rb.y === b.ctx.rb.y && a.ctx.laDrone === b.ctx.laDrone) throw new Error('Robot ' + (i + 1) + ' và robot ' + (j + 1) + ' xuất phát cùng một ô.');
@@ -2092,7 +2105,7 @@
 
   var API = {
     VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_XOAY: TAY_XOAY, XOAY_NAC: XOAY_NAC, TAY_NHOM: TAY_NHOM, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
-    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan,
+    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
     CHAN_LENH: CHAN_LENH,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };

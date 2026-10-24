@@ -1,4 +1,4 @@
-# Kế hoạch: các gói phối hợp hai robot (24/10, chờ user chốt)
+# Kế hoạch: các gói đội hai robot (24/10, user đã chốt)
 
 Mục tiêu xa: chế độ thi kiểu Robocon, người chơi đọc **đề của ban tổ chức** (sân, nhiệm vụ, trần part / ngân sách), tự chọn part cho từng robot
 rồi lập trình cả đội. Các gói ở đây là bậc thang tới đó: mỗi lần học xong một part mới thì có ngay một gói **dùng part đó trong đội hai robot**.
@@ -16,24 +16,27 @@ Tư liệu: tham-khao-robocon-v0.1.md §4 (điểm chết là **bàn giao**; ph�
 - **Done when:** mỗi gói có máy kiểm: lời giải mọi màn thắng 3 sao trên mọi sân; mẫu không thắng sẵn; 10 màn khác nhau; lời sai tiêu biểu
   (chờ cứng, viết thẳng, bỏ đồng đội, R2 tự làm hết) bị chặn hay mất sao; chơi tay 2 màn mỗi gói trên khung 375×812.
 
-## 1. Đặt ở đâu (chèn ngay sau gói giới thiệu part)
+## 1. Đặt ở đâu (user chốt 24/10)
 
-| Sau gói part | Gói phối hợp | Trạng thái | Part mới trong đội |
+- Mỗi gói đội **20 màn = 2 chương**: chương `doi-<gói>` (phối hợp, khuôn §3) và chương `che-doi-<gói>` (chế lệnh phối hợp, §3b).
+- Gói đội đứng **ngay sau gói part** của nó và ghép part đó với **part liền trước** (cái sau dùng cái trước). Không bắt buộc có robot gốc
+  (xe hai bánh + kẹp): đội có thể là hai robot đặc thù, part đặc thù.
+- Robot tự động **luôn cho xem chương trình** (khóa, chỉ đọc); không có chế độ hộp đen (để dành cho robot đối thủ sau này).
+- Làm các gói đội trước, gói Đề ban tổ chức sau.
+
+| Sau gói part (chương `sau`) | Gói đội (tệp) | Đội | Trạng thái |
 |---|---|---|---|
-| Cảm biến (+ Robot hoàn thiện) | Đội hai robot | đã có | hai robot giống nhau |
-| Thân nhện | Đội vượt hố và băng chuyền | đã có | nhện (không cảm biến) + xe |
-| Bánh xích | **Đội xích chở nặng** | mới | xích (leo bậc, không trôi băng) |
-| Bánh omni | **Đội omni nhường đường** | mới | omni (trượt ngang) |
-| Súng hơi | **Đội mở cổng** | mới | súng hơi (bắn nút, đẩy thùng) |
-| Cảm biến màu | **Đội đọc màu** | mới | màu / camera |
-| Nam châm | **Đội hút từ xa** | mới | nam châm + cảm biến từ |
-| Tay xoay | **Dây chuyền hai trạm** | mới | tay xoay |
-| Máy ném | Đội tay gắp và máy ném | đã có (đề xuất dời lên trước Lắp ráp: Thân + Tay) | máy ném |
-| Drone (+ Flycam) | **Đội trên không – mặt đất** | mới | drone, camera nhìn xuống, pin |
-| Lắp ráp: Đủ bộ | **Đề ban tổ chức** | mới, gói cuối | chọn part cho cả đội |
-
-Tám gói mới, 80 màn. Gói phối hợp là gói `thu-thach`, `khongTangNguong: true` (không đẩy ngưỡng sao gói sau), khai báo trong `man-doi-*.js`
-(`ManHoc.chuongThem`), `lo-trinh-hoc.js` chèn vào sau gói part, như hai gói đội đã có.
+| Cảm biến + Robot hoàn thiện | Đội hai robot (`man-hai-robot.js`) | hai xe giống nhau | có, 10 màn (gói nhập môn, giữ nguyên) |
+| Thân nhện (`che-nhen`) | Đội vượt hố và băng chuyền (`man-doi-ho-bang.js`) | xe + nhện | chương 1 có; **thiếu chương 2** |
+| Bánh xích (`che-xich`) | Đội xích và nhện (`man-doi-xich.js`) | xích + nhện | mới |
+| Bánh omni (`che-omni`) | Đội omni và xích (`man-doi-omni.js`) | omni + xích | mới |
+| Súng hơi (`che-sung-hoi`) | Đội súng hơi và omni (`man-doi-sung-hoi.js`) | súng hơi + omni | mới |
+| Cảm biến màu (`che-mau`) | Đội màu và súng hơi (`man-doi-mau.js`) | màu / camera + súng hơi | mới (trước Lắp ráp: Thân + Não) |
+| Nam châm (`che-nam-cham`) | Đội nam châm và màu (`man-doi-nam-cham.js`) | nam châm + màu | mới |
+| Tay xoay (`che-tay-xoay`) | Đội tay xoay và nam châm (`man-doi-tay-xoay.js`) | tay xoay + nam châm | mới |
+| Máy ném (`che-may-nem`) | Đội tay gắp và máy ném (`man-doi-gap-nem.js`) | kẹp + ném (chương 2: tay xoay + ném) | chương 1 có, **đã dời lên trước Lắp ráp: Thân + Tay**; thiếu chương 2 |
+| Flycam (`flycam`) | Đội drone và máy ném (`man-doi-drone.js`) | drone + máy ném | mới (trước Lắp ráp: Đủ bộ) |
+| Lắp ráp: Đủ bộ | Đề ban tổ chức | chọn part cho cả đội | sau cùng **[cần G3, G4]** |
 
 ## 2. Bậc thang kỹ năng phối hợp (xuyên các gói)
 
@@ -43,16 +46,16 @@ Mỗi gói thêm đúng một kỹ năng phối hợp mới, ôn các kỹ năng
 |---|---|---|---|
 | K1 | Chia việc theo phần cứng | robot nào làm được gì | Đội hai robot, Đội vượt hố |
 | K2 | Bàn giao vật (đặt trước mặt, chờ bằng cảm biến) | điểm chết số một | Đội vượt hố, Đội tay gắp và máy ném |
-| K3 | **Phối hợp với robot tự động có sẵn**: đọc chương trình khóa của R1, viết R2 cho khớp | R1 tự động chạy cố định suốt trận | Đội xích |
-| K4 | Nhường đường, giữ khoảng cách, không chặn nhau | hai robot chung một sân hẹp | Đội omni |
-| K5 | Mở đường cho đồng đội (nút, cửa, dời thùng) | robot này dọn sân cho robot kia | Đội mở cổng |
-| K6 | Báo nhau bằng vị trí vật (không có lệnh tín hiệu) | "giao tiếp" qua trạng thái sân | Đội đọc màu |
-| K7 | Đường lui khi đồng đội trễ (chờ có giới hạn bằng `for` + `if`) | robot tự động không được kẹt mãi | Đội hút từ xa |
-| K8 | Dây chuyền nhiều vật (vòng lặp hai phía, không ùn ô bàn giao) | năng suất trong thời gian giới hạn | Dây chuyền hai trạm |
-| K9 | Phân vai trên không / mặt đất, quản lý pin cả đội | robot khác độ cao không chặn nhau | Đội trên không – mặt đất |
+| K3 | **Phối hợp với robot tự động có sẵn**: đọc chương trình khóa của R1, viết R2 cho khớp | R1 tự động chạy cố định suốt trận | Đội xích và nhện |
+| K4 | Nhường đường, giữ khoảng cách, không chặn nhau | hai robot chung một sân hẹp | Đội omni và xích |
+| K5 | Mở đường cho đồng đội (nút, cửa, dời thùng) | robot này dọn sân cho robot kia | Đội súng hơi và omni |
+| K6 | Báo nhau bằng vị trí vật (không có lệnh tín hiệu) | "giao tiếp" qua trạng thái sân | Đội màu và súng hơi |
+| K7 | Đường lui khi đồng đội trễ (chờ có giới hạn bằng `for` + `if`) | robot tự động không được kẹt mãi | Đội nam châm và màu |
+| K8 | Dây chuyền nhiều vật (vòng lặp hai phía, không ùn ô bàn giao) | năng suất trong thời gian giới hạn | Đội tay xoay và nam châm |
+| K9 | Phân vai trên không / mặt đất, quản lý pin cả đội | robot khác độ cao không chặn nhau | Đội drone và máy ném |
 | K10 | Chọn part cho từng robot theo đề, ngân sách chung | đề ban tổ chức đổi mỗi năm | Đề ban tổ chức |
 
-## 3. Khuôn 10 màn dùng chung cho mọi gói phối hợp
+## 3. Khuôn chương 1 `doi-<gói>` (10 màn, dùng chung cho mọi gói đội)
 
 | Màn | Hàng | Dạng | Ai viết |
 |---|---|---|---|
@@ -74,92 +77,90 @@ Luật thiết kế (rút từ lần làm lại 24/10):
 - Robot không cảm biến (nhện, robot "mù") không thể chờ bằng cảm biến: chỉ cho chờ đếm nhịp ở màn cố ý dạy điều đó.
 - Trùm ba sân phải khác ở chỗ buộc quyết định (độ dài, phía, thời điểm đồng đội tới), không chỉ khác trang trí.
 
-## 4. Tám gói mới
+### 3b. Khuôn chương 2 `che-doi-<gói>` (chế lệnh phối hợp)
 
-Robot "xe" mặc định = xe hai bánh + tay kẹp + cảm biến khoảng cách (robot của gói Robot hoàn thiện). Tình huống dưới đây đều chạy được trên luật lõi hiện có
-trừ chỗ ghi **[cần G…]** (mục 5).
+| Màn | Hàng | Dạng |
+|---|---|---|
+| 1–3 | làm quen | Tự chế một hàm phối hợp (`taoHam`, tên cốt truyện mới, không trùng kho), dùng ngay trong một tình huống: hàm chờ / bàn giao / mở đường |
+| 4–6 | luyện | Dùng hàm vừa chế cho **cả hai robot** hay trong vòng lặp; một màn có robot tự động khóa gọi hàm đó |
+| 7–9 | biến thể | Sửa hàm phối hợp hỏng (hàm của màn, `chinhCoDinh` hay robot khóa), cờ riêng `doi[i].co` cho bài đổi chỗ |
+| 10 | trùm | Ba sân, cả đội dùng các hàm đã chế |
 
-**Đội xích chở nặng** (sau Bánh xích; K3 robot tự động có sẵn)
-- Vai: xích leo bậc S, đứng yên trên băng (băng không đẩy), quay chậm 2 nhịp; xe đi băng nhanh nhưng không leo bậc.
-- Tình huống: xích chở hộp lên bậc rồi đặt cho xe; **xích đứng trên băng làm chốt** để xe bị băng đẩy dừng đúng ô; xe chờ xích quay xong mới đi.
-- Robot tự động: R1 xích chạy chương trình khóa (vd lặp ba chuyến chở hộp lên bậc); em đọc chương trình đó và viết xe nhận hàng **[cần G1]**.
-- Trùm: ba kho bậc cao thấp khác nhau, xích tự động dùng `go_wall`/cảm biến nên thời điểm giao đổi theo sân; xe phải chờ bằng cảm biến.
+## 4. Các gói đội
 
-**Đội omni nhường đường** (sau Bánh omni; K4)
-- Vai: omni trượt ngang không cần quay; xe phải quay mới đổi hướng.
-- Tình huống: hành lang một làn có hốc bên, omni trượt vào hốc cho xe chở hàng đi qua rồi trượt ra; hai robot đi song song chở một hàng dài
-  (giữ khoảng cách, không chặn nhau); omni bám sau xe và dừng khi thấy xe (`front_clear`).
-- Robot tự động: xe khóa chạy đi chạy lại trên hành lang chính; em viết omni tránh đúng lúc.
-- Trùm: ba hành lang có hốc ở vị trí khác nhau; omni phải dùng `left_clear` / `right_clear` tìm hốc.
+Tình huống dưới đây chạy được trên luật lõi hiện có. Mỗi gói ghép part mới với part liền trước; robot nào thêm cảm biến khoảng cách / tay kẹp
+là tùy màn (part đã học thì dùng được).
 
-**Đội mở cổng** (sau Súng hơi; K5)
-- Vai: súng hơi bắn nút N đổi cửa C/c và bật tắt băng; giật lùi đẩy thùng nặng H; xe chở vật nhẹ.
-- Tình huống: R1 bắn nút mở cửa cho xe, xe chờ `while not front_clear(): wait()` rồi qua; R1 bắn lần nữa tắt băng cho xe đi ngược; R1 giật đẩy thùng
-  ra khỏi lối của xe; thứ tự sai (đóng cửa khi xe đang ở giữa) thì kẹt.
-- Robot tự động: súng hơi khóa bắn nút theo chu kỳ cố định; xe phải canh lúc cửa mở.
-- Trùm: ba sân, nút điều khiển cửa khác nhau, số lần bắn khác nhau.
+**Đội vượt hố và băng chuyền — chương 2** (xe + nhện): chế hàm bàn giao (nhện `ferry(path)` chở hộp qua hố rồi đặt; xe `take_box()` chờ rồi nhặt);
+xe tự động khóa, em viết nhện đếm nhịp theo chương trình xe; cờ riêng: nhện và xe đổi phía cho nhau.
 
-**Đội đọc màu** (sau Cảm biến màu, trước Lắp ráp: Thân + Não; K6)
-- Vai: một robot có camera (đọc màu vật trước mặt), robot kia không có cảm biến màu.
-- Tình huống: R1 đọc màu hộp rồi đặt hộp ở ô A (đỏ) hay ô B (xanh); R2 không nhìn màu nhưng biết màu nhờ **chỗ hộp nằm** và chở vào đích màu;
-  R1 **đứng bên trái hay bên phải** làm tín hiệu, R2 hỏi `left_clear()` / `right_clear()` để chọn đường. Đích có màu nên đặt sai thì `dat-sai-mau`.
-- Robot tự động: R1 khóa phân loại theo màu; em viết R2 đọc vị trí.
-- Trùm: ba kho thứ tự màu khác nhau; chương trình R2 không được ghi cứng thứ tự.
+**Đội xích và nhện** (K3 robot tự động): cả hai leo bậc S; xích đứng vững trên băng, quay chậm 2 nhịp; nhện bật hố, chui gầm, bị băng đẩy, không cảm biến.
+Xích đứng trên băng làm **chốt** cho nhện đang bị băng đẩy dừng đúng ô; xích chở hộp lên bậc, nhện chở qua hố; xích tự động khóa (quay chậm) —
+em đọc chương trình xích để tính nhịp cho nhện. Trùm: ba kho bậc / hố khác nhau.
 
-**Đội hút từ xa** (sau Nam châm; K7 đường lui)
-- Vai: nam châm hút sắt trong 2 ô, đẩy vật cùng cực tới 3 ô; cảm biến từ `front_metal()` / `front_pole()`; xe kẹp chở vật gỗ.
-- Tình huống: R1 đẩy vật nam châm trượt tới trước mũi xe; vật gỗ thì nam châm bó tay, xe phải tự đi lấy; xe chờ có giới hạn
-  (`for i in range(n): if not front_clear(): …`), quá hạn thì làm phương án B.
-- Robot tự động: R1 khóa chỉ hút / đẩy vật sắt và nam châm; em viết xe xử lý cả trường hợp R1 không làm được.
-- Trùm: ba sân, một sân vật là gỗ (R1 không giao) — xe chờ mãi thì quá nhịp, phải có đường lui.
+**Đội omni và xích** (K4 nhường đường): omni trượt ngang không quay, bị băng đẩy; xích không bị băng đẩy nhưng quay chậm. Hành lang một làn có hốc:
+omni trượt vào hốc cho xích qua; băng ngang lối: xích đi thẳng qua, omni trượt né; xích tự động khóa chạy đi chạy lại, omni canh lúc bằng cảm biến.
 
-**Dây chuyền hai trạm** (sau Tay xoay; K8)
-- Vai: tay xoay gắp / đặt ô bên trái, bên phải mà không quay xe (chu trình 4 nhịp); xe kẹp chở đi xa.
-- Tình huống: R1 đứng yên lấy từng hộp bên trái đặt sang bên phải (ô bàn giao), xe nhận và chở đi; ô bàn giao còn hộp thì R1 phải chờ
-  (`while not right_clear(): wait()`); ba, bốn hộp: cả hai cùng lặp, nhịp cả đội là thước đo.
-- Robot tự động: R1 khóa với chu kỳ cố định; xe phải theo kịp, chậm thì R1 đặt vào ô đang có hộp và kẹt.
-- Trùm: ba sân số hộp và đường chở khác nhau.
+**Đội súng hơi và omni** (K5 mở đường): súng hơi bắn nút N đổi cửa C/c và bật tắt băng, giật lùi đẩy thùng nặng H; omni chở vật nhẹ, trượt qua lối vừa mở.
+Omni chờ cửa mở bằng `while not front_clear(): wait()`; thứ tự sai (đóng cửa khi omni ở giữa) thì kẹt; súng hơi tự động bắn theo chu kỳ.
 
-**Đội trên không – mặt đất** (sau Flycam, trước Lắp ráp: Đủ bộ; K9)
-- Vai: drone bay qua rào, băng, vật, không chặn robot mặt đất; nam châm treo hút sắt dưới bụng; pin + ô sạc P; camera nhìn xuống `look()`.
-- Tình huống: drone chở hộp sắt qua rào thả xuống trước mũi xe; drone trinh sát màu bằng `look()` rồi thả hộp ở chỗ báo hiệu cho xe (K6);
-  drone bay ngang trên đầu xe mà không chặn nhau (khác tầng), nhưng hai robot vẫn tranh ô bàn giao dưới đất.
-- Robot tự động: drone khóa chạy theo pin (`if battery() < n`), thời điểm giao đổi theo mức pin của sân.
-- Trùm: ba sân pin khác nhau; xe chờ bằng cảm biến.
+**Đội màu và súng hơi** (K6 báo nhau bằng vị trí): robot camera đọc màu nhưng không bắn được; robot súng hơi không đọc màu. Robot camera đặt hộp / đứng
+bên trái hay phải làm tín hiệu, robot súng hơi hỏi `left_clear()` / `right_clear()` rồi bắn đúng nút (mở cửa của màu đó). Trùm: thứ tự màu đổi theo sân.
 
-**Đề ban tổ chức** (gói cuối, sau Lắp ráp: Đủ bộ; K10) **[cần G3]**
-- Màn 1–4: R1 là robot tự động có sẵn (part và chương trình khóa); em **chọn part cho R2** trong ngân sách rồi viết R2.
-- Màn 5–9: chọn part cho **cả hai** robot, ngân sách chung của đội; mỗi màn ≥ 2 đội hình thắng, không đội hình nào hơn hẳn (luật lắp ráp).
-- Màn 10: "đề năm nay": tờ đề ghi sân, nhiệm vụ, trần cứng (ngân sách, part được phép), ba sân.
-- Mỗi màn mở đầu bằng **tờ đề** (như tờ luật Robocon) thay cho đoạn đề bài thường: đây là giao diện sẽ dùng lại cho chế độ thi.
+**Đội nam châm và màu** (K7 đường lui): nam châm hút sắt 2 ô, đẩy vật cùng cực 3 ô, `front_metal()` / `front_pole()`; robot màu phân loại.
+Vật gỗ thì nam châm bó tay: robot kia chờ có giới hạn (`for` + `if not front_clear()`), quá hạn thì tự đi lấy. Trùm: một sân vật gỗ.
+
+**Đội tay xoay và nam châm** (K8 dây chuyền): nam châm hút vật từ xa về ô bàn giao, tay xoay gắp bên này đặt bên kia không quay xe (4 nhịp mỗi vật);
+ô bàn giao còn vật thì robot trước chờ; nhiều vật, cả hai lặp; nhịp cả đội là thước đo.
+
+**Đội tay gắp và máy ném — chương 2** (tay xoay + máy ném): tay xoay đặt vật sang ô trước mặt máy ném không cần quay; chế hàm `feed()` / `relay_throw(n)`.
+
+**Đội drone và máy ném** (K9 khác tầng): drone bay qua rào / băng / vật, không chặn robot mặt đất, pin + ô sạc P, nam châm treo hút sắt, camera `look()`;
+máy ném ném qua rào. Drone trinh sát màu rồi thả hộp ở chỗ báo hiệu; máy ném ném hộp sang bên drone chở tiếp; drone tự động chạy theo pin.
+
+**Đề ban tổ chức** (gói cuối, sau Lắp ráp: Đủ bộ; K10) **[cần G3, G4]**: màn 1–4 R1 tự động có sẵn, em chọn part cho R2 trong ngân sách; màn 5–9 chọn part
+cho cả hai, ngân sách chung, ≥ 2 đội hình thắng, không đội hình nào hơn hẳn; màn 10 "đề năm nay" ba sân. Mở đầu mỗi màn bằng **tờ đề**.
 
 ## 5. Việc lõi và giao diện cần thêm
 
 | Mã | Việc | Vì sao | Công |
 |---|---|---|---|
-| G1 | **Robot khóa trong màn nhiều robot**: `doi[i].coDinh: true` — thẻ R của robot đó chỉ đọc, có ổ khóa, chương trình lấy từ `maMau.doi[i]`, nháp cũ không ghi đè; máy chấm từ chối bài làm sửa robot khóa | dạng bài "R1 tự động sẵn" (K3) | nhỏ: mở rộng `chinhCoDinh` hiện có (man-choi.js, thanh-phan.js) theo từng robot |
-| G2 | **Mục tiêu theo robot**: cờ / đích có chủ (vd `cfg.chu = [{ x, y, robot: 0 }]` hay ký hiệu sân riêng), `toi-co` mỗi robot đúng cờ của mình; mở `bong-mo` cho nhiều robot | hết đường tắt "cờ nào cũng được" (KE-HOACH-HAI-ROBOT.md đã ghi), cho phép bài đổi chỗ / đổi hàng | vừa: san-hoc.js, cham.js, san-ve.js (vẽ màu chủ) |
+| G1 ✅ | **Robot khóa trong màn nhiều robot**: `doi[i].coDinh: true` — thẻ R của robot đó chỉ đọc, có ổ khóa, chương trình lấy từ `maMau.doi[i]`, nháp cũ không ghi đè; máy chấm từ chối bài làm sửa robot khóa | dạng bài "R1 tự động sẵn" (K3) | nhỏ: mở rộng `chinhCoDinh` hiện có (man-choi.js, thanh-phan.js) theo từng robot |
+| G2 ✅ | **Mục tiêu theo robot**: cờ / đích có chủ (vd `cfg.chu = [{ x, y, robot: 0 }]` hay ký hiệu sân riêng), `toi-co` mỗi robot đúng cờ của mình; mở `bong-mo` cho nhiều robot | hết đường tắt "cờ nào cũng được" (KE-HOACH-HAI-ROBOT.md đã ghi), cho phép bài đổi chỗ / đổi hàng | vừa: san-hoc.js, cham.js, san-ve.js (vẽ màu chủ) |
 | G3 | **Lắp ráp cho đội**: `lapRap.doi = [{ khe… } , …]`, ngân sách chung hay riêng, robot khóa không chọn được; màn Lắp robot có thẻ R1 / R2; `LapRap.kiemCanMan` duyệt tổ hợp đội (giới hạn danh mục mỗi màn để số tổ hợp nhỏ) | gói Đề ban tổ chức, chế độ thi | lớn: lap-rap.js, man-lap.js, máy kiểm |
 | G4 | **Tờ đề** (màn hình đọc đề trước khi lắp): sân thu nhỏ, nhiệm vụ, trần cứng, part được phép | giao diện dùng lại cho Robocon | vừa |
 | G5 | **Bộ dò chung cho đội khác thân**: BFS chạy thật `SanHoc.chay` trên trạng thái hai robot (như do-duong-rap-du.mjs), hoặc tối thiểu bộ "lời sai tiêu biểu" chạy cho mọi màn | bộ dò hiện tại chỉ hỗ trợ hai xe kẹp | vừa |
-| G6 | Mở rộng `kiem-lo-trinh.mjs`: mọi gói `doi-*` qua cùng bộ luật mục 3 (không trùng, mẫu không thắng, cần cả hai robot, robot khóa không đổi) | giữ chất lượng khi thêm 80 màn | nhỏ |
+| G6 ✅ | `hoc/kiem-goi-doi.mjs` (thay cho mở rộng kiem-lo-trinh): mọi gói `doi-*` qua cùng bộ luật mục 3 (không trùng, mẫu không thắng, cần cả hai robot, robot khóa không đổi) | giữ chất lượng khi thêm 80 màn | nhỏ |
 
 Chế độ thi về sau (ngoài phạm vi kế hoạch này): tính điểm trong N nhịp thay vì thắng / thua, đối thủ, trần mềm (tham-khao-robocon §5.3).
 
-## 6. Thứ tự làm đề xuất
+Đã làm (24/10): **G1** (`doi[i].coDinh`: thẻ R có ổ khóa, khung chỉ đọc, nháp cũ không đè; hàm `khungCoDinh` ở game/man-choi.js),
+**G2** (`doi[i].co = [{x,y}]` hay mảng theo sân: lõi chỉ tính tới cờ khi đúng chủ, `SanHoc.coCuaSan`, sân vẽ vạch màu robot dưới cờ riêng),
+**G6** (`hoc/kiem-goi-doi.mjs`), khung gói hai chương (`ManHoc.chuongThem`), công cụ đo sao `tools/do-goi-doi.mjs`. Sửa kèm: rổ có sẵn vật của
+robot máy ném trong màn nhiều robot giờ được vẽ (trước chỉ vẽ ở màn một robot).
 
-1. **G1 + G6**, dời gói Đội tay gắp và máy ném lên ngay sau gói Máy ném (nếu user chốt).
-2. **Thí điểm hai gói**: Đội xích chở nặng (K3, robot khóa) và Đội mở cổng (K5). Chơi thử, chỉnh khuôn 10 màn ở mục 3.
-3. **G2**, rồi bốn gói giữa: Đội omni, Đội đọc màu, Đội hút từ xa, Dây chuyền hai trạm.
-4. Đội trên không – mặt đất.
-5. **G3 + G4 + G5**, rồi gói Đề ban tổ chức.
+## 6. Thứ tự làm
 
-Mỗi gói làm riêng một phiên (một tệp `man-doi-*.js`, một khối kiểm), không đụng chương khác; ước một gói ~ nửa ngày tới một ngày kể cả máy kiểm.
+1. Nền chung (xong 24/10).
+2. Các gói đội, mỗi gói một phiên riêng, chạy song song được (mỗi phiên chỉ sửa tệp gói của mình + máy kiểm riêng): Đội xích và nhện, Đội omni và xích,
+   Đội súng hơi và omni, Đội màu và súng hơi, Đội nam châm và màu, Đội tay xoay và nam châm, Đội drone và máy ném, chương 2 của Đội vượt hố và
+   Đội tay gắp và máy ném.
+3. Ráp các nhánh, chạy toàn bộ máy kiểm, chơi thử.
+4. **G3 + G4 + G5**, rồi gói Đề ban tổ chức.
 
-## 7. Cần user chốt
+## 7. Đã chốt (24/10)
 
-1. Giữ **10 màn** mỗi gói phối hợp (như mọi chương) hay gói ngắn hơn? Gói ngắn cần sửa luật "10 màn / chương" trong máy kiểm.
-2. Dời **Đội tay gắp và máy ném** lên ngay sau gói Máy ném (trước Lắp ráp: Thân + Tay) cho đúng luật "sau gói part"?
-3. Robot tự động: người chơi **xem được chương trình khóa** (đọc để tính) hay chỉ **xem nó chạy** (hộp đen)? Đề xuất: xem được ở các gói giữa, hộp đen ở gói Đề ban tổ chức.
-4. Thứ tự ưu tiên: thí điểm Đội xích + Đội mở cổng trước như mục 6, hay làm Đề ban tổ chức sớm hơn?
-5. Tên gói gộp **Dò đường** (Cảm biến hai bên + Mê cung) đã đặt 24/10 — giữ hay đổi.
+20 màn mỗi gói (hai chương); gói đội đứng ngay sau gói part, ghép với part liền trước; robot tự động luôn cho xem chương trình, không hộp đen
+(hộp đen để dành cho robot đối thủ); làm các gói đội trước; không bắt buộc có robot gốc; giữ tên gói Dò đường.
+
+## 8. Cách làm một gói đội (cho từng phiên)
+
+1. Đọc tệp gói rỗng `hoc/man-doi-<gói>.js`, mẫu `hoc/man-doi-ho-bang.js` (cách khai robot từng phần `doi[i]`, `B(c1, c2)`, hàm `man()`), mục 3 / 3b / 4 ở trên,
+   luật lõi của các part liên quan ở đầu `hoc/san-hoc.js` và tệp chương part (`man-<part>.js`, `man-che-<part>.js`) để biết hàm kho đã có.
+2. Chỉ sửa: `hoc/man-doi-<gói>.js`, `hoc/kiem-doi-<gói>.mjs` (máy kiểm riêng: lời sai đặc thù, lối tắt, ý của từng màn). Không sửa tệp chung
+   (`lo-trinh-hoc.js`, `lo-trinh-sao.js`, `thu-tu-chuong.js`, `choi.html`, `huy-hieu.js` đã có sẵn chỗ cho gói). Cần đổi lõi thì dừng lại hỏi.
+3. Màn dùng chương `doi-<gói>` (10 màn) và `che-doi-<gói>` (10 màn, khai `chuong: 'che-' + CHUONG`). Robot khóa: `doi[i].coDinh = true` và chương trình ở
+   `maMau.doi[i]` (trùng `loiGiai.doi[i]`). Cờ riêng: `doi[i].co`.
+4. Thử từng màn bằng máy chấm (chạy lời giải, mẫu, vài lời sai), rồi `node tools/do-goi-doi.mjs hoc/man-doi-<gói>.js --ghi` để ghi ngưỡng sao.
+5. Xong khi: `node hoc/kiem-goi-doi.mjs`, `node hoc/kiem-doi-<gói>.mjs`, `node hoc/kiem-lo-trinh.mjs` đều đạt, rồi `npm test` đủ bộ; mở 2 màn trong game
+   (`hoc/game/choi.html?debug=1&man=doi-<gói>.4`) xem sân và robot vẽ đúng. Commit trên nhánh của phiên.

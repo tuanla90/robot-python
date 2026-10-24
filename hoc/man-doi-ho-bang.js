@@ -26,6 +26,20 @@
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
   var CHUONG = 'doi-ho-bang';
+  // @sao-dau (node tools/do-goi-doi.mjs <tệp này> --ghi viết lại khối này: ngưỡng sao = ô / nhịp của lời giải chuẩn)
+  var SAO = {
+    'doi-ho-bang.1': { o: 21, nhip: 7 },
+    'doi-ho-bang.2': { o: 27, nhip: 9 },
+    'doi-ho-bang.3': { o: 37, nhip: 8 },
+    'doi-ho-bang.4': { o: 44, nhip: 17 },
+    'doi-ho-bang.5': { o: 39, nhip: 18 },
+    'doi-ho-bang.6': { o: 50, nhip: 28 },
+    'doi-ho-bang.7': { o: 44, nhip: 18 },
+    'doi-ho-bang.8': { o: 41, nhip: 18 },
+    'doi-ho-bang.9': { o: 38, nhip: 13 },
+    'doi-ho-bang.10': { o: 51, nhip: 65 }
+  };
+  // @sao-cuoi
 
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   var TAY = ['arm_down', 'arm_up', 'grab', 'release'];
@@ -44,7 +58,7 @@
   function man(m) {
     var bd = m.bd, nhen = m.nhen || NHEN_KEP;
     delete m.bd; delete m.nhen;
-    m.chuong = CHUONG;
+    m.chuong = m.chuong || CHUONG;                                         // chương 2 của gói khai chuong: 'che-' + CHUONG
     m.hang = m.so <= 3 ? 'lam-quen' : m.so <= 6 ? 'luyen' : m.so <= 9 ? 'bien-the' : 'trum';
     m.cauTruc = ['for', 'if', 'while'];
     m.mucTieu = m.mucTieu || 'dua-vat';
@@ -58,8 +72,7 @@
     m.batDau = bd[0]; m.loaiRobot = XE.loaiRobot; m.robot = sao(XE.robot); m.hamGoc = XE.hamGoc.slice();
     m.taoHam = []; m.loiSai = [];
     m.loiGiai.hamCuaEmMoi = m.loiGiai.hamCuaEmMoi || [];
-    m.sao = m.sao || { o: 1, nhip: 1 };
-    m.phienBanNoiDung = 2;
+    m.sao = SAO[m.chuong + '.' + m.so] || { o: 1, nhip: 1 };
     return ManHoc.chuanHoa(m);
   }
 
@@ -175,9 +188,9 @@
 
   // Chỉ khai báo: lo-trinh-hoc.js chèn chương vào thứ tự xuất bản rồi mới thêm màn, nên ngân hàng gốc và id các chương cũ giữ nguyên.
   ManHoc.chuongThem = (ManHoc.chuongThem || []).concat([{
-    ma: CHUONG, ten: 'Đội vượt hố và băng chuyền', sau: 'che-nhen', ds: DS,
-    // Gói thử thách không đẩy tăng ngưỡng sao của các gói sau.
-    goi: { ma: CHUONG, ten: 'Đội vượt hố và băng chuyền', loai: 'thu-thach', sao: 195, chuong: [CHUONG], hinh: 'nhen', khongTangNguong: true }
+    sau: 'che-nhen', ds: DS,
+    chuong: [{ ma: CHUONG, ten: 'Đội vượt hố và băng chuyền' }, { ma: 'che-' + CHUONG, ten: 'Chế lệnh đội vượt hố' }],
+    goi: { ma: CHUONG, ten: 'Đội vượt hố và băng chuyền', hinh: 'nhen' }
   }]);
   if (laNode) module.exports = ManHoc;
   if (typeof window !== 'undefined') window.ManHoc = ManHoc;

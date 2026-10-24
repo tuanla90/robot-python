@@ -25,6 +25,20 @@
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
   var CHUONG = 'doi-gap-nem';
+  // @sao-dau (node tools/do-goi-doi.mjs <tệp này> --ghi viết lại khối này: ngưỡng sao = ô / nhịp của lời giải chuẩn)
+  var SAO = {
+    'doi-gap-nem.1': { o: 26, nhip: 6 },
+    'doi-gap-nem.2': { o: 31, nhip: 7 },
+    'doi-gap-nem.3': { o: 33, nhip: 9 },
+    'doi-gap-nem.4': { o: 32, nhip: 10 },
+    'doi-gap-nem.5': { o: 29, nhip: 5 },
+    'doi-gap-nem.6': { o: 44, nhip: 15 },
+    'doi-gap-nem.7': { o: 32, nhip: 10 },
+    'doi-gap-nem.8': { o: 35, nhip: 10 },
+    'doi-gap-nem.9': { o: 44, nhip: 21 },
+    'doi-gap-nem.10': { o: 40, nhip: 36 }
+  };
+  // @sao-cuoi
 
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   var BA_HUONG = ['front_clear', 'left_clear', 'right_clear'];
@@ -41,7 +55,7 @@
   function man(m) {
     var bd = m.bd;
     delete m.bd;
-    m.chuong = CHUONG;
+    m.chuong = m.chuong || CHUONG;                                         // chương 2 của gói khai chuong: 'che-' + CHUONG
     m.hang = m.so <= 3 ? 'lam-quen' : m.so <= 6 ? 'luyen' : m.so <= 9 ? 'bien-the' : 'trum';
     m.cauTruc = ['for', 'if', 'while'];
     m.mucTieu = 'dua-vat';
@@ -56,8 +70,7 @@
     m.batDau = bd[0]; m.loaiRobot = GAP.loaiRobot; m.robot = sao(GAP.robot); m.hamGoc = GAP.hamGoc.slice();
     m.taoHam = []; m.loiSai = [];
     m.loiGiai.hamCuaEmMoi = m.loiGiai.hamCuaEmMoi || [];
-    m.sao = m.sao || { o: 1, nhip: 1 };
-    m.phienBanNoiDung = 2;
+    m.sao = SAO[m.chuong + '.' + m.so] || { o: 1, nhip: 1 };
     return ManHoc.chuanHoa(m);
   }
 
@@ -174,9 +187,9 @@
 
   // Chỉ khai báo: lo-trinh-hoc.js chèn chương vào thứ tự xuất bản rồi mới thêm màn, nên ngân hàng gốc và id các chương cũ giữ nguyên.
   ManHoc.chuongThem = (ManHoc.chuongThem || []).concat([{
-    ma: CHUONG, ten: 'Đội tay gắp và máy ném', sau: 'rap-tay', ds: DS,
-    // Gói thử thách không đẩy tăng ngưỡng sao của các gói sau.
-    goi: { ma: CHUONG, ten: 'Đội tay gắp và máy ném', loai: 'thu-thach', sao: 480, chuong: [CHUONG], hinh: 'may-nem', khongTangNguong: true }
+    sau: 'che-may-nem', ds: DS,
+    chuong: [{ ma: CHUONG, ten: 'Đội tay gắp và máy ném' }, { ma: 'che-' + CHUONG, ten: 'Chế lệnh đội gắp ném' }],
+    goi: { ma: CHUONG, ten: 'Đội tay gắp và máy ném', hinh: 'may-nem' }
   }]);
   if (laNode) module.exports = ManHoc;
   if (typeof window !== 'undefined') window.ManHoc = ManHoc;

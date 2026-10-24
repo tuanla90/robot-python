@@ -485,5 +485,21 @@
   HINH['cam-bien-ben'] = HINH['khoang-cach'];
   HINH['doi-ho-bang'] = HINH['hai-robot'];                      // gói thử thách hai robot: dùng lại hình Đội hai robot
   HINH['doi-gap-nem'] = HINH['hai-robot'];
+  HINH['che-doi-ho-bang'] = HINH['hai-robot'];
+  HINH['che-doi-gap-nem'] = HINH['hai-robot'];
+  HINH['doi-xich'] = HINH['hai-robot'];
+  HINH['che-doi-xich'] = HINH['hai-robot'];
+  HINH['doi-omni'] = HINH['hai-robot'];
+  HINH['che-doi-omni'] = HINH['hai-robot'];
+  HINH['doi-sung-hoi'] = HINH['hai-robot'];
+  HINH['che-doi-sung-hoi'] = HINH['hai-robot'];
+  HINH['doi-mau'] = HINH['hai-robot'];
+  HINH['che-doi-mau'] = HINH['hai-robot'];
+  HINH['doi-nam-cham'] = HINH['hai-robot'];
+  HINH['che-doi-nam-cham'] = HINH['hai-robot'];
+  HINH['doi-tay-xoay'] = HINH['hai-robot'];
+  HINH['che-doi-tay-xoay'] = HINH['hai-robot'];
+  HINH['doi-drone'] = HINH['hai-robot'];
+  HINH['che-doi-drone'] = HINH['hai-robot'];
   window.HuyHieu = { ve: ve, DS: Object.keys(HINH) };
 })();

@@ -11,7 +11,9 @@
       'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'khoang-cach', 'che-cam-bien',
       'robot-hoan-thien', 'hai-robot', 'mau', 'che-mau', 'rap-nao', 'nam-cham',
       'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'doi-gap-nem',
-      'che-drone', 'drone', 'flycam', 'rap-du'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'che-drone', 'drone', 'flycam', 'rap-du',
+      // gói đội hai robot còn đang làm (tệp có thể chưa có màn)
+      'doi-xich', 'doi-omni', 'doi-sung-hoi', 'doi-mau', 'doi-nam-cham', 'doi-tay-xoay', 'doi-drone'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -233,12 +235,17 @@
   dsBen[8].hamCuaEmCan.push('pick', 'drop');
   dsBen.forEach(function (m) { m.hamCuaEmCan.push('go_wall'); });
   M.them(dsBen);
-  // Gói thử thách hai robot (man-doi-*.js) chỉ khai báo trong ngân hàng; chèn chương và gói vào lộ trình xuất bản ở đây.
+  // Gói đội hai robot (man-doi-*.js, hoc/KE-HOACH-PHOI-HOP.md) chỉ khai báo trong ngân hàng: chèn các chương của gói ngay sau chương c.sau
+  // (cuối gói part) và gói ngay sau gói chứa chương đó. Chương chưa có màn thì chưa chèn. Ngưỡng sao mặc định: gói part +30 (đã chơi kha khá gói part), không vượt gói kế tiếp.
   (M.chuongThem || []).forEach(function (c) {
-    TT.thuTu.splice(TT.thuTu.indexOf(c.sau) + 1, 0, c.ma);
-    TT.dot2.splice(TT.dot2.indexOf(c.sau) + 1, 0, c.ma);
-    TT.ten[c.ma] = c.ten;
-    TT.goi.splice(TT.goi.findIndex(function (g) { return g.chuong.indexOf(c.sau) >= 0; }) + 1, 0, c.goi);
+    var ma = c.chuong.map(function (x) { return x.ma; }).filter(function (k) { return c.ds.some(function (m) { return m.chuong === k; }); });
+    if (!ma.length) return;
+    TT.thuTu.splice.apply(TT.thuTu, [TT.thuTu.indexOf(c.sau) + 1, 0].concat(ma));
+    TT.dot2.splice.apply(TT.dot2, [TT.dot2.indexOf(c.sau) + 1, 0].concat(ma));
+    c.chuong.forEach(function (x) { TT.ten[x.ma] = x.ten; });
+    var truoc = TT.goi.findIndex(function (g) { return g.chuong.indexOf(c.sau) >= 0; });
+    var sao = Math.min(TT.goi[truoc].sao + 30, TT.goi[truoc + 1] ? TT.goi[truoc + 1].sao : Infinity);
+    TT.goi.splice(truoc + 1, 0, Object.assign({ loai: 'thu-thach', sao: sao, khongTangNguong: true }, c.goi, { chuong: ma }));
     M.them(c.ds);
   });
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });

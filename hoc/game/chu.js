@@ -90,6 +90,7 @@
       'choi.xoaHetCo': 'Xóa hết',
       'choi.khoaO': 'Ô này đang khóa',
       'choi.chinhCoDinh': 'Main đã cố định. Em sửa hàm trong Xưởng.',
+      'choi.xeCoDinh': 'R{n} là robot tự động, chương trình đã khóa. Đọc để biết nó làm gì rồi viết robot còn lại.',
       'choi.chinhKhoaNhan': 'Cố định',
       'choi.canhBao': 'Lưu ý trên sân',
       'choi.nhom.goc': 'LỆNH CÓ SẴN',
