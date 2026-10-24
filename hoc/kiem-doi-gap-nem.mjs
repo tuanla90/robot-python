@@ -52,7 +52,7 @@ function itSao(so, moTa, doi, opt) {
 }
 
 /** Dò hình sân (điều kiện cần, bỏ qua số dòng / nhịp): robot nào không khóa mà MỘT MÌNH với tới được mọi vật và đủ ô đích
- *  (robot kia tránh đường; robot khóa không đi thì là vật cản). Trả về ['R1', …] cho sân thứ si. */
+ *  (như tools/do-mot-robot.mjs: đồng đội em viết đứng yên, robot khóa không đi cũng đứng yên, là vật cản). Trả về ['R1', …] cho sân thứ si. */
 function motMinh(m, si) {
   const VEC = [[0, -1], [1, 0], [0, 1], [-1, 0]];
   const rows = Array.isArray(m.san[0]) ? m.san[si] : m.san;
@@ -62,7 +62,7 @@ function motMinh(m, si) {
   rows.forEach((r, y) => [...r].forEach((c, x) => { if (c === 'o') vat.push([x, y]); if (c === 'D') dich.push([x, y]); }));
   m.doi.forEach((d) => { if (d.roBanDau) vat.push(null); });
   const DI = /move\(|go_wall|back\(|forward|walk|go\(|jump|leap|crawl|hop_box|bring|carry|deliver|step\(|route/;
-  const dung = m.doi.map((d, i) => d.coDinh && !DI.test(J(m.maMau.doi[i].chinh)));
+  const dung = m.doi.map((d, i) => !d.coDinh || !DI.test(J(m.maMau.doi[i].chinh)));        // đồng đội đứng yên: robot em viết (bỏ chương trình) hay robot khóa không đi
   const kq = [];
   m.doi.forEach((d, i) => {
     if (d.coDinh || m.mucTieu !== 'dua-vat') return;
@@ -106,18 +106,17 @@ for (const [so, ten] of Object.entries(TAO)) {
 }
 kiem('feed() không quay xe: thân chỉ có lệnh tay', !/turn|move|u_turn/.test(J(get(1).loiGiai.hamCuaEmMoi[0].than)));
 kiem('các màn 4–10 không chế thêm hàm, dùng lại hàm đã chế', ds.filter((m) => m.so >= 4).every((m) => !m.taoHam.length && !m.loiGiai.hamCuaEmMoi.length));
-kiem('hàm đã chế được dùng lại ở màn sau (feed ≥ 4 màn, relay_throw ≥ 4, catch_box ≥ 1)',
-  ['feed', 'relay_throw', 'catch_box'].every((t, k) => ds.filter((m) => m.so > 3 && J([m.loiGiai.doi, m.loiGiai.hamCuaMan]).includes(t + '(')).length >= [4, 4, 1][k]));
-kiem('robot khóa: máy ném ở 1, 3, 5, 6, 8; tay xoay ở 2, 7, 9', J(ds.map((m) => m.doi.map((d) => d.coDinh ? 1 : 0).join(''))) === J(['01', '10', '01', '00', '01', '01', '10', '01', '10', '00']));
+kiem('hàm đã chế được dùng lại ở màn sau (feed ≥ 3 màn, relay_throw ≥ 4, catch_box ≥ 2)',
+  ['feed', 'relay_throw', 'catch_box'].every((t, k) => ds.filter((m) => m.so > 3 && J([m.loiGiai.doi, m.loiGiai.hamCuaMan]).includes(t + '(')).length >= [3, 4, 2][k]));
+kiem('robot khóa: máy ném ở 1, 3, 6, 8; tay xoay ở 2, 5, 7, 9', J(ds.map((m) => m.doi.map((d) => d.coDinh ? 1 : 0).join(''))) === J(['01', '10', '01', '00', '10', '01', '10', '01', '10', '00']));
 kiem('màn 9 đổi phía: mỗi robot một cờ riêng, cờ là ô F, mục tiêu tới cờ', get(9).mucTieu === 'toi-co' && get(9).doi.every((d) => d.co && d.co.length === 1 && get(9).san[d.co[0].y][d.co[0].x] === 'F'));
 
-// CHƯA CHẶN ĐƯỢC (điều kiện cần, không phải lời giải đã thử): 4 cả hai robot đi dọc làn nên mỗi robot với tới được ô bàn giao sau và ô đích kế nó;
-// 10 máy ném đi được vào ô bàn giao rồi vào chỗ tay xoay vừa rời. Làm một mình phải tự đi vòng nhặt, đặt / nạp, quay, ném từng vật (dài hơn khung
-// 10 ô, phải chế thêm hàm, mất sao). Các màn khác đã chặn bằng hình sân (rào, tường quanh đích; robot khóa đứng yên làm vật cản).
+// 10 (trùm, tools/do-mot-robot.mjs không dò màn 10): máy ném đi được vào ô bàn giao rồi vào chỗ tay xoay vừa rời, nên về hình sân nó với tới vật;
+// muốn làm một mình phải viết một chương trình tự nạp, quay, ném đúng cho cả ba kho. Các màn 1–9 đã chặn bằng hình sân.
 for (const m of ds) {
   const n = Array.isArray(m.san[0]) ? m.san.length : 1, mm = [];
   for (let s = 0; s < n; s++) mm.push(...motMinh(m, s));
-  if (![4, 10].includes(m.so)) kiem(m.ma + ': không robot nào một mình với tới mọi vật và đủ đích (robot kia tránh đường)', !mm.length, [...new Set(mm)].join(', '));
+  if (![10].includes(m.so)) kiem(m.ma + ': không robot nào một mình với tới mọi vật và đủ đích (robot kia đứng yên)', !mm.length, [...new Set(mm)].join(', '));
 }
 
 console.log('\n— lời sai và lối tắt');
@@ -135,13 +134,15 @@ thua(2, 'ném tầm 2: vật rơi trúng hàng rào', [LG(2, 0), ['relay_throw(2
 // 3 catch_box
 thua(3, 'catch_box nhặt ngay không chờ', [['catch_box()', 'drop_left()'], LG(3, 1)], { ham: [H('catch_box', [], ['pick()'])] });
 thua(3, 'bắt được rồi đặt sang phải (sai bên)', [['catch_box()', 'drop_right()'], LG(3, 1)]);
-// 4 cùng lặp
-itSao(4, 'viết thẳng hai lượt cho cả hai robot', [['move()', 'feed()', 'move()', 'feed()'], ['relay_throw(3)', 'move()', 'relay_throw(3)']]);
-thua(4, 'máy ném không tiến: vật thứ hai ở ngoài tầm nạp', [LG(4, 0), ['for i in range(2):', '    relay_throw(3)']]);
-thua(4, 'tay xoay không tiến: lần hai nhặt hụt', [['move()', 'feed()', 'feed()'], LG(4, 1)]);
-// 5 robot khóa gọi relay_throw
-thua(5, 'tay xoay chỉ chuyền vật trước mặt', [['feed()'], LG(5, 1)]);
-thua(5, 'vật bên trái đặt xuống trước mặt (drop) thay vì sang phải', [['feed()', 'pick_left()', 'drop()'], LG(5, 1)]);
+// 4 hai làn
+thua(4, 'tay xoay chỉ chuyền vật trước mặt', [['feed()'], LG(4, 1)]);
+thua(4, 'vật bên trái đặt xuống trước mặt (drop) thay vì sang phải', [['feed()', 'pick_left()', 'drop()'], LG(4, 1)]);
+thua(4, 'máy ném ném cả hai vật thẳng một làn: vật sau rơi trúng vật trước', [LG(4, 0), ['relay_throw(3)', 'relay_throw(3)']]);
+thua(4, 'máy ném không chờ vật thứ hai', [LG(4, 0), ['relay_throw(3)', 'side_throw(3)']]);
+// 5 tay xoay khóa gọi catch_box
+thua(5, 'máy ném chỉ ném vật trước mặt (rổ còn đầy nên nạp không được)', [LG(5, 0), ['relay_throw(3)']]);
+thua(5, 'máy ném chỉ ném vật trong rổ', [LG(5, 0), ['toss(3)']]);
+thua(5, 'ném tầm 2: vật rơi trúng hàng rào', [LG(5, 0), ['toss(2)', 'relay_throw(2)']]);
 // 6 bắt hai lượt
 thua(6, 'tay xoay không tiến: lượt hai chờ mãi', [['for i in range(2):', '    catch_box()', '    drop_left()'], LG(6, 1)]);
 thua(6, 'tay xoay nhặt ngay, không catch_box()', [['for i in range(2):', '    pick()', '    drop_left()', '    move()'], LG(6, 1)]);
@@ -155,9 +156,9 @@ thua(7, 'nâng tay SAU khi xoay: vẫn kẹt', [LG(7, 0), LG(7, 1)], { hamCuaMan
 // 8 long_throw
 thua(8, 'không sửa long_throw(): ném tầm cũ 1 ô', [LG(8, 0), LG(8, 1)], { hamCuaMan: get(8).maMau.hamCuaMan });
 thua(8, 'aim cứng 2: vật rơi trúng tay xoay', [LG(8, 0), LG(8, 1)], { hamCuaMan: [H('long_throw', ['n'], ['load()', 'wait()', 'aim(2)', 'throw()', 'wait()'])] });
-// 9 let_pass
-thua(9, 'không sửa let_pass(): máy ném ra sớm', [LG(9, 0), LG(9, 1)], { hamCuaMan: get(9).maMau.hamCuaMan });
-thua(9, 'let_pass chỉ chờ máy ném tới: ra khi bạn đang ở trước hốc', [LG(9, 0), LG(9, 1)], { hamCuaMan: [H('let_pass', [], ['while front_clear():', '    wait()'])] });
+// 9 wait_pass
+thua(9, 'không sửa wait_pass(): máy ném ra sớm', [LG(9, 0), LG(9, 1)], { hamCuaMan: get(9).maMau.hamCuaMan });
+thua(9, 'wait_pass chỉ chờ máy ném tới: ra khi bạn đang ở trước hốc', [LG(9, 0), LG(9, 1)], { hamCuaMan: [H('wait_pass', [], ['while front_clear():', '    wait()'])] });
 thua(9, 'máy ném dừng giữa hành lang (forward(5))', [LG(9, 0), ['forward(5)']]);
 // 10 trùm
 thua(10, 'tay xoay luôn feed() sang phải', [['go_wall()', 'feed()'], LG(10, 1)]);

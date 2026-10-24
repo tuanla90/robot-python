@@ -51,7 +51,7 @@ function itSao(so, moTa, doi, opt) {
 }
 
 /** Dò hình sân (điều kiện cần, bỏ qua số dòng / nhịp): robot nào không khóa mà MỘT MÌNH với tới được mọi vật và đủ ô đích
- *  (robot kia tránh đường; robot khóa không đi thì là vật cản). Trả về ['R1', …] cho sân thứ si. */
+ *  (như tools/do-mot-robot.mjs: đồng đội em viết đứng yên, robot khóa không đi cũng đứng yên, là vật cản). Trả về ['R1', …] cho sân thứ si. */
 function motMinh(m, si) {
   const VEC = [[0, -1], [1, 0], [0, 1], [-1, 0]];
   const rows = Array.isArray(m.san[0]) ? m.san[si] : m.san;
@@ -61,7 +61,7 @@ function motMinh(m, si) {
   rows.forEach((r, y) => [...r].forEach((c, x) => { if (c === 'o') vat.push([x, y]); if (c === 'D') dich.push([x, y]); }));
   m.doi.forEach((d) => { if (d.roBanDau) vat.push(null); });
   const DI = /move\(|go_wall|back\(|forward|walk|go\(|jump|leap|crawl|hop_box|bring|carry|deliver|step\(|route/;
-  const dung = m.doi.map((d, i) => d.coDinh && !DI.test(J(m.maMau.doi[i].chinh)));
+  const dung = m.doi.map((d, i) => !d.coDinh || !DI.test(J(m.maMau.doi[i].chinh)));        // đồng đội đứng yên: robot em viết (bỏ chương trình) hay robot khóa không đi
   const kq = [];
   m.doi.forEach((d, i) => {
     if (d.coDinh || m.mucTieu !== 'dua-vat') return;
@@ -109,7 +109,7 @@ kiem('màn 9 đổi phía: mỗi robot một cờ riêng, cờ là ô F, mục t
 for (const m of ds) {
   const n = Array.isArray(m.san[0]) ? m.san.length : 1, mm = [];
   for (let s = 0; s < n; s++) mm.push(...motMinh(m, s));
-  if (![].includes(m.so)) kiem(m.ma + ': không robot nào một mình với tới mọi vật và đủ đích (robot kia tránh đường)', !mm.length, [...new Set(mm)].join(', '));
+  if (![].includes(m.so)) kiem(m.ma + ': không robot nào một mình với tới mọi vật và đủ đích (robot kia đứng yên)', !mm.length, [...new Set(mm)].join(', '));
 }
 
 console.log('\n— lời sai và lối tắt');

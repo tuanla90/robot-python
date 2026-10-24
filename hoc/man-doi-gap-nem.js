@@ -9,11 +9,11 @@
      1  Hai xe, hai tay        hai làn riêng: R1 đã có deliver(3); em viết launch(3) cho máy ném
      2  Nạp, tiến rồi ném      R2 đã có carry_throw(1); em đưa vật của R1 qua khúc quanh
      3  Hàng bay qua rào       R2 ném vật qua rào tới trước mũi R1; R1 chờ bằng cảm biến rồi mang vào đích
-     4  Gắp đưa, ném đi        R1 đặt vật trước mặt R2; R2 chờ rồi side_throw(3) qua rào
-     5  Dọn đường              R1 dời vật chắn vào đích; R2 chờ đường trống (while not front_clear()) rồi tiến và ném
+     4  Gắp đưa, ném đi        R1 lấy vật sau lưng, đặt trước mặt R2; R2 chờ rồi side_throw(3) qua rào
+     5  Dọn đường              R1 nhấc vật chắn mang lên đích xa; R2 chờ đường trống (while not front_clear()) rồi tiến và ném
      6  Hai đích, hai tầm      R1 chuyền hai vật; R2 ném vật đầu tầm 2, vật sau tầm 3
      7  Sửa tầm ném            tầm 2 rơi trúng hàng rào: vật vỡ
-     8  Sửa điều kiện chờ      while not front_clear() làm R2 ném rổ trống
+     8  Chờ sai chiều          while not front_clear() làm R2 ném rổ trống
      9  Lặp hai chuyến         viết thẳng thì tràn khung: R1 lặp for, R2 lặp với biến tầm n tăng dần
      10 Kho hai phía           trùm ba sân: vật của R1 xa gần khác nhau, đích của R2 lúc bên phải lúc bên trái
 
@@ -31,18 +31,18 @@
     'doi-gap-nem.1': { o: 26, nhip: 6 },
     'doi-gap-nem.2': { o: 31, nhip: 7 },
     'doi-gap-nem.3': { o: 33, nhip: 9 },
-    'doi-gap-nem.4': { o: 32, nhip: 10 },
-    'doi-gap-nem.5': { o: 29, nhip: 5 },
+    'doi-gap-nem.4': { o: 38, nhip: 11 },
+    'doi-gap-nem.5': { o: 32, nhip: 8 },
     'doi-gap-nem.6': { o: 44, nhip: 15 },
-    'doi-gap-nem.7': { o: 32, nhip: 10 },
+    'doi-gap-nem.7': { o: 36, nhip: 10 },
     'doi-gap-nem.8': { o: 35, nhip: 10 },
     'doi-gap-nem.9': { o: 44, nhip: 21 },
     'doi-gap-nem.10': { o: 40, nhip: 36 },
     'che-doi-gap-nem.1': { o: 24, nhip: 5 },
     'che-doi-gap-nem.2': { o: 26, nhip: 5 },
     'che-doi-gap-nem.3': { o: 24, nhip: 5 },
-    'che-doi-gap-nem.4': { o: 32, nhip: 11 },
-    'che-doi-gap-nem.5': { o: 44, nhip: 10 },
+    'che-doi-gap-nem.4': { o: 44, nhip: 10 },
+    'che-doi-gap-nem.5': { o: 37, nhip: 8 },
     'che-doi-gap-nem.6': { o: 30, nhip: 11 },
     'che-doi-gap-nem.7': { o: 20, nhip: 5 },
     'che-doi-gap-nem.8': { o: 29, nhip: 7 },
@@ -94,6 +94,10 @@
 
   var R1_DAT = ['pick()', 'go_wall()', 'turn_right()', 'drop()'];
   var R1_HAI = ['pass_back()', 'move()', 'pick()', 'u_turn()', 'move()', 'drop()'];
+  // R1 đứng chắn lối vào chỗ để vật: máy ném không tự đi lấy được (cần cả đội)
+  var R1_SAU = ['grab_back()', 'go_wall()', 'turn_right()', 'drop()'];
+  var R1_NHAC = ['pick()', 'u_turn()', 'go_wall()', 'turn_left()', 'drop()'];
+  var R1_QUAY = ['pick()', 'u_turn()', 'go_wall()', 'turn_right()', 'drop()'];
 
   var DS = [
     man({
@@ -126,21 +130,21 @@
     }),
     man({
       so: 4, ten: 'Gắp đưa, ném đi',
-      deBai: 'Lần này R1 mang vật tới đặt trước mặt R2. R2 chờ tới khi thấy vật, nạp vào rổ, quay sang phải rồi ném qua rào vào đích.',
+      deBai: 'Lần này R1 lấy vật sau lưng, mang tới đặt trước mặt R2. R2 chờ tới khi thấy vật, nạp vào rổ, quay sang phải rồi ném qua rào vào đích.',
       veMaMau: 'Chương trình R1 đã xong. Viết chương trình R2.',
-      san: ['#########', '#.o..####', '####.####', '####.=.D#', '#########'], bd: [{ x: 1, y: 1, huong: 1 }, { x: 4, y: 3, huong: 0 }],
-      maMau: B(R1_DAT, []), loiGiai: B(R1_DAT, CHO_HANG.concat(['side_throw(3)'])),
-      hamCuaEmCan: ['pick', 'drop', 'go_wall', 'turn_right', 'side_throw'],
+      san: ['#########', '#o...####', '####.####', '####.=.D#', '#########'], bd: [{ x: 2, y: 1, huong: 1 }, { x: 4, y: 3, huong: 0 }],
+      maMau: B(R1_SAU, []), loiGiai: B(R1_SAU, CHO_HANG.concat(['side_throw(3)'])),
+      hamCuaEmCan: ['grab_back', 'drop', 'go_wall', 'turn_right', 'side_throw'],
       goiY: ['R2 phải chờ như R1 ở bài trước.', 'side_throw(n) nạp, quay phải, ném rồi quay lại.']
     }),
     man({
       so: 5, ten: 'Dọn đường', ro: true,
-      deBai: 'Rổ của R2 đã có một vật, nhưng một vật khác chắn ngay trước mũi R2. R1 dời vật chắn vào đích bên cạnh. R2 chờ tới khi đường trống, tiến sát hàng rào rồi ném vào đích.',
+      deBai: 'Rổ của R2 đã có một vật, nhưng một vật khác chắn ngay trước mũi R2. R1 nhấc vật chắn mang lên đích ở cuối khoang phía trên. R2 chờ tới khi đường trống, tiến sát hàng rào rồi ném vào đích.',
       veMaMau: 'Chạy thử: R2 ném ngay từ chỗ cũ. Cho R2 chờ đường trống trước khi tiến.',
-      san: ['########', '#D.#####', '#.o..=D#', '########'], bd: [{ x: 2, y: 1, huong: 2 }, { x: 1, y: 2, huong: 1 }],
-      maMau: B(['put_right()'], ['go_wall()', 'toss(2)']),
-      loiGiai: B(['put_right()'], ['while not front_clear():', '    wait()', 'go_wall()', 'toss(2)']),
-      hamCuaEmCan: ['put_right', 'go_wall', 'toss'],
+      san: ['########', '#D.#####', '##.#####', '##.#####', '##.#####', '#.o..=D#', '########'], bd: [{ x: 2, y: 4, huong: 2 }, { x: 1, y: 5, huong: 1 }],
+      maMau: B(R1_NHAC, ['go_wall()', 'toss(2)']),
+      loiGiai: B(R1_NHAC, ['while not front_clear():', '    wait()', 'go_wall()', 'toss(2)']),
+      hamCuaEmCan: ['pick', 'u_turn', 'go_wall', 'turn_left', 'drop', 'toss'],
       goiY: ['Lần này chờ cho tới khi trước mặt TRỐNG.', 'while not front_clear(): wait()']
     }),
     man({
@@ -157,14 +161,14 @@
       so: 7, ten: 'Sửa tầm ném',
       deBai: 'R1 đặt vật trên đầu R2. R2 nạp vật, quay trái rồi ném, nhưng vật rơi trúng hàng rào và vỡ. Sửa chương trình R2 cho vật rơi vào đích.',
       veMaMau: 'Chương trình R1 đã đúng. Chạy thử rồi sửa R2.',
-      san: ['######', '#.o..#', '####.#', '#D=..#', '######'], bd: [{ x: 1, y: 1, huong: 1 }, { x: 4, y: 3, huong: 0 }],
-      maMau: B(R1_DAT, CHO_HANG.concat(['load()', 'wait()', 'turn_left()', 'toss(2)'])),
-      loiGiai: B(R1_DAT, CHO_HANG.concat(['load()', 'wait()', 'turn_left()', 'toss(3)'])),
-      hamCuaEmCan: ['pick', 'drop', 'go_wall', 'turn_right', 'turn_left', 'toss'],
+      san: ['######', '#o...#', '####.#', '#D=..#', '######'], bd: [{ x: 2, y: 1, huong: 3 }, { x: 4, y: 3, huong: 0 }],
+      maMau: B(R1_QUAY, CHO_HANG.concat(['load()', 'wait()', 'turn_left()', 'toss(2)'])),
+      loiGiai: B(R1_QUAY, CHO_HANG.concat(['load()', 'wait()', 'turn_left()', 'toss(3)'])),
+      hamCuaEmCan: ['pick', 'u_turn', 'drop', 'go_wall', 'turn_right', 'turn_left', 'toss'],
       goiY: ['Đếm số ô từ R2 tới đích, không tính ô R2 đứng.', 'Đích cách R2 ba ô.']
     }),
     man({
-      so: 8, ten: 'Sửa điều kiện chờ',
+      so: 8, ten: 'Chờ sai chiều',
       deBai: 'R2 phải chờ R1 đặt vật trên đầu rồi mới ném, nhưng R2 ném ngay lúc đầu với rổ trống. Sửa điều kiện vòng chờ của R2.',
       veMaMau: 'Chương trình R1 đã đúng. Sửa một dòng của R2.',
       san: ['########', '#...####', '#o#.####', '###.=.D#', '########'], bd: [{ x: 1, y: 1, huong: 2 }, { x: 3, y: 3, huong: 0 }],
@@ -209,7 +213,7 @@
        1 feed()          = pick(), drop_right()                         tay xoay nhặt vật trước mặt, đặt sang ô bên phải (4 nhịp)
        2 relay_throw(n)  = while front_clear(): wait(), launch(n)       máy ném chờ tới khi có vật trước mặt rồi nạp và ném xa n ô
        3 catch_box()     = while front_clear(): wait(), pick()          tay xoay chờ vật bay tới trước mặt rồi nhặt
-     Hàm của màn: 7 swing() quên nâng tay trước khi xoay (khớp kẹt); 8 long_throw(n) ném rồi mới aim (ném tầm cũ); 9 let_pass() chỉ chờ đồng đội đi khỏi,
+     Hàm của màn: 7 swing() quên nâng tay trước khi xoay (khớp kẹt); 8 long_throw(n) ném rồi mới aim (ném tầm cũ); 9 wait_pass() chỉ chờ đồng đội đi khỏi,
      quên chờ đồng đội tới. */
   var T_FEED = ['pick()', 'drop_right()'];
   var T_RELAY = CHO_HANG.concat(['launch(n)']);
@@ -221,11 +225,12 @@
   var T_SWING = ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()'];
   function hSwing(than) { return H('swing', [], than || T_SWING_CU); }
   function hLong(than) { return H('long_throw', ['n'], than || ['load()', 'wait()', 'throw()', 'aim(n)', 'wait()']); }
-  var T_LET_PASS = ['while front_clear():', '    wait()', 'while not front_clear():', '    wait()'];
-  function hLetPass(than) { return H('let_pass', [], than || ['while not front_clear():', '    wait()']); }
+  var T_WAIT_PASS = ['while front_clear():', '    wait()', 'while not front_clear():', '    wait()'];
+  function hWaitPass(than) { return H('wait_pass', [], than || ['while not front_clear():', '    wait()']); }
   function lg(bai, ham) { bai.hamCuaEmMoi = ham || []; return bai; }
   var CHE = 'che-' + CHUONG;
-  var NEM_5 = ['relay_throw(3)'].concat(CHO_HANG, ['side_throw(3)']);
+  var NEM_4 = ['relay_throw(3)'].concat(CHO_HANG, ['side_throw(3)']);
+  var XOAY_5 = ['catch_box()', 'drop_right()', 'catch_box()', 'drop_left()'];
   var R1_TRUM = ['go_wall()', 'if right_clear():', '    feed()', 'else:', '    pick()', '    drop_left()'];
 
   DS = DS.concat([
@@ -260,24 +265,24 @@
       goiY: ['R1 quay mặt sang trái, nên bên trái của R1 là phía dưới.', 'Chờ như relay_throw(), nhưng chờ xong thì pick().']
     }),
     man({
-      so: 4, chuong: CHE, ten: 'Cùng tiến, cùng lặp',
-      deBai: 'Hai vật nằm nối nhau trước mũi tay xoay. Mỗi lượt tay xoay tiến một ô rồi chuyền vật sang ô dưới; máy ném chờ vật, ném xa 3 ô rồi cũng tiến một ô. Viết vòng lặp cho cả hai robot.',
+      so: 4, chuong: CHE, ten: 'Hai vật, hai làn',
+      deBai: 'Tay xoay có một vật trước mặt và một vật bên trái: chuyền lần lượt cả hai sang ô bên phải, đúng trước mặt máy ném. Máy ném ném vật thứ nhất thẳng qua rào phía trước bằng relay_throw(3), rồi chờ vật thứ hai và ném sang phải bằng side_throw(3).',
       veMaMau: 'Tự viết cả hai chương trình bằng các hàm em đã chế.',
-      san: ['#######', '#..oo##', '#...DD#', '#######'], bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }],
+      san: ['########', '###D####', '##o=####', '#o..####', '###..=D#', '########'], bd: [{ x: 2, y: 3, huong: 0 }, { x: 3, y: 4, huong: 0 }],
       maMau: B([], []),
-      loiGiai: B(['for i in range(2):', '    move()', '    feed()'], ['for i in range(2):', '    relay_throw(3)', '    move()']),
-      hamCuaEmCan: ['move', 'feed', 'relay_throw'],
-      goiY: ['Mỗi lần tay xoay tiến một ô thì ô bàn giao cũng dời theo một ô.', 'Máy ném ném xong thì tiến một ô để đứng sau ô bàn giao mới.']
+      loiGiai: B(['feed()', 'pick_left()', 'drop_right()'], NEM_4),
+      hamCuaEmCan: ['feed', 'pick_left', 'drop_right', 'relay_throw', 'side_throw'],
+      goiY: ['feed() lo vật trước mặt; vật bên trái cần một lần nhặt bên trái.', 'Hai vật không cùng rơi một ô: vật sau phải ném sang làn khác.']
     }),
     man({
-      so: 5, chuong: CHE, ten: 'Máy ném tự động dùng hàm của em', khoa: 1,
-      deBai: 'Máy ném tự động gọi relay_throw(3) em đã chế để ném vật thứ nhất qua rào phía trước, rồi chờ vật thứ hai và ném sang phải bằng side_throw(3). Tay xoay có một vật trước mặt và một vật bên trái: chuyền lần lượt cả hai sang ô bên phải, đúng trước mặt máy ném.',
-      veMaMau: 'Chương trình máy ném bị khóa, xem được. Viết chương trình tay xoay.',
-      san: ['########', '###D####', '##o=####', '#o..####', '###..=D#', '########'], bd: [{ x: 2, y: 3, huong: 0 }, { x: 3, y: 4, huong: 0 }],
-      maMau: B([], NEM_5),
-      loiGiai: B(['feed()', 'pick_left()', 'drop_right()'], NEM_5),
-      hamCuaEmCan: ['feed', 'pick_left', 'drop_right', 'relay_throw', 'side_throw'],
-      goiY: ['feed() lo vật trước mặt; vật bên trái cần một lần nhặt bên trái.', 'pick_left() rồi drop_right().']
+      so: 5, chuong: CHE, ten: 'Tay xoay tự động bắt hàng', khoa: 0, ro: true,
+      deBai: 'Tay xoay tự động gọi catch_box() em đã chế hai lần: bắt vật rơi trước mặt, đặt sang phải, rồi bắt vật sau, đặt sang trái. Máy ném có một vật trong rổ và một vật trước mặt: ném cả hai qua rào, rơi đúng ô trước mặt tay xoay.',
+      veMaMau: 'Chương trình tay xoay bị khóa, xem được. Viết chương trình máy ném.',
+      san: ['#######', '#####D#', '#.o=..#', '#####D#', '#######'], bd: [{ x: 5, y: 2, huong: 3 }, { x: 1, y: 2, huong: 1 }],
+      maMau: B(XOAY_5, []),
+      loiGiai: B(XOAY_5, ['toss(3)', 'relay_throw(3)']),
+      hamCuaEmCan: ['catch_box', 'drop_right', 'drop_left', 'toss', 'relay_throw'],
+      goiY: ['Rổ đang có vật thì chưa nạp thêm được: ném vật trong rổ trước.', 'toss(3) rồi relay_throw(3).']
     }),
     man({
       so: 6, chuong: CHE, ten: 'Bắt hai lượt', khoa: 1, ro: true,
@@ -311,11 +316,11 @@
     }),
     man({
       so: 9, chuong: CHE, ten: 'Nhường đường', mucTieu: 'toi-co', khoa: 0, co: [[{ x: 9, y: 1 }], [{ x: 1, y: 1 }]],
-      deBai: 'Hai robot đổi phía qua một hành lang hẹp, mỗi robot tới cờ có vạch màu của mình. Tay xoay đứng trong hốc và gọi let_pass() để chờ máy ném đi qua, nhưng hàm của màn chỉ chờ "tới khi trước mặt trống" nên tay xoay ra quá sớm. Sửa let_pass() và viết chương trình máy ném.',
-      veMaMau: 'Chương trình tay xoay bị khóa. Sửa hàm let_pass() rồi viết chương trình máy ném.',
+      deBai: 'Hai robot đổi phía qua một hành lang hẹp, mỗi robot tới cờ có vạch màu của mình. Tay xoay đứng trong hốc và gọi wait_pass() để chờ máy ném đi qua, nhưng hàm của màn chỉ chờ "tới khi trước mặt trống" nên tay xoay ra quá sớm. Sửa wait_pass() và viết chương trình máy ném.',
+      veMaMau: 'Chương trình tay xoay bị khóa. Sửa hàm wait_pass() rồi viết chương trình máy ném.',
       san: ['###########', '#F.......F#', '###.#######', '###########'], bd: [{ x: 3, y: 2, huong: 0 }, { x: 9, y: 1, huong: 3 }],
-      maMau: B(['let_pass()', 'move()', 'turn_right()', 'go_wall()'], [], [hLetPass()]),
-      loiGiai: B(['let_pass()', 'move()', 'turn_right()', 'go_wall()'], ['go_wall()'], [hLetPass(T_LET_PASS)]),
+      maMau: B(['wait_pass()', 'move()', 'turn_right()', 'go_wall()'], [], [hWaitPass()]),
+      loiGiai: B(['wait_pass()', 'move()', 'turn_right()', 'go_wall()'], ['go_wall()'], [hWaitPass(T_WAIT_PASS)]),
       hamCuaEmCan: ['go_wall', 'move', 'turn_right'],
       goiY: ['Lúc đầu trước mặt tay xoay đã trống: phải chờ máy ném tới trước, rồi mới chờ máy ném đi khỏi.', 'Hai vòng while: while front_clear(), rồi while not front_clear().']
     }),
