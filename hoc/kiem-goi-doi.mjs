@@ -6,6 +6,7 @@
    - Mỗi màn: ≥ 2 robot; lời giải thắng 3 sao, ngưỡng sao (khối SAO của tệp gói) khớp đúng ô / nhịp lời giải; mẫu chưa thắng;
      robot khóa (doi[i].coDinh) giữ nguyên chương trình mẫu và vẫn còn robot cho người chơi viết; hàm cần đã học trước màn;
      CẦN CẢ ĐỘI: bỏ chương trình của một robot (robot đó có việc trong lời giải) thì không thắng, trừ màn khai choPhepMotRobot.
+   - Không va giữa các gói: tên màn, hàm cốt truyện, hàm của màn không trùng nhau. (Một robot làm hết: chạy tools/do-mot-robot.mjs — chậm, không nằm trong máy kiểm.)
    - Lõi: cờ riêng của từng robot (doi[i].co) chỉ tính khi đúng chủ.
    ========================================================================== */
 import path from 'node:path';
@@ -86,6 +87,23 @@ console.log('\n— lõi: cờ riêng của từng robot');
   let loi = null; try { SanHoc.chay(Object.assign({}, cfg, { doi: [Object.assign({}, cfg.doi[0], { co: [{ x: 2, y: 2 }] }), cfg.doi[1]] }), ['', '']); } catch (e) { loi = e.message; }
   kiem('cờ riêng phải là ô F', /không phải ô cờ F/.test(loi || ''), loi);
   kiem('coCuaSan: một sân, nhiều sân', J(SanHoc.coCuaSan([{ x: 1, y: 1 }], 2, true)) === J([{ x: 1, y: 1 }]) && J(SanHoc.coCuaSan([[{ x: 1, y: 1 }], [{ x: 2, y: 2 }]], 1, true)) === J([{ x: 2, y: 2 }]));
+}
+
+console.log('\n— không va nhau giữa các gói (các gói làm song song ở nhánh riêng)');
+{
+  const dsDoi = M.danhSach.filter((m) => goiDoi.some((c) => c.coMan.includes(m.chuong)));
+  const theoTen = {};
+  dsDoi.forEach((m) => { (theoTen[m.ten] = theoTen[m.ten] || []).push(m.ma); });
+  const trungTen = Object.entries(theoTen).filter(([, a]) => a.length > 1);
+  kiem('tên màn không trùng giữa các màn của gói đội', !trungTen.length, trungTen.map(([t, a]) => t + ': ' + a.join(', ')).join('; '));
+  // hàm cốt truyện (taoHam) chỉ một màn chế; hàm của màn không được trùng tên hàm của em ở chương nào
+  const noiTao = {};
+  M.danhSach.forEach((m) => (m.taoHam || []).forEach((t) => { (noiTao[t] = noiTao[t] || []).push(m.ma); }));
+  const taoTrung = Object.entries(noiTao).filter(([, a]) => a.length > 1 && a.some((ma) => dsDoi.some((m) => m.ma === ma)));
+  kiem('mỗi hàm cốt truyện chỉ một màn bắt chế', !taoTrung.length, taoTrung.map(([t, a]) => t + ': ' + a.join(', ')).join('; '));
+  const tenKho = new Set(M.danhSach.flatMap((m) => (m.loiGiai.hamCuaEmMoi || []).map((h) => h.ten)));
+  const manVa = dsDoi.flatMap((m) => (m.loiGiai.hamCuaMan || []).filter((h) => tenKho.has(h.ten) || noiTao[h.ten]).map((h) => m.ma + ' ' + h.ten));
+  kiem('hàm của màn không trùng tên hàm của em ở chương nào', !manVa.length, manVa.join(', '));
 }
 
 console.log('\n---------------------------------------------');
