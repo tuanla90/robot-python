@@ -142,10 +142,10 @@ robot máy ném trong màn nhiều robot giờ được vẽ (trước chỉ v�
 ## 6. Thứ tự làm
 
 1. Nền chung (xong 24/10).
-2. Các gói đội, mỗi gói một phiên riêng, chạy song song được (mỗi phiên chỉ sửa tệp gói của mình + máy kiểm riêng): Đội xích và nhện, Đội omni và xích,
-   Đội súng hơi và omni, Đội màu và súng hơi, Đội nam châm và màu, Đội tay xoay và nam châm, Đội drone và máy ném, chương 2 của Đội vượt hố và
-   Đội tay gắp và máy ném.
-3. Ráp các nhánh, chạy toàn bộ máy kiểm, chơi thử.
+2. Các gói đội (xong 24/10): 7 gói mới + chương 2 của hai gói cũ, mỗi gói một phiên riêng chạy song song.
+3. Ráp các nhánh (xong 24/10): nghiệm thu hai lượt. Lượt 1 bắt được 20 trường hợp một robot làm hết, hàm cốt truyện và tên màn trùng giữa các gói
+   (các gói làm riêng không thấy nhau) → thêm kiểm tra không va tên vào `kiem-goi-doi.mjs` và công cụ `tools/do-mot-robot.mjs`. Lượt 2: 9 gói / 180 màn,
+   luật chung 980/980, không màn nào một robot làm hết, `npm test` 67/67. Chưa chơi thử bằng người.
 4. **G3 + G4 + G5**, rồi gói Đề ban tổ chức.
 
 ## 7. Đã chốt (24/10)
