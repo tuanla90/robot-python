@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-nam-cham.mjs — máy kiểm chương `che-nam-cham` (Chế lệnh nam châm) của "Đường học" và các luật lõi mới của nó (KE-HOACH-CHE-LENH.md, mục 5b.2).
+   kiem-che-nam-cham.mjs — máy kiểm chương `che-nam-cham` (Chế lệnh nam châm) của "Học lập trình" và các luật lõi mới của nó (KE-HOACH-CHE-LENH.md, mục 5b.2).
    Gồm:
    - daoChieu 'cuc' (dây cực đấu ngược): magnet_n() bật cực S thật, magnet_s() bật cực N thật; vết lệnh vẫn ghi tên lệnh gọi; cấu hình sai bị từ chối;
    - màn hỏng (phanCung thiếu magnet_s): gọi lệnh hỏng → lenh-goc-hong nói "Cực S của nam châm hỏng" / canhBao của màn;

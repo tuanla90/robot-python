@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-choi.js — "Đường học": MÀN CHƠI (window.Choi).
+   man-choi.js — "Học lập trình": MÀN CHƠI (window.Choi).
    Sân + cột nút ▶ ⏭ ↺ 💡 + đồng hồ NHỊP; nửa dưới: CHƯƠNG TRÌNH (10 ô) | KHỐI LỆNH.
    Chạy = ChamHoc.cham(...) rồi phát lại `vet`. Mọi luật và lời chẩn đoán đến từ lõi.
    Màn chế lệnh (14/10): mục tiêu 'bong-mo' (SanVe vẽ xe mờ + ô ◆ theo man.bongMo, ◆ sáng khi vết có 'qua-diem'), man.chinhCoDinh (khung chương trình chính chỉ đọc, có ổ khóa),

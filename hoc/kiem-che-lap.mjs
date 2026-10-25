@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-lap.mjs — máy kiểm chương `che-lap` (Chế lệnh có for, chương 7) của "Đường học". Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.2).
+   kiem-che-lap.mjs — máy kiểm chương `che-lap` (Chế lệnh có for, chương 7) của "Học lập trình". Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.2).
    Gồm:
    - bộ dò đường tắt do-duong-che-lap.mjs: màn có vật + tay kẹp (BFS riêng) và tự kiểm bằng cách chạy chuỗi hành động qua SanHoc;
    - 10 màn che-lap: lời giải 3 sao (đúng sao.o ô, sao.nhip nhịp, không chẩn đoán), BFS nhịp = sao.nhip trên PHẦN CỨNG (màn 5 theo lời giải chuẩn: BFS ≤ sao.nhip),

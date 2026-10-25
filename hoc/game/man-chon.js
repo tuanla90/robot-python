@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-chon.js — "Đường học": LƯỚI MÀN CỦA MỘT GÓI (window.Chon), kiểu lưới màn trong hộp của Cut the Rope.
+   man-chon.js — "Học lập trình": LƯỚI MÀN CỦA MỘT GÓI (window.Chon), kiểu lưới màn trong hộp của Cut the Rope.
    Thanh trên: ◀ (về chọn gói) · "GÓI n" · nút Sổ lệnh. Dải bìa: huy hiệu gói · tên gói · sao của gói · thanh tiến độ (mỗi màn một vạch).
    Mỗi chương của gói một khối: dòng "Chương 4 · Tay gắp   7/10" + lưới 5×2 ô màn (ô 10 = thử thách, vẽ bằng huy hiệu của chương).
    Ô: số màn + sao / ổ khóa / "CHƠI!" (màn nên chơi). Chạm ô khóa thì rung + báo lý do (luật ở game/mo-goi.js).
@@ -48,6 +48,7 @@
   }
 
   function lyDoChu(tt) {
+    if (tt.lyDo === 'chua-mua') { var mb = App.dsMua().filter(function (x) { return x.ma === tt.mua; })[0]; return t('chon.khoaChuaMua', { ten: mb ? mb.ten : tt.mua }); }
     if (tt.lyDo === 'mua') return window.ChonGoi && ChonGoi.loiMua ? ChonGoi.loiMua(App.dsMua().filter(function (x) { return x.ma === tt.mua; })[0]) : t('chon.khoaMua');
     if (tt.lyDo === 'sao') return t('chon.khoaSao', { can: tt.can, co: tt.co });
     if (tt.lyDo === 'chuoi') return t('chon.khoaChuoi', { n: tt.chuoi });

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-tham-so.js — "Đường học": CHƯƠNG `tham-so` · HÀM CÓ THAM SỐ (10 màn).
+   man-tham-so.js — "Học lập trình": CHƯƠNG `tham-so` · HÀM CÓ THAM SỐ (10 màn).
    Xe hai bánh có tay kẹp, Xưởng hàm mở (moXuong true), được dùng hàm của em. Hàm gốc như chương
    bang-chuyen (bánh, wait, 4 lệnh tay). Chương trình 10 ô; mỗi hàm một khung riêng 10 ô.
    Đã học `for` nên cauTruc ['for'].

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-tay-gap.js — "Đường học": CHƯƠNG `tay-gap` · TAY GẮP (10 màn).
+   man-tay-gap.js — "Học lập trình": CHƯƠNG `tay-gap` · TAY GẮP (10 màn).
    Xe hai bánh có thêm tay gắp, Xưởng hàm mở (moXuong true), được dùng hàm của em.
    Chương trình 10 ô; mỗi hàm một khung riêng 10 ô (dòng def không tốn ô). Chưa có `for` (cauTruc []).
    Mục tiêu mới `dua-vat` (man.mucTieu): thắng khi MỌI vật trên sân nằm trên ô đích.

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-tay-xoay.js — "Đường học": CHƯƠNG `tay-xoay` · TAY XOAY (10 màn). Đợt 2 làm lại theo khuôn (KE-HOACH-CHE-LENH.md, mục 5b.3). Chương làm quen của bộ phận MỚI "tay xoay".
+   man-tay-xoay.js — "Học lập trình": CHƯƠNG `tay-xoay` · TAY XOAY (10 màn). Đợt 2 làm lại theo khuôn (KE-HOACH-CHE-LENH.md, mục 5b.3). Chương làm quen của bộ phận MỚI "tay xoay".
    Robot là XE HAI BÁNH GẮN TAY XOAY: robot { than: 'hai-banh', tay: 'xoay', camBien: [] }. Tay kẹp đời 2: bốn lệnh tay cũ (arm_down, arm_up, grab, release) giữ nguyên, thêm arm_left() / arm_right()
    xoay khớp tay MỘT nấc giữa ba nấc trái · trước · phải. grab / release làm ở Ô MÀ TAY ĐANG CHỈ (trước mặt, bên trái hay bên phải xe), nên nhặt / đặt vật ở bên hông mà không cần quay xe.
 

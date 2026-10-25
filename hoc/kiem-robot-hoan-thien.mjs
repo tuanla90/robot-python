@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-robot-hoan-thien.mjs — máy kiểm chương `robot-hoan-thien` (Robot hoàn thiện, chương 10, cuối đợt 1) của "Đường học" (KE-HOACH-CHE-LENH.md, mục 5.4).
+   kiem-robot-hoan-thien.mjs — máy kiểm chương `robot-hoan-thien` (Robot hoàn thiện, chương 10, cuối đợt 1) của "Học lập trình" (KE-HOACH-CHE-LENH.md, mục 5.4).
    Gồm:
    - bộ dò đường do-duong-robot-hoan-thien.mjs (BFS từng sân, cộng lại): đường BFS đổi thành lệnh gốc rồi chạy SanHoc.chay phải thắng đúng bằng số nhịp BFS;
    - 10 màn: lời giải 3 sao trên MỌI sân (đúng sao.o ô, sao.nhip nhịp, không chẩn đoán), BFS ≤ sao.nhip (chấm theo lời giải chuẩn), mọi congThucKhac thắng, loiGiaiKhac đúng 2 sao,

@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-moi-truong.mjs — máy kiểm "YẾU TỐ MÔI TRƯỜNG CÓ TRƯỚC BỘ PHẬN GỠ NÓ" của "Đường học" (user chốt 15/10).
+   kiem-moi-truong.mjs — máy kiểm "YẾU TỐ MÔI TRƯỜNG CÓ TRƯỚC BỘ PHẬN GỠ NÓ" của "Học lập trình" (user chốt 15/10).
    Mỗi yếu tố (vật chắn, gầm thấp, hố, hàng rào, bậc thang, băng chuyền, thùng nặng, cửa, nút, sàn màu, vật sắt, vật nam châm) phải XUẤT HIỆN LẦN ĐẦU
    ở một GÓI đứng TRƯỚC gói của bộ phận gỡ nỗi đau đó (vd băng chuyền có trước bánh xích): người chơi gặp khó trước, rồi mới có bộ phận giải quyết.
    Gói theo ThuTuChuong.goi (thứ tự gói = thứ tự chương). Chỉ xét chương CÓ màn. Không cần lõi (đọc ký hiệu sân và lớp vatChat).

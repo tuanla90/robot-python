@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-goi.mjs — máy kiểm GÓI MÀN + LUẬT MỞ KHÓA + BA MÀN HÌNH MỚI của "Đường học" (bố cục kiểu Cut the Rope, 15/10).
+   kiem-goi.mjs — máy kiểm GÓI MÀN + LUẬT MỞ KHÓA + BA MÀN HÌNH MỚI của "Học lập trình" (bố cục kiểu Cut the Rope, 15/10).
    Kiểm:
    - ThuTuChuong.goi: mỗi chương của thuTu nằm đúng một gói, thứ tự gói theo thứ tự chương; mã gói không trùng;
    - game/mo-goi.js: gói đầu cần 0 sao; sao cần = TI_LE_SAO × tổng sao tối đa các gói trước (bội 5), không giảm, luôn với tới được; gói rỗng = "Sắp có";
@@ -61,8 +61,9 @@ console.log('\n== 2. MoGoi.dsGoi: sao cần ==');
   kiem('gói đầu là Xe hai bánh, cần 0 sao', ds[0].ma === 'xe' && ds[0].saoCan === 0);
   kiem('dsGoi mang loai (mặc định khai-niem): Tay gắp là bo-phan, Vòng lặp khai-niem, Robot hoàn thiện thu-thach',
     MoGoi.goiTheoMa('tay-gap').loai === 'bo-phan' && MoGoi.goiTheoMa('vong-lap').loai === 'khai-niem' && MoGoi.goiTheoMa('robot').loai === 'thu-thach');
-  let truoc = 0, dung = true, giam = false, cu = 0;
+  let truoc = 0, dung = true, giam = false, cu = 0, muaCu = null;
   for (const g of coMan) {
+    if (g.mua !== muaCu) { truoc = 0; cu = 0; muaCu = g.mua; }                    // ngưỡng tính trong từng mùa (bán theo mùa, 25/10)
     const mong = Math.floor(MoGoi.TI_LE_SAO * truoc / 5) * 5, khai = (TT.goi || []).find((x) => x.ma === g.ma);
     if (khai && typeof khai.sao === 'number') { if (g.saoCan !== khai.sao || g.saoCan > mong) dung = false; }    // khai cứng: đúng số khai, không khó hơn công thức
     else if (g.saoCan !== mong) dung = false;
@@ -71,7 +72,7 @@ console.log('\n== 2. MoGoi.dsGoi: sao cần ==');
     cu = g.saoCan; truoc += g.saoToiDa;
   }
   kiem('sao cần = số khai cứng (không khó hơn công thức) hoặc ' + MoGoi.TI_LE_SAO + ' × tổng sao tối đa các gói trước (làm tròn xuống bội 5), không vượt số sao lấy được', dung, coMan.map((g) => g.ma + ':' + g.saoCan).join(' '));
-  kiem('sao cần không giảm theo thứ tự gói', !giam);
+  kiem('sao cần không giảm theo thứ tự gói trong mỗi mùa', !giam);
   kiem('saoToiDa = 3 × số màn; man đúng các màn của các chương trong gói, theo thứ tự', coMan.every((g) => g.saoToiDa === 3 * g.man.length && g.man.length === g.chuong.reduce((s, c) => s + manCua(c).length, 0)));
   kiem('gói chưa có màn nào là "Sắp có" (sapCo, không tính vào sao)', ds.filter((g) => g.sapCo).every((g) => !g.man.length && g.saoToiDa === 0));
   kiem('goiCua(chương) trả đúng gói (kể cả chương chưa có màn)', TT.thuTu.every((c) => { const g = MoGoi.goiCua(c); return g && g.chuongKhai.includes(c); }));
@@ -130,28 +131,43 @@ console.log('\n== 3. Luật mở màn ==');
   kiem('tongSao / saoGoi / soQua cộng đúng', MoGoi.tongSao(luu(du)) === 15 && MoGoi.saoGoi(MoGoi.goiTheoMa('xe'), luu(du)) === 15 && MoGoi.soQua(MoGoi.goiTheoMa('xe'), luu(du)) === 5);
 }
 
-console.log('\n== 3b. Mùa (gói mở rộng) và gói không bao giờ khóa lại ==');
+console.log('\n== 3b. Mùa bán riêng (25/10) và gói không bao giờ khóa lại ==');
 {
   const dsM = MoGoi.dsMua();
-  kiem('một mùa "mua-1" chứa mọi gói (gói không khai mua thì thuộc mùa đầu)', dsM.length === 1 && dsM[0].ma === 'mua-1' && dsM[0].goi.length === MoGoi.dsGoi().length && MoGoi.dsGoi().every((g) => g.mua === 'mua-1'));
-  kiem('22 gói mùa 1 khai cứng `sao` (thêm gói sau này không đổi ngưỡng đã công bố)', (TT.goi || []).every((g) => typeof g.sao === 'number'), (TT.goi || []).filter((g) => typeof g.sao !== 'number').map((g) => g.ma).join(', '));
-  kiem('saoMua(mùa 1) = tongSao khi chỉ có một mùa', MoGoi.saoMua('mua-1', luu(tatCa('hai-banh', 3))) === 30 && MoGoi.tongSao(luu(tatCa('hai-banh', 3))) === 30);
-  const fly = MoGoi.goiTheoMa('flycam');
-  const coCo = { saoTot: () => 0, daXem: (c) => c === 'goi-mo:flycam' };
-  kiem('gói đã mở (cờ goi-mo:<mã>) thì không khóa lại dù không đủ sao', !MoGoi.goiMo(fly, luu({})) && MoGoi.goiMo(fly, coCo) && MoGoi.trangThai(ManHoc.timMa('flycam.1'), coCo).lyDo !== 'sao');
+  const muaCua = (ma) => MoGoi.goiTheoMa(ma).mua;
+  kiem('bốn mùa: Xưởng R1 miễn phí, ba mùa sau có `ban` (giá)', dsM.map((x) => x.ma).join() === 'mua-1,mua-2,mua-3,mua-4' && !dsM[0].ban && dsM.slice(1).every((x) => x.ban && x.ban.gia));
+  kiem('mùa 1 dừng ở Robot hoàn thiện; mùa 2 mở đầu bằng Đội hai robot, mùa 3 Súng hơi, mùa 4 Tay xoay',
+    muaCua('robot') === 'mua-1' && muaCua('hai-robot') === 'mua-2' && muaCua('omni') === 'mua-2' && muaCua('sung-hoi') === 'mua-3' && muaCua('nam-cham') === 'mua-3' &&
+      muaCua('tay-xoay') === 'mua-4' && muaCua('rap-du') === 'mua-4');
+  kiem('gói đầu mỗi mùa cần 0 sao', dsM.every((x) => x.goi.filter((g) => !g.sapCo)[0].saoCan === 0));
+  kiem('mọi gói khai cứng `sao` (thêm gói sau này không đổi ngưỡng đã công bố)', (TT.goi || []).every((g) => typeof g.sao === 'number'), (TT.goi || []).filter((g) => typeof g.sao !== 'number').map((g) => g.ma).join(', '));
+  kiem('saoMua chỉ đếm sao trong mùa', MoGoi.saoMua('mua-1', luu(tatCa('hai-banh', 3))) === 30 && MoGoi.saoMua('mua-2', luu(tatCa('hai-banh', 3))) === 0);
 
-  // mùa 2 giả: gói Lắp ráp: Đủ bộ chuyển sang mùa 2, mở khi qua hết gói Xe hai bánh
-  const rd = TT.goi.find((g) => g.ma === 'rap-du'), cuSao = rd.sao;
+  const hr = MoGoi.goiTheoMa('hai-robot'), m2 = MoGoi.muaTheoMa('mua-2');
+  const mua2 = (sao, xem) => ({ saoTot: (ma) => (sao || {})[ma] || 0, daMua: (ma) => ma === 'mua-2', daXem: (c) => (xem || []).includes(c) });
+  kiem('chưa mua: mùa và gói khóa, lyDo "chua-mua" (dù đủ sao mùa 1)', !MoGoi.muaMo(m2, luu({})) && !MoGoi.goiMo(hr, luu(tatCa('hai-banh', 3))) && tt('hai-robot.1', {}).lyDo === 'chua-mua' && tt('hai-robot.1', {}).mua === 'mua-2');
+  kiem('cờ goi-mo / mua-mo cũ không vượt được khóa chưa mua', !MoGoi.goiMo(hr, { saoTot: () => 0, daXem: (c) => c === 'goi-mo:hai-robot' || c === 'mua-mo:mua-2' }));
+  kiem('đã mua: gói đầu mùa mở ngay, không cần sao mùa 1', MoGoi.muaMo(m2, mua2()) && MoGoi.goiMo(hr, mua2()) && MoGoi.trangThai(ManHoc.timMa('hai-robot.1'), mua2()).mo);
+  kiem('đã mua mùa 2 không mở mùa 3', !MoGoi.goiMo(MoGoi.goiTheoMa('sung-hoi'), mua2()));
+  kiem('mua thẳng mùa sau: hàm chế ở mùa trước không chặn (được nạp sẵn khi vào màn)',
+    ManHoc.danhSach.filter((m) => MoGoi.goiCua(m.chuong) === hr).every((m) => !['can-ham', 'mat-ham'].includes(MoGoi.trangThai(m, mua2()).lyDo)));
+  kiem('"Mở hết" coi mọi mùa như đã mua', MoGoi.goiMo(MoGoi.goiTheoMa('rap-du'), luu({}), true) && !MoGoi.chuaMua(m2, luu({}), true));
+  const fly = MoGoi.goiTheoMa('flycam');
+  const coCo = { saoTot: () => 0, daMua: () => true, daXem: (c) => c === 'goi-mo:flycam' };
+  kiem('gói đã mở (cờ goi-mo:<mã>) thì không khóa lại dù không đủ sao', !MoGoi.goiMo(fly, { saoTot: () => 0, daMua: () => true }) && MoGoi.goiMo(fly, coCo) && MoGoi.trangThai(ManHoc.timMa('flycam.1'), coCo).lyDo !== 'sao');
+
+  // mùa giả mở theo điều kiện: gói Lắp ráp: Đủ bộ chuyển sang mùa thử, mở khi qua hết gói Xe hai bánh
+  const rd = TT.goi.find((g) => g.ma === 'rap-du'), cuSao = rd.sao, cuMua = rd.mua;
   TT.mua.push({ ma: 'mua-thu', ten: 'Mùa thử', mo: { goi: 'xe' } }); rd.mua = 'mua-thu'; delete rd.sao;
   try {
-    const g = MoGoi.goiTheoMa('rap-du'), m2 = MoGoi.muaTheoMa('mua-thu');
-    kiem('gói đầu của mùa mới cần 0 sao (ngưỡng tính trong mùa của nó)', g.mua === 'mua-thu' && g.saoCan === 0 && m2.goi.length === 1);
+    const g = MoGoi.goiTheoMa('rap-du'), mt = MoGoi.muaTheoMa('mua-thu');
+    kiem('gói đầu của mùa mới cần 0 sao (ngưỡng tính trong mùa của nó)', g.mua === 'mua-thu' && g.saoCan === 0 && mt.goi.length === 1);
     kiem('mùa chưa mở: gói khóa, lyDo "mua" kèm điều kiện', !MoGoi.goiMo(g, luu({})) && tt('rap-du.1', {}).lyDo === 'mua' && tt('rap-du.1', {}).dieuKien.goi === 'xe');
-    kiem('qua hết gói Xe: mùa mở, gói đầu mùa mở', MoGoi.muaMo(m2, luu(tatCa('hai-banh', 1))) && MoGoi.goiMo(g, luu(tatCa('hai-banh', 1))));
-    kiem('thêm mùa không đổi ngưỡng của mùa 1 (Flycam vẫn cần 525 ★)', MoGoi.goiTheoMa('flycam').saoCan === 525 && MoGoi.goiTheoMa('flycam').mua === 'mua-1');
-    kiem('cờ mua-mo:<mã> giữ mùa mở', MoGoi.muaMo(m2, { saoTot: () => 0, daXem: (c) => c === 'mua-mo:mua-thu' }));
-  } finally { TT.mua.pop(); delete rd.mua; rd.sao = cuSao; }
-  kiem('trả lại như cũ sau khi thử', MoGoi.dsMua().length === 1 && MoGoi.goiTheoMa('rap-du').mua === 'mua-1' && MoGoi.goiTheoMa('rap-du').saoCan === cuSao);
+    kiem('qua hết gói Xe: mùa mở, gói đầu mùa mở', MoGoi.muaMo(mt, luu(tatCa('hai-banh', 1))) && MoGoi.goiMo(g, luu(tatCa('hai-banh', 1))));
+    kiem('thêm mùa không đổi ngưỡng mùa khác (Flycam vẫn cần 105 ★ ở mùa 4)', MoGoi.goiTheoMa('flycam').saoCan === 105 && MoGoi.goiTheoMa('flycam').mua === 'mua-4');
+    kiem('cờ mua-mo:<mã> giữ mùa mở', MoGoi.muaMo(mt, { saoTot: () => 0, daXem: (c) => c === 'mua-mo:mua-thu' }));
+  } finally { TT.mua.pop(); rd.mua = cuMua; rd.sao = cuSao; }
+  kiem('trả lại như cũ sau khi thử', MoGoi.dsMua().length === 4 && MoGoi.goiTheoMa('rap-du').mua === 'mua-4' && MoGoi.goiTheoMa('rap-du').saoCan === cuSao);
 }
 
 console.log('\n== 4. Ba màn hình (khởi đầu → chọn gói → lưới màn) ==');

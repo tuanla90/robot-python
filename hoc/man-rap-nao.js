@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-rap-nao.js — "Đường học": CHƯƠNG `rap-nao` · LẮP RÁP: THÂN + NÃO (10 màn, chế độ lắp ráp: KE-HOACH-LAP-RAP.md, lõi lap-rap.js).
+   man-rap-nao.js — "Học lập trình": CHƯƠNG `rap-nao` · LẮP RÁP: THÂN + NÃO (10 màn, chế độ lắp ráp: KE-HOACH-LAP-RAP.md, lõi lap-rap.js).
    Người chơi tự chọn THÂN (hai bánh · xích · omni · nhện) và NÃO = cảm biến (khoảng cách · màu · camera · không gắn) dưới một NGÂN SÁCH XU, rồi mới viết code.
    Không có tay, không có drone, không có cảm biến từ. Yếu tố sân chỉ dùng thứ đã gặp tới gói Cảm biến màu: tường, bậc thang S, gầm thấp n, hố u, băng chuyền, ô màu, vật.
    Giá (lap-rap.js): thân 2 · 3 · 4 · 4 (hai bánh · xích · omni · nhện); não 0 · 1 · 2 · 2 (không · khoảng cách · màu · camera).

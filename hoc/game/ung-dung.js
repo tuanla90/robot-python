@@ -1,5 +1,5 @@
 /* ============================================================================
-   ung-dung.js — "Đường học": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
+   ung-dung.js — "Học lập trình": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
    Bốn màn hình (kiểu Cut the Rope, 15/10): 'dau' khởi đầu (man-dau.js) → 'goi' chọn gói (man-goi.js) → 'chon' lưới màn của gói (man-chon.js) → 'choi' màn chơi.
    Thêm màn 'lap' (17/10, chế độ lắp ráp, man-lap.js): màn có man.lapRap thì App.vaoMan mở màn Lắp robot TRƯỚC, "Lắp xong" mới vào 'choi' (Choi.vao(m, cachLap)); trong màn chơi App.lapLai quay về đó đổi part.
    Luật mở khóa (gói mở bằng tổng sao, chương / hàng / thử thách trong gói) ở game/mo-goi.js; App chỉ gọi qua.
@@ -63,9 +63,33 @@
   App.saoGoi = function (g) { return MoGoi.saoGoi(g, Luu); };
   App.soQua = function (g) { return MoGoi.soQua(g, Luu); };
   App.goiMo = function (g) { return MoGoi.goiMo(g, Luu, App.moHet); };
+  /** Mùa bán riêng chưa mua (thu-tu-chuong.js, mùa có `ban`). */
+  App.chuaMua = function (mu) { return MoGoi.chuaMua(mu, Luu, App.moHet); };
+  /** MUA THỬ một mùa: chưa nối thanh toán, chỉ ghi cờ đã mua trên máy này (Luu.datDaMua) rồi vẽ lại màn chọn gói ở gói đầu mùa. */
+  App.muaThu = function (maMua) {
+    Luu.datDaMua(maMua);
+    var mu = MoGoi.muaTheoMa(maMua), dau = mu && mu.goi.filter(function (g) { return !g.sapCo; })[0];
+    if (dau) { Luu.datDaXem('goi-mo:' + dau.ma); Luu.datDaXem('mua-mo:' + maMua); }
+    if (window.AmThanh) AmThanh.phat('moKhoa');
+    if (App.manHinh === 'goi' && window.ChonGoi) ChonGoi.ve(dau ? dau.ma : null);
+  };
+  /** Vào màn của mùa sau: thêm vào kho các hàm cốt truyện của MỌI MÙA TRƯỚC mà kho còn thiếu (người mua thẳng mùa sau, chưa chơi mùa trước).
+   *  Chỉ thêm, không thay hàm em đã có. Hàm chế trong chính mùa này vẫn phải tự chế (mo-goi.js, luật 'can-ham'). */
+  function napMuaTruoc(m) {
+    var g = MoGoi.goiCua(m.chuong), mu = g && MoGoi.muaTheoMa(g.mua);
+    if (!mu || mu.so <= 1) return;
+    var dau = mu.goi.filter(function (x) { return !x.sapCo; })[0], doi = false;
+    if (!dau || !dau.man.length) return;
+    ManHoc.khoThamChieu(dau.man[0]).forEach(function (f) {
+      if (KhoHam.tim(f.ten)) return;
+      if (!KhoHam.tao(f.ten, f.thamSo, { taoHam: [f.ten] }).ok) return;
+      if (KhoHam.sua(f.ten, f.than, f.thamSo).ok) doi = true;
+    });
+    if (doi) Luu.ghiKho();
+  }
   /** Hàm em chương ma cần mà chế ở chương khác: [{ chuong, ham }] (giữ dạng cũ cho chỗ khác gọi). */
   App.chuongCanTruoc = function (ma) { return MoGoi.canHam(ma).map(function (x) { return { chuong: x.man.chuong, ham: x.ham }; }); };
-  /** { mo } hoặc { mo: false, lyDo: 'sao' | 'chuoi' | 'can-ham' | 'hang1' | 'hang23' | 'trum', … } — xem mo-goi.js. */
+  /** { mo } hoặc { mo: false, lyDo: 'chua-mua' | 'mua' | 'sao' | 'chuoi' | 'can-ham' | 'hang1' | 'hang23' | 'trum', … } — xem mo-goi.js. */
   App.trangThai = function (m) { return MoGoi.trangThai(m, Luu, App.moHet); };
   /** Màn nên chơi tiếp (màn mở đầu tiên chưa qua), hoặc null. */
   App.manTiepTheo = function () { return MoGoi.manTiepTheo(Luu, App.moHet); };
@@ -131,6 +155,7 @@
   App.vaoMan = function (ma) {
     var m = ManHoc.timMa(ma) || ManHoc.tim(ma); if (!m) return;
     if (App.moHet && window.GoLoi && GoLoi.napKhiMoHet) GoLoi.napKhiMoHet(m);   // "Mở hết" (gỡ lỗi): nhảy cóc vẫn có hàm cốt truyện các màn trước
+    napMuaTruoc(m);
     App.man = m; App.chuong = m.chuong;
     var g = App.goiCua(m.chuong); if (g) { App.goi = g.ma; App.mua = g.mua; }
     if (m.lapRap && window.LapRobot) {                 // màn lắp ráp (lap-rap.js): chọn part trước, "Lắp xong" mới vào màn chơi; ◀ về lưới màn

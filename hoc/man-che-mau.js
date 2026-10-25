@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-mau.js — "Đường học": CHƯƠNG `che-mau` · CHẾ LỆNH MÀU (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.4, 15/10 tối): chương chế lệnh đi sau chương `mau`.
+   man-che-mau.js — "Học lập trình": CHƯƠNG `che-mau` · CHẾ LỆNH MÀU (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.4, 15/10 tối): chương chế lệnh đi sau chương `mau`.
    Robot là XE HAI BÁNH gắn CẢM BIẾN MÀU Ở BỤNG (đọc màu SÀN ô xe đang đứng; xe vẫn đọc được lúc đang mang vật):
    robot { than: 'hai-banh', tay: null | 'kep', camBien: [{ ma: 'mau', o: 'hong' }] }. Hai ngoại lệ:
      · màn 6 gắn CAMERA thay cho cảm biến bụng (camBien [{ ma: 'camera', o: 'tren' }]): color() đọc Ô TRƯỚC MẶT (có vật thì màu vật, không thì màu sàn);

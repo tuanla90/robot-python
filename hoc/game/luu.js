@@ -1,5 +1,5 @@
 /* ============================================================================
-   luu.js — "Đường học": LƯU (window.Luu). Mọi thứ bọc try/catch; hỏng thì chạy không lưu.
+   luu.js — "Học lập trình": LƯU (window.Luu). Mọi thứ bọc try/catch; hỏng thì chạy không lưu.
      kho hàm  : KhoHam.ghiLuu(Luu.kho)   (khóa của lõi)
      tiến độ  : duong-hoc:tien-do = { phienBan: 1, sao: { 'hai-banh.1': 3, … } }   (khóa = m.ma, cố định khi đổi thứ tự chương)
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
@@ -7,6 +7,7 @@
      cách lắp : duong-hoc:lap:<ma> = { than, tay, camBien } (màn lắp ráp, lap-rap.js: mỗi khe một mã part hay null), riêng từng màn
      đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, 'mo-dau': true, 'gioi-thieu': true, … }   (bảng / lời chào chỉ hiện một lần)
      cài đặt  : duong-hoc:cai-dat = { hieuUng, nhac } (mức âm lượng 0..4; xoaHet giữ lại)
+     đã mua   : duong-hoc:da-mua = { 'mua-2': true, … } (mùa bán riêng, mo-goi.js; xoaTienDo / xoaHet giữ lại)
      Dữ liệu cũ theo id ('1.1'…'2.10') được chuyển một lần sang ma (chuyenCu).
    ========================================================================== */
 (function () {
@@ -160,11 +161,19 @@
   }
   function ghiCaiDat(c) { return ghiJson(KHOA_CAI_DAT, c); }
 
-  /** Xóa SẠCH dữ liệu chơi (sao, bản nháp, kho hàm, sân thử, cách lắp, cờ đã xem); chỉ giữ cài đặt. Gọi xong nên tải lại trang. */
+  /* ---- mùa đã mua (thu-tu-chuong.js, mùa có `ban`). Hiện là mua THỬ: chưa nối thanh toán, chỉ ghi cờ trên máy này. */
+  var KHOA_DA_MUA = 'duong-hoc:da-mua';
+  function docDaMua() { var d = docJson(KHOA_DA_MUA); return d && typeof d === 'object' ? d : {}; }
+  function daMua(ma) { return docDaMua()[ma] === true; }
+  function datDaMua(ma) { var d = docDaMua(); d[ma] = true; return ghiJson(KHOA_DA_MUA, d); }
+  /** Bỏ mọi mùa đã mua (bảng Gỡ lỗi, để thử lại nút mua). */
+  function xoaDaMua() { try { kho.removeItem(KHOA_DA_MUA); } catch (e) { return false; } return true; }
+
+  /** Xóa SẠCH dữ liệu chơi (sao, bản nháp, kho hàm, sân thử, cách lắp, cờ đã xem); chỉ giữ cài đặt và mùa đã mua. Gọi xong nên tải lại trang. */
   function xoaHet() {
     try {
       var ds = [];
-      for (var i = 0; i < kho.length; i++) { var k = kho.key(i); if (k && k.indexOf('duong-hoc:') === 0 && k !== KHOA_CAI_DAT) ds.push(k); }
+      for (var i = 0; i < kho.length; i++) { var k = kho.key(i); if (k && k.indexOf('duong-hoc:') === 0 && k !== KHOA_CAI_DAT && k !== KHOA_DA_MUA) ds.push(k); }
       ds.forEach(function (k) { kho.removeItem(k); });
     } catch (e) { return false; }
     docTienDo();
@@ -220,6 +229,7 @@
     docLap: docLap, ghiLap: ghiLap, xoaLap: xoaLap,
     daXem: daXem, datDaXem: datDaXem, xoaTienDo: xoaTienDo, xoaHet: xoaHet,
     docCaiDat: docCaiDat, ghiCaiDat: ghiCaiDat,
+    daMua: daMua, datDaMua: datDaMua, xoaDaMua: xoaDaMua,
     docKho: docKho, ghiKho: ghiKho,
     coHam: function (ten) { try { return KhoHam.ds().some(function (f) { return f.ten === ten; }); } catch (e) { return true; } },   // kho của em có hàm này chưa (mo-goi.js: lyDo 'mat-ham')
     get loiKho() { return loiKho; },

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-khoang-cach.js — "Đường học": CHƯƠNG `khoang-cach` · CẢM BIẾN KHOẢNG CÁCH (10 màn).
+   man-khoang-cach.js — "Học lập trình": CHƯƠNG `khoang-cach` · CẢM BIẾN KHOẢNG CÁCH (10 màn).
    Robot là XE HAI BÁNH (loaiRobot 'banh') gắn CẢM BIẾN KHOẢNG CÁCH ở hai bên hông, mặt đo hướng ra trước:
    robot { than: 'hai-banh', tay: null | 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }.
    hamGoc có thêm hàm cảm biến (luật đầy đủ ở san-hoc.js, phần CẢM BIẾN KHOẢNG CÁCH):

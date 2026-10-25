@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-list-man.mjs — máy kiểm chương `list` (Danh sách, 10 màn làm quen) của "Đường học" (KE-HOACH-LIST-FLYCAM.md, mục 3). Lõi list + khay: kiem-list.mjs. Chương chế lệnh: kiem-che-list.mjs.
+   kiem-list-man.mjs — máy kiểm chương `list` (Danh sách, 10 màn làm quen) của "Học lập trình" (KE-HOACH-LIST-FLYCAM.md, mục 3). Lõi list + khay: kiem-list.mjs. Chương chế lệnh: kiem-che-list.mjs.
    Gồm:
    - dữ liệu chung của chương: 10 màn, mã list.1…10, id theo vị trí (ngay sau che-nhen, trước che-list), tên, hàng, huy hiệu chỉ ở trùm; xe hai bánh, hamGoc, cauTruc ['for','list'], khung 10 ô;
    - SÂN là hành lang không phân nhánh (đồ thị các ô đi được là một đường, hai đầu: xe và cờ): không có đường tắt; độ dài từng đoạn và hướng rẽ của sân khớp với số trong danh sách của lời giải;

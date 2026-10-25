@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-rap-du.mjs — máy kiểm chương `rap-du` (Lắp ráp: Đủ bộ, chương CUỐI) của "Đường học" (KE-HOACH-LAP-RAP.md; thiết kế: docs/thiet-ke/tham-khao-robocon-v0.1.md §5: đánh đổi, không part nào trội). Gồm:
+   kiem-rap-du.mjs — máy kiểm chương `rap-du` (Lắp ráp: Đủ bộ, chương CUỐI) của "Học lập trình" (KE-HOACH-LAP-RAP.md; thiết kế: docs/thiet-ke/tham-khao-robocon-v0.1.md §5: đánh đổi, không part nào trội). Gồm:
    1. 10 màn rap-du: dữ liệu (thân + tay + não dưới ngân sách xu, cách lắp mẫu), mọi cách mẫu thắng bằng lời giải chạy thật, cachLap[0] ba sao, không cách nào hơn hẳn cách khác ở cả
       giá / nhịp / ô (LapRap.kiemCanMan), chương dùng đủ năm thân, năm tay và năm não, đủ yếu tố sân (hố, rào, gầm, bậc thang, băng chuyền, cửa + nút, thùng nặng, vật, ô màu, pin + ô sạc, nhiều sân);
    2. bộ dò đường do-duong-rap-du.mjs (BFS chạy thật SanHoc.chay): so chéo với các bộ dò viết tay có sẵn (xích, omni, nhện, drone, máy ném, súng hơi, tay kẹp… ) trên sân của chương và

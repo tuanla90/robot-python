@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-nam-cham.mjs — máy kiểm chương `nam-cham` (Nam châm CÓ CỰC) của "Đường học" (viết lại 15/10, KE-HOACH-CHE-LENH.md mục 5b.2).
+   kiem-nam-cham.mjs — máy kiểm chương `nam-cham` (Nam châm CÓ CỰC) của "Học lập trình" (viết lại 15/10, KE-HOACH-CHE-LENH.md mục 5b.2).
    Gồm: luật hút (sắt 2 ô, vật nam châm 3 ô; bốn hướng, tường chắn, bậc thang không chắn, gỗ không tương tác và chắn, vật gần nhất trước, mỗi lần một vật),
    luật CỰC (khác cực hút, cùng cực đẩy; sắt cực nào cũng hút và KHÔNG BAO GIỜ bị đẩy; đẩy trượt tối đa 3 ô, dừng trước vật cản), vật dính (đi theo xe; đổi cực: sắt vẫn dính, vật nam châm
    cùng cực bị bắn ra), thả, thứ tự lệnh trong nhịp, quên wait / gọi lại, omni và xích, robot không có tay nam châm, nhện không gắn được, nam châm không đi chung tay kẹp / tấm đẩy,

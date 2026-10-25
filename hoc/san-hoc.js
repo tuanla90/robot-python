@@ -1,5 +1,5 @@
 /* ============================================================================
-   san-hoc.js — "Đường học": MÔ PHỎNG SÂN theo NHỊP cho game dạy Python qua robot.
+   san-hoc.js — "Học lập trình": MÔ PHỎNG SÂN theo NHỊP cho game dạy Python qua robot.
 
    Chạy được trong Node (module.exports) và trình duyệt (window.SanHoc).
    Dựa trên nhân chạy code của nhan/san-robot-core.js (window.RobotCore):

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-cam-bien.js — "Đường học": CHƯƠNG `che-cam-bien` · CHẾ LỆNH CÓ if, while + BIẾN ĐẾM (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.3).
+   man-che-cam-bien.js — "Học lập trình": CHƯƠNG `che-cam-bien` · CHẾ LỆNH CÓ if, while + BIẾN ĐẾM (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.3).
    Chương thứ 9 (sau Cảm biến khoảng cách). Robot là XE HAI BÁNH gắn CẢM BIẾN KHOẢNG CÁCH ở hông (như chương khoang-cach), 9 và 10 có thêm TAY KẸP:
    robot { than: 'hai-banh', tay: null | 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }.
    Chỉ dùng hàm của em từ chương 2, 3, 4 (pick, drop), 6 và 8 (go_wall); KHÔNG dùng hàm của che-tay / che-lap (hai chương làm song song).

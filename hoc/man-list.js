@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-list.js — "Đường học": CHƯƠNG `list` · DANH SÁCH (10 màn). Kế hoạch KE-HOACH-LIST-FLYCAM.md (mục 3), làm 17/10.
+   man-list.js — "Học lập trình": CHƯƠNG `list` · DANH SÁCH (10 màn). Kế hoạch KE-HOACH-LIST-FLYCAM.md (mục 3), làm 17/10.
    Chương thứ 15 (ngay sau Chế lệnh nhện, trước Bánh xích). Chương chế lệnh đi kèm: man-che-list.js (route, route_left, scan, box).
    Robot là XE HAI BÁNH (không tay, không cảm biến): robot { than: 'hai-banh', tay: null, camBien: [] }, hàm gốc = bánh (tiến, lùi) + wait. Xưởng hàm mở, được dùng hàm của em.
    Hàm của em dùng ở đây (đã chế ở chương trước): forward(n) (tham-so.3), right(k) (tham-so.4), turn_right, turn_left (chế xe). Chương trình 10 ô; mỗi hàm một khung riêng 10 ô.

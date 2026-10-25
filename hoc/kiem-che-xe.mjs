@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-xe.mjs — máy kiểm chương `che-xe` (Chế lệnh xe) của "Đường học" và các luật lõi mới của kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md).
+   kiem-che-xe.mjs — máy kiểm chương `che-xe` (Chế lệnh xe) của "Học lập trình" và các luật lõi mới của kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md).
    Gồm:
    - luật bánh (xe hai bánh): bảng tổ hợp (trái, phải) → tiến / lùi / quay đầu / quay phải / quay trái;
    - LENH_NGUOC (cặp lệnh ngược) và dữ liệu Sổ lệnh (so-lenh.js): mọi tên trong taoHam của mọi màn đều có trong SoLenh.ds;

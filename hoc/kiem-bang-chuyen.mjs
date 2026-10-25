@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-bang-chuyen.mjs — máy kiểm chương `bang-chuyen` (Băng chuyền) của "Đường học".
+   kiem-bang-chuyen.mjs — máy kiểm chương `bang-chuyen` (Băng chuyền) của "Học lập trình".
    Gồm: luật băng chuyền ở những chỗ chương này dựa vào (xe quay / đứng chờ / cầm vật trên băng,
    tay hạ không cản băng, vật dưới đất không bị đẩy), dữ liệu 10 màn, hamCuaEmCan đủ và không thừa,
    từng màn "sai một nhịp thì trượt" (màn 2 sai số lần lặp, màn 9 thiếu một nhịp chờ…), canFor (trải

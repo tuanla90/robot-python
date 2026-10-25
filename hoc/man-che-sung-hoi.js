@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-sung-hoi.js — "Đường học": CHƯƠNG `che-sung-hoi` · CHẾ LỆNH SÚNG HƠI (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.3, 15/10): chương chế lệnh đi sau chương `sung-hoi`.
+   man-che-sung-hoi.js — "Học lập trình": CHƯƠNG `che-sung-hoi` · CHẾ LỆNH SÚNG HƠI (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.3, 15/10): chương chế lệnh đi sau chương `sung-hoi`.
    Robot là XE HAI BÁNH gắn SÚNG HƠI hai nòng: robot { than: 'hai-banh', tay: 'hoi', camBien: [] }.
    Lệnh gốc (luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI), đều chỉ RA LỆNH, wait() cho nhịp trôi, mỗi nhịp một phát, cặp lệnh ngược shoot ↔ shoot_back:
        shoot() bắn bóng ra TRƯỚC, xe giật LÙI một ô · shoot_back() bắn bóng ra SAU, xe giật TỚI một ô · ô giật vào có thùng nặng thì thùng trượt đi xa, xe đứng yên · ô bị chặn thì xe đứng yên.

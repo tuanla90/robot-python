@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-lap-rap.mjs — máy kiểm LÕI + GIAO DIỆN CHẾ ĐỘ LẮP RÁP của "Đường học" (lap-rap.js, KE-HOACH-LAP-RAP.md). Dùng MÀN TẠM trong bộ nhớ (không thêm màn nào vào game). Gồm:
+   kiem-lap-rap.mjs — máy kiểm LÕI + GIAO DIỆN CHẾ ĐỘ LẮP RÁP của "Học lập trình" (lap-rap.js, KE-HOACH-LAP-RAP.md). Dùng MÀN TẠM trong bộ nhớ (không thêm màn nào vào game). Gồm:
    1. danh mục part: mã part thật có trong game/part, giá đúng bảng kế hoạch (thân 2 3 4 4 5 · tay 2 3 3 3 3 · não 1 2 2 2 2), icon có trong ve.js, mỗi mục có một dòng "vượt được gì";
    2. luật ghép: bảng luật của lõi khớp từng tổ hợp (5 thân × 6 tay × 6 não = 180) với Part.ghep VÀ với SanHoc.chay (cấu hình robot đúng thì chay() không ném lỗi); các ca cụ thể + lý do tiếng Việt;
    3. kiemCachLap: part ngoài danh sách màn, thiếu khe bắt buộc, vượt ngân sách (thieu), giá, bí danh `giá`; dsCachLap đếm đúng (đếm độc lập bằng tay);

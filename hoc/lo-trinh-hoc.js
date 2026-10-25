@@ -244,8 +244,10 @@
     TT.dot2.splice.apply(TT.dot2, [TT.dot2.indexOf(c.sau) + 1, 0].concat(ma));
     c.chuong.forEach(function (x) { TT.ten[x.ma] = x.ten; });
     var truoc = TT.goi.findIndex(function (g) { return g.chuong.indexOf(c.sau) >= 0; });
-    var sao = Math.min(TT.goi[truoc].sao + 30, TT.goi[truoc + 1] ? TT.goi[truoc + 1].sao : Infinity);
-    TT.goi.splice(truoc + 1, 0, Object.assign({ loai: 'thu-thach', sao: sao, khongTangNguong: true }, c.goi, { chuong: ma }));
+    var sau = TT.goi[truoc + 1];
+    var sao = Math.min(TT.goi[truoc].sao + 30, sau && sau.mua === TT.goi[truoc].mua ? sau.sao : Infinity);
+    // Gói đội thuộc cùng mùa với gói part đứng trước (mùa bán riêng, thu-tu-chuong.js).
+    TT.goi.splice(truoc + 1, 0, Object.assign({ loai: 'thu-thach', sao: sao, khongTangNguong: true, mua: TT.goi[truoc].mua }, c.goi, { chuong: ma }));
     M.them(c.ds);
   });
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
@@ -341,6 +343,115 @@
   final.hamCuaEmCan = ['pick', 'drop', 'turn_left', 'turn_right', 'move', 'forward'];
   final.sao.re = { gia: 6, o: 38 };
 
+  // Bỏ kiểu màn "dây / bộ phận lắp ngược" (daoChieu): mỗi màn thành một lỗi code thật hay một bài mới cùng robot, cùng chỗ trong chương.
+  function thay(ma, ds) {
+    var m = sua(ma, ds);
+    delete m.daoChieu; delete m.canhBao; delete m.khoaHamMan;
+    return m;
+  }
+  thay('che-xe.8', {
+    ten: 'Hai bánh cùng nhịp', chinhCoDinh: true, hamCuaEmCan: ['move'],
+    deBai: 'Hàm go_one() của màn ra lệnh cho hai bánh ở hai nhịp khác nhau nên xe chỉ lắc qua lắc lại. Sửa hàm để xe tiến thẳng đúng một ô, rồi đưa xe tới cờ.',
+    veMaMau: 'Chương trình chính bị khóa, gọi go_one() ba lần. Thử go_one() trong sân thử của Xưởng hàm trước để thấy xe làm gì.',
+    maMau: bai(['go_one()', 'go_one()', 'go_one()'], [ham('go_one', ['left_move()', 'wait()', 'right_move()', 'wait()'])]),
+    loiGiai: bai(['go_one()', 'go_one()', 'go_one()'], [ham('go_one', ['left_move()', 'right_move()', 'wait()'])]),
+    goiY: ['Một bánh quay một mình thì xe xoay, không tiến.', 'Hai lệnh bánh phải nằm trong cùng một nhịp: đặt chúng liền nhau, rồi mới wait().']
+  });
+  thay('che-tay.8', {
+    ten: 'Thứ tự của tay', chinhCoDinh: true, hamCuaEmCan: ['move'],
+    deBai: 'Hai hàm lift() và put() của màn viết sai thứ tự lệnh: tay kẹp vào không khí, còn vật bị thả từ trên cao. Sửa chúng để chương trình đưa vật lên hai ô như vật mờ.',
+    veMaMau: 'Chương trình chính bị khóa: nhặt, tiến hai ô, đặt. Thử lift() và put() trong sân thử của Xưởng hàm để thấy tay làm gì.',
+    maMau: bai(['lift()', 'move()', 'move()', 'put()'], [ham('lift', ['grab()', 'arm_down()', 'wait()', 'arm_up()', 'wait()']), ham('put', ['arm_down()', 'wait()', 'arm_up()', 'release()', 'wait()'])]),
+    loiGiai: bai(['lift()', 'move()', 'move()', 'put()'], [ham('lift', ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()']), ham('put', ['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'])]),
+    goiY: ['Phải hạ tay xuống trước rồi mới kẹp được vật.', 'Thả vật khi tay còn đang hạ, rồi mới nâng tay lên.']
+  });
+  thay('che-cam-bien.7', {
+    ten: 'Thừa chữ not', chinhCoDinh: true, hamCuaEmCan: ['move'],
+    deBai: 'Hàm safe_move2() của màn phải tiến một ô khi trước mặt trống và đứng yên khi bị chắn, nhưng xe không nhúc nhích. Sửa điều kiện trong hàm.',
+    veMaMau: 'Chương trình chính bị khóa, gọi safe_move2() ba lần. Thử safe_move2() trong sân thử của Xưởng hàm.',
+    maMau: bai(['safe_move2()', 'safe_move2()', 'safe_move2()'], [ham('safe_move2', ['if not front_clear():', '    move()'])]),
+    loiGiai: bai(['safe_move2()', 'safe_move2()', 'safe_move2()'], [ham('safe_move2', ['if front_clear():', '    move()'])]),
+    goiY: ['not đảo ngược câu trả lời: trước mặt trống thì not front_clear() là False.', 'Bỏ chữ not để xe chỉ tiến khi trước mặt trống.']
+  });
+  thay('robot-hoan-thien.7', {
+    ten: 'Mang thùng về nhà', hamCuaEmCan: ['move', 'pick', 'back', 'drop', 'u_turn', 'go_wall'],
+    deBai: 'Thùng hàng nằm giữa hành lang. Đi tới thùng, nhặt lên, mang về đặt sát tường ở đầu hành lang nơi xe xuất phát, giống vật mờ và xe mờ.',
+    veMaMau: 'Dùng cảm biến để dừng trước thùng và trước tường, không đếm số ô.',
+    san: ['#######', '#..o..#', '#######'], batDau: { x: 1, y: 1, huong: 1 }, bongMo: { x: 2, y: 1, huong: 3, vat: [{ x: 1, y: 1 }] },
+    maMau: bai([]), loiGiai: bai(['go_wall()', 'pick()', 'u_turn()', 'go_wall()', 'back()', 'drop()']),
+    goiY: ['Thùng cũng chắn cảm biến như tường: go_wall() dừng ngay trước thùng.', 'Tới sát tường thì không còn chỗ đặt: lùi một ô rồi mới drop().']
+  });
+  thay('robot-hoan-thien.8', {
+    ten: 'Dọn sang trái rồi về', hamCuaEmCan: ['go_wall', 'move', 'turn_right', 'turn_left', 'u_turn', 'pick', 'drop'],
+    deBai: 'Ba thùng xếp dọc hành lang. Dời từng thùng sang ô bên trái xe, rồi đưa xe về chỗ xuất phát, quay mặt xuống, giống vật mờ và xe mờ.',
+    veMaMau: 'Ba thùng làm giống nhau: viết một lần trong vòng for.',
+    san: ['####', '#.##', '.o##', '.o##', '.o##', '#.##', '#.##'], batDau: { x: 1, y: 6, huong: 0 },
+    bongMo: { x: 1, y: 6, huong: 2, vat: [{ x: 0, y: 2 }, { x: 0, y: 3 }, { x: 0, y: 4 }] },
+    maMau: bai([]), loiGiai: bai(['go_wall()', 'for i in range(3):', '    pick()', '    move()', '    turn_left()', '    drop()', '    turn_right()', 'u_turn()', 'go_wall()']),
+    goiY: ['Nhặt thùng trước mặt, tiến vào chỗ trống của nó, quay trái rồi thả.', 'Thả xong quay lại hướng cũ để lượt sau thấy thùng kế tiếp.']
+  });
+  thay('che-nhen.8', {
+    ten: 'Cú nhảy thiếu nhịp', chinhCoDinh: true,
+    deBai: 'Hàm fixed_jump(d) của màn co rồi duỗi chân trong cùng một nhịp nên nhện không lấy được đà và rơi xuống hố. Sửa nó để nhện nhảy qua cả hai hố.',
+    veMaMau: 'Chương trình chính bị khóa: fixed_jump("R") hai lần. Sửa thân hàm trong Xưởng.',
+    maMau: bai(['fixed_jump("R")', 'fixed_jump("R")'], [ham('fixed_jump', ['crouch()', 'stand()', 'go(d)'], ['d'])]),
+    loiGiai: bai(['fixed_jump("R")', 'fixed_jump("R")'], [ham('fixed_jump', ['crouch()', 'wait()', 'stand()', 'go(d)'], ['d'])]),
+    goiY: ['Chân cần một nhịp ngồi xuống trước khi bật lên.', 'Thêm wait() giữa crouch() và stand().']
+  });
+  thay('che-list.9', {
+    ten: 'Đếm lại từ đầu', chinhCoDinh: true,
+    deBai: 'Hàm scan3(seen) của màn đặt n = 0 bên trong vòng while nên lần nào cũng ghi số 1. Sửa scan3(seen) để đo đúng và về đúng xe mờ.',
+    veMaMau: 'Chương trình chính bị khóa: scan3(seen) hai lần, rồi route(seen). Chạy thử, xem seen ghi số nào rồi sửa thân hàm scan3.',
+    maMau: bai(['seen = []', 'scan3(seen)', 'turn_right()', 'scan3(seen)', 'turn_right()', 'route(seen)'], [ham('scan3', ['while front_clear():', '    n = 0', '    move()', '    n = n + 1', 'seen.append(n)'], ['seen'])]),
+    loiGiai: bai(['seen = []', 'scan3(seen)', 'turn_right()', 'scan3(seen)', 'turn_right()', 'route(seen)'], [ham('scan3', ['n = 0', 'while front_clear():', '    move()', '    n = n + 1', 'seen.append(n)'], ['seen'])]),
+    goiY: ['Mỗi vòng lặp n lại bị đặt về 0 trước khi cộng.', 'Đưa n = 0 ra ngoài, trước vòng while.']
+  });
+  thay('che-xich.8', {
+    ten: 'Quay chưa đủ', chinhCoDinh: true,
+    deBai: 'Hàm fixed_turn() của màn chỉ quay xích một nhịp, nên xe mới quay được nửa vòng thì đi tiếp và phần quay dở bị mất. Sửa nó để xe đi hết đường như xe mờ.',
+    veMaMau: 'Chương trình chính bị khóa: đi ba ô, rẽ phải, đi hai ô. Thử fixed_turn() trong sân thử của Xưởng hàm.',
+    maMau: bai(['fixed_drive()', 'fixed_drive()', 'fixed_drive()', 'fixed_turn()', 'fixed_drive()', 'fixed_drive()'],
+      [ham('fixed_drive', ['left_move()', 'right_move()', 'wait()']), ham('fixed_turn', ['for i in range(1):', '    left_move()', '    wait()'])]),
+    loiGiai: bai(['fixed_drive()', 'fixed_drive()', 'fixed_drive()', 'fixed_turn()', 'fixed_drive()', 'fixed_drive()'],
+      [ham('fixed_drive', ['left_move()', 'right_move()', 'wait()']), ham('fixed_turn', ['for i in range(2):', '    left_move()', '    wait()'])]),
+    goiY: ['Xe xích cần hai nhịp liền nhau để rẽ một góc vuông.', 'Đổi số lần lặp trong fixed_turn().']
+  });
+  thay('che-sung-hoi.7', {
+    ten: 'Đá hai bên', chinhCoDinh: true,
+    deBai: 'Hai thùng nặng nằm hai bên xe. Hàm kick_both() của màn mới đá được thùng bên trái. Sửa nó để đá cả hai thùng ra xa như thùng mờ, xe giữ chỗ và hướng.',
+    veMaMau: 'Chương trình chính bị khóa, chỉ gọi kick_both(). Thử nó trong sân thử của Xưởng hàm.',
+    san: ['.....', '.....', '.H.H.', '.....', '.....'], bongMo: { x: 2, y: 2, huong: 0, thung: [{ x: 0, y: 2 }, { x: 4, y: 2 }] },
+    maMau: bai(['kick_both()'], [ham('kick_both', ['turn_left()', 'shoot()', 'wait()', 'turn_right()'])]),
+    loiGiai: bai(['kick_both()'], [ham('kick_both', ['turn_left()', 'shoot()', 'wait()', 'shoot_back()', 'wait()', 'turn_right()'])]),
+    goiY: ['Khi xe quay trái, thùng bên phải nằm ngay sau lưng xe.', 'Thêm shoot_back() và wait() trước khi quay lại.']
+  });
+  thay('che-nam-cham.7', {
+    ten: 'Hút hay đẩy', chinhCoDinh: true,
+    deBai: 'Hàm fixed_grip() của màn bật cùng cực với vật nên vật bị đẩy ra xa. Sửa fixed_grip() cho vật bị kéo về, để chương trình chuyền vật sang phải như vật mờ.',
+    veMaMau: 'Chương trình chính bị khóa: kéo vật bằng fixed_grip(), rẽ phải, ngắt điện. Thử fixed_grip() trong sân thử của Xưởng hàm để thấy vật đi đâu.',
+    maMau: bai(['fixed_grip()', 'turn_right()', 'magnet_off()', 'wait()'], [ham('fixed_grip', ['if front_pole() == "N":', '    magnet_n()', 'else:', '    magnet_s()', 'wait()'])]),
+    loiGiai: bai(['fixed_grip()', 'turn_right()', 'magnet_off()', 'wait()'], [ham('fixed_grip', ['if front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()', 'wait()'])]),
+    goiY: ['Hai cực giống nhau thì đẩy nhau, khác nhau thì hút nhau.', 'Vật cực N cần nam châm cực S, và ngược lại.']
+  });
+  thay('tay-xoay.7', {
+    ten: 'Đố: quên hạ tay',
+    deBai: 'Vật nằm ngay bên trái xe, ô đích nằm ngay trước mặt xe. Chương trình có sẵn kẹp vào không khí. Sửa lại để đưa vật tới ô đích.',
+    veMaMau: 'Chạy thử, xem tay đang ở trên cao hay đã hạ xuống lúc kẹp.',
+    maMau: bai(['arm_left()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
+    loiGiai: bai(['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
+    goiY: ['Tay phải hạ xuống thì mới kẹp được vật nằm dưới đất.', 'Thêm arm_down() trước grab().']
+  });
+  thay('che-tay-xoay.8', {
+    ten: 'Tay chưa về giữa', chinhCoDinh: true,
+    deBai: 'Hàm fixed_pick_left() của màn nhặt vật bên trái nhưng quên xoay tay về giữa, nên fixed_drop_right() đặt vật sai chỗ. Sửa để chuyển vật từ trái sang phải như vật mờ.',
+    veMaMau: 'Chương trình chính bị khóa: nhặt bên trái rồi đặt sang phải. Thử từng hàm trong sân thử của Xưởng hàm để xem tay đang chỉ về đâu.',
+    maMau: bai(['fixed_pick_left()', 'fixed_drop_right()'], [ham('fixed_pick_left', ['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()']),
+      ham('fixed_drop_right', ['arm_right()', 'arm_down()', 'release()', 'wait()', 'arm_up()', 'arm_left()', 'wait()'])]),
+    loiGiai: bai(['fixed_pick_left()', 'fixed_drop_right()'], [ham('fixed_pick_left', ['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()']),
+      ham('fixed_drop_right', ['arm_right()', 'arm_down()', 'release()', 'wait()', 'arm_up()', 'arm_left()', 'wait()'])]),
+    goiY: ['Từ bên trái, một lần arm_right() chỉ đưa tay về giữa.', 'Thêm arm_right() trước wait() cuối của fixed_pick_left().']
+  });
+
   // Viết lại các đoạn mô tả vốn so sánh nhiều sân thành yêu cầu luyện một tình huống.
   var deLuyen = {
     'khoang-cach.4': 'Hành lang có một góc rẽ phải. Đi tới tường bằng cảm biến, rẽ phải rồi đi hai ô tới cờ.',
@@ -360,7 +471,6 @@
     'che-list.5': 'Xe đã đo cạnh đầu của bãi hình vuông vào seen. Chế box(seen): đi ba cạnh còn lại theo số đã ghi, về đúng xe mờ.',
     'che-list.6': 'Đo hai cạnh đầu của bãi chữ nhật vào danh sách rồi đi hai cạnh sau, về đúng xe mờ. Dùng scan() và route() đã chế.',
     'che-list.8': 'Hàm scan2(seen) ghi nhiều số thừa khiến xe đi sai hai cạnh sau. Sửa chỗ ghi số để xe về đúng xe mờ.',
-    'che-list.9': 'Cảm biến lắp ngược: trước mặt trống thì front_clear() báo False. Sửa scan3(seen) để đo đúng và về đúng xe mờ.',
     'mau.4': 'Đi theo vạch tới cờ: ô đỏ rẽ phải, ô xanh dương rẽ trái, màu khác đi thẳng.',
     'mau.5': 'Tạo read_turn(): đỏ thì rẽ phải, xanh dương thì rẽ trái, màu khác không quay. Dùng hàm ở mỗi bước trên vạch tới cờ.',
     'mau.6': 'Đi tới ô vàng, rẽ phải rồi đi tới ô xanh dương có cờ. Dùng màu để quyết định điểm dừng.',

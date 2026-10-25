@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-omni.mjs — máy kiểm chương `che-omni` (Chế lệnh omni) của "Đường học" (KE-HOACH-CHE-LENH.md, mục 5c.2).
+   kiem-che-omni.mjs — máy kiểm chương `che-omni` (Chế lệnh omni) của "Học lập trình" (KE-HOACH-CHE-LENH.md, mục 5c.2).
    Gồm:
    - luật omni mà chương dùng: không đi chéo (hai nhịp), băng chuyền kéo xe một ô mỗi nhịp đứng trên băng (qua hai băng lệch hai ô), tay hạ thì không trượt, phần cứng hỏng (thiếu slide_right) → lenh-goc-hong;
    - Sổ lệnh có đủ năm hàm mới (so-lenh.js; hop_right, north, east, step_out, step_back là HÀM CỦA MÀN nên không có ở đó, không vào kho);

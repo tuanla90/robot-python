@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-may-nem.js — "Đường học": CHƯƠNG `che-may-nem` · CHẾ LỆNH MÁY NÉM (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.5, 15/10): chương chế lệnh đi sau chương `may-nem`.
+   man-che-may-nem.js — "Học lập trình": CHƯƠNG `che-may-nem` · CHẾ LỆNH MÁY NÉM (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.5, 15/10): chương chế lệnh đi sau chương `may-nem`.
    Robot là XE HAI BÁNH gắn MÁY NÉM ở mũi xe: robot { than: 'hai-banh', tay: 'nem', camBien: [] | [{ ma: 'camera', o: 'tren' }] (6: camera nhìn ô trước mặt) | [{ ma: 'khoang-cach', o: 'hong' }] (10) }.
    Lệnh gốc (luật đầy đủ ở san-hoc.js, phần MÁY NÉM):
        aim(n)   đặt tầm n = 1, 2 hay 3 ô (có hiệu lực NGAY, không tốn nhịp)      load()   nạp vật ở Ô TRƯỚC MẶT vào rổ (rổ chứa một vật)      throw()   ném vật trong rổ

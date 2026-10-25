@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-mau.js — "Đường học": CHƯƠNG `mau` · CẢM BIẾN MÀU (10 màn).
+   man-mau.js — "Học lập trình": CHƯƠNG `mau` · CẢM BIẾN MÀU (10 màn).
    Robot là XE HAI BÁNH (loaiRobot 'banh') gắn CẢM BIẾN MÀU ở bụng xe (đọc ô ngay dưới xe):
    robot { than: 'hai-banh', tay: null | 'kep', camBien: [{ ma: 'mau', o: 'hong' }] (+ { ma: 'khoang-cach', o: 'hong' } ở màn 7) }.
    RIÊNG MÀN 8 xe gắn CAMERA thay cho cảm biến bụng (camBien: [{ ma: 'camera', o: 'tren' }]): cùng tên hàm color() nhưng đọc Ô TRƯỚC MẶT.

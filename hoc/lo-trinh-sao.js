@@ -1,6 +1,14 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "che-xe.8": {
+    "o": 6,
+    "nhip": 3
+  },
+  "che-tay.8": {
+    "o": 17,
+    "nhip": 6
+  },
   "khoang-cach.8": {
     "o": 10,
     "nhip": 8
@@ -170,8 +178,8 @@
     "nhip": 12
   },
   "robot-hoan-thien.7": {
-    "o": 23,
-    "nhip": 9
+    "o": 27,
+    "nhip": 8
   },
   "robot-hoan-thien.8": {
     "o": 31,
@@ -201,6 +209,10 @@
     "o": 23,
     "nhip": 8
   },
+  "che-nhen.8": {
+    "o": 14,
+    "nhip": 6
+  },
   "che-list.4": {
     "o": 21,
     "nhip": 14
@@ -220,6 +232,14 @@
   "che-list.9": {
     "o": 21,
     "nhip": 18
+  },
+  "che-xich.8": {
+    "o": 12,
+    "nhip": 7
+  },
+  "che-sung-hoi.7": {
+    "o": 11,
+    "nhip": 4
   },
   "mau.4": {
     "o": 13,
@@ -304,6 +324,14 @@
   "che-nam-cham.7": {
     "o": 11,
     "nhip": 3
+  },
+  "tay-xoay.7": {
+    "o": 10,
+    "nhip": 3
+  },
+  "che-tay-xoay.8": {
+    "o": 16,
+    "nhip": 4
   },
   "may-nem.6": {
     "o": 6,

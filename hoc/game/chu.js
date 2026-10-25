@@ -1,5 +1,5 @@
 /* ============================================================================
-   chu.js — "Đường học": BẢNG CHỮ giao diện (window.CHU) và hàm t('khoa', thamSo).
+   chu.js — "Học lập trình": BẢNG CHỮ giao diện (window.CHU) và hàm t('khoa', thamSo).
    Mọi chữ của giao diện nằm ở đây; mã giao diện không viết cứng chữ tiếng Việt.
    Thêm ngôn ngữ: thêm CHU.en = { ... } rồi gọi CHU.dat('en'). Tham số: {ten} trong chuỗi.
    (Đề bài, gợi ý, tên màn, lời chẩn đoán đến từ lõi — xem ghi chú trong báo cáo.)
@@ -10,7 +10,7 @@
   var CHU = {
     vi: {
       /* ---- chung */
-      'chung.tenGame': 'Đường học',
+      'chung.tenGame': 'Học lập trình',
       'chung.dong': 'Đóng',
       'chung.dongY': 'Đồng ý',
       'chung.huy': 'Hủy',
@@ -27,6 +27,7 @@
       'chon.choi': 'CHƠI!',
       'chon.khoaMan': 'Màn này đang khóa.',
       'chon.khoaMua': 'Mùa này chưa mở.',
+      'chon.khoaChuaMua': 'Mùa {ten} chưa mua.',
       'chon.khoaHang1': 'Chơi lần lượt: xong màn trước mới mở màn này.',
       'chon.khoaHang23': 'Xong hết hàng "Làm quen" để mở hàng này.',
       'chon.khoaChuoi': 'Xong thử thách chương {n} để mở chương này.',
@@ -356,6 +357,13 @@
       'goi.moTa1': '{m} màn',
       'goi.canSao': 'Cần {n}',
       'goi.sapCo': 'SẮP CÓ',
+      'goi.chuaMua': 'CHƯA MUA',
+      'mua.tieuDe': 'Mua mùa {ten}',
+      'mua.noiDung': 'Mùa {ten} có {goi} gói, {man} màn. Mua một lần, chơi mãi trên máy này.',
+      'mua.thu': 'Bản thử: chưa trừ tiền thật. Bấm mua là mở ngay.',
+      'mua.nut': 'Mua thử · {gia}',
+      'mua.nutBan': 'Mua {ten} · {gia}',
+      'mua.deSau': 'Để sau',
       'goi.khoa': 'Cần {can} ★ để mở gói này. Em đang có {co} ★. Chơi lại các màn để lấy thêm sao nhé.',
       'goi.sapCoTb': 'Gói này đang được làm.',
       'goi.truoc': 'Gói trước',
@@ -378,6 +386,8 @@
       'go.xoaTienDoHoi': 'Xóa hết sao, tiến độ, cờ đã xem và bản nháp mọi màn? Kho hàm của em vẫn giữ.',
       'go.xoaKhoHoi': 'Xóa hết sao, tiến độ, cờ đã xem, bản nháp VÀ cả kho hàm của em?',
       'go.daXoaTienDo': 'Đã xóa tiến độ (kho hàm vẫn giữ).',
+      'go.boMua': 'Bỏ mua',
+      'go.daBoMua': 'Đã bỏ mua mọi mùa (mua thử).',
       'go.daXoaKho': 'Đã xóa tiến độ và cả kho hàm.',
 
       /* ---- chế độ lắp ráp (man-lap.js, lõi lap-rap.js; KE-HOACH-LAP-RAP.md) */
@@ -418,7 +428,7 @@
       'caiDat.xoaCanh': 'Không lấy lại được.',
       'caiDat.xoaCo': 'Xóa hết',
       'caiDat.phienBan': 'Phiên bản {v}',
-      'caiDat.thongTinChu': 'Đội Robot Chấn Hưng: Đường học\nGame học lập trình Python bằng cách điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Handjet, VT323 (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
+      'caiDat.thongTinChu': 'Đội Robot Chấn Hưng: Học lập trình\nGame học lập trình Python bằng cách điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Handjet, VT323 (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
 
       /* ---- phim mở đầu (mo-dau.js) */
       'md.boQua': 'Bỏ qua',

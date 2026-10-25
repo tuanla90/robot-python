@@ -1,5 +1,5 @@
 /* ============================================================================
-   mo-goi.js — "Đường học": GÓI MÀN và LUẬT MỞ KHÓA (window.MoGoi). Không đụng DOM: chạy được trong Node (máy kiểm kiem-goi.mjs).
+   mo-goi.js — "Học lập trình": GÓI MÀN và LUẬT MỞ KHÓA (window.MoGoi). Không đụng DOM: chạy được trong Node (máy kiểm kiem-goi.mjs).
 
    Gói (ThuTuChuong.goi, kiểu hộp của Cut the Rope): mỗi gói là một bộ phận (chương làm quen + chương chế lệnh) hoặc một logic mới.
    MÙA (ThuTuChuong.mua, kiểu episode của Angry Birds, 22/10): mỗi gói thuộc một mùa (g.mua, mặc định mùa đầu). Mùa 1 là lộ trình chính;
@@ -17,7 +17,9 @@
         (gói mở bằng sao nên có thể tới gói sau mà chưa chế hàm cần dùng; luật này chặn đúng chỗ đó)
      3b. màn cần hàm em đã "tạo" ở một màn đã qua mà kho không có hàm đó (luu.coHam) → 'mat-ham' (ham, canChuong, canMan): quay lại màn đó tạo hàm
      4. trong chương: hàng Làm quen chơi lần lượt ('hang1'); Luyện + Biến thể mở khi xong Làm quen ('hang23'); thử thách mở khi qua đủ 9 màn ('trum').
-   luu = { saoTot(maMan) → 0..3, daXem(cờ)? } (game/luu.js); moHet = true: mở hết (bảng Gỡ lỗi). Gói chưa mở vì MÙA chưa mở → lyDo 'mua' (mua, dieuKien).
+   luu = { saoTot(maMan) → 0..3, daXem(cờ)?, daMua(mã mùa)? } (game/luu.js); moHet = true: mở hết (bảng Gỡ lỗi). Gói chưa mở vì MÙA chưa mở → lyDo 'mua' (mua, dieuKien).
+   BÁN THEO MÙA (25/10): mùa khai `ban` (thu-tu-chuong.js) chỉ mở khi luu.daMua(mã mùa); chưa mua → lyDo 'chua-mua' (mua, goi), cờ đã mở cũ không vượt qua được.
+   Luật 3 ('can-ham') bỏ qua hàm được chế ở MÙA TRƯỚC: người mua thẳng mùa sau được nạp sẵn các hàm đó (App.vaoMan).
    ========================================================================== */
 (function (goc) {
   'use strict';
@@ -35,6 +37,9 @@
   function daXem(luu, co) { try { return !!(luu && luu.daXem && luu.daXem(co)); } catch (e) { return false; } }
   /** Các mùa khai trong ThuTuChuong.mua (không khai: một mùa duy nhất 'mua-1'). */
   function muaKhai() { var m = TT().mua; return m && m.length ? m : [{ ma: 'mua-1', ten: 'Mùa 1' }]; }
+  function daMua(luu, ma) { try { return !!(luu && luu.daMua && luu.daMua(ma)); } catch (e) { return false; } }
+  /** Mùa bán riêng mà chưa mua (moHet: coi như đã mua). */
+  function chuaMua(mua, luu, moHet) { return !!(mua && mua.ban && !moHet && !daMua(luu, mua.ma)); }
 
   /** Các gói theo thứ tự chương (thuTu): [{ ma, ten, so, chuong (chương CÓ màn), chuongKhai, man, saoToiDa, saoCan, sapCo, hinh, loai, mua, dot }]. */
   function dsGoi() {
@@ -71,7 +76,7 @@
     });
     cache = kq; khoaCache = khoa;
     cacheMua = muaKhai().map(function (x, i) {
-      return { ma: x.ma, ten: x.ten || x.ma, so: i + 1, mo: x.mo || null, goi: kq.filter(function (gg) { return gg.mua === x.ma; }) };
+      return { ma: x.ma, ten: x.ten || x.ma, so: i + 1, mo: x.mo || null, ban: x.ban || null, goi: kq.filter(function (gg) { return gg.mua === x.ma; }) };
     });
     return kq;
   }
@@ -83,6 +88,7 @@
   /** Mùa đã mở chưa: không khai điều kiện thì mở; đã mở một lần (cờ 'mua-mo:<mã>') thì mở mãi. */
   function muaMo(mua, luu, moHet) {
     if (!mua) return false;
+    if (chuaMua(mua, luu, moHet)) return false;
     if (moHet || !mua.mo || daXem(luu, 'mua-mo:' + mua.ma)) return true;
     var c = mua.mo, ok = true;
     if (typeof c.sao === 'number') ok = ok && saoMua(c.mua || muaKhai()[0].ma, luu) >= c.sao;
@@ -102,6 +108,7 @@
   /** Gói mở: mùa của nó mở và đủ sao trong mùa — hoặc đã từng mở (cờ 'goi-mo:<mã>', không bao giờ khóa lại). */
   function goiMo(g, luu, moHet) {
     if (!g || g.sapCo) return false;
+    if (chuaMua(muaTheoMa(g.mua), luu, moHet)) return false;
     if (moHet || daXem(luu, 'goi-mo:' + g.ma)) return true;
     return muaMo(muaTheoMa(g.mua), luu) && saoMua(g.mua, luu) >= g.saoCan;
   }
@@ -135,6 +142,7 @@
     var n = m.chuong, g = goiCua(n);
     if (g && !goiMo(g, luu)) {
       var mu = muaTheoMa(g.mua);
+      if (chuaMua(mu, luu)) return { mo: false, lyDo: 'chua-mua', mua: g.mua, goi: g.ma };
       if (!muaMo(mu, luu)) return { mo: false, lyDo: 'mua', mua: g.mua, dieuKien: mu && mu.mo, goi: g.ma };
       return { mo: false, lyDo: 'sao', can: g.saoCan, co: saoMua(g.mua, luu), goi: g.ma };
     }
@@ -143,8 +151,10 @@
       var cTruoc = g.chuong[vt - 1], tr = trumCua(cTruoc);
       if (tr && !qua(luu, tr.ma)) return { mo: false, lyDo: 'chuoi', chuong: cTruoc, chuoi: (TT().thuTu || []).indexOf(cTruoc) + 1 };
     }
-    var can = canHam(n);
+    var can = canHam(n), soMua = g ? muaTheoMa(g.mua).so : 1;
     for (var i = 0; i < can.length; i++) {
+      var gTao = goiCua(can[i].man.chuong);
+      if (gTao && muaTheoMa(gTao.mua).so < soMua) continue;                    // hàm của mùa trước: được nạp sẵn khi vào màn
       if (!qua(luu, can[i].man.ma)) return { mo: false, lyDo: 'can-ham', ham: can[i].ham, canChuong: can[i].man.chuong, canMan: can[i].man.ma };
     }
     // kho của em thiếu hàm mà màn cần (vd đã qua màn tạo hàm từ bản cũ, lúc máy chấm chưa bắt tạo): khóa, chỉ về màn tạo hàm đó (luu.coHam: game/luu.js)
@@ -176,7 +186,7 @@
   var MoGoi = {
     TI_LE_SAO: TI_LE_SAO,
     dsGoi: dsGoi, goiTheoMa: goiTheoMa, goiCua: goiCua, tongSao: tongSao, saoGoi: saoGoi, soQua: soQua, goiMo: goiMo,
-    dsMua: dsMua, muaTheoMa: muaTheoMa, saoMua: saoMua, muaMo: muaMo,
+    dsMua: dsMua, muaTheoMa: muaTheoMa, saoMua: saoMua, muaMo: muaMo, chuaMua: chuaMua,
     canHam: canHam, trangThai: trangThai, manTiepTheo: manTiepTheo, trumCua: trumCua
   };
   goc.MoGoi = MoGoi;

@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-sung-hoi.mjs — máy kiểm chương `che-sung-hoi` (Chế lệnh súng hơi) của "Đường học" và các luật lõi mới của nó (KE-HOACH-CHE-LENH.md, mục 5c.3).
+   kiem-che-sung-hoi.mjs — máy kiểm chương `che-sung-hoi` (Chế lệnh súng hơi) của "Học lập trình" và các luật lõi mới của nó (KE-HOACH-CHE-LENH.md, mục 5c.3).
    Gồm:
    - daoChieu 'sung' (súng lắp ngược): shoot() bắn ra sau + xe giật tới, shoot_back() bắn ra trước + giật lùi; cấu hình sai bị từ chối; sân thử của Xưởng dùng daoChieu của màn;
    - màn hỏng (phanCung thiếu shoot_back): gọi lệnh hỏng → lenh-goc-hong nói "Nòng sau hỏng" / canhBao của màn; bộ dò chỉ cho ban-truoc;

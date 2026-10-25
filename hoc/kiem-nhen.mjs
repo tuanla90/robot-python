@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-nhen.mjs — máy kiểm chương `nhen` (Thân nhện, làm lại 15/10 theo khuôn làm quen) của "Đường học".
+   kiem-nhen.mjs — máy kiểm chương `nhen` (Thân nhện, làm lại 15/10 theo khuôn làm quen) của "Học lập trình".
    Gồm: luật nhện (4 hướng tuyệt đối, 2 nhịp mỗi bước, bậc thang, băng chuyền xuôi / ngược chiều, tay kẹp: lệnh tay làm ở nhịp đầu của bước, tay hạ thì chân vướng),
    chuỗi chữ chỉ đường với go() / walk() (if / elif, for c in "…"), LUẬT CHÂN MỚI (crouch / stand làm ở nhịp đầu của bước hay nhịp wait, ô gầm n, ô hố u, cú NHẢY, daoChieu "chan",
    bongMo.chan), bộ dò đường tắt cho nhện (do-duong-nhen.mjs) và so chéo với san-hoc.js bằng chương trình ngẫu nhiên, dữ liệu 10 màn, canHam (không dùng hàm / chuỗi thì

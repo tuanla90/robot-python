@@ -1,5 +1,5 @@
 /* ============================================================================
-   thu-tu-chuong.js — "Đường học": THỨ TỰ CÁC CHƯƠNG (window.ThuTuChuong).
+   thu-tu-chuong.js — "Học lập trình": THỨ TỰ CÁC CHƯƠNG (window.ThuTuChuong).
 
    MUỐN ĐỔI THỨ TỰ CHƯƠNG THÌ CHỈ SỬA MẢNG `thuTu` Ở DƯỚI. Không sửa chỗ nào khác.
    - Mỗi chương có MÃ cố định (chuỗi, không bao giờ đổi): đây là danh tính của chương.
@@ -59,9 +59,15 @@
     // MÙA (22/10, kiểu episode của Angry Birds): mùa 1 là lộ trình chính. GÓI MỞ RỘNG thêm vào MÙA MỚI, không chen vào giữa mùa 1:
     //   1. thêm chương mới vào CUỐI thuTu, viết tệp màn; 2. thêm mùa vào `mua` với điều kiện `mo` ({ goi: 'cam-bien' } = qua hết gói đó,
     //   hay { sao: 200, mua: 'mua-1' } = đủ 200 sao ở mùa 1); 3. thêm gói với `mua: '<mã mùa>'` (không khai `sao` thì tự tính trong mùa).
-    // `sao` của 22 gói mùa 1 khai CỨNG (bằng công thức TI_LE_SAO lúc 22/10): sửa danh sách gói sau này không làm đổi ngưỡng đã công bố.
+    // `sao` của các gói khai CỨNG (mùa 1 bằng công thức TI_LE_SAO lúc 22/10; mùa 2–4 trừ đi ngưỡng của gói đầu mùa, 25/10): sửa danh sách gói sau này không làm đổi ngưỡng đã công bố.
+    // BÁN THEO MÙA (25/10): mùa 1 miễn phí; mùa có `ban` chỉ mở khi đã mua (Luu.daMua, mo-goi.js). `ban.gia` là giá hiện trên nút mua thử
+    //   (chưa nối thanh toán thật). Sao của các gói mùa sau tính TRONG MÙA (gói đầu mùa cần 0 ★), nên người mua thẳng mùa sau vẫn chơi được;
+    //   hàm cốt truyện của các mùa trước tự nạp vào kho khi vào màn (ung-dung.js, App.vaoMan).
     mua: [
-      { ma: 'mua-1', ten: 'Xưởng R1' }
+      { ma: 'mua-1', ten: 'Xưởng R1' },
+      { ma: 'mua-2', ten: 'Địa hình', ban: { gia: '49.000đ' } },
+      { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' } },
+      { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' } }
     ],
     goi: [
       { ma: 'xe', ten: 'Xe hai bánh', sao: 0, chuong: ['hai-banh'] },
@@ -70,22 +76,22 @@
       { ma: 'vong-lap', ten: 'Vòng lặp', sao: 75, chuong: ['vong-lap', 'che-lap'] },
       { ma: 'cam-bien', ten: 'Cảm biến', loai: 'bo-phan', sao: 105, chuong: ['khoang-cach', 'che-cam-bien'] },
       { ma: 'robot', ten: 'Robot hoàn thiện', loai: 'thu-thach', sao: 135, chuong: ['robot-hoan-thien'] },
-      { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 150, chuong: ['hai-robot'] },                 // 22/10 hai robot, hai chương trình, nhịp chung (KE-HOACH-HAI-ROBOT.md)
-      { ma: 'bang-chuyen', ten: 'Đường dài', sao: 165, chuong: ['bang-chuyen', 'tham-so'] },       // 22/10: gộp Băng chuyền + Hàm có tham số (mỗi chương 10 màn đứng lẻ) thành một gói 20 màn
-      { ma: 'nhen', ten: 'Thân nhện', loai: 'bo-phan', sao: 195, chuong: ['nhen', 'che-nhen'] },
-      { ma: 'list', ten: 'Danh sách', sao: 225, chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
-      { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', sao: 255, chuong: ['xich', 'che-xich'] },
-      { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', sao: 285, chuong: ['omni', 'che-omni'] },
-      { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', sao: 315, chuong: ['sung-hoi', 'che-sung-hoi'] },
-      { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', sao: 345, chuong: ['mau', 'che-mau'] },
-      { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', sao: 375, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
-      { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', sao: 390, chuong: ['nam-cham', 'che-nam-cham'] },
-      { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 420, chuong: ['tay-xoay', 'che-tay-xoay'] },
-      { ma: 'may-nem', ten: 'Máy ném', loai: 'bo-phan', sao: 450, chuong: ['may-nem', 'che-may-nem'] },
-      { ma: 'rap-tay', ten: 'Lắp ráp: Thân + Tay', loai: 'thu-thach', sao: 480, chuong: ['rap-tay'] },
-      { ma: 'drone', ten: 'Drone', loai: 'bo-phan', sao: 495, chuong: ['drone', 'che-drone'] },
-      { ma: 'flycam', ten: 'Flycam', loai: 'bo-phan', sao: 525, chuong: ['flycam'] },              // 22/10 tách khỏi gói Drone: drone gắn camera nhìn xuống, look() + list (17/10)
-      { ma: 'rap-du', ten: 'Lắp ráp: Đủ bộ', loai: 'thu-thach', sao: 540, chuong: ['rap-du'] }
+      { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', mua: 'mua-2', sao: 0, chuong: ['hai-robot'] },                 // 22/10 hai robot, hai chương trình, nhịp chung (KE-HOACH-HAI-ROBOT.md)
+      { ma: 'bang-chuyen', ten: 'Đường dài', mua: 'mua-2', sao: 15, chuong: ['bang-chuyen', 'tham-so'] },       // 22/10: gộp Băng chuyền + Hàm có tham số (mỗi chương 10 màn đứng lẻ) thành một gói 20 màn
+      { ma: 'nhen', ten: 'Thân nhện', loai: 'bo-phan', mua: 'mua-2', sao: 45, chuong: ['nhen', 'che-nhen'] },
+      { ma: 'list', ten: 'Danh sách', mua: 'mua-2', sao: 75, chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
+      { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', mua: 'mua-2', sao: 105, chuong: ['xich', 'che-xich'] },
+      { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', mua: 'mua-2', sao: 135, chuong: ['omni', 'che-omni'] },
+      { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi'] },
+      { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', mua: 'mua-3', sao: 30, chuong: ['mau', 'che-mau'] },
+      { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', mua: 'mua-3', sao: 60, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
+      { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', mua: 'mua-3', sao: 75, chuong: ['nam-cham', 'che-nam-cham'] },
+      { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', mua: 'mua-4', sao: 0, chuong: ['tay-xoay', 'che-tay-xoay'] },
+      { ma: 'may-nem', ten: 'Máy ném', loai: 'bo-phan', mua: 'mua-4', sao: 30, chuong: ['may-nem', 'che-may-nem'] },
+      { ma: 'rap-tay', ten: 'Lắp ráp: Thân + Tay', loai: 'thu-thach', mua: 'mua-4', sao: 60, chuong: ['rap-tay'] },
+      { ma: 'drone', ten: 'Drone', loai: 'bo-phan', mua: 'mua-4', sao: 75, chuong: ['drone', 'che-drone'] },
+      { ma: 'flycam', ten: 'Flycam', loai: 'bo-phan', mua: 'mua-4', sao: 105, chuong: ['flycam'] },              // 22/10 tách khỏi gói Drone: drone gắn camera nhìn xuống, look() + list (17/10)
+      { ma: 'rap-du', ten: 'Lắp ráp: Đủ bộ', loai: 'thu-thach', mua: 'mua-4', sao: 120, chuong: ['rap-du'] }
     ],
     ten: {
       'hai-banh': 'Hai bánh',

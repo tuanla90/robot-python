@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-nam-cham.js — "Đường học": GÓI ĐỘI NAM CHÂM VÀ MÀU (20 màn, gói đội ngay sau gói Nam châm). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
+   man-doi-nam-cham.js — "Học lập trình": GÓI ĐỘI NAM CHÂM VÀ MÀU (20 màn, gói đội ngay sau gói Nam châm). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
    Hai robot khác tay: R1 là xe hai bánh gắn NAM CHÂM + cảm biến từ (front_clear, front_metal, front_pole): hút sắt 2 ô, vật nam châm 3 ô, lực hút đi
    qua hàng rào và hố, nhưng bó tay với GỖ; R2 là xe hai bánh gắn TAY KẸP + CAMERA (color() đọc ô trước mặt) + cảm biến khoảng cách: gắp được mọi vật
    kể cả gỗ, phân loại theo màu, nhưng không với qua rào / hố. Kỹ năng phối hợp của gói là K7, ĐƯỜNG LUI: R2 chờ R1 có giới hạn

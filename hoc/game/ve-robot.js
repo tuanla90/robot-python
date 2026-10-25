@@ -1,5 +1,5 @@
 /* ============================================================================
-   ve-robot.js — "Đường học": LỚP VẼ ROBOT TÁCH RIÊNG (window.VeRobot).
+   ve-robot.js — "Học lập trình": LỚP VẼ ROBOT TÁCH RIÊNG (window.VeRobot).
    Mọi chỗ vẽ robot (sân chính, sân thử ở Xưởng) đều gọi VeRobot.ve(); muốn đổi hình robot chỉ sửa tệp này
    (hoặc nạp bộ PART, xem dưới).
 

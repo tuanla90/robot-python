@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-nam-cham.js — "Đường học": CHƯƠNG `nam-cham` · NAM CHÂM CÓ CỰC (10 màn). Viết lại 15/10 theo KE-HOACH-CHE-LENH.md mục 5b.2 (user chốt: nam châm có cực N / S,
+   man-nam-cham.js — "Học lập trình": CHƯƠNG `nam-cham` · NAM CHÂM CÓ CỰC (10 màn). Viết lại 15/10 theo KE-HOACH-CHE-LENH.md mục 5b.2 (user chốt: nam châm có cực N / S,
    "nam châm đẩy sắt nghe điêu lắm"). Giữ MÃ nam-cham.1…10 để không mất tiến độ; nội dung viết lại.
    Robot là XE HAI BÁNH (loaiRobot 'banh'; màn 9 là XE OMNI) gắn TAY NAM CHÂM ở mũi xe:
    robot { than: 'hai-banh' | 'omni', tay: 'nam-cham', camBien: [] | [{ ma: 'khoang-cach', o: 'hong' }] (6, 10: cảm biến từ / khoảng cách ở hông) (+ { ma: 'mau', o: 'hong' } ở 10: cảm biến màu Ở BỤNG) }.

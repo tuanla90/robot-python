@@ -1,5 +1,5 @@
 /* ============================================================================
-   thu-vien-mau.js — "Đường học": BỘ HÀM CỦA EM MẪU, dùng cho test (window.HamCuaEmMau).
+   thu-vien-mau.js — "Học lập trình": BỘ HÀM CỦA EM MẪU, dùng cho test (window.HamCuaEmMau).
    (Tên tệp giữ từ thời "thư viện theo trùm"; nay là kho hàm của em, xem kho-ham.js.)
    Dạng mảng [ { ten, thamSo, than } ] — đúng dạng ChamHoc.cham(man, baiLam, hamCuaEm) nhận.
    Dựng từ hàm gốc thấp hơn: move ← left_move/right_move/wait, u_turn ← turn_right,

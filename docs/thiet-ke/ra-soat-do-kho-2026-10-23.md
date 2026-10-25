@@ -1,4 +1,4 @@
-# Rà soát độ khó đường học — 23/10/2026
+# Rà soát độ khó Học lập trình — 23/10/2026
 
 Trạng thái: báo cáo dưới đây ghi nhận **bản trước khi sửa** (370 màn / 37 chương). Phương án đã được triển khai trong `hoc/lo-trinh-hoc.js`: bản xuất bản có **380 màn / 38 chương**, gói Mê cung riêng sau Cảm biến, không còn màn nhiều map ở vị trí 1–9. Số màn trong các bảng bên dưới là số cũ, mã cố định dùng để đối chiếu thay đổi.
 

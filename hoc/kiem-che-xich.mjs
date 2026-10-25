@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-xich.mjs — máy kiểm chương `che-xich` (Chế lệnh xích) của "Đường học" và các luật lõi nó dùng (KE-HOACH-CHE-LENH.md, mục 5c.1).
+   kiem-che-xich.mjs — máy kiểm chương `che-xich` (Chế lệnh xích) của "Học lập trình" và các luật lõi nó dùng (KE-HOACH-CHE-LENH.md, mục 5c.1).
    Gồm:
    - daoChieu ['trai'] / ['phai'] trên XE XÍCH (đấu dây ngược): left_move() làm xích trái quay lùi…; vết lệnh vẫn ghi tên lệnh gọi, vết nhịp ghi giá trị bánh THẬT; cấu hình sai bị từ chối;
    - màn hỏng (phanCung thiếu left_move): gọi lệnh hỏng (cả gián tiếp qua hàm của em) → lenh-goc-hong nói "Xích trái hỏng…" / canhBao của màn;

@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-sung-hoi.mjs — máy kiểm SÚNG HƠI của "Đường học": các luật lõi mới (KE-HOACH-CHE-LENH.md, mục 5c.3) và chương `sung-hoi` (10 màn).
+   kiem-sung-hoi.mjs — máy kiểm SÚNG HƠI của "Học lập trình": các luật lõi mới (KE-HOACH-CHE-LENH.md, mục 5c.3) và chương `sung-hoi` (10 màn).
    Gồm:
    - shoot() bắn ra trước + xe giật lùi, shoot_back() bắn ra sau + xe giật tới, bốn hướng; bóng bay thẳng, dừng ở từng loại vật cản, bay qua rào / băng / cửa mở, ra khỏi sân (ban-hut);
    - giật bị chặn (tường, mép sân, cửa đóng, nút, rào, bậc thang, vật) → xe đứng yên (giat-chan); thùng nặng sau xe trượt tới vật cản (không dừng ở đích), xe đứng yên;

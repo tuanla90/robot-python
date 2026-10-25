@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-nhen.js — "Đường học": CHƯƠNG `che-nhen` · CHẾ LỆNH NHỆN (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5b.1), làm 15/10.
+   man-che-nhen.js — "Học lập trình": CHƯƠNG `che-nhen` · CHẾ LỆNH NHỆN (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5b.1), làm 15/10.
    Chương thứ 14 (ngay sau Thân nhện, man-nhen.js). Robot là NHỆN: robot { than: 'nhen', tay: null } (tay 'kep' ở che-nhen.6). Xưởng hàm mở, được dùng hàm của em.
    Luật thiết kế (như che-xe): lệnh gốc chỉ đổi MỘT trạng thái (co / duỗi chân, một bước); động tác hay (bò qua gầm, nhảy hố, nhảy liên tiếp…) là thứ NGƯỜI CHƠI TỰ CHẾ.
    Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (máy kiểm kiem-che-nhen.mjs chạy từng cách).

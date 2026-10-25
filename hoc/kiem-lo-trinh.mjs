@@ -160,13 +160,27 @@ kiem('HTML và Node dùng cùng danh sách màn và cùng ngưỡng sao', () => 
 vm.runInContext(fs.readFileSync(new URL('./game/mo-goi.js', import.meta.url), 'utf8'), ctx);
 kiem('đi tuần tự toàn bộ lộ trình không gặp khóa phụ thuộc tương lai', () => {
   const sao = {};
-  const luu = { saoTot: ma => sao[ma] || 0 };
+  const luu = { saoTot: ma => sao[ma] || 0, daMua: () => true };
   for (const m of browser.ManHoc.danhSach) {
     const tt = browser.MoGoi.trangThai(m, luu, false);
     assert.ok(tt.mo, m.ma + ': ' + JSON.stringify(tt));
     sao[m.ma] = 3;
   }
   assert.equal(browser.MoGoi.manTiepTheo(luu, false), null);
+});
+kiem('mua thẳng từng mùa sau (chưa chơi mùa trước): đi tuần tự hết mùa đó không gặp khóa', () => {
+  for (const mu of browser.MoGoi.dsMua().slice(1)) {
+    const sao = {};
+    const luu = { saoTot: ma => sao[ma] || 0, daMua: ma => ma === mu.ma };
+    for (const g of mu.goi) for (const m of g.man) {
+      const tt = browser.MoGoi.trangThai(m, luu, false);
+      assert.ok(tt.mo, mu.ma + ' ' + m.ma + ': ' + JSON.stringify(tt));
+      sao[m.ma] = 3;
+    }
+  }
+});
+kiem('chưa mua thì gói đầu mùa sau khóa với lyDo chua-mua', () => {
+  assert.equal(browser.MoGoi.trangThai(browser.ManHoc.timMa('hai-robot.1'), { saoTot: () => 3 }, false).lyDo, 'chua-mua');
 });
 kiem('gói Dò đường (cảm biến hai bên + mê cung) trước thử thách, không đẩy ngưỡng cũ', () => {
   const ds = browser.MoGoi.dsGoi().filter(g => g.mua === 'mua-1');
@@ -181,7 +195,7 @@ kiem('gói Dò đường (cảm biến hai bên + mê cung) trước thử thác
   assert.equal(ds[i - 1].ma, 'cam-bien');
   assert.equal(ds[i + 1].ma, 'robot');
   assert.equal(browser.MoGoi.goiTheoMa('robot').saoCan, 135);
-  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 540);
+  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 120);
 });
 
 kiem('bản lưu cũ giữ sao theo mã, bỏ nháp lỗi thời, nháp mới đọc lại được', () => {

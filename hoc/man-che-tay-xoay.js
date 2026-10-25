@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-tay-xoay.js — "Đường học": CHƯƠNG `che-tay-xoay` · CHẾ LỆNH TAY XOAY (10 màn). Đợt 2 làm lại theo khuôn (KE-HOACH-CHE-LENH.md, mục 5b.3). Chương chế lệnh của bộ phận tay xoay (sau chương `tay-xoay`).
+   man-che-tay-xoay.js — "Học lập trình": CHƯƠNG `che-tay-xoay` · CHẾ LỆNH TAY XOAY (10 màn). Đợt 2 làm lại theo khuôn (KE-HOACH-CHE-LENH.md, mục 5b.3). Chương chế lệnh của bộ phận tay xoay (sau chương `tay-xoay`).
    Robot như chương tay-xoay: XE HAI BÁNH GẮN TAY XOAY, robot { than: 'hai-banh', tay: 'xoay', camBien: [] }. Luật thiết kế như che-xe / che-tay: lệnh gốc chỉ đổi MỘT trạng thái (tay nâng / hạ, kẹp, khớp xoay một nấc);
    động tác hay (nhặt bên trái, đặt sang phải, đổi chỗ hai bên, phân loại…) là thứ NGƯỜI CHƠI TỰ CHẾ. Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi | baiLam }]` (kiem-che-tay-xoay.mjs chạy từng cách).
    Màn dùng HÀM CỦA MÀN (6.7, 6.8, 6.9: hàm chỉ đúng cho màn đó, không vào kho) khai cách khác bằng `{ moTa, baiLam: { chinh, hamCuaMan } }`.

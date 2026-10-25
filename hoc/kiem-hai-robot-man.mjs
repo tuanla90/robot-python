@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-hai-robot-man.mjs — máy kiểm chương `hai-robot` (Đội hai robot, 10 màn; man-hai-robot.js) của "Đường học" (KE-HOACH-HAI-ROBOT.md).
+   kiem-hai-robot-man.mjs — máy kiểm chương `hai-robot` (Đội hai robot, 10 màn; man-hai-robot.js) của "Học lập trình" (KE-HOACH-HAI-ROBOT.md).
    Gồm:
    - bộ dò đường do-duong-hai-robot.mjs: sân tự dựng (cùng nhắm một ô, đổi chỗ xuyên nhau, đồng đội chắn đường, tách vùng = dò chung); đường BFS của mọi
      sân đổi thành lệnh gốc rồi chạy SanHoc.chay phải thắng đúng bằng số nhịp BFS;

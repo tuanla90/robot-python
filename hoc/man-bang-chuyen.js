@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-bang-chuyen.js — "Đường học": CHƯƠNG `bang-chuyen` · BĂNG CHUYỀN (10 màn).
+   man-bang-chuyen.js — "Học lập trình": CHƯƠNG `bang-chuyen` · BĂNG CHUYỀN (10 màn).
    Xe hai bánh có tay gắp, Xưởng hàm mở (moXuong true), được dùng hàm của em. Hàm gốc như chương
    vong-lap (bánh, wait, 4 lệnh tay). Chương trình 10 ô; mỗi hàm một khung riêng 10 ô.
    Đã học `for` ở chương vong-lap nên cauTruc ['for'].

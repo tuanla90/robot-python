@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-mau.mjs — máy kiểm chương `mau` (Cảm biến màu) của "Đường học".
+   kiem-mau.mjs — máy kiểm chương `mau` (Cảm biến màu) của "Học lập trình".
    Gồm: color() ở mọi màu và mọi loại ô (ký hiệu r g b y, lớp màu riêng, cộng hai cách, xung đột, ô tường), ô màu đi lại như sàn thường,
    đọc màu không tốn nhịp và ghi sự kiện doc-cam-bien (cam 'mau'), color() phụ thuộc phần cứng (14/10): cảm biến BỤNG luôn đọc màu sàn dưới xe (cả lúc cầm / dính / nạp rổ),
    CAMERA đọc ô trước mặt (vật nằm đó → màu vật, không thì màu sàn; tường, rào, thùng, cửa đóng, nút, mép sân → "none"; bốn hướng; nhện mặt cố định), ghép cả hai hay camera trên drone → lỗi,

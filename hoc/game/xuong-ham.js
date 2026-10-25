@@ -1,5 +1,5 @@
 /* ============================================================================
-   xuong-ham.js — "Đường học": XƯỞNG HÀM (window.Xuong).
+   xuong-ham.js — "Học lập trình": XƯỞNG HÀM (window.Xuong).
    Lớp phủ trượt lên đè màn chơi. Từ trên xuống:
    - thanh trên: ‹ | TÊN HÀM to bằng font code (xanh lá = hàm của em, cam = hàm của màn) | ↺ lấy lại bản đúng (hàm cốt truyện khác bản của game) | 🗑 xóa hàm của em;
      chạm bút chì một hàm khác trong kho khối thì Xưởng chuyển sang hàm đó, ‹ quay lại hàm trước (S.lui), hết chuỗi mới về sân;

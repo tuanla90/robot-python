@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-nam-cham.js — "Đường học": CHƯƠNG `che-nam-cham` · CHẾ LỆNH NAM CHÂM (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5b.2, 15/10): chương chế lệnh đi sau chương `nam-cham`.
+   man-che-nam-cham.js — "Học lập trình": CHƯƠNG `che-nam-cham` · CHẾ LỆNH NAM CHÂM (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5b.2, 15/10): chương chế lệnh đi sau chương `nam-cham`.
    Robot là XE HAI BÁNH gắn TAY NAM CHÂM CÓ CỰC: robot { than: 'hai-banh', tay: 'nam-cham', camBien: [{ ma: 'khoang-cach', o: 'hong' }] } (cảm biến từ gắn vào cảm biến khoảng cách ở hông).
    Lệnh gốc (luật đầy đủ ở san-hoc.js, phần NAM CHÂM), đều chỉ RA LỆNH, wait() cho nhịp trôi, mỗi nhịp một lệnh nam châm:
        magnet_n() bật cực N · magnet_s() bật cực S · magnet_off() ngắt điện, thả vật dính xuống ô sát mũi xe        (cặp lệnh ngược: magnet_n ↔ magnet_s)

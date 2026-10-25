@@ -40,7 +40,7 @@ console.log('\n== 1. Literal chuỗi ==');
   kiem("'abc' (nháy đơn) in ra abc", ra("print('abc')") === J(['abc']));
   kiem('hai kiểu nháy lồng nhau: "it\'s" và \'say "hi"\'', ra(`print("it's")\nprint('say "hi"')`) === J(["it's", 'say "hi"']));
   kiem('chuỗi rỗng "" in ra dòng trống', ra('print("")') === J(['']));
-  kiem('tiếng Việt có dấu giữ nguyên', ra('print("Xin chào, Đường học")') === J(['Xin chào, Đường học']));
+  kiem('tiếng Việt có dấu giữ nguyên', ra('print("Xin chào, Học lập trình")') === J(['Xin chào, Học lập trình']));
   kiem('thoát \\n: một chuỗi có xuống dòng', chay('x = "a\\nb"\nprint(len(x))').ra[0] === '3');
   kiem('thoát \\\\ thành một dấu \\', chay('x = "a\\\\b"\nprint(len(x))\nprint(x == "a" + "\\\\" + "b")').ra.join('|') === '3|1');
   kiem('thoát \\\' và \\" bên trong chuỗi cùng loại nháy', ra(`print('it\\'s')\nprint("say \\"hi\\"")`) === J(["it's", 'say "hi"']));

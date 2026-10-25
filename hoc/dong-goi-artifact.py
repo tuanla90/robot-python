@@ -49,7 +49,7 @@ var s=document.createElement('style');s.textContent=c;document.head.appendChild(
 nap_js = """<script>(function(){var d=window.__DH||{j:[]},g={};d.j.forEach(function(p){(g[p[0]]=g[p[0]]||[]).push(p[1])});
 Object.keys(g).map(Number).sort(function(a,b){return a-b}).forEach(function(k){try{(0,eval)(g[k].join(''))}catch(e){console.error('Lỗi nạp tệp '+k,e)}});})();</script>"""
 
-trang = '''<title>Đường học</title>
+trang = '''<title>Học lập trình</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400..800&family=VT323&display=swap" rel="stylesheet">

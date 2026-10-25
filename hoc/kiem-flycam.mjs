@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-flycam.mjs — máy kiểm chương `flycam` (Flycam: drone gắn camera nhìn xuống, look() + danh sách; "nhìn trước, làm sau") của "Đường học"
+   kiem-flycam.mjs — máy kiểm chương `flycam` (Flycam: drone gắn camera nhìn xuống, look() + danh sách; "nhìn trước, làm sau") của "Học lập trình"
    (KE-HOACH-LIST-FLYCAM.md, mục 4, làm 17/10). Gồm:
    1. 10 màn flycam: dữ liệu (tên, hàng, robot có camera-bay + pin, khay, hàm chế, hàm của màn, khóa, pin / ô sạc, ba sân), lời giải 3 sao, mọi công thức khác thắng, lời giải khác đúng 2 sao,
       lời sai đúng mã, chinhCoDinh chặn chương trình chính gửi lên, nhịp: BFS (do-duong-che-drone.mjs; look() không đổi vật lý nên dùng chung bộ dò drone) ≤ sao.nhip (bằng nhau ở 1, 3, 7, 8);

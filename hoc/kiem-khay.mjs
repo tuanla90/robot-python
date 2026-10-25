@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-khay.mjs — máy kiểm KHAY KHỐI LỆNH theo thẻ bộ phận và giới hạn hàm theo màn của "Đường học" (KE-HOACH-CHE-LENH.md §3.4b).
+   kiem-khay.mjs — máy kiểm KHAY KHỐI LỆNH theo thẻ bộ phận và giới hạn hàm theo màn của "Học lập trình" (KE-HOACH-CHE-LENH.md §3.4b).
    Gồm:
    - man.gioiHanHam = n (lõi): chương trình chính gọi trực tiếp tối đa n hàm của em KHÁC NHAU; lỗi khung `qua-gioi-han-ham` đúng lời, đúng dòng;
      không khai thì không kiểm; hàm gọi bên trong hàm khác, hàm của màn, lệnh gốc không tính; Xưởng (thuHam) không bị chặn. Dùng màn GIẢ dựng từ một màn thật, không thêm màn thật;

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-lap.js — "Đường học": CHƯƠNG `che-lap` · CHẾ LỆNH CÓ for (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.2).
+   man-che-lap.js — "Học lập trình": CHƯƠNG `che-lap` · CHẾ LỆNH CÓ for (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.2).
    Chương thứ 7 (sau Vòng lặp, trước Cảm biến khoảng cách). Robot là XE HAI BÁNH, cauTruc ['for']: người chơi đã học `for i in range(n):` ở chương vong-lap
    và ở đây dùng nó TRONG THÂN HÀM tự chế. Chỉ dùng hàm của em từ các chương xuong-ham, che-xe, tay-gap, vong-lap (KHÔNG dùng hàm của che-tay).
    Khuôn như che-xe: mục tiêu 'bong-mo' (xe mờ + ô ◆), chương trình chính khóa (`chinhCoDinh`) ở màn chế lệnh, mỗi lệnh chế được ít nhất hai cách

@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-drone.mjs — máy kiểm chương `drone` (Drone) của "Đường học".
+   kiem-drone.mjs — máy kiểm chương `drone` (Drone) của "Học lập trình".
    Gồm: bay bốn hướng (mỗi lệnh 1 nhịp, tự trôi nhịp, không cần wait()), bay qua hàng rào / băng chuyền / vật / thùng nặng / bậc thang, bị tường cao / mép sân / cửa đóng / nút chặn,
    băng không đẩy drone, vật không bị đẩy hay chiếm ô với drone, PIN (trừ mỗi nhịp kể cả wait() và nhịp đâm tường, hết pin, đến cờ đúng nhịp pin về 0, ô sạc P, battery() không tốn nhịp),
    NAM CHÂM TREO (hút vật sắt ở ô DƯỚI drone, vật gỗ không hút, thả xuống ô dưới, thả bị chặn, thứ tự trong nhịp, gộp lệnh nam châm với lệnh bay), color() khi đang dính vật,

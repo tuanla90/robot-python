@@ -1,5 +1,5 @@
 /* ============================================================================
-   bang-mo-khoa.js — "Đường học": BẢNG "MỞ GÓI MỚI!" (window.MoKhoa).
+   bang-mo-khoa.js — "Học lập trình": BẢNG "MỞ GÓI MỚI!" (window.MoKhoa).
    Hiện khi tổng sao của người chơi vừa đủ mở một (hay vài) gói (game/mo-goi.js): mỗi gói một huy hiệu (HuyHieu.ve, hình của chương đầu gói) + tên gói.
    App.baoGoiMoi() (ung-dung.js) lo chuyện "mỗi gói báo một lần" (cờ 'goi-mo:<mã>' ở Luu) rồi gọi MoKhoa.mo(dsGoi, khiXong).
    ========================================================================== */

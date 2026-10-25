@@ -1,7 +1,5 @@
 // Máy chủ tĩnh cho Railway và chạy thử trên máy: không cần build, không cần gói ngoài.
-//   /          → Đường học (hoc/game/choi.html)
-//   /tran      → Trận đấu (tran/choi-tran.html)
-//   /nhan      → mockup sân robot đợt 1 (nhan/san-robot-dot-1.html)
+//   /          → Học lập trình (hoc/game/choi.html)
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
@@ -10,13 +8,11 @@ import { fileURLToPath } from 'node:url';
 import { createGzip } from 'node:zlib';
 
 const root = resolve(fileURLToPath(new URL('./', import.meta.url)));
-const thuMucMo = ['hoc', 'tran', 'nhan'].map((d) => resolve(root, d));
+const thuMucMo = ['hoc', 'nhan'].map((d) => resolve(root, d));
 const port = Number(process.env.PORT || 4180);
 const chuyen = {
   '/': '/hoc/game/choi.html',
   '/hoc': '/hoc/game/choi.html',
-  '/tran': '/tran/choi-tran.html',
-  '/nhan': '/nhan/san-robot-dot-1.html',
 };
 const types = {
   '.css': 'text/css; charset=utf-8',

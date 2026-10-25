@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-khoang-cach.mjs — máy kiểm chương `khoang-cach` (Cảm biến khoảng cách) của "Đường học".
+   kiem-khoang-cach.mjs — máy kiểm chương `khoang-cach` (Cảm biến khoảng cách) của "Học lập trình".
    Gồm: front_clear / left_clear / right_clear ở mọi loại ô và mọi hướng (xe bánh, xích, omni; thùng nặng; mép sân), đọc cảm biến
    không tốn nhịp và ghi sự kiện doc-cam-bien, robot không có cảm biến (chua-gan-cam-bien), nhện không gắn cảm biến, chống vòng
    lặp vô hạn (vong-vo-han: while không nhịp, while quá nhịp, quá 1000 lần đọc liên tiếp), chấm NHIỀU SÂN (thắng khi thắng tất cả;

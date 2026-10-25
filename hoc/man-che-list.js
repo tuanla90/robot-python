@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-list.js — "Đường học": CHƯƠNG `che-list` · CHẾ LỆNH DANH SÁCH (10 màn). Kế hoạch KE-HOACH-LIST-FLYCAM.md (mục 3) + KE-HOACH-CHE-LENH.md (khuôn chương chế lệnh), làm 17/10.
+   man-che-list.js — "Học lập trình": CHƯƠNG `che-list` · CHẾ LỆNH DANH SÁCH (10 màn). Kế hoạch KE-HOACH-LIST-FLYCAM.md (mục 3) + KE-HOACH-CHE-LENH.md (khuôn chương chế lệnh), làm 17/10.
    Chương thứ 16 (ngay sau Danh sách, man-list.js; trước Bánh xích). Robot là XE HAI BÁNH, 4–10 gắn thêm CẢM BIẾN KHOẢNG CÁCH ở hông (front_clear()):
    robot { than: 'hai-banh', tay: null, camBien: [] | [{ ma: 'khoang-cach', o: 'hong' }] }. Xưởng hàm mở, được dùng hàm của em. Hàm của em có sẵn: forward(n), right(k), turn_right, turn_left, u_turn, move…
    Luật thiết kế (như che-xe): lệnh gốc chỉ đổi MỘT trạng thái; DANH SÁCH là thứ người chơi dùng để mang nhiều con số: hàm nhận danh sách (route(steps)) và hàm GHI vào danh sách (seen.append(n)).

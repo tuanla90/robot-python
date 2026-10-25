@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-list.mjs — máy kiểm GÓI LIST: DANH SÁCH (list) của "Đường học" (KE-HOACH-LIST-FLYCAM.md, mục 1 và 2). Chưa có màn nào của gói List:
+   kiem-list.mjs — máy kiểm GÓI LIST: DANH SÁCH (list) của "Học lập trình" (KE-HOACH-LIST-FLYCAM.md, mục 1 và 2). Chưa có màn nào của gói List:
    mọi màn thử dựng TẠM trong bộ nhớ của máy kiểm (một màn thật được nhân bản rồi thêm 'list' vào cauTruc), không thêm màn vào game.
    Gồm:
    1. LÕI list của nhân Python (nhan/san-robot-core.js): literal số / chuỗi / rỗng, gán, len, a[i], a.append(x), x in a / x not in a, for x in a / [..],

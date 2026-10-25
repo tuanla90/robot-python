@@ -1,5 +1,5 @@
 /* ============================================================================
-   the-part.js — "Đường học": HỘP GIỚI THIỆU BỘ PHẬN (window.ThePart). Dữ liệu ở hoc/gioi-thieu-part.js (window.GioiThieuPart).
+   the-part.js — "Học lập trình": HỘP GIỚI THIỆU BỘ PHẬN (window.ThePart). Dữ liệu ở hoc/gioi-thieu-part.js (window.GioiThieuPart).
 
    ThePart.choMan(m, khiXong)   vào màn m: bộ phận nào của robot người chơi chưa gặp thì hiện thẻ đầy đủ; đã gặp mà màn mở thêm lệnh của nó thì hiện thẻ
                                 "lệnh mới" (chỉ phần mới). Nhiều thẻ thì lần lượt (Tiếp 1/2…). Không có thẻ nào thì gọi khiXong ngay. Đóng thẻ cuối → khiXong.

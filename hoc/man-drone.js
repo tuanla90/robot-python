@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-drone.js — "Đường học": CHƯƠNG `drone` · DRONE (10 màn).
+   man-drone.js — "Học lập trình": CHƯƠNG `drone` · DRONE (10 màn).
    Robot là DRONE (loaiRobot 'drone'): robot { than: 'drone', tay: null | 'nam-cham', camBien: [] | [{ ma: 'pin', o: 'than' }] }.
    LUẬT ĐÃ CHỐT (đầy đủ ở san-hoc.js, phần DRONE):
    - Bốn lệnh bay CÙNG TÊN với nhện: go_up / go_down / go_left / go_right (theo màn hình), wait() lơ lửng. Mỗi lệnh bay đúng 1 ô và tự tốn đúng 1 NHỊP

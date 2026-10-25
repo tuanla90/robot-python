@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-dau.js — "Đường học": MÀN KHỞI ĐẦU (window.Dau), kiểu màn tiêu đề của Cut the Rope.
+   man-dau.js — "Học lập trình": MÀN KHỞI ĐẦU (window.Dau), kiểu màn tiêu đề của Cut the Rope.
    Logo · robot hoàn thiện chạy qua lại trên tấm bảng · tổng sao · nút CHƠI (→ chọn gói) · "Chơi tiếp · 4.3" (vào thẳng màn kế) · Sổ lệnh · bánh răng Cài đặt (cai-dat.js).
    Giữ logo 2 giây = mở bảng Gỡ lỗi (go-loi.js); dùng được cả trên link Artifact (không thêm ?debug=1 vào địa chỉ được).
    ========================================================================== */

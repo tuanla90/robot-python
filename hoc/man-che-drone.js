@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-drone.js — "Đường học": CHƯƠNG `che-drone` · CHẾ LỆNH DRONE (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.6), làm 15/10.
+   man-che-drone.js — "Học lập trình": CHƯƠNG `che-drone` · CHẾ LỆNH DRONE (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.6), làm 15/10.
    Chương thứ 30 (cuối, ngay sau Drone, man-drone.js). Robot là DRONE: robot { than: 'drone', tay: null | 'nam-cham', camBien: [] | [{ ma: 'pin', o: 'than' }] }. Xưởng hàm mở, được dùng hàm của em.
    Luật thiết kế (như che-xe): lệnh gốc chỉ đổi MỘT trạng thái (bay một ô, bật / ngắt nam châm); động tác hay (vòng qua cột, bậc thang bay, chở hộp qua rào rồi về) là thứ NGƯỜI CHƠI TỰ CHẾ.
    Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (kiem-che-drone.mjs chạy từng cách).

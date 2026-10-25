@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-mau.mjs — máy kiểm chương `che-mau` (Chế lệnh màu, 10 màn) của "Đường học" (KE-HOACH-CHE-LENH.md, mục 5c.4).
+   kiem-che-mau.mjs — máy kiểm chương `che-mau` (Chế lệnh màu, 10 màn) của "Học lập trình" (KE-HOACH-CHE-LENH.md, mục 5c.4).
    Gồm:
    - 10 màn: lời giải 3 sao trên MỌI sân (kho cổ điển lẫn kho thật), sao.nhip = tổng ba sân, BFS (do-duong-che-mau.mjs) = sao.nhip (hay ≤ khi nhipTheoLoiGiai), mọi congThucKhac thắng,
      loiGiaiKhac đúng 2 sao, loiSai đúng mã, chinhCoDinh, gioiHanHam, khoaHamMan, không hàm có tham số, không trùng tên hàm cốt truyện / hàm của màn;

@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-tham-so.mjs — máy kiểm chương `tham-so` (Hàm có tham số) của "Đường học".
+   kiem-tham-so.mjs — máy kiểm chương `tham-so` (Hàm có tham số) của "Học lập trình".
    Gồm: hàm có tham số ở nhân Python (gọi đúng / thiếu / thừa đối số, đối số là biểu thức, biến của hàm không rò
    ra ngoài), đổi tham số thì xe đi đúng số ô (sân thử của Xưởng hàm: forward, right, deliver, step), kho hàm giữ
    tham số, dữ liệu 10 màn, hamCuaEmCan đủ và không thừa, từng màn "đúng số thì thắng, sai số thì trượt",

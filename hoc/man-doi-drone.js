@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-drone.js — "Đường học": GÓI ĐỘI DRONE VÀ MÁY NÉM (20 màn = hai chương doi-drone + che-doi-drone). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
+   man-doi-drone.js — "Học lập trình": GÓI ĐỘI DRONE VÀ MÁY NÉM (20 màn = hai chương doi-drone + che-doi-drone). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
    Gói đứng ngay sau gói Flycam (chương flycam), trước Lắp ráp: Đủ bộ. Kỹ năng phối hợp mới: K9 PHÂN VAI TRÊN KHÔNG / MẶT ĐẤT, QUẢN LÝ PIN CẢ ĐỘI.
    Hai robot khác tầng (luật nhiều robot trong san-hoc.js: drone và xe dưới đất không chặn nhau):
      R1 XE HAI BÁNH gắn MÁY NÉM (aim / load / throw) và cảm biến khoảng cách ở hông: nạp hộp trước mũi, ném bay qua tường cao và hàng rào,

@@ -1,5 +1,5 @@
 /* ============================================================================
-   huy-hieu.js — "Đường học": HUY HIỆU CỦA TỪNG CHƯƠNG (window.HuyHieu).
+   huy-hieu.js — "Học lập trình": HUY HIỆU CỦA TỪNG CHƯƠNG (window.HuyHieu).
    Một huy hiệu tròn 36×36 pixel: vành kim loại + đĩa nền sáng + hình part / cơ chế của chương (vẽ bằng code, dùng Part và Ve sẵn có).
      HuyHieu.ve(ma, tt) → canvas 36×36.   ma = mã huy hiệu (man.huyHieu.ma = mã chương), tt = 'khoa' | 'mo' | 'xong'
      khoa = xám + ổ khóa · mo = đủ màu, vành thép · xong = vành vàng + sao.

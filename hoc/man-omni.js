@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-omni.js — "Đường học": CHƯƠNG `omni` · BÁNH OMNI (10 màn).
+   man-omni.js — "Học lập trình": CHƯƠNG `omni` · BÁNH OMNI (10 màn).
    Robot là XE BÁNH OMNI (loaiRobot 'omni'; mỗi màn khai robot: { than: 'omni', tay: 'kep' | null } để giao diện
    vẽ đúng part). Có MỌI lệnh bánh của xe hai bánh (left_move / right_move / left_back / right_back / wait) với đúng luật
    cũ, nên move(), turn_right(), turn_left() của em vẫn chạy ĐÚNG. Thêm HAI lệnh gốc mới:

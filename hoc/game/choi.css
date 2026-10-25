@@ -1,5 +1,5 @@
 /* ============================================================================
-   choi.css — "Đường học": giao diện v3 (bàn xưởng gỗ, khối có núm, bảng xanh).
+   choi.css — "Học lập trình": giao diện v3 (bàn xưởng gỗ, khối có núm, bảng xanh).
    Chữ: Handjet (giao diện) + VT323 (code); không có mạng thì rơi về system-ui / monospace (body.fb: hệ số cỡ = 1).
    Một màn 360×640 co giãn đều bằng transform, KHÔNG có thanh cuộn ở bất kỳ đâu.
    ========================================================================== */
@@ -1109,8 +1109,11 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .g-ch.tt{border-radius:0;transform:rotate(45deg) scale(.85)}                    /* chấm của gói thử thách: hình thoi */
 .pal-the .the-chu.co-part canvas{width:auto !important;height:auto !important;max-height:26px}                         /* hình bộ phận thật ở tiêu đề thẻ (thanh-phan.js hinhPart), giữ pixel gốc */
 /* hàng chọn mùa ở màn chọn gói (man-goi.js veMua, chỉ khi có từ hai mùa) */
-.g-mua{flex:none;display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
-.g-mua-nut{height:30px;display:flex;align-items:center;gap:5px;padding:2px 12px 0;font:700 calc(14px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.g-mua{flex:none;display:flex;justify-content:center;gap:4px;margin-top:10px;flex-wrap:wrap}
+.g-mua-nut{height:30px;display:flex;align-items:center;gap:4px;padding:2px 7px 0;font:700 calc(13px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}
 .g-mua-nut.on{color:var(--ink);text-shadow:none}
 .g-mua-nut.khoa{filter:saturate(.3) brightness(.85)}
+.g-mua-nut.khoa.on{filter:none}
 .g-mua-nut.nope{animation:shake .25s steps(2) 2}
+.g-ban{flex:none;display:flex;justify-content:center;margin-top:6px}
+.g-ban-nut{height:36px;display:flex;align-items:center;padding:2px 16px 0;font:700 calc(16px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}

@@ -1,5 +1,5 @@
 /* ============================================================================
-   thanh-phan.js — "Đường học": THÀNH PHẦN GIAO DIỆN DÙNG CHUNG (window.TP).
+   thanh-phan.js — "Học lập trình": THÀNH PHẦN GIAO DIỆN DÙNG CHUNG (window.TP).
    h() dựng DOM · Editor (khung 10 ô) · Palette (khay khối lệnh theo thẻ bộ phận: Thân / Tay / Cảm biến) · Hop (hộp thoại).
    Mọi chữ lấy qua t('khoa') trong chu.js.
    ========================================================================== */

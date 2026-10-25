@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-xich.js — "Đường học": CHƯƠNG `che-xich` · CHẾ LỆNH XÍCH (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.1), làm 15/10.
+   man-che-xich.js — "Học lập trình": CHƯƠNG `che-xich` · CHẾ LỆNH XÍCH (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.1), làm 15/10.
    Chương thứ 16 (ngay sau Bánh xích, man-xich.js). Robot là XE BÁNH XÍCH: robot { than: 'xich', tay: null } (tay kẹp ở che-xich.6 và 10). Xưởng hàm mở, được dùng hàm của em.
    Luật thiết kế như che-xe: lệnh gốc chỉ đổi MỘT trạng thái (một bên xích quay tới / lùi); động tác hay (quay đầu, né sang bên, leo bậc, xuống bậc, nhặt vật sau lưng)
    là thứ NGƯỜI CHƠI TỰ CHẾ. Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (kiem-che-xich.mjs chạy từng cách).
