@@ -1,5 +1,5 @@
 /* ============================================================================
-   huong-dan.js — "Học lập trình": KHUNG HƯỚNG DẪN dùng lại (window.HuongDan).
+   huong-dan.js — "Robot Chấn Hưng": KHUNG HƯỚNG DẪN dùng lại (window.HuongDan).
 
    Một CHUỖI hướng dẫn gồm các BƯỚC. Mỗi bước LÀM SÁNG nút / khối / dòng người chơi phải chạm (viền vàng nhấp nháy quanh đích)
    và hiện một bong bóng ngắn có mũi tên chỉ vào đích. Bước xong thì chuyển sang bước kế; hết chuỗi thì lưu cờ "đã xem" (Luu) để không hiện lại.

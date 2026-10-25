@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-tay.js — "Học lập trình": CHƯƠNG `che-tay` · CHẾ LỆNH TAY (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.1).
+   man-che-tay.js — "Robot Chấn Hưng": CHƯƠNG `che-tay` · CHẾ LỆNH TAY (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.1).
    Chương thứ 5 (sau Tay gắp). Robot là XE HAI BÁNH GẮN TAY KẸP: robot { than: 'hai-banh', tay: 'kep', camBien: [] }.
    Luật thiết kế như che-xe: lệnh gốc chỉ đổi MỘT trạng thái (tay lên / xuống, kẹp đóng / mở); động tác hay (chuyền vật ra sau, đặt sang phải, nhặt sau lưng…)
    là thứ NGƯỜI CHƠI TỰ CHẾ. Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (kiem-che-tay.mjs chạy từng cách).

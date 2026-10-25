@@ -1,5 +1,5 @@
 /* ============================================================================
-   thanh-phan.js — "Học lập trình": THÀNH PHẦN GIAO DIỆN DÙNG CHUNG (window.TP).
+   thanh-phan.js — "Robot Chấn Hưng": THÀNH PHẦN GIAO DIỆN DÙNG CHUNG (window.TP).
    h() dựng DOM · Editor (khung 10 ô) · Palette (khay khối lệnh theo thẻ bộ phận: Thân / Tay / Cảm biến) · Hop (hộp thoại).
    Mọi chữ lấy qua t('khoa') trong chu.js.
    ========================================================================== */
@@ -679,7 +679,7 @@
       var n = lay().length, ok = choXoa();
       if (hienX >= n) hienX = -1;
       for (var i = 0; i < tong; i++) {
-        var xc = ok && i < dung && i < n && i === hienX && i === sel;                          // cảm ứng: dòng vừa chạm (đang chọn) hiện ✕ đỏ rộng hơn để bấm trúng
+        var xc = ok && i < dung && i < n && i === hienX && i === sel;                          // cảm ứng: dòng vừa chạm (đang chọn) hiện ✕ đỏ (cùng bề rộng ô số, dòng code không bị đẩy)
         rows[i].classList.toggle('xx', ok && i < dung && i < n && (i === hov || xc));
         rows[i].classList.toggle('xc', xc);
       }

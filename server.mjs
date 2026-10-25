@@ -1,5 +1,5 @@
 // Máy chủ tĩnh cho Railway và chạy thử trên máy: không cần build, không cần gói ngoài.
-//   /          → Học lập trình (hoc/game/choi.html)
+//   /          → Robot Chấn Hưng (hoc/game/choi.html)
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';

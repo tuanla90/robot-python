@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-list.mjs — máy kiểm chương `che-list` (Chế lệnh danh sách, 10 màn) của "Học lập trình" (KE-HOACH-LIST-FLYCAM.md mục 3 + KE-HOACH-CHE-LENH.md, khuôn chương chế lệnh).
+   kiem-che-list.mjs — máy kiểm chương `che-list` (Chế lệnh danh sách, 10 màn) của "Robot Chấn Hưng" (KE-HOACH-LIST-FLYCAM.md mục 3 + KE-HOACH-CHE-LENH.md, khuôn chương chế lệnh).
    Lõi list + khay: kiem-list.mjs. Chương làm quen: kiem-list-man.mjs. Các kiểm chung cho cả game (đi tuần tự, sao, lời sai, đường tắt…): kiem-hoc.mjs.
    Gồm:
    - dữ liệu chung: 10 màn che-list.1…10, id theo vị trí (ngay sau list), tên, hàng, huy hiệu chỉ ở trùm; xe hai bánh, 4–10 (trừ 7) có cảm biến khoảng cách ở hông; mục tiêu bóng mờ; chinhCoDinh trừ 3, 6, 10;

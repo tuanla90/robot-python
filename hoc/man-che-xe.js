@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-xe.js — "Học lập trình": CHƯƠNG `che-xe` · CHẾ LỆNH XE (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 4).
+   man-che-xe.js — "Robot Chấn Hưng": CHƯƠNG `che-xe` · CHẾ LỆNH XE (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 4).
    Chương thứ 3 (sau Xưởng hàm). Robot là XE HAI BÁNH, chưa có part nào khác: robot { than: 'hai-banh', tay: null, camBien: [] }.
    Luật thiết kế: lệnh gốc chỉ đổi MỘT trạng thái (một bánh quay tới hay lùi); động tác hay (né, đỗ lùi, đường về…) là thứ NGƯỜI CHƠI TỰ CHẾ.
    Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (máy kiểm kiem-che-xe.mjs chạy từng cách).

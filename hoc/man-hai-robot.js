@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-hai-robot.js — "Học lập trình": CHƯƠNG `hai-robot` · ĐỘI HAI ROBOT (10 màn). Kế hoạch KE-HOACH-HAI-ROBOT.md (22/10).
+   man-hai-robot.js — "Robot Chấn Hưng": CHƯƠNG `hai-robot` · ĐỘI HAI ROBOT (10 màn). Kế hoạch KE-HOACH-HAI-ROBOT.md (22/10).
    Đứng ngay sau gói Robot hoàn thiện: người chơi đã có if / while, cảm biến khoảng cách, tay kẹp và kho hàm (move, pick, drop, u_turn, go_wall…).
    Mỗi màn có HAI robot giống nhau (xe hai bánh + tay kẹp + cảm biến khoảng cách ở hông), mỗi robot MỘT chương trình (khung R1 / R2), chạy theo NHỊP CHUNG.
    Hai robot không có lệnh báo nhau (user chốt 22/10): muốn chờ đồng đội thì dùng cảm biến — đồng đội và vật đều làm front_clear() trả False.

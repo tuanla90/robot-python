@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-tay.mjs — máy kiểm chương `che-tay` (Chế lệnh tay) của "Học lập trình" và các luật lõi mới của nó (KE-HOACH-CHE-LENH.md, mục 5.1).
+   kiem-che-tay.mjs — máy kiểm chương `che-tay` (Chế lệnh tay) của "Robot Chấn Hưng" và các luật lõi mới của nó (KE-HOACH-CHE-LENH.md, mục 5.1).
    Gồm:
    - daoChieu 'tay' / 'kep' (tay lắp ngược): arm_up ↔ arm_down, grab ↔ release đổi chỗ; cấu hình sai bị từ chối;
    - bongMo.vat có màu (chấm theo màu) và bongMo.cam (xe mờ cầm vật): thắng / không thắng, cấu hình sai;

@@ -1,7 +1,7 @@
 {
-  "name": "Đội Robot Chấn Hưng: Học lập trình",
-  "short_name": "Học lập trình",
-  "description": "Lắp robot, viết Python điều khiển robot qua từng màn.",
+  "name": "Robot Chấn Hưng",
+  "short_name": "Robot Chấn Hưng",
+  "description": "Viết Python điều khiển robot: lắp robot, vượt từng màn.",
   "lang": "vi",
   "start_url": "choi.html",
   "scope": "./",

@@ -1,5 +1,5 @@
 /* ============================================================================
-   den-bo-phan.js — "Học lập trình": ĐÈN THEO BỘ PHẬN cạnh đồng hồ NHỊP của màn chơi (window.DenBoPhan).
+   den-bo-phan.js — "Robot Chấn Hưng": ĐÈN THEO BỘ PHẬN cạnh đồng hồ NHỊP của màn chơi (window.DenBoPhan).
    Thay hai đèn chữ T / P cũ: mỗi bộ phận robot có trên màn là một biểu tượng pixel nhỏ, sáng lên trong nhịp bộ phận đó chạy.
      bánh trái · bánh phải (xe hai bánh, xích, omni: xích / omni như bánh) · trượt (omni) · tay (lên / xuống) · kẹp (mở / đóng) · nam châm · máy ném · súng hơi · cảm biến (nháy khi đọc)
      nhện: chân · drone: cánh quạt

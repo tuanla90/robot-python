@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-xich.mjs — máy kiểm chương `xich` (Bánh xích) của "Học lập trình".
+   kiem-xich.mjs — máy kiểm chương `xich` (Bánh xích) của "Robot Chấn Hưng".
    Gồm: luật xích (cùng bộ lệnh với xe bánh; tiến / lùi 1 ô; QUAY CHẬM: cần 2 nhịp liên tiếp cùng tổ hợp mới đủ 90°,
    quay dở bị mất khi nhịp kế khác tổ hợp; leo bậc thang; băng chuyền không đẩy được), hàm quay của xe bánh quay sai trên
    xích, bộ dò đường tắt cho xích (do-duong-xich.mjs) và so chéo với san-hoc.js bằng chương trình ngẫu nhiên, dữ liệu 10 màn,

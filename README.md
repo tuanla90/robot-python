@@ -15,7 +15,7 @@ Mở `http://localhost:4180`:
 
 | Đường dẫn | Trang |
 |---|---|
-| `/` | **Học lập trình**: lắp robot từ part, viết Python điều khiển, các gói chương (`hoc/game/choi.html`) |
+| `/` | **Robot Chấn Hưng**: lắp robot từ part, viết Python điều khiển, các gói chương (`hoc/game/choi.html`) |
 
 Đổi cổng bằng biến `PORT`. Trên Railway, `railway.json` chạy `npm start`.
 
@@ -24,13 +24,13 @@ Mở `http://localhost:4180`:
 | Thư mục | Việc |
 |---|---|
 | `nhan/` | **nhân chạy Python** (`san-robot-core.js`, `window.RobotCore`) |
-| `hoc/` | **Học lập trình**: lõi sân (`san-hoc.js`), máy chấm (`cham.js`), khung code, kho hàm, sổ lệnh, lắp ráp, tệp màn `man-*.js`, công cụ đo đường `do-duong-*.mjs` |
-| `hoc/game/` | giao diện Học lập trình: màn chọn gói, màn chơi, Xưởng hàm, vẽ robot pixel, lưu tiến độ, âm thanh (`am-thanh.js`), cài đặt (`cai-dat.js`), phim mở đầu (`mo-dau.js`) và mẹo chơi (`gioi-thieu.js`) |
+| `hoc/` | **Robot Chấn Hưng**: lõi sân (`san-hoc.js`), máy chấm (`cham.js`), khung code, kho hàm, sổ lệnh, lắp ráp, tệp màn `man-*.js`, công cụ đo đường `do-duong-*.mjs` |
+| `hoc/game/` | giao diện Robot Chấn Hưng: màn chọn gói, màn chơi, Xưởng hàm, vẽ robot pixel, lưu tiến độ, âm thanh (`am-thanh.js`), cài đặt (`cai-dat.js`), phim mở đầu (`mo-dau.js`) và mẹo chơi (`gioi-thieu.js`) |
 | `hoc/game/part/` | danh mục part (thân, tay, cảm biến) và cách vẽ từng part |
 | `docs/thiet-ke/` | GDD v0.1 · v0.2, luật trận v0.1 → v0.4, tư liệu Robocon |
 | `tools/` | `kiem-tat-ca.mjs` chạy mọi máy kiểm |
 
-Kế hoạch và lộ trình của Học lập trình nằm trong `hoc/`: `LO-TRINH.md`, `KE-HOACH-CHE-LENH.md`,
+Kế hoạch và lộ trình của Robot Chấn Hưng nằm trong `hoc/`: `LO-TRINH.md`, `KE-HOACH-CHE-LENH.md`,
 `KE-HOACH-LIST-FLYCAM.md`, `KE-HOACH-LAP-RAP.md`, `Y-TUONG-TIEP-THEO.md`.
 Đổi thứ tự chương: sửa `hoc/thu-tu-chuong.js`.
 

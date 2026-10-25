@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-chuoi-2.js — "Học lập trình": CHUỖI 2 · XƯỞNG HÀM (10 màn).
+   man-chuoi-2.js — "Robot Chấn Hưng": CHUỖI 2 · XƯỞNG HÀM (10 màn).
    Chương trình 10 ô; mỗi hàm một khung riêng 10 ô (dòng def không tốn ô).
    Hàm gốc như chuỗi 1. Xưởng hàm mở (moXuong true); không giới hạn số hàm theo màn.
 

@@ -1,5 +1,5 @@
 /* ============================================================================
-   huong-dan-man.js — "Học lập trình": HƯỚNG DẪN TỪNG BƯỚC CHO TỪNG MÀN (window.HuongDanMan).
+   huong-dan-man.js — "Robot Chấn Hưng": HƯỚNG DẪN TỪNG BƯỚC CHO TỪNG MÀN (window.HuongDanMan).
 
    Dữ liệu cho khung huong-dan.js (đọc phần CÁCH DÙNG ở đầu tệp đó): mỗi màn làm quen có THAO TÁC MỚI được khai các bước
    "làm sáng nút / khối / dòng người chơi phải chạm" + một bong bóng ngắn nói chạm vào đâu và vì sao.

@@ -1,5 +1,5 @@
 /* ============================================================================
-   luu.js — "Học lập trình": LƯU (window.Luu). Mọi thứ bọc try/catch; hỏng thì chạy không lưu.
+   luu.js — "Robot Chấn Hưng": LƯU (window.Luu). Mọi thứ bọc try/catch; hỏng thì chạy không lưu.
      kho hàm  : KhoHam.ghiLuu(Luu.kho)   (khóa của lõi)
      tiến độ  : duong-hoc:tien-do = { phienBan: 1, sao: { 'hai-banh.1': 3, … } }   (khóa = m.ma, cố định khi đổi thứ tự chương)
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }

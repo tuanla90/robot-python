@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-may-nem.mjs — máy kiểm chương `may-nem` (Máy ném) của "Học lập trình".
+   kiem-may-nem.mjs — máy kiểm chương `may-nem` (Máy ném) của "Robot Chấn Hưng".
    Gồm: ném 1–3 ô theo bốn hướng, bay qua hàng rào / tường cao / băng / vật / thùng, rơi vào tường cao, hàng rào, bậc thang, mép sân,
    ô đã có vật thì vỡ (nem-vo, dừng sớm), ô băng / ô đích thì nằm yên, đích có màu, aim(n) (không tốn nhịp, giữ nguyên tầm, tầm sai là lỗi
    tam-sai, throw nhớ tầm lúc gọi), nạp (load, vật ở Ô TRƯỚC MẶT; vật nằm đất chiếm ô), rổ đầy / rổ trống / một lệnh tay mỗi nhịp / xe đứng yên trong nhịp nạp-ném / quên wait, color() theo phần cứng (cảm biến bụng đọc sàn kể cả khi vật trong rổ; camera đọc ô trước mặt),

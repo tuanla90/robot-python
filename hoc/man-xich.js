@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-xich.js — "Học lập trình": CHƯƠNG `xich` · BÁNH XÍCH (10 màn).
+   man-xich.js — "Robot Chấn Hưng": CHƯƠNG `xich` · BÁNH XÍCH (10 màn).
    Robot là XE BÁNH XÍCH (loaiRobot 'xich'; mỗi màn khai robot: { than: 'xich', tay: 'kep' | null } để giao diện
    vẽ đúng part). CÙNG bộ lệnh với xe hai bánh: left_move / right_move / left_back / right_back / wait (và 4 lệnh
    tay kẹp ở 7, 10). Xưởng hàm mở (moXuong true), được dùng hàm của em. Chương trình 10 ô; mỗi hàm một khung

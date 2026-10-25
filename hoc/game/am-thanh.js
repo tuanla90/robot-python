@@ -1,5 +1,5 @@
 /* ============================================================================
-   am-thanh.js — "Học lập trình": ÂM THANH (window.AmThanh). Không có tệp âm thanh: mọi tiếng kêu và nhạc nền
+   am-thanh.js — "Robot Chấn Hưng": ÂM THANH (window.AmThanh). Không có tệp âm thanh: mọi tiếng kêu và nhạc nền
    tổng hợp bằng WebAudio (sóng vuông / tam giác / nhiễu, kiểu máy chơi game 8-bit).
      AmThanh.phat('thang')      phát một hiệu ứng (bảng HIEU_UNG ở dưới)
      AmThanh.lenh('grab')       tiếng của một lệnh robot vừa chạy (bảng LENH); lệnh bánh không kêu, nhịp kêu 'buoc'

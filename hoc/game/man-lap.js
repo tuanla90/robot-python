@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-lap.js — "Học lập trình": MÀN LẮP ROBOT (window.LapRobot), chế độ lắp ráp (KE-HOACH-LAP-RAP.md, lõi ở ../lap-rap.js).
+   man-lap.js — "Robot Chấn Hưng": MÀN LẮP ROBOT (window.LapRobot), chế độ lắp ráp (KE-HOACH-LAP-RAP.md, lõi ở ../lap-rap.js).
    Hiện TRƯỚC khi chơi một màn có man.lapRap: người chơi chọn part cho ba khe (THÂN · TAY · NÃO = cảm biến) dưới ngân sách xu rồi bấm "Lắp xong".
      · mỗi khe là một hàng thẻ lướt ngang: icon bộ phận + tên + giá (xu) + một dòng "vượt được gì"; khe màn không có thì ẩn; khe tay / não có thẻ "Không gắn" (trừ khe bắt buộc);
      · thẻ ghép không hợp lệ với các khe đang chọn thì MỜ; chạm vào thì thẻ rung, bảng báo lý do (lõi: LapRap.kiemGhep) và cách gỡ ("Bỏ tay kẹp trước nhé");

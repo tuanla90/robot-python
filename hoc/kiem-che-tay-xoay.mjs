@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-tay-xoay.mjs — máy kiểm chương `che-tay-xoay` (Chế lệnh tay xoay, chương 22) của "Học lập trình" (KE-HOACH-CHE-LENH.md, mục 5b.3). Luật lõi tay xoay và chương làm quen: kiem-tay-xoay.mjs.
+   kiem-che-tay-xoay.mjs — máy kiểm chương `che-tay-xoay` (Chế lệnh tay xoay, chương 22) của "Robot Chấn Hưng" (KE-HOACH-CHE-LENH.md, mục 5b.3). Luật lõi tay xoay và chương làm quen: kiem-tay-xoay.mjs.
    Gồm:
    - 10 màn che-tay-xoay: lời giải 3 sao (đúng sao.o, sao.nhip với kho cổ điển; kho THẬT không chậm hơn), mọi công thức khác (congThucKhac) thắng, lời giải khác đúng 2 sao, lời sai đúng mã,
      chinhCoDinh chặn chương trình chính gửi lên, nhịp: đường ngắn nhất BFS (do-duong-tay-xoay.mjs) không dài hơn sao.nhip (bằng khi không nhipTheoLoiGiai);

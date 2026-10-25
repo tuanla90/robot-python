@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-cam-bien.mjs — máy kiểm chương `che-cam-bien` (Chế lệnh có if, while + BIẾN ĐẾM) của "Học lập trình" (KE-HOACH-CHE-LENH.md, mục 5.3).
+   kiem-che-cam-bien.mjs — máy kiểm chương `che-cam-bien` (Chế lệnh có if, while + BIẾN ĐẾM) của "Robot Chấn Hưng" (KE-HOACH-CHE-LENH.md, mục 5.3).
    Gồm:
    - daoChieu 'cam' (cảm biến khoảng cách lắp ngược): front_clear() / left_clear() / right_clear() trả NGƯỢC, đọc vẫn không tốn nhịp, lỗi cấu hình, chẩn đoán cam-bien-nguoc;
      front_clear() coi vật nằm đất là chắn (luật vật chiếm ô);

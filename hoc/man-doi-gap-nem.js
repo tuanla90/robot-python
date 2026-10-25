@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-gap-nem.js — "Học lập trình": GÓI ĐỘI TAY GẮP VÀ MÁY NÉM (20 màn, sau gói Máy ném): chương `doi-gap-nem` (tay kẹp + máy ném, 10 màn dưới đây)
+   man-doi-gap-nem.js — "Robot Chấn Hưng": GÓI ĐỘI TAY GẮP VÀ MÁY NÉM (20 màn, sau gói Máy ném): chương `doi-gap-nem` (tay kẹp + máy ném, 10 màn dưới đây)
    và chương `che-doi-gap-nem` "Chế lệnh đội gắp ném" (TAY XOAY + máy ném, 10 màn, khối chương 2 ở cuối tệp; máy kiểm riêng kiem-doi-gap-nem.mjs).
    Hai xe hai bánh, cùng cảm biến khoảng cách ở hông: R1 gắn TAY KẸP (mang vật đi mọi ngả nhưng không qua được hàng rào '='),
    R2 gắn MÁY NÉM (ném vật bay qua rào nhưng chỉ theo đường thẳng, đúng 1–3 ô). Mỗi robot một chương trình, chạy theo nhịp chung;

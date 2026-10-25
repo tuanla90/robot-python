@@ -1,5 +1,5 @@
 /* ============================================================================
-   gioi-thieu-part.js — "Học lập trình": THẺ GIỚI THIỆU TỪNG BỘ PHẬN (window.GioiThieuPart). Chỉ dữ liệu + phép chọn, không đụng DOM (máy kiểm kiem-gioi-thieu-part.mjs).
+   gioi-thieu-part.js — "Robot Chấn Hưng": THẺ GIỚI THIỆU TỪNG BỘ PHẬN (window.GioiThieuPart). Chỉ dữ liệu + phép chọn, không đụng DOM (máy kiểm kiem-gioi-thieu-part.mjs).
 
    Mỗi bộ phận (thân, tay, cảm biến) có một thẻ: làm gì, các lệnh gốc nó mở ra, cách ghép lệnh trong một nhịp, giỏi gì, không làm được gì.
    Thẻ hiện ở đầu màn ĐẦU TIÊN mà robot có bộ phận đó (game/the-part.js); bộ phận được mở thêm lệnh ở chương sau (vd. bánh lùi ở Chế lệnh xe)

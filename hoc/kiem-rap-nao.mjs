@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-rap-nao.mjs — máy kiểm chương `rap-nao` (Lắp ráp: Thân + Não, 10 màn) của "Học lập trình" (KE-HOACH-LAP-RAP.md; lõi lap-rap.js; bộ dò do-duong-rap-nao.mjs). Gồm:
+   kiem-rap-nao.mjs — máy kiểm chương `rap-nao` (Lắp ráp: Thân + Não, 10 màn) của "Robot Chấn Hưng" (KE-HOACH-LAP-RAP.md; lõi lap-rap.js; bộ dò do-duong-rap-nao.mjs). Gồm:
    1. dữ liệu chương: 10 màn đúng hàng (3 làm quen · 3 luyện · 3 biến thể · 1 trùm có huy hiệu), thân chỉ hai bánh · xích · omni · nhện, não chỉ khoảng cách · màu · camera,
       không khe tay, không drone / cảm biến từ, sân chỉ dùng ký hiệu đã gặp tới gói Cảm biến màu, sân ≤ 7 × 9, màn có não là màn 3 sân (còn lại một sân);
    2. cân màn: mọi màn qua LapRap.kiemCanMan (≥ 2 cách mẫu đều thắng bằng lời giải chạy thật, cachLap[0] ba sao, không cách mẫu nào hơn hẳn cách khác), lời giải mẫu vừa khung, đúng sao.o / sao.nhip;

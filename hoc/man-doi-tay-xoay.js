@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-tay-xoay.js — "Học lập trình": GÓI ĐỘI TAY XOAY VÀ NAM CHÂM (20 màn, hai chương, ngay sau che-tay-xoay). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
+   man-doi-tay-xoay.js — "Robot Chấn Hưng": GÓI ĐỘI TAY XOAY VÀ NAM CHÂM (20 màn, hai chương, ngay sau che-tay-xoay). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
    Hai xe hai bánh, cùng cảm biến khoảng cách ở hông: R1 gắn NAM CHÂM CÓ CỰC (kéo vật sắt / vật nam châm từ xa, bắn vật nam châm ra xa; front_metal(), front_pole()),
    R2 gắn TAY XOAY (gắp, đặt ở ô trước mặt, bên trái hay bên phải mà không quay xe). Mỗi robot một chương trình, chạy theo nhịp chung.
    Kỹ năng phối hợp của gói (K8): DÂY CHUYỀN NHIỀU VẬT. Ô bàn giao chỉ chứa được một vật: còn vật thì robot đứng trước phải chờ; nhiều vật thì cả hai lặp.

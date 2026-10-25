@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-chon.js — "Học lập trình": LƯỚI MÀN CỦA MỘT GÓI (window.Chon), kiểu lưới màn trong hộp của Cut the Rope.
+   man-chon.js — "Robot Chấn Hưng": LƯỚI MÀN CỦA MỘT GÓI (window.Chon), kiểu lưới màn trong hộp của Cut the Rope.
    Thanh trên: ◀ (về chọn gói) · "GÓI n" · nút Sổ lệnh. Dải bìa: huy hiệu gói · tên gói · sao của gói · thanh tiến độ (mỗi màn một vạch).
    Mỗi chương của gói một khối: dòng "Chương 4 · Tay gắp   7/10" + lưới 5×2 ô màn (ô 10 = thử thách, vẽ bằng huy hiệu của chương).
    Ô: số màn + sao / ổ khóa / "CHƠI!" (màn nên chơi). Chạm ô khóa thì rung + báo lý do (luật ở game/mo-goi.js).

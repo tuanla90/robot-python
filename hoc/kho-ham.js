@@ -1,5 +1,5 @@
 /* ============================================================================
-   kho-ham.js — "Học lập trình": KHO HÀM CỦA EM, bền, dùng ở mọi màn (window.KhoHam).
+   kho-ham.js — "Robot Chấn Hưng": KHO HÀM CỦA EM, bền, dùng ở mọi màn (window.KhoHam).
 
    Hàm của em: học sinh tạo MỘT lần, được lưu, luôn có trên khay ở mọi màn sau.
    Sửa hàm thì mọi chỗ dùng nó đều đổi theo (máy chấm luôn chạy bản hiện tại trong kho).

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-vong-lap.js — "Học lập trình": CHƯƠNG `vong-lap` · VÒNG LẶP for (10 màn).
+   man-vong-lap.js — "Robot Chấn Hưng": CHƯƠNG `vong-lap` · VÒNG LẶP for (10 màn).
    Xe hai bánh, Xưởng hàm mở (moXuong true), được dùng hàm của em. Hàm gốc như chương tay-gap
    (bánh, wait, 4 lệnh tay); các màn ở đây chỉ dùng bánh.
    Chương trình 10 ô; mỗi hàm một khung riêng 10 ô (dòng def không tốn ô).

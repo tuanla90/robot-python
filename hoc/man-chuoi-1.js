@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-chuoi-1.js — "Học lập trình": CHUỖI 1 · HAI BÁNH (10 màn, chỉ có chương trình 10 ô,
+   man-chuoi-1.js — "Robot Chấn Hưng": CHUỖI 1 · HAI BÁNH (10 màn, chỉ có chương trình 10 ô,
    chưa mở Xưởng hàm: moXuong false). Hàm gốc: left_move, right_move, wait. Chưa có
    left_back / right_back. Kho hàm của em chưa có gì, và các màn cấm hàm của em
    (camHamCuaEm true) để ai chơi lại chuỗi này cũng không dùng hàm đã tạo ở chuỗi sau.

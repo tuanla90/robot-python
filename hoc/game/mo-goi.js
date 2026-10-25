@@ -1,5 +1,5 @@
 /* ============================================================================
-   mo-goi.js — "Học lập trình": GÓI MÀN và LUẬT MỞ KHÓA (window.MoGoi). Không đụng DOM: chạy được trong Node (máy kiểm kiem-goi.mjs).
+   mo-goi.js — "Robot Chấn Hưng": GÓI MÀN và LUẬT MỞ KHÓA (window.MoGoi). Không đụng DOM: chạy được trong Node (máy kiểm kiem-goi.mjs).
 
    Gói (ThuTuChuong.goi, kiểu hộp của Cut the Rope): mỗi gói là một bộ phận (chương làm quen + chương chế lệnh) hoặc một logic mới.
    MÙA (ThuTuChuong.mua, kiểu episode của Angry Birds, 22/10): mỗi gói thuộc một mùa (g.mua, mặc định mùa đầu). Mùa 1 là lộ trình chính;

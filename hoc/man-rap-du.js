@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-rap-du.js — "Học lập trình": CHƯƠNG `rap-du` · LẮP RÁP: ĐỦ BỘ (10 màn, chương CUỐI của game, chế độ lắp ráp: KE-HOACH-LAP-RAP.md).
+   man-rap-du.js — "Robot Chấn Hưng": CHƯƠNG `rap-du` · LẮP RÁP: ĐỦ BỘ (10 màn, chương CUỐI của game, chế độ lắp ráp: KE-HOACH-LAP-RAP.md).
    Mỗi màn người chơi tự chọn THÂN + TAY + NÃO (cảm biến) dưới một NGÂN SÁCH XU (lapRap.nganSach), rồi viết code giải màn. Không part nào trội: part đắt thì nhanh / gọn code hơn nhưng tốn xu
    (và pin), part rẻ thì đi vòng / chậm. Cảm biến không đổi vật lý, chỉ giúp chương trình quyết định — ở màn nhiều sân, mắt giúp một chương trình đúng cả ba sân.
    Part (LapRap.DANH_MUC): thân hai-banh 2 · xich 3 · omni 4 · nhen 4 · drone 5; tay kep 2 · xoay 3 · nam-cham 3 · nem 3 · hoi 3; não khoang-cach 1 · mau 2 · camera 2 · tu 2 · camera-bay 2 (chỉ drone).

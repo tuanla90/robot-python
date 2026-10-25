@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-goi.mjs — máy kiểm GÓI MÀN + LUẬT MỞ KHÓA + BA MÀN HÌNH MỚI của "Học lập trình" (bố cục kiểu Cut the Rope, 15/10).
+   kiem-goi.mjs — máy kiểm GÓI MÀN + LUẬT MỞ KHÓA + BA MÀN HÌNH MỚI của "Robot Chấn Hưng" (bố cục kiểu Cut the Rope, 15/10).
    Kiểm:
    - ThuTuChuong.goi: mỗi chương của thuTu nằm đúng một gói, thứ tự gói theo thứ tự chương; mã gói không trùng;
    - game/mo-goi.js: gói đầu cần 0 sao; sao cần = TI_LE_SAO × tổng sao tối đa các gói trước (bội 5), không giảm, luôn với tới được; gói rỗng = "Sắp có";

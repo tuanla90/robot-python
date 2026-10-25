@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-may-nem.js — "Học lập trình": CHƯƠNG `may-nem` · MÁY NÉM (10 màn).
+   man-may-nem.js — "Robot Chấn Hưng": CHƯƠNG `may-nem` · MÁY NÉM (10 màn).
    Robot là XE HAI BÁNH (loaiRobot 'banh'; màn 9 là XE OMNI) gắn MÁY NÉM ở mũi xe:
    robot { than: 'hai-banh' | 'omni', tay: 'nem', camBien: [] | [{ ma: 'khoang-cach', o: 'hong' }] (6) | [{ ma: 'camera', o: 'tren' }] (7: CAMERA nhìn ô trước mặt, không phải cảm biến màu ở bụng) }.
    hamGoc: bộ lệnh bánh + aim, throw (màn 1–2), thêm load (màn 3–10); màn 6 thêm front_clear, màn 7 thêm color (xe gắn camera nên color() đọc Ô TRƯỚC MẶT: màu vật nằm ở đó), màn 9 là bộ lệnh omni.

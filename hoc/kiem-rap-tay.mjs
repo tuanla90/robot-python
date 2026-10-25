@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-rap-tay.mjs — máy kiểm chương `rap-tay` (Lắp ráp: Thân + Tay, 10 màn) của "Học lập trình" (KE-HOACH-LAP-RAP.md; lõi lap-rap.js; bộ dò do-duong-rap-tay.mjs). Gồm:
+   kiem-rap-tay.mjs — máy kiểm chương `rap-tay` (Lắp ráp: Thân + Tay, 10 màn) của "Robot Chấn Hưng" (KE-HOACH-LAP-RAP.md; lõi lap-rap.js; bộ dò do-duong-rap-tay.mjs). Gồm:
    1. dữ liệu chương: 10 màn đúng hàng (3 làm quen · 3 luyện · 3 biến thể · 1 trùm có huy hiệu), thân ⊆ {hai bánh, xích, omni, nhện}, tay ⊆ {kẹp, xoay, nam châm, máy ném, súng hơi}, không drone,
       không khe não (cảm biến), sân chỉ dùng ký hiệu đã gặp tới gói Máy ném, sân ≤ 7 × 9, khung 10 ô như giao diện, lời giải mẫu dùng kho (lapRap.dungKho) và không tạo hàm của em nào;
    2. cân màn: mọi màn qua LapRap.kiemCanMan (≥ 2 cách mẫu đều THẮNG bằng lời giải chạy thật, cachLap[0] ba sao, không cách mẫu nào hơn hẳn cách khác ở cả giá, nhịp lẫn ô), lời giải mẫu vừa khung,

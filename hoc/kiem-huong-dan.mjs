@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-huong-dan.mjs — máy kiểm HƯỚNG DẪN TỪNG BƯỚC CHO TỪNG MÀN ("Học lập trình", game/huong-dan-man.js + khung game/huong-dan.js).
+   kiem-huong-dan.mjs — máy kiểm HƯỚNG DẪN TỪNG BƯỚC CHO TỪNG MÀN ("Robot Chấn Hưng", game/huong-dan-man.js + khung game/huong-dan.js).
    Kiểm:
    - mọi mã màn trong window.HuongDanMan là màn có thật; các màn làm quen có thao tác mới đều có hướng dẫn (danh sách PHAI_CO), kể cả màn nhiều sân đầu tiên;
    - mỗi bước đúng dạng: khóa hợp lệ, `dich` đúng cú pháp (nut: / khoi: / dong: / x: / so: / bộ chọn CSS, hay function trả về đích hợp lệ khi gọi trong môi trường rỗng),

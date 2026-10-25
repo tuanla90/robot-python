@@ -1,5 +1,5 @@
 /* ============================================================================
-   chu.js — "Học lập trình": BẢNG CHỮ giao diện (window.CHU) và hàm t('khoa', thamSo).
+   chu.js — "Robot Chấn Hưng": BẢNG CHỮ giao diện (window.CHU) và hàm t('khoa', thamSo).
    Mọi chữ của giao diện nằm ở đây; mã giao diện không viết cứng chữ tiếng Việt.
    Thêm ngôn ngữ: thêm CHU.en = { ... } rồi gọi CHU.dat('en'). Tham số: {ten} trong chuỗi.
    (Đề bài, gợi ý, tên màn, lời chẩn đoán đến từ lõi — xem ghi chú trong báo cáo.)
@@ -10,7 +10,7 @@
   var CHU = {
     vi: {
       /* ---- chung */
-      'chung.tenGame': 'Học lập trình',
+      'chung.tenGame': 'Robot Chấn Hưng',
       'chung.dong': 'Đóng',
       'chung.dongY': 'Đồng ý',
       'chung.huy': 'Hủy',
@@ -341,7 +341,7 @@
       'moKhoa.loiThu': 'Đủ {sao} ★ rồi! Thử thách mới đã mở:',      // gói loai 'thu-thach'
       'moKhoa.loiCa': 'Đủ {sao} ★ rồi! R1 có thêm:',               // mở cùng lúc nhiều loại
       // màn khởi đầu (man-dau.js)
-      'dau.phuDe': 'Lập trình robot bằng Python',
+      'dau.phuDe': 'Viết Python điều khiển robot',
       'dau.choi': 'CHƠI',
       'dau.tiep': 'Chơi tiếp · {id}',
       'dau.xongHet': 'Em đã qua hết các màn!',
@@ -428,7 +428,7 @@
       'caiDat.xoaCanh': 'Không lấy lại được.',
       'caiDat.xoaCo': 'Xóa hết',
       'caiDat.phienBan': 'Phiên bản {v}',
-      'caiDat.thongTinChu': 'Đội Robot Chấn Hưng: Học lập trình\nGame học lập trình Python bằng cách điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Handjet, VT323 (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
+      'caiDat.thongTinChu': 'Robot Chấn Hưng\nViết Python điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Handjet, VT323 (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
 
       /* ---- phim mở đầu (mo-dau.js) */
       'md.boQua': 'Bỏ qua',

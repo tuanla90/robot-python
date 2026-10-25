@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-may-nem.mjs — máy kiểm chương `che-may-nem` (Chế lệnh máy ném) của "Học lập trình" (KE-HOACH-CHE-LENH.md, mục 5c.5).
+   kiem-che-may-nem.mjs — máy kiểm chương `che-may-nem` (Chế lệnh máy ném) của "Robot Chấn Hưng" (KE-HOACH-CHE-LENH.md, mục 5c.5).
    Gồm:
    - luật lõi máy ném mà chương dựa vào: rổ CHỞ vật đi theo xe, load / throw mỗi lệnh một nhịp riêng và xe đứng yên, ném bay qua rào / tường và vỡ ở ô cấm, bóng mờ có vật mờ chấm theo màu,
      camera color() đọc ô trước mặt (nạp xong thì ô trống: "none");

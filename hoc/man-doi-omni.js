@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-omni.js — "Học lập trình": GÓI ĐỘI OMNI VÀ XÍCH (20 màn, gói ngay sau gói Bánh omni). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
+   man-doi-omni.js — "Robot Chấn Hưng": GÓI ĐỘI OMNI VÀ XÍCH (20 màn, gói ngay sau gói Bánh omni). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
    Hai robot khác bánh chung một sân hẹp; kỹ năng phối hợp của gói là K4: NHƯỜNG ĐƯỜNG, GIỮ KHOẢNG CÁCH, KHÔNG CHẶN NHAU.
      R1 là xe BÁNH XÍCH: leo bậc S, đứng vững trên băng chuyền (băng không đẩy), nhưng QUAY CHẬM (tr_right() / tr_left() mỗi cái 2 nhịp).
      R2 là xe BÁNH OMNI: trượt ngang không quay (slide_r(n) / slide_l(n)), quay 1 nhịp, nhưng không leo bậc và bị băng đẩy ngay nhịp đầu.

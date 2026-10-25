@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-ho-bang.js — "Học lập trình": GÓI ĐỘI VƯỢT HỐ VÀ BĂNG CHUYỀN (20 màn, sau gói Thân nhện): chương `doi-ho-bang` (phối hợp, 10 màn dưới đây)
+   man-doi-ho-bang.js — "Robot Chấn Hưng": GÓI ĐỘI VƯỢT HỐ VÀ BĂNG CHUYỀN (20 màn, sau gói Thân nhện): chương `doi-ho-bang` (phối hợp, 10 màn dưới đây)
    và chương `che-doi-ho-bang` "Chế lệnh đội vượt hố" (10 màn, khối chương 2 ở cuối tệp; máy kiểm riêng kiem-doi-ho-bang.mjs).
    Hai robot khác thân: R1 là xe hai bánh (tay kẹp, cảm biến khoảng cách ở hông) đi được băng chuyền nhưng rơi xuống hố;
    R2 là nhện (màn 3 trở đi có tay kẹp) bật qua hố, chui gầm thấp nhưng không có cảm biến. Mỗi robot một chương trình, chạy theo nhịp chung.

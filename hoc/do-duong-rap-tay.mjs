@@ -1,5 +1,5 @@
 /* ============================================================================
-   do-duong-rap-tay.mjs — BỘ DÒ ĐƯỜNG TẮT cho chương `rap-tay` (Lắp ráp: Thân + Tay) của "Học lập trình", dùng cho TỪNG cách lắp: thân hai bánh / xích / omni / nhện × tay kẹp / xoay /
+   do-duong-rap-tay.mjs — BỘ DÒ ĐƯỜNG TẮT cho chương `rap-tay` (Lắp ráp: Thân + Tay) của "Robot Chấn Hưng", dùng cho TỪNG cách lắp: thân hai bánh / xích / omni / nhện × tay kẹp / xoay /
    nam châm / máy ném / súng hơi / không gắn. Dùng trong máy kiểm (kiem-rap-tay.mjs, kiem-hoc.mjs); không nằm trong game.
 
    KHÁC các bộ dò khác (do-duong-che-*.mjs): các bộ dò kia viết lại luật sân bằng tay cho MỘT loại robot. Chương lắp ráp có tới ~20 loại robot nên bộ dò này KHÔNG viết lại luật: nó dùng

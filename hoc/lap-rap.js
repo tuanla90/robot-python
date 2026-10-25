@@ -1,5 +1,5 @@
 /* ============================================================================
-   lap-rap.js — "Học lập trình": LÕI CHẾ ĐỘ LẮP RÁP (window.LapRap). Kế hoạch: KE-HOACH-LAP-RAP.md (17/10).
+   lap-rap.js — "Robot Chấn Hưng": LÕI CHẾ ĐỘ LẮP RÁP (window.LapRap). Kế hoạch: KE-HOACH-LAP-RAP.md (17/10).
    Màn thường: robot CỐ ĐỊNH theo màn (man.loaiRobot / man.robot / man.hamGoc). Màn LẮP RÁP: người chơi tự chọn part (thân · tay · não = cảm biến) dưới một
    NGÂN SÁCH XU, rồi mới chơi. Tệp này không biết gì về giao diện: chỉ có danh mục part, luật ghép, giá, và hàm gắn robot đã chọn vào màn.
 

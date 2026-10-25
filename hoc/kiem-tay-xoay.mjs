@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-tay-xoay.mjs — máy kiểm bộ phận TAY XOAY của "Học lập trình" và chương `tay-xoay` (Tay xoay, chương 21; KE-HOACH-CHE-LENH.md, mục 5b.3). Chương chế lệnh: kiem-che-tay-xoay.mjs.
+   kiem-tay-xoay.mjs — máy kiểm bộ phận TAY XOAY của "Robot Chấn Hưng" và chương `tay-xoay` (Tay xoay, chương 21; KE-HOACH-CHE-LENH.md, mục 5b.3). Chương chế lệnh: kiem-che-tay-xoay.mjs.
    Gồm:
    - LÕI (san-hoc.js, phần TAY XOAY): arm_left() / arm_right() xoay khớp MỘT nấc giữa trái · trước · phải (lúc đầu "truoc"); grab / release làm ở Ô TAY CHỈ (trước mặt, bên trái, bên phải xe theo hướng xe);
      thứ tự trong nhịp: tay nâng → xoay → tay hạ → kẹp / thả → bánh; tay hạ thì khớp kẹt ('tay-xoay-ket'); hết nấc ('xoay-het-nac'); gọi lại trong một nhịp ('tay-goi-lai' nhom 'xoay');

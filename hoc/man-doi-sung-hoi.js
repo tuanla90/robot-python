@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-sung-hoi.js — "Học lập trình": GÓI ĐỘI SÚNG HƠI VÀ OMNI (20 màn, hai chương), đứng ngay sau gói Súng hơi (chương che-sung-hoi).
+   man-doi-sung-hoi.js — "Robot Chấn Hưng": GÓI ĐỘI SÚNG HƠI VÀ OMNI (20 màn, hai chương), đứng ngay sau gói Súng hơi (chương che-sung-hoi).
    Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8). Kỹ năng phối hợp mới: K5 MỞ ĐƯỜNG CHO ĐỒNG ĐỘI.
    R1 là xe hai bánh gắn SÚNG HƠI (shoot / shoot_back: bóng trúng nút N đổi cửa C / c và bật tắt băng chuyền; cú giật đẩy xe, ô giật vào có thùng nặng
    thì thùng trượt đi); một số màn R1 có thêm cảm biến khoảng cách. R2 là xe BÁNH OMNI (trượt ngang slide_left / slide_right, bị băng đẩy mạnh), luôn có

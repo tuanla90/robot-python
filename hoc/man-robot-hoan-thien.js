@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-robot-hoan-thien.js — "Học lập trình": CHƯƠNG `robot-hoan-thien` · ROBOT HOÀN THIỆN (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.4).
+   man-robot-hoan-thien.js — "Robot Chấn Hưng": CHƯƠNG `robot-hoan-thien` · ROBOT HOÀN THIỆN (10 màn). Kế hoạch "Chế lệnh" 14/10 (KE-HOACH-CHE-LENH.md, mục 5.4).
    Chương thứ 10, CUỐI đợt 1: thắng trùm của chương này thì mở khóa đợt 2 (ThuTuChuong.congDot2 = 'robot-hoan-thien', bảng "Mở khóa bộ phận mới!").
    Robot là XE HAI BÁNH gắn TAY KẸP và CẢM BIẾN KHOẢNG CÁCH ở hông: robot { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }.
    Chương này chủ yếu ÁP DỤNG: mỗi màn là một NHIỆM VỤ ghép cả ba bộ phận (đi, cầm nắm, cảm biến) bằng các hàm em đã chế ở chương 2 đến 9 (go_wall, pick, drop, back, pass_back,

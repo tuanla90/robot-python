@@ -1,5 +1,5 @@
 /* ============================================================================
-   cham.js — "Học lập trình": MÁY CHẤM (window.ChamHoc).
+   cham.js — "Robot Chấn Hưng": MÁY CHẤM (window.ChamHoc).
 
    cham(man, baiLam, hamCuaEm) → {
      thang, sao (0–3), soO, soNhip,

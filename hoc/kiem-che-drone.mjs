@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-che-drone.mjs — máy kiểm chương `che-drone` (Chế lệnh drone) của "Học lập trình" và các luật lõi nó dùng (KE-HOACH-CHE-LENH.md, mục 5c.6).
+   kiem-che-drone.mjs — máy kiểm chương `che-drone` (Chế lệnh drone) của "Robot Chấn Hưng" và các luật lõi nó dùng (KE-HOACH-CHE-LENH.md, mục 5c.6).
    Gồm:
    - bóng mờ với DRONE (không hướng mặt): thắng khi chạy xong, không thắng giữa đường, ◆, pin về 0 ở nhịp cuối (bóng mờ rơi, tới cờ vẫn thắng), ô sạc cứu đúng nhịp, vật mờ + nam châm treo, drone mờ đang dính vật;
      chẩn đoán nói "Drone dừng lệch…" / "Drone chưa đi qua điểm ◆";

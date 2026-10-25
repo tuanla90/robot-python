@@ -1,5 +1,5 @@
 /* ============================================================================
-   go-loi.js — "Học lập trình": BẢNG GỠ LỖI "chơi một màn bất kỳ" (window.GoLoi). Chỉ để người làm game thử màn.
+   go-loi.js — "Robot Chấn Hưng": BẢNG GỠ LỖI "chơi một màn bất kỳ" (window.GoLoi). Chỉ để người làm game thử màn.
    Mở bằng: giữ lâu logo màn khởi đầu / tiêu đề màn chọn gói / tiêu đề lưới màn 2 giây · nút 🐞 ở hàng "Hàm của em" (khi địa chỉ có ?debug=1 hoặc #debug) · mục "Gỡ lỗi" trong menu ☰ của màn chơi.
    Trong bảng: ‹ Chương N · tên › chọn chương (mọi chương, kể cả đợt 2) · lưới các màn của chương (số, tên, sao): chạm một màn là vào màn đó NGAY, bỏ qua khóa ·
    công tắc "Mở hết" (lưu ở localStorage, App.moHet đọc lại lúc khởi động) · "Nạp hàm chuẩn khi vào màn" (mặc định BẬT) · "Xóa tiến độ" (kèm "Xóa cả kho hàm" nếu bật) · "Bỏ mua" (xóa cờ các mùa đã mua thử).

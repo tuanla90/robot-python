@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-xich.js — "Học lập trình": GÓI ĐỘI XÍCH VÀ NHỆN. Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§4, §8).
+   man-doi-xich.js — "Robot Chấn Hưng": GÓI ĐỘI XÍCH VÀ NHỆN. Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§4, §8).
    Hai chương doi-xich + che-doi-xich, 20 màn, đặt ngay sau chương che-xich: xích (leo bậc S, đứng vững trên băng, quay chậm) với nhện (bật qua hố, chui gầm, không cảm biến).
    R1 luôn là xích (tay kẹp / cảm biến khoảng cách tùy màn), R2 luôn là nhện (tay kẹp tùy màn). Kỹ năng phối hợp của gói là K3: robot tự động có sẵn
    (doi[i].coDinh, chương trình khóa nhưng em đọc được); nhện không hỏi được gì nên em đọc chương trình xích để đếm nhịp cho nhện, còn xích thì chờ bằng cảm biến.

@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-omni.js — "Học lập trình": CHƯƠNG `che-omni` · CHẾ LỆNH OMNI (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.2, 15/10): chương chế lệnh đi sau chương `omni`.
+   man-che-omni.js — "Robot Chấn Hưng": CHƯƠNG `che-omni` · CHẾ LỆNH OMNI (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.2, 15/10): chương chế lệnh đi sau chương `omni`.
    Robot là XE BÁNH OMNI: robot { than: 'omni', tay: null | 'kep' } (loaiRobot 'omni'). Có mọi lệnh bánh của xe hai bánh (left_move / right_move / left_back / right_back, wait) và hai lệnh trượt ngang
    slide_left() / slide_right() (một ô sang trái / phải SO VỚI HƯỚNG MẶT, không đổi hướng). Luật omni (san-hoc.js, phần 'omni'): KHÔNG ĐI CHÉO (nhịp có trượt thì lệnh bánh bị bỏ), băng chuyền đẩy omni
    mạnh hơn (đứng trên băng một nhịp là bị đẩy một ô; đi xuôi băng thì hai ô một nhịp), tay hạ thì xe không đi cũng không trượt. Mọi lệnh chỉ RA LỆNH, wait() cho nhịp trôi.

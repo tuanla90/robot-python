@@ -1,7 +1,7 @@
 {
   "name": "doi-robot-chan-hung",
   "private": true,
-  "description": "Đội Robot Chấn Hưng: game dạy Python bằng robot (Học lập trình). Trang tĩnh, không cần build.",
+  "description": "Đội Robot Chấn Hưng: game dạy Python bằng robot. Trang tĩnh, không cần build.",
   "engines": {
     "node": ">=22.12"
   },

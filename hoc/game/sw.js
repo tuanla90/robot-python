@@ -1,5 +1,5 @@
 /* ============================================================================
-   sw.js — "Học lập trình": SERVICE WORKER cho chơi KHÔNG CẦN MẠNG.
+   sw.js — "Robot Chấn Hưng": SERVICE WORKER cho chơi KHÔNG CẦN MẠNG.
    Cài đặt: đọc choi.html, lấy mọi <script src> / <link href> (kể cả tệp ngoài hoc/game như ../san-hoc.js,
    ../../nhan/san-robot-core.js), đọc font/font.css lấy các tệp .woff2, rồi cất hết vào bộ đệm.
    Khi chạy: mọi yêu cầu GET cùng nguồn đi MẠNG TRƯỚC (luôn có bản mới nhất, chép đè vào bộ đệm);

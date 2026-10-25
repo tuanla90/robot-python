@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-doi-mau.js — "Học lập trình": GÓI ĐỘI MÀU VÀ SÚNG HƠI (20 màn, hai chương), đặt ngay sau chương che-mau. Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
+   man-doi-mau.js — "Robot Chấn Hưng": GÓI ĐỘI MÀU VÀ SÚNG HƠI (20 màn, hai chương), đặt ngay sau chương che-mau. Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
    Hai robot khác part: R1 là ROBOT MÀU (xe hai bánh, camera đọc ô trước mặt, tay kẹp, cảm biến khoảng cách; không bắn được),
    R2 là ROBOT SÚNG HƠI (xe hai bánh, súng hơi, cảm biến khoảng cách; không đọc màu, không cầm vật). Kỹ năng phối hợp K6: BÁO NHAU BẰNG VỊ TRÍ.
    Không có lệnh tín hiệu: R1 nhìn màu hộp rồi tới đứng chờ trước cửa phòng cùng màu, ngay sát bên trái hay bên phải R2; R2 hỏi

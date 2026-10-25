@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-rap-tay.js — "Học lập trình": CHƯƠNG `rap-tay` · LẮP RÁP: THÂN + TAY (10 màn, chế độ lắp ráp: KE-HOACH-LAP-RAP.md, lõi lap-rap.js).
+   man-rap-tay.js — "Robot Chấn Hưng": CHƯƠNG `rap-tay` · LẮP RÁP: THÂN + TAY (10 màn, chế độ lắp ráp: KE-HOACH-LAP-RAP.md, lõi lap-rap.js).
    Người chơi tự chọn THÂN (hai bánh · xích · omni · nhện) và TAY (kẹp · xoay · nam châm · máy ném · súng hơi · không gắn) dưới một NGÂN SÁCH XU, rồi mới viết code.
    Không có drone, không có khe não (cảm biến). Yếu tố sân chỉ dùng thứ đã gặp tới gói Máy ném: tường, vật (gỗ / sắt), hàng rào, bậc thang, hố, băng chuyền, nút + cửa, ô đích.
    Giá (lap-rap.js): thân 2 · 3 · 4 · 4 (hai bánh · xích · omni · nhện); tay 0 · 2 · 3 · 3 · 3 · 3 (không · kẹp · xoay · nam châm · máy ném · súng hơi).

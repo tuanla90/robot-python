@@ -1,5 +1,5 @@
 /* ============================================================================
-   gioi-thieu.js — "Học lập trình": GIỚI THIỆU LẦN ĐẦU CHƠI (window.GioiThieu).
+   gioi-thieu.js — "Robot Chấn Hưng": GIỚI THIỆU LẦN ĐẦU CHƠI (window.GioiThieu).
    Ba trang mẹo chơi trong một hộp (viết lệnh + Chạy · gom sao · mở bộ phận mới), có chấm trang, Bỏ qua / Tiếp.
    Chiếu ngay sau phim mở đầu (mo-dau.js): phim kể vì sao, ba trang này chỉ cách chơi.
    Cách chơi chi tiết của từng màn vẫn do hướng dẫn trong màn lo (huong-dan-man.js).

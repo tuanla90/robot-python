@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-sung-hoi.js — "Học lập trình": CHƯƠNG `sung-hoi` · SÚNG HƠI (10 màn). Thay hai chương cũ `tam-day` (tấm đẩy) và `sung-bong` (súng bóng): giữ ba ý hay của chúng
+   man-sung-hoi.js — "Robot Chấn Hưng": CHƯƠNG `sung-hoi` · SÚNG HƠI (10 màn). Thay hai chương cũ `tam-day` (tấm đẩy) và `sung-bong` (súng bóng): giữ ba ý hay của chúng
    (thùng nặng trượt vào đích, nút mở cửa, băng chuyền bật tắt) và thêm cái mới của GIẬT. Kế hoạch KE-HOACH-CHE-LENH.md mục 5c.3 (user chốt 15/10).
    Robot là XE HAI BÁNH gắn SÚNG HƠI có hai nòng: robot { than: 'hai-banh', tay: 'hoi', camBien: [] }.
    Hai lệnh gốc (luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI), chỉ RA LỆNH, wait() cho nhịp trôi, một nhịp một phát, cặp lệnh ngược:

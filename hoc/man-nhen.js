@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-nhen.js — "Học lập trình": CHƯƠNG `nhen` · THÂN NHỆN (10 màn). Làm lại 15/10 theo khuôn "làm quen" (KE-HOACH-CHE-LENH.md, mục 5b.1):
+   man-nhen.js — "Robot Chấn Hưng": CHƯƠNG `nhen` · THÂN NHỆN (10 màn). Làm lại 15/10 theo khuôn "làm quen" (KE-HOACH-CHE-LENH.md, mục 5b.1):
    mã màn nhen.1…10 giữ nguyên, nội dung viết lại. Chương chế lệnh đi kèm: man-che-nhen.js (crawl, jump, leap…).
    Robot là NHỆN (loaiRobot 'nhen'; robot { than: 'nhen', tay: null }, chương này chưa gắn tay). Xưởng hàm mở, được dùng hàm của em. Chương trình 10 ô; mỗi hàm một khung riêng 10 ô.
    Đã học `for` và `if`; cauTruc ['for', 'if'].

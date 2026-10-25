@@ -1,5 +1,5 @@
 /* ============================================================================
-   mo-dau.js — "Học lập trình": PHIM MỞ ĐẦU (window.MoDau), kiểu cảnh mở của Cut the Rope.
+   mo-dau.js — "Robot Chấn Hưng": PHIM MỞ ĐẦU (window.MoDau), kiểu cảnh mở của Cut the Rope.
    Sáu khung hoạt hình pixel, mỗi khung một câu: xe chở linh kiện sụp ổ gà ở cửa xưởng, bộ phận văng khắp xưởng,
    còn lại robot R1 chỉ có thân hai bánh, cứ quay mòng mòng; R1 hiểu lệnh Python, em viết lệnh cho R1.
    Truyện này là lý do của luật mở gói: mỗi gói bộ phận là một món đồ tìm lại được (bang-mo-khoa.js: GOI_BO_PHAN).

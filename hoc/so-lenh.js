@@ -1,5 +1,5 @@
 /* ============================================================================
-   so-lenh.js — "Học lập trình": DỮ LIỆU SỔ LỆNH (window.SoLenh). Kế hoạch "Chế lệnh" 14/10, mục 3.4.
+   so-lenh.js — "Robot Chấn Hưng": DỮ LIỆU SỔ LỆNH (window.SoLenh). Kế hoạch "Chế lệnh" 14/10, mục 3.4.
 
    Sổ lệnh là màn hình liệt kê MỌI hàm cốt truyện (hàm người chơi tự chế ở một màn nào đó của game) theo nhóm:
    hàm đã chế thì hiện tên + thân hàm (lấy từ kho hàm của em), chưa chế thì hiện "???" + moTa + "chế ở chương …".

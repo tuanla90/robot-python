@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-omni.mjs — máy kiểm chương `omni` (Bánh omni) của "Học lập trình".
+   kiem-omni.mjs — máy kiểm chương `omni` (Bánh omni) của "Robot Chấn Hưng".
    Gồm: luật omni (có mọi lệnh bánh của xe hai bánh; thêm slide_left / slide_right trượt ngang 1 ô theo HƯỚNG MẶT ở cả
    4 hướng, không đổi hướng; KHÔNG ĐI CHÉO: slide cộng lệnh bánh = chỉ slide; slide_left + slide_right cùng nhịp = lệnh sau
    bị bỏ; tay hạ chặn trượt; không leo bậc thang; băng chuyền đẩy MẠNH HƠN: 1 nhịp trên băng là bị đẩy 1 ô, xuôi băng

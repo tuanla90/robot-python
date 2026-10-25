@@ -1,5 +1,5 @@
 /* ============================================================================
-   ve.js — "Học lập trình": VẼ PIXEL BẰNG CANVAS (window.Ve).
+   ve.js — "Robot Chấn Hưng": VẼ PIXEL BẰNG CANVAS (window.Ve).
    Painter, chất liệu (gỗ, bảng xanh, núm khối), icon pixel TRẮNG viền tối 1px,
    sprite (ốc vít, ô sân, băng chuyền, cờ, robot bánh, nhện, sao, khóa, trùm, huy hiệu).
    Không có bút chì / giấy note (đã bỏ theo góp ý).

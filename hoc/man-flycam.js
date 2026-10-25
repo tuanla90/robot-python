@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-flycam.js — "Học lập trình": CHƯƠNG `flycam` · FLYCAM (10 màn). Kế hoạch KE-HOACH-LIST-FLYCAM.md mục 4, làm 17/10.
+   man-flycam.js — "Robot Chấn Hưng": CHƯƠNG `flycam` · FLYCAM (10 màn). Kế hoạch KE-HOACH-LIST-FLYCAM.md mục 4, làm 17/10.
    Chương cuối gói Drone (drone → che-drone → flycam). Robot là DRONE gắn CAMERA NHÌN XUỐNG dưới bụng:
      robot { than: 'drone', tay: null | 'nam-cham', camBien: [{ ma: 'camera-bay', o: 'bung' }] (+ { ma: 'pin', o: 'than' } ở màn có pin) }, hamGoc có `look` (xem san-hoc.js, CAMERA NHÌN XUỐNG).
    look() trả CHUỖI "red" | "green" | "blue" | "yellow" | "none" của ô ngay DƯỚI drone (vật nằm đất thì màu vật; rào / thùng / cửa đóng thì "none"; vật đang dính nam châm không tính), không tốn nhịp, không tốn pin.

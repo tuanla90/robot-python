@@ -1,5 +1,5 @@
 /* ============================================================================
-   ung-dung.js — "Học lập trình": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
+   ung-dung.js — "Robot Chấn Hưng": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
    Bốn màn hình (kiểu Cut the Rope, 15/10): 'dau' khởi đầu (man-dau.js) → 'goi' chọn gói (man-goi.js) → 'chon' lưới màn của gói (man-chon.js) → 'choi' màn chơi.
    Thêm màn 'lap' (17/10, chế độ lắp ráp, man-lap.js): màn có man.lapRap thì App.vaoMan mở màn Lắp robot TRƯỚC, "Lắp xong" mới vào 'choi' (Choi.vao(m, cachLap)); trong màn chơi App.lapLai quay về đó đổi part.
    Luật mở khóa (gói mở bằng tổng sao, chương / hàng / thử thách trong gói) ở game/mo-goi.js; App chỉ gọi qua.

@@ -1,4 +1,4 @@
-# Ý tưởng tiếp theo cho "Học lập trình" (15/10)
+# Ý tưởng tiếp theo cho "Robot Chấn Hưng" (15/10)
 
 Ghi lại ý tưởng chưa làm. Mục A lấy từ lần xem NiHiCode (nihicode.com, 15/10). Mục B là ba ý của user (15/10 tối), đã nghiên cứu và có đề xuất, chờ user chốt.
 

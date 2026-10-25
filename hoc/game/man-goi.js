@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-goi.js — "Học lập trình": MÀN CHỌN GÓI (window.ChonGoi), kiểu chọn hộp của Cut the Rope.
+   man-goi.js — "Robot Chấn Hưng": MÀN CHỌN GÓI (window.ChonGoi), kiểu chọn hộp của Cut the Rope.
    Một dải hộp lướt ngang (vuốt, hay bấm ◀ ▶, hay chạm hộp bên cạnh); hộp giữa to, hai hộp hai bên ló ra một mép.
    Hộp: "GÓI n" · huy hiệu · tên · "2 chương · 20 màn" · sao đã lấy / tối đa. Gói thử thách (loai 'thu-thach'): hộp vàng, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + ổ khóa + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
    Chạm hộp giữa đã mở → lưới màn của gói (App.vaoGoi). Gói và luật mở ở game/mo-goi.js.

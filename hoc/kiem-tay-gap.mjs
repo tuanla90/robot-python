@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-tay-gap.mjs — máy kiểm LUẬT TAY GẮP và chương `tay-gap` của "Học lập trình".
+   kiem-tay-gap.mjs — máy kiểm LUẬT TAY GẮP và chương `tay-gap` của "Robot Chấn Hưng".
    Gồm: lệnh tay chạy theo nhịp, thứ tự (tư thế → kẹp / thả → bánh → băng chuyền), trạng thái tay,
    grab / release Ở Ô TRƯỚC MẶT, vật chiếm ô (mọi thân đứng im khi gặp vật), tay vướng sàn, vật đi theo xe, thả bị chặn (tha-bi-chan),
    color() theo phần cứng (cảm biến bụng đọc sàn dưới xe kể cả khi mang vật; camera đọc ô trước mặt), load() ở ô trước, mục tiêu dua-vat, ký hiệu sân,

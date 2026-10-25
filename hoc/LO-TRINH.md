@@ -1,4 +1,4 @@
-# Học lập trình — lộ trình chương (bản 14/10/2026)
+# Lộ trình chương (bản 14/10/2026)
 
 Robot lắp từ PART:
 - **Thân** để đi.

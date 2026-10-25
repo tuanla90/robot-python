@@ -1,5 +1,5 @@
 /* ============================================================================
-   cai-dat.js — "Học lập trình": BẢNG CÀI ĐẶT (window.CaiDat).
+   cai-dat.js — "Robot Chấn Hưng": BẢNG CÀI ĐẶT (window.CaiDat).
    Mở từ nút bánh răng ở màn khởi đầu (man-dau.js) và từ menu ☰ trong màn chơi (man-choi.js).
      · Hiệu ứng / Nhạc nền: mức 0..4 (0 = tắt), bấm − / +; đổi là nghe ngay (AmThanh.dat), lưu ở Luu.
      · Xem lại phim mở đầu (mo-dau.js) · Thông tin game (phiên bản, quyền riêng tư, giấy phép chữ)

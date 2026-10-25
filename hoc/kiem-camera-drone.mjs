@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-camera-drone.mjs — máy kiểm CAMERA NHÌN XUỐNG của drone (look(), part 'camera-bay'; 16/10, chuẩn bị chương flycam) của "Học lập trình".
+   kiem-camera-drone.mjs — máy kiểm CAMERA NHÌN XUỐNG của drone (look(), part 'camera-bay'; 16/10, chuẩn bị chương flycam) của "Robot Chấn Hưng".
    Việc (B) của KE-HOACH-LIST-FLYCAM.md mục 4. Chưa có màn nào dùng camera này: máy kiểm dùng cấu hình GIẢ (SanHoc.chay trực tiếp, màn giả dựng từ drone.7) cho mọi ca.
    Gồm:
    1. Lõi (san-hoc.js): look() trả màu ô NGAY DƯỚI drone — sàn "red" / "green" / "blue" / "yellow" / "none"; vật nằm đất che sàn (màu vật, "none" nếu vật không màu); rào / thùng nặng "none" (nguon 'chan');

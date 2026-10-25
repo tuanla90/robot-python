@@ -1,5 +1,5 @@
 /* ============================================================================
-   thu-tu-chuong.js — "Học lập trình": THỨ TỰ CÁC CHƯƠNG (window.ThuTuChuong).
+   thu-tu-chuong.js — "Robot Chấn Hưng": THỨ TỰ CÁC CHƯƠNG (window.ThuTuChuong).
 
    MUỐN ĐỔI THỨ TỰ CHƯƠNG THÌ CHỈ SỬA MẢNG `thuTu` Ở DƯỚI. Không sửa chỗ nào khác.
    - Mỗi chương có MÃ cố định (chuỗi, không bao giờ đổi): đây là danh tính của chương.

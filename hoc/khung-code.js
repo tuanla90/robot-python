@@ -1,5 +1,5 @@
 /* ============================================================================
-   khung-code.js — "Học lập trình": KHUNG CODE, MỖI HÀM MỘT KHUNG RIÊNG (window.KhungCode).
+   khung-code.js — "Robot Chấn Hưng": KHUNG CODE, MỖI HÀM MỘT KHUNG RIÊNG (window.KhungCode).
 
    Bài làm của học sinh ở một màn:
      { chinh: [dòng], hamCuaMan: [ { ten, thamSo: [], than: [dòng] } ] }
