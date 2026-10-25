@@ -610,6 +610,12 @@ console.log('\n== 5f. Hàm có đối số danh sách: kiểu "list", thẻ bi�
   kiem('đối số duyệt bằng for n in steps: → "list" (ở màn có list)', kieu('weave', 0) === 'list');
   kiem('đối số dùng len(xs) / xs[i] → "list"; s.append(1) → "list"; x in route → "list" (route), x vẫn số', kieu('count', 0) === 'list' && kieu('add', 0) === 'list' && kieu('hit', 1) === 'list' && kieu('hit', 0) === 'so');
   kiem('đối số n của forward(n) vẫn là "so"; hàm còn trống nhưng tên đối số là seen → "list" (đoán theo tên)', kieu('forward', 0) === 'so' && kieu('ten', 0) === 'list');
+  {
+    const kieuSon = TP.taoKieu(() => ({ man: M_LIST, hamCuaMan: [], kho: [H('line', ['pen_down()', 'forward(n)', 'pen_up()', 'wait()'], ['n']), H('color_line', ['ink(c)', 'line(n)'], ['c', 'n']),
+      H('stripes', ['for c in colors:', '    color_line(c, 3)'], ['colors']), H('forward', ['for i in range(n):', '    move()'], ['n'])] }));
+    kiem('máy sơn: đối số đưa vào ink(c) → "mau", kể cả qua hàm khác; danh sách màu vẫn "list"', kieuSon('color_line', 0) === 'mau' && kieuSon('color_line', 1) === 'so' && kieuSon('stripes', 0) === 'list');
+    kiem('máy sơn: ink("blue") và color_line("red", 2) vẽ ô màu chạm được (chuoi-mau)', /chuoi-mau mc-blue/.test(TP.mauDong('ink("blue")')) && /chuoi-mau mc-red/.test(TP.mauDong('color_line("red", 2)')));
+  }
   TP.datCheList(false);
   kiem('TẮT chế độ list: for n in steps: vẫn là "ghep" như chương chuỗi (không đổi hành vi cũ)', TP.taoKieu(() => ({ man: manList(['for']), hamCuaMan: [], kho: [H('walk', ['for c in path:', '    go(c)'], ['path'])] }))('walk', 0) === 'ghep');
   TP.datCheList(true);

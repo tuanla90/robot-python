@@ -81,7 +81,7 @@
       camBien: function () { return TP.camBienCua(manXe()); },                                    // điều kiện while / if chạm đổi được: front_clear() …
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
       soToiDa: function (ten, k) { return S.soMax(ten, k); },                                    // aim(n) chỉ nhận 1–3
-      listChu: function () { return !!TP.coMauCua(S.man); },                                     // danh sách cho phần tử là màu (màn có color() / look()): bảng chọn phần tử có thêm hàng màu
+      listChu: function () { return !!TP.coMauCua(S.man) || !!(S.man && S.man.robot && S.man.robot.tay === 'son'); },     // máy sơn: danh sách màu (stripes, color_dots)                                     // danh sách cho phần tử là màu (màn có color() / look()): bảng chọn phần tử có thêm hàng màu
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
       chiDoc: khungCoDinh,                                                                      // chương trình chính cố định (màn chế lệnh) hay robot tự động khóa (doi[i].coDinh): chỉ đọc
       khiChiDoc: baoChinhCoDinh,

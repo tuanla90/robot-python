@@ -345,6 +345,36 @@
     buocThanHam('clear_left', ['.p-pal .pal'], 'Ghép các khối thành thân hàm: nhặt vật, đặt sang trái rồi xoay tay về.', 1, 'tren')
   ].concat(buocThuVeChay('Chương trình gọi được clear_left() rồi. Bấm Chạy.'));
 
+  /* ============================================================ Máy sơn (làm quen, 25/10): dot() chấm ô đang đứng, ink(c) chọn màu (bảng chọn bốn màu), chế dots(n) */
+  var CHU_THE_SON = 'Khối sơn nằm ở thẻ Máy sơn. Bấm ◀ hoặc ▶ để sang thẻ đó.';
+  H['may-son.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: dot() chấm sơn vào ô xe đang đứng.', xong: 'chay', daLam: daChay },
+    khoiTheo(['khoi:em:move'], 'Chấm thứ hai cách hai ô: chạm move() hai lần.', CHU_THE,
+      { daLam: function () { return dongCo(/^\s*move\(\)/, dongCo(/^\s*move\(\)/) + 1) >= 0; } }),
+    khoiTheo(['khoi:dot', 'khoi:wait'], 'Rồi chạm dot() và wait() để chấm chấm thứ hai.', CHU_THE_SON,
+      { daLam: function () { var i = dongCo(/^\s*move\(\)/); return i >= 0 && dongCo(/^\s*dot\(\)/, i) >= 0 && dongCo(/^\s*wait\(\)/, i) >= 0; } }),
+    buocChay('Bấm Chạy.')
+  ];
+  /** Dòng (từ 1) của lệnh ink(...) đầu tiên trong chương trình chính, 0 nếu chưa có. */
+  function dongInk() { return dongCo(/^\s*ink\(/) + 1; }
+  H['may-son.2'] = [
+    khoiTheo(['khoi:ink'], 'Lệnh mới ink() chọn màu sơn. Chọn dòng đứng trước chấm thứ hai rồi chạm ink().', CHU_THE_SON,
+      { daLam: function () { return dongInk() > 0; } }),
+    {
+      phu: true, huong: 'tren',
+      dich: function () { return thay('nut:chon-mau') ? 'nut:chon-mau' : dongInk() ? 'so:' + dongInk() : []; },
+      chu: function () { return thay('nut:chon-mau') ? 'Chọn blue: chấm sau dòng này sẽ màu xanh dương.' : 'Chạm vào màu trong ink() để chọn màu khác.'; },
+      xong: 'doi-so', rong: 170, han: 0,
+      daLam: function () { var i = dongInk() - 1; return i >= 0 && !/"red"/.test(dsChinh()[i]); }
+    },
+    buocChay('Bấm Chạy.')
+  ];
+  H['may-son.6'] = [
+    buocTaoHam('dots', 'Chế hàm dots(n) trong Xưởng: bấm Hàm mới.', CHU_TAO),
+    khoiTheo(['khoi:vong:for'], 'Chạm khối for, rồi trong vòng lặp thêm dot() và hai move().', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+      { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { var t = chuThan('dots'); return /for/.test(t) && /dot\(\)/.test(t); } })
+  ].concat(buocThuVeChay('Chương trình chính đã gọi dots(3). Bấm Chạy.'));
+
   /* ============================================================ Chương 19 · Súng hơi (làm quen): shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới */
   var CHU_THE_SUNG = 'Khối của súng nằm ở thẻ Súng hơi. Bấm ◀ hoặc ▶ để sang thẻ đó.';
   H['sung-hoi.1'] = [

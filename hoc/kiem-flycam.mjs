@@ -511,8 +511,8 @@ console.log('\n== 6. Khay và khung chương trình ở màn có look(): khối 
   // nối ở màn chơi và Xưởng (đọc mã nguồn, như kiem-list.mjs)
   const mc = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), xh = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
   kiem("màn chơi và Xưởng không có khối `for c in \"R\":` (chuỗi chữ) ở màn có look(): chuoi: … && TP.coMauCua(…) !== 'look'", /chuoi: TP\.coCauTruc\(m, 'for'\) && TP\.coMauCua\(m\) !== 'look'/.test(mc) && /chuoi: TP\.coCauTruc\(man, 'for'\) && TP\.coMauCua\(man\) !== 'look'/.test(xh));
-  kiem('Xưởng: hàm có đối số DANH SÁCH (survey(seen)) không đổi khay thành khối `if d == "U":` (hamChuoiDrone bỏ kiểu "list"); danh sách thử mặc định ở màn có look() là danh sách MÀU; sân thử mặc định có ô màu (sanThuMacDinh)',
-    /kd !== 'so' && kd !== 'list'/.test(xh) && /DS_LIST_MAU_MAC_DINH = \['red', 'blue', 'red'\]/.test(xh) && /TP\.coMauCua\(A\.man\(\)\) \? DS_LIST_MAU_MAC_DINH/.test(xh) && /function sanThuMacDinh\(ten\)/.test(xh) && /Luu\.docSanThu\(ten\) \|\| sanThuMacDinh\(ten\)/.test(xh));
+  kiem('Xưởng: hàm có đối số DANH SÁCH (survey(seen)) không đổi khay thành khối `if d == "U":` (hamChuoiDrone bỏ kiểu "list"); danh sách thử mặc định ở màn có look() (và màn máy sơn) là danh sách MÀU; sân thử mặc định có ô màu (sanThuMacDinh)',
+    /kd !== 'so' && kd !== 'list'/.test(xh) && /DS_LIST_MAU_MAC_DINH = \['red', 'blue', 'red'\]/.test(xh) && /listMau\(\) \? DS_LIST_MAU_MAC_DINH/.test(xh) && /function listMau\(\) \{[^}]*TP\.coMauCua\(m\)/.test(xh) && /function sanThuMacDinh\(ten\)/.test(xh) && /Luu\.docSanThu\(ten\) \|\| sanThuMacDinh\(ten\)/.test(xh));
 }
 
 console.log('\n---------------------------------------------');
