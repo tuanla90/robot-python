@@ -66,7 +66,7 @@ kiem('đúng 10 màn, mã rap-nao.1 … rap-nao.10, id bắt đầu bằng số 
 kiem('hàng: 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ màn trùm có huy hiệu "rap-nao"',
   J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) &&
   ds.every((m) => (m.so === 10) === !!m.huyHieu) && ds[9].huyHieu.ma === 'rap-nao' && /Lắp ráp/.test(ds[9].huyHieu.ten));
-kiem('chương nằm trong gói riêng "rap-nao" ngay sau gói Cảm biến màu (thứ tự chương: sau che-mau)', ThuTu.thuTu.indexOf('rap-nao') === ThuTu.thuTu.indexOf('che-mau') + 1 && ThuTu.goi.some((g) => g.ma === 'rap-nao' && g.chuong.length === 1 && g.chuong[0] === 'rap-nao'));
+kiem('chương nằm trong gói riêng "rap-nao" ngay sau gói Máy sơn (thứ tự chương: sau che-may-son; gói Máy sơn đứng sau gói Cảm biến màu từ 25/10)', ThuTu.thuTu.indexOf('rap-nao') === ThuTu.thuTu.indexOf('che-may-son') + 1 && ThuTu.goi.some((g) => g.ma === 'rap-nao' && g.chuong.length === 1 && g.chuong[0] === 'rap-nao'));
 kiem('mọi màn là màn lắp ráp: có lapRap, bỏ khe tay (tay rỗng), thân ⊆ {hai bánh, xích, omni, nhện}, não ⊆ {khoảng cách, màu, camera}, ngân sách nguyên ≥ 1',
   ds.every((m) => m.lapRap && J(m.lapRap.tay) === '[]' && m.lapRap.than.every((t) => THAN.includes(t)) && m.lapRap.camBien.every((c) => NAO.includes(c)) && Number.isInteger(m.lapRap.nganSach) && m.lapRap.nganSach >= 1 && !(m.lapRap.phaiCo || []).length));
 kiem('không màn nào dùng drone, cảm biến từ, camera bụng, tay (các cách mẫu cũng vậy)',

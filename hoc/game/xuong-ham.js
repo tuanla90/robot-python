@@ -415,7 +415,7 @@
   /* -------------------------------------------------------- sân thử */
   function napSan() {
     var st = S.st;
-    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, thung: st.thung, robot: VeRobot.cauHinhCua(A.man()), mau: lopMauSan(st), roBanDau: st.ro === true && coNem() ? true : undefined, danToiDa: coSung() ? A.man().danToiDa : undefined, pin: coPin() ? pinSanThu() : undefined });
+    S.field.nap({ san: ChamHoc.hangSanThu(st), batDau: st.batDau, loaiRobot: A.man().loaiRobot || 'banh', vat: st.vat, thung: st.thung, robot: VeRobot.cauHinhCua(A.man()), mau: lopMauSan(st), roBanDau: st.ro === true && coNem() ? true : undefined, danToiDa: coSung() ? A.man().danToiDa : undefined, pin: coPin() ? pinSanThu() : undefined, mucBanDau: A.man().mucBanDau });
     if (E.dso) dungDoiSo();                                                        // pin / rổ trên thanh tên hàm đổi theo sân thử
   }
   /** Màn drone có pin (man.pin): Xưởng có nút Sạc và Pin. */
@@ -801,6 +801,7 @@
   function sang(e, lap, toc) {
     if (!e) { S.ed.datChay(null); S.pal.datSang(null); return; }
     if (e.docCamBien) S.field.docCamBien(e.docCamBien, 380 / (toc || 1));       // đọc cảm biến: cảm biến ở hông nháy, tia tới ô được đo
+    if (e.inkMau) S.field.datMauSon(e.inkMau);                                  // ink(c): lon sơn trên xe đổi màu
     var dong = dongTrongHam(e), lit = null;
     if (e.cho && (e.cho.cot === 'hamEm' || e.cho.cot === 'hamMan') && e.cho.ten !== S.ten) lit = [e.cho.cot === 'hamEm' ? 'em' : 'man', e.cho.ten];
     S.ed.datChay(dong, lap);

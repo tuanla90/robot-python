@@ -11,7 +11,7 @@
      nhện: chân sáng ở nhịp chuẩn bị ('chuan-bi'), nhịp bước ('di'), nhịp nhảy ('nhay') và nhịp co / duỗi chân ('doi-chan'); drone: cánh sáng ở nhịp bay ('di') và nhịp lơ lửng ('dung-yen').
    Dùng:  DenBoPhan.dung(phanTuClock)  (một lần, dựng vùng đèn)  ·  DenBoPhan.nap(man)  (vào màn: chọn các bộ phận có trên màn)  ·
           DenBoPhan.bat(e, lenhTruoc)  (sáng theo nhịp e)  ·  DenBoPhan.tat()  (tắt hết, tay lên / kẹp mở như lúc đầu).
-   DenBoPhan.phan(e, lenhTruoc) (thuần túy, kiểm trong Node): trả về { banhT, banhP, truot, tay, xoay, kep, namCham, nem, sung, camBien, chan, canh } (true = sáng).
+   DenBoPhan.phan(e, lenhTruoc) (thuần túy, kiểm trong Node): trả về { banhT, banhP, truot, tay, xoay, kep, namCham, nem, sung, son, camBien, chan, canh } (true = sáng).
    DenBoPhan.boPhanCuaMan(man): mảng khóa bộ phận có trên màn theo thứ tự hiển thị.
    ========================================================================== */
 (function () {
@@ -30,11 +30,12 @@
     namCham: { hinh: ['denNamCham'], mau: '#ff7a6a', nhan: 'choi.den.namCham' },
     nem: { hinh: ['denNem'], mau: '#ffb050', nhan: 'choi.den.nem' },
     sung: { hinh: ['denSung'], mau: '#ffb050', nhan: 'choi.den.sung' },
+    son: { hinh: ['denSon'], mau: '#ff7ad9', nhan: 'choi.den.son' },
     camBien: { hinh: ['denCam'], mau: '#9ff0e2', nhan: 'choi.den.camBien' },
     chan: { hinh: ['denChan'], mau: '#8fb4ff', nhan: 'choi.den.chan' },
     canh: { hinh: ['denCanh'], mau: '#8fb4ff', nhan: 'choi.den.canh' }
   };
-  var THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'camBien', 'chan', 'canh'];
+  var THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'son', 'camBien', 'chan', 'canh'];
 
   function coTrong(ds, tenLenh) { return (ds || []).some(function (e) { return tenLenh.indexOf(e && e.ten) >= 0; }); }
 
@@ -51,6 +52,7 @@
     if (co(NC_LEN)) kq.push('namCham');
     if (co(['aim', 'load', 'throw'])) kq.push('nem');
     if (co(['shoot', 'shoot_back'])) kq.push('sung');
+    if (co(['dot', 'pen_down', 'pen_up'])) kq.push('son');         // máy sơn: đèn sáng khi chấm / hạ / nhấc, và cả nhịp đầu sơn đang hạ (đang tô nét)
     if (co(CAM_BIEN)) kq.push('camBien');
     return THU_TU.filter(function (k) { return kq.indexOf(k) >= 0; });
   }
@@ -69,6 +71,7 @@
     kq.namCham = coTrong(lenhTruoc, NC_LEN) || !!(rb.namCham && rb.namCham.bat);
     kq.nem = coTrong(lenhTruoc, NEM_LEN);
     kq.sung = coTrong(lenhTruoc, ['shoot', 'shoot_back']);
+    kq.son = coTrong(lenhTruoc, ['dot', 'pen_down', 'pen_up']) || !!(rb.son && rb.son.ha);
     kq.camBien = (lenhTruoc || []).some(function (x) { return x && (x.docCamBien || CAM_BIEN.indexOf(x.ten) >= 0); }) || coSk('doc-cam-bien') || !!rb.camBien;
     kq.chan = coSk('chuan-bi') || coSk('di') || coSk('doi-chan') || coSk('nhay');
     kq.canh = coSk('di') || coSk('dung-yen');

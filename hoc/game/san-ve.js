@@ -64,8 +64,13 @@
     }
     return co ? kq : null;
   }
-  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1 };   // sự kiện tức thì của tay (không chiếm thời gian của nhịp)
+  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1 };   // sự kiện tức thì của tay (không chiếm thời gian của nhịp)
 
+  /** Hình mờ của máy sơn (man.hinh, một sân: mảng chuỗi r g b y '.') → mảng hàng tên màu / null; null nếu không có. */
+  function dungHinh(lop) {
+    if (!Array.isArray(lop) || !lop.length) return null;
+    return lop.map(function (hang) { var kq = []; for (var x = 0; x < String(hang).length; x++) kq.push(MAU_KY[hang[x]] || null); return kq; });
+  }
   function ngu(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
 
@@ -125,7 +130,8 @@
       var loai = cfg.loaiRobot || 'banh';
       this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
         robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [], cacCo: [],
-        bm: chuanBongMo(cfg.bongMo) };                    // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
+        bm: chuanBongMo(cfg.bongMo),                     // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
+        hinh: dungHinh(cfg.hinh), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red' };      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
       // nhiều robot (cfg.doi = [{ robot, batDau, loaiRobot, pin, danToiDa }]): mỗi xe một ngữ cảnh (xem chonXe); this.cfg mang phần của xe đang xét
       this.cfgXe = Array.isArray(cfg.doi) ? cfg.doi.map(function (r, i) {
         var l = r.loaiRobot || 'banh', rb = r.robot || { than: l === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] };
@@ -292,6 +298,7 @@
       this.bong = null;                                                                                         // quả bóng đang bay: { x, y, r, a } (pixel sân)
       this.datLaiCua();
       this.canhBao = null;
+      this.daSon = {}; this.sonLoe = {};                                                                       // máy sơn: ô đã tô ('x,y' → màu), ô vừa tô (khóa → lúc tô, để lóe)
       this.diQuaSang = {}; this.bmNhay = 0;                                                                    // bóng mờ: ô ◆ đã sáng (khóa 'x,y' → lúc sáng), tới lúc nào bóng còn nháy (sai chỗ / chưa qua ◆)
       this.thungs = this.thung0.map(function (o) { return { id: o.id, x: o.x, y: o.y, dx: 0, dy: 0, ket: false }; });
       this.clearFx();
@@ -308,6 +315,7 @@
       this.vis = { x: b.x, y: b.y, d: b.huong || 0, goc: 0, chan: 0, co: b.chan === 'co', roi: 0, hop: 0, dx: 0, dy: 0, tay: this.cfg.robot.tay === 'xoay' ? { tuThe: 'tren', kep: false, cam: null, xoay: 'truoc' } : { tuThe: 'tren', kep: false, cam: null }, tayDo: 0, bao: null, baoDen: 0 };
       this.vis.nem = this.cfg.robot.tay === 'nem' ? { tam: 1, ang: null, dang: 0, rung: 0, loi: 0, doi: 0 } : null;      // máy ném: tam = tầm đang đặt; ang = góc đầu cần khi đang quay; dang = tới lúc nào cần còn vung lên; rung = rổ rung; doi = lúc vừa đổi tầm
       this.vis.nc = this.cfg.robot.tay === 'nam-cham' ? { bat: false, cuc: null, ang: null, rung: 0 } : null;       // tay nam châm: bat = đang bật; ang = góc mũi xe khi đang quay (null: theo hướng xe); rung = tới lúc nào vật dính còn rung
+      this.vis.son = this.cfg.robot.tay === 'son' ? { ha: false, mau: this.cfg.mucBanDau || 'red' } : null;      // máy sơn: đầu sơn đang hạ không, màu đang chọn
       this.vis.sung = this.cfg.robot.tay === 'hoi' ? { dan: this.cfg.danToiDa, truoc: 0, sau: 0, het: 0 } : null;      // súng hơi: dan = số viên còn (null: vô hạn); truoc / sau = tới lúc nào nòng trước / nòng sau còn lóe; het = hết đạn, nhấp nháy đỏ
       this.vis.dr = this.cfg.robot.than === 'drone' ? { alt: ALT, roi: false, nguy: false, pin: this.cfg.pin, pinMax: this.cfg.pin, nhay: 0, sacLoe: 0 } : null;          // drone: alt = độ cao, roi = đã rơi xuống đất, nguy = đang rơi, pin / pinMax (null: pin vô hạn, ẩn thanh pin), nhay = tới lúc nào thanh pin còn nháy (đọc battery()), sacLoe = tới lúc nào ô sạc còn lóe
     },
@@ -560,6 +568,32 @@
     baoHieu: function (kieu, ms) { this.vis.bao = kieu; this.vis.baoDen = performance.now() + (ms || 1200); },
     /** Chớp đỏ (đâm tường / lỗi). */
     chopDo: function (ms) { this.flash = performance.now() + (ms || 160); },
+
+    /* ---- MÁY SƠN: hình mờ cần tô (ô nét đứt mang màu, chấm màu mờ ở giữa) và ô đã tô (sơn đặc, viền tối; ô vừa tô lóe sáng). Ô tô ngoài hình viền đỏ. */
+    veSon: function (g, now) {
+      var c = this.cfg, hinh = c.hinh, x, y, k, m;
+      if (hinh) for (y = 0; y < hinh.length; y++) for (x = 0; x < hinh[y].length; x++) {
+        m = hinh[y][x]; if (!m || this.daSon[x + ',' + y] === m) continue;
+        g.save(); g.globalAlpha = 0.55; g.fillStyle = MAU_VIEN[m]; g.fillRect(x * T + 5, y * T + 5, T - 10, T - 10); g.restore();
+        g.save(); g.setLineDash([2, 2]); g.lineDashOffset = -((now / 160) % 4); g.lineWidth = 1; g.strokeStyle = MAU_VIEN[m]; g.strokeRect(x * T + 1.5, y * T + 1.5, T - 3, T - 3); g.restore();
+      }
+      for (k in this.daSon) {
+        var a = k.split(','); x = +a[0]; y = +a[1]; m = this.daSon[k];
+        var loe = this.sonLoe[k], kk = loe ? (now - loe) / 380 : 1;
+        g.fillStyle = 'rgba(27,18,10,.55)'; g.fillRect(x * T + 1, y * T + 1, T - 2, T - 2);
+        g.fillStyle = MAU_VIEN[m] || '#d8dfeb'; g.fillRect(x * T + 2, y * T + 2, T - 4, T - 4);
+        g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x * T + 2, y * T + 2, T - 4, 1); g.fillRect(x * T + 2, y * T + 2, 1, T - 4);
+        if (kk >= 0 && kk < 1) { g.fillStyle = 'rgba(255,255,255,' + (0.7 * (1 - kk)).toFixed(3) + ')'; g.fillRect(x * T + 2, y * T + 2, T - 4, T - 4); }
+        if (hinh && hinh[y] && hinh[y][x] !== m) {                                           // ngoài hình (đỏ) hay sai màu (dấu chéo màu cần tô)
+          g.save(); g.strokeStyle = hinh[y][x] ? MAU_VIEN[hinh[y][x]] : '#ff3b30'; g.lineWidth = 1; g.strokeRect(x * T + 0.5, y * T + 0.5, T - 1, T - 1); g.restore();
+          if (hinh[y][x]) { g.fillStyle = MAU_VIEN[hinh[y][x]]; for (var q = 3; q < T - 3; q++) { g.fillRect(x * T + q, y * T + q, 1, 1); } }
+        }
+      }
+    },
+    /** Tô ô o màu mau (hoạt cảnh): ô lóe trắng rồi hiện màu. */
+    toO: function (o, mau) { var k = o.x + ',' + o.y; this.daSon[k] = mau; this.sonLoe[k] = performance.now(); },
+    /** ink(c) vừa chạy: lon sơn trên xe đổi màu ngay. */
+    datMauSon: function (mau) { if (this.vis && this.vis.son) this.vis.son.mau = mau; },
 
     /* ---- BÓNG MỜ (mục tiêu 'bong-mo'): xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua */
     /** Vật mờ + ô ◆ (vẽ trên sân, dưới lớp robot). Vật đích: thùng mờ trong khung vàng nét đứt. ◆ chưa tới: kim cương kem viền tối; đã tới ('qua-diem'): vàng sáng + vòng tỏa. */
@@ -940,7 +974,7 @@
         var wL = this.wh.L, wR = this.wh.R, phC = ph;
         if (v.dr) { wL = wR = (v.dr.roi || (v.dr.nguy && ((now / 110 | 0) & 1))) ? 0 : 2; phC = wL ? (now / 70 | 0) & 1 : 0; }          // drone: cánh quạt quay không ngừng (tắt khi rơi / nằm đất), hai cặp cánh đổi nhau
         if (c.robot.than === 'nhen') { wL = wR = v.chan ? 2 : 0; if (v.chan === 1) phC = 1; }   // nhện: chan 1 = nhấc chân (khung `buoc` đứng yên), 2 = chân bước luân phiên
-        var ttR = { wl: wL, wr: wR, ph: phC, tay: v.sung ? { tuThe: 'tren', kep: false, cam: null, dangBanTruoc: v.sung.truoc > now, dangBanSau: v.sung.sau > now } : v.nem ? { tuThe: 'tren', kep: false, cam: !!this.vatRo(), ngam: v.nem.tam, dangNem: v.nem.dang > now } : v.nc ? { tuThe: 'tren', kep: false, cam: null, bat: v.nc.bat, cuc: v.nc.cuc } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true, mat: this.camMatSang(now) } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null };
+        var ttR = { wl: wL, wr: wR, ph: phC, tay: v.son ? { tuThe: v.son.ha ? 'duoi' : 'tren', kep: false, cam: null, mauSon: v.son.mau } : v.sung ? { tuThe: 'tren', kep: false, cam: null, dangBanTruoc: v.sung.truoc > now, dangBanSau: v.sung.sau > now } : v.nem ? { tuThe: 'tren', kep: false, cam: !!this.vatRo(), ngam: v.nem.tam, dangNem: v.nem.dang > now } : v.nc ? { tuThe: 'tren', kep: false, cam: null, bat: v.nc.bat, cuc: v.nc.cuc } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true, mat: this.camMatSang(now) } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null };
         if (c.robot.than === 'nhen' && v.co) ttR.co = true;                                // nhện đang CO CHÂN: ảnh part thấp sát đất
         var spr = VeRobot.ve(c.robot, ttR, v.d, p);
         g.imageSmoothingEnabled = false;
@@ -1624,6 +1658,7 @@
         else if (ch === 'C' || ch === 'c') this.veMotCua(g, this.cuaT[kO], now);
         if (ch === '=') g.drawImage(TL.rao((x > 0 && c.rows[y][x - 1] === '=' ? 1 : 0) | (x < c.w - 1 && c.rows[y][x + 1] === '=' ? 2 : 0) | (y > 0 && c.rows[y - 1][x] === '=' ? 4 : 0) | (y < c.h - 1 && c.rows[y + 1][x] === '=' ? 8 : 0)), x * T, y * T);
       }
+      this.veSon(g, now);                                      // máy sơn: hình mờ cần tô + ô đã tô (trên sàn, dưới vật và xe)
       this.veDichTrong(g, now);
       this.veVat(g, TL, now);
       this.veThung(g, TL, now);
@@ -1680,6 +1715,11 @@
       v.camBien = (e.robot && e.robot.camBien) ? { bat: true } : null;       // cảm biến sáng trong nhịp có lệnh đọc cảm biến (lõi chưa có: chương sau điền e.robot.camBien)
       this.wh.L = b.trai !== 0 ? 2 : 0; this.wh.R = b.phai !== 0 ? 2 : 0;
       if (e.robot && e.robot.truot) { this.wh.L = 2; this.wh.R = 2; }       // omni trượt ngang: cả bốn bánh nhỏ cùng quay
+      if (v.son) evs.forEach(function (s) {                                 // máy sơn: chấm / hạ đầu sơn làm ĐẦU nhịp (trước khi xe đi): ô đứng đổi màu ngay
+        if (s.ma === 'ha-but') v.son.ha = true;
+        else if (s.ma === 'nhac-but') v.son.ha = false;
+        else if (s.ma === 'to-o' && s.kieu !== 'net') self.toO(s.o, s.mau);
+      });
       var list = evs.filter(function (s) { return s.ma !== 'toi-co' && !HIEU_UNG[s.ma]; });
       var thungBang = evs.filter(function (s) { return s.ma === 'thung-di' && s.nguon === 'bang'; });      // thùng nằm trên băng: băng đưa đi 1 ô
       var coBan = evs.some(function (s) { return s.ma === 'ban'; });                                      // súng hơi: phát bắn = bóng bay + xe giật (+ thùng trượt) CÙNG LÚC, gom làm một bước 'ban'
@@ -1924,6 +1964,12 @@
         for (var ni = 0; ni < this.objs.length; ni++) { this.objs[ni].nb = null; this.objs[ni].nang = 0; this.objs[ni].dx = 0; this.objs[ni].dy = 0; }
       }
       if (e.robot.tay) v.tay = { tuThe: e.robot.tay.tuThe, kep: e.robot.tay.kep, cam: e.robot.tay.cam, xoay: e.robot.tay.xoay };
+      if (v.son) {                                                      // máy sơn: nét tô cuối nhịp (ô xe vừa tới) lóe lên, rồi lớp đã tô và đầu sơn đúng vết
+        evs.forEach(function (s) { if (s.ma === 'to-o' && s.kieu === 'net') self.toO(s.o, s.mau); });
+        if (e.daSon) { this.daSon = {}; e.daSon.forEach(function (q) { self.daSon[q.x + ',' + q.y] = q.mau; }); }
+        if (e.robot.son) { v.son.ha = !!e.robot.son.ha; v.son.mau = e.robot.son.mau; }
+        if (evs.some(function (s) { return s.ma === 'to-thua' || s.ma === 'son-goi-lai'; })) this.baoHieu('!', 1300);
+      }
       v.camBien = null;
       this.wh.L = 0; this.wh.R = 0;
     },

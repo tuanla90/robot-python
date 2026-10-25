@@ -9,7 +9,7 @@
     ['chuoi-1', 'chuoi-2', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap',
       'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'doi-ho-bang', 'list', 'che-list', 'xich', 'che-xich',
       'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'khoang-cach', 'che-cam-bien',
-      'robot-hoan-thien', 'hai-robot', 'mau', 'che-mau', 'rap-nao', 'nam-cham',
+      'robot-hoan-thien', 'hai-robot', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao', 'nam-cham',
       'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'doi-gap-nem',
       'che-drone', 'drone', 'flycam', 'rap-du',
       // gói đội hai robot còn đang làm (tệp có thể chưa có màn)

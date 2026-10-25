@@ -36,10 +36,11 @@
   var NC_TEN = ['magnet_n', 'magnet_s', 'magnet_off'];         // lệnh tay nam châm (cực N / cực S / ngắt điện): nhóm NAM CHÂM (cùng màu cam với tay) trong kho khối
   var NEM_TEN = ['aim', 'throw', 'load'];                      // lệnh máy ném: nhóm MÁY NÉM (cùng màu cam với tay); aim(n) mang một số 1–3
   var SUNG_TEN = ['shoot', 'shoot_back'];                      // lệnh SÚNG HƠI (bắn ra trước + giật lùi / bắn ra sau + giật tới): nhóm SÚNG HƠI (cùng màu cam với tay)
+  var SON_TEN = ['ink', 'dot', 'pen_down', 'pen_up'];           // lệnh MÁY SƠN: nhóm MÁY SƠN (cùng màu cam với tay); ink(c) mang một màu, đổi ngay như aim(n)
   function lopMau(ten) {
     if (ten === 'left_move' || ten === 'right_move' || ten === 'left_back' || ten === 'right_back') return 'cy';
     if (ten === 'wait') return 'yl';
-    if (TAY_TEN.indexOf(ten) >= 0 || NC_TEN.indexOf(ten) >= 0 || NEM_TEN.indexOf(ten) >= 0 || SUNG_TEN.indexOf(ten) >= 0) return 'tay';
+    if (TAY_TEN.indexOf(ten) >= 0 || NC_TEN.indexOf(ten) >= 0 || NEM_TEN.indexOf(ten) >= 0 || SUNG_TEN.indexOf(ten) >= 0 || SON_TEN.indexOf(ten) >= 0) return 'tay';
     if (/^go_/.test(ten) || CHAN_TEN.indexOf(ten) >= 0) return 'chan';
     if (/^slide_/.test(ten)) return 'truot';
     return 'gr';
@@ -76,14 +77,14 @@
          từ sau `wait()` trước (hay đầu khối) tới hết `wait()` kế tiếp, kèm nhãn nhỏ "nhịp k" ở dòng wait(). Chỉ gom lệnh gốc "chỉ ra lệnh" (bánh, trượt, tay, kẹp, đẩy, nam châm, ném, bắn)
          và wait(); aim(n) tác dụng ngay nên đứng trong nhóm hay ngoài nhóm đều không ngắt; dòng khác (hàm của em, for / if / while, gán biến, chú thích, dòng trống) ngắt nhóm;
          đổi bậc thụt cũng ngắt. Nhãn đánh số từ 1 trong mỗi dãy nhóm liền nhau, dãy mới (sau dòng ngắt) đánh lại từ 1. Nhện / drone (go_* tự trôi nhịp) không dùng ngoặc này (Editor tuyChon.veNhip). */
-  var LENH_NHIP = ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'magnet_n', 'magnet_s', 'magnet_off', 'load', 'throw', 'shoot', 'shoot_back'];
+  var LENH_NHIP = ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'magnet_n', 'magnet_s', 'magnet_off', 'load', 'throw', 'shoot', 'shoot_back', 'dot', 'pen_down', 'pen_up'];
   var RE_LENH_DON = /^\s*([A-Za-z_]\w*)\s*\([^()]*\)\s*(#.*)?$/;
   /** Mảng dòng code → [{ tu, den, so }]: nhóm một nhịp từ dòng tu tới dòng den (chỉ số từ 0, đều gồm), so = thứ tự nhịp trong dãy liền nhau. */
   function nhomNhip(arr) {
     var kq = [], mo = -1, bacMo = 0, truocDen = -9, bacTruoc = -1, so = 0;
     for (var i = 0; i < arr.length; i++) {
       var d = chuoi(arr[i]), m = RE_LENH_DON.exec(d), ten = m ? m[1] : '', bac = bacCua(d);
-      var laLenh = LENH_NHIP.indexOf(ten) >= 0, laWait = ten === 'wait', laAim = ten === 'aim';
+      var laLenh = LENH_NHIP.indexOf(ten) >= 0, laWait = ten === 'wait', laAim = ten === 'aim' || ten === 'ink';       // ink(c) cũng đổi ngay như aim(n)
       if (!laLenh && !laWait && !laAim) { mo = -1; continue; }          // dòng khác: ngắt nhóm đang mở
       if (mo >= 0 && bac !== bacMo) mo = -1;                              // đổi bậc thụt: bỏ nhóm dở
       if (laAim) continue;
@@ -103,7 +104,7 @@
   var BO_PHAN_LENH = {
     banhT: ['left_move', 'left_back'], banhP: ['right_move', 'right_back'], truot: ['slide_left', 'slide_right'],
     tay: ['arm_down', 'arm_up'], xoay: ['arm_left', 'arm_right'], kep: ['grab', 'release'], namCham: ['magnet_n', 'magnet_s', 'magnet_off'],
-    nem: ['load', 'throw'], sung: ['shoot', 'shoot_back'], chan: ['crouch', 'stand']
+    nem: ['load', 'throw'], sung: ['shoot', 'shoot_back'], chan: ['crouch', 'stand'], son: ['dot', 'pen_down', 'pen_up']
   };
   var BP_CUA = {};
   Object.keys(BO_PHAN_LENH).forEach(function (bp) { BO_PHAN_LENH[bp].forEach(function (l) { BP_CUA[l] = bp; }); });
@@ -114,7 +115,7 @@
   /** Lệnh gốc cùng NHỊP với chỗ chèn (vị trí at, bậc b): dòng lệnh gốc liền trên / liền dưới cùng bậc, dừng ở ranh nhịp (wait / go_*) hay dòng khác. aim(n) không thuộc bộ phận nào, bỏ qua. */
   function lenhCungNhip(arr, at, b) {
     var ds = [], i, ten;
-    function laLenh(d) { if (bacCua(d) !== b) return false; ten = tenDon(d); return !!ten && !RE_HET_NHIP.test(ten) && (!!BP_CUA[ten] || ten === 'aim'); }
+    function laLenh(d) { if (bacCua(d) !== b) return false; ten = tenDon(d); return !!ten && !RE_HET_NHIP.test(ten) && (!!BP_CUA[ten] || ten === 'aim' || ten === 'ink'); }
     for (i = at - 1; i >= 0 && laLenh(arr[i]); i--) ds.push(ten);
     for (i = at; i < arr.length && laLenh(arr[i]); i++) ds.push(ten);
     return ds;
@@ -350,7 +351,7 @@
   /** Ô chạm được của đối số: số (data-so), chuỗi có nháy (data-chuoi) hoặc tên biến (data-bien); k = thứ tự trong dòng. */
   function oDoiSo(v, k) {
     if (RE_SO.test(v)) return '<span class="num" data-k="' + k + '" data-so="' + v + '">' + v + '</span>';
-    if (RE_CHUOI.test(v)) return '<span class="num chuoi" data-k="' + k + '" data-so="0" data-chuoi="' + esc(v.slice(1, -1)) + '">' + esc(v) + '</span>';
+    if (RE_CHUOI.test(v)) return '<span class="num chuoi' + (MAU_DS.indexOf(v.slice(1, -1)) >= 0 ? ' chuoi-mau mc-' + v.slice(1, -1) : '') + '" data-k="' + k + '" data-so="0" data-chuoi="' + esc(v.slice(1, -1)) + '">' + esc(v) + '</span>';       // tên màu (ink("red"), stop_on("blue")): ô màu
     if (RE_BTH.test(v) || RE_PTU_CHI.test(v) || RE_LEN_DS.test(v)) return '<span class="num bien bth" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';        // 3 - i · a[0] · a[i] · len(a)
     if (RE_BIEN.test(v)) return '<span class="num bien" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';
     return '<span class="ar">' + esc(v) + '</span>';
@@ -438,7 +439,7 @@
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = m[1] === 'left_move' || m[1] === 'right_move' || m[1] === 'left_back' || m[1] === 'right_back' ? 'mv'
-      : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 || NC_TEN.indexOf(m[1]) >= 0 || NEM_TEN.indexOf(m[1]) >= 0 || SUNG_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : /^slide_/.test(m[1]) ? 'sl' : 'fn';
+      : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 || NC_TEN.indexOf(m[1]) >= 0 || NEM_TEN.indexOf(m[1]) >= 0 || SUNG_TEN.indexOf(m[1]) >= 0 || SON_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : /^slide_/.test(m[1]) ? 'sl' : 'fn';
     var args = m[2].trim() === '' ? '' : m[2].split(',').map(function (x, k) { return oDoiSo(x.trim(), k); }).join('<span class="pu">, </span>');
     return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' + args + '<span class="pu">)</span>';
   }
@@ -505,6 +506,7 @@
       if (d.loai === 'dk') return 'dk';
       if (d.loai === 'dkm') return 'dkm';
       if (d.loai === 'if') return k === 0 ? 'bien' : 'dl';
+      if (d.ten === 'ink') return 'mau';                                   // ink(c): bảng chọn bốn màu sơn
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
       return kd === 'don' || kd === 'ghep' || kd === 'list' ? kd : 'so';
     }
@@ -612,6 +614,7 @@
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }
+      if (kd === 'mau') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('ghep', i), khongNone: true, khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mauls') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('bien', i), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
         if (camDuoc().length) chonDieuKien({ neo: so, ds: camDuoc(), gia: d.ds[kk], khiChon: function (v) { ed.datSo(i, v, kk); } });
@@ -1368,6 +1371,7 @@
     var el = h('div', 'chon-so chon-chuoi mau'); el.setAttribute('data-nut', 'chon-mau'); el.setAttribute('aria-label', t('choi.chonMau'));
     var hien = RE_CHUOI.test(o.gia) ? o.gia.slice(1, -1) : null;
     MAU_DS.forEach(function (ten) {
+      if (o.khongNone && ten === 'none') return;                            // ink(c): không có màu sơn "none"
       var b = nutMau(ten, ten === hien);
       b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon('"' + ten + '"'); });
       el.appendChild(b);
@@ -1474,7 +1478,7 @@
   }
   /** Hàm của em dùng được với robot của màn: hàm gọi (trực tiếp hay qua hàm khác của em) một lệnh gốc mà màn không có trong `hamGoc` thì ẩn khỏi kho
    *  (vd. nhện bỏ hàm dùng lệnh bánh; xích / omni bỏ go(d); xe không tay bỏ pick()). Màn không khai hamGoc: giữ nguyên. */
-  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'shoot', 'shoot_back', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look'];
+  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'shoot', 'shoot_back', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look'];
   /** Lệnh gốc mà THÂN HÀM CỦA EM được gọi ở màn này: các lệnh trên khay (hamGoc) cộng PHẦN CỨNG robot (SanHoc.phanCungCua(man) của lõi: man.phanCung nếu màn khai — màn hỏng —,
    *  không thì trọn bộ lệnh loại robot, vd. xe bánh luôn có bánh lùi dù khay chưa cho dùng). Lõi cũ chưa có SanHoc.phanCungCua thì dùng man.phanCung nếu có, không thì chỉ hamGoc như trước. */
   function lenhDuocGoi(man) {
@@ -1623,6 +1627,7 @@
   function taoSoToiDa(layCtx) {
     return function (ten, k) {
       if (ten === 'aim') return 3;
+      if (ten === 'ink') return 9;
       var cx = layCtx() || {}, l = [(cx.hamCuaMan || []), (cx.kho || [])], i, j, f = null;
       for (i = 0; i < l.length && !f; i++) for (j = 0; j < l[i].length && !f; j++) if (l[i][j].ten === ten) f = l[i][j];
       var p = f && f.thamSo ? f.thamSo[k] : null;
@@ -1654,7 +1659,7 @@
   }
   /** Lệnh đọc cảm biến (thân hàm gọi một trong số này thì hàm đó thuộc thẻ CẢM BIẾN) và mọi lệnh tay / dụng cụ (thẻ TAY). */
   var CAM_TEN_TAT_CA = CAM_BIEN_TEN.concat(['color', 'look', 'battery']);
-  var LENH_TAY_TAT_CA = TAY_TEN.concat(NC_TEN, NEM_TEN, SUNG_TEN);
+  var LENH_TAY_TAT_CA = TAY_TEN.concat(NC_TEN, NEM_TEN, SUNG_TEN, SON_TEN);
   var RE_DK_CAM = /\b(front_clear|left_clear|right_clear|front_metal|front_pole|color|look|battery)\s*\(/;       // khối điều kiện có đọc cảm biến
   /**
    * Hàm f = { ten, than } thuộc thẻ nào của khay, theo các lệnh gốc nó gọi (kể cả gián tiếp qua hàm khác, tìm bằng tim(ten) → hàm | null):
@@ -1927,10 +1932,11 @@
       // chèn: mỗi đối số là 1 (số), "U" (một chữ) hoặc "R" (chuỗi chữ) tùy kiểu; hiện: tên đối số
       var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function (_, k) { var kd = cb.kieuDoiSo ? cb.kieuDoiSo(ten, k) : 'so'; return kd === 'don' ? '"U"' : kd === 'ghep' ? '"R"' : kd === 'list' ? '[2, 3, 1]' : '1'; }).join(', ') : '') + ')';
       if (loai === 'goc' && ten === 'aim') goi = 'aim(1)';                       // aim(n): thẻ chèn sẵn tầm 1, chạm số để chọn 1 / 2 / 3
+      if (loai === 'goc' && ten === 'ink') goi = 'ink("red")';                   // ink(c): thẻ chèn sẵn màu đỏ, chạm màu để chọn màu khác
       var hien = '(' + (hamTS || []).join(', ') + ')';
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', loai); d.setAttribute('data-goi', goi);
       var sp = h('span', 'tx');
-      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten;
+      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : ten;
       else { sp.appendChild(document.createTextNode(ten)); sp.appendChild(h('span', 'pn' + (hamTS && hamTS.length ? ' co' : ''), hien)); }
       d.appendChild(sp);
       if (loai !== 'goc') {
@@ -1997,14 +2003,15 @@
       var gocTay = goc.filter(function (n) { return TAY_TEN.indexOf(n) >= 0; });
       var gocNem = goc.filter(function (n) { return NEM_TEN.indexOf(n) >= 0; });                // máy ném: aim / throw / load
       var gocSung = goc.filter(function (n) { return SUNG_TEN.indexOf(n) >= 0; });              // súng hơi: shoot / shoot_back
+      var gocSon = goc.filter(function (n) { return SON_TEN.indexOf(n) >= 0; });                // máy sơn: ink / dot / pen_down / pen_up
       var gocNC = goc.filter(function (n) { return NC_TEN.indexOf(n) >= 0; });                  // nam châm: magnet_n / magnet_s / magnet_off
       var camDau = cam.indexOf('front_metal') >= 0 ? 'front_metal' : cam[0];                    // màn có cảm biến từ: khối mẫu của while / if dùng front_metal()
       var camCuc = cam.indexOf('front_pole') >= 0;                                              // front_pole() trả chuỗi "N" / "S" / "none": khối mẫu so sánh chuỗi, không phải if front_pole():
       var gocChan = goc.filter(function (n) { return /^go_/.test(n) || CHAN_TEN.indexOf(n) >= 0; });      // nhện / drone: go_up / go_down / go_left / go_right (kèm wait); nhện còn có crouch / stand (co / duỗi chân)
       var gocTruot = goc.filter(function (n) { return /^slide_/.test(n); });                    // omni: slide_left / slide_right
-      var gocThuong = goc.filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && !/^go_/.test(n) && CHAN_TEN.indexOf(n) < 0 && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && n !== 'color' && n !== 'look' && n !== 'wait'; });   // lệnh bánh; hàm cảm biến là ĐIỀU KIỆN, không phải lệnh; wait() ở hàng ghim
+      var gocThuong = goc.filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && SON_TEN.indexOf(n) < 0 && !/^go_/.test(n) && CHAN_TEN.indexOf(n) < 0 && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && n !== 'color' && n !== 'look' && n !== 'wait'; });   // lệnh bánh; hàm cảm biến là ĐIỀU KIỆN, không phải lệnh; wait() ở hàng ghim
       ghimWait = goc.indexOf('wait') >= 0;
-      var coTay = gocTay.length + gocNem.length + gocSung.length + gocNC.length > 0;
+      var coTay = gocTay.length + gocNem.length + gocSung.length + gocNC.length + gocSon.length > 0;
       var coCam = cam.length > 0 || !!spec.mau || !!spec.pin;
       var coBien = !!(spec.bien && spec.bien.length);
       var coTS = coBien || [spec.em, spec.man].some(function (l) { return (l || []).some(function (f) { return f.thamSo && f.thamSo.length; }); });
@@ -2137,6 +2144,7 @@
       if (gocNC.length) loaiTay.push('NamCham');
       if (gocNem.length) loaiTay.push('Nem');
       if (gocSung.length) loaiTay.push('Sung');                                               // thẻ tên "Súng hơi"
+      if (gocSon.length) loaiTay.push('Son');                                                 // thẻ tên "Máy sơn"
       var tenThe = {
         than: t(spec.loai === 'nhen' ? 'choi.the.nhen' : spec.loai === 'drone' ? 'choi.the.drone' : 'choi.the.xe'),
         tay: t('choi.the.tay' + (loaiTay.length === 1 ? loaiTay[0] : '')),
@@ -2144,12 +2152,12 @@
       };
       var icThe = {                                                                           // icon tiêu đề thẻ (ve.js ICON BỘ PHẬN), dùng chung với đèn nhịp; chỉ dùng khi không vẽ được hình bộ phận
         than: ({ nhen: 'denChan', drone: 'denCanh', xich: 'denXich', omni: 'denTruot' })[spec.loai] || 'denBanh',
-        tay: loaiTay.length === 1 ? ({ Kep: 'denKepMo', Xoay: 'denXoay', NamCham: 'denNamCham', Nem: 'denNem', Sung: 'denSung' })[loaiTay[0]] : 'denTayLen',
+        tay: loaiTay.length === 1 ? ({ Kep: 'denKepMo', Xoay: 'denXoay', NamCham: 'denNamCham', Nem: 'denNem', Sung: 'denSung', Son: 'denSon' })[loaiTay[0]] : 'denTayLen',
         cam: 'denLogic'
       };
       var partThe = {                                                                         // 22/10: tiêu đề thẻ vẽ bằng HÌNH BỘ PHẬN THẬT (bộ PART) thay icon đèn: điều khiển xe thì thấy thân xe, không thấy bánh tròn
         than: { loai: 'than', ma: ({ nhen: 'nhen', drone: 'drone', xich: 'xich', omni: 'omni' })[spec.loai] || 'hai-banh' },
-        tay: loaiTay.length === 1 ? { loai: 'tay', ma: ({ Kep: 'kep', Xoay: 'xoay', NamCham: 'nam-cham', Nem: 'nem', Sung: 'hoi' })[loaiTay[0]] } : null,
+        tay: loaiTay.length === 1 ? { loai: 'tay', ma: ({ Kep: 'kep', Xoay: 'xoay', NamCham: 'nam-cham', Nem: 'nem', Sung: 'hoi', Son: 'son' })[loaiTay[0]] } : null,
         cam: null                                                                              // thẻ Logic (for / if / while / biến) không phải phần cứng: giữ icon
       };
       the = [];
@@ -2160,13 +2168,14 @@
         nhomEm(emThe.than, khacThe.than);
       } });
       if (coTay) {
-        var nTay = [gocTay, gocNC, gocNem, gocSung].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
+        var nTay = [gocTay, gocNC, gocNem, gocSung, gocSon].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
         the.push({ khoa: 'tay', ten: tenThe.tay, icon: icThe.tay, part: partThe.tay, ve: function () {
           nhomBien();
           nhomLenhTay(gocTay, 'choi.nhom.tay', nTay > 1, !!gocChan.length || gocTay.length > 4);          // tay xoay có sáu lệnh: xếp hai cột (nâng / hạ, trái / phải, kẹp / thả)
           nhomLenhTay(gocNC, 'choi.nhom.namCham', nTay > 1);
           nhomLenhTay(gocNem, 'choi.nhom.mayNem', nTay > 1);
           nhomLenhTay(gocSung, 'choi.nhom.sungHoi', nTay > 1);
+          nhomLenhTay(gocSon, 'choi.nhom.maySon', nTay > 1, gocSon.length > 2);
           nhomMan(manThe.tay);
           nhomEm(emThe.tay, khacThe.tay);
         } });

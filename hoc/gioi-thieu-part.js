@@ -134,6 +134,15 @@
       khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên'],
       luuY: ['aim(n) chọn tầm 1, 2 hoặc 3 ô, đổi ngay, không tốn nhịp.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
     },
+    'son': {
+      khe: 'tay', ten: 'Máy sơn',
+      moTa: 'Đầu sơn có chổi dưới mũi xe, tô ô xe đang đứng.',
+      lenh: ['ink', 'dot', 'pen_down', 'pen_up'],
+      ghep: [{ lenh: ['ink', 'dot', 'wait'], ra: 'Chọn màu rồi chấm ô đang đứng' }, { lenh: ['pen_down', 'wait'], ra: 'Hạ đầu sơn: tô ô đang đứng, giữ sơn' }],
+      gioi: ['Chấm từng ô, hay giữ sơn để vẽ nét liền', 'Đầu sơn hạ thì xe rẽ góc vẫn liền nét', 'Tô lại một ô thì màu mới đè màu cũ'],
+      khong: ['Tô ra ngoài hình thì không xóa được', 'Mỗi nhịp đầu sơn chỉ làm một việc'],
+      luuY: ['Đầu sơn hạ thì xe đi tới đâu tô tới đó, kể cả lúc quay tại chỗ.', 'ink() chọn màu ngay, không tốn nhịp: "red", "green", "blue", "yellow".', 'dot(), pen_down(), pen_up() chỉ là ra lệnh, wait() mới làm.']
+    },
     'hoi': {
       khe: 'tay', ten: 'Súng hơi',
       moTa: 'Hai nòng: shoot() bắn ra trước, shoot_back() bắn ra sau.',
@@ -188,7 +197,7 @@
       luuY: []
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'khoang-cach', 'tu', 'mau', 'camera', 'camera-bay'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'mau', 'camera', 'camera-bay'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }

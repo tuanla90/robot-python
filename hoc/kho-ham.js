@@ -43,7 +43,7 @@
   // hàm gốc của mọi loại robot (xe bánh có tay gắp, nhện và drone (go_up…), omni, súng hơi shoot / shoot_back, cảm biến khoảng cách, cảm biến màu color, nam châm magnet_n / magnet_s / magnet_off, cảm biến từ front_metal, đo pin battery và camera nhìn xuống look của drone) + hàm nội bộ của nhân chạy code (print, range, len, str, int)
   var HAM_GOC_MAC_DINH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right',
-    'slide_left', 'slide_right', 'front_clear', 'left_clear', 'right_clear', 'color', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'shoot', 'shoot_back', 'battery', 'look',
+    'slide_left', 'slide_right', 'front_clear', 'left_clear', 'right_clear', 'color', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'shoot', 'shoot_back', 'battery', 'look', 'ink', 'dot', 'pen_down', 'pen_up',
     'go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'print', 'range', 'len', 'str', 'int'];
   // từ khóa Python (nhân chạy code chỉ hiểu một phần, nhưng cấm cả bộ cho khỏi nhầm)
   var TU_KHOA = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',

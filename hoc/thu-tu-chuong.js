@@ -43,10 +43,10 @@
     // 15/10 tối: mỗi bộ phận hai chương (làm quen + chế lệnh) — thêm che-xich, che-omni, che-mau, che-may-nem, che-drone; SÚNG HƠI (sung-hoi + che-sung-hoi:
     // shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới đẩy thùng) thay TẤM ĐẨY và SÚNG BÓNG (hai chương cũ tam-day / sung-bong đã xóa).
     thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien', 'hai-robot',
-      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'rap-nao',
+      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao',
       'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
-    dot2: ['hai-robot', 'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'rap-nao',
+    dot2: ['hai-robot', 'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao',
       'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'],
     // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
     // (15/10: màn chọn đã chuyển sang GÓI mở bằng tổng sao, xem `goi` dưới; dot2 / congDot2 chỉ còn dùng để ghi nhãn và cho máy kiểm.)
@@ -84,8 +84,9 @@
       { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', mua: 'mua-2', sao: 135, chuong: ['omni', 'che-omni'] },
       { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi'] },
       { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', mua: 'mua-3', sao: 30, chuong: ['mau', 'che-mau'] },
-      { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', mua: 'mua-3', sao: 60, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
-      { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', mua: 'mua-3', sao: 75, chuong: ['nam-cham', 'che-nam-cham'] },
+      { ma: 'may-son', ten: 'Máy sơn', loai: 'bo-phan', mua: 'mua-3', sao: 60, chuong: ['may-son', 'che-may-son'] },       // 25/10 tô màu: chấm, nét liền qua góc, chọn màu (KE-HOACH-MAY-SON.md)
+      { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', mua: 'mua-3', sao: 90, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
+      { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', mua: 'mua-3', sao: 105, chuong: ['nam-cham', 'che-nam-cham'] },
       { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', mua: 'mua-4', sao: 0, chuong: ['tay-xoay', 'che-tay-xoay'] },
       { ma: 'may-nem', ten: 'Máy ném', loai: 'bo-phan', mua: 'mua-4', sao: 30, chuong: ['may-nem', 'che-may-nem'] },
       { ma: 'rap-tay', ten: 'Lắp ráp: Thân + Tay', loai: 'thu-thach', mua: 'mua-4', sao: 60, chuong: ['rap-tay'] },
@@ -123,6 +124,8 @@
       'sung-hoi': 'Súng hơi',
       'che-sung-hoi': 'Chế lệnh súng hơi',
       'che-mau': 'Chế lệnh màu',
+      'may-son': 'Máy sơn',
+      'che-may-son': 'Chế lệnh máy sơn',
       'che-may-nem': 'Chế lệnh máy ném',
       'che-drone': 'Chế lệnh drone',
       'list': 'Danh sách',
