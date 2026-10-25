@@ -271,7 +271,7 @@
     if (S.busy) return;
     if (!S.ed.datBien(ten, kieuBienHam(ten))) toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000);
   }
-  /** Danh sách ở màn này là danh sách MÀU: màn có color() / look(), hay robot gắn máy sơn (stripes(colors), color_dots(colors)). */
+  /** Danh sách ở màn này là danh sách MÀU: màn có color() / look(), hay robot gắn máy sơn (stripes(colors), copy_row(n)). */
   function listMau() { var m = A.man(); return !!TP.coMauCua(m) || !!(m && m.robot && m.robot.tay === 'son'); }
   /** Kiểu của đối số `ten` của hàm đang sửa: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi chữ). */
   function kieuBienHam(ten) {
