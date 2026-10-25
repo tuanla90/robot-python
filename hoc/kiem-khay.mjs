@@ -575,7 +575,7 @@ console.log('\n== 10. DenBoPhan: bộ phận có trên màn, bộ phận sáng t
   kiem('xe + tay + cảm biến (khoang-cach.9): thêm cảm biến ở cuối', dsBp('khoang-cach.9') === '["banhT","banhP","tay","kep","camBien"]');
   kiem('omni (omni.3): thêm đèn trượt; xích (xich.3) như bánh; nhện (nhen.4): chỉ chân; drone (drone.5): cánh quạt (+ cảm biến pin)', dsBp('omni.3') === '["banhT","banhP","truot"]' && dsBp('xich.3') === '["banhT","banhP"]' && dsBp('nhen.4') === '["chan"]' && J(DenBoPhan.boPhanCuaMan(man('drone.5'))).includes('"canh"') && !J(DenBoPhan.boPhanCuaMan(man('drone.5'))).includes('banh'));
   kiem('nam châm / máy ném / súng hơi có đèn riêng; không còn đèn tấm đẩy', ['nam-cham.3', 'may-nem.4', 'sung-hoi.3'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|') === 'namCham|nem|sung', ['nam-cham.3', 'may-nem.4', 'sung-hoi.3'].map((m) => DenBoPhan.boPhanCuaMan(man(m)).slice(2).join()).join('|'));
-  const THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'camBien', 'chan', 'canh'];      // như den-bo-phan.js (xoay: khớp tay xoay)
+  const THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'son', 'camBien', 'chan', 'canh'];      // như den-bo-phan.js (xoay: khớp tay xoay)
   kiem('mọi màn: có ít nhất một bộ phận, đúng thứ tự hiển thị, không quá 7 (vừa ô đồng hồ), xe bánh có đủ hai bánh', ManHoc.danhSach.every((m) => { const d = DenBoPhan.boPhanCuaMan(m); const idx = d.map((k) => THU_TU.indexOf(k)); return d.length >= 1 && d.length <= 7 && idx.every((i, j) => i >= 0 && (j === 0 || idx[j - 1] < i)) && (['nhen', 'drone'].includes(m.loaiRobot) || (d.includes('banhT') && d.includes('banhP'))); }));
   // phan() thuần túy
   const P = (e, l) => DenBoPhan.phan(e, l);

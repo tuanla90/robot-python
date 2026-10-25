@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url),Part=require('./part.js');
 ['hai-banh','xich','nhen','omni','drone'].forEach(x=>require('./part-'+x+'.js'));
-['kep','nam-cham','nem','hoi','tay-xoay'].forEach(x=>require('./part-'+x+'.js'));
+['kep','nam-cham','nem','hoi','tay-xoay','son'].forEach(x=>require('./part-'+x+'.js'));
 ['khoang-cach','mau','cham','camera','camera-bay'].forEach(x=>require('./part-'+x+'.js'));
 
 for(const loai of ['than','tay','cam-bien'])for(const d of Part.ds(loai)){
@@ -78,7 +78,7 @@ for(const than of ['hai-banh','xich','nhen','omni']){
   assert.doesNotThrow(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'camera-bay',o:'bung'},{ma:'mau',o:'hong'}]}),'drone gắn được cả cảm biến màu ở hông lẫn camera nhìn xuống');
 }
 
-for(const bad of ['kep','nem','hoi'])assert.throws(()=>Part.ghep({than:'drone',tay:bad}),/Drone không gắn được/);
+for(const bad of ['kep','nem','hoi','son'])assert.throws(()=>Part.ghep({than:'drone',tay:bad}),/Drone không gắn được/);
 assert.throws(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'cham',o:'hong'}]}),/Drone không gắn được/);
 
 function silhouette(d){const q=Part._veMot(d,{}),n=d.diemNeo||{x:12,y:12},W=64,out=new Array(W*W).fill(false);for(let y=0;y<q.h;y++)for(let x=0;x<q.w;x++)if(q.get(x,y)){const X=x-n.x+32,Y=y-n.y+32;if(X>=0&&Y>=0&&X<W&&Y<W)out[Y*W+X]=true}return out}   /* neo theo điểm gắn: tay xoay có tấm vẽ rộng hơn 24×24 */
@@ -89,6 +89,9 @@ const c={than:'hai-banh',tay:'nem',camBien:[{ma:'camera',o:'tren'}]},a=Part._veM
 const hs=Part.hamGoc(c);assert.equal(hs.length,new Set(hs).size,'hàm gốc gộp bộ trùng');assert.ok(hs.includes('aim')&&hs.includes('throw'),'máy ném phải có aim, throw');assert.ok(Part.hamGoc({than:'omni',tay:'hoi'}).includes('shoot')&&Part.hamGoc({than:'omni',tay:'hoi'}).includes('shoot_back'),'súng hơi phải có shoot và shoot_back');
 /* SÚNG HƠI (15/10): hai nòng — nòng trước ở mũi xe, nòng sau ở đuôi xe; mỗi nòng có hình lúc bắn riêng. Mọi thân có hướng mặt (hai bánh, xích, omni, nhện) đều gắn được. */
 {
+  assert.deepEqual(Part.hamGoc({than:'hai-banh',tay:'son'}).filter(h=>['ink','dot','pen_down','pen_up'].includes(h)).sort(),['dot','ink','pen_down','pen_up'],'máy sơn mở ink, dot, pen_down, pen_up');
+  {const a=Part.ghep({than:'hai-banh',tay:'son'},{tay:{mauSon:'red'}}),b=Part.ghep({than:'hai-banh',tay:'son'},{tay:{mauSon:'blue'}}),c=Part.ghep({than:'hai-banh',tay:'son'},{tay:{mauSon:'blue',tuThe:'duoi'}});
+   assert.ok(a.buf.some((x,i)=>x!==b.buf[i]),'đổi màu sơn thì lon sơn đổi màu');assert.ok(c.buf.filter(Boolean).length>b.buf.filter(Boolean).length,'đầu sơn hạ: chổi dài hơn');}
   const hoi=Part.lay('tay','hoi');
   assert.ok(hoi&&hoi.kich&&hoi.kich.h>24,'súng hơi có tấm vẽ cao hơn 24 hàng để chứa nòng sau');
   assert.deepEqual(Part.hamGoc({than:'hai-banh',tay:'hoi'}).filter(h=>h.startsWith('shoot')).sort(),['shoot','shoot_back'],'súng hơi mở shoot và shoot_back');

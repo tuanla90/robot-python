@@ -41,10 +41,11 @@
     'mau': 'Cảm biến màu',
     'nam-cham': 'Nam châm',
     'tay-xoay': 'Tay xoay',
+    'son': 'Máy sơn',
     'nem': 'Máy ném',
     'drone': 'Drone'
   };
-  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'nam-cham', 'tay-xoay', 'nem', 'drone'];
+  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'son', 'nam-cham', 'tay-xoay', 'nem', 'drone'];
 
   function m(ten, nhom, moTa, chuong, man) { return { ten: ten, nhom: nhom, moTa: moTa, chuong: chuong, man: man }; }
 
@@ -144,6 +145,16 @@
     m('stop_line', 'mau', 'Dừng sát trước vạch đỏ: lên vạch rồi lùi lại một ô', 'che-mau', 'che-mau.4'),
     m('follow_line', 'mau', 'Đi theo vạch kẻ đỏ, xanh dương cho tới khi gặp ô vàng', 'che-mau', 'che-mau.5'),
     m('sort_color', 'mau', 'Vật đỏ chuyền sang ô bên phải, vật xanh dương sang ô bên trái', 'che-mau', 'che-mau.6'),
+    // chương Máy sơn + Chế lệnh máy sơn (nhóm 'son'; stair_step, fix_middle là hàm của màn nên không có ở đây)
+    m('dots', 'son', 'Chấm n chấm cách nhau một ô theo hướng xe', 'may-son', 'may-son.6'),
+    m('frame', 'son', 'Vẽ khung vuông cạnh ba ô rồi về đúng chỗ, đúng hướng cũ', 'may-son', 'may-son.10'),
+    m('line', 'son', 'Hạ đầu sơn, đi n bước rồi nhấc đầu sơn: nét n + 1 ô', 'che-may-son', 'che-may-son.1'),
+    m('color_line', 'son', 'Chọn màu c rồi vẽ nét n + 1 ô', 'che-may-son', 'che-may-son.2'),
+    m('next_row', 'son', 'Lùi n ô về đầu hàng rồi xuống hàng dưới, giữ hướng', 'che-may-son', 'che-may-son.3'),
+    m('stripes', 'son', 'Mỗi màu trong danh sách vẽ một sọc bốn ô, sọc nọ dưới sọc kia', 'che-may-son', 'che-may-son.5'),
+    m('color_dots', 'son', 'Mỗi màu trong danh sách chấm một chấm, cách nhau một ô', 'che-may-son', 'che-may-son.6'),
+    m('grid', 'son', 'Lưới chấm r hàng, mỗi hàng k chấm, hàng cách hàng một ô', 'che-may-son', 'che-may-son.7'),
+    m('border', 'son', 'Khung vuông mỗi cạnh đi n bước, về chỗ cũ', 'che-may-son', 'che-may-son.8'),
     m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.5'),
     m('grip', 'nam-cham', 'Bật cực khác chữ trên vật nam châm trước mặt để kéo nó về', 'nam-cham', 'nam-cham.6'),
     // chương Chế lệnh nam châm (kick, reel, lane, sort, fling; fixed_grip, go_pull, put_back là hàm của màn nên không có ở đây)
@@ -221,6 +232,10 @@
     g('aim', null, 'Đặt tầm ném'),
     g('throw', null, 'Ném vật trong rổ'),
     g('load', null, 'Nạp vật ở ô trước mặt vào rổ'),
+    g('ink', null, 'Máy sơn: chọn màu sơn, đổi ngay'),
+    g('dot', null, 'Máy sơn: chấm sơn vào ô xe đang đứng'),
+    g('pen_down', 'pen_up', 'Máy sơn: hạ đầu sơn, xe đi tới đâu tô tới đó'),
+    g('pen_up', 'pen_down', 'Máy sơn: nhấc đầu sơn, thôi tô'),
     g('battery', null, 'Hỏi: pin còn bao nhiêu'),
     g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì')
   ];

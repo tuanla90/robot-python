@@ -349,6 +349,18 @@
     for (k = 0; k < 2; k++) { p.px(11 - k * 2, y0 - 2 + k, '#2c8fa4'); p.px(14 + k * 2, y0 - 2 + k, '#2c8fa4'); }
     return p;
   };
+  HINH['may-son'] = function () {                               // đầu sơn + nét sơn đỏ gập góc
+    var p = P(30, 26), t = cat(partTho('tay', 'son', { mauSon: 'red', tuThe: 'duoi' }));
+    chep(p, t, 0, Math.max(0, 26 - t.h), 1);
+    p.rect(17, 3, 12, 5, INK); p.rect(18, 4, 10, 3, '#df4b4b'); p.rect(23, 3, 6, 16, INK); p.rect(24, 4, 4, 14, '#df4b4b'); p.rect(18, 4, 10, 1, '#ff9a8a');
+    return cat(p);
+  };
+  HINH['che-may-son'] = function () {                           // đầu sơn + bánh răng
+    var p = P(T26, T26), t = cat(partTho('tay', 'son', { mauSon: 'blue' }));
+    chep(p, t, Math.max(0, 10 - (t.w >> 1)), Math.max(0, T26 - t.h), 1);
+    themBanhRang(p);
+    return p;
+  };
   HINH['tay-xoay'] = function () {                              // tay xoay (khớp tròn) + vật gỗ bên cạnh
     var p = P(30, 26), t = cat(partTho('tay', 'xoay', { kep: 'mo' }));
     chep(p, t, 0, Math.max(0, 26 - t.h), 1);

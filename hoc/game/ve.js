@@ -179,6 +179,7 @@
     denKepDong: ['...xx.xx...', '...x.w.x...', '...x.w.x...', '...xx.xx...', '...xxxxx...', '....xxx....', '....xwx....', '.....x.....', '.....x.....', '....xxx....'],
     denNamCham: ['www.....www', 'www.....www', 'xxx.....xxx', 'xxx.....xxx', 'xxx.....xxx', 'xxxx...xxxx', '.xxxxxxxxx.', '..xxxxxxx..'],
     denNem: ['........ww.', '.......wwww', '.......xww.', '......xx...', '.....xx....', '....xx.....', '...xx......', '..xxx......', 'xxxxxxxxxxx', '.w.......w.'],
+    denSon: ['....xxx....', '....xwx....', '....xxx....', '...xxxxx...', '...xwwwx...', '...xxxxx...', '....xox....', '....xox....', '.....x.....', '..wwwwwww..', '..wwwwwww..'],
     denSung: ['....xxx....', '...xxxxx...', 'w.xxxwxxx.w', 'wwxxwwwxxww', 'w.xxxwxxx.w', '...xxxxx...', '....xxx....'],
     denCam: ['...xxxxx...', '.xxwwwwwxx.', 'xxwwooowwxx', 'xwwwooowwwx', 'xxwwooowwxx', '.xxwwwwwxx.', '...xxxxx...'],
     denChan: ['x.x.....x.x', '.x.x...x.x.', '..x.xxx.x..', '...xxwxx...', '..xxxxxxx..', '...xxwxx...', '..x.xxx.x..', '.x.x...x.x.', 'x.x.....x.x'],

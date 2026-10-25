@@ -43,7 +43,8 @@
   /** Lệnh gốc của tay → mã part tay (tay nào mở ra lệnh nào). Màn có lệnh tay mà không khai man.robot.tay thì lấy theo bảng này. */
   var TAY_THEO_LENH = {
     arm_down: 'kep', arm_up: 'kep', grab: 'kep', release: 'kep', arm_left: 'xoay', arm_right: 'xoay',
-    magnet_n: 'nam-cham', magnet_s: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', shoot: 'hoi', shoot_back: 'hoi'
+    magnet_n: 'nam-cham', magnet_s: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', shoot: 'hoi', shoot_back: 'hoi',
+    ink: 'son', dot: 'son', pen_down: 'son', pen_up: 'son'
   };
   function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }
   /**
@@ -67,6 +68,7 @@
     t = t || {};
     return { tuThe: t.tuThe === 'duoi' ? 'duoi' : t.tuThe === 'giua' ? 'giua' : 'tren', kep: t.kep === true || t.kep === 'dong', cam: t.cam !== null && t.cam !== undefined && t.cam !== false,
       bat: !!t.bat, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBanTruoc: !!t.dangBanTruoc, dangBanSau: !!t.dangBanSau,
+      mauSon: typeof t.mauSon === 'string' ? t.mauSon : null,                                     // máy sơn: màu đang chọn (ruột lon sơn); tuThe 'duoi' = đầu sơn đang hạ
       xoay: t.xoay === 'trai' || t.xoay === 'phai' ? t.xoay : 'truoc', goc: typeof t.goc === 'number' ? Math.round(t.goc / 5) * 5 : null };       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
   }
 
@@ -150,7 +152,7 @@
     var chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || cfg.than === 'drone') ? 0 : huong;     // drone bay 4 hướng, không có mặt trước (cánh quạt luôn quay); nhện đi 4 hướng không quay mặt; nhện CÓ TAY: ảnh quay theo cạnh gắn tay (cố định theo batDau.huong, san-ve.js truyền vào `huong`)
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },       // drone: buoc = pha cánh quạt, doc = đèn thân sáng khi đo pin
-      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBanTruoc: tay.dangBanTruoc, dangBanSau: tay.dangBanSau, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc },
+      tay: { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBanTruoc: tay.dangBanTruoc, dangBanSau: tay.dangBanSau, mauSon: tay.mauSon, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc },
       camBien: { bat: !!cb.bat, mat: !!cb.mat }                                  // mat: camera đang đọc (hai đốm mắt trên thân sáng lên)
     };
     var raw;
@@ -185,7 +187,7 @@
     huong = ((huong || 0) % 4 + 4) % 4;
     var tay = chuanTay(tt.tay);
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
-      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') : '', tt.loi || '', coPart() ? 'P' : 'x', cauHinh.son || ''].join('|');
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') : '', tt.loi || '', coPart() ? 'P' : 'x', cauHinh.son || ''].join('|');
     if (cache[khoa]) return cache[khoa];
     var cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien, co: tt.co }, huong, tiLe);
     if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)

@@ -1,0 +1,140 @@
+/* ============================================================================
+   kiem-may-son.mjs — máy kiểm MÁY SƠN (luật lõi san-hoc.js phần MÁY SƠN, chẩn đoán cham.js, chương may-son + che-may-son, đăng ký gói).
+   Kiểm:
+   - luật: dot() / pen_down() / pen_up() chỉ ra lệnh, wait() chốt nhịp; thứ tự trong nhịp (lệnh sơn → bánh → nét cuối nhịp); nét liền qua góc khi xe quay tại chỗ;
+     ink(c) đổi ngay, màu lạ là lỗi chạy; hai lệnh sơn một nhịp; tô đè; tô ngoài hình dừng sớm; thắng ngay khi hình đủ; lỗi cấu hình (một tay, chỉ xe bánh, hình trên tường);
+   - chẩn đoán: mau-son-sai, son-goi-lai, to-thua, chua-to-hinh (đếm ô thiếu / sai màu), quen-wait nói "lệnh sơn";
+   - 20 màn: lời giải 3 sao đúng sao.o / sao.nhip, không chẩn đoán; mọi congThucKhac thắng; lời sai đủ mã; BFS (do-duong-may-son.mjs) ≤ sao.nhip;
+   - đăng ký: gói 'may-son' mùa 3 ngay sau gói Cảm biến màu (trong ngân hàng), choi.html nạp tệp màn và part-son.js, Sổ lệnh nhóm 'son', huy hiệu, thẻ giới thiệu.
+   Chạy: node hoc/kiem-may-son.mjs        (trượt thì thoát mã 1)
+   ========================================================================== */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const day = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const SanHoc = require(path.join(day, 'san-hoc.js'));
+const ChamHoc = require(path.join(day, 'cham.js'));
+const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
+const SoLenh = require(path.join(day, 'so-lenh.js'));
+const GT = require(path.join(day, 'gioi-thieu-part.js'));
+for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f))) require(path.join(day, f));
+const ManHoc = require(path.join(day, 'man-chuoi-1.js'));
+const LoTrinh = require(path.join(day, 'lo-trinh-hoc.js'));
+const { nhipMaySonTatCa } = await import('./do-duong-may-son.mjs');
+
+let dat = 0, hong = 0;
+function kiem(ten, ok, chiTiet) {
+  if (ok) { dat++; console.log('  ok   ' + ten); }
+  else { hong++; console.log('  HỎNG ' + ten + (chiTiet !== undefined ? ' → ' + chiTiet : '')); }
+}
+const J = JSON.stringify;
+const KHAY = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'ink', 'dot', 'pen_down', 'pen_up'];
+const F = 'left_move()\nright_move()\nwait()\n';
+const loi = (fn) => { try { fn(); return ''; } catch (e) { return e.message; } };
+const chay = (san, hinh, code, them) => SanHoc.chay(Object.assign({ san, batDau: { x: 0, y: 1, huong: 1 }, hamGoc: KHAY, mucTieu: hinh ? 'to-hinh' : 'toi-co', hinh: hinh || undefined }, them || {}), code);
+const toO = (r) => r.daSon.map((q) => q.x + ',' + q.y + q.mau[0]).sort().join(' ');
+const S5 = ['.....', '.....', '.....', '.....'];
+
+console.log('== 1. Luật lõi ==');
+{
+  let r = chay(S5, null, 'dot()\n');
+  kiem('dot() chỉ ra lệnh: không có wait() thì không tô, báo quen-wait', r.daSon.length === 0 && r.suKien.some((e) => e.ma === 'quen-wait'));
+  r = chay(S5, null, 'dot()\n' + F);
+  kiem('dot() rồi tiến cùng một nhịp: tô ô CŨ rồi mới đi', toO(r) === '0,1r' && r.robot.x === 1 && r.nhip === 1);
+  r = chay(S5, null, 'pen_down()\n' + F + F);
+  kiem('pen_down() rồi đi: tô ô xuất phát và mọi ô đi qua (một nét)', toO(r) === '0,1r 1,1r 2,1r' && r.son.ha === true);
+  r = chay(S5, null, 'pen_down()\n' + F + 'left_move()\nwait()\n' + F);
+  kiem('nét liền qua góc: quay tại chỗ vẫn giữ sơn, đoạn sau tiếp nối', toO(r) === '0,1r 1,1r 1,2r');
+  r = chay(S5, null, 'pen_down()\n' + F + 'pen_up()\n' + F);
+  kiem('pen_up() cùng nhịp với bước đi: nhấc TRƯỚC khi đi, ô mới không tô', toO(r) === '0,1r 1,1r' && r.son.ha === false);
+  r = chay(S5, null, 'ink("blue")\ndot()\nink("green")\nwait()\n');
+  kiem('dot() tô bằng màu LÚC GỌI, ink() đổi ngay không tốn nhịp', toO(r) === '0,1b' && r.son.mau === 'green' && r.nhip === 1);
+  r = chay(S5, null, 'pen_down()\n' + 'ink("yellow")\n' + F);
+  kiem('nét đang giữ tô ô cuối nhịp bằng màu hiện tại', toO(r) === '0,1r 1,1y');
+  r = chay(S5, null, 'dot()\nwait()\nink("blue")\ndot()\nwait()\n');
+  kiem('tô lại một ô thì màu mới đè màu cũ', toO(r) === '0,1b');
+  r = chay(S5, null, 'dot()\npen_down()\nwait()\n');
+  kiem('hai lệnh sơn một nhịp: lệnh sau bị bỏ (son-goi-lai)', r.suKien.some((e) => e.ma === 'son-goi-lai') && r.son.ha === false);
+  r = chay(S5, null, 'ink("Red")\n');
+  kiem('ink() màu lạ (chữ hoa) là lỗi chạy mau-son-sai', r.loi && r.loi.ma === 'mau-son-sai' && r.loi.mauDat === 'Red');
+  r = chay(S5, null, 'ink()\n');
+  kiem('ink() thiếu đối số là lỗi chạy mau-son-sai', r.loi && r.loi.ma === 'mau-son-sai');
+  r = chay(S5, ['.....', 'rr...', '.....', '.....'], 'pen_down()\n' + F + F + F);
+  kiem('mục tiêu to-hinh: thắng NGAY cuối nhịp hình đủ (không chạy tiếp)', r.thang && r.nhip === 1 && r.robot.x === 1);
+  r = chay(S5, ['.....', 'r.r..', '.....', '.....'], 'pen_down()\n' + F + F);
+  kiem('tô ô ngoài hình: to-thua, dừng sớm', !r.thang && r.dungSom === 'to-thua' && r.suKien.some((e) => e.ma === 'to-thua' && e.o.x === 1));
+  r = chay(S5, ['.....', 'b....', '.....', '.....'], 'dot()\nwait()\nink("blue")\ndot()\nwait()\n');
+  kiem('tô sai màu trong hình thì tô lại được rồi thắng', r.thang && r.nhip === 2 && r.suKien.some((e) => e.ma === 'to-sai-mau'));
+  r = chay(S5, null, 'pen_down()\n' + F);
+  kiem('vết nhịp có robot.son và daSon', r.vet.filter((e) => e.loai === 'nhip').every((e) => e.robot.son && Array.isArray(e.daSon)));
+  kiem('lỗi cấu hình: máy sơn đi chung tay kẹp / chỉ gắn xe bánh / hình trên tường / hinh ngoài to-hinh',
+    /một tay/.test(loi(() => SanHoc.chay({ san: S5, batDau: { x: 0, y: 0 }, hamGoc: KHAY.concat(['grab']) }, ''))) &&
+      /xe có bánh/.test(loi(() => SanHoc.chay({ san: S5, batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'wait', 'dot'] }, ''))) &&
+      /tường/.test(loi(() => SanHoc.chay({ san: ['#....'], batDau: { x: 1, y: 0 }, hamGoc: KHAY, mucTieu: 'to-hinh', hinh: ['r....'] }, ''))) &&
+      /to-hinh/.test(loi(() => SanHoc.chay({ san: S5, batDau: { x: 0, y: 0 }, hamGoc: KHAY, hinh: S5 }, ''))));
+  kiem('LENH_NGUOC: pen_down ↔ pen_up', SanHoc.LENH_NGUOC.pen_down === 'pen_up' && SanHoc.LENH_NGUOC.pen_up === 'pen_down');
+}
+
+console.log('\n== 2. Chẩn đoán ==');
+{
+  const man = (o) => Object.assign({ chuong: 'may-son', san: S5, batDau: { x: 0, y: 1, huong: 1 }, hamGoc: KHAY, mucTieu: 'to-hinh', hinh: ['.....', 'rrb..', '.....', '.....'], khung: { chinh: 10, moiHam: 10 } }, o);
+  const ma = (bai) => ChamHoc.cham(man({}), { chinh: bai }, []).chanDoan.map((c) => c.ma);
+  const c1 = ChamHoc.cham(man({}), { chinh: ['pen_down()', 'left_move()', 'right_move()', 'wait()'] }, []);
+  const ct = c1.chanDoan.find((c) => c.ma === 'chua-to-hinh');
+  kiem('chua-to-hinh đếm ô thiếu (1) và nói ô cần màu gì', ct && ct.thieu === 1 && ct.saiMau === 0 && /xanh dương/.test(ct.loi), J(c1.chanDoan));
+  kiem('mau-son-sai có chỗ dòng', ma(['ink("Blue")']).includes('mau-son-sai'));
+  kiem('son-goi-lai', ma(['dot()', 'pen_up()', 'wait()']).includes('son-goi-lai'));
+  kiem('to-thua (nét đi quá hình)', ma(['pen_down()', 'left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()']).includes('to-thua'));
+  const q = ChamHoc.cham(man({}), { chinh: ['dot()'] }, []).chanDoan.find((c) => c.ma === 'quen-wait');
+  kiem('quen-wait nói "lệnh sơn"', q && /lệnh sơn/.test(q.loi), q && q.loi);
+}
+
+console.log('\n== 3. Hai chương ==');
+{
+  const ds = ManHoc.danhSach.filter((m) => m.chuong === 'may-son' || m.chuong === 'che-may-son');
+  kiem('20 màn: may-son.1–10 và che-may-son.1–10', ds.length === 20);
+  kiem('mọi màn: xe hai bánh gắn đầu sơn, khay 9 lệnh, mục tiêu to-hinh, có hình mờ', ds.every((m) => m.loaiRobot === 'banh' && m.robot.tay === 'son' && J(m.hamGoc) === J(KHAY) && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh)));
+  kiem('che-may-son 1–9 chương trình chính cố định; 10 gioiHanHam 3', ds.filter((m) => m.chuong === 'che-may-son').every((m) => (m.so < 10) === (m.chinhCoDinh === true)) && ManHoc.timMa('che-may-son.10').gioiHanHam === 3);
+  // kho: hàm cốt truyện các màn trước theo lộ trình (như người chơi mua mùa 3)
+  const kho = new Map();
+  for (const m of LoTrinh.danhSach) { if (m.doi) continue; if (m.chuong === 'may-son') break; for (const h of m.loiGiai.hamCuaEmMoi || []) kho.set(h.ten, h); }
+  const tron = (b) => { const k = new Map(kho); (b || []).forEach((h) => k.set(h.ten, h)); return [...k.values()]; };
+  for (const m of ds) {
+    const r = ChamHoc.cham(m, m.loiGiai, tron(m.loiGiai.hamCuaEmMoi));
+    kiem(m.ma + ': lời giải 3 sao, ' + m.sao.o + ' ô, ' + m.sao.nhip + ' nhịp, không chẩn đoán', r.thang && r.sao === 3 && r.soO === m.sao.o && r.soNhip === m.sao.nhip && !r.chanDoan.length, J({ sao: r.sao, o: r.soO, n: r.soNhip, cd: r.chanDoan.map((c) => c.ma) }));
+    (m.congThucKhac || []).forEach((ct) => {
+      const q = ChamHoc.cham(m, ct.baiLam || m.loiGiai, tron(ct.hamCuaEmMoi));
+      kiem(m.ma + ': cách khác "' + ct.moTa + '" thắng', q.thang, J(q.chanDoan.map((c) => c.ma)));
+    });
+    m.loiSai.forEach((ls) => {
+      const q = ChamHoc.cham(m, ls.baiLam, tron(ls.hamCuaEmMoi)), co = q.chanDoan.map((c) => c.ma);
+      kiem(m.ma + ': lời sai "' + ls.moTa + '" đủ mã ' + ls.phaiCoMa.join('+'), q.sao < 3 && ls.phaiCoMa.every((x) => co.includes(x)), co.join());
+    });
+    const b = nhipMaySonTatCa(m);
+    kiem(m.ma + ': BFS ' + b + ' ≤ sao.nhip ' + m.sao.nhip, b !== null && b <= m.sao.nhip);
+    for (const h of m.loiGiai.hamCuaEmMoi) kho.set(h.ten, h);
+  }
+}
+
+console.log('\n== 4. Đăng ký ==');
+{
+  const g = ThuTu.goi.find((x) => x.ma === 'may-son'), i = ThuTu.goi.indexOf(g);
+  // lo-trinh-hoc.js đã chèn gói đội vào chính mảng ThuTu.goi: gói đội Cảm biến màu (nếu có) đứng giữa gói mau và gói may-son
+  const truoc = ThuTu.goi.slice(0, i).filter((x) => x.ma !== 'doi-mau').pop();
+  kiem('gói may-son: bộ phận, mùa 3, hai chương, ngay sau gói Cảm biến màu (và gói đội của nó)', g && g.loai === 'bo-phan' && g.mua === 'mua-3' && J(g.chuong) === '["may-son","che-may-son"]' && truoc.ma === 'mau' && ThuTu.goi[i - 1].mua === 'mua-3');
+  kiem('thuTu: may-son, che-may-son đứng sau che-mau (và chương đội của nó), trước rap-nao', ThuTu.thuTu.indexOf('may-son') > ThuTu.thuTu.indexOf('che-mau') && ThuTu.thuTu.indexOf('che-may-son') === ThuTu.thuTu.indexOf('may-son') + 1 && ThuTu.thuTu.indexOf('rap-nao') === ThuTu.thuTu.indexOf('che-may-son') + 1);
+  const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
+  kiem('choi.html nạp man-may-son.js, man-che-may-son.js (sau man-che-mau.js) và part/part-son.js', html.indexOf('../man-may-son.js') > html.indexOf('../man-che-mau.js') && html.indexOf('../man-che-may-son.js') > html.indexOf('../man-may-son.js') && html.includes('part/part-son.js'));
+  kiem('Sổ lệnh: nhóm "son", bảy hàm cốt truyện đúng chương, bốn lệnh gốc', SoLenh.tenNhom.son && ['dots', 'frame', 'line', 'color_line', 'next_row', 'stripes', 'color_dots', 'grid', 'border'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).nhom === 'son') &&
+    ['ink', 'dot', 'pen_down', 'pen_up'].every((t) => SoLenh.lenhGoc.some((l) => l.ten === t)));
+  const hh = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
+  kiem('huy hiệu may-son và che-may-son có hình', hh.includes("HINH['may-son']") && hh.includes("HINH['che-may-son']"));
+  kiem('thẻ giới thiệu bộ phận "son" (khe tay, bốn lệnh)', GT.DS.son && GT.DS.son.khe === 'tay' && J(GT.DS.son.lenh) === '["ink","dot","pen_down","pen_up"]');
+  kiem('kế hoạch hoc/KE-HOACH-MAY-SON.md có trên đĩa', fs.existsSync(path.join(day, 'KE-HOACH-MAY-SON.md')));
+}
+
+console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
+if (hong) process.exit(1);

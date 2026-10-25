@@ -44,9 +44,9 @@ Kế hoạch và lộ trình của Robot Chấn Hưng nằm trong `hoc/`: `LO-TR
 
 ### Lộ trình xuất bản
 
-Game nạp `hoc/lo-trinh-hoc.js` sau ngân hàng `man-*.js`: **570 màn / 57 chương**, có gói Dò đường (Cảm biến hai bên + Mê cung) sau Cảm biến, và 9 gói đội hai robot (20 màn mỗi gói, hai chương), mỗi gói đứng ngay sau gói part của nó, ghép part đó với part liền trước (khai báo trong `man-doi-*.js`, chèn vào lộ trình ở `lo-trinh-hoc.js`; luật chung `hoc/kiem-goi-doi.mjs`, kế hoạch `hoc/KE-HOACH-PHOI-HOP.md`). Màn 1–9 chỉ chấm một sân; bài nhiều sân nằm ở màn 10. Giữ mã `ma` khi đổi vị trí để sao và tiến độ vẫn thuộc đúng bài. Gói mới không tăng ngưỡng sao mở các gói cũ.
+Game nạp `hoc/lo-trinh-hoc.js` sau ngân hàng `man-*.js`: **590 màn / 59 chương**, có gói Dò đường (Cảm biến hai bên + Mê cung) sau Cảm biến, và 9 gói đội hai robot (20 màn mỗi gói, hai chương), mỗi gói đứng ngay sau gói part của nó, ghép part đó với part liền trước (khai báo trong `man-doi-*.js`, chèn vào lộ trình ở `lo-trinh-hoc.js`; luật chung `hoc/kiem-goi-doi.mjs`, kế hoạch `hoc/KE-HOACH-PHOI-HOP.md`). Màn 1–9 chỉ chấm một sân; bài nhiều sân nằm ở màn 10. Giữ mã `ma` khi đổi vị trí để sao và tiến độ vẫn thuộc đúng bài. Gói mới không tăng ngưỡng sao mở các gói cũ.
 
-**Bán theo mùa** (`mua` trong `hoc/thu-tu-chuong.js`): mùa 1 *Xưởng R1* (120 màn, tới Robot hoàn thiện) miễn phí; mùa 2 *Địa hình* (170), mùa 3 *Công cụ* (130), mùa 4 *Bầu trời* (150) khai `ban` và chỉ mở khi đã mua. Ngưỡng sao tính trong từng mùa, gói đầu mùa cần 0 ★; mua thẳng mùa sau thì hàm cốt truyện của các mùa trước tự nạp vào kho khi vào màn. Hiện là **mua thử** (nút "Mua thử" chỉ ghi cờ `duong-hoc:da-mua` trên máy, bảng Gỡ lỗi có "Bỏ mua"); chưa nối thanh toán.
+**Bán theo mùa** (`mua` trong `hoc/thu-tu-chuong.js`): mùa 1 *Xưởng R1* (120 màn, tới Robot hoàn thiện) miễn phí; mùa 2 *Địa hình* (170), mùa 3 *Công cụ* (150, có gói Máy sơn: tô chấm, nét liền qua góc, chọn màu; `hoc/KE-HOACH-MAY-SON.md`), mùa 4 *Bầu trời* (150) khai `ban` và chỉ mở khi đã mua. Ngưỡng sao tính trong từng mùa, gói đầu mùa cần 0 ★; mua thẳng mùa sau thì hàm cốt truyện của các mùa trước tự nạp vào kho khi vào màn. Hiện là **mua thử** (nút "Mua thử" chỉ ghi cờ `duong-hoc:da-mua` trên máy, bảng Gỡ lỗi có "Bỏ mua"); chưa nối thanh toán.
 
 Khi viết công cụ đọc nội dung game, dùng `require('./hoc/lo-trinh-hoc.js')`; đọc riêng `man-*.js` là ngân hàng bài trước khi sắp lộ trình. Xem [bản rà soát và thay đổi](docs/thiet-ke/ra-soat-do-kho-2026-10-23.md).
 
@@ -60,7 +60,7 @@ Khi viết công cụ đọc nội dung game, dùng `require('./hoc/lo-trinh-hoc
 npm test
 ```
 
-Chạy lần lượt 60 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
+Chạy lần lượt 61 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
 Chạy một bộ: `node hoc/kiem-xich.mjs`, hoặc lọc `npm test -- hoc/kiem-xich`.
 
 ## Đóng gói thành trang Artifact
