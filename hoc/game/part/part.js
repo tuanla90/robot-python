@@ -6,7 +6,17 @@
      Thiếu son (màn một robot) thì không đổi gì: mỗi thân giữ màu nhận diện riêng (hai bánh vàng, nhện tím, omni xanh lá, xích thép, drone đen).
      vang = đội của người chơi (R1); lam = đồng đội thứ hai; do = đối thủ; tim = dự phòng. Không dùng xanh lá (trùng nền sân).
      LOP_SON[mã part]: map tên màu K → ô màu đội (0 nền, 1 sáng, 2 tối); vung [x,y,w,h] (tọa độ trong tấm part) giới hạn chỗ sơn khi màu đó còn dùng cho chi tiết khác (bánh xích, khung drone). Tay thiếu mục thì sơn bộ ba vàng. */
-  var SON={vang:['#ffcf30','#ffe888','#d99418'],lam:['#5aa9ff','#b3dcff','#2c62c4'],do:['#ff5f57','#ffb3ac','#b8302a'],tim:['#b07cff','#dcc4ff','#6f42c1']};
+  var SON={
+    vang:['#ffcf30','#ffe888','#d99418'],lam:['#5aa9ff','#b3dcff','#2c62c4'],do:['#ff5f57','#ffb3ac','#b8302a'],tim:['#b07cff','#dcc4ff','#6f42c1'],
+    ngoc:['#2dd4bf','#99f6e4','#0f766e'],cam:['#ff7a2f','#ffc299','#b84309'],trang:['#dce5f2','#ffffff','#7c8da6'],'hoang-kim':['#ffd700','#fff8b8','#b87d08']
+  };
+  var DS_SON=[
+    {ma:'',ten:'Nguyên bản',saoCan:0,mau:['#ffcf30','#ffe888','#d99418']},
+    {ma:'ngoc',ten:'Xanh Ngọc',saoCan:60,mau:SON.ngoc},
+    {ma:'cam',ten:'Cam Hỏa Tinh',saoCan:150,mau:SON.cam},
+    {ma:'trang',ten:'Trắng Vũ Trụ',saoCan:300,mau:SON.trang},
+    {ma:'hoang-kim',ten:'Hoàng Kim',saoCan:450,mau:SON['hoang-kim']}
+  ];
   var SON_VANG={map:{vang:0,vangSang:1,vangToi:2}};
   var LOP_SON={'hai-banh':SON_VANG,nhen:{map:{tim:0,timSang:1}},omni:{map:{la:0,laSang:1}},xich:{map:{thepToi:0,thepSang:1,vangToi:2},vung:[6,6,12,13]},drone:{map:{den:0,denSang:1,vangToi:2},vung:[7,7,10,10]},xoay:{map:{tim:0,timSang:1}}};
   function sonPart(q,d,ten){var s=SON[ten];if(!s)return q;var l=LOP_SON[d.ma]||(d.loai==='tay'?SON_VANG:null);if(!l)return q;var map={},k,v=l.vung||[0,0,q.w,q.h],x,y,c;for(k in l.map)map[K[k]]=s[l.map[k]];
@@ -73,5 +83,5 @@
     huong=((huong||0)%4+4)%4;while(huong--)p=rot90(p);return p.canvas();
   }
   function hamGoc(c){var a=[],them=function(d){d.hamGoc.forEach(function(h){if(a.indexOf(h)<0)a.push(h);});};them(chon('than',c.than));if(c.tay)them(chon('tay',c.tay));(c.camBien||[]).forEach(function(x){them(chon('cam-bien',x.ma));});return a;}
-  return{K:K,SON:SON,LOP_SON:LOP_SON,veVatNho:veVatNho,veMat:veMat,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
+  return{K:K,SON:SON,DS_SON:DS_SON,LOP_SON:LOP_SON,veVatNho:veVatNho,veMat:veMat,Painter:Painter,rot90:rot90,dangKy:dangKy,ds:ds,lay:lay,ghep:ghep,hamGoc:hamGoc,_veMot:veMot,_copy:copy};
 });

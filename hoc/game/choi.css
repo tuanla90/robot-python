@@ -1031,6 +1031,22 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .cd-vach i:nth-child(1){height:7px}.cd-vach i:nth-child(2){height:12px}.cd-vach i:nth-child(3){height:17px}.cd-vach i:nth-child(4){height:22px}
 .cd-vach i.on{background:#ffd95a;box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fff2a6}
 .cd-muc{flex:none;width:26px;text-align:center;font:var(--wm) calc(15px*var(--km))/1 var(--mono);color:#ffd95a}
+.cd-sw{flex:none;width:62px;height:28px;display:flex;align-items:center;justify-content:center;padding-top:2px;font:700 calc(13px*var(--kp))/1 var(--px);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.cd-sw.bat{color:#0e3a14;text-shadow:0 1px 0 rgba(255,255,255,.35)}
+.cd-son{margin:2px 0 8px;padding:6px 6px 4px;background:rgba(0,0,0,.22);box-shadow:inset 0 0 0 2px rgba(0,0,0,.38)}
+.cd-son-hd{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.cd-son-dang{font:600 calc(13px*var(--kp))/1 var(--px);color:#ffd95a;padding-top:2px}
+.cd-son-hang{display:flex;justify-content:space-between;gap:5px}
+.cd-son-o{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px 3px;background:#0e3a2b;box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 rgba(255,255,255,.12),inset 0 -2px 0 rgba(0,0,0,.3)}
+.cd-son-o.on{background:#236c50;box-shadow:0 0 0 2px #ffd95a,0 0 0 4px var(--ink),inset 0 2px 0 rgba(255,255,255,.2)}
+.cd-son-o.khoa{opacity:.65}
+.cd-son-o.rung{animation:shake .25s steps(2) 2}
+.cd-son-o:active{transform:translateY(1px)}
+.cd-son-mau{width:28px;height:20px;display:flex;align-items:center;justify-content:center;background:var(--c0,#ffcf30);box-shadow:0 0 0 2px var(--ink),inset 0 3px 0 var(--c1,#ffe888),inset 0 -3px 0 var(--c2,#d99418)}
+.cd-son-ic{display:flex;line-height:0}
+.cd-son-sao{display:flex;align-items:center;gap:2px;font:var(--wm) calc(11px*var(--km))/1 var(--mono);color:#ffe27a}
+.cd-son-o.khoa .cd-son-sao{color:#b8d4c5}
+.cd-son-tb{min-height:14px;margin-top:4px;text-align:center;font:500 calc(11px*var(--kp))/1.15 var(--px);color:#ffd95a}
 .cd-cot{display:flex;flex-direction:column;gap:10px;margin-top:6px}
 .cd-cot .hop-nut{flex:none}
 .cd-ban{margin-top:10px;text-align:center;font:500 calc(12px*var(--kp))/1 var(--px);color:#9fd3b8}

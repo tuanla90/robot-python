@@ -375,6 +375,7 @@
   /** Rời màn: dừng phát lại. */
   function roi() {
     if (window.HuongDan) HuongDan.dung();                                              // rời màn: dừng mọi hướng dẫn đang sáng (chưa xong thì lần sau còn)
+    if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo('soan');
     S.rid++; S.busy = false;
     if (E.side) E.side.classList.remove('busy');
   }
@@ -481,6 +482,7 @@
   /* -------------------------------------------------------------- chạy / phát lại */
   function datLaiChay() {
     S.rid++; S.busy = false; S.ket = null; S.vet = null; S.lap = null; S.idx = 0; S.nhip = 0; S.marks = null; S.cap = null;
+    if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo('soan');
     E.side.classList.remove('busy');
     if (S.man && S.man.doi) veTabXe();
     if (S.si !== 0 && nhieuSan()) { S.si = 0; S.field.nap(cauHinhSan(0)); } else S.field.datLai();
@@ -568,6 +570,7 @@
     anBong(); anToast(); S.ed.anHoan();
     S.ed.datLoi([]); S.pal.datLoi([]);
     var my = ++S.rid; S.busy = true; E.side.classList.add('busy');
+    if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo(S.man && S.man.hang === 'trum' ? 'trum' : 'chay');
     var vet = S.vet, cap = S.cap, lenhDem = 0, capDung = false, lenhNhip = [];      // lenhNhip: các lệnh chạy trong nhịp sắp phát (để đèn bộ phận sáng đúng)
     while (S.idx < vet.length) {
       var e = vet[S.idx++];
@@ -599,6 +602,7 @@
         if (tungNhip) {
           if (S.idx >= vet.length) break;
           S.busy = false; E.side.classList.remove('busy');
+          if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo('soan');
           return;
         }
       }
@@ -606,6 +610,7 @@
     sang(null);
     if (capDung) S.idx = vet.length;                                  // đã dừng giữa chừng: Chạy lần sau chạy lại từ đầu
     S.busy = false; E.side.classList.remove('busy');
+    if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo('soan');
     ketThuc(capDung);
   }
 

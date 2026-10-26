@@ -95,6 +95,7 @@
     var c = el.robot;
     if (c.width !== cv.width || c.height !== cv.height) { c.width = cv.width; c.height = cv.height; c.style.width = cv.width + 'px'; c.style.height = cv.height + 'px'; }
     var g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height); g.imageSmoothingEnabled = false; g.drawImage(cv, 0, 0);
+    if (cv.laPart && window.SanVe && SanVe.coMatDong && SanVe.coMatDong()) SanVe.veMatTam(g, c.width / 2, c.height / 2, TI_LE, ROBOT, { chay: !S.nghi }, S.huong, performance.now());
     c.style.transform = 'translate(' + S.x + 'px,-50%)';
   }
   function nhip() {

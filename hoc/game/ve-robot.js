@@ -145,10 +145,28 @@
     return Math.max(0.3, THAN_DICH * canhO / w);
   }
 
+  /** Màu sơn R1 mà người chơi đang chọn trong Cài đặt (nếu đã đủ sao mở khóa), hoặc '' (nguyên bản). */
+  function sonChon() {
+    var L = typeof window !== 'undefined' && window.Luu, P = typeof window !== 'undefined' && window.Part;
+    if (!L || !L.docCaiDat || !P || !P.SON) return '';
+    var s = L.docCaiDat().son;
+    if (!s || !P.SON[s]) return '';
+    if (P.DS_SON && typeof window !== 'undefined' && window.App && App.tongSao && !App.moHet) {
+      var muc = P.DS_SON.filter(function (x) { return x.ma === s; })[0];
+      if (muc && muc.saoCan > App.tongSao()) return '';
+    }
+    return s;
+  }
+  function sonHieuLuc(son) {
+    if (son === 'goc') return null;
+    if (son && son !== 'vang') return son;
+    return sonChon() || son || null;
+  }
+
   function veGhep(cauHinh, tt, huong, tiLe) {
     if (!coPart()) return null;
     var P = window.Part, tay = chuanTay(tt.tay), cb = tt.camBien || {};
-    var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: cauHinh.son || null };     // son: màu sơn đội (Part.SON), thiếu = vàng chuẩn
+    var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: sonHieuLuc(cauHinh.son) };     // son: màu sơn đội / người chơi chọn (Part.SON), thiếu = màu gốc của thân
     var chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || cfg.than === 'drone') ? 0 : huong;     // drone bay 4 hướng, không có mặt trước (cánh quạt luôn quay); nhện đi 4 hướng không quay mặt; nhện CÓ TAY: ảnh quay theo cạnh gắn tay (cố định theo batDau.huong, san-ve.js truyền vào `huong`)
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },       // drone: buoc = pha cánh quạt, doc = đèn thân sáng khi đo pin
@@ -186,8 +204,9 @@
     var tt = trangThai || {}, wl = tt.wl || 0, wr = tt.wr || 0, ph = tt.ph ? 1 : 0;
     huong = ((huong || 0) % 4 + 4) % 4;
     var tay = chuanTay(tt.tay);
+    var son = sonHieuLuc(cauHinh.son) || '';
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
-      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') : '', tt.loi || '', coPart() ? 'P' : 'x', cauHinh.son || ''].join('|');
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') : '', tt.loi || '', coPart() ? 'P' : 'x', son].join('|');
     if (cache[khoa]) return cache[khoa];
     var cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien, co: tt.co }, huong, tiLe);
     if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)
@@ -206,9 +225,10 @@
     if (!cauHinh || (cauHinh.tay !== 'kep' && cauHinh.tay !== 'xoay') || !coPart()) return null;
     var cv = ve(cauHinh, trangThai, huong, tiLe);
     if (!cv || !cv.laPart) return null;
-    var tt = trangThai || {}, k = [cauHinh.than, JSON.stringify(cauHinh.camBien || []), ((huong || 0) % 4 + 4) % 4, tt.wl || 0, tt.wr || 0, tt.ph ? 1 : 0, tiLe, cv.width, chuanTay(tt.tay).tuThe, chuanTay(tt.tay).kep, chuanTay(tt.tay).cam, chuanTay(tt.tay).xoay, chuanTay(tt.tay).goc].join('|');
+    var son = sonHieuLuc(cauHinh.son) || '';
+    var tt = trangThai || {}, k = [cauHinh.than, JSON.stringify(cauHinh.camBien || []), ((huong || 0) % 4 + 4) % 4, tt.wl || 0, tt.wr || 0, tt.ph ? 1 : 0, tiLe, cv.width, chuanTay(tt.tay).tuThe, chuanTay(tt.tay).kep, chuanTay(tt.tay).cam, chuanTay(tt.tay).xoay, chuanTay(tt.tay).goc, son].join('|');
     if (cacheBong[k] !== undefined) return cacheBong[k];
-    var khong = ve({ than: cauHinh.than, tay: null, camBien: cauHinh.camBien }, { wl: tt.wl, wr: tt.wr, ph: tt.ph, tay: null, camBien: tt.camBien }, huong, tiLe), r = null;
+    var khong = ve({ than: cauHinh.than, tay: null, camBien: cauHinh.camBien, son: cauHinh.son }, { wl: tt.wl, wr: tt.wr, ph: tt.ph, tay: null, camBien: tt.camBien }, huong, tiLe), r = null;
     try {
       if (khong && khong.width === cv.width) {
         var o = ctxMoi(cv.width), a = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height), b = khong.getContext('2d').getImageData(0, 0, cv.width, cv.height), d = o.g.createImageData(cv.width, cv.height), i, co = false;
@@ -244,9 +264,10 @@
   }
 
   var VeRobot = {
-    ve: ve, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart,
+    ve: ve, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
     REACH: REACH,                                                     // tâm thân → mép xa nhất của hình part (pixel part)
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };
-  window.VeRobot = VeRobot;
+  if (typeof module !== 'undefined' && module.exports) module.exports = VeRobot;
+  if (typeof window !== 'undefined') window.VeRobot = VeRobot;
 })();

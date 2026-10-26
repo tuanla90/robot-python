@@ -41,6 +41,126 @@
     return d;
   }
 
+  function tenSon(it) { return it.ma ? t('caiDat.son.' + it.ma) : t('caiDat.sonGoc'); }
+
+  /** Hàng chọn màu sơn R1 (mở khóa theo mốc tổng sao: 0 / 60 / 150 / 300 / 450). */
+  function hangSon() {
+    var ds = (window.Part && Part.DS_SON) || [
+      { ma: '', saoCan: 0, mau: ['#ffcf30', '#ffe888', '#d99418'] },
+      { ma: 'ngoc', saoCan: 60, mau: ['#2dd4bf', '#99f6e4', '#0f766e'] },
+      { ma: 'cam', saoCan: 150, mau: ['#ff7a2f', '#ffc299', '#b84309'] },
+      { ma: 'trang', saoCan: 300, mau: ['#dce5f2', '#ffffff', '#7c8da6'] },
+      { ma: 'hoang-kim', saoCan: 450, mau: ['#ffd700', '#fff8b8', '#b87d08'] }
+    ];
+    var khung = h('div', 'cd-son'); khung.setAttribute('data-cd', 'son');
+    var hd = h('div', 'cd-son-hd');
+    var ten = h('div', 'cd-ten');
+    var ic = h('span'); ic.setAttribute('data-i', 'mau'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', '#ffd95a'); ic.setAttribute('data-l', '#1b120a');
+    ten.appendChild(ic); ten.appendChild(h('span', null, t('caiDat.son')));
+    var dang = h('div', 'cd-son-dang');
+    hd.appendChild(ten); hd.appendChild(dang);
+    var hang = h('div', 'cd-son-hang');
+    var tb = h('div', 'cd-son-tb');
+    var tbHen = null;
+
+    function saoHienTai() { return (window.App && App.tongSao) ? App.tongSao() : 0; }
+    function daMo(it) { return !!(window.App && App.moHet) || saoHienTai() >= it.saoCan; }
+    function maChon() {
+      var s = (window.VeRobot && VeRobot.sonChon) ? VeRobot.sonChon() : (window.Luu && Luu.docCaiDat ? Luu.docCaiDat().son : '');
+      return s || '';
+    }
+
+    function ve() {
+      var chon = maChon();
+      var cur = ds.filter(function (x) { return x.ma === chon; })[0] || ds[0];
+      dang.textContent = tenSon(cur);
+      hang.innerHTML = '';
+      ds.forEach(function (it) {
+        var mo = daMo(it), on = chon === it.ma;
+        var b = h('button', 'cd-son-o' + (on ? ' on' : '') + (mo ? '' : ' khoa'));
+        b.setAttribute('data-nut', 'son-' + (it.ma || 'goc'));
+        b.setAttribute('data-son', it.ma || '');
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.title = mo ? tenSon(it) : t('caiDat.sonKhoa', { n: it.saoCan, ten: tenSon(it) });
+        var m = h('span', 'cd-son-mau');
+        m.style.setProperty('--c0', it.mau[0]);
+        m.style.setProperty('--c1', it.mau[1]);
+        m.style.setProperty('--c2', it.mau[2]);
+        if (on && mo) {
+          var ck = h('span', 'cd-son-ic');
+          ck.appendChild(Ve.ico('check', 1, { fill: '#ffffff', line: '#1b120a' }));
+          m.appendChild(ck);
+        } else if (!mo) {
+          var lk = h('span', 'cd-son-ic');
+          lk.appendChild(Ve.khoa(1, true));
+          m.appendChild(lk);
+        }
+        b.appendChild(m);
+        if (it.saoCan > 0) {
+          var s = h('span', 'cd-son-sao');
+          s.appendChild(Ve.sao(!mo ? false : true, 1));
+          s.appendChild(h('span', null, String(it.saoCan)));
+          b.appendChild(s);
+        } else {
+          b.appendChild(h('span', 'cd-son-sao', '0'));
+        }
+        b.addEventListener('click', function () {
+          if (!mo) {
+            b.classList.remove('rung'); void b.offsetWidth; b.classList.add('rung');
+            if (window.AmThanh) AmThanh.phat('loi');
+            tb.textContent = t('caiDat.sonKhoa', { n: it.saoCan, ten: tenSon(it) });
+            clearTimeout(tbHen);
+            tbHen = setTimeout(function () { tb.textContent = ''; }, 2400);
+            return;
+          }
+          tb.textContent = '';
+          if (window.Luu && Luu.ghiCaiDat) Luu.ghiCaiDat({ son: it.ma });
+          if (window.AmThanh) AmThanh.phat('lat');
+          ve();
+          if (window.App && App.veLai) App.veLai();
+        });
+        hang.appendChild(b);
+      });
+    }
+
+    khung.appendChild(hd);
+    khung.appendChild(hang);
+    khung.appendChild(tb);
+    ve();
+    return khung;
+  }
+
+  /** Hàng bật / tắt Biểu cảm mắt (mắt LED chuyển động trên kính robot; có thể tắt bất cứ lúc nào). */
+  function hangMat() {
+    var d = h('div', 'cd-dong'); d.setAttribute('data-cd', 'mat');
+    var ten = h('div', 'cd-ten');
+    var ic = h('span'); ic.setAttribute('data-i', 'denCam'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', '#7ff0ff'); ic.setAttribute('data-l', '#1b120a');
+    ten.appendChild(ic); ten.appendChild(h('span', null, t('caiDat.mat')));
+    var sw = h('button', 'bt cd-sw'); sw.setAttribute('data-nut', 'cd-mat');
+    function dangBat() {
+      if (window.SanVe && SanVe.coMatDong) return SanVe.coMatDong();
+      return !(window.Luu && Luu.docCaiDat && Luu.docCaiDat().mat === false);
+    }
+    function ve() {
+      var on = dangBat();
+      sw.className = 'bt cd-sw ' + (on ? 'g-gr bat' : 'g-wd');
+      sw.textContent = t(on ? 'caiDat.bat' : 'caiDat.tat');
+      sw.setAttribute('aria-pressed', on ? 'true' : 'false');
+      d.classList.toggle('tat', !on);
+    }
+    sw.addEventListener('click', function () {
+      var moi = !dangBat();
+      if (window.SanVe) SanVe.dungMat = true;
+      if (window.Luu && Luu.ghiCaiDat) Luu.ghiCaiDat({ mat: moi });
+      if (window.AmThanh) AmThanh.phat('lat');
+      ve();
+      if (window.App && App.veLai) App.veLai();
+    });
+    d.appendChild(ten); d.appendChild(sw);
+    ve();
+    return d;
+  }
+
   /** Mở bảng cài đặt; đóng thì gọi khiDong (nếu có). */
   function mo(khiDong) {
     var hop = TP.Hop.mo(t('caiDat.tieuDe'), 'hop-cai-dat');
@@ -49,6 +169,8 @@
       hop.than.appendChild(hangAm('hieuUng', 'loa', t('caiDat.hieuUng')));
       hop.than.appendChild(hangAm('nhac', 'nhac', t('caiDat.nhac')));
     }
+    hop.than.appendChild(hangMat());
+    hop.than.appendChild(hangSon());
     var cot = h('div', 'cd-cot');
     if (window.MoDau) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.gioiThieu'), function () { TP.Hop.dong(); MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(function () { mo(khiDong); }); else mo(khiDong); }); }, 'cd-mo-dau'));
     cot.appendChild(TP.Hop.nut('g-wd', t('caiDat.thongTin'), function () { thongTin(khiDong); }, 'cd-thong-tin'));

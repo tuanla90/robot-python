@@ -14,13 +14,13 @@
 
   var MUC = [0, 0.25, 0.5, 0.75, 1];            // mức 0..4 → hệ số
   var HE_SO_HU = 0.55, HE_SO_NHAC = 0.3;        // nhạc nền nhỏ hơn hiệu ứng
-  var cd = window.Luu && Luu.docCaiDat ? Luu.docCaiDat() : { hieuUng: 3, nhac: 2 };
+  var cd = (typeof window !== 'undefined' && window.Luu && Luu.docCaiDat) ? Luu.docCaiDat() : { hieuUng: 3, nhac: 2 };
 
   var ctx = null, kenhHU = null, kenhNhac = null, nhieu = null, daMo = false;
 
   function moMay() {
     if (ctx) return ctx;
-    var AC = window.AudioContext || window.webkitAudioContext;
+    var AC = typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext);
     if (!AC) return null;
     try { ctx = new AC(); } catch (e) { return null; }
     kenhHU = ctx.createGain(); kenhHU.connect(ctx.destination);
@@ -46,11 +46,13 @@
     if (ctx.state === 'suspended') ctx.resume();
     nhacChay();
   }
-  ['pointerdown', 'keydown', 'touchstart'].forEach(function (su) { document.addEventListener(su, moKhoa, true); });
-  document.addEventListener('visibilitychange', function () {
-    if (!ctx || !daMo) return;
-    if (document.hidden) ctx.suspend(); else ctx.resume();
-  });
+  if (typeof document !== 'undefined') {
+    ['pointerdown', 'keydown', 'touchstart'].forEach(function (su) { document.addEventListener(su, moKhoa, true); });
+    document.addEventListener('visibilitychange', function () {
+      if (!ctx || !daMo) return;
+      if (document.hidden) ctx.suspend(); else ctx.resume();
+    });
+  }
 
   /* ------------------------------------------------------------- nốt và nhiễu */
   /** Một nốt: tần số f (Hz), bắt đầu t0 (giây, đồng hồ ctx), dài dai; o.song kiểu sóng, o.am độ to, o.den trượt tới tần số này, o.kenh kênh ra. */
@@ -122,26 +124,61 @@
     for (var i = 0; i < LENH.length; i++) if (LENH[i][0].test(ten || '')) { phat(LENH[i][1]); return; }
   }
 
-  /* ------------------------------------------------------------- nhạc nền */
-  // Hai câu nhạc, mỗi câu 4 nhịp (Đô – La thứ – Fa – Sol), nốt móc đơn; null = lặng. Số là MIDI (72 = Đô 5).
+   /* ------------------------------------------------------------- nhạc nền 3 trạng thái */
+  // 1) 'soan' (đang xếp lệnh / menu): nhịp 96 BPM thư thái, rải hợp âm sóng tam giác êm dịu để tập trung suy nghĩ.
+  // 2) 'chay' (robot đang chạy): nhịp 112 BPM 8-bit sôi nổi (Đô – La thứ – Fa – Sol), giai điệu sóng vuông + trống hi-hat nhẹ.
+  // 3) 'trum' (màn Trùm cuối chương): nhịp 128 BPM kịch tính (La thứ – Fa – Rê thứ – Mi), bass dồn dập + giai điệu anh hùng.
+  var SOAN_DIEU = [
+    72, null, 76, null, 79, null, 76, null, 69, null, 72, null, 76, null, 72, null,
+    65, null, 69, null, 72, null, 69, null, 67, null, 71, null, 74, null, 71, null,
+    72, null, 79, null, 84, null, 79, null, 69, null, 76, null, 81, null, 76, null,
+    65, null, 72, null, 77, null, 72, null, 67, null, 74, null, 79, null, 74, null
+  ];
   var GIAI_DIEU = [
     76, null, 79, null, 81, 79, 76, null, 72, null, 76, null, 74, 72, 69, null,
     72, null, 74, 76, 79, null, 76, 74, 74, null, 71, null, 74, null, null, null,
     79, null, 76, 79, 84, null, 81, 79, 76, null, 72, 76, 81, null, 79, 76,
     77, null, 76, 74, 72, null, 74, 76, 74, null, null, null, 71, null, 74, null
   ];
-  var GOC_BASS = [48, 45, 41, 43, 48, 45, 41, 43];   // nốt gốc từng ô nhịp
-  var BUOC_S = 60 / 104 / 2;                          // 104 phách / phút, móc đơn
-  var nhac = { hen: null, buoc: 0, luc: 0 };
+  var GIAI_DIEU_TRUM = [
+    69, null, 72, 76, 81, null, 79, 76, 77, null, 76, 72, 74, null, 76, null,
+    69, null, 72, 76, 84, null, 81, 79, 76, null, 74, 72, 71, null, 76, null,
+    81, null, 84, 81, 79, null, 76, 79, 77, null, 81, 77, 76, null, 72, 76,
+    74, null, 77, 74, 72, null, 69, 72, 71, null, 74, 76, 80, null, 76, null
+  ];
+  var GOC_BASS = [48, 45, 41, 43, 48, 45, 41, 43];        // Đô – La – Fa – Sol
+  var GOC_BASS_TRUM = [45, 41, 38, 40, 45, 48, 38, 40];   // La – Fa – Rê – Mi
+  var CHE_DO_NHAC = {
+    soan: { buocS: 60 / 96 / 2, dieu: SOAN_DIEU, bass: GOC_BASS, songDieu: 'triangle', amDieu: 0.065, amBass: 0.25, trong: false },
+    chay: { buocS: 60 / 112 / 2, dieu: GIAI_DIEU, bass: GOC_BASS, songDieu: 'square', amDieu: 0.09, amBass: 0.32, trong: true },
+    trum: { buocS: 60 / 128 / 2, dieu: GIAI_DIEU_TRUM, bass: GOC_BASS_TRUM, songDieu: 'square', amDieu: 0.105, amBass: 0.35, trong: true }
+  };
+  var nhac = { hen: null, buoc: 0, luc: 0, cheDo: 'soan' };
+
+  /** Tiếng hi-hat nhẹ trên kênh nhạc nền (dùng cho chế độ 'chay' và 'trum'). */
+  function hiHatNhac(t0, am) {
+    var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = nhieu; f.type = 'highpass'; f.frequency.setValueAtTime(5200, t0);
+    g.gain.setValueAtTime(am, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.028);
+    s.connect(f); f.connect(g); g.connect(kenhNhac);
+    s.start(t0); s.stop(t0 + 0.04);
+  }
 
   function xepNhac() {
+    var cfg = CHE_DO_NHAC[nhac.cheDo] || CHE_DO_NHAC.soan, bs = cfg.buocS;
     while (nhac.luc < ctx.currentTime + 0.25) {
-      var b = nhac.buoc % GIAI_DIEU.length, t = nhac.luc, o = { kenh: kenhNhac };
-      var m = GIAI_DIEU[b];
-      if (m) not(hz(m), t, BUOC_S * 1.6, { song: 'square', am: 0.09, kenh: kenhNhac });
-      var vt = b % 8, goc = GOC_BASS[Math.floor(b / 8)];
-      if (vt % 2 === 0) { o.song = 'triangle'; o.am = 0.32; not(hz(goc + [0, 12, 7, 12][vt / 2]), t, BUOC_S * 1.8, o); }
-      nhac.buoc++; nhac.luc += BUOC_S;
+      var b = nhac.buoc % cfg.dieu.length, t = nhac.luc;
+      var m = cfg.dieu[b];
+      if (m) not(hz(m), t, bs * 1.55, { song: cfg.songDieu, am: cfg.amDieu, kenh: kenhNhac });
+      var vt = b % 8, goc = cfg.bass[Math.floor(b / 8)];
+      if (nhac.cheDo === 'trum') {
+        if (vt % 2 === 0) not(hz(goc + (vt === 4 ? 12 : 0)), t, bs * 1.4, { song: 'triangle', am: cfg.amBass, kenh: kenhNhac });
+        else not(hz(goc + 12), t, bs * 0.9, { song: 'triangle', am: cfg.amBass * 0.65, kenh: kenhNhac });
+      } else if (vt % 2 === 0) {
+        not(hz(goc + [0, 12, 7, 12][vt / 2]), t, bs * 1.8, { song: 'triangle', am: cfg.amBass, kenh: kenhNhac });
+      }
+      if (cfg.trong && (vt % 2 === 1)) hiHatNhac(t, nhac.cheDo === 'trum' ? 0.045 : 0.03);
+      nhac.buoc++; nhac.luc += bs;
     }
   }
   function nhacChay() {
@@ -150,10 +187,20 @@
     nhac.hen = setInterval(function () { if (!document.hidden) xepNhac(); else nhac.luc = ctx.currentTime + 0.1; }, 80);
   }
   function nhacDung() { clearInterval(nhac.hen); nhac.hen = null; }
+  /** Đổi chế độ nhạc nền: 'soan' (đang xếp lệnh / ngoài màn), 'chay' (robot đang chạy), 'trum' (đang chạy màn Trùm). */
+  function datCheDo(ten) {
+    var m = CHE_DO_NHAC[ten] ? ten : 'soan';
+    if (nhac.cheDo === m) return;
+    nhac.cheDo = m;
+    nhac.buoc = 0;
+    if (ctx && daMo) nhac.luc = Math.max(nhac.luc, ctx.currentTime + 0.05);
+  }
+  function cheDo() { return nhac.cheDo; }
 
   /* ------------------------------------------------------------- cài đặt */
   function dat(moi) {
-    Object.keys(moi || {}).forEach(function (k) { if (k in cd) cd[k] = Math.max(0, Math.min(4, moi[k] | 0)); });
+    if (moi && moi.hieuUng !== undefined) cd.hieuUng = Math.max(0, Math.min(4, moi.hieuUng | 0));
+    if (moi && moi.nhac !== undefined) cd.nhac = Math.max(0, Math.min(4, moi.nhac | 0));
     if (window.Luu && Luu.ghiCaiDat) Luu.ghiCaiDat(cd);
     datAmLuong();
     if (cd.nhac) nhacChay(); else nhacDung();
@@ -168,5 +215,7 @@
     }, true);
   }
 
-  window.AmThanh = { phat: phat, lenh: lenh, sao: sao, dat: dat, caiDat: caiDat, ganNut: ganNut, MUC: MUC.length - 1 };
+  var AmThanh = { phat: phat, lenh: lenh, sao: sao, dat: dat, caiDat: caiDat, datCheDo: datCheDo, cheDo: cheDo, CHE_DO_NHAC: CHE_DO_NHAC, ganNut: ganNut, MUC: MUC.length - 1 };
+  if (typeof module !== 'undefined' && module.exports) module.exports = AmThanh;
+  if (typeof window !== 'undefined') window.AmThanh = AmThanh;
 })();

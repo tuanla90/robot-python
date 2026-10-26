@@ -138,4 +138,23 @@ const hs=Part.hamGoc(c);assert.equal(hs.length,new Set(hs).size,'hàm gốc gộ
   assert.notDeepEqual(anh({tuThe:'duoi'}).buf,anh({tuThe:'tren'}).buf,'tay hạ khác tay nâng');assert.notDeepEqual(anh({kep:'dong'}).buf,anh({kep:'mo'}).buf,'kẹp đóng khác kẹp mở');
   assert.notDeepEqual(anh({kep:'dong',cam:true}).buf,anh({kep:'dong'}).buf,'kẹp ôm vật chừa khe');
 }
-console.log(`OK: ${Part.ds('than').length+Part.ds('tay').length+Part.ds('cam-bien').length} PART, tay trước mũi, cảm biến hông, nối liền, drone và silhouette đã kiểm.`);
+/* MÀU SƠN THƯỞNG THEO SAO (DS_SON) & NHẠC NỀN 3 TRẠNG THÁI (Hướng 5): 5 mức sơn (0, 60, 150, 300, 450 sao) sơn được mọi thân + tay mà giữ nguyên dáng (mask). */
+{
+  assert.ok(Array.isArray(Part.DS_SON)&&Part.DS_SON.length===5,'DS_SON có đủ 5 mốc sơn');
+  assert.deepEqual(Part.DS_SON.map(x=>x.saoCan),[0,60,150,300,450],'mốc sao mở khóa sơn: 0, 60, 150, 300, 450');
+  for(const s of ['ngoc','cam','trang','hoang-kim']){
+    assert.ok(Array.isArray(Part.SON[s])&&Part.SON[s].length===3,`SON.${s} có bộ ba màu`);
+    for(const than of ['hai-banh','xich','nhen','omni','drone']){
+      const tay=than==='drone'?'nam-cham':'kep';
+      const goc=Part.ghep({than,tay},{}),son=Part.ghep({than,tay,son:s},{});
+      assert.deepEqual(son.buf.map(Boolean),goc.buf.map(Boolean),`${than}/${s}: sơn không làm đổi khung pixel`);
+      assert.notDeepEqual(son.buf,goc.buf,`${than}/${s}: sơn phải đổi màu lớp vỏ`);
+    }
+  }
+  const AmThanh=require('../am-thanh.js');
+  assert.equal(AmThanh.cheDo(),'soan','chế độ nhạc mặc định là soan');
+  AmThanh.datCheDo('chay');assert.equal(AmThanh.cheDo(),'chay','đổi sang chế độ chay');
+  AmThanh.datCheDo('trum');assert.equal(AmThanh.cheDo(),'trum','đổi sang chế độ trum');
+  AmThanh.datCheDo('khong-hop-le');assert.equal(AmThanh.cheDo(),'soan','chế độ lạ tự về soan');
+}
+console.log(`OK: ${Part.ds('than').length+Part.ds('tay').length+Part.ds('cam-bien').length} PART, tay trước mũi, cảm biến hông, nối liền, drone, màu sơn thưởng và silhouette đã kiểm.`);

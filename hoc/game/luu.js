@@ -148,18 +148,28 @@
     return true;
   }
 
-  /* ---- cài đặt (cai-dat.js): duong-hoc:cai-dat = { hieuUng: 0..4, nhac: 0..4 } (mức âm lượng, 0 = tắt). Xóa tiến độ không đụng tới. */
+  /* ---- cài đặt (cai-dat.js): duong-hoc:cai-dat = { hieuUng: 0..4, nhac: 0..4, son: '' | mã sơn, mat: bool }. Xóa tiến độ không đụng tới. */
   var KHOA_CAI_DAT = 'duong-hoc:cai-dat';
-  var CAI_DAT_GOC = { hieuUng: 3, nhac: 2 };
+  var CAI_DAT_GOC = { hieuUng: 3, nhac: 2, son: '', mat: true };
   function docCaiDat() {
     var d = docJson(KHOA_CAI_DAT), kq = {};
-    Object.keys(CAI_DAT_GOC).forEach(function (k) {
+    ['hieuUng', 'nhac'].forEach(function (k) {
       var v = d && typeof d === 'object' ? d[k] : undefined;
       kq[k] = typeof v === 'number' && v >= 0 && v <= 4 ? Math.floor(v) : CAI_DAT_GOC[k];
     });
+    kq.son = d && typeof d === 'object' && typeof d.son === 'string' ? d.son : '';
+    kq.mat = d && typeof d === 'object' && typeof d.mat === 'boolean' ? d.mat : true;
     return kq;
   }
-  function ghiCaiDat(c) { return ghiJson(KHOA_CAI_DAT, c); }
+  function ghiCaiDat(c) {
+    var cur = docCaiDat(), moi = Object.assign({}, cur, c || {});
+    return ghiJson(KHOA_CAI_DAT, {
+      hieuUng: typeof moi.hieuUng === 'number' ? Math.max(0, Math.min(4, Math.floor(moi.hieuUng))) : cur.hieuUng,
+      nhac: typeof moi.nhac === 'number' ? Math.max(0, Math.min(4, Math.floor(moi.nhac))) : cur.nhac,
+      son: typeof moi.son === 'string' ? moi.son : cur.son,
+      mat: typeof moi.mat === 'boolean' ? moi.mat : cur.mat
+    });
+  }
 
   /* ---- mùa đã mua (thu-tu-chuong.js, mùa có `ban`). Hiện là mua THỬ: chưa nối thanh toán, chỉ ghi cờ trên máy này. */
   var KHOA_DA_MUA = 'duong-hoc:da-mua';
@@ -220,7 +230,7 @@
   docTienDo();
   chuyenCu();
 
-  window.Luu = {
+  var Luu = {
     chuyenCu: chuyenCu, docTienDo: docTienDo,
     kho: kho, laBoNho: laBoNho,
     saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
@@ -235,4 +245,6 @@
     get loiKho() { return loiKho; },
     KHOA_TIEN_DO: KHOA_TIEN_DO, KHOA_NHAP: KHOA_NHAP
   };
+  if (typeof module !== 'undefined' && module.exports) module.exports = Luu;
+  if (typeof window !== 'undefined') window.Luu = Luu;
 })();
