@@ -12,7 +12,17 @@
    Mười màn (lời giải chuẩn):
      1  Tay xoay vào đội     dua-vat   R1 đã có chương trình; R2 chuyền vật bên trái sang ô đích bên phải: pick_left(), drop_right()
      2  Nhìn bên hông        toi-co    R1 tìm lối rẽ bên phải bằng to_gap(); R2 đi thẳng tới cờ
-     (các màn sau: xem DS)
+     3  Giữ cửa cho bạn      dua-vat   R1 move() lên nút M giữ cửa C mở; R2 mang vật qua cửa (pick_left, go_wall, drop_right)
+     4  Chờ hàng bên hông    dua-vat   R1 đặt vật vào ô bên trái R2; R2 chờ bằng while left_clear(): wait()
+     5  Lùi giao hàng        dua-vat   như 4, ô đích ở bên phải hai ô sau lưng R2: R2 lùi hai ô (giữ đúng bên tay xoay) rồi drop_right()
+     6  Chờ cửa mở           dua-vat   R1 tìm nút trong hốc bằng to_gap(); R2 chờ cửa trước mặt mở: while not front_clear(): wait()
+     7  Dọn chỗ cho bạn      dua-vat   R2 đứng trên ô đích R1 cần, làm việc của mình rồi tiến ra; R1 chờ ô trước mặt trống rồi mới đặt (chờ ngược chiều)
+     8  Gác nút cho bạn qua  toi-co    cờ riêng: R1 đứng trên M quay mặt vào cửa, chờ tới khi thấy R2 vào cửa rồi lùi hai ô về cờ
+     9  Bạn tự động          dua-vat   R1 khóa (go_wall, pick, lùi hai ô, đặt); sửa R2 đang chờ cố định 5 nhịp thành chờ bằng left_clear()
+     10 Ca phối hợp          dua-vat   trùm ba sân, huy hiệu 'che-hai-robot': chỗ của R1 là nút M; R1 lấy vật xa gần khác nhau, lùi về tới khi bên phải
+                                       trống (while not right_clear(): back()), đặt cho R2; R2 chờ vật, qua cửa, tới cuối hành lang, lùi một ô rồi đặt
+   Một sân thì đếm đúng số nhịp chờ cũng thắng (và kẹp ngay trong nhịp R1 thả nên nhanh hơn chờ bằng cảm biến một nhịp, ở màn 4, 5, 9):
+   ngưỡng sao lấy theo lời giải chờ bằng cảm biến; trùm ba sân mới bắt buộc cảm biến (kiem-doi-mua-1.mjs, NHANH_HON).
 
    Dữ liệu màn nhiều robot như man-hai-robot.js: man.doi = [phần riêng R1, phần riêng R2] (batDau, loaiRobot, robot, hamGoc, coDinh); cấp ngoài là của R1.
    Bài làm: { doi: [{ chinh }, { chinh }], hamCuaMan }. Ô = tổng hai chương trình chính + thân mỗi hàm được gọi (mỗi hàm một lần).
@@ -83,27 +93,29 @@
   // 6: hành lang trên của R1 (hàng 1, dài quá chỗ rẽ), nút M ở hốc dưới (4,2). R2 ở (1,4) quay phải, vật bên trái (1,3), cửa C (2,4), ô đích (5,5) bên phải cuối hành lang
   var SAN_6 = ['#######', '#.....#', '####M##', '#o#####', '#.C...#', '#####D#', '#######'];
 
-  // 7: R1 ở (1,2) quay lên, vật trước mặt (1,1). Ô đích (2,2) trước mặt R1 sau khi quay phải đang có sẵn một vật (X): R2 phải dọn nó sang ô đích (4,2).
-  //    R2 ở (3,5) quay lên, đi lên tới (3,2) (trước mặt là tường): bên trái là (2,2), bên phải là (4,2)
-  var SAN_7 = ['######', '#o####', '#.X.D#', '###.##', '###.##', '###.##', '######'];
+  // 7: R1 ở (1,2) quay trái, vật trước mặt (0,2). R2 ĐỨNG TRÊN ô đích (2,2) quay phải: vật của R2 bên trái (2,1), ô đích của nó bên phải (2,3),
+  //    lối ra (3,2) trước mặt. R2 làm xong việc rồi tiến ra khỏi ô đích; R1 (đã quay đầu, ô đích trước mặt) chờ ô trống rồi mới đặt.
+  //    R2 đứng yên thì R1 không có chỗ đặt; R1 đứng yên thì không ai lấy được vật của R1.
+  var SAN_7 = ['#####', '##o##', 'o.D.#', '##D##', '#####'];
 
-  // 8: hành lang dọc của R2 (x = 2) có cửa C (2,6); nút M (3,6) ngay bên phải cửa; R1 ở (4,6) quay trái, cờ R1 (5,6); cờ R2 (2,8) sau cửa. Cờ riêng từng robot.
+  // 8: hành lang dọc của R2 (x = 2) có cửa C (2,6); nút M (3,6) ngay bên phải cửa; R1 ở (4,6) quay trái, cờ R1 (5,6) sau lưng; cờ R2 (2,8) sau cửa.
+  //    Cờ riêng từng robot. R1 đứng trên M quay mặt vào cửa: thấy R2 vào cửa (front_clear() False) thì lùi hai ô về cờ.
   var SAN_8 = ['#######', '##.####', '##.####', '##.####', '##.####', '##.####', '##CM.F#', '##.####', '##F####', '#######'];
 
   // 9: làn dọc của R1 (x = 1), vật ở cuối làn (1,1); ô bàn giao (2,4) bên phải R1 lúc về chỗ cũ = bên trái R2 (3,4); ô đích (4,4) bên phải R2
   var SAN_9 = ['######', '#o####', '#.####', '#.####', '#...D#', '######'];
   var R1_9 = ['go_wall()', 'pick()'].concat(FOR(2, ['back()']), ['turn_right()', 'drop()']);   // R1 tự động (khóa)
 
-  // 10 (trùm, ba sân): làn dọc của R1 (x = 2), R1 ở (2,6) quay lên, vật ở đầu làn (sâu nông khác nhau), nút M (2,4) hai ô trên chỗ R1.
-  //    Ô bàn giao (3,6) bên phải R1 lúc về chỗ cũ = bên trái R2 (3,7) quay phải. Cửa C (4,7) ngay trước mặt R2; ô đích ở cuối hành lang (xa gần khác nhau).
+  // 10 (trùm, ba sân): làn dọc của R1 (x = 2), chỗ của R1 (2,6) là nút M: R1 đi lấy vật thì cửa đóng, về chỗ thì cửa mở. Vật ở đầu làn (sâu nông khác nhau).
+  //    Ô bàn giao (3,6) bên phải R1 lúc về chỗ = bên trái R2 (3,7) quay phải. Cửa C (4,7) ngay trước mặt R2; ô đích ở cuối hành lang (xa gần khác nhau).
   var SAN_10 = [
-    ['##########', '##########', '##########', '##o#######', '##M#######', '##.#######', '##..######', '###.C.D###', '##########'],
-    ['##########', '##o#######', '##.#######', '##.#######', '##M#######', '##.#######', '##..######', '###.C...D#', '##########'],
-    ['##########', '##########', '##o#######', '##.#######', '##M#######', '##.#######', '##..######', '###.C..D##', '##########']
+    ['##########', '##########', '##########', '##o#######', '##.#######', '##.#######', '##M.######', '###.C.D###', '##########'],
+    ['##########', '##o#######', '##.#######', '##.#######', '##.#######', '##.#######', '##M.######', '###.C...D#', '##########'],
+    ['##########', '##########', '##o#######', '##.#######', '##.#######', '##.#######', '##M.######', '###.C..D##', '##########']
   ];
   var BD_10 = [[0, 1, 2].map(function () { return { x: 2, y: 6, huong: 0 }; }), [0, 1, 2].map(function () { return { x: 3, y: 7, huong: 1 }; })];
-  var R1_10 = ['go_wall()', 'pick()', 'u_turn()', 'go_wall()', 'turn_left()', 'drop()', 'turn_left()'].concat(FOR(2, ['move()']));
-  var R2_10 = ['while left_clear():', '    wait()', 'pick_left()', 'while not front_clear():', '    wait()', 'go_wall()', 'back()', 'drop()'];
+  var R1_10 = ['go_wall()', 'pick()', 'while not right_clear():', '    back()', 'turn_right()', 'drop()'];   // lùi về tới khi bên phải (ô bàn giao) trống
+  var R2_10 = ['while left_clear():', '    wait()', 'pick_left()', 'go_wall()', 'back()', 'drop()'];
 
   var DS = [
     /* ------------------------------------------------------------ hàng 1: làm quen */
@@ -180,7 +192,7 @@
     }),
 
     man({
-      so: 5, ten: 'Lùi mang hàng',
+      so: 5, ten: 'Lùi giao hàng',
       hamCuaEmCan: ['pick', 'turn_right', 'drop', 'pick_left', 'back', 'drop_right', 'u_turn', 'move'],
       mucTieu: 'dua-vat',
       deBai: 'Ô đích ở bên phải, hai ô phía sau lưng R2. Nhận vật xong, R2 lùi về cạnh ô đích rồi đặt vật sang phải. Lùi thì bên phải vẫn là bên phải; quay đầu thì bên phải thành bên trái.',
@@ -218,38 +230,39 @@
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Dọn chỗ cho bạn',
-      hamCuaEmCan: ['pick', 'turn_right', 'drop', 'go_wall', 'pick_left', 'drop_right'],
+      hamCuaEmCan: ['pick', 'u_turn', 'drop', 'pick_left', 'drop_right', 'move'],
       mucTieu: 'dua-vat',
-      deBai: 'Ô đích trước mặt R1 đang có sẵn một vật. R2 chạy tới, dọn vật đó sang ô đích bên phải nó. Lần này R1 phải chờ R2: chờ tới khi ô trước mặt trống rồi mới đặt vật của mình.',
-      veMaMau: 'Chạy thử: R1 đặt vật khi ô đích còn bị chiếm. Thêm vòng chờ cho R1.',
-      san: SAN_7, bd: [{ x: 1, y: 2, huong: 0 }, { x: 3, y: 5, huong: 0 }],
-      maMau: B(['pick()', 'turn_right()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']),
-      sao: { o: 39, nhip: 6 },
-      loiGiai: B(['pick()', 'turn_right()', 'while not front_clear():', '    wait()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']),
-      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['pick()', 'turn_right()', '# chờ R2 dọn chỗ', 'while not front_clear():', '    wait()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']) },
+      deBai: 'R2 đang đứng trên ô đích mà R1 cần. R2 chuyển vật của mình từ bên trái sang ô đích bên phải, rồi tiến ra khỏi ô đích. Lần này R1 phải chờ R2: nhặt vật, quay đầu, chờ tới khi ô trước mặt trống rồi mới đặt.',
+      veMaMau: 'Chạy thử: R1 đặt vật khi R2 còn đứng trên ô đích. Thêm vòng chờ cho R1.',
+      san: SAN_7, bd: [{ x: 1, y: 2, huong: 3 }, { x: 2, y: 2, huong: 1 }],
+      maMau: B(['pick()', 'u_turn()', 'drop()'], ['pick_left()', 'drop_right()', 'move()']),
+      sao: { o: 38, nhip: 6 },
+      loiGiai: B(['pick()', 'u_turn()', 'while not front_clear():', '    wait()', 'drop()'], ['pick_left()', 'drop_right()', 'move()']),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['pick()', 'u_turn()', '# chờ R2 rời ô đích', 'while not front_clear():', '    wait()', 'drop()'], ['pick_left()', 'drop_right()', 'move()']) },
       loiSai: [
-        { moTa: 'R1 không chờ: đặt vật lên ô đang có vật', baiLam: B(['pick()', 'turn_right()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
-        { moTa: 'R1 chờ ngược điều kiện: thiếu chữ not', baiLam: B(['pick()', 'turn_right()', 'while front_clear():', '    wait()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] }
+        { moTa: 'R1 không chờ: đặt vật vào chỗ R2 đang đứng', baiLam: B(['pick()', 'u_turn()', 'drop()'], ['pick_left()', 'drop_right()', 'move()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
+        { moTa: 'R1 chờ ngược điều kiện: thiếu chữ not', baiLam: B(['pick()', 'u_turn()', 'while front_clear():', '    wait()', 'drop()'], ['pick_left()', 'drop_right()', 'move()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] }
       ],
-      goiY: ['Ô trước mặt còn vật thì front_clear() trả False.', 'R1: while not front_clear(): wait() ngay trước drop().']
+      goiY: ['Đồng đội đứng trước mặt thì front_clear() trả False, như gặp vật.', 'R1: while not front_clear(): wait() ngay trước drop().']
     }),
 
     man({
       so: 8, ten: 'Gác nút cho bạn qua',
-      hamCuaEmCan: ['move', 'turn_right', 'go_wall', 'turn_left'],
+      hamCuaEmCan: ['move', 'back', 'go_wall'],
       co: [[{ x: 5, y: 6 }], [{ x: 2, y: 8 }]],
-      deBai: 'R1 đứng lên nút M thì cửa C mở cho R2 đi xuống. Cờ của R1 ở ngay phía sau. R1 rời nút sớm thì cửa đóng trước mặt R2. R1 quay mặt lên để cửa nằm bên trái, chờ tới khi thấy R2 đi vào cửa rồi mới về cờ.',
+      deBai: 'R1 tiến lên nút M thì cửa C trước mặt mở cho R2 đi xuống. Cờ của R1 ở hai ô phía sau lưng. R1 rời nút sớm thì cửa đóng trước mặt R2. R1 chờ tới khi thấy R2 đi vào cửa rồi mới lùi về cờ: đang có xe trong cửa thì cửa không đóng được.',
       veMaMau: 'R2 đã có chương trình. Chạy thử: R1 đứng mãi trên nút. Viết tiếp chương trình R1.',
       san: SAN_8, bd: [{ x: 4, y: 6, huong: 3 }, { x: 2, y: 1, huong: 2 }],
       maMau: B(['move()'], ['go_wall()']),
-      sao: { o: 14, nhip: 8 },
-      loiGiai: B(['move()', 'turn_right()', 'while left_clear():', '    wait()', 'turn_right()', 'go_wall()'], ['go_wall()']),
-      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['move()', 'turn_right()', '# chờ R2 vào cửa', 'while left_clear():', '    wait()', 'turn_right()', 'go_wall()'], ['go_wall()']) },
+      sao: { o: 14, nhip: 7 },
+      loiGiai: B(['move()', 'while front_clear():', '    wait()'].concat(FOR(2, ['back()'])), ['go_wall()']),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['move()', '# chờ R2 vào cửa', 'while front_clear():', '    wait()'].concat(FOR(2, ['back()'])), ['go_wall()']) },
       loiSai: [
-        { moTa: 'R1 không chờ: rời nút trước khi R2 tới cửa', baiLam: B(['move()', 'turn_right()', 'turn_right()', 'go_wall()'], ['go_wall()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'R1 không chờ: rời nút trước khi R2 tới cửa', baiLam: B(['move()'].concat(FOR(2, ['back()'])), ['go_wall()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'R1 chờ ngược điều kiện: thừa chữ not', baiLam: B(['move()', 'while not front_clear():', '    wait()'].concat(FOR(2, ['back()'])), ['go_wall()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'R1 đứng mãi trên nút: không về cờ', baiLam: B(['move()'], ['go_wall()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Cửa mở mà chưa có ai thì left_clear() trả True; R2 vào cửa thì trả False.', 'Đang có xe trong cửa thì cửa không đóng được: R1 về cờ lúc đó là vừa.']
+      goiY: ['Cửa mở mà chưa có ai thì front_clear() trả True; R2 vào cửa thì trả False.', 'Chờ xong thì lùi hai ô: for i in range(2): back().']
     }),
 
     man({
@@ -273,21 +286,22 @@
     /* ------------------------------------------------------------ trùm */
     man({
       so: 10, ten: 'Ca phối hợp', hang: 'trum',
-      hamCuaEmCan: ['go_wall', 'pick', 'u_turn', 'turn_left', 'drop', 'move', 'pick_left', 'back', 'drop_right'],
+      hamCuaEmCan: ['go_wall', 'pick', 'u_turn', 'turn_left', 'drop', 'pick_left', 'back', 'drop_right', 'turn_right'],
       mucTieu: 'dua-vat',
-      deBai: 'R1 lên đầu làn lấy vật, mang về đặt vào ô bên trái R2, rồi lên đứng trên nút M (hai ô phía trên chỗ cũ) giữ cửa mở. R2 nhận vật, chờ cửa trước mặt mở, mang vật tới ô đích ở cuối hành lang. Làn của R1 và hành lang của R2 ở mỗi sân dài ngắn khác nhau: một chương trình cho cả ba sân.',
-      veMaMau: 'R1 đã mang được vật về; R2 đã nhận được vật. Viết tiếp: R1 lên nút, R2 chờ cửa rồi giao hàng.',
+      deBai: 'Chỗ R1 đứng là nút M: R1 đi lấy hàng thì cửa C trước mặt R2 đóng, R1 về chỗ thì cửa mở. R1 lên đầu làn lấy vật, lùi về chỗ cũ (chỉ ở chỗ cũ bên phải R1 mới trống) rồi đặt vào ô bên trái R2. R2 nhận vật, đi qua cửa tới cuối hành lang, đặt vật vào ô đích ở ô cuối. Làn của R1 và hành lang của R2 ở mỗi sân dài ngắn khác nhau: một chương trình cho cả ba sân.',
+      veMaMau: 'R1 đã lấy được vật; R2 chưa có chương trình. Viết tiếp cho cả hai, đừng đếm bước hay đếm nhịp.',
       san: SAN_10, bd: BD_10,
-      maMau: B(R1_10.slice(0, 6), R2_10.slice(0, 3)),
-      sao: { o: 47, nhip: 63 },
+      maMau: B(R1_10.slice(0, 2), []),
+      sao: { o: 39, nhip: 54 },
       loiGiai: B(R1_10, R2_10),
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(R1_10, ['# nhận vật'].concat(R2_10)) },
       loiSai: [
-        { moTa: 'R1 không lên nút: cửa đóng mãi, R2 chờ mãi', baiLam: B(R1_10.slice(0, 6), R2_10), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'R2 đặt vật sang phải ở cuối hành lang: bên phải là tường', baiLam: B(R1_10, R2_10.slice(0, 6).concat(['drop_right()'])), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
-        { moTa: 'R2 chờ cố định theo sân ngắn: sân khác vật chưa tới', baiLam: B(R1_10, FOR(9, ['wait()']).concat(R2_10.slice(2))), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'R1 đặt vật ngay ở đầu làn: R2 chờ mãi', baiLam: B(['go_wall()', 'pick()', 'u_turn()', 'drop()'], R2_10), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'R2 đi tới cuối hành lang rồi đặt luôn: trước mặt là tường', baiLam: B(R1_10, R2_10.slice(0, 4).concat(['drop()'])), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
+        { moTa: 'R2 chờ cố định theo sân ngắn: sân khác vật chưa tới', baiLam: B(R1_10, FOR(10, ['wait()']).concat(R2_10.slice(2))), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R1 lùi khi bên phải còn trống: thừa chữ not, R1 không lùi về', baiLam: B(['go_wall()', 'pick()', 'while right_clear():', '    back()', 'turn_right()', 'drop()'], R2_10), phaiCoMa: ['tha-bi-chan'] }
       ],
-      goiY: ['R1: đi tới vật, nhặt, quay đầu, về tới tường, quay trái rồi đặt; sau đó quay trái và tiến hai ô lên nút M.', 'R2: chờ vật bên trái, nhặt, chờ cửa mở, đi tới cuối hành lang, lùi một ô rồi đặt vật vào ô đích.'],
+      goiY: ['R1: đi tới vật, nhặt, rồi lùi cho tới khi bên phải trống (đó là chỗ cũ, trên nút M), quay phải rồi đặt.', 'R2: chờ vật bên trái, nhặt, đi tới cuối hành lang, lùi một ô rồi đặt vật vào ô đích.'],
       huyHieu: { ma: 'che-hai-robot', ten: 'Huy hiệu Đội phối hợp' }
     })
   ];
