@@ -91,7 +91,7 @@ for (const m of M.danhSach) {
 // ---------------------------------------------------------------- MÙA 1 = 10 GÓI (26/10, KE-HOACH-MUA-1.md): thứ tự gói, ràng buộc lệnh theo gói
 const day = (c, so) => so.map(n => c + '.' + n);
 const MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-// [mã gói, [[chương, các màn (không kể thứ tự)]]]. Gói 9 (Combo) chưa có màn nên chưa có; chương chưa có màn chưa có.
+// [mã gói, [[chương, các màn (không kể thứ tự)]]]. Chương chưa có màn chưa có. Gói 9 Combo: man-combo-mua-1.js + che-cam-bien.10 (về từ chỗ cất).
 const BANG_MUA_1 = [
   ['xe', [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]]],
   ['tay-gap', [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9, 10]).concat('che-lap.5')]]],
@@ -101,9 +101,10 @@ const BANG_MUA_1 = [
   ['tay-xoay', [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]]],
   ['me-cung', [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]]],
   ['hai-robot', [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', day('che-hai-robot', MUOI)]]],
+  ['combo', [['combo', day('combo', MUOI)], ['che-combo', day('che-combo', [1, 2, 3, 4, 5, 6, 7, 8, 9]).concat('che-cam-bien.10')]]],
   ['robot', [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8, 10]).concat('cam-bien-ben.10')]]]
 ];
-const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'che-cam-bien.10'];
+const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8'];
 const BIEN_MUA_2 = ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
 const goiMua = mu => TT.goi.filter(g => g.mua === mu);
 const goiCuaChuong = c => TT.goi.find(g => g.chuong.includes(c));
@@ -311,7 +312,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   let tr = 0;
   for (const g of browser.MoGoi.dsMua()[0].goi) { assert.equal(g.saoCan, Math.floor(browser.MoGoi.TI_LE_SAO * tr / 5) * 5, g.ma); tr += g.saoToiDa; }
   const ds = browser.MoGoi.dsMua()[0].goi;
-  assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 10]);
+  assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 10]);
   assert.equal(ds[6].man[0].ma, 'che-cam-bien.4');
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
   assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 90);
