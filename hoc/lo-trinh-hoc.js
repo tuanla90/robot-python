@@ -268,7 +268,7 @@
       chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
     { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 185,
       chuong: [['hai-robot', day('hai-robot', MUOI)]] },
-    { ma: 'robot', ten: 'Trùm mùa', loai: 'thu-thach', sao: 200, hinh: 'robot-hoan-thien',
+    { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 200, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
   ];
   // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.
@@ -350,7 +350,7 @@
   // Gói Kho hàng đứng trước gói Bánh lùi: u_turn() lúc đó còn là bản hai lần turn_right() (xuong-ham.7), chưa phải bản một nhịp có lùi (che-xe.5).
   // Lời giải không đổi nhưng số nhịp / ô đổi: đánh dấu nội dung bản 2 để tools/do-lo-trinh.mjs đo lại ngưỡng sao (nháp cũ của các màn này bị bỏ).
   ['che-tay.1', 'che-tay.3', 'che-tay.4', 'che-tay.6', 'che-tay.10'].forEach(function (ma) { get(ma).phienBanNoiDung = 2; });
-  // Trùm mùa cần bounce() và fetch_back(), nhưng hai màn chế chúng (dùng biến đếm) đã sang mùa 2: đưa sẵn thành hàm của màn, khóa (chỉ xem).
+  // Màn trùm của gói R1 xuất xưởng cần bounce() và fetch_back(), nhưng hai màn chế chúng (dùng biến đếm) đã sang mùa 2: đưa sẵn thành hàm của màn, khóa (chỉ xem).
   // Chương trình còn gọi 4 hàm của em khác nhau (go_wall, pass_back, to_gap, turn_right) nên giới hạn hàm hạ từ 6 xuống 4; khay không mở nhóm ĐẾM.
   (function () {
     var m = get('robot-hoan-thien.10');

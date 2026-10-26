@@ -12,6 +12,9 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
   Khác bảng: doi-tay-xoay neo sau `che-doi-nam-cham` (neo `che-nam-cham` thì chen trước Đội nam châm); tắt nhóm ĐẾM (`bienDem`) cho mọi màn mùa 1;
   cam-bien-ben.9 thành trùm chương 1 gói 7 (chương đủ 10 thì màn cuối là trùm); robot-hoan-thien.10 nhận `bounce` / `fetch_back` thành hàm của màn khóa (người chơi vẫn XEM được code có biến trong hai hàm đó: cất màn này khi gói 10 có 10 trùm mới).
 
+- **27/10 gói B xong** (8e4e4f0, eaf8873, 091018e): gói 4 chương 1 `nut-de` 10 màn (máy kiểm hoc/kiem-nut-de.mjs, bộ dò đường riêng có cửa / nút đè). Gói 10 đổi tên **"R1 xuất xưởng"**.
+  Còn treo: sân chưa vẽ dây nối nút đè với cửa (màn 5, 6, 9, 10 dùng `noi`); bấm thử thấy rối thì làm sau.
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
