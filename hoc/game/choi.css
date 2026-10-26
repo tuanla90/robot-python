@@ -1124,6 +1124,44 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 @keyframes md-quay{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 @keyframes md-di{from{transform:translateX(0)}to{transform:translateX(var(--d))}}
 @keyframes md-sang{0%,100%{filter:drop-shadow(0 0 0 #ffd95a)}50%{filter:drop-shadow(0 0 8px #ffd95a)}}
+/* ============================================================ PHIM GÓI (phim-goi.js, phim-mua-*.js): dùng lại lớp .md-* của phim mở đầu, thêm .pg-* */
+.pg .md-loi{min-height:72px}
+.pg-xe{width:0;height:0}
+.pg-nhom{width:0;height:0}
+.pg-truot{transition:left var(--tg,1s) steps(6),top var(--tg,1s) steps(6)}
+.pg-hien{animation:pg-hien .01s linear var(--t,0s) both}
+.pg-an{animation:pg-an .01s linear var(--t,0s) both}
+.pg-dich{box-sizing:border-box;border:3px solid #ffd95a;box-shadow:0 0 0 2px var(--ink),inset 0 0 0 2px var(--ink);animation:md-sang 1s steps(2) infinite}
+.pg-nhac{animation:pg-nhac .3s steps(2) both}
+.pg-hoi-r1{left:76px;top:86px;animation-delay:1.3s}
+.pg-hoi-xa{left:150px;top:70px;animation-delay:.6s}
+.pg-cach{left:30px;right:auto;top:60px}
+.pg-code{z-index:2}
+.pg-tia{height:8px;background:repeating-linear-gradient(90deg,#7ff0ff 0 6px,transparent 6px 10px);opacity:.9;transform-origin:0 50%;animation:pg-tia .6s steps(3) infinite}
+.pg-tia.pg-do{animation:pg-tia .6s steps(3) infinite,pg-do .01s linear var(--t,0s) both}
+.pg-tia.doc{width:8px;background:repeating-linear-gradient(180deg,#7ff0ff 0 6px,transparent 6px 10px);transform-origin:50% 0}
+.pg-lan{animation:pg-lan 1.2s steps(6) .2s both}
+.pg-sao-quay{animation:md-quay .8s steps(4) infinite}
+.pg-vet{height:6px;background:repeating-linear-gradient(90deg,#3a2412 0 8px,transparent 8px 14px);opacity:.8;transform-origin:100% 50%;animation:pg-vet 1.4s steps(5) .5s both}
+.pg-mo-cua{animation:pg-mo-cua 1.6s steps(6) .5s both}
+.pg-anh{background:linear-gradient(90deg,rgba(255,240,180,0) 0,rgba(255,240,180,.85) 50%,rgba(255,240,180,0) 100%);animation:pg-anh 1.6s steps(6) .8s both}
+.pg-bay{animation:pg-bay 2.4s steps(12) infinite}
+.pg-r2{--r2:#5aa9ff}
+@keyframes pg-hien{from{visibility:hidden}to{visibility:visible}}
+@keyframes pg-an{from{visibility:visible}to{visibility:hidden}}
+@keyframes pg-nhac{from{transform:translateY(0) scale(1)}to{transform:translateY(-4px) scale(1.1)}}
+@keyframes pg-tia{0%,100%{opacity:.95}50%{opacity:.55}}
+@keyframes pg-do{from{filter:none}to{filter:hue-rotate(180deg) saturate(3)}}
+@keyframes pg-lan{from{transform:translateX(0) rotate(0)}to{transform:translateX(var(--x,-120px)) rotate(-720deg)}}
+@keyframes pg-vet{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pg-mo-cua{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes pg-anh{from{opacity:0}to{opacity:1}}
+@keyframes pg-bay{0%{transform:translate(0,0)}25%{transform:translate(6px,-6px)}50%{transform:translate(0,-10px)}75%{transform:translate(-6px,-4px)}100%{transform:translate(0,0)}}
+/* nút ▶ "Xem lại phim" trên hộp gói đã xem phim (man-goi.js) */
+.g-phim{position:absolute;left:4px;top:42px;width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;z-index:2}
+.cd-phim{display:flex;flex-direction:column;gap:8px;margin-top:6px;max-height:340px;overflow-y:auto}
+.cd-phim .hop-nut{flex:none}
+.cd-phim-rong{font:600 calc(14px*var(--kp))/1.3 var(--px);color:var(--cream);text-align:center}
 .g-ch.tt{border-radius:0;transform:rotate(45deg) scale(.85)}                    /* chấm của gói thử thách: hình thoi */
 .pal-the .the-chu.co-part canvas{width:auto !important;height:auto !important;max-height:26px}                         /* hình bộ phận thật ở tiêu đề thẻ (thanh-phan.js hinhPart), giữ pixel gốc */
 /* hàng chọn mùa ở màn chọn gói (man-goi.js veMua, chỉ khi có từ hai mùa) */

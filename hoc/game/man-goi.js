@@ -204,6 +204,17 @@
       else dong.appendChild(h('span', 'g-can', t('chon.khoaMua')));
       b.appendChild(dong);
       if (xong) b.appendChild(h('div', 'g-xong', t('goi.xong')));
+      if (mo && window.PhimGoi && PhimGoi.co(g.ma) && PhimGoi.daXem(g.ma)) {        // đã xem phim gói: nút nhỏ ▶ xem lại (phim xong thì vào gói)
+        var xl = h('button', 'bt g-cy g-phim'); xl.setAttribute('data-nut', 'xem-phim'); xl.setAttribute('aria-label', t('pg.xemLai')); xl.setAttribute('title', t('pg.xemLai'));
+        var ip = h('span'); ip.setAttribute('data-i', 'play'); ip.setAttribute('data-s', '1'); ip.setAttribute('data-l', '#07303a'); ip.setAttribute('data-f', '#ffffff'); xl.appendChild(ip); Ve.hydrate(xl);
+        xl.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });          // không tính là bắt đầu vuốt dải hộp
+        xl.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          if (k !== S.i) { dat(k, true); return; }
+          PhimGoi.mo(g.ma, function () { App.vaoGoi(g.ma); });
+        });
+        b.appendChild(xl);
+      }
     }
     b.addEventListener('click', function () {
       if (S.vuaKeo && Date.now() - S.vuaKeo < 250) return;                // vừa vuốt xong: không tính là chạm
@@ -214,6 +225,7 @@
         if (App.chuaMua(mu)) { moMua(mu); return; }
         lac(b); thongBao(App.muaMo(mu) ? t('goi.khoa', { can: g.saoCan, co: App.saoMua(g.mua) }) : loiMua(mu)); return;
       }
+      if (window.PhimGoi && PhimGoi.co(g.ma) && !PhimGoi.daXem(g.ma)) { PhimGoi.mo(g.ma, function () { App.vaoGoi(g.ma); }); return; }   // lần đầu vào gói: phim ngắn (phim-goi.js)
       App.vaoGoi(g.ma);
     });
     return b;

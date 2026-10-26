@@ -457,6 +457,19 @@
       'md.5': 'R1 muốn đi tìm đồ, mà cứ quay mòng mòng tại chỗ.',
       'md.6': 'May mà R1 hiểu lệnh Python. Em viết lệnh, R1 làm theo.',
 
+      /* ---- phim mở gói (phim-goi.js; lời khung n của gói g: 'pg.<g>.<n>', dữ liệu phim ở phim-mua-*.js) */
+      'pg.boQua': 'Bỏ qua',
+      'pg.tiep': 'Tiếp',
+      'pg.vaoGoi': 'Vào gói',
+      'pg.xong': 'Xong',
+      'pg.xemLai': 'Xem lại phim',
+      'pg.tay-gap.1': 'R1 tìm thấy rồi! Tay kẹp bị kẹt dưới thùng gỗ.',
+      'pg.tay-gap.2': 'Tay kẹp bay về, gắn vào mũi R1. Cạch!',
+      'pg.tay-gap.3': 'Có tay rồi! R1 hạ tay, kẹp chặt thùng, nhấc lên.',
+      'pg.tay-gap.4': 'Lệnh mới cho tay: arm_down(), grab(), arm_up(). Em thử nhé!',
+      'caiDat.phimGoi': 'Xem lại phim các gói',
+      'caiDat.phimGoiRong': 'Mở gói mới để có thêm phim.',
+
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',
       'gt.tiep': 'Tiếp',
