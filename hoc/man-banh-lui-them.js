@@ -114,7 +114,7 @@
     man({
       chuong: 'banh-lui', so: 4, ten: 'Ra khỏi ngõ cụt', mucTieu: 'bong-mo', nhipTheoLoiGiai: true,
       huyHieu: { ma: 'banh-lui', ten: 'Huy hiệu Bánh lùi' },
-      hamCuaEmCan: ['go_wall', 'back', 'turn_right', 'u_turn', 'move', 'turn_left'],
+      hamCuaEmCan: ['go_wall', 'back', 'turn_right', 'u_turn', 'move'],
       deBai: 'Ba ngõ cụt dài ngắn khác nhau, trạm ◆ ở cuối ngõ. Ngã rẽ luôn cách ◆ hai ô, lúc bên phải lúc bên trái. Một chương trình phải chạm ◆, lùi ra tới ngã rẽ rồi đi hết nhánh rẽ như xe mờ, ở cả ba sân.',
       veMaMau: 'Chương trình có sẵn đưa xe tới ◆. Viết tiếp; đừng đếm bước đi tới, mỗi ngõ một khác.',
       san: [
