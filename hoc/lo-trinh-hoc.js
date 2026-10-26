@@ -18,7 +18,9 @@
       // 7 màn mới của gói 3 Cảm biến khoảng cách (chỉ khai, lộ trình thêm vào chương bên dưới)
       'cam-bien-them',
       // 8 màn mới của gói 5 Bánh lùi (chỉ khai, lộ trình thêm vào hai chương bên dưới)
-      'banh-lui-them'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'banh-lui-them',
+      // 10 màn mới của gói 8 Đội hai robot, chương 2 "Đội phối hợp" (chỉ khai, lộ trình thêm chương bên dưới)
+      'doi-mua-1'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -270,6 +272,12 @@
   TT.thuTu.push('banh-lui', 'che-banh-lui');
   M.them(M.manBanhLuiThem || []);
   (M.manBanhLuiThem || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // Gói 8: chương 2 "Đội phối hợp" (man-doi-mua-1.js, mã che-hai-robot.1–10; R1 tay kẹp, R2 tay xoay, cảm biến bên, nút đè, bánh lùi).
+  // Chương chỉ có ở lộ trình nên chèn tạm vào cuối thuTu cho ManHoc.them nhận (như nut-de); thuTu mùa 1 dựng lại theo MUA_1 bên dưới.
+  TT.thuTu.push('che-hai-robot');
+  TT.ten['che-hai-robot'] = 'Đội phối hợp';
+  M.them(M.manDoiMua1 || []);
+  (M.manDoiMua1 || []).forEach(function (m) { nguon[m.ma] = copy(m); });
   var MUA_1 = [
     { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
       chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
@@ -287,7 +295,7 @@
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
       chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
     { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 210,
-      chuong: [['hai-robot', day('hai-robot', MUOI)]] },
+      chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
     { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 225, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
   ];
