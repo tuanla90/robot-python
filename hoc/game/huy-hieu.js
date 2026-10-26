@@ -227,6 +227,23 @@
     return p;
   };
 
+  HINH['banh-lui'] = function () {                              // xe nhìn ngang (quay sang phải) đang lùi: mũi tên vàng chỉ về phía sau, vệt bụi sau đuôi
+    var p = P(T26, T26), x0 = 7, y0 = 11;
+    p.rect(x0, y0 + 4, 17, 6, INK); p.rect(x0 + 1, y0 + 5, 15, 4, KK.vang);          // thân
+    p.rect(x0 + 1, y0 + 5, 15, 1, KK.vangSang); p.rect(x0 + 1, y0 + 8, 15, 1, KK.vangToi);
+    p.rect(x0 + 4, y0, 9, 5, INK); p.rect(x0 + 5, y0 + 1, 7, 4, KK.vang);             // cabin
+    p.rect(x0 + 6, y0 + 1, 5, 3, KK.kinh); p.rect(x0 + 6, y0 + 1, 2, 1, KK.xanh);
+    p.rect(x0 + 16, y0 + 5, 1, 2, '#fff3b0');                                         // đèn trước
+    p.rect(x0, y0 + 5, 1, 2, '#ff5a4a');                                              // đèn lùi đỏ ở đuôi
+    [3, 13].forEach(function (cx) {                                                   // hai bánh
+      p.ell(x0 + cx + 0.5, y0 + 9.5, 2.9, 2.9, INK); p.ell(x0 + cx + 0.5, y0 + 9.5, 1.9, 1.9, KK.den); p.px(x0 + cx, y0 + 9, KK.thepSang);
+    });
+    p.rect(5, 6, 13, 3, INK); p.rect(6, 7, 11, 1, KK.vangSang);                       // mũi tên lùi: thân
+    tamGiac(p, [0.5, 7.5], [6.5, 2.5], [6.5, 12.5], INK); tamGiac(p, [2, 7.5], [6, 4.2], [6, 10.8], KK.vang);
+    [[2, 18], [3, 21], [1, 23]].forEach(function (q) { p.rect(q[0], q[1], 2, 1, '#c9b48a'); });   // bụi
+    return p;
+  };
+
   HINH['che-tay'] = function () {                               // càng kẹp mở, sắp gắp khối sắt + bánh răng
     var p = P(T26, T26), k = cat(partTho('tay', 'kep', { kep: 'mo' })), q = P(k.w, k.h - 3), y;
     for (y = 0; y < k.h; y++) if (y < 5 || y > 7) for (var x = 0; x < k.w; x++) q.px(x, y < 5 ? y : y - 3, k.get(x, y));   // rút ngắn hai càng 3 hàng cho khỏi chạm bánh răng
