@@ -531,7 +531,7 @@ async function main() {
   console.log('chương | số | mã | tên | kiểu bài | gói recall | dòng | nhịp | ô | cỡ sân | khối chuẩn');
   for (const m of dsGoi) {
     const b = bang[m.ma] || {}, r = recallCua(m);
-    console.log([m.chuong, m.so, m.ma + (MOI.includes(m.ma) ? '' : ' (cũ)'), m.ten, m.kieuBai, [...r.goi].sort().map((g) => g + ':' + r.lyDo[g]).join(', '), soDong(m), m.sao.nhip, m.sao.o, coSan(m), (b.khoi ?? '') + (NHANH_HON[m.ma] ? ' (NHANH_HON)' : '')].join(' | '));
+    console.log([m.chuong, m.so, m.ma + (MOI.includes(m.ma) ? '' : ' (cũ)'), m.ten, m.kieuBai, [...r.goi].sort().map((g) => g + ':' + r.lyDo[g]).join(', '), soDong(m), m.sao.nhip + (b.nhip !== undefined && b.nhip !== m.sao.nhip ? ' (đo ' + b.nhip + ')' : ''), m.sao.o + (b.o !== undefined && b.o !== m.sao.o ? ' (đo ' + b.o + ')' : ''), coSan(m), (b.khoi ?? '') + (NHANH_HON[m.ma] ? ' (NHANH_HON)' : '')].join(' | '));
   }
   console.log('BẢNG RECALL (số lần mỗi gói được nhắc trong ' + dsGoi.length + ' màn): ' + Object.entries(KQ.dem).map(([g, n]) => g + ' ' + GOI_RECALL[g] + ' = ' + n).join(' · '));
   for (const l of KQ.loi) console.log('  recall: ' + l);

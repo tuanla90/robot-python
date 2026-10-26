@@ -412,7 +412,24 @@
     return p;
   };
 
-  HINH['robot-hoan-thien'] = function () {                      // robot đủ bộ nhìn từ trên (hướng lên) đúng dáng robot trong game, thu nhỏ; sao nổi phía trên
+  HINH['combo'] = function () {                                 // combo nhìn bên, nhặt bên: tay xoay ở giữa, hai thùng hai bên, hai tia cảm biến đỏ chỉ sang hai bên
+    var p = P(30, 26), t = cat(partTho('tay', 'xoay', { kep: 'mo' }));
+    chep(p, t, 15 - (t.w >> 1), Math.max(0, 26 - t.h), 1);
+    Part.veVatNho(p, 0, 4, 7, 'go');
+    Part.veVatNho(p, 23, 4, 7, 'go');
+    for (var i = 0; i < 3; i++) { p.px(8 + i * 2, 7, '#ff5a4a'); p.px(21 - i * 2, 7, '#ff5a4a'); }
+    return p;
+  };
+  HINH['che-combo'] = function () {                             // combo mở rộng: tay xoay + thùng bên cạnh + bánh răng
+    var p = P(T26, T26), t = cat(partTho('tay', 'xoay', { kep: 'mo' }));
+    chep(p, t, Math.max(0, 10 - (t.w >> 1)), Math.max(0, T26 - t.h), 1);
+    Part.veVatNho(p, 0, 2, 6, 'go');
+    p.px(7, 5, '#ff5a4a'); p.px(9, 5, '#ff5a4a');
+    themBanhRang(p);
+    return p;
+  };
+
+  HINH['robot-hoan-thien'] = function () {                   // robot đủ bộ nhìn từ trên (hướng lên) đúng dáng robot trong game, thu nhỏ; sao nổi phía trên
     var p = P(T26, T26), r = P(23, 14), CY = '#3fd0e8';
     r.rect(3, 7, 3, 7, INK); r.rect(4, 8, 1, 5, KK.denSang); r.px(4, 9, KK.thepSang); r.px(4, 11, KK.thepSang);       // bánh trái
     r.rect(17, 7, 3, 7, INK); r.rect(18, 8, 1, 5, KK.denSang); r.px(18, 9, KK.thepSang); r.px(18, 11, KK.thepSang);   // bánh phải
