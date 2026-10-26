@@ -1,4 +1,7 @@
-# Kế hoạch phim ngắn mở mỗi gói (27/10/2026, user yêu cầu, kịch bản CHƯA DUYỆT)
+# Kế hoạch phim ngắn mở mỗi gói (27/10/2026, user đồng ý)
+
+**27/10 đã làm** (f027ac0 … b2671cc): bộ máy `game/phim-goi.js`, dữ liệu `game/phim-mua-1.js` (9 phim, gói combo khai sẵn), nút ▶ xem lại trên hộp gói, Cài đặt "Xem lại phim các gói", máy kiểm `kiem-phim-goi.mjs`.
+Đã quyết khi nghiệm thu: R1 trong phim theo màu sơn người chơi chọn (bảng sơn không có màu lam nên không trùng R2); phim gói 10 vẽ R1 có tay xoay (trùm mới của gói 10 sẽ dùng tay xoay).
 
 User 27/10: "mỗi gói bạn làm 1 đoạn hoạt hình ngắn giống đoạn mở đầu để giới thiệu các robot, cơ chế mới trong màn".
 
