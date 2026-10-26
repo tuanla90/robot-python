@@ -7,6 +7,11 @@ Rà từng màn hiện có (script đọc lời giải, tính bắc cầu qua h�
 Ràng buộc: không màn nào trước gói 5 gọi lệnh lùi; trước gói 7 gọi `left_clear` / `right_clear`; trước gói 2 chương 2 dùng `for`; mùa 1 không còn biến (sang mùa 2).
 Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / thứ tự ở lớp lộ trình `lo-trinh-hoc.js`.
 
+## Trạng thái
+- **27/10 gói A xong** (commit fa377d6, 7c501bd, 8043010): mùa 1 đã thành 10 gói bằng màn có sẵn (gói 9 Combo chưa có nên chưa hiện).
+  Khác bảng: doi-tay-xoay neo sau `che-doi-nam-cham` (neo `che-nam-cham` thì chen trước Đội nam châm); tắt nhóm ĐẾM (`bienDem`) cho mọi màn mùa 1;
+  cam-bien-ben.9 thành trùm chương 1 gói 7 (chương đủ 10 thì màn cuối là trùm); robot-hoan-thien.10 nhận `bounce` / `fetch_back` thành hàm của màn khóa (người chơi vẫn XEM được code có biến trong hai hàm đó: cất màn này khi gói 10 có 10 trùm mới).
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
@@ -55,6 +60,20 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
 | 8 | 10 | đội hai robot có tay xoay / cảm biến bên |
 | 9 | 10 + 9 | combo tay xoay + cảm biến bên: hỏi bên nào có thùng rồi xoay tay nhặt bên đó không quay xe; trùm combo |
 | 10 | 10 | trùm mùa: kho hàng tổng hợp mọi part và nâng cấp mùa 1 |
+
+## Đường cong học và recall (user 26/10: bắt buộc cho mọi gói viết mới)
+
+**Đường cong mượt** trong mỗi chương 10 màn (theo `hang` đang dùng):
+- màn 1–3 **làm quen**: một ý mới, sân nhỏ, lời giải ngắn; màn 4–6 **luyện**: dùng ý đó vài cách; màn 7–9 **biến thể**: đố, sửa hàm lỗi, ghép với ý cũ; màn 10 **trùm**.
+- Mỗi màn thêm **tối đa một** điều mới so với màn trước. Không nhảy vọt: số dòng lời giải, số nhịp, cỡ sân tăng dần (màn n không quá ~1,5 lần màn n−1, trừ màn trùm).
+- Màn đầu của một gói phải dễ hơn màn trùm của gói trước (thở ra trước khi học tiếp).
+
+**Gói 9 (Combo) và gói 10 (Tổng hợp + Trùm mùa) phải phong phú và recall các gói khác:**
+- Mỗi màn mới của gói 9–10 dùng **ít nhất hai gói trước** ngoài ý chính của nó (ví dụ combo tay xoay + cảm biến bên **cộng** nút đè, lùi, vòng lặp, `while`…).
+- Trên cả gói 9 + 10, **mỗi gói 1–8 được nhắc lại ít nhất 3 lần** (hàm của gói đó, part, hay yếu tố sân của nó): xe + `def`, tay + `for`, khoảng cách + `if` / `while`, kho hàng + nút đè, bánh lùi, tay xoay, cảm biến bên, đội.
+- Không hai màn liền nhau cùng một kiểu bài; xen bài giao hàng, dò đường, sửa hàm lỗi, đố nhịp, nhiều sân một chương trình.
+- Trùm mùa (gói 10 màn 10) gần như dùng hết: thân, tay xoay, cảm biến bên, lùi, nút đè, hàm tự viết, vòng lặp.
+- Máy kiểm của gói 9–10 có **bảng recall**: mỗi màn đánh dấu gói nào được dùng (đọc từ lời giải: lệnh, hàm của em, ký hiệu sân), và kiểm các điều trên.
 
 ## Việc phải làm khi bắt tay (chưa làm)
 1. `lo-trinh-hoc.js`: dựng 10 gói / 20 chương mùa 1 theo bảng (đổi `m.chuong`, `m.so`, `m.hang`; giữ `ma`); thêm chương mới vào `thu-tu-chuong.js`; ngưỡng sao gói.
