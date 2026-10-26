@@ -236,6 +236,98 @@
   dsBen[8].hamCuaEmCan.push('pick', 'drop');
   dsBen.forEach(function (m) { m.hamCuaEmCan.push('go_wall'); });
   M.them(dsBen);
+
+  // ---------------------------------------------------------------- MÙA 1 = 10 GÓI (26/10, KE-HOACH-MUA-1.md, KE-HOACH-7-MUA.md "Bố cục chuẩn")
+  // Chỉ dùng màn đã có. Đổi m.chuong / so / hang và vị trí; KHÔNG đổi `ma` (khóa lưu sao). Chương chưa có màn nào (gói 4 chương nút đè, gói 5 phần màn mới,
+  // gói 8 chương 2, gói 10 chương 2) chưa tạo; gói 9 (Combo) chưa có màn nên chưa tạo. Chương mới chỉ có ở lộ trình (như cam-bien-ben / me-cung):
+  // kho-hang, banh-lui, che-banh-lui (mùa 1) và bien (đầu mùa 2). Chương cũ hết màn (che-xe, che-tay, che-lap) rời khỏi thuTu (không thành gói "Sắp có").
+  // Thứ tự màn trong chương: thứ tự cũ của lộ trình, trùm của chương gốc đứng cuối. Mã gói giữ như cũ khi được (cờ goi-mo:<mã> không khóa lại).
+  // Ngưỡng sao khai cứng = TI_LE_SAO (0,5) × tổng sao tối đa các gói trước trong mùa, làm tròn xuống bội 5 (mo-goi.js); thêm màn mới thì tính lại.
+  function day(chuong, so) { return so.map(function (n) { return chuong + '.' + n; }); }
+  var MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  var MUA_1 = [
+    { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
+      chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
+    { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 30,
+      chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },
+    { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
+      chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 5, 4, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 3])]] },
+    { ma: 'kho-hang', ten: 'Kho hàng', sao: 75, hinh: 'che-tay',
+      chuong: [['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
+    { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 90, hinh: 'che-xe',
+      chuong: [['banh-lui', day('che-xe', [4, 5, 6, 7, 8, 9])], ['che-banh-lui', day('che-tay', [5, 7, 9]).concat(['che-lap.7', 'che-lap.9', 'che-xe.10'])]] },
+    { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 110,
+      chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
+    { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 140, hinh: 'cam-bien-ben',
+      chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
+    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 170,
+      chuong: [['hai-robot', day('hai-robot', MUOI)]] },
+    { ma: 'robot', ten: 'Trùm mùa', loai: 'thu-thach', sao: 185, hinh: 'robot-hoan-thien',
+      chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
+  ];
+  // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.
+  var BIEN = { ma: 'bien', ten: 'Biến', loai: 'khai-niem', mua: 'mua-2', sao: 0, hinh: 'che-cam-bien',
+    chuong: [['bien', ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9']]] };
+  // Cất khỏi lộ trình xuất bản (ngân hàng man-*.js giữ nguyên, `nguon` còn bản gốc): trùng ý, dư so với khuôn, hay dùng cảm biến bên quá sớm.
+  // che-cam-bien.10 chỉ cất tạm: chờ gói 9 (Combo) có màn.
+  var CAT = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10',
+    'khoang-cach.7', 'che-cam-bien.8', 'che-cam-bien.10'];
+  /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
+  function cat(dsMa) {
+    dsMa.forEach(function (ma) {
+      var i = M.danhSach.indexOf(get(ma));
+      if (i < 0) throw new Error('Cất màn không có trong lộ trình: ' + ma);
+      M.danhSach.splice(i, 1);
+    });
+  }
+  /** Dựng một chương từ các màn `dsMa` theo thứ tự: chương, số 1..n, hàng. Trùm: màn cuối của chương đủ 10, hay màn cuối vốn là trùm. */
+  function dungChuong(chuong, dsMa) {
+    if (dsMa.length > 10) throw new Error('Chương quá 10 màn: ' + chuong);
+    dsMa.forEach(function (ma, i) {
+      var m = get(ma);
+      if (!m) throw new Error('Màn không có: ' + ma);
+      var cuoi = i === dsMa.length - 1 && (dsMa.length === 10 || nguon[ma].hang === 'trum');
+      m.chuong = chuong; m.so = i + 1;
+      m.hang = cuoi ? 'trum' : i < 3 ? 'lam-quen' : i < 6 ? 'luyen' : 'bien-the';
+    });
+  }
+  cat(CAT);
+  var chuongMua1 = [], daDung = {};
+  MUA_1.concat([BIEN]).forEach(function (g) {
+    g.chuong.forEach(function (c) {
+      c[1].forEach(function (ma) { if (daDung[ma]) throw new Error('Màn xếp hai lần: ' + ma); daDung[ma] = true; });
+      dungChuong(c[0], c[1]);
+      if (g !== BIEN) chuongMua1.push(c[0]);
+    });
+  });
+  ['kho-hang', 'banh-lui', 'che-banh-lui', 'bien'].forEach(function (c) { TT.ten[c] = c === 'kho-hang' ? 'Kho hàng' : c === 'banh-lui' ? 'Bánh lùi' : c === 'che-banh-lui' ? 'Hàm có lùi' : 'Biến'; });
+  // Gói của mùa 1 cũ (và hai gói dời về mùa 1) thay bằng MUA_1; gói Biến đứng đầu mùa 2.
+  var goiDoi = ['hai-robot', 'tay-xoay'];
+  for (var gi = TT.goi.length - 1; gi >= 0; gi--) {
+    var gc = TT.goi[gi];
+    if (!gc.mua || gc.mua === 'mua-1' || goiDoi.indexOf(gc.ma) >= 0) TT.goi.splice(gi, 1);
+  }
+  var dauMua2 = TT.goi.findIndex(function (g) { return g.mua === 'mua-2'; });
+  TT.goi.splice(dauMua2, 0, { ma: BIEN.ma, ten: BIEN.ten, loai: BIEN.loai, mua: BIEN.mua, sao: BIEN.sao, hinh: BIEN.hinh, chuong: ['bien'] });
+  TT.goi.splice.apply(TT.goi, [0, 0].concat(MUA_1.map(function (g) {
+    var x = { ma: g.ma, ten: g.ten, sao: g.sao, mua: 'mua-1', chuong: g.chuong.map(function (c) { return c[0]; }) };
+    if (g.loai) x.loai = g.loai;
+    if (g.hinh) x.hinh = g.hinh;
+    return x;
+  })));
+  // Mùa 2 mất gói đầu Đội hai robot (30 ★), thêm gói Biến (4 màn, 12 ★); mùa 4 mất gói đầu Tay xoay: tính lại theo cùng luật, gói đầu mùa cần 0 ★.
+  // Chỉ hạ ngưỡng (gói đã mở vẫn mở). Gói đội chèn sau (dưới) tự tính từ các ngưỡng này.
+  var NGUONG_MUA_SAU = { 'bang-chuyen': 5, nhen: 35, list: 65, xich: 95, omni: 125, 'may-nem': 0, 'rap-tay': 30, drone: 45, flycam: 75, 'rap-du': 90 };
+  TT.goi.forEach(function (g) { if (NGUONG_MUA_SAU[g.ma] !== undefined) g.sao = NGUONG_MUA_SAU[g.ma]; });
+  var boChuong = chuongMua1.concat(['che-xe', 'che-tay', 'che-lap', 'bien']);
+  var chuongSau = TT.thuTu.filter(function (c) { return boChuong.indexOf(c) < 0; });
+  chuongSau.splice(chuongSau.indexOf(TT.goi[dauMua2 + MUA_1.length + 1].chuong[0]), 0, 'bien');
+  TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(chuongMua1, chuongSau));
+  // dot2 chỉ còn là nhãn (lớp dot2 của hộp gói): ba chương dời về mùa 1 không còn là đợt 2.
+  ['hai-robot', 'tay-xoay', 'che-tay-xoay'].forEach(function (c) { var i = TT.dot2.indexOf(c); if (i >= 0) TT.dot2.splice(i, 1); });
+  M.manCat = CAT.slice();
+  M.tinhLai();
+
   // Gói đội hai robot (man-doi-*.js, hoc/KE-HOACH-PHOI-HOP.md) chỉ khai báo trong ngân hàng: chèn các chương của gói ngay sau chương c.sau
   // (cuối gói part) và gói ngay sau gói chứa chương đó. Chương chưa có màn thì chưa chèn. Ngưỡng sao mặc định: gói part +30 (đã chơi kha khá gói part), không vượt gói kế tiếp.
   // Gói neo sau chương của một gói thêm khác (doi-thu-manh sau che-dua-robot) có thể được nạp trước gói đó (tệp nạp theo vần): chương neo chưa có thì để lượt sau.

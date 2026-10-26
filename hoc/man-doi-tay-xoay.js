@@ -375,7 +375,7 @@
 
   // Chỉ khai báo: lo-trinh-hoc.js chèn chương vào thứ tự xuất bản rồi mới thêm màn, nên ngân hàng gốc và id các chương cũ giữ nguyên.
   ManHoc.chuongThem = (ManHoc.chuongThem || []).concat([{
-    sau: 'che-tay-xoay', ds: DS.concat(DS2),
+    sau: 'che-doi-nam-cham', ds: DS.concat(DS2),   // 26/10: tay xoay dời về mùa 1, gói đội này cần nam châm nên đứng sau gói Đội nam châm (mùa 3)
     chuong: [{ ma: CHUONG, ten: 'Đội tay xoay và nam châm' }, { ma: 'che-' + CHUONG, ten: 'Chế lệnh đội tay xoay' }],
     goi: { ma: CHUONG, ten: 'Đội tay xoay và nam châm', hinh: 'tay-xoay' }
   }]);
