@@ -173,12 +173,32 @@
     hop.than.appendChild(hangSon());
     var cot = h('div', 'cd-cot');
     if (window.MoDau) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.gioiThieu'), function () { TP.Hop.dong(); MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(function () { mo(khiDong); }); else mo(khiDong); }); }, 'cd-mo-dau'));
+    if (window.PhimGoi && window.App && App.dsGoi) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.phimGoi'), function () { phimGoi(khiDong); }, 'cd-phim-goi'));
     cot.appendChild(TP.Hop.nut('g-wd', t('caiDat.thongTin'), function () { thongTin(khiDong); }, 'cd-thong-tin'));
     cot.appendChild(TP.Hop.nut('g-rd', t('caiDat.xoa'), function () { xoa(khiDong); }, 'cd-xoa'));
     cot.appendChild(TP.Hop.nut('g-gr', t('chung.dong'), function () { TP.Hop.dong(); if (khiDong) khiDong(); }, 'cd-dong'));
     hop.than.appendChild(cot);
     hop.than.appendChild(h('div', 'cd-ban', t('caiDat.phienBan', { v: PHIEN_BAN })));
     Ve.hydrate(hop.than);
+  }
+
+  /** "Xem lại phim các gói": danh sách gói đã mở có phim (phim-goi.js); xem xong một phim thì về lại danh sách. */
+  function phimGoi(khiDong) {
+    var m = TP.Hop.mo(t('caiDat.phimGoi'), 'hop-nho');
+    m.hop.setAttribute('data-hop', 'phim-goi-ds');
+    var ds = h('div', 'cd-phim');
+    var goi = App.dsGoi().filter(function (g) { return !g.sapCo && App.goiMo(g) && PhimGoi.co(g.ma); });
+    if (!goi.length) ds.appendChild(h('div', 'cd-phim-rong', t('caiDat.phimGoiRong')));
+    goi.forEach(function (g) {
+      ds.appendChild(TP.Hop.nut('g-wd', g.ten, function () {
+        TP.Hop.dong();
+        PhimGoi.mo(g.ma, function () { phimGoi(khiDong); }, { nutCuoi: 'pg.xong' });
+      }, 'cd-phim-' + g.ma));
+    });
+    m.than.appendChild(ds);
+    var hang = h('div', 'hop-hang');
+    hang.appendChild(TP.Hop.nut('g-gr', t('chung.dong'), function () { mo(khiDong); }, 'dong'));
+    m.than.appendChild(hang);
   }
 
   function thongTin(khiDong) {
