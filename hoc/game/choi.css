@@ -1142,6 +1142,10 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .pg-tia.doc{width:8px;background:repeating-linear-gradient(180deg,#7ff0ff 0 6px,transparent 6px 10px);transform-origin:50% 0}
 .pg-lan{animation:pg-lan 1.2s steps(6) .2s both}
 .pg-sao-quay{animation:md-quay .8s steps(4) infinite}
+.pg-sang{animation:md-sang .8s steps(2) var(--t,0s) infinite}
+.pg-nhay{animation:md-sang .8s steps(2) infinite}
+.pg-nap{width:33px;height:6px;background:#e0a35a;box-shadow:0 0 0 2px var(--ink)}
+.pg-lac-xe{animation:md-lac .5s steps(2) 3}
 .pg-vet{height:6px;background:repeating-linear-gradient(90deg,#3a2412 0 8px,transparent 8px 14px);opacity:.8;transform-origin:100% 50%;animation:pg-vet 1.4s steps(5) .5s both}
 .pg-mo-cua{animation:pg-mo-cua 1.6s steps(6) .5s both}
 .pg-anh{background:linear-gradient(90deg,rgba(255,240,180,0) 0,rgba(255,240,180,.85) 50%,rgba(255,240,180,0) 100%);animation:pg-anh 1.6s steps(6) .8s both}
@@ -1151,8 +1155,8 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 @keyframes pg-an{from{visibility:visible}to{visibility:hidden}}
 @keyframes pg-nhac{from{transform:translateY(0) scale(1)}to{transform:translateY(-4px) scale(1.1)}}
 @keyframes pg-tia{0%,100%{opacity:.95}50%{opacity:.55}}
-@keyframes pg-do{from{filter:none}to{filter:hue-rotate(180deg) saturate(3)}}
-@keyframes pg-lan{from{transform:translateX(0) rotate(0)}to{transform:translateX(var(--x,-120px)) rotate(-720deg)}}
+@keyframes pg-do{from{background-image:repeating-linear-gradient(90deg,#7ff0ff 0 6px,transparent 6px 10px)}to{background-image:repeating-linear-gradient(90deg,#ff5f57 0 6px,transparent 6px 10px)}}
+@keyframes pg-lan{from{transform:translateX(0) rotate(0)}to{transform:translateX(var(--x,120px)) rotate(var(--r,720deg))}}
 @keyframes pg-vet{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes pg-mo-cua{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 @keyframes pg-anh{from{opacity:0}to{opacity:1}}
