@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-che-may-son.js — "Học lập trình": CHƯƠNG `che-may-son` · CHẾ LỆNH MÁY SƠN (10 màn, 25/10). Chương chế lệnh của bộ phận máy sơn (sau chương `may-son`, hoc/KE-HOACH-MAY-SON.md).
+   man-che-may-son.js — "Robot Chấn Hưng": CHƯƠNG `che-may-son` · CHẾ LỆNH MÁY SƠN (10 màn, 25/10). Chương chế lệnh của bộ phận máy sơn (sau chương `may-son`, hoc/KE-HOACH-MAY-SON.md).
    Robot như chương may-son: XE HAI BÁNH GẮN ĐẦU SƠN, robot { than: 'hai-banh', tay: 'son', camBien: [] }. Mục tiêu 'to-hinh' (tô đúng hình mờ). Chương trình chính khóa (`chinhCoDinh`, bản mẫu
    `maMau.chinh`), người chơi chế hàm; 10 tự viết chương trình chính (gioiHanHam 3). Mỗi lệnh chế có ít nhất một cách khác cũng thắng: `congThucKhac` (kiem-che-may-son.mjs chạy từng cách).
    Ý Python: hàm có tham số mang MÀU (color_line(c, n)), hàm nhận DANH SÁCH MÀU (stripes(colors)), for LỒNG for (grid(r, k)), GHI màu vào danh sách (copy_row), if theo màu đọc được.

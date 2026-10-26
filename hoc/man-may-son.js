@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-may-son.js — "Học lập trình": CHƯƠNG `may-son` · MÁY SƠN (10 màn, 25/10). Chương làm quen của bộ phận MỚI "máy sơn" (hoc/KE-HOACH-MAY-SON.md), gói mùa 3 "Công cụ", sau gói Cảm biến màu.
+   man-may-son.js — "Robot Chấn Hưng": CHƯƠNG `may-son` · MÁY SƠN (10 màn, 25/10). Chương làm quen của bộ phận MỚI "máy sơn" (hoc/KE-HOACH-MAY-SON.md), gói mùa 3 "Công cụ", sau gói Cảm biến màu.
    Robot là XE HAI BÁNH GẮN ĐẦU SƠN: robot { than: 'hai-banh', tay: 'son', camBien: [] }. Đầu sơn tô Ô XE ĐANG ĐỨNG. Bốn lệnh gốc:
      ink(c)      chọn màu "red" | "green" | "blue" | "yellow", đổi NGAY, không tốn nhịp (như aim(n))
      dot()       chấm một chấm vào ô đang đứng          ┐ chỉ ra lệnh, wait() cho nhịp trôi;
