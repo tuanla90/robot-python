@@ -3,7 +3,8 @@
   'use strict';
   var K={ink:'#1b120a',vang:'#ffcf30',vangSang:'#ffe888',vangToi:'#d99418',thep:'#9aa3b5',thepSang:'#dbe3ed',thepToi:'#596274',kinh:'#26324e',xanh:'#7ff0ff',den:'#292a35',denSang:'#565968',go:'#c9853d',goSang:'#e5ad62',tim:'#56406f',timSang:'#9070b5',la:'#a8dc72',laSang:'#dcffad',do:'#df4b4b',xanhDuong:'#4f8dff'};
   /* MÀU SƠN ĐỘI (22/10, màn nhiều robot): ghep({son:'lam'}) sơn lại LỚP SƠN của từng part bằng bộ ba màu đội [nền, sáng, tối]; kim loại, kính, mắt, cảm biến giữ nguyên.
-     Thiếu son (màn một robot) thì không đổi gì: mỗi thân giữ màu nhận diện riêng (hai bánh vàng, nhện tím, omni xanh lá, xích thép, drone đen).
+     Thiếu son thì ghep không đổi gì: mỗi thân giữ màu nhận diện riêng (hai bánh vàng, nhện tím, omni xanh lá, xích thép, drone đen). Trong game VeRobot.sonHieuLuc
+     luôn truyền son (26/10: thiếu = vàng, kể cả màn một robot), nên màu gốc chỉ còn ở trang xem part và máy kiểm.
      vang = đội của người chơi (R1); lam = đồng đội thứ hai; do = đối thủ; tim = dự phòng. Không dùng xanh lá (trùng nền sân).
      LOP_SON[mã part]: map tên màu K → ô màu đội (0 nền, 1 sáng, 2 tối); vung [x,y,w,h] (tọa độ trong tấm part) giới hạn chỗ sơn khi màu đó còn dùng cho chi tiết khác (bánh xích, khung drone). Tay thiếu mục thì sơn bộ ba vàng. */
   var SON={

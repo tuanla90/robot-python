@@ -14,7 +14,7 @@
       'che-drone', 'drone', 'flycam', 'rap-du',
       // gói đội hai robot còn đang làm (tệp có thể chưa có màn)
       'doi-xich', 'doi-omni', 'doi-sung-hoi', 'doi-mau', 'doi-nam-cham', 'doi-tay-xoay', 'doi-drone',
-      'ban-xoay', 'dua-robot'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'ban-xoay', 'dua-robot', 'doi-thu-manh'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -238,7 +238,15 @@
   M.them(dsBen);
   // Gói đội hai robot (man-doi-*.js, hoc/KE-HOACH-PHOI-HOP.md) chỉ khai báo trong ngân hàng: chèn các chương của gói ngay sau chương c.sau
   // (cuối gói part) và gói ngay sau gói chứa chương đó. Chương chưa có màn thì chưa chèn. Ngưỡng sao mặc định: gói part +30 (đã chơi kha khá gói part), không vượt gói kế tiếp.
-  (M.chuongThem || []).concat(M.chuongCoChe || []).forEach(function (c) {
+  // Gói neo sau chương của một gói thêm khác (doi-thu-manh sau che-dua-robot) có thể được nạp trước gói đó (tệp nạp theo vần): chương neo chưa có thì để lượt sau.
+  var choChen = (M.chuongThem || []).concat(M.chuongCoChe || []);
+  while (choChen.length) {
+    var conLai = choChen.filter(function (c) { return !TT.goi.some(function (g) { return g.chuong.indexOf(c.sau) >= 0; }); });
+    if (conLai.length === choChen.length) throw new Error('Gói thêm neo sau chương không có: ' + conLai.map(function (c) { return c.sau; }).join(', '));
+    choChen.filter(function (c) { return conLai.indexOf(c) < 0; }).forEach(chenGoi);
+    choChen = conLai;
+  }
+  function chenGoi(c) {
     var ma = c.chuong.map(function (x) { return x.ma; }).filter(function (k) { return c.ds.some(function (m) { return m.chuong === k; }); });
     if (!ma.length) return;
     TT.thuTu.splice.apply(TT.thuTu, [TT.thuTu.indexOf(c.sau) + 1, 0].concat(ma));
@@ -250,7 +258,7 @@
     // Gói đội thuộc cùng mùa với gói part đứng trước (mùa bán riêng, thu-tu-chuong.js).
     TT.goi.splice(truoc + 1, 0, Object.assign({ loai: 'thu-thach', sao: sao, khongTangNguong: true, mua: TT.goi[truoc].mua }, c.goi, { chuong: ma }));
     M.them(c.ds);
-  });
+  }
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
 
   // Trùm máy ném: đọc màu TRƯỚC khi nạp; ba kho đổi thứ tự màu/tầm.

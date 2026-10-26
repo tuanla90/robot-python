@@ -40,7 +40,7 @@ User chốt 22/10: **hai khung code riêng** (R1, R2); **không thêm lệnh tí
 ## Giao diện (xong 22/10, 0a7232c)
 - Khung code có thẻ R1 / R2 (mỗi robot một chương trình; khay theo bộ phận của robot đang chọn); thẻ của robot có lỗi riêng gắn chấm đỏ.
 - Sân vẽ mọi robot, phát lại theo nhịp chung; MÀU ĐỘI: `Part.ghep({ son })` sơn lại lớp sơn từng part (`LOP_SON` trong part.js): R1 vàng, R2 lam,
-  đối thủ (sau này) đỏ; màn một robot giữ màu nhận diện của từng thân. Sân có nhiều cờ thì vẽ hết.
+  đối thủ (sau này) đỏ; màn một robot ~~giữ màu nhận diện của từng thân~~ (26/10 user: mọi thân sơn vàng như R1, hay màu sơn người chơi chọn; VeRobot.sonHieuLuc). Sân có nhiều cờ thì vẽ hết.
 
 ## Chương `hai-robot` · Đội hai robot (10 màn, man-hai-robot.js)
 - Đứng ngay sau Robot hoàn thiện (chương 11, gói riêng ngay sau gói Robot hoàn thiện); id các chương sau tăng 1 (mã màn không đổi).

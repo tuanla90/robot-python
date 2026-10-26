@@ -53,7 +53,9 @@ function chuKy(r, d) {
   };
   const a = lay(0), b = lay(1);
   const rb = (e) => (e ? [e.robot.x, e.robot.y, e.robot.huong, e.robot.tay ? e.robot.tay.tuThe + ':' + e.robot.tay.cam : ''].join(',') : '-');
-  return rb(a) + '|' + rb(b) + '|' + JSON.stringify(a ? a.vat || [] : []);
+  // sân: vật, cửa (mở / đóng), nút bắn, băng tắt, nút đè: hai nhánh cùng chỗ robot mà cửa khác nhau là hai trạng thái khác nhau
+  const sanCua = (e) => (e ? JSON.stringify([e.vat || [], e.cua || [], e.nut || [], e.bangTat || [], e.nutDe || []]) : '');
+  return rb(a) + '|' + rb(b) + '|' + sanCua(a);
 }
 
 export function nhipDuaSan(man, i, tuyChon = {}) {

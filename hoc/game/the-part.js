@@ -4,6 +4,8 @@
    ThePart.choMan(m, khiXong)   vào màn m: bộ phận nào của robot người chơi chưa gặp thì hiện thẻ đầy đủ; đã gặp mà màn mở thêm lệnh của nó thì hiện thẻ
                                 "lệnh mới" (chỉ phần mới). Nhiều thẻ thì lần lượt (Tiếp 1/2…). Không có thẻ nào thì gọi khiXong ngay. Đóng thẻ cuối → khiXong.
                                 Cờ đã xem ở Luu: 'part:<mã>' (đã gặp bộ phận), 'part-lenh:<mã>:<lệnh>' (đã giới thiệu lệnh đó).
+   ThePart.doiThu(m, khiXong)   màn đối kháng có m.doiThu = { part, manh, yeu }: thẻ "ĐỐI THỦ" giới thiệu part của R2 (hình R2 sơn đỏ, lệnh R2 dùng, mạnh ở / yếu ở),
+                                hiện một lần mỗi màn (cờ 'doi-thu:<mã màn>'). Không đánh dấu 'part:<mã>': người chơi chưa gắn part đó nên gặp thật sau này vẫn có thẻ đầy đủ.
    ThePart.mo(ma, khiDong)      mở thẻ đầy đủ của một bộ phận với mọi lệnh đã giới thiệu (Sổ lệnh, trang "Bộ phận").
    ThePart.daGap()              [mã] các bộ phận người chơi đã gặp, theo GioiThieuPart.THU_TU.
    ThePart.hinh(ma, tiLe)       canvas hình bộ phận gắn trên thân mẫu (thân: chính nó; tay, cảm biến: trên xe hai bánh; camera bụng: trên drone).
@@ -44,8 +46,9 @@
       return c;
     } catch (e) { return cv; }
   }
-  function hinh(ma, tiLe) {
-    var cfg = cauHinhMau(ma), cv = null;
+  function hinh(ma, tiLe) { return hinhXe(cauHinhMau(ma), tiLe); }
+  function hinhXe(cfg, tiLe) {
+    var cv = null;
     try { cv = VeRobot.ve(cfg, { tay: { tuThe: 'tren', kep: false }, camBien: { mat: true } }, 0, tiLe || 2); } catch (e) { cv = null; }
     if (!cv) return h('div', 'tp-hinh-trong');
     var c = Ve.mk(catLe(cv), cv.laPart ? 1 : 3); c.classList.add('tp-hinh-cv');
@@ -84,7 +87,7 @@
   /** Dựng nội dung thẻ (nd = GioiThieuPart.noiDung(...)) vào phần tử than. */
   function dungThe(than, nd) {
     var dau = h('div', 'tp-dau-the');
-    var khung = h('div', 'tp-hinh'); khung.appendChild(hinh(nd.ma, 3)); dau.appendChild(khung);
+    var khung = h('div', 'tp-hinh'); khung.appendChild(nd.cauHinh ? hinhXe(nd.cauHinh, 3) : hinh(nd.ma, 3)); dau.appendChild(khung);
     var ben = h('div', 'tp-ben');
     ben.appendChild(h('div', 'tp-khe', nd.tenKhe));
     ben.appendChild(h('div', 'tp-ten', nd.ten));
@@ -92,6 +95,11 @@
     than.appendChild(dau);
     var cuon = h('div', 'tp-cuon');
     if (nd.moTa) { var mt = chuCode('tp-mota', nd.moTa); mt.style.display = 'block'; cuon.appendChild(mt); }
+    function manhYeu() {
+      muc(cuon, t(nd.laDoiThu ? 'part.manh' : 'part.gioi'), nd.gioi.map(function (x) { return dongChu(x, '✓'); }), 'gioi');
+      muc(cuon, t(nd.laDoiThu ? 'part.yeu' : 'part.khong'), nd.khong.map(function (x) { return dongChu(x, '✗'); }), 'khong');
+    }
+    if (nd.laDoiThu) manhYeu();                                                       // thẻ đối thủ: mạnh ở / yếu ở là điều cần đọc trước, lên đầu
     muc(cuon, t(nd.laMoi ? 'part.lenhMoi' : 'part.lenh'), nd.lenh.map(function (l) {
       var d = h('div', 'tp-lenh'); d.setAttribute('data-lenh', l.ten);
       d.appendChild(code(l.ten)); d.appendChild(chuCode('tp-chu', l.moTa));
@@ -103,8 +111,7 @@
       d.appendChild(chuCode('tp-ghep-ra', '→ ' + g.ra));
       return d;
     }), 'ghep');
-    muc(cuon, t('part.gioi'), nd.gioi.map(function (x) { return dongChu(x, '✓'); }), 'gioi');
-    muc(cuon, t('part.khong'), nd.khong.map(function (x) { return dongChu(x, '✗'); }), 'khong');
+    if (!nd.laDoiThu) manhYeu();
     muc(cuon, t('part.luuY'), nd.luuY.map(function (x) { return dongChu(x, '•'); }), 'luu');
     than.appendChild(cuon);
     if (window.ThanhCuon) ThanhCuon.gan(cuon);
@@ -155,6 +162,29 @@
     return ds.length;
   }
 
+  /** Nội dung thẻ đối thủ của màn m (null: màn không khai m.doiThu). Lệnh: các lệnh của part mà R2 được dùng. */
+  function noiDungDoiThu(m) {
+    var dt = m.doiThu;
+    if (!dt || !m.doi || !m.doi[1] || !G() || !G().DS[dt.part] || !window.VeRobot) return null;
+    var r2 = Object.assign({}, m, m.doi[1]); delete r2.doi;
+    var cfg = Object.assign(VeRobot.cauHinhCua(r2), { son: (r2.robot && r2.robot.son) || 'do' });     // cauHinhCua bỏ màu sơn: hình R2 tô màu đội đối thủ như trên sân
+    var nd = G().noiDung(dt.part, r2.hamGoc || [], null, cfg.than, moTaGoc());
+    if (!nd) return null;
+    nd.ten = 'R2 · ' + nd.ten; nd.cauHinh = cfg; nd.laDoiThu = true;
+    nd.ghep = []; nd.luuY = [];
+    nd.gioi = (dt.manh || []).slice(); nd.khong = (dt.yeu || []).slice();
+    return nd;
+  }
+  function doiThu(m, khiXong) {
+    var nd = null, k = 'doi-thu:' + (m && m.ma);
+    try { nd = m && m.doiKhang && !daXem(k) ? noiDungDoiThu(m) : null; } catch (e) { nd = null; }
+    if (!nd) { if (khiXong) khiXong(); return 0; }
+    datXem(k);
+    var hop = moHop(nd, t('part.hieu'), khiXong, t('part.tieuDeDoiThu'));
+    hop.hop.classList.add('doi-thu');
+    return 1;
+  }
+
   function mo(ma, khiDong) {
     if (!G() || !G().DS[ma]) return;
     var than = ma === 'nam-cham' && daXem('part:drone') ? 'drone' : null;           // dòng "nam châm treo dưới drone" chỉ hiện khi đã gặp drone
@@ -162,5 +192,5 @@
     moHop(nd, t('chung.dong'), khiDong, t('part.tieuDeSo'));
   }
 
-  window.ThePart = { choMan: choMan, mo: mo, daGap: daGap, hinh: hinh, theCuaMan: theCuaMan };
+  window.ThePart = { choMan: choMan, doiThu: doiThu, noiDungDoiThu: noiDungDoiThu, mo: mo, daGap: daGap, hinh: hinh, theCuaMan: theCuaMan };
 })();

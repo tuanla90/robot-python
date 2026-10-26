@@ -272,7 +272,8 @@
         if (window.HuongDan) HuongDan.vaoMan(m);                                        // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
       });
     }
-    if (window.ThePart && m.doi) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.choMan(manCuaXe(m, 1), batDau); });      // nhiều robot: bộ phận mới của từng robot
+    if (window.ThePart && m.doi && m.doiThu) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.doiThu(m, batDau); });     // đối thủ part mạnh: thẻ "ĐỐI THỦ" thay cho thẻ bộ phận của R2
+    else if (window.ThePart && m.doi) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.choMan(manCuaXe(m, 1), batDau); });      // nhiều robot: bộ phận mới của từng robot
     else if (window.ThePart) ThePart.choMan(m, batDau); else batDau();                      // bộ phận lần đầu gặp / lệnh mới mở: thẻ giới thiệu trước đề bài và hướng dẫn (the-part.js)
     if (goc.lapRap) baoLenhMat();                                                      // robot đã đổi (hay bản nháp cũ): dòng gọi lệnh của part đang không gắn thì tô đỏ
   }

@@ -491,6 +491,24 @@
     themBanhRang(p);
     return p;
   };
+  function xeXichNho(son) {                                     // thân xích 14×14: hai dải xích rộng có mắt xích, thân sơn màu đội, nòng ngắn phía trước
+    var q = P(14, 14), s = Part.SON[son], y;
+    q.rect(0, 1, 4, 13, INK); q.rect(1, 2, 2, 11, KK.thepToi);
+    q.rect(10, 1, 4, 13, INK); q.rect(11, 2, 2, 11, KK.thepToi);
+    for (y = 3; y < 13; y += 2) { q.rect(1, y, 2, 1, KK.thepSang); q.rect(11, y, 2, 1, KK.thepSang); }
+    q.rect(3, 3, 8, 10, INK); q.rect(4, 4, 6, 8, s[0]); q.rect(4, 4, 6, 1, s[1]); q.rect(4, 11, 6, 1, s[2]);
+    q.rect(5, 6, 4, 3, KK.kinh); q.px(5, 7, KK.xanh); q.px(8, 7, KK.xanh);
+    q.rect(6, 0, 2, 4, INK); q.px(6, 1, KK.thepSang); q.px(7, 1, KK.thepSang);
+    return q;
+  }
+  HINH['doi-thu-manh'] = function () {                          // đọ sức part mạnh: xe hai bánh vàng nhỏ (R1) đi trước xe xích đỏ to (R2), cờ đích phía trước R1
+    var p = P(30, 27);
+    chep(p, xeXichNho('do'), 15, 12, 1);
+    chep(p, xeDuaNho('vang'), 2, 9, 1);
+    p.rect(4, 0, 2, 9, INK); p.rect(5, 1, 1, 7, '#fff6e3');
+    p.rect(6, 0, 7, 6, INK); p.rect(6, 1, 6, 4, '#ff4a3c'); p.rect(6, 1, 3, 2, '#ffd23f'); p.rect(9, 3, 3, 2, '#ffd23f');
+    return p;
+  };
 
   /* ---------------------------------------------------------------- vành + đĩa */
   var PAL = {

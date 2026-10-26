@@ -157,16 +157,18 @@
     }
     return s;
   }
+  /** Màu sơn thật khi vẽ (26/10 user: mọi thân cùng một màu để chia phe và làm gói sơn): màu đội khác vàng giữ nguyên; còn lại là màu người chơi chọn,
+   *  thiếu thì VÀNG, kể cả màn một robot (nhện, omni, xích, drone cũng sơn vàng như xe hai bánh). 'goc' = màu nhận diện gốc của thân (không sơn). */
   function sonHieuLuc(son) {
     if (son === 'goc') return null;
     if (son && son !== 'vang') return son;
-    return sonChon() || son || null;
+    return sonChon() || 'vang';
   }
 
   function veGhep(cauHinh, tt, huong, tiLe) {
     if (!coPart()) return null;
     var P = window.Part, tay = chuanTay(tt.tay), cb = tt.camBien || {};
-    var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: sonHieuLuc(cauHinh.son) };     // son: màu sơn đội / người chơi chọn (Part.SON), thiếu = màu gốc của thân
+    var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: sonHieuLuc(cauHinh.son) };     // son: màu sơn đội / người chơi chọn (Part.SON), thiếu = vàng (sonHieuLuc)
     var chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || cfg.than === 'drone') ? 0 : huong;     // drone bay 4 hướng, không có mặt trước (cánh quạt luôn quay); nhện đi 4 hướng không quay mặt; nhện CÓ TAY: ảnh quay theo cạnh gắn tay (cố định theo batDau.huong, san-ve.js truyền vào `huong`)
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },       // drone: buoc = pha cánh quạt, doc = đèn thân sáng khi đo pin
