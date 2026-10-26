@@ -20,7 +20,9 @@
       // 8 màn mới của gói 5 Bánh lùi (chỉ khai, lộ trình thêm vào hai chương bên dưới)
       'banh-lui-them',
       // 10 màn mới của gói 8 Đội hai robot, chương 2 "Đội phối hợp" (chỉ khai, lộ trình thêm chương bên dưới)
-      'doi-mua-1'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'doi-mua-1',
+      // 19 màn mới của gói 9 Combo (tay xoay + cảm biến bên), hai chương combo / che-combo (chỉ khai, lộ trình thêm chương bên dưới)
+      'combo-mua-1'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -279,6 +281,15 @@
   TT.ten['che-hai-robot'] = 'Đội phối hợp';
   M.them(M.manDoiMua1 || []);
   (M.manDoiMua1 || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // Gói 9 "Combo" (man-combo-mua-1.js, mã combo.1–10 và che-combo.1–9; tay xoay + cảm biến bên). Hai chương chỉ có ở lộ trình nên chèn tạm vào cuối
+  // thuTu cho ManHoc.them nhận (như nut-de); thuTu mùa 1 dựng lại theo MUA_1 bên dưới. Mã gói `combo` khớp phim gói (game/phim-mua-1.js).
+  TT.thuTu.push('combo', 'che-combo');
+  TT.ten['combo'] = 'Nhìn bên, nhặt bên';
+  TT.ten['che-combo'] = 'Combo mở rộng';
+  M.them(M.manComboMua1 || []);
+  (M.manComboMua1 || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  var COMBO_1 = (M.manComboMua1 || []).filter(function (m) { return m.chuong === 'combo'; }).map(function (m) { return m.ma; });
+  var COMBO_2 = (M.manComboMua1 || []).filter(function (m) { return m.chuong === 'che-combo'; }).map(function (m) { return m.ma; });
   var MUA_1 = [
     { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
       chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
@@ -297,7 +308,9 @@
       chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
     { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 210,
       chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
-    { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 240, hinh: 'robot-hoan-thien',
+    { ma: 'combo', ten: 'Combo', loai: 'thu-thach', sao: 240, hinh: 'combo',
+      chuong: [['combo', COMBO_1], ['che-combo', COMBO_2]] },
+    { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 270, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
   ];
   // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.
