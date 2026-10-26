@@ -25,9 +25,11 @@ export function nhipMaySonNganNhat(cfg, gioiHan = 120) {
     if (i === undefined) return -1;
     return canMau[i] === mau ? (mask | (1 << i)) : (mask & ~(1 << i));
   }
+  let mask0 = 0;                                       // ô sơn sẵn đúng màu đã tính là xong
+  (cfg.sonBanDau || []).forEach((hang, y) => [...hang].forEach((c, x) => { const i = chiSo.get(x + ',' + y); if (KY[c] && i !== undefined && canMau[i] === KY[c]) mask0 |= 1 << i; }));
   const bd = cfg.batDau, khoa = (x, y, h, p, m) => (((m * W + x) * H + y) * 4 + h) * 2 + p;
-  let tang = [[bd.x, bd.y, bd.huong || 0, 0, 0]];
-  const da = new Set([khoa(bd.x, bd.y, bd.huong || 0, 0, 0)]);
+  let tang = [[bd.x, bd.y, bd.huong || 0, 0, mask0]];
+  const da = new Set([khoa(bd.x, bd.y, bd.huong || 0, 0, mask0)]);
   for (let nhip = 1; nhip <= gioiHan; nhip++) {
     const moi = [];
     for (const [x, y, h, p, m] of tang) {
@@ -62,7 +64,7 @@ export function nhipMaySonTatCa(m) {
   if (m.khongDoBFS) return m.sao.nhip;
   const nhieu = Array.isArray(m.san[0]), dsSan = nhieu ? m.san : [m.san], kq = [];
   for (let i = 0; i < dsSan.length; i++) {
-    const r = nhipMaySonNganNhat({ san: dsSan[i], hinh: nhieu ? m.hinh[i] : m.hinh, batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau }, m.sao.nhip + 2);
+    const r = nhipMaySonNganNhat({ san: dsSan[i], hinh: nhieu ? m.hinh[i] : m.hinh, sonBanDau: m.sonBanDau ? (nhieu ? m.sonBanDau[i] : m.sonBanDau) : null, batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau }, m.sao.nhip + 2);
     if (r === null) return m.sao.nhip;
     kq.push(r);
   }

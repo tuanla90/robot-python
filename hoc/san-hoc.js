@@ -249,6 +249,10 @@
         - Mục tiêu 'to-hinh' (cfg.mucTieu) + cfg.hinh = HÌNH MỜ (mảng chuỗi cùng cỡ sân, ký tự r g b y hay '.'; màn nhiều sân: mảng song song với san, như bongMo): thắng NGAY cuối nhịp
           mà mọi ô của hình đã tô đúng màu và KHÔNG có ô nào ngoài hình bị tô ('xong-to-hinh'). Tô sai màu một ô trong hình thì tô lại được ('to-sai-mau', thông tin). Tô một ô NGOÀI hình
           thì không xóa được nữa: 'to-thua' { nhip, o, mau, lenh } (lỗi), dừng ngay cuối nhịp đó (dungSom = 'to-thua'). Ô hình không được là tường / rào / nút / cửa.
+        - SƠN VÀ CẢM BIẾN MÀU (26/10): sơn PHỦ lên màu sàn. color() (cảm biến bụng, camera) và look() đọc màu ô đã sơn nếu ô đó có sơn (nguon 'son'), không thì màu sàn như cũ.
+          Nhờ vậy robot vừa sơn vừa đọc được vạch mình (hay màn) đã sơn. Ô đích có màu vẫn theo màu SÀN (sơn không đổi đích).
+        - Lớp SƠN SẴN cfg.sonBanDau (mảng chuỗi r g b y '.', cùng cỡ sân; màn nhiều sân: song song với san): ô đã sơn từ lúc xuất phát (không trên tường, rào, nút, cửa, gầm, hố).
+          Với mục tiêu 'to-hinh', ô sơn sẵn phải nằm trong hình (có thể sai màu: robot đọc màu rồi sơn lại cho đúng). Kết quả có `sonBanDau` [{x,y,mau}].
         Kết quả chạy có `son` { ha, mau } (null nếu robot không có đầu sơn), `daSon` [{x,y,mau}] (lớp đã tô CUỐI, mọi màn), `hinh` (mảng hàng tên màu / null, hay null nếu không có hình);
         vết nhịp có robot.son và `daSon` (khi robot có đầu sơn); mục lệnh ink có `inkMau`.
 
@@ -560,7 +564,7 @@
   function lopMauCuaSan(m, i) {
     var nhieu = Array.isArray(m.san[0]);
     function lay(l) { return l ? (nhieu ? (l[i] || null) : l) : null; }
-    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), bongMo: lay(m.bongMo), hinh: lay(m.hinh) };
+    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
   }
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
   function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_NHIN_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0; }
@@ -804,7 +808,7 @@
     khoiRobot(dsRc[0]);
 
     // bóng mờ (xem phần BÓNG MỜ): tư thế đích, các ô phải đi qua, vị trí vật
-    var bongMo = null, diQua = [], diQuaTai = {};
+    var bongMo = null, diQua = [], diQuaTai = {}, sonBanDau = null;
     if (mucTieu === 'bong-mo') {
       var bm = cfg.bongMo;
       if (!bm || typeof bm !== 'object' || !laSoNguyen(bm.x) || !laSoNguyen(bm.y)) throw new Error('Mục tiêu bong-mo cần cfg.bongMo { x, y, huong }.');
@@ -869,6 +873,15 @@
       }
       if (!soOHinh) throw new Error('Hình mờ phải có ít nhất một ô.');
     } else if (cfg.hinh) throw new Error('hinh chỉ dùng với mục tiêu "to-hinh".');
+    var lopSon = docLopMau(cfg.sonBanDau, san.rong, san.cao, 'sơn sẵn');
+    if (lopSon) for (var sy = 0; sy < san.cao; sy++) for (var sx = 0; sx < san.rong; sx++) {
+      if (!lopSon[sy][sx]) continue;
+      if ('#=NCcnu'.indexOf(san.o[sy][sx]) >= 0) throw new Error('Ô sơn sẵn (' + sx + ', ' + sy + ') nằm trên tường, rào, nút, cửa, gầm hay hố.');
+      if (hinh && !hinh[sy][sx]) throw new Error('Ô sơn sẵn (' + sx + ', ' + sy + ') nằm ngoài hình mờ.');
+      daSon[sx + ',' + sy] = lopSon[sy][sx];
+    }
+    sonBanDau = chupSonDau();
+    function chupSonDau() { return Object.keys(daSon).map(function (k) { var q = k.split(','); return { x: +q[0], y: +q[1], mau: daSon[k] }; }); }
     function chupSon() { return Object.keys(daSon).map(function (k) { var a = k.split(','); return { x: +a[0], y: +a[1], mau: daSon[k] }; }); }
     /** Hình mờ đã tô xong: mọi ô hình đúng màu, không ô nào ngoài hình bị tô. */
     function hinhDat() {
@@ -912,6 +925,8 @@
     function chupVat() { return vats.map(function (v) { var o = { id: v.id, x: v.x, y: v.y, trangThai: v.trangThai }; if (v.mau) o.mau = v.mau; if (coNamCham || v.chat === 'sat' || v.chat === 'nam-cham') o.chat = v.chat; if (v.cuc) o.cuc = v.cuc; return o; }); }
     /** Màu sàn của ô (x, y): tên màu hay null. */
     function mauNen(x, y) { return (san.mau && san.mau[y] && san.mau[y][x]) || null; }
+    /** Màu cảm biến thấy ở ô (x, y) khi không có vật: sơn phủ lên sàn (xem SƠN VÀ CẢM BIẾN MÀU). { mau, son: true nếu là màu sơn }. */
+    function mauThay(x, y) { var s = daSon[x + ',' + y]; return s ? { mau: s, son: true } : { mau: mauNen(x, y), son: false }; }
     /** Vật v nằm trên ô đích (x, y) có hợp màu không: đích không màu nhận mọi vật; đích có màu chỉ nhận vật cùng màu. */
     function hopMauDich(v, x, y) {
       var md = dichMau[x + ',' + y];
@@ -1836,7 +1851,8 @@
     /** Đọc cảm biến màu ở bụng: màu SÀN ô ngay dưới xe ("none" nếu sàn không màu). Vật đang mang không tính. Không tốn nhịp, không đổi sân. */
     function docMau(yc) {
       if (camNhin) return docCamera(yc);
-      return { ma: 'doc-cam-bien', cam: 'mau', ham: yc.ten, tu: { x: rb.x, y: rb.y }, o: { x: rb.x, y: rb.y }, mau: mauNen(rb.x, rb.y) || 'none', nguon: 'san', idVat: null, nhip: nhip };
+      var mt = mauThay(rb.x, rb.y);
+      return { ma: 'doc-cam-bien', cam: 'mau', ham: yc.ten, tu: { x: rb.x, y: rb.y }, o: { x: rb.x, y: rb.y }, mau: mt.mau || 'none', nguon: mt.son ? 'son' : 'san', idVat: null, nhip: nhip };
     }
 
     /** Đọc camera: màu thứ ở Ô TRƯỚC MẶT: vật nằm đất → màu vật; không có vật → màu sàn; tường / rào / thùng / nút / cửa đóng / ngoài sân → "none". Không tốn nhịp. */
@@ -1846,7 +1862,7 @@
       if (c === null || c === '#' || c === '=' || c === 'N' || cuaDong(o.x, o.y) || thungTai(o.x, o.y) || xeDatTai(o.x, o.y)) nguon = 'chan';
       else {
         var v = vatNamTai(o.x, o.y);
-        if (v) { m = v.mau || 'none'; nguon = 'vat'; idVat = v.id; } else m = mauNen(o.x, o.y) || 'none';
+        if (v) { m = v.mau || 'none'; nguon = 'vat'; idVat = v.id; } else { var mo = mauThay(o.x, o.y); m = mo.mau || 'none'; if (mo.son) nguon = 'son'; }
       }
       return { ma: 'doc-cam-bien', cam: 'camera', ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: rb.huong, o: o, mau: m, nguon: nguon, idVat: idVat, nhip: nhip };
     }
@@ -1858,7 +1874,7 @@
       if (oTai(san, x, y) === '=' || thungTai(x, y) || cuaDong(x, y)) nguon = 'chan';
       else {
         var v = vatNamTai(x, y);
-        if (v) { m = v.mau || 'none'; nguon = 'vat'; idVat = v.id; } else m = mauNen(x, y) || 'none';
+        if (v) { m = v.mau || 'none'; nguon = 'vat'; idVat = v.id; } else { var mn = mauThay(x, y); m = mn.mau || 'none'; if (mn.son) nguon = 'son'; }
       }
       return { ma: 'doc-cam-bien', cam: MA_CAM_BAY, ham: yc.ten, tu: { x: x, y: y }, o: { x: x, y: y }, mau: m, nguon: nguon, idVat: idVat, nhip: nhip };
     }
@@ -2161,7 +2177,7 @@
         thang: thang, nhip: nhip, loi: loiDoi, doi: dsKq,
         vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
         cua: chupCua(), nut: chupNut(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau,
-        thung: chupThung(), thungBanDau: thungBanDau, bongMo: null, diQua: [], mauO: san.mau, sac: san.sac.slice(), daSon: chupSon(), hinh: hinh
+        thung: chupThung(), thungBanDau: thungBanDau, bongMo: null, diQua: [], mauO: san.mau, sac: san.sac.slice(), daSon: chupSon(), hinh: hinh, sonBanDau: sonBanDau
       });
     }
 
@@ -2199,7 +2215,7 @@
       thang: thang, nhip: nhip, robot: chup(), loi: loi, vet: vet,
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
       tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coHoi ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
-      son: coSon ? { ha: son.ha, mau: son.mau } : null, daSon: chupSon(), hinh: hinh,
+      son: coSon ? { ha: son.ha, mau: son.mau } : null, daSon: chupSon(), hinh: hinh, sonBanDau: sonBanDau,
       cua: chupCua(), nut: chupNut(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau,
       thung: chupThung(), thungBanDau: thungBanDau,
       bongMo: bongMo, diQua: chupDiQua(),

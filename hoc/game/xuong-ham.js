@@ -98,7 +98,7 @@
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
       soToiDa: function (ten, k) { return S.soMax(ten, k); },                                  // aim(n) chỉ nhận 1–3
       kieuPtuList: kieuPtuThu,                                                                 // đối số danh sách: số hay chữ / màu (theo giá trị thử) để bộ chọn liệt kê biến hợp kiểu
-      listChu: function () { return !!TP.coMauCua(A.man()); },                                 // danh sách cho phần tử là màu: bảng chọn phần tử có thêm hàng màu
+      listChu: function () { return listMau(); },                                 // danh sách cho phần tử là màu: bảng chọn phần tử có thêm hàng màu
       giaBien: giaBienThu,                                                                     // để hiện số lượt của range(n) khi Thử
       tt: q('.p-prog .tt'), ttDay: t('xuong.def'), ttNgan: t('xuong.def'),
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); },
@@ -271,6 +271,8 @@
     if (S.busy) return;
     if (!S.ed.datBien(ten, kieuBienHam(ten))) toast(t('xuong.khongCoSo', { ten: ten }), 'bad', 3000);
   }
+  /** Danh sách ở màn này là danh sách MÀU: màn có color() / look(), hay robot gắn máy sơn (stripes(colors), copy_row(n)). */
+  function listMau() { var m = A.man(); return !!TP.coMauCua(m) || !!(m && m.robot && m.robot.tay === 'son'); }
   /** Kiểu của đối số `ten` của hàm đang sửa: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi chữ). */
   function kieuBienHam(ten) {
     var f = hamHienTai(), k = f ? (f.thamSo || []).indexOf(ten) : -1;
@@ -293,8 +295,9 @@
     var nho = S.doiSo[S.loai + ':' + S.ten] || [];
     return thamSoHienTai().map(function (ten, k) {
       var kd = kieuBienHam(ten);
-      if (kd === 'list') return Array.isArray(nho[k]) ? nho[k].slice() : (TP.coMauCua(A.man()) ? DS_LIST_MAU_MAC_DINH : DS_LIST_MAC_DINH).slice();      // màn có camera look(): danh sách thử mặc định là danh sách MÀU
+      if (kd === 'list') return Array.isArray(nho[k]) ? nho[k].slice() : (listMau() ? DS_LIST_MAU_MAC_DINH : DS_LIST_MAC_DINH).slice();      // màn có camera look(): danh sách thử mặc định là danh sách MÀU
       if (kd === 'so') return nho[k] > 0 ? +nho[k] : DS_THU_MAC_DINH;
+      if (kd === 'mau') return TP.MAU_DS.indexOf(nho[k]) >= 0 && nho[k] !== 'none' ? nho[k] : 'red';          // đối số màu sơn (ink(c)): mặc định đỏ
       var v = typeof nho[k] === 'string' ? nho[k] : '';
       return /^[UDLR]+$/.test(v) && (kd === 'ghep' || v.length === 1) ? v : (kd === 'don' ? 'R' : 'RRD');
     });
@@ -316,7 +319,8 @@
       b.addEventListener('click', function (ev) {
         ev.stopPropagation();
         if (S.busy) return;
-        if (laChu) TP.chonChuoi({ neo: b, kieu: kd, gia: doiSoHienTai()[k], bien: [], khiChon: function (s) { datDoiSo(k, s.replace(/"/g, '')); } });
+        if (kd === 'mau') TP.chonMau({ neo: b, gia: '"' + doiSoHienTai()[k] + '"', bien: [], khongNone: true, khiChon: function (s) { datDoiSo(k, s.replace(/"/g, '')); } });     // màu sơn: bảng bốn màu
+        else if (laChu) TP.chonChuoi({ neo: b, kieu: kd, gia: doiSoHienTai()[k], bien: [], khiChon: function (s) { datDoiSo(k, s.replace(/"/g, '')); } });
         else TP.chonSo({ neo: b, so: doiSoHienTai()[k], toiDa: S.soMax(S.ten, k), khiChon: function (n) { datDoiSo(k, n); } });      // đối số đưa thẳng vào aim(): chỉ 1–3
       });
       E.dso.appendChild(b);
@@ -355,7 +359,7 @@
   function moPtuThu(k, j, neo) {
     var ds = doiSoHienTai()[k], x = ds[j];
     TP.chonPtu({
-      neo: neo, v: typeof x === 'string' ? '"' + x + '"' : String(x), chu: !!TP.coMauCua(A.man()), coThem: ds.length < DS_LIST_TOI_DA, coBo: true,
+      neo: neo, v: typeof x === 'string' ? '"' + x + '"' : String(x), chu: listMau(), coThem: ds.length < DS_LIST_TOI_DA, coBo: true,
       khiChon: function (s) { var d = doiSoHienTai()[k]; d[j] = /^"/.test(s) ? s.replace(/"/g, '') : +s; datDoiSo(k, d); },
       khiThem: function () { themPtuThu(k, j); },
       khiBo: function () { var d = doiSoHienTai()[k]; d.splice(j, 1); datDoiSo(k, d); }

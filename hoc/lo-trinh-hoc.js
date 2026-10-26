@@ -33,7 +33,7 @@
     m.loiSai = ds.loiSai || [];
     return m;
   }
-  var lop = ['mau', 'vatMau', 'vatChat', 'vatThem', 'cuaNhip', 'noi', 'bongMo'];
+  var lop = ['mau', 'vatMau', 'vatChat', 'vatThem', 'cuaNhip', 'noi', 'bongMo', 'hinh', 'sonBanDau'];
   function motSan(m, i) {
     if (!Array.isArray(m.san[0])) return;
     m.san = copy(m.san[i]);

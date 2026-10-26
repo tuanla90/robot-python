@@ -499,7 +499,7 @@
         if (sg && sg.c.lit) return 'ptu';
         if (d.loai === 'themList') return RE_CHUOI.test(d.ds[k]) ? 'mauls' : 'so';       // giá trị đem thêm: số (kèm biến) hay màu
         var ka = tuyChon.kieuDoiSo && sg ? tuyChon.kieuDoiSo(d.ten, sg.i) : 'so';
-        return ka === 'don' || ka === 'ghep' || ka === 'list' ? ka : 'so';
+        return ka === 'don' || ka === 'ghep' || ka === 'list' || ka === 'mau' ? ka : 'so';
       }
       if (!d || d.loai === 'range') return 'so';
       if (d.loai === 'forChuoi') return 'ghep';
@@ -508,13 +508,14 @@
       if (d.loai === 'if') return k === 0 ? 'bien' : 'dl';
       if (d.ten === 'ink') return 'mau';                                   // ink(c): bảng chọn bốn màu sơn
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
-      return kd === 'don' || kd === 'ghep' || kd === 'list' ? kd : 'so';
+      return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' ? kd : 'so';
     }
     /** Biến kiểu kb có đặt được vào ô kiểu slot không (một chữ đặt được vào chuỗi ghép, ngược lại thì không). */
     function hopKieu(slot, kb) {
       if (slot === 'list' || slot === 'tenls') return kb === 'list';
       if (slot === 'so') return kb === 'so';
       if (slot === 'don') return kb === 'don';
+      if (slot === 'mau') return kb === 'mau' || kb === 'don' || kb === 'ghep';             // ô màu (ink(c), color_line(c, n)): biến màu, biến vòng for c in [màu…]
       if (slot === 'ghep' || slot === 'bien') return kb === 'don' || kb === 'ghep';
       return false;
     }
@@ -614,7 +615,7 @@
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }
-      if (kd === 'mau') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('ghep', i), khongNone: true, khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
+      if (kd === 'mau') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('mau', i), khongNone: true, khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mauls') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('bien', i), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
         if (camDuoc().length) chonDieuKien({ neo: so, ds: camDuoc(), gia: d.ds[kk], khiChon: function (v) { ed.datSo(i, v, kk); } });
@@ -1580,6 +1581,7 @@
     if (new RegExp('\\bin\\s+' + P + '\\s*:').test(src)) return CHE_LIST && !KIEU_TEN_GHEP.test(p) ? 'list' : 'ghep';                      // for c in path: (chuỗi chữ) · for n in steps: (danh sách, ở màn có list)
     if (CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) return 'list';                                       // x in steps
     if (new RegExp('range\\(\\s*' + P + '\\s*\\)').test(src)) return 'so';
+    if (new RegExp('\\bink\\(\\s*' + P + '\\s*\\)').test(src)) return 'mau';                                        // ink(c): đối số là tên MÀU sơn (máy sơn)
     if ((sau || 0) < 4) {
       var re = /([A-Za-z_]\w*)\(([^()]*)\)/g, m;
       while ((m = re.exec(src))) {
@@ -1592,7 +1594,7 @@
     return null;
   }
   /**
-   * Hàm kieuDoiSo(tenHam, k) → 'so' | 'don' | 'ghep'. layCtx() trả { man, hamCuaMan: [f], kho: [f] }.
+   * Hàm kieuDoiSo(tenHam, k) → 'so' | 'don' | 'ghep' | 'list' | 'mau' (tên màu sơn, đưa vào ink()). layCtx() trả { man, hamCuaMan: [f], kho: [f] }.
    * Hàm có trong lời giải của màn (go, walk, bring, go_sai…) thì theo lời giải; còn lại suy từ thân hàm (của em / của màn); chưa có gì thì theo tên đối số ở màn nhện (d, c: một chữ; path: chuỗi); còn lại là số.
    */
   function taoKieu(layCtx) {
@@ -1930,7 +1932,7 @@
     function gach(ten, lopGach, loai, hamTS, cha) {
       var d = h('div', 'brick ' + lopGach); d.setAttribute('role', 'button');
       // chèn: mỗi đối số là 1 (số), "U" (một chữ) hoặc "R" (chuỗi chữ) tùy kiểu; hiện: tên đối số
-      var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function (_, k) { var kd = cb.kieuDoiSo ? cb.kieuDoiSo(ten, k) : 'so'; return kd === 'don' ? '"U"' : kd === 'ghep' ? '"R"' : kd === 'list' ? '[2, 3, 1]' : '1'; }).join(', ') : '') + ')';
+      var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function (_, k) { var kd = cb.kieuDoiSo ? cb.kieuDoiSo(ten, k) : 'so'; return kd === 'mau' ? '"red"' : kd === 'don' ? '"U"' : kd === 'ghep' ? '"R"' : kd === 'list' ? '[2, 3, 1]' : '1'; }).join(', ') : '') + ')';
       if (loai === 'goc' && ten === 'aim') goi = 'aim(1)';                       // aim(n): thẻ chèn sẵn tầm 1, chạm số để chọn 1 / 2 / 3
       if (loai === 'goc' && ten === 'ink') goi = 'ink("red")';                   // ink(c): thẻ chèn sẵn màu đỏ, chạm màu để chọn màu khác
       var hien = '(' + (hamTS || []).join(', ') + ')';

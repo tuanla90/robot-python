@@ -31,8 +31,15 @@ Giao diện (`game/san-ve.js`): ô hình chưa tô = khung nét đứt + chấm 
 ## 3. Hai chương (khuôn KE-HOACH-CHE-LENH.md)
 
 `may-son` (làm quen): chấm, đổi màu, nét thẳng, giữ nét qua góc, chữ U (for), chấm cách quãng (chế `dots(n)`), danh sách màu (`for c in [...]`), đổi màu giữa nét, khung vuông, trùm hai khung hai màu (chế `frame()`, for lồng for).
-`che-may-son` (chế lệnh, chương trình chính cố định): `line(n)`, `color_line(c, n)`, `next_row(n)`, hàm của màn `stair_step()` rẽ ngược, `stripes(colors)`, `color_dots(colors)`, `grid(r, k)` (for lồng for),
-`border(n)`, hàm của màn `fix_middle()` (tô đè), trùm lá cờ có viền (gioiHanHam 3). Không có màn "lắp ngược".
+`che-may-son` (chế lệnh, chương trình chính cố định): `line(n)`, `color_line(c, n)`, `next_row(n)`, hàm của màn `stair_step()` rẽ ngược, `stripes(colors)`, `copy_row(n)` (đọc sơn, ghi vào danh sách), `grid(r, k)` (for lồng for),
+`border(n)`, `fill_gaps(c, n)` (lấp ô chưa sơn), trùm ba bức tranh hoa văn (3 sân, gioiHanHam 2). Không có màn "lắp ngược".
+
+## 3b. Sơn và cảm biến màu (26/10)
+
+Sơn phủ lên màu sàn: `color()` (cảm biến bụng, camera) và `look()` đọc màu sơn nếu ô có sơn (`nguon: 'son'`), không thì màu sàn. Ô đích có màu vẫn theo màu sàn.
+Lớp sơn sẵn `man.sonBanDau` (chuỗi `r g b y .`, nhiều sân thì song song với `san`); với `to-hinh` ô sơn sẵn phải nằm trong hình.
+Ba màn của `che-may-son` dùng xe gắn thêm cảm biến màu (khay có `color()`): 6 chép hàng bằng danh sách màu đọc được, 9 lấp chỗ trống bằng `if color() == "none"`,
+10 một chương trình cho ba sân có hoa văn khác nhau (phải đọc màu, không đếm cứng được). Thay ba màn cũ `color_dots`, `fix_middle` (tô đè) và lá cờ có viền.
 
 ## 4. Máy kiểm
 

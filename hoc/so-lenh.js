@@ -145,16 +145,17 @@
     m('stop_line', 'mau', 'Dừng sát trước vạch đỏ: lên vạch rồi lùi lại một ô', 'che-mau', 'che-mau.4'),
     m('follow_line', 'mau', 'Đi theo vạch kẻ đỏ, xanh dương cho tới khi gặp ô vàng', 'che-mau', 'che-mau.5'),
     m('sort_color', 'mau', 'Vật đỏ chuyền sang ô bên phải, vật xanh dương sang ô bên trái', 'che-mau', 'che-mau.6'),
-    // chương Máy sơn + Chế lệnh máy sơn (nhóm 'son'; stair_step, fix_middle là hàm của màn nên không có ở đây)
+    // chương Máy sơn + Chế lệnh máy sơn (nhóm 'son'; stair_step là hàm của màn nên không có ở đây)
     m('dots', 'son', 'Chấm n chấm cách nhau một ô theo hướng xe', 'may-son', 'may-son.6'),
     m('frame', 'son', 'Vẽ khung vuông cạnh ba ô rồi về đúng chỗ, đúng hướng cũ', 'may-son', 'may-son.10'),
     m('line', 'son', 'Hạ đầu sơn, đi n bước rồi nhấc đầu sơn: nét n + 1 ô', 'che-may-son', 'che-may-son.1'),
     m('color_line', 'son', 'Chọn màu c rồi vẽ nét n + 1 ô', 'che-may-son', 'che-may-son.2'),
     m('next_row', 'son', 'Lùi n ô về đầu hàng rồi xuống hàng dưới, giữ hướng', 'che-may-son', 'che-may-son.3'),
     m('stripes', 'son', 'Mỗi màu trong danh sách vẽ một sọc bốn ô, sọc nọ dưới sọc kia', 'che-may-son', 'che-may-son.5'),
-    m('color_dots', 'son', 'Mỗi màu trong danh sách chấm một chấm, cách nhau một ô', 'che-may-son', 'che-may-son.6'),
+    m('copy_row', 'son', 'Đọc màu n ô bằng cảm biến, xuống hàng dưới rồi chép lại đúng các màu đó', 'che-may-son', 'che-may-son.6'),
     m('grid', 'son', 'Lưới chấm r hàng, mỗi hàng k chấm, hàng cách hàng một ô', 'che-may-son', 'che-may-son.7'),
     m('border', 'son', 'Khung vuông mỗi cạnh đi n bước, về chỗ cũ', 'che-may-son', 'che-may-son.8'),
+    m('fill_gaps', 'son', 'Đi qua n ô, ô nào chưa có sơn thì chấm màu c', 'che-may-son', 'che-may-son.9'),
     m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.5'),
     m('grip', 'nam-cham', 'Bật cực khác chữ trên vật nam châm trước mặt để kéo nó về', 'nam-cham', 'nam-cham.6'),
     // chương Chế lệnh nam châm (kick, reel, lane, sort, fling; fixed_grip, go_pull, put_back là hàm của màn nên không có ở đây)

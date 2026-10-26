@@ -143,7 +143,7 @@
    dau-dung-tran (lỗi: stand() khi đang đứng trong ô gầm), chan-goi-lai (lỗi: hai lệnh chân cùng nhịp); dam-tuong với vat 'gam-thap' (đi vào gầm mà chân đang duỗi); lech-bong-mo nói cả chân co / duỗi lệch bóng mờ
    (bongMo.chan); quen-wait nói "lệnh chân" khi crouch() / stand() chưa kịp trôi nhịp.
    MÁY SƠN / MỤC TIÊU to-hinh (chương may-son, che-may-son; luật ở san-hoc.js, phần MÁY SƠN): man.hinh = hình mờ (màn nhiều sân: mảng song song với man.san), man.mucBanDau = màu sơn lúc đầu.
-   Kết quả (và mỗi mục theoSan) có thêm `son` { ha, mau }, `daSon` [{x,y,mau}], `hinh`. Mã chẩn đoán: mau-son-sai (lỗi chạy: ink() nhận màu lạ), son-goi-lai (lỗi: hai lệnh đầu sơn cùng nhịp),
+   man.sonBanDau = lớp ô sơn sẵn (cảm biến màu đọc được sơn). Kết quả (và mỗi mục theoSan) có thêm `son` { ha, mau }, `daSon` [{x,y,mau}], `hinh`, `sonBanDau`. Mã chẩn đoán: mau-son-sai (lỗi chạy: ink() nhận màu lạ), son-goi-lai (lỗi: hai lệnh đầu sơn cùng nhịp),
    to-thua (lỗi: tô ra ngoài hình, chương trình dừng), chua-to-hinh (lỗi: chạy xong mà hình còn ô chưa tô hay tô sai màu; kèm thieu, saiMau), quen-wait nói "lệnh sơn".
    ========================================================================== */
 (function () {
@@ -1162,14 +1162,14 @@
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: man.danToiDa,
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
-        bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
+        bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
       }, g.ma);
       var cd = chanDoanSan(man, res, g, false, bc);
       var vet = chuyenVet(res.vet, g);
       hamTrongVet(vet, dung);
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
-        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua, son: res.son, daSon: res.daSon, hinh: res.hinh });
+        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua, son: res.son, daSon: res.daSon, hinh: res.hinh, sonBanDau: res.sonBanDau });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
@@ -1190,7 +1190,7 @@
     ketQua.thungBanDau = viec.thungBanDau; ketQua.thung = viec.thung; ketQua.mauO = viec.mauO;
     ketQua.pin = viec.pin; ketQua.pinToiDa = viec.pinToiDa; ketQua.sac = viec.sac;
     ketQua.bongMo = viec.bongMo; ketQua.diQua = viec.diQua;
-    ketQua.son = viec.son; ketQua.daSon = viec.daSon; ketQua.hinh = viec.hinh;
+    ketQua.son = viec.son; ketQua.daSon = viec.daSon; ketQua.hinh = viec.hinh; ketQua.sonBanDau = viec.sonBanDau;
     ketQua.sung = viec.sung; ketQua.cua = viec.cua; ketQua.nut = viec.nut; ketQua.bangTat = viec.bangTat; ketQua.cuaBanDau = viec.cuaBanDau; ketQua.nutBanDau = viec.nutBanDau;
 
     // hàm thực sự được gọi (hợp mọi sân) → số ô
@@ -1281,7 +1281,7 @@
       var res = SanHoc.chay({
         san: rows, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, dich: man.dich,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, hinh: lm.hinh || undefined,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,

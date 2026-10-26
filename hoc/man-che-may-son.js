@@ -2,17 +2,20 @@
    man-che-may-son.js — "Học lập trình": CHƯƠNG `che-may-son` · CHẾ LỆNH MÁY SƠN (10 màn, 25/10). Chương chế lệnh của bộ phận máy sơn (sau chương `may-son`, hoc/KE-HOACH-MAY-SON.md).
    Robot như chương may-son: XE HAI BÁNH GẮN ĐẦU SƠN, robot { than: 'hai-banh', tay: 'son', camBien: [] }. Mục tiêu 'to-hinh' (tô đúng hình mờ). Chương trình chính khóa (`chinhCoDinh`, bản mẫu
    `maMau.chinh`), người chơi chế hàm; 10 tự viết chương trình chính (gioiHanHam 3). Mỗi lệnh chế có ít nhất một cách khác cũng thắng: `congThucKhac` (kiem-che-may-son.mjs chạy từng cách).
-   Ý Python: hàm có tham số mang MÀU (color_line(c, n)), hàm nhận DANH SÁCH MÀU (color_dots(colors), stripes(colors)), for LỒNG for (grid(r, k)), tô đè để sửa màu.
+   Ý Python: hàm có tham số mang MÀU (color_line(c, n)), hàm nhận DANH SÁCH MÀU (stripes(colors)), for LỒNG for (grid(r, k)), GHI màu vào danh sách (copy_row), if theo màu đọc được.
+   Màn 6, 9, 10 xe gắn THÊM cảm biến màu dưới bụng (robot XE_DOC, khay có color()): sơn phủ lên sàn nên color() đọc được ô đã sơn (san-hoc.js, phần SƠN VÀ CẢM BIẾN MÀU);
+   man.sonBanDau là lớp ô sơn sẵn (vẽ trên sân từ lúc vào màn).
 
    Hàm của em MỚI (tên cốt truyện, khóa trong kho):
      che-may-son.1 line(n)            = pen_down(), forward(n), pen_up(), wait()              nét n + 1 ô theo hướng xe, nhấc đầu sơn ở cuối
      che-may-son.2 color_line(c, n)   = ink(c), line(n)                                       nét màu c
      che-may-son.3 next_row(n)        = for i in range(n): back(); turn_right(), move(), turn_left()   lùi n ô về đầu hàng rồi xuống hàng dưới, hướng cũ
      che-may-son.5 stripes(colors)    = for c in colors: color_line(c, 3), next_row(3)        mỗi màu một sọc bốn ô, sọc nọ dưới sọc kia
-     che-may-son.6 color_dots(colors) = for c in colors: ink(c), dot(), move(), move()          chấm cách quãng, mỗi chấm một màu của danh sách
+     che-may-son.6 copy_row(n)        = seen = []; đọc n ô bằng seen.append(color()); next_row(n); for c in seen: ink(c), dot(), move()   chép hàng sơn sẵn xuống hàng dưới
+     che-may-son.9 fill_gaps(c, n)    = ink(c); for i in range(n): if color() == "none": dot(); move()                         lấp ô chưa sơn bằng màu c, giữ ô đã sơn
      che-may-son.7 grid(r, k)         = for i in range(r): dots(k); for j in range(2 * k): back(); turn_right(), move(), move(), turn_left()   lưới chấm r hàng × k cột
      che-may-son.8 border(n)          = for i in range(4): forward(n), turn_right()            khung vuông cạnh n + 1 ô, về chỗ cũ
-   HÀM CỦA MÀN (không vào kho): che-may-son.4 stair_step() (thân ban đầu rẽ ngược), che-may-son.9 fix_middle() (thân ban đầu `pass`).
+   HÀM CỦA MÀN (không vào kho): che-may-son.4 stair_step() (thân ban đầu rẽ ngược), 10 (trùm, 3 sân, gioiHanHam 2): ba bức tranh ba sọc có hoa văn sơn sẵn ở chỗ khác nhau: for c in […]: fill_gaps(c, 4); next_row(4).
    Sao: sao.nhip = nhịp lời giải chạy thật (nhipTheoLoiGiai; do-duong-may-son.mjs dò BFS khi hình nhỏ); sao.o = ô của lời giải.
    ========================================================================== */
 (function () {
@@ -30,7 +33,8 @@
   var T_COLOR_LINE = ['ink(c)', 'line(n)'];
   var T_NEXT_ROW = ['for i in range(n):', '    back()', 'turn_right()', 'move()', 'turn_left()'];
   var T_STRIPES = ['for c in colors:', '    color_line(c, 3)', '    next_row(3)'];
-  var T_COLOR_DOTS = ['for c in colors:', '    ink(c)', '    dot()', '    move()', '    move()'];
+  var T_COPY_ROW = ['seen = []', 'for i in range(n):', '    seen.append(color())', '    move()', 'next_row(n)', 'for c in seen:', '    ink(c)', '    dot()', '    move()'];
+  var T_FILL_GAPS = ['ink(c)', 'for i in range(n):', '    if color() == "none":', '        dot()', '    move()'];
   var T_GRID = ['for i in range(r):', '    dots(k)', '    for j in range(2 * k):', '        back()', '    turn_right()', '    move()', '    move()', '    turn_left()'];
   var T_BORDER = ['for i in range(4):', '    forward(n)', '    turn_right()'];
   var STEP_SAI = ['move()', 'turn_left()', 'move()', 'turn_right()'];
@@ -41,16 +45,20 @@
   var C_3 = ['color_line("red", 3)', 'next_row(3)', 'color_line("blue", 3)'];
   var C_4 = ['pen_down()', 'for i in range(3):', '    stair_step()'];
   var C_5 = ['stripes(["red", "yellow", "blue"])'];
-  var C_6 = ['color_dots(["yellow", "green", "blue"])'];
+  var C_6 = ['move()', 'copy_row(4)'];
   var C_7 = ['ink("green")', 'grid(3, 3)'];
   var C_8 = ['ink("blue")', 'pen_down()', 'border(6)', 'pen_up()', 'step(2, 2)', 'ink("red")', 'pen_down()', 'border(2)'];
-  var C_9 = ['color_line("red", 4)', 'fix_middle()'];
-  var L_10 = ['ink("yellow")', 'pen_down()', 'border(5)', 'pen_up()', 'step(1, 1)', 'stripes(["red", "blue", "red", "blue"])'];
+  var C_9 = ['move()', 'fill_gaps("green", 5)'];
+  var L_10 = ['for c in ["red", "yellow", "blue"]:', '    fill_gaps(c, 4)', '    next_row(4)'];
+  var S10 = ['......', '......', '......', '......', '......'];
+  // 6, 9, 10: xe gắn THÊM cảm biến màu dưới bụng; color() đọc cả màu sơn (san-hoc.js, phần SƠN VÀ CẢM BIẾN MÀU)
+  var XE_DOC = { than: 'hai-banh', tay: 'son', camBien: [{ ma: 'mau', o: 'hong' }] };
+  var KHAY_DOC = KHAY.concat(['color']);
 
   function man(m) {
     m.chuong = 'che-may-son';
     m.loaiRobot = 'banh';
-    m.robot = { than: 'hai-banh', tay: 'son', camBien: [] };
+    m.robot = m.robot || { than: 'hai-banh', tay: 'son', camBien: [] };
     m.hamGoc = m.hamGoc || KHAY;
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = { chinh: 10, moiHam: 10 };
@@ -175,25 +183,27 @@
     }),
 
     man({
-      so: 6, ten: 'Chấm theo danh sách', hang: 'luyen', hamCuaEmCan: ['move'], taoHam: ['color_dots'],
-      deBai: 'Chế color_dots(colors): mỗi màu trong danh sách chấm một chấm, các chấm cách nhau một ô. Chương trình chính chấm vàng, xanh lá, xanh dương.',
-      veMaMau: 'Tạo color_dots với đối số colors. Mỗi lần lặp: chọn màu, chấm, đi hai bước.',
-      san: ['.......', '.......', '.......'],
-      hinh: ['.......', 'y.g.b..', '.......'],
+      so: 6, ten: 'Chép màu', hang: 'luyen', hamCuaEmCan: ['move', 'back', 'turn_right', 'turn_left', 'next_row'], taoHam: ['copy_row'],
+      robot: XE_DOC, hamGoc: KHAY_DOC,
+      deBai: 'Hàng trên đã sơn sẵn bốn màu, xe tiến một bước là tới ô đầu. Chế copy_row(n): đi dọc hàng, ghi màu từng ô vào danh sách bằng color(), rồi xuống hàng dưới chép lại đúng các màu đó.',
+      veMaMau: 'Cảm biến màu dưới bụng đọc cả màu sơn. seen.append(color()) ghi màu ô đang đứng vào danh sách seen.',
+      san: ['......', '......', '......', '......'],
+      sonBanDau: ['......', '.rybr.', '......', '......'],
+      hinh: ['......', '.rybr.', '.rybr.', '......'],
       batDau: { x: 0, y: 1, huong: 1 },
       maMau: { chinh: C_6.slice() },
-      sao: { o: 9, nhip: 5 },
-      loiGiai: { chinh: C_6.slice(), hamCuaEmMoi: [H('color_dots', T_COLOR_DOTS, ['colors'])] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('color_dots', nhieu(['# mỗi màu một chấm'], T_COLOR_DOTS), ['colors'])] },
+      sao: { o: 26, nhip: 16 },
+      loiGiai: { chinh: C_6.slice(), hamCuaEmMoi: [H('copy_row', T_COPY_ROW, ['n'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', nhieu(['# đọc hàng trên, chép xuống hàng dưới'], T_COPY_ROW), ['n'])] },
       congThucKhac: [
-        { moTa: 'Đi hai bước bằng forward(2)', hamCuaEmMoi: [H('color_dots', ['for c in colors:', '    ink(c)', '    dot()', '    forward(2)'], ['colors'])] }
+        { moTa: 'Chép theo chỉ số: seen[i]', hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    seen.append(color())', '    move()', 'next_row(n)', 'for i in range(n):', '    ink(seen[i])', '    dot()', '    move()'], ['n'])] }
       ],
       loiSai: [
-        { moTa: 'Gọi color_dots mà chưa chế hàm', baiLam: { chinh: C_6.slice() }, phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Chấm trước rồi mới chọn màu: màu lệch một chấm', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('color_dots', ['for c in colors:', '    dot()', '    ink(c)', '    move()', '    move()'], ['colors'])], phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Đi một bước: chấm sát nhau, ra ngoài hình', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('color_dots', ['for c in colors:', '    ink(c)', '    dot()', '    move()'], ['colors'])], phaiCoMa: ['to-thua'] }
+        { moTa: 'Gọi copy_row mà chưa chế hàm', baiLam: { chinh: C_6.slice() }, phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Đi rồi mới đọc màu: lệch một ô, đọc phải ô không màu', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    move()', '    seen.append(color())', 'next_row(n)', 'for c in seen:', '    ink(c)', '    dot()', '    move()'], ['n'])], phaiCoMa: ['mau-son-sai'] },
+        { moTa: 'Quên xuống hàng: chép ra ngoài hình', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    seen.append(color())', '    move()', 'for c in seen:', '    ink(c)', '    dot()', '    move()'], ['n'])], phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['Giống dots(n), nhưng lặp qua danh sách màu thay vì đếm n lần.', 'ink(c) chạy trước dot().']
+      goiY: ['Đọc màu TRƯỚC khi đi: color() đọc ô xe đang đứng.', 'Xuống hàng bằng next_row(n) rồi lặp qua seen: chọn màu, chấm, đi.']
     }),
 
     /* ------------------------------------------------------------ hàng 3: biến thể */
@@ -243,48 +253,52 @@
     }),
 
     man({
-      so: 9, ten: 'Đố: tô đè', hang: 'bien-the', hamCuaEmCan: ['back', 'color_line'],
-      deBai: 'Hình mờ là nét năm ô: đỏ, đỏ, xanh dương, đỏ, đỏ. Chương trình chính vẽ cả nét màu đỏ rồi gọi hàm của màn fix_middle(). Viết fix_middle() để tô lại ô giữa màu xanh dương.',
-      veMaMau: 'Tô lại một ô thì màu mới đè lên màu cũ. Vẽ nét xong, xe đứng ở ô cuối của nét.',
-      san: ['.....', '.....', '.....'],
-      hinh: ['.....', 'rrbrr', '.....'],
+      so: 9, ten: 'Lấp chỗ trống', hang: 'bien-the', hamCuaEmCan: ['move'], taoHam: ['fill_gaps'],
+      robot: XE_DOC, hamGoc: KHAY_DOC,
+      deBai: 'Vạch đã có vài ô sơn sẵn đỏ, xanh dương, vàng. Chế fill_gaps(c, n): đi qua n ô, ô nào chưa có sơn thì chấm màu c, ô đã có sơn thì để nguyên.',
+      veMaMau: 'color() trả "none" khi ô chưa có sơn và sàn không màu. Tô đè lên ô đã sơn là làm hỏng màu của nó.',
+      san: ['.......', '.......', '.......'],
+      sonBanDau: ['.......', '.r.b.y.', '.......'],
+      hinh: ['.......', '.rgbgy.', '.......'],
       batDau: { x: 0, y: 1, huong: 1 },
-      maMau: { chinh: C_9.slice(), hamCuaMan: [H('fix_middle', ['pass'])] },
-      sao: { o: 21, nhip: 8 },
-      loiGiai: { chinh: C_9.slice(), hamCuaMan: [H('fix_middle', ['back()', 'back()', 'ink("blue")', 'dot()', 'wait()'])] },
-      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('fix_middle', ['# lùi về ô giữa, tô xanh', 'back()', 'back()', 'ink("blue")', 'dot()', 'wait()'])] } },
+      maMau: { chinh: C_9.slice() },
+      sao: { o: 10, nhip: 5 },
+      loiGiai: { chinh: C_9.slice(), hamCuaEmMoi: [H('fill_gaps', T_FILL_GAPS, ['c', 'n'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', nhieu(['# chỉ chấm ô chưa có sơn'], T_FILL_GAPS), ['c', 'n'])] },
       congThucKhac: [
-        { moTa: 'Chọn màu trước, lùi bằng vòng for', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('fix_middle', ['ink("blue")', 'for i in range(2):', '    back()', 'dot()', 'wait()'])] } }
+        { moTa: 'Hỏi ngược lại: ô đã có sơn thì chỉ đi tiếp', hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    if color() != "none":', '        move()', '    else:', '        dot()', '        move()'], ['c', 'n'])] }
       ],
       loiSai: [
-        { moTa: 'Để nguyên pass: ô giữa vẫn đỏ', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('fix_middle', ['pass'])] }, phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Lùi một ô: tô xanh nhầm ô', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('fix_middle', ['back()', 'ink("blue")', 'dot()', 'wait()'])] }, phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Hạ đầu sơn để tô: lùi tiếp thì tô xanh thêm ô', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('fix_middle', ['back()', 'back()', 'ink("blue")', 'pen_down()', 'back()'])] }, phaiCoMa: ['chua-to-hinh'] }
+        { moTa: 'Gọi fill_gaps mà chưa chế hàm', baiLam: { chinh: C_9.slice() }, phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Chấm mọi ô: đè mất màu sơn sẵn', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    dot()', '    move()'], ['c', 'n'])], phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Hỏi "khác màu c": ô đỏ, xanh, vàng cũng bị chấm đè', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    if color() != c:', '        dot()', '    move()'], ['c', 'n'])], phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['Từ ô cuối lùi hai ô là tới ô giữa.', 'Chấm một lần là đủ: dot() rồi wait().']
+      goiY: ['Hỏi color() == "none" để biết ô còn trống.', 'Chọn màu một lần ở đầu hàm là đủ.']
     }),
 
     /* ------------------------------------------------------------ hàng 4: thử thách */
     man({
-      so: 10, ten: 'Lá cờ có viền', hang: 'trum', hamCuaEmCan: ['border', 'step', 'stripes'],
+      so: 10, ten: 'Ba bức tranh hoa văn', hang: 'trum', hamCuaEmCan: ['next_row', 'fill_gaps'],
+      robot: XE_DOC, hamGoc: KHAY_DOC,
       huyHieu: { ma: 'che-may-son', ten: 'Huy hiệu Chế lệnh máy sơn' },
-      gioiHanHam: 3,
-      deBai: 'Vẽ lá cờ: viền vàng sáu ô bao quanh bốn sọc đỏ, xanh dương, đỏ, xanh dương. Tự viết chương trình chính, chỉ được gọi 3 hàm của em khác nhau.',
-      veMaMau: 'Gợi ý: border cho viền, step để vào trong, stripes cho bốn sọc.',
-      san: ['.......', '.......', '.......', '.......', '.......', '.......', '.......'],
-      hinh: ['yyyyyy.', 'yrrrry.', 'ybbbby.', 'yrrrry.', 'ybbbby.', 'yyyyyy.', '.......'],
-      batDau: { x: 0, y: 0, huong: 1 },
+      gioiHanHam: 2,
+      deBai: 'Ba bức tranh ba sọc đỏ, vàng, xanh dương; mỗi bức có vài ô hoa văn xanh lá sơn sẵn ở chỗ khác nhau. Một chương trình phải tô đủ cả ba bức mà không đè lên hoa văn. Chỉ được gọi 2 hàm của em khác nhau.',
+      veMaMau: 'Bấm Sân 1, 2, 3 để xem từng bức. fill_gaps(c, n) chỉ chấm ô còn trống, next_row(n) xuống hàng.',
+      san: [S10, S10, S10],
+      sonBanDau: [['......', '..g...', '...g..', '......', '......'], ['......', '....g.', '.g....', '..g...', '......'], ['......', '..g...', '......', '.g..g.', '......']],
+      hinh: [['......', '.rgrr.', '.yygy.', '.bbbb.', '......'], ['......', '.rrrg.', '.gyyy.', '.bgbb.', '......'], ['......', '.rgrr.', '.yyyy.', '.gbbg.', '......']],
+      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: { chinh: [] },
-      sao: { o: 39, nhip: 61 },
-      khongDoBFS: true,                                                                   // hình 36 ô
+      sao: { o: 23, nhip: 26 },
+      khongDoBFS: true,                                                                   // ba sân, mỗi sân 12 ô hình: sao.nhip theo lời giải
       loiGiai: { chinh: L_10.slice() },
-      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# viền trước, sọc sau'], L_10) } },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# mỗi sọc: lấp ô trống rồi xuống hàng'], L_10) } },
       loiSai: [
-        { moTa: 'Quên chọn màu vàng: viền đỏ', baiLam: { chinh: ['pen_down()', 'border(5)', 'pen_up()', 'step(1, 1)', 'stripes(["red", "blue", "red", "blue"])'] }, phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Nhấc đầu sơn rồi gọi stripes ngay: hai lệnh đầu sơn chung một nhịp, sọc vẽ đè lên viền', baiLam: { chinh: ['ink("yellow")', 'pen_down()', 'border(5)', 'pen_up()', 'stripes(["red", "blue", "red", "blue"])'] }, phaiCoMa: ['son-goi-lai', 'chua-to-hinh'] },
-        { moTa: 'Gọi thêm move(): vượt giới hạn 3 hàm', baiLam: { chinh: ['ink("yellow")', 'pen_down()', 'border(5)', 'pen_up()', 'move()', 'step(0, 1)', 'stripes(["red", "blue", "red", "blue"])'] }, phaiCoMa: ['qua-gioi-han-ham'] }
+        { moTa: 'Vẽ sọc bằng stripes: đè mất hoa văn', baiLam: { chinh: ['stripes(["red", "yellow", "blue"])'] }, phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Quên xuống hàng: xe chạy ra ngoài tranh', baiLam: { chinh: ['for c in ["red", "yellow", "blue"]:', '    fill_gaps(c, 4)'] }, phaiCoMa: ['to-thua'] },
+        { moTa: 'Sai thứ tự màu', baiLam: { chinh: ['for c in ["red", "blue", "yellow"]:', '    fill_gaps(c, 4)', '    next_row(4)'] }, phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['Viền trước: border(5) vẽ khung sáu ô. Nhớ nhấc đầu sơn.', 'step(1, 1) đưa xe vào góc trong, quay mặt sang phải.']
+      goiY: ['Lặp qua danh sách ba màu: mỗi màu một sọc.', 'Sau mỗi sọc, next_row(4) đưa xe về đầu sọc dưới.']
     })
   ];
 

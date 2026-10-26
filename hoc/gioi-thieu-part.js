@@ -177,7 +177,7 @@
       moTaLenh: { color: 'Đọc màu sàn dưới bụng xe' },
       gioi: ['color() trả "red", "green", "blue", "yellow" hoặc "none"', 'Đọc không tốn nhịp, kể cả lúc đang mang vật'],
       khong: ['Không thấy ô trước mặt', 'Không biết vật màu gì'],
-      luuY: ['Muốn biết màu của vật thì cần camera.']
+      luuY: ['Muốn biết màu của vật thì cần camera.', 'Ô đã có sơn thì color() đọc màu sơn, không đọc màu sàn bên dưới.']
     },
     'camera': {
       khe: 'camBien', ten: 'Camera trước',
