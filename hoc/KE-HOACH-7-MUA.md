@@ -88,6 +88,8 @@ Giống các chương chế lệnh `che-*` hiện nay (che-xe, che-tay, che-xich
 
 Yếu tố sân cần một nâng cấp mới dùng được (ô sạc cần Hạ cánh) thì giới thiệu trong gói nâng cấp đó.
 
+**Phim mở gói (user 27/10, mọi mùa):** mỗi gói có một phim ngắn 3–4 khung giới thiệu robot / part / cơ chế mới, chiếu lần đầu vào gói (bộ máy và kịch bản mùa 1: [KE-HOACH-PHIM-GOI.md](KE-HOACH-PHIM-GOI.md)). Kịch bản từng mùa viết cùng lúc lên danh sách màn của mùa đó.
+
 | Mùa | Python A (gói 1) | Python B (gói 2) | Cảm biến trả về (gói 3) | 1 Thân | 2 Tay | 3 Cảm biến | 4 Sân | 5–7 Nâng cấp | 8 Đội |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 Xưởng R1 | `def` | `for` | bool, `if` / `while` | Hai bánh | Tay gắp | Khoảng cách | thùng gỗ, ô đích, nút đè | Bánh lùi · Tay xoay · Cảm biến bên | Hai robot (+10 mới) |

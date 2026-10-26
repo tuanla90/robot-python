@@ -35,6 +35,7 @@ User 27/10: "mỗi gói bạn làm 1 đoạn hoạt hình ngắn giống đoạn
 Ghi chú:
 - Gói 9 và 10 chưa có màn mới (gói F, G); phim vẫn làm được vì chỉ dựa vào part đã có.
 - Gói 10 đổi tên thành **"R1 xuất xưởng"** (user 27/10 đồng ý). Làm sau khi gộp gói B (cùng sửa `lo-trinh-hoc.js`).
+- **User 27/10: các mùa khác cũng phải có phim** cho mọi gói. Kịch bản mùa n viết cùng lúc lên danh sách màn mùa n (KE-HOACH-MUA-n.md), dữ liệu ở `game/phim-mua-n.js`.
 - Mùa sau: phim mở gói bộ phận = R1 tìm lại món văng mất (xích, cánh drone…) hay nhận món mới; phim gói sân = cơ chế mới làm gì; phim gói đội = robot mới xuất hiện.
 
 ## 4. Kiểm
