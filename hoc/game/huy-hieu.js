@@ -444,6 +444,54 @@
     return p;
   };
 
+  HINH['ban-xoay'] = function () {                              // mâm bàn xoay cơ khí + mũi tên vòng chiều kim đồng hồ
+    var p = P(T26, T26);
+    p.ell(13, 13, 10, 10, INK);
+    p.ell(13, 13, 8.8, 8.8, '#4a566e');
+    p.ell(13, 13, 7.2, 7.2, '#8c5210');
+    p.ell(13, 13, 6.2, 6.2, '#d9881e');
+    for (var a = -140; a <= 40; a += 6) {
+      var rx = Math.round(13 + Math.cos(a * Math.PI / 180) * 4.5), ry = Math.round(13 + Math.sin(a * Math.PI / 180) * 4.5);
+      p.px(rx, ry, '#fff0a6');
+    }
+    p.rect(16, 14, 3, 2, '#fff0a6'); p.px(17, 16, '#ffffff');
+    p.ell(13, 13, 2.2, 2.2, INK); p.ell(13, 13, 1.3, 1.3, '#e6eef8');
+    return p;
+  };
+  HINH['che-ban-xoay'] = function () {                          // cổng dịch chuyển phát sáng + bánh răng
+    var p = P(T26, T26);
+    p.ell(11, 15, 8.5, 8.5, INK);
+    p.ell(11, 15, 7.2, 7.2, '#145a8a');
+    p.ell(11, 15, 5.4, 5.4, '#26a8f0');
+    p.ell(11, 15, 3.2, 3.2, '#9cf0ff');
+    p.rect(10, 14, 2, 2, '#ffffff');
+    themBanhRang(p);
+    return p;
+  };
+  function xeDuaNho(son) {
+    var q = P(12, 12), s = Part.SON[son];
+    q.rect(0, 3, 3, 8, INK); q.rect(1, 4, 1, 6, KK.denSang); q.px(1, 5, KK.thepSang); q.px(1, 8, KK.thepSang);
+    q.rect(9, 3, 3, 8, INK); q.rect(10, 4, 1, 6, KK.denSang); q.px(10, 5, KK.thepSang); q.px(10, 8, KK.thepSang);
+    q.rect(2, 1, 8, 11, INK); q.rect(3, 2, 6, 9, s[0]); q.rect(3, 2, 6, 1, s[1]); q.rect(3, 10, 6, 1, s[2]);
+    q.rect(4, 4, 4, 3, KK.kinh); q.px(4, 5, KK.xanh); q.px(7, 5, KK.xanh);
+    return q;
+  }
+  HINH['dua-robot'] = function () {                             // đua đối kháng: xe vàng (R1) vượt trước xe đỏ (R2) hướng tới cờ đích
+    var p = P(30, 26);
+    chep(p, xeDuaNho('vang'), 1, 11, 1);
+    chep(p, xeDuaNho('do'), 17, 14, 1);
+    p.rect(13, 1, 2, 11, INK); p.rect(14, 2, 1, 9, '#fff6e3');
+    p.rect(15, 1, 7, 6, INK); p.rect(15, 2, 6, 4, '#ff4a3c'); p.rect(15, 2, 3, 2, '#ffd23f'); p.rect(18, 4, 3, 2, '#ffd23f');
+    return p;
+  };
+  HINH['che-dua-robot'] = function () {                         // chiến thuật đối kháng: xe vàng đấu xe đỏ + bánh răng
+    var p = P(T26, T26);
+    chep(p, xeDuaNho('vang'), 0, 12, 1);
+    chep(p, xeDuaNho('do'), 13, 14, 1);
+    themBanhRang(p);
+    return p;
+  };
+
   /* ---------------------------------------------------------------- vành + đĩa */
   var PAL = {
     khoa: { hi: '#b7bac4', md: '#8b8f9c', lo: '#555966', d1: '#7d818e', d2: '#6a6e7b' },

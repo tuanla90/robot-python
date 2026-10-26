@@ -714,6 +714,14 @@
         loi: 'Ở nhịp ' + ck0.nhip + ', cửa ở (' + ck0.o.x + ', ' + ck0.o.y + ') đáng lẽ đóng lại nhưng ' + (ck0.voi === 'xe' ? 'xe đang đứng ngay ô cửa' : 'có vật nằm ở ô cửa') + ' nên cửa giữ mở.' +
           (cuaKet.length > 1 ? ' Chuyện này xảy ra ' + cuaKet.length + ' lần.' : '') + ' Cửa không bao giờ đóng đè lên xe hay vật.' });
     }
+    var congChan = res.suKien.filter(function (e) { return e.ma === 'cong-chan'; });
+    if (congChan.length) {
+      var cc0 = congChan[0];
+      var tenVatCong = cc0.vat === 'thung-nang' ? 'thùng nặng' : cc0.vat === 'vat' ? 'vật nằm' : cc0.vat === 'dong-doi' ? 'đồng đội' : cc0.vat;
+      cd.push({ ma: 'cong-chan', muc: 'thong-tin', nhip: cc0.nhip, soLan: congChan.length, cong: cc0.cong, tu: cc0.tu, den: cc0.den, vat: cc0.vat,
+        loi: 'Ở nhịp ' + cc0.nhip + ', robot bước vào cổng số ' + cc0.cong + ' tại (' + cc0.tu.x + ', ' + cc0.tu.y + ') nhưng cổng đầu kia tại (' + cc0.den.x + ', ' + cc0.den.y + ') đang bị ' + tenVatCong + ' chắn nên không dịch chuyển được.' +
+          (congChan.length > 1 ? ' Chuyện này xảy ra ' + congChan.length + ' lần.' : '') + ' Muốn dịch chuyển qua cổng, ô cổng đầu kia phải trống.' });
+    }
     var thaChan = res.suKien.filter(function (e) { return e.ma === 'tha-bi-chan'; });
     if (thaChan.length) {
       var tb0 = thaChan[0], mtb = tb0.lenh ? (g.anhXa[tb0.lenh.dongPy] || null) : null;
@@ -953,6 +961,13 @@
     }
 
     // --- chạy xong mà chưa tới cờ
+    var doiThuThang = res.suKien.filter(function (e) { return e.ma === 'doi-thu-thang'; });
+    if (doiThuThang.length) {
+      var dtt = doiThuThang[0];
+      them('doi-thu-thang', 'Ở nhịp ' + dtt.nhip + ', robot đối thủ (R2) đã tới đích ' + (dtt.cungNhip ? 'cùng lúc với' : 'trước') + ' robot của em (tại ô (' + dtt.o.x + ', ' + dtt.o.y + ')). ' +
+        'Trong màn đối kháng, R1 phải hoàn thành mục tiêu TRƯỚC khi R2 tới cờ: hãy tìm đường ngắn hơn, tận dụng cơ chế sân hoặc cản nhịp R2.',
+        { nhip: dtt.nhip, cungNhip: !!dtt.cungNhip, o: dtt.o });
+    }
     if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'dua-vat') {
       if (!res.dungSom) {
         var vcan = man.vatCan, tenVatCan = vcan === 'sat' ? 'vật sắt' : vcan === 'nam-cham' ? 'vật nam châm' : vcan === 'tu' ? 'vật có từ (sắt và nam châm)' : 'vật';
@@ -995,7 +1010,7 @@
           if (chuaQua.length) them('chua-qua-diem', (man.loaiRobot === 'drone' ? 'Drone' : 'Xe') + ' chưa đi qua điểm ◆' + (chuaQua.length > 1 ? ' (còn thiếu ' + chuaQua.length + ' điểm)' : '') + ' trên đường. Chương trình phải đưa ' + (man.loaiRobot === 'drone' ? 'drone' : 'xe') + ' ghé qua mọi điểm ◆ rồi mới tới bóng mờ.', { conLai: chuaQua.length, o: { x: chuaQua[0].x, y: chuaQua[0].y } });
         }
       }
-    } else if (!sanThu && !res.thang && !res.loi) {
+    } else if (!sanThu && !res.thang && !res.loi && res.dungSom !== 'doi-thu-thang') {
       var r = res.robot;
       them('chua-toi-co', 'Chương trình chạy xong mà robot chưa tới cờ: robot đang ở ô (' + r.x + ', ' + r.y + ')' +
         (man.loaiRobot === 'nhen' || man.loaiRobot === 'drone' ? '' : ', quay mặt hướng ' + SanHoc.TEN_HUONG[r.huong]) +
@@ -1246,15 +1261,24 @@
   function chamDoi(man, baiLam, hamCuaEm) {
     var ds = (baiLam && baiLam.doi) || [];
     var hamCuaMan = ((baiLam && baiLam.hamCuaMan) || []).map(saoHam);
-    var bais = man.doi.map(function (r, i) { return { chinh: ((ds[i] && ds[i].chinh) || []).slice(), hamCuaMan: hamCuaMan.map(saoHam) }; });
+    // màn đối kháng (man.doiKhang): robot đối thủ (coDinh) chạy chương trình khóa của bản mẫu VỚI bộ hàm riêng cố định (man.khoDoiThu, hàm của màn bản mẫu),
+    // không mượn kho hàm của em hay hàm của màn người chơi đang sửa: sửa move() của mình không làm đối thủ chậm đi, và đối thủ chạy như nhau với mọi người chơi.
+    function laDoiThu(i) { return !!(man.doiKhang && man.doi[i].coDinh); }
+    var bais = man.doi.map(function (r, i) {
+      var ch = ds[i] ? ds[i].chinh : (i === 0 && baiLam && baiLam.chinh ? baiLam.chinh : null);
+      if (laDoiThu(i) && man.maMau && man.maMau.doi && man.maMau.doi[i]) ch = man.maMau.doi[i].chinh;
+      var hm = laDoiThu(i) && man.maMau ? (man.maMau.hamCuaMan || []) : hamCuaMan;
+      return { chinh: (ch || []).slice(), hamCuaMan: hm.map(saoHam) };
+    });
     var mans = man.doi.map(function (r, i) { return manCuaXe(man, i); });
     var cam = !!man.camHamCuaEm;
     var kho = cam ? [] : (hamCuaEm || []).map(saoHam);
+    var khoXe = man.doi.map(function (r, i) { return laDoiThu(i) && man.khoDoiThu ? man.khoDoiThu.map(saoHam) : kho; });
     var biCamTen = cam ? tenCua(hamCuaEm || []) : [];
     var khung = Object.assign({ chinh: 10, moiHam: 10 }, man.khung || {}, { moXuong: man.moXuong !== false });
     if (man.gioiHanHam !== undefined) khung.gioiHanHam = man.gioiHanHam;
-    var taps = bais.map(function (b) { return KhungCode.tapHamDung(b, kho, { tatCaHamMan: true }); });
-    var tinhs = bais.map(function (b) { return KhungCode.tapHamDung(b, kho); });
+    var taps = bais.map(function (b, i) { return KhungCode.tapHamDung(b, khoXe[i], { tatCaHamMan: true }); });
+    var tinhs = bais.map(function (b, i) { return KhungCode.tapHamDung(b, khoXe[i]); });
     var che = [];
     taps.forEach(function (t) { t.che.forEach(function (x) { if (che.indexOf(x) < 0) che.push(x); }); });
     var thongTin = cam ? [] : thongTinChe(che);
@@ -1291,7 +1315,7 @@
     dsSan.forEach(function (rows, si) {
       var lm = SanHoc.lopMauCuaSan(man, si);
       var res = SanHoc.chay({
-        san: rows, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
+        san: rows, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co', doiKhang: !!man.doiKhang,
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, dich: man.dich,
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         doi: mans.map(function (mi, i) {
@@ -1304,11 +1328,12 @@
         })
       }, gs.map(function (g) { return g.ma; }));
       var cdXe = mans.map(function (mi, i) {
+        if (man.doiKhang && i > 0) return [];
         var l = res.loi && (res.loi.robot === undefined || res.loi.robot === i) ? res.loi : null;
         var xongPhan = res.thang || (mi.mucTieu || 'toi-co') === 'toi-co' && res.doi[i].toiCo;        // tới cờ: phần của robot này đã xong
         return chanDoanSan(mi, Object.assign({}, res, res.doi[i], { thang: xongPhan, nhip: res.nhip, loi: l }), gs[i], false, bc);
       });
-      var cd = gopChanDoan(cdXe);
+      var cd = man.doiKhang ? cdXe[0].map(function (c) { return Object.assign({}, c, { xe: 0 }); }) : gopChanDoan(cdXe);
       var doi = res.doi.map(function (d, i) {
         var vet = chuyenVet(d.vet, gs[i]);
         hamTrongVet(vet, dung);
