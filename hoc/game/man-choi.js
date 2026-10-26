@@ -522,7 +522,7 @@
     if (!nhieuSan()) return;
     S.man.san.forEach(function (rows, i) {
       var b = h('button', 'sanbt'); b.setAttribute('data-nut', 'san-' + (i + 1)); b.setAttribute('data-san', i);
-      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau, vatChat: ch.vatChat, vatThem: ch.vatThem, cuaNhip: ch.cuaNhip });
+      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau, vatChat: ch.vatChat, vatThem: ch.vatThem, cuaNhip: ch.cuaNhip, hinh: ch.hinh, sonBanDau: ch.sonBanDau });
       b.appendChild(cv); b.appendChild(h('span', 'sn', String(i + 1))); b.appendChild(h('span', 'dau'));
       b.addEventListener('click', function () { xemSan(i); });
       E.bar.appendChild(b); S.nut.push(b);

@@ -2153,6 +2153,12 @@
         g.fillStyle = '#ff4a3c'; g.fillRect(px + (s >> 1), py + 1, s >> 1, s >> 1);
       }
     }
+    var hinhT = dungHinh(lopMau && lopMau.hinh), sonT = dungHinh(lopMau && lopMau.sonBanDau), vien = Math.max(1, s >> 3);       // máy sơn: ô hình mờ (khung màu) và ô sơn sẵn (sơn đặc)
+    for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+      var mh = hinhT && hinhT[y] ? hinhT[y][x] : null, ms = sonT && sonT[y] ? sonT[y][x] : null;
+      if (ms) { g.fillStyle = K_INK; g.fillRect(x * s + 1, y * s + 1, s - 2, s - 2); g.fillStyle = MAU_VIEN[ms]; g.fillRect(x * s + 2, y * s + 2, s - 4, s - 4); }
+      else if (mh) { g.fillStyle = MAU_VIEN[mh]; g.fillRect(x * s, y * s, s, vien); g.fillRect(x * s, y * s + s - vien, s, vien); g.fillRect(x * s, y * s, vien, s); g.fillRect(x * s + s - vien, y * s, vien, s); }
+    }
     them.forEach(function (o) {
       var ox = Math.floor(o.x), oy = Math.floor(o.y);
       if (ox < 0 || oy < 0 || ox >= w || oy >= h || rows[oy][ox] === '#' || rows[oy][ox] === 'o' || rows[oy][ox] === 'X') return;

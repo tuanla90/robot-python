@@ -45,10 +45,10 @@
   var C_3 = ['color_line("red", 3)', 'next_row(3)', 'color_line("blue", 3)'];
   var C_4 = ['pen_down()', 'for i in range(3):', '    stair_step()'];
   var C_5 = ['stripes(["red", "yellow", "blue"])'];
-  var C_6 = ['copy_row(4)'];
+  var C_6 = ['move()', 'copy_row(4)'];
   var C_7 = ['ink("green")', 'grid(3, 3)'];
   var C_8 = ['ink("blue")', 'pen_down()', 'border(6)', 'pen_up()', 'step(2, 2)', 'ink("red")', 'pen_down()', 'border(2)'];
-  var C_9 = ['fill_gaps("green", 5)'];
+  var C_9 = ['move()', 'fill_gaps("green", 5)'];
   var L_10 = ['for c in ["red", "yellow", "blue"]:', '    fill_gaps(c, 4)', '    next_row(4)'];
   var S10 = ['......', '......', '......', '......', '......'];
   // 6, 9, 10: xe gắn THÊM cảm biến màu dưới bụng; color() đọc cả màu sơn (san-hoc.js, phần SƠN VÀ CẢM BIẾN MÀU)
@@ -185,14 +185,14 @@
     man({
       so: 6, ten: 'Chép màu', hang: 'luyen', hamCuaEmCan: ['move', 'back', 'turn_right', 'turn_left', 'next_row'], taoHam: ['copy_row'],
       robot: XE_DOC, hamGoc: KHAY_DOC,
-      deBai: 'Hàng trên đã sơn sẵn bốn màu. Chế copy_row(n): đi dọc hàng, ghi màu từng ô vào danh sách bằng color(), rồi xuống hàng dưới chép lại đúng các màu đó.',
+      deBai: 'Hàng trên đã sơn sẵn bốn màu, xe tiến một bước là tới ô đầu. Chế copy_row(n): đi dọc hàng, ghi màu từng ô vào danh sách bằng color(), rồi xuống hàng dưới chép lại đúng các màu đó.',
       veMaMau: 'Cảm biến màu dưới bụng đọc cả màu sơn. seen.append(color()) ghi màu ô đang đứng vào danh sách seen.',
       san: ['......', '......', '......', '......'],
       sonBanDau: ['......', '.rybr.', '......', '......'],
       hinh: ['......', '.rybr.', '.rybr.', '......'],
-      batDau: { x: 1, y: 1, huong: 1 },
+      batDau: { x: 0, y: 1, huong: 1 },
       maMau: { chinh: C_6.slice() },
-      sao: { o: 25, nhip: 15 },
+      sao: { o: 26, nhip: 16 },
       loiGiai: { chinh: C_6.slice(), hamCuaEmMoi: [H('copy_row', T_COPY_ROW, ['n'])] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', nhieu(['# đọc hàng trên, chép xuống hàng dưới'], T_COPY_ROW), ['n'])] },
       congThucKhac: [
@@ -257,12 +257,12 @@
       robot: XE_DOC, hamGoc: KHAY_DOC,
       deBai: 'Vạch đã có vài ô sơn sẵn đỏ, xanh dương, vàng. Chế fill_gaps(c, n): đi qua n ô, ô nào chưa có sơn thì chấm màu c, ô đã có sơn thì để nguyên.',
       veMaMau: 'color() trả "none" khi ô chưa có sơn và sàn không màu. Tô đè lên ô đã sơn là làm hỏng màu của nó.',
-      san: ['......', '......', '......'],
-      sonBanDau: ['......', 'r.b.y.', '......'],
-      hinh: ['......', 'rgbgy.', '......'],
+      san: ['.......', '.......', '.......'],
+      sonBanDau: ['.......', '.r.b.y.', '.......'],
+      hinh: ['.......', '.rgbgy.', '.......'],
       batDau: { x: 0, y: 1, huong: 1 },
       maMau: { chinh: C_9.slice() },
-      sao: { o: 9, nhip: 4 },
+      sao: { o: 10, nhip: 5 },
       loiGiai: { chinh: C_9.slice(), hamCuaEmMoi: [H('fill_gaps', T_FILL_GAPS, ['c', 'n'])] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', nhieu(['# chỉ chấm ô chưa có sơn'], T_FILL_GAPS), ['c', 'n'])] },
       congThucKhac: [
@@ -285,8 +285,8 @@
       deBai: 'Ba bức tranh ba sọc đỏ, vàng, xanh dương; mỗi bức có vài ô hoa văn xanh lá sơn sẵn ở chỗ khác nhau. Một chương trình phải tô đủ cả ba bức mà không đè lên hoa văn. Chỉ được gọi 2 hàm của em khác nhau.',
       veMaMau: 'Bấm Sân 1, 2, 3 để xem từng bức. fill_gaps(c, n) chỉ chấm ô còn trống, next_row(n) xuống hàng.',
       san: [S10, S10, S10],
-      sonBanDau: [['......', '.g....', '...g..', '......', '......'], ['......', '....g.', '.g....', '..g...', '......'], ['......', '..g...', '......', '.g..g.', '......']],
-      hinh: [['......', '.grrr.', '.yygy.', '.bbbb.', '......'], ['......', '.rrrg.', '.gyyy.', '.bgbb.', '......'], ['......', '.rgrr.', '.yyyy.', '.gbbg.', '......']],
+      sonBanDau: [['......', '..g...', '...g..', '......', '......'], ['......', '....g.', '.g....', '..g...', '......'], ['......', '..g...', '......', '.g..g.', '......']],
+      hinh: [['......', '.rgrr.', '.yygy.', '.bbbb.', '......'], ['......', '.rrrg.', '.gyyy.', '.bgbb.', '......'], ['......', '.rgrr.', '.yyyy.', '.gbbg.', '......']],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: { chinh: [] },
       sao: { o: 23, nhip: 26 },
