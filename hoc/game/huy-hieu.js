@@ -235,6 +235,17 @@
     themBanhRang(p);
     return p;
   };
+  HINH['nut-de'] = function () {                                // nút đè M đang bật (lún, xanh lá như ô M trên sân) + thùng gỗ đè lên trên
+    var p = P(T26, T26);
+    p.rect(2, 16, 22, 8, INK);
+    p.rect(3, 17, 20, 6, '#444e62');
+    p.rect(4, 18, 18, 4, '#2ca85a');
+    p.rect(4, 18, 18, 1, '#9ef5b8'); p.rect(4, 18, 1, 4, '#9ef5b8');
+    p.rect(4, 21, 18, 1, '#1a6836'); p.rect(21, 18, 1, 4, '#1a6836');
+    [[3, 17], [22, 17], [3, 22], [22, 22]].forEach(function (q) { p.px(q[0], q[1], '#7cff86'); });
+    Part.veVatNho(p, 7, 5, 12, 'go');
+    return p;
+  };
 
   HINH['che-lap'] = function () {                               // mũi tên vòng nhỏ + bánh răng
     var p = P(T26, T26), cx = 9.5, cy = 16.5, ri = 4.6, ro = 7.8;

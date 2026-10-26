@@ -6,7 +6,7 @@
   var node = typeof module !== 'undefined' && module.exports;
   var M, TT, SL;
   if (node) {
-    ['chuoi-1', 'chuoi-2', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap',
+    ['chuoi-1', 'chuoi-2', 'che-xe', 'tay-gap', 'che-tay', 'nut-de', 'vong-lap', 'che-lap',
       'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'doi-ho-bang', 'list', 'che-list', 'xich', 'che-xich',
       'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'luc-ban', 'khoang-cach', 'che-cam-bien',
       'robot-hoan-thien', 'hai-robot', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao', 'nam-cham',
@@ -245,6 +245,12 @@
   // Ngưỡng sao khai cứng = TI_LE_SAO (0,5) × tổng sao tối đa các gói trước trong mùa, làm tròn xuống bội 5 (mo-goi.js); thêm màn mới thì tính lại.
   function day(chuong, so) { return so.map(function (n) { return chuong + '.' + n; }); }
   var MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  // Gói 4 chương 1 "Nút đè" (man-nut-de.js, màn mới viết cho lộ trình): chương chưa có trong thu-tu-chuong.js nên chèn tạm vào cuối thuTu
+  // cho ManHoc.them nhận; thuTu mùa 1 được dựng lại theo MUA_1 bên dưới. `nguon` giữ bản gốc như mọi màn khác (dungChuong đọc hang gốc).
+  TT.thuTu.push('nut-de');
+  TT.ten['nut-de'] = 'Nút đè';
+  M.them(M.manNutDe || []);
+  (M.manNutDe || []).forEach(function (m) { nguon[m.ma] = copy(m); });
   var MUA_1 = [
     { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
       chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
@@ -253,16 +259,16 @@
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
       chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 5, 4, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 3])]] },
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 75, hinh: 'che-tay',
-      chuong: [['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
-    { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 90, hinh: 'che-xe',
+      chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
+    { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 105, hinh: 'che-xe',
       chuong: [['banh-lui', day('che-xe', [4, 5, 6, 7, 8, 9])], ['che-banh-lui', day('che-tay', [5, 7, 9]).concat(['che-lap.7', 'che-lap.9', 'che-xe.10'])]] },
-    { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 110,
+    { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 125,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
-    { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 140, hinh: 'cam-bien-ben',
+    { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 155, hinh: 'cam-bien-ben',
       chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
-    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 170,
+    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 185,
       chuong: [['hai-robot', day('hai-robot', MUOI)]] },
-    { ma: 'robot', ten: 'Trùm mùa', loai: 'thu-thach', sao: 185, hinh: 'robot-hoan-thien',
+    { ma: 'robot', ten: 'Trùm mùa', loai: 'thu-thach', sao: 200, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
   ];
   // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.
