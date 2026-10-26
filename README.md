@@ -60,7 +60,7 @@ Khi viết công cụ đọc nội dung game, dùng `require('./hoc/lo-trinh-hoc
 npm test
 ```
 
-Chạy lần lượt 61 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
+Chạy lần lượt 62 bộ `kiem-*.mjs` (khoảng 6 phút; `hoc/kiem-hoc.mjs` và `hoc/kiem-nam-cham.mjs` lâu nhất).
 Chạy một bộ: `node hoc/kiem-xich.mjs`, hoặc lọc `npm test -- hoc/kiem-xich`.
 
 ## Đóng gói thành trang Artifact
