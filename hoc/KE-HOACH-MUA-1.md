@@ -20,6 +20,8 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
   **Luật đo đường cong** (áp cho mọi gói sau): màn n ≤ max(1,5 × màn n−1, màn n−1 + bù), bù: dòng +3, nhịp +4, ô +6; trừ trùm (với số nhỏ, 1,5 lần là quá chặt).
   Ngưỡng mở gói 4–10 thành 90, 120, 135, 165, 195, 210 (gói đã mở không khóa lại).
 
+- **27/10 gói D xong** (e2835fb, 9ed6b14, a9ff891): gói 5 đủ 20 màn (banh-lui.1–4, trùm mới banh-lui.4 huy hiệu `banh-lui`; che-banh-lui.1–4). Ngưỡng gói 6–9: 150, 180, 210, 225.
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
