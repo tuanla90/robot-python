@@ -177,6 +177,10 @@
     "o": 23,
     "nhip": 8
   },
+  "che-cam-bien.10": {
+    "o": 30,
+    "nhip": 13
+  },
   "robot-hoan-thien.1": {
     "o": 23,
     "nhip": 11

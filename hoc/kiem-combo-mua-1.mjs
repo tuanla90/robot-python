@@ -133,9 +133,13 @@ async function main() {
   const VI_TRI_CCB10 = 7;
   if (THU_TU['che-combo'].length === 9) THU_TU['che-combo'].splice(VI_TRI_CCB10, 0, 'che-cam-bien.10');
   /** Màn mà bộ dò khối chuẩn có đường nhanh hơn ngưỡng: lý do. */
-  const NHANH_HON = {};
+  const NHANH_HON = {
+    'che-combo.1': 'R2 đếm đúng số nhịp chờ thì nhặt ngay trong nhịp R1 thả (R1 chạy trước trong nhịp), nhanh hơn chờ bằng cảm biến một nhịp; chỉ đúng ở sân này (như che-hai-robot.4)',
+    'che-combo.7': 'lùi xuống đầu dưới (không quay đầu) nhanh hơn một nhịp, nhưng chương trình chính bị khóa: quay đầu (trái thành phải) là ý của màn',
+    'che-combo.6': 'R1 đếm đúng số nhịp chờ thì bước vào cửa ngay nhịp cửa vừa mở, nhanh hơn hỏi front_clear() một nhịp; chỉ đúng ở sân này'
+  };
   /** Robot khóa (màn hai robot): dãy khối nó chạy. */
-  const KHOI_KHOA = {};
+  const KHOI_KHOA = { 'che-combo.1': { r: 0, khoi: ['pick', 'turn_right', 'drop'] } };
   const BU = { dong: 3, nhip: 4, o: 6 };
   const theoSan = (v, i) => (Array.isArray(v) ? v[i] : v);
   const get = (ma) => M.timMa(ma);
@@ -238,7 +242,14 @@ async function main() {
     return {
       m, si, rows, rong, cao, mucTieu: m.mucTieu || 'toi-co', ds, bm,
       o: (x, y) => (x < 0 || y < 0 || x >= rong || y >= cao ? -1 : y * rong + x),
-      tuong, nut: san.nutDe.map((q) => q.y * rong + q.x), cua: san.cua.map((d) => ({ o: d.y * rong + d.x, mo0: d.mo })),
+      tuong, nut: san.nutDe.map((q) => q.y * rong + q.x),
+      // nút điều khiển cửa: không khai noi thì mọi nút giữ mọi cửa; có noi thì cửa chỉ theo các nút của nhóm chứa nó (như san-hoc.js)
+      cua: san.cua.map((d) => {
+        const noi = Array.isArray(m.san[0]) ? (m.noi || [])[si] : m.noi;
+        const nut = noi ? noi.filter((g) => (g.cua || []).some((c) => c.x === d.x && c.y === d.y)).map((g) => san.nutDe.findIndex((q) => q.x === g.nut.x && q.y === g.nut.y))
+          : san.nutDe.map((_, k) => k);
+        return { o: d.y * rong + d.x, mo0: d.mo, nut };
+      }),
       laCo: (o) => o >= 0 && rows[(o - (o % rong)) / rong][o % rong] === 'F', dich: new Set(san.dich.map((d) => d.y * rong + d.x)),
       vat0: san.vat.map((v) => v.y * rong + v.x),
       dichVat: bm ? (bm.vat || []).map((v) => v.y * rong + v.x).sort((a, b) => a - b) : null
@@ -272,8 +283,9 @@ async function main() {
       R.b++;
       if (R.b >= KHOI[R.k].length) { R.k = null; R.b = 0; }
     }
-    const bat = ctx.nut.some((o) => r.some((R) => vi(R) === o) || pos.includes(o));
+    const batNut = ctx.nut.map((o) => r.some((R) => vi(R) === o) || pos.includes(o));
     ctx.cua.forEach((d, j) => {
+      const bat = d.nut.some((k) => k >= 0 && batNut[k]);
       const muon = bat ? !d.mo0 : d.mo0;
       if (muon === cua[j]) return;
       if (!muon && (r.some((R) => vi(R) === d.o) || pos.includes(d.o))) return;

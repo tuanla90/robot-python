@@ -290,6 +290,8 @@
   (M.manComboMua1 || []).forEach(function (m) { nguon[m.ma] = copy(m); });
   var COMBO_1 = (M.manComboMua1 || []).filter(function (m) { return m.chuong === 'combo'; }).map(function (m) { return m.ma; });
   var COMBO_2 = (M.manComboMua1 || []).filter(function (m) { return m.chuong === 'che-combo'; }).map(function (m) { return m.ma; });
+  // che-cam-bien.10 "Kho hàng" (cất tạm từ 26/10) về đứng thứ 8 chương che-combo: sửa thành một sân, không biến (xem dưới, sau khi dựng chương).
+  if (COMBO_2.length === 9) COMBO_2.splice(7, 0, 'che-cam-bien.10');
   var MUA_1 = [
     { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
       chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
@@ -317,9 +319,9 @@
   var BIEN = { ma: 'bien', ten: 'Biến', loai: 'khai-niem', mua: 'mua-2', sao: 0, hinh: 'che-cam-bien',
     chuong: [['bien', ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9']]] };
   // Cất khỏi lộ trình xuất bản (ngân hàng man-*.js giữ nguyên, `nguon` còn bản gốc): trùng ý, dư so với khuôn, hay dùng cảm biến bên quá sớm.
-  // che-cam-bien.10 chỉ cất tạm: chờ gói 9 (Combo) có màn.
+  // che-cam-bien.10 (cất tạm 26/10) đã về gói 9 Combo, chương che-combo.
   var CAT = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10',
-    'khoang-cach.7', 'che-cam-bien.8', 'che-cam-bien.10'];
+    'khoang-cach.7', 'che-cam-bien.8'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
@@ -410,6 +412,35 @@
     delete m.bienDem;
     m.deBai = m.deBai.replace('Chương trình chỉ được gọi 6 hàm của em khác nhau.',
       'bounce() (đi tới tường rồi lùi về chỗ cũ) và fetch_back() (đi tới thùng, nhặt, lùi về rồi đặt) là hàm của màn, đã viết sẵn. Chương trình chỉ được gọi 4 hàm của em khác nhau.');
+  })();
+  // Gói 9 Combo, chương che-combo màn 8: che-cam-bien.10 "Kho hàng" cần fetch_back() của che-cam-bien.9 (biến đếm, đã sang mùa 2). Không đưa bản có biến thành hàm
+  // của màn khóa như robot-hoan-thien.10 (người chơi vẫn thấy biến): viết lại fetch_back() KHÔNG BIẾN thành hàm của màn người chơi viết tiếp — đi tới hàng, nhặt,
+  // LÙI tới khi bên phải trống (đúng chỗ rẽ: trong nhánh hai bên là tường), đặt. Cảm biến bên thay biến đếm. Một sân (sân giữa) như mọi màn không phải trùm;
+  // không còn là trùm nên bỏ huy hiệu (huy hiệu che-cam-bien là của trùm che-cam-bien.16). Chương trình chính gọi 2 hàm của em (to_gap, turn_right): giới hạn 2.
+  (function () {
+    var m = get('che-cam-bien.10');
+    motSan(m, 1);
+    var FB = ['go_wall()', 'pick()', 'while not right_clear():', '    back()', 'drop()'];
+    var CHINH = ['to_gap()', 'turn_right()', 'fetch_back()'];
+    function lam(chinh, than) { return bai(chinh, [ham('fetch_back', than)]); }
+    Object.assign(m, {
+      kieuBai: 'do-duong', gioiHanHam: 2,
+      deBai: 'Hàng nằm cuối một nhánh bên phải của kho. Đi lên hành lang tới cửa bên phải (hốc bên trái chỉ là mồi), vào nhánh, lấy hàng rồi đặt nó ngay trong cửa nhánh, giống bóng mờ. ' +
+        'fetch_back() là hàm của màn: đi tới hàng và nhặt đã có; viết tiếp phần lùi về chỗ rẽ (bên phải trống) rồi đặt. Chương trình chỉ được gọi 2 hàm của em.',
+      veMaMau: 'Viết chương trình chính (tới cửa, rẽ, gọi fetch_back()), rồi viết tiếp thân fetch_back() trong Xưởng hàm.',
+      maMau: lam([], ['go_wall()', 'pick()']),
+      loiGiai: lam(CHINH, FB),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: lam(['# lên cửa, vào nhánh, lấy hàng'].concat(CHINH), FB) },
+      loiSai: [
+        { moTa: 'Quên rẽ phải vào nhánh: fetch_back() chạy dọc hành lang', baiLam: lam(['to_gap()', 'fetch_back()'], FB), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Dùng thêm go_wall() trong chương trình chính: vượt quá 2 hàm của em', baiLam: lam(['to_gap()', 'turn_right()', 'go_wall()', 'fetch_back()'], FB), phaiCoMa: ['qua-gioi-han-ham'] },
+        { moTa: 'Lùi khi bên phải trống (thiếu chữ not): xe không lùi, đặt thùng về chỗ cũ', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'while right_clear():', '    back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] }
+      ],
+      hamCuaEmCan: ['turn_right', 'to_gap', 'go_wall', 'pick', 'back', 'drop', 'move'],
+      goiY: ['Trong nhánh, bên phải xe là tường; về tới chỗ rẽ thì bên phải là hành lang trống.', 'while not right_clear(): back() rồi drop().']
+    });
+    delete m.congThucKhac; delete m.huyHieu;
+    m.phienBanNoiDung = 2;
   })();
   // Hàm của màn side_pick / side_drop gọi các hàm của em này mà ngân hàng chưa khai (khóa đúng màn khi kho thiếu, mo-goi.js luật 3 / 3b).
   get('che-tay-xoay.9').hamCuaEmCan = get('che-tay-xoay.9').hamCuaEmCan.concat(['turn_left', 'turn_right', 'pick', 'drop']);
