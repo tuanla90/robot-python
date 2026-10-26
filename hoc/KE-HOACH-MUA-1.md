@@ -22,6 +22,9 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
 
 - **27/10 gói D xong** (e2835fb, 9ed6b14, a9ff891): gói 5 đủ 20 màn (banh-lui.1–4, trùm mới banh-lui.4 huy hiệu `banh-lui`; che-banh-lui.1–4). Ngưỡng gói 6–9: 150, 180, 210, 225.
 
+- **27/10 gói E xong** (df9f9e5 … b5d1d50): gói 8 chương 2 `che-hai-robot` "Đội phối hợp" 10 màn (R1 tay kẹp, R2 tay xoay; nút đè, lùi, cảm biến bên), trùm huy hiệu `che-hai-robot`. Gói R1 xuất xưởng cần 240 ★.
+  Luật đo "ô +6" = cỡ sân (số ô không phải tường), không phải số ô code.
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
