@@ -434,6 +434,31 @@
     return p;
   };
 
+  HINH['ban-xoay'] = function () {                              // mâm bàn xoay cơ khí + mũi tên vòng chiều kim đồng hồ
+    var p = P(T26, T26);
+    p.ell(13, 13, 10, 10, INK);
+    p.ell(13, 13, 8.8, 8.8, '#4a566e');
+    p.ell(13, 13, 7.2, 7.2, '#8c5210');
+    p.ell(13, 13, 6.2, 6.2, '#d9881e');
+    for (var a = -140; a <= 40; a += 6) {
+      var rx = Math.round(13 + Math.cos(a * Math.PI / 180) * 4.5), ry = Math.round(13 + Math.sin(a * Math.PI / 180) * 4.5);
+      p.px(rx, ry, '#fff0a6');
+    }
+    p.rect(16, 14, 3, 2, '#fff0a6'); p.px(17, 16, '#ffffff');
+    p.ell(13, 13, 2.2, 2.2, INK); p.ell(13, 13, 1.3, 1.3, '#e6eef8');
+    return p;
+  };
+  HINH['che-ban-xoay'] = function () {                          // cổng dịch chuyển phát sáng + bánh răng
+    var p = P(T26, T26);
+    p.ell(11, 15, 8.5, 8.5, INK);
+    p.ell(11, 15, 7.2, 7.2, '#145a8a');
+    p.ell(11, 15, 5.4, 5.4, '#26a8f0');
+    p.ell(11, 15, 3.2, 3.2, '#9cf0ff');
+    p.rect(10, 14, 2, 2, '#ffffff');
+    themBanhRang(p);
+    return p;
+  };
+
   /* ---------------------------------------------------------------- vành + đĩa */
   var PAL = {
     khoa: { hi: '#b7bac4', md: '#8b8f9c', lo: '#555966', d1: '#7d818e', d2: '#6a6e7b' },
