@@ -327,6 +327,46 @@
   ['hai-robot', 'tay-xoay', 'che-tay-xoay'].forEach(function (c) { var i = TT.dot2.indexOf(c); if (i >= 0) TT.dot2.splice(i, 1); });
   M.manCat = CAT.slice();
   M.tinhLai();
+  // Khay theo gói: trước gói Bánh lùi chưa có left_back / right_back, trước gói Cảm biến bên chưa có left_clear / right_clear.
+  // Chỉ bớt lệnh trên khay (hamGoc); phần cứng vẫn đủ nên hàm của em chế ở gói sau vẫn chạy khi chơi lại màn cũ.
+  var viTri = MUA_1.map(function (g) { return g.ma; });
+  MUA_1.forEach(function (g, i) {
+    var bo = (i < viTri.indexOf('banh-lui') ? ['left_back', 'right_back'] : []).concat(i < viTri.indexOf('me-cung') ? ['left_clear', 'right_clear'] : []);
+    g.chuong.forEach(function (c) {
+      c[1].forEach(function (ma) {
+        var m = get(ma);
+        if (m.hamGoc && m.hamGoc.some(function (h) { return bo.indexOf(h) >= 0; })) m.hamGoc = m.hamGoc.filter(function (h) { return bo.indexOf(h) < 0; });
+        // Biến sang mùa 2: khay mùa 1 không hiện nhóm ĐẾM (che-cam-bien.7, hai-robot, robot-hoan-thien vốn bật mà lời giải không dùng biến).
+        delete m.bienDem;
+      });
+    });
+  });
+  // Gói Kho hàng đứng trước gói Bánh lùi: u_turn() lúc đó còn là bản hai lần turn_right() (xuong-ham.7), chưa phải bản một nhịp có lùi (che-xe.5).
+  // Lời giải không đổi nhưng số nhịp / ô đổi: đánh dấu nội dung bản 2 để tools/do-lo-trinh.mjs đo lại ngưỡng sao (nháp cũ của các màn này bị bỏ).
+  ['che-tay.1', 'che-tay.3', 'che-tay.4', 'che-tay.6', 'che-tay.10'].forEach(function (ma) { get(ma).phienBanNoiDung = 2; });
+  // Trùm mùa cần bounce() và fetch_back(), nhưng hai màn chế chúng (dùng biến đếm) đã sang mùa 2: đưa sẵn thành hàm của màn, khóa (chỉ xem).
+  // Chương trình còn gọi 4 hàm của em khác nhau (go_wall, pass_back, to_gap, turn_right) nên giới hạn hàm hạ từ 6 xuống 4; khay không mở nhóm ĐẾM.
+  (function () {
+    var m = get('robot-hoan-thien.10');
+    var hm = ['che-cam-bien.5', 'che-cam-bien.9'].map(function (ma) { return copy(nguon[ma].loiGiai.hamCuaEmMoi[0]); });
+    m.maMau.hamCuaMan = copy(hm);
+    m.loiGiai.hamCuaMan = copy(hm);
+    if (m.loiGiaiKhac) m.loiGiaiKhac.baiLam.hamCuaMan = copy(hm);
+    (m.congThucKhac || []).forEach(function (c) { c.baiLam.hamCuaMan = copy(hm); c.moTa = 'Rẽ phải bằng lệnh bánh viết thẳng, chỉ còn 3 hàm của em'; });
+    m.loiSai.forEach(function (ls) { ls.baiLam.hamCuaMan = copy(hm); });
+    m.loiSai[2].moTa = 'Dùng thêm turn_left(): hàm thứ năm, vượt giới hạn 4 hàm';
+    m.khoaHamMan = ['bounce', 'fetch_back'];
+    m.hamCuaEmCan = m.hamCuaEmCan.filter(function (h) { return hm.every(function (x) { return x.ten !== h; }); })
+      .concat(['move', 'back', 'pick', 'drop']);                         // thân hai hàm của màn gọi các hàm của em này
+    m.gioiHanHam = 4;
+    delete m.bienDem;
+    m.deBai = m.deBai.replace('Chương trình chỉ được gọi 6 hàm của em khác nhau.',
+      'bounce() (đi tới tường rồi lùi về chỗ cũ) và fetch_back() (đi tới thùng, nhặt, lùi về rồi đặt) là hàm của màn, đã viết sẵn. Chương trình chỉ được gọi 4 hàm của em khác nhau.');
+  })();
+  // Hàm của màn side_pick / side_drop gọi các hàm của em này mà ngân hàng chưa khai (khóa đúng màn khi kho thiếu, mo-goi.js luật 3 / 3b).
+  get('che-tay-xoay.9').hamCuaEmCan = get('che-tay-xoay.9').hamCuaEmCan.concat(['turn_left', 'turn_right', 'pick', 'drop']);
+  // Game bỏ bậc thang: xuong-ham.6 dùng ô S như tường (xe hai bánh không leo), đổi thành tường thường. Sửa thẳng sân (không qua sua()) để giữ lỗi mẫu của bài.
+  get('xuong-ham.6').san = get('xuong-ham.6').san.map(function (d) { return d.replace(/S/g, '#'); });
 
   // Gói đội hai robot (man-doi-*.js, hoc/KE-HOACH-PHOI-HOP.md) chỉ khai báo trong ngân hàng: chèn các chương của gói ngay sau chương c.sau
   // (cuối gói part) và gói ngay sau gói chứa chương đó. Chương chưa có màn thì chưa chèn. Ngưỡng sao mặc định: gói part +30 (đã chơi kha khá gói part), không vượt gói kế tiếp.
