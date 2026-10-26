@@ -15,6 +15,11 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
 - **27/10 gói B xong** (8e4e4f0, eaf8873, 091018e): gói 4 chương 1 `nut-de` 10 màn (máy kiểm hoc/kiem-nut-de.mjs, bộ dò đường riêng có cửa / nút đè). Gói 10 đổi tên **"R1 xuất xưởng"**.
   Còn treo: sân chưa vẽ dây nối nút đè với cửa (màn 5, 6, 9, 10 dùng `noi`); bấm thử thấy rối thì làm sau.
 
+- **27/10 gói phim xong** (f027ac0 … b2671cc): 9 phim mở gói mùa 1 (KE-HOACH-PHIM-GOI.md).
+- **27/10 gói C xong** (01fac58, e44772f): gói 3 đủ 20 màn (khoang-cach.11; che-cam-bien.11–.16, trùm ccb.16 huy hiệu `che-cam-bien`); thứ tự ccb 1, 2, 7, 11, 12, 13, 3, 14, 15, 16.
+  **Luật đo đường cong** (áp cho mọi gói sau): màn n ≤ max(1,5 × màn n−1, màn n−1 + bù), bù: dòng +3, nhịp +4, ô +6; trừ trùm (với số nhỏ, 1,5 lần là quá chặt).
+  Ngưỡng mở gói 4–10 thành 90, 120, 135, 165, 195, 210 (gói đã mở không khóa lại).
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
