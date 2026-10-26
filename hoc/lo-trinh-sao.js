@@ -5,13 +5,13 @@
     "o": 10,
     "nhip": 8
   },
-  "khoang-cach.5": {
-    "o": 12,
-    "nhip": 12
-  },
   "khoang-cach.4": {
     "o": 10,
     "nhip": 7
+  },
+  "khoang-cach.5": {
+    "o": 12,
+    "nhip": 12
   },
   "khoang-cach.6": {
     "o": 10,

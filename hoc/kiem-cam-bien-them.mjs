@@ -181,6 +181,7 @@ function thanhChuongTrinh(chuoi) {
 function manSan(m, i) {
   const x = clone(m);
   delete x.chinhCoDinh;
+  x.khung = Object.assign({}, x.khung, { chinh: 99 });                      // đường dò được viết thẳng: không tính khung 10 ô
   if (soSan(m) > 1) { x.san = clone(m.san[i]); x.batDau = clone(m.batDau[i]); if (m.bongMo) x.bongMo = clone(m.bongMo[i]); delete x.nhipTheo; }
   return x;
 }
@@ -190,6 +191,7 @@ const bang = {};
 for (const m of DS) {
   if (!m) continue;
   const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
+  bang[m.ma] = {};
   kiem(m.ma + ': đủ trường, số sân, robot, sân không có nút / cửa / bậc thang', () => {
     for (const k of ['ten', 'deBai', 'san', 'batDau', 'mucTieu', 'hamGoc', 'sao', 'maMau', 'loiGiai', 'loiGiaiKhac', 'goiY', 'hamCuaEmCan']) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
@@ -267,27 +269,32 @@ for (const m of DS) {
     assert.ok(tongGop <= m.sao.nhip, m.ma + ': BFS gộp ' + tongGop + ' > ngưỡng ' + m.sao.nhip);
     if (soSan(m) > 1) {
       for (let i = 0; i < duong.length; i++) {
-        const r = cham(m, { chinh: duong[i] });
-        assert.ok(!r.thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ba sân');
+        const mr = Object.assign(clone(m), { khung: Object.assign({}, m.khung, { chinh: 99 }) });
+        const r = cham(mr, { chinh: duong[i] });
+        assert.ok(!r.thang && r.theoSan[i].thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ba sân (hay thua chính sân đó)');
       }
     }
-    bang[m.ma] = { khoi: tong, gop: tongGop };
+    Object.assign(bang[m.ma], { khoi: tong, gop: tongGop });
   });
+  // Hàm của màn được gọi ở nhiều chỗ (nhiều dòng gọi, hay một dòng trong vòng for): thân đếm cứng không được 3 sao.
+  // Gọi đúng một lần (che-cam-bien.12) thì đếm cứng hòa với cảm biến như mọi màn một sân: chỉ ghi số thân thắng.
+  const goiNhieu = m.chinhCoDinh && (() => { const ten = m.loiGiai.hamCuaMan[0].ten + '()'; const ds = m.loiGiai.chinh; return ds.filter((l) => l.includes(ten)).length >= 2 || ds.some((l) => /^\s*for /.test(l)); })();
   if (m.chinhCoDinh) {
-    kiem(m.ma + ': chương trình chính khóa, thân hàm của màn không hỏi cảm biến (đếm cứng) không được 3 sao', () => {
+    kiem(m.ma + ': chương trình chính khóa: thân hàm của màn đếm cứng (không hỏi cảm biến) không được 3 sao khi hàm được gọi ở nhiều chỗ', () => {
       const hm = m.loiGiai.hamCuaMan;
       assert.equal(hm.length, 1, m.ma + ' cần đúng một hàm của màn');
       const lenh = ['move()', 'turn_right()', 'turn_left()', 'u_turn()'].concat(m.hamGoc.includes('grab') ? ['pick()', 'drop()'] : []);
       const than = [[]];
       for (let d = 1; d <= 4; d++) for (const t of than.filter((x) => x.length === d - 1)) for (const l of lenh) than.push(t.concat(l));
       for (let n = 2; n <= 8; n++) for (const l of [[], ...lenh.map((x) => [x])]) for (const l2 of [[], ...lenh.map((x) => [x])]) than.push([...l, 'for i in range(' + n + '):', '    move()', ...l2]);
-      let soThang = 0;
+      let soThang = 0, so3 = 0;
       for (const t of than) {
         const r = cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: [{ ten: hm[0].ten, thamSo: [], than: t }] });
-        assert.ok(!(r.thang && r.sao === 3), m.ma + ': thân đếm cứng [' + t.join('; ') + '] được 3 sao');
+        if (goiNhieu) assert.ok(!(r.thang && r.sao === 3), m.ma + ': thân đếm cứng [' + t.join('; ') + '] được 3 sao');
         if (r.thang) soThang++;
+        if (r.thang && r.sao === 3) so3++;
       }
-      bang[m.ma].demCung = soThang + '/' + than.length + ' thắng (dưới 3 sao)';
+      bang[m.ma].demCung = (goiNhieu ? 'gọi nhiều chỗ' : 'gọi một lần') + ': ' + soThang + '/' + than.length + ' thân đếm cứng thắng, ' + so3 + ' được 3 sao';
     });
   }
 }

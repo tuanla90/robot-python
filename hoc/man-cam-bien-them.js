@@ -93,6 +93,115 @@
         { moTa: 'Rẽ trước rồi mới đi: xe quay mặt vào tường ngay từ đầu', baiLam: { chinh: ['wall_right()', 'wall_right()'], hamCuaMan: [H('wall_right', ['turn_right()', 'go_wall()'])] }, phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Hai đoạn dài khác nhau nên đừng đếm bước: để cảm biến báo tường.', 'Thân hàm: go_wall() rồi turn_right().']
+    }),
+
+    man({
+      chuong: 'che-cam-bien', so: 12, ten: 'Dừng trước thùng', chinhCoDinh: true, tay: true, mucTieu: 'bong-mo',
+      hamCuaEmCan: ['go_wall', 'pick', 'turn_right', 'drop', 'move'],
+      deBai: 'Thùng nằm ở cuối hành lang. Thùng cũng chắn cảm biến như tường. Viết thân hàm get_box() của màn: đi tới ngay trước thùng rồi nhặt nó. Chương trình chính sẽ quay phải và đặt thùng vào ngách, giống xe mờ và thùng mờ.',
+      veMaMau: 'Chương trình chính bị khóa: get_box(), turn_right(), drop(). Thân get_box() đang đi một bước rồi nhặt: chạy thử, xem tay kẹp vào đâu.',
+      san: ['####', '#o##', '#..#', '#.##', '#.##', '#.##', '####'],
+      batDau: { x: 1, y: 5, huong: 0 },
+      bongMo: { x: 1, y: 2, huong: 1, vat: [{ x: 2, y: 2 }] },
+      maMau: { chinh: ['get_box()', 'turn_right()', 'drop()'], hamCuaMan: [H('get_box', ['move()', 'pick()'])] },
+      sao: { o: 22, nhip: 8 },
+      loiGiai: { chinh: ['get_box()', 'turn_right()', 'drop()'], hamCuaMan: [H('get_box', ['go_wall()', 'pick()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: ['get_box()', 'turn_right()', 'drop()'], hamCuaMan: [H('get_box', ['# thùng chắn cảm biến như tường', 'go_wall()', 'pick()'])] } },
+      loiSai: [
+        { moTa: 'Để nguyên thân đi một bước: thùng còn xa nên tay kẹp vào chỗ trống', baiLam: { chinh: ['get_box()', 'turn_right()', 'drop()'], hamCuaMan: [H('get_box', ['move()', 'pick()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên nhặt: xe tới trước thùng rồi đi tay không', baiLam: { chinh: ['get_box()', 'turn_right()', 'drop()'], hamCuaMan: [H('get_box', ['go_wall()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Nhặt trước rồi mới đi: tay kẹp vào chỗ trống, rồi xe dừng trước thùng', baiLam: { chinh: ['get_box()', 'turn_right()', 'drop()'], hamCuaMan: [H('get_box', ['pick()', 'go_wall()'])] }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['go_wall() dừng ngay trước thùng, vì cảm biến thấy thùng chắn như tường.', 'Thân hàm: go_wall() rồi pick().']
+    }),
+
+    man({
+      chuong: 'che-cam-bien', so: 13, ten: 'Quay đầu trong vòng lặp', chinhCoDinh: true, mucTieu: 'bong-mo',
+      hamCuaEmCan: ['move', 'u_turn'],
+      deBai: 'Hàm to_end() của màn phải đi tới cuối hành lang rồi quay đầu. Chương trình chính gọi nó hai lần để xe chạm ô ◆ ở đầu bên phải rồi về đầu bên trái, mặt quay sang phải như xe mờ. Nhưng xe cứ lắc qua lắc lại mãi: sửa thân hàm. Các ngách phía trên không cần ghé.',
+      veMaMau: 'Chương trình chính bị khóa: to_end() hai lần. Chạy thử, xem u_turn() đang nằm trong hay ngoài vòng while.',
+      san: ['########', '#.#.#.##', '#......#', '########'],
+      batDau: { x: 3, y: 2, huong: 1 },
+      bongMo: { x: 1, y: 2, huong: 1, diQua: [{ x: 6, y: 2 }] },
+      maMau: { chinh: ['to_end()', 'to_end()'], hamCuaMan: [H('to_end', ['while front_clear():', '    move()', '    u_turn()'])] },
+      sao: { o: 12, nhip: 12 },
+      loiGiai: { chinh: ['to_end()', 'to_end()'], hamCuaMan: [H('to_end', ['while front_clear():', '    move()', 'u_turn()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: ['to_end()', 'to_end()'], hamCuaMan: [H('to_end', ['while front_clear():', '    move()', '# tới tường rồi mới quay đầu', 'u_turn()'])] } },
+      loiSai: [
+        { moTa: 'Chưa sửa: u_turn() thụt vào trong while nên xe đi một ô lại quay đầu, chạy mãi', baiLam: { chinh: ['to_end()', 'to_end()'], hamCuaMan: [H('to_end', ['while front_clear():', '    move()', '    u_turn()'])] }, phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Xóa luôn u_turn(): lần gọi sau nhìn vào tường, xe không về', baiLam: { chinh: ['to_end()', 'to_end()'], hamCuaMan: [H('to_end', ['while front_clear():', '    move()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quay đầu trước rồi mới đi: lần đầu chạy về bên trái, chưa chạm ◆', baiLam: { chinh: ['to_end()', 'to_end()'], hamCuaMan: [H('to_end', ['u_turn()', 'while front_clear():', '    move()'])] }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['Dòng thụt vào dưới while chạy lại mỗi vòng; dòng không thụt chỉ chạy một lần sau khi vòng dừng.', 'Bỏ thụt lề của u_turn() để xe tới tường rồi mới quay đầu.']
+    }),
+
+    man({
+      chuong: 'che-cam-bien', so: 14, ten: 'Sửa hàm nhặt thùng', chinhCoDinh: true, tay: true, mucTieu: 'bong-mo',
+      hamCuaEmCan: ['move', 'pick', 'turn_right', 'drop', 'turn_left', 'go_wall'],
+      deBai: 'Hai thùng nằm dọc hành lang, xa gần khác nhau. Chương trình chính lặp hai lần: grab_box(), quay phải đặt thùng vào ngách, quay lại. Hàm grab_box() của màn phải đi tới ngay trước thùng rồi nhặt, nhưng nó chỉ đi được một ô. Sửa hàm để hai thùng nằm trong hai ngách như thùng mờ.',
+      veMaMau: 'Chương trình chính bị khóa. Chạy thử, xem grab_box() dừng ở đâu: if chỉ hỏi một lần.',
+      san: ['####', '#o##', '#..#', '#.##', '#o##', '#..#', '#.##', '#.##', '####'],
+      batDau: { x: 1, y: 7, huong: 0 },
+      bongMo: { x: 1, y: 2, huong: 0, vat: [{ x: 2, y: 5 }, { x: 2, y: 2 }] },
+      maMau: { chinh: FOR(2, ['grab_box()', 'turn_right()', 'drop()', 'turn_left()']), hamCuaMan: [H('grab_box', ['if front_clear():', '    move()', 'pick()'])] },
+      sao: { o: 26, nhip: 17 },
+      loiGiai: { chinh: FOR(2, ['grab_box()', 'turn_right()', 'drop()', 'turn_left()']), hamCuaMan: [H('grab_box', ['go_wall()', 'pick()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: FOR(2, ['grab_box()', 'turn_right()', 'drop()', 'turn_left()']), hamCuaMan: [H('grab_box', ['# đi tới khi thùng chắn', 'go_wall()', 'pick()'])] } },
+      loiSai: [
+        { moTa: 'Chưa sửa: if chỉ hỏi một lần nên xe đi một ô rồi kẹp vào chỗ trống', baiLam: { chinh: FOR(2, ['grab_box()', 'turn_right()', 'drop()', 'turn_left()']), hamCuaMan: [H('grab_box', ['if front_clear():', '    move()', 'pick()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng hai bước theo thùng đầu: thùng sau xa hơn nên kẹp hụt', baiLam: { chinh: FOR(2, ['grab_box()', 'turn_right()', 'drop()', 'turn_left()']), hamCuaMan: [H('grab_box', ['move()', 'move()', 'pick()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đặt pick() vào trong vòng while: tay kẹp vào chỗ trống ở mỗi bước, tới trước thùng lại không nhặt', baiLam: { chinh: FOR(2, ['grab_box()', 'turn_right()', 'drop()', 'turn_left()']), hamCuaMan: [H('grab_box', ['while front_clear():', '    move()', '    pick()'])] }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['if hỏi cảm biến một lần; while hỏi lại sau mỗi bước.', 'Đổi if thành while, hay dùng go_wall() em đã có.']
+    }),
+
+    man({
+      chuong: 'che-cam-bien', so: 15, ten: 'Rẽ về phía có lối', chinhCoDinh: true, mucTieu: 'toi-co',
+      hamCuaEmCan: ['turn_right', 'u_turn', 'go_wall', 'face_open'],
+      deBai: 'Hành lang có ba khúc quanh, lúc rẽ phải lúc rẽ trái. Xe chỉ có cảm biến phía trước. Viết thân hàm turn_open() của màn: quay phải; nếu trước mặt vẫn bị chắn thì quay đầu để nhìn sang trái. Chương trình chính lặp go_wall() và turn_open() để tới cờ.',
+      veMaMau: 'Chương trình chính bị khóa. Thân turn_open() đang chỉ quay phải: chạy thử, xem xe kẹt ở khúc quanh nào.',
+      san: ['#######', '###..F#', '###.###', '#...###', '#.#####', '#.#####', '#######'],
+      batDau: { x: 1, y: 5, huong: 0 },
+      maMau: { chinh: FOR(4, ['go_wall()', 'turn_open()']), hamCuaMan: [H('turn_open', ['turn_right()'])] },
+      sao: { o: 15, nhip: 13 },
+      loiGiai: { chinh: FOR(4, ['go_wall()', 'turn_open()']), hamCuaMan: [H('turn_open', ['turn_right()', 'if not front_clear():', '    u_turn()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: FOR(4, ['go_wall()', 'turn_open()']), hamCuaMan: [H('turn_open', ['turn_right()', '# bên phải bị chắn thì nhìn sang trái', 'if not front_clear():', '    u_turn()'])] } },
+      loiSai: [
+        { moTa: 'Chỉ quay phải: ở khúc rẽ trái xe nhìn vào tường', baiLam: { chinh: FOR(4, ['go_wall()', 'turn_open()']), hamCuaMan: [H('turn_open', ['turn_right()'])] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Dùng face_open(): quay phải mãi nên gặp lối cũ trước lối bên trái, xe đi ngược lại', baiLam: { chinh: FOR(4, ['go_wall()', 'turn_open()']), hamCuaMan: [H('turn_open', ['face_open()'])] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu chữ not: khúc rẽ phải đang mở mà xe lại quay đầu', baiLam: { chinh: FOR(4, ['go_wall()', 'turn_open()']), hamCuaMan: [H('turn_open', ['turn_right()', 'if front_clear():', '    u_turn()'])] }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Không có cảm biến bên: quay sang phải rồi hỏi front_clear().', 'Bên phải bị chắn thì u_turn() là nhìn sang trái.']
+    }),
+
+    man({
+      chuong: 'che-cam-bien', so: 16, ten: 'Giao thùng vào ngách', tay: true, mucTieu: 'bong-mo', nhipTheoLoiGiai: true,
+      huyHieu: { ma: 'che-cam-bien', ten: 'Huy hiệu Chế lệnh cảm biến' },
+      hamCuaEmCan: ['go_wall', 'pick', 'turn_right', 'u_turn', 'drop', 'face_open', 'move'],
+      deBai: 'Ba kho dài ngắn khác nhau. Mỗi kho có một thùng trong hành lang và một ngách ở cuối hành lang, lúc bên phải lúc bên trái. Một chương trình phải đi tới thùng, nhặt, mang tới cuối hành lang rồi đặt thùng vào ngách, giống xe mờ và thùng mờ ở cả ba kho.',
+      veMaMau: 'Chương trình có sẵn mới tới được thùng và nhặt. Viết tiếp; đừng đếm bước, mỗi kho một khác.',
+      san: [
+        ['#####', '#..##', '#.###', '#.###', '#o###', '#.###', '#.###', '#####'],
+        ['#####', '#..##', '##o##', '##.##', '##.##', '##.##', '##.##', '#####'],
+        ['#####', '#####', '#..##', '#.###', '#.###', '#o###', '#.###', '#####']
+      ],
+      batDau: [{ x: 1, y: 6, huong: 0 }, { x: 2, y: 6, huong: 0 }, { x: 1, y: 6, huong: 0 }],
+      bongMo: [
+        { x: 1, y: 1, huong: 1, vat: [{ x: 2, y: 1 }] },
+        { x: 2, y: 1, huong: 3, vat: [{ x: 1, y: 1 }] },
+        { x: 1, y: 2, huong: 1, vat: [{ x: 2, y: 2 }] }
+      ],
+      maMau: { chinh: ['go_wall()', 'pick()'] },
+      sao: { o: 26, nhip: 31 },
+      loiGiai: { chinh: ['go_wall()', 'pick()', 'go_wall()', 'turn_right()', 'if not front_clear():', '    u_turn()', 'drop()'] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', 'pick()', 'go_wall()', '# ngách bên phải hay bên trái?', 'turn_right()', 'if not front_clear():', '    u_turn()', 'drop()'] } },
+      loiSai: [
+        { moTa: 'Luôn quay phải rồi đặt: kho có ngách bên trái thì đặt vào tường', baiLam: { chinh: ['go_wall()', 'pick()', 'go_wall()', 'turn_right()', 'drop()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Dùng face_open(): quay phải mãi nên gặp hành lang trước ngách trái, đặt thùng giữa đường', baiLam: { chinh: ['go_wall()', 'pick()', 'go_wall()', 'face_open()', 'drop()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên go_wall() đầu: thùng còn xa nên tay kẹp vào chỗ trống', baiLam: { chinh: ['pick()', 'go_wall()', 'turn_right()', 'if not front_clear():', '    u_turn()', 'drop()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng đường của kho đầu: hai kho sau dài ngắn khác', baiLam: { chinh: ['move()', 'pick()', 'for i in range(4):', '    move()', 'turn_right()', 'drop()'] }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['go_wall() dừng trước thùng; nhặt xong, go_wall() lần nữa đưa xe tới cuối hành lang.', 'Quay phải rồi hỏi front_clear(): bị chắn thì u_turn() để nhìn sang ngách bên trái.']
     })
   ];
 

@@ -245,6 +245,9 @@
   // kho-hang, banh-lui, che-banh-lui (mùa 1) và bien (đầu mùa 2). Chương cũ hết màn (che-xe, che-tay, che-lap) rời khỏi thuTu (không thành gói "Sắp có").
   // Thứ tự màn trong chương: thứ tự cũ của lộ trình, trùm của chương gốc đứng cuối. Mã gói giữ như cũ khi được (cờ goi-mo:<mã> không khóa lại).
   // Ngưỡng sao khai cứng = TI_LE_SAO (0,5) × tổng sao tối đa các gói trước trong mùa, làm tròn xuống bội 5 (mo-goi.js); thêm màn mới thì tính lại.
+  // 27/10: gói 3 đủ 20 màn (thêm khoang-cach.11, che-cam-bien.11–16 của man-cam-bien-them.js) nên ngưỡng gói 4–10 tính lại (+15 / +10 ★).
+  // khoang-cach: kc.4 đứng trước kc.5 (chưa có go_wall thì viết while thẳng không mất sao ô), kc.11 ngay trước kc.5.
+  // che-cam-bien: 3 màn mới (.11–.13) làm mượt chỗ nhảy từ 1–2 nhịp lên 17 nhịp của che-cam-bien.3, rồi .14, .15 và trùm .16.
   function day(chuong, so) { return so.map(function (n) { return chuong + '.' + n; }); }
   var MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   // Gói 4 chương 1 "Nút đè" (man-nut-de.js, màn mới viết cho lộ trình): chương chưa có trong thu-tu-chuong.js nên chèn tạm vào cuối thuTu
@@ -263,18 +266,18 @@
     { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 30,
       chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
-      chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 4, 11, 5, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 3])]] },
-    { ma: 'kho-hang', ten: 'Kho hàng', sao: 75, hinh: 'che-tay',
+      chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 4, 11, 5, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 12, 13, 3, 14, 15, 16])]] },
+    { ma: 'kho-hang', ten: 'Kho hàng', sao: 90, hinh: 'che-tay',
       chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
-    { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 105, hinh: 'che-xe',
+    { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 120, hinh: 'che-xe',
       chuong: [['banh-lui', day('che-xe', [4, 5, 6, 7, 8, 9])], ['che-banh-lui', day('che-tay', [5, 7, 9]).concat(['che-lap.7', 'che-lap.9', 'che-xe.10'])]] },
-    { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 125,
+    { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 135,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
-    { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 155, hinh: 'cam-bien-ben',
+    { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 165, hinh: 'cam-bien-ben',
       chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
-    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 185,
+    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 195,
       chuong: [['hai-robot', day('hai-robot', MUOI)]] },
-    { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 200, hinh: 'robot-hoan-thien',
+    { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 210, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
   ];
   // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.
