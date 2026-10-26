@@ -41,6 +41,7 @@
   var HANG = 5.5;                   // drone: tâm vật treo dưới nam châm cách tâm thân drone bao nhiêu pixel sân (về phía dưới)
   var DEM_KHUNG = 4;                // khung gỗ ôm sát sân: bề dày gỗ quanh canvas sân (px CSS), bằng đệm của .ffr trước đây (xem Field.datKhung)
   var BANG = { '>': 1, 'v': 2, '<': 3, '^': 0 };
+  var BAN_XOAY = { '@': 1, '%': -1 };
   var DX = [0, 1, 0, -1], DY = [-1, 0, 1, 0];
   var FIELDS = [];
   var MAU_KY = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
@@ -64,7 +65,7 @@
     }
     return co ? kq : null;
   }
-  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1 };   // sự kiện tức thì của tay (không chiếm thời gian của nhịp)
+  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'nut-de': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1 };   // sự kiện tức thì của tay (không chiếm thời gian của nhịp)
 
   /** Hình mờ của máy sơn (man.hinh, một sân: mảng chuỗi r g b y '.') → mảng hàng tên màu / null; null nếu không có. */
   function dungHinh(lop) {
@@ -266,7 +267,7 @@
     },
     /** Trạng thái hiển thị ban đầu của nút, cửa, băng chuyền: nút tắt, cửa theo ký hiệu (cửa nhịp: theo pha), băng chạy hết. */
     datLaiCua: function () {
-      this.nutT = {}; this.cuaT = {}; this.bangTat = {}; this.bangLoe = {}; this.nhipDa = 0;
+      this.nutT = {}; this.nutDeT = {}; this.cuaT = {}; this.bangTat = {}; this.bangLoe = {}; this.nhipDa = 0;
       var self = this;
       this.cuaDS.forEach(function (d) {
         var nh = self.cuaNhipBy[d.x + ',' + d.y], mo = nh ? (nh.pha % (nh.mo + nh.dong)) < nh.mo : d.mo0;
@@ -1606,6 +1607,7 @@
     dongBoSung: function (e) {
       var self = this, d;
       if (e.nut) e.nut.forEach(function (n) { self.nutO(n.x, n.y).bat = !!n.bat; });
+      if (e.nutDe) e.nutDe.forEach(function (m) { self.nutDeT[m.x + ',' + m.y] = !!m.bat; });
       if (e.bangTat) { this.bangTat = {}; e.bangTat.forEach(function (q) { self.bangTat[q.x + ',' + q.y] = true; }); }
       if (e.cua) e.cua.forEach(function (q) { d = self.cuaT[q.x + ',' + q.y]; if (d) { d.mo = !!q.mo; d.k = q.mo ? 1 : 0; d.ket = 0; d.rung = 0; } });
       if (typeof e.nhip === 'number') this.nhipDa = e.nhip;
@@ -1697,6 +1699,9 @@
         var mn = (ch === '#' || ch === 'S' || ch === '=' || ch === 'N' || ch === 'C' || ch === 'c' || ch === 'n' || ch === 'u' || BANG[ch] !== undefined) ? null : this.mauNen(x, y);
         if (mn) t = TL.mau[mn][(x + y) & 1];                  // sàn tô màu (kể cả dưới cờ và ô đích)
         g.drawImage(t, x * T, y * T);
+        if (ch === 'M') g.drawImage(TL.nutDe(!!this.nutDeT[kO]), x * T, y * T);
+        else if (BAN_XOAY[ch] !== undefined) g.drawImage(TL.banXoay(BAN_XOAY[ch], ff), x * T, y * T);
+        else if (ch === '1' || ch === '2') g.drawImage(TL.cong(ch, ff), x * T, y * T);
         if (bangTat) this.veBangTat(g, x, y, now);
         else if (ch === 'C' || ch === 'c') this.veMotCua(g, this.cuaT[kO], now);
         if (ch === '=') g.drawImage(TL.rao((x > 0 && c.rows[y][x - 1] === '=' ? 1 : 0) | (x < c.w - 1 && c.rows[y][x + 1] === '=' ? 2 : 0) | (y > 0 && c.rows[y - 1][x] === '=' ? 4 : 0) | (y < c.h - 1 && c.rows[y + 1][x] === '=' ? 8 : 0)), x * T, y * T);
@@ -1776,7 +1781,8 @@
       });
       if (thungBang.length && !list.some(function (s) { return s.ma === 'bang-day'; })) list.push({ ma: 'thung-bang' });
       var cuaEvs = evs.filter(function (s) { return s.ma === 'cua-doi' || s.ma === 'cua-ket'; });                // súng hơi: cửa đổi ở CUỐI nhịp, gom làm một bước
-      if (cuaEvs.length) list.push({ ma: 'cua-batch' });
+      var nutDeEvs = evs.filter(function (s) { return s.ma === 'nut-de'; });
+      if (cuaEvs.length || nutDeEvs.length) list.push({ ma: 'cua-batch' });
       var dsT = function (arr) {
         return arr.map(function (q) { var th = self.thungTheoId(q.id); return th ? { th: th, x0: q.tu.x, y0: q.tu.y, x1: q.den.x, y1: q.den.y } : null; }).filter(function (q) { return q; });
       };
@@ -1799,7 +1805,7 @@
         if (my !== this.rid) return;
         v.goc = 0; tgian = Math.max(ms * 0.3, tgian - tq);
       }
-      var TRONG = function (s) { return s.ma === 'bang-khong-day' ? 0.5 : s.ma === 'hut-vat' ? 1.5 : s.ma === 'day-vat' ? 1.6 : s.ma === 'tha-vat' ? 0.8 : s.ma === 'nem-vat' ? 2.4 : s.ma === 'nem-roi' ? 0.8 : s.ma === 'nem-vo' ? 1.2 : s.ma === 'ban' ? 2.2 : s.ma === 'cua-batch' ? 1.2 : s.ma === 'sac-pin' ? 1.3 : s.ma === 'het-pin' ? 1.7 : s.ma === 'roi-ho' ? 2.5 : 1; };
+      var TRONG = function (s) { return s.ma === 'bang-khong-day' ? 0.5 : s.ma === 'ban-xoay' ? 0.95 : s.ma === 'dich-chuyen' ? 1.15 : s.ma === 'hut-vat' ? 1.5 : s.ma === 'day-vat' ? 1.6 : s.ma === 'tha-vat' ? 0.8 : s.ma === 'nem-vat' ? 2.4 : s.ma === 'nem-roi' ? 0.8 : s.ma === 'nem-vo' ? 1.2 : s.ma === 'ban' ? 2.2 : s.ma === 'cua-batch' ? 1.2 : s.ma === 'sac-pin' ? 1.3 : s.ma === 'het-pin' ? 1.7 : s.ma === 'roi-ho' ? 2.5 : 1; };
       var tong = 0; list.forEach(function (s) { tong += TRONG(s); });
       if (!list.length) await ngu(tgian);
       for (var i = 0; i < list.length; i++) {
@@ -1868,9 +1874,41 @@
           if (my !== this.rid) return;
         } else if (s.ma === 'giat') {                                 // giật mà không có sự kiện bắn đi kèm (dự phòng)
           await this.giatXe(s, thungGiat, chanGiat, ms, my);
-        } else if (s.ma === 'cua-batch') {                            // cuối nhịp: cửa trượt mở / đóng, cửa kẹt rung đỏ
+        } else if (s.ma === 'cua-batch') {                            // cuối nhịp: nút đè sáng/tắt, cửa trượt mở / đóng, cửa kẹt rung đỏ
           if (typeof e.nhip === 'number') this.nhipDa = e.nhip;
-          await this.cuaBatch(cuaEvs, ms * 0.95, my);
+          nutDeEvs.forEach(function (nd) {
+            self.nutDeT[nd.o.x + ',' + nd.o.y] = !!nd.bat;
+            self.burst(nd.o.x * T + 7, nd.o.y * T + 7, 5, nd.bat ? ['#7cff86', '#fff6e3'] : ['#ffd04d', '#fff6e3'], 0.55);
+          });
+          if (cuaEvs.length) await this.cuaBatch(cuaEvs, ms * 0.95, my);
+        } else if (s.ma === 'ban-xoay') {                             // bàn xoay (@ xoay phải 90°, % xoay trái 90°): mâm xoay đưa robot quay 90°
+          var d1bx = s.den, h0bx = v.goc, h1bx = (s.huong > 0 ? 1 : -1) * Math.PI / 2, dqbx = s.huong > 0 ? 1 : -1;
+          this.burst(v.x * T + 7, v.y * T + 7, 5, s.huong > 0 ? ['#ffd04d', '#fff6e3'] : ['#58dcff', '#fff6e3'], 0.65);
+          await this.tween(per, my, function (k) {
+            v.hop = Math.sin(k * Math.PI) * 1.6;
+            if ((v.nc || v.nem) && !laXich) (v.nc || v.nem).ang = (d + dqbx * ease(k)) * Math.PI / 2;
+            if (laXich) v.goc = h0bx + (h1bx - h0bx) * ease(k);
+            else if (k > 0.5) v.d = d1bx;
+          });
+          if (my !== this.rid) return;
+          v.d = d1bx; v.hop = 0; v.goc = 0; d = d1bx;
+          if (v.nc) v.nc.ang = null;
+          if (v.nem) v.nem.ang = null;
+        } else if (s.ma === 'dich-chuyen') {                          // cổng dịch chuyển (1, 2): lóe sáng ở cổng vào rồi xuất hiện ở cổng ra
+          var mCong = s.cong === '2' ? ['#f0b8ff', '#a84cff', '#ffffff'] : ['#9cf0ff', '#26a8f0', '#ffffff'];
+          this.burst(s.tu.x * T + 7, s.tu.y * T + 7, 10, mCong, 1.0, 1, true);
+          await this.tween(per * 0.45, my, function (k) { v.hop = Math.sin(k * Math.PI * 0.5) * 5; });
+          if (my !== this.rid) return;
+          v.x = s.den.x; v.y = s.den.y;
+          this.burst(s.den.x * T + 7, s.den.y * T + 7, 12, mCong, 1.1, 1, true);
+          await this.tween(per * 0.55, my, function (k) { v.hop = (1 - ease(k)) * 5; });
+          if (my !== this.rid) return;
+          v.hop = 0;
+        } else if (s.ma === 'cong-chan') {                            // cổng đầu kia bị chắn: xe rung tại cổng vào, cổng ra nháy đỏ, dấu '!'
+          this.baoHieu('!', 1400);
+          if (s.den) this.canhBao = { x: s.den.x, y: s.den.y, den: performance.now() + 1100 };
+          await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 1.8; });
+          v.dx = 0;
         } else if (s.ma === 'het-dan') {                              // shoot() / shoot_back() khi hết đạn: nòng (trước hay sau) chỉ lóe xám, thẻ đạn nháy đỏ, dấu '!'; xe không giật
           var sauH = !!(s.lenh && s.lenh.ten === 'shoot_back'), kcH = sauH ? (this.mzs || 4) : (this.mz || 8), dH = sauH ? (d + 2) % 4 : d;
           var mzx = Math.round(v.x) * T + 7 + DX[dH] * kcH, mzy = Math.round(v.y) * T + 7 + DY[dH] * kcH;
@@ -2186,6 +2224,9 @@
       g.fillStyle = mn ? Ve.MAU[mn].n : BANG[ch] !== undefined ? '#2f5fb0' : ch === 'S' ? '#9aa0b0' : '#2f7a46'; g.fillRect(px, py, s, s);
       if (mn) { g.fillStyle = Ve.MAU[mn].t; g.fillRect(px, py, s, 1); g.fillRect(px, py + s - 1, s, 1); g.fillRect(px, py, 1, s); g.fillRect(px + s - 1, py, 1, s); }
       if (ch === 'H' || ch === 'h') { g.fillStyle = '#8d97a8'; g.fillRect(px + (s >> 3), py + (s >> 3), s - (s >> 2), s - (s >> 2)); }
+      if (ch === 'M') { g.fillStyle = '#f4b53f'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
+      if (BAN_XOAY[ch] !== undefined) { g.fillStyle = BAN_XOAY[ch] > 0 ? '#ffd04d' : '#58dcff'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
+      if (ch === '1' || ch === '2') { g.fillStyle = ch === '2' ? '#d070ff' : '#42d4ff'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
       if (ch === 'o' || ch === 'X') {
         var mv = vm && vm[y] ? MAU_KY[vm[y][x]] : null, sat = !!(vc && vc[y] && vc[y][x] === 's'), cucV = vc && vc[y] && (vc[y][x] === 'N' || vc[y][x] === 'S') ? vc[y][x] : null;
         thuVat(g, px, py, s, mv, sat, cucV);

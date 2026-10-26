@@ -447,6 +447,93 @@
     g.drawImage(p.canvas(), 0, 0);
     nutCache[khoa] = cv; return cv;
   }
+  /** NÚT ĐÈ GIỮ TRÊN SÀN (ký hiệu `M`): tấm cảm biến lực đặt trên cỏ. Chưa đè: mặt vàng cam nổi cao. Đang đè: mặt xanh lá lún xuống và sáng viền. */
+  var nutDeCache = {};
+  function makeNutDe(bat) {
+    var khoa = bat ? '1' : '0';
+    if (nutDeCache[khoa]) return nutDeCache[khoa];
+    var p = new Painter(T, T);
+    p.rect(1, 1, 12, 12, K.ink);
+    p.rect(2, 2, 10, 10, '#444e62');
+    var y0 = bat ? 3 : 2;
+    p.rect(3, y0, 8, 8, bat ? '#2ca85a' : '#d88b1c');
+    p.rect(3, y0, 8, 1, bat ? '#9ef5b8' : '#ffe074');
+    p.rect(3, y0, 1, 8, bat ? '#9ef5b8' : '#ffe074');
+    p.rect(3, y0 + 7, 8, 1, bat ? '#1a6836' : '#8c520a');
+    p.rect(10, y0, 1, 8, bat ? '#1a6836' : '#8c520a');
+    p.rect(5, y0 + 2, 4, 4, bat ? '#68e894' : '#f4b53f');
+    p.rect(6, y0 + 3, 2, 2, bat ? '#e6ffed' : '#8c520a');
+    [[2, 2], [11, 2], [2, 11], [11, 11]].forEach(function (q) { p.px(q[0], q[1], bat ? '#7cff86' : '#a3afc4'); });
+    nutDeCache[khoa] = p.canvas(); return nutDeCache[khoa];
+  }
+  /** BÀN XOAY (ký hiệu `@` chieu = +1 xoay phải 90°, `%` chieu = -1 xoay trái 90°): mâm xoay cơ khí có mũi tên cong chỉ chiều quay. */
+  var banXoayCache = {};
+  function makeBanXoay(chieu, ph) {
+    var f = (ph || 0) & 3, cw = chieu > 0;
+    var khoa = (cw ? 'R' : 'L') + '_' + f;
+    if (banXoayCache[khoa]) return banXoayCache[khoa];
+    var p = new Painter(T, T);
+    p.ell(7, 7, 6.3, 6.3, K.ink);
+    p.ell(7, 7, 5.3, 5.3, '#4a566e');
+    p.ell(7, 7, 4.3, 4.3, cw ? '#8c5210' : '#1b5a7a');
+    p.ell(7, 7, 3.6, 3.6, cw ? '#d9881e' : '#2688b8');
+    // 4 rãnh đinh tán trên vành xoay theo pha f
+    var ranh = [[7, 2], [11, 7], [7, 11], [2, 7]];
+    for (var i = 0; i < 4; i++) {
+      var q = ranh[i];
+      p.px(q[0], q[1], ((i + (cw ? f : 4 - f)) & 1) ? '#d6e0f0' : '#2d3546');
+    }
+    // vòng mũi tên chỉ chiều xoay (xoay 90° * f)
+    var b = new Painter(T, T);
+    var sang = cw ? '#fff0a6' : '#b8f4ff', V = cw ? '#ffd04d' : '#58dcff';
+    if (cw) {
+      // cung trên sang phải + đầu mũi tên chỉ xuống ở bên phải
+      b.px(5, 3, V); b.px(6, 3, V); b.px(7, 3, sang); b.px(8, 3, sang); b.px(9, 4, sang);
+      b.px(10, 5, sang); b.px(9, 5, V); b.px(11, 5, V); b.px(10, 6, '#ffffff');
+      // cung dưới sang trái
+      b.px(8, 10, V); b.px(7, 10, V); b.px(6, 10, sang); b.px(5, 10, sang); b.px(4, 9, sang);
+      b.px(3, 8, sang); b.px(4, 8, V); b.px(2, 8, V); b.px(3, 7, '#ffffff');
+    } else {
+      // cung trên sang trái + đầu mũi tên chỉ xuống ở bên trái
+      b.px(8, 3, V); b.px(7, 3, V); b.px(6, 3, sang); b.px(5, 3, sang); b.px(4, 4, sang);
+      b.px(3, 5, sang); b.px(4, 5, V); b.px(2, 5, V); b.px(3, 6, '#ffffff');
+      // cung dưới sang phải
+      b.px(5, 10, V); b.px(6, 10, V); b.px(7, 10, sang); b.px(8, 10, sang); b.px(9, 9, sang);
+      b.px(10, 8, sang); b.px(9, 8, V); b.px(11, 8, V); b.px(10, 7, '#ffffff');
+    }
+    for (var k = 0; k < f; k++) b = rot90(b);
+    p.blit(b, 0, 0);
+    p.rect(6, 6, 2, 2, K.ink);
+    p.px(6, 6, '#e6eef8'); p.px(7, 7, '#7f8da6');
+    banXoayCache[khoa] = p.canvas(); return banXoayCache[khoa];
+  }
+  /** CỔNG DỊCH CHUYỂN ĐÔI (ký hiệu `1` xanh lam điện, `2` tím hồng): vòng năng lượng phát sáng trên sàn. */
+  var congCache = {};
+  function makeCong(so, ph) {
+    var f = (ph || 0) & 3, la2 = String(so) === '2';
+    var khoa = (la2 ? '2' : '1') + '_' + f;
+    if (congCache[khoa]) return congCache[khoa];
+    var p = new Painter(T, T);
+    var c1 = la2 ? '#5a1e96' : '#145a8a';
+    var c2 = la2 ? '#a84cff' : '#26a8f0';
+    var c3 = la2 ? '#f0b8ff' : '#9cf0ff';
+    p.ell(7, 7, 6.3, 6.3, K.ink);
+    p.ell(7, 7, 5.3, 5.3, '#3c465c');
+    p.ell(7, 7, 4.4, 4.4, c1);
+    p.ell(7, 7, 3.4 - (f & 1) * 0.3, 3.4 - (f & 1) * 0.3, c2);
+    p.ell(7, 7, 2.0, 2.0, c3);
+    p.rect(6, 6, 2, 2, '#ffffff');
+    // 4 tia năng lượng xoay quanh tâm theo pha f
+    var tia = [[7, 2], [11, 7], [7, 11], [2, 7], [4, 4], [9, 4], [9, 9], [4, 9]];
+    for (var i = 0; i < 4; i++) {
+      var q = tia[i + ((f & 1) ? 4 : 0)];
+      p.px(q[0], q[1], c3);
+    }
+    // dấu chấm số hiệu cổng ở mép trên (1 chấm = cổng 1, 2 chấm = cổng 2)
+    if (la2) { p.px(5, 1, '#ffffff'); p.px(8, 1, '#ffffff'); }
+    else { p.px(6, 1, '#ffffff'); p.px(7, 1, '#ffffff'); }
+    congCache[khoa] = p.canvas(); return congCache[khoa];
+  }
   /** CỬA (chương súng hơi, `C` đóng / `c` mở), vẽ thẳng lên g tại (px, py) trên nền sàn đã có. k = độ mở 0 (đóng) .. 1 (mở); hai cánh cửa trượt vào hai cột khung.
    *  o = { doc: true nếu đi qua cửa theo chiều dọc (cánh trượt ngang), nhip: { mo, dong, pha, p } nếu là cửa nhịp (khung xanh lơ + hàng đèn đếm nhịp ở mép trên), ket: 0..1 cửa đang kẹt (đỏ), rung: lệch px }.
    *  Cửa đóng giống tường nhưng có khung cửa (cột khung màu vàng cam, hoặc xanh lơ nếu là cửa nhịp) và khe giữa hai cánh. */
@@ -713,7 +800,7 @@
     tileCache = {
       mau: matMau, crateMau: thungMau, sat: makeSat(), satMau: satMau,
       crate: makeCrate(), thung: makeThung(), rug: [makeRug(0, 0, 5), makeRug(1, 0, 9), makeRug(0, 0, 13), makeRug(1, 0, 17)], pad: makeRug(0, 1, 7), wall: makeWall(), stair: makeStair(), ho: makeHo(), gam: makeGam(false), gamMai: makeGam(true), sac: [makeSac(0), makeSac(1)],
-      flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)], rao: makeRao, nut: makeNut
+      flags: [makeFlag(0), makeFlag(1), makeFlag(2), makeFlag(3)], rao: makeRao, nut: makeNut, nutDe: makeNutDe, banXoay: makeBanXoay, cong: makeCong
     };
     return tileCache;
   }
@@ -761,6 +848,6 @@
   window.Ve = {
     K: K, Painter: Painter, rot90: rot90, rng: rng, T: T,
     datChatLieu: datChatLieu, icon: icon, mk: mk, ico: ico, sao: sao, khoa: khoa, mui: mui, hydrate: hydrate, khungGo: khungGo,
-    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeNut: makeNut, veCua: veCua, makeSat: makeSat, makeVatNho: makeVatNho, makeThung: makeThung, makeSac: makeSac, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
+    spriteTrum: spriteTrum, tiles: tiles, makeConv: makeConv, makeCrate: makeCrate, makeRao: makeRao, makeNut: makeNut, makeNutDe: makeNutDe, makeBanXoay: makeBanXoay, makeCong: makeCong, veCua: veCua, makeSat: makeSat, makeVatNho: makeVatNho, makeThung: makeThung, makeSac: makeSac, MAU: MAU, MAU_TEN: MAU_TEN, makeRobot: makeRobot, makeNhen: makeNhen, HINH: HINH
   };
 })();

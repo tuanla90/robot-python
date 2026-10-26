@@ -1,3 +1,11 @@
+## 2026-10-26 — Nhánh `huong-4-co-che-san` (Hướng 4: Cơ Chế Sân Tương Tác Mới & Gói 20 Màn Sân Cơ Khí)
+- `hoc/san-hoc.js`, `hoc/cham.js`: Thêm 3 cơ chế ô sàn tương tác mới vào lõi mô phỏng và bộ chẩn đoán:
+  - **Bàn xoay (`@` xoay phải 90° chiều kim đồng hồ `+1`, `%` xoay trái 90° ngược chiều kim đồng hồ `-1`)**: Tự động xoay các robot có hướng (`banh`, `xich`, `omni`) khi vừa bước/trượt vào ô bàn xoay hoặc khi đứng chờ (`wait()`) trên bàn xoay, giữ nguyên hướng khi đang thao tác tay (`pick`/`drop`), kèm sự kiện `'ban-xoay'`.
+  - **Nút đè giữ trên sàn (`M`)**: Kết nối với cửa (`C` / `c`) mặc định hoặc qua `cfg.noi`; giữ cửa mở/đóng chỉ khi đang có xe dưới đất, vật nằm (`o`) hoặc thùng nặng (`H`) đè lên `M`, và tự động đóng lại khi rời khỏi `M` (kèm sự kiện `'nut-de'` và vết `nutDe`).
+  - **Cổng dịch chuyển đôi (`1`, `2`)**: Kiểm tra đúng 2 ô mỗi cặp cổng trong `docSan`; khi robot bước vào cổng sẽ dịch chuyển tức thì sang cổng cặp cùng số (mang theo vật đang cầm, giữ nguyên hướng mặt), phát sự kiện `'dich-chuyen'` hoặc `'cong-chan'` (kèm lời chẩn đoán trong `cham.js`) nếu cổng đầu ra đang bị vật/thùng/đồng đội chắn.
+- `hoc/game/ve.js`, `hoc/game/san-ve.js`, `hoc/game/huy-hieu.js`: Thêm pixel art `makeBanXoay`, `makeNutDe`, `makeCong`, hoạt cảnh xoay mâm `'ban-xoay'`, dịch chuyển `'dich-chuyen'`, cảnh báo `'cong-chan'`, vẽ mini-map `thuSan`, và 2 huy hiệu mới `'ban-xoay'` & `'che-ban-xoay'`.
+- `hoc/man-ban-xoay.js`, `hoc/lo-trinh-hoc.js`, `hoc/game/choi.html`, `hoc/kiem-ban-xoay.mjs`: Tạo gói **Sân cơ khí** (`ban-xoay`, 20 màn chia làm 2 chương: `ban-xoay` — *Bàn xoay và nút đè* và `che-ban-xoay` — *Cổng dịch chuyển*, mỗi chương 10 màn có màn Trùm 3 sân) cùng bộ kiểm thử tự động `hoc/kiem-ban-xoay.mjs`.
+
 ## 2026-10-26 — Nhánh `huong-5-game-feel` (Hướng 5: Nhịp Cảm Xúc & Cá Nhân Hóa)
 - `hoc/game/am-thanh.js`, `hoc/game/man-choi.js`: Nâng cấp nhạc nền Chiptune 3 trạng thái động (`soan` 96 BPM thư thái khi xếp lệnh/menu, `chay` 112 BPM sôi nổi khi robot chạy, `trum` 128 BPM kịch tính ở màn Trùm).
 - `hoc/game/part/part.js`, `hoc/game/luu.js`, `hoc/game/ve-robot.js`, `hoc/game/cai-dat.js`, `hoc/game/chu.js`, `hoc/game/choi.css`: Mở khóa màu sơn thưởng cho R1 theo mốc tổng sao (`0 / 60 / 150 / 300 / 450` sao: Nguyên bản, Xanh Ngọc, Cam Hỏa Tinh, Trắng Vũ Trụ, Hoàng Kim) ngay trong bảng Cài đặt.

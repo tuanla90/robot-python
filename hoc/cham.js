@@ -703,6 +703,14 @@
         loi: 'Ở nhịp ' + ck0.nhip + ', cửa ở (' + ck0.o.x + ', ' + ck0.o.y + ') đáng lẽ đóng lại nhưng ' + (ck0.voi === 'xe' ? 'xe đang đứng ngay ô cửa' : 'có vật nằm ở ô cửa') + ' nên cửa giữ mở.' +
           (cuaKet.length > 1 ? ' Chuyện này xảy ra ' + cuaKet.length + ' lần.' : '') + ' Cửa không bao giờ đóng đè lên xe hay vật.' });
     }
+    var congChan = res.suKien.filter(function (e) { return e.ma === 'cong-chan'; });
+    if (congChan.length) {
+      var cc0 = congChan[0];
+      var tenVatCong = cc0.vat === 'thung-nang' ? 'thùng nặng' : cc0.vat === 'vat' ? 'vật nằm' : cc0.vat === 'dong-doi' ? 'đồng đội' : cc0.vat;
+      cd.push({ ma: 'cong-chan', muc: 'thong-tin', nhip: cc0.nhip, soLan: congChan.length, cong: cc0.cong, tu: cc0.tu, den: cc0.den, vat: cc0.vat,
+        loi: 'Ở nhịp ' + cc0.nhip + ', robot bước vào cổng số ' + cc0.cong + ' tại (' + cc0.tu.x + ', ' + cc0.tu.y + ') nhưng cổng đầu kia tại (' + cc0.den.x + ', ' + cc0.den.y + ') đang bị ' + tenVatCong + ' chắn nên không dịch chuyển được.' +
+          (congChan.length > 1 ? ' Chuyện này xảy ra ' + congChan.length + ' lần.' : '') + ' Muốn dịch chuyển qua cổng, ô cổng đầu kia phải trống.' });
+    }
     var thaChan = res.suKien.filter(function (e) { return e.ma === 'tha-bi-chan'; });
     if (thaChan.length) {
       var tb0 = thaChan[0], mtb = tb0.lenh ? (g.anhXa[tb0.lenh.dongPy] || null) : null;
