@@ -14,7 +14,9 @@
       'che-drone', 'drone', 'flycam', 'rap-du',
       // gói đội hai robot còn đang làm (tệp có thể chưa có màn)
       'doi-xich', 'doi-omni', 'doi-sung-hoi', 'doi-mau', 'doi-nam-cham', 'doi-tay-xoay', 'doi-drone',
-      'ban-xoay', 'dua-robot', 'doi-thu-manh'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'ban-xoay', 'dua-robot', 'doi-thu-manh',
+      // 7 màn mới của gói 3 Cảm biến khoảng cách (chỉ khai, lộ trình thêm vào chương bên dưới)
+      'cam-bien-them'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -251,13 +253,17 @@
   TT.ten['nut-de'] = 'Nút đè';
   M.them(M.manNutDe || []);
   (M.manNutDe || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // Gói 3: 7 màn mới (man-cam-bien-them.js, mã khoang-cach.11 và che-cam-bien.11–16, mã mới không trùng màn cất). Thêm vào hai chương có sẵn rồi
+  // MUA_1 xếp chỗ; `nguon` giữ bản gốc như mọi màn khác.
+  M.them(M.manCamBienThem || []);
+  (M.manCamBienThem || []).forEach(function (m) { nguon[m.ma] = copy(m); });
   var MUA_1 = [
     { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
       chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
     { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 30,
       chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
-      chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 5, 4, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 3])]] },
+      chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 4, 11, 5, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 3])]] },
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 75, hinh: 'che-tay',
       chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
     { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 105, hinh: 'che-xe',
