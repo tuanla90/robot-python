@@ -80,6 +80,20 @@
   // 5: như 4 nhưng ô đích (4,3) ở bên phải, hai ô phía sau R2 (R2 ở (3,1) quay lên, ngõ dọc (3,1)–(3,3)). Lối duy nhất là một đường cụt: R1 không vượt được R2.
   var SAN_5 = ['#o####', '#...##', '###.##', '###.D#', '######'];
 
+  // 6: hành lang trên của R1 (hàng 1, dài quá chỗ rẽ), nút M ở hốc dưới (4,2). R2 ở (1,4) quay phải, vật bên trái (1,3), cửa C (2,4), ô đích (5,5) bên phải cuối hành lang
+  var SAN_6 = ['#######', '#.....#', '####M##', '#o#####', '#.C...#', '#####D#', '#######'];
+
+  // 7: R1 ở (1,2) quay lên, vật trước mặt (1,1). Ô đích (2,2) trước mặt R1 sau khi quay phải đang có sẵn một vật (X): R2 phải dọn nó sang ô đích (4,2).
+  //    R2 ở (3,5) quay lên, đi lên tới (3,2) (trước mặt là tường): bên trái là (2,2), bên phải là (4,2)
+  var SAN_7 = ['######', '#o####', '#.X.D#', '###.##', '###.##', '###.##', '######'];
+
+  // 8: hành lang dọc của R2 (x = 2) có cửa C (2,6); nút M (3,6) ngay bên phải cửa; R1 ở (4,6) quay trái, cờ R1 (5,6); cờ R2 (2,8) sau cửa. Cờ riêng từng robot.
+  var SAN_8 = ['#######', '##.####', '##.####', '##.####', '##.####', '##.####', '##CM.F#', '##.####', '##F####', '#######'];
+
+  // 9: làn dọc của R1 (x = 1), vật ở cuối làn (1,1); ô bàn giao (2,4) bên phải R1 lúc về chỗ cũ = bên trái R2 (3,4); ô đích (4,4) bên phải R2
+  var SAN_9 = ['######', '#o####', '#.####', '#.####', '#...D#', '######'];
+  var R1_9 = ['go_wall()', 'pick()'].concat(FOR(2, ['back()']), ['turn_right()', 'drop()']);   // R1 tự động (khóa)
+
   var DS = [
     /* ------------------------------------------------------------ hàng 1: làm quen */
     man({
@@ -170,6 +184,79 @@
         { moTa: 'R2 lùi một ô: bên phải là tường', baiLam: B(['pick()', 'turn_right()', 'drop()'], ['while left_clear():', '    wait()', 'pick_left()', 'back()', 'drop_right()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] }
       ],
       goiY: ['back() lùi một ô, mặt xe và tay xoay vẫn như cũ.', 'Lùi hai ô (for i in range(2): back()) rồi drop_right().']
+    }),
+
+    man({
+      so: 6, ten: 'Chờ cửa mở',
+      hamCuaEmCan: ['to_gap', 'turn_right', 'move', 'pick_left', 'go_wall', 'drop_right'],
+      mucTieu: 'dua-vat',
+      deBai: 'Nút M nằm trong hốc ở bên phải hành lang của R1; go_wall() sẽ chạy quá hốc. R2 mang vật qua cửa C, nhưng R1 tới nút khá lâu: R2 phải chờ tới khi cửa trước mặt mở rồi mới đi.',
+      veMaMau: 'Chương trình R2 chưa chờ cửa. Viết chương trình R1, thêm vòng chờ cho R2.',
+      san: SAN_6, bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 4, huong: 1 }],
+      maMau: B([], ['pick_left()', 'go_wall()', 'drop_right()']),
+      sao: { o: 31, nhip: 10 },
+      loiGiai: B(['to_gap()', 'turn_right()', 'move()'], ['pick_left()', 'while not front_clear():', '    wait()', 'go_wall()', 'drop_right()']),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['to_gap()', 'turn_right()', 'move()'], ['pick_left()', '# chờ cửa mở', 'while not front_clear():', '    wait()', 'go_wall()', 'drop_right()']) },
+      loiSai: [
+        { moTa: 'R2 không chờ cửa: go_wall() dừng ngay trước cửa đóng', baiLam: B(['to_gap()', 'turn_right()', 'move()'], ['pick_left()', 'go_wall()', 'drop_right()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
+        { moTa: 'R1 dùng go_wall(): chạy quá hốc có nút, cửa không mở, R2 chờ mãi', baiLam: B(['go_wall()', 'turn_right()', 'move()'], ['pick_left()', 'while not front_clear():', '    wait()', 'go_wall()', 'drop_right()']), phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['Cửa đang đóng thì front_clear() trả False, như gặp tường.', 'R2: while not front_clear(): wait() ngay trước go_wall(). R1: to_gap(), turn_right(), move().']
+    }),
+
+    /* ------------------------------------------------------------ hàng 3: biến thể */
+    man({
+      so: 7, ten: 'Dọn chỗ cho bạn',
+      hamCuaEmCan: ['pick', 'turn_right', 'drop', 'go_wall', 'pick_left', 'drop_right'],
+      mucTieu: 'dua-vat',
+      deBai: 'Ô đích trước mặt R1 đang có sẵn một vật. R2 chạy tới, dọn vật đó sang ô đích bên phải nó. Lần này R1 phải chờ R2: chờ tới khi ô trước mặt trống rồi mới đặt vật của mình.',
+      veMaMau: 'Chạy thử: R1 đặt vật khi ô đích còn bị chiếm. Thêm vòng chờ cho R1.',
+      san: SAN_7, bd: [{ x: 1, y: 2, huong: 0 }, { x: 3, y: 5, huong: 0 }],
+      maMau: B(['pick()', 'turn_right()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']),
+      sao: { o: 39, nhip: 6 },
+      loiGiai: B(['pick()', 'turn_right()', 'while not front_clear():', '    wait()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['pick()', 'turn_right()', '# chờ R2 dọn chỗ', 'while not front_clear():', '    wait()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']) },
+      loiSai: [
+        { moTa: 'R1 không chờ: đặt vật lên ô đang có vật', baiLam: B(['pick()', 'turn_right()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
+        { moTa: 'R1 chờ ngược điều kiện: thiếu chữ not', baiLam: B(['pick()', 'turn_right()', 'while front_clear():', '    wait()', 'drop()'], ['go_wall()', 'pick_left()', 'drop_right()']), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] }
+      ],
+      goiY: ['Ô trước mặt còn vật thì front_clear() trả False.', 'R1: while not front_clear(): wait() ngay trước drop().']
+    }),
+
+    man({
+      so: 8, ten: 'Gác nút cho bạn qua',
+      hamCuaEmCan: ['move', 'turn_right', 'go_wall', 'turn_left'],
+      co: [[{ x: 5, y: 6 }], [{ x: 2, y: 8 }]],
+      deBai: 'R1 đứng lên nút M thì cửa C mở cho R2 đi xuống. Cờ của R1 ở ngay phía sau. R1 rời nút sớm thì cửa đóng trước mặt R2. R1 quay mặt lên để cửa nằm bên trái, chờ tới khi thấy R2 đi vào cửa rồi mới về cờ.',
+      veMaMau: 'R2 đã có chương trình. Chạy thử: R1 đứng mãi trên nút. Viết tiếp chương trình R1.',
+      san: SAN_8, bd: [{ x: 4, y: 6, huong: 3 }, { x: 2, y: 1, huong: 2 }],
+      maMau: B(['move()'], ['go_wall()']),
+      sao: { o: 14, nhip: 8 },
+      loiGiai: B(['move()', 'turn_right()', 'while left_clear():', '    wait()', 'turn_right()', 'go_wall()'], ['go_wall()']),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['move()', 'turn_right()', '# chờ R2 vào cửa', 'while left_clear():', '    wait()', 'turn_right()', 'go_wall()'], ['go_wall()']) },
+      loiSai: [
+        { moTa: 'R1 không chờ: rời nút trước khi R2 tới cửa', baiLam: B(['move()', 'turn_right()', 'turn_right()', 'go_wall()'], ['go_wall()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'R1 đứng mãi trên nút: không về cờ', baiLam: B(['move()'], ['go_wall()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Cửa mở mà chưa có ai thì left_clear() trả True; R2 vào cửa thì trả False.', 'Đang có xe trong cửa thì cửa không đóng được: R1 về cờ lúc đó là vừa.']
+    }),
+
+    man({
+      so: 9, ten: 'Bạn tự động', khoa: 0,
+      hamCuaEmCan: ['go_wall', 'pick', 'back', 'turn_right', 'drop', 'pick_left', 'drop_right'],
+      mucTieu: 'dua-vat',
+      deBai: 'R1 tự động (chương trình khóa, xem được): đi lên cuối làn lấy vật, lùi về chỗ cũ rồi đặt vật vào ô bên trái R2. Chương trình R2 chờ một số nhịp cố định nên nhặt hụt. Sửa R2 để chờ bằng cảm biến.',
+      veMaMau: 'Chương trình R1 bị khóa. Chạy thử, đếm xem R1 đặt vật ở nhịp nào, rồi sửa R2.',
+      san: SAN_9, bd: [{ x: 1, y: 4, huong: 0 }, { x: 3, y: 4, huong: 0 }],
+      maMau: B(R1_9, FOR(5, ['wait()']).concat(['pick_left()', 'drop_right()'])),
+      sao: { o: 44, nhip: 11 },
+      loiGiai: B(R1_9, ['while left_clear():', '    wait()', 'pick_left()', 'drop_right()']),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(R1_9, ['# chờ R1 đặt vật', 'while left_clear():', '    wait()', 'pick_left()', 'drop_right()']) },
+      loiSai: [
+        { moTa: 'Chờ cố định 5 nhịp: vật chưa tới', baiLam: B(R1_9, FOR(5, ['wait()']).concat(['pick_left()', 'drop_right()'])), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chờ ngược điều kiện: thừa chữ not', baiLam: B(R1_9, ['while not left_clear():', '    wait()', 'pick_left()', 'drop_right()']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Không cần đếm nhịp của R1: hỏi cảm biến bên trái.', 'while left_clear(): wait() thay cho vòng for chờ cố định.']
     })
   ];
 
