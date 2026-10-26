@@ -17,7 +17,7 @@
    băng chuyền tắt (vết `bangTat`) đứng yên và mờ; thùng nặng H (thép xám, chỉ cú giật mới dời được). Một phát bắn = ban + giat chạy CÙNG LÚC: ban = bóng tròn bay thẳng từ miệng nòng (trước hay sau, theo `sau`; làn hơi phun ở miệng)
    tới ô `den` (trúng nút thì nút lóe rồi đổi, băng đổi ngay, cửa đổi ở cuối nhịp; bị chặn thì nảy ra; ra khỏi sân thì bay mất ở mép); giat = xe trượt một ô ngược hướng bắn (di), hay rung tại chỗ nếu ô sau xe bị chặn;
    có thùng nặng sau xe thì thùng trượt thẳng đi (thung-di nguon 'giat', bụi bốc theo), thùng bị chặn ngay thì xe và thùng cùng rung + dấu ! (thung-chan). cua-ket = cửa rung đỏ, ban-hut / ban-bi-chan = dấu ?, het-dan / ban-goi-lai = dấu !,
-   số đạn còn (cfg.danToiDa) ở góc sân.
+   số đạn còn (cfg.danToiDa) ở góc sân. Bắn nhanh (s.luc "fast", màn Lực bắn): làn hơi nhỏ, không có giat; hết tầm (s.hetTam) thì bóng rơi ở ô s.cuoi, bụi nhỏ, dấu ?.
    CAMERA NHÌN XUỐNG của drone (docCamBien.cam === 'camera-bay', look() đọc vật hay sàn ở ô NGAY DƯỚI drone, 16/10): kính camera ở mép trên khung sáng rực, ô dưới drone tô màu vừa đọc (vòng sáng như cảm biến màu ở bụng xe + vạch quét chạy từ trên xuống),
    bốn góc ngắm (viewfinder) ôm ô đó ở lớp trên (nguon 'vat' thì ôm vật nhỏ hơn, 'chan' thì góc xám + X), bong chữ màu nổi cạnh drone.
    Chương drone: robot.than === 'drone' (bay cao, không có mặt trước, cánh quạt luôn quay): bóng đổ lệch xuống dưới ô, rơi lên mặt rào / băng / vật / thùng khi bay qua ('bay-qua'),
@@ -1475,12 +1475,13 @@
       var v = this.vis, c = this.cfg, self = this, dx = DX[s.huong], dy = DY[s.huong], sg = v.sung, sau = !!s.sau;
       var kc = sau ? (this.mzs || 4) : (this.mz || 8);
       var x0 = s.tu.x * T + 7 + dx * kc, y0 = s.tu.y * T + 7 + dy * kc;
-      var tx, ty, hut = !s.trung;
-      if (hut) { tx = dx ? (dx > 0 ? (c.ox + c.vw) * T + 5 : c.ox * T - 5) : x0; ty = dy ? (dy > 0 ? (c.oy + c.vh) * T + 5 : c.oy * T - 5) : y0; }
+      var tx, ty, roi = !!s.hetTam, hut = !s.trung && !roi, nhanh = s.luc === 'fast';             // roi: bắn nhanh hết tầm, bóng rơi ở ô cuối (s.cuoi)
+      if (roi) { tx = s.cuoi.x * T + 7; ty = s.cuoi.y * T + 7; }
+      else if (hut) { tx = dx ? (dx > 0 ? (c.ox + c.vw) * T + 5 : c.ox * T - 5) : x0; ty = dy ? (dy > 0 ? (c.oy + c.vh) * T + 5 : c.oy * T - 5) : y0; }
       else { var st = this.banDung(s, dx, dy); tx = st.x; ty = st.y; }
       if ((tx - x0) * dx + (ty - y0) * dy < 0) { tx = x0; ty = y0; }                                    // vật cản dính sát miệng nòng: bóng không bay được đoạn nào
       if (sg) { var den = performance.now() + ms * 0.3; if (sau) sg.sau = den; else sg.truoc = den; }
-      this.phunHoi(x0, y0, dx, dy, 9, 1.0);
+      this.phunHoi(x0, y0, dx, dy, nhanh ? 4 : 9, nhanh ? 0.6 : 1.0);                                   // bắn nhanh: làn hơi nhỏ (không giật)
       this.burst(x0, y0, 3, ['#fff6a8', '#ffe14a'], 0.4, 1, true);
       this.bong = { x: x0, y: y0, a: 1, dx: dx, dy: dy, bay: true };
       var dai = Math.abs(tx - x0) + Math.abs(ty - y0), tBay = Math.max(90, dai * 8.5 * (ms / 483));          // chậm hơn cho nhìn kịp: ~0,4 giây cho 4 ô ở ×1 (ms = 2,1 nhịp = 483), ×2 nhanh gấp đôi
@@ -1493,6 +1494,13 @@
       if (my !== this.rid || !this.bong) return;
       this.bong.bay = false;
       if (hut) { this.bong = null; this.baoHieu('?', 1400); return; }
+      if (roi) {                                                                                       // bắn nhanh hết tầm: bóng rơi xuống sàn, bụi nhỏ, mờ đi
+        this.burst(tx, ty + 2, 5, ['#d0d6e4', '#ffffff', '#9ba3b4'], 0.35);
+        await this.tween(ms * 0.3, my, function (k) { if (!self.bong) return; self.bong.y = ty + k * 2; self.bong.a = 1 - k; });
+        this.bong = null;
+        if (my === this.rid) this.baoHieu('?', 1200);
+        return;
+      }
       // chạm vật cản
       var kind = s.trung, tNay = performance.now(), og = null;
       var nutEv = evs.filter(function (q) { return q.ma === 'nut-doi'; })[0];

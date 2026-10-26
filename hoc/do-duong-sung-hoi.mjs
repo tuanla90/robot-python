@@ -6,7 +6,8 @@
    nút nào đang bật, cửa nào đang mở, băng nào đang tắt, nhịp mod chu kỳ cửa nhịp, tập ô ◆ (diQua) đã qua.
    Một HÀNH ĐỘNG mỗi nhịp, MỘT trong:
      - hiệu quả bánh: tien | lui | phai | trai | dau | cho (đứng yên) — tập cho phép do phần cứng quyết định (toHopChoPhep của do-duong-che-xe.mjs; mặc định đủ sáu);
-     - ban-truoc  (shoot không đảo: bóng ra trước, xe giật lùi)  hay  ban-sau (bóng ra sau, xe giật tới) — nếu phần cứng có shoot / shoot_back.
+     - ban-truoc  (shoot không đảo: bóng ra trước, xe giật lùi)  hay  ban-sau (bóng ra sau, xe giật tới) — nếu phần cứng có shoot / shoot_back;
+       màn có man.lucBan thêm hai hành động BẮN NHANH { ban, luc: 'fast' }: bóng bay tối đa SanHoc.TAM_BAN_NHANH ô, xe không giật.
    Nhịp có bắn thì bánh nghỉ (khay chặn luôn lệnh bánh cùng nhịp), nên bắn là MỘT hành động riêng.
    Thứ tự trong nhịp: bắn (bóng bay, nút đổi, băng đổi ngay) → giật (xe / thùng) → băng chuyền xe → băng chuyền thùng → cửa đổi ở cuối nhịp (cửa không đóng đè lên xe hay thùng).
    Mục tiêu: 'toi-co' (chạm cờ F), 'day-thung' (mọi thùng nằm trên ô đích; thùng kẹt góc = trạng thái chết), 'bong-mo' (xe đúng tư thế, đã qua mọi ô ◆, thùng mờ nếu khai: thắng khi chương trình CHẠY XONG nên
@@ -40,6 +41,10 @@ export function hanhDongChoPhep(man, tuyChon = {}) {
   const truoc = dao ? 'shoot_back' : 'shoot', sau = dao ? 'shoot' : 'shoot_back';
   if (pc.includes(truoc)) kq.push({ ban: 'truoc' });
   if (pc.includes(sau)) kq.push({ ban: 'sau' });
+  if (man.lucBan) {                                                    // màn Lực bắn: thêm bắn nhanh (bóng bay ≤ 2 ô, không giật)
+    if (pc.includes(truoc)) kq.push({ ban: 'truoc', luc: 'fast' });
+    if (pc.includes(sau)) kq.push({ ban: 'sau', luc: 'fast' });
+  }
   return kq;
 }
 
@@ -149,10 +154,11 @@ export function buocMotNhip(ctx, S, a) {
   if (a.ban) {
     const hb = a.ban === 'sau' ? (N.h + 2) % 4 : N.h;
     // (a) bóng bay
-    const v = VEC[hb];
-    let x = N.x, y = N.y;
+    const v = VEC[hb], nhanh = a.luc === 'fast';
+    let x = N.x, y = N.y, d = 0;
     for (;;) {
-      x += v[0]; y += v[1];
+      x += v[0]; y += v[1]; d++;
+      if (nhanh && d > SanHoc.TAM_BAN_NHANH) break;                  // bắn nhanh: bóng rơi sau 2 ô
       if (!ctx.trongSan(x, y)) break;
       const cell = y * rong + x;
       if (ctx.banDung[cell] || cuaDong(cell) || N.p.indexOf(cell) >= 0) {
@@ -165,9 +171,9 @@ export function buocMotNhip(ctx, S, a) {
         break;
       }
     }
-    // (b) giật
+    // (b) giật (bắn nhanh thì không giật)
     const hg = (hb + 2) % 4, vg = VEC[hg], nx = N.x + vg[0], ny = N.y + vg[1];
-    if (ctx.trongSan(nx, ny)) {
+    if (!nhanh && ctx.trongSan(nx, ny)) {
       const cell = ny * rong + nx;
       if (!ctx.chan[cell] && !cuaDong(cell)) {
         const i = N.p.indexOf(cell);
@@ -324,7 +330,7 @@ export function chuoiThanhMa(chuoi, tuyChon = {}) {
   const BANH = { cho: [0, 0], tien: [1, 1], lui: [-1, -1], phai: [1, 0], trai: [0, 1], dau: [1, -1] };
   const dong = [];
   for (const a of chuoi) {
-    if (a.ban) dong.push(((a.ban === 'truoc') === !daoS) ? 'shoot()' : 'shoot_back()');
+    if (a.ban) dong.push((((a.ban === 'truoc') === !daoS) ? 'shoot' : 'shoot_back') + (a.luc === 'fast' ? '("fast")' : '()'));
     else { const [t, p] = BANH[a.banh]; dong.push(...tl(t), ...pl(p)); }
     dong.push('wait()');
   }

@@ -1,0 +1,193 @@
+/* ============================================================================
+   kiem-luc-ban.mjs — máy kiểm chương `luc-ban` (Lực bắn: shoot("fast") bắn nhanh / shoot("charge") bắn tụ, 26/10) của "Robot Chấn Hưng".
+   Gồm:
+   - LUẬT LÕI (san-hoc.js, phần SÚNG HƠI, mục LỰC BẮN): không đối số = bắn tụ (luật cũ); "fast" bay tối đa 2 ô, không giật, hết tầm thì 'ban-ngan';
+     shoot_back("fast"); biến mang lực; lực lạ → 'luc-ban-sai'; màn không khai lucBan → 'luc-chua-mo'; súng lắp ngược; đạn có hạn; bắn nhanh không đẩy thùng;
+   - BỘ DÒ (do-duong-sung-hoi.mjs): chỉ thêm hai hành động bắn nhanh khi man.lucBan; đường của bộ dò viết thành mã rồi chạy thật bằng SanHoc cũng tới đích, đúng số nhịp;
+   - 10 MÀN: lời giải 3 sao đúng sao.o / sao.nhip, không chẩn đoán; lời giải khác đúng 2 sao; lời sai đủ mã; BFS = sao.nhip (≤ khi nhipTheoLoiGiai); khung 7 × 9;
+     hàm cốt truyện fire / fire_back / smart_fire có trong Sổ lệnh; đăng ký chương (thứ tự, gói Súng hơi, choi.html, lo-trinh-hoc.js, huy hiệu);
+   - KHAY (thanh-phan.js với document giả): taoKieu cho shoot ở màn Lực bắn là 'luc', đối số p của fire(p) suy ra kiểu 'luc'.
+   Các kiểm chung (đi tuần tự, sao, lời sai, đường tắt…) nằm ở kiem-hoc.mjs.
+   Chạy: node hoc/kiem-luc-ban.mjs        (trượt thì thoát mã 1)
+   ========================================================================== */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const day = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const SanHoc = require(path.join(day, 'san-hoc.js'));
+const ChamHoc = require(path.join(day, 'cham.js'));
+const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
+const SoLenh = require(path.join(day, 'so-lenh.js'));
+const M = require(path.join(day, 'lo-trinh-hoc.js'));
+const Bo = await import('./do-duong-sung-hoi.mjs');
+const { nhipCheSungHoiTatCa } = await import('./do-duong-che-sung-hoi.mjs');
+
+let dat = 0, hong = 0;
+function kiem(ten, ok, chiTiet) {
+  if (ok) { dat++; console.log('  ok   ' + ten); }
+  else { hong++; console.log('  HỎNG ' + ten + (chiTiet !== undefined ? ' → ' + chiTiet : '')); }
+}
+const J = (o) => JSON.stringify(o);
+const maCua = (kq) => kq.chanDoan.map((c) => c.ma);
+
+console.log('== 1. Luật lõi ==');
+{
+  const KHAY = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'shoot', 'shoot_back'];
+  // nút (3,0) cách xe 2 ô phía trên; thùng (3,3) ngay sau lưng, chỗ trượt (3,4); ô (3,5) để thử hết tầm khi quay xuống
+  const SAN = ['#######', '###N###', '#.....#', '###.###', '###H###', '###.###', '###.###', '#######'];
+  const goc = { loaiRobot: 'banh', hamGoc: KHAY, san: SAN, batDau: { x: 3, y: 3, huong: 0 }, lucBan: true };
+  const chay = (cfg, code) => SanHoc.chay(Object.assign({}, goc, cfg), code);
+  const sk = (r) => r.vet.filter((e) => e.loai === 'nhip').flatMap((e) => e.suKien || []);
+  const xe = (r) => { const n = r.vet.filter((e) => e.loai === 'nhip'); return n.length ? n[n.length - 1].robot : null; };
+
+  // xe (3,3) quay lên: (3,2) d1, (3,1) nút d2
+  let r = chay({}, 'shoot()\nwait()\n');
+  kiem('không đối số = bắn tụ: trúng nút, xe giật lùi đẩy thùng sau lưng', !r.loi && sk(r).some((e) => e.ma === 'nut-doi') && sk(r).some((e) => e.ma === 'thung-di' && e.nguon === 'giat') && sk(r).some((e) => e.ma === 'ban' && e.luc === 'charge'), J(sk(r).map((e) => e.ma)));
+  r = chay({}, 'shoot("charge")\nwait()\n');
+  kiem('shoot("charge") giống hệt shoot()', !r.loi && sk(r).some((e) => e.ma === 'thung-di' && e.nguon === 'giat'));
+  r = chay({}, 'shoot("fast")\nwait()\n');
+  kiem('shoot("fast"): trúng nút cách 2 ô, KHÔNG có sự kiện giật, thùng nằm yên, xe đứng yên',
+    !r.loi && sk(r).some((e) => e.ma === 'nut-doi') && !sk(r).some((e) => e.ma === 'giat' || e.ma === 'thung-di') && xe(r).x === 3 && xe(r).y === 3 && sk(r).some((e) => e.ma === 'ban' && e.luc === 'fast' && !e.hetTam), J(sk(r).map((e) => e.ma)));
+  r = chay({ batDau: { x: 1, y: 2, huong: 1 } }, 'shoot("fast")\nwait()\n');
+  const bn = sk(r).find((e) => e.ma === 'ban');
+  kiem('bắn nhanh hết tầm: bóng dừng ở ô thứ 2 (hetTam), có thông tin ban-ngan, ô rơi đúng', !!bn && bn.hetTam === true && bn.soO === 2 && bn.cuoi.x === 3 && bn.cuoi.y === 2 && r.suKien.some((e) => e.ma === 'ban-ngan'), J(bn));
+  r = chay({ batDau: { x: 3, y: 2, huong: 2 } }, 'shoot_back("fast")\nwait()\n');
+  kiem('shoot_back("fast"): bóng ra sau trúng nút cách 1 ô, xe không giật tới', !r.loi && sk(r).some((e) => e.ma === 'nut-doi') && xe(r).y === 2 && !sk(r).some((e) => e.ma === 'giat'));
+  r = chay({ batDau: { x: 3, y: 2, huong: 2 } }, 'shoot("fast")\nwait()\n');
+  kiem('bắn nhanh trúng thùng: bóng dừng ở thùng, thùng không nhúc nhích', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.trung === 'thung') && !sk(r).some((e) => e.ma === 'thung-di'));
+  r = chay({}, 'p = "fast"\nshoot(p)\nwait()\np = "charge"\nshoot(p)\nwait()\n');
+  kiem('biến mang lực: p = "fast" rồi "charge" — phát đầu không giật, phát sau giật', !r.loi && sk(r).filter((e) => e.ma === 'ban').map((e) => e.luc).join() === 'fast,charge' && sk(r).filter((e) => e.ma === 'thung-di').length === 1);
+  r = chay({}, 'def fire(p):\n    shoot(p)\n    wait()\nfire("fast")\n');
+  kiem('tham số mang lực: fire("fast") với thân shoot(p)', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.luc === 'fast'));
+  r = chay({}, 'shoot("quick")\nwait()\n');
+  kiem('lực lạ "quick" → lỗi chạy luc-ban-sai, có lucDat', r.loi && r.loi.ma === 'luc-ban-sai' && r.loi.lucDat === 'quick');
+  r = chay({}, 'shoot(2)\nwait()\n');
+  kiem('lực là số → luc-ban-sai', r.loi && r.loi.ma === 'luc-ban-sai');
+  r = chay({}, 'shoot("fast", "fast")\nwait()\n');
+  kiem('hai đối số → luc-ban-sai', r.loi && r.loi.ma === 'luc-ban-sai' && /nhiều nhất 1 đối số/.test(r.loi.thongDiep));
+  r = chay({ lucBan: false }, 'shoot("fast")\nwait()\n');
+  kiem('màn không khai lucBan mà gọi có đối số → luc-chua-mo', r.loi && r.loi.ma === 'luc-chua-mo');
+  r = chay({ lucBan: false }, 'shoot()\nwait()\n');
+  kiem('màn không khai lucBan: shoot() không đối số vẫn chạy như cũ', !r.loi && sk(r).some((e) => e.ma === 'thung-di'));
+  r = chay({ daoChieu: ['sung'], batDau: { x: 3, y: 2, huong: 2 } }, 'shoot("fast")\nwait()\n');
+  kiem('súng lắp ngược: shoot("fast") bắn ra sau, vẫn không giật', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.sau && e.luc === 'fast') && sk(r).some((e) => e.ma === 'nut-doi') && !sk(r).some((e) => e.ma === 'giat'));
+  r = chay({ danToiDa: 1 }, 'shoot("fast")\nwait()\nshoot("fast")\nwait()\n');
+  kiem('bắn nhanh cũng tốn đạn: phát thứ hai hết đạn', r.suKien.some((e) => e.ma === 'het-dan'));
+  let loiCfg = '';
+  try { SanHoc.chay({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'wait'], san: SAN, batDau: { x: 3, y: 3, huong: 0 }, lucBan: true }, 'wait()\n'); } catch (e) { loiCfg = e.message; }
+  kiem('lucBan mà robot không có súng → lỗi cấu hình', /lucBan chỉ dùng cho robot có súng hơi/.test(loiCfg), loiCfg);
+  kiem('SanHoc xuất LUC_BAN, TAM_BAN_NHANH = 2', J(SanHoc.LUC_BAN) === '["fast","charge"]' && SanHoc.TAM_BAN_NHANH === 2);
+
+  // chẩn đoán qua máy chấm
+  const man = { ma: 'thu', chuong: 'thu', loaiRobot: 'banh', hamGoc: KHAY, san: SAN, batDau: { x: 1, y: 2, huong: 1 }, lucBan: true, khung: { chinh: 10, moiHam: 10, cauTruc: [] }, cauTruc: [], moXuong: false, sao: { o: 9, nhip: 9 } };
+  let kq = ChamHoc.cham(man, { chinh: ['shoot("fast")', 'wait()'], hamCuaMan: [] }, []);
+  const cdNgan = kq.chanDoan.find((c) => c.ma === 'ban-ngan');
+  kiem('chẩn đoán ban-ngan (thông tin): nói bay 2 ô rồi rơi, gợi ý "charge"', !!cdNgan && cdNgan.muc === 'thong-tin' && /2 ô rồi rơi/.test(cdNgan.loi) && /"charge"/.test(cdNgan.loi), cdNgan && cdNgan.loi);
+  kq = ChamHoc.cham(man, { chinh: ['shoot("Fast")', 'wait()'], hamCuaMan: [] }, []);
+  kiem('chẩn đoán luc-ban-sai (lỗi): nhắc chữ thường trong dấu nháy', maCua(kq).includes('luc-ban-sai') && /chữ thường/.test(kq.chanDoan.find((c) => c.ma === 'luc-ban-sai').loi));
+  kq = ChamHoc.cham(Object.assign({}, man, { lucBan: false }), { chinh: ['shoot("fast")', 'wait()'], hamCuaMan: [] }, []);
+  kiem('chẩn đoán luc-chua-mo (lỗi)', maCua(kq).includes('luc-chua-mo'));
+}
+
+console.log('\n== 2. Bộ dò ==');
+const ds = M.danhSach.filter((m) => m.chuong === 'luc-ban').sort((a, b) => a.so - b.so);
+{
+  const coLuc = Bo.hanhDongChoPhep({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'shoot', 'shoot_back'], lucBan: true }, {});
+  const khongLuc = Bo.hanhDongChoPhep({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'shoot', 'shoot_back'] }, {});
+  kiem('hành động bắn nhanh chỉ có ở màn lucBan', coLuc.filter((a) => a.luc === 'fast').length === 2 && !khongLuc.some((a) => a.luc));
+  kiem('chuoiThanhMa viết shoot("fast") / shoot_back("fast")', Bo.chuoiThanhMa([{ ban: 'truoc', luc: 'fast' }, { ban: 'sau', luc: 'fast' }, { ban: 'truoc' }]) === 'shoot("fast")\nwait()\nshoot_back("fast")\nwait()\nshoot()\nwait()\n');
+  // so chéo: đường của bộ dò chạy thật bằng SanHoc (mỗi sân) cũng tới đích, đúng số nhịp
+  for (const m of ds) {
+    const nhieu = Array.isArray(m.san[0]), dsSan = nhieu ? m.san : [m.san];
+    let ok = true, ct = '';
+    dsSan.forEach((rows, i) => {
+      const lm = SanHoc.lopMauCuaSan(m, i);
+      const con = Object.assign({}, m, { san: rows, batDau: nhieu ? m.batDau[i] : m.batDau, bongMo: lm.bongMo || m.bongMo, noi: lm.noi || m.noi });
+      const b = Bo.nhipSungHoiNganNhat(con);
+      if (b.nhip === null) { ok = false; ct = 'sân ' + i + ' không giải được'; return; }
+      const r = SanHoc.chay(con, Bo.chuoiThanhMa(b.chuoi));
+      const nhip = r.vet.filter((e) => e.loai === 'nhip').length;
+      if (!r.thang || nhip !== b.nhip) { ok = false; ct = 'sân ' + i + ': thắng ' + r.thang + ', nhịp ' + nhip + '/' + b.nhip; }
+    });
+    kiem(m.ma + ': đường của bộ dò chạy thật cũng thắng, đúng nhịp', ok, ct);
+  }
+}
+
+console.log('\n== 3. Mười màn ==');
+{
+  const kho = [];
+  const them = (h) => { const i = kho.findIndex((x) => x.ten === h.ten); if (i >= 0) kho[i] = h; else kho.push(h); };
+  for (const ch of ThuTu.thuTu) {
+    if (ch === 'luc-ban') break;
+    M.danhSach.filter((m) => m.chuong === ch).sort((a, b) => a.so - b.so).forEach((m) => (m.loiGiai.hamCuaEmMoi || []).forEach(them));
+  }
+  kiem('đúng 10 màn, so 1..10, hàng 3 · 3 · 3 · 1', ds.length === 10 && ds.every((m, i) => m.so === i + 1) && J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
+  kiem('mọi màn: súng hơi, lucBan, cauTruc for/if/while; 8–10 thêm cảm biến khoảng cách và front_clear', ds.every((m) => m.robot.tay === 'hoi' && m.lucBan === true && J(m.cauTruc) === '["for","if","while"]' &&
+    (m.so >= 8) === (m.robot.camBien.some((c) => c.ma === 'khoang-cach') && m.hamGoc.includes('front_clear'))));
+  kiem('sân tối đa 7 cột × 9 hàng (cả ba sân của trùm)', ds.every((m) => (Array.isArray(m.san[0]) ? m.san : [m.san]).every((s) => s.length <= 9 && s.every((h) => h.length <= 7))));
+  for (const m of ds) {
+    const kq = ChamHoc.cham(m, m.loiGiai, (m.loiGiai.hamCuaEmMoi || []).concat(kho));
+    kiem(m.ma + ' ' + m.ten + ': lời giải 3 sao, đúng sao.o / sao.nhip, không chẩn đoán', kq.thang && kq.sao === 3 && kq.soO === m.sao.o && kq.soNhip === m.sao.nhip && !kq.chanDoan.length,
+      J({ thang: kq.thang, sao: kq.sao, o: kq.soO, nhip: kq.soNhip, cd: maCua(kq) }));
+    if (m.loiGiaiKhac) {
+      const k2 = ChamHoc.cham(m, m.loiGiaiKhac.baiLam, (m.loiGiaiKhac.hamCuaEmMoi || []).concat(kho));
+      kiem(m.ma + ': lời giải khác đúng 2 sao', k2.thang && k2.sao === 2, J({ sao: k2.sao, o: k2.soO, nhip: k2.soNhip }));
+    }
+    m.loiSai.forEach((ls, i) => {
+      const k3 = ChamHoc.cham(m, ls.baiLam, (ls.hamCuaEmMoi || []).concat(kho));
+      const thieu = ls.phaiCoMa.filter((x) => !maCua(k3).includes(x));
+      kiem(m.ma + ' lời sai #' + (i + 1) + ': không thắng, đủ mã ' + ls.phaiCoMa.join('+'), !k3.thang && !thieu.length, 'có ' + maCua(k3).join(','));
+    });
+    const bfs = nhipCheSungHoiTatCa(m, kho);
+    kiem(m.ma + ': BFS ' + (m.nhipTheoLoiGiai ? '≤' : '=') + ' sao.nhip', m.nhipTheoLoiGiai ? bfs !== null && bfs <= m.sao.nhip : bfs === m.sao.nhip, 'BFS ' + bfs + ', sao.nhip ' + m.sao.nhip);
+    (m.loiGiai.hamCuaEmMoi || []).forEach(them);
+  }
+  kiem('màn 1: bắn tụ thì lệch bóng mờ, bắn nhanh thì thắng (lý do chọn lực)', (() => { const m = ds[0]; return !ChamHoc.cham(m, { chinh: ['shoot()', 'wait()', 'turn_left()', 'forward(3)'], hamCuaMan: [] }, kho).thang; })());
+  kiem('màn 2: bắn nhanh thì bóng rơi (ban-ngan), cửa không mở', (() => { const m = ds[1]; return maCua(ChamHoc.cham(m, { chinh: ['shoot("fast")', 'wait()', 'turn_left()', 'forward(2)'], hamCuaMan: [] }, kho)).includes('ban-ngan'); })());
+  kiem('trùm: luôn một lực thì không qua được cả ba sân (mỗi lực trượt ít nhất một sân)', ds[9].loiSai.length >= 2 && ds[9].loiSai.every((ls) => !ChamHoc.cham(ds[9], ls.baiLam, kho).thang));
+  kiem('trùm có huy hiệu luc-ban, nhịp tính tổng ba sân', ds[9].huyHieu && ds[9].huyHieu.ma === 'luc-ban' && ds[9].nhipTheo === 'tong' && ds[9].san.length === 3);
+  kiem('hàm cốt truyện tạo ở chương: fire (4), fire_back (5), smart_fire (8); có mục Sổ lệnh nhóm hoi, chương luc-ban, đúng màn',
+    J(ds.flatMap((m) => m.taoHam)) === '["fire","fire_back","smart_fire"]' &&
+    ['fire', 'fire_back', 'smart_fire'].every((t, i) => SoLenh.tim(t) && SoLenh.tim(t).nhom === 'hoi' && SoLenh.tim(t).chuong === 'luc-ban' && SoLenh.tim(t).man === 'luc-ban.' + [4, 5, 8][i]));
+  kiem('hàm của màn tap_left (7) và pick_fire (9) không có trong Sổ lệnh', !SoLenh.tim('tap_left') && !SoLenh.tim('pick_fire'));
+}
+
+console.log('\n== 4. Đăng ký ==');
+{
+  const tt = ThuTu.thuTu;
+  kiem('thứ tự: luc-ban ngay sau che-sung-hoi, có tên "Lực bắn", thuộc đợt 2', tt.indexOf('luc-ban') === tt.indexOf('che-sung-hoi') + 1 && ThuTu.ten['luc-ban'] === 'Lực bắn' && ThuTu.laDot2('luc-ban'));
+  kiem('gói Súng hơi có ba chương sung-hoi, che-sung-hoi, luc-ban', J(ThuTu.goi.find((g) => g.ma === 'sung-hoi').chuong) === '["sung-hoi","che-sung-hoi","luc-ban"]');
+  const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
+  const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
+  kiem('choi.html nạp ../man-luc-ban.js đúng một lần, ngay sau ../man-che-sung-hoi.js', tags.filter((t) => t === '../man-luc-ban.js').length === 1 && tags.indexOf('../man-luc-ban.js') === tags.indexOf('../man-che-sung-hoi.js') + 1);
+  kiem('lo-trinh-hoc.js require luc-ban', /'che-sung-hoi', 'luc-ban'/.test(fs.readFileSync(path.join(day, 'lo-trinh-hoc.js'), 'utf8')));
+  kiem('huy-hieu.js có hình cho luc-ban', /HINH\['luc-ban'\]/.test(fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8')));
+}
+
+console.log('\n== 5. Khay ==');
+{
+  global.window = global;
+  global.document = { addEventListener() {}, getElementById() { return null; }, body: { classList: { add() {}, remove() {} } }, createElement() { return { style: {}, classList: { add() {}, remove() {}, toggle() {} }, appendChild() {}, setAttribute() {}, addEventListener() {}, querySelector() { return null; } }; } };
+  let TP = null, loiNap = '';
+  try { require(path.join(day, 'game', 'thanh-phan.js')); TP = global.window.TP; } catch (e) { loiNap = e.message; }
+  kiem('thanh-phan.js nạp được (document giả)', !!TP && typeof TP.taoKieu === 'function', loiNap);
+  if (TP) {
+    const m4 = ds[3], m1 = ds[0];
+    const k4 = TP.taoKieu(() => ({ man: m4, hamCuaMan: [], kho: [] }));
+    kiem('màn Lực bắn: kiểu đối số của shoot / shoot_back là "luc" (thẻ chèn shoot("charge"))', k4('shoot', 0) === 'luc' && k4('shoot_back', 0) === 'luc');
+    kiem('fire(p) của lời giải: đối số p suy ra kiểu "luc"', k4('fire', 0) === 'luc');
+    const kTho = TP.taoKieu(() => ({ man: ds[6], hamCuaMan: [], kho: [] }));
+    kiem('hàm của màn tap_left(p): đối số p kiểu "luc"', kTho('tap_left', 0) === 'luc');
+    const kCu = TP.taoKieu(() => ({ man: M.timMa('sung-hoi.4'), hamCuaMan: [], kho: [] }));
+    kiem('màn súng hơi cũ: shoot không có ô lực', kCu('shoot', 0) !== 'luc');
+    void m1;
+  }
+  const src = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8');
+  kiem('bộ chọn chuỗi có kiểu "luc" với hai nút fast / charge', /var LUC_BAN = \['fast', 'charge'\]/.test(src) && /o\.kieu === 'luc' \? LUC_BAN : CHU_HUONG/.test(src));
+}
+
+console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
+if (hong) process.exit(1);

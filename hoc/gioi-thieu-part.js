@@ -149,7 +149,7 @@
       lenh: ['shoot', 'shoot_back'],
       gioi: ['Bóng bay thẳng; trúng nút thì nút đổi: cửa mở / đóng, băng chuyền bật / tắt', 'Giật: bắn ra trước thì xe lùi 1 ô, bắn ra sau thì xe tiến 1 ô', 'Xe giật vào thùng nặng thì thùng trượt tới khi gặp vật cản'],
       khong: ['Một nhịp chỉ bắn một phát', 'Nhịp bắn thì bánh nghỉ', 'Chạy bánh húc vào thùng nặng thì không đẩy được'],
-      luuY: ['Lệnh bắn cũng chỉ là ra lệnh, wait() mới bắn.']
+      luuY: ['Lệnh bắn cũng chỉ là ra lệnh, wait() mới bắn.', 'Ở các màn Lực bắn, lệnh bắn nhận một lực: "charge" bắn tụ như thường, bay xa và xe giật; "fast" bắn nhanh, bóng bay 2 ô và xe không giật.']
     },
 
     /* ------------------------------------------------------------ CẢM BIẾN */

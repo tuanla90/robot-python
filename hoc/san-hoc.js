@@ -108,6 +108,10 @@
         (wait() cho nhịp trôi), mỗi nhịp một phát, cặp lệnh ngược (LENH_NGUOC): shoot ↔ shoot_back.
             shoot()       bắn bóng ra TRƯỚC mũi xe;  xe GIẬT LÙI một ô (về phía đuôi)
             shoot_back()  bắn bóng ra SAU đuôi xe;   xe GIẬT TỚI một ô (về phía mũi)
+        - LỰC BẮN (chương `luc-ban`, 26/10; màn khai cfg.lucBan = true): shoot(p) / shoot_back(p) nhận MỘT đối số chuỗi p = "fast" | "charge". Không đối số = "charge" (luật cũ).
+            "charge"  BẮN TỤ:   bóng bay tới vật cản đầu tiên, xe GIẬT một ô (như trên).
+            "fast"    BẮN NHANH: bóng bay TỐI ĐA TAM_BAN_NHANH = 2 ô rồi rơi (không trúng gì: 'ban-ngan', thông tin), xe KHÔNG GIẬT (không có sự kiện 'giat'). Bánh vẫn nghỉ.
+          p lạ (chữ khác, số, nhiều đối số) → lỗi chạy 'luc-ban-sai'. Màn không khai lucBan mà gọi có đối số → lỗi chạy 'luc-chua-mo'. Sự kiện 'ban' có thêm luc và hetTam (bóng nhanh rơi vì hết tầm).
         - Nhịp có bắn thì xe không tự đi: lệnh bánh / trượt cùng nhịp bị bỏ ('ban-dung-yen', thông tin). Hai phát cùng nhịp: phát sau bị bỏ ('ban-goi-lai', lỗi). Quên wait() sau lệnh bắn →
           'quen-wait'. Đạn vô hạn, trừ khi màn khai cfg.danToiDa = n: mỗi phát tốn 1 viên, hết đạn thì không bắn VÀ không giật ('het-dan', lỗi) nhưng vẫn mất nhịp.
         - THỨ TỰ TRONG NHỊP: (a) bắn: bóng bay (nút đổi, băng chuyền nối nút đổi NGAY) → (b) GIẬT: xe (hay thùng) → (c) băng chuyền (theo trạng thái MỚI) → (d) cửa đổi ở CUỐI nhịp.
@@ -398,6 +402,8 @@
   var TAM_NEM_TOI_DA = 3;                       // aim(n): n = 1, 2 hoặc 3 ô
   // tay SÚNG HƠI (chương sung-hoi, che-sung-hoi): hai lệnh gốc shoot() (bắn ra trước, xe giật lùi) và shoot_back() (bắn ra sau, xe giật tới); ký hiệu N nút bắn, C cửa đóng, c cửa mở
   var TAY_HOI = ['shoot', 'shoot_back'];
+  var LUC_BAN = ['fast', 'charge'];             // shoot(p) / shoot_back(p) ở màn có cfg.lucBan: "fast" bắn nhanh (bay ≤ 2 ô, không giật), "charge" bắn tụ (luật cũ)
+  var TAM_BAN_NHANH = 2;
   // tay MÁY SƠN (chương may-son, che-may-son): ink(c) chọn màu (đổi ngay, không tốn nhịp); dot() / pen_down() / pen_up() chỉ ra lệnh, tô ô xe đang đứng (xem phần MÁY SƠN)
   var TAY_SON = ['ink', 'dot', 'pen_down', 'pen_up'];
   var SON_LENH = ['dot', 'pen_down', 'pen_up'];
@@ -647,7 +653,7 @@
       coNamCham, coNem, coHoi, coCamBien, coCamTu, coColor, dsCamBien, coCamMauBung, coCamera, camNhin, coPinCamBien, coLook,
       coCamBay, pinToiDa, pin, dao, rb, demBang, quayDo, lenh, lenhTon, tayCho, chanCho, nhayBuoc,
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
-      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho;
+      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan;
     var nhip = 0, thang = false, dungSom = null;
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
     function khoiRobot(rc) {
@@ -765,6 +771,8 @@
         if (typeof rc.danToiDa !== 'number' || Math.floor(rc.danToiDa) !== rc.danToiDa || rc.danToiDa < 0) throw new Error('danToiDa phải là số nguyên không âm.');
         dan = rc.danToiDa;
       }
+      lucBan = !!rc.lucBan;                   // súng hơi: shoot(p) / shoot_back(p) chọn được lực "fast" / "charge"
+      if (lucBan && !coHoi) throw new Error('lucBan chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
       vet = [], suKienChan = [];
       loi = null;
       docCho = [], docLienTiep = 0, soLanDoc = 0, traVe = 0;       // cảm biến: sự kiện chờ gắn vào nhịp kế, số lần đọc liên tiếp chưa có nhịp, tổng số lần đọc, giá trị trả về cho nhân
@@ -791,7 +799,7 @@
         quayDo: quayDo, lenh: lenh, lenhTon: lenhTon, tayCho: tayCho, chanCho: chanCho, nhayBuoc: nhayBuoc,
         truotCho: truotCho, ncCho: ncCho, nc: nc, nem: nem, nemCho: nemCho, hoiCho: hoiCho,
         dan: dan, vet: vet, suKienChan: suKienChan, loi: loi, docCho: docCho, docLienTiep: docLienTiep,
-        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho
+        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, lucBan: lucBan
       };
     }
     function napRobot(o) {
@@ -803,7 +811,7 @@
       quayDo = o.quayDo; lenh = o.lenh; lenhTon = o.lenhTon; tayCho = o.tayCho; chanCho = o.chanCho; nhayBuoc = o.nhayBuoc;
       truotCho = o.truotCho; ncCho = o.ncCho; nc = o.nc; nem = o.nem; nemCho = o.nemCho; hoiCho = o.hoiCho;
       dan = o.dan; vet = o.vet; suKienChan = o.suKienChan; loi = o.loi; docCho = o.docCho; docLienTiep = o.docLienTiep;
-      soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho;
+      soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho; lucBan = o.lucBan;
     }
     khoiRobot(dsRc[0]);
 
@@ -1489,8 +1497,10 @@
           dan--;
         }
         var v = VEC[hb], x = rb.x, y = rb.y, d = 0, cuoi = { x: rb.x, y: rb.y }, trung = null, oVC = null;
+        var nhanh = l.luc === 'fast', hetTam = false;                             // bắn nhanh: bóng bay tối đa TAM_BAN_NHANH ô rồi rơi
         for (;;) {
           x += v[0]; y += v[1]; d++;
+          if (nhanh && d > TAM_BAN_NHANH) { hetTam = true; break; }
           var c = oTai(san, x, y);
           if (c === null) break;                                                // ra khỏi sân
           var ly = null;
@@ -1504,8 +1514,8 @@
           if (ly) { trung = ly; oVC = { x: x, y: y }; break; }
           cuoi = { x: x, y: y };
         }
-        sk.push({ ma: 'ban', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, den: oVC || cuoi, cuoi: cuoi, o: oVC, trung: trung, soO: d - 1 });
-        var kqBan = { trung: trung, o: oVC, cuoi: cuoi, soO: d - 1 };
+        sk.push({ ma: 'ban', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, den: oVC || cuoi, cuoi: cuoi, o: oVC, trung: trung, soO: d - 1, luc: l.luc || 'charge', hetTam: hetTam });
+        var kqBan = { trung: trung, o: oVC, cuoi: cuoi, soO: d - 1, hetTam: hetTam };
         if (trung !== 'nut') return kqBan;
         var n = nutTai[oVC.x + ',' + oVC.y];
         n.bat = !n.bat;
@@ -1520,12 +1530,15 @@
         return kqBan;
       }
 
-      /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật của phát bắn đó chẳng dời được gì
-       *  (xe và thùng đứng yên): phát bắn mà xe / thùng đi được một đoạn là phát bắn có ích, bóng đập vào tường là chuyện thường. */
+      /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), bắn nhanh rơi vì hết tầm ('ban-ngan'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật
+       *  của phát bắn đó chẳng dời được gì (xe và thùng đứng yên): phát bắn mà xe / thùng đi được một đoạn là phát bắn có ích, bóng đập vào tường là chuyện thường. */
       function thongTinBan(kb, l, hb, giatCoDoi) {
         if (kb.trung === 'nut' || giatCoDoi) return;
         var lenhGhi = l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null;
-        if (kb.trung === null) {
+        if (kb.hetTam) {
+          var en = { ma: 'ban-ngan', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, cuoi: kb.cuoi, lenh: lenhGhi };
+          sk.push(en); suKienChan.push(en);
+        } else if (kb.trung === null) {
           var ek = { ma: 'ban-hut', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, cuoi: kb.cuoi, soO: kb.soO, lenh: lenhGhi };
           sk.push(ek); suKienChan.push(ek);
         } else if (nuts.length) {                                              // sân có nút mà bóng bị chặn ở thứ khác
@@ -1697,7 +1710,7 @@
             if (loai === 'xich') xichThoi(sk);
             var hb = lh.sau ? (rb.huong + 2) % 4 : rb.huong;
             var kb = banBong(lh, hb);
-            if (kb) thongTinBan(kb, lh, hb, giatXe(hb, lh.dongPy ? { ten: lh.ten, dongPy: lh.dongPy } : null));
+            if (kb) thongTinBan(kb, lh, hb, lh.luc === 'fast' ? false : giatXe(hb, lh.dongPy ? { ten: lh.ten, dongPy: lh.dongPy } : null));     // bắn nhanh: không giật
           }
           else if (coTay && tay.tuThe === 'duoi' && (tr || t !== 0 || p !== 0)) {   // (c) bánh chạy — nhưng tay vướng sàn
             var ev = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : hanhDong.lenhBanh) || null };
@@ -2012,7 +2025,23 @@
           suKienChan.push({ ma: 'ban-goi-lai', nhip: nhip + 1, ten: yc.ten, dongPy: yc.dong, truoc: { ten: hoiCho.ten, dongPy: hoiCho.dongPy } });
           return false;
         }
-        hoiCho = { ten: yc.ten, dongPy: yc.dong, sau: (yc.ten === 'shoot_back') !== dao.sung };        // daoChieu 'sung': shoot() bắn ra sau, shoot_back() bắn ra trước
+        var luc = 'charge';                                      // lực bắn: không đối số = bắn tụ (luật cũ); màn có cfg.lucBan nhận shoot("fast") / shoot("charge")
+        if (yc.thamSo && yc.thamSo.length) {
+          var lb = yc.thamSo.length === 1 ? yc.thamSo[0] : undefined;
+          if (!lucBan) {
+            loi = { loai: 'runtime-error', ma: 'luc-chua-mo', dong: yc.dong, ten: yc.ten, thongDiep: 'Súng ở màn này chưa chọn được lực bắn: viết ' + yc.ten + '() không có đối số.' };
+            return true;
+          }
+          if (LUC_BAN.indexOf(lb) < 0) {
+            loi = { loai: 'runtime-error', ma: 'luc-ban-sai', dong: yc.dong, ten: yc.ten, lucDat: lb === undefined ? null : lb,
+              thongDiep: yc.thamSo.length !== 1 ? yc.ten + '() nhận nhiều nhất 1 đối số (lực bắn), đang có ' + yc.thamSo.length + '.'
+                : yc.ten + '(p) chỉ nhận p = "fast" hoặc "charge", mà em đưa vào ' + (typeof lb === 'string' ? '"' + lb + '"' : String(lb)) + '.' };
+            return true;
+          }
+          luc = lb;
+        }
+        hoiCho = { ten: yc.ten, dongPy: yc.dong, sau: (yc.ten === 'shoot_back') !== dao.sung, luc: luc };        // daoChieu 'sung': shoot() bắn ra sau, shoot_back() bắn ra trước
+        vet[vet.length - 1].lucBan = luc;
         lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
         return false;
       }
@@ -2228,7 +2257,7 @@
 
   var API = {
     VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_XOAY: TAY_XOAY, XOAY_NAC: XOAY_NAC, TAY_NHOM: TAY_NHOM, BANG: BANG, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
-    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, TAY_SON: TAY_SON, SON_LENH: SON_LENH, laLenhSon: laLenhSon, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
+    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, LUC_BAN: LUC_BAN, TAM_BAN_NHANH: TAM_BAN_NHANH, TAY_SON: TAY_SON, SON_LENH: SON_LENH, laLenhSon: laLenhSon, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
     CHAN_LENH: CHAN_LENH,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };

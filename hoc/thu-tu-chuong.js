@@ -28,6 +28,7 @@
    Chương 13 'nam-cham' (Nam châm) nằm ở man-nam-cham.js.
    Chương 14 'may-nem' (Máy ném) nằm ở man-may-nem.js.
    Chương 19 'sung-hoi' (Súng hơi) nằm ở man-sung-hoi.js; chương 20 'che-sung-hoi' (Chế lệnh súng hơi) nằm ở man-che-sung-hoi.js.
+   Chương 'luc-ban' (Lực bắn: shoot("fast") bắn nhanh / shoot("charge") bắn tụ, 26/10) nằm ở man-luc-ban.js, chương thứ ba của gói Súng hơi.
    Chương 16 'drone' (Drone) nằm ở man-drone.js.
    Chương 15 'list' (Danh sách) nằm ở man-list.js; chương 16 'che-list' (Chế lệnh danh sách) nằm ở man-che-list.js (17/10, gói List sau gói Nhện).
    Chương 'flycam' (Flycam: drone gắn camera nhìn xuống, look() + danh sách; chương CUỐI, cuối gói Drone) nằm ở man-flycam.js.
@@ -43,10 +44,10 @@
     // 15/10 tối: mỗi bộ phận hai chương (làm quen + chế lệnh) — thêm che-xich, che-omni, che-mau, che-may-nem, che-drone; SÚNG HƠI (sung-hoi + che-sung-hoi:
     // shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới đẩy thùng) thay TẤM ĐẨY và SÚNG BÓNG (hai chương cũ tam-day / sung-bong đã xóa).
     thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien', 'hai-robot',
-      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao',
+      'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'luc-ban', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao',
       'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'],
     // các chương đợt 2 (khóa tới khi thắng trùm của chương cổng)
-    dot2: ['hai-robot', 'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao',
+    dot2: ['hai-robot', 'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'luc-ban', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao',
       'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'],
     // chương cổng: thắng trùm chương này (Robot hoàn thiện, chương 10 cuối đợt 1) thì mở cả đợt 2.
     // (15/10: màn chọn đã chuyển sang GÓI mở bằng tổng sao, xem `goi` dưới; dot2 / congDot2 chỉ còn dùng để ghi nhãn và cho máy kiểm.)
@@ -82,7 +83,7 @@
       { ma: 'list', ten: 'Danh sách', mua: 'mua-2', sao: 75, chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
       { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', mua: 'mua-2', sao: 105, chuong: ['xich', 'che-xich'] },
       { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', mua: 'mua-2', sao: 135, chuong: ['omni', 'che-omni'] },
-      { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi'] },
+      { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi', 'luc-ban'] },        // 26/10: thêm chương Lực bắn (shoot("fast") / shoot("charge"))
       { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', mua: 'mua-3', sao: 30, chuong: ['mau', 'che-mau'] },
       { ma: 'may-son', ten: 'Máy sơn', loai: 'bo-phan', mua: 'mua-3', sao: 60, chuong: ['may-son', 'che-may-son'] },       // 25/10 tô màu: chấm, nét liền qua góc, chọn màu (KE-HOACH-MAY-SON.md)
       { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', mua: 'mua-3', sao: 90, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
@@ -123,6 +124,7 @@
       'che-omni': 'Chế lệnh omni',
       'sung-hoi': 'Súng hơi',
       'che-sung-hoi': 'Chế lệnh súng hơi',
+      'luc-ban': 'Lực bắn',
       'che-mau': 'Chế lệnh màu',
       'may-son': 'Máy sơn',
       'che-may-son': 'Chế lệnh máy sơn',

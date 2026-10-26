@@ -507,14 +507,16 @@
       if (d.loai === 'dkm') return 'dkm';
       if (d.loai === 'if') return k === 0 ? 'bien' : 'dl';
       if (d.ten === 'ink') return 'mau';                                   // ink(c): bảng chọn bốn màu sơn
+      if (d.ten === 'shoot' || d.ten === 'shoot_back') return 'luc';       // shoot(p): bảng chọn lực "fast" / "charge"
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
-      return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' ? kd : 'so';
+      return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' || kd === 'luc' ? kd : 'so';
     }
     /** Biến kiểu kb có đặt được vào ô kiểu slot không (một chữ đặt được vào chuỗi ghép, ngược lại thì không). */
     function hopKieu(slot, kb) {
       if (slot === 'list' || slot === 'tenls') return kb === 'list';
       if (slot === 'so') return kb === 'so';
       if (slot === 'don') return kb === 'don';
+      if (slot === 'luc') return kb === 'luc';                                                // ô lực bắn (shoot(p), fire(p)): biến lực
       if (slot === 'mau') return kb === 'mau' || kb === 'don' || kb === 'ghep';             // ô màu (ink(c), color_line(c, n)): biến màu, biến vòng for c in [màu…]
       if (slot === 'ghep' || slot === 'bien') return kb === 'don' || kb === 'ghep';
       return false;
@@ -1246,9 +1248,11 @@
   }
   var CHU_TOI_DA = 16;       // chuỗi ghép dài tối đa
   var CHU_HUONG = ['U', 'D', 'L', 'R'];
+  var LUC_BAN = ['fast', 'charge'];                                   // lực bắn của súng hơi ở màn Lực bắn: shoot("fast") / shoot("charge")
   /**
    * Bộ chọn chuỗi chữ chỉ đường cạnh ô `neo`. o: { neo, kieu, gia, hien, bien: [tên biến], khiChon(v) }
    *   kieu 'don' / 'dl': bốn nút U D L R, chạm một nút là chọn xong ('dl' không có hàng biến);
+   *   kieu 'luc': hai nút "fast" / "charge" (lực bắn của shoot(p)), chạm là chọn xong, kèm hàng biến lực;
    *   kieu 'ghep': nút U D L R thêm chữ vào cuối, ⌫ xóa chữ cuối, Xong để đóng; chuỗi đang ghép hiện ở trên (tối đa 16 chữ), mỗi lần chạm đều đổi dòng code ngay;
    *   kieu 'bien': chỉ hàng tên biến.
    *   gia: chuỗi đang có (không nháy); hien: tên biến đang dùng (nếu ô đang là biến). khiChon nhận chuỗi có nháy ("RRD") hoặc tên biến.
@@ -1275,8 +1279,8 @@
       el.appendChild(hang0);
     }
     if (o.kieu !== 'bien') {
-      var hc = h('div', 'cc-chu');
-      CHU_HUONG.forEach(function (c) {
+      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' ? ' cc-luc' : ''));
+      (o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {           // 'luc': hai nút "fast" / "charge" (lực bắn của súng hơi)
         var b = h('button', 'bt g-pu cs' + (o.kieu !== 'ghep' && c === o.gia ? ' on' : ''), c); b.setAttribute('data-chu', c);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
@@ -1582,6 +1586,7 @@
     if (CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) return 'list';                                       // x in steps
     if (new RegExp('range\\(\\s*' + P + '\\s*\\)').test(src)) return 'so';
     if (new RegExp('\\bink\\(\\s*' + P + '\\s*\\)').test(src)) return 'mau';                                        // ink(c): đối số là tên MÀU sơn (máy sơn)
+    if (new RegExp('\\bshoot(_back)?\\(\\s*' + P + '\\s*\\)').test(src)) return 'luc';                              // shoot(p): đối số là LỰC bắn "fast" / "charge" (súng hơi)
     if ((sau || 0) < 4) {
       var re = /([A-Za-z_]\w*)\(([^()]*)\)/g, m;
       while ((m = re.exec(src))) {
@@ -1600,6 +1605,7 @@
   function taoKieu(layCtx) {
     return function (ten, k) {
       var cx = layCtx() || {};
+      if ((ten === 'shoot' || ten === 'shoot_back') && cx.man && cx.man.lucBan) return 'luc';      // màn Lực bắn: thẻ shoot chèn sẵn lực, chạm để đổi
       function tim(n) {
         var l = [(cx.hamCuaMan || []), (cx.kho || [])], i, j;
         for (i = 0; i < l.length; i++) for (j = 0; j < l[i].length; j++) if (l[i][j].ten === n) return l[i][j];
@@ -1932,8 +1938,9 @@
     function gach(ten, lopGach, loai, hamTS, cha) {
       var d = h('div', 'brick ' + lopGach); d.setAttribute('role', 'button');
       // chèn: mỗi đối số là 1 (số), "U" (một chữ) hoặc "R" (chuỗi chữ) tùy kiểu; hiện: tên đối số
-      var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function (_, k) { var kd = cb.kieuDoiSo ? cb.kieuDoiSo(ten, k) : 'so'; return kd === 'mau' ? '"red"' : kd === 'don' ? '"U"' : kd === 'ghep' ? '"R"' : kd === 'list' ? '[2, 3, 1]' : '1'; }).join(', ') : '') + ')';
+      var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function (_, k) { var kd = cb.kieuDoiSo ? cb.kieuDoiSo(ten, k) : 'so'; return kd === 'mau' ? '"red"' : kd === 'luc' ? '"charge"' : kd === 'don' ? '"U"' : kd === 'ghep' ? '"R"' : kd === 'list' ? '[2, 3, 1]' : '1'; }).join(', ') : '') + ')';
       if (loai === 'goc' && ten === 'aim') goi = 'aim(1)';                       // aim(n): thẻ chèn sẵn tầm 1, chạm số để chọn 1 / 2 / 3
+      if (loai === 'goc' && (ten === 'shoot' || ten === 'shoot_back') && cb.kieuDoiSo && cb.kieuDoiSo(ten, 0) === 'luc') goi = ten + '("charge")';   // màn Lực bắn: chạm "charge" để đổi sang "fast"
       if (loai === 'goc' && ten === 'ink') goi = 'ink("red")';                   // ink(c): thẻ chèn sẵn màu đỏ, chạm màu để chọn màu khác
       var hien = '(' + (hamTS || []).join(', ') + ')';
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', loai); d.setAttribute('data-goi', goi);

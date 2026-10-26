@@ -634,6 +634,7 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .chon-so .cs:disabled{opacity:.38;filter:saturate(.35);pointer-events:none}
 .chon-chuoi{display:flex;flex-direction:column;gap:6px;width:136px;grid-template-columns:none}
 .chon-chuoi .cc-chu{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.chon-chuoi .cc-chu.cc-luc{grid-template-columns:repeat(2,1fr)}
 .chon-chuoi.don,.chon-chuoi.dl{width:128px}
 .chon-chuoi .cs-bien{flex-wrap:wrap;margin-top:0}
 .cc-hang0{display:flex;align-items:flex-end;gap:4px}

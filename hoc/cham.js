@@ -125,7 +125,7 @@
    man.danToiDa (số viên; không khai = vô hạn); màn nhiều sân thì cuaNhip và noi là mảng song song với man.san. man.daoChieu có 'sung': súng lắp ngược (shoot() bắn ra sau, shoot_back() bắn ra trước);
    man.phanCung thiếu shoot_back (nòng sau hỏng) hay shoot (nòng trước hỏng) = lenh-goc-hong. Kết quả có thêm `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}],
    `cuaBanDau`, `nutBanDau`, `sung` { dan } (trạng thái cuối, như vet nhịp có cua / nut / bangTat / robot.sung). Mã chẩn đoán mới: ban-goi-lai (lỗi: hai lệnh bắn cùng nhịp), het-dan (lỗi),
-   ban-hut (thông tin: bóng bay ra khỏi sân không trúng gì), ban-bi-chan (thông tin: bóng bị tường / cửa đóng / thùng / vật chặn trước khi tới nút), ban-dung-yen (thông tin: lệnh bánh cùng nhịp với lệnh bắn bị bỏ),
+   ban-hut (thông tin: bóng bay ra khỏi sân không trúng gì), ban-ngan (thông tin: bắn nhanh "fast" bay hết 2 ô mà chưa trúng gì), luc-ban-sai / luc-chua-mo (lỗi chạy: lực bắn lạ / màn chưa cho chọn lực), ban-bi-chan (thông tin: bóng bị tường / cửa đóng / thùng / vật chặn trước khi tới nút), ban-dung-yen (thông tin: lệnh bánh cùng nhịp với lệnh bắn bị bỏ),
    giat-chan (thông tin: xe không giật được vì ô giật vào bị chặn), ban-nut-lai (thông tin: cùng một nút bị bắn nhiều lần), cua-ket (thông tin: cửa không đóng được vì xe đang đứng ở ô cửa);
    dam-tuong với vat 'cua' (cửa đang đóng) hay 'nut'.
    Sân thử Xưởng nhận thêm sanThu.nut = [{ x, y }] (nút bắn) và sanThu.cua = [{ x, y, mo }] (cửa; mo true là cửa mở lúc đầu).
@@ -480,6 +480,10 @@
         them('mau-son-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Tên màu viết chữ thường, đặt trong dấu nháy, ví dụ ink("red").', { cho: cho(m), mau: l.mauDat });
       } else if (l.ma === 'tam-sai') {
         them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.', { cho: cho(m), tam: l.tamDat });
+      } else if (l.ma === 'luc-ban-sai') {
+        them('luc-ban-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Lực bắn viết chữ thường trong dấu nháy: "fast" bắn nhanh (bay 2 ô, không giật), "charge" bắn tụ (bay xa, xe giật).', { cho: cho(m), luc: l.lucDat });
+      } else if (l.ma === 'luc-chua-mo') {
+        them('luc-chua-mo', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Chọn lực bắn chỉ có ở các màn Lực bắn.', { ten: l.ten, cho: cho(m) });
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến hay hàm/.test(l.thongDiep) && SanHoc.laHamCamBien(tn[1]) && hamGoc.indexOf(tn[1]) < 0 && !lenhHong(man, tn[1])) {
         var dsCam = hamGoc.filter(function (t) { return SanHoc.laHamCamBien(t); });
         var laNhin = SanHoc.CAM_NHIN_HAM.indexOf(tn[1]) >= 0, camBayGan = ((man.robot && man.robot.camBien) || []).some(function (c) { return c && c.ma === SanHoc.MA_CAM_BAY; });
@@ -666,6 +670,13 @@
       cd.push({ ma: 'ban-hut', muc: 'thong-tin', nhip: bh0.nhip, soLan: banHut.length, huong: bh0.huong, cho: cho(bh0.lenh ? (g.anhXa[bh0.lenh.dongPy] || null) : null),
         loi: 'Ở nhịp ' + bh0.nhip + ', quả bóng bay thẳng về phía ' + SanHoc.TEN_HUONG[bh0.huong] + (bh0.sau ? ' (ra sau đuôi xe)' : '') + ' từ ô (' + bh0.tu.x + ', ' + bh0.tu.y + ') rồi ra khỏi sân mà không trúng gì.' +
           (banHut.length > 1 ? ' Chuyện này xảy ra ' + banHut.length + ' lần.' : '') + ' Bóng chỉ bay thẳng: shoot() bắn ra trước mũi xe, shoot_back() bắn ra sau đuôi xe. Xem xe đang quay mặt về đâu.' });
+    }
+    var banNgan = res.suKien.filter(function (e) { return e.ma === 'ban-ngan'; });
+    if (banNgan.length) {
+      var bn0 = banNgan[0];
+      cd.push({ ma: 'ban-ngan', muc: 'thong-tin', nhip: bn0.nhip, soLan: banNgan.length, huong: bn0.huong, o: bn0.cuoi, cho: cho(bn0.lenh ? (g.anhXa[bn0.lenh.dongPy] || null) : null),
+        loi: 'Ở nhịp ' + bn0.nhip + ', phát bắn nhanh bay về phía ' + SanHoc.TEN_HUONG[bn0.huong] + (bn0.sau ? ' (ra sau đuôi xe)' : '') + ' được ' + SanHoc.TAM_BAN_NHANH + ' ô rồi rơi ở ô (' + bn0.cuoi.x + ', ' + bn0.cuoi.y + '), chưa trúng gì.' +
+          (banNgan.length > 1 ? ' Chuyện này xảy ra ' + banNgan.length + ' lần.' : '') + ' Bắn nhanh chỉ bay ' + SanHoc.TAM_BAN_NHANH + ' ô; muốn bóng bay xa thì bắn tụ "charge" (xe sẽ bị giật).' });
     }
     var banChan = res.suKien.filter(function (e) { return e.ma === 'ban-bi-chan'; });
     if (banChan.length) {
@@ -1074,6 +1085,7 @@
           ngan: e.nganPy.map(function (d) { return cho(g.anhXa[d]); }).filter(function (x) { return x && x.cot !== 'thu'; })
         };
         if (e.aimTam !== undefined) mucLenh.aimTam = e.aimTam;
+        if (e.lucBan !== undefined) mucLenh.lucBan = e.lucBan;           // shoot(p): lực bắn "fast" / "charge"
         if (e.inkMau !== undefined) mucLenh.inkMau = e.inkMau;           // ink(c): giao diện đổi màu đầu sơn ngay           // aim(n): giao diện đổi số ngắm trên xe
         if (e.docCamBien) mucLenh.docCamBien = e.docCamBien;             // đọc cảm biến: giao diện nháy cảm biến
         return mucLenh;
@@ -1159,7 +1171,7 @@
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: man.danToiDa,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan,
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
         bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
@@ -1285,7 +1297,7 @@
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,
-            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, mucBanDau: mi.mucBanDau,
+            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, mucBanDau: mi.mucBanDau,
             co: SanHoc.coCuaSan(mi.co, si, nhieu),
             daoChieu: mi.daoChieu, phanCung: SanHoc.phanCungCua(mi), nguonDong: nguonDongCua(gs[i])
           };
@@ -1418,7 +1430,7 @@
     var res = SanHoc.chay({
       san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st), roBanDau: st.ro === true ? true : undefined,
-      danToiDa: man.danToiDa, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
+      danToiDa: man.danToiDa, lucBan: man.lucBan, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
       daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g),
       pin: man.loaiRobot === 'drone' ? (st.pin !== undefined ? st.pin : (Array.isArray(man.pin) ? man.pin[0] : man.pin)) : undefined
     }, g.ma);

@@ -137,6 +137,10 @@
     m('tap_right', 'hoi', 'Bắn nút bên phải xe rồi về đúng chỗ cũ, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.5'),
     m('kick_left', 'hoi', 'Đá thùng nặng bên trái xe trượt sang trái, xe giữ chỗ và hướng', 'che-sung-hoi', 'che-sung-hoi.6'),
     m('kick_ahead', 'hoi', 'Đá thùng nặng ngay trước mặt trượt đi xa, xe quay mặt như cũ', 'che-sung-hoi', 'che-sung-hoi.8'),
+    // chương Lực bắn (tap_left, pick_fire là hàm của màn nên không có ở đây)
+    m('fire', 'hoi', 'Bắn ra trước với lực p, "fast" hay "charge", rồi chờ một nhịp', 'luc-ban', 'luc-ban.4'),
+    m('fire_back', 'hoi', 'Bắn ra sau với lực p rồi chờ một nhịp', 'luc-ban', 'luc-ban.5'),
+    m('smart_fire', 'hoi', 'Trước mũi trống thì bắn tụ cho bóng bay xa, có vật sát mũi thì bắn nhanh', 'luc-ban', 'luc-ban.8'),
     // đợt 2: cảm biến màu, nam châm, máy ném, drone
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
     // chương Chế lệnh màu (go_out, come_back, line_step, trace là hàm của màn nên không có ở đây)
@@ -219,8 +223,8 @@
     g('stand', 'crouch', 'Nhện duỗi chân ra; duỗi ngay trước một bước đi lúc đang co là nhảy'),
     g('slide_left', 'slide_right', 'Xe omni trượt sang trái một ô'),
     g('slide_right', 'slide_left', 'Xe omni trượt sang phải một ô'),
-    g('shoot', 'shoot_back', 'Súng hơi: bắn bóng ra trước, xe giật lùi một ô'),
-    g('shoot_back', 'shoot', 'Súng hơi: bắn bóng ra sau, xe giật tới một ô'),
+    g('shoot', 'shoot_back', 'Súng hơi: bắn bóng ra trước, xe giật lùi một ô. Màn Lực bắn: lực "fast" bắn nhanh, bay 2 ô, xe không giật'),
+    g('shoot_back', 'shoot', 'Súng hơi: bắn bóng ra sau, xe giật tới một ô. Màn Lực bắn: lực "fast" bắn nhanh, xe không giật'),
     g('front_clear', null, 'Hỏi: ô trước mặt có trống không'),
     g('left_clear', null, 'Hỏi: ô bên trái có trống không'),
     g('right_clear', null, 'Hỏi: ô bên phải có trống không'),

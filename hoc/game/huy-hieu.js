@@ -123,6 +123,16 @@
     for (var j = 0; j < 7; j++) for (var i = 0; i < 7; i++) if (M[j].charAt(i) !== '.') p.px(bx + i, by + j, CB[M[j].charAt(i)]);
     return p;
   };
+  HINH['luc-ban'] = function () {                               // súng hơi nằm ngang + hai quả bóng: nhỏ ở gần (bắn nhanh), to ở xa (bắn tụ)
+    var g = Part.rot90(nongTruoc()), p = P(g.w + 15, g.h), by = g.h >> 1;
+    chep(p, g, 0, 0, 1);
+    var NHO = ['.XXX.', 'XwyyX', 'XyyyX', 'XyydX', '.XXX.'];
+    var TO = ['..XXX..', '.XwyyX.', 'XwyyyyX', 'XyyyyyX', 'XyyyydX', '.XdddX.', '..XXX..'], CB = { X: INK, w: '#fffbd0', y: '#ffe14a', d: '#d19a1a' };
+    function ve(M, x0, y0) { for (var j = 0; j < M.length; j++) for (var i = 0; i < M[j].length; i++) if (M[j].charAt(i) !== '.') p.px(x0 + i, y0 + j, CB[M[j].charAt(i)]); }
+    ve(NHO, g.w + 1, by - 2);
+    ve(TO, g.w + 7, by - 3);
+    return p;
+  };
   HINH['che-sung-hoi'] = function () {                          // súng hơi (nòng trước, đứng) + bánh răng
     var p = P(T26, T26), t = nongTruoc();
     chep(p, t, Math.max(0, 8 - (t.w >> 1)), Math.max(0, T26 - 1 - t.h), 1);
