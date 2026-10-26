@@ -640,6 +640,7 @@
     opt = opt || {};
     // NHIỀU ROBOT (KE-HOACH-HAI-ROBOT.md): cfg.doi = [phần riêng của R1, phần riêng của R2…], codeVao = [code R1, code R2…]; sân dùng chung trong cfg.
     var laDoi = Array.isArray(cfg.doi);
+    var doiKhang = laDoi && !!cfg.doiKhang;
     var dsRc = [cfg];
     if (laDoi) {
       if (cfg.doi.length < 1 || cfg.doi.length > 4) throw new Error('cfg.doi phải có từ 1 đến 4 robot.');
@@ -663,10 +664,11 @@
       coNamCham, coNem, coHoi, coCamBien, coCamTu, coColor, dsCamBien, coCamMauBung, coCamera, camNhin, coPinCamBien, coLook,
       coCamBay, pinToiDa, pin, dao, rb, demBang, quayDo, lenh, lenhTon, tayCho, chanCho, nhayBuoc,
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
-      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho;
+      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, laR1;
     var nhip = 0, thang = false, dungSom = null;
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
     function khoiRobot(rc) {
+      laR1 = rc === dsRc[0];                                               // robot của người chơi (đối kháng: R1)
       loai = rc.loaiRobot || 'banh';
       if (loai !== 'banh' && loai !== 'nhen' && loai !== 'xich' && loai !== 'omni' && loai !== 'drone') throw new Error('Loại robot lạ: ' + loai);
       laBanh = loai === 'banh' || loai === 'xich' || loai === 'omni';      // dùng chung bộ lệnh bánh
@@ -807,7 +809,7 @@
         quayDo: quayDo, lenh: lenh, lenhTon: lenhTon, tayCho: tayCho, chanCho: chanCho, nhayBuoc: nhayBuoc,
         truotCho: truotCho, ncCho: ncCho, nc: nc, nem: nem, nemCho: nemCho, hoiCho: hoiCho,
         dan: dan, vet: vet, suKienChan: suKienChan, loi: loi, docCho: docCho, docLienTiep: docLienTiep,
-        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho
+        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, laR1: laR1
       };
     }
     function napRobot(o) {
@@ -819,7 +821,7 @@
       quayDo = o.quayDo; lenh = o.lenh; lenhTon = o.lenhTon; tayCho = o.tayCho; chanCho = o.chanCho; nhayBuoc = o.nhayBuoc;
       truotCho = o.truotCho; ncCho = o.ncCho; nc = o.nc; nem = o.nem; nemCho = o.nemCho; hoiCho = o.hoiCho;
       dan = o.dan; vet = o.vet; suKienChan = o.suKienChan; loi = o.loi; docCho = o.docCho; docLienTiep = o.docLienTiep;
-      soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho;
+      soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho; laR1 = o.laR1;
     }
     khoiRobot(dsRc[0]);
 
@@ -1846,10 +1848,11 @@
           var dq = diQuaTai[rb.x + ',' + rb.y];
           if (dq && !dq.da) { dq.da = true; sk.push({ ma: 'qua-diem', nhip: nhip, o: { x: rb.x, y: rb.y } }); }
         }
+        if (laDoi && (mucTieu === 'toi-co' || (doiKhang && !laR1))) {       // nhiều robot: mỗi robot tới một cờ; tới rồi thì dừng chương trình, đứng yên (thắng: chayDoi). Đối kháng giao hàng: cờ F là đích của R2, R1 đi qua F không dừng
+          if (!xeToiCo && oTai(san, rb.x, rb.y) === 'F' && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }))) { xeToiCo = true; sk.push({ ma: 'toi-co' }); }
+        }
         if (mucTieu === 'toi-co') {
-          if (laDoi) {                                                       // nhiều robot: mỗi robot tới một cờ; tới rồi thì dừng chương trình, đứng yên (thắng: chayDoi)
-            if (!xeToiCo && oTai(san, rb.x, rb.y) === 'F' && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }))) { xeToiCo = true; sk.push({ ma: 'toi-co' }); }
-          } else if (san.co && rb.x === san.co.x && rb.y === san.co.y) { thang = true; sk.push({ ma: 'toi-co' }); }
+          if (!laDoi && san.co && rb.x === san.co.x && rb.y === san.co.y) { thang = true; sk.push({ ma: 'toi-co' }); }
         } else if (mucTieu === 'bong-mo') {
           // thắng xét KHI CHƯƠNG TRÌNH CHẠY XONG (xem sau vòng chạy), không thắng giữa đường
         } else if (mucTieu === 'day-thung') {
@@ -2227,13 +2230,30 @@
         X.forEach(function (x) {                                           // tới cờ: dừng chương trình, các nhịp sau đứng yên
           if (x.ctx.xeToiCo && !x.xong) { try { x.g.return(); } catch (e) { /* bỏ qua */ } x.xong = true; x.ctx.hangNhip.length = 0; }
         });
-        if (mucTieu === 'toi-co' && X.every(function (x) { return x.ctx.xeToiCo; })) thang = true;
+        if (doiKhang) {
+          var x0 = X[0], x1 = X[1];
+          if (!dungSom && x1 && x1.ctx.xeToiCo) {
+            var cungNhip = !!(x0 && (x0.ctx.xeToiCo || thang));
+            thang = false;
+            dungSom = 'doi-thu-thang';
+            var edt = { ma: 'doi-thu-thang', nhip: nhip, cungNhip: cungNhip, o: { x: x1.ctx.rb.x, y: x1.ctx.rb.y } };
+            if (x0) {
+              x0.ctx.suKienChan.push(edt);
+              var v0 = x0.ctx.vet;
+              for (var iv0 = v0.length - 1; iv0 >= 0; iv0--) if (v0[iv0].loai === 'nhip') { v0[iv0].suKien.push(edt); break; }
+            }
+          } else if (!dungSom && mucTieu === 'toi-co' && x0 && x0.ctx.xeToiCo) {
+            thang = true;
+          }
+        } else if (mucTieu === 'toi-co' && X.every(function (x) { return x.ctx.xeToiCo; })) {
+          thang = true;
+        }
         if (thang || dungSom) break;
       }
       xeKhac = []; oDinhToi = [];
       var dsKq = X.map(function (x, i) {
         napRobot(x.ctx);
-        var hetBinhThuong = !thang && !loi && !loiDoi && !dungSom && !xeToiCo;
+        var hetBinhThuong = !thang && !loi && !loiDoi && (!dungSom || (dungSom === 'doi-thu-thang' && i === 0 && x.xong)) && !xeToiCo;
         if (hetBinhThuong && loai === 'xich' && quayDo) suKienChan.push({ ma: 'xich-quay-do', nhip: nhip, nhipNua: quayDo.nhip, huong: quayDo.huong, lenh: quayDo.lenh, cuoi: true });
         if (hetBinhThuong && lenhTon.length) suKienChan.push({ ma: 'quen-wait', nhip: nhip, lenh: lenhTon.slice() });
         var o = {

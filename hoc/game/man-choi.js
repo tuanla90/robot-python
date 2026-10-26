@@ -140,7 +140,9 @@
     S.man.doi.forEach(function (r, i) {
       var b = h('button', 'bt xe-tab', 'R' + (i + 1));
       b.setAttribute('data-nut', 'xe-' + (i + 1)); b.setAttribute('aria-label', t('choi.xeTab', { n: i + 1 }));
-      b.style.setProperty('--mx', SanVe.MAU_XE[i % SanVe.MAU_XE.length]);
+      var sonTab = (r.robot && r.robot.son) || (S.man.doiKhang && i === 1 ? 'do' : SanVe.SON_XE[i % SanVe.SON_XE.length]);
+      var idxMau = SanVe.SON_XE.indexOf(sonTab);
+      b.style.setProperty('--mx', SanVe.MAU_XE[idxMau >= 0 ? idxMau : (i % SanVe.MAU_XE.length)]);
       b.addEventListener('click', function () { chonXeCode(i); });
       if (r.coDinh) { b.classList.add('khoa'); b.appendChild(Ve.khoa(1, true)); }        // robot tự động: chương trình khóa, vẫn mở xem được
       E.xeTabs.appendChild(b);
@@ -319,6 +321,7 @@
       pin: Array.isArray(m.pin) ? m.pin[i] : m.pin,                                // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
       bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo,                    // mục tiêu 'bong-mo': xe mờ (+ vật mờ, ô ◆) của sân này; màn nhiều sân thì mảng song song với san
       hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: m.mucBanDau,                          // máy sơn: hình mờ cần tô của sân này, màu sơn lúc đầu
+      doiKhang: !!m.doiKhang,
       doi: m.doi ? m.doi.map(function (r, k) {                                       // nhiều robot: hình xe, chỗ xuất phát của từng robot (san-ve.js vẽ đủ, R1 xanh lơ, R2 cam)
         var mk = manCuaXe(m, k);
         return { robot: VeRobot.cauHinhCua(mk), batDau: Array.isArray(mk.batDau) && nhieu ? mk.batDau[i] : mk.batDau, loaiRobot: mk.loaiRobot || 'banh',

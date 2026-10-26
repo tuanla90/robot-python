@@ -458,6 +458,29 @@
     themBanhRang(p);
     return p;
   };
+  function xeDuaNho(son) {
+    var q = P(12, 12), s = Part.SON[son];
+    q.rect(0, 3, 3, 8, INK); q.rect(1, 4, 1, 6, KK.denSang); q.px(1, 5, KK.thepSang); q.px(1, 8, KK.thepSang);
+    q.rect(9, 3, 3, 8, INK); q.rect(10, 4, 1, 6, KK.denSang); q.px(10, 5, KK.thepSang); q.px(10, 8, KK.thepSang);
+    q.rect(2, 1, 8, 11, INK); q.rect(3, 2, 6, 9, s[0]); q.rect(3, 2, 6, 1, s[1]); q.rect(3, 10, 6, 1, s[2]);
+    q.rect(4, 4, 4, 3, KK.kinh); q.px(4, 5, KK.xanh); q.px(7, 5, KK.xanh);
+    return q;
+  }
+  HINH['dua-robot'] = function () {                             // đua đối kháng: xe vàng (R1) vượt trước xe đỏ (R2) hướng tới cờ đích
+    var p = P(30, 26);
+    chep(p, xeDuaNho('vang'), 1, 11, 1);
+    chep(p, xeDuaNho('do'), 17, 14, 1);
+    p.rect(13, 1, 2, 11, INK); p.rect(14, 2, 1, 9, '#fff6e3');
+    p.rect(15, 1, 7, 6, INK); p.rect(15, 2, 6, 4, '#ff4a3c'); p.rect(15, 2, 3, 2, '#ffd23f'); p.rect(18, 4, 3, 2, '#ffd23f');
+    return p;
+  };
+  HINH['che-dua-robot'] = function () {                         // chiến thuật đối kháng: xe vàng đấu xe đỏ + bánh răng
+    var p = P(T26, T26);
+    chep(p, xeDuaNho('vang'), 0, 12, 1);
+    chep(p, xeDuaNho('do'), 13, 14, 1);
+    themBanhRang(p);
+    return p;
+  };
 
   /* ---------------------------------------------------------------- vành + đĩa */
   var PAL = {

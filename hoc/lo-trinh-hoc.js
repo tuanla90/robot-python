@@ -14,7 +14,7 @@
       'che-drone', 'drone', 'flycam', 'rap-du',
       // gói đội hai robot còn đang làm (tệp có thể chưa có màn)
       'doi-xich', 'doi-omni', 'doi-sung-hoi', 'doi-mau', 'doi-nam-cham', 'doi-tay-xoay', 'doi-drone',
-      'ban-xoay'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'ban-xoay', 'dua-robot'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
