@@ -259,16 +259,16 @@
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
       chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 5, 4, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 3])]] },
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 75, hinh: 'che-tay',
-      chuong: [['nut-de', day('nut-de', [1, 2, 3])], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
-    { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 95, hinh: 'che-xe',
+      chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
+    { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 105, hinh: 'che-xe',
       chuong: [['banh-lui', day('che-xe', [4, 5, 6, 7, 8, 9])], ['che-banh-lui', day('che-tay', [5, 7, 9]).concat(['che-lap.7', 'che-lap.9', 'che-xe.10'])]] },
-    { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 115,
+    { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 125,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
-    { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 145, hinh: 'cam-bien-ben',
+    { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 155, hinh: 'cam-bien-ben',
       chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
-    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 175,
+    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 185,
       chuong: [['hai-robot', day('hai-robot', MUOI)]] },
-    { ma: 'robot', ten: 'Trùm mùa', loai: 'thu-thach', sao: 190, hinh: 'robot-hoan-thien',
+    { ma: 'robot', ten: 'Trùm mùa', loai: 'thu-thach', sao: 200, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
   ];
   // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.

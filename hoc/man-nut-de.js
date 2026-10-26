@@ -102,6 +102,151 @@
         { moTa: 'Quay nhầm sang trái nên thả vào tường', baiLam: { chinh: ['go_wall()', 'pick()', 'turn_left()', 'drop()', 'turn_right()', 'go_wall()'] }, phaiCoMa: ['tha-bi-chan'] }
       ],
       goiY: ['Thùng cũng chắn cảm biến: go_wall() dừng ngay trước thùng.', 'Nút M nằm dưới ô xe dừng: quay phải là nhìn xuống M.']
+    }),
+
+    /* ------------------------------------------------------------ 4–6: luyện */
+    man({
+      so: 4, ten: 'Ngách đối diện',
+      hamCuaEmCan: ['go_wall', 'turn_left', 'turn_right', 'pick', 'u_turn', 'drop'],
+      deBai: 'Thùng nằm trong ngách phía trên hành lang, nút M ở ngách phía dưới, ngay đối diện. Đi tới trước cửa C, nhặt thùng ở ngách trên, quay đầu đặt nó lên M, rồi đi qua cửa tới cờ.',
+      veMaMau: 'go_wall() đã đưa xe tới trước cửa C và nhặt được thùng. Viết tiếp: quay đầu, đặt, quay về hướng cửa.',
+      san: ['########', '###o####', '#...CF##', '###M####', '########'],
+      batDau: { x: 1, y: 2, huong: 1 },
+      maMau: { chinh: ['go_wall()', 'turn_left()', 'pick()'] },
+      sao: { o: 28, nhip: 12 },
+      loiGiai: { chinh: ['go_wall()', 'turn_left()', 'pick()', 'u_turn()', 'drop()', 'turn_left()', 'go_wall()'] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', 'turn_left()', 'pick()', '# quay đầu nhìn xuống M', 'u_turn()', 'drop()', 'turn_left()', 'go_wall()'] } },
+      loiSai: [
+        { moTa: 'Nhặt thùng rồi đặt lại vào ngách cũ: cửa vẫn đóng', baiLam: { chinh: ['go_wall()', 'turn_left()', 'pick()', 'drop()', 'turn_right()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đặt lên M nhưng quên quay về hướng cửa: go_wall() nhìn xuống thùng', baiLam: { chinh: ['go_wall()', 'turn_left()', 'pick()', 'u_turn()', 'drop()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Cửa đóng làm go_wall() dừng đúng chỗ, giữa hai ngách.', 'Đang nhìn lên thì u_turn() làm xe nhìn xuống M. Đặt xong, turn_left() đưa mũi xe về phía cửa.']
+    }),
+
+    man({
+      so: 5, ten: 'Hai nút hai cửa',
+      hamCuaEmCan: ['pick', 'move', 'turn_right', 'drop', 'turn_left', 'go_wall'],
+      noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 4, y: 1 }] }, { nut: { x: 3, y: 2 }, cua: [{ x: 5, y: 1 }] }],
+      deBai: 'Hai cửa C nối tiếp nhau. Ở sân này mỗi nút chỉ giữ một cửa: nút M bên trái giữ cửa thứ nhất, nút M bên phải giữ cửa thứ hai. Đặt hai thùng lên hai nút rồi đi qua cả hai cửa tới cờ.',
+      veMaMau: 'Chương trình mẫu đặt được một thùng: cửa thứ hai vẫn đóng. Hai thùng làm giống nhau: lặp bằng for.',
+      san: ['#########', '#.ooCCF##', '##MM#####', '#########'],
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: { chinh: ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'] },
+      sao: { o: 26, nhip: 17 },
+      loiGiai: { chinh: FOR(2, ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()']) },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# mỗi thùng một nút'].concat(FOR(2, ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()']), ['go_wall()']) } },
+      loiSai: [
+        { moTa: 'Chỉ đặt một thùng: cửa thứ hai vẫn đóng', baiLam: { chinh: ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Viết thẳng hai lần thay cho for: quá 10 ô', baiLam: { chinh: ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()', 'pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'] }, phaiCoMa: ['tran-khung'] },
+        { moTa: 'Quên turn_left() trong vòng lặp: lượt hai nhặt lại thùng trên nút, cửa thứ nhất đóng', baiLam: { chinh: FOR(2, ['pick()', 'move()', 'turn_right()', 'drop()']).concat(['go_wall()']) }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Mỗi thùng: nhặt, tiến vào chỗ thùng vừa trống, quay xuống đặt lên nút, quay lại.', 'Lặp hai lần rồi go_wall() qua hai cửa.']
+    }),
+
+    man({
+      so: 6, ten: 'Kho dài',
+      hamCuaEmCan: ['go_wall', 'pick', 'turn_right', 'drop', 'turn_left', 'move'],
+      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 5, y: 1 }] }, { nut: { x: 7, y: 2 }, cua: [{ x: 9, y: 1 }] }],
+      deBai: 'Hai thùng nằm cách xa nhau, mỗi thùng có một nút M ở dưới chỗ đứng nhặt. Mỗi nút giữ cánh cửa C ngay sau thùng của nó. Lặp: đi tới trước thùng, đặt thùng lên nút; xong hai lượt thì đi tới cờ.',
+      veMaMau: 'Chương trình mẫu làm đúng một lượt. Khoảng cách hai lượt khác nhau nên không đếm bước: để go_wall() dừng trước thùng.',
+      san: ['############', '#...oC..oCF#', '###M###M####', '############'],
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: { chinh: ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'] },
+      sao: { o: 26, nhip: 21 },
+      loiGiai: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()']) },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['# hai cửa đã mở', 'go_wall()']) } },
+      loiSai: [
+        { moTa: 'Lặp như màn trước, tiến đúng một ô: lượt hai nhặt hụt', baiLam: { chinh: FOR(2, ['pick()', 'move()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()']) }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên go_wall() cuối: hai cửa đã mở nhưng xe đứng yên', baiLam: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']) }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['go_wall() dừng trước thùng dù thùng gần hay xa, và đi qua cửa đã mở.', 'Thân vòng lặp: go_wall(), pick(), turn_right(), drop(), turn_left().']
+    }),
+
+    /* ------------------------------------------------------------ 7–9: biến thể */
+    man({
+      so: 7, ten: 'Đố: xe tự đè nút',
+      hamCuaEmCan: ['go_wall', 'turn_right', 'move', 'u_turn', 'pick', 'turn_left', 'drop'],
+      deBai: 'Xe tự lăn lên nút M thì cửa C cũng mở. Vì sao chương trình có sẵn vẫn không tới được cờ? Sửa lại: dùng thùng ở dưới xe để giữ cửa thay cho xe.',
+      veMaMau: 'Chạy thử và nhìn cửa C lúc xe rời khỏi nút M.',
+      san: ['########', '#...CF##', '#o#M####', '########'],
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: { chinh: ['go_wall()', 'turn_right()', 'move()', 'u_turn()', 'move()', 'turn_right()', 'go_wall()'] },
+      sao: { o: 27, nhip: 12 },
+      loiGiai: { chinh: ['turn_right()', 'pick()', 'turn_left()', 'go_wall()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['turn_right()', 'pick()', 'turn_left()', 'go_wall()', 'turn_right()', '# thùng giữ cửa thay xe', 'drop()', 'turn_left()', 'go_wall()'] } },
+      loiSai: [
+        { moTa: 'Xe tự đứng lên M rồi rời đi: cửa đóng lại ngay', baiLam: { chinh: ['go_wall()', 'turn_right()', 'move()', 'u_turn()', 'move()', 'turn_right()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đặt thùng lên M rồi lại nhặt lên mang theo: cửa đóng lại', baiLam: { chinh: ['turn_right()', 'pick()', 'turn_left()', 'go_wall()', 'turn_right()', 'drop()', 'pick()', 'turn_left()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Cửa chỉ mở khi có thứ ĐANG nằm trên M. Xe rời M là cửa đóng.', 'Nhặt thùng ở dưới xe trước, rồi mới đi tới chỗ nút.']
+    }),
+
+    man({
+      so: 8, ten: 'Đố: cửa ngược',
+      hamCuaEmCan: ['go_wall', 'turn_left', 'turn_right', 'move'],
+      deBai: 'Cửa c (chữ thường) đang mở. Nút M nối với nó theo chiều ngược: có thứ đè lên M thì cửa c ĐÓNG. Đường thẳng tới cờ đi qua M ngay trước cửa. Tìm đường khác, không đè lên M.',
+      veMaMau: 'Chạy thử: xe lăn lên M, cửa c đóng sập trước mũi xe.',
+      san: ['#######', '#.....#', '#.###.#', '#.McF.#', '#######'],
+      batDau: { x: 1, y: 3, huong: 1 },
+      maMau: { chinh: ['go_wall()'] },
+      sao: { o: 14, nhip: 13 },
+      loiGiai: { chinh: ['turn_left()', 'go_wall()'].concat(FOR(3, ['turn_right()', 'go_wall()'])) },
+      loiGiaiKhac: { moTa: 'Viết thẳng từng góc, không dùng for (nhiều ô hơn)', baiLam: { chinh: ['turn_left()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'go_wall()'] } },
+      loiSai: [
+        { moTa: 'Đi thẳng qua M: cửa c đóng ngay trước mũi xe', baiLam: { chinh: ['move()', 'move()', 'move()'] }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Vòng lặp thiếu một lần rẽ: xe dừng ở góc dưới bên phải', baiLam: { chinh: ['turn_left()', 'go_wall()'].concat(FOR(2, ['turn_right()', 'go_wall()'])) }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Đi vòng lên hàng trên, sang phải, rồi xuống: không chạm vào M.', 'Ba góc cuối đều là rẽ phải rồi go_wall(): lặp chúng bằng for.']
+    }),
+
+    man({
+      so: 9, ten: 'Sửa hàm giữ cửa',
+      hamCuaEmCan: ['go_wall', 'pick', 'turn_right', 'drop', 'turn_left'],
+      chinhCoDinh: true,
+      noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 4, y: 1 }] }, { nut: { x: 5, y: 2 }, cua: [{ x: 7, y: 1 }] }],
+      deBai: 'Hàm hold_door() của màn phải đặt thùng trước mặt lên nút M bên phải xe, rồi trả xe về hướng cũ. Nó đang quên một việc nên lượt thứ hai hỏng. Sửa hold_door() để xe qua cả hai cửa tới cờ. Mỗi nút giữ cánh cửa C ngay sau thùng của nó.',
+      veMaMau: 'Chương trình chính bị khóa. Chạy thử, xem xe đang nhìn hướng nào khi hold_door() xong.',
+      san: ['##########', '#..oC.oCF#', '##M##M####', '##########'],
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: { chinh: FOR(2, ['go_wall()', 'hold_door()']).concat(['go_wall()']), hamCuaMan: [H('hold_door', ['pick()', 'turn_right()', 'drop()'])] },
+      sao: { o: 27, nhip: 19 },
+      loiGiai: { chinh: FOR(2, ['go_wall()', 'hold_door()']).concat(['go_wall()']), hamCuaMan: [H('hold_door', ['pick()', 'turn_right()', 'drop()', 'turn_left()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: FOR(2, ['go_wall()', 'hold_door()']).concat(['go_wall()']), hamCuaMan: [H('hold_door', ['pick()', 'turn_right()', 'drop()', '# quay về hướng cũ', 'turn_left()'])] } },
+      loiSai: [
+        { moTa: 'Hàm chưa sửa: lượt hai nhặt lại thùng trên nút, cửa thứ nhất đóng', baiLam: { chinh: FOR(2, ['go_wall()', 'hold_door()']).concat(['go_wall()']), hamCuaMan: [H('hold_door', ['pick()', 'turn_right()', 'drop()'])] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quay nhầm sang trái để đặt: thả vào tường', baiLam: { chinh: FOR(2, ['go_wall()', 'hold_door()']).concat(['go_wall()']), hamCuaMan: [H('hold_door', ['pick()', 'turn_left()', 'drop()', 'turn_right()'])] }, phaiCoMa: ['tha-bi-chan'] }
+      ],
+      goiY: ['Sau drop() xe còn nhìn xuống nút. go_wall() lượt sau không đi được.', 'Thêm turn_left() ở cuối hold_door().']
+    }),
+
+    /* ------------------------------------------------------------ 10: trùm */
+    man({
+      so: 10, ten: 'Trùm: kho nhiều cửa', huyHieu: { ma: 'nut-de', ten: 'Huy hiệu Nút đè' },
+      hamCuaEmCan: ['go_wall', 'pick', 'turn_right', 'drop', 'turn_left', 'move'],
+      nhipTheo: 'tong',
+      noi: [
+        [{ nut: { x: 3, y: 2 }, cua: [{ x: 5, y: 1 }, { x: 2, y: 1 }] }, { nut: { x: 7, y: 2 }, cua: [{ x: 9, y: 1 }] }],
+        [{ nut: { x: 4, y: 2 }, cua: [{ x: 6, y: 1 }, { x: 3, y: 1 }] }, { nut: { x: 7, y: 2 }, cua: [{ x: 9, y: 1 }] }],
+        [{ nut: { x: 5, y: 2 }, cua: [{ x: 7, y: 1 }, { x: 2, y: 1 }] }, { nut: { x: 8, y: 2 }, cua: [{ x: 10, y: 1 }] }]
+      ],
+      deBai: 'Ba kho dài ngắn khác nhau. Mỗi kho có cửa c đang mở ở đầu, hai thùng, hai nút M và hai cửa C phải mở theo thứ tự; cờ ở cuối lối rẽ xuống. Nút đầu giữ cửa C thứ nhất và đóng cửa c sau lưng; nút sau giữ cửa C thứ hai. Một chương trình phải tới cờ ở cả ba kho.',
+      veMaMau: 'Chương trình mẫu đặt được thùng đầu. Viết tiếp cho thùng thứ hai và đoạn rẽ cuối; đừng đếm bước, mỗi kho một khác.',
+      san: [
+        ['#############', '#.c.oC..oC..#', '###M###M###.#', '###########.#', '###########F#', '#############', '#############'],
+        ['#############', '#..c.oC.oC..#', '####M##M###.#', '###########F#', '#############', '#############', '#############'],
+        ['#############', '#.c...oC.oC.#', '#####M##M##.#', '###########.#', '###########.#', '###########F#', '#############']
+      ],
+      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
+      maMau: { chinh: ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()'] },
+      sao: { o: 28, nhip: 78 },
+      loiGiai: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()', 'turn_right()', 'go_wall()']) },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()', '# rẽ xuống cờ', 'turn_right()', 'go_wall()']) } },
+      loiSai: [
+        { moTa: 'Quên đoạn rẽ cuối: xe dừng ở góc trên', baiLam: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()']) }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lặp một lần: cửa C thứ hai vẫn đóng', baiLam: { chinh: FOR(1, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()', 'turn_right()', 'go_wall()']) }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đếm bước thay cho go_wall(): lượt hai nhặt hụt', baiLam: { chinh: FOR(2, ['move()', 'move()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()', 'turn_right()', 'go_wall()']) }, phaiCoMa: ['kep-hut', 'chua-toi-co'] }
+      ],
+      goiY: ['Cửa c đóng sau lưng khi thùng đầu lên nút: xe đã qua rồi nên không sao.', 'Một lượt: go_wall() tới trước thùng, nhặt, quay xuống đặt lên nút, quay lại. Lặp hai lượt, rồi go_wall(), turn_right(), go_wall().']
     })
   ];
 

@@ -82,8 +82,10 @@ function moiBai(m) {
   return ds;
 }
 function dongCua(x) { return [...(x.b.chinh || []), ...(x.b.hamCuaMan || []).concat(x.moi || []).flatMap((h) => h.than)]; }
-/** Số dòng lời giải người chơi viết / sửa: chương trình chính + thân hàm mới + thân hàm của màn. */
-const soDong = (m) => m.loiGiai.chinh.length + (m.loiGiai.hamCuaMan || []).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
+/** Số dòng lời giải người chơi viết / sửa: chương trình chính (trừ khi màn khóa nó: chinhCoDinh) + thân hàm mới + thân hàm của màn. */
+const soDong = (m) => (m.chinhCoDinh ? 0 : m.loiGiai.chinh.length) + (m.loiGiai.hamCuaMan || []).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
+/** Màn cửa `c` (mở lúc đầu, đè thì đóng): cơ chế là cái bẫy phải tránh, không phải thứ phải dùng. */
+const laCuaNguoc = (m) => dsSan(m).some((rows) => rows.join('').includes('c'));
 
 /* ------------------------------------------------------------------ 5. bộ dò đường nút đè */
 const VEC = SanHoc.VEC;
@@ -93,7 +95,7 @@ function nguCanh(m, i) {
   if (san.thung.length || san.nut.length || san.banXoay.length || san.cong.length || /[><^v]/.test(rows.join(''))) throw new Error(m.ma + ': bộ dò nút đè không hỗ trợ thùng nặng, nút bắn, bàn xoay, cổng, băng chuyền.');
   const chan = (x, y) => !!SanHoc.lyDoChan(san, 'banh', x, y);
   const nut = san.nutDe.map((q) => q.y * rong + q.x);
-  const noi = theoSan(m.noi, i);
+  const noi = soSan(m) > 1 ? (m.noi || [])[i] : m.noi;
   const cua = san.cua.map((d) => {
     let ds;
     if (noi) ds = noi.filter((g) => (g.cua || []).some((c) => c.x === d.x && c.y === d.y)).map((g) => nut.indexOf(g.nut.y * rong + g.nut.x));
@@ -303,10 +305,10 @@ for (const m of DS) {
       assert.ok(rr.thang, m.ma + ' sân ' + i + ': đường bộ dò tìm được thua khi chạy thật');
       assert.equal(rr.nhip, khoi.nhip, m.ma + ' sân ' + i + ': bộ dò và lõi lệch nhịp');
       if (ne.nhip !== null) { const rn = chayThat(ctx, ne.chuoi); assert.ok(rn.thang && rn.nhip === ne.nhip, m.ma + ': đường né chạy thật lệch'); }
-      if (m.coChe === 'c') { const bq = nganNhat(ctx, { cuaDungYen: true, gop: false }); tongBoQua += bq.nhip; }
+      if (laCuaNguoc(m) && !dsSan(m)[i].join('').includes('C')) { const bq = nganNhat(ctx, { cuaDungYen: true, gop: false }); tongBoQua += bq.nhip; }
     }
     const nguong = m.sao.nhip;
-    if (m.coChe === 'c') {
+    if (laCuaNguoc(m) && !dsSan(m).some((rows) => rows.join('').includes('C'))) {
       assert.ok(tongBoQua < tongKhoi, m.ma + ': coi cửa c luôn mở mà không nhanh hơn: cơ chế không đổi đường');
     } else {
       assert.ok(!coNe || tongNe > nguong, m.ma + ': có đường né nút đè ' + tongNe + ' nhịp ≤ ngưỡng ' + nguong);

@@ -96,7 +96,7 @@ const BANG_MUA_1 = [
   ['xe', [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]]],
   ['tay-gap', [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9, 10]).concat('che-lap.5')]]],
   ['cam-bien', [['khoang-cach', day('khoang-cach', [1, 2, 3, 4, 5, 6, 8, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 3, 7])]]],
-  ['kho-hang', [['nut-de', day('nut-de', [1, 2, 3])], ['kho-hang', day('che-tay', [1, 2, 3, 4, 6, 8, 10]).concat(day('che-xe', [1, 2, 3]))]]],
+  ['kho-hang', [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-tay', [1, 2, 3, 4, 6, 8, 10]).concat(day('che-xe', [1, 2, 3]))]]],
   ['banh-lui', [['banh-lui', day('che-xe', [4, 5, 6, 7, 8, 9])], ['che-banh-lui', ['che-xe.10'].concat(day('che-tay', [5, 7, 9]), day('che-lap', [7, 9]))]]],
   ['tay-xoay', [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]]],
   ['me-cung', [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]]],
@@ -311,7 +311,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   let tr = 0;
   for (const g of browser.MoGoi.dsMua()[0].goi) { assert.equal(g.saoCan, Math.floor(browser.MoGoi.TI_LE_SAO * tr / 5) * 5, g.ma); tr += g.saoToiDa; }
   const ds = browser.MoGoi.dsMua()[0].goi;
-  assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 13, 13, 12, 20, 20, 10, 10]);
+  assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 13, 20, 12, 20, 20, 10, 10]);
   assert.equal(ds[6].man[0].ma, 'che-cam-bien.4');
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
   assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 90);
