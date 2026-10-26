@@ -446,6 +446,26 @@
     return p;
   };
 
+  HINH['che-hai-robot'] = function () {                         // đội phối hợp: R1 vàng đứng trên nút đè M (xanh lá) giữ cửa mở, R2 lam mang thùng đi qua khung cửa
+    var p = P(30, 26);
+    function xe(son) {                                          // xe 12×12 quay lên như HINH['hai-robot']
+      var q = P(12, 12), s = Part.SON[son];
+      q.rect(0, 3, 3, 8, INK); q.rect(1, 4, 1, 6, KK.denSang); q.px(1, 5, KK.thepSang); q.px(1, 8, KK.thepSang);
+      q.rect(9, 3, 3, 8, INK); q.rect(10, 4, 1, 6, KK.denSang); q.px(10, 5, KK.thepSang); q.px(10, 8, KK.thepSang);
+      q.rect(2, 1, 8, 11, INK); q.rect(3, 2, 6, 9, s[0]); q.rect(3, 2, 6, 1, s[1]); q.rect(3, 10, 6, 1, s[2]);
+      q.rect(4, 4, 4, 3, KK.kinh); q.px(4, 5, KK.xanh); q.px(7, 5, KK.xanh);
+      return q;
+    }
+    p.rect(0, 22, 14, 4, INK); p.rect(1, 23, 12, 2, '#2ca85a'); p.rect(1, 23, 12, 1, '#9ef5b8');   // nút đè M dưới R1
+    chep(p, xe('vang'), 1, 11, 1);
+    p.rect(14, 4, 2, 22, INK); p.rect(14, 5, 1, 20, '#8a93a6');                                   // khung cửa (cánh đã mở)
+    p.rect(28, 4, 2, 22, INK); p.rect(29, 5, 1, 20, '#8a93a6');
+    p.rect(14, 4, 16, 2, INK); p.rect(15, 5, 14, 1, '#b8c0d0');
+    chep(p, xe('lam'), 16, 13, 1);
+    Part.veVatNho(p, 18, 7, 8, 'go');                                                            // thùng R2 đang mang
+    return p;
+  };
+
   HINH['rap-nao'] = function () {                              // lắp ráp thân + não: thân xích nhìn từ trên + đồng xu vàng nổi ở góc (ngân sách)
     var p = P(T26, T26), t = thanPart('xich');
     chep(p, t, Math.max(0, 14 - (t.w >> 1)), Math.max(0, T26 - t.h), 1);

@@ -94,6 +94,17 @@
   var SAN_9 = ['######', '#o####', '#.####', '#.####', '#...D#', '######'];
   var R1_9 = ['go_wall()', 'pick()'].concat(FOR(2, ['back()']), ['turn_right()', 'drop()']);   // R1 tự động (khóa)
 
+  // 10 (trùm, ba sân): làn dọc của R1 (x = 2), R1 ở (2,6) quay lên, vật ở đầu làn (sâu nông khác nhau), nút M (2,4) hai ô trên chỗ R1.
+  //    Ô bàn giao (3,6) bên phải R1 lúc về chỗ cũ = bên trái R2 (3,7) quay phải. Cửa C (4,7) ngay trước mặt R2; ô đích ở cuối hành lang (xa gần khác nhau).
+  var SAN_10 = [
+    ['##########', '##########', '##########', '##o#######', '##M#######', '##.#######', '##..######', '###.C.D###', '##########'],
+    ['##########', '##o#######', '##.#######', '##.#######', '##M#######', '##.#######', '##..######', '###.C...D#', '##########'],
+    ['##########', '##########', '##o#######', '##.#######', '##M#######', '##.#######', '##..######', '###.C..D##', '##########']
+  ];
+  var BD_10 = [[0, 1, 2].map(function () { return { x: 2, y: 6, huong: 0 }; }), [0, 1, 2].map(function () { return { x: 3, y: 7, huong: 1 }; })];
+  var R1_10 = ['go_wall()', 'pick()', 'u_turn()', 'go_wall()', 'turn_left()', 'drop()', 'turn_left()'].concat(FOR(2, ['move()']));
+  var R2_10 = ['while left_clear():', '    wait()', 'pick_left()', 'while not front_clear():', '    wait()', 'go_wall()', 'back()', 'drop()'];
+
   var DS = [
     /* ------------------------------------------------------------ hàng 1: làm quen */
     man({
@@ -257,6 +268,27 @@
         { moTa: 'Chờ ngược điều kiện: thừa chữ not', baiLam: B(R1_9, ['while not left_clear():', '    wait()', 'pick_left()', 'drop_right()']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Không cần đếm nhịp của R1: hỏi cảm biến bên trái.', 'while left_clear(): wait() thay cho vòng for chờ cố định.']
+    }),
+
+    /* ------------------------------------------------------------ trùm */
+    man({
+      so: 10, ten: 'Ca phối hợp', hang: 'trum',
+      hamCuaEmCan: ['go_wall', 'pick', 'u_turn', 'turn_left', 'drop', 'move', 'pick_left', 'back', 'drop_right'],
+      mucTieu: 'dua-vat',
+      deBai: 'R1 lên đầu làn lấy vật, mang về đặt vào ô bên trái R2, rồi lên đứng trên nút M (hai ô phía trên chỗ cũ) giữ cửa mở. R2 nhận vật, chờ cửa trước mặt mở, mang vật tới ô đích ở cuối hành lang. Làn của R1 và hành lang của R2 ở mỗi sân dài ngắn khác nhau: một chương trình cho cả ba sân.',
+      veMaMau: 'R1 đã mang được vật về; R2 đã nhận được vật. Viết tiếp: R1 lên nút, R2 chờ cửa rồi giao hàng.',
+      san: SAN_10, bd: BD_10,
+      maMau: B(R1_10.slice(0, 6), R2_10.slice(0, 3)),
+      sao: { o: 47, nhip: 63 },
+      loiGiai: B(R1_10, R2_10),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(R1_10, ['# nhận vật'].concat(R2_10)) },
+      loiSai: [
+        { moTa: 'R1 không lên nút: cửa đóng mãi, R2 chờ mãi', baiLam: B(R1_10.slice(0, 6), R2_10), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'R2 đặt vật sang phải ở cuối hành lang: bên phải là tường', baiLam: B(R1_10, R2_10.slice(0, 6).concat(['drop_right()'])), phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] },
+        { moTa: 'R2 chờ cố định theo sân ngắn: sân khác vật chưa tới', baiLam: B(R1_10, FOR(9, ['wait()']).concat(R2_10.slice(2))), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['R1: đi tới vật, nhặt, quay đầu, về tới tường, quay trái rồi đặt; sau đó quay trái và tiến hai ô lên nút M.', 'R2: chờ vật bên trái, nhặt, chờ cửa mở, đi tới cuối hành lang, lùi một ô rồi đặt vật vào ô đích.'],
+      huyHieu: { ma: 'che-hai-robot', ten: 'Huy hiệu Đội phối hợp' }
     })
   ];
 

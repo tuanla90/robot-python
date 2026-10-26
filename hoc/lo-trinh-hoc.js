@@ -255,6 +255,7 @@
   // 27/10: gói 5 đủ 20 màn (banh-lui.1–4, che-banh-lui.1–4 của man-banh-lui-them.js) nên ngưỡng gói 6–9 tính lại (+15 ★): 150, 180, 210, 225.
   // banh-lui: màn mới chen giữa màn cũ (thứ tự cũ giữ nguyên) để dòng / nhịp / cỡ sân không nhảy vọt; trùm mới banh-lui.4 (huy hiệu banh-lui).
   // che-banh-lui: che-banh-lui.1 đệm giữa che-tay.7 (8 nhịp) và che-tay.9 (14 nhịp); .2–.4 là biến thể trước trùm che-xe.10.
+  // 27/10: gói 8 đủ 20 màn (che-hai-robot.1–10 của man-doi-mua-1.js) nên ngưỡng gói 10 tính lại (+15 ★): 240.
   function day(chuong, so) { return so.map(function (n) { return chuong + '.' + n; }); }
   var MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   // Gói 4 chương 1 "Nút đè" (man-nut-de.js, màn mới viết cho lộ trình): chương chưa có trong thu-tu-chuong.js nên chèn tạm vào cuối thuTu
@@ -296,7 +297,7 @@
       chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
     { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 210,
       chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
-    { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 225, hinh: 'robot-hoan-thien',
+    { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 240, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
   ];
   // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.
