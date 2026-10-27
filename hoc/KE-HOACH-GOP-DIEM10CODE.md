@@ -25,7 +25,23 @@ Tệp này ghi những gì phía game nên đổi để trông và nghe như cù
 - **Gói Đội**: R1 là robot của Sola, R2 là robot của Luna. Màu đội trong game đang là R1 vàng, R2 lam: cân nhắc đổi R2 sang hồng của Luna, hoặc giữ màu đội và chỉ đặt tên.
 - Không đổi luật chơi; chỉ đổi chữ (`deBai`, `goiY`, lời phim) và thêm chân dung.
 
-## 2. Hình ảnh: giữ thế giới pixel, thêm Sola / Luna bản pixel
+## 2. Hình ảnh: GIỮ phong cách pixel, ĐỔI bảng màu cho đồng bộ (user 27/10)
+
+User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì vẫn giữ".
+
+**Hiện trạng màu:** khoảng 800 mã hex gõ thẳng (choi.css ~400, ve.js ~180, san-ve.js ~140, huy-hieu.js ~80, part.js, mo-dau.js, phim-goi.js): nền gỗ nâu, sân cỏ xanh lá, bảng đen xanh, R1 vàng, nút có núm nhiều màu.
+
+**Hai phương án màu** (đã cho user xem bảng mẫu 27/10):
+- **A · đêm tím chàm**: nền chàm đậm (như nền tối của site), sân chàm, tường xám bạc, chữ trắng; khớp chế độ tối của diem10code.
+- **B · sáng như video**: nền lavender nhạt, sân trắng lưới mờ, tường xám slate, chữ chàm đậm; khớp khung bài giảng video.
+- Cả hai: màu thương hiệu tím chàm cho nút chính; **R1 xanh da trời của Sola** (`#38BDF8`), **R2 hồng của Luna** (`#F472B6`); điểm nhấn xanh ngọc theo bộ đồ linh vật; giữ phông pixel Handjet / VT323.
+
+**Cách làm (không đổi hình, chỉ đổi màu):**
+1. Đợt token: gom mọi hex vào **một bảng màu** (`game/bang-mau.js` + biến CSS `--g-*`), thay hex bằng tên vai trò (nền, sân, tường, R1, R2, nút chính…). Chụp màn trước / sau phải **giống từng điểm ảnh** (đợt này không đổi màu nào).
+2. Đợt đổi màu: chỉ sửa giá trị trong bảng màu theo phương án user chọn; chụp lại các màn mẫu (sân, khay, hộp, phim, huy hiệu) cho user duyệt.
+3. Màu sơn R1 mặc định (`SON.vang` → xanh Sola) và màu đội (R2 lam → hồng Luna) đổi trong `part.js`; kiểm lại tương phản trên sân mới.
+
+## 2b. Linh vật Sola / Luna bản pixel
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
 - Vẽ **chân dung pixel** Sola và Luna (đầu + vai, vài nét mặt: vui, lo, ngạc nhiên) dùng ở: hộp thoại đề bài / gợi ý, phim, màn thắng. Mẫu là ảnh mascot thật trong `diem10code-video/public/mascot/`.
@@ -76,6 +92,6 @@ Theo `tin_hoc/KE-HOACH-GOP-GAME-LOGIC.md`; phía game:
 5. Mục 5 khi bắt đầu gộp vào diem10code.
 
 ## 7. Cần user chốt
-1. R2 ở gói Đội: đổi sang màu hồng của Luna, hay giữ màu đội lam?
+1. Bảng màu: phương án A (đêm tím chàm) hay B (sáng như video)? R1 đổi sang xanh Sola, R2 hồng Luna?
 2. Chân dung pixel: sinh bằng công cụ (tốn tiền, báo giá trước) hay vẽ tay đơn giản bằng code như các part?
 3. Ranh giới miễn phí: khách chơi gói 1, tài khoản miễn phí chơi hết mùa 1, Premium từ mùa 2 — đúng ý chưa?
