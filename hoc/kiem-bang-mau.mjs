@@ -22,6 +22,12 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const NEN = '13b8a97';   // commit nền của gói A1 (trước khi gom màu)
+/* Tệp các gói SAU A1 đã sửa vì việc khác màu (thêm dòng, đổi dòng): mục 4 không so được từng byte với bản nền nữa nên bỏ qua (mục 2–3 vẫn giữ: không mã gõ thẳng, token có trong bảng).
+   Mỗi mục ghi gói + lý do; đổi màu thật (A2) thì đặt NEN = null. */
+const SUA_SAU_NEN = {
+  'san-ve.js': 'V1 (27/10): chế độ vector — canvas theo pixel thiết bị, ô / vật vector',
+  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector'
+};
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
 const goc = path.resolve(day, '..');
@@ -156,17 +162,18 @@ console.log('\n== 3. Token và thứ tự nạp ==');
 /* ================================================================= 4. tương đương từng chỗ với bản nền */
 function coGit() { try { execFileSync('git', ['-C', goc, 'cat-file', '-e', NEN + '^{commit}'], { stdio: 'ignore' }); return true; } catch (e) { return false; } }
 const NEN_OK = NEN && coGit();
-const gitShow = (p) => { try { return execFileSync('git', ['-C', goc, 'show', NEN + ':' + p], { encoding: 'utf8', maxBuffer: 1 << 26 }); } catch (e) { return null; } };
+const gitShow = (p) => { try { return execFileSync('git', ['-C', goc, 'show', NEN + ':' + p], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { return null; } };
 if (NEN && !NEN_OK) console.log('\n(không có git hoặc commit ' + NEN + ': bỏ qua mục 4–5)');
 if (NEN_OK) {
   console.log('\n== 4. Tương đương từng chỗ với bản nền ' + NEN + ' (thay token bằng giá trị → đúng từng byte tệp cũ) ==');
   const chuanNhay = (s) => s.replace(/"(#[0-9a-fA-F]{3,8}|rgba?\([^"()]*\)|\d{1,3},\d{1,3},\d{1,3})"/g, "'$1'");
   const gt = (t) => { if (!(t in BM)) throw new Error('không có vai ' + t); return BM[t]; };
-  let soTep = 0, soToken = 0; const khac = [];
+  let soTep = 0, soToken = 0; const khac = [], boQua = [];
   for (const f of TEP) {
     const cu = gitShow('hoc/game/' + f); if (cu === null) continue;
     let s = doc(f);
     if (!/BM\.|var\(--g-/.test(s)) continue;
+    if (SUA_SAU_NEN[f]) { boQua.push(f); continue; }
     soTep++;
     for (const c of CHEN[f] || []) s = s.split(c).join('');
     if (s.startsWith(ALIAS.game + '\n')) s = s.slice(ALIAS.game.length + 1); else if (s.startsWith(ALIAS.part + '\n')) s = s.slice(ALIAS.part.length + 1);
@@ -180,6 +187,8 @@ if (NEN_OK) {
     }
   }
   kiem(soTep + ' tệp, ' + soToken + ' token: thay token bằng giá trị bảng màu ra đúng từng byte bản nền', khac.length === 0, khac.slice(0, 5).join('\n      '));
+  for (const f of boQua) console.log('  (bỏ qua ' + f + ': đã sửa sau nền — ' + SUA_SAU_NEN[f] + ')');
+  kiem('danh sách SUA_SAU_NEN chỉ gồm tệp có thật và thật sự khác bản nền', Object.keys(SUA_SAU_NEN).every((f) => TEP.includes(f) && gitShow('hoc/game/' + f) !== null && gitShow('hoc/game/' + f) !== doc(f)), Object.keys(SUA_SAU_NEN).join(', '));
 }
 
 /* ================================================================= 5. tương đương điểm ảnh của bộ PART */

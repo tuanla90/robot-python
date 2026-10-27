@@ -23,6 +23,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      = tâm canvas (đúng cả 4 hướng) rồi phóng nguyên lần (hoặc thu nhỏ khi ô quá nhỏ). Hình trả về có cờ .laPart = true.
      Part ném lỗi (cấu hình không ghép được) hoặc chưa nạp → rơi về hình TẠM bên dưới (không có cờ .laPart; đơn vị = pixel sân).
      Tắt hẳn part: VeRobot.dungPart = false (hoặc ?part=0).
+   VECTOR (gói V1, 27/10, ve-vector.js): khi VeVector.bat() (?ve=vector hay đã lưu) VÀ VeVector.coDu(cauHinh) (mọi bộ phận đã có hình vector: V1 chỉ thân hai-banh + tay kep / không tay,
+     không cảm biến) thì ve() trả canvas vector đúng MỘT Ô (VeVector.robot; cờ .laPart + .laVector), tiLe = cạnh ô / 100 (tiLeChoO), REACH = 50 (nửa ô), vatKep theo VeVector.
+     Cấu hình chưa có hình vector (xích, nhện, omni, drone, tay khác, cảm biến) vẫn vẽ bằng part pixel như cũ, kể cả ở chế độ vector (gói V3 bổ sung).
      Cách vẽ lên sân (san-ve.js): robot vẽ trên LỚP PHỦ cả sân (có lề tràn ra), nên tay kẹp nhô ra mép sân vẫn không bị cắt.
    NHỆN CO CHÂN (chương nhen / che-nhen, 15/10): trangThai.co = true → part nhện vẽ tư thế co (chân dang sát đất, thân dẹt); ảnh khác hẳn ảnh đứng nên là một phần của khóa bộ nhớ đệm.
    Drone (than 'drone'): bay cao, không có mặt trước nên huong luôn 0 và ảnh không xoay; cánh quạt quay theo pha ph (trangThai.wl / wr > 0 = đang quay); trangThai.camBien.bat sáng đèn thân (đang đo pin).
@@ -137,11 +140,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return (rongThan[ma] = w);
   }
   function coPart() { var P = (typeof window !== 'undefined') ? window.Part : null; return !!(P && typeof P.ghep === 'function' && VeRobot.dungPart !== false); }
+  /** Bộ vẽ vector (ve-vector.js) nếu đã nạp. */
+  function VV() { var r = (typeof window !== 'undefined') ? window : (typeof globalThis !== 'undefined' ? globalThis : null); return (r && r.VeVector) || null; }
+  /** Đang ở chế độ vector? */
+  function cheDoVector() { var v = VV(); return !!(v && v.bat()); }
+  /** Cấu hình này vẽ bằng vector (chế độ vector và đủ hình)? */
+  function veVector(cauHinh) { var v = VV(); return !!(v && v.bat() && v.coDu(cauHinh || { than: 'hai-banh' })); }
   /** Chọn tiLe (px màn hình / px part) cho một ô sân cạnh canhO px màn hình, sao cho thân xe chiếm khoảng 80–90% bề ngang ô trên MỌI máy
    *  (trước đây lấy số nguyên lớn nhất vừa ô: máy tính tỉ lệ thấp thì xe chỉ còn nửa ô, cờ to hơn xe).
    *  Ưu tiên số nguyên (nét pixel đều); số nguyên nào cũng ngoài khoảng đó thì dùng tỉ lệ lẻ ~85% ô (veGhep vẽ lớn rồi thu lại cho khỏi méo). */
   var THAN_MIN = 0.8, THAN_MAX = 0.9, THAN_DICH = 0.85;        // 14/10 user: xe tầm 85% ô (trước 0,6–0,85 rồi 0,66–0,84)
   function tiLeChoO(canhO, cauHinh) {
+    if (veVector(cauHinh)) return canhO / 100;                                  // vector: robot vẽ trong hệ 100 của một ô → 1 đơn vị = cạnh ô / 100 px
     var w = coPart() ? beNgangThan((cauHinh && cauHinh.than) || 'hai-banh') : 20, n = Math.floor(THAN_MAX * canhO / w);
     if (n >= 1 && n * w >= THAN_MIN * canhO) return n;
     return Math.max(0.3, THAN_DICH * canhO / w);
@@ -212,7 +222,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
       cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') : '', tt.loi || '', coPart() ? 'P' : 'x', son].join('|');
     if (cache[khoa]) return cache[khoa];
-    var cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien, co: tt.co }, huong, tiLe);
+    var cv = veVector(cauHinh) ? VV().robot({ than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: son },
+      { than: { banh: { trai: wl > 0 ? 1 : 0, phai: wr > 0 ? 1 : 0 }, buoc: (wl > 0 || wr > 0) && ph ? 1 : 0 }, tay: cauHinh.tay ? { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: !!tay.cam } : null },
+      huong, Math.round(tiLe * 100)) : null;                                    // vector: VeVector tự đệm; tiLe = cạnh ô / 100 → canvas đúng một ô
+    if (!cv) cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien, co: tt.co }, huong, tiLe);
     if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)
       if (cauHinh.than === 'nhen' || cauHinh.than === 'drone') cv = Ve.makeNhen(wl > 0 || wr > 0 ? ph : 0);       // chưa nạp part: drone tạm dùng hình nhện
       else if (!cauHinh.tay) cv = Ve.makeRobot(huong, wl, wr, ph);
@@ -228,7 +241,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function bongTay(cauHinh, trangThai, huong, tiLe) {
     if (!cauHinh || (cauHinh.tay !== 'kep' && cauHinh.tay !== 'xoay') || !coPart()) return null;
     var cv = ve(cauHinh, trangThai, huong, tiLe);
-    if (!cv || !cv.laPart) return null;
+    if (!cv || !cv.laPart || cv.laVector) return null;                       // vector: bóng đổ đã nằm trong hình robot (lớp riêng không xoay)
     var son = sonHieuLuc(cauHinh.son) || '';
     var tt = trangThai || {}, k = [cauHinh.than, JSON.stringify(cauHinh.camBien || []), ((huong || 0) % 4 + 4) % 4, tt.wl || 0, tt.wr || 0, tt.ph ? 1 : 0, tiLe, cv.width, chuanTay(tt.tay).tuThe, chuanTay(tt.tay).kep, chuanTay(tt.tay).cam, chuanTay(tt.tay).xoay, chuanTay(tt.tay).goc, son].join('|');
     if (cacheBong[k] !== undefined) return cacheBong[k];
@@ -249,6 +262,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Vật trong tay kẹp (luật vật 14/10): tâm vật cách tâm thân bao nhiêu pixel PART về phía mũi xe (tay nâng; tay hạ xa thêm 2: càng dài ra chạm đất) và cạnh vật (pixel part).
    *  Part kẹp chừa khe giữa hai càng cho vật (cột 7..16, hàng 8..17 của ảnh tay); thân hai bánh có ổ tay ở y = 4, các thân khác y = 5. */
   function vatKep(cauHinh, tuThe) {
+    if (veVector(cauHinh) && cauHinh && cauHinh.tay) { var vk = VV().vatKep(cauHinh, tuThe); if (vk) return vk; }     // vector: đơn vị 1/100 ô (tiLe = cạnh ô / 100)
     var oy = 4, P = (typeof window !== 'undefined') ? window.Part : null;
     try { var d = P && P.lay('than', (cauHinh && cauHinh.than) || 'hai-banh'); if (d && d.oGan && d.oGan.tay) oy = d.oGan.tay.y; } catch (e) { /* giữ 4 */ }
     return { ahead: 22 - oy + (tuThe === 'duoi' ? 2 : 0), n: 10 };
@@ -269,9 +283,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   var VeRobot = {
     ve: ve, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
-    REACH: REACH,                                                     // tâm thân → mép xa nhất của hình part (pixel part)
+    cheDoVector: cheDoVector, veVector: veVector,
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };
+  Object.defineProperty(VeRobot, 'REACH', { enumerable: true, get: function () { return cheDoVector() ? 50 : REACH; } });   // tâm thân → mép xa nhất của hình (pixel part; vector: nửa ô theo đơn vị 1/100 ô)
   if (typeof module !== 'undefined' && module.exports) module.exports = VeRobot;
   if (typeof window !== 'undefined') window.VeRobot = VeRobot;
 })();

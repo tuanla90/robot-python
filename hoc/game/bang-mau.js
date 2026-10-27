@@ -159,7 +159,32 @@
     xamToi2: '#473a4c',                // 3 chỗ (choi.css): .g-the.khoa,.g-the.sap { --lo }
     hong: '#ffb4d4',                   // 5 chỗ (choi.css): .g-pk { --hi }
     hongToi: '#ee5a9c',                // 4 chỗ (choi.css, ve.js): .g-pk { --c }
-    hongToi2: '#b02e6c'               // 4 chỗ (choi.css, ve.js): .g-pk { --lo }
+    hongToi2: '#b02e6c',               // 4 chỗ (choi.css, ve.js): .g-pk { --lo }
+    // ---- VECTOR (gói V1, 27/10): bộ vẽ vector theo mẫu hoc/hinh-mau/thu-vector.html (ve-vector*.js). Sân lab trắng, viền chàm, vỏ trắng, đèn cyan
+    vecVien: '#2e2a5a',                // viền chàm đậm của mọi hình vector (ô, vật, thân, tay)
+    vecVienRgb: '46,42,90',            // bộ ba của vecVien cho bóng đổ rgba(…, a)
+    vecVo: '#ffffff',                  // vỏ robot / thùng / cụm tay kẹp: điểm sáng của gradient toả
+    vecVoGiua: '#f3f1fc',              // vỏ: giữa gradient
+    vecVoToi: '#d9d3f1',               // vỏ: mép gradient
+    vecVoGhep: '#c4bbea',              // đường ghép tím nhạt chạy dọc trên vỏ
+    vecSan: '#ffffff',                 // ô sàn: góc sáng của gradient chéo
+    vecSanToi: '#f1effb',              // ô sàn: góc tối của gradient chéo
+    vecSanVien: '#e3dff5',             // ô sàn: viền lưới lavender nhạt
+    vecTuong: '#f8f8fc',               // ô tường: đỉnh gradient khối
+    vecTuongToi: '#d6d9e6',            // ô tường: đáy gradient khối
+    vecTuongVien: '#8b93aa',           // ô tường: viền khối
+    vecTuongTrong: '#ffffff',          // ô tường: mặt trên của khối
+    vecTuongTrongVien: '#c9cee0',      // ô tường: viền mặt trên
+    vecDen: '#22d3ee',                 // dải đèn cyan (tường, bánh xe, chấm cụm tay)
+    vecDenSang: '#cffafe',             // vệt sáng của dải đèn / đai thùng
+    vecDai: '#38bdf8',                 // đai xanh quanh thùng gỗ (vật 'o')
+    vecBanh: '#3b4266',                // bánh xe con nhộng
+    vecBanhGach: '#5a6290',            // gạch trên bánh xe
+    vecMat: '#e0fbff',                 // hai mắt viên thuốc trên kính
+    vecBac: '#cbd5e1',                 // cột cờ bạc
+    vecBacSang: '#e0f2fe',             // đỉnh cột cờ
+    vecBacToi: '#94a3b8',              // cột ăng-ten
+    vecBong: '#d9d4f2'                 // đế cờ (vệt bóng dưới chân cột)
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ
@@ -194,7 +219,12 @@
     doiR1Vach: '#ffcf30',              // 1 chỗ (san-ve.js): var MAU_XE = ['#ffcf30', '#5aa9ff', '#ff5f57', '#b07cff']; // màu đế …
     doiR2Vach: '#5aa9ff',              // 1 chỗ (san-ve.js): var MAU_XE = ['#ffcf30', '#5aa9ff', '#ff5f57', '#b07cff']; // màu đế …
     doiR3Vach: '#ff5f57',              // 1 chỗ (san-ve.js): var MAU_XE = ['#ffcf30', '#5aa9ff', '#ff5f57', '#b07cff']; // màu đế …
-    doiR4Vach: '#b07cff'              // 1 chỗ (san-ve.js): var MAU_XE = ['#ffcf30', '#5aa9ff', '#ff5f57', '#b07cff']; // màu đế …
+    doiR4Vach: '#b07cff',              // 1 chỗ (san-ve.js): var MAU_XE = ['#ffcf30', '#5aa9ff', '#ff5f57', '#b07cff']; // màu đế …
+    // ---- VECTOR (gói V1): màu đội ở kính + mắt + chấm ăng-ten của robot vector (ve-vector.js, mauDoi). R1 xanh Sola, R2 hồng Luna (hoc/KE-HOACH-GOP-DIEM10CODE.md mục 2c)
+    vecDoiR1: '#38bdf8',               // R1: màu chính (đáy kính, chấm ăng-ten)
+    vecDoiR1Toi: '#2563eb',            // R1: đỉnh gradient kính
+    vecDoiR2: '#f472b6',               // R2: màu chính
+    vecDoiR2Toi: '#db2777'             // R2: đỉnh gradient kính
   };
 
   // ======================================================================== LUẬT CHƠI (48): màu đọc bằng color() / màu vật / ô sàn màu / sơn. Đổi được, nhưng bốn màu đỏ / xanh lá / xanh dương / vàng phải luôn phân biệt rõ với nhau và với nền sân
