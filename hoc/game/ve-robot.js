@@ -61,6 +61,7 @@
     else for (var i = 0; i < goc.length && !tay; i++) tay = TAY_THEO_LENH[goc[i]] || null;
     var cam = copyCam(r.camBien).filter(function (c) { return c.ma !== 'pin'; });
     if (than === 'drone' && goc.indexOf('look') >= 0 && !cam.some(function (c) { return c.ma === 'camera-bay'; })) cam.push({ ma: 'camera-bay', o: 'bung' });       // màn có look() mà chưa khai camera nhìn xuống: lắp camera-bay ở ổ bung (như tay suy từ lệnh tay)
+    if (than !== 'drone' && than !== 'nhen' && (goc.indexOf('distance') >= 0 || goc.indexOf('warm') >= 0) && !cam.some(function (c) { return c.ma === 'hong-ngoai'; })) cam.push({ ma: 'hong-ngoai', o: 'tren' });      // mùa 2: màn có distance() / warm() mà chưa khai: lắp cảm biến hồng ngoại ở mũi xe (ổ tren)
     return { than: than, tay: tay, camBien: cam, pin: !!(r.camBien || []).some(function (c) { return c.ma === 'pin'; }) };       // pin: drone có pin (đo battery()); chưa là bộ PART nên không đưa vào ghép hình
   }
 

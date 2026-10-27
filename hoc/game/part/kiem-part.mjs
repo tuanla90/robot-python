@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url),Part=require('./part.js');
 ['hai-banh','xich','nhen','omni','drone'].forEach(x=>require('./part-'+x+'.js'));
 ['kep','nam-cham','nem','hoi','tay-xoay','son'].forEach(x=>require('./part-'+x+'.js'));
-['khoang-cach','mau','cham','camera','camera-bay'].forEach(x=>require('./part-'+x+'.js'));
+['khoang-cach','mau','cham','camera','camera-bay','hong-ngoai'].forEach(x=>require('./part-'+x+'.js'));
 
 for(const loai of ['than','tay','cam-bien'])for(const d of Part.ds(loai)){
   assert.ok(d.ma&&d.ten&&Array.isArray(d.hamGoc)&&d.hamGoc.length&&typeof d.ve==='function',`${loai}/${d.ma} thiếu trường`);
@@ -16,7 +16,7 @@ for(const loai of ['than','tay','cam-bien'])for(const d of Part.ds(loai)){
   }else assert.ok(d.diemNeo&&d.gan,`${d.ma} thiếu điểm neo hoặc ổ gắn`);
 }
 for(const tay of Part.ds('tay'))assert.ok((Array.isArray(tay.gan)?tay.gan:[tay.gan]).includes('tay')||tay.ma==='nam-cham',`${tay.ma}: tay phải gắn ở mũi`);
-for(const cb of Part.ds('cam-bien'))assert.ok(cb.ma==='camera'?cb.gan==='tren':cb.ma==='camera-bay'?cb.gan==='bung':(Array.isArray(cb.gan)?cb.gan:[cb.gan]).includes('hong'),`${cb.ma}: cảm biến phải ở hông, trên thân (camera) hoặc ở ổ bụng drone (camera-bay)`);
+for(const cb of Part.ds('cam-bien'))assert.ok(cb.ma==='camera'||cb.ma==='hong-ngoai'?cb.gan==='tren':cb.ma==='camera-bay'?cb.gan==='bung':(Array.isArray(cb.gan)?cb.gan:[cb.gan]).includes('hong'),`${cb.ma}: cảm biến phải ở hông, trên thân (camera, hồng ngoại ở mũi) hoặc ở ổ bụng drone (camera-bay)`);
 
 function lienMotKhoi(cauHinh,trangThai={}){
   const image=Part.ghep(cauHinh,trangThai),mask=image.buf.map(Boolean),first=mask.findIndex(Boolean),seen=new Set([first]),queue=[first];
@@ -39,7 +39,7 @@ for(const than of Part.ds('than').filter(x=>x.ma!=='drone'))for(const tay of Par
   tayKhongAnSau(than,tay);tayKhongAnSau(than,tay,{kep:'dong',cam:true,tuThe:'duoi',dangNem:true,dangBanTruoc:true,dangBanSau:true,ngam:3});
 }
 for(const than of Part.ds('than').filter(x=>x.ma!=='drone'))for(const tay of Part.ds('tay'))for(const cb of Part.ds('cam-bien').filter(x=>x.ma!=='camera-bay')){
-  const cams=cb.ma==='camera'?[{ma:cb.ma,o:'tren'}]:[{ma:cb.ma,o:'hong'}];
+  const cams=cb.ma==='camera'||cb.ma==='hong-ngoai'?[{ma:cb.ma,o:'tren'}]:[{ma:cb.ma,o:'hong'}];
   assert.doesNotThrow(()=>Part.ghep({than:than.ma,tay:tay.ma,camBien:cams},{camBien:{bat:true}}));
 }
 assert.doesNotThrow(()=>Part.ghep({than:'drone',tay:'nam-cham',camBien:[{ma:'khoang-cach',o:'hong'},{ma:'mau',o:'hong'}]}));

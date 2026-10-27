@@ -283,5 +283,73 @@ console.log('\n== 4. Bệ súng xích (cfg.beSung) ==');
   kiem('cham.js: màn bệ súng, shoot() trúng nút → không có giat-chan / thung-chan / lỗi (ngoài chua-toi-co vì sân thử không có cờ)', !kq.chanDoan.some((c) => c.ma === 'giat-chan' || c.ma === 'thung-chan' || (c.muc === 'loi' && c.ma !== 'chua-toi-co')), J(kq.chanDoan.map((c) => c.ma)));
 }
 
+console.log('\n== 5. Part hồng ngoại và giao diện (hình, thẻ bộ phận, Sổ lệnh, khay, đèn, hoạt cảnh) ==');
+{
+  const fs = await import('node:fs');
+  const vm = await import('node:vm');
+  const Part = require(path.join(day, 'game', 'part', 'part.js'));
+  ['hai-banh', 'xich', 'omni', 'nhen', 'drone'].forEach((x) => require(path.join(day, 'game', 'part', 'part-' + x + '.js')));
+  ['kep', 'hoi', 'khoang-cach', 'camera', 'hong-ngoai'].forEach((x) => require(path.join(day, 'game', 'part', 'part-' + x + '.js')));
+  const GT = require(path.join(day, 'gioi-thieu-part.js'));
+  const SoLenh = require(path.join(day, 'so-lenh.js'));
+  const loi = (f) => { try { f(); return null; } catch (e) { return e.message; } };
+
+  // part pixel
+  const hn = Part.lay('cam-bien', 'hong-ngoai');
+  kiem('part hong-ngoai đăng ký: loại cam-bien, gắn ổ tren (mũi xe), mở distance + warm', !!hn && hn.gan === 'tren' && J(hn.hamGoc) === '["distance","warm"]' && hn.diemNeo.x === 12 && hn.diemNeo.y === 7, hn && J([hn.gan, hn.hamGoc]));
+  const ghepOK = ['hai-banh', 'xich', 'omni'].every((than) => [null, 'kep', 'hoi'].every((tay) => !loi(() => Part.ghep({ than: than, tay: tay, camBien: [{ ma: 'hong-ngoai', o: 'tren' }, { ma: 'khoang-cach', o: 'hong' }] }, { camBien: { bat: true } }))));
+  kiem('Part.ghep: ba thân xe × (không tay / kẹp / súng hơi) + hồng ngoại + khoảng cách đều ghép được, cả khi đang đọc (bat)', ghepOK);
+  kiem('Part.ghep: drone không gắn hồng ngoại (lỗi tiếng Việt)', /Drone không gắn được/.test(loi(() => Part.ghep({ than: 'drone', tay: null, camBien: [{ ma: 'hong-ngoai', o: 'tren' }] })) || ''));
+  const tat = Part._veMot(hn, {}), bat = Part._veMot(hn, { bat: true });
+  const dem = (q, mau) => q.buf.filter((c) => c === mau).length;
+  kiem('hình: tắt có thấu kính đỏ sẫm; đang đọc đỏ rực + tia nhô lên trước mũi (thêm pixel phía trên vỏ)', dem(tat, '#8a1f1f') > 0 && dem(bat, '#ff4a3c') > 0 && bat.buf.filter(Boolean).length > tat.buf.filter(Boolean).length && bat.get(6, 5) !== null && tat.get(6, 5) === null);
+  ['nam-cham', 'nem', 'tay-xoay', 'son'].forEach((x) => require(path.join(day, 'game', 'part', 'part-' + x + '.js')));
+  const deTay = [];
+  for (const than of Part.ds('than').filter((t) => t.ma !== 'drone' && t.ma !== 'nhen')) for (const tay of Part.ds('tay')) {
+    const port = than.oGan.tay, arm = Part._veMot(tay, { than: than.ma, kep: 'dong', cam: true, tuThe: 'duoi', dangBanTruoc: true, dangNem: true, ngam: 3, bat: true });
+    for (let y = 0; y < 24; y++) for (let x = 0; x < 24; x++) if (bat.get(x, y) && arm.get(x - port.x + tay.diemNeo.x, y - port.y + tay.diemNeo.y)) deTay.push(than.ma + '/' + tay.ma + '@' + x + ',' + y);
+  }
+  kiem('mắt hồng ngoại (kể cả lúc đang đọc) không đè lên bất kỳ tay nào ở mũi của ba thân xe', deTay.length === 0, deTay.join(' '));
+
+  // ve-robot.cauHinhCua suy part từ hamGoc
+  const ctxV = vm.createContext({ console, Ve: {}, document: { createElement: () => ({ getContext: () => ({}) }) }, Part });
+  ctxV.window = ctxV;
+  vm.runInContext(fs.readFileSync(path.join(day, 'game', 've-robot.js'), 'utf8'), ctxV, { filename: 've-robot.js' });
+  const VR = ctxV.VeRobot;
+  const c1 = VR.cauHinhCua({ loaiRobot: 'xich', hamGoc: BANH.concat(['distance']), robot: { than: 'xich', tay: null, camBien: [] } });
+  const c2 = VR.cauHinhCua({ loaiRobot: 'banh', hamGoc: BANH.concat(['shoot', 'shoot_back', 'warm']), robot: { than: 'hai-banh', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] } });
+  const c3 = VR.cauHinhCua({ loaiRobot: 'banh', hamGoc: BANH, robot: { than: 'hai-banh', tay: null, camBien: [] } });
+  kiem('cauHinhCua: hamGoc có distance / warm mà màn chưa khai → tự lắp hong-ngoai ở ổ tren; đã khai thì không lắp đôi; không có thì không lắp', J(c1.camBien) === J([{ ma: 'hong-ngoai', o: 'tren' }]) && c2.camBien.length === 1 && c3.camBien.length === 0, J([c1.camBien, c2.camBien, c3.camBien]));
+  kiem('cauHinhCua + Part.ghep: robot của màn mùa 2 (xích + súng hơi + hồng ngoại) vẽ được', !loi(() => Part.ghep(VR.cauHinhCua({ loaiRobot: 'xich', hamGoc: BANH.concat(['shoot', 'shoot_back', 'distance', 'warm']), robot: { than: 'xich', tay: 'hoi', camBien: [] } }), {})));
+
+  // thẻ bộ phận, Sổ lệnh
+  const d = GT.DS['hong-ngoai'];
+  kiem('gioi-thieu-part: thẻ hong-ngoai ở khe camBien, lệnh distance + warm, có trong THU_TU', !!d && d.khe === 'camBien' && J(d.lenh) === '["distance","warm"]' && GT.THU_TU.includes('hong-ngoai'));
+  const bp = GT.boPhanCua({ than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] }, BANH.concat(['shoot', 'shoot_back', 'distance']));
+  kiem('boPhanCua: màn chỉ mở distance → thẻ hồng ngoại chỉ có distance (warm để sau)', bp.some((b) => b.ma === 'hong-ngoai' && J(b.lenh) === '["distance"]'), J(bp));
+  const moTaGoc = Object.fromEntries(SoLenh.lenhGoc.map((l) => [l.ten, l.moTa]));
+  const nd = GT.noiDung('hong-ngoai', ['distance', 'warm'], ['warm'], 'xich', moTaGoc);
+  kiem('noiDung chỉ phần mới (warm): lệnh mới là warm, mục nói về nóng, không lặp mục distance', nd.lenh.length === 1 && nd.lenh[0].ten === 'warm' && nd.gioi.some((s) => /nóng|NÓNG/.test(s)) && !nd.gioi.some((s) => /distance\(\) trả/.test(s)), J(nd));
+  kiem('Sổ lệnh lenhGoc có distance và warm, câu mô tả không có dấu ngoặc', ['distance', 'warm'].every((t) => moTaGoc[t] && !/[()]/.test(moTaGoc[t].replace(/\(\)/g, ''))), J([moTaGoc.distance, moTaGoc.warm]));
+
+  // đèn bộ phận (den-bo-phan.js trong ngữ cảnh giả)
+  const ctxD = vm.createContext({ console, document: { createElement: () => ({ getContext: () => ({}), classList: { add() {}, remove() {} }, style: {}, appendChild() {}, setAttribute() {} }), getElementById: () => null, addEventListener() {} }, Ve: { ico: () => ({}), khoa: () => ({}) }, setTimeout, clearTimeout });
+  ctxD.window = ctxD;
+  ['chu.js', 'den-bo-phan.js'].forEach((f) => vm.runInContext(fs.readFileSync(path.join(day, 'game', f), 'utf8'), ctxD, { filename: f }));
+  const DBP = ctxD.DenBoPhan;
+  kiem('DenBoPhan.boPhanCuaMan: màn xích có distance → đèn cảm biến; phan(): mục lệnh distance / warm làm đèn cảm biến sáng', J(DBP.boPhanCuaMan({ loaiRobot: 'xich', hamGoc: BANH.concat(['distance']) })) === '["banhT","banhP","camBien"]' && DBP.phan({ robot: {}, suKien: [] }, [{ ten: 'distance', docCamBien: { cam: 'hong-ngoai' } }]).camBien === true && DBP.phan({ robot: {}, suKien: [] }, [{ ten: 'warm' }]).camBien === true && DBP.phan({ robot: {}, suKien: [] }, [{ ten: 'wait' }]).camBien === false);
+
+  // khay (thanh-phan.js), hoạt cảnh (san-ve.js), choi.html: kiểm theo mã nguồn (giao diện cần trình duyệt)
+  const tp = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8');
+  kiem('thanh-phan.js: distance / warm là hàm cảm biến (CAM_BIEN_TEN, LENH_GOC, RE_DK_CAM), khối mẫu `if distance() > 2:`, `d = distance()`, `while distance() > 0:`, `while not warm():`',
+    /CAM_BIEN_TEN = \[[^\]]*'distance', 'warm'\]/.test(tp) && /'look', 'distance', 'warm'\];/.test(tp) && /battery\|distance\|warm\)\\s\*\\\(/.test(tp) && tp.includes("'if distance() > 2:'") && tp.includes("'d = distance()'") && tp.includes("'while distance() > 0:'") && tp.includes("'while not warm():'"));
+  const sv = fs.readFileSync(path.join(day, 'game', 'san-ve.js'), 'utf8');
+  kiem('san-ve.js: tia hồng ngoại (veTiaHongNgoai, nhánh cam hong-ngoai), nút bật nóng (veNong), thùng bị xích đẩy đi cùng bước tien (thungXich), bệ súng giữ (be-sung trong HIEU_UNG, veGiuBe)',
+    /veTiaHongNgoai: function/.test(sv) && /d\.cam === 'hong-ngoai'/.test(sv) && /veNong: function/.test(sv) && /ch === 'N' && this\.nutT\[kO\] && this\.nutT\[kO\]\.bat\) this\.veNong/.test(sv) && /s\.nguon === 'xich'/.test(sv) && /'be-sung': 1/.test(sv) && /veGiuBe: async function/.test(sv) && /ham: d\.ham \|\| null, khoang: d\.khoang \|\| 0, nong: !!d\.nong/.test(sv));
+  const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8'), xem = fs.readFileSync(path.join(day, 'game', 'part', 'xem-part.html'), 'utf8');
+  kiem('choi.html và xem-part.html nạp part-hong-ngoai.js', /part\/part-hong-ngoai\.js/.test(html) && /part-hong-ngoai\.js/.test(xem));
+  kiem('kho-ham.js biết tên gốc distance / warm (không cho đặt tên hàm trùng)', /'distance'/.test(fs.readFileSync(path.join(day, 'kho-ham.js'), 'utf8')) && /'warm'/.test(fs.readFileSync(path.join(day, 'kho-ham.js'), 'utf8')));
+}
+
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' : 'ĐẠT ') + (dat + hong) + ' kiểm' + (LOI_GIA ? ' (đang cắm lỗi giả: phải đỏ)' : ''));
 process.exit(hong ? 1 : 0);

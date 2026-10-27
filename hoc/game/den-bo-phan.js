@@ -7,7 +7,7 @@
      bánh trái / phải: e.robot.banh.trai / .phai ≠ 0 (omni trượt: e.robot.truot ≠ 0 thì cả hai bánh + đèn trượt);
      tay: có lệnh arm_up / arm_down; kẹp: có lệnh grab / release (hình tay lên / xuống, kẹp mở / đóng theo e.robot.tay);
      nam châm: có magnet_n / magnet_s / magnet_off hoặc nam châm đang bật (e.robot.namCham.bat); máy ném: load / throw; súng hơi: shoot / shoot_back;
-     cảm biến: có lệnh đọc cảm biến (mục 'lenh' có docCamBien, hay front_clear / left_clear / right_clear / front_metal / color / look / battery) hoặc e.robot.camBien;
+     cảm biến: có lệnh đọc cảm biến (mục 'lenh' có docCamBien, hay front_clear / left_clear / right_clear / front_metal / color / look / battery / distance / warm) hoặc e.robot.camBien;
      nhện: chân sáng ở nhịp chuẩn bị ('chuan-bi'), nhịp bước ('di'), nhịp nhảy ('nhay') và nhịp co / duỗi chân ('doi-chan'); drone: cánh sáng ở nhịp bay ('di') và nhịp lơ lửng ('dung-yen').
    Dùng:  DenBoPhan.dung(phanTuClock)  (một lần, dựng vùng đèn)  ·  DenBoPhan.nap(man)  (vào màn: chọn các bộ phận có trên màn)  ·
           DenBoPhan.bat(e, lenhTruoc)  (sáng theo nhịp e)  ·  DenBoPhan.tat()  (tắt hết, tay lên / kẹp mở như lúc đầu).
@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  var CAM_BIEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole', 'color', 'look', 'battery'];
+  var CAM_BIEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole', 'color', 'look', 'battery', 'distance', 'warm'];     // distance / warm: cảm biến hồng ngoại (mùa 2)
   var TAY_LEN = ['arm_up', 'arm_down'], KEP_LEN = ['grab', 'release'], NC_LEN = ['magnet_n', 'magnet_s', 'magnet_off'], NEM_LEN = ['load', 'throw'];
   // khóa → { hinh: [tên hình khi trạng thái A, B], mau: màu khi sáng, nhan: khóa chữ }
   var BP = {
