@@ -518,7 +518,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      *  Không có ổ (cấu hình lạ): mũi xe như nhánh pixel (5 / 7 pixel sân trước tâm ô; cảm biến từ thiếu tai thì ở ổ tay nam châm). */
     oTia: function (d) {
       var r = this.cfg.robot, v = this.vis, h = v.d || 0, dx = DX[d.huong] || 0, dy = DY[d.huong] || 0, bx = d.tu.x * T, by = d.tu.y * T - (v.dr ? v.hop : 0), ds, i;
-      if (d.cam === 'camera') ds = VeVector.diemMat(r, h, T);
+      if (d.cam === 'camera') { var ok = VeVector.diemOngKinh(r, h, T); ds = ok ? [{ x: ok.x - dy * 0.7, y: ok.y + dx * 0.7 }, { x: ok.x + dy * 0.7, y: ok.y - dx * 0.7 }] : VeVector.diemMat(r, h, T); }   // gói V4: chùm từ ống kính camera ở đuôi (mép trái / phải ống kính)
       else ds = VeVector.diemCamBien(r, d.cam === 'hong-ngoai' ? 'hong-ngoai' : 'khoang-cach', h, T);
       if (!ds.length && d.cam === 'tu') { var gn = VeVector.diemGan(r, h, T); if (gn) ds = [gn]; }
       if (!ds.length) return [{ x: bx + 7 + dx * (d.cam === 'tu' || d.cam === 'hong-ngoai' ? 7 : 5), y: by + 7 + dy * (d.cam === 'tu' || d.cam === 'hong-ngoai' ? 7 : 5) }];

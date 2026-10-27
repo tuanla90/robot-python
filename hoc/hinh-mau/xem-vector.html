@@ -237,6 +237,10 @@
 </script>
 <h2 id="v4">Gói V4 — MẮT BIỂU CẢM trên 5 thân (hướng xuống, ô 72 px): thường · chớp nửa · chớp khép · đâm (X) · va nhau (xoáy) · vui (^ ^) · ngạc nhiên · buồn · lim dim · chờ · liếc trái · liếc phải</h2>
 <div class="v3" id="v4-mat"></div>
+<h2>Gói V4 — mắt biểu cảm ở ô NHỎ 24 px và 32 px (cỡ ô nhỏ nhất thực tế của sân / khổ điện thoại 360 × 640): biểu cảm nào không đọc ra thì đổi hình</h2>
+<div class="v3" id="v4-mat-nho"></div>
+<h2>Gói V4 — cảm biến DÍNH VỎ trên từng thân (ô 96 px, hướng xuống; tắt · đang đọc): hông trên vỏ, hồng ngoại góc mũi, camera = khối ống kính ở ĐUÔI (mắt giữ là mắt cảm xúc), camera-bay ở mép trên drone</h2>
+<div class="v3" id="v4-cam"></div>
 <h2>Gói V4 — HOẠT CẢNH TRÊN SÂN ở chế độ vector: mỗi ô là một sân thật (SanVe.Field) chạy một chương trình mẫu qua SanHoc.chay, phát lại vòng lặp như màn chơi (nút ↻ chạy lại ngay)</h2>
 <p style="font-size:12px;margin:0 0 8px">Mắt chớp theo thời gian ở mọi sân (2,5–5 s, lệch nhau, thỉnh thoảng chớp đôi), kể cả lúc đứng yên. Hệ thống giảm chuyển động (prefers-reduced-motion): không chớp / rung / nảy.</p>
 <div class="hang" id="v4-san"></div>
@@ -264,6 +268,33 @@
       var c = el('div'); c.appendChild(cv); c.appendChild(el('p', '', m[1])); r.appendChild(c);
     });
     d.appendChild(r); d.appendChild(el('p', '', 'thân ' + than)); noiMat.appendChild(d);
+  });
+  /* 1b. mắt ở ô nhỏ */
+  var noiNho = document.getElementById('v4-mat-nho');
+  [24, 32].forEach(function (css) {
+    var d = el('div', 'o'), r = el('div', 'hang'); r.style.gap = '3px';
+    V.ds('than').forEach(function (than) {
+      MAT.forEach(function (m) {
+        var n = Math.round(css * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n; cv.style.width = cv.style.height = css + 'px'; cv.title = than + ' · ' + m[1];
+        var g = cv.getContext('2d'); g.drawImage(V.o('san', n), 0, 0); g.drawImage(V.robot({ than: than }, { than: { mat: m[0], quat: true } }, 2, n), 0, 0); r.appendChild(cv);
+      });
+    });
+    d.appendChild(r); d.appendChild(el('p', '', 'ô ' + css + ' px: mỗi thân một dãy ' + MAT.length + ' biểu cảm (' + MAT.map(function (m) { return m[1]; }).join(', ') + ')')); noiNho.appendChild(d);
+  });
+  /* 1c. cảm biến dính vỏ, ô 96 px */
+  var noiCam = document.getElementById('v4-cam'), BO_CAM = [[{ ma: 'khoang-cach', o: 'hong' }], [{ ma: 'mau', o: 'hong' }], [{ ma: 'cham', o: 'hong' }], [{ ma: 'hong-ngoai', o: 'tren' }], [{ ma: 'camera', o: 'tren' }], [{ ma: 'camera', o: 'tren' }, { ma: 'khoang-cach', o: 'hong' }], [{ ma: 'camera-bay', o: 'bung' }]];
+  V.ds('than').forEach(function (than) {
+    var d = el('div', 'o'), r = el('div', 'hang'); r.style.gap = '4px';
+    BO_CAM.forEach(function (cb) {
+      [false, true].forEach(function (doc) {
+        var cfg = { than: than, tay: than === 'drone' ? null : 'hoi', camBien: cb }, n = Math.round(96 * dpr), rb;
+        try { rb = V.robot(cfg, { camBien: doc ? { bat: true, mat: true } : {} }, 2, n); } catch (e) { return; }
+        var cv = document.createElement('canvas'); cv.width = n; cv.height = n; cv.style.width = cv.style.height = '96px'; cv.title = than + ' · ' + cb.map(function (c) { return c.ma + '@' + c.o; }).join(' + ') + (doc ? ' · đang đọc' : '');
+        var g = cv.getContext('2d'); g.drawImage(V.o('san', n), 0, 0); g.drawImage(rb, (n - rb.width) / 2, (n - rb.height) / 2);
+        var c = el('div'); c.appendChild(cv); c.appendChild(el('p', '', cb.map(function (q) { return q.ma; }).join(' + ') + (doc ? ' (đọc)' : ''))); r.appendChild(c);
+      });
+    });
+    d.appendChild(r); d.appendChild(el('p', '', 'thân ' + than + (than === 'drone' ? '' : ' (kèm súng hơi: nòng sau ở đuôi bên phải, camera lệch trái)'))); noiCam.appendChild(d);
   });
   /* 2. sân mẫu chạy chương trình */
   var B = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
