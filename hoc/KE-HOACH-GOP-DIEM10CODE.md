@@ -69,7 +69,8 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   **Màu đội nằm ở kính + mắt + CHẤM ĂNG-TEN** (R1 xanh `#38BDF8`, R2 hồng `#F472B6`, đổi sơn là đổi cả ba); vỏ trắng giữ nguyên.
   Sân lab trắng như bản thử (ô trắng bo góc, tường khối trắng có dải đèn cyan, thùng trắng đai xanh, khối sắt có đinh tán, nút đè vòng cyan, cờ hồng).
 - Không đổi: luật chơi, máy chấm, mọi màn. Đổi: bộ vẽ sân / vật / bộ phận / hoạt cảnh / giao diện (font Google Sans Flex) / huy hiệu / phim. Bảng màu gói A1 dùng tiếp.
-- Gói A2 (pixel lab trắng + thân M1) TẠM GIỮ tới khi user chốt vector hay pixel.
+- ~~Gói A2 (pixel lab trắng + thân M1)~~ BỎ (user chọn vector). Thứ tự (user 27/10): A1 bảng màu → **V1–V6 vector** → gói 8, 9, 10 mùa 2 → phim mùa 2.
+  V1 bộ vẽ vector + ghép bộ phận theo điểm gắn, xoay 4 hướng · V2 ô sân + vật · V3 5 thân, 6 tay, cảm biến · V4 hoạt cảnh · V5 giao diện phẳng diem10code · V6 huy hiệu + phim.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
