@@ -13,7 +13,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   V.dangKy({ loai: 'than', ma: 'hai-banh', ten: 'Thân hai bánh (A)', oGan: { tay: { x: 50, y: 80 }, hongTrai: { x: 95, y: 54 }, hongPhai: { x: 5, y: 54 }, tren: { x: 71, y: 76 }, sau: { x: 36, y: 25 } }, ve: function (g, s, M, H) {
-    var quay = s && s.banh && (s.banh.trai || s.banh.phai), lech = quay && s.buoc ? 4 : 0, i, y;
+    var quay = s && s.banh && (s.banh.trai || s.banh.phai), lech = typeof s.lan === 'number' ? s.lan * 8 : quay && s.buoc ? 4 : 0, i, y;       // s.lan (0..1, gói V4): pha bánh theo quãng đi
     /* hai bánh con nhộng */
     [10, 74].forEach(function (x) { H.bo(g, x, 36, 16, 44, 8); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 3); });
     g.beginPath();

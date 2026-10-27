@@ -30,8 +30,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         : 'M' + (-ngoai - 7) + ' ' + u0 + ' C' + (-ngoai - 7) + ' ' + (u0 + 9) + ' ' + (-ngoai) + ' ' + (u1 - 6) + ' ' + (-1.5) + ' ' + u1 + ' M' + (ngoai + 7) + ' ' + u0 + ' C' + (ngoai + 7) + ' ' + (u0 + 9) + ' ' + ngoai + ' ' + (u1 - 6) + ' 1.5 ' + u1;
       if (!mo && !om) { H.duong(g, 'M' + (-ngoai - 7) + ' ' + u0 + ' H' + (ngoai + 7)); H.vien(g, BM.vecVien, 8); }
       H.duong(g, ngon); H.vien(g, BM.vecVien, 8);
-      H.duong(g, ngon); H.vien(g, BM.vecVo, 4);
-      H.duong(g, 'M' + (-ngoai - (mo || om ? 0 : 7)) + ' ' + u0 + ' H' + (ngoai + (mo || om ? 0 : 7))); H.vien(g, BM.vecVo, 4);
+      H.duong(g, ngon); H.vien(g, BM.vecNgon, 4);                                            // ngón tông bạc như tay kẹp (gói V4)
+      H.duong(g, 'M' + (-ngoai - (mo || om ? 0 : 7)) + ' ' + u0 + ' H' + (ngoai + (mo || om ? 0 : 7))); H.vien(g, BM.vecNgon, 4);
       g.restore();
       /* khớp tròn: vành bạc, nắp báo nâng / hạ */
       H.tron(g, KHOP.x, KHOP.y, 7); H.to(g, BM.vecBac); H.vien(g, BM.vecVien, 2.5);

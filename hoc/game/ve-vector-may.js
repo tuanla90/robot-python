@@ -25,7 +25,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var TT_BANG = [];
   [0, 1, 2, 3].forEach(function (h) { [0, 1, 2, 3, 4].forEach(function (p) { TT_BANG.push({ huong: h, pha: p }); }); TT_BANG.push({ huong: h, pha: 0, tat: true }); });
   V.dangKy({ loai: 'o', ma: 'bang', ten: 'Băng chuyền', ky: ['^', '>', 'v', '<'], cacTrangThai: TT_BANG, ve: function (g, s, H) {
-    var p = s.tat ? 0 : ((s.pha | 0) % 5 + 5) % 5, j, y;
+    var p = s.tat ? 0 : ((+s.pha || 0) % 5 + 5) % 5, j, y;                                       // pha có thể lẻ (gói V4: san-ve.js cho băng chạy liên tục theo đồng hồ)
     g.save(); xoayQuanh(g, (((s.huong | 0) % 4 + 4) % 4) * Math.PI / 2);
     nenLuoi(g);
     g.fillStyle = BM.vecDe; g.fillRect(18, 0, 64, 100);                                            // mặt băng: tô không viền, chạm mép ô (nối liền ô kề)
@@ -108,7 +108,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var TT_BAN = [];
   [1, -1].forEach(function (c) { [0, 1, 2, 3].forEach(function (p) { TT_BAN.push({ chieu: c, pha: p }); }); });
   V.dangKy({ loai: 'o', ma: 'ban-xoay', ten: 'Bàn xoay', ky: ['@', '%'], phu: true, cacTrangThai: TT_BAN, ve: function (g, s, H) {
-    var d = s.chieu < 0 ? -1 : 1, a0 = d * ((s.pha | 0) & 3) * Math.PI / 8, mau = d > 0 ? BM.vecVang : BM.vecNgoc, k, a;
+    var d = s.chieu < 0 ? -1 : 1, a0 = d * (((+s.pha || 0) % 4 + 4) % 4) * Math.PI / 8, mau = d > 0 ? BM.vecVang : BM.vecNgoc, k, a;
     H.elip(g, 52, 55, 42, 40); H.to(g, H.rgba(BM.vecVienRgb, 0.12));
     H.tron(g, 50, 50, 43); g.fillStyle = H.gradDoc(g, 0, 7, 0, 93, [[0, BM.vecSat], [1, BM.vecSatToi]]); g.fill(); H.vien(g, BM.vecVien, 3);
     H.tron(g, 50, 50, 32); H.to(g, BM.vecVo); H.vien(g, BM.vecTuongTrongVien, 2);

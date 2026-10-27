@@ -77,7 +77,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       bat: !!t.bat, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBanTruoc: !!t.dangBanTruoc, dangBanSau: !!t.dangBanSau,
       mauSon: typeof t.mauSon === 'string' ? t.mauSon : null,                                     // máy sơn: màu đang chọn (ruột lon sơn); tuThe 'duoi' = đầu sơn đang hạ
       xoay: t.xoay === 'trai' || t.xoay === 'phai' ? t.xoay : 'truoc', goc: typeof t.goc === 'number' ? Math.round(t.goc / 5) * 5 : null,       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
-      cuc: t.cuc === 'N' || t.cuc === 'S' ? t.cuc : null };       // nam châm: cực đang bật (chỉ bộ vector vẽ màu cực; bộ pixel không nhận trường này)       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
+      cuc: t.cuc === 'N' || t.cuc === 'S' ? t.cuc : null,
+      moK: typeof t.moK === 'number' ? Math.round(Math.max(0, Math.min(1, t.moK)) * 4) / 4 : null, vung: typeof t.vung === 'number' ? Math.round(Math.max(0, Math.min(1, t.vung)) * 4) / 4 : null };   // gói V4 (chỉ vector): kẹp mở dần, gáo ném vung dần       // nam châm: cực đang bật (chỉ bộ vector vẽ màu cực; bộ pixel không nhận trường này)       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
   }
 
   /* ----------------------------------------------------------------- hình tạm */
@@ -218,13 +219,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  drone và nhện không tay luôn hướng 0). Cấu hình cấm (drone + camera…): VeVector ném đúng lỗi của Part.ghep → báo một lần, trả null (rồi rơi về hình tạm như pixel). */
   function veVec(cauHinh, tt, tay, son, huong, tiLe) {
     var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: son }, cb = tt.camBien || {};
-    var chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || cfg.than === 'drone') ? 0 : huong;
+    var dThan = VV().lay('than', cfg.than), chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || (dThan && dThan.khongHuong)) ? 0 : huong;     // không hướng: đọc cờ khongHuong của hình vector (drone)
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },
       tay: cfg.tay ? { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: !!tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBanTruoc: tay.dangBanTruoc, dangBanSau: tay.dangBanSau,
         mauSon: tay.mauSon, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc, cuc: tay.cuc || undefined } : null,
       camBien: { bat: !!cb.bat, mat: !!cb.mat }
     };
+    if (typeof tt.lan === 'number') st.than.lan = tt.lan;                                       // gói V4: pha bánh / xích / con lăn theo quãng đi (0..1)
+    if (tt.mat) st.than.mat = tt.mat;                                                           // gói V4: biểu cảm mắt ('thuong' | 'chop1' | 'chop2' | 'dam' | 'vui' | 'ngac' | 'buon' | 'lim' …, kèm ':' + liếc)
+    if (st.tay && tay.moK !== null) st.tay.moK = tay.moK;
+    if (st.tay && tay.vung !== null) st.tay.vung = tay.vung;
     if (cfg.than !== 'drone') { delete st.than.quat; delete st.than.doc; }
     if (cfg.than !== 'nhen') delete st.than.co;
     if (!cfg.camBien.length) delete st.camBien;
@@ -245,7 +250,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var tay = chuanTay(tt.tay);
     var son = sonHieuLuc(cauHinh.son) || '';
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
-      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', coPart() ? 'P' : 'x', son].join('|');
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', coPart() ? 'P' : 'x', son,
+      typeof tt.lan === 'number' ? tt.lan : '', tt.mat || '', tay.moK === null ? '' : tay.moK, tay.vung === null ? '' : tay.vung].join('|');       // gói V4: chỉ nhánh vector đặt các trường này
     if (cache[khoa]) return cache[khoa];
     var cv = veVector(cauHinh) ? veVec(cauHinh, tt, tay, son, huong, tiLe) : null;      // vector: VeVector tự đệm; tiLe = cạnh ô / 100 → canvas đúng một ô (tay xoay: tràn sang ô bên)
     if (!cv) cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien, co: tt.co }, huong, tiLe);

@@ -319,6 +319,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Ô sạc vừa lóe (drone sạc pin): tấm xanh lơ bo góc thở + viền trắng. */
   function sacLoe(g, x, y, a) { boO(g, x, y, 0.6, 2.4); g.fillStyle = rgba(BM.tiaNgocRgb, a); g.fill(); g.lineWidth = 0.8; g.strokeStyle = rgba(BM.tiaTrangRgb, Math.min(1, a * 1.4)); g.stroke(); }
+  /** Ô sạc THỞ (gói V4, ô động): quầng cyan mềm nở / co quanh đế sạc theo đồng hồ; giảm chuyển động: đứng yên. */
+  function thoSac(g, x, y, now) {
+    var th = giam() ? 0.5 : 0.5 + 0.5 * Math.sin(now / 420), cx = x * T + 7, cy = y * T + 7, gr = g.createRadialGradient(cx, cy, 2, cx, cy, 6.5 + th);
+    gr.addColorStop(0, rgba(BM.tiaNgocRgb, 0)); gr.addColorStop(0.7, rgba(BM.tiaNgocRgb, 0.1 + 0.16 * th)); gr.addColorStop(1, rgba(BM.tiaNgocRgb, 0));
+    tron(g, cx, cy, 6.5 + th); g.fillStyle = gr; g.fill();
+  }
   /** Bóng drone ở mặt ô: elip mềm, rộng w (pixel sân), đậm al. */
   function bongDrone(g, cx, cy, w, al) { bongElip(g, cx, cy, w / 2, Math.max(1.4, w * 0.2), al); }
   /** Thanh pin nổi trên drone: viên thuốc viền mực, ruột màu theo mức (xanh → vàng → đỏ), vạch ngăn mỗi đơn vị, số pin bên phải.
@@ -380,7 +386,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep,
     tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong,
-    bongVat: bongVat, toDo: toDo, bongElip: bongElip, vongHut: vongHut, vienLoi: vienLoi, ngam: ngam, vetCung: vetCung, sacLoe: sacLoe, bongDrone: bongDrone, thanhPin: thanhPin, theDan: theDan,
+    bongVat: bongVat, toDo: toDo, bongElip: bongElip, vongHut: vongHut, vienLoi: vienLoi, ngam: ngam, vetCung: vetCung, sacLoe: sacLoe, thoSac: thoSac, bongDrone: bongDrone, thanhPin: thanhPin, theDan: theDan,
     sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach };
   if (typeof module === 'object' && module.exports) module.exports = V.HU;
 })(typeof window !== 'undefined' ? window : globalThis);

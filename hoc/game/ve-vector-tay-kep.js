@@ -15,10 +15,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.dangKy({ loai: 'tay', ma: 'kep', ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: 96, canh: 28, ha: HA }, ve: function (g, s, M, H) {
     s = s || {};
     var mo = s.kep !== 'dong', om = !mo && !!s.cam, ha = s.tuThe === 'duoi', yDau = (om ? 104 : 102) + (ha ? HA : 0);
-    if (mo) cang(g, 20, 20, 14, yDau); else if (om) cang(g, 18, 17, 15, yDau); else cang(g, 14, 8, 1.5, yDau);
-    H.vien(g, BM.vecVien, 9);
-    if (mo) cang(g, 20, 20, 14, yDau); else if (om) cang(g, 18, 17, 15, yDau); else cang(g, 14, 8, 1.5, yDau);
-    H.vien(g, BM.vecVo, 5);
+    var k = typeof s.moK === 'number' && !om ? Math.max(0, Math.min(1, s.moK)) : null;       // gói V4: độ mở 0 (đóng) … 1 (mở) khi đang khép / mở dần
+    function ve2() { if (k !== null) cang(g, 14 + 6 * k, 8 + 12 * k, 1.5 + 12.5 * k, yDau); else if (mo) cang(g, 20, 20, 14, yDau); else if (om) cang(g, 18, 17, 15, yDau); else cang(g, 14, 8, 1.5, yDau); }
+    ve2(); H.vien(g, BM.vecVien, 9);
+    ve2(); H.vien(g, BM.vecNgon, 5);                                                         // ngón tông bạc (gói V4): tách khỏi vật trắng trong kẹp
     H.bo(g, 34, 76, 32, 12, 6); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 3);
     H.tron(g, 50, 82, 3); H.to(g, ha ? BM.robotCam : BM.vecDen);
   } });
