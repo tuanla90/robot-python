@@ -71,6 +71,15 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
 - Không đổi: luật chơi, máy chấm, mọi màn. Đổi: bộ vẽ sân / vật / bộ phận / hoạt cảnh / giao diện (font Google Sans Flex) / huy hiệu / phim. Bảng màu gói A1 dùng tiếp.
 - ~~Gói A2 (pixel lab trắng + thân M1)~~ BỎ (user chọn vector). Thứ tự (user 27/10): A1 bảng màu → **V1–V6 vector** → gói 8, 9, 10 mùa 2 → phim mùa 2.
   V1 bộ vẽ vector + ghép bộ phận theo điểm gắn, xoay 4 hướng · V2 ô sân + vật · V3 5 thân, 6 tay, cảm biến · V4 hoạt cảnh · V5 giao diện phẳng diem10code · V6 huy hiệu + phim.
+  **V5 làm lại TOÀN BỘ giao diện ngoài sân** (user 27/10: "còn phải làm lại cả khung code, rìa ngoài, các button"). Hiện `game/choi.css` (1187 dòng) vẫn kiểu pixel:
+  font Handjet / VT323, vân gỗ `--wood*`, bảng phấn `.chalk`, khối lệnh `.brick` có núm `--stud`, viền vát `inset` nhiều lớp, 51 hoạt cảnh `steps()`, icon `.pxi` pixel.
+  Tách hai gói, làm lần lượt:
+  - **V5a · màn chơi:** rìa / khung ngoài (`.screen` `.deco .surf`, nền điện thoại), thanh trên `.top`, khung code (`.pan` `.row` `.strip` `.tab`, số dòng, dòng chọn, lỗi),
+    khối lệnh `.brick` thành thẻ phẳng bo góc (giữ màu theo nhóm lệnh), khay lệnh, mọi nút (`.bt` `.cbtn` …: thường / nhấn / tắt / đang chọn), thanh sân `.sanbar`,
+    hộp gợi ý, toast, hộp thoại `.md*`; font Google Sans Flex (mã dùng font mono phẳng), bỏ `steps()` sang chuyển động mượt; mục Cài đặt bật / tắt vector; xử lý cỡ ô sân.
+  - **V5b · các màn khác:** màn đầu `.d-*`, bản đồ gói / màn `.g-*` `.go-*`, xưởng lắp ráp `.lr-*`, sổ lệnh `.so-*`, hộp mở khóa / part `.hop-*`, màn xong `.th-*`,
+    giới thiệu part `.gt-*`, thẻ phim `.pg-*` (khung, không đổi nội dung phim); icon `.pxi` sang vector.
+  Không đổi luật, máy chấm, nội dung màn; `npm test` phải giữ xanh; kiểm trên trình duyệt cả máy tính lẫn khổ điện thoại.
 - **27/10 A1 · Bảng màu xong** (nhánh claude/bang-mau, gộp 60ad527; npm test 80/80). `hoc/game/bang-mau.js`: 141 màu gốc G theo vai thị giác, 854 biến thể BT
   (`GOP_HET = true` gộp hết về gốc), nhóm DOI (sơn, đội) và LUAT (màu luật chơi); CSS qua biến `--g-<vai>` do bang-mau.js ghi lúc nạp. 2279 chỗ màu trong 33 tệp.
   Máy kiểm `kiem-bang-mau.mjs`: không còn mã gõ thẳng; thay token ra đúng từng byte bản nền 13b8a97; 8528 ảnh bộ phận y hệt (khi đổi màu thật: đặt `NEN = null`).
