@@ -53,7 +53,12 @@ if (LOI_GIA) {
   b.loiSai[0].phaiCoMa = ['vat-vo']; LOI_GIA_DS.push('hong-ngoai.2: lời giải');                          // lời sai thiếu mã
   b.hamCuaEmCan = b.hamCuaEmCan.concat(['fly_home']); LOI_GIA_DS.push('hong-ngoai.2: hàm của em');       // hàm chưa ai tạo
   a.loiGiai.chinh = a.loiGiai.chinh.concat(['w = warm()']); LOI_GIA_DS.push('hong-ngoai.1: không dùng thứ'); // warm() là gói 7
-  b.san = [['......', '......', '......', '...F..'], ['......', '......', '......', '...F..']]; LOI_GIA_DS.push('hong-ngoai.2: bộ dò');    // sân trống: đếm cứng thắng
+  const c = get('hong-ngoai.3'), e = get('hong-ngoai.4'), k = get('che-hong-ngoai.2'), t = get('hong-ngoai.10');
+  c.sao = Object.assign({}, c.sao, { o: c.sao.o + 2 }); LOI_GIA_DS.push('hong-ngoai.3: bộ dò');                   // ngưỡng ô rộng: đếm cứng cũng 3 sao
+  k.san = ['#####', '#...#', '#.#.#', '#.#F#', '#####']; k.batDau = { x: 1, y: 3, huong: 0 };                       // ba đoạn dài bằng nhau…
+  k.loiGiai = Object.assign({}, k.loiGiai, { chinh: ['go_safe(0)', 'turn_right()', 'go_safe(0)', 'turn_right()', 'go_safe(0)'] }); LOI_GIA_DS.push('che-hong-ngoai.2: bộ dò');  // …thân cố định move(); move() cũng 3 sao
+  e.san = [e.san, e.san]; e.batDau = [e.batDau, e.batDau]; LOI_GIA_DS.push('hong-ngoai.4: đủ trường');            // nhiều sân ở màn không phải trùm
+  t.huyHieu = null; LOI_GIA_DS.push('huy hiệu');                                                                      // trùm mất huy hiệu
 }
 
 /* ------------------------------------------------------------------ kho hàm của em theo thứ tự lộ trình */

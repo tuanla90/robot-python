@@ -200,14 +200,17 @@ export function timLoiNe(m, khoHam, cham, tran = 3000, tranF = 60) {
     if (so < tranF) for (const k of khucLap(day)) thu.push([['f', k]]);
     for (const them of thu) {
       const hamMoi = them.length ? [{ ten: 'f', thamSo: [], than: nenDay(them[0][1], khoHam).dong }] : [];
-      let bo = new Set(), tim = nenDay(day, khoHam, bo, them), r = chay(tim.dong, hamMoi);
-      for (let doi = true; doi;) {          // bỏ bớt hàm của em (khỏi tính thân hàm) nếu rẻ hơn
-        doi = false;
-        for (const t of tim.dung) {
-          if (NGUYEN_TU[t] || t === 'f') continue;
-          const bo2 = new Set([...bo, t]), t2 = nenDay(day, khoHam, bo2, them), r2 = chay(t2.dong, hamMoi);
-          if (r2 && (!r || r2.soO < r.soO)) { bo = bo2; tim = t2; r = r2; doi = true; break; }
-        }
+      // bỏ bớt hàm của em (khỏi tính thân hàm): dò mọi tập bỏ theo các hàm lời nén đang dùng (nhận cả khi bằng, để đi tiếp), thêm tập "chỉ lệnh nguyên tử"
+      const daBo = new Set(), cho = [new Set()], chiNguyenTu = new Set(khoHam.map((h) => h.ten).filter((t) => !NGUYEN_TU[t]));
+      cho.push(chiNguyenTu);
+      let r = null;
+      while (cho.length && daBo.size < 40) {
+        const bo = cho.pop(), k = [...bo].sort().join(',');
+        if (daBo.has(k)) continue;
+        daBo.add(k);
+        const tim = nenDay(day, khoHam, bo, them), r2 = chay(tim.dong, hamMoi);
+        if (r2 && (!r || r2.soO < r.soO)) r = r2;
+        for (const t of tim.dung) if (!NGUYEN_TU[t] && t !== 'f' && !bo.has(t)) cho.push(new Set([...bo, t]));
       }
       if (r && (!tot || r.soO < tot.soO)) tot = Object.assign({ day }, r);
     }
@@ -266,9 +269,12 @@ export function timLoiNeKhoa(m, tenX, khoHam, chamThan, tran = 3000) {
       const x = day.slice(i0, i0 + L), mo = mau.map((t) => (t === 'X' ? x : t)).join('');
       if (!mo.startsWith(day) || da.has(x)) continue;
       da.add(x);
-      const than = x ? nenDay(x, khoHam).dong : ['pass'];
-      const r = chamThan(than);
-      if (r.thang && (!tot || r.soO < tot.soO)) tot = { soO: r.soO, soNhip: r.soNhip, than, day };
+      // nén có dùng hàm của em (ít dòng) và nén chỉ bằng lệnh nguyên tử + for (khỏi tính thân hàm): lấy cái rẻ hơn khi chạy thật
+      const chiNguyenTu = new Set(khoHam.map((h) => h.ten).filter((t) => !NGUYEN_TU[t]));
+      for (const than of x ? [nenDay(x, khoHam).dong, nenDay(x, khoHam, chiNguyenTu).dong] : [['pass']]) {
+        const r = chamThan(than);
+        if (r.thang && (!tot || r.soO < tot.soO)) tot = { soO: r.soO, soNhip: r.soNhip, than, day };
+      }
     }
   }
   return tot;
