@@ -64,6 +64,10 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   "chưa ưng lắm nhưng làm base được". Cần tệp SVG gốc của Gemini để tách mảnh.
 - **ĐÃ CHỐT (user 27/10): MỘT hình mỗi bộ phận, quay mặt XUỐNG, xoay cả nhóm cho 4 hướng** (không vẽ riêng 4 góc như tờ Gemini): dễ cân bằng, ít việc.
   Tay gắn vào thân theo điểm gắn rồi xoay cùng thân; bóng đổ (nếu có) vẽ ở lớp riêng không xoay.
+- **ĐÃ CHỐT (user 27/10 tối): thân A** của bản thử `hoc/hinh-mau/thu-vector.html` (vỏ vuông bo góc lớn, đường ghép tím nhạt chạy dọc, kính dải ngang
+  hai mắt viên thuốc, hai bánh con nhộng viền cyan, tay kẹp cong) — mắt / kính theo bản thử của Claude (user thích hơn bản Gemini).
+  **Màu đội nằm ở kính + mắt + CHẤM ĂNG-TEN** (R1 xanh `#38BDF8`, R2 hồng `#F472B6`, đổi sơn là đổi cả ba); vỏ trắng giữ nguyên.
+  Sân lab trắng như bản thử (ô trắng bo góc, tường khối trắng có dải đèn cyan, thùng trắng đai xanh, khối sắt có đinh tán, nút đè vòng cyan, cờ hồng).
 - Không đổi: luật chơi, máy chấm, mọi màn. Đổi: bộ vẽ sân / vật / bộ phận / hoạt cảnh / giao diện (font Google Sans Flex) / huy hiệu / phim. Bảng màu gói A1 dùng tiếp.
 - Gói A2 (pixel lab trắng + thân M1) TẠM GIỮ tới khi user chốt vector hay pixel.
 
