@@ -318,7 +318,7 @@
       mau: lm.mau, vatMau: lm.vatMau,                   // lớp màu sàn / màu vật (chương cảm biến màu); null nếu màn không có
       vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem,   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
       roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau,           // máy ném: rổ có sẵn một vật lúc xuất phát
-      cuaNhip: lm.cuaNhip || undefined, danToiDa: m.danToiDa,                      // súng bóng: chu kỳ cửa nhịp của sân này, số đạn tối đa (không khai = vô hạn)
+      cuaNhip: lm.cuaNhip || undefined, nutBat: lm.nutBat || undefined, danToiDa: m.danToiDa,   // súng bóng: chu kỳ cửa nhịp của sân này, nút bật sẵn (nóng từ đầu), số đạn tối đa (không khai = vô hạn)
       pin: Array.isArray(m.pin) ? m.pin[i] : m.pin,                                // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
       bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo,                    // mục tiêu 'bong-mo': xe mờ (+ vật mờ, ô ◆) của sân này; màn nhiều sân thì mảng song song với san
       hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: m.mucBanDau,                          // máy sơn: hình mờ cần tô của sân này, màu sơn lúc đầu
@@ -528,7 +528,7 @@
     if (!nhieuSan()) return;
     S.man.san.forEach(function (rows, i) {
       var b = h('button', 'sanbt'); b.setAttribute('data-nut', 'san-' + (i + 1)); b.setAttribute('data-san', i);
-      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau, vatChat: ch.vatChat, vatThem: ch.vatThem, cuaNhip: ch.cuaNhip, hinh: ch.hinh, sonBanDau: ch.sonBanDau });
+      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau, vatChat: ch.vatChat, vatThem: ch.vatThem, cuaNhip: ch.cuaNhip, nutBat: ch.nutBat, hinh: ch.hinh, sonBanDau: ch.sonBanDau });
       b.appendChild(cv); b.appendChild(h('span', 'sn', String(i + 1))); b.appendChild(h('span', 'dau'));
       b.addEventListener('click', function () { xemSan(i); });
       E.bar.appendChild(b); S.nut.push(b);
