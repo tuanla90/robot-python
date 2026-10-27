@@ -2356,6 +2356,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         else if (ma === 'nut-ban' && nutBat[x + ',' + y]) st.bat = true;
         else if (ma === 'cua' && cuaNhip[x + ',' + y]) { var cn = cuaNhip[x + ',' + y], chu = cn.mo + cn.dong; st.k = (cn.pha % chu) < cn.mo ? 1 : 0; st.nhip = { n: Math.min(chu, 6), mo: cn.mo, p: cn.pha % chu }; }
         else if (ma === 'rao') st.mask = (x > 0 && rows[y][x - 1] === '=' ? 1 : 0) | (x < w - 1 && rows[y][x + 1] === '=' ? 2 : 0) | (y > 0 && rows[y - 1][x] === '=' ? 4 : 0) | (y < h - 1 && rows[y + 1][x] === '=' ? 8 : 0);
+        if (ma === 'tuong' && s < 24) {                                         // ảnh nhỏ thật (vài px mỗi ô): khối tường trắng lẫn với sàn trắng → tô phẳng xám chàm + vạch đèn cyan, đọc ra ngay đâu là tường
+          g.fillStyle = BM.vecTuongVien; g.fillRect(px, py, s, s);
+          g.fillStyle = BM.vecDen; g.fillRect(px + s * 0.25, py + s * 0.3, s * 0.5, Math.max(1, s * 0.12));
+          continue;
+        }
         g.drawImage(VeVector.o(ma, s, st), px, py, s, s);
       }
       (kh.vat || []).forEach(function (v) {
