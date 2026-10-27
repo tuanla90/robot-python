@@ -34,7 +34,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    khung nét đứt ở chỗ cũ; Field.xoayXe() = hoạt cảnh xe xoay 90°. Việc chạm / kéo nằm ở xuong-ham.js (pointer events); ở đây chỉ vẽ.
    CHẾ ĐỘ VECTOR (gói V1, 27/10, ve-vector.js; bật ?ve=vector, mặc định pixel): canvas sân lấy độ phân giải pixel THIẾT BỊ (pxO px mỗi ô, datDoPhanGiai) và vẽ qua phép phóng sv = pxO / T,
    nên mọi hiệu ứng vẫn tính theo pixel sân (T = 14 mỗi ô) như cũ; ô sàn / tường / cờ và thùng gỗ lấy canvas đệm vector đúng cỡ (oVec, hinhVat) vẽ 1:1 nên nét ở mọi cỡ ô;
-   ô / vật chưa có hình vector (bậc thang, băng, nút, cửa, rào, sạc, sàn màu, khối sắt, thùng nặng…) tạm phóng hình pixel cũ (gói V2). Robot vector do VeRobot trả về (cờ .laVector:
+   gói V2: MỌI ô (veOVec: bậc thang, băng, nút bắn / đè, cửa, rào, sạc, sàn màu, hố, gầm, bàn xoay, cổng, ô đích) và mọi vật (hinhVat / veVatVec: thùng gỗ, khối sắt,
+   nam châm; thùng nặng; bóng hơi) cùng ảnh nhỏ thuSan (thuOVec, theo VeVector.KY_HIEU) vẽ bằng hình vector; trạng thái (pha băng, độ mở cửa…) là tham số của hình,
+   còn quầng nóng / lóe / kẹt đỏ / nét đứt chạy của ô đích là lệnh trực tiếp theo pixel sân (nét nhờ sv). Robot vector do VeRobot trả về (cờ .laVector:
    đúng một ô, bóng đổ nằm trong hình, không vẽ vạch đế / mắt động / bóng tay riêng). Chế độ pixel: mọi đường đi y nguyên (sv = 1, canvas T px mỗi ô).
    Không chứa luật chơi: mọi kết quả (vị trí, hướng, sự kiện) đến từ lõi (SanHoc).
    ========================================================================== */
@@ -203,12 +205,32 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.cv.style.imageRendering = pxO ? 'auto' : '';
       this.g = this.cv.getContext('2d'); this.g.imageSmoothingEnabled = false;
     },
-    /** Chế độ vector: canvas đệm vector cho ô `ch` (tường, sàn dưới mọi thứ khác); null → giữ hình pixel phóng (sàn màu, bậc thang, băng, nút, gầm, hố, sạc: gói V2). */
-    oVec: function (ch, mn) {
-      if (!this.vec || mn) return null;
-      if (ch === '#') return VeVector.o('tuong', this.pxO);
-      if (ch === 'N' || ch === 'S' || ch === 'n' || ch === 'u' || ch === 'P' || BANG[ch] !== undefined) return null;
-      return VeVector.o('san', this.pxO);
+    /** Chế độ vector: canvas đệm của ô vector `ma` (trạng thái s) cạnh MỘT Ô theo pixel thiết bị của g (canvas sân: pxO; lớp phủ robot: theo phép biến hình của nó). */
+    oV: function (ma, s, g) { return VeVector.o(ma, g ? Math.max(1, Math.round(T * this.tiLeCua(g))) : this.pxO, s); },
+    /** Chế độ vector (gói V2): vẽ trọn một ô (x, y) ký hiệu ch bằng hình vector (ve-vector-o*.js, ve-vector-may.js), trạng thái lấy từ vết như nhánh pixel của draw():
+     *  nút bắn bật / loé, băng tắt / pha chạy, nút đè, bàn xoay và cổng theo pha đồng hồ, cửa theo độ mở; ô "vẽ đè" (sạc, nút đè, bàn xoay, cổng, cửa, rào) vẽ trên sàn (hay sàn màu).
+     *  Còn lệnh trực tiếp theo pixel sân (nét nhờ phép phóng sv): quầng nóng nút bắn (veNong), lóe trắng băng vừa tắt (veBangTat). */
+    veOVec: function (g, x, y, ch, kO, now, cf, ff) {
+      var self = this, c = this.cfg, px = x * T, py = y * T;
+      function ve(ma, s) { g.drawImage(self.oV(ma, s), px, py, T, T); }
+      if (ch === '#') { ve('tuong'); return; }
+      if (ch === 'N') { var nt = this.nutT[kO], bat = !!(nt && nt.bat); ve('nut-ban', { bat: bat, loe: !!(nt && nt.loe > now) }); if (bat) this.veNong(g, x, y, now); return; }
+      if (BANG[ch] !== undefined) { var tat = !!this.bangTat[kO]; ve('bang', { huong: BANG[ch], pha: tat ? 0 : cf, tat: tat }); if (tat) this.veBangTat(g, x, y, now); return; }
+      if (ch === 'S') { ve('bac-thang'); return; }
+      if (ch === 'n') { ve('gam'); return; }
+      if (ch === 'u') { ve('ho'); return; }
+      var mn = (ch === '=' || ch === 'C' || ch === 'c') ? null : this.mauNen(x, y);   // như nhánh pixel: sàn màu ở mọi ô trừ tường, bậc, rào, nút bắn, cửa, gầm, hố, băng
+      ve(mn ? 'san-mau' : 'san', mn ? { mau: mn } : undefined);
+      if (ch === 'P') ve('sac', { pha: (now / 450 | 0) & 1 });
+      else if (ch === 'M') ve('nut-de', { de: !!this.nutDeT[kO] });
+      else if (BAN_XOAY[ch] !== undefined) ve('ban-xoay', { chieu: BAN_XOAY[ch], pha: ff });
+      else if (ch === '1' || ch === '2') ve('cong', { so: ch, pha: ff });
+      else if (ch === 'C' || ch === 'c') this.veMotCua(g, this.cuaT[kO], now);
+      else if (ch === '=') ve('rao', { mask: (x > 0 && c.rows[y][x - 1] === '=' ? 1 : 0) | (x < c.w - 1 && c.rows[y][x + 1] === '=' ? 2 : 0) | (y > 0 && c.rows[y - 1][x] === '=' ? 4 : 0) | (y < c.h - 1 && c.rows[y + 1][x] === '=' ? 8 : 0) });
+    },
+    /** Chế độ vector: vẽ vật o (thùng gỗ / khối sắt / nam châm, ve-vector-ky-hieu.js vatCua) tâm (cx, cy), THÂN cạnh `than` (đơn vị của g; thân vector chiếm 76% hộp nên hộp = than / 0,76). */
+    veVatVec: function (g, o, cx, cy, than) {
+      var h = than / 0.76; g.drawImage(this.hinhVat(o, 8, Math.round(h * this.tiLeCua(g))), cx - h / 2, cy - h / 2, h, h);
     },
     /** Vật nằm đất: cạnh (pixel sân). Pixel: 8 (≈ 57% ô, luật vật 14/10); vector: 10,5 (thùng vector chiếm 76% hộp → cũng ≈ 57% ô). Và tâm theo chiều dọc: pixel 6 (bóng đổ chiếm 2 hàng dưới), vector 7 (giữa ô). */
     coVatDat: function () { return this.vec ? 10.5 : 8; },
@@ -707,7 +729,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore();
         if (this.thungTaiO(o.x, o.y)) continue;
         g.globalAlpha = nhay ? 0.85 : 0.45;
-        g.drawImage(Ve.tiles().thung, o.x * T, o.y * T);
+        if (this.vec) g.drawImage(VeVector.vat('thung-nang', Math.round(T * this.sv)), o.x * T, o.y * T, T, T);     // vector: thùng thép mờ
+        else g.drawImage(Ve.tiles().thung, o.x * T, o.y * T);
         g.globalAlpha = 1;
       }
       for (i = 0; i < b.diQua.length; i++) this.veDiQua(g, b.diQua[i], now, nhay);
@@ -828,6 +851,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Ô đích còn trống: nền vàng nhạt + khung nét đứt chạy chậm. Đích có màu: ô đã là tấm màu, khung nét đứt tô màu đích (sáng hơn nền). */
     veDichTrong: function (g, now) {
       var ds = this.cfg.dich; if (!ds.length) return;
+      if (this.vec) {                                                           // vector: hình 'dich' {trong} (nền hổ phách mờ + bốn góc khung) + viền nét đứt chạy, bo góc, ở trong (lệnh trực tiếp theo pixel sân)
+        for (var j = 0; j < ds.length; j++) {
+          var e = ds[j], ex = e.x * T, ey = e.y * T, vo2 = this.vatTaiO(e.x, e.y);
+          if ((vo2 && this.vatDungMau(vo2, e)) || this.thungTaiO(e.x, e.y)) continue;
+          g.drawImage(this.oV('dich', e.mau ? { kieu: 'trong', mau: e.mau } : { kieu: 'trong' }), ex, ey, T, T);
+          g.save(); g.setLineDash([2, 1.5]); g.lineDashOffset = -((now / 140) % 3.5);
+          if (e.mau) { g.lineWidth = 1.6; g.strokeStyle = BM.vecVien; VeVector.H.bo(g, ex + 3.5, ey + 3.5, T - 7, T - 7, 1.2); g.stroke(); }
+          g.lineWidth = 0.9; g.strokeStyle = e.mau ? Ve.MAU[e.mau].vi : BM.vecDich; VeVector.H.bo(g, ex + 3.5, ey + 3.5, T - 7, T - 7, 1.2); g.stroke();
+          g.restore();
+        }
+        return;
+      }
       g.save(); g.lineWidth = 1; g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5);
       for (var i = 0; i < ds.length; i++) {
         var d = ds[i], x = d.x * T, y = d.y * T, vo = this.vatTaiO(d.x, d.y);
@@ -866,6 +901,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (var i = 0; i < ds.length; i++) {
         var d = ds[i], o = this.vatTaiO(d.x, d.y);
         if (!o && !this.thungTaiO(d.x, d.y)) continue;
+        if (this.vec) { g.drawImage(this.oV('dich', { kieu: o && !this.vatDungMau(o, d) ? 'sai' : 'day', mau: d.mau || undefined }), d.x * T, d.y * T, T, T); continue; }   // vector: khung đặc / góc khung + ✗
         if (o && !this.vatDungMau(o, d)) {
           g.save(); g.lineWidth = 1; g.setLineDash([3, 2]); g.strokeStyle = Ve.MAU[d.mau].vi; g.strokeRect(d.x * T + 1.25, d.y * T + 1.25, T - 2.5, T - 2.5); g.restore();
           this.veDauSai(g, d.x, d.y);
@@ -894,6 +930,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (o.ket) {
           var nhay = 0.28 + 0.14 * Math.sin(now / 120);
           g.fillStyle = 'rgba(' + BM.tiaDoV2Rgb + ',' + nhay.toFixed(2) + ')'; g.fillRect(Math.round(o.x) * T, Math.round(o.y) * T, T, T);
+        }
+        if (this.vec) {                                                          // vector: thùng thép 'thung-nang' cỡ một ô, trượt mượt (không làm tròn px); kẹt: phủ đỏ bo góc
+          var vx = o.x * T + o.dx, vy = o.y * T + o.dy + (this.thungTaiDich(o) ? nhun : 0);
+          g.drawImage(VeVector.vat('thung-nang', Math.round(T * this.sv)), vx, vy, T, T);
+          if (o.ket) { g.fillStyle = BM.moDoToiV1; VeVector.H.bo(g, vx + 1, vy + 1, T - 2, T - 2, 1.5); g.fill(); g.strokeStyle = BM.sanDoV1; g.lineWidth = 1; g.strokeRect(Math.round(o.x) * T + 0.5, Math.round(o.y) * T + 0.5, T - 1, T - 1); }
+          continue;
         }
         g.drawImage(TL.thung, px, py + (this.thungTaiDich(o) ? nhun : 0));
         if (o.ket) { g.fillStyle = BM.moDoToiV1; g.fillRect(px + 1, py + 1, T - 2, T - 2); g.strokeStyle = BM.sanDoV1; g.lineWidth = 1; g.strokeRect(Math.round(o.x) * T + 0.5, Math.round(o.y) * T + 0.5, T - 1, T - 1); }
@@ -925,13 +967,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         else if (o.tt === 'anim') this.veVatTruot(g, o, now);
         else if (o.tt === 'vo' && o.voLuc) {
           var k = (now - o.voLuc) / 800;
-          if (k < 1) { g.globalAlpha = 0.7 * (1 - k); g.drawImage(this.hinhVat(o, 8), Math.round(o.x * T + 3), Math.round(o.y * T + 2 - k * 4)); g.globalAlpha = 1; }
+          if (k < 1 && this.vec) { g.globalAlpha = 0.7 * (1 - k); this.veVatVec(g, o, o.x * T + 7, o.y * T + this.yVatDat() - k * 4, 8); g.globalAlpha = 1; }   // vector: vật vỡ bay lên mờ dần, cùng cỡ thân vật nằm đất
+          else if (k < 1) { g.globalAlpha = 0.7 * (1 - k); g.drawImage(this.hinhVat(o, 8), Math.round(o.x * T + 3), Math.round(o.y * T + 2 - k * 4)); g.globalAlpha = 1; }
         }
       }
     },
     /** Hình của vật o: sắt (khối kim loại) hay gỗ (thùng), có dải màu nếu vật mang màu; n = cạnh (8: nằm đất, 10: trong kẹp tính theo pixel part). */
     hinhVat: function (o, n, px) {
-      if (this.vec && px > 0 && o.chat !== 'sat' && o.chat !== 'nam-cham') { var v = VeVector.vat('thung-go', px, o.mau ? { mau: o.mau } : undefined); if (v) return v; }   // vector: thùng gỗ đúng px pixel thiết bị (vật sắt / nam châm: gói V2)
+      if (this.vec && px > 0) { var hv = VeVector.vatCua(o), v = VeVector.vat(hv[0], px, hv[1]); if (v) return v; }   // vector: thùng gỗ / khối sắt / nam châm (ve-vector-ky-hieu.js vatCua) đúng px pixel thiết bị
       return Ve.makeVatNho(n || 8, o.chat, o.mau, o.cuc);
     },
     /** Vẽ một vật: sprite n×n phóng thành cạnh sz, tâm (x, y), bóng đổ = bản đen mờ của vật lệch (so / 2, so) về phía phải-dưới (ánh sáng từ trái trên, như mọi hình trong game):
@@ -1140,7 +1183,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (y = y0; y <= y1; y++) for (x = x0; x <= x1; x++) {
         if (x < 0 || y < 0 || x >= c.w || y >= c.h || c.rows[y][x] !== 'n') continue;
         var ov = Math.max(0, 1 - Math.abs(v.x - x)) * Math.max(0, 1 - Math.abs(v.y - y)); if (ov <= 0.05) continue;       // phần nhện chồng lên ô gầm
-        g.globalAlpha = 0.28 + 0.4 * ov; g.drawImage(TL.gamMai, x * T, y * T); g.globalAlpha = 1;
+        g.globalAlpha = 0.28 + 0.4 * ov;
+        if (this.vec) g.drawImage(this.oV('gam', { mai: true }, g), x * T, y * T, T, T);       // vector: mái thép (nền trong suốt) đúng pixel thiết bị của lớp phủ
+        else g.drawImage(TL.gamMai, x * T, y * T);
+        g.globalAlpha = 1;
       }
     },
     /* ---- DRONE: độ cao, bóng đổ, ô sạc, thanh pin, vật treo dưới bụng, rơi khi hết pin */
@@ -1316,7 +1362,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           var b = o.bay;
           px = b.x * T + 7; py = b.y * T + 7 - b.cao;
           g.fillStyle = BM.moToiV23; g.fillRect(Math.round(b.x * T + 4), Math.round(b.y * T + 10), 6, 2);
-          g.drawImage(this.hinhVat(o, 8), Math.round(px - 4 + (b.rx || 0)), Math.round(py - 5 + (b.ry || 0)));
+          if (this.vec) this.veVatVec(g, o, px + (b.rx || 0), py - 1 + (b.ry || 0), 8);         // vector: thân vật 8 pixel sân như hình pixel
+          else g.drawImage(this.hinhVat(o, 8), Math.round(px - 4 + (b.rx || 0)), Math.round(py - 5 + (b.ry || 0)));
           if (b.vong) {
             g.strokeStyle = 'rgba(' + BM.tiaXanhLoV3Rgb + ',' + (0.35 + 0.35 * Math.abs(Math.sin(now / 60))).toFixed(3) + ')'; g.lineWidth = 1;
             g.strokeRect(Math.round(px - 6) + 0.5, Math.round(py - 7) + 0.5, 11, 11);
@@ -1444,14 +1491,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         o = this.objs[i];
         if (o.tt === 'ro') {
           var a = this.viTriRo(q.dang > now), sz = Math.max(4, Math.round((this.bk || 15) * 0.34)), rg = q.rung > now ? Math.sin(now / 20) * 1.2 : 0;
-          g.drawImage(this.hinhVat(o, 8), Math.round(a.x - sz / 2 + rg), Math.round(a.y - sz / 2), sz, sz);
+          if (this.vec) this.veVatVec(g, o, a.x + rg, a.y, sz);                                      // vector: thân vật cạnh sz như hình pixel
+          else g.drawImage(this.hinhVat(o, 8), Math.round(a.x - sz / 2 + rg), Math.round(a.y - sz / 2), sz, sz);
           if (q.loi > now) { g.strokeStyle = BM.moDo; g.lineWidth = 1; g.strokeRect(Math.round(a.x - sz / 2 + rg) - 0.5, Math.round(a.y - sz / 2) - 0.5, sz + 1, sz + 1); }
         } else if (o.tt === 'bay' && o.nb) {
           var b = o.nb, d = Math.max(3, Math.round(8 * b.esc));
           g.fillStyle = 'rgba(' + BM.tiaDenRgb + ',' + Math.max(0.12, 0.34 - b.cao * 0.012).toFixed(3) + ')';
           var sw = Math.max(3, Math.round(d * 0.7 * (1 - Math.min(0.5, b.cao * 0.03))));
           g.fillRect(Math.round(b.px - sw / 2), Math.round(b.py + 5), sw, 2);
-          g.drawImage(this.hinhVat(o, 8), Math.round(b.px - d / 2), Math.max(-1, Math.round(b.py - d / 2 - b.cao)), d, d);          // vật bay cao không vượt khỏi mép trên của lớp phủ
+          if (this.vec) this.veVatVec(g, o, b.px, Math.max(-1, b.py - d / 2 - b.cao) + d / 2, d);
+          else g.drawImage(this.hinhVat(o, 8), Math.round(b.px - d / 2), Math.max(-1, Math.round(b.py - d / 2 - b.cao)), d, d);          // vật bay cao không vượt khỏi mép trên của lớp phủ
         }
       }
     },
@@ -1522,6 +1571,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var b = this.bong; if (!b) return;
       var x = Math.round(b.x), y = Math.round(b.y), sq = b.sq || 0, i;
       g.save(); g.globalAlpha = Math.max(0, Math.min(1, b.a === undefined ? 1 : b.a));
+      if (this.vec) {                                                                                      // vector: vệt tròn mờ dần, bóng đổ elip, quả bóng 'bong' (bẹp khi đập vào vật) cỡ 7 pixel sân
+        x = b.x; y = b.y;
+        if (b.bay && (b.dx || b.dy)) for (i = 1; i <= 3; i++) {
+          g.fillStyle = 'rgba(' + BM.tiaVangV2Rgb + ',' + (0.5 - i * 0.12).toFixed(2) + ')'; g.beginPath(); g.arc(x - b.dx * (3 + i * 3), y - b.dy * (3 + i * 3), (5 - i) / 2, 0, Math.PI * 2); g.fill();
+        }
+        g.fillStyle = BM.moToiV24; g.beginPath(); g.ellipse(x + 0.5, y + 4.5, 2.6, 0.8, 0, 0, Math.PI * 2); g.fill();
+        g.drawImage(VeVector.vat('bong', Math.max(1, Math.round(7 * this.tiLeCua(g))), sq ? { bep: true } : undefined), x - 3.5, y - 3.5, 7, 7);
+        g.restore(); return;
+      }
       if (b.bay && (b.dx || b.dy)) {                                                                       // vệt: ba vệt vàng nhạt nhỏ dần phía sau, cùng đường bay
         for (i = 1; i <= 3; i++) {
           var sz = 5 - i, tx = x - b.dx * (3 + i * 3), ty = y - b.dy * (3 + i * 3);
@@ -1762,6 +1820,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     /** Băng chuyền đã tắt (bóng trúng nút): mờ đi, không có mũi tên chạy, đèn đỏ nhỏ ở góc; vừa tắt / bật lại thì sáng trắng một chút. */
     veBangTat: function (g, x, y, now) {
+      if (this.vec) {                                                           // vector: băng tắt (mũi tên xám, đèn đỏ) đã nằm trong hình 'bang' {tat}; ở đây chỉ còn lóe trắng lúc vừa tắt
+        var lv = this.bangLoe[x + ',' + y];
+        if (lv > now) { g.fillStyle = 'rgba(' + BM.tiaTrangRgb + ',' + (0.45 * (lv - now) / 300).toFixed(3) + ')'; g.fillRect(x * T, y * T, T, T); }
+        return;
+      }
       g.fillStyle = BM.moLam; g.fillRect(x * T + 1, y * T + 1, T - 2, T - 2);
       g.fillStyle = K_INK; g.fillRect(x * T + 2, y * T + 2, 4, 4);
       g.fillStyle = BM.sanDo; g.fillRect(x * T + 3, y * T + 3, 2, 2);
@@ -1772,6 +1835,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veMotCua: function (g, d, now) {
       if (!d) return;
       var nh = d.nhip ? { mo: d.nhip.mo, dong: d.nhip.dong, p: (this.nhipDa + d.nhip.pha) % (d.nhip.mo + d.nhip.dong) } : null;
+      if (this.vec) {                                                           // vector: hình 'cua' (ve-vector-may.js), độ mở lượng tử hoá 1/10, đèn nhịp trong hình; rung lệch theo pixel sân, kẹt tô đỏ bo góc
+        var s = { k: Math.round(Math.max(0, Math.min(1, d.k)) * 10) / 10, doc: d.doc !== false }, rg = d.rung > now ? Math.sin(now / 22) * 1.2 : 0;
+        if (nh) { var chu = nh.mo + nh.dong, sap = ((nh.p + 1) % chu) === 0 || ((nh.p + 1) % chu) === nh.mo; s.nhip = { n: Math.min(chu, 6), mo: nh.mo, p: nh.p, tat: !!(sap && (Math.floor(now / 160) & 1)) }; }
+        g.drawImage(this.oV('cua', s), d.x * T + rg, d.y * T, T, T);
+        if (d.ket > 0) { g.fillStyle = 'rgba(' + BM.tiaDoV2Rgb + ',' + (0.18 + 0.32 * d.ket).toFixed(3) + ')'; VeVector.H.bo(g, d.x * T + 0.5, d.y * T + 0.5, T - 1, T - 1, 1.5); g.fill(); }
+      } else
       Ve.veCua(g, d.x * T, d.y * T, d.k, { doc: d.doc, nhip: nh, ket: d.ket, rung: d.rung > now ? Math.sin(now / 22) * 1.2 : 0, now: now });
       if (d.ket > 0.02) {                                                       // cửa kẹt: khung đỏ quanh ô (không bị xe che)
         g.save(); g.strokeStyle = 'rgba(' + BM.tiaDoV8Rgb + ',' + Math.min(1, d.ket + 0.15).toFixed(3) + ')'; g.lineWidth = 2; g.strokeRect(d.x * T + 1, d.y * T + 1, T - 2, T - 2); g.restore();
@@ -1786,6 +1855,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (var y = c.oy; y < c.oy + c.vh; y++) for (var x = c.ox; x < c.ox + c.vw; x++) {
         var ch = c.rows[y][x], t;
         var kO = x + ',' + y, bangTat = BANG[ch] !== undefined && this.bangTat[kO];
+        if (this.vec) { this.veOVec(g, x, y, ch, kO, now, cf, ff); continue; }              // vector (gói V2): mọi ô vẽ bằng hình vector đúng cỡ, nhánh pixel bên dưới giữ y nguyên
         if (BANG[ch] !== undefined) t = Ve.makeConv(BANG[ch], bangTat ? 0 : cf);                 // băng tắt (nút đã đổi): đứng yên ở một khung
         else if (ch === '#') t = TL.wall;
         else if (ch === 'N') { var nt = this.nutT[kO]; t = TL.nut(!!(nt && nt.bat), !!(nt && nt.loe > now)); }                 // nút bắn nằm trên tường
@@ -1799,7 +1869,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         else t = TL.rug[(x + y * 2) & 3];
         var mn = (ch === '#' || ch === 'S' || ch === '=' || ch === 'N' || ch === 'C' || ch === 'c' || ch === 'n' || ch === 'u' || BANG[ch] !== undefined) ? null : this.mauNen(x, y);
         if (mn) t = TL.mau[mn][(x + y) & 1];                  // sàn tô màu (kể cả dưới cờ và ô đích)
-        if (this.vec) t = this.oVec(ch, mn) || t;              // vector: sàn / tường vector đúng cỡ (vẽ 1:1), ô khác tạm phóng pixel
         g.drawImage(t, x * T, y * T, T, T);
         if (ch === 'M') g.drawImage(TL.nutDe(!!this.nutDeT[kO]), x * T, y * T);
         if (ch === 'N' && this.nutT[kO] && this.nutT[kO].bat) this.veNong(g, x, y, now);                // nút đang bật thì nóng (warm() đọc được): quầng đỏ cam + gợn nhiệt
@@ -2270,6 +2339,39 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (sat) { g.fillStyle = BM.sanTrangV6; g.fillRect(px + q, py + q, w2, Math.max(1, s >> 4)); g.fillRect(px + q, py + q, Math.max(1, s >> 4), w2); g.fillStyle = BM.sanLamToiV8; g.fillRect(px + q + w2 - Math.max(1, s >> 4), py + q, Math.max(1, s >> 4), w2); g.fillRect(px + q, py + q + w2 - Math.max(1, s >> 4), w2, Math.max(1, s >> 4)); }
     if (mv) { g.fillStyle = Ve.MAU[mv].s; g.fillRect(px + q, py + (s >> 1) - 1, w2, Math.max(2, s >> 3)); }
   }
+  /** Ảnh nhỏ, chế độ vector (gói V2): vật o = { chat, mau, cuc } (ve-vector-ky-hieu.js vatCua) thân nửa ô giữa ô như thuVat (thân vector chiếm 76% hộp). */
+  function thuVatVec(g, px, py, s, o) {
+    var hv = VeVector.vatCua(o), h = s * 0.5 / 0.76;
+    g.drawImage(VeVector.vat(hv[0], Math.max(1, Math.round(h)), hv[1]), px + (s - h) / 2, py + (s - h) / 2, h, h);
+  }
+  /** Ảnh nhỏ, chế độ vector (gói V2): mọi ô vẽ theo bảng VeVector.KY_HIEU (lớp ô dưới trước, rồi vật nằm sẵn), trạng thái lúc đầu màn như thuSan pixel:
+   *  sàn màu (lớp màu / ký hiệu r g b y) thay ô sàn, ô đích trên sàn màu mang màu, nút bắn bật sẵn, cửa nhịp theo pha, rào nối theo ô kề; vật o / X theo lớp màu / chất. */
+  function thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat) {
+    var x, y, ch, px, py, i, kh, lop, ma, st;
+    for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+      ch = rows[y][x]; px = x * s; py = y * s; kh = VeVector.KY_HIEU[ch] || VeVector.KY_HIEU['.'];
+      var mn = mauO && mauO[y][x] && '#S=NCcnu'.indexOf(ch) < 0 && BANG[ch] === undefined ? mauO[y][x] : null;
+      for (i = 0; i < kh.o.length; i++) {
+        lop = kh.o[i]; ma = lop[0]; st = lop[1] ? Object.assign({}, lop[1]) : undefined;
+        if (ma === 'san' && mn) { ma = 'san-mau'; st = { mau: mn }; }
+        else if (ma === 'dich' && mn) st.mau = mn;
+        else if (ma === 'nut-ban' && nutBat[x + ',' + y]) st.bat = true;
+        else if (ma === 'cua' && cuaNhip[x + ',' + y]) { var cn = cuaNhip[x + ',' + y], chu = cn.mo + cn.dong; st.k = (cn.pha % chu) < cn.mo ? 1 : 0; st.nhip = { n: Math.min(chu, 6), mo: cn.mo, p: cn.pha % chu }; }
+        else if (ma === 'rao') st.mask = (x > 0 && rows[y][x - 1] === '=' ? 1 : 0) | (x < w - 1 && rows[y][x + 1] === '=' ? 2 : 0) | (y > 0 && rows[y - 1][x] === '=' ? 4 : 0) | (y < h - 1 && rows[y + 1][x] === '=' ? 8 : 0);
+        if (ma === 'tuong' && s < 24) {                                         // ảnh nhỏ thật (vài px mỗi ô): khối tường trắng lẫn với sàn trắng → tô phẳng xám chàm + vạch đèn cyan, đọc ra ngay đâu là tường
+          g.fillStyle = BM.vecTuongVien; g.fillRect(px, py, s, s);
+          g.fillStyle = BM.vecDen; g.fillRect(px + s * 0.25, py + s * 0.3, s * 0.5, Math.max(1, s * 0.12));
+          continue;
+        }
+        g.drawImage(VeVector.o(ma, s, st), px, py, s, s);
+      }
+      (kh.vat || []).forEach(function (v) {
+        if (v[0] === 'thung-nang') { g.drawImage(VeVector.vat('thung-nang', s), px, py, s, s); return; }
+        var cuc = vc && vc[y] && (vc[y][x] === 'N' || vc[y][x] === 'S') ? vc[y][x] : null;
+        thuVatVec(g, px, py, s, { chat: cuc ? 'nam-cham' : vc && vc[y] && vc[y][x] === 's' ? 'sat' : 'go', cuc: cuc, mau: vm && vm[y] ? MAU_KY[vm[y][x]] : null });
+      });
+    }
+  }
 
   /**
    * Ảnh nhỏ của một sân (cho dải chọn sân): vẽ lên canvas cv, mỗi ô vuông nguyên px CSS (vừa khung rong × cao px CSS), hai px canvas mỗi px CSS.
@@ -2285,7 +2387,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (xx < gx0) gx0 = xx; if (xx > gx1) gx1 = xx; if (yy < gy0) gy0 = yy; if (yy > gy1) gy1 = yy;
     }
     if (gx1 < 0) { gx0 = 0; gy0 = 0; gx1 = w - 1; gy1 = h - 1; }
-    var vw = gx1 - gx0 + 1, vh = gy1 - gy0 + 1, c = Math.max(2, Math.floor(Math.min((rong || 29) / vw, (cao || 28) / vh))), q = 2, s = c * q;
+    var vecT = !!(window.VeVector && VeVector.bat() && VeVector.KY_HIEU);                 // chế độ vector (gói V2): ô / vật vẽ bằng hình vector, canvas theo pixel thiết bị (ít nhất 2 px canvas mỗi px CSS như cũ)
+    var vw = gx1 - gx0 + 1, vh = gy1 - gy0 + 1, c = Math.max(2, Math.floor(Math.min((rong || 29) / vw, (cao || 28) / vh))), q = vecT ? Math.max(2, Math.ceil(window.devicePixelRatio || 1)) : 2, s = c * q;
     cv.width = vw * s; cv.height = vh * s; cv.style.width = (vw * c) + 'px'; cv.style.height = (vh * c) + 'px';
     var g = cv.getContext('2d'), x, y, ch, px, py;
     g.translate(-gx0 * s, -gy0 * s);                                         // vẽ theo tọa độ ô đầy đủ, canvas chỉ là cửa sổ
@@ -2293,7 +2396,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var them = (lopMau && lopMau.vatThem) || [], cuaNhip = {}, nutBat = {};
     ((lopMau && lopMau.nutBat) || []).forEach(function (o) { nutBat[o.x + ',' + o.y] = true; });                          // nút bật sẵn: ảnh nhỏ vẽ nút xanh + viền cam (nóng)
     ((lopMau && lopMau.cuaNhip) || []).forEach(function (cn) { cuaNhip[cn.x + ',' + cn.y] = cn; });                      // cửa nhịp: ảnh nhỏ vẽ trạng thái lúc đầu (theo pha), khung xanh lơ                                                                          // vật thêm ngoài ký hiệu (vd trên băng chuyền)
-    for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+    if (vecT) thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat);
+    else for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
       ch = rows[y][x]; px = x * s; py = y * s;
       if (ch === '#') { g.fillStyle = BM.sanLamToiV1; g.fillRect(px, py, s, s); g.fillStyle = BM.sanLamV8; g.fillRect(px, py, s, Math.max(1, s >> 3)); continue; }
       if (ch === '=') {                                                       // hàng rào thấp: sàn xanh + thanh gỗ ngang + cọc (khác ô tường đặc)
@@ -2356,9 +2460,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     them.forEach(function (o) {
       var ox = Math.floor(o.x), oy = Math.floor(o.y);
       if (ox < 0 || oy < 0 || ox >= w || oy >= h || rows[oy][ox] === '#' || rows[oy][ox] === 'o' || rows[oy][ox] === 'X') return;
-      thuVat(g, ox * s, oy * s, s, chuanMau(o.mau), o.chat === 'sat', o.chat === 'nam-cham' ? o.cuc : null);
+      if (vecT) thuVatVec(g, ox * s, oy * s, s, { chat: o.chat, cuc: o.cuc, mau: chuanMau(o.mau) });
+      else thuVat(g, ox * s, oy * s, s, chuanMau(o.mau), o.chat === 'sat', o.chat === 'nam-cham' ? o.cuc : null);
     });
-    if (bd) {
+    if (bd && vecT) {                                                         // vector: chấm tròn màu R1 viền chàm, chấm trắng chỉ hướng mặt
+      var vx = bd.x * s + s / 2, vy = bd.y * s + s / 2, vr = s * 0.3;
+      g.beginPath(); g.arc(vx, vy, vr, 0, Math.PI * 2); g.fillStyle = BM.vecDoiR1; g.fill(); g.lineWidth = Math.max(1, s / 14); g.strokeStyle = BM.vecVien; g.stroke();
+      g.beginPath(); g.arc(vx + DX[bd.huong || 0] * vr * 0.55, vy + DY[bd.huong || 0] * vr * 0.55, Math.max(1, vr * 0.32), 0, Math.PI * 2); g.fillStyle = BM.vecVo; g.fill();
+    } else if (bd) {
       var cx = bd.x * s + s / 2, cy = bd.y * s + s / 2, r = s * 0.28;
       g.fillStyle = BM.sanXanhLo; g.fillRect(Math.round(cx - r), Math.round(cy - r), Math.round(r * 2), Math.round(r * 2));
       g.fillStyle = BM.vienDam; g.fillRect(Math.round(cx + DX[bd.huong || 0] * r - 1), Math.round(cy + DY[bd.huong || 0] * r - 1), 2, 2);

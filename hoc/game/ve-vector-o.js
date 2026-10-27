@@ -1,7 +1,7 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-o.js — Ô SÂN và VẬT vector (gói V1): sàn, tường, cờ, thùng gỗ. Hệ 100 × 100 một ô, theo hoc/hinh-mau/thu-vector.html.
-   Ô khác (bậc thang, băng chuyền, nút, cửa, rào, ô sạc, sàn màu, hố, gầm) và vật khác (khối sắt, thùng nặng, vật nam châm) CHƯA có hình vector:
-   san-ve.js tạm phóng hình pixel cũ — việc của gói V2.
+   Ô / vật còn lại có ở gói V2: ve-vector-o2.js (bậc thang, hố, gầm, sàn màu, ô sạc, rào, ô đích), ve-vector-may.js (băng chuyền, nút bắn, nút đè, cửa,
+   bàn xoay, cổng), ve-vector-vat.js (khối sắt, nam châm, thùng nặng, bóng hơi); bảng nối ký hiệu → hình: ve-vector-ky-hieu.js.
    Thêm một ô: VeVector.dangKy({ loai: 'o', ma, ten, ve: function (g, s, H) { … } }); một vật: loai 'vat' (vẽ đầy ô, người gọi quyết cỡ). */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));

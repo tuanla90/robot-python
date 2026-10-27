@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Xem bộ vẽ vector (gói V1)</title>
+<title>Xem bộ vẽ vector (gói V1–V2)</title>
 <style>
   body{margin:0;background:var(--g-vecSanToi);font-family:system-ui,sans-serif;color:var(--g-vecVien);padding:16px}
   h2{font-size:15px;font-weight:600;margin:18px 0 8px}
@@ -12,6 +12,10 @@
 <script src="../game/bang-mau.js"></script>
 <script src="../game/ve-vector.js"></script>
 <script src="../game/ve-vector-o.js"></script>
+<script src="../game/ve-vector-o2.js"></script>
+<script src="../game/ve-vector-may.js"></script>
+<script src="../game/ve-vector-vat.js"></script>
+<script src="../game/ve-vector-ky-hieu.js"></script>
 <script src="../game/ve-vector-than-hai-banh.js"></script>
 <script src="../game/ve-vector-tay-kep.js"></script>
 </head><body>
@@ -28,6 +32,10 @@
 <div class="hang" id="doi"></div>
 <h2>Ô và vật: sàn, tường, cờ, thùng gỗ (và thùng mang màu red / green / blue / yellow)</h2>
 <div class="hang" id="o-vat"></div>
+<h2>Gói V2 — MỌI ô / vật trong kho, MỌI trạng thái mẫu (cacTrangThai), ba cỡ ô: <span id="co-v2"></span> px CSS. Ô "vẽ đè" (phu) đặt trên ô sàn; vật nhỏ đặt trên ô sàn ở cỡ vật nằm đất (thân ≈ 57% ô)</h2>
+<div id="kho-v2"></div>
+<h2>Gói V2 — sân mẫu từ ký hiệu (bảng VeVector.KY_HIEU): mỗi ký hiệu SanHoc một ô</h2>
+<div class="hang" id="san-v2"></div>
 <script>
   var V = window.VeVector, dpr = window.devicePixelRatio || 1;
   document.getElementById('dpr').textContent = dpr;
@@ -75,5 +83,42 @@
   });
   ['san', 'tuong', 'co'].forEach(function (ma) { var n = Math.round(120 * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n; var g = cv.getContext('2d'); if (ma === 'co') g.drawImage(V.o('san', n), 0, 0); g.drawImage(V.o(ma, n), 0, 0); document.getElementById('o-vat').appendChild(khung(cv, 120, 'o/' + ma)); });
   [undefined, 'red', 'green', 'blue', 'yellow'].forEach(function (m) { var n = Math.round(120 * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n; var g = cv.getContext('2d'); g.drawImage(V.vat('thung-go', n, m ? { mau: m } : undefined), 0, 0); document.getElementById('o-vat').appendChild(khung(cv, 120, 'vat/thung-go ' + (m || ''))); });
+  /* ---------------- gói V2: bày hết kho ô / vật, mọi trạng thái mẫu, ba cỡ */
+  (function () {
+    var CO = [28, 56, 112], goc = document.getElementById('kho-v2');
+    document.getElementById('co-v2').textContent = CO.join(', ');
+    function o1(loai, ma, s, css) {
+      var n = Math.round(css * dpr), cv = document.createElement('canvas'), d = V.lay(loai, ma); cv.width = n; cv.height = n;
+      var g = cv.getContext('2d');
+      if (loai === 'vat') {
+        g.drawImage(V.o('san', n), 0, 0);
+        if (ma === 'thung-nang') g.drawImage(V.vat(ma, n, s), 0, 0, n, n);
+        else if (ma === 'bong') { var b = Math.round(n * 0.5); g.drawImage(V.vat(ma, b, s), (n - b) / 2, (n - b) / 2, b, b); }
+        else { var h = Math.round(n * 0.75); g.drawImage(V.vat(ma, h, s), (n - h) / 2, (n - h) / 2, h, h); }
+      } else { if (d.phu) g.drawImage(V.o('san', n), 0, 0); g.drawImage(V.o(ma, n, s), 0, 0); }
+      return cv;
+    }
+    ['o', 'vat'].forEach(function (loai) { V.ds(loai).forEach(function (ma) {
+      var d = V.lay(loai, ma), tt = d.cacTrangThai || [{}];
+      var h2 = document.createElement('h2'); h2.textContent = loai + '/' + ma + ' — ' + d.ten + (d.ky ? ' (ký hiệu ' + d.ky.join(' ') + ')' : '') + ' · ' + tt.length + ' trạng thái'; goc.appendChild(h2);
+      var hang = document.createElement('div'); hang.className = 'hang'; goc.appendChild(hang);
+      tt.forEach(function (s) {
+        var o = document.createElement('div'); o.className = 'o'; var r = document.createElement('div'); r.className = 'hang'; r.style.gap = '6px'; r.style.alignItems = 'flex-end';
+        CO.forEach(function (css) { var cv = o1(loai, ma, s, css); cv.style.width = css + 'px'; cv.style.height = css + 'px'; r.appendChild(cv); });
+        o.appendChild(r); var p = document.createElement('p'); p.textContent = JSON.stringify(s); o.appendChild(p); hang.appendChild(o);
+      });
+    }); });
+    /* sân mẫu V2: mọi ký hiệu trong bảng, xếp hàng, có tường bao */
+    var ky = Object.keys(V.KY_HIEU).filter(function (k) { return k !== ' '; }), cot = 10, css = 48, n = Math.round(css * dpr), hangSo = Math.ceil(ky.length / cot);
+    var cv = document.createElement('canvas'); cv.width = n * (cot + 2); cv.height = n * (hangSo + 2); var g = cv.getContext('2d');
+    for (var y = 0; y < hangSo + 2; y++) for (var x = 0; x < cot + 2; x++) {
+      var i = (y - 1) * cot + (x - 1), k = x > 0 && x <= cot && y > 0 && y <= hangSo && i < ky.length ? ky[i] : '#', kh = V.KY_HIEU[k];
+      kh.o.forEach(function (l) { g.drawImage(V.o(l[0], n, l[1]), x * n, y * n); });
+      (kh.vat || []).forEach(function (v) { if (v[0] === 'thung-nang') g.drawImage(V.vat(v[0], n, v[1]), x * n, y * n); else { var h = Math.round(n * 0.75); g.drawImage(V.vat(v[0], h, v[1]), x * n + (n - h) / 2, y * n + (n - h) / 2); } });
+    }
+    cv.style.width = (css * (cot + 2)) + 'px'; cv.style.height = (css * (hangSo + 2)) + 'px';
+    document.getElementById('san-v2').appendChild(khung(cv, 0, 'ký hiệu theo thứ tự: ' + ky.join(' ')));
+    cv.style.width = (css * (cot + 2)) + 'px'; cv.style.height = (css * (hangSo + 2)) + 'px';
+  })();
 </script>
 </body></html>
