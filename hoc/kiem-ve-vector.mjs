@@ -37,7 +37,10 @@ function kiem(ten, ok, chiTiet) {
 
 const BM = require(path.join(GAME, 'bang-mau.js'));
 const V = require(path.join(GAME, 've-vector.js'));
-for (const f of ['ve-vector-o.js', 've-vector-o2.js', 've-vector-may.js', 've-vector-vat.js', 've-vector-ky-hieu.js', 've-vector-than-hai-banh.js', 've-vector-tay-kep.js']) require(path.join(GAME, f));
+/* tệp hình vector: đúng thứ tự choi.html nạp (gói V3: máy kiểm mục 12 đòi mọi ve-vector*.js của hoc/game đều có trong choi.html và trang xem) */
+const CHOI_SRC = fs.readFileSync(path.join(GAME, 'choi.html'), 'utf8');
+const TEP_VEC = [...CHOI_SRC.matchAll(/<script src="(ve-vector-[\w-]+\.js)"/g)].map((m) => m[1]);
+for (const f of TEP_VEC) require(path.join(GAME, f));
 let VeRobot = null;
 try { VeRobot = require(path.join(GAME, 've-robot.js')); } catch (e) { console.log('(không nạp được ve-robot.js ở Node: ' + e.message + ')'); }
 
@@ -108,7 +111,7 @@ function ngoaiO(cv) { return diemThietBi(cv.lenh).filter((p) => p.x - p.le < -0.
 /* ================================================================= 1. kho hình */
 console.log('== 1. Kho hình vector khai đủ ==');
 {
-  const can = { o: ['san', 'tuong', 'co'], vat: ['thung-go'], than: ['hai-banh'], tay: ['kep'] };
+  const can = { o: ['san', 'tuong', 'co'], vat: ['thung-go'], than: ['hai-banh', 'xich', 'nhen', 'omni', 'drone'], tay: ['kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son'], 'cam-bien': ['khoang-cach', 'mau', 'cham', 'camera', 'camera-bay', 'hong-ngoai'] };
   for (const loai of Object.keys(can)) {
     const thieu = can[loai].filter((ma) => !V.lay(loai, ma));
     kiem(loai + ': có ' + can[loai].join(', ') + ' (kho: ' + V.ds(loai).join(', ') + ')', thieu.length === 0, 'thiếu ' + thieu.join(', '));
@@ -117,10 +120,12 @@ console.log('== 1. Kho hình vector khai đủ ==');
   for (const loai of ['o', 'vat', 'than', 'tay', 'cam-bien']) for (const ma of V.ds(loai)) {
     const d = V.lay(loai, ma);
     if (!d.ten || typeof d.ve !== 'function') loiTruong.push(loai + '/' + ma + ' thiếu ten / ve');
-    if (loai === 'than' && !(d.oGan && d.oGan.tay)) loiTruong.push(loai + '/' + ma + ' thiếu oGan.tay');
-    if (loai === 'tay' && !(d.diemNeo && d.gan === 'tay' && d.vatKep && d.vatKep.canh > 0)) loiTruong.push(loai + '/' + ma + ' thiếu diemNeo / gan / vatKep');
+    if (loai === 'than' && !(d.oGan && (d.oGan.tay || (d.khongHuong && d.oGan.duoi)))) loiTruong.push(loai + '/' + ma + ' thiếu oGan.tay (drone: oGan.duoi)');
+    if (loai === 'tay' && !(d.diemNeo && d.gan && [].concat(d.gan).includes('tay'))) loiTruong.push(loai + '/' + ma + ' thiếu diemNeo / gan (tay phải gắn được ổ tay)');
+    if (loai === 'tay' && (ma === 'kep' || ma === 'xoay') && !(d.vatKep && d.vatKep.canh > 0)) loiTruong.push(loai + '/' + ma + ' (tay kẹp vật) thiếu vatKep');
+    if (loai === 'cam-bien' && !(d.diemNeo && d.gan)) loiTruong.push(loai + '/' + ma + ' thiếu diemNeo / gan');
   }
-  kiem('mỗi hình có ten + ve(); thân có oGan.tay; tay có diemNeo, gan = tay, vatKep', loiTruong.length === 0, loiTruong.join('; '));
+  kiem('mỗi hình có ten + ve(); thân có oGan.tay (drone: duoi); tay có diemNeo, gan gồm ổ tay; tay kẹp / tay xoay có vatKep; cảm biến có diemNeo, gan', loiTruong.length === 0, loiTruong.join('; '));
   let nem = null; try { V.dangKy({ loai: 'than', ma: 'thu', ten: 'x', ve() {} }); } catch (e) { nem = e.message; }
   kiem('dangKy từ chối thân thiếu oGan.tay', !!nem && /oGan/.test(nem), nem);
   nem = null; try { V.dangKy({ loai: 'o', ma: 'san', ten: 'x', ve() {} }); } catch (e) { nem = e.message; }
@@ -173,7 +178,7 @@ console.log('\n== 4. Sau xoay, ổ tay và vật trong kẹp ở phía hướng 
   const vk = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren'), vkH = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'duoi');
   kiem('vatKep (đơn vị 1/100 ô): tâm vật trước tâm thân ' + (vk && vk.ahead.toFixed(1)) + ', cạnh ' + (vk && vk.n.toFixed(1)) + '; tay hạ xa hơn (' + (vkH && vkH.ahead.toFixed(1)) + '); vật nằm trong ô',
     !!vk && !!vkH && vk.ahead > 20 && vk.n > 10 && vkH.ahead > vk.ahead && vkH.ahead + vkH.n / 2 <= 50);
-  kiem('không tay → vatKep = null; thân lạ → null', V.vatKep({ than: 'hai-banh', tay: null }) === null && V.vatKep({ than: 'xich', tay: 'kep' }) === null);
+  kiem('không tay → vatKep = null; thân lạ → null; tay không kẹp (nam châm) → null', V.vatKep({ than: 'hai-banh', tay: null }) === null && V.vatKep({ than: 'khong-co', tay: 'kep' }) === null && V.vatKep({ than: 'hai-banh', tay: 'nam-cham' }) === null);
 }
 
 /* ================================================================= 5. robot nằm trong ô */
@@ -235,10 +240,10 @@ console.log('\n== 7. Bộ đệm theo (tên, cỡ, trạng thái, hướng, sơn
 /* ================================================================= 8. coDu, công tắc */
 console.log('\n== 8. coDu() và công tắc ==');
 {
-  kiem('coDu: hai-banh / hai-banh + kẹp → true; xích, nam châm, cảm biến màu, drone → false (rơi về pixel)',
-    V.coDu({ than: 'hai-banh' }) && V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [] }) && !V.coDu({ than: 'xich' }) && !V.coDu({ than: 'hai-banh', tay: 'nam-cham' })
-    && !V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'mau', o: 'hong' }] }) && !V.coDu({ than: 'drone' }));
-  kiem('robot() với cấu hình thiếu hình → null (không ném)', V.robot({ than: 'xich' }, {}, 0, 56) === null && V.robot({ than: 'hai-banh', tay: 'hoi' }, {}, 0, 56) === null);
+  kiem('coDu (gói V3): mọi thân / tay / cảm biến đều có hình → true (xích, nam châm, cảm biến màu, drone…); mã lạ → false (rơi về pixel)',
+    V.coDu({ than: 'hai-banh' }) && V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [] }) && V.coDu({ than: 'xich' }) && V.coDu({ than: 'hai-banh', tay: 'nam-cham' })
+    && V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'mau', o: 'hong' }] }) && V.coDu({ than: 'drone' }) && !V.coDu({ than: 'khong-co' }) && !V.coDu({ than: 'hai-banh', tay: 'khong-co' }) && !V.coDu({ than: 'hai-banh', camBien: [{ ma: 'khong-co', o: 'hong' }] }));
+  kiem('robot() với cấu hình thiếu hình → null (không ném)', V.robot({ than: 'khong-co' }, {}, 0, 56) === null && V.robot({ than: 'hai-banh', tay: 'khong-co' }, {}, 0, 56) === null);
   kiem('mặc định PIXEL: bat() = false khi không có ?ve=vector và chưa lưu', V.bat() === false);
   kiem("datCheDo('vector') → bat() = true; datCheDo('pixel') → false", V.datCheDo('vector') === true && V.bat() === true && V.datCheDo('pixel') === false && V.bat() === false);
 }
@@ -253,9 +258,17 @@ else {
   kiem('pixel: vatKep(hai-banh, tren) = { ahead: 18, n: 10 }; REACH = 26', J(VeRobot.vatKep({ than: 'hai-banh' }, 'tren')) === J({ ahead: 18, n: 10 }) && VeRobot.REACH === 26);
   V.datCheDo('vector');
   kiem('vector: tiLeChoO(S, hai-banh + kẹp) = S / 100 (84 → 0.84); REACH = 50 (nửa ô)', VeRobot.tiLeChoO(84, { than: 'hai-banh', tay: 'kep' }) === 0.84 && VeRobot.REACH === 50);
-  kiem('vector: cấu hình chưa có hình (xích) vẫn dùng công thức pixel', VeRobot.tiLeChoO(84, { than: 'xich' }) === pixel(84, 20));
+  kiem('vector (gói V3): mọi thân đều theo hệ 1/100 ô (xích 84 → 0.84, drone); cấu hình thiếu hình (mã lạ) vẫn dùng công thức pixel',
+    VeRobot.tiLeChoO(84, { than: 'xich' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'drone', tay: 'nam-cham' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'khong-co' }) === pixel(84, 20));
   const vk = VeRobot.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren'), vv = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren');
-  kiem('vector: vatKep lấy từ VeVector (' + (vk && vk.ahead.toFixed(1)) + ', ' + (vk && vk.n.toFixed(1)) + '); tay khác giữ pixel', !!vk && !!vv && vk.ahead === vv.ahead && vk.n === vv.n && J(VeRobot.vatKep({ than: 'hai-banh', tay: 'xoay' }, 'tren')) === J({ ahead: 18, n: 10 }));
+  const vx = VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0), vxv = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0);
+  kiem('vector: vatKep lấy từ VeVector (' + (vk && vk.ahead.toFixed(1)) + ', ' + (vk && vk.n.toFixed(1)) + '); tay xoay: vatXoay cũng từ VeVector (f ' + (vx && vx.f.toFixed(1)) + ')',
+    !!vk && !!vv && vk.ahead === vv.ahead && vk.n === vv.n && !!vx && !!vxv && vx.f === vxv.f && vx.l === vxv.l);
+  const hh = VeRobot.hinhHoc({ than: 'hai-banh', tay: 'hoi' }), hv = V.hinhHoc({ than: 'hai-banh', tay: 'hoi' });
+  kiem('vector: hinhHoc (mz / mzs / bk / pp / dinh) lấy từ VeVector; reachCua = 50 (+ phần tràn của tay xoay)', J(hh) === J(hv) && VeRobot.reachCua({ than: 'hai-banh', tay: 'kep' }) === 50 && VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }) > 50);
+  V.datCheDo('pixel');
+  kiem('pixel: hinhHoc = hằng pixel part { mz 24, mzs 10,5, bk 23,5, pp 1, dinh 11 }; reachCua = REACH 26; vatXoay công thức cũ', J(VeRobot.hinhHoc({ than: 'hai-banh', tay: 'hoi' })) === J({ mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 }) && VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }) === 26
+    && J(VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0)) === J({ f: 22, l: 0, n: 10 }));
   V.datCheDo('pixel');
 }
 
