@@ -144,6 +144,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var sonTab = (r.robot && r.robot.son) || (S.man.doiKhang && i === 1 ? 'do' : SanVe.SON_XE[i % SanVe.SON_XE.length]);
       var idxMau = SanVe.SON_XE.indexOf(sonTab);
       b.style.setProperty('--mx', SanVe.MAU_XE[idxMau >= 0 ? idxMau : (i % SanVe.MAU_XE.length)]);
+      b.setAttribute('data-son', sonTab);                                           // giao diện vector (choi-vector.css): thẻ mang màu đội của robot vector (R1 xanh, R2 hồng, đối thủ đỏ)
       b.addEventListener('click', function () { chonXeCode(i); });
       if (r.coDinh) { b.classList.add('khoa'); b.appendChild(Ve.khoa(1, true)); }        // robot tự động: chương trình khóa, vẫn mở xem được
       E.xeTabs.appendChild(b);
