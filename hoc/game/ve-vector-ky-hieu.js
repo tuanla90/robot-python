@@ -7,7 +7,7 @@
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var SAN = ['san'];
   var KY_HIEU = {
-    '.': { o: [SAN] }, ' ': { o: [SAN] },
+    '.': { o: [SAN] },
     '#': { o: [['tuong']] },
     'F': { o: [SAN, ['co']] },
     'o': { o: [SAN], vat: [['thung-go']] },

@@ -11,9 +11,16 @@
      7. Bộ đệm: cùng (tên, cỡ, trạng thái) → cùng canvas; khác cỡ / trạng thái / hướng / sơn → canvas khác.
      8. coDu(): chỉ cấu hình đủ hình vector mới vẽ bằng vector; công tắc mặc định PIXEL (bat() = false khi không có ?ve=vector / lưu).
      9. VeRobot (ve-robot.js): tiLeChoO / vatKep / REACH đổi theo chế độ và theo coDu; chế độ pixel giữ công thức cũ.
-   Cờ --loi-gia: cắm sáu lỗi giả (neo tay lệch, góc xoay lệch 90°, màu R2 = R1, đệm bỏ cỡ, ô tường tô mã màu ngoài bảng, ổ tay thân ra ngoài ô) → máy kiểm phải ĐỎ.
+  10. (gói V2) Mọi ký hiệu sân và mọi vật có hình vector — liệt kê TỪ CODE, không gõ tay: ký hiệu = mọi ký tự SanHoc.docSan nhận (thử từng ký tự in được),
+       ô pixel = mọi khoá của Ve.tiles() (đọc từ nguồn ve.js), hàm vẽ trực tiếp = mọi lời gọi Ve.make* / Ve.ve* trong san-ve.js, vật = mọi chất SanHoc.CHAT_KY × màu
+       SanHoc.MAU_TEN; mỗi thứ phải có trong bảng nối ve-vector-ky-hieu.js và trỏ tới hình đã đăng ký; mỗi hàm Field.* trong bảng có nhánh this.vec.
+  11. (gói V2) Mỗi hình × MỌI trạng thái mẫu (cacTrangThai) × 3 cỡ (14, 56, 168): vẽ được, màu từ bảng màu, nằm trong ô; trạng thái khác → luồng lệnh khác và canvas đệm khác;
+       màu luật: sàn màu / vật nam châm / khung đích màu lấy nhóm LUAT, bốn màu sàn cách nhau và cách nền sân trắng đủ xa (khoảng cách RGB).
+   Cờ --loi-gia: cắm sáu lỗi giả (neo tay lệch, góc xoay lệch 90°, màu R2 = R1, đệm bỏ cỡ, ô tường tô mã màu ngoài bảng, ổ tay thân ra ngoài ô) và bốn lỗi V2
+   (bỏ ký hiệu hố khỏi bảng nối, bỏ ô bậc thang của Ve.tiles khỏi bảng, băng chuyền bỏ qua pha, sàn màu vàng tô màu ngoài nhóm LUAT) → máy kiểm phải ĐỎ.
    Chạy: node hoc/kiem-ve-vector.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -42,6 +49,10 @@ if (LOI_GIA) {
   V._loiGia.demBoCo = true;
   V.lay('o', 'tuong').ve = function (g) { g.fillStyle = '#123456'; g.fillRect(0, 0, 100, 100); };
   V.lay('than', 'hai-banh').oGan.tay.y = 140;
+  console.log('(và bốn lỗi giả V2: bỏ KY_HIEU.u, bỏ TILES.stair, băng chuyền bỏ qua pha, sàn màu vàng tô vecDen)');
+  delete V.KY_HIEU.u; delete V.TILES.stair;
+  const bang = V.lay('o', 'bang'), veBang = bang.ve; bang.ve = function (g, s, H) { return veBang(g, Object.assign({}, s, { pha: 0 }), H); };
+  const sm = V.lay('o', 'san-mau'), veSm = sm.ve; sm.ve = function (g, s, H) { if (s && s.mau === 'yellow') { H.bo(g, 3, 3, 94, 94, 6); H.to(g, BM.vecDen); return; } return veSm(g, s, H); };
 }
 
 const CO = [14, 37, 56, 84, 168];
@@ -246,6 +257,107 @@ else {
   const vk = VeRobot.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren'), vv = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren');
   kiem('vector: vatKep lấy từ VeVector (' + (vk && vk.ahead.toFixed(1)) + ', ' + (vk && vk.n.toFixed(1)) + '); tay khác giữ pixel', !!vk && !!vv && vk.ahead === vv.ahead && vk.n === vv.n && J(VeRobot.vatKep({ than: 'hai-banh', tay: 'xoay' }, 'tren')) === J({ ahead: 18, n: 10 }));
   V.datCheDo('pixel');
+}
+
+/* ================================================================= 10. mọi ký hiệu / ô / vật có hình vector (liệt kê từ code) */
+console.log('\n== 10. Mọi ký hiệu sân, ô của Ve.tiles(), hàm vẽ trực tiếp và vật đều có hình vector ==');
+const SanHoc = require(path.join(day, 'san-hoc.js'));
+const coHinh = (loai, ma) => !!V.lay(loai, ma);
+{
+  /* ký hiệu: thử từng ký tự in được với SanHoc.docSan (hai ô liền nhau: cổng cần đúng 2 ô); "Ký hiệu lạ" = không phải ký hiệu sân */
+  const ky = [];
+  for (let c = 32; c < 127; c++) {
+    const ch = String.fromCharCode(c);
+    try { SanHoc.docSan([ch + ch]); ky.push(ch); } catch (e) { if (!/Ký hiệu lạ/.test(e.message)) ky.push(ch); }
+  }
+  const thieuKy = ky.filter((ch) => !V.KY_HIEU[ch]), saiKy = [];
+  for (const ch of ky) {
+    const kh = V.KY_HIEU[ch]; if (!kh) continue;
+    if (!(kh.o || []).length) saiKy.push(ch + ': không có lớp ô');
+    for (const l of kh.o || []) { if (!coHinh('o', l[0])) saiKy.push(ch + '→o/' + l[0]); else for (const n of [14, 56, 168]) if (!coVe(V.o(l[0], n, l[1]).lenh)) saiKy.push(ch + '→o/' + l[0] + '@' + n + ' không vẽ'); }
+    for (const l of kh.vat || []) if (!coHinh('vat', l[0])) saiKy.push(ch + '→vat/' + l[0]);
+  }
+  kiem(ky.length + ' ký hiệu SanHoc.docSan nhận (' + ky.join(' ') + ') đều có trong VeVector.KY_HIEU', ky.length > 20 && thieuKy.length === 0, 'thiếu: ' + J(thieuKy));
+  kiem('mỗi ký hiệu có ít nhất một lớp ô, trỏ tới ô / vật đã đăng ký, vẽ được ở 3 cỡ với trạng thái của bảng', saiKy.length === 0, saiKy.join(', '));
+  const kyHinh = []; for (const loai of ['o', 'vat']) for (const ma of V.ds(loai)) for (const k of V.lay(loai, ma).ky || []) kyHinh.push(k);
+  kiem('ký hiệu khai trong từng hình (ky) đều là ký hiệu sân thật', kyHinh.every((k) => ky.includes(k)), J(kyHinh.filter((k) => !ky.includes(k))));
+
+  /* ô pixel: mọi khoá của tileCache trong ve.js */
+  const veSrc = fs.readFileSync(path.join(GAME, 've.js'), 'utf8'), m = /tileCache = \{([\s\S]*?)\n    \};/.exec(veSrc);
+  const khoa = m ? [...new Set([...m[1].matchAll(/(?:^|[\s,{])([A-Za-z]\w*)\s*:/g)].map((x) => x[1]))] : [];
+  const thieuT = khoa.filter((k) => !V.TILES[k] || !(coHinh('o', V.TILES[k]) || coHinh('vat', V.TILES[k])));
+  kiem(khoa.length + ' ô của Ve.tiles() (đọc từ ve.js: ' + khoa.join(', ') + ') đều có hình vector trong VeVector.TILES', khoa.length >= 15 && thieuT.length === 0, 'thiếu: ' + J(thieuT));
+
+  /* hàm vẽ trực tiếp của san-ve.js */
+  const svSrc = fs.readFileSync(path.join(GAME, 'san-ve.js'), 'utf8');
+  const goi = [...new Set([...svSrc.matchAll(/Ve\.((?:make|ve)[A-Z]\w*)\(/g)].map((x) => 'Ve.' + x[1]))];
+  const thieuG = goi.filter((k) => !V.VE_TRUC_TIEP[k]);
+  kiem(goi.length + ' hàm vẽ trực tiếp san-ve.js gọi (' + goi.join(', ') + ') đều có trong VeVector.VE_TRUC_TIEP', goi.length >= 3 && thieuG.length === 0, 'thiếu: ' + J(thieuG));
+  const saiTT = [];
+  for (const k of Object.keys(V.VE_TRUC_TIEP)) {
+    const [loai, ...ma] = V.VE_TRUC_TIEP[k];
+    for (const x of ma) if (!coHinh(loai, x)) saiTT.push(k + '→' + loai + '/' + x);
+    if (k.startsWith('Field.')) {
+      const ten = k.slice(6), i = svSrc.indexOf('\n    ' + ten + ': function');
+      const than = i < 0 ? '' : svSrc.slice(i, svSrc.indexOf('\n    },', i));
+      if (!/this\.vec/.test(than)) saiTT.push(k + ' không có nhánh this.vec');
+    }
+  }
+  kiem('VE_TRUC_TIEP trỏ tới hình đã đăng ký; mỗi Field.* có nhánh this.vec trong san-ve.js', saiTT.length === 0, saiTT.join(', '));
+  kiem('draw() của san-ve.js vẽ mọi ô bằng veOVec ở chế độ vector; ảnh nhỏ thuSan dùng VeVector.KY_HIEU',
+    /if \(this\.vec\) \{ this\.veOVec\(/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /if \(vecT\) thuOVec\(/.test(svSrc));
+  const kySrc = fs.readFileSync(path.join(GAME, 've-vector-ky-hieu.js'), 'utf8');
+  const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'"));
+  kiem('mọi hình ô / vật trong kho đều được san-ve.js hay bảng nối dùng tới (không hình thừa)', khongDung.length === 0, J(khongDung));
+
+  /* vật: mọi chất × màu của lõi */
+  const DAI = { red: 'luatVatDo', green: 'luatVatXanhLa', blue: 'luatVatXanhDuong', yellow: 'luatVatVang' };
+  const chat = [...new Set(Object.values(SanHoc.CHAT_KY))], saiV = [];
+  for (const c of chat) for (const mau of [null, ...SanHoc.MAU_TEN]) {
+    const o = c === 'N' || c === 'S' ? { chat: 'nam-cham', cuc: c, mau } : { chat: c, mau };
+    const hv = V.vatCua(o);
+    if (!coHinh('vat', hv[0])) { saiV.push(J(o) + '→' + hv[0]); continue; }
+    const cv = V.vat(hv[0], 30, hv[1]);
+    if (!coVe(cv.lenh)) saiV.push(J(o) + ' không vẽ');
+    if (mau && o.chat !== 'nam-cham' && !mauCua(cv.lenh).includes(BM[DAI[mau]])) saiV.push(J(o) + ' thiếu đai màu luật');
+  }
+  kiem('mọi vật (chất ' + chat.join(' / ') + ' × không màu + ' + SanHoc.MAU_TEN.length + ' màu) có hình vector qua vatCua; vật màu có đai màu luật (luatVat*)', saiV.length === 0, saiV.slice(0, 6).join('; '));
+  kiem('nam châm N tô luatVatDo, S tô luatVatXanhDuong (như bộ pixel); thùng nặng H / h và bóng hơi có hình',
+    mauCua(V.vat('nam-cham', 30, { cuc: 'N' }).lenh).includes(BM.luatVatDo) && mauCua(V.vat('nam-cham', 30, { cuc: 'S' }).lenh).includes(BM.luatVatXanhDuong) && coHinh('vat', 'thung-nang') && coHinh('vat', 'bong'));
+}
+
+/* ================================================================= 11. mọi trạng thái mẫu × 3 cỡ, màu luật */
+console.log('\n== 11. Mỗi hình × mọi trạng thái mẫu × 3 cỡ; trạng thái khác → hình khác; màu luật ==');
+{
+  const CO3 = [14, 56, 168], khongVe = [], mauLa = [], ngoai = [], trung = [], demSai = []; let so = 0;
+  const anh = (loai, ma, n, s) => (loai === 'o' ? V.o(ma, n, s) : V.vat(ma, n, s));
+  for (const loai of ['o', 'vat']) for (const ma of V.ds(loai)) {
+    const tt = V.lay(loai, ma).cacTrangThai || [{}], luong = new Map();
+    for (const s of tt) for (const n of CO3) {
+      V.xoaDem(); const cv = anh(loai, ma, n, s); so++;
+      if (!cv || !coVe(cv.lenh)) { khongVe.push(loai + '/' + ma + J(s) + '@' + n); continue; }
+      for (const m of mauCua(cv.lenh)) if (!mauHopLe(m)) mauLa.push(loai + '/' + ma + ': ' + m);
+      if (ngoaiO(cv).length) ngoai.push(loai + '/' + ma + J(s) + '@' + n);
+      if (n === 56) { const k = cv.lenh.map(chuoi).join('\n'); if (luong.has(k)) trung.push(loai + '/' + ma + ' ' + J(s) + ' = ' + J(luong.get(k))); else luong.set(k, s); }
+    }
+    if (tt.length > 1) { V.xoaDem(); const a = anh(loai, ma, 56, tt[0]), b = anh(loai, ma, 56, tt[1]); if (a === b || a !== anh(loai, ma, 56, tt[0])) demSai.push(loai + '/' + ma); }
+  }
+  kiem(so + ' ảnh (mọi ô / vật × mọi trạng thái mẫu × cỡ ' + CO3.join(', ') + '): đều có lệnh tô / viền', khongVe.length === 0, khongVe.slice(0, 6).join(', '));
+  kiem('mọi màu của chúng có trong bảng màu (hay rgba bộ ba của bảng)', mauLa.length === 0, [...new Set(mauLa)].slice(0, 6).join(', '));
+  kiem('mọi điểm vẽ (kể cả nửa nét) nằm trong ô', ngoai.length === 0, ngoai.slice(0, 6).join(', '));
+  kiem('hai trạng thái mẫu khác nhau của cùng hình → luồng lệnh khác (băng theo pha, cửa theo độ mở, nút theo bật / đè…)', trung.length === 0, trung.slice(0, 4).join('\n      '));
+  kiem('bộ đệm theo trạng thái: cùng trạng thái → cùng canvas, khác trạng thái → canvas khác', demSai.length === 0, demSai.join(', '));
+  const nen = { red: 'luatSanDo', green: 'luatSanXanhLa', blue: 'luatSanXanhDuong', yellow: 'luatSanVang' }, saiL = [];
+  for (const m of Object.keys(nen)) {
+    if (!mauCua(V.o('san-mau', 56, { mau: m }).lenh).includes(BM[nen[m]])) saiL.push('sàn ' + m + ' thiếu ' + nen[m]);
+    if (!mauCua(V.o('dich', 56, { kieu: 'day', mau: m }).lenh).includes(BM[nen[m] + 'Vien'])) saiL.push('đích ' + m + ' thiếu ' + nen[m] + 'Vien');
+  }
+  kiem('sàn màu lấy nền luatSan*, khung đích màu lấy luatSan*Vien (nhóm LUAT, cùng màu luật với bộ pixel)', saiL.length === 0, saiL.join(', '));
+  const rgb = (h) => { h = String(h).replace('#', ''); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)); }, kc = (a, b) => Math.hypot(...a.map((x, i) => x - b[i]));
+  const ds = [['đỏ', BM.luatSanDo], ['xanh lá', BM.luatSanXanhLa], ['xanh dương', BM.luatSanXanhDuong], ['vàng', BM.luatSanVang], ['sàn trắng', BM.vecSan], ['lưới sân', BM.vecSanToi]];
+  let nho = Infinity, cap = '';
+  for (let i = 0; i < 4; i++) for (let j = i + 1; j < ds.length; j++) { const d = kc(rgb(ds[i][1]), rgb(ds[j][1])); if (d < nho) { nho = d; cap = ds[i][0] + ' – ' + ds[j][0]; } }
+  kiem('bốn màu sàn luật cách nhau và cách nền sân trắng ≥ 80 (RGB): nhỏ nhất ' + nho.toFixed(0) + ' (' + cap + ')', nho >= 80);
 }
 
 console.log('\n---------------------------------------------');
