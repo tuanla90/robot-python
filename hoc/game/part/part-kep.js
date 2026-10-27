@@ -1,3 +1,4 @@
+var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* Tay kẹp trước mũi. Ba thế của hai càng (đối xứng quanh cột 12, tính theo toạ độ liên tục):
        mở      càng ở sát mép thân (2..5 và 18..21), khe giữa 12 pixel, đủ rộng để ôm vật;
@@ -9,12 +10,12 @@
   P.dangKy({loai:'tay',ma:'kep',ten:'Tay kẹp trước mũi',hamGoc:['arm_down','arm_up','grab','release'],gan:'tay',diemNeo:{x:12,y:23},ve:function(p,s){
     s=s||{};var open=s.kep!=='dong',low=s.tuThe==='duoi',a=low?1:0,e=low?2:0,hold=!open&&!!s.cam,
       l=open?2-a:hold?4:9-a,r=open?21+a:hold?19:14+a,
-      cL=low?C.vang:C.vangSang,cR=low?'#b07510':C.vang,tip=low?'#fff6e3':C.vangSang,i;
+      cL=low?C.vang:C.vangSang,cR=low?BM.partKepVe1:C.vang,tip=low?BM.partKepVe2:C.vangSang,i;
     p.rect(7,22,10,2,C.ink);p.rect(8,22,8,1,C.thepSang);
     p.rect(l,19,r-l+1,3,C.ink);p.rect(l+1,20,r-l-1,1,C.thep);
     p.rect(9,18,2,4,C.ink);p.rect(13,18,2,4,C.ink);
     /* CHỈ BÁO CỐ ĐỊNH trên cụm giữa (hàng 22..23, nằm sát thân, không bị càng che): tay nâng = mũi tên LÊN xanh lá, tay hạ = mũi tên XUỐNG cam */
-    if(low){p.rect(10,22,4,1,'#ff8a35');p.rect(11,23,2,1,'#ff8a35');}else{p.rect(11,22,2,1,C.la);p.rect(10,23,4,1,C.la);}
+    if(low){p.rect(10,22,4,1,BM.partKepVe3);p.rect(11,23,2,1,BM.partKepVe3);}else{p.rect(11,22,2,1,C.la);p.rect(10,23,4,1,C.la);}
     if(s.vat){var v=typeof s.vat==='object'?s.vat:{chat:s.vat};P.veVatNho(p,7,8-e,10,v.chat,v.mau);}
     /* tay hạ: càng DÀI ra thêm 2 pixel tới chạm đất, màu đậm, đầu càng sáng như vừa chạm; tay nâng: càng ngắn hơn, màu sáng */
     p.rect(l,9-e,4,12+e,C.ink);p.rect(r-3,9-e,4,12+e,C.ink);
