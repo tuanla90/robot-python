@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    man-lap.js — "Robot Chấn Hưng": MÀN LẮP ROBOT (window.LapRobot), chế độ lắp ráp (KE-HOACH-LAP-RAP.md, lõi ở ../lap-rap.js).
    Hiện TRƯỚC khi chơi một màn có man.lapRap: người chơi chọn part cho ba khe (THÂN · TAY · NÃO = cảm biến) dưới ngân sách xu rồi bấm "Lắp xong".
@@ -16,8 +17,8 @@
   var E = {};
   var S = { m: null, cach: null, tuyChon: null, loiHen: null, loiRieng: null, keo: null, vuaKeo: 0, cao: false };
   var CAO_TU = 700;                                    // chiều cao khung (--sh) từ đây trở lên: có hàng sân + đề bài riêng
-  var MAU_KHE = { than: '#5ff0ff', tay: '#ffb050', camBien: '#9ff0e2' };
-  var MAU_RIENG = { 'nam-cham': '#ff7a6a' };
+  var MAU_KHE = { than: BM.ngocToi, tay: BM.cam, camBien: BM.ngoc };
+  var MAU_RIENG = { 'nam-cham': BM.doSangV6 };
   var XU_TOI_DA_ICON = 14;                             // quá số này thì chỉ ghi số, không vẽ từng đồng xu
 
   /* ------------------------------------------------------------------ dựng DOM */
@@ -137,7 +138,7 @@
     E.xu.classList.toggle('qua', con < 0);
   }
   function xuIcon(sang, s) {
-    return Ve.ico('xu', s || 1, sang ? { fill: '#ffcf30', toi: '#c27a10', sang: '#fff2a6', line: '#1b120a' } : { fill: '#3d4a44', toi: '#26302b', sang: '#59675f', line: '#101814' });
+    return Ve.ico('xu', s || 1, sang ? { fill: BM.vangV3, toi: BM.goSangV14, sang: BM.kem, line: BM.vienDam } : { fill: BM.xamToi2V4, toi: BM.xamToi2V5, sang: BM.xamToiV9, line: BM.denV4 });
   }
 
   /* ----------------------------------------------------------------- đề bài + sân */
@@ -204,14 +205,14 @@
     var b = h('button', 'lr-the'); b.setAttribute('data-khe', khe); b.setAttribute('data-ma', ma || 'khong');
     var hd = h('div', 'lr-the-hd');
     var ic = h('span', 'lr-the-ic');
-    ic.appendChild(Ve.ico(d ? d.icon : 'cross', 2, d ? DenBoPhan.mauIcon(mauThe(khe, ma), true) : { fill: '#9fb3a8', line: '#0a2a1f', toi: '#0a2a1f' }));
+    ic.appendChild(Ve.ico(d ? d.icon : 'cross', 2, d ? DenBoPhan.mauIcon(mauThe(khe, ma), true) : { fill: BM.xamV9, line: BM.bangV1, toi: BM.bangV1 }));
     hd.appendChild(ic);
     var gia = h('span', 'lr-gia'); gia.appendChild(xuIcon(true, 1)); gia.appendChild(h('span', 'lr-gia-so', String(d ? d.gia : 0)));
     hd.appendChild(gia);
     b.appendChild(hd);
     b.appendChild(h('div', 'lr-the-ten', d ? d.ten : t('lap.khongGan')));
     b.appendChild(h('div', 'lr-the-vuot', d ? d.vuot : t('lap.khongGanMoTa')));
-    var tick = h('span', 'lr-tick'); tick.appendChild(Ve.ico('check', 1, { fill: '#7cff86', shade: '#3cc24a', line: '#0e2a14' })); b.appendChild(tick);
+    var tick = h('span', 'lr-tick'); tick.appendChild(Ve.ico('check', 1, { fill: BM.xanhLaSangV1, shade: BM.xanhLaToiV1, line: BM.bangV3 })); b.appendChild(tick);
     b.addEventListener('click', function () { if (Date.now() - S.vuaKeo < 250) return; chon(khe, ma, b); });
     return b;
   }

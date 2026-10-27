@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    man-so-lenh.js — "Robot Chấn Hưng": SỔ LỆNH (window.SoLenhMan).
    Mở từ nút "Sổ lệnh" (quyển sách) ở màn khởi đầu, màn chọn gói và thanh trên của lưới màn; trang "Hàm của em" là thư viện hàm của người chơi. Dữ liệu do lõi giữ ở window.SoLenh (hoc/so-lenh.js):
@@ -72,7 +73,7 @@
     the.setAttribute('data-ham', ten);
     var hd = h('div', 'so-hd');
     hd.appendChild(h('span', 'so-ten', f ? ten + '(' + (f.thamSo || []).join(', ') + ')' : t('so.chuaBiet')));
-    if (f) { var ok = h('span', 'so-ok'); ok.appendChild(Ve.ico('check', 1, { fill: '#7cff86', line: '#0e2a14' })); hd.appendChild(ok); }
+    if (f) { var ok = h('span', 'so-ok'); ok.appendChild(Ve.ico('check', 1, { fill: BM.xanhLaSangV1, line: BM.bangV3 })); hd.appendChild(ok); }
     else hd.appendChild(h('span', 'so-nhan', t('so.chuaChe')));
     the.appendChild(hd);
     if (moTa) the.appendChild(h('div', 'so-mota', moTa));
@@ -94,7 +95,7 @@
     var hd = h('div', 'so-hd goc');
     hd.appendChild(h('span', 'so-ten' + (biet[c.ten] ? '' : ' mo'), tenLenhGoc(c.ten, biet)));
     if (c.nguoc) {
-      var mt = h('span', 'so-cap'); mt.appendChild(Ve.ico('back', 1, { fill: '#ffd95a', line: '#1b120a' })); mt.appendChild(Ve.ico('next', 1, { fill: '#ffd95a', line: '#1b120a' }));
+      var mt = h('span', 'so-cap'); mt.appendChild(Ve.ico('back', 1, { fill: BM.vang, line: BM.vienDam })); mt.appendChild(Ve.ico('next', 1, { fill: BM.vang, line: BM.vienDam }));
       hd.appendChild(mt);
       hd.appendChild(h('span', 'so-ten' + (biet[c.nguoc] ? '' : ' mo'), tenLenhGoc(c.nguoc, biet)));
     }

@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    man-dau.js — "Robot Chấn Hưng": MÀN KHỞI ĐẦU (window.Dau), kiểu màn tiêu đề của Cut the Rope.
    Logo · robot hoàn thiện chạy qua lại trên tấm bảng · tổng sao · nút CHƠI (→ chọn gói) · "Chơi tiếp · 4.3" (vào thẳng màn kế) · Sổ lệnh · bánh răng Cài đặt (cai-dat.js).
@@ -69,14 +70,14 @@
     el.hang.innerHTML = '';
     if (window.SoLenh && window.SoLenhMan) {
       var bs = h('button', 'bt g-cy d-so'); bs.setAttribute('data-nut', 'so-lenh'); bs.setAttribute('aria-label', t('chon.soLenh'));
-      var ib = h('span'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', '#07303a'); bs.appendChild(ib);
+      var ib = h('span'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', BM.xanhLo); bs.appendChild(ib);
       bs.appendChild(h('span', null, t('chon.soLenh')));
       bs.addEventListener('click', function () { SoLenhMan.mo(); });
       el.hang.appendChild(bs);
     }
     if (window.CaiDat) {
       var bc = h('button', 'bt g-wd d-cai'); bc.setAttribute('data-nut', 'cai-dat'); bc.setAttribute('aria-label', t('caiDat.nut'));
-      var ic = h('span'); ic.setAttribute('data-i', 'gear'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-l', '#3a2410'); bc.appendChild(ic);
+      var ic = h('span'); ic.setAttribute('data-i', 'gear'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-l', BM.goToiV1); bc.appendChild(ic);
       bc.addEventListener('click', function () { CaiDat.mo(); });
       el.hang.appendChild(bc);
     }

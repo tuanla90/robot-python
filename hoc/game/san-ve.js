@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    san-ve.js — "Robot Chấn Hưng": VẼ SÂN VÀ PHÁT LẠI VẾT (window.SanVe).
    Vẽ từ cấu hình sân của lõi { san, batDau, loaiRobot }: tường #, cờ F, bậc thang S,
@@ -37,9 +38,9 @@
   'use strict';
 
   var T = Ve.T;
-  var K_INK = '#1b120a';
+  var K_INK = BM.vienDam;
   var SON_XE = ['vang', 'lam', 'do', 'tim'];                          // nhiều robot: màu sơn thân của R1, R2… (Part.SON); R1 giữ vàng chuẩn, đối thủ sau này dùng 'do'
-  var MAU_XE = ['#ffcf30', '#5aa9ff', '#ff5f57', '#b07cff'];          // màu đế (vạch dưới thân) của R1, R2…, trùng màu sơn và màu thẻ R1 / R2 ở khung code
+  var MAU_XE = [BM.doiR1Vach, BM.doiR2Vach, BM.doiR3Vach, BM.doiR4Vach];          // màu đế (vạch dưới thân) của R1, R2…, trùng màu sơn và màu thẻ R1 / R2 ở khung code
   var ALT = 3;                      // drone: độ cao hiển thị (pixel sân) so với mặt ô; bóng đổ nằm ở mặt ô, lệch xuống dưới
   var HANG = 5.5;                   // drone: tâm vật treo dưới nam châm cách tâm thân drone bao nhiêu pixel sân (về phía dưới)
   var DEM_KHUNG = 4;                // khung gỗ ôm sát sân: bề dày gỗ quanh canvas sân (px CSS), bằng đệm của .ffr trước đây (xem Field.datKhung)
@@ -51,7 +52,7 @@
   var MAU_RA = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
   var GOC_XOAY = { trai: -90, truoc: 0, phai: 90 };                       // tay xoay: nấc khớp → góc (độ, 0 = phía trước, âm = sang trái)
   function laTayKep(t) { return t === 'kep' || t === 'xoay'; }            // tay kẹp thường và tay xoay đều kẹp vật ở ô tay chỉ
-  var MAU_VIEN = { red: '#ff5a4a', green: '#5fe06a', blue: '#4aa8ff', yellow: '#ffd23f' };         // màu khung của vật mờ có màu (bóng mờ che-tay)
+  var MAU_VIEN = { red: BM.luatKhungDo, green: BM.luatKhungXanhLa, blue: BM.luatKhungXanhDuong, yellow: BM.luatKhungVang };         // màu khung của vật mờ có màu (bóng mờ che-tay)
   function chuanMau(m) { return typeof m === 'string' ? (MAU_KY[m] || (MAU_RA[m] ? m : null)) : null; }
   /** Lớp màu (mảng chuỗi r g b y '.') + ký hiệu r g b y trong hàng sân → mảng hàng tên màu / null; null nếu sân không có ô màu. */
   function dungLopMau(rows, lop) {
@@ -359,7 +360,7 @@
       var ds = this.docs, i;
       for (i = ds.length - 1; i >= 0; i--) if (now - ds[i].t0 >= ds[i].ms) ds.splice(i, 1);
       for (i = 0; i < ds.length; i++) {
-        var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45), rgb = d.trong ? '93,255,122' : '255,74,60';
+        var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45), rgb = d.trong ? BM.tiaXanhLaRgb : BM.tiaDoV3Rgb;
         if (d.cam === 'mau' || d.cam === 'pin') continue;                         // cảm biến màu: vòng sáng vẽ dưới robot (veVongMauDuoi); cảm biến pin: thanh pin nháy (veThanhPin)
         if (d.cam === 'camera') { this.veTiaCamera(g, d, now, u, a, 'tren'); continue; }
         if (d.cam === 'camera-bay') { this.veTiaNhin(g, d, now, u, a, 'tren'); continue; }                  // camera nhìn xuống của drone: bốn góc ngắm quanh ô dưới drone   // camera: hai tia từ đôi mắt tới ô trước mặt, ô đó nháy khung theo màu đọc được
@@ -386,14 +387,14 @@
     veTiaCamera: function (g, d, now, u, a, pha) {
       var vx = DX[d.huong], vy = DY[d.huong], e = 2.5 * (this.pp || 0.7), tx = d.tu.x * T + 7, ty = d.tu.y * T + 7;
       var cx = d.o.x * T + 7, cy = d.o.y * T + 7, chan = d.nguon === 'chan', vat = d.nguon === 'vat';
-      var col = chan ? '#aab3c4' : this.mauHien(d.mau), nhay = u < 0.55 ? (((now / 80) | 0) & 1 ? 1 : 0.6) : 1, ox = d.o.x * T, oy = d.o.y * T, i;
+      var col = chan ? BM.sanLamV3 : this.mauHien(d.mau), nhay = u < 0.55 ? (((now / 80) | 0) & 1 ? 1 : 0.6) : 1, ox = d.o.x * T, oy = d.o.y * T, i;
       g.save();
       if (pha === 'duoi') {
         g.globalAlpha = 0.3 * a; g.fillStyle = col;                                   // mũi tia: tam giác hẹp từ hai mắt tới tâm ô
         g.beginPath(); g.moveTo(tx + vy * e, ty - vx * e); g.lineTo(tx - vy * e, ty + vx * e); g.lineTo(cx, cy); g.closePath(); g.fill();
         g.setLineDash([3, 1]); g.lineDashOffset = -((now / 40) % 3);
         var x0 = tx + vx * 6.5, y0 = ty + vy * 6.5, x1 = cx - vx * (vat ? 5 : 2), y1 = cy - vy * (vat ? 5 : 2);
-        g.globalAlpha = 0.9 * a; g.lineWidth = 2; g.strokeStyle = '#1b120a';
+        g.globalAlpha = 0.9 * a; g.lineWidth = 2; g.strokeStyle = BM.vienDam;
         g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
         g.lineWidth = 1; g.strokeStyle = col;
         g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
@@ -404,18 +405,18 @@
         var L = [[-6, -6, 1, 1], [5, -6, -1, 1], [-6, 5, 1, -1], [5, 5, -1, -1]];
         for (i = 0; i < 4; i++) {
           var px = Math.round(cx + L[i][0]), py = Math.round(cy + L[i][1]), hx = L[i][2] > 0 ? px : px - 2, vy2 = L[i][3] > 0 ? py : py - 2;
-          g.fillStyle = '#1b120a'; g.fillRect(hx - 1, py - 1, 5, 3); g.fillRect(px - 1, vy2 - 1, 3, 5);
+          g.fillStyle = BM.vienDam; g.fillRect(hx - 1, py - 1, 5, 3); g.fillRect(px - 1, vy2 - 1, 3, 5);
           g.fillStyle = col; g.fillRect(hx, py, 3, 1); g.fillRect(px, vy2, 1, 3);
         }
         g.fillStyle = col; g.globalAlpha = 0.16 * a * nhay; g.fillRect(ox + 1, oy + 1, T - 2, T - 2);
       } else {
         g.fillStyle = col; g.globalAlpha = (chan ? 0.26 : 0.38) * a * nhay; g.fillRect(ox, oy, T, T);
-        g.globalAlpha = a * nhay; g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.strokeRect(ox + 1.5, oy + 1.5, T - 3, T - 3);
+        g.globalAlpha = a * nhay; g.lineWidth = 3; g.strokeStyle = BM.vienDam; g.strokeRect(ox + 1.5, oy + 1.5, T - 3, T - 3);
         g.lineWidth = 1.5; g.strokeStyle = col; if (chan) g.setLineDash([3, 2]); g.strokeRect(ox + 1.5, oy + 1.5, T - 3, T - 3); g.setLineDash([]);
       }
       if (chan) {                                                                     // dấu X: không nhìn thấy màu gì
         g.globalAlpha = a; g.lineCap = 'butt';
-        g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
+        g.lineWidth = 3; g.strokeStyle = BM.vienDam; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
         g.lineWidth = 1.5; g.strokeStyle = col; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
       }
       g.restore();
@@ -427,13 +428,13 @@
      */
     veTiaNhin: function (g, d, now, u, a, pha) {
       var cx = d.o.x * T + 7, cy = d.o.y * T + 7, ox = d.o.x * T, oy = d.o.y * T, chan = d.nguon === 'chan', vat = d.nguon === 'vat';
-      var col = chan ? '#aab3c4' : this.mauHien(d.mau), nhay = u < 0.55 ? (((now / 80) | 0) & 1 ? 1 : 0.6) : 1, i;
+      var col = chan ? BM.sanLamV3 : this.mauHien(d.mau), nhay = u < 0.55 ? (((now / 80) | 0) & 1 ? 1 : 0.6) : 1, i;
       g.save();
       if (pha === 'duoi') {
         g.globalAlpha = (chan ? 0.24 : vat ? 0.2 : 0.4) * a * nhay; g.fillStyle = col; g.fillRect(ox, oy, T, T);
         if (u < 0.6) {                                                              // vạch quét: từ mép trên xuống mép dưới ô
           var yy = Math.round(oy + 1 + (T - 3) * (u / 0.6));
-          g.globalAlpha = 0.35 * a; g.fillStyle = '#ffffff'; g.fillRect(ox + 1, yy - 1, T - 2, 3);
+          g.globalAlpha = 0.35 * a; g.fillStyle = BM.sanTrangV1; g.fillRect(ox + 1, yy - 1, T - 2, 3);
           g.globalAlpha = 0.95 * a; g.fillRect(ox + 1, yy, T - 2, 1);
         }
         g.restore(); return;
@@ -442,11 +443,11 @@
       var m = vat ? 4.5 : 6.5, L = [[-1, -1], [1, -1], [-1, 1], [1, 1]];          // m: nửa cạnh khung ngắm (vật nhỏ hơn ô)
       for (i = 0; i < 4; i++) {
         var px = Math.round(cx + L[i][0] * m), py = Math.round(cy + L[i][1] * m), hx = L[i][0] > 0 ? px - 2 : px, vy2 = L[i][1] > 0 ? py - 2 : py;       // (px, py) = đỉnh góc; mỗi góc hai nét dài 3 pixel hướng vào tâm ô, viền mực quanh nét
-        g.fillStyle = '#1b120a'; g.fillRect(hx - 1, py - 1, 5, 3); g.fillRect(px - 1, vy2 - 1, 3, 5);
+        g.fillStyle = BM.vienDam; g.fillRect(hx - 1, py - 1, 5, 3); g.fillRect(px - 1, vy2 - 1, 3, 5);
         g.fillStyle = col; g.fillRect(hx, py, 3, 1); g.fillRect(px, vy2, 1, 3);
       }
       if (chan) {                                                                   // dấu X: nhìn xuống mà không thấy màu gì
-        g.lineCap = 'butt'; g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
+        g.lineCap = 'butt'; g.lineWidth = 3; g.strokeStyle = BM.vienDam; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
         g.lineWidth = 1.5; g.strokeStyle = col; g.beginPath(); g.moveTo(cx - 3.5, cy - 3.5); g.lineTo(cx + 3.5, cy + 3.5); g.moveTo(cx + 3.5, cy - 3.5); g.lineTo(cx - 3.5, cy + 3.5); g.stroke();
       }
       g.restore();
@@ -472,7 +473,7 @@
     /** Tia của cảm biến từ front_metal(): nét đứt từ mũi xe tới vật được đo (bạc nếu sắt, nâu nếu gỗ); không có vật thì tia mờ chạy hết tầm. u = tiến độ 0..1, a = độ đậm. */
     veTiaTu: function (g, d, u, a) {
       var vx = DX[d.huong], vy = DY[d.huong], sat = d.chat === 'sat', go = d.chat === 'go', nch = d.chat === 'nam-cham';
-      var rgb = sat ? '226,238,252' : go ? '196,134,72' : nch ? (d.cuc === 'N' ? '255,126,112' : '120,176,255') : '150,176,206';           // vật nam châm: tia đỏ (chữ N) hay xanh dương (chữ S)
+      var rgb = sat ? BM.tiaTrangV1Rgb : go ? BM.tiaCamRgb : nch ? (d.cuc === 'N' ? BM.tiaDoRgb : BM.tiaLamRgb) : BM.tiaLamV1Rgb;           // vật nam châm: tia đỏ (chữ N) hay xanh dương (chữ S)
       var x0 = d.tu.x * T + 7 + vx * 7, y0 = d.tu.y * T + 7 + vy * 7, dai, x1, y1;
       if (d.o) { x1 = d.o.x * T + 7; y1 = d.o.y * T + 7; g.fillStyle = 'rgba(' + rgb + ',' + ((sat ? 0.34 : 0.26) * a).toFixed(3) + ')'; g.fillRect(d.o.x * T, d.o.y * T, T, T); }
       else { dai = d.dai || 0; x1 = x0 + vx * dai; y1 = y0 + vy * dai; }
@@ -486,13 +487,13 @@
         var cx = x1, cy = y1;
         if (sat) {                                                              // lóe bốn cánh trên vật sắt
           var s = 2 + Math.round(Math.abs(Math.sin(u * 9)) * 2);
-          g.strokeStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')'; g.lineWidth = 1.5;
+          g.strokeStyle = 'rgba(' + BM.tiaTrangRgb + ',' + a.toFixed(3) + ')'; g.lineWidth = 1.5;
           g.beginPath(); g.moveTo(cx - s - 2, cy); g.lineTo(cx + s + 2, cy); g.moveTo(cx, cy - s - 2); g.lineTo(cx, cy + s + 2); g.stroke();
         } else if (nch) {                                                       // vòng tròn màu cực quanh vật nam châm: đọc được chữ
           g.strokeStyle = 'rgba(' + rgb + ',' + a.toFixed(3) + ')'; g.lineWidth = 1.5;
           g.beginPath(); g.arc(cx, cy, 5 + Math.abs(Math.sin(u * 9)), 0, Math.PI * 2); g.stroke();
         } else {                                                                // dấu X nâu trên vật gỗ: không hút được
-          g.strokeStyle = 'rgba(120,70,30,' + a.toFixed(3) + ')'; g.lineWidth = 2;
+          g.strokeStyle = 'rgba(' + BM.tiaNauRgb + ',' + a.toFixed(3) + ')'; g.lineWidth = 2;
           g.beginPath(); g.moveTo(cx - 3, cy - 3); g.lineTo(cx + 3, cy + 3); g.moveTo(cx + 3, cy - 3); g.lineTo(cx - 3, cy + 3); g.stroke();
         }
       } else if (!d.o && dm >= 1) {                                             // không thấy gì: gạch cụt ở cuối tia
@@ -505,7 +506,7 @@
      *  bằng mắt = distance()), ô vật cản ám đỏ nhạt. warm(): vật cản nóng (d.nong) thì ô đó loé cam và ba gợn nhiệt bay lên; không nóng thì chấm xanh lơ lạnh. u = tiến độ 0..1, a = độ đậm. */
     veTiaHongNgoai: function (g, d, now, u, a) {
       var vx = DX[d.huong], vy = DY[d.huong], nong = d.ham === 'warm' && !!d.nong, lanh = d.ham === 'warm' && !d.nong;
-      var rgb = nong ? '255,140,40' : '255,58,48';
+      var rgb = nong ? BM.tiaCamV1Rgb : BM.tiaDoV4Rgb;
       var x0 = d.tu.x * T + 7 + vx * 7, y0 = d.tu.y * T + 7 + vy * 7, cx = d.o.x * T + 7, cy = d.o.y * T + 7, x1 = cx - vx * 7, y1 = cy - vy * 7;     // dừng sát mép ô vật cản
       var c = this.cfg, trong = d.o.x >= c.ox && d.o.y >= c.oy && d.o.x < c.ox + c.vw && d.o.y < c.oy + c.vh;
       g.save();
@@ -522,13 +523,13 @@
       }
       if (dm >= 1 && trong) {
         if (nong) {                                                                                    // nóng: lõi cam sáng + ba gợn nhiệt bay lên trên ô
-          g.fillStyle = 'rgba(255,220,120,' + a.toFixed(3) + ')'; g.fillRect(cx - 2, cy - 2, 4, 4);
-          g.strokeStyle = 'rgba(255,170,60,' + (0.9 * a).toFixed(3) + ')'; g.lineWidth = 1;
+          g.fillStyle = 'rgba(' + BM.tiaVangRgb + ',' + a.toFixed(3) + ')'; g.fillRect(cx - 2, cy - 2, 4, 4);
+          g.strokeStyle = 'rgba(' + BM.tiaCamV2Rgb + ',' + (0.9 * a).toFixed(3) + ')'; g.lineWidth = 1;
           for (var k = -1; k <= 1; k++) { var ph = now / 160 + k, gy = cy - 4 - ((now / 25 + k * 5) % 8); g.beginPath(); g.moveTo(cx + k * 4 - 1.5, gy + 2); g.quadraticCurveTo(cx + k * 4 + Math.sin(ph) * 2, gy, cx + k * 4 + 1.5, gy - 2); g.stroke(); }
         } else if (lanh) {                                                                             // không nóng: chấm xanh lơ lạnh ở điểm chạm
-          g.fillStyle = 'rgba(140,220,255,' + a.toFixed(3) + ')'; g.fillRect(x1 - 1.5, y1 - 1.5, 3, 3);
+          g.fillStyle = 'rgba(' + BM.tiaXanhLoV2Rgb + ',' + a.toFixed(3) + ')'; g.fillRect(x1 - 1.5, y1 - 1.5, 3, 3);
         } else {                                                                                       // distance(): chấm đỏ ở điểm chạm
-          g.fillStyle = 'rgba(255,90,70,' + a.toFixed(3) + ')'; g.fillRect(x1 - 1.5, y1 - 1.5, 3, 3);
+          g.fillStyle = 'rgba(' + BM.tiaDoV5Rgb + ',' + a.toFixed(3) + ')'; g.fillRect(x1 - 1.5, y1 - 1.5, 3, 3);
         }
       }
       g.restore();
@@ -537,9 +538,9 @@
     veNong: function (g, x, y, now) {
       var px = x * T, py = y * T, th = 0.55 + 0.45 * Math.sin(now / 260);
       g.save();
-      g.strokeStyle = 'rgba(255,110,40,' + (0.35 + 0.4 * th).toFixed(3) + ')'; g.lineWidth = 1;
+      g.strokeStyle = 'rgba(' + BM.tiaCamV3Rgb + ',' + (0.35 + 0.4 * th).toFixed(3) + ')'; g.lineWidth = 1;
       g.strokeRect(px + 1.5, py + 1.5, T - 3, T - 3);
-      g.strokeStyle = 'rgba(255,170,80,' + (0.5 + 0.3 * th).toFixed(3) + ')';
+      g.strokeStyle = 'rgba(' + BM.tiaCamV4Rgb + ',' + (0.5 + 0.3 * th).toFixed(3) + ')';
       for (var k = 0; k < 2; k++) { var gy = py + 3 - ((now / 30 + k * 7) % 6), gx = px + 5 + k * 5; g.beginPath(); g.moveTo(gx - 1, gy + 2); g.quadraticCurveTo(gx + Math.sin(now / 140 + k) * 1.5, gy, gx + 1, gy - 2); g.stroke(); }
       g.restore();
     },
@@ -548,12 +549,12 @@
       var v = this.vis, self = this, rx = DX[s.huong], ry = DY[s.huong];
       await this.tween(ms * 0.9, my, function (k) {
         var a = Math.sin(k * Math.PI * 4) * (1 - k) * 1.2; v.dx = rx * a; v.dy = ry * a;
-        if (k < 0.5 && Math.random() < 0.4) self.burst(v.x * T + 3 + Math.random() * 8, v.y * T + 12, 1, ['#d8d8d8', '#fff6e3'], 0.35);
+        if (k < 0.5 && Math.random() < 0.4) self.burst(v.x * T + 3 + Math.random() * 8, v.y * T + 12, 1, [BM.sanXam, BM.sanTrang], 0.35);
       });
       v.dx = 0; v.dy = 0;
     },
     /** Màu hiển thị của một lần đọc màu: 'none' (ô không màu) là xám nhạt. */
-    mauHien: function (mau) { return Ve.MAU[mau] ? Ve.MAU[mau].vi : '#d8dfeb'; },
+    mauHien: function (mau) { return Ve.MAU[mau] ? Ve.MAU[mau].vi : BM.sanLamV4; },
     /** Vòng sáng của cảm biến màu ở ô vừa đọc (vẽ DƯỚI robot): vòng nở ra rồi mờ dần, tô màu vừa đọc được (ô không màu: xám nhạt). */
     veVongMauDuoi: function (g, now) {
       var ds = this.docs, i;
@@ -603,8 +604,8 @@
       g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'center';
       var w = Math.ceil(g.measureText(txt).width) + 5, hh = 9, pos = this.viTriBong(cx, cy, w + 2, hh + 2), x = pos.x + 1, y = pos.y + 1;
       g.globalAlpha = Math.min(1, (b.den - now) / 120);
-      g.fillStyle = '#1b120a'; g.fillRect(x - 1, y - 1, w + 2, hh + 2);
-      g.fillStyle = '#2a2236'; g.fillRect(x, y, w, hh);
+      g.fillStyle = BM.vienDam; g.fillRect(x - 1, y - 1, w + 2, hh + 2);
+      g.fillStyle = BM.sanTim; g.fillRect(x, y, w, hh);
       g.fillStyle = col; g.fillRect(x, y, w, 1); g.fillRect(x, y + hh - 1, w, 1); g.fillRect(x, y, 1, hh); g.fillRect(x + w - 1, y, 1, hh);
       g.fillText(txt, Math.round(x + w / 2), y + hh / 2 + 0.5);
       g.restore();
@@ -619,7 +620,7 @@
     mungThang: function () {
       var now = performance.now();
       this.bounce = now + 900; this.mung = now + 900;
-      var cols = ['#ffd23f', '#fff6e3', '#38c6de', '#ff7ac8', '#6fe06a', '#ff5a4a'];
+      var cols = [BM.sanVang, BM.sanTrang, BM.sanXanhLoToiV1, BM.sanHong, BM.sanXanhLaToiV2, BM.sanDo];
       if (this.xe) { for (var xi = 0; xi < this.xe.length; xi++) this.burst(this.xe[xi].vis.x * T + 7, this.xe[xi].vis.y * T + 4, 18, cols, 1.3, 2, true); }
       else if (this.vis) this.burst(this.vis.x * T + 7, this.vis.y * T + 4, 24, cols, 1.35, 2, true);
       var f = this.cfg.co;
@@ -644,12 +645,12 @@
       for (k in this.daSon) {
         var a = k.split(','); x = +a[0]; y = +a[1]; m = this.daSon[k];
         var loe = this.sonLoe[k], kk = loe ? (now - loe) / 380 : 1;
-        g.fillStyle = 'rgba(27,18,10,.55)'; g.fillRect(x * T + 1, y * T + 1, T - 2, T - 2);
-        g.fillStyle = MAU_VIEN[m] || '#d8dfeb'; g.fillRect(x * T + 2, y * T + 2, T - 4, T - 4);
-        g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x * T + 2, y * T + 2, T - 4, 1); g.fillRect(x * T + 2, y * T + 2, 1, T - 4);
-        if (kk >= 0 && kk < 1) { g.fillStyle = 'rgba(255,255,255,' + (0.7 * (1 - kk)).toFixed(3) + ')'; g.fillRect(x * T + 2, y * T + 2, T - 4, T - 4); }
+        g.fillStyle = BM.moToiSangV8; g.fillRect(x * T + 1, y * T + 1, T - 2, T - 2);
+        g.fillStyle = MAU_VIEN[m] || BM.sanLamV4; g.fillRect(x * T + 2, y * T + 2, T - 4, T - 4);
+        g.fillStyle = BM.moSangSangV1; g.fillRect(x * T + 2, y * T + 2, T - 4, 1); g.fillRect(x * T + 2, y * T + 2, 1, T - 4);
+        if (kk >= 0 && kk < 1) { g.fillStyle = 'rgba(' + BM.tiaTrangRgb + ',' + (0.7 * (1 - kk)).toFixed(3) + ')'; g.fillRect(x * T + 2, y * T + 2, T - 4, T - 4); }
         if (hinh && hinh[y] && hinh[y][x] !== m) {                                           // ngoài hình (đỏ) hay sai màu (dấu chéo màu cần tô)
-          g.save(); g.strokeStyle = hinh[y][x] ? MAU_VIEN[hinh[y][x]] : '#ff3b30'; g.lineWidth = 1; g.strokeRect(x * T + 0.5, y * T + 0.5, T - 1, T - 1); g.restore();
+          g.save(); g.strokeStyle = hinh[y][x] ? MAU_VIEN[hinh[y][x]] : BM.sanDoV1; g.lineWidth = 1; g.strokeRect(x * T + 0.5, y * T + 0.5, T - 1, T - 1); g.restore();
           if (hinh[y][x]) { g.fillStyle = MAU_VIEN[hinh[y][x]]; for (var q = 3; q < T - 3; q++) { g.fillRect(x * T + q, y * T + q, 1, 1); } }
         }
       }
@@ -666,7 +667,7 @@
       var nhay = this.bmNhay > now && ((now / 150 | 0) & 1) === 0, i, o;
       for (i = 0; i < b.vat.length; i++) {
         o = b.vat[i];
-        g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = o.mau ? MAU_VIEN[o.mau] : '#ffd23f';       // vật mờ có màu: khung nét đứt tô màu đó (đổi chỗ hai vật khác màu vẫn đọc được)
+        g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = o.mau ? MAU_VIEN[o.mau] : BM.sanVang;       // vật mờ có màu: khung nét đứt tô màu đó (đổi chỗ hai vật khác màu vẫn đọc được)
         g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore();
         if (this.vatTaiO(o.x, o.y)) continue;                                                              // ô đã có vật thật nằm đó: chỉ giữ khung, khỏi vẽ vật mờ chồng lên (màu trộn lẫn)
         g.globalAlpha = nhay ? 0.85 : 0.45;
@@ -675,7 +676,7 @@
       }
       for (i = 0; i < (b.thung || []).length; i++) {                                                       // thùng mờ (chương che-sung-hoi): thùng nặng nằm ô đó khi xong; khung nét đứt + thùng mờ, khỏi chồng lên thùng thật đã nằm đúng ô
         o = b.thung[i];
-        g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = '#ffd23f';
+        g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = BM.sanVang;
         g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore();
         if (this.thungTaiO(o.x, o.y)) continue;
         g.globalAlpha = nhay ? 0.85 : 0.45;
@@ -698,10 +699,10 @@
       function vien(r, c) { g.fillStyle = c; for (var dy = -r; dy <= r; dy++) { var w = r - Math.abs(dy); g.fillRect(cx - w, cy + dy, 1, 1); g.fillRect(cx + w, cy + dy, 1, 1); } }
       if (sang) {
         var k = (now - t0) / 650;
-        if (k >= 0 && k < 1) { vien(4 + Math.round(k * 3), 'rgba(255,236,150,' + (0.9 * (1 - k)).toFixed(3) + ')'); }
-        kim(4, '#1b120a'); kim(3, '#ffd23f'); g.fillStyle = '#fff6e3'; g.fillRect(cx - 1, cy - 2, 1, 1); g.fillRect(cx - 2, cy - 1, 1, 1);
+        if (k >= 0 && k < 1) { vien(4 + Math.round(k * 3), 'rgba(' + BM.tiaVangV1Rgb + ',' + (0.9 * (1 - k)).toFixed(3) + ')'); }
+        kim(4, BM.vienDam); kim(3, BM.sanVang); g.fillStyle = BM.sanTrang; g.fillRect(cx - 1, cy - 2, 1, 1); g.fillRect(cx - 2, cy - 1, 1, 1);
       } else {
-        kim(4, '#1b120a'); kim(3, nhay ? '#ff8a6a' : 'rgba(255,246,227,.82)');
+        kim(4, BM.vienDam); kim(3, nhay ? BM.sanDoSang : BM.moSangV5);
       }
     },
     /** Ô ◆ vừa tới (sự kiện 'qua-diem' của vết): sáng lên cho tới khi chạy lại / tua lại. */
@@ -709,7 +710,7 @@
       var k = o.x + ',' + o.y;
       if (this.diQuaSang[k] !== undefined) return;
       this.diQuaSang[k] = performance.now();
-      this.burst(o.x * T + 7, o.y * T + 7, 8, ['#ffd23f', '#fff6e3', '#fff09a'], 0.7);
+      this.burst(o.x * T + 7, o.y * T + 7, 8, [BM.sanVang, BM.sanTrang, BM.sanKemV2], 0.7);
     },
     /** Bóng mờ nháy ms mili giây (thua vì lệch bóng mờ / chưa qua ◆): hút mắt người chơi tới chỗ cần tới. */
     nhayBongMo: function (ms) { if (this.cfg && this.cfg.bm) this.bmNhay = performance.now() + (ms || 1200); },
@@ -730,7 +731,7 @@
       return this.tween(ms || 190, my, function (k) {
         v.hop = Math.sin(k * Math.PI) * 2;
         if (k > 0.5) v.d = moi;
-        if (Math.random() < 0.4) self.burst(v.x * T + 11, v.y * T + 12, 1, ['#fff6e3', '#ffd95a'], 0.6);
+        if (Math.random() < 0.4) self.burst(v.x * T + 11, v.y * T + 12, 1, [BM.sanTrang, BM.sanVangV2], 0.6);
       }).then(function () { if (my === self.rid) { v.d = moi; v.hop = 0; } });
     },
     /** Vẽ (pixel sân, DƯỚI thân xe): đang kéo thì ô đích (vàng nếu thả được, đỏ nếu không) + khung nét đứt mờ ở chỗ cũ (xe sẽ về đó nếu thả hỏng); không kéo thì khung vàng nhấp nháy quanh ô xe. */
@@ -738,15 +739,15 @@
       var b = this.cfg.bd, k = this.keoXe;
       if (k) {
         if (!k.ngoai) {
-          g.fillStyle = k.hopLe ? 'rgba(255,217,90,.3)' : 'rgba(255,60,48,.36)'; g.fillRect(k.tx * T, k.ty * T, T, T);
-          g.strokeStyle = k.hopLe ? '#ffd95a' : '#ff5a4a'; g.lineWidth = 1; g.strokeRect(k.tx * T + 0.5, k.ty * T + 0.5, T - 1, T - 1);
+          g.fillStyle = k.hopLe ? BM.moVangV3 : BM.moDoToi; g.fillRect(k.tx * T, k.ty * T, T, T);
+          g.strokeStyle = k.hopLe ? BM.sanVangV2 : BM.sanDo; g.lineWidth = 1; g.strokeRect(k.tx * T + 0.5, k.ty * T + 0.5, T - 1, T - 1);
         }
-        g.save(); g.setLineDash([2, 2]); g.strokeStyle = 'rgba(255,246,227,.6)'; g.lineWidth = 1; g.strokeRect(b.x * T + 1.5, b.y * T + 1.5, T - 3, T - 3); g.restore();
+        g.save(); g.setLineDash([2, 2]); g.strokeStyle = BM.moSangV6; g.lineWidth = 1; g.strokeRect(b.x * T + 1.5, b.y * T + 1.5, T - 3, T - 3); g.restore();
         return;
       }
       var sang = ((now / 330) | 0) & 1;                                                  // nháy từng nấc như viền hướng dẫn (steps), không mờ dần
-      g.strokeStyle = sang ? '#ffd95a' : 'rgba(255,217,90,.35)'; g.lineWidth = 1; g.strokeRect(b.x * T + 0.5, b.y * T + 0.5, T - 1, T - 1);
-      g.fillStyle = sang ? 'rgba(255,217,90,.22)' : 'rgba(255,217,90,.08)'; g.fillRect(b.x * T, b.y * T, T, T);
+      g.strokeStyle = sang ? BM.sanVangV2 : BM.moVangV4; g.lineWidth = 1; g.strokeRect(b.x * T + 0.5, b.y * T + 0.5, T - 1, T - 1);
+      g.fillStyle = sang ? BM.moVangV5 : BM.moVangV6; g.fillRect(b.x * T, b.y * T, T, T);
     },
     /** Mũi tên vòng nhỏ (↻), viền tối + lõi vàng: gợi ý "chạm xe để xoay theo chiều kim đồng hồ". Nằm ở góc SAU-PHẢI của ô xe (xe quay lên: góc dưới phải; quay phải: dưới trái; xuống: trên trái; trái: trên phải)
      *  để khỏi đè lên tay kẹp / cần ở phía trước mũi xe. Vẽ TRÊN thân xe. */
@@ -756,7 +757,7 @@
       var px = cx + r * Math.cos(a1), py = cy + r * Math.sin(a1), tx = -Math.sin(a1), ty = Math.cos(a1), nx = Math.cos(a1), ny = Math.sin(a1);
       g.save(); g.lineCap = 'butt';
       for (i = 0; i < 2; i++) {
-        g.strokeStyle = g.fillStyle = i ? '#ffd95a' : '#1b120a'; g.lineWidth = i ? 1 : 2.2;
+        g.strokeStyle = g.fillStyle = i ? BM.sanVangV2 : BM.vienDam; g.lineWidth = i ? 1 : 2.2;
         g.beginPath(); g.arc(cx, cy, r, a0, a1); g.stroke();
         var e = i ? 0 : 0.7;                                                           // lượt viền tối to hơn lượt vàng một chút
         g.beginPath();
@@ -792,7 +793,7 @@
       g.drawImage(spr, 0, 0, w, h, x0, y0, dw, dh);
       g.globalAlpha = nhay ? 1 : 0.9;
       if (spr.laPart) g.drawImage(vienDut(spr, p), x0, y0);
-      else { g.save(); g.setLineDash([4, 3]); g.lineWidth = Math.max(1, ku * 0.8); g.strokeStyle = '#ffd95a'; g.strokeRect(Math.round(mx + b.x * T * ku) + 1, Math.round(my + b.y * T * ku) + 1, T * ku - 2, T * ku - 2); g.restore(); }
+      else { g.save(); g.setLineDash([4, 3]); g.lineWidth = Math.max(1, ku * 0.8); g.strokeStyle = BM.sanVangV2; g.strokeRect(Math.round(mx + b.x * T * ku) + 1, Math.round(my + b.y * T * ku) + 1, T * ku - 2, T * ku - 2); g.restore(); }
       g.globalAlpha = 1;
     },
 
@@ -805,12 +806,12 @@
         var d = ds[i], x = d.x * T, y = d.y * T, vo = this.vatTaiO(d.x, d.y);
         if ((vo && this.vatDungMau(vo, d)) || this.thungTaiO(d.x, d.y)) continue;
         if (d.mau) {
-          g.setLineDash([]); g.strokeStyle = '#1b120a'; g.strokeRect(x + 2.5, y + 2.5, T - 5, T - 5);     // viền tối trong để khung sáng nổi trên nền cùng màu
+          g.setLineDash([]); g.strokeStyle = BM.vienDam; g.strokeRect(x + 2.5, y + 2.5, T - 5, T - 5);     // viền tối trong để khung sáng nổi trên nền cùng màu
           g.setLineDash([3, 2]); g.strokeStyle = Ve.MAU[d.mau].vi; g.lineWidth = 1.5; g.strokeRect(x + 1.25, y + 1.25, T - 2.5, T - 2.5); g.lineWidth = 1;
           continue;
         }
-        g.fillStyle = 'rgba(255,210,63,.22)'; g.fillRect(x, y, T, T);
-        g.strokeStyle = '#ffd23f'; g.strokeRect(x + 1.5, y + 1.5, T - 3, T - 3);
+        g.fillStyle = BM.moVangV7; g.fillRect(x, y, T, T);
+        g.strokeStyle = BM.sanVang; g.strokeRect(x + 1.5, y + 1.5, T - 3, T - 3);
       }
       g.restore();
     },
@@ -819,17 +820,17 @@
     /** Khung đặc của ô đích đã có vật nằm (đích có màu: màu đích, có viền tối cho nổi). */
     veKhungDay: function (g, d) {
       if (d.mau) {
-        g.lineWidth = 3; g.strokeStyle = '#1b120a'; g.strokeRect(d.x * T + 1.5, d.y * T + 1.5, T - 3, T - 3);
+        g.lineWidth = 3; g.strokeStyle = BM.vienDam; g.strokeRect(d.x * T + 1.5, d.y * T + 1.5, T - 3, T - 3);
         g.lineWidth = 2; g.strokeStyle = Ve.MAU[d.mau].vi;
-      } else { g.lineWidth = 2; g.strokeStyle = '#ffd23f'; }
+      } else { g.lineWidth = 2; g.strokeStyle = BM.sanVang; }
       g.strokeRect(d.x * T + 1, d.y * T + 1, T - 2, T - 2); g.lineWidth = 1;
     },
     /** Dấu ✗ nhỏ ở góc trên phải ô (x, y): vật thả sai màu đích. */
     veDauSai: function (g, x, y) {
       var X = [[0, 0], [1, 1], [2, 2], [3, 3], [0, 3], [1, 2], [2, 1], [3, 0]], i, ox = x * T + T - 6, oy = y * T + 2;
-      g.fillStyle = '#1b120a';
+      g.fillStyle = BM.vienDam;
       for (i = 0; i < X.length; i++) { g.fillRect(ox + X[i][0] - 1, oy + X[i][1], 3, 1); g.fillRect(ox + X[i][0], oy + X[i][1] - 1, 1, 3); }
-      g.fillStyle = '#ff4a3c';
+      g.fillStyle = BM.sanDoV2;
       for (i = 0; i < X.length; i++) g.fillRect(ox + X[i][0], oy + X[i][1], 1, 1);
     },
     /** Ô đích đã có vật nằm: khung đặc đè lên viền thùng (đích có màu mà vật sai màu: giữ khung nét đứt, thêm ✗). */
@@ -865,10 +866,10 @@
         var o = ds[i], px = Math.round(o.x * T + o.dx), py = Math.round(o.y * T + o.dy);
         if (o.ket) {
           var nhay = 0.28 + 0.14 * Math.sin(now / 120);
-          g.fillStyle = 'rgba(255,40,30,' + nhay.toFixed(2) + ')'; g.fillRect(Math.round(o.x) * T, Math.round(o.y) * T, T, T);
+          g.fillStyle = 'rgba(' + BM.tiaDoV2Rgb + ',' + nhay.toFixed(2) + ')'; g.fillRect(Math.round(o.x) * T, Math.round(o.y) * T, T, T);
         }
         g.drawImage(TL.thung, px, py + (this.thungTaiDich(o) ? nhun : 0));
-        if (o.ket) { g.fillStyle = 'rgba(230,30,20,.42)'; g.fillRect(px + 1, py + 1, T - 2, T - 2); g.strokeStyle = '#ff3b30'; g.lineWidth = 1; g.strokeRect(Math.round(o.x) * T + 0.5, Math.round(o.y) * T + 0.5, T - 1, T - 1); }
+        if (o.ket) { g.fillStyle = BM.moDoToiV1; g.fillRect(px + 1, py + 1, T - 2, T - 2); g.strokeStyle = BM.sanDoV1; g.lineWidth = 1; g.strokeRect(Math.round(o.x) * T + 0.5, Math.round(o.y) * T + 0.5, T - 1, T - 1); }
       }
     },
     thungTaiDich: function (o) {
@@ -908,10 +909,10 @@
      *  dd: độ đậm lớp tô đỏ phủ lên vật (thả bị chặn), 0 = không tô. */
     veMotVat: function (g, o, n, x, y, sz, so, dd) {
       var h = Math.max(2, Math.round(sz)), x0 = Math.round(x - sz / 2), y0 = Math.round(y - sz / 2);
-      g.fillStyle = so > sz * 0.3 ? 'rgba(0,28,10,.2)' : 'rgba(0,28,10,.38)';
+      g.fillStyle = so > sz * 0.3 ? BM.moToiV20 : BM.moToiV21;
       g.fillRect(x0 + Math.round(so * 0.5), y0 + Math.round(so), h, h);
       g.drawImage(this.hinhVat(o, n), x0, y0, h, h);
-      if (dd) { g.fillStyle = 'rgba(255,60,50,' + dd.toFixed(2) + ')'; g.fillRect(x0, y0, h, h); }
+      if (dd) { g.fillStyle = 'rgba(' + BM.tiaDoV6Rgb + ',' + dd.toFixed(2) + ')'; g.fillRect(x0, y0, h, h); }
     },
     /** Tâm vật trong kẹp theo pixel THIẾT BỊ của lớp phủ, cho xe có thân tâm (X, Y): { x, y, n, sz, so, a } (a = góc mũi xe, n = cạnh sprite, so = độ lệch bóng).
      *  Tay hạ: vật sát đất, nhỏ hơn một chút (9 pixel part), bóng sát; tay nâng: vật cao hơn nên to hơn (10), bóng nhạt và xa. */
@@ -1046,7 +1047,7 @@
         if (spr.laPart && laTayKep(c.robot.tay)) this.veVatKep(g, X, Y, now);                 // vật trong kẹp: dưới ảnh part, hai càng đè lên mép vật
         var w = spr.width, h = spr.height, sc = spr.laPart ? 1 : ku;
         if (!v.dr) {                                                                      // drone có bóng riêng (veDuoiDrone)
-          g.fillStyle = this.xe ? (this.cfgXe[this.xeDang].mauXe || MAU_XE[this.xeDang % MAU_XE.length]) : 'rgba(0,30,10,.35)';      // bóng dưới thân; nhiều robot: đế mang màu của xe (R1 vàng, R2 lam / đỏ đối kháng)
+          g.fillStyle = this.xe ? (this.cfgXe[this.xeDang].mauXe || MAU_XE[this.xeDang % MAU_XE.length]) : BM.moToiV22;      // bóng dưới thân; nhiều robot: đế mang màu của xe (R1 vàng, R2 lam / đỏ đối kháng)
           if (spr.laPart) g.fillRect(Math.round(X - 9 * p), Math.round(Y + 7 * p), Math.round(18 * p), Math.max(1, Math.round(2.5 * p)));
           else g.fillRect(Math.round(X - 5 * ku), Math.round(Y + 6 * ku), Math.round(10 * ku), Math.max(1, Math.round(2 * ku)));
         }
@@ -1088,7 +1089,7 @@
         if (v.bongMau && v.bongMau.den > now) this.veBongMau(g, cx, cy, now, c.robot.tay ? 24 : 20);
         if (v.choang > now) this.veChoang(g, cx, cy - v.hop, now, v.dr ? this.dinhDrone() : c.robot.tay ? 16 : 13);
         if (v.bao && v.baoDen > now) this.veDau(g, v.bao, v.dr ? cx + 5 : cx, cy, now, v.dr ? this.dinhDrone() - 3 : c.robot.tay ? 25 : 21);       // drone: dấu nổi ở phía trên bên phải thân (phía trên là thanh pin)
-        if (cuoi && this.flash > now) { g.fillStyle = 'rgba(255,60,50,.32)'; g.fillRect(c.ox * T, c.oy * T, this.cv.width, this.cv.height); }
+        if (cuoi && this.flash > now) { g.fillStyle = BM.moDoToiV2; g.fillRect(c.ox * T, c.oy * T, this.cv.width, this.cv.height); }
       }
       for (i = cuoi ? this.parts.length - 1 : -1; i >= 0; i--) {
         var q = this.parts[i]; q.life--; q.vy += 0.05; q.x += q.vx; q.y += q.vy;
@@ -1098,7 +1099,7 @@
         g.fillStyle = q.c; g.fillRect(Math.round(q.x), Math.round(q.y), q.s, q.s);
         if (q.mo) g.globalAlpha = 1;
       }
-      if (v.dr && v.dr.roi && ok && Math.random() < 0.1) this.burst(cx + (Math.random() - 0.5) * 6, cy - 2, 1, ['#6b707c', '#9aa0ae', '#c9cedb'], 0.22, 2, true);          // drone nằm đất: khói bốc lên
+      if (v.dr && v.dr.roi && ok && Math.random() < 0.1) this.burst(cx + (Math.random() - 0.5) * 6, cy - 2, 1, [BM.sanXamToi, BM.sanXamToiV1, BM.sanLamV1], 0.22, 2, true);          // drone nằm đất: khói bốc lên
     },
     /** Gầm thấp (ô n): nhện đang nằm trên ô gầm (hay sắp vào / vừa ra) thì vẽ lại MÁI ván đè lên nhện, độ đục 0,55, để thấy nhện chui DƯỚI mái. Vẽ theo pixel sân. */
     veMaiGam: function (g, v, c) {
@@ -1138,11 +1139,11 @@
       var v = this.vis, d = v.dr, cao = this.caoDuoi(), alt = v.hop, i, o;
       if (this.sacO && d.sacLoe > now) {                                              // vừa sạc: đế sạc lóe xanh lơ
         var a = Math.min(1, (d.sacLoe - now) / 400) * (0.35 + 0.25 * Math.abs(Math.sin(now / 70)));
-        g.fillStyle = 'rgba(95,240,255,' + a.toFixed(3) + ')'; g.fillRect(this.sacO.x * T, this.sacO.y * T, T, T);
-        g.strokeStyle = 'rgba(255,255,255,' + (a * 1.4).toFixed(3) + ')'; g.lineWidth = 1; g.strokeRect(this.sacO.x * T + 0.5, this.sacO.y * T + 0.5, T - 1, T - 1);
+        g.fillStyle = 'rgba(' + BM.tiaNgocRgb + ',' + a.toFixed(3) + ')'; g.fillRect(this.sacO.x * T, this.sacO.y * T, T, T);
+        g.strokeStyle = 'rgba(' + BM.tiaTrangRgb + ',' + (a * 1.4).toFixed(3) + ')'; g.lineWidth = 1; g.strokeRect(this.sacO.x * T + 0.5, this.sacO.y * T + 0.5, T - 1, T - 1);
       }
       var w = Math.max(7, Math.round(13 - alt * 0.8 - cao * 0.4)), sy = Math.round(cy + 3 - cao), sx = Math.round(cx);          // bóng: hình bầu dục ba hàng, nằm ở mặt ô, lệch xuống dưới thân
-      g.fillStyle = 'rgba(0,28,10,' + Math.min(0.5, 0.24 + (4 - Math.min(4, alt)) * 0.04 + cao * 0.03).toFixed(3) + ')';
+      g.fillStyle = 'rgba(' + BM.tiaDenRgb + ',' + Math.min(0.5, 0.24 + (4 - Math.min(4, alt)) * 0.04 + cao * 0.03).toFixed(3) + ')';
       g.fillRect(sx - ((w - 4) >> 1), sy - 2, w - 4, 1); g.fillRect(sx - (w >> 1), sy - 1, w, 2); g.fillRect(sx - ((w - 4) >> 1), sy + 1, w - 4, 1);
       if (v.nc) this.veTuTreo(g, cx, cy, now);
       for (i = 0; i < this.objs.length; i++) {                                         // vật treo dưới bụng: nằm giữa khung bốn cánh, ngay dưới nam châm (thân drone che phần giữa)
@@ -1155,7 +1156,7 @@
     /** Nam châm treo đang bật mà chưa dính gì: hai vòng sóng nhỏ nở ra rồi mờ dần ở mặt ô dưới bụng. */
     veTuTreo: function (g, cx, cy, now) {
       var nc = this.vis.nc; if (!nc || !nc.bat || this.vis.dr.roi) return;
-      var co = this.vatDinh(), i, rgbT = nc.cuc === 'N' ? '255,126,112' : nc.cuc === 'S' ? '120,176,255' : '150,222,255';           // sóng theo cực: N đỏ, S xanh dương
+      var co = this.vatDinh(), i, rgbT = nc.cuc === 'N' ? BM.tiaDoRgb : nc.cuc === 'S' ? BM.tiaLamRgb : BM.tiaXanhLoV1Rgb;           // sóng theo cực: N đỏ, S xanh dương
       for (i = 0; i < 2; i++) {
         var ph = ((now / 700) + i / 2) % 1, r = co ? 5.5 : 2.5 + ph * 4.5, al = co ? 0.25 : Math.pow(1 - ph, 0.9) * 0.85;
         g.strokeStyle = 'rgba(' + rgbT + ',' + al.toFixed(3) + ')'; g.lineWidth = 1.2;
@@ -1171,17 +1172,17 @@
       var tw = Math.ceil(g.measureText(so).width), tong = W + 3 + tw + 2, x = Math.round(cx - tong / 2 + 1), y = Math.round(cy - this.dinhDrone() - 6);
       var tl = Math.max(0, Math.min(1, d.pin / d.pinMax)), fill = d.pin > 0 ? Math.max(1, Math.round(W * tl)) : 0;
       var sac = d.sacLoe > now, nay = d.nhay > now && ((now / 90 | 0) & 1) === 0, thap = d.pin <= Math.max(1.5, d.pinMax * 0.25), nguy = thap && !d.roi && ((now / 240 | 0) & 1) === 0;
-      var mau = sac ? '#5ff0ff' : thap ? '#ff5a4a' : tl <= 0.6 ? '#ffd23f' : '#6fe06a';
+      var mau = sac ? BM.sanNgoc : thap ? BM.sanDo : tl <= 0.6 ? BM.sanVang : BM.sanXanhLaToiV2;
       g.fillStyle = K_INK; g.fillRect(x - 1, y - 1, tong + 2, 5);
-      g.fillStyle = nay ? '#ffffff' : nguy ? '#7a1f1a' : '#2a2236'; g.fillRect(x, y, W, 3);
-      if (fill) { g.fillStyle = mau; g.fillRect(x, y, fill, 3); g.fillStyle = 'rgba(255,255,255,.45)'; g.fillRect(x, y, fill, 1); }
-      if (d.pinMax <= 16) { g.fillStyle = 'rgba(27,18,10,.6)'; for (var i = 1; i < d.pinMax; i++) g.fillRect(x + Math.round(W * i / d.pinMax), y, 1, 3); }
-      g.fillStyle = sac ? '#5ff0ff' : thap ? '#ff8a7a' : '#fff6e3'; g.fillText(so, x + W + 2, y + 1.7);
+      g.fillStyle = nay ? BM.sanTrangV1 : nguy ? BM.sanDoV3 : BM.sanTim; g.fillRect(x, y, W, 3);
+      if (fill) { g.fillStyle = mau; g.fillRect(x, y, fill, 3); g.fillStyle = BM.moSangV3; g.fillRect(x, y, fill, 1); }
+      if (d.pinMax <= 16) { g.fillStyle = BM.moToiSangV9; for (var i = 1; i < d.pinMax; i++) g.fillRect(x + Math.round(W * i / d.pinMax), y, 1, 3); }
+      g.fillStyle = sac ? BM.sanNgoc : thap ? BM.sanDoSangV1 : BM.sanTrang; g.fillText(so, x + W + 2, y + 1.7);
       g.restore();
     },
     /** Gió cánh quạt xả xuống vật bị bay qua ('bay-qua'): vài hạt bụi / mảnh gỗ / bọt xanh quanh ô. */
     giuQuat: function (s) {
-      var cols = s.tren.indexOf('rao') >= 0 ? ['#e8b574', '#fff6e3', '#c98a45'] : s.tren.indexOf('bang') >= 0 ? ['#bcd6ff', '#f4f9ff', '#7fb0f2'] : s.tren.indexOf('bac-thang') >= 0 ? ['#f2c98a', '#fff6e3'] : ['#fff6e3', '#d8d8d8', '#bfe8b0'];
+      var cols = s.tren.indexOf('rao') >= 0 ? [BM.sanCam, BM.sanTrang, BM.sanCamToi] : s.tren.indexOf('bang') >= 0 ? [BM.sanLamV5, BM.sanTrangV2, BM.sanLamV2] : s.tren.indexOf('bac-thang') >= 0 ? [BM.sanCamV1, BM.sanTrang] : [BM.sanTrang, BM.sanXam, BM.sanXanhLa];
       this.burst(s.o.x * T + 7, s.o.y * T + 8, 7, cols, 0.55, 1, true);
     },
     /** Pin đầy lại ở ô sạc ('sac-pin'): thanh pin chạy từ mức sau khi trừ lên đầy, đế sạc lóe, tia lửa điện xanh lơ / vàng. */
@@ -1192,7 +1193,7 @@
       var cx = s.o.x * T + 7, cy = s.o.y * T + 8;
       await this.tween(ms, my, function (k) {
         d.pin = s.tu + (s.den - s.tu) * k;
-        if (Math.random() < 0.6) self.burst(cx + (Math.random() - 0.5) * 10, cy + 2, 1, ['#7ff0ff', '#ffe84a', '#ffffff'], 0.5, 1, true);
+        if (Math.random() < 0.6) self.burst(cx + (Math.random() - 0.5) * 10, cy + 2, 1, [BM.sanXanhLo, BM.sanVangV5, BM.sanTrangV1], 0.5, 1, true);
       });
       if (my !== this.rid) return;
       d.pin = s.den;
@@ -1206,11 +1207,11 @@
       await this.tween(ms * 0.8, my, function (k) {
         d.alt = a0 * (1 - k * k);
         v.dx = Math.sin(k * Math.PI * 9) * (1 - k) * 1.2;
-        if (Math.random() < 0.55) self.burst(cx + (Math.random() - 0.5) * 8, cy - d.alt, 1, ['#6b707c', '#9aa0ae', '#c9cedb'], 0.3, 2, true);
+        if (Math.random() < 0.55) self.burst(cx + (Math.random() - 0.5) * 8, cy - d.alt, 1, [BM.sanXamToi, BM.sanXamToiV1, BM.sanLamV1], 0.3, 2, true);
       });
       if (my !== this.rid) return;
       d.alt = 0; v.dx = 0; d.roi = true; d.nguy = false;
-      this.burst(cx, cy, 16, ['#6b707c', '#9aa0ae', '#c9cedb', '#ffcf30', '#fff6e3'], 0.95, 2, true);
+      this.burst(cx, cy, 16, [BM.sanXamToi, BM.sanXamToiV1, BM.sanLamV1, BM.sanVangV6, BM.sanTrang], 0.95, 2, true);
       this.chopDo(220);
       await ngu(ms * 0.2);
     },
@@ -1244,7 +1245,7 @@
       if (!nc || !nc.bat || this.vatDinh()) return;
       var ang = this.gocMui(), dx = Math.sin(ang), dy = -Math.cos(ang), nt = this.nhinTruoc();
       var tamMax = (nt.chan || nt.vat) ? (nt.khoang - 1) * T + 1 : 3 * T + 2, go = !!(nt.vat && nt.vat.chat !== 'sat' && nt.vat.chat !== 'nam-cham');
-      var cuc = nc.cuc, rgb = cuc === 'N' ? '255,126,112' : cuc === 'S' ? '120,176,255' : '150,222,255', rgb2 = cuc === 'N' ? '255,226,218' : cuc === 'S' ? '222,238,255' : '235,250,255';
+      var cuc = nc.cuc, rgb = cuc === 'N' ? BM.tiaDoRgb : cuc === 'S' ? BM.tiaLamRgb : BM.tiaXanhLoV1Rgb, rgb2 = cuc === 'N' ? BM.tiaDoV7Rgb : cuc === 'S' ? BM.tiaTrangV2Rgb : BM.tiaTrangV3Rgb;
       var vao = !!(nt.vat && !go && (nt.vat.chat === 'sat' || nt.vat.cuc !== cuc));                         // hút: cung chạy vào mũi xe
       if (tamMax < 4) return;
       var nx = cx + dx * 8, ny = cy + dy * 8, a0 = Math.atan2(dy, dx), i;
@@ -1252,9 +1253,9 @@
       for (i = 0; i < 3; i++) {
         var ph = ((now / 900) + i / 3) % 1, pos = vao ? 1 - ph : ph, r = 2 + pos * (tamMax - 2), nua = Math.min(1.0, 8 / Math.max(r, 3)), al = Math.pow(1 - ph, 0.8) * (go ? 0.55 : 0.9);
         if (go && ph > 0.7) al *= 0.4 + 0.6 * Math.abs(Math.sin(now / 50));
-        g.strokeStyle = (go ? 'rgba(182,168,150,' : 'rgba(' + rgb + ',') + al.toFixed(3) + ')'; g.lineWidth = 1.4;
+        g.strokeStyle = (go ? 'rgba(' + BM.tiaCamV5Rgb + ',' : 'rgba(' + rgb + ',') + al.toFixed(3) + ')'; g.lineWidth = 1.4;
         g.beginPath(); g.arc(nx, ny, r, a0 - nua, a0 + nua); g.stroke();
-        g.strokeStyle = (go ? 'rgba(235,225,205,' : 'rgba(' + rgb2 + ',') + (al * 0.7).toFixed(3) + ')'; g.lineWidth = 0.6;
+        g.strokeStyle = (go ? 'rgba(' + BM.tiaKemV1Rgb + ',' : 'rgba(' + rgb2 + ',') + (al * 0.7).toFixed(3) + ')'; g.lineWidth = 0.6;
         g.beginPath(); g.arc(nx, ny, r, a0 - nua * 0.7, a0 + nua * 0.7); g.stroke();
       }
       g.restore();
@@ -1264,8 +1265,8 @@
       var b = this.canhBao; if (!b) return;
       if (now > b.den) { this.canhBao = null; return; }
       var al = 0.18 + 0.2 * Math.abs(Math.sin(now / 90));
-      g.fillStyle = 'rgba(255,50,40,' + al.toFixed(3) + ')'; g.fillRect(b.x * T, b.y * T, T, T);
-      g.strokeStyle = 'rgba(255,70,55,.9)'; g.lineWidth = 1; g.strokeRect(b.x * T + 0.5, b.y * T + 0.5, T - 1, T - 1);
+      g.fillStyle = 'rgba(' + BM.tiaDoV1Rgb + ',' + al.toFixed(3) + ')'; g.fillRect(b.x * T, b.y * T, T, T);
+      g.strokeStyle = BM.moDo; g.lineWidth = 1; g.strokeRect(b.x * T + 0.5, b.y * T + 0.5, T - 1, T - 1);
     },
     /** Vật dính ở mũi xe (vẽ sát mũi, đi theo xe, quay theo xe) và vật đang bị hút bay: vẽ trên thân xe. */
     veVatTu: function (g, cx, cy, now) {
@@ -1281,10 +1282,10 @@
         } else if (o.tt === 'bay' && o.bay) {
           var b = o.bay;
           px = b.x * T + 7; py = b.y * T + 7 - b.cao;
-          g.fillStyle = 'rgba(0,30,10,.25)'; g.fillRect(Math.round(b.x * T + 4), Math.round(b.y * T + 10), 6, 2);
+          g.fillStyle = BM.moToiV23; g.fillRect(Math.round(b.x * T + 4), Math.round(b.y * T + 10), 6, 2);
           g.drawImage(this.hinhVat(o, 8), Math.round(px - 4 + (b.rx || 0)), Math.round(py - 5 + (b.ry || 0)));
           if (b.vong) {
-            g.strokeStyle = 'rgba(200,236,255,' + (0.35 + 0.35 * Math.abs(Math.sin(now / 60))).toFixed(3) + ')'; g.lineWidth = 1;
+            g.strokeStyle = 'rgba(' + BM.tiaXanhLoV3Rgb + ',' + (0.35 + 0.35 * Math.abs(Math.sin(now / 60))).toFixed(3) + ')'; g.lineWidth = 1;
             g.strokeRect(Math.round(px - 6) + 0.5, Math.round(py - 7) + 0.5, 11, 11);
           }
         }
@@ -1303,11 +1304,11 @@
         var k2 = k * k * (3 - 2 * k);
         o.bay.x = x0 + (x1 - x0) * k2; o.bay.y = y0 + (y1 - y0) * k2;
         o.bay.cao = v.dr ? -(HANG - ALT) * k2 + Math.sin(k * Math.PI) * 2.5 : 1.5 + Math.sin(k * Math.PI) * 2.5;       // drone: vật nhấc nhẹ rồi trôi vào chỗ treo ngay dưới nam châm
-        if (Math.random() < 0.7) self.burst(o.bay.x * T + 7 - (x1 - x0) * 3 * (1 - k), o.bay.y * T + 7 - (y1 - y0) * 3 * (1 - k), 1, ['#dff3ff', '#8fd8ff', '#ffffff'], 0.3);
+        if (Math.random() < 0.7) self.burst(o.bay.x * T + 7 - (x1 - x0) * 3 * (1 - k), o.bay.y * T + 7 - (y1 - y0) * 3 * (1 - k), 1, [BM.sanTrangV3, BM.sanXanhLoV2, BM.sanTrangV1], 0.3);
       });
       if (my !== this.rid) return;
       o.bay = null; o.tt = 'cam'; o.x = Math.round(v.x); o.y = Math.round(v.y);
-      this.burst(x1 * T + 7, y1 * T + 7, 8, ['#dff3ff', '#8fd8ff', '#ffffff'], 0.8, 1, true);
+      this.burst(x1 * T + 7, y1 * T + 7, 8, [BM.sanTrangV3, BM.sanXanhLoV2, BM.sanTrangV1], 0.8, 1, true);
       v.nc.rung = 0;
     },
     /** Đẩy vật nam châm (day-vat): vật trượt thẳng ra xa xe từ ô `tu` tới ô `den` (nhanh dần rồi chậm, bụi và tia màu cực phía sau).
@@ -1316,7 +1317,7 @@
       var o = this.objTheoId(s.id);
       if (!o) { await ngu(ms); return; }
       var self = this, x0 = s.tu.x, y0 = s.tu.y, x1 = s.den.x, y1 = s.den.y, ux = Math.sign(x1 - x0), uy = Math.sign(y1 - y0);
-      var mau = s.cuc === 'N' ? ['#ff9a8e', '#ffd9d2', '#ffffff'] : ['#8fbaff', '#d6e6ff', '#ffffff'];
+      var mau = s.cuc === 'N' ? [BM.sanDoSangV3, BM.sanDoSangV4, BM.sanTrangV1] : [BM.sanLamV12, BM.sanLamV13, BM.sanTrangV1];
       if (s.tuMui) { o.tt = 'dat'; o.x = x0; o.y = y0; o.nang = 3; }
       await this.tween(ms, my, function (k) {
         var k2 = 1 - Math.pow(1 - k, 2.2);
@@ -1326,7 +1327,7 @@
       });
       if (my !== this.rid) return;
       o.x = x1; o.y = y1; o.nang = 0;
-      if (s.chan) this.burst(x1 * T + 7 + ux * 5, y1 * T + 7 + uy * 5, 4, ['#fff6e3', '#d8d8d8'], 0.5);
+      if (s.chan) this.burst(x1 * T + 7 + ux * 5, y1 * T + 7 + uy * 5, 4, [BM.sanTrang, BM.sanXam], 0.5);
     },
     /** Thả vật (tha-vat): vật dính rời mũi xe, rơi xuống ô sát mũi xe (nảy nhẹ, bụi). */
     thaVat: async function (s, ms, my) {
@@ -1338,7 +1339,7 @@
       this.vis.nc.rung = 0;
       await this.tween(ms * 0.8, my, function (k) {
         o.nang = k < 0.7 ? n0 * (1 - Math.pow(k / 0.7, 2)) : Math.abs(Math.sin((k - 0.7) / 0.3 * Math.PI)) * 1.2 * (1 - k);
-        if (k >= 0.7 && !bui) { bui = true; self.burst(o.x * T + 7, o.y * T + 11, 4, ['#fff6e3', '#bfe8b0'], 0.5); }
+        if (k >= 0.7 && !bui) { bui = true; self.burst(o.x * T + 7, o.y * T + 11, 4, [BM.sanTrang, BM.sanXanhLa], 0.5); }
       });
       o.nang = 0;
     },
@@ -1369,11 +1370,11 @@
       var a = this.gocMui(), dx = Math.sin(a), dy = -Math.cos(a), n = q.tam, i, nho = now - q.doi < 420 ? (1 - (now - q.doi) / 420) : 0;
       var tx = cx + dx * n * T, ty = cy + dy * n * T, al = 0.5 + 0.12 * Math.sin(now / 260);
       g.save();
-      g.strokeStyle = 'rgba(127,240,255,' + (al * 0.8).toFixed(3) + ')'; g.lineWidth = 1; g.setLineDash([2, 2]); g.lineDashOffset = -((now / 120) % 4);
+      g.strokeStyle = 'rgba(' + BM.tiaXanhLoRgb + ',' + (al * 0.8).toFixed(3) + ')'; g.lineWidth = 1; g.setLineDash([2, 2]); g.lineDashOffset = -((now / 120) % 4);
       g.beginPath(); g.moveTo(cx + dx * 9, cy + dy * 9); g.lineTo(tx - dx * 5, ty - dy * 5); g.stroke(); g.setLineDash([]);
-      g.fillStyle = 'rgba(127,240,255,' + (al * 0.9).toFixed(3) + ')';
+      g.fillStyle = 'rgba(' + BM.tiaXanhLoRgb + ',' + (al * 0.9).toFixed(3) + ')';
       for (i = 1; i < n; i++) g.fillRect(Math.round(cx + dx * i * T) - 1, Math.round(cy + dy * i * T) - 1, 2, 2);
-      var col = nho ? '255,246,168' : '127,240,255', a2 = Math.min(1, al + nho) * (this.vatRo() ? 1 : 0.6), x0 = Math.round(tx) - 7, y0 = Math.round(ty) - 7, k = 4 + (nho ? 1 : 0);
+      var col = nho ? BM.tiaKemRgb : BM.tiaXanhLoRgb, a2 = Math.min(1, al + nho) * (this.vatRo() ? 1 : 0.6), x0 = Math.round(tx) - 7, y0 = Math.round(ty) - 7, k = 4 + (nho ? 1 : 0);
       g.strokeStyle = 'rgba(' + col + ',' + a2.toFixed(3) + ')'; g.lineWidth = 1.5;                  // bốn góc khung ô rơi (không che vật nằm trong ô)
       g.beginPath();
       g.moveTo(x0, y0 + k); g.lineTo(x0, y0); g.lineTo(x0 + k, y0);
@@ -1381,8 +1382,8 @@
       g.moveTo(x0 + 14, y0 + 14 - k); g.lineTo(x0 + 14, y0 + 14); g.lineTo(x0 + 14 - k, y0 + 14);
       g.moveTo(x0 + k, y0 + 14); g.lineTo(x0, y0 + 14); g.lineTo(x0, y0 + 14 - k);
       g.stroke();
-      g.fillStyle = 'rgba(15,40,52,' + (0.85 * Math.min(1, a2 + 0.2)).toFixed(3) + ')'; g.fillRect(x0 + 1, y0 + 1, 6, 8);               // thẻ số tầm ở góc trên trái ô rơi
-      g.font = '8px VT323, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = 'rgba(' + (nho ? '255,246,168' : '214,250,255') + ',' + Math.min(1, a2 + 0.3).toFixed(3) + ')';
+      g.fillStyle = 'rgba(' + BM.tiaXanhLoV4Rgb + ',' + (0.85 * Math.min(1, a2 + 0.2)).toFixed(3) + ')'; g.fillRect(x0 + 1, y0 + 1, 6, 8);               // thẻ số tầm ở góc trên trái ô rơi
+      g.font = '8px VT323, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = 'rgba(' + (nho ? BM.tiaKemRgb : BM.tiaXanhLoV5Rgb) + ',' + Math.min(1, a2 + 0.3).toFixed(3) + ')';
       g.fillText(String(n), x0 + 4, y0 + 5.5);
       g.restore();
     },
@@ -1392,12 +1393,12 @@
       for (i = 0; i < ds.length; i++) {
         o = ds[i];
         if (!this.ngoaiKhung(o.x, o.y)) {
-          g.fillStyle = 'rgba(255,50,40,' + al.toFixed(3) + ')'; g.fillRect(o.x * T, o.y * T, T, T);
-          g.strokeStyle = 'rgba(255,70,55,.9)'; g.lineWidth = 1; g.strokeRect(o.x * T + 0.5, o.y * T + 0.5, T - 1, T - 1);
+          g.fillStyle = 'rgba(' + BM.tiaDoV1Rgb + ',' + al.toFixed(3) + ')'; g.fillRect(o.x * T, o.y * T, T, T);
+          g.strokeStyle = BM.moDo; g.lineWidth = 1; g.strokeRect(o.x * T + 0.5, o.y * T + 0.5, T - 1, T - 1);
         } else {
           var gx0 = c.ox * T, gy0 = c.oy * T, gx1 = (c.ox + c.vw) * T, gy1 = (c.oy + c.vh) * T;       // mép cửa sổ vẽ (tường mép đã cắt thì vạch đỏ nằm ở mép sân)
           var px = Math.max(gx0, Math.min(gx1, o.px)), py = Math.max(gy0, Math.min(gy1, o.py)), ngang = o.x < c.ox || o.x >= c.ox + c.vw;
-          g.fillStyle = 'rgba(255,50,40,' + (al + 0.25).toFixed(3) + ')';
+          g.fillStyle = 'rgba(' + BM.tiaDoV1Rgb + ',' + (al + 0.25).toFixed(3) + ')';
           if (ngang) g.fillRect(o.x < c.ox ? gx0 : gx1 - 2, Math.round(py) - 6, 2, 12); else g.fillRect(Math.round(px) - 6, o.y < c.oy ? gy0 : gy1 - 2, 12, 2);
         }
       }
@@ -1411,10 +1412,10 @@
         if (o.tt === 'ro') {
           var a = this.viTriRo(q.dang > now), sz = Math.max(4, Math.round((this.bk || 15) * 0.34)), rg = q.rung > now ? Math.sin(now / 20) * 1.2 : 0;
           g.drawImage(this.hinhVat(o, 8), Math.round(a.x - sz / 2 + rg), Math.round(a.y - sz / 2), sz, sz);
-          if (q.loi > now) { g.strokeStyle = 'rgba(255,70,55,.9)'; g.lineWidth = 1; g.strokeRect(Math.round(a.x - sz / 2 + rg) - 0.5, Math.round(a.y - sz / 2) - 0.5, sz + 1, sz + 1); }
+          if (q.loi > now) { g.strokeStyle = BM.moDo; g.lineWidth = 1; g.strokeRect(Math.round(a.x - sz / 2 + rg) - 0.5, Math.round(a.y - sz / 2) - 0.5, sz + 1, sz + 1); }
         } else if (o.tt === 'bay' && o.nb) {
           var b = o.nb, d = Math.max(3, Math.round(8 * b.esc));
-          g.fillStyle = 'rgba(0,28,10,' + Math.max(0.12, 0.34 - b.cao * 0.012).toFixed(3) + ')';
+          g.fillStyle = 'rgba(' + BM.tiaDenRgb + ',' + Math.max(0.12, 0.34 - b.cao * 0.012).toFixed(3) + ')';
           var sw = Math.max(3, Math.round(d * 0.7 * (1 - Math.min(0.5, b.cao * 0.03))));
           g.fillRect(Math.round(b.px - sw / 2), Math.round(b.py + 5), sw, 2);
           g.drawImage(this.hinhVat(o, 8), Math.round(b.px - d / 2), Math.max(-1, Math.round(b.py - d / 2 - b.cao)), d, d);          // vật bay cao không vượt khỏi mép trên của lớp phủ
@@ -1431,12 +1432,12 @@
         var k2 = k * k * (3 - 2 * k);
         o.nb.px = x0 + (a.x - x0) * k2; o.nb.py = y0 + (a.y - y0) * k2;
         o.nb.cao = Math.sin(k * Math.PI) * 6; o.nb.esc = 1 + (sz - 1) * k2;
-        if (Math.random() < 0.5) self.burst(o.nb.px, o.nb.py - o.nb.cao, 1, ['#fff6e3', '#e8b574'], 0.3);
+        if (Math.random() < 0.5) self.burst(o.nb.px, o.nb.py - o.nb.cao, 1, [BM.sanTrang, BM.sanCam], 0.3);
       });
       if (my !== this.rid) return;
       o.nb = null; o.tt = 'ro';
       v.nem.rung = performance.now() + 140;
-      this.burst(a.x, a.y, 5, ['#fff6e3', '#bfe8b0'], 0.5);
+      this.burst(a.x, a.y, 5, [BM.sanTrang, BM.sanXanhLa], 0.5);
     },
     /** throw(): cần vung lên, xe giật lùi nhẹ, vật bay vòng cung từ rổ tới ô rơi (to dần rồi nhỏ lại, bóng đổ dưới đất), bay qua mọi thứ ở giữa. */
     nemVat: async function (s, ms, my) {
@@ -1455,7 +1456,7 @@
         o.nb.px = a.x + (tx - a.x) * k; o.nb.py = a.y + (ty - a.y) * k;
         o.nb.cao = Math.sin(k * Math.PI) * hcao;
         o.nb.esc = esc0 + (1 - esc0) * k + 0.4 * Math.sin(k * Math.PI);
-        if (Math.random() < 0.55) self.burst(o.nb.px, o.nb.py - o.nb.cao, 1, ['#fff6e3', '#cfe9ff'], 0.25);
+        if (Math.random() < 0.55) self.burst(o.nb.px, o.nb.py - o.nb.cao, 1, [BM.sanTrang, BM.sanLamV14], 0.25);
       });
       if (my !== this.rid) return;
       o.nb = { px: tx, py: ty, cao: 0, esc: 1 }; o.x = s.den.x; o.y = s.den.y;
@@ -1466,7 +1467,7 @@
       if (!o) { await ngu(ms); return; }
       var self = this;
       o.nb = null; o.tt = 'dat'; o.x = s.o.x; o.y = s.o.y; o.nang = 0;
-      this.burst(o.x * T + 7, o.y * T + 11, 5, ['#fff6e3', '#bfe8b0'], 0.5);
+      this.burst(o.x * T + 7, o.y * T + 11, 5, [BM.sanTrang, BM.sanXanhLa], 0.5);
       await this.tween(ms, my, function (k) { o.nang = Math.sin(k * Math.PI) * 3 * (1 - k); });
       o.nang = 0;
     },
@@ -1474,10 +1475,10 @@
     nemVo: async function (s, ms, my) {
       var o = this.objTheoId(s.id), c = this.cfg, ngoai = this.ngoaiKhung(s.o.x, s.o.y);
       var px = Math.max(c.ox * T + 3, Math.min((c.ox + c.vw) * T - 3, s.o.x * T + 7)), py = Math.max(c.oy * T + 3, Math.min((c.oy + c.vh) * T - 3, s.o.y * T + 7));
-      var cols = o && o.chat === 'sat' ? ['#7f97b2', '#dcecfa', '#3f536c', '#a9c0d8'] : ['#c98a45', '#8a5a24', '#e8b574', '#5a3a14'];
+      var cols = o && o.chat === 'sat' ? [BM.sanLamV15, BM.sanLamV6, BM.sanLamToiV6, BM.sanLamV7] : [BM.sanCamToi, BM.sanNauSang, BM.sanCam, BM.sanNauV1];
       if (o) { o.nb = null; o.tt = 'vo'; o.x = s.o.x; o.y = s.o.y; o.voLuc = performance.now(); }
       this.burst(px, py, 22, cols, 1.9, 2, true);
-      this.burst(px, py, 8, ['#fff6e3', '#ffd23f'], 1.1, 1, true);
+      this.burst(px, py, 8, [BM.sanTrang, BM.sanVang], 1.1, 1, true);
       this.oVo.push({ x: s.o.x, y: s.o.y, px: s.o.x * T + 7, py: s.o.y * T + 7, ngoai: ngoai });
       this.chopDo(180);
       await ngu(ms);
@@ -1491,12 +1492,12 @@
       if (b.bay && (b.dx || b.dy)) {                                                                       // vệt: ba vệt vàng nhạt nhỏ dần phía sau, cùng đường bay
         for (i = 1; i <= 3; i++) {
           var sz = 5 - i, tx = x - b.dx * (3 + i * 3), ty = y - b.dy * (3 + i * 3);
-          g.fillStyle = 'rgba(255,225,74,' + (0.5 - i * 0.12).toFixed(2) + ')'; g.fillRect(Math.round(tx - sz / 2), Math.round(ty - sz / 2), sz, sz);
+          g.fillStyle = 'rgba(' + BM.tiaVangV2Rgb + ',' + (0.5 - i * 0.12).toFixed(2) + ')'; g.fillRect(Math.round(tx - sz / 2), Math.round(ty - sz / 2), sz, sz);
         }
       }
-      g.fillStyle = 'rgba(0,28,10,.3)'; g.fillRect(x - 2, y + 4, 5, 1);                                    // bóng đổ nhỏ dưới đất
-      var M = ['..XXX..', '.XwyyX.', 'XwyyyyX', 'XyyyyyX', 'XyyyydX', '.XdddX.', '..XXX..'], C = { X: K_INK, w: '#fffbd0', y: '#ffe14a', d: '#d19a1a' }, r, c;
-      if (sq) { g.fillStyle = K_INK; g.fillRect(x - 4, y - 2, 9, 5); g.fillStyle = '#ffe14a'; g.fillRect(x - 3, y - 1, 7, 3); g.fillStyle = '#fffbd0'; g.fillRect(x - 3, y - 1, 2, 1); }           // lúc đập vào vật: bẹp ra một chút
+      g.fillStyle = BM.moToiV24; g.fillRect(x - 2, y + 4, 5, 1);                                    // bóng đổ nhỏ dưới đất
+      var M = ['..XXX..', '.XwyyX.', 'XwyyyyX', 'XyyyyyX', 'XyyyydX', '.XdddX.', '..XXX..'], C = { X: K_INK, w: BM.sanKemV1, y: BM.sanVangV1, d: BM.sanNauSangV3 }, r, c;
+      if (sq) { g.fillStyle = K_INK; g.fillRect(x - 4, y - 2, 9, 5); g.fillStyle = BM.sanVangV1; g.fillRect(x - 3, y - 1, 7, 3); g.fillStyle = BM.sanKemV1; g.fillRect(x - 3, y - 1, 2, 1); }           // lúc đập vào vật: bẹp ra một chút
       else for (r = 0; r < 7; r++) for (c = 0; c < 7; c++) { var ch = M[r].charAt(c); if (ch !== '.') { g.fillStyle = C[ch]; g.fillRect(x - 3 + c, y - 3 + r, 1, 1); } }
       g.restore();
     },
@@ -1508,10 +1509,10 @@
       g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left';
       var w = Math.ceil(g.measureText(txt).width) + 10, hh = 9, x = 1, y = 1;
       g.fillStyle = K_INK; g.fillRect(x - 1, y - 1, w + 2, hh + 2);
-      g.fillStyle = het || nhay ? '#7a1f1a' : '#2a2236'; g.fillRect(x, y, w, hh);
-      g.fillStyle = het ? '#9a8a86' : '#ffe14a'; g.fillRect(x + 2, y + 3, 3, 3);
+      g.fillStyle = het || nhay ? BM.sanDoV3 : BM.sanTim; g.fillRect(x, y, w, hh);
+      g.fillStyle = het ? BM.sanXamToiV3 : BM.sanVangV1; g.fillRect(x + 2, y + 3, 3, 3);
       g.fillStyle = K_INK; g.fillRect(x + 2, y + 3, 1, 1);
-      g.fillStyle = het ? '#ff8a7a' : '#fff6e3'; g.fillText(txt, x + 7, y + hh / 2 + 0.5);
+      g.fillStyle = het ? BM.sanDoSangV1 : BM.sanTrang; g.fillText(txt, x + 7, y + hh / 2 + 0.5);
       g.restore();
     },
     nutO: function (x, y) { var k = x + ',' + y; return this.nutT[k] || (this.nutT[k] = { bat: false, loe: 0 }); },
@@ -1524,7 +1525,7 @@
     phunHoi: function (x, y, dx, dy, n, sp) {
       for (var i = 0; i < n; i++) {
         var v = (sp || 0.9) * (0.45 + Math.random() * 0.9), ng = (Math.random() - 0.5) * 1.1;
-        this.parts.push({ x: x, y: y, vx: dx * v - dy * ng, vy: dy * v + dx * ng - 0.12, life: 14 + Math.random() * 16, c: ['#ffffff', '#d8f6ff', '#7ff0ff', '#eafcff'][i % 4], s: i % 3 === 0 ? 2 : 1, mo: true });
+        this.parts.push({ x: x, y: y, vx: dx * v - dy * ng, vy: dy * v + dx * ng - 0.12, life: 14 + Math.random() * 16, c: [BM.sanTrangV1, BM.sanXanhLoV3, BM.sanXanhLo, BM.sanTrangV5][i % 4], s: i % 3 === 0 ? 2 : 1, mo: true });
       }
     },
     /** shoot() / shoot_back(): quả bóng bay thẳng từ miệng nòng (nòng trước ở mũi xe, nòng sau ở đuôi xe; nòng sau là s.sau) tới ô `den`, kèm làn hơi ở miệng nòng và nòng lóe;
@@ -1541,20 +1542,20 @@
       if ((tx - x0) * dx + (ty - y0) * dy < 0) { tx = x0; ty = y0; }                                    // vật cản dính sát miệng nòng: bóng không bay được đoạn nào
       if (sg) { var den = performance.now() + ms * 0.3; if (sau) sg.sau = den; else sg.truoc = den; }
       this.phunHoi(x0, y0, dx, dy, nhanh ? 4 : 9, nhanh ? 0.6 : 1.0);                                   // bắn nhanh: làn hơi nhỏ (không giật)
-      this.burst(x0, y0, 3, ['#fff6a8', '#ffe14a'], 0.4, 1, true);
+      this.burst(x0, y0, 3, [BM.sanKem, BM.sanVangV1], 0.4, 1, true);
       this.bong = { x: x0, y: y0, a: 1, dx: dx, dy: dy, bay: true };
       var dai = Math.abs(tx - x0) + Math.abs(ty - y0), tBay = Math.max(90, dai * 8.5 * (ms / 483));          // chậm hơn cho nhìn kịp: ~0,4 giây cho 4 ô ở ×1 (ms = 2,1 nhịp = 483), ×2 nhanh gấp đôi
       await this.tween(tBay, my, function (k) {
         if (!self.bong) return;
         self.bong.x = x0 + (tx - x0) * k; self.bong.y = y0 + (ty - y0) * k;
         if (hut && k > 0.7) self.bong.a = 1 - (k - 0.7) / 0.3;
-        if (Math.random() < 0.8) self.burst(self.bong.x - dx * 2, self.bong.y - dy * 2, 1, ['#fff6a8', '#ffe14a', '#d8f6ff'], 0.12, 1, true);
+        if (Math.random() < 0.8) self.burst(self.bong.x - dx * 2, self.bong.y - dy * 2, 1, [BM.sanKem, BM.sanVangV1, BM.sanXanhLoV3], 0.12, 1, true);
       });
       if (my !== this.rid || !this.bong) return;
       this.bong.bay = false;
       if (hut) { this.bong = null; this.baoHieu('?', 1400); return; }
       if (roi) {                                                                                       // bắn nhanh hết tầm: bóng rơi xuống sàn, bụi nhỏ, mờ đi
-        this.burst(tx, ty + 2, 5, ['#d0d6e4', '#ffffff', '#9ba3b4'], 0.35);
+        this.burst(tx, ty + 2, 5, [BM.sanLam, BM.sanTrangV1, BM.sanXamV1], 0.35);
         await this.tween(ms * 0.3, my, function (k) { if (!self.bong) return; self.bong.y = ty + k * 2; self.bong.a = 1 - k; });
         this.bong = null;
         if (my === this.rid) this.baoHieu('?', 1200);
@@ -1565,21 +1566,21 @@
       var nutEv = evs.filter(function (q) { return q.ma === 'nut-doi'; })[0];
       if (kind === 'nut') {
         var nt = this.nutO(s.den.x, s.den.y); nt.loe = tNay + 340;
-        this.burst(tx + dx * 2, ty + dy * 2, 14, ['#ffffff', '#ffe14a', '#fff6a8', '#7cff86'], 1.3, 1, true);
+        this.burst(tx + dx * 2, ty + dy * 2, 14, [BM.sanTrangV1, BM.sanVangV1, BM.sanKem, BM.sanXanhLaToi], 1.3, 1, true);
         this.bong.sq = 1;
         await ngu(ms * 0.1); if (my !== this.rid) return;
         if (nutEv) nt.bat = !!nutEv.bat;
         evs.filter(function (q) { return q.ma === 'bang-doi'; }).forEach(function (q) { var k2 = q.o.x + ',' + q.o.y; if (q.bat) delete self.bangTat[k2]; else self.bangTat[k2] = true; self.bangLoe[k2] = performance.now() + 300; });
       } else if (kind === 'cua') {
         var cd = this.cuaT[s.den.x + ',' + s.den.y]; if (cd) cd.rung = tNay + 220;
-        this.burst(tx + dx * 2, ty + dy * 2, 9, ['#ffe27a', '#ffffff', '#f2b533'], 1.0, 1, true);
+        this.burst(tx + dx * 2, ty + dy * 2, 9, [BM.sanVangSang, BM.sanTrangV1, BM.sanVangV4], 1.0, 1, true);
         this.bong.sq = 1;
       } else if (kind === 'vat' || kind === 'thung') {
         og = kind === 'vat' ? this.vatTaiO(s.den.x, s.den.y) : this.thungTaiO(s.den.x, s.den.y);
-        this.burst(tx + dx * 2, ty + dy * 2, 7, ['#e8b574', '#fff6e3', '#c98a45'], 0.6);
+        this.burst(tx + dx * 2, ty + dy * 2, 7, [BM.sanCam, BM.sanTrang, BM.sanCamToi], 0.6);
         this.bong.sq = 1;
       } else {
-        this.burst(tx + dx * 2, ty + dy * 2, 8, ['#ffffff', '#d0d6e4', '#9ba3b4'], 0.8, 1, true);
+        this.burst(tx + dx * 2, ty + dy * 2, 8, [BM.sanTrangV1, BM.sanLam, BM.sanXamV1], 0.8, 1, true);
         this.bong.sq = 1;
       }
       var bx = this.bong.x, by = this.bong.y;
@@ -1622,7 +1623,7 @@
           var e = 1 - Math.pow(1 - k, 2.4);
           m.forEach(function (q) {
             q.th.x = q.x0 + (q.x1 - q.x0) * e; q.th.y = q.y0 + (q.y1 - q.y0) * e;
-            if (k < 0.85 && Math.random() < 0.8) self.burst(q.th.x * T + 7 - rx * 7, q.th.y * T + 10 - ry * 7, 1, ['#fff6e3', '#d8d8d8', '#bfe8b0'], 0.5);
+            if (k < 0.85 && Math.random() < 0.8) self.burst(q.th.x * T + 7 - rx * 7, q.th.y * T + 10 - ry * 7, 1, [BM.sanTrang, BM.sanXam, BM.sanXanhLa], 0.5);
           });
           var a = Math.sin(Math.min(1, k * 5) * Math.PI) * (1 - k);
           v.dx = rx * a * 1.4; v.dy = ry * a * 1.4;                                             // xe nhún về phía thùng khi thùng bị hất đi
@@ -1636,14 +1637,14 @@
         await this.tween(dur2, my, function (k) {
           var e = 1 - Math.pow(1 - k, 2.4);
           v.x = x0 + (s.den.x - x0) * e; v.y = y0 + (s.den.y - y0) * e; v.hop = Math.sin(Math.min(1, k * 2.2) * Math.PI) * 0.8;
-          if (k < 0.8 && Math.random() < 0.6) self.burst(v.x * T + 7 - rx * 6, v.y * T + 10 - ry * 6, 1, ['#fff6e3', '#d8d8d8', '#bfe8b0'], 0.45);
+          if (k < 0.8 && Math.random() < 0.6) self.burst(v.x * T + 7 - rx * 6, v.y * T + 10 - ry * 6, 1, [BM.sanTrang, BM.sanXam, BM.sanXanhLa], 0.45);
         });
         v.x = s.den.x; v.y = s.den.y; v.hop = 0;
         return;
       }
       var ox = s.tu.x + rx, oy = s.tu.y + ry, cd = s.vat === 'cua' ? this.cuaT[ox + ',' + oy] : null, vv = s.vat === 'vat' ? this.vatTaiO(ox, oy) : null;
       if (cd) cd.rung = performance.now() + ms;
-      this.burst(s.tu.x * T + 7 + rx * 8, s.tu.y * T + 7 + ry * 8, 5, ['#ffffff', '#d0d6e4', '#9ba3b4'], 0.6, 1, true);
+      this.burst(s.tu.x * T + 7 + rx * 8, s.tu.y * T + 7 + ry * 8, 5, [BM.sanTrangV1, BM.sanLam, BM.sanXamV1], 0.6, 1, true);
       await this.tween(ms * 1.1, my, function (k) {
         var a = Math.sin(k * Math.PI * 3) * (1 - k) * 2.4; v.dx = rx * a; v.dy = ry * a;
         if (vv) { vv.dx = rx * a * 0.5; vv.dy = ry * a * 0.5; }
@@ -1704,9 +1705,9 @@
       for (var k = 0; k < 3; k++) {
         var ang = now / 145 + k * 2.0944;
         var sx = Math.round(cx + Math.cos(ang) * 6.5), sy = Math.round(y0 + Math.sin(ang) * 2.2);
-        g.fillStyle = '#1b120a';
+        g.fillStyle = BM.vienDam;
         g.fillRect(sx - 1, sy - 1, 3, 3);
-        g.fillStyle = (k + ((now / 120) | 0)) % 2 === 0 ? '#ffd23f' : '#fff6e3';
+        g.fillStyle = (k + ((now / 120) | 0)) % 2 === 0 ? BM.sanVang : BM.sanTrang;
         g.fillRect(sx, sy - 1, 1, 3); g.fillRect(sx - 1, sy, 3, 1);
       }
       g.restore();
@@ -1718,21 +1719,21 @@
       var bob = Math.round(Math.sin(now / 110));
       var x = Math.round(cx - w / 2) + 6, y = Math.max(this.cfg.oy * T + 1, cy - (cao || 21) + bob);
       var i, j;
-      g.fillStyle = '#1b120a';
+      g.fillStyle = BM.vienDam;
       for (j = 0; j < rows.length; j++) for (i = 0; i < w; i++) if (rows[j][i] === '#') {
         g.fillRect(x + i - 1, y + j, 3, 1); g.fillRect(x + i, y + j - 1, 1, 3);
       }
-      g.fillStyle = kieu === '!' ? '#ff8a6a' : '#fff6a8';
+      g.fillStyle = kieu === '!' ? BM.sanDoSang : BM.sanKem;
       for (j = 0; j < rows.length; j++) for (i = 0; i < w; i++) if (rows[j][i] === '#') g.fillRect(x + i, y + j, 1, 1);
     },
 
     /** Băng chuyền đã tắt (bóng trúng nút): mờ đi, không có mũi tên chạy, đèn đỏ nhỏ ở góc; vừa tắt / bật lại thì sáng trắng một chút. */
     veBangTat: function (g, x, y, now) {
-      g.fillStyle = 'rgba(28,34,52,.5)'; g.fillRect(x * T + 1, y * T + 1, T - 2, T - 2);
+      g.fillStyle = BM.moLam; g.fillRect(x * T + 1, y * T + 1, T - 2, T - 2);
       g.fillStyle = K_INK; g.fillRect(x * T + 2, y * T + 2, 4, 4);
-      g.fillStyle = '#ff5a4a'; g.fillRect(x * T + 3, y * T + 3, 2, 2);
+      g.fillStyle = BM.sanDo; g.fillRect(x * T + 3, y * T + 3, 2, 2);
       var l = this.bangLoe[x + ',' + y];
-      if (l > now) { g.fillStyle = 'rgba(255,255,255,' + (0.45 * (l - now) / 300).toFixed(3) + ')'; g.fillRect(x * T, y * T, T, T); }
+      if (l > now) { g.fillStyle = 'rgba(' + BM.tiaTrangRgb + ',' + (0.45 * (l - now) / 300).toFixed(3) + ')'; g.fillRect(x * T, y * T, T, T); }
     },
     /** Một ô cửa: cánh trượt theo độ mở d.k (0 đóng .. 1 mở), rung / đỏ khi kẹt; cửa nhịp có hàng đèn đếm nhịp (xanh = mở, đỏ = đóng). */
     veMotCua: function (g, d, now) {
@@ -1740,7 +1741,7 @@
       var nh = d.nhip ? { mo: d.nhip.mo, dong: d.nhip.dong, p: (this.nhipDa + d.nhip.pha) % (d.nhip.mo + d.nhip.dong) } : null;
       Ve.veCua(g, d.x * T, d.y * T, d.k, { doc: d.doc, nhip: nh, ket: d.ket, rung: d.rung > now ? Math.sin(now / 22) * 1.2 : 0, now: now });
       if (d.ket > 0.02) {                                                       // cửa kẹt: khung đỏ quanh ô (không bị xe che)
-        g.save(); g.strokeStyle = 'rgba(255,60,48,' + Math.min(1, d.ket + 0.15).toFixed(3) + ')'; g.lineWidth = 2; g.strokeRect(d.x * T + 1, d.y * T + 1, T - 2, T - 2); g.restore();
+        g.save(); g.strokeStyle = 'rgba(' + BM.tiaDoV8Rgb + ',' + Math.min(1, d.ket + 0.15).toFixed(3) + ')'; g.lineWidth = 2; g.strokeRect(d.x * T + 1, d.y * T + 1, T - 2, T - 2); g.restore();
       }
     },
     draw: function (now) {
@@ -1780,12 +1781,12 @@
       this.veDichDay(g);
       this.veBongMoNen(g, now);                                // bóng mờ: vật mờ + ô ◆ (xe mờ vẽ ở lớp phủ robot)
       if (c.dd) {                                              // vòng mờ nét đứt: ô xuất phát
-        g.save(); g.strokeStyle = 'rgba(255,246,227,.7)'; g.lineWidth = 1; g.setLineDash([2, 2]);
+        g.save(); g.strokeStyle = BM.moSangV7; g.lineWidth = 1; g.setLineDash([2, 2]);
         g.strokeRect(c.dd.x * T + 1.5, c.dd.y * T + 1.5, T - 3, T - 3); g.restore();
       }
       if (c.cat) {                                             // dấu … ở cạnh bị cắt
         g.save(); g.translate(c.ox * T, c.oy * T);
-        g.fillStyle = 'rgba(255,246,227,.85)';
+        g.fillStyle = BM.moSangV8;
         var cw = this.cv.width, ch2 = this.cv.height, m = 3;
         for (var q2 = -1; q2 <= 1; q2++) {
           if (c.cat.tren) g.fillRect(cw / 2 + q2 * 4 - 1, m, 2, 2);
@@ -1888,7 +1889,7 @@
           await this.tween(per * (s.ma === 'bang-day' ? 0.85 : 1), my, function (k) {
             var k2 = ease(k); v.x = x0 + (s.den.x - x0) * k2; v.y = y0 + (s.den.y - y0) * k2;
             if (mt.length) capT(mt, k2);
-            if (laTruot && Math.random() < 0.5) self.burst(v.x * T + 7 - sx * 6, v.y * T + 9 - sy * 6, 1, ['#fff6e3', '#bfe8b0'], 0.5);      // omni: bụi phía sau, xe giữ nguyên hướng mặt
+            if (laTruot && Math.random() < 0.5) self.burst(v.x * T + 7 - sx * 6, v.y * T + 9 - sy * 6, 1, [BM.sanTrang, BM.sanXanhLa], 0.5);      // omni: bụi phía sau, xe giữ nguyên hướng mặt
           });
           if (my !== this.rid) return;
           v.x = s.den.x; v.y = s.den.y; v.chan = 0; xongT(mt);
@@ -1910,14 +1911,14 @@
           var q0 = v.goc, q1 = (s.huong > 0 ? 1 : -1) * Math.PI / 4;
           await this.tween(per, my, function (k) {
             v.goc = q0 + (q1 - q0) * ease(k); v.hop = Math.sin(k * Math.PI) * 1.5;
-            if (Math.random() < 0.4) self.burst(v.x * T + (s.huong < 0 ? 3 : 11), v.y * T + 12, 1, ['#fff6e3', '#7fe8ff'], 0.6);
+            if (Math.random() < 0.4) self.burst(v.x * T + (s.huong < 0 ? 3 : 11), v.y * T + 12, 1, [BM.sanTrang, BM.sanXanhLoV4], 0.6);
           });
           if (my !== this.rid) return;
           v.goc = q1; v.hop = 0;
         } else if (s.ma === 'bang-khong-day') {                       // xích: băng chạy dưới xích mà xe đứng yên, xích bám chặt rung nhẹ
           await this.tween(per, my, function (k) {
             v.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 1.1;
-            if (Math.random() < 0.35) self.burst(v.x * T + 3 + Math.random() * 8, v.y * T + 12, 1, ['#d8d8d8', '#fff6e3'], 0.4);
+            if (Math.random() < 0.35) self.burst(v.x * T + 3 + Math.random() * 8, v.y * T + 12, 1, [BM.sanXam, BM.sanTrang], 0.4);
           });
           v.dx = 0;
         } else if (s.ma === 'hut-vat') {                             // nam châm hút được vật sắt: vật rung rồi bay về mũi xe và dính
@@ -1947,12 +1948,12 @@
           if (typeof e.nhip === 'number') this.nhipDa = e.nhip;
           nutDeEvs.forEach(function (nd) {
             self.nutDeT[nd.o.x + ',' + nd.o.y] = !!nd.bat;
-            self.burst(nd.o.x * T + 7, nd.o.y * T + 7, 5, nd.bat ? ['#7cff86', '#fff6e3'] : ['#ffd04d', '#fff6e3'], 0.55);
+            self.burst(nd.o.x * T + 7, nd.o.y * T + 7, 5, nd.bat ? [BM.sanXanhLaToi, BM.sanTrang] : [BM.sanVangV3, BM.sanTrang], 0.55);
           });
           if (cuaEvs.length) await this.cuaBatch(cuaEvs, ms * 0.95, my);
         } else if (s.ma === 'ban-xoay') {                             // bàn xoay (@ xoay phải 90°, % xoay trái 90°): mâm xoay đưa robot quay 90°
           var d1bx = s.den, h0bx = v.goc, h1bx = (s.huong > 0 ? 1 : -1) * Math.PI / 2, dqbx = s.huong > 0 ? 1 : -1;
-          this.burst(v.x * T + 7, v.y * T + 7, 5, s.huong > 0 ? ['#ffd04d', '#fff6e3'] : ['#58dcff', '#fff6e3'], 0.65);
+          this.burst(v.x * T + 7, v.y * T + 7, 5, s.huong > 0 ? [BM.sanVangV3, BM.sanTrang] : [BM.sanXanhLoV1, BM.sanTrang], 0.65);
           await this.tween(per, my, function (k) {
             v.hop = Math.sin(k * Math.PI) * 1.6;
             if ((v.nc || v.nem) && !laXich) (v.nc || v.nem).ang = (d + dqbx * ease(k)) * Math.PI / 2;
@@ -1964,7 +1965,7 @@
           if (v.nc) v.nc.ang = null;
           if (v.nem) v.nem.ang = null;
         } else if (s.ma === 'dich-chuyen') {                          // cổng dịch chuyển (1, 2): lóe sáng ở cổng vào rồi xuất hiện ở cổng ra
-          var mCong = s.cong === '2' ? ['#f0b8ff', '#a84cff', '#ffffff'] : ['#9cf0ff', '#26a8f0', '#ffffff'];
+          var mCong = s.cong === '2' ? [BM.sanTimSang, BM.sanTimSangV1, BM.sanTrangV1] : [BM.sanXanhLoV5, BM.sanXanhLoToiV2, BM.sanTrangV1];
           this.burst(s.tu.x * T + 7, s.tu.y * T + 7, 10, mCong, 1.0, 1, true);
           await this.tween(per * 0.45, my, function (k) { v.hop = Math.sin(k * Math.PI * 0.5) * 5; });
           if (my !== this.rid) return;
@@ -1982,7 +1983,7 @@
           var sauH = !!(s.lenh && s.lenh.ten === 'shoot_back'), kcH = sauH ? (this.mzs || 4) : (this.mz || 8), dH = sauH ? (d + 2) % 4 : d;
           var mzx = Math.round(v.x) * T + 7 + DX[dH] * kcH, mzy = Math.round(v.y) * T + 7 + DY[dH] * kcH;
           if (v.sung) v.sung.het = performance.now() + 900;
-          this.baoHieu('!', 1500); this.burst(mzx, mzy, 5, ['#9a8a86', '#d0d6e4', '#ffffff'], 0.4, 1, true);
+          this.baoHieu('!', 1500); this.burst(mzx, mzy, 5, [BM.sanXamToiV3, BM.sanLam, BM.sanTrangV1], 0.4, 1, true);
           await ngu(per);
         } else if (s.ma === 'sac-pin') {                             // drone: cuối nhịp ở trên ô sạc, pin đầy lại
           await this.sacPin(s, per, my);
@@ -2004,7 +2005,7 @@
           await this.tween(per, my, function (k) {
             if (og && v.dr) { og.nang = Math.abs(Math.sin(k * Math.PI * 2)) * 1.6 * (1 - k); og.dx = Math.sin(k * Math.PI * 5) * (1 - k) * 0.3; }       // drone: vật gỗ trượt nhẹ lên rồi rơi lại, không dính (theo phương thẳng đứng)
             else if (og) { og.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 0.9; }
-            if (Math.random() < 0.3 * (1 - k)) self.burst(s.o.x * T + 7 - hx * 6, s.o.y * T + 7 - hy * 6, 1, ['#d8d0c0', '#fff6e3'], 0.35);
+            if (Math.random() < 0.3 * (1 - k)) self.burst(s.o.x * T + 7 - hx * 6, s.o.y * T + 7 - hy * 6, 1, [BM.sanKemToi, BM.sanTrang], 0.35);
           });
           if (og) { og.dx = 0; og.nang = 0; }
         } else if (s.ma === 'tha-bi-chan') {                         // magnet_off() / release() mà ô trước mũi xe bị chặn: vật dính / trong kẹp rung đỏ, ô trước nhấp nháy đỏ, dấu '!'
@@ -2021,7 +2022,7 @@
             if ((v.nc || v.nem) && !xoayDan) (v.nc || v.nem).ang = (d + dq * ease(k)) * Math.PI / 2;      // vật dính / vật trong rổ quay theo mũi xe (vòng cung), không nhảy cóc
             if (xoayDan) v.goc = h0 + (h1 - h0) * ease(k);            // xích: nhịp quay thứ hai, xoay nốt từ 45° tới 90°
             else if (k > 0.5) v.d = d1;
-            if (Math.random() < 0.4) self.burst(v.x * T + (lt === 'L' ? 3 : 11), v.y * T + 12, 1, ['#fff6e3', '#7fe8ff'], 0.6);
+            if (Math.random() < 0.4) self.burst(v.x * T + (lt === 'L' ? 3 : 11), v.y * T + 12, 1, [BM.sanTrang, BM.sanXanhLoV4], 0.6);
           });
           if (my !== this.rid) return;
           v.d = d1; v.hop = 0; v.goc = 0; d = d1;
@@ -2034,7 +2035,7 @@
           var cdr = (bad && s.vat === 'cua' && s.den) ? this.cuaT[s.den.x + ',' + s.den.y] : null;                                // xe húc cửa đang đóng: cánh cửa rung
           if (cdr) cdr.rung = performance.now() + per;
           var vv = (s.vat === 'vat' && s.den) ? (this.objTheoId(s.idVat) || this.vatTaiO(s.den.x, s.den.y)) : null;                         // vướng vật nằm đất: xe giật lại, vật rung, bụi
-          if (vv) this.burst(vv.x * T + 7 - ddx * 3, vv.y * T + 7 - ddy * 3, 4, vv.chat === 'sat' ? ['#dcecfa', '#a9c0d8', '#fff6e3'] : ['#e8b574', '#fff6e3', '#c98a45'], 0.5);
+          if (vv) this.burst(vv.x * T + 7 - ddx * 3, vv.y * T + 7 - ddy * 3, 4, vv.chat === 'sat' ? [BM.sanLamV6, BM.sanLamV7, BM.sanTrang] : [BM.sanCam, BM.sanTrang, BM.sanCamToi], 0.5);
           if (laNhen) v.chan = 1;
           await this.tween(per, my, function (k) {
             var a = Math.sin(k * Math.PI * 3) * (1 - k) * 3; v.dx = ddx * a; v.dy = ddy * a;
@@ -2049,7 +2050,7 @@
           await this.tween(per, my, function (k) {
             v.hop = (coDen ? -1 : 1) * Math.sin(k * Math.PI) * 1.4;
             if (k > 0.45) v.co = coDen;
-            if (k > 0.25 && k < 0.55 && Math.random() < 0.5) self.burst(v.x * T + 3 + Math.random() * 8, v.y * T + 11, 1, ['#fff6e3', '#d8c8a0'], 0.5);
+            if (k > 0.25 && k < 0.55 && Math.random() < 0.5) self.burst(v.x * T + 3 + Math.random() * 8, v.y * T + 11, 1, [BM.sanTrang, BM.sanVangSangV1], 0.5);
           });
           v.co = coDen; v.hop = 0;
         } else if (s.ma === 'nhay') {                               // nhện BẬT QUA một ô: bay vòng cung (cao nhất ở ô giữa), đáp xuống ô cách 2 ô, bụi khi đáp
@@ -2060,7 +2061,7 @@
           });
           if (my !== this.rid) return;
           v.x = s.den.x; v.y = s.den.y; v.hop = 0; v.chan = 0;
-          this.burst(s.den.x * T + 7, s.den.y * T + 11, 6, ['#fff6e3', '#bfe8b0', '#d8c8a0'], 0.7);
+          this.burst(s.den.x * T + 7, s.den.y * T + 11, 6, [BM.sanTrang, BM.sanXanhLa, BM.sanVangSangV1], 0.7);
         } else if (s.ma === 'nhay-hut') {                           // nhảy hụt: nhện bật lên, đụng chỗ chắn rồi rơi lại ô cũ, dấu '!'
           var hux = Math.sign(s.den.x - s.tu.x), huy = Math.sign(s.den.y - s.tu.y);
           this.baoHieu('!', 1500); v.choang = performance.now() + per + 1100;
@@ -2073,7 +2074,7 @@
           if (this.onRung) this.onRung();
         } else if (s.ma === 'roi-ho') {                             // nhện rơi hố: nhỏ dần, xoay, mờ dần, bụi đất bắn lên, dấu '!'
           this.baoHieu('!', 2200); v.choang = performance.now() + per + 1100;
-          this.burst(s.o.x * T + 7, s.o.y * T + 7, 8, ['#a8742f', '#5a3a14', '#fff6e3'], 0.8, 1, true);
+          this.burst(s.o.x * T + 7, s.o.y * T + 7, 8, [BM.sanNauSangV2, BM.sanNauV1, BM.sanTrang], 0.8, 1, true);
           await this.tween(Math.max(per, ms * 0.9), my, function (k) { v.roi = ease(k); });
           v.roi = 1;
           if (this.onRung) this.onRung();
@@ -2211,10 +2212,10 @@
     hieuUngTay: function (evs) {
       for (var i = 0; i < evs.length; i++) {
         var s = evs[i], o = s.o, px = o ? o.x * T + 7 : 0, py = o ? o.y * T + 7 : 0;
-        if (s.ma === 'nhat-vat' && o) this.burst(px, py, 8, ['#e8b574', '#fff6e3', '#c98a45'], 0.7);
-        else if (s.ma === 'dat-vat' && o) this.burst(px, py + 3, 6, ['#fff6e3', '#bfe8b0'], 0.5);
+        if (s.ma === 'nhat-vat' && o) this.burst(px, py, 8, [BM.sanCam, BM.sanTrang, BM.sanCamToi], 0.7);
+        else if (s.ma === 'dat-vat' && o) this.burst(px, py + 3, 6, [BM.sanTrang, BM.sanXanhLa], 0.5);
         else if (s.ma === 'vat-vo' && o) {
-          this.burst(px, py, 16, ['#c98a45', '#8a5a24', '#e8b574', '#5a3a14'], 1.7, 2, true);
+          this.burst(px, py, 16, [BM.sanCamToi, BM.sanNauSang, BM.sanCam, BM.sanNauV1], 1.7, 2, true);
           this.chopDo(160);
         } else if (s.ma === 'kep-hut') {
           this.baoHieu('?', 1300);
@@ -2228,9 +2229,9 @@
   /** Vật trong ảnh nhỏ của sân: ô vuông nhỏ giữa ô; gỗ nâu, SẮT xám xanh có viền sáng; mv = tên màu của vật (dải ngang). */
   function thuVat(g, px, py, s, mv, sat, cuc) {
     var q = s >> 2, w2 = s >> 1;
-    g.fillStyle = cuc ? (cuc === 'N' ? '#d6493e' : '#3f7fe0') : sat ? '#8aa2bd' : '#c98a45'; g.fillRect(px + q, py + q, w2, w2);          // vật nam châm: khối đỏ (chữ N) hay xanh dương (chữ S), một vạch trắng ở giữa
-    if (cuc) { g.fillStyle = '#ffffff'; g.fillRect(px + q + Math.max(1, s >> 4), py + (s >> 1) - Math.max(1, s >> 5), Math.max(2, w2 - 2 * Math.max(1, s >> 4)), Math.max(1, s >> 4)); }
-    if (sat) { g.fillStyle = '#e4f0fb'; g.fillRect(px + q, py + q, w2, Math.max(1, s >> 4)); g.fillRect(px + q, py + q, Math.max(1, s >> 4), w2); g.fillStyle = '#4a617c'; g.fillRect(px + q + w2 - Math.max(1, s >> 4), py + q, Math.max(1, s >> 4), w2); g.fillRect(px + q, py + q + w2 - Math.max(1, s >> 4), w2, Math.max(1, s >> 4)); }
+    g.fillStyle = cuc ? (cuc === 'N' ? BM.sanDoV6 : BM.sanLamToiV7) : sat ? BM.sanLamV16 : BM.sanCamToi; g.fillRect(px + q, py + q, w2, w2);          // vật nam châm: khối đỏ (chữ N) hay xanh dương (chữ S), một vạch trắng ở giữa
+    if (cuc) { g.fillStyle = BM.sanTrangV1; g.fillRect(px + q + Math.max(1, s >> 4), py + (s >> 1) - Math.max(1, s >> 5), Math.max(2, w2 - 2 * Math.max(1, s >> 4)), Math.max(1, s >> 4)); }
+    if (sat) { g.fillStyle = BM.sanTrangV6; g.fillRect(px + q, py + q, w2, Math.max(1, s >> 4)); g.fillRect(px + q, py + q, Math.max(1, s >> 4), w2); g.fillStyle = BM.sanLamToiV8; g.fillRect(px + q + w2 - Math.max(1, s >> 4), py + q, Math.max(1, s >> 4), w2); g.fillRect(px + q, py + q + w2 - Math.max(1, s >> 4), w2, Math.max(1, s >> 4)); }
     if (mv) { g.fillStyle = Ve.MAU[mv].s; g.fillRect(px + q, py + (s >> 1) - 1, w2, Math.max(2, s >> 3)); }
   }
 
@@ -2258,56 +2259,56 @@
     ((lopMau && lopMau.cuaNhip) || []).forEach(function (cn) { cuaNhip[cn.x + ',' + cn.y] = cn; });                      // cửa nhịp: ảnh nhỏ vẽ trạng thái lúc đầu (theo pha), khung xanh lơ                                                                          // vật thêm ngoài ký hiệu (vd trên băng chuyền)
     for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
       ch = rows[y][x]; px = x * s; py = y * s;
-      if (ch === '#') { g.fillStyle = '#4a5368'; g.fillRect(px, py, s, s); g.fillStyle = '#7a85a3'; g.fillRect(px, py, s, Math.max(1, s >> 3)); continue; }
+      if (ch === '#') { g.fillStyle = BM.sanLamToiV1; g.fillRect(px, py, s, s); g.fillStyle = BM.sanLamV8; g.fillRect(px, py, s, Math.max(1, s >> 3)); continue; }
       if (ch === '=') {                                                       // hàng rào thấp: sàn xanh + thanh gỗ ngang + cọc (khác ô tường đặc)
-        g.fillStyle = '#2f7a46'; g.fillRect(px, py, s, s);
+        g.fillStyle = BM.sanXanhLaToiV1; g.fillRect(px, py, s, s);
         var rh = Math.max(1, s >> 3), ry = py + (s >> 1) - (rh >> 1);
-        g.fillStyle = '#1b120a'; g.fillRect(px, ry - 1, s, rh + 2);
-        g.fillStyle = '#e8b574'; g.fillRect(px, ry, s, rh);
-        g.fillStyle = '#1b120a'; g.fillRect(px + (s >> 1) - (s >> 3) - 1, py + (s >> 2), (s >> 2) + 2, (s >> 1));
-        g.fillStyle = '#c98a45'; g.fillRect(px + (s >> 1) - (s >> 3), py + (s >> 2) + 1, s >> 2, (s >> 1) - 2);
+        g.fillStyle = BM.vienDam; g.fillRect(px, ry - 1, s, rh + 2);
+        g.fillStyle = BM.sanCam; g.fillRect(px, ry, s, rh);
+        g.fillStyle = BM.vienDam; g.fillRect(px + (s >> 1) - (s >> 3) - 1, py + (s >> 2), (s >> 2) + 2, (s >> 1));
+        g.fillStyle = BM.sanCamToi; g.fillRect(px + (s >> 1) - (s >> 3), py + (s >> 2) + 1, s >> 2, (s >> 1) - 2);
         continue;
       }
       if (ch === 'P') {                                                       // ô sạc của drone: sàn xanh + đế thép tối viền xanh lơ + chấm vàng ở giữa (khác ô đích khung vàng, cờ)
         var pm = Math.max(1, s >> 3);
-        g.fillStyle = '#2f7a46'; g.fillRect(px, py, s, s);
+        g.fillStyle = BM.sanXanhLaToiV1; g.fillRect(px, py, s, s);
         g.fillStyle = K_INK; g.fillRect(px + 1, py + 1, s - 2, s - 2);
-        g.fillStyle = '#566078'; g.fillRect(px + 1 + pm, py + 1 + pm, s - 2 - 2 * pm, s - 2 - 2 * pm);
-        g.fillStyle = '#2b3347'; g.fillRect(px + (s >> 2) + 1, py + (s >> 2) + 1, s - 2 * ((s >> 2) + 1), s - 2 * ((s >> 2) + 1));
-        g.fillStyle = '#5ff0ff'; g.fillRect(px + 1 + pm, py + 1 + pm, s - 2 - 2 * pm, 1);
-        g.fillStyle = '#ffd23f'; g.fillRect(px + (s >> 1) - 1, py + (s >> 2) + 1, Math.max(2, s >> 3), (s >> 1) - 1);
+        g.fillStyle = BM.sanLamToiV2; g.fillRect(px + 1 + pm, py + 1 + pm, s - 2 - 2 * pm, s - 2 - 2 * pm);
+        g.fillStyle = BM.sanLamToiV3; g.fillRect(px + (s >> 2) + 1, py + (s >> 2) + 1, s - 2 * ((s >> 2) + 1), s - 2 * ((s >> 2) + 1));
+        g.fillStyle = BM.sanNgoc; g.fillRect(px + 1 + pm, py + 1 + pm, s - 2 - 2 * pm, 1);
+        g.fillStyle = BM.sanVang; g.fillRect(px + (s >> 1) - 1, py + (s >> 2) + 1, Math.max(2, s >> 3), (s >> 1) - 1);
         continue;
       }
       if (ch === 'N') {                                                       // nút bắn: tường xám + nút tròn đỏ ở giữa (nút bật sẵn: nút xanh, viền cam nóng)
         var nbT = !!nutBat[x + ',' + y];
-        g.fillStyle = '#4a5368'; g.fillRect(px, py, s, s); g.fillStyle = '#7a85a3'; g.fillRect(px, py, s, Math.max(1, s >> 3));
-        if (nbT) { g.fillStyle = '#ff7a2e'; g.fillRect(px + (s >> 2) - 1, py + (s >> 2) - 1, (s >> 1) + 2, (s >> 1) + 2); }
+        g.fillStyle = BM.sanLamToiV1; g.fillRect(px, py, s, s); g.fillStyle = BM.sanLamV8; g.fillRect(px, py, s, Math.max(1, s >> 3));
+        if (nbT) { g.fillStyle = BM.sanCamToiV2; g.fillRect(px + (s >> 2) - 1, py + (s >> 2) - 1, (s >> 1) + 2, (s >> 1) + 2); }
         g.fillStyle = K_INK; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1);
-        g.fillStyle = nbT ? '#5fe08a' : '#e8604a'; g.fillRect(px + (s >> 2) + 1, py + (s >> 2) + 1, Math.max(1, (s >> 1) - 2), Math.max(1, (s >> 1) - 2));
+        g.fillStyle = nbT ? BM.sanXanhLaToiV6 : BM.sanDoV7; g.fillRect(px + (s >> 2) + 1, py + (s >> 2) + 1, Math.max(1, (s >> 1) - 2), Math.max(1, (s >> 1) - 2));
         continue;
       }
       if (ch === 'C' || ch === 'c') {                                         // cửa: đóng = khối xám khung vàng; mở = sàn có hai cột khung vàng
-        var nhT = cuaNhip[x + ',' + y], moT = nhT ? (nhT.pha % (nhT.mo + nhT.dong)) < nhT.mo : ch === 'c', kh = nhT ? '#38c6de' : '#f2b533', cd = Math.max(1, s >> 3);
-        g.fillStyle = '#2f7a46'; g.fillRect(px, py, s, s);
-        if (!moT) { g.fillStyle = K_INK; g.fillRect(px, py, s, s); g.fillStyle = '#9aa3b6'; g.fillRect(px + cd, py, s - 2 * cd, s); g.fillStyle = K_INK; g.fillRect(px + (s >> 1) - 1, py, 1, s); }
+        var nhT = cuaNhip[x + ',' + y], moT = nhT ? (nhT.pha % (nhT.mo + nhT.dong)) < nhT.mo : ch === 'c', kh = nhT ? BM.sanXanhLoToiV1 : BM.sanVangV4, cd = Math.max(1, s >> 3);
+        g.fillStyle = BM.sanXanhLaToiV1; g.fillRect(px, py, s, s);
+        if (!moT) { g.fillStyle = K_INK; g.fillRect(px, py, s, s); g.fillStyle = BM.sanLamV9; g.fillRect(px + cd, py, s - 2 * cd, s); g.fillStyle = K_INK; g.fillRect(px + (s >> 1) - 1, py, 1, s); }
         g.fillStyle = kh; g.fillRect(px, py, cd, s); g.fillRect(px + s - cd, py, cd, s);
         continue;
       }
       var mn = mauO && mauO[y][x] && BANG[ch] === undefined && ch !== 'S' ? mauO[y][x] : null;
-      g.fillStyle = mn ? Ve.MAU[mn].n : BANG[ch] !== undefined ? '#2f5fb0' : ch === 'S' ? '#9aa0b0' : '#2f7a46'; g.fillRect(px, py, s, s);
+      g.fillStyle = mn ? Ve.MAU[mn].n : BANG[ch] !== undefined ? BM.sanLamToiV9 : ch === 'S' ? BM.sanXamToiV4 : BM.sanXanhLaToiV1; g.fillRect(px, py, s, s);
       if (mn) { g.fillStyle = Ve.MAU[mn].t; g.fillRect(px, py, s, 1); g.fillRect(px, py + s - 1, s, 1); g.fillRect(px, py, 1, s); g.fillRect(px + s - 1, py, 1, s); }
-      if (ch === 'H' || ch === 'h') { g.fillStyle = '#8d97a8'; g.fillRect(px + (s >> 3), py + (s >> 3), s - (s >> 2), s - (s >> 2)); }
-      if (ch === 'M') { g.fillStyle = '#f4b53f'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
-      if (BAN_XOAY[ch] !== undefined) { g.fillStyle = BAN_XOAY[ch] > 0 ? '#ffd04d' : '#58dcff'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
-      if (ch === '1' || ch === '2') { g.fillStyle = ch === '2' ? '#d070ff' : '#42d4ff'; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
+      if (ch === 'H' || ch === 'h') { g.fillStyle = BM.sanXamToiV5; g.fillRect(px + (s >> 3), py + (s >> 3), s - (s >> 2), s - (s >> 2)); }
+      if (ch === 'M') { g.fillStyle = BM.sanCamV2; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
+      if (BAN_XOAY[ch] !== undefined) { g.fillStyle = BAN_XOAY[ch] > 0 ? BM.sanVangV3 : BM.sanXanhLoV1; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
+      if (ch === '1' || ch === '2') { g.fillStyle = ch === '2' ? BM.sanTimSangV2 : BM.sanXanhLoV6; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1); }
       if (ch === 'o' || ch === 'X') {
         var mv = vm && vm[y] ? MAU_KY[vm[y][x]] : null, sat = !!(vc && vc[y] && vc[y][x] === 's'), cucV = vc && vc[y] && (vc[y][x] === 'N' || vc[y][x] === 'S') ? vc[y][x] : null;
         thuVat(g, px, py, s, mv, sat, cucV);
       }
-      if (ch === 'D' || ch === 'X' || ch === 'h') { g.strokeStyle = mn ? Ve.MAU[mn].vi : '#ffd23f'; g.lineWidth = Math.max(1, s >> 3); g.strokeRect(px + g.lineWidth / 2, py + g.lineWidth / 2, s - g.lineWidth, s - g.lineWidth); }
+      if (ch === 'D' || ch === 'X' || ch === 'h') { g.strokeStyle = mn ? Ve.MAU[mn].vi : BM.sanVang; g.lineWidth = Math.max(1, s >> 3); g.strokeRect(px + g.lineWidth / 2, py + g.lineWidth / 2, s - g.lineWidth, s - g.lineWidth); }
       if (ch === 'F') {
-        g.fillStyle = '#fff6e3'; g.fillRect(px + (s >> 1) - 1, py + 1, Math.max(1, s >> 3), s - 2);
-        g.fillStyle = '#ff4a3c'; g.fillRect(px + (s >> 1), py + 1, s >> 1, s >> 1);
+        g.fillStyle = BM.sanTrang; g.fillRect(px + (s >> 1) - 1, py + 1, Math.max(1, s >> 3), s - 2);
+        g.fillStyle = BM.sanDoV2; g.fillRect(px + (s >> 1), py + 1, s >> 1, s >> 1);
       }
     }
     var hinhT = dungHinh(lopMau && lopMau.hinh), sonT = dungHinh(lopMau && lopMau.sonBanDau), vien = Math.max(1, s >> 3);       // máy sơn: ô hình mờ (khung màu) và ô sơn sẵn (sơn đặc)
@@ -2323,8 +2324,8 @@
     });
     if (bd) {
       var cx = bd.x * s + s / 2, cy = bd.y * s + s / 2, r = s * 0.28;
-      g.fillStyle = '#7ff0ff'; g.fillRect(Math.round(cx - r), Math.round(cy - r), Math.round(r * 2), Math.round(r * 2));
-      g.fillStyle = '#1b120a'; g.fillRect(Math.round(cx + DX[bd.huong || 0] * r - 1), Math.round(cy + DY[bd.huong || 0] * r - 1), 2, 2);
+      g.fillStyle = BM.sanXanhLo; g.fillRect(Math.round(cx - r), Math.round(cy - r), Math.round(r * 2), Math.round(r * 2));
+      g.fillStyle = BM.vienDam; g.fillRect(Math.round(cx + DX[bd.huong || 0] * r - 1), Math.round(cy + DY[bd.huong || 0] * r - 1), 2, 2);
     }
   }
 
@@ -2336,7 +2337,7 @@
     if (!chu) { if (el) el.style.display = 'none'; return; }
     if (!el) {
       el = document.createElement('div'); el.className = 'canh-bao'; el.setAttribute('data-canh-bao', '1');
-      var ic = document.createElement('span'); ic.className = 'cb-ic'; ic.appendChild(Ve.ico('canhbao', 1, { fill: '#ffd23f', line: '#1b120a' }));
+      var ic = document.createElement('span'); ic.className = 'cb-ic'; ic.appendChild(Ve.ico('canhbao', 1, { fill: BM.sanVang, line: BM.vienDam }));
       var tx = document.createElement('span'); tx.className = 'cb-chu';
       el.appendChild(ic); el.appendChild(tx); ffr.appendChild(el);
     }
@@ -2382,28 +2383,28 @@
     }
 
     // 1. Nền kính tối (xóa mắt tĩnh để vẽ mắt động; giữ chấm chân mày camera nếu có)
-    rectB(k.x, k.y, k.w, k.h, '#26324e');
-    if (k.gocSang) pxB(k.gocSang[0], k.gocSang[1], '#dbe3ed');
-    if (coCam && k.may) k.may.forEach(function (m) { pxB(m[0], m[1], '#7ff0ff'); });
+    rectB(k.x, k.y, k.w, k.h, BM.sanLamToiV10);
+    if (k.gocSang) pxB(k.gocSang[0], k.gocSang[1], BM.sanLamV17);
+    if (coCam && k.may) k.may.forEach(function (m) { pxB(m[0], m[1], BM.sanXanhLo); });
 
     var lx = k.lx, rx = k.rx, ey = k.ey, ew = k.ew;
     // 2. Biểu cảm CHOÁNG / VA CHẠM (> <)
     if (st.choang) {
-      var cChoang = ((now / 120) | 0) & 1 ? '#ffd23f' : '#ff8a6a';
+      var cChoang = ((now / 120) | 0) & 1 ? BM.sanVang : BM.sanDoSang;
       if (k.h >= 5) {
         var yC = k.y + 1;
-        pxB(lx, yC, cChoang); pxB(lx + ew - 1, yC + 1, '#ffffff'); pxB(lx, yC + 2, cChoang);
-        pxB(rx + ew - 1, yC, cChoang); pxB(rx, yC + 1, '#ffffff'); pxB(rx + ew - 1, yC + 2, cChoang);
+        pxB(lx, yC, cChoang); pxB(lx + ew - 1, yC + 1, BM.sanTrangV1); pxB(lx, yC + 2, cChoang);
+        pxB(rx + ew - 1, yC, cChoang); pxB(rx, yC + 1, BM.sanTrangV1); pxB(rx + ew - 1, yC + 2, cChoang);
       } else {
-        pxB(lx, ey, cChoang); pxB(lx + ew - 1, ey, '#ffffff'); pxB(lx, ey + 1, cChoang);
-        pxB(rx + ew - 1, ey, cChoang); pxB(rx, ey, '#ffffff'); pxB(rx + ew - 1, ey + 1, cChoang);
+        pxB(lx, ey, cChoang); pxB(lx + ew - 1, ey, BM.sanTrangV1); pxB(lx, ey + 1, cChoang);
+        pxB(rx + ew - 1, ey, cChoang); pxB(rx, ey, BM.sanTrangV1); pxB(rx + ew - 1, ey + 1, cChoang);
       }
       return;
     }
     // 3. Biểu cảm THẮNG MÀN (^ ^ mắt cười)
     if (st.mung) {
       var nhay = ((now / 140) | 0) & 1;
-      var cVui = nhay ? '#ffffff' : '#7ff0ff', cVien = '#2dd4bf';
+      var cVui = nhay ? BM.sanTrangV1 : BM.sanXanhLo, cVien = BM.sanNgocToi;
       [lx, rx].forEach(function (ex) {
         if (ew >= 3) {
           pxB(ex + 1, ey, cVui); pxB(ex, ey + 1, cVien); pxB(ex + 2, ey + 1, cVien);
@@ -2415,28 +2416,28 @@
     }
     // 4. Biểu cảm THẮC MẮC '?' hoặc GIẬT MÌNH '!'
     if (st.bao === '?') {
-      rectB(lx, ey + 1, ew, 1, '#7ff0ff');
-      rectB(rx, ey, ew, 2, '#7ff0ff'); pxB(rx, ey, '#ffffff');
+      rectB(lx, ey + 1, ew, 1, BM.sanXanhLo);
+      rectB(rx, ey, ew, 2, BM.sanXanhLo); pxB(rx, ey, BM.sanTrangV1);
       return;
     }
     if (st.bao === '!') {
-      rectB(lx, ey, ew, 2, '#ffe14a'); pxB(lx, ey, '#ffffff');
-      rectB(rx, ey, ew, 2, '#ffe14a'); pxB(rx, ey, '#ffffff');
+      rectB(lx, ey, ew, 2, BM.sanVangV1); pxB(lx, ey, BM.sanTrangV1);
+      rectB(rx, ey, ew, 2, BM.sanVangV1); pxB(rx, ey, BM.sanTrangV1);
       return;
     }
     // 5. Đang đọc cảm biến: mắt sáng rực
     if (st.quet) {
       [lx, rx].forEach(function (ex) {
-        rectB(ex, ey, ew, 2, '#7ff0ff');
-        rectB(ex, ey, Math.max(1, ew - 1), 1, '#ffffff');
+        rectB(ex, ey, ew, 2, BM.sanXanhLo);
+        rectB(ex, ey, Math.max(1, ew - 1), 1, BM.sanTrangV1);
       });
       return;
     }
     // 6. Bình thường / Đang chạy: chớp mắt tự nhiên khi đứng yên + con ngươi liếc theo hướng đi
     var pha = (now + (st.xe || 0) * 970) % 3200;
     if (!st.chay && pha > 3050) {
-      rectB(lx, ey + 1, ew, 1, '#3fa9bb');
-      rectB(rx, ey + 1, ew, 1, '#3fa9bb');
+      rectB(lx, ey + 1, ew, 1, BM.sanXanhLoToiV3);
+      rectB(rx, ey + 1, ew, 1, BM.sanXanhLoToiV3);
       return;
     }
     var gx = st.re || 0, gy = st.chay ? 0 : 1;
@@ -2444,13 +2445,13 @@
       var liec = ((now + (st.xe || 0) * 530) / 1400) | 0;
       gx = liec % 4 === 1 ? 1 : liec % 4 === 3 ? -1 : 0;
     }
-    var nenMat = st.chay ? '#66e8fa' : '#4cc3d9';
+    var nenMat = st.chay ? BM.sanXanhLoV7 : BM.sanXanhLoV8;
     [lx, rx].forEach(function (ex) {
       rectB(ex, ey, ew, 2, nenMat);
       var px = ex + (gx > 0 ? ew - 1 : gx < 0 ? 0 : Math.min(1, ew - 1));
       var py = ey + (gy > 0 ? 0 : 0);
-      pxB(px, py, '#ffffff');
-      if (ew >= 3 && gx === 0) pxB(ex, ey + 1, '#2c8fa4');
+      pxB(px, py, BM.sanTrangV1);
+      if (ew >= 3 && gx === 0) pxB(ex, ey + 1, BM.sanXanhLoToiV4);
     });
   }
 

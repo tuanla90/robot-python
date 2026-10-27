@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    cai-dat.js — "Robot Chấn Hưng": BẢNG CÀI ĐẶT (window.CaiDat).
    Mở từ nút bánh răng ở màn khởi đầu (man-dau.js) và từ menu ☰ trong màn chơi (man-choi.js).
@@ -15,7 +16,7 @@
   function hangAm(khoa, icon, chu) {
     var d = h('div', 'cd-dong'); d.setAttribute('data-cd', khoa);
     var ten = h('div', 'cd-ten');
-    var ic = h('span'); ic.setAttribute('data-i', icon); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', '#ffd95a'); ic.setAttribute('data-l', '#1b120a');
+    var ic = h('span'); ic.setAttribute('data-i', icon); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', BM.vang); ic.setAttribute('data-l', BM.vienDam);
     ten.appendChild(ic); ten.appendChild(h('span', null, chu));
     var bot = h('button', 'bt g-wd cd-nut', '−'); bot.setAttribute('data-nut', khoa + '-bot');
     var vach = h('div', 'cd-vach');
@@ -46,16 +47,16 @@
   /** Hàng chọn màu sơn R1 (mở khóa theo mốc tổng sao: 0 / 60 / 150 / 300 / 450). */
   function hangSon() {
     var ds = (window.Part && Part.DS_SON) || [
-      { ma: '', saoCan: 0, mau: ['#ffcf30', '#ffe888', '#d99418'] },
-      { ma: 'ngoc', saoCan: 60, mau: ['#2dd4bf', '#99f6e4', '#0f766e'] },
-      { ma: 'cam', saoCan: 150, mau: ['#ff7a2f', '#ffc299', '#b84309'] },
-      { ma: 'trang', saoCan: 300, mau: ['#dce5f2', '#ffffff', '#7c8da6'] },
-      { ma: 'hoang-kim', saoCan: 450, mau: ['#ffd700', '#fff8b8', '#b87d08'] }
+      { ma: '', saoCan: 0, mau: [BM.vangV3, BM.vangV5, BM.goSangV5] },
+      { ma: 'ngoc', saoCan: 60, mau: [BM.ngocToiV3, BM.ngocV5, BM.ngocToi2V6] },
+      { ma: 'cam', saoCan: 150, mau: [BM.camToiV4, BM.kemToi, BM.goSangV19] },
+      { ma: 'trang', saoCan: 300, mau: [BM.lamSangV21, BM.trangV2, BM.lamSangV22] },
+      { ma: 'hoang-kim', saoCan: 450, mau: [BM.vangToiV3, BM.kemV11, BM.goSangV20] }
     ];
     var khung = h('div', 'cd-son'); khung.setAttribute('data-cd', 'son');
     var hd = h('div', 'cd-son-hd');
     var ten = h('div', 'cd-ten');
-    var ic = h('span'); ic.setAttribute('data-i', 'mau'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', '#ffd95a'); ic.setAttribute('data-l', '#1b120a');
+    var ic = h('span'); ic.setAttribute('data-i', 'mau'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', BM.vang); ic.setAttribute('data-l', BM.vienDam);
     ten.appendChild(ic); ten.appendChild(h('span', null, t('caiDat.son')));
     var dang = h('div', 'cd-son-dang');
     hd.appendChild(ten); hd.appendChild(dang);
@@ -88,7 +89,7 @@
         m.style.setProperty('--c2', it.mau[2]);
         if (on && mo) {
           var ck = h('span', 'cd-son-ic');
-          ck.appendChild(Ve.ico('check', 1, { fill: '#ffffff', line: '#1b120a' }));
+          ck.appendChild(Ve.ico('check', 1, { fill: BM.trangV2, line: BM.vienDam }));
           m.appendChild(ck);
         } else if (!mo) {
           var lk = h('span', 'cd-son-ic');
@@ -134,7 +135,7 @@
   function hangMat() {
     var d = h('div', 'cd-dong'); d.setAttribute('data-cd', 'mat');
     var ten = h('div', 'cd-ten');
-    var ic = h('span'); ic.setAttribute('data-i', 'denCam'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', '#7ff0ff'); ic.setAttribute('data-l', '#1b120a');
+    var ic = h('span'); ic.setAttribute('data-i', 'denCam'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', BM.xanhLoSang2); ic.setAttribute('data-l', BM.vienDam);
     ten.appendChild(ic); ten.appendChild(h('span', null, t('caiDat.mat')));
     var sw = h('button', 'bt cd-sw'); sw.setAttribute('data-nut', 'cd-mat');
     function dangBat() {

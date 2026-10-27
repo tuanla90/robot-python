@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    thanh-phan.js — "Robot Chấn Hưng": THÀNH PHẦN GIAO DIỆN DÙNG CHUNG (window.TP).
    h() dựng DOM · Editor (khung 10 ô) · Palette (khay khối lệnh theo thẻ bộ phận: Thân / Tay / Cảm biến) · Hop (hộp thoại).
@@ -728,7 +729,7 @@
       boThutEl = h('span', 'thut');
       [['thutra', 'thut-ra', 'choi.thutRa', -1], ['thutvao', 'thut-vao', 'choi.thutVao', 1]].forEach(function (c) {
         var b = h('button', 'bt g-pu thut-nut'); b.setAttribute('data-nut', c[1]); b.setAttribute('aria-label', t(c[2]));
-        b.appendChild(Ve.ico(c[0], 2, { line: '#2f1a6a' }));
+        b.appendChild(Ve.ico(c[0], 2, { line: BM.timToi2 }));
         b.addEventListener('click', function (ev) { ev.stopPropagation(); doiBac(c[3]); });
         boThutEl.appendChild(b);
         if (c[3] < 0) nutRa = b; else nutVao = b;
@@ -738,7 +739,7 @@
     for (var i = 0; i < tong; i++) {
       var r = h('div', 'row'), tb = h('div', 'tab'), s = h('div', 'strip empty'), bk = h('div', 'brk'), nj = h('div', 'nj');
       tb.appendChild(h('span', 'tn', i + 1));
-      var xi = Ve.ico('x5', 2, { fill: '#fff', line: '#5a0e0c' }); xi.className += ' tx'; tb.appendChild(xi);
+      var xi = Ve.ico('x5', 2, { fill: BM.trang, line: BM.doToiV8 }); xi.className += ' tx'; tb.appendChild(xi);
       r.appendChild(tb); r.appendChild(s); r.appendChild(bk); r.appendChild(nj); host.appendChild(r); rows.push(r); strips.push(s); brks.push(bk); njs.push(nj);
       (function (i) {
         r.addEventListener('click', function (ev) {
@@ -1732,7 +1733,7 @@
    * cb.khiBien(ten): chạm thẻ biến. em === null → ẩn cả nhóm "hàm của em". cb.goiYThe (bool): màn chơi lần đầu có từ hai thẻ (hay lần đầu có thẻ Cảm biến) thì ◀ ▶ nhấp nháy + bong bóng nhỏ cho tới khi đổi thẻ (cờ Luu 'meo-the', 'meo-the-cam').
    * Khối KHÔNG co nhỏ (cỡ chạm đủ lớn trên điện thoại): khay dài thì cuộn bằng vuốt dọc, lăn chuột hay ▲ ▼.
    */
-  var MAU_THE = { than: '#9aeefa', tay: '#ffb050', cam: '#d9c4ff' };                       // màu icon tiêu đề thẻ: Thân xanh, Tay cam, Logic tím (như khối for)
+  var MAU_THE = { than: BM.xanhLoSang2V1, tay: BM.cam, cam: BM.tim };                       // màu icon tiêu đề thẻ: Thân xanh, Tay cam, Logic tím (như khối for)
   var HINH_PART = {};                                                                       // bộ đệm hình bộ phận của tiêu đề thẻ (hinhPart), khóa 'than/hai-banh'
   function Palette(host, cb) {
     this.host = host;
@@ -1828,7 +1829,7 @@
       theTen.innerHTML = ''; theTen.setAttribute('title', the[i].ten);
       var hp = hinhPart(the[i].part);
       if (hp) { theTen.classList.add('co-ic', 'co-part'); theTen.appendChild(hp); }
-      else if (the[i].icon && window.Ve && Ve.ico) { theTen.classList.add('co-ic'); theTen.appendChild(Ve.ico(the[i].icon, 2, { fill: MAU_THE[theChon] || '#e8ffe0', line: '#0a2a1f', toi: '#0a2a1f', sang: '#ffffff' })); }
+      else if (the[i].icon && window.Ve && Ve.ico) { theTen.classList.add('co-ic'); theTen.appendChild(Ve.ico(the[i].icon, 2, { fill: MAU_THE[theChon] || BM.trangV3, line: BM.bangV1, toi: BM.bangV1, sang: BM.trangV2 })); }
       else { theTen.textContent = the[i].ten; vuaTenThe(); }
       theCham.innerHTML = '';
       the.forEach(function (x, k) { theCham.appendChild(h('i', k === i ? 'on' : '')); });
@@ -1953,7 +1954,7 @@
         var e = h('span', 'ed' + (khoaH ? ' khoa' : '')); e.setAttribute('role', 'button'); e.setAttribute('aria-label', t(khoaH ? 'choi.hamKhoaNhan' : 'choi.suaHam', { ten: ten }));
         e.setAttribute('data-sua', ten);
         if (khoaH) { e.setAttribute('data-khoa', '1'); d.className += ' khoa'; }
-        e.appendChild(khoaH ? Ve.khoa(2, true) : Ve.ico('edit', 2, { line: '#0e3a12' }));
+        e.appendChild(khoaH ? Ve.khoa(2, true) : Ve.ico('edit', 2, { line: BM.bangV2 }));
         e.addEventListener('click', function (ev) { ev.stopPropagation(); cb.khiSua && cb.khiSua(loai, ten); });
         d.appendChild(e);
       }
@@ -2087,7 +2088,7 @@
         var g2 = nhan(t('choi.nhom.em'), lop('g-em'));
         if (spec.coNutMoi && cb.khiMoi) {
           var nb = h('button', 'nb'); nb.setAttribute('data-nut', 'ham-moi');
-          nb.appendChild(Ve.ico('plus', 1, { line: '#0e3a12', fill: '#e8ffe0' }));
+          nb.appendChild(Ve.ico('plus', 1, { line: BM.bangV2, fill: BM.trangV3 }));
           nb.appendChild(document.createTextNode(t('choi.hamMoi')));
           nb.addEventListener('click', function () { cb.khiMoi(theChon); });                // truyền thẻ đang xem: hàm mới mở ở Xưởng sẽ hiện đúng thẻ đó
           g2.appendChild(nb);
@@ -2096,7 +2097,7 @@
         ds.forEach(function (f) { gach(f.ten, 'gr', 'em', f.thamSo); });
         if (!khac.length) return;
         var nk = h('button', 'nk' + (moKhac ? ' mo' : '')); nk.setAttribute('data-nut', 'ham-khac'); nk.setAttribute('aria-expanded', moKhac ? 'true' : 'false'); nk.setAttribute('title', t('choi.hamKhacNhan', { n: khac.length }));
-        nk.appendChild(Ve.ico(moKhac ? 'thutra' : 'next', 1, { line: '#0e3a12', fill: '#e8ffe0' }));
+        nk.appendChild(Ve.ico(moKhac ? 'thutra' : 'next', 1, { line: BM.bangV2, fill: BM.trangV3 }));
         nk.appendChild(h('span', 'nk-chu', t(moKhac ? 'choi.hamKhacAn' : 'choi.hamKhac', { n: khac.length })));
         nk.addEventListener('click', function (ev) { ev.stopPropagation(); moKhac = !moKhac; veThe(host.scrollTop); });
         host.appendChild(nk);
@@ -2346,7 +2347,7 @@
       var ed = cfg.ed, pal = cfg.pal;
       var panP = ed.host.closest('.pan'), panK = pal.host.closest('.pan');
       var thung = h('div', 'thung');
-      var ic = h('div', 'thung-ic'); ic.appendChild(Ve.ico('trash', 7, { line: '#3a0806', fill: '#fff0ec', shade: '#e0b0aa' }));
+      var ic = h('div', 'thung-ic'); ic.appendChild(Ve.ico('trash', 7, { line: BM.doToiV9, fill: BM.trangToiV7, shade: BM.doSangV11 }));
       thung.appendChild(ic); thung.appendChild(h('div', 'thung-chu', t('keo.thung')));
       panK.appendChild(thung);
       [ed.host, pal.host].forEach(function (el) {
@@ -2558,7 +2559,7 @@
     if (o.ma) b.setAttribute('data-ma', o.ma); else b.removeAttribute('data-ma');
     // nút X đỏ ở góc trên phải: cách DUY NHẤT để ẩn bong bóng bằng cách chạm vào bong bóng (chạm thân thì không ẩn)
     var nx = h('button', 'bt g-rd bg-x'); nx.setAttribute('data-nut', 'bong-x'); nx.setAttribute('aria-label', t('choi.anBong'));
-    nx.appendChild(Ve.ico('close', 2, { line: '#4a0e0c' }));
+    nx.appendChild(Ve.ico('close', 2, { line: BM.doToi }));
     nx.addEventListener('click', function (ev) { ev.stopPropagation(); bongAn(b); });
     b.appendChild(nx);
     var ch = h('div', 'bg-ch');
@@ -2582,7 +2583,7 @@
   function bongMui(b, hangEl) {
     var cu = b.querySelector('.bg-mui'); if (cu) b.removeChild(cu);
     if (!hangEl || !b.classList.contains('show')) return;
-    var m = Ve.mui(b.classList.contains('tin') ? '#4aa0ff' : '#ff5a4a', 2);
+    var m = Ve.mui(b.classList.contains('tin') ? BM.lamSangV24 : BM.doV8, 2);
     m.className += ' bg-mui';
     b.appendChild(m);
     var rb = b.getBoundingClientRect(), rh = hangEl.getBoundingClientRect();

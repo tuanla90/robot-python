@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* TAY XOAY (chương tay-xoay, 15/10): tay kẹp đời 2 có KHỚP TRÒN ở mũi xe. Nhìn từ trên xuống: một trụ ngắn nối mũi xe với khớp tròn (bệ thép, nắp xanh lá = tay nâng / cam = tay hạ),
      cổ tay màu tím, thanh ngang rồi hai ngón thép. Khớp có ba nấc: tay chỉ phía trước, bên trái hay bên phải xe (cánh tay xoay quanh khớp, không quay cả xe).
@@ -14,7 +15,7 @@
     var goc=s.goc!==undefined?s.goc:({trai:-90,phai:90}[s.xoay]||0),th=goc*Math.PI/180,sn=Math.sin(th),cs=Math.cos(th);
     var low=s.tuThe==='duoi',open=s.kep!=='dong',hold=!open&&!!s.cam;
     var inner=open?5:hold?4:1,outer=inner+2,len=(hold?12:11.5)+(low?1.5:0);
-    var tim=low?'#7a5aa0':C.timSang,timSang=low?'#a98bd0':'#c9aef0',timToi=low?'#46335f':C.tim,ngon=low?'#e08a1e':C.thepSang,ngonToi=low?'#a45f0e':C.thep,mui=low?'#fff6e3':'#ffffff';
+    var tim=low?BM.robotTimV1:C.timSang,timSang=low?BM.robotTimSangV1:BM.robotTimSangV2,timToi=low?BM.robotTimV2:C.tim,ngon=low?BM.robotNauSangV2:C.thepSang,ngonToi=low?BM.robotNauV2:C.thep,mui=low?BM.robotTrangV1:BM.robotTrang;
     var co=[
       {u0:2,u1:5.5,v0:-2,v1:2,c:tim,hl:timSang,sh:timToi},                    /* cổ tay */
       {u0:5,u1:7,v0:-outer,v1:outer,c:C.thepToi,hl:C.thep,sh:C.den},          /* thanh ngang */
@@ -40,8 +41,8 @@
       }}
       if(d2<=3.9*3.9){                                                   /* khớp tròn: bệ thép, vòng tối, nắp báo tay nâng / hạ */
         col=d2>2.7*2.7?C.thep:C.thepSang;
-        if(d2>3.2*3.2)col=C.thepToi;else if(d2<=2.1*2.1)col=low?'#ff8a35':C.la;
-        if(d2<=0.9*0.9)col=low?'#fff0d6':'#f4ffd8';
+        if(d2>3.2*3.2)col=C.thepToi;else if(d2<=2.1*2.1)col=low?BM.robotCam:C.la;
+        if(d2<=0.9*0.9)col=low?BM.robotKem:BM.robotXanhLa;
       }
       p.px(x,y,col);
     }

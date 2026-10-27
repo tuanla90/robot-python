@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    gioi-thieu.js — "Robot Chấn Hưng": GIỚI THIỆU LẦN ĐẦU CHƠI (window.GioiThieu).
    Ba trang mẹo chơi trong một hộp (viết lệnh + Chạy · gom sao · mở bộ phận mới), có chấm trang, Bỏ qua / Tiếp.
@@ -12,7 +13,7 @@
 
   function huyHieu(ma) {
     var co = window.HuyHieu && HuyHieu.DS && HuyHieu.DS.indexOf(ma) >= 0;
-    return co ? Ve.mk(HuyHieu.ve(ma, 'mo'), 2) : Ve.ico('box', 3, { fill: '#ffd95a', line: '#1b120a' });
+    return co ? Ve.mk(HuyHieu.ve(ma, 'mo'), 2) : Ve.ico('box', 3, { fill: BM.vang, line: BM.vienDam });
   }
   /** Hình minh họa của trang i (2..4). */
   function hinh(i) {

@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    huong-dan.js — "Robot Chấn Hưng": KHUNG HƯỚNG DẪN dùng lại (window.HuongDan).
 
@@ -138,8 +139,8 @@
     daKieuPhu = true;
     var st = document.createElement('style');
     st.textContent = '#stage>.hd-vien{position:absolute;z-index:95;pointer-events:none;animation:hdvien .6s steps(1) infinite}' +
-      '#stage>.hd-bong{position:absolute;z-index:96;pointer-events:none;padding:6px 7px 4px;background:#fff3b0;color:#3a2200;text-align:left;' +
-      'font:600 calc(12px*var(--kp))/1.15 var(--px);box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 #fffbe0,inset 0 -2px 0 #e8c860;animation:none}';
+      '#stage>.hd-bong{position:absolute;z-index:96;pointer-events:none;padding:6px 7px 4px;background:' + BM.kemV4 + ';color:' + BM.goToiV4 + ';text-align:left;' +
+      'font:600 calc(12px*var(--kp))/1.15 var(--px);box-shadow:0 0 0 2px var(--ink),inset 0 2px 0 ' + BM.trangToiV2 + ',inset 0 -2px 0 ' + BM.vangV7 + ';animation:none}';
     document.head.appendChild(st);
   }
   function chuBuoc(b) { var c = b.chu; if (typeof c === 'function') { try { c = c(); } catch (e) { c = ''; } } return c === undefined || c === null ? '' : String(c); }
