@@ -76,3 +76,15 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   **Khác kế hoạch:** che-xich 3, 4, 5, 7, 10 không cất hẳn mà thành chương `che-xich` (5 màn) ở mùa 3 (ẩn), vì che-xich.4 tạo `climb()` mà che-doi-xich.1, .2, che-doi-omni.5 cần.
   Dời đầu mùa 3 (ẩn), giữ thứ tự: Sân cơ khí (`ban-xoay`, gói đầu mùa 3 cần 0 ★), Thân nhện, Đội vượt hố và băng chuyền, Danh sách, `che-xich`, Đội xích và nhện, Bánh omni, Đội omni và xích.
   Đường cong (luật mùa 1) chưa đạt ở vài chỗ của chương có sẵn (xich.2, .3 dòng; bang-chuyen.2–4, .8; che-xich.6 trong `bien-xich` nhịp 10 so với 5): để gói viết mới xử lý nếu cần.
+
+- **27/10 P1 · Lõi mới mùa 2 xong** (nhánh claude/loi-mua-2, gộp dfe443e). Máy kiểm `hoc/kiem-loi-mua-2.mjs` (93 ca, `--loi-gia` đỏ 5). Mọi màn cũ y nguyên.
+
+  | Luật | Bật bằng | Ghi chú |
+  |---|---|---|
+  | Hồng ngoại `distance()` | `hamGoc` có `distance` (part `hong-ngoai` tự lắp) | số ô trống tới vật cản phía trước theo hướng mặt, sát là 0, không tốn nhịp; nhện / drone gắn → lỗi cấu hình; tia đỏ khi đọc |
+  | Đo nhiệt `warm()` | `hamGoc` có `warm` | True khi vật cản đầu tiên là robot khác hoặc nút bắn đang bật; nút bật có quầng đỏ ở MỌI màn (luật thế giới) |
+  | Xích đẩy thùng nặng | `cfg.xichDay: true` + xích, khi TIẾN | ô sau thùng trống thì thùng dời 1 ô; chặn thì đâm như cũ; lùi không kéo |
+  | Bệ súng xích | `cfg.beSung: true` + xích + súng hơi | bắn tụ không giật; robot không súng thì bỏ qua cờ (khác `lucBan`, để màn đội khai cờ chung) |
+
+  Để sau: part hồng ngoại chưa vào danh mục lắp ráp (`lap-rap.js`) tới khi có màn lắp ráp dùng nó; khay chưa cho chạm đổi số trong `distance() > 2`;
+  thùng bị đẩy vào hố `u` chưa có luật (mùa 3); bắn nhanh ở màn nhiều robot vẫn giữ ô sau lưng (lỗi sẵn có). Thẻ bộ phận hồng ngoại còn một dấu "—" (đợt quét chữ diem10code).
