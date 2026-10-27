@@ -229,7 +229,6 @@ function thanhChuongTrinh(chuoi) {
 
 /* ------------------------------------------------------------------ 2–4, 7. từng màn */
 const CAM_LENH = ['warm', 'xichDay', 'beSung'];
-const soLenhCho = [];
 const bang = {};
 for (const m of DS) {
   const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
@@ -276,10 +275,9 @@ for (const m of DS) {
       assert.ok((m.loiGiai.hamCuaEmMoi || []).some((h) => h.ten === t), m.ma + ' taoHam ' + t + ' mà lời giải không tạo');
       const khac = M.danhSach.filter((x) => x !== m && (x.taoHam || []).includes(t)).map((x) => x.ma);
       assert.deepEqual(khac, [], m.ma + ' tên hàm ' + t + ' trùng hàm cốt truyện của màn khác');
-      // Sổ lệnh: so-lenh.js + kiem-che-xe.mjs chưa đọc màn của tệp ngân hàng mùa 2 (chỉ lo-trinh-hoc.js nạp), thêm mục bây giờ làm đỏ kiem-che-xe
-      // ("hàm thừa"). Ghi lại để báo, chờ user quyết (báo cáo P3, mục CÂU HỎI).
+      // Sổ lệnh: kiem-che-xe.mjs đọc cả màn mới mùa 2 theo lộ trình, nên hàm mới phải có mục đúng màn, đúng chương, nhóm hong-ngoai
       const sl = SL.tim(t);
-      if (!(sl && sl.man === m.ma && sl.chuong === m.chuong)) soLenhCho.push(t);
+      assert.ok(sl && sl.man === m.ma && sl.chuong === m.chuong && sl.nhom === 'hong-ngoai', m.ma + ' hàm mới ' + t + ' chưa có mục Sổ lệnh đúng màn / chương / nhóm: ' + JSON.stringify(sl));
     }
   });
   kiem(m.ma + ': lời giải 3 sao đúng ngưỡng, không chẩn đoán; mã mẫu chưa thắng; lời giải khác 2 sao; lời sai thua đúng mã', () => {
@@ -396,7 +394,6 @@ kiem('phép so số: nếu chưa có trước gói 3 thì màn đầu dùng phé
 });
 
 /* ------------------------------------------------------------------ bảng */
-if (soLenhCho.length) console.log('CHỜ (không tính hỏng): hàm mới chưa có mục Sổ lệnh: ' + soLenhCho.join(', '));
 console.log('Phép so số trước gói 3: ' + (soSanhTruoc || 'CHƯA CÓ (lời giải các màn trước gói 3 không so số)'));
 console.log('chương | số | mã | tên | điều mới | bước video | dòng | nhịp | ô không tường | ô code | đường tắt | recall');
 for (const m of DS) {
