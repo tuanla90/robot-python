@@ -4,7 +4,7 @@ var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require ===
     s=s||{};var under=s.duoi;
     if(under){                                             /* treo dưới bụng drone: dây cáp + nam châm chữ U (cực xanh trái, cực đỏ phải), mở xuống phía dưới */
       p.rect(11,16,2,3,C.ink);p.px(12,16,C.thepSang);p.px(12,17,C.thep);p.px(12,18,C.thepToi);
-      p.rect(7,19,10,5,C.ink);p.rect(11,22,2,2,null);p.rect(8,20,8,1,C.thepSang);p.rect(8,21,2,2,s.cuc==='N'?C.do:C.xanhDuong);p.rect(14,21,2,2,s.cuc==='S'?C.xanhDuong:C.do);p.px(8,21,BM.partNamChamVe1);p.px(14,21,BM.partNamChamVe2);
+      p.rect(7,19,10,5,C.ink);p.rect(11,22,2,2,null);p.rect(8,20,8,1,C.thepSang);p.rect(8,21,2,2,s.cuc==='N'?C.do:C.xanhDuong);p.rect(14,21,2,2,s.cuc==='S'?C.xanhDuong:C.do);p.px(8,21,BM.robotLamV2);p.px(14,21,BM.robotDoV6);
       if(s.bat){var cd=s.cuc==='N'?C.do:s.cuc==='S'?C.xanhDuong:C.xanh;[[5,23],[18,23]].forEach(function(a){p.px(a[0],a[1],cd);p.px(a[0]+(a[0]<10?-1:1),a[1]-2,cd);});p.px(12,23,cd);}
       return;}
     p.rect(7,22,10,2,C.ink);p.rect(8,22,8,1,C.thepSang);p.rect(9,18,6,4,C.ink);p.rect(10,18,4,3,C.thep);
