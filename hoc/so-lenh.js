@@ -205,7 +205,10 @@
     m('go_to_wall', 'hong-ngoai', 'Đi thẳng tới khi sát tường, dùng mắt hồng ngoại đo số ô trống', 'che-hong-ngoai', 'che-hong-ngoai.1'),
     m('go_safe', 'hong-ngoai', 'Đi thẳng tới khi phía trước chỉ còn an_toan ô trống', 'che-hong-ngoai', 'che-hong-ngoai.2'),
     m('clean_step', 'hong-ngoai', 'Một bước hút bụi: còn an_toan ô trống trở xuống thì rẽ phải, không thì đi một ô', 'che-hong-ngoai', 'che-hong-ngoai.3'),
-    m('go_get', 'hong-ngoai', 'Đo khoảng cách, tới nhặt vật, quay đầu đi về đúng chừng ấy ô rồi đặt vật', 'che-hong-ngoai', 'che-hong-ngoai.4')
+    m('go_get', 'hong-ngoai', 'Đo khoảng cách, tới nhặt vật, quay đầu đi về đúng chừng ấy ô rồi đặt vật', 'che-hong-ngoai', 'che-hong-ngoai.4'),
+    // gói 5 · chương Hàm đẩy thùng (man-day-thung.js): xích đẩy thùng nặng, nhóm Bánh xích
+    m('push', 'xich', 'Tới sát thùng trước mặt rồi đẩy nó n ô: xích tiến là thùng trượt', 'che-day-thung', 'che-day-thung.1'),
+    m('go_around', 'xich', 'Đi vòng sang bên phải thùng rồi quay mũi xích vào thùng', 'che-day-thung', 'che-day-thung.3')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có

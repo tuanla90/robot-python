@@ -228,6 +228,79 @@
       ],
       goiY: ['Mỗi kho xa gần khác nhau nhưng việc làm giống nhau: đo, tới sát thùng, đẩy.',
         'Thùng thứ hai cách ô đích hai ô: forward(2) sau khi đã sát thùng.']
+    }, true),
+
+    /* ================================================================ chương che-day-thung: Hàm đẩy thùng */
+    man({
+      chuong: 'che-day-thung', so: 1, ten: 'Hàm push(n)', yMoi: 'tạo hàm push(n): tới sát thùng rồi đẩy n ô, forward(distance() + n)', hamCuaEmCan: ['tr_right', 'tr_left', 'forward'],
+      taoHam: ['push'], chinhCoDinh: true,
+      deBai: 'Tạo hàm push(n): xích tới sát thùng trước mặt rồi đẩy nó n ô. Chương trình chính đã khóa: push(1), quay phải, push(2), quay trái, push(1). Ba thùng xa gần khác nhau, đẩy quá là thùng kẹt góc.',
+      veMaMau: 'Hàm push chưa có. Mở Xưởng hàm, tạo nó với tham số n: distance() ô tới sát thùng, cộng thêm n ô đẩy.',
+      san: ['#########', '#.###D###', '#D###H###', '#H..H.D.#', '#.#######', '#.#######', '#########'],
+      batDau: { x: 1, y: 5, huong: 0 },
+      maMau: bai(['push(1)', 'tr_right()', 'push(2)', 'tr_left()', 'push(1)']),
+      sao: { o: 17, nhip: 11 },
+      loiGiai: { chinh: ['push(1)', 'tr_right()', 'push(2)', 'tr_left()', 'push(1)'], hamCuaEmMoi: [H('push', ['n'], ['forward(distance() + n)'])] },
+      loiGiaiKhac: { moTa: 'Hai dòng: forward(distance()) rồi forward(n): đúng, thêm một ô', baiLam: bai(['push(1)', 'tr_right()', 'push(2)', 'tr_left()', 'push(1)']), hamCuaEmMoi: [H('push', ['n'], ['forward(distance())', 'forward(n)'])] },
+      loiSai: [
+        { moTa: 'Thân hàm chỉ có forward(n): xích không tới sát thùng', baiLam: bai(['push(1)', 'tr_right()', 'push(2)', 'tr_left()', 'push(1)']), hamCuaEmMoi: [H('push', ['n'], ['forward(n)'])], phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Quên cộng n: xích tới sát thùng rồi dừng, không đẩy', baiLam: bai(['push(1)', 'tr_right()', 'push(2)', 'tr_left()', 'push(1)']), hamCuaEmMoi: [H('push', ['n'], ['forward(distance())'])], phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Viết cứng forward(distance() + 2): thùng đầu bị đẩy quá, kẹt góc', baiLam: bai(['push(1)', 'tr_right()', 'push(2)', 'tr_left()', 'push(1)']), hamCuaEmMoi: [H('push', ['n'], ['forward(distance() + 2)'])], phaiCoMa: ['thung-ket'] }
+      ],
+      goiY: ['distance() là số ô trống tới thùng. Đi chừng ấy ô là sát thùng; đi thêm n ô là thùng trượt n ô.',
+        'Thân hàm một dòng: forward(distance() + n).']
+    }, true),
+    man({
+      chuong: 'che-day-thung', so: 2, ten: 'push trong vòng lặp', yMoi: 'gọi push(1) trong vòng lặp for', hamCuaEmCan: ['push', 'tr_left', 'tr_right', 'forward'],
+      deBai: 'Bốn thùng nằm trên bốn đoạn đường xoay vòng, xa gần khác nhau. Mỗi đoạn: push(1) rồi quay trái. Viết chương trình chính bằng một vòng lặp.',
+      veMaMau: 'Chương trình có sẵn quay phải sau mỗi lần đẩy. Đường này rẽ trái.',
+      san: ['##########', '####.#####', '####D#####', '#.DHH#####', '###..#####', '###H...HD#', '###D.#####', '###.######', '##########'],
+      batDau: { x: 4, y: 6, huong: 0 },
+      maMau: bai(FOR(4, ['push(1)', 'tr_right()'])),
+      sao: { o: 12, nhip: 16 },
+      loiGiai: bai(FOR(4, ['push(1)', 'tr_left()'])),
+      loiGiaiKhac: { moTa: 'Gọi push(1) bốn lần liền, không dùng vòng lặp', baiLam: bai(['push(1)', 'tr_left()', 'push(1)', 'tr_left()', 'push(1)', 'tr_left()', 'push(1)']) },
+      loiSai: [
+        { moTa: 'Quay phải: xích quay vào tường', baiLam: bai(FOR(4, ['push(1)', 'tr_right()'])), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'push(2): thùng đầu bị đẩy quá ô đích, kẹt góc', baiLam: bai(FOR(4, ['push(2)', 'tr_left()'])), phaiCoMa: ['thung-ket'] }
+      ],
+      goiY: ['Hàm push của em tự đo nên đoạn dài ngắn thế nào cũng được.',
+        'Thân vòng lặp có hai dòng: push(1) và tr_left().']
+    }, true),
+    man({
+      chuong: 'che-day-thung', so: 3, ten: 'Hàm go_around()', yMoi: 'tạo hàm go_around(): đi vòng sang hông thùng, mũi quay vào thùng', hamCuaEmCan: ['move', 'tr_right', 'tr_left', 'sidestep', 'push', 'forward'],
+      taoHam: ['go_around'], chinhCoDinh: true,
+      deBai: 'Tạo hàm go_around(): xích đang đứng sát thùng, mặt quay vào thùng; đi vòng sang bên phải thùng rồi quay mũi vào thùng. Chương trình chính đã khóa: push(1) cho thùng chạm tường, go_around(), rồi push(2) đẩy thùng sang trái vào ô đích.',
+      veMaMau: 'Hàm go_around() chưa có. Quay phải, tiến, quay trái, tiến, quay trái.',
+      san: ['######', '#D...#', '###H.#', '###.##', '###.##', '######'],
+      batDau: { x: 3, y: 4, huong: 0 },
+      maMau: bai(['push(1)', 'go_around()', 'push(2)']),
+      sao: { o: 20, nhip: 12 },
+      loiGiai: { chinh: ['push(1)', 'go_around()', 'push(2)'], hamCuaEmMoi: [H('go_around', [], ['tr_right()', 'move()', 'tr_left()', 'move()', 'tr_left()'])] },
+      loiGiaiKhac: { moTa: 'Dùng sidestep() của gói Bánh xích: đúng, nhưng thêm thân một hàm', baiLam: bai(['push(1)', 'go_around()', 'push(2)']), hamCuaEmMoi: [H('go_around', [], ['sidestep()', 'move()', 'tr_left()'])] },
+      loiSai: [
+        { moTa: 'Quay phải ở cuối: mũi xích quay ra xa thùng', baiLam: bai(['push(1)', 'go_around()', 'push(2)']), hamCuaEmMoi: [H('go_around', [], ['tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()'])], phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Thiếu một move(): xích còn ở hàng dưới, đẩy vào tường', baiLam: bai(['push(1)', 'go_around()', 'push(2)']), hamCuaEmMoi: [H('go_around', [], ['tr_right()', 'move()', 'tr_left()', 'tr_left()'])], phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['Muốn đẩy thùng sang trái thì xích phải đứng bên phải thùng, mũi quay sang trái.',
+        'Vẽ đường đi ra giấy: sang phải một ô, lên một ô, rồi quay mặt vào thùng.']
+    }, true),
+    man({
+      chuong: 'che-day-thung', so: 4, ten: 'Sửa hàm round_left()', yMoi: 'sửa hàm lỗi: quay sai chiều ở bước cuối', hamCuaEmCan: ['move', 'tr_right', 'tr_left', 'push', 'forward'], chinhCoDinh: true,
+      deBai: 'Sola viết hàm round_left(): đi vòng sang bên TRÁI thùng rồi quay mũi vào thùng. Chạy thử thì xích quay lưng lại với thùng. Chương trình chính đã khóa. Tìm và sửa lỗi trong hàm round_left.',
+      veMaMau: 'Chạy thử: sau round_left(), mũi xích quay về đâu? Thùng ở phía nào?',
+      san: ['######', '#..D##', '#..###', '##H###', '##.###', '##.###', '######'],
+      batDau: { x: 2, y: 5, huong: 0 },
+      maMau: bai(['push(2)', 'round_left()', 'push(1)'], [H('round_left', [], ['tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()'])]),
+      sao: { o: 20, nhip: 12 },
+      loiGiai: { chinh: ['push(2)', 'round_left()', 'push(1)'], hamCuaMan: [H('round_left', [], ['tr_left()', 'move()', 'tr_right()', 'move()', 'tr_right()'])] },
+      loiGiaiKhac: { moTa: 'Viết lần quay cuối bằng lệnh gốc: đúng, nhưng dài hơn', baiLam: bai(['push(2)', 'round_left()', 'push(1)'], [H('round_left', [], nhieu(['tr_left()', 'move()', 'tr_right()', 'move()'], FOR(2, ['right_back()', 'wait()'])))]) },
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: lần quay cuối sai chiều', baiLam: bai(['push(2)', 'round_left()', 'push(1)'], [H('round_left', [], ['tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()'])]), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Sửa nhầm lần quay đầu: xích đi sang phải, vào tường', baiLam: bai(['push(2)', 'round_left()', 'push(1)'], [H('round_left', [], ['tr_right()', 'move()', 'tr_right()', 'move()', 'tr_left()'])]), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['Đứng bên trái thùng thì muốn đẩy thùng sang phải, mũi xích phải quay sang PHẢI.',
+        'Chỉ cần sửa một dòng.']
     }, true)
   ];
 

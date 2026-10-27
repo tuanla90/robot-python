@@ -171,6 +171,8 @@ kiem('huy hiệu: chỉ trùm mỗi chương mang, đúng mã chương; huy-hieu
 const CAM_LENH = ['warm', 'shoot', 'shoot_back'];
 const HAM_COT_TRUYEN = new Map();
 for (const m of M.danhSach) for (const t of m.taoHam || []) if (!HAM_COT_TRUYEN.has(t)) HAM_COT_TRUYEN.set(t, m.ma);
+// Màn bắt phải dùng một hàm của em không cảm biến (bộ dò mở được thân nó): lời né = chương trình không gọi hàm đó
+const PHAI_DUNG = {};
 const bang = {};
 for (const m of DS) {
   const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
@@ -260,6 +262,7 @@ for (const m of DS) {
     if (m.chinhCoDinh) {
       const hm = (m.loiGiai.hamCuaEmMoi || [])[0] || (m.loiGiai.hamCuaMan || [])[0];
       assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để sửa');
+      if (!bacCau(m, hm.than, m.loiGiai.hamCuaEmMoi).dong.some((l) => /distance\(\)/.test(l))) { bang[m.ma].ne = 'khóa: thân ' + hm.ten + ' không cảm biến (lời giải là dãy cố định)'; return; }
       const laMan = !(m.loiGiai.hamCuaEmMoi || []).length;
       const t = timLoiNeKhoa(m, hm.ten, kho, (than) => {
         const h = Object.assign({}, hm, { than });
@@ -269,12 +272,15 @@ for (const m of DS) {
       if (t && t.soO <= m.sao.o && t.soNhip <= m.sao.nhip) assert.fail(m.ma + ': thân ' + hm.ten + ' cố định ' + t.soO + ' ô ≤ ' + m.sao.o + ', ' + t.soNhip + ' nhịp: ' + t.than.join(' / '));
       return;
     }
-    const t = timLoiNe(m, kho, (dong, hamMoi) => cham(m, { chinh: dong }, hamMoi));
-    bang[m.ma].ne = t ? t.soO + ' ô ' + t.soNhip + ' nhịp' : 'không thắng';
+    // hàm màn bắt phải dùng (PHAI_DUNG): bỏ khỏi kho cho bộ dò, lời tìm được là lời NÉ hàm đó
+    const X = PHAI_DUNG[m.ma];
+    const khoDo = X ? kho.filter((h) => h.ten !== X) : kho;
+    const t = timLoiNe(m, khoDo, (dong, hamMoi) => cham(m, { chinh: dong }, hamMoi));
+    bang[m.ma].ne = (X ? 'né ' + X + ': ' : '') + (t ? t.soO + ' ô ' + t.soNhip + ' nhịp' : 'không thắng');
     if (!t) return;
     const ct = t.chinh.join(' / ') + (t.hamMoi.length ? ' với f: ' + t.hamMoi[0].than.join(' / ') : '');
-    if (mat && t.soO <= m.sao.o && t.soNhip <= m.sao.nhip) assert.fail(m.ma + ': lời né distance() ' + t.soO + ' ô ≤ ' + m.sao.o + ', ' + t.soNhip + ' nhịp: ' + ct);
-    if (!mat && t.soO < m.sao.o) assert.fail(m.ma + ': lời cố định ' + t.soO + ' ô rẻ hơn lời giải (' + m.sao.o + ' ô): ' + ct);
+    if ((mat || X) && t.soO <= m.sao.o && t.soNhip <= m.sao.nhip) assert.fail(m.ma + ': lời né ' + (X || 'distance()') + ' ' + t.soO + ' ô ≤ ' + m.sao.o + ', ' + t.soNhip + ' nhịp: ' + ct);
+    if (!mat && !X && t.soO < m.sao.o) assert.fail(m.ma + ': lời cố định ' + t.soO + ' ô rẻ hơn lời giải (' + m.sao.o + ' ô): ' + ct);
   });
 }
 
