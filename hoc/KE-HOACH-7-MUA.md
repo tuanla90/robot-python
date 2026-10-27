@@ -25,6 +25,13 @@ Mỗi mùa: **1 thân + 1 tay + 1 cảm biến**, mỗi part có **gốc → nâ
 |---|---|
 | (hết ô trống 26/10) | |
 
+## Ý tưởng gói nội dung sau (chưa xếp chỗ)
+- **Drone gắp và phun sơn xuống ô bên dưới** (user 27/10). Hiện luật `part.js` chỉ cho drone gắn nam châm (tay khác đều "chỉa về phía trước", mà drone
+  không có hướng mặt). Ý tưởng: cho drone gắn **tay kẹp hướng xuống** (gắp vật ở ô ngay dưới, mang bay qua rào / hố / băng, thả xuống ô khác: kiểu giao hàng)
+  và **máy sơn hướng xuống** (phun màu ô ngay dưới, không cần quay mặt). Cần làm khi xếp gói: luật mới trong `part.js` (ổ `duoi` nhận kẹp / sơn), lõi
+  `san-hoc.js` (gắp / thả / sơn theo ô dưới drone, độ cao bay), máy chấm, hình vector tay hướng xuống, màn mới + máy kiểm đường tắt.
+  Chỗ hợp: **mùa 4** (drone và máy sơn cùng mùa: gói nâng cấp drone hoặc gói đội), hoặc **mùa 7** (câu đố tổ hợp). Chốt khi lập kế hoạch mùa 4.
+
 ## Luật dự kiến cho các yếu tố mới (user 26/10, Claude làm rõ)
 - **Đệm từ (cơ chế mùa 3)**: ô đệm có cực N hay S, kéo hoặc đẩy **thân xe** ở ô kề (1 ô mỗi nhịp, dọc theo hàng / cột).
   Xe không bật nam châm: bị hút như sắt. Xe bật nam châm **khác cực** đệm: bị hút; **cùng cực**: bị đẩy ra xa.
