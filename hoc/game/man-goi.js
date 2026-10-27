@@ -171,7 +171,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.duoi.innerHTML = '';
     if (window.SoLenh && window.SoLenhMan) {
       var bs = h('button', 'bt g-cy d-so'); bs.setAttribute('data-nut', 'so-lenh'); bs.setAttribute('aria-label', t('chon.soLenh'));
-      var ib = h('span'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', BM.goiVe1); bs.appendChild(ib);
+      var ib = h('span'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', BM.xanhLo); bs.appendChild(ib);
       bs.appendChild(h('span', null, t('chon.soLenh')));
       bs.addEventListener('click', function () { SoLenhMan.mo(); });
       el.duoi.appendChild(bs);
@@ -190,7 +190,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     b.appendChild(h('div', 'g-so', tt ? t('goi.thuThach') : t('goi.so', { n: k + 1 })));
     var mat = h('div', 'g-mat chalk');
     var co = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0;
-    mat.appendChild(co ? Ve.mk(HuyHieu.ve(g.hinh, g.sapCo || !mo ? 'khoa' : xong ? 'xong' : 'mo'), 3) : Ve.ico('plus', 5, { fill: BM.goiTheFill, line: BM.ink }));
+    mat.appendChild(co ? Ve.mk(HuyHieu.ve(g.hinh, g.sapCo || !mo ? 'khoa' : xong ? 'xong' : 'mo'), 3) : Ve.ico('plus', 5, { fill: BM.vang, line: BM.vienDam }));
     b.appendChild(mat);
     b.appendChild(h('div', 'g-ten', g.ten));
     if (g.sapCo) {
@@ -210,7 +210,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var moDauGoi = g.ma === 'xe' && window.MoDau && window.Luu && Luu.daXem(MoDau.CO);     // gói 1 dùng phim mở đầu (mo-dau.js) làm phim của gói
       if (mo && (moDauGoi || (window.PhimGoi && PhimGoi.co(g.ma) && PhimGoi.daXem(g.ma)))) {        // đã xem phim gói: nút nhỏ ▶ xem lại (phim xong thì vào gói)
         var xl = h('button', 'bt g-cy g-phim'); xl.setAttribute('data-nut', 'xem-phim'); xl.setAttribute('aria-label', t('pg.xemLai')); xl.setAttribute('title', t('pg.xemLai'));
-        var ip = h('span'); ip.setAttribute('data-i', 'play'); ip.setAttribute('data-s', '1'); ip.setAttribute('data-l', BM.goiThe1); ip.setAttribute('data-f', BM.goiThe2); xl.appendChild(ip); Ve.hydrate(xl);
+        var ip = h('span'); ip.setAttribute('data-i', 'play'); ip.setAttribute('data-s', '1'); ip.setAttribute('data-l', BM.xanhLo); ip.setAttribute('data-f', BM.trangV2); xl.appendChild(ip); Ve.hydrate(xl);
         xl.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });          // không tính là bắt đầu vuốt dải hộp
         xl.addEventListener('click', function (ev) {
           ev.stopPropagation();
