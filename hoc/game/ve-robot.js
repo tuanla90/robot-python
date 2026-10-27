@@ -37,7 +37,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   'use strict';
 
   var CAN = 34;                      // cạnh canvas hình tạm có tay (xe 16 + viền ở giữa, càng nhô 8px phía trước; tâm canvas = tâm xe)
-  var ND = { ink: BM.ink };
+  var ND = { ink: BM.vienDam };
   var cache = {};
 
   /* ---------------------------------------------------------------- cấu hình */
@@ -84,13 +84,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var o = ctxMoi(CAN), g = o.g, i;
     var tuThe = tay.tuThe, tren = tuThe === 'tren', duoi = tuThe === 'duoi';
     var dong = tay.kep, cam = tay.cam;
-    var mau = loi ? { f: BM.veRobotTamTayF, h: BM.veRobotTamTayH } : duoi ? { f: BM.veRobotTamTayF2, h: BM.veRobotTamTayH2 } : tren ? { f: BM.veRobotTamTayF3, h: BM.veRobotTamTayH3 } : { f: BM.veRobotTamTayF4, h: BM.veRobotTamTayH4 };
+    var mau = loi ? { f: BM.robotDoV8, h: BM.robotDoV9 } : duoi ? { f: BM.robotNauSangV4, h: BM.robotCamV1 } : tren ? { f: BM.robotCamV2, h: BM.robotKemToi } : { f: BM.robotCamV3, h: BM.robotCamV4 };
     // Hệ toạ độ canvas 34×34, xe (18×18 có viền) đặt ở (8, 8) → mũi xe ở hàng y = 8, tâm xe = tâm canvas. Tay ở PHÍA TRƯỚC mũi (hàng 0..7).
     // hai thanh (như càng xe nâng) x 9..10 và 23..24 (đúng hai góc trước của thân, hàng 1..10) nối vào xe; ngàm ở hàng 2..3: mở = ngắn, đóng = chạm nhau, ôm thùng = chạm hai bên thùng.
     var dauNgam = !dong ? 11 : cam ? 12 : 16;                         // x cuối của ngàm trái
     var rect = [[9, 1, 2, 10], [23, 1, 2, 10], [9, 2, dauNgam - 8, 2], [33 - dauNgam, 2, dauNgam - 8, 2]];   // [x, y, w, h]
     if (tren) {                                                       // tay nâng: có bóng đổ xuống đất (cao hơn mặt đất)
-      g.fillStyle = BM.veRobotTamTayFillStyle;
+      g.fillStyle = BM.moToiV6;
       rect.forEach(function (r) { g.fillRect(r[0] + 1, r[1] + 2, r[2], r[3]); });
       if (cam) g.fillRect(15, 3, 8, 8);
     }
@@ -100,13 +100,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     rect.forEach(function (r) { g.fillStyle = mau.f; g.fillRect(r[0], r[1], r[2], r[3]); });
     g.fillStyle = mau.h;
     g.fillRect(9, 3, 1, 8); g.fillRect(23, 3, 1, 8); g.fillRect(9, 2, dauNgam - 8, 1); g.fillRect(33 - dauNgam, 2, dauNgam - 8, 1);
-    if (duoi) { g.fillStyle = BM.veRobotTamTayFillStyle2; g.fillRect(9, 1, 1, 1); g.fillRect(24, 1, 1, 1); }   // đầu càng chạm đất
+    if (duoi) { g.fillStyle = BM.robotTrangV1; g.fillRect(9, 1, 1, 1); g.fillRect(24, 1, 1, 1); }   // đầu càng chạm đất
     if (cam) {                                                        // thùng giữa hai càng, ngay trước mũi: 6×6 + viền
       var cx = 14, cy = 1;
       g.fillStyle = ND.ink; g.fillRect(cx - 1, cy - 1, 8, 8);
-      g.fillStyle = BM.veRobotTamTayFillStyle3; g.fillRect(cx, cy, 6, 6);
-      g.fillStyle = BM.veRobotTamTayFillStyle4; g.fillRect(cx, cy, 6, 1); g.fillRect(cx, cy, 1, 6);
-      g.fillStyle = BM.veRobotTamTayFillStyle5; g.fillRect(cx, cy + 5, 6, 1); g.fillRect(cx + 5, cy, 1, 6);
+      g.fillStyle = BM.robotCamToi; g.fillRect(cx, cy, 6, 6);
+      g.fillStyle = BM.robotCamToiV1; g.fillRect(cx, cy, 6, 1); g.fillRect(cx, cy, 1, 6);
+      g.fillStyle = BM.robotNauV1; g.fillRect(cx, cy + 5, 6, 1); g.fillRect(cx + 5, cy, 1, 6);
       for (i = 1; i < 5; i++) { g.fillRect(cx + i, cy + i, 1, 1); g.fillRect(cx + 5 - i, cy + i, 1, 1); }
     }
     return xoay(o.cv, huong);
