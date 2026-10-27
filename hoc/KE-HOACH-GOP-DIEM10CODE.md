@@ -41,6 +41,21 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
 2. Đợt đổi màu: chỉ sửa giá trị trong bảng màu theo phương án user chọn; chụp lại các màn mẫu (sân, khay, hộp, phim, huy hiệu) cho user duyệt.
 3. Màu sơn R1 mặc định (`SON.vang` → xanh Sola) và màu đội (R2 lam → hồng Luna) đổi trong `part.js`; kiểm lại tương phản trên sân mới.
 
+### 2a. ĐÃ CHỐT (user 27/10 chiều): bảng màu "lab trắng", thân hai bánh M1
+
+- **Bảng màu**: không phải A hay B ở trên mà là **"lab trắng"** theo ảnh mẫu TopView `hoc/hinh-mau/concept-lab-trang.webp`:
+  sân ô trắng bóng, lưới tím lavender nhạt; tường là khối trắng bạc có dải đèn xanh cyan; thùng gỗ thành hộp trắng có đai xanh; thùng nặng / khối sắt xám bạc có đinh tán;
+  nút đè là vòng sáng cyan trên đế tối; cờ hồng `#F472B6` trên cột bạc; viền đậm chàm. Đổi **toàn bộ** màu (sân, vật, khung giao diện, khay, hộp thoại, huy hiệu, phim) cho cùng tông.
+  GIỮ phong cách pixel và mọi hình dạng / lưới hiện có; chỉ được sửa nhẹ hình ô khi cần để giống mẫu (ví dụ thêm dải đèn cyan trên tường).
+- **Thân hai bánh**: bản **M1** của nháp `hoc/hinh-mau/nhap-than-hai-banh.cjs` (hàm `hb-gM1`): bánh như cũ, đầu (mũi + kính) như cũ, đuôi bo tròn,
+  hoa văn viền trong chạy dọc cong ở đuôi + chấm giữa lưng. Giữ ổ gắn (`oGan`) của thân hai bánh hiện tại.
+- **Robot màu gì trên sân trắng**: thân trắng như mẫu, viền chàm đậm để nổi trên sàn trắng; **màu đội nằm ở chi tiết** (chấm lưng, viền trong, dải đèn):
+  R1 xanh trời Sola `#38BDF8`, R2 hồng Luna `#F472B6`, đối thủ đỏ. Bộ sơn mở khoá (`DS_SON`) giữ, đổi thành màu chi tiết.
+- **Nhân vật chibi trong ảnh mẫu** (đầu tròn nhìn thẳng): KHÔNG dùng trên sân vì không xoay 4 hướng và không gắn được tay / cảm biến theo ổ; dùng được làm
+  **chân dung** trong hộp thoại, phim, màn thắng (mục 2b).
+- **Cách làm** (giữ hai bước ở trên): gói A1 gom màu vào bảng màu, ảnh trước / sau giống từng điểm ảnh; gói A2 đổi giá trị bảng màu sang "lab trắng" +
+  vẽ thân M1 + sửa ô tường / thùng cho giống mẫu, chụp màn mẫu cho user duyệt. Hai gói chạy tuần tự sau gói mùa 2 đang chạy.
+
 ## 2b. Linh vật Sola / Luna bản pixel
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
@@ -92,6 +107,6 @@ Theo `tin_hoc/KE-HOACH-GOP-GAME-LOGIC.md`; phía game:
 5. Mục 5 khi bắt đầu gộp vào diem10code.
 
 ## 7. Cần user chốt
-1. Bảng màu: phương án A (đêm tím chàm) hay B (sáng như video)? R1 đổi sang xanh Sola, R2 hồng Luna?
+1. ~~Bảng màu: phương án A (đêm tím chàm) hay B (sáng như video)?~~ ĐÃ CHỐT 27/10: "lab trắng" + thân M1 (mục 2a).
 2. Chân dung pixel: sinh bằng công cụ (tốn tiền, báo giá trước) hay vẽ tay đơn giản bằng code như các part?
 3. Ranh giới miễn phí: khách chơi gói 1, tài khoản miễn phí chơi hết mùa 1, Premium từ mùa 2 — đúng ý chưa?
