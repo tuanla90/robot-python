@@ -76,7 +76,7 @@
     });
     cache = kq; khoaCache = khoa;
     cacheMua = muaKhai().map(function (x, i) {
-      return { ma: x.ma, ten: x.ten || x.ma, so: i + 1, mo: x.mo || null, ban: x.ban || null, goi: kq.filter(function (gg) { return gg.mua === x.ma; }) };
+      return { ma: x.ma, ten: x.ten || x.ma, so: i + 1, mo: x.mo || null, ban: x.ban || null, an: !!x.an, goi: kq.filter(function (gg) { return gg.mua === x.ma; }) };
     });
     return kq;
   }

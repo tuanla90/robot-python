@@ -452,7 +452,7 @@
       'md.batDau': 'Chỉ đường cho R1!',
       'md.1': 'Xe chở linh kiện sắp về tới xưởng robot.',
       'md.2': 'Tới cửa xưởng thì sụp ổ gà. Bật tung nắp thùng!',
-      'md.3': 'Tay gắp chui dưới thùng gỗ. Bánh xích văng lên tường. Cánh quạt bay mất hút.',
+      'md.3': 'Tay kẹp chui dưới thùng gỗ. Bánh xích văng lên tường. Cánh quạt bay mất hút.',
       'md.4': 'Chỉ còn lại R1. Một cái thân với hai cái bánh.',
       'md.5': 'R1 muốn đi tìm đồ, mà cứ quay mòng mòng tại chỗ.',
       'md.6': 'May mà R1 hiểu lệnh Python. Em viết lệnh, R1 làm theo.',

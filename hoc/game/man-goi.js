@@ -119,9 +119,11 @@
     b.addEventListener('click', function () { moMua(mu); });
     el.ban.appendChild(b);
   }
-  /** Hàng chọn mùa (chỉ khi có từ hai mùa). */
+  /** Các mùa hiện trên màn chọn gói: mùa khai `an` (thu-tu-chuong.js) chỉ hiện khi bật "Mở hết" (bảng Gỡ lỗi). */
+  function muaHien() { return App.dsMua().filter(function (mu) { return !mu.an || App.moHet; }); }
+  /** Hàng chọn mùa (chỉ khi có từ hai mùa hiện). */
   function veMua() {
-    var dsM = App.dsMua();
+    var dsM = muaHien();
     el.mua.innerHTML = '';
     el.mua.style.display = dsM.length > 1 ? '' : 'none';
     if (dsM.length < 2) return;
@@ -148,7 +150,7 @@
     var dich = ma || App.goi, i = 0;
     var gDich = App.goiTheoMa(dich);
     if (gDich) App.mua = gDich.mua;
-    if (!App.mua) App.mua = App.dsMua()[0].ma;
+    if (!App.mua || !muaHien().some(function (mu) { return mu.ma === App.mua; })) App.mua = muaHien()[0].ma;
     S.ds = App.dsGoi().filter(function (g) { return g.mua === App.mua; });
     veMua();
     veBan();
@@ -204,14 +206,16 @@
       else dong.appendChild(h('span', 'g-can', t('chon.khoaMua')));
       b.appendChild(dong);
       if (xong) b.appendChild(h('div', 'g-xong', t('goi.xong')));
-      if (mo && window.PhimGoi && PhimGoi.co(g.ma) && PhimGoi.daXem(g.ma)) {        // đã xem phim gói: nút nhỏ ▶ xem lại (phim xong thì vào gói)
+      var moDauGoi = g.ma === 'xe' && window.MoDau && window.Luu && Luu.daXem(MoDau.CO);     // gói 1 dùng phim mở đầu (mo-dau.js) làm phim của gói
+      if (mo && (moDauGoi || (window.PhimGoi && PhimGoi.co(g.ma) && PhimGoi.daXem(g.ma)))) {        // đã xem phim gói: nút nhỏ ▶ xem lại (phim xong thì vào gói)
         var xl = h('button', 'bt g-cy g-phim'); xl.setAttribute('data-nut', 'xem-phim'); xl.setAttribute('aria-label', t('pg.xemLai')); xl.setAttribute('title', t('pg.xemLai'));
         var ip = h('span'); ip.setAttribute('data-i', 'play'); ip.setAttribute('data-s', '1'); ip.setAttribute('data-l', '#07303a'); ip.setAttribute('data-f', '#ffffff'); xl.appendChild(ip); Ve.hydrate(xl);
         xl.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });          // không tính là bắt đầu vuốt dải hộp
         xl.addEventListener('click', function (ev) {
           ev.stopPropagation();
           if (k !== S.i) { dat(k, true); return; }
-          PhimGoi.mo(g.ma, function () { App.vaoGoi(g.ma); });
+          if (moDauGoi) MoDau.mo(function () { App.vaoGoi(g.ma); });
+          else PhimGoi.mo(g.ma, function () { App.vaoGoi(g.ma); });
         });
         b.appendChild(xl);
       }

@@ -66,9 +66,10 @@
     //   hàm cốt truyện của các mùa trước tự nạp vào kho khi vào màn (ung-dung.js, App.vaoMan).
     mua: [
       { ma: 'mua-1', ten: 'Xưởng R1' },
-      { ma: 'mua-2', ten: 'Địa hình', ban: { gia: '49.000đ' } },
-      { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' } },
-      { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' } }
+      // `an: true` (user 27/10): mùa chưa dựng lại theo khuôn 10 gói (KE-HOACH-7-MUA.md) thì ẩn khỏi màn chọn gói; bảng Gỡ lỗi "Mở hết" vẫn hiện để thử.
+      { ma: 'mua-2', ten: 'Địa hình', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' }, an: true }
     ],
     goi: [
       { ma: 'xe', ten: 'Xe hai bánh', sao: 0, chuong: ['hai-banh'] },
