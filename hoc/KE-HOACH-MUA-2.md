@@ -88,3 +88,9 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
 
   Để sau: part hồng ngoại chưa vào danh mục lắp ráp (`lap-rap.js`) tới khi có màn lắp ráp dùng nó; khay chưa cho chạm đổi số trong `distance() > 2`;
   thùng bị đẩy vào hố `u` chưa có luật (mùa 3); bắn nhanh ở màn nhiều robot vẫn giữ ô sau lưng (lỗi sẵn có). Thẻ bộ phận hồng ngoại còn một dấu "—" (đợt quét chữ diem10code).
+
+- **27/10 P3 · Gói 3 Hồng ngoại xong** (nhánh claude/hong-ngoai-2, gộp 80fcb34; npm test 75/75). 20 màn trong `man-hong-ngoai.js` theo video "Rô bốt né vật cản"
+  (Đo → So → Rẽ, mỗi ô 10 cm, biến `an_toan`; hong-ngoai.7 "Phanh không kịp" là màn đố ngưỡng quá nhỏ). Màn thường một sân, trùm ba sân.
+  Máy kiểm `kiem-hong-ngoai.mjs` (107) + bộ dò `do-duong-hong-ngoai.mjs`: lời né `distance()` không được 3 sao. Huy hiệu `hong-ngoai`, `che-hong-ngoai`.
+  Hàm của em mới: `go_to_wall`, `go_safe(an_toan)`, `clean_step(an_toan)`, `go_get` (không dùng tên `fetch`: trùng hàm cốt truyện nam-cham.5).
+  Còn nợ (gói sửa S1): 4 hàm trên chưa có mục Sổ lệnh (kiem-che-xe chưa thấy màn ngân hàng mùa 2); hong-ngoai.7 chạy mã mẫu thì lời nhắc đầu là "vòng while chạy mãi" thay vì "đâm tường".
