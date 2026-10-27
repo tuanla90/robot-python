@@ -99,6 +99,11 @@
     m('right', 'tham-so', 'Quay phải k lần', 'tham-so', 'tham-so.4'),
     m('deliver', 'tham-so', 'Nhặt vật, tiến n ô rồi đặt vật xuống', 'tham-so', 'tham-so.6'),
     m('step', 'tham-so', 'Đi ngang a ô rồi đi xuống b ô, làm trọn một bậc thang', 'tham-so', 'tham-so.8'),
+    // mùa 2 gói 3 · Hàm cho hồng ngoại (distance())
+    m('go_to_wall', 'cam-bien', 'Đi thẳng tới sát vật cản, đo bằng mắt hồng ngoại', 'che-hong-ngoai', 'che-hong-ngoai.1'),
+    m('go_safe', 'cam-bien', 'Đi thẳng tới khi phía trước chỉ còn an_toan ô trống', 'che-hong-ngoai', 'che-hong-ngoai.2'),
+    m('clean_step', 'cam-bien', 'Một bước hút bụi: gần vật cản thì rẽ phải, còn không thì đi một ô', 'che-hong-ngoai', 'che-hong-ngoai.3'),
+    m('fetch', 'cam-bien', 'Đo khoảng cách, tới nhặt vật, quay đầu đi về đúng chừng ấy ô rồi đặt vật xuống', 'che-hong-ngoai', 'che-hong-ngoai.4'),
     // đợt 2: thân nhện
     m('go', 'nhen', 'Nhện đi một bước theo một chữ: U lên, D xuống, L trái, R phải', 'nhen', 'nhen.4'),
     m('walk', 'nhen', 'Nhện đi hết một chuỗi chỉ đường', 'nhen', 'nhen.6'),

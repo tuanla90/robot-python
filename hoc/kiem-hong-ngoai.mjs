@@ -27,7 +27,7 @@ const SanHoc = require('./san-hoc.js');
 const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const SL = require('./so-lenh.js');
-const { timLoiNe } = await import('./do-duong-hong-ngoai.mjs');
+const { timLoiNe, timLoiNeKhoa } = await import('./do-duong-hong-ngoai.mjs');
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const LOI_GIA = process.argv.includes('--loi-gia');
 
@@ -259,7 +259,7 @@ for (const m of DS) {
   kiem(m.ma + ': hàm của em cần đã tạo ở màn trước; mọi lời gọi hàm của em đều khai trong hamCuaEmCan; hàm mới có mục Sổ lệnh', () => {
     for (const h of m.hamCuaEmCan) assert.ok(daTao.has(h) && kho.some((x) => x.ten === h), m.ma + ' cần ' + h + ' nhưng chưa màn nào trước nó tạo');
     for (const x of moiBai(m)) {
-      const rieng = new Set((x.b.hamCuaMan || []).concat(x.moi || []).map((h) => h.ten));
+      const rieng = new Set((x.b.hamCuaMan || []).concat(x.moi || []).map((h) => h.ten).concat(m.taoHam || []));   // hàm màn này bắt tạo: mã mẫu gọi trước khi có
       for (const t of loiGoi(dongCua(x))) {
         if (PY.has(t) || rieng.has(t) || m.hamGoc.includes(t)) continue;
         assert.ok(m.hamCuaEmCan.includes(t), m.ma + ' ' + x.ten + ' gọi ' + t + '() mà không khai trong hamCuaEmCan');
@@ -294,6 +294,20 @@ for (const m of DS) {
     Object.assign(bang[m.ma], { o: r.soO, nhip: r.soNhip });
   });
   kiem(m.ma + ': bộ dò đường tắt: không có chương trình né distance() được 3 sao', () => {
+    if (soSan(m) === 1 && m.chinhCoDinh) {
+      // chương trình chính khóa: người chơi chỉ sửa thân MỘT hàm (hàm mới tạo, hay hàm của màn); thân né distance() là dãy cố định
+      const hm = (m.loiGiai.hamCuaEmMoi || [])[0] || (m.loiGiai.hamCuaMan || [])[0];
+      assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để sửa');
+      const laMan = !(m.loiGiai.hamCuaEmMoi || []).length;
+      const t = timLoiNeKhoa(m, hm.ten, kho, (than) => {
+        const h = Object.assign({}, hm, { than });
+        return laMan ? cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: [h] }, []) : cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: m.loiGiai.hamCuaMan }, [h]);
+      });
+      bang[m.ma].ne = t ? t.soO : '-';
+      if (t && t.soO <= m.sao.o && t.soNhip <= m.sao.nhip) assert.fail(m.ma + ': thân ' + hm.ten + ' né distance() ' + t.soO + ' ô ≤ ' + m.sao.o + ', ' + t.soNhip + ' nhịp: ' + t.than.join(' / '));
+      bang[m.ma].tat = 'không (khóa, thân cố định ' + (t ? 'thắng ' + t.soO + ' ô' : 'không thắng') + ')';
+      return;
+    }
     if (soSan(m) === 1) {
       const t = timLoiNe(m, kho, (dong, hamMoi) => cham(m, { chinh: dong }, hamMoi));
       bang[m.ma].ne = t ? t.soO : '-';

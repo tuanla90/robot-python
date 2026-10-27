@@ -220,3 +220,56 @@ export function timLoiNe(m, khoHam, cham, tran = 3000, tranF = 60) {
     return da.get(k);
   }
 }
+
+/* ------------------------------------------------------------------ 4. màn khóa chương trình chính (chinhCoDinh): chỉ sửa thân MỘT hàm */
+/** Mở chương trình chính khóa thành dãy mẫu: nguyên tử, 'X' ở mỗi lời gọi hàm được sửa (tenX, đối số bỏ qua), hàm của em khác mở ra dãy cố định. null nếu không mở được. */
+function moMau(dong, tenX, khoHam) {
+  const bang = new Map(khoHam.map((h) => [h.ten, h]));
+  function khoi(ds, thut) {
+    let kq = [];
+    for (let i = 0; i < ds.length; i++) {
+      const l = ds[i].slice(thut);
+      const f = l.match(/^for \w+ in range\((\d+)\):$/);
+      if (f) {
+        let j = i + 1;
+        while (j < ds.length && ds[j].startsWith(' '.repeat(thut + 4))) j++;
+        const than = khoi(ds.slice(i + 1, j), thut + 4);
+        if (than === null) return null;
+        for (let k = 0; k < +f[1]; k++) kq = kq.concat(than);
+        i = j - 1;
+        continue;
+      }
+      const g = l.match(/^([A-Za-z_]\w*)\((.*)\)$/);
+      if (!g) return null;
+      const so = g[2].trim();
+      if (g[1] === tenX) kq.push('X');
+      else if (!so) { const e = moHam(g[1], bang); if (e === null) return null; kq = kq.concat(e.split('')); }
+      else if (g[1] === 'forward' && /^\d+$/.test(so)) kq = kq.concat('M'.repeat(+so).split(''));
+      else if (g[1] === 'right' && /^\d+$/.test(so)) kq = kq.concat('R'.repeat(+so).split(''));
+      else return null;
+    }
+    return kq;
+  }
+  return khoi(dong, 0);
+}
+/** Lời né distance() rẻ nhất ở màn khóa chương trình chính: thân hàm tenX là một dãy hành động CỐ ĐỊNH (mọi lời gọi chạy như nhau, đối số bị bỏ qua).
+ *  chamThan(than) → kết quả cham.js khi thân hàm tenX = than. Trả về { soO, soNhip, than, day } hay null. */
+export function timLoiNeKhoa(m, tenX, khoHam, chamThan, tran = 3000) {
+  const mau = moMau(m.loiGiai.chinh, tenX, khoHam);
+  if (!mau) throw new Error(m.ma + ': không mở được chương trình chính khóa thành dãy mẫu');
+  const i0 = mau.indexOf('X');
+  let tot = null;
+  const da = new Set();
+  for (const day of dsDay(m, m.sao.nhip, tran)) {
+    if (i0 < 0 || mau.slice(0, i0).join('') !== day.slice(0, i0)) continue;
+    for (let L = 0; i0 + L <= day.length; L++) {
+      const x = day.slice(i0, i0 + L), mo = mau.map((t) => (t === 'X' ? x : t)).join('');
+      if (!mo.startsWith(day) || da.has(x)) continue;
+      da.add(x);
+      const than = x ? nenDay(x, khoHam).dong : ['pass'];
+      const r = chamThan(than);
+      if (r.thang && (!tot || r.soO < tot.soO)) tot = { soO: r.soO, soNhip: r.soNhip, than, day };
+    }
+  }
+  return tot;
+}
