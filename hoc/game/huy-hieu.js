@@ -280,6 +280,31 @@
     return p;
   };
 
+  /** mắt hồng ngoại (vỏ mực, thấu kính đỏ đang đọc) ở (x, y), cỡ 6×6 */
+  function matHongNgoai(p, x, y) {
+    p.rect(x, y, 6, 6, INK); p.rect(x + 1, y + 1, 4, 4, '#8a1f1f');
+    p.rect(x + 2, y + 2, 2, 2, '#ff4a3c'); p.px(x + 2, y + 2, '#ffd0c8'); p.px(x + 1, y, '#9aa7b4');
+  }
+  /** tia đỏ đứt từ (x0, y) tới x1, mỗi ô 3 px (vạch ngang + chấm sáng) */
+  function tiaDo(p, x0, x1, y) {
+    for (var x = x0; x < x1; x++) { p.px(x, y, (x - x0) % 3 === 2 ? '#ffb0a0' : '#e0302a'); }
+    for (var k = x0 + 2; k < x1; k += 3) { p.px(k, y - 1, '#e0302a'); p.px(k, y + 1, '#e0302a'); }
+  }
+  HINH['hong-ngoai'] = function () {                            // mắt hồng ngoại bắn tia đỏ đứt (mỗi vạch một ô 10 cm) tới viên gạch tường
+    var p = P(30, 22);
+    matHongNgoai(p, 0, 8);
+    tiaDo(p, 6, 21, 11);
+    veBloc(p, 21, 4, 8, 7, '#b5651d', '#d98a3c', '#7a3f12'); veBloc(p, 21, 11, 8, 7, '#b5651d', '#d98a3c', '#7a3f12');
+    return cat(p);
+  };
+  HINH['che-hong-ngoai'] = function () {                        // mắt hồng ngoại + tia đỏ ngắn tới gạch + bánh răng
+    var p = P(T26, T26);
+    matHongNgoai(p, 1, 15);
+    tiaDo(p, 7, 17, 18);
+    veBloc(p, 17, 14, 7, 9, '#b5651d', '#d98a3c', '#7a3f12');
+    themBanhRang(p);
+    return p;
+  };
   HINH['che-cam-bien'] = function () {                          // cảm biến + sóng + dấu ? + bánh răng
     var p = P(T26, T26), sx = 2, sy = 9, sh = 11;
     p.rect(sx, sy, 4, sh, INK); p.rect(sx + 1, sy + 1, 2, sh - 2, KK.thep);              // thân cảm biến (tai xanh lơ)
