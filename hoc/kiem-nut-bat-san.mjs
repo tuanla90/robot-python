@@ -3,7 +3,7 @@
      - Màn khai nutBat = [{ x, y }] (ô nút N): nút đó ĐANG BẬT (nóng) từ đầu màn; bắn trúng thì tắt, bắn nữa lại bật (luật đổi cũ).
      - warm() trước phát bắn nào = True; distance() không đổi; nutBanDau / vết / kết quả cham.js ghi bat true.
      - Nút bật sẵn KHÔNG ĐƯỢC NỐI cửa / băng chuyền (mặc định hay cfg.noi): ném lỗi cấu hình tiếng Việt. Không nối thì được (noi bỏ nút đó, hay cua: [] bang: []).
-     - Màn cũ (không khai nutBat) chạy y nguyên: mọi nút tắt lúc đầu; không màn nào trong sổ màn khai nutBat.
+     - Màn cũ (không khai nutBat) chạy y nguyên: mọi nút tắt lúc đầu; không màn nào ngoài gói Đo nhiệt (do-nhiet, che-do-nhiet) khai nutBat.
      - Giao diện (san-ve.js, man-choi.js, man-lap.js): kiểm theo mã nguồn (vẽ cần trình duyệt).
    Cờ --loi-gia: cắm lỗi giả để chứng minh máy kiểm đỏ được.
    Chạy: node hoc/kiem-nut-bat-san.mjs        (trượt thì thoát mã 1)
@@ -130,8 +130,12 @@ console.log('\n== 4. cham.js và màn nhiều sân ==');
 console.log('\n== 5. Màn cũ y nguyên ==');
 {
   const M = require(path.join(day, 'lo-trinh-hoc.js'));
-  const ds = M.danhSach;
-  kiem('không màn nào trong sổ màn khai nutBat (tính năng mới, chưa dùng)', ds.length > 500 && ds.every((m) => m.nutBat === undefined && !(m.doi || []).some((r) => r.nutBat !== undefined)), ds.length);
+  // Gói 7 Đo nhiệt (man-do-nhiet.js, chương do-nhiet / che-do-nhiet) là nơi DÙNG nutBat: kiem-do-nhiet.mjs kiểm các màn đó. Mọi màn khác vẫn phải y nguyên.
+  const GOI_DUNG = ['do-nhiet', 'che-do-nhiet'];
+  const ds = M.danhSach.filter((m) => !GOI_DUNG.includes(m.chuong));
+  const dung = M.danhSach.filter((m) => GOI_DUNG.includes(m.chuong));
+  kiem('không màn nào ngoài gói Đo nhiệt khai nutBat; màn gói Đo nhiệt nào cũng khai', ds.length > 500 && ds.every((m) => m.nutBat === undefined && !(m.doi || []).some((r) => r.nutBat !== undefined)) && dung.every((m) => Array.isArray(m.nutBat) && m.nutBat.length),
+    ds.length + ' màn khác, ' + dung.length + ' màn Đo nhiệt');
   const coNut = ds.filter((m) => m.loiGiai && /N/.test(J(m.san)));
   let sai = [];
   for (const m of coNut) {
