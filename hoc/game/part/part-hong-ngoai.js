@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* CẢM BIẾN HỒNG NGOẠI (mùa 2, 27/10): mắt đo nhỏ gắn ở MŨI xe, lệch sang góc trái mũi (ổ 'tren', toạ độ tấm part = toạ độ thân vì diemNeo = ổ) để không chạm đế tay (cột 7..16).
      distance() đo số ô trống phía trước; bản nâng cấp đo nhiệt warm() biết vật cản phía trước có nóng không (robot khác, nút bắn đang bật) — cùng một part, hình không đổi.

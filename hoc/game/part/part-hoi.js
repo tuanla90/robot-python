@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* SÚNG HƠI (chương sung-hoi / che-sung-hoi, 15/10): thay ống bóng và lưỡi gạt cũ. Hai nòng: NÒNG TRƯỚC ở mũi xe (ống thép loe miệng, bình khí nén xanh dương sát mũi)
      và NÒNG SAU ở đuôi xe (ống ngắn, miệng loe nhô khỏi đuôi). shoot() bắn ra trước, shoot_back() bắn ra sau.

@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* TAY XOAY (chương tay-xoay, 15/10): tay kẹp đời 2 có KHỚP TRÒN ở mũi xe. Nhìn từ trên xuống: một trụ ngắn nối mũi xe với khớp tròn (bệ thép, nắp xanh lá = tay nâng / cam = tay hạ),
      cổ tay màu tím, thanh ngang rồi hai ngón thép. Khớp có ba nấc: tay chỉ phía trước, bên trái hay bên phải xe (cánh tay xoay quanh khớp, không quay cả xe).

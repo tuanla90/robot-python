@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   P.dangKy({loai:'tay',ma:'nam-cham',ten:'Nam châm chữ U trước mũi',hamGoc:['magnet_n','magnet_s','magnet_off'],gan:['tay','duoi'],diemNeo:{x:12,y:23},diemNeoDuoi:{x:12,y:16},ve:function(p,s){
     s=s||{};var under=s.duoi;

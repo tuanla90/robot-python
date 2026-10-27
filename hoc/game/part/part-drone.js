@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* Drone nhìn từ trên xuống, không có mặt trước (bay bốn hướng): khung chữ X, bốn cánh quạt (đĩa mờ + hai cánh, đổi cặp cánh theo s.buoc để thấy quay),
      thân tối ở giữa với mắt xanh. s.doc: đèn thân sáng (đang đo pin). Chỉ dùng hàng 1..22 của lưới 24 để vừa ảnh part 40×40. */

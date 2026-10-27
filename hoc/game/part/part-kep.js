@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* Tay kẹp trước mũi. Ba thế của hai càng (đối xứng quanh cột 12, tính theo toạ độ liên tục):
        mở      càng ở sát mép thân (2..5 và 18..21), khe giữa 12 pixel, đủ rộng để ôm vật;

@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* MÁY SƠN (chương may-son / che-may-son, 25/10, hoc/KE-HOACH-MAY-SON.md): đầu sơn gắn ở mũi xe, nhìn từ trên xuống. Đế thép ở mũi, BÌNH SƠN (lon tròn, ruột mang màu đang chọn bằng ink(c)),
      cổ ống và CHỔI ở đầu. Trạng thái s: mauSon ('red'|'green'|'blue'|'yellow', mặc định đỏ), tuThe 'duoi' = đầu sơn đang HẠ (pen_down: chổi duỗi dài chạm sàn, giọt sơn loang ở đầu chổi),

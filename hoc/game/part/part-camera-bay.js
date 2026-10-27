@@ -1,4 +1,4 @@
-var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* CAMERA NHÌN XUỐNG của drone (mã 'camera-bay', mở look()): cụm ống kính tròn đặt ở ổ 'bung' của thân drone — mép trên khung, giữa hai cánh quạt trên.
      Nhìn từ trên xuống, drone không có "mặt trước", nên ống kính ló ra khỏi mép khung như một chiếc gimbal treo dưới bụng: vỏ thép có viền mực, vành tối, kính xanh với chấm sáng.
