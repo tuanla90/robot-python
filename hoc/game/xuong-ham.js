@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    xuong-ham.js — "Robot Chấn Hưng": XƯỞNG HÀM (window.Xuong).
    Lớp phủ trượt lên đè màn chơi. Từ trên xuống:
@@ -25,18 +26,18 @@
   /* Loại thứ đặt được trên sân thử. Chế độ S.che 'vat' (Đặt vật) dùng loại S.coVat, 'san' (Đặt sàn) dùng S.coSan; bảng chọn chỉ có loại màn này dùng tới (dsVat / dsSan).
      ky: ký hiệu sân của lõi (sanThu.ky), băng chuyền thì đổi hướng theo BANG_VONG. */
   var LOAI = {
-    vat: { bieu: 'box', mau: '#e0a050', chu: 'xuong.loai.vat', goiY: 'xuong.vatGoiY' },
-    thung: { bieu: 'thung', mau: '#b08860', chu: 'xuong.loai.thung', goiY: 'xuong.thungGoiY' },
-    tuong: { bieu: 'wall', mau: '#b0b8c8', chu: 'xuong.loai.tuong', goiY: 'xuong.tuongGoiY' },
-    rao: { bieu: 'rao', mau: '#e0b868', chu: 'xuong.loai.rao', goiY: 'xuong.raoGoiY' },
-    nut: { bieu: 'nutban', mau: '#ff6a5a', chu: 'xuong.loai.nut', goiY: 'xuong.nutGoiY' },
-    cua: { bieu: 'cua', mau: '#6fd8e8', chu: 'xuong.loai.cua', goiY: 'xuong.cuaGoiY' },
-    bac: { bieu: 'bac', mau: '#d8c898', chu: 'xuong.loai.bac', goiY: 'xuong.bacGoiY', ky: 'S' },
-    gam: { bieu: 'gam', mau: '#9aaabb', chu: 'xuong.loai.gam', goiY: 'xuong.gamGoiY', ky: 'n' },
-    mau: { bieu: 'mau', mau: '#ff7ab0', chu: 'xuong.loai.mau', goiY: 'xuong.mauGoiY' },
-    sac: { bieu: 'sac', mau: '#ffd23a', chu: 'xuong.loai.sac', goiY: 'xuong.sacGoiY' },
-    bang: { bieu: 'bang', mau: '#9aaabb', chu: 'xuong.loai.bang', goiY: 'xuong.bangGoiY' },
-    ho: { bieu: 'ho', mau: '#8a7058', chu: 'xuong.loai.ho', goiY: 'xuong.hoGoiY', ky: 'u' }
+    vat: { bieu: 'box', mau: BM.xuongLoai1, chu: 'xuong.loai.vat', goiY: 'xuong.vatGoiY' },
+    thung: { bieu: 'thung', mau: BM.xuongLoai2, chu: 'xuong.loai.thung', goiY: 'xuong.thungGoiY' },
+    tuong: { bieu: 'wall', mau: BM.xuongLoai3, chu: 'xuong.loai.tuong', goiY: 'xuong.tuongGoiY' },
+    rao: { bieu: 'rao', mau: BM.xuongLoai4, chu: 'xuong.loai.rao', goiY: 'xuong.raoGoiY' },
+    nut: { bieu: 'nutban', mau: BM.xuongLoai5, chu: 'xuong.loai.nut', goiY: 'xuong.nutGoiY' },
+    cua: { bieu: 'cua', mau: BM.xuongLoai6, chu: 'xuong.loai.cua', goiY: 'xuong.cuaGoiY' },
+    bac: { bieu: 'bac', mau: BM.xuongLoai7, chu: 'xuong.loai.bac', goiY: 'xuong.bacGoiY', ky: 'S' },
+    gam: { bieu: 'gam', mau: BM.xuongLoai8, chu: 'xuong.loai.gam', goiY: 'xuong.gamGoiY', ky: 'n' },
+    mau: { bieu: 'mau', mau: BM.xuongLoai9, chu: 'xuong.loai.mau', goiY: 'xuong.mauGoiY' },
+    sac: { bieu: 'sac', mau: BM.xuongLoai10, chu: 'xuong.loai.sac', goiY: 'xuong.sacGoiY' },
+    bang: { bieu: 'bang', mau: BM.xuongLoai8, chu: 'xuong.loai.bang', goiY: 'xuong.bangGoiY' },
+    ho: { bieu: 'ho', mau: BM.xuongLoai11, chu: 'xuong.loai.ho', goiY: 'xuong.hoGoiY', ky: 'u' }
   };
   var BANG_VONG = ['>', 'v', '<', '^'];                                     // chạm băng chuyền: quay hướng theo chiều kim đồng hồ, hết vòng thì bỏ
   function kyTen(k) { return k === 'S' ? 'bac' : k === 'n' ? 'gam' : k === 'u' ? 'ho' : 'bang'; }
@@ -51,25 +52,25 @@
     A = app; E.host = host;
     host.innerHTML =
       '<div class="deco"></div>' +
-      '<div class="top"><button class="bt g-or menu" data-nut="ve" aria-label="' + t('xuong.ve') + '"><span data-i="back" data-s="2" data-l="#5a2f08"></span></button>' +
+      '<div class="top"><button class="bt g-or menu" data-nut="ve" aria-label="' + t('xuong.ve') + '"><span data-i="back" data-s="2" data-l="' + BM.xuongDung1 + '"></span></button>' +
         '<div class="tenham chalk"><span class="nm"></span></div><span class="dso"></span>' +
-        '<button class="bt g-bl menu" data-nut="lay-lai" aria-label="' + t('xuong.layLai') + '"><span data-i="reset" data-s="2" data-l="#0f2f6a"></span></button>' +
+        '<button class="bt g-bl menu" data-nut="lay-lai" aria-label="' + t('xuong.layLai') + '"><span data-i="reset" data-s="2" data-l="' + BM.xuongDung2 + '"></span></button>' +
         '<button class="bt g-rd menu" data-nut="xoa-ham" aria-label="' + t('xuong.xoaHam') + '"><span data-i="trash" data-s="2"></span></button></div>' +
       '<div class="fblock">' +
         '<div class="ffr sua"><canvas class="tex"></canvas><div class="toast"></div></div>' +
         '<div class="side xu">' +
-          '<div class="thu-hang"><button class="bt g-gr cbtn" data-nut="thu"><span data-i="play" data-s="1.5" data-l="#14561e"></span><span class="cl">' + t('xuong.thu') + '</span></button></div>' +
-          '<button class="bt g-am cbtn" data-nut="nhip"><span data-i="step" data-s="1.5" data-l="#6a4400"></span>' + t('choi.nhip') + '</button>' +
-          '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="1.5" data-l="#0f2f6a"></span>' + t('xuong.lai') + '</button>' +
-          '<button class="bt g-am cbtn mode" data-nut="' + CHE.xe + '" data-che="xe"><span data-i="car" data-s="1.5" data-l="#6a4400"></span>' + t('xuong.datXe') + '</button>' +
-          '<button class="bt g-or cbtn mode nut-loai" data-nut="' + CHE.vat + '" data-che="vat"><span class="oi" data-i="box" data-s="1.5" data-l="#5a2f08"></span><span class="ol">' + t('xuong.datVat') + '</span></button>' +
-          '<button class="bt g-pk cbtn mode nut-loai xu-san" data-nut="' + CHE.san + '" data-che="san"><span class="oi" data-i="mau" data-s="1.5" data-l="#5a1238"></span><span class="ol">' + t('xuong.datSan') + '</span></button>' +
+          '<div class="thu-hang"><button class="bt g-gr cbtn" data-nut="thu"><span data-i="play" data-s="1.5" data-l="' + BM.xuongDung3 + '"></span><span class="cl">' + t('xuong.thu') + '</span></button></div>' +
+          '<button class="bt g-am cbtn" data-nut="nhip"><span data-i="step" data-s="1.5" data-l="' + BM.xuongDung4 + '"></span>' + t('choi.nhip') + '</button>' +
+          '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="1.5" data-l="' + BM.xuongDung2 + '"></span>' + t('xuong.lai') + '</button>' +
+          '<button class="bt g-am cbtn mode" data-nut="' + CHE.xe + '" data-che="xe"><span data-i="car" data-s="1.5" data-l="' + BM.xuongDung4 + '"></span>' + t('xuong.datXe') + '</button>' +
+          '<button class="bt g-or cbtn mode nut-loai" data-nut="' + CHE.vat + '" data-che="vat"><span class="oi" data-i="box" data-s="1.5" data-l="' + BM.xuongDung1 + '"></span><span class="ol">' + t('xuong.datVat') + '</span></button>' +
+          '<button class="bt g-pk cbtn mode nut-loai xu-san" data-nut="' + CHE.san + '" data-che="san"><span class="oi" data-i="mau" data-s="1.5" data-l="' + BM.xuongDung5 + '"></span><span class="ol">' + t('xuong.datSan') + '</span></button>' +
           '<div class="clock chalk xu-dem"><span class="l">' + t('choi.nhipDong') + '</span><span class="v">0</span></div>' +
         '</div></div>' +
       '<div class="low">' +
         '<div class="pan p-prog"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt code">' + t('xuong.def') + '</span><span class="chinh-khoa" data-nut="ham-khoa"><span class="ck-ic"></span><span class="ck-chu">' + t('xuong.chiXem') + '</span></span>' +
-            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="#4a0e0c"></span></button></div>' +
+            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="' + BM.xuongDung6 + '"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
@@ -133,7 +134,7 @@
         function chon(ma) { if (x[0] === 'vat') S.coVat = ma; else S.coSan = ma; datChe(x[0]); }
         if (ds.length === 1) { chon(ds[0]); return; }
         TP.chonMuc({ neo: x[1], dang: x[0] === 'vat' ? S.coVat : S.coSan, khiChon: chon,
-          ds: ds.map(function (ma) { return { ma: ma, chu: t(LOAI[ma].chu), icon: Ve.ico(LOAI[ma].bieu, 2, { fill: LOAI[ma].mau, line: '#2a1a0a', toi: '#2a1a0a' }) }; }) });
+          ds: ds.map(function (ma) { return { ma: ma, chu: t(LOAI[ma].chu), icon: Ve.ico(LOAI[ma].bieu, 2, { fill: LOAI[ma].mau, line: BM.xuongDungLine, toi: BM.xuongDungToi }) }; }) });
       });
     });
     E.canvas.addEventListener('click', chamSan);
@@ -514,7 +515,7 @@
   function veNutLoai() {
     [[E.nutVat, S.coVat], [E.nutSan, S.coSan]].forEach(function (x) {
       var lo = LOAI[x[1]]; if (!x[0] || !lo) return;
-      var oi = x[0].querySelector('.oi'); oi.innerHTML = ''; oi.appendChild(Ve.ico(lo.bieu, 1.5, { fill: lo.mau, line: '#2a1a0a', toi: '#2a1a0a' }));
+      var oi = x[0].querySelector('.oi'); oi.innerHTML = ''; oi.appendChild(Ve.ico(lo.bieu, 1.5, { fill: lo.mau, line: BM.xuongNutLoaiLine, toi: BM.xuongNutLoaiToi }));
     });
   }
   function coSung() { return VeRobot.cauHinhCua(A.man()).tay === 'hoi'; }                     // súng hơi: có nút Nút (nút bắn) và Cửa
