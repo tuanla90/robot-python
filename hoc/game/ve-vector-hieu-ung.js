@@ -3,7 +3,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    ve-vector-hieu-ung.js — "Robot Chấn Hưng": HIỆU ỨNG TRÊN SÂN bằng VECTOR (VeVector.HU), gói V4 (27/10).
    Chế độ vector (?ve=vector) của san-ve.js rẽ nhánh sang đây: mọi hoạt cảnh / hiệu ứng vẽ bằng hình mượt (tròn, bo góc, gradient nhẹ, nét đều) cùng phong cách lab trắng
    với ô / vật / robot vector, KHÔNG còn khối fillRect kiểu pixel. Toạ độ y như nhánh pixel: PIXEL SÂN (T = 14 mỗi ô), nên luồng phát lại của san-ve.js không đổi;
-   canvas sân (phép phóng sv) và lớp phủ robot (phép phóng ku) đều theo pixel thiết bị nên nét ở mọi cỡ ô. Màu: chỉ từ bảng màu (BM.vec*, BM.tia*Rgb…).
+   canvas sân (phép phóng sv) và lớp phủ robot (phép phóng ku) đều theo pixel thiết bị nên nét ở mọi cỡ ô. Màu: chỉ từ bảng màu (các vai vec… và bộ ba tia…Rgb).
    Mỗi hàm nhận g (đã đặt phép biến hình theo pixel sân) và dữ liệu đã tính sẵn ở san-ve.js; không đọc luật chơi, không gọi Math.random (nhánh pixel giữ nguyên chuỗi số ngẫu nhiên).
    NHÓM (theo bước gói V4):
      hạt / bụi / khói / mảnh vỡ (hat), chớp đỏ (chop), dấu ? ! (dau), sao choáng (choang), bong chữ màu (bongMau), ô cảnh báo / ô vỡ (oDo, vachMep).

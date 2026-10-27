@@ -7,12 +7,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var MAU_DAI = { red: 'luatVatDo', green: 'luatVatXanhLa', blue: 'luatVatXanhDuong', yellow: 'luatVatVang' };   // vật mang màu (chương cảm biến màu): đai đổi theo màu luật
 
-  /* Ô SÀN: tấm trắng bo góc, gradient chéo nhạt, viền lưới lavender, một vệt bóng ở góc trên trái. */
+  /* Ô SÀN: tấm trắng bo góc, gradient chéo nhạt, viền lưới lavender, một vệt bóng ở góc trên trái.
+     Gói V4 (user 27/10): sàn BÀN CỜ hai tông xen kẽ theo (x + y) chẵn / lẻ — s.le (1: ô lẻ, xám nhạt hơn một bậc; thiếu / 0: ô chẵn, trắng lab hơi xám), chênh nhẹ. */
   function nenLuoi(g) { g.fillStyle = BM.vecSanToi; g.fillRect(0, 0, 100, 100); }   // nền lavender lộ ra ở khe giữa các tấm (lưới mờ của sân lab); sân vẽ kín ô nên nền canvas không lộ
-  V.dangKy({ loai: 'o', ma: 'san', ten: 'Sàn lab', ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'san', ten: 'Sàn lab', cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
+    var le = !!(s && s.le);
     nenLuoi(g);
-    H.bo(g, 3, 3, 94, 94, 6); g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, [[0, BM.vecSan], [1, BM.vecSanToi]]); g.fill(); H.vien(g, BM.vecSanVien, 2);
-    H.duong(g, 'M14 30 L30 14'); g.globalAlpha = 0.9; H.vien(g, BM.vecVo, 5); g.globalAlpha = 1;
+    H.bo(g, 3, 3, 94, 94, 6); g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, le ? [[0, BM.vecSanLe], [1, BM.vecSanLeToi]] : [[0, BM.vecSanChan], [1, BM.vecSanChanToi]]); g.fill(); H.vien(g, BM.vecSanVien, 2);
+    H.duong(g, 'M14 30 L30 14'); g.globalAlpha = 0.9; H.vien(g, BM.vecSan, 5); g.globalAlpha = 1;                 // vệt sáng trắng (vecSan) trên cả hai tông
   } });
 
   /* Ô TƯỜNG: khối trắng bạc nhìn từ trên, mặt trên trắng viền nhạt, dải đèn cyan với vệt sáng. */

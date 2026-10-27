@@ -268,7 +268,7 @@
   /* 2. sân mẫu chạy chương trình */
   var B = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   var DEMO = [
-    { ten: 'Đi thẳng, quay mượt (cả hình xoay), bánh theo quãng đi, đâm tường: mắt X + rung, chớp đỏ, sao choáng', san: ['....#', '.....', '.....'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: B,
+    { ten: 'Đi thẳng, quay mượt (cả hình xoay), bánh theo quãng đi, đâm tường: mắt X + rung, chớp đỏ, sao choáng', san: ['.....', '...#.', '.....'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: B,
       code: 'left_move()\nright_move()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\n' },
     { ten: 'Tới cờ: mắt cười "^ ^" + nảy (giữ tới khi hộp kết quả hiện), pháo giấy', san: ['...F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: B, code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\n' },
     { ten: 'Tay kẹp: hạ, nhặt (khép dần), mang, đặt vào ô đích (vui); hạ tay mà đi: tay vướng (đâm)', san: ['.o.', '...', '..D'], batDau: { x: 0, y: 0, huong: 1 }, robot: { than: 'hai-banh', tay: 'kep', camBien: [] }, mucTieu: 'dua-vat',
@@ -302,6 +302,7 @@
     san.appendChild(cv); o.appendChild(san); o.appendChild(el('p', '', d.ten)); var nut = el('button', '', '↻ chạy lại'); o.appendChild(nut); noiSan.appendChild(o);
     var F = new SanVe.Field(cv, { kich: 200 }), lan = 0;
     F.nap(cauHinhSan(d));
+    (window.V4_SAN = window.V4_SAN || []).push(F);                                   // để thử tay trong console: V4_SAN[i].baoHieu('!') …
     async function phat() {
       var my = ++lan, k = chayVet(d);
       F.datLai(); await SanVe.ngu(500);

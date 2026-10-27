@@ -231,7 +231,11 @@
     vecMatSangRgb: '207,250,254',      // bộ ba quầng sáng quanh mắt camera / ống kính đang đọc
     // ---- VECTOR (gói V4, 27/10): hiệu ứng trên sân bằng vector (ve-vector-hieu-ung.js) — bộ ba rgb cho lớp mờ / quầng của các màu vec đã có
     vecDoRgb: '239,68,68',             // bộ ba của vecDo: chớp đỏ, ô bị chặn / vỡ, vật thả bị chặn
-    vecNgon: '#b9c2d6'                 // ngón tay kẹp / tay xoay (bạc nhạt): vật trắng trong kẹp nổi rõ
+    vecNgon: '#b9c2d6',                // ngón tay kẹp / tay xoay (bạc nhạt): vật trắng trong kẹp nổi rõ
+    vecSanChan: '#fbfaff',             // sàn bàn cờ, ô (x + y) chẵn: trắng lab hơi xám (đỉnh gradient chéo)
+    vecSanChanToi: '#efedf7',          // sàn ô chẵn: góc tối gradient
+    vecSanLe: '#f3f2f9',               // sàn ô lẻ: xám nhạt hơn một bậc
+    vecSanLeToi: '#e7e5f0'             // sàn ô lẻ: góc tối gradient
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ
