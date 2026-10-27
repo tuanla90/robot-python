@@ -15,6 +15,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    ROBOT: VeVector.robot(cauHinh, trangThai, huong, canhPx) → canvas canhPx × canhPx (một ô), tâm thân = tâm canvas, cờ .laPart và .laVector.
      Ghép: thân + tay (dịch oGan − diemNeo) rồi XOAY CẢ NHÓM theo hướng (0 lên, 1 phải, 2 xuống, 3 trái); cả nhóm thu CO_THAN (0,86) như mẫu;
      bóng đổ vẽ lớp riêng KHÔNG xoay. Chỉ cấu hình coDu(cauHinh) (mọi bộ phận đã có hình vector) mới vẽ được; VeRobot rơi về pixel khi thiếu.
+   GÓI V3 (27/10): đủ 5 thân (ve-vector-than-*.js), 6 tay (ve-vector-tay-*.js), 6 cảm biến (ve-vector-cam.js), cùng mã / ổ với part/*.js. Thân có đủ ổ như pixel
+     (tay, hongTrai, hongPhai, tren + sau cho nòng sau; drone: hongTrai, hongPhai, duoi, tren, bung); cảm biến 'hong' = một cái mỗi hông (doiCam như Part.ghep);
+     kiemGhep(cfg) ném ĐÚNG lỗi của Part.ghep cho cấu hình cấm; thân khongHuong (drone) không xoay, bongRieng không có bóng trong hình; tay.tran (tay xoay) → canvas
+     rộng hơn ô (tâm vẫn ở giữa); vatXoay / hinhHoc trả hình học tay theo 1/100 ô cho san-ve.js (qua VeRobot). H.kinh / H.angTen: kính + mắt + chấm ăng-ten màu đội dùng chung.
    Ô / VẬT: VeVector.o(ma, canhPx, s) · VeVector.vat(ma, canhPx, s) → canvas đệm.
    Node: không có document → CanvasGia ghi lại từng lệnh vẽ (máy kiểm hoc/kiem-ve-vector.mjs đọc .lenh).
    ========================================================================== */

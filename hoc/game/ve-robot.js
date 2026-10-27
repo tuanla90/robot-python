@@ -25,7 +25,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      Tắt hẳn part: VeRobot.dungPart = false (hoặc ?part=0).
    VECTOR (gói V1, 27/10, ve-vector.js): khi VeVector.bat() (?ve=vector hay đã lưu) VÀ VeVector.coDu(cauHinh) (mọi bộ phận đã có hình vector: V1 chỉ thân hai-banh + tay kep / không tay,
      không cảm biến) thì ve() trả canvas vector đúng MỘT Ô (VeVector.robot; cờ .laPart + .laVector), tiLe = cạnh ô / 100 (tiLeChoO), REACH = 50 (nửa ô), vatKep theo VeVector.
-     Cấu hình chưa có hình vector (xích, nhện, omni, drone, tay khác, cảm biến) vẫn vẽ bằng part pixel như cũ, kể cả ở chế độ vector (gói V3 bổ sung).
+     Gói V3: mọi thân / tay / cảm biến có hình vector (veVec đổi trạng thái như veGhep: drone và nhện không tay hướng 0; nam châm có cực, súng, máy ném, máy sơn, tay xoay góc,
+     nhện co, drone quạt / đo pin, camera sáng mắt); cấu hình cấm → VeVector ném lỗi như Part.ghep, báo một lần, rơi về hình tạm. vatXoay / hinhHoc / reachCua theo 1/100 ô
+     ở chế độ vector (san-ve.js doiCo nhân với tiLe: miệng nòng, rổ máy ném, chân tia camera, đỉnh drone, lề lớp phủ khi tay xoay vươn sang ô bên). Chỉ mã lạ mới còn rơi về pixel.
      Cách vẽ lên sân (san-ve.js): robot vẽ trên LỚP PHỦ cả sân (có lề tràn ra), nên tay kẹp nhô ra mép sân vẫn không bị cắt.
    NHỆN CO CHÂN (chương nhen / che-nhen, 15/10): trangThai.co = true → part nhện vẽ tư thế co (chân dang sát đất, thân dẹt); ảnh khác hẳn ảnh đứng nên là một phần của khóa bộ nhớ đệm.
    Drone (than 'drone'): bay cao, không có mặt trước nên huong luôn 0 và ảnh không xoay; cánh quạt quay theo pha ph (trangThai.wl / wr > 0 = đang quay); trangThai.camBien.bat sáng đèn thân (đang đo pin).
