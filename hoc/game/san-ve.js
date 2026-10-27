@@ -1236,6 +1236,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (this.docs.length) this.veTia(g, now);
         if (v.bongMau && v.bongMau.den > now) this.veBongMau(g, cx, cy, now, c.robot.tay ? 24 : 20);
         if (v.choang > now) this.veChoang(g, cx, cy - v.hop, now, v.dr ? this.dinhDrone() : c.robot.tay ? 16 : 13);
+        else if (this.vec && v.choDen > now && !(v.bao && v.baoDen > now)) HU().dau(g, '…', v.dr ? cx + 5 : cx, cy, now, v.dr ? this.dinhDrone() - 3 : c.robot.tay ? 25 : 21, c.oy * T);   // nhiều robot đang chờ: bong bóng "…" (gói V4)
         if (v.bao && v.baoDen > now) this.veDau(g, v.bao, v.dr ? cx + 5 : cx, cy, now, v.dr ? this.dinhDrone() - 3 : c.robot.tay ? 25 : 21);       // drone: dấu nổi ở phía trên bên phải thân (phía trên là thanh pin)
         if (cuoi && this.flash > now) {
           if (this.vec) HU().chop(g, c.ox * T, c.oy * T, this.pw, this.ph, Math.min(1, (this.flash - now) / 90 + 0.35));       // vector: viền đỏ toả vào từ mép (gói V4)
@@ -1302,11 +1303,41 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       else if (v.dr && v.dr.roi) kieu = 'lim';
       else if (chop && !giam) kieu = chop;
       else if (now - v._tDi > 9000 && !this.camBienSang(now)) kieu = 'lim';
-      if (kieu === 'thuong' || kieu === 'chop1' || kieu === 'ngac' || kieu === 'lim') {
+      if (kieu === 'thuong' || kieu === 'chop1' || kieu === 'ngac' || kieu === 'lim' || kieu === 'vui') {
         if (v.gocMem) liec = v.gocMem > 0 ? -1 : 1;                                       // đang quay phải (thuận kim) → liếc sang phải xe (phía x nhỏ của thân)
-        else if (v.liecMat) liec = v.liecMat;
+        else liec = this.liecVeBan(v, now) || this.liecCamBien(v, now);                 // nhiều robot: liếc về phía bạn kề bên / cả đội mừng thì nhìn nhau; đọc cảm biến bên hông: liếc theo tia
       }
       ttR.mat = kieu + (liec ? ':' + liec : '');
+    },
+    /** NHIỀU ROBOT (gói V4, bổ sung 27/10): gắn cảm xúc theo sự kiện vết có sẵn — chỉ đọc vết, không đổi luật. Xe đang xét = this.vis.
+     *  'dam-tuong' vat 'dong-doi' (húc / bị bạn chặn): xe này nhăn "> <" + rung, xe bị húc giật mình (mắt tròn); 'nut-doi' (bắn nút giúp đội): các xe khác cười;
+     *  'doi-thu-thang' (đọ sức): xe này buồn, đối thủ cười; nhịp chỉ đứng yên ('dung-yen' / đọc cảm biến) liền 2 nhịp trở lên: lim dim + bong bóng "…" (đang chờ). */
+    camXucDoi: function (evs) {
+      var v = this.vis, self = this, now = performance.now(), ds = this.xe || [], i;
+      function xeTai(o) { for (var k = 0; k < ds.length; k++) if (ds[k].vis !== v && o && Math.round(ds[k].vis.x) === o.x && Math.round(ds[k].vis.y) === o.y) return ds[k].vis; return null; }
+      evs.forEach(function (s) {
+        if (s.ma === 'dam-tuong' && s.vat === 'dong-doi') { self.matSuKien('xoay', 850); var kia = xeTai(s.den); if (kia) self.matSuKien('ngac', 750, kia); }
+        if (s.ma === 'nut-doi') for (i = 0; i < ds.length; i++) if (ds[i].vis !== v) self.matSuKien('vui', 900, ds[i].vis);
+        if (s.ma === 'doi-thu-thang') { self.matSuKien('buon', 2400); for (i = 0; i < ds.length; i++) if (ds[i].vis !== v) self.matSuKien('vui', 2400, ds[i].vis); }
+      });
+      var yen = evs.length > 0 && evs.every(function (s) { return s.ma === 'dung-yen' || s.ma === 'doc-cam-bien'; });
+      v.choDem = yen ? (v.choDem || 0) + 1 : 0;
+      if (v.choDem >= 2) { this.matSuKien('lim', 1400); v.choDen = now + 1400; } else v.choDen = 0;
+    },
+    /** Liếc về phía robot khác (nhiều robot: kề nhau trong 1,6 ô, hay cả đội đang mừng xong màn — nhìn nhau): -1 / 0 / 1 theo trục trái của xe v (0 nếu không có ai). */
+    liecVeBan: function (v, now) {
+      var ds = this.xe; if (!ds) return 0;
+      var mung = this.mung > now, best = null, bd = 1e9, i;
+      for (i = 0; i < ds.length; i++) { var o = ds[i].vis; if (o === v) continue; var d = Math.abs(o.x - v.x) + Math.abs(o.y - v.y); if (d < bd) { bd = d; best = o; } }
+      if (!best || (!mung && bd > 1.6)) return 0;
+      var a = ((v.d || 0) + (v.gocMem || 0) * 2 / Math.PI) * Math.PI / 2, tx = Math.cos(a), ty = Math.sin(a);   // trục TRÁI của xe: hướng mặt (sin a, −cos a) xoay −90° = (−cos a, −sin a)
+      var lx = -tx, ly = -ty, dx = best.x - v.x, dy = best.y - v.y, n = Math.sqrt(dx * dx + dy * dy) || 1, p = (dx * lx + dy * ly) / n;
+      return p > 0.3 ? 1 : p < -0.3 ? -1 : 0;
+    },
+    /** Liếc tò mò theo tia cảm biến đang đọc sang trái / phải xe (left_clear / right_clear…): +1 trái, -1 phải. */
+    liecCamBien: function (v, now) {
+      for (var i = this.docs.length - 1; i >= 0; i--) { var d = this.docs[i]; if (now - d.t0 < d.ms && typeof d.huong === 'number') { var r = ((d.huong - (v.d || 0)) % 4 + 4) % 4; return r === 1 ? -1 : r === 3 ? 1 : 0; } }
+      return 0;
     },
     /** Số ngẫu nhiên 0..1 riêng của mắt xe v (LCG, không đụng Math.random: nhánh pixel giữ nguyên chuỗi số ngẫu nhiên). */
     soMat: function (v) { v.hatMat = (Math.imul(v.hatMat || 1, 1664525) + 1013904223) >>> 0; return v.hatMat / 4294967296; },
@@ -2388,7 +2419,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (my !== this.rid) return;
       if (v.dr) evs.forEach(function (s) { if (s.ma === 'bay-qua') self.giuQuat(s); });             // drone vừa bay qua rào / băng / vật / thùng: gió cánh quạt thổi bụi
       evs.forEach(function (s) { if (s.ma === 'qua-diem' && s.o) self.diQuaLen(s.o); });                // bóng mờ: xe vừa tới ô ◆ (lần đầu): ◆ sáng lên
-      if (evs.some(function (s) { return s.ma === 'toi-co'; })) this.coManh = performance.now() + 900;          // cờ phất mạnh một nhịp khi robot tới (gói V4, chỉ vector vẽ)
+      if (evs.some(function (s) { return s.ma === 'toi-co'; })) this.coManh = performance.now() + 900;
+      if (this.xe) this.camXucDoi(evs);                                                                  // nhiều robot: cảm xúc khi tương tác (gói V4, chỉ đọc vết)          // cờ phất mạnh một nhịp khi robot tới (gói V4, chỉ vector vẽ)
       if (evs.some(function (s) { return s.ma === 'toi-co' || s.ma === 'xong-dua-vat' || s.ma === 'xong-day-thung' || s.ma === 'xong-to-hinh' || s.ma === 'nut-doi' || (s.ma === 'dat-vat' && s.o && self.dichTaiO(s.o.x, s.o.y)); })) this.matSuKien('vui', 1000);   // mắt cười (gói V4)
       if (evs.some(function (s) { return s.ma === 'doi-thu-thang'; })) { this.baoHieu('!', 1800); v.choang = performance.now() + 1400; }
       // đồng bộ với vết (an toàn nếu có sự kiện lạ)

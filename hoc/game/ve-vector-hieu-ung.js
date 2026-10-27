@@ -61,13 +61,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ---------------------------------------------------------------- dấu nổi '?' (hụt, thắc mắc) / '!' (bị chặn, giật mình): bong bóng tròn trắng viền mực, đuôi chỉ về robot */
   /** (cx, cy) tâm ô robot, cao: từ tâm tới chân dấu (như nhánh pixel), yTran: mép trên cửa sổ vẽ (pixel sân). */
   function dau(g, kieu, cx, cy, now, cao, yTran) {
-    var bob = giam() ? 0 : Math.sin(now / 110) * 0.8, x = cx + 6, y = Math.max(yTran + 5, cy - (cao || 21) + 3.5 + bob), r = 4.1, mau = kieu === '!' ? BM.vecDo : BM.vecDenToi;
+    var bob = giam() ? 0 : Math.sin(now / 110) * 0.8, x = cx + 6, y = Math.max(yTran + 5, cy - (cao || 21) + 3.5 + bob), r = 4.1, mau = kieu === '!' ? BM.vecDo : kieu === '…' ? BM.vecBacToi : BM.vecDenToi;
     g.save();
     g.beginPath(); g.moveTo(x - 2.6, y + 2.6); g.lineTo(x - 4.6, y + 5.6); g.lineTo(x - 0.6, y + 3.6); g.closePath();     // đuôi bong bóng
     g.fillStyle = BM.vecVo; g.fill(); g.lineWidth = 0.7; g.strokeStyle = BM.vecVien; g.lineJoin = 'round'; g.stroke();
     tron(g, x, y, r); g.fillStyle = H.gradToa(g, x - 1.2, y - 1.4, r * 1.4, [[0, BM.vecVo], [1, BM.vecVoGiua]]); g.fill(); g.lineWidth = 0.75; g.strokeStyle = BM.vecVien; g.stroke();
     g.strokeStyle = mau; g.fillStyle = mau; g.lineCap = 'round';
-    if (kieu === '!') {
+    if (kieu === '…') {                                                          // đang chờ (nhiều robot): ba chấm xám
+      for (var k = -1; k <= 1; k++) { tron(g, x + k * 1.6, y + 0.3, 0.62); g.fill(); }
+    } else if (kieu === '!') {
       g.lineWidth = 1.35; g.beginPath(); g.moveTo(x, y - 2.3); g.lineTo(x, y + 0.5); g.stroke();
       tron(g, x, y + 2.15, 0.72); g.fill();
     } else {
