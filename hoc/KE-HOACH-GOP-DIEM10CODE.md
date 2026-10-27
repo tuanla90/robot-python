@@ -56,6 +56,17 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
 - **Cách làm** (giữ hai bước ở trên): gói A1 gom màu vào bảng màu, ảnh trước / sau giống từng điểm ảnh; gói A2 đổi giá trị bảng màu sang "lab trắng" +
   vẽ thân M1 + sửa ô tường / thùng cho giống mẫu, chụp màn mẫu cho user duyệt. Hai gói chạy tuần tự sau gói mùa 2 đang chạy.
 
+### 2c. Đang cân nhắc: bỏ pixel, chuyển sang VECTOR (user 27/10 tối)
+
+- Lý do: hai game kia của diem10code (game logic mới `mach-den` vẽ SVG, khung `luyen-sql`) không dùng pixel art. Vector nét ở mọi cỡ ô (hết lệch điểm ảnh khi
+  cạnh ô không là bội số 14), mẫu robot vòm trắng user thích vốn là hình vector.
+- Đã có: bản thử của Claude (sân lab trắng + robot vòm hai bánh + tay kẹp, xoay 4 hướng, nhiều cỡ ô) và tờ SVG của Gemini user gửi (4 góc, 5 thân, 6 tay, 3 biểu cảm):
+  "chưa ưng lắm nhưng làm base được". Cần tệp SVG gốc của Gemini để tách mảnh.
+- **ĐÃ CHỐT (user 27/10): MỘT hình mỗi bộ phận, quay mặt XUỐNG, xoay cả nhóm cho 4 hướng** (không vẽ riêng 4 góc như tờ Gemini): dễ cân bằng, ít việc.
+  Tay gắn vào thân theo điểm gắn rồi xoay cùng thân; bóng đổ (nếu có) vẽ ở lớp riêng không xoay.
+- Không đổi: luật chơi, máy chấm, mọi màn. Đổi: bộ vẽ sân / vật / bộ phận / hoạt cảnh / giao diện (font Google Sans Flex) / huy hiệu / phim. Bảng màu gói A1 dùng tiếp.
+- Gói A2 (pixel lab trắng + thân M1) TẠM GIỮ tới khi user chốt vector hay pixel.
+
 ## 2b. Linh vật Sola / Luna bản pixel
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
