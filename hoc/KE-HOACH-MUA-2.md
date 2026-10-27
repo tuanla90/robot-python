@@ -94,3 +94,8 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   Máy kiểm `kiem-hong-ngoai.mjs` (107) + bộ dò `do-duong-hong-ngoai.mjs`: lời né `distance()` không được 3 sao. Huy hiệu `hong-ngoai`, `che-hong-ngoai`.
   Hàm của em mới: `go_to_wall`, `go_safe(an_toan)`, `clean_step(an_toan)`, `go_get` (không dùng tên `fetch`: trùng hàm cốt truyện nam-cham.5).
   Còn nợ (gói sửa S1): 4 hàm trên chưa có mục Sổ lệnh (kiem-che-xe chưa thấy màn ngân hàng mùa 2); hong-ngoai.7 chạy mã mẫu thì lời nhắc đầu là "vòng while chạy mãi" thay vì "đâm tường".
+
+- **27/10 S1 · Sửa sau gói 3 xong** (nhánh claude/sua-mua-2-a, gộp 28ba21d; npm test 75/75). Sổ lệnh có nhóm "Hồng ngoại" với 4 hàm; `kiem-che-xe.mjs` nạp màn mới
+  mùa 2 qua lộ trình, gói sau chỉ thêm mục Sổ lệnh + một dòng chương → nhóm. `cham.js`: vòng while chạy mãi mà robot cứ đâm thì lời `vong-vo-han` mở đầu bằng
+  "Robot đâm vào … ở ô (x, y) từ nhịp n, cả thảy N lần." (giữ mã, thứ tự, thắng / thua / sao; 38 ca ở 21 màn đổi câu đầu).
+  Nợ cũ phát hiện thêm: lộ trình xuất bản có ~30 hàm cốt truyện chưa có mục Sổ lệnh (to_left_gap, các hàm che-doi-*), và 4 mục (dash, square, zigzag, ring) chỉ màn đã cất tạo.
