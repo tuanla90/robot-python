@@ -24,7 +24,9 @@
       // 19 màn mới của gói 9 Combo (tay xoay + cảm biến bên), hai chương combo / che-combo (chỉ khai, lộ trình thêm chương bên dưới)
       'combo-mua-1',
       // 11 màn mới của gói 10 R1 xuất xưởng: robot-hoan-thien.11 (thay robot-hoan-thien.10) + chương 2 trum-mua-1 "Trùm mùa" (chỉ khai, lộ trình thêm bên dưới)
-      'trum-mua-1'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'trum-mua-1',
+      // MÙA 2 (KE-HOACH-MUA-2.md): mỗi gói có màn mới một tệp ngân hàng (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_2 bên dưới)
+      'bien-xich', 'hong-ngoai', 'day-thung', 'che-luc-ban', 'do-nhiet', 'doi-mua-2', 'be-sung', 'trum-mua-2'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -571,8 +573,33 @@
       ]
     }).loiGiaiKhac = { moTa: 'Đi bằng move() bảy lần viết thẳng', baiLam: bai(BAN.concat(['move()', 'move()', 'move()', 'move()', 'move()', 'move()', 'move()'])) };
   })();
+  // TỆP NGÂN HÀNG MÀN MỚI MÙA 2 (quy ước cho các gói sau): mỗi gói có màn mới MỘT tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai
+  // `chuong` (mã chương trong MUA_2) và `so`; tệp đã có trong danh sách require ở đầu tệp này và thẻ <script> của game/choi.html. Màn mới của một chương
+  // nối SAU các màn có sẵn của chương đó trong MUA_2, theo `so` (muốn xen giữa thì sửa đúng dòng chương đó trong MUA_2). Màn cuối của chương đủ 10 là trùm.
+  //   man-bien-xich.js   manBienXich   gói 1 chương 2 bien-xich (1 màn mới, thành trùm)
+  //   man-hong-ngoai.js  manHongNgoai  gói 3 hong-ngoai · che-hong-ngoai
+  //   man-day-thung.js   manDayThung   gói 5 day-thung · che-day-thung
+  //   man-che-luc-ban.js manCheLucBan  gói 6 chương 2 che-luc-ban
+  //   man-do-nhiet.js    manDoNhiet    gói 7 do-nhiet · che-do-nhiet
+  //   man-doi-mua-2.js   manDoiMua2    gói 8 doi-mua-2 · che-doi-mua-2
+  //   man-be-sung.js     manBeSung     gói 9 be-sung · che-be-sung
+  //   man-trum-mua-2.js  manTrumMua2   gói 10 tong-hop-2 · trum-mua-2
+  var TEP_MUA_2 = ['manBienXich', 'manHongNgoai', 'manDayThung', 'manCheLucBan', 'manDoNhiet', 'manDoiMua2', 'manBeSung', 'manTrumMua2'];
   (function () {
     Object.keys(TEN_MUA_2).forEach(function (c) { TT.ten[c] = TEN_MUA_2[c]; });
+    var moi = [], chuong = [];
+    MUA_2.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
+    TEP_MUA_2.forEach(function (k) { moi = moi.concat(M[k] || []); });
+    moi.forEach(function (m) { if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa 2 thuộc chương không có trong MUA_2: ' + m.chuong + '.' + m.so); });
+    // Chương mới chưa có trong thuTu: chèn tạm vào cuối cho ManHoc.them nhận (như nut-de); thuTu được dựng lại ngay dưới.
+    chuong.forEach(function (c) { if (TT.thuTu.indexOf(c) < 0) TT.thuTu.push(c); });
+    M.them(moi);
+    moi.forEach(function (m) { nguon[m.ma] = copy(m); });
+    MUA_2.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        c[1] = c[1].concat(moi.filter(function (m) { return m.chuong === c[0]; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; }));
+      });
+    });
     dungChuong('che-xich', XICH_CU);
     var chuongMua2 = [], coMan = [], da = {};
     MUA_2.forEach(function (g) {
