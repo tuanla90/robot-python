@@ -116,5 +116,57 @@ console.log('== 1. Hồng ngoại distance() ==');
   kiem('cham.js: chương trình dùng distance() chạy sạch (không lỗi, không dam-tuong)', !kq.chanDoan.some((c) => c.muc === 'loi') && !kq.chanDoan.some((c) => c.ma === 'dam-tuong'), J(kq.chanDoan.map((c) => c.ma)));
 }
 
+console.log('\n== 2. Đo nhiệt warm() ==');
+{
+  const SUNG = BANH.concat(['shoot', 'shoot_back', 'distance', 'warm']);
+  const SAN = ['#######', '#..N..#', '#.....#', '#.....#', '#.....#', '#######'];      // nút (3,1) trên tường trên
+  const chay = (bd, code, them) => SanHoc.chay(Object.assign({ loaiRobot: 'banh', hamGoc: SUNG, san: SAN, batDau: bd }, them || {}), code);
+  const nongs = (r) => docs(r).filter((d) => d.ham === 'warm').map((d) => d.nong);
+
+  let r = chay({ x: 3, y: 2, huong: 0 }, 'a = warm()\nshoot()\nwait()\nb = warm()\nshoot()\nwait()\nc = warm()\nwait()\n');
+  let ds = docs(r).filter((d) => d.ham === 'warm');
+  kiem('nút tắt → False; bắn trúng (nút BẬT) → True; bắn lần hai (tắt lại) → False', !r.loi && J(nongs(r)) === J([false, gia(true, false), false]) && ds.every((d) => d.vat === 'nut' && d.cam === 'hong-ngoai'), J(ds.map((d) => [d.nong, d.vat, d.khoang])));
+  kiem('warm() đi cùng tia với distance(): sau cú giật xe ở (3,3), khoang tới nút = 1', ds[1].khoang === 1 && ds[1].tu.y === 3 && ds[1].o.x === 3 && ds[1].o.y === 1, J(ds[1]));
+  r = chay({ x: 1, y: 2, huong: 0 }, 'w = warm()\nwait()\n');
+  kiem('tường: False (vat tuong)', nongs(r)[0] === false && docs(r)[0].vat === 'tuong');
+  r = chay({ x: 3, y: 2, huong: 0 }, 'w = warm()\nx = warm()\ny = warm()\nwait()\n');
+  kiem('đọc 3 lần không tốn nhịp (1 nhịp)', !r.loi && soNhip(r) === 1 && docs(r).length === 3);
+  // nút bật nhưng vật cản ĐẦU TIÊN là thùng: không nóng (chỉ xét vật cản đầu của tia)
+  {
+    const SAN_T = ['#######', '#..N..#', '#.....#', '#..H..#', '#.....#', '#.....#', '#######'];   // thùng (3,3) giữa xe (3,5) và nút (3,1)
+    const r2 = SanHoc.chay({ loaiRobot: 'banh', hamGoc: SUNG, san: SAN_T, batDau: { x: 3, y: 5, huong: 0 } }, 'w = warm()\nd = distance()\nwait()\n');
+    const dd = docs(r2);
+    kiem('thùng chắn trước nút: warm() False (vat thung-nang), distance() = 1', dd[0].nong === false && dd[0].vat === 'thung-nang' && dd[1].khoang === 1, J(dd));
+  }
+  r = SanHoc.chay({ loaiRobot: 'banh', hamGoc: SUNG, san: ['#####', '#...#', '#.C.#', '#.o.#', '#...#', '#####'], batDau: { x: 2, y: 4, huong: 0 } }, 'w = warm()\nwait()\n');
+  kiem('vật nằm đất chắn: False (vat vat)', nongs(r)[0] === false && docs(r)[0].vat === 'vat');
+  r = SanHoc.chay({ loaiRobot: 'banh', hamGoc: SUNG, san: ['#####', '#...#', '#.C.#', '#...#', '#####'], batDau: { x: 2, y: 3, huong: 0 } }, 'w = warm()\nwait()\n');
+  kiem('cửa đóng chắn: False (vat cua)', nongs(r)[0] === false && docs(r)[0].vat === 'cua');
+  // cửa nhịp: distance đổi theo nhịp (tương tác cửa)
+  r = SanHoc.chay({ loaiRobot: 'banh', hamGoc: SUNG, san: ['#####', '#...#', '#.c.#', '#...#', '#####'], batDau: { x: 2, y: 3, huong: 0 }, cuaNhip: [{ x: 2, y: 2, mo: 2, dong: 2 }] }, 'a = distance()\nwait()\nwait()\nb = distance()\nwait()\nwait()\nc = distance()\nwait()\n');
+  kiem('cửa nhịp (mở 2 / đóng 2): distance() = 2 lúc mở, 0 lúc đóng, 2 khi mở lại', J(docs(r).map((d) => d.khoang)) === J([2, 0, 2]), J(docs(r).map((d) => [d.khoang, d.vat])));
+
+  // robot khác: nóng. R2 đứng trước mặt R1 (dưới đất) → True; drone bay trên → tia qua, không nóng
+  const DOI = { san: ['......', '......', '......'], doi: [{ batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'banh', hamGoc: SUNG }, { batDau: { x: 3, y: 1, huong: 3 }, loaiRobot: 'banh', hamGoc: BANH }] };
+  r = SanHoc.chay(DOI, ['w = warm()\nwait()\n', 'wait()\n']);
+  kiem('nhiều robot: robot khác dưới đất phía trước → warm() True (vat dong-doi, khoang 2)', nongs(r)[0] === gia(true, false) && docs(r)[0].vat === 'dong-doi' && docs(r)[0].khoang === 2, J(docs(r)[0]));
+  r = SanHoc.chay(Object.assign({}, DOI, { doi: [DOI.doi[0], { batDau: { x: 3, y: 1 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'] }] }), ['w = warm()\nwait()\n', 'wait()\n']);
+  kiem('drone bay trên không chắn tia: warm() False, tia tới mép sân', nongs(r)[0] === false && docs(r)[0].vat === 'ngoai-san', J(docs(r)[0]));
+  // đồng đội bắn nút, mình chờ: while not warm(): wait()
+  const CHO = { san: ['#######', '#.....#', '#..N..#', '#.....#', '#######'], doi: [{ batDau: { x: 1, y: 2, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH.concat(['warm']) }, { batDau: { x: 3, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['shoot', 'shoot_back']) }] };
+  r = SanHoc.chay(CHO, ['while not warm():\n    wait()\n', 'wait()\nshoot()\nwait()\n']);
+  kiem('while not warm(): wait() — chờ đồng đội bắn nút sáng: R1 chờ đúng 2 nhịp, đọc được [False, False, True]', !r.loi && J(nongs(r)) === J([false, false, true]) && r.doi[0].vet.filter((e) => e.loai === 'nhip').length === 2, J({ loi: r.loi, nong: nongs(r) }));
+
+  // cấm: khay chỉ có distance (chưa nâng cấp) → warm chưa có hàm; cham.js nói rõ
+  r = SanHoc.chay({ loaiRobot: 'banh', hamGoc: BANH.concat(['distance']), san: SAN, batDau: { x: 3, y: 2, huong: 0 } }, 'w = warm()\nwait()\n');
+  kiem('khay chỉ có distance: warm() là "chưa có hàm"', r.loi && /warm/.test(r.loi.thongDiep), J(r.loi));
+  const man = { ma: 'thu-warm', chuong: 'thu', loaiRobot: 'banh', hamGoc: BANH.concat(['distance']), san: SAN, batDau: { x: 3, y: 2, huong: 0 }, khung: { chinh: 10, moiHam: 10, cauTruc: [] }, cauTruc: [], moXuong: false, sao: { o: 9, nhip: 9 } };
+  const kq = ChamHoc.cham(man, { chinh: ['w = warm()', 'wait()'], hamCuaMan: [] }, []);
+  const cd = kq.chanDoan.find((c) => c.ma === 'chua-gan-cam-bien');
+  kiem('cham.js: gọi warm() khi khay mới có distance → chua-gan-cam-bien nói "mới dùng được distance(), chưa có warm()"', !!cd && /distance\(\)/.test(cd.loi) && /chưa có warm\(\)/.test(cd.loi), cd && cd.loi);
+  const lc = loiCfg({ loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'warm'], san: SAN, batDau: { x: 1, y: 2 } }, 'wait()\n');
+  kiem('nhện gắn đo nhiệt → lỗi cấu hình', /Nhện không gắn cảm biến hồng ngoại/.test(lc), lc);
+}
+
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' : 'ĐẠT ') + (dat + hong) + ' kiểm' + (LOI_GIA ? ' (đang cắm lỗi giả: phải đỏ)' : ''));
 process.exit(hong ? 1 : 0);
