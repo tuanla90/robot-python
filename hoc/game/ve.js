@@ -8,7 +8,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 (function () {
   'use strict';
 
-  var K = { ink: BM.ink };
+  var K = { ink: BM.vienDam };
 
   /* ------------------------------------------------------------- Painter */
   function Painter(w, h) { this.w = w; this.h = h; this.buf = new Array(w * h).fill(null); }
@@ -79,9 +79,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   function texChalk() {
     var p = new Painter(24, 24), r = rng(41);
-    p.rect(0, 0, 24, 24, BM.bangDen1);
-    for (var i = 0; i < 46; i++) p.px(Math.floor(r() * 24), Math.floor(r() * 24), r() < 0.6 ? BM.bangDen2 : BM.bangDen3);
-    for (var j = 0; j < 5; j++) { var x = Math.floor(r() * 20), y = Math.floor(r() * 24); p.rect(x, y, 3 + Math.floor(r() * 3), 1, BM.bangDen4); }
+    p.rect(0, 0, 24, 24, BM.bangSang);
+    for (var i = 0; i < 46; i++) p.px(Math.floor(r() * 24), Math.floor(r() * 24), r() < 0.6 ? BM.bangSangV6 : BM.bangSangV7);
+    for (var j = 0; j < 5; j++) { var x = Math.floor(r() * 20), y = Math.floor(r() * 24); p.rect(x, y, 3 + Math.floor(r() * 3), 1, BM.bangSangV8); }
     return p.canvas().toDataURL();
   }
   function texStud(c1, c2, c3) {
@@ -92,24 +92,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function datChatLieu() {
     var R = document.documentElement.style;
     R.setProperty('--wood', 'url(' + texWood([
-      [BM.chatLieu1, BM.chatLieu2, BM.chatLieu3, BM.chatLieu4, BM.chatLieu5, BM.chatLieu6],
-      [BM.chatLieu1_2, BM.chatLieu2_2, BM.chatLieu3_2, BM.chatLieu4_2, BM.chatLieu5_2, BM.chatLieu6_2],
-      [BM.chatLieu1_3, BM.chatLieu2_3, BM.chatLieu3_3, BM.chatLieu4_3, BM.chatLieu5_3, BM.chatLieu6_3]], 11) + ')');
+      [BM.goSangV7, BM.goSangV21, BM.camToiV5, BM.goV14, BM.camToiV6, BM.goV15],
+      [BM.goSangV22, BM.goSangV23, BM.camToiV7, BM.goV16, BM.camToiV8, BM.goV17],
+      [BM.camToiV9, BM.goSangV24, BM.camToiV10, BM.goSangV25, BM.camV4, BM.goV18]], 11) + ')');
     R.setProperty('--woodL', 'url(' + texWood([
-      [BM.chatLieu1_4, BM.chatLieu2_4, BM.chatLieu3_4, BM.chatLieu4_4, BM.chatLieu5_4, BM.chatLieu6_4],
-      [BM.chatLieu1_5, BM.chatLieu2_5, BM.chatLieu3_5, BM.chatLieu4_5, BM.chatLieu5_5, BM.chatLieu6_5],
-      [BM.chatLieu1_6, BM.chatLieu2_6, BM.chatLieu3_6, BM.chatLieu4_6, BM.chatLieu5_6, BM.chatLieu6_6]], 23) + ')');
+      [BM.goSangV26, BM.goV19, BM.goSangV27, BM.goV20, BM.goSangV28, BM.goV21],
+      [BM.goSangV29, BM.goV22, BM.goSangV30, BM.goV23, BM.goSangV31, BM.goV24],
+      [BM.goSangV32, BM.goSangV33, BM.goSangV34, BM.goV25, BM.camToiV11, BM.goV26]], 23) + ')');
     R.setProperty('--woodD', 'url(' + texWood([
-      [BM.chatLieu1_7, BM.chatLieu2_7, BM.chatLieu3_7, BM.chatLieu4_7, BM.chatLieu5_7, BM.chatLieu6_7],
-      [BM.chatLieu1_8, BM.chatLieu2_8, BM.chatLieu3_8, BM.chatLieu4_8, BM.chatLieu5_8, BM.chatLieu6_8],
-      [BM.chatLieu1_9, BM.chatLieu2_9, BM.chatLieu3_9, BM.chatLieu4_9, BM.chatLieu5_9, BM.chatLieu6_9]], 37) + ')');
+      [BM.goV27, BM.goV28, BM.goV29, BM.goToiV14, BM.goV30, BM.goToiV15],
+      [BM.goV31, BM.goV32, BM.goV33, BM.goToiV16, BM.goV34, BM.goToiV17],
+      [BM.goV35, BM.goV36, BM.goV37, BM.goToiV18, BM.goSangV35, BM.goToiV19]], 37) + ')');
     R.setProperty('--chalk', 'url(' + texChalk() + ')');
-    R.setProperty('--st-cy', 'url(' + texStud(BM.chatLieu7, BM.chatLieu8, BM.chatLieu9) + ')');
-    R.setProperty('--st-yl', 'url(' + texStud(BM.chatLieu10, BM.chatLieu11, BM.chatLieu12) + ')');
-    R.setProperty('--st-gr', 'url(' + texStud(BM.chatLieu13, BM.chatLieu14, BM.chatLieu15) + ')');
-    R.setProperty('--st-pu', 'url(' + texStud(BM.chatLieu16, BM.chatLieu17, BM.chatLieu18) + ')');
-    R.setProperty('--st-or', 'url(' + texStud(BM.chatLieu19, BM.chatLieu20, BM.chatLieu21) + ')');
-    R.setProperty('--st-pk', 'url(' + texStud(BM.chatLieu22, BM.chatLieu23, BM.chatLieu24) + ')');
+    R.setProperty('--st-cy', 'url(' + texStud(BM.xanhLoSang2V9, BM.xanhLoSang, BM.xanhLoSangV1) + ')');
+    R.setProperty('--st-yl', 'url(' + texStud(BM.kemV12, BM.vangV1, BM.goSangV2) + ')');
+    R.setProperty('--st-gr', 'url(' + texStud(BM.xanhLaSangV17, BM.xanhLaToi, BM.bangSang2) + ')');
+    R.setProperty('--st-pu', 'url(' + texStud(BM.timV8, BM.timToiV1, BM.timToi) + ')');
+    R.setProperty('--st-or', 'url(' + texStud(BM.kemV13, BM.camToi, BM.goSangV6) + ')');
+    R.setProperty('--st-pk', 'url(' + texStud(BM.hongV3, BM.hongToi, BM.hongToi2) + ')');
   }
 
   /* ---------------------------------------------------------------- icon
@@ -201,9 +201,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var rows = HINH[ten];
     if (!rows) throw new Error('Không có icon ' + ten);
     var p = new Painter(rows[0].length + 2, rows.length + 2);     // chừa 1 pixel quanh cho viền tối
-    p.map(rows, { x: tuyChon.fill || BM.iconChung1, o: tuyChon.toi || tuyChon.line || BM.iconChung2, w: tuyChon.sang || BM.iconChung1 }, 1, 1);     // o / w: chi tiết tối / sáng của icon bộ phận
+    p.map(rows, { x: tuyChon.fill || BM.trangV2, o: tuyChon.toi || tuyChon.line || BM.goToiV1, w: tuyChon.sang || BM.trangV2 }, 1, 1);     // o / w: chi tiết tối / sáng của icon bộ phận
     if (tuyChon.shade) p.shade(tuyChon.shade);
-    p.outline(tuyChon.line || BM.iconChung2);
+    p.outline(tuyChon.line || BM.goToiV1);
     return p.canvas();
   }
 
@@ -218,8 +218,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       '.hhhhhh.', 'bbbkkbbb', 'bbkkkkbb', 'bbbkkbbb', 'bbbkkbbb', '.dddddd.'
     ];
     var rows = nho ? small : big, w = rows[0].length;
-    var pal = tran ? { s: BM.iconKhoaS, h: BM.iconKhoaH, b: BM.iconKhoaB, d: BM.iconKhoaD, k: K.ink }
-                   : { s: BM.iconKhoaS, h: BM.iconKhoaH2, b: BM.iconKhoaB2, d: BM.iconKhoaD2, k: K.ink };
+    var pal = tran ? { s: BM.trangToiV3, h: BM.vangV9, b: BM.vangToiV4, d: BM.goSangV36, k: K.ink }
+                   : { s: BM.trangToiV3, h: BM.vangV2, b: BM.vangToiV5, d: BM.goSangV37, k: K.ink };
     var p = new Painter(w + 2, rows.length + 2);
     p.map(rows, pal, 1, 1);
     p.outline(K.ink); return p.canvas();
@@ -227,7 +227,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Mũi tên chỉ sang trái (từ bong bóng sang ô code): 8×7, viền tối 1px. */
   function spriteMui(mau) {
     var p = new Painter(10, 9);
-    p.map(['...x....', '..xx....', '.xxxxxxx', 'xxxxxxxx', '.xxxxxxx', '..xx....', '...x....'], { x: mau || BM.iconMuiTen1 }, 1, 1);
+    p.map(['...x....', '..xx....', '.xxxxxxx', 'xxxxxxxx', '.xxxxxxx', '..xx....', '...x....'], { x: mau || BM.doV8 }, 1, 1);
     p.outline(K.ink); return p.canvas();
   }
   /** Cây bút chì nằm chéo (đầu chì ở dưới trái, tẩy ở trên phải) cho nút sửa hàm ✎: 9×9 gồm viền tối 1px,
@@ -235,30 +235,30 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  (i sang phải, j xuống), vị trí dọc thân a = i - j: -6 chì, -5..-3 gỗ, -2..2 thân (sọc xen kẽ), 3 vòng kim loại, 4..6 tẩy. */
   function spriteBut() {
     var p = new Painter(9, 9);
-    var MAU = { chi: BM.iconButChi, go: BM.iconButGo, vang: BM.iconButVang, soc: BM.iconButSoc, kim: BM.iconButKim, te: BM.iconButTe };
+    var MAU = { chi: BM.xamToi2V6, go: BM.camSangV6, vang: BM.vangV4, soc: BM.goSangV38, kim: BM.trangToiV8, te: BM.doSangV12 };
     for (var j = 0; j < 7; j++) for (var i = 0; i < 7; i++) {
       var tong = i + j;
       if (tong < 5 || tong > 7) continue;
       var a = i - j, c;
       if (a <= -6) c = MAU.chi;
-      else if (a <= -3) c = (tong === 7 ? BM.iconBut1 : MAU.go);
+      else if (a <= -3) c = (tong === 7 ? BM.camV5 : MAU.go);
       else if (a <= 2) c = (a % 2 === 0) ? MAU.vang : MAU.soc;
       else if (a === 3) c = MAU.kim;
       else c = MAU.te;
-      if (a >= -2 && a <= 2 && tong === 7 && c === MAU.vang) c = BM.iconBut2;          // cạnh dưới của thân hơi tối: có khối
+      if (a >= -2 && a <= 2 && tong === 7 && c === MAU.vang) c = BM.vangToiV6;          // cạnh dưới của thân hơi tối: có khối
       p.px(i + 1, j + 1, c);
     }
     p.outline(K.ink); return p.canvas();
   }
   function spriteStar(bat) {
     var p = new Painter(11, 10);
-    p.map(['....y....', '...yyy...', 'yyyyyyyyy', '.yyyyyyy.', '..yyyyy..', '.yyyyyyy.', '.yy...yy.'], bat ? { y: BM.iconSao1 } : { y: BM.iconSao2 }, 1, 1);
-    if (bat) { p.px(3, 3, BM.iconSao3); p.px(4, 2, BM.iconSao3); p.rect(4, 5, 3, 1, BM.iconSao4); p.px(2, 6, BM.iconSao4); }
+    p.map(['....y....', '...yyy...', 'yyyyyyyyy', '.yyyyyyy.', '..yyyyy..', '.yyyyyyy.', '.yy...yy.'], bat ? { y: BM.vangV4 } : { y: BM.xamToiV10 }, 1, 1);
+    if (bat) { p.px(3, 3, BM.kemSangV5); p.px(4, 2, BM.kemSangV5); p.rect(4, 5, 3, 1, BM.vangToiV2); p.px(2, 6, BM.vangToiV2); }
     p.outline(K.ink); return p.canvas();
   }
   function spriteScrew() {
     var p = new Painter(4, 4);
-    p.map(['.OO.', 'OhgO', 'OgsO', '.OO.'], { O: BM.iconOcO, h: BM.iconOcH, g: BM.iconOcG, s: BM.iconOcS });
+    p.map(['.OO.', 'OhgO', 'OgsO', '.OO.'], { O: BM.denV5, h: BM.trangV15, g: BM.xamV10, s: BM.xamToiV11 });
     return p.canvas();
   }
   /**
@@ -270,10 +270,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     bat = bat !== false;
     var p = new Painter(24, 24);
     var C = {
-      s: BM.iconTrumS, h: BM.iconTrumH, e: BM.iconTrumE, m: BM.iconTrumM, d: BM.iconTrumD,
-      n: BM.iconTrumN, N: BM.iconTrumN2,
-      r: bat ? BM.iconTrum1 : BM.iconTrum2, g: bat ? BM.iconTrum3 : BM.iconTrum4, q: bat ? BM.iconTrum5 : BM.iconTrum6,
-      t: BM.iconTrumT, u: BM.iconTrumU, v: BM.iconTrumV, y: BM.iconTrum7, k: BM.iconTrumK
+      s: BM.xamV11, h: BM.lamSangV11, e: BM.trangV16, m: BM.xamV3, d: BM.xamToiV6,
+      n: BM.lamToiV1, N: BM.lamV16,
+      r: bat ? BM.doV1 : BM.doToiV10, g: bat ? BM.doSangV2 : BM.doV17, q: bat ? BM.doV3 : BM.doToiV11,
+      t: BM.xamToi2V7, u: BM.xamV12, v: BM.xamToi2V8, y: BM.vangV3, k: BM.goToiV20
     };
     function R(x, y, w, h, c) { p.rect(x + 1, y + 1, w, h, C[c]); }
     function P(x, y, c) { p.px(x + 1, y + 1, C[c]); }
@@ -316,10 +316,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function spriteHuyHieu() {
     var p = new Painter(16, 18);
     p.map(['.yyyyyyyyyyyy.', 'yyyyyyyyyyyyyy', 'yyyywwyyyyyyyy', 'yyywwwwyyyyyyy', 'yyyyyyyyyyyyyy', 'yyyyyyyyyyyyyy', '.yyyyyyyyyyyy.', '..yyyyyyyyyy..', '...yyyyyyyy...', '....yyyyyy....', '.....yyyy.....', '......yy......']
-      .map(function (s) { return (s + '                ').slice(0, 14); }), { y: BM.iconHuyHieu1, w: BM.iconHuyHieuW }, 1, 1);
+      .map(function (s) { return (s + '                ').slice(0, 14); }), { y: BM.vangV3, w: BM.kemSangV2 }, 1, 1);
     // giữa huy hiệu: đầu robot trùm đã hạ (thép xám, mắt đỏ)
-    p.rect(4, 3, 8, 8, K.ink); p.rect(5, 4, 6, 6, BM.iconHuyHieu2); p.rect(5, 4, 6, 1, BM.iconHuyHieu3); p.rect(5, 9, 6, 1, BM.iconHuyHieu4);
-    p.rect(6, 6, 1, 2, BM.iconHuyHieu5); p.rect(9, 6, 1, 2, BM.iconHuyHieu5); p.px(6, 6, BM.iconHuyHieu6); p.px(9, 6, BM.iconHuyHieu6); p.rect(7, 8, 2, 1, BM.iconHuyHieu7);
+    p.rect(4, 3, 8, 8, K.ink); p.rect(5, 4, 6, 6, BM.xamV3); p.rect(5, 4, 6, 1, BM.lamSangV11); p.rect(5, 9, 6, 1, BM.xamToiV6);
+    p.rect(6, 6, 1, 2, BM.doV1); p.rect(9, 6, 1, 2, BM.doV1); p.px(6, 6, BM.doSangV2); p.px(9, 6, BM.doSangV2); p.rect(7, 8, 2, 1, BM.lamToiV1);
     p.outline(K.ink); return p.canvas();
   }
 
@@ -327,48 +327,48 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var T = 14;
   function makeRug(alt, pad, seed) {
     var p = new Painter(T, T), r = rng(seed || 3);
-    var base = pad ? BM.oSan1 : (alt ? BM.oSan2 : BM.oSan3);
+    var base = pad ? BM.coSangV2 : (alt ? BM.coV3 : BM.co);
     p.rect(0, 0, T, T, base);
-    for (var i = 0; i < 14; i++) p.px(1 + Math.floor(r() * 12), 1 + Math.floor(r() * 12), r() < 0.5 ? (pad ? BM.oSan4 : BM.oSan5) : (pad ? BM.oSan6 : BM.oSan7));
-    p.rect(0, 0, T, 1, pad ? BM.oSan8 : BM.oSan9); p.rect(0, 0, 1, T, pad ? BM.oSan8 : BM.oSan9);
-    p.rect(0, T - 1, T, 1, pad ? BM.oSan10 : BM.oSan11); p.rect(T - 1, 0, 1, T, pad ? BM.oSan10 : BM.oSan11);
+    for (var i = 0; i < 14; i++) p.px(1 + Math.floor(r() * 12), 1 + Math.floor(r() * 12), r() < 0.5 ? (pad ? BM.coSangV3 : BM.coV1) : (pad ? BM.coSangV4 : BM.coToiV1));
+    p.rect(0, 0, T, 1, pad ? BM.coSangV1 : BM.coSang); p.rect(0, 0, 1, T, pad ? BM.coSangV1 : BM.coSang);
+    p.rect(0, T - 1, T, 1, pad ? BM.coV2 : BM.coToi); p.rect(T - 1, 0, 1, T, pad ? BM.coV2 : BM.coToi);
     return p.canvas();
   }
   function makeWall() {
     var p = new Painter(T, T);
-    p.rect(0, 0, T, T, BM.oTuong1);
-    for (var y = 1; y < T - 1; y++) for (var x = 1; x < T - 1; x++) { if (((x + y) % 6) < 3) p.px(x, y, BM.oTuong2); else p.px(x, y, BM.oTuong3); }
-    p.rect(0, 0, T, 1, BM.oTuong4); p.rect(0, T - 1, T, 1, BM.oTuong4); p.rect(0, 0, 1, T, BM.oTuong4); p.rect(T - 1, 0, 1, T, BM.oTuong4);
-    p.rect(1, 1, T - 2, 1, BM.oTuong5); p.rect(1, 1, 1, T - 2, BM.oTuong5);
-    p.rect(1, T - 2, T - 2, 1, BM.oTuong6); p.rect(T - 2, 1, 1, T - 2, BM.oTuong6);
-    [[3, 3], [10, 3], [3, 10], [10, 10]].forEach(function (q) { p.rect(q[0], q[1], 2, 2, BM.oTuong6); p.px(q[0], q[1], BM.oTuong7); });
+    p.rect(0, 0, T, T, BM.tuong);
+    for (var y = 1; y < T - 1; y++) for (var x = 1; x < T - 1; x++) { if (((x + y) % 6) < 3) p.px(x, y, BM.tuongV1); else p.px(x, y, BM.tuongV2); }
+    p.rect(0, 0, T, 1, BM.tuongToi); p.rect(0, T - 1, T, 1, BM.tuongToi); p.rect(0, 0, 1, T, BM.tuongToi); p.rect(T - 1, 0, 1, T, BM.tuongToi);
+    p.rect(1, 1, T - 2, 1, BM.tuongSang); p.rect(1, 1, 1, T - 2, BM.tuongSang);
+    p.rect(1, T - 2, T - 2, 1, BM.tuongToiV1); p.rect(T - 2, 1, 1, T - 2, BM.tuongToiV1);
+    [[3, 3], [10, 3], [3, 10], [10, 10]].forEach(function (q) { p.rect(q[0], q[1], 2, 2, BM.tuongToiV1); p.px(q[0], q[1], BM.tuongSangV1); });
     return p.canvas();
   }
   function makeStair() {
     var p = new Painter(T, T);
-    var bands = [[BM.oBac1, BM.oBac2, BM.oBac3], [BM.oBac1_2, BM.oBac2_2, BM.oBac3_2], [BM.oBac1_3, BM.oBac2_3, BM.oBac3_3], [BM.oBac1_4, BM.oBac2_4, BM.oBac3_4]];
+    var bands = [[BM.sanCamV1, BM.sanKemV3, BM.sanCamToiV3], [BM.sanCamV3, BM.sanCamV4, BM.sanNauSangV4], [BM.sanCamToiV4, BM.sanCamV5, BM.sanNauSangV5], [BM.sanCamToiV5, BM.sanCamV6, BM.sanNauSangV6]];
     for (var b = 0; b < 4; b++) {
       var y0 = b * 3 + 1;
       p.rect(1, y0, T - 2, 3, bands[b][0]);
       p.rect(1, y0, T - 2, 1, bands[b][1]);
       p.rect(1, y0 + 2, T - 2, 1, bands[b][2]);
     }
-    p.rect(0, 0, T, 1, BM.oBac4); p.rect(0, T - 1, T, 1, BM.oBac4); p.rect(0, 0, 1, T, BM.oBac4); p.rect(T - 1, 0, 1, T, BM.oBac4);
+    p.rect(0, 0, T, 1, BM.sanNau); p.rect(0, T - 1, T, 1, BM.sanNau); p.rect(0, 0, 1, T, BM.sanNau); p.rect(T - 1, 0, 1, T, BM.sanNau);
     return p.canvas();
   }
   /** HỐ (chương nhện, ký hiệu `u`): sàn cỏ có một cái hố tròn, bờ đất sáng ở phía trên-trái, thành hố tối dần xuống đáy đen. Nhện đặt chân vào là rơi. */
   function makeHo() {
     var p = new Painter(T, T), r = rng(41), i;
-    p.rect(0, 0, T, T, BM.oHo1);
-    for (i = 0; i < 12; i++) p.px(1 + Math.floor(r() * 12), 1 + Math.floor(r() * 12), r() < 0.5 ? BM.oHo2 : BM.oHo3);
-    p.rect(0, 0, T, 1, BM.oHo4); p.rect(0, 0, 1, T, BM.oHo4); p.rect(0, T - 1, T, 1, BM.oHo5); p.rect(T - 1, 0, 1, T, BM.oHo5);
-    p.ell(7, 7, 6.4, 6.2, BM.oHo6);            // viền đất tối
-    p.ell(7, 7, 5.6, 5.4, BM.oHo7);            // bờ đất
-    p.ell(7.3, 7.6, 4.8, 4.6, BM.oHo8);        // thành hố
-    p.ell(7.5, 8.2, 3.6, 3.3, BM.oHo9);        // đáy
-    p.ell(7.2, 8.4, 1.9, 1.6, BM.oHo10);        // sâu nhất
-    [[3, 3], [4, 2], [2, 4], [5, 2], [2, 5]].forEach(function (q) { p.px(q[0], q[1], BM.oHo11); });   // bờ đất sáng ở phía ánh sáng
-    [[9, 10], [10, 9], [8, 11]].forEach(function (q) { p.px(q[0], q[1], BM.oHo12); });                // sỏi đáy
+    p.rect(0, 0, T, T, BM.co);
+    for (i = 0; i < 12; i++) p.px(1 + Math.floor(r() * 12), 1 + Math.floor(r() * 12), r() < 0.5 ? BM.coV1 : BM.coToiV1);
+    p.rect(0, 0, T, 1, BM.coSang); p.rect(0, 0, 1, T, BM.coSang); p.rect(0, T - 1, T, 1, BM.coToi); p.rect(T - 1, 0, 1, T, BM.coToi);
+    p.ell(7, 7, 6.4, 6.2, BM.sanNau);            // viền đất tối
+    p.ell(7, 7, 5.6, 5.4, BM.sanNauSangV2);            // bờ đất
+    p.ell(7.3, 7.6, 4.8, 4.6, BM.sanNauV2);        // thành hố
+    p.ell(7.5, 8.2, 3.6, 3.3, BM.sanDen);        // đáy
+    p.ell(7.2, 8.4, 1.9, 1.6, BM.sanDenV1);        // sâu nhất
+    [[3, 3], [4, 2], [2, 4], [5, 2], [2, 5]].forEach(function (q) { p.px(q[0], q[1], BM.sanCamToiV1); });   // bờ đất sáng ở phía ánh sáng
+    [[9, 10], [10, 9], [8, 11]].forEach(function (q) { p.px(q[0], q[1], BM.sanNauV1); });                // sỏi đáy
     return p.canvas();
   }
   /** GẦM THẤP (chương nhện, ký hiệu `n`): một mái ván gỗ thấp phủ trọn ô, hai mép trên dưới có vạch vàng-đen báo "thấp". mai = true: chỉ riêng mái (nền trong suốt),
@@ -376,19 +376,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function makeGam(mai) {
     var p = new Painter(T, T), x, y;
     if (!mai) {
-      p.rect(0, 0, T, T, BM.oGam1);
-      p.rect(0, 0, T, 1, BM.oGam2); p.rect(0, 0, 1, T, BM.oGam2); p.rect(0, T - 1, T, 1, BM.oGam3); p.rect(T - 1, 0, 1, T, BM.oGam3);
+      p.rect(0, 0, T, T, BM.co);
+      p.rect(0, 0, T, 1, BM.coSang); p.rect(0, 0, 1, T, BM.coSang); p.rect(0, T - 1, T, 1, BM.coToi); p.rect(T - 1, 0, 1, T, BM.coToi);
     }
     p.rect(0, 1, T, T - 2, K.ink);
-    p.rect(1, 2, T - 2, T - 4, BM.oGam4);
-    for (y = 0; y < 3; y++) p.rect(1, 4 + y * 3, T - 2, 1, BM.oGam5);           // khe giữa các tấm ván
-    p.rect(1, 2, T - 2, 1, BM.oGam6);                                            // mép trên sáng
-    p.rect(1, T - 3, T - 2, 1, BM.oGam7);                                        // mép dưới tối
+    p.rect(1, 2, T - 2, T - 4, BM.sanNauSangV7);
+    for (y = 0; y < 3; y++) p.rect(1, 4 + y * 3, T - 2, 1, BM.sanNauSang);           // khe giữa các tấm ván
+    p.rect(1, 2, T - 2, 1, BM.sanCamV7);                                            // mép trên sáng
+    p.rect(1, T - 3, T - 2, 1, BM.sanNauSangV8);                                        // mép dưới tối
     for (x = 1; x < T - 1; x++) {                                                 // vạch vàng - đen ở hai mép: báo hiệu gầm thấp
       var vang = (((x >> 1) & 1) === 0);
-      p.px(x, 1, vang ? BM.oGam8 : K.ink); p.px(x, T - 2, vang ? K.ink : BM.oGamInk);
+      p.px(x, 1, vang ? BM.sanVang : K.ink); p.px(x, T - 2, vang ? K.ink : BM.sanVang);
     }
-    [[2, 6], [11, 6], [2, 9], [11, 9]].forEach(function (q) { p.px(q[0], q[1], BM.oGam9); p.px(q[0] + 1, q[1], BM.oGam10); });   // đinh
+    [[2, 6], [11, 6], [2, 9], [11, 9]].forEach(function (q) { p.px(q[0], q[1], BM.sanNau); p.px(q[0] + 1, q[1], BM.sanCamToiV1); });   // đinh
     return p.canvas();
   }
   /** Hàng rào THẤP (chương máy ném, ký hiệu `=`): chỉ vẽ cọc gỗ + thanh ngang, nền trong suốt nên thấy sàn phía sau (khác tường cao # đặc kín, xám). mask: 1 trái, 2 phải, 4 trên, 8 dưới
@@ -401,12 +401,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function thanh(x, y, w, h, doc) {                                     // thanh gỗ trắng ngà 4 px: viền tối, mép sáng, mép bóng, viền tối (giữa hai thanh thấy sàn)
       var i;
       for (i = 0; i < (doc ? w : h); i++) {
-        var c = i === 0 || i === (doc ? w : h) - 1 ? K.ink : i === 1 ? BM.oRao1 : BM.oRao2;
+        var c = i === 0 || i === (doc ? w : h) - 1 ? K.ink : i === 1 ? BM.sanTrang : BM.sanVangSangV2;
         if (doc) p.rect(x + i, y, 1, h, c); else p.rect(x, y + i, w, 1, c);
       }
     }
     function coc(x, y, w, h) {                                            // cọc 3 px bản: viền tối, mặt trên sáng, thân ngà, mép phải tối
-      p.rect(x, y, w, h, K.ink); p.rect(x + 1, y + 1, w - 2, h - 2, BM.oRao3); p.rect(x + 1, y + 1, w - 2, 2, BM.oRao4); p.rect(x + w - 2, y + 3, 1, h - 4, BM.oRao2);
+      p.rect(x, y, w, h, K.ink); p.rect(x + 1, y + 1, w - 2, h - 2, BM.sanKemToiV1); p.rect(x + 1, y + 1, w - 2, 2, BM.sanTrangV1); p.rect(x + w - 2, y + 3, 1, h - 4, BM.sanVangSangV2);
     }
     if (ngang) {
       xa = (mask & 1) ? 0 : 2; xb = (mask & 2) ? T : 12;
@@ -420,7 +420,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (doc) { if (!(mask & 4)) coc(1, 0, 12, 4); coc(1, 10, 12, 4); }
     var cv = document.createElement('canvas'); cv.width = T; cv.height = T;
     var g = cv.getContext('2d');
-    g.fillStyle = BM.oRaoFillStyle;                                         // bóng đổ: lệch xuống 2 px, chỉ chỗ sàn trống
+    g.fillStyle = BM.moToiV25;                                         // bóng đổ: lệch xuống 2 px, chỉ chỗ sàn trống
     for (y = 0; y < T - 2; y++) for (x = 0; x < T; x++) if (p.get(x, y) && !p.get(x, y + 2)) g.fillRect(x, y + 2, 1, 1);
     g.drawImage(p.canvas(), 0, 0);
     raoCache[mask] = cv; return cv;
@@ -433,18 +433,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (nutCache[khoa]) return nutCache[khoa];
     var p = new Painter(T, T);
     p.rect(2, 2, 10, 10, K.ink);
-    p.rect(3, 3, 8, 8, bat ? BM.oNutBan1 : BM.oNutBan2);
-    p.rect(3, 3, 8, 1, bat ? BM.oNutBan3 : BM.oNutBan4); p.rect(3, 3, 1, 8, bat ? BM.oNutBan3 : BM.oNutBan4);
-    p.rect(3, 10, 8, 1, bat ? BM.oNutBan5 : BM.oNutBan6); p.rect(10, 3, 1, 8, bat ? BM.oNutBan5 : BM.oNutBan6);
+    p.rect(3, 3, 8, 8, bat ? BM.sanXanhLaV3 : BM.sanXamToiV2);
+    p.rect(3, 3, 8, 1, bat ? BM.sanTrangV4 : BM.sanLamV10); p.rect(3, 3, 1, 8, bat ? BM.sanTrangV4 : BM.sanLamV10);
+    p.rect(3, 10, 8, 1, bat ? BM.sanXanhLaToiV3 : BM.sanLamToiV4); p.rect(10, 3, 1, 8, bat ? BM.sanXanhLaToiV3 : BM.sanLamToiV4);
     p.ell(7, bat ? 7.5 : 7, 3, 3, K.ink);
-    p.ell(7, bat ? 7.5 : 7, 2.2, 2.2, bat ? BM.oNutBan7 : BM.oNutBan8);
-    p.px(6, bat ? 6 : 5, bat ? BM.oNutBan9 : BM.oNutBan10); p.px(7, bat ? 6 : 5, bat ? BM.oNutBan9 : BM.oNutBan10);
-    p.rect(6, 1, 2, 1, bat ? BM.oNutBan11 : BM.oNutBan12);                   // đèn nhỏ ở mép trên tấm
-    if (loe) { p.rect(3, 3, 8, 8, BM.oNutBan13); p.ell(7, 7, 3, 3, BM.oNutBan14); }
+    p.ell(7, bat ? 7.5 : 7, 2.2, 2.2, bat ? BM.sanXanhLaToiV7 : BM.sanDoV8);
+    p.px(6, bat ? 6 : 5, bat ? BM.sanXanhLaV1 : BM.sanDoSangV2); p.px(7, bat ? 6 : 5, bat ? BM.sanXanhLaV1 : BM.sanDoSangV2);
+    p.rect(6, 1, 2, 1, bat ? BM.sanVangSangV4 : BM.sanXamToiV6);                   // đèn nhỏ ở mép trên tấm
+    if (loe) { p.rect(3, 3, 8, 8, BM.sanTrangV1); p.ell(7, 7, 3, 3, BM.sanKemV4); }
     var cv = document.createElement('canvas'); cv.width = T; cv.height = T;
     var g = cv.getContext('2d');
     g.drawImage(makeWall(), 0, 0);
-    if (bat) { g.fillStyle = BM.oNutBanFillStyle; g.fillRect(1, 1, T - 2, 1); g.fillRect(1, T - 2, T - 2, 1); g.fillRect(1, 1, 1, T - 2); g.fillRect(T - 2, 1, 1, T - 2); }
+    if (bat) { g.fillStyle = BM.moXanhLa; g.fillRect(1, 1, T - 2, 1); g.fillRect(1, T - 2, T - 2, 1); g.fillRect(1, 1, 1, T - 2); g.fillRect(T - 2, 1, 1, T - 2); }
     g.drawImage(p.canvas(), 0, 0);
     nutCache[khoa] = cv; return cv;
   }
@@ -455,16 +455,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (nutDeCache[khoa]) return nutDeCache[khoa];
     var p = new Painter(T, T);
     p.rect(1, 1, 12, 12, K.ink);
-    p.rect(2, 2, 10, 10, BM.oNutDe1);
+    p.rect(2, 2, 10, 10, BM.sanLamToiV11);
     var y0 = bat ? 3 : 2;
-    p.rect(3, y0, 8, 8, bat ? BM.oNutDe2 : BM.oNutDe3);
-    p.rect(3, y0, 8, 1, bat ? BM.oNutDe4 : BM.oNutDe5);
-    p.rect(3, y0, 1, 8, bat ? BM.oNutDe4 : BM.oNutDe5);
-    p.rect(3, y0 + 7, 8, 1, bat ? BM.oNutDe6 : BM.oNutDe7);
-    p.rect(10, y0, 1, 8, bat ? BM.oNutDe6 : BM.oNutDe7);
-    p.rect(5, y0 + 2, 4, 4, bat ? BM.oNutDe8 : BM.oNutDe9);
-    p.rect(6, y0 + 3, 2, 2, bat ? BM.oNutDe10 : BM.oNutDe7);
-    [[2, 2], [11, 2], [2, 11], [11, 11]].forEach(function (q) { p.px(q[0], q[1], bat ? BM.oNutDe11 : BM.oNutDe12); });
+    p.rect(3, y0, 8, 8, bat ? BM.sanXanhLaToiV8 : BM.sanNauSangV9);
+    p.rect(3, y0, 8, 1, bat ? BM.sanXanhLaV2 : BM.sanVangSangV3);
+    p.rect(3, y0, 1, 8, bat ? BM.sanXanhLaV2 : BM.sanVangSangV3);
+    p.rect(3, y0 + 7, 8, 1, bat ? BM.sanXanhLaToiV4 : BM.sanNauSangV1);
+    p.rect(10, y0, 1, 8, bat ? BM.sanXanhLaToiV4 : BM.sanNauSangV1);
+    p.rect(5, y0 + 2, 4, 4, bat ? BM.sanXanhLaToiV9 : BM.sanCamV2);
+    p.rect(6, y0 + 3, 2, 2, bat ? BM.sanTrangV7 : BM.sanNauSangV1);
+    [[2, 2], [11, 2], [2, 11], [11, 11]].forEach(function (q) { p.px(q[0], q[1], bat ? BM.sanXanhLaToi : BM.sanLamV18); });
     nutDeCache[khoa] = p.canvas(); return nutDeCache[khoa];
   }
   /** BÀN XOAY (ký hiệu `@` chieu = +1 xoay phải 90°, `%` chieu = -1 xoay trái 90°): mâm xoay cơ khí có mũi tên cong chỉ chiều quay. */
@@ -475,37 +475,37 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (banXoayCache[khoa]) return banXoayCache[khoa];
     var p = new Painter(T, T);
     p.ell(7, 7, 6.3, 6.3, K.ink);
-    p.ell(7, 7, 5.3, 5.3, BM.oBanXoay1);
-    p.ell(7, 7, 4.3, 4.3, cw ? BM.oBanXoay2 : BM.oBanXoay3);
-    p.ell(7, 7, 3.6, 3.6, cw ? BM.oBanXoay4 : BM.oBanXoay5);
+    p.ell(7, 7, 5.3, 5.3, BM.sanLamToiV12);
+    p.ell(7, 7, 4.3, 4.3, cw ? BM.sanNauSangV10 : BM.sanXanhLoToiV5);
+    p.ell(7, 7, 3.6, 3.6, cw ? BM.sanNauSangV11 : BM.sanXanhLoToiV6);
     // 4 rãnh đinh tán trên vành xoay theo pha f
     var ranh = [[7, 2], [11, 7], [7, 11], [2, 7]];
     for (var i = 0; i < 4; i++) {
       var q = ranh[i];
-      p.px(q[0], q[1], ((i + (cw ? f : 4 - f)) & 1) ? BM.oBanXoay6 : BM.oBanXoay7);
+      p.px(q[0], q[1], ((i + (cw ? f : 4 - f)) & 1) ? BM.sanLamV19 : BM.sanLamToiV13);
     }
     // vòng mũi tên chỉ chiều xoay (xoay 90° * f)
     var b = new Painter(T, T);
-    var sang = cw ? BM.oBanXoay8 : BM.oBanXoay9, V = cw ? BM.oBanXoay10 : BM.oBanXoay11;
+    var sang = cw ? BM.sanKemV5 : BM.sanXanhLoV9, V = cw ? BM.sanVangV3 : BM.sanXanhLoV1;
     if (cw) {
       // cung trên sang phải + đầu mũi tên chỉ xuống ở bên phải
       b.px(5, 3, V); b.px(6, 3, V); b.px(7, 3, sang); b.px(8, 3, sang); b.px(9, 4, sang);
-      b.px(10, 5, sang); b.px(9, 5, V); b.px(11, 5, V); b.px(10, 6, BM.oBanXoay12);
+      b.px(10, 5, sang); b.px(9, 5, V); b.px(11, 5, V); b.px(10, 6, BM.sanTrangV1);
       // cung dưới sang trái
       b.px(8, 10, V); b.px(7, 10, V); b.px(6, 10, sang); b.px(5, 10, sang); b.px(4, 9, sang);
-      b.px(3, 8, sang); b.px(4, 8, V); b.px(2, 8, V); b.px(3, 7, BM.oBanXoay12);
+      b.px(3, 8, sang); b.px(4, 8, V); b.px(2, 8, V); b.px(3, 7, BM.sanTrangV1);
     } else {
       // cung trên sang trái + đầu mũi tên chỉ xuống ở bên trái
       b.px(8, 3, V); b.px(7, 3, V); b.px(6, 3, sang); b.px(5, 3, sang); b.px(4, 4, sang);
-      b.px(3, 5, sang); b.px(4, 5, V); b.px(2, 5, V); b.px(3, 6, BM.oBanXoay12);
+      b.px(3, 5, sang); b.px(4, 5, V); b.px(2, 5, V); b.px(3, 6, BM.sanTrangV1);
       // cung dưới sang phải
       b.px(5, 10, V); b.px(6, 10, V); b.px(7, 10, sang); b.px(8, 10, sang); b.px(9, 9, sang);
-      b.px(10, 8, sang); b.px(9, 8, V); b.px(11, 8, V); b.px(10, 7, BM.oBanXoay12);
+      b.px(10, 8, sang); b.px(9, 8, V); b.px(11, 8, V); b.px(10, 7, BM.sanTrangV1);
     }
     for (var k = 0; k < f; k++) b = rot90(b);
     p.blit(b, 0, 0);
     p.rect(6, 6, 2, 2, K.ink);
-    p.px(6, 6, BM.oBanXoay13); p.px(7, 7, BM.oBanXoay14);
+    p.px(6, 6, BM.sanTrangV8); p.px(7, 7, BM.sanLamV20);
     banXoayCache[khoa] = p.canvas(); return banXoayCache[khoa];
   }
   /** CỔNG DỊCH CHUYỂN ĐÔI (ký hiệu `1` xanh lam điện, `2` tím hồng): vòng năng lượng phát sáng trên sàn. */
@@ -515,15 +515,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var khoa = (la2 ? '2' : '1') + '_' + f;
     if (congCache[khoa]) return congCache[khoa];
     var p = new Painter(T, T);
-    var c1 = la2 ? BM.oCong1 : BM.oCong2;
-    var c2 = la2 ? BM.oCong3 : BM.oCong4;
-    var c3 = la2 ? BM.oCong5 : BM.oCong6;
+    var c1 = la2 ? BM.sanTimV1 : BM.sanXanhLoToiV7;
+    var c2 = la2 ? BM.sanTimSangV1 : BM.sanXanhLoToiV2;
+    var c3 = la2 ? BM.sanTimSang : BM.sanXanhLoV5;
     p.ell(7, 7, 6.3, 6.3, K.ink);
-    p.ell(7, 7, 5.3, 5.3, BM.oCong7);
+    p.ell(7, 7, 5.3, 5.3, BM.sanLamToiV14);
     p.ell(7, 7, 4.4, 4.4, c1);
     p.ell(7, 7, 3.4 - (f & 1) * 0.3, 3.4 - (f & 1) * 0.3, c2);
     p.ell(7, 7, 2.0, 2.0, c3);
-    p.rect(6, 6, 2, 2, BM.oCong8);
+    p.rect(6, 6, 2, 2, BM.sanTrangV1);
     // 4 tia năng lượng xoay quanh tâm theo pha f
     var tia = [[7, 2], [11, 7], [7, 11], [2, 7], [4, 4], [9, 4], [9, 9], [4, 9]];
     for (var i = 0; i < 4; i++) {
@@ -531,8 +531,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       p.px(q[0], q[1], c3);
     }
     // dấu chấm số hiệu cổng ở mép trên (1 chấm = cổng 1, 2 chấm = cổng 2)
-    if (la2) { p.px(5, 1, BM.oCong8); p.px(8, 1, BM.oCong8); }
-    else { p.px(6, 1, BM.oCong8); p.px(7, 1, BM.oCong8); }
+    if (la2) { p.px(5, 1, BM.sanTrangV1); p.px(8, 1, BM.sanTrangV1); }
+    else { p.px(6, 1, BM.sanTrangV1); p.px(7, 1, BM.sanTrangV1); }
     congCache[khoa] = p.canvas(); return congCache[khoa];
   }
   /** CỬA (chương súng hơi, `C` đóng / `c` mở), vẽ thẳng lên g tại (px, py) trên nền sàn đã có. k = độ mở 0 (đóng) .. 1 (mở); hai cánh cửa trượt vào hai cột khung.
@@ -540,7 +540,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  Cửa đóng giống tường nhưng có khung cửa (cột khung màu vàng cam, hoặc xanh lơ nếu là cửa nhịp) và khe giữa hai cánh. */
   function veCua(g, px, py, k, o) {
     o = o || {};
-    var nhip = o.nhip, khung = nhip ? [BM.oCua1, BM.oCua2, BM.oCua3] : [BM.oCua1_2, BM.oCua2_2, BM.oCua3_2];
+    var nhip = o.nhip, khung = nhip ? [BM.sanXanhLoToiV1, BM.sanXanhLoV10, BM.sanXanhLoToiV8] : [BM.sanVangV4, BM.sanVangSang, BM.sanNauSangV12];
     var doc = o.doc !== false, ox = Math.round(o.rung || 0);
     var P = new Painter(T, T), i;
     // quy ước vẽ cho cửa đi theo chiều dọc (cánh trượt ngang); cửa đi ngang thì xoay 90° ở cuối
@@ -552,24 +552,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (w <= 0) return;
       P.rect(x0, 0, w, T, K.ink);
       if (w > 2) {
-        P.rect(x0 + 1, 1, w - 2, T - 2, BM.oCua4);
-        P.rect(x0 + 1, 1, w - 2, 1, BM.oCua5);
-        for (var y = 3; y < T - 2; y += 3) P.rect(x0 + 1, y, w - 2, 1, BM.oCua6);
-      } else if (w === 2) { P.rect(x0, 1, 1, T - 2, BM.oCua5); P.rect(x0 + 1, 1, 1, T - 2, BM.oCua6); P.rect(x0, 0, 2, 1, K.ink); }
+        P.rect(x0 + 1, 1, w - 2, T - 2, BM.sanLamV9);
+        P.rect(x0 + 1, 1, w - 2, 1, BM.sanLam);
+        for (var y = 3; y < T - 2; y += 3) P.rect(x0 + 1, y, w - 2, 1, BM.sanXamToiV2);
+      } else if (w === 2) { P.rect(x0, 1, 1, T - 2, BM.sanLam); P.rect(x0 + 1, 1, 1, T - 2, BM.sanXamToiV2); P.rect(x0, 0, 2, 1, K.ink); }
     }
     canh(3, rong); canh(T - 3 - rong, rong);
     if (rong >= 4) {                                                       // đóng hẳn: khe giữa + đèn đỏ
-      P.rect(6, 0, 2, T, K.ink); P.rect(6, 1, 1, T - 2, BM.oCua7); P.rect(7, 1, 1, T - 2, BM.oCua8);
-      P.rect(5, 6, 4, 2, K.ink); P.rect(6, 6, 2, 1, BM.oCua9); P.px(6, 7, BM.oCua10); P.px(7, 7, BM.oCua10);
+      P.rect(6, 0, 2, T, K.ink); P.rect(6, 1, 1, T - 2, BM.sanXamToiV7); P.rect(7, 1, 1, T - 2, BM.sanLamToiV15);
+      P.rect(5, 6, 4, 2, K.ink); P.rect(6, 6, 2, 1, BM.sanDo); P.px(6, 7, BM.sanDoV4); P.px(7, 7, BM.sanDoV4);
     } else if (rong <= 0) {                                                // mở hẳn: đèn xanh trên cột khung
-      P.px(1, 6, BM.oCua11); P.px(T - 2, 6, BM.oCua11);
+      P.px(1, 6, BM.sanXanhLaToi); P.px(T - 2, 6, BM.sanXanhLaToi);
     }
     var cv = document.createElement('canvas'); cv.width = T; cv.height = T;
     var c2 = cv.getContext('2d'), src = P.canvas();
     if (doc) c2.drawImage(src, 0, 0);
     else { c2.translate(T / 2, T / 2); c2.rotate(Math.PI / 2); c2.translate(-T / 2, -T / 2); c2.drawImage(src, 0, 0); c2.setTransform(1, 0, 0, 1, 0, 0); }
-    if (k < 1) { c2.fillStyle = 'rgba(' + BM.oCuaFillStyleRgb + ',' + (0.3 * (1 - k)).toFixed(3) + ')'; if (doc) c2.fillRect(3 + rong, 1, T - 6 - 2 * rong, T - 2); else c2.fillRect(1, 3 + rong, T - 2, T - 6 - 2 * rong); }
-    if (o.ket > 0) { c2.fillStyle = 'rgba(' + BM.oCuaFillStyleRgb2 + ',' + (0.18 + 0.32 * o.ket).toFixed(3) + ')'; c2.fillRect(0, 0, T, T); }
+    if (k < 1) { c2.fillStyle = 'rgba(' + BM.tiaDenRgb + ',' + (0.3 * (1 - k)).toFixed(3) + ')'; if (doc) c2.fillRect(3 + rong, 1, T - 6 - 2 * rong, T - 2); else c2.fillRect(1, 3 + rong, T - 2, T - 6 - 2 * rong); }
+    if (o.ket > 0) { c2.fillStyle = 'rgba(' + BM.tiaDoV2Rgb + ',' + (0.18 + 0.32 * o.ket).toFixed(3) + ')'; c2.fillRect(0, 0, T, T); }
     g.drawImage(cv, px + ox, py);
     if (nhip) {                                                            // hàng đèn đếm nhịp ở mép trên: xanh lá = mở, đỏ = đóng, đèn đang sáng có viền trắng và nhấp nháy khi sắp đổi
       var chu = nhip.mo + nhip.dong, n = Math.min(chu, 6), w = n > 4 ? 1 : 2, gap = 1, tong = n * w + (n - 1) * gap, x0 = px + Math.floor((T - tong) / 2) + ox;
@@ -577,9 +577,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (i = 0; i < n; i++) {
         var dang = i === nhip.p, mo = i < nhip.mo, sapDoi = dang && (((nhip.p + 1) % chu) === 0 || ((nhip.p + 1) % chu) === nhip.mo);
         var tat = dang && sapDoi && (Math.floor(((o.now || 0) / 160)) & 1);
-        g.fillStyle = dang ? (tat ? (mo ? BM.oCua12 : BM.oCua13) : (mo ? BM.oCua11 : BM.oCua14)) : (mo ? BM.oCua12 : BM.oCua13);
+        g.fillStyle = dang ? (tat ? (mo ? BM.sanXanhLaToiV5 : BM.sanDoV5) : (mo ? BM.sanXanhLaToi : BM.sanDoV9)) : (mo ? BM.sanXanhLaToiV5 : BM.sanDoV5);
         g.fillRect(x0 + i * (w + gap), py + 1, w, 2);
-        if (dang && !tat) { g.fillStyle = BM.oCuaFillStyle; g.fillRect(x0 + i * (w + gap), py + 1, w, 1); }
+        if (dang && !tat) { g.fillStyle = BM.sanTrangV1; g.fillRect(x0 + i * (w + gap), py + 1, w, 1); }
       }
     }
   }
@@ -588,12 +588,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Vẽ thân thùng gỗ vào một Painter T×T (chưa viền): dùng chung cho thùng thường và thùng có dải màu. */
   function veThanThung() {
     var p = new Painter(T, T);
-    p.rect(1, 1, T - 2, T - 2, BM.oThungGo1);
-    p.rect(1, 1, T - 2, 1, BM.oThungGo2); p.rect(1, 1, 1, T - 2, BM.oThungGo2);
-    p.rect(1, T - 2, T - 2, 1, BM.oThungGo3); p.rect(T - 2, 1, 1, T - 2, BM.oThungGo3);
-    p.rect(2, 2, T - 4, 1, BM.oThungGo4); p.rect(2, T - 3, T - 4, 1, BM.oThungGo4); p.rect(2, 2, 1, T - 4, BM.oThungGo4); p.rect(T - 3, 2, 1, T - 4, BM.oThungGo4);
-    for (var i = 3; i < T - 3; i++) { p.px(i, i, BM.oThungGo3); p.px(T - 1 - i, i, BM.oThungGo3); }
-    [[2, 2], [T - 3, 2], [2, T - 3], [T - 3, T - 3]].forEach(function (q) { p.px(q[0], q[1], BM.oThungGo5); });
+    p.rect(1, 1, T - 2, T - 2, BM.vatCam);
+    p.rect(1, 1, T - 2, 1, BM.vatCamV1); p.rect(1, 1, 1, T - 2, BM.vatCamV1);
+    p.rect(1, T - 2, T - 2, 1, BM.vatNau); p.rect(T - 2, 1, 1, T - 2, BM.vatNau);
+    p.rect(2, 2, T - 4, 1, BM.vatNauV1); p.rect(2, T - 3, T - 4, 1, BM.vatNauV1); p.rect(2, 2, 1, T - 4, BM.vatNauV1); p.rect(T - 3, 2, 1, T - 4, BM.vatNauV1);
+    for (var i = 3; i < T - 3; i++) { p.px(i, i, BM.vatNau); p.px(T - 1 - i, i, BM.vatNau); }
+    [[2, 2], [T - 3, 2], [2, T - 3], [T - 3, T - 3]].forEach(function (q) { p.px(q[0], q[1], BM.vatKem); });
     return p;
   }
   function makeCrate() {
@@ -606,18 +606,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var sat = null;
   function veThanSat() {
     var p = new Painter(T, T), x, y;
-    p.rect(1, 1, T - 2, T - 2, BM.oKhoiSat1);                                   // thân xám xanh
-    for (y = 2; y < T - 2; y += 2) p.rect(2, y, T - 4, 1, BM.oKhoiSat2);       // thớ kim loại ngang (đánh bóng)
-    p.rect(1, 1, T - 2, 1, BM.oKhoiSat3); p.rect(1, 1, 1, T - 2, BM.oKhoiSat3);    // mép sáng trên trái: ánh bạc
-    p.rect(1, T - 2, T - 2, 1, BM.oKhoiSat4); p.rect(T - 2, 1, 1, T - 2, BM.oKhoiSat4);   // mép tối dưới phải
-    p.rect(2, 2, T - 4, 1, BM.oKhoiSat5); p.rect(2, 2, 1, T - 4, BM.oKhoiSat5);
-    p.rect(2, T - 3, T - 4, 1, BM.oKhoiSat6); p.rect(T - 3, 2, 1, T - 4, BM.oKhoiSat6);
-    [[2, 2], [T - 3, 2], [2, T - 3], [T - 3, T - 3]].forEach(function (q) { p.px(q[0], q[1], BM.oKhoiSat7); p.px(q[0] + (q[0] > 6 ? -1 : 1), q[1], BM.oKhoiSat4); });
-    p.rect(4, 3, 6, 6, BM.oKhoiSat4);                                           // ổ bu lông
-    p.rect(5, 3, 4, 6, BM.oKhoiSat8); p.rect(4, 4, 6, 4, BM.oKhoiSat8);            // đầu bu lông sáu cạnh
-    p.rect(6, 5, 2, 2, BM.oKhoiSat9);                                           // lỗ giữa
-    p.px(5, 4, BM.oKhoiSat7); p.px(6, 3, BM.oKhoiSat7); p.px(9, 7, BM.oKhoiSat10);
-    p.px(11, 4, BM.oKhoiSat7); p.px(3, 11, BM.oKhoiSat11);                          // hai điểm lóe sáng
+    p.rect(1, 1, T - 2, T - 2, BM.vatLamV2);                                   // thân xám xanh
+    for (y = 2; y < T - 2; y += 2) p.rect(2, y, T - 4, 1, BM.vatLamV9);       // thớ kim loại ngang (đánh bóng)
+    p.rect(1, 1, T - 2, 1, BM.vatLamV3); p.rect(1, 1, 1, T - 2, BM.vatLamV3);    // mép sáng trên trái: ánh bạc
+    p.rect(1, T - 2, T - 2, 1, BM.vatLam); p.rect(T - 2, 1, 1, T - 2, BM.vatLam);   // mép tối dưới phải
+    p.rect(2, 2, T - 4, 1, BM.vatLamV4); p.rect(2, 2, 1, T - 4, BM.vatLamV4);
+    p.rect(2, T - 3, T - 4, 1, BM.vatLamV5); p.rect(T - 3, 2, 1, T - 4, BM.vatLamV5);
+    [[2, 2], [T - 3, 2], [2, T - 3], [T - 3, T - 3]].forEach(function (q) { p.px(q[0], q[1], BM.vatTrang); p.px(q[0] + (q[0] > 6 ? -1 : 1), q[1], BM.vatLam); });
+    p.rect(4, 3, 6, 6, BM.vatLam);                                           // ổ bu lông
+    p.rect(5, 3, 4, 6, BM.vatLamV6); p.rect(4, 4, 6, 4, BM.vatLamV6);            // đầu bu lông sáu cạnh
+    p.rect(6, 5, 2, 2, BM.vatLamV10);                                           // lỗ giữa
+    p.px(5, 4, BM.vatTrang); p.px(6, 3, BM.vatTrang); p.px(9, 7, BM.vatLamV11);
+    p.px(11, 4, BM.vatTrang); p.px(3, 11, BM.vatLamV12);                          // hai điểm lóe sáng
     return p;
   }
   function makeSat() {
@@ -640,19 +640,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function makeThung() {
     if (thungCache) return thungCache;
     var p = new Painter(T, T), x, y;
-    p.rect(1, 1, T - 2, T - 2, BM.oThung1);
-    p.rect(1, 1, T - 2, 1, BM.oThung2); p.rect(1, 1, 1, T - 2, BM.oThung2);
-    p.rect(1, T - 2, T - 2, 1, BM.oThung3); p.rect(T - 2, 1, 1, T - 2, BM.oThung3);
-    p.rect(3, 4, T - 6, T - 8, BM.oThung4);                                  // tấm giữa lõm
-    p.rect(3, 4, T - 6, 1, BM.oThung3); p.rect(3, 4, 1, T - 8, BM.oThung3);
-    p.rect(3, T - 5, T - 6, 1, BM.oThung5); p.rect(T - 4, 4, 1, T - 8, BM.oThung5);
+    p.rect(1, 1, T - 2, T - 2, BM.vatXam);
+    p.rect(1, 1, T - 2, 1, BM.vatLamV7); p.rect(1, 1, 1, T - 2, BM.vatLamV7);
+    p.rect(1, T - 2, T - 2, 1, BM.vatLamV1); p.rect(T - 2, 1, 1, T - 2, BM.vatLamV1);
+    p.rect(3, 4, T - 6, T - 8, BM.vatXamV1);                                  // tấm giữa lõm
+    p.rect(3, 4, T - 6, 1, BM.vatLamV1); p.rect(3, 4, 1, T - 8, BM.vatLamV1);
+    p.rect(3, T - 5, T - 6, 1, BM.vatLamV8); p.rect(T - 4, 4, 1, T - 8, BM.vatLamV8);
     for (x = 2; x < T - 2; x++) {                                           // sọc vàng đen chéo: hàng 2 (trên) và hàng 11 (dưới)
-      var c = ((x >> 1) & 1) ? BM.ink : BM.oThung6;
+      var c = ((x >> 1) & 1) ? BM.vienDam : BM.vatVang;
       p.px(x, 2, c); p.px(T - 1 - x, T - 3, c);
     }
-    [[1, 1], [T - 2, 1], [1, T - 2], [T - 2, T - 2]].forEach(function (q) { p.px(q[0], q[1], BM.oThung7); });
-    [[4, 6], [T - 5, 6], [4, T - 7], [T - 5, T - 7]].forEach(function (q) { p.px(q[0], q[1], BM.oThung8); p.px(q[0] + 1, q[1] + 1, BM.oThung9); });
-    for (y = 6; y < T - 6; y++) p.px(T >> 1, y, BM.oThung10);                 // gân giữa
+    [[1, 1], [T - 2, 1], [1, T - 2], [T - 2, T - 2]].forEach(function (q) { p.px(q[0], q[1], BM.vatTrangV1); });
+    [[4, 6], [T - 5, 6], [4, T - 7], [T - 5, T - 7]].forEach(function (q) { p.px(q[0], q[1], BM.vatLamV13); p.px(q[0] + 1, q[1] + 1, BM.vatLamV14); });
+    for (y = 6; y < T - 6; y++) p.px(T >> 1, y, BM.vatLamV15);                 // gân giữa
     p.outline(K.ink);
     thungCache = p.canvas(); return thungCache;
   }
@@ -664,45 +664,45 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (sacCache[frame]) return sacCache[frame];
     var p = new Painter(T, T), i;
     p.rect(1, 1, 12, 12, K.ink);
-    p.rect(2, 2, 10, 10, BM.oSac1);
-    p.rect(2, 2, 10, 1, BM.oSac2); p.rect(2, 2, 1, 10, BM.oSac2);
-    p.rect(2, 11, 10, 1, BM.oSac3); p.rect(11, 2, 1, 10, BM.oSac3);
-    for (i = 3; i <= 10; i++) { p.px(i, 3, BM.oSac4); p.px(i, 10, BM.oSac4); p.px(3, i, BM.oSac4); p.px(10, i, BM.oSac4); }     // vòng xanh lơ
-    p.rect(4, 4, 6, 6, BM.oSac5);
-    [[1, 1], [12, 1], [1, 12], [12, 12]].forEach(function (q, k) { p.px(q[0], q[1], (k + frame) % 2 ? BM.oSac6 : BM.oSac7); });
-    ['...##', '..##.', '.###.', '..##.', '.##..', '.#...'].forEach(function (row, y) { for (var x = 0; x < row.length; x++) if (row.charAt(x) === '#') p.px(5 + x - 1, 4 + y, y < 2 ? BM.oSac8 : BM.oSac9); });     // tia chớp vàng 5×6
+    p.rect(2, 2, 10, 10, BM.sanLamToiV2);
+    p.rect(2, 2, 10, 1, BM.sanLamV11); p.rect(2, 2, 1, 10, BM.sanLamV11);
+    p.rect(2, 11, 10, 1, BM.sanLamToiV5); p.rect(11, 2, 1, 10, BM.sanLamToiV5);
+    for (i = 3; i <= 10; i++) { p.px(i, 3, BM.sanXanhLoToi); p.px(i, 10, BM.sanXanhLoToi); p.px(3, i, BM.sanXanhLoToi); p.px(10, i, BM.sanXanhLoToi); }     // vòng xanh lơ
+    p.rect(4, 4, 6, 6, BM.sanLamToiV3);
+    [[1, 1], [12, 1], [1, 12], [12, 12]].forEach(function (q, k) { p.px(q[0], q[1], (k + frame) % 2 ? BM.sanVangV5 : BM.sanNgoc); });
+    ['...##', '..##.', '.###.', '..##.', '.##..', '.#...'].forEach(function (row, y) { for (var x = 0; x < row.length; x++) if (row.charAt(x) === '#') p.px(5 + x - 1, 4 + y, y < 2 ? BM.sanKem : BM.sanVang); });     // tia chớp vàng 5×6
     sacCache[frame] = p.canvas(); return sacCache[frame];
   }
   var convCache = {};
   function makeConv(d, frame) {
     var key = d + '_' + frame; if (convCache[key]) return convCache[key];
     var p = new Painter(T, T);
-    p.rect(0, 0, T, T, BM.oBangChuyen1);
-    p.rect(2, 2, T - 4, T - 4, BM.oBangChuyen2);
+    p.rect(0, 0, T, T, BM.sanLamToiV16);
+    p.rect(2, 2, T - 4, T - 4, BM.sanLamToiV17);
     for (var y = 3; y <= 10; y++) {
       var t = (y + frame) % 5;
-      if (t === 0) p.rect(6, y, 2, 1, BM.oBangChuyen3);
-      else if (t === 1) p.rect(5, y, 4, 1, BM.oBangChuyen3);
-      else if (t === 2) p.rect(4, y, 6, 1, BM.oBangChuyen4);
-      else if (t === 3) p.rect(6, y, 2, 1, BM.oBangChuyen5);
+      if (t === 0) p.rect(6, y, 2, 1, BM.sanTrangV2);
+      else if (t === 1) p.rect(5, y, 4, 1, BM.sanTrangV2);
+      else if (t === 2) p.rect(4, y, 6, 1, BM.sanLamV21);
+      else if (t === 3) p.rect(6, y, 2, 1, BM.sanLamV5);
     }
-    p.rect(0, 0, T, 1, BM.oBangChuyen6); p.rect(0, T - 1, T, 1, BM.oBangChuyen6); p.rect(0, 0, 1, T, BM.oBangChuyen6); p.rect(T - 1, 0, 1, T, BM.oBangChuyen6);
-    p.rect(1, 1, T - 2, 1, BM.oBangChuyen7); p.rect(1, 1, 1, T - 2, BM.oBangChuyen7);
-    [[1, 1], [12, 1], [1, 12], [12, 12]].forEach(function (q) { p.px(q[0], q[1], BM.oBangChuyen8); });
+    p.rect(0, 0, T, 1, BM.sanLamToi); p.rect(0, T - 1, T, 1, BM.sanLamToi); p.rect(0, 0, 1, T, BM.sanLamToi); p.rect(T - 1, 0, 1, T, BM.sanLamToi);
+    p.rect(1, 1, T - 2, 1, BM.sanLamV2); p.rect(1, 1, 1, T - 2, BM.sanLamV2);
+    [[1, 1], [12, 1], [1, 12], [12, 12]].forEach(function (q) { p.px(q[0], q[1], BM.sanLamV22); });
     var q = p; for (var r = 0; r < d; r++) q = rot90(q);
     convCache[key] = q.canvas(); return convCache[key];
   }
   /** Cờ 12×13 (gọn trong một ô 14 px: trước là 16×16 tràn quá ô, to hơn xe). */
   function makeFlag(frame) {
     var p = new Painter(12, 13);
-    p.rect(1, 10, 6, 2, BM.oCoDich1); p.rect(1, 10, 6, 1, BM.oCoDich2); p.rect(2, 11, 4, 1, BM.oCoDich3);
-    p.rect(3, 2, 1, 8, BM.oCoDich4);
+    p.rect(1, 10, 6, 2, BM.sanXamToiV8); p.rect(1, 10, 6, 1, BM.sanXamToiV9); p.rect(2, 11, 4, 1, BM.sanLamToiV18);
+    p.rect(3, 2, 1, 8, BM.sanTrangV9);
     var wave = [0, 1, 0, -1][frame % 4];
     for (var c = 0; c < 7; c++) {
       var yo = (c > 2 ? wave : 0) + (c > 4 ? wave : 0);
-      for (var r = 0; r < 5; r++) p.px(4 + c, 3 + r + yo, r === 0 ? BM.oCoDich5 : (r === 4 ? BM.oCoDich6 : BM.oCoDich7));
+      for (var r = 0; r < 5; r++) p.px(4 + c, 3 + r + yo, r === 0 ? BM.sanDoSangV5 : (r === 4 ? BM.sanDoV10 : BM.sanDoV11));
     }
-    p.rect(2, 1, 3, 1, BM.oCoDich8);
+    p.rect(2, 1, 3, 1, BM.sanVang);
     p.outline(K.ink);
     return p.canvas();
   }
@@ -710,16 +710,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function makeRobot(dir, wl, wr, ph) {
     var key = dir + '_' + wl + '_' + wr + '_' + ph; if (robotCache[key]) return robotCache[key];
     var p = new Painter(16, 16);
-    p.rect(3, 1, 10, 14, BM.robotTam1); p.rect(4, 2, 8, 12, BM.robotTam2);
-    p.rect(4, 6, 8, 1, BM.robotTam3); p.rect(4, 6, 1, 7, BM.robotTam4); p.rect(11, 6, 1, 7, BM.robotTam5); p.rect(4, 13, 8, 1, BM.robotTam5);
-    p.rect(4, 2, 8, 4, BM.robotTam6); p.rect(5, 3, 2, 2, BM.robotTam7); p.rect(9, 3, 2, 2, BM.robotTam7); p.rect(7, 4, 2, 1, BM.robotTam8);
-    p.rect(7, 7, 2, 1, BM.robotTam9); p.rect(6, 8, 4, 1, BM.robotTam9); p.rect(5, 9, 6, 1, BM.robotTam9);
+    p.rect(3, 1, 10, 14, BM.robotNauV4); p.rect(4, 2, 8, 12, BM.robotVang);
+    p.rect(4, 6, 8, 1, BM.robotVangSang); p.rect(4, 6, 1, 7, BM.robotVangSangV1); p.rect(11, 6, 1, 7, BM.robotNauSang); p.rect(4, 13, 8, 1, BM.robotNauSang);
+    p.rect(4, 2, 8, 4, BM.robotLamToi); p.rect(5, 3, 2, 2, BM.robotXanhLo); p.rect(9, 3, 2, 2, BM.robotXanhLo); p.rect(7, 4, 2, 1, BM.robotLamV10);
+    p.rect(7, 7, 2, 1, BM.robotNau); p.rect(6, 8, 4, 1, BM.robotNau); p.rect(5, 9, 6, 1, BM.robotNau);
     function wheel(x0, st) {
-      var base = st === 0 ? BM.robotTam10 : st === 1 ? BM.robotTam11 : BM.robotTam12;
+      var base = st === 0 ? BM.robotXamToiV3 : st === 1 ? BM.robotXanhLoToiV1 : BM.robotXanhLoToiV3;
       p.rect(x0, 3, 3, 12, base);
       for (var y = 3; y < 15; y++) {
         var on = ((y + (st === 2 ? ph : 0)) & 1) === 0;
-        var c = st === 0 ? (on ? BM.robotTam13 : BM.robotTam14) : st === 1 ? (on ? BM.robotTam15 : BM.robotTam11) : (on ? BM.robotTam16 : BM.robotTam17);
+        var c = st === 0 ? (on ? BM.robotXamV1 : BM.robotXamToiV4) : st === 1 ? (on ? BM.robotXanhLoV3 : BM.robotXanhLoToiV1) : (on ? BM.robotTrang : BM.robotXanhLoV4);
         p.rect(x0, y, 3, 1, c);
       }
     }
@@ -732,16 +732,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function makeNhen(ph) {
     var key = ph & 1; if (nhenCache[key]) return nhenCache[key];
     var p = new Painter(16, 16);
-    var leg = BM.nhenTamLeg;
+    var leg = BM.robotTimV5;
     for (var i = 0; i < 4; i++) {
       var y = 3 + i * 3, off = ((i + ph) & 1);
       p.rect(1 + off, y, 4, 1, leg); p.rect(11 - off, y, 4, 1, leg);
       p.px(1 + off, y + 1, leg); p.px(14 - off, y + 1, leg);
     }
-    p.ell(8, 9, 4.6, 5.4, BM.nhenTam1); p.ell(8, 9, 3.4, 4.2, BM.nhenTam2);
-    p.ell(8, 4.5, 3, 2.6, BM.nhenTam3);
-    p.rect(6, 4, 1, 2, BM.nhenTam4); p.rect(9, 4, 1, 2, BM.nhenTam4); p.px(6, 5, BM.nhenTam5); p.px(9, 5, BM.nhenTam5);
-    p.rect(7, 11, 2, 2, BM.nhenTam6);
+    p.ell(8, 9, 4.6, 5.4, BM.robotTimSangV3); p.ell(8, 9, 3.4, 4.2, BM.robotTimSangV4);
+    p.ell(8, 4.5, 3, 2.6, BM.robotTimV6);
+    p.rect(6, 4, 1, 2, BM.robotTrangV1); p.rect(9, 4, 1, 2, BM.robotTrangV1); p.px(6, 5, BM.robotDo); p.px(9, 5, BM.robotDo);
+    p.rect(7, 11, 2, 2, BM.robotTimSangV5);
     var q = new Painter(18, 18); q.blit(p, 1, 1); q.outline(K.ink);
     nhenCache[key] = q.canvas(); return nhenCache[key];
   }
@@ -789,7 +789,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (vatNhoCache[k]) return vatNhoCache[k];
     var p = new Painter(n, n), P = (typeof window !== 'undefined') ? window.Part : null;
     if (P && P.veVatNho) P.veVatNho(p, 0, 0, n, chat, mau, cuc);
-    else { p.rect(0, 0, n, n, K.ink); p.rect(1, 1, n - 2, n - 2, nc ? (cuc === 'N' ? BM.vatNho1 : BM.vatNho2) : chat === 'sat' ? BM.vatNho3 : BM.vatNho4); }
+    else { p.rect(0, 0, n, n, K.ink); p.rect(1, 1, n - 2, n - 2, nc ? (cuc === 'N' ? BM.vatDo : BM.vatLamV16) : chat === 'sat' ? BM.vatLamV2 : BM.vatCam); }
     vatNhoCache[k] = p.canvas(); return vatNhoCache[k];
   }
 
