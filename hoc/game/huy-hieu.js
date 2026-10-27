@@ -370,6 +370,37 @@
     themBanhRang(p);
     return p;
   };
+  /** thùng nặng gỗ s×s (viền mực, ván sáng trên trái, tối dưới phải, hai nẹp chéo). */
+  function veThungGo(p, x, y, s) {
+    veBloc(p, x, y, s, s, '#b07a3a', '#d9a35c', '#7a4d1e');
+    for (var i = 2; i < s - 2; i++) { p.px(x + i, y + i, '#5a3612'); p.px(x + s - 1 - i, y + i, '#5a3612'); }
+    p.rect(x + 1, y + (s >> 1), s - 2, 1, '#5a3612');
+  }
+  /** xe xích nhìn ngang, quay sang phải (18 × 11 px): thân thấp trên một dải xích. */
+  function veXichNgang(p, x0, y0) {
+    p.rect(x0 + 2, y0, 14, 5, INK); p.rect(x0 + 3, y0 + 1, 12, 3, KK.vang);
+    p.rect(x0 + 3, y0 + 1, 12, 1, KK.vangSang); p.rect(x0 + 3, y0 + 3, 12, 1, KK.vangToi);
+    p.rect(x0 + 6, y0 + 1, 5, 2, KK.kinh); p.rect(x0 + 6, y0 + 1, 2, 1, KK.xanh);
+    p.rect(x0, y0 + 4, 18, 7, INK); p.rect(x0 + 1, y0 + 5, 16, 5, KK.den);
+    for (var i = 1; i < 16; i += 3) { p.rect(x0 + 1 + i, y0 + 5, 1, 1, KK.denSang); p.rect(x0 + 1 + i, y0 + 9, 1, 1, KK.denSang); }
+    [3.5, 14.5].forEach(function (cx) { p.ell(x0 + cx, y0 + 7.5, 2.4, 2.4, INK); p.ell(x0 + cx, y0 + 7.5, 1.5, 1.5, KK.thepSang); });
+  }
+  HINH['day-thung'] = function () {                             // xe xích nhìn ngang tì mũi vào thùng nặng gỗ, mũi tên đẩy phía trên thùng
+    var p = P(T26, T26);
+    veXichNgang(p, 0, 13);
+    veThungGo(p, 17, 14, 9);
+    tamGiac(p, [19, 4], [24, 8.5], [19, 13], INK); p.rect(12, 7, 7, 3, INK);           // mũi tên đẩy sang phải
+    tamGiac(p, [20, 6], [22.6, 8.5], [20, 11], KK.vang); p.rect(13, 8, 7, 1, KK.vang);
+    return p;
+  };
+  HINH['che-day-thung'] = function () {                         // thùng nặng gỗ + mũi tên đẩy + bánh răng
+    var p = P(T26, T26);
+    veThungGo(p, 11, 13, 11);
+    tamGiac(p, [6, 13], [11, 18.5], [6, 24], INK); p.rect(2, 16, 4, 5, INK);           // mũi tên đẩy vào thùng
+    tamGiac(p, [7, 15.5], [9.6, 18.5], [7, 21.5], KK.vang); p.rect(3, 17, 5, 3, KK.vang);
+    themBanhRang(p);
+    return p;
+  };
   HINH['che-omni'] = function () {                              // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
     var p = P(T26, T26), t = thanPart('omni');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên

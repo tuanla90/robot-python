@@ -158,11 +158,14 @@ console.log('\n== 3. Mười màn ==');
 console.log('\n== 4. Đăng ký ==');
 {
   const tt = ThuTu.thuTu;
-  kiem('thứ tự: luc-ban ngay sau che-sung-hoi, có tên "Lực bắn", thuộc đợt 2', tt.indexOf('luc-ban') === tt.indexOf('che-sung-hoi') + 1 && ThuTu.ten['luc-ban'] === 'Lực bắn' && ThuTu.laDot2('luc-ban'));
+  // Giữa che-sung-hoi (gói 4 Nhà máy) và luc-ban (gói 6) chỉ có chương của gói 5 Đẩy thùng (hiện khi đã có màn, KE-HOACH-MUA-2.md).
+  const giuaLB = tt.slice(tt.indexOf('che-sung-hoi') + 1, tt.indexOf('luc-ban'));
+  kiem('thứ tự: luc-ban sau che-sung-hoi, giữa chỉ có chương gói Đẩy thùng; có tên "Lực bắn", thuộc đợt 2', tt.indexOf('luc-ban') > tt.indexOf('che-sung-hoi') && giuaLB.every((c) => ['day-thung', 'che-day-thung'].includes(c)) && ThuTu.ten['luc-ban'] === 'Lực bắn' && ThuTu.laDot2('luc-ban'), J(giuaLB));
   // Khung mùa 2 (27/10, KE-HOACH-MUA-2.md): Lực bắn là gói 6 riêng (chương 1 luc-ban, chương 2 che-luc-ban khi có màn), đứng ngay sau gói Nhà máy (bang-chuyen, che-sung-hoi).
   const gLB = ThuTu.goi.find((g) => g.ma === 'luc-ban'), iLB = ThuTu.goi.indexOf(gLB);
-  kiem('gói Lực bắn (mùa 2) mở đầu bằng chương luc-ban, đứng ngay sau gói chứa che-sung-hoi',
-    gLB && gLB.mua === 'mua-2' && gLB.chuong[0] === 'luc-ban' && ThuTu.goi[iLB - 1].chuong.includes('che-sung-hoi'), gLB && J(gLB.chuong));
+  const gTruoc = iLB > 0 && ThuTu.goi[iLB - 1].ma === 'day-thung' ? ThuTu.goi[iLB - 2] : ThuTu.goi[iLB - 1];
+  kiem('gói Lực bắn (mùa 2) mở đầu bằng chương luc-ban, đứng sau gói chứa che-sung-hoi (giữa chỉ có gói Đẩy thùng)',
+    gLB && gLB.mua === 'mua-2' && gLB.chuong[0] === 'luc-ban' && gTruoc.chuong.includes('che-sung-hoi'), gLB && J(gLB.chuong));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   kiem('choi.html nạp ../man-luc-ban.js đúng một lần, ngay sau ../man-che-sung-hoi.js', tags.filter((t) => t === '../man-luc-ban.js').length === 1 && tags.indexOf('../man-luc-ban.js') === tags.indexOf('../man-che-sung-hoi.js') + 1);
