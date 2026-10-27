@@ -41,7 +41,12 @@ function moPhong(m, i, khongDay) {
   const o = (x, y) => (x < 0 || y < 0 || x >= W || y >= Hh ? null : rows[y][x]);
   const dich = new Set(S.dich.map((d) => d.x + ',' + d.y));
   const nutDe = S.nutDe.map((q) => q.x + ',' + q.y);
-  const cua = S.cua.map((d) => ({ k: d.x + ',' + d.y, mo0: d.mo }));
+  // cửa nào theo nút đè nào: m.noi (nhóm nối) hay mặc định mọi nút đè điều khiển mọi cửa
+  const cua = S.cua.map((d) => {
+    const k = d.x + ',' + d.y;
+    const nut = m.noi ? m.noi.filter((g) => (g.cua || []).some((c) => c.x + ',' + c.y === k)).map((g) => g.nut.x + ',' + g.nut.y).filter((q) => nutDe.includes(q)) : nutDe.slice();
+    return { k, mo0: d.mo, nut };
+  });
   const laDay = m.mucTieu === 'day-thung';
   const coThoiGian = /[<>^v]/.test(rows.join('')) || cua.length > 0;
   const tuongHoacMep = (x, y) => { const c = o(x, y); return c === null || c === '#' || c === '='; };
@@ -95,11 +100,11 @@ function moPhong(m, i, khongDay) {
       });
     }
     for (const k of dung) st.t[k][2] = 0;
-    // cửa theo nút đè (mọi cửa nối mọi nút đè, cfg.noi không dùng ở gói này)
+    // cửa theo nút đè (cuối nhịp; cửa không đóng xuống xe / thùng)
     if (cua.length) {
-      const de = nutDe.some((q) => q === st.x + ',' + st.y || st.t.some((t) => t[0] + ',' + t[1] === q));
+      const bi = (q) => q === st.x + ',' + st.y || st.t.some((t) => t[0] + ',' + t[1] === q);
       cua.forEach((d, j) => {
-        const muon = nutDe.length ? (de ? !d.mo0 : d.mo0) : st.c[j];
+        const muon = d.nut.length ? (d.nut.some(bi) ? !d.mo0 : d.mo0) : st.c[j];
         if (muon === st.c[j]) return;
         const [cx, cy] = d.k.split(',').map(Number);
         if (!muon && ((st.x === cx && st.y === cy) || thungTai(st, cx, cy) >= 0)) return;     // không đóng xuống xe / thùng
