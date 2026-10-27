@@ -71,6 +71,10 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
 - Không đổi: luật chơi, máy chấm, mọi màn. Đổi: bộ vẽ sân / vật / bộ phận / hoạt cảnh / giao diện (font Google Sans Flex) / huy hiệu / phim. Bảng màu gói A1 dùng tiếp.
 - ~~Gói A2 (pixel lab trắng + thân M1)~~ BỎ (user chọn vector). Thứ tự (user 27/10): A1 bảng màu → **V1–V6 vector** → gói 8, 9, 10 mùa 2 → phim mùa 2.
   V1 bộ vẽ vector + ghép bộ phận theo điểm gắn, xoay 4 hướng · V2 ô sân + vật · V3 5 thân, 6 tay, cảm biến · V4 hoạt cảnh · V5 giao diện phẳng diem10code · V6 huy hiệu + phim.
+- **27/10 A1 · Bảng màu xong** (nhánh claude/bang-mau, gộp 60ad527; npm test 80/80). `hoc/game/bang-mau.js`: 141 màu gốc G theo vai thị giác, 854 biến thể BT
+  (`GOP_HET = true` gộp hết về gốc), nhóm DOI (sơn, đội) và LUAT (màu luật chơi); CSS qua biến `--g-<vai>` do bang-mau.js ghi lúc nạp. 2279 chỗ màu trong 33 tệp.
+  Máy kiểm `kiem-bang-mau.mjs`: không còn mã gõ thẳng; thay token ra đúng từng byte bản nền 13b8a97; 8528 ảnh bộ phận y hệt (khi đổi màu thật: đặt `NEN = null`).
+  Tệp tĩnh theme-color (choi.html, manifest, dong-goi-artifact.py) phải sửa tay theo khi đổi màu nền.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
