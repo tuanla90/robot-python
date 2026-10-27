@@ -1332,6 +1332,16 @@
         var tn = (ly || laDrone) ? null : thungTai(nx, ny);               // drone bay qua thùng nặng
         if (tn) {                                                         // ô có thùng nặng: xe húc bằng bánh = đâm như tường (chỉ cú giật của súng hơi mới dời được thùng)
           var et = { ma: 'dam-tuong', nhip: nhip, den: { x: nx, y: ny }, tu: { x: rb.x, y: rb.y }, vat: 'thung-nang', kieu: ma, lenh: lenhNhip };
+          if (xichDay && loai === 'xich' && ma === 'tien' && soBuoc === 1) {           // XÍCH ĐẨY THÙNG (mùa 2, cfg.xichDay): xích tiến thì thùng dời 1 ô theo hướng tiến nếu ô sau trống
+            var sx = nx + v[0], sy = ny + v[1], lyS = oThungChan(sx, sy);
+            if (!lyS) {
+              tn.x = sx; tn.y = sy; tn.dem = 0;
+              sk.push({ ma: 'thung-di', id: tn.id, tu: { x: nx, y: ny }, den: { x: sx, y: sy }, nguon: 'xich', soO: 1 });
+              rb.x = nx; rb.y = ny; sk.push({ ma: ma, den: { x: nx, y: ny }, dayThung: tn.id });
+              return;
+            }
+            et.xichDay = true; et.chan = lyS; et.sau = { x: sx, y: sy };                 // ô sau thùng bị chặn: xích đứng yên như đâm tường (cham.js nói rõ vì sao)
+          }
           sk.push(et); suKienChan.push(et);
           return;
         }

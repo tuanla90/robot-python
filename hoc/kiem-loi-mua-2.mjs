@@ -168,5 +168,67 @@ console.log('\n== 2. Đo nhiệt warm() ==');
   kiem('nhện gắn đo nhiệt → lỗi cấu hình', /Nhện không gắn cảm biến hồng ngoại/.test(lc), lc);
 }
 
+console.log('\n== 3. Xích đẩy thùng nặng (cfg.xichDay) ==');
+{
+  //  x: 0 1 2 3 4 5 6
+  const SAN = ['#######', '#.....#', '#.H..D#', '#.....#', '#######'];      // thùng (2,2), ô đích (5,2)
+  const goc = { loaiRobot: 'xich', hamGoc: BANH, san: SAN, batDau: { x: 1, y: 2, huong: 1 }, xichDay: true, mucTieu: 'day-thung' };
+  const chay = (them, code) => SanHoc.chay(Object.assign({}, goc, them || {}), code);
+  const thungDi = (r) => sk(r).filter((e) => e.ma === 'thung-di');
+  const dam = (r) => r.suKien.filter((e) => e.ma === 'dam-tuong');
+
+  let r = chay({}, TIEN + TIEN + TIEN);
+  kiem('xích tiến 3 nhịp đẩy thùng 3 ô lên ô đích: thắng, thùng ở (5,2), xe ở (4,2), mỗi nhịp một thung-di nguon xich + tien có dayThung', r.thang && soNhip(r) === 3 && r.thung[0].x === gia(5, 4) && r.robot.x === 4 && thungDi(r).length === 3 && thungDi(r).every((e) => e.nguon === 'xich' && e.soO === 1) && sk(r).filter((e) => e.ma === 'tien' && e.dayThung === 1).length === 3, J({ thang: r.thang, thung: r.thung, robot: r.robot }));
+  kiem('thùng đi đúng từng ô: (2→3), (3→4), (4→5)', J(thungDi(r).map((e) => [e.tu.x, e.den.x])) === J([[2, 3], [3, 4], [4, 5]]), J(thungDi(r)));
+  r = chay({}, TIEN + TIEN + TIEN + TIEN + TIEN);
+  kiem('thùng đã lên đích thì thắng NGAY (nhịp 3), không chạy tiếp', r.thang && soNhip(r) === 3, J({ nhip: soNhip(r) }));
+  r = chay({ batDau: { x: 3, y: 2, huong: 3 } }, TIEN + TIEN);
+  const d0 = dam(r)[0];
+  kiem('nhịp 1 đẩy thùng (2→1), nhịp 2 ô sau thùng là tường: thùng không nhúc nhích, xích đứng yên — dam-tuong vat thung-nang kèm xichDay, chan tuong, sau (0,2)', !r.thang && r.robot.x === 2 && r.thung[0].x === 1 && thungDi(r).length === 1 && !!d0 && d0.nhip === 2 && d0.vat === 'thung-nang' && d0.xichDay === true && d0.chan === 'tuong' && d0.sau.x === 0 && dam(r).length === 1, J(d0));
+  r = chay({ batDau: { x: 3, y: 2, huong: 1 } }, 'left_back()\nright_back()\nwait()\n');
+  kiem('LÙI vào thùng không kéo được: đâm như cũ (dam-tuong kieu lui, không có xichDay), thùng y nguyên', !thungDi(r).length && dam(r).length === 1 && dam(r)[0].kieu === 'lui' && !dam(r)[0].xichDay && r.thung[0].x === 2, J(dam(r)[0]));
+
+  // không cờ / thân khác: cờ chỉ có nghĩa với xích
+  r = chay({ xichDay: false }, TIEN);
+  kiem('xích KHÔNG khai xichDay: húc thùng đâm như cũ (dam-tuong thung-nang, không thung-di)', !thungDi(r).length && dam(r).length === 1 && dam(r)[0].vat === 'thung-nang' && !dam(r)[0].xichDay && r.robot.x === 1, J(dam(r)[0]));
+  r = chay({ loaiRobot: 'banh' }, TIEN);
+  kiem('xe hai bánh có cờ xichDay: vẫn đâm (cờ bỏ qua)', !thungDi(r).length && dam(r).length === 1 && !dam(r)[0].xichDay, J(dam(r)[0]));
+  r = chay({ loaiRobot: 'omni', hamGoc: BANH.concat(['slide_left', 'slide_right']) }, TIEN);
+  kiem('omni có cờ xichDay: vẫn đâm', !thungDi(r).length && dam(r).length === 1, J(dam(r)[0]));
+
+  // tương tác: băng chuyền, cửa, vật, thùng khác, đồng đội
+  r = chay({ san: ['#######', '#.....#', '#.H>..#', '#.....#', '#######'], mucTieu: 'toi-co' }, TIEN + 'wait()\nwait()\n');
+  kiem('đẩy thùng lên băng chuyền: nhịp 1 xích đẩy (nguon xich), băng đếm từ 0 rồi đưa thùng đi ở nhịp 3 (nguon bang)', J(thungDi(r).map((e) => [e.nguon, e.den.x])) === J([['xich', 3], ['bang', 4]]), J(thungDi(r)));
+  r = chay({ san: ['#######', '#.....#', '#.HC..#', '#.....#', '#######'], mucTieu: 'toi-co' }, TIEN);
+  kiem('cửa đóng sau thùng: chặn (chan cua)', !thungDi(r).length && dam(r)[0] && dam(r)[0].chan === 'cua', J(dam(r)[0]));
+  r = chay({ san: ['#######', '#.....#', '#.Hc..#', '#.....#', '#######'], mucTieu: 'toi-co' }, TIEN);
+  kiem('cửa MỞ sau thùng: đẩy được thùng vào ô cửa', thungDi(r).length === 1 && r.thung[0].x === 3, J(r.thung));
+  r = chay({ san: ['#######', '#.....#', '#.Ho..#', '#.....#', '#######'], mucTieu: 'toi-co' }, TIEN);
+  kiem('vật nằm đất sau thùng: chặn (chan vat)', !thungDi(r).length && dam(r)[0] && dam(r)[0].chan === 'vat', J(dam(r)[0]));
+  r = chay({ san: ['#######', '#.....#', '#.HH..#', '#.....#', '#######'], mucTieu: 'toi-co' }, TIEN);
+  kiem('thùng khác sau thùng: chặn (chan thung-nang), không đẩy dây chuyền', !thungDi(r).length && dam(r)[0] && dam(r)[0].chan === 'thung-nang', J(dam(r)[0]));
+  r = chay({ san: ['#######', '#.....#', '#.H=..#', '#.....#', '#######'], mucTieu: 'toi-co' }, TIEN);
+  kiem('hàng rào sau thùng: chặn (chan rao)', !thungDi(r).length && dam(r)[0] && dam(r)[0].chan === 'rao', J(dam(r)[0]));
+  r = SanHoc.chay({ san: ['#######', '#.....#', '#.H...#', '#.....#', '#######'], xichDay: true, doi: [{ batDau: { x: 1, y: 2, huong: 1 }, loaiRobot: 'xich', hamGoc: BANH }, { batDau: { x: 3, y: 2, huong: 3 }, loaiRobot: 'banh', hamGoc: BANH }] }, [TIEN, 'wait()\n']);
+  kiem('nhiều robot: đồng đội đứng sau thùng chặn (chan dong-doi)', !thungDi(r).length && r.doi[0].suKien.some((e) => e.ma === 'dam-tuong' && e.chan === 'dong-doi'), J(r.doi[0].suKien));
+  // góc chết: đẩy thùng vào góc (không phải đích) ở mục tiêu day-thung → thung-ket, dừng sớm
+  r = chay({ san: ['#######', '#....D#', '#.H...#', '#.....#', '#######'], batDau: { x: 1, y: 2, huong: 1 } }, TIEN + TIEN + TIEN + TIEN);
+  kiem('đẩy thùng vào góc chết (5,2)? không — (5,2) có mép phải nhưng trên/dưới trống: không kẹt; thùng dừng sát tường, nhịp 4 đâm', !r.dungSom && r.thung[0].x === 5 && dam(r).length === 1, J({ dungSom: r.dungSom, thung: r.thung }));
+  r = chay({ san: ['#######', '#.H...#', '#....D#', '#.....#', '#######'], batDau: { x: 1, y: 1, huong: 1 } }, TIEN + TIEN + TIEN);
+  kiem('đẩy thùng vào góc chết (5,1) thật: dungSom thung-ket ngay cuối nhịp 3', r.dungSom === 'thung-ket' && soNhip(r) === 3 && r.thung[0].x === 5 && r.thung[0].y === 1, J({ dungSom: r.dungSom, thung: r.thung, nhip: soNhip(r) }));
+
+  // chẩn đoán qua máy chấm
+  const man = { ma: 'thu-xich-day', chuong: 'thu', loaiRobot: 'xich', hamGoc: BANH, san: ['#######', '#.....#', '#H...F#', '#.....#', '#######'], batDau: { x: 2, y: 2, huong: 3 }, xichDay: true, khung: { chinh: 10, moiHam: 10, cauTruc: [] }, cauTruc: [], moXuong: false, sao: { o: 9, nhip: 9 } };
+  let kq = ChamHoc.cham(man, { chinh: ['left_move()', 'right_move()', 'wait()'], hamCuaMan: [] }, []);
+  let cd = kq.chanDoan.find((c) => c.ma === 'dam-tuong');
+  kiem('cham.js: xích đẩy thùng mà ô sau là tường → dam-tuong nói "ô sau thùng ... là tường", gợi đi vòng', !!cd && /ô sau thùng/.test(cd.loi) && /tường/.test(cd.loi) && /đi vòng/.test(cd.loi), cd && cd.loi);
+  kq = ChamHoc.cham(Object.assign({}, man, { batDau: { x: 2, y: 2, huong: 1 } }), { chinh: ['left_back()', 'right_back()', 'wait()'], hamCuaMan: [] }, []);
+  cd = kq.chanDoan.find((c) => c.ma === 'dam-tuong');
+  kiem('cham.js: xích LÙI vào thùng ở màn xichDay → nhắc "chỉ đẩy được thùng khi TIẾN"', !!cd && /khi TIẾN/.test(cd.loi), cd && cd.loi);
+  kq = ChamHoc.cham(Object.assign({}, man, { xichDay: false }), { chinh: ['left_move()', 'right_move()', 'wait()'], hamCuaMan: [] }, []);
+  cd = kq.chanDoan.find((c) => c.ma === 'dam-tuong');
+  kiem('cham.js: màn không khai xichDay → lời cũ y nguyên ("chỉ cú giật của súng hơi mới dời được thùng")', !!cd && /chỉ cú giật của súng hơi mới dời được thùng\.$/.test(cd.loi), cd && cd.loi);
+}
+
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' : 'ĐẠT ') + (dat + hong) + ' kiểm' + (LOI_GIA ? ' (đang cắm lỗi giả: phải đỏ)' : ''));
 process.exit(hong ? 1 : 0);
