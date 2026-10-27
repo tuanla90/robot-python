@@ -22,19 +22,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var TAY_LEN = ['arm_up', 'arm_down'], KEP_LEN = ['grab', 'release'], NC_LEN = ['magnet_n', 'magnet_s', 'magnet_off'], NEM_LEN = ['load', 'throw'];
   // khóa → { hinh: [tên hình khi trạng thái A, B], mau: màu khi sáng, nhan: khóa chữ }
   var BP = {
-    banhT: { hinh: ['denBanh'], mau: BM.denBp1, nhan: 'choi.den.banhT' },
-    banhP: { hinh: ['denBanh'], mau: BM.denBp1, nhan: 'choi.den.banhP' },
-    truot: { hinh: ['denTruot'], mau: BM.denBp2, nhan: 'choi.den.truot' },
-    tay: { hinh: ['denTayLen', 'denTayXuong'], mau: BM.denBp3, nhan: 'choi.den.tay' },
-    xoay: { hinh: ['denXoay'], mau: BM.denBp3, nhan: 'choi.den.xoay' },
-    kep: { hinh: ['denKepMo', 'denKepDong'], mau: BM.denBp3, nhan: 'choi.den.kep' },
-    namCham: { hinh: ['denNamCham'], mau: BM.denBp4, nhan: 'choi.den.namCham' },
-    nem: { hinh: ['denNem'], mau: BM.denBp3, nhan: 'choi.den.nem' },
-    sung: { hinh: ['denSung'], mau: BM.denBp3, nhan: 'choi.den.sung' },
-    son: { hinh: ['denSon'], mau: BM.denBp5, nhan: 'choi.den.son' },
-    camBien: { hinh: ['denCam'], mau: BM.denBp6, nhan: 'choi.den.camBien' },
-    chan: { hinh: ['denChan'], mau: BM.denBp7, nhan: 'choi.den.chan' },
-    canh: { hinh: ['denCanh'], mau: BM.denBp7, nhan: 'choi.den.canh' }
+    banhT: { hinh: ['denBanh'], mau: BM.ngocToi, nhan: 'choi.den.banhT' },
+    banhP: { hinh: ['denBanh'], mau: BM.ngocToi, nhan: 'choi.den.banhP' },
+    truot: { hinh: ['denTruot'], mau: BM.xanhLaSangV6, nhan: 'choi.den.truot' },
+    tay: { hinh: ['denTayLen', 'denTayXuong'], mau: BM.cam, nhan: 'choi.den.tay' },
+    xoay: { hinh: ['denXoay'], mau: BM.cam, nhan: 'choi.den.xoay' },
+    kep: { hinh: ['denKepMo', 'denKepDong'], mau: BM.cam, nhan: 'choi.den.kep' },
+    namCham: { hinh: ['denNamCham'], mau: BM.doSangV6, nhan: 'choi.den.namCham' },
+    nem: { hinh: ['denNem'], mau: BM.cam, nhan: 'choi.den.nem' },
+    sung: { hinh: ['denSung'], mau: BM.cam, nhan: 'choi.den.sung' },
+    son: { hinh: ['denSon'], mau: BM.hongV2, nhan: 'choi.den.son' },
+    camBien: { hinh: ['denCam'], mau: BM.ngoc, nhan: 'choi.den.camBien' },
+    chan: { hinh: ['denChan'], mau: BM.lamSangV10, nhan: 'choi.den.chan' },
+    canh: { hinh: ['denCanh'], mau: BM.lamSangV10, nhan: 'choi.den.canh' }
   };
   var THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'son', 'camBien', 'chan', 'canh'];
 
@@ -105,7 +105,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return { el: el, cv: cv, sang: false };
   }
   /** Màu icon bộ phận (ve.js, ICON BỘ PHẬN): sáng = màu bộ phận + chi tiết trắng; tắt = xanh xám. Thẻ khay (thanh-phan.js) dùng cùng hàm này. */
-  function mauIcon(mau, sang) { return sang ? { fill: mau, line: BM.denMauIconLine, toi: BM.denMauIconToi, sang: BM.denMauIconSang } : { fill: BM.denMauIconFill, line: BM.denMauIconLine2, toi: BM.denMauIconToi2, sang: BM.denMauIconSang2 }; }
+  function mauIcon(mau, sang) { return sang ? { fill: mau, line: BM.xanhLoV2, toi: BM.xanhLoV2, sang: BM.trangV2 } : { fill: BM.xanhLaToiV4, line: BM.bangV1, toi: BM.bangV1, sang: BM.xanhLaV14 }; }
   /** Icon của bộ phận k trên màn (xe xích: bánh vẽ thành xích). */
   function hinhCua(k, man) { return (k === 'banhT' || k === 'banhP') && man && man.loaiRobot === 'xich' ? ['denXich'] : BP[k].hinh; }
   /** Dựng vùng đèn trong phần tử clock (một dòng thứ hai dưới "NHỊP n"). Gọi một lần. */
