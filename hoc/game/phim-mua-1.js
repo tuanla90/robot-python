@@ -42,7 +42,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 1 · R1 lăn tới thùng gỗ; tay kẹp thò ra dưới gầm, lắc lắc
       function (k, c) {
         c.nen(k, 'md-san');
-        k.appendChild(c.dat(c.ico('denKepMo', 3, BM.phimM1Phim1), 236, 156, 'md-lac'));
+        k.appendChild(c.dat(c.ico('denKepMo', 3, BM.vang), 236, 156, 'md-lac'));
         k.appendChild(c.dat(c.o('crate', 5), 180, 120));
         var r = c.xe(XE, {}, 1, 3, -40, Y); k.appendChild(r);
         truot(c, r, 60, 86, Y, 1.2);
@@ -57,7 +57,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         k.appendChild(c.tu(c.xe(KEP, NANG_MO, 1, 3, 86, Y), 0.95));
         var vx = c.h('div', 'md-a md-vx'); vx.style.left = '236px'; vx.style.top = '156px'; vx.style.setProperty('--x', '-100px'); vx.style.animationDelay = '.1s';
         var vy = c.h('div', 'md-vy'); vy.style.setProperty('--y', '-10px'); vy.style.setProperty('--r', '360deg'); vy.style.animationDelay = '.1s';
-        vy.appendChild(c.ico('denKepMo', 3, BM.phimM1Phim1)); vx.appendChild(vy); k.appendChild(c.tu(vx, 0.95, true));
+        vy.appendChild(c.ico('denKepMo', 3, BM.vang)); vx.appendChild(vy); k.appendChild(c.tu(vx, 0.95, true));
         var cach = c.chu('md-ram pg-cach', 'CẠCH!'); cach.style.animationDelay = '.95s'; k.appendChild(cach);
         c.sau(950, function () { c.keu('kep'); });
       },
@@ -102,9 +102,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.nen(k, 'md-san'); tuong(k, c, 270);
         k.appendChild(c.xe(XE, {}, 1, 3, 230, Y));
         saoQuay(k, c, 230, 0);
-        var den = c.dat(c.ico('denCam', 3, BM.phimM1Phim2), -30, 160, 'pg-lan'); den.style.setProperty('--x', '150px'); k.appendChild(c.tu(den, 1.4, true));
+        var den = c.dat(c.ico('denCam', 3, BM.xanhLoSang2), -30, 160, 'pg-lan'); den.style.setProperty('--x', '150px'); k.appendChild(c.tu(den, 1.4, true));
         var nhay = c.dat(c.h('div'), 0, 0); k.appendChild(c.tu(nhay, 1.4));
-        nhay.appendChild(c.dat(c.ico('denCam', 3, BM.phimM1Phim2), 120, 160, 'pg-nhay'));
+        nhay.appendChild(c.dat(c.ico('denCam', 3, BM.xanhLoSang2), 120, 160, 'pg-nhay'));
         var hoi = c.chu('md-hoi', '!'); hoi.style.left = '132px'; hoi.style.top = '118px'; hoi.style.animationDelay = '1.4s'; k.appendChild(hoi);
         c.sau(1400, function () { c.keu('moKhoa'); });
       },
@@ -184,12 +184,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 2 · hộp linh kiện bật nắp, hai bánh R1 sáng lên
       function (k, c) {
         var s = c.san(k, NGO, 4, 20, 26), p = s.o(3, 1), h = s.o(0, 0);
-        k.appendChild(c.dat(c.ico('box', 3, BM.phimM1Phim3), h.x - 17, h.y - 12));
+        k.appendChild(c.dat(c.ico('box', 3, BM.camToiV1), h.x - 17, h.y - 12));
         k.appendChild(c.dat(c.h('div', 'pg-nap'), h.x - 16, h.y - 16, 'md-bat'));
         var r = c.xe(XE, {}, 1, 2, p.x, p.y); k.appendChild(r);
         var vx = c.h('div', 'md-a md-vx'); vx.style.left = (h.x - 16) + 'px'; vx.style.top = (h.y - 16) + 'px'; vx.style.setProperty('--x', (p.x - h.x) + 'px'); vx.style.animationDelay = '.3s';
         var vy = c.h('div', 'md-vy'); vy.style.setProperty('--y', (p.y - h.y) + 'px'); vy.style.setProperty('--r', '360deg'); vy.style.animationDelay = '.3s';
-        vy.appendChild(c.ico('denBanh', 3, BM.phimM1Phim4)); vx.appendChild(vy); k.appendChild(c.tu(vx, 1.2, true));
+        vy.appendChild(c.ico('denBanh', 3, BM.lamSang)); vx.appendChild(vy); k.appendChild(c.tu(vx, 1.2, true));
         c.sau(1200, function () { r.classList.add('pg-nhay'); r.ve({ wl: 2, wr: 2 }); c.keu('moKhoa'); });
       },
       // 3 · R1 lùi ra khỏi ngõ, vệt bánh
@@ -218,7 +218,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       function (k, c) {
         var cx = 150, cy = 140, tg = thung(c, cx, cy - VAT); k.appendChild(tg);
         var r = c.xe(KEP, NANG_MO, 1, 3, cx, cy); k.appendChild(r);
-        var vong = c.dat(c.ico('reset', 3, BM.phimM1Phim1), cx + 46, cy - 70, 'md-pop'); vong.style.animationDelay = '.3s'; k.appendChild(vong);
+        var vong = c.dat(c.ico('reset', 3, BM.vang), cx + 46, cy - 70, 'md-pop'); vong.style.animationDelay = '.3s'; k.appendChild(vong);
         nhip(k, c, '1', cx - 70, cy - 40, 0.6);
         c.sau(600, function () { r.ve(null, 0); c.keu('buoc'); });
         c.sau(1100, function () { r.ve(HA_MO); });
@@ -236,7 +236,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         k.appendChild(c.tu(c.xe(XOAY, NANG_MO, 1, 3, cx, cy, 'pg-sang'), 1.2));
         var vx = c.h('div', 'md-a md-vx'); vx.style.left = '240px'; vx.style.top = '46px'; vx.style.setProperty('--x', (cx + 30 - 240) + 'px'); vx.style.animationDelay = '.4s';
         var vy = c.h('div', 'md-vy pg-nhay'); vy.style.setProperty('--y', (cy - 62) + 'px'); vy.style.setProperty('--r', '360deg'); vy.style.animationDelay = '.4s';
-        vy.appendChild(c.ico('denXoay', 3, BM.phimM1Phim5)); vx.appendChild(vy); k.appendChild(c.tu(vx, 1.2, true));
+        vy.appendChild(c.ico('denXoay', 3, BM.timV7)); vx.appendChild(vy); k.appendChild(c.tu(vx, 1.2, true));
         var cach = c.chu('md-ram pg-cach', 'CẠCH!'); cach.style.animationDelay = '1.2s'; k.appendChild(cach);
         c.sau(1200, function () { c.keu('kep'); });
       },
@@ -412,7 +412,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 3 · R1 lăn ra ngoài; xa xa trên đồi thấy bánh xích văng hôm trước (nhá mùa 2)
       function (k, c) {
         c.nen(k, 'pg-troi'); c.nen(k, 'pg-doi'); c.nen(k, 'md-san pg-dat');
-        var xich = c.dat(c.ico('denXich', 2, BM.phimM1Phim4), 252, 78, 'pg-nhay'); k.appendChild(xich);
+        var xich = c.dat(c.ico('denXich', 2, BM.lamSang), 252, 78, 'pg-nhay'); k.appendChild(xich);
         var hoi = c.chu('md-hoi', '!'); hoi.style.left = '258px'; hoi.style.top = '40px'; hoi.style.animationDelay = '2s'; k.appendChild(hoi);
         var r = c.xe(DU_BO, {}, 1, 3, -40, Y); k.appendChild(r);
         truot(c, r, 100, 130, Y, 1.6);
