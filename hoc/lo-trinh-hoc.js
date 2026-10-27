@@ -103,6 +103,39 @@
     loiGiai: bai(['count_return()'], [ham('count_return', ['n = 0', 'while front_clear():', '    move()', '    n = n + 1', 'for i in range(n):', '    back()'])]),
     goiY: ['n bắt đầu bằng 0. Mỗi lần move(), n cần tăng một đơn vị.', 'Dùng n = n + 1 trong thân while.']
   });
+  // Gói 2 chương 2 Vòng lặp (KE-HOACH-MUA-1.md, Vướng 4): hai màn gần cuối chương thêm TAY KẸP để chương đúng "hàm cho tay" (che-lap.5 Dọn hàng đã có tay).
+  // Chỉ dùng thứ của gói 1–2 (for, pick / drop, move / rẽ). vong-lap.10 không đổi (nó tạo row / bend_left / bend_right cho màn khác).
+  // Cỡ sân / nhịp đặt giữa vong-lap.6 và che-lap.5 cho đường cong chương (luật đo: n ≤ max(1,5 × n−1, n−1 + bù)).
+  (function () {
+    var vl8 = ['pick()', 'for i in range(6):', '    move()', 'turn_left()', 'for i in range(4):', '    move()', 'drop()'];
+    sua('vong-lap.8', {
+      ten: 'Thụt lề', mucTieu: 'dua-vat', canFor: 'tran-khung', hamCuaEmCan: ['pick', 'move', 'turn_left', 'drop'],
+      deBai: 'Nhặt thùng ngay trước mặt, mang nó sang phải sáu ô, rẽ trái, đi lên bốn ô rồi đặt vào ô đích ở đầu đường.',
+      veMaMau: 'Chương trình có sẵn đủ lệnh nhưng xe cứ quay vòng thay vì đi thẳng. Thụt vào là nằm trong vòng lặp, thụt ra là nằm ngoài: có dòng nào đang đứng sai chỗ?',
+      san: ['######D', '######.', '######.', '######.', '######.', '.o.....'], batDau: { x: 0, y: 5, huong: 1 },
+      maMau: bai(['pick()', 'for i in range(6):', '    move()', '    turn_left()', 'for i in range(4):', '    move()', 'drop()']),
+      loiGiai: bai(vl8),
+      loiSai: [
+        { moTa: 'Không sửa gì: turn_left() nằm trong vòng lặp nên xe quay vòng, đâm tường', baiLam: bai(['pick()', 'for i in range(6):', '    move()', '    turn_left()', 'for i in range(4):', '    move()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'drop() thụt vào vòng for thứ hai: thùng bị đặt ngay sau bước đầu', baiLam: bai(['pick()', 'for i in range(6):', '    move()', 'turn_left()', 'for i in range(4):', '    move()', '    drop()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên nhặt thùng: thùng chắn ngay trước mặt', baiLam: bai(vl8.slice(1)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Chạy thử và xem xe làm gì ở nhịp sau khi nhặt: nó rẽ sớm hơn dự định.', 'Dòng rẽ chỉ chạy một lần, sau khi vòng lặp đầu đã đi xong; drop() cũng nằm ngoài vòng lặp.']
+    }).loiGiaiKhac = { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: bai(['# nhặt, sang phải, lên, đặt'].concat(vl8)) };
+    var vl9 = ['pick()', 'for i in range(3):', '    for j in range(5):', '        move()', '    turn_right()', 'drop()'];
+    sua('vong-lap.9', {
+      ten: 'Vòng lặp lồng nhau', mucTieu: 'dua-vat', canFor: 'tran-khung', hamCuaEmCan: ['pick', 'move', 'turn_right', 'drop'],
+      deBai: 'Nhặt thùng ngay trước mặt rồi đi hành lang hình chữ U úp ngược: lên năm ô, rẽ phải, sang năm ô, rẽ phải, xuống năm ô, rẽ phải, rồi đặt thùng vào ô đích. Ba đoạn giống hệt nhau là "đi năm ô rồi rẽ phải", mà đi năm ô cũng là một vòng lặp.',
+      san: ['......', '.####.', '.####.', '.####.', 'o####.', '.###D.'], batDau: { x: 0, y: 5, huong: 0 },
+      maMau: bai([]), loiGiai: bai(vl9),
+      loiSai: [
+        { moTa: 'Vòng ngoài chỉ lặp hai lần: xe đặt thùng xuống giữa đường', baiLam: bai(['pick()', 'for i in range(2):', '    for j in range(5):', '        move()', '    turn_right()', 'drop()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Vòng trong lặp bốn lần: xe rẽ sớm một ô rồi đâm tường', baiLam: bai(['pick()', 'for i in range(3):', '    for j in range(4):', '        move()', '    turn_right()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Quên nhặt thùng: thùng chắn ngay trước mặt', baiLam: bai(vl9.slice(1)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Vòng lặp có thể nằm trong thân một vòng lặp khác, thụt vào thêm một bậc.', 'Lần rẽ phải thứ ba đưa mũi xe về phía ô đích: đặt thùng sau vòng ngoài.']
+    }).loiGiaiKhac = { moTa: 'Không lồng vòng lặp: vòng ngoài gọi move() năm lần rồi rẽ', baiLam: bai(['pick()', 'for i in range(3):', '    move()', '    move()', '    move()', '    move()', '    move()', '    turn_right()', 'drop()']) };
+  })();
   // Sắp lại mà không đổi khóa ma: các bản lưu vẫn thuộc đúng bài của chúng.
   function xep(chuong, ds) {
     ds.forEach(function (soCu, i) {

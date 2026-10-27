@@ -44,9 +44,11 @@ kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chươn
     if (m.hang === 'trum') assert.equal(m.so, ds.length, m.ma + ' trùm không đứng cuối chương');
     if (ds.length === 10) assert.equal(m.hang === 'trum', m.so === 10, m.ma);
   }
-  for (const c of ['khoang-cach', 'robot-hoan-thien', 'hai-robot', 'che-list', 'mau', 'che-mau', 'rap-nao', 'nam-cham', 'che-nam-cham', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'flycam', 'rap-du', 'me-cung', 'cam-bien-ben']) {
+  for (const c of ['khoang-cach', 'hai-robot', 'che-list', 'mau', 'che-mau', 'rap-nao', 'nam-cham', 'che-nam-cham', 'may-nem', 'che-may-nem', 'drone', 'che-drone', 'flycam', 'rap-du', 'me-cung', 'cam-bien-ben']) {
     assert.equal(soSan(get(c + '.10')), 3, c);
   }
+  // Gói 10: robot-hoan-thien.10 đã cất, trùm Tổng hợp là robot-hoan-thien.11; trùm cuối mùa trum-mua-1.10.
+  for (const ma of ['robot-hoan-thien.11', 'trum-mua-1.10']) assert.equal(soSan(get(ma)), 3, ma);
 });
 kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến', () => {
   assert.equal(get('khoang-cach.8').so, 4);
@@ -91,7 +93,8 @@ for (const m of M.danhSach) {
 // ---------------------------------------------------------------- MÙA 1 = 10 GÓI (26/10, KE-HOACH-MUA-1.md): thứ tự gói, ràng buộc lệnh theo gói
 const day = (c, so) => so.map(n => c + '.' + n);
 const MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-// [mã gói, [[chương, các màn (không kể thứ tự)]]]. Chương chưa có màn chưa có. Gói 9 Combo: man-combo-mua-1.js + che-cam-bien.10 (về từ chỗ cất).
+// [mã gói, [[chương, các màn (không kể thứ tự)]]]. Gói 9 Combo: man-combo-mua-1.js + che-cam-bien.10 (về từ chỗ cất).
+// Gói 10 R1 xuất xưởng: robot-hoan-thien.11 thay robot-hoan-thien.10 (cất) + chương Trùm mùa (man-trum-mua-1.js). Mùa 1 đủ 10 gói × 20 màn.
 const BANG_MUA_1 = [
   ['xe', [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]]],
   ['tay-gap', [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9, 10]).concat('che-lap.5')]]],
@@ -102,9 +105,9 @@ const BANG_MUA_1 = [
   ['me-cung', [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]]],
   ['hai-robot', [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', day('che-hai-robot', MUOI)]]],
   ['combo', [['combo', day('combo', MUOI)], ['che-combo', day('che-combo', [1, 2, 3, 4, 5, 6, 7, 8, 9]).concat('che-cam-bien.10')]]],
-  ['robot', [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8, 10]).concat('cam-bien-ben.10')]]]
+  ['robot', [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8, 11]).concat('cam-bien-ben.10')], ['trum-mua-1', day('trum-mua-1', MUOI)]]]
 ];
-const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8'];
+const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10'];
 const BIEN_MUA_2 = ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
 const goiMua = mu => TT.goi.filter(g => g.mua === mu);
 const goiCuaChuong = c => TT.goi.find(g => g.chuong.includes(c));
@@ -156,8 +159,8 @@ kiem('(c) không màn nào trước gói Cảm biến bên gọi left_clear / ri
     assert.ok(!BEN.some(h => l.has(h)), m.ma + ' gọi cảm biến bên: ' + [...l].filter(h => BEN.includes(h)));
   }
 });
-// Ngoại lệ duy nhất: trùm mùa đưa sẵn bounce / fetch_back (có biến đếm) thành hàm của màn KHÓA, người chơi chỉ xem.
-const BIEN_KHOA = { 'robot-hoan-thien.10': ['bounce', 'fetch_back'] };
+// Không còn ngoại lệ: robot-hoan-thien.10 (bounce / fetch_back có biến đếm, hàm của màn khóa) đã cất, robot-hoan-thien.11 không biến thay chỗ.
+const BIEN_KHOA = {};
 const laBien = l => /^\s*[A-Za-z_]\w*(\s*\[[^\]]*\])?\s*[-+*/]?=(?!=)/.test(l) || /range\(\s*[A-Za-z_]/.test(l);
 kiem('(d) không màn mùa 1 nào dùng biến (mã mẫu, lời giải, hàm của em mới, hàm của màn không khóa), không mở nhóm ĐẾM trên khay', () => {
   for (const m of manMua1) {
@@ -312,7 +315,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   let tr = 0;
   for (const g of browser.MoGoi.dsMua()[0].goi) { assert.equal(g.saoCan, Math.floor(browser.MoGoi.TI_LE_SAO * tr / 5) * 5, g.ma); tr += g.saoToiDa; }
   const ds = browser.MoGoi.dsMua()[0].goi;
-  assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 10]);
+  assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
   assert.equal(ds[6].man[0].ma, 'che-cam-bien.4');
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
   assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 90);

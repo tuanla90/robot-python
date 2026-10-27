@@ -1,6 +1,14 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "vong-lap.8": {
+    "o": 22,
+    "nhip": 14
+  },
+  "vong-lap.9": {
+    "o": 21,
+    "nhip": 21
+  },
   "khoang-cach.8": {
     "o": 10,
     "nhip": 8
