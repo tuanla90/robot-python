@@ -127,6 +127,18 @@
   var C_9 = FOR(2, ['go_wall()', 'clear_way()']).concat(['go_wall()']);
   var CLEAR = nhieu(['pick()'], IF('left_clear()', ['drop_left()'], ['drop_right()']));
   var CLEAR_LOI = ['pick()', 'drop_left()'];
+  // 10 (trùm cuối mùa, ba sân): làn x = 2. Xe (2,3) quay lên, ngay dưới cửa C (2,2) đang đóng. Phía sau xe là bốn hàng kệ (y = 3…6); một hàng có thùng ở
+  //    một bên và nút đè M ở bên kia (hàng và bên mỗi sân một khác). Sau cửa: thùng thứ hai chắn đầu làn (2,0), ô đích (1,1) hay (3,1) ở một bên.
+  //    find() của màn: LÙI khi hai bên còn trống (vòng for, hai if lồng). open_gate() của màn: chuyển thùng sang nút cho cửa mở. Rồi go_wall() qua cửa,
+  //    nhặt thùng chắn, đặt sang bên có ô đích. Xe mờ ở (2,1) quay lên.
+  function kho10(d1, r3, r4, r5, r6) { return ['##o##', d1, '##C##', r3, r4, r5, r6, '#####']; }
+  var K = '#...#';
+  var SAN_10 = [kho10('#D.##', K, K, '#o.M#', K), kho10('##.D#', '#M.o#', K, K, K), kho10('#D.##', K, K, K, '#M.o#')];
+  var BM_10 = SAN_10.map(function (rows) { return { x: 2, y: 1, huong: 0, vat: dichCua(rows) }; });
+  var FIND = FOR(3, ['if left_clear():', '    if right_clear():', '        back()']);
+  var DOI_KE = IF('left_clear()', ['pick_right()', 'drop_left()'], ['pick_left()', 'drop_right()']);
+  var L_10 = nhieu(['find()', 'open_gate()', 'go_wall()', 'pick()'], IF('left_clear()', ['drop_left()'], ['drop_right()']));
+  var HM_10 = [H('find', FIND), H('open_gate', DOI_KE)];
 
   var DS = [
     man({
@@ -304,6 +316,26 @@
         { moTa: 'Hỏi ngược: bên trái trống lại đặt sang phải', baiLam: { chinh: C_9, hamCuaMan: [H('clear_way', nhieu(['pick()'], IF('left_clear()', ['drop_right()'], ['drop_left()'])))] }, phaiCoMa: ['tha-bi-chan', 'chua-toi-co'] }
       ],
       goiY: ['Nút M là sàn trống: cảm biến bên đó trả True.', 'pick(), rồi if left_clear(): drop_left() — còn không thì drop_right().']
+    }),
+
+    man({
+      c: 2, so: 10, ten: 'Ngày xuất xưởng', kieuBai: 'nhieu-san', mucTieu: 'bong-mo',
+      huyHieu: { ma: 'xuat-xuong', ten: 'Huy hiệu R1 xuất xưởng' },
+      hamCuaEmCan: ['back', 'pick_right', 'drop_left', 'pick_left', 'drop_right', 'go_wall', 'pick', 'move'],
+      deBai: 'Ca cuối trước khi R1 xuất xưởng, ba kho khác nhau. Cửa C trước mặt đang đóng. Sau lưng xe là các hàng kệ: một hàng có thùng ở một bên và nút đè M ở bên kia. Lùi tìm hàng đó, chuyển thùng lên nút cho cửa mở, đi qua cửa, nhặt thùng chắn đầu làn và đặt nó vào ô đích bên cạnh, giống xe mờ và thùng mờ. Viết thân hai hàm của màn find() và open_gate(), rồi chương trình chính. Một chương trình cho cả ba kho.',
+      veMaMau: 'Chương trình chính đã gọi find() và open_gate(); thân hai hàm còn trống. Viết hai hàm trong Xưởng, rồi viết tiếp chương trình chính.',
+      san: SAN_10, batDau: { x: 2, y: 3, huong: 0 }, bongMo: BM_10,
+      maMau: { chinh: ['find()', 'open_gate()'], hamCuaMan: [H('find', ['pass']), H('open_gate', ['pass'])] },
+      sao: { o: 59, nhip: 40 },
+      loiGiai: { chinh: L_10, hamCuaMan: HM_10 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# lùi tìm, mở cửa, dọn lối'].concat(L_10), hamCuaMan: HM_10 } },
+      loiSai: [
+        { moTa: 'find() tiến thay vì lùi: cửa trước mặt đóng nên xe đứng yên', baiLam: { chinh: L_10, hamCuaMan: [H('find', FOR(3, ['if left_clear():', '    if right_clear():', '        move()'])), H('open_gate', DOI_KE)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'find() chỉ hỏi bên trái: kho có thùng bên phải thì lùi quá', baiLam: { chinh: L_10, hamCuaMan: [H('find', FOR(3, ['if left_clear():', '    back()'])), H('open_gate', DOI_KE)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng theo kho đầu: lùi hai ô', baiLam: { chinh: L_10, hamCuaMan: [H('find', FOR(2, ['back()'])), H('open_gate', DOI_KE)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên dọn thùng chắn sau cửa', baiLam: { chinh: ['find()', 'open_gate()', 'go_wall()'], hamCuaMan: HM_10 }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['find(): vòng for, trong đó if left_clear(): if right_clear(): back() — gặp thùng hay nút ở một bên thì thôi lùi.', 'open_gate(): thùng bên nào thì đặt sang bên kia (lên nút M). Sau cửa: pick() thùng chắn, đặt sang bên có ô đích.']
     })
   ];
 

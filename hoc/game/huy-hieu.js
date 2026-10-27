@@ -446,7 +446,16 @@
     return p;
   };
 
-  HINH['hai-robot'] = function () {                             // đội hai robot: hai xe nhỏ nhìn từ trên, sơn vàng (R1) và lam (R2) như trên sân, thùng hàng chuyền ở giữa
+  HINH['xuat-xuong'] = function () {                           // trùm cuối mùa 1 "R1 xuất xưởng": tay xoay đủ bộ ở giữa, hai tai cảm biến bên xanh lơ, hai sao hai góc trên
+    var p = P(T26, T26), t = cat(partTho('tay', 'xoay', { kep: 'mo' })), s = saoNho();
+    chep(p, t, 13 - (t.w >> 1), Math.max(0, T26 - t.h), 1);
+    for (var i = 0; i < 3; i++) { p.px(1 + i * 2, 15, '#3fd0e8'); p.px(T26 - 2 - i * 2, 15, '#3fd0e8'); }
+    chep(p, s, 0, 0, 1);
+    chep(p, s, T26 - s.w, 0, 1);
+    return p;
+  };
+
+  HINH['hai-robot'] = function () {                            // đội hai robot: hai xe nhỏ nhìn từ trên, sơn vàng (R1) và lam (R2) như trên sân, thùng hàng chuyền ở giữa
     var p = P(30, 26);
     function xe(son) {                                          // xe 12×12 quay lên: hai bánh, thân sơn màu đội, kính + hai mắt
       var q = P(12, 12), s = Part.SON[son];
