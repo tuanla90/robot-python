@@ -112,10 +112,10 @@ export function doDuongChung(m, gioiHan) {
   const dau = Ps.map((P) => ({ st: P.dau, xong: false }));
   const khoa = (ds) => ds.map((d, i) => (d.xong ? 'X' : Ps[i].khoa(d.st))).join('#');
   const tot = new Map([[khoa(dau), 0]]);
-  let hang = [[0, dau, '']];
-  while (hang.length) {
-    hang.sort((a, b) => a[0] - b[0]);
-    const [c, ds, chuoi] = hang.shift();
+  const xo = Array.from({ length: gioiHan + 1 }, () => []);          // hàng đợi theo xô: chi phí là số nguyên nhỏ
+  xo[0].push([0, dau, '']);
+  for (let cx = 0; cx <= gioiHan; cx++) while (xo[cx].length) {
+    const [c, ds, chuoi] = xo[cx].pop();
     if (tot.get(khoa(ds)) < c) continue;
     if (chuoi && ds.every((d, i) => d.xong || (!Ps[i].dung && Ps[i].laDich(d.st)))) return { nhip: c, chuoi };
     for (const [ch, a] of HD) {
@@ -132,7 +132,7 @@ export function doDuongChung(m, gioiHan) {
       if (c2 > gioiHan) continue;
       const k = khoa(moi);
       if (tot.has(k) && tot.get(k) <= c2) continue;
-      tot.set(k, c2); hang.push([c2, moi, chuoi + ch]);
+      tot.set(k, c2); xo[c2].push([c2, moi, chuoi + ch]);
     }
   }
   return null;

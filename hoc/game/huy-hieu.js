@@ -401,7 +401,17 @@
     themBanhRang(p);
     return p;
   };
-  HINH['che-omni'] = function () {                              // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
+  HINH['che-luc-ban'] = function () {                           // hai quả bóng (nhỏ: bắn nhanh, to: bắn tụ) + bánh răng
+    var p = P(T26, T26);
+    var NHO = ['.XXX.', 'XwyyX', 'XyyyX', 'XyydX', '.XXX.'];
+    var TO = ['..XXX..', '.XwyyX.', 'XwyyyyX', 'XyyyyyX', 'XyyyydX', '.XdddX.', '..XXX..'], CB = { X: INK, w: '#fffbd0', y: '#ffe14a', d: '#d19a1a' };
+    function ve(M, x0, y0) { for (var j = 0; j < M.length; j++) for (var i = 0; i < M[j].length; i++) if (M[j].charAt(i) !== '.') p.px(x0 + i, y0 + j, CB[M[j].charAt(i)]); }
+    ve(NHO, 2, 17);
+    ve(TO, 9, 14);
+    themBanhRang(p);
+    return p;
+  };
+  HINH['che-omni'] = function () {                           // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
     var p = P(T26, T26), t = thanPart('omni');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
     themBanhRang(p);

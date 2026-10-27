@@ -210,7 +210,15 @@
     m('push', 'xich', 'Tới sát thùng trước mặt rồi đẩy nó n ô: xích tiến là thùng trượt', 'che-day-thung', 'che-day-thung.1'),
     m('go_around', 'xich', 'Đi vòng sang bên phải thùng rồi quay mũi xích vào thùng', 'che-day-thung', 'che-day-thung.3'),
     m('push_around', 'xich', 'Đi vòng sang hông thùng rồi đẩy thùng n ô', 'che-day-thung', 'che-day-thung.6'),
-    m('push_back', 'xich', 'Quay đầu rồi đẩy thùng ở phía sau n ô', 'che-day-thung', 'che-day-thung.9')
+    m('push_back', 'xich', 'Quay đầu rồi đẩy thùng ở phía sau n ô', 'che-day-thung', 'che-day-thung.9'),
+    // chương che-luc-ban · Hàm lực bắn (quick_aim, shot_right là hàm của màn nên không có ở đây)
+    m('aim_fire', 'hoi', 'Mắt hồng ngoại đo: nút xa từ 2 ô trống thì bắn tụ, gần hơn thì bắn nhanh', 'che-luc-ban', 'che-luc-ban.1'),
+    m('aim_left', 'hoi', 'Quay trái, tự chọn lực bắn nút bên trái, rồi quay lại', 'che-luc-ban', 'che-luc-ban.2'),
+    m('aim_right', 'hoi', 'Quay phải, tự chọn lực bắn nút bên phải, rồi quay lại', 'che-luc-ban', 'che-luc-ban.4'),
+    m('fire_left', 'hoi', 'Quay trái, bắn với lực p, rồi quay lại', 'che-luc-ban', 'che-luc-ban.5'),
+    m('close_fire', 'hoi', 'Đi tới sát nút rồi bắn nhanh, xe đứng yên', 'che-luc-ban', 'che-luc-ban.6'),
+    m('scan_left', 'hoi', 'Hai lần: tự chọn lực bắn nút bên trái rồi tiến một ô', 'che-luc-ban', 'che-luc-ban.7'),
+    m('aim_turn', 'hoi', 'Tự chọn lực bắn nút trước mặt rồi quay trái', 'che-luc-ban', 'che-luc-ban.8')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
