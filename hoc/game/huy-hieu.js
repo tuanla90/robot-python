@@ -411,6 +411,42 @@
     themBanhRang(p);
     return p;
   };
+  /** Nút bắn ĐANG BẬT nhìn thẳng (khối tường xám, núm đỏ sáng) có quầng đỏ và ba làn hơi nóng bốc lên; x0, y0: góc trái trên của khung 16 × 18. */
+  function veNutNong(p, x0, y0) {
+    var M = [
+      '....r.....r.....',
+      '...r.....r....r.',
+      '....r.....r..r..',
+      '...r.....r....r.',
+      '..oooooooooooo..',
+      '.ooXXXXXXXXXXoo.',
+      'ooXggggggggggXoo',
+      'oXgsssssssssgXo.',
+      'oXgsgsXXXXsgsXo.',
+      'oXgsgXRRRRXgsXo.',
+      'oXgsXRwRRRdXsXo.',
+      'oXgsXRRRRRdXsXo.',
+      'oXgsXRRRRddXsXo.',
+      'oXgsgXddddXgsXo.',
+      'oXgsssXXXXsssXo.',
+      'ooXggggggggggXoo',
+      '.ooXXXXXXXXXXoo.',
+      '..oooooooooooo..'
+    ];
+    var CB = { X: INK, g: '#8d93a1', s: '#b9becb', R: '#ff3b2f', w: '#ffd9cf', d: '#b3191a', o: '#ffb0a0', r: '#ff6a3d' };
+    for (var j = 0; j < M.length; j++) for (var i = 0; i < M[j].length; i++) { var c = M[j].charAt(i); if (c !== '.') p.px(x0 + i, y0 + j, CB[c]); }
+  }
+  HINH['do-nhiet'] = function () {                              // nút bắn đang bật: núm đỏ, quầng đỏ, hơi nóng bốc lên
+    var p = P(T26, T26);
+    veNutNong(p, 5, 5);
+    return p;
+  };
+  HINH['che-do-nhiet'] = function () {                          // nút nóng + bánh răng
+    var p = P(T26, T26);
+    veNutNong(p, 1, 7);
+    themBanhRang(p);
+    return p;
+  };
   HINH['che-omni'] = function () {                              // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
     var p = P(T26, T26), t = thanPart('omni');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
