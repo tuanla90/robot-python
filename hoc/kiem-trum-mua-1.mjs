@@ -46,12 +46,12 @@ const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const LOI_GIA = process.argv.includes('--loi-gia');
 if (LOI_GIA) {
-  // Lỗi giả: sai ngưỡng nhịp, hai màn liền nhau cùng kiểu bài, một trùm mùa 1 mất huy hiệu, một màn mới khai thiếu hàm cần, cất thêm một màn đội (recall gói 8).
+  // Lỗi giả: sai ngưỡng nhịp, hai màn liền nhau cùng kiểu bài, một trùm mùa 1 mất huy hiệu, một màn mới khai thiếu hàm cần, màn đội của gói 10 còn một robot (recall gói 8 tụt còn 2).
   const a = M.timMa('trum-mua-1.3'); a.sao = Object.assign({}, a.sao, { nhip: a.sao.nhip - 1 });
   M.timMa('trum-mua-1.2').kieuBai = M.timMa('trum-mua-1.1').kieuBai;
   delete M.timMa('me-cung.10').huyHieu;
   M.timMa('trum-mua-1.1').hamCuaEmCan = M.timMa('trum-mua-1.1').hamCuaEmCan.filter((h) => h !== 'back');
-  for (const m of M.danhSach) if (m.chuong === 'trum-mua-1' && m.doi) { m.kieuBai = 'giao-hang'; delete m.doi; }
+  for (const m of M.danhSach) if (m.chuong === 'trum-mua-1' && m.doi) { m.kieuBai = 'giao-hang'; m.doi = m.doi.slice(0, 1); m.loiGiai.doi = m.loiGiai.doi.slice(0, 1); }
 }
 
 let dat = 0, hong = 0;
