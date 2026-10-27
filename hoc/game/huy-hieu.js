@@ -455,7 +455,7 @@
     return p;
   };
 
-  HINH['hai-robot'] = function () {                            // đội hai robot: hai xe nhỏ nhìn từ trên, sơn vàng (R1) và lam (R2) như trên sân, thùng hàng chuyền ở giữa
+  HINH['hai-robot'] = function () {                             // đội hai robot: hai xe nhỏ nhìn từ trên, sơn vàng (R1) và lam (R2) như trên sân, thùng hàng chuyền ở giữa
     var p = P(30, 26);
     function xe(son) {                                          // xe 12×12 quay lên: hai bánh, thân sơn màu đội, kính + hai mắt
       var q = P(12, 12), s = Part.SON[son];
