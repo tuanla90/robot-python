@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    mo-dau.js — "Robot Chấn Hưng": PHIM MỞ ĐẦU (window.MoDau), kiểu cảnh mở của Cut the Rope.
    Sáu khung hoạt hình pixel, mỗi khung một câu: xe chở linh kiện sụp ổ gà ở cửa xưởng, bộ phận văng khắp xưởng,
@@ -16,7 +17,7 @@
   var CO = 'mo-dau';
   var SO_KHUNG = 6;
   var R1 = { than: 'hai-banh', tay: null, camBien: [] };
-  var VANG = '#ffd95a', MUC = '#1b120a';
+  var VANG = BM.moDauVANG, MUC = BM.ink;
 
   var hen = [];                                   // hẹn giờ tiếng của khung đang chiếu (đổi khung thì hủy)
   function sau(ms, f) { hen.push(setTimeout(f, ms)); }
@@ -54,10 +55,10 @@
 
   // bốn bộ phận văng ra: icon đèn bộ phận + màu
   var DO = [
-    { ten: 'denKepMo', mau: '#ffd95a', x: -120, y: 40, r: '-200deg' },
-    { ten: 'denCam', mau: '#7ff0ff', x: 110, y: 30, r: '160deg' },
-    { ten: 'denXich', mau: '#c0c6d4', x: -70, y: -40, r: '-90deg' },
-    { ten: 'denCanh', mau: '#a8dc72', x: 80, y: -90, r: '540deg' }
+    { ten: 'denKepMo', mau: BM.moDauDo1, x: -120, y: 40, r: '-200deg' },
+    { ten: 'denCam', mau: BM.moDauDo2, x: 110, y: 30, r: '160deg' },
+    { ten: 'denXich', mau: BM.moDauDo3, x: -70, y: -40, r: '-90deg' },
+    { ten: 'denCanh', mau: BM.moDauDo4, x: 80, y: -90, r: '540deg' }
   ];
 
   /* ------------------------------------------------------------- bảy khung */
@@ -67,15 +68,15 @@
       nen(k, 'md-mua'); nen(k, 'md-duong');
       var xe = h('div', 'md-a md-xe'); xe.style.top = '106px';
       var nhun = h('div', 'md-nhun');
-      nhun.appendChild(dat(ico('box', 3, '#c98a45'), 6, 0));
-      nhun.appendChild(dat(ico('car', 6, '#e8504a'), 0, 26));
+      nhun.appendChild(dat(ico('box', 3, BM.moDauKhung1), 6, 0));
+      nhun.appendChild(dat(ico('car', 6, BM.moDauKhung2), 0, 26));
       xe.appendChild(nhun); k.appendChild(xe);
     },
     // 2 · sụp ổ gà, thùng bật, đồ văng
     function (k) {
       nen(k, 'md-mua'); nen(k, 'md-duong');
-      k.appendChild(dat(ico('car', 6, '#e8504a'), 118, 132, 'md-rung'));
-      k.appendChild(dat(ico('box', 3, '#c98a45'), 124, 106, 'md-bat'));
+      k.appendChild(dat(ico('car', 6, BM.moDauKhung2), 118, 132, 'md-rung'));
+      k.appendChild(dat(ico('box', 3, BM.moDauKhung1), 124, 106, 'md-bat'));
       DO.forEach(function (d, i) {
         var vx = h('div', 'md-a md-vx'); vx.style.left = '140px'; vx.style.top = '110px';
         vx.style.setProperty('--x', d.x + 'px'); vx.style.animationDelay = (0.12 + i * 0.05) + 's';
@@ -89,10 +90,10 @@
     function (k) {
       nen(k, 'md-san');
       k.appendChild(dat(o('wall', 3), 18, 66)); k.appendChild(dat(o('wall', 3), 60, 66));
-      k.appendChild(dat(ico('denXich', 3, '#c0c6d4'), 40, 36, 'md-lac'));
-      k.appendChild(dat(ico('denKepMo', 3, '#ffd95a'), 228, 156, 'md-lac'));      // thò nửa ra khỏi gầm tủ (thùng vẽ sau, che nửa trái)
+      k.appendChild(dat(ico('denXich', 3, BM.moDauKhung3), 40, 36, 'md-lac'));
+      k.appendChild(dat(ico('denKepMo', 3, BM.moDauKhung4), 228, 156, 'md-lac'));      // thò nửa ra khỏi gầm tủ (thùng vẽ sau, che nửa trái)
       k.appendChild(dat(o('crate', 5), 178, 104));
-      k.appendChild(dat(ico('denCanh', 2, '#a8dc72'), 250, 70, 'md-mat'));
+      k.appendChild(dat(ico('denCanh', 2, BM.moDauKhung5), 250, 70, 'md-mat'));
       k.appendChild(chu('md-hoi md-hoi-xa', '?'));
     },
     // 4 · còn lại mỗi R1
