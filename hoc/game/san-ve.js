@@ -34,7 +34,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    khung nét đứt ở chỗ cũ; Field.xoayXe() = hoạt cảnh xe xoay 90°. Việc chạm / kéo nằm ở xuong-ham.js (pointer events); ở đây chỉ vẽ.
    CHẾ ĐỘ VECTOR (gói V1, 27/10, ve-vector.js; bật ?ve=vector, mặc định pixel): canvas sân lấy độ phân giải pixel THIẾT BỊ (pxO px mỗi ô, datDoPhanGiai) và vẽ qua phép phóng sv = pxO / T,
    nên mọi hiệu ứng vẫn tính theo pixel sân (T = 14 mỗi ô) như cũ; ô sàn / tường / cờ và thùng gỗ lấy canvas đệm vector đúng cỡ (oVec, hinhVat) vẽ 1:1 nên nét ở mọi cỡ ô;
-   ô / vật chưa có hình vector (bậc thang, băng, nút, cửa, rào, sạc, sàn màu, khối sắt, thùng nặng…) tạm phóng hình pixel cũ (gói V2). Robot vector do VeRobot trả về (cờ .laVector:
+   gói V2: MỌI ô (veOVec: bậc thang, băng, nút bắn / đè, cửa, rào, sạc, sàn màu, hố, gầm, bàn xoay, cổng, ô đích) và mọi vật (hinhVat / veVatVec: thùng gỗ, khối sắt,
+   nam châm; thùng nặng; bóng hơi) cùng ảnh nhỏ thuSan (thuOVec, theo VeVector.KY_HIEU) vẽ bằng hình vector; trạng thái (pha băng, độ mở cửa…) là tham số của hình,
+   còn quầng nóng / lóe / kẹt đỏ / nét đứt chạy của ô đích là lệnh trực tiếp theo pixel sân (nét nhờ sv). Robot vector do VeRobot trả về (cờ .laVector:
    đúng một ô, bóng đổ nằm trong hình, không vẽ vạch đế / mắt động / bóng tay riêng). Chế độ pixel: mọi đường đi y nguyên (sv = 1, canvas T px mỗi ô).
    Không chứa luật chơi: mọi kết quả (vị trí, hướng, sự kiện) đến từ lõi (SanHoc).
    ========================================================================== */
