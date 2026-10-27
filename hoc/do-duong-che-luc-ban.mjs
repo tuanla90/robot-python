@@ -413,7 +413,7 @@ export function timLoiNeKhoa(m, tenX, kho, chamThan, tuy = {}) {
     if (P.dung && P.laDich && thang.includes(x) && r.nhip <= i0 + x.length) return;     // đã tới đích ngay trong lần gọi đầu
     if (x.length >= dai) return;
     for (const [ch, kn] of canh.get(k) || []) {
-      if (P.dung && (!con.has(kn) || c + 1 + con.get(kn) > gioiHan)) continue;
+      if (!con.has(kn) || c + 1 + con.get(kn) > gioiHan) continue;
       di(kn, c + 1, x + ch);
     }
   })(k, i0, '');
