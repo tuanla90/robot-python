@@ -411,7 +411,7 @@
     themBanhRang(p);
     return p;
   };
-  HINH['che-omni'] = function () {                           // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
+  HINH['che-omni'] = function () {                              // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
     var p = P(T26, T26), t = thanPart('omni');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
     themBanhRang(p);
