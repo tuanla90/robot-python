@@ -1,12 +1,15 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Xem bộ vẽ vector (gói V1–V2)</title>
+<title>Xem bộ vẽ vector (gói V1–V3)</title>
 <style>
   body{margin:0;background:var(--g-vecSanToi);font-family:system-ui,sans-serif;color:var(--g-vecVien);padding:16px}
   h2{font-size:15px;font-weight:600;margin:18px 0 8px}
   .hang{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
   .o{background:var(--g-vecVo);border:1px solid var(--g-vecVoToi);border-radius:10px;padding:10px}
   .o p{margin:6px 0 0;font-size:12px;color:var(--g-vecBacToi)}
+  .v3 .o{padding:6px}
+  .v3 .o p{font-size:11px;max-width:300px}
+  .cam{font-size:11px;color:var(--g-vecDo);width:64px;height:64px;display:flex;align-items:center;justify-content:center;text-align:center}
   canvas{display:block}
 </style>
 <script src="../game/bang-mau.js"></script>
@@ -18,6 +21,17 @@
 <script src="../game/ve-vector-ky-hieu.js"></script>
 <script src="../game/ve-vector-than-hai-banh.js"></script>
 <script src="../game/ve-vector-tay-kep.js"></script>
+<script src="../game/ve-vector-cam.js"></script>
+<script src="../game/ve-vector-than-xich.js"></script>
+<script src="../game/ve-vector-than-nhen.js"></script>
+<script src="../game/ve-vector-than-omni.js"></script>
+<script src="../game/ve-vector-than-drone.js"></script>
+<script src="../game/ve-vector-tay-nam-cham.js"></script>
+<script src="../game/ve-vector-tay-nem.js"></script>
+<script src="../game/ve-vector-tay-hoi.js"></script>
+<script src="../game/ve-vector-tay-xoay.js"></script>
+<script src="../game/ve-vector-tay-son.js"></script>
+<!--V3-->
 </head><body>
 <h2>Trang xem bộ vẽ vector (hoc/game/ve-vector*.js) — cùng kho hình mà sân dùng ở chế độ ?ve=vector. Mỗi canvas rasterise đúng pixel thiết bị (dpr = <span id="dpr"></span>).</h2>
 <h2>Sân mẫu (như thu-vector.html): # tường, . sàn, F cờ, c thùng, R robot</h2>
@@ -120,5 +134,98 @@
     document.getElementById('san-v2').appendChild(khung(cv, 0, 'ký hiệu theo thứ tự: ' + ky.join(' ')));
     cv.style.width = (css * (cot + 2)) + 'px'; cv.style.height = (css * (hangSo + 2)) + 'px';
   })();
+</script>
+<h2 id="v3">Gói V3 — robot: 5 thân × (không tay + 6 tay) × 4 hướng (lên · phải · xuống · trái), ô <span id="co-v3"></span> px CSS. Ô "cấm" = cấu hình Part.ghep cũng từ chối (câu báo ở dưới)</h2>
+<div class="v3" id="v3-ma-tran"></div>
+<h2>Gói V3 — cảm biến ở mọi ổ hợp lệ của mọi thân (tắt · đang đọc), 4 hướng; camera = hai mắt ống kính trên kính (đang đọc: sáng rực)</h2>
+<div class="v3" id="v3-cam"></div>
+<h2>Gói V3 — trạng thái động chính (hướng xuống, ô 96 px)</h2>
+<div class="v3 hang" id="v3-trang-thai"></div>
+<h2>Gói V3 — màu đội trên mọi thân: R1 · R2 · đối thủ · sơn ngọc / cam / trắng / hoàng kim (ô 48 px và 28 px)</h2>
+<div class="v3" id="v3-doi"></div>
+<h2>Gói V3 — cấu hình cấm (VeVector.kiemGhep ném đúng câu báo của Part.ghep)</h2>
+<div class="v3" id="v3-cam-loi"></div>
+<script>
+(function () {
+  var V = window.VeVector, dpr = window.devicePixelRatio || 1, HUONG = ['lên', 'phải', 'xuống', 'trái'];
+  var THAN = V.ds('than'), TAY = [null].concat(V.ds('tay')), CO = 64;
+  document.getElementById('co-v3').textContent = CO;
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  /** Một ô: nền sàn + (vật trong kẹp nếu có) + robot (canvas robot có thể rộng hơn ô: tay xoay vươn sang ô bên → đặt giữa, phần thừa tràn ra lề). */
+  function oRobot(css, cfg, st, h, vat) {
+    var n = Math.round(css * dpr), tran = V.tranCua(cfg), pad = Math.round(n * tran), W = n + 2 * pad;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = W; cv.style.width = cv.style.height = (W / dpr) + 'px';
+    var g = cv.getContext('2d');
+    g.drawImage(V.o('san', n), pad, pad);
+    var r;
+    try { r = V.robot(cfg, st, h, n); } catch (e) { return el('div', 'cam', 'cấm'); }
+    if (!r) return el('div', 'cam', 'thiếu hình');
+    var hh = V.lay('than', cfg.than).khongHuong ? 0 : h;
+    if (vat && cfg.tay) {
+      var tt = st.tay || {}, p = n / 100, a = hh * Math.PI / 2, x, y, sz;
+      if (cfg.tay === 'xoay') { var q = V.vatXoay(cfg, tt.tuThe, typeof tt.goc === 'number' ? tt.goc : ({ trai: -90, phai: 90 }[tt.xoay] || 0)); x = W / 2 + (Math.sin(a) * q.f + Math.cos(a) * q.l) * p; y = W / 2 + (-Math.cos(a) * q.f + Math.sin(a) * q.l) * p; sz = q.n * p; }
+      else { var k = V.vatKep(cfg, tt.tuThe); if (k) { x = W / 2 + Math.sin(a) * k.ahead * p; y = W / 2 - Math.cos(a) * k.ahead * p; sz = k.n * p; } }
+      if (sz) g.drawImage(V.vat(vat, Math.round(sz)), Math.round(x - sz / 2), Math.round(y - sz / 2), Math.round(sz), Math.round(sz));
+    }
+    g.drawImage(r, (W - r.width) / 2, (W - r.height) / 2);
+    return cv;
+  }
+  function khungO(noi, nhan) { var d = el('div', 'o'); var r = el('div', 'hang'); r.style.gap = '4px'; r.style.alignItems = 'center'; noi.forEach(function (c) { r.appendChild(c); }); d.appendChild(r); d.appendChild(el('p', '', nhan)); return d; }
+  /* 1. ma trận thân × tay × 4 hướng */
+  var mt = document.getElementById('v3-ma-tran');
+  THAN.forEach(function (than) {
+    mt.appendChild(el('h2', '', 'thân ' + than + ' — ' + V.lay('than', than).ten));
+    var hang = el('div', 'hang'); mt.appendChild(hang);
+    TAY.forEach(function (tay) {
+      var cfg = { than: than, tay: tay }, st = tay ? { tay: { kep: 'mo', tuThe: 'tren' } } : {};
+      hang.appendChild(khungO([0, 1, 2, 3].map(function (h) { return oRobot(CO, cfg, st, h); }), tay ? 'tay ' + tay : 'không tay'));
+    });
+  });
+  /* 2. cảm biến ở mọi ổ hợp lệ */
+  var mc = document.getElementById('v3-cam');
+  THAN.forEach(function (than) {
+    var hang = el('div', 'hang'); mc.appendChild(el('h2', '', 'thân ' + than)); mc.appendChild(hang);
+    V.ds('cam-bien').forEach(function (cb) {
+      var d = V.lay('cam-bien', cb), gan = Array.isArray(d.gan) ? d.gan : [d.gan];
+      gan.forEach(function (o) {
+        var cfg = { than: than, tay: null, camBien: [{ ma: cb, o: o }] };
+        try { V.kiemGhep(cfg); } catch (e) { return; }
+        var o1 = [0, 1, 2, 3].map(function (h) { return oRobot(CO, cfg, { camBien: { bat: false } }, h); }), o2 = [oRobot(CO, cfg, { camBien: { bat: true, mat: true } }, 2)];
+        hang.appendChild(khungO(o1.concat(o2), cb + ' @ ' + o + ' (4 hướng + đang đọc)'));
+      });
+    });
+  });
+  /* 3. trạng thái động */
+  var TT = [
+    [{ than: 'hai-banh', tay: 'kep' }, { tay: { kep: 'mo', tuThe: 'tren' } }, 0, 'kẹp mở'], [{ than: 'hai-banh', tay: 'kep' }, { tay: { kep: 'dong', tuThe: 'tren' } }, 0, 'kẹp đóng'],
+    [{ than: 'hai-banh', tay: 'kep' }, { tay: { kep: 'dong', cam: true, tuThe: 'tren' } }, 'thung-go', 'kẹp ôm vật'], [{ than: 'hai-banh', tay: 'kep' }, { tay: { kep: 'dong', cam: true, tuThe: 'duoi' } }, 'thung-go', 'kẹp hạ ôm'],
+    [{ than: 'hai-banh', tay: 'nam-cham' }, { tay: {} }, 0, 'nam châm tắt'], [{ than: 'hai-banh', tay: 'nam-cham' }, { tay: { bat: true, cuc: 'N' } }, 0, 'nam châm hút N'], [{ than: 'hai-banh', tay: 'nam-cham' }, { tay: { bat: true, cuc: 'S' } }, 0, 'nam châm hút S'],
+    [{ than: 'drone', tay: 'nam-cham' }, { tay: { bat: true, cuc: 'N' } }, 0, 'drone: nam châm treo hút'],
+    [{ than: 'hai-banh', tay: 'hoi' }, { tay: {} }, 0, 'súng nạp'], [{ than: 'hai-banh', tay: 'hoi' }, { tay: { dangBanTruoc: true } }, 0, 'súng bắn trước'], [{ than: 'hai-banh', tay: 'hoi' }, { tay: { dangBanSau: true } }, 0, 'súng bắn sau'],
+    [{ than: 'xich', tay: 'hoi' }, { tay: { dangBanTruoc: true, dangBanSau: true } }, 0, 'xích: bắn hai nòng'],
+    [{ than: 'hai-banh', tay: 'nem' }, { tay: { ngam: 1 } }, 0, 'máy ném tầm 1'], [{ than: 'hai-banh', tay: 'nem' }, { tay: { ngam: 3, cam: true } }, 0, 'tầm 3, có vật'], [{ than: 'hai-banh', tay: 'nem' }, { tay: { ngam: 2, dangNem: true } }, 0, 'đang ném'],
+    [{ than: 'hai-banh', tay: 'son' }, { tay: { mauSon: 'red' } }, 0, 'sơn đỏ nhấc'], [{ than: 'hai-banh', tay: 'son' }, { tay: { mauSon: 'green', tuThe: 'duoi' } }, 0, 'sơn xanh lá hạ'], [{ than: 'hai-banh', tay: 'son' }, { tay: { mauSon: 'blue' } }, 0, 'sơn xanh dương'], [{ than: 'hai-banh', tay: 'son' }, { tay: { mauSon: 'yellow', tuThe: 'duoi' } }, 0, 'sơn vàng hạ'],
+    [{ than: 'nhen' }, {}, 0, 'nhện đứng'], [{ than: 'nhen' }, { than: { co: true } }, 0, 'nhện co'], [{ than: 'nhen' }, { than: { buoc: 1 } }, 0, 'nhện bước'], [{ than: 'nhen', tay: 'kep' }, { than: { co: true }, tay: { kep: 'mo' } }, 0, 'nhện co + kẹp'],
+    [{ than: 'xich' }, { than: { banh: { trai: 1, phai: 1 }, buoc: 0 } }, 0, 'xích chạy nhịp 0'], [{ than: 'xich' }, { than: { banh: { trai: 1, phai: 1 }, buoc: 1 } }, 0, 'xích chạy nhịp 1'],
+    [{ than: 'drone' }, { than: { quat: false } }, 0, 'drone nằm (quạt dừng)'], [{ than: 'drone' }, { than: { quat: true, buoc: 0 } }, 0, 'drone bay nhịp 0'], [{ than: 'drone' }, { than: { quat: true, buoc: 1 } }, 0, 'drone bay nhịp 1'], [{ than: 'drone' }, { than: { quat: true, doc: true } }, 0, 'drone đo pin']
+  ];
+  [-90, -45, 0, 45, 90].forEach(function (a) { TT.push([{ than: 'hai-banh', tay: 'xoay' }, { tay: { kep: 'dong', cam: true, goc: a } }, 'thung-go', 'tay xoay ' + a + '°']); });
+  TT.push([{ than: 'hai-banh', tay: 'xoay' }, { tay: { kep: 'mo', xoay: 'trai', tuThe: 'duoi' } }, 0, 'tay xoay trái, hạ, mở']);
+  var vt = document.getElementById('v3-trang-thai');
+  TT.forEach(function (q) { vt.appendChild(khungO([oRobot(96, q[0], q[1], 2, q[2] || null)], q[3])); });
+  /* 4. màu đội */
+  var vd = document.getElementById('v3-doi'), SON = [['', 'R1'], ['lam', 'R2'], ['do', 'đối thủ'], ['ngoc', 'ngọc'], ['cam', 'cam'], ['trang', 'trắng'], ['hoang-kim', 'hoàng kim']];
+  THAN.forEach(function (than) {
+    var hang = el('div', 'hang'); vd.appendChild(hang);
+    SON.forEach(function (s) { hang.appendChild(khungO([oRobot(48, { than: than, tay: than === 'drone' ? 'nam-cham' : 'kep', son: s[0] }, { tay: { kep: 'mo' } }, 1), oRobot(28, { than: than, tay: null, son: s[0] }, {}, 1)], than + ' · ' + s[1])); });
+  });
+  /* 5. cấu hình cấm */
+  var vc = document.getElementById('v3-cam-loi');
+  [{ than: 'drone', camBien: [{ ma: 'camera', o: 'tren' }] }, { than: 'drone', tay: 'kep' }, { than: 'drone', camBien: [{ ma: 'cham', o: 'hong' }] }, { than: 'hai-banh', camBien: [{ ma: 'camera-bay', o: 'bung' }] },
+    { than: 'hai-banh', camBien: [{ ma: 'camera', o: 'tren' }, { ma: 'mau', o: 'hong' }] }, { than: 'xich', camBien: [{ ma: 'hong-ngoai', o: 'hongTrai' }] }].forEach(function (cfg) {
+    var m = ''; try { V.kiemGhep(cfg); m = '(không ném — SAI)'; } catch (e) { m = e.message; }
+    vc.appendChild(el('p', '', JSON.stringify(cfg) + ' → ' + m));
+  });
+})();
 </script>
 </body></html>

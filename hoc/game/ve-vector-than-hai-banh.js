@@ -1,13 +1,18 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-than-hai-banh.js — THÂN HAI BÁNH vector (thân A của hoc/hinh-mau/thu-vector.html, user chốt 27/10): vỏ vuông bo góc lớn trắng toả sáng,
    đường ghép tím nhạt chạy dọc, kính dải ngang + hai mắt viên thuốc, hai bánh con nhộng viền cyan, ăng-ten có chấm. Quay mặt XUỐNG trong hệ 100 × 100,
-   tâm thân (50, 56) = VeVector.TAM_THAN; ổ gắn tay ở (50, 80) (mép dưới vỏ: tay kẹp nhô ra trước mũi).
-   Màu đội M = { chinh, toi } (VeVector.mauDoi): kính (gradient toi → chinh), hai mắt (chinh pha sáng: viền mắt), chấm ăng-ten (chinh).
-   Trạng thái s: banh { trai, phai } (bánh đang quay) + buoc (0 | 1, nhịp) → gạch bánh dịch một nấc; camera / camSang: chưa dùng (V3).
-   Thêm một thân: VeVector.dangKy({ loai: 'than', ma, ten, oGan: { tay: {x, y} }, ve(g, s, M, H) }) — vẽ quay xuống, tâm ở TAM_THAN. */
+   tâm thân (50, 56) = VeVector.TAM_THAN. Thân A là CHUẨN "gia đình" cho mọi thân (gói V3: xích, nhện, omni, drone dùng chung H.kinh + H.angTen).
+   Ổ gắn (oGan, hệ của thân; mặt quay xuống nên bên TRÁI xe là phía x LỚN):
+     tay (50, 80)       mép dưới vỏ: tay nhô ra trước mũi;
+     hongTrai (95, 54)  hongPhai (5, 54)   ngoài hai bánh, giữa thân (cảm biến khoảng cách / màu / cần gạt);
+     tren (71, 76)      góc mũi bên trái (cảm biến hồng ngoại; camera không có hình riêng: là hai mắt trên kính);
+     sau (36, 25)       đuôi, lệch trái cột ăng-ten (nòng sau của súng hơi).
+   Màu đội M = { chinh, toi } (VeVector.mauDoi): kính (gradient toi → chinh), hai mắt (viền chinh), chấm ăng-ten (chinh) — đúng ba chỗ.
+   Trạng thái s: banh { trai, phai } (bánh đang quay) + buoc (0 | 1, nhịp) → gạch bánh dịch một nấc; camera / camSang: hai mắt là ống kính / đang đọc (sáng rực).
+   Thêm một thân: VeVector.dangKy({ loai: 'than', ma, ten, oGan: { tay: {x, y}, … }, ve(g, s, M, H) }) — vẽ quay xuống, tâm ở TAM_THAN. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
-  V.dangKy({ loai: 'than', ma: 'hai-banh', ten: 'Thân hai bánh (A)', oGan: { tay: { x: 50, y: 80 } }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'than', ma: 'hai-banh', ten: 'Thân hai bánh (A)', oGan: { tay: { x: 50, y: 80 }, hongTrai: { x: 95, y: 54 }, hongPhai: { x: 5, y: 54 }, tren: { x: 71, y: 76 }, sau: { x: 36, y: 25 } }, ve: function (g, s, M, H) {
     var quay = s && s.banh && (s.banh.trai || s.banh.phai), lech = quay && s.buoc ? 4 : 0, i, y;
     /* hai bánh con nhộng */
     [10, 74].forEach(function (x) { H.bo(g, x, 36, 16, 44, 8); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 3); });
@@ -19,11 +24,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 20, 23, 60, 58, 20); g.fillStyle = H.gradVo(g, 20, 23, 60, 58); g.fill(); H.vien(g, BM.vecVien, 3.5);
     H.duong(g, 'M33 31 C31 41 31 51 33 60 M67 31 C69 41 69 51 67 60 M50 23 v12'); H.vien(g, BM.vecVoGhep, 2.5);
     H.duong(g, 'M30 33 C33 28 39 27 46 27'); H.vien(g, BM.vecVo, 4);
-    /* kính dải ngang + hai mắt viên thuốc (màu đội) */
-    H.bo(g, 27, 57, 46, 17, 8.5); g.fillStyle = H.gradDoc(g, 0, 57, 0, 74, [[0, M.toi], [1, M.chinh]]); g.fill(); H.vien(g, BM.vecVien, 2.5);
-    [37, 56].forEach(function (x) { H.bo(g, x, 60.5, 7, 10, 3.5); H.to(g, BM.vecMat); H.vien(g, M.chinh, 1); });
-    /* ăng-ten: cột bạc + chấm màu đội */
-    H.duong(g, 'M50 24 v-9'); H.vien(g, BM.vecBacToi, 3);
-    H.tron(g, 50, 12, 5); H.to(g, M.chinh); H.vien(g, BM.vecVien, 2);
+    /* kính dải ngang + hai mắt viên thuốc (màu đội), ăng-ten có chấm màu đội */
+    H.kinh(g, M, 27, 57, 46, 17, s);
+    H.angTen(g, M, 50, 24, 12, 5);
   } });
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -29,15 +29,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.duong(g, CHU[cuc]); H.vien(g, BM.vecVo, 7);
   } });
 
-  /* THÙNG NẶNG (H, h — chương súng hơi, bị đẩy / hất đi): thùng thép XÁM ĐẬM lớn gần trọn ô (khác khối sắt nhỏ xám nhạt, khác mái gầm sọc vàng), khung viền nổi,
-     thanh giằng chéo chữ X trên tấm giữa, bốn đinh tán lớn ở góc khung, vệt sáng mép trên. */
+  /* THÙNG NẶNG (H, h — chương súng hơi, bị đẩy / hất đi): thùng THÉP TỐI xám xanh đậm (vecThep*, gói V3: tông riêng, không lẫn khối sắt xám bạc nhạt, khác mái gầm sọc vàng),
+     lớn gần trọn ô, khung viền nổi, tấm giữa thép tối hơn, thanh giằng chéo chữ X sáng, bốn đinh tán lớn ở góc khung, vệt sáng mép trên. */
   V.dangKy({ loai: 'vat', ma: 'thung-nang', ten: 'Thùng nặng', cacTrangThai: [{}], ve: function (g, s, H) {
     H.bo(g, 8, 10, 86, 86, 12); H.to(g, H.rgba(BM.vecVienRgb, 0.16));                                  // bóng đổ lệch phải-dưới (vẽ trong ảnh: thùng đứng trên ô)
-    H.bo(g, 6, 6, 86, 86, 12); g.fillStyle = H.gradDoc(g, 0, 6, 0, 92, [[0, BM.vecSatToi], [1, BM.vecDinhVien]]); g.fill(); H.vien(g, BM.vecVien, 3.5);
-    H.bo(g, 20, 20, 58, 58, 5); H.to(g, BM.vecSatGiua); H.vien(g, BM.vecVien, 2.5);
+    H.bo(g, 6, 6, 86, 86, 12); g.fillStyle = H.gradDoc(g, 0, 6, 0, 92, [[0, BM.vecThep], [1, BM.vecThepToi]]); g.fill(); H.vien(g, BM.vecVien, 3.5);
+    H.bo(g, 20, 20, 58, 58, 5); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2.5);
     H.duong(g, 'M24 24 L74 74 M74 24 L24 74'); H.vien(g, BM.vecVien, 9);
-    H.duong(g, 'M24 24 L74 74 M74 24 L24 74'); H.vien(g, BM.vecSat, 5);
-    H.duong(g, 'M18 12 H80'); H.vien(g, BM.vecSat, 3);
+    H.duong(g, 'M24 24 L74 74 M74 24 L24 74'); H.vien(g, BM.vecThepSang, 5);
+    H.duong(g, 'M18 12 H80'); H.vien(g, BM.vecThepSang, 3);
     dinh(g, H, 13.5, 13.5, 4.5); dinh(g, H, 84.5, 13.5, 4.5); dinh(g, H, 13.5, 84.5, 4.5); dinh(g, H, 84.5, 84.5, 4.5);
   } });
 

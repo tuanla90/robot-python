@@ -64,12 +64,27 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* SÀN MÀU (r g b y, hay lớp màu riêng): tấm sơn đầy ô, gradient từ màu sáng xuống màu nền, viền tối cùng họ màu, vệt bóng trắng như ô sàn lab.
      Màu lấy nhóm LUAT (luatSan*): là màu luật chơi (cảm biến đọc, ô đích màu) nên phải trùng với bộ pixel và phân biệt rõ trên sân trắng. */
+  /* DẤU HÌNH theo màu (gói V3, cho người mù màu): đỏ = tròn, xanh lá = tam giác, xanh dương = vuông, vàng = sao năm cánh. Trắng viền chàm, ở góc dưới phải
+     (tâm 74, 74; vật nằm đất chỉ phủ 21..79 nên dấu vẫn ló ra một phần khi có vật; robot đứng trên thì che). Cùng bộ dấu cho mọi chỗ cần đọc màu không qua sắc. */
+  function dauHinh(g, H, mau, cx, cy, r) {
+    if (mau === 'green') { g.beginPath(); g.moveTo(cx, cy - r * 1.1); g.lineTo(cx + r * 1.05, cy + r * 0.75); g.lineTo(cx - r * 1.05, cy + r * 0.75); g.closePath(); }
+    else if (mau === 'blue') H.bo(g, cx - r * 0.85, cy - r * 0.85, r * 1.7, r * 1.7, r * 0.2);
+    else if (mau === 'yellow') {
+      g.beginPath();
+      for (var i = 0; i < 10; i++) { var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.48 : r * 1.12; g[i ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); }
+      g.closePath();
+    } else H.tron(g, cx, cy, r * 0.9);
+    H.vien(g, BM.vecVien, 4.5); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 2);
+  }
+  V.dauHinhMau = dauHinh;
+  V.DAU_HINH = { red: 'tron', green: 'tam-giac', blue: 'vuong', yellow: 'sao' };
   V.dangKy({ loai: 'o', ma: 'san-mau', ten: 'Sàn màu', ky: ['r', 'g', 'b', 'y'], cacTrangThai: MAU.map(function (m) { return { mau: m }; }), ve: function (g, s, H) {
     var c = mauSan(s.mau);
     nenLuoi(g);
     H.bo(g, 3, 3, 94, 94, 6); g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, [[0, c.s], [1, c.n]]); g.fill(); H.vien(g, c.t, 3);
     H.bo(g, 11, 11, 78, 78, 4); H.vien(g, c.vi, 2);
     H.duong(g, 'M16 32 L32 16'); g.globalAlpha = 0.6; H.vien(g, BM.vecVo, 5); g.globalAlpha = 1;
+    dauHinh(g, H, MAU_SAN[s.mau] ? s.mau : 'red', 74, 74, 10);
   } });
 
   /* Ô SẠC của drone (P, vẽ đè lên sàn): đế tối bo góc, vòng cyan, tia chớp vàng ở giữa, bốn đèn góc nháy luân phiên theo s.pha (0 / 1). */

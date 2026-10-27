@@ -12,7 +12,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.beginPath();
     [-1, 1].forEach(function (k) { g.moveTo(50 + k * 12, 84); g.bezierCurveTo(50 + k * d1, 90, 50 + k * d2, 98, 50 + k * t, yDau); });
   }
-  V.dangKy({ loai: 'tay', ma: 'kep', ten: 'Tay kẹp', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: 96, canh: 28, ha: HA }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'kep', ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: 96, canh: 28, ha: HA }, ve: function (g, s, M, H) {
     s = s || {};
     var mo = s.kep !== 'dong', om = !mo && !!s.cam, ha = s.tuThe === 'duoi', yDau = (om ? 104 : 102) + (ha ? HA : 0);
     if (mo) cang(g, 20, 20, 14, yDau); else if (om) cang(g, 18, 17, 15, yDau); else cang(g, 14, 8, 1.5, yDau);
