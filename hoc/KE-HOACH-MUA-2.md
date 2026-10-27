@@ -99,3 +99,9 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   mùa 2 qua lộ trình, gói sau chỉ thêm mục Sổ lệnh + một dòng chương → nhóm. `cham.js`: vòng while chạy mãi mà robot cứ đâm thì lời `vong-vo-han` mở đầu bằng
   "Robot đâm vào … ở ô (x, y) từ nhịp n, cả thảy N lần." (giữ mã, thứ tự, thắng / thua / sao; 38 ca ở 21 màn đổi câu đầu).
   Nợ cũ phát hiện thêm: lộ trình xuất bản có ~30 hàm cốt truyện chưa có mục Sổ lệnh (to_left_gap, các hàm che-doi-*), và 4 mục (dash, square, zigzag, ring) chỉ màn đã cất tạo.
+
+- **27/10 P5 · Gói 5 Đẩy thùng xong** (nhánh claude/day-thung, gộp d366c28; npm test 76/76). 20 màn trong `man-day-thung.js`, mọi màn `xichDay: true`:
+  đẩy thẳng, quay rồi đẩy, đố lùi không kéo được, ô sau thùng là tường (đi vòng), `range(distance())` tới sát thùng, thùng lên băng chuyền, mở đường, thùng đè nút M mở cửa;
+  chương 2 hàm của em `push(n)`, `go_around()`, `push_around(n)`, `push_back(n)` (Sổ lệnh nhóm Bánh xích), sửa hàm `round_left`, `shove`. Hai trùm ba sân, huy hiệu `day-thung`, `che-day-thung`.
+  Máy kiểm `kiem-day-thung.mjs` (108) + bộ dò `do-duong-day-thung.mjs`. Thùng chỉ đè được nút M (nút bắn N chặn thùng như tường); `push_to_wall()` không làm được (sau thùng distance() = 0).
+  `kiem-luc-ban.mjs` sửa giả định "luc-ban ngay sau che-sung-hoi" (giữa giờ có gói 5).
