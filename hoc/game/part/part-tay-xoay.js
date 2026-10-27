@@ -15,7 +15,7 @@ var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require ===
     var goc=s.goc!==undefined?s.goc:({trai:-90,phai:90}[s.xoay]||0),th=goc*Math.PI/180,sn=Math.sin(th),cs=Math.cos(th);
     var low=s.tuThe==='duoi',open=s.kep!=='dong',hold=!open&&!!s.cam;
     var inner=open?5:hold?4:1,outer=inner+2,len=(hold?12:11.5)+(low?1.5:0);
-    var tim=low?BM.partTayXoayVe1:C.timSang,timSang=low?BM.partTayXoayVe2:BM.partTayXoayVe3,timToi=low?BM.partTayXoayVe4:C.tim,ngon=low?BM.partTayXoayVe5:C.thepSang,ngonToi=low?BM.partTayXoayVe6:C.thep,mui=low?BM.partTayXoayVe7:BM.partTayXoayVe8;
+    var tim=low?BM.robotTimV1:C.timSang,timSang=low?BM.robotTimSangV1:BM.robotTimSangV2,timToi=low?BM.robotTimV2:C.tim,ngon=low?BM.robotNauSangV2:C.thepSang,ngonToi=low?BM.robotNauV2:C.thep,mui=low?BM.robotTrangV1:BM.robotTrang;
     var co=[
       {u0:2,u1:5.5,v0:-2,v1:2,c:tim,hl:timSang,sh:timToi},                    /* cổ tay */
       {u0:5,u1:7,v0:-outer,v1:outer,c:C.thepToi,hl:C.thep,sh:C.den},          /* thanh ngang */
@@ -41,8 +41,8 @@ var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require ===
       }}
       if(d2<=3.9*3.9){                                                   /* khớp tròn: bệ thép, vòng tối, nắp báo tay nâng / hạ */
         col=d2>2.7*2.7?C.thep:C.thepSang;
-        if(d2>3.2*3.2)col=C.thepToi;else if(d2<=2.1*2.1)col=low?BM.partTayXoayVe9:C.la;
-        if(d2<=0.9*0.9)col=low?BM.partTayXoayVe10:BM.partTayXoayVe11;
+        if(d2>3.2*3.2)col=C.thepToi;else if(d2<=2.1*2.1)col=low?BM.robotCam:C.la;
+        if(d2<=0.9*0.9)col=low?BM.robotKem:BM.robotXanhLa;
       }
       p.px(x,y,col);
     }
