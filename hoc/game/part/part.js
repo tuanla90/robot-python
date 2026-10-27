@@ -2,7 +2,7 @@ var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require ===
 /* Hệ thống PART pixel: chạy cả trên trang xem lẫn Node. */
 (function(root,factory){var api=factory(root);if(typeof module==='object'&&module.exports)module.exports=api;root.Part=api;})(typeof window!=='undefined'?window:globalThis,function(root){
   'use strict';
-  var K={ink:BM.ink,vang:BM.partKVang,vangSang:BM.partKVangSang,vangToi:BM.partKVangToi,thep:BM.partKThep,thepSang:BM.partKThepSang,thepToi:BM.partKThepToi,kinh:BM.partKKinh,xanh:BM.partKXanh,den:BM.partKDen,denSang:BM.partKDenSang,go:BM.partKGo,goSang:BM.partKGoSang,tim:BM.partKTim,timSang:BM.partKTimSang,la:BM.partKLa,laSang:BM.partKLaSang,do:BM.partKDo,xanhDuong:BM.partKXanhDuong};
+  var K={ink:BM.vienDam,vang:BM.robotVang,vangSang:BM.robotVangSang,vangToi:BM.robotNauSangV3,thep:BM.robotXam,thepSang:BM.robotLamV3,thepToi:BM.robotXamToi,kinh:BM.robotLamToi,xanh:BM.robotXanhLo,den:BM.robotXamToiV1,denSang:BM.robotXamToiV2,go:BM.robotCamToiV2,goSang:BM.robotCamToiV3,tim:BM.robotTimV3,timSang:BM.robotTimV4,la:BM.robotXanhLaToi,laSang:BM.robotXanhLaV1,do:BM.robotDoV7,xanhDuong:BM.robotLamV4};
   /* MÀU SƠN ĐỘI (22/10, màn nhiều robot): ghep({son:'lam'}) sơn lại LỚP SƠN của từng part bằng bộ ba màu đội [nền, sáng, tối]; kim loại, kính, mắt, cảm biến giữ nguyên.
      Thiếu son thì ghep không đổi gì: mỗi thân giữ màu nhận diện riêng (hai bánh vàng, nhện tím, omni xanh lá, xích thép, drone đen). Trong game VeRobot.sonHieuLuc
      luôn truyền son (26/10: thiếu = vàng, kể cả màn một robot), nên màu gốc chỉ còn ở trang xem part và máy kiểm.
@@ -32,23 +32,23 @@ var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require ===
     var c=MAU_VAT[cuc==='N'?'red':'blue'],m=n-2,i,j,g=CHU_CUC[cuc],cx=ox+((n-4)>>1),cy=oy+((n-5)>>1);
     for(i=1;i<n-1;i++){p.px(ox+i,oy,K.ink);p.px(ox+i,oy+n-1,K.ink);p.px(ox,oy+i,K.ink);p.px(ox+n-1,oy+i,K.ink);}
     p.rect(ox+1,oy+1,m,m,c[0]);p.rect(ox+1,oy+1,m,1,c[1]);p.rect(ox+1,oy+1,1,m,c[1]);p.rect(ox+1,oy+n-2,m,1,c[2]);p.rect(ox+n-2,oy+1,1,m,c[2]);
-    for(j=0;j<5;j++)for(i=0;i<4;i++)if(g[j].charAt(i)==='X')p.px(cx+i,cy+j,BM.partVatCuc1);
+    for(j=0;j<5;j++)for(i=0;i<4;i++)if(g[j].charAt(i)==='X')p.px(cx+i,cy+j,BM.robotTrang);
     return p;
   }
   function veVatNho(p,ox,oy,n,chat,mau,cuc){
     if(chat==='nam-cham'&&(cuc==='N'||cuc==='S'))return veVatCuc(p,ox,oy,n||8,cuc);
-    n=n||8;var m=n-2,sat=chat==='sat',base=sat?BM.partVatNho1:BM.partVatNho2,lit=sat?BM.partVatNho3:BM.partVatNho4,dk=sat?BM.partVatNho5:BM.partVatNho6,mid=sat?BM.partVatNho7:BM.partVatNho8,i,c=MAU_VAT[mau];
+    n=n||8;var m=n-2,sat=chat==='sat',base=sat?BM.robotLamV5:BM.robotCamToi,lit=sat?BM.robotLamV6:BM.robotCamToiV1,dk=sat?BM.robotLamToiV1:BM.robotNauV1,mid=sat?BM.robotLamV7:BM.robotNauV3,i,c=MAU_VAT[mau];
     for(i=1;i<n-1;i++){p.px(ox+i,oy,K.ink);p.px(ox+i,oy+n-1,K.ink);p.px(ox,oy+i,K.ink);p.px(ox+n-1,oy+i,K.ink);}
     p.rect(ox+1,oy+1,m,m,base);p.rect(ox+1,oy+1,m,1,lit);p.rect(ox+1,oy+1,1,m,lit);p.rect(ox+1,oy+n-2,m,1,dk);p.rect(ox+n-2,oy+1,1,m,dk);
-    if(sat){var q=(n>>1)-1;p.rect(ox+q,oy+q,2,2,mid);p.px(ox+q,oy+q,BM.partVatNho9);p.px(ox+q+1,oy+q+1,BM.partVatNho10);p.px(ox+2,oy+2,BM.partVatNho9);p.px(ox+n-3,oy+n-3,BM.partVatNho11);}
+    if(sat){var q=(n>>1)-1;p.rect(ox+q,oy+q,2,2,mid);p.px(ox+q,oy+q,BM.robotTrang);p.px(ox+q+1,oy+q+1,BM.robotLamV8);p.px(ox+2,oy+2,BM.robotTrang);p.px(ox+n-3,oy+n-3,BM.robotLamV9);}
     else for(i=2;i<n-2;i++){p.px(ox+i,oy+i,mid);p.px(ox+n-1-i,oy+i,mid);}
     if(c){var h=n>=10?3:2,y0=oy+((n-h)>>1),cs=h===3?[c[1],c[0],c[2]]:[c[0],c[0]];for(i=0;i<h;i++)p.rect(ox+1,y0+i,m,1,cs[i]);}
     return p;
   }
   /* Con mắt của camera (vẽ lên thân): tắt = xanh dịu, sáng (đang đọc) = lõi trắng + viền xanh bao quanh. Mỗi thân gọi hai lần, một mắt trái một mắt phải. */
   function veMat(p,x,y,w,h,sang){
-    if(sang){p.rect(x-1,y-1,w+2,h+2,BM.partMat1);p.rect(x,y,w,h,K.xanh);p.rect(x,y,w,1,BM.partMat2);if(w>2)p.px(x+1,y+1,BM.partMat2);}
-    else p.rect(x,y,w,h,BM.partMat3);
+    if(sang){p.rect(x-1,y-1,w+2,h+2,BM.robotXanhLoToi);p.rect(x,y,w,h,K.xanh);p.rect(x,y,w,1,BM.robotTrang);if(w>2)p.px(x+1,y+1,BM.robotTrang);}
+    else p.rect(x,y,w,h,BM.robotXanhLoToiV2);
     return p;
   }
   function Painter(w,h){this.w=w;this.h=h;this.buf=new Array(w*h).fill(null);}
