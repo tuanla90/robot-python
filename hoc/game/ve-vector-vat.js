@@ -29,24 +29,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.duong(g, CHU[cuc]); H.vien(g, BM.vecVo, 7);
   } });
 
-  /* THÙNG NẶNG (H, h — chương súng hơi, bị đẩy / hất đi): thùng thép lớn gần trọn ô, sọc cảnh báo ở mép trên và dưới, tấm giữa có gân, bốn đinh tán. */
-  function soc(g, H, y0, y1) {
-    g.save(); g.beginPath(); g.rect(12, y0, 76, y1 - y0); g.closePath(); g.clip();
-    H.to(g, BM.vecCanhBao);
-    var h = y1 - y0; g.beginPath();
-    for (var x = 4; x < 88; x += 13) { g.moveTo(x, y1); g.lineTo(x + 6.5, y1); g.lineTo(Math.min(97, x + 6.5 + h), y0); g.lineTo(Math.min(97, x + h), y0); g.closePath(); }
-    H.to(g, BM.vecVien);
-    g.restore();
-    g.beginPath(); g.rect(12, y0, 76, y1 - y0); g.closePath(); H.vien(g, BM.vecVien, 2, 'butt');
-  }
+  /* THÙNG NẶNG (H, h — chương súng hơi, bị đẩy / hất đi): thùng thép XÁM ĐẬM lớn gần trọn ô (khác khối sắt nhỏ xám nhạt, khác mái gầm sọc vàng), khung viền nổi,
+     thanh giằng chéo chữ X trên tấm giữa, bốn đinh tán lớn ở góc khung, vệt sáng mép trên. */
   V.dangKy({ loai: 'vat', ma: 'thung-nang', ten: 'Thùng nặng', cacTrangThai: [{}], ve: function (g, s, H) {
-    H.bo(g, 8, 10, 86, 86, 11); H.to(g, H.rgba(BM.vecVienRgb, 0.14));                                  // bóng đổ lệch phải-dưới (vẽ trong ảnh: thùng đứng trên ô)
-    H.bo(g, 6, 6, 86, 86, 11); g.fillStyle = H.gradDoc(g, 0, 6, 0, 92, [[0, BM.vecSat], [1, BM.vecSatToi]]); g.fill(); H.vien(g, BM.vecVien, 3.5);
-    soc(g, H, 12, 22); soc(g, H, 76, 86);
-    H.bo(g, 18, 28, 62, 42, 6); H.to(g, BM.vecSatGiua); H.vien(g, BM.vecSatVien, 2);
-    H.duong(g, 'M49 32 V66'); H.vien(g, BM.vecSatVien, 2.5);
-    H.duong(g, 'M24 34 H42'); H.vien(g, BM.vecDinh, 2.5);
-    dinh(g, H, 24, 63, 3); dinh(g, H, 74, 34, 3); dinh(g, H, 74, 63, 3);
+    H.bo(g, 8, 10, 86, 86, 12); H.to(g, H.rgba(BM.vecVienRgb, 0.16));                                  // bóng đổ lệch phải-dưới (vẽ trong ảnh: thùng đứng trên ô)
+    H.bo(g, 6, 6, 86, 86, 12); g.fillStyle = H.gradDoc(g, 0, 6, 0, 92, [[0, BM.vecSatToi], [1, BM.vecDinhVien]]); g.fill(); H.vien(g, BM.vecVien, 3.5);
+    H.bo(g, 20, 20, 58, 58, 5); H.to(g, BM.vecSatGiua); H.vien(g, BM.vecVien, 2.5);
+    H.duong(g, 'M24 24 L74 74 M74 24 L24 74'); H.vien(g, BM.vecVien, 9);
+    H.duong(g, 'M24 24 L74 74 M74 24 L24 74'); H.vien(g, BM.vecSat, 5);
+    H.duong(g, 'M18 12 H80'); H.vien(g, BM.vecSat, 3);
+    dinh(g, H, 13.5, 13.5, 4.5); dinh(g, H, 84.5, 13.5, 4.5); dinh(g, H, 13.5, 84.5, 4.5); dinh(g, H, 84.5, 84.5, 4.5);
   } });
 
   /* BÓNG HƠI (súng hơi bắn ra): quả bóng vàng viền chàm, vệt sáng trái trên. s.bep: lúc đập vào vật — bẹp ngang. */

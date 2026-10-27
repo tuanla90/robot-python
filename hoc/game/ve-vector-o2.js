@@ -26,8 +26,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var mat = [BM.vecVo, BM.vecVoGiua, BM.vecVoToi, BM.vecSat], i, y;
     for (i = 0; i < 4; i++) {
       y = 9 + i * 21;
+      H.bo(g, 9, y + 3, 82, 18, 5); H.to(g, H.rgba(BM.vecVienRgb, 0.18));                       // bóng của bậc trên đổ xuống bậc dưới (đọc ra độ cao)
       H.bo(g, 9, y, 82, 18, 5); H.to(g, mat[i]); H.vien(g, BM.vecTuongVien, 2);
-      H.duong(g, 'M15 ' + (y + 4) + ' H85'); H.vien(g, BM.vecVo, 2.5);
+      H.duong(g, 'M14 ' + (y + 4) + ' H86'); H.vien(g, BM.vecCanhBao, 3.5);                       // mép bậc vàng an toàn (như cầu thang thật): khác khe lưới của tường / băng
       H.duong(g, 'M13 ' + (y + 15) + ' H87'); H.vien(g, BM.vecSatVien, 2);
     }
   } });
