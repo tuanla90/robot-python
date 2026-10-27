@@ -1,18 +1,19 @@
+var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* Hệ thống PART pixel: chạy cả trên trang xem lẫn Node. */
 (function(root,factory){var api=factory(root);if(typeof module==='object'&&module.exports)module.exports=api;root.Part=api;})(typeof window!=='undefined'?window:globalThis,function(root){
   'use strict';
-  var K={ink:'#1b120a',vang:'#ffcf30',vangSang:'#ffe888',vangToi:'#d99418',thep:'#9aa3b5',thepSang:'#dbe3ed',thepToi:'#596274',kinh:'#26324e',xanh:'#7ff0ff',den:'#292a35',denSang:'#565968',go:'#c9853d',goSang:'#e5ad62',tim:'#56406f',timSang:'#9070b5',la:'#a8dc72',laSang:'#dcffad',do:'#df4b4b',xanhDuong:'#4f8dff'};
+  var K={ink:BM.ink,vang:BM.partKVang,vangSang:BM.partKVangSang,vangToi:BM.partKVangToi,thep:BM.partKThep,thepSang:BM.partKThepSang,thepToi:BM.partKThepToi,kinh:BM.partKKinh,xanh:BM.partKXanh,den:BM.partKDen,denSang:BM.partKDenSang,go:BM.partKGo,goSang:BM.partKGoSang,tim:BM.partKTim,timSang:BM.partKTimSang,la:BM.partKLa,laSang:BM.partKLaSang,do:BM.partKDo,xanhDuong:BM.partKXanhDuong};
   /* MÀU SƠN ĐỘI (22/10, màn nhiều robot): ghep({son:'lam'}) sơn lại LỚP SƠN của từng part bằng bộ ba màu đội [nền, sáng, tối]; kim loại, kính, mắt, cảm biến giữ nguyên.
      Thiếu son thì ghep không đổi gì: mỗi thân giữ màu nhận diện riêng (hai bánh vàng, nhện tím, omni xanh lá, xích thép, drone đen). Trong game VeRobot.sonHieuLuc
      luôn truyền son (26/10: thiếu = vàng, kể cả màn một robot), nên màu gốc chỉ còn ở trang xem part và máy kiểm.
      vang = đội của người chơi (R1); lam = đồng đội thứ hai; do = đối thủ; tim = dự phòng. Không dùng xanh lá (trùng nền sân).
      LOP_SON[mã part]: map tên màu K → ô màu đội (0 nền, 1 sáng, 2 tối); vung [x,y,w,h] (tọa độ trong tấm part) giới hạn chỗ sơn khi màu đó còn dùng cho chi tiết khác (bánh xích, khung drone). Tay thiếu mục thì sơn bộ ba vàng. */
   var SON={
-    vang:['#ffcf30','#ffe888','#d99418'],lam:['#5aa9ff','#b3dcff','#2c62c4'],do:['#ff5f57','#ffb3ac','#b8302a'],tim:['#b07cff','#dcc4ff','#6f42c1'],
-    ngoc:['#2dd4bf','#99f6e4','#0f766e'],cam:['#ff7a2f','#ffc299','#b84309'],trang:['#dce5f2','#ffffff','#7c8da6'],'hoang-kim':['#ffd700','#fff8b8','#b87d08']
+    vang:[BM.sonVang,BM.sonVangSang,BM.sonVangToi],lam:[BM.sonLam,BM.sonLamSang,BM.sonLamToi],do:[BM.sonDo,BM.sonDoSang,BM.sonDoToi],tim:[BM.sonTim,BM.sonTimSang,BM.sonTimToi],
+    ngoc:[BM.sonNgoc,BM.sonNgocSang,BM.sonNgocToi],cam:[BM.sonCam,BM.sonCamSang,BM.sonCamToi],trang:[BM.sonTrang,BM.sonTrangSang,BM.sonTrangToi],'hoang-kim':[BM.sonHoangKim,BM.sonHoangKimSang,BM.sonHoangKimToi]
   };
   var DS_SON=[
-    {ma:'',ten:'Nguyên bản',saoCan:0,mau:['#ffcf30','#ffe888','#d99418']},
+    {ma:'',ten:'Nguyên bản',saoCan:0,mau:[BM.dsSonGoc,BM.dsSonGocSang,BM.dsSonGocToi]},
     {ma:'ngoc',ten:'Xanh Ngọc',saoCan:60,mau:SON.ngoc},
     {ma:'cam',ten:'Cam Hỏa Tinh',saoCan:150,mau:SON.cam},
     {ma:'trang',ten:'Trắng Vũ Trụ',saoCan:300,mau:SON.trang},
@@ -24,30 +25,30 @@
     for(y=v[1];y<v[1]+v[3];y++)for(x=v[0];x<v[0]+v[2];x++){c=q.get(x,y);if(c&&map[c])q.buf[y*q.w+x]=map[c];}return q;}
   /* VẬT NHỎ (luật vật 14/10): vẽ một vật n×n (n=8: vật nằm đất ≈ 57% ô; n=10: vật trong kẹp ≈ 45% ô tính theo pixel part) vào bất kỳ Painter có px/rect.
      chat 'sat' (khối sắt) hay gỗ (thùng nan chéo); mau: 'red'|'green'|'blue'|'yellow'|null (dải màu quanh thân). Dùng chung cho ve.js (vật trên sân) và tay kẹp (xem trang). */
-  var MAU_VAT={red:['#d6493e','#f0847a','#8f2822'],green:['#35c47a','#7cf0aa','#16703f'],blue:['#3f7fe0','#7db0f7','#22489c'],yellow:['#efc531','#ffe784','#a07c10']};
+  var MAU_VAT={red:[BM.luatVatDo,BM.luatVatDoSang,BM.luatVatDoToi],green:[BM.luatVatXanhLa,BM.luatVatXanhLaSang,BM.luatVatXanhLaToi],blue:[BM.luatVatXanhDuong,BM.luatVatXanhDuongSang,BM.luatVatXanhDuongToi],yellow:[BM.luatVatVang,BM.luatVatVangSang,BM.luatVatVangToi]};
   /* VẬT NAM CHÂM (chat 'nam-cham', cuc 'N' hay 'S'): khối đỏ ghi chữ N hoặc xanh dương ghi chữ S (chữ trắng 4×5 pixel). Cực ghi trên vật là cực quay về phía xe khi xe tới gần. */
   var CHU_CUC={N:['X..X','XX.X','X.XX','X..X','X..X'],S:['.XXX','X...','.XX.','...X','XXX.']};
   function veVatCuc(p,ox,oy,n,cuc){
     var c=MAU_VAT[cuc==='N'?'red':'blue'],m=n-2,i,j,g=CHU_CUC[cuc],cx=ox+((n-4)>>1),cy=oy+((n-5)>>1);
     for(i=1;i<n-1;i++){p.px(ox+i,oy,K.ink);p.px(ox+i,oy+n-1,K.ink);p.px(ox,oy+i,K.ink);p.px(ox+n-1,oy+i,K.ink);}
     p.rect(ox+1,oy+1,m,m,c[0]);p.rect(ox+1,oy+1,m,1,c[1]);p.rect(ox+1,oy+1,1,m,c[1]);p.rect(ox+1,oy+n-2,m,1,c[2]);p.rect(ox+n-2,oy+1,1,m,c[2]);
-    for(j=0;j<5;j++)for(i=0;i<4;i++)if(g[j].charAt(i)==='X')p.px(cx+i,cy+j,'#ffffff');
+    for(j=0;j<5;j++)for(i=0;i<4;i++)if(g[j].charAt(i)==='X')p.px(cx+i,cy+j,BM.partVatCuc1);
     return p;
   }
   function veVatNho(p,ox,oy,n,chat,mau,cuc){
     if(chat==='nam-cham'&&(cuc==='N'||cuc==='S'))return veVatCuc(p,ox,oy,n||8,cuc);
-    n=n||8;var m=n-2,sat=chat==='sat',base=sat?'#7f97b2':'#c98a45',lit=sat?'#dcecfa':'#e8b574',dk=sat?'#3f536c':'#8a5a24',mid=sat?'#a9c0d8':'#a8692a',i,c=MAU_VAT[mau];
+    n=n||8;var m=n-2,sat=chat==='sat',base=sat?BM.partVatNho1:BM.partVatNho2,lit=sat?BM.partVatNho3:BM.partVatNho4,dk=sat?BM.partVatNho5:BM.partVatNho6,mid=sat?BM.partVatNho7:BM.partVatNho8,i,c=MAU_VAT[mau];
     for(i=1;i<n-1;i++){p.px(ox+i,oy,K.ink);p.px(ox+i,oy+n-1,K.ink);p.px(ox,oy+i,K.ink);p.px(ox+n-1,oy+i,K.ink);}
     p.rect(ox+1,oy+1,m,m,base);p.rect(ox+1,oy+1,m,1,lit);p.rect(ox+1,oy+1,1,m,lit);p.rect(ox+1,oy+n-2,m,1,dk);p.rect(ox+n-2,oy+1,1,m,dk);
-    if(sat){var q=(n>>1)-1;p.rect(ox+q,oy+q,2,2,mid);p.px(ox+q,oy+q,'#ffffff');p.px(ox+q+1,oy+q+1,'#4a5f7a');p.px(ox+2,oy+2,'#ffffff');p.px(ox+n-3,oy+n-3,'#6f87a3');}
+    if(sat){var q=(n>>1)-1;p.rect(ox+q,oy+q,2,2,mid);p.px(ox+q,oy+q,BM.partVatNho9);p.px(ox+q+1,oy+q+1,BM.partVatNho10);p.px(ox+2,oy+2,BM.partVatNho9);p.px(ox+n-3,oy+n-3,BM.partVatNho11);}
     else for(i=2;i<n-2;i++){p.px(ox+i,oy+i,mid);p.px(ox+n-1-i,oy+i,mid);}
     if(c){var h=n>=10?3:2,y0=oy+((n-h)>>1),cs=h===3?[c[1],c[0],c[2]]:[c[0],c[0]];for(i=0;i<h;i++)p.rect(ox+1,y0+i,m,1,cs[i]);}
     return p;
   }
   /* Con mắt của camera (vẽ lên thân): tắt = xanh dịu, sáng (đang đọc) = lõi trắng + viền xanh bao quanh. Mỗi thân gọi hai lần, một mắt trái một mắt phải. */
   function veMat(p,x,y,w,h,sang){
-    if(sang){p.rect(x-1,y-1,w+2,h+2,'#2c8fa4');p.rect(x,y,w,h,K.xanh);p.rect(x,y,w,1,'#ffffff');if(w>2)p.px(x+1,y+1,'#ffffff');}
-    else p.rect(x,y,w,h,'#3fa9bb');
+    if(sang){p.rect(x-1,y-1,w+2,h+2,BM.partMat1);p.rect(x,y,w,h,K.xanh);p.rect(x,y,w,1,BM.partMat2);if(w>2)p.px(x+1,y+1,BM.partMat2);}
+    else p.rect(x,y,w,h,BM.partMat3);
     return p;
   }
   function Painter(w,h){this.w=w;this.h=h;this.buf=new Array(w*h).fill(null);}
