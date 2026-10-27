@@ -228,7 +228,9 @@
     vecQuat: '#a5f3fc',                // cánh quạt drone đang quay (đĩa mờ cyan nhạt)
     vecXichMat: '#4b5380',             // mắt xích bánh xích (nhạt hơn vecBanh)
     vecMatSang: '#ffffff',             // mắt camera đang đọc: lõi trắng rực
-    vecMatSangRgb: '207,250,254'       // bộ ba quầng sáng quanh mắt camera / ống kính đang đọc
+    vecMatSangRgb: '207,250,254',      // bộ ba quầng sáng quanh mắt camera / ống kính đang đọc
+    // ---- VECTOR (gói V4, 27/10): hiệu ứng trên sân bằng vector (ve-vector-hieu-ung.js) — bộ ba rgb cho lớp mờ / quầng của các màu vec đã có
+    vecDoRgb: '239,68,68'              // bộ ba của vecDo: chớp đỏ, ô bị chặn / vỡ, vật thả bị chặn
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ
