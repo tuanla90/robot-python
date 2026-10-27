@@ -211,7 +211,11 @@
     vecHo: '#3b3772',                  // thành hố
     vecHoToi: '#0e0c2b',               // đáy hố
     vecDich: '#f59e0b',                // ô đích: góc khung hổ phách (vàng thuần chìm trên nền trắng)
-    vecDichRgb: '245,158,11'           // bộ ba của vecDich (nền ô đích mờ, nét đứt chạy)
+    vecDichRgb: '245,158,11',          // bộ ba của vecDich (nền ô đích mờ, nét đứt chạy)
+    // ---- VECTOR (gói V3, 27/10): thùng nặng tông thép tối riêng; thân / tay / cảm biến robot (ve-vector-than-*.js, ve-vector-tay-*.js, ve-vector-cam.js)
+    vecThep: '#5b6b84',                // thùng nặng: đỉnh gradient thép xám xanh đậm (khác khối sắt xám bạc vecSat)
+    vecThepToi: '#36425a',             // thùng nặng: đáy gradient, tấm giữa
+    vecThepSang: '#a9b6cc'             // thùng nặng: thanh giằng chữ X, vệt sáng mép trên
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ
