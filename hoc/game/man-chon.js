@@ -93,7 +93,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     // dải bìa gói
     el.bia.innerHTML = '';
     var hinh = h('div', 'c-bia-hinh'), coHinh = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0, quaHet = App.soQua(g) === g.man.length;
-    hinh.appendChild(coHinh ? Ve.mk(HuyHieu.ve(g.hinh, quaHet ? 'xong' : 'mo'), 2) : Ve.ico('plus', 4, { fill: BM.chonVeFill, line: BM.ink }));
+    hinh.appendChild(coHinh ? Ve.mk(HuyHieu.ve(g.hinh, quaHet ? 'xong' : 'mo'), 2) : Ve.ico('plus', 4, { fill: BM.vang, line: BM.vienDam }));
     el.bia.appendChild(hinh);
     var bx = h('div', 'c-bia-bx');
     bx.appendChild(h('div', 'c-bia-ten', g.ten));
@@ -106,7 +106,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.phai.innerHTML = '';
     if (window.SoLenh && window.SoLenhMan) {                                         // Sổ lệnh (thư viện hàm): một nút nhỏ, bấm mới mở
       var bs = h('button', 'bt g-cy c-so'); bs.setAttribute('data-nut', 'so-lenh'); bs.setAttribute('aria-label', t('chon.soLenh'));
-      var ib = h('span'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', BM.chonVe1); bs.appendChild(ib);
+      var ib = h('span'); ib.setAttribute('data-i', 'book'); ib.setAttribute('data-s', '2'); ib.setAttribute('data-l', BM.xanhLo); bs.appendChild(ib);
       bs.addEventListener('click', function () { SoLenhMan.mo(); });
       el.phai.appendChild(bs);
     }
