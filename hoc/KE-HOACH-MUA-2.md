@@ -111,3 +111,8 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   sửa hàm `quick_aim` (Sola so `> 2`), đố lực viết cứng; trùm ba hành lang, huy hiệu `che-luc-ban`. Hàm của em mới (Sổ lệnh nhóm Súng hơi): aim_fire, aim_left, aim_right,
   fire_left, close_fire, scan_left, aim_turn. Phần lớn màn khóa chương trình chính (một sân không khóa thì đếm cứng luôn rẻ hơn if/else). Không dạy "biến giữ lực" (không sân nào cần).
   Máy kiểm `kiem-che-luc-ban.mjs` (57) + bộ dò `do-duong-che-luc-ban.mjs`. Ba màn có lời rẻ hơn lời giải mà vẫn dùng cảm biến (ghi ở `congThucKhac`).
+
+- **27/10 S2 · Nút bắn bật sẵn xong** (nhánh claude/nut-bat-san, gộp bb08740; npm test 78/78). Gói 7 dừng hỏi vì mọi nút khởi đầu tắt (người chơi luôn biết trước nút nào nóng,
+  `warm()` thừa). Lõi thêm cờ màn `nutBat: [{x, y}]` (nhiều sân: mảng song song như `noi`): nút N đó nóng từ đầu màn, bắn thì tắt (toggle như cũ); sân vẫn ghi `N`
+  (không thêm ký hiệu: ~30 bộ dò đọc sân thô). Nút bật sẵn KHÔNG được nối cửa / băng (ném lỗi cấu hình; khai `noi` cho các nút khác). Máy kiểm `kiem-nut-bat-san.mjs` (30).
+  Còn để ngỏ: danh sách lớp theo sân trong `lo-trinh-hoc.js` (motSan) chưa có `nutBat`.
