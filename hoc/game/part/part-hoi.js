@@ -16,21 +16,21 @@ var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require ===
     /* ---- nòng trước: đế ở mũi xe, bình khí nén, ống thép, miệng loe */
     p.rect(7,22,10,2,C.ink);p.rect(8,22,8,1,C.thepSang);
     p.rect(7,14,10,8,C.ink);p.rect(8,15,8,6,C.xanhDuong);p.px(7,14,null);p.px(16,14,null);p.px(7,21,null);p.px(16,21,null);          /* bình khí: bo bốn góc */
-    p.rect(8,15,2,6,BM.partHoiVe1);p.rect(8,15,8,1,BM.partHoiVe1);p.rect(15,16,1,5,BM.partHoiVe2);p.rect(9,20,6,1,BM.partHoiVe2);
+    p.rect(8,15,2,6,BM.robotXanhLoV2);p.rect(8,15,8,1,BM.robotXanhLoV2);p.rect(15,16,1,5,BM.robotLam);p.rect(9,20,6,1,BM.robotLam);
     p.rect(11,17,2,2,C.ink);p.px(11,17,C.laSang);p.px(12,18,C.vang);                                                                        /* đồng hồ áp suất */
     veOng(p,10,9,5);p.rect(10,13,4,1,C.vang);                                                                                               /* ống + vòng vàng ở chân ống */
     p.rect(9,6,6,1,C.ink);p.rect(8,7,8,3,C.ink);                                                                                            /* miệng loe */
-    p.rect(9,7,6,1,tr?BM.partHoiVe3:C.vangSang);p.rect(9,8,6,1,tr?C.xanh:C.vang);p.rect(9,9,6,1,tr?C.xanh:C.vangToi);
+    p.rect(9,7,6,1,tr?BM.robotTrang:C.vangSang);p.rect(9,8,6,1,tr?C.xanh:C.vang);p.rect(9,9,6,1,tr?C.xanh:C.vangToi);
     if(!tr){p.rect(11,7,2,1,C.den);}
     if(tr){                                                                                                                                  /* bắn: đám hơi trắng nối liền miệng nòng */
-      p.rect(10,5,4,1,BM.partHoiVe3);p.rect(9,4,6,1,C.xanh);p.rect(11,4,2,1,BM.partHoiVe3);
-      p.px(8,3,C.xanh);p.px(11,3,BM.partHoiVe3);p.px(12,3,BM.partHoiVe3);p.px(15,3,C.xanh);p.px(10,2,C.xanh);p.px(13,2,BM.partHoiVe3);
+      p.rect(10,5,4,1,BM.robotTrang);p.rect(9,4,6,1,C.xanh);p.rect(11,4,2,1,BM.robotTrang);
+      p.px(8,3,C.xanh);p.px(11,3,BM.robotTrang);p.px(12,3,BM.robotTrang);p.px(15,3,C.xanh);p.px(10,2,C.xanh);p.px(13,2,BM.robotTrang);
     }
     if(s.chiTruoc)return;
     /* ---- nòng sau: ống chồng lên đuôi thân, miệng loe nhô khỏi đuôi (hàng 1: môi miệng; có 3 hàng thì hàng 2 là lòng nòng tối; hàng cuối là viền mực) */
     veOng(p,10,t-3,4);p.rect(10,t-2,4,1,C.vang);
     var n=Math.min(3,cuoi-t),y0=t+1;
-    p.rect(8,y0,8,1,C.ink);p.rect(9,y0,6,1,sa?BM.partHoiVe3:C.vangSang);
+    p.rect(8,y0,8,1,C.ink);p.rect(9,y0,6,1,sa?BM.robotTrang:C.vangSang);
     if(n>=3){p.rect(8,y0+1,8,1,C.ink);p.rect(9,y0+1,6,1,sa?C.xanh:C.den);}
     p.rect(9,y0+n-1,6,1,C.ink);
     if(sa){p.px(7,y0,C.xanh);p.px(16,y0,C.xanh);}                                                                                            /* bắn: hai tia hơi hai bên miệng sau */
