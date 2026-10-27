@@ -111,6 +111,22 @@
   // 5: làn x = 2, thùng (2,1) chắn đầu làn, xe (2,2) quay lên; nút đè M bên phải (3,3); cửa C (2,5) đóng; cờ F (2,7) sau cửa.
   //    Nhặt thùng, LÙI tới khi bên phải trống (nút M), đặt thùng lên nút, cửa mở, lùi tiếp qua cửa tới cờ. Quay đầu thì nút sang bên trái, chậm hơn.
   var L_5 = nhieu(['pick()'], WHILE('not right_clear()', ['back()']), ['drop_right()'], FOR(4, ['back()']));
+  // 6: làn x = 2, xe (2,3) quay lên; thùng A (2,2) ngay trước mặt, thùng B (2,0) ở đầu làn; hai hốc đích bên trái (1,3), (1,4).
+  //    Chương trình chính khóa: hai lần go_wall(), pick(), stash(). Người chơi viết stash(): lùi tới khi bên trái trống, đặt sang trái.
+  //    Lần đầu hốc (1,3) trống ngay cạnh xe (không lùi); lần sau hốc đó đã có thùng A nên xe lùi tới hốc (1,4).
+  var C_6 = FOR(2, ['go_wall()', 'pick()', 'stash()']);
+  var STASH = nhieu(WHILE('not left_clear()', ['back()']), ['drop_left()']);
+  // 7: làn x = 2, xe (2,4) quay lên; thùng bên trái (1,4); cửa C (2,2) đóng, cờ F (2,0); nút đè M bên phải (3,6) ở phía sau.
+  //    Nhặt bên trái, lùi tới khi bên phải trống (nút), đặt lên nút, rồi đi thẳng qua cửa tới cờ. Quay đầu xuống nút rồi quay lại thì chậm hơn hai nhịp.
+  var L_7 = nhieu(['pick_left()'], WHILE('not right_clear()', ['back()']), ['drop_right()', 'go_wall()']);
+  // 8: hành lang dọc x = 2, xe (2,8) quay lên; hốc trái (1,4) làm mồi; cửa nhánh bên phải ở (3,3), thùng ở cuối nhánh (4,3); ô đích (2,2) ngay trên chỗ rẽ.
+  //    Tìm cửa phải, rẽ, tới thùng, nhặt, LÙI tới khi bên trái (phía trên) trống, đặt sang trái vào ô đích.
+  var L_8 = nhieu(['to_gap()', 'turn_right()', 'go_wall()', 'pick()'], WHILE('not left_clear()', ['back()']), ['drop_left()']);
+  // 9: làn x = 2, xe (2,7) quay lên. Trạm 1: thùng chắn (2,5), nút M1 bên phải (3,6) giữ cửa 1 (2,4). Trạm 2: thùng chắn (2,2), nút M2 bên trái (1,3)
+  //    giữ cửa 2 (2,1). Cờ (2,0). Chương trình chính khóa: hai lần go_wall(), clear_way(); rồi go_wall(). clear_way() của màn luôn đặt sang trái.
+  var C_9 = FOR(2, ['go_wall()', 'clear_way()']).concat(['go_wall()']);
+  var CLEAR = nhieu(['pick()'], IF('left_clear()', ['drop_left()'], ['drop_right()']));
+  var CLEAR_LOI = ['pick()', 'drop_left()'];
 
   var DS = [
     man({
@@ -219,6 +235,75 @@
         { moTa: 'Đặt thùng ngay chỗ nhặt: nút trống', baiLam: { chinh: nhieu(['pick()', 'drop()'], FOR(5, ['back()'])) }, phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Nút M là sàn trống nên right_clear() trả True khi xe tới cạnh nó.', 'Thùng nằm trên M thì cửa mở. Lùi tiếp bốn ô tới cờ.']
+    }),
+
+    man({
+      c: 2, so: 6, ten: 'Cất vào hốc trống', kieuBai: 'che-ham', mucTieu: 'dua-vat', chinhCoDinh: true,
+      hamCuaEmCan: ['go_wall', 'pick', 'back', 'drop_left', 'move'],
+      deBai: 'Hai thùng nằm trong làn. Chương trình chính đi tới thùng, nhặt, rồi gọi stash(). Viết thân stash() của màn: lùi tới khi bên trái có hốc trống, đặt thùng sang trái. Hốc đã có thùng thì cảm biến thấy vướng.',
+      veMaMau: 'Chương trình chính bị khóa. Thân stash() còn trống (pass): viết nó trong Xưởng hàm.',
+      san: ['##o##', '##.##', '##o##', '#D.##', '#D.##', '#####'], batDau: { x: 2, y: 3, huong: 0 },
+      maMau: { chinh: C_6, hamCuaMan: [H('stash', ['pass'])] },
+      sao: { o: 27, nhip: 12 },
+      loiGiai: { chinh: C_6, hamCuaMan: [H('stash', STASH)] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6, hamCuaMan: [H('stash', ['# lùi tới hốc trống'].concat(STASH))] } },
+      loiSai: [
+        { moTa: 'Không lùi, đặt sang trái ngay: thùng thứ hai đặt vào tường', baiLam: { chinh: C_6, hamCuaMan: [H('stash', ['drop_left()'])] }, phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'Lùi khi bên trái trống (thiếu chữ not): lần đầu lùi mãi vào tường', baiLam: { chinh: C_6, hamCuaMan: [H('stash', nhieu(WHILE('left_clear()', ['back()']), ['drop_left()']))] }, phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['Bên trái là tường hay hốc đã có thùng thì left_clear() trả False: lùi tiếp.', 'while not left_clear(): back(), rồi drop_left().']
+    }),
+
+    man({
+      c: 2, so: 7, ten: 'Đè nút sau lưng', kieuBai: 'do-nhip',
+      hamCuaEmCan: ['pick_left', 'back', 'drop_right', 'go_wall', 'u_turn', 'move', 'drop_left'],
+      deBai: 'Cửa C trước mặt đang đóng, cờ ở sau cửa. Nút đè M nằm bên phải, phía sau lưng xe. Nhặt thùng bên trái, đưa nó lên nút rồi đi qua cửa tới cờ, trong 12 nhịp. Quay đầu xuống nút rồi quay lại thì chậm hơn: lùi tới nút.',
+      veMaMau: 'Xe đã nhặt thùng. Viết tiếp: lùi tới nút, đặt thùng, đi tới cờ.',
+      san: ['##F##', '##.##', '##C##', '##.##', '#o.##', '##.##', '##.M#', '#####'], batDau: { x: 2, y: 4, huong: 0 },
+      maMau: { chinh: ['pick_left()'] },
+      sao: { o: 27, nhip: 12 },
+      loiGiai: { chinh: L_7 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['pick_left()', '# lùi tới nút đè'].concat(L_7.slice(1)) } },
+      loiSai: [
+        { moTa: 'Mang thùng tới cửa: nút trống, cửa đóng', baiLam: { chinh: ['pick_left()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lùi đếm cứng một ô: chưa tới nút, đặt vào tường', baiLam: { chinh: ['pick_left()', 'back()', 'drop_right()', 'go_wall()'] }, phaiCoMa: ['tha-bi-chan', 'chua-toi-co'] }
+      ],
+      goiY: ['Lùi thì nút vẫn ở bên phải xe: while not right_clear(): back().', 'Thùng trên M thì cửa mở: go_wall() đi một mạch tới cờ.']
+    }),
+
+    man({
+      c: 2, so: 8, ten: 'Lấy hàng trong nhánh', kieuBai: 'do-duong', mucTieu: 'dua-vat',
+      hamCuaEmCan: ['to_gap', 'turn_right', 'go_wall', 'pick', 'back', 'drop_left', 'move', 'u_turn'],
+      deBai: 'Tìm cửa nhánh bên phải của hành lang (hốc bên trái chỉ là mồi), rẽ vào, đi tới thùng ở cuối nhánh và nhặt nó. Lùi ra tới khi bên trái xe (phía hành lang) trống, rồi đặt thùng sang trái vào ô đích.',
+      veMaMau: 'Xe đã nhặt được thùng ở cuối nhánh. Viết tiếp: lùi ra cửa nhánh, đặt sang trái.',
+      san: ['#####', '#####', '##D##', '##..o', '#..##', '##.##', '##.##', '##.##', '##.##', '#####'], batDau: { x: 2, y: 8, huong: 0 },
+      maMau: { chinh: ['to_gap()', 'turn_right()', 'go_wall()', 'pick()'] },
+      sao: { o: 31, nhip: 11 },
+      loiGiai: { chinh: L_8 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# tìm cửa phải'].concat(L_8) } },
+      loiSai: [
+        { moTa: 'Đi tới tường thay vì tìm cửa: chạy quá chỗ rẽ, rẽ vào tường rồi lùi mãi', baiLam: { chinh: nhieu(['go_wall()', 'turn_right()', 'go_wall()', 'pick()'], WHILE('not left_clear()', ['back()']), ['drop_left()']) }, phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Đặt ngay ở cuối nhánh: bên trái là tường', baiLam: { chinh: ['to_gap()', 'turn_right()', 'go_wall()', 'pick()', 'drop_left()'] }, phaiCoMa: ['tha-bi-chan'] }
+      ],
+      goiY: ['Xe quay sang phải thì bên trái xe là phía trên.', 'Trong nhánh, phía trên là tường; về tới chỗ rẽ thì phía trên là ô đích trống.']
+    }),
+
+    man({
+      c: 2, so: 9, ten: 'Dọn lối hai cửa', kieuBai: 'sua-ham', chinhCoDinh: true,
+      hamCuaEmCan: ['go_wall', 'pick', 'drop_left', 'drop_right', 'move'],
+      deBai: 'Lối lên cờ có hai cửa. Trước mỗi cửa có một thùng chắn, nút đè giữ cửa đó nằm ở một bên xe (bên kia là tường). Hàm clear_way() của màn nhặt thùng chắn nhưng luôn đặt sang trái. Sửa clear_way() để đặt thùng lên nút ở cả hai trạm.',
+      veMaMau: 'Chương trình chính bị khóa: hai lần go_wall(), clear_way(); rồi go_wall(). Chạy thử, xem trạm nào đặt sai.',
+      san: ['##F##', '##C##', '##o##', '#M.##', '##C##', '##o##', '##.M#', '##.##', '#####'], batDau: { x: 2, y: 7, huong: 0 },
+      noi: [{ nut: { x: 3, y: 6 }, cua: [{ x: 2, y: 4 }] }, { nut: { x: 1, y: 3 }, cua: [{ x: 2, y: 1 }] }],
+      maMau: { chinh: C_9, hamCuaMan: [H('clear_way', CLEAR_LOI)] },
+      sao: { o: 33, nhip: 15 },
+      loiGiai: { chinh: C_9, hamCuaMan: [H('clear_way', CLEAR)] },
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9, hamCuaMan: [H('clear_way', ['# đặt sang bên có nút'].concat(CLEAR))] } },
+      loiSai: [
+        { moTa: 'Chưa sửa: trạm đầu đặt vào tường', baiLam: { chinh: C_9, hamCuaMan: [H('clear_way', CLEAR_LOI)] }, phaiCoMa: ['tha-bi-chan', 'chua-toi-co'] },
+        { moTa: 'Hỏi ngược: bên trái trống lại đặt sang phải', baiLam: { chinh: C_9, hamCuaMan: [H('clear_way', nhieu(['pick()'], IF('left_clear()', ['drop_right()'], ['drop_left()'])))] }, phaiCoMa: ['tha-bi-chan', 'chua-toi-co'] }
+      ],
+      goiY: ['Nút M là sàn trống: cảm biến bên đó trả True.', 'pick(), rồi if left_clear(): drop_left() — còn không thì drop_right().']
     })
   ];
 
