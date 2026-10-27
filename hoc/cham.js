@@ -122,7 +122,7 @@
    SÚNG HƠI (chương sung-hoi và che-sung-hoi; luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI): hamGoc có shoot / shoot_back thì robot có tay súng hơi (man.robot.tay = 'hoi'). shoot() bắn ra trước + xe giật lùi
    một ô, shoot_back() bắn ra sau + xe giật tới một ô; ô giật vào có thùng nặng thì thùng trượt ra xa, ô bị chặn thì xe đứng yên. Ký hiệu sân N nút bắn, C cửa đóng, c cửa mở;
    man.cuaNhip = [{ x, y, mo, dong, pha }] (cửa tự đóng mở theo chu kỳ), man.noi = [{ nut, cua, bang }] (nút nào điều khiển cửa / băng nào; mặc định mọi nút điều khiển mọi cửa thường và mọi băng),
-   man.danToiDa (số viên; không khai = vô hạn); màn nhiều sân thì cuaNhip và noi là mảng song song với man.san. man.daoChieu có 'sung': súng lắp ngược (shoot() bắn ra sau, shoot_back() bắn ra trước);
+   man.nutBat = [{ x, y }] (nút N đang bật, nóng từ đầu màn; không được nối cửa / băng), man.danToiDa (số viên; không khai = vô hạn); màn nhiều sân thì cuaNhip, noi và nutBat là mảng song song với man.san. man.daoChieu có 'sung': súng lắp ngược (shoot() bắn ra sau, shoot_back() bắn ra trước);
    man.phanCung thiếu shoot_back (nòng sau hỏng) hay shoot (nòng trước hỏng) = lenh-goc-hong. Kết quả có thêm `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}],
    `cuaBanDau`, `nutBanDau`, `sung` { dan } (trạng thái cuối, như vet nhịp có cua / nut / bangTat / robot.sung). Mã chẩn đoán mới: ban-goi-lai (lỗi: hai lệnh bắn cùng nhịp), het-dan (lỗi),
    ban-hut (thông tin: bóng bay ra khỏi sân không trúng gì), ban-ngan (thông tin: bắn nhanh "fast" bay hết 2 ô mà chưa trúng gì), luc-ban-sai / luc-chua-mo (lỗi chạy: lực bắn lạ / màn chưa cho chọn lực), ban-bi-chan (thông tin: bóng bị tường / cửa đóng / thùng / vật chặn trước khi tới nút), ban-dung-yen (thông tin: lệnh bánh cùng nhịp với lệnh bắn bị bỏ),
@@ -1201,7 +1201,7 @@
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
         bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
@@ -1332,7 +1332,7 @@
       var res = SanHoc.chay({
         san: rows, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co', doiKhang: !!man.doiKhang,
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, dich: man.dich,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,

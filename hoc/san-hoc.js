@@ -141,6 +141,12 @@
           · CỬA đổi ở CUỐI nhịp ('cua-doi' { o, mo }): nút đổi thì cửa đổi (đóng ↔ mở). Cửa không đóng xuống ô đang có xe, vật hay thùng: giữ mở và ghi 'cua-ket' (thông tin).
           · CỬA NHỊP (cfg.cuaNhip = [{ x, y, mo, dong, pha }], ô đó phải là C hay c): tự đóng mở theo chu kỳ mo + dong nhịp. Sau t nhịp đã trôi, p = (t + pha) mod (mo + dong); p < mo thì cửa mở. Đổi ở cuối nhịp như mọi cửa.
             Nút không điều khiển cửa nhịp. front_clear() là False khi cửa trước mặt đang đóng, nên `while not front_clear(): wait()` chờ được.
+        - NÚT BẬT SẴN (cfg.nutBat = [{ x, y }], mùa 2 gói Đo nhiệt; màn nhiều sân thì mảng song song với san như noi): các ô đó phải là nút N; nút đó ĐANG BẬT từ đầu màn (bat true trong nutBanDau
+          và vết, warm() trả True ngay trước phát bắn nào), bắn trúng thì tắt, bắn lần nữa lại bật (luật đổi như mọi nút). Sân giữ ký hiệu N (không có ký hiệu mới), nên mọi chỗ đọc sân
+          (bộ dò, ảnh nhỏ, giao diện) vẫn thấy một nút trên tường; chỉ trạng thái đầu khác. NÚT BẬT SẴN KHÔNG ĐƯỢC NỐI GÌ: sau khi nối (mặc định hay cfg.noi) mà nút đó còn điều khiển cửa
+          hay băng chuyền thì ném lỗi cấu hình. Lý do: ký hiệu C / c và băng chuyền trên sân luôn là trạng thái THẬT lúc đầu; nút bật sẵn có nối thì phải chọn giữa "sân nói dối"
+          (cửa / băng đã đổi như bị bắn một lần) và "nút xanh mà băng vẫn chạy" — cả hai đều dễ hiểu sai. Sân có cửa / băng mà không khai noi thì mọi nút điều khiển mọi thứ, nên phải khai
+          noi cho các nút khác (nút không có trong noi thì không điều khiển gì). Nút đè M không bật sẵn được (M bật theo vật đè lên).
         - Ký hiệu sân: N NÚT BẮN nằm trên tường, chiếm ô như tường (xe không đi vào, lyDoChan 'nut'); C CỬA ĐÓNG lúc đầu, c CỬA MỞ lúc đầu (cửa mở là sàn). Cửa đóng chặn xe (dam-tuong vat 'cua',
           front_clear() = False), chặn bóng và chặn thùng. Vật và thùng không đặt lên ô N / C / c được. Lớp màu không được tô ô N / C / c. Tiến vào cửa đóng: dam-tuong vat 'cua'.
         - Cảm biến khoảng cách coi cửa đóng là KHÔNG trống (vat 'cua') và nút N là không trống (vat 'nut'), thùng nặng là không trống (vat 'thung-nang').
@@ -171,7 +177,8 @@
         cửa mở, ô màu là ô trống (tia đi qua).
         - distance() TRẢ SỐ NGUYÊN = số ô TRỐNG giữa xe và vật cản (sát vật cản → 0). Dùng được trong biểu thức: d = distance(); if distance() > 2:.
         - warm() (NÂNG CẤP ĐO NHIỆT, chỉ khi hamGoc có warm) TRẢ True khi vật cản đầu tiên ấy NÓNG: là ROBOT khác hay NÚT BẮN ĐANG BẬT (nut.bat); mọi thứ khác (nút đang tắt, cửa, thùng,
-          tường, vật…) → False. Cùng tia với distance().
+          tường, vật…) → False. Cùng tia với distance(). Nút bật sẵn (cfg.nutBat, xem SÚNG BÓNG) nóng ngay từ đầu màn, nên warm() có ích:
+          người chơi không biết trước nút nào nóng.
         - ĐỌC KHÔNG TỐN NHỊP, không đổi sân, đọc ở trạng thái hiện tại (như mọi cảm biến); mỗi lần đọc ghi mục lệnh có `docCamBien` { ma:'doc-cam-bien', cam:'hong-ngoai', ham:'distance'|'warm',
           tu, huong, o: ô vật cản (ngoài sân thì toạ độ ngoài sân), khoang: số ô trống, vat: 'tuong'|'ngoai-san'|'rao'|'nut'|'bac-thang'|'gam-thap'|'cua'|'thung-nang'|'vat'|'dong-doi', nong: true|false,
           trong: false, nhip } và sự kiện 'doc-cam-bien' ở nhịp kế; chung bộ đếm 1000 lần đọc liên tiếp ('infinite-loop'). Gọi khi hamGoc không có → "chưa có hàm" (cham.js: chua-gan-cam-bien).
@@ -608,7 +615,7 @@
   function lopMauCuaSan(m, i) {
     var nhieu = Array.isArray(m.san[0]);
     function lay(l) { return l ? (nhieu ? (l[i] || null) : l) : null; }
-    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
+    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
   }
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
   function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_NHIN_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0 || CAM_HONG_NGOAI_HAM.indexOf(t) >= 0; }
@@ -1099,6 +1106,16 @@
       nutDes.forEach(function (m) {
         m.cua = cuas.filter(function (d) { return !d.nhip; });
         m.cua.forEach(function (d) { if (d.nutDe.indexOf(m) < 0) d.nutDe.push(m); });
+      });
+    }
+    if (cfg.nutBat !== undefined && cfg.nutBat !== null) {                    // NÚT BẬT SẴN (xem SÚNG BÓNG): nút N đang bật (nóng) từ đầu màn; không được nối cửa / băng chuyền
+      if (!Array.isArray(cfg.nutBat)) throw new Error('nutBat phải là mảng ô [{ x, y }] (nút bắn N đang bật lúc đầu màn).');
+      cfg.nutBat.forEach(function (o) {
+        var k = o ? o.x + ',' + o.y : '?', n = nutTai[k];
+        if (!n) throw new Error('Nút bật sẵn: ô (' + (o ? o.x + ', ' + o.y : '?') + ') không phải nút bắn N' + (nutDeTai[k] ? ' (nút đè M không bật sẵn được)' : '') + '.');
+        if (n.cua.length || n.bang.length) throw new Error('Nút bật sẵn (' + n.x + ', ' + n.y + ') đang điều khiển ' + (n.cua.length ? n.cua.length + ' cửa' : '') + (n.cua.length && n.bang.length ? ' và ' : '') + (n.bang.length ? n.bang.length + ' ô băng chuyền' : '') +
+          ': nút bật sẵn không được nối gì. Khai noi cho các nút khác (nút không có trong noi thì không điều khiển gì), hay ghi nút này với cua: [] và bang: [].');
+        n.bat = true;
       });
     }
     if (cuaTai[bd.x + ',' + bd.y] && !cuaTai[bd.x + ',' + bd.y].mo) throw new Error('Robot xuất phát trong ô cửa đang đóng.');

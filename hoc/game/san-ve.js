@@ -132,7 +132,7 @@
     nap: function (cfg) {
       var rows = cfg.san, w = rows[0].length, h = rows.length;
       var loai = cfg.loaiRobot || 'banh';
-      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
+      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, nutBat: Array.isArray(cfg.nutBat) ? cfg.nutBat : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
         robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [], cacCo: [],
         bm: chuanBongMo(cfg.bongMo),                     // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
         hinh: dungHinh(cfg.hinh), sonBanDau: dungHinh(cfg.sonBanDau), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red' };      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
@@ -270,10 +270,11 @@
       }
       (cuaNhip || []).forEach(function (cn) { this.cuaNhipBy[cn.x + ',' + cn.y] = { mo: cn.mo, dong: cn.dong, pha: cn.pha || 0 }; }, this);
     },
-    /** Trạng thái hiển thị ban đầu của nút, cửa, băng chuyền: nút tắt, cửa theo ký hiệu (cửa nhịp: theo pha), băng chạy hết. */
+    /** Trạng thái hiển thị ban đầu của nút, cửa, băng chuyền: nút tắt (trừ nút bật sẵn cfg.nutBat: bật, nóng ngay khung đầu), cửa theo ký hiệu (cửa nhịp: theo pha), băng chạy hết. */
     datLaiCua: function () {
       this.nutT = {}; this.nutDeT = {}; this.cuaT = {}; this.bangTat = {}; this.bangLoe = {}; this.nhipDa = 0;
       var self = this;
+      ((this.cfg && this.cfg.nutBat) || []).forEach(function (o) { self.nutO(o.x, o.y).bat = true; });
       this.cuaDS.forEach(function (d) {
         var nh = self.cuaNhipBy[d.x + ',' + d.y], mo = nh ? (nh.pha % (nh.mo + nh.dong)) < nh.mo : d.mo0;
         self.cuaT[d.x + ',' + d.y] = { x: d.x, y: d.y, mo: mo, k: mo ? 1 : 0, doc: d.doc, nhip: nh || null, ket: 0, rung: 0 };
@@ -2252,7 +2253,8 @@
     var g = cv.getContext('2d'), x, y, ch, px, py;
     g.translate(-gx0 * s, -gy0 * s);                                         // vẽ theo tọa độ ô đầy đủ, canvas chỉ là cửa sổ
     var mauO = dungLopMau(rows, lopMau && lopMau.mau), vm = lopMau && lopMau.vatMau, vc = lopMau && lopMau.vatChat;       // sân có ô màu / vật màu (chương cảm biến màu), chất vật (chương nam châm)
-    var them = (lopMau && lopMau.vatThem) || [], cuaNhip = {};
+    var them = (lopMau && lopMau.vatThem) || [], cuaNhip = {}, nutBat = {};
+    ((lopMau && lopMau.nutBat) || []).forEach(function (o) { nutBat[o.x + ',' + o.y] = true; });                          // nút bật sẵn: ảnh nhỏ vẽ nút xanh + viền cam (nóng)
     ((lopMau && lopMau.cuaNhip) || []).forEach(function (cn) { cuaNhip[cn.x + ',' + cn.y] = cn; });                      // cửa nhịp: ảnh nhỏ vẽ trạng thái lúc đầu (theo pha), khung xanh lơ                                                                          // vật thêm ngoài ký hiệu (vd trên băng chuyền)
     for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
       ch = rows[y][x]; px = x * s; py = y * s;
@@ -2276,10 +2278,12 @@
         g.fillStyle = '#ffd23f'; g.fillRect(px + (s >> 1) - 1, py + (s >> 2) + 1, Math.max(2, s >> 3), (s >> 1) - 1);
         continue;
       }
-      if (ch === 'N') {                                                       // nút bắn: tường xám + nút tròn đỏ ở giữa
+      if (ch === 'N') {                                                       // nút bắn: tường xám + nút tròn đỏ ở giữa (nút bật sẵn: nút xanh, viền cam nóng)
+        var nbT = !!nutBat[x + ',' + y];
         g.fillStyle = '#4a5368'; g.fillRect(px, py, s, s); g.fillStyle = '#7a85a3'; g.fillRect(px, py, s, Math.max(1, s >> 3));
+        if (nbT) { g.fillStyle = '#ff7a2e'; g.fillRect(px + (s >> 2) - 1, py + (s >> 2) - 1, (s >> 1) + 2, (s >> 1) + 2); }
         g.fillStyle = K_INK; g.fillRect(px + (s >> 2), py + (s >> 2), s >> 1, s >> 1);
-        g.fillStyle = '#e8604a'; g.fillRect(px + (s >> 2) + 1, py + (s >> 2) + 1, Math.max(1, (s >> 1) - 2), Math.max(1, (s >> 1) - 2));
+        g.fillStyle = nbT ? '#5fe08a' : '#e8604a'; g.fillRect(px + (s >> 2) + 1, py + (s >> 2) + 1, Math.max(1, (s >> 1) - 2), Math.max(1, (s >> 1) - 2));
         continue;
       }
       if (ch === 'C' || ch === 'c') {                                         // cửa: đóng = khối xám khung vàng; mở = sàn có hai cột khung vàng
