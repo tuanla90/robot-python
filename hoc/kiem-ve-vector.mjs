@@ -74,7 +74,7 @@ function coVe(lenh) { return lenh.some((l) => l[0] === 'fill' || l[0] === 'strok
 function diemThietBi(lenh) {
   let m = [1, 0, 0, 1, 0, 0]; const stack = [], pts = []; let lw = 1;
   const mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];
-  const ap = (x, y) => pts.push({ x: m[0] * x + m[2] * y + m[4], y: m[1] * x + m[3] * y + m[5], le: lw * Math.sqrt(Math.abs(m[0] * m[3] - m[1] * m[2])) / 2 });
+  const ap = (x, y, khongVien) => pts.push({ x: m[0] * x + m[2] * y + m[4], y: m[1] * x + m[3] * y + m[5], le: khongVien ? 0 : lw * Math.sqrt(Math.abs(m[0] * m[3] - m[1] * m[2])) / 2 });
   for (const l of lenh) {
     const [c, ...a] = l;
     if (c === 'save') stack.push(m.slice()); else if (c === 'restore') m = stack.pop() || m;
@@ -87,7 +87,8 @@ function diemThietBi(lenh) {
     else if (c === 'arcTo') { ap(a[0], a[1]); ap(a[2], a[3]); }
     else if (c === 'arc') { ap(a[0] - a[2], a[1] - a[2]); ap(a[0] + a[2], a[1] + a[2]); }
     else if (c === 'ellipse') { ap(a[0] - a[2], a[1] - a[3]); ap(a[0] + a[2], a[1] + a[3]); }
-    else if (c === 'rect' || c === 'fillRect' || c === 'strokeRect') { ap(a[0], a[1]); ap(a[0] + a[2], a[1] + a[3]); }
+    else if (c === 'fillRect') { ap(a[0], a[1], true); ap(a[0] + a[2], a[1] + a[3], true); }      // tô không có nét viền
+    else if (c === 'rect' || c === 'strokeRect') { ap(a[0], a[1]); ap(a[0] + a[2], a[1] + a[3]); }
   }
   return pts;
 }
