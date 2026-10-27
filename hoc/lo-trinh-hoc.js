@@ -22,7 +22,9 @@
       // 10 màn mới của gói 8 Đội hai robot, chương 2 "Đội phối hợp" (chỉ khai, lộ trình thêm chương bên dưới)
       'doi-mua-1',
       // 19 màn mới của gói 9 Combo (tay xoay + cảm biến bên), hai chương combo / che-combo (chỉ khai, lộ trình thêm chương bên dưới)
-      'combo-mua-1'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'combo-mua-1',
+      // 11 màn mới của gói 10 R1 xuất xưởng: robot-hoan-thien.11 (thay robot-hoan-thien.10) + chương 2 trum-mua-1 "Trùm mùa" (chỉ khai, lộ trình thêm bên dưới)
+      'trum-mua-1'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -101,6 +103,39 @@
     loiGiai: bai(['count_return()'], [ham('count_return', ['n = 0', 'while front_clear():', '    move()', '    n = n + 1', 'for i in range(n):', '    back()'])]),
     goiY: ['n bắt đầu bằng 0. Mỗi lần move(), n cần tăng một đơn vị.', 'Dùng n = n + 1 trong thân while.']
   });
+  // Gói 2 chương 2 Vòng lặp (KE-HOACH-MUA-1.md, Vướng 4): hai màn gần cuối chương thêm TAY KẸP để chương đúng "hàm cho tay" (che-lap.5 Dọn hàng đã có tay).
+  // Chỉ dùng thứ của gói 1–2 (for, pick / drop, move / rẽ). vong-lap.10 không đổi (nó tạo row / bend_left / bend_right cho màn khác).
+  // Cỡ sân / nhịp đặt giữa vong-lap.6 và che-lap.5 cho đường cong chương (luật đo: n ≤ max(1,5 × n−1, n−1 + bù)).
+  (function () {
+    var vl8 = ['pick()', 'for i in range(6):', '    move()', 'turn_left()', 'for i in range(4):', '    move()', 'drop()'];
+    sua('vong-lap.8', {
+      ten: 'Thụt lề', mucTieu: 'dua-vat', canFor: 'tran-khung', hamCuaEmCan: ['pick', 'move', 'turn_left', 'drop'],
+      deBai: 'Nhặt thùng ngay trước mặt, mang nó sang phải sáu ô, rẽ trái, đi lên bốn ô rồi đặt vào ô đích ở đầu đường.',
+      veMaMau: 'Chương trình có sẵn đủ lệnh nhưng xe cứ quay vòng thay vì đi thẳng. Thụt vào là nằm trong vòng lặp, thụt ra là nằm ngoài: có dòng nào đang đứng sai chỗ?',
+      san: ['######D', '######.', '######.', '######.', '######.', '.o.....'], batDau: { x: 0, y: 5, huong: 1 },
+      maMau: bai(['pick()', 'for i in range(6):', '    move()', '    turn_left()', 'for i in range(4):', '    move()', 'drop()']),
+      loiGiai: bai(vl8),
+      loiSai: [
+        { moTa: 'Không sửa gì: turn_left() nằm trong vòng lặp nên xe quay vòng, đâm tường', baiLam: bai(['pick()', 'for i in range(6):', '    move()', '    turn_left()', 'for i in range(4):', '    move()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'drop() thụt vào vòng for thứ hai: thùng bị đặt ngay sau bước đầu', baiLam: bai(['pick()', 'for i in range(6):', '    move()', 'turn_left()', 'for i in range(4):', '    move()', '    drop()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên nhặt thùng: thùng chắn ngay trước mặt', baiLam: bai(vl8.slice(1)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Chạy thử và xem xe làm gì ở nhịp sau khi nhặt: nó rẽ sớm hơn dự định.', 'Dòng rẽ chỉ chạy một lần, sau khi vòng lặp đầu đã đi xong; drop() cũng nằm ngoài vòng lặp.']
+    }).loiGiaiKhac = { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: bai(['# nhặt, sang phải, lên, đặt'].concat(vl8)) };
+    var vl9 = ['pick()', 'for i in range(3):', '    for j in range(5):', '        move()', '    turn_right()', 'drop()'];
+    sua('vong-lap.9', {
+      ten: 'Vòng lặp lồng nhau', mucTieu: 'dua-vat', canFor: 'tran-khung', hamCuaEmCan: ['pick', 'move', 'turn_right', 'drop'],
+      deBai: 'Nhặt thùng ngay trước mặt rồi đi hành lang hình chữ U úp ngược: lên năm ô, rẽ phải, sang năm ô, rẽ phải, xuống năm ô, rẽ phải, rồi đặt thùng vào ô đích. Ba đoạn giống hệt nhau là "đi năm ô rồi rẽ phải", mà đi năm ô cũng là một vòng lặp.',
+      san: ['......', '.####.', '.####.', '.####.', 'o####.', '.###D.'], batDau: { x: 0, y: 5, huong: 0 },
+      maMau: bai([]), loiGiai: bai(vl9),
+      loiSai: [
+        { moTa: 'Vòng ngoài chỉ lặp hai lần: xe đặt thùng xuống giữa đường', baiLam: bai(['pick()', 'for i in range(2):', '    for j in range(5):', '        move()', '    turn_right()', 'drop()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Vòng trong lặp bốn lần: xe rẽ sớm một ô rồi đâm tường', baiLam: bai(['pick()', 'for i in range(3):', '    for j in range(4):', '        move()', '    turn_right()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Quên nhặt thùng: thùng chắn ngay trước mặt', baiLam: bai(vl9.slice(1)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Vòng lặp có thể nằm trong thân một vòng lặp khác, thụt vào thêm một bậc.', 'Lần rẽ phải thứ ba đưa mũi xe về phía ô đích: đặt thùng sau vòng ngoài.']
+    }).loiGiaiKhac = { moTa: 'Không lồng vòng lặp: vòng ngoài gọi move() năm lần rồi rẽ', baiLam: bai(['pick()', 'for i in range(3):', '    move()', '    move()', '    move()', '    move()', '    move()', '    turn_right()', 'drop()']) };
+  })();
   // Sắp lại mà không đổi khóa ma: các bản lưu vẫn thuộc đúng bài của chúng.
   function xep(chuong, ds) {
     ds.forEach(function (soCu, i) {
@@ -292,6 +327,16 @@
   var COMBO_2 = (M.manComboMua1 || []).filter(function (m) { return m.chuong === 'che-combo'; }).map(function (m) { return m.ma; });
   // che-cam-bien.10 "Kho hàng" (cất tạm từ 26/10) về đứng thứ 8 chương che-combo: sửa thành một sân, không biến (xem dưới, sau khi dựng chương).
   if (COMBO_2.length === 9) COMBO_2.splice(7, 0, 'che-cam-bien.10');
+  // Gói 10 "R1 xuất xưởng" (man-trum-mua-1.js): robot-hoan-thien.11 "Giao ca ở kho" (mã mới, chương robot-hoan-thien có sẵn) thay robot-hoan-thien.10 (cất:
+  // hai hàm của màn bounce / fetch_back có biến đếm) làm trùm chương 1 Tổng hợp; chương 2 `trum-mua-1` "Trùm mùa" (trum-mua-1.1–10, trùm cuối mùa .10 huy hiệu
+  // xuat-xuong) chỉ có ở lộ trình nên chèn tạm vào cuối thuTu cho ManHoc.them nhận (như nut-de); thuTu mùa 1 dựng lại theo MUA_1 bên dưới.
+  TT.thuTu.push('trum-mua-1');
+  TT.ten['trum-mua-1'] = 'Trùm mùa';
+  M.them(M.manTrumMua1 || []);
+  (M.manTrumMua1 || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  var TRUM_1 = day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10'],
+    (M.manTrumMua1 || []).filter(function (m) { return m.chuong === 'robot-hoan-thien'; }).map(function (m) { return m.ma; }));
+  var TRUM_2 = (M.manTrumMua1 || []).filter(function (m) { return m.chuong === 'trum-mua-1'; }).map(function (m) { return m.ma; });
   var MUA_1 = [
     { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
       chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
@@ -313,15 +358,15 @@
     { ma: 'combo', ten: 'Combo', loai: 'thu-thach', sao: 240, hinh: 'combo',
       chuong: [['combo', COMBO_1], ['che-combo', COMBO_2]] },
     { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 270, hinh: 'robot-hoan-thien',
-      chuong: [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8]).concat(['cam-bien-ben.10', 'robot-hoan-thien.10'])]] }
+      chuong: [['robot-hoan-thien', TRUM_1], ['trum-mua-1', TRUM_2]] }
   ];
   // Bốn màn dùng biến đếm sang đầu mùa 2 (chương tạm, mùa 2 dựng lại sau): count_return sửa trước, rồi bounce, fetch_back.
   var BIEN = { ma: 'bien', ten: 'Biến', loai: 'khai-niem', mua: 'mua-2', sao: 0, hinh: 'che-cam-bien',
     chuong: [['bien', ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9']]] };
   // Cất khỏi lộ trình xuất bản (ngân hàng man-*.js giữ nguyên, `nguon` còn bản gốc): trùng ý, dư so với khuôn, hay dùng cảm biến bên quá sớm.
-  // che-cam-bien.10 (cất tạm 26/10) đã về gói 9 Combo, chương che-combo.
+  // che-cam-bien.10 (cất tạm 26/10) đã về gói 9 Combo, chương che-combo. robot-hoan-thien.10 (bounce / fetch_back có biến) cất, robot-hoan-thien.11 thay chỗ.
   var CAT = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10',
-    'khoang-cach.7', 'che-cam-bien.8'];
+    'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
@@ -394,25 +439,14 @@
   // Gói Kho hàng đứng trước gói Bánh lùi: u_turn() lúc đó còn là bản hai lần turn_right() (xuong-ham.7), chưa phải bản một nhịp có lùi (che-xe.5).
   // Lời giải không đổi nhưng số nhịp / ô đổi: đánh dấu nội dung bản 2 để tools/do-lo-trinh.mjs đo lại ngưỡng sao (nháp cũ của các màn này bị bỏ).
   ['che-tay.1', 'che-tay.3', 'che-tay.4', 'che-tay.6', 'che-tay.10'].forEach(function (ma) { get(ma).phienBanNoiDung = 2; });
-  // Màn trùm của gói R1 xuất xưởng cần bounce() và fetch_back(), nhưng hai màn chế chúng (dùng biến đếm) đã sang mùa 2: đưa sẵn thành hàm của màn, khóa (chỉ xem).
-  // Chương trình còn gọi 4 hàm của em khác nhau (go_wall, pass_back, to_gap, turn_right) nên giới hạn hàm hạ từ 6 xuống 4; khay không mở nhóm ĐẾM.
-  (function () {
-    var m = get('robot-hoan-thien.10');
-    var hm = ['che-cam-bien.5', 'che-cam-bien.9'].map(function (ma) { return copy(nguon[ma].loiGiai.hamCuaEmMoi[0]); });
-    m.maMau.hamCuaMan = copy(hm);
-    m.loiGiai.hamCuaMan = copy(hm);
-    if (m.loiGiaiKhac) m.loiGiaiKhac.baiLam.hamCuaMan = copy(hm);
-    (m.congThucKhac || []).forEach(function (c) { c.baiLam.hamCuaMan = copy(hm); c.moTa = 'Rẽ phải bằng lệnh bánh viết thẳng, chỉ còn 3 hàm của em'; });
-    m.loiSai.forEach(function (ls) { ls.baiLam.hamCuaMan = copy(hm); });
-    m.loiSai[2].moTa = 'Dùng thêm turn_left(): hàm thứ năm, vượt giới hạn 4 hàm';
-    m.khoaHamMan = ['bounce', 'fetch_back'];
-    m.hamCuaEmCan = m.hamCuaEmCan.filter(function (h) { return hm.every(function (x) { return x.ten !== h; }); })
-      .concat(['move', 'back', 'pick', 'drop']);                         // thân hai hàm của màn gọi các hàm của em này
-    m.gioiHanHam = 4;
-    delete m.bienDem;
-    m.deBai = m.deBai.replace('Chương trình chỉ được gọi 6 hàm của em khác nhau.',
-      'bounce() (đi tới tường rồi lùi về chỗ cũ) và fetch_back() (đi tới thùng, nhặt, lùi về rồi đặt) là hàm của màn, đã viết sẵn. Chương trình chỉ được gọi 4 hàm của em khác nhau.');
-  })();
+  // Gói 10 chương 1 Tổng hợp: robot-hoan-thien.10 (bounce / fetch_back có biến đếm) đã cất, robot-hoan-thien.11 (man-trum-mua-1.js, không biến) là trùm.
+  // cam-bien-ben.10 (trùm cũ của Cảm biến hai bên) đứng thứ 9 Tổng hợp, không còn là trùm: huy hiệu cam-bien-ben về trùm mới của chương đó, cam-bien-ben.9.
+  get('cam-bien-ben.9').huyHieu = copy(get('cam-bien-ben.10').huyHieu);
+  delete get('cam-bien-ben.10').huyHieu;
+  // Kiểu bài (máy kiểm gói 9 + 10, kiem-trum-mua-1.mjs: không hai màn liền nhau cùng kiểu) cho các màn có sẵn của chương Tổng hợp.
+  var KIEU_TONG_HOP = { 'robot-hoan-thien.1': 'giao-hang', 'robot-hoan-thien.2': 'do-nhip', 'robot-hoan-thien.3': 'do-duong', 'robot-hoan-thien.4': 'giao-hang',
+    'robot-hoan-thien.5': 'do-duong', 'robot-hoan-thien.6': 'do-nhip', 'robot-hoan-thien.7': 'giao-hang', 'robot-hoan-thien.8': 'do-nhip', 'cam-bien-ben.10': 'do-duong' };
+  Object.keys(KIEU_TONG_HOP).forEach(function (ma) { get(ma).kieuBai = KIEU_TONG_HOP[ma]; });
   // Gói 9 Combo, chương che-combo màn 8: che-cam-bien.10 "Kho hàng" cần fetch_back() của che-cam-bien.9 (biến đếm, đã sang mùa 2). Không đưa bản có biến thành hàm
   // của màn khóa như robot-hoan-thien.10 (người chơi vẫn thấy biến): viết lại fetch_back() KHÔNG BIẾN thành hàm của màn người chơi viết tiếp — đi tới hàng, nhặt,
   // LÙI tới khi bên phải trống (đúng chỗ rẽ: trong nhánh hai bên là tường), đặt. Cảm biến bên thay biến đếm. Một sân (sân giữa) như mọi màn không phải trùm;
