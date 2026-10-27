@@ -105,3 +105,9 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   chương 2 hàm của em `push(n)`, `go_around()`, `push_around(n)`, `push_back(n)` (Sổ lệnh nhóm Bánh xích), sửa hàm `round_left`, `shove`. Hai trùm ba sân, huy hiệu `day-thung`, `che-day-thung`.
   Máy kiểm `kiem-day-thung.mjs` (108) + bộ dò `do-duong-day-thung.mjs`. Thùng chỉ đè được nút M (nút bắn N chặn thùng như tường); `push_to_wall()` không làm được (sau thùng distance() = 0).
   `kiem-luc-ban.mjs` sửa giả định "luc-ban ngay sau che-sung-hoi" (giữa giờ có gói 5).
+
+- **27/10 P6 · Gói 6 Lực bắn đủ 20 màn** (nhánh claude/che-luc-ban, gộp 073de2e; npm test 77/77). Chương 2 `che-luc-ban` 10 màn mới trong `man-che-luc-ban.js`:
+  chọn lực bằng `distance() > 1` (bắn nhanh chỉ bay 2 ô, nên không phải `> 2`), hàm gọi hàm, vòng lặp gọi hàm cảm biến, tham số lực truyền tiếp, `go_to_wall()` rồi bắn nhanh,
+  sửa hàm `quick_aim` (Sola so `> 2`), đố lực viết cứng; trùm ba hành lang, huy hiệu `che-luc-ban`. Hàm của em mới (Sổ lệnh nhóm Súng hơi): aim_fire, aim_left, aim_right,
+  fire_left, close_fire, scan_left, aim_turn. Phần lớn màn khóa chương trình chính (một sân không khóa thì đếm cứng luôn rẻ hơn if/else). Không dạy "biến giữ lực" (không sân nào cần).
+  Máy kiểm `kiem-che-luc-ban.mjs` (57) + bộ dò `do-duong-che-luc-ban.mjs`. Ba màn có lời rẻ hơn lời giải mà vẫn dùng cảm biến (ghi ở `congThucKhac`).
