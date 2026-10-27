@@ -30,7 +30,7 @@ function kiem(ten, ok, chiTiet) {
 
 const BM = require(path.join(GAME, 'bang-mau.js'));
 const V = require(path.join(GAME, 've-vector.js'));
-for (const f of ['ve-vector-o.js', 've-vector-than-hai-banh.js', 've-vector-tay-kep.js']) require(path.join(GAME, f));
+for (const f of ['ve-vector-o.js', 've-vector-o2.js', 've-vector-may.js', 've-vector-vat.js', 've-vector-ky-hieu.js', 've-vector-than-hai-banh.js', 've-vector-tay-kep.js']) require(path.join(GAME, f));
 let VeRobot = null;
 try { VeRobot = require(path.join(GAME, 've-robot.js')); } catch (e) { console.log('(không nạp được ve-robot.js ở Node: ' + e.message + ')'); }
 

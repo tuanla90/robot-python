@@ -184,7 +184,34 @@
     vecBac: '#cbd5e1',                 // cột cờ bạc
     vecBacSang: '#e0f2fe',             // đỉnh cột cờ
     vecBacToi: '#94a3b8',              // cột ăng-ten
-    vecBong: '#d9d4f2'                 // đế cờ (vệt bóng dưới chân cột)
+    vecBong: '#d9d4f2',                // đế cờ (vệt bóng dưới chân cột)
+    // ---- VECTOR (gói V2, 27/10): ô sân + vật còn lại (ve-vector-o2.js, ve-vector-may.js, ve-vector-vat.js), cùng tông lab trắng
+    vecDe: '#1e293b',                  // đế tối của máy (nút đè, nút bắn, băng chuyền, ô sạc, cổng), như mẫu vat-nut
+    vecDeSang: '#334155',              // nan băng chuyền, mặt trong đế tối
+    vecSat: '#c9ced9',                 // khối sắt / thùng nặng / mái gầm: đỉnh gradient xám bạc
+    vecSatToi: '#8f98aa',              // khối sắt: đáy gradient
+    vecSatGiua: '#b8bfcc',             // khối sắt: tấm giữa lõm
+    vecSatVien: '#7b8496',             // khối sắt: viền tấm giữa
+    vecDinh: '#e2e8f0',                // đinh tán
+    vecDinhVien: '#5b6478',            // viền đinh tán
+    vecCanhBao: '#facc15',             // sọc cảnh báo vàng (xen viền chàm) ở thùng nặng, mái gầm thấp
+    vecDo: '#ef4444',                  // đèn / nút đỏ (nút bắn tắt, cửa đóng, băng tắt, dấu ✗)
+    vecDoSang: '#fca5a5',              // vệt sáng trên nút đỏ / đèn đỏ đang sáng
+    vecXanhLa: '#22c55e',              // đèn / nút xanh (nút bắn bật, nút đè đang đè, cửa mở)
+    vecXanhLaSang: '#86efac',          // quầng sáng xanh
+    vecVang: '#fbbf24',                // tia chớp ô sạc, đèn nút bắn bật, khung cửa, mũi tên bàn xoay phải, bóng hơi
+    vecVangSang: '#fde68a',            // vệt sáng vàng
+    vecVangToi: '#d97706',             // mép tối của khung cửa / bóng hơi
+    vecNgoc: '#14b8a6',                // mũi tên bàn xoay trái (khác bàn xoay phải màu vàng)
+    vecDenToi: '#0891b2',              // khung cửa nhịp (cyan tối)
+    vecCong1: '#3b82f6',               // cổng dịch chuyển 1: vòng xanh lam
+    vecCong1Sang: '#bfdbfe',           // cổng 1: tia / lõi sáng
+    vecCong2: '#a855f7',               // cổng dịch chuyển 2: vòng tím
+    vecCong2Sang: '#e9d5ff',           // cổng 2: tia / lõi sáng
+    vecHo: '#3b3772',                  // thành hố
+    vecHoToi: '#0e0c2b',               // đáy hố
+    vecDich: '#f59e0b',                // ô đích: góc khung hổ phách (vàng thuần chìm trên nền trắng)
+    vecDichRgb: '245,158,11'           // bộ ba của vecDich (nền ô đích mờ, nét đứt chạy)
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ
