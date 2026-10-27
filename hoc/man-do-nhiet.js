@@ -72,12 +72,17 @@
   var SAN_D3 = ['#######', '####N##', '####F##', '##N#.##', '#N...N#', '#..N.##', '##.#H##', '##C####', '#######'];
   // do-nhiet.4: hành lang (1..6, 2) đi sang phải, năm nút trên tường (1..5, 1). Nút TẮT (1,1), (3,1), (4,1) mở cửa ngay sau nó (2,2), (4,2), (5,2); (2,1), (5,1) ĐANG BẬT. Cờ (6,2).
   var SAN_D4 = ['########', '#NNNNN##', '#.C.CCF#', '########'];
+  // do-nhiet.5: như do-nhiet.4 nhưng nút xa gần khác nhau và dưới hành lang có hai hốc (2,4), (3,4). Nút (1,0) TẮT cách 2 ô: bắn tụ, xe giật xuống tường nên đứng yên;
+  //   (2,0) ĐANG BẬT cách 2 ô, dưới là hốc: bắn tụ thì xe giật xuống hốc; (3,2) TẮT sát mũi, dưới là hốc: phải bắn nhanh; (4,2) TẮT sát mũi; (5,2) ĐANG BẬT. Cửa (2,3), (4,3), (5,3).
+  var SAN_D5 = ['########', '#NN#####', '#..#####', '#..NNN##', '#.C.CCF#', '##..####', '########'];
 
   /* ------------------------------------------------------------- chương trình */
 
   var L_D1 = FOR(4, nhieu(BAT, ['turn_right()', 'go_to_wall()']));
   var L_D2 = FOR(4, nhieu(TIM, ['go_to_wall()']));
   var L_D4 = FOR(5, nhieu(['turn_left()'], BAT, ['turn_right()', 'move()']));
+  var C_D5 = FOR(5, ['turn_left()', 'check_hot()', 'turn_right()', 'move()']);
+  var T_D5 = IF('not warm()', ['aim_fire()']);
 
   var DS = [
     /* ================================================================ chương do-nhiet: đọc nóng / không nóng rồi quyết */
@@ -158,6 +163,27 @@
       ],
       goiY: ['Mắt hồng ngoại ở mũi xe: muốn đo nút phía trên thì phải quay mặt về phía nút.',
         'Thân vòng lặp: turn_left(), if not warm(): fire("fast"), turn_right(), move().']
+    }),
+
+    man({
+      chuong: 'do-nhiet', so: 5, ten: 'Xa gần và nóng lạnh', yMoi: 'kết hợp: warm() chọn có bắn không, aim_fire() (distance()) chọn lực',
+      hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'move'], chinhCoDinh: true,
+      deBai: 'Hành lang như màn trước, nhưng các nút xa gần khác nhau, và dưới hành lang có hai hốc. Nhớ gói Lực bắn: bắn tụ thì xe giật lùi, sau lưng là tường thì đứng yên, là hốc thì rơi xuống hốc. ' +
+        'Chương trình chính đã khóa: ở mỗi ô quay trái, gọi check_hot(), quay lại, tiến. Viết thân check_hot(): warm() cho biết có cần bắn không, aim_fire() của em chọn lực theo distance().',
+      veMaMau: 'Chương trình chính bị khóa. check_hot() có sẵn bắn nhanh mọi nút: nút đầu cách 2 ô, bóng nhanh rơi giữa đường.',
+      san: SAN_D5, batDau: { x: 1, y: 4, huong: 1 }, noi: [noi(1, 1, [[2, 4]]), noi(3, 3, [[4, 4]]), noi(4, 3, [[5, 4]])], nutBat: [o(2, 1), o(5, 3)],
+      maMau: bai(C_D5, [H('check_hot', [], ['fire("fast")'])]),
+      sao: { o: 20, nhip: 18 },
+      loiGiai: bai(C_D5, [H('check_hot', [], T_D5)]),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_D5, [H('check_hot', [], ['# warm() chọn có bắn không, aim_fire() chọn lực'].concat(T_D5))]) },
+      congThucKhac: [{ moTa: 'Viết thẳng if / else theo distance() thay cho aim_fire()', baiLam: bai(C_D5, [H('check_hot', [], IF('not warm()', IF('distance() > 1', ['fire("charge")'], ['fire("fast")'])))]) }],
+      loiSai: [
+        { moTa: 'Để nguyên bắn nhanh: nút đầu cách 2 ô, bóng rơi giữa đường', baiLam: bai(C_D5, [H('check_hot', [], ['fire("fast")'])]), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Bỏ warm(), nút nào cũng aim_fire(): nút nóng thứ hai cách 2 ô, bắn tụ, xe giật xuống hốc', baiLam: bai(C_D5, [H('check_hot', [], ['aim_fire()'])]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Luôn bắn tụ: nút thứ ba sát mũi, xe giật xuống hốc', baiLam: bai(C_D5, [H('check_hot', [], IF('not warm()', ['fire("charge")']))]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['aim_fire() đo distance(): từ 2 ô trống trở lên thì bắn tụ, gần hơn thì bắn nhanh.',
+        'Thân check_hot(): if not warm(): rồi thụt vào aim_fire().']
     })
   ];
 

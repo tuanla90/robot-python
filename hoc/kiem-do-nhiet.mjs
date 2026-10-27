@@ -4,7 +4,7 @@
    1. Vị trí: gói do-nhiet (mùa 2) có hai chương do-nhiet, che-do-nhiet; mỗi chương đúng 10 màn mới theo `so`, hạng lam-quen ×3 · luyen ×3 · bien-the ×3 · trum;
       do-nhiet.1 ngay sau che-luc-ban.10, che-do-nhiet.1 ngay sau do-nhiet.10; trùm mang huy hiệu đúng mã chương (huy-hieu.js có hình), màn khác không mang.
    2. Từng màn: đủ trường (≥ 2 lời sai có phaiCoMa), xe HAI BÁNH gắn súng hơi + mắt hồng ngoại, khay có warm (và distance), lucBan ở mọi màn; có nút bật sẵn (nutBat);
-      nhiều sân chỉ ở trùm (+ nhipTheo 'tong'); lời giải thắng 3 sao, đúng sao.o / sao.nhip, KHÔNG chẩn đoán, có đọc warm(); mã mẫu chưa thắng; lời giải khác đúng 2 sao;
+      nhiều sân chỉ ở trùm (+ nhipTheo 'tong'); lời giải thắng 3 sao, đúng sao.o / sao.nhip, KHÔNG chẩn đoán (trừ thông tin 'giat-chan'), có đọc warm(); mã mẫu chưa thắng; lời giải khác đúng 2 sao;
       công thức khác (nếu có) thắng; lời sai thua và có đủ mã phaiCoMa; chữ hiển thị không emoji, không gạch dài.
    3. Hàm của em: mọi hàm màn cần đã được tạo ở màn đứng trước, mọi lời gọi khai trong hamCuaEmCan; hàm mới (taoHam) không trùng hàm cốt truyện nào (kể cả mùa ẩn)
       và có mục Sổ lệnh đúng màn / chương, nhóm hong-ngoai; hàm của màn không trùng hàm cốt truyện / hàm trong kho.
@@ -195,6 +195,8 @@ kiem('huy hiệu: chỉ trùm mang, đúng mã chương; huy-hieu.js có hình',
 });
 
 /* ------------------------------------------------------------------ 2–4, 6. từng màn */
+// Chẩn đoán thông tin được phép trong lời giải: 'giat-chan' (bắn tụ mà sau lưng là tường nên xe đứng yên: chính là cách màn dạy bắn tụ an toàn).
+const CHAN_DOAN_DUOC = ['giat-chan'];
 const HAM_COT_TRUYEN = new Map();
 for (const m of M.danhSach) for (const t of m.taoHam || []) if (!HAM_COT_TRUYEN.has(t)) HAM_COT_TRUYEN.set(t, m.ma);
 const bang = {};
@@ -257,7 +259,7 @@ for (const m of DS) {
     assert.equal(r.soO, m.sao.o, m.ma + ' soO=' + r.soO + ' khai ' + m.sao.o);
     assert.equal(r.soNhip, m.sao.nhip, m.ma + ' soNhip=' + r.soNhip + ' khai ' + m.sao.nhip);
     assert.equal(r.sao, 3, m.ma + ' sao=' + r.sao);
-    assert.deepEqual(r.chanDoan.map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
+    assert.deepEqual(r.chanDoan.filter((c) => !(c.muc === 'thong-tin' && CHAN_DOAN_DUOC.includes(c.ma))).map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
     assert.ok(r.theoSan.length === soSan(m) && r.theoSan.every((s) => s.thang));
     const rm = cham(m, m.maMau);
     assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
