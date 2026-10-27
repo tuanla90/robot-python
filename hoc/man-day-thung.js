@@ -53,7 +53,7 @@
   var DS = [
     /* ================================================================ chương day-thung: xích tiến vào thùng nặng thì đẩy */
     man({
-      chuong: 'day-thung', so: 1, ten: 'Thùng trượt một ô', yMoi: 'xích tiến vào thùng nặng thì thùng trượt một ô', hamCuaEmCan: ['move', 'back'],
+      chuong: 'day-thung', so: 1, ten: 'Thùng trượt một ô', yMoi: 'xích tiến vào thùng nặng thì thùng trượt một ô', hamCuaEmCan: ['move', 'back', 'forward'],
       deBai: 'Xích của xe đã được nâng cấp: tiến vào thùng nặng thì thùng trượt đi một ô. Đẩy thùng vào ô đích khung vàng.',
       veMaMau: 'Chương trình có sẵn mới tiến một lần. Thùng đi được mấy ô?',
       san: ['#######', '#.H.D.#', '#######'],
@@ -70,7 +70,7 @@
         'Thùng cách ô đích hai ô: cần tiến hai lần.']
     }),
     man({
-      chuong: 'day-thung', so: 2, ten: 'Đẩy cả đoạn đường', yMoi: 'đẩy nhiều ô bằng vòng for', hamCuaEmCan: ['move', 'back'],
+      chuong: 'day-thung', so: 2, ten: 'Đẩy cả đoạn đường', yMoi: 'đẩy nhiều ô bằng vòng for', hamCuaEmCan: ['move', 'back', 'forward'],
       deBai: 'Thùng nằm cuối một hành lang dài, ô đích ở đầu kia. Xích tiến bao nhiêu lần thì thùng trượt bấy nhiêu ô. Dùng vòng lặp for.',
       veMaMau: 'Chương trình có sẵn lặp ba lần: thùng còn cách ô đích bao xa?',
       san: ['###', '#D#', '#.#', '#.#', '#.#', '#H#', '#.#', '#.#', '###'],
@@ -128,29 +128,29 @@
       san: ['#######', '#.D.H.#', '####..#', '#######'],
       batDau: { x: 4, y: 2, huong: 0 },
       maMau: bai(FOR(2, ['move()'])),
-      sao: { o: 16, nhip: 10 },
-      loiGiai: bai(nhieu(['tr_right()', 'move()', 'tr_left()', 'move()', 'tr_left()'], FOR(2, ['move()']))),
-      loiGiaiKhac: { moTa: 'Đi vòng bằng sidestep() của gói Bánh xích: đúng, nhưng thêm thân một hàm', baiLam: bai(nhieu(['sidestep()', 'move()', 'tr_left()'], FOR(2, ['move()']))) },
+      sao: { o: 15, nhip: 10 },
+      loiGiai: bai(nhieu(['tr_right()', 'move()'], FOR(2, ['tr_left()', 'move()']), ['move()'])),
+      loiGiaiKhac: { moTa: 'Viết thẳng từng lệnh, không gộp hai lần quay trái rồi tiến vào vòng for', baiLam: bai(nhieu(['tr_right()', 'move()', 'tr_left()', 'move()', 'tr_left()'], FOR(2, ['move()']))) },
       loiSai: [
         { moTa: 'Đẩy thùng lên: ô sau thùng là tường, xích đứng yên', baiLam: bai(FOR(2, ['move()'])), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Đi vòng rồi quay phải: mũi xích quay ra xa thùng', baiLam: bai(nhieu(['tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()'], FOR(2, ['move()']))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đi vòng bằng sidestep() rồi quay phải: mũi xích quay ra xa thùng', baiLam: bai(nhieu(['sidestep()', 'move()', 'tr_right()'], FOR(2, ['move()']))), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Đẩy một lần: thùng còn cách ô đích một ô', baiLam: bai(['tr_right()', 'move()', 'tr_left()', 'move()', 'tr_left()', 'move()']), phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['Muốn đẩy thùng sang trái thì xích phải đứng bên PHẢI thùng, mũi quay sang trái.',
-        'Quay phải, đi một ô, quay trái: xích sang phải một ô mà giữ hướng. Lên một ô nữa là ngang hàng thùng.']
+        'Quay phải, tiến; rồi hai lần: quay trái, tiến. Lần thứ hai xích đã đẩy thùng một ô; tiến thêm một ô nữa.']
     }),
     man({
       chuong: 'day-thung', so: 6, ten: 'Mắt hồng ngoại thấy thùng', yMoi: 'distance() đếm số ô trống tới thùng: range(distance()) tới sát thùng', hamCuaEmCan: ['move', 'tr_right', 'forward'],
-      deBai: 'Ba thùng nằm trên ba đoạn đường dài ngắn khác nhau, ô đích ngay sau mỗi thùng. Mắt hồng ngoại coi thùng là vật cản: distance() cho biết còn mấy ô trống tới thùng. Mỗi đoạn: tới sát thùng, đẩy một ô, quay phải.',
+      deBai: 'Ba thùng nằm trên ba đoạn đường dài ngắn khác nhau, ô đích ngay sau mỗi thùng; đẩy quá một ô là thùng kẹt góc. Mắt hồng ngoại coi thùng là vật cản: distance() cho biết còn mấy ô trống tới thùng. Mỗi đoạn: tới sát thùng, đẩy một ô, quay phải.',
       veMaMau: 'Chương trình có sẵn đoạn nào cũng đi hai ô tới thùng. Thay số 2 bằng số đo của mắt hồng ngoại.',
-      san: ['########', '#D######', '#H...HD#', '#.###.##', '#.###H##', '#.###D##', '########'],
-      batDau: { x: 1, y: 5, huong: 0 },
+      san: ['#######', '#.#####', '#D#####', '#H.HD.#', '#.#.###', '###.###', '###H###', '###D###', '#######'],
+      batDau: { x: 1, y: 4, huong: 0 },
       maMau: bai(FOR(3, ['forward(2)', 'move()', 'tr_right()'])),
-      sao: { o: 11, nhip: 13 },
+      sao: { o: 11, nhip: 10 },
       loiGiai: bai(FOR(3, nhieu(FOR('distance()', ['move()'], 'j'), ['move()', 'tr_right()']))),
       loiGiaiKhac: { moTa: 'Tới sát thùng bằng forward(distance()): đúng, nhưng thêm thân một hàm', baiLam: bai(FOR(3, ['forward(distance())', 'move()', 'tr_right()'])) },
       loiSai: [
-        { moTa: 'Đoạn nào cũng đi hai ô: đoạn giữa xích dừng sớm, đoạn cuối đẩy thùng quá ô đích', baiLam: bai(FOR(3, ['forward(2)', 'move()', 'tr_right()'])), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Đoạn nào cũng đi hai ô: đoạn giữa thùng bị đẩy quá ô đích, kẹt góc', baiLam: bai(FOR(3, ['forward(2)', 'move()', 'tr_right()'])), phaiCoMa: ['thung-ket'] },
         { moTa: 'Quên move() đẩy thùng: xích tới sát thùng rồi quay luôn', baiLam: bai(FOR(3, nhieu(FOR('distance()', ['move()'], 'j'), ['tr_right()']))), phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['Thùng nặng chắn tia hồng ngoại như tường: đứng sát thùng thì distance() là 0.',
@@ -158,52 +158,53 @@
     }, true),
     man({
       chuong: 'day-thung', so: 7, ten: 'Thùng lên băng chuyền', yMoi: 'đẩy thùng lên băng chuyền rồi chờ băng chở đi', hamCuaEmCan: ['move', 'forward'],
-      deBai: 'Đẩy thùng lên băng chuyền. Băng chở thùng tới ô đích, cứ hai nhịp một ô. Xích bám chắc nên băng không đẩy được xích. Đẩy xong thì chờ: while True: wait() chờ mãi, thùng tới đích là thắng.',
+      deBai: 'Đẩy thùng lên băng chuyền. Băng chở thùng tới ô đích, cứ hai nhịp một ô. Đẩy thêm là thùng rời băng, kẹt góc. Đẩy xong thì chờ: while True: wait() chờ mãi, thùng tới đích là thắng.',
       veMaMau: 'Chương trình có sẵn đẩy thùng lên băng rồi dừng luôn. Băng chưa kịp chở thùng.',
-      san: ['######', '#>>>D#', '#H####', '#.####', '#.####', '######'],
-      batDau: { x: 1, y: 4, huong: 0 },
+      san: ['######', '#.####', '#>>>D#', '#H####', '#.####', '#.####', '######'],
+      batDau: { x: 1, y: 5, huong: 0 },
       maMau: bai(FOR(2, ['move()'])),
       sao: { o: 7, nhip: 7 },
       loiGiai: bai(nhieu(FOR(2, ['move()']), WHILE('True', ['wait()']))),
       loiGiaiKhac: { moTa: 'Đẩy bằng forward(2): đúng, nhưng thêm thân một hàm', baiLam: bai(nhieu(['forward(2)'], WHILE('True', ['wait()']))) },
       loiSai: [
         { moTa: 'Đẩy xong là dừng: băng chưa kịp chở thùng', baiLam: bai(FOR(2, ['move()'])), phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Chờ ba nhịp thì ít quá: thùng mới đi một ô', baiLam: bai(nhieu(FOR(2, ['move()']), FOR(3, ['wait()']))), phaiCoMa: ['chua-day-thung'] }
+        { moTa: 'Chờ ba nhịp thì ít quá: thùng mới đi một ô', baiLam: bai(nhieu(FOR(2, ['move()']), FOR(3, ['wait()']))), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Đẩy ba lần: thùng rời băng, kẹt vào góc', baiLam: bai(nhieu(FOR(3, ['move()']), WHILE('True', ['wait()']))), phaiCoMa: ['thung-ket'] }
       ],
       goiY: ['Thùng nằm trên băng đủ hai nhịp liền thì băng đẩy nó đi một ô.',
         'wait() cho một nhịp trôi qua mà xích đứng yên.']
     }),
     man({
-      chuong: 'day-thung', so: 8, ten: 'Mở đường', yMoi: 'mục tiêu tới cờ: đẩy thùng chắn lối vào ngách', mucTieu: 'toi-co', hamCuaEmCan: ['move', 'tr_right', 'tr_left', 'go_to_wall'],
-      deBai: 'Thùng nặng chắn ngay ngã rẽ xuống cờ. Đẩy thùng vào ngách cụt phía trước để mở đường, rồi rẽ phải xuống cờ. Ngách chỉ sâu một ô.',
+      chuong: 'day-thung', so: 8, ten: 'Mở đường', yMoi: 'mục tiêu tới cờ: đẩy thùng chắn lối vào ngách', mucTieu: 'toi-co', hamCuaEmCan: ['move', 'tr_right', 'go_to_wall'],
+      deBai: 'Thùng nặng chắn ngay ngã rẽ xuống cờ. Đẩy thùng vào ngách phía trước một ô để mở đường, rồi rẽ phải xuống cờ.',
       veMaMau: 'Chương trình có sẵn quên đẩy thùng: xích dừng sát thùng rồi rẽ luôn.',
-      san: ['########', '#....H.#', '#####.##', '#####.##', '#####F##', '########'],
+      san: ['#########', '#....H..#', '#####.###', '#####.###', '#####.###', '#####.###', '#####F###', '#########'],
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai(['go_to_wall()', 'tr_right()', 'go_to_wall()']),
-      sao: { o: 11, nhip: 9 },
-      loiGiai: bai(nhieu(FOR(4, ['move()']), ['tr_right()'], FOR(3, ['move()']))),
+      sao: { o: 11, nhip: 11 },
+      loiGiai: bai(nhieu(FOR(4, ['move()']), ['tr_right()'], FOR(5, ['move()']))),
       loiGiaiKhac: { moTa: 'Dùng go_to_wall() rồi move() để đẩy: đúng, nhưng thêm thân một hàm', baiLam: bai(['go_to_wall()', 'move()', 'tr_right()', 'go_to_wall()']) },
       loiSai: [
         { moTa: 'Quên đẩy thùng: xích rẽ khi chưa tới ngã rẽ, quay mặt vào tường', baiLam: bai(['go_to_wall()', 'tr_right()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đi ba ô: xích dừng sát thùng, chưa đẩy, rẽ vào tường', baiLam: bai(nhieu(FOR(3, ['move()']), ['tr_right()'], FOR(3, ['move()']))), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Đẩy thùng rồi quay trái: mũi xích quay lên tường', baiLam: bai(nhieu(FOR(4, ['move()']), ['tr_left()'], FOR(3, ['move()']))), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Đi ba ô: xích dừng sát thùng, chưa đẩy, rẽ vào tường', baiLam: bai(nhieu(FOR(3, ['move()']), ['tr_right()'], FOR(5, ['move()']))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đẩy hai lần: xích đi quá ngã rẽ, rẽ vào tường', baiLam: bai(nhieu(FOR(5, ['move()']), ['tr_right()'], FOR(5, ['move()']))), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Ba ô trống tới thùng, thêm một ô đẩy: xích tiến bốn lần là đứng đúng ngã rẽ.',
-        'go_to_wall() của gói Hồng ngoại dừng sát vật cản, kể cả thùng: dừng đó thì chưa đẩy.']
+        'Đẩy hai lần là xích đi quá ngã rẽ. Đường xuống cờ dài năm ô.']
     }, true),
     man({
       chuong: 'day-thung', so: 9, ten: 'Thùng đè nút', yMoi: 'đẩy thùng đè nút M để giữ cửa mở', mucTieu: 'toi-co', hamCuaEmCan: ['move', 'tr_right', 'forward'],
       deBai: 'Nút đè M mở cửa khi có vật đè lên. Xích phải đi qua cửa nên không đứng trên nút được: đẩy thùng nặng đè lên nút, cửa mở, rồi rẽ phải xuống cờ.',
       veMaMau: 'Chương trình có sẵn đẩy thùng ba lần: thùng trượt qua khỏi nút.',
-      san: ['#######', '#.H.M.#', '###C###', '###F###', '#######'],
+      san: ['#######', '#.H.M.#', '###C###', '###.###', '###F###', '#######'],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(nhieu(FOR(3, ['move()']), ['tr_right()'], FOR(2, ['move()']))),
-      sao: { o: 11, nhip: 6 },
-      loiGiai: bai(nhieu(FOR(2, ['move()']), ['tr_right()'], FOR(2, ['move()']))),
-      loiGiaiKhac: { moTa: 'Đẩy bằng forward(2): đúng, nhưng thêm thân một hàm', baiLam: bai(nhieu(['forward(2)', 'tr_right()'], FOR(2, ['move()']))) },
+      maMau: bai(nhieu(FOR(3, ['move()']), ['tr_right()'], FOR(3, ['move()']))),
+      sao: { o: 11, nhip: 7 },
+      loiGiai: bai(nhieu(FOR(2, ['move()']), ['tr_right()'], FOR(3, ['move()']))),
+      loiGiaiKhac: { moTa: 'Đẩy bằng forward(2): đúng, nhưng thêm thân một hàm', baiLam: bai(nhieu(['forward(2)', 'tr_right()'], FOR(3, ['move()']))) },
       loiSai: [
-        { moTa: 'Đẩy ba lần: thùng trượt qua nút, xích đứng trên nút nhưng không ở trước cửa', baiLam: bai(nhieu(FOR(3, ['move()']), ['tr_right()'], FOR(2, ['move()']))), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Đẩy một lần: thùng chưa tới nút, xích quay vào tường', baiLam: bai(nhieu(['move()', 'tr_right()'], FOR(2, ['move()']))), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Đẩy ba lần: thùng trượt qua nút, xích đứng trên nút nhưng không ở trước cửa', baiLam: bai(nhieu(FOR(3, ['move()']), ['tr_right()'], FOR(3, ['move()']))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đẩy một lần: thùng chưa tới nút, xích quay vào tường', baiLam: bai(nhieu(['move()', 'tr_right()'], FOR(3, ['move()']))), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Thùng nằm trên nút M thì nút bị đè, cửa mở cho tới khi thùng rời đi.',
         'Thùng cách nút hai ô: đẩy hai lần. Lúc đó xích đứng ngay trên cửa.']
