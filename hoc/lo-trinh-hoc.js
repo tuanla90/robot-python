@@ -573,6 +573,36 @@
       ]
     }).loiGiaiKhac = { moTa: 'Đi bằng move() bảy lần viết thẳng', baiLam: bai(BAN.concat(['move()', 'move()', 'move()', 'move()', 'move()', 'move()', 'move()'])) };
   })();
+  // Game bỏ bậc thang, hố / gầm là của mùa 3 (KE-HOACH-MUA-2.md mục 1). Sửa thẳng sân (không qua sua()) để giữ lỗi mẫu; lời giải, số nhịp, số ô không đổi
+  // (xích leo S như đi trên sàn; hố / gầm chỉ chắn lối tắt nên thay bằng chướng ngại chung) nên không đo lại sao.
+  (function () {
+    function sanThay(ma, tu, den) { var m = get(ma); m.san = m.san.map(function (d) { return d.split(tu).join(den); }); return m; }
+    // xich.5, .7, .10: ô S thành sàn, hành lang giữ nguyên hình nên đường đi và lời giải không đổi.
+    Object.assign(sanThay('xich.5', 'S', '.'), {
+      ten: 'Trái rồi phải',
+      deBai: 'Hành lang quẹo trái rồi quẹo phải. Đưa xe xích tới cờ, dùng tr_left() ở khúc quẹo trái và tr_right() ở khúc quẹo phải.',
+      goiY: ['Mỗi khúc quẹo của xe xích là một lần gọi hàm quay; đoạn thẳng thì lặp move().',
+        'Chỗ nào quẹo trái gọi tr_left(), quẹo phải gọi tr_right(); hàm turn_left() cũ không dùng cho xe xích.']
+    });
+    Object.assign(sanThay('xich.7', 'S', '.'), {
+      deBai: 'Xe xích gắn tay kẹp, dùng pick() và drop() như xe hai bánh: nhặt và thả ở ô ngay trước mũi xe, còn vật nằm đất chiếm ô nên xe phải dừng sát vật. Nhặt vật, mang qua khúc quẹo, dừng sát ô đích (khung vàng) rồi thả.',
+      goiY: ['pick() và drop() tự hạ tay, kẹp hoặc thả rồi nâng tay lên lại, nên xe quay và đi được ngay sau đó.',
+        'Dừng sát vật mới nhặt được, và dừng sát ô đích (mũi xe hướng về nó) mới thả đúng chỗ.']
+    });
+    // xich.10 giữ băng chuyền: băng không đẩy được xích là đặc tính của part (như xich.6), trùm nhắc lại.
+    Object.assign(sanThay('xich.10', 'S', '.'), {
+      ten: 'Đường bậc thềm',
+      deBai: 'Mang vật qua con đường gấp khúc như bậc thềm, có băng chuyền, tới ô đích: nhặt và thả đều ở ô ngay trước mũi xe, nên xe dừng sát vật và dừng sát ô đích. Dùng vòng lặp cùng các hàm quay của xe xích cho gọn.',
+      veMaMau: 'Chương trình có sẵn đưa xe tới sát vật rồi nhặt nó. Viết tiếp phần đi lên sát ô đích và thả vật.',
+      goiY: ['Mỗi bậc là: quẹo trái, đi một ô, quẹo phải, đi một ô. Đặt bốn dòng đó vào một vòng for.',
+        'Băng chuyền không đẩy được xe xích; nhớ pick() trước khi đi và drop() khi tới ô đích.']
+    });
+    // xich.6 đứng trước gói 4 (Nhà máy, nơi học băng chuyền): đề bài tự giới thiệu băng chuyền thay vì nhắc chương đã học.
+    get('xich.6').deBai = 'Ô mũi tên là băng chuyền: nó đẩy xe hai bánh trôi theo chiều mũi tên (gói Nhà máy sẽ gặp lại). Xe xích bám chắc nên băng chuyền, xuôi hay ngược chiều, đều không đẩy được nó. Đi qua các băng chuyền tới cờ như đi trên sàn.';
+    // tham-so.3: hố u (mùa 3) thành hàng rào = (chướng ngại chung); tham-so.7: gầm n (mùa 3) thành tường. Hai ô đó chỉ chắn lối tắt.
+    sanThay('tham-so.3', 'u', '=');
+    sanThay('tham-so.7', 'n', '#');
+  })();
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 2 (quy ước cho các gói sau): mỗi gói có màn mới MỘT tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai
   // `chuong` (mã chương trong MUA_2) và `so`; tệp đã có trong danh sách require ở đầu tệp này và thẻ <script> của game/choi.html. Màn mới của một chương
   // nối SAU các màn có sẵn của chương đó trong MUA_2, theo `so` (muốn xen giữa thì sửa đúng dòng chương đó trong MUA_2). Màn cuối của chương đủ 10 là trùm.
