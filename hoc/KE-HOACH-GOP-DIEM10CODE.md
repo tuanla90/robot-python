@@ -70,7 +70,7 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   Sân lab trắng như bản thử (ô trắng bo góc, tường khối trắng có dải đèn cyan, thùng trắng đai xanh, khối sắt có đinh tán, nút đè vòng cyan, cờ hồng).
 - Không đổi: luật chơi, máy chấm, mọi màn. Đổi: bộ vẽ sân / vật / bộ phận / hoạt cảnh / giao diện (font Google Sans Flex) / huy hiệu / phim. Bảng màu gói A1 dùng tiếp.
 - ~~Gói A2 (pixel lab trắng + thân M1)~~ BỎ (user chọn vector). Thứ tự (user 27/10): A1 bảng màu → **V1–V6 vector** → gói 8, 9, 10 mùa 2 → phim mùa 2.
-  V1 bộ vẽ vector + ghép bộ phận theo điểm gắn, xoay 4 hướng · V2 ô sân + vật · V3 5 thân, 6 tay, cảm biến · V4 hoạt cảnh · V5 giao diện phẳng diem10code · V6 huy hiệu + phim.
+  V1 bộ vẽ vector + ghép bộ phận theo điểm gắn, xoay 4 hướng · V2 ô sân + vật · V3 5 thân, 6 tay, cảm biến · V4 hoạt cảnh · V5 giao diện phẳng diem10code · V6 huy hiệu + phim · V7 đổi mặc định sang vector, rồi gỡ bộ vẽ pixel (user 27/10).
   **V5 làm lại TOÀN BỘ giao diện ngoài sân** (user 27/10: "còn phải làm lại cả khung code, rìa ngoài, các button"). Hiện `game/choi.css` (1187 dòng) vẫn kiểu pixel:
   font Handjet / VT323, vân gỗ `--wood*`, bảng phấn `.chalk`, khối lệnh `.brick` có núm `--stud`, viền vát `inset` nhiều lớp, 51 hoạt cảnh `steps()`, icon `.pxi` pixel.
   Tách hai gói, làm lần lượt:
@@ -99,7 +99,7 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (`VeVector.kiemGhep`: 1680 tổ hợp, 528 hợp lệ, cùng câu báo); san-ve.js lấy hình học tay qua `VeRobot.hinhHoc` / `reachCua` / `vatXoay`. Sàn màu có dấu hình
   (tròn / tam giác / vuông / sao), thùng nặng thép tối `vecThep*`. Màn đội: kính + chấm ăng-ten đủ phân biệt, không thêm dải đội. Máy kiểm 74 (400 màn → 36 cấu hình, đều vector).
   Còn lại → V4: robot ngoài sân (Lắp robot, thẻ Bộ phận mới, mở đầu, phim) quá to ở vector (tham số cỡ theo bội số pixel); hiệu ứng sân còn khối pixel; vật kẹp nhỏ, cùng
-  màu ngón. → V6: huy-hieu.js gọi thẳng `Part.ghep` (luôn pixel). Nòng sau súng hơi lệch trái ăng-ten ~0,12 ô: giữ. Bộ vẽ pixel: GIỮ tới hết V6 rồi mới tính gỡ.
+  màu ngón. → V6: huy-hieu.js gọi thẳng `Part.ghep` (luôn pixel). Nòng sau súng hơi lệch trái ăng-ten ~0,12 ô: giữ. Bộ vẽ pixel (user chốt 27/10): GIỮ tới hết V6, sau đó đổi mặc định sang vector rồi mới gỡ pixel (gói gỡ riêng sau V6).
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
