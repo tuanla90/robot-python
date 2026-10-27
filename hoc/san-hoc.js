@@ -88,6 +88,14 @@
         - Leo được bậc thang S như đi trên sàn; băng chuyền KHÔNG đẩy được xích (bám chắc): xích đứng đủ 2 nhịp trên băng
           chỉ ghi 'bang-khong-day' (thông tin cho hoạt cảnh), vị trí không đổi.
         Vết nhịp của xích có thêm robot.quayDo (0, +1, -1) cho hoạt cảnh xoay dở.
+        - XÍCH ĐẨY THÙNG NẶNG (mùa 2, 27/10; nâng cấp xích, màn khai cfg.xichDay = true; thân khác bỏ qua cờ): xích TIẾN vào ô có thùng nặng thì thùng bị đẩy 1 ô theo hướng tiến
+          nếu ô sau thùng nhận được thùng (sàn, ô đích, băng chuyền, ô màu; không phải tường, rào, nút, bậc thang, cửa đóng, thùng khác, vật nằm đất, robot khác: oThungChan), xe vào ô
+          thùng vừa rời: sự kiện 'thung-di' nguon 'xich' { id, tu, den, soO: 1 } + 'tien' có thêm dayThung = id. Ô sau bị chặn → xích đứng yên như đâm tường: 'dam-tuong' vat 'thung-nang'
+          có thêm xichDay: true, chan = lý do, sau = ô sau thùng (cham.js nói "ô sau thùng bị chặn"). LÙI không kéo thùng (đâm như cũ). Làm ở pha (a) cùng chỗ bánh chạy (trước băng chuyền),
+          nên thùng vừa bị đẩy lên băng thì nhịp đó băng đếm từ 0 như mọi thùng. Hai bánh / omni / nhện / màn không khai cờ: húc thùng vẫn đâm như tường.
+        - BỆ SÚNG XÍCH (mùa 2; màn khai cfg.beSung = true, cần robot có súng hơi): XÍCH gắn súng hơi bắn TỤ ("charge" hay không đối số) thì bóng bay như cũ nhưng xe KHÔNG GIẬT:
+          không có sự kiện 'giat', thùng sau xe không bị hất; thay bằng sự kiện 'be-sung' { nhip, huong } (thông tin cho hoạt cảnh: xe rung nhẹ, bệ giữ). Bắn nhanh ("fast") như cũ.
+          Thân khác (hai bánh, omni) có beSung vẫn giật như thường; không khai cờ thì xích cũng giật như hiện nay.
 
    'omni' (xe BÁNH OMNI): có MỌI lệnh bánh của xe hai bánh (left_move / right_move / left_back / right_back, wait và tay gắp
         nếu có) với đúng luật cũ (tiến / lùi 1 ô, quay 90° trong 1 nhịp), nên move(), turn_right(), turn_left() cũ chạy ĐÚNG. Thêm HAI
@@ -156,6 +164,17 @@
         - Chống vòng lặp vô hạn không có nhịp: quá 1000 lần đọc cảm biến liên tiếp mà chưa có nhịp nào thì dừng, loi.loai 'infinite-loop'
           (cham.js: vong-vo-han). Vòng lặp có nhịp thì bị chặn bởi nhipToiDa ('qua-nhieu-nhip'); vòng không có lời gọi nào bị chặn bởi
           ngân sách lệnh của nhân ('infinite-loop').
+
+   CẢM BIẾN HỒNG NGOẠI (mùa 2, 27/10; part 'hong-ngoai' gắn mũi xe; xe bánh, xích, omni — nhện và drone không có hướng mặt nên ghép là lỗi cấu hình). Robot có nó khi hamGoc có
+        distance hay warm. Cùng một TIA đi thẳng từ mũi xe theo hướng mặt, ô tới ô, dừng ở VẬT CẢN ĐẦU TIÊN: tường '#', hàng rào '=', nút N, gầm thấp, bậc thang S (xe bánh / omni; xích leo được
+        nên S là ô trống với xích, như front_clear), cửa đang đóng, thùng nặng, vật nằm đất, robot khác dưới đất (drone bay trên không chắn), mép sân (= tường). Hố u, băng chuyền, ô đích, cờ,
+        cửa mở, ô màu là ô trống (tia đi qua).
+        - distance() TRẢ SỐ NGUYÊN = số ô TRỐNG giữa xe và vật cản (sát vật cản → 0). Dùng được trong biểu thức: d = distance(); if distance() > 2:.
+        - warm() (NÂNG CẤP ĐO NHIỆT, chỉ khi hamGoc có warm) TRẢ True khi vật cản đầu tiên ấy NÓNG: là ROBOT khác hay NÚT BẮN ĐANG BẬT (nut.bat); mọi thứ khác (nút đang tắt, cửa, thùng,
+          tường, vật…) → False. Cùng tia với distance().
+        - ĐỌC KHÔNG TỐN NHỊP, không đổi sân, đọc ở trạng thái hiện tại (như mọi cảm biến); mỗi lần đọc ghi mục lệnh có `docCamBien` { ma:'doc-cam-bien', cam:'hong-ngoai', ham:'distance'|'warm',
+          tu, huong, o: ô vật cản (ngoài sân thì toạ độ ngoài sân), khoang: số ô trống, vat: 'tuong'|'ngoai-san'|'rao'|'nut'|'bac-thang'|'gam-thap'|'cua'|'thung-nang'|'vat'|'dong-doi', nong: true|false,
+          trong: false, nhip } và sự kiện 'doc-cam-bien' ở nhịp kế; chung bộ đếm 1000 lần đọc liên tiếp ('infinite-loop'). Gọi khi hamGoc không có → "chưa có hàm" (cham.js: chua-gan-cam-bien).
 
    CẢM BIẾN MÀU / CAMERA (chương `mau`; xe bánh, xích, omni, nhện — chương 12 dùng xe hai bánh). Robot đọc màu khi hamGoc có hàm gốc color().
         color() TRẢ VỀ MỘT CHUỖI chữ thường: "red", "green", "blue", "yellow" hoặc "none" (không có màu). CÙNG TÊN HÀM, KẾT QUẢ PHỤ THUỘC PHẦN CỨNG
@@ -393,6 +412,9 @@
   // Chất vật: s sắt, g gỗ, N / S vật nam châm (chữ ghi là cực quay về phía xe)
   var TAY_NAM_CHAM = ['magnet_n', 'magnet_s', 'magnet_off'];
   var CAM_TU_HAM = ['front_metal', 'front_pole'];
+  // cảm biến HỒNG NGOẠI (mùa 2, part 'hong-ngoai' ở mũi xe): distance() trả SỐ ô trống tới vật cản đầu tiên phía trước; warm() (nâng cấp đo nhiệt) trả True khi vật cản đó NÓNG (robot khác, nút bắn đang bật)
+  var CAM_HONG_NGOAI_HAM = ['distance', 'warm'];
+  var MA_CAM_HONG_NGOAI = 'hong-ngoai';
   var CUC_LENH = { magnet_n: 'N', magnet_s: 'S' };           // lệnh bật cực → cực
   var CUC_DOI = { N: 'S', S: 'N' };
   var CUC_MAU = { N: 'red', S: 'blue' };                   // vật nam châm mang màu theo cực (ô đích đỏ / xanh dương phân loại theo cực): N đỏ, S xanh dương
@@ -589,7 +611,7 @@
     return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
   }
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
-  function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_NHIN_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0; }
+  function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_NHIN_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0 || CAM_HONG_NGOAI_HAM.indexOf(t) >= 0; }
 
   function oTai(san, x, y) {
     if (x < 0 || y < 0 || x >= san.rong || y >= san.cao) return null;   // ngoài sân
@@ -670,7 +692,7 @@
       coNamCham, coNem, coHoi, coCamBien, coCamTu, coColor, dsCamBien, coCamMauBung, coCamera, camNhin, coPinCamBien, coLook,
       coCamBay, pinToiDa, pin, dao, rb, demBang, quayDo, lenh, lenhTon, tayCho, chanCho, nhayBuoc,
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
-      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1;
+      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung;
     var nhip = 0, thang = false, dungSom = null;
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
     function khoiRobot(rc) {
@@ -690,7 +712,7 @@
 
       hamGoc = rc.hamGoc || HAM_GOC[loai];                                  // KHAY (xem phần KHAY VÀ PHẦN CỨNG)
       function kiemTenGoc(t) {
-        if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined && CAM_MAU_HAM.indexOf(t) < 0 && CAM_NHIN_HAM.indexOf(t) < 0 && TAY_NAM_CHAM.indexOf(t) < 0 && CAM_TU_HAM.indexOf(t) < 0 && TAY_NEM.indexOf(t) < 0 && TAY_HOI.indexOf(t) < 0 && TAY_SON.indexOf(t) < 0 && CAM_PIN_HAM.indexOf(t) < 0) {
+        if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined && CAM_MAU_HAM.indexOf(t) < 0 && CAM_NHIN_HAM.indexOf(t) < 0 && TAY_NAM_CHAM.indexOf(t) < 0 && CAM_TU_HAM.indexOf(t) < 0 && TAY_NEM.indexOf(t) < 0 && TAY_HOI.indexOf(t) < 0 && TAY_SON.indexOf(t) < 0 && CAM_PIN_HAM.indexOf(t) < 0 && CAM_HONG_NGOAI_HAM.indexOf(t) < 0) {
           throw new Error('Hàm gốc "' + t + '" không thuộc loại robot ' + loai + '.');
         }
       }
@@ -721,6 +743,8 @@
       coCamBien = hamGoc.some(function (t) { return CAM_BIEN_HAM[t] !== undefined; });     // cảm biến khoảng cách (front_clear…)
       coCamTu = hamGoc.some(function (t) { return CAM_TU_HAM.indexOf(t) >= 0; });         // cảm biến từ front_metal (gắn vào cảm biến khoảng cách)
       if ((coCamBien || coCamTu) && loai === 'nhen') throw new Error('Nhện không gắn cảm biến khoảng cách (nhện không có hướng mặt).');
+      coHongNgoai = hamGoc.some(function (t) { return CAM_HONG_NGOAI_HAM.indexOf(t) >= 0; });      // cảm biến HỒNG NGOẠI ở mũi xe: distance() / warm() (mùa 2)
+      if (coHongNgoai && loai === 'nhen') throw new Error('Nhện không gắn cảm biến hồng ngoại (nhện không có hướng mặt để đo phía trước).');
       coColor = hamGoc.some(function (t) { return CAM_MAU_HAM.indexOf(t) >= 0; });            // đọc màu color()
       dsCamBien = Array.isArray(rc.camBien) ? rc.camBien : [];
       coCamMauBung = dsCamBien.some(function (c) { return c && c.ma === 'mau'; });
@@ -739,6 +763,7 @@
         if (coNem) throw new Error('Drone không gắn máy ném (aim, throw, load): thân drone chỉ gắn được nam châm treo.');
         if (coHoi) throw new Error('Drone không gắn súng hơi (shoot, shoot_back): thân drone chỉ gắn được nam châm treo.');
         if (coCamBien || coCamTu) throw new Error('Drone không gắn cảm biến khoảng cách hay cảm biến từ (drone không có hướng mặt để đo "phía trước").');
+        if (coHongNgoai) throw new Error('Drone không gắn cảm biến hồng ngoại (drone không có hướng mặt để đo "phía trước").');
       } else if (coPinCamBien) throw new Error('battery() chỉ dành cho drone (robot có pin).');
       pinToiDa = null, pin = null;                                         // drone: pin đầy = pin lúc đầu; null = pin vô hạn
       if (rc.pin !== undefined && rc.pin !== null) {
@@ -791,6 +816,9 @@
       }
       lucBan = !!rc.lucBan;                   // súng hơi: shoot(p) / shoot_back(p) chọn được lực "fast" / "charge"
       if (lucBan && !coHoi) throw new Error('lucBan chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
+      xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
+      beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật)
+      if (beSung && !coHoi) throw new Error('beSung chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
       vet = [], suKienChan = [];
       loi = null;
       docCho = [], docLienTiep = 0, soLanDoc = 0, traVe = 0;       // cảm biến: sự kiện chờ gắn vào nhịp kế, số lần đọc liên tiếp chưa có nhịp, tổng số lần đọc, giá trị trả về cho nhân
@@ -817,7 +845,8 @@
         quayDo: quayDo, lenh: lenh, lenhTon: lenhTon, tayCho: tayCho, chanCho: chanCho, nhayBuoc: nhayBuoc,
         truotCho: truotCho, ncCho: ncCho, nc: nc, nem: nem, nemCho: nemCho, hoiCho: hoiCho,
         dan: dan, vet: vet, suKienChan: suKienChan, loi: loi, docCho: docCho, docLienTiep: docLienTiep,
-        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, lucBan: lucBan, laR1: laR1
+        soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, lucBan: lucBan, laR1: laR1,
+        coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung
       };
     }
     function napRobot(o) {
@@ -830,6 +859,7 @@
       truotCho = o.truotCho; ncCho = o.ncCho; nc = o.nc; nem = o.nem; nemCho = o.nemCho; hoiCho = o.hoiCho;
       dan = o.dan; vet = o.vet; suKienChan = o.suKienChan; loi = o.loi; docCho = o.docCho; docLienTiep = o.docLienTiep;
       soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho; lucBan = o.lucBan; laR1 = o.laR1;
+      coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung;
     }
     khoiRobot(dsRc[0]);
 
@@ -1982,6 +2012,25 @@
         chat: vt ? vt.chat : null, cuc: cuc, idVat: vt ? vt.id : null, trong: trong, nhip: nhip };
     }
 
+    /** Đọc cảm biến HỒNG NGOẠI (mùa 2): tia đi thẳng từ mũi xe theo hướng mặt tới VẬT CẢN ĐẦU TIÊN (tường, rào, nút, bậc thang với xe bánh / omni, gầm, cửa đóng, thùng nặng, vật nằm đất,
+     *  robot khác dưới đất, mép sân). distance() = số ô TRỐNG đi qua (sát vật cản → 0); warm() = True khi vật cản đó NÓNG: robot khác hay nút bắn đang bật. Không tốn nhịp, không đổi sân. */
+    function docHongNgoai(yc) {
+      var v = VEC[rb.huong], x = rb.x, y = rb.y, d = 0, ly = null;
+      for (;;) {
+        x += v[0]; y += v[1];
+        ly = lyDoChan(san, loai, x, y);
+        if (!ly && cuaDong(x, y)) ly = 'cua';
+        if (!ly && thungTai(x, y)) ly = 'thung-nang';
+        if (!ly && vatNamTai(x, y)) ly = 'vat';
+        if (!ly && xeDatTai(x, y)) ly = 'dong-doi';
+        if (ly) break;
+        d++;
+      }
+      var nt = ly === 'nut' ? nutTai[x + ',' + y] : null;
+      var nong = ly === 'dong-doi' || !!(nt && nt.bat);
+      return { ma: 'doc-cam-bien', cam: MA_CAM_HONG_NGOAI, ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: rb.huong, o: { x: x, y: y }, khoang: d, vat: ly, nong: nong, trong: false, nhip: nhip };
+    }
+
     /** Xử lý một lời gọi hàm gốc nhân nhường ra. Trả về true nếu phải dừng. */
     function xuLy(yc) {
       if (nguonDong && khayThieu[yc.ten]) {                      // lệnh có trong phần cứng nhưng chưa mở trên khay: chương trình chính và hàm của màn không dùng được
@@ -1992,13 +2041,13 @@
         }
       }
       vet.push({ loai: 'lenh', ten: yc.ten, dongPy: yc.dong, nganPy: yc.ngan });
-      if (CAM_BIEN_HAM[yc.ten] !== undefined || CAM_MAU_HAM.indexOf(yc.ten) >= 0 || CAM_NHIN_HAM.indexOf(yc.ten) >= 0 || CAM_TU_HAM.indexOf(yc.ten) >= 0 || CAM_PIN_HAM.indexOf(yc.ten) >= 0) {     // cảm biến: đọc xong trả về cho chương trình (khoảng cách / từ: True / False; màu: chuỗi; pin: số), không tốn nhịp
-        var laMau = CAM_MAU_HAM.indexOf(yc.ten) >= 0, laPin = CAM_PIN_HAM.indexOf(yc.ten) >= 0, laNhin = CAM_NHIN_HAM.indexOf(yc.ten) >= 0;
-        var ed = laNhin ? docNhin(yc) : laMau ? docMau(yc) : laPin ? docPin(yc) : CAM_TU_HAM.indexOf(yc.ten) >= 0 ? docTu(yc) : docCamBien(yc);
+      if (CAM_BIEN_HAM[yc.ten] !== undefined || CAM_MAU_HAM.indexOf(yc.ten) >= 0 || CAM_NHIN_HAM.indexOf(yc.ten) >= 0 || CAM_TU_HAM.indexOf(yc.ten) >= 0 || CAM_PIN_HAM.indexOf(yc.ten) >= 0 || CAM_HONG_NGOAI_HAM.indexOf(yc.ten) >= 0) {     // cảm biến: đọc xong trả về cho chương trình (khoảng cách / từ / nhiệt: True / False; màu: chuỗi; pin / hồng ngoại distance: số), không tốn nhịp
+        var laMau = CAM_MAU_HAM.indexOf(yc.ten) >= 0, laPin = CAM_PIN_HAM.indexOf(yc.ten) >= 0, laNhin = CAM_NHIN_HAM.indexOf(yc.ten) >= 0, laHN = CAM_HONG_NGOAI_HAM.indexOf(yc.ten) >= 0;
+        var ed = laNhin ? docNhin(yc) : laMau ? docMau(yc) : laPin ? docPin(yc) : laHN ? docHongNgoai(yc) : CAM_TU_HAM.indexOf(yc.ten) >= 0 ? docTu(yc) : docCamBien(yc);
         vet[vet.length - 1].docCamBien = Object.assign({}, ed);
         soLanDoc++;
         if (docCho.length < DOC_TOI_DA_MOI_NHIP) docCho.push(ed);
-        traVe = laMau || laNhin ? ed.mau : laPin ? ed.pin : yc.ten === 'front_pole' ? (ed.cuc || 'none') : ed.trong;
+        traVe = laMau || laNhin ? ed.mau : laPin ? ed.pin : laHN ? (yc.ten === 'warm' ? ed.nong : ed.khoang) : yc.ten === 'front_pole' ? (ed.cuc || 'none') : ed.trong;
         docLienTiep++;
         if (docLienTiep > DOC_LIEN_TIEP_TOI_DA) {
           loi = { loai: 'infinite-loop', dong: yc.dong, thongDiep: 'Đọc cảm biến ' + DOC_LIEN_TIEP_TOI_DA + ' lần liên tiếp mà robot chưa chạy nhịp nào — có vòng lặp không có đường ra.' };
@@ -2351,7 +2400,7 @@
 
   var API = {
     VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_XOAY: TAY_XOAY, XOAY_NAC: XOAY_NAC, TAY_NHOM: TAY_NHOM, BANG: BANG, BAN_XOAY: BAN_XOAY, CONG_KY: CONG_KY, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, CAM_BIEN_HAM: CAM_BIEN_HAM,
-    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, LUC_BAN: LUC_BAN, TAM_BAN_NHANH: TAM_BAN_NHANH, TAY_SON: TAY_SON, SON_LENH: SON_LENH, laLenhSon: laLenhSon, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
+    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, LUC_BAN: LUC_BAN, TAM_BAN_NHANH: TAM_BAN_NHANH, TAY_SON: TAY_SON, SON_LENH: SON_LENH, laLenhSon: laLenhSon, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_HONG_NGOAI_HAM: CAM_HONG_NGOAI_HAM, MA_CAM_HONG_NGOAI: MA_CAM_HONG_NGOAI, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
     CHAN_LENH: CHAN_LENH,
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };

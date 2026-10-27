@@ -492,7 +492,7 @@
           : laNhin ? 'màn này chưa mở lệnh ' + tn[1] + '() trên khay (camera dưới bụng drone chưa dùng được ở đây).'          // camera có gắn mà khay chưa mở lệnh
           : dsCam.length
           ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
-          : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu ở bụng hay camera (để đọc màu)' : SanHoc.CAM_TU_HAM.indexOf(tn[1]) >= 0 ? 'từ (kim loại)' : SanHoc.CAM_PIN_HAM.indexOf(tn[1]) >= 0 ? 'đo pin (màn này drone chưa có pin để đo)' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
+          : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu ở bụng hay camera (để đọc màu)' : SanHoc.CAM_TU_HAM.indexOf(tn[1]) >= 0 ? 'từ (kim loại)' : SanHoc.CAM_HONG_NGOAI_HAM && SanHoc.CAM_HONG_NGOAI_HAM.indexOf(tn[1]) >= 0 ? 'hồng ngoại ở mũi xe (đo số ô trống phía trước' + (tn[1] === 'warm' ? ', bản nâng cấp mới đo được nóng' : '') + ')' : SanHoc.CAM_PIN_HAM.indexOf(tn[1]) >= 0 ? 'đo pin (màn này drone chưa có pin để đo)' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
           ' Hàm gốc dùng được ở màn này: ' + (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.', { ten: tn[1], cho: cho(m) });
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến( hay hàm)? tên/.test(l.thongDiep) && SanHoc.MAU_TEN.concat(['none']).indexOf(tn[1]) >= 0 && (hamGoc.indexOf('color') >= 0 || hamGoc.indexOf('look') >= 0)) {
         them('mau-thieu-nhay', 'Ở ' + viTri(m) + ': ' + tn[1] + ' đang viết không có dấu nháy nên Python tưởng đó là tên một biến hay một hàm và không tìm thấy. ' +
