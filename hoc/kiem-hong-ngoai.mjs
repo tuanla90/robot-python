@@ -27,6 +27,7 @@ const SanHoc = require('./san-hoc.js');
 const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const SL = require('./so-lenh.js');
+const { timLoiNe } = await import('./do-duong-hong-ngoai.mjs');
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const LOI_GIA = process.argv.includes('--loi-gia');
 
@@ -237,8 +238,9 @@ for (const m of DS) {
     assert.ok(m.robot.tay === null || m.robot.tay === 'kep', m.ma + ' tay ' + m.robot.tay);
     assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['hong-ngoai']);
     assert.ok(m.hamGoc.includes('distance'), m.ma + ' khay thiếu distance');
-    assert.ok(soSan(m) >= 2, m.ma + ' phải có nhiều sân (một chương trình cho mọi sân)');
-    assert.equal(m.nhipTheo, 'tong', m.ma + ' nhiều sân phải tính tổng nhịp');
+    if (m.hang === 'trum') assert.ok(soSan(m) <= 3, m.ma + ' trùm tối đa ba sân');
+    else assert.equal(soSan(m), 1, m.ma + ' nhiều sân chỉ ở trùm (luật lộ trình)');
+    if (soSan(m) > 1) assert.equal(m.nhipTheo, 'tong', m.ma + ' nhiều sân phải tính tổng nhịp');
     for (const s of ['ten', 'deBai', 'veMaMau']) if (m[s]) assert.ok(!/—|\p{Extended_Pictographic}/u.test(m[s]), m.ma + ' ' + s + ' có gạch dài / emoji');
     for (const s of m.goiY.concat(m.loiSai.map((x) => x.moTa))) assert.ok(!/—|\p{Extended_Pictographic}/u.test(s), m.ma + ' chữ có gạch dài / emoji: ' + s);
     if (m.hang === 'trum') assert.ok(m.huyHieu, m.ma + ' trùm thiếu huy hiệu');
@@ -291,7 +293,14 @@ for (const m of DS) {
     });
     Object.assign(bang[m.ma], { o: r.soO, nhip: r.soNhip });
   });
-  kiem(m.ma + ': bộ dò đường tắt: không có dãy lệnh cố định (không đọc distance()) thắng mọi sân với tổng nhịp ≤ ngưỡng', () => {
+  kiem(m.ma + ': bộ dò đường tắt: không có chương trình né distance() được 3 sao', () => {
+    if (soSan(m) === 1) {
+      const t = timLoiNe(m, kho, (dong, hamMoi) => cham(m, { chinh: dong }, hamMoi));
+      bang[m.ma].ne = t ? t.soO : '-';
+      if (t && t.soO <= m.sao.o && t.soNhip <= m.sao.nhip) assert.fail(m.ma + ': lời né distance() ' + t.soO + ' ô ≤ ' + m.sao.o + ', ' + t.soNhip + ' nhịp: ' + t.chinh.join(' / ') + (t.hamMoi.length ? ' với f: ' + t.hamMoi[0].than.join(' / ') : ''));
+      bang[m.ma].tat = 'không (né rẻ nhất ' + (t ? t.soO + ' ô' : 'không thắng') + ')';
+      return;
+    }
     const t = doDuongTat(m, m.sao.nhip);
     if (t) {
       const ct = thanhChuongTrinh(t.chuoi);

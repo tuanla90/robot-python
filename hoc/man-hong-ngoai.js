@@ -12,10 +12,11 @@
 
    NỘI DUNG (27/10, theo video diem10code "Rô bốt né vật cản": Đo khoảng cách → So mức an toàn → Gần thì rẽ; mỗi ô là 10 cm):
    Xe hai bánh gắn cảm biến hồng ngoại ở mũi (robot.camBien [{ ma: 'hong-ngoai', o: 'tren' }]); distance() = số ô TRỐNG tới vật cản phía trước
-   (sát là 0), không tốn nhịp (luật ở san-hoc.js, CẢM BIẾN HỒNG NGOẠI). Hàm của em dùng lại: move, turn_right, turn_left, u_turn, back, forward(n),
+   (sát là 0), không tốn nhịp (luật ở san-hoc.js, CẢM BIẾN HỒNG NGOẠI). Hàm của em dùng lại: move, turn_right, turn_left, u_turn, forward(n),
    pick, drop (gói 1–2 mùa 2 và mùa 1).
-   MỌI màn có NHIỀU SÂN (cùng một chương trình, khoảng cách khác nhau) và nhipTheo 'tong': chương trình đếm cứng số ô (không đọc distance())
-   hoặc thua một sân, hoặc phải đâm tường mới khớp mọi sân nên tốn nhịp hơn ngưỡng. kiem-hong-ngoai.mjs dò bằng BFS chung mọi sân để chứng minh.
+   MỘT SÂN mỗi màn (luật lộ trình: nhiều sân chỉ ở trùm). Để màn không giải được bằng cách đếm cứng số ô, đường đi có NHIỀU ĐOẠN DÀI NGẮN KHÔNG ĐỀU
+   và CÙNG MỘT đoạn code (thân vòng lặp, thân hàm) chạy cho mọi đoạn: đọc distance() thì một vòng lặp đủ, đếm cứng thì mỗi đoạn một dòng, dài hơn ngưỡng ô.
+   kiem-hong-ngoai.mjs + do-duong-hong-ngoai.mjs chứng minh: không chương trình nào né distance() mà được 3 sao (trùm nhiều sân: BFS chung mọi sân).
    ========================================================================== */
 (function () {
   'use strict';
@@ -29,15 +30,18 @@
   /** Thụt mọi dòng vào một bậc (4 dấu cách). */
   function thut(ds) { return ds.map(function (s) { return '    ' + s; }); }
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
-  /** Vòng for: dòng đầu rồi thân thụt một bậc. n là số hay tên biến. */
-  function FOR(n, than) { return ['for i in range(' + n + '):'].concat(thut(than)); }
+  /** Vòng for: dòng đầu rồi thân thụt một bậc. n là số hay tên biến; bien là tên biến đếm (mặc định i). */
+  function FOR(n, than, bien) { return ['for ' + (bien || 'i') + ' in range(' + n + '):'].concat(thut(than)); }
   function WHILE(dk, than) { return ['while ' + dk + ':'].concat(thut(than)); }
+  function IF(dk, co, khong) { return ['if ' + dk + ':'].concat(thut(co), khong ? ['else:'].concat(thut(khong)) : []); }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
   function bai(chinh, hamCuaMan) { return { chinh: chinh.slice(), hamCuaMan: (hamCuaMan || []).slice() }; }
 
-  // Đi đúng số ô trống tới vật cản rồi dừng sát nó: hai cách viết (vòng for theo biến d, hay hàm forward(n) của gói 2)
+  // Đo rồi đi đúng số ô trống tới vật cản (dừng sát nó)
   var DOC = ['d = distance()'];
-  var DI_D = FOR('d', ['move()']);
+  var DI_D = FOR('d', ['move()'], 'j');
+  /** Robot hút bụi: gần thì rẽ phải, còn không thì đi. */
+  function HUT_BUI(dk, re, di) { return IF(dk, [re || 'turn_right()'], [di || 'move()']); }
 
   function man(m, coTay) {
     m.cauTruc = ['for', 'if', 'while'];
@@ -47,7 +51,7 @@
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = { chinh: 10, moiHam: 10 };
     if (!m.mucTieu) m.mucTieu = 'toi-co';
-    m.nhipTheo = 'tong';
+    if (Array.isArray(m.san[0])) m.nhipTheo = 'tong';
     return ManHoc.chuanHoa(m);
   }
 
@@ -55,161 +59,162 @@
     /* ================================================================ chương hong-ngoai: Đo khoảng cách → So mức an toàn → Gần thì rẽ */
     man({
       chuong: 'hong-ngoai', so: 1, ten: 'Mỗi ô là 10 cm', yMoi: 'distance(): đọc số ô trống vào biến d', buocVideo: 'Đo khoảng cách', hamCuaEmCan: ['move', 'turn_right', 'forward'],
-      deBai: 'Xe có mắt hồng ngoại ở mũi. distance() cho biết còn bao nhiêu ô trống tới tường phía trước, mỗi ô là 10 cm. Hai sân dài ngắn khác nhau, một chương trình: đọc số vào biến d, đi đúng d ô rồi rẽ phải vào cờ.',
-      veMaMau: 'Chương trình có sẵn đã đọc d = distance() nhưng lại đi cố định hai ô. Sân thứ hai dài hơn: dùng d thay cho số 2.',
-      san: [['...####', '##F####'], ['.....##', '####F##']],
-      batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }],
-      maMau: bai(nhieu(DOC, FOR(2, ['move()']), ['turn_right()', 'move()'])),
-      sao: { o: 10, nhip: 10 },
-      loiGiai: bai(nhieu(DOC, DI_D, ['turn_right()', 'move()'])),
-      loiGiaiKhac: { moTa: 'Đi d ô bằng hàm forward(d) của gói trước', baiLam: bai(nhieu(DOC, ['forward(d)', 'turn_right()', 'move()'])) },
+      deBai: 'Xe có mắt hồng ngoại ở mũi. distance() cho biết phía trước còn bao nhiêu ô trống tới tường, mỗi ô là 10 cm. Đường có ba đoạn dài ngắn khác nhau. Ở đầu mỗi đoạn, đọc số vào biến d rồi đi đúng d ô, rẽ phải và làm lại.',
+      veMaMau: 'Chương trình có sẵn đã đọc d = distance() nhưng mỗi đoạn lại đi cố định hai ô. Dùng d thay cho số 2.',
+      san: ['...#', '.#.#', '.#.#', '.#F#', '.###'],
+      batDau: { x: 0, y: 4, huong: 0 },
+      maMau: bai(FOR(3, nhieu(DOC, FOR(2, ['move()'], 'j'), ['turn_right()']))),
+      sao: { o: 10, nhip: 11 },
+      loiGiai: bai(FOR(3, nhieu(DOC, DI_D, ['turn_right()']))),
+      loiGiaiKhac: { moTa: 'Đi d ô bằng hàm forward(d) của gói trước', baiLam: bai(FOR(3, nhieu(DOC, ['forward(d)', 'turn_right()']))) },
       loiSai: [
-        { moTa: 'Đếm ô của sân đầu, viết cố định range(2): sân thứ hai rẽ quá sớm', baiLam: bai(nhieu(DOC, FOR(2, ['move()']), ['turn_right()', 'move()'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên dòng d = distance(): Python chưa biết d là gì', baiLam: bai(nhieu(DI_D, ['turn_right()', 'move()'])), phaiCoMa: ['loi-chay'] },
-        { moTa: 'Đi d - 1 ô: dừng trước chỗ rẽ một ô', baiLam: bai(nhieu(DOC, FOR('d - 1', ['move()']), ['turn_right()', 'move()'])), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Đi cố định range(2): đoạn đầu dài 4 ô, xe rẽ quá sớm', baiLam: bai(FOR(3, nhieu(DOC, FOR(2, ['move()'], 'j'), ['turn_right()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên rẽ phải trong vòng lặp: xe đứng sát tường, đo được 0 mãi', baiLam: bai(FOR(3, nhieu(DOC, DI_D))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên dòng d = distance(): Python chưa biết d là gì', baiLam: bai(FOR(3, nhieu(DI_D, ['turn_right()']))), phaiCoMa: ['loi-chay'] }
       ],
       goiY: ['distance() đếm số ô trống phía trước mũi xe. Xe đứng sát tường thì distance() là 0.',
-        'Đọc số một lần vào d ở đầu chương trình, rồi lặp move() d lần.']
+        'Đo lại ở đầu mỗi đoạn: rẽ xong thì phía trước đã khác, số ô cũng khác.']
     }),
     man({
-      chuong: 'hong-ngoai', so: 2, ten: 'Đo hai lần', yMoi: 'đưa d vào forward(d), đo lại sau khi rẽ', buocVideo: 'Đo khoảng cách', hamCuaEmCan: ['move', 'turn_right', 'forward'],
-      deBai: 'Đường có hai đoạn thẳng, mỗi sân dài ngắn khác nhau. Đo distance() ở đầu mỗi đoạn rồi đưa số đó vào forward(d) để đi hết đoạn.',
-      san: [['######', '...F##', '.#####', '.#####'], ['....F#', '.#####', '.#####', '.#####']],
-      batDau: [{ x: 0, y: 3, huong: 0 }, { x: 0, y: 3, huong: 0 }],
-      maMau: bai(nhieu(DOC, ['forward(d)', 'turn_right()'])),
-      sao: { o: 12, nhip: 14 },
-      loiGiai: bai(nhieu(DOC, ['forward(d)', 'turn_right()'], DOC, ['forward(d)'])),
-      loiGiaiKhac: { moTa: 'Đoạn sau đi bằng vòng for thay cho forward(d)', baiLam: bai(nhieu(DOC, ['forward(d)', 'turn_right()'], DOC, DI_D)) },
+      chuong: 'hong-ngoai', so: 2, ten: 'Đưa thẳng số đo vào vòng lặp', yMoi: 'range(distance()): dùng số đo ngay, không cần biến', buocVideo: 'Đo khoảng cách', hamCuaEmCan: ['move', 'turn_left', 'turn_right'],
+      deBai: 'distance() là một con số nên đặt thẳng được vào range(): for j in range(distance()): đi hết đoạn trước mặt. Đường bốn đoạn, lần này rẽ trái.',
+      veMaMau: 'Chương trình có sẵn đi bốn đoạn, mỗi đoạn ba ô. Thay số 3 bằng distance().',
+      san: ['#######', '#######', '#.....#', '#.###.#', '#.F##.#', '#####.#', '#####.#', '#####.#', '#######'],
+      batDau: { x: 5, y: 7, huong: 0 },
+      maMau: bai(FOR(4, nhieu(FOR(3, ['move()'], 'j'), ['turn_left()']))),
+      sao: { o: 9, nhip: 15 },
+      loiGiai: bai(FOR(4, nhieu(FOR('distance()', ['move()'], 'j'), ['turn_left()']))),
+      loiGiaiKhac: { moTa: 'Đọc vào biến d trước rồi mới lặp d lần', baiLam: bai(FOR(4, nhieu(DOC, DI_D, ['turn_left()']))) },
       loiSai: [
-        { moTa: 'Không đo lại sau khi rẽ: d vẫn là số ô của đoạn đầu', baiLam: bai(nhieu(DOC, ['forward(d)', 'turn_right()', 'forward(d)'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đo trước, rẽ rồi mới đi: xe đi sai hướng', baiLam: bai(nhieu(DOC, ['turn_right()', 'forward(d)'], DOC, ['forward(d)'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gọi forward() mà không đưa số vào', baiLam: bai(nhieu(DOC, ['forward()', 'turn_right()'], DOC, ['forward(d)'])), phaiCoMa: ['loi-chay'] }
+        { moTa: 'Mỗi đoạn đi cố định 3 ô: đoạn đầu dài 5 ô, xe rẽ sớm vào tường', baiLam: bai(FOR(4, nhieu(FOR(3, ['move()'], 'j'), ['turn_left()']))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Rẽ phải thay vì rẽ trái: phía bên phải toàn tường', baiLam: bai(FOR(4, nhieu(FOR('distance()', ['move()'], 'j'), ['turn_right()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Viết distance không có dấu ngoặc: Python không lặp theo tên hàm được', baiLam: bai(FOR(4, nhieu(FOR('distance', ['move()'], 'j'), ['turn_left()']))), phaiCoMa: ['loi-chay'] }
       ],
-      goiY: ['Rẽ xong thì phía trước mũi xe đã khác: số ô trống cũng khác.',
-        'Gán lại d = distance() sau khi rẽ, biến d nhận số mới.']
+      goiY: ['range(distance()) đọc số ô ngay lúc bắt đầu vòng lặp, rồi lặp đúng chừng ấy lần.',
+        'Vòng lặp ngoài chạy bốn lần, mỗi lần một đoạn: đo, đi, rẽ trái.']
     }),
     man({
-      chuong: 'hong-ngoai', so: 3, ten: 'Còn ô trống thì đi', yMoi: 'phép so sánh distance() > 0 trong while', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_left', 'forward'],
-      deBai: 'distance() trả về một số nên ta so sánh được nó với số khác. Phép so sánh distance() > 0 đúng khi phía trước còn ô trống. Dùng while distance() > 0: để đi tới sát tường, rẽ trái rồi lại đi tới sát tường để vào cờ.',
-      veMaMau: 'Chương trình có sẵn mới đi hết đoạn đầu. Viết tiếp: rẽ trái rồi đi tới sát tường.',
-      san: [['######', '######', '#F...#', '####.#', '####.#'], ['######', '##F..#', '####.#', '####.#', '####.#']],
-      batDau: [{ x: 4, y: 4, huong: 0 }, { x: 4, y: 4, huong: 0 }],
-      maMau: bai(WHILE('distance() > 0', ['move()'])),
-      sao: { o: 10, nhip: 12 },
-      loiGiai: bai(nhieu(WHILE('distance() > 0', ['move()']), ['turn_left()'], WHILE('distance() > 0', ['move()']))),
-      loiGiaiKhac: { moTa: 'Đoạn sau đo vào d rồi gọi forward(d)', baiLam: bai(nhieu(WHILE('distance() > 0', ['move()']), ['turn_left()'], DOC, ['forward(d)'])) },
+      chuong: 'hong-ngoai', so: 3, ten: 'Còn ô trống thì đi', yMoi: 'phép so sánh distance() > 0 trong while', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'distance() trả về một số nên ta so sánh được nó với số khác. Phép so sánh distance() > 0 đúng khi phía trước còn ô trống. Mỗi đoạn: while distance() > 0: đi tới sát tường, rồi rẽ phải.',
+      veMaMau: 'Chương trình có sẵn so với 1 nên xe dừng khi còn một ô. Sửa số trong phép so sánh.',
+      san: ['#######', '#####.#', '#F###.#', '#.###.#', '#.....#', '#######'],
+      batDau: { x: 5, y: 1, huong: 2 },
+      maMau: bai(FOR(3, nhieu(WHILE('distance() > 1', ['move()']), ['turn_right()']))),
+      sao: { o: 9, nhip: 11 },
+      loiGiai: bai(FOR(3, nhieu(WHILE('distance() > 0', ['move()']), ['turn_right()']))),
+      loiGiaiKhac: { moTa: 'Đo vào biến d rồi lặp d lần', baiLam: bai(FOR(3, nhieu(DOC, DI_D, ['turn_right()']))) },
       loiSai: [
-        { moTa: 'So với 1: xe dừng khi còn một ô, rẽ sớm', baiLam: bai(nhieu(WHILE('distance() > 1', ['move()']), ['turn_left()'], WHILE('distance() > 1', ['move()']))), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'distance() >= 0 luôn đúng: vòng lặp không bao giờ dừng, xe húc tường mãi', baiLam: bai(nhieu(WHILE('distance() >= 0', ['move()']), ['turn_left()'], WHILE('distance() > 0', ['move()']))), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Dùng if thay cho while: xe chỉ đi một ô', baiLam: bai(nhieu(['if distance() > 0:', '    move()', 'turn_left()'], WHILE('distance() > 0', ['move()']))), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'So với 1: xe dừng khi còn một ô, rẽ vào tường', baiLam: bai(FOR(3, nhieu(WHILE('distance() > 1', ['move()']), ['turn_right()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'distance() >= 0 luôn đúng: vòng lặp không bao giờ dừng, xe húc tường mãi', baiLam: bai(FOR(3, nhieu(WHILE('distance() >= 0', ['move()']), ['turn_right()']))), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Dùng if thay cho while: mỗi đoạn xe chỉ đi một ô', baiLam: bai(FOR(3, nhieu(IF('distance() > 0', ['move()']), ['turn_right()']))), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Phép so sánh: dấu > đọc là "lớn hơn". distance() > 0 nghĩa là còn ít nhất một ô trống phía trước.',
         'while lặp lại khi phép so sánh còn đúng. Sát tường thì distance() là 0, phép so sánh sai, vòng lặp dừng.']
     }),
     man({
-      chuong: 'hong-ngoai', so: 4, ten: 'Dừng cách tường 20 cm', yMoi: 'so với số khác 0: dừng khi còn 2 ô', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_right', 'forward'],
-      deBai: 'Lối rẽ vào cờ nằm cách tường cuối 2 ô, tức 20 cm. Đi khi phía trước còn hơn 2 ô trống, dừng lại rồi rẽ phải vào lối đó.',
-      veMaMau: 'Chương trình có sẵn đi tới sát tường mới rẽ: quá sát, lỡ mất lối rẽ. Sửa số trong phép so sánh của vòng lặp đầu.',
-      san: [['.....##', '##.####', '##F####'], ['.......', '####.##', '####F##']],
-      batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }],
-      maMau: bai(nhieu(WHILE('distance() > 0', ['move()']), ['turn_right()'], WHILE('distance() > 0', ['move()']))),
-      sao: { o: 10, nhip: 12 },
-      loiGiai: bai(nhieu(WHILE('distance() > 2', ['move()']), ['turn_right()'], WHILE('distance() > 0', ['move()']))),
-      loiGiaiKhac: { moTa: 'Đoạn sau đi cố định forward(2)', baiLam: bai(nhieu(WHILE('distance() > 2', ['move()']), ['turn_right()', 'forward(2)'])) },
+      chuong: 'hong-ngoai', so: 4, ten: 'Dừng cách tường 20 cm', yMoi: 'so với số khác 0: dừng khi còn 2 ô', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Mỗi chỗ rẽ nằm cách tường cuối đường 2 ô, tức 20 cm; đi quá là lạc vào ngõ cụt. Mỗi đoạn: đi khi phía trước còn hơn 2 ô trống, dừng lại rồi rẽ phải.',
+      veMaMau: 'Chương trình có sẵn đi tới sát tường mới rẽ: quá sát, lỡ mất chỗ rẽ. Sửa số trong phép so sánh.',
+      san: ['########', '#.######', '#.######', '#......#', '#.##.###', '#.##F###', '#.##.###', '####.###', '########'],
+      batDau: { x: 1, y: 6, huong: 0 },
+      maMau: bai(FOR(3, nhieu(WHILE('distance() > 0', ['move()']), ['turn_right()']))),
+      sao: { o: 9, nhip: 10 },
+      loiGiai: bai(FOR(3, nhieu(WHILE('distance() > 2', ['move()']), ['turn_right()']))),
+      loiGiaiKhac: { moTa: 'Đoạn nào cũng đi số ô trừ 2: for j in range(distance() - 2)', baiLam: bai(FOR(3, nhieu(DOC, FOR('d - 2', ['move()'], 'j'), ['turn_right()']))) },
       loiSai: [
-        { moTa: 'Không sửa: xe đi tới sát tường mới rẽ, lỡ lối vào cờ', baiLam: bai(nhieu(WHILE('distance() > 0', ['move()']), ['turn_right()'], WHILE('distance() > 0', ['move()']))), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'So với 3: xe dừng sớm một ô', baiLam: bai(nhieu(WHILE('distance() > 3', ['move()']), ['turn_right()'], WHILE('distance() > 0', ['move()']))), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Dùng >= 2: xe còn đi thêm khi đúng 2 ô, dừng muộn một ô', baiLam: bai(nhieu(WHILE('distance() >= 2', ['move()']), ['turn_right()'], WHILE('distance() > 0', ['move()']))), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không sửa: xe đi tới sát tường, vào ngõ cụt', baiLam: bai(FOR(3, nhieu(WHILE('distance() > 0', ['move()']), ['turn_right()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'So với 3: xe dừng sớm một ô', baiLam: bai(FOR(3, nhieu(WHILE('distance() > 3', ['move()']), ['turn_right()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Dùng >= 2: còn đúng 2 ô xe vẫn đi thêm, dừng muộn một ô', baiLam: bai(FOR(3, nhieu(WHILE('distance() >= 2', ['move()']), ['turn_right()']))), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Đếm trên sân: đứng ở chỗ rẽ thì phía trước còn mấy ô trống?',
+      goiY: ['Đứng ở chỗ rẽ thì phía trước còn mấy ô trống tới tường? Đếm trên sân.',
         'distance() > 2 đúng khi còn 3, 4, 5… ô; còn đúng 2 ô thì sai, vòng lặp dừng.']
     }),
     man({
       chuong: 'hong-ngoai', so: 5, ten: 'Biến an_toan', yMoi: 'so sánh với biến an_toan', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Mức an toàn của xe là 2 ô (20 cm): gán an_toan = 2 rồi dùng biến này trong phép so sánh. Ở mỗi đoạn, xe đi khi distance() > an_toan, dừng thì rẽ phải. Hai lần rẽ phải, thêm một bước là tới cờ.',
+      deBai: 'Mức an toàn của xe là 2 ô (20 cm). Gán an_toan = 2 rồi dùng biến này trong phép so sánh: xe đi khi distance() > an_toan. Muốn xe giữ khoảng cách khác thì chỉ sửa một dòng.',
       veMaMau: 'Chương trình có sẵn đã có biến an_toan nhưng vòng lặp vẫn so với 0. Thay số 0 bằng an_toan.',
-      san: [['....##', '#.####', 'F.####', '#.####', '#.####', '######'], ['......', '##F.##', '###.##', '###.##', '######', '######']],
-      batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }],
-      maMau: bai(nhieu(['an_toan = 2'], FOR(2, WHILE('distance() > 0', ['move()']).concat(['turn_right()'])), ['move()'])),
-      sao: { o: 11, nhip: 13 },
-      loiGiai: bai(nhieu(['an_toan = 2'], FOR(2, WHILE('distance() > an_toan', ['move()']).concat(['turn_right()'])), ['move()'])),
-      loiGiaiKhac: { moTa: 'Viết hai đoạn liền nhau, không dùng vòng for', baiLam: bai(nhieu(['an_toan = 2'], WHILE('distance() > an_toan', ['move()']), ['turn_right()'], WHILE('distance() > an_toan', ['move()']), ['turn_right()', 'move()'])) },
+      san: ['##########', '####.....#', '######.###', '######.###', '######.###', '#..F...###', '######.###', '######.###', '##########'],
+      batDau: { x: 4, y: 1, huong: 1 },
+      maMau: bai(nhieu(['an_toan = 2'], FOR(3, nhieu(WHILE('distance() > 0', ['move()']), ['turn_right()'])))),
+      sao: { o: 10, nhip: 11 },
+      loiGiai: bai(nhieu(['an_toan = 2'], FOR(3, nhieu(WHILE('distance() > an_toan', ['move()']), ['turn_right()'])))),
+      loiGiaiKhac: { moTa: 'Mỗi đoạn đọc vào biến d rồi đi d - an_toan ô', baiLam: bai(nhieu(['an_toan = 2'], FOR(3, nhieu(DOC, FOR('d - an_toan', ['move()'], 'j'), ['turn_right()'])))) },
       loiSai: [
-        { moTa: 'Không sửa: so với 0 nên xe đi tới sát tường mới rẽ', baiLam: bai(nhieu(['an_toan = 2'], FOR(2, WHILE('distance() > 0', ['move()']).concat(['turn_right()'])), ['move()'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gán an_toan = 1: xe rẽ muộn một ô', baiLam: bai(nhieu(['an_toan = 1'], FOR(2, WHILE('distance() > an_toan', ['move()']).concat(['turn_right()'])), ['move()'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gõ nhầm tên biến trong phép so sánh', baiLam: bai(nhieu(['an_toan = 2'], FOR(2, WHILE('distance() > antoan', ['move()']).concat(['turn_right()'])), ['move()'])), phaiCoMa: ['loi-chay'] }
+        { moTa: 'Không sửa: so với 0 nên xe đi tới sát tường, vào ngõ cụt', baiLam: bai(nhieu(['an_toan = 2'], FOR(3, nhieu(WHILE('distance() > 0', ['move()']), ['turn_right()'])))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gán an_toan = 1: xe rẽ muộn một ô', baiLam: bai(nhieu(['an_toan = 1'], FOR(3, nhieu(WHILE('distance() > an_toan', ['move()']), ['turn_right()'])))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gõ nhầm tên biến trong phép so sánh', baiLam: bai(nhieu(['an_toan = 2'], FOR(3, nhieu(WHILE('distance() > antoan', ['move()']), ['turn_right()'])))), phaiCoMa: ['loi-chay'] }
       ],
-      goiY: ['Biến giữ một con số để dùng nhiều lần: an_toan = 2 rồi viết distance() > an_toan.',
-        'Muốn xe giữ khoảng cách khác thì chỉ cần sửa một chỗ: dòng an_toan = 2.']
+      goiY: ['Biến giữ một con số để dùng lại: an_toan = 2 rồi viết distance() > an_toan.',
+        'Tên biến phải viết giống hệt nhau ở chỗ gán và chỗ dùng, kể cả dấu gạch dưới.']
     }),
     man({
       chuong: 'hong-ngoai', so: 6, ten: 'Gần thì rẽ', yMoi: 'if distance() <= an_toan: rẽ, else: đi', buocVideo: 'Gần thì rẽ', hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Robot hút bụi chạy mãi: mỗi lần đo, nếu vật cản gần, tức distance() <= an_toan, thì rẽ phải; còn không thì đi một ô. Phép so sánh <= đọc là "nhỏ hơn hoặc bằng". Đưa robot tới cờ ở cả hai sân.',
-      veMaMau: 'Chương trình có sẵn đã có vòng lặp và an_toan = 2. Thêm điều kiện: gần thì rẽ phải, còn không thì đi.',
-      san: [['......#', '###.###', '..F.###', '###.###', '###.###', '#######'], ['.......', '####.##', '#..F.##', '####.##', '####.##', '#######']],
-      batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }],
-      maMau: bai(nhieu(['an_toan = 2'], WHILE('True', ['move()']))),
-      sao: { o: 11, nhip: 17 },
-      loiGiai: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() <= an_toan:', '    turn_right()', 'else:', '    move()']))),
-      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['d = distance()', 'if d <= an_toan:', '    turn_right()', 'else:', '    move()']))) },
+      deBai: 'Robot hút bụi làm một việc mỗi lượt: đo, nếu vật cản gần, tức distance() <= an_toan, thì rẽ phải; còn không thì đi một ô. Phép so sánh <= đọc là "nhỏ hơn hoặc bằng". Lặp 20 lượt là đủ tới cờ.',
+      veMaMau: 'Chương trình có sẵn đã có an_toan = 2 và vòng lặp 20 lượt nhưng chỉ biết đi. Thêm điều kiện: gần thì rẽ phải, còn không thì đi.',
+      san: ['#######', '#.#####', '#.#####', '#.....#', '#.#.###', '#.#.###', '#.#F###', '#.#.###', '#.#.###', '#######'],
+      batDau: { x: 1, y: 8, huong: 0 },
+      maMau: bai(nhieu(['an_toan = 2'], FOR(20, ['move()']))),
+      sao: { o: 11, nhip: 12 },
+      loiGiai: bai(nhieu(['an_toan = 2'], FOR(20, HUT_BUI('distance() <= an_toan')))),
+      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 2'], FOR(20, nhieu(DOC, HUT_BUI('d <= an_toan'))))) },
       loiSai: [
-        { moTa: 'Không có điều kiện: robot đi thẳng, húc tường mãi', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['move()']))), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Đổi chỗ hai nhánh: gần thì lại đi, xa thì rẽ', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() <= an_toan:', '    move()', 'else:', '    turn_right()']))), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Dùng < thay cho <=: còn đúng 2 ô robot vẫn đi, rẽ muộn', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() < an_toan:', '    turn_right()', 'else:', '    move()']))), phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Không có điều kiện: robot đi thẳng, húc tường', baiLam: bai(nhieu(['an_toan = 2'], FOR(20, ['move()']))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đổi chỗ hai nhánh: gần thì lại đi, xa thì rẽ', baiLam: bai(nhieu(['an_toan = 2'], FOR(20, HUT_BUI('distance() <= an_toan', 'move()', 'turn_right()')))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Dùng < thay cho <=: còn đúng 2 ô robot vẫn đi, rẽ muộn', baiLam: bai(nhieu(['an_toan = 2'], FOR(20, HUT_BUI('distance() < an_toan')))), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Mỗi vòng lặp robot chỉ làm một việc: hoặc rẽ, hoặc đi một ô. Hỏi distance() trước rồi mới chọn.',
+      goiY: ['Mỗi lượt robot chỉ làm một việc: hoặc rẽ, hoặc đi một ô. Hỏi distance() trước rồi mới chọn.',
         'distance() <= an_toan đúng khi còn 2, 1 hay 0 ô trống: lúc đó phải rẽ.']
     }),
     man({
-      chuong: 'hong-ngoai', so: 7, ten: 'Phanh không kịp', yMoi: 'sửa ngưỡng: xe đi 3 ô mới đo lại', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_right', 'forward'],
-      deBai: 'Xe chạy nhanh: mỗi lần forward(3) đi luôn 3 ô (30 cm) rồi mới đo lại. Sola đặt an_toan = 0 nên xe đâm tường. Sửa số an_toan để xe dừng kịp, rồi rẽ phải vào lối dẫn tới cờ.',
-      veMaMau: 'Chạy thử bản của Sola: xe đâm tường ở sân nào? Lúc đó distance() còn mấy ô?',
-      san: [['.....####', '###.#####', '###F#####'], ['.........', '######.##', '######F##']],
-      batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }],
-      maMau: bai(nhieu(['an_toan = 0'], WHILE('distance() > an_toan', ['forward(3)']), ['turn_right()', 'forward(2)'])),
-      sao: { o: 12, nhip: 15 },
-      loiGiai: bai(nhieu(['an_toan = 2'], WHILE('distance() > an_toan', ['forward(3)']), ['turn_right()', 'forward(2)'])),
-      loiGiaiKhac: { moTa: 'Lối rẽ đi bằng while distance() > 0', baiLam: bai(nhieu(['an_toan = 2'], WHILE('distance() > an_toan', ['forward(3)']), ['turn_right()'], WHILE('distance() > 0', ['move()']))) },
+      chuong: 'hong-ngoai', so: 7, ten: 'Phanh không kịp', yMoi: 'while True: lặp mãi tới khi tới cờ; sửa ngưỡng cho xe chạy nhanh', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_right', 'forward'],
+      deBai: 'Xe chạy nhanh: mỗi lần forward(3) đi luôn 3 ô (30 cm) rồi mới đo lại. while True: lặp mãi, tới cờ là xe dừng. Sola đặt an_toan = 0 nên xe đâm vào ngõ cụt. Sửa số an_toan để xe phanh kịp và rẽ đúng chỗ.',
+      veMaMau: 'Chạy thử bản của Sola: lúc xe lao vào ngõ cụt, distance() còn mấy ô?',
+      san: ['###########', '#.#########', '#.#########', '#.........#', '#.#####.###', '#.#####.###', '#.##.F..###', '#######.###', '#######.###', '###########'],
+      batDau: { x: 1, y: 6, huong: 0 },
+      maMau: bai(nhieu(['an_toan = 0'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_right()', 'forward(3)')))),
+      sao: { o: 13, nhip: 17 },
+      loiGiai: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_right()', 'forward(3)')))),
+      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d',baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', nhieu(DOC, HUT_BUI('d <= an_toan', 'turn_right()', 'forward(3)'))))) },
       loiSai: [
-        { moTa: 'Không sửa: an_toan = 0 quá nhỏ, còn 1 hay 2 ô xe vẫn lao tới 3 ô và đâm', baiLam: bai(nhieu(['an_toan = 0'], WHILE('distance() > an_toan', ['forward(3)']), ['turn_right()', 'forward(2)'])), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'an_toan = 1 vẫn chưa đủ: còn 2 ô xe vẫn lao tới 3 ô', baiLam: bai(nhieu(['an_toan = 1'], WHILE('distance() > an_toan', ['forward(3)']), ['turn_right()', 'forward(2)'])), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'an_toan = 5 quá xa: xe dừng sớm, rẽ vào tường', baiLam: bai(nhieu(['an_toan = 5'], WHILE('distance() > an_toan', ['forward(3)']), ['turn_right()', 'forward(2)'])), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Đổi > thành >=: còn đúng 2 ô xe vẫn lao tới', baiLam: bai(nhieu(['an_toan = 2'], WHILE('distance() >= an_toan', ['forward(3)']), ['turn_right()', 'forward(2)'])), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Không sửa: an_toan = 0 quá nhỏ, còn 2 ô xe vẫn lao tới 3 ô và đâm', baiLam: bai(nhieu(['an_toan = 0'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_right()', 'forward(3)')))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'an_toan = 1 vẫn chưa đủ: còn 2 ô xe vẫn lao tới 3 ô', baiLam: bai(nhieu(['an_toan = 1'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_right()', 'forward(3)')))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'an_toan = 5 quá xa: xe chỉ quay tại chỗ', baiLam: bai(nhieu(['an_toan = 5'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_right()', 'forward(3)')))), phaiCoMa: ['vong-vo-han'] }
       ],
-      goiY: ['Mỗi lần đi 3 ô thì trước đó phải còn ít nhất 3 ô trống. Còn 2 ô hay ít hơn là phải dừng.',
+      goiY: ['Mỗi lần đi 3 ô thì trước đó phải còn ít nhất 3 ô trống. Còn 2 ô hay ít hơn là phải rẽ.',
         'Ngưỡng an toàn phải đủ lớn để xe kịp phanh: thử 1, rồi 2.']
     }),
     man({
       chuong: 'hong-ngoai', so: 8, ten: 'Chân bàn', yMoi: 'vật cản là chân bàn (vật), không phải tường', buocVideo: 'Gần thì rẽ', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
       deBai: 'Trong phòng có chân bàn (vật nằm trên sàn). Mắt hồng ngoại thấy chân bàn như thấy tường. Robot hút bụi giữ cách vật cản 20 cm: gần thì rẽ phải, còn không thì đi, tới khi gặp cờ.',
-      san: [['......o', '###.###', '###F###', '###.###', '###.###', '###o###'], ['....o##', '#.#####', '#.#####', '#F#####', '#.#####', '#.#####']],
-      batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }],
-      maMau: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() <= an_toan:', '    turn_left()', 'else:', '    move()']))),
-      sao: { o: 11, nhip: 11 },
-      loiGiai: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() <= an_toan:', '    turn_right()', 'else:', '    move()']))),
-      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['d = distance()', 'if d <= an_toan:', '    turn_right()', 'else:', '    move()']))) },
+      veMaMau: 'Chương trình có sẵn rẽ trái khi gần vật cản. Ở phòng này phải rẽ phải.',
+      san: ['#o########', '#.########', '#.########', '#........o', '#.####.###', '#.####.###', '#.####.###', '#.o..F.###', '#.####.###', '######.###', '##########'],
+      batDau: { x: 1, y: 8, huong: 0 },
+      maMau: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_left()')))),
+      sao: { o: 11, nhip: 18 },
+      loiGiai: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan')))),
+      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', nhieu(DOC, HUT_BUI('d <= an_toan'))))) },
       loiSai: [
-        { moTa: 'Rẽ trái thay vì rẽ phải: robot đi vào góc cụt', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() <= an_toan:', '    turn_left()', 'else:', '    move()']))), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'an_toan = 0: robot đi tới sát chân bàn mới rẽ, lỡ lối', baiLam: bai(nhieu(['an_toan = 0'], WHILE('True', ['if distance() <= an_toan:', '    turn_right()', 'else:', '    move()']))), phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Rẽ trái thay vì rẽ phải: robot quay vào tường', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_left()')))), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'an_toan = 0: robot đi tới sát chân bàn mới rẽ, lạc vào ngõ cụt', baiLam: bai(nhieu(['an_toan = 0'], WHILE('True', HUT_BUI('distance() <= an_toan')))), phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['Chân bàn chặn tia hồng ngoại: distance() đếm số ô trống tới chân bàn.',
         'Chương trình giống màn "Gần thì rẽ": chỉ cần đúng an_toan và đúng hướng rẽ.']
     }),
     man({
       chuong: 'hong-ngoai', so: 9, ten: 'Nhớ số để quay về', yMoi: 'dùng lại biến d để quay về đúng chỗ cũ', buocVideo: 'Đo khoảng cách', mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'u_turn', 'forward', 'pick', 'drop'],
-      deBai: 'Xe có tay kẹp. Phía trước có một vật, xa gần tùy sân. Đo khoảng cách vào d, tiến tới sát vật rồi nhặt nó, quay đầu, đi về đúng d ô rồi đặt vật vào ô đích ngay sau chỗ xuất phát.',
-      veMaMau: 'Chương trình có sẵn đi về cố định hai ô nên có sân xe đi quá. Biến d vẫn còn nhớ số đã đo: dùng lại nó.',
-      san: [['D..o##'], ['D...o#']],
-      batDau: [{ x: 1, y: 0, huong: 1 }, { x: 1, y: 0, huong: 1 }],
-      maMau: bai(nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(2)', 'drop()'])),
-      sao: { o: 24, nhip: 14 },
-      loiGiai: bai(nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(d)', 'drop()'])),
-      loiGiaiKhac: { moTa: 'Đường về đi bằng vòng for theo d', baiLam: bai(nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DI_D, ['drop()'])) },
+      hamCuaEmCan: ['move', 'turn_left', 'u_turn', 'forward', 'pick', 'drop'],
+      deBai: 'Xe có tay kẹp đứng ở ngã ba. Mỗi ngả có một vật, xa gần khác nhau. Mỗi chuyến: đo khoảng cách vào d, tiến tới sát vật rồi nhặt, quay đầu, đi về đúng d ô, đặt vật vào ô đích trước mặt rồi rẽ trái sang ngả kế.',
+      veMaMau: 'Chương trình có sẵn đi về cố định hai ô nên chuyến đầu xe chưa về tới ngã ba. Biến d vẫn còn nhớ số đã đo: dùng lại nó.',
+      san: ['#o###', '#.###', '#.###', '#.###', 'D..o#', '#D###'],
+      batDau: { x: 1, y: 4, huong: 0 },
+      maMau: bai(FOR(2, nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(2)', 'drop()', 'turn_left()']))),
+      sao: { o: 28, nhip: 18 },
+      loiGiai: bai(FOR(2, nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(d)', 'drop()', 'turn_left()']))),
+      loiGiaiKhac: { moTa: 'Đường về đi bằng vòng for theo d', baiLam: bai(FOR(2, nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DI_D, ['drop()', 'turn_left()']))) },
       loiSai: [
-        { moTa: 'Đi về cố định hai ô: sân gần thì xe đi quá, không còn chỗ đặt vật', baiLam: bai(nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(2)', 'drop()'])), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đo lại sau khi quay đầu: d thành số ô tới mép sân, xe đi quá', baiLam: bai(nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DOC, ['forward(d)', 'drop()'])), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên nhặt vật trước khi quay về', baiLam: bai(nhieu(DOC, ['forward(d)', 'u_turn()', 'forward(d)', 'drop()'])), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đi về cố định hai ô: chuyến đầu xe chưa về tới ngã ba', baiLam: bai(FOR(2, nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(2)', 'drop()', 'turn_left()']))), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đo lại sau khi quay đầu: d thành số ô tới tường phía sau, xe đi quá', baiLam: bai(FOR(2, nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DOC, ['forward(d)', 'drop()', 'turn_left()']))), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên nhặt vật trước khi quay về', baiLam: bai(FOR(2, nhieu(DOC, ['forward(d)', 'u_turn()', 'forward(d)', 'drop()', 'turn_left()']))), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Biến d giữ số đã đo cho tới khi em gán số khác vào nó.',
         'Đi tới mấy ô thì đi về bấy nhiêu ô: đường về cũng dài d ô.']
@@ -223,14 +228,14 @@
         ['....o###', '##.#####', '##.#####', '.F.#####', '##.#####', '##o#####'],
         ['.......#', '#####.##', '#...F.##', '#####.##', '#####o##', '########']],
       batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 0 }],
-      maMau: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() <= an_toan:', '    turn_right()', 'else:', '    move()']))),
+      maMau: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan')))),
       sao: { o: 11, nhip: 31 },
-      loiGiai: bai(nhieu(['an_toan = 1'], WHILE('True', ['if distance() <= an_toan:', '    turn_right()', 'else:', '    move()']))),
-      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 1'], WHILE('True', ['d = distance()', 'if d <= an_toan:', '    turn_right()', 'else:', '    move()']))) },
+      loiGiai: bai(nhieu(['an_toan = 1'], WHILE('True', HUT_BUI('distance() <= an_toan')))),
+      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 1'], WHILE('True', nhieu(DOC, HUT_BUI('d <= an_toan'))))) },
       loiSai: [
-        { moTa: 'Giữ an_toan = 2: robot rẽ sớm một ô, đi vào tường', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['if distance() <= an_toan:', '    turn_right()', 'else:', '    move()']))), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'an_toan = 0: robot đi tới sát vật cản mới rẽ, lỡ lối', baiLam: bai(nhieu(['an_toan = 0'], WHILE('True', ['if distance() <= an_toan:', '    turn_right()', 'else:', '    move()']))), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Rẽ trái thay vì rẽ phải', baiLam: bai(nhieu(['an_toan = 1'], WHILE('True', ['if distance() <= an_toan:', '    turn_left()', 'else:', '    move()']))), phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Giữ an_toan = 2: robot rẽ sớm một ô, đi vào tường', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan')))), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'an_toan = 0: robot đi tới sát vật cản mới rẽ, lỡ lối', baiLam: bai(nhieu(['an_toan = 0'], WHILE('True', HUT_BUI('distance() <= an_toan')))), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Rẽ trái thay vì rẽ phải', baiLam: bai(nhieu(['an_toan = 1'], WHILE('True', HUT_BUI('distance() <= an_toan', 'turn_left()')))), phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['Đứng ở một chỗ rẽ, đếm số ô trống còn lại tới vật cản: đó là an_toan.',
         'Phòng thứ ba: robot xuất phát mặt sát mép sân, nên việc đầu tiên là rẽ.']
