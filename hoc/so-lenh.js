@@ -218,7 +218,15 @@
     m('fire_left', 'hoi', 'Quay trái, bắn với lực p, rồi quay lại', 'che-luc-ban', 'che-luc-ban.5'),
     m('close_fire', 'hoi', 'Đi tới sát nút rồi bắn nhanh, xe đứng yên', 'che-luc-ban', 'che-luc-ban.6'),
     m('scan_left', 'hoi', 'Hai lần: tự chọn lực bắn nút bên trái rồi tiến một ô', 'che-luc-ban', 'che-luc-ban.7'),
-    m('aim_turn', 'hoi', 'Tự chọn lực bắn nút trước mặt rồi quay trái', 'che-luc-ban', 'che-luc-ban.8')
+    m('aim_turn', 'hoi', 'Tự chọn lực bắn nút trước mặt rồi quay trái', 'che-luc-ban', 'che-luc-ban.8'),
+    // chương che-do-nhiet · Hàm đo nhiệt (light, find_hot là hàm của màn nên không có ở đây)
+    m('switch_on', 'hong-ngoai', 'Đo nhiệt nút trước mũi xe: chưa nóng thì bắn nhanh cho bật', 'che-do-nhiet', 'che-do-nhiet.1'),
+    m('switch_left', 'hong-ngoai', 'Quay trái, bật nút bên trái nếu nó còn tắt, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.2'),
+    m('find_warm', 'hong-ngoai', 'Quay khỏi đèn vừa tới rồi quay tới khi thấy đèn nóng', 'che-do-nhiet', 'che-do-nhiet.4'),
+    m('aim_on', 'hong-ngoai', 'Nút chưa nóng thì tự chọn lực bắn theo xa gần', 'che-do-nhiet', 'che-do-nhiet.5'),
+    m('scan_on', 'hong-ngoai', 'n lần: bật nút bên trái nếu còn tắt rồi tiến một ô', 'che-do-nhiet', 'che-do-nhiet.6'),
+    m('switch_right', 'hong-ngoai', 'Quay phải, bật nút bên phải nếu nó còn tắt, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.7'),
+    m('aim_left_on', 'hong-ngoai', 'Quay trái, nút chưa nóng thì tự chọn lực bắn, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có

@@ -15,7 +15,8 @@
    6. Bộ dò (do-duong-do-nhiet.mjs = bộ dò gói 6 + timLoiNeNhanh cho màn mở; lời tìm được chấm thật bằng cham.js):
       - nút bật sẵn không nối gì (động học sân không phụ thuộc nutBat, nên bộ dò dãy cố định đúng luật);
       - BFS tự do (mỗi sân) không dài hơn sao.nhip;
-      - màn khóa chương trình chính: KHÔNG thân hàm cố định (không cảm biến) nào được 3 sao; màn nhiều sân: không có dãy chung nào thắng mọi sân trong sao.nhip;
+      - màn khóa chương trình chính: KHÔNG thân hàm cố định (không cảm biến) nào được 3 sao (chương trình chính có go_to_wall() thì mô phỏng mọi dãy thân cố định
+        đủ ngắn cho sao.nhip: timThanCoDinh); màn nhiều sân: không có dãy chung nào thắng mọi sân trong sao.nhip;
         màn mở một sân: lời cố định (kể cả một hàm phụ f()) không được 3 sao; liệt kê tối đa 100000 dãy thắng (bảng ghi "cắt ngang" khi chạm trần).
    Chạy: node hoc/kiem-do-nhiet.mjs              (trượt thì thoát mã 1)
          node hoc/kiem-do-nhiet.mjs --loi-gia    (cắm lỗi giả: các mục bị cắm phải ĐỎ; thoát 0 khi đỏ đủ)
@@ -30,7 +31,7 @@ const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const SL = require('./so-lenh.js');
 const Bo = await import('./do-duong-sung-hoi.mjs');
-const { timLoiNeNhanh, timLoiNeKhoa, doDuongChung, catSan, kiemDocLap } = await import('./do-duong-do-nhiet.mjs');
+const { timLoiNeNhanh, timLoiNeKhoa, timThanCoDinh, moRong, doDuongChung, catSan, kiemDocLap } = await import('./do-duong-do-nhiet.mjs');
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const LOI_GIA = process.argv.includes('--loi-gia');
 const CHI = (process.argv.find((a) => a.startsWith('--chi=')) || '').slice(6);      // --chi=do-nhiet.3: chỉ chạy kiểm từng màn cho các mã này (phẩy), để làm nhanh
@@ -296,11 +297,14 @@ for (const m of DS) {
       assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để viết / sửa');
       assert.ok(bacCau(m, hm.than, m.loiGiai.hamCuaEmMoi).dong.some((l) => /warm\(\)/.test(l)), m.ma + ': thân ' + hm.ten + ' không đọc warm()');
       const laMan = !(m.loiGiai.hamCuaEmMoi || []).length;
-      const t = timLoiNeKhoa(m, hm.ten, kho, (than) => {
+      const chamThan = (than) => {
         const h = Object.assign({}, hm, { than });
         return laMan ? cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: [h] }, []) : cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: m.loiGiai.hamCuaMan }, [h]);
-      });
-      bang[m.ma].ne = 'khóa: thân cố định ' + (t.khong ? 'không thắng' : t.soO + ' ô ' + t.soNhip + ' nhịp');
+      };
+      // chương trình chính mở được thành dãy cố định: bộ dò gói 6; có go_to_wall() (while theo distance()) thì liệt kê thẳng mọi thân cố định trong ngân sách ô
+      const moDuoc = moRong(m.loiGiai.chinh, kho, {}, hm.ten) !== null;
+      const t = moDuoc ? timLoiNeKhoa(m, hm.ten, kho, chamThan) : timThanCoDinh(m, hm.ten, kho, chamThan);
+      bang[m.ma].ne = 'khóa: thân cố định ' + (t.khong ? 'không thắng' : t.soO + ' ô ' + t.soNhip + ' nhịp') + (moDuoc ? '' : ' (mô phỏng ' + t.soDay + ' dãy dài ≤ ' + t.dai + ', ' + t.soThang + ' dãy thắng)');
       if (!t.khong && t.soO <= m.sao.o && t.soNhip <= m.sao.nhip) assert.fail(m.ma + ': thân ' + hm.ten + ' cố định ' + t.soO + ' ô ≤ ' + m.sao.o + ', ' + t.soNhip + ' nhịp: ' + t.than.join(' / '));
       return;
     }

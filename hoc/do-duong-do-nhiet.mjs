@@ -10,10 +10,13 @@
 
    Màn mở (chương do-nhiet) dùng timLoiNeNhanh (ô tính tĩnh, chỉ chấm thật các ứng viên rẻ nhất) vì timLoiNe chấm mọi cách nén của mọi dãy: quá chậm cho màn mở.
 
-   Hàm xuất: catSan, kiemDocLap, timLoiNeNhanh, và lại của do-duong-che-luc-ban.mjs: dsDay, doDuongChung, moRong, nenDay, timLoiNe, timLoiNeKhoa
+   Màn khóa mà chương trình chính có go_to_wall() (không mở thành dãy được) dùng timThanCoDinh: mô phỏng mọi dãy thân cố định đủ ngắn cho sao.nhip.
+
+   Hàm xuất: catSan, kiemDocLap, timLoiNeNhanh, timThanCoDinh, và lại của do-duong-che-luc-ban.mjs: dsDay, doDuongChung, moRong, nenDay, timLoiNe, timLoiNeKhoa
    ========================================================================== */
 import { createRequire } from 'node:module';
-import { dsDay, doDuongChung, moRong, nenDay, timLoiNe, timLoiNeKhoa } from './do-duong-che-luc-ban.mjs';
+import { CHU, dsDay, doDuongChung, moRong, nenDay, timLoiNe, timLoiNeKhoa } from './do-duong-che-luc-ban.mjs';
+import * as Bo from './do-duong-sung-hoi.mjs';
 
 const require = createRequire(import.meta.url);
 const SanHoc = require('./san-hoc.js');
@@ -170,4 +173,86 @@ export function timLoiNeNhanh(m, kho, cham, tuy = {}) {
     if (r.thang && r.soNhip <= m.sao.nhip) return { soO: r.soO, soNhip: r.soNhip, chinh: u.dong, hamMoi: hm, day: u.day, soDay: ds.length, catNgang, soCham, oTinh: u.o };
   }
   return { khong: true, soDay: ds.length, catNgang, catCham, soCham, oNhoNhat: ung.length ? ung[0].o : null };
+}
+
+/* ------------------------------------------------------------------ màn khóa mà chương trình chính KHÔNG mở thành dãy được (có go_to_wall(): while theo distance())
+   timLoiNeKhoa cần mở chương trình chính thành một dãy cố định nên không dùng được. Một thân X cố định (không if / while / cảm biến) chạy ra MỘT dãy hành động x
+   ở mọi lần gọi; go_to_wall() thì mô phỏng thẳng (tiến tới khi ô trước mặt bị chặn: tường, nút, cửa đóng, thùng). Ở đây liệt kê MỌI dãy x (10 hành động một nhịp)
+   đủ ngắn để cả chương trình còn trong sao.nhip, mô phỏng bằng bộ dò súng hơi (do-duong-sung-hoi.mjs, luật san-hoc.js), giữ dãy thắng, nén thành thân ít dòng nhất
+   (như timLoiNeNhanh) và chấm thật bằng cham.js những thân có ô tĩnh ≤ sao.o. Trả thân rẻ nhất được 3 sao hay { khong: true, soDay, soThang }. Liệt kê ĐỦ (không cắt). */
+function moChinh(dong, kho, tenX) {
+  // chương trình chính khóa: lời gọi hàm, for số cố định; go_to_wall() thành 'G', X thành 'X', hàm khác mở bằng moRong
+  const ds = dong.map((l) => l.replace(/#.*$/, '')).filter((l) => l.trim());
+  const thut = (l) => l.match(/^ */)[0].length;
+  function khoi(a, b) {
+    let kq = '';
+    for (let i = a; i < b; i++) {
+      const t = ds[i].trim(), f = t.match(/^for\s+\w+\s+in\s+range\((\d+)\):$/);
+      if (f) { let j = i + 1; while (j < b && thut(ds[j]) > thut(ds[i])) j++; const k = khoi(i + 1, j); if (k === null) return null; kq += k.repeat(+f[1]); i = j - 1; continue; }
+      if (t === 'go_to_wall()') { kq += 'G'; continue; }
+      if (t === tenX + '()') { kq += 'X'; continue; }
+      const e = moRong([t], kho);
+      if (e === null) return null;
+      kq += e;
+    }
+    return kq;
+  }
+  return khoi(0, ds.length);
+}
+export function timThanCoDinh(m, tenX, kho, chamThan, tuy = {}) {
+  if (Array.isArray(m.san[0])) throw new Error(m.ma + ': timThanCoDinh chỉ cho một sân');
+  const mau = moChinh(m.maMau.chinh, kho, tenX);
+  if (mau === null) throw new Error(m.ma + ': không mở được chương trình chính khóa');
+  const ctx = Bo.dungNguCanh(m), HD = new Map(Bo.hanhDongChoPhep(m).map((a) => [CHU(a), a]));
+  const dau = Bo.trangThaiDau(ctx), { rong } = ctx, VEC = SanHoc.VEC;
+  const dung = ctx.mucTieu !== 'bong-mo';
+  const truocTrong = (S) => {
+    const v = VEC[S.h], x = S.x + v[0], y = S.y + v[1];
+    if (!ctx.trongSan(x, y)) return false;
+    const c = y * rong + x, j = ctx.cuaIdx[c];
+    return !ctx.chan[c] && !(j >= 0 && !((S.cm >> j) & 1)) && S.p.indexOf(c) < 0;
+  };
+  function chay(x) {
+    let S = dau, nhip = 0;
+    for (const ch of mau) {
+      const ds = ch === 'X' ? x : ch === 'G' ? null : ch;
+      if (ds === null) {
+        let an = 0;
+        while (truocTrong(S)) { S = Bo.buocMotNhip(ctx, S, HD.get('M')); nhip++; if (S.chet || nhip > m.sao.nhip || ++an > 40) return false; if (dung && Bo.laDich(ctx, S)) return nhip; }
+        continue;
+      }
+      for (const a of ds) {
+        const hd = HD.get(a);
+        if (!hd) return false;
+        S = Bo.buocMotNhip(ctx, S, hd); nhip++;
+        if (S.chet || nhip > m.sao.nhip) return false;
+        if (dung && Bo.laDich(ctx, S)) return nhip;
+      }
+    }
+    return !dung && Bo.laDich(ctx, S) ? nhip : false;
+  }
+  const soX = mau.split('X').length - 1, coDinh = mau.replace(/[XG]/g, '').length;
+  const dai = Math.min(tuy.daiToiDa || 6, Math.floor((m.sao.nhip - coDinh) / soX));
+  const chu = [...HD.keys()], thang = [];
+  let soDay = 0;
+  (function di(x) {
+    soDay++;
+    if (chay(x) !== false) thang.push(x);
+    if (x.length >= dai) return;
+    for (const c of chu) di(x + c);
+  })('');
+  // ô tĩnh: chương trình chính + các hàm nó gọi (trừ X) + thân X nén + hàm thân X gọi mà chưa tính
+  const bangKho = new Map(kho.map((h) => [h.ten, h])), G0 = taoGach(kho);
+  const ung = thang.map((x) => {
+    const than = x ? nen(x, G0) : ['pass'];
+    return { than, o: oTinh(m.maMau.chinh, { ten: tenX, thamSo: [], than }, bangKho) };
+  }).sort((a, b) => a.o - b.o);
+  let tot = null, soCham = 0;
+  for (const u of ung) {
+    if (u.o > m.sao.o) break;
+    soCham++;
+    const r = chamThan(u.than);
+    if (r.thang && r.sao === 3) { tot = { soO: r.soO, soNhip: r.soNhip, than: u.than }; break; }
+  }
+  return tot ? Object.assign(tot, { soDay, soThang: thang.length, dai, soCham }) : { khong: true, soDay, soThang: thang.length, dai, soCham, oNhoNhat: ung.length ? ung[0].o : null };
 }
