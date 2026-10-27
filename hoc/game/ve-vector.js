@@ -105,15 +105,35 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Vỏ trắng toả sáng như mẫu (radialGradient cx 42% cy 35% r 70% của hộp (x, y, w, h)). */
   function gradVo(g, x, y, w, h) { return gradToa(g, x + w * 0.42, y + h * 0.35, Math.max(w, h) * 0.7, [[0, BM.vecVo], [0.7, BM.vecVoGiua], [1, BM.vecVoToi]]); }
   function rgba(boBa, a) { return 'rgba(' + boBa + ',' + (+a).toFixed(3) + ')'; }
-  var H = { bo: bo, duong: duong, tron: tron, elip: elip, to: to, vien: vien, gradDoc: gradDoc, gradToa: gradToa, gradVo: gradVo, rgba: rgba, VIEN: function () { return BM.vecVien; } };
+  /** "GIA ĐÌNH" thân A (gói V3, mọi thân dùng chung): KÍNH dải ngang (gradient màu đội toi → chinh) + HAI MẮT viên thuốc (vecMat, viền chinh) trong hộp (x, y, w, h).
+   *  Màu đội chỉ ở đúng hai chỗ này (một gradient, hai viền mắt) + chấm ăng-ten (angTen): máy kiểm đếm. s.camera: mắt là ống kính (con ngươi tối);
+   *  s.camSang (camera đang đọc) / s.sang (drone đo pin): quầng sáng quanh mắt, mắt trắng rực, con ngươi cyan. */
+  function kinh(g, M, x, y, w, h, s) {
+    s = s || {};
+    bo(g, x, y, w, h, h / 2); g.fillStyle = gradDoc(g, 0, y, 0, y + h, [[0, M.toi], [1, M.chinh]]); g.fill(); vien(g, BM.vecVien, 2.5);
+    var ew = w * 0.1522, eh = h * 0.588, ey = y + (h - eh) / 2, sang = !!(s.camSang || s.sang);
+    [x + w * 0.2174, x + w * 0.6304].forEach(function (ex) {
+      if (sang) { bo(g, ex - 2.5, ey - 2.5, ew + 5, eh + 5, (ew + 5) / 2); to(g, rgba(BM.vecMatSangRgb, 0.6)); }
+      bo(g, ex, ey, ew, eh, ew / 2); to(g, sang ? BM.vecMatSang : BM.vecMat); vien(g, M.chinh, 1);
+      if (s.camera) { tron(g, ex + ew / 2, ey + eh / 2, ew * 0.3); to(g, sang ? BM.vecDen : BM.vecBanh); }
+    });
+  }
+  /** Ăng-ten: cột bạc từ (x, yGoc) lên tới (x, yDinh + r), chấm màu đội bán kính r ở (x, yDinh). */
+  function angTen(g, M, x, yGoc, yDinh, r) {
+    duong(g, 'M' + x + ' ' + yGoc + ' V' + (yDinh + r - 2)); vien(g, BM.vecBacToi, 3);
+    tron(g, x, yDinh, r); to(g, M.chinh); vien(g, BM.vecVien, 2);
+  }
+  var H = { bo: bo, duong: duong, tron: tron, elip: elip, to: to, vien: vien, gradDoc: gradDoc, gradToa: gradToa, gradVo: gradVo, rgba: rgba, kinh: kinh, angTen: angTen, VIEN: function () { return BM.vecVien; } };
 
   /* ---------------------------------------------------------------- kho hình */
   var kho = { o: {}, vat: {}, than: {}, tay: {}, 'cam-bien': {} };
   function dangKy(d) {
     if (!d || !kho[d.loai] || !d.ma || typeof d.ve !== 'function') throw new Error('VeVector.dangKy: cần loai (o | vat | than | tay | cam-bien), ma và ve().');
     if (kho[d.loai][d.ma]) throw new Error('VeVector: hình đã có ' + d.loai + '/' + d.ma);
-    if (d.loai === 'than' && !(d.oGan && d.oGan.tay && isFinite(d.oGan.tay.x) && isFinite(d.oGan.tay.y))) throw new Error('VeVector: thân ' + d.ma + ' cần oGan.tay {x, y}.');
+    var oTayHop = function (o) { return !!(o && isFinite(o.x) && isFinite(o.y)); };
+    if (d.loai === 'than' && !(d.oGan && (oTayHop(d.oGan.tay) || (d.khongHuong && oTayHop(d.oGan.duoi))))) throw new Error('VeVector: thân ' + d.ma + ' cần oGan.tay {x, y} (drone: oGan.duoi).');
     if (d.loai === 'tay' && !(d.diemNeo && isFinite(d.diemNeo.x) && isFinite(d.diemNeo.y) && d.gan)) throw new Error('VeVector: tay ' + d.ma + ' cần diemNeo {x, y} và gan.');
+    if (d.loai === 'cam-bien' && !(d.diemNeo && isFinite(d.diemNeo.x) && isFinite(d.diemNeo.y) && d.gan)) throw new Error('VeVector: cảm biến ' + d.ma + ' cần diemNeo {x, y} và gan.');
     kho[d.loai][d.ma] = d; return d;
   }
   function lay(loai, ma) { return (kho[loai] && kho[loai][ma]) || null; }
@@ -165,39 +185,117 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return { ma: 'R1', chinh: BM.vecDoiR1, toi: BM.vecDoiR1Toi };
   }
 
+  /* ---------------------------------------------------------------- luật ghép: Y NHƯ Part.ghep của bộ pixel (part/part.js) — cùng điều cấm, cùng câu báo lỗi */
+  function ganCua(d) { return Array.isArray(d.gan) ? d.gan : [d.gan]; }
+  /** camBien [{ ma, o }] → danh sách ổ thật: 'truoc' = 'hong'; 'hong' = một cái ở hongTrai + một cái ở hongPhai (như Part.ghep). */
+  function doiCam(cams) {
+    var out = [];
+    (cams || []).forEach(function (c) { var o = c.o === 'truoc' ? 'hong' : c.o; if (o === 'hong') { out.push({ ma: c.ma, o: 'hongTrai' }); out.push({ ma: c.ma, o: 'hongPhai' }); } else out.push({ ma: c.ma, o: o }); });
+    return out;
+  }
+  /** Ổ tay mà tay gắn vào thân: drone (khongHuong) treo ở ổ 'duoi'; thân khác ở ổ 'tay' (nếu tay gắn được ổ đó). */
+  function oTay(than, tay) { return than.khongHuong ? ['duoi'] : ganCua(tay).filter(function (o) { return o === 'tay' && than.oGan[o]; }); }
+  /** Kiểm cấu hình như Part.ghep: ném Error với ĐÚNG câu báo của bộ pixel khi ghép cấm (drone + camera, drone + tay khác nam châm, camera-bay trên thân thường,
+   *  camera + cảm biến màu, ổ không có / cảm biến sai ổ). Trả { than, tay, cams } (cams đã đổi 'hong' → hai ổ). Thiếu hình vector: ném "Không có …". */
+  function kiemGhep(cfg) {
+    cfg = cfg || {};
+    var than = lay('than', cfg.than || 'hai-banh'), tay = cfg.tay ? lay('tay', cfg.tay) : null, cams = doiCam(cfg.camBien), i, d;
+    if (!than) throw new Error('Không có than "' + cfg.than + '".');
+    if (cfg.tay && !tay) throw new Error('Không có tay "' + cfg.tay + '".');
+    var drone = !!than.khongHuong, co = function (ma) { return cams.some(function (c) { return c.ma === ma; }); };
+    for (i = 0; i < cams.length; i++) if (!lay('cam-bien', cams[i].ma)) throw new Error('Không có cam-bien "' + cams[i].ma + '".');
+    if (drone && co('camera')) throw new Error('Drone không gắn được camera: drone không có hướng mặt để nhìn "phía trước".');
+    if (drone) {
+      if (tay && tay.ma !== 'nam-cham') throw new Error('Drone không gắn được ' + tay.ten + '.');
+      for (i = 0; i < cams.length; i++) if (['khoang-cach', 'mau', 'camera-bay'].indexOf(cams[i].ma) < 0) throw new Error('Drone không gắn được ' + lay('cam-bien', cams[i].ma).ten + '.');
+    }
+    if (!drone && co('camera-bay')) throw new Error('Camera nhìn xuống (camera-bay) chỉ gắn được lên drone.');
+    if (co('camera') && co('mau')) throw new Error('Robot không gắn được cả cảm biến màu lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
+    if (tay && !oTay(than, tay).length) throw new Error((drone ? 'Drone' : 'Tay ' + tay.ma) + ' không gắn được vào ổ này.');
+    for (i = 0; i < cams.length; i++) {
+      d = lay('cam-bien', cams[i].ma);
+      if (!than.oGan[cams[i].o]) throw new Error('Thân ' + than.ma + ' không có ổ "' + cams[i].o + '".');
+      if (ganCua(d).indexOf(cams[i].o) < 0) throw new Error('Cảm biến ' + d.ma + ' không gắn được vào ổ ' + cams[i].o + '.');
+    }
+    return { than: than, tay: tay, cams: cams };
+  }
+
   /* ---------------------------------------------------------------- robot: ghép rồi xoay cả nhóm */
   function gocXoay(huong) { huong = ((huong || 0) % 4 + 4) % 4; return ((huong + 2 + (loiGia.gocXoay ? 1 : 0)) % 4) * Math.PI / 2; }   // thân vẽ quay XUỐNG: lên = 180°, phải = 270°, xuống = 0°, trái = 90°
-  /** Điểm (x, y) trong hệ của thân → toạ độ pixel trên canvas ô cạnh `canh` sau khi thu CO_THAN và xoay theo hướng. */
-  function diemTrenO(pt, huong, canh) {
-    var k = (canh / HE) * CO_THAN, a = gocXoay(huong), dx = pt.x - TAM_THAN.x, dy = pt.y - TAM_THAN.y;
+  /** Góc quay thật của nhóm: thân không có hướng mặt (drone, khongHuong) KHÔNG xoay — vẽ thẳng theo màn hình (như bộ pixel: drone luôn hướng 0, ảnh không xoay). */
+  function gocCua(than, huong) { return than && than.khongHuong ? 0 : gocXoay(huong); }
+  /** Điểm (x, y) trong hệ của thân → toạ độ pixel trên canvas ô cạnh `canh` sau khi thu CO_THAN và xoay theo hướng (than: để biết drone không xoay). */
+  function diemTrenO(pt, huong, canh, than) {
+    var k = (canh / HE) * CO_THAN, a = gocCua(than, huong), dx = pt.x - TAM_THAN.x, dy = pt.y - TAM_THAN.y;
     return { x: canh / 2 + (dx * Math.cos(a) - dy * Math.sin(a)) * k, y: canh / 2 + (dx * Math.sin(a) + dy * Math.cos(a)) * k };
   }
-  /** Ổ gắn tay của thân (sau xoay) trên canvas ô: để kiểm "tay luôn ở phía hướng mặt". */
-  function diemGan(cfg, huong, canh) { var t = lay('than', (cfg && cfg.than) || 'hai-banh'); return t ? diemTrenO(t.oGan.tay, huong, canh) : null; }
+  /** Ổ `o` của thân trong cfg (sau xoay) trên canvas ô cạnh `canh` (tâm canvas = tâm thân); null nếu thân không có ổ đó. */
+  function diemO(cfg, o, huong, canh) { var t = lay('than', (cfg && cfg.than) || 'hai-banh'); return t && t.oGan[o] ? diemTrenO(t.oGan[o], huong, canh, t) : null; }
+  /** Ổ gắn tay của thân (sau xoay) trên canvas ô: để kiểm "tay luôn ở phía hướng mặt" (drone: ổ 'duoi' dưới bụng). */
+  function diemGan(cfg, huong, canh) { var t = lay('than', (cfg && cfg.than) || 'hai-banh'); return t ? diemO(cfg, t.khongHuong ? 'duoi' : 'tay', huong, canh) : null; }
+  /** Dịch của tay trong hệ thân (ổ − điểm neo) và ổ đã dùng; null nếu không gắn được. */
+  function dichTay(than, tay) {
+    var os = oTay(than, tay)[0]; if (!os) return null;
+    var oG = than.oGan[os], neo = os === 'duoi' && tay.diemNeoDuoi ? tay.diemNeoDuoi : tay.diemNeo;
+    return { o: os, x: oG.x - neo.x, y: oG.y - neo.y };
+  }
   /** Vật trong kẹp: { ahead, n } theo đơn vị "1/100 ô" (VeRobot.tiLeChoO trả p = cạnh ô / 100): tâm vật cách tâm thân `ahead` về phía mũi, cạnh vật `n`. Tay hạ: xa thêm một chút (càng dài ra). */
   function vatKep(cfg, tuThe) {
     var t = lay('than', (cfg && cfg.than) || 'hai-banh'), tay = cfg && cfg.tay ? lay('tay', cfg.tay) : null;
     if (!t || !tay || !tay.vatKep) return null;
-    var y = t.oGan.tay.y - tay.diemNeo.y + tay.vatKep.y + (tuThe === 'duoi' ? (tay.vatKep.ha || 0) : 0);
+    var d = dichTay(t, tay); if (!d) return null;
+    var y = d.y + tay.vatKep.y + (tuThe === 'duoi' ? (tay.vatKep.ha || 0) : 0);
     return { ahead: (y - TAM_THAN.y) * CO_THAN, n: tay.vatKep.canh * CO_THAN };
   }
+  /** TAY XOAY: vật trong kẹp khi khớp ở góc `goc` độ (0 = trước, âm = trái, dương = phải): { f, l, n } theo 1/100 ô — f về phía mũi, l về bên PHẢI xe, cạnh n
+   *  (cùng nghĩa với VeRobot.vatXoay của bộ pixel). Hình học ở tay (tay.vatXoay(tuThe, goc) → tâm vật { x, y, canh } trong hệ của tay). */
+  function vatXoay(cfg, tuThe, goc) {
+    var t = lay('than', (cfg && cfg.than) || 'hai-banh'), tay = cfg && cfg.tay ? lay('tay', cfg.tay) : null;
+    if (!t || !tay || typeof tay.vatXoay !== 'function') return null;
+    var d = dichTay(t, tay); if (!d) return null;
+    var v = tay.vatXoay(tuThe, goc || 0), x = v.x + d.x, y = v.y + d.y;
+    return { f: (y - TAM_THAN.y) * CO_THAN, l: (TAM_THAN.x - x) * CO_THAN, n: v.canh * CO_THAN };      // mặt quay xuống: bên phải xe là phía x nhỏ
+  }
+  /** Hình học tay / thân cho hiệu ứng của san-ve.js, theo 1/100 ô từ tâm thân (đã thu CO_THAN): mz miệng nòng trước, mzs miệng nòng sau (súng hơi), bk rổ máy ném,
+   *  pp "một điểm ảnh part" (độ rộng chân tia camera), dinh từ tâm tới đỉnh hình drone (thanh pin). Cùng nghĩa các hằng 24 / 10,5 / 23,5 / 1 / 11 của bộ pixel. */
+  function hinhHoc(cfg) {
+    var t = lay('than', (cfg && cfg.than) || 'hai-banh'), tay = cfg && cfg.tay ? lay('tay', cfg.tay) : null; if (!t) return null;
+    var d = tay ? dichTay(t, tay) : null, dy = d ? d.y : 0, truoc = function (y) { return (y + dy - TAM_THAN.y) * CO_THAN; };
+    return {
+      mz: tay && tay.mieng ? truoc(tay.mieng.truoc) : 44,
+      mzs: (TAM_THAN.y - (t.oGan.sau ? t.oGan.sau.y : 22) + (tay && tay.mieng ? tay.mieng.lui || 0 : 0)) * CO_THAN,
+      bk: tay && tay.ro ? truoc(tay.ro.y) : 36,
+      pp: 2.6,
+      dinh: (TAM_THAN.y - (isFinite(t.dinh) ? t.dinh : 14)) * CO_THAN
+    };
+  }
+  /** Phần tràn ra ngoài ô mỗi bên (theo cạnh ô) của canvas robot: tay xoay vươn sang ô bên (tay.tran); còn lại 0 (canvas đúng một ô). */
+  function tranCua(cfg) { var tay = cfg && cfg.tay ? lay('tay', cfg.tay) : null; return tay && tay.tran > 0 ? tay.tran : 0; }
   function robot(cfg, st, huong, canhPx) {
     cfg = cfg || {}; st = st || {};
-    var than = lay('than', cfg.than || 'hai-banh'), tay = cfg.tay ? lay('tay', cfg.tay) : null;
-    if (!than || (cfg.tay && !tay) || !coDu(cfg)) return null;
-    huong = ((huong || 0) % 4 + 4) % 4;
-    var canh = Math.max(1, Math.round(canhPx)), M = mauDoi(cfg.son), sT = st.than || {}, sTay = st.tay || {};
-    var khoa = ['robot', than.ma, tay ? tay.ma : '-', huong, '#' + canh, M.ma, JSON.stringify(sT), tay ? JSON.stringify(sTay) : ''].join('|');
+    if (!coDu(cfg)) return null;
+    var kq = kiemGhep(cfg), than = kq.than, tay = kq.tay, cams = kq.cams;                  // cấu hình cấm: ném lỗi y như Part.ghep (VeRobot bắt, báo một lần, như bộ pixel)
+    huong = ((huong || 0) % 4 + 4) % 4; if (than.khongHuong) huong = 0;
+    var canh = Math.max(1, Math.round(canhPx)), tran = tranCua(cfg), canhCv = canh + 2 * Math.round(canh * tran), M = mauDoi(cfg.son);
+    var sCb = st.camBien || {}, coCam = cams.some(function (c) { return c.ma === 'camera'; });
+    var sT = Object.assign({}, st.than || {}, coCam ? { camera: true, camSang: !!sCb.mat } : {}), sTay = st.tay || {};
+    var khoa = ['robot', than.ma, tay ? tay.ma : '-', JSON.stringify(cams), huong, '#' + canh, M.ma, JSON.stringify(sT), tay ? JSON.stringify(sTay) : '', cams.length ? JSON.stringify(sCb) : ''].join('|');
     return nho(khoa, function () {
-      var cv = taoCanvas(canh, canh), g = cv.getContext('2d'), k = (canh / HE) * CO_THAN;
-      g.save(); g.translate(canh / 2, canh / 2); g.scale(k, k);
-      elip(g, 2, 5, 33, 31); to(g, rgba(BM.vecVienRgb, 0.12));                 // bóng đổ: lớp riêng, không xoay, lệch phải-dưới (ánh sáng từ trái trên như mọi hình trong game)
-      g.rotate(gocXoay(huong)); g.translate(-TAM_THAN.x, -TAM_THAN.y);
+      var cv = taoCanvas(canhCv, canhCv), g = cv.getContext('2d'), k = (canh / HE) * CO_THAN;
+      g.save(); g.translate(canhCv / 2, canhCv / 2); g.scale(k, k);
+      if (!than.bongRieng) { elip(g, 2, 5, 33, 31); to(g, rgba(BM.vecVienRgb, 0.12)); }   // bóng đổ: lớp riêng, không xoay, lệch phải-dưới; drone có bóng riêng theo độ cao (san-ve.js veDuoiDrone)
+      g.rotate(gocCua(than, huong)); g.translate(-TAM_THAN.x, -TAM_THAN.y);
       than.ve(g, sT, M, H);
       if (tay) {
-        var oG = than.oGan.tay, neo = tay.diemNeo;
-        g.save(); g.translate(oG.x - neo.x, oG.y - neo.y); tay.ve(g, Object.assign({}, sTay, { than: than.ma }), M, H); g.restore();
+        var d = dichTay(than, tay), sau = than.oGan.sau ? { x: than.oGan.sau.x - d.x, y: than.oGan.sau.y - d.y } : null;
+        g.save(); g.translate(d.x, d.y); tay.ve(g, Object.assign({}, sTay, { than: than.ma, duoi: d.o === 'duoi', sau: sau }), M, H); g.restore();
       }
+      cams.forEach(function (c) {                                                       // cảm biến: vẽ ở ổ (điểm neo trùng ổ), trên thân và tay; ra = phía ngoài (dấu x) của ổ
+        var cb = lay('cam-bien', c.ma), o = than.oGan[c.o];
+        g.save(); g.translate(o.x - cb.diemNeo.x, o.y - cb.diemNeo.y);
+        cb.ve(g, Object.assign({}, sCb, { ben: c.o === 'hongTrai' ? 'trai' : c.o === 'hongPhai' ? 'phai' : null, o: c.o, ra: o.x >= TAM_THAN.x ? 1 : -1, than: than.ma }), M, H);
+        g.restore();
+      });
       g.restore();
       cv.laPart = true; cv.laVector = true;
       return cv;
@@ -208,7 +306,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     HE: HE, CO_THAN: CO_THAN, TAM_THAN: TAM_THAN, H: H, CanvasGia: CanvasGia, taoCanvas: taoCanvas,
     bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
-    o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, gocXoay: gocXoay, diemTrenO: diemTrenO, diemGan: diemGan,
+    o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, gocXoay: gocXoay, gocCua: gocCua,
+    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
     xoaDem: xoaDem, _loiGia: loiGia
   };
 });

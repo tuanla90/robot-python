@@ -1073,16 +1073,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var pTran = (0.15 * S + S / 2 + tr * dr) / VeRobot.REACH;                   // tay vượt quá ~15% ô thì thu robot nhỏ lại cho tay không bị cắt
         if (p > pTran) p = Math.max(1, Number.isInteger(p) ? Math.floor(pTran) : pTran);   // tỉ lệ nguyên thì lùi về số nguyên (nét đều), tỉ lệ lẻ thì thu vừa đủ
       }
-      var mc = Math.max(4, Math.ceil((VeRobot.REACH * p - S / 2) / f) + 3);          // lề (px CSS): tay nhô ra khi xe sát mép sân
+      var mc = Math.max(4, Math.ceil(((VeRobot.reachCua ? VeRobot.reachCua(c.robot) : VeRobot.REACH) * p - S / 2) / f) + 3);          // lề (px CSS): tay nhô ra khi xe sát mép sân (vector: tay xoay vươn sang ô bên)
       var cw = ow + 2 * mc, ch = cv.offsetHeight + 2 * mc, l = this.lop;
       l.width = Math.max(1, Math.round(cw * f)); l.height = Math.max(1, Math.round(ch * f));
       l.style.width = cw + 'px'; l.style.height = ch + 'px'; l.style.imageRendering = this.vec ? 'auto' : '';
       l.style.left = (cv.offsetLeft - mc) + 'px'; l.style.top = (cv.offsetTop - mc) + 'px';
       this.kk = kk; this.u = l.width / cw; this.mc = mc; this.p = p;
-      this.pp = p / (kk * this.u);                                                   // camera: 1 pixel part = bao nhiêu pixel sân
-      this.mz = 24 * p / (kk * this.u);                                              // súng hơi: từ tâm xe tới miệng NÒNG TRƯỚC (pixel sân) = 24 pixel part
-      this.mzs = 10.5 * p / (kk * this.u);                                           // súng hơi: từ tâm xe tới miệng NÒNG SAU (nhô khỏi đuôi xe) = 10,5 pixel part
-      this.bk = 23.5 * p / (kk * this.u);                                            // máy ném: từ tâm xe tới rổ ở đầu cần (pixel sân) = 23,5 pixel part
+      var hh = this.hh = VeRobot.hinhHoc ? VeRobot.hinhHoc(c.robot) : { mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 };   // hình học tay: pixel = hằng pixel part; vector = 1/100 ô đo từ hình (gói V3)
+      this.pp = hh.pp * p / (kk * this.u);                                           // camera: 1 pixel part = bao nhiêu pixel sân
+      this.mz = hh.mz * p / (kk * this.u);                                           // súng hơi: từ tâm xe tới miệng NÒNG TRƯỚC (pixel sân) = 24 pixel part
+      this.mzs = hh.mzs * p / (kk * this.u);                                         // súng hơi: từ tâm xe tới miệng NÒNG SAU (nhô khỏi đuôi xe) = 10,5 pixel part
+      this.bk = hh.bk * p / (kk * this.u);                                           // máy ném: từ tâm xe tới rổ ở đầu cần (pixel sân) = 23,5 pixel part
       this.lopOK = true;
     },
     /** Vẽ robot + hạt + chớp đỏ + dấu nổi lên lớp phủ. */
@@ -1212,7 +1213,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return this.matCao(Math.round(v.x), Math.round(v.y));
     },
     /** Từ tâm ô tới đỉnh hình drone (pixel sân), cộng độ cao: chỗ đặt thanh pin và dấu nổi. */
-    dinhDrone: function () { return this.vis.hop + 11 * this.p / (this.kk * this.u); },
+    dinhDrone: function () { return this.vis.hop + (this.hh ? this.hh.dinh : 11) * this.p / (this.kk * this.u); },
     /** Phần drone vẽ DƯỚI thân (đơn vị pixel sân): ô sạc đang lóe, bóng đổ, từ trường nam châm, vật treo dưới bụng. (cx, cy) = tâm ô (kể cả lệch khi đâm tường). */
     veDuoiDrone: function (g, cx, cy, now) {
       var v = this.vis, d = v.dr, cao = this.caoDuoi(), alt = v.hop, i, o;

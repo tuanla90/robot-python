@@ -215,7 +215,21 @@
     // ---- VECTOR (gói V3, 27/10): thùng nặng tông thép tối riêng; thân / tay / cảm biến robot (ve-vector-than-*.js, ve-vector-tay-*.js, ve-vector-cam.js)
     vecThep: '#5b6b84',                // thùng nặng: đỉnh gradient thép xám xanh đậm (khác khối sắt xám bạc vecSat)
     vecThepToi: '#36425a',             // thùng nặng: đáy gradient, tấm giữa
-    vecThepSang: '#a9b6cc'             // thùng nặng: thanh giằng chữ X, vệt sáng mép trên
+    vecThepSang: '#a9b6cc',            // thùng nặng: thanh giằng chữ X, vệt sáng mép trên
+    vecKhop: '#e7e3f8',                // khớp / đế tay tròn (vỏ trắng ngả lavender: tách khỏi vỏ thân)
+    vecTim: '#8b7fd6',                 // cổ tay xoay, cột cần ném (tím lavender đậm, cùng họ vecVoGhep)
+    vecTimToi: '#5b4fa8',              // mép tối của chi tiết tím
+    vecLoi: '#0f172a',                 // lòng nòng / lòng ống tối sâu
+    vecHoi: '#e0f2fe',                 // làn hơi súng hơi bắn ra (trắng xanh)
+    vecHong: '#fb7185',                // thấu kính cảm biến hồng ngoại đang đọc / đèn cần gạt khi chạm (đỏ hồng)
+    vecHongToi: '#9f1239',             // thấu kính hồng ngoại lúc tắt (đỏ sẫm)
+    vecHongSang: '#fecdd3',            // lõi sáng thấu kính hồng ngoại đang đọc
+    vecMauCb: '#c084fc',               // thấu kính cảm biến màu lúc tắt (tím)
+    vecMauCbSang: '#f5d0fe',           // cảm biến màu đang đọc: lõi sáng
+    vecQuat: '#a5f3fc',                // cánh quạt drone đang quay (đĩa mờ cyan nhạt)
+    vecXichMat: '#4b5380',             // mắt xích bánh xích (nhạt hơn vecBanh)
+    vecMatSang: '#ffffff',             // mắt camera đang đọc: lõi trắng rực
+    vecMatSangRgb: '207,250,254'       // bộ ba quầng sáng quanh mắt camera / ống kính đang đọc
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ

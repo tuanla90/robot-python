@@ -74,7 +74,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return { tuThe: t.tuThe === 'duoi' ? 'duoi' : t.tuThe === 'giua' ? 'giua' : 'tren', kep: t.kep === true || t.kep === 'dong', cam: t.cam !== null && t.cam !== undefined && t.cam !== false,
       bat: !!t.bat, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBanTruoc: !!t.dangBanTruoc, dangBanSau: !!t.dangBanSau,
       mauSon: typeof t.mauSon === 'string' ? t.mauSon : null,                                     // máy sơn: màu đang chọn (ruột lon sơn); tuThe 'duoi' = đầu sơn đang hạ
-      xoay: t.xoay === 'trai' || t.xoay === 'phai' ? t.xoay : 'truoc', goc: typeof t.goc === 'number' ? Math.round(t.goc / 5) * 5 : null };       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
+      xoay: t.xoay === 'trai' || t.xoay === 'phai' ? t.xoay : 'truoc', goc: typeof t.goc === 'number' ? Math.round(t.goc / 5) * 5 : null,       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
+      cuc: t.cuc === 'N' || t.cuc === 'S' ? t.cuc : null };       // nam châm: cực đang bật (chỉ bộ vector vẽ màu cực; bộ pixel không nhận trường này)       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
   }
 
   /* ----------------------------------------------------------------- hình tạm */
@@ -211,6 +212,28 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return o.cv;
   }
 
+  /** Robot vector (gói V3: mọi thân / tay / cảm biến): đổi trangThai của game sang trạng thái của hình như veGhep đổi cho Part.ghep (cùng quy ước hướng:
+   *  drone và nhện không tay luôn hướng 0). Cấu hình cấm (drone + camera…): VeVector ném đúng lỗi của Part.ghep → báo một lần, trả null (rồi rơi về hình tạm như pixel). */
+  function veVec(cauHinh, tt, tay, son, huong, tiLe) {
+    var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: son }, cb = tt.camBien || {};
+    var chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || cfg.than === 'drone') ? 0 : huong;
+    var st = {
+      than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },
+      tay: cfg.tay ? { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: !!tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBanTruoc: tay.dangBanTruoc, dangBanSau: tay.dangBanSau,
+        mauSon: tay.mauSon, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc, cuc: tay.cuc || undefined } : null,
+      camBien: { bat: !!cb.bat, mat: !!cb.mat }
+    };
+    if (cfg.than !== 'drone') { delete st.than.quat; delete st.than.doc; }
+    if (cfg.than !== 'nhen') delete st.than.co;
+    if (!cfg.camBien.length) delete st.camBien;
+    try { return VV().robot(cfg, st, h, Math.round(tiLe * 100)); }
+    catch (e) {
+      var kb = 'vector:' + cfg.than + '/' + cfg.tay + '/' + JSON.stringify(cfg.camBien);
+      if (!daBao[kb]) { daBao[kb] = 1; if (typeof console !== 'undefined' && console.warn) console.warn('VeRobot: vector không ghép được (' + kb + '): ' + e.message); }
+      return null;
+    }
+  }
+
   /* ------------------------------------------------------------------- chính */
   function ve(cauHinh, trangThai, huong, tiLe) {
     cauHinh = cauHinh || { than: 'hai-banh', tay: null, camBien: [] };
@@ -220,11 +243,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var tay = chuanTay(tt.tay);
     var son = sonHieuLuc(cauHinh.son) || '';
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
-      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') : '', tt.loi || '', coPart() ? 'P' : 'x', son].join('|');
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', coPart() ? 'P' : 'x', son].join('|');
     if (cache[khoa]) return cache[khoa];
-    var cv = veVector(cauHinh) ? VV().robot({ than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: son },
-      { than: { banh: { trai: wl > 0 ? 1 : 0, phai: wr > 0 ? 1 : 0 }, buoc: (wl > 0 || wr > 0) && ph ? 1 : 0 }, tay: cauHinh.tay ? { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: !!tay.cam } : null },
-      huong, Math.round(tiLe * 100)) : null;                                    // vector: VeVector tự đệm; tiLe = cạnh ô / 100 → canvas đúng một ô
+    var cv = veVector(cauHinh) ? veVec(cauHinh, tt, tay, son, huong, tiLe) : null;      // vector: VeVector tự đệm; tiLe = cạnh ô / 100 → canvas đúng một ô (tay xoay: tràn sang ô bên)
     if (!cv) cv = veGhep(cauHinh, { wl: wl, wr: wr, ph: ph, tay: cauHinh.tay ? tay : null, camBien: tt.camBien, co: tt.co }, huong, tiLe);
     if (!cv) {                                                        // hình TẠM (đơn vị pixel sân)
       if (cauHinh.than === 'nhen' || cauHinh.than === 'drone') cv = Ve.makeNhen(wl > 0 || wr > 0 ? ph : 0);       // chưa nạp part: drone tạm dùng hình nhện
@@ -272,6 +293,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  về phía MŨI xe và l pixel về bên PHẢI xe (theo hướng xe), cạnh vật n. Khớp ở mũi xe, trụ ngắn: tâm khớp cách tâm thân F0 = 16 - (y ổ tay của thân) pixel về phía mũi; vật cách khớp U = 10 pixel
    *  theo hướng cánh tay (tay hạ: +1,5, vật nhỏ hơn một pixel). Cùng hằng số với part-tay-xoay.js (U_VAT). */
   function vatXoay(cauHinh, tuThe, goc) {
+    if (veVector(cauHinh)) { var vx = VV().vatXoay(cauHinh, tuThe, goc); if (vx) return vx; }     // vector: đơn vị 1/100 ô, hình học ở tay xoay vector
     var oy = 4, P = (typeof window !== 'undefined') ? window.Part : null, U = 10;
     try {
       var d = P && P.lay('than', (cauHinh && cauHinh.than) || 'hai-banh'); if (d && d.oGan && d.oGan.tay) oy = d.oGan.tay.y;
@@ -281,8 +303,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return { f: 16 - oy + R * Math.cos(b), l: R * Math.sin(b), n: low ? 9 : 10 };
   }
 
+  /** Hình học cho hiệu ứng (san-ve.js doiCo nhân với tiLe): { mz, mzs, bk, pp, dinh } = miệng nòng trước / nòng sau (súng hơi), rổ máy ném, một "pixel part"
+   *  (chân tia camera), tâm → đỉnh hình drone (thanh pin). Pixel: hằng của bộ part (24, 10,5, 23,5, 1, 11 pixel part); vector: đo từ hình (1/100 ô). */
+  var HH_PIXEL = { mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 };
+  function hinhHoc(cauHinh) { if (veVector(cauHinh)) { var h = VV().hinhHoc(cauHinh); if (h) return h; } return HH_PIXEL; }
+  /** Tầm với của hình (tâm thân → mép xa nhất, cùng đơn vị tiLe) cho lề lớp phủ: pixel REACH (26); vector nửa canvas (50, tay xoay vươn sang ô bên thì hơn). */
+  function reachCua(cauHinh) { if (veVector(cauHinh)) return 50 + 100 * VV().tranCua(cauHinh); return cheDoVector() ? 50 : REACH; }
+
   var VeRobot = {
-    ve: ve, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
+    ve: ve, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
     cheDoVector: cheDoVector, veVector: veVector,
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };
