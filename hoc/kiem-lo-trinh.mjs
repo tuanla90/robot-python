@@ -23,9 +23,11 @@ function cham(m, lg, truoc = khoTruoc.get(m.ma) || []) {
   return Cham.cham(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [], doi: lg.doi }, [...hs.values()]);
 }
 
-// Mùa 1 (26/10, KE-HOACH-MUA-1.md) còn chương chưa đủ 10 màn (chỗ cho màn mới), cùng chương tạm bien; mọi chương khác đủ 10.
+// Mùa 1 (26/10, KE-HOACH-MUA-1.md) và mùa 2 (27/10, KE-HOACH-MUA-2.md, đang dựng: chương còn chờ màn mới) được có chương chưa đủ 10 màn; mọi chương khác đủ 10.
 const chuongMua1 = new Set(TT.goi.filter(g => g.mua === 'mua-1').flatMap(g => g.chuong));
-const chuongTam = new Set([...chuongMua1, 'bien']);       // bien: chương tạm đầu mùa 2 (4 màn dùng biến dời từ mùa 1)
+const chuongMua2 = new Set(TT.goi.filter(g => g.mua === 'mua-2').flatMap(g => g.chuong));
+// che-xich (mùa 3, ẩn): năm màn bậc thang rời mùa 2 nhưng giữ vì che-xich.4 tạo climb() cho gói đội mùa ẩn.
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, 'che-xich']);
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
   assert.equal(new Set(M.danhSach.map(m => m.ma)).size, M.danhSach.length);
@@ -57,8 +59,8 @@ kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến'
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'bien-the');
   assert.equal(get('che-cam-bien.7').so, 3);
-  assert.equal(get('che-cam-bien.6').chuong, 'bien');
-  assert.equal(get('che-cam-bien.6').so, 1);
+  assert.equal(get('che-cam-bien.6').chuong, 'bien-xich');           // 27/10: chương tạm bien gộp vào gói 1 mùa 2, chương 2 "Biến cho xích"
+  assert.equal(get('che-cam-bien.6').so, 5);
   assert.equal(TT.thuTu.indexOf('me-cung'), TT.thuTu.indexOf('cam-bien-ben') + 1);
   assert.deepEqual(TT.goi.find(g => g.ma === 'me-cung').chuong, ['cam-bien-ben', 'me-cung']);
   assert.equal(get('me-cung.6').taoHam[0], 'follow_right');
@@ -109,6 +111,8 @@ const BANG_MUA_1 = [
 ];
 const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10'];
 const BIEN_MUA_2 = ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
+// Mùa 2 (27/10): che-xich 3, 4, 5, 7, 10 (bậc thang + hàm có tham số) rời mùa 2, sang chương che-xich ở mùa 3 (ẩn); không màn nào cất thêm.
+const XICH_CU = ['che-xich.3', 'che-xich.4', 'che-xich.5', 'che-xich.7', 'che-xich.10'];
 const goiMua = mu => TT.goi.filter(g => g.mua === mu);
 const goiCuaChuong = c => TT.goi.find(g => g.chuong.includes(c));
 const manMua1 = M.danhSach.filter(m => chuongMua1.has(m.chuong));
@@ -139,9 +143,11 @@ kiem('(a) mùa 1 đúng các gói của bảng, đúng thứ tự, đúng màn; 
     for (const [c, dsMa] of ds) assert.deepEqual(M.danhSach.filter(m => m.chuong === c).map(m => m.ma).sort(), dsMa.slice().sort(), c);
   }
   assert.deepEqual(M.manCat, CAT_MUA_1);
+  assert.deepEqual(M.danhSach.filter(m => m.chuong === 'che-xich').map(m => m.ma), XICH_CU);
+  assert.equal(goiCuaChuong('che-xich').mua, 'mua-3');
   for (const ma of CAT_MUA_1) assert.equal(get(ma), null, ma + ' phải cất khỏi lộ trình');
-  assert.equal(goiMua('mua-2')[0].ma, 'bien');
-  assert.deepEqual(M.danhSach.filter(m => m.chuong === 'bien').map(m => m.ma), BIEN_MUA_2);
+  // Bốn màn dùng biến dời mùa 2: nay ở gói 1 chương 2 (bien-xich).
+  for (const ma of BIEN_MUA_2) assert.equal(get(ma).chuong, 'bien-xich', ma);
 });
 kiem('(b) không màn nào trước gói Bánh lùi gọi lệnh lùi (thẳng hay qua hàm, bắc cầu) hay có lệnh lùi trên khay', () => {
   const moc = BANG_MUA_1.findIndex(x => x[0] === 'banh-lui');

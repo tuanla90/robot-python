@@ -504,6 +504,111 @@
     TT.goi.splice(truoc + 1, 0, Object.assign({ loai: 'thu-thach', sao: sao, khongTangNguong: true, mua: TT.goi[truoc].mua }, c.goi, { chuong: ma }));
     M.them(c.ds);
   }
+
+  // ---------------------------------------------------------------- MÙA 2 = 10 GÓI (27/10, KE-HOACH-MUA-2.md; cùng cách MÙA 1 ở trên)
+  // Dựng SAU khi chèn các gói đội (chenGoi): gói đội neo sau chương mùa 2 (doi-xich sau che-xich, doi-sung-hoi sau luc-ban, ban-xoay sau tham-so) đã vào
+  // TT.goi, rồi mới được dời ra mùa ẩn. Đổi m.chuong / so / hang và vị trí; KHÔNG đổi `ma` (khóa lưu sao). Mã gói giữ như cũ khi được (cờ goi-mo:<mã>).
+  // Mỗi gói [mã, tên, loại, [[chương 1, màn có sẵn], [chương 2, màn có sẵn]]]. Chương chưa có màn nào thì CHƯA hiện (không vào thuTu, không thành "Sắp có");
+  // gói không còn chương nào có màn thì cũng chưa hiện. Ngưỡng sao gói mùa 2 KHÔNG khai: mo-goi.js tự tính TI_LE_SAO × tổng sao tối đa các gói trước trong
+  // mùa (mùa 2 còn ẩn, `an: true`, nên ngưỡng tự đổi khi thêm màn; khi mở bán thì khai cứng như mùa 1).
+  // Chương đã có ở mùa 2 cũ mà không thuộc bảng (ban-xoay, nhen, doi-ho-bang, list, doi-xich, omni, doi-omni và chương 2 của chúng) dời ra đầu mùa 3 (ẩn),
+  // giữ thứ tự cũ: vẫn chơi được bằng "Mở hết", hàm chúng cần vẫn được tạo ở màn đứng trước.
+  var MUA_2 = [
+    { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', hinh: 'xich',
+      // Chương 2 "Biến cho xích": hàm cho xích (spin, sidestep, pick_behind, sửa fixed_turn) rồi biến đếm (count_return sửa trước, bounce, fetch_back), che-xich.9 cuối.
+      // Màn mới (đếm nhịp quay) của man-bien-xich.js nối vào cuối chương và thành trùm (màn thứ 10).
+      chuong: [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.6', 'che-xich.8', 'che-cam-bien.6', 'che-cam-bien.5',
+        'che-cam-bien.9', 'robot-hoan-thien.9', 'che-xich.9']]] },
+    { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', hinh: 'sung-hoi',
+      chuong: [['sung-hoi', day('sung-hoi', MUOI)], ['tham-so', day('tham-so', MUOI)]] },
+    { ma: 'hong-ngoai', ten: 'Hồng ngoại', loai: 'bo-phan',
+      chuong: [['hong-ngoai', []], ['che-hong-ngoai', []]] },
+    { ma: 'nha-may', ten: 'Nhà máy', hinh: 'bang-chuyen',
+      chuong: [['bang-chuyen', day('bang-chuyen', MUOI)], ['che-sung-hoi', day('che-sung-hoi', MUOI)]] },
+    { ma: 'day-thung', ten: 'Đẩy thùng',
+      chuong: [['day-thung', []], ['che-day-thung', []]] },
+    { ma: 'luc-ban', ten: 'Lực bắn', hinh: 'luc-ban',
+      chuong: [['luc-ban', day('luc-ban', MUOI)], ['che-luc-ban', []]] },
+    { ma: 'do-nhiet', ten: 'Đo nhiệt',
+      chuong: [['do-nhiet', []], ['che-do-nhiet', []]] },
+    { ma: 'doi-mua-2', ten: 'Đội', loai: 'thu-thach',
+      chuong: [['doi-mua-2', []], ['che-doi-mua-2', []]] },
+    { ma: 'be-sung', ten: 'Bệ súng xích', loai: 'thu-thach',
+      chuong: [['be-sung', []], ['che-be-sung', []]] },
+    { ma: 'nha-may-chay', ten: 'Nhà máy chạy lại', loai: 'thu-thach',
+      chuong: [['tong-hop-2', []], ['trum-mua-2', []]] }
+  ];
+  var TEN_MUA_2 = { 'bien-xich': 'Biến cho xích', 'hong-ngoai': 'Hồng ngoại', 'che-hong-ngoai': 'Hàm cho hồng ngoại', 'day-thung': 'Đẩy thùng',
+    'che-day-thung': 'Hàm đẩy thùng', 'che-luc-ban': 'Hàm lực bắn', 'do-nhiet': 'Đo nhiệt', 'che-do-nhiet': 'Hàm đo nhiệt', 'doi-mua-2': 'Đội',
+    'che-doi-mua-2': 'Đội phối hợp', 'be-sung': 'Bệ súng xích', 'che-be-sung': 'Hàm bệ súng', 'tong-hop-2': 'Tổng hợp', 'trum-mua-2': 'Trùm mùa' };
+  // Rời mùa 2: che-xich 3, 4, 5, 7, 10 dùng bậc thang (game đã bỏ) và hàm có tham số trước gói 2. KHÔNG cất hẳn: che-xich.4 tạo climb() mà
+  // che-doi-xich.1, .2 và che-doi-omni.5 (mùa ẩn) cần; năm màn thành chương `che-xich` (5 màn) đứng trước gói Đội xích và nhện ở mùa 3 (ẩn).
+  // Gói 5 Đẩy thùng có thể lấy lại màn nào cứu được (bỏ bậc thang) về chương của mình.
+  var XICH_CU = ['che-xich.3', 'che-xich.4', 'che-xich.5', 'che-xich.7', 'che-xich.10'];
+  // Gói 2 chương 1 Súng hơi đứng TRƯỚC chương 2 Hàm có tham số (tham-so.3 tạo forward(n)): ba màn gọi forward(n) đổi sang move() lặp bằng for
+  // (không gọi hàm có tham số). Lời giải đổi thì nội dung bản 2, đo lại sao (tools/do-lo-trinh.mjs --ghi-sao).
+  (function () {
+    var BAN = ['shoot()', 'wait()'], BAN_SAU = ['shoot_back()', 'wait()'];
+    var di = function (n) { return lap(n, ['move()']); };
+    sua('sung-hoi.3', {
+      hamCuaEmCan: ['move'], maMau: bai(BAN_SAU.slice()), loiGiai: bai(BAN_SAU.concat(di(3))),
+      loiSai: [
+        { moTa: 'Không bắn nút: cửa vẫn đóng nên xe đâm vào cửa', baiLam: bai(di(3)), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Bắn ra trước bằng shoot(): bóng bay về phía cửa chứ không tới nút, cửa vẫn đóng', baiLam: bai(BAN.concat(di(3))), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Đi thiếu một ô: xe dừng ngay trước cờ', baiLam: bai(BAN_SAU.concat(di(2))), phaiCoMa: ['chua-toi-co'] }
+      ]
+    }).loiGiaiKhac = { moTa: 'Gọi move() ba lần viết thẳng', baiLam: bai(BAN_SAU.concat(['move()', 'move()', 'move()'])) };
+    // sung-hoi.4: lời giải chỉ bắn; mã mẫu (tiến hai ô cho thấy húc thùng vô ích) đổi forward(2) thành hai move(). Lời giải không đổi: không đo lại.
+    var m4 = get('sung-hoi.4');
+    m4.maMau = bai(['move()', 'move()']);
+    m4.hamCuaEmCan = ['u_turn', 'move'];
+    sua('sung-hoi.8', {
+      hamCuaEmCan: ['move'], maMau: bai(di(10)), loiGiai: bai(BAN.concat(di(7))),
+      loiSai: [
+        { moTa: 'Không tắt băng: xe vẫn tới cờ nhưng chậm hơn nhiều', baiLam: bai(di(10)), phaiCoMa: [] },
+        { moTa: 'Quên wait() sau shoot(): bước đầu của xe bị bỏ', baiLam: bai(['shoot()'].concat(di(7))), phaiCoMa: ['ban-dung-yen'] },
+        { moTa: 'Dùng shoot_back(): bóng bay ra sau tới tường, không tới nút, băng vẫn chạy', baiLam: bai(BAN_SAU.concat(di(10))), phaiCoMa: [] }
+      ]
+    }).loiGiaiKhac = { moTa: 'Đi bằng move() bảy lần viết thẳng', baiLam: bai(BAN.concat(['move()', 'move()', 'move()', 'move()', 'move()', 'move()', 'move()'])) };
+  })();
+  (function () {
+    Object.keys(TEN_MUA_2).forEach(function (c) { TT.ten[c] = TEN_MUA_2[c]; });
+    dungChuong('che-xich', XICH_CU);
+    var chuongMua2 = [], coMan = [], da = {};
+    MUA_2.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        chuongMua2.push(c[0]);
+        c[1].forEach(function (ma) { if (da[ma]) throw new Error('Màn xếp hai lần (mùa 2): ' + ma); da[ma] = true; });
+        if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); }
+      });
+    });
+    // Chương tạm bien đã trống (4 màn sang bien-xich) nên rời thuTu; gói cũ chứa chương mùa 2 (bien, Đường dài, Bánh xích, Súng hơi) thay bằng gói MUA_2.
+    var bo = chuongMua2.concat(['bien']);
+    var c1 = [];
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-1') c1 = c1.concat(g.chuong); });
+    var goi1 = TT.goi.filter(function (g) { return g.mua === 'mua-1'; });
+    var conLai = TT.goi.filter(function (g) { return g.mua !== 'mua-1' && !g.chuong.some(function (c) { return bo.indexOf(c) >= 0 || c === 'che-xich'; }); });
+    conLai.push({ ma: 'che-xich', ten: 'Chế lệnh xích', loai: 'bo-phan', mua: 'mua-3', chuong: ['che-xich'] });
+    conLai.forEach(function (g) { if (g.mua === 'mua-2') g.mua = 'mua-3'; });
+    var sau = TT.thuTu.filter(function (c) { return c1.indexOf(c) < 0 && bo.indexOf(c) < 0; });
+    TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(c1, coMan, sau));
+    conLai.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
+    var goi2 = [];
+    MUA_2.forEach(function (g) {
+      var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coMan.indexOf(c) >= 0; });
+      if (!ch.length) return;
+      var x = { ma: g.ma, ten: g.ten, mua: 'mua-2', chuong: ch };
+      if (g.loai) x.loai = g.loai;
+      if (g.hinh) x.hinh = g.hinh;
+      goi2.push(x);
+    });
+    TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goi1, goi2, conLai));
+    // Gói đầu mùa 3 giờ là Sân cơ khí (dời từ mùa 2): cần 0 ★. Các ngưỡng khác của mùa 3 giữ, vì gói đứng trước chỉ thêm sao.
+    var dau3 = TT.goi.filter(function (g) { return g.mua === 'mua-3'; })[0];
+    if (dau3) dau3.sao = 0;
+    M.mua2 = MUA_2;
+    M.tinhLai();
+  })();
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
   // Sổ lệnh: hàm được chế ở màn đã dời chương (che-xe.4 → banh-lui…) ghi theo chương mới của màn đó; màn đã cất thì giữ như ngân hàng.
   if (SL && SL.ds) SL.ds.forEach(function (h) { var m = h.man && get(h.man); if (m) h.chuong = m.chuong; });

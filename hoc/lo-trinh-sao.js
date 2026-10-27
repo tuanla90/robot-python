@@ -225,6 +225,10 @@
     "o": 20,
     "nhip": 36
   },
+  "che-xich.8": {
+    "o": 12,
+    "nhip": 7
+  },
   "che-cam-bien.6": {
     "o": 13,
     "nhip": 8
@@ -240,6 +244,18 @@
   "robot-hoan-thien.9": {
     "o": 25,
     "nhip": 9
+  },
+  "sung-hoi.3": {
+    "o": 7,
+    "nhip": 4
+  },
+  "sung-hoi.8": {
+    "o": 7,
+    "nhip": 8
+  },
+  "che-sung-hoi.7": {
+    "o": 11,
+    "nhip": 4
   },
   "ban-xoay.1": {
     "o": 5,
@@ -344,14 +360,6 @@
   "che-list.9": {
     "o": 21,
     "nhip": 18
-  },
-  "che-xich.8": {
-    "o": 12,
-    "nhip": 7
-  },
-  "che-sung-hoi.7": {
-    "o": 11,
-    "nhip": 4
   },
   "mau.4": {
     "o": 13,
