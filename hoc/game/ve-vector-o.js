@@ -8,13 +8,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var MAU_DAI = { red: 'luatVatDo', green: 'luatVatXanhLa', blue: 'luatVatXanhDuong', yellow: 'luatVatVang' };   // vật mang màu (chương cảm biến màu): đai đổi theo màu luật
 
   /* Ô SÀN: tấm trắng bo góc, gradient chéo nhạt, viền lưới lavender, một vệt bóng ở góc trên trái. */
+  function nenLuoi(g) { g.fillStyle = BM.vecSanToi; g.fillRect(0, 0, 100, 100); }   // nền lavender lộ ra ở khe giữa các tấm (lưới mờ của sân lab); sân vẽ kín ô nên nền canvas không lộ
   V.dangKy({ loai: 'o', ma: 'san', ten: 'Sàn lab', ve: function (g, s, H) {
+    nenLuoi(g);
     H.bo(g, 3, 3, 94, 94, 6); g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, [[0, BM.vecSan], [1, BM.vecSanToi]]); g.fill(); H.vien(g, BM.vecSanVien, 2);
     H.duong(g, 'M14 30 L30 14'); g.globalAlpha = 0.9; H.vien(g, BM.vecVo, 5); g.globalAlpha = 1;
   } });
 
   /* Ô TƯỜNG: khối trắng bạc nhìn từ trên, mặt trên trắng viền nhạt, dải đèn cyan với vệt sáng. */
   V.dangKy({ loai: 'o', ma: 'tuong', ten: 'Tường', ve: function (g, s, H) {
+    nenLuoi(g);
     H.bo(g, 2, 2, 96, 96, 10); g.fillStyle = H.gradDoc(g, 0, 2, 0, 98, [[0, BM.vecTuong], [1, BM.vecTuongToi]]); g.fill(); H.vien(g, BM.vecTuongVien, 3);
     H.bo(g, 14, 10, 72, 70, 8); H.to(g, BM.vecTuongTrong); H.vien(g, BM.vecTuongTrongVien, 2);
     H.bo(g, 24, 26, 52, 9, 4.5); H.to(g, BM.vecDen);
