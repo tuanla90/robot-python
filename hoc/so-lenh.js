@@ -43,9 +43,10 @@
     'tay-xoay': 'Tay xoay',
     'son': 'Máy sơn',
     'nem': 'Máy ném',
-    'drone': 'Drone'
+    'drone': 'Drone',
+    'hong-ngoai': 'Hồng ngoại'
   };
-  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'son', 'nam-cham', 'tay-xoay', 'nem', 'drone'];
+  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'son', 'nam-cham', 'tay-xoay', 'nem', 'drone', 'hong-ngoai'];
 
   function m(ten, nhom, moTa, chuong, man) { return { ten: ten, nhom: nhom, moTa: moTa, chuong: chuong, man: man }; }
 
@@ -198,7 +199,13 @@
     m('survey', 'drone', 'Bay qua các ô có màu, ghi màu từng ô vào danh sách seen', 'flycam', 'flycam.3'),
     m('obey', 'drone', 'Bay theo từng màu đã ghi: đỏ xuống, xanh dương sang phải, còn lại lên', 'flycam', 'flycam.4'),
     m('dispatch', 'drone', 'Xuống từng hộp rồi chở đi theo màu đã ghi: đỏ 2 ô, xanh dương 3 ô', 'flycam', 'flycam.5'),
-    m('patrol', 'drone', 'Bay tới ô vàng và ghi màu từng ô, rồi bay về đúng chỗ cũ, ghé sạc dọc đường', 'flycam', 'flycam.6')
+    m('patrol', 'drone', 'Bay tới ô vàng và ghi màu từng ô, rồi bay về đúng chỗ cũ, ghé sạc dọc đường', 'flycam', 'flycam.6'),
+    // MÙA 2 (màn ngân hàng mùa 2 chỉ lo-trinh-hoc.js đưa vào game; kiem-che-xe.mjs thấy chúng theo thứ tự lộ trình)
+    // gói 3 · chương Hàm cho hồng ngoại (man-hong-ngoai.js)
+    m('go_to_wall', 'hong-ngoai', 'Đi thẳng tới khi sát tường, dùng mắt hồng ngoại đo số ô trống', 'che-hong-ngoai', 'che-hong-ngoai.1'),
+    m('go_safe', 'hong-ngoai', 'Đi thẳng tới khi phía trước chỉ còn an_toan ô trống', 'che-hong-ngoai', 'che-hong-ngoai.2'),
+    m('clean_step', 'hong-ngoai', 'Một bước hút bụi: còn an_toan ô trống trở xuống thì rẽ phải, không thì đi một ô', 'che-hong-ngoai', 'che-hong-ngoai.3'),
+    m('go_get', 'hong-ngoai', 'Đo khoảng cách, tới nhặt vật, quay đầu đi về đúng chừng ấy ô rồi đặt vật', 'che-hong-ngoai', 'che-hong-ngoai.4')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có

@@ -2,7 +2,9 @@
    kiem-che-xe.mjs — máy kiểm chương `che-xe` (Chế lệnh xe) của "Robot Chấn Hưng" và các luật lõi mới của kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md).
    Gồm:
    - luật bánh (xe hai bánh): bảng tổ hợp (trái, phải) → tiến / lùi / quay đầu / quay phải / quay trái;
-   - LENH_NGUOC (cặp lệnh ngược) và dữ liệu Sổ lệnh (so-lenh.js): mọi tên trong taoHam của mọi màn đều có trong SoLenh.ds;
+   - LENH_NGUOC (cặp lệnh ngược) và dữ liệu Sổ lệnh (so-lenh.js): mọi tên trong taoHam của mọi màn đều có trong SoLenh.ds
+     (màn ngân hàng mùa 1 theo thứ tự ngân hàng, rồi màn MỚI của mùa 2 (man-bien-xich, man-hong-ngoai…) theo thứ tự lộ trình lo-trinh-hoc.js;
+     gói mùa 2 chế hàm mới chỉ cần thêm mục Sổ lệnh và dòng chương → nhóm ở mục 2);
    - mục tiêu 'bong-mo' (xe mờ): thắng KHI CHẠY XONG, đi ngang qua bóng mờ giữa đường chưa thắng, ô diQua (◆) và sự kiện 'qua-diem', vật đúng ô, cấu hình sai;
    - daoChieu (đấu dây ngược), phanCung / khay (lệnh-chua-mo, lệnh-goc-hong), chinhCoDinh / khoaHamMan;
    - chẩn đoán bằng lời: lech-bong-mo, chua-qua-diem, lenh-chua-mo, lenh-goc-hong;
@@ -44,6 +46,23 @@ const tatCa = ManHoc.danhSach;
 const che = tatCa.filter((m) => m.chuong === 'che-xe');
 const man = (so) => ManHoc.timMa('che-xe.' + so);
 const tenCotTruyen = [...new Set(tatCa.flatMap((m) => m.taoHam))];
+
+/** Màn MỚI của mùa 2 (tệp ngân hàng man-bien-xich, man-hong-ngoai…: chỉ lo-trinh-hoc.js đưa vào game) theo thứ tự lộ trình, cùng tên chương mùa 2.
+    Nạp lộ trình RIÊNG (gỡ cache các tệp hoc/, nạp, rồi trả cache cũ) để ManHoc ngân hàng mà máy kiểm này dùng không bị lộ trình sửa. */
+const loTrinhRieng = (() => {
+  const laHoc = (k) => k.startsWith(day + path.sep);
+  const cu = {};
+  for (const k of Object.keys(require.cache)) if (laHoc(k)) { cu[k] = require.cache[k]; delete require.cache[k]; }
+  try {
+    const LT = require(path.join(day, 'lo-trinh-hoc.js'));
+    const tenChuong = require(path.join(day, 'thu-tu-chuong.js')).ten;
+    const chuongMua2 = LT.mua2.flatMap((g) => g.chuong.map((c) => c[0]));
+    return { tenChuong, manMua2Moi: LT.danhSach.filter((m) => chuongMua2.includes(m.chuong) && !ManHoc.timMa(m.ma)) };
+  } finally {
+    for (const k of Object.keys(require.cache)) if (laHoc(k)) delete require.cache[k];
+    Object.assign(require.cache, cu);
+  }
+})();
 
 /** Kho của học sinh LÚC TỚI màn `id` (đã chơi mọi màn trước, mỗi màn tạo / sửa hàm theo lời giải; màn tiết kiệm nhịp sửa riêng, không ghi vào kho). id 'het' = sau cả game. */
 function khoTruoc(id) {
@@ -114,19 +133,22 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('SoLenh.ds: mỗi mục { ten, nhom, moTa, chuong, man }; nhóm có trong tenNhom và thuTuNhom; moTa là MỘT câu ngắn (≤ 80 chữ cái, không xuống dòng, không dấu chấm cuối); tên không trùng',
     SoLenh.ds.every((h) => typeof h.ten === 'string' && /^[a-z_][a-z_0-9]*$/.test(h.ten) && SoLenh.tenNhom[h.nhom] && SoLenh.thuTuNhom.includes(h.nhom) && typeof h.moTa === 'string' && h.moTa.length >= 8 && h.moTa.length <= 80 && !/[\n]/.test(h.moTa) && !/[.]$/.test(h.moTa) && typeof h.chuong === 'string' && typeof h.man === 'string') &&
       new Set(SoLenh.ds.map((h) => h.ten)).size === SoLenh.ds.length);
-  kiem('nhóm của Sổ lệnh đủ loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, hoi (súng hơi), mau, son (máy sơn), nam-cham, tay-xoay, nem, drone, tham-so, bang-chuyen; mỗi nhóm có tên hiển thị',
-    J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'cam-bien', 'drone', 'hoi', 'lap', 'list', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'son', 'tay', 'tay-xoay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
-  const dau = {};                                                      // tên hàm → màn đầu tiên tạo nó
-  for (const m of tatCa) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
+  kiem('nhóm của Sổ lệnh đủ loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, hoi (súng hơi), mau, son (máy sơn), nam-cham, tay-xoay, nem, drone, tham-so, bang-chuyen, hong-ngoai (mùa 2); mỗi nhóm có tên hiển thị',
+    J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'cam-bien', 'drone', 'hoi', 'hong-ngoai', 'lap', 'list', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'son', 'tay', 'tay-xoay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
+  const dau = {};                                                      // tên hàm → màn đầu tiên tạo nó (ngân hàng mùa 1, rồi màn mới mùa 2 theo lộ trình)
+  for (const m of tatCa.concat(loTrinhRieng.manMua2Moi)) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
+  kiem('lộ trình có màn mới mùa 2 (man-hong-ngoai…) cho Sổ lệnh thấy: có che-hong-ngoai.1 tạo go_to_wall', loTrinhRieng.manMua2Moi.some((m) => m.ma === 'che-hong-ngoai.1' && m.taoHam.includes('go_to_wall')), J(loTrinhRieng.manMua2Moi.map((m) => m.ma)));
   const thieu = Object.keys(dau).filter((t) => !SoLenh.tim(t));
   kiem('mọi tên trong taoHam của mọi màn (' + Object.keys(dau).length + ' hàm cốt truyện) đều có trong SoLenh.ds', thieu.length === 0, 'thiếu ' + thieu.join());
   const thua = SoLenh.ds.filter((h) => !dau[h.ten]).map((h) => h.ten);
   kiem('SoLenh.ds không có hàm thừa: mọi mục là một hàm cốt truyện có thật (tổng ' + SoLenh.ds.length + ' = ' + Object.keys(dau).length + ')', thua.length === 0 && SoLenh.ds.length === Object.keys(dau).length, 'thừa ' + thua.join());
   kiem('chuong và man của từng mục khớp màn đầu tiên tạo hàm đó; thứ tự mục = thứ tự chế trong game',
     SoLenh.ds.every((h) => dau[h.ten] && dau[h.ten].chuong === h.chuong && dau[h.ten].ma === h.man) && J(SoLenh.ds.map((h) => h.ten)) === J(Object.keys(dau)), J(SoLenh.ds.filter((h) => !(dau[h.ten] && dau[h.ten].ma === h.man)).map((h) => h.ten + '@' + h.man + '≠' + (dau[h.ten] && dau[h.ten].ma))));
-  kiem('chương của mọi mục có tên hiển thị trong ThuTuChuong', SoLenh.ds.every((h) => typeof ThuTu.ten[h.chuong] === 'string'));
+  kiem('chương của mọi mục có tên hiển thị trong ThuTuChuong', SoLenh.ds.every((h) => typeof (ThuTu.ten[h.chuong] || loTrinhRieng.tenChuong[h.chuong]) === 'string'));
   kiem('nhóm của hàm đợt 2 ứng với chương: drone → drone, sung-hoi + che-sung-hoi + luc-ban → hoi, may-nem → nem…; hàm đợt 1 thuộc xe / tay / lap / cam-bien',
-    SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'che-nhen': 'nhen', 'list': 'list', 'che-list': 'list', 'xich': 'xich', 'che-xich': 'xich', 'omni': 'omni', 'che-omni': 'omni', 'sung-hoi': 'hoi', 'che-sung-hoi': 'hoi', 'luc-ban': 'hoi', 'mau': 'mau', 'nam-cham': 'nam-cham', 'che-nam-cham': 'nam-cham', 'tay-xoay': 'tay-xoay', 'che-tay-xoay': 'tay-xoay', 'may-nem': 'nem', 'che-may-nem': 'nem', 'drone': 'drone', 'che-drone': 'drone', 'flycam': 'drone', 'che-mau': 'mau', 'may-son': 'son', 'che-may-son': 'son' })[h.chuong] === h.nhom));
+    SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'che-nhen': 'nhen', 'list': 'list', 'che-list': 'list', 'xich': 'xich', 'che-xich': 'xich', 'omni': 'omni', 'che-omni': 'omni', 'sung-hoi': 'hoi', 'che-sung-hoi': 'hoi', 'luc-ban': 'hoi', 'mau': 'mau', 'nam-cham': 'nam-cham', 'che-nam-cham': 'nam-cham', 'tay-xoay': 'tay-xoay', 'che-tay-xoay': 'tay-xoay', 'may-nem': 'nem', 'che-may-nem': 'nem', 'drone': 'drone', 'che-drone': 'drone', 'flycam': 'drone', 'che-mau': 'mau', 'may-son': 'son', 'che-may-son': 'son',
+      // mùa 2: mỗi chương chế hàm mới thêm một dòng
+      'che-hong-ngoai': 'hong-ngoai' })[h.chuong] === h.nhom));
   kiem('hàm chế ở che-xe có trong Sổ lệnh với lời lớp 5 (vd dodge_right: "Né sang phải một ô, giữ hướng")',
     ['dodge_right', 'dodge_left', 'back', 'park'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).chuong === 'che-xe') && SoLenh.tim('dodge_right').moTa === 'Né sang phải một ô, giữ hướng');
   kiem('hàm CỦA MÀN (come_back, fixed_move: chỉ đúng cho một màn, 15/10) không còn là hàm cốt truyện: không trong taoHam của màn nào, không trong Sổ lệnh, không là tên khóa của kho', ['come_back', 'fixed_move'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null));

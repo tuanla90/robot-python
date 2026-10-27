@@ -166,6 +166,9 @@
   }
 
   var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'nút bắn (gắn trên tường: xe không đi vào được, chỉ quả bóng bắn trúng mới đổi nút)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)' };
+  // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
+  var TEN_CHAN_NGAN = { 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
+    'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'nút bắn', 'gam-thap': 'gầm thấp' };
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
   var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'nút bắn' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
@@ -534,8 +537,14 @@
         'Xem lại điều kiện của vòng while và những gì nằm trong thân vòng.', { cho: cho(mw), loaiCore: 'infinite-loop' });
     } else if (l && l.loai === 'qua-nhieu-nhip' && coWhile(g)) {
       var mw2 = viTriWhileTheoNgan(g, res) || viTriWhile(g, ultLenhPy(res));
-      them('vong-vo-han', 'Robot đã chạy quá ' + (res.nhipToiDa || man.nhipToiDa || 200) + ' nhịp mà vòng while vẫn chưa dừng (ở ' + viTri(mw2) + '): điều kiện không bao giờ sai.' +
-        ' Xem lại điều kiện của vòng while, và xem trong thân vòng có lệnh nào làm điều kiện đổi không.', { cho: cho(mw2), loaiCore: 'qua-nhieu-nhip', nhip: res.nhip });
+      // Robot đâm vào vật cản trong lúc vòng chạy mãi (vd. hong-ngoai.7: ngưỡng quá nhỏ, xe lao vào tường): lời hiện ĐẦU TIÊN nói chuyện đâm trước.
+      // Mã và thứ tự giữ nguyên (vong-vo-han rồi dam-tuong với lời đầy đủ); chỉ thêm một câu mở đầu vào lời vong-vo-han.
+      var dam = res.suKien.filter(function (e) { return e.ma === 'dam-tuong'; }), d0 = dam[0];
+      var moDau = d0 ? 'Robot đâm vào ' + (TEN_CHAN_NGAN[d0.vat] || 'vật cản') + (d0.den && d0.vat !== 'ngoai-san' ? ' ở ô (' + d0.den.x + ', ' + d0.den.y + ')' : '') +
+        ' từ nhịp ' + d0.nhip + (dam.length > 1 ? ', cả thảy ' + dam.length + ' lần' : '') + '. ' : '';
+      them('vong-vo-han', moDau + (moDau ? 'Đã chạy quá ' : 'Robot đã chạy quá ') + (res.nhipToiDa || man.nhipToiDa || 200) + ' nhịp mà vòng while vẫn chưa dừng (ở ' + viTri(mw2) + '): điều kiện không bao giờ sai.' +
+        (moDau ? ' Xem lại vì sao robot đi vào ô đó, và trong thân vòng có lệnh nào làm điều kiện đổi không.'
+          : ' Xem lại điều kiện của vòng while, và xem trong thân vòng có lệnh nào làm điều kiện đổi không.'), { cho: cho(mw2), loaiCore: 'qua-nhieu-nhip', nhip: res.nhip });
     } else if (l && l.loai === 'qua-nhieu-nhip') {
       them('qua-nhieu-nhip', 'Robot đã chạy quá ' + (res.nhipToiDa || man.nhipToiDa || 200) + ' nhịp' +
         (sanThu ? '. ' : ' mà chưa tới cờ. ') +
