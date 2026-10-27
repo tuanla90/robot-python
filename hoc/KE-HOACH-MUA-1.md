@@ -27,6 +27,26 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
 
 - **27/10 gói F xong** (b27f16d … dc356aa): gói 9 `combo` 20 màn (`combo` 1–10 "Nhìn bên, nhặt bên", trùm huy hiệu `combo`; `che-combo` 1–9 + che-cam-bien.10 viết lại không biến, trùm che-combo.9 huy hiệu `che-combo`). Recall gói 9: gói 1: 8 · 2: 17 · 3: 11 · 4: 8 · 5: 8 · 6: 19 · 7: 20 · 8: 2. Gói R1 xuất xưởng cần 270 ★. Mùa 1 lúc này 190 màn.
 
+- **27/10 gói G xong — MÙA 1 ĐỦ 200 MÀN** (nhánh claude/trum-mua-1, 3c2e532 … 833b878): gói 10 "R1 xuất xưởng" đủ hai chương (man-trum-mua-1.js, máy kiểm hoc/kiem-trum-mua-1.mjs).
+  Chương 1 Tổng hợp: robot-hoan-thien.10 **cất** (hàm của màn khóa có biến), thay bằng **robot-hoan-thien.11** "Giao ca ở kho" (cùng kho ba sân, "lùi về chỗ cũ" thành lùi tới cửa nhánh bằng cảm biến bên, hàm của màn bring_out(), huy hiệu robot-hoan-thien).
+  Chương 2 **Trùm mùa** (`trum-mua-1` 1–10, R1 tay xoay; màn 4 hai robot R1 xoay vàng + R2 kẹp lam; trùm cuối mùa trum-mua-1.10 "Ngày xuất xưởng" ba kho, huy hiệu **xuat-xuong**).
+  Huy hiệu cam-bien-ben chuyển từ cam-bien-ben.10 (nay đứng thứ 9 Tổng hợp) về trùm mới của chương đó cam-bien-ben.9. vong-lap.8, .9 thêm tay kẹp (qua lộ trình).
+  Recall gộp gói 9 + 10 (40 màn): gói 1: 13 · 2: 35 · 3: 27 · 4: 16 · 5: 22 · 6: 29 · 7: 33 · 8: 3. Ngưỡng gói 10 vẫn 270 ★ (gói cuối mùa: màn thêm không đổi ngưỡng gói nào).
+
+  | Gói | Chương 1 | Chương 2 | Màn |
+  |---|---|---|---|
+  | 1 Xe hai bánh | `hai-banh` 10 | `xuong-ham` 10 | 20 |
+  | 2 Tay gắp | `tay-gap` 10 | `vong-lap` 10 | 20 |
+  | 3 Cảm biến khoảng cách | `khoang-cach` 10 | `che-cam-bien` 10 | 20 |
+  | 4 Kho hàng | `nut-de` 10 | `kho-hang` 10 | 20 |
+  | 5 Bánh lùi | `banh-lui` 10 | `che-banh-lui` 10 | 20 |
+  | 6 Tay xoay | `tay-xoay` 10 | `che-tay-xoay` 10 | 20 |
+  | 7 Cảm biến bên | `cam-bien-ben` 10 | `me-cung` 10 | 20 |
+  | 8 Đội hai robot | `hai-robot` 10 | `che-hai-robot` 10 | 20 |
+  | 9 Combo | `combo` 10 | `che-combo` 10 | 20 |
+  | 10 R1 xuất xưởng | `robot-hoan-thien` (Tổng hợp) 10 | `trum-mua-1` (Trùm mùa) 10 | 20 |
+  | | | **Tổng** | **200** |
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
