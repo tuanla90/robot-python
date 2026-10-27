@@ -1,8 +1,9 @@
+var BM =(typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('../bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 (function(root){var P=root.Part||(typeof module==='object'&&require('./part')),C=P.K;
   /* MÁY SƠN (chương may-son / che-may-son, 25/10, hoc/KE-HOACH-MAY-SON.md): đầu sơn gắn ở mũi xe, nhìn từ trên xuống. Đế thép ở mũi, BÌNH SƠN (lon tròn, ruột mang màu đang chọn bằng ink(c)),
      cổ ống và CHỔI ở đầu. Trạng thái s: mauSon ('red'|'green'|'blue'|'yellow', mặc định đỏ), tuThe 'duoi' = đầu sơn đang HẠ (pen_down: chổi duỗi dài chạm sàn, giọt sơn loang ở đầu chổi),
      không thì đang nhấc (chổi ngắn, có bóng đổ). Tô ô XE ĐANG ĐỨNG (không phải ô trước mặt): chổi chỉ là hình, luật ở san-hoc.js (phần MÁY SƠN). */
-  var MAU={red:['#df4b4b','#ff9a8a','#9a2a24'],green:['#3fc46a','#9cf0a8','#1d7a3a'],blue:['#4f8dff','#a8c8ff','#2a54b0'],yellow:['#ffcf30','#ffe888','#c08a10']};
+  var MAU={red:[BM.luatSonDo,BM.luatSonDoSang,BM.luatSonDoToi],green:[BM.luatSonXanhLa,BM.luatSonXanhLaSang,BM.luatSonXanhLaToi],blue:[BM.luatSonXanhDuong,BM.luatSonXanhDuongSang,BM.luatSonXanhDuongToi],yellow:[BM.luatSonVang,BM.luatSonVangSang,BM.luatSonVangToi]};
   P.dangKy({loai:'tay',ma:'son',ten:'Đầu sơn có chổi',hamGoc:['ink','dot','pen_down','pen_up'],gan:'tay',diemNeo:{x:12,y:23},MAU_SON:MAU,ve:function(p,s){
     s=s||{};var m=MAU[s.mauSon]||MAU.red,ha=s.tuThe==='duoi',dau=ha?4:8;
     p.rect(7,22,10,2,C.ink);p.rect(8,22,8,1,C.thepSang);                                                     /* đế thép ở mũi xe */
