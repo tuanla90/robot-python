@@ -2082,7 +2082,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var co = c.cacCo[ci];
         var fy = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 3) : 0;
         var fl = TL.flags[ff], fx = co.x * T + Math.floor((T - fl.width) / 2), fyy = co.y * T + (T - fl.height) - 1;   // cờ gọn trong ô: giữa theo bề ngang, đế cách đáy ô 1 px (sát đáy thì viền đế chạm đường kẻ ô)
-        if (this.vec) g.drawImage(VeVector.o('co', this.pxO), co.x * T, co.y * T + fy, T, T);     // vector: cờ hồng trên cột bạc, đầy ô (nhún theo fy như cũ)
+        if (this.vec) {                                       // vector: cờ hồng trên cột bạc, đầy ô (nhún theo fy như cũ); gói V4: lá cờ gợn sóng liên tục, mỗi cờ lệch pha, robot tới cờ thì phất mạnh
+          var phaCo = HU().giam() ? 0 : Math.floor(((now / 1400 + co.x * 0.37 + co.y * 0.61) % 1) * 16) / 16, manh = !HU().giam() && (this.coManh > now || this.mung > now);
+          g.drawImage(VeVector.o('co', this.pxO, HU().giam() ? undefined : { pha: manh ? Math.floor(((now / 700 + co.x * 0.37) % 1) * 16) / 16 : phaCo, manh: manh ? 1 : 0 }), co.x * T, co.y * T + fy, T, T);
+        }
         else g.drawImage(fl, Math.max(c.ox * T, Math.min(c.ox * T + this.pw - fl.width, fx)), Math.max(c.oy * T, Math.min(c.oy * T + this.ph - fl.height, fyy)) + fy);
         if (co.chu !== null && this.vec) HU().vach(g, co.x * T + 2.5, co.y * T + T - 2.8, T - 5, 1.8, (this.cfgXe && this.cfgXe[co.chu] && this.cfgXe[co.chu].mauXe) || MAU_XE[co.chu % MAU_XE.length]);   // vector: vạch bo tròn
         else if (co.chu !== null) { g.fillStyle = (this.cfgXe && this.cfgXe[co.chu] && this.cfgXe[co.chu].mauXe) || MAU_XE[co.chu % MAU_XE.length]; g.fillRect(co.x * T + 2, co.y * T + T - 3, T - 4, 2); }    // cờ riêng: vạch màu của robot chủ dưới chân cờ
@@ -2385,6 +2388,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (my !== this.rid) return;
       if (v.dr) evs.forEach(function (s) { if (s.ma === 'bay-qua') self.giuQuat(s); });             // drone vừa bay qua rào / băng / vật / thùng: gió cánh quạt thổi bụi
       evs.forEach(function (s) { if (s.ma === 'qua-diem' && s.o) self.diQuaLen(s.o); });                // bóng mờ: xe vừa tới ô ◆ (lần đầu): ◆ sáng lên
+      if (evs.some(function (s) { return s.ma === 'toi-co'; })) this.coManh = performance.now() + 900;          // cờ phất mạnh một nhịp khi robot tới (gói V4, chỉ vector vẽ)
       if (evs.some(function (s) { return s.ma === 'toi-co' || s.ma === 'xong-dua-vat' || s.ma === 'xong-day-thung' || s.ma === 'xong-to-hinh' || s.ma === 'nut-doi' || (s.ma === 'dat-vat' && s.o && self.dichTaiO(s.o.x, s.o.y)); })) this.matSuKien('vui', 1000);   // mắt cười (gói V4)
       if (evs.some(function (s) { return s.ma === 'doi-thu-thang'; })) { this.baoHieu('!', 1800); v.choang = performance.now() + 1400; }
       // đồng bộ với vết (an toàn nếu có sự kiện lạ)
