@@ -99,7 +99,15 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (`VeVector.kiemGhep`: 1680 tổ hợp, 528 hợp lệ, cùng câu báo); san-ve.js lấy hình học tay qua `VeRobot.hinhHoc` / `reachCua` / `vatXoay`. Sàn màu có dấu hình
   (tròn / tam giác / vuông / sao), thùng nặng thép tối `vecThep*`. Màn đội: kính + chấm ăng-ten đủ phân biệt, không thêm dải đội. Máy kiểm 74 (400 màn → 36 cấu hình, đều vector).
   Còn lại → V4: robot ngoài sân (Lắp robot, thẻ Bộ phận mới, mở đầu, phim) quá to ở vector (tham số cỡ theo bội số pixel); hiệu ứng sân còn khối pixel; vật kẹp nhỏ, cùng
-  màu ngón. → V6: huy-hieu.js gọi thẳng `Part.ghep` (luôn pixel). Nòng sau súng hơi lệch trái ăng-ten ~0,12 ô: giữ. Bộ vẽ pixel (user chốt 27/10): GIỮ tới hết V6, sau đó đổi mặc định sang vector rồi mới gỡ pixel (gói gỡ riêng sau V6).
+  màu ngón. → V6: huy-hieu.js gọi thẳng `Part.ghep` (luôn pixel).
+- **28/10 V4 · Hoạt cảnh vector xong** (nhánh claude/ve-vector-hoat-canh, gộp a2f1ed1; npm test 81/81). Tệp mới `ve-vector-hieu-ung.js` (`VeVector.HU`): mọi hiệu ứng sân ở vector
+  vẽ mượt (hạt, khói, mảnh vỡ, chớp đỏ, bong bóng ? / ! / …, sao choáng, tia cảm biến từ ổ thật, nút nóng, bóng vật / drone, vạch ngắm, pin, ô sơn, ô sạc thở);
+  chuyển động mượt (quay, bánh / xích theo quãng, kẹp / gáo dần, vật kẹp to bằng khe, ngón tông bạc); băng / bàn xoay / cửa chạy liên tục. Theo user: mắt biểu cảm
+  (chớp theo thời gian, đâm X, va nhau "> <", vui "^ ^", ngạc nhiên, buồn, lim dim, chờ, liếc; nét dày, sàn 2 px thiết bị), cảm xúc khi robot tương tác (chỉ đọc vết),
+  cờ gợn 2 nếp lệch pha, sàn bàn cờ hai tông, camera = khối ống kính trên trụ ở ĐUÔI (mắt giữ cho cảm xúc), cảm biến dính vỏ từng thân. `VeRobot.veCo` cho robot
+  ngoài sân (Lắp robot, thẻ Bộ phận mới, mở đầu, phim). Máy kiểm 85 (pixel: phát lại 22 màn, 8103 khung khớp từng lệnh vẽ với nền a962f7b).
+  Tự quyết (người giao): robot vector ngoài sân phóng ×1,2 cho bằng pixel → V5a; hông cảm biến nằm trên vỏ (không chờm bánh): giữ.
+  Còn lại → V5: chữ canvas còn VT323 (bong bóng, pin); robot màn đầu chưa có mắt biểu cảm. → V6: `phim-mua-1.js` hằng VAT = 57 chưa theo veCo (thùng lệch kẹp ở vector). Nòng sau súng hơi lệch trái ăng-ten ~0,12 ô: giữ. Bộ vẽ pixel (user chốt 27/10): GIỮ tới hết V6, sau đó đổi mặc định sang vector rồi mới gỡ pixel (gói gỡ riêng sau V6).
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
