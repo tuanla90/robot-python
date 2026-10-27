@@ -29,6 +29,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      nhện co, drone quạt / đo pin, camera sáng mắt); cấu hình cấm → VeVector ném lỗi như Part.ghep, báo một lần, rơi về hình tạm. vatXoay / hinhHoc / reachCua theo 1/100 ô
      ở chế độ vector (san-ve.js doiCo nhân với tiLe: miệng nòng, rổ máy ném, chân tia camera, đỉnh drone, lề lớp phủ khi tay xoay vươn sang ô bên). Chỉ mã lạ mới còn rơi về pixel.
      Cách vẽ lên sân (san-ve.js): robot vẽ trên LỚP PHỦ cả sân (có lề tràn ra), nên tay kẹp nhô ra mép sân vẫn không bị cắt.
+   GÓI V4: VeRobot.veCo(cauHinh, trangThai, huong, pxCss) = robot NGOÀI SÂN theo cỡ ô hiển thị (px CSS): pixel = ve(…, pxCss / 24) y như cũ; vector = canvas một ô pxCss × dpr,
+     hiển thị cỡ width × heSoCss(cv). trangThai.lan / .mat / tay.moK / tay.vung (chỉ nhánh vector của san-ve.js đặt): pha bánh theo quãng đi, mắt biểu cảm, kẹp mở dần, gáo vung dần.
    NHỆN CO CHÂN (chương nhen / che-nhen, 15/10): trangThai.co = true → part nhện vẽ tư thế co (chân dang sát đất, thân dẹt); ảnh khác hẳn ảnh đứng nên là một phần của khóa bộ nhớ đệm.
    Drone (than 'drone'): bay cao, không có mặt trước nên huong luôn 0 và ảnh không xoay; cánh quạt quay theo pha ph (trangThai.wl / wr > 0 = đang quay); trangThai.camBien.bat sáng đèn thân (đang đo pin).
    CAMERA (camBien { ma:'camera', o:'tren' }, luật color() 14/10): không cắm cột nào lên thân, chỉ hiện HAI ĐỐM SÁNG Ở MẮT trên thân (trangThai.camBien.mat = true: đang đọc, hai mắt sáng rực). Không ghép cùng cảm biến màu ở bụng; drone không gắn camera (Part.ghep ném lỗi, hình rơi về hình tạm).

@@ -19,6 +19,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      (tay, hongTrai, hongPhai, tren + sau cho nòng sau; drone: hongTrai, hongPhai, duoi, tren, bung); cảm biến 'hong' = một cái mỗi hông (doiCam như Part.ghep);
      kiemGhep(cfg) ném ĐÚNG lỗi của Part.ghep cho cấu hình cấm; thân khongHuong (drone) không xoay, bongRieng không có bóng trong hình; tay.tran (tay xoay) → canvas
      rộng hơn ô (tâm vẫn ở giữa); vatXoay / hinhHoc trả hình học tay theo 1/100 ô cho san-ve.js (qua VeRobot). H.kinh / H.angTen: kính + mắt + chấm ăng-ten màu đội dùng chung.
+   GÓI V4 (27–28/10): H.kinh vẽ mắt biểu cảm theo s.mat ('thuong' | 'chop1' | 'chop2' | 'lim' | 'dam' | 'xoay' | 'vui' | 'ngac' | 'buon' | 'cho', kèm ':±1' liếc) — nét dày có
+     sàn 2 px thiết bị, hình gần hết dải kính; camera KHÔNG còn đổi mắt: khối ống kính ở đuôi (than.oCam, cảm biến oVe 'cam'), diemOngKinh = gốc tia camera; diemCamBien = gốc tia
+     cảm biến khác; ổ hông mọi thân nằm trên vỏ (than.vo = hộp vỏ, máy kiểm "dính vỏ"); hiệu ứng trên sân ở VeVector.HU (ve-vector-hieu-ung.js).
    Ô / VẬT: VeVector.o(ma, canhPx, s) · VeVector.vat(ma, canhPx, s) → canvas đệm.
    Node: không có document → CanvasGia ghi lại từng lệnh vẽ (máy kiểm hoc/kiem-ve-vector.mjs đọc .lenh).
    ========================================================================== */

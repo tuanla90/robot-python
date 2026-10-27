@@ -6,7 +6,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    canvas sân (phép phóng sv) và lớp phủ robot (phép phóng ku) đều theo pixel thiết bị nên nét ở mọi cỡ ô. Màu: chỉ từ bảng màu (các vai vec… và bộ ba tia…Rgb).
    Mỗi hàm nhận g (đã đặt phép biến hình theo pixel sân) và dữ liệu đã tính sẵn ở san-ve.js; không đọc luật chơi, không gọi Math.random (nhánh pixel giữ nguyên chuỗi số ngẫu nhiên).
    NHÓM (theo bước gói V4):
-     hạt / bụi / khói / mảnh vỡ (hat), chớp đỏ (chop), dấu ? ! (dau), sao choáng (choang), bong chữ màu (bongMau), ô cảnh báo / ô vỡ (oDo, vachMep).
+     bước 2: hạt / bụi / khói / mảnh vỡ (hat), chớp đỏ (chop), dấu ? ! … (dau), sao choáng (choang), bong chữ màu (bongMau), ô cảnh báo / ô vỡ (oDo, vachMep);
+     bước 3: tia cảm biến từ ổ thật (tiaKc, tiaCamera, tiaNhin, tiaTu, tiaHongNgoai), quầng nóng + gợn nhiệt (nong);
+     bước 4: bóng vật (bongVat, bongElip, toDo), vòng hút, viền lỗi, vạch ngắm (ngam), vệt vòng cung (vetCung), ô sạc lóe / thở (sacLoe, thoSac), bóng drone, thanh pin, thẻ đạn,
+             ô sơn (sonCan, sonDa), kim cương bóng mờ, khung / tấm ô bo góc (khungO, tamO), chấm, vạch.
    Node: nạp được (máy kiểm hoc/kiem-ve-vector.mjs vẽ từng hiệu ứng lên canvas giả, đếm lệnh). Giảm chuyển động (prefers-reduced-motion): giam() → lắc / nảy tắt.
    ========================================================================== */
 (function (root) {

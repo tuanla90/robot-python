@@ -38,6 +38,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    nam châm; thùng nặng; bóng hơi) cùng ảnh nhỏ thuSan (thuOVec, theo VeVector.KY_HIEU) vẽ bằng hình vector; trạng thái (pha băng, độ mở cửa…) là tham số của hình,
    còn quầng nóng / lóe / kẹt đỏ / nét đứt chạy của ô đích là lệnh trực tiếp theo pixel sân (nét nhờ sv). Robot vector do VeRobot trả về (cờ .laVector:
    đúng một ô, bóng đổ nằm trong hình, không vẽ vạch đế / mắt động / bóng tay riêng). Chế độ pixel: mọi đường đi y nguyên (sv = 1, canvas T px mỗi ô).
+   GÓI V4 (27–28/10, chỉ chế độ vector; chế độ pixel đi y nguyên từng lệnh — máy kiểm hoc/kiem-ve-vector.mjs mục 13 so với nền): MỌI hoạt cảnh / hiệu ứng rẽ nhánh this.vec
+   sang VeVector.HU (ve-vector-hieu-ung.js), vẫn theo pixel sân nên luồng phát lại không đổi: hạt / bụi / khói ('khoi') / mảnh vỡ ('manh', kieuHat), chớp đỏ, dấu ? ! "…", sao choáng,
+   bong chữ màu, ô cảnh báo / ô vỡ, tia cảm biến TỪ Ổ THẬT (oTia: VeVector.diemCamBien / diemOngKinh; veTiaVec), quầng nóng + gợn nhiệt, bóng vật / drone / vật bay (elip, không làm
+   tròn px), vạch ngắm, vệt vòng cung, thanh pin, thẻ đạn, ô sơn, kim cương bóng mờ, khung ô (đặt xe, xuất phát, kẹt), cờ bay (pha + phất mạnh coManh), sàn bàn cờ ((x + y) chẵn / lẻ).
+   Chuyển động mượt (hoatVec): quay / bàn xoay / xoay xe xoay cả hình theo góc liên tục (v.gocMem, gocMui cộng vào), bánh / xích / con lăn theo quãng đi (lan), kẹp mở dần (moK),
+   gáo ném vung dần (vung), băng / mâm bàn xoay chạy liền, cửa 1/20, ô sạc thở. MẮT BIỂU CẢM (bieuCam → trangThai.mat cho VeRobot): chớp 2,5–5 s ngẫu nhiên riêng từng xe (LCG,
+   không đụng Math.random), chớp đôi; matSuKien: đâm / bị chặn (dấu !) → X + rung, '?' → mắt tròn, tới cờ / đặt đúng đích / bắn trúng nút / xong hình → "^ ^" + nảy, xong màn cười
+   tới hộp kết quả; nhiều robot (camXucDoi, chỉ đọc vết): húc bạn "> <", bạn bị húc giật mình, bắn nút giúp đội cả đội cười, đọ sức thua buồn / thắng cười, chờ lim dim + "…",
+   kề nhau / mừng thì liếc về nhau (liecVeBan); đứng lâu lim dim; prefers-reduced-motion (HU.giam) tắt chớp / rung / nảy / cờ bay.
    Không chứa luật chơi: mọi kết quả (vị trí, hướng, sự kiện) đến từ lõi (SanHoc).
    ========================================================================== */
 (function () {
