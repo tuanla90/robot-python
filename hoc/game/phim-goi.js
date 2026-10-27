@@ -17,7 +17,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   'use strict';
 
   var h = TP.h;
-  var VANG = BM.phimVANG, MUC = BM.ink;
+  var VANG = BM.vang, MUC = BM.vienDam;
   var PHIM = {};                                  // mã gói → mảng hàm khung
 
   function CO(ma) { return 'phim-goi:' + ma; }
@@ -49,7 +49,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var cv = document.createElement('canvas'); cv.width = Ve.T; cv.height = Ve.T;
     var g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
     g.drawImage(Ve.tiles().rug[0], 0, 0);
-    try { Ve.veCua(g, 0, 0, mo, { doc: doc !== false }); } catch (e) { g.fillStyle = BM.phimCuaFillStyle; g.fillRect(0, 0, Ve.T, Ve.T); }
+    try { Ve.veCua(g, 0, 0, mo, { doc: doc !== false }); } catch (e) { g.fillStyle = BM.lamSangV23; g.fillRect(0, 0, Ve.T, Ve.T); }
     var c = Ve.mk(cv, s); c.classList.add('pxi'); return c;
   }
   function chu(cls, s) { return h('div', 'md-a ' + cls, s); }
