@@ -28,7 +28,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     CANH.forEach(function (c) { quat(g, H, c[0], c[1], quay, pha); });
     H.bo(g, 31, 38, 38, 36, 15); g.fillStyle = H.gradVo(g, 31, 38, 38, 36); g.fill(); H.vien(g, BM.vecVien, 3.5);
     H.duong(g, 'M39 43 C37 50 37 57 39 63 M61 43 C63 50 63 57 61 63'); H.vien(g, BM.vecVoGhep, 2.2);
-    H.kinh(g, M, 35, 53, 30, 13, { sang: !!s.doc });
+    H.kinh(g, M, 35, 53, 30, 13, { sang: !!s.doc, mat: s.mat });         // gói V4: mắt biểu cảm (s.mat) như mọi thân
     H.angTen(g, M, 50, 39, 33, 3.8);
   } });
 })(typeof window !== 'undefined' ? window : globalThis);

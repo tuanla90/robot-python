@@ -115,12 +115,36 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function kinh(g, M, x, y, w, h, s) {
     s = s || {};
     bo(g, x, y, w, h, h / 2); g.fillStyle = gradDoc(g, 0, y, 0, y + h, [[0, M.toi], [1, M.chinh]]); g.fill(); vien(g, BM.vecVien, 2.5);
-    var ew = w * 0.1522, eh = h * 0.588, ey = y + (h - eh) / 2, sang = !!(s.camSang || s.sang);
-    [x + w * 0.2174, x + w * 0.6304].forEach(function (ex) {
+    var ew = w * 0.1522, eh = h * 0.588, ey = y + (h - eh) / 2, mt = String(s.mat || 'thuong').split(':'), kieu = mt[0], liec = +mt[1] || 0;
+    var sang = !!(s.camSang || s.sang) && (kieu === 'thuong' || kieu === 'chop1' || kieu === 'ngac'), dx = liec * ew * 0.38;
+    [x + w * 0.2174, x + w * 0.6304].forEach(function (ex0, i) {
+      var ex = ex0 + dx, cx = ex + ew / 2, cy = ey + eh / 2, trong = i === 0 ? 1 : -1;   // trong: hướng về giữa mặt theo x (mắt x nhỏ → +x)
+      if (veMat(g, M, kieu, cx, cy, ew, eh, trong)) return;
       if (sang) { bo(g, ex - 2.5, ey - 2.5, ew + 5, eh + 5, (ew + 5) / 2); to(g, rgba(BM.vecMatSangRgb, 0.6)); }
       bo(g, ex, ey, ew, eh, ew / 2); to(g, sang ? BM.vecMatSang : BM.vecMat); vien(g, M.chinh, 1);
       if (s.camera) { tron(g, ex + ew / 2, ey + eh / 2, ew * 0.3); to(g, sang ? BM.vecDen : BM.vecBanh); }
     });
+  }
+  /** MẮT BIỂU CẢM (gói V4) trong hộp mắt tâm (cx, cy), cạnh ew × eh, hệ của thân (mặt quay xuống: "trên" của khuôn mặt là −y). Trả true nếu đã vẽ (kiểu khác 'thuong').
+   *  Nét biểu cảm: lót màu đội tối (M.toi) + lõi mắt sáng (vecMat) cho nổi trên kính màu đội. chop1 nửa nhắm · chop2 khép thành vạch · lim lim dim (mí phẳng) ·
+   *  dam chữ X · xoay mắt xoáy (va nhau) · vui cong "^" · ngac tròn to có con ngươi · buon mí cụp xuống phía ngoài · cho "…" (chờ: hai mắt thành chấm). */
+  function veMat(g, M, kieu, cx, cy, ew, eh, trong) {
+    function net(day) { g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = M.toi; g.lineWidth = day + 1.6; g.stroke(); g.strokeStyle = BM.vecMat; g.lineWidth = day; g.stroke(); }
+    var rx = ew / 2, ry = eh / 2;
+    switch (kieu) {
+      case 'chop1': bo(g, cx - rx, cy - ry * 0.42, ew, eh * 0.42, Math.min(rx, eh * 0.21)); to(g, BM.vecMat); vien(g, M.chinh, 1); return true;
+      case 'chop2': g.beginPath(); g.moveTo(cx - rx, cy + ry * 0.1); g.quadraticCurveTo(cx, cy + ry * 0.45, cx + rx, cy + ry * 0.1); net(1.3); return true;
+      case 'lim': bo(g, cx - rx, cy - ry * 0.1, ew, ry * 1.1, Math.min(rx, ry * 0.55)); to(g, BM.vecMat); vien(g, M.chinh, 1);
+        g.beginPath(); g.moveTo(cx - rx - 0.6, cy - ry * 0.1); g.lineTo(cx + rx + 0.6, cy - ry * 0.1); g.lineCap = 'round'; g.strokeStyle = M.toi; g.lineWidth = 1.6; g.stroke(); return true;
+      case 'dam': g.beginPath(); g.moveTo(cx - rx * 0.95, cy - ry * 0.7); g.lineTo(cx + rx * 0.95, cy + ry * 0.7); g.moveTo(cx + rx * 0.95, cy - ry * 0.7); g.lineTo(cx - rx * 0.95, cy + ry * 0.7); net(1.4); return true;
+      case 'xoay': g.beginPath(); for (var t = 0; t <= 1.0001; t += 0.05) { var a = t * Math.PI * 3.2 * trong, r = 0.4 + t * Math.min(rx, ry) * 1.05, px = cx + Math.cos(a) * r, py = cy + Math.sin(a) * r * 0.95; if (t) g.lineTo(px, py); else g.moveTo(px, py); } net(0.9); return true;
+      case 'vui': g.beginPath(); g.moveTo(cx - rx * 1.05, cy + ry * 0.45); g.quadraticCurveTo(cx, cy - ry * 1.25, cx + rx * 1.05, cy + ry * 0.45); net(1.5); return true;
+      case 'ngac': var R = Math.max(rx, ry) * 1.02; tron(g, cx, cy, R); to(g, BM.vecMat); vien(g, M.chinh, 1.1); tron(g, cx, cy + R * 0.08, R * 0.38); to(g, M.toi); tron(g, cx - R * 0.15, cy - R * 0.12, R * 0.14); to(g, BM.vecMatSang); return true;
+      case 'buon': bo(g, cx - rx, cy - ry * 0.2, ew, ry * 1.2, Math.min(rx, ry * 0.6)); to(g, BM.vecMat); vien(g, M.chinh, 1);
+        g.beginPath(); g.moveTo(cx - trong * rx * 1.1, cy + ry * 0.25); g.lineTo(cx + trong * rx * 1.05, cy - ry * 0.55); g.lineCap = 'round'; g.strokeStyle = M.toi; g.lineWidth = 1.7; g.stroke(); return true;
+      case 'cho': tron(g, cx, cy + ry * 0.2, Math.min(rx, ry) * 0.55); to(g, BM.vecMat); vien(g, M.chinh, 0.9); return true;
+      default: return false;
+    }
   }
   /** Ăng-ten: cột bạc từ (x, yGoc) lên tới (x, yDinh + r), chấm màu đội bán kính r ở (x, yDinh). */
   function angTen(g, M, x, yGoc, yDinh, r) {
