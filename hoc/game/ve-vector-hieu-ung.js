@@ -120,6 +120,161 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.fillStyle = rgba(BM.vecDoRgb, al); g.fill();
   }
 
-  V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep };
+  /* ================================================================ TIA CẢM BIẾN + SÓNG (bước 3): mọi tia xuất phát từ Ổ THẬT của cảm biến (goc = các điểm pixel sân do Field.oTia tính
+     từ VeVector.diemO / diemMat), không từ tâm xe. d = mục docCamBien của san-ve.js, u = tiến độ 0..1, a = độ đậm. */
+  function oTint(g, x, y, rgb, al) { boO(g, x, y, 0.6, 2.2); g.fillStyle = rgba(rgb, al); g.fill(); }
+  function dauX(g, x, y, r, mau, day) {
+    g.beginPath(); g.moveTo(x - r, y - r); g.lineTo(x + r, y + r); g.moveTo(x + r, y - r); g.lineTo(x - r, y + r);
+    g.lineCap = 'round'; g.lineWidth = day + 1.1; g.strokeStyle = BM.vecVo; g.stroke(); g.lineWidth = day; g.strokeStyle = mau; g.stroke();
+  }
+  /** Chấm sáng ở đầu tia (thấu kính đang phát). */
+  function chamGoc(g, p, rgb, a) {
+    tron(g, p.x, p.y, 1.6); g.fillStyle = rgba(rgb, 0.35 * a); g.fill();
+    tron(g, p.x, p.y, 0.75); g.fillStyle = rgba(rgb, a); g.fill();
+  }
+  /** Nét đứt chạy từ mỗi gốc tới (x1, y1) (dm: phần đã chạy ra 0..1), lót nét trắng mờ cho nổi trên sàn trắng. */
+  function netTia(g, goc, x1, y1, dm, rgb, a, day, dash, now, toc) {
+    for (var i = 0; i < goc.length; i++) {
+      var p = goc[i], xe = p.x + (x1 - p.x) * dm, ye = p.y + (y1 - p.y) * dm;
+      g.setLineDash([]); g.lineCap = 'round';
+      g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(xe, ye); g.lineWidth = day + 1; g.strokeStyle = rgba(BM.vecVienRgb, 0.12 * a); g.stroke();
+      g.setLineDash(dash); g.lineDashOffset = -((now / (toc || 40)) % (dash[0] + dash[1]));
+      g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(xe, ye); g.lineWidth = day; g.strokeStyle = rgba(rgb, a); g.stroke();
+      g.setLineDash([]);
+      chamGoc(g, p, rgb, a);
+    }
+  }
+  /** Cảm biến KHOẢNG CÁCH (front_clear / left_clear / right_clear): ô được đo ám nhẹ, tia nét đứt từ thấu kính, ô trống: khung bo nhỏ; bị chặn: dấu X sát mép ô. */
+  function tiaKc(g, d, now, u, a, goc, DX, DY) {
+    var rgb = d.trong ? BM.tiaXanhLaRgb : BM.tiaDoV3Rgb, vx = DX[d.huong], vy = DY[d.huong];
+    var cx = d.o.x * T + 7, cy = d.o.y * T + 7, x1 = d.trong ? cx : cx - vx * 6, y1 = d.trong ? cy : cy - vy * 6;
+    g.save();
+    oTint(g, d.o.x, d.o.y, rgb, 0.26 * a);
+    netTia(g, goc, x1, y1, 1, rgb, 0.95 * a, 1.2, [3, 1.4], now, 40);
+    if (d.trong) { H.bo(g, cx - 3, cy - 3, 6, 6, 1.6); g.lineWidth = 1.1; g.strokeStyle = rgba(rgb, a); g.stroke(); }
+    else dauX(g, x1, y1, 2.3, rgba(rgb, a), 1.1);
+    g.restore();
+  }
+  /** Bốn góc ngắm bo tròn ôm tâm (cx, cy), nửa cạnh m (camera ở xe: ôm vật; camera nhìn xuống của drone). */
+  function gocNgam(g, cx, cy, m, col) {
+    var L = [[-1, -1], [1, -1], [-1, 1], [1, 1]], k = 2.6, i;
+    g.beginPath();
+    for (i = 0; i < 4; i++) { var px = cx + L[i][0] * m, py = cy + L[i][1] * m; g.moveTo(px - L[i][0] * k, py); g.lineTo(px, py); g.lineTo(px, py - L[i][1] * k); }
+    g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 2.1; g.strokeStyle = BM.vecVien; g.stroke(); g.lineWidth = 1.1; g.strokeStyle = col; g.stroke();
+  }
+  /** CAMERA ở xe (color() đọc ô trước mặt), hai lớp như nhánh pixel: 'duoi' (dưới robot) chùm sáng từ HAI MẮT (mat = hai điểm) chụm vào ô + hai nét mảnh;
+   *  'tren' (trên robot) ô được nhìn: nguon 'san' tô cả ô bo góc, 'vat' bốn góc ôm vật, 'chan' khung xám nét đứt + X. */
+  function tiaCamera(g, d, now, u, a, pha, mat, col, DX, DY) {
+    var vx = DX[d.huong], vy = DY[d.huong], cx = d.o.x * T + 7, cy = d.o.y * T + 7, chan = d.nguon === 'chan', vat = d.nguon === 'vat';
+    var nhay = u < 0.55 && !giam() ? 0.8 + 0.2 * Math.sin(now / 40) : 1;
+    g.save();
+    if (pha === 'duoi') {
+      var e1 = mat[0], e2 = mat[mat.length - 1], x1 = cx - vx * (vat ? 5 : 2), y1 = cy - vy * (vat ? 5 : 2);
+      g.beginPath(); g.moveTo(e1.x, e1.y); g.lineTo(e2.x, e2.y); g.lineTo(cx, cy); g.closePath();
+      g.globalAlpha = 0.28 * a; g.fillStyle = col; g.fill(); g.globalAlpha = 1;
+      mat.forEach(function (p) {
+        g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(x1, y1); g.lineCap = 'round';
+        g.lineWidth = 1.5; g.strokeStyle = rgba(BM.vecVienRgb, 0.35 * a); g.stroke(); g.lineWidth = 0.7; g.globalAlpha = 0.9 * a; g.strokeStyle = col; g.stroke(); g.globalAlpha = 1;
+      });
+      g.restore(); return;
+    }
+    g.globalAlpha = a * nhay;
+    if (vat) { gocNgam(g, cx, cy, 5.5, col); boO(g, d.o.x, d.o.y, 1, 2.4); g.globalAlpha = 0.14 * a * nhay; g.fillStyle = col; g.fill(); }
+    else {
+      boO(g, d.o.x, d.o.y, 0.6, 2.4); g.globalAlpha = (chan ? 0.24 : 0.36) * a * nhay; g.fillStyle = col; g.fill();
+      g.globalAlpha = a * nhay; boO(g, d.o.x, d.o.y, 1.4, 2); g.lineWidth = 2; g.strokeStyle = BM.vecVien; g.stroke();
+      if (chan) g.setLineDash([2.5, 1.6]); g.lineWidth = 1.1; g.strokeStyle = col; g.stroke(); g.setLineDash([]);
+    }
+    if (chan) { g.globalAlpha = a; dauX(g, cx, cy, 3, col, 1.2); }
+    g.restore();
+  }
+  /** CAMERA NHÌN XUỐNG của drone (look()): 'duoi' ô dưới drone ám màu + vạch quét sáng (gradient) chạy từ trên xuống; 'tren' bốn góc ngắm (vật: nhỏ hơn), chặn: X. */
+  function tiaNhin(g, d, now, u, a, pha, col) {
+    var cx = d.o.x * T + 7, cy = d.o.y * T + 7, ox = d.o.x * T, oy = d.o.y * T, chan = d.nguon === 'chan', vat = d.nguon === 'vat';
+    var nhay = u < 0.55 && !giam() ? 0.8 + 0.2 * Math.sin(now / 40) : 1;
+    g.save();
+    if (pha === 'duoi') {
+      boO(g, d.o.x, d.o.y, 0.6, 2.4); g.globalAlpha = (chan ? 0.22 : vat ? 0.18 : 0.36) * a * nhay; g.fillStyle = col; g.fill();
+      if (u < 0.6) {
+        var yy = oy + 1.5 + (T - 3) * (u / 0.6), gr = g.createLinearGradient(0, yy - 2.2, 0, yy + 0.6);
+        gr.addColorStop(0, rgba(BM.tiaTrangRgb, 0)); gr.addColorStop(1, rgba(BM.tiaTrangRgb, 0.9));
+        g.globalAlpha = a; H.bo(g, ox + 1.2, yy - 2.2, T - 2.4, 2.8, 1); g.fillStyle = gr; g.fill();
+        H.bo(g, ox + 1.2, yy - 0.3, T - 2.4, 0.7, 0.35); g.fillStyle = rgba(BM.tiaTrangRgb, 0.95); g.fill();
+      }
+      g.restore(); return;
+    }
+    g.globalAlpha = a * nhay;
+    gocNgam(g, cx, cy, vat ? 4.5 : 6, col);
+    if (chan) dauX(g, cx, cy, 3, col, 1.2);
+    g.restore();
+  }
+  /** Cảm biến TỪ front_metal(): tia bạc (sắt) / nâu (gỗ) / màu cực (vật nam châm) từ thấu kính cảm biến; không thấy gì: tia mờ hết tầm + gạch cụt. Dấu ở vật như nhánh pixel. */
+  function tiaTu(g, d, u, a, goc, now, DX, DY) {
+    var vx = DX[d.huong], vy = DY[d.huong], sat = d.chat === 'sat', go = d.chat === 'go', nch = d.chat === 'nam-cham';
+    var rgb = sat ? BM.tiaTrangV1Rgb : go ? BM.tiaCamRgb : nch ? (d.cuc === 'N' ? BM.tiaDoRgb : BM.tiaLamRgb) : BM.tiaLamV1Rgb, x1, y1, p0 = goc[0];
+    if (d.o) { x1 = d.o.x * T + 7; y1 = d.o.y * T + 7; }
+    else { var dai = d.dai || 0; x1 = d.tu.x * T + 7 + vx * (7 + dai); y1 = d.tu.y * T + 7 + vy * (7 + dai); }
+    g.save();
+    if (d.o) oTint(g, d.o.x, d.o.y, sat ? BM.tiaLamV1Rgb : rgb, (sat ? 0.3 : 0.24) * a);
+    var dm = Math.min(1, u / 0.35);
+    netTia(g, goc, x1, y1, dm, sat ? BM.tiaLamV1Rgb : rgb, (d.o ? 0.95 : 0.55) * a, sat ? 1.5 : 1.15, sat ? [4, 1.2] : [3, 2], now, 40);
+    if (d.o && dm >= 1) {
+      if (sat) {                                                                     // lóe bốn cánh trên vật sắt
+        var s = 2.5 + Math.abs(Math.sin(u * 9)) * 1.6;
+        g.beginPath(); g.moveTo(x1 - s - 1.5, y1); g.lineTo(x1 + s + 1.5, y1); g.moveTo(x1, y1 - s - 1.5); g.lineTo(x1, y1 + s + 1.5);
+        g.lineCap = 'round'; g.lineWidth = 1.2; g.strokeStyle = rgba(BM.tiaLamV1Rgb, a); g.stroke(); tron(g, x1, y1, 1.1); g.fillStyle = rgba(BM.tiaTrangRgb, a); g.fill();
+      } else if (nch) { tron(g, x1, y1, 5 + Math.abs(Math.sin(u * 9))); g.lineWidth = 1.2; g.strokeStyle = rgba(rgb, a); g.stroke(); }
+      else dauX(g, x1, y1, 2.6, rgba(BM.tiaNauRgb, a), 1.3);
+    } else if (!d.o && dm >= 1) {
+      g.beginPath(); g.moveTo(x1 - vy * 2.8, y1 + vx * 2.8); g.lineTo(x1 + vy * 2.8, y1 - vx * 2.8); g.lineCap = 'round'; g.lineWidth = 1.2; g.strokeStyle = rgba(rgb, 0.7 * a); g.stroke();
+    }
+    g.restore();
+    return p0;
+  }
+  /** Gợn nhiệt: ba (hay hai) nét cong bay lên trên (x, y), pha theo thời gian; giảm chuyển động: đứng yên. */
+  function gonNhiet(g, x, y, n, buoc, cao, now, rgb, al, day) {
+    for (var k = 0; k < n; k++) {
+      var t = giam() ? 0.4 : ((now / 25 + k * 5) % cao) / cao, gx = x + (k - (n - 1) / 2) * buoc, gy = y - t * cao, sw = giam() ? 0 : Math.sin(now / 150 + k) * 1.2;
+      g.beginPath(); g.moveTo(gx - 1.2, gy + 2.2); g.bezierCurveTo(gx + 1.4 + sw, gy + 1, gx - 1.4 + sw, gy - 0.8, gx + 1.1, gy - 2.2);
+      g.lineCap = 'round'; g.lineWidth = day; g.strokeStyle = rgba(rgb, al * (1 - t * 0.7)); g.stroke();
+    }
+  }
+  /** HỒNG NGOẠI (distance() / warm()): tia đỏ mảnh từ thấu kính ở mũi tới mép ô vật cản, vạch nhỏ ở mỗi ô trống (đếm được), ô vật cản ám đỏ;
+   *  warm(): nóng → lõi cam sáng + gợn nhiệt; lạnh → chấm xanh lơ; distance() → chấm đỏ ở điểm chạm. trong: ô vật cản nằm trong cửa sổ vẽ. */
+  function tiaHongNgoai(g, d, now, u, a, goc, trong, DX, DY) {
+    var vx = DX[d.huong], vy = DY[d.huong], nong = d.ham === 'warm' && !!d.nong, lanh = d.ham === 'warm' && !d.nong, rgb = nong ? BM.tiaCamV1Rgb : BM.tiaDoV4Rgb;
+    var cx = d.o.x * T + 7, cy = d.o.y * T + 7, x1 = cx - vx * 7, y1 = cy - vy * 7, p0 = goc[0];
+    g.save();
+    if (trong) oTint(g, d.o.x, d.o.y, rgb, (nong ? 0.4 : 0.2) * a);
+    var dm = Math.min(1, u / 0.3), xe = p0.x + (x1 - p0.x) * dm, ye = p0.y + (y1 - p0.y) * dm;
+    netTia(g, goc, x1, y1, dm, rgb, 0.95 * a, 0.85, [2, 1.6], now, 30);
+    for (var i = 1; i <= (d.khoang || 0); i++) {
+      var px = (d.tu.x + vx * i) * T + 7, py = (d.tu.y + vy * i) * T + 7;
+      if ((Math.abs(px - p0.x) + Math.abs(py - p0.y)) > (Math.abs(xe - p0.x) + Math.abs(ye - p0.y))) break;
+      g.beginPath(); g.moveTo(px - vy * 2.6, py + vx * 2.6); g.lineTo(px + vy * 2.6, py - vx * 2.6); g.lineCap = 'round'; g.lineWidth = 1.2; g.strokeStyle = rgba(rgb, 0.8 * a); g.stroke();
+    }
+    if (dm >= 1 && trong) {
+      if (nong) {
+        var gr = g.createRadialGradient(cx, cy, 0, cx, cy, 4.5); gr.addColorStop(0, rgba(BM.tiaVangRgb, a)); gr.addColorStop(1, rgba(BM.tiaCamV1Rgb, 0));
+        tron(g, cx, cy, 4.5); g.fillStyle = gr; g.fill();
+        gonNhiet(g, cx, cy - 4, 3, 4, 8, now, BM.tiaCamV2Rgb, 0.9 * a, 0.9);
+      } else { tron(g, x1, y1, 1.5); g.fillStyle = rgba(lanh ? BM.tiaXanhLoV2Rgb : BM.tiaDoV5Rgb, a); g.fill(); g.lineWidth = 0.4; g.strokeStyle = rgba(BM.vecVienRgb, 0.5 * a); g.stroke(); }
+    }
+    g.restore();
+  }
+  /** NÚT BẮN ĐANG BẬT thì NÓNG (luật warm()): quầng cam thở bo góc quanh tấm nút + hai gợn nhiệt bay lên. Giảm chuyển động: quầng đứng yên. */
+  function nong(g, x, y, now) {
+    var px = x * T, py = y * T, th = giam() ? 0.6 : 0.55 + 0.45 * Math.sin(now / 260);
+    g.save();
+    var gr = g.createRadialGradient(px + 7, py + 7, 3, px + 7, py + 7, 9.5);
+    gr.addColorStop(0, rgba(BM.tiaCamV3Rgb, 0)); gr.addColorStop(1, rgba(BM.tiaCamV3Rgb, 0.12 + 0.18 * th));
+    boO(g, x, y, 0.5, 2.6); g.fillStyle = gr; g.fill();
+    boO(g, x, y, 1.4, 2.2); g.lineWidth = 0.9; g.strokeStyle = rgba(BM.tiaCamV3Rgb, 0.35 + 0.4 * th); g.stroke();
+    gonNhiet(g, px + 7, py + 4.5, 2, 5, 6, now, BM.tiaCamV4Rgb, 0.5 + 0.3 * th, 0.8);
+    g.restore();
+  }
+
+  V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep,
+    tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong };
   if (typeof module === 'object' && module.exports) module.exports = V.HU;
 })(typeof window !== 'undefined' ? window : globalThis);

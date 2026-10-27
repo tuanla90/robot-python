@@ -237,6 +237,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function diemO(cfg, o, huong, canh) { var t = lay('than', (cfg && cfg.than) || 'hai-banh'); return t && t.oGan[o] ? diemTrenO(t.oGan[o], huong, canh, t) : null; }
   /** Ổ gắn tay của thân (sau xoay) trên canvas ô: để kiểm "tay luôn ở phía hướng mặt" (drone: ổ 'duoi' dưới bụng). */
   function diemGan(cfg, huong, canh) { var t = lay('than', (cfg && cfg.than) || 'hai-banh'); return t ? diemO(cfg, t.khongHuong ? 'duoi' : 'tay', huong, canh) : null; }
+  /** Mọi ổ đang gắn cảm biến `ma` của cfg (sau đổi 'hong' → hai ổ, sau xoay) trên canvas ô cạnh `canh`: [{ o, x, y }] — gốc tia của cảm biến (gói V4, san-ve.js oTia). */
+  function diemCamBien(cfg, ma, huong, canh) {
+    var t = lay('than', (cfg && cfg.than) || 'hai-banh'); if (!t) return [];
+    return doiCam(cfg && cfg.camBien).filter(function (c) { return c.ma === ma && t.oGan[c.o]; }).map(function (c) { var p = diemTrenO(t.oGan[c.o], huong, canh, t); p.o = c.o; return p; });
+  }
+  /** Hộp kính (x, y, w, h) mà thân vẽ qua H.kinh (đo một lần bằng cách cho thân vẽ lên canvas giả với H.kinh ghi lại): để biết chỗ hai mắt. */
+  var kinhDem = {};
+  function kinhCua(than) {
+    if (!than) return null;
+    if (kinhDem[than.ma] !== undefined) return kinhDem[than.ma];
+    var cap = null, Hc = Object.assign({}, H, { kinh: function (g, M, x, y, w, h) { if (!cap) cap = { x: x, y: y, w: w, h: h }; } });
+    try { than.ve(new CanvasGia(1, 1).getContext('2d'), {}, mauDoi(''), Hc); } catch (e) { cap = null; }
+    return (kinhDem[than.ma] = cap);
+  }
+  /** Tâm hai mắt (camera là đôi mắt trên kính) của thân trong cfg, sau xoay, trên canvas ô cạnh `canh`: [mắt x nhỏ, mắt x lớn] (hệ thân); [] nếu thân không có kính. */
+  function diemMat(cfg, huong, canh) {
+    var t = lay('than', (cfg && cfg.than) || 'hai-banh'), k = kinhCua(t); if (!k) return [];
+    var ew = k.w * 0.1522, ey = k.y + k.h / 2;
+    return [k.x + k.w * 0.2174 + ew / 2, k.x + k.w * 0.6304 + ew / 2].map(function (ex) { return diemTrenO({ x: ex, y: ey }, huong, canh, t); });
+  }
   /** Dịch của tay trong hệ thân (ổ − điểm neo) và ổ đã dùng; null nếu không gắn được. */
   function dichTay(than, tay) {
     var os = oTay(than, tay)[0]; if (!os) return null;
@@ -311,7 +331,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
     o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, gocXoay: gocXoay, gocCua: gocCua,
-    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
+    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, kinhCua: kinhCua, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
     xoaDem: xoaDem, _loiGia: loiGia
   };
 });

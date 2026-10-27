@@ -412,6 +412,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (i = 0; i < ds.length; i++) {
         var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45), rgb = d.trong ? BM.tiaXanhLaRgb : BM.tiaDoV3Rgb;
         if (d.cam === 'mau' || d.cam === 'pin') continue;                         // cảm biến màu: vòng sáng vẽ dưới robot (veVongMauDuoi); cảm biến pin: thanh pin nháy (veThanhPin)
+        if (this.vec) { this.veTiaVec(g, d, now, u, a, 'tren'); continue; }           // vector (gói V4): tia từ ổ thật của cảm biến (oTia), hình mượt
         if (d.cam === 'camera') { this.veTiaCamera(g, d, now, u, a, 'tren'); continue; }
         if (d.cam === 'camera-bay') { this.veTiaNhin(g, d, now, u, a, 'tren'); continue; }                  // camera nhìn xuống của drone: bốn góc ngắm quanh ô dưới drone   // camera: hai tia từ đôi mắt tới ô trước mặt, ô đó nháy khung theo màu đọc được
         if (d.cam === 'tu') { this.veTiaTu(g, d, u, a); continue; }              // cảm biến từ: tia bạc tới vật sắt / tia nâu tới vật gỗ
@@ -507,9 +508,34 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var ds = this.docs, i;
       for (i = 0; i < ds.length; i++) {
         var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45);
-        if (d.cam === 'camera' && u < 1) this.veTiaCamera(g, d, now, u, a, 'duoi');
+        if (this.vec && (d.cam === 'camera' || d.cam === 'camera-bay') && u < 1) this.veTiaVec(g, d, now, u, a, 'duoi');
+        else if (d.cam === 'camera' && u < 1) this.veTiaCamera(g, d, now, u, a, 'duoi');
         else if (d.cam === 'camera-bay' && u < 1) this.veTiaNhin(g, d, now, u, a, 'duoi');
       }
+    },
+    /** GỐC TIA của một lần đọc d (chế độ vector, gói V4): ổ THẬT của cảm biến trên robot đang xét (VeVector.diemCamBien / diemMat, theo hướng xe lúc vẽ), pixel sân.
+     *  camera: hai mắt; hồng ngoại: ổ tren ở góc mũi; khoảng cách / cảm biến từ: ổ hông nào chĩa xa nhất về hướng tia (tia trước: cả hai hông), lùi ra mép thấu kính 0,9 pixel sân.
+     *  Không có ổ (cấu hình lạ): mũi xe như nhánh pixel (5 / 7 pixel sân trước tâm ô; cảm biến từ thiếu tai thì ở ổ tay nam châm). */
+    oTia: function (d) {
+      var r = this.cfg.robot, v = this.vis, h = v.d || 0, dx = DX[d.huong] || 0, dy = DY[d.huong] || 0, bx = d.tu.x * T, by = d.tu.y * T - (v.dr ? v.hop : 0), ds, i;
+      if (d.cam === 'camera') ds = VeVector.diemMat(r, h, T);
+      else ds = VeVector.diemCamBien(r, d.cam === 'hong-ngoai' ? 'hong-ngoai' : 'khoang-cach', h, T);
+      if (!ds.length && d.cam === 'tu') { var gn = VeVector.diemGan(r, h, T); if (gn) ds = [gn]; }
+      if (!ds.length) return [{ x: bx + 7 + dx * (d.cam === 'tu' || d.cam === 'hong-ngoai' ? 7 : 5), y: by + 7 + dy * (d.cam === 'tu' || d.cam === 'hong-ngoai' ? 7 : 5) }];
+      if (d.cam === 'camera') return ds.map(function (p) { return { x: bx + p.x, y: by + p.y }; });
+      var max = -1e9, kq = [];
+      for (i = 0; i < ds.length; i++) max = Math.max(max, (ds[i].x - T / 2) * dx + (ds[i].y - T / 2) * dy);
+      for (i = 0; i < ds.length; i++) if ((ds[i].x - T / 2) * dx + (ds[i].y - T / 2) * dy >= max - 0.3) kq.push({ x: bx + ds[i].x + dx * 0.9, y: by + ds[i].y + dy * 0.9 });
+      return kq;
+    },
+    /** Một tia cảm biến ở chế độ vector (gói V4, VeVector.HU): pha 'duoi' (dưới robot: chùm camera, ô ám của camera nhìn xuống) hay 'tren'. */
+    veTiaVec: function (g, d, now, u, a, pha) {
+      var hu = HU(), c = this.cfg, col = d.nguon === 'chan' ? BM.sanLamV3 : this.mauHien(d.mau);
+      if (d.cam === 'camera') hu.tiaCamera(g, d, now, u, a, pha, this.oTia(d), col, DX, DY);
+      else if (d.cam === 'camera-bay') hu.tiaNhin(g, d, now, u, a, pha, col);
+      else if (d.cam === 'tu') hu.tiaTu(g, d, u, a, this.oTia(d), now, DX, DY);
+      else if (d.cam === 'hong-ngoai') hu.tiaHongNgoai(g, d, now, u, a, this.oTia(d), d.o.x >= c.ox && d.o.y >= c.oy && d.o.x < c.ox + c.vw && d.o.y < c.oy + c.vh, DX, DY);
+      else hu.tiaKc(g, d, now, u, a, this.oTia(d), DX, DY);
     },
     /** Số pixel (từ mũi xe) mà tia / sóng nam châm đi được theo hướng h từ ô `tu`, tối đa 3 ô: tường, mép sân, thùng nặng chắn thì dừng sát mép ô đó (không xét vật). */
     tamTrong: function (tu, h) {
@@ -586,6 +612,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     },
     /** NÚT BẮN ĐANG BẬT thì NÓNG (luật warm() mùa 2): quầng đỏ cam thở quanh tấm nút và hai gợn nhiệt bay lên, vẽ đè lên ô nút ở mọi màn có nút (nhìn thấy ngay khi đọc code). */
     veNong: function (g, x, y, now) {
+      if (this.vec) { HU().nong(g, x, y, now); return; }                           // vector: quầng cam thở bo góc + gợn nhiệt (gói V4)
       var px = x * T, py = y * T, th = 0.55 + 0.45 * Math.sin(now / 260);
       g.save();
       g.strokeStyle = 'rgba(' + BM.tiaCamV3Rgb + ',' + (0.35 + 0.4 * th).toFixed(3) + ')'; g.lineWidth = 1;
