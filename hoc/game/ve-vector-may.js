@@ -13,7 +13,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function doanCat(g, x1, y1, x2, y2, a, b) {
     if (y1 > y2) { var t = x1; x1 = x2; x2 = t; t = y1; y1 = y2; y2 = t; }
     if (y2 < a || y1 > b) return;
-    var ya = Math.max(y1, a), yb = Math.min(y2, b), tai = function (y) { return y2 === y1 ? x1 : x1 + (x2 - x1) * (y - y1) / (y2 - y1); };
+    var ya = Math.max(y1, a), yb = Math.min(y2, b);
+    if (y2 > y1 && yb - ya < 4) return;                                              // mẩu cụt quá ngắn: bỏ (không thành chấm tròn ở mép ô)
+    var tai = function (y) { return y2 === y1 ? x1 : x1 + (x2 - x1) * (y - y1) / (y2 - y1); };
     g.moveTo(tai(ya), ya); g.lineTo(tai(yb), yb);
   }
 
