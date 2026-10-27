@@ -118,9 +118,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function veRobot() {
     var cfg = LapRap.cauHinhCua(S.cach), cv;
     E.robot.innerHTML = '';
-    try { cv = VeRobot.ve(cfg, {}, 0, 2); } catch (e) { cv = null; }
+    try { cv = VeRobot.veCo(cfg, {}, 0, 2 * VeRobot.PX_O_PART); } catch (e) { cv = null; }      // cỡ hiển thị: một ô 48 px CSS (pixel: bội số 2 như cũ; vector: đúng cỡ, nét theo pixel thiết bị)
     if (!cv) return;
-    var c = Ve.mk(cv, cv.laPart ? 1 : 3);
+    var c = Ve.mk(cv, cv.laPart ? VeRobot.heSoCss(cv) : 3);
     c.classList.add('lr-hinh');
     E.robot.appendChild(c);
     E.robot.classList.remove('doi'); void E.robot.offsetWidth; E.robot.classList.add('doi');

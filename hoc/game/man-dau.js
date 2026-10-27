@@ -89,14 +89,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ---------------------------------------------------------------- robot chạy qua lại */
   function hinh() {
     if (!window.VeRobot) return null;
-    try { return VeRobot.ve(ROBOT, { wl: S.nghi ? 0 : 2, wr: S.nghi ? 0 : 2, ph: S.ph, tay: { tuThe: 'tren', kep: false } }, S.huong, TI_LE); } catch (e) { return null; }
+    try { return VeRobot.veCo(ROBOT, { wl: S.nghi ? 0 : 2, wr: S.nghi ? 0 : 2, ph: S.ph, tay: { tuThe: 'tren', kep: false } }, S.huong, TI_LE * VeRobot.PX_O_PART); } catch (e) { return null; }      // cỡ ô hiển thị (VeRobot.veCo): pixel = bội số TI_LE như cũ
   }
   function veRobot() {
     var cv = hinh(); if (!cv) return;
     var c = el.robot;
-    if (c.width !== cv.width || c.height !== cv.height) { c.width = cv.width; c.height = cv.height; c.style.width = cv.width + 'px'; c.style.height = cv.height + 'px'; }
+    var hs = VeRobot.heSoCss(cv);
+    if (c.width !== cv.width || c.height !== cv.height) { c.width = cv.width; c.height = cv.height; c.style.width = cv.width * hs + 'px'; c.style.height = cv.height * hs + 'px'; }
     var g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height); g.imageSmoothingEnabled = false; g.drawImage(cv, 0, 0);
-    if (cv.laPart && window.SanVe && SanVe.coMatDong && SanVe.coMatDong()) SanVe.veMatTam(g, c.width / 2, c.height / 2, TI_LE, ROBOT, { chay: !S.nghi }, S.huong, performance.now());
+    if (cv.laPart && !cv.laVector && window.SanVe && SanVe.coMatDong && SanVe.coMatDong()) SanVe.veMatTam(g, c.width / 2, c.height / 2, TI_LE, ROBOT, { chay: !S.nghi }, S.huong, performance.now());
     c.style.transform = 'translate(' + S.x + 'px,-50%)';
   }
   function nhip() {

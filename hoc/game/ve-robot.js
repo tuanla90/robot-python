@@ -258,6 +258,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return cv;
   }
 
+  /** ROBOT NGOÀI SÂN theo CỠ HIỂN THỊ (gói V4): màn Lắp robot, thẻ Bộ phận mới, mở đầu, phim gọi veCo thay vì ve(…, tiLe) (tiLe là "bội số pixel part", ở vector
+   *  bị hiểu thành cạnh ô / 100). pxCss = cạnh MỘT Ô hiển thị (px CSS) mà robot đứng trong đó: một ô = PX_O_PART (24) pixel part, nên pixel: tiLe = pxCss / 24
+   *  (48 → 2, 72 → 3, 96 → 4, 36 → 1,5: Y NHƯ cũ); vector: canvas đúng một ô cạnh pxCss × devicePixelRatio (tay xoay: tràn sang ô bên), cờ .cssMoiPx = px CSS mỗi px canvas
+   *  (người gọi hiển thị canvas cỡ width × heSoCss(cv)). Cấu hình vector không ghép được: rơi về pixel cùng cỡ như ve(). */
+  var PX_O_PART = 24;
+  function veCo(cauHinh, trangThai, huong, pxCss) {
+    pxCss = pxCss > 0 ? pxCss : 2 * PX_O_PART;
+    if (veVector(cauHinh)) {
+      var dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1, canh = Math.max(1, Math.round(pxCss * dpr));
+      var cv = ve(cauHinh, trangThai, huong, canh / 100);
+      if (cv && cv.laVector) { cv.cssMoiPx = pxCss / canh; return cv; }
+    }
+    return ve(cauHinh, trangThai, huong, pxCss / PX_O_PART);
+  }
+  /** Px CSS mỗi px của canvas robot (veCo): vector = 1 / devicePixelRatio (đúng cạnh ô pxCss), pixel = 1 (như Ve.mk(cv, 1) cũ). */
+  function heSoCss(cv) { return cv && cv.laVector && cv.cssMoiPx > 0 ? cv.cssMoiPx : 1; }
+
   /** BÓNG CỦA TAY (chỉ part kẹp): ảnh đen một màu = đúng phần pixel mà hình có tay khác hình không tay (hai càng + cụm giữa), cùng cỡ với VeRobot.ve().
    *  san-ve.js vẽ nó DƯỚI robot, lệch phải-dưới: tay hạ lệch ít (bóng sát), tay nâng lệch nhiều (bóng xa). Không có part / không có tay: null. */
   var cacheBong = {};
@@ -313,7 +330,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function reachCua(cauHinh) { if (veVector(cauHinh)) return 50 + 100 * VV().tranCua(cauHinh); return cheDoVector() ? 50 : REACH; }
 
   var VeRobot = {
-    ve: ve, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
+    ve: ve, veCo: veCo, heSoCss: heSoCss, PX_O_PART: PX_O_PART, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
     cheDoVector: cheDoVector, veVector: veVector,
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };
