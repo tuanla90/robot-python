@@ -300,20 +300,20 @@
         'Vòng lặp 20 lần ở chương trình chính lo việc lặp lại; hàm chỉ lo một bước.']
     }),
     man({
-      chuong: 'che-hong-ngoai', so: 4, ten: 'Đi lấy rồi về: fetch()',yMoi: 'hàm nhớ số đo vào biến để đi về', buocVideo: 'Đo khoảng cách', mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'turn_left', 'u_turn', 'forward', 'pick', 'drop'], taoHam: ['fetch'], chinhCoDinh: true,
-      deBai: 'Tạo hàm fetch(): đo khoảng cách vào d, tới sát vật rồi nhặt, quay đầu, đi về đúng d ô và đặt vật vào ô đích trước mặt. Chương trình chính đã khóa: fetch(), rẽ trái, fetch(). Hai vật xa gần khác nhau.',
-      veMaMau: 'Hàm fetch() chưa có. Tạo nó giống màn "Nhớ số để quay về", nhưng gói vào một hàm.',
+      chuong: 'che-hong-ngoai', so: 4, ten: 'Đi lấy rồi về: go_get()',yMoi: 'hàm nhớ số đo vào biến để đi về', buocVideo: 'Đo khoảng cách', mucTieu: 'dua-vat',
+      hamCuaEmCan: ['move', 'turn_left', 'u_turn', 'forward', 'pick', 'drop'], taoHam: ['go_get'], chinhCoDinh: true,
+      deBai: 'Tạo hàm go_get(): đo khoảng cách vào d, tới sát vật rồi nhặt, quay đầu, đi về đúng d ô và đặt vật vào ô đích trước mặt. Chương trình chính đã khóa: go_get(), rẽ trái, go_get(). Hai vật xa gần khác nhau.',
+      veMaMau: 'Hàm go_get() chưa có. Tạo nó giống màn "Nhớ số để quay về", nhưng gói vào một hàm.',
       san: ['#o###', '#.###', 'D...o', '#D###'],
       batDau: { x: 1, y: 2, huong: 0 },
-      maMau: bai(['fetch()', 'turn_left()', 'fetch()']),
+      maMau: bai(['go_get()', 'turn_left()', 'go_get()']),
       sao: { o: 29, nhip: 16 },
-      loiGiai: { chinh: ['fetch()', 'turn_left()', 'fetch()'], hamCuaEmMoi: [H('fetch', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(d)', 'drop()']))] },
-      loiGiaiKhac: { moTa: 'Đường về đi bằng vòng for theo d', baiLam: bai(['fetch()', 'turn_left()', 'fetch()']), hamCuaEmMoi: [H('fetch', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DI_D, ['drop()']))] },
+      loiGiai: { chinh: ['go_get()', 'turn_left()', 'go_get()'], hamCuaEmMoi: [H('go_get', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(d)', 'drop()']))] },
+      loiGiaiKhac: { moTa: 'Đường về đi bằng vòng for theo d', baiLam: bai(['go_get()', 'turn_left()', 'go_get()']), hamCuaEmMoi: [H('go_get', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DI_D, ['drop()']))] },
       loiSai: [
-        { moTa: 'Đi về cố định một ô: chuyến sau xe chưa về tới chỗ cũ', baiLam: bai(['fetch()', 'turn_left()', 'fetch()']), hamCuaEmMoi: [H('fetch', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(1)', 'drop()']))], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đo lại sau khi quay đầu: d thành số ô tới ô đích phía sau', baiLam: bai(['fetch()', 'turn_left()', 'fetch()']), hamCuaEmMoi: [H('fetch', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DOC, ['forward(d)', 'drop()']))], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên nhặt vật', baiLam: bai(['fetch()', 'turn_left()', 'fetch()']), hamCuaEmMoi: [H('fetch', [], nhieu(DOC, ['forward(d)', 'u_turn()', 'forward(d)', 'drop()']))], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đi về cố định một ô: chuyến sau xe chưa về tới chỗ cũ', baiLam: bai(['go_get()', 'turn_left()', 'go_get()']), hamCuaEmMoi: [H('go_get', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()', 'forward(1)', 'drop()']))], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đo lại sau khi quay đầu: d thành số ô tới ô đích phía sau', baiLam: bai(['go_get()', 'turn_left()', 'go_get()']), hamCuaEmMoi: [H('go_get', [], nhieu(DOC, ['forward(d)', 'pick()', 'u_turn()'], DOC, ['forward(d)', 'drop()']))], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên nhặt vật', baiLam: bai(['go_get()', 'turn_left()', 'go_get()']), hamCuaEmMoi: [H('go_get', [], nhieu(DOC, ['forward(d)', 'u_turn()', 'forward(d)', 'drop()']))], phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Biến d trong hàm giữ số đo của lần gọi đó; lần gọi sau đo lại từ đầu.',
         'Đi tới d ô thì đi về cũng d ô.']
