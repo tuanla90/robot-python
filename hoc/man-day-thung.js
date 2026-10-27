@@ -92,13 +92,13 @@
       veMaMau: 'Chương trình có sẵn quay bằng turn_right() của xe hai bánh. Chạy thử xem xích quay được không.',
       san: ['#######', '#.H..D#', '#.#####', '#######'],
       batDau: { x: 1, y: 2, huong: 0 },
-      maMau: bai(nhieu(['move()', 'turn_right()'], FOR(4, ['move()']))),
+      maMau: bai(nhieu(['move()', 'turn_right()'], FOR(3, ['move()']))),
       sao: { o: 10, nhip: 6 },
-      loiGiai: bai(nhieu(['move()', 'tr_right()'], FOR(4, ['move()']))),
-      loiGiaiKhac: { moTa: 'Đẩy bằng forward(4): đúng, nhưng thêm thân một hàm', baiLam: bai(['move()', 'tr_right()', 'forward(4)']) },
+      loiGiai: bai(nhieu(['move()', 'tr_right()'], FOR(3, ['move()']))),
+      loiGiaiKhac: { moTa: 'Đẩy bằng forward(3): đúng, nhưng thêm thân một hàm', baiLam: bai(['move()', 'tr_right()', 'forward(3)']) },
       loiSai: [
-        { moTa: 'turn_right() của xe hai bánh: xích chỉ nhích nửa vòng, vẫn quay mặt lên', baiLam: bai(nhieu(['move()', 'turn_right()'], FOR(4, ['move()']))), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Quay trái: xích quay vào tường', baiLam: bai(nhieu(['move()', 'tr_left()'], FOR(4, ['move()']))), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'turn_right() của xe hai bánh: xích chỉ nhích nửa vòng, vẫn quay mặt lên', baiLam: bai(nhieu(['move()', 'turn_right()'], FOR(3, ['move()']))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quay trái: xích quay vào tường', baiLam: bai(nhieu(['move()', 'tr_left()'], FOR(3, ['move()']))), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['tr_right() quay xích 90 độ trong hai nhịp liền.',
         'Sau khi quay, thùng ở ngay trước mũi: mỗi move() đẩy nó một ô.']
