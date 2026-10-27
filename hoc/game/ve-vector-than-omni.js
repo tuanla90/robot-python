@@ -13,8 +13,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.elip(g, 0, 0, 4.5, 3.2); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 1.5);
     g.restore();
   }
-  V.dangKy({ loai: 'than', ma: 'omni', ten: 'Thân omni', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 96, y: 56 }, hongPhai: { x: 4, y: 56 }, tren: { x: 71, y: 78 }, sau: { x: 37, y: 27 } }, ve: function (g, s, M, H) {
-    var pha = s && s.banh && (s.banh.trai || s.banh.phai) && s.buoc ? 1 : 0, A = 40 * Math.PI / 180;
+  V.dangKy({ loai: 'than', ma: 'omni', ten: 'Thân omni', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 71, y: 47 }, hongPhai: { x: 29, y: 47 }, tren: { x: 71, y: 78 }, sau: { x: 37, y: 27 } }, oCam: { x: 63, y: 29 }, vo: { x: 23, y: 24, w: 54, h: 59 }, ve: function (g, s, M, H) {
+    var pha = s && typeof s.lan === 'number' ? (s.lan >= 0.5 ? 1 : 0) : s && s.banh && (s.banh.trai || s.banh.phai) && s.buoc ? 1 : 0, A = 40 * Math.PI / 180;
     banh(g, H, 17, 37, A, pha); banh(g, H, 83, 37, -A, pha); banh(g, H, 17, 75, -A, pha); banh(g, H, 83, 75, A, pha);
     H.bo(g, 23, 24, 54, 59, 22); g.fillStyle = H.gradVo(g, 23, 24, 54, 59); g.fill(); H.vien(g, BM.vecVien, 3.5);
     H.duong(g, 'M35 32 C33 42 33 51 35 60 M65 32 C67 42 67 51 65 60 M50 24 v12'); H.vien(g, BM.vecVoGhep, 2.5);

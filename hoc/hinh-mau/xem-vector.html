@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Xem bộ vẽ vector (gói V1–V3)</title>
+<title>Xem bộ vẽ vector (gói V1–V4)</title>
 <style>
   body{margin:0;background:var(--g-vecSanToi);font-family:system-ui,sans-serif;color:var(--g-vecVien);padding:16px}
   h2{font-size:15px;font-weight:600;margin:18px 0 8px}
@@ -31,6 +31,13 @@
 <script src="../game/ve-vector-tay-hoi.js"></script>
 <script src="../game/ve-vector-tay-xoay.js"></script>
 <script src="../game/ve-vector-tay-son.js"></script>
+<script src="../game/ve-vector-hieu-ung.js"></script>
+<!--V4: sân thật (SanVe.Field) + lõi SanHoc để phát lại chương trình mẫu-->
+<script src="../../nhan/san-robot-core.js"></script>
+<script src="../san-hoc.js"></script>
+<script src="../game/ve.js"></script>
+<script src="../game/ve-robot.js"></script>
+<script src="../game/san-ve.js"></script>
 <!--V3-->
 </head><body>
 <h2>Trang xem bộ vẽ vector (hoc/game/ve-vector*.js) — cùng kho hình mà sân dùng ở chế độ ?ve=vector. Mỗi canvas rasterise đúng pixel thiết bị (dpr = <span id="dpr"></span>).</h2>
@@ -137,7 +144,7 @@
 </script>
 <h2 id="v3">Gói V3 — robot: 5 thân × (không tay + 6 tay) × 4 hướng (lên · phải · xuống · trái), ô <span id="co-v3"></span> px CSS. Ô "cấm" = cấu hình Part.ghep cũng từ chối (câu báo ở dưới)</h2>
 <div class="v3" id="v3-ma-tran"></div>
-<h2>Gói V3 — cảm biến ở mọi ổ hợp lệ của mọi thân (tắt · đang đọc), 4 hướng; camera = hai mắt ống kính trên kính (đang đọc: sáng rực)</h2>
+<h2>Gói V3 — cảm biến ở mọi ổ hợp lệ của mọi thân (tắt · đang đọc), 4 hướng; camera (gói V4) = khối ống kính ở đuôi, mắt giữ là mắt cảm xúc (đang đọc: ống kính sáng rực)</h2>
 <div class="v3" id="v3-cam"></div>
 <h2>Gói V3 — trạng thái động chính (hướng xuống, ô 96 px)</h2>
 <div class="v3 hang" id="v3-trang-thai"></div>
@@ -225,6 +232,123 @@
     { than: 'hai-banh', camBien: [{ ma: 'camera', o: 'tren' }, { ma: 'mau', o: 'hong' }] }, { than: 'xich', camBien: [{ ma: 'hong-ngoai', o: 'hongTrai' }] }].forEach(function (cfg) {
     var m = ''; try { V.kiemGhep(cfg); m = '(không ném — SAI)'; } catch (e) { m = e.message; }
     vc.appendChild(el('p', '', JSON.stringify(cfg) + ' → ' + m));
+  });
+})();
+</script>
+<h2 id="v4">Gói V4 — MẮT BIỂU CẢM trên 5 thân (hướng xuống, ô 72 px): thường · chớp nửa · chớp khép · đâm (X) · va nhau (xoáy) · vui (^ ^) · ngạc nhiên · buồn · lim dim · chờ · liếc trái · liếc phải</h2>
+<div class="v3" id="v4-mat"></div>
+<h2>Gói V4 — mắt biểu cảm ở ô NHỎ 24 px và 32 px (cỡ ô nhỏ nhất thực tế của sân / khổ điện thoại 360 × 640): biểu cảm nào không đọc ra thì đổi hình</h2>
+<div class="v3" id="v4-mat-nho"></div>
+<h2>Gói V4 — cảm biến DÍNH VỎ trên từng thân (ô 96 px, hướng xuống; tắt · đang đọc): hông trên vỏ, hồng ngoại góc mũi, camera = khối ống kính ở ĐUÔI (mắt giữ là mắt cảm xúc), camera-bay ở mép trên drone</h2>
+<div class="v3" id="v4-cam"></div>
+<h2>Gói V4 — HOẠT CẢNH TRÊN SÂN ở chế độ vector: mỗi ô là một sân thật (SanVe.Field) chạy một chương trình mẫu qua SanHoc.chay, phát lại vòng lặp như màn chơi (nút ↻ chạy lại ngay)</h2>
+<p style="font-size:12px;margin:0 0 8px">Mắt chớp theo thời gian ở mọi sân (2,5–5 s, lệch nhau, thỉnh thoảng chớp đôi), kể cả lúc đứng yên. Hệ thống giảm chuyển động (prefers-reduced-motion): không chớp / rung / nảy.</p>
+<div class="hang" id="v4-san"></div>
+<style>
+  .v4s{position:relative;display:flex;align-items:center;justify-content:center;width:210px;height:210px}
+  .v4s canvas:not(.lop-robot){position:relative;z-index:1;border-radius:4px}
+  .v4s canvas.lop-robot{position:absolute;z-index:2;pointer-events:none}
+  .v4s .khung-san{position:absolute;z-index:0;display:none;border-radius:6px;background:var(--g-vecVoToi)}
+  .v4 p{max-width:210px}
+  .v4 button{margin-top:6px;font:12px system-ui;border:1px solid var(--g-vecVoToi);background:var(--g-vecVo);border-radius:6px;padding:3px 10px;cursor:pointer}
+</style>
+<script>
+(function () {
+  var V = window.VeVector, dpr = window.devicePixelRatio || 1;
+  V.datCheDo('vector');
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  /* 1. mắt biểu cảm: 5 thân × mọi kiểu */
+  var MAT = [['thuong', 'thường'], ['chop1', 'chớp nửa'], ['chop2', 'chớp khép'], ['dam', 'đâm'], ['xoay', 'va nhau'], ['vui', 'vui'], ['ngac', 'ngạc nhiên'], ['buon', 'buồn'], ['lim', 'lim dim'], ['cho', 'chờ'], ['thuong:1', 'liếc trái'], ['thuong:-1', 'liếc phải']];
+  var noiMat = document.getElementById('v4-mat');
+  V.ds('than').forEach(function (than) {
+    var d = el('div', 'o'), r = el('div', 'hang'); r.style.gap = '4px';
+    MAT.forEach(function (m) {
+      var n = Math.round(72 * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n; cv.style.width = cv.style.height = '72px';
+      var g = cv.getContext('2d'); g.drawImage(V.o('san', n), 0, 0); g.drawImage(V.robot({ than: than }, { than: { mat: m[0], quat: true } }, 2, n), 0, 0);
+      var c = el('div'); c.appendChild(cv); c.appendChild(el('p', '', m[1])); r.appendChild(c);
+    });
+    d.appendChild(r); d.appendChild(el('p', '', 'thân ' + than)); noiMat.appendChild(d);
+  });
+  /* 1b. mắt ở ô nhỏ */
+  var noiNho = document.getElementById('v4-mat-nho');
+  [24, 32].forEach(function (css) {
+    var d = el('div', 'o'), r = el('div', 'hang'); r.style.gap = '3px';
+    V.ds('than').forEach(function (than) {
+      MAT.forEach(function (m) {
+        var n = Math.round(css * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n; cv.style.width = cv.style.height = css + 'px'; cv.title = than + ' · ' + m[1];
+        var g = cv.getContext('2d'); g.drawImage(V.o('san', n), 0, 0); g.drawImage(V.robot({ than: than }, { than: { mat: m[0], quat: true } }, 2, n), 0, 0); r.appendChild(cv);
+      });
+    });
+    d.appendChild(r); d.appendChild(el('p', '', 'ô ' + css + ' px: mỗi thân một dãy ' + MAT.length + ' biểu cảm (' + MAT.map(function (m) { return m[1]; }).join(', ') + ')')); noiNho.appendChild(d);
+  });
+  /* 1c. cảm biến dính vỏ, ô 96 px */
+  var noiCam = document.getElementById('v4-cam'), BO_CAM = [[{ ma: 'khoang-cach', o: 'hong' }], [{ ma: 'mau', o: 'hong' }], [{ ma: 'cham', o: 'hong' }], [{ ma: 'hong-ngoai', o: 'tren' }], [{ ma: 'camera', o: 'tren' }], [{ ma: 'camera', o: 'tren' }, { ma: 'khoang-cach', o: 'hong' }], [{ ma: 'camera-bay', o: 'bung' }]];
+  V.ds('than').forEach(function (than) {
+    var d = el('div', 'o'), r = el('div', 'hang'); r.style.gap = '4px';
+    BO_CAM.forEach(function (cb) {
+      [false, true].forEach(function (doc) {
+        var cfg = { than: than, tay: than === 'drone' ? null : 'hoi', camBien: cb }, n = Math.round(96 * dpr), rb;
+        try { rb = V.robot(cfg, { camBien: doc ? { bat: true, mat: true } : {} }, 2, n); } catch (e) { return; }
+        var cv = document.createElement('canvas'); cv.width = n; cv.height = n; cv.style.width = cv.style.height = '96px'; cv.title = than + ' · ' + cb.map(function (c) { return c.ma + '@' + c.o; }).join(' + ') + (doc ? ' · đang đọc' : '');
+        var g = cv.getContext('2d'); g.drawImage(V.o('san', n), 0, 0); g.drawImage(rb, (n - rb.width) / 2, (n - rb.height) / 2);
+        var c = el('div'); c.appendChild(cv); c.appendChild(el('p', '', cb.map(function (q) { return q.ma; }).join(' + ') + (doc ? ' (đọc)' : ''))); r.appendChild(c);
+      });
+    });
+    d.appendChild(r); d.appendChild(el('p', '', 'thân ' + than + (than === 'drone' ? '' : ' (kèm súng hơi: nòng sau ở đuôi bên phải, camera lệch trái)'))); noiCam.appendChild(d);
+  });
+  /* 2. sân mẫu chạy chương trình */
+  var B = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
+  var DEMO = [
+    { ten: 'Đi thẳng, quay mượt (cả hình xoay), bánh theo quãng đi, đâm tường: mắt X + rung, chớp đỏ, sao choáng', san: ['.....', '...#.', '.....'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: B,
+      code: 'left_move()\nright_move()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\n' },
+    { ten: 'Tới cờ: mắt cười "^ ^" + nảy (giữ tới khi hộp kết quả hiện), pháo giấy', san: ['...F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: B, code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\n' },
+    { ten: 'Tay kẹp: hạ, nhặt (khép dần), mang, đặt vào ô đích (vui); hạ tay mà đi: tay vướng (đâm)', san: ['.o.', '...', '..D'], batDau: { x: 0, y: 0, huong: 1 }, robot: { than: 'hai-banh', tay: 'kep', camBien: [] }, mucTieu: 'dua-vat',
+      hamGoc: B.concat(['arm_down', 'arm_up', 'grab', 'release']), code: 'arm_down()\ngrab()\nwait()\narm_up()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\narm_down()\nrelease()\nwait()\narm_up()\nwait()\nright_move()\nwait()\narm_down()\nwait()\nleft_move()\nright_move()\nwait()\n' },
+    { ten: 'Cảm biến khoảng cách: tia từ hai tai ở hông (trống xanh, chặn đỏ + X)', san: ['....', '.#..', '....'], batDau: { x: 0, y: 1, huong: 1 }, robot: { than: 'hai-banh', tay: null, camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+      hamGoc: B.concat(['front_clear', 'left_clear', 'right_clear']), code: 'front_clear()\nwait()\nleft_clear()\nwait()\nright_clear()\nwait()\nleft_move()\nwait()\nfront_clear()\nwait()\n' },
+    { ten: 'Camera (đôi mắt): chùm sáng từ hai mắt tới ô trước mặt, khung ô theo màu đọc', san: ['rb..', '....'], batDau: { x: 0, y: 1, huong: 0 }, robot: { than: 'hai-banh', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] },
+      hamGoc: B.concat(['color']), code: 'color()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\ncolor()\nwait()\n' },
+    { ten: 'Nam châm: cảm biến từ (tia bạc), sóng hút theo cực, vật sắt bay về mũi; thả bị chặn (!)', san: ['....', '....'], vat: [{ x: 3, y: 0, chat: 'sat' }], batDau: { x: 0, y: 0, huong: 1 },
+      robot: { than: 'hai-banh', tay: 'nam-cham', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }, hamGoc: B.concat(['magnet_n', 'magnet_s', 'magnet_off', 'front_metal']), code: 'front_metal()\nwait()\nleft_move()\nright_move()\nwait()\nmagnet_n()\nwait()\nwait()\nright_move()\nwait()\nmagnet_off()\nwait()\n' },
+    { ten: 'Súng hơi: bóng bay, làn hơi, giật; trúng nút (nút lóe → nóng: quầng cam + gợn nhiệt, mắt vui)', san: ['..N', '...', '...'], batDau: { x: 2, y: 2, huong: 0 }, robot: { than: 'hai-banh', tay: 'hoi', camBien: [] },
+      hamGoc: B.concat(['shoot', 'shoot_back']), code: 'shoot()\nwait()\nwait()\nshoot_back()\nwait()\n' },
+    { ten: 'Máy ném: vạch ngắm, nạp, gáo vung dần, vật bay vòng cung + bóng co theo độ cao; ném hụt (?)', san: ['.o...', '.....'], batDau: { x: 0, y: 0, huong: 1 }, robot: { than: 'hai-banh', tay: 'nem', camBien: [] },
+      hamGoc: B.concat(['aim', 'throw', 'load']), code: 'load()\nwait()\naim(3)\nthrow()\nwait()\nwait()\nthrow()\nwait()\n' },
+    { ten: 'Drone: bóng elip theo độ cao, thanh pin, ô sạc thở / lóe, hết pin rơi (khói, mắt lim dim)', san: ['.P...', '.....'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'drone', robot: { than: 'drone', tay: null, camBien: [{ ma: 'pin', o: 'bung' }] }, pin: 3,
+      hamGoc: ['go_right', 'go_left', 'go_up', 'go_down', 'wait', 'battery'], code: 'battery()\ngo_right()\nwait()\ngo_right()\nwait()\ngo_right()\nwait()\ngo_right()\nwait()\ngo_down()\nwait()\ngo_left()\nwait()\n' },
+    { ten: 'Máy sơn: ô cần tô (nét đứt), tô ô (lóe), xong hình (vui)', san: ['....'], hinh: ['rr..'], batDau: { x: 0, y: 0, huong: 1 }, robot: { than: 'hai-banh', tay: 'son', camBien: [] }, mucTieu: 'to-hinh',
+      hamGoc: B.concat(['ink', 'dot', 'pen_down', 'pen_up']), code: 'ink("red")\ndot()\nwait()\nleft_move()\nright_move()\nwait()\ndot()\nwait()\n' },
+    { ten: 'Tay xoay: khớp xoay mượt trái / trước / phải, nhặt vật bên hông; khớp kẹt (?)', san: ['...', '.o.', '...'], batDau: { x: 1, y: 2, huong: 0 }, robot: { than: 'hai-banh', tay: 'xoay', camBien: [] },
+      hamGoc: B.concat(['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right']), code: 'arm_left()\nwait()\narm_right()\nwait()\narm_right()\nwait()\narm_left()\nwait()\narm_down()\ngrab()\nwait()\narm_up()\nwait()\narm_left()\nwait()\n' },
+    { ten: 'Ô động: băng chuyền chạy liền, bàn xoay quay liền, cửa trượt, ô sạc thở, nút bắn bật sẵn (nóng)', san: ['>>>v', '@.Cv', 'P.N<'], nutBat: [{ x: 2, y: 2 }], batDau: { x: 1, y: 1, huong: 1 }, hamGoc: B, code: 'wait()\nwait()\nwait()\n' }
+  ];
+  function cauHinhSan(d) { var r = VeRobot.cauHinhCua({ robot: d.robot, hamGoc: d.hamGoc, loaiRobot: d.loaiRobot }); return { san: d.san, batDau: d.batDau, loaiRobot: d.loaiRobot || 'banh', robot: r, vat: d.vat, pin: d.pin, hinh: d.hinh, nutBat: d.nutBat }; }
+  function chayVet(d) {
+    var cfg = { san: d.san, batDau: d.batDau, loaiRobot: d.loaiRobot || 'banh', hamGoc: d.hamGoc, robot: d.robot, camBien: d.robot ? d.robot.camBien : undefined, mucTieu: d.mucTieu, vat: d.vat, pin: d.pin, hinh: d.hinh, nutBat: d.nutBat };
+    try { return SanHoc.chay(cfg, d.code); } catch (e) { return { vet: [], thang: false, loi: e }; }
+  }
+  var noiSan = document.getElementById('v4-san');
+  DEMO.forEach(function (d, i) {
+    var o = el('div', 'o v4'), san = el('div', 'v4s'), cv = document.createElement('canvas'); cv.className = 'tex';
+    san.appendChild(cv); o.appendChild(san); o.appendChild(el('p', '', d.ten)); var nut = el('button', '', '↻ chạy lại'); o.appendChild(nut); noiSan.appendChild(o);
+    var F = new SanVe.Field(cv, { kich: 200 }), lan = 0;
+    F.nap(cauHinhSan(d));
+    (window.V4_SAN = window.V4_SAN || []).push(F);                                   // để thử tay trong console: V4_SAN[i].baoHieu('!') …
+    async function phat() {
+      var my = ++lan, k = chayVet(d);
+      F.datLai(); await SanVe.ngu(500);
+      for (var j = 0; j < k.vet.length && my === lan; j++) {
+        var e = k.vet[j];
+        if (e.loai === 'lenh') { if (e.docCamBien) F.docCamBien(e.docCamBien, 380); if (e.aimTam) F.datTam(e.aimTam); if (e.inkMau) F.datMauSon(e.inkMau); await SanVe.ngu(120); }
+        else await F.phatNhip(e, 300);
+      }
+      if (my !== lan) return;
+      if (k.thang) F.mungThang(); else { F.chopDo(200); F.quayVe(); }
+      await SanVe.ngu(2600);
+      if (my === lan) phat();
+    }
+    nut.addEventListener('click', phat);
+    setTimeout(phat, 300 + i * 180);
   });
 })();
 </script>

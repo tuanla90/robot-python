@@ -26,7 +26,10 @@ const NEN = '13b8a97';   // commit nền của gói A1 (trước khi gom màu)
    Mỗi mục ghi gói + lý do; đổi màu thật (A2) thì đặt NEN = null. */
 const SUA_SAU_NEN = {
   'san-ve.js': 'V1 (27/10): chế độ vector — canvas theo pixel thiết bị, ô / vật vector',
-  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector'
+  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector',
+  'man-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'man-lap.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
+  'mo-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'phim-goi.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
+  'the-part.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)'
 };
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');

@@ -67,10 +67,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     bao.ve = function (t2, h2) {
       if (t2) tt = t2; if (h2 !== undefined) hg = h2;
       var cv;
-      try { cv = Ve.mk(VeRobot.ve(cfg, tt, hg, tiLe || 3), 1); }
+      try { var rb = VeRobot.veCo(cfg, tt, hg, (tiLe || 3) * VeRobot.PX_O_PART); cv = Ve.mk(rb, VeRobot.heSoCss(rb)); }      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
       catch (e) { cv = h('div'); }
       cv.classList.add('pxi');
-      var w = cv.width || 0, hh = cv.height || 0;
+      var w = parseFloat(cv.style && cv.style.width) || cv.width || 0, hh = parseFloat(cv.style && cv.style.height) || cv.height || 0;      // cỡ hiển thị (vector: canvas theo pixel thiết bị)
       cv.style.position = 'absolute'; cv.style.left = (-w / 2) + 'px'; cv.style.top = (-hh / 2) + 'px';
       bao.innerHTML = ''; bao.appendChild(cv);
       return bao;

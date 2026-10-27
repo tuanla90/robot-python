@@ -5,8 +5,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Trạng thái s: banh { trai, phai } + buoc (0 | 1) → mắt xích dịch nửa nấc (nhịp bánh xích); camera / camSang như thân A. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
-  V.dangKy({ loai: 'than', ma: 'xich', ten: 'Thân bánh xích', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 98, y: 56 }, hongPhai: { x: 2, y: 56 }, tren: { x: 70, y: 78 }, sau: { x: 36, y: 26 } }, ve: function (g, s, M, H) {
-    var quay = s && s.banh && (s.banh.trai || s.banh.phai), lech = quay && s.buoc ? 3.5 : 0, i, y;
+  V.dangKy({ loai: 'than', ma: 'xich', ten: 'Thân bánh xích', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 72, y: 47 }, hongPhai: { x: 28, y: 47 }, tren: { x: 70, y: 78 }, sau: { x: 36, y: 26 } }, oCam: { x: 64, y: 29 }, vo: { x: 22, y: 24, w: 56, h: 59 }, ve: function (g, s, M, H) {
+    var quay = s && s.banh && (s.banh.trai || s.banh.phai), lech = typeof s.lan === 'number' ? s.lan * 7 : quay && s.buoc ? 3.5 : 0, i, y;       // s.lan (0..1, gói V4): mắt xích theo quãng đi
     /* hai dải xích: khung tối bo tròn hai đầu, bánh dẫn ở hai đầu, mắt xích ngang */
     [6, 74].forEach(function (x) {
       H.bo(g, x, 25, 20, 62, 10); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 3);

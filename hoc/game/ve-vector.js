@@ -19,6 +19,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      (tay, hongTrai, hongPhai, tren + sau cho nòng sau; drone: hongTrai, hongPhai, duoi, tren, bung); cảm biến 'hong' = một cái mỗi hông (doiCam như Part.ghep);
      kiemGhep(cfg) ném ĐÚNG lỗi của Part.ghep cho cấu hình cấm; thân khongHuong (drone) không xoay, bongRieng không có bóng trong hình; tay.tran (tay xoay) → canvas
      rộng hơn ô (tâm vẫn ở giữa); vatXoay / hinhHoc trả hình học tay theo 1/100 ô cho san-ve.js (qua VeRobot). H.kinh / H.angTen: kính + mắt + chấm ăng-ten màu đội dùng chung.
+   GÓI V4 (27–28/10): H.kinh vẽ mắt biểu cảm theo s.mat ('thuong' | 'chop1' | 'chop2' | 'lim' | 'dam' | 'xoay' | 'vui' | 'ngac' | 'buon' | 'cho', kèm ':±1' liếc) — nét dày có
+     sàn 2 px thiết bị, hình gần hết dải kính; camera KHÔNG còn đổi mắt: khối ống kính ở đuôi (than.oCam, cảm biến oVe 'cam'), diemOngKinh = gốc tia camera; diemCamBien = gốc tia
+     cảm biến khác; ổ hông mọi thân nằm trên vỏ (than.vo = hộp vỏ, máy kiểm "dính vỏ"); hiệu ứng trên sân ở VeVector.HU (ve-vector-hieu-ung.js).
    Ô / VẬT: VeVector.o(ma, canhPx, s) · VeVector.vat(ma, canhPx, s) → canvas đệm.
    Node: không có document → CanvasGia ghi lại từng lệnh vẽ (máy kiểm hoc/kiem-ve-vector.mjs đọc .lenh).
    ========================================================================== */
@@ -110,17 +113,43 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function gradVo(g, x, y, w, h) { return gradToa(g, x + w * 0.42, y + h * 0.35, Math.max(w, h) * 0.7, [[0, BM.vecVo], [0.7, BM.vecVoGiua], [1, BM.vecVoToi]]); }
   function rgba(boBa, a) { return 'rgba(' + boBa + ',' + (+a).toFixed(3) + ')'; }
   /** "GIA ĐÌNH" thân A (gói V3, mọi thân dùng chung): KÍNH dải ngang (gradient màu đội toi → chinh) + HAI MẮT viên thuốc (vecMat, viền chinh) trong hộp (x, y, w, h).
-   *  Màu đội chỉ ở đúng hai chỗ này (một gradient, hai viền mắt) + chấm ăng-ten (angTen): máy kiểm đếm. s.camera: mắt là ống kính (con ngươi tối);
-   *  s.camSang (camera đang đọc) / s.sang (drone đo pin): quầng sáng quanh mắt, mắt trắng rực, con ngươi cyan. */
+   *  Màu đội chỉ ở đúng hai chỗ này (một gradient, hai viền mắt) + chấm ăng-ten (angTen): máy kiểm đếm. Gói V4: camera KHÔNG còn đổi mắt (camera là khối ống kính ở đuôi,
+   *  ve-vector-cam.js); mắt luôn là mắt cảm xúc (s.mat). s.sang (drone đo pin): quầng sáng quanh mắt, mắt trắng rực. */
   function kinh(g, M, x, y, w, h, s) {
     s = s || {};
     bo(g, x, y, w, h, h / 2); g.fillStyle = gradDoc(g, 0, y, 0, y + h, [[0, M.toi], [1, M.chinh]]); g.fill(); vien(g, BM.vecVien, 2.5);
-    var ew = w * 0.1522, eh = h * 0.588, ey = y + (h - eh) / 2, sang = !!(s.camSang || s.sang);
-    [x + w * 0.2174, x + w * 0.6304].forEach(function (ex) {
+    var ew = w * 0.1522, eh = h * 0.588, ey = y + (h - eh) / 2, mt = String(s.mat || 'thuong').split(':'), kieu = mt[0], liec = +mt[1] || 0;
+    var sang = !!(s.camSang || s.sang) && (kieu === 'thuong' || kieu === 'ngac'), dx = liec * ew * 0.38;
+    [x + w * 0.2174, x + w * 0.6304].forEach(function (ex0, i) {
+      var ex = ex0 + dx, cx = ex + ew / 2, cy = ey + eh / 2, trong = i === 0 ? 1 : -1;   // trong: hướng về giữa mặt theo x (mắt x nhỏ → +x)
+      if (veMat(g, M, kieu, cx, cy, w, h, trong)) return;
       if (sang) { bo(g, ex - 2.5, ey - 2.5, ew + 5, eh + 5, (ew + 5) / 2); to(g, rgba(BM.vecMatSangRgb, 0.6)); }
       bo(g, ex, ey, ew, eh, ew / 2); to(g, sang ? BM.vecMatSang : BM.vecMat); vien(g, M.chinh, 1);
-      if (s.camera) { tron(g, ex + ew / 2, ey + eh / 2, ew * 0.3); to(g, sang ? BM.vecDen : BM.vecBanh); }
     });
+  }
+  /** Bao nhiêu px thiết bị trên một đơn vị của g lúc này (để nét biểu cảm có SÀN theo px thật: ô sân nhỏ ~24 px vẫn đọc ra). Canvas giả (Node): 1. */
+  function pxMoiDv(g) { try { var m = g.getTransform(); return Math.sqrt(Math.abs(m.a * m.d - (m.b || 0) * (m.c || 0))) || 1; } catch (e) { return 1; } }
+  /** MẮT BIỂU CẢM (gói V4, sửa theo góp ý 28/10: nét DÀY, hình TO gần hết chiều cao dải kính, quầng sáng cho tương phản) — mắt tâm (cx, cy) trên kính w × h,
+   *  hệ của thân (mặt quay xuống: "trên" của khuôn mặt là −y). Nét = max(0,3·h, 2 px thiết bị) (trần 0,55·h), đầu bo tròn; màu lõi sáng vecMat trên quầng vecMatSang.
+   *  chop1 nửa nhắm · chop2 khép thành vạch · lim lim dim (nửa dưới) · dam chữ X · xoay "> <" (va nhau) · vui chữ "^" · ngac tròn to có con ngươi · buon vạch xệ ra ngoài ·
+   *  cho chấm nhỏ. Trả true nếu đã vẽ (kiểu khác 'thuong'). */
+  function veMat(g, M, kieu, cx, cy, w, h, trong) {
+    if (!kieu || kieu === 'thuong') return false;
+    var rw = w * 0.12, rh = h * 0.42, day = Math.min(h * 0.55, Math.max(h * 0.3, 2 / pxMoiDv(g)));
+    function net(d) { d = d || day; g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = rgba(BM.vecMatSangRgb, 0.55); g.lineWidth = d * 1.75; g.stroke(); g.strokeStyle = BM.vecMat; g.lineWidth = d; g.stroke(); }
+    function dac() { g.lineJoin = 'round'; g.strokeStyle = rgba(BM.vecMatSangRgb, 0.55); g.lineWidth = day * 0.75; g.stroke(); to(g, BM.vecMat); }
+    switch (kieu) {
+      case 'chop1': bo(g, cx - rw, cy - rh * 0.15, 2 * rw, rh * 0.95, rh * 0.45); dac(); return true;
+      case 'chop2': g.beginPath(); g.moveTo(cx - rw, cy + rh * 0.05); g.quadraticCurveTo(cx, cy + rh * 0.45, cx + rw, cy + rh * 0.05); net(); return true;
+      case 'lim': g.beginPath(); g.moveTo(cx - rw, cy - rh * 0.05); g.lineTo(cx + rw, cy - rh * 0.05); g.arc(cx, cy - rh * 0.05, rw, 0, Math.PI); g.closePath(); dac(); return true;
+      case 'dam': g.beginPath(); g.moveTo(cx - rw, cy - rh * 0.85); g.lineTo(cx + rw, cy + rh * 0.85); g.moveTo(cx + rw, cy - rh * 0.85); g.lineTo(cx - rw, cy + rh * 0.85); net(day * 0.85); return true;
+      case 'xoay': g.beginPath(); g.moveTo(cx - trong * rw, cy - rh * 0.8); g.lineTo(cx + trong * rw * 0.9, cy); g.lineTo(cx - trong * rw, cy + rh * 0.8); net(day * 0.9); return true;      // "> <" nhăn mắt (va nhau): khác hẳn X và tròn ở ô nhỏ
+      case 'vui': g.beginPath(); g.moveTo(cx - rw * 1.1, cy + rh * 0.55); g.lineTo(cx, cy - rh * 0.65); g.lineTo(cx + rw * 1.1, cy + rh * 0.55); net(); return true;
+      case 'ngac': var R = rh * 1.05; tron(g, cx, cy, R); dac(); tron(g, cx, cy + R * 0.1, R * 0.42); to(g, M.toi); return true;
+      case 'buon': g.beginPath(); g.moveTo(cx - trong * rw * 1.1, cy + rh * 0.75); g.lineTo(cx + trong * rw * 0.8, cy - rh * 0.55); net(); return true;      // vạch xệ dốc: ngoài thấp, trong cao
+      case 'cho': tron(g, cx, cy + rh * 0.15, day * 0.62); to(g, BM.vecMat); return true;
+      default: return false;
+    }
   }
   /** Ăng-ten: cột bạc từ (x, yGoc) lên tới (x, yDinh + r), chấm màu đội bán kính r ở (x, yDinh). */
   function angTen(g, M, x, yGoc, yDinh, r) {
@@ -237,6 +266,32 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function diemO(cfg, o, huong, canh) { var t = lay('than', (cfg && cfg.than) || 'hai-banh'); return t && t.oGan[o] ? diemTrenO(t.oGan[o], huong, canh, t) : null; }
   /** Ổ gắn tay của thân (sau xoay) trên canvas ô: để kiểm "tay luôn ở phía hướng mặt" (drone: ổ 'duoi' dưới bụng). */
   function diemGan(cfg, huong, canh) { var t = lay('than', (cfg && cfg.than) || 'hai-banh'); return t ? diemO(cfg, t.khongHuong ? 'duoi' : 'tay', huong, canh) : null; }
+  /** Mọi ổ đang gắn cảm biến `ma` của cfg (sau đổi 'hong' → hai ổ, sau xoay) trên canvas ô cạnh `canh`: [{ o, x, y }] — gốc tia của cảm biến (gói V4, san-ve.js oTia). */
+  function diemCamBien(cfg, ma, huong, canh) {
+    var t = lay('than', (cfg && cfg.than) || 'hai-banh'); if (!t) return [];
+    return doiCam(cfg && cfg.camBien).filter(function (c) { return c.ma === ma && t.oGan[c.o]; }).map(function (c) { var p = diemTrenO(t.oGan[c.o], huong, canh, t); p.o = c.o; return p; });
+  }
+  /** Tâm ống kính CAMERA (gói V4: khối camera ở đuôi, than.oCam + ongKinh − diemNeo) sau xoay trên canvas ô cạnh `canh`; null nếu cfg không có camera / thân không có oCam. */
+  function diemOngKinh(cfg, huong, canh) {
+    var t = lay('than', (cfg && cfg.than) || 'hai-banh'), cb = lay('cam-bien', 'camera');
+    if (!t || !t.oCam || !cb || !doiCam(cfg && cfg.camBien).some(function (c) { return c.ma === 'camera'; })) return null;
+    return diemTrenO({ x: t.oCam.x + cb.ongKinh.x - cb.diemNeo.x, y: t.oCam.y + cb.ongKinh.y - cb.diemNeo.y }, huong, canh, t);
+  }
+  /** Hộp kính (x, y, w, h) mà thân vẽ qua H.kinh (đo một lần bằng cách cho thân vẽ lên canvas giả với H.kinh ghi lại): để biết chỗ hai mắt. */
+  var kinhDem = {};
+  function kinhCua(than) {
+    if (!than) return null;
+    if (kinhDem[than.ma] !== undefined) return kinhDem[than.ma];
+    var cap = null, Hc = Object.assign({}, H, { kinh: function (g, M, x, y, w, h) { if (!cap) cap = { x: x, y: y, w: w, h: h }; } });
+    try { than.ve(new CanvasGia(1, 1).getContext('2d'), {}, mauDoi(''), Hc); } catch (e) { cap = null; }
+    return (kinhDem[than.ma] = cap);
+  }
+  /** Tâm hai mắt (camera là đôi mắt trên kính) của thân trong cfg, sau xoay, trên canvas ô cạnh `canh`: [mắt x nhỏ, mắt x lớn] (hệ thân); [] nếu thân không có kính. */
+  function diemMat(cfg, huong, canh) {
+    var t = lay('than', (cfg && cfg.than) || 'hai-banh'), k = kinhCua(t); if (!k) return [];
+    var ew = k.w * 0.1522, ey = k.y + k.h / 2;
+    return [k.x + k.w * 0.2174 + ew / 2, k.x + k.w * 0.6304 + ew / 2].map(function (ex) { return diemTrenO({ x: ex, y: ey }, huong, canh, t); });
+  }
   /** Dịch của tay trong hệ thân (ổ − điểm neo) và ổ đã dùng; null nếu không gắn được. */
   function dichTay(than, tay) {
     var os = oTay(than, tay)[0]; if (!os) return null;
@@ -282,7 +337,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     huong = ((huong || 0) % 4 + 4) % 4; if (than.khongHuong) huong = 0;
     var canh = Math.max(1, Math.round(canhPx)), tran = tranCua(cfg), canhCv = canh + 2 * Math.round(canh * tran), M = mauDoi(cfg.son);
     var sCb = st.camBien || {}, coCam = cams.some(function (c) { return c.ma === 'camera'; });
-    var sT = Object.assign({}, st.than || {}, coCam ? { camera: true, camSang: !!sCb.mat } : {}), sTay = st.tay || {};
+    var sT = Object.assign({}, st.than || {}), sTay = st.tay || {};                          // gói V4: camera không đổi mắt (khối ống kính ở đuôi), coCam chỉ còn cho khoá đệm
     var khoa = ['robot', than.ma, tay ? tay.ma : '-', JSON.stringify(cams), huong, '#' + canh, M.ma, JSON.stringify(sT), tay ? JSON.stringify(sTay) : '', cams.length ? JSON.stringify(sCb) : ''].join('|');
     return nho(khoa, function () {
       var cv = taoCanvas(canhCv, canhCv), g = cv.getContext('2d'), k = (canh / HE) * CO_THAN;
@@ -295,7 +350,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         g.save(); g.translate(d.x, d.y); tay.ve(g, Object.assign({}, sTay, { than: than.ma, duoi: d.o === 'duoi', sau: sau }), M, H); g.restore();
       }
       cams.forEach(function (c) {                                                       // cảm biến: vẽ ở ổ (điểm neo trùng ổ), trên thân và tay; ra = phía ngoài (dấu x) của ổ
-        var cb = lay('cam-bien', c.ma), o = than.oGan[c.o];
+        var cb = lay('cam-bien', c.ma), o = cb.oVe === 'cam' && than.oCam ? than.oCam : than.oGan[c.o];     // camera (gói V4): vẽ ở đuôi (than.oCam), ổ logic giữ nguyên
         g.save(); g.translate(o.x - cb.diemNeo.x, o.y - cb.diemNeo.y);
         cb.ve(g, Object.assign({}, sCb, { ben: c.o === 'hongTrai' ? 'trai' : c.o === 'hongPhai' ? 'phai' : null, o: c.o, ra: o.x >= TAM_THAN.x ? 1 : -1, than: than.ma }), M, H);
         g.restore();
@@ -311,7 +366,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
     o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, gocXoay: gocXoay, gocCua: gocCua,
-    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
+    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
     xoaDem: xoaDem, _loiGia: loiGia
   };
 });

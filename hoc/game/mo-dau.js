@@ -44,7 +44,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** R1 (thân hai bánh, không tay) đã cắt lề: tỉ lệ 3 ≈ 51×60, tỉ lệ 4 ≈ 68×80. */
   function r1(huong, tiLe) {
-    try { var c = Ve.mk(catLe(VeRobot.ve(R1, { wl: 0, wr: 0, ph: 0, tay: null }, huong, tiLe)), 1); c.classList.add('pxi'); return c; }
+    try { var cv = VeRobot.veCo(R1, { wl: 0, wr: 0, ph: 0, tay: null }, huong, tiLe * VeRobot.PX_O_PART), c = Ve.mk(catLe(cv), VeRobot.heSoCss(cv)); c.classList.add('pxi'); return c; }      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
     catch (e) { return h('div'); }
   }
   function ico(ten, s, mau) { var c = Ve.ico(ten, s, { fill: mau || VANG, line: MUC }); c.classList.add('pxi'); return c; }

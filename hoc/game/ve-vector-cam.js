@@ -34,8 +34,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, 50, 62, 3); H.to(g, s.bat ? BM.vecHong : BM.vecDeSang); H.vien(g, BM.vecVien, 1.5);
   } });
 
-  /* CAMERA (đôi mắt, color() đọc ô trước mặt): không có hình ở ổ — hai mắt trên kính của thân thành ống kính (VeVector.robot đặt s.camera / s.camSang cho thân). */
-  V.dangKy({ loai: 'cam-bien', ma: 'camera', ten: 'Camera (đôi mắt)', gan: 'tren', diemNeo: { x: 50, y: 50 }, trenThan: true, ve: function () { /* mắt vẽ ở thân (H.kinh) */ } });
+  /* CAMERA (color() đọc ô trước mặt) — gói V4 (user 28/10): KHÔNG còn là hai mắt; là khối camera trên trụ ngắn ở ĐUÔI xe (VeVector.robot đặt ở than.oCam, oVe 'cam'; ổ logic vẫn 'tren'
+     như Part.ghep), ống kính hướng về PHÍA TRƯỚC (+y) nhìn qua đầu xe. Đế bạc chạm vỏ, khối trắng viền chàm, loa che tối, ống kính cyan; s.mat (đang đọc): ống kính trắng rực + quầng.
+     Gốc tia camera = tâm ống kính (diemNeo + (0, 10)) → VeVector.diemOngKinh. Mắt trên kính giữ là mắt cảm xúc. */
+  V.dangKy({ loai: 'cam-bien', ma: 'camera', ten: 'Camera (đôi mắt)', gan: 'tren', diemNeo: { x: 50, y: 50 }, oVe: 'cam', ongKinh: { x: 50, y: 60 }, ve: function (g, s, M, H) {
+    var sang = !!s.mat;
+    H.bo(g, 45.5, 43, 9, 8, 3); H.to(g, BM.vecBacToi); H.vien(g, BM.vecVien, 1.6);                          // trụ / đế chạm vỏ
+    H.bo(g, 41, 46, 18, 12, 4); g.fillStyle = H.gradVo(g, 41, 46, 18, 12); g.fill(); H.vien(g, BM.vecVien, 2.2);   // khối camera
+    H.bo(g, 44, 56, 12, 5.5, 2); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 1.4);                              // loa che ống kính (phía trước)
+    if (sang) { H.tron(g, 50, 60, 7); H.to(g, H.rgba(BM.vecMatSangRgb, 0.7)); }
+    H.tron(g, 50, 60, 3.4); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 1.2);
+    H.tron(g, 50, 60, 2.2); H.to(g, sang ? BM.vecMatSang : s.bat ? BM.vecDenSang : BM.vecDen);
+    H.tron(g, 49.2, 59.2, 0.8); H.to(g, BM.vecVo);
+  } });
 
   /* HỒNG NGOẠI (distance() / warm(), mùa 2): mắt đo nhỏ ở góc mũi bên trái, vỏ tròn trắng, thấu kính đỏ: tắt = đỏ sẫm, đang đọc = đỏ hồng rực + lõi sáng + hai chấm nhô về phía trước
      (tia dài trên sân do san-ve.js / gói V4 vẽ). */
