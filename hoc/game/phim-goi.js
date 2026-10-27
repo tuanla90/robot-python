@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    phim-goi.js — "Robot Chấn Hưng": PHIM NGẮN MỞ MỖI GÓI (window.PhimGoi). Kế hoạch: hoc/KE-HOACH-PHIM-GOI.md.
    Bộ máy chiếu DÙNG CHUNG cho mọi mùa: phim là dữ liệu (một mảng hàm vẽ khung cho mỗi mã gói) ở game/phim-mua-1.js, phim-mua-2.js…,
@@ -16,7 +17,7 @@
   'use strict';
 
   var h = TP.h;
-  var VANG = '#ffd95a', MUC = '#1b120a';
+  var VANG = BM.phimVANG, MUC = BM.ink;
   var PHIM = {};                                  // mã gói → mảng hàm khung
 
   function CO(ma) { return 'phim-goi:' + ma; }
@@ -48,7 +49,7 @@
     var cv = document.createElement('canvas'); cv.width = Ve.T; cv.height = Ve.T;
     var g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
     g.drawImage(Ve.tiles().rug[0], 0, 0);
-    try { Ve.veCua(g, 0, 0, mo, { doc: doc !== false }); } catch (e) { g.fillStyle = '#9aa3b6'; g.fillRect(0, 0, Ve.T, Ve.T); }
+    try { Ve.veCua(g, 0, 0, mo, { doc: doc !== false }); } catch (e) { g.fillStyle = BM.phimCuaFillStyle; g.fillRect(0, 0, Ve.T, Ve.T); }
     var c = Ve.mk(cv, s); c.classList.add('pxi'); return c;
   }
   function chu(cls, s) { return h('div', 'md-a ' + cls, s); }
