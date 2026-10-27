@@ -75,6 +75,11 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (`GOP_HET = true` gộp hết về gốc), nhóm DOI (sơn, đội) và LUAT (màu luật chơi); CSS qua biến `--g-<vai>` do bang-mau.js ghi lúc nạp. 2279 chỗ màu trong 33 tệp.
   Máy kiểm `kiem-bang-mau.mjs`: không còn mã gõ thẳng; thay token ra đúng từng byte bản nền 13b8a97; 8528 ảnh bộ phận y hệt (khi đổi màu thật: đặt `NEN = null`).
   Tệp tĩnh theme-color (choi.html, manifest, dong-goi-artifact.py) phải sửa tay theo khi đổi màu nền.
+- **27/10 V1 · Bộ vẽ vector xong** (nhánh claude/ve-vector, gộp 7f07c93; npm test 81/81). Bật `choi.html?ve=vector` (mặc định pixel; lưu qua `VeVector.luuCheDo`).
+  `hoc/game/ve-vector.js`: kho hình đăng ký (`VeVector.dangKy({loai:'o'|'vat'|'than'|'tay', ...})`, hệ 100 × 100 một ô), raster ra canvas đúng pixel thiết bị, bộ đệm theo
+  (tên, cỡ, trạng thái, hướng, sơn); robot ghép thân + tay theo `oGan` − `diemNeo`, thu 0,86, XOAY cả nhóm, bóng đổ lớp riêng. san-ve.js giữ kiến trúc, canvas sân theo pixel
+  thiết bị và phép phóng `sv` nên hiệu ứng cũ vẫn tính theo pixel sân. Đã có: sàn, tường, cờ, thùng gỗ, thân A hai bánh, tay kẹp; hình chưa có tự rơi về pixel phóng.
+  Trang xem `hoc/hinh-mau/xem-vector.html`. Máy kiểm `kiem-ve-vector.mjs` (38). Chốt (người giao): robot 86% ô; vật nằm đất ~57% cạnh ô; mục Cài đặt để V5; dải đội ở chân xem lại ở V3.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
