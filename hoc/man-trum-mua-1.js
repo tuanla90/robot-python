@@ -99,6 +99,18 @@
   // 2: làn x = 2, thùng ở cuối làn (2,1); hốc đích bên phải (3,4). Xe (2,5) quay lên: tới thùng, nhặt, LÙI tới khi bên phải trống, đặt sang phải.
   //    Quay đầu rồi đi thì chậm hơn một nhịp (quay một nhịp, rồi vẫn phải đi chừng ấy ô).
   var L_2 = nhieu(['go_wall()', 'pick()'], WHILE('not right_clear()', ['back()']), ['drop_right()']);
+  // 3: làn x = 2, xe (2,1) ở đầu trên quay lên; kệ phải trống trừ hai ô có thùng (3,2), (3,4); ô đích bên trái (1,2), (1,4).
+  //    Chương trình chính khóa: hai lần seek(), pick_right(), drop_left(). seek() của màn phải LÙI khi bên phải còn trống; bản lỗi lại tiến.
+  var C_3 = FOR(2, ['seek()', 'pick_right()', 'drop_left()']);
+  var SEEK = WHILE('right_clear()', ['back()']);
+  var SEEK_LOI = WHILE('right_clear()', ['move()']);
+  // 4 (hai robot): R1 tay xoay (3,2) quay lên; R2 tay kẹp (1,2) quay lên, khóa: nhặt thùng (1,1), quay phải, đặt vào (2,2) — ô bên trái R1.
+  //    R1 chờ tới khi bên trái có thùng, nhặt bên trái, lùi một ô rồi đặt vào ô đích bên phải (4,3).
+  var R2_4 = ['pick()', 'turn_right()', 'drop()'];
+  var R1_4 = nhieu(WHILE('left_clear()', ['wait()']), ['pick_left()', 'back()', 'drop_right()']);
+  // 5: làn x = 2, thùng (2,1) chắn đầu làn, xe (2,2) quay lên; nút đè M bên phải (3,3); cửa C (2,5) đóng; cờ F (2,7) sau cửa.
+  //    Nhặt thùng, LÙI tới khi bên phải trống (nút M), đặt thùng lên nút, cửa mở, lùi tiếp qua cửa tới cờ. Quay đầu thì nút sang bên trái, chậm hơn.
+  var L_5 = nhieu(['pick()'], WHILE('not right_clear()', ['back()']), ['drop_right()'], FOR(4, ['back()']));
 
   var DS = [
     man({
@@ -154,6 +166,59 @@
         { moTa: 'Lùi về tận chỗ xuất phát: quá hốc đích một ô', baiLam: { chinh: ['go_wall()', 'pick()', 'back()', 'back()', 'back()', 'drop_right()'] }, phaiCoMa: ['tha-bi-chan'] }
       ],
       goiY: ['Trong làn, bên phải xe là tường; tới hốc thì bên phải trống.', 'while not right_clear(): back() rồi drop_right(). Quay đầu thì hốc sang bên trái và chậm hơn.']
+    }),
+
+    man({
+      c: 2, so: 3, ten: 'Sửa hàm lùi tìm', kieuBai: 'sua-ham', mucTieu: 'dua-vat', chinhCoDinh: true,
+      hamCuaEmCan: ['back', 'pick_right', 'drop_left', 'move'],
+      deBai: 'Xe đứng ở đầu trên làn. Kệ bên phải có hai thùng ở xa gần khác nhau, ô đích nằm bên trái ngay đối diện mỗi thùng. Hàm seek() của màn phải lùi tới khi bên phải có thùng, nhưng nó lại cho xe tiến. Sửa seek() để cả hai thùng sang ô đích.',
+      veMaMau: 'Chương trình chính bị khóa: hai lần seek(), pick_right(), drop_left(). Chạy thử, xem xe đi đâu.',
+      san: ['#####', '##..#', '#D.o#', '##..#', '#D.o#', '#####'], batDau: { x: 2, y: 1, huong: 0 },
+      maMau: { chinh: C_3, hamCuaMan: [H('seek', SEEK_LOI)] },
+      sao: { o: 23, nhip: 10 },
+      loiGiai: { chinh: C_3, hamCuaMan: [H('seek', SEEK)] },
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_3, hamCuaMan: [H('seek', ['# lùi khi kệ phải còn trống'].concat(SEEK))] } },
+      loiSai: [
+        { moTa: 'Chưa sửa: xe tiến vào tường, bên phải vẫn trống nên lặp mãi', baiLam: { chinh: C_3, hamCuaMan: [H('seek', SEEK_LOI)] }, phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Đếm cứng một bước lùi: thùng thứ hai còn xa hơn', baiLam: { chinh: C_3, hamCuaMan: [H('seek', ['back()'])] }, phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Thêm chữ not: kệ phải đang trống nên xe không lùi', baiLam: { chinh: C_3, hamCuaMan: [H('seek', WHILE('not right_clear()', ['back()']))] }, phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Thùng ở phía sau xe: phải lùi, không tiến.', 'while right_clear(): back() — kệ trống thì lùi tiếp, gặp thùng thì dừng.']
+    }),
+
+    man({
+      c: 2, so: 4, ten: 'Hàng trao tay', kieuBai: 'hai-robot', mucTieu: 'dua-vat', khoa: 1,
+      bd: [{ x: 3, y: 2, huong: 0 }, { x: 1, y: 2, huong: 0 }],
+      hamCuaEmCan: ['pick', 'turn_right', 'drop', 'pick_left', 'back', 'drop_right'],
+      deBai: 'R2 (tay kẹp, chương trình khóa, xem được) nhặt thùng rồi đặt vào ô bên trái R1. R1 có tay xoay: chờ tới khi bên trái có thùng, nhặt bên trái, lùi một ô rồi đặt thùng vào ô đích bên phải.',
+      veMaMau: 'R1 chưa có chương trình. Viết R1: chờ thùng tới bên trái, nhặt, lùi, đặt sang phải.',
+      san: ['######', '#o####', '#...##', '###.D#', '######'],
+      maMau: B([], R2_4),
+      sao: { o: 37, nhip: 8 },
+      loiGiai: B(R1_4, R2_4),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: B(['# chờ hàng từ R2'].concat(R1_4), R2_4) },
+      loiSai: [
+        { moTa: 'R1 không chờ: nhặt khi thùng chưa tới', baiLam: B(['pick_left()', 'back()', 'drop_right()'], R2_4), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R1 nhặt rồi đặt ngay sang phải: bên phải là tường', baiLam: B(nhieu(WHILE('left_clear()', ['wait()']), ['pick_left()', 'drop_right()']), R2_4), phaiCoMa: ['tha-bi-chan'] }
+      ],
+      goiY: ['Chưa có thùng thì left_clear() trả True: chờ tiếp.', 'Lùi một ô thì ô đích nằm ngay bên phải R1.']
+    }),
+
+    man({
+      c: 2, so: 5, ten: 'Lùi qua cửa tới cờ', kieuBai: 'giao-hang',
+      hamCuaEmCan: ['pick', 'back', 'drop_right', 'u_turn', 'move', 'drop_left', 'go_wall', 'drop'],
+      deBai: 'Thùng chắn đầu làn. Cửa C phía sau lưng đang đóng, cờ ở sau cửa. Nhặt thùng, lùi tới nút đè M bên phải, đặt thùng lên nút cho cửa mở, rồi lùi qua cửa tới cờ.',
+      veMaMau: 'Xe đã nhặt thùng. Viết tiếp: lùi tới nút, đặt thùng, lùi qua cửa.',
+      san: ['#####', '##o##', '##.##', '##.M#', '##.##', '##C##', '##.##', '##F##', '#####'], batDau: { x: 2, y: 2, huong: 0 },
+      maMau: { chinh: ['pick()'] },
+      sao: { o: 21, nhip: 9 },
+      loiGiai: { chinh: L_5 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['pick()', '# lùi tới nút đè'].concat(L_5.slice(1)) } },
+      loiSai: [
+        { moTa: 'Lùi thẳng tới cờ, mang thùng theo: cửa không mở', baiLam: { chinh: nhieu(['pick()'], FOR(5, ['back()'])) }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đặt thùng ngay chỗ nhặt: nút trống', baiLam: { chinh: nhieu(['pick()', 'drop()'], FOR(5, ['back()'])) }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Nút M là sàn trống nên right_clear() trả True khi xe tới cạnh nó.', 'Thùng nằm trên M thì cửa mở. Lùi tiếp bốn ô tới cờ.']
     })
   ];
 

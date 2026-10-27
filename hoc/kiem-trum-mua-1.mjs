@@ -69,7 +69,7 @@ const NHANH_HON = {
   'robot-hoan-thien.11': 'đếm cứng số bước lùi lên ◆ (mỗi kho một khác) thì bỏ được lần quay đầu thứ hai của pass_back(): nhanh hơn một nhịp mỗi sân, nhưng không chung được cho ba kho (đường đếm cứng không thắng cả ba sân)'
 };
 /** Robot khóa (màn hai robot): dãy khối nó chạy. */
-const KHOI_KHOA = {};
+const KHOI_KHOA = { 'trum-mua-1.4': { r: 1, khoi: ['pick', 'turn_right', 'drop'] } };
 const BU = { dong: 3, nhip: 4, o: 6 };
 const theoSan = (v, i) => (Array.isArray(v) ? v[i] : v);
 const get = (ma) => M.timMa(ma);
