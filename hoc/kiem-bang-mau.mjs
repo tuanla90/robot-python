@@ -29,7 +29,8 @@ const SUA_SAU_NEN = {
   've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector',
   'man-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'man-lap.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'mo-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'phim-goi.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
-  'the-part.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)'
+  'the-part.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
+  've.js': 'V5a (28/10): giao diện vector — mk() phóng sẵn icon điểm ảnh (bỏ image-rendering: pixelated), viền icon mặc định chàm; pixel giữ nhánh cũ'
 };
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');

@@ -201,9 +201,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var rows = HINH[ten];
     if (!rows) throw new Error('Không có icon ' + ten);
     var p = new Painter(rows[0].length + 2, rows.length + 2);     // chừa 1 pixel quanh cho viền tối
-    p.map(rows, { x: tuyChon.fill || BM.trangV2, o: tuyChon.toi || tuyChon.line || BM.goToiV1, w: tuyChon.sang || BM.trangV2 }, 1, 1);     // o / w: chi tiết tối / sáng của icon bộ phận
+    var vien = giaoDienVec() ? BM.vecChu : BM.goToiV1;      // viền mặc định: nâu gỗ (pixel) / chàm đậm (giao diện vector, gói V5a)
+    p.map(rows, { x: tuyChon.fill || BM.trangV2, o: tuyChon.toi || tuyChon.line || vien, w: tuyChon.sang || BM.trangV2 }, 1, 1);     // o / w: chi tiết tối / sáng của icon bộ phận
     if (tuyChon.shade) p.shade(tuyChon.shade);
-    p.outline(tuyChon.line || BM.goToiV1);
+    p.outline(tuyChon.line || vien);
     return p.canvas();
   }
 
@@ -808,10 +809,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* -------------------------------------------------- canvas → phần tử DOM */
   function mk(cv, s) {
-    var c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height;
-    c.getContext('2d').drawImage(cv, 0, 0);
+    var c = document.createElement('canvas'), k = phongVec(cv, s);
+    c.width = cv.width * k; c.height = cv.height * k;
+    var g = c.getContext('2d'); if (k > 1) g.imageSmoothingEnabled = false;
+    g.drawImage(cv, 0, 0, c.width, c.height);
     c.style.width = cv.width * s + 'px'; c.style.height = cv.height * s + 'px'; c.className = 'pxi';
+    if (k > 1) c.style.setProperty('--hp', cv.height * s + 'px');        // cao hiển thị (choi-vector.css dùng khi chỗ đặt ép width / height: auto)
     return c;
+  }
+  /** Giao diện vector (gói V5a: body.ve-vector, VeVector.apGiaoDien)? Ở đó KHÔNG dùng image-rendering: pixelated nên icon / hình điểm ảnh được
+   *  PHÓNG SẴN bằng lân cận gần nhất tới đủ điểm ảnh thiết bị (k = ⌈s × dpr × 2⌉, chừa phép phóng của #stage), trình duyệt chỉ còn thu nhỏ: nét, không nhoè. */
+  function giaoDienVec() { return typeof document !== 'undefined' && !!document.body && document.body.classList.contains('ve-vector'); }
+  function phongVec(cv, s) {
+    if (!giaoDienVec() || cv.laVector || !(s > 0)) return 1;
+    return Math.max(1, Math.min(8, Math.ceil(s * (window.devicePixelRatio || 1) * 2)));
   }
   function ico(ten, s, tuyChon) { return mk(ten === 'edit' ? spriteBut() : icon(ten, tuyChon), s || 2); }
   function sao(bat, s) { return mk(spriteStar(bat), s || 2); }

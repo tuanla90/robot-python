@@ -47,6 +47,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function datCheDo(v) { cheDo = v === 'vector' || v === true; return cheDo; }
   /** Ghi lựa chọn cho lần mở sau ('vector' | 'pixel'); có hiệu lực sau khi nạp lại trang. */
   function luuCheDo(v) { try { if (v === 'vector') root.localStorage.setItem(KHOA_LUU, 'vector'); else root.localStorage.removeItem(KHOA_LUU); return true; } catch (e) { return false; } }
+  /** GIAO DIỆN (gói V5a): ở vector, <body> mang lớp `ve-vector` → choi-vector.css phủ giao diện phẳng diem10code lên choi.css; pixel không có lớp, y như cũ.
+   *  Gọi ngay khi nạp tệp (choi.html nạp ve-vector.js trong <body>, trước mọi tệp dựng màn hình). */
+  var LOP_GIAO_DIEN = 've-vector';
+  function apGiaoDien() {
+    var d = root.document; if (!d || !d.body || !d.body.classList) return false;
+    var co = bat(); d.body.classList.toggle(LOP_GIAO_DIEN, co);
+    return co;
+  }
 
   /* ---------------------------------------------------------------- canvas giả cho Node: ghi lại lệnh */
   var THUOC = ['fillStyle', 'strokeStyle', 'lineWidth', 'lineCap', 'lineJoin', 'globalAlpha', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'font', 'textAlign', 'textBaseline', 'miterLimit'];
@@ -361,9 +369,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     });
   }
 
+  apGiaoDien();
   return {
     HE: HE, CO_THAN: CO_THAN, TAM_THAN: TAM_THAN, H: H, CanvasGia: CanvasGia, taoCanvas: taoCanvas,
-    bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo,
+    bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
     o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, gocXoay: gocXoay, gocCua: gocCua,
     diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,

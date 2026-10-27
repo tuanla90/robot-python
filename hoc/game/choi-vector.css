@@ -1,0 +1,39 @@
+/* ============================================================================
+   choi-vector.css — "Robot Chấn Hưng": GIAO DIỆN PHẲNG kiểu diem10code (gói V5a, 28/10) cho chế độ VECTOR.
+   Chỉ áp khi <body> có lớp `ve-vector` (VeVector.apGiaoDien, ve-vector.js: ?ve=vector hoặc đã lưu ở Cài đặt); chế độ pixel không có lớp này nên
+   choi.css chạy y nguyên. Tệp này PHỦ lên choi.css bằng bộ chọn `body.ve-vector …`, không sửa choi.css.
+   Ngôn ngữ thiết kế: tin_hoc/public/css/tokens.css + styles.css (không link sang repo kia; giá trị lấy về thành vai vec* trong bang-mau.js):
+     nền lavender rất nhạt, thẻ trắng bo góc, bóng mềm (--elev-1..3), bán kính 10 / 16 / 24 / tròn, chữ chàm đậm, nút chính tím chàm, điểm nhấn cyan;
+     phông Google Sans Flex (giao diện) + Google Sans Code (mã), font/font.css. Không vân gỗ, không bảng phấn, không núm khối, không viền vát nhiều lớp,
+     không image-rendering: pixelated, không steps(): chuyển động ease mượt, tôn trọng prefers-reduced-motion.
+   Thứ tự: 1 nền tảng · 2 thanh trên, cột nút sân, khung sân · 3 khung code · 4 khối lệnh · 5 khay, hộp gợi ý, toast, hộp thoại · 6 nút · 7 chuyển động.
+   ========================================================================== */
+
+/* ============================================================ 1. NỀN TẢNG: phông, biến, nền, khung ngoài */
+body.ve-vector{
+  --px:"Google Sans Flex",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Google Sans Code",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,Consolas,monospace;
+  --kp:1; --km:1; --wm:500;                                         /* phông mới đúng cỡ: bỏ hệ số của Handjet / VT323 */
+  --ink:var(--g-vecChu); --cream:var(--g-vecChu);
+  --r-sm:10px; --r-md:16px; --r-lg:24px; --r-full:9999px;
+  --elev-1:0 1px 4px rgba(var(--g-vecBongRgb),.08);
+  --elev-2:0 4px 14px rgba(var(--g-vecBongRgb),.07);
+  --elev-3:0 16px 36px rgba(var(--g-vecBrandRgb),.15);
+  --vien:1.5px solid var(--g-vecKe);
+  --focus:0 0 0 3px rgba(var(--g-vecBrandRgb),.45);
+  background:var(--g-vecNenSau); background-image:none; color:var(--g-vecChu);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+body.ve-vector.dien-thoai{background:var(--g-vecNen);background-image:none}
+/* không có chỗ nào phóng ảnh kiểu điểm ảnh: icon pixel được ve.js (mk) phóng sẵn bằng lân cận gần nhất, canvas sân / robot đã theo pixel thiết bị */
+body.ve-vector,body.ve-vector *{image-rendering:auto!important}
+
+/* khung 360 × 640: thẻ lavender bo góc lớn, bóng tím mềm (máy tính); điện thoại: lấp đầy, không bo */
+body.ve-vector .screen,body.ve-vector .ws-ov{background:var(--g-vecNen);background-image:none;clip-path:none}
+body.ve-vector:not(.dien-thoai) .screen{border-radius:var(--r-lg);box-shadow:var(--elev-3),0 0 0 1px var(--g-vecKe)}
+body.ve-vector:not(.dien-thoai) .screen>.ovwrap{border-radius:var(--r-lg)}
+body.ve-vector .deco .surf,body.ve-vector .deco .bev,body.ve-vector .deco>canvas{display:none}
+
+/* chữ code / tên lệnh trong câu (`move()`): Google Sans Code cùng cỡ, ngoặc đứng riêng giữ phông chữ thường */
+body.ve-vector .kc{font-size:.96em;font-weight:500}
+body.ve-vector .kc.ngoac,body.ve-vector .hd-bong .kc.ngoac{font-family:var(--px);font-size:1em;font-weight:inherit}

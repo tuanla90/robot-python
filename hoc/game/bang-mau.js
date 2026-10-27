@@ -235,7 +235,51 @@
     vecSanChan: '#fbfaff',             // sàn bàn cờ, ô (x + y) chẵn: trắng lab hơi xám (đỉnh gradient chéo)
     vecSanChanToi: '#efedf7',          // sàn ô chẵn: góc tối gradient
     vecSanLe: '#f3f2f9',               // sàn ô lẻ: xám nhạt hơn một bậc
-    vecSanLeToi: '#e7e5f0'             // sàn ô lẻ: góc tối gradient
+    vecSanLeToi: '#e7e5f0',            // sàn ô lẻ: góc tối gradient
+    // ---- VECTOR (gói V5a, 28/10): GIAO DIỆN PHẲNG màn chơi theo diem10code (tin_hoc/public/css/tokens.css), chỉ áp ở body.ve-vector (choi-vector.css)
+    vecNen: '#f5f4fc',                 // nền màn hình (lavender rất nhạt, cùng tông sàn sân)
+    vecNenSau: '#e8e6f6',              // nền trang ngoài khung 360 × 640 (máy tính), nền điện thoại
+    vecThe: '#ffffff',                 // mặt thẻ / nút phụ / hộp thoại (--surface)
+    vecTheLom: '#f1f0f9',              // mặt lõm: ô nhập, vùng phụ, đáy khay (--surface-sunken ngả lavender)
+    vecChu: '#1e1b4b',                 // chữ chính chàm đậm (indigo-950): 15,9:1 trên trắng
+    vecChuPhu: '#475569',              // chữ phụ (slate-600, --fg-muted): 7,6:1 trên trắng
+    vecChuMo: '#5f6d82',               // chữ mờ nhất còn đọc được (slate-550, --fg-faint): 4,8:1 trên nền lõm
+    vecKe: '#e2e0f0',                  // viền thường (--stroke ngả lavender)
+    vecKeDam: '#c9c5e3',               // viền cần thấy rõ (--stroke-strong ngả lavender)
+    vecBongRgb: '15,23,42',            // bộ ba bóng đổ mềm --elev-1 / --elev-2 (slate-900)
+    vecBrand: '#4f46e5',               // tím chàm thương hiệu (--brand, indigo-600): nút chính, dòng chọn, vòng focus
+    vecBrandDam: '#3730a3',            // tím chàm nhấn (--brand-strong, indigo-800): nút chính khi nhấn, chữ trên nền nhạt
+    vecBrandNhat: '#eef2ff',           // nền rất nhạt thương hiệu (--brand-wash)
+    vecBrandRgb: '79,70,229',          // bộ ba của vecBrand: bóng nút chính --elev-3, quầng focus
+    vecMa: '#eef2f8',                  // nền ô mã (--code-surface)
+    vecMaKe: '#d7dfec',                // kẻ / viền ô mã (--code-line)
+    vecLa: '#16a34a',                  // xanh lá (đúng, xong): viền, dải màu
+    vecLaDam: '#15803d',               // xanh lá đậm: chữ / nền đặc chữ trắng (5,0:1)
+    vecLaNhat: '#dcfce7',              // xanh lá nhạt: nền
+    vecHoPhach: '#f59e0b',             // hổ phách (nhịp, chờ wait): dải màu, chấm
+    vecHoPhachDam: '#b45309',          // hổ phách đậm: chữ / nền đặc chữ trắng (5,0:1)
+    vecHoPhachNhat: '#fef3c7',         // hổ phách nhạt: nền toast, dòng đang chạy
+    vecLam: '#2563eb',                 // xanh lam (Lại, chân nhện): dải màu
+    vecLamDam: '#1d4ed8',              // xanh lam đậm: chữ / nền đặc (6,7:1)
+    vecLamNhat: '#eff6ff',             // xanh lam nhạt: nền
+    vecTimDam: '#7c3aed',              // tím (vòng lặp for, Gợi ý, ô số range): nền đặc chữ trắng (5,7:1), chữ từ khoá
+    vecTimNhat: '#f3e8ff',             // tím nhạt: nền dòng for
+    vecLoi: '#e11d48',                 // hồng đỏ báo lỗi (rose-600): viền dòng lỗi, nút xoá
+    vecLoiDam: '#b91c1c',              // đỏ đậm: chữ lỗi (--code-err), nền đặc chữ trắng
+    vecLoiNhat: '#fff1f2',             // nền lỗi rất nhạt
+    vecLoiRgb: '225,29,72',            // bộ ba của vecLoi: quầng chớp đỏ khung code
+    vecCyanDam: '#0e7490',             // cyan đậm (lệnh đi move): chữ, nền đặc
+    vecCyanNhat: '#ecfeff',            // cyan nhạt: nền khối lệnh đi
+    vecCamDam: '#c2410c',              // cam đậm (lệnh tay, chuỗi chữ): chữ, nền đặc
+    vecCamNhat: '#fff7ed',             // cam nhạt: nền khối lệnh tay
+    vecNgocDam: '#0f766e',             // xanh ngọc đậm (điều kiện if / elif / else): chữ, nền đặc
+    vecNgocNhat: '#ccfbf1',            // xanh ngọc nhạt: nền dòng if
+    vecHongDam: '#be185d',             // hồng đậm (biến, đếm): chữ, nền đặc
+    vecHongNhat: '#fce7f3',            // hồng nhạt: nền khối biến
+    vecTroiDam: '#0369a1',             // xanh trời đậm (while): chữ, nền đặc
+    vecTroiNhat: '#e0f2fe',            // xanh trời nhạt: nền dòng while
+    vecChanhDam: '#4d7c0f',            // xanh chanh đậm (danh sách, trượt slide_): chữ, nền đặc
+    vecChanhNhat: '#ecfccb'            // xanh chanh nhạt: nền khối danh sách
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ

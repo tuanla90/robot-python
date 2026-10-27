@@ -255,13 +255,14 @@
     });
   }
 
-  /** Không tải được phông (font/font.css; bản Artifact vẫn lấy từ Google): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. */
+  /** Không tải được phông (font/font.css; bản Artifact vẫn lấy từ Google): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. Vector: kiểm Google Sans Flex / Code. */
   function phongDuPhong() {
     var fb = function () { document.body.classList.add('fb'); };
     try {
       if (!document.fonts || !document.fonts.load) { fb(); return; }
       var hen = setTimeout(fb, 3000);
-      Promise.all([document.fonts.load('600 16px "Handjet"', t('choi.chay') + ' ạịợữỳĐ'), document.fonts.load('400 16px "VT323"', 'turn_right()')]).then(function (r) {
+      var vec = document.body.classList.contains('ve-vector'), pGd = vec ? '"Google Sans Flex"' : '"Handjet"', pMa = vec ? '"Google Sans Code"' : '"VT323"';     // giao diện vector (gói V5a): phông diem10code
+      Promise.all([document.fonts.load('600 16px ' + pGd, t('choi.chay') + ' ạịợữỳĐ'), document.fonts.load('400 16px ' + pMa, 'turn_right()')]).then(function (r) {
         clearTimeout(hen);
         if (!r[0].length || !r[1].length) fb(); else document.body.classList.remove('fb');
       }).catch(function () { clearTimeout(hen); fb(); });
