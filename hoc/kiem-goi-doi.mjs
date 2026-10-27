@@ -48,10 +48,21 @@ kiem('có ít nhất hai gói đội đã khai báo', goiDoi.length >= 2, goiDoi
 for (const c of goiDoi) {
   console.log('\n— gói ' + c.goi.ma + ' (' + c.coMan.join(', ') + ')');
   const vt = TT.thuTu.indexOf(c.sau);
-  kiem(c.goi.ma + ': chương nằm ngay sau ' + c.sau, J(TT.thuTu.slice(vt + 1, vt + 1 + c.coMan.length)) === J(c.coMan));
   const gi = TT.goi.findIndex((g) => g.ma === c.goi.ma);
-  kiem(c.goi.ma + ': gói nằm ngay sau gói part, ngưỡng sao không thấp hơn', gi > 0 && TT.goi[gi - 1].chuong.includes(c.sau) && TT.goi[gi].sao >= TT.goi[gi - 1].sao && TT.goi[gi].khongTangNguong === true,
-    gi > 0 ? TT.goi[gi - 1].ma + ' ' + TT.goi[gi - 1].sao + ' → ' + TT.goi[gi].sao : 'không thấy gói');
+  // Khung mùa 2 (27/10, KE-HOACH-MUA-2.md): chương neo `sau` đã vào bảng 10 gói mùa 2 còn gói đội thì rời mùa 2 sang mùa ẩn (xếp lại khi làm mùa của nó).
+  // Gói đó chỉ cần: ở mùa ẩn sau mùa 2, chương đứng sau `sau` trong thuTu, ngưỡng sao có khai, giữ khongTangNguong.
+  const goiSau = TT.goi.find((g) => g.chuong.includes(c.sau));
+  const roiMua2 = goiSau && goiSau.mua === 'mua-2' && TT.goi[gi] && TT.goi[gi].mua !== 'mua-2';
+  if (roiMua2) {
+    const g = TT.goi[gi], mua = TT.mua.find((x) => x.ma === g.mua);
+    kiem(c.goi.ma + ': gói đội rời mùa 2 (neo ' + c.sau + ' ở khung mùa 2): ở mùa ẩn sau mùa 2, chương đứng sau ' + c.sau + ', có ngưỡng sao',
+      mua && mua.an === true && TT.mua.indexOf(mua) > TT.mua.findIndex((x) => x.ma === 'mua-2') && c.coMan.every((x) => TT.thuTu.indexOf(x) > vt) &&
+      typeof g.sao === 'number' && g.khongTangNguong === true, g.mua + ' ' + g.sao);
+  } else {
+    kiem(c.goi.ma + ': chương nằm ngay sau ' + c.sau, J(TT.thuTu.slice(vt + 1, vt + 1 + c.coMan.length)) === J(c.coMan));
+    kiem(c.goi.ma + ': gói nằm ngay sau gói part, ngưỡng sao không thấp hơn', gi > 0 && TT.goi[gi - 1].chuong.includes(c.sau) && TT.goi[gi].sao >= TT.goi[gi - 1].sao && TT.goi[gi].khongTangNguong === true,
+      gi > 0 ? TT.goi[gi - 1].ma + ' ' + TT.goi[gi - 1].sao + ' → ' + TT.goi[gi].sao : 'không thấy gói');
+  }
   for (const ch of c.coMan) {
     const ds = M.danhSach.filter((m) => m.chuong === ch);
     kiem(ch + ': 10 màn, hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', ds.length === 10 && J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));

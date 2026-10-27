@@ -645,7 +645,8 @@
     TT.goi.forEach(function (g) { if (g.mua === 'mua-1') c1 = c1.concat(g.chuong); });
     var goi1 = TT.goi.filter(function (g) { return g.mua === 'mua-1'; });
     var conLai = TT.goi.filter(function (g) { return g.mua !== 'mua-1' && !g.chuong.some(function (c) { return bo.indexOf(c) >= 0 || c === 'che-xich'; }); });
-    conLai.push({ ma: 'che-xich', ten: 'Chế lệnh xích', loai: 'bo-phan', mua: 'mua-3', chuong: ['che-xich'] });
+    // sao 95: ngưỡng cũ của gói Bánh xích (mùa 2 cũ) chứa che-xich, nằm giữa List (65) và Đội xích và nhện (125) nên thứ tự ngưỡng mùa 3 không lùi.
+    conLai.push({ ma: 'che-xich', ten: 'Chế lệnh xích', loai: 'bo-phan', mua: 'mua-3', sao: 95, chuong: ['che-xich'] });
     conLai.forEach(function (g) { if (g.mua === 'mua-2') g.mua = 'mua-3'; });
     var sau = TT.thuTu.filter(function (c) { return c1.indexOf(c) < 0 && bo.indexOf(c) < 0; });
     TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(c1, coMan, sau));
