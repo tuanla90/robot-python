@@ -61,16 +61,16 @@
   var SAN_1 = ['#######', '###N###', '###.###', '###.###', '###.###', '#.H..N#', '###C###', '###C###', '###.###', '#######'];
   var NOI_1 = [{ nut: { x: 5, y: 5 }, cua: [{ x: 3, y: 6 }] }, { nut: { x: 3, y: 1 }, cua: [{ x: 3, y: 7 }] }];
   // 2: xe (1,4) quay phải. Trạm 1: nút trên (1,1), distance() = 2: bắn tụ, xe giật xuống làn dưới (1,5). Trạm 2 (2,5) là cửa của nút 1:
-  //    nút trên (2,3), distance() = 1: bắn nhanh (bắn tụ thì xe giật xuống hốc (2,6)). Nút 2 mở cửa (3,5), cờ (4,5).
-  var SAN_2 = ['#######', '#N#####', '#.#####', '#.N####', '#..####', '#.CCF##', '##.####', '#######'];
+  //    nút trên (2,3), distance() = 1: bắn nhanh (bắn tụ thì xe giật xuống hốc (2,6)). Nút 2 mở cửa (3,5), xe mờ (4,5) quay phải.
+  var SAN_2 = ['#######', '#N#####', '#.#####', '#.N####', '#..####', '#.CC.##', '##.####', '#######'];
   var NOI_2 = [{ nut: { x: 1, y: 1 }, cua: [{ x: 2, y: 5 }] }, { nut: { x: 2, y: 3 }, cua: [{ x: 3, y: 5 }] }];
   // 3: xe (3,5) quay trái: nút gần (1,5), distance() = 1, thùng (4,5) sau lưng. Quay trái (mặt xuống): nút xa (3,8), distance() = 2, bắn tụ thì xe giật lên (3,4).
   //    Cửa (3,3) theo nút gần, cửa (3,2) theo nút xa; xe mờ (3,0) quay phải, thùng nằm yên. Hàm quick_aim() của Sola so với 2.
   var SAN_3 = ['###.###', '###.###', '###C###', '###C###', '###.###', '#N..H.#', '###.###', '###.###', '###N###', '#######'];
   var NOI_3 = [{ nut: { x: 1, y: 5 }, cua: [{ x: 3, y: 3 }] }, { nut: { x: 3, y: 8 }, cua: [{ x: 3, y: 2 }] }];
   // 4: xe (1,3) quay phải, nút ở bên PHẢI (phía dưới). Trạm 1: nút (1,6), distance() = 2: bắn tụ, xe giật lên làn trên (1,2). Trạm 2 (2,2), trạm 3 (3,2):
-  //    nút (2,4), (3,4) có distance() = 1: bắn nhanh (bắn tụ thì xe giật lên hốc). Mỗi nút mở cửa kế tiếp trên làn trên, cờ (5,2).
-  var SAN_4 = ['#######', '##..###', '#.CCCF#', '#...###', '#.NN###', '#.#####', '#N#####', '#######'];
+  //    nút (2,4), (3,4) có distance() = 1: bắn nhanh (bắn tụ thì xe giật lên hốc). Mỗi nút mở cửa kế tiếp trên làn trên, xe mờ (5,2) quay phải.
+  var SAN_4 = ['#######', '##..###', '#.CCC.#', '#...###', '#.NN###', '#.#####', '#N#####', '#######'];
   var NOI_4 = [{ nut: { x: 1, y: 6 }, cua: [{ x: 2, y: 2 }] }, { nut: { x: 2, y: 4 }, cua: [{ x: 3, y: 2 }] }, { nut: { x: 3, y: 4 }, cua: [{ x: 4, y: 2 }] }];
   // 5: xe (2,3) quay phải, trước mặt là bốn ô băng chuyền chạy ngược (<) rồi nút B (7,3). Nút A (2,1) bên trái, distance() = 1, tắt băng (dưới xe là hốc (2,4)).
   //    Bắn tụ nút B: xe giật lùi về (1,3). Cuối băng, nút C (6,0) bên trái có distance() = 2: bắn tụ, xe giật xuống (6,4). B mở cửa (6,5), C mở cửa (6,6), cờ (6,7).
@@ -112,20 +112,21 @@
 
     man({
       so: 2, ten: 'Hàm aim_left()', yMoi: 'hàm gọi hàm có cảm biến: quay trái, aim_fire(), quay lại',
-      hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'forward', 'move'], taoHam: ['aim_left'], chinhCoDinh: true,
-      deBai: 'Hành lang có hai nút ở bên trái, xa gần khác nhau; mỗi nút mở một cánh cửa phía trước. Em chế aim_left(): quay trái, gọi aim_fire() của em, rồi quay lại. ' +
+      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'forward', 'move'], taoHam: ['aim_left'], chinhCoDinh: true,
+      deBai: 'Hành lang có hai nút ở bên trái, xa gần khác nhau; mỗi nút mở một cánh cửa phía trước. Đưa xe tới chỗ xe mờ. Em chế aim_left(): quay trái, gọi aim_fire() của em, rồi quay lại. ' +
         'Chương trình chính đã khóa, gọi aim_left() ở hai chỗ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo aim_left() trong Xưởng hàm: ba dòng.',
       san: SAN_2, batDau: { x: 1, y: 4, huong: 1 }, noi: NOI_2,
+      bongMo: { x: 4, y: 5, huong: 1 },
       maMau: bai(C_2),
       sao: { o: 22, nhip: 9 },
       loiGiai: { chinh: C_2.slice(), hamCuaEmMoi: [H('aim_left', [], T_AIM_LEFT)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['# quay về phía nút rồi tự chọn lực'].concat(T_AIM_LEFT))] },
       congThucKhac: [{ moTa: 'Viết thẳng if / else trong aim_left() thay cho gọi aim_fire()', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], nhieu(['turn_left()'], T_AIM, ['turn_right()']))] }],
       loiSai: [
-        { moTa: 'Viết cứng fire("charge"): ở nút gần xe giật lùi xuống hốc', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'fire("charge")', 'turn_right()'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Viết cứng fire("charge"): ở nút gần xe giật lùi xuống hốc', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'fire("charge")', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Viết cứng fire("fast"): nút đầu cách 3 ô, bóng rơi giữa đường', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'fire("fast")', 'turn_right()'])], phaiCoMa: ['ban-ngan'] },
-        { moTa: 'Quên quay lại: xe vẫn quay mặt lên, đi vào tường', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'aim_fire()'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Quên quay lại: xe vẫn quay mặt lên, đi vào tường', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'aim_fire()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Hàm của em gọi được hàm của em khác: aim_fire() đã làm ở màn trước.',
         'Quay trái thì mắt hồng ngoại nhìn về phía nút; bắn xong quay phải để đi tiếp.']
@@ -156,19 +157,20 @@
     /* ------------------------------------------------ hàng 2: luyện */
     man({
       so: 4, ten: 'Hàm aim_right() trong vòng lặp', yMoi: 'chương trình chính gọi hàm có cảm biến trong vòng for, mỗi lần một nút xa gần khác',
-      hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'move'], taoHam: ['aim_right'], chinhCoDinh: true,
+      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'move'], taoHam: ['aim_right'], chinhCoDinh: true,
       deBai: 'Ba nút nằm bên PHẢI đường đi, nút đầu xa, hai nút sau gần. Chương trình chính đã khóa: vòng lặp ba lần gọi aim_right() rồi tiến một ô. ' +
-        'Em chế aim_right(): quay phải, aim_fire(), quay lại. Bắn tụ thì xe giật sang làn trên, bắn nhanh thì xe đứng yên.',
+        'Em chế aim_right(): quay phải, aim_fire(), quay lại. Bắn tụ thì xe giật sang làn trên, bắn nhanh thì xe đứng yên. Đưa xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo aim_right() như aim_left() nhưng quay về phía bên phải.',
       san: SAN_4, batDau: { x: 1, y: 3, huong: 1 }, noi: NOI_4,
+      bongMo: { x: 5, y: 2, huong: 1 },
       maMau: bai(C_4),
       sao: { o: 20, nhip: 13 },
       loiGiai: { chinh: C_4.slice(), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'aim_fire()', 'turn_left()'])] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['# quay phải, tự chọn lực, quay lại', 'turn_right()', 'aim_fire()', 'turn_left()'])] },
       loiSai: [
-        { moTa: 'Quay trái thay vì quay phải: mắt hồng ngoại nhìn vào tường', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_left()', 'aim_fire()', 'turn_right()'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quay trái thay vì quay phải: mắt hồng ngoại nhìn vào tường', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_left()', 'aim_fire()', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Viết cứng fire("fast"): nút đầu cách 3 ô, bóng rơi giữa đường', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'fire("fast")', 'turn_left()'])], phaiCoMa: ['ban-ngan'] },
-        { moTa: 'Viết cứng fire("charge"): ở nút gần xe giật lên hốc', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'fire("charge")', 'turn_left()'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Viết cứng fire("charge"): ở nút gần xe giật lên hốc', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'fire("charge")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Cùng một hàm chạy ba lần, mỗi lần mắt hồng ngoại đo lại nên lực tự đổi.',
         'Thân hàm ba dòng: turn_right(), aim_fire(), turn_left().']
