@@ -385,6 +385,20 @@ for (const m of M.danhSach.slice(0, viTri(dauGoi))) {
   const l = dong.find((x) => !/^\s*for\b/.test(x) && /(<=|>=|==|!=|<|>)\s*\d+/.test(x));
   if (l) { soSanhTruoc = m.ma + ': ' + l.trim(); break; }
 }
+kiem('hong-ngoai.7 "Phanh không kịp": while True chạy mãi mà xe cứ đâm tường → lời hiện đầu tiên nói chuyện đâm tường (ô, nhịp, số lần); mã giữ [vong-vo-han, dam-tuong]; quay tại chỗ (không đâm) giữ lời cũ', () => {
+  const m = get('hong-ngoai.7');
+  for (const b of [m.maMau, m.loiSai[0].baiLam, m.loiSai[1].baiLam]) {
+    const r = cham(m, b, []);
+    assert.deepEqual(r.chanDoan.map((c) => c.ma), ['vong-vo-han', 'dam-tuong']);
+    const dau = r.chanDoan[0], dt = r.chanDoan[1];
+    assert.equal(dau.loaiCore, 'qua-nhieu-nhip');
+    assert.ok(dau.loi.startsWith('Robot đâm vào tường ở ô (' + dt.den.x + ', ' + dt.den.y + ') từ nhịp ' + dt.nhip + ', cả thảy ' + dt.soLan + ' lần. '), dau.loi);
+    assert.ok(/vòng while vẫn chưa dừng/.test(dau.loi) && /điều kiện không bao giờ sai/.test(dau.loi) && dau.loi.length <= 330, dau.loi);
+  }
+  const quay = cham(m, m.loiSai[2].baiLam, []);
+  assert.deepEqual(quay.chanDoan.map((c) => c.ma), ['vong-vo-han']);
+  assert.ok(quay.chanDoan[0].loi.startsWith('Robot đã chạy quá 200 nhịp mà vòng while vẫn chưa dừng'), quay.chanDoan[0].loi);
+});
 kiem('phép so số: nếu chưa có trước gói 3 thì màn đầu dùng phép so tự giới thiệu (đề hoặc gợi ý nói "so sánh" và viết dấu)', () => {
   if (soSanhTruoc) return;
   const dau = DS.find((m) => [...dacTrung(m)].some((f) => /^so sanh/.test(f)));
