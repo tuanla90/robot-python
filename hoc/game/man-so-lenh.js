@@ -73,7 +73,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     the.setAttribute('data-ham', ten);
     var hd = h('div', 'so-hd');
     hd.appendChild(h('span', 'so-ten', f ? ten + '(' + (f.thamSo || []).join(', ') + ')' : t('so.chuaBiet')));
-    if (f) { var ok = h('span', 'so-ok'); ok.appendChild(Ve.ico('check', 1, { fill: BM.soLenhTheHamFill, line: BM.soLenhTheHamLine })); hd.appendChild(ok); }
+    if (f) { var ok = h('span', 'so-ok'); ok.appendChild(Ve.ico('check', 1, { fill: BM.xanhLaSangV1, line: BM.bangV3 })); hd.appendChild(ok); }
     else hd.appendChild(h('span', 'so-nhan', t('so.chuaChe')));
     the.appendChild(hd);
     if (moTa) the.appendChild(h('div', 'so-mota', moTa));
@@ -95,7 +95,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var hd = h('div', 'so-hd goc');
     hd.appendChild(h('span', 'so-ten' + (biet[c.ten] ? '' : ' mo'), tenLenhGoc(c.ten, biet)));
     if (c.nguoc) {
-      var mt = h('span', 'so-cap'); mt.appendChild(Ve.ico('back', 1, { fill: BM.soLenhTheGocFill, line: BM.ink })); mt.appendChild(Ve.ico('next', 1, { fill: BM.soLenhTheGocFill, line: BM.ink }));
+      var mt = h('span', 'so-cap'); mt.appendChild(Ve.ico('back', 1, { fill: BM.vang, line: BM.vienDam })); mt.appendChild(Ve.ico('next', 1, { fill: BM.vang, line: BM.vienDam }));
       hd.appendChild(mt);
       hd.appendChild(h('span', 'so-ten' + (biet[c.nguoc] ? '' : ' mo'), tenLenhGoc(c.nguoc, biet)));
     }
