@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    man-choi.js — "Robot Chấn Hưng": MÀN CHƠI (window.Choi).
    Sân + cột nút ▶ ⏭ ↺ 💡 + đồng hồ NHỊP; nửa dưới: CHƯƠNG TRÌNH (10 ô) | KHỐI LỆNH.
@@ -30,17 +31,17 @@
       '<div class="top">' +
         '<div class="plaque"><span class="n"></span><span class="d"></span><span class="t"></span></div>' +
         '<div class="stars"></div>' +
-        '<button class="bt g-or lap-lai" data-nut="lap-lai" style="display:none" aria-label="' + t('lap.lapLaiNhan') + '"><span data-i="banhRang" data-s="1" data-l="#4a2a08"></span><span class="ll-chu">' + t('lap.lapLai') + '</span></button>' +
-        '<button class="bt g-pu menu" data-nut="menu" aria-label="' + t('choi.menu') + '"><span data-i="menu" data-s="2" data-l="#2f1a6a"></span></button>' +
+        '<button class="bt g-or lap-lai" data-nut="lap-lai" style="display:none" aria-label="' + t('lap.lapLaiNhan') + '"><span data-i="banhRang" data-s="1" data-l="' + BM.choiDung1 + '"></span><span class="ll-chu">' + t('lap.lapLai') + '</span></button>' +
+        '<button class="bt g-pu menu" data-nut="menu" aria-label="' + t('choi.menu') + '"><span data-i="menu" data-s="2" data-l="' + BM.choiDung2 + '"></span></button>' +
       '</div>' +
       '<div class="fblock">' +
         '<div class="ffr"><canvas class="tex" id="field"></canvas><div class="toast"></div></div>' +
         '<div class="side">' +
           '<div class="sanbar"></div>' +
-          '<button class="bt g-gr cbtn" data-nut="chay"><span data-i="play" data-s="1.5" data-l="#14561e"></span>' + t('choi.chay') + '</button>' +
-          '<button class="bt g-am cbtn" data-nut="nhip"><span data-i="step" data-s="1.5" data-l="#6a4400"></span>' + t('choi.nhip') + '</button>' +
-          '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="1.5" data-l="#0f2f6a"></span>' + t('choi.lai') + '</button>' +
-          '<button class="bt g-pu cbtn" data-nut="goi-y"><span data-i="bulb" data-s="1.5" data-l="#2f1a6a"></span>' + t('choi.goiY') + '</button>' +
+          '<button class="bt g-gr cbtn" data-nut="chay"><span data-i="play" data-s="1.5" data-l="' + BM.choiDung3 + '"></span>' + t('choi.chay') + '</button>' +
+          '<button class="bt g-am cbtn" data-nut="nhip"><span data-i="step" data-s="1.5" data-l="' + BM.choiDung4 + '"></span>' + t('choi.nhip') + '</button>' +
+          '<button class="bt g-bl cbtn" data-nut="lai"><span data-i="reset" data-s="1.5" data-l="' + BM.choiDung5 + '"></span>' + t('choi.lai') + '</button>' +
+          '<button class="bt g-pu cbtn" data-nut="goi-y"><span data-i="bulb" data-s="1.5" data-l="' + BM.choiDung2 + '"></span>' + t('choi.goiY') + '</button>' +
           '<div class="mini"><button class="bt g-wd" data-nut="toc"></button><button class="bt g-te" data-nut="de-bai">' + t('choi.deBai') + '</button></div>' +
           '<div class="clock chalk"><span class="l">' + t('choi.nhipDong') + '</span><span class="v">0</span><span class="tong"></span>' +
             '</div>' +
@@ -49,7 +50,7 @@
       '<div class="low">' +
         '<div class="pan p-prog" id="pan-main"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="xe-tabs"></span><span class="tt">' + t('choi.chuongTrinh') + '</span><span class="ham-dem" data-nut="ham-dem" style="display:none" title="' + t('choi.hamDemNhan') + '"></span><span class="ct">0/10</span><span class="chinh-khoa" data-nut="chinh-khoa"><span class="ck-ic"></span><span class="ck-chu">' + t('choi.chinhKhoaNhan') + '</span></span>' +
-            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="#4a0e0c"></span></button></div>' +
+            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="' + BM.choiDung6 + '"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
@@ -541,7 +542,7 @@
       var d = b.querySelector('.dau'), tt = S.marks ? S.marks[i] : null;
       d.className = 'dau' + (tt === true ? ' ok' : tt === false ? ' sai' : '');
       d.innerHTML = '';
-      if (tt === true || tt === false) d.appendChild(Ve.ico(tt ? 'check' : 'cross', 1, { fill: '#fff', line: '#1b120a' }));
+      if (tt === true || tt === false) d.appendChild(Ve.ico(tt ? 'check' : 'cross', 1, { fill: BM.choiSanBarFill, line: BM.ink }));
       b.setAttribute('aria-label', t(tt === true ? 'choi.sanQua' : tt === false ? 'choi.sanTruot' : 'choi.san', { n: i + 1 }));
     });
   }
@@ -709,7 +710,7 @@
     hop.than.appendChild(st);
     function dong(ok, chu) {
       var d = h('div', 'th-dong ' + (ok ? 'ok' : 'chua'));
-      var ic = h('span', 'ic'); ic.appendChild(Ve.ico(ok ? 'check' : 'cross', 2, { fill: ok ? '#7cff86' : '#ff8a80', shade: ok ? '#3cc24a' : '#d04a40', line: '#0e2a14' }));
+      var ic = h('span', 'ic'); ic.appendChild(Ve.ico(ok ? 'check' : 'cross', 2, { fill: ok ? BM.choiDong1 : BM.choiDong2, shade: ok ? BM.choiDong3 : BM.choiDong4, line: BM.choiDongLine }));
       d.appendChild(ic); d.appendChild(TP.vanBan(h('span'), chu)); return d;
     }
     if (nguongO !== undefined) hop.than.appendChild(dong(okO, t('thang.o', { x: k.soO, y: nguongO })));
@@ -766,7 +767,7 @@
       var hd = h('div', 'hd'); hd.appendChild(h('span', 'ten', x.ten));
       if (cung) hd.appendChild(h('span', 'chip', t('thang.cachEm')));
       d.appendChild(hd);
-      var so = h('div', 'so'); so.appendChild(Ve.ico('xu', 1, { fill: '#ffcf30', toi: '#c27a10', sang: '#fff2a6', line: '#1b120a' }));
+      var so = h('div', 'so'); so.appendChild(Ve.ico('xu', 1, { fill: BM.choiKhoiCachLapFill, toi: BM.choiKhoiCachLapToi, sang: BM.choiKhoiCachLapSang, line: BM.ink }));
       so.appendChild(h('span', null, x.thang ? t('thang.cachSo', { xu: x.gia, nhip: x.nhip, o: x.o }) : t('thang.cachChua', { xu: x.gia })));
       d.appendChild(so);
       if (x.ghiChu) d.appendChild(h('div', 'gc', x.ghiChu));
