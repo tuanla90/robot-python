@@ -45,3 +45,34 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
 - **Không song song P0 và P1** với bất kỳ gì: cả hai sửa tệp dùng chung (lộ trình, lõi).
 - **P2 chạy 2 agent cùng lúc**: mỗi agent một gói, tệp riêng; dòng dùng chung (ngưỡng sao, `kiem-lo-trinh.mjs`, `huy-hieu.js`) chỉ thêm, không sửa dòng của người khác; người giao gộp từng nhánh, chạy `npm test` một lần sau mỗi lần gộp.
 - **Rủi ro máy:** máy 16 GB, lúc rà còn trống ~1 GB; mỗi agent tự chạy `npm test` (~10 phút, nặng). Hai agent cùng chạy có thể làm máy chậm hay tràn bộ nhớ (đã từng). Cách giảm: agent chỉ chạy máy kiểm của gói mình, **người giao** chạy `npm test` đầy đủ khi gộp.
+
+## Trạng thái
+
+- **27/10 P0 · Khung mùa 2 xong** (nhánh claude/khung-mua-2): lộ trình xếp mùa 2 thành 10 gói (`lo-trinh-hoc.js`, khối "MÙA 2 = 10 GÓI", mảng `MUA_2`) chỉ bằng màn đã có; mùa 2 vẫn ẩn (`an: true`).
+  Giữ `ma` mọi màn. Gói / chương chưa có màn **chưa hiện**; gói sau chỉ việc thêm màn vào tệp ngân hàng của mình (bảng dưới), màn tự vào đúng chương, đúng gói
+  (màn mới nối sau màn có sẵn của chương, theo `so`; chương đủ 10 thì màn cuối là trùm). Ngưỡng sao mùa 2 **không khai cứng**: mo-goi.js tính TI_LE_SAO trong mùa,
+  tự đổi khi thêm màn (khai cứng khi mở bán, như mùa 1).
+  Máy kiểm `hoc/kiem-lo-trinh.mjs` mục mùa 2: (a) đúng bảng, (b) không biến trước gói 1 chương 2, (c) không hàm có tham số / lời gọi có đối số (trừ `range`) trước `tham-so`
+  (kể cả mùa 1, bắc cầu qua hàm của em), (d) không `S` / `u` / `n`, (e) hàm cần được tạo trước, (f) part mùa 1 + xích + súng hơi (+ `distance` / `warm`).
+  `node hoc/kiem-lo-trinh.mjs --loi-gia-mua-2` cắm 6 lỗi giả: cả 6 mục đỏ.
+
+  | Gói | Chương 1 | Chương 2 | Màn | Mã màn | Tệp màn mới |
+  |---|---|---|---|---|---|
+  | 1 Bánh xích `xich` | `xich` 10 | `bien-xich` "Biến cho xích" 9 (+1 mới) | 19 | xich.1–10 · che-xich.1, .2, .6, .8, che-cam-bien.6, .5, .9, robot-hoan-thien.9, che-xich.9 | man-bien-xich.js |
+  | 2 Súng hơi `sung-hoi` | `sung-hoi` 10 | `tham-so` 10 | 20 | sung-hoi.1–10 · tham-so.1–10 | |
+  | 3 Hồng ngoại `hong-ngoai` | `hong-ngoai` 0 | `che-hong-ngoai` 0 | 0 (chưa hiện) | | man-hong-ngoai.js |
+  | 4 Nhà máy `nha-may` | `bang-chuyen` 10 | `che-sung-hoi` 10 | 20 | bang-chuyen.1–10 · che-sung-hoi.1–10 | |
+  | 5 Đẩy thùng `day-thung` | `day-thung` 0 | `che-day-thung` 0 | 0 (chưa hiện) | | man-day-thung.js |
+  | 6 Lực bắn `luc-ban` | `luc-ban` 10 | `che-luc-ban` 0 | 10 | luc-ban.1–10 | man-che-luc-ban.js |
+  | 7 Đo nhiệt `do-nhiet` | `do-nhiet` 0 | `che-do-nhiet` 0 | 0 (chưa hiện) | | man-do-nhiet.js |
+  | 8 Đội `doi-mua-2` | `doi-mua-2` 0 | `che-doi-mua-2` 0 | 0 (chưa hiện) | | man-doi-mua-2.js |
+  | 9 Bệ súng xích `be-sung` | `be-sung` 0 | `che-be-sung` 0 | 0 (chưa hiện) | | man-be-sung.js |
+  | 10 Nhà máy chạy lại `nha-may-chay` | `tong-hop-2` 0 | `trum-mua-2` 0 | 0 (chưa hiện) | | man-trum-mua-2.js |
+  | | | | **69** | | |
+
+  Đã sửa (qua lộ trình, ngân hàng không đổi): sung-hoi.3, .8 lời giải `forward(n)` → `for … move()` (đo lại sao), sung-hoi.4 mã mẫu bỏ `forward(2)`;
+  xich.5 ("Trái rồi phải"), xich.7, xich.10 ("Đường bậc thềm") ô `S` thành sàn, lời giải / nhịp / ô không đổi; tham-so.3 hố `u` → hàng rào `=`; tham-so.7 gầm `n` → tường;
+  xich.6 đề tự giới thiệu băng chuyền. **Giữ** băng chuyền trước gói 4 ở xich.6, .10 (băng không đẩy xích: đặc tính part), tham-so.9, .10 và sung-hoi.7, .8 (băng là ý bài, đề đã nêu luật băng; dời thì hụt chương).
+  **Khác kế hoạch:** che-xich 3, 4, 5, 7, 10 không cất hẳn mà thành chương `che-xich` (5 màn) ở mùa 3 (ẩn), vì che-xich.4 tạo `climb()` mà che-doi-xich.1, .2, che-doi-omni.5 cần.
+  Dời đầu mùa 3 (ẩn), giữ thứ tự: Sân cơ khí (`ban-xoay`, gói đầu mùa 3 cần 0 ★), Thân nhện, Đội vượt hố và băng chuyền, Danh sách, `che-xich`, Đội xích và nhện, Bánh omni, Đội omni và xích.
+  Đường cong (luật mùa 1) chưa đạt ở vài chỗ của chương có sẵn (xich.2, .3 dòng; bang-chuyen.2–4, .8; che-xich.6 trong `bien-xich` nhịp 10 so với 5): để gói viết mới xử lý nếu cần.
