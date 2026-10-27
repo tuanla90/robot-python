@@ -75,6 +75,19 @@
   // do-nhiet.5: như do-nhiet.4 nhưng nút xa gần khác nhau và dưới hành lang có hai hốc (2,4), (3,4). Nút (1,0) TẮT cách 2 ô: bắn tụ, xe giật xuống tường nên đứng yên;
   //   (2,0) ĐANG BẬT cách 2 ô, dưới là hốc: bắn tụ thì xe giật xuống hốc; (3,2) TẮT sát mũi, dưới là hốc: phải bắn nhanh; (4,2) TẮT sát mũi; (5,2) ĐANG BẬT. Cửa (2,3), (4,3), (5,3).
   var SAN_D5 = ['########', '#NN#####', '#..#####', '#..NNN##', '#.C.CCF#', '##..####', '########'];
+  // do-nhiet.6: hành lang (1..6, 2), nút ở CẢ HAI bên: trên (1..4, 1), dưới (1..4, 3). Nút TẮT (1,1) mở cửa (2,2), (2,3) mở cửa (3,2), (4,3) mở cửa (5,2); các nút khác ĐANG BẬT. Cờ (6,2).
+  var SAN_D6 = ['########', '#NNNN###', '#.CC.CF#', '#NNNN###', '########'];
+  // do-nhiet.7: đi rồi về. Lượt đi (2..5, 1) sang phải, lượt về (5..1, 3) sang trái; ba nút (2..4, 2) nằm trên bức tường GIỮA, lượt nào cũng ở bên phải xe.
+  //   (2,2) ĐANG BẬT; (3,2) TẮT mở cửa (2,3); (4,2) TẮT mở cửa (3,3). Lượt về, hai nút mình đã bật cũng nóng: bắn lại thì cửa đóng.
+  var SAN_D7 = ['#######', '##....#', '##NNN.#', '#FCC..#', '#######'];
+  // do-nhiet.8: hành lang (1..5, 2) sang phải, nút ở bên phải (phía dưới), xa gần khác nhau; phía trên có hai hốc (2,1), (3,1). (1,5) TẮT cách 2 ô mở cửa (2,2);
+  //   (2,5) ĐANG BẬT cách 2 ô, trên là hốc; (3,3) TẮT sát mũi mở cửa (4,2); (4,3) ĐANG BẬT. Xe mờ (5,2) quay phải.
+  var SAN_D8 = ['#######', '##..###', '#.C.C.#', '#..NN##', '#..####', '#NN####', '#######'];
+  // do-nhiet.9: hành lang (1..5, 2), bốn nút phía trên. (1,1) TẮT nối hai ô băng chuyền chạy ngược (2,2), (3,2): bắn thì băng dừng; (3,1) TẮT mở cửa (4,2); (2,1), (4,1) ĐANG BẬT.
+  var SAN_D9 = ['#######', '#NNNN##', '#.<<CF#', '#######'];
+  // do-nhiet.10: ba mê cung đèn nóng, mỗi sân bốn ngã: sân 1 của do-nhiet.2, sân 2 của do-nhiet.3 (có cửa, thùng, nút tắt làm mồi), sân 3 là đường xoắn của do-nhiet.1
+  //   với cửa đã mở, bốn đèn nóng (4,2), (3,6), (0,5), (1,3) và nút TẮT (2,1) làm mồi.
+  var SAN_D10 = [SAN_D2, SAN_D3, ['######', '##N###', '##..N#', '#N#.##', '#F#.##', 'N...##', '###N##', '######']];
 
   /* ------------------------------------------------------------- chương trình */
 
@@ -83,6 +96,11 @@
   var L_D4 = FOR(5, nhieu(['turn_left()'], BAT, ['turn_right()', 'move()']));
   var C_D5 = FOR(5, ['turn_left()', 'check_hot()', 'turn_right()', 'move()']);
   var T_D5 = IF('not warm()', ['aim_fire()']);
+  var C_D6 = FOR(4, ['turn_left()', 'check_side()', 'u_turn()', 'check_side()', 'turn_left()', 'move()']).concat(['move()']);
+  var C_D7 = nhieu(FOR(3, ['check_right()', 'move()']), ['turn_right()', 'forward(2)', 'turn_right()'], FOR(3, ['move()', 'check_right()']), ['move()']);
+  var T_D7 = nhieu(['turn_right()'], BAT, ['turn_left()']);
+  var C_D8 = FOR(4, ['turn_right()', 'scan_hot()', 'turn_left()', 'move()']);
+  var C_D9 = FOR(4, ['turn_left()', 'check_belt()', 'turn_right()', 'move()']);
 
   var DS = [
     /* ================================================================ chương do-nhiet: đọc nóng / không nóng rồi quyết */
@@ -184,6 +202,111 @@
       ],
       goiY: ['aim_fire() đo distance(): từ 2 ô trống trở lên thì bắn tụ, gần hơn thì bắn nhanh.',
         'Thân check_hot(): if not warm(): rồi thụt vào aim_fire().']
+    }),
+
+    /* ------------------------------------------------ hàng 2 tiếp: luyện */
+    man({
+      chuong: 'do-nhiet', so: 6, ten: 'Nút hai bên đường', yMoi: 'đo cả hai bên: gọi cùng một thân hàm sau turn_left() và sau u_turn()',
+      hamCuaEmCan: ['fire', 'turn_left', 'u_turn', 'move'], chinhCoDinh: true,
+      deBai: 'Hành lang có nút ở cả hai bên. Ở mỗi ô, chỉ một nút tắt (hay không nút nào) mở cánh cửa phía trước; các nút khác đang bật. Chương trình chính đã khóa: ' +
+        'quay trái, check_side(), quay đầu, check_side(), quay trái, tiến. Viết thân check_side(): nút chưa nóng thì bắn nhanh.',
+      veMaMau: 'Chương trình chính bị khóa. check_side() có sẵn chưa làm gì. Viết thân của nó.',
+      san: SAN_D6, batDau: { x: 1, y: 2, huong: 1 }, noi: [noi(1, 1, [[2, 2]]), noi(2, 3, [[3, 2]]), noi(4, 3, [[5, 2]])], nutBat: [o(2, 1), o(3, 1), o(4, 1), o(1, 3), o(3, 3)],
+      maMau: bai(C_D6, [H('check_side', [], ['pass'])]),
+      sao: { o: 20, nhip: 20 },
+      loiGiai: bai(C_D6, [H('check_side', [], BAT)]),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_D6, [H('check_side', [], ['# nút chưa nóng thì bắn cho bật'].concat(BAT))]) },
+      congThucKhac: [{ moTa: 'Bắn mọi nút không cần đo: vẫn tới cờ nhưng tắt năm nút đang bật, phí năm nhịp', baiLam: bai(C_D6, [H('check_side', [], ['fire("fast")'])]) }],
+      loiSai: [
+        { moTa: 'Viết if warm(): chỉ tắt nút đang bật, ba nút tắt vẫn tắt', baiLam: bai(C_D6, [H('check_side', [], IF('warm()', ['fire("fast")']))]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Để thân trống: không nút nào được bật, cửa đầu tiên vẫn đóng', baiLam: bai(C_D6, [H('check_side', [], ['pass'])]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Cùng một thân hàm chạy tám lần, mỗi lần mắt hồng ngoại nhìn một nút khác.',
+        'Thân check_side(): if not warm(): fire("fast").']
+    }),
+
+    /* ------------------------------------------------ hàng 3: biến thể */
+    man({
+      chuong: 'do-nhiet', so: 7, ten: 'Đi rồi về qua nút cũ', yMoi: 'nút mình vừa bật cũng nóng: lượt về warm() là True, bắn lại thì cửa đóng',
+      hamCuaEmCan: ['fire', 'turn_left', 'turn_right', 'forward', 'move'], chinhCoDinh: true,
+      deBai: 'Ba nút nằm trên bức tường giữa hai lượt đi: lượt đi và lượt về, nút nào cũng ở bên phải xe. Nút tắt mở cửa ở lượt về. Chương trình chính đã khóa, gọi check_right() ở cả hai lượt. ' +
+        'Bắn là ĐỔI trạng thái: lượt về mà bắn lại nút mình vừa bật thì nó tắt, cửa của nó đóng lại. Sửa thân check_right() cho đúng.',
+      veMaMau: 'Chương trình chính bị khóa. check_right() có sẵn bắn mọi nút. Chạy thử: lượt về cửa nào đóng lại?',
+      san: SAN_D7, batDau: { x: 2, y: 1, huong: 1 }, noi: [noi(3, 2, [[2, 3]]), noi(4, 2, [[3, 3]])], nutBat: [o(2, 2)],
+      maMau: bai(C_D7, [H('check_right', [], ['turn_right()', 'fire("fast")', 'turn_left()'])]),
+      sao: { o: 25, nhip: 25 },
+      loiGiai: bai(C_D7, [H('check_right', [], T_D7)]),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_D7, [H('check_right', [], ['# nút đã nóng thì để yên'].concat(T_D7))]) },
+      loiSai: [
+        { moTa: 'Để nguyên bắn mọi nút: lượt về bắn lại nút vừa bật, cửa đóng trước mũi xe', baiLam: bai(C_D7, [H('check_right', [], ['turn_right()', 'fire("fast")', 'turn_left()'])]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đo mà quên quay: mắt hồng ngoại nhìn dọc đường đi, không nhìn nút', baiLam: bai(C_D7, [H('check_right', [], BAT)]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Lượt về, nút mình đã bắn ở lượt đi đang bật nên nóng.',
+        'Thân check_right(): turn_right(), if not warm(): fire("fast"), turn_left().']
+    }),
+
+    man({
+      chuong: 'do-nhiet', so: 8, ten: 'Đố: Sola bắn mọi nút', yMoi: 'tìm lỗi: thiếu if not warm(), nút nóng ở xa bị bắn tụ, cú giật đẩy xe xuống hốc',
+      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'move'], chinhCoDinh: true,
+      deBai: 'Sola viết scan_hot(): nút nào cũng aim_fire(), tự chọn lực theo xa gần. Chương trình chính đã khóa. Chạy thử: tới nút thứ hai xe rơi xuống hốc. Vì sao? ' +
+        'Nút đó đang bật sẵn, không cần bắn. Sửa scan_hot() để chỉ bắn nút chưa nóng, đưa xe tới chỗ xe mờ.',
+      veMaMau: 'Chạy thử. Nút thứ hai cách mấy ô, aim_fire() chọn lực gì, sau lưng xe là gì?',
+      san: SAN_D8, batDau: { x: 1, y: 2, huong: 1 }, noi: [noi(1, 5, [[2, 2]]), noi(3, 3, [[4, 2]])], nutBat: [o(2, 5), o(4, 3)],
+      bongMo: { x: 5, y: 2, huong: 1 },
+      maMau: bai(C_D8, [H('scan_hot', [], ['aim_fire()'])]),
+      sao: { o: 20, nhip: 14 },
+      loiGiai: bai(C_D8, [H('scan_hot', [], T_D5)]),
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích', baiLam: bai(C_D8, [H('scan_hot', [], ['# nút nóng thì không bắn'].concat(T_D5))]) },
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: nút nóng cách 2 ô bị bắn tụ, xe giật lên hốc', baiLam: bai(C_D8, [H('scan_hot', [], ['aim_fire()'])]), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Sửa thành if warm(): bắn nút nóng, bỏ nút tắt', baiLam: bai(C_D8, [H('scan_hot', [], IF('warm()', ['aim_fire()']))]), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Bỏ aim_fire(), bắn nhanh: nút tắt đầu tiên cách 2 ô, bóng rơi giữa đường', baiLam: bai(C_D8, [H('scan_hot', [], BAT)]), phaiCoMa: ['ban-ngan', 'lech-bong-mo'] }
+      ],
+      goiY: ['Nút đang bật thì không cần bắn: bắn chỉ tắt nó, mà bắn tụ còn làm xe giật.',
+        'Bọc aim_fire() trong if not warm():.']
+    }),
+
+    man({
+      chuong: 'do-nhiet', so: 9, ten: 'Băng chuyền và nút nóng', yMoi: 'nút tắt nối băng chuyền: bắn thì băng dừng; nút nóng để yên',
+      hamCuaEmCan: ['fire', 'turn_left', 'turn_right', 'move'], chinhCoDinh: true,
+      deBai: 'Hai ô băng chuyền chạy ngược chắn đường: đứng trên băng hai nhịp là bị đẩy lùi. Nút tắt đầu tiên nối với băng, bắn thì băng dừng; nút tắt thứ hai mở cửa. ' +
+        'Hai nút còn lại đang bật. Chương trình chính đã khóa, gọi check_belt() ở bốn ô. Viết thân check_belt().',
+      veMaMau: 'Chương trình chính bị khóa. check_belt() có sẵn chỉ bắn khi nút nóng. Chạy thử xem băng có dừng không.',
+      san: SAN_D9, batDau: { x: 1, y: 2, huong: 1 }, noi: [{ nut: o(1, 1), bang: [o(2, 2), o(3, 2)] }, noi(3, 1, [[4, 2]])], nutBat: [o(2, 1), o(4, 1)],
+      maMau: bai(C_D9, [H('check_belt', [], IF('warm()', ['fire("fast")']))]),
+      sao: { o: 16, nhip: 14 },
+      loiGiai: bai(C_D9, [H('check_belt', [], BAT)]),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_D9, [H('check_belt', [], ['# nút tắt thì bắn: băng dừng, cửa mở'].concat(BAT))]) },
+      loiSai: [
+        { moTa: 'Để nguyên if warm(): băng vẫn chạy, xe bị đẩy lùi', baiLam: bai(C_D9, [H('check_belt', [], IF('warm()', ['fire("fast")']))]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không bắn gì: băng chạy, cửa đóng', baiLam: bai(C_D9, [H('check_belt', [], ['pass'])]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Băng chuyền nối với nút: nút đổi trạng thái thì băng đổi theo ngay.',
+        'Thân check_belt(): if not warm(): fire("fast").']
+    }),
+
+    /* ------------------------------------------------ trùm */
+    man({
+      chuong: 'do-nhiet', so: 10, ten: 'Trùm: Ba mê cung đèn nóng', yMoi: 'một chương trình cho ba mê cung: quay tìm đèn nóng ở mỗi ngã',
+      hang: 'trum', hamCuaEmCan: ['turn_right', 'go_to_wall', 'move'],
+      huyHieu: { ma: 'do-nhiet', ten: 'Huy hiệu Đo nhiệt' },
+      deBai: 'Ba mê cung, một chương trình. Mê cung nào cũng có bốn ngã, ở mỗi ngã đường đi tiếp là hướng có đèn nóng ở cuối, nhưng đèn nằm bên phải hay bên trái, xa hay gần thì mỗi sân một khác, ' +
+        'lại có cửa, thùng, nút tắt đứng gần như đèn. Viết một chương trình tới cờ ở cả ba mê cung.',
+      veMaMau: 'Chương trình có sẵn ngã nào cũng rẽ phải một lần: chỉ đúng ở mê cung thứ ba.',
+      san: SAN_D10, batDau: [{ x: 2, y: 1, huong: 0 }, { x: 1, y: 5, huong: 0 }, { x: 2, y: 2, huong: 0 }],
+      noi: [[], [], []],
+      nutBat: [[o(5, 1), o(4, 4), o(6, 3), o(5, 5)], [o(3, 5), o(2, 3), o(5, 4), o(4, 1)], [o(4, 2), o(3, 6), o(0, 5), o(1, 3)]],
+      maMau: bai(FOR(4, ['turn_right()', 'go_to_wall()'])),
+      sao: { o: 12, nhip: 37 },
+      loiGiai: bai(L_D2),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# ngã nào cũng tìm đèn nóng'].concat(L_D2)) },
+      loiSai: [
+        { moTa: 'Ngã nào cũng rẽ phải một lần: chỉ đúng ở mê cung thứ ba', baiLam: bai(FOR(4, ['turn_right()', 'go_to_wall()'])), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Tìm bằng distance() như Sola: cửa đóng cách 1 ô cũng bị chọn', baiLam: bai(FOR(4, nhieu(['turn_right()'], WHILE('distance() == 0', ['turn_right()']), ['go_to_wall()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bỏ dòng quay đầu tiên: xe đang nhìn đúng đèn vừa tới nên đứng yên', baiLam: bai(FOR(4, nhieu(WHILE('not warm()', ['turn_right()']), ['go_to_wall()']))), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Ở mỗi ngã: quay khỏi đèn vừa tới, quay tiếp cho tới khi warm() là True, rồi go_to_wall().',
+        'Chương trình của màn Đèn nóng chỉ đường chạy được ở cả ba mê cung.']
     })
   ];
 
