@@ -169,7 +169,7 @@
 
     man({
       so: 3, ten: 'Sửa hàm quick_aim()', yMoi: 'sửa hàm lỗi: so với tầm bắn nhanh, distance() > 2 thành distance() > 1',
-      mucTieu: 'bong-mo', hamCuaEmCan: ['fire', 'turn_left', 'turn_right', 'u_turn', 'forward', 'move'], chinhCoDinh: true,
+      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'u_turn', 'forward', 'move'], chinhCoDinh: true,
       deBai: 'Sola cũng viết một hàm tự chọn lực, quick_aim(), nhưng so distance() với 2. Chương trình chính đã khóa, gọi quick_aim() hai lần: nút gần có thùng sau lưng, rồi nút xa có distance() đúng bằng 2. ' +
         'Chạy thử xem phát nào hỏng, rồi sửa một dòng trong quick_aim(). Thùng phải nằm yên.',
       veMaMau: 'Chạy thử. Nút xa có distance() bằng mấy? Bắn nhanh bay được mấy ô?',
@@ -233,7 +233,7 @@
 
     man({
       so: 6, ten: 'Hàm close_fire()', yMoi: 'hàm dùng go_to_wall(): đi tới sát nút rồi bắn nhanh để xe đứng yên ở chỗ rẽ',
-      mucTieu: 'bong-mo', hamCuaEmCan: ['go_to_wall', 'fire', 'turn_right', 'move'], taoHam: ['close_fire'], chinhCoDinh: true,
+      mucTieu: 'bong-mo', hamCuaEmCan: ['go_to_wall', 'fire', 'turn_right', 'forward', 'move'], taoHam: ['close_fire'], chinhCoDinh: true,
       deBai: 'Ba đoạn đường dài ngắn khác nhau; cuối mỗi đoạn có một nút mở cửa ở chỗ rẽ. Em chế close_fire(): đi tới sát nút bằng go_to_wall() của gói Hồng ngoại rồi bắn nhanh. ' +
         'Sát nút mà bắn tụ thì xe giật lùi khỏi chỗ rẽ. Chương trình chính đã khóa. Đưa xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo close_fire(): hai dòng.',
@@ -256,7 +256,7 @@
     /* ------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Hàm scan_left()', yMoi: 'hàm có vòng lặp bên trong: mỗi vòng aim_left() rồi tiến, gọi ở hai hành lang',
-      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_left', 'aim_fire', 'fire', 'turn_left', 'turn_right', 'move'], taoHam: ['scan_left'], chinhCoDinh: true,
+      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_left', 'aim_fire', 'fire', 'fire_left', 'turn_left', 'turn_right', 'move'], taoHam: ['scan_left'], chinhCoDinh: true,
       deBai: 'Hai hành lang nối nhau, mỗi hành lang có hai nút bên trái, xa gần khác nhau. Em chế scan_left(): vòng lặp hai lần, mỗi lần aim_left() rồi tiến một ô. ' +
         'Chương trình chính đã khóa: scan_left(), quay phải, scan_left(). Bắn tụ thì xe giật sang làn bên cạnh. Đưa xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo scan_left() với for i in range(2): trong thân hàm.',
@@ -298,7 +298,7 @@
 
     man({
       so: 9, ten: 'Đố: lực bị viết cứng', yMoi: 'sửa hàm lỗi: tham số p bị bỏ quên, thân hàm viết cứng "charge"',
-      mucTieu: 'bong-mo', hamCuaEmCan: ['fire', 'turn_left', 'turn_right', 'forward', 'move'], chinhCoDinh: true,
+      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'forward', 'move'], chinhCoDinh: true,
       deBai: 'Sola chế shot_right(p): quay phải, bắn, quay lại. Chương trình chính đã khóa, gọi shot_right("charge") rồi shot_right("fast"). ' +
         'Nhưng ở nút thứ hai xe vẫn giật lùi xuống hốc. Tìm và sửa một dòng trong shot_right(p).',
       veMaMau: 'Chạy thử. Lời gọi đưa "fast" vào p, mà thân hàm có dùng p không?',
@@ -321,7 +321,7 @@
     /* ------------------------------------------------ trùm */
     man({
       so: 10, ten: 'Trùm: Ba hành lang nút', yMoi: 'một chương trình cho ba sân: aim_left() trong vòng lặp, close_fire() ở cuối hành lang',
-      hang: 'trum', hamCuaEmCan: ['aim_left', 'aim_fire', 'close_fire', 'go_to_wall', 'fire', 'fire_left', 'turn_left', 'turn_right', 'move'],
+      hang: 'trum', hamCuaEmCan: ['aim_left', 'aim_fire', 'close_fire', 'scan_left', 'go_to_wall', 'fire', 'fire_left', 'turn_left', 'turn_right', 'move'],
       huyHieu: { ma: 'che-luc-ban', ten: 'Huy hiệu Hàm lực bắn' },
       deBai: 'Ba sân, một chương trình. Sân nào cũng có ba nút bên trái hành lang, mỗi nút mở cửa trạm kế, nhưng nút xa nằm ở trạm khác nhau. ' +
         'Cuối hành lang là một nút nữa, xa gần khác nhau, mở cửa xuống cờ. Dùng các hàm của em để tới cờ trên cả ba sân.',
