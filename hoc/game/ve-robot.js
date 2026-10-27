@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    ve-robot.js — "Robot Chấn Hưng": LỚP VẼ ROBOT TÁCH RIÊNG (window.VeRobot).
    Mọi chỗ vẽ robot (sân chính, sân thử ở Xưởng) đều gọi VeRobot.ve(); muốn đổi hình robot chỉ sửa tệp này
@@ -36,7 +37,7 @@
   'use strict';
 
   var CAN = 34;                      // cạnh canvas hình tạm có tay (xe 16 + viền ở giữa, càng nhô 8px phía trước; tâm canvas = tâm xe)
-  var ND = { ink: '#1b120a' };
+  var ND = { ink: BM.ink };
   var cache = {};
 
   /* ---------------------------------------------------------------- cấu hình */
@@ -83,13 +84,13 @@
     var o = ctxMoi(CAN), g = o.g, i;
     var tuThe = tay.tuThe, tren = tuThe === 'tren', duoi = tuThe === 'duoi';
     var dong = tay.kep, cam = tay.cam;
-    var mau = loi ? { f: '#ff3b30', h: '#ffb0a8' } : duoi ? { f: '#c8661a', h: '#e48a3c' } : tren ? { f: '#ffb13b', h: '#ffe0a0' } : { f: '#e68a24', h: '#ffc070' };
+    var mau = loi ? { f: BM.veRobotTamTayF, h: BM.veRobotTamTayH } : duoi ? { f: BM.veRobotTamTayF2, h: BM.veRobotTamTayH2 } : tren ? { f: BM.veRobotTamTayF3, h: BM.veRobotTamTayH3 } : { f: BM.veRobotTamTayF4, h: BM.veRobotTamTayH4 };
     // Hệ toạ độ canvas 34×34, xe (18×18 có viền) đặt ở (8, 8) → mũi xe ở hàng y = 8, tâm xe = tâm canvas. Tay ở PHÍA TRƯỚC mũi (hàng 0..7).
     // hai thanh (như càng xe nâng) x 9..10 và 23..24 (đúng hai góc trước của thân, hàng 1..10) nối vào xe; ngàm ở hàng 2..3: mở = ngắn, đóng = chạm nhau, ôm thùng = chạm hai bên thùng.
     var dauNgam = !dong ? 11 : cam ? 12 : 16;                         // x cuối của ngàm trái
     var rect = [[9, 1, 2, 10], [23, 1, 2, 10], [9, 2, dauNgam - 8, 2], [33 - dauNgam, 2, dauNgam - 8, 2]];   // [x, y, w, h]
     if (tren) {                                                       // tay nâng: có bóng đổ xuống đất (cao hơn mặt đất)
-      g.fillStyle = 'rgba(0,0,0,.3)';
+      g.fillStyle = BM.veRobotTamTayFillStyle;
       rect.forEach(function (r) { g.fillRect(r[0] + 1, r[1] + 2, r[2], r[3]); });
       if (cam) g.fillRect(15, 3, 8, 8);
     }
@@ -99,13 +100,13 @@
     rect.forEach(function (r) { g.fillStyle = mau.f; g.fillRect(r[0], r[1], r[2], r[3]); });
     g.fillStyle = mau.h;
     g.fillRect(9, 3, 1, 8); g.fillRect(23, 3, 1, 8); g.fillRect(9, 2, dauNgam - 8, 1); g.fillRect(33 - dauNgam, 2, dauNgam - 8, 1);
-    if (duoi) { g.fillStyle = '#fff6e3'; g.fillRect(9, 1, 1, 1); g.fillRect(24, 1, 1, 1); }   // đầu càng chạm đất
+    if (duoi) { g.fillStyle = BM.veRobotTamTayFillStyle2; g.fillRect(9, 1, 1, 1); g.fillRect(24, 1, 1, 1); }   // đầu càng chạm đất
     if (cam) {                                                        // thùng giữa hai càng, ngay trước mũi: 6×6 + viền
       var cx = 14, cy = 1;
       g.fillStyle = ND.ink; g.fillRect(cx - 1, cy - 1, 8, 8);
-      g.fillStyle = '#c98a45'; g.fillRect(cx, cy, 6, 6);
-      g.fillStyle = '#e8b574'; g.fillRect(cx, cy, 6, 1); g.fillRect(cx, cy, 1, 6);
-      g.fillStyle = '#8a5a24'; g.fillRect(cx, cy + 5, 6, 1); g.fillRect(cx + 5, cy, 1, 6);
+      g.fillStyle = BM.veRobotTamTayFillStyle3; g.fillRect(cx, cy, 6, 6);
+      g.fillStyle = BM.veRobotTamTayFillStyle4; g.fillRect(cx, cy, 6, 1); g.fillRect(cx, cy, 1, 6);
+      g.fillStyle = BM.veRobotTamTayFillStyle5; g.fillRect(cx, cy + 5, 6, 1); g.fillRect(cx + 5, cy, 1, 6);
       for (i = 1; i < 5; i++) { g.fillRect(cx + i, cy + i, 1, 1); g.fillRect(cx + 5 - i, cy + i, 1, 1); }
     }
     return xoay(o.cv, huong);
