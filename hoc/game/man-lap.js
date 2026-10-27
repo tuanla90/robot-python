@@ -17,8 +17,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var E = {};
   var S = { m: null, cach: null, tuyChon: null, loiHen: null, loiRieng: null, keo: null, vuaKeo: 0, cao: false };
   var CAO_TU = 700;                                    // chiều cao khung (--sh) từ đây trở lên: có hàng sân + đề bài riêng
-  var MAU_KHE = { than: BM.lapMauKheThan, tay: BM.lapMauKheTay, camBien: BM.lapMauKheCamBien };
-  var MAU_RIENG = { 'nam-cham': BM.lapMauRieng1 };
+  var MAU_KHE = { than: BM.ngocToi, tay: BM.cam, camBien: BM.ngoc };
+  var MAU_RIENG = { 'nam-cham': BM.doSangV6 };
   var XU_TOI_DA_ICON = 14;                             // quá số này thì chỉ ghi số, không vẽ từng đồng xu
 
   /* ------------------------------------------------------------------ dựng DOM */
@@ -138,7 +138,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     E.xu.classList.toggle('qua', con < 0);
   }
   function xuIcon(sang, s) {
-    return Ve.ico('xu', s || 1, sang ? { fill: BM.lapXuIconFill, toi: BM.lapXuIconToi, sang: BM.lapXuIconSang, line: BM.ink } : { fill: BM.lapXuIconFill2, toi: BM.lapXuIconToi2, sang: BM.lapXuIconSang2, line: BM.lapXuIconLine });
+    return Ve.ico('xu', s || 1, sang ? { fill: BM.vangV3, toi: BM.goSangV14, sang: BM.kem, line: BM.vienDam } : { fill: BM.xamToi2V4, toi: BM.xamToi2V5, sang: BM.xamToiV9, line: BM.denV4 });
   }
 
   /* ----------------------------------------------------------------- đề bài + sân */
@@ -205,14 +205,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var b = h('button', 'lr-the'); b.setAttribute('data-khe', khe); b.setAttribute('data-ma', ma || 'khong');
     var hd = h('div', 'lr-the-hd');
     var ic = h('span', 'lr-the-ic');
-    ic.appendChild(Ve.ico(d ? d.icon : 'cross', 2, d ? DenBoPhan.mauIcon(mauThe(khe, ma), true) : { fill: BM.lapTheFill, line: BM.lapTheLine, toi: BM.lapTheToi }));
+    ic.appendChild(Ve.ico(d ? d.icon : 'cross', 2, d ? DenBoPhan.mauIcon(mauThe(khe, ma), true) : { fill: BM.xamV9, line: BM.bangV1, toi: BM.bangV1 }));
     hd.appendChild(ic);
     var gia = h('span', 'lr-gia'); gia.appendChild(xuIcon(true, 1)); gia.appendChild(h('span', 'lr-gia-so', String(d ? d.gia : 0)));
     hd.appendChild(gia);
     b.appendChild(hd);
     b.appendChild(h('div', 'lr-the-ten', d ? d.ten : t('lap.khongGan')));
     b.appendChild(h('div', 'lr-the-vuot', d ? d.vuot : t('lap.khongGanMoTa')));
-    var tick = h('span', 'lr-tick'); tick.appendChild(Ve.ico('check', 1, { fill: BM.lapTheFill2, shade: BM.lapTheShade, line: BM.lapTheLine2 })); b.appendChild(tick);
+    var tick = h('span', 'lr-tick'); tick.appendChild(Ve.ico('check', 1, { fill: BM.xanhLaSangV1, shade: BM.xanhLaToiV1, line: BM.bangV3 })); b.appendChild(tick);
     b.addEventListener('click', function () { if (Date.now() - S.vuaKeo < 250) return; chon(khe, ma, b); });
     return b;
   }
