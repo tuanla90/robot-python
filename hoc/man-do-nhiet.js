@@ -67,10 +67,17 @@
   //   Ngã (4,3) phải quay ba lần (bên trái là tường, phía sau là đường cũ). Cờ (5,4) nằm trước nút cuối (5,5).
   var SAN_D2 = ['########', '##...N##', '####.###', '####..N#', '####NF##', '#####N##', '########'];
 
+  // do-nhiet.3: đường bậc thang lên phải, như do-nhiet.2, nhưng ở ngã có vật cản khác cách xe như nút nóng: cửa đóng không ai mở (2,7), thùng (4,6), nút TẮT (1,4), tường.
+  //   Xe (1,5) quay lên. Đèn nóng: (3,5), (2,3), (5,4), (4,1); cờ (4,2) nằm trước đèn cuối. Ngã (2,5) và (4,4) phải quay ba lần.
+  var SAN_D3 = ['#######', '####N##', '####F##', '##N#.##', '#N...N#', '#..N.##', '##.#H##', '##C####', '#######'];
+  // do-nhiet.4: hành lang (1..6, 2) đi sang phải, năm nút trên tường (1..5, 1). Nút TẮT (1,1), (3,1), (4,1) mở cửa ngay sau nó (2,2), (4,2), (5,2); (2,1), (5,1) ĐANG BẬT. Cờ (6,2).
+  var SAN_D4 = ['########', '#NNNNN##', '#.C.CCF#', '########'];
+
   /* ------------------------------------------------------------- chương trình */
 
   var L_D1 = FOR(4, nhieu(BAT, ['turn_right()', 'go_to_wall()']));
   var L_D2 = FOR(4, nhieu(TIM, ['go_to_wall()']));
+  var L_D4 = FOR(5, nhieu(['turn_left()'], BAT, ['turn_right()', 'move()']));
 
   var DS = [
     /* ================================================================ chương do-nhiet: đọc nóng / không nóng rồi quyết */
@@ -113,6 +120,44 @@
       ],
       goiY: ['while not warm(): turn_right() quay cho tới khi phía trước là một nút nóng.',
         'Tới sát nút rồi thì xe đang nhìn chính nút đó: quay phải một lần trước khi tìm tiếp.']
+    }),
+
+    man({
+      chuong: 'do-nhiet', so: 3, ten: 'Cửa, thùng hay đèn', yMoi: 'distance() không phân biệt được: cửa, thùng, nút tắt, nút nóng cùng cách 1 ô, chỉ warm() khác',
+      hamCuaEmCan: ['turn_right', 'go_to_wall', 'move'],
+      deBai: 'Lại đi theo đèn nóng, nhưng ở các ngã có thêm cửa đóng, thùng nặng và nút tắt, cùng cách xe một ô như nút nóng. Mắt hồng ngoại chỉ đo xa gần và đo nhiệt, không biết vật cản là gì: ' +
+        'distance() của chúng như nhau, chỉ warm() khác. Đi bốn ngã tới cờ.',
+      veMaMau: 'Bản của Sola tìm đường bằng distance(): gặp vật cản không sát mũi là đi. Ở ngã thứ hai, cửa đóng cũng cách 1 ô: Sola đi nhầm. Đổi điều kiện sang warm().',
+      san: SAN_D3, batDau: { x: 1, y: 5, huong: 0 }, noi: [], nutBat: [o(3, 5), o(2, 3), o(5, 4), o(4, 1)],
+      maMau: bai(FOR(4, nhieu(['turn_right()'], WHILE('distance() == 0', ['turn_right()']), ['go_to_wall()']))),
+      sao: { o: 12, nhip: 14 },
+      loiGiai: bai(L_D2),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# chỉ nút đang bật mới nóng'].concat(L_D2)) },
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: cửa đóng cũng cách 1 ô nên xe đi nhầm về phía cửa', baiLam: bai(FOR(4, nhieu(['turn_right()'], WHILE('distance() == 0', ['turn_right()']), ['go_to_wall()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bỏ dòng quay đầu tiên: tới ngã thứ hai xe đang nhìn đúng nút nóng vừa tới nên đứng yên', baiLam: bai(FOR(4, nhieu(WHILE('not warm()', ['turn_right()']), ['go_to_wall()']))), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Cửa đóng, thùng, nút tắt hay nút nóng đều là vật cản: distance() chỉ cho biết cách mấy ô.',
+        'Chương trình của màn trước dùng lại được nguyên vẹn.']
+    }),
+
+    man({
+      chuong: 'do-nhiet', so: 4, ten: 'Hành lang năm nút', yMoi: 'vòng lặp đi dọc hành lang: quay trái đo, nút tắt thì bắn, quay lại rồi tiến',
+      hamCuaEmCan: ['fire', 'turn_left', 'turn_right', 'move'],
+      deBai: 'Năm nút nằm trên tường phía trên hành lang, ngay bên trái xe. Nút tắt nào cũng mở cánh cửa ngay trước nó; nút đang bật thì cửa trước nó đã mở sẵn. ' +
+        'Ở mỗi ô: quay trái đo nhiệt, nút chưa nóng thì bắn nhanh, quay lại rồi tiến một ô. Đi tới cờ.',
+      veMaMau: 'Chương trình có sẵn quay trái, quay lại rồi tiến, chưa bắn gì. Thêm if not warm(): fire("fast").',
+      san: SAN_D4, batDau: { x: 1, y: 2, huong: 1 }, noi: [noi(1, 1, [[2, 2]]), noi(3, 1, [[4, 2]]), noi(4, 1, [[5, 2]])], nutBat: [o(2, 1), o(5, 1)],
+      maMau: bai(FOR(5, ['turn_left()', 'turn_right()', 'move()'])),
+      sao: { o: 15, nhip: 18 },
+      loiGiai: bai(L_D4),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# nút tắt thì bắn, nút nóng để yên'].concat(L_D4)) },
+      loiSai: [
+        { moTa: 'Quên quay lại: xe tiến thẳng vào tường phía trên', baiLam: bai(FOR(5, nhieu(['turn_left()'], BAT, ['move()']))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Viết if warm(): tắt hai nút đang bật, ba nút tắt vẫn tắt', baiLam: bai(FOR(5, nhieu(['turn_left()'], IF('warm()', ['fire("fast")']), ['turn_right()', 'move()']))), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Mắt hồng ngoại ở mũi xe: muốn đo nút phía trên thì phải quay mặt về phía nút.',
+        'Thân vòng lặp: turn_left(), if not warm(): fire("fast"), turn_right(), move().']
     })
   ];
 
