@@ -1,7 +1,7 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-than-omni.js — THÂN OMNI vector (gói V3), cùng gia đình thân A: vỏ trắng bo tròn hẹp, đường ghép tím nhạt, kính + hai mắt màu đội, ăng-ten chấm màu đội;
    bốn bánh omni ở bốn góc (bầu dục nghiêng 40°, trục cyan, hai con lăn chéo) — chạy được sang ngang (slide_left / slide_right).
-   Quay mặt XUỐNG, tâm (50, 56). Ổ: tay (50, 82); hongTrai (96, 56) / hongPhai (4, 56) giữa hai bánh mỗi bên; tren (71, 78) góc mũi trái; sau (37, 27) đuôi.
+   Quay mặt XUỐNG, tâm (50, 56). Ổ: tay (50, 81); hongTrai (96, 56) / hongPhai (4, 56) giữa hai bánh mỗi bên; tren (71, 78) góc mũi trái; sau (37, 27) đuôi.
    Trạng thái s: banh { trai, phai } + buoc (0 | 1) → con lăn đổi chéo (thấy bánh quay); camera / camSang như thân A. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
@@ -13,7 +13,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.elip(g, 0, 0, 4.5, 3.2); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 1.5);
     g.restore();
   }
-  V.dangKy({ loai: 'than', ma: 'omni', ten: 'Thân omni', oGan: { tay: { x: 50, y: 82 }, hongTrai: { x: 96, y: 56 }, hongPhai: { x: 4, y: 56 }, tren: { x: 71, y: 78 }, sau: { x: 37, y: 27 } }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'than', ma: 'omni', ten: 'Thân omni', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 96, y: 56 }, hongPhai: { x: 4, y: 56 }, tren: { x: 71, y: 78 }, sau: { x: 37, y: 27 } }, ve: function (g, s, M, H) {
     var pha = s && s.banh && (s.banh.trai || s.banh.phai) && s.buoc ? 1 : 0, A = 40 * Math.PI / 180;
     banh(g, H, 17, 37, A, pha); banh(g, H, 83, 37, -A, pha); banh(g, H, 17, 75, -A, pha); banh(g, H, 83, 75, A, pha);
     H.bo(g, 23, 24, 54, 59, 22); g.fillStyle = H.gradVo(g, 23, 24, 54, 59); g.fill(); H.vien(g, BM.vecVien, 3.5);

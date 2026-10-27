@@ -16,8 +16,14 @@
        SanHoc.MAU_TEN; mỗi thứ phải có trong bảng nối ve-vector-ky-hieu.js và trỏ tới hình đã đăng ký; mỗi hàm Field.* trong bảng có nhánh this.vec.
   11. (gói V2) Mỗi hình × MỌI trạng thái mẫu (cacTrangThai) × 3 cỡ (14, 56, 168): vẽ được, màu từ bảng màu, nằm trong ô; trạng thái khác → luồng lệnh khác và canvas đệm khác;
        màu luật: sàn màu / vật nam châm / khung đích màu lấy nhóm LUAT, bốn màu sàn cách nhau và cách nền sân trắng đủ xa (khoảng cách RGB).
+  12. (gói V3) Thân / tay / cảm biến — liệt kê TỪ part/*.js: mỗi bộ phận có hình vector cùng mã, cùng ổ (gan, ten); mọi tệp ve-vector-*.js nạp trong choi.html + trang xem;
+       mọi tổ hợp thân × (không tay + tay) × bộ cảm biến (mọi cảm biến ở mọi tên ổ, vài cặp): kiemGhep ném đúng khi Part.ghep ném, CÙNG câu báo; tổ hợp hợp lệ × 4 hướng × 2 cỡ
+       vẽ được, màu từ bảng, nằm trong ô (tay xoay: nấc trái / phải trong ô, ±45° trong lề tràn); drone một hình cho 4 hướng, không bóng trong hình; ổ đúng phía sau xoay
+       (tay trước, hongTrai trái, hongPhai phải, tren góc mũi trái, sau đuôi); màu đội đúng ba chỗ trên mọi tổ hợp; trạng thái động ra hình khác; MỌI MÀN (cả từng robot
+       của màn đội) vẽ được bằng vector qua VeRobot.ve.
    Cờ --loi-gia: cắm sáu lỗi giả (neo tay lệch, góc xoay lệch 90°, màu R2 = R1, đệm bỏ cỡ, ô tường tô mã màu ngoài bảng, ổ tay thân ra ngoài ô) và bốn lỗi V2
-   (bỏ ký hiệu hố khỏi bảng nối, bỏ ô bậc thang của Ve.tiles khỏi bảng, băng chuyền bỏ qua pha, sàn màu vàng tô màu ngoài nhóm LUAT) → máy kiểm phải ĐỎ.
+   (bỏ ký hiệu hố khỏi bảng nối, bỏ ô bậc thang của Ve.tiles khỏi bảng, băng chuyền bỏ qua pha, sàn màu vàng tô màu ngoài nhóm LUAT) và bốn lỗi V3 (drone mất cờ không hướng,
+   xích đổi chỗ hai ổ hông, nam châm tô màu đội, camera-bay sai ổ) → máy kiểm phải ĐỎ.
    Chạy: node hoc/kiem-ve-vector.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
@@ -56,6 +62,11 @@ if (LOI_GIA) {
   delete V.KY_HIEU.u; delete V.TILES.stair;
   const bang = V.lay('o', 'bang'), veBang = bang.ve; bang.ve = function (g, s, H) { return veBang(g, Object.assign({}, s, { pha: 0 }), H); };
   const sm = V.lay('o', 'san-mau'), veSm = sm.ve; sm.ve = function (g, s, H) { if (s && s.mau === 'yellow') { H.bo(g, 3, 3, 94, 94, 6); H.to(g, BM.vecDen); return; } return veSm(g, s, H); };
+  console.log('(và bốn lỗi giả V3: drone mất cờ khongHuong (xoay theo hướng, nhận camera), xích đổi chỗ hongTrai / hongPhai, nam châm tô màu đội, camera-bay gắn ổ tren)');
+  V.lay('than', 'drone').khongHuong = false;
+  const xi = V.lay('than', 'xich').oGan, tg = xi.hongTrai; xi.hongTrai = xi.hongPhai; xi.hongPhai = tg;
+  const nc = V.lay('tay', 'nam-cham'), veNc = nc.ve; nc.ve = function (g, s, M, H) { veNc(g, s, M, H); H.tron(g, 50, 81, 1); H.to(g, M.chinh); };
+  V.lay('cam-bien', 'camera-bay').gan = 'tren';
 }
 
 const CO = [14, 37, 56, 84, 168];
@@ -371,6 +382,168 @@ console.log('\n== 11. Mỗi hình × mọi trạng thái mẫu × 3 cỡ; trạn
   let nho = Infinity, cap = '';
   for (let i = 0; i < 4; i++) for (let j = i + 1; j < ds.length; j++) { const d = kc(rgb(ds[i][1]), rgb(ds[j][1])); if (d < nho) { nho = d; cap = ds[i][0] + ' – ' + ds[j][0]; } }
   kiem('bốn màu sàn luật cách nhau và cách nền sân trắng ≥ 80 (RGB): nhỏ nhất ' + nho.toFixed(0) + ' (' + cap + ')', nho >= 80);
+}
+
+/* ================================================================= 12. (gói V3) mọi thân / tay / cảm biến của bộ PART có hình vector; mọi tổ hợp ghép như Part.ghep */
+console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js, ghép mọi tổ hợp như Part.ghep, 4 hướng, ổ đúng phía, màu đội, trạng thái, mọi màn ==');
+{
+  const Part = require(path.join(GAME, 'part', 'part.js'));
+  for (const f of fs.readdirSync(path.join(GAME, 'part')).filter((f) => /^part-.*\.js$/.test(f)).sort()) require(path.join(GAME, 'part', f));
+  /* a. danh sách bộ phận */
+  const thieu = [], sai = [];
+  for (const loai of ['than', 'tay', 'cam-bien']) {
+    const mp = Part.ds(loai).map((d) => d.ma), mv = V.ds(loai);
+    for (const ma of mp) if (!mv.includes(ma)) thieu.push(loai + '/' + ma);
+    for (const ma of mv) if (!mp.includes(ma)) sai.push(loai + '/' + ma + ' (vector có, pixel không)');
+    for (const d of Part.ds(loai)) {
+      const v = V.lay(loai, d.ma); if (!v) continue;
+      if (loai !== 'than' && (J([].concat(v.gan)) !== J([].concat(d.gan)) || v.ten !== d.ten)) sai.push(loai + '/' + d.ma + ': gan / ten khác pixel (' + J(v.gan) + ' / ' + v.ten + ')');
+      if (loai === 'tay' && d.diemNeoDuoi && !v.diemNeoDuoi) sai.push('tay/' + d.ma + ' thiếu diemNeoDuoi');
+      if (loai === 'than') for (const o of Object.keys(d.oGan)) if (!v.oGan[o]) sai.push('than/' + d.ma + ' thiếu ổ ' + o);
+    }
+  }
+  kiem('mọi bộ phận của part/*.js (' + Part.ds('than').length + ' thân, ' + Part.ds('tay').length + ' tay, ' + Part.ds('cam-bien').length + ' cảm biến) có hình vector cùng mã', thieu.length === 0, 'thiếu: ' + thieu.join(', '));
+  kiem('cùng ổ gắn (gan, ten) với pixel; thân vector có đủ mọi ổ của thân pixel (tay, hongTrai, hongPhai, tren; drone: duoi, bung…); không bộ phận thừa', sai.length === 0, sai.join('; '));
+  const tepGame = fs.readdirSync(GAME).filter((f) => /^ve-vector-.*\.js$/.test(f)), xemSrc = fs.readFileSync(path.join(day, 'hinh-mau', 'xem-vector.html'), 'utf8');
+  const khongNap = tepGame.filter((f) => !TEP_VEC.includes(f) || !xemSrc.includes('../game/' + f + '"'));
+  kiem('mọi tệp ve-vector-*.js (' + tepGame.length + ') nạp trong choi.html và hinh-mau/xem-vector.html', khongNap.length === 0, J(khongNap));
+
+  /* b. mọi tổ hợp: thân × (không tay + tay) × bộ cảm biến (không, từng cảm biến ở từng ổ, vài cặp) — Part.ghep ném ⇔ VeVector.kiemGhep ném, cùng câu báo */
+  const O = ['hong', 'truoc', 'hongTrai', 'hongPhai', 'tren', 'bung', 'duoi'];
+  const boCam = [[]];
+  for (const cb of Part.ds('cam-bien')) for (const o of O) boCam.push([{ ma: cb.ma, o }]);
+  boCam.push([{ ma: 'camera', o: 'tren' }, { ma: 'mau', o: 'hong' }], [{ ma: 'khoang-cach', o: 'hong' }, { ma: 'mau', o: 'hong' }], [{ ma: 'camera', o: 'tren' }, { ma: 'hong-ngoai', o: 'tren' }],
+    [{ ma: 'khoang-cach', o: 'hong' }, { ma: 'cham', o: 'hong' }, { ma: 'hong-ngoai', o: 'tren' }], [{ ma: 'camera-bay', o: 'bung' }, { ma: 'khoang-cach', o: 'hong' }, { ma: 'mau', o: 'hong' }]);
+  const hopLe = [], lechLuat = []; let soCam = 0;
+  for (const than of Part.ds('than').map((d) => d.ma)) for (const tay of [null, ...Part.ds('tay').map((d) => d.ma)]) for (const camBien of boCam) {
+    const cfg = { than, tay, camBien };
+    let ep = null, ev = null;
+    try { Part.ghep(cfg); } catch (e) { ep = e.message; }
+    try { V.kiemGhep(cfg); } catch (e) { ev = e.message; }
+    if (ep !== ev) lechLuat.push(J(cfg) + ' pixel: ' + ep + ' | vector: ' + ev);
+    else if (ep) soCam++; else hopLe.push(cfg);
+  }
+  kiem((hopLe.length + soCam) + ' tổ hợp (' + hopLe.length + ' ghép được, ' + soCam + ' cấm): VeVector.kiemGhep ném ĐÚNG khi Part.ghep ném, cùng câu báo (drone + camera, drone + tay khác nam châm, camera-bay trên xe, camera + cảm biến màu, sai ổ…)',
+    lechLuat.length === 0 && hopLe.length > 300 && soCam > 100, lechLuat.slice(0, 4).join('\n      '));
+  let nem = null; try { V.robot({ than: 'drone', camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 56); } catch (e) { nem = e.message; }
+  kiem('VeVector.robot với cấu hình cấm ném lỗi (VeRobot bắt, báo một lần, rơi về hình tạm như pixel): "' + nem + '"', !!nem && /Drone không gắn được camera/.test(nem));
+
+  /* c. mọi tổ hợp hợp lệ × 4 hướng × 2 cỡ: vẽ được, màu từ bảng, nằm trong ô (canvas = một ô; tay xoay có lề tràn), drone không xoay, không bóng đổ trong hình drone */
+  const khongVe = [], mauLa = [], ngoai = [], droneXoay = [], bongDrone = [];
+  const trongVung = (cv, canh) => { const pad = (cv.width - canh) / 2; return diemThietBi(cv.lenh).filter((p) => p.x - p.le < pad - 0.5 || p.y - p.le < pad - 0.5 || p.x + p.le > pad + canh + 0.5 || p.y + p.le > pad + canh + 0.5); };
+  const ST = { kep: { kep: 'mo', tuThe: 'tren' }, xoay: { kep: 'mo', tuThe: 'tren', goc: 0 }, 'nam-cham': { bat: true }, nem: { ngam: 3 }, hoi: { dangBanTruoc: true, dangBanSau: true }, son: { tuThe: 'duoi', mauSon: 'yellow' } };
+  for (const cfg of hopLe) for (const n of [37, 84]) {
+    const anh = [];
+    for (const h of [0, 1, 2, 3]) {
+      V.xoaDem();
+      const st = { than: { banh: { trai: 1, phai: 1 }, buoc: 1, quat: true }, tay: cfg.tay ? ST[cfg.tay] : undefined, camBien: { bat: true, mat: true } };
+      const cv = V.robot(cfg, st, h, n);
+      if (!cv || !coVe(cv.lenh)) { khongVe.push(J(cfg) + ' h' + h); continue; }
+      for (const m of mauCua(cv.lenh)) if (!mauHopLe(m)) mauLa.push(J(cfg) + ': ' + m);
+      if (trongVung(cv, n).length) ngoai.push(J(cfg) + ' ' + TEN_HUONG[h] + '@' + n);
+      anh.push(cv.lenh.map(chuoi).join('\n'));
+      if (cfg.than === 'drone' && cv.lenh.some((l) => l[0] === 'ellipse' && l[1] === 2 && l[2] === 5)) bongDrone.push(J(cfg));
+    }
+    if (cfg.than === 'drone' && new Set(anh).size !== 1) droneXoay.push(J(cfg) + '@' + n);
+  }
+  kiem(hopLe.length + ' tổ hợp × 4 hướng × 2 cỡ (37, 84): đều vẽ được, mọi màu từ bảng màu', khongVe.length === 0 && mauLa.length === 0, khongVe.slice(0, 4).concat([...new Set(mauLa)].slice(0, 4)).join(', '));
+  kiem('mọi nét (kể cả nửa nét, trạng thái tay giang rộng nhất) nằm trong ô — tay xoay ở nấc trước cũng vậy', ngoai.length === 0, ngoai.slice(0, 5).join('\n      '));
+  kiem('drone không có hướng mặt: bốn hướng ra cùng một hình (không xoay), không bóng đổ trong hình (bóng theo độ cao do san-ve.js vẽ)', droneXoay.length === 0 && bongDrone.length === 0, droneXoay.concat(bongDrone).slice(0, 4).join(', '));
+
+  /* tay xoay: nấc trái / phải trong ô; đang xoay (±45°) có thể chờm sang ô chéo nhưng vẫn trong canvas có lề tràn; vật ở nấc trái nằm bên trái xe */
+  const xoaySai = [];
+  for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) for (const goc of [-90, -45, 0, 45, 90]) for (const tuThe of ['tren', 'duoi']) for (const h of [0, 1, 2, 3]) {
+    V.xoaDem(); const cv = V.robot({ than, tay: 'xoay' }, { tay: { kep: 'dong', cam: true, goc, tuThe } }, h, 84);
+    if (Math.abs(goc) !== 45 && trongVung(cv, 84).length) xoaySai.push(than + ' ' + goc + '° ' + tuThe + ' ' + TEN_HUONG[h] + ': ngoài ô');
+    if (ngoaiO(cv).length) xoaySai.push(than + ' ' + goc + '° ' + TEN_HUONG[h] + ': ngoài canvas');
+  }
+  const vT = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', -90), vP = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 90), v0 = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0), vk0 = V.vatKep({ than: 'hai-banh', tay: 'xoay' }, 'tren');
+  kiem('tay xoay: nấc trái / trước / phải trong ô, đang xoay ±45° trong canvas lề tràn (' + V.tranCua({ tay: 'xoay' }) + ' ô); vật nấc trái l < 0, nấc phải l > 0, ra ngoài thân (|l| ≥ 30); nấc trước trùng vatKep (f ' + v0.f.toFixed(1) + ')',
+    xoaySai.length === 0 && vT.l < -30 && vP.l > 30 && Math.abs(v0.l) < 1e-9 && Math.abs(v0.f - vk0.ahead) < 1e-9 && vT.l + vT.n / 2 >= -50 - 1e-9, xoaySai.slice(0, 4).join('; ') + ' l trái ' + vT.l.toFixed(1));
+
+  /* d. ổ đúng phía sau xoay: tay về phía mặt, hongTrai bên trái xe, hongPhai bên phải, tren phía trước, sau phía sau */
+  const oSai = [];
+  for (const than of V.ds('than').filter((t) => !V.lay('than', t).khongHuong)) for (const h of [0, 1, 2, 3]) for (const n of [56, 84]) {
+    const truoc = [DX[h], DY[h]], trai = [DY[h], -DX[h]], tam = n / 2;
+    const huongO = (o) => { const p = V.diemO({ than }, o, h, n); if (!p) { oSai.push(than + ' thiếu ổ ' + o); return [0, 0, 0]; } const d = [p.x - tam, p.y - tam], r = Math.hypot(...d) || 1; return [d[0] / r, d[1] / r, r]; };
+    const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+    const t = huongO('tay'), l = huongO('hongTrai'), r = huongO('hongPhai'), tr = huongO('tren'), sa = huongO('sau');
+    if (!(dot(t, truoc) > 0.99 && t[2] > n * 0.1)) oSai.push(than + ' ' + TEN_HUONG[h] + ' tay');
+    if (!(dot(l, trai) > 0.9)) oSai.push(than + ' ' + TEN_HUONG[h] + ' hongTrai');
+    if (!(dot(r, trai) < -0.9)) oSai.push(than + ' ' + TEN_HUONG[h] + ' hongPhai');
+    if (!(dot(tr, truoc) > 0.5 && dot(tr, trai) > 0)) oSai.push(than + ' ' + TEN_HUONG[h] + ' tren (góc mũi trái)');
+    if (!(dot(sa, truoc) < -0.5)) oSai.push(than + ' ' + TEN_HUONG[h] + ' sau');
+  }
+  kiem('sau xoay 4 hướng × 2 cỡ: ổ tay ở phía mặt; hongTrai bên TRÁI xe, hongPhai bên PHẢI; tren ở góc mũi trái; sau ở đuôi (mọi thân có hướng)', oSai.length === 0, oSai.slice(0, 6).join(', '));
+  const vkSai = [];
+  for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) for (const tay of ['kep', 'xoay']) for (const tt of ['tren', 'duoi']) { const k = V.vatKep({ than, tay }, tt); if (!k || !(k.ahead > 20 && k.ahead + k.n / 2 <= 50.5)) vkSai.push(than + '/' + tay + '/' + tt); }
+  kiem('vật trong kẹp (kẹp, tay xoay) ở phía trước, trong ô, trên mọi thân có hướng', vkSai.length === 0, vkSai.join(', '));
+  const hh = V.ds('than').map((t) => [t, V.hinhHoc({ than: t, tay: t === 'drone' ? 'nam-cham' : 'hoi' })]), hhSai = hh.filter(([t, x]) => !(x.mz > 30 && x.mz < 50 && x.mzs > 20 && x.mzs < 50 && x.dinh > 20 && x.dinh < 50));
+  const bk = V.hinhHoc({ than: 'hai-banh', tay: 'nem' }).bk;
+  kiem('hinhHoc: miệng nòng trước / sau, rổ máy ném (' + bk.toFixed(1) + '), đỉnh drone trong (20, 50) phần trăm ô', hhSai.length === 0 && bk > 25 && bk * 27.5 / 23.5 < 46, J(hhSai));
+
+  /* e. màu đội: mọi tổ hợp R1 ↔ R2 chỉ khác màu đội, đúng ba chỗ (kính 1 gradient, mắt 2 viền, chấm ăng-ten 1 tô) */
+  const M1 = V.mauDoi('vang'), M2 = V.mauDoi('lam'), doiSai = [];
+  const doiMau = (x) => x.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi);
+  for (const cfg of hopLe.filter((c, i) => i % 3 === 0)) {
+    V.xoaDem();
+    const st = { tay: cfg.tay ? ST[cfg.tay] : undefined, camBien: { bat: true, mat: true }, than: { quat: true, doc: true } };
+    const a = V.robot(Object.assign({}, cfg, { son: '' }), st, 1, 84).lenh.map(chuoi), b = V.robot(Object.assign({}, cfg, { son: 'lam' }), st, 1, 84).lenh.map(chuoi);
+    const kinh = b.filter((x) => x.startsWith('createLinearGradient') && x.includes(M2.toi) && x.includes(M2.chinh)).length, mat = b.filter((x) => x === 'strokeStyle ' + M2.chinh).length, cham = b.filter((x) => x === 'fillStyle ' + M2.chinh).length;
+    const ok = a.length === b.length && b.every((x, i) => doiMau(x) === a[i]) && kinh === 1 && mat === 2 && cham === 1 && b.filter((x) => x.includes(M2.chinh) || x.includes(M2.toi)).length === 5;      // kính: lệnh tạo gradient + fillStyle gradient; hai viền mắt; chấm ăng-ten
+    if (!ok) doiSai.push(J(cfg) + ' kính ' + kinh + ' mắt ' + mat + ' chấm ' + cham);
+  }
+  kiem('màu đội trên mọi thân / tay / cảm biến: R1 ↔ R2 chỉ khác màu đội, đúng ba chỗ (kính, hai mắt, chấm ăng-ten); tay / cảm biến không mang màu đội', doiSai.length === 0, doiSai.slice(0, 4).join('\n      '));
+
+  /* f. trạng thái động: mỗi trạng thái chính ra hình khác */
+  const TTD = [
+    ['hai-banh', 'kep', [{ tay: { kep: 'mo' } }, { tay: { kep: 'dong' } }, { tay: { kep: 'dong', cam: true } }, { tay: { kep: 'mo', tuThe: 'duoi' } }]],
+    ['hai-banh', 'nam-cham', [{ tay: {} }, { tay: { bat: true } }, { tay: { bat: true, cuc: 'N' } }, { tay: { bat: true, cuc: 'S' } }, { tay: { cuc: 'N' } }]],
+    ['drone', 'nam-cham', [{ tay: {} }, { tay: { bat: true, cuc: 'S' } }, { than: { quat: false } }, { than: { quat: true, buoc: 1 } }, { than: { doc: true } }]],
+    ['hai-banh', 'hoi', [{ tay: {} }, { tay: { dangBanTruoc: true } }, { tay: { dangBanSau: true } }, { tay: { chiTruoc: true } }]],
+    ['hai-banh', 'nem', [{ tay: { ngam: 1 } }, { tay: { ngam: 2 } }, { tay: { ngam: 3 } }, { tay: { ngam: 1, dangNem: true } }, { tay: { ngam: 1, cam: true } }]],
+    ['hai-banh', 'xoay', [{ tay: { goc: 0 } }, { tay: { goc: -45 } }, { tay: { xoay: 'trai' } }, { tay: { xoay: 'phai' } }, { tay: { goc: 0, kep: 'dong' } }, { tay: { goc: 0, tuThe: 'duoi' } }]],
+    ['hai-banh', 'son', [{ tay: { mauSon: 'red' } }, { tay: { mauSon: 'green' } }, { tay: { mauSon: 'blue' } }, { tay: { mauSon: 'yellow' } }, { tay: { mauSon: 'red', tuThe: 'duoi' } }]],
+    ['nhen', null, [{}, { than: { co: true } }, { than: { buoc: 1 } }]],
+    ['xich', null, [{ than: { banh: { trai: 1, phai: 1 }, buoc: 0 } }, { than: { banh: { trai: 1, phai: 1 }, buoc: 1 } }]],
+    ['omni', null, [{ than: { banh: { trai: 1, phai: 1 }, buoc: 0 } }, { than: { banh: { trai: 1, phai: 1 }, buoc: 1 } }]]
+  ];
+  const ttSai = [];
+  for (const [than, tay, ds] of TTD) { const seen = new Map(); for (const st of ds) { V.xoaDem(); let k; try { k = V.robot({ than, tay }, st, 2, 84).lenh.map(chuoi).join('\n'); } catch (e) { ttSai.push(than + '/' + tay + ': ' + e.message); continue; } if (seen.has(k)) ttSai.push(than + '/' + tay + ' ' + J(st) + ' = ' + J(seen.get(k))); else seen.set(k, st); } }
+  for (const cb of ['khoang-cach', 'mau', 'cham', 'hong-ngoai', 'camera']) for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) {
+    const cfg = { than, camBien: [{ ma: cb, o: cb === 'camera' || cb === 'hong-ngoai' ? 'tren' : 'hong' }] };
+    V.xoaDem(); const a = V.robot(cfg, { camBien: {} }, 0, 84).lenh.map(chuoi).join('\n'), b = V.robot(cfg, { camBien: { bat: true, mat: true } }, 0, 84).lenh.map(chuoi).join('\n'), c = V.robot({ than }, {}, 0, 84).lenh.map(chuoi).join('\n');
+    if (a === b) ttSai.push(than + '/' + cb + ': đang đọc không khác tắt'); if (a === c) ttSai.push(than + '/' + cb + ': gắn mà không thấy');
+  }
+  try { V.xoaDem(); const cfg = { than: 'drone', camBien: [{ ma: 'camera-bay', o: 'bung' }] }; if (V.robot(cfg, { camBien: {} }, 0, 84).lenh.map(chuoi).join() === V.robot(cfg, { camBien: { mat: true } }, 0, 84).lenh.map(chuoi).join()) ttSai.push('camera-bay: mat không khác'); } catch (e) { ttSai.push('camera-bay: ' + e.message); }
+  kiem('trạng thái động ra hình khác: kẹp mở / đóng / ôm / hạ, nam châm hút + cực, drone quạt / pha / đo pin, súng nạp / bắn trước / sau, máy ném tầm / ném / có vật, tay xoay góc, máy sơn màu / hạ, nhện co / bước, xích / omni nhịp; cảm biến đang đọc, camera sáng mắt', ttSai.length === 0, ttSai.slice(0, 6).join('; '));
+
+  /* g. mọi màn (cả từng robot của màn đội): cấu hình VeRobot.cauHinhCua vẽ được bằng vector — không màn nào rơi về pixel */
+  for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1']) require(path.join(day, f + '.js'));
+  for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f)).sort()) require(path.join(day, f));
+  const ManHoc = require(path.join(day, 'man-chuoi-1.js'));
+  V.datCheDo('vector');
+  const cacCfg = new Map(), roiPixel = [];
+  for (const m of ManHoc.danhSach) {
+    const ds = m.doi ? m.doi.map((r) => { const o = Object.assign({}, m, r); delete o.doi; return o; }) : [m];
+    for (const mk of ds) { const c = VeRobot.cauHinhCua(mk); const k = J({ than: c.than, tay: c.tay, camBien: c.camBien }); if (!cacCfg.has(k)) cacCfg.set(k, m.id || m.ma); }
+  }
+  for (const [k, id] of cacCfg) {
+    const c = JSON.parse(k); let ep = null; try { Part.ghep(c); } catch (e) { ep = e.message; }
+    if (ep) continue;                                                                  // cấu hình pixel cũng không ghép được (hình tạm cả hai chế độ)
+    let cv = null; try { cv = VeRobot.ve(c, { wl: 2, wr: 2, ph: 1, tay: { tuThe: 'tren', kep: false }, camBien: { bat: true } }, 1, 0.56); } catch (e) { cv = null; }   // Node: hình tạm (rơi về pixel) cần Ve của trình duyệt
+    if (!VeRobot.veVector(c) || !cv || !cv.laVector) roiPixel.push(id + ' ' + k);
+  }
+  kiem(ManHoc.danhSach.length + ' màn (cả từng robot của màn đội) → ' + cacCfg.size + ' cấu hình robot khác nhau: ở chế độ vector đều vẽ bằng vector (VeRobot.ve cờ .laVector), không rơi về pixel', ManHoc.danhSach.length > 300 && roiPixel.length === 0, roiPixel.slice(0, 5).join('\n      '));
+  let nhenKhongTay = false, droneMoi = false, bao = 0, cam = null;
+  try {
+    nhenKhongTay = VeRobot.ve({ than: 'nhen', tay: null, camBien: [] }, {}, 1, 0.56) === VeRobot.ve({ than: 'nhen', tay: null, camBien: [] }, {}, 3, 0.56);
+    droneMoi = VeRobot.ve({ than: 'drone', tay: 'nam-cham', camBien: [] }, {}, 1, 0.56) === VeRobot.ve({ than: 'drone', tay: 'nam-cham', camBien: [] }, {}, 2, 0.56);
+    bao = 0; const cw = console.warn; console.warn = () => { bao++; };
+    try { cam = VeRobot.ve({ than: 'drone', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 0.56); } catch (e) { cam = null; /* Node: hình tạm cần Ve của trình duyệt */ } console.warn = cw;
+  } catch (e) { /* lỗi giả: cấu hình rơi về hình tạm (cần Ve của trình duyệt) */ }
+  kiem('VeRobot (như bộ pixel): nhện không tay và drone không quay theo hướng; cấu hình cấm báo một lần rồi không trả hình vector', nhenKhongTay && droneMoi && bao === 1 && !(cam && cam.laVector));
+  V.datCheDo('pixel');
 }
 
 console.log('\n---------------------------------------------');
