@@ -93,6 +93,13 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   thùng gỗ, thùng nặng, bóng) có hình vector theo trạng thái (băng chuyền 4 hướng × 5 pha, cửa mở dần, nút bật, bàn xoay, cổng…); ảnh nhỏ sân `thuSan` vector; bảng nối
   `ve-vector-ky-hieu.js`. Máy kiểm (55) liệt kê ký hiệu từ luật chơi; pixel y nguyên (886 ảnh nhỏ sân, 6 màn băm trùng). Ô đích hổ phách `vecDich`.
   Việc chuyển sang V3: sàn màu thêm dấu hình (mù màu), thùng nặng tông riêng khác khối sắt.
+- **27/10 V3 · Thân, tay, cảm biến vector xong** (nhánh claude/ve-vector-robot, gộp cbdbc97; npm test 81/81). Ở `?ve=vector` mọi robot vẽ vector, không còn rơi về pixel:
+  thân xích / nhện (bước, co) / omni / drone (không hướng, quạt, pin) trong `ve-vector-than-*.js`; tay nam châm (cực N đỏ / S xanh), ném (gáo), súng hơi (hai nòng),
+  tay xoay (góc liên tục), sơn (4 màu) trong `ve-vector-tay-*.js`; 6 cảm biến trong `ve-vector-cam.js` (camera = hai mắt trên kính). Luật ghép như pixel
+  (`VeVector.kiemGhep`: 1680 tổ hợp, 528 hợp lệ, cùng câu báo); san-ve.js lấy hình học tay qua `VeRobot.hinhHoc` / `reachCua` / `vatXoay`. Sàn màu có dấu hình
+  (tròn / tam giác / vuông / sao), thùng nặng thép tối `vecThep*`. Màn đội: kính + chấm ăng-ten đủ phân biệt, không thêm dải đội. Máy kiểm 74 (400 màn → 36 cấu hình, đều vector).
+  Còn lại → V4: robot ngoài sân (Lắp robot, thẻ Bộ phận mới, mở đầu, phim) quá to ở vector (tham số cỡ theo bội số pixel); hiệu ứng sân còn khối pixel; vật kẹp nhỏ, cùng
+  màu ngón. → V6: huy-hieu.js gọi thẳng `Part.ghep` (luôn pixel). Nòng sau súng hơi lệch trái ăng-ten ~0,12 ô: giữ. Bộ vẽ pixel: GIỮ tới hết V6 rồi mới tính gỡ.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
