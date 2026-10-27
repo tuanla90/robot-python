@@ -1,3 +1,4 @@
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    bang-mo-khoa.js — "Robot Chấn Hưng": BẢNG "MỞ GÓI MỚI!" (window.MoKhoa).
    Hiện khi tổng sao của người chơi vừa đủ mở một (hay vài) gói (game/mo-goi.js): mỗi gói một huy hiệu (HuyHieu.ve, hình của chương đầu gói) + tên gói.
@@ -19,7 +20,7 @@
   /** Hình của một gói: huy hiệu của chương `hinh` nếu có, không thì dấu + để giữ chỗ. */
   function hinhGoi(g) {
     var co = window.HuyHieu && HuyHieu.DS && HuyHieu.DS.indexOf(g.hinh) >= 0;
-    return co ? Ve.mk(HuyHieu.ve(g.hinh, 'mo'), 2) : Ve.ico('plus', 4, { fill: '#ffd95a', line: '#1b120a' });
+    return co ? Ve.mk(HuyHieu.ve(g.hinh, 'mo'), 2) : Ve.ico('plus', 4, { fill: BM.moKhoaHinhGoiFill, line: BM.ink });
   }
 
   /** Mở bảng cho các gói ds; bấm "Tuyệt!" thì đóng và gọi khiXong (nếu có). */
