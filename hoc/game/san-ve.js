@@ -715,6 +715,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /* ---- MÁY SƠN: hình mờ cần tô (ô nét đứt mang màu, chấm màu mờ ở giữa) và ô đã tô (sơn đặc, viền tối; ô vừa tô lóe sáng). Ô tô ngoài hình viền đỏ. */
     veSon: function (g, now) {
       var c = this.cfg, hinh = c.hinh, x, y, k, m;
+      if (this.vec) {                                                           // vector (gói V4): ô cần tô = chấm màu mờ + viền nét đứt bo góc; ô đã tô = tấm sơn bo góc có bóng, lóe trắng; sai: viền + gạch chéo
+        if (hinh) for (y = 0; y < hinh.length; y++) for (x = 0; x < hinh[y].length; x++) { m = hinh[y][x]; if (m && this.daSon[x + ',' + y] !== m) HU().sonCan(g, x, y, MAU_VIEN[m], now); }
+        for (k in this.daSon) {
+          var av = k.split(','), xv = +av[0], yv = +av[1], mv = this.daSon[k], lv = this.sonLoe[k], sai = hinh && hinh[yv] && hinh[yv][xv] !== mv;
+          HU().sonDa(g, xv, yv, MAU_VIEN[mv] || BM.sanLamV4, lv ? (now - lv) / 380 : 1, sai ? (hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : BM.vecDo) : null, sai && hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : null);
+        }
+        return;
+      }
       if (hinh) for (y = 0; y < hinh.length; y++) for (x = 0; x < hinh[y].length; x++) {
         m = hinh[y][x]; if (!m || this.daSon[x + ',' + y] === m) continue;
         g.save(); g.globalAlpha = 0.55; g.fillStyle = MAU_VIEN[m]; g.fillRect(x * T + 5, y * T + 5, T - 10, T - 10); g.restore();
@@ -745,8 +753,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var nhay = this.bmNhay > now && ((now / 150 | 0) & 1) === 0, i, o;
       for (i = 0; i < b.vat.length; i++) {
         o = b.vat[i];
+        if (this.vec) HU().khungO(g, o.x, o.y, 1.5, 2.2, 0.9, o.mau ? MAU_VIEN[o.mau] : BM.vecDich, [3, 2], -((now / 140) % 5));     // vector: khung nét đứt bo góc
+        else {
         g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = o.mau ? MAU_VIEN[o.mau] : BM.sanVang;       // vật mờ có màu: khung nét đứt tô màu đó (đổi chỗ hai vật khác màu vẫn đọc được)
-        g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore();
+        g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore(); }
         if (this.vatTaiO(o.x, o.y)) continue;                                                              // ô đã có vật thật nằm đó: chỉ giữ khung, khỏi vẽ vật mờ chồng lên (màu trộn lẫn)
         g.globalAlpha = nhay ? 0.85 : 0.45;
         this.veMotVat(g, this.kieuVatMo(o.mau), 8, o.x * T + 7, o.y * T + 6, 8, 2);        // vật mờ có màu thì vẽ dải màu như vật thật
@@ -754,8 +764,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       for (i = 0; i < (b.thung || []).length; i++) {                                                       // thùng mờ (chương che-sung-hoi): thùng nặng nằm ô đó khi xong; khung nét đứt + thùng mờ, khỏi chồng lên thùng thật đã nằm đúng ô
         o = b.thung[i];
-        g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = BM.sanVang;
-        g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore();
+        if (this.vec) HU().khungO(g, o.x, o.y, 1.5, 2.2, 0.9, BM.vecDich, [3, 2], -((now / 140) % 5));
+        else { g.save(); g.setLineDash([3, 2]); g.lineDashOffset = -((now / 140) % 5); g.lineWidth = 1; g.strokeStyle = BM.sanVang;
+        g.strokeRect(o.x * T + 1.5, o.y * T + 1.5, T - 3, T - 3); g.restore(); }
         if (this.thungTaiO(o.x, o.y)) continue;
         g.globalAlpha = nhay ? 0.85 : 0.45;
         if (this.vec) g.drawImage(VeVector.vat('thung-nang', Math.round(T * this.sv)), o.x * T, o.y * T, T, T);     // vector: thùng thép mờ
@@ -774,6 +785,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Một ô ◆ (kim cương nhỏ, 7 pixel sân cao + viền tối); sang = đã có sự kiện 'qua-diem'. */
     veDiQua: function (g, o, now, nhay) {
       var cx = o.x * T + 7, cy = o.y * T + 7, t0 = this.diQuaSang[o.x + ',' + o.y], sang = t0 !== undefined;
+      if (this.vec) { HU().kimCuong(g, cx, cy, sang ? BM.vecVang : nhay ? BM.vecDoSang : BM.vecVoToi, sang, sang ? (now - t0) / 650 : 1); return; }     // vector (gói V4): kim cương bo, vòng toả
       function kim(r, c) { g.fillStyle = c; for (var dy = -r; dy <= r; dy++) { var w = r - Math.abs(dy); g.fillRect(cx - w, cy + dy, 2 * w + 1, 1); } }
       function vien(r, c) { g.fillStyle = c; for (var dy = -r; dy <= r; dy++) { var w = r - Math.abs(dy); g.fillRect(cx - w, cy + dy, 1, 1); g.fillRect(cx + w, cy + dy, 1, 1); } }
       if (sang) {
@@ -816,6 +828,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Vẽ (pixel sân, DƯỚI thân xe): đang kéo thì ô đích (vàng nếu thả được, đỏ nếu không) + khung nét đứt mờ ở chỗ cũ (xe sẽ về đó nếu thả hỏng); không kéo thì khung vàng nhấp nháy quanh ô xe. */
     veSuaXe: function (g, now) {
       var b = this.cfg.bd, k = this.keoXe;
+      if (this.vec) {                                                           // vector (gói V4): tấm + khung bo góc
+        if (k) {
+          if (!k.ngoai) { HU().tamO(g, k.tx, k.ty, 0.5, 2.4, k.hopLe ? BM.moVangV3 : BM.moDoToi); HU().khungO(g, k.tx, k.ty, 0.6, 2.4, 0.9, k.hopLe ? BM.vecVang : BM.vecDo); }
+          HU().khungO(g, b.x, b.y, 1.5, 2.2, 0.8, BM.moSangV6, [2, 2]);
+          return;
+        }
+        var sv2 = HU().giam() ? 1 : 0.5 + 0.5 * Math.sin(now / 210);
+        HU().tamO(g, b.x, b.y, 0.5, 2.4, HU().rgba(BM.vecDichRgb, 0.08 + 0.1 * sv2)); HU().khungO(g, b.x, b.y, 0.6, 2.4, 1, HU().rgba(BM.vecDichRgb, 0.55 + 0.45 * sv2));
+        return;
+      }
       if (k) {
         if (!k.ngoai) {
           g.fillStyle = k.hopLe ? BM.moVangV3 : BM.moDoToi; g.fillRect(k.tx * T, k.ty * T, T, T);
@@ -956,14 +978,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var nhun = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 2) : 0;
       for (var i = 0; i < ds.length; i++) {
         var o = ds[i], px = Math.round(o.x * T + o.dx), py = Math.round(o.y * T + o.dy);
-        if (o.ket) {
+        if (o.ket && this.vec) HU().tamO(g, Math.round(o.x), Math.round(o.y), 0.4, 2.4, 'rgba(' + BM.tiaDoV2Rgb + ',' + (0.28 + 0.14 * Math.sin(now / 120)).toFixed(2) + ')');
+        else if (o.ket) {
           var nhay = 0.28 + 0.14 * Math.sin(now / 120);
           g.fillStyle = 'rgba(' + BM.tiaDoV2Rgb + ',' + nhay.toFixed(2) + ')'; g.fillRect(Math.round(o.x) * T, Math.round(o.y) * T, T, T);
         }
         if (this.vec) {                                                          // vector: thùng thép 'thung-nang' cỡ một ô, trượt mượt (không làm tròn px); kẹt: phủ đỏ bo góc
           var vx = o.x * T + o.dx, vy = o.y * T + o.dy + (this.thungTaiDich(o) ? nhun : 0);
           g.drawImage(VeVector.vat('thung-nang', Math.round(T * this.sv)), vx, vy, T, T);
-          if (o.ket) { g.fillStyle = BM.moDoToiV1; VeVector.H.bo(g, vx + 1, vy + 1, T - 2, T - 2, 1.5); g.fill(); g.strokeStyle = BM.sanDoV1; g.lineWidth = 1; g.strokeRect(Math.round(o.x) * T + 0.5, Math.round(o.y) * T + 0.5, T - 1, T - 1); }
+          if (o.ket) { g.fillStyle = BM.moDoToiV1; VeVector.H.bo(g, vx + 1, vy + 1, T - 2, T - 2, 1.5); g.fill(); HU().khungO(g, Math.round(o.x), Math.round(o.y), 0.5, 2.4, 1, BM.sanDoV1); }
           continue;
         }
         g.drawImage(TL.thung, px, py + (this.thungTaiDich(o) ? nhun : 0));
@@ -1010,6 +1033,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      *  vật nằm sát đất so ≈ 1/4 cạnh, bóng đậm; vật nhấc cao so ≈ 0,45 cạnh, bóng nhạt, rời xa. Mọi số theo đơn vị của g.
      *  dd: độ đậm lớp tô đỏ phủ lên vật (thả bị chặn), 0 = không tô. */
     veMotVat: function (g, o, n, x, y, sz, so, dd) {
+      if (this.vec) {                                                           // vector (gói V4): không làm tròn px (trượt mượt), bóng khối bo góc mềm, lớp đỏ bo góc
+        var hv2 = this.hinhVat(o, n, Math.max(2, Math.round(sz * this.tiLeCua(g)))), vx0 = x - sz / 2, vy0 = y - sz / 2;
+        HU().bongVat(g, vx0, vy0, sz, so, so > sz * 0.3);
+        g.drawImage(hv2, vx0, vy0, sz, sz);
+        if (dd) HU().toDo(g, vx0, vy0, sz, dd);
+        return;
+      }
       var h = Math.max(2, Math.round(sz)), x0 = Math.round(x - sz / 2), y0 = Math.round(y - sz / 2), hv = this.vec ? this.hinhVat(o, n, Math.round(h * this.tiLeCua(g))) : this.hinhVat(o, n);
       g.fillStyle = so > sz * 0.3 ? BM.moToiV20 : BM.moToiV21;
       if (hv.width !== n && this.vec) g.fillRect(x0 + Math.round(so * 0.5) + h * 0.12, y0 + Math.round(so) + h * 0.14, h * 0.76, h * 0.72);   // thùng vector chiếm 76% hộp: bóng theo chân thùng
@@ -1255,12 +1285,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var v = this.vis, d = v.dr, cao = this.caoDuoi(), alt = v.hop, i, o;
       if (this.sacO && d.sacLoe > now) {                                              // vừa sạc: đế sạc lóe xanh lơ
         var a = Math.min(1, (d.sacLoe - now) / 400) * (0.35 + 0.25 * Math.abs(Math.sin(now / 70)));
+        if (this.vec) HU().sacLoe(g, this.sacO.x, this.sacO.y, a); else {
         g.fillStyle = 'rgba(' + BM.tiaNgocRgb + ',' + a.toFixed(3) + ')'; g.fillRect(this.sacO.x * T, this.sacO.y * T, T, T);
-        g.strokeStyle = 'rgba(' + BM.tiaTrangRgb + ',' + (a * 1.4).toFixed(3) + ')'; g.lineWidth = 1; g.strokeRect(this.sacO.x * T + 0.5, this.sacO.y * T + 0.5, T - 1, T - 1);
+        g.strokeStyle = 'rgba(' + BM.tiaTrangRgb + ',' + (a * 1.4).toFixed(3) + ')'; g.lineWidth = 1; g.strokeRect(this.sacO.x * T + 0.5, this.sacO.y * T + 0.5, T - 1, T - 1); }
       }
       var w = Math.max(7, Math.round(13 - alt * 0.8 - cao * 0.4)), sy = Math.round(cy + 3 - cao), sx = Math.round(cx);          // bóng: hình bầu dục ba hàng, nằm ở mặt ô, lệch xuống dưới thân
+      if (this.vec) HU().bongDrone(g, cx, cy + 3 - cao, Math.max(7, 13 - alt * 0.8 - cao * 0.4), Math.min(0.5, 0.24 + (4 - Math.min(4, alt)) * 0.04 + cao * 0.03));    // vector: bóng elip mềm, không làm tròn
+      else {
       g.fillStyle = 'rgba(' + BM.tiaDenRgb + ',' + Math.min(0.5, 0.24 + (4 - Math.min(4, alt)) * 0.04 + cao * 0.03).toFixed(3) + ')';
-      g.fillRect(sx - ((w - 4) >> 1), sy - 2, w - 4, 1); g.fillRect(sx - (w >> 1), sy - 1, w, 2); g.fillRect(sx - ((w - 4) >> 1), sy + 1, w - 4, 1);
+      g.fillRect(sx - ((w - 4) >> 1), sy - 2, w - 4, 1); g.fillRect(sx - (w >> 1), sy - 1, w, 2); g.fillRect(sx - ((w - 4) >> 1), sy + 1, w - 4, 1); }
       if (v.nc) this.veTuTreo(g, cx, cy, now);
       for (i = 0; i < this.objs.length; i++) {                                         // vật treo dưới bụng: nằm giữa khung bốn cánh, ngay dưới nam châm (thân drone che phần giữa)
         o = this.objs[i];
@@ -1289,6 +1322,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var tl = Math.max(0, Math.min(1, d.pin / d.pinMax)), fill = d.pin > 0 ? Math.max(1, Math.round(W * tl)) : 0;
       var sac = d.sacLoe > now, nay = d.nhay > now && ((now / 90 | 0) & 1) === 0, thap = d.pin <= Math.max(1.5, d.pinMax * 0.25), nguy = thap && !d.roi && ((now / 240 | 0) & 1) === 0;
       var mau = sac ? BM.sanNgoc : thap ? BM.sanDo : tl <= 0.6 ? BM.sanVang : BM.sanXanhLaToiV2;
+      if (this.vec) {                                                           // vector (gói V4): viên pin bo tròn, ruột theo mức (không làm tròn: sạc chạy mượt)
+        g.restore();
+        HU().thanhPin(g, { x: cx - tong / 2 + 1, y: cy - this.dinhDrone() - 6, W: W, tong: tong, fill: d.pin > 0 ? Math.max(1, W * tl) : 0, mau: sac ? BM.vecDen : thap ? BM.vecDo : tl <= 0.6 ? BM.vecVang : BM.vecXanhLa,
+          nen: nay ? BM.vecVo : nguy ? BM.vecDoSang : BM.vecDe, vach: d.pinMax <= 16 ? d.pinMax : 0, so: so, mauSo: sac ? BM.vecDenToi : thap ? BM.vecDo : BM.vecVien });
+        return;
+      }
       g.fillStyle = K_INK; g.fillRect(x - 1, y - 1, tong + 2, 5);
       g.fillStyle = nay ? BM.sanTrangV1 : nguy ? BM.sanDoV3 : BM.sanTim; g.fillRect(x, y, W, 3);
       if (fill) { g.fillStyle = mau; g.fillRect(x, y, fill, 3); g.fillStyle = BM.moSangV3; g.fillRect(x, y, fill, 1); }
@@ -1399,6 +1438,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         } else if (o.tt === 'bay' && o.bay) {
           var b = o.bay;
           px = b.x * T + 7; py = b.y * T + 7 - b.cao;
+          if (this.vec) {                                                       // vector (gói V4): bóng elip mềm, thân vật 8 pixel sân như hình pixel, vòng hút bo góc
+            HU().bongElip(g, b.x * T + 7, b.y * T + 11, 3.6, 1.3, 0.24);
+            this.veVatVec(g, o, px + (b.rx || 0), py - 1 + (b.ry || 0), 8);
+            if (b.vong) HU().vongHut(g, px, py, 0.35 + 0.35 * Math.abs(Math.sin(now / 60)));
+            continue;
+          }
           g.fillStyle = BM.moToiV23; g.fillRect(Math.round(b.x * T + 4), Math.round(b.y * T + 10), 6, 2);
           if (this.vec) this.veVatVec(g, o, px + (b.rx || 0), py - 1 + (b.ry || 0), 8);         // vector: thân vật 8 pixel sân như hình pixel
           else g.drawImage(this.hinhVat(o, 8), Math.round(px - 4 + (b.rx || 0)), Math.round(py - 5 + (b.ry || 0)));
@@ -1486,6 +1531,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veNgam: function (g, cx, cy, now) {
       var q = this.vis.nem; if (!q) return;
       var a = this.gocMui(), dx = Math.sin(a), dy = -Math.cos(a), n = q.tam, i, nho = now - q.doi < 420 ? (1 - (now - q.doi) / 420) : 0;
+      if (this.vec) { HU().ngam(g, cx, cy, dx, dy, n, now, nho, !!this.vatRo()); return; }      // vector (gói V4): chấm tròn, góc bo, thẻ số bo góc
       var tx = cx + dx * n * T, ty = cy + dy * n * T, al = 0.5 + 0.12 * Math.sin(now / 260);
       g.save();
       g.strokeStyle = 'rgba(' + BM.tiaXanhLoRgb + ',' + (al * 0.8).toFixed(3) + ')'; g.lineWidth = 1; g.setLineDash([2, 2]); g.lineDashOffset = -((now / 120) % 4);
@@ -1535,11 +1581,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         o = this.objs[i];
         if (o.tt === 'ro') {
           var a = this.viTriRo(q.dang > now), sz = Math.max(4, Math.round((this.bk || 15) * 0.34)), rg = q.rung > now ? Math.sin(now / 20) * 1.2 : 0;
-          if (this.vec) this.veVatVec(g, o, a.x + rg, a.y, sz);                                      // vector: thân vật cạnh sz như hình pixel
+          if (this.vec) { this.veVatVec(g, o, a.x + rg, a.y, sz); if (q.loi > now) HU().vienLoi(g, a.x - sz / 2 + rg, a.y - sz / 2, sz); continue; }      // vector: thân vật cạnh sz như hình pixel, viền lỗi bo góc
           else g.drawImage(this.hinhVat(o, 8), Math.round(a.x - sz / 2 + rg), Math.round(a.y - sz / 2), sz, sz);
           if (q.loi > now) { g.strokeStyle = BM.moDo; g.lineWidth = 1; g.strokeRect(Math.round(a.x - sz / 2 + rg) - 0.5, Math.round(a.y - sz / 2) - 0.5, sz + 1, sz + 1); }
         } else if (o.tt === 'bay' && o.nb) {
           var b = o.nb, d = Math.max(3, Math.round(8 * b.esc));
+          if (this.vec) {                                                       // vector (gói V4): cỡ không làm tròn, bóng elip mềm co theo độ cao, vệt vòng cung chấm mờ phía sau
+            var dv = Math.max(3, 8 * b.esc), yv = Math.max(-1, b.py - dv / 2 - b.cao) + dv / 2, vt = b.vet || (b.vet = []);
+            if (!vt.length || Math.abs(vt[vt.length - 1].x - b.px) + Math.abs(vt[vt.length - 1].y - yv) > 1.2) { vt.push({ x: b.px, y: yv }); if (vt.length > 7) vt.shift(); }
+            HU().bongElip(g, b.px, b.py + 6, Math.max(1.6, dv * 0.36 * (1 - Math.min(0.5, b.cao * 0.03))), 0.9, Math.max(0.1, 0.3 - b.cao * 0.012));
+            if (b.cao > 0.5) HU().vetCung(g, vt.slice(0, -1));
+            this.veVatVec(g, o, b.px, yv, dv);
+            continue;
+          }
           g.fillStyle = 'rgba(' + BM.tiaDenRgb + ',' + Math.max(0.12, 0.34 - b.cao * 0.012).toFixed(3) + ')';
           var sw = Math.max(3, Math.round(d * 0.7 * (1 - Math.min(0.5, b.cao * 0.03))));
           g.fillRect(Math.round(b.px - sw / 2), Math.round(b.py + 5), sw, 2);
@@ -1643,6 +1697,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       g.save();
       g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left';
       var w = Math.ceil(g.measureText(txt).width) + 10, hh = 9, x = 1, y = 1;
+      if (this.vec) { g.restore(); HU().theDan(g, this.cfg.ox * T + x + 0.5, this.cfg.oy * T + y + 0.5, w, hh, txt, het, nhay); return; }     // vector (gói V4): thẻ viên thuốc ở góc cửa sổ vẽ
       g.fillStyle = K_INK; g.fillRect(x - 1, y - 1, w + 2, hh + 2);
       g.fillStyle = het || nhay ? BM.sanDoV3 : BM.sanTim; g.fillRect(x, y, w, hh);
       g.fillStyle = het ? BM.sanXamToiV3 : BM.sanVangV1; g.fillRect(x + 2, y + 3, 3, 3);
@@ -1868,7 +1923,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veBangTat: function (g, x, y, now) {
       if (this.vec) {                                                           // vector: băng tắt (mũi tên xám, đèn đỏ) đã nằm trong hình 'bang' {tat}; ở đây chỉ còn lóe trắng lúc vừa tắt
         var lv = this.bangLoe[x + ',' + y];
-        if (lv > now) { g.fillStyle = 'rgba(' + BM.tiaTrangRgb + ',' + (0.45 * (lv - now) / 300).toFixed(3) + ')'; g.fillRect(x * T, y * T, T, T); }
+        if (lv > now) HU().tamO(g, x, y, 0.4, 2, 'rgba(' + BM.tiaTrangRgb + ',' + (0.45 * (lv - now) / 300).toFixed(3) + ')');      // gói V4: tấm bo góc
         return;
       }
       g.fillStyle = BM.moLam; g.fillRect(x * T + 1, y * T + 1, T - 2, T - 2);
@@ -1888,6 +1943,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (d.ket > 0) { g.fillStyle = 'rgba(' + BM.tiaDoV2Rgb + ',' + (0.18 + 0.32 * d.ket).toFixed(3) + ')'; VeVector.H.bo(g, d.x * T + 0.5, d.y * T + 0.5, T - 1, T - 1, 1.5); g.fill(); }
       } else
       Ve.veCua(g, d.x * T, d.y * T, d.k, { doc: d.doc, nhip: nh, ket: d.ket, rung: d.rung > now ? Math.sin(now / 22) * 1.2 : 0, now: now });
+      if (d.ket > 0.02 && this.vec) { HU().khungO(g, d.x, d.y, 1, 2.4, 1.6, 'rgba(' + BM.tiaDoV8Rgb + ',' + Math.min(1, d.ket + 0.15).toFixed(3) + ')'); return; }
       if (d.ket > 0.02) {                                                       // cửa kẹt: khung đỏ quanh ô (không bị xe che)
         g.save(); g.strokeStyle = 'rgba(' + BM.tiaDoV8Rgb + ',' + Math.min(1, d.ket + 0.15).toFixed(3) + ')'; g.lineWidth = 2; g.strokeRect(d.x * T + 1, d.y * T + 1, T - 2, T - 2); g.restore();
       }
@@ -1930,7 +1986,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.veThung(g, TL, now);
       this.veDichDay(g);
       this.veBongMoNen(g, now);                                // bóng mờ: vật mờ + ô ◆ (xe mờ vẽ ở lớp phủ robot)
-      if (c.dd) {                                              // vòng mờ nét đứt: ô xuất phát
+      if (c.dd && this.vec) HU().khungO(g, c.dd.x, c.dd.y, 1.5, 2.4, 0.8, BM.moSangV7, [2, 2]);   // vector: khung nét đứt bo góc
+      else if (c.dd) {                                              // vòng mờ nét đứt: ô xuất phát
         g.save(); g.strokeStyle = BM.moSangV7; g.lineWidth = 1; g.setLineDash([2, 2]);
         g.strokeRect(c.dd.x * T + 1.5, c.dd.y * T + 1.5, T - 3, T - 3); g.restore();
       }
@@ -1939,6 +1996,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         g.fillStyle = BM.moSangV8;
         var cw = this.pw, ch2 = this.ph, m = 3;
         for (var q2 = -1; q2 <= 1; q2++) {
+          if (this.vec) {                                      // vector: chấm tròn
+            if (c.cat.tren) HU().cham(g, cw / 2 + q2 * 4, m + 1, 1, BM.moSangV8);
+            if (c.cat.duoi) HU().cham(g, cw / 2 + q2 * 4, ch2 - m - 1, 1, BM.moSangV8);
+            if (c.cat.trai) HU().cham(g, m + 1, ch2 / 2 + q2 * 4, 1, BM.moSangV8);
+            if (c.cat.phai) HU().cham(g, cw - m - 1, ch2 / 2 + q2 * 4, 1, BM.moSangV8);
+            continue;
+          }
           if (c.cat.tren) g.fillRect(cw / 2 + q2 * 4 - 1, m, 2, 2);
           if (c.cat.duoi) g.fillRect(cw / 2 + q2 * 4 - 1, ch2 - m - 2, 2, 2);
           if (c.cat.trai) g.fillRect(m, ch2 / 2 + q2 * 4 - 1, 2, 2);
@@ -1952,7 +2016,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var fl = TL.flags[ff], fx = co.x * T + Math.floor((T - fl.width) / 2), fyy = co.y * T + (T - fl.height) - 1;   // cờ gọn trong ô: giữa theo bề ngang, đế cách đáy ô 1 px (sát đáy thì viền đế chạm đường kẻ ô)
         if (this.vec) g.drawImage(VeVector.o('co', this.pxO), co.x * T, co.y * T + fy, T, T);     // vector: cờ hồng trên cột bạc, đầy ô (nhún theo fy như cũ)
         else g.drawImage(fl, Math.max(c.ox * T, Math.min(c.ox * T + this.pw - fl.width, fx)), Math.max(c.oy * T, Math.min(c.oy * T + this.ph - fl.height, fyy)) + fy);
-        if (co.chu !== null) { g.fillStyle = (this.cfgXe && this.cfgXe[co.chu] && this.cfgXe[co.chu].mauXe) || MAU_XE[co.chu % MAU_XE.length]; g.fillRect(co.x * T + 2, co.y * T + T - 3, T - 4, 2); }    // cờ riêng: vạch màu của robot chủ dưới chân cờ
+        if (co.chu !== null && this.vec) HU().vach(g, co.x * T + 2.5, co.y * T + T - 2.8, T - 5, 1.8, (this.cfgXe && this.cfgXe[co.chu] && this.cfgXe[co.chu].mauXe) || MAU_XE[co.chu % MAU_XE.length]);   // vector: vạch bo tròn
+        else if (co.chu !== null) { g.fillStyle = (this.cfgXe && this.cfgXe[co.chu] && this.cfgXe[co.chu].mauXe) || MAU_XE[co.chu % MAU_XE.length]; g.fillRect(co.x * T + 2, co.y * T + T - 3, T - 4, 2); }    // cờ riêng: vạch màu của robot chủ dưới chân cờ
       }
       g.restore();
       this.veLop(now);

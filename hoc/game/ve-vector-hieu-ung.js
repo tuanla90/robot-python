@@ -274,7 +274,113 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.restore();
   }
 
+  /* ================================================================ VẬT / ĐẠN / NÉM / SƠN / DRONE (bước 4) */
+  /** Bóng đổ của vật cạnh h (hộp vẽ góc (x0, y0)), lệch so về phải-dưới: khối bo góc mềm hai lớp; cao (so lớn) thì nhạt và nhỏ lại. */
+  function bongVat(g, x0, y0, h, so, cao) {
+    var k = cao ? 0.7 : 0.78, w = h * k, hh = h * (k - 0.04), x = x0 + so * 0.5 + (h - w) / 2, y = y0 + so + (h - hh) / 2 + h * 0.04;
+    H.bo(g, x - 0.4, y - 0.3, w + 0.8, hh + 0.6, Math.min(w, hh) * 0.28); g.fillStyle = rgba(BM.vecVienRgb, cao ? 0.07 : 0.1); g.fill();
+    H.bo(g, x + 0.3, y + 0.3, w - 0.6, hh - 0.6, Math.min(w, hh) * 0.22); g.fillStyle = rgba(BM.vecVienRgb, cao ? 0.1 : 0.17); g.fill();
+  }
+  /** Lớp đỏ phủ lên vật (thả bị chặn), bo góc theo thân vật vector (76% hộp). */
+  function toDo(g, x0, y0, h, dd) { H.bo(g, x0 + h * 0.12, y0 + h * 0.12, h * 0.76, h * 0.76, h * 0.12); g.fillStyle = rgba(BM.vecDoRgb, dd); g.fill(); }
+  /** Bóng elip mềm dưới vật đang bay / nằm (cx, cy) bán trục rx, ry, độ đậm al. */
+  function bongElip(g, cx, cy, rx, ry, al) {
+    g.save(); g.translate(cx, cy); g.scale(1, ry / Math.max(0.01, rx));
+    var gr = g.createRadialGradient(0, 0, 0, 0, 0, rx);
+    gr.addColorStop(0, rgba(BM.vecVienRgb, al)); gr.addColorStop(0.6, rgba(BM.vecVienRgb, al * 0.7)); gr.addColorStop(1, rgba(BM.vecVienRgb, 0));
+    tron(g, 0, 0, rx); g.fillStyle = gr; g.fill(); g.restore();
+  }
+  /** Vòng sáng quanh vật đang bị nam châm hút (cyan, thở). */
+  function vongHut(g, px, py, al) { H.bo(g, px - 6, py - 7, 11, 11, 3); g.lineWidth = 0.9; g.strokeStyle = rgba(BM.tiaXanhLoV3Rgb, al); g.stroke(); }
+  /** Viền đỏ quanh vật trong rổ (load() khi rổ đầy). */
+  function vienLoi(g, x, y, sz) { H.bo(g, x - 0.6, y - 0.6, sz + 1.2, sz + 1.2, Math.max(1, sz * 0.25)); g.lineWidth = 0.9; g.strokeStyle = BM.vecDo; g.stroke(); }
+  /** MÁY NÉM — vạch ngắm: nét đứt từ đầu cần tới ô rơi, chấm tròn ở từng ô đi qua, bốn góc bo ở ô rơi, thẻ số tầm bo góc. (cx, cy) tâm xe, (dx, dy) hướng mũi. */
+  function ngam(g, cx, cy, dx, dy, n, now, nho, coVat) {
+    var tx = cx + dx * n * T, ty = cy + dy * n * T, al = 0.5 + (giam() ? 0 : 0.12 * Math.sin(now / 260)), i;
+    g.save();
+    g.lineCap = 'round'; g.setLineDash([2, 2]); g.lineDashOffset = -((now / 120) % 4);
+    g.beginPath(); g.moveTo(cx + dx * 9, cy + dy * 9); g.lineTo(tx - dx * 5, ty - dy * 5); g.lineWidth = 0.9; g.strokeStyle = rgba(BM.tiaXanhLoRgb, al * 0.9); g.stroke(); g.setLineDash([]);
+    for (i = 1; i < n; i++) { tron(g, cx + dx * i * T, cy + dy * i * T, 1.1); g.fillStyle = rgba(BM.tiaXanhLoRgb, al); g.fill(); g.lineWidth = 0.3; g.strokeStyle = rgba(BM.vecVienRgb, 0.4); g.stroke(); }
+    var col = nho ? BM.tiaKemRgb : BM.tiaXanhLoRgb, a2 = Math.min(1, al + nho) * (coVat ? 1 : 0.6), x0 = tx - 7, y0 = ty - 7, k = 4 + (nho ? 1 : 0);
+    g.beginPath();
+    g.moveTo(x0 + 0.8, y0 + k); g.arcTo(x0 + 0.8, y0 + 0.8, x0 + k, y0 + 0.8, 1.6); g.lineTo(x0 + k, y0 + 0.8);
+    g.moveTo(x0 + 13.2 - k, y0 + 0.8); g.arcTo(x0 + 13.2, y0 + 0.8, x0 + 13.2, y0 + k, 1.6); g.lineTo(x0 + 13.2, y0 + k);
+    g.moveTo(x0 + 13.2, y0 + 13.2 - k); g.arcTo(x0 + 13.2, y0 + 13.2, x0 + 13.2 - k, y0 + 13.2, 1.6); g.lineTo(x0 + 13.2 - k, y0 + 13.2);
+    g.moveTo(x0 + k, y0 + 13.2); g.arcTo(x0 + 0.8, y0 + 13.2, x0 + 0.8, y0 + 13.2 - k, 1.6); g.lineTo(x0 + 0.8, y0 + 13.2 - k);
+    g.lineWidth = 2.2; g.strokeStyle = rgba(BM.vecVienRgb, 0.25 * a2); g.stroke(); g.lineWidth = 1.2; g.strokeStyle = rgba(col, a2); g.stroke();
+    H.bo(g, x0 + 1.2, y0 + 1.2, 6, 7.6, 2); g.fillStyle = rgba(BM.tiaXanhLoV4Rgb, 0.85 * Math.min(1, a2 + 0.2)); g.fill();
+    g.font = '8px VT323, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = rgba(nho ? BM.tiaKemRgb : BM.tiaXanhLoV5Rgb, Math.min(1, a2 + 0.3));
+    g.fillText(String(n), x0 + 4.2, y0 + 5.4);
+    g.restore();
+  }
+  /** Máy ném — vệt vòng cung mờ phía sau vật đang bay (vài chấm nhỏ dần theo đường đã bay). pts = [{ x, y }] cũ → mới. */
+  function vetCung(g, pts) {
+    for (var i = 0; i < pts.length; i++) { var t = (i + 1) / (pts.length + 1); tron(g, pts[i].x, pts[i].y, 0.35 + 0.6 * t); g.fillStyle = rgba(BM.tiaXanhLoRgb, 0.15 + 0.35 * t); g.fill(); }
+  }
+  /** Ô sạc vừa lóe (drone sạc pin): tấm xanh lơ bo góc thở + viền trắng. */
+  function sacLoe(g, x, y, a) { boO(g, x, y, 0.6, 2.4); g.fillStyle = rgba(BM.tiaNgocRgb, a); g.fill(); g.lineWidth = 0.8; g.strokeStyle = rgba(BM.tiaTrangRgb, Math.min(1, a * 1.4)); g.stroke(); }
+  /** Bóng drone ở mặt ô: elip mềm, rộng w (pixel sân), đậm al. */
+  function bongDrone(g, cx, cy, w, al) { bongElip(g, cx, cy, w / 2, Math.max(1.4, w * 0.2), al); }
+  /** Thanh pin nổi trên drone: viên thuốc viền mực, ruột màu theo mức (xanh → vàng → đỏ), vạch ngăn mỗi đơn vị, số pin bên phải.
+   *  o = { x, y, W, tong, fill (0..W), mau, nen, vach (số vạch hay 0), so, mauSo }. */
+  function thanhPin(g, o) {
+    g.save();
+    H.bo(g, o.x - 1, o.y - 1.2, o.tong + 2, 5.4, 2.7); g.fillStyle = BM.vecVo; g.fill(); g.lineWidth = 0.6; g.strokeStyle = BM.vecVien; g.stroke();
+    H.bo(g, o.x, o.y - 0.2, o.W, 3.4, 1.7); g.fillStyle = o.nen; g.fill();
+    if (o.fill > 0) { H.bo(g, o.x, o.y - 0.2, Math.max(1.8, o.fill), 3.4, 1.7); g.fillStyle = o.mau; g.fill(); H.bo(g, o.x + 0.6, o.y + 0.2, Math.max(0.6, o.fill - 1.2), 0.9, 0.45); g.fillStyle = rgba(BM.tiaTrangRgb, 0.55); g.fill(); }
+    if (o.vach) { g.beginPath(); for (var i = 1; i < o.vach; i++) { var vx = o.x + o.W * i / o.vach; g.moveTo(vx, o.y + 0.2); g.lineTo(vx, o.y + 2.8); } g.lineWidth = 0.35; g.strokeStyle = rgba(BM.vecVienRgb, 0.45); g.stroke(); }
+    H.bo(g, o.x + o.W + 0.4, o.y + 0.6, 0.9, 1.8, 0.4); g.fillStyle = BM.vecVien; g.fill();                 // núm pin
+    g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = o.mauSo; g.fillText(o.so, o.x + o.W + 2, o.y + 1.7);
+    g.restore();
+  }
+  /** Thẻ số đạn (súng hơi) ở góc trên trái cửa sổ vẽ: viên thuốc trắng, quả bóng vàng nhỏ, "×n"; hết đạn / nháy: nền đỏ nhạt, chữ đỏ. */
+  function theDan(g, x, y, w, hh, txt, het, nhay) {
+    g.save();
+    H.bo(g, x - 0.5, y - 0.5, w + 1, hh + 1, (hh + 1) / 2); g.fillStyle = het || nhay ? rgba(BM.vecDoRgb, 0.18) : BM.vecVo; g.fill(); g.lineWidth = 0.7; g.strokeStyle = het || nhay ? BM.vecDo : BM.vecVien; g.stroke();
+    tron(g, x + 3.6, y + hh / 2, 1.8); g.fillStyle = het ? BM.vecBacToi : BM.vecVang; g.fill(); g.lineWidth = 0.4; g.strokeStyle = het ? BM.vecBacToi : BM.vecVangToi; g.stroke();
+    tron(g, x + 3.1, y + hh / 2 - 0.5, 0.5); g.fillStyle = BM.vecVo; g.fill();
+    g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = het ? BM.vecDo : BM.vecVien; g.fillText(txt, x + 7, y + hh / 2 + 0.5);
+    g.restore();
+  }
+  /** MÁY SƠN — ô cần tô (hình mờ): chấm màu mờ bo góc giữa ô + viền nét đứt bo góc chạy chậm. */
+  function sonCan(g, x, y, mau, now) {
+    g.save();
+    boO(g, x, y, 4.6, 1.6); g.globalAlpha = 0.5; g.fillStyle = mau; g.fill(); g.globalAlpha = 1;
+    g.setLineDash([2, 1.6]); g.lineDashOffset = -((now / 160) % 3.6); boO(g, x, y, 1.5, 2.2); g.lineWidth = 0.9; g.strokeStyle = mau; g.stroke();
+    g.restore();
+  }
+  /** Ô đã tô: tấm sơn bo góc, gradient bóng nhẹ, viền mực mờ; kk (0..1): vừa tô thì lóe trắng; sai: viền màu cần tô (hay đỏ nếu ngoài hình) + gạch chéo màu cần tô. */
+  function sonDa(g, x, y, mau, kk, vienSai, gachSai) {
+    var px = x * T, py = y * T;
+    boO(g, x, y, 1, 2.2); g.fillStyle = mau; g.fill();
+    boO(g, x, y, 1, 2.2); g.fillStyle = H.gradDoc(g, 0, py + 1, 0, py + T - 1, [[0, rgba(BM.tiaTrangRgb, 0.35)], [0.5, rgba(BM.tiaTrangRgb, 0)], [1, rgba(BM.vecVienRgb, 0.12)]]); g.fill();
+    g.lineWidth = 0.6; g.strokeStyle = rgba(BM.vecVienRgb, 0.45); g.stroke();
+    if (kk >= 0 && kk < 1) { boO(g, x, y, 1, 2.2); g.fillStyle = rgba(BM.tiaTrangRgb, 0.7 * (1 - kk)); g.fill(); }
+    if (vienSai) { boO(g, x, y, 0.5, 2.4); g.lineWidth = 0.9; g.strokeStyle = vienSai; g.stroke(); }
+    if (gachSai) { g.beginPath(); g.moveTo(px + 3.5, py + 3.5); g.lineTo(px + T - 3.5, py + T - 3.5); g.lineCap = 'round'; g.lineWidth = 1.1; g.strokeStyle = gachSai; g.stroke(); }
+  }
+  /** Ô ◆ của bóng mờ (phải đi qua): kim cương bo nhẹ, viền mực; sang (đã qua): vàng có đốm sáng + vòng toả k (0..1). */
+  function kimCuong(g, cx, cy, mau, sang, k) {
+    function kc(r) { g.beginPath(); g.moveTo(cx, cy - r); g.lineTo(cx + r, cy); g.lineTo(cx, cy + r); g.lineTo(cx - r, cy); g.closePath(); }
+    if (sang && k >= 0 && k < 1) { kc(4.5 + k * 3); g.lineWidth = 0.8; g.strokeStyle = rgba(BM.tiaVangV1Rgb, 0.9 * (1 - k)); g.lineJoin = 'round'; g.stroke(); }
+    kc(4.3); g.fillStyle = mau; g.fill(); g.lineWidth = 0.9; g.strokeStyle = BM.vecVien; g.lineJoin = 'round'; g.stroke();
+    if (sang) { g.beginPath(); g.moveTo(cx - 1.8, cy - 0.4); g.lineTo(cx - 0.4, cy - 1.8); g.lineCap = 'round'; g.lineWidth = 0.8; g.strokeStyle = BM.vecVo; g.stroke(); }
+  }
+  /** Khung bo góc quanh một ô (m: lùi vào, day, mau, dash: mảng nét đứt hay null). */
+  function khungO(g, x, y, m, r, day, mau, dash, off) {
+    g.save(); if (dash) { g.setLineDash(dash); g.lineDashOffset = off || 0; }
+    boO(g, x, y, m, r); g.lineWidth = day; g.strokeStyle = mau; g.stroke(); g.restore();
+  }
+  /** Tấm bo góc phủ một ô (m lùi vào), màu mau (chuỗi màu đầy đủ). */
+  function tamO(g, x, y, m, r, mau) { boO(g, x, y, m, r); g.fillStyle = mau; g.fill(); }
+  /** Chấm tròn nhỏ (dấu … ở cạnh sân bị cắt). */
+  function cham(g, x, y, r, mau) { tron(g, x, y, r); g.fillStyle = mau; g.fill(); }
+  /** Vạch bo tròn (x, y, w, h) màu mau (vạch màu robot chủ dưới chân cờ riêng). */
+  function vach(g, x, y, w, h, mau) { H.bo(g, x, y, w, h, h / 2); g.fillStyle = mau; g.fill(); }
+
   V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep,
-    tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong };
+    tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong,
+    bongVat: bongVat, toDo: toDo, bongElip: bongElip, vongHut: vongHut, vienLoi: vienLoi, ngam: ngam, vetCung: vetCung, sacLoe: sacLoe, bongDrone: bongDrone, thanhPin: thanhPin, theDan: theDan,
+    sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach };
   if (typeof module === 'object' && module.exports) module.exports = V.HU;
 })(typeof window !== 'undefined' ? window : globalThis);
