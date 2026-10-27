@@ -29,7 +29,7 @@ function kiem(ten, ok, chiTiet) {
 const nguon = (f) => fs.readFileSync(path.join(game, f), 'utf8');
 
 const SO_TU_TOI_DA = 14;
-const CHUA_CO_GOI = ['combo'];                 // phim khai sẵn cho gói chưa có màn (chưa có trong ThuTuChuong.goi)
+const CHUA_CO_GOI = [];                       // phim khai sẵn cho gói chưa có màn (27/10: gói combo đã có, mọi phim mùa 1 đều khớp gói thật)
 const KHONG_PHIM = ['xe'];                     // gói dùng phim mở đầu (mo-dau.js)
 
 // ---------------------------------------------------------------- nạp

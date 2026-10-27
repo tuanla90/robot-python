@@ -2,7 +2,7 @@
    phim-mua-1.js — "Robot Chấn Hưng": DỮ LIỆU PHIM GÓI MÙA 1 (bộ máy chiếu: phim-goi.js). Kịch bản: hoc/KE-HOACH-PHIM-GOI.md mục 3.
    Mỗi mã gói một mảng 3–4 hàm khung (k, c): k = khung tranh 320×220, c = bộ dựng hình của PhimGoi (c.xe, c.san, c.code…).
    Lời khung n ở chu.js khóa 'pg.<mã gói>.<n>' (≤ 14 từ). Gói 'xe' không có phim (đã có phim mở đầu, mo-dau.js).
-   Gói 'combo' (gói 9) chưa có màn nên chưa có trong lộ trình: phim khai sẵn, gói ra đời là chiếu.
+   Gói 'combo' (gói 9) có màn từ 27/10 (man-combo-mua-1.js); mọi phim mùa 1 khớp một gói thật.
    R1 sơn vàng (sơn mặc định của VeRobot: vàng, hay màu người chơi chọn ở Cài đặt); R2 sơn lam (son: 'lam').
    Hình chiếu ngang như phim mở đầu: robot nhìn từ trên, mũi quay sang PHẢI (hướng 1), đứng trên dải sàn ở đáy khung (đỉnh sàn y = 190).
    Node (máy kiểm kiem-phim-goi.mjs) require tệp này lấy bảng PHIM (không chạy hàm vẽ nào).
@@ -338,7 +338,7 @@
       }
     ],
 
-    /* ---------------------------------------------------------------- 9 · Combo (tay xoay + cảm biến bên); gói chưa có màn */
+    /* ---------------------------------------------------------------- 9 · Combo (tay xoay + cảm biến bên) */
     'combo': [
       // 1 · kho chật, thùng nằm hai bên lối đi
       function (k, c) {

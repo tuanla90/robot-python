@@ -25,6 +25,8 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
 - **27/10 gói E xong** (df9f9e5 … b5d1d50): gói 8 chương 2 `che-hai-robot` "Đội phối hợp" 10 màn (R1 tay kẹp, R2 tay xoay; nút đè, lùi, cảm biến bên), trùm huy hiệu `che-hai-robot`. Gói R1 xuất xưởng cần 240 ★.
   Luật đo "ô +6" = cỡ sân (số ô không phải tường), không phải số ô code.
 
+- **27/10 gói F xong** (b27f16d … dc356aa): gói 9 `combo` 20 màn (`combo` 1–10 "Nhìn bên, nhặt bên", trùm huy hiệu `combo`; `che-combo` 1–9 + che-cam-bien.10 viết lại không biến, trùm che-combo.9 huy hiệu `che-combo`). Recall gói 9: gói 1: 8 · 2: 17 · 3: 11 · 4: 8 · 5: 8 · 6: 19 · 7: 20 · 8: 2. Gói R1 xuất xưởng cần 270 ★. Mùa 1 lúc này 190 màn.
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
