@@ -93,7 +93,7 @@
           thùng vừa rời: sự kiện 'thung-di' nguon 'xich' { id, tu, den, soO: 1 } + 'tien' có thêm dayThung = id. Ô sau bị chặn → xích đứng yên như đâm tường: 'dam-tuong' vat 'thung-nang'
           có thêm xichDay: true, chan = lý do, sau = ô sau thùng (cham.js nói "ô sau thùng bị chặn"). LÙI không kéo thùng (đâm như cũ). Làm ở pha (a) cùng chỗ bánh chạy (trước băng chuyền),
           nên thùng vừa bị đẩy lên băng thì nhịp đó băng đếm từ 0 như mọi thùng. Hai bánh / omni / nhện / màn không khai cờ: húc thùng vẫn đâm như tường.
-        - BỆ SÚNG XÍCH (mùa 2; màn khai cfg.beSung = true, cần robot có súng hơi): XÍCH gắn súng hơi bắn TỤ ("charge" hay không đối số) thì bóng bay như cũ nhưng xe KHÔNG GIẬT:
+        - BỆ SÚNG XÍCH (mùa 2; màn khai cfg.beSung = true; robot không súng bỏ qua cờ): XÍCH gắn súng hơi bắn TỤ ("charge" hay không đối số) thì bóng bay như cũ nhưng xe KHÔNG GIẬT:
           không có sự kiện 'giat', thùng sau xe không bị hất; thay bằng sự kiện 'be-sung' { nhip, huong } (thông tin cho hoạt cảnh: xe rung nhẹ, bệ giữ). Bắn nhanh ("fast") như cũ.
           Thân khác (hai bánh, omni) có beSung vẫn giật như thường; không khai cờ thì xích cũng giật như hiện nay.
 
@@ -817,8 +817,7 @@
       lucBan = !!rc.lucBan;                   // súng hơi: shoot(p) / shoot_back(p) chọn được lực "fast" / "charge"
       if (lucBan && !coHoi) throw new Error('lucBan chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
       xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
-      beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật)
-      if (beSung && !coHoi) throw new Error('beSung chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
+      beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật; robot không súng bỏ qua cờ, để màn nhiều robot khai một chỗ)
       vet = [], suKienChan = [];
       loi = null;
       docCho = [], docLienTiep = 0, soLanDoc = 0, traVe = 0;       // cảm biến: sự kiện chờ gắn vào nhịp kế, số lần đọc liên tiếp chưa có nhịp, tổng số lần đọc, giá trị trả về cho nhân
@@ -1795,7 +1794,13 @@
             if (loai === 'xich') xichThoi(sk);
             var hb = lh.sau ? (rb.huong + 2) % 4 : rb.huong;
             var kb = banBong(lh, hb);
-            if (kb) thongTinBan(kb, lh, hb, lh.luc === 'fast' ? false : giatXe(hb, lh.dongPy ? { ten: lh.ten, dongPy: lh.dongPy } : null));     // bắn nhanh: không giật
+            if (kb) {
+              var giatCoDoi = false;
+              if (lh.luc === 'fast') giatCoDoi = false;                                                                 // bắn nhanh: không giật
+              else if (beSung && loai === 'xich') sk.push({ ma: 'be-sung', nhip: nhip, huong: (hb + 2) % 4 });          // BỆ SÚNG XÍCH (mùa 2, cfg.beSung): xích bắn tụ không giật, bệ giữ (thông tin cho hoạt cảnh)
+              else giatCoDoi = giatXe(hb, lh.dongPy ? { ten: lh.ten, dongPy: lh.dongPy } : null);
+              thongTinBan(kb, lh, hb, giatCoDoi);
+            }
           }
           else if (coTay && tay.tuThe === 'duoi' && (tr || t !== 0 || p !== 0)) {   // (c) bánh chạy — nhưng tay vướng sàn
             var ev = { ma: 'tay-vuong', nhip: nhip, tu: { x: rb.x, y: rb.y }, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : hanhDong.lenhBanh) || null };
@@ -2237,7 +2242,10 @@
         v = VEC[h.huong];
         return { x: rb.x + v[0] * buoc, y: rb.y + v[1] * buoc, drone: false };
       } else if (h.nem) return null;
-      else if (h.hoi) d = ((h.hoi.sau ? (rb.huong + 2) % 4 : rb.huong) + 2) % 4;
+      else if (h.hoi) {
+        if (beSung && loai === 'xich' && h.hoi.luc !== 'fast') return null;                                           // bệ súng xích: bắn tụ không giật nên không định tới ô nào
+        d = ((h.hoi.sau ? (rb.huong + 2) % 4 : rb.huong) + 2) % 4;
+      }
       else if (h.truot) d = (rb.huong + (h.truot.bien > 0 ? 1 : 3)) % 4;
       else if (h.trai === 1 && h.phai === 1) d = rb.huong;
       else if (h.trai === -1 && h.phai === -1) d = (rb.huong + 2) % 4;

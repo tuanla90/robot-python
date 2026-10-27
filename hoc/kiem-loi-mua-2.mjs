@@ -230,5 +230,58 @@ console.log('\n== 3. Xích đẩy thùng nặng (cfg.xichDay) ==');
   kiem('cham.js: màn không khai xichDay → lời cũ y nguyên ("chỉ cú giật của súng hơi mới dời được thùng")', !!cd && /chỉ cú giật của súng hơi mới dời được thùng\.$/.test(cd.loi), cd && cd.loi);
 }
 
+console.log('\n== 4. Bệ súng xích (cfg.beSung) ==');
+{
+  const KHAY = BANH.concat(['shoot', 'shoot_back']);
+  // nút (3,1) cách xe 2 ô phía trên; thùng (3,4) ngay sau lưng xe (3,3); (3,5) chỗ thùng trượt tới
+  const SAN = ['#######', '###N###', '#.....#', '###.###', '###H###', '###.###', '#######'];
+  const goc = { loaiRobot: 'xich', hamGoc: KHAY, san: SAN, batDau: { x: 3, y: 3, huong: 0 }, beSung: true, lucBan: true };
+  const chay = (them, code) => SanHoc.chay(Object.assign({}, goc, them || {}), code);
+  const ma = (r) => sk(r).map((e) => e.ma);
+
+  let r = chay({}, 'shoot()\nwait()\n');
+  kiem('xích + beSung bắn tụ: bóng vẫn trúng nút (nut-doi), KHÔNG có giat / thung-di, có be-sung, xe và thùng đứng yên', !r.loi && ma(r).includes('nut-doi') && !ma(r).includes(gia('giat', 'nut-doi')) && !ma(r).includes('thung-di') && ma(r).includes('be-sung') && r.robot.y === 3 && r.thung[0].y === 4, J(ma(r)));
+  const bs = sk(r).find((e) => e.ma === 'be-sung');
+  kiem('sự kiện be-sung ghi nhịp và hướng giật bị giữ (2 = xuống)', !!bs && bs.nhip === 1 && bs.huong === 2, J(bs));
+  r = chay({}, 'shoot("charge")\nwait()\n');
+  kiem('shoot("charge") cũng không giật', !ma(r).includes('giat') && ma(r).includes('be-sung'), J(ma(r)));
+  r = chay({}, 'shoot("fast")\nwait()\n');
+  kiem('bắn nhanh ("fast") như cũ: trúng nút cách 2 ô, không giật, không be-sung', ma(r).includes('nut-doi') && !ma(r).includes('giat') && !ma(r).includes('be-sung'), J(ma(r)));
+  r = chay({ batDau: { x: 3, y: 2, huong: 2 } }, 'shoot_back()\nwait()\n');
+  kiem('shoot_back() tụ với bệ súng: bóng ra sau trúng nút, xe không giật tới', ma(r).includes('nut-doi') && !ma(r).includes('giat') && r.robot.y === 2, J(ma(r)));
+  r = chay({ batDau: { x: 1, y: 2, huong: 1 } }, 'shoot()\nwait()\n');
+  kiem('bắn vào tường ở sân có nút với bệ súng: vẫn có ban-bi-chan (thông tin) vì xe chẳng dời được gì', r.suKien.some((e) => e.ma === 'ban-bi-chan') && !ma(r).includes('giat'), J(r.suKien.map((e) => e.ma)));
+  r = chay({ san: ['.....'], batDau: { x: 0, y: 0, huong: 1 }, lucBan: false }, 'shoot()\nwait()\n');
+  kiem('bắn hụt ra ngoài sân với bệ súng: ban-hut (thông tin), không giật, có be-sung', r.suKien.some((e) => e.ma === 'ban-hut') && !ma(r).includes('giat') && ma(r).includes('be-sung'), J(r.suKien.map((e) => e.ma)));
+  r = chay({ beSung: false }, 'shoot()\nwait()\n');
+  kiem('xích KHÔNG khai beSung: giật như hiện nay (giat, thùng sau lưng trượt)', ma(r).includes('giat') && ma(r).includes('thung-di') && !ma(r).includes('be-sung') && r.thung[0].y === 5, J(ma(r)));
+  r = chay({ loaiRobot: 'banh' }, 'shoot()\nwait()\n');
+  kiem('xe hai bánh có beSung: vẫn giật (cờ chỉ có nghĩa với xích)', ma(r).includes('giat') && ma(r).includes('thung-di') && !ma(r).includes('be-sung'), J(ma(r)));
+  r = chay({ loaiRobot: 'omni', hamGoc: KHAY.concat(['slide_left', 'slide_right']) }, 'shoot()\nwait()\n');
+  kiem('omni có beSung: vẫn giật', ma(r).includes('giat') && !ma(r).includes('be-sung'), J(ma(r)));
+  r = chay({ beSung: true, lucBan: false }, 'shoot()\nwait()\n');
+  kiem('beSung không cần lucBan: màn chưa mở lực, shoot() không đối số vẫn là bắn tụ không giật', !r.loi && ma(r).includes('be-sung') && !ma(r).includes('giat'), J({ loi: r.loi, ma: ma(r) }));
+  r = chay({ daoChieu: ['sung'], batDau: { x: 3, y: 2, huong: 2 } }, 'shoot()\nwait()\n');
+  kiem('súng lắp ngược + bệ súng: shoot() bắn ra sau trúng nút, vẫn không giật', ma(r).includes('nut-doi') && sk(r).find((e) => e.ma === 'ban').sau === true && !ma(r).includes('giat'), J(ma(r)));
+  r = chay({ danToiDa: 1 }, 'shoot()\nwait()\nshoot()\nwait()\n');
+  kiem('hết đạn: phát hai không bắn, không be-sung', r.suKien.some((e) => e.ma === 'het-dan') && sk(r).filter((e) => e.ma === 'be-sung').length === 1, J(ma(r)));
+  r = chay({}, 'shoot()\nleft_move()\nright_move()\nwait()\n');
+  kiem('nhịp bắn thì bánh vẫn nghỉ (ban-dung-yen), xe không đi', r.suKien.some((e) => e.ma === 'ban-dung-yen') && r.robot.y === 3, J(r.suKien.map((e) => e.ma)));
+  // băng chuyền: xích bám chắc, bắn tụ không giật, đứng trên băng vẫn không trôi
+  r = chay({ san: ['#######', '###N###', '#.....#', '###v###', '###.###', '###.###', '#######'], batDau: { x: 3, y: 3, huong: 0 }, noi: [{ nut: { x: 3, y: 1 }, cua: [], bang: [] }] }, 'shoot()\nwait()\nwait()\n');
+  kiem('đứng trên băng chuyền bắn tụ: không giật, băng không đẩy xích (bang-khong-day), xe vẫn ở (3,3)', !ma(r).includes('giat') && ma(r).includes('bang-khong-day') && r.robot.y === 3, J(ma(r)));
+  // nhiều robot: xích bệ súng không "định tới" ô sau lưng → đồng đội đi vào ô đó được ngay nhịp ấy
+  r = SanHoc.chay({ san: ['#######', '###N###', '#.....#', '#.....#', '#######'], beSung: true, doi: [{ batDau: { x: 3, y: 2, huong: 0 }, loaiRobot: 'xich', hamGoc: KHAY }, { batDau: { x: 2, y: 3, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH }] }, ['shoot()\nwait()\n', TIEN]);
+  kiem('nhiều robot: xích bắn tụ không giật nên đồng đội tiến vào ô sau lưng xích cùng nhịp được (không dam-tuong dong-doi)', !r.loi && r.doi[1].robot.x === 3 && !r.doi[1].suKien.some((e) => e.ma === 'dam-tuong'), J({ r2: r.doi[1].robot, sk: r.doi[1].suKien.map((e) => e.ma) }));
+  r = SanHoc.chay({ san: ['#######', '###N###', '#.....#', '#.....#', '#######'], beSung: false, doi: [{ batDau: { x: 3, y: 2, huong: 0 }, loaiRobot: 'xich', hamGoc: KHAY }, { batDau: { x: 2, y: 3, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH }] }, ['shoot()\nwait()\n', TIEN]);
+  kiem('(đối chứng) không beSung: xích giật lùi vào (3,3) nên đồng đội bị chặn (dong-doi)', r.doi[1].suKien.some((e) => e.ma === 'dam-tuong' && e.vat === 'dong-doi'), J(r.doi[1].suKien.map((e) => e.ma)));
+  r = SanHoc.chay({ loaiRobot: 'xich', hamGoc: BANH, san: SAN, batDau: { x: 3, y: 3, huong: 0 }, beSung: true }, TIEN);
+  kiem('beSung trên robot không có súng: bỏ qua cờ, chạy bình thường (màn nhiều robot khai một chỗ cho cả đội)', !r.loi && r.robot.y === 2, J({ loi: r.loi, robot: r.robot }));
+  // chẩn đoán: bắn tụ không giật ở màn bệ súng không sinh giat-chan / thung-chan
+  const man = { ma: 'thu-be-sung', chuong: 'thu', loaiRobot: 'xich', hamGoc: KHAY, san: SAN, batDau: { x: 3, y: 3, huong: 0 }, beSung: true, khung: { chinh: 10, moiHam: 10, cauTruc: [] }, cauTruc: [], moXuong: false, sao: { o: 9, nhip: 9 } };
+  const kq = ChamHoc.cham(man, { chinh: ['shoot()', 'wait()'], hamCuaMan: [] }, []);
+  kiem('cham.js: màn bệ súng, shoot() trúng nút → không có giat-chan / thung-chan / lỗi (ngoài chua-toi-co vì sân thử không có cờ)', !kq.chanDoan.some((c) => c.ma === 'giat-chan' || c.ma === 'thung-chan' || (c.muc === 'loi' && c.ma !== 'chua-toi-co')), J(kq.chanDoan.map((c) => c.ma)));
+}
+
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' : 'ĐẠT ') + (dat + hong) + ' kiểm' + (LOI_GIA ? ' (đang cắm lỗi giả: phải đỏ)' : ''));
 process.exit(hong ? 1 : 0);
