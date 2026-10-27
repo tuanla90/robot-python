@@ -492,7 +492,7 @@
           : laNhin ? 'màn này chưa mở lệnh ' + tn[1] + '() trên khay (camera dưới bụng drone chưa dùng được ở đây).'          // camera có gắn mà khay chưa mở lệnh
           : dsCam.length
           ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
-          : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu ở bụng hay camera (để đọc màu)' : SanHoc.CAM_TU_HAM.indexOf(tn[1]) >= 0 ? 'từ (kim loại)' : SanHoc.CAM_PIN_HAM.indexOf(tn[1]) >= 0 ? 'đo pin (màn này drone chưa có pin để đo)' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
+          : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu ở bụng hay camera (để đọc màu)' : SanHoc.CAM_TU_HAM.indexOf(tn[1]) >= 0 ? 'từ (kim loại)' : SanHoc.CAM_HONG_NGOAI_HAM && SanHoc.CAM_HONG_NGOAI_HAM.indexOf(tn[1]) >= 0 ? 'hồng ngoại ở mũi xe (đo số ô trống phía trước' + (tn[1] === 'warm' ? ', bản nâng cấp mới đo được nóng' : '') + ')' : SanHoc.CAM_PIN_HAM.indexOf(tn[1]) >= 0 ? 'đo pin (màn này drone chưa có pin để đo)' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
           ' Hàm gốc dùng được ở màn này: ' + (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.', { ten: tn[1], cho: cho(m) });
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến( hay hàm)? tên/.test(l.thongDiep) && SanHoc.MAU_TEN.concat(['none']).indexOf(tn[1]) >= 0 && (hamGoc.indexOf('color') >= 0 || hamGoc.indexOf('look') >= 0)) {
         them('mau-thieu-nhay', 'Ở ' + viTri(m) + ': ' + tn[1] + ' đang viết không có dấu nháy nên Python tưởng đó là tên một biến hay một hàm và không tìm thấy. ' +
@@ -575,10 +575,16 @@
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ô đó có một vật nằm đất: vật chiếm ô nên xe vướng vật và đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
           ' Muốn đi qua ô đó phải gắp vật lên trước (hạ tay, grab()), hoặc đi đường vòng.';
+      } else if (e0.vat === 'thung-nang' && e0.xichDay) {                    // xích đẩy thùng (mùa 2, cfg.xichDay): ô sau thùng bị chặn nên không đẩy được
+        s2 = 'Ở nhịp ' + e0.nhip + ', xích tiến vào thùng nặng ở ô (' + e0.den.x + ', ' + e0.den.y + ') để đẩy nó đi, nhưng ô sau thùng, (' + e0.sau.x + ', ' + e0.sau.y + '), là ' +
+          (LY_DO_THUNG[e0.chan] || e0.chan) + ' nên thùng không nhúc nhích, xích đứng yên (vẫn mất một nhịp).' +
+          (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
+          ' Xích chỉ đẩy được thùng vào ô trống phía sau nó: đi vòng sang cạnh khác của thùng rồi đẩy theo hướng còn trống.';
       } else if (e0.vat === 'thung-nang') {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là thùng nặng nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          ' Thùng nặng cản đường xe như tường: xe húc bằng bánh thì không đẩy được, chỉ cú giật của súng hơi mới dời được thùng.';
+          (man.xichDay && e0.kieu === 'lui' ? ' Xích chỉ đẩy được thùng khi TIẾN: lùi vào thùng thì không kéo được.' :
+            ' Thùng nặng cản đường xe như tường: xe húc bằng bánh thì không đẩy được, chỉ cú giật của súng hơi mới dời được thùng.');
       } else {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là ' +
           (LOAI_VAT[e0.vat] || e0.vat) + ' nên nó đứng yên (vẫn mất một nhịp).' +
@@ -1186,7 +1192,7 @@
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
         bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
@@ -1321,7 +1327,7 @@
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,
-            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, mucBanDau: mi.mucBanDau,
+            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, xichDay: mi.xichDay, beSung: mi.beSung, mucBanDau: mi.mucBanDau,
             co: SanHoc.coCuaSan(mi.co, si, nhieu),
             daoChieu: mi.daoChieu, phanCung: SanHoc.phanCungCua(mi), nguonDong: nguonDongCua(gs[i])
           };
@@ -1455,7 +1461,7 @@
     var res = SanHoc.chay({
       san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st), roBanDau: st.ro === true ? true : undefined,
-      danToiDa: man.danToiDa, lucBan: man.lucBan, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
+      danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
       daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g),
       pin: man.loaiRobot === 'drone' ? (st.pin !== undefined ? st.pin : (Array.isArray(man.pin) ? man.pin[0] : man.pin)) : undefined
     }, g.ma);

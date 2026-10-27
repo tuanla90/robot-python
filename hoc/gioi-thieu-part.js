@@ -170,6 +170,15 @@
       khong: ['Vật gỗ, tường, không có gì: front_metal() là False, front_pole() là "none"'],
       luuY: []
     },
+    'hong-ngoai': {
+      khe: 'camBien', ten: 'Cảm biến hồng ngoại',
+      moTa: 'Mắt đỏ ở mũi xe, đo xem phía trước còn mấy ô trống.',
+      lenh: ['distance', 'warm'],
+      gioi: ['Hỏi không tốn nhịp', { chu: 'distance() trả một SỐ: số ô trống tới vật cản; sát vật cản là 0. Dùng được trong phép so sánh, như if distance() > 2:', can: ['distance'] },
+        { chu: 'warm() trả True khi vật cản trước mặt NÓNG: robot khác, hay nút bắn đang bật', can: ['warm'] }],
+      khong: ['Chỉ nhìn thẳng phía trước, không nhìn hai bên', 'Không biết vật cản là gì, chỉ biết cách bao xa', { chu: 'Nút đang tắt, cửa, thùng, tường thì warm() là False', can: ['warm'] }],
+      luuY: [{ chu: 'Tường, mép sân, cửa đóng, thùng nặng, vật nằm đất, robot khác đều chắn tia.', can: ['distance'] }, { chu: 'Cùng một tia với distance(): warm() chỉ xét vật cản đầu tiên.', can: ['warm'] }]
+    },
     'mau': {
       khe: 'camBien', ten: 'Cảm biến màu ở bụng',
       moTa: 'Gắn dưới bụng xe, đọc màu sàn ở ô xe đang đứng.',
@@ -197,7 +206,7 @@
       luuY: []
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'mau', 'camera', 'camera-bay'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-bay'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -212,6 +221,7 @@
     if (c.tay) them(c.tay);
     them('khoang-cach');
     them('tu');
+    them('hong-ngoai');
     if (co(goc, 'color')) them(co(cam, 'camera') ? 'camera' : 'mau');
     them('camera-bay');
     return kq;

@@ -1469,7 +1469,7 @@
     moBang(el, o.neo);
   }
   /** Hàm cảm biến khoảng cách mà màn cho dùng (front_clear, left_clear, right_clear), theo hamGoc của màn. */
-  var CAM_BIEN_TEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole'];
+  var CAM_BIEN_TEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole', 'distance', 'warm'];      // distance / warm: cảm biến hồng ngoại (mùa 2): distance() trả SỐ (so sánh), warm() trả True / False
   function camBienCua(man) { return ((man && man.hamGoc) || []).filter(function (n) { return CAM_BIEN_TEN.indexOf(n) >= 0; }); }
 
   /** Chẩn đoán cụ thể lên trước câu chung chung: `nhen-khong-buoc` (nhện chưa bước lần nào) đứng trước `chua-toi-co` / `chua-dua-vat`. Trả về mảng mới. */
@@ -1483,7 +1483,7 @@
   }
   /** Hàm của em dùng được với robot của màn: hàm gọi (trực tiếp hay qua hàm khác của em) một lệnh gốc mà màn không có trong `hamGoc` thì ẩn khỏi kho
    *  (vd. nhện bỏ hàm dùng lệnh bánh; xích / omni bỏ go(d); xe không tay bỏ pick()). Màn không khai hamGoc: giữ nguyên. */
-  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'shoot', 'shoot_back', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look'];
+  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'shoot', 'shoot_back', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look', 'distance', 'warm'];
   /** Lệnh gốc mà THÂN HÀM CỦA EM được gọi ở màn này: các lệnh trên khay (hamGoc) cộng PHẦN CỨNG robot (SanHoc.phanCungCua(man) của lõi: man.phanCung nếu màn khai — màn hỏng —,
    *  không thì trọn bộ lệnh loại robot, vd. xe bánh luôn có bánh lùi dù khay chưa cho dùng). Lõi cũ chưa có SanHoc.phanCungCua thì dùng man.phanCung nếu có, không thì chỉ hamGoc như trước. */
   function lenhDuocGoi(man) {
@@ -1668,7 +1668,7 @@
   /** Lệnh đọc cảm biến (thân hàm gọi một trong số này thì hàm đó thuộc thẻ CẢM BIẾN) và mọi lệnh tay / dụng cụ (thẻ TAY). */
   var CAM_TEN_TAT_CA = CAM_BIEN_TEN.concat(['color', 'look', 'battery']);
   var LENH_TAY_TAT_CA = TAY_TEN.concat(NC_TEN, NEM_TEN, SUNG_TEN, SON_TEN);
-  var RE_DK_CAM = /\b(front_clear|left_clear|right_clear|front_metal|front_pole|color|look|battery)\s*\(/;       // khối điều kiện có đọc cảm biến
+  var RE_DK_CAM = /\b(front_clear|left_clear|right_clear|front_metal|front_pole|color|look|battery|distance|warm)\s*\(/;       // khối điều kiện có đọc cảm biến
   /**
    * Hàm f = { ten, than } thuộc thẻ nào của khay, theo các lệnh gốc nó gọi (kể cả gián tiếp qua hàm khác, tìm bằng tim(ten) → hàm | null):
    * có lệnh cảm biến → 'cam'; không có mà có lệnh tay / dụng cụ → 'tay'; còn lại → 'than'.
@@ -2014,7 +2014,9 @@
       var gocSung = goc.filter(function (n) { return SUNG_TEN.indexOf(n) >= 0; });              // súng hơi: shoot / shoot_back
       var gocSon = goc.filter(function (n) { return SON_TEN.indexOf(n) >= 0; });                // máy sơn: ink / dot / pen_down / pen_up
       var gocNC = goc.filter(function (n) { return NC_TEN.indexOf(n) >= 0; });                  // nam châm: magnet_n / magnet_s / magnet_off
-      var camDau = cam.indexOf('front_metal') >= 0 ? 'front_metal' : cam[0];                    // màn có cảm biến từ: khối mẫu của while / if dùng front_metal()
+      var camHN = cam.indexOf('distance') >= 0, camNong = cam.indexOf('warm') >= 0;             // hồng ngoại (mùa 2): distance() trả số nên không dùng làm `if distance():`; warm() là True / False
+      var camKhac = cam.filter(function (n) { return n !== 'distance' && n !== 'warm'; });
+      var camDau = cam.indexOf('front_metal') >= 0 ? 'front_metal' : camKhac.length ? camKhac[0] : camNong ? 'warm' : cam[0];      // màn có cảm biến từ: khối mẫu của while / if dùng front_metal()
       var camCuc = cam.indexOf('front_pole') >= 0;                                              // front_pole() trả chuỗi "N" / "S" / "none": khối mẫu so sánh chuỗi, không phải if front_pole():
       var gocChan = goc.filter(function (n) { return /^go_/.test(n) || CHAN_TEN.indexOf(n) >= 0; });      // nhện / drone: go_up / go_down / go_left / go_right (kèm wait); nhện còn có crouch / stand (co / duỗi chân)
       var gocTruot = goc.filter(function (n) { return /^slide_/.test(n); });                    // omni: slide_left / slide_right
@@ -2033,12 +2035,18 @@
           : cam.length ? (cam.indexOf('right_clear') >= 0 ? ['if right_clear():', 'elif front_clear():', 'else:'] : ['if ' + camDau + '():', 'else:'])
           : ['if d == "U":', 'elif d == "D":', 'else:'];
       }
+      if (camHN && dsDk.length) {                                                               // hồng ngoại: so số ô trống + gán biến d = distance(); khối `if distance():` (nếu lọt) đổi thành phép so sánh
+        dsDk = dsDk.filter(function (s) { return s !== 'if distance():'; });
+        if (!camKhac.length && !camNong && !spec.mau) dsDk = ['if distance() > 2:', 'else:'];
+        else if (dsDk.indexOf('if distance() > 2:') < 0) dsDk.unshift('if distance() > 2:');
+        if (dsDk.indexOf('d = distance()') < 0) dsDk.push('d = distance()');
+      }
       if (camCuc && dsDk.length) {                                                              // cảm biến cực: ba khối if / elif so với "N", "S"; khối else: dùng chung
         dsDk = ['if front_pole() == "N":', 'elif front_pole() == "S":'].concat(dsDk.filter(function (s) { return s !== 'if front_pole():'; }));
         if (dsDk.indexOf('else:') < 0) dsDk.push('else:');
       }
       var dkCam = dsDk.some(function (s) { return RE_DK_CAM.test(s); });
-      var chuWhile = spec.vong && spec.vongWhile ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + fm + '() != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương
+      var chuWhile = spec.vong && spec.vongWhile ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + fm + '() != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camHN && !camKhac.length && !spec.mau ? 'while distance() > 0:' : camNong && !camKhac.length && !spec.mau ? 'while not warm():' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương (hồng ngoại: while distance() > 0: / while not warm():)
       var coLogic = coCam || !!spec.vong || dsDk.length > 0 || !!chuWhile || !!spec.bienDem || !!spec.list;
 
       /* ---- hàm của em chia vào thẻ theo lệnh gốc nó gọi (kể cả gián tiếp); thẻ không có thì rơi về THÂN */
