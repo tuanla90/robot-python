@@ -116,3 +116,11 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   `warm()` thừa). Lõi thêm cờ màn `nutBat: [{x, y}]` (nhiều sân: mảng song song như `noi`): nút N đó nóng từ đầu màn, bắn thì tắt (toggle như cũ); sân vẫn ghi `N`
   (không thêm ký hiệu: ~30 bộ dò đọc sân thô). Nút bật sẵn KHÔNG được nối cửa / băng (ném lỗi cấu hình; khai `noi` cho các nút khác). Máy kiểm `kiem-nut-bat-san.mjs` (30).
   Còn để ngỏ: danh sách lớp theo sân trong `lo-trinh-hoc.js` (motSan) chưa có `nutBat`.
+
+- **27/10 P7 · Gói 7 Đo nhiệt xong** (nhánh claude/do-nhiet, gộp d1e1606; npm test 79/79). 20 màn trong `man-do-nhiet.js`, mọi màn khai `nutBat`:
+  `if not warm():` bắn, `while not warm()` tìm đèn nóng, phân biệt đèn nóng với cửa / thùng / nút tắt cùng khoảng cách, `warm()` + `aim_fire()`, nút mình vừa bật cũng nóng (bẫy),
+  đố Sola bắn mọi nút; chương 2 hàm của em switch_on, switch_left, find_warm, aim_on, scan_on(n), switch_right, aim_left_on (Sổ lệnh nhóm Hồng ngoại), sửa hàm light, find_hot.
+  Hai trùm ba sân, huy hiệu `do-nhiet`, `che-do-nhiet`. Máy kiểm `kiem-do-nhiet.mjs` (107) + bộ dò `do-duong-do-nhiet.mjs` (timLoiNeNhanh, timThanCoDinh dùng lại được).
+  Chương 1 từ màn 5 khóa chương trình chính (màn mở một sân bị cú giật súng hơi né warm()); lời giải được có chẩn đoán thông tin `giat-chan`.
+  Đề xuất để sau: mục tiêu "trạng thái nút cuối màn" để bẫy "bắn nút nóng là tắt nó" thua ngay. `warm()` với robot khác để gói 8 Đội.
+  Thứ tự tiếp theo (user 27/10): A1 bảng màu → A2 lab trắng + thân M1 (KE-HOACH-GOP-DIEM10CODE mục 2a) → gói 8, 9, 10 → phim mùa 2.
