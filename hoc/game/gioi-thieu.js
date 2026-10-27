@@ -13,7 +13,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   function huyHieu(ma) {
     var co = window.HuyHieu && HuyHieu.DS && HuyHieu.DS.indexOf(ma) >= 0;
-    return co ? Ve.mk(HuyHieu.ve(ma, 'mo'), 2) : Ve.ico('box', 3, { fill: BM.gioiThieuHuyHieuFill, line: BM.ink });
+    return co ? Ve.mk(HuyHieu.ve(ma, 'mo'), 2) : Ve.ico('box', 3, { fill: BM.vang, line: BM.vienDam });
   }
   /** Hình minh họa của trang i (2..4). */
   function hinh(i) {
