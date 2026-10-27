@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xem bộ vẽ vector (gói V1)</title>
+<style>
+  body{margin:0;background:var(--g-vecSanToi);font-family:system-ui,sans-serif;color:var(--g-vecVien);padding:16px}
+  h2{font-size:15px;font-weight:600;margin:18px 0 8px}
+  .hang{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+  .o{background:var(--g-vecVo);border:1px solid var(--g-vecVoToi);border-radius:10px;padding:10px}
+  .o p{margin:6px 0 0;font-size:12px;color:var(--g-vecBacToi)}
+  canvas{display:block}
+</style>
+<script src="../game/bang-mau.js"></script>
+<script src="../game/ve-vector.js"></script>
+<script src="../game/ve-vector-o.js"></script>
+<script src="../game/ve-vector-than-hai-banh.js"></script>
+<script src="../game/ve-vector-tay-kep.js"></script>
+</head><body>
+<h2>Trang xem bộ vẽ vector (hoc/game/ve-vector*.js) — cùng kho hình mà sân dùng ở chế độ ?ve=vector. Mỗi canvas rasterise đúng pixel thiết bị (dpr = <span id="dpr"></span>).</h2>
+<h2>Sân mẫu (như thu-vector.html): # tường, . sàn, F cờ, c thùng, R robot</h2>
+<div class="hang" id="san"></div>
+<h2>Robot xoay 4 hướng (một hình, xoay cả nhóm; tay kẹp gắn theo ổ (50, 80))</h2>
+<div class="hang" id="bon-huong"></div>
+<h2>Trạng thái tay: mở · đóng · ôm vật (vật vẽ dưới robot theo vatKep) · hạ mở · hạ ôm · không tay · bánh quay</h2>
+<div class="hang" id="trang-thai"></div>
+<h2>Nhiều cỡ ô (14, 28, 37, 46, 64, 84, 168 px): vector luôn nét</h2>
+<div class="hang" id="nhieu-co"></div>
+<h2>Màu đội: R1 (sơn '' / vang) · R2 ('lam') · đối thủ 'do' · sơn mở khoá ngoc / cam / trang / hoang-kim</h2>
+<div class="hang" id="doi"></div>
+<h2>Ô và vật: sàn, tường, cờ, thùng gỗ (và thùng mang màu red / green / blue / yellow)</h2>
+<div class="hang" id="o-vat"></div>
+<script>
+  var V = window.VeVector, dpr = window.devicePixelRatio || 1;
+  document.getElementById('dpr').textContent = dpr;
+  function khung(cv, cssPx, nhan) {
+    var d = document.createElement('div'); d.className = 'o';
+    cv.style.width = cssPx + 'px'; cv.style.height = cssPx + 'px';
+    d.appendChild(cv); var p = document.createElement('p'); p.textContent = nhan; d.appendChild(p); return d;
+  }
+  /* vẽ một ô: nền sàn + (robot / vật) ghép lên một canvas mới, để canvas đệm dùng chung không bị vẽ đè */
+  function oGhep(cssPx, ve) {
+    var n = Math.round(cssPx * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n;
+    var g = cv.getContext('2d'); g.drawImage(V.o('san', n), 0, 0); ve(g, n); return cv;
+  }
+  function robotO(cssPx, cfg, st, huong, vat) {
+    return oGhep(cssPx, function (g, n) {
+      if (vat) { var vk = V.vatKep(cfg, st.tay && st.tay.tuThe), p = n / 100, a = huong * Math.PI / 2, A = vk.ahead * p, sz = vk.n * p, cx = n / 2 + Math.sin(a) * A, cy = n / 2 - Math.cos(a) * A; g.drawImage(V.vat('thung-go', Math.round(sz)), Math.round(cx - sz / 2), Math.round(cy - sz / 2), Math.round(sz), Math.round(sz)); }
+      g.drawImage(V.robot(cfg, st, huong, n), 0, 0);
+    });
+  }
+  var KEP = { than: 'hai-banh', tay: 'kep' }, KHONG = { than: 'hai-banh', tay: null };
+  /* sân mẫu */
+  (function () {
+    var MAP = ['########', '#.....F#', '#......#', '#R.c...#', '#......#', '########'], css = 56, n = Math.round(css * dpr);
+    var cv = document.createElement('canvas'); cv.width = n * 8; cv.height = n * 6; var g = cv.getContext('2d');
+    MAP.forEach(function (h, y) { h.split('').forEach(function (ch, x) {
+      g.drawImage(V.o(ch === '#' ? 'tuong' : 'san', n), x * n, y * n);
+      if (ch === 'F') g.drawImage(V.o('co', n), x * n, y * n);
+      if (ch === 'c') { var s = Math.round(n * 0.75); g.drawImage(V.vat('thung-go', s), x * n + (n - s) / 2, y * n + (n - s) / 2); }
+      if (ch === 'R') g.drawImage(V.robot(KEP, { tay: { kep: 'mo', tuThe: 'tren' } }, 1, n), x * n, y * n);
+    }); });
+    cv.style.width = (css * 8) + 'px'; cv.style.height = (css * 6) + 'px';
+    document.getElementById('san').appendChild(khung(cv, 0, 'ô 56 px CSS, canvas ' + n + ' px thiết bị mỗi ô')); cv.style.width = (css * 8) + 'px'; cv.style.height = (css * 6) + 'px';
+  })();
+  [[0, 'lên (huong 0)'], [1, 'phải (1)'], [2, 'xuống (2)'], [3, 'trái (3)']].forEach(function (q) {
+    document.getElementById('bon-huong').appendChild(khung(robotO(160, KEP, { tay: { kep: 'mo', tuThe: 'tren' } }, q[0]), 160, q[1]));
+  });
+  [[KEP, { tay: { kep: 'mo', tuThe: 'tren' } }, false, 'mở'], [KEP, { tay: { kep: 'dong', tuThe: 'tren' } }, false, 'đóng'], [KEP, { tay: { kep: 'dong', cam: true, tuThe: 'tren' } }, true, 'ôm vật'],
+    [KEP, { tay: { kep: 'mo', tuThe: 'duoi' } }, false, 'hạ, mở'], [KEP, { tay: { kep: 'dong', cam: true, tuThe: 'duoi' } }, true, 'hạ, ôm vật'], [KHONG, {}, false, 'không tay'],
+    [KEP, { than: { banh: { trai: 1, phai: 1 }, buoc: 1 }, tay: { kep: 'mo', tuThe: 'tren' } }, false, 'bánh quay (nhịp 1)']].forEach(function (q) {
+    document.getElementById('trang-thai').appendChild(khung(robotO(140, q[0], q[1], 2, q[2]), 140, q[3]));
+  });
+  [14, 28, 37, 46, 64, 84, 168].forEach(function (w) { document.getElementById('nhieu-co').appendChild(khung(robotO(w, KEP, { tay: { kep: 'mo', tuThe: 'tren' } }, 2), w, w + ' px')); });
+  [['', 'R1'], ['lam', 'R2'], ['do', 'đối thủ'], ['ngoc', 'ngoc'], ['cam', 'cam'], ['trang', 'trang'], ['hoang-kim', 'hoang-kim']].forEach(function (q) {
+    document.getElementById('doi').appendChild(khung(robotO(120, { than: 'hai-banh', tay: 'kep', son: q[0] }, { tay: { kep: 'mo', tuThe: 'tren' } }, 2), 120, q[1]));
+  });
+  ['san', 'tuong', 'co'].forEach(function (ma) { var n = Math.round(120 * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n; var g = cv.getContext('2d'); if (ma === 'co') g.drawImage(V.o('san', n), 0, 0); g.drawImage(V.o(ma, n), 0, 0); document.getElementById('o-vat').appendChild(khung(cv, 120, 'o/' + ma)); });
+  [undefined, 'red', 'green', 'blue', 'yellow'].forEach(function (m) { var n = Math.round(120 * dpr), cv = document.createElement('canvas'); cv.width = n; cv.height = n; var g = cv.getContext('2d'); g.drawImage(V.vat('thung-go', n, m ? { mau: m } : undefined), 0, 0); document.getElementById('o-vat').appendChild(khung(cv, 120, 'vat/thung-go ' + (m || ''))); });
+</script>
+</body></html>
