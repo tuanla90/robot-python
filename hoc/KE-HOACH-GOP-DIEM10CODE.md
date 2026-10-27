@@ -80,6 +80,10 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (tên, cỡ, trạng thái, hướng, sơn); robot ghép thân + tay theo `oGan` − `diemNeo`, thu 0,86, XOAY cả nhóm, bóng đổ lớp riêng. san-ve.js giữ kiến trúc, canvas sân theo pixel
   thiết bị và phép phóng `sv` nên hiệu ứng cũ vẫn tính theo pixel sân. Đã có: sàn, tường, cờ, thùng gỗ, thân A hai bánh, tay kẹp; hình chưa có tự rơi về pixel phóng.
   Trang xem `hoc/hinh-mau/xem-vector.html`. Máy kiểm `kiem-ve-vector.mjs` (38). Chốt (người giao): robot 86% ô; vật nằm đất ~57% cạnh ô; mục Cài đặt để V5; dải đội ở chân xem lại ở V3.
+- **27/10 V2 · Ô sân + vật vector xong** (nhánh claude/ve-vector-o, gộp c9b710b; npm test 81/81). Mọi ký hiệu sân (29), mọi ô `Ve.tiles()`, mọi vật (sắt, nam châm N / S,
+  thùng gỗ, thùng nặng, bóng) có hình vector theo trạng thái (băng chuyền 4 hướng × 5 pha, cửa mở dần, nút bật, bàn xoay, cổng…); ảnh nhỏ sân `thuSan` vector; bảng nối
+  `ve-vector-ky-hieu.js`. Máy kiểm (55) liệt kê ký hiệu từ luật chơi; pixel y nguyên (886 ảnh nhỏ sân, 6 màn băm trùng). Ô đích hổ phách `vecDich`.
+  Việc chuyển sang V3: sàn màu thêm dấu hình (mù màu), thùng nặng tông riêng khác khối sắt.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
