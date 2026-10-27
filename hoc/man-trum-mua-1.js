@@ -109,7 +109,7 @@
       veMaMau: 'Chương trình mới cất thùng chắn và lên ◆. Viết tiếp: lùi về cửa nhánh, rẽ phải, rồi viết thân bring_out() trong Xưởng hàm.',
       san: SAN_R11, batDau: { x: 2, y: 6, huong: 0 }, bongMo: BM_R11,
       maMau: { chinh: ['go_wall()', 'pass_back()', 'go_wall()'], hamCuaMan: [H('bring_out', ['pass'])] },
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 39, nhip: 67 },
       loiGiai: { chinh: L_R11, hamCuaMan: [H('bring_out', BRING)] },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# cất thùng chắn, lên ◆, lùi về cửa nhánh'].concat(L_R11), hamCuaMan: [H('bring_out', BRING)] } },
       loiSai: [
@@ -128,7 +128,7 @@
       veMaMau: 'Chạy thử: xe chưa đứng cạnh thùng nên tay kẹp vào ngăn trống. Thêm vòng while ở đầu: lùi khi bên trái còn trống.',
       san: ['#####', '##.D#', '#..##', '#..##', '#o.##', '#####'], batDau: { x: 2, y: 2, huong: 0 },
       maMau: { chinh: ['pick_left()', 'go_wall()', 'drop_right()'] },
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 27, nhip: 8 },
       loiGiai: { chinh: L_1 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# lùi tới khi bên trái có thùng'].concat(L_1) } },
       loiSai: [
@@ -146,7 +146,7 @@
       veMaMau: 'Xe đã nhặt được thùng. Viết tiếp: lùi tới hốc đích, đặt sang phải.',
       san: ['#####', '##o##', '##.##', '##.##', '##.D#', '##.##', '#####'], batDau: { x: 2, y: 5, huong: 0 },
       maMau: { chinh: ['go_wall()', 'pick()'] },
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 25, nhip: 8 },
       loiGiai: { chinh: L_2 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', 'pick()', '# lùi tới hốc đích'].concat(WHILE('not right_clear()', ['back()']), ['drop_right()']) } },
       loiSai: [
