@@ -134,6 +134,13 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   Brief của người giao SAI một chỗ: so pixel "sàn 8, kẹp 10" là hai đơn vị khác nhau; pixel thật nâng 42,5%, hạ 38%, sàn 57% (pixel không đổi).
   Chờ user xem ảnh: vật chờm ô trước mặt (tâm 0,4 ô) hay sát càng (0,52 ô); càng kẹp mở rộng trông như "sừng"; tay xoay bật khe lớn khi cầm (chưa có hoạt cảnh mở dần).
   → V7: huy hiệu tay-gap / tay-xoay / combo thùng to lẹm viền (truyền k = 0); vật treo dưới drone nam châm chưa theo luật mới; hoạt cảnh mở dần cho tay xoay.
+- **28/10 V6c · Mọi nút, cảnh mở màn, phim sang vector xong** (nhánh claude/ve-vector-nut-mo-dau-phim, gộp abd1ef9). Một bộ icon `ve-vector-icon.js` (61 hình, `VeIcon.veCanvas`; phim-vector.js
+  gọi lại, bỏ 7 tên trùng); màn chơi `#sc-choi` (PHAM_VI_CHOI, cả Xưởng hàm) icon vector, thêm mui, trum, 9 icon vật Xưởng; hình bộ phận tiêu đề thẻ khay bằng VeVector. Cảnh mở màn `mo-dau.js`
+  vector (xe tải `PhimVector.xeTai`, R1 mắt ngạc nhiên / quay / vui, nền lab, chữ RẦM! viền trắng; lời / khung / thời lượng giữ). Phim .md / .pg-* bỏ mực / kem pixel, mượt, giảm chuyển động
+  hiện ngay trạng thái cuối. Soát trong trang (script tự kiểm bắt 4 / 4 lỗi giả): mọi màn, phim mở đầu 6 khung, 9 phim gói ở vector: 0 canvas điểm ảnh, 0 icon pixel, 0 phông pixel.
+  Máy kiểm `kiem-nut-mo-dau-phim-vector.mjs` (11, lỗi giả đỏ 8). Sau gộp người giao chạy 7 máy kiểm đạt.
+  → V7: Ve.ico / sao / khoa / mui ở vector trả thẳng svg rồi bỏ MutationObserver, noiVe, móc `drawImage` toàn cục (cầu tạm); kiem-giao-dien-vector-b mục d còn luật cũ "PHAM_VI không chứa #sc-choi"
+  (gộp PHAM_VI + PHAM_VI_CHOI); huy hiệu gói 8 (doi-mua-2, che-doi-mua-2) cần bản vector; trời mưa dùng `:has()` (Safari < 15.4 / Firefox < 121 thấy nền sáng).
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
