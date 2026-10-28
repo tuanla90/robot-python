@@ -114,7 +114,14 @@
   // che-be-sung.9: thùng (3,3) trên hành lang, hai cửa nối tiếp (5,3), (6,3), ô đích (7,3). Trạm (3,3), (4,3) có nút xa phía trên ((3,0), (4,0)) mở cửa (5,3), (6,3); hốc phía dưới.
   var SAN_C9 = ['###NN####', '###..####', '###..####', '#..H.CCD#', '###..####', '#########'];
   var SAN_C6 = ['#########', '##NN#####', '##..#####', '##..#####', '#......N#', '##.....N#', '###....N#', '####C####', '####C####', '####C####', '####F####', '#########'];
-
+  // che-be-sung.10 (trùm, HAI sân, MỘT chương trình): dây chuyền đi sang phải, xe (1,3). Đoạn 1: hai trạm liền nhau (2,3), (3,3), nút xa phía trên, hốc phía dưới: nút TẮT mở cửa
+  //   ngay sau trạm (4,3); nút ĐANG BẬT mỗi sân một chỗ (sân 1 trạm đầu, sân 2 trạm sau). Đoạn 2: cửa thứ hai XA GẦN KHÁC NHAU ((6,3) / (8,3)), trước cửa là trạm có nút xa phía trên
+  //   mở nó (go_fire). Đoạn 3: hành lang tới sát cửa cuối; ngay trước cửa, một ngõ cụt đi lên SÂU KHÁC NHAU (2 / 3 ô); ở đáy ngõ, nút xa bên trái mở cửa cuối, bên phải đáy là hốc (visit).
+  //   Sau cửa cuối là cờ. Hai sân đủ nhỏ để bộ dò dãy chung (do-duong-be-sung.mjs) chạy hết trong giới hạn trạng thái.
+  var SAN_C10 = [
+    ['##NN#N######', '##..#.N...##', '##..#.##.###', '#...C.C..CF#', '##..#.######', '############'],
+    ['##NN###N#N...##', '##..###.###.###', '##..###.###.###', '#...C...C...CF#', '##..###.#######', '###############']
+  ];
   /* ------------------------------------------------------------- chương trình */
 
   var L_B1 = ['shoot()', 'wait()', 'tr_right()', 'forward(3)'];
@@ -147,6 +154,7 @@
   var C_C8 = ['tr_left()', 'visit()', 'tr_right()', 'forward(4)', 'tr_left()', 'visit()', 'tr_right()', 'forward(2)'];
   var T_PB = ['push(1)', 'blast_left()'];                                  // push_blast()
   var C_C9 = FOR(2, ['push_blast()']).concat(['push(2)']);
+  var L_C10 = ['move()', 'lock_row(2)', 'go_fire()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()'];   // trùm che-be-sung.10: ba hàm của em nối nhau
 
   var DS = [
     /* ================================================================ chương be-sung: xích bắn tụ không giật */
@@ -510,6 +518,38 @@
         { moTa: 'Quên blast_left(): cửa không mở, thùng vướng cửa đóng, không tới ô đích', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_blast', [], ['push(1)'])], phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['push(1) đo distance() tới thùng, đi tới sát rồi đẩy một ô.', 'push(1), rồi blast_left().']
+    }),
+
+    /* ------------------------------------------------ trùm */
+    man({
+      chuong: 'che-be-sung', so: 10, ten: 'Trùm: Hai dây chuyền', yMoi: 'một chương trình nối ba hàm của em: lock_row(2), go_fire(), visit(); hai dây chuyền khác nút bật, khoảng cách cửa, độ sâu ngõ',
+      hang: 'trum', kieuBai: 'trum', mat: true, lucBan: true,
+      hamCuaEmCan: ['lock_row', 'lock_left', 'lock_on', 'go_fire', 'visit', 'blast_left', 'go_to_wall', 'tr_left', 'tr_right', 'fire', 'forward', 'back', 'move'],
+      huyHieu: { ma: 'che-be-sung', ten: 'Huy hiệu Hàm bệ súng' },
+      deBai: 'Hai dây chuyền, một chương trình, toàn hàm của em. Đoạn đầu: hai trạm liền nhau, nút xa phía trên, nút nào tắt thì mở cửa ngay sau trạm, nút đang bật mỗi sân một chỗ. ' +
+        'Đoạn giữa: một cánh cửa xa gần khác nhau, trước cửa là trạm có nút mở nó. Đoạn cuối: ngay trước cửa cuối là ngõ cụt đi lên, sâu khác nhau; nút ở đáy ngõ, phía bên trái, mở cửa cuối. ' +
+        'Sau cửa, cờ ở cuối hành lang. Nối lock_row(2), go_fire() và visit() cho đúng chỗ.',
+      veMaMau: 'Chương trình có sẵn qua hai cửa đầu rồi đứng trước cửa cuối: nút mở nó nằm dưới đáy ngõ cụt phía trên xe.',
+      san: SAN_C10, batDau: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      noi: [
+        [noi(3, 0, [[4, 3]]), noi(5, 0, [[6, 3]]), noi(6, 1, [[9, 3]])],
+        [noi(2, 0, [[4, 3]]), noi(7, 0, [[8, 3]]), noi(9, 0, [[12, 3]])]
+      ],
+      nutBat: [[o(2, 0)], [o(3, 0)]],
+      maMau: bai(['move()', 'lock_row(2)', 'go_fire()', 'go_to_wall()']),
+      sao: { o: 44, nhip: 77 },
+      loiGiai: bai(L_C10),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# ba hàm của em nối nhau: trạm, cửa xa, ngõ cụt'].concat(L_C10)) },
+      congThucKhac: [
+        { moTa: 'Bắn mọi nút đoạn đầu bằng blast_left(): vẫn tới cờ nhưng tắt nút đang bật, phí nhịp', baiLam: bai(['move()'].concat(FOR(2, ['blast_left()', 'move()']), ['go_fire()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()'])) },
+        { moTa: 'Viết thẳng go_to_wall() rồi blast_left() thay cho go_fire()', baiLam: bai(['move()', 'lock_row(2)', 'go_to_wall()', 'blast_left()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()']) }
+      ],
+      loiSai: [
+        { moTa: 'Đi cứng forward(1) tới trạm cửa giữa như sân 1: sân 2 trạm xa hơn, bắn trúng tường', baiLam: bai(['move()', 'lock_row(2)', 'forward(1)', 'blast_left()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên tr_right() sau visit(): xe còn quay lên, go_to_wall() đi vào ngõ cụt', baiLam: bai(['move()', 'lock_row(2)', 'go_fire()', 'go_to_wall()', 'tr_left()', 'visit()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu move() đầu: lock_row(2) đo ngay chỗ xuất phát, trạm sau bị bỏ, cửa đầu không mở', baiLam: bai(['lock_row(2)', 'go_fire()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Ba đoạn, ba hàm: lock_row(2) cho hai trạm đầu, go_fire() cho cửa giữa, visit() cho ngõ cụt.', 'Sau go_fire() xe còn đứng ở trạm: go_to_wall() tới miệng ngõ, quay lên, visit(), quay lại, go_to_wall() tới cờ.']
     })
   ];
 
