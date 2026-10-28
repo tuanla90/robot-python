@@ -239,3 +239,8 @@ body.ve-vector .gt-hinh .vi-box,body.ve-vector .gt-hh .vi-box{color:var(--g-vecH
 body.ve-vector .so-ok .vi-check,body.ve-vector .lr-tick .vi-check{color:var(--g-vecLa)}
 body.ve-vector .so-cap .vi{color:var(--g-vecChuMo)}
 body.ve-vector .lr-the-ic .vi-cross{color:var(--g-vecChuMo)}
+/* icon bộ phận ở thẻ phần (Lắp robot): màu theo khe như tên thẻ khay của màn chơi (thân cyan, tay cam, não ngọc); thẻ "không gắn" chữ mờ */
+body.ve-vector .lr-the[data-khe="than"] .lr-the-ic{color:var(--g-vecCyanDam)}
+body.ve-vector .lr-the[data-khe="tay"] .lr-the-ic{color:var(--g-vecCamDam)}
+body.ve-vector .lr-the[data-khe="camBien"] .lr-the-ic{color:var(--g-vecNgocDam)}
+body.ve-vector .lr-the-ic .vi2{color:var(--g-vecThe);opacity:1}
