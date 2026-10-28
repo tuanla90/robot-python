@@ -266,6 +266,7 @@ body.ve-vector.dang-keo .row.xx .tab svg.tx{display:none}                    /* 
    Tông lab trắng như sân vector: tường lavender nhạt, sàn bàn cờ hai tông, trời mưa xanh xám nhạt, đường nhựa chàm. */
 body.ve-vector .md-khung,body.ve-vector .md-khung.chalk{background-color:var(--g-vecNen);background-size:auto;background-image:linear-gradient(180deg,var(--g-vecThe) 0,var(--g-vecNen) 55%,var(--g-vecNenSau) 100%)}
 body.ve-vector .md-khung:has(.md-mua){background-image:linear-gradient(180deg,var(--g-vecKeDam) 0,var(--g-vecNenSau) 70%,var(--g-vecNen) 100%)}   /* trời mưa ngoài cửa xưởng */
+body.ve-vector .md-khung.co-mua{background-image:linear-gradient(180deg,var(--g-vecKeDam) 0,var(--g-vecNenSau) 70%,var(--g-vecNen) 100%)}   /* gói V7a: cùng luật, đường lùi không cần :has (mo-dau.js đặt lớp co-mua); luật riêng vì trình duyệt cũ bỏ cả luật có :has */
 body.ve-vector .md-mua{opacity:1;background-image:repeating-linear-gradient(110deg,transparent 0 17px,rgba(var(--g-vecBrandRgb),.2) 17px 18.5px,transparent 18.5px 30px);background-size:60px 60px;animation:md-mua .6s linear infinite}
 body.ve-vector .md-duong{height:40px;background:var(--g-vecBanh);box-shadow:inset 0 3px 0 var(--g-vecBanhGach),0 -1px 0 var(--g-vecVien)}
 body.ve-vector .md-duong::after{top:19px;height:3px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--g-vecVang) 0 20px,transparent 20px 44px);animation:md-vach .4s linear infinite}

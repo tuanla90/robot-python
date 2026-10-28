@@ -63,7 +63,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Thùng linh kiện trên xe (pixel: icon 'box' tỉ lệ 3 = 39 × 39; vector: thùng gỗ của sân cùng cỡ). */
   function thungHang() { var v = PV() && PhimVector.o('crate', 39 / 14, 0); return v || ico('box', 3, BM.camToiV1); }
   function chu(cls, s) { return h('div', 'md-a ' + cls, s); }
-  function nen(k, cls) { k.appendChild(h('div', cls)); }
+  function nen(k, cls) {
+    k.appendChild(h('div', cls));
+    if (cls === 'md-mua' && PV()) k.classList.add('co-mua');        // gói V7a: đường lùi cho luật CSS :has(.md-mua) (Safari < 15.4, Firefox < 121): chỉ vector, pixel y nguyên
+  }
 
   // bốn bộ phận văng ra: icon đèn bộ phận + màu
   var DO = [
@@ -155,6 +158,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function ve(n) {
       huyHen(); so = n;
       khung.innerHTML = '';
+      if (khung.classList) khung.classList.remove('co-mua');           // gói V7a: khung mưa đặt lại mỗi cảnh
       KHUNG[n - 1](khung);
       loi.textContent = t('md.' + n);
       Array.prototype.forEach.call(cham.children, function (c, i) { c.classList.toggle('on', i === n - 1); });
