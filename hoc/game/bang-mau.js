@@ -280,7 +280,10 @@
     vecTroiDam: '#0369a1',             // xanh trời đậm (while): chữ, nền đặc
     vecTroiNhat: '#e0f2fe',            // xanh trời nhạt: nền dòng while
     vecChanhDam: '#4d7c0f',            // xanh chanh đậm (danh sách, trượt slide_): chữ, nền đặc
-    vecChanhNhat: '#ecfccb'            // xanh chanh nhạt: nền khối danh sách
+    vecChanhNhat: '#ecfccb',           // xanh chanh nhạt: nền khối danh sách
+    vecHoPhachChu: '#92400e',          // chữ wait() trong dòng code (amber-800): đậm hơn vecHoPhachDam cho đủ 4,5:1 trên nền ô mã vecMa
+    vecLaChu: '#166534',               // chữ tên hàm trong dòng code (green-800): vecLaDam trên vecMa chỉ 4,46:1
+    vecChanhChu: '#3f6212'             // chữ lệnh trượt / danh sách trong dòng code (lime-800): vecChanhDam trên vecMa chỉ 4,44:1
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ

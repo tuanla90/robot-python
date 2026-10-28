@@ -941,7 +941,7 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     kiem('(14d) không phông Handjet / VT323 áp vào màn chơi vector: choi.css không gõ thẳng tên phông (chỉ qua --px / --mono), chữ canvas vector (bong chữ, pin, đạn) dùng Google Sans Flex / Code',
       !goThang.length && canvasCu === 0 && /Google Sans Flex/.test(hieuUng) && /Google Sans Code/.test(hieuUng), J({ goThang, canvasCu }));
   }
-  /* e. tương phản WCAG AA (4,5:1) của mọi cặp chữ / nền KHAI CÙNG LUẬT trong choi-vector.css (màu đều là vai bảng màu); luật chỉ có màu chữ thì đo trên thẻ trắng vecThe
+  /* e. tương phản WCAG AA (4,5:1) của mọi cặp chữ / nền KHAI CÙNG LUẬT trong choi-vector.css (màu đều là vai bảng màu); luật chỉ có màu chữ thì đo trên thẻ trắng vecThe (trong dòng code .strip / .keo-dong: nền ô mã vecMa)
         (trừ chữ trắng: nền của nó là màu đặc khai ở luật khác). Màn thật đo thêm bằng script trong trang (báo cáo V5a). */
   {
     const lum = (hex) => { const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
@@ -952,7 +952,7 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
       const c = vai(r.than, 'color'); if (!c) continue;
       const n = vai(r.than, 'background') || vai(r.than, 'background-color');
       if (!n && c === 'vecThe') continue;
-      const nen = n || 'vecThe'; soCap++;
+      const nen = n || (/\.(strip|keo-dong)\b/.test(r.sel) ? 'vecMa' : 'vecThe'); soCap++;            // chữ trong dòng code nằm trên nền ô mã vecMa
       const k = tl(BM[c], BM[nen]);
       if (k < 4.5) sai.push(r.sel.split(',')[0] + ': ' + c + ' / ' + nen + ' = ' + k.toFixed(2));
     }
