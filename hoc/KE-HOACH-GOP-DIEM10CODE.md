@@ -150,6 +150,13 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (3) gói Artifact nhúng phông Google Sans Flex / Code có sẵn ở hoc/game/font (không gọi Google Fonts); (4) icon app vẽ lại theo vector nếu xuất được PNG, không thì để V7c; (5) người đã chọn pixel trước V7b chuyển sang vector (đúng "chuyển hẳn").
   V7c theo phương án C (gỡ theo lớp): V7c1 phanh vector mới (phát lại vector khớp nền cuối V7b) + tách logic khỏi tệp pixel + gỡ công tắc; V7c2 xoá mã pixel chết từng tệp; V7c3 CSS / phông / bảng màu. Sau V7b: cấm viết pixel mới.
 
+- **28/10 V7a · Vector dọn đuôi xong** (agent Claude opus, nhánh claude/ve-vector-duoi; agent làm việc 1–4 rồi đứng ~2 tiếng ở việc 5, người giao dừng, tự commit việc 5 và làm việc 6; gộp ad0d875).
+  (1) huy hiệu vector cho doi-mua-2, che-doi-mua-2, be-sung, che-be-sung và vật trong tay robot không lẹm viền (tay-gap, tay-xoay, combo…); máy kiểm A6: MỌI mã HINH có vector, đọc từ HuyHieu.DS,
+  CHO_V7B = tong-hop-2, nha-may-chay (gói 10, V7b vẽ). (2) vật treo dưới drone nam châm = cỡ vật nâng, hút lên to dần, thả thu về cỡ sàn. (3) tay xoay mở / khép dần (moK), ngón ôm sát mép vật.
+  (4) dây nối nút ↔ cửa (chỉ vector): san-ve.js dungDayNoi theo cfg.noi (không noi: mọi nút nối mọi cửa không nhịp, như lõi), đường rẻ nhất theo ô ưu tiên tường, mờ trung tính, sáng khi nút bật.
+  (5) trời mưa mở đầu có lớp co-mua (không cần :has). (6) kiem-ve-vector mục 13i (drone, tay xoay, dây nối; ba lỗi giả đỏ). Sau gộp: kiem-ve-vector 97, kiem-huy-hieu-phim-vector 11,
+  kiem-nut-mo-dau-phim-vector 11, kiem-giao-dien-vector-b 16, kiem-phim-goi 41, kiem-bang-mau 19, kiem-nut-de 62. Chưa xem trình duyệt.
+
 ## 2b. Linh vật Sola / Luna bản pixel
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.

@@ -69,4 +69,5 @@ GÓP Ý USER 28/10 (gửi SendMessage): cảm biến phải dính vỏ theo từ
 | Gói 9 làm tiếp | fable (giao lại nâng một bậc) | 28/10 14:1x | goi9-be-sung, nhánh claude/be-sung từ 2fa95a2 | 9f84e72 (~14:10) | 16:12 nhắc; user bảo người giao nhận lại, dừng agent | DỪNG ở bước kiểm: 4 việc xong (fcdaf0f, fdc52cd, 48c701e, 9f84e72), không báo cáo; người giao chạy kiểm (107 đạt), gộp 793a8e4 |
 | Gói 10 mùa 2 Nhà máy chạy lại | fable | 28/10 16:38 | goi10-trum-mua-2, nhánh claude/trum-mua-2 từ 6348c9f | a90973a | — | ĐẠT: gộp 0045111, 11 máy kiểm đạt sau gộp |
 | Phim mùa 2 | opus | 28/10 16:38 | phim-mua-2, nhánh claude/phim-mua-2 từ 6348c9f | f02eb86 | — | ĐẠT: gộp 529281e, 4 máy kiểm đạt sau gộp |
-| V7a vector dọn đuôi (huy hiệu, drone nam châm, tay xoay, dây nối, :has) | opus | 28/10 16:38 | v7a-ve-vector-duoi, nhánh claude/ve-vector-duoi từ 6348c9f | 6348c9f | — | đang chạy; brief-V7a.md |
+| V7a vector dọn đuôi (huy hiệu, drone nam châm, tay xoay, dây nối, :has) | opus | 28/10 16:38 | v7a-ve-vector-duoi, nhánh claude/ve-vector-duoi từ 6348c9f | cd1bdc3 | 18:20 nhắc (không đáp); 19:03 dừng | DỪNG ở việc 5 sau ~2 tiếng không commit; người giao commit việc 5 (b1a0e86), làm việc 6 (eba2b2f), gộp ad0d875 |
+| Scout gỡ pixel | opus | 28/10 | chỉ đọc nhánh chính | — | — | ĐẠT: báo cáo hoc/ban-giao/scout-go-pixel.md |
