@@ -22,7 +22,7 @@
        (tay trước, hongTrai trái, hongPhai phải, tren góc mũi trái, sau đuôi); màu đội đúng ba chỗ trên mọi tổ hợp; trạng thái động ra hình khác; MỌI MÀN (cả từng robot
        của màn đội) vẽ được bằng vector qua VeRobot.ve.
   13. (gói V4) Hoạt cảnh trên sân: chạy san-ve.js THẬT trong ngữ cảnh vm (canvas giả, đồng hồ ảo, Math.random hạt cố định), phát lại vết ChamHoc (lời giải + lời sai) của 22 màn
-       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền c830c12 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
+       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền 8780764 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
        sự kiện đâm / ? / tới cờ / xong màn / húc bạn / chờ → đúng biểu cảm, chớp 2,5–5 s lệch nhau); camera không đổi mắt (ống kính ở đuôi); cảm biến dính vỏ; VeRobot.veCo; cờ bay, sàn bàn cờ.
   14. (gói V5a) Giao diện phẳng màn chơi (choi-vector.css): nạp đủ phông Google Sans Flex / Code + choi-vector.css sau choi.css; mọi bộ chọn trong body.ve-vector (pixel y nguyên);
        không steps( / pixelated / Handjet / VT323; mọi steps() màn chơi của choi.css (và huong-dan.js) có luật phủ mượt, có prefers-reduced-motion; chữ canvas vector không VT323;
@@ -570,12 +570,12 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
        g. cờ bay (pha khác → hình khác), sàn bàn cờ hai tông, trang xem có mục V4.
    ====================================================================================================================================== */
 {
-  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền c830c12, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
+  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền 8780764, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
   const vm = await import('node:vm');
   const { execFileSync } = await import('node:child_process');
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
-  const NEN_VEC = 'c830c12';                                                           // V7c1 (28/10): nền VECTOR = nhánh chính sau khi gộp V7b (mặc định vector, hết cầu tạm); 13a-v phát lại vector so với nền này
+  const NEN_VEC = '8780764';                                                           // V7c3 (29/10): nền VECTOR = commit gộp V7c2 (V7c2 chứng minh hình y hệt c830c12, nền V7c1 sau gộp V7b); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };
