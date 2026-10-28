@@ -48,6 +48,7 @@ body.ve-vector .g-tong,body.ve-vector .c-saog{height:32px;padding:0 10px 0 7px;g
 /* hộp gói: thẻ trắng bo lớn, dải đầu nhạt + chữ đậm theo trạng thái (--ac đậm / --an nhạt), không sọc gỗ, không núm */
 body.ve-vector .g-the{--ac:var(--g-vecBrand);--an:var(--g-vecBrandNhat);color:var(--g-vecChu);background:var(--g-vecThe);background-image:none;border-radius:var(--r-lg);padding:0 12px 14px;
   box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2);transition:transform .3s cubic-bezier(.16,1,.3,1),opacity .3s ease,box-shadow .2s ease}
+body.ve-vector .g-day.tuc .g-the{transition:none}                     /* dựng lại / mở màn (man-goi.js dat(i, false)): hộp giữa hiện rõ ngay, không mờ dần lên */
 body.ve-vector .g-the.giua{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-3)}
 body.ve-vector .g-the:not(.giua){filter:none;opacity:.55}
 body.ve-vector .g-the.dot2{--ac:var(--g-vecNgocDam);--an:var(--g-vecNgocNhat)}
@@ -217,3 +218,24 @@ body.ve-vector .md-tiep{height:52px;padding-top:0;border-radius:var(--r-md);font
   background:var(--g-vecBrand);box-shadow:0 6px 18px rgba(var(--g-vecBrandRgb),.32)}
 @media (hover:hover){body.ve-vector .md-tiep:hover{background:var(--g-vecBrandDam)}}
 body.ve-vector .md-tiep:active{background:var(--g-vecBrandDam);box-shadow:0 2px 6px rgba(var(--g-vecBrandRgb),.3)}
+
+/* ============================================================ 8. ICON VECTOR (ve-vector-icon.js: <svg class="pxi vi vi-<tên>"> thay canvas điểm ảnh có nhãn ở các màn ngoài màn chơi)
+   Hình vẽ bằng currentColor: mặc định THEO MÀU CHỮ của chỗ đặt (nút chính trắng, nút phụ chàm, dòng đạt xanh lá, dòng chưa đạt đỏ…); dưới đây là các vai riêng. */
+body.ve-vector svg.vi{display:block;flex:none;overflow:visible}
+body.ve-vector .vi .vi2{color:var(--g-vecThe);opacity:.75}                                   /* chi tiết phụ: lỗ khoá, vành xu, dấu ! của biển cảnh báo, vệt sáng */
+body.ve-vector .vi-star{color:var(--g-vecHoPhach)}
+body.ve-vector .vi-star.tat{color:var(--g-vecKeDam)}
+body.ve-vector .vi-xu{color:var(--g-vecHoPhach)}
+body.ve-vector .vi-xu.tat{color:var(--g-vecKeDam)}
+body.ve-vector .vi-lock{color:var(--g-vecChuPhu)}
+body.ve-vector .c-man.lock .vi-lock,body.ve-vector .so-tab .vi-lock,body.ve-vector .so-con-khoa .vi-lock,body.ve-vector .so-khoa-ic .vi-lock{color:var(--g-vecChuMo)}
+body.ve-vector .vi-lock .vi2{opacity:1}
+/* ô icon màu của nút chữ (Sổ lệnh): icon trắng trên ô cyan */
+body.ve-vector .d-so>span[data-i],body.ve-vector .c-so>span[data-i]{color:var(--g-vecThe)}
+/* hình thay huy hiệu khi gói chưa có hình (dấu +), hình hộp ở mẹo chơi */
+body.ve-vector .g-mat .vi-plus,body.ve-vector .c-bia-hinh .vi-plus,body.ve-vector .mk-hinh .vi-plus{color:var(--g-vecBrand)}
+body.ve-vector .gt-hinh .vi-box,body.ve-vector .gt-hh .vi-box{color:var(--g-vecHoPhach)}
+/* dấu đã biết ở Sổ lệnh, dấu chọn ở thẻ Lắp robot: xanh lá; mũi tên cặp lệnh ngược: chữ mờ; "không gắn": chữ mờ */
+body.ve-vector .so-ok .vi-check,body.ve-vector .lr-tick .vi-check{color:var(--g-vecLa)}
+body.ve-vector .so-cap .vi{color:var(--g-vecChuMo)}
+body.ve-vector .lr-the-ic .vi-cross{color:var(--g-vecChuMo)}
