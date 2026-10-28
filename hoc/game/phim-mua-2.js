@@ -121,7 +121,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var HH = goc.HuyHieu;
     if (PV()) {
       try { if (HH && HH.maVec && HH.maVec(ma) && HH.mk) { var v = HH.mk(ma, 'xong', 1); if (v && v.laVector) return v; } } catch (e) { /* rơi về icon */ }
-      return c.ico(ICO_HUY[ma] || 'star', 3, ma === 'hong-ngoai' || ma === 'do-nhiet' ? BM.do : BM.vang);
+      var chip = c.h('div'); chip.style.cssText = 'position:relative;width:36px;height:36px;border-radius:50%;box-sizing:border-box;display:flex;align-items:center;justify-content:center';
+      chip.style.background = BM.vecVo; chip.style.border = '3px solid ' + BM.vecVang; chip.style.boxShadow = '0 0 0 2px ' + BM.vecVien;
+      var ic = c.ico(ICO_HUY[ma] || 'star', 2, ma === 'hong-ngoai' || ma === 'do-nhiet' ? BM.do : BM.vang); ic.style.position = 'static'; chip.appendChild(ic);
+      return chip;                                                       // icon bộ phận trong khung tròn cỡ huy hiệu (36 px)
     }
     try { if (HH && HH.DS && HH.DS.indexOf(ma) >= 0) { var p = HH.mk ? HH.mk(ma, 'xong', 1) : Ve.mk(HH.ve(ma, 'xong'), 1); p.classList.add('pxi'); return p; } } catch (e) { /* rơi về sao */ }
     return c.sao(2);
@@ -507,7 +510,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           var dx = l[2].x - p.x, dy = l[2].y - p.y, dai = Math.abs(dx) + Math.abs(dy);
           banBong(k, c, 2, p.x + dx / dai * 30, p.y + dy / dai * 30, l[2].x, l[2].y, t + 470, 0.3);
           c.sau(t + 800, function () { s.nb[l[1]].dat(true); r.ve(YEN); c.keu('moKhoa'); });
-          nhip(k, c, String(i + 1), 24 + i * 22, 180, (t + 800) / 1000);
+          nhip(k, c, String(i + 1), 26 + i * 30, 182, (t + 800) / 1000);
         });
         c.sau(3500, function () { r.mat('vui'); c.keu('thang'); });
       }
