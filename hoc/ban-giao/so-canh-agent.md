@@ -56,3 +56,4 @@ GÓP Ý USER 28/10 00:1x (gửi SendMessage): mắt biểu cảm nét dày + to 
 GÓP Ý USER 28/10 (gửi SendMessage): cảm biến phải dính vỏ theo từng thân (không lơ lửng), máy kiểm hộp bao đế giao vỏ, lỗi giả dời ổ hông.
 - V4 (00:4x): robot vector ngoài sân nhỏ hơn pixel 17% → phóng ×1,2 (giao V5a). Hông cảm biến trên vỏ, không chờm bánh → giữ.
 | V5a · giao diện màn chơi phẳng diem10code (khung code, rìa, nút, khối lệnh, hộp, phông Google Sans) | opus | 28/10 00:53 | worktree agent-a2b177d2cde83df28, nhánh claude/ve-vector-giao-dien-a từ 0e1f4a8 | 7a8c0cc (01:15) | canh 01:17: vùng 1 nền tảng + phông (32daa0b), vùng 6+2 nút phẳng (7a8c0cc); đang làm tiếp | đang chạy; brief-V5a.md |
+| V5a-tiếp · làm tiếp V5a từ WIP 91b81ae (soát vùng 2 → 4 → 5 → 7–11 → máy kiểm → npm test) | opus | 28/10 (phiên mới) | worktree CŨ agent-a2b177d2cde83df28, nhánh claude/ve-vector-giao-dien-a | 91b81ae | — | đang chạy; brief-V5a-tiep.md |
