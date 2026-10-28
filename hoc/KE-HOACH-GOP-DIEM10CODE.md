@@ -157,6 +157,14 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (5) trời mưa mở đầu có lớp co-mua (không cần :has). (6) kiem-ve-vector mục 13i (drone, tay xoay, dây nối; ba lỗi giả đỏ). Sau gộp: kiem-ve-vector 97, kiem-huy-hieu-phim-vector 11,
   kiem-nut-mo-dau-phim-vector 11, kiem-giao-dien-vector-b 16, kiem-phim-goi 41, kiem-bang-mau 19, kiem-nut-de 62. npm test cả bộ ở 4d14382 (sau gộp phim mùa 2, gói 10, V7a): 87/87 bộ đạt. Chưa xem trình duyệt.
 
+- **28/10 V7b · Mặc định vector xong** (agent Claude fable, nhánh claude/ve-vector-mac-dinh, 12 commit, gộp cdd03a3). Mở game không tham số là vector; pixel còn qua `?ve=pixel` / Cài đặt (lựa chọn pixel được LƯU).
+  Gỡ hết 5 cầu tạm: C1 MutationObserver (ve.js svgVec: Ve.ico / sao / khoa / mui / hydrate trả svg thẳng), C2 noiVe, C3 móc Part._veMot + drawImage toàn cục (thanh-phan gọi VeIcon.hinhPartVec), C4 bọc Ve.mk / hydrate
+  (HuyHieu.mk), C5 PHAM_VI = #stage chỉ quét title. giao-dien-vector-b.css nối nguyên văn vào cuối choi-vector.css (giữ tiền tố), tệp cũ xoá. Nền tĩnh #e8e6f6 (theme-color, manifest, Artifact).
+  Gói Artifact có CSS vector + nhúng 6 woff2 Google Sans (bỏ Handjet / VT323), máy kiểm mới `kiem-dong-goi-artifact.mjs` (14, lỗi giả đỏ). R1 luôn màu đội ở vector (sonHieuLuc bỏ sơn đã lưu);
+  "Biểu cảm mắt" có tác dụng ở vector. Huy hiệu vector tong-hop-2, nha-may-chay (CHO_V7B rỗng); phim gói 10 bay đủ 10 huy hiệu. Icon app 192 / 512 / maskable vẽ lại theo vector.
+  Agent chạy: kiem-ve-vector 99, kiem-huy-hieu-phim-vector 11, kiem-nut-mo-dau-phim-vector 12, kiem-giao-dien-vector-b 16, kiem-phim-goi 41, kiem-bang-mau 19, kiem-lap-rap 125, kiem-khay 184, kiem-dong-goi-artifact 14.
+  Người giao quyết: brief sai chỗ "360 px khung phim tràn 12 px" (không tái hiện: bỏ); Artifact bỏ phông pixel (chấp nhận); trum 24 × 24 (phim-vector.js RIENG còn 26: V7c1 sửa).
+
 ## 2b. Linh vật Sola / Luna bản pixel
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
