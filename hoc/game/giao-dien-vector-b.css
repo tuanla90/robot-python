@@ -3,7 +3,7 @@
    Nối tiếp ngôn ngữ của choi-vector.css (gói V5a, màn chơi): cùng biến (--r-sm / --r-md / --r-lg, --elev-1..3, --vc), cùng vai vec* của bang-mau.js,
    cùng phông Google Sans Flex / Code. Nạp SAU choi-vector.css (choi.html); mọi bộ chọn bắt đầu bằng `body.ve-vector`, pixel giữ choi.css y nguyên.
    Không vân gỗ (--wood*), không bảng phấn (--chalk), không viền vát nhiều lớp, không phông Handjet / VT323, không steps(): chuyển động ease mượt,
-   prefers-reduced-motion đã được choi-vector.css (mục 7) cắt cho mọi thứ trong #stage trừ phim (.md).
+   prefers-reduced-motion đã được choi-vector.css (mục 7) cắt cho mọi thứ trong #stage, kể cả phim (.md, gói V6c).
    Thứ tự: 1 màn đầu · 2 chọn gói, lưới màn · 3 Lắp robot · 4 Sổ lệnh · 5 hộp Bộ phận mới / mở khoá, mẹo chơi · 6 màn xong · 7 khung phim · 8 icon vector.
    ========================================================================== */
 
@@ -202,8 +202,8 @@ body.ve-vector .so-bp-khe{font:700 10.5px/1 var(--px);letter-spacing:.6px;color:
 body.ve-vector .so-bp-ten{font:700 15px/1.1 var(--px);color:var(--g-vecChu)}
 
 /* ============================================================ 7. KHUNG PHIM (mo-dau.js phim mở đầu, phim-goi.js phim gói: .md / .md.pg)
-   CHỈ KHUNG: nền lớp phim, viền ô cảnh, lời thoại, chấm trang, nút Bỏ qua / Tiếp. NỘI DUNG trong ô cảnh (.md-khung: nền bảng, xe, đường, mưa, chữ .md-ram /
-   .md-hoi, thẻ .pg-ten…) là việc của gói V6, để nguyên (kể cả --ink / --cream pixel mà choi-vector.css đặt cho .md). */
+   KHUNG: nền lớp phim, viền ô cảnh, lời thoại, chấm trang, nút Bỏ qua / Tiếp. NỘI DUNG trong ô cảnh (nền, xe, đường, mưa, chữ .md-ram / .md-hoi, thẻ .pg-ten…):
+   mục 10 (gói V6c). */
 body.ve-vector .md{gap:16px;background-color:var(--g-vecNen);background-image:none}
 body.ve-vector .md::before{display:none}
 body.ve-vector .md-khung{border-radius:var(--r-md);box-shadow:0 0 0 1.5px var(--g-vecKe),var(--elev-3)}
@@ -280,3 +280,27 @@ body.ve-vector .md-di{animation-timing-function:cubic-bezier(.45,0,.55,1)}
 body.ve-vector .md-mat{animation-timing-function:cubic-bezier(.3,0,.6,1)}
 body.ve-vector .md-pop{animation-timing-function:cubic-bezier(.34,1.56,.64,1)}
 body.ve-vector .md-pop.md-sang{animation-timing-function:cubic-bezier(.34,1.56,.64,1),ease-in-out}
+/* --- phim gói (.pg-*: phim-goi.js + phim-mua-1.js): ô đích, tia cảm biến, vệt bánh, nắp hộp, cửa kho, thẻ tên R1 / R2, trời / đồi; hoạt cảnh mượt */
+body.ve-vector .pg-dich{border:2.5px dashed var(--g-vecDich);border-radius:8px;background:rgba(var(--g-vecDichRgb),.1);box-shadow:none;animation:vec-pg-dich 1.2s ease-in-out infinite alternate}
+@keyframes vec-pg-dich{from{box-shadow:0 0 0 0 rgba(var(--g-vecDichRgb),0)}to{box-shadow:0 0 0 4px rgba(var(--g-vecDichRgb),.25)}}
+body.ve-vector .pg-tia{height:6px;border-radius:3px;background:repeating-linear-gradient(90deg,var(--g-vecDen) 0 8px,transparent 8px 13px);opacity:.9;animation:pg-tia .9s ease-in-out infinite}
+body.ve-vector .pg-tia.doc{width:6px;height:auto;background:repeating-linear-gradient(180deg,var(--g-vecDen) 0 8px,transparent 8px 13px)}
+body.ve-vector .pg-tia.pg-do{animation:pg-tia .9s ease-in-out infinite,vec-pg-do .01s linear var(--t,0s) both}
+body.ve-vector .pg-tia.doc.pg-do{animation:pg-tia .9s ease-in-out infinite,vec-pg-do-doc .01s linear var(--t,0s) both}
+@keyframes vec-pg-do{from{background-image:repeating-linear-gradient(90deg,var(--g-vecDen) 0 8px,transparent 8px 13px)}to{background-image:repeating-linear-gradient(90deg,var(--g-vecDo) 0 8px,transparent 8px 13px)}}
+@keyframes vec-pg-do-doc{from{background-image:repeating-linear-gradient(180deg,var(--g-vecDen) 0 8px,transparent 8px 13px)}to{background-image:repeating-linear-gradient(180deg,var(--g-vecDo) 0 8px,transparent 8px 13px)}}
+body.ve-vector .pg-vet{height:5px;border-radius:3px;background:repeating-linear-gradient(90deg,var(--g-vecKeDam) 0 9px,transparent 9px 15px);opacity:1;animation-timing-function:ease-out}
+body.ve-vector .pg-nap{border-radius:4px;background:var(--g-vecHoPhach);box-shadow:0 0 0 1.5px var(--g-vecVien)}
+body.ve-vector .pg-cua-lon{border-radius:6px 6px 0 0;background:repeating-linear-gradient(180deg,var(--g-vecTuong) 0 17px,var(--g-vecTuongTrongVien) 17px 19px);box-shadow:inset 0 0 0 2px var(--g-vecTuongVien),inset 5px 0 0 var(--g-vecDen);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+body.ve-vector .pg-anh{background:linear-gradient(90deg,rgba(var(--g-vecDichRgb),0) 0,var(--g-vecVangSang) 50%,rgba(var(--g-vecDichRgb),0) 100%);animation-timing-function:ease-out}
+body.ve-vector .pg-ten{height:20px;padding:0 9px;border-radius:var(--r-full);font:700 12px/1 var(--px);color:var(--g-vecChu);background:var(--g-vecDoiR1);box-shadow:none}
+body.ve-vector .pg-ten.pg-ten-r2{color:var(--g-vecChu);background:var(--g-vecDoiR2)}
+body.ve-vector .pg-troi{background:linear-gradient(180deg,var(--g-vecTroiNhat) 0,var(--g-vecNen) 75%)}
+body.ve-vector .pg-doi{background:linear-gradient(180deg,var(--g-vecXanhLaSang) 0,var(--g-vecXanhLa) 45%);box-shadow:inset 0 3px 0 rgba(var(--g-vecMatSangRgb),.6),0 0 0 1.5px var(--g-vecLa)}
+body.ve-vector .pg-dat{background:var(--g-vecXanhLaSang)}
+body.ve-vector .pg-truot{transition-timing-function:cubic-bezier(.45,0,.55,1)}
+body.ve-vector .pg-nhac{animation-timing-function:ease-out}
+body.ve-vector .pg-lan{animation-timing-function:cubic-bezier(.3,0,.6,1)}
+body.ve-vector .pg-mo-cua{animation-timing-function:cubic-bezier(.45,0,.55,1)}
+body.ve-vector .pg-sao-quay{animation-timing-function:linear}
+body.ve-vector .pg-sang,body.ve-vector .pg-nhay,body.ve-vector .pg-bay,body.ve-vector .pg-lac-xe{animation-timing-function:ease-in-out}
