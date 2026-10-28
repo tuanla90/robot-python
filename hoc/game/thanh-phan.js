@@ -731,7 +731,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (tuyChon.nutXoaHet && tuyChon.thutLe) {
       boThutEl = h('span', 'thut');
       [['thutra', 'thut-ra', 'choi.thutRa', -1], ['thutvao', 'thut-vao', 'choi.thutVao', 1]].forEach(function (c) {
-        var b = h('button', 'bt g-pu thut-nut'); b.setAttribute('data-nut', c[1]); b.setAttribute('aria-label', t(c[2]));
+        var b = h('button', 'bt g-pu thut-nut'); b.setAttribute('data-nut', c[1]); b.setAttribute('aria-label', t(c[2])); b.title = t(c[2]);
         b.appendChild(Ve.ico(c[0], 2, { line: BM.timToi2 }));
         b.addEventListener('click', function (ev) { ev.stopPropagation(); doiBac(c[3]); });
         boThutEl.appendChild(b);
@@ -1752,7 +1752,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (host.parentNode && host.parentNode.appendChild) { ghimEl = h('div', 'pal pal-ghim'); ghimEl.style.display = 'none'; if (host.parentNode.insertBefore) host.parentNode.insertBefore(ghimEl, host.nextSibling); else host.parentNode.appendChild(ghimEl); }
     this.ghim = ghimEl;
     function nutTam(lopNut, nhanChu, dataNut, fn) {
-      var b = h('button', 'bt g-wd cuon-b ' + lopNut); b.setAttribute('data-nut', dataNut); b.setAttribute('aria-label', t(nhanChu));
+      var b = h('button', 'bt g-wd cuon-b ' + lopNut); b.setAttribute('data-nut', dataNut); b.setAttribute('aria-label', t(nhanChu)); b.title = t(nhanChu);
       b.appendChild(h('i', 'tam'));
       b.addEventListener('click', function (ev) { ev.stopPropagation(); fn(); });
       return b;
@@ -1954,7 +1954,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       d.appendChild(sp);
       if (loai !== 'goc') {
         var khoaH = !!khoaSet[loai + ':' + ten];                                     // hàm bị khóa ở màn này (hàm cốt truyện không cần sửa ở đây, hàm của màn khóa): ổ khóa thay bút chì, mở ở Xưởng chỉ xem
-        var e = h('span', 'ed' + (khoaH ? ' khoa' : '')); e.setAttribute('role', 'button'); e.setAttribute('aria-label', t(khoaH ? 'choi.hamKhoaNhan' : 'choi.suaHam', { ten: ten }));
+        var e = h('span', 'ed' + (khoaH ? ' khoa' : '')); e.setAttribute('role', 'button'); e.setAttribute('aria-label', t(khoaH ? 'choi.hamKhoaNhan' : 'choi.suaHam', { ten: ten })); e.title = e.getAttribute('aria-label');
         e.setAttribute('data-sua', ten);
         if (khoaH) { e.setAttribute('data-khoa', '1'); d.className += ' khoa'; }
         e.appendChild(khoaH ? Ve.khoa(2, true) : Ve.ico('edit', 2, { line: BM.bangV2 }));
@@ -2561,14 +2561,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (o.phu) nd.appendChild(hv('div', 'bg-phu', o.phu));      // dòng phụ (chữ nghiêng, nhạt hơn) cùng co cỡ với thân
     if (o.ma) b.setAttribute('data-ma', o.ma); else b.removeAttribute('data-ma');
     // nút X đỏ ở góc trên phải: cách DUY NHẤT để ẩn bong bóng bằng cách chạm vào bong bóng (chạm thân thì không ẩn)
-    var nx = h('button', 'bt g-rd bg-x'); nx.setAttribute('data-nut', 'bong-x'); nx.setAttribute('aria-label', t('choi.anBong'));
+    var nx = h('button', 'bt g-rd bg-x'); nx.setAttribute('data-nut', 'bong-x'); nx.setAttribute('aria-label', t('choi.anBong')); nx.title = t('choi.anBong');
     nx.appendChild(Ve.ico('close', 2, { line: BM.doToi }));
     nx.addEventListener('click', function (ev) { ev.stopPropagation(); bongAn(b); });
     b.appendChild(nx);
     var ch = h('div', 'bg-ch');
     if (o.pager) {
-      var tr = h('button', 'bt g-wd pg', '‹'); tr.setAttribute('data-nut', 'cd-truoc'); tr.setAttribute('aria-label', t('choi.truoc'));
-      var sa = h('button', 'bt g-wd pg', '›'); sa.setAttribute('data-nut', 'cd-sau'); sa.setAttribute('aria-label', t('choi.tiep'));
+      var tr = h('button', 'bt g-wd pg', '‹'); tr.setAttribute('data-nut', 'cd-truoc'); tr.setAttribute('aria-label', t('choi.truoc')); tr.title = t('choi.truoc');
+      var sa = h('button', 'bt g-wd pg', '›'); sa.setAttribute('data-nut', 'cd-sau'); sa.setAttribute('aria-label', t('choi.tiep')); sa.title = t('choi.tiep');
       tr.addEventListener('click', function (ev) { ev.stopPropagation(); o.pager.truoc(); });
       sa.addEventListener('click', function (ev) { ev.stopPropagation(); o.pager.sau(); });
       ch.appendChild(tr); ch.appendChild(h('span', 'so', t('choi.chanDoanSo', { i: o.pager.i, n: o.pager.n }))); ch.appendChild(sa);
