@@ -179,7 +179,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function mayNem(g, c, cx, cy, canh, nho) {
     var cfg = { than: 'hai-banh', tay: 'nem' };
     c.robot(cfg, st(null, { dangNem: true, vung: 1 }), 1, cx, cy, canh);
-    var pts = nho ? [[48, 46], [56, 41], [64, 42], [71, 48]] : [[50, 40], [58, 32], [67, 30], [76, 34], [82, 42]];
+    var pts = nho ? [[46, 56], [53, 51], [60, 51], [66, 55]] : [[50, 40], [58, 32], [67, 30], [76, 34], [82, 42]];
     pts.forEach(function (q) { H.tron(g, q[0], q[1], 2.6); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.4); });
     var e = pts[pts.length - 1]; c.vat('thung-go', {}, e[0] + 1, e[1] + 14, nho ? 11 : 14);
   }
@@ -244,10 +244,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.vat('thung-nang', {}, cx + canh * 0.6, cy, canh * 0.62);
     c.robot({ than: 'xich' }, st({ banh: { trai: 1, phai: 1 } }), 1, cx, cy, canh);
   }
-  dk('day-thung', function (g, c) { dayThung(g, c, 30, 58, 48); c.muiTen(52, 26, 76, 26, BM.vecVang, 5); });
+  dk('day-thung', function (g, c) { dayThung(g, c, 36, 58, 42); c.muiTen(52, 30, 76, 30, BM.vecVang, 5); });
   dk('che-day-thung', che(function (g, c) { c.vat('thung-nang', {}, 40, 62, 30); c.muiTen(22, 36, 44, 36, BM.vecVang, 4.5); }));
   function nutNong(g, c, cx, cy, canh) {
-    c.o('nut-ban', { bat: true, loe: true }, cx, cy, canh);
+    c.o('nut-ban', { loe: true }, cx, cy, canh);
     [-10, 0, 10].forEach(function (dx) { H.duong(g, 'M' + (cx + dx) + ' ' + (cy - canh * 0.36) + ' c-4 -5 4 -8 0 -14'); H.vien(g, BM.vecDo, 2.6); });
   }
   dk('do-nhiet', function (g, c) { nutNong(g, c, 50, 58, 50); });
@@ -293,16 +293,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('ban-xoay', function (g, c) { c.o('ban-xoay', { chieu: 1, pha: 0 }, 50, 50, 60); });
   dk('che-ban-xoay', che(function (g, c) { c.o('cong', { so: '1', pha: 0 }, 42, 60, 44); }));
   function dua(g, c, x0) {
-    c.o('co', { pha: 0.25 }, 80, 42, 26);
-    c.robot({ than: 'hai-banh', son: 'do' }, st({ banh: { trai: 1, phai: 1 } }), 1, x0, 64, 36);
-    c.robot({ than: 'hai-banh', son: '' }, st({ banh: { trai: 1, phai: 1 } }), 1, x0 + 26, 42, 36);
+    c.o('co', { pha: 0.25 }, 76, 36, 24);
+    c.robot({ than: 'hai-banh', son: 'do' }, st({ banh: { trai: 1, phai: 1 } }), 1, x0, 62, 32);
+    c.robot({ than: 'hai-banh', son: '' }, st({ banh: { trai: 1, phai: 1 } }), 1, x0 + 24, 46, 32);
   }
-  dk('dua-robot', function (g, c) { dua(g, c, 26); });
-  dk('che-dua-robot', che(function (g, c) { dua(g, c, 22); }));
+  dk('dua-robot', function (g, c) { dua(g, c, 32); });
+  dk('che-dua-robot', che(function (g, c) { dua(g, c, 30); }));
   dk('doi-thu-manh', function (g, c) {
-    c.o('co', { pha: 0.25 }, 82, 40, 24);
-    c.robot({ than: 'xich', son: 'do' }, st(), 1, 30, 62, 46);
-    c.robot({ than: 'hai-banh', son: '' }, st(), 1, 60, 40, 32);
+    c.o('co', { pha: 0.25 }, 78, 36, 22);
+    c.robot({ than: 'xich', son: 'do' }, st(), 1, 36, 62, 40);
+    c.robot({ than: 'hai-banh', son: '' }, st(), 1, 60, 44, 28);
   });
 
   V.HUY_HIEU = {
