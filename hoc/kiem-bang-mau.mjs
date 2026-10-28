@@ -69,7 +69,7 @@ const CHEN = {   // phần gói A1 chèn thêm (bỏ đi khi so với bản nề
   'part/xem-part.html': ['<script src="../bang-mau.js"></script>', ALIAS.trang]
 };
 // mã màu được phép gõ thẳng: tệp tĩnh không chạy JS; giá trị phải bằng đúng vai ghi kèm
-const VAI_NEN_TRANG = 'goToiV11';
+const VAI_NEN_TRANG = 'vecNenSau';   // V7b (28/10): mặc định vector → nền tĩnh là nền trang vector (chàm nhạt), không còn nâu gỗ goToiV11
 const NGOAI_LE = [
   { tep: 'hoc/game/choi.html', re: /<meta name="theme-color" content="(#[0-9a-f]+)">/, vai: VAI_NEN_TRANG, ly: 'thẻ meta theme-color (thanh trình duyệt) đọc trước khi chạy JS' },
   { tep: 'hoc/game/manifest.webmanifest', re: /"background_color": "(#[0-9a-f]+)"/, vai: VAI_NEN_TRANG, ly: 'manifest PWA là JSON tĩnh' },

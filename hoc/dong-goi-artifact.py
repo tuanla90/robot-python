@@ -53,7 +53,7 @@ trang = '''<title>Robot Chấn Hưng</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400..800&family=VT323&display=swap" rel="stylesheet">
-<style>html,body{height:100%%;background:#2a1d14}</style>
+<style>html,body{height:100%%;background:#e8e6f6}</style>
 %s
 %s
 %s
