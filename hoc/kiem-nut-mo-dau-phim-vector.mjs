@@ -23,6 +23,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const NEN = '4ac900f';                                 // nhánh V6c tạo từ đây: mo-dau.js / phim-vector.js trước V6c
+const NEN_VEC = 'c830c12';                             // V7c1 (28/10): nền VECTOR = nhánh chính sau khi gộp V7b; C3-v so 6 khung mở đầu vector với nền này (phanh thay C3 khi gỡ pixel)
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
 const goc = path.resolve(day, '..');
@@ -34,7 +35,8 @@ function kiem(ten, ok, chiTiet) {
   if (ok) { dat++; console.log('  ✓ ' + ten); } else { hong++; console.log('  ✗ HỎNG ' + ten + (chiTiet ? '\n      ' + String(chiTiet).slice(0, 1200) : '')); }
 }
 const doc = (f) => fs.readFileSync(path.join(GAME, f), 'utf8');
-const docNen = (f) => { try { return execFileSync('git', ['-C', goc, 'show', NEN + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { return null; } };
+const docTai = (sha) => (f) => { try { return execFileSync('git', ['-C', goc, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { return null; } };
+const docNen = docTai(NEN), docNenVec = docTai(NEN_VEC);
 
 /* ---------------------------------------------------------------- lỗi giả (đổi nguồn trong bộ nhớ) */
 const SUA = {};
@@ -96,8 +98,10 @@ function taoDom() {
   }
   return El;
 }
-const DS_TEP = [...doc('choi.html').matchAll(/<script src="([\w./-]+\.js)"/g)].map((m) => m[1])
+const dsTep = (html) => [...html.matchAll(/<script src="([\w./-]+\.js)"/g)].map((m) => m[1])
   .filter((f) => /^(bang-mau|chu|ve|ve-vector[\w-]*|huy-hieu-vector|ve-robot|huy-hieu|mo-dau|phim-vector|phim-goi|phim-mua-\d+|part\/[\w-]+)\.js$/.test(f));
+const DS_TEP = dsTep(doc('choi.html'));
+/** nenMoDau: true = mo-dau.js của NEN (pixel); 'vec' = MỌI tệp của NEN_VEC (nền vector, V7c1). */
 function napGame(cheDo, nenMoDau) {
   const El = taoDom(), stage = new El('div'), body = new El('body'), hen = [], canhBao = [];
   const ctx = {
@@ -111,13 +115,14 @@ function napGame(cheDo, nenMoDau) {
   ctx.window = ctx; ctx.globalThis = ctx;
   vm.createContext(ctx);
   vm.runInContext('var TP = { h: function (tag, cls, chu) { var e = document.createElement(tag); if (cls) e.className = cls; if (chu !== undefined && chu !== null) e.textContent = chu; return e; } };', ctx);
-  for (const f of DS_TEP) {
+  for (const f of (nenMoDau === 'vec' ? dsTep(docNenVec('choi.html')) : DS_TEP)) {
+    if (nenMoDau === 'vec') { vm.runInContext(docNenVec(f), ctx, { filename: 'nen-vec:' + f }); continue; }
     if (nenMoDau && f === 'mo-dau.js') { vm.runInContext(docNen(f), ctx, { filename: 'nen:' + f }); continue; }
     vm.runInContext(nguon(f), ctx, { filename: f });
   }
   return { ctx, El, stage, hen, canhBao };
 }
-const PX = napGame('pixel'), VE = napGame('vector'), NEN_G = docNen('mo-dau.js') ? napGame('pixel', true) : null;
+const PX = napGame('pixel'), VE = napGame('vector'), NEN_G = docNen('mo-dau.js') ? napGame('pixel', true) : null, NEN_V = docNenVec('mo-dau.js') ? napGame('vector', 'vec') : null;
 
 /* ================================================================= A. một bộ icon */
 console.log('== A. Một bộ icon (ve-vector-icon.js) ==');
@@ -269,6 +274,22 @@ const SO = PX.ctx.MoDau.SO_KHUNG;
       if (a !== b) { let i = 0; while (i < a.length && a[i] === b[i]) i++; khac.push('khung ' + n + ' lệch ở ký tự ' + i + ': …' + a.slice(Math.max(0, i - 60), i + 60) + ' / …' + b.slice(Math.max(0, i - 60), i + 60)); }
     }
     kiem('(C3) pixel y nguyên: cây DOM + lệnh vẽ của ' + SO + ' khung mở đầu (sau mọi hẹn giờ) bản mới = mo-dau.js bản ' + NEN, !khac.length, khac.slice(0, 2).join('\n      '));
+  }
+}
+{
+  if (!NEN_V) kiem('(C3-v) cần git và commit nền vector ' + NEN_VEC, false, 'git show lỗi');
+  else {
+    const ma2 = new Map(); let so = 0;
+    const tuan = (cv, sau) => { if (!ma2.has(cv)) ma2.set(cv, 'C' + (++so)); if (sau > 3) return ma2.get(cv); return cv._w + 'x' + cv._h + '[' + (cv._data ? cv._data.length + ':' + cv._data.slice(0, 80) : '') + '|' + J(cv.__ctx.lenh).replace(/cv#\d+/g, 'cv') + '|' + cv.nguon.map((x) => tuan(x, sau + 1)).join(';') + ']'; };
+    const boNhan = (st) => { const o = Object.assign({}, st); delete o.setProperty; delete o.removeProperty; return o; };
+    const cay = (e) => (e.__cv ? 'canvas{' + J(boNhan(e.style)) + tuan(e, 0) + '}' : e.tag + '.' + e.className + J(boNhan(e.style)) + J(e.attrs) + (e._text || '') + '(' + e.children.map(cay).join(',') + ')');
+    const khac = [], VE2 = napGame('vector'), SO_NEN = NEN_V.ctx.MoDau.SO_KHUNG;
+    for (let n = 1; n <= SO_NEN; n++) {
+      let a; try { ma2.clear(); so = 0; a = cay(chieuMoDau(VE2, n)); } catch (e) { khac.push('khung ' + n + ' mới ném ' + e.message); continue; }
+      ma2.clear(); so = 0; const b = cay(chieuMoDau(NEN_V, n));
+      if (a !== b) { let i = 0; while (i < a.length && a[i] === b[i]) i++; khac.push('khung ' + n + ' lệch ở ký tự ' + i + ': …' + a.slice(Math.max(0, i - 60), i + 60) + ' / …' + b.slice(Math.max(0, i - 60), i + 60)); }
+    }
+    kiem('(C3-v) V7c1 VECTOR y nguyên: cây DOM + lệnh vẽ của ' + SO_NEN + ' khung mở đầu (sau mọi hẹn giờ) bản mới = bản nền vector ' + NEN_VEC + '; cùng số khung', !khac.length && SO === SO_NEN, khac.slice(0, 2).join('\n      ') + (SO !== SO_NEN ? ' | số khung ' + SO + ' ≠ ' + SO_NEN : ''));
   }
 }
 

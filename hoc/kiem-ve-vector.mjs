@@ -589,9 +589,11 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
   const NEN_V4 = 'a962f7b';
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
+  const NEN_VEC = 'c830c12';                                                           // V7c1 (28/10): nền VECTOR = nhánh chính sau khi gộp V7b (mặc định vector, hết cầu tạm); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
-  const docNen = (f) => { if (_nen[f] === undefined) { try { _nen[f] = execFileSync('git', ['-C', GOC, 'show', NEN_V4 + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[f] = null; coGit = false; } } return _nen[f]; };
+  const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };
+  const docNen = docTai(NEN_V4), docNenVec = docTai(NEN_VEC);
 
   /** Ngữ cảnh trình duyệt giả chạy bang-mau / ve / part / ve-vector* / ve-robot / san-ve theo đúng thứ tự choi.html. */
   function taoKhung(docTep, cheDo, dpr) {
@@ -653,7 +655,7 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
     vm.createContext(ctx);
     const ds = [...docTep('choi.html').matchAll(/<script src="([\w./-]+\.js)"/g)].map((m) => m[1]).filter((f) => /^(bang-mau|chu|ve|ve-vector[\w-]*|ve-robot|san-ve|part\/[\w-]+)\.js$/.test(f));
     for (const f of ds) vm.runInContext(docTep(f), ctx, { filename: f });
-    if (cheDo === 'vector') ctx.VeVector.datCheDo('vector');
+    if (cheDo === 'vector' && ctx.VeVector.datCheDo) ctx.VeVector.datCheDo('vector');
     async function chayToi(p, field, ghi) {
       let xong = false; p.then(() => { xong = true; });
       let vong = 0, khungSau = dongHo;
@@ -739,6 +741,24 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
       if (i < Math.max(A.length, B.length)) { const a = (A[i] || '').split('\n'), b = (B[i] || '').split('\n'); let j = 0; while (a[j] === b[j]) j++; khac.push(c.ten + ' khung ' + i + ': nền ' + a[j] + ' / mới ' + b[j]); }
     }
     kiem('(13a) CHẾ ĐỘ PIXEL y nguyên: ' + CA.length + ' lần phát lại (lời giải + lời sai, ' + MAN_V4.length + ' màn kể cả màn nhiều robot), ' + soKhung + ' khung — canvas sân + lớp phủ robot của bản mới ra đúng từng lệnh như nền ' + NEN_V4, khac.length === 0 && soKhung > 2000, khac.slice(0, 3).join('\n      '));
+  }
+
+  /* a-v (V7c1). VECTOR y nguyên so với nền NEN_VEC: cùng harness, cùng CA, cùng hạt; canvas sân + lớp phủ robot ra đúng từng lệnh. Đây là phanh thay cho 13a khi mã pixel bị gỡ. */
+  if (!coGit || docNenVec('san-ve.js') === null) kiem('(13a-v) cần git và commit nền vector ' + NEN_VEC, false, 'git show lỗi');
+  else {
+    const KA = taoKhung(docNenVec, 'vector', 2), KB = taoKhung(docMoi, 'vector', 2);
+    if (LOI_GIA) { const hu = KB.ctx.VeVector.HU, cu = hu.hat; hu.hat = function (g) { g.save(); g.restore(); return cu.apply(this, arguments); }; console.log('(và lỗi giả V7c1: HU.hat vector thêm save / restore, mục 13a-v phải đỏ)'); }
+    const khac = []; let soKhung = 0;
+    for (const c of CA) {
+      const A = [], B = [];
+      KA.datHat(777); KB.datHat(777); KA.datGio(1000); KB.datGio(1000);
+      await phat(KA, c.m, c.v, (a, b) => A.push(a.join('\n') + '\n||\n' + b.join('\n')));
+      await phat(KB, c.m, c.v, (a, b) => B.push(a.join('\n') + '\n||\n' + b.join('\n')));
+      soKhung += A.length;
+      let i = 0; while (i < Math.max(A.length, B.length) && A[i] === B[i]) i++;
+      if (i < Math.max(A.length, B.length)) { const a = (A[i] || '').split('\n'), b = (B[i] || '').split('\n'); let j = 0; while (a[j] === b[j]) j++; khac.push(c.ten + ' khung ' + i + ': nền ' + a[j] + ' / mới ' + b[j]); }
+    }
+    kiem('(13a-v) CHẾ ĐỘ VECTOR y nguyên: ' + CA.length + ' lần phát lại (lời giải + lời sai, ' + MAN_V4.length + ' màn kể cả màn nhiều robot), ' + soKhung + ' khung — canvas sân + lớp phủ robot của bản mới ra đúng từng lệnh như nền vector ' + NEN_VEC, khac.length === 0 && soKhung > 2000, khac.slice(0, 3).join('\n      '));
   }
 
   /* b. vector: không fillRect / strokeRect; c. tia từ ổ */
