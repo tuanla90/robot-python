@@ -193,6 +193,10 @@
   var R1_C4 = nhieu(CHO(4), FOR(2, nhieu(['go_to_wall()'], WHILE('distance() == 0', ['wait()']))), ['go_to_wall()']);
   var R2_C4 = FOR(2, ['wait_mate()', 'fire_back("fast")', 'turn_right()', 'forward(3)', 'turn_left()']);
 
+  // che-doi-mua-2.5: sân của doi-mua-2.4 (ba khoang có cửa sổ), R1 đứng ở cửa sổ 2 và 3 mỗi chỗ năm nhịp. pass_mate() của em = wait_mate() rồi wait_clear().
+  var R1_C5 = nhieu(['forward(6)'], CHO(5), ['forward(3)'], CHO(5), ['forward(2)']);
+  var R2_C5 = FOR(3, ['pass_mate()', 'fire("charge")', 'turn_right()', 'forward(3)', 'turn_left()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -485,6 +489,25 @@
         { moTa: 'Gọi wait_clear(): khoang trống không nóng nên bắn ngay', hamEm: [H('wait_mate', [], ['wait_clear()'])], phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['wait_mate() ngược với wait_clear(): chờ cho tới KHI thấy bạn.', 'Thân wait_mate(): while not warm(): wait().']
+    }),
+
+    man({
+      chuong: 'che-doi-mua-2', so: 5, ten: 'Hàm pass_mate()', yMoi: 'hàm gọi HAI hàm của em nối nhau: wait_mate() rồi wait_clear()',
+      hamCuaEmCan: ['wait_mate', 'wait_clear', 'forward', 'move', 'turn_right', 'turn_left', 'fire'], taoHam: ['pass_mate'],
+      deBai: 'Lại là ba khoang có cửa sổ: bắn trước khi R1 qua cửa vào thì cửa đóng trước mặt R1, bắn khi R1 còn đứng ở cửa sổ thì bóng trúng R1. ' +
+        'Em đã có wait_mate() và wait_clear(). Chế pass_mate(): gọi lần lượt hai hàm đó. Chương trình hai xe đã khóa.',
+      veMaMau: 'Hai chương trình bị khóa. Tạo pass_mate() hai dòng, mỗi dòng gọi một hàm của em.',
+      san: SAN_4, noi: NOI_4, bd: [{ x: 1, y: 1, huong: 1 }, { x: 4, y: 3, huong: 0 }], co: [[o(12, 1)], [o(12, 3)]],
+      chinh: [R1_C5, R2_C5],
+      hamEm: [H('pass_mate', [], ['wait_mate()', 'wait_clear()'])],
+      sao: { o: 30, nhip: 24 },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('pass_mate', [], ['# chờ bạn tới rồi chờ bạn đi', 'wait_mate()', 'wait_clear()'])] },
+      congThucKhac: [{ moTa: 'Viết thẳng hai vòng while thay cho gọi hai hàm', hamEm: [H('pass_mate', [], CHO_QUA)] }],
+      loiSai: [
+        { moTa: 'Gọi ngược thứ tự: wait_clear() trước thì không chờ gì, rồi wait_mate() bắn đúng lúc bạn ở cửa sổ', hamEm: [H('pass_mate', [], ['wait_clear()', 'wait_mate()'])], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Chỉ gọi wait_mate(): bắn lúc R1 còn ở cửa sổ', hamEm: [H('pass_mate', [], ['wait_mate()'])], phaiCoMa: ['ban-bi-chan'] }
+      ],
+      goiY: ['Thứ tự quan trọng: chờ bạn tới trước, rồi mới chờ bạn đi.', 'Thân pass_mate(): wait_mate() rồi wait_clear().']
     })
   ];
 
