@@ -178,6 +178,17 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   nạp màn TRƯỚC khi cắm lỗi giả. Sổ lệnh: mô tả distance / warm bỏ "—", kiem-che-xe chặn gạch dài / emoji (cb1f002, sửa dở của phiên cũ).
   → V7c2 (xoá mã pixel chết, theo bảng mục 3 báo cáo V7c1), rồi V7c3 (choi.css bỏ khai báo pixel, phông 12 → 6 @font-face, sw.js đổi tên bộ đệm, bảng màu dọn vai thừa).
 
+- **29/10 V7c2 · Xoá mã pixel chết xong** (agent Claude fable, nhánh claude/xoa-pixel, 8 commit d42965b … a8f8efc, ~70 phút, không cần nhắc; gộp 8780764). Xoá hoc/game/part/ (20 tệp) + 18 thẻ script,
+  san-ve.js 2942 → 2277 dòng (72 nhánh this.vec), ve-robot.js 340 → 170, huy-hieu.js 858 → 32 (lớp mỏng trên VeVector.HUY_HIEU), ve.js 883 → 85, phim / mở đầu / màn đầu / thanh-phan / ung-dung / xuong-ham bỏ vế pixel,
+  tools/ve-icon.py và hoc/chup-du-lieu-pixel.mjs xoá; tổng 55 tệp +653 / −3643. Máy kiểm thôi đọc part/ (kiem-tay-xoay, kiem-loi-mua-2, kiem-camera-drone nạp VeVector). PHANH CHỐNG TÁI PHÁT kiem-ve-vector mục 15 / 15b
+  (không part/, 8 mẫu cấm trong 54 tệp JS game: Part.*, this.vec, HINH['x'] = function, Painter, Ve.tiles / make*, pixelated, ve=pixel, phông Handjet / VT323), lỗi giả đỏ. Báo cáo: [ban-giao/bao-cao-V7c2.md](ban-giao/bao-cao-V7c2.md).
+  Người giao sau gộp: npm test 86/87, đỏ kiem-luc-ban (V7c1 sót: còn regex HINH['luc-ban'] trong huy-hieu.js) → sửa qua huy-hieu-ds.mjs (1a70bbf, 104 đạt, lỗi giả đỏ) → 87/87 (bớt một bộ vì part/kiem-part.mjs xoá).
+  Trình duyệt: Part undefined, 0 yêu cầu part/, 84 / 84 mã huy hiệu có hình vector, 0 canvas pixelated, chọn gói + lưới màn + màn 1.3 chạy và chấm đúng. Lỗi console "unknown error when fetching the script" là đăng ký
+  service worker trong ô trình duyệt của app (thử với tệp không tồn tại cũng ra đúng lỗi đó thay vì 404; sw.js trả 200, đủ 130 thẻ script có tệp): môi trường, không phải game.
+  Người giao trả lời câu hỏi của agent: (1) giữ fillStyle thừa + 3 chỗ đo chữ VT323 tới V7c3 (sau khi đổi nền phanh); (2) huy-hieu.js giữ tệp riêng; (3)–(5) hình tạm / chất lạ / số dự phòng vector: chấp nhận;
+  (6) 508 vai màu thừa: V7c3 xoá; (8) chỗ brief sai: đã ghi vào brief V7c3. Tự quyết của người giao (user 28/10 "bạn tự làm đi" cho chặng gỡ pixel): choi-vector.css GIỮ tiền tố body.ve-vector
+  (body luôn có lớp này; bỏ tiền tố đổi độ ưu tiên CSS, rủi ro hình đổi mà không được gì) — đảo lại được sau.
+
 ## 2b. Linh vật Sola / Luna bản pixel (CŨ: user chuyển hẳn sang vector 27/10, mục 2c; chân dung nếu làm thì vẽ vector)
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
