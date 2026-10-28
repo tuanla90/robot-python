@@ -189,6 +189,17 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (6) 508 vai màu thừa: V7c3 xoá; (8) chỗ brief sai: đã ghi vào brief V7c3. Tự quyết của người giao (user 28/10 "bạn tự làm đi" cho chặng gỡ pixel): choi-vector.css GIỮ tiền tố body.ve-vector
   (body luôn có lớp này; bỏ tiền tố đổi độ ưu tiên CSS, rủi ro hình đổi mà không được gì) — đảo lại được sau.
 
+- **29/10 V7c3 · CSS / phông / bảng màu / bộ đệm xong — CHẶNG GỠ PIXEL XONG** (agent Claude opus, nhánh claude/css-phong, 8 commit 9233a92 … fb65b06, ~100 phút, không cần nhắc; gộp c258019).
+  sw.js bộ đệm 'duong-hoc-v2' (activate xoá bộ đệm khác tên); choi.css bỏ 114 khai báo + 8 luật pixel (vân gỗ, bảng phấn, núm, pixelated, steps(), clip-path răng cưa, .deco); font.css 12 → 6 @font-face, xoá 6 woff2
+  Handjet / VT323 (60 588 byte); san-ve.js đo chữ bằng phông HU vector (PHONG_CHU / PHONG_SO); bang-mau.js xoá 500 vai (160 KB → 89 KB; 19 vai dùng động qua BM[tên] + 5 gốc giữ, kiem-bang-mau nay đếm cả chỗ dùng động).
+  MÁY ĐO KIỂU TÍNH mới `tools/do-kieu-tinh.mjs` (Chrome headless qua DevTools Protocol, 14 cảnh × 2 khổ, 10 658 phần tử, nền tools/nen-kieu-tinh.json; lỗi giả đổi một nút → 94 chỗ khác): 0 khác sau mỗi bước.
+  Khác biệt CỐ Ý duy nhất: bong chữ màu / viên pin đo bề ngang bằng đúng phông vẽ (mau.8 nhãn "blue" đổi bên ô), nền phanh 13a-v / A3-v / B5-v / C3-v đổi sang 6e04104 (commit riêng a6fcfb9).
+  Phanh mục 15c (CSS / phông / sw.js không quay lại pixel); agent sửa 3 lỗi giả đã mục (C3-v, 14c, giao-dien-vector-b c). Báo cáo: [ban-giao/bao-cao-V7c3.md](ban-giao/bao-cao-V7c3.md).
+  Người giao sau gộp: npm test 87/87; trình duyệt: document.fonts chỉ Google Sans Flex / Code, 0 luật CSS pixelated / Handjet / VT323.
+  Người giao trả lời: (1) câu Cài đặt → Thông tin "Chữ: Google Sans Flex, Google Sans Code (giấy phép SIL Open Font License)": chấp nhận (chữ cũ sai sau khi xoá phông); (2) nền máy đo 1,85 MB giữ trong tools/
+  (máy đo cần nó; ghi lại nền khi cố ý đổi giao diện). Việc nhỏ còn lại (không chặn): chú thích "rơi về pixel" trong bộ vẽ vector / phim (ve-vector.js, ve-vector-icon.js, huy-hieu-vector.js, phim-vector.js, phim-goi.js,
+  phim-mua-1 / 2, den-bo-phan.js), @keyframes pixel đã bị phủ tên trong choi.css; gộp choi.css + choi-vector.css: chưa làm (lợi ít).
+
 ## 2b. Linh vật Sola / Luna bản pixel (CŨ: user chuyển hẳn sang vector 27/10, mục 2c; chân dung nếu làm thì vẽ vector)
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
