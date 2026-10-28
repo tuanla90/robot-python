@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c2: mã huy hiệu từ dữ liệu bộ vector (huy-hieu.js không còn HINH pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -170,7 +171,7 @@ console.log('\n== 4. Đăng ký ==');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   kiem('choi.html nạp ../man-luc-ban.js đúng một lần, ngay sau ../man-che-sung-hoi.js', tags.filter((t) => t === '../man-luc-ban.js').length === 1 && tags.indexOf('../man-luc-ban.js') === tags.indexOf('../man-che-sung-hoi.js') + 1);
   kiem('lo-trinh-hoc.js require luc-ban', /'che-sung-hoi', 'luc-ban'/.test(fs.readFileSync(path.join(day, 'lo-trinh-hoc.js'), 'utf8')));
-  kiem('huy-hieu.js có hình cho luc-ban', /HINH\['luc-ban'\]/.test(fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8')));
+  kiem('huy hiệu vector có hình cho luc-ban', coHinhRieng('luc-ban'));
 }
 
 console.log('\n== 5. Khay ==');
