@@ -18,6 +18,8 @@
    Liệt kê: ĐỦ mọi dãy dài ≤ min(L, TRAN_L_DU = 3); với 4 ≤ |x| ≤ L (khi ngưỡng nhịp còn rộng) thì liệt kê các dãy "chờ rồi làm" W…W y và "làm rồi chờ" y W…W
    (|y| ≤ 2, y tùy ý): thân dài mà không chủ yếu là chờ thì làm xe lệch chỗ / lệch hướng / bắn đổi nút ở mọi lần gọi, chương trình khóa phía sau đi sai.
    Chạy thử với nhipToiDa = sao.nhip + 1 (chỉ cần biết có thắng trong ngưỡng không), nên mỗi lần chấm ngắn.
+   Hàm có tham số p (chương 2): thân cố định còn dùng được p. Tham số là CHUỖI (lực bắn: X("fast")) thì thêm chữ p = fire(p), q = fire_back(p) vào bảng;
+   tham số là SỐ (X(3)) thì thêm các thân có một vòng `for i in range(p):` (trước vòng, trong vòng, sau vòng là dãy chữ, tổng dài ≤ 2, trong vòng ≥ 1).
 
    Hàm xuất: CHU_DOI, demGoi, timThanCoDinhDoi
    ========================================================================== */
@@ -27,6 +29,7 @@ export const CHU_DOI = {
   M: ['move()'], B: ['back()'], W: ['wait()'], R: ['turn_right()'], L: ['turn_left()'], U: ['u_turn()'], P: ['tr_right()'], Q: ['tr_left()'],
   f: ['fire("fast")'], c: ['fire("charge")'], g: ['fire_back("fast")'], h: ['fire_back("charge")']
 };
+const CHU_THAM = (p) => ({ p: ['fire(' + p + ')'], q: ['fire_back(' + p + ')'] });
 const TRAN_L_DU = 3, TRAN_L_CHO = 8, TOI_THIEU_L = 2;
 
 /** Số lần chương trình (dòng) gọi tenX và số nhịp tối thiểu của phần còn lại; null nếu không mở tĩnh được. */
@@ -45,7 +48,12 @@ export function timThanCoDinhDoi(m, tenX, kho, chamThan, tuy = {}) {
   const goiX = chinh.map((c) => moRongGoi(c, kho, tenX));            // robot nào gọi X (kể cả qua hàm của em)
   const coGoi = goiX.map((g) => g.coGoi);
   const sung = m.doi.every((d, i) => !coGoi[i] || (d.hamGoc || []).includes('shoot'));
-  const chu = 'MBWRLUPQ' + (sung ? 'fcgh' : '');
+  const hv = (m.loiGiai.hamCuaEmMoi || []).concat(m.loiGiai.hamCuaMan || []).find((h) => h.ten === tenX) || { thamSo: [] };
+  const p = hv.thamSo[0] || null;
+  const doiSo = chinh.flatMap((c) => c.flatMap((l) => [...l.matchAll(/([A-Za-z_]\w*)\(([^()]*)\)/g)].filter((x) => x[1] === tenX).map((x) => x[2].trim())));
+  const kieu = !p ? null : doiSo.some((a) => /^"/.test(a)) ? 'chuoi' : 'so';
+  const CHU = Object.assign({}, CHU_DOI, kieu === 'chuoi' ? CHU_THAM(p) : {});
+  const chu = 'MBWRLUPQ' + (sung ? 'fcgh' : '') + (kieu === 'chuoi' && sung ? 'pq' : '');
   const bang = [];
   let L = tuy.L || TRAN_L_CHO, demDuoc = true;
   chinh.forEach((c, i) => {
@@ -61,7 +69,10 @@ export function timThanCoDinhDoi(m, tenX, kho, chamThan, tuy = {}) {
   function thu(x) {
     if (da.has(x)) return;
     da.add(x); soThu++;
-    const than = x ? [...x].flatMap((k) => CHU_DOI[k]) : ['pass'];
+    const than = x ? [...x].flatMap((k) => CHU[k]) : ['pass'];
+    thuThan(x, than);
+  }
+  function thuThan(x, than) {
     const r = chamThan(than);
     if (r.thang && r.soNhip <= m.sao.nhip) thang.push({ day: x, than, soO: r.soO, soNhip: r.soNhip, sao: r.sao });
   }
@@ -69,7 +80,16 @@ export function timThanCoDinhDoi(m, tenX, kho, chamThan, tuy = {}) {
   (function di(x) { thu(x); if (x.length < du) for (const k of chu) di(x + k); })('');
   const ngan = [''].concat([...chu], [...chu].flatMap((a) => [...chu].map((b) => a + b)));
   for (let n = du + 1; n <= L; n++) for (const y of ngan) if (y.length < n) { thu('W'.repeat(n - y.length) + y); thu(y + 'W'.repeat(n - y.length)); }
-  return { L, du, demDuoc, bang, soThu, chu, thang };
+  if (kieu === 'so') {                                                  // thân có vòng for theo tham số số
+    const dong = (y) => [...y].flatMap((k) => CHU[k]);
+    for (const trong of ngan.filter((y) => y.length >= 1 && y.length <= 2)) for (const ngoai of ngan.filter((y) => y.length <= 2 - trong.length)) for (let k = 0; k <= ngoai.length; k++) {
+      const truoc = ngoai.slice(0, k), sau = ngoai.slice(k), ma = truoc + '(' + trong + ')' + sau;
+      if (da.has(ma)) continue;
+      da.add(ma); soThu++;
+      thuThan(ma, dong(truoc).concat(['for i in range(' + p + '):'], dong(trong).map((l) => '    ' + l), dong(sau)));
+    }
+  }
+  return { L, du, demDuoc, bang, soThu, chu: chu + (kieu === 'so' ? ' + for theo ' + p : ''), thang };
 }
 
 /** X có được gọi trong chương trình (thẳng hay qua một hàm của em gọi X) không. */

@@ -197,6 +197,9 @@
   var R1_C5 = nhieu(['forward(6)'], CHO(5), ['forward(3)'], CHO(5), ['forward(2)']);
   var R2_C5 = FOR(3, ['pass_mate()', 'fire("charge")', 'turn_right()', 'forward(3)', 'turn_left()']);
 
+  // che-doi-mua-2.6: hai giếng của doi-mua-2.8 (nút xa: bắn tụ; nút gần, sau lưng là hốc: bắn nhanh). shot_clear(p) của em = wait_clear() rồi fire(p).
+  var R2_C6 = ['move()', 'turn_left()', 'shot_clear("charge")', 'turn_right()', 'forward(2)', 'turn_left()', 'shot_clear("fast")', 'turn_right()', 'forward(2)'];
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -508,6 +511,24 @@
         { moTa: 'Chỉ gọi wait_mate(): bắn lúc R1 còn ở cửa sổ', hamEm: [H('pass_mate', [], ['wait_mate()'])], phaiCoMa: ['ban-bi-chan'] }
       ],
       goiY: ['Thứ tự quan trọng: chờ bạn tới trước, rồi mới chờ bạn đi.', 'Thân pass_mate(): wait_mate() rồi wait_clear().']
+    }),
+
+    man({
+      chuong: 'che-doi-mua-2', so: 6, ten: 'Hàm shot_clear(p)', yMoi: 'hàm có tham số lực p: chờ bạn đi khỏi đường bóng rồi bắn với lực p',
+      hamCuaEmCan: ['wait_clear', 'forward', 'move', 'turn_left', 'turn_right', 'fire'], taoHam: ['shot_clear'],
+      deBai: 'Hai giếng bắn: giếng đầu nút ở xa, sau lưng là tường; giếng sau nút ở gần, sau lưng là hốc. R1 đứng ở giếng đầu một lúc. ' +
+        'Em chế shot_clear(p): chờ bạn đi khỏi đường bóng (wait_clear()), rồi bắn với lực p. Chương trình R2 đã khóa, gọi shot_clear("charge") ở giếng đầu và shot_clear("fast") ở giếng sau.',
+      veMaMau: 'Hai chương trình bị khóa. Tạo shot_clear(p) hai dòng: hàm có một tham số p.',
+      san: SAN_8, noi: NOI_8, bd: [{ x: 1, y: 3, huong: 1 }, { x: 2, y: 4, huong: 1 }], co: [[o(8, 3)], [o(7, 4)]],
+      chinh: [R1_8, R2_C6],
+      hamEm: [H('shot_clear', ['p'], ['wait_clear()', 'fire(p)'])],
+      sao: { o: 28, nhip: 15 },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('shot_clear', ['p'], ['# bạn đi rồi mới bắn', 'wait_clear()', 'fire(p)'])] },
+      loiSai: [
+        { moTa: 'Bắn ngay không chờ: bóng trúng R1 ở giếng đầu', hamEm: [H('shot_clear', ['p'], ['fire(p)'])], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
+        { moTa: 'Quên tham số, luôn bắn tụ: ở giếng sau xe giật xuống hốc', hamEm: [H('shot_clear', ['p'], ['wait_clear()', 'fire("charge")'])], phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['shot_clear("fast") thì p là "fast"; fire(p) bắn đúng lực đó.', 'Thân shot_clear(p): wait_clear() rồi fire(p).']
     })
   ];
 
