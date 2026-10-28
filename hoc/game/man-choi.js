@@ -429,7 +429,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Menu ☰: về màn chọn / làm lại từ đầu (nạp lại code mẫu, bỏ bản nháp; không đụng kho hàm của em và sao). */
   function moMenu() {
-    var m = TP.Hop.mo(t('choi.menu'), 'hop-nho hop-menu');
+    var m = TP.Hop.mo(t('menu.tieuDe'), 'hop-nho hop-menu');
     var hang = h('div', 'hop-hang cot');
     hang.appendChild(TP.Hop.nut('g-pu', t('menu.veChon'), function () { TP.Hop.dong(); roi(); App.veChon(); }, 'menu-ve-chon'));
     hang.appendChild(TP.Hop.nut('g-or', t('menu.lamLai'), function () {
