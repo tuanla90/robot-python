@@ -71,8 +71,9 @@
     if (Array.isArray(m.san[0])) m.nhipTheo = 'tong';
     if (m.bd) {
       var bd = m.bd, co = m.co, chinh = m.chinh;
-      var R1 = { loaiRobot: 'xich', robot: { than: 'xich', tay: 'hoi', camBien: HN }, hamGoc: BANH.concat(MAT) };
-      var R2 = { loaiRobot: 'xich', robot: { than: 'xich', tay: null, camBien: HN }, hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'].concat(MAT) };
+      var R1 = { loaiRobot: 'xich', robot: { than: 'xich', tay: 'hoi', camBien: HN }, hamGoc: BANH.concat(MAT), lucBan: true, xichDay: false };   // bệ súng: không đẩy thùng
+      var R2 = { loaiRobot: 'xich', robot: { than: 'xich', tay: null, camBien: HN }, hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'].concat(MAT), xichDay: true };
+      delete m.lucBan; delete m.xichDay;                                   // cờ theo từng xe (lucBan chỉ cho xe có súng)
       var cung = function (x) { return x.ham !== undefined || x.hamEm !== undefined ? B(chinh, x.ham || [], x.hamEm) : x.baiLam; };
       m.doi = [Object.assign({ batDau: bd[0] }, sao(R1)), Object.assign({ batDau: bd[1] }, sao(R2))];
       m.doi.forEach(function (d, i) { d.coDinh = true; if (co && co[i]) d.co = sao(co[i]); });
@@ -90,103 +91,256 @@
 
   /* ------------------------------------------------------------------- sân chương tong-hop-2 */
 
-  // tong-hop-2.1: xe (1,1) quay phải ở làn trên; thùng (2,2) và ô đích (5,2) ở làn dưới. Né sang phải (sidestep: xuống làn dưới) rồi đẩy thùng ba ô.
-  var SAN_T1 = ['#######', '#.....#', '#.H..D#', '#######'];
-  // tong-hop-2.2: xe (2,2) quay lên; nút (2,5) ở cuối giếng SAU LƯNG (ba ô: phải bắn tụ ra sau); trên đầu xe là hốc (2,1): xe hai bánh bắn ra sau thì giật TỚI vào hốc.
-  //   Nút mở cửa (3,2) bên phải xe; cờ (5,2).
-  var SAN_T2 = ['#######', '##.####', '##.C.F#', '##.####', '##.####', '##N####', '#######'];
-  // tong-hop-2.3: hành lang (1..8, 3); ba trạm (2,3), (4,3), (6,3): nút xa phía trên cách ba ô ((2,0)), hai ô ((4,1)), ba ô ((6,0)); hốc phía dưới mỗi trạm.
-  //   Nút (4,1) ĐANG BẬT (không mở gì). Nút (2,0) mở cửa (7,3), nút (6,0) mở cửa (8,3); cờ (9,3).
-  var SAN_T3 = ['##N###N####', '##.#N#.####', '##.#.#.####', '#......CCF#', '##.#.#.####', '###########'];
-  // tong-hop-2.4: xe (1,2) quay phải; thùng A (2,1) trước mũi, sau nó là băng chuyền (3,1) chạy sang phải tới ô đích (4,1). Thùng B (2,3) ở giếng dưới chỗ xe sẽ đứng, ô đích (2,4): xe quay xuống đi hai ô là đẩy B vào đích.
-  //   Đẩy A lên băng một ô rồi để băng đưa A tới đích trong lúc xe quay xuống đẩy B. Tự đẩy A tới đích thì xe kẹt cuối băng, không về được giếng.
-  var SAN_T4 = ['#######', '#.H>D##', '##.####', '##H####', '##D####', '#######'];
+  // tong-hop-2.1: xe (1,1) quay phải; thùng A (2,1) trước mũi, sau nó là băng chuyền (3,1) chạy sang phải tới ô đích (4,1). Thùng B (2,3) ở giếng dưới chỗ xe sẽ đứng, ô đích (2,4):
+  //   đẩy A lên băng một ô rồi để băng đưa A tới đích trong lúc xe quay xuống đi hai ô đẩy B vào đích. Tự đẩy A tới đích thì xe kẹt cuối băng, không về được giếng.
+  var SAN_T1 = ['#######', '#.H>D##', '##.####', '##H####', '##D####', '#######'];
+  // tong-hop-2.2: xe (3,2) quay phải; nút (7,2) cách ba ô ở cuối hành lang mở cửa (2,3) ngay dưới ô SAU LƯNG xe; cờ (2,4). Sola lùi bằng jet_back() (bắn tụ, giật lùi): bệ súng không giật.
+  var SAN_T2 = ['#########', '#########', '#......N#', '##C######', '##F######', '#########'];
+  // tong-hop-2.3: xe (2,2) quay lên; nút (2,5) ở cuối giếng SAU LƯNG (ba ô: phải bắn tụ ra sau); trên đầu xe là hốc (2,1): xe hai bánh bắn ra sau thì giật TỚI vào hốc.
+  //   Nút mở cửa (3,2) bên phải xe; cờ (7,2).
+  var SAN_T3 = ['#########', '##.######', '##.C...F#', '##.######', '##.######', '##N######', '#########'];
+  // tong-hop-2.4: xe (1,1) quay phải ở làn trên; thùng (2,2) và ô đích (7,2) ở làn dưới. Né sang phải (sidestep: xuống làn dưới) rồi đẩy thùng năm ô.
+  var SAN_T4 = ['#########', '#.......#', '#.H....D#', '#########'];
+  // tong-hop-2.5: xe (2,3) quay lên; nút (2,0) cách ba ô; SAU LƯNG xe là thùng (2,4), rồi hai ô trống, cửa (2,7) đóng, ô đích (2,8). Bắn mở cửa, quay nửa vòng (spin), đẩy thùng bốn ô.
+  var SAN_T5 = ['##N##', '##.##', '##.##', '##.##', '##H##', '##.##', '##.##', '##C##', '##D##', '#####'];
+  // tong-hop-2.6: hành lang (1..6, 3), xe (1,3) quay phải. Trạm (3,3): một nút ở cuối giếng phía trên (3,0), một ở cuối giếng phía dưới (3,6), đều cách ba ô. Xe quay lên ở trạm:
+  //   nút trên là trước mặt, nút dưới là sau lưng. Nút (3,0) mở cửa (4,3), nút (3,6) mở cửa (5,3); cờ (6,3). pair_shot() của Sola bắn hai lần ra trước: nút trên bị bắn hai lần thì tắt lại.
+  var SAN_T6 = ['###N####', '###.####', '###.####', '#...CCF#', '###.####', '###.####', '###N####', '########'];
+  // tong-hop-2.7: hành lang (1..8, 3); hai trạm (2,3), (4,3): trạm đầu nút (2,1) cách hai ô ĐANG BẬT (không mở gì); trạm sau nút (4,0) cách ba ô, tắt, mở cửa (5,3); hốc phía dưới; cờ (8,3).
+  var SAN_T7 = ['####N#####', '##N#.#####', '##.#.#####', '#....C..F#', '##.#.#####', '##########'];
+  // tong-hop-2.8 (hai robot): R2 (xe đẩy, không súng) đi hành lang trên (hàng 1) từ (1,1) tới cờ (7,1), đứng ở giếng đầu (2,1) bốn nhịp. R1 (bệ súng) ở hành lang dưới (hàng 3): tại trạm (2,3) và (5,3)
+  //   quay lên bắn tụ nút (2,0), (5,0) cách ba ô, qua giếng (·,1), (·,2); R2 đứng trong giếng thì bóng trúng bạn. Nút mở cửa (3,3), (6,3); cờ R1 (8,3). Hốc (2,4), (5,4) dưới trạm.
+  var SAN_T8 = ['##N##N####', '#......F##', '##.##.####', '#..C..C.F#', '##.##.####', '##########'];
+  // tong-hop-2.9 (hai robot): R2 (xe đẩy, xichDay) ở (4,1) quay xuống, thùng (4,2) trước mũi: đẩy thùng xuống qua ngã tư (4,3), dừng ba nhịp, rồi đẩy tiếp xuống hốc (4,5), đứng ở cờ (4,4).
+  //   R1 (bệ súng) đi hành lang (hàng 3) từ (1,3) tới cờ (7,3), mỗi bước gọi box_step(): thùng không nóng (warm() không thấy), phải đo distance().
+  var SAN_T9 = ['#########', '####.####', '####H####', '#......F#', '####F####', '####.####', '#########'];
+  // tong-hop-2.10 (trùm, ba sân, một chương trình): xe (1,3) quay phải; thùng cách xa gần khác nhau (p = 2 / 3 / 6); đẩy thùng một ô thì xe đứng đúng trạm (p,3) có nút xa phía trên (p,0),
+  //   hốc phía dưới (p,4); nút mở cửa (p+2,3) ngay sau thùng; ô đích (p+3,3). Sân 3: nút ĐANG BẬT, cửa đã mở sẵn (thùng ở xa nhất: dãy cố định đếm bước cho hai sân đầu thì hụt).
+  //   push(1), lock_left(), push(2).
+  var SAN_T10 = [
+    ['##N#####', '##.#####', '##.#####', '#.H.CD##', '##.#####', '########'],
+    ['###N#####', '###.#####', '###.#####', '#..H.CD##', '###.#####', '#########'],
+    ['######N####', '######.####', '######.####', '#.....H.cD#', '######.####', '###########']
+  ];
 
-  /* ------------------------------------------------------------- chương trình */
+  /* ------------------------------------------------------------- chương trình chương tong-hop-2 */
 
-  var L_T1 = ['sidestep()', 'forward(3)'];
-  var L_T2 = ['fire_back("charge")', 'tr_right()', 'forward(3)'];
-  var C_T3 = nhieu(['move()'], FOR(3, ['tr_left()', 'peek()', 'tr_right()', 'forward(2)']), ['move()']);
+  var L_T1 = ['move()', 'tr_right()', 'forward(2)'];
+  var M_T2 = ['jet_back()', 'tr_right()', 'forward(2)'];                 // Sola: tưởng jet_back() lùi một ô
+  var L_T2 = ['jet_back()', 'back()', 'tr_right()', 'forward(2)'];
+  var L_T3 = ['fire_back("charge")', 'tr_right()', 'forward(5)'];
+  var L_T4 = ['sidestep()', 'forward(5)'];
+  var L_T5 = ['fire("charge")', 'spin()', 'forward(4)'];
+  var C_T6 = ['forward(2)', 'tr_left()', 'pair_shot()', 'tr_right()', 'forward(3)'];
+  var T_PAIR = ['fire("charge")', 'fire_back("charge")'];
+  var T_PAIR_LOI = ['fire("charge")', 'fire("charge")'];
+  var C_T7 = nhieu(['move()'], FOR(2, ['tr_left()', 'peek()', 'tr_right()', 'forward(2)']), ['forward(2)']);
   var T_PEEK = ['aim_on()'];                                               // peek(): nút chưa nóng thì tự chọn lực theo xa gần (aim_on của gói 7, aim_fire của gói 6)
-  var L_T4 = ['move()', 'tr_right()', 'forward(2)'];
+  var R1_T8 = nhieu(['move()'], FOR(2, ['tr_left()', 'cover_shot()', 'tr_right()', 'forward(3)']));
+  var R2_T8 = nhieu(['move()'], CHO(4), ['forward(5)']);
+  var T_COVER = ['shot_clear("charge")'];                                  // cover_shot(): chờ bạn đi khỏi đường bóng rồi bắn tụ (gói 8)
+  var R1_T9 = FOR(6, ['box_step()']);
+  var R2_T9 = nhieu(['move()'], CHO(3), ['forward(2)']);
+  var T_BOX = ['step_clear()'];                                            // box_step(): còn sát vật cản (thùng hay bạn) thì chờ, rồi tiến (gói 8)
+  var L_T10 = ['push(1)', 'lock_left()', 'push(2)'];
 
   var DS = [
     /* ================================================================ chương tong-hop-2: Tổng hợp */
     man({
-      chuong: 'tong-hop-2', so: 1, ten: 'Thùng ở làn dưới', yMoi: 'ôn: sidestep() của xích rồi xích đẩy thùng (gói 1 + gói 5)',
-      kieuBai: 'day-thung', mucTieu: 'day-thung', hamCuaEmCan: ['sidestep', 'tr_right', 'tr_left', 'forward', 'move'],
-      deBai: 'Nhà máy của Sola chạy lại: thùng hàng còn nằm ở làn dưới, xe xích đứng ở làn trên. Né sang phải một ô bằng sidestep() của gói Bánh xích (xe quay phải thì ' +
-        'làn dưới là bên phải), rồi đẩy thùng ba ô vào ô đích: xích tiến là thùng trượt.',
-      veMaMau: 'Chương trình có sẵn đẩy thẳng ở làn trên: không có thùng nào ở đó.',
-      san: SAN_T1, batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['forward(3)']),
-      sao: { o: 16, nhip: 8 },
-      loiGiai: bai(L_T1),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# né xuống làn dưới rồi đẩy'].concat(L_T1)) },
-      loiSai: [
-        { moTa: 'Đẩy ở làn trên: thùng không đi đâu', baiLam: bai(['forward(3)']), phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Đẩy thiếu một ô: thùng nằm trước ô đích', baiLam: bai(['sidestep()', 'forward(2)']), phaiCoMa: ['chua-day-thung'] }
-      ],
-      goiY: ['sidestep() = tr_right(), move(), tr_left(): sang làn bên phải mà mặt vẫn quay phải.', 'Thùng cách ô đích ba ô: forward(3).']
-    }),
-
-    man({
-      chuong: 'tong-hop-2', so: 2, ten: 'Nút ở sau lưng', yMoi: 'ôn: fire_back("charge") của gói Lực bắn trên bệ súng: bắn tụ ra sau, xe không giật tới (gói 6 + gói 9)',
-      kieuBai: 'ban-sau', hamCuaEmCan: ['fire', 'fire_back', 'tr_right', 'forward', 'move', 'back'],
-      deBai: 'Nút mở cửa nằm ở cuối giếng sau lưng xe, cách ba ô: bắn nhanh không tới, phải bắn tụ ra sau bằng fire_back("charge"). Trên đầu xe là hốc: xe hai bánh bắn ra sau ' +
-        'thì giật tới vào hốc, còn bệ súng xích đứng yên. Mở cửa bên phải rồi đi tới cờ.',
-      veMaMau: 'Sola viết cho xe hai bánh: bắn xong back() để về chỗ cũ. Trên bệ súng, back() làm xe tụt xuống giếng.',
-      san: SAN_T2, batDau: { x: 2, y: 2, huong: 0 }, noi: [noi(2, 5, [[3, 2]])],
-      maMau: bai(['fire_back("charge")', 'back()', 'tr_right()', 'forward(3)']),
-      sao: { o: 13, nhip: 6 },
-      loiGiai: bai(L_T2),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# bắn tụ ra sau, bệ súng không trôi'].concat(L_T2)) },
-      loiSai: [
-        { moTa: 'Để nguyên back() của Sola: xe tụt xuống giếng, rẽ phải đâm tường', baiLam: bai(['fire_back("charge")', 'back()', 'tr_right()', 'forward(3)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Bắn nhanh ra sau: nút cách ba ô, bóng rơi giữa giếng', baiLam: bai(['fire_back("fast")', 'tr_right()', 'forward(3)']), phaiCoMa: ['ban-ngan', 'dam-tuong'] }
-      ],
-      goiY: ['fire_back("charge") bắn tụ ra sau đuôi xe và chờ một nhịp.', 'Bắn, rồi tr_right() và forward(3).']
-    }),
-
-    man({
-      chuong: 'tong-hop-2', so: 3, ten: 'Trạm xa trạm gần', yMoi: 'ôn: hàm của màn gọi aim_on() (gói 7): nút chưa nóng thì tự chọn lực theo xa gần; chương trình chính khóa',
-      kieuBai: 'doc-nhiet', mat: true, chinhCoDinh: true, hamCuaEmCan: ['aim_on', 'aim_fire', 'fire', 'tr_left', 'tr_right', 'forward', 'move'],
-      deBai: 'Ba trạm, nút xa gần khác nhau: cách ba ô thì bắn tụ, cách hai ô bắn nhanh là đủ. Nút trạm giữa đang bật (quầng đỏ), không mở gì. Hai nút tắt mở hai cánh cửa cuối hành lang. ' +
-        'Chương trình chính đã khóa, ở mỗi trạm quay lên rồi gọi peek(). Viết thân peek(): nút chưa nóng thì tự chọn lực: aim_on() của gói Đo nhiệt làm đúng việc đó.',
-      veMaMau: 'Chương trình chính bị khóa. peek() có sẵn bắn nhanh mọi nút: hai nút cách ba ô, bóng không tới.',
-      san: SAN_T3, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(2, 0, [[7, 3]]), noi(6, 0, [[8, 3]])], nutBat: [o(4, 1)],
-      maMau: bai(C_T3, [H('peek', [], ['fire("fast")'])]),
-      sao: { o: 27, nhip: 22 },
-      loiGiai: bai(C_T3, [H('peek', [], T_PEEK)]),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_T3, [H('peek', [], ['# chưa nóng thì đo xa gần rồi bắn'].concat(T_PEEK))]) },
-      congThucKhac: [
-        { moTa: 'Viết thẳng if not warm(): aim_fire()', baiLam: bai(C_T3, [H('peek', [], IF('not warm()', ['aim_fire()']))]) },
-        { moTa: 'Bắn tụ mọi nút không đo: vẫn tới cờ nhưng tắt nút đang bật, phí một nhịp', baiLam: bai(C_T3, [H('peek', [], ['fire("charge")'])]) },
-        { moTa: 'Gọi aim_fire() không đo nhiệt: vẫn tới cờ nhưng tắt nút đang bật, phí một nhịp', baiLam: bai(C_T3, [H('peek', [], ['aim_fire()'])]) }
-      ],
-      loiSai: [
-        { moTa: 'Để nguyên bắn nhanh: hai nút cách ba ô, bóng rơi giữa giếng', baiLam: bai(C_T3, [H('peek', [], ['fire("fast")'])]), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
-        { moTa: 'Viết if warm(): chỉ bắn nút đang bật, hai nút tắt vẫn tắt', baiLam: bai(C_T3, [H('peek', [], IF('warm()', ['aim_fire()']))]), phaiCoMa: ['chua-toi-co'] }
-      ],
-      goiY: ['aim_on() = if not warm(): aim_fire(); aim_fire() đo distance() rồi chọn lực.', 'Thân peek() chỉ cần một dòng.']
-    }),
-
-    man({
-      chuong: 'tong-hop-2', so: 4, ten: 'Băng chuyền giúp một tay', yMoi: 'ôn: băng chuyền đưa thùng A tới đích trong lúc xích đẩy thùng B (gói 4 + gói 5)',
+      chuong: 'tong-hop-2', so: 1, ten: 'Băng chuyền giúp một tay', yMoi: 'ôn: băng chuyền đưa thùng A tới đích trong lúc xích đẩy thùng B (gói 4 + gói 5)',
       kieuBai: 'bang-chuyen', mucTieu: 'day-thung', hamCuaEmCan: ['tr_right', 'forward', 'move', 'back'],
-      deBai: 'Hai thùng, hai ô đích. Thùng A nằm trước mũi xe, sau nó là băng chuyền chạy tới ô đích: đẩy A lên băng một ô rồi để băng làm nốt. ' +
-        'Thùng B nằm trong giếng phía dưới: xe quay xuống, đi hai ô là đẩy B vào ô đích. Nhớ: băng chuyền đẩy thùng đứng trên nó sau hai nhịp, nhưng không đẩy được xích.',
+      deBai: 'Nhà máy của Sola chạy lại. Hai thùng, hai ô đích. Thùng A nằm trước mũi xe, sau nó là băng chuyền chạy tới ô đích: đẩy A lên băng một ô rồi để băng làm nốt. ' +
+        'Thùng B nằm trong giếng phía dưới: xe quay xuống, đi hai ô là đẩy B vào ô đích. Nhớ: băng chuyền đẩy thùng đứng trên nó, nhưng không đẩy được xích.',
       veMaMau: 'Chương trình có sẵn tự đẩy A tới tận đích: xe đứng cuối băng, không về được giếng.',
-      san: SAN_T4, batDau: { x: 1, y: 1, huong: 1 },
+      san: SAN_T1, batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai(['forward(2)', 'tr_right()', 'forward(2)']),
       sao: { o: 11, nhip: 5 },
-      loiGiai: bai(L_T4),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# đẩy A lên băng, băng lo phần còn lại'].concat(L_T4)) },
+      loiGiai: bai(L_T1),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# đẩy A lên băng, băng lo phần còn lại'].concat(L_T1)) },
       loiSai: [
         { moTa: 'Tự đẩy A tới tận đích rồi mới quay xuống: xe kẹt cuối băng, đâm tường', baiLam: bai(['forward(2)', 'tr_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Quên đẩy A: băng không có gì để đưa đi', baiLam: bai(['tr_right()', 'forward(2)']), phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['Một ô là đủ: thùng lên băng rồi băng tự đẩy nó.', 'move(), tr_right(), forward(2).']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 2, ten: 'Đố: jet_back() không lùi', yMoi: 'tìm lỗi: jet_back() của gói Nhà máy lùi nhờ cú giật, trên bệ súng xe đứng yên; muốn lùi phải back()',
+      kieuBai: 'do', hamCuaEmCan: ['jet_back', 'fire', 'back', 'tr_right', 'forward', 'move'],
+      deBai: 'Sola dùng jet_back() của gói Nhà máy: bắn tụ nút cuối hành lang cho cửa mở, cú giật đưa xe lùi một ô về đúng chỗ rẽ. Chạy thử trên bệ súng: xe không lùi, rẽ phải đâm tường. ' +
+        'Vì sao? Bệ súng xích không giật, nên jet_back() chỉ còn là một phát bắn. Sửa cho xe lùi được một ô rồi rẽ xuống cờ.',
+      veMaMau: 'Chạy thử chương trình của Sola. Sau phát bắn, xe đứng ở đâu?',
+      san: SAN_T2, batDau: { x: 3, y: 2, huong: 1 }, noi: [noi(7, 2, [[2, 3]])],
+      maMau: bai(M_T2),
+      sao: { o: 17, nhip: 6 },
+      loiGiai: bai(L_T2),
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích', baiLam: bai(['# bệ súng không giật: lùi bằng back()'].concat(L_T2)) },
+      congThucKhac: [{ moTa: 'Bắn bằng fire("charge") rồi back()', baiLam: bai(['fire("charge")', 'back()', 'tr_right()', 'forward(2)']) }],
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: xe không lùi, rẽ phải đâm tường', baiLam: bai(M_T2), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Bỏ luôn phát bắn: cửa còn đóng', baiLam: bai(['back()', 'tr_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['jet_back() = shoot() rồi wait(): trên bệ súng xe đứng yên sau phát bắn.', 'Thêm back() sau jet_back().']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 3, ten: 'Giếng sau lưng', yMoi: 'ôn: fire_back("charge") của gói Lực bắn trên bệ súng: bắn tụ ra sau, xe không giật tới (gói 6 + gói 9)',
+      kieuBai: 'ban-sau', hamCuaEmCan: ['fire', 'fire_back', 'tr_right', 'forward', 'move', 'back'],
+      deBai: 'Nút mở cửa nằm ở cuối giếng sau lưng xe, cách ba ô: bắn nhanh không tới, phải bắn tụ ra sau bằng fire_back("charge"). Trên đầu xe là hốc: xe hai bánh bắn ra sau ' +
+        'thì giật tới vào hốc, còn bệ súng xích đứng yên. Mở cửa bên phải rồi đi tới cờ.',
+      veMaMau: 'Sola viết cho xe hai bánh: bắn xong back() để về chỗ cũ. Trên bệ súng, back() làm xe tụt xuống giếng.',
+      san: SAN_T3, batDau: { x: 2, y: 2, huong: 0 }, noi: [noi(2, 5, [[3, 2]])],
+      maMau: bai(['fire_back("charge")', 'back()', 'tr_right()', 'forward(5)']),
+      sao: { o: 13, nhip: 8 },
+      loiGiai: bai(L_T3),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# bắn tụ ra sau, bệ súng không trôi'].concat(L_T3)) },
+      loiSai: [
+        { moTa: 'Để nguyên back() của Sola: xe tụt xuống giếng, rẽ phải đâm tường', baiLam: bai(['fire_back("charge")', 'back()', 'tr_right()', 'forward(5)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Bắn nhanh ra sau: nút cách ba ô, bóng rơi giữa giếng', baiLam: bai(['fire_back("fast")', 'tr_right()', 'forward(5)']), phaiCoMa: ['ban-ngan', 'dam-tuong'] }
+      ],
+      goiY: ['fire_back("charge") bắn tụ ra sau đuôi xe và chờ một nhịp.', 'Bắn, rồi tr_right() và forward(5).']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 4, ten: 'Thùng ở làn dưới', yMoi: 'ôn: sidestep() của xích rồi xích đẩy thùng (gói 1 + gói 5)',
+      kieuBai: 'day-thung', mucTieu: 'day-thung', hamCuaEmCan: ['sidestep', 'tr_right', 'tr_left', 'forward', 'move'],
+      deBai: 'Thùng hàng nằm ở làn dưới, xe xích đứng ở làn trên. Né sang phải một ô bằng sidestep() của gói Bánh xích (xe quay phải thì làn dưới là bên phải), ' +
+        'rồi đẩy thùng năm ô vào ô đích: xích tiến là thùng trượt.',
+      veMaMau: 'Chương trình có sẵn đẩy thẳng ở làn trên: không có thùng nào ở đó.',
+      san: SAN_T4, batDau: { x: 1, y: 1, huong: 1 },
+      maMau: bai(['forward(5)']),
+      sao: { o: 16, nhip: 10 },
+      loiGiai: bai(L_T4),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# né xuống làn dưới rồi đẩy'].concat(L_T4)) },
+      loiSai: [
+        { moTa: 'Đẩy ở làn trên: thùng không đi đâu', baiLam: bai(['forward(5)']), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Đẩy thiếu một ô: thùng nằm trước ô đích', baiLam: bai(['sidestep()', 'forward(4)']), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['sidestep() = tr_right(), move(), tr_left(): sang làn bên phải mà mặt vẫn quay phải.', 'Thùng cách ô đích năm ô: forward(5).']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 5, ten: 'Mở cửa cho thùng sau lưng', yMoi: 'ôn: bắn tụ mở cửa, spin() quay nửa vòng rồi đẩy thùng sau lưng qua cửa (gói 1 + gói 5 + gói 6)',
+      kieuBai: 'mo-cua', mucTieu: 'day-thung', hamCuaEmCan: ['fire', 'spin', 'tr_right', 'tr_left', 'forward', 'move'],
+      deBai: 'Nút ở cuối giếng trước mặt, cách ba ô. Sau lưng xe là thùng, xa hơn là cánh cửa đóng rồi ô đích. Bắn tụ mở cửa, quay nửa vòng bằng spin() của gói Bánh xích, ' +
+        'rồi đẩy thùng bốn ô qua cửa vào ô đích.',
+      veMaMau: 'Chương trình có sẵn quay lại đẩy ngay: cửa còn đóng, thùng kẹt.',
+      san: SAN_T5, batDau: { x: 2, y: 3, huong: 0 }, noi: [noi(2, 0, [[2, 7]])],
+      maMau: bai(['spin()', 'forward(4)']),
+      sao: { o: 15, nhip: 9 },
+      loiGiai: bai(L_T5),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# mở cửa trước, quay lại đẩy sau'].concat(L_T5)) },
+      loiSai: [
+        { moTa: 'Quay lại đẩy ngay, chưa mở cửa: thùng vướng cửa đóng', baiLam: bai(['spin()', 'forward(4)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Bắn nhanh: nút cách ba ô, bóng rơi giữa giếng', baiLam: bai(['fire("fast")', 'spin()', 'forward(4)']), phaiCoMa: ['ban-ngan', 'dam-tuong'] }
+      ],
+      goiY: ['spin() = hai lần tr_right(): bốn nhịp, mặt quay xuống thùng.', 'fire("charge"), spin(), forward(4).']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 6, ten: 'Sửa hàm pair_shot()', yMoi: 'sửa hàm lỗi: bắn hai lần cùng một nút là nút tắt lại; phát thứ hai phải bắn ra sau (gói 4 + gói 6)',
+      kieuBai: 'sua-ham', chinhCoDinh: true, hamCuaEmCan: ['fire', 'fire_back', 'tr_left', 'tr_right', 'forward', 'move'],
+      deBai: 'Ở trạm có hai nút: một ở cuối giếng phía trên, một ở cuối giếng phía dưới, đều cách ba ô; mỗi nút mở một cánh cửa phía trước. Xe quay lên ở trạm: nút trên trước mặt, nút dưới sau lưng. ' +
+        'Sola chế pair_shot() để bắn cả hai, nhưng chép nhầm: hai lần fire("charge"). Nút bắn trúng hai lần thì tắt lại. Chương trình chính đã khóa. Chạy thử rồi sửa hàm.',
+      veMaMau: 'Chạy thử. Hai cánh cửa: cánh nào mở, cánh nào không?',
+      san: SAN_T6, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(3, 0, [[4, 3]]), noi(3, 6, [[5, 3]])],
+      maMau: bai(C_T6, [H('pair_shot', [], T_PAIR_LOI)]),
+      sao: { o: 22, nhip: 11 },
+      loiGiai: bai(C_T6, [H('pair_shot', [], T_PAIR)]),
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: bai(C_T6, [H('pair_shot', [], ['# một phát ra trước, một phát ra sau'].concat(T_PAIR))]) },
+      congThucKhac: [{ moTa: 'Bắn ra sau trước, ra trước sau', baiLam: bai(C_T6, [H('pair_shot', [], ['fire_back("charge")', 'fire("charge")'])]) }],
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: nút trên bị bắn hai lần nên tắt lại, cửa đầu đóng', baiLam: bai(C_T6, [H('pair_shot', [], T_PAIR_LOI)]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Bắn nhanh ra sau: nút cách ba ô, bóng rơi giữa giếng', baiLam: bai(C_T6, [H('pair_shot', [], ['fire("charge")', 'fire_back("fast")'])]), phaiCoMa: ['ban-ngan', 'dam-tuong'] }
+      ],
+      goiY: ['Nút bắn là công tắc: trúng lần hai là tắt.', 'fire("charge") rồi fire_back("charge").']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 7, ten: 'Trạm xa trạm gần', yMoi: 'ôn: hàm của màn gọi aim_on() (gói 7): nút chưa nóng thì tự chọn lực theo xa gần; chương trình chính khóa',
+      kieuBai: 'doc-nhiet', mat: true, chinhCoDinh: true, hamCuaEmCan: ['aim_on', 'aim_fire', 'fire', 'tr_left', 'tr_right', 'forward', 'move'],
+      deBai: 'Hai trạm, nút xa gần khác nhau: cách ba ô thì bắn tụ, cách hai ô bắn nhanh là đủ. Nút trạm đầu đang bật (quầng đỏ), không mở gì; nút trạm sau ở xa, mở cánh cửa cuối hành lang. ' +
+        'Chương trình chính đã khóa, ở mỗi trạm quay lên rồi gọi peek(). Viết thân peek(): nút chưa nóng thì tự chọn lực: aim_on() của gói Đo nhiệt làm đúng việc đó.',
+      veMaMau: 'Chương trình chính bị khóa. peek() có sẵn bắn nhanh mọi nút: nút trạm sau cách ba ô, bóng không tới.',
+      san: SAN_T7, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(4, 0, [[5, 3]])], nutBat: [o(2, 1)],
+      maMau: bai(C_T7, [H('peek', [], ['fire("fast")'])]),
+      sao: { o: 27, nhip: 16 },
+      loiGiai: bai(C_T7, [H('peek', [], T_PEEK)]),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_T7, [H('peek', [], ['# chưa nóng thì đo xa gần rồi bắn'].concat(T_PEEK))]) },
+      congThucKhac: [
+        { moTa: 'Viết thẳng if not warm(): aim_fire()', baiLam: bai(C_T7, [H('peek', [], IF('not warm()', ['aim_fire()']))]) },
+        { moTa: 'Bắn tụ mọi nút không đo: vẫn tới cờ nhưng tắt nút đang bật, phí một nhịp', baiLam: bai(C_T7, [H('peek', [], ['fire("charge")'])]) },
+        { moTa: 'Gọi aim_fire() không đo nhiệt: vẫn tới cờ nhưng tắt nút đang bật, phí một nhịp', baiLam: bai(C_T7, [H('peek', [], ['aim_fire()'])]) }
+      ],
+      loiSai: [
+        { moTa: 'Để nguyên bắn nhanh: nút trạm sau cách ba ô, bóng rơi giữa giếng', baiLam: bai(C_T7, [H('peek', [], ['fire("fast")'])]), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Viết if warm(): chỉ bắn nút đang bật, nút tắt vẫn tắt', baiLam: bai(C_T7, [H('peek', [], IF('warm()', ['aim_fire()']))]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['aim_on() = if not warm(): aim_fire(); aim_fire() đo distance() rồi chọn lực.', 'Thân peek() chỉ cần một dòng.']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 8, ten: 'Bệ súng và xe đẩy', yMoi: 'ôn gói Đội: hai robot, bệ súng chờ bạn đi khỏi đường bóng rồi bắn (shot_clear của gói 8); cả hai chương trình khóa',
+      kieuBai: 'doi-ban', hamCuaEmCan: ['shot_clear', 'wait_clear', 'wait_mate', 'fire', 'tr_left', 'tr_right', 'forward', 'move'],
+      deBai: 'Đội hai xe xích: R1 là bệ súng, R2 là xe đẩy đi hành lang trên và đứng lại ở giếng đầu một lúc. R1 ở mỗi trạm quay lên bắn tụ nút cuối giếng cho cửa mở; ' +
+        'R2 còn đứng trong giếng thì bóng trúng bạn. Hai chương trình đã khóa. Viết cover_shot(): chờ bạn đi khỏi rồi bắn tụ. shot_clear(p) của gói Đội làm đúng việc đó.',
+      veMaMau: 'Hai chương trình bị khóa. cover_shot() có sẵn bắn ngay: bóng trúng R2 ở trạm đầu.',
+      san: SAN_T8, noi: [noi(2, 0, [[3, 3]]), noi(5, 0, [[6, 3]])], bd: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[o(8, 3)], [o(7, 1)]],
+      chinh: [R1_T8, R2_T8],
+      hamMau: [H('cover_shot', [], ['fire("charge")'])],
+      ham: [H('cover_shot', [], T_COVER)],
+      sao: { o: 28, nhip: 20 },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', ham: [H('cover_shot', [], ['# bạn đi khỏi rồi mới bắn'].concat(T_COVER))] },
+      congThucKhac: [{ moTa: 'Viết wait_clear() rồi fire("charge")', ham: [H('cover_shot', [], ['wait_clear()', 'fire("charge")'])] }],
+      loiSai: [
+        { moTa: 'Bắn ngay: bóng trúng R2 đang đứng trong giếng đầu', ham: [H('cover_shot', [], ['fire("charge")'])], phaiCoMa: ['ban-bi-chan', 'dam-tuong'] },
+        { moTa: 'Chờ bạn TỚI (wait_mate) rồi bắn: ở trạm sau R2 đã đi qua, chờ mãi', ham: [H('cover_shot', [], ['wait_mate()', 'fire("charge")'])], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Chờ đúng nhưng bắn nhanh: nút cách ba ô', ham: [H('cover_shot', [], ['shot_clear("fast")'])], phaiCoMa: ['ban-ngan', 'dam-tuong'] }
+      ],
+      goiY: ['warm() thấy R2 trong giếng; wait_clear() chờ tới khi hết thấy.', 'Thân cover_shot(): shot_clear("charge").']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 9, ten: 'Thùng qua ngã tư', yMoi: 'ôn gói Đội + Đẩy thùng: R2 đẩy thùng qua ngã tư; thùng không nóng nên R1 phải đo distance() (step_clear của gói 8)',
+      kieuBai: 'doi-thung', hamCuaEmCan: ['step_clear', 'yield_step', 'wait_clear', 'forward', 'move', 'tr_right'],
+      deBai: 'R2 (xe đẩy) đẩy thùng nặng xuống qua ngã tư rồi dừng một lúc; R1 (bệ súng) đi hành lang cắt ngang ngã tư đó, mỗi bước gọi box_step(). ' +
+        'Thùng không nóng nên warm() không thấy nó; phải đo distance(): có gì sát mũi xe thì chờ, không thì tiến. step_clear() của gói Đội làm đúng việc đó. Hai chương trình đã khóa.',
+      veMaMau: 'Hai chương trình bị khóa. box_step() có sẵn chỉ tiến: R1 húc vào thùng.',
+      san: SAN_T9, bd: [{ x: 1, y: 3, huong: 1 }, { x: 4, y: 1, huong: 2 }], co: [[o(7, 3)], [o(4, 4)]],
+      chinh: [R1_T9, R2_T9],
+      hamMau: [H('box_step', [], ['move()'])],
+      ham: [H('box_step', [], T_BOX)],
+      sao: { o: 15, nhip: 10 },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', ham: [H('box_step', [], ['# thùng hay bạn sát mũi thì chờ'].concat(T_BOX))] },
+      congThucKhac: [{ moTa: 'Viết thẳng while distance() == 0: wait() rồi move()', ham: [H('box_step', [], WHILE('distance() == 0', ['wait()']).concat(['move()']))] }],
+      loiSai: [
+        { moTa: 'Chỉ tiến: R1 húc vào thùng đang nằm trong ngã tư', ham: [H('box_step', [], ['move()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Dùng yield_step() (chờ khi warm()): thùng không nóng, R1 vẫn húc thùng', ham: [H('box_step', [], ['yield_step()'])], phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['distance() là 0 khi ngay trước mũi có thùng hay bạn.', 'Thân box_step(): step_clear().']
+    }),
+
+    man({
+      chuong: 'tong-hop-2', so: 10, ten: 'Trùm: Ba dây chuyền thùng', yMoi: 'một chương trình cho ba sân: push(1) tới trạm, lock_left() bắn nút còn tắt, push(2) qua cửa vào ô đích',
+      hang: 'trum', kieuBai: 'trum', mat: true, mucTieu: 'day-thung', hamCuaEmCan: ['push', 'lock_left', 'lock_on', 'blast_left', 'fire', 'tr_left', 'tr_right', 'forward', 'move'],
+      huyHieu: { ma: 'tong-hop-2', ten: 'Huy hiệu Tổng hợp mùa 2' },
+      deBai: 'Ba dây chuyền, một chương trình. Thùng nằm xa gần khác nhau; đẩy thùng một ô thì xe đứng đúng trạm có nút xa phía trên, hốc phía dưới. Nút tắt thì mở cánh cửa ngay sau thùng, ' +
+        'nút đang bật thì cửa đã mở sẵn. Rồi đẩy thùng hai ô qua cửa vào ô đích. Dùng push(n) của gói Đẩy thùng và lock_left() của gói Bệ súng.',
+      veMaMau: 'Chương trình có sẵn đếm cứng theo sân đầu: sân sau thùng ở xa hơn.',
+      san: SAN_T10, batDau: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 3, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      noi: [[noi(2, 0, [[4, 3]])], [noi(3, 0, [[5, 3]])], []],
+      nutBat: [[], [], [o(6, 0)]],
+      maMau: bai(['move()', 'blast_left()', 'forward(2)']),
+      sao: { o: 22, nhip: 28 },
+      loiGiai: bai(L_T10),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# tới thùng, bắn nút còn tắt, đẩy qua cửa'].concat(L_T10)) },
+      congThucKhac: [{ moTa: 'Bắn mọi nút bằng blast_left(): vẫn tới đích nhưng sân cuối tắt nút đang bật, phí một nhịp', baiLam: bai(['push(1)', 'blast_left()', 'push(2)']) }],
+      loiSai: [
+        { moTa: 'Đếm cứng theo sân đầu: sân sau thùng ở xa hơn, bắn trúng tường', baiLam: bai(['move()', 'blast_left()', 'forward(2)']), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Quên bắn: cửa đóng chặn thùng', baiLam: bai(['push(3)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đẩy ba ô một mạch rồi mới bắn: xe đã đi quá trạm', baiLam: bai(['push(1)', 'push(2)', 'lock_left()']), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['push(1) đo distance() tới thùng, tới sát rồi đẩy một ô: xe đứng đúng trạm.', 'push(1), lock_left(), push(2).']
     })
   ];
 

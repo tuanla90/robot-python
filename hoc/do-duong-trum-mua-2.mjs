@@ -61,7 +61,7 @@ export function doMan(m, kho, cham, tuy = {}) {
   }
   bang.canXichDay = '-';
   if (dayThung) {
-    const rk = cham(m, lg, lg.hamCuaEmMoi, { xichDay: false });
+    const rk = cham(m, lg, lg.hamCuaEmMoi, m.doi ? { doi: m.doi.map((d) => Object.assign({}, d, { xichDay: false })) } : { xichDay: false });
     bang.canXichDay = rk.thang ? 'KHÔNG cần' : 'cần';
     if (rk.thang) loi.push(m.ma + ': lời giải đẩy thùng mà chạy không xichDay vẫn thắng');
   }

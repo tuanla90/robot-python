@@ -484,6 +484,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     themBanhRang(p);
     return p;
   };
+  HINH['tong-hop-2'] = function () {                            // gói 10 mùa 2 chương Tổng hợp: bệ súng xích (xích nhìn ngang + nòng ngang) tì mũi vào thùng nặng gỗ
+    var p = P(T26, T26);
+    veXichNgang(p, 0, 14);
+    veNongNgang(p, 2, 9);
+    veThungGo(p, 17, 15, 9);
+    return p;
+  };
+  HINH['nha-may-chay'] = function () {                          // trùm cuối mùa 2 "Nhà máy chạy lại": bệ súng xích vừa bắn bóng to, hai sao hai góc trên như xuat-xuong
+    var p = P(T26, T26), s = saoNho();
+    veXichNgang(p, 0, 14);
+    veNongNgang(p, 2, 9);
+    veBongTo(p, 18, 7);
+    chep(p, s, 0, 0, 1);
+    chep(p, s, T26 - s.w, 0, 1);
+    return p;
+  };
   HINH['che-omni'] = function () {                             // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
     var p = P(T26, T26), t = thanPart('omni');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
