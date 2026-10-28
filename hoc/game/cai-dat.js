@@ -3,6 +3,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    cai-dat.js — "Robot Chấn Hưng": BẢNG CÀI ĐẶT (window.CaiDat).
    Mở từ nút bánh răng ở màn khởi đầu (man-dau.js) và từ menu ☰ trong màn chơi (man-choi.js).
      · Hiệu ứng / Nhạc nền: mức 0..4 (0 = tắt), bấm − / +; đổi là nghe ngay (AmThanh.dat), lưu ở Luu.
+     · Kiểu vẽ (gói V5a): Nét mới (vector) / Điểm ảnh (pixel), lưu qua VeVector.luuCheDo rồi tải lại trang (bỏ ?ve= trên địa chỉ để lựa chọn có hiệu lực).
      · Xem lại phim mở đầu (mo-dau.js) · Thông tin game (phiên bản, quyền riêng tư, giấy phép chữ)
      · Xóa tiến độ: hỏi lại, xóa sạch dữ liệu chơi (Luu.xoaHet, giữ cài đặt) rồi tải lại trang.
    ========================================================================== */
@@ -162,6 +163,40 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return d;
   }
 
+  /** Hàng chọn KIỂU VẼ (gói V5a): hai nút Nét mới (vector) / Điểm ảnh (pixel), nút đang dùng sáng (aria-pressed). Bấm nút kia: VeVector.luuCheDo
+   *  ghi lựa chọn rồi tải lại trang, bỏ tham số ?ve= trên địa chỉ (tham số đó thắng lựa chọn đã lưu). Không có VeVector: không có hàng. */
+  function hangKieuVe() {
+    if (!window.VeVector || !VeVector.luuCheDo || !VeVector.bat) return null;
+    var d = h('div', 'cd-dong cd-kieu-ve'); d.setAttribute('data-cd', 'kieu-ve');
+    var ten = h('div', 'cd-ten');
+    var ic = h('span'); ic.setAttribute('data-i', 'mau'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', BM.xanhLoSang2); ic.setAttribute('data-l', BM.vienDam);
+    ten.appendChild(ic); ten.appendChild(h('span', null, t('caiDat.kieuVe')));
+    d.appendChild(ten);
+    var dang = VeVector.bat() ? 'vector' : 'pixel';
+    [['vector', 'caiDat.netMoi'], ['pixel', 'caiDat.diemAnh']].forEach(function (x) {
+      var on = x[0] === dang, chu = t(x[1]);
+      var b = h('button', 'bt cd-sw cd-kv ' + (on ? 'g-gr bat' : 'g-wd'), chu);
+      b.setAttribute('data-nut', 'cd-kieu-ve-' + x[0]); b.setAttribute('data-ve', x[0]);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.title = on ? t('caiDat.kieuVeDang', { ten: chu }) : t('caiDat.kieuVeDoi', { ten: chu });
+      b.addEventListener('click', function () {
+        if (x[0] === dang) return;
+        VeVector.luuCheDo(x[0]);
+        if (window.AmThanh) AmThanh.phat('lat');
+        taiLaiKieuVe();
+      });
+      d.appendChild(b);
+    });
+    return d;
+  }
+  /** Tải lại trang sau khi đổi kiểu vẽ: bỏ ?ve= (nếu có) để lựa chọn vừa lưu có hiệu lực, giữ các tham số khác (man, debug…). */
+  function taiLaiKieuVe() {
+    try {
+      var u = new URL(window.location.href); u.searchParams.delete('ve');
+      window.location.replace(u.toString());
+    } catch (e) { window.location.reload(); }
+  }
+
   /** Mở bảng cài đặt; đóng thì gọi khiDong (nếu có). */
   function mo(khiDong) {
     var hop = TP.Hop.mo(t('caiDat.tieuDe'), 'hop-cai-dat');
@@ -171,6 +206,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       hop.than.appendChild(hangAm('nhac', 'nhac', t('caiDat.nhac')));
     }
     hop.than.appendChild(hangMat());
+    var kv = hangKieuVe(); if (kv) hop.than.appendChild(kv);
     hop.than.appendChild(hangSon());
     var cot = h('div', 'cd-cot');
     if (window.MoDau) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.gioiThieu'), function () { TP.Hop.dong(); MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(function () { mo(khiDong); }); else mo(khiDong); }); }, 'cd-mo-dau'));
