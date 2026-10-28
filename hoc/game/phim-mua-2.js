@@ -20,8 +20,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var XH = { than: 'xich', tay: 'hoi', camBien: [] };                     // xích + súng hơi (từ gói 2)
   var XHN = { than: 'xich', tay: 'hoi', camBien: HN };                    // xích + súng hơi + hồng ngoại (từ gói 3)
   var R2 = { than: 'hai-banh', tay: 'hoi', camBien: HN, son: 'lam' };     // R2 gói 8: hai bánh + súng hơi + hồng ngoại
-  var HUY = ['xich', 'sung-hoi', 'hong-ngoai', 'bang-chuyen', 'day-thung', 'luc-ban', 'do-nhiet', 'be-sung'];   // huy hiệu chương 1 các gói mùa 2 bay trong phim gói 10
-  var ICO_HUY = { 'xich': 'denXich', 'sung-hoi': 'denSung', 'hong-ngoai': 'denCam', 'bang-chuyen': 'bang', 'day-thung': 'thung', 'luc-ban': 'nutban', 'do-nhiet': 'denCam', 'be-sung': 'denSung' };
+  var HUY = ['xich', 'sung-hoi', 'hong-ngoai', 'bang-chuyen', 'day-thung', 'luc-ban', 'do-nhiet', 'be-sung', 'tong-hop-2', 'nha-may-chay'];   // huy hiệu chương 1 các gói mùa 2 (+ gói 10 và trùm, V7b) bay trong phim gói 10
   var Y = 158;                                    // tâm thân R1 khi đứng trên dải sàn (tỉ lệ 3)
   var BAN = { tay: { tuThe: 'tren', dangBanTruoc: true } }, BAN_SAU = { tay: { tuThe: 'tren', dangBanSau: true } }, YEN = { tay: { tuThe: 'tren' } };
   var DO = { camBien: { bat: true } };
@@ -120,11 +119,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function huyHieu(c, ma) {
     var HH = goc.HuyHieu;
     if (PV()) {
-      try { if (HH && HH.maVec && HH.maVec(ma) && HH.mk) { var v = HH.mk(ma, 'xong', 1); if (v && v.laVector) return v; } } catch (e) { /* rơi về icon */ }
-      var chip = c.h('div'); chip.style.cssText = 'position:relative;width:36px;height:36px;border-radius:50%;box-sizing:border-box;display:flex;align-items:center;justify-content:center';
-      chip.style.background = BM.vecVo; chip.style.border = '3px solid ' + BM.vecVang; chip.style.boxShadow = '0 0 0 2px ' + BM.vecVien;
-      var ic = c.ico(ICO_HUY[ma] || 'star', 2, ma === 'hong-ngoai' || ma === 'do-nhiet' ? BM.do : BM.vang); ic.style.position = 'static'; chip.appendChild(ic);
-      return chip;                                                       // icon bộ phận trong khung tròn cỡ huy hiệu (36 px)
+      try { if (HH && HH.maVec && HH.maVec(ma) && HH.mk) { var v = HH.mk(ma, 'xong', 1); if (v && v.laVector) return v; } } catch (e) { /* rơi về sao */ }
+      return c.sao(2);                                                   // V7b: mọi mã đều có bản vector (máy kiểm A6), đường tạm icon trong khung tròn đã gỡ
     }
     try { if (HH && HH.DS && HH.DS.indexOf(ma) >= 0) { var p = HH.mk ? HH.mk(ma, 'xong', 1) : Ve.mk(HH.ve(ma, 'xong'), 1); p.classList.add('pxi'); return p; } } catch (e) { /* rơi về sao */ }
     return c.sao(2);
@@ -522,7 +518,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       function (k, c) {
         c.nen(k, 'md-san');
         k.appendChild(c.xe(XHN, DO, 1, 3, 150, Y, 'md-nhun').mat('vui'));
-        var cho = [[30, 30], [110, 14], [196, 14], [262, 40], [20, 100], [266, 104], [64, 60], [222, 72]];
+        var cho = [[30, 30], [110, 14], [196, 14], [262, 40], [20, 100], [266, 104], [64, 60], [222, 72], [70, 128], [220, 132]];   // 10 chỗ cho 10 huy hiệu (V7b thêm hai)
         HUY.forEach(function (m, i) {
           var o = c.dat(c.h('div', 'pg-bay'), cho[i][0], cho[i][1]); o.style.animationDelay = (-i * 0.3) + 's';
           var p = c.dat(c.h('div', 'md-pop'), 0, 0); p.style.animationDelay = (0.2 + i * 0.15) + 's'; p.appendChild(huyHieu(c, m));

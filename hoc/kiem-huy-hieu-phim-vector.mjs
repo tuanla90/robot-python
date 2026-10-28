@@ -214,7 +214,7 @@ const conPixel = [];
 }
 {
   // CHO_V7B: mã của gói 10 mùa 2 (gộp song song với V7a), bản vector do V7b vẽ; V7b vẽ xong thì xoá khỏi danh sách (máy kiểm in mã đã có vector mà còn trong danh sách)
-  const CHO_V7B = ['tong-hop-2', 'nha-may-chay'];
+  const CHO_V7B = [];   // V7b (28/10) đã vẽ tong-hop-2, nha-may-chay; danh sách để trống: mọi mã HINH phải có vector
   const thieu = DS.filter((m) => !VE.ctx.HuyHieu.maVec(m) && !CHO_V7B.includes(m)), cho = CHO_V7B.filter((m) => DS.includes(m) && !VE.ctx.HuyHieu.maVec(m)), thua = CHO_V7B.filter((m) => VE.ctx.HuyHieu.maVec(m));
   if (cho.length) console.log('  (A6) chờ V7b vẽ bản vector: ' + cho.join(', '));
   if (thua.length) console.log('  (A6) đã có bản vector, xoá khỏi CHO_V7B: ' + thua.join(', '));
