@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-huy-hieu-phim-vector.mjs — máy kiểm gói V6: HUY HIỆU và PHIM vẽ bằng bộ vẽ vector ("Robot Chấn Hưng").
    Chạy game THẬT trong ngữ cảnh vm (bang-mau, chu, ve, part/*, ve-vector*, huy-hieu-vector, ve-robot, huy-hieu, phim-vector, phim-goi, phim-mua-*) với DOM + canvas giả
-   ghi lệnh, hai chế độ: pixel (không ?ve=) và vector (?ve=vector).
+   ghi lệnh, hai chế độ: pixel (?ve=pixel, V7b mặc định vector) và vector (?ve=vector).
    A. HUY HIỆU
      A1 mọi mã HuyHieu.DS × ba trạng thái (khoa / mo / xong) vẽ được ở CẢ HAI chế độ (HuyHieu.ve, HuyHieu.mk), không ném lỗi.
      A2 vector: mã có bản vector (HuyHieu.maVec) KHÔNG gọi Part.* (ghep, _veMot, veVatNho, rot90, lay) và ra canvas .laVector; mã chưa có bản vector rơi về pixel (liệt kê).
@@ -122,7 +122,7 @@ function napGame(cheDo, nen) {
   const ctx = {
     console: { log() {}, info() {}, warn: (s) => canhBao.push(String(s)), error: (s) => canhBao.push(String(s)) },
     document: { createElement: (t) => new El(t), getElementById: (id) => (id === 'stage' ? stage : null), querySelector: () => null, body, documentElement: { style: { setProperty() {} } } },
-    location: { search: cheDo === 'vector' ? '?ve=vector' : '' }, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
+    location: { search: cheDo === 'vector' ? '?ve=vector' : '?ve=pixel' }, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
     devicePixelRatio: 2, setTimeout: (f) => { hen.push(f); return hen.length; }, clearTimeout() {}, requestAnimationFrame: () => 0,
     Luu: { daXem: () => false, datDaXem: () => true, docCaiDat: () => ({}) }, AmThanh: { phat() {} },
     Math, JSON, Object, Array, String, Number, Boolean, Date, Error, RegExp, Map, Set, Symbol, Promise, parseFloat, parseInt, isFinite, isNaN, Uint8ClampedArray

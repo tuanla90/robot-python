@@ -9,7 +9,7 @@
      6. Màu đội: R1 (sơn '' / vang) và R2 ('lam') cho hai luồng lệnh y hệt, chỉ khác ở đúng ba chỗ kính (gradient), mắt (viền), chấm ăng-ten (tô);
         sơn mở khoá ('ngoc'…) lấy bộ ba SON của bảng màu; không lẫn màu đội kia.
      7. Bộ đệm: cùng (tên, cỡ, trạng thái) → cùng canvas; khác cỡ / trạng thái / hướng / sơn → canvas khác.
-     8. coDu(): chỉ cấu hình đủ hình vector mới vẽ bằng vector; công tắc mặc định PIXEL (bat() = false khi không có ?ve=vector / lưu).
+     8. coDu(): chỉ cấu hình đủ hình vector mới vẽ bằng vector; công tắc mặc định VECTOR từ V7b (bat() = true khi không có ?ve=pixel / lưu 'pixel').
      9. VeRobot (ve-robot.js): tiLeChoO / vatKep / REACH đổi theo chế độ và theo coDu; chế độ pixel giữ công thức cũ.
   10. (gói V2) Mọi ký hiệu sân và mọi vật có hình vector — liệt kê TỪ CODE, không gõ tay: ký hiệu = mọi ký tự SanHoc.docSan nhận (thử từng ký tự in được),
        ô pixel = mọi khoá của Ve.tiles() (đọc từ nguồn ve.js), hàm vẽ trực tiếp = mọi lời gọi Ve.make* / Ve.ve* trong san-ve.js, vật = mọi chất SanHoc.CHAT_KY × màu
@@ -268,7 +268,7 @@ console.log('\n== 8. coDu() và công tắc ==');
     V.coDu({ than: 'hai-banh' }) && V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [] }) && V.coDu({ than: 'xich' }) && V.coDu({ than: 'hai-banh', tay: 'nam-cham' })
     && V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'mau', o: 'hong' }] }) && V.coDu({ than: 'drone' }) && !V.coDu({ than: 'khong-co' }) && !V.coDu({ than: 'hai-banh', tay: 'khong-co' }) && !V.coDu({ than: 'hai-banh', camBien: [{ ma: 'khong-co', o: 'hong' }] }));
   kiem('robot() với cấu hình thiếu hình → null (không ném)', V.robot({ than: 'khong-co' }, {}, 0, 56) === null && V.robot({ than: 'hai-banh', tay: 'khong-co' }, {}, 0, 56) === null);
-  kiem('mặc định PIXEL: bat() = false khi không có ?ve=vector và chưa lưu', V.bat() === false);
+  kiem('mặc định VECTOR (V7b): bat() = true khi không có ?ve=pixel và chưa lưu pixel', V.bat() === true);
   kiem("datCheDo('vector') → bat() = true; datCheDo('pixel') → false", V.datCheDo('vector') === true && V.bat() === true && V.datCheDo('pixel') === false && V.bat() === false);
 }
 
@@ -636,7 +636,7 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
     const cha = { style: { setProperty() {} }, firstChild: null, clientWidth: 232, clientHeight: 232, insertBefore() {}, appendChild() {}, querySelector() { return null; } };
     const ctx = {
       console: { log() {}, warn() {}, error() {}, info() {} }, document: { createElement() { return new Cv(); }, querySelector() { return null; }, body: {} }, devicePixelRatio: dpr,
-      location: { search: cheDo === 'vector' ? '?ve=vector' : '' }, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
+      location: { search: cheDo === 'vector' ? '?ve=vector' : '?ve=pixel' }, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
       performance: { now: () => dongHo }, setTimeout: (f, ms) => { hangCho.push({ t: dongHo + Math.max(0, ms || 0), f, id: ++soHen }); return soHen; }, clearTimeout() {}, requestAnimationFrame: () => 0,
       Math: Object.create(Math), JSON, Object, Array, String, Number, Boolean, Date, Error, RegExp, Map, Set, WeakMap, Symbol, Promise, parseFloat, parseInt, isFinite, isNaN, Uint8ClampedArray
     };
@@ -1073,7 +1073,7 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     const kho = {}, ls = { getItem: (k) => (k in kho ? kho[k] : null), setItem: (k, v) => { kho[k] = String(v); }, removeItem: (k) => { delete kho[k]; } };
     const cuLs = globalThis.localStorage, cuLoc = globalThis.location;
     let vao = null, ra = null;
-    const veSrc = doc('ve-vector.js'), sau = /getItem\(KHOA_LUU\) === 'vector'/.test(veSrc) && /setItem\(KHOA_LUU, 'vector'\)/.test(veSrc);   // bat() đọc lại đúng khoá luuCheDo ghi
+    const veSrc = doc('ve-vector.js'), sau = /getItem\(KHOA_LUU\) === 'pixel'/.test(veSrc) && /setItem\(KHOA_LUU, v === 'pixel' \? 'pixel' : 'vector'\)/.test(veSrc);   // bat() đọc lại đúng khoá luuCheDo ghi
     try {
       Object.defineProperty(globalThis, 'localStorage', { value: ls, configurable: true, writable: true });
       Object.defineProperty(globalThis, 'location', { value: { search: '' }, configurable: true, writable: true });
@@ -1086,8 +1086,8 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     const chuHt = ['caiDat.kieuVe', 'caiDat.netMoi', 'caiDat.diemAnh', 'caiDat.kieuVeDang', 'caiDat.kieuVeDoi'].map((k) => { const m = chu.match(new RegExp("'" + k.replace('.', '\\.') + "': '([^']*)'")); return m ? m[1] : null; });
     const chuOk = chuHt.every((s) => s && !/[—–]|\p{Extended_Pictographic}/u.test(s));
     const nguon = /function hangKieuVe\(\)/.test(caiDat) && /VeVector\.luuCheDo\(x\[0\]\)/.test(caiDat) && /searchParams\.delete\('ve'\)/.test(caiDat) && /'cd-kieu-ve-' \+ x\[0\]/.test(caiDat) && /aria-pressed/.test(caiDat) && /hangKieuVe\(\); if \(kv\)/.test(caiDat);
-    kiem('(14f) công tắc Cài đặt "Kiểu vẽ: Nét mới / Điểm ảnh": luuCheDo(\'vector\') ghi khoá duong-hoc:ve-vector = vector, luuCheDo(\'pixel\') xoá khoá; cai-dat.js dựng hai nút (aria-pressed), bấm thì lưu rồi tải lại bỏ ?ve=; chữ không emoji / gạch dài',
-      vao === 'vector' && ra === null && sau === true && nguon && chuOk, J({ vao, ra, sau, nguon, chuHt }));
+    kiem('(14f) công tắc Cài đặt "Kiểu vẽ: Nét mới / Điểm ảnh": luuCheDo(\'vector\') ghi khoá duong-hoc:ve-vector = vector, luuCheDo(\'pixel\') GHI pixel (V7b: lựa chọn pixel được lưu); cai-dat.js dựng hai nút (aria-pressed), bấm thì lưu rồi tải lại bỏ ?ve=; chữ không emoji / gạch dài',
+      vao === 'vector' && ra === 'pixel' && sau === true && nguon && chuOk, J({ vao, ra, sau, nguon, chuHt }));
   }
   /* g. trang xem có mục V5a (bảng mẫu nút / khối lệnh / khung code ở các trạng thái, nạp choi-vector.css) */
   {

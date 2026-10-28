@@ -104,7 +104,7 @@ function napGame(cheDo, nenMoDau) {
   const ctx = {
     console: { log() {}, info() {}, warn: (s) => canhBao.push(String(s)), error: (s) => canhBao.push(String(s)) },
     document: { createElement: (t) => new El(t), getElementById: (id) => (id === 'stage' ? stage : null), querySelector: () => null, body, documentElement: { style: { setProperty() {} } } },
-    location: { search: cheDo === 'vector' ? '?ve=vector' : '' }, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
+    location: { search: cheDo === 'vector' ? '?ve=vector' : '?ve=pixel' }, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
     devicePixelRatio: 2, setTimeout: (f) => { hen.push(f); return hen.length; }, clearTimeout() {}, requestAnimationFrame: () => 0,
     Luu: { daXem: () => false, datDaXem: () => true, docCaiDat: () => ({}) }, AmThanh: { phat() {} },
     Math, JSON, Object, Array, String, Number, Boolean, Date, Error, RegExp, Map, Set, Symbol, Promise, parseFloat, parseInt, isFinite, isNaN, Uint8ClampedArray

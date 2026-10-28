@@ -32,7 +32,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    KHUNG ÔM SÂN (15/10): vùng .ffr luôn 218×218 (cột nút bên cạnh không nhảy) nhưng khung gỗ viền sân là div .khung-san tự đặt theo canvas thật (datKhung: canvas + 4 px mỗi phía, kể cả khi sân dính đáy vì nhãn ⚠), phần còn lại của vùng là nền bàn xưởng; toast bám đáy khung qua --kw / --kdy.
    SÂN THỬ, CHẾ ĐỘ ĐẶT XE (15/10): Field.datSuaXe(bat) = viền vàng nhấp nháy quanh xe + mũi tên ↻ (xoay) ở góc sau-phải; Field.datKeoXe({x, y, tx, ty, hopLe, ngoai}) = xe đi theo ngón tay, ô đích sáng vàng / đỏ,
    khung nét đứt ở chỗ cũ; Field.xoayXe() = hoạt cảnh xe xoay 90°. Việc chạm / kéo nằm ở xuong-ham.js (pointer events); ở đây chỉ vẽ.
-   CHẾ ĐỘ VECTOR (gói V1, 27/10, ve-vector.js; bật ?ve=vector, mặc định pixel): canvas sân lấy độ phân giải pixel THIẾT BỊ (pxO px mỗi ô, datDoPhanGiai) và vẽ qua phép phóng sv = pxO / T,
+   CHẾ ĐỘ VECTOR (gói V1, 27/10, ve-vector.js; V7b mặc định vector, ?ve=pixel để chạy pixel): canvas sân lấy độ phân giải pixel THIẾT BỊ (pxO px mỗi ô, datDoPhanGiai) và vẽ qua phép phóng sv = pxO / T,
    nên mọi hiệu ứng vẫn tính theo pixel sân (T = 14 mỗi ô) như cũ; ô sàn / tường / cờ và thùng gỗ lấy canvas đệm vector đúng cỡ (oVec, hinhVat) vẽ 1:1 nên nét ở mọi cỡ ô;
    gói V2: MỌI ô (veOVec: bậc thang, băng, nút bắn / đè, cửa, rào, sạc, sàn màu, hố, gầm, bàn xoay, cổng, ô đích) và mọi vật (hinhVat / veVatVec: thùng gỗ, khối sắt,
    nam châm; thùng nặng; bóng hơi) cùng ảnh nhỏ thuSan (thuOVec, theo VeVector.KY_HIEU) vẽ bằng hình vector; trạng thái (pha băng, độ mở cửa…) là tham số của hình,
