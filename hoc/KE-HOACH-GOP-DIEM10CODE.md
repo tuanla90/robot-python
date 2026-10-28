@@ -165,7 +165,20 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   Agent chạy: kiem-ve-vector 99, kiem-huy-hieu-phim-vector 11, kiem-nut-mo-dau-phim-vector 12, kiem-giao-dien-vector-b 16, kiem-phim-goi 41, kiem-bang-mau 19, kiem-lap-rap 125, kiem-khay 184, kiem-dong-goi-artifact 14.
   npm test cả bộ sau gộp: 88/88 bộ đạt. Người giao quyết: brief sai chỗ "360 px khung phim tràn 12 px" (không tái hiện: bỏ); Artifact bỏ phông pixel (chấp nhận); trum 24 × 24 (phim-vector.js RIENG còn 26: V7c1 sửa).
 
-## 2b. Linh vật Sola / Luna bản pixel
+- **28/10 V7c1 · Gỡ công tắc pixel xong** (agent Claude fable, nhánh claude/go-pixel-1, 8 commit 4f841ff … 37d61ff, gộp cd5c517; phiên điều phối cũ dừng giữa chừng, phiên mới nhận và nghiệm thu). Game LUÔN vector:
+  bat() = true, `<body class="ve-vector">` sẵn, bỏ hàng "Kiểu vẽ" và "Màu sơn R1" (SON / DS_SON / Luu.son / sonChon xoá; R1 luôn #38BDF8), `?ve=pixel` hết tác dụng. Logic tách khỏi tệp pixel:
+  luật ghép + hamGoc sang bộ phận vector (lap-rap.js gọi VeVector.kiemGhep), HuyHieu.DS + bí danh thành dữ liệu ở huy-hieu-vector.js, 25 máy kiểm đọc mã huy hiệu qua `hoc/huy-hieu-ds.mjs`.
+  Dữ liệu chụp từ mã pixel tại c830c12: `hoc/du-lieu-chup-pixel.json` (chuẩn cho kiem-lap-rap, kiem-ve-vector 12, kiem-huy-hieu A7). Phanh mới so VECTOR với nền c830c12: 13a-v (39 lần chơi, 8104 khung),
+  A3-v (84 huy hiệu × 3), B5-v (19 phim), C3-v (6 khung mở đầu), đều có lỗi giả đỏ; phanh pixel cũ gỡ. Mã pixel còn nằm đó (chết) cho V7c2. Báo cáo: [ban-giao/bao-cao-V7c1.md](ban-giao/bao-cao-V7c1.md).
+  Người giao sau gộp: npm test 88/88 bộ đạt (kiem-ve-vector 95, kiem-huy-hieu-phim-vector 12, kiem-nut-mo-dau-phim-vector 12, kiem-lo-trinh 894, kiem-che-xe 271); trình duyệt: màn đầu, Cài đặt (không còn hai hàng),
+  màn 1.3 chạy và chấm, 0 canvas pixelated, 0 lỗi console; trong trang so VeVector.kiemGhep với Part.ghep cũ trên 1295 tổ hợp thân × tay × cảm biến × ổ: cùng cho / cùng chặn ở mọi tổ hợp
+  (chỉ khác câu báo khi gắn vào ổ "sau" ở 4 thân không có ổ đó; game không đưa ra ổ này).
+  Người giao trả lời câu hỏi của agent: (1) ve.js ico / sao / mui / khoa / hydrate còn vế lùi `nhan(mk(pixel))`: chấp nhận, V7c2 xoá cùng Ve.mk pixel; (2) kiem-tay-xoay, kiem-loi-mua-2, kiem-camera-drone còn chạy nhánh Part:
+  V7c2 sửa TRƯỚC khi xoá part/; (3) HuyHieu.DS đổi thứ tự: chấp nhận (mọi chỗ dùng chỉ indexOf); (4) từ nay máy kiểm require ve-vector.js rồi require màn thì dùng chung một VeVector với lap-rap.js:
+  nạp màn TRƯỚC khi cắm lỗi giả. Sổ lệnh: mô tả distance / warm bỏ "—", kiem-che-xe chặn gạch dài / emoji (cb1f002, sửa dở của phiên cũ).
+  → V7c2 (xoá mã pixel chết, theo bảng mục 3 báo cáo V7c1), rồi V7c3 (choi.css bỏ khai báo pixel, phông 12 → 6 @font-face, sw.js đổi tên bộ đệm, bảng màu dọn vai thừa).
+
+## 2b. Linh vật Sola / Luna bản pixel (CŨ: user chuyển hẳn sang vector 27/10, mục 2c; chân dung nếu làm thì vẽ vector)
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
 - Vẽ **chân dung pixel** Sola và Luna (đầu + vai, vài nét mặt: vui, lo, ngạc nhiên) dùng ở: hộp thoại đề bài / gợi ý, phim, màn thắng. Mẫu là ảnh mascot thật trong `diem10code-video/public/mascot/`.
