@@ -161,6 +161,11 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
       KhoHam.HAM_GOC_MAC_DINH.filter((t) => !['print', 'range', 'len', 'str', 'int'].includes(t)).every((t) => SoLenh.lenhGoc.some((l) => l.ten === t)) &&
       SoLenh.lenhGoc.every((l) => KhoHam.HAM_GOC_MAC_DINH.includes(l.ten)) && SoLenh.lenhGoc.find((l) => l.ten === 'wait').nguoc === null,
     J(SoLenh.lenhGoc.filter((l) => l.nguoc !== (SanHoc.LENH_NGUOC[l.ten] || null)).map((l) => l.ten)));
+  {
+    // chữ hiển thị (thẻ Bộ phận mới, Sổ lệnh): không dấu gạch dài, không emoji (luật diem10code; 28/10 người giao thấy hai mô tả distance / warm có "—")
+    const xau = SoLenh.ds.concat(SoLenh.lenhGoc).filter((h) => /[—–]|\p{Extended_Pictographic}/u.test(h.moTa || '')).map((h) => h.ten);
+    kiem('mô tả Sổ lệnh (hàm của em + lệnh gốc) không dấu gạch dài, không emoji', xau.length === 0, J(xau));
+  }
   kiem('SoLenh.capNguoc(): mỗi cặp một lần, gồm left_move↔left_back và right_move↔right_back', SoLenh.capNguoc().length === Object.keys(SanHoc.LENH_NGUOC).length / 2 && SoLenh.capNguoc().some((c) => c[0] === 'left_move' && c[1] === 'left_back'));
 }
 
