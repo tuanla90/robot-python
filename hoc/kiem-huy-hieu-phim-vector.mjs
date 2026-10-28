@@ -8,6 +8,7 @@
      A3 pixel y nguyên: HuyHieu.vePixel bản mới = HuyHieu.ve bản nền (commit NEN) từng điểm ảnh; ở pixel HuyHieu.ve = vePixel; Ve.mk / Ve.hydrate không bị bọc.
      A4 vector: cầu nối Ve.mk(HuyHieu.ve(…), s) ra canvas vector cỡ 36·s px CSS; Ve.hydrate điền [data-i="huyhieu"] bằng bản vector; mã lạ vẫn ra hình pixel.
      A5 phủ: huy hiệu của mọi gói mùa 1 (ThuTuChuong.goi: hinh / chương đầu) và các huy hiệu bay trong phim "robot" đều có bản vector.
+     A6 (gói V7a) phủ hết: MỌI mã HINH của huy-hieu.js (HuyHieu.DS = Object.keys(HINH), không danh sách cứng: gói sau thêm mã là thấy thiếu) có bản vector (HuyHieu.maVec).
    B. PHIM (mọi phim ở PhimGoi, chạy đủ khung và mọi hẹn giờ)
      B1 vector: mọi khung vẽ được, không lỗi / cảnh báo.
      B2 vector: mọi canvas trong khung tranh là hình vector (.laVector: ô, cờ, nút đè, cửa, sao, icon bộ phận, robot, huy hiệu); không gọi Ve.tiles / Ve.makeNutDe / Ve.veCua.
@@ -15,7 +16,8 @@
         cạnh thùng theo vatKep.n.
      B4 vector: robot trong phim dùng mắt biểu cảm (VeRobot.veCo nhận trangThai.mat) ở ≥ 8 phim, có cả 'vui' lẫn 'ngac'.
      B5 pixel y nguyên: cây DOM của từng khung (sau mọi hẹn giờ) bản mới = bản nền (phim-goi.js, phim-mua-1.js, huy-hieu.js của NEN).
-   Cờ --loi-gia: cắm sáu lỗi (hình tay-gap gọi Part.ghep, vePixel dời sao, hình xich ném lỗi, VAT về 57, PhimVector bỏ ô tường, xe().mat không đổi gì) → máy kiểm phải ĐỎ.
+   Cờ --loi-gia: cắm bảy lỗi (hình tay-gap gọi Part.ghep, vePixel dời sao, hình xich ném lỗi, VAT về 57, PhimVector bỏ ô tường, xe().mat không đổi gì,
+   V7a: bỏ bản vector của be-sung) → máy kiểm phải ĐỎ.
    Chạy: node hoc/kiem-huy-hieu-phim-vector.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
@@ -42,7 +44,8 @@ const docNen = (f) => { try { return execFileSync('git', ['-C', goc, 'show', NEN
 /* ---------------------------------------------------------------- lỗi giả (đổi nguồn trong bộ nhớ) */
 const SUA = {};
 if (LOI_GIA) {
-  console.log('(đang cắm lỗi giả: sáu lỗi, các mục A1 A2 A3 B2 B3 B4 phải đỏ)');
+  console.log('(đang cắm lỗi giả: bảy lỗi, các mục A1 A2 A3 A6 B2 B3 B4 phải đỏ)');
+  SUA['huy-hieu-vector.js'] = (s) => s.replace("dk('be-sung',", "dk('be-sung-loi-gia',");
   SUA['huy-hieu.js'] = (s) => s.replace("if (tt === 'xong') veSao(p, 28, 30);", "if (tt === 'xong') veSao(p, 27, 30);");
   SUA['phim-mua-1.js'] = (s) => s.replace('var VAT = VEC ? kepPx(3).vat : 57;', 'var VAT = 57;');
   SUA['phim-vector.js'] = (s) => s.replace("if (ten === 'wall')", "if (ten === 'wallX')");
@@ -206,6 +209,10 @@ const conPixel = [];
   for (const m of ['hai-banh', 'tay-gap', 'khoang-cach', 'che-tay', 'che-xe', 'tay-xoay', 'cam-bien-ben', 'hai-robot']) can.add(m);
   const thieu = [...can].filter((m) => DS.includes(m) && !VE.ctx.HuyHieu.maVec(m));
   kiem('(A5) huy hiệu mọi gói mùa 1 và huy hiệu bay trong phim "robot" có bản vector (' + can.size + ' mã)', !thieu.length, thieu.join(', '));
+}
+{
+  const thieu = DS.filter((m) => !VE.ctx.HuyHieu.maVec(m));
+  kiem('(A6) gói V7a: mọi mã HINH của huy-hieu.js (' + DS.length + ' mã, đọc từ HuyHieu.DS) có bản vector, không mã nào rơi về pixel', !thieu.length, 'thiếu: ' + thieu.join(', '));
 }
 
 /* ---------------------------------------------------------------- B. PHIM */
