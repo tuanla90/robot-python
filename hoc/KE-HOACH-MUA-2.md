@@ -145,3 +145,8 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   (mốc chương be-sung giờ là màn cuối gói 8). Sau gộp: kiem-be-sung 107, kiem-doi-mua-2 107, kiem-lo-trinh 874, kiem-che-xe 270, kiem-loi-mua-2 93, kiem-bang-mau 19, kiem-huy-hieu-phim-vector 10.
   Recall gói 9 (số màn nhắc mỗi gói): 1:2 · 2:18 · 3:5 · 4:20 · 5:3 · 6:16 · 7:6 · 8:0 (nhánh tách trước khi có gói 8). Gói 10 phải bù: gói 1 (biến, sidestep), 3, 5 (đẩy thùng), 8 (đội, warm() thấy bạn).
   kiem-nut-bat-san: thêm chương be-sung / che-be-sung vào nhóm được khai nutBat (màn đọc warm() ở trạm). npm test cả bộ 86 bộ: 85 đạt + kiem-nut-bat-san đạt sau sửa. Chưa xem trình duyệt.
+- **28/10 Phim mùa 2 xong** (agent Claude opus, nhánh claude/phim-mua-2, gộp 529281e). `game/phim-mua-2.js`: 10 phim (36 khung) cho mọi gói mùa 2, kịch bản ở KE-HOACH-PHIM-GOI.md mục 3b; truyện nối mùa 1:
+  R1 nhặt lại bánh xích trên đồi, nhận súng hơi, mắt hồng ngoại, gặp R2, nhà máy chạy lại, phim 10 nhá mùa 3 (chân nhện, nam châm, sóng từ). 5 hình mới trong phim-vector.js (băng, nút bắn, thùng nặng, bóng, nòng).
+  kiem-phim-goi 41 (mục 1b mùa 2 đọc MUA_2; lỗi giả 6 → đỏ 15); kiem-huy-hieu-phim-vector B5 chỉ so pixel nền cho 9 phim mùa 1 (phim mới chỉ cần chạy ở pixel): người giao duyệt.
+  Người giao tự quyết: robot trong phim theo truyện (R1 lắp dần part), không theo robot từng màn. Chưa xem chuyển động thật (ô trình duyệt ẩn, agent chỉ xem trạng thái cuối): xem khi soát cuối.
+  Còn: phim 10 dùng icon trong khung tròn cho huy hiệu chưa có vector (hết khi V7a gộp); màn chọn gói ghi mùa 2 là "Địa hình" còn kế hoạch gọi "Ghi nhớ" (chưa đổi); ở 360 px #stage phóng 1,2 nên khung phim tràn 12 px mỗi bên (cả mùa 1, sửa ở V7b).
