@@ -52,10 +52,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     A = app; E.host = host;
     host.innerHTML =
       '<div class="deco"></div>' +
-      '<div class="top"><button class="bt g-or menu" data-nut="ve" aria-label="' + t('xuong.ve') + '"><span data-i="back" data-s="2" data-l="' + BM.goV1 + '"></span></button>' +
+      '<div class="top"><button class="bt g-or menu" data-nut="ve" aria-label="' + t('xuong.ve') + '" title="' + t('xuong.ve') + '"><span data-i="back" data-s="2" data-l="' + BM.goV1 + '"></span></button>' +
         '<div class="tenham chalk"><span class="nm"></span></div><span class="dso"></span>' +
-        '<button class="bt g-bl menu" data-nut="lay-lai" aria-label="' + t('xuong.layLai') + '"><span data-i="reset" data-s="2" data-l="' + BM.lamV1 + '"></span></button>' +
-        '<button class="bt g-rd menu" data-nut="xoa-ham" aria-label="' + t('xuong.xoaHam') + '"><span data-i="trash" data-s="2"></span></button></div>' +
+        '<button class="bt g-bl menu" data-nut="lay-lai" aria-label="' + t('xuong.layLai') + '" title="' + t('xuong.layLai') + '"><span data-i="reset" data-s="2" data-l="' + BM.lamV1 + '"></span></button>' +
+        '<button class="bt g-rd menu" data-nut="xoa-ham" aria-label="' + t('xuong.xoaHam') + '" title="' + t('xuong.xoaHam') + '"><span data-i="trash" data-s="2"></span></button></div>' +
       '<div class="fblock">' +
         '<div class="ffr sua"><canvas class="tex"></canvas><div class="toast"></div></div>' +
         '<div class="side xu">' +
@@ -70,7 +70,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       '<div class="low">' +
         '<div class="pan p-prog"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt code">' + t('xuong.def') + '</span><span class="chinh-khoa" data-nut="ham-khoa"><span class="ck-ic"></span><span class="ck-chu">' + t('xuong.chiXem') + '</span></span>' +
-            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="' + BM.doToi + '"></span></button></div>' +
+            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '" title="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="' + BM.doToi + '"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +
