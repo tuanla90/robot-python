@@ -211,8 +211,12 @@ const conPixel = [];
   kiem('(A5) huy hiệu mọi gói mùa 1 và huy hiệu bay trong phim "robot" có bản vector (' + can.size + ' mã)', !thieu.length, thieu.join(', '));
 }
 {
-  const thieu = DS.filter((m) => !VE.ctx.HuyHieu.maVec(m));
-  kiem('(A6) gói V7a: mọi mã HINH của huy-hieu.js (' + DS.length + ' mã, đọc từ HuyHieu.DS) có bản vector, không mã nào rơi về pixel', !thieu.length, 'thiếu: ' + thieu.join(', '));
+  // CHO_V7B: mã của gói 10 mùa 2 (gộp song song với V7a), bản vector do V7b vẽ; V7b vẽ xong thì xoá khỏi danh sách (máy kiểm in mã đã có vector mà còn trong danh sách)
+  const CHO_V7B = ['tong-hop-2', 'nha-may-chay'];
+  const thieu = DS.filter((m) => !VE.ctx.HuyHieu.maVec(m) && !CHO_V7B.includes(m)), cho = CHO_V7B.filter((m) => DS.includes(m) && !VE.ctx.HuyHieu.maVec(m)), thua = CHO_V7B.filter((m) => VE.ctx.HuyHieu.maVec(m));
+  if (cho.length) console.log('  (A6) chờ V7b vẽ bản vector: ' + cho.join(', '));
+  if (thua.length) console.log('  (A6) đã có bản vector, xoá khỏi CHO_V7B: ' + thua.join(', '));
+  kiem('(A6) gói V7a: mọi mã HINH của huy-hieu.js (' + DS.length + ' mã, đọc từ HuyHieu.DS) có bản vector, không mã nào rơi về pixel (trừ CHO_V7B)', !thieu.length, 'thiếu: ' + thieu.join(', '));
 }
 
 /* ---------------------------------------------------------------- B. PHIM */
