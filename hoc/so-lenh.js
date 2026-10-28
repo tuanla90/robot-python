@@ -228,6 +228,10 @@
     m('switch_right', 'hong-ngoai', 'Quay phải, bật nút bên phải nếu nó còn tắt, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.7'),
     m('aim_left_on', 'hong-ngoai', 'Quay trái, nút chưa nóng thì tự chọn lực bắn, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8')
   ];
+  // chương che-doi-mua-2 · Đội phối hợp (gói 8 mùa 2, man-doi-mua-2.js; hàm của màn không có ở đây)
+  ds.push(
+    m('wait_clear', 'hong-ngoai', 'Còn thấy đồng đội (vật nóng) trước mũi xe thì chờ', 'che-doi-mua-2', 'che-doi-mua-2.1')
+  );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
   function g(ten, nguoc, moTa) { return { ten: ten, nguoc: nguoc, moTa: moTa }; }

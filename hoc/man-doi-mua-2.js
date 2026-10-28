@@ -169,6 +169,12 @@
   var R1_10 = nhieu(['forward(2)'], CHO(3), ['forward(2)']);
   var R2_10 = nhieu(FOR(8, ['safe_step()', 'move()']), ['turn_right()', 'move()']);
 
+  // che-doi-mua-2.1: hai giếng bắn (2,·), (4,·) như doi-mua-2.1, nhỏ hơn. R1 đứng ở trạm (2,2) bốn nhịp rồi chạy về cờ (7,2). Cửa của R2 (3,4), (5,4), cờ R2 (6,4).
+  var SAN_C1 = ['##N#N####', '##.#.####', '#......F#', '##.#.####', '#..C.CF##', '#########'];
+  var NOI_C1 = [noi(2, 0, [[3, 4]]), noi(4, 0, [[5, 4]])];
+  var R1_C1 = nhieu(['move()'], CHO(4), ['forward(5)']);
+  var R2_C1 = nhieu(FOR(2, ['move()', 'turn_left()', 'wait_clear()', 'fire("charge")', 'turn_right()', 'move()']), ['move()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -384,6 +390,25 @@
         { moTa: 'Chờ cố định một nhịp mỗi bước: sân thứ hai R2 tới ngã tư đúng lúc R1 đi xuống', ham: [H('safe_step', [], ['wait()'])], phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Sân nào cũng vậy: có thứ gì sát mũi xe (bạn hay thùng) thì chờ, không thì đi.', 'Thân safe_step(): while distance() == 0: wait().']
+    }),
+
+    /* ================================================================ chương che-doi-mua-2: Đội phối hợp (hàm của em) */
+    man({
+      chuong: 'che-doi-mua-2', so: 1, ten: 'Hàm wait_clear()', yMoi: 'chế hàm của em đọc warm(): còn thấy bạn trước mũi xe thì chờ',
+      hamCuaEmCan: ['move', 'forward', 'turn_left', 'turn_right', 'fire'], taoHam: ['wait_clear'],
+      deBai: 'Em chế wait_clear(): còn thấy đồng đội (hay vật nóng) trước mũi xe thì chờ. Hàm này sẽ theo đội suốt chương. ' +
+        'Chương trình hai xe đã khóa: R2 ở mỗi giếng quay lên, gọi wait_clear() rồi bắn tụ mở cửa. R1 đứng ở giếng đầu một lúc.',
+      veMaMau: 'Hai chương trình bị khóa. Mở Xưởng hàm, tạo wait_clear() hai dòng.',
+      san: SAN_C1, noi: NOI_C1, bd: [{ x: 1, y: 2, huong: 1 }, { x: 1, y: 4, huong: 1 }], co: [[o(7, 2)], [o(6, 4)]],
+      chinh: [R1_C1, R2_C1],
+      hamEm: [H('wait_clear', [], CHO_DI)],
+      sao: { o: 25, nhip: 15 },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('wait_clear', [], ['# còn thấy bạn thì chờ'].concat(CHO_DI))] },
+      loiSai: [
+        { moTa: 'Thân chỉ có pass: bắn ngay, bóng trúng R1', hamEm: [H('wait_clear', [], ['pass'])], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
+        { moTa: 'Dùng if thay cho while: chỉ chờ một nhịp, R1 còn đứng đó', hamEm: [H('wait_clear', [], IF('warm()', ['wait()']))], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] }
+      ],
+      goiY: ['Hàm của em vào kho, các màn sau gọi lại được.', 'Thân wait_clear(): while warm(): wait().']
     })
   ];
 
