@@ -231,13 +231,13 @@
   // chương che-doi-mua-2 · Đội phối hợp (gói 8 mùa 2, man-doi-mua-2.js; hàm của màn không có ở đây)
   ds.push(
     m('wait_clear', 'hong-ngoai', 'Còn thấy đồng đội (vật nóng) trước mũi xe thì chờ', 'che-doi-mua-2', 'che-doi-mua-2.1'),
-    m('yield_step', 'hong-ngoai', 'Chờ tới khi không còn thấy bạn trước mũi xe rồi tiến một ô (xe nào trong đội cũng gọi được)', 'che-doi-mua-2', 'che-doi-mua-2.2'),
+    m('yield_step', 'hong-ngoai', 'Chờ tới khi không còn thấy bạn trước mũi xe rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.2'),
     m('wait_mate', 'hong-ngoai', 'Chờ tới khi thấy đồng đội (vật nóng) trước mũi xe', 'che-doi-mua-2', 'che-doi-mua-2.4'),
-    m('pass_mate', 'hong-ngoai', 'Chờ bạn tới trước mũi xe rồi chờ bạn đi khỏi (wait_mate rồi wait_clear)', 'che-doi-mua-2', 'che-doi-mua-2.5'),
+    m('pass_mate', 'hong-ngoai', 'Chờ bạn tới trước mũi xe rồi chờ bạn đi khỏi', 'che-doi-mua-2', 'che-doi-mua-2.5'),
     m('shot_clear', 'hong-ngoai', 'Chờ bạn đi khỏi đường bóng rồi bắn với lực p', 'che-doi-mua-2', 'che-doi-mua-2.6'),
-    m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô (đo khoảng cách, không nhầm đèn nóng)', 'che-doi-mua-2', 'che-doi-mua-2.7'),
+    m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.7'),
     m('cover', 'hong-ngoai', 'Chờ bạn tới rồi đi khỏi (pass_mate) rồi bắn tụ', 'che-doi-mua-2', 'che-doi-mua-2.8'),
-    m('guard', 'hong-ngoai', 'Chờ bạn tới rồi đi khỏi (pass_mate) rồi tự chọn lực bắn theo xa gần (aim_fire)', 'che-doi-mua-2', 'che-doi-mua-2.10')
+    m('guard', 'hong-ngoai', 'Chờ bạn qua (pass_mate) rồi tự chọn lực bắn theo xa gần', 'che-doi-mua-2', 'che-doi-mua-2.10')
   );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
