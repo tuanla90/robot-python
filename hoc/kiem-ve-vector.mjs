@@ -29,6 +29,7 @@
        tương phản WCAG AA mọi cặp chữ / nền khai cùng luật; công tắc Cài đặt Kiểu vẽ (luuCheDo ghi / xoá khoá); trang xem có mục V5a.
    (gói V6b) mục 13h: cỡ vật trong tay ở vector (phát lại màn kẹp / tay xoay / nam châm): hạ = vật nằm sàn, nâng 1,15–1,25 lần, chuyển dần, bóng nâng xa hơn, vật dính
        nam châm = cỡ nâng; càng / ngón ôm vật ở mọi độ nâng. Mục 4 / 9 / 12: vật trong tay to chờm sang ô trước mặt, nằm trong tầm lớp phủ (VeVector.tamVoi, reachCua).
+   (gói V7a) mục 13i: vật treo dưới drone nam châm = cỡ vật nâng (phát lại drone.7, che-drone.6); tay xoay mở / khép dần (khe theo moK); dây nối nút ↔ cửa theo cfg.noi (dungDayNoi, chỉ vector vẽ).
    Cờ --loi-gia: cắm sáu lỗi giả (neo tay lệch, góc xoay lệch 90°, màu R2 = R1, đệm bỏ cỡ, ô tường tô mã màu ngoài bảng, ổ tay thân ra ngoài ô) và bốn lỗi V2
    (bỏ ký hiệu hố khỏi bảng nối, bỏ ô bậc thang của Ve.tiles khỏi bảng, băng chuyền bỏ qua pha, sàn màu vàng tô màu ngoài nhóm LUAT) và bốn lỗi V3 (drone mất cờ không hướng,
    xích đổi chỗ hai ổ hông, nam châm tô màu đội, camera-bay sai ổ) và sáu lỗi V4 (nhánh pixel veDau tô thêm, hạt vector dùng fillRect, tia từ tâm xe, matSuKien bỏ qua,
@@ -910,6 +911,60 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
       if (!(khe >= nua && khe <= nua + 4)) om.push(ma + ' k' + k + ': nửa khe ' + khe.toFixed(1) + ', nửa thân vật ' + nua.toFixed(1));
     }
     kiem('(13h) V6b càng kẹp / ngón tay xoay ÔM vật ở mọi độ nâng (0 / 0,5 / 1): đường tâm càng nằm ngoài mép thân vật, cách không quá 4 đơn vị (không xuyên vật, không hở)', om.length === 0, om.join('; '));
+  }
+
+  /* i. (gói V7a) drone nam châm: vật treo dưới drone = cỡ vật nâng (phát lại màn drone thật); tay xoay mở / khép DẦN (moK 0 / 0,5 / 1 ra ba khe khác nhau, tăng dần);
+        dây nối nút ↔ cửa: màn có nút N / M và cửa có dây, đầu dây ở ô nút, cuối ở ô cửa, theo cfg.noi; màn không nút không dây; nhánh vector gọi veDayNoi. */
+  {
+    const VV = KV.ctx.VeVector, P = KV.ctx.SanVe.Field.prototype, veCu = P.veMotVat, nangCu = P.coVatNang, ghi = [];
+    if (LOI_GIA) { P.coVatNang = P.coVatDat; V._loiGia.xoayBat = true; console.log('(và ba lỗi giả V7a: vật treo drone cỡ sàn, tay xoay bật khe một phát, dungDayNoi không dựng dây)'); }
+    P.veMotVat = function (g, o, n, x, y, sz) {
+      const m = g.getTransform(), sc = Math.sqrt(Math.abs(m.a * m.d - m.b * m.c)) || 1, o1 = 14 * this.kk * this.u / sc;
+      if (this.lopOK && o1 > 0 && o.tt === 'cam' && this.vis && this.vis.dr && !this.vis.dr.roi) ghi.push(sz * 0.76 / o1 * 100);
+      return veCu.apply(this, arguments);
+    };
+    const DR = ['drone.7', 'che-drone.6'].map((ma) => ManHoc.danhSach.find((x) => x.ma === ma)).filter(Boolean);
+    for (const m of DR) { const v = vetCua(m); if (v && v.vet.length) { KV.datHat(777); KV.datGio(1000); await phat(KV, m, v); } }
+    P.veMotVat = veCu; P.coVatNang = nangCu;
+    const tl = ghi.map((t) => t / VV.VAT_SAN);
+    kiem('(13i) V7a vật treo dưới drone nam châm = cỡ vật nâng (1,15–1,25 lần vật nằm sàn; phát lại ' + DR.map((m) => m.ma).join(', ') + ': ' + ghi.length + ' khung treo)',
+      ghi.length > 0 && tl.every((k) => k >= 1.15 && k <= 1.25), ghi.length ? 'tỉ lệ ' + Math.min(...tl).toFixed(2) + '–' + Math.max(...tl).toFixed(2) : 'không khung treo nào');
+    /* tay xoay: vẽ riêng tay (canvas giả), đo nửa khe (điểm lineTo xa trục nhất) ở moK 0 / 0,5 / 1 */
+    const khe = [0, 0.5, 1].map((k) => {
+      const cv = new V.CanvasGia(100, 100), g = cv.getContext('2d'); V.lay('tay', 'xoay').ve(g, { kep: 'dong', cam: false, tuThe: 'tren', moK: k }, V.mauDoi(''), V.H);
+      const pts = []; let m = [1, 0, 0, 1, 0, 0]; const ngan = [];
+      for (const l of cv.lenh) {
+        const [c, ...a] = l;
+        if (c === 'save') ngan.push(m.slice()); else if (c === 'restore') m = ngan.pop() || m; else if (c === 'translate') m = [m[0], m[1], m[2], m[3], m[4] + m[0] * a[0] + m[2] * a[1], m[5] + m[1] * a[0] + m[3] * a[1]];
+        else if (c === 'rotate') { const co = Math.cos(a[0]), si = Math.sin(a[0]); m = [m[0] * co + m[2] * si, m[1] * co + m[3] * si, -m[0] * si + m[2] * co, -m[1] * si + m[3] * co, m[4], m[5]]; }
+        else if (c === 'lineTo') pts.push(m[0] * a[0] + m[2] * a[1] + m[4]);
+      }
+      return Math.max(...pts.map((x) => Math.abs(x - 50)));
+    });
+    V._loiGia.xoayBat = false;
+    kiem('(13i) V7a tay xoay mở / khép DẦN: nửa khe ở moK 0 / 0,5 / 1 tăng dần, giữa chừng khác hai đầu (không bật một phát) ' + J(khe.map((k) => +k.toFixed(1))),
+      khe[0] < khe[1] - 0.5 && khe[1] < khe[2] - 0.5, '');
+    /* dây nối: chạy dungDayNoi trên sân thật của các màn (không cần vẽ) */
+    const dung = LOI_GIA ? function () { this.dayNoi = []; } : P.dungDayNoi, saiD = [];
+    const MAN_D = ManHoc.danhSach.filter((m) => !Array.isArray(m.san[0]) && !m.doi);
+    let coDay = 0, coNut = 0;
+    for (const m of MAN_D) {
+      const rows = m.san, w = rows[0].length, h = rows.length, f = {};
+      dung.call(f, rows, m.noi, m.cuaNhip, { ox: 0, oy: 0, vw: w, vh: h });
+      const nut = rows.join('').match(/[NM]/g), cua = rows.join('').match(/[Cc]/g), ds = f.dayNoi || [];
+      if (!nut || !cua) { if (ds.length) saiD.push(m.ma + ': không nút / cửa mà có ' + ds.length + ' dây'); continue; }
+      coNut++; if (ds.length) coDay++;
+      const can = Array.isArray(m.noi) ? m.noi.reduce((s, g) => s + ((g && g.cua) || []).length, 0) : null;
+      if (!ds.length && can !== 0) saiD.push(m.ma + ': có nút + cửa mà không dây');
+      for (const d of ds) {
+        if (rows[d.nut.y][d.nut.x] !== d.nut.ma || !/[Cc]/.test(rows[d.cua.y][d.cua.x])) { saiD.push(m.ma + ': dây nối sai ô'); break; }
+        const a = d.diem[0], b = d.diem[d.diem.length - 1];
+        if (Math.floor(a[0] / 14) !== d.nut.x || Math.floor(a[1] / 14) !== d.nut.y || Math.floor(b[0] / 14) !== d.cua.x || Math.floor(b[1] / 14) !== d.cua.y) { saiD.push(m.ma + ': đầu / cuối dây không ở ô nút / cửa'); break; }
+      }
+    }
+    const svSrc = fs.readFileSync(path.join(GAME, 'san-ve.js'), 'utf8');
+    kiem('(13i) V7a dây nối nút ↔ cửa: ' + coDay + ' / ' + coNut + ' màn có nút + cửa có dây (theo cfg.noi; đầu ô nút, cuối ô cửa); màn không nút không dây; chỉ nhánh vector vẽ (this.vec → veDayNoi)',
+      saiD.length === 0 && coDay >= 10 && /if \(this\.vec\) this\.veDayNoi\(/.test(svSrc), saiD.slice(0, 4).join('; '));
   }
 
   /* g. cờ bay, sàn bàn cờ, trang xem */

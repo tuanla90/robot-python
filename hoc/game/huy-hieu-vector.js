@@ -37,6 +37,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var a = (huong || 0) * Math.PI / 2, fx = Math.sin(a), fy = -Math.cos(a);                    // hướng mũi; bên phải xe = (−fy, fx)
       return { x: cx + (fx * f - fy * l) * u, y: cy + (fy * f + fx * l) * u, n: n * u };
     };
+    /** Gói V7a: vật trong tay to theo luật V6b (68,4% ô khi nâng) nên robot cầm vật cỡ cũ lẹm viền đĩa. Tìm chỗ đặt vừa đĩa: giữ cạnh `canh` lớn nhất có thể
+     *  (thu dần tới 60%), lùi robot ngược hướng vật tối đa 24 đơn vị, sao cho bốn góc thân vật và vòng thân robot (≈ 0,4 cạnh) nằm trong bán kính R (mặc định R_HINH − 1,5).
+     *  Trả { cx, cy, canh } (giữ nguyên nếu không có vật). */
+    c.vua = function (cfg, tuThe, huong, cx, cy, canh, goc, R) {
+      R = R || R_HINH - 1.5;
+      var p0 = c.vatCam(cfg, tuThe, huong, cx, cy, canh, goc); if (!p0) return { cx: cx, cy: cy, canh: canh };
+      var vx = p0.x - cx, vy = p0.y - cy, L = Math.sqrt(vx * vx + vy * vy) || 1, u, t, x, y;
+      vx /= L; vy /= L;
+      function lot(x, y, u) {
+        var p = c.vatCam(cfg, tuThe, huong, x, y, u, goc), h = p.n / 2 + 1, i, dx, dy;
+        for (i = 0; i < 4; i++) { dx = p.x + (i & 1 ? h : -h) - 50; dy = p.y + (i & 2 ? h : -h) - 50; if (dx * dx + dy * dy > R * R) return false; }
+        dx = x - 50; dy = y - 50; return Math.sqrt(dx * dx + dy * dy) + u * 0.4 <= R + 2;
+      }
+      for (u = canh; u >= canh * 0.6; u -= 0.5) for (t = 0; t <= 24; t += 0.5) { x = cx - vx * t; y = cy - vy * t; if (lot(x, y, u)) return { cx: x, cy: y, canh: u }; }
+      return { cx: cx, cy: cy, canh: canh * 0.6 };
+    };
     /** Điểm cách tâm thân `d` (1/100 ô) về phía mũi, theo hướng: cho bóng hơi / vật trước mũi. */
     c.truoc = function (huong, cx, cy, canh, d) { var a = (huong || 0) * Math.PI / 2; return { x: cx + Math.sin(a) * d * canh / 100, y: cy - Math.cos(a) * d * canh / 100 }; };
     c.hh = function (cfg) { return V.hinhHoc(cfg) || { mz: 44, bk: 36 }; };
@@ -148,9 +164,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function dk(ma, f) { HINH[ma] = f; }
   /** Robot cầm vật (tay kẹp / tay xoay): vật vẽ trước (dưới càng), rồi robot. */
   function robotCam(c, cfg, s, huong, cx, cy, canh, vat, goc) {
-    var p = c.vatCam(cfg, s.tay && s.tay.tuThe === 'duoi' ? 'duoi' : 'tren', huong, cx, cy, canh, goc);
+    var tt = s.tay && s.tay.tuThe === 'duoi' ? 'duoi' : 'tren', o = c.vua(cfg, tt, huong, cx, cy, canh, goc);   // gói V7a: vừa đĩa, không lẹm viền
+    var p = c.vatCam(cfg, tt, huong, o.cx, o.cy, o.canh, goc);
     if (p) c.vat(vat || 'thung-go', {}, p.x, p.y, p.n);
-    c.robot(cfg, s, huong, cx, cy, canh);
+    c.robot(cfg, s, huong, o.cx, o.cy, o.canh);
   }
   /** Huy hiệu "chế lệnh": hình nhỏ lệch trái dưới + bánh răng góc trên phải. */
   function che(f) { return function (g, c, tt) { f(g, c, tt); c.banhRang(68, 30, 13); }; }
@@ -166,8 +183,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   });
   dk('tay-gap', function (g, c) { robotCam(c, KEP, st(null, { tuThe: 'tren', kep: 'dong', cam: true }), 0, 50, 60, 64); });
   dk('che-tay', che(function (g, c) {
-    var cfg = KEP, p = c.vatCam(cfg, 'tren', 0, 42, 62, 52);
-    c.vat('khoi-sat', {}, p.x, p.y - 4, p.n); c.robot(cfg, st(null, { tuThe: 'tren', kep: 'mo' }), 0, 42, 62, 52);
+    var cfg = KEP, o = c.vua(cfg, 'tren', 0, 42, 62, 52), p = c.vatCam(cfg, 'tren', 0, o.cx, o.cy - 4, o.canh);   // gói V7a: vừa đĩa (vật mở kẹp cách 4 đơn vị)
+    c.vat('khoi-sat', {}, p.x, p.y, p.n); c.robot(cfg, st(null, { tuThe: 'tren', kep: 'mo' }), 0, o.cx, o.cy, o.canh);
   }));
   function namCham(g, c, cx, cy, canh) {
     var cfg = { than: 'hai-banh', tay: 'nam-cham' }, p = c.truoc(0, cx, cy, canh, c.hh(cfg).mz + 12);
@@ -269,8 +286,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('che-tay-xoay', che(function (g, c) { robotCam(c, XOAY, st(null, { tuThe: 'tren', kep: 'dong', cam: true, goc: -90 }), 0, 50, 62, 46, 'thung-go', -90); }));
   var DU_BO = { than: 'hai-banh', tay: 'xoay', camBien: CAM };
   dk('combo', function (g, c) {
-    c.vat('thung-go', {}, 18, 46, 14); c.vat('thung-go', {}, 82, 46, 14);
-    c.tiaDo(28, 40, 46); c.tiaDo(72, 60, 46);
+    c.vat('thung-go', {}, 22, 46, 12); c.vat('thung-go', {}, 78, 46, 12);          // gói V7a: hai thùng dời vào trong đĩa (cũ 18 / 82 cỡ 14 lẹm viền)
+    c.tiaDo(30, 40, 46); c.tiaDo(70, 60, 46);
     c.robot(DU_BO, st(null, { tuThe: 'tren', kep: 'mo' }, { bat: true }), 0, 50, 54, 54);
   });
   dk('che-combo', che(function (g, c) { robotCam(c, DU_BO, st(null, { tuThe: 'tren', kep: 'dong', cam: true, goc: -90 }, { bat: true }), 0, 50, 62, 46, 'thung-go', -90); }));
@@ -282,6 +299,29 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot({ than: 'hai-banh', son: 'lam' }, st(), 0, 70, 60, 42);
   }
   dk('hai-robot', haiRobot);
+  /* gói V7a: gói 8 mùa 2 "Đội" (doi-mua-2): hai xe đội (R1, R2) như hai-robot, giữa hai xe là sóng nhiệt đỏ (mắt hồng ngoại thấy bạn nóng); chế = thêm bánh răng. */
+  function songNhiet(g, x, y0, n, b) {
+    var i, y = y0;
+    g.beginPath(); g.moveTo(x, y);
+    for (i = 0; i < n; i++, y += b * 2.6) g.quadraticCurveTo(x + (i % 2 ? -b : b), y + b * 1.3, x, y + b * 2.6);   // đường lượn dọc (H.duong không có lệnh q)
+    H.vien(g, H.rgba(BM.vecVienRgb, 0.3), 4.6); H.vien(g, BM.vecDo, 2.6);
+  }
+  function doiMua2(g, c, cy, canh, coThung) {
+    if (coThung) c.vat('thung-go', {}, 50, 30, 14);
+    c.robot({ than: 'hai-banh', son: '' }, st(), 0, 32, cy, canh);
+    c.robot({ than: 'hai-banh', son: 'lam' }, st(), 0, 68, cy, canh);
+    songNhiet(g, 47.5, cy - canh * 0.3, 3, 2); songNhiet(g, 52.5, cy - canh * 0.3, 3, -2);
+  }
+  dk('doi-mua-2', function (g, c) { doiMua2(g, c, 60, 34, true); });
+  dk('che-doi-mua-2', che(function (g, c) { doiMua2(g, c, 62, 33, false); }));
+  /* gói V7a: gói 9 mùa 2 "Bệ súng xích" (be-sung): xe xích gắn súng hơi, nòng trước vừa bắn ra quả bóng to (bắn tụ), xe đứng yên; chế = thân xích + nòng, thêm bánh răng. */
+  function beSung(g, c, cx, cy, canh, bong) {
+    var cfg = { than: 'xich', tay: 'hoi' }, mz = c.hh(cfg).mz;
+    c.robot(cfg, st(null, { dangBanTruoc: !!bong }), 1, cx, cy, canh);
+    if (bong) { var p = c.truoc(1, cx, cy, canh, mz + bong[0]); c.vat('bong', {}, p.x + bong[1] * 0.5, p.y, bong[1]); }
+  }
+  dk('be-sung', function (g, c) { beSung(g, c, 36, 54, 50, [8, 20]); });
+  dk('che-be-sung', che(function (g, c) { beSung(g, c, 38, 62, 50); }));
   dk('che-hai-robot', function (g, c) {
     c.o('nut-de', { de: true }, 30, 62, 32); c.robot({ than: 'hai-banh', son: '' }, st(), 0, 30, 62, 34);
     c.o('cua', { k: 1, doc: true }, 68, 34, 30);

@@ -283,7 +283,10 @@
     vecChanhNhat: '#ecfccb',           // xanh chanh nhạt: nền khối danh sách
     vecHoPhachChu: '#92400e',          // chữ wait() trong dòng code (amber-800): đậm hơn vecHoPhachDam cho đủ 4,5:1 trên nền ô mã vecMa
     vecLaChu: '#166534',               // chữ tên hàm trong dòng code (green-800): vecLaDam trên vecMa chỉ 4,46:1
-    vecChanhChu: '#3f6212'             // chữ lệnh trượt / danh sách trong dòng code (lime-800): vecChanhDam trên vecMa chỉ 4,44:1
+    vecChanhChu: '#3f6212',            // chữ lệnh trượt / danh sách trong dòng code (lime-800): vecChanhDam trên vecMa chỉ 4,44:1
+    // ---- VECTOR (gói V7a, 28/10): dây nối nút ↔ cửa trên sàn (ve-vector-hieu-ung.js dayNoi, san-ve.js veDayNoi)
+    vecDayNoiRgb: '108,104,150',       // dây nối lúc tắt: xám chàm trung tính, ghép độ mờ thấp (chìm trên sàn trắng)
+    vecDayNoiSangRgb: '34,197,94'      // dây nối lúc nút bật: xanh lá như mặt nút bật (vecXanhLa)
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (31): SON / DS_SON của part.js, cai-dat.js, vạch đế R1..R4 (san-ve.js). R1 vàng, R2 lam, đối thủ đỏ
