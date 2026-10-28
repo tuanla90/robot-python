@@ -133,7 +133,8 @@ console.log('\n== 5. Màn cũ y nguyên ==');
   // Gói 7 Đo nhiệt (man-do-nhiet.js, chương do-nhiet / che-do-nhiet) là nơi DÙNG nutBat: kiem-do-nhiet.mjs kiểm các màn đó. Mọi màn khác vẫn phải y nguyên.
   const GOI_DUNG = ['do-nhiet', 'che-do-nhiet'];
   const GOI_DUNG_SAU = ['doi-mua-2', 'che-doi-mua-2',   // gói 8 Đội (man-doi-mua-2.js): vài màn có đèn nóng (nutBat), kiem-doi-mua-2.mjs kiểm; không bắt buộc màn nào cũng khai
-    'be-sung', 'che-be-sung'];                          // gói 9 Bệ súng xích (man-be-sung.js): màn đọc warm() ở trạm có nút bật sẵn, kiem-be-sung.mjs kiểm
+    'be-sung', 'che-be-sung',                           // gói 9 Bệ súng xích (man-be-sung.js): màn đọc warm() ở trạm có nút bật sẵn, kiem-be-sung.mjs kiểm
+    'tong-hop-2', 'trum-mua-2'];                        // gói 10 Nhà máy chạy lại (man-trum-mua-2.js): màn đọc warm() có nút bật sẵn, kiem-trum-mua-2.mjs kiểm
   const ds = M.danhSach.filter((m) => !GOI_DUNG.includes(m.chuong) && !GOI_DUNG_SAU.includes(m.chuong));
   const dung = M.danhSach.filter((m) => GOI_DUNG.includes(m.chuong));
   kiem('không màn nào ngoài gói Đo nhiệt khai nutBat; màn gói Đo nhiệt nào cũng khai', ds.length > 500 && ds.every((m) => m.nutBat === undefined && !(m.doi || []).some((r) => r.nutBat !== undefined)) && dung.every((m) => Array.isArray(m.nutBat) && m.nutBat.length),
