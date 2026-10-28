@@ -33,8 +33,7 @@ body.ve-vector .screen,body.ve-vector .ws-ov{background:var(--g-vecNen);backgrou
 body.ve-vector:not(.dien-thoai) .screen{border-radius:var(--r-lg);box-shadow:var(--elev-3),0 0 0 1px var(--g-vecKe)}
 body.ve-vector:not(.dien-thoai) .screen>.ovwrap{border-radius:var(--r-lg)}
 body.ve-vector .deco .surf,body.ve-vector .deco .bev,body.ve-vector .deco>canvas{display:none}
-/* phim mở đầu / phim gói (.md, gói V6) còn nền gỗ + bảng phấn: giữ mực / kem của pixel cho chữ đọc được tới khi V6 làm lại */
-body.ve-vector .md{--ink:var(--g-vienDam);--cream:var(--g-kemSang)}
+/* phim mở đầu / phim gói (.md): gói V6c đã chuyển hẳn sang vector (giao-dien-vector-b.css mục 7, 10), mực / kem theo body.ve-vector như mọi chỗ khác */
 
 /* chữ code / tên lệnh trong câu (`move()`): Google Sans Code cùng cỡ, ngoặc đứng riêng giữ phông chữ thường */
 body.ve-vector .kc{font-size:.96em;font-weight:500}
@@ -511,7 +510,7 @@ body.ve-vector .mini .bt::before,body.ve-vector .cuon-b::before,body.ve-vector .
 body.ve-vector .bh .cuon-nut .cuon-b{width:22px}
 
 /* ============================================================ 7. CHUYỂN ĐỘNG: bỏ steps() còn lại của màn chơi, tôn trọng prefers-reduced-motion
-   Các steps() của khối / dòng / hộp đã thay ở vùng 3–5 (vec-*); ở đây là phần còn lại của màn chơi. Phim mở đầu / phim gói (.md-*, .pg-*) và
+   Các steps() của khối / dòng / hộp đã thay ở vùng 3–5 (vec-*); ở đây là phần còn lại của màn chơi. Phim mở đầu / phim gói (.md-*, .pg-*: giao-dien-vector-b.css mục 10, V6c) và
    màn ngoài màn chơi (.g-the, .c-man, .lr-*) để V5b / V6. Dòng code đổi chỗ (thanh-phan.js, Web Animations) cũng trượt mượt ở vector. */
 body.ve-vector .ffr.rung{animation:rung .32s ease-in-out 1}
 body.ve-vector .ws-ov{transition:transform .34s cubic-bezier(.16,1,.3,1)}
@@ -525,7 +524,7 @@ body.ve-vector .lr-robot.doi .lr-hinh{animation:vec-lr-pop .32s cubic-bezier(.34
 @keyframes vec-lr-pop{0%{transform:scale(.86)}100%{transform:scale(1)}}
 @keyframes vec-nut-nhay{from{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}to{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.22)}}
 /* giảm chuyển động: mọi hoạt cảnh / chuyển tiếp của giao diện chạy tức thì, dừng ở khung cuối (các vec-* lặp đặt trạng thái rõ nhất ở 'to');
-   trừ phim (.md: hiện từng hình theo animation-delay, gói V6 làm lại) */
+   kể cả phim (.md, gói V6c): mọi hình của khung hiện ngay ở trạng thái cuối (hình hiện dần theo animation-delay hiện luôn, hình bay đã tới chỗ), không chờ */
 @media (prefers-reduced-motion:reduce){
-  body.ve-vector #stage>:not(.md),body.ve-vector #stage>:not(.md) *,body.ve-vector #stage>:not(.md) *::before,body.ve-vector #stage>:not(.md) *::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
+  body.ve-vector #stage>*,body.ve-vector #stage>* *,body.ve-vector #stage>* *::before,body.ve-vector #stage>* *::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
 }
