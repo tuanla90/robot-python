@@ -150,6 +150,25 @@
   var R1_8 = nhieu(['forward(2)'], CHO(3), ['forward(5)']);
   var R2_8 = nhieu(FOR(2, ['move()', 'turn_left()', 'wait_aim()', 'turn_right()', 'move()']), ['move()']);
 
+  // doi-mua-2.9: hành lang ngang (hàng 3) của R2, cuối hành lang quay xuống cờ (9,4). R1 xích (xichDay) ở trên ngã tư (4,3), thùng nặng (4,2) trước mũi:
+  //   R1 đẩy thùng vào ngã tư, dừng ba nhịp, rồi đẩy thùng xuống hốc (4,5) và đứng ở cờ (4,4). Thùng rồi R1 chắn ngã tư năm nhịp.
+  var SAN_9 = ['###########', '####.######', '####H######', '#.........#', '####F####F#', '####.######', '###########'];
+  var R1_9 = nhieu(['move()'], CHO(3), ['forward(2)']);
+  var R2_9 = nhieu(FOR(8, ['cross_safe()', 'move()']), ['turn_right()', 'move()']);
+
+  // doi-mua-2.10 (trùm, ba sân): cùng hành lang của R2 (hàng 3, quay xuống cờ (9,4)); R1 đi dọc xuống cắt ngang ở ngã tư khác nhau, cùng một chương trình:
+  //   sân 1: R1 (5,1) vào ngã tư (5,3) rồi dừng ba nhịp ngay trong ngã tư; cuối hành lang là đèn nóng (10,3);
+  //   sân 2: R1 (3,0) dừng ba nhịp ở (3,2) TRÊN ngã tư (R2 qua trước được), rồi đi xuống cờ (3,4);
+  //   sân 3: R1 (7,1) đẩy thùng (7,2) qua ngã tư (7,3), dừng ba nhịp trong ngã tư, rồi đẩy thùng xuống hốc (7,5).
+  var SAN_10 = [
+    ['###########', '#####.#####', '#####.#####', '#.........N', '#####.###F#', '#####F#####', '###########'],
+    ['###.#######', '###.#######', '###.#######', '#.........#', '###F#####F#', '###########', '###########'],
+    ['###########', '#######.###', '#######H###', '#.........#', '#######F#F#', '#######.###', '###########']
+  ];
+  var BD_10 = [[o(5, 1), o(3, 0), o(7, 1)].map(function (p) { return { x: p.x, y: p.y, huong: 2 }; }), [0, 1, 2].map(function () { return { x: 1, y: 3, huong: 1 }; })];
+  var R1_10 = nhieu(['forward(2)'], CHO(3), ['forward(2)']);
+  var R2_10 = nhieu(FOR(8, ['safe_step()', 'move()']), ['turn_right()', 'move()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -322,6 +341,49 @@
         { moTa: 'Chờ rồi luôn bắn nhanh: nút giếng đầu ở xa, bóng rơi giữa đường', ham: [H('wait_aim', [], CHO_DI.concat(['fire("fast")']))], phaiCoMa: ['ban-ngan', 'chua-toi-co'] }
       ],
       goiY: ['Đo xa gần khi R1 còn đứng chắn thì distance() là 0.', 'while warm(): wait() rồi aim_fire().']
+    }),
+
+    man({
+      chuong: 'doi-mua-2', so: 9, ten: 'Ngã tư có thùng', yMoi: 'thùng hay bạn ở ngã tư đều làm distance() bằng 0: một vòng chờ cho cả hai',
+      hamCuaEmCan: ['move', 'forward', 'turn_right'], xichDay: true,
+      deBai: 'R1 xe xích đẩy một thùng nặng đi xuống, qua ngã tư trên hành lang của R2, dừng một lúc rồi đẩy thùng xuống hốc. Thùng rồi tới R1 chắn ngã tư. ' +
+        'R2 gọi cross_safe() trước mỗi bước; húc vào thùng hay vào R1 đều mất bước. Viết thân cross_safe() chờ được cả thùng lẫn bạn.',
+      veMaMau: 'Hai chương trình bị khóa. cross_safe() viết bằng warm(): chạy thử xem R2 húc vào gì.',
+      san: SAN_9, bd: [{ x: 4, y: 1, huong: 2 }, { x: 1, y: 3, huong: 1 }], co: [[o(4, 4)], [o(9, 4)]],
+      chinh: [R1_9, R2_9],
+      hamMau: [H('cross_safe', [], CHO_DI)],
+      ham: [H('cross_safe', [], CHO_SAT)],
+      sao: { o: 18, nhip: 14 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('cross_safe', [], ['# thùng hay bạn sát mũi xe thì chờ'].concat(CHO_SAT))] },
+      loiSai: [
+        { moTa: 'Để nguyên while warm(): thùng không nóng, R2 húc vào thùng', ham: [H('cross_safe', [], CHO_DI)], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Viết while distance() > 0: còn khoảng trống thì chờ, R2 đứng mãi', ham: [H('cross_safe', [], WHILE('distance() > 0', ['wait()']))], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Để trống: R2 húc vào thùng ở ngã tư', ham: [H('cross_safe', [], ['pass'])], phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Thùng hay đồng đội ngay trước mũi xe đều làm distance() bằng 0.', 'Thân cross_safe(): while distance() == 0: wait().']
+    }),
+
+    /* ------------------------------------------------ trùm */
+    man({
+      chuong: 'doi-mua-2', so: 10, ten: 'Trùm: Ba ngã tư', yMoi: 'một hàm cho ba sân: bạn dừng trong ngã tư, dừng trên ngã tư, hay đẩy thùng qua',
+      hang: 'trum', hamCuaEmCan: ['move', 'forward', 'turn_right'], xichDay: true,
+      huyHieu: { ma: 'doi-mua-2', ten: 'Huy hiệu Đội' },
+      deBai: 'Ba sân, cùng hai chương trình khóa. R1 đi dọc xuống, cắt ngang hành lang của R2 ở một ngã tư mỗi sân một chỗ: sân thứ nhất R1 dừng ngay trong ngã tư và cuối hành lang có đèn nóng, ' +
+        'sân thứ hai R1 dừng phía trên ngã tư nên R2 qua trước được, sân thứ ba R1 đẩy thùng qua ngã tư. R2 gọi safe_step() trước mỗi bước. Viết safe_step() cho cả ba sân.',
+      veMaMau: 'Hai chương trình bị khóa. safe_step() còn trống: chạy thử từng sân.',
+      san: SAN_10, bd: BD_10, nutBat: [[o(10, 3)], [], []],
+      co: [[[o(5, 5)], [o(3, 4)], [o(7, 4)]], [[o(9, 4)], [o(9, 4)], [o(9, 4)]]],
+      chinh: [R1_10, R2_10],
+      hamMau: [H('safe_step', [], ['pass'])],
+      ham: [H('safe_step', [], CHO_SAT)],
+      sao: { o: 18, nhip: 34 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('safe_step', [], ['# chỉ chờ khi có gì sát mũi xe'].concat(CHO_SAT))] },
+      loiSai: [
+        { moTa: 'Viết while warm(): sân thứ nhất có đèn nóng, R2 chờ mãi', ham: [H('safe_step', [], CHO_DI)], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Để trống: sân thứ nhất R2 húc vào R1 đang đứng trong ngã tư', ham: [H('safe_step', [], ['pass'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Chờ cố định một nhịp mỗi bước: sân thứ hai R2 tới ngã tư đúng lúc R1 đi xuống', ham: [H('safe_step', [], ['wait()'])], phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Sân nào cũng vậy: có thứ gì sát mũi xe (bạn hay thùng) thì chờ, không thì đi.', 'Thân safe_step(): while distance() == 0: wait().']
     })
   ];
 

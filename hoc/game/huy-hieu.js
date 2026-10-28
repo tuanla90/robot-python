@@ -448,7 +448,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     themBanhRang(p);
     return p;
   };
-  HINH['che-omni'] = function () {                              // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
+  // gói 8 mùa 2 "Đội" (man-doi-mua-2.js): hai xe của đội (vàng R1, lam R2) như Đội hai robot, giữa hai xe là sóng nhiệt đỏ: mắt hồng ngoại thấy bạn nóng
+  HINH['doi-mua-2'] = function () {
+    var p = HINH['hai-robot'](), r = BM.hhDoV10, d = BM.hhDoV7;
+    [[13, 15], [14, 16], [13, 17], [14, 18], [13, 19], [16, 15], [15, 16], [16, 17], [15, 18], [16, 19]].forEach(function (q) { p.px(q[0], q[1], r); });
+    p.px(14, 21, d); p.px(15, 21, d);
+    return p;
+  };
+  HINH['che-doi-mua-2'] = function () {                         // Đội phối hợp: như Đội + bánh răng
+    var p = HINH['doi-mua-2']();
+    themBanhRang(p);
+    return p;
+  };
+  HINH['che-omni'] = function () {                             // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
     var p = P(T26, T26), t = thanPart('omni');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên
     themBanhRang(p);
