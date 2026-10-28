@@ -36,7 +36,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var VAT_SAN = 57, VAT_NANG = 1.2;
   var BONG_SAN = 0.19, BONG_NANG = 0.32;          // bóng đổ của vật lệch bấy nhiêu lần cạnh hộp vật: sát đất như vật nằm sàn (2 / 10,5), nâng thì xa hơn và nhạt (> 0,3: HU.bongVat 'cao')
   var KHOA_LUU = 'duong-hoc:ve-vector';
-  var loiGia = { gocXoay: false, demBoCo: false, coVatCu: false, kheCu: false };   // chỉ máy kiểm --loi-gia bật (V6b: coVatCu = vật trong tay cỡ cũ 24% không theo độ nâng, kheCu = càng kẹp khe cũ)
+  var loiGia = { gocXoay: false, demBoCo: false, coVatCu: false, kheCu: false, xoayBat: false };   // chỉ máy kiểm --loi-gia bật (V6b: coVatCu = vật trong tay cỡ cũ 24% không theo độ nâng, kheCu = càng kẹp khe cũ; V7a: xoayBat = tay xoay bỏ moK, khe bật một phát)
 
   /* ---------------------------------------------------------------- công tắc */
   var cheDo = null;

@@ -1304,6 +1304,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (r.tay === 'kep' && ttR.tay && !ttR.tay.cam) {
         var dich = ttR.tay.kep ? 0 : 1; v.kepK = v.kepK === undefined ? dich : v.kepK + (dich - v.kepK) * mu;
         if (Math.abs(v.kepK - dich) < 0.04) v.kepK = dich; else ttR.tay = Object.assign({}, ttR.tay, { moK: v.kepK });
+      } else if (r.tay === 'xoay' && ttR.tay) {                                   // gói V7a: tay xoay mở / khép DẦN (kể cả lúc nhặt vật: ngón khép từ khe mở về ôm mép vật), bậc 0,05 cho bộ đệm hình
+        var dichX = ttR.tay.kep ? 0 : 1; v.kepK = v.kepK === undefined ? dichX : v.kepK + (dichX - v.kepK) * mu;
+        if (Math.abs(v.kepK - dichX) < 0.04) v.kepK = dichX; else ttR.tay = Object.assign({}, ttR.tay, { moK: Math.round(v.kepK * 20) / 20 });
       } else v.kepK = undefined;
       if (laTayKep(r.tay) && ttR.tay && v.tay) {                                    // gói V6b: độ nâng của tay kẹp / tay xoay chuyển MƯỢT (hạ 0 … nâng 1): vật trong tay to dần khi nâng, thu về cỡ sàn khi hạ
         var dn = VeVector.nangCua(v.tay.tuThe); v.nangK = v.nangK === undefined ? dn : v.nangK + (dn - v.nangK) * Math.min(1, dt / 90);

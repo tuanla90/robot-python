@@ -82,6 +82,11 @@
   (VeIcon.veCanvas: màu + viền dán chàm, như PhimVector.ico). Dưới cùng: xe tải chở linh kiện của cảnh mở màn (PhimVector.xeTai). Phim mở đầu chọn ở ô "Phim" bên dưới (mo-dau).</p>
 <div class="icon-luoi" id="icon-v6c"></div>
 <div class="dk" style="margin-top:10px"><span>Xe tải (84 × 60, ×2):</span><span id="xe-v6c"></span></div>
+<h2 id="v7a">Gói V7a: tay cầm vật, drone nam châm, dây nối nút và cửa</h2>
+<p class="ghi">Mỗi hình một ô 2 × 2 (lưới mờ = ô sân), robot hướng lên ở tâm ô dưới. Vật trong tay vẽ trước (dưới càng) theo VeVector.vatKep / vatXoay đúng như san-ve.js.
+  Hàng tay xoay: mở / khép dần theo moK (1 mở … 0 ôm), rồi cầm ở nâng / hạ / xoay ngang. Hàng drone: vật treo dưới nam châm ở cỡ sàn (cũ) và cỡ nâng (V7a).</p>
+<div id="v7a-tay" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+<div id="v7a-san" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px"></div>
 <h2 id="tieu-phim">Phim gói: vector | pixel (game thật trong khung 360 × 640, cùng phim cùng khung)</h2>
 <p class="ghi">Chọn phim và khung; hai khung bên dưới là choi.html?ve=vector và choi.html?ve=pixel, chiếu bằng PhimGoi.mo rồi bấm Tiếp tới khung đã chọn (hoạt cảnh chạy thật).</p>
 <div class="dk"><label>Phim <select id="chon-phim" aria-label="Chọn phim gói"></select></label><span id="nut-khung"></span><button type="button" id="chieu-lai" title="Chiếu lại khung đang chọn ở cả hai bên">Chiếu lại</button></div>
@@ -144,6 +149,57 @@
   [kv, kp].forEach(function (f) { f.addEventListener('load', function () { setTimeout(khiSan, 300); }); });
   chon.onchange = function () { phim = chon.value; khung = 1; veNut(); chieu(); };
   document.getElementById('chieu-lai').onclick = chieu;
+})();
+</script>
+<script>
+/* gói V7a: khung tay cầm vật + drone nam châm (vẽ tĩnh lúc tải trang) */
+(function () {
+  VeVector.datCheDo('vector');
+  if (/[?&]chi=v7a/.test(location.search)) {                       // ?chi=v7a: chỉ mục V7a (bỏ hai khung game nặng)
+    Array.prototype.forEach.call(document.querySelectorAll('iframe'), function (f) { f.remove(); });
+    var giu = false; Array.prototype.forEach.call(document.body.children, function (e) { if (e.id === 'v7a') giu = true; if (e.id === 'tieu-phim') giu = false; if (!giu && e.tagName !== 'SCRIPT') e.style.display = 'none'; });
+  }
+  var luoi = document.getElementById('v7a-tay'), DPR = window.devicePixelRatio || 1, U = +(/[?&]u=(\d+)/.exec(location.search) || [0, 72])[1];
+  var chon = (/[?&]chon=([\w,-]+)/.exec(location.search) || [0, ''])[1].split(',').filter(Boolean).map(Number), soO = 0;   // ?chon=1,3: chỉ vẽ các ô số đó (đếm từ 1)
+  function o(ten, ve) {
+    if (chon.length && chon.indexOf(++soO) < 0) return;
+    var d = document.createElement('div'), b = document.createElement('b'), cv = document.createElement('canvas'), W = U * 2;
+    d.className = 'o'; b.textContent = ten; d.appendChild(b);
+    cv.width = cv.height = Math.round(W * DPR); cv.style.width = cv.style.height = W + 'px';
+    var g = cv.getContext('2d'); g.scale(DPR, DPR);
+    g.fillStyle = BangMau.vecNen; g.fillRect(0, 0, W, W); g.strokeStyle = BangMau.vecKe; g.lineWidth = 1;
+    [0, 1, 2].forEach(function (i) { g.beginPath(); g.moveTo(i * U + 0.5, 0); g.lineTo(i * U + 0.5, W); g.moveTo(0, i * U + 0.5); g.lineTo(W, i * U + 0.5); g.stroke(); });
+    ve(g, U * 1, U * 1.5);
+    d.appendChild(cv); luoi.appendChild(d);
+  }
+  function vat(g, ma, x, y, than, bong) {
+    var h = than / 0.76, cv = VeVector.vat(ma, Math.round(h * DPR), {});
+    if (bong) { g.globalAlpha = 0.18; g.fillStyle = BangMau.vecVien; g.fillRect(x - h * 0.38 + bong * 0.5, y - h * 0.38 + bong, h * 0.76, h * 0.76); g.globalAlpha = 1; }
+    g.drawImage(cv, x - h / 2, y - h / 2, h, h);
+  }
+  function robot(g, cfg, st, x, y) { var cv = VeVector.robot(cfg, st, 0, Math.round(U * DPR)); if (cv) g.drawImage(cv, x - cv.width / DPR / 2, y - cv.height / DPR / 2, cv.width / DPR, cv.height / DPR); }
+  function cam(cfg, s) {
+    return function (g, x, y) {
+      var k = VeVector.nangCua(s.tuThe, s.nangK), v = s.cam ? (cfg.tay === 'xoay' ? VeVector.vatXoay(cfg, s.tuThe, s.goc || 0, k) : VeVector.vatKep(cfg, s.tuThe, k)) : null;
+      if (v) { var f = v.f !== undefined ? v.f : v.ahead, l = v.l || 0; vat(g, 'thung-go', x + l * U / 100, y - f * U / 100, v.n * U / 100); }
+      robot(g, cfg, { tay: s }, x, y);
+    };
+  }
+  var X = { than: 'hai-banh', tay: 'xoay' }, K = { than: 'hai-banh', tay: 'kep' };
+  [1, 0.66, 0.33, 0].forEach(function (m) { o('xoay khép moK ' + m, cam(X, { tuThe: 'duoi', kep: 'dong', cam: true, moK: m })); });
+  o('xoay mở (không vật)', cam(X, { tuThe: 'tren', kep: 'mo' }));
+  o('xoay đóng (không vật)', cam(X, { tuThe: 'tren', kep: 'dong' }));
+  o('xoay cầm hạ', cam(X, { tuThe: 'duoi', kep: 'dong', cam: true }));
+  o('xoay cầm nâng', cam(X, { tuThe: 'tren', kep: 'dong', cam: true }));
+  o('xoay cầm nâng, trái', cam(X, { tuThe: 'tren', kep: 'dong', cam: true, goc: -90 }));
+  o('xoay cầm nâng, 45°', cam(X, { tuThe: 'tren', kep: 'dong', cam: true, goc: 45 }));
+  o('kẹp mở', cam(K, { tuThe: 'tren', kep: 'mo' }));
+  o('kẹp cầm hạ', cam(K, { tuThe: 'duoi', kep: 'dong', cam: true }));
+  o('kẹp cầm nâng', cam(K, { tuThe: 'tren', kep: 'dong', cam: true }));
+  var D = { than: 'drone', tay: 'nam-cham' }, T = U / 14, HANG = 5.5, ALT = 3;
+  [['drone treo: cỡ sàn (cũ)', 8 * 0.76 * T], ['drone treo: cỡ nâng (V7a)', VeVector.coVatKep(1) / 100 * U]].forEach(function (q) {
+    o(q[0], function (g, x, y) { vat(g, 'khoi-sat', x, y - (ALT - HANG) * T, q[1], q[1] / 0.76 * 0.32); robot(g, D, { than: { quat: true }, tay: { bat: true, cuc: 'N' } }, x, y - ALT * T); });
+  });
 })();
 </script>
 </body></html>
