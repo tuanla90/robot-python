@@ -1031,6 +1031,8 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     return kq;
   }
   const luatV = tachLuat(cssV), luatP = tachLuat(cssP);
+  const MOC_B = cssV.search(/\n\/\* =+ V7b \(28\/10\): từ đây là NGUYÊN VĂN giao-dien-vector-b\.css/);   // V7b việc 10: phần V5b nối sau dòng mốc; 14e chỉ đo phần V5a (phần V5b đo ở kiem-giao-dien-vector-b mục e với luật nền cha riêng)
+  const luatV5a = MOC_B >= 0 ? tachLuat(cssV.slice(0, MOC_B)) : luatV;
 
   /* a. nạp đủ phông mới + choi-vector.css (sau choi.css), biến phông trỏ phông mới */
   {
@@ -1076,7 +1078,7 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     const tl = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
     const vai = (than, thuoc) => { const m = than.match(new RegExp('(?:^|;)\\s*' + thuoc + '\\s*:\\s*var\\(--g-(\\w+)\\)\\s*(?:;|$)')); return m && /^#[0-9a-f]{6}$/i.test(BM[m[1]] || '') ? m[1] : null; };
     const sai = []; let soCap = 0;
-    for (const r of luatV) {
+    for (const r of luatV5a) {
       const c = vai(r.than, 'color'); if (!c) continue;
       const n = vai(r.than, 'background') || vai(r.than, 'background-color');
       if (!n && c === 'vecThe') continue;
@@ -1084,7 +1086,7 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
       const k = tl(BM[c], BM[nen]);
       if (k < 4.5) sai.push(r.sel.split(',')[0] + ': ' + c + ' / ' + nen + ' = ' + k.toFixed(2));
     }
-    kiem('(14e) tương phản chữ WCAG AA: ' + soCap + ' cặp chữ / nền của choi-vector.css đều ≥ 4,5:1', soCap > 40 && !sai.length, sai.slice(0, 8).join('; '));
+    kiem('(14e) tương phản chữ WCAG AA: ' + soCap + ' cặp chữ / nền của choi-vector.css (phần V5a, trước dòng mốc V7b) đều ≥ 4,5:1', soCap > 40 && !sai.length, sai.slice(0, 8).join('; '));
   }
   /* f. công tắc Cài đặt "Kiểu vẽ": luuCheDo ghi / xoá đúng khoá, bat() đọc lại; cai-dat.js có hàng hai nút, tải lại bỏ ?ve=; chữ hiển thị không emoji / gạch dài */
   {
