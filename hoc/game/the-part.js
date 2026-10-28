@@ -51,7 +51,7 @@
     var cv = null;
     try { cv = VeRobot.veCo(cfg, { tay: { tuThe: 'tren', kep: false }, camBien: { mat: true } }, 0, (tiLe || 2) * VeRobot.PX_O_PART); } catch (e) { cv = null; }      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
     if (!cv) return h('div', 'tp-hinh-trong');
-    var c = Ve.mk(catLe(cv), cv.laPart ? VeRobot.heSoCss(cv) : 3); c.classList.add('tp-hinh-cv');
+    var c = Ve.mk(catLe(cv), VeRobot.heSoCss(cv)); c.classList.add('tp-hinh-cv');
     return c;
   }
   /** Câu chữ có tên lệnh: phần `ten()`, True / False, "chuỗi" vẽ bằng phông code (phông Handjet vẽ "()" như "[]"). */

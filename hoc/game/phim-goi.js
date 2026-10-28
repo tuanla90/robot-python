@@ -39,25 +39,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     e.style.left = x + 'px'; e.style.top = y + 'px';
     return e;
   }
-  /** Gói V6: ở chế độ vector (VeVector.bat()) icon / ô / cờ / nút đè / cửa / sao của phim lấy từ PhimVector (phim-vector.js, cùng cỡ CSS); null → pixel y như cũ. */
-  function PV() { return window.PhimVector && PhimVector.bat() ? PhimVector : null; }
-  function ico(ten, s, mau) { var v = PV() && PhimVector.ico(ten, s, mau || VANG); if (v) return v; var c = Ve.ico(ten, s, { fill: mau || VANG, line: MUC }); c.classList.add('pxi'); return c; }
-  /** Ô gạch của sân (Ve.tiles()): 'wall', 'crate', 'thung', 'pad'… ; ten = 'rug' lấy ô cỏ thứ i. */
-  function o(ten, s, i) { var v = PV() && PhimVector.o(ten, s, i); if (v) return v; var tl = Ve.tiles(), cv = ten === 'rug' ? tl.rug[(i || 0) & 3] : tl[ten]; var c = Ve.mk(cv, s); c.classList.add('pxi'); return c; }
-  function coDich(s) { var v = PV() && PhimVector.co(s); if (v) { v.classList.add('md-co'); return v; } var c = Ve.mk(Ve.tiles().flags[0], s); c.classList.add('pxi', 'md-co'); return c; }
-  function nutDe(bat, s) { var v = PV() && PhimVector.nutDe(!!bat, s); if (v) return v; var c = Ve.mk(Ve.makeNutDe(!!bat), s); c.classList.add('pxi'); return c; }
-  /** Cửa (Ve.veCua) cạnh 14·s: mo = 0 (đóng) .. 1 (mở); doc = false: đi qua theo chiều ngang. */
-  function cua(mo, s, doc) {
-    var v = PV() && PhimVector.cua(mo, s, doc); if (v) return v;
-    var cv = document.createElement('canvas'); cv.width = Ve.T; cv.height = Ve.T;
-    var g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
-    g.drawImage(Ve.tiles().rug[0], 0, 0);
-    try { Ve.veCua(g, 0, 0, mo, { doc: doc !== false }); } catch (e) { g.fillStyle = BM.lamSangV23; g.fillRect(0, 0, Ve.T, Ve.T); }
-    var c = Ve.mk(cv, s); c.classList.add('pxi'); return c;
-  }
+  /** Gói V6: icon / ô / cờ / nút đè / cửa / sao của phim lấy từ PhimVector (phim-vector.js, cùng cỡ CSS với bản pixel cũ). V7c2 (28/10): hết đường lùi pixel (Ve.tiles / makeNutDe / veCua). */
+  function PV() { return window.PhimVector || null; }
+  function ico(ten, s, mau) { return (PV() && PhimVector.ico(ten, s, mau || VANG)) || Ve.ico(ten, s, { fill: mau || VANG, line: MUC }); }     // Ve.ico: svg VeIcon (tên ngoài bộ phim)
+  /** Ô của sân (PhimVector.o): 'wall', 'crate', 'thung', 'pad', 'rug' (i = ô cỏ thứ i). */
+  function o(ten, s, i) { return (PV() && PhimVector.o(ten, s, i)) || h('div'); }
+  function coDich(s) { var v = PV() && PhimVector.co(s); if (!v) return h('div'); v.classList.add('md-co'); return v; }
+  function nutDe(bat, s) { return (PV() && PhimVector.nutDe(!!bat, s)) || h('div'); }
+  /** Cửa cạnh 14·s: mo = 0 (đóng) .. 1 (mở); doc = false: đi qua theo chiều ngang. */
+  function cua(mo, s, doc) { return (PV() && PhimVector.cua(mo, s, doc)) || h('div'); }
   function chu(cls, s) { return h('div', 'md-a ' + cls, s); }
   function nen(k, cls) { k.appendChild(h('div', cls)); }
-  function sao(s) { var v = PV() && PhimVector.sao(s); if (v) return v; var c = Ve.sao(true, s); c.classList.add('pxi'); return c; }
+  function sao(s) { return (PV() && PhimVector.sao(s)) || Ve.sao(true, s); }
 
   /**
    * Robot vẽ bằng VeRobot.ve, đặt theo TÂM THÂN (cx, cy). cauHinh như VeRobot (than, tay, camBien, son); thiếu than = 'hai-banh'.
@@ -67,9 +60,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: cauHinh.son };
     var bao = h('div', 'md-a pg-xe' + (cls ? ' ' + cls : ''));
     var tt = trangThai || {}, hg = huong === undefined ? 1 : huong;
-    var vec = !!(window.VeRobot && VeRobot.veVector && VeRobot.veVector(cfg));       // gói V6: robot vector có mắt biểu cảm (trangThai.mat)
     bao.ve = function (t2, h2) {
-      if (t2) { var m = tt.mat; tt = t2; if (vec && m && t2.mat === undefined) tt = Object.assign({}, t2, { mat: m }); }      // vector: biểu cảm giữ qua các lần đổi tư thế
+      if (t2) { var m = tt.mat; tt = t2; if (m && t2.mat === undefined) tt = Object.assign({}, t2, { mat: m }); }      // gói V6: biểu cảm mắt (trangThai.mat) giữ qua các lần đổi tư thế
       if (h2 !== undefined) hg = h2;
       var cv;
       try { var rb = VeRobot.veCo(cfg, tt, hg, (tiLe || 3) * VeRobot.PX_O_PART); cv = Ve.mk(rb, VeRobot.heSoCss(rb)); if (rb.laVector) cv.laVector = true; }      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
@@ -81,7 +73,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return bao;
     };
     /** Gói V6: đổi biểu cảm mắt ('vui' | 'ngac' | 'buon' | 'xoay' | 'dam' | 'chop2' | 'thuong'…, xem VeVector H.kinh); pixel: không đổi gì. */
-    bao.mat = function (kieu) { if (!vec) return bao; tt = Object.assign({}, tt, { mat: kieu }); return bao.ve(); };
+    bao.mat = function (kieu) { tt = Object.assign({}, tt, { mat: kieu }); return bao.ve(); };
     bao.toi = function (x, y) { bao.style.left = x + 'px'; bao.style.top = y + 'px'; return bao; };
     bao.toi(cx, cy).ve();
     return bao;

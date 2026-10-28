@@ -279,10 +279,9 @@ console.log('\n== 8. coDu() và công tắc ==');
 console.log('\n== 9. VeRobot (ve-robot.js) theo chế độ ==');
 if (!VeRobot) kiem('nạp ve-robot.js ở Node', false, 'không nạp được');
 else {
-  const pixel = (S, w) => { const n = Math.floor(0.9 * S / w); return n >= 1 && n * w >= 0.8 * S ? n : Math.max(0.3, 0.85 * S / w); };   // công thức cũ: chỉ còn cho cấu hình thiếu hình
   kiem('vector: tiLeChoO(S, hai-banh + kẹp) = S / 100 (84 → 0.84); REACH = 50 (nửa ô)', VeRobot.tiLeChoO(84, { than: 'hai-banh', tay: 'kep' }) === 0.84 && VeRobot.REACH === 50);
-  kiem('vector (gói V3): mọi thân đều theo hệ 1/100 ô (xích 84 → 0.84, drone); cấu hình thiếu hình (mã lạ) vẫn dùng công thức pixel',
-    VeRobot.tiLeChoO(84, { than: 'xich' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'drone', tay: 'nam-cham' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'khong-co' }) === pixel(84, 20));
+  kiem('vector (gói V3): mọi thân đều theo hệ 1/100 ô (xích 84 → 0.84, drone); V7c2: cấu hình thiếu hình (mã lạ) cũng S / 100 (hết công thức pixel)',
+    VeRobot.tiLeChoO(84, { than: 'xich' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'drone', tay: 'nam-cham' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'khong-co' }) === 0.84);
   const vk = VeRobot.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren'), vv = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren');
   const vx = VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0), vxv = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0);
   kiem('vector: vatKep lấy từ VeVector (' + (vk && vk.ahead.toFixed(1)) + ', ' + (vk && vk.n.toFixed(1)) + '); tay xoay: vatXoay cũng từ VeVector (f ' + (vx && vx.f.toFixed(1)) + ')',
@@ -323,30 +322,29 @@ const coHinh = (loai, ma) => !!V.lay(loai, ma);
   const kyHinh = []; for (const loai of ['o', 'vat']) for (const ma of V.ds(loai)) for (const k of V.lay(loai, ma).ky || []) kyHinh.push(k);
   kiem('ký hiệu khai trong từng hình (ky) đều là ký hiệu sân thật', kyHinh.every((k) => ky.includes(k)), J(kyHinh.filter((k) => !ky.includes(k))));
 
-  /* ô pixel: mọi khoá của tileCache trong ve.js */
-  const veSrc = fs.readFileSync(path.join(GAME, 've.js'), 'utf8'), m = /tileCache = \{([\s\S]*?)\n    \};/.exec(veSrc);
-  const khoa = m ? [...new Set([...m[1].matchAll(/(?:^|[\s,{])([A-Za-z]\w*)\s*:/g)].map((x) => x[1]))] : [];
+  /* bảng nối TILES (tên ô của bộ pixel cũ → hình vector; V7c2: Ve.tiles() đã xoá, bảng là dữ liệu của ve-vector-ky-hieu.js) */
+  const veSrc = fs.readFileSync(path.join(GAME, 've.js'), 'utf8');
+  const khoa = Object.keys(V.TILES);
   const thieuT = khoa.filter((k) => !V.TILES[k] || !(coHinh('o', V.TILES[k]) || coHinh('vat', V.TILES[k])));
-  kiem(khoa.length + ' ô của Ve.tiles() (đọc từ ve.js: ' + khoa.join(', ') + ') đều có hình vector trong VeVector.TILES', khoa.length >= 15 && thieuT.length === 0, 'thiếu: ' + J(thieuT));
+  kiem(khoa.length + ' tên ô của bảng nối VeVector.TILES (' + khoa.join(', ') + ') đều trỏ tới hình vector đã đăng ký; ve.js không còn Ve.tiles / Painter (V7c2)', khoa.length >= 15 && thieuT.length === 0 && !/tileCache = |function Painter\(|function tiles\(/.test(veSrc), 'thiếu: ' + J(thieuT));
 
   /* hàm vẽ trực tiếp của san-ve.js */
   const svSrc = fs.readFileSync(path.join(GAME, 'san-ve.js'), 'utf8');
   const goi = [...new Set([...svSrc.matchAll(/Ve\.((?:make|ve)[A-Z]\w*)\(/g)].map((x) => 'Ve.' + x[1]))];
   const thieuG = goi.filter((k) => !V.VE_TRUC_TIEP[k]);
-  kiem(goi.length + ' hàm vẽ trực tiếp san-ve.js gọi (' + goi.join(', ') + ') đều có trong VeVector.VE_TRUC_TIEP', goi.length >= 3 && thieuG.length === 0, 'thiếu: ' + J(thieuG));
+  kiem('(V7c2) san-ve.js không còn gọi hàm vẽ pixel Ve.make* / Ve.ve* nào (trước: ' + Object.keys(V.VE_TRUC_TIEP).filter((k) => k.startsWith('Ve.')).join(', ') + ' đã có hình vector trong VE_TRUC_TIEP)', goi.length === 0 && thieuG.length === 0, 'còn gọi: ' + J(goi));
   const saiTT = [];
   for (const k of Object.keys(V.VE_TRUC_TIEP)) {
     const [loai, ...ma] = V.VE_TRUC_TIEP[k];
     for (const x of ma) if (!coHinh(loai, x)) saiTT.push(k + '→' + loai + '/' + x);
     if (k.startsWith('Field.')) {
       const ten = k.slice(6), i = svSrc.indexOf('\n    ' + ten + ': function');
-      const than = i < 0 ? '' : svSrc.slice(i, svSrc.indexOf('\n    },', i));
-      if (!/this\.vec/.test(than)) saiTT.push(k + ' không có nhánh this.vec');
+      if (i < 0) saiTT.push(k + ' không có trong san-ve.js');                     // V7c2: hết nhánh this.vec (game luôn vector), chỉ còn đòi hàm có thật
     }
   }
-  kiem('VE_TRUC_TIEP trỏ tới hình đã đăng ký; mỗi Field.* có nhánh this.vec trong san-ve.js', saiTT.length === 0, saiTT.join(', '));
-  kiem('draw() của san-ve.js vẽ mọi ô bằng veOVec ở chế độ vector; ảnh nhỏ thuSan dùng VeVector.KY_HIEU',
-    /if \(this\.vec\) \{ this\.veOVec\(/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /if \(vecT\) thuOVec\(/.test(svSrc));
+  kiem('VE_TRUC_TIEP trỏ tới hình đã đăng ký; mỗi Field.* có trong san-ve.js', saiTT.length === 0, saiTT.join(', '));
+  kiem('draw() của san-ve.js vẽ mọi ô bằng veOVec (V7c2: không còn rẽ this.vec); ảnh nhỏ thuSan dùng VeVector.KY_HIEU (thuOVec, không còn vecT)',
+    /this\.veOVec\(g, x, y, c\.rows\[y\]\[x\]/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /\n    thuOVec\(g, rows, w, h, s, mauO/.test(svSrc) && !/this\.vec\b|\bvecT\b/.test(svSrc));
   const kySrc = fs.readFileSync(path.join(GAME, 've-vector-ky-hieu.js'), 'utf8');
   const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'"));
   kiem('mọi hình ô / vật trong kho đều được san-ve.js hay bảng nối dùng tới (không hình thừa)', khongDung.length === 0, J(khongDung));
@@ -552,9 +550,10 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     nhenKhongTay = VeRobot.ve({ than: 'nhen', tay: null, camBien: [] }, {}, 1, 0.56) === VeRobot.ve({ than: 'nhen', tay: null, camBien: [] }, {}, 3, 0.56);
     droneMoi = VeRobot.ve({ than: 'drone', tay: 'nam-cham', camBien: [] }, {}, 1, 0.56) === VeRobot.ve({ than: 'drone', tay: 'nam-cham', camBien: [] }, {}, 2, 0.56);
     bao = 0; const cw = console.warn; console.warn = () => { bao++; };
-    try { cam = VeRobot.ve({ than: 'drone', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 0.56); } catch (e) { cam = null; /* Node: hình tạm cần Ve của trình duyệt */ } console.warn = cw;
-  } catch (e) { /* lỗi giả: cấu hình rơi về hình tạm (cần Ve của trình duyệt) */ }
-  kiem('VeRobot (như bộ pixel): nhện không tay và drone không quay theo hướng; cấu hình cấm báo một lần rồi không trả hình vector', nhenKhongTay && droneMoi && bao === 1 && !(cam && cam.laVector));
+    try { cam = VeRobot.ve({ than: 'drone', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 0.56); } catch (e) { cam = null; } console.warn = cw;
+  } catch (e) { /* lỗi giả: cấu hình rơi về hình tạm */ }
+  const tam = VeRobot.ve({ than: 'hai-banh', tay: null, camBien: [] }, {}, 0, 0.56);
+  kiem('VeRobot: nhện không tay và drone không quay theo hướng; cấu hình cấm báo một lần rồi rơi về hình TẠM = xe hai bánh vector không tay (V7c2: hết hình tạm pixel)', nhenKhongTay && droneMoi && bao === 1 && !!cam && cam.laVector === true && cam === tam);
 }
 
 
@@ -968,8 +967,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
       }
     }
     const svSrc = fs.readFileSync(path.join(GAME, 'san-ve.js'), 'utf8');
-    kiem('(13i) V7a dây nối nút ↔ cửa: ' + coDay + ' / ' + coNut + ' màn có nút + cửa có dây (theo cfg.noi; đầu ô nút, cuối ô cửa); màn không nút không dây; chỉ nhánh vector vẽ (this.vec → veDayNoi)',
-      saiD.length === 0 && coDay >= 10 && /if \(this\.vec\) this\.veDayNoi\(/.test(svSrc), saiD.slice(0, 4).join('; '));
+    kiem('(13i) V7a dây nối nút ↔ cửa: ' + coDay + ' / ' + coNut + ' màn có nút + cửa có dây (theo cfg.noi; đầu ô nút, cuối ô cửa); màn không nút không dây; draw() gọi veDayNoi (V7c2: hết điều kiện this.vec)',
+      saiD.length === 0 && coDay >= 10 && /\n      this\.veDayNoi\(g, now\);/.test(svSrc), saiD.slice(0, 4).join('; '));
   }
 
   /* g. cờ bay, sàn bàn cờ, trang xem */
@@ -1092,6 +1091,37 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     const ok = xem.includes('id="v5a"') && /choi-vector\.css/.test(xem) && /class="[^"]*\bbrick\b/.test(xem) && /class="[^"]*\bstrip\b/.test(xem) && /class="[^"]*\bbt\b/.test(xem);
     kiem('(14g) trang xem hinh-mau/xem-vector.html có mục V5a (nạp choi-vector.css; mẫu nút, khối lệnh, dòng code ở các trạng thái)', ok);
   }
+}
+
+/* ============================================================ 15. (V7c2, 28/10) PHANH CHỐNG TÁI PHÁT: bộ vẽ pixel không quay lại */
+console.log('\n== 15. (V7c2) Phanh chống tái phát: không thư mục game/part, choi.html không nạp part/, mã game không còn Part. / this.vec / HINH pixel / Painter / Ve.tiles / pixelated / rẽ theo chế độ ==');
+{
+  // Mẫu cấm (soát trên nguồn JS của hoc/game đã bỏ chú thích khối và chú thích dòng; mẫu nào cũng là thứ V7c1 / V7c2 đã gỡ):
+  const MAU_CAM = [
+    ['Part.*', /(?<![\w$.])Part\.(ghep|lay|hamGoc|_veMot|veVatNho|rot90|ds|SON|DS_SON|LOP_SON|K)\b/],          // bộ pixel game/part
+    ['this.vec', /\bthis\.vec\b/],                                                                              // san-ve.js rẽ chế độ
+    ["HINH['x'] = function", /HINH\['[\w-]+'\] = function/],                                                    // huy hiệu pixel
+    ['Painter', /\bnew Painter\(|function Painter\(|\bPainter\.prototype\b/],                                   // bộ vẽ điểm ảnh của ve.js / huy-hieu.js
+    ['Ve.tiles / make* / veCua / HINH / khungGo / datChatLieu', /(?<!['"])\bVe\.(tiles|make[A-Z]\w*|veCua|HINH|Painter|khungGo|datChatLieu|spriteTrum|icon)\b/],     // (?<!['"]): khoá chuỗi 'Ve.makeConv' của bảng VE_TRUC_TIEP (ve-vector-ky-hieu.js) là dữ liệu, không phải lời gọi
+    ['pixelated', /pixelated/],                                                                                 // image-rendering trong JS (CSS để V7c3)
+    ['?ve=pixel / rẽ theo VeVector.bat() / cheDoVector()', /ve=pixel|VeVector\.bat\(\)\s*[?&|]|cheDoVector\(\)\s*[?&|]|VeRobot\.coPart|dungPart|\?part=0/],
+    ['Handjet / VT323 làm phông dự phòng', /["']Handjet["']|["']VT323["']/]                                       // phông pixel (g.font đo chữ '8px VT323, monospace' của san-ve.js không khớp mẫu này: V7c3 xét)
+  ];
+  const boChuThich = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:\\'"])\/\/[^\n]*/g, '$1');
+  const tepGame = fs.readdirSync(GAME).filter((f) => /\.js$/.test(f)).sort();
+  const nguonJs = Object.fromEntries(tepGame.map((f) => [f, boChuThich(docGame(f))]));
+  let html = CHOI_SRC, coPart = fs.existsSync(path.join(GAME, 'part'));
+  if (LOI_GIA) {                                                                                               // lỗi giả: bộ pixel "quay lại" ở ba chỗ
+    console.log('(đang cắm lỗi giả mục 15: coi như còn thư mục part, choi.html nạp part/part.js, san-ve.js có this.vec + Part.ghep — phải ĐỎ)');
+    coPart = true; html += '\n<script src="part/part.js"></script>'; nguonJs['san-ve.js'] += '\nif (this.vec) Part.ghep(cfg, st, h);\n';
+  }
+  const sai = [];
+  if (coPart) sai.push('còn thư mục hoc/game/part');
+  if (/<script src="part\//.test(html)) sai.push('choi.html còn nạp part/');
+  for (const f of tepGame) for (const [ten, re] of MAU_CAM) if (re.test(nguonJs[f])) sai.push(f + ': ' + ten);
+  kiem('(15) V7c2: không thư mục game/part, choi.html không nạp part/, ' + tepGame.length + ' tệp JS của hoc/game (bỏ chú thích) không còn ' + MAU_CAM.map((m) => m[0]).join(' · '), !sai.length, sai.slice(0, 12).join(' | '));
+  kiem('(15b) V7c2: hoc/chup-du-lieu-pixel.mjs và tools/ve-icon.py đã xoá; du-lieu-chup-pixel.json còn (chuẩn của kiem-lap-rap / mục 12 / A7); hoc/game/ve.js chỉ còn icon svg + mk + MAU + CO_ICON (< 120 dòng)',
+    !fs.existsSync(path.join(day, 'chup-du-lieu-pixel.mjs')) && !fs.existsSync(path.join(day, '..', 'tools', 've-icon.py')) && fs.existsSync(path.join(day, 'du-lieu-chup-pixel.json')) && docGame('ve.js').split('\n').length < 120);
 }
 
 console.log('\n---------------------------------------------');

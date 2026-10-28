@@ -77,7 +77,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           '<div class="bong duoi" data-nut="bong-duoi"></div></div>' +
       '</div>';
     Ve.hydrate(host);
-    Ve.khungGo(host.querySelector('.deco'));
     var q = function (s) { return host.querySelector(s); };
     E.tenham = q('.tenham'); E.nm = q('.tenham .nm'); E.ffr = q('.ffr'); E.toast = q('.toast');
     E.side = q('.side'); E.xoaHam = q('[data-nut="xoa-ham"]'); E.layLai = q('[data-nut="lay-lai"]'); E.thuHang = q('.thu-hang'); E.dso = q('.dso');

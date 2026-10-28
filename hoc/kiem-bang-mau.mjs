@@ -67,9 +67,8 @@ const ALIAS = {
   trang: 'var BM = window.BangMau;'
 };
 const CHEN = {   // phần gói A1 chèn thêm (bỏ đi khi so với bản nền)
-  'choi.html': ['<!-- bảng màu theo vai (gói A1): nạp TRƯỚC mọi tệp dùng màu; ghi biến CSS --g-<vai> cho choi.css -->\n<script src="bang-mau.js"></script>\n'],
-  'part/xem-part.html': ['<script src="../bang-mau.js"></script>', ALIAS.trang]
-};
+  'choi.html': ['<!-- bảng màu theo vai (gói A1): nạp TRƯỚC mọi tệp dùng màu; ghi biến CSS --g-<vai> cho choi.css -->\n<script src="bang-mau.js"></script>\n']
+};   // V7c2 (28/10): part/xem-part.html đã xoá cùng bộ pixel game/part
 // mã màu được phép gõ thẳng: tệp tĩnh không chạy JS; giá trị phải bằng đúng vai ghi kèm
 const VAI_NEN_TRANG = 'vecNenSau';   // V7b (28/10): mặc định vector → nền tĩnh là nền trang vector (chàm nhạt), không còn nâu gỗ goToiV11
 const NGOAI_LE = [
@@ -161,7 +160,54 @@ console.log('\n== 3. Token và thứ tự nạp ==');
   }
   kiem('mọi BM.<vai> / var(--g-<vai>) có trong bảng màu', thieu.length === 0, thieu.slice(0, 10).join(', '));
   /* V7c1 (28/10): bảng sơn dự phòng của cai-dat.js (hàng "Màu sơn R1") đã bỏ → 11 vai này không còn chỗ dùng; V7c3 (bảng màu) xoá khỏi bang-mau.js rồi xoá danh sách này */
-  const VAI_CHO_V7C3 = ['kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3'];
+  const VAI_CHO_V7C3 = ['kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3',
+    /* V7c2 (28/10) san-ve.js xoá nhánh pixel (tia, mắt LED, ảnh nhỏ, vật, thanh pin, thẻ đạn…) → 45 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js rồi xoá dòng này */
+    'sanTim', 'sanDoSang', 'sanNgocToi', 'moDo', 'moLam', 'moDoToiV2', 'moSangV5', 'moToiV20', 'moToiV21', 'moToiV23', 'moToiSangV8', 'moToiSangV9', 'moVangV4', 'moVangV5', 'moVangV6', 'moVangV7',
+    'sanCamToiV2', 'sanDoV2', 'sanDoV3', 'sanDoV6', 'sanDoV7', 'sanDoSangV1', 'sanKemV1', 'sanLamV8', 'sanLamV16', 'sanLamV17', 'sanLamToiV1', 'sanLamToiV7', 'sanLamToiV8', 'sanLamToiV9', 'sanLamToiV10',
+    'sanNauSangV3', 'sanTimSangV2', 'sanTrangV6', 'sanXamToiV4', 'sanXamToiV5', 'sanXanhLaToiV1', 'sanXanhLaToiV6', 'sanXanhLoV6', 'sanXanhLoV7', 'sanXanhLoV8', 'sanXanhLoToiV3', 'sanXanhLoToiV4', 'tiaDoV1Rgb', 'tiaDoV6Rgb',
+    /* V7c2 d4 (28/10): xoá bộ pixel game/part (17 tệp bộ phận: vai robot* / son* / luatSon* / luatVat* / dsSon*), ve-robot.js hình tạm, phim pixel → 117 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js (kể cả 'ds mau son' Part.SON) rồi xoá khối này */
+    'robotDen', 'robotLam', 'robotNgoc', 'robotXanhLoToi', 'robotDoToi', 'robotCamToi', 'robotHong', 'robotTim', 'robotTimSang', 'robotKem', 'robotKemToi', 'robotXanhLa',
+    'robotXanhLaToi', 'robotXam', 'robotXamToi', 'sonVang', 'sonVangSang', 'sonVangToi', 'sonLam', 'sonLamSang', 'sonLamToi', 'sonDoSang', 'sonDoToi', 'sonTimSang',
+    'sonTimToi', 'sonNgoc', 'sonNgocSang', 'sonNgocToi', 'sonCam', 'sonCamSang', 'sonCamToi', 'sonTrang', 'sonTrangSang', 'sonTrangToi', 'sonHoangKim', 'sonHoangKimSang',
+    'sonHoangKimToi', 'dsSonGoc', 'dsSonGocSang', 'dsSonGocToi', 'luatSonDoSang', 'luatSonDoToi', 'luatSonXanhLa', 'luatSonXanhLaSang', 'luatSonXanhLaToi', 'luatSonXanhDuong', 'luatSonXanhDuongSang', 'luatSonXanhDuongToi',
+    'luatSonVang', 'luatSonVangSang', 'luatSonVangToi', 'luatVatDoSang', 'luatVatDoToi', 'luatVatXanhLa', 'luatVatXanhLaSang', 'luatVatXanhLaToi', 'luatVatXanhDuongSang', 'luatVatXanhDuongToi', 'luatVatVang', 'luatVatVangSang',
+    'luatVatVangToi', 'bangSangV5', 'camSangV5', 'doToiV7', 'goV13', 'kemV10', 'kemSangV4', 'lamSangV23', 'robotCamV1', 'robotCamV2', 'robotCamV3', 'robotCamV4',
+    'robotCamToiV1', 'robotCamToiV2', 'robotCamToiV3', 'robotDoV1', 'robotDoV2', 'robotDoV3', 'robotDoV4', 'robotDoV5', 'robotDoV6', 'robotDoV7', 'robotDoV8', 'robotDoV9',
+    'robotLamV1', 'robotLamV2', 'robotLamV3', 'robotLamV4', 'robotLamV5', 'robotLamV6', 'robotLamV7', 'robotLamV8', 'robotLamV9', 'robotLamToiV1', 'robotNauV1', 'robotNauV2',
+    'robotNauV3', 'robotNauSangV1', 'robotNauSangV2', 'robotNauSangV3', 'robotNauSangV4', 'robotNgocV1', 'robotTimV1', 'robotTimV2', 'robotTimV3', 'robotTimV4', 'robotTimSangV1', 'robotTimSangV2',
+    'robotXamToiV1', 'robotXamToiV2', 'robotXanhLaV1', 'robotXanhLoV1', 'robotXanhLoV2', 'robotXanhLoToiV2', 'trangV14', 'xanhLaV13', 'xanhLaToiV8',
+    /* V7c2 d5 (28/10): huy-hieu.js bỏ bộ huy hiệu pixel (HINH pixel, Painter) -> vai hh* hết chỗ dùng; V7c3 xoá (89 vai) */
+    'hhTim', 'hhTrang', 'hhXanhLo', 'hhVang', 'hhXanhLa', 'hhKem', 'hhNau', 'hhXam', 'hhLam', 'hhDo', 'hhCam', 'hhNgoc',
+    'hhCamV1', 'hhDoV1', 'hhDoV2', 'hhDoV3', 'hhDoV4', 'hhDoV5', 'hhDoV6', 'hhDoV7', 'hhDoV8', 'hhDoV9', 'hhDoV10', 'hhDoV11',
+    'hhKemV1', 'hhKemV2', 'hhLamV1', 'hhLamV2', 'hhLamV3', 'hhLamV4', 'hhLamV5', 'hhLamV6', 'hhLamV7', 'hhLamV8', 'hhLamV9', 'hhLamV10',
+    'hhLamV11', 'hhLamV12', 'hhNauV1', 'hhNauV2', 'hhNauV3', 'hhNauV4', 'hhNauV5', 'hhNauV6', 'hhNauV7', 'hhNauV8', 'hhNauV9', 'hhNauV10',
+    'hhNauV11', 'hhTimV1', 'hhTimV2', 'hhTimV3', 'hhTrangV1', 'hhTrangV2', 'hhTrangV3', 'hhVangV1', 'hhVangV2', 'hhVangV3', 'hhVangV4', 'hhVangV5',
+    'hhVangV6', 'hhVangV7', 'hhXamV1', 'hhXamV2', 'hhXamV3', 'hhXamV4', 'hhXamV5', 'hhXamV6', 'hhXamV7', 'hhXamV8', 'hhXamV9', 'hhXamV10',
+    'hhXamV11', 'hhXamV12', 'hhXamV13', 'hhXamV14', 'hhXanhLaV1', 'hhXanhLaV2', 'hhXanhLaV3', 'hhXanhLaV4', 'hhXanhLaV5', 'hhXanhLoV1', 'hhXanhLoV2', 'hhXanhLoV3',
+    'hhXanhLoV4', 'hhXanhLoV5', 'hhXanhLoV6', 'hhXanhLoV7', 'hhXanhLoV8',
+    /* V7c2 d6 (28/10): ve.js bỏ Painter / chất liệu / lưới icon HINH / sprite / ô sân / robot tạm -> vai sau hết chỗ dùng; V7c3 xoá (257 vai) */
+    'sanLamToi', 'sanXanhLoToi', 'sanNgoc', 'sanNau', 'co', 'coSang', 'coToi', 'tuong', 'tuongSang', 'tuongToi', 'sanDen', 'vatCam',
+    'vatNau', 'vatKem', 'vatLam', 'vatTrang', 'vatXam', 'vatVang', 'vatDo', 'robotLamToi', 'robotTrang', 'robotXanhLo', 'robotDo', 'robotNau',
+    'robotNauSang', 'robotVang', 'robotVangSang', 'tiaDenRgb', 'moXanhLa', 'bangSangV6', 'bangSangV7', 'bangSangV8', 'camV4', 'camV5', 'camSangV6', 'camToiV5',
+    'camToiV6', 'camToiV7', 'camToiV8', 'camToiV9', 'camToiV10', 'camToiV11', 'coV1', 'coV2', 'coV3', 'coSangV1', 'coSangV2', 'coSangV3',
+    'coSangV4', 'coToiV1', 'denV5', 'doV17', 'doSangV2', 'doSangV12', 'doToiV10', 'doToiV11', 'goV14', 'goV15', 'goV16', 'goV17',
+    'goV18', 'goV19', 'goV20', 'goV21', 'goV22', 'goV23', 'goV24', 'goV25', 'goV26', 'goV27', 'goV28', 'goV29',
+    'goV30', 'goV31', 'goV32', 'goV33', 'goV34', 'goV35', 'goV36', 'goV37', 'goSangV21', 'goSangV22', 'goSangV23', 'goSangV24',
+    'goSangV25', 'goSangV26', 'goSangV27', 'goSangV28', 'goSangV29', 'goSangV30', 'goSangV31', 'goSangV32', 'goSangV33', 'goSangV34', 'goSangV35', 'goSangV36',
+    'goSangV37', 'goSangV38', 'goToiV14', 'goToiV15', 'goToiV16', 'goToiV17', 'goToiV18', 'goToiV19', 'goToiV20', 'hongV3', 'kemV12', 'kemV13',
+    'kemSangV5', 'lamV16', 'lamSangV11', 'lamToiV1', 'moToiV25', 'robotLamV10', 'robotNauV4', 'robotTimV5', 'robotTimV6', 'robotTimSangV3', 'robotTimSangV4', 'robotTimSangV5',
+    'robotTrangV1', 'robotVangSangV1', 'robotXamV1', 'robotXamToiV3', 'robotXamToiV4', 'robotXanhLoV3', 'robotXanhLoV4', 'robotXanhLoToiV1', 'robotXanhLoToiV3', 'sanCamV2', 'sanCamV3', 'sanCamV4',
+    'sanCamV5', 'sanCamV6', 'sanCamV7', 'sanCamToiV1', 'sanCamToiV3', 'sanCamToiV4', 'sanCamToiV5', 'sanDenV1', 'sanDoV4', 'sanDoV5', 'sanDoV8', 'sanDoV9',
+    'sanDoV10', 'sanDoV11', 'sanDoSangV2', 'sanDoSangV5', 'sanKemV3', 'sanKemV4', 'sanKemV5', 'sanKemToiV1', 'sanLamV9', 'sanLamV10', 'sanLamV11', 'sanLamV18',
+    'sanLamV19', 'sanLamV20', 'sanLamV21', 'sanLamV22', 'sanLamToiV2', 'sanLamToiV3', 'sanLamToiV4', 'sanLamToiV5', 'sanLamToiV11', 'sanLamToiV12', 'sanLamToiV13', 'sanLamToiV14',
+    'sanLamToiV15', 'sanLamToiV16', 'sanLamToiV17', 'sanLamToiV18', 'sanNauV2', 'sanNauSangV1', 'sanNauSangV4', 'sanNauSangV5', 'sanNauSangV6', 'sanNauSangV7', 'sanNauSangV8', 'sanNauSangV9',
+    'sanNauSangV10', 'sanNauSangV11', 'sanNauSangV12', 'sanTimV1', 'sanTrangV4', 'sanTrangV7', 'sanTrangV8', 'sanTrangV9', 'sanVangSangV2', 'sanVangSangV3', 'sanVangSangV4', 'sanXamToiV2',
+    'sanXamToiV6', 'sanXamToiV7', 'sanXamToiV8', 'sanXamToiV9', 'sanXanhLaV1', 'sanXanhLaV2', 'sanXanhLaV3', 'sanXanhLaToiV3', 'sanXanhLaToiV4', 'sanXanhLaToiV5', 'sanXanhLaToiV7', 'sanXanhLaToiV8',
+    'sanXanhLaToiV9', 'sanXanhLoV9', 'sanXanhLoV10', 'sanXanhLoToiV5', 'sanXanhLoToiV6', 'sanXanhLoToiV7', 'sanXanhLoToiV8', 'timV8', 'trangV15', 'trangV16', 'trangToiV3', 'trangToiV8',
+    'tuongV1', 'tuongV2', 'tuongSangV1', 'tuongToiV1', 'vangV9', 'vangToiV2', 'vangToiV4', 'vangToiV5', 'vangToiV6', 'vatCamV1', 'vatLamV1', 'vatLamV2',
+    'vatLamV3', 'vatLamV4', 'vatLamV5', 'vatLamV6', 'vatLamV7', 'vatLamV8', 'vatLamV9', 'vatLamV10', 'vatLamV11', 'vatLamV12', 'vatLamV13', 'vatLamV14',
+    'vatLamV15', 'vatLamV16', 'vatNauV1', 'vatTrangV1', 'vatXamV1', 'xamV3', 'xamV10', 'xamV11', 'xamV12', 'xamToiV6', 'xamToiV10', 'xamToiV11',
+    'xamToi2V6', 'xamToi2V7', 'xamToi2V8', 'xanhLaSangV17', 'xanhLoSang2V9'];
   const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
   const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));
@@ -169,9 +215,7 @@ console.log('\n== 3. Token và thứ tự nạp ==');
   const html = doc('choi.html'), dau = html.indexOf('<script src="bang-mau.js"></script>');
   kiem('choi.html: bang-mau.js nạp trong <head>, trước choi.css và trước mọi <script src> khác',
     dau > 0 && dau < html.indexOf('</head>') && dau < html.indexOf('href="choi.css"') && dau === html.indexOf('<script src='));
-  const xp = doc('part/xem-part.html');
-  kiem('part/xem-part.html: ../bang-mau.js nạp trước part.js; script nội tuyến lấy BM = window.BangMau',
-    xp.indexOf('<script src="../bang-mau.js"></script>') >= 0 && xp.indexOf('<script src="../bang-mau.js"></script>') < xp.indexOf('<script src="part.js">') && xp.includes('<script>' + ALIAS.trang));
+  /* V7c2 (28/10): mục "part/xem-part.html nạp ../bang-mau.js" bỏ (bộ pixel game/part xoá ở V7c2; phanh "không còn part/" nằm ở kiem-ve-vector mục 15) */
 }
 
 /* ================================================================= 4. tương đương từng chỗ với bản nền */

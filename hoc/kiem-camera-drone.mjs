@@ -30,8 +30,8 @@ for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1']) require(path.join(d
 for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f)).sort()) require(path.join(day, f));
 const ManHoc = require(path.join(day, 'man-drone.js'));
 const SoLenh = require(path.join(day, 'so-lenh.js'));
-const Part = require(path.join(day, 'game', 'part', 'part.js'));
-for (const x of ['hai-banh', 'xich', 'nhen', 'omni', 'drone', 'kep', 'nam-cham', 'khoang-cach', 'mau', 'camera', 'camera-bay']) require(path.join(day, 'game', 'part', 'part-' + x + '.js'));
+/* V7c2 (28/10): bộ pixel game/part đã xoá; bộ phận, luật ghép, hàm gốc đọc từ bộ vẽ VECTOR (VeVector; lap-rap.js tự nạp ve-vector*.js ở Node) */
+const VV = require(path.join(day, 'lap-rap.js')).veVector();
 
 let dat = 0, hong = 0;
 function kiem(ten, ok, chiTiet) {
@@ -206,18 +206,18 @@ console.log('\n== 2. cham.js: chẩn đoán, vết, Xưởng ==');
 /* ============================================================================ 3. PART, VE-ROBOT, KHO HÀM, SỔ LỆNH */
 console.log('\n== 3. part camera-bay, ve-robot.cauHinhCua, kho hàm, sổ lệnh, choi.html ==');
 {
-  const bay = Part.lay('cam-bien', 'camera-bay');
-  kiem('part camera-bay đăng ký: loại cam-bien, gắn ổ "bung" của drone, mở đúng hàm look', bay && bay.gan === 'bung' && J(bay.hamGoc) === '["look"]' && Part.lay('than', 'drone').oGan.bung && Number.isInteger(Part.lay('than', 'drone').oGan.bung.x));
-  kiem('Part.hamGoc(drone + nam châm + camera-bay) có look, không có color; Part.ghep ghép được cả ba trạng thái; xe không ghép được', Part.hamGoc({ than: 'drone', tay: 'nam-cham', camBien: CAM }).includes('look') && !Part.hamGoc({ than: 'drone', tay: 'nam-cham', camBien: CAM }).includes('color') &&
-    [{}, { camBien: { bat: true } }, { camBien: { mat: true } }].every((st) => !loi(() => Part.ghep({ than: 'drone', tay: 'nam-cham', camBien: CAM }, st))) && !!loi(() => Part.ghep({ than: 'hai-banh', tay: null, camBien: CAM })));
+  const bay = VV.lay('cam-bien', 'camera-bay');
+  kiem('bộ phận camera-bay đăng ký ở bộ vẽ vector: loại cam-bien, gắn ổ "bung" của drone, mở đúng hàm look', bay && bay.gan === 'bung' && J(bay.hamGoc) === '["look"]' && VV.lay('than', 'drone').oGan.bung && Number.isInteger(VV.lay('than', 'drone').oGan.bung.x));
+  kiem('VeVector.hamGoc(drone + nam châm + camera-bay) có look, không có color; VeVector.robot vẽ được cả ba trạng thái; xe không ghép được (kiemGhep ném)', VV.hamGoc({ than: 'drone', tay: 'nam-cham', camBien: CAM }).includes('look') && !VV.hamGoc({ than: 'drone', tay: 'nam-cham', camBien: CAM }).includes('color') &&
+    [{}, { camBien: { bat: true } }, { camBien: { mat: true } }].every((st) => !loi(() => VV.robot({ than: 'drone', tay: 'nam-cham', camBien: CAM }, st, 0, 100))) && !!loi(() => VV.kiemGhep({ than: 'hai-banh', tay: null, camBien: CAM })));
   // ve-robot.cauHinhCua (tải trong ngữ cảnh giả)
-  const ctxV = vm.createContext({ console, Ve: {}, document: { createElement: () => ({ getContext: () => ({}) }) }, Part });
-  ctxV.window = ctxV; ctxV.window.Part = Part;
+  const ctxV = vm.createContext({ console, Ve: {}, document: { createElement: () => ({ getContext: () => ({}) }) }, VeVector: VV });
+  ctxV.window = ctxV;
   vm.runInContext(fs.readFileSync(path.join(day, 'game', 've-robot.js'), 'utf8'), ctxV, { filename: 've-robot.js' });
   const VeRobot = ctxV.VeRobot;
   const mc = { loaiRobot: 'drone', hamGoc: BAY.concat(NC, ['look']), robot: { than: 'drone', tay: 'nam-cham', camBien: [{ ma: 'camera-bay', o: 'bung' }, { ma: 'pin', o: 'than' }] } };
   const ch = VeRobot.cauHinhCua(mc);
-  kiem('cauHinhCua(màn drone có camera-bay + pin): camBien chỉ còn camera-bay (pin không là part), cờ pin true, ghép được thành hình', J(ch.camBien) === J([{ ma: 'camera-bay', o: 'bung' }]) && ch.pin === true && ch.than === 'drone' && ch.tay === 'nam-cham' && !loi(() => Part.ghep(ch)));
+  kiem('cauHinhCua(màn drone có camera-bay + pin): camBien chỉ còn camera-bay (pin không là bộ phận), cờ pin true, ghép được (VeVector.kiemGhep)', J(ch.camBien) === J([{ ma: 'camera-bay', o: 'bung' }]) && ch.pin === true && ch.than === 'drone' && ch.tay === 'nam-cham' && !loi(() => VV.kiemGhep(ch)));
   const ch2 = VeRobot.cauHinhCua({ loaiRobot: 'drone', hamGoc: BAY.concat(NC, ['look']), robot: { than: 'drone', tay: 'nam-cham', camBien: [] } });
   kiem('cauHinhCua tự thêm camera-bay (ổ bung) khi hamGoc có look() mà màn chưa khai camera; không có look thì không thêm', J(ch2.camBien) === J([{ ma: 'camera-bay', o: 'bung' }]) && VeRobot.cauHinhCua({ loaiRobot: 'drone', hamGoc: BAY.concat(NC), robot: { than: 'drone', tay: 'nam-cham', camBien: [] } }).camBien.length === 0 &&
     VeRobot.cauHinhCua({ loaiRobot: 'drone', hamGoc: BAY.concat(NC, ['look']), robot: { than: 'drone', tay: 'nam-cham', camBien: CAM.slice() } }).camBien.length === 1);
@@ -226,12 +226,12 @@ console.log('\n== 3. part camera-bay, ve-robot.cauHinhCua, kho hàm, sổ lệnh
   const sl = SoLenh.lenhGoc.find((x) => x.ten === 'look');
   kiem('sổ lệnh gốc có look (không có lệnh ngược, như battery / color); SanHoc.laHamCamBien("look"), CAM_NHIN_HAM, MA_CAM_BAY', sl && sl.nguoc === null && /camera/i.test(sl.moTa) && SanHoc.laHamCamBien('look') && J(SanHoc.CAM_NHIN_HAM) === '["look"]' && SanHoc.MA_CAM_BAY === 'camera-bay' && SanHoc.LENH_NGUOC.look === undefined);
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
-  const vt = (f) => html.indexOf('part/' + f + '.js');
-  kiem('game/choi.html nạp part-camera-bay.js, sau part.js / part-drone.js và trước ve-robot.js', vt('part-camera-bay') > vt('part') && vt('part-camera-bay') > vt('part-drone') && vt('part-camera-bay') < html.indexOf('ve-robot.js'));
-  const xem = fs.readFileSync(path.join(day, 'game', 'part', 'xem-part.html'), 'utf8');
-  kiem('trang xem part (xem-part.html) nạp part-camera-bay.js và có hàng chọn camera nhìn xuống', xem.includes('part-camera-bay.js') && xem.includes('CAMERA NHÌN XUỐNG'));
-  // kiem-part.mjs có kiểm part này (không bị bỏ sót khi sửa)
-  kiem('kiem-part.mjs nạp và kiểm part-camera-bay', fs.readFileSync(path.join(day, 'game', 'part', 'kiem-part.mjs'), 'utf8').includes("'camera-bay'"));
+  const vt = (f) => html.indexOf(f + '.js');
+  kiem('game/choi.html nạp ve-vector-cam.js (có camera-bay), sau ve-vector.js / ve-vector-than-drone.js và trước ve-robot.js (V7c2: bộ pixel part/ đã xoá)', vt('ve-vector-cam') > vt('ve-vector') && vt('ve-vector-cam') > vt('ve-vector-than-drone') && vt('ve-vector-cam') < html.indexOf('ve-robot.js') && fs.readFileSync(path.join(day, 'game', 've-vector-cam.js'), 'utf8').includes("'camera-bay'"));
+  const xem = fs.readFileSync(path.join(day, 'hinh-mau', 'xem-vector.html'), 'utf8');
+  kiem('trang xem bộ vector (hinh-mau/xem-vector.html) nạp ve-vector-cam.js', xem.includes('ve-vector-cam.js'));
+  // dữ liệu chụp (chuẩn của kiem-lap-rap / kiem-ve-vector 12) có bộ phận này (không bị bỏ sót khi sửa)
+  kiem('du-lieu-chup-pixel.json (chuẩn ghép) có camera-bay', fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8').includes('"camera-bay"'));
 }
 
 /* ============================================================================ 4. GIAO DIỆN (DOM giả) */

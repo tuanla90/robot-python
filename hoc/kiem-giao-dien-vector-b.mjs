@@ -10,12 +10,12 @@
      d. Icon: mọi tên icon các màn đó dùng (data-i, Ve.ico, đèn bộ phận den-bo-phan.js) có bản vector trong VeIcon.HINH; taoSvg (DOM giả) cho <svg viewBox 24>
         mà mọi nét / mảng tô đều là currentColor (màu theo vai đặt bằng CSS); ve.js ghi nhãn _vi ở Ve.ico / Ve.sao / Ve.khoa; phạm vi thay KHÔNG gồm #sc-choi.
      e. Tương phản WCAG AA: mọi cặp chữ / nền khai cùng luật trong giao-dien-vector-b.css ≥ 4,5:1 (màu là vai bảng màu); chữ trắng trên nền đặc cũng đo.
-     f. Robot màn đầu: man-dau.js chỉ đặt trangThai.mat khi VeVector.bat() (pixel không đổi), có chớp / cười / liếc, tôn trọng prefers-reduced-motion.
+     f. Robot màn đầu: man-dau.js luôn đặt trangThai.mat (V7c2), có chớp / cười / liếc, tôn trọng prefers-reduced-motion.
      g. Luật UI: nút chỉ có icon của màn chơi (menu, xoá hết, thụt lề, cuộn khay, ẩn bong bóng) có title; ve-vector-icon.js thêm title cho nút chỉ icon thiếu title.
      h. Trang xem hinh-mau/xem-vector.html có mục V5b nạp giao-dien-vector-b.css và ve-vector-icon.js.
      i. Cài đặt (user 28/10 "Ẩn ở vector"): CaiDat.mo() chạy trong DOM giả: ở vector KHÔNG có mục "Màu sơn R1" (R1 cố định màu đội), ở pixel CÓ như cũ.
    Cờ --loi-gia: cắm bảy lỗi giả trong bộ nhớ (luật ngoài body.ve-vector có steps(), bỏ luật phủ bảng phấn của .d-san, bỏ icon book, cặp chữ 1,7:1,
-   :hover ngoài @media, bỏ điều kiện VeVector.bat() của mắt, Cài đặt vector vẫn có mục sơn) → phải đỏ đúng các mục b, c, d, e, b, f, i.
+   :hover ngoài @media, màn đầu quên đặt mắt, Cài đặt vector vẫn có mục sơn) → phải đỏ đúng các mục b, c, d, e, b, f, i.
    Chạy: node hoc/kiem-giao-dien-vector-b.mjs [--loi-gia]   (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
@@ -50,7 +50,7 @@ if (LOI_GIA) {
   iconSrc = iconSrc.replace(/\n {4}book: \[[^\n]*\n/, '\n');                                                    // d: mất icon book (Sổ lệnh)
   cssB += '\nbody.ve-vector .g-mota{color:var(--g-vecKeDam);background:var(--g-vecThe)}\n';                   // e: chữ 1,7:1
   cssB += '\nbody.ve-vector .c-man:hover{transform:none}\n';                                                    // b: rê chuột ngoài @media (hover:hover)
-  manDau = manDau.replace('if (window.VeVector && VeVector.bat()) tt.mat = matDau();', 'tt.mat = matDau();');   // f: pixel cũng nhận mắt
+  manDau = manDau.replace('tt.mat = matDau();', '');                                                            // f: màn đầu quên đặt mắt
 }
 
 function tachLuat(src) {
@@ -199,9 +199,9 @@ console.log('\n== e. Tương phản chữ WCAG AA ==');
 /* ================================================================= f. mắt robot màn đầu */
 console.log('\n== f. Robot màn đầu: mắt biểu cảm chỉ ở vector ==');
 {
-  const ok = /if \(window\.VeVector && VeVector\.bat\(\)\) tt\.mat = matDau\(\);/.test(manDau) && (manDau.match(/tt\.mat\s*=/g) || []).length === 1;
+  const ok = /\n\s*tt\.mat = matDau\(\);/.test(manDau) && (manDau.match(/tt\.mat\s*=/g) || []).length === 1 && !/VeVector\.bat\(\)\) tt\.mat/.test(manDau);
   const kieu = ['chop1', 'chop2', 'vui', "'thuong:'"].every((k) => manDau.includes(k)) && /prefers-reduced-motion: reduce/.test(manDau) && !/Math\.random/.test(manDau.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, ''));
-  kiem('man-dau.js đặt trangThai.mat CHỈ khi VeVector.bat() (pixel không nhận trường mới)', ok);
+  kiem('man-dau.js luôn đặt trangThai.mat = matDau() (V7c2: game luôn vector, hết điều kiện VeVector.bat())', ok);
   kiem('mắt có chớp (chop1 / chop2), cười ở mép (vui), liếc về hướng sắp đi (thuong:±1); giảm chuyển động không chớp; không Math.random', kieu);
 }
 

@@ -6,7 +6,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Lời khung n ở chu.js khóa 'pg.<mã gói>.<n>' (≤ 14 từ). Truyện nối phim gói 10 mùa 1: R1 lăn ra khỏi xưởng, thấy bánh xích trên đồi;
    mùa 2 R1 lắp lại xích, nhận súng hơi, mắt hồng ngoại, rồi làm nhà máy cũ chạy lại; phim cuối nhá mùa 3 "Tín hiệu" (nhện, nam châm, sóng từ).
    Hình: sân mini nhìn từ trên (c.san, ô 56 px, robot tỉ lệ 2) hay dải sàn (md-san, robot tỉ lệ 3). Cơ chế mới của mùa 2 (băng chuyền, nút bắn và quầng nóng,
-   thùng nặng, bóng hơi) vẽ bằng PhimVector.bang / nutBan / thungNang / bong / nong ở vector; ở pixel rơi về Ve.tiles / Ve.ico (chỉ cần chạy không lỗi).
+   thùng nặng, bóng hơi) vẽ bằng PhimVector.bang / nutBan / thungNang / bong / nong (V7c2: hết đường lùi pixel; thiếu thì icon / div).
    Huy hiệu mùa 2 chưa có bản vector thì ở vector thay bằng icon bộ phận (không có canvas pixel trong phim vector).
    R1 sơn mặc định (vector: xanh đội R1), R2 sơn lam (vector: hồng đội R2).
    Node (máy kiểm kiem-phim-goi.mjs) require tệp này lấy bảng PHIM (không chạy hàm vẽ nào).
@@ -25,12 +25,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var BAN = { tay: { tuThe: 'tren', dangBanTruoc: true } }, BAN_SAU = { tay: { tuThe: 'tren', dangBanSau: true } }, YEN = { tay: { tuThe: 'tren' } };
   var DO = { camBien: { bat: true } };
 
-  /* ---------------------------------------------------------------- hình cơ chế mùa 2 (vector: PhimVector; pixel: Ve.*) */
-  function PV() { return goc.PhimVector && goc.PhimVector.bat && goc.PhimVector.bat() ? goc.PhimVector : null; }
+  /* ---------------------------------------------------------------- hình cơ chế mùa 2 (PhimVector; dự phòng: icon / div) */
+  function PV() { return goc.PhimVector || null; }
   function veBang(c, s, huong, pha) { var v = PV() && PhimVector.bang(s, huong, pha); return v || c.ico('bang', s); }
   function veNut(c, bat, s) {
     var v = PV() && PhimVector.nutBan(!!bat, s); if (v) return v;
-    try { var tl = Ve.tiles(); if (typeof tl.nut === 'function') { var e = Ve.mk(tl.nut(!!bat), s); e.classList.add('pxi'); return e; } } catch (x) { /* rơi về icon */ }
     return c.ico('nutban', s, bat ? BM.do : BM.vang);
   }
   function veNang(c, s) { var v = PV() && PhimVector.thungNang(s); return v || c.o('thung', s); }
@@ -115,15 +114,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function lap(k, c, cu, moi, t) { k.appendChild(c.tu(cu, t, true)); k.appendChild(c.tu(moi, t)); var cach = c.chu('md-ram pg-cach', 'CẠCH!'); cach.style.animationDelay = t + 's'; k.appendChild(cach); c.sau(t * 1000, function () { c.keu('kep'); }); }
   /** Cột tường ở x (ba ô tường cạnh 42, đáy chạm sàn). */
   function tuong(k, c, x) { [64, 106, 148].forEach(function (y) { k.appendChild(c.dat(c.o('wall', 3), x, y)); }); }
-  /** Huy hiệu ma (trạng thái xong) cạnh 36 px; vector mà huy hiệu chưa có bản vector thì icon bộ phận (không để canvas pixel trong phim vector). */
+  /** Huy hiệu ma (trạng thái xong) cạnh 36 px (HuyHieu.mk vector); chưa có bản vector thì sao. */
   function huyHieu(c, ma) {
     var HH = goc.HuyHieu;
-    if (PV()) {
-      try { if (HH && HH.maVec && HH.maVec(ma) && HH.mk) { var v = HH.mk(ma, 'xong', 1); if (v && v.laVector) return v; } } catch (e) { /* rơi về sao */ }
-      return c.sao(2);                                                   // V7b: mọi mã đều có bản vector (máy kiểm A6), đường tạm icon trong khung tròn đã gỡ
-    }
-    try { if (HH && HH.DS && HH.DS.indexOf(ma) >= 0) { var p = HH.mk(ma, 'xong', 1); p.classList.add('pxi'); return p; } } catch (e) { /* rơi về sao */ }
-    return c.sao(2);
+    try { if (HH && HH.maVec && HH.maVec(ma) && HH.mk) { var v = HH.mk(ma, 'xong', 1); if (v && v.laVector) return v; } } catch (e) { /* rơi về sao */ }
+    return c.sao(2);                                                   // V7b: mọi mã đều có bản vector (máy kiểm A6), đường tạm icon trong khung tròn đã gỡ
   }
   /** Chữ qua t() của chu.js (Node không có t: trả khóa). */
   function t2(khoa) { return typeof t === 'function' ? t(khoa) : khoa; }

@@ -209,7 +209,6 @@
   /* ------------------------------------------------------------------ khởi động */
   function boot() {
     document.title = t('chung.tenGame');
-    Ve.datChatLieu();
     // hàm theo cốt truyện (tên nằm trong taoHam của một màn nào đó): kho khóa tên, không cho đổi tên / xóa
     KhoHam.datTenCoDinh([].concat.apply([], ManHoc.danhSach.map(function (m) { return m.taoHam || []; })));
     var r = Luu.docKho();
@@ -219,7 +218,6 @@
     Chon.dung(kb);
     Choi.dung(kc);
     if (kl && window.LapRobot) LapRobot.dung(kl);
-    [kd, kg, kb, kc, kl].forEach(function (k) { if (k) Ve.khungGo(k.querySelector('.deco')); });
     ghiGoiDaMo();
     // gói / chương mở ban đầu: của màn tiếp theo cần chơi
     var dau = App.manTiepTheo(), dsc = App.dsChuong();
@@ -256,13 +254,13 @@
     });
   }
 
-  /** Không tải được phông (font/font.css; bản Artifact vẫn lấy từ Google): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. Vector: kiểm Google Sans Flex / Code. */
+  /** Không tải được phông (font/font.css; bản Artifact vẫn lấy từ Google): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. Kiểm Google Sans Flex / Code (V7c2: hết Handjet / VT323). */
   function phongDuPhong() {
     var fb = function () { document.body.classList.add('fb'); };
     try {
       if (!document.fonts || !document.fonts.load) { fb(); return; }
       var hen = setTimeout(fb, 3000);
-      var vec = document.body.classList.contains('ve-vector'), pGd = vec ? '"Google Sans Flex"' : '"Handjet"', pMa = vec ? '"Google Sans Code"' : '"VT323"';     // giao diện vector (gói V5a): phông diem10code
+      var pGd = '"Google Sans Flex"', pMa = '"Google Sans Code"';     // giao diện vector (gói V5a): phông diem10code
       Promise.all([document.fonts.load('600 16px ' + pGd, t('choi.chay') + ' ạịợữỳĐ'), document.fonts.load('400 16px ' + pMa, 'turn_right()')]).then(function (r) {
         clearTimeout(hen);
         if (!r[0].length || !r[1].length) fb(); else document.body.classList.remove('fb');

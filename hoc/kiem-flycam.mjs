@@ -273,8 +273,8 @@ console.log('\n== 4. Sổ lệnh, gói Drone, huy hiệu, choi.html ==');
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   const vtri = (f) => tags.indexOf('../' + f);
-  kiem('choi.html có thẻ script ../man-flycam.js đúng một lần, sau man-che-drone.js (cùng sổ màn); so-lenh.js nạp trước; part-camera-bay.js có mặt',
-    tags.filter((t) => t === '../man-flycam.js').length === 1 && vtri('man-flycam.js') > vtri('man-che-drone.js') && vtri('so-lenh.js') < vtri('man-flycam.js') && tags.some((t) => /part-camera-bay\.js$/.test(t)), J(tags));
+  kiem('choi.html có thẻ script ../man-flycam.js đúng một lần, sau man-che-drone.js (cùng sổ màn); so-lenh.js nạp trước; ve-vector-cam.js (camera-bay vector; V7c2: bộ pixel part/ đã xoá) có mặt',
+    tags.filter((t) => t === '../man-flycam.js').length === 1 && vtri('man-flycam.js') > vtri('man-che-drone.js') && vtri('so-lenh.js') < vtri('man-flycam.js') && tags.some((t) => /^ve-vector-cam\.js$/.test(t)), J(tags));
   const hd = fs.readFileSync(path.join(day, 'game', 'huong-dan-man.js'), 'utf8');
   kiem("hướng dẫn bong bóng (huong-dan-man.js): H['flycam.1'] có tạo hàm seek_red, chỉ khối while (có look()) trong Xưởng, rồi thử / về sân / chạy",
     /H\['flycam\.1'\] = \[[\s\S]*?buocTaoHam\('seek_red'[\s\S]*?khoiTheo\(\['khoi:vong:while'\][\s\S]*?buocThuVeChay\(/.test(hd));

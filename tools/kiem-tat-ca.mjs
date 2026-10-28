@@ -1,4 +1,4 @@
-/* Chạy mọi máy kiểm (kiem-*.mjs) trong nhan/, hoc/, hoc/game/part/ lần lượt.
+/* Chạy mọi máy kiểm (kiem-*.mjs) trong nhan/, hoc/ lần lượt (V7c2: hoc/game/part đã xoá).
    Chạy: npm test        (một bộ trượt thì thoát mã 1)
    Lọc:  npm test -- hoc/kiem-xich     (chỉ chạy các tệp có chứa chuỗi này) */
 import { spawnSync } from 'node:child_process';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const goc = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const loc = process.argv[2] || '';
-const tep = ['nhan', 'hoc', 'hoc/game/part']
+const tep = ['nhan', 'hoc']
   .flatMap((d) => fs.readdirSync(path.join(goc, d))
     .filter((f) => /^kiem-.*\.mjs$/.test(f))
     .map((f) => `${d}/${f}`))

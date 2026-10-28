@@ -12,7 +12,7 @@
   .o .cap{display:flex;gap:6px;align-items:center}
   .o .cap span{font-size:10px;color:var(--g-vecChuMo);width:30px}
   .o.thieu{border-color:var(--g-vecHoPhach)}
-  .o.thieu b::after{content:" (chưa có bản vector: rơi về pixel)";color:var(--g-vecHoPhachDam);font-weight:400}
+  .o.thieu b::after{content:" (chưa có bản vector)";color:var(--g-vecHoPhachDam);font-weight:400}
   canvas{display:block}
   .dk{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;font-size:13px}
   .dk button,.dk select{font:inherit;padding:4px 10px;border-radius:8px;border:1px solid var(--g-vecKeDam);background:var(--g-vecThe);color:var(--g-vecChu);cursor:pointer}
@@ -29,24 +29,6 @@
 <script src="../game/bang-mau.js"></script>
 <script src="../game/chu.js"></script>
 <script src="../game/ve.js"></script>
-<script src="../game/part/part.js"></script>
-<script src="../game/part/part-hai-banh.js"></script>
-<script src="../game/part/part-xich.js"></script>
-<script src="../game/part/part-nhen.js"></script>
-<script src="../game/part/part-omni.js"></script>
-<script src="../game/part/part-drone.js"></script>
-<script src="../game/part/part-kep.js"></script>
-<script src="../game/part/part-tay-xoay.js"></script>
-<script src="../game/part/part-nam-cham.js"></script>
-<script src="../game/part/part-nem.js"></script>
-<script src="../game/part/part-hoi.js"></script>
-<script src="../game/part/part-son.js"></script>
-<script src="../game/part/part-khoang-cach.js"></script>
-<script src="../game/part/part-mau.js"></script>
-<script src="../game/part/part-cham.js"></script>
-<script src="../game/part/part-camera.js"></script>
-<script src="../game/part/part-camera-bay.js"></script>
-<script src="../game/part/part-hong-ngoai.js"></script>
 <script src="../game/ve-vector.js"></script>
 <script src="../game/ve-vector-icon.js"></script>
 <script src="../game/ve-vector-o.js"></script>
@@ -73,9 +55,9 @@
 <script src="../game/phim-vector.js"></script>
 </head><body>
 <h1>Trang xem gói V6: huy hiệu và phim vẽ bằng bộ vẽ vector</h1>
-<p class="ghi">Mỗi ô: tên mã, ba trạng thái (khoá · mở · xong). Hàng trên là bộ pixel (HuyHieu.vePixel, y như cũ), hàng dưới là bản vector (VeVector.HUY_HIEU qua HuyHieu.mk) ở cỡ ×2 như bản đồ gói.
-  Ô viền hổ phách: huy hiệu chưa có bản vector, ở chế độ vector vẫn hiện bản pixel. dpr = <span id="dpr"></span>.</p>
-<h2>Huy hiệu: pixel | vector (<span id="dem"></span>)</h2>
+<p class="ghi">Mỗi ô: tên mã, ba trạng thái (khoá · mở · xong), bản vector (VeVector.HUY_HIEU qua HuyHieu.mk) ở cỡ ×2 như bản đồ gói. V7c2 (28/10): bộ pixel và cột pixel đã xoá.
+  Ô viền hổ phách: huy hiệu chưa có bản vector (HuyHieu.mk ra canvas trống). dpr = <span id="dpr"></span>.</p>
+<h2>Huy hiệu: vector (<span id="dem"></span>)</h2>
 <div class="luoi" id="huy"></div>
 <h2 id="v6c">Gói V6c: một bộ icon cho giao diện và phim (VeIcon.HINH, <span id="dem-icon"></span>)</h2>
 <p class="ghi">Mỗi ô một tên: trái là svg của giao diện (currentColor, màu theo vai đặt bằng CSS; màn chơi #sc-choi cũng thay từ gói V6c), phải là cùng hình vẽ lên canvas cho phim
@@ -87,23 +69,21 @@
   Hàng tay xoay: mở / khép dần theo moK (1 mở … 0 ôm), rồi cầm ở nâng / hạ / xoay ngang. Hàng drone: vật treo dưới nam châm ở cỡ sàn (cũ) và cỡ nâng (V7a).</p>
 <div id="v7a-tay" style="display:flex;flex-wrap:wrap;gap:8px"></div>
 <div id="v7a-san" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px"></div>
-<h2 id="tieu-phim">Phim gói: vector | pixel (game thật trong khung 360 × 640, cùng phim cùng khung)</h2>
-<p class="ghi">Chọn phim và khung; hai khung bên dưới là choi.html?ve=vector và choi.html?ve=pixel, chiếu bằng PhimGoi.mo rồi bấm Tiếp tới khung đã chọn (hoạt cảnh chạy thật).</p>
-<div class="dk"><label>Phim <select id="chon-phim" aria-label="Chọn phim gói"></select></label><span id="nut-khung"></span><button type="button" id="chieu-lai" title="Chiếu lại khung đang chọn ở cả hai bên">Chiếu lại</button></div>
+<h2 id="tieu-phim">Phim gói (game thật trong khung 360 × 640)</h2>
+<p class="ghi">Chọn phim và khung; khung bên dưới là choi.html (luôn vector từ V7c1), chiếu bằng PhimGoi.mo rồi bấm Tiếp tới khung đã chọn (hoạt cảnh chạy thật).</p>
+<div class="dk"><label>Phim <select id="chon-phim" aria-label="Chọn phim gói"></select></label><span id="nut-khung"></span><button type="button" id="chieu-lai" title="Chiếu lại khung đang chọn">Chiếu lại</button></div>
 <div id="phim">
-  <figure><figcaption>vector (?ve=vector)</figcaption><iframe id="khung-vec" title="Game ở chế độ vector" src="../game/choi.html?ve=vector"></iframe></figure>
-  <figure><figcaption>pixel (?ve=pixel)</figcaption><iframe id="khung-px" title="Game ở chế độ pixel" src="../game/choi.html?ve=pixel"></iframe></figure>
+  <figure><figcaption>game (vector)</figcaption><iframe id="khung-vec" title="Game" src="../game/choi.html"></iframe></figure>
 </div>
 <script>
 (function () {
   document.getElementById('dpr').textContent = window.devicePixelRatio || 1;
-  VeVector.datCheDo('vector');                                     // trang xem: bản vector lấy qua HuyHieu.mk (đọc chế độ lúc gọi), bản pixel qua vePixel
   var luoi = document.getElementById('huy'), TT = ['khoa', 'mo', 'xong'], coVec = 0;
   HuyHieu.DS.forEach(function (ma) {
     var o = document.createElement('div'), b = document.createElement('b'), vec = !!HuyHieu.maVec(ma);
     o.className = 'o' + (vec ? '' : ' thieu'); b.textContent = ma + (vec && HuyHieu.maVec(ma) !== ma ? '  (dùng hình ' + HuyHieu.maVec(ma) + ')' : ''); o.appendChild(b);
     if (vec) coVec++;
-    [['pixel', function (tt) { return Ve.mk(HuyHieu.vePixel(ma, tt), 2); }], ['vector', function (tt) { return HuyHieu.mk(ma, tt, 2); }]].forEach(function (h) {
+    [['vector', function (tt) { return HuyHieu.mk(ma, tt, 2); }]].forEach(function (h) {
       var cap = document.createElement('div'), nh = document.createElement('span'); cap.className = 'cap'; nh.textContent = h[0]; cap.appendChild(nh);
       TT.forEach(function (tt) { try { cap.appendChild(h[1](tt)); } catch (e) { var x = document.createElement('span'); x.textContent = 'LỖI ' + e.message; cap.appendChild(x); } });
       o.appendChild(cap);
@@ -125,11 +105,11 @@
   });
   var xe = PhimVector.xeTai(168, 120); if (xe) document.getElementById('xe-v6c').appendChild(xe);
 
-  /* phim: hai iframe game thật */
-  var kv = document.getElementById('khung-vec'), kp = document.getElementById('khung-px'), chon = document.getElementById('chon-phim'), nut = document.getElementById('nut-khung');
+  /* phim: iframe game thật */
+  var kv = document.getElementById('khung-vec'), chon = document.getElementById('chon-phim'), nut = document.getElementById('nut-khung');
   var phim = null, khung = 1, san = 0;
   function chieu() {
-    [kv, kp].forEach(function (f) {
+    [kv].forEach(function (f) {
       var w = f.contentWindow; if (!w || !w.PhimGoi || !phim) return;
       var cu = w.document.querySelector('.md'); if (cu) cu.remove();
       if (phim === 'mo-dau') w.MoDau.mo(function () {}); else w.PhimGoi.mo(phim, function () {});      // V6c: phim mở đầu (mo-dau.js) cũng xem được
@@ -142,11 +122,11 @@
     for (var i = 1; i <= n; i++) (function (i) { var b = document.createElement('button'); b.type = 'button'; b.textContent = 'Khung ' + i; b.title = 'Chiếu khung ' + i + ' của phim ' + phim; b.onclick = function () { khung = i; chieu(); }; nut.appendChild(b); })(i);
   }
   function khiSan() {
-    if (++san < 2) return;
+    if (++san < 1) return;
     ['mo-dau'].concat(kv.contentWindow.PhimGoi.ds()).forEach(function (m) { var o = document.createElement('option'); o.value = o.textContent = m; chon.appendChild(o); });
     phim = chon.value; veNut(); chieu();
   }
-  [kv, kp].forEach(function (f) { f.addEventListener('load', function () { setTimeout(khiSan, 300); }); });
+  [kv].forEach(function (f) { f.addEventListener('load', function () { setTimeout(khiSan, 300); }); });
   chon.onchange = function () { phim = chon.value; khung = 1; veNut(); chieu(); };
   document.getElementById('chieu-lai').onclick = chieu;
 })();

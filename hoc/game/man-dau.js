@@ -13,7 +13,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var ROBOT = { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] };   // robot hoàn thiện (chương Robot hoàn thiện)
   var TI_LE = 3, NHIP_MS = 110, BUOC = 4, NGHI = 6;
   var S = { hen: null, x: 0, huong: 1, ph: 0, nghi: 0, nhip: 0 };
-  /* MẮT BIỂU CẢM (gói V5b, chỉ robot vector: VeRobot chuyển trangThai.mat cho H.kinh của ve-vector.js; pixel không đọc trường này).
+  /* MẮT BIỂU CẢM (gói V5b: VeRobot chuyển trangThai.mat cho H.kinh của ve-vector.js; V7c2: hết mắt LED pixel SanVe.veMatTam).
      Chạy: mắt thường, chớp ba nhịp (nửa nhắm, khép, nửa nhắm) cứ CHOP_NHIP nhịp một lần (lần thứ ba chớp đôi); dừng ở mép bảng: cười "^ ^" rồi liếc về hướng sắp đi.
      Không Math.random (đếm nhịp, lặp lại được); giảm chuyển động (prefers-reduced-motion): không chớp, không liếc. */
   var CHOP_NHIP = 27, CHOP = ['chop1', 'chop2', 'chop1'];
@@ -103,8 +103,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function hinh() {
     if (!window.VeRobot) return null;
     var tt = { wl: S.nghi ? 0 : 2, wr: S.nghi ? 0 : 2, ph: S.ph, tay: { tuThe: 'tren', kep: false } };
-    if (window.VeVector && VeVector.bat()) tt.mat = matDau();                                   // gói V5b: mắt biểu cảm (chỉ vector)
-    try { return VeRobot.veCo(ROBOT, tt, S.huong, TI_LE * VeRobot.PX_O_PART); } catch (e) { return null; }      // cỡ ô hiển thị (VeRobot.veCo): pixel = bội số TI_LE như cũ
+    tt.mat = matDau();                                                                          // gói V5b: mắt biểu cảm (V7c2: luôn đặt, game luôn vector)
+    try { return VeRobot.veCo(ROBOT, tt, S.huong, TI_LE * VeRobot.PX_O_PART); } catch (e) { return null; }      // cỡ ô hiển thị (VeRobot.veCo)
   }
   function veRobot() {
     var cv = hinh(); if (!cv) return;
@@ -112,7 +112,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var hs = VeRobot.heSoCss(cv);
     if (c.width !== cv.width || c.height !== cv.height) { c.width = cv.width; c.height = cv.height; c.style.width = cv.width * hs + 'px'; c.style.height = cv.height * hs + 'px'; }
     var g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height); g.imageSmoothingEnabled = false; g.drawImage(cv, 0, 0);
-    if (cv.laPart && !cv.laVector && window.SanVe && SanVe.coMatDong && SanVe.coMatDong()) SanVe.veMatTam(g, c.width / 2, c.height / 2, TI_LE, ROBOT, { chay: !S.nghi }, S.huong, performance.now());
     c.style.transform = 'translate(' + S.x + 'px,-50%)';
   }
   function nhip() {

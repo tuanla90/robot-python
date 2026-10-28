@@ -39,7 +39,6 @@ Kế hoạch và lộ trình của Robot Chấn Hưng nằm trong `hoc/`: `LO-TR
 - Chữ (Handjet, VT323) nằm sẵn trong `hoc/game/font/`, không gọi Google Fonts.
 - `hoc/game/sw.js` (service worker) cất mọi tệp mà `choi.html` nạp. Mở game một lần khi có mạng, lần sau mất mạng vẫn chơi được.
 - `hoc/game/manifest.webmanifest` và `hoc/game/icon/`: cài lên màn hình chính như một app, bọc thành app Android.
-- Vẽ lại icon: `python -I tools/ve-icon.py` (cần Pillow).
 - Âm thanh tổng hợp bằng WebAudio ngay trong game, không có tệp âm thanh.
 
 ### Lộ trình xuất bản

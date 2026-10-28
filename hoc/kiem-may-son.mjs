@@ -146,7 +146,7 @@ console.log('\n== 4. Đăng ký ==');
   kiem('gói may-son: bộ phận, mùa 3, hai chương, ngay sau gói Cảm biến màu (và gói đội của nó)', g && g.loai === 'bo-phan' && g.mua === 'mua-3' && J(g.chuong) === '["may-son","che-may-son"]' && truoc.ma === 'mau' && ThuTu.goi[i - 1].mua === 'mua-3');
   kiem('thuTu: may-son, che-may-son đứng sau che-mau (và chương đội của nó), trước rap-nao', ThuTu.thuTu.indexOf('may-son') > ThuTu.thuTu.indexOf('che-mau') && ThuTu.thuTu.indexOf('che-may-son') === ThuTu.thuTu.indexOf('may-son') + 1 && ThuTu.thuTu.indexOf('rap-nao') === ThuTu.thuTu.indexOf('che-may-son') + 1);
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
-  kiem('choi.html nạp man-may-son.js, man-che-may-son.js (sau man-che-mau.js) và part/part-son.js', html.indexOf('../man-may-son.js') > html.indexOf('../man-che-mau.js') && html.indexOf('../man-che-may-son.js') > html.indexOf('../man-may-son.js') && html.includes('part/part-son.js'));
+  kiem('choi.html nạp man-may-son.js, man-che-may-son.js (sau man-che-mau.js) và ve-vector-tay-son.js (V7c2: bộ pixel part/ đã xoá)', html.indexOf('../man-may-son.js') > html.indexOf('../man-che-mau.js') && html.indexOf('../man-che-may-son.js') > html.indexOf('../man-may-son.js') && html.includes('ve-vector-tay-son.js'));
   kiem('Sổ lệnh: nhóm "son", bảy hàm cốt truyện đúng chương, bốn lệnh gốc', SoLenh.tenNhom.son && ['dots', 'frame', 'line', 'color_line', 'next_row', 'stripes', 'copy_row', 'grid', 'border', 'fill_gaps'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).nhom === 'son') &&
     ['ink', 'dot', 'pen_down', 'pen_up'].every((t) => SoLenh.lenhGoc.some((l) => l.ten === t)));
   kiem('huy hiệu may-son và che-may-son có hình (bộ vector, V7c1)', coHuyHieu('may-son') && coHuyHieu('che-may-son'));

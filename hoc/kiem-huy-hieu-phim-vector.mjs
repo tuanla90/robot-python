@@ -4,13 +4,13 @@
    ghi lệnh. V7c1 (28/10): game luôn vector; ngữ cảnh pixel và phanh pixel A3 / B5 (so nền fa3702f) đã gỡ, thay bằng A3-v / B5-v so nền vector c830c12.
    A. HUY HIỆU
      A1 mọi mã HuyHieu.DS × ba trạng thái (khoa / mo / xong) vẽ được (HuyHieu.ve, HuyHieu.mk), không ném lỗi.
-     A2 vector: mã có bản vector (HuyHieu.maVec) KHÔNG gọi Part.* (ghep, _veMot, veVatNho, rot90, lay) và ra canvas .laVector; mã chưa có bản vector rơi về pixel (liệt kê).
+     A2 vector: mã có bản vector (HuyHieu.maVec) ra canvas .laVector (V7c2: bộ pixel part/ đã xoá, không còn Part.* để gọi); mã chưa có bản vector (liệt kê).
      A3-v (V7c1) vector y nguyên: HuyHieu.mk bản mới = bản nền vector NEN_VEC từng lệnh vẽ, mọi mã của nền còn.
      A4 vector: cầu nối Ve.mk(HuyHieu.ve(…), s) ra canvas vector cỡ 36·s px CSS; Ve.hydrate điền [data-i="huyhieu"] bằng bản vector; mã lạ vẫn ra hình pixel.
      A5 phủ: huy hiệu của mọi gói mùa 1 (ThuTuChuong.goi: hinh / chương đầu) và các huy hiệu bay trong phim "robot" đều có bản vector.
      A6 (gói V7a) phủ hết: MỌI mã của HuyHieu.DS (V7c1: = VeVector.HUY_HIEU.dsTatCa(), hình riêng + bí danh; không danh sách cứng) có bản vector (HuyHieu.maVec).
      A7 (V7c1) danh sách mã + bí danh là DỮ LIỆU ở huy-hieu-vector.js: HuyHieu.DS (tập) và BI_DANH y hệt dữ liệu chụp từ bộ pixel (hoc/du-lieu-chup-pixel.json, c0);
-        mọi HINH['x'] = function của huy-hieu.js pixel còn lại đều có trong DS (bộ pixel không được thêm mã mà bộ vector không biết); maVec(bí danh) = mã gốc.
+        huy-hieu.js không còn HINH['x'] = function nào (V7c2: bộ pixel đã xoá); maVec(bí danh) = mã gốc.
    B. PHIM (mọi phim ở PhimGoi, chạy đủ khung và mọi hẹn giờ)
      B1 vector: mọi khung vẽ được, không lỗi / cảnh báo.
      B2 vector: mọi canvas trong khung tranh là hình vector (.laVector: ô, cờ, nút đè, cửa, sao, icon bộ phận, robot, huy hiệu); không gọi Ve.tiles / Ve.makeNutDe / Ve.veCua.
@@ -18,7 +18,7 @@
         cạnh thùng theo vatKep.n.
      B4 vector: robot trong phim dùng mắt biểu cảm (VeRobot.veCo nhận trangThai.mat) ở ≥ 8 phim, có cả 'vui' lẫn 'ngac'.
      B5-v (V7c1) vector y nguyên: cây DOM + lệnh vẽ của từng khung (sau mọi hẹn giờ) của mọi phim bản mới = bản nền vector NEN_VEC.
-   Cờ --loi-gia: cắm bảy lỗi (hình tay-gap gọi Part.ghep, vePixel dời sao, hình xich ném lỗi, VAT về 57, PhimVector bỏ ô tường, xe().mat không đổi gì,
+   Cờ --loi-gia: cắm bảy lỗi (hình tay-gap vẽ khác nền, HuyHieu.mk lệch 1 px, hình xich ném lỗi, VAT về 57, PhimVector bỏ ô tường, xe().mat không đổi gì,
    V7a: bỏ bản vector của be-sung) → máy kiểm phải ĐỎ.
    Chạy: node hoc/kiem-huy-hieu-phim-vector.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
@@ -49,7 +49,7 @@ const SUA = {};
 if (LOI_GIA) {
   console.log('(đang cắm lỗi giả: bảy lỗi, các mục A1 A2 A3 A6 B2 B3 B4 phải đỏ)');
   SUA['huy-hieu-vector.js'] = (s) => s.replace("dk('be-sung',", "dk('be-sung-loi-gia',");
-  SUA['huy-hieu.js'] = (s) => s.replace("if (tt === 'xong') veSao(p, 28, 30);", "if (tt === 'xong') veSao(p, 27, 30);");
+  SUA['huy-hieu.js'] = (s) => s.replace("e.style.width = e.style.height = CO_GOC * s + 'px';", "e.style.width = e.style.height = (CO_GOC * s + 1) + 'px';");     // V7c2: mk lệch 1 px CSS (trước: vePixel dời sao, bộ pixel đã xoá) → A3-v đỏ
   SUA['phim-mua-1.js'] = (s) => s.replace('var VAT = VEC ? kepPx(3).vat : 57;', 'var VAT = 57;');
   SUA['phim-vector.js'] = (s) => s.replace("if (ten === 'wall')", "if (ten === 'wallX')");
   SUA['phim-goi.js'] = (s) => s.replace('bao.mat = function (kieu) { if (!vec) return bao;', 'bao.mat = function (kieu) { if (true) return bao;');
@@ -139,8 +139,7 @@ function napGame(cheDo, nen) {
     vm.runInContext(nguon(f), ctx, { filename: f });
   }
   if (LOI_GIA && !nen && ctx.VeVector && ctx.VeVector.HUY_HIEU) {
-    const P = ctx.Part;
-    ctx.VeVector.HUY_HIEU.dangKy('tay-gap', function () { P.ghep({ than: 'hai-banh', tay: 'kep', camBien: [] }, {}, 0); });
+    ctx.VeVector.HUY_HIEU.dangKy('tay-gap', function (g) { g.fillRect(0, 0, 1, 1); });     // V7c2: hình tay-gap vẽ khác nền (trước: gọi Part.ghep của bộ pixel, nay đã xoá) → A3-v đỏ
     ctx.VeVector.HUY_HIEU.dangKy('xich', function () { throw new Error('lỗi giả: hình xich ném'); });
   }
   return { ctx, El, stage, hen, canhBao };
@@ -170,8 +169,8 @@ const lechO = (a, b) => { let i = 0; while (i < a.length && a[i] === b[i]) i++; 
 }
 const conPixel = [];
 {
-  const P = VE.ctx.Part, dem = { n: 0 }, goc0 = {};
-  ['ghep', '_veMot', 'veVatNho', 'rot90', 'lay'].forEach((k) => { goc0[k] = P[k]; P[k] = function () { dem.n++; return goc0[k].apply(this, arguments); }; });
+  const P = VE.ctx.Part || null, dem = { n: 0 }, goc0 = {};        // V7c2: bộ pixel part/ đã xoá → ctx.Part không có (không còn gì để đếm)
+  if (P) ['ghep', '_veMot', 'veVatNho', 'rot90', 'lay'].forEach((k) => { goc0[k] = P[k]; P[k] = function () { dem.n++; return goc0[k].apply(this, arguments); }; });
   const sai = [];
   for (const ma of DS) {
     const mv = VE.ctx.HuyHieu.maVec(ma);
@@ -183,7 +182,7 @@ const conPixel = [];
       if (!cv.laVector || !e.laVector) sai.push(ma + '/' + tt + ': không phải canvas vector');
     }
   }
-  Object.assign(P, goc0);
+  if (P) Object.assign(P, goc0);
   const sai2 = conPixel.filter((ma) => { const cv = VE.ctx.HuyHieu.ve(ma, 'mo'); return cv.laVector || !cv._data; });
   kiem('(A2) vector: ' + (DS.length - conPixel.length) + ' mã có bản vector không gọi Part.*, ra canvas .laVector; ' + conPixel.length + ' mã chưa có bản vector rơi về pixel',
     !sai.length && !sai2.length, sai.concat(sai2.map((m) => m + ': không rơi về pixel')).slice(0, 6).join(' | '));
@@ -213,8 +212,8 @@ const conPixel = [];
   V.Ve.hydrate(b);
   const [h1, h2] = b.children.map((c) => c.firstChild);
   if (!h1 || !h1.laVector || h1.style.width !== '36px') sai.push('hydrate data-ma=' + ma + ': ' + (h1 && h1.style.width) + ' vector=' + !!(h1 && h1.laVector));
-  if (!h2 || h2.laVector) sai.push('hydrate mã lạ: phải ra hình pixel');
-  kiem('(A4) vector: HuyHieu.mk(ma, tt, s) → canvas vector 36·s px CSS (rasterise × dpr × 2); Ve.hydrate [data-i="huyhieu"] gọi HuyHieu.mk → bản vector, mã lạ vẫn pixel; V7b: không còn bọc Ve.mk / Ve.hydrate ở cả hai chế độ', !sai.length, sai.join(' | '));
+  if (!h2 || !h2.laVector || h2.style.width !== '72px' || h2.__ctx.lenh.length) sai.push('hydrate mã lạ: phải ra canvas trống 72 px, cờ laVector (V7c2: hết hình pixel): ' + (h2 && h2.style.width));
+  kiem('(A4) vector: HuyHieu.mk(ma, tt, s) → canvas vector 36·s px CSS (rasterise × dpr × 2); Ve.hydrate [data-i="huyhieu"] gọi HuyHieu.mk → bản vector, mã lạ ra canvas trống cùng cỡ (V7c2); V7b: không còn bọc Ve.mk / Ve.hydrate', !sai.length, sai.join(' | '));
 }
 {
   const TTC = require(path.join(day, 'thu-tu-chuong.js'));
