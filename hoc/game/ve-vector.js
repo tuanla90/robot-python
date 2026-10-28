@@ -36,7 +36,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var VAT_SAN = 57, VAT_NANG = 1.2;
   var BONG_SAN = 0.19, BONG_NANG = 0.32;          // bóng đổ của vật lệch bấy nhiêu lần cạnh hộp vật: sát đất như vật nằm sàn (2 / 10,5), nâng thì xa hơn và nhạt (> 0,3: HU.bongVat 'cao')
   var KHOA_LUU = 'duong-hoc:ve-vector';
-  var loiGia = { gocXoay: false, demBoCo: false };   // chỉ máy kiểm --loi-gia bật
+  var loiGia = { gocXoay: false, demBoCo: false, coVatCu: false, kheCu: false };   // chỉ máy kiểm --loi-gia bật (V6b: coVatCu = vật trong tay cỡ cũ 24% không theo độ nâng, kheCu = càng kẹp khe cũ)
 
   /* ---------------------------------------------------------------- công tắc */
   var cheDo = null;
@@ -317,7 +317,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return tuThe === 'duoi' ? 0 : tuThe === 'giua' ? 0.5 : 1;
   }
   /** Cạnh THÂN vật trong tay ở độ nâng k (1/100 ô): hạ = vật nằm sàn, nâng = VAT_NANG lần (gói V6b). */
-  function coVatKep(k) { return VAT_SAN * (1 + (VAT_NANG - 1) * nangCua(null, k)); }
+  function coVatKep(k) { return loiGia.coVatCu ? 24 : VAT_SAN * (1 + (VAT_NANG - 1) * nangCua(null, k)); }
   /** Vật trong kẹp: { ahead, n } theo đơn vị "1/100 ô" (VeRobot.tiLeChoO trả p = cạnh ô / 100): tâm vật cách tâm thân `ahead` về phía mũi, cạnh THÂN vật `n`.
    *  Gói V6b: n theo độ nâng (coVatKep; k = số 0..1, hay theo tư thế); tay hạ xa thêm vatKep.ha (càng dài ra), chuyển dần theo k. */
   function vatKep(cfg, tuThe, k) {

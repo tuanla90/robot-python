@@ -20,7 +20,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     s = s || {};
     var mo = s.kep !== 'dong', om = !mo && !!s.cam, ha = s.tuThe === 'duoi', nk = V.nangCua(s.tuThe, s.nangK), yDau = (om ? Y_VAT + 2 : Y_VAT) + HA * (1 - nk);
     var k = typeof s.moK === 'number' && !om ? Math.max(0, Math.min(1, s.moK)) : null;       // gói V4: độ mở 0 (đóng) … 1 (mở) khi đang khép / mở dần
-    var t = V.coVatKep(nk) / V.CO_THAN / 2 + 1.5;                                             // gói V6b: nửa khe ôm vật ở cỡ hiện tại (thân vật / CO_THAN), càng không xuyên vật
+    var t = V._loiGia.kheCu ? 15 : V.coVatKep(nk) / V.CO_THAN / 2 + 1.5;                                             // gói V6b: nửa khe ôm vật ở cỡ hiện tại (thân vật / CO_THAN), càng không xuyên vật
     function ve2() { if (k !== null) cang(g, 14 + (MO + 5 - 14) * k, 8 + (MO + 5 - 8) * k, 1.5 + (MO - 1.5) * k, yDau); else if (mo) cang(g, MO + 5, MO + 5, MO, yDau); else if (om) cang(g, t + 3, t + 2, t, yDau); else cang(g, 14, 8, 1.5, yDau); }
     ve2(); H.vien(g, BM.vecVien, 9);
     ve2(); H.vien(g, BM.vecNgon, 5);                                                         // ngón tông bạc (gói V4): tách khỏi vật trắng trong kẹp
