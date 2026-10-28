@@ -116,10 +116,10 @@ body.ve-vector .clock .v{font:600 15px/1 var(--mono);color:var(--g-vecBrand)}
 body.ve-vector .clock .tong{font:600 11px/1 var(--px);color:var(--g-vecChuPhu);padding-top:0}
 body.ve-vector .den{border-radius:4px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKeDam);transition:background-color .2s ease,box-shadow .2s ease}
 body.ve-vector .den.sang{background:var(--g-vecCyanNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecDen),0 0 6px var(--g-vecDen)}
-/* khung ôm sân: thẻ trắng bo góc bóng mềm (thay gỗ); nền canvas trắng như ô sân */
+/* khung ôm sân: thẻ trắng bo góc bóng mềm (thay gỗ); nền canvas trắng như ô sân. Bo 8 px (vùng 11): sân một hàng ô 14 px có khung cao 22 px, bo 12 thành viên thuốc */
 body.ve-vector .ffr canvas{background:var(--g-vecThe)}
 body.ve-vector .ffr canvas.lop-robot{background:none}
-body.ve-vector .ffr .khung-san{background:var(--g-vecThe);background-image:none;border-radius:12px;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}
+body.ve-vector .ffr .khung-san{background:var(--g-vecThe);background-image:none;border-radius:8px;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}
 /* nhiều sân: ảnh nhỏ các sân là thẻ bo, sân đang xem viền tím chàm */
 body.ve-vector .sanbt{background:var(--g-vecThe);border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1);transition:box-shadow .18s ease,transform .18s ease}
 body.ve-vector .sanbt.on{box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-2)}
@@ -167,6 +167,9 @@ body.ve-vector .strip.if:not(.on):not(.err){background:var(--g-vecNgocNhat);box-
 body.ve-vector .strip.if{font-size:11px}
 body.ve-vector .strip.wh{font-size:11px}
 body.ve-vector .strip.wh:not(.on):not(.err){background:var(--g-vecTroiNhat);box-shadow:inset 3px 0 0 var(--g-vecTroiDam),inset 0 0 0 1px var(--g-vecMaKe)}
+/* dòng điều kiện dài (if distance() <= 0:) ở sân lớn: Google Sans Code rộng hơn VT323, khít lại một chút cho lọt ô (vùng 11) */
+body.ve-vector .strip.for,body.ve-vector .strip.if,body.ve-vector .strip.wh{padding:0 3px 0 6px;font-size:10.5px;letter-spacing:-.25px}
+body.ve-vector .strip.for .num,body.ve-vector .strip.if .num,body.ve-vector .strip.wh .num{padding:1px 4px}
 body.ve-vector .strip.lock{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe);color:var(--g-vecChuMo)}
 body.ve-vector .strip.hai{font-size:9.5px!important;line-height:12px}
 /* xoá nhanh: ô số thành nút X đỏ (rê chuột / chạm chọn); cảm ứng: đỏ thở nhẹ */
