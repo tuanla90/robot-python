@@ -279,10 +279,9 @@ console.log('\n== 8. coDu() và công tắc ==');
 console.log('\n== 9. VeRobot (ve-robot.js) theo chế độ ==');
 if (!VeRobot) kiem('nạp ve-robot.js ở Node', false, 'không nạp được');
 else {
-  const pixel = (S, w) => { const n = Math.floor(0.9 * S / w); return n >= 1 && n * w >= 0.8 * S ? n : Math.max(0.3, 0.85 * S / w); };   // công thức cũ: chỉ còn cho cấu hình thiếu hình
   kiem('vector: tiLeChoO(S, hai-banh + kẹp) = S / 100 (84 → 0.84); REACH = 50 (nửa ô)', VeRobot.tiLeChoO(84, { than: 'hai-banh', tay: 'kep' }) === 0.84 && VeRobot.REACH === 50);
-  kiem('vector (gói V3): mọi thân đều theo hệ 1/100 ô (xích 84 → 0.84, drone); cấu hình thiếu hình (mã lạ) vẫn dùng công thức pixel',
-    VeRobot.tiLeChoO(84, { than: 'xich' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'drone', tay: 'nam-cham' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'khong-co' }) === pixel(84, 20));
+  kiem('vector (gói V3): mọi thân đều theo hệ 1/100 ô (xích 84 → 0.84, drone); V7c2: cấu hình thiếu hình (mã lạ) cũng S / 100 (hết công thức pixel)',
+    VeRobot.tiLeChoO(84, { than: 'xich' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'drone', tay: 'nam-cham' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'khong-co' }) === 0.84);
   const vk = VeRobot.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren'), vv = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren');
   const vx = VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0), vxv = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0);
   kiem('vector: vatKep lấy từ VeVector (' + (vk && vk.ahead.toFixed(1)) + ', ' + (vk && vk.n.toFixed(1)) + '); tay xoay: vatXoay cũng từ VeVector (f ' + (vx && vx.f.toFixed(1)) + ')',
@@ -551,9 +550,10 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     nhenKhongTay = VeRobot.ve({ than: 'nhen', tay: null, camBien: [] }, {}, 1, 0.56) === VeRobot.ve({ than: 'nhen', tay: null, camBien: [] }, {}, 3, 0.56);
     droneMoi = VeRobot.ve({ than: 'drone', tay: 'nam-cham', camBien: [] }, {}, 1, 0.56) === VeRobot.ve({ than: 'drone', tay: 'nam-cham', camBien: [] }, {}, 2, 0.56);
     bao = 0; const cw = console.warn; console.warn = () => { bao++; };
-    try { cam = VeRobot.ve({ than: 'drone', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 0.56); } catch (e) { cam = null; /* Node: hình tạm cần Ve của trình duyệt */ } console.warn = cw;
-  } catch (e) { /* lỗi giả: cấu hình rơi về hình tạm (cần Ve của trình duyệt) */ }
-  kiem('VeRobot (như bộ pixel): nhện không tay và drone không quay theo hướng; cấu hình cấm báo một lần rồi không trả hình vector', nhenKhongTay && droneMoi && bao === 1 && !(cam && cam.laVector));
+    try { cam = VeRobot.ve({ than: 'drone', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 0.56); } catch (e) { cam = null; } console.warn = cw;
+  } catch (e) { /* lỗi giả: cấu hình rơi về hình tạm */ }
+  const tam = VeRobot.ve({ than: 'hai-banh', tay: null, camBien: [] }, {}, 0, 0.56);
+  kiem('VeRobot: nhện không tay và drone không quay theo hướng; cấu hình cấm báo một lần rồi rơi về hình TẠM = xe hai bánh vector không tay (V7c2: hết hình tạm pixel)', nhenKhongTay && droneMoi && bao === 1 && !!cam && cam.laVector === true && cam === tam);
 }
 
 
