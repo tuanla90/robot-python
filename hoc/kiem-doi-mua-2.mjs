@@ -57,6 +57,9 @@ if (LOI_GIA) {
   a.doi[1].coDinh = false; LOI_GIA_DS.push('doi-mua-2.1: đủ trường');                                           // R2 không khóa
   a.doi[0].beSung = true; LOI_GIA_DS.push('doi-mua-2.1: không dùng thứ');                                        // bệ súng là gói 9
   a.sao = Object.assign({}, a.sao, { nhip: a.sao.nhip + 30 }); LOI_GIA_DS.push('doi-mua-2.1: bộ dò');            // ngưỡng nhịp rộng: thân cố định cũng thắng
+  get('che-doi-mua-2.1').taoHam = ['safe_move']; LOI_GIA_DS.push('che-doi-mua-2.1: hàm của em');                 // trùng hàm cốt truyện che-cam-bien.1
+  get('che-doi-mua-2.10').huyHieu = null; LOI_GIA_DS.push('huy hiệu');                                           // trùm mất huy hiệu
+  get('doi-mua-2.3').san = get('doi-mua-2.3').san.map((d, i) => (i === 1 ? '#S' + d.slice(2) : d)); LOI_GIA_DS.push('doi-mua-2.3: không dùng thứ');   // bậc thang S
 }
 
 /* ------------------------------------------------------------------ kho hàm của em theo thứ tự lộ trình */

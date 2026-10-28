@@ -105,3 +105,37 @@ function moRongGoi(dong, kho, tenX) {
   }
   return { coGoi: false };
 }
+
+/* ------------------------------------------------------------------ chạy riêng: node hoc/do-duong-doi-mua-2.mjs [--chi=ma1,ma2]
+   Với mọi màn của gói (theo thứ tự lộ trình): liệt kê thân cố định của hàm người chơi viết / sửa, chấm bằng cham.js với kho hàm của em có trước màn.
+   In một dòng mỗi màn; có thân cố định nào thắng trong sao.nhip thì in ra và thoát mã 1. */
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  const require = createRequire(import.meta.url);
+  const Cham = require('./cham.js');
+  const M = require('./lo-trinh-hoc.js');
+  const CHI = (process.argv.find((a) => a.startsWith('--chi=')) || '').slice(6);
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+  const kho = new Map(), truoc = new Map();
+  for (const m of M.danhSach) { truoc.set(m.ma, [...kho.values()].map(clone)); if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEmMoi || []) kho.set(h.ten, clone(h)); }
+  let loi = 0;
+  for (const m of M.danhSach.filter((x) => x.chuong === 'doi-mua-2' || x.chuong === 'che-doi-mua-2')) {
+    if (CHI && !CHI.split(',').includes(m.ma)) continue;
+    const hv = (m.loiGiai.hamCuaEmMoi || []).concat(m.loiGiai.hamCuaMan || [])[0];
+    const laMan = !(m.loiGiai.hamCuaEmMoi || []).length;
+    const k = truoc.get(m.ma);
+    const chamThan = (than) => {
+      const h = Object.assign({}, hv, { than });
+      const hs = new Map(k.map((x) => [x.ten, clone(x)]));
+      if (!laMan) hs.set(h.ten, h);
+      return Cham.cham(Object.assign({}, m, { nhipToiDa: m.sao.nhip + 1 }), { chinh: [], doi: m.loiGiai.doi, hamCuaMan: laMan ? [h] : m.loiGiai.hamCuaMan || [] }, [...hs.values()]);
+    };
+    const t = timThanCoDinhDoi(m, hv.ten, k, chamThan);
+    console.log(m.ma + ' | ' + hv.ten + ' | ngưỡng ' + m.sao.o + ' ô, ' + m.sao.nhip + ' nhịp | đủ mọi thân dài ≤ ' + t.du + (t.L > t.du ? ', chờ + ≤ 2 lệnh tới dài ' + t.L : '') +
+      ' | chữ ' + t.chu + ' | thử ' + t.soThu + ' | thắng trong ngưỡng: ' + (t.thang.length ? t.thang.length + ' (vd ' + t.thang[0].than.join(' / ') + ', ' + t.thang[0].soNhip + ' nhịp)' : 'không'));
+    if (t.thang.length) loi++;
+  }
+  console.log(loi ? 'CÓ ' + loi + ' màn có thân cố định thắng trong ngưỡng nhịp.' : 'Không màn nào có thân cố định (không đọc cảm biến) thắng trong ngưỡng nhịp.');
+  if (loi) process.exitCode = 1;
+}

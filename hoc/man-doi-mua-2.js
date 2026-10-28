@@ -213,6 +213,12 @@
   // che-doi-mua-2.9: sân của doi-mua-2.9 (R1 đẩy thùng qua ngã tư). cross_ok() của Sola gọi wait_clear(): thùng không nóng nên R2 húc thùng.
   var R2_C9 = nhieu(FOR(8, ['cross_ok()', 'move()']), ['turn_right()', 'move()']);
 
+  // che-doi-mua-2.10 (trùm, hai sân): ba khoang có cửa sổ, cùng hai chương trình. Sân 1 là sân của doi-mua-2.4 (cửa sổ cách R2 một ô giếng: nút ở xa, sau lưng R2 là tường,
+  //   bắn tụ). Sân 2: hành lang của R1 ngay trên đầu R2 (hàng 2), nút ngay sau cửa sổ (hàng 1): nút gần, dưới chân R2 là hốc (4,4), (7,4), (10,4): bắn tụ thì xe giật xuống hốc.
+  var SAN_C10 = [SAN_4, ['##############', '####N##N##N###', '#..c..c..c..F#', '####.C..C..CF#', '####.##.##.###', '##############']];
+  var NOI_C10 = [NOI_4, [noi(4, 1, [[3, 2], [5, 3]]), noi(7, 1, [[6, 2], [8, 3]]), noi(10, 1, [[9, 2], [11, 3]])]];
+  var R2_C10 = FOR(3, ['guard()', 'turn_right()', 'forward(3)', 'turn_left()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -599,6 +605,29 @@
         { moTa: 'Đổi sang wait_mate(): ngã tư trống thì R2 chờ mãi', ham: [H('cross_ok', [], ['wait_mate()'])], phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['warm() chỉ thấy vật nóng; distance() thấy mọi vật cản.', 'Thân cross_ok(): while distance() == 0: wait().']
+    }),
+
+    /* ------------------------------------------------ trùm */
+    man({
+      chuong: 'che-doi-mua-2', so: 10, ten: 'Trùm: Canh cửa sổ', yMoi: 'một hàm của em cho hai sân: chờ bạn qua cửa sổ (pass_mate) rồi tự chọn lực (aim_fire)',
+      hang: 'trum', hamCuaEmCan: ['pass_mate', 'cover', 'wait_mate', 'wait_clear', 'aim_fire', 'forward', 'move', 'turn_right', 'turn_left', 'fire'], taoHam: ['guard'],
+      huyHieu: { ma: 'che-doi-mua-2', ten: 'Huy hiệu Đội phối hợp' },
+      deBai: 'Hai sân, cùng hai chương trình khóa. Sân nào cũng ba khoang có cửa sổ: bắn trước khi R1 qua cửa vào thì cửa đóng trước mặt R1, bắn khi R1 còn ở cửa sổ thì bóng trúng R1. ' +
+        'Sân thứ nhất nút ở xa, sau lưng R2 là tường: phải bắn tụ. Sân thứ hai nút ở gần, dưới chân R2 là hốc: bắn tụ thì xe giật xuống hốc. Em chế guard() cho cả hai sân.',
+      veMaMau: 'Hai chương trình bị khóa. Tạo guard() hai dòng bằng các hàm của em và của gói Lực bắn.',
+      san: SAN_C10, noi: NOI_C10,
+      bd: [[{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }], [{ x: 4, y: 3, huong: 0 }, { x: 4, y: 3, huong: 0 }]],
+      co: [[[o(12, 1)], [o(12, 2)]], [[o(12, 3)], [o(12, 3)]]],
+      chinh: [R1_C8, R2_C10],
+      hamEm: [H('guard', [], ['pass_mate()', 'aim_fire()'])],
+      sao: { o: 35, nhip: 44 },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('guard', [], ['# bạn qua rồi mới đo và bắn', 'pass_mate()', 'aim_fire()'])] },
+      loiSai: [
+        { moTa: 'Luôn bắn tụ (gọi cover()): sân thứ hai xe giật xuống hốc', hamEm: [H('guard', [], ['cover()'])], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Luôn bắn nhanh: sân thứ nhất bóng rơi giữa giếng', hamEm: [H('guard', [], ['pass_mate()', 'fire("fast")'])], phaiCoMa: ['ban-ngan'] },
+        { moTa: 'Chỉ aim_fire() không chờ: cửa vào đóng trước mặt R1', hamEm: [H('guard', [], ['aim_fire()'])], phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['pass_mate() lo phần chờ bạn; aim_fire() đo xa gần rồi chọn lực.', 'Thân guard(): pass_mate() rồi aim_fire().']
     })
   ];
 
