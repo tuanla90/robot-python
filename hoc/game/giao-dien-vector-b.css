@@ -203,3 +203,17 @@ body.ve-vector .so-bp{padding:6px 10px 6px 6px;gap:10px;border-radius:12px;backg
 body.ve-vector .so-bp-hinh{border-radius:10px;background:var(--g-vecTheLom)}
 body.ve-vector .so-bp-khe{font:700 10.5px/1 var(--px);letter-spacing:.6px;color:var(--g-vecChuPhu)}
 body.ve-vector .so-bp-ten{font:700 15px/1.1 var(--px);color:var(--g-vecChu)}
+
+/* ============================================================ 7. KHUNG PHIM (mo-dau.js phim mở đầu, phim-goi.js phim gói: .md / .md.pg)
+   CHỈ KHUNG: nền lớp phim, viền ô cảnh, lời thoại, chấm trang, nút Bỏ qua / Tiếp. NỘI DUNG trong ô cảnh (.md-khung: nền bảng, xe, đường, mưa, chữ .md-ram /
+   .md-hoi, thẻ .pg-ten…) là việc của gói V6, để nguyên (kể cả --ink / --cream pixel mà choi-vector.css đặt cho .md). */
+body.ve-vector .md{gap:16px;background-color:var(--g-vecNen);background-image:none}
+body.ve-vector .md::before{display:none}
+body.ve-vector .md-khung{border-radius:var(--r-md);box-shadow:0 0 0 1.5px var(--g-vecKe),var(--elev-3)}
+body.ve-vector .md-loi{font:600 17px/1.4 var(--px);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .md-cham i.on{width:18px;border-radius:var(--r-full);background:var(--g-vecBrand)}
+body.ve-vector .md-bo-qua{height:32px;padding:0 14px;border-radius:var(--r-full);font:600 13px/1 var(--px);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .md-tiep{height:52px;padding-top:0;border-radius:var(--r-md);font:800 21px/1 var(--px);letter-spacing:1px;color:var(--g-vecThe);text-shadow:none;
+  background:var(--g-vecBrand);box-shadow:0 6px 18px rgba(var(--g-vecBrandRgb),.32)}
+@media (hover:hover){body.ve-vector .md-tiep:hover{background:var(--g-vecBrandDam)}}
+body.ve-vector .md-tiep:active{background:var(--g-vecBrandDam);box-shadow:0 2px 6px rgba(var(--g-vecBrandRgb),.3)}
