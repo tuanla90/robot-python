@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xem vector gói V6</title>
+<style>
+  body{margin:0;background:var(--g-vecNen);font-family:system-ui,sans-serif;color:var(--g-vecChu);padding:16px}
+  h1{font-size:17px;margin:0 0 6px}
+  h2{font-size:15px;font-weight:600;margin:20px 0 8px}
+  p.ghi{font-size:13px;color:var(--g-vecChuPhu);margin:4px 0 10px;max-width:900px}
+  .luoi{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .o{background:var(--g-vecThe);border:1px solid var(--g-vecKe);border-radius:10px;padding:8px}
+  .o b{display:block;font-size:12px;margin-bottom:6px}
+  .o .cap{display:flex;gap:6px;align-items:center}
+  .o .cap span{font-size:10px;color:var(--g-vecChuMo);width:30px}
+  .o.thieu{border-color:var(--g-vecHoPhach)}
+  .o.thieu b::after{content:" (chưa có bản vector: rơi về pixel)";color:var(--g-vecHoPhachDam);font-weight:400}
+  canvas{display:block}
+  #phim{display:flex;flex-wrap:wrap;gap:12px}
+  #phim .khung{width:320px}
+  #phim .khung p{font-size:12px;margin:4px 0 0}
+</style>
+<script src="../game/bang-mau.js"></script>
+<script src="../game/chu.js"></script>
+<script src="../game/ve.js"></script>
+<script src="../game/part/part.js"></script>
+<script src="../game/part/part-hai-banh.js"></script>
+<script src="../game/part/part-xich.js"></script>
+<script src="../game/part/part-nhen.js"></script>
+<script src="../game/part/part-omni.js"></script>
+<script src="../game/part/part-drone.js"></script>
+<script src="../game/part/part-kep.js"></script>
+<script src="../game/part/part-tay-xoay.js"></script>
+<script src="../game/part/part-nam-cham.js"></script>
+<script src="../game/part/part-nem.js"></script>
+<script src="../game/part/part-hoi.js"></script>
+<script src="../game/part/part-son.js"></script>
+<script src="../game/part/part-khoang-cach.js"></script>
+<script src="../game/part/part-mau.js"></script>
+<script src="../game/part/part-cham.js"></script>
+<script src="../game/part/part-camera.js"></script>
+<script src="../game/part/part-camera-bay.js"></script>
+<script src="../game/part/part-hong-ngoai.js"></script>
+<script src="../game/ve-vector.js"></script>
+<script src="../game/ve-vector-o.js"></script>
+<script src="../game/ve-vector-o2.js"></script>
+<script src="../game/ve-vector-may.js"></script>
+<script src="../game/ve-vector-vat.js"></script>
+<script src="../game/ve-vector-ky-hieu.js"></script>
+<script src="../game/ve-vector-than-hai-banh.js"></script>
+<script src="../game/ve-vector-tay-kep.js"></script>
+<script src="../game/ve-vector-than-xich.js"></script>
+<script src="../game/ve-vector-than-nhen.js"></script>
+<script src="../game/ve-vector-than-omni.js"></script>
+<script src="../game/ve-vector-than-drone.js"></script>
+<script src="../game/ve-vector-tay-nam-cham.js"></script>
+<script src="../game/ve-vector-tay-nem.js"></script>
+<script src="../game/ve-vector-tay-hoi.js"></script>
+<script src="../game/ve-vector-tay-xoay.js"></script>
+<script src="../game/ve-vector-tay-son.js"></script>
+<script src="../game/ve-vector-cam.js"></script>
+<script src="../game/ve-vector-hieu-ung.js"></script>
+<script src="../game/huy-hieu-vector.js"></script>
+<script src="../game/ve-robot.js"></script>
+<script src="../game/huy-hieu.js"></script>
+</head><body>
+<h1>Trang xem gói V6: huy hiệu và phim vẽ bằng bộ vẽ vector</h1>
+<p class="ghi">Mỗi ô: tên mã, ba trạng thái (khoá · mở · xong). Hàng trên là bộ pixel (HuyHieu.vePixel, y như cũ), hàng dưới là bản vector (VeVector.HUY_HIEU qua HuyHieu.mk) ở cỡ ×2 như bản đồ gói.
+  Ô viền hổ phách: huy hiệu chưa có bản vector, ở chế độ vector vẫn hiện bản pixel. dpr = <span id="dpr"></span>.</p>
+<h2>Huy hiệu: pixel | vector (<span id="dem"></span>)</h2>
+<div class="luoi" id="huy"></div>
+<h2 id="tieu-phim">Phim gói</h2>
+<div id="phim"></div>
+<script>
+(function () {
+  document.getElementById('dpr').textContent = window.devicePixelRatio || 1;
+  VeVector.datCheDo('vector');                                     // trang xem: bản vector lấy qua HuyHieu.mk (đọc chế độ lúc gọi), bản pixel qua vePixel
+  var luoi = document.getElementById('huy'), TT = ['khoa', 'mo', 'xong'], coVec = 0;
+  HuyHieu.DS.forEach(function (ma) {
+    var o = document.createElement('div'), b = document.createElement('b'), vec = !!HuyHieu.maVec(ma);
+    o.className = 'o' + (vec ? '' : ' thieu'); b.textContent = ma + (vec && HuyHieu.maVec(ma) !== ma ? '  (dùng hình ' + HuyHieu.maVec(ma) + ')' : ''); o.appendChild(b);
+    if (vec) coVec++;
+    [['pixel', function (tt) { return Ve.mk(HuyHieu.vePixel(ma, tt), 2); }], ['vector', function (tt) { return HuyHieu.mk(ma, tt, 2); }]].forEach(function (h) {
+      var cap = document.createElement('div'), nh = document.createElement('span'); cap.className = 'cap'; nh.textContent = h[0]; cap.appendChild(nh);
+      TT.forEach(function (tt) { try { cap.appendChild(h[1](tt)); } catch (e) { var x = document.createElement('span'); x.textContent = 'LỖI ' + e.message; cap.appendChild(x); } });
+      o.appendChild(cap);
+    });
+    luoi.appendChild(o);
+  });
+  document.getElementById('dem').textContent = coVec + ' / ' + HuyHieu.DS.length + ' mã có bản vector';
+})();
+</script>
+</body></html>
