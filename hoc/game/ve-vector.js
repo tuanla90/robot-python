@@ -30,8 +30,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var HE = 100;                                   // cạnh hệ toạ độ gốc của mọi hình (một ô)
   var CO_THAN = 0.86;                             // robot: cả nhóm (thân + tay) thu lại bấy nhiêu để lọt ô, như mẫu
   var TAM_THAN = { x: 50, y: 56 };                // tâm thân trong hệ của thân (đặt vào tâm ô)
+  /* GÓI V6b (28/10, user "Nâng lên to ra"): cỡ vật trong tay (kẹp, tay xoay, nam châm) theo độ nâng k (0 = tay hạ / sát đất … 1 = tay nâng):
+     THÂN vật = VAT_SAN · (1 + (VAT_NANG − 1)·k) phần trăm cạnh ô — hạ bằng đúng vật nằm sàn (san-ve.js coVatDat 10,5 pixel sân × 0,76 / 14 = 57%), nâng to hơn
+     VAT_NANG lần (gần camera hơn). Tay vẽ khe kẹp ôm vật cỡ đó (s.nangK); san-ve.js / phim / huy hiệu lấy cỡ qua vatKep / vatXoay. */
+  var VAT_SAN = 57, VAT_NANG = 1.2;
+  var BONG_SAN = 0.19, BONG_NANG = 0.32;          // bóng đổ của vật lệch bấy nhiêu lần cạnh hộp vật: sát đất như vật nằm sàn (2 / 10,5), nâng thì xa hơn và nhạt (> 0,3: HU.bongVat 'cao')
   var KHOA_LUU = 'duong-hoc:ve-vector';
-  var loiGia = { gocXoay: false, demBoCo: false };   // chỉ máy kiểm --loi-gia bật
+  var loiGia = { gocXoay: false, demBoCo: false, coVatCu: false, kheCu: false };   // chỉ máy kiểm --loi-gia bật (V6b: coVatCu = vật trong tay cỡ cũ 24% không theo độ nâng, kheCu = càng kẹp khe cũ)
 
   /* ---------------------------------------------------------------- công tắc */
   var cheDo = null;
@@ -306,22 +311,41 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var oG = than.oGan[os], neo = os === 'duoi' && tay.diemNeoDuoi ? tay.diemNeoDuoi : tay.diemNeo;
     return { o: os, x: oG.x - neo.x, y: oG.y - neo.y };
   }
-  /** Vật trong kẹp: { ahead, n } theo đơn vị "1/100 ô" (VeRobot.tiLeChoO trả p = cạnh ô / 100): tâm vật cách tâm thân `ahead` về phía mũi, cạnh vật `n`. Tay hạ: xa thêm một chút (càng dài ra). */
-  function vatKep(cfg, tuThe) {
+  /** Độ nâng của tay (gói V6b): số k cho sẵn (hoạt cảnh nâng / hạ mượt) thì kẹp vào [0, 1]; không thì theo tư thế: 'duoi' 0, 'giua' 0,5, còn lại ('tren') 1. */
+  function nangCua(tuThe, k) {
+    if (typeof k === 'number' && isFinite(k)) return k < 0 ? 0 : k > 1 ? 1 : k;
+    return tuThe === 'duoi' ? 0 : tuThe === 'giua' ? 0.5 : 1;
+  }
+  /** Cạnh THÂN vật trong tay ở độ nâng k (1/100 ô): hạ = vật nằm sàn, nâng = VAT_NANG lần (gói V6b). */
+  function coVatKep(k) { return loiGia.coVatCu ? 24 : VAT_SAN * (1 + (VAT_NANG - 1) * nangCua(null, k)); }
+  /** Vật trong kẹp: { ahead, n } theo đơn vị "1/100 ô" (VeRobot.tiLeChoO trả p = cạnh ô / 100): tâm vật cách tâm thân `ahead` về phía mũi, cạnh THÂN vật `n`.
+   *  Gói V6b: n theo độ nâng (coVatKep; k = số 0..1, hay theo tư thế); tay hạ xa thêm vatKep.ha (càng dài ra), chuyển dần theo k. */
+  function vatKep(cfg, tuThe, k) {
     var t = lay('than', (cfg && cfg.than) || 'hai-banh'), tay = cfg && cfg.tay ? lay('tay', cfg.tay) : null;
     if (!t || !tay || !tay.vatKep) return null;
     var d = dichTay(t, tay); if (!d) return null;
-    var y = d.y + tay.vatKep.y + (tuThe === 'duoi' ? (tay.vatKep.ha || 0) : 0);
-    return { ahead: (y - TAM_THAN.y) * CO_THAN, n: tay.vatKep.canh * CO_THAN };
+    k = nangCua(tuThe, k);
+    var y = d.y + tay.vatKep.y + (tay.vatKep.ha || 0) * (1 - k);
+    return { ahead: (y - TAM_THAN.y) * CO_THAN, n: coVatKep(k) };
   }
   /** TAY XOAY: vật trong kẹp khi khớp ở góc `goc` độ (0 = trước, âm = trái, dương = phải): { f, l, n } theo 1/100 ô — f về phía mũi, l về bên PHẢI xe, cạnh n
    *  (cùng nghĩa với VeRobot.vatXoay của bộ pixel). Hình học ở tay (tay.vatXoay(tuThe, goc) → tâm vật { x, y, canh } trong hệ của tay). */
-  function vatXoay(cfg, tuThe, goc) {
+  function vatXoay(cfg, tuThe, goc, k) {
     var t = lay('than', (cfg && cfg.than) || 'hai-banh'), tay = cfg && cfg.tay ? lay('tay', cfg.tay) : null;
     if (!t || !tay || typeof tay.vatXoay !== 'function') return null;
     var d = dichTay(t, tay); if (!d) return null;
-    var v = tay.vatXoay(tuThe, goc || 0), x = v.x + d.x, y = v.y + d.y;
-    return { f: (y - TAM_THAN.y) * CO_THAN, l: (TAM_THAN.x - x) * CO_THAN, n: v.canh * CO_THAN };      // mặt quay xuống: bên phải xe là phía x nhỏ
+    k = nangCua(tuThe, k);
+    var v = tay.vatXoay(tuThe, goc || 0, k), x = v.x + d.x, y = v.y + d.y;
+    return { f: (y - TAM_THAN.y) * CO_THAN, l: (TAM_THAN.x - x) * CO_THAN, n: coVatKep(k) };      // mặt quay xuống: bên phải xe là phía x nhỏ; cạnh thân vật theo độ nâng (gói V6b)
+  }
+  /** Tầm với (1/100 ô, từ tâm thân) mà lớp phủ của san-ve.js phải chừa cho cfg (gói V6b): nửa canvas robot (cả lề tràn tay xoay), hay xa hơn nếu vật trong tay
+   *  (tay nâng, to nhất) chờm qua mép ô: tâm vật + bóng đổ của vật (bóng chiếm 0,7 hộp, lệch tới BONG_NANG hộp; thân vật chiếm 76% hộp). */
+  function tamVoi(cfg) {
+    var r = 50 + 100 * tranCua(cfg), xa = 0, hop = coVatKep(1) / 0.76;
+    var vk = vatKep(cfg, 'tren', 1), vh = vatKep(cfg, 'duoi', 0);
+    [vk, vh].forEach(function (v) { if (v) xa = Math.max(xa, v.ahead); });
+    [-90, 90].forEach(function (g) { var v = vatXoay(cfg, 'tren', g, 1); if (v) xa = Math.max(xa, Math.abs(v.l), v.f); });
+    return xa ? Math.max(r, xa + hop * (0.35 + BONG_NANG)) : r;
   }
   /** Hình học tay / thân cho hiệu ứng của san-ve.js, theo 1/100 ô từ tâm thân (đã thu CO_THAN): mz miệng nòng trước, mzs miệng nòng sau (súng hơi), bk rổ máy ném,
    *  pp "một điểm ảnh part" (độ rộng chân tia camera), dinh từ tâm tới đỉnh hình drone (thanh pin). Cùng nghĩa các hằng 24 / 10,5 / 23,5 / 1 / 11 của bộ pixel. */
@@ -374,7 +398,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     HE: HE, CO_THAN: CO_THAN, TAM_THAN: TAM_THAN, H: H, CanvasGia: CanvasGia, taoCanvas: taoCanvas,
     bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
-    o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, gocXoay: gocXoay, gocCua: gocCua,
+    o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, tamVoi: tamVoi, nangCua: nangCua, coVatKep: coVatKep, VAT_SAN: VAT_SAN, VAT_NANG: VAT_NANG, BONG_SAN: BONG_SAN, BONG_NANG: BONG_NANG, gocXoay: gocXoay, gocCua: gocCua,
     diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
     xoaDem: xoaDem, _loiGia: loiGia
   };

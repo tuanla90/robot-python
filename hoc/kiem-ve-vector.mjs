@@ -27,11 +27,13 @@
   14. (gói V5a) Giao diện phẳng màn chơi (choi-vector.css): nạp đủ phông Google Sans Flex / Code + choi-vector.css sau choi.css; mọi bộ chọn trong body.ve-vector (pixel y nguyên);
        không steps( / pixelated / Handjet / VT323; mọi steps() màn chơi của choi.css (và huong-dan.js) có luật phủ mượt, có prefers-reduced-motion; chữ canvas vector không VT323;
        tương phản WCAG AA mọi cặp chữ / nền khai cùng luật; công tắc Cài đặt Kiểu vẽ (luuCheDo ghi / xoá khoá); trang xem có mục V5a.
+   (gói V6b) mục 13h: cỡ vật trong tay ở vector (phát lại màn kẹp / tay xoay / nam châm): hạ = vật nằm sàn, nâng 1,15–1,25 lần, chuyển dần, bóng nâng xa hơn, vật dính
+       nam châm = cỡ nâng; càng / ngón ôm vật ở mọi độ nâng. Mục 4 / 9 / 12: vật trong tay to chờm sang ô trước mặt, nằm trong tầm lớp phủ (VeVector.tamVoi, reachCua).
    Cờ --loi-gia: cắm sáu lỗi giả (neo tay lệch, góc xoay lệch 90°, màu R2 = R1, đệm bỏ cỡ, ô tường tô mã màu ngoài bảng, ổ tay thân ra ngoài ô) và bốn lỗi V2
    (bỏ ký hiệu hố khỏi bảng nối, bỏ ô bậc thang của Ve.tiles khỏi bảng, băng chuyền bỏ qua pha, sàn màu vàng tô màu ngoài nhóm LUAT) và bốn lỗi V3 (drone mất cờ không hướng,
    xích đổi chỗ hai ổ hông, nam châm tô màu đội, camera-bay sai ổ) và sáu lỗi V4 (nhánh pixel veDau tô thêm, hạt vector dùng fillRect, tia từ tâm xe, matSuKien bỏ qua,
    veCo vector bỏ devicePixelRatio, ổ hông hai-banh dời ra 10 đơn vị) và năm lỗi V5a (luật không có body.ve-vector có steps(), bỏ phủ .ffr.rung, chữ canvas về VT323,
-   luuCheDo không ghi, cặp chữ / nền 2:1) → máy kiểm phải ĐỎ.
+   luuCheDo không ghi, cặp chữ / nền 2:1) và hai lỗi V6b (vật trong tay cỡ cũ không theo độ nâng, càng kẹp khe cũ) → máy kiểm phải ĐỎ.
    Chạy: node hoc/kiem-ve-vector.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
@@ -75,6 +77,7 @@ if (LOI_GIA) {
   const xi = V.lay('than', 'xich').oGan, tg = xi.hongTrai; xi.hongTrai = xi.hongPhai; xi.hongPhai = tg;
   const nc = V.lay('tay', 'nam-cham'), veNc = nc.ve; nc.ve = function (g, s, M, H) { veNc(g, s, M, H); H.tron(g, 50, 81, 1); H.to(g, M.chinh); };
   V.lay('cam-bien', 'camera-bay').gan = 'tren';
+  V._loiGia.kheCu = true;                                                         // V6b: càng kẹp giữ khe cũ (mục 13h phải đỏ); vật cỡ cũ cắm ở ngữ cảnh vm của mục 13
 }
 
 const CO = [14, 37, 56, 84, 168];
@@ -195,8 +198,9 @@ console.log('\n== 4. Sau xoay, ổ tay và vật trong kẹp ở phía hướng 
   }
   kiem('ổ tay sau xoay nằm đúng trục hướng mặt, cách tâm ≥ 10% ô (4 hướng × ' + CO.length + ' cỡ)', sai.length === 0, sai.slice(0, 4).join(' | '));
   const vk = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren'), vkH = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'duoi');
-  kiem('vatKep (đơn vị 1/100 ô): tâm vật trước tâm thân ' + (vk && vk.ahead.toFixed(1)) + ', cạnh ' + (vk && vk.n.toFixed(1)) + '; tay hạ xa hơn (' + (vkH && vkH.ahead.toFixed(1)) + '); vật nằm trong ô',
-    !!vk && !!vkH && vk.ahead > 20 && vk.n > 10 && vkH.ahead > vk.ahead && vkH.ahead + vkH.n / 2 <= 50);
+  const tamKep = V.tamVoi({ than: 'hai-banh', tay: 'kep' });
+  kiem('vatKep (đơn vị 1/100 ô): tâm vật trước tâm thân ' + (vk && vk.ahead.toFixed(1)) + ', thân vật nâng ' + (vk && vk.n.toFixed(1)) + ' / hạ ' + (vkH && vkH.n.toFixed(1)) + '; tay hạ xa hơn (' + (vkH && vkH.ahead.toFixed(1)) + '); vật không lùi quá tâm thân, nằm trong tầm lớp phủ (V6b: vật to chờm sang ô trước mặt, tamVoi ' + tamKep.toFixed(1) + ')',
+    !!vk && !!vkH && vk.ahead > 20 && vk.n > vkH.n && vkH.n > 10 && vkH.ahead > vk.ahead && vk.ahead - vk.n / 2 > 0 && Math.max(vk.ahead + vk.n / 2, vkH.ahead + vkH.n / 2) <= tamKep);
   kiem('không tay → vatKep = null; thân lạ → null; tay không kẹp (nam châm) → null', V.vatKep({ than: 'hai-banh', tay: null }) === null && V.vatKep({ than: 'khong-co', tay: 'kep' }) === null && V.vatKep({ than: 'hai-banh', tay: 'nam-cham' }) === null);
 }
 
@@ -284,7 +288,9 @@ else {
   kiem('vector: vatKep lấy từ VeVector (' + (vk && vk.ahead.toFixed(1)) + ', ' + (vk && vk.n.toFixed(1)) + '); tay xoay: vatXoay cũng từ VeVector (f ' + (vx && vx.f.toFixed(1)) + ')',
     !!vk && !!vv && vk.ahead === vv.ahead && vk.n === vv.n && !!vx && !!vxv && vx.f === vxv.f && vx.l === vxv.l);
   const hh = VeRobot.hinhHoc({ than: 'hai-banh', tay: 'hoi' }), hv = V.hinhHoc({ than: 'hai-banh', tay: 'hoi' });
-  kiem('vector: hinhHoc (mz / mzs / bk / pp / dinh) lấy từ VeVector; reachCua = 50 (+ phần tràn của tay xoay)', J(hh) === J(hv) && VeRobot.reachCua({ than: 'hai-banh', tay: 'kep' }) === 50 && VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }) > 50);
+  const rK = VeRobot.reachCua({ than: 'hai-banh', tay: 'kep' }), rX = VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }), vkN = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren', 1);
+  kiem('vector: hinhHoc (mz / mzs / bk / pp / dinh) lấy từ VeVector; reachCua = VeVector.tamVoi: 50 khi tay không cầm vật (súng hơi), kẹp / tay xoay chừa cả vật nâng to + bóng (' + rK.toFixed(1) + ' / ' + rX.toFixed(1) + ')',
+    J(hh) === J(hv) && VeRobot.reachCua({ than: 'hai-banh', tay: 'hoi' }) === 50 && rK === V.tamVoi({ than: 'hai-banh', tay: 'kep' }) && rK >= vkN.ahead + vkN.n / 2 && rX > 50 + 100 * V.tranCua({ tay: 'xoay' }) - 1e-9);
   V.datCheDo('pixel');
   kiem('pixel: hinhHoc = hằng pixel part { mz 24, mzs 10,5, bk 23,5, pp 1, dinh 11 }; reachCua = REACH 26; vatXoay công thức cũ', J(VeRobot.hinhHoc({ than: 'hai-banh', tay: 'hoi' })) === J({ mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 }) && VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }) === 26
     && J(VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0)) === J({ f: 22, l: 0, n: 10 }));
@@ -460,13 +466,13 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
 
   /* tay xoay: nấc trái / phải trong ô; đang xoay (±45°) có thể chờm sang ô chéo nhưng vẫn trong canvas có lề tràn; vật ở nấc trái nằm bên trái xe */
   const xoaySai = [];
-  for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) for (const goc of [-90, -45, 0, 45, 90]) for (const tuThe of ['tren', 'duoi']) for (const h of [0, 1, 2, 3]) {
-    V.xoaDem(); const cv = V.robot({ than, tay: 'xoay' }, { tay: { kep: 'dong', cam: true, goc, tuThe } }, h, 84);
-    if (Math.abs(goc) !== 45 && trongVung(cv, 84).length) xoaySai.push(than + ' ' + goc + '° ' + tuThe + ' ' + TEN_HUONG[h] + ': ngoài ô');
+  for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) for (const goc of [-90, -45, 0, 45, 90]) for (const tuThe of ['tren', 'duoi']) for (const h of [0, 1, 2, 3]) for (const cam of [true, false]) {
+    V.xoaDem(); const cv = V.robot({ than, tay: 'xoay' }, { tay: { kep: cam ? 'dong' : 'mo', cam, goc, tuThe } }, h, 84);
+    if ((goc === 0 || (Math.abs(goc) === 90 && !cam)) && trongVung(cv, 84).length) xoaySai.push(than + ' ' + goc + '° ' + tuThe + (cam ? ' cầm vật ' : ' mở ') + TEN_HUONG[h] + ': ngoài ô');
     if (ngoaiO(cv).length) xoaySai.push(than + ' ' + goc + '° ' + TEN_HUONG[h] + ': ngoài canvas');
   }
   const vT = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', -90), vP = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 90), v0 = V.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0), vk0 = V.vatKep({ than: 'hai-banh', tay: 'xoay' }, 'tren');
-  kiem('tay xoay: nấc trái / trước / phải trong ô, đang xoay ±45° trong canvas lề tràn (' + V.tranCua({ tay: 'xoay' }) + ' ô); vật nấc trái l < 0, nấc phải l > 0, ra ngoài thân (|l| ≥ 30); nấc trước trùng vatKep (f ' + v0.f.toFixed(1) + ')',
+  kiem('tay xoay: nấc trước trong ô, nấc trái / phải trong ô khi không cầm vật (V6b: cầm vật to thì ngón ôm vật chờm sang ô chéo, trong lề tràn), đang xoay ±45° trong canvas lề tràn (' + V.tranCua({ tay: 'xoay' }) + ' ô); vật nấc trái l < 0, nấc phải l > 0, ra ngoài thân (|l| ≥ 30); nấc trước trùng vatKep (f ' + v0.f.toFixed(1) + ')',
     xoaySai.length === 0 && vT.l < -30 && vP.l > 30 && Math.abs(v0.l) < 1e-9 && Math.abs(v0.f - vk0.ahead) < 1e-9 && vT.l + vT.n / 2 >= -50 - 1e-9, xoaySai.slice(0, 4).join('; ') + ' l trái ' + vT.l.toFixed(1));
 
   /* d. ổ đúng phía sau xoay: tay về phía mặt, hongTrai bên trái xe, hongPhai bên phải, tren phía trước, sau phía sau */
@@ -484,8 +490,8 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
   }
   kiem('sau xoay 4 hướng × 2 cỡ: ổ tay ở phía mặt; hongTrai bên TRÁI xe, hongPhai bên PHẢI; tren ở góc mũi trái; sau ở đuôi (mọi thân có hướng)', oSai.length === 0, oSai.slice(0, 6).join(', '));
   const vkSai = [];
-  for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) for (const tay of ['kep', 'xoay']) for (const tt of ['tren', 'duoi']) { const k = V.vatKep({ than, tay }, tt); if (!k || !(k.ahead > 20 && k.ahead + k.n / 2 <= 50.5)) vkSai.push(than + '/' + tay + '/' + tt); }
-  kiem('vật trong kẹp (kẹp, tay xoay) ở phía trước, trong ô, trên mọi thân có hướng', vkSai.length === 0, vkSai.join(', '));
+  for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) for (const tay of ['kep', 'xoay']) for (const tt of ['tren', 'duoi']) { const k = V.vatKep({ than, tay }, tt); if (!k || !(k.ahead > 20 && k.ahead - k.n / 2 > 0 && k.ahead + k.n / 2 <= V.tamVoi({ than, tay }))) vkSai.push(than + '/' + tay + '/' + tt); }
+  kiem('vật trong kẹp (kẹp, tay xoay) ở phía trước, không lùi quá tâm thân, trong tầm lớp phủ (tamVoi), trên mọi thân có hướng', vkSai.length === 0, vkSai.join(', '));
   const hh = V.ds('than').map((t) => [t, V.hinhHoc({ than: t, tay: t === 'drone' ? 'nam-cham' : 'hoi' })]), hhSai = hh.filter(([t, x]) => !(x.mz > 30 && x.mz < 50 && x.mzs > 20 && x.mzs < 50 && x.dinh > 20 && x.dinh < 50));
   const bk = V.hinhHoc({ than: 'hai-banh', tay: 'nem' }).bk;
   kiem('hinhHoc: miệng nòng trước / sau, rổ máy ném (' + bk.toFixed(1) + '), đỉnh drone trong (20, 50) phần trăm ô', hhSai.length === 0 && bk > 25 && bk * 27.5 / 23.5 < 46, J(hhSai));
@@ -855,6 +861,55 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
     const nguon = ['man-lap.js', 'the-part.js', 'mo-dau.js', 'man-dau.js', 'phim-goi.js'].filter((f) => !/VeRobot\.veCo\(/.test(fs.readFileSync(path.join(GAME, f), 'utf8')) || /VeRobot\.ve\(/.test(fs.readFileSync(path.join(GAME, f), 'utf8')));
     kiem('(13f) VeRobot.veCo (robot ngoài sân): pixel cùng canvas với ve(…, pxCss / 24) (48 → ×2, 72 → ×3…), vector một ô pxCss × 1,2 (V5a) × dpr (heSoCss = 1 / dpr); màn Lắp robot, thẻ Bộ phận mới, mở đầu, màn đầu, phim đều gọi veCo',
       sai.length === 0 && nguon.length === 0, sai.concat(nguon).slice(0, 5).join('; '));
+  }
+
+  /* h. (gói V6b, user 28/10 "Nâng lên to ra") CỠ VẬT TRONG TAY ở vector: phát lại màn kẹp / tay xoay / nam châm bằng san-ve.js thật, đo cạnh THÂN vật mỗi lần vẽ
+        (phần trăm cạnh ô: hộp sz × 0,76 / ô): tay hạ (độ nâng 0) = vật nằm sàn, tay nâng (độ nâng 1) = 1,15–1,25 lần, chuyển dần (không nhảy cỡ), bóng nâng xa hơn;
+        vật dính nam châm = cỡ vật nâng; càng kẹp / ngón tay xoay ôm vật ở mọi độ nâng (khe ≥ thân vật, sát mép). */
+  {
+    const VV = KV.ctx.VeVector, P = KV.ctx.SanVe.Field.prototype, veCu = P.veMotVat, ghi = [];
+    if (LOI_GIA) { VV._loiGia.coVatCu = true; console.log('(và hai lỗi giả V6b: vật trong tay cỡ cũ 24% không theo độ nâng, càng kẹp giữ khe cũ)'); }
+    P.veMotVat = function (g, o, n, x, y, sz, so) {
+      const m = g.getTransform(), sc = Math.sqrt(Math.abs(m.a * m.d - m.b * m.c)) || 1, o1 = 14 * this.kk * this.u / sc;      // cạnh ô theo đơn vị của g
+      if (this.lopOK && o1 > 0) ghi.push({ ten: this.__ten, tt: o.tt, nang: o.nang || 0, tay: this.cfg.robot.tay, tuThe: this.vis && this.vis.tay && this.vis.tay.tuThe, nk: this.vis && this.vis.nangK, than: sz * 0.76 / o1 * 100, so: so / o1 * 100 });
+      return veCu.apply(this, arguments);
+    };
+    const MAN_H = CA.filter((c) => ['kep', 'xoay', 'nam-cham'].includes(KV.ctx.VeRobot.cauHinhCua(c.m).tay) && !c.m.doi);
+    for (const c of MAN_H) { KV.datHat(777); KV.datGio(1000); P.__ten = c.ten; await phat(KV, c.m, c.v); }
+    P.veMotVat = veCu; delete P.__ten;
+    const SAN = ghi.filter((r) => r.tt === 'dat' && !r.nang).map((r) => r.than), san = SAN.length ? SAN.reduce((a, b) => a + b, 0) / SAN.length : 0;
+    const chuoi2 = (r) => r.ten + ' ' + r.tay + ' ' + r.tuThe + ' k' + (r.nk === undefined ? '-' : (+r.nk).toFixed(2)) + ' thân ' + r.than.toFixed(1);
+    const sai = [], bang = {};
+    for (const tay of ['kep', 'xoay']) {
+      const cam = ghi.filter((r) => r.tt === 'cam' && r.tay === tay), ha = cam.filter((r) => r.tuThe === 'duoi' && r.nk === 0), nang = cam.filter((r) => r.tuThe === 'tren' && r.nk === 1);
+      if (!ha.length || !nang.length) { sai.push(tay + ': thiếu khung hạ (' + ha.length + ') / nâng (' + nang.length + ')'); continue; }
+      ha.filter((r) => Math.abs(r.than - san) > 1).slice(0, 2).forEach((r) => sai.push('hạ ≠ cỡ sàn: ' + chuoi2(r)));
+      nang.filter((r) => !(r.than / san >= 1.15 && r.than / san <= 1.25)).slice(0, 2).forEach((r) => sai.push('nâng không 1,15–1,25 lần sàn: ' + chuoi2(r)));
+      if (!(Math.min(...nang.map((r) => r.so)) > Math.max(...ha.map((r) => r.so)))) sai.push(tay + ': bóng vật nâng không xa hơn bóng vật hạ');
+      for (let i = 1; i < cam.length; i++) if (cam[i].ten === cam[i - 1].ten && Math.abs(cam[i].than - cam[i - 1].than) > 3) { sai.push(tay + ': nhảy cỡ ' + chuoi2(cam[i - 1]) + ' → ' + cam[i].than.toFixed(1)); break; }
+      const giua = cam.filter((r) => r.nk > 0.05 && r.nk < 0.95).length;
+      if (!giua) sai.push(tay + ': không có khung chuyển cỡ giữa chừng (nâng / hạ không mượt)');
+      bang[tay] = { ha: +(ha[0].than).toFixed(1), nang: +(nang[0].than).toFixed(1), giua };
+    }
+    const nc = ghi.filter((r) => r.tt === 'cam' && r.tay === 'nam-cham');
+    if (!nc.length) sai.push('nam châm: không có khung vật dính'); else if (nc.some((r) => !(r.than / san >= 1.15 && r.than / san <= 1.25))) sai.push('nam châm: vật dính không bằng cỡ vật nâng: ' + chuoi2(nc[0]));
+    kiem('(13h) V6b cỡ vật trong tay (vector, ' + MAN_H.length + ' lần phát lại: ' + MAN_H.map((c) => c.ten).join(', ') + '): vật nằm sàn ' + san.toFixed(1) + '% ô; tay hạ = cỡ sàn, tay nâng 1,15–1,25 lần, chuyển dần, bóng nâng xa hơn; vật dính nam châm = cỡ nâng ' + J(bang),
+      sai.length === 0 && Math.abs(san - VV.VAT_SAN) < 1, sai.slice(0, 5).join('\n      '));
+    /* càng / ngón ôm vật: vẽ riêng tay (canvas giả) ở độ nâng 0 / 0,5 / 1, đo nửa khe (đường tâm nét càng) so với nửa thân vật, theo hệ của tay */
+    const om = [];
+    for (const ma of ['kep', 'xoay']) for (const k of [0, 0.5, 1]) {
+      const cv = new V.CanvasGia(100, 100), g = cv.getContext('2d'); V.lay('tay', ma).ve(g, { kep: 'dong', cam: true, tuThe: k === 0 ? 'duoi' : 'tren', nangK: k }, V.mauDoi(''), V.H);
+      const pts = []; let m = [1, 0, 0, 1, 0, 0]; const ngan = [];
+      for (const l of cv.lenh) {
+        const [c, ...a] = l;
+        if (c === 'save') ngan.push(m.slice()); else if (c === 'restore') m = ngan.pop() || m; else if (c === 'translate') m = [m[0], m[1], m[2], m[3], m[4] + m[0] * a[0] + m[2] * a[1], m[5] + m[1] * a[0] + m[3] * a[1]];
+        else if (c === 'rotate') { const co = Math.cos(a[0]), si = Math.sin(a[0]); m = [m[0] * co + m[2] * si, m[1] * co + m[3] * si, -m[0] * si + m[2] * co, -m[1] * si + m[3] * co, m[4], m[5]]; }
+        else if ((ma === 'kep' && c === 'bezierCurveTo') || (ma === 'xoay' && c === 'lineTo')) { const x = ma === 'kep' ? a[4] : a[0], y = ma === 'kep' ? a[5] : a[1]; pts.push(m[0] * x + m[2] * y + m[4]); }
+      }
+      const khe = Math.max(...pts.map((x) => Math.abs(x - 50))), nua = V.coVatKep(k) / V.CO_THAN / 2;
+      if (!(khe >= nua && khe <= nua + 4)) om.push(ma + ' k' + k + ': nửa khe ' + khe.toFixed(1) + ', nửa thân vật ' + nua.toFixed(1));
+    }
+    kiem('(13h) V6b càng kẹp / ngón tay xoay ÔM vật ở mọi độ nâng (0 / 0,5 / 1): đường tâm càng nằm ngoài mép thân vật, cách không quá 4 đơn vị (không xuyên vật, không hở)', om.length === 0, om.join('; '));
   }
 
   /* g. cờ bay, sàn bàn cờ, trang xem */

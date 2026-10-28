@@ -49,7 +49,8 @@
       'chon.goLoi': 'Gỡ lỗi',
 
       /* ---- màn chơi */
-      'choi.menu': 'Menu',
+      'choi.menu': 'Mở menu',                                  // nhãn đọc màn hình + title của nút ☰ (nút chỉ có icon); tiêu đề hộp menu là menu.tieuDe
+      'menu.tieuDe': 'Menu',
       'menu.veChon': 'Về màn chọn',
       'menu.lamLai': 'Làm lại từ đầu',
       'menu.lamLaiHoi': 'Nạp lại chương trình mẫu của màn này? Bài em đang viết ở màn này sẽ mất (hàm đã lưu và sao vẫn giữ).',
@@ -163,7 +164,7 @@
       'choi.meoThe': 'Bấm {nut} để sang thẻ {ten}',
       'choi.dayKhung': 'Đầy khung rồi: xóa bớt một dòng.',
       'choi.trong': 'Chương trình còn trống.',
-      'choi.anBong': 'Ẩn',
+      'choi.anBong': 'Ẩn khung nhắc này',                      // nút X (chỉ có icon) ở góc khung nhắc: đề bài / gợi ý / lỗi / lưu ý
       'choi.goiYSo': 'Gợi ý {i}/{n}',
       'choi.khongGoiY': 'Màn này chưa có gợi ý.',
       'choi.chanDoan': 'Chưa được',
@@ -422,7 +423,7 @@
 
       /* ---- cài đặt (cai-dat.js) */
       'caiDat.tieuDe': 'Cài đặt',
-      'caiDat.nut': 'Cài đặt',
+      'caiDat.nut': 'Mở cài đặt',                              // nút bánh răng (chỉ có icon) ở màn đầu
       'caiDat.hieuUng': 'Hiệu ứng',
       'caiDat.nhac': 'Nhạc nền',
       'caiDat.son': 'Màu sơn R1',

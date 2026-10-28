@@ -244,6 +244,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     },
     /** Vật nằm đất: cạnh (pixel sân). Pixel: 8 (≈ 57% ô, luật vật 14/10); vector: 10,5 (thùng vector chiếm 76% hộp → cũng ≈ 57% ô). Và tâm theo chiều dọc: pixel 6 (bóng đổ chiếm 2 hàng dưới), vector 7 (giữa ô). */
     coVatDat: function () { return this.vec ? 10.5 : 8; },
+    /** Vector (gói V6b): hộp vật đang được NÂNG khỏi sàn (pixel sân): thân VeVector.coVatKep(1) (1,2 lần vật nằm sàn) chia 0,76. */
+    coVatNang: function () { return VeVector.coVatKep(1) / 0.76 * T / 100; },
+    /** Vector (gói V6b): hộp vật ở độ cao `cao` pixel sân trên mặt sàn (nam châm hút / thả, vật nảy): to dần từ cỡ sàn tới cỡ nâng khi lên tới `toi` pixel sân. */
+    coVatCao: function (cao, toi) { var k = Math.max(0, Math.min(1, (cao || 0) / (toi || 3))); return { sz: this.coVatDat() + (this.coVatNang() - this.coVatDat()) * k, k: k }; },
     yVatDat: function () { return this.vec ? 7 : 6; },
     /** Tỉ lệ pixel thiết bị trên một đơn vị của g (phép biến hình hiện tại), để lấy canvas đệm vector đúng cỡ. */
     tiLeCua: function (g) { try { var m = g.getTransform(); return Math.sqrt(Math.abs(m.a * m.d - m.b * m.c)) || 1; } catch (e) { return 1; } },
@@ -904,11 +908,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           var vq = VeRobot.vatXoay(c.robot, 'tren', GOC_XOAY[b.xoay]);
           vx = X + (Math.sin(ang) * vq.f + Math.cos(ang) * vq.l) * p; vy = Y + (-Math.cos(ang) * vq.f + Math.sin(ang) * vq.l) * p;
         }
-        this.veMotVat(g, { chat: 'go', mau: b.camMau || null }, nv, vx, vy, nv * p, 4.5 * p);
+        if (this.vec) { var hm = VeVector.coVatKep(1) * p / 0.76; this.veMotVat(g, { chat: 'go', mau: b.camMau || null }, nv, vx, vy, hm, hm * VeVector.BONG_NANG); }   // vector (gói V6b): cỡ vật tay nâng như xe thật
+        else this.veMotVat(g, { chat: 'go', mau: b.camMau || null }, nv, vx, vy, nv * p, 4.5 * p);
       }
       if (b.cam && c.robot.tay === 'nam-cham') {                                      // xe mờ của tay nam châm đang HÚT một vật: vật mờ dính ở ô sát mũi (như veVatTu)
         var an = b.d * Math.PI / 2;
-        this.veMotVat(g, this.kieuVatMo(b.camMau), 8, X + Math.sin(an) * T * ku, Y - Math.cos(an) * T * ku - ku, 8 * ku, 2 * ku);
+        if (this.vec) { var hn = this.coVatNang(); this.veMotVat(g, this.kieuVatMo(b.camMau), 8, X + Math.sin(an) * T * ku, Y - Math.cos(an) * T * ku - ku, hn * ku, hn * VeVector.BONG_NANG * ku); }   // vector (gói V6b): vật dính cỡ vật nâng
+        else this.veMotVat(g, this.kieuVatMo(b.camMau), 8, X + Math.sin(an) * T * ku, Y - Math.cos(an) * T * ku - ku, 8 * ku, 2 * ku);
       }
       g.drawImage(spr, 0, 0, w, h, x0, y0, dw, dh);
       g.globalAlpha = nhay ? 1 : 0.9;
@@ -1034,7 +1040,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var nhun = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 2) : 0;
       for (var i = 0; i < this.objs.length; i++) {
         var o = this.objs[i], rg = o.rung > now ? Math.sin(now / 22) * 1.3 : 0;
-        if (o.tt === 'dat') this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - (o.nang || 0) + (this.vatTaiDich(o) ? nhun : 0), this.coVatDat(), 2);
+        if (o.tt === 'dat' && this.vec && o.nang > 0) {                                  // vector (gói V6b): vật đang ở trên cao (nam châm thả, vật nảy) to hơn, bóng xa hơn, thu về cỡ sàn khi chạm đất
+          var cv = this.coVatCao(o.nang, 3);
+          this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - o.nang + (this.vatTaiDich(o) ? nhun : 0), cv.sz, cv.sz * (VeVector.BONG_SAN + (VeVector.BONG_NANG - VeVector.BONG_SAN) * cv.k));
+        } else if (o.tt === 'dat') this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - (o.nang || 0) + (this.vatTaiDich(o) ? nhun : 0), this.coVatDat(), 2);
         else if (o.tt === 'anim') this.veVatTruot(g, o, now);
         else if (o.tt === 'vo' && o.voLuc) {
           var k = (now - o.voLuc) / 800;
@@ -1069,12 +1078,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Tâm vật trong kẹp theo pixel THIẾT BỊ của lớp phủ, cho xe có thân tâm (X, Y): { x, y, n, sz, so, a } (a = góc mũi xe, n = cạnh sprite, so = độ lệch bóng).
      *  Tay hạ: vật sát đất, nhỏ hơn một chút (9 pixel part), bóng sát; tay nâng: vật cao hơn nên to hơn (10), bóng nhạt và xa. */
     tamVatKep: function (X, Y) {
+      if (this.vec) return this.tamVatKepVec(X, Y);
       var v = this.vis, a = this.gocMui(), low = v.tay.tuThe === 'duoi', vk = VeRobot.vatKep(this.cfg.robot, v.tay.tuThe), p = this.p, A = vk.ahead * p, n = vk.n ? Math.round(low ? vk.n * 0.9 : vk.n) : (low ? 9 : 10);
       if (this.cfg.robot.tay === 'xoay') {                                         // tay xoay: tâm vật theo góc cánh tay (nấc khớp, hay góc đang xoay giữa chừng) quanh khớp ở mũi xe
         var vq = VeRobot.vatXoay(this.cfg.robot, v.tay.tuThe, typeof v.tay.goc === 'number' ? v.tay.goc : GOC_XOAY[v.tay.xoay || 'truoc']);
         return { x: X + (Math.sin(a) * vq.f + Math.cos(a) * vq.l) * p, y: Y + (-Math.cos(a) * vq.f + Math.sin(a) * vq.l) * p, n: n, sz: n * p * (this.vec ? 1 / 0.76 : 1), so: (low ? 2 : 4.5) * p, a: a };
       }
       return { x: X + Math.sin(a) * A, y: Y - Math.cos(a) * A, n: n, sz: n * p * (this.vec ? 1 / 0.76 : 1), so: (low ? 2 : 4.5) * p, a: a };     // vector (gói V4): THÂN vật (76% hộp) = cạnh khe kẹp, dễ thấy
+    },
+    /** Vector (gói V6b, user 28/10 "Nâng lên to ra"): như tamVatKep nhưng cỡ theo độ nâng mượt v.nangK (hoatVec; 0 = hạ … 1 = nâng): THÂN vật = VeVector.coVatKep
+     *  (hạ = đúng vật nằm sàn 57% ô, nâng 1,2 lần: gần camera hơn), sz = hộp vật (thân chiếm 76%); bóng lệch BONG_SAN → BONG_NANG lần hộp (nâng: xa và nhạt hơn). */
+    tamVatKepVec: function (X, Y) {
+      var v = this.vis, a = this.gocMui(), p = this.p, r = this.cfg.robot, k = VeVector.nangCua(v.tay.tuThe, v.nangK), V = VeVector;
+      var n = V.coVatKep(k), sz = n * p / 0.76, so = sz * (V.BONG_SAN + (V.BONG_NANG - V.BONG_SAN) * k), f, l = 0;
+      if (r.tay === 'xoay') { var vq = VeRobot.vatXoay(r, v.tay.tuThe, typeof v.tay.goc === 'number' ? v.tay.goc : GOC_XOAY[v.tay.xoay || 'truoc'], k); f = vq.f; l = vq.l; }
+      else f = VeRobot.vatKep(r, v.tay.tuThe, k).ahead;
+      return { x: X + (Math.sin(a) * f + Math.cos(a) * l) * p, y: Y + (-Math.cos(a) * f + Math.sin(a) * l) * p, n: n, sz: sz, so: so, a: a, k: k };
     },
     /** Vật đang nằm trong kẹp (robot kẹp, trangThai 'cam'), hoặc null. */
     vatCamKep: function () {
@@ -1283,6 +1302,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var dich = ttR.tay.kep ? 0 : 1; v.kepK = v.kepK === undefined ? dich : v.kepK + (dich - v.kepK) * mu;
         if (Math.abs(v.kepK - dich) < 0.04) v.kepK = dich; else ttR.tay = Object.assign({}, ttR.tay, { moK: v.kepK });
       } else v.kepK = undefined;
+      if (laTayKep(r.tay) && ttR.tay && v.tay) {                                    // gói V6b: độ nâng của tay kẹp / tay xoay chuyển MƯỢT (hạ 0 … nâng 1): vật trong tay to dần khi nâng, thu về cỡ sàn khi hạ
+        var dn = VeVector.nangCua(v.tay.tuThe); v.nangK = v.nangK === undefined ? dn : v.nangK + (dn - v.nangK) * Math.min(1, dt / 90);
+        if (Math.abs(v.nangK - dn) < 0.02) v.nangK = dn;
+        ttR.tay = Object.assign({}, ttR.tay, { nangK: Math.round(v.nangK * 20) / 20 });     // bậc 0,05: đủ mượt, bộ đệm hình robot không phình
+      } else v.nangK = undefined;
       this.bieuCam(v, ttR, now, diChuyen ? 1 : 0);
       if (v.nem && ttR.tay) {
         var dv = v.nem.dang > now ? 1 : 0; v.nem.vungK = v.nem.vungK === undefined ? dv : v.nem.vungK + (dv - v.nem.vungK) * Math.min(1, dt / 55);
@@ -1542,13 +1566,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           if (v.dr) continue;                                                       // drone: vật treo dưới bụng vẽ ở veDuoiDrone
           var rung = v.nc.rung > now, lech = rung ? Math.sin(now / 22) * 1.3 : 0;
           px = cx + dx * T + (rung ? -dy : 0) * lech; py = cy + dy * T + (rung ? dx : 0) * lech;
-          this.veMotVat(g, o, 8, px, py - 1, 8, 2, rung ? 0.3 : 0);
+          if (this.vec) { var hn2 = this.coVatNang(); this.veMotVat(g, o, 8, px, py - 1, hn2, hn2 * VeVector.BONG_NANG, rung ? 0.3 : 0); }   // vector (gói V6b): vật dính nam châm được nhấc khỏi sàn: cỡ vật nâng, bóng xa
+          else this.veMotVat(g, o, 8, px, py - 1, 8, 2, rung ? 0.3 : 0);
         } else if (o.tt === 'bay' && o.bay) {
           var b = o.bay;
           px = b.x * T + 7; py = b.y * T + 7 - b.cao;
           if (this.vec) {                                                       // vector (gói V4): bóng elip mềm, thân vật 8 pixel sân như hình pixel, vòng hút bo góc
             HU().bongElip(g, b.x * T + 7, b.y * T + 11, 3.6, 1.3, 0.24);
-            this.veVatVec(g, o, px + (b.rx || 0), py - 1 + (b.ry || 0), 8);
+            this.veVatVec(g, o, px + (b.rx || 0), py - 1 + (b.ry || 0), v.dr ? 8 : this.coVatCao(b.cao, 1.5).sz * 0.76);   // gói V6b: vật bị hút lên to dần tới cỡ vật nâng (drone: giữ cỡ cũ)
             if (b.vong) HU().vongHut(g, px, py, 0.35 + 0.35 * Math.abs(Math.sin(now / 60)));
             continue;
           }
