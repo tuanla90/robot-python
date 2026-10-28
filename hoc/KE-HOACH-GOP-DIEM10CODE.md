@@ -142,6 +142,14 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   → V7: Ve.ico / sao / khoa / mui ở vector trả thẳng svg rồi bỏ MutationObserver, noiVe, móc `drawImage` toàn cục (cầu tạm); kiem-giao-dien-vector-b mục d còn luật cũ "PHAM_VI không chứa #sc-choi"
   (gộp PHAM_VI + PHAM_VI_CHOI); huy hiệu gói 8 (doi-mua-2, che-doi-mua-2) cần bản vector; trời mưa dùng `:has()` (Safari < 15.4 / Firefox < 121 thấy nền sáng).
 
+- **28/10 Scout gỡ pixel** (opus, chỉ đọc, báo cáo hoc/ban-giao/scout-go-pixel.md): công tắc ve-vector.js doCheDo; không chỗ nào đọc chế độ trước ve-vector.js; sw.js lấy mạng trước (không cần đổi tên bộ đệm);
+  5 cầu tạm C1–C5 (MutationObserver, noiVe, móc drawImage / Part._veMot, bọc Ve.mk / Ve.hydrate, PHAM_VI); choi.css là NỀN BỐ CỤC chung (2263 / 3541 khai báo bố cục, 91 khai báo pixel), không gộp vào choi-vector.css;
+  logic nằm lẫn tệp pixel phải tách trước khi xoá: luật ghép part.js (lap-rap.js gọi lúc chơi), hamGoc trong part-*.js, SON / DS_SON, danh sách HuyHieu.DS, Ve.T = 14, Ve.MAU; gói Artifact (dong-goi-artifact.py) chỉ gói choi.css + phông pixel.
+  Hai lỗi cũ lộ khi đổi mặc định: màu sơn R1 đã chọn ở pixel lọt vào vector (ve-robot.js sonChon), nút "Biểu cảm mắt" không tác dụng ở vector (san-ve.js bieuCam).
+  Người giao tự quyết (user 28/10 "bạn tự làm đi"): (1) ở vector R1 luôn #38BDF8, bỏ qua sơn đã lưu; mốc mở màu sơn giữ dữ liệu, ẩn ở vector; (2) "Biểu cảm mắt" có tác dụng ở vector (tắt thì mắt thường, chỉ chớp);
+  (3) gói Artifact nhúng phông Google Sans Flex / Code có sẵn ở hoc/game/font (không gọi Google Fonts); (4) icon app vẽ lại theo vector nếu xuất được PNG, không thì để V7c; (5) người đã chọn pixel trước V7b chuyển sang vector (đúng "chuyển hẳn").
+  V7c theo phương án C (gỡ theo lớp): V7c1 phanh vector mới (phát lại vector khớp nền cuối V7b) + tách logic khỏi tệp pixel + gỡ công tắc; V7c2 xoá mã pixel chết từng tệp; V7c3 CSS / phông / bảng màu. Sau V7b: cấm viết pixel mới.
+
 ## 2b. Linh vật Sola / Luna bản pixel
 
 - **Giữ sân pixel** (bản sắc của game; theo kế hoạch gộp, mỗi game vẫn là app riêng). Không dán ảnh chibi vector lên sân: lệch phong cách.
