@@ -10,7 +10,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function vo(g, H, x, y, w, h, r) { H.bo(g, x, y, w, h, r); g.fillStyle = H.gradVo(g, x, y, w, h); g.fill(); H.vien(g, BM.vecVien, 2.2); }
 
   /* KHOẢNG CÁCH (tai xanh lơ, front_clear / left_clear / right_clear): vỏ con nhộng dọc, thấu kính cyan ở đầu trước; đang đọc: thấu kính sáng + hai gợn sóng ở góc trước-ngoài. */
-  V.dangKy({ loai: 'cam-bien', ma: 'khoang-cach', ten: 'Cảm biến khoảng cách (tai xanh lơ)', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'cam-bien', ma: 'khoang-cach', hamGoc: ['front_clear',  'left_clear',  'right_clear'], ten: 'Cảm biến khoảng cách (tai xanh lơ)', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     var ra = s.ra || 1;
     vo(g, H, 45, 45, 10, 17, 5);
     H.bo(g, 46.5, 54, 7, 6, 3); H.to(g, s.bat ? BM.vecDenSang : BM.vecDen); H.vien(g, BM.vecVien, 1.2);
@@ -21,14 +21,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   } });
 
   /* MÀU (dưới sườn, color()): vỏ tròn nhỏ lùi về phía đuôi so với ổ, thấu kính tím; đang đọc: lõi sáng hồng + quầng tím. */
-  V.dangKy({ loai: 'cam-bien', ma: 'mau', ten: 'Cảm biến màu dưới sườn', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'cam-bien', ma: 'mau', hamGoc: ['color'], ten: 'Cảm biến màu dưới sườn', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     if (s.bat) { H.tron(g, 50, 40, 7.5); H.to(g, H.rgba(BM.vecVienRgb, 0.12)); }
     H.tron(g, 50, 40, 5.5); g.fillStyle = H.gradVo(g, 44.5, 34.5, 11, 11); g.fill(); H.vien(g, BM.vecVien, 2.2);
     H.tron(g, 50, 40, 3); H.to(g, s.bat ? BM.vecMauCbSang : BM.vecMauCb); H.vien(g, s.bat ? BM.vecMauCb : BM.vecVien, 1.2);
   } });
 
   /* CẦN GẠT (va chạm, bumped()): đế thép nhỏ ở ổ, cần bạc chĩa về phía trước, đầu tròn; vừa chạm (bat): đầu cần đỏ hồng. */
-  V.dangKy({ loai: 'cam-bien', ma: 'cham', ten: 'Cảm biến va chạm (cần gạt)', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'cam-bien', ma: 'cham', hamGoc: ['bumped'], ten: 'Cảm biến va chạm (cần gạt)', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     H.duong(g, 'M50 50 V61'); H.vien(g, BM.vecVien, 4.5); H.duong(g, 'M50 50 V61'); H.vien(g, BM.vecBac, 2);
     vo(g, H, 46, 45, 8, 9, 3);
     H.tron(g, 50, 62, 3); H.to(g, s.bat ? BM.vecHong : BM.vecDeSang); H.vien(g, BM.vecVien, 1.5);
@@ -37,7 +37,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* CAMERA (color() đọc ô trước mặt) — gói V4 (user 28/10): KHÔNG còn là hai mắt; là khối camera trên trụ ngắn ở ĐUÔI xe (VeVector.robot đặt ở than.oCam, oVe 'cam'; ổ logic vẫn 'tren'
      như Part.ghep), ống kính hướng về PHÍA TRƯỚC (+y) nhìn qua đầu xe. Đế bạc chạm vỏ, khối trắng viền chàm, loa che tối, ống kính cyan; s.mat (đang đọc): ống kính trắng rực + quầng.
      Gốc tia camera = tâm ống kính (diemNeo + (0, 10)) → VeVector.diemOngKinh. Mắt trên kính giữ là mắt cảm xúc. */
-  V.dangKy({ loai: 'cam-bien', ma: 'camera', ten: 'Camera (đôi mắt)', gan: 'tren', diemNeo: { x: 50, y: 50 }, oVe: 'cam', ongKinh: { x: 50, y: 60 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'cam-bien', ma: 'camera', hamGoc: ['color'], ten: 'Camera (đôi mắt)', gan: 'tren', diemNeo: { x: 50, y: 50 }, oVe: 'cam', ongKinh: { x: 50, y: 60 }, ve: function (g, s, M, H) {
     var sang = !!s.mat;
     H.bo(g, 45.5, 43, 9, 8, 3); H.to(g, BM.vecBacToi); H.vien(g, BM.vecVien, 1.6);                          // trụ / đế chạm vỏ
     H.bo(g, 41, 46, 18, 12, 4); g.fillStyle = H.gradVo(g, 41, 46, 18, 12); g.fill(); H.vien(g, BM.vecVien, 2.2);   // khối camera
@@ -50,7 +50,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* HỒNG NGOẠI (distance() / warm(), mùa 2): mắt đo nhỏ ở góc mũi bên trái, vỏ tròn trắng, thấu kính đỏ: tắt = đỏ sẫm, đang đọc = đỏ hồng rực + lõi sáng + hai chấm nhô về phía trước
      (tia dài trên sân do san-ve.js / gói V4 vẽ). */
-  V.dangKy({ loai: 'cam-bien', ma: 'hong-ngoai', ten: 'Cảm biến hồng ngoại (mắt đỏ ở mũi)', gan: 'tren', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'cam-bien', ma: 'hong-ngoai', hamGoc: ['distance',  'warm'], ten: 'Cảm biến hồng ngoại (mắt đỏ ở mũi)', gan: 'tren', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     H.tron(g, 50, 50, 5.5); g.fillStyle = H.gradVo(g, 44.5, 44.5, 11, 11); g.fill(); H.vien(g, BM.vecVien, 2.2);
     H.tron(g, 50, 50.5, 3.2); H.to(g, s.bat ? BM.vecHong : BM.vecHongToi); H.vien(g, BM.vecVien, 1);
     if (s.bat) {
@@ -61,7 +61,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* CAMERA NHÌN XUỐNG (camera-bay, look(), chỉ drone, ổ bung ở mép trên khung): cụm gimbal tròn vỏ trắng, vành tối, kính xanh; s.bat: kính sáng nhẹ;
      s.mat (đang đọc look()): kính cyan rực lõi trắng, quầng sáng quanh cụm, hai tia nhỏ nhô ra ngoài (−y: drone không xoay, ổ bung ở phía trên). */
-  V.dangKy({ loai: 'cam-bien', ma: 'camera-bay', ten: 'Camera nhìn xuống (dưới bụng drone)', gan: 'bung', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'cam-bien', ma: 'camera-bay', hamGoc: ['look'], ten: 'Camera nhìn xuống (dưới bụng drone)', gan: 'bung', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     var sang = !!s.mat;
     if (sang) {
       H.tron(g, 50, 50, 10); H.to(g, H.rgba(BM.vecMatSangRgb, 0.7));

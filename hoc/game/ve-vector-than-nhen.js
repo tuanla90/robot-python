@@ -15,7 +15,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, k[0], k[1], 3.6); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2);
     H.tron(g, b[0], b[1], 3.2); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 2);
   }
-  V.dangKy({ loai: 'than', ma: 'nhen', ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'than', ma: 'nhen', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'crouch',  'stand'], ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
     var d = s && s.buoc ? 5 : 0;
     if (s && s.co) {
       [[-1], [1]].forEach(function (q) {

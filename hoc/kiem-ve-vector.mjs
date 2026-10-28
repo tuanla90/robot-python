@@ -408,45 +408,41 @@ console.log('\n== 11. Mỗi hình × mọi trạng thái mẫu × 3 cỡ; trạn
 }
 
 /* ================================================================= 12. (gói V3) mọi thân / tay / cảm biến của bộ PART có hình vector; mọi tổ hợp ghép như Part.ghep */
-console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js, ghép mọi tổ hợp như Part.ghep, 4 hướng, ổ đúng phía, màu đội, trạng thái, mọi màn ==');
+console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ dữ liệu chụp bộ pixel (du-lieu-chup-pixel.json), ghép mọi tổ hợp như Part.ghep đã chụp, 4 hướng, ổ đúng phía, màu đội, trạng thái, mọi màn ==');
 {
-  const Part = require(path.join(GAME, 'part', 'part.js'));
-  for (const f of fs.readdirSync(path.join(GAME, 'part')).filter((f) => /^part-.*\.js$/.test(f)).sort()) require(path.join(GAME, 'part', f));
+  /* V7c1 (28/10): nguồn so sánh là DỮ LIỆU CHỤP từ part/*.js ở c0 (hoc/chup-du-lieu-pixel.mjs), không nạp bộ pixel nữa */
+  const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'));
+  const BP = { than: CHUP.boPhan.filter((b) => b.loai === 'than'), tay: CHUP.boPhan.filter((b) => b.loai === 'tay'), 'cam-bien': CHUP.boPhan.filter((b) => b.loai === 'cam-bien') };
   /* a. danh sách bộ phận */
   const thieu = [], sai = [];
   for (const loai of ['than', 'tay', 'cam-bien']) {
-    const mp = Part.ds(loai).map((d) => d.ma), mv = V.ds(loai);
+    const mp = BP[loai].map((d) => d.ma), mv = V.ds(loai);
     for (const ma of mp) if (!mv.includes(ma)) thieu.push(loai + '/' + ma);
-    for (const ma of mv) if (!mp.includes(ma)) sai.push(loai + '/' + ma + ' (vector có, pixel không)');
-    for (const d of Part.ds(loai)) {
+    for (const ma of mv) if (!mp.includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
+    for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;
-      if (loai !== 'than' && (J([].concat(v.gan)) !== J([].concat(d.gan)) || v.ten !== d.ten)) sai.push(loai + '/' + d.ma + ': gan / ten khác pixel (' + J(v.gan) + ' / ' + v.ten + ')');
+      if (loai !== 'than' && (J([].concat(v.gan)) !== J(d.gan) || v.ten !== d.ten)) sai.push(loai + '/' + d.ma + ': gan / ten khác chụp (' + J(v.gan) + ' / ' + v.ten + ')');
       if (loai === 'tay' && d.diemNeoDuoi && !v.diemNeoDuoi) sai.push('tay/' + d.ma + ' thiếu diemNeoDuoi');
       if (loai === 'than') for (const o of Object.keys(d.oGan)) if (!v.oGan[o]) sai.push('than/' + d.ma + ' thiếu ổ ' + o);
+      if (J(v.hamGoc) !== J(d.hamGoc)) sai.push(loai + '/' + d.ma + ': hamGoc ' + J(v.hamGoc) + ' ≠ chụp ' + J(d.hamGoc));
     }
   }
-  kiem('mọi bộ phận của part/*.js (' + Part.ds('than').length + ' thân, ' + Part.ds('tay').length + ' tay, ' + Part.ds('cam-bien').length + ' cảm biến) có hình vector cùng mã', thieu.length === 0, 'thiếu: ' + thieu.join(', '));
-  kiem('cùng ổ gắn (gan, ten) với pixel; thân vector có đủ mọi ổ của thân pixel (tay, hongTrai, hongPhai, tren; drone: duoi, bung…); không bộ phận thừa', sai.length === 0, sai.join('; '));
+  kiem('mọi bộ phận trong dữ liệu chụp ' + CHUP.commit + ' (' + BP.than.length + ' thân, ' + BP.tay.length + ' tay, ' + BP['cam-bien'].length + ' cảm biến) có hình vector cùng mã', thieu.length === 0, 'thiếu: ' + thieu.join(', '));
+  kiem('cùng ổ gắn (gan, ten) và hamGoc với dữ liệu chụp; thân vector có đủ mọi ổ của thân pixel (tay, hongTrai, hongPhai, tren; drone: duoi, bung…); không bộ phận thừa', sai.length === 0, sai.join('; '));
   const tepGame = fs.readdirSync(GAME).filter((f) => /^ve-vector-.*\.js$/.test(f)), xemSrc = fs.readFileSync(path.join(day, 'hinh-mau', 'xem-vector.html'), 'utf8');
   const khongNap = tepGame.filter((f) => !TEP_VEC.includes(f) || !xemSrc.includes('../game/' + f + '"'));
   kiem('mọi tệp ve-vector-*.js (' + tepGame.length + ') nạp trong choi.html và hinh-mau/xem-vector.html', khongNap.length === 0, J(khongNap));
 
-  /* b. mọi tổ hợp: thân × (không tay + tay) × bộ cảm biến (không, từng cảm biến ở từng ổ, vài cặp) — Part.ghep ném ⇔ VeVector.kiemGhep ném, cùng câu báo */
-  const O = ['hong', 'truoc', 'hongTrai', 'hongPhai', 'tren', 'bung', 'duoi'];
-  const boCam = [[]];
-  for (const cb of Part.ds('cam-bien')) for (const o of O) boCam.push([{ ma: cb.ma, o }]);
-  boCam.push([{ ma: 'camera', o: 'tren' }, { ma: 'mau', o: 'hong' }], [{ ma: 'khoang-cach', o: 'hong' }, { ma: 'mau', o: 'hong' }], [{ ma: 'camera', o: 'tren' }, { ma: 'hong-ngoai', o: 'tren' }],
-    [{ ma: 'khoang-cach', o: 'hong' }, { ma: 'cham', o: 'hong' }, { ma: 'hong-ngoai', o: 'tren' }], [{ ma: 'camera-bay', o: 'bung' }, { ma: 'khoang-cach', o: 'hong' }, { ma: 'mau', o: 'hong' }]);
+  /* b. mọi tổ hợp: thân × (không tay + tay) × bộ cảm biến (không, từng cảm biến ở từng ổ, vài cặp) — Part.ghep (đã chụp) ném ⇔ VeVector.kiemGhep ném, cùng câu báo */
   const hopLe = [], lechLuat = []; let soCam = 0;
-  for (const than of Part.ds('than').map((d) => d.ma)) for (const tay of [null, ...Part.ds('tay').map((d) => d.ma)]) for (const camBien of boCam) {
-    const cfg = { than, tay, camBien };
-    let ep = null, ev = null;
-    try { Part.ghep(cfg); } catch (e) { ep = e.message; }
+  for (const g of CHUP.ghep) {
+    const cfg = g.cfg, ep = g.loi;
+    let ev = null;
     try { V.kiemGhep(cfg); } catch (e) { ev = e.message; }
-    if (ep !== ev) lechLuat.push(J(cfg) + ' pixel: ' + ep + ' | vector: ' + ev);
+    if (ep !== ev) lechLuat.push(J(cfg) + ' pixel (chụp): ' + ep + ' | vector: ' + ev);
     else if (ep) soCam++; else hopLe.push(cfg);
   }
-  kiem((hopLe.length + soCam) + ' tổ hợp (' + hopLe.length + ' ghép được, ' + soCam + ' cấm): VeVector.kiemGhep ném ĐÚNG khi Part.ghep ném, cùng câu báo (drone + camera, drone + tay khác nam châm, camera-bay trên xe, camera + cảm biến màu, sai ổ…)',
+  kiem((hopLe.length + soCam) + ' tổ hợp (' + hopLe.length + ' ghép được, ' + soCam + ' cấm): VeVector.kiemGhep ném ĐÚNG khi Part.ghep (dữ liệu chụp ' + CHUP.commit + ') ném, cùng câu báo (drone + camera, drone + tay khác nam châm, camera-bay trên xe, camera + cảm biến màu, sai ổ…)',
     lechLuat.length === 0 && hopLe.length > 300 && soCam > 100, lechLuat.slice(0, 4).join('\n      '));
   let nem = null; try { V.robot({ than: 'drone', camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 56); } catch (e) { nem = e.message; }
   kiem('VeVector.robot với cấu hình cấm ném lỗi (VeRobot bắt, báo một lần, rơi về hình tạm như pixel): "' + nem + '"', !!nem && /Drone không gắn được camera/.test(nem));

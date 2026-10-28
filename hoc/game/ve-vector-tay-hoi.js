@@ -16,7 +16,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 41, y0, 18, 6, 3); H.to(g, ban ? BM.vecDenSang : BM.vecVo); H.vien(g, BM.vecVien, 2.2);
     H.elip(g, 50, y0 + 3, 4.5, 1.6); H.to(g, ban ? BM.vecDen : BM.vecLoi);
   }
-  V.dangKy({ loai: 'tay', ma: 'hoi', ten: 'Súng hơi hai nòng', gan: 'tay', diemNeo: { x: 50, y: 80 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['shoot',  'shoot_back'], ten: 'Súng hơi hai nòng', gan: 'tay', diemNeo: { x: 50, y: 80 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
     s = s || {};
     var tr = !!s.dangBanTruoc, sa = !!s.dangBanSau;
     /* nòng sau (vẽ trước: nằm dưới bình khí nếu thân ngắn) */

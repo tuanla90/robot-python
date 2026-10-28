@@ -16,15 +16,16 @@
    KHÔNG cần khai loaiRobot / robot / hamGoc: chúng được suy ra lúc vào màn bằng apDung (có khai thì bị apDung ghi đè). sao.nhip / sao.o ứng với cách lắp tốt nhất; cách khác có thể chỉ đạt 2 sao (đó là đánh đổi).
    pin (nếu màn khai) chỉ có nghĩa với drone: apDung giữ pin + battery() + camBien { ma:'pin' } khi thân là drone, và bỏ pin khi thân khác.
 
-   MÃ PART lấy đúng mã trong game/part (Part.lay; bảng DANH_MUC giữ thêm `ham` = lệnh gốc của part, máy kiểm so với Part.hamGoc): thân hai-banh · xich · omni · nhen · drone; tay kep · xoay · nam-cham · nem · hoi;
+   MÃ PART lấy đúng mã bộ phận của bộ vẽ vector game/ve-vector-*.js (VeVector.lay; V7c1: bộ pixel game/part không còn là nguồn; bảng DANH_MUC giữ thêm `ham` = lệnh gốc
+   của bộ phận, máy kiểm so với VeVector.hamGoc và dữ liệu chụp hoc/du-lieu-chup-pixel.json): thân hai-banh · xich · omni · nhen · drone; tay kep · xoay · nam-cham · nem · hoi;
    cảm biến khoang-cach · mau · camera · camera-bay · và 'tu' = cảm biến khoảng cách có đầu dò từ (part khoang-cach + hai hàm front_metal / front_pole; hình giống khoang-cach).
 
-   API (window.LapRap, hay module.exports trong Node; trong Node tự nạp game/part):
+   API (window.LapRap, hay module.exports trong Node; trong Node tự nạp game/ve-vector.js + các bộ phận vector):
      KHE                          ['than', 'tay', 'camBien']
      DANH_MUC                     { than: [...], tay: [...], camBien: [...] } — mỗi mục { ma, part, ten, gia, vuot (một dòng "vượt được gì"), icon (tên icon ve.js), loai | o | hamThem }
      tim(khe, ma) · tenCua(khe, ma) · moTa(cach) → "Hai bánh + Tay kẹp + Màu bụng"
      chuanCach(c) → { than, tay, camBien }      giaCach(c) → số xu
-     cauHinhCua(c) → { than, tay, camBien: [{ ma, o }] }   (đưa thẳng cho VeRobot.ve / Part.ghep)
+     cauHinhCua(c) → { than, tay, camBien: [{ ma, o }] }   (đưa thẳng cho VeRobot.ve / VeVector.kiemGhep)
      kiemGhep(c) → { ok, lyDo, ma: 'ghep-sai' | 'khe-la', xung: [khe…] }   ghép có hợp lệ không (KHÔNG xét ngân sách, không xét danh sách màn cho phép)
      kiemCachLap(man, c) → { ok, gia, lyDo, ma, thieu, khe }    ma: 'khong-cho' | 'thieu-khe' | 'ghep-sai' | 'vuot-ngan-sach' | null; thieu = số xu còn thiếu khi vượt ngân sách; khe = khe liên quan (khong-cho, thieu-khe)
                                   (có thêm bí danh không đếm được `giá` = gia)
@@ -39,7 +40,7 @@
      kiemCanMan(man) → kiemDuLieu + mọi cách mẫu thắng + cachLap[0] đạt 3 sao + không cách nào hơn hẳn cách khác (mảng lỗi; rỗng = ổn)
      khoMau(man) → kho tham chiếu lúc tới màn (mọi hàm của em các màn thường trước đó tạo / sửa); màn khai lapRap.dungKho: true thì thongKeMau / kiemCanMan chạy lời giải mẫu trên kho này (lời giải được dùng pick(), forward(n)…)
      thongKeMau(man, kho?) → chạy lời giải từng cách mẫu qua máy chấm: [{ cach, ten, gia, thang, nhip, o, sao, loi }] (bảng "Cách lắp khác")
-     part() → bộ Part đã nạp (Node: tự nạp game/part)
+     veVector() → bộ vẽ vector đã nạp (Node: tự nạp game/ve-vector.js + ve-vector-than-* / tay-* / cam.js); null nếu không có (khi đó bỏ bước nhờ kiemGhep xét lại)
      honHan(a, b) · cachBiHonHan(thongKe) → các cặp { hon, kem }: cách hơn hẳn cách khác ở cả giá, nhịp, ô (luật cân màn: phải rỗng)
      lenhKhongCon(man, dong) → chỉ số các dòng gọi lệnh gốc của part mà robot hiện tại không có (khi "Lắp lại" đổi part mà chương trình còn lệnh cũ)
    ========================================================================== */
@@ -52,7 +53,7 @@
 
   /* ------------------------------------------------------------------ danh mục */
   // loai: loaiRobot của thân trong lõi SanHoc ('banh' cho hai bánh). gia: xu (khởi điểm, chỉnh khi cân màn).
-  // ham: các lệnh gốc part mở ra (đúng Part.hamGoc của part; kiem-lap-rap.mjs so từng mục) — để apDung / macDinh chạy được cả lúc nạp màn, khi bộ Part chưa nạp.
+  // ham: các lệnh gốc part mở ra (đúng hamGoc của bộ phận vector; kiem-lap-rap.mjs so từng mục) — để apDung / macDinh chạy được cả lúc nạp màn, khi bộ vẽ chưa nạp.
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back'], BAY = ['go_up', 'go_down', 'go_left', 'go_right'], KHOANG_CACH = ['front_clear', 'left_clear', 'right_clear'];
   var THAN = [
     { ma: 'hai-banh', part: 'hai-banh', loai: 'banh', ten: 'Hai bánh', gia: 2, icon: 'denBanh', vuot: 'Đi, rẽ trên sàn phẳng', ham: BANH.concat(['wait']) },
@@ -68,7 +69,7 @@
     { ma: 'nem', part: 'nem', ten: 'Máy ném', gia: 3, icon: 'denNem', vuot: 'Ném vật qua rào, xa 1 đến 3 ô', ham: ['aim', 'throw', 'load'] },
     { ma: 'hoi', part: 'hoi', ten: 'Súng hơi', gia: 3, icon: 'denSung', vuot: 'Bắn hơi đẩy thùng nặng', ham: ['shoot', 'shoot_back'] }
   ];
-  // o: ổ gắn trên thân (Part.ghep). Cảm biến từ ('tu') = part khoang-cach + hai hàm front_metal / front_pole.
+  // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu') = part khoang-cach + hai hàm front_metal / front_pole.
   var CAM_BIEN = [
     { ma: 'khoang-cach', part: 'khoang-cach', o: 'hong', ten: 'Khoảng cách', gia: 1, icon: 'denCam', vuot: 'Thấy tường, vật ở trước, trái, phải', ham: KHOANG_CACH },
     { ma: 'mau', part: 'mau', o: 'hong', ten: 'Màu bụng', gia: 2, icon: 'denCam', vuot: 'Đọc màu ô dưới bụng xe', ham: ['color'] },
@@ -86,19 +87,19 @@
   function tenCua(khe, ma) { var d = tim(khe, ma); return d ? d.ten : String(ma); }
   function giaMot(khe, ma) { var d = ma ? tim(khe, ma) : null; return d ? d.gia : 0; }
 
-  /* --------------------------------------------------------------------- Part */
-  var partNode = null;
-  /** Bộ Part: trình duyệt dùng window.Part (nạp trước khi gọi), Node tự nạp game/part. null nếu không có (khi đó bỏ bước nhờ Part.ghep xét lại). */
-  function P() {
-    var p = (typeof window !== 'undefined' && window.Part) || (typeof globalThis !== 'undefined' && globalThis.Part) || null;
-    if (p && p.lay('than', 'hai-banh')) return p;
-    if (!laNode) return p;
-    if (!partNode) {
-      var fs = require('fs'), path = require('path'), dir = path.join(__dirname, 'game', 'part');
-      partNode = require(path.join(dir, 'part.js'));
-      fs.readdirSync(dir).filter(function (n) { return /^part-.+\.js$/.test(n); }).sort().forEach(function (n) { require(path.join(dir, n)); });
+  /* ----------------------------------------------------------- bộ vẽ vector (V7c1: luật ghép + dữ liệu bộ phận nằm ở VeVector, không còn ở game/part pixel) */
+  var vvNode = null;
+  /** Bộ vẽ vector: trình duyệt dùng window.VeVector (nạp trước khi gọi), Node tự nạp game/ve-vector.js + mọi ve-vector-than-* / tay-* / cam.js. null nếu không có (khi đó bỏ bước nhờ kiemGhep xét lại). */
+  function VV() {
+    var v = (typeof window !== 'undefined' && window.VeVector) || (typeof globalThis !== 'undefined' && globalThis.VeVector) || null;
+    if (v && v.lay('than', 'hai-banh')) return v;
+    if (!laNode) return v;
+    if (!vvNode) {
+      var fs = require('fs'), path = require('path'), dir = path.join(__dirname, 'game');
+      vvNode = require(path.join(dir, 've-vector.js'));
+      fs.readdirSync(dir).filter(function (n) { return /^ve-vector-(than|tay)-[\w-]+\.js$|^ve-vector-cam\.js$/.test(n); }).sort().forEach(function (n) { require(path.join(dir, n)); });
     }
-    return partNode;
+    return vvNode;
   }
 
   /* ------------------------------------------------------------- một cách lắp */
@@ -120,10 +121,10 @@
   function tenKhe(c, khe) { return c[khe] ? tenCua(khe, c[khe]) : ''; }
 
   /**
-   * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). Luật = luật của Part.ghep + luật của lõi SanHoc.chay (cấu hình robot):
+   * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). Luật = luật của VeVector.kiemGhep + luật của lõi SanHoc.chay (cấu hình robot):
    *   drone: chỉ treo nam châm dưới bụng, không camera trước / cảm biến khoảng cách / cảm biến từ (không có mặt trước); camera bụng chỉ gắn lên drone;
    *   nhện: chỉ tay kẹp (không tay xoay, nam châm, máy ném, súng hơi), không cảm biến khoảng cách / từ (không có hướng mặt).
-   * Cuối cùng nhờ Part.ghep xét lại (bắt luật ghép mới thêm vào Part).
+   * Cuối cùng nhờ VeVector.kiemGhep xét lại (bắt luật ghép mới thêm vào bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
    */
   function kiemGhep(c) {
     c = chuanCach(c);
@@ -143,9 +144,9 @@
       }
     }
     if (sai) return { ok: false, ma: 'ghep-sai', lyDo: sai.lyDo, xung: sai.xung };
-    var part = P();
-    if (part) {
-      try { part.ghep(cauHinhCua(c)); }
+    var vv = VV();
+    if (vv) {
+      try { vv.kiemGhep(cauHinhCua(c)); }
       catch (e) { return { ok: false, ma: 'ghep-sai', lyDo: 'Ghép không được: ' + e.message, xung: ['than'].concat(c.tay ? ['tay'] : [], c.camBien ? ['camBien'] : []) }; }
     }
     return { ok: true, ma: null, lyDo: '', xung: [] };
@@ -404,7 +405,7 @@
     KHE: KHE, TEN_KHE: TEN_KHE, DANH_MUC: DANH_MUC,
     tim: tim, tenCua: tenCua, moTa: moTa, chuanCach: chuanCach, giaCach: giaCach, cauHinhCua: cauHinhCua,
     kiemGhep: kiemGhep, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
-    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, part: P
+    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV
   };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.LapRap = API;

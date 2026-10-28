@@ -6,7 +6,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var RO = 96, RO_NEM = 102.5;                     // tâm gáo: nghỉ / đang ném (tỉ lệ ≈ 27,5 / 23,5 tính từ tâm thân của thân hai bánh)
-  V.dangKy({ loai: 'tay', ma: 'nem', ten: 'Máy ném trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, ro: { y: RO }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'nem', hamGoc: ['aim',  'throw',  'load'], ten: 'Máy ném trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, ro: { y: RO }, ve: function (g, s, M, H) {
     s = s || {};
     var vg = typeof s.vung === 'number' ? Math.max(0, Math.min(1, s.vung)) : s.dangNem ? 1 : 0;      // gói V4: s.vung 0..1 = gáo vung dần (tween)
     var n = Math.max(1, Math.min(3, +s.ngam || 1)), y = RO + (RO_NEM - RO) * vg, r = 8 - 0.5 * vg, i;

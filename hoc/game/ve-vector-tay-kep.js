@@ -16,7 +16,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.beginPath();
     [-1, 1].forEach(function (k) { g.moveTo(50 + k * 12, 84); g.bezierCurveTo(50 + k * d1, 90, 50 + k * d2, 98, 50 + k * t, yDau); });
   }
-  V.dangKy({ loai: 'tay', ma: 'kep', ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: Y_VAT, canh: V.VAT_SAN / V.CO_THAN, ha: HA }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'kep', hamGoc: ['arm_down',  'arm_up',  'grab',  'release'], ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: Y_VAT, canh: V.VAT_SAN / V.CO_THAN, ha: HA }, ve: function (g, s, M, H) {
     s = s || {};
     var mo = s.kep !== 'dong', om = !mo && !!s.cam, ha = s.tuThe === 'duoi', nk = V.nangCua(s.tuThe, s.nangK), yDau = (om ? Y_VAT + 2 : Y_VAT) + HA * (1 - nk);
     var k = typeof s.moK === 'number' && !om ? Math.max(0, Math.min(1, s.moK)) : null;       // gói V4: độ mở 0 (đóng) … 1 (mở) khi đang khép / mở dần

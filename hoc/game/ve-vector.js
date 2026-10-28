@@ -10,6 +10,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    KHO HÌNH: VeVector.dangKy({ loai: 'o' | 'vat' | 'than' | 'tay' | 'cam-bien', ma, ten, ve(g, s, M), ... })
      o / vat    ve(g, s): vẽ một ô / một vật đầy ô 100 × 100 (vật vẽ ở giữa, cỡ do người gọi quyết khi rasterise).
      than       quay mặt XUỐNG trong ô 100 × 100, tâm thân ở TAM_THAN; oGan: { tay: {x, y}, … } điểm gắn (hệ của thân);
+     (V7c1, 28/10) than / tay / cam-bien mang cả DỮ LIỆU LOGIC của bộ phận (trước nằm trong part/*.js pixel): ten (câu báo lỗi ghép), gan / oGan (ổ), hamGoc (lệnh gốc
+                bộ phận mở ra; hamGoc(cfg) = hợp lệnh của cấu hình, lap-rap.js / kiem-lap-rap so). kiemGhep là LUẬT GHÉP duy nhất của game (lap-rap.js gọi lúc chơi).
                 ve(g, s, M) với M = màu đội { chinh, toi } (mauDoi) cho kính + mắt + chấm ăng-ten.
      tay        diemNeo {x, y}: điểm của tay đặt trùng ổ gắn; gan: 'tay'; ve(g, s, M); vatKep: { y, canh } (vật trong kẹp, hệ của tay, tay nâng).
    ROBOT: VeVector.robot(cauHinh, trangThai, huong, canhPx) → canvas canhPx × canhPx (một ô), tâm thân = tâm canvas, cờ .laPart và .laVector.
@@ -265,6 +267,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return { than: than, tay: tay, cams: cams };
   }
+  /** Lệnh gốc mà cấu hình { than, tay, camBien } mở ra: hợp hamGoc của thân, tay rồi từng cảm biến, giữ thứ tự, không trùng (y Part.hamGoc của bộ pixel; V7c1). Thiếu bộ phận: ném "Không có …". */
+  function hamGoc(cfg) {
+    cfg = cfg || {};
+    var a = [], them = function (d) { (d.hamGoc || []).forEach(function (h) { if (a.indexOf(h) < 0) a.push(h); }); };
+    var than = lay('than', cfg.than); if (!than) throw new Error('Không có than "' + cfg.than + '".');
+    them(than);
+    if (cfg.tay) { var tay = lay('tay', cfg.tay); if (!tay) throw new Error('Không có tay "' + cfg.tay + '".'); them(tay); }
+    (cfg.camBien || []).forEach(function (c) { var d = lay('cam-bien', c.ma); if (!d) throw new Error('Không có cam-bien "' + c.ma + '".'); them(d); });
+    return a;
+  }
 
   /* ---------------------------------------------------------------- robot: ghép rồi xoay cả nhóm */
   function gocXoay(huong) { huong = ((huong || 0) % 4 + 4) % 4; return ((huong + 2 + (loiGia.gocXoay ? 1 : 0)) % 4) * Math.PI / 2; }   // thân vẽ quay XUỐNG: lên = 180°, phải = 270°, xuống = 0°, trái = 90°
@@ -399,7 +411,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
     o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, tamVoi: tamVoi, nangCua: nangCua, coVatKep: coVatKep, VAT_SAN: VAT_SAN, VAT_NANG: VAT_NANG, BONG_SAN: BONG_SAN, BONG_NANG: BONG_NANG, gocXoay: gocXoay, gocCua: gocCua,
-    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
+    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, hamGoc: hamGoc, doiCam: doiCam, oTay: oTay,
     xoaDem: xoaDem, _loiGia: loiGia
   };
 });
