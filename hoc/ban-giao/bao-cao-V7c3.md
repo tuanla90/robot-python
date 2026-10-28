@@ -4,6 +4,21 @@ Brief: [brief-V7c3.md](brief-V7c3.md). Ghi dần theo từng commit.
 
 ## 1. KẾT QUẢ
 
+### Commit (8, nhánh claude/css-phong từ db08b60; không push, không merge)
+| SHA | Việc |
+|---|---|
+| 9233a92 | e0: sw.js BAN v1 → v2; nền phanh c830c12 → 8780764; lỗi giả C3-v cắm lại |
+| 6114524 | e1: máy đo kiểu tính tools/do-kieu-tinh.mjs + nền tools/nen-kieu-tinh.json |
+| 85cb56b | e2: choi.css bỏ 114 khai báo + 8 luật pixel; choi-vector.css −1 luật; san-ve.js −2 dòng imageRendering |
+| 6e04104 | e3: font.css 12 → 6 @font-face, xoá 6 woff2; dong-goi-artifact.py; --px / --mono; san-ve.js đo chữ bằng phông vector, bỏ fillStyle thừa (13a-v đỏ đúng dự kiến) |
+| a6fcfb9 | e3b: nền phanh 8780764 → 6e04104 (commit riêng) |
+| 80beb46 | e4: bang-mau.js xoá 500 vai (giữ 19 vai dùng động + 5 gốc) |
+| ba5a7ee | e5: dọn chú thích / chữ cũ, phanh 15c + sửa lỗi giả 14c / giao-dien-b mục c |
+| (commit cuối) | báo cáo này + phần soát trình duyệt cuối |
+
+### Số dòng / byte theo tệp (git diff --numstat db08b60 → cuối; thêm / xoá)
+bang-mau.js +4 / −504 (1377 → 877 dòng, 160 402 → 88 971 byte, 500 vai) · choi.css +90 / −103 (1187 → 1174 dòng; 114 khai báo + 8 luật) · font/font.css +3 / −51 (12 → 6 @font-face) · 6 woff2 xoá (60 588 byte) · san-ve.js +4 / −6 · choi-vector.css +3 / −4 · dong-goi-artifact.py +2 / −4 · thanh-phan / thanh-cuon / the-part / mo-dau / man-lap / man-choi / chu / choi.html / sw.js / ve-vector-hieu-ung / README: 1–3 dòng mỗi tệp · máy kiểm: kiem-ve-vector +44 / −9, kiem-bang-mau +14 / −57, kiem-nut-mo-dau +4 / −4, kiem-giao-dien-vector-b +3 / −2, kiem-huy-hieu-phim-vector +2 / −2, kiem-dong-goi-artifact +1 / −1 · mới: tools/do-kieu-tinh.mjs 182 dòng, tools/nen-kieu-tinh.json 11 044 dòng (1,85 MB).
+
 ### e0 (9233a92) sw.js + nền phanh
 - sw.js:11 BAN 'duong-hoc-v1' → 'duong-hoc-v2'. activate ĐÃ xoá mọi bộ đệm khác tên (`ks.filter(k !== BAN).map(caches.delete)`), không cần thêm.
 - NEN_VEC c830c12 → 8780764 ở kiem-ve-vector (13a-v), kiem-huy-hieu-phim-vector (A3-v / B5-v), kiem-nut-mo-dau-phim-vector (C3-v); chữ trong chú thích / tên kiểm sửa theo.
@@ -57,3 +72,52 @@ Brief: [brief-V7c3.md](brief-V7c3.md). Ghi dần theo từng commit.
 - **(15c) mới**: choi.css / choi-vector.css (bỏ chú thích) không `pixelated` / `steps(` / `--wood --chalk --stud` / Handjet VT323; font.css đúng 6 @font-face, không Handjet / VT323; thư mục font không còn handjet-* / vt323-*; 54 tệp JS game không còn CHUỖI có VT323 / Handjet (cả chuỗi đo chữ); sw.js BAN ≠ 'duong-hoc-v1'. Lỗi giả: cả 10 điều kiện cùng đỏ (choi.css 4 mẫu, font.css 7 @font-face + còn Handjet, font/ còn handjet-latin.woff2, san-ve.js chuỗi VT323, sw.js BAN v1; chu.js đỏ thật trước khi sửa câu Thông tin).
 - kiem-giao-dien-vector-b: mục c (luật phủ cho vân gỗ / bảng phấn / steps / bóng chữ của choi.css) thôi đỏ khi cắm lỗi giả từ e2 (choi.css hết bảng phấn ở .d-san) → lỗi giả cắm lại `.d-san{background-image:var(--chalk)}` vào choi.css trong bộ nhớ: --loi-gia lại HỎNG 9 / 16 như V7c2.
 - Kiểm (trạng thái e5): kiem-ve-vector ĐẠT 98 · HỎNG 0 (--loi-gia HỎNG 47 / 98: 13a-v, 14c, 15, 15c …), kiem-huy-hieu-phim-vector ĐẠT 12 (--loi-gia HỎNG 6), kiem-nut-mo-dau-phim-vector ĐẠT 12 (--loi-gia HỎNG 9 / 12), kiem-giao-dien-vector-b ĐẠT 16 (--loi-gia HỎNG 9 / 16), kiem-bang-mau ĐẠT 16 (--loi-gia HỎNG 4 / 16), kiem-dong-goi-artifact ĐẠT 14, kiem-khay ĐẠT 184, kiem-phim-goi ĐẠT 41, kiem-lap-rap ĐẠT 127, kiem-hoc ĐẠT 6715, kiem-sung-hoi ĐẠT 187; máy đo kiểu tính 0 khác (một lần chạy cảnh 360x640:lap-robot hết giờ chờ trang tải → chạy lại riêng cảnh đó: 0 khác).
+
+### Soát trình duyệt cuối (Chrome headless, hồ sơ mới, server tạm 4202 do script bật / tắt; ô trình duyệt của app không dùng)
+- Trước khi vào game, tạo sẵn bộ đệm 'duong-hoc-v1' (trang font.css cùng nguồn, không đăng ký SW) → vào choi.html, SW kích hoạt: `caches.keys()` = ['duong-hoc-v2'] (v1 đã bị xoá), v2 có 144 tệp.
+- Đi qua: màn đầu → chọn gói → lưới màn → màn hai-banh.3 → Cài đặt → Sổ lệnh → Lắp robot → phim mở đầu. Lỗi: 0 exception, 0 console.error / warning; một dòng 404 favicon.ico là của trang font.css mở ở bước tạo bộ đệm (trình duyệt tự xin favicon), không phải game.
+- Yêu cầu woff2: chỉ gsflex-latin / latin-ext / viet, gscode-latin / viet; 0 yêu cầu handjet-* / vt323-*. `document.fonts`: chỉ Google Sans Code, Google Sans Flex (không Handjet / VT323).
+- Cài đặt → Thông tin: "Chữ: Google Sans Flex, Google Sans Code (giấy phép SIL Open Font License)."
+- Máy đo kiểu tính ở cả hai khổ: 0 khác (xem e5).
+
+### Việc dở
+không có (e0–e5 đã làm). Ngoài phạm vi, để lại: các câu chú thích "rơi về pixel" trong bộ vẽ vector (mục 3).
+
+## 2. CÂU HỎI CẦN LÀM RÕ
+Câu còn mở:
+1. **chu.js `caiDat.thongTinChu`** (chữ hiện cho người chơi, Cài đặt → Thông tin): brief cấm sửa nội dung chữ, nhưng câu "Chữ: Handjet, VT323 (giấy phép SIL Open Font License)." sai sự thật sau khi xoá hai phông (và phanh 15c brief đòi bắt đúng nó). Tự quyết: đổi thành "Chữ: Google Sans Flex, Google Sans Code (giấy phép SIL Open Font License)." (giấy phép theo chú thích font.css của gói V5a: Google Fonts, SIL OFL). Đảo lại được: một dòng. Người giao xác nhận câu chữ / giấy phép.
+2. **Nền máy đo kiểu tính 1,85 MB** trong tools/: chấp nhận cỡ này trong repo không, hay chuyển ra ngoài (gzip / chỉ giữ máy, ghi nền khi cần)?
+
+Câu đã tự quyết:
+3. Máy đo: Chrome headless + DevTools Protocol (WebSocket có sẵn Node 24), không dùng ô trình duyệt (lý do: chạy lại một lệnh, khổ chính xác, không phụ thuộc ô bị ẩn). Phần tử JS đặt transform nội tuyến ghi "js" (robot màn đầu đi lại theo thời gian), cỡ / vị trí / lặp ảnh nền ghi '·' khi không có ảnh nền (không hiện gì). Đảo lại được.
+4. e2: cũng bỏ `background-size` đi kèm vân gỗ / bảng phấn (brief chỉ nêu --wood / --chalk) và `--stud` của khối; máy đo chứng minh không đổi.
+5. e3: choi.css :root đặt luôn `--kp:1; --km:1; --wm:500` (giá trị body.ve-vector đã dùng) cùng lúc đổi --px / --mono: hệ số 1,4 / 1,5 / 400 chỉ có nghĩa với phông pixel. GIỮ khai báo trùng ở choi-vector.css (giữ tệp riêng như người giao quyết).
+6. e3b: đổi nền cả A3-v / B5-v / C3-v sang 6e04104 (không bắt buộc, chúng xanh với cả hai nền) để ba phanh chung một nền.
+7. e4: GIỮ 19 vai dùng động + 5 gốc (xem e4); kiem-bang-mau đếm thêm hai kiểu chỗ dùng đó. GIỮ NEN = '13b8a97' (mục 4 còn so 3 tệp). Đảo lại được.
+8. e5: không sửa chú thích trong bộ vẽ vector (brief cấm), trả lại sửa ở den-bo-phan.js (giữ phép so từng byte của mục 4).
+
+Chỗ brief sai / thiếu:
+9. **Brief e4 "xoá các vai trong VAI_CHO_V7C3"**: 19 vai trong đó còn dùng động (luatSon* / luatVat* / sonDoToi / sonTimToi), xoá là sơn của tay sơn, đai màu vật, cực nam châm, màu đối thủ thành undefined (kiem-ve-vector:250 đọc BM.sonDoToi cũng gãy). Brief có cảnh báo chung "tên vai ghép chuỗi": đúng là chỗ này. Thêm: 5 gốc G không xoá được vì là gốc của biến thể còn dùng.
+10. **Lỗi giả có sẵn đã mục** (phanh không đỏ khi cắm lỗi giả): C3-v (chuỗi `var v = PV() && PhimVector.o(…)` hết từ V7c2; báo cáo V7c2 ghi "HỎNG 8 / 12" mà C3-v xanh), 14c và giao-dien-vector-b mục c (từ e2: choi.css hết steps / bảng phấn nên "bỏ luật phủ" không còn gây đỏ). Đã sửa cả ba.
+11. Brief e2 "V7c1 đếm 91 khai báo": đếm thật ra 114 khai báo (53 steps(), 25 image-rendering, 14 --stud, 11 + 11 vân gỗ / bảng phấn + cỡ, 1 clip-path) + 8 luật; khác do cách đếm (steps() tính từng chỗ).
+12. Brief e3 "phanh 13a-v đỏ ĐÚNG ở các lệnh đó": đỏ thêm ở các lệnh hình học (moveTo / lineTo / arcTo / fillText) của viên pin / bong chữ dời theo bề ngang mới, và vị trí bong chữ (viTriBong chọn chỗ khác theo bề ngang). Đã chứng minh bằng phép trả tạm phông đo (mục e3).
+
+## 3. ĐỀ XUẤT
+- **Chặng gỡ pixel coi như xong** ở CSS / phông / bảng màu / bộ đệm. Còn lại (nhỏ, không cần user quyết):
+  - Chú thích "rơi về pixel" / "pixel: …" đã sai trong bộ vẽ vector và phim: ve-vector.js:4 / :18 / :46 / :178, ve-vector-icon.js:7, huy-hieu-vector.js:3 / :9, phim-vector.js:5 / :99, phim-goi.js:75, phim-mua-1.js:470, phim-mua-2.js:42; den-bo-phan.js:4 ("biểu tượng pixel nhỏ") nếu chấp nhận bỏ nó khỏi mục 4 kiem-bang-mau (hoặc đặt NEN = null luôn).
+  - @keyframes pixel trong choi.css (rung, redfl, selb, blink, shake, pop…) vẫn được choi.css gọi theo tên nhưng ở vector bị luật body.ve-vector thay tên khác: có thể xoá cùng các luật `animation:` của choi.css đã bị phủ hết. Cẩn thận: .md-* / .pg-* của phim chỉ bị phủ `animation-timing-function`, KHÔNG đổi tên → keyframes md-* / pg-* còn hiệu lực, không được xoá. Cần máy đo + so hoạt cảnh.
+  - Lớp `.tex` / `.pxi` còn gắn vào canvas / svg (tên cũ, không còn luật pixel); `--kp` / `--km` / `--wm` có thể bỏ hẳn (mọi calc(…*var(--kp)) thành cỡ thẳng): nhiều dòng, lợi ít.
+  - kiem-bang-mau NEN: mục 4 chỉ còn 3 tệp / 30 token; khi sửa tệp nào trong ba tệp đó thì đặt NEN = null.
+- **Cần user quyết**: (a) câu Thông tin phông (câu hỏi 1); (b) gộp choi.css + choi-vector.css / bỏ tiền tố body.ve-vector (người giao đã giữ; máy đo kiểu tính nay đủ để làm an toàn nếu muốn: so 10 658 phần tử ở hai khổ). Tôi nghiêng: (a) giữ câu mới; (b) chưa làm, lợi ít.
+
+## 4. PHẦN CHO NGƯỜI KHÔNG ĐỌC CODE
+Gói này dọn nốt phần "trang trí kiểu điểm ảnh" còn sót sau khi game đã chuyển hẳn sang hình nét mới: các dòng tô vân gỗ, bảng phấn, núm khối, chuyển động giật từng nấc trong tệp kiểu trang; hai phông chữ điểm ảnh cũ (6 tệp, khoảng 60 KB); 500 màu không còn ai dùng trong bảng màu. Để chắc giao diện không đổi, tôi làm một "máy đo" mở game thật trong trình duyệt ẩn, đi qua 14 màn hình ở hai cỡ màn (máy tính và điện thoại) và ghi kiểu dáng của hơn 10 000 phần tử; sau mỗi bước dọn, máy đo báo 0 chỗ khác. Thay đổi nhìn thấy duy nhất là cố ý và rất nhỏ: nhãn màu và thanh pin trên sân giờ đo chữ đúng bằng phông đang vẽ, nên nhãn có thể nằm sang bên kia ô một chút. Người chơi cũ sẽ tự bỏ bộ nhớ đệm cũ ở lần mở sau. Có thêm "phanh": nếu ai đưa phông hay kiểu điểm ảnh quay lại, máy kiểm sẽ báo đỏ.
+
+## 5. RỦI RO CÒN LẠI
+- **Chưa chạy npm test cả bộ** (luật): đã chạy 15 máy kiểm liên quan (mục 1). Máy khác có thể đọc vai màu đã xoá theo tên chuỗi (đã quét: chỉ 19 vai dùng động trong game, đã giữ; trong máy kiểm chỉ kiem-ve-vector đọc BM.sonDoToi, đã giữ). Cách kiểm: người giao chạy npm test một lần sau gộp.
+- **Máy đo kiểu tính chỉ thấy 14 cảnh**: trạng thái không có trong cảnh (dòng code đang chọn, khối đang kéo, bảng mở gói, hộp mua mùa, Xưởng hàm…) không được đo. Với steps() đã soát tĩnh: MỌI bộ chọn có steps() trong choi.css đều có luật body.ve-vector cùng bộ chọn đặt lại animation / animation-timing-function / transition-timing-function (script soát ở e2, 51 bộ chọn + .ws-ov). Vân gỗ / bảng phấn / núm: biến CSS không ai đặt nên vốn rỗng. Cách kiểm thêm: thêm cảnh vào CANH của tools/do-kieu-tinh.mjs, ghi nền ở commit trước gói (trả tệp tạm) rồi so.
+- **Máy đo có lúc hết giờ chờ trang** (một lần ở cảnh 360x640:lap-robot khi máy bận): báo "lỗi dựng cảnh", chạy lại cảnh đó bằng `--canh` thì 0 khác. Không phải khác giao diện.
+- **Hoạt cảnh dừng ở 400 ms**: khác biệt chỉ lộ ở thời điểm khác của hoạt cảnh thì máy không bắt (đã soát tĩnh như trên).
+- **Đo chữ trên sân** dùng Google Sans: lần vẽ đầu tiên trước khi phông tải xong, measureText dùng phông dự phòng → bong chữ / viên pin có thể rộng hơn một nhịp (trước đây VT323 cũng vậy). Rủi ro thấp.
+- **Phanh 13a-v / A3-v / B5-v / C3-v so nền 6e04104** (commit của gói này): nếu gói bị rebase khác SHA thì phải đổi NEN_VEC theo.
+- Trình duyệt soát bằng Chrome headless + script (không nhìn từng màn bằng mắt, trừ hai khung pin / bong chữ). Cách kiểm: mở game, vào mau.8 / drone.3 xem nhãn màu và viên pin; mở Cài đặt → Thông tin.
