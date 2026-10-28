@@ -6,7 +6,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    của Ve.mk), cùng lớp (giữ .pxi và lớp người gọi thêm), thêm lớp `vi vi-<tên>` (+ `tat` cho sao / xu tắt). Màu: fill / stroke = currentColor, nên MÀU THEO VAI
    đặt bằng CSS (giao-dien-vector-b.css mục 8: color: var(--g-vec…)); chi tiết phụ (lỗ khoá, vành xu…) mang lớp `vi2`.
    Thay bằng MutationObserver trên #stage: dựng màn / hộp xong là đổi ngay trong cùng vi tác vụ, trước khi trình duyệt vẽ (không chớp hình pixel).
-   Màn chơi (#sc-choi) GIỮ icon điểm ảnh phóng sẵn của V5a (không đổi màn chơi trong gói này); icon chưa có bản vector (icon bộ phận den*, trùm…) giữ điểm ảnh.
+   Gói V6c (28/10): màn chơi #sc-choi (PHAM_VI_CHOI, cả Xưởng hàm) cũng thay; thêm mui (mũi tên bong bóng), trum, icon vật Xưởng hàm; hình bộ phận thật ở tiêu đề
+   thẻ khay vẽ bằng VeVector (thayPart); canvas đã thay chuyển style / lớp sang hình mới (noiVe) vì người gọi có thể còn giữ nó. Phim vẽ cùng bộ hình lên canvas (veCanvas).
    Pixel (không body.ve-vector): không làm gì.
    Cùng lúc: nút chỉ có icon trong PHAM_VI có aria-label mà thiếu title thì được thêm title cùng chữ (luật UI), chỉ ở vector.
    ========================================================================== */
@@ -14,6 +15,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   'use strict';
 
   var PHAM_VI = '#sc-dau,#sc-goi,#sc-chon,#sc-lap,#lop-hop,.md';
+  var PHAM_VI_CHOI = '#sc-choi';                         // gói V6c: màn chơi cũng thay (nút Chạy / Nhịp / Lại / Gợi ý, thẻ khay, đèn nhịp, menu, xoá, thụt lề, bong bóng, Xưởng hàm)
   var NS = 'http://www.w3.org/2000/svg';
 
   /* ---------------------------------------------------------------- dựng hình (khung 24 × 24) */
@@ -89,7 +91,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     denCam: [['s', 'M2.8 12c2.4-4.2 5.6-6.4 9.2-6.4s6.8 2.2 9.2 6.4c-2.4 4.2-5.6 6.4-9.2 6.4S5.2 16.2 2.8 12z', 2.4], ['c', 12, 12, 3.2]],
     denChan: [['c', 12, 12, 4], ['s', 'M8.8 9.4L4.4 5.4L3 7.6M15.2 9.4l4.4-4L21 7.6M8.8 14.6l-4.4 4L3 16.4M15.2 14.6l4.4 4 1.4-2.2', 2.2]],
     denCanh: [['s', 'M6.2 6.2l11.6 11.6M17.8 6.2L6.2 17.8', 2.4], ['s', 'M6 2.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4zM18 2.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4zM6 14.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4zM18 14.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4z', 1.8], ['r', 9.4, 9.4, 5.2, 5.2, 1.4]],
-    denLogic: [['r', 6, 6, 12, 12, 2.6], ['s', 'M9 2.6v2.4M12 2.6v2.4M15 2.6v2.4M9 19v2.4M12 19v2.4M15 19v2.4M2.6 9h2.4M2.6 12h2.4M2.6 15h2.4M19 9h2.4M19 12h2.4M19 15h2.4', 1.8], ['r', 9.4, 9.4, 5.2, 5.2, 1.2, 'vi2']]
+    denLogic: [['r', 6, 6, 12, 12, 2.6], ['s', 'M9 2.6v2.4M12 2.6v2.4M15 2.6v2.4M9 19v2.4M12 19v2.4M15 19v2.4M2.6 9h2.4M2.6 12h2.4M2.6 15h2.4M19 9h2.4M19 12h2.4M19 15h2.4', 1.8], ['r', 9.4, 9.4, 5.2, 5.2, 1.2, 'vi2']],
+    // gói V6c: icon còn thiếu của màn chơi / Xưởng hàm (bảng vật Xưởng: xuong-ham.js LOAI[].bieu), mũi tên bong bóng, trùm
+    mui: [['p', 'M3.2 12l8.2-7v4.4h9.4v5.2h-9.4V19z', '', '', 1.6]],                                    // mũi tên từ bong bóng chỉ sang ô code (Ve.mui)
+    trum: [['s', 'M12 8.4V4.8', 2.2], ['c', 12, 3.8, 2], ['s', 'M4.4 12.6H2.6V8.8M19.6 12.6h1.8V8.8', 2.2], ['r', 4.4, 8.2, 15.2, 12.6, 3.2],
+      ['r', 6.6, 11, 4.2, 3.4, 1.2, 'vi2'], ['r', 13.2, 11, 4.2, 3.4, 1.2, 'vi2'], ['s', 'M8.6 17.4h6.8', 1.6, 'vi2']],               // robot trùm: ăng-ten, hai càng, kính hai mắt
+    rao: [['s', 'M3 9.2h18M3 15.2h18', 2.4], ['s', 'M6 5.4v14.2M12 5.4v14.2M18 5.4v14.2', 2.8]],                                     // hàng rào thấp
+    ro: [['p', 'M3.2 9.6h17.6l-2 9.4a2 2 0 0 1-2 1.6H7.2a2 2 0 0 1-2-1.6z'], ['s', 'M7.6 9.4l3-5.4M16.4 9.4l-3-5.4', 2.2], ['s', 'M9.4 12.8v4.8M14.6 12.8v4.8', 1.6, 'vi2']],   // rổ
+    nutban: [['s', 'M7 3.8h10A3.2 3.2 0 0 1 20.2 7v10a3.2 3.2 0 0 1-3.2 3.2H7A3.2 3.2 0 0 1 3.8 17V7A3.2 3.2 0 0 1 7 3.8z', 2.2], ['c', 12, 12, 4.8]],   // nút bắn trên sàn
+    thung: [['r', 3.4, 3.4, 17.2, 17.2, 2.6], ['s', 'M7.4 7.4l9.2 9.2M16.6 7.4l-9.2 9.2', 2, 'vi2']],                                 // thùng nặng (đai chữ X)
+    bac: [['p', 'M3 20.6V15h5.4V9.6h5.4V4.2H21v16.4z', '', '', 1.2]],                                                               // bậc thang
+    gam: [['r', 2.6, 3.8, 18.8, 6, 1.8], ['s', 'M5.2 9.8v10.4M18.8 9.8v10.4', 2.6], ['s', 'M7.8 6.8h2.6M13.6 6.8h2.6', 1.6, 'vi2']],   // gầm thấp: mái trên hai cột
+    ho: [['s', 'M2.8 12.4a9.2 6.6 0 1 0 18.4 0a9.2 6.6 0 1 0-18.4 0z', 2.2], ['p', 'M6.4 13a5.6 3.6 0 1 0 11.2 0a5.6 3.6 0 1 0-11.2 0z']],   // hố: miệng elip, đáy tối
+    bang: [['s', 'M6 7.6h12a4.4 4.4 0 0 1 0 8.8H6a4.4 4.4 0 0 1 0-8.8z', 2.2], ['c', 6.2, 12, 1.8], ['c', 17.8, 12, 1.8], ['p', 'M10.2 9.6l3.8 2.4-3.8 2.4z']],   // băng chuyền
+    cua: [['s', 'M5.6 20.8V5a1.6 1.6 0 0 1 1.6-1.6h9.6A1.6 1.6 0 0 1 18.4 5v15.8M3.2 20.8h17.6', 2.2], ['c', 15, 12.8, 1.6], ['s', 'M9 7.6h6', 1.8]]   // cửa
   };
 
   /** <svg> của icon ten, cỡ hiển thị w × h px CSS (null nếu chưa có bản vector). */
@@ -208,6 +223,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   function giaoDienVec() { var d = root.document; return !!(d && d.body && d.body.classList && d.body.classList.contains && d.body.classList.contains('ve-vector')); }   // DOM giả của máy kiểm có thể thiếu classList
+  /** Gói V6c: chỗ cần thay nằm trong các màn ngoài (PHAM_VI) hoặc màn chơi (PHAM_VI_CHOI, kể cả Xưởng hàm và lớp chạy trong #sc-choi). */
+  function trongPhamVi(e) { return !!(e.closest && (e.closest(PHAM_VI) || e.closest(PHAM_VI_CHOI))); }
+  /** Người gọi có thể còn giữ canvas cũ để đổi sau (den-bo-phan.js bật / tắt đèn bằng cv.style.display; thanh-phan.js thêm lớp): canvas đã gỡ
+   *  chuyển style / classList / className sang hình thay nó, nên mọi thay đổi về sau vẫn tới hình đang hiện. */
+  function noiVe(c, moi) {
+    try {
+      Object.defineProperty(c, 'style', { configurable: true, get: function () { return moi.style; } });
+      Object.defineProperty(c, 'classList', { configurable: true, get: function () { return moi.classList; } });
+      Object.defineProperty(c, 'className', { configurable: true, get: function () { return moi.getAttribute('class') || ''; }, set: function (v) { moi.setAttribute('class', v); } });
+    } catch (e) { /* trình duyệt không cho định nghĩa lại: bỏ qua */ }
+    c._thay = moi;
+  }
   /** Thay một canvas icon có nhãn bằng svg (trả svg, hoặc null nếu không thay). */
   function thayMot(c) {
     var v = c._vi; if (!v || !HINH[v.ten] || !c.parentNode) return null;
@@ -218,7 +245,58 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (c.style.cssText) { svg.style.cssText = c.style.cssText; svg.style.width = k + 'px'; svg.style.height = k + 'px'; }
     svg._vi = v;
     c.parentNode.replaceChild(svg, c);
+    noiVe(c, svg);
     return svg;
+  }
+  /* ---- hình BỘ PHẬN THẬT ở tiêu đề thẻ khay (thanh-phan.js hinhPart: Part._veMot → cắt lề → Ve.mk, ảnh điểm ảnh không nhãn).
+     Ở vector: Part._veMot đánh dấu canvas bộ phận (_partVi = { loai, ma }), dấu đi theo drawImage sang canvas chép (cắt lề, Ve.mk); canvas có dấu nằm trong
+     tiêu đề thẻ (.co-part) được thay bằng hình bộ phận vẽ bằng VeVector (thân: VeVector.robot không tay; tay: hình tay đứng một mình), cùng cỡ chỗ đặt. */
+  var DAU_PART = '_partVi';
+  function catLe(cv) {
+    var g = cv.getContext('2d'), w = cv.width, hh = cv.height, d = g.getImageData(0, 0, w, hh).data, x0 = w, y0 = hh, x1 = -1, y1 = -1, x, y;
+    for (y = 0; y < hh; y++) for (x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return cv;
+    var c = root.document.createElement('canvas'); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
+    c.getContext('2d').drawImage(cv, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
+    return c;
+  }
+  /** Canvas vector của bộ phận bp = { loai: 'than' | 'tay', ma } (null nếu VeVector chưa có hình). */
+  function hinhPartVec(bp) {
+    var V = root.VeVector; if (!V || !V.lay || !bp) return null;
+    var d = V.lay(bp.loai, bp.ma); if (!d) return null;
+    var P = Math.round(56 * (root.devicePixelRatio || 1)), cv;
+    try {
+      if (bp.loai === 'than') cv = V.robot({ than: bp.ma, tay: null, camBien: [] }, {}, 0, P);
+      else {
+        var tr = d.tran || 0, W = Math.round(P * (1 + 2 * tr));
+        cv = root.document.createElement('canvas'); cv.width = W; cv.height = P;
+        var g = cv.getContext('2d'); g.save(); g.translate(W / 2, P / 2); g.rotate(Math.PI); g.translate(-W / 2, -P / 2); g.translate(P * tr, 0); g.scale(P / 100, P / 100);   // tay vẽ quay mặt xuống: lật lên như thân
+        d.ve(g, {}, V.mauDoi(), V.H); g.restore();
+      }
+    } catch (e) { return null; }
+    var c = catLe(cv); c.laVector = true; return c;
+  }
+  function thayPart(c) {
+    var moi = hinhPartVec(c[DAU_PART]); if (!moi || !c.parentNode) return null;
+    moi.className = (c.getAttribute('class') || 'pxi') + ' vi-part';
+    c.parentNode.replaceChild(moi, c);
+    noiVe(c, moi);
+    return moi;
+  }
+  var daNoiPart = false;
+  function noiPart() {
+    var P = root.Part, C2 = root.CanvasRenderingContext2D;
+    if (daNoiPart || !P || !P._veMot || !C2 || !C2.prototype.drawImage) return false;
+    daNoiPart = true;
+    var ve0 = P._veMot;
+    P._veMot = function (d) {
+      var p = ve0.apply(this, arguments);
+      if (p && p.canvas && d && d.ma) { var c0 = p.canvas; p.canvas = function () { var cv = c0.apply(p, arguments); if (cv) cv[DAU_PART] = { loai: d.loai, ma: d.ma }; return cv; }; }
+      return p;
+    };
+    var di0 = C2.prototype.drawImage;
+    C2.prototype.drawImage = function (nguon) { if (nguon && nguon[DAU_PART] && this.canvas && !this.canvas[DAU_PART]) this.canvas[DAU_PART] = nguon[DAU_PART]; return di0.apply(this, arguments); };
+    return true;
   }
   /** Nút chỉ có icon (không chữ) mang aria-label mà thiếu title: thêm title cùng chữ (luật UI: title + aria-label). */
   function datTitle(b) {
@@ -226,21 +304,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if ((b.textContent || '').trim()) return;
     b.setAttribute('title', b.getAttribute('aria-label'));
   }
-  /** Thay mọi icon có nhãn trong goc (chỉ phần nằm trong PHAM_VI). Trả số icon đã thay. */
+  /** Thay mọi icon có nhãn trong goc (chỉ phần nằm trong PHAM_VI / PHAM_VI_CHOI). Trả số icon đã thay. */
   function thay(goc) {
     if (!giaoDienVec() || !goc || !goc.querySelectorAll) return 0;
     var n = 0, i, ds = [];
     if (goc.tagName === 'CANVAS') ds.push(goc);
     var cs = goc.querySelectorAll('canvas.pxi'); for (i = 0; i < cs.length; i++) ds.push(cs[i]);
-    for (i = 0; i < ds.length; i++) if (ds[i]._vi && ds[i].closest && ds[i].closest(PHAM_VI) && thayMot(ds[i])) n++;
+    for (i = 0; i < ds.length; i++) {
+      var c = ds[i];
+      if (c._vi) { if (trongPhamVi(c) && thayMot(c)) n++; }
+      else if (c[DAU_PART] && !c.laVector && c.closest && c.closest('.co-part') && thayPart(c)) n++;
+    }
     var bs = goc.tagName === 'BUTTON' ? [goc] : goc.querySelectorAll('button[aria-label]:not([title])');
-    for (i = 0; i < bs.length; i++) if (bs[i].closest && bs[i].closest(PHAM_VI)) datTitle(bs[i]);
+    for (i = 0; i < bs.length; i++) if (trongPhamVi(bs[i])) datTitle(bs[i]);
     return n;
   }
   var quanSat = null;
   /** Bắt đầu theo dõi #stage (gọi một lần khi nạp, sau VeVector.apGiaoDien). */
   function batDau() {
     var d = root.document; if (!giaoDienVec() || quanSat || !root.MutationObserver) return false;
+    noiPart();
     var st = (d.getElementById && d.getElementById('stage')) || d.body;
     quanSat = new root.MutationObserver(function (ds) {
       for (var i = 0; i < ds.length; i++) for (var j = 0; j < ds[i].addedNodes.length; j++) { var nd = ds[i].addedNodes[j]; if (nd.nodeType === 1) thay(nd); }
@@ -250,7 +333,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return true;
   }
 
-  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, thayMot: thayMot, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
+  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, PHAM_VI_CHOI: PHAM_VI_CHOI, hinhPartVec: hinhPartVec, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, thayMot: thayMot, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
   root.VeIcon = VeIcon;
   if (typeof module === 'object' && module.exports) module.exports = VeIcon;
   if (root.document && root.document.body) batDau();

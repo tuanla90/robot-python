@@ -824,11 +824,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (!giaoDienVec() || cv.laVector || !(s > 0)) return 1;
     return Math.max(1, Math.min(8, Math.ceil(s * (window.devicePixelRatio || 1) * 2)));
   }
-  /** Gói V5b: ghi TÊN icon lên canvas (c._vi) để ve-vector-icon.js thay bằng hình vector ở các màn ngoài màn chơi (chỉ khi body.ve-vector). Hình pixel không đổi. */
+  /** Gói V5b: ghi TÊN icon lên canvas (c._vi) để ve-vector-icon.js thay bằng hình vector (V5b: các màn ngoài màn chơi; V6c: cả màn chơi, mũi tên bong bóng, trùm),
+   *  chỉ khi body.ve-vector. Hình pixel không đổi. */
   function nhan(c, ten, tuyChon, phu) { c._vi = { ten: ten, tuyChon: tuyChon || {}, phu: phu || '' }; return c; }
   function ico(ten, s, tuyChon) { return nhan(mk(ten === 'edit' ? spriteBut() : icon(ten, tuyChon), s || 2), ten, tuyChon); }
   function sao(bat, s) { return nhan(mk(spriteStar(bat), s || 2), 'star', null, bat ? '' : 'tat'); }
-  function mui(mau, s) { return mk(spriteMui(mau), s || 2); }
+  function mui(mau, s) { return nhan(mk(spriteMui(mau), s || 2), 'mui', { fill: mau }); }        // gói V6c: nhãn để màn chơi vector thay bằng mũi tên vector
   function khoa(s, tran) { return nhan(mk(spriteLock(tran, tran), s || 2), 'lock'); }
 
   /** Điền icon vào mọi [data-i] chưa có nội dung. data-s tỉ lệ, data-l màu viền, data-f màu tô. */
@@ -841,7 +842,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var node;
       if (ten === 'star') node = sao(el.getAttribute('data-on') !== '0', s);
       else if (ten === 'lock') node = khoa(s);
-      else if (ten === 'trum') node = mk(spriteTrum(el.getAttribute('data-on') !== '0'), s);
+      else if (ten === 'trum') node = nhan(mk(spriteTrum(el.getAttribute('data-on') !== '0'), s), 'trum', null, el.getAttribute('data-on') !== '0' ? '' : 'tat');
       else if (ten === 'huyhieu') node = mk(window.HuyHieu && el.getAttribute('data-ma') ? HuyHieu.ve(el.getAttribute('data-ma'), el.getAttribute('data-tt') || 'xong') : spriteHuyHieu(), s);
       else node = ico(ten, s, opt);
       el.appendChild(node); el.style.display = 'flex';

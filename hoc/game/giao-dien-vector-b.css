@@ -240,3 +240,19 @@ body.ve-vector .lr-the[data-khe="than"] .lr-the-ic{color:var(--g-vecCyanDam)}
 body.ve-vector .lr-the[data-khe="tay"] .lr-the-ic{color:var(--g-vecCamDam)}
 body.ve-vector .lr-the[data-khe="camBien"] .lr-the-ic{color:var(--g-vecNgocDam)}
 body.ve-vector .lr-the-ic .vi2{color:var(--g-vecThe);opacity:1}
+
+/* ============================================================ 9. ICON VECTOR CỦA MÀN CHƠI (gói V6c: ve-vector-icon.js PHAM_VI_CHOI = #sc-choi, cả Xưởng hàm)
+   Mặc định icon theo màu chữ của nút (currentColor); dưới đây là chỗ icon nằm trên ô màu, đèn nhịp, mũi tên bong bóng, dấu đạt / chưa đạt, biển cảnh báo sân. */
+body.ve-vector .side .cbtn>span[data-i] .vi,body.ve-vector .side .cbtn>.oi .vi{color:var(--g-vecThe);transform:scale(.8)}   /* ô icon màu (--vc) của nút Nhịp / Lại / Gợi ý, vật Xưởng */
+body.ve-vector .den .vi{color:var(--g-vecChuMo)}                                             /* đèn bộ phận tắt: chữ mờ */
+body.ve-vector .den.sang .vi{color:var(--g-vecCyanDam)}                                      /* đèn bộ phận đang chạy: cyan đậm trên nền cyan nhạt */
+body.ve-vector .den .vi .vi2{color:var(--g-vecThe);opacity:1}
+body.ve-vector .bong .vi-mui{color:var(--g-vecLoi)}                                          /* mũi tên bong bóng lỗi chỉ sang dòng code */
+body.ve-vector .bong.tin .vi-mui{color:var(--g-vecLam)}                                      /* bong bóng tin (không phải lỗi) */
+body.ve-vector #sc-choi .vi-check{color:var(--g-vecLa)}
+body.ve-vector #sc-choi .vi-cross,body.ve-vector .tab .vi-x5,body.ve-vector .thung-ic .vi-trash{color:var(--g-vecLoi)}
+body.ve-vector .cb-ic .vi-canhbao{color:var(--g-vecHoPhach)}
+body.ve-vector .cb-ic .vi-canhbao .vi2{color:var(--g-vecChu);opacity:1}                     /* dấu ! chàm đậm trên tam giác hổ phách */
+body.ve-vector .vi-trum{color:var(--g-vecChuPhu)}
+body.ve-vector .vi-trum.tat{color:var(--g-vecKeDam)}
+body.ve-vector .pal-the .the-chu.co-part canvas.vi-part{max-height:24px}                    /* hình bộ phận thật (VeVector) ở tiêu đề thẻ khay */
