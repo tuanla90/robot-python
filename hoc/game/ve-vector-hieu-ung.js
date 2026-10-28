@@ -22,6 +22,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (_giam === null) { try { _giam = !!(root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { _giam = false; } }
     return _giam;
   }
+  /** Chữ trên canvas ở vector (gói V5a): phông giao diện mới thay VT323. Cỡ chọn để bề ngang chữ ≤ bản VT323 8px (san-ve.js đo hộp bằng VT323):
+   *  nhãn màu (bong chữ) Google Sans Flex 6,5px, số (pin, đạn, lượt sạc) Google Sans Code 6px. */
+  var PHONG_CHU = '600 6.5px "Google Sans Flex", system-ui, sans-serif', PHONG_SO = '600 6px "Google Sans Code", ui-monospace, monospace';
   function rgba(rgb, a) { return 'rgba(' + rgb + ',' + Math.max(0, Math.min(1, a)).toFixed(3) + ')'; }
   function tron(g, x, y, r) { g.beginPath(); g.arc(x, y, Math.max(0.05, r), 0, PI2); }
   function boO(g, x, y, m, r) { H.bo(g, x * T + m, y * T + m, T - 2 * m, T - 2 * m, r); }
@@ -103,7 +106,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, x - 0.5, y - 0.5, w + 1, hh + 1, (hh + 1) / 2); g.fillStyle = BM.vecVo; g.fill(); g.lineWidth = 0.8; g.strokeStyle = col; g.stroke();
     H.bo(g, x - 0.5, y - 0.5, w + 1, hh + 1, (hh + 1) / 2); g.lineWidth = 0.35; g.strokeStyle = BM.vecVien; g.stroke();
     tron(g, x + 2.6, y + hh / 2, 1.3); g.fillStyle = col; g.fill(); g.lineWidth = 0.3; g.strokeStyle = BM.vecVien; g.stroke();
-    g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'center'; g.fillStyle = BM.vecVien;
+    g.font = PHONG_CHU; g.textBaseline = 'middle'; g.textAlign = 'center'; g.fillStyle = BM.vecVien;
     g.fillText(txt, x + w / 2 + 1.4, y + hh / 2 + 0.5);
     g.restore();
   }
@@ -314,7 +317,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.moveTo(x0 + k, y0 + 13.2); g.arcTo(x0 + 0.8, y0 + 13.2, x0 + 0.8, y0 + 13.2 - k, 1.6); g.lineTo(x0 + 0.8, y0 + 13.2 - k);
     g.lineWidth = 2.2; g.strokeStyle = rgba(BM.vecVienRgb, 0.25 * a2); g.stroke(); g.lineWidth = 1.2; g.strokeStyle = rgba(col, a2); g.stroke();
     H.bo(g, x0 + 1.2, y0 + 1.2, 6, 7.6, 2); g.fillStyle = rgba(BM.tiaXanhLoV4Rgb, 0.85 * Math.min(1, a2 + 0.2)); g.fill();
-    g.font = '8px VT323, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = rgba(nho ? BM.tiaKemRgb : BM.tiaXanhLoV5Rgb, Math.min(1, a2 + 0.3));
+    g.font = PHONG_SO; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = rgba(nho ? BM.tiaKemRgb : BM.tiaXanhLoV5Rgb, Math.min(1, a2 + 0.3));
     g.fillText(String(n), x0 + 4.2, y0 + 5.4);
     g.restore();
   }
@@ -341,7 +344,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (o.fill > 0) { H.bo(g, o.x, o.y - 0.2, Math.max(1.8, o.fill), 3.4, 1.7); g.fillStyle = o.mau; g.fill(); H.bo(g, o.x + 0.6, o.y + 0.2, Math.max(0.6, o.fill - 1.2), 0.9, 0.45); g.fillStyle = rgba(BM.tiaTrangRgb, 0.55); g.fill(); }
     if (o.vach) { g.beginPath(); for (var i = 1; i < o.vach; i++) { var vx = o.x + o.W * i / o.vach; g.moveTo(vx, o.y + 0.2); g.lineTo(vx, o.y + 2.8); } g.lineWidth = 0.35; g.strokeStyle = rgba(BM.vecVienRgb, 0.45); g.stroke(); }
     H.bo(g, o.x + o.W + 0.4, o.y + 0.6, 0.9, 1.8, 0.4); g.fillStyle = BM.vecVien; g.fill();                 // núm pin
-    g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = o.mauSo; g.fillText(o.so, o.x + o.W + 2, o.y + 1.7);
+    g.font = PHONG_SO; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = o.mauSo; g.fillText(o.so, o.x + o.W + 2, o.y + 1.7);
     g.restore();
   }
   /** Thẻ số đạn (súng hơi) ở góc trên trái cửa sổ vẽ: viên thuốc trắng, quả bóng vàng nhỏ, "×n"; hết đạn / nháy: nền đỏ nhạt, chữ đỏ. */
@@ -350,7 +353,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, x - 0.5, y - 0.5, w + 1, hh + 1, (hh + 1) / 2); g.fillStyle = het || nhay ? rgba(BM.vecDoRgb, 0.18) : BM.vecVo; g.fill(); g.lineWidth = 0.7; g.strokeStyle = het || nhay ? BM.vecDo : BM.vecVien; g.stroke();
     tron(g, x + 3.6, y + hh / 2, 1.8); g.fillStyle = het ? BM.vecBacToi : BM.vecVang; g.fill(); g.lineWidth = 0.4; g.strokeStyle = het ? BM.vecBacToi : BM.vecVangToi; g.stroke();
     tron(g, x + 3.1, y + hh / 2 - 0.5, 0.5); g.fillStyle = BM.vecVo; g.fill();
-    g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = het ? BM.vecDo : BM.vecVien; g.fillText(txt, x + 7, y + hh / 2 + 0.5);
+    g.font = PHONG_SO; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = het ? BM.vecDo : BM.vecVien; g.fillText(txt, x + 7, y + hh / 2 + 0.5);
     g.restore();
   }
   /** MÁY SƠN — ô cần tô (hình mờ): chấm màu mờ bo góc giữa ô + viền nét đứt bo góc chạy chậm. */

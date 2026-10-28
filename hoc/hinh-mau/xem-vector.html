@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Xem bộ vẽ vector (gói V1–V4)</title>
+<title>Xem bộ vẽ vector (gói V1 tới V5a)</title>
 <style>
   body{margin:0;background:var(--g-vecSanToi);font-family:system-ui,sans-serif;color:var(--g-vecVien);padding:16px}
   h2{font-size:15px;font-weight:600;margin:18px 0 8px}
@@ -350,6 +350,98 @@
     nut.addEventListener('click', phat);
     setTimeout(phat, 300 + i * 180);
   });
+})();
+</script>
+<h2 id="v5a">Gói V5a — GIAO DIỆN PHẲNG màn chơi ở vector (hoc/game/choi-vector.css, chỉ áp khi body có lớp ve-vector): nút, khối lệnh, dòng code ở các trạng thái. Khung dưới là trang con nạp choi.css + choi-vector.css thật (choi.css khoá cuộn trang nên không nạp thẳng vào trang này)</h2>
+<iframe id="v5a-khung" title="Mẫu giao diện vector V5a" style="width:100%;max-width:760px;height:900px;border:1px solid var(--g-vecVoToi);border-radius:12px;background:var(--g-vecVo)"></iframe>
+<template id="v5a-mau">
+<style>
+  html,body{position:static;overflow:auto;height:auto}
+  body.ve-vector{padding:14px;-webkit-user-select:text;user-select:text}
+  .m-td{font:700 12px/1.2 var(--px);color:var(--g-vecChuPhu);text-transform:uppercase;letter-spacing:.4px;margin:14px 0 8px}
+  .m-hang{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .m-hang .bt{height:36px;padding:0 14px;display:flex;align-items:center;font:600 14px/1 var(--px)}
+  .m-cot{display:flex;flex-direction:column;gap:0;width:150px}
+  .m-nhan{font:500 11px/1.2 var(--px);color:var(--g-vecChuPhu);margin-top:2px}
+  .m-pan{width:300px}
+  .m-pan .row{height:30px}
+  .m-ben{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+  .m-bong{position:relative;width:220px}
+  .m-bong .bong{position:static;display:flex;margin-bottom:10px}
+  .m-bong .toast{position:static;display:block;margin-bottom:10px}
+</style>
+<div class="m-td">Nút: phụ · đang nhấn · tắt · chính (Chạy) · chính hộp thoại · nguy hiểm · chỉ icon · đang chọn</div>
+<div class="m-hang">
+  <button class="bt g-wd">Đề bài</button>
+  <button class="bt g-wd pr">Đang nhấn</button>
+  <button class="bt g-wd" disabled>Đang tắt</button>
+  <button class="bt g-gr cbtn" data-nut="chay">Chạy</button>
+  <button class="bt g-gr hop-nut" style="flex:none;width:120px">Tiếp</button>
+  <button class="bt g-rd hop-nut" style="flex:none;width:120px">Xóa hết</button>
+  <button class="bt g-pu menu" title="Mở menu" aria-label="Mở menu"></button>
+  <span class="hop-chips" style="margin:0"><button class="bt g-pu chip on">3</button><button class="bt g-pu chip">4</button></span>
+</div>
+<div class="m-td">Khối lệnh theo nhóm (dải trái + nền nhạt) và trạng thái: đang chạy (lit) · lỗi · đang giữ · cấm trong nhịp · hàm khoá</div>
+<div class="m-ben">
+  <div class="m-cot pal">
+    <div class="brick cy"><span class="tx">move()</span></div>
+    <div class="brick yl"><span class="tx">wait()</span></div>
+    <div class="brick gr"><span class="tx">turn_right()</span></div>
+    <div class="brick pu vong"><span class="tx">for i in range(3):</span></div>
+    <div class="brick or"><span class="tx">grab()</span></div>
+    <div class="brick tay"><span class="tx">arm_up()</span></div>
+    <div class="brick bien"><span class="tx">n</span></div>
+  </div>
+  <div class="m-cot pal">
+    <div class="brick chan"><span class="tx">leg_a()</span></div>
+    <div class="brick truot"><span class="tx">slide_left()</span></div>
+    <div class="brick dk"><span class="tx">if distance() &gt; 2:</span></div>
+    <div class="brick wh"><span class="tx">while True:</span></div>
+    <div class="brick ls"><span class="tx">ds.append(1)</span></div>
+    <div class="brick dem"><span class="tx">d = distance()</span></div>
+    <div class="brick cy"><span class="tx">slide_r(<span class="num">2</span>)</span></div>
+  </div>
+  <div class="m-cot pal">
+    <div class="brick cy lit"><span class="tx">move()</span></div><div class="m-nhan">đang chạy (lit)</div>
+    <div class="brick gr err"><span class="tx">turn_left()</span></div><div class="m-nhan">gây lỗi</div>
+    <div class="brick yl giu"><span class="tx">wait()</span></div><div class="m-nhan">đang giữ để kéo</div>
+    <div class="brick or cam-nhip"><span class="tx">release()</span></div><div class="m-nhan">cấm trong nhịp này</div>
+    <div class="brick gr khoa" data-loai="man"><span class="tx">u_turn()</span><span class="ed khoa"></span></div><div class="m-nhan">hàm khoá</div>
+  </div>
+</div>
+<div class="m-td">Khung code: dòng thường · chọn · đang chạy · lỗi · for / if / while · khoá · trống</div>
+<div class="m-ben">
+  <div class="pan p-prog m-pan"><div class="board"><div class="bh"><span class="xe-tabs"><button class="xe-tab on" data-son="vang">R1</button><button class="xe-tab" data-son="lam">R2</button></span><span class="tt">main</span><span class="ct">7/10</span></div>
+    <div class="rows">
+      <div class="row"><div class="tab"><span class="tn">1</span></div><div class="strip"><span class="mv">move</span><span class="pu">()</span></div></div>
+      <div class="row sel"><div class="tab"><span class="tn">2</span></div><div class="strip"><span class="fn">turn_right</span><span class="pu">()</span></div></div>
+      <div class="row run"><div class="tab"><span class="tn">3</span></div><div class="strip on"><span class="wt">wait</span><span class="pu">()</span></div></div>
+      <div class="row"><div class="tab"><span class="tn">4</span></div><div class="strip err"><span class="mv">forward</span><span class="pu">(</span><span class="num">9</span><span class="pu">)</span></div></div>
+      <div class="row"><div class="tab"><span class="tn">5</span></div><div class="strip for"><span class="kw">for </span>i <span class="kw">in </span>range(<span class="num">3</span>):</div></div>
+      <div class="row"><div class="tab"><span class="tn">6</span></div><div class="strip if"><span class="kw if">if </span>distance() &lt;= <span class="num dkc">0</span>:</div></div>
+      <div class="row"><div class="tab"><span class="tn">7</span></div><div class="strip wh"><span class="kw wh">while </span><span class="num dkc">True</span>:</div></div>
+      <div class="row"><div class="tab"><span class="tn">8</span></div><div class="strip lock">chương trình cố định</div></div>
+      <div class="row"><div class="tab"><span class="tn">9</span></div><div class="strip empty"></div></div>
+    </div></div></div>
+  <div class="m-bong">
+    <div class="bong show"><div class="bg-td">Đề bài</div><div class="bg-nd">Đưa robot tới cờ trong 6 nhịp.</div></div>
+    <div class="bong show goi"><div class="bg-td">Gợi ý 1/2</div><div class="bg-nd">Thử dùng vòng lặp for.</div></div>
+    <div class="bong show loi"><div class="bg-td">Chưa được</div><div class="bg-nd">Robot đâm tường ở nhịp 3.</div></div>
+    <div class="toast win">Tới cờ!</div>
+    <div class="toast bad">Sai cú pháp ở dòng 4</div>
+  </div>
+</div>
+</template>
+<script>
+/* V5a: dựng trang con cùng gốc (about:blank kế thừa địa chỉ trang này nên đường dẫn ../game/ đúng), body.ve-vector, nạp phông + choi.css + choi-vector.css + bảng màu */
+(function () {
+  var f = document.getElementById('v5a-khung'), tpl = document.getElementById('v5a-mau');
+  if (!f || !tpl) return;
+  var d = f.contentDocument; d.open();
+  d.write('<!doctype html><html lang="vi"><head><meta charset="utf-8"><script src="../game/bang-mau.js"><\/script>' +
+    '<link rel="stylesheet" href="../game/font/font.css"><link rel="stylesheet" href="../game/choi.css"><link rel="stylesheet" href="../game/choi-vector.css"></head>' +
+    '<body class="ve-vector">' + tpl.innerHTML + '</body></html>');
+  d.close();
 })();
 </script>
 </body></html>

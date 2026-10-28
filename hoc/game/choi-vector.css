@@ -1,0 +1,521 @@
+/* ============================================================================
+   choi-vector.css — "Robot Chấn Hưng": GIAO DIỆN PHẲNG kiểu diem10code (gói V5a, 28/10) cho chế độ VECTOR.
+   Chỉ áp khi <body> có lớp `ve-vector` (VeVector.apGiaoDien, ve-vector.js: ?ve=vector hoặc đã lưu ở Cài đặt); chế độ pixel không có lớp này nên
+   choi.css chạy y nguyên. Tệp này PHỦ lên choi.css bằng bộ chọn `body.ve-vector …`, không sửa choi.css.
+   Ngôn ngữ thiết kế: tin_hoc/public/css/tokens.css + styles.css (không link sang repo kia; giá trị lấy về thành vai vec* trong bang-mau.js):
+     nền lavender rất nhạt, thẻ trắng bo góc, bóng mềm (--elev-1..3), bán kính 10 / 16 / 24 / tròn, chữ chàm đậm, nút chính tím chàm, điểm nhấn cyan;
+     phông Google Sans Flex (giao diện) + Google Sans Code (mã), font/font.css. Không vân gỗ, không bảng phấn, không núm khối, không viền vát nhiều lớp,
+     không image-rendering: pixelated, không steps(): chuyển động ease mượt, tôn trọng prefers-reduced-motion.
+   Thứ tự: 1 nền tảng · 2 thanh trên, cột nút sân, khung sân · 3 khung code · 4 khối lệnh · 5 khay, hộp gợi ý, toast, hộp thoại · 6 nút · 7 chuyển động.
+   ========================================================================== */
+
+/* ============================================================ 1. NỀN TẢNG: phông, biến, nền, khung ngoài */
+body.ve-vector{
+  --px:"Google Sans Flex",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Google Sans Code",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,Consolas,monospace;
+  --kp:1; --km:1; --wm:500;                                         /* phông mới đúng cỡ: bỏ hệ số của Handjet / VT323 */
+  --ink:var(--g-vecChu); --cream:var(--g-vecChu);
+  --r-sm:10px; --r-md:16px; --r-lg:24px; --r-full:9999px;
+  --elev-1:0 1px 4px rgba(var(--g-vecBongRgb),.08);
+  --elev-2:0 4px 14px rgba(var(--g-vecBongRgb),.07);
+  --elev-3:0 16px 36px rgba(var(--g-vecBrandRgb),.15);
+  --vien:1.5px solid var(--g-vecKe);
+  --focus:0 0 0 3px rgba(var(--g-vecBrandRgb),.45);
+  background:var(--g-vecNenSau); background-image:none; color:var(--g-vecChu);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+body.ve-vector.dien-thoai{background:var(--g-vecNen);background-image:none}
+/* không có chỗ nào phóng ảnh kiểu điểm ảnh: icon pixel được ve.js (mk) phóng sẵn bằng lân cận gần nhất, canvas sân / robot đã theo pixel thiết bị */
+body.ve-vector,body.ve-vector *{image-rendering:auto!important}
+
+/* khung 360 × 640: thẻ lavender bo góc lớn, bóng tím mềm (máy tính); điện thoại: lấp đầy, không bo */
+body.ve-vector .screen,body.ve-vector .ws-ov{background:var(--g-vecNen);background-image:none;clip-path:none}
+body.ve-vector:not(.dien-thoai) .screen{border-radius:var(--r-lg);box-shadow:var(--elev-3),0 0 0 1px var(--g-vecKe)}
+body.ve-vector:not(.dien-thoai) .screen>.ovwrap{border-radius:var(--r-lg)}
+body.ve-vector .deco .surf,body.ve-vector .deco .bev,body.ve-vector .deco>canvas{display:none}
+/* phim mở đầu / phim gói (.md, gói V6) còn nền gỗ + bảng phấn: giữ mực / kem của pixel cho chữ đọc được tới khi V6 làm lại */
+body.ve-vector .md{--ink:var(--g-vienDam);--cream:var(--g-kemSang)}
+
+/* chữ code / tên lệnh trong câu (`move()`): Google Sans Code cùng cỡ, ngoặc đứng riêng giữ phông chữ thường */
+body.ve-vector .kc{font-size:.96em;font-weight:500}
+body.ve-vector .kc.ngoac,body.ve-vector .hd-bong .kc.ngoac{font-family:var(--px);font-size:1em;font-weight:inherit}
+
+/* ============================================================ 6. MỌI NÚT (.bt và nút riêng): phẳng, bo --r-sm, bóng --elev-1, rê nổi, nhấn lún mượt, focus thấy rõ
+   --vc = màu nhận diện của nút (thay bộ ba --c / --hi / --lo của pixel): ô icon của nút chữ, nền của nút chỉ có icon. */
+body.ve-vector .g-gr{--vc:var(--g-vecLaDam)}
+body.ve-vector .g-yl,body.ve-vector .g-am{--vc:var(--g-vecHoPhachDam)}
+body.ve-vector .g-bl{--vc:var(--g-vecLamDam)}
+body.ve-vector .g-pu{--vc:var(--g-vecTimDam)}
+body.ve-vector .g-rd{--vc:var(--g-vecLoi)}
+body.ve-vector .g-cy{--vc:var(--g-vecCyanDam)}
+body.ve-vector .g-or{--vc:var(--g-vecCamDam)}
+body.ve-vector .g-wd,body.ve-vector .g-gy{--vc:var(--g-vecChuPhu)}
+body.ve-vector .g-te{--vc:var(--g-vecNgocDam)}
+body.ve-vector .g-pk{--vc:var(--g-vecHongDam)}
+/* nút phụ: thẻ trắng viền mảnh, chữ chàm */
+body.ve-vector .bt{
+  color:var(--g-vecChu);background:var(--g-vecThe);text-shadow:none;border-radius:var(--r-sm);
+  box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1);
+  transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s ease,background-color .18s ease,color .18s ease,opacity .18s ease,filter .18s ease;
+}
+@media (hover:hover){
+  body.ve-vector .bt:hover{box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam),var(--elev-2);transform:translateY(-1px)}
+}
+body.ve-vector .bt:active,body.ve-vector .bt.pr{transform:translateY(1px) scale(.98);box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam)}
+body.ve-vector .bt:focus-visible,body.ve-vector button:focus-visible,body.ve-vector .brick:focus-visible,body.ve-vector .row:focus-visible{outline:2px solid var(--g-vecBrand);outline-offset:2px}
+body.ve-vector .bt:disabled{opacity:.45;filter:none;box-shadow:inset 0 0 0 1.5px var(--g-vecKe)}
+/* nút CHÍNH (Chạy ở màn chơi, Chạy thử ở Xưởng, nút đầu của hộp thoại): tím chàm đặc, chữ trắng, bóng tím */
+body.ve-vector .cbtn[data-nut="chay"],body.ve-vector .cbtn[data-nut="thu"],body.ve-vector .bt.chinh{
+  --vc:var(--g-vecBrand);color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.3)}
+@media (hover:hover){
+  body.ve-vector .cbtn[data-nut="chay"]:hover,body.ve-vector .cbtn[data-nut="thu"]:hover,body.ve-vector .bt.chinh:hover{background:var(--g-vecBrandDam);box-shadow:0 6px 18px rgba(var(--g-vecBrandRgb),.4)}
+}
+body.ve-vector .cbtn[data-nut="chay"]:active,body.ve-vector .cbtn[data-nut="thu"]:active,body.ve-vector .bt.chinh:active{background:var(--g-vecBrandDam);box-shadow:0 1px 4px rgba(var(--g-vecBrandRgb),.3)}
+/* nút CHỈ CÓ ICON (menu, quay về, xoá, thụt lề, đóng): nền đặc màu nhận diện, icon trắng */
+body.ve-vector .menu,body.ve-vector .bh .del,body.ve-vector .thut-nut,body.ve-vector .nav,body.ve-vector .bong .bg-x,body.ve-vector .go-bug{
+  background:var(--vc,var(--g-vecBrand));color:var(--g-vecThe);box-shadow:var(--elev-1)}
+body.ve-vector .menu.g-pu{--vc:var(--g-vecBrand)}
+@media (hover:hover){
+  body.ve-vector .menu:hover,body.ve-vector .bh .del:hover,body.ve-vector .thut-nut:hover,body.ve-vector .nav:hover,body.ve-vector .bong .bg-x:hover{box-shadow:var(--elev-2);filter:brightness(1.08)}
+}
+body.ve-vector .menu:active,body.ve-vector .bh .del:active,body.ve-vector .thut-nut:active,body.ve-vector .nav:active,body.ve-vector .bong .bg-x:active{box-shadow:none;filter:brightness(.92)}
+body.ve-vector .bh .del:disabled,body.ve-vector .thut-nut:disabled{opacity:.35;filter:none;box-shadow:none}
+body.ve-vector .menu.nhat,body.ve-vector .nav.mo-mo{filter:none;opacity:.45}
+/* nút đang chọn (chế độ của Xưởng, ô chọn trong bảng): viền tím chàm + nền nhạt, không nhảy chỗ */
+body.ve-vector .cbtn.mode.on,body.ve-vector .chip.on,body.ve-vector .so-tab.on{transform:none;background:var(--g-vecBrandNhat);box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-1)}
+/* nút chữ có icon: icon nằm trong ô vuông bo góc màu nhận diện (kiểu ô icon --cat-*-ico của diem10code: icon trắng trên màu) */
+body.ve-vector .cbtn{gap:8px;padding:0 8px 0 4px;font:600 14px/1 var(--px);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .cbtn.dark{color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .side .cbtn>span[data-i],body.ve-vector .side .cbtn>.oi{width:24px;height:24px;border-radius:7px;background:var(--vc)}
+body.ve-vector .side .cbtn>span[data-i] canvas,body.ve-vector .side .cbtn>.oi canvas{transform:scale(.8)}
+body.ve-vector .cbtn[data-nut="chay"]>span[data-i],body.ve-vector .cbtn[data-nut="thu"]>span[data-i]{background:transparent}
+body.ve-vector .cbtn.g-am,body.ve-vector .mini .g-te{color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .side.busy .cbtn[data-nut="chay"],body.ve-vector .side.busy .cbtn[data-nut="nhip"]{filter:none;opacity:.5}
+body.ve-vector .side.xu.busy .cbtn:not([data-nut="lai"]){filter:none;opacity:.5}
+body.ve-vector .mini .bt{font:600 12px/1 var(--px);color:var(--g-vecChu);text-shadow:none;padding:0;border-radius:8px;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
+body.ve-vector .mini .g-cy{color:var(--g-vecCyanDam);text-shadow:none}
+body.ve-vector .mini .bt:active{transform:translateY(1px) scale(.98)}
+
+/* ============================================================ 2. THANH TRÊN, CỘT NÚT SÂN, BẢNG NHỊP, KHUNG SÂN */
+/* biển tên màn: thẻ trắng, số màn tím chàm (phông mã), chấm cyan, tên đậm */
+body.ve-vector .plaque{height:36px;padding:0 12px 0 10px;gap:8px;background:var(--g-vecThe);color:var(--g-vecChu);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
+body.ve-vector .plaque::after{display:none}
+body.ve-vector .plaque .n{font:600 13px/1 var(--mono);color:var(--g-vecBrand)}
+body.ve-vector .plaque .d{width:5px;height:5px;border-radius:50%;background:var(--g-vecDen)}
+body.ve-vector .plaque .t{font:700 15px/1.3 var(--px);padding-top:0;letter-spacing:0}
+body.ve-vector .plaque .t-xuong{font-size:16px;letter-spacing:0}
+body.ve-vector .top .stars{height:36px;padding:0 6px;gap:1px;background:var(--g-vecThe);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
+body.ve-vector .menu{width:38px;height:36px}
+body.ve-vector .back{font:600 14px/1 var(--px);color:var(--g-vecChu);text-shadow:none;padding-top:0}
+body.ve-vector .lap-lai{height:36px;padding:2px 7px 0;font:600 11px/1 var(--px);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .lap-lai [data-i]{padding:2px;border-radius:5px;background:var(--vc)}
+/* bảng NHỊP: thẻ trắng, nhãn chữ nhỏ, số phông mã tím chàm; đèn bộ phận là ô bo nhỏ, sáng = cyan có quầng */
+body.ve-vector .clock,body.ve-vector .clock.chalk{background:var(--g-vecThe);background-image:none;border-radius:var(--r-sm);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
+body.ve-vector .clock .l{font:700 11px/1 var(--px);color:var(--g-vecChuPhu);letter-spacing:.3px;padding-top:0}
+body.ve-vector .clock .v{font:600 15px/1 var(--mono);color:var(--g-vecBrand)}
+body.ve-vector .clock .tong{font:600 11px/1 var(--px);color:var(--g-vecChuPhu);padding-top:0}
+body.ve-vector .den{border-radius:4px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKeDam);transition:background-color .2s ease,box-shadow .2s ease}
+body.ve-vector .den.sang{background:var(--g-vecCyanNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecDen),0 0 6px var(--g-vecDen)}
+/* khung ôm sân: thẻ trắng bo góc bóng mềm (thay gỗ); nền canvas trắng như ô sân. Bo 8 px (vùng 11): sân một hàng ô 14 px có khung cao 22 px, bo 12 thành viên thuốc */
+body.ve-vector .ffr canvas{background:var(--g-vecThe)}
+body.ve-vector .ffr canvas.lop-robot{background:none}
+body.ve-vector .ffr .khung-san{background:var(--g-vecThe);background-image:none;border-radius:8px;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}
+/* nhiều sân: ảnh nhỏ các sân là thẻ bo, sân đang xem viền tím chàm */
+body.ve-vector .sanbt{background:var(--g-vecThe);border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1);transition:box-shadow .18s ease,transform .18s ease}
+body.ve-vector .sanbt.on{box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-2)}
+body.ve-vector .sanbt .sn{font:700 9px/1 var(--px);color:var(--g-vecThe);text-shadow:none;left:2px;top:2px;padding:1px 3px;border-radius:4px;background:var(--g-vecChu)}
+body.ve-vector .sanbt .dau{border-radius:50%;box-shadow:0 0 0 1.5px var(--g-vecThe)}
+body.ve-vector .sanbt .dau.ok{background:var(--g-vecLa)}
+body.ve-vector .sanbt .dau.sai{background:var(--g-vecLoi)}
+body.ve-vector .side.busy .sanbt{filter:none;opacity:.55}
+/* toast bám đáy khung sân: viên bo, nền nhạt + viền màu theo loại */
+body.ve-vector .toast{padding:6px 10px;font:600 12.5px/1.25 var(--px);color:var(--g-vecChu);background:var(--g-vecHoPhachNhat);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1.5px var(--g-vecHoPhach),var(--elev-2)}
+body.ve-vector .toast.win{background:var(--g-vecLaNhat);color:var(--g-vecLaDam);box-shadow:inset 0 0 0 1.5px var(--g-vecLa),var(--elev-2)}
+body.ve-vector .toast.bad{background:var(--g-vecLoiNhat);color:var(--g-vecLoiDam);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi),var(--elev-2)}
+/* nhãn cảnh báo trên sân */
+body.ve-vector .canh-bao{padding:3px 7px 3px 5px;border-radius:7px;font:600 11px/1.1 var(--px);color:var(--g-vecChu);background:var(--g-vecHoPhachNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecHoPhach)}
+body.ve-vector .canh-bao .cb-ic{margin-bottom:0}
+
+/* ============================================================ 3. KHUNG CODE: thẻ trắng, dòng là ô mã diem10code (--code-surface / --code-line, Google Sans Code) */
+body.ve-vector .pan{padding:4px;background:var(--g-vecThe);background-image:none;border-radius:var(--r-md);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2);transition:box-shadow .2s ease}
+body.ve-vector .pan .rv,body.ve-vector .hop .rv{display:none}
+body.ve-vector .board,body.ve-vector .board.chalk,body.ve-vector .tenham.chalk{background:transparent;background-image:none;box-shadow:none}
+body.ve-vector .board{padding:2px 3px 3px}
+body.ve-vector .bh{height:32px;gap:5px}
+body.ve-vector .bh .tt{font:700 11px/1 var(--px);color:var(--g-vecChuPhu);letter-spacing:.4px;text-transform:uppercase;padding-top:0}
+body.ve-vector .bh .tt.code{font:600 13px/1 var(--mono);color:var(--g-vecTimDam);text-transform:none;letter-spacing:0;padding-top:0}
+body.ve-vector .bh .ct{font:500 11px/1 var(--mono);color:var(--g-vecChuPhu)}
+body.ve-vector .bh .ham-dem{padding:3px 7px;border-radius:var(--r-full);font:600 10px/1 var(--px);color:var(--g-vecBrandDam);background:var(--g-vecBrandNhat);box-shadow:none}
+body.ve-vector .bh .ham-dem.qua{color:var(--g-vecThe);background:var(--g-vecLoi)}
+body.ve-vector .bh .del{width:30px;height:26px;margin-bottom:2px;border-radius:8px}
+body.ve-vector .bh .del:not(.het){--vc:var(--g-vecChuPhu)}
+body.ve-vector .thut-nut{width:24px;height:26px;border-radius:8px}
+body.ve-vector .bh .chinh-khoa{height:22px;padding:0 7px 0 5px;border-radius:var(--r-full);font:600 10px/1 var(--px);color:var(--g-vecHoPhachDam);background:var(--g-vecHoPhachNhat);box-shadow:none}
+body.ve-vector .bh .chinh-khoa .ck-ic{margin-bottom:0}
+/* chớp đỏ khi chương trình sai chỗ: quầng đỏ mờ dần (không nháy bậc) */
+body.ve-vector .pan.flash{animation:vec-redfl .6s ease-out 1}
+@keyframes vec-redfl{0%{box-shadow:inset 0 0 0 2px var(--g-vecLoi),0 0 0 4px rgba(var(--g-vecLoiRgb),.35)}100%{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}}
+/* dòng: số dòng chữ mờ phông mã; ô code nền xám xanh nhạt, kẻ mảnh, bo 8 */
+body.ve-vector .rows{gap:3px}
+body.ve-vector .row{gap:4px}
+body.ve-vector .tab{border-radius:7px;background:transparent;box-shadow:none;font:500 11px/1 var(--mono);color:var(--g-vecChuMo);transition:background-color .18s ease,color .18s ease}
+body.ve-vector .strip{padding:0 8px;border-radius:8px;background:var(--g-vecMa);box-shadow:inset 0 0 0 1px var(--g-vecMaKe);font:500 13px/1 var(--mono);color:var(--g-vecChu);
+  transition:box-shadow .18s ease,background-color .18s ease}
+body.ve-vector .strip.empty{background:transparent;box-shadow:none;border:1.5px dashed var(--g-vecKeDam)}
+body.ve-vector .strip.for{font-size:11px;background:var(--g-vecTimNhat);box-shadow:inset 3px 0 0 var(--g-vecTimDam),inset 0 0 0 1px var(--g-vecMaKe)}
+body.ve-vector .strip.if:not(.on):not(.err){background:var(--g-vecNgocNhat);box-shadow:inset 3px 0 0 var(--g-vecNgocDam),inset 0 0 0 1px var(--g-vecMaKe)}
+body.ve-vector .strip.if{font-size:11px}
+body.ve-vector .strip.wh{font-size:11px}
+body.ve-vector .strip.wh:not(.on):not(.err){background:var(--g-vecTroiNhat);box-shadow:inset 3px 0 0 var(--g-vecTroiDam),inset 0 0 0 1px var(--g-vecMaKe)}
+/* dòng điều kiện dài (if distance() <= 0:) ở sân lớn: Google Sans Code rộng hơn VT323, khít lại một chút cho lọt ô (vùng 11) */
+body.ve-vector .strip.for,body.ve-vector .strip.if,body.ve-vector .strip.wh{padding:0 3px 0 6px;font-size:10.5px;letter-spacing:-.25px}
+body.ve-vector .strip.for .num,body.ve-vector .strip.if .num,body.ve-vector .strip.wh .num{padding:1px 4px}
+body.ve-vector .strip.lock{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe);color:var(--g-vecChuMo)}
+body.ve-vector .strip.hai{font-size:9.5px!important;line-height:12px}
+/* xoá nhanh: ô số thành nút X đỏ (rê chuột / chạm chọn); cảm ứng: đỏ thở nhẹ */
+body.ve-vector .row.xx .tab{background:var(--g-vecLoi);color:var(--g-vecThe);box-shadow:none}
+body.ve-vector .row.xc .tab{animation:vec-xc 1.2s ease-in-out infinite alternate}
+@keyframes vec-xc{from{background:var(--g-vecLoi)}to{background:var(--g-vecLoiDam)}}
+body.ve-vector.dang-keo .row.xx .tab{background:transparent;box-shadow:none;animation:none}
+/* dòng đang chọn: số dòng tím chàm đặc, ô code có vòng tím chàm thở chậm (thay nháy vàng / trắng) */
+body.ve-vector .row.sel .tab{background:var(--g-vecBrand);color:var(--g-vecThe);box-shadow:none}
+body.ve-vector .row.sel .strip{box-shadow:inset 0 0 0 1px var(--g-vecMaKe),0 0 0 2px var(--g-vecBrand);animation:vec-sel 1.6s ease-in-out infinite alternate}
+body.ve-vector .row.sel .strip.empty{background:var(--g-vecBrandNhat);border-color:var(--g-vecBrand);box-shadow:none;animation:vec-sel 1.6s ease-in-out infinite alternate}
+@keyframes vec-sel{from{outline:2px solid rgba(var(--g-vecBrandRgb),.0);outline-offset:1px}to{outline:2px solid rgba(var(--g-vecBrandRgb),.28);outline-offset:3px}}
+body.ve-vector .row.dich .strip{box-shadow:inset 0 0 0 1px var(--g-vecMaKe),0 0 0 2px var(--g-vecHongDam);animation:vec-sel 1.6s ease-in-out infinite alternate}
+/* dòng đang chạy: nền hổ phách nhạt, dải trái hổ phách; dòng lỗi: nền hồng nhạt, viền đỏ, chữ đỏ đậm */
+body.ve-vector .strip.on{background:var(--g-vecHoPhachNhat);box-shadow:inset 3px 0 0 var(--g-vecHoPhach),inset 0 0 0 1px var(--g-vecHoPhach),0 0 0 2px rgba(var(--g-vecBongRgb),.06)}
+body.ve-vector .row.run .tab{background:var(--g-vecHoPhach);color:var(--g-vecChu)}
+body.ve-vector .strip.err{background:var(--g-vecLoiNhat);color:var(--g-vecLoiDam);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi),0 0 0 2px rgba(var(--g-vecLoiRgb),.18)}
+/* tô màu cú pháp (cùng họ màu với nhóm khối lệnh; mọi màu đủ 4,5:1 trên nền ô mã vecMa: máy kiểm 14e + đo trong trang) */
+body.ve-vector .strip .mv,body.ve-vector .keo-dong .mv{color:var(--g-vecCyanDam)}
+body.ve-vector .strip .wt,body.ve-vector .keo-dong .wt{color:var(--g-vecHoPhachChu)}
+body.ve-vector .strip .ty,body.ve-vector .keo-dong .ty{color:var(--g-vecCamDam)}
+body.ve-vector .strip .fn,body.ve-vector .keo-dong .fn{color:var(--g-vecLaChu)}
+body.ve-vector .strip .sl,body.ve-vector .keo-dong .sl{color:var(--g-vecChanhChu)}
+body.ve-vector .strip .pu,body.ve-vector .keo-dong .pu,body.ve-vector .strip.on .pu{color:var(--g-vecChuPhu)}
+body.ve-vector .strip .cm,body.ve-vector .keo-dong .cm{color:var(--g-vecChuMo);font-style:italic}
+body.ve-vector .strip .ar,body.ve-vector .keo-dong .ar{color:var(--g-vecBrand)}
+body.ve-vector .strip .kw,body.ve-vector .keo-dong .kw{color:var(--g-vecTimDam);font-weight:600}
+body.ve-vector .strip .kw.if,body.ve-vector .keo-dong .kw.if{color:var(--g-vecNgocDam)}
+body.ve-vector .strip .kw.wh,body.ve-vector .keo-dong .kw.wh{color:var(--g-vecTroiDam)}
+body.ve-vector .strip .vr,body.ve-vector .keo-dong .vr,body.ve-vector .strip .lit,body.ve-vector .keo-dong .lit{color:var(--g-vecChu)}
+body.ve-vector .strip .vr.dem,body.ve-vector .keo-dong .vr.dem{color:var(--g-vecHongDam)}
+body.ve-vector .strip.err .mv,body.ve-vector .strip.err .wt,body.ve-vector .strip.err .ty,body.ve-vector .strip.err .fn,body.ve-vector .strip.err .sl,body.ve-vector .strip.err .ar{color:var(--g-vecLoiDam)}
+/* ngoặc khối for / if / while: thanh mảnh bo tròn cùng màu nhóm; ngoặc nhịp ở mép phải: nét chàm mờ, nhãn viên thuốc */
+body.ve-vector .bk{width:3px;border-radius:2px;background:var(--g-vecTimDam);box-shadow:none;opacity:.55}
+body.ve-vector .bk.cuoi::after{height:3px;width:6px;border-radius:2px;background:var(--g-vecTimDam);box-shadow:none}
+body.ve-vector .bk.if,body.ve-vector .bk.if.cuoi::after{background:var(--g-vecNgocDam);box-shadow:none}
+body.ve-vector .bk.wh,body.ve-vector .bk.wh.cuoi::after{background:var(--g-vecTroiDam);box-shadow:none}
+body.ve-vector .njb,body.ve-vector .njb.dau::before,body.ve-vector .njb.cuoi::after{background:var(--g-vecKeDam)}
+body.ve-vector .njn{padding:2px 5px;border-radius:var(--r-full);font:600 8.5px/1 var(--mono);color:var(--g-vecChuPhu);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKeDam)}
+/* thẻ R1 / R2 (màn nhiều robot): viên thuốc màu ĐỘI của robot vector (R1 xanh Sola, R2 hồng Luna, đối thủ đỏ), thẻ chưa chọn nhạt đi */
+body.ve-vector .xe-tab{--mv:var(--g-vecDoiR1);min-width:32px;height:24px;padding:0 8px;border-radius:var(--r-full);font:700 12px/1 var(--px);color:var(--g-vecThe);background:var(--mv);box-shadow:none;opacity:.5}
+body.ve-vector .xe-tab[data-son="lam"]{--mv:var(--g-vecDoiR2)}
+body.ve-vector .xe-tab[data-son="do"]{--mv:var(--g-sonDo)}
+body.ve-vector .xe-tab[data-son="tim"]{--mv:var(--g-sonTim)}
+body.ve-vector .xe-tab:not(.on){opacity:1;color:var(--g-vecChuPhu);background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--mv)}   /* thẻ chưa chọn: trắng viền màu đội, chữ xám đậm (đủ tương phản; mờ .5 thì không đủ) */
+body.ve-vector .xe-tab.on{opacity:1;color:var(--g-vecChu);box-shadow:0 0 0 2px var(--g-vecThe),0 0 0 3.5px var(--mv)}   /* chữ chàm trên màu đội: trắng trên xanh R1 #38BDF8 chỉ 2,1:1 (đo trong trang) */
+body.ve-vector .xe-tab:active{transform:translateY(1px)}
+body.ve-vector .xe-tab.co-loi::after{top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--g-vecLoi);box-shadow:0 0 0 2px var(--g-vecThe)}
+body.ve-vector .rows.chi-doc .strip:not(.empty){filter:none;opacity:.8}
+/* "Đã xoá · Hoàn tác" dưới khung code */
+body.ve-vector .hoan-tac{left:8px;right:8px;bottom:8px;height:32px;padding:0 4px 0 10px;border-radius:var(--r-sm);color:var(--g-vecThe);background:var(--g-vecChu);box-shadow:var(--elev-2)}
+body.ve-vector .hoan-tac .ht{font:600 12px/1 var(--px);padding-top:0}
+body.ve-vector .hoan-tac .hoan-nut{height:24px;padding:0 10px;border-radius:7px;font:700 12px/1 var(--px);color:var(--g-vecChu);background:var(--g-vecThe);text-shadow:none;box-shadow:none}
+/* thanh cuộn (thanh-cuon.js): rãnh lõm bo tròn, cục kéo tím chàm nhạt (không vạch nắm pixel) */
+body.ve-vector .tc-ray{width:8px;border-radius:var(--r-full);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .tc-cuc{border-radius:var(--r-full);background:var(--g-vecKeDam);box-shadow:none;transition:background-color .15s ease}
+body.ve-vector .tc-cuc:hover,body.ve-vector .tc-ray.dang-keo .tc-cuc{background:var(--g-vecBrand)}
+
+/* ============================================================ 4. KHỐI LỆNH: thẻ phẳng bo góc, nền nhạt + dải trái đậm theo NHÓM lệnh, không núm; ô tham số là viên thuốc
+   --bc = màu đậm của nhóm (dải trái, viền khi chọn), --bn = nền nhạt của nhóm. Chữ luôn chàm đậm (đủ tương phản trên mọi nền nhạt). */
+body.ve-vector .brick{--bc:var(--g-vecChuPhu);--bn:var(--g-vecThe);
+  height:28px;margin-top:7px;padding:0 6px 0 11px;border-radius:8px;font:500 13px/1 var(--mono);color:var(--g-vecChu);text-shadow:none;
+  background:var(--bn);box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKe),var(--elev-1);
+  transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s ease,opacity .18s ease,filter .18s ease}
+body.ve-vector .brick::before{display:none}
+body.ve-vector .brick.cy{--bc:var(--g-vecCyanDam);--bn:var(--g-vecCyanNhat)}
+body.ve-vector .brick.yl{--bc:var(--g-vecHoPhach);--bn:var(--g-vecHoPhachNhat)}
+body.ve-vector .brick.gr{--bc:var(--g-vecLa);--bn:var(--g-vecLaNhat)}
+body.ve-vector .brick.pu,body.ve-vector .brick.vong{--bc:var(--g-vecTimDam);--bn:var(--g-vecTimNhat)}
+body.ve-vector .brick.or{--bc:var(--g-vecCamDam);--bn:var(--g-vecCamNhat)}
+body.ve-vector .brick.tay{--bc:var(--g-vecCamDam);--bn:var(--g-vecHoPhachNhat)}
+body.ve-vector .brick.bien,body.ve-vector .brick.dem{--bc:var(--g-vecHongDam);--bn:var(--g-vecHongNhat)}
+body.ve-vector .brick.chan{--bc:var(--g-vecLam);--bn:var(--g-vecLamNhat)}
+body.ve-vector .brick.truot{--bc:var(--g-vecChanhDam);--bn:var(--g-vecLaNhat)}
+body.ve-vector .brick.dk{--bc:var(--g-vecNgocDam);--bn:var(--g-vecNgocNhat)}
+body.ve-vector .brick.wh{--bc:var(--g-vecTroiDam);--bn:var(--g-vecTroiNhat)}
+body.ve-vector .brick.ls{--bc:var(--g-vecChanhDam);--bn:var(--g-vecChanhNhat)}
+@media (hover:hover){
+  body.ve-vector .brick:hover{transform:translateY(-1px);box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKeDam),var(--elev-2)}
+}
+body.ve-vector .brick:active{transform:scale(.98)}
+body.ve-vector .brick.giu{transform:translateY(-3px) scale(1.02);filter:none;box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1.5px var(--bc),var(--elev-3)}
+/* khối đang chạy (lệnh của dòng đang chạy): vòng hổ phách thở; khối gây lỗi: vòng đỏ */
+body.ve-vector .brick.lit{box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKe),0 0 0 2px var(--g-vecHoPhach);animation:vec-lit 1s ease-in-out infinite alternate}
+@keyframes vec-lit{from{filter:none}to{filter:brightness(1.06) saturate(1.15)}}
+body.ve-vector .brick.err{box-shadow:inset 4px 0 0 var(--g-vecLoi),inset 0 0 0 1px var(--g-vecLoi),0 0 0 2px rgba(var(--g-vecLoiRgb),.25)}
+/* nút sửa / ổ khoá bên phải khối hàm: ô vuông bo trắng */
+body.ve-vector .brick .ed{right:3px;top:3px;bottom:3px;width:24px;border-radius:6px;background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .brick .ed:active{background:var(--g-vecTheLom)}
+body.ve-vector .brick.or .ed{background:var(--g-vecThe)}
+body.ve-vector .brick .ed.khoa{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .brick.khoa{filter:none}
+body.ve-vector .brick[data-loai="em"],body.ve-vector .brick[data-loai="man"]{padding-right:32px}
+/* khối của bộ phận đã có lệnh trong nhịp đang soạn: mờ + gạch ngang */
+body.ve-vector .brick.cam-nhip{filter:grayscale(.8);opacity:.5;box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+/* về sân từ Xưởng: khối hàm vừa xem thở sáng ba lần */
+body.ve-vector .brick.nhay-ve{animation:vec-nhay .5s ease-in-out 4 alternate}
+@keyframes vec-nhay{from{box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKe),0 0 0 0 rgba(var(--g-vecBrandRgb),0)}to{box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.3)}}
+/* ô tham số trong dòng / khối: viên thuốc màu đặc chữ trắng */
+body.ve-vector .num{min-width:1.1em;padding:1px 5px;margin:0 1px;border-radius:var(--r-full);color:var(--g-vecThe);background:var(--g-vecTimDam);box-shadow:none;font-weight:600}
+body.ve-vector .num.bien,body.ve-vector .strip .num.dkm.rhs.bien{background:var(--g-vecHongDam);box-shadow:none}
+body.ve-vector .num.chuoi,body.ve-vector .num.mc-sai,body.ve-vector .strip .num.dkm.noi{background:var(--g-vecCamDam);box-shadow:none}
+body.ve-vector .num.dkc{background:var(--g-vecCyanDam);box-shadow:none}
+body.ve-vector .num.lsten{background:var(--g-vecChanhDam);box-shadow:none}
+body.ve-vector .num.ptu.them{background:var(--g-vecLaNhat);color:var(--g-vecLaDam);box-shadow:inset 0 0 0 1px var(--g-vecLa)}
+body.ve-vector .strip .num.dkm.op{background:var(--g-vecChuPhu);box-shadow:none}
+body.ve-vector .strip .num.dkm.rhs.pinso{background:var(--g-vecTimDam)}
+body.ve-vector .num.chuoi-mau{text-shadow:none}
+body.ve-vector .num.mc-red{background:var(--g-luatSanDo);box-shadow:none}
+body.ve-vector .num.mc-green{background:var(--g-luatSanXanhLaToi);box-shadow:none}
+body.ve-vector .num.mc-blue{background:var(--g-luatSanXanhDuong);box-shadow:none}
+body.ve-vector .num.mc-yellow{background:var(--g-luatSanVang);color:var(--g-vecChu);box-shadow:none}
+body.ve-vector .num.mc-none{background:var(--g-vecTheLom);color:var(--g-vecChu);box-shadow:inset 0 0 0 1px var(--g-vecKeDam)}
+body.ve-vector .strip .lap{right:3px;top:3px;bottom:3px;padding:0 6px;border-radius:var(--r-full);font:600 10px/1 var(--mono);color:var(--g-vecThe);background:var(--g-vecTimDam);box-shadow:none}
+body.ve-vector .strip.hai .num{padding:0 4px}
+/* KÉO THẢ: bóng kéo nổi mềm; ô thả nét đứt tím chàm thở; khung nhận sáng viền */
+body.ve-vector .keo-bong{transform:rotate(-2deg) scale(1.04);filter:drop-shadow(0 10px 18px rgba(var(--g-vecBrandRgb),.22))}
+body.ve-vector .keo-bong.bad{filter:drop-shadow(0 10px 18px rgba(var(--g-vecLoiRgb),.25)) saturate(.7)}
+body.ve-vector .keo-bong.vao-thung{transform:rotate(4deg) scale(.84);opacity:.9}
+body.ve-vector .keo-dong{padding:0 8px;border-radius:8px;background:var(--g-vecMa);box-shadow:inset 0 0 0 1px var(--g-vecMaKe),0 0 0 2px var(--g-vecBrand);font:500 13px/1 var(--mono);color:var(--g-vecChu)}
+body.ve-vector .keo-dong.for{background:var(--g-vecTimNhat);font-size:11px}
+body.ve-vector .keo-dong.if{background:var(--g-vecNgocNhat);font-size:11px}
+body.ve-vector .keo-dong.wh{background:var(--g-vecTroiNhat);font-size:11px}
+body.ve-vector .keo-bong.keo-dong.bad{background:var(--g-vecLoiNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi)}
+body.ve-vector .keo-bong.brick.bad{box-shadow:inset 4px 0 0 var(--g-vecLoi),inset 0 0 0 1.5px var(--g-vecLoi)}
+body.ve-vector .strip.slot{background:var(--g-vecBrandNhat);border:1.5px dashed var(--g-vecBrand);box-shadow:none;animation:vec-slot 1s ease-in-out infinite alternate}
+@keyframes vec-slot{from{border-color:var(--g-vecKeDam);background:var(--g-vecThe)}to{border-color:var(--g-vecBrand);background:var(--g-vecBrandNhat)}}   /* đích ở 'to': giảm chuyển động thì dừng ở trạng thái rõ nhất */
+body.ve-vector .pan.keo-dich{box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam),0 0 0 3px rgba(var(--g-vecBrandRgb),.18),var(--elev-2)}
+body.ve-vector .pan.keo-co-cho{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.25),var(--elev-2)}
+body.ve-vector .strip.cam{animation:vec-cam .38s cubic-bezier(.16,1,.3,1) 1}
+@keyframes vec-cam{0%{transform:translateY(-6px) scale(1.04)}60%{transform:translateY(1px) scale(.99)}100%{transform:none}}
+/* thùng rác (thế chỗ khay khi kéo một dòng code ra) */
+body.ve-vector .thung{left:4px;right:4px;top:4px;bottom:4px;border-radius:12px;background:var(--g-vecLoiNhat);background-image:none;box-shadow:inset 0 0 0 2px var(--g-vecLoi);border:0;transition:background-color .2s ease}
+body.ve-vector .thung-chu{font:700 14px/1.2 var(--px);color:var(--g-vecLoiDam);text-shadow:none}
+body.ve-vector .thung.on{background:var(--g-vecLoi);box-shadow:inset 0 0 0 2px var(--g-vecLoiDam)}
+body.ve-vector .thung.on .thung-chu{color:var(--g-vecThe)}
+body.ve-vector .thung.on .thung-ic{animation:vec-thung .5s ease-in-out infinite alternate}
+@keyframes vec-thung{from{transform:translateY(0) rotate(-5deg) scale(1.1)}to{transform:translateY(-3px) rotate(5deg) scale(1.1)}}
+
+/* ============================================================ 5. KHAY LỆNH, BONG BÓNG ĐỀ BÀI / GỢI Ý, HƯỚNG DẪN, HỘP THOẠI, BẢNG CHỌN
+   Nền phấn tối của pixel → thẻ trắng, nên mọi chữ sáng (trắng / kem / vàng / xanh lá sáng) của choi.css được đổi sang chữ chàm / màu đậm đủ 4,5:1. */
+/* --- khay: tiêu đề thẻ bộ phận ◀ [tên] ▶, nút cuộn ▲ ▼, nhãn nhóm, "Hàm mới", "Hàm khác (n)" */
+body.ve-vector .pal-the .the-giua{border-radius:8px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .pal-the .the-chu{font:700 11px/1 var(--px);color:var(--g-vecChu);padding-top:0}
+body.ve-vector .the-chu.k-than{color:var(--g-vecCyanDam)}
+body.ve-vector .the-chu.k-tay{color:var(--g-vecCamDam)}
+body.ve-vector .the-chu.k-cam{color:var(--g-vecNgocDam)}
+body.ve-vector .the-chu.k-py{color:var(--g-vecTimDam)}
+body.ve-vector .the-cham i{width:4px;height:4px;border-radius:50%;background:var(--g-vecKeDam)}
+body.ve-vector .the-cham i.on{background:var(--g-vecBrand)}
+body.ve-vector .cuon-b{border-radius:7px}
+body.ve-vector .cuon-b.len .tam{border-bottom-color:var(--g-vecChuPhu)}
+body.ve-vector .cuon-b.xuong .tam{border-top-color:var(--g-vecChuPhu)}
+body.ve-vector .cuon-b.trai .tam{border-right-color:var(--g-vecChuPhu)}
+body.ve-vector .cuon-b.phai .tam{border-left-color:var(--g-vecChuPhu)}
+body.ve-vector .cuon-b:disabled{opacity:.35;filter:none}
+body.ve-vector .gl{font:700 10px/1 var(--px);color:var(--g-vecChuPhu);letter-spacing:.4px;text-transform:uppercase}
+body.ve-vector .gl::after{height:1px;background:var(--g-vecKe)}
+body.ve-vector .gl.g-em{color:var(--g-vecLaDam)}
+body.ve-vector .gl.g-ma{color:var(--g-vecCamDam)}
+body.ve-vector .gl.g-tay{color:var(--g-vecCamDam)}
+body.ve-vector .gl .tg{font:700 9px/1 var(--px);padding:2px 5px;border-radius:var(--r-full);color:var(--g-vecThe);background:var(--g-vecCamDam);box-shadow:none;text-transform:none}
+body.ve-vector .gl .nb{height:18px;padding:0 6px 0 4px;border-radius:var(--r-full);font:600 10px/1 var(--px);color:var(--g-vecBrandDam);background:var(--g-vecBrandNhat);border:1px dashed var(--g-vecBrand);text-transform:none;letter-spacing:0;transition:background-color .18s ease}
+body.ve-vector .gl .nb:active{background:var(--g-vecThe)}
+body.ve-vector .pal .nk{height:24px;padding:0 8px;border-radius:8px;font:600 11px/1 var(--px);color:var(--g-vecChuPhu);background:var(--g-vecTheLom);border:1px dashed var(--g-vecKeDam);transition:background-color .18s ease}
+body.ve-vector .pal .nk:active{background:var(--g-vecThe)}
+body.ve-vector .pal .nk.mo{color:var(--g-vecLaDam);border-style:solid}
+body.ve-vector .pal.pal-ghim{box-shadow:0 -1px 0 var(--g-vecKe)}
+
+/* --- bong bóng đề bài / gợi ý / chẩn đoán (đè lên sân hoặc cột khay): thẻ trắng bo, viền theo loại, bóng nổi */
+body.ve-vector .bong{padding:8px 10px 6px;color:var(--g-vecChu);background:var(--g-vecThe);border-radius:var(--r-md);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-3)}
+body.ve-vector .bong .bg-td{font:700 13px/1.2 var(--px);color:var(--g-vecChu);padding-top:2px;letter-spacing:0}
+body.ve-vector .bong .bg-nd{font:500 13px/1.35 var(--px)}
+body.ve-vector .bong.duoi .bg-nd{font-size:13px}
+body.ve-vector .bong .bg-phu{color:var(--g-vecChuPhu)}
+body.ve-vector .bong .bg-ch .so{font:500 12px/1 var(--mono);color:var(--g-vecChuPhu)}
+body.ve-vector .bong .pg{font:700 15px/16px var(--px);color:var(--g-vecChu);text-shadow:none;padding:0}
+body.ve-vector .bong.goi{background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecTimDam),var(--elev-3)}
+body.ve-vector .bong.goi .bg-td{color:var(--g-vecTimDam)}
+body.ve-vector .bong.loi{background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi),var(--elev-3)}
+body.ve-vector .bong.loi .bg-td{color:var(--g-vecLoiDam)}
+body.ve-vector .bong.tin{background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecLam),var(--elev-3)}
+body.ve-vector .bong.tin .bg-td{color:var(--g-vecLamDam)}
+body.ve-vector .bong .bg-x{width:26px;height:26px;border-radius:8px;--vc:var(--g-vecChuPhu)}
+
+/* --- hướng dẫn (huong-dan.js): vòng sáng tím chàm thở quanh chỗ phải chạm + bong bóng trắng có mũi tên (thay viền vàng / đen nháy bậc) */
+body.ve-vector .screen>.hd-vien,body.ve-vector #stage>.hd-vien{border-radius:10px;animation:vec-hdvien 1.1s ease-in-out infinite alternate}
+@keyframes vec-hdvien{from{box-shadow:0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.28)}to{box-shadow:0 0 0 2.5px var(--g-vecBrand),0 0 0 9px rgba(var(--g-vecBrandRgb),0)}}
+body.ve-vector .screen>.hd-bong,body.ve-vector #stage>.hd-bong{padding:7px 9px 6px;border-radius:var(--r-sm);font:600 12.5px/1.3 var(--px);color:var(--g-vecChu);background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecBrand),var(--elev-3);animation:none}
+body.ve-vector .hd-bong .hd-mui{background:var(--g-vecThe);border-radius:2px}
+body.ve-vector .hd-bong.duoi .hd-mui{box-shadow:-1.5px -1.5px 0 var(--g-vecBrand)}
+body.ve-vector .hd-bong.tren .hd-mui{box-shadow:1.5px 1.5px 0 var(--g-vecBrand)}
+
+/* --- hộp thoại (TP.Hop: kết quả màn, menu, xác nhận, Bộ phận mới, mở khoá, mẹo chơi, Cài đặt, Hàm mới): thẻ trắng bo lớn trên lớp phủ chàm mờ */
+body.ve-vector #lop-hop{background:rgba(var(--g-vecChuRgb),.4)}                    /* không backdrop-filter: #stage co giãn bằng transform, mờ nền làm lặp mép */
+body.ve-vector .hop{padding:8px;background:var(--g-vecThe);background-image:none;border-radius:var(--r-lg);box-shadow:inset 0 0 0 1px var(--g-vecKe),var(--elev-3),0 2px 6px rgba(var(--g-vecBongRgb),.1)}
+body.ve-vector .hop-td{height:40px;margin:0 0 2px;padding:0 12px;background:none;color:var(--g-vecChu);font:700 18px/1.2 var(--px);letter-spacing:0;box-shadow:none}
+body.ve-vector .hop-than{padding:6px 12px 12px;background:none;background-image:none;box-shadow:none;color:var(--g-vecChu)}
+body.ve-vector .hop-chu{font:500 14px/1.45 var(--px);color:var(--g-vecChu)}
+body.ve-vector .hop-chu.nho{font-size:12.5px;color:var(--g-vecChuPhu)}
+body.ve-vector .hop-chu.canh{color:var(--g-vecHoPhachDam)}
+body.ve-vector .hop-hang{gap:10px}
+body.ve-vector .hop-nut{height:40px;padding-top:0;font:600 15px/1 var(--px);text-shadow:none}
+/* nút chính của hộp (Tiếp, Đã hiểu, Tạo, Đóng…: g-gr ở choi.css) tím chàm; nút nguy hiểm (Đồng ý xoá: g-rd) đỏ đặc */
+body.ve-vector .hop-nut.g-gr,body.ve-vector .ds-them.g-gr{color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.28)}
+body.ve-vector .hop-nut.g-rd{color:var(--g-vecThe);background:var(--g-vecLoi);box-shadow:0 4px 12px rgba(var(--g-vecLoiRgb),.25)}
+@media (hover:hover){
+  body.ve-vector .hop-nut.g-gr:hover,body.ve-vector .ds-them.g-gr:hover{background:var(--g-vecBrandDam);box-shadow:0 6px 16px rgba(var(--g-vecBrandRgb),.36)}
+  body.ve-vector .hop-nut.g-rd:hover{background:var(--g-vecLoiDam);box-shadow:0 6px 16px rgba(var(--g-vecLoiRgb),.32)}
+}
+body.ve-vector .hop-nut.g-gr:active,body.ve-vector .hop-nut.g-rd:active{box-shadow:none}
+/* ô nhập (tên hàm, danh sách) */
+body.ve-vector .hop-in,body.ve-vector .ds-in{border-radius:var(--r-sm);background:var(--g-vecThe);color:var(--g-vecChu);font:500 15px/1 var(--mono);box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam);transition:box-shadow .18s ease}
+body.ve-vector .ds-in{font-size:14px}
+body.ve-vector .hop-in:focus,body.ve-vector .ds-o.on .ds-in,body.ve-vector .ds-in:focus{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 3px rgba(var(--g-vecBrandRgb),.18)}
+body.ve-vector .hop-in[readonly],body.ve-vector .ds-in[readonly]{background:var(--g-vecTheLom);color:var(--g-vecChuPhu);box-shadow:inset 0 0 0 1.5px var(--g-vecKe)}
+body.ve-vector .hop-loi{font:600 13px/1.3 var(--px);color:var(--g-vecLoiDam)}
+body.ve-vector .hop-mo .chu{font:600 12.5px/1.3 var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .hop-loi .hop-mo .chu{color:var(--g-vecLoiDam)}
+body.ve-vector .hop-mo .hop-nut{padding:0 12px;font-size:13px;height:32px}
+body.ve-vector .chip{border-radius:var(--r-full);font:500 14px/1 var(--mono)}
+body.ve-vector .hop-ds{font:500 18px/1 var(--mono);color:var(--g-vecChu)}
+body.ve-vector .ds-x{width:18px;height:18px;padding:0;border-radius:50%;font:700 11px/1 var(--px);background:var(--g-vecLoi);color:var(--g-vecThe);box-shadow:0 0 0 2px var(--g-vecThe)}
+body.ve-vector .ds-them{padding:0 10px;font:600 13px/1 var(--px);text-shadow:none}
+body.ve-vector .ds-chip{border-radius:var(--r-full);padding-top:0;font:500 14px/1 var(--mono);text-shadow:none}
+body.ve-vector .ds-chip.on{color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:none}
+/* kết quả màn: sao bật ra mượt, dòng đạt / chưa, ghi chú, huy hiệu, lời khuyên, cách lắp khác */
+body.ve-vector .th-s{animation:vec-pop .45s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes vec-pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+body.ve-vector .th-s.on{filter:drop-shadow(0 2px 6px rgba(var(--g-vecDichRgb),.45))}
+body.ve-vector .th-dong{font:600 14px/1.25 var(--px);color:var(--g-vecChu)}
+body.ve-vector .th-dong.ok{color:var(--g-vecLaDam)}
+body.ve-vector .th-dong.chua{color:var(--g-vecLoiDam)}
+body.ve-vector .th-ghi,body.ve-vector .th-theo{font:500 12.5px/1.35 var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .th-ghi.tot{color:var(--g-vecLaDam)}
+body.ve-vector .th-huy{padding:8px 10px;border-radius:12px;background:var(--g-vecHoPhachNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecHoPhach)}
+body.ve-vector .th-huy .k{font:600 11px/1.2 var(--px);color:var(--g-vecHoPhachDam)}
+body.ve-vector .th-huy .v{font:700 15px/1.2 var(--px);color:var(--g-vecChu)}
+body.ve-vector .th-luu,body.ve-vector .th-cach{padding:7px 9px 6px;border-radius:12px;font:500 12px/1.35 var(--px);color:var(--g-vecChu);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .th-luu .k,body.ve-vector .th-cach .k{font:700 12px/1.2 var(--px);color:var(--g-vecBrandDam)}
+body.ve-vector .th-cach-em{font:500 11.5px/1.3 var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .th-cach-em .ten{color:var(--g-vecChu)}
+body.ve-vector .th-cach-dong{border-top:1px solid var(--g-vecKe)}
+body.ve-vector .th-cach-dong .ten{font:700 13px/1.2 var(--px);color:var(--g-vecChu)}
+body.ve-vector .th-cach-dong .chip{padding:2px 6px;border-radius:var(--r-full);font:700 10px/1 var(--px);color:var(--g-vecHoPhachDam);background:var(--g-vecHoPhachNhat)}
+body.ve-vector .th-cach-dong .so{font:600 12px/1.2 var(--px);color:var(--g-vecHoPhachDam)}
+body.ve-vector .th-cach-dong .gc{font:500 11.5px/1.3 var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .th-cach-dong.cung .ten{color:var(--g-vecLaDam)}
+body.ve-vector .th-cach-dong.hong .so{color:var(--g-vecLoiDam)}
+/* thẻ Bộ phận mới (the-part.js) */
+body.ve-vector .tp-hinh{border-radius:var(--r-md);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+/* robot vector ×1,2 (VeRobot.PHONG_NGOAI_SAN, vùng 9) cao tới ~75 px: nới trần 72 px của pixel và giữ đúng tỉ lệ (trần cũ làm méo hình) */
+body.ve-vector .tp-hinh-cv{max-width:76px;max-height:76px;object-fit:contain}
+body.ve-vector .tp-khe{font:700 11px/1 var(--px);color:var(--g-vecChuPhu);letter-spacing:.5px}
+body.ve-vector .tp-ten{font:700 22px/1.1 var(--px);color:var(--g-vecBrand);text-shadow:none}
+body.ve-vector .hop-part.doi-thu .tp-ten{color:var(--g-vecLoiDam)}
+body.ve-vector .tp-mota{font:500 14px/1.45 var(--px);color:var(--g-vecChu)}
+body.ve-vector .tp-muc{padding:8px 10px;border-radius:12px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .tp-muc-td{font:700 13px/1.2 var(--px);color:var(--g-vecBrandDam)}
+body.ve-vector .tp-muc.khong .tp-muc-td{color:var(--g-vecLoiDam)}
+body.ve-vector .tp-code{padding:2px 6px;border-radius:6px;font:500 13px/1.2 var(--mono);color:var(--g-vecChu);background:var(--g-vecMa);box-shadow:inset 0 0 0 1px var(--g-vecMaKe)}
+body.ve-vector .tp-code.nho{padding:1px 4px;font-size:12.5px;background:var(--g-vecMa);box-shadow:inset 0 0 0 1px var(--g-vecMaKe)}
+body.ve-vector .tp-chu{font:500 13px/1.35 var(--px);color:var(--g-vecChu)}
+body.ve-vector .tp-dau{font:700 13px/1.35 var(--px);color:var(--g-vecLaChu)}
+body.ve-vector .tp-muc.khong .tp-dau{color:var(--g-vecLoiDam)}
+body.ve-vector .tp-muc.luu .tp-dau{color:var(--g-vecHoPhachChu)}
+body.ve-vector .tp-ghep-ra{font:600 13px/1.3 var(--px);color:var(--g-vecLaChu)}
+body.ve-vector .tp-ghep+.tp-ghep{border-top:1px dashed var(--g-vecKeDam)}
+/* bảng mở khoá bộ phận */
+body.ve-vector .mk-loi{font:500 13.5px/1.4 var(--px);color:var(--g-vecChu)}
+body.ve-vector .mk-o{animation:vec-pop .45s cubic-bezier(.34,1.56,.64,1) forwards}
+body.ve-vector .mk-hinh{filter:drop-shadow(0 3px 8px rgba(var(--g-vecBrandRgb),.25))}
+body.ve-vector .mk-ten{font:600 11px/1.2 var(--px);color:var(--g-vecChu)}
+/* mẹo chơi (gioi-thieu.js): khung minh hoạ lõm, dòng code là ô mã, nút Chạy giả tím chàm */
+body.ve-vector .gt-hinh.chalk{border-radius:var(--r-md);background:var(--g-vecTheLom);background-image:none;box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .gt-dong{border-radius:7px;background:var(--g-vecMa);box-shadow:inset 0 0 0 1px var(--g-vecMaKe)}
+body.ve-vector .gt-dong .so{font:500 11px/1 var(--mono);color:var(--g-vecChuMo)}
+body.ve-vector .gt-dong .kc{color:var(--g-vecChu)}
+body.ve-vector .gt-chay{padding:0 12px 0 8px;font:600 15px/1 var(--px);color:var(--g-vecThe);background:var(--g-vecBrand);text-shadow:none;box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.3)}
+body.ve-vector .gt-sao{animation:vec-pop .5s cubic-bezier(.34,1.56,.64,1) both}
+body.ve-vector .gt-cham i,body.ve-vector .md-cham i{width:8px;height:8px;border-radius:50%;background:var(--g-vecKeDam);box-shadow:none;transition:background-color .2s ease,width .2s ease}
+body.ve-vector .gt-cham i.on{width:18px;border-radius:var(--r-full);background:var(--g-vecBrand)}
+/* Cài đặt (cai-dat.js) */
+body.ve-vector .cd-ten{font:600 15px/1.2 var(--px);color:var(--g-vecChu);padding-top:0}
+body.ve-vector .cd-dong.tat .cd-ten{color:var(--g-vecChuMo)}
+body.ve-vector .cd-nut{border-radius:var(--r-full);padding:0;font:600 18px/1 var(--px);text-shadow:none}
+body.ve-vector .cd-nut.g-gr{color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:none}
+body.ve-vector .cd-vach i{border-radius:3px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKeDam);transition:background-color .18s ease}
+body.ve-vector .cd-vach i.on{background:var(--g-vecBrand);box-shadow:none}
+body.ve-vector .cd-muc{font:600 15px/1 var(--mono);color:var(--g-vecBrand)}
+body.ve-vector .cd-sw{border-radius:var(--r-full);padding-top:0;font:600 13px/1 var(--px);text-shadow:none}
+body.ve-vector .cd-sw.bat{color:var(--g-vecThe);background:var(--g-vecLaDam);box-shadow:none;text-shadow:none}
+/* Kiểu vẽ (vùng 10): hai nút Nét mới / Điểm ảnh, nút đang dùng tím chàm */
+body.ve-vector .cd-kv{width:auto;min-width:0;padding:0 10px}
+body.ve-vector .cd-kv.bat{background:var(--g-vecBrand)}
+body.ve-vector .cd-son{padding:8px 8px 6px;border-radius:12px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .cd-son-dang{font:600 13px/1.2 var(--px);color:var(--g-vecChu);padding-top:0}
+body.ve-vector .cd-son-o{border-radius:10px;background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe),var(--elev-1);transition:box-shadow .18s ease,transform .18s ease}
+body.ve-vector .cd-son-o.on{background:var(--g-vecBrandNhat);box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-1)}
+body.ve-vector .cd-son-o.rung{animation:vec-rung .32s ease-in-out 1}
+@keyframes vec-rung{0%,100%{transform:none}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+body.ve-vector .cd-son-mau{border-radius:6px;box-shadow:inset 0 0 0 1px rgba(var(--g-vecVienRgb),.35)}
+body.ve-vector .cd-son-sao{font:600 11px/1 var(--mono);color:var(--g-vecHoPhachChu)}
+body.ve-vector .cd-son-o.khoa{opacity:1}
+body.ve-vector .cd-son-o.khoa .cd-son-mau{opacity:.5}                   /* màu chưa mở: mờ ô màu, giữ chữ số sao đủ tương phản (cả ô mờ .65 thì chữ còn 2,6:1) */
+body.ve-vector .cd-son-o.khoa .cd-son-sao{color:var(--g-vecChuPhu)}
+body.ve-vector .cd-son-tb{font:500 11.5px/1.25 var(--px);color:var(--g-vecHoPhachChu)}
+body.ve-vector .cd-cot .hop-nut.g-rd{color:var(--g-vecLoiDam);background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi),var(--elev-1)}   /* Xoá tiến độ: nằm giữa danh sách nút, viền đỏ chứ không đỏ đặc */
+@media (hover:hover){body.ve-vector .cd-cot .hop-nut.g-rd:hover{color:var(--g-vecLoiDam);background:var(--g-vecLoiNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecLoiDam),var(--elev-2)}}
+body.ve-vector .cd-ban,body.ve-vector .cd-phim-rong{font:500 12px/1.3 var(--px);color:var(--g-vecChuPhu)}
+
+/* --- bảng chọn số / chữ / điều kiện / màu / phần tử (TP.chonSo…): thẻ trắng nổi, ô chọn là nút trắng, ô đang chọn tím chàm */
+body.ve-vector .chon-so{padding:8px;border-radius:var(--r-md);background:var(--g-vecThe);background-image:none;box-shadow:inset 0 0 0 1px var(--g-vecKe),var(--elev-3)}
+body.ve-vector .chon-so .cs{border-radius:7px;padding-top:0;font:500 13px/1 var(--mono);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .chon-so .cs.on,body.ve-vector .chon-so .cs.bien.on,body.ve-vector .chon-so .cs.dk-nut.on{color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:none}
+body.ve-vector .chon-so .cs.bien{color:var(--g-vecHongDam)}
+body.ve-vector .chon-so .cs.bien.on{background:var(--g-vecHongDam)}
+body.ve-vector .chon-so .cs.dk-nut{padding:0 7px;font-size:11px;color:var(--g-vecCyanDam)}
+body.ve-vector .chon-so .cs.ghep-nut{padding:0 8px;font-size:11px;color:var(--g-vecChu)}
+body.ve-vector .chon-so .cs.cc-bs,body.ve-vector .chon-so .cs.ghep-nut.g-rd,body.ve-vector .chon-so .cs.ptu-bo{color:var(--g-vecThe);background:var(--g-vecLoi);box-shadow:none}
+body.ve-vector .chon-so .cs.cc-xong{color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:none}
+body.ve-vector .chon-so .cs.ptu-them{color:var(--g-vecLaDam)}
+body.ve-vector .chon-so .cs.mau-nut{padding:0 7px;font-size:12px;color:var(--g-vecThe);box-shadow:none}
+body.ve-vector .chon-so .cs.mau-nut[data-mau="red"]{background:var(--g-luatSanDo)}
+body.ve-vector .chon-so .cs.mau-nut[data-mau="green"]{background:var(--g-luatSanXanhLaToi)}
+body.ve-vector .chon-so .cs.mau-nut[data-mau="blue"]{background:var(--g-luatSanXanhDuong)}
+body.ve-vector .chon-so .cs.mau-nut[data-mau="yellow"]{background:var(--g-luatSanVang);color:var(--g-vecChu)}
+body.ve-vector .chon-so .cs.mau-nut[data-mau="none"]{background:var(--g-vecTheLom);color:var(--g-vecChu);box-shadow:inset 0 0 0 1px var(--g-vecKeDam)}
+body.ve-vector .chon-so .cs.mau-nut.on{outline:2px solid var(--g-vecBrand);outline-offset:2px}
+body.ve-vector .chon-so.muc .cs.muc-nut{padding:0 8px;font:600 12px/1 var(--px)}
+
+/* vùng chạm tối thiểu 24 × 24 (luật UI): nút nhỏ hơn mà khung không nới được (hàng tốc độ / Đề bài cao 22, nút cuộn khay rộng 20 / 22, "Hàm mới" cao 18,
+   nút khoá / sửa của khối hàm cao 22) được nới VÙNG BẤM vô hình bằng ::before, hình không đổi chỗ (cách bong bóng .bg-x của choi.css đã làm) */
+body.ve-vector .mini .bt,body.ve-vector .cuon-b,body.ve-vector .gl .nb,body.ve-vector .brick .ed{position:relative}
+body.ve-vector .brick .ed{position:absolute}
+body.ve-vector .mini .bt::before,body.ve-vector .cuon-b::before,body.ve-vector .gl .nb::before,body.ve-vector .brick .ed::before{content:"";position:absolute;left:-1px;right:-1px;top:-3px;bottom:-3px}
+
+/* ============================================================ 7. CHUYỂN ĐỘNG: bỏ steps() còn lại của màn chơi, tôn trọng prefers-reduced-motion
+   Các steps() của khối / dòng / hộp đã thay ở vùng 3–5 (vec-*); ở đây là phần còn lại của màn chơi. Phim mở đầu / phim gói (.md-*, .pg-*) và
+   màn ngoài màn chơi (.g-the, .c-man, .lr-*) để V5b / V6. Dòng code đổi chỗ (thanh-phan.js, Web Animations) cũng trượt mượt ở vector. */
+body.ve-vector .ffr.rung{animation:rung .32s ease-in-out 1}
+body.ve-vector .ws-ov{transition:transform .34s cubic-bezier(.16,1,.3,1)}
+body.ve-vector [data-nut="lap-lai"].nhay{animation:vec-nut-nhay 1.1s ease-in-out infinite alternate}
+@keyframes vec-nut-nhay{from{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}to{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.22)}}
+/* giảm chuyển động: mọi hoạt cảnh / chuyển tiếp của giao diện chạy tức thì, dừng ở khung cuối (các vec-* lặp đặt trạng thái rõ nhất ở 'to');
+   trừ phim (.md: hiện từng hình theo animation-delay, gói V6 làm lại) */
+@media (prefers-reduced-motion:reduce){
+  body.ve-vector #stage>:not(.md),body.ve-vector #stage>:not(.md) *,body.ve-vector #stage>:not(.md) *::before,body.ve-vector #stage>:not(.md) *::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
+}
