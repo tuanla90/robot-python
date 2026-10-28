@@ -72,7 +72,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (t2) { var m = tt.mat; tt = t2; if (vec && m && t2.mat === undefined) tt = Object.assign({}, t2, { mat: m }); }      // vector: biểu cảm giữ qua các lần đổi tư thế
       if (h2 !== undefined) hg = h2;
       var cv;
-      try { var rb = VeRobot.veCo(cfg, tt, hg, (tiLe || 3) * VeRobot.PX_O_PART); cv = Ve.mk(rb, VeRobot.heSoCss(rb)); }      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
+      try { var rb = VeRobot.veCo(cfg, tt, hg, (tiLe || 3) * VeRobot.PX_O_PART); cv = Ve.mk(rb, VeRobot.heSoCss(rb)); if (rb.laVector) cv.laVector = true; }      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
       catch (e) { cv = h('div'); }
       cv.classList.add('pxi');
       var w = parseFloat(cv.style && cv.style.width) || cv.width || 0, hh = parseFloat(cv.style && cv.style.height) || cv.height || 0;      // cỡ hiển thị (vector: canvas theo pixel thiết bị)
