@@ -392,9 +392,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Vạch bo tròn (x, y, w, h) màu mau (vạch màu robot chủ dưới chân cờ riêng). */
   function vach(g, x, y, w, h, mau) { H.bo(g, x, y, w, h, h / 2); g.fillStyle = mau; g.fill(); }
 
+  /** Gói V7a: DÂY NỐI nút ↔ cửa trên sàn: đường gấp khúc p = [[x, y] …] (pixel sân, đã cắt ở mép ô nút / cửa), góc bo nhẹ, chấm ổ cắm hai đầu.
+   *  Tắt: nét mảnh mờ trung tính (le: sân chỉ một dây, còn mờ hơn). Bật (nút đang bật): xanh lá như mặt nút bật, quầng mềm, vệt sáng chạy từ nút tới cửa (giảm chuyển động: đứng yên). */
+  function dayNoi(g, p, sang, le, now) {
+    function net() { g.beginPath(); g.moveTo(p[0][0], p[0][1]); for (var i = 1; i < p.length - 1; i++) g.arcTo(p[i][0], p[i][1], p[i + 1][0], p[i + 1][1], 2); g.lineTo(p[p.length - 1][0], p[p.length - 1][1]); }
+    g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (sang) {
+      net(); g.lineWidth = 2.6; g.strokeStyle = rgba(BM.vecDayNoiSangRgb, 0.22); g.stroke();
+      net(); g.lineWidth = 1; g.strokeStyle = rgba(BM.vecDayNoiSangRgb, 0.85); g.stroke();
+      if (!giam()) { g.setLineDash([1.6, 5]); g.lineDashOffset = -((now / 40) % 6.6); net(); g.lineWidth = 1; g.strokeStyle = rgba(BM.tiaTrangRgb, 0.8); g.stroke(); g.setLineDash([]); }
+    } else { net(); g.lineWidth = le ? 0.6 : 0.8; g.strokeStyle = rgba(BM.vecDayNoiRgb, le ? 0.22 : 0.34); g.stroke(); }
+    [p[0], p[p.length - 1]].forEach(function (q) { tron(g, q[0], q[1], sang ? 1.1 : 0.8); g.fillStyle = sang ? rgba(BM.vecDayNoiSangRgb, 0.95) : rgba(BM.vecDayNoiRgb, le ? 0.3 : 0.45); g.fill(); });
+    g.restore();
+  }
+
   V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep,
     tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong,
     bongVat: bongVat, toDo: toDo, bongElip: bongElip, vongHut: vongHut, vienLoi: vienLoi, ngam: ngam, vetCung: vetCung, sacLoe: sacLoe, thoSac: thoSac, bongDrone: bongDrone, thanhPin: thanhPin, theDan: theDan,
-    sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach };
+    sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach, dayNoi: dayNoi };
   if (typeof module === 'object' && module.exports) module.exports = V.HU;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -192,6 +192,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       (cfg.thung || []).forEach(function (o) { this.themThung(Math.floor(o.x), Math.floor(o.y)); }, this);   // thùng nặng thêm ngoài sân (sân thử của Xưởng): cùng thứ tự với SanHoc.chay
       var cat = cfg.catMep === undefined ? this.catMep : !!cfg.catMep, vg = cat ? this.vungCat() : { ox: 0, oy: 0, vw: w, vh: h };
       this.cfg.ox = vg.ox; this.cfg.oy = vg.oy; this.cfg.vw = vg.vw; this.cfg.vh = vg.vh;      // cửa sổ VẼ (ô): mọi tọa độ vẫn là tọa độ ô của lõi, chỉ canvas / lớp phủ dịch gốc về (ox, oy)
+      this.dungDayNoi(rows, cfg.noi, cfg.cuaNhip, vg);                                 // gói V7a: dây nối nút ↔ cửa (chỉ nhánh vector vẽ), đi trong cửa sổ vẽ
       var canhO = this.canhO(vg.vw, vg.vh), xuongDay = this.nhanDeLenO(vg, canhO);    // sân tự co giãn theo số ô nhìn thấy: ô to nhất mà cả sân còn lọt khung (xem canhO)
       if (xuongDay) canhO = Math.min(canhO, Math.floor(xuongDay / vg.vh));              // nhãn ⚠ sẽ đè lên ô có gì đó: sân nhường chỗ phía trên cho nhãn (canvas dính đáy khung)
       this.cv.style.alignSelf = xuongDay ? 'flex-end' : '';
@@ -333,6 +334,69 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         this.cuaDS.push({ x: x, y: y, mo0: ch === 'c', doc: !(dung && !ngang) });
       }
       (cuaNhip || []).forEach(function (cn) { this.cuaNhipBy[cn.x + ',' + cn.y] = { mo: cn.mo, dong: cn.dong, pha: cn.pha || 0 }; }, this);
+    },
+    /** Gói V7a: DÂY NỐI nút ↔ cửa (chỉ chế độ vector vẽ, veDayNoi): nút nào điều khiển cửa nào, theo đúng cách lõi san-hoc.js nối (xem "súng bóng" ở đó):
+     *  có cfg.noi thì theo từng nhóm { nut, cua } (nút không có trong noi không nối gì); không có noi thì MỌI nút N và nút đè M nối MỌI cửa không phải cửa nhịp.
+     *  Đường gấp khúc theo ô (đường rẻ nhất trên lưới ô): tránh đi ngang mặt nút / cửa khác (dễ hiểu nhầm là nối vào đó), ưu tiên ô tường (dây chìm trong tường,
+     *  ít vắt ngang sàn), ít góc rẽ; mỗi dây lệch song song một khoảng riêng (dây chung một hàng / cột không chồng lên nhau).
+     *  this.dayNoi = [{ nut: {x, y, ma: 'N' | 'M'}, cua: {x, y}, diem: [[x, y] … pixel sân], le }], le = sân chỉ một dây (nút → cửa hiển nhiên: vẽ mảnh hơn). */
+    dungDayNoi: function (rows, noi, cuaNhip, vg) {
+      var w = rows[0].length, h = rows.length, nut = [], cua = [], nhip = {}, cap = [], x, y, ch;
+      (cuaNhip || []).forEach(function (cn) { nhip[cn.x + ',' + cn.y] = true; });
+      for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+        ch = rows[y][x];
+        if (ch === 'N' || ch === 'M') nut.push({ x: x, y: y, ma: ch });
+        else if ((ch === 'C' || ch === 'c') && !nhip[x + ',' + y]) cua.push({ x: x, y: y });
+      }
+      function tim(ds, o) { for (var i = 0; i < ds.length; i++) if (o && ds[i].x === o.x && ds[i].y === o.y) return ds[i]; return null; }
+      if (Array.isArray(noi)) noi.forEach(function (g) { var n = tim(nut, g && g.nut); if (n) ((g && g.cua) || []).forEach(function (c) { var d = tim(cua, c); if (d) cap.push([n, d]); }); });
+      else nut.forEach(function (n) { cua.forEach(function (d) { cap.push([n, d]); }); });
+      vg = vg || { ox: 0, oy: 0, vw: w, vh: h };
+      function gia(a, b) {                                                                // ô ngoài cửa sổ vẽ (mép tường bị cắt) và ô nút / cửa khác: tránh; tường rẻ nhất
+        if (a < vg.ox || b < vg.oy || a >= vg.ox + vg.vw || b >= vg.oy + vg.vh) return 80;
+        var c = rows[b][a]; return c === 'N' || c === 'M' || c === 'C' || c === 'c' ? 60 : c === '#' ? 1 : 2.2;
+      }
+      function duong(a, b) {                                                              // đường rẻ nhất a → b theo ô (Dijkstra, trạng thái = ô + hướng vào, rẽ +1,5): danh sách ô
+        var VEC4 = [[1, 0], [0, 1], [-1, 0], [0, -1]], N = w * h * 4, kc = new Array(N), tr = new Array(N), xong = new Array(N), i, j, k, best, bi, x0, y0, nx, ny, cst;
+        for (i = 0; i < N; i++) kc[i] = Infinity;
+        for (k = 0; k < 4; k++) { kc[(a.y * w + a.x) * 4 + k] = 0; tr[(a.y * w + a.x) * 4 + k] = -1; }
+        for (;;) {
+          best = Infinity; bi = -1;
+          for (i = 0; i < N; i++) if (!xong[i] && kc[i] < best) { best = kc[i]; bi = i; }
+          if (bi < 0) return null;
+          xong[bi] = true; k = bi % 4; x0 = ((bi - k) / 4) % w; y0 = Math.floor((bi - k) / 4 / w);
+          if (x0 === b.x && y0 === b.y) break;
+          for (j = 0; j < 4; j++) {
+            nx = x0 + VEC4[j][0]; ny = y0 + VEC4[j][1]; if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+            cst = best + (nx === b.x && ny === b.y ? 0 : gia(nx, ny)) + (j !== k && !(x0 === a.x && y0 === a.y) ? 1.5 : 0);
+            i = (ny * w + nx) * 4 + j; if (cst < kc[i]) { kc[i] = cst; tr[i] = bi; }
+          }
+        }
+        var o = [], q = bi; while (q >= 0) { k = q % 4; o.unshift([((q - k) / 4) % w, Math.floor((q - k) / 4 / w)]); q = tr[q]; }
+        return o;
+      }
+      var le = cap.length === 1, buoc = cap.length > 1 ? Math.min(2.2, 8 / (cap.length - 1)) : 0;
+      this.dayNoi = cap.map(function (q, i) {
+        var a = q[0], b = q[1], o = duong(a, b) || [[a.x, a.y], [b.x, b.y]], goc = [o[0]], j;
+        for (j = 1; j < o.length - 1; j++) if ((o[j][0] - o[j - 1][0]) !== (o[j + 1][0] - o[j][0]) || (o[j][1] - o[j - 1][1]) !== (o[j + 1][1] - o[j][1])) goc.push(o[j]);   // chỉ giữ góc rẽ
+        goc.push(o[o.length - 1]);
+        var lech = (i - (cap.length - 1) / 2) * buoc;                                          // dây thứ i lệch song song (tổng bề rộng bó dây ≤ 8 pixel sân)
+        return { nut: a, cua: b, diem: goc.map(function (c) { return [c[0] * T + 7 + lech, c[1] * T + 7 + lech]; }), le: le };
+      });
+    },
+    /** Gói V7a (chỉ vector): vẽ dây nối this.dayNoi. Dây sáng (màu nút bật, xanh lá) khi nút của nó đang bật (N: nutT.bat, M: nutDeT), còn lại mờ trung tính.
+     *  Hai đầu cắt ở mép ô nút / ô cửa (không đè lên hình nút, cánh cửa), mỗi đầu một chấm ổ cắm. */
+    veDayNoi: function (g, now) {
+      var ds = this.dayNoi; if (!ds || !ds.length) return;
+      function cat(a, b, l) { var dx = b[0] - a[0], dy = b[1] - a[1], L = Math.abs(dx) + Math.abs(dy); if (L < 0.01) return; a[0] += dx / L * Math.min(l, L * 0.45); a[1] += dy / L * Math.min(l, L * 0.45); }   // lùi đầu a về phía b
+      for (var i = 0; i < ds.length; i++) {
+        var d = ds[i], kN = d.nut.x + ',' + d.nut.y, sang = d.nut.ma === 'M' ? !!this.nutDeT[kN] : !!(this.nutT[kN] && this.nutT[kN].bat);
+        var p = d.diem.map(function (q) { return [q[0], q[1]]; });
+        var n = p.length; if (n < 2) continue;
+        cat(p[0], p[1], 6);                                                                    // đầu nút: ra khỏi mặt nút
+        cat(p[n - 1], p[n - 2], 7);                                                            // đầu cửa: dừng ở mép ô cửa
+        HU().dayNoi(g, p, sang, d.le, now);
+      }
     },
     /** Trạng thái hiển thị ban đầu của nút, cửa, băng chuyền: nút tắt (trừ nút bật sẵn cfg.nutBat: bật, nóng ngay khung đầu), cửa theo ký hiệu (cửa nhịp: theo pha), băng chạy hết. */
     datLaiCua: function () {
@@ -2124,6 +2188,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         else if (ch === 'C' || ch === 'c') this.veMotCua(g, this.cuaT[kO], now);
         if (ch === '=') g.drawImage(TL.rao((x > 0 && c.rows[y][x - 1] === '=' ? 1 : 0) | (x < c.w - 1 && c.rows[y][x + 1] === '=' ? 2 : 0) | (y > 0 && c.rows[y - 1][x] === '=' ? 4 : 0) | (y < c.h - 1 && c.rows[y + 1][x] === '=' ? 8 : 0)), x * T, y * T);
       }
+      if (this.vec) this.veDayNoi(g, now);                     // gói V7a: dây nối nút ↔ cửa mờ trên sàn, sáng khi nút bật (dưới vật và xe)
       this.veSon(g, now);                                      // máy sơn: hình mờ cần tô + ô đã tô (trên sàn, dưới vật và xe)
       this.veDichTrong(g, now);
       this.veVat(g, TL, now);
