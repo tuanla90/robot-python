@@ -1840,7 +1840,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     /** Hình một bộ phận cho tiêu đề thẻ: { loai: 'than' | 'tay', ma } → canvas đã cắt lề trong suốt (bộ PART, part/part.js), hay null nếu chưa nạp bộ PART / không có mã. */
     function hinhPart(bp) {
-      if (!bp || !bp.ma || !window.Part || !Part._veMot || !window.Ve) return null;
+      if (!bp || !bp.ma) return null;
+      if (window.VeVector && VeVector.bat() && window.VeIcon && VeIcon.hinhPartVec) {        // V7b (gỡ C3): vector vẽ thẳng hình bộ phận bằng VeVector (cạnh 56 px thiết bị, đã cắt lề), lớp vi-part như trước
+        var cvv = VeIcon.hinhPartVec(bp); if (!cvv) return null;
+        cvv.className = 'pxi vi-part'; return cvv;
+      }
+      if (!window.Part || !Part._veMot || !window.Ve) return null;
       var k = bp.loai + '/' + bp.ma;
       if (!(k in HINH_PART)) {
         HINH_PART[k] = null;
@@ -2613,6 +2618,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var than = h('div', 'hop-than'); hop.appendChild(than);
     g.appendChild(hop);
     for (var i = 0; i < 4; i++) hop.appendChild(h('i', 'rv ' + 'abcd'.charAt(i)));
+    if (window.VeIcon && VeIcon.thay) Promise.resolve().then(function () { VeIcon.thay(g); });      // V7b: nút chỉ icon trong hộp có title (sau khi người gọi dựng xong nội dung)
     return { hop: hop, than: than, nut: null };
   }
   function nut(mau, chu, khiBam, ten) {

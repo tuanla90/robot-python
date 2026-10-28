@@ -211,7 +211,7 @@ console.log('\n== B. Icon: Ve.ico / sao / khoa / mui trả thẳng svg ở vecto
   if (nutChu.hasAttribute('title')) sai.push('nút có chữ bị thêm title');
   if (nutNgoai.hasAttribute('title')) sai.push('nút ngoài #stage bị thêm title');
   if (nut.con[0] !== c2) sai.push('canvas có nhãn bị thay (V7b: ve.js đã trả svg thẳng, thay() không đụng icon)');
-  kiem('(B3) VeIcon.thay (DOM giả, V7b): chỉ thêm title cho nút chỉ icon có aria-label trong #stage (nút có chữ / ngoài #stage không), không thay canvas icon nữa', !sai.length && n === 0, sai.join(' | ') + ' · thay ' + n);
+  kiem('(B3) VeIcon.thay (DOM giả, V7b): chỉ thêm title cho nút chỉ icon có aria-label trong #stage (nút có chữ / ngoài #stage không), không thay canvas icon nữa; không còn MutationObserver / móc drawImage', !sai.length && n === 1 && !/new root\.MutationObserver|prototype\.drawImage = |var DAU_PART|function noiPart|function thayPart|function noiVe/.test(nguon('ve-vector-icon.js')), sai.join(' | ') + ' · thay ' + n);
 }
 
 /* ================================================================= C. cảnh mở màn */

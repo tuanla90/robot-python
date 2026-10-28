@@ -6,7 +6,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    điểm ảnh có nhãn phải thay sau, không MutationObserver cho icon. Màu: fill / stroke = currentColor, nên MÀU THEO VAI đặt bằng CSS (giao-dien-vector-b.css mục 8:
    color: var(--g-vec…)); chi tiết phụ (lỗ khoá, vành xu…) mang lớp `vi2`. Phim vẽ cùng bộ hình lên canvas (veCanvas). Pixel (không body.ve-vector): không làm gì.
    Một phạm vi PHAM_VI = '#stage' (cả khung game): nút chỉ có icon trong đó có aria-label mà thiếu title thì được thêm title cùng chữ (luật UI, datTitle), chỉ ở vector.
-   Còn lại (V7b việc 9 gỡ tiếp): hình bộ phận thật ở tiêu đề thẻ khay (thayPart / noiPart: móc Part._veMot + drawImage) thay qua MutationObserver trên #stage.
+   Hình bộ phận thật ở tiêu đề thẻ khay: thanh-phan.js gọi thẳng hinhPartVec (V7b việc 9 gỡ C3: không móc Part._veMot / drawImage, không MutationObserver).
    ========================================================================== */
 (function (root) {
   'use strict';
@@ -232,11 +232,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return e;
   }
   /* V7b việc 8: cầu C2 (noiVe: chuyển style / classList của canvas đã gỡ sang svg) và thayMot đã gỡ: ve.js trả svg thẳng, người gọi giữ đúng phần tử đang hiện. */
-  /* ---- hình BỘ PHẬN THẬT ở tiêu đề thẻ khay (thanh-phan.js hinhPart: Part._veMot → cắt lề → Ve.mk, ảnh điểm ảnh không nhãn).
-     Ở vector: Part._veMot đánh dấu canvas bộ phận (_partVi = { loai, ma }), dấu đi theo drawImage sang canvas chép (cắt lề, Ve.mk); canvas có dấu nằm trong
-     tiêu đề thẻ (.co-part) được thay bằng hình bộ phận vẽ bằng VeVector (thân: VeVector.robot không tay; tay: hình tay đứng một mình), cùng cỡ chỗ đặt.
-     Cùng chỗ nối: canvas MỚI mà lần vẽ đầu là chép một hình vector (.laVector, ví dụ the-part.js / mo-dau.js cắt lề robot) cũng mang .laVector. */
-  var DAU_PART = '_partVi';
+  /* ---- hình BỘ PHẬN THẬT ở tiêu đề thẻ khay (thanh-phan.js hinhPart): V7b việc 9 (gỡ C3) thanh-phan.js ở vector gọi thẳng hinhPartVec({ loai, ma }),
+     không còn móc Part._veMot + CanvasRenderingContext2D.prototype.drawImage toàn cục (noiPart) và MutationObserver thay sau (thayPart); the-part.js / mo-dau.js
+     tự chép cờ .laVector sang bản cắt lề. */
   function catLe(cv) {
     var g = cv.getContext('2d'), w = cv.width, hh = cv.height, d = g.getImageData(0, 0, w, hh).data, x0 = w, y0 = hh, x1 = -1, y1 = -1, x, y;
     for (y = 0; y < hh; y++) for (x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
@@ -261,71 +259,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     } catch (e) { return null; }
     var c = catLe(cv); c.laVector = true; return c;
   }
-  function thayPart(c) {
-    var moi = hinhPartVec(c[DAU_PART]); if (!moi || !c.parentNode) return null;
-    moi.className = (c.getAttribute('class') || 'pxi') + ' vi-part';
-    c.parentNode.replaceChild(moi, c);
-    return moi;
-  }
-  var daNoiPart = false;
-  function noiPart() {
-    var P = root.Part, C2 = root.CanvasRenderingContext2D;
-    if (daNoiPart || !P || !P._veMot || !C2 || !C2.prototype.drawImage) return false;
-    daNoiPart = true;
-    var ve0 = P._veMot;
-    P._veMot = function (d) {
-      var p = ve0.apply(this, arguments);
-      if (p && p.canvas && d && d.ma) { var c0 = p.canvas; p.canvas = function () { var cv = c0.apply(p, arguments); if (cv) cv[DAU_PART] = { loai: d.loai, ma: d.ma }; return cv; }; }
-      return p;
-    };
-    var di0 = C2.prototype.drawImage;
-    C2.prototype.drawImage = function (nguon) {
-      var dich = this.canvas;
-      if (dich && nguon) {
-        if (nguon[DAU_PART] && !dich[DAU_PART]) dich[DAU_PART] = nguon[DAU_PART];
-        if (nguon.laVector && dich._daVe === undefined && !dich.laVector) dich.laVector = true;    // bản chép (cắt lề) của hình vector, lần vẽ ĐẦU vào canvas mới: Ve.mk không phóng điểm ảnh
-        dich._daVe = 1;
-      }
-      return di0.apply(this, arguments);
-    };
-    return true;
-  }
   /** Nút chỉ có icon (không chữ) mang aria-label mà thiếu title: thêm title cùng chữ (luật UI: title + aria-label). */
   function datTitle(b) {
-    if (b.hasAttribute('title') || !b.getAttribute('aria-label')) return;
-    if ((b.textContent || '').trim()) return;
+    if (b.hasAttribute('title') || !b.getAttribute('aria-label')) return false;
+    if ((b.textContent || '').trim()) return false;
     b.setAttribute('title', b.getAttribute('aria-label'));
-  }
-  /** Thay mọi icon có nhãn trong goc (chỉ phần nằm trong PHAM_VI / PHAM_VI_CHOI). Trả số icon đã thay. */
-  function thay(goc) {
-    if (!giaoDienVec() || !goc || !goc.querySelectorAll) return 0;
-    var n = 0, i, ds = [];
-    if (goc.tagName === 'CANVAS') ds.push(goc);
-    var cs = goc.querySelectorAll('canvas.pxi'); for (i = 0; i < cs.length; i++) ds.push(cs[i]);
-    for (i = 0; i < ds.length; i++) {
-      var c = ds[i];                                                     // V7b: icon có nhãn _vi không thay nữa (ve.js đã trả svg thẳng); chỉ còn hình bộ phận (C3)
-      if (!c._vi && c[DAU_PART] && !c.laVector && c.closest && c.closest('.co-part') && thayPart(c)) n++;
-    }
-    var bs = goc.tagName === 'BUTTON' ? [goc] : goc.querySelectorAll('button[aria-label]:not([title])');
-    for (i = 0; i < bs.length; i++) if (trongPhamVi(bs[i])) datTitle(bs[i]);
-    return n;
-  }
-  var quanSat = null;
-  /** Bắt đầu theo dõi #stage (gọi một lần khi nạp, sau VeVector.apGiaoDien). */
-  function batDau() {
-    var d = root.document; if (!giaoDienVec() || quanSat || !root.MutationObserver) return false;
-    noiPart();
-    var st = (d.getElementById && d.getElementById('stage')) || d.body;
-    quanSat = new root.MutationObserver(function (ds) {
-      for (var i = 0; i < ds.length; i++) for (var j = 0; j < ds[i].addedNodes.length; j++) { var nd = ds[i].addedNodes[j]; if (nd.nodeType === 1) thay(nd); }
-    });
-    quanSat.observe(st, { childList: true, subtree: true });
-    thay(st);
     return true;
   }
-
-  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, svg: svg, hinhPartVec: hinhPartVec, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
+  /** V7b: quét nút chỉ có icon trong goc (phần nằm trong PHAM_VI) thêm title (luật UI). Trả số nút đã thêm. Gọi khi dựng xong màn (ung-dung.js App.hien)
+   *  và hộp (thanh-phan.js Hop.mo); chỉ ở vector. Không còn MutationObserver, không còn thay canvas. */
+  function thay(goc) {
+    if (!giaoDienVec() || !goc || !goc.querySelectorAll) return 0;
+    var n = 0, i, bs = goc.tagName === 'BUTTON' ? [goc] : goc.querySelectorAll('button[aria-label]:not([title])');
+    for (i = 0; i < bs.length; i++) if (trongPhamVi(bs[i]) && datTitle(bs[i])) n++;
+    return n;
+  }
+  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, svg: svg, hinhPartVec: hinhPartVec, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, co: function (ten) { return !!HINH[ten]; } };
   root.VeIcon = VeIcon;
   if (typeof module === 'object' && module.exports) module.exports = VeIcon;
-  if (root.document && root.document.body) batDau();
 })(typeof window !== 'undefined' ? window : this);

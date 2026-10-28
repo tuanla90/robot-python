@@ -42,7 +42,7 @@
       if (x1 < 0) return cv;
       var c = document.createElement('canvas'); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
       var g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(cv, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
-      c.laPart = cv.laPart;
+      c.laPart = cv.laPart; c.laVector = cv.laVector;                     // V7b: cờ vector tự chép (hết móc drawImage), Ve.mk không phóng điểm ảnh hình vector
       return c;
     } catch (e) { return cv; }
   }
