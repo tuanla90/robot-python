@@ -4,10 +4,10 @@
    với DOM + canvas giả (không trình duyệt, nhẹ), cộng đọc nguồn CSS.
      A. Một bộ icon: mọi tên icon game dùng (Ve.ico, data-i, đèn bộ phận, thẻ khay, vật Xưởng hàm, thụt lề, mũi tên bong bóng, trùm) có trong VeIcon.HINH;
         phim-vector.js không còn bộ ICON riêng (không tên trùng), PhimVector.ico vẽ MỌI tên của VeIcon.HINH lên canvas vector bằng VeIcon.veCanvas (không NaN).
-     B. Icon (V7b, gỡ cầu C1 / C5): một phạm vi VeIcon.PHAM_VI = #stage; ở vector Ve.ico / sao / khoa / mui trả THẲNG <svg class="pxi vi vi-<tên>"> cỡ = cạnh lớn bản
-        pixel × s, có nhãn _vi (pixel vẫn canvas có nhãn); VeIcon.thay trong DOM giả chỉ còn thêm title cho nút chỉ icon trong #stage, không thay canvas icon.
-     C. Cảnh mở màn (mo-dau.js): ở vector mọi canvas trong 6 khung là hình vector, không gọi Painter pixel / Ve.tiles / Ve.ico khi chiếu; R1 có mắt biểu cảm;
-        cùng số hình mỗi khung như pixel; ở pixel cây DOM + lệnh vẽ của 6 khung y như bản nền 4ac900f.
+     B. Icon (V7b, gỡ cầu C1 / C5): một phạm vi VeIcon.PHAM_VI = #stage; Ve.ico / sao / khoa / mui trả THẲNG <svg class="pxi vi vi-<tên>"> cỡ = cạnh lớn của bảng
+        CO_ICON (V7c1: bảng số cố định trong ve.js, không đọc lưới pixel) × s, có nhãn _vi; VeIcon.thay trong DOM giả chỉ còn thêm title cho nút chỉ icon trong #stage.
+     C. Cảnh mở màn (mo-dau.js): mọi canvas trong 6 khung là hình vector, không gọi Painter pixel / Ve.tiles / Ve.ico khi chiếu; R1 có mắt biểu cảm;
+        (C3-v, V7c1) cây DOM + lệnh vẽ của 6 khung y như bản nền vector c830c12 (phanh pixel C3 so 4ac900f đã gỡ).
      D. Phim .md / .pg-*: choi-vector.css không còn giữ mực / kem pixel cho .md, giảm chuyển động áp cả phim; mọi luật .md-* / .pg-* của choi.css có steps() /
         bóng chữ đều có luật vector đặt lại (giao-dien-vector-b.css hoặc choi-vector.css); luật vector của phim không phông pixel, không màu kem / mực pixel,
         nền ô cảnh không còn ảnh bảng phấn.
@@ -22,7 +22,6 @@ import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const NEN = '4ac900f';                                 // nhánh V6c tạo từ đây: mo-dau.js / phim-vector.js trước V6c
 const NEN_VEC = 'c830c12';                             // V7c1 (28/10): nền VECTOR = nhánh chính sau khi gộp V7b; C3-v so 6 khung mở đầu vector với nền này (phanh thay C3 khi gỡ pixel)
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
@@ -36,7 +35,7 @@ function kiem(ten, ok, chiTiet) {
 }
 const doc = (f) => fs.readFileSync(path.join(GAME, f), 'utf8');
 const docTai = (sha) => (f) => { try { return execFileSync('git', ['-C', goc, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { return null; } };
-const docNen = docTai(NEN), docNenVec = docTai(NEN_VEC);
+const docNenVec = docTai(NEN_VEC);
 
 /* ---------------------------------------------------------------- lỗi giả (đổi nguồn trong bộ nhớ) */
 const SUA = {};
@@ -101,7 +100,7 @@ function taoDom() {
 const dsTep = (html) => [...html.matchAll(/<script src="([\w./-]+\.js)"/g)].map((m) => m[1])
   .filter((f) => /^(bang-mau|chu|ve|ve-vector[\w-]*|huy-hieu-vector|ve-robot|huy-hieu|mo-dau|phim-vector|phim-goi|phim-mua-\d+|part\/[\w-]+)\.js$/.test(f));
 const DS_TEP = dsTep(doc('choi.html'));
-/** nenMoDau: true = mo-dau.js của NEN (pixel); 'vec' = MỌI tệp của NEN_VEC (nền vector, V7c1). */
+/** nenMoDau: 'vec' = MỌI tệp của NEN_VEC (nền vector, V7c1). cheDo chỉ còn 'vector' (game luôn vector). */
 function napGame(cheDo, nenMoDau) {
   const El = taoDom(), stage = new El('div'), body = new El('body'), hen = [], canhBao = [];
   const ctx = {
@@ -117,12 +116,11 @@ function napGame(cheDo, nenMoDau) {
   vm.runInContext('var TP = { h: function (tag, cls, chu) { var e = document.createElement(tag); if (cls) e.className = cls; if (chu !== undefined && chu !== null) e.textContent = chu; return e; } };', ctx);
   for (const f of (nenMoDau === 'vec' ? dsTep(docNenVec('choi.html')) : DS_TEP)) {
     if (nenMoDau === 'vec') { vm.runInContext(docNenVec(f), ctx, { filename: 'nen-vec:' + f }); continue; }
-    if (nenMoDau && f === 'mo-dau.js') { vm.runInContext(docNen(f), ctx, { filename: 'nen:' + f }); continue; }
     vm.runInContext(nguon(f), ctx, { filename: f });
   }
   return { ctx, El, stage, hen, canhBao };
 }
-const PX = napGame('pixel'), VE = napGame('vector'), NEN_G = docNen('mo-dau.js') ? napGame('pixel', true) : null, NEN_V = docNenVec('mo-dau.js') ? napGame('vector', 'vec') : null;
+const VE = napGame('vector'), NEN_V = docNenVec('mo-dau.js') ? napGame('vector', 'vec') : null;
 
 /* ================================================================= A. một bộ icon */
 console.log('== A. Một bộ icon (ve-vector-icon.js) ==');
@@ -168,22 +166,24 @@ console.log('\n== B. Icon: Ve.ico / sao / khoa / mui trả thẳng svg ở vecto
   kiem('(B1) V7b: một hằng phạm vi VeIcon.PHAM_VI = #stage (cả khung game: mọi màn, #lop-hop, phim .md), không còn PHAM_VI_CHOI', !!VI && pv === '#stage' && !('PHAM_VI_CHOI' in VI), J(pv));
 }
 {
-  const V = VE.ctx.Ve, P = PX.ctx.Ve, sai = [];
+  const V = VE.ctx.Ve, sai = [];
+  const CO = { menu: [12, 10], edit: [9, 9], xu: [13, 13], star: [11, 10], lock: [12, 14], lockNho: [10, 11], mui: [10, 9] };   // V7c1: cỡ bản pixel đã chốt thành bảng (ve.js CO_ICON); đây là bản chép để máy kiểm độc lập
   const lop = (e) => ((e && e.getAttribute && e.getAttribute('class')) || '').split(/\s+/);
   const la = (e, ten, phu) => !!e && e.tag === 'svg' && lop(e).includes('pxi') && lop(e).includes('vi') && lop(e).includes('vi-' + ten) && (!phu || lop(e).includes(phu));
-  const cap = [['ico menu', V.ico('menu', 2), P.ico('menu', 2), 'menu'], ['ico edit', V.ico('edit', 2), P.ico('edit', 2), 'edit'], ['ico xu tắt', V.ico('xu', 1, { fill: VE.ctx.BangMau.xamToi2V4 }), P.ico('xu', 1, { fill: PX.ctx.BangMau.xamToi2V4 }), 'xu', 'tat'],
-    ['sao tắt', V.sao(false, 2), P.sao(false, 2), 'star', 'tat'], ['sao bật', V.sao(true, 4), P.sao(true, 4), 'star'], ['khoa nhỏ', V.khoa(1, true), P.khoa(1, true), 'lock'], ['khoa', V.khoa(2), P.khoa(2), 'lock'], ['mui', V.mui('#f00', 2), P.mui('#f00', 2), 'mui']];
-  for (const [ten, v, p, hinh, phu] of cap) {
+  const cap = [['ico menu', V.ico('menu', 2), 2, 'menu'], ['ico edit', V.ico('edit', 2), 2, 'edit'], ['ico xu tắt', V.ico('xu', 1, { fill: VE.ctx.BangMau.xamToi2V4 }), 1, 'xu', 'tat'],
+    ['sao tắt', V.sao(false, 2), 2, 'star', 'tat'], ['sao bật', V.sao(true, 4), 4, 'star'], ['khoa nhỏ', V.khoa(1, true), 1, 'lock', '', 'lockNho'], ['khoa', V.khoa(2), 2, 'lock'], ['mui', V.mui('#f00', 2), 2, 'mui']];
+  for (const [ten, v, s, hinh, phu, bang] of cap) {
     if (!la(v, hinh, phu)) sai.push(ten + ': vector không ra svg pxi vi vi-' + hinh + (phu ? '.' + phu : '') + ' (' + (v && v.tag) + ' ' + lop(v).join('.') + ')');
-    if (!p || p.tag !== 'canvas' || !p._vi) { sai.push(ten + ': pixel phải là canvas có nhãn _vi'); continue; }
-    const k = Math.max(parseFloat(p.style.width), parseFloat(p.style.height)) + 'px';
+    const k = Math.max(...CO[bang || hinh]) * s + 'px';
     if (v && (v.style.width !== k || v.style.height !== k)) sai.push(ten + ': cỡ svg ' + v.style.width + ' × ' + v.style.height + ' ≠ cạnh lớn bản pixel ' + k);
     if (v && (!v._vi || v._vi.ten !== hinh)) sai.push(ten + ': svg thiếu nhãn _vi');
   }
   const src = nguon('ve-vector-icon.js'), veJs = doc('ve.js');
   if (!/function svg\(ten, k, tuyChon, phu\)/.test(src)) sai.push('ve-vector-icon.js thiếu VeIcon.svg');
   if (!/function svgVec\(ten, s, tuyChon, phu, nho\)/.test(veJs) || !/else if \(ten === 'trum'\) node = svgVec\('trum', s, null,/.test(veJs)) sai.push('ve.js thiếu svgVec / hydrate trum chưa qua svgVec');
-  kiem('(B2) V7b: ở vector Ve.ico / sao / khoa / mui trả thẳng <svg class="pxi vi vi-<tên>"> (sao / xu tắt thêm .tat), cỡ = cạnh lớn bản pixel × s, có nhãn _vi, không vẽ canvas điểm ảnh; pixel vẫn canvas có nhãn; hydrate trum qua svgVec', !sai.length, sai.join(' | '));
+  if (!/var CO_ICON = \{/.test(veJs) || !/function coIcon\(ten, nho\) \{ return \(nho && ten === 'lock' \? CO_ICON\.lockNho : CO_ICON\[ten\]\) \|\| null; \}/.test(veJs) || /!giaoDienVec\(\) \|\| !VI/.test(veJs)) sai.push('ve.js svgVec chưa dùng bảng CO_ICON / còn rẽ theo body.ve-vector (V7c1)');
+  if (!/trum: \[24, 24\]/.test(nguon('phim-vector.js'))) sai.push('phim-vector.js RIENG trum chưa 24 × 24');
+  kiem('(B2) V7b / V7c1: Ve.ico / sao / khoa / mui trả thẳng <svg class="pxi vi vi-<tên>"> (sao / xu tắt thêm .tat), cỡ = cạnh lớn bảng CO_ICON × s, có nhãn _vi; ve.js không đọc lưới pixel / không rẽ theo chế độ; phim-vector trùm 24; hydrate trum qua svgVec', !sai.length, sai.join(' | '));
 }
 {
   // DOM giả nhỏ có closest / querySelectorAll để chạy VeIcon.thay như trình duyệt: V7b chỉ còn quét title cho nút chỉ icon, KHÔNG thay canvas có nhãn nữa
@@ -228,7 +228,7 @@ function chieuMoDau(G, n) {
   let vong = 0; while (G.hen.length && vong++ < 50) G.hen.splice(0).forEach((f) => f());
   return lop.querySelector('md-khung');
 }
-const SO = PX.ctx.MoDau.SO_KHUNG;
+const SO = VE.ctx.MoDau.SO_KHUNG;
 {
   const V = VE.ctx, dem = { painter: 0, tiles: 0, ico: 0 }, g0 = { canvas: V.Ve.Painter.prototype.canvas, tiles: V.Ve.tiles, ico: V.Ve.ico };
   V.Ve.Painter.prototype.canvas = function () { dem.painter++; return g0.canvas.apply(this, arguments); };
@@ -243,38 +243,17 @@ const SO = PX.ctx.MoDau.SO_KHUNG;
     soHinh.push(k.tim((e) => e.classList.contains('md-a')).length);
   }
   V.Ve.Painter.prototype.canvas = g0.canvas; V.Ve.tiles = g0.tiles; V.Ve.ico = g0.ico;
-  const soPx = []; for (let n = 1; n <= SO; n++) soPx.push(chieuMoDau(PX, n).tim((e) => e.classList.contains('md-a')).length);
   VE.canhBao.slice(cb0).forEach((s) => loi.push(s));
-  kiem('(C1) vector: ' + SO + ' khung mở đầu mọi canvas là hình vector, không gọi Painter pixel / Ve.tiles / Ve.ico khi chiếu; số hình mỗi khung bằng pixel (' + soHinh.join(' ') + ')',
-    !sai.length && !loi.length && !dem.painter && !dem.tiles && !dem.ico && J(soHinh) === J(soPx), sai.concat(loi).slice(0, 5).join(' | ') + ' · Painter ' + dem.painter + ', tiles ' + dem.tiles + ', ico ' + dem.ico + ' · pixel ' + soPx.join(' '));
+  kiem('(C1) vector: ' + SO + ' khung mở đầu mọi canvas là hình vector, không gọi Painter pixel / Ve.tiles / Ve.ico khi chiếu; số hình mỗi khung 3 7 7 2 3 3 (' + soHinh.join(' ') + ')',
+    !sai.length && !loi.length && !dem.painter && !dem.tiles && !dem.ico && J(soHinh) === J([3, 7, 7, 2, 3, 3]), sai.concat(loi).slice(0, 5).join(' | ') + ' · Painter ' + dem.painter + ', tiles ' + dem.tiles + ', ico ' + dem.ico);
 }
 {
   const V = VE.ctx, g0 = V.VeRobot.veCo, mat = [];
   V.VeRobot.veCo = function (cfg, tt) { if (tt && tt.mat) mat.push(tt.mat); return g0.apply(this, arguments); };
   for (let n = 1; n <= SO; n++) chieuMoDau(VE, n);
   V.VeRobot.veCo = g0;
-  const P = PX.ctx, g1 = P.VeRobot.veCo, matPx = [];
-  P.VeRobot.veCo = function (cfg, tt) { if (tt && tt.mat) matPx.push(tt.mat); return g1.apply(this, arguments); };
-  for (let n = 1; n <= SO; n++) chieuMoDau(PX, n);
-  P.VeRobot.veCo = g1;
   const ks = [...new Set(mat)];
-  kiem('(C2) vector: R1 của cảnh mở màn có mắt biểu cảm (' + ks.join(', ') + '); pixel không nhận trường mat', ks.includes('ngac') && ks.includes('vui') && ks.includes('xoay') && !matPx.length, J({ ks, matPx }));
-}
-{
-  if (!NEN_G) kiem('(C3) cần git và commit nền ' + NEN, false, 'git show lỗi');
-  else {
-    const ma2 = new Map(); let so = 0;
-    const tuan = (cv, sau) => { if (!ma2.has(cv)) ma2.set(cv, 'C' + (++so)); if (sau > 3) return ma2.get(cv); return cv._w + 'x' + cv._h + '[' + (cv._data ? cv._data.length + ':' + cv._data.slice(0, 80) : '') + '|' + J(cv.__ctx.lenh).replace(/cv#\d+/g, 'cv') + '|' + cv.nguon.map((x) => tuan(x, sau + 1)).join(';') + ']'; };
-    const boNhan = (st) => { const o = Object.assign({}, st); delete o.setProperty; delete o.removeProperty; return o; };
-    const cay = (e) => (e.__cv ? 'canvas{' + J(boNhan(e.style)) + tuan(e, 0) + '}' : e.tag + '.' + e.className + J(boNhan(e.style)) + J(e.attrs) + (e._text || '') + '(' + e.children.map(cay).join(',') + ')');
-    const khac = [];
-    for (let n = 1; n <= SO; n++) {
-      ma2.clear(); so = 0; const a = cay(chieuMoDau(PX, n));
-      ma2.clear(); so = 0; const b = cay(chieuMoDau(NEN_G, n));
-      if (a !== b) { let i = 0; while (i < a.length && a[i] === b[i]) i++; khac.push('khung ' + n + ' lệch ở ký tự ' + i + ': …' + a.slice(Math.max(0, i - 60), i + 60) + ' / …' + b.slice(Math.max(0, i - 60), i + 60)); }
-    }
-    kiem('(C3) pixel y nguyên: cây DOM + lệnh vẽ của ' + SO + ' khung mở đầu (sau mọi hẹn giờ) bản mới = mo-dau.js bản ' + NEN, !khac.length, khac.slice(0, 2).join('\n      '));
-  }
+  kiem('(C2) vector: R1 của cảnh mở màn có mắt biểu cảm (' + ks.join(', ') + ')', ks.includes('ngac') && ks.includes('vui') && ks.includes('xoay'), J({ ks }));
 }
 {
   if (!NEN_V) kiem('(C3-v) cần git và commit nền vector ' + NEN_VEC, false, 'git show lỗi');

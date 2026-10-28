@@ -223,7 +223,7 @@ console.log('\n== g. Nút chỉ có icon có title ==');
 }
 
 /* ================================================================= i. Cài đặt: mục Màu sơn R1 ẩn ở vector */
-console.log('\n== i. Cài đặt: "Màu sơn R1" ẩn ở vector (R1 cố định màu đội), pixel còn ==');
+console.log('\n== i. Cài đặt (V7c1): không còn "Màu sơn R1" lẫn "Kiểu vẽ", còn Biểu cảm mắt ==');
 {
   let caiDat = doc('cai-dat.js');
   if (LOI_GIA) caiDat = caiDat.replace('hop.than.appendChild(hangMat());', "hop.than.appendChild(hangMat()); var _s = h('div'); _s.setAttribute('data-cd', 'son'); hop.than.appendChild(_s);");   // lỗi giả: Cài đặt lại có mục sơn (V7c1 đã bỏ)
@@ -237,12 +237,12 @@ console.log('\n== i. Cài đặt: "Màu sơn R1" ẩn ở vector (R1 cố địn
   El.prototype.querySelector = function () { return null; };
   El.prototype.querySelectorAll = function () { return []; };
   const tim = (e, k, v) => !!e && (e.attrs && e.attrs[k] === v || (e.con || []).some((c) => tim(c, k, v)));
-  function dung(vector) {
+  function dung() {
     const than = new El('div', 'hop-than');
     const w = {
       BangMau: BM, TP: { h: (tag, cls, chu) => new El(tag, cls, chu), Hop: { mo: () => ({ hop: new El('div', 'hop'), than }), nut: (c, chu) => new El('button', c, chu), dong() {} } },
       Ve: { hydrate() {}, ico: () => new El('canvas'), khoa: () => new El('canvas'), sao: () => new El('canvas') },
-      VeVector: { bat: () => vector, luuCheDo: () => true }, VeRobot: { sonHieuLuc: () => '' },
+      VeVector: { bat: () => true }, VeRobot: { sonHieuLuc: () => '' },
       Luu: { docCaiDat: () => ({ mat: true }), ghiCaiDat() {}, daXem: () => true }, App: { tongSao: () => 0 },
       SanVe: { coMatDong: () => true }, location: { href: 'http://x/choi.html', search: '' }
     };
@@ -252,9 +252,9 @@ console.log('\n== i. Cài đặt: "Màu sơn R1" ẩn ở vector (R1 cố địn
     catch (e) { return { loi: String(e && e.message || e) }; }
     return { son: tim(than, 'data-cd', 'son'), kieuVe: tim(than, 'data-cd', 'kieu-ve'), mat: tim(than, 'data-cd', 'mat') };
   }
-  const v = dung(true), p = dung(false);
-  kiem('CaiDat.mo() (V7c1 bỏ sơn mở khoá): KHÔNG có mục Màu sơn R1 (data-cd="son") ở cả vector lẫn pixel, vẫn có Kiểu vẽ / mắt; cai-dat.js hết hangSon / Part.DS_SON',
-    !v.loi && !p.loi && v.son === false && p.son === false && v.kieuVe && p.kieuVe && v.mat && p.mat && !/hangSon|DS_SON/.test(caiDat), J({ vector: v, pixel: p }));
+  const v = dung();
+  kiem('CaiDat.mo() (V7c1): KHÔNG có mục Màu sơn R1 (data-cd="son") lẫn Kiểu vẽ (data-cd="kieu-ve"), vẫn có Biểu cảm mắt; cai-dat.js hết hangSon / DS_SON / hangKieuVe / luuCheDo',
+    !v.loi && v.son === false && v.kieuVe === false && v.mat && !/hangSon|DS_SON|hangKieuVe|luuCheDo/.test(caiDat), J(v));
 }
 
 /* ================================================================= h. trang xem */

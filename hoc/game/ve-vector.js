@@ -1,8 +1,7 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    ve-vector.js — "Robot Chấn Hưng": BỘ VẼ VECTOR (window.VeVector), gói V1 (27/10).
-   Chạy song song với bộ vẽ pixel (ve.js / part/), chọn bằng công tắc. V7b (28/10): MẶC ĐỊNH VECTOR:
-     ?ve=pixel trên địa chỉ hay đã lưu VeVector.luuCheDo('pixel') (localStorage duong-hoc:ve-vector = 'pixel') → pixel; ?ve=vector ép vector; còn lại vector.
+   V7b (28/10) mặc định vector; V7c1 (28/10) GAME LUÔN VECTOR: hết công tắc ?ve= / Cài đặt "Kiểu vẽ", bat() luôn true; bộ pixel (ve.js / part/) chỉ còn là mã chết chờ V7c2 xoá.
    Mẫu chuẩn: hoc/hinh-mau/thu-vector.html (thân A, sân lab trắng). Mọi hình vẽ trên hệ toạ độ 100 × 100 của MỘT Ô
    bằng lệnh canvas (không Path2D, để chạy được ở Node với canvas giả), rồi rasterise ra canvas đệm đúng cỡ điểm ảnh thật
    (cạnh ô × devicePixelRatio) nên nét ở mọi cỡ ô, không cần bội số 14. Bộ đệm theo (tên, cỡ, trạng thái, màu đội).
@@ -37,23 +36,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      VAT_NANG lần (gần camera hơn). Tay vẽ khe kẹp ôm vật cỡ đó (s.nangK); san-ve.js / phim / huy hiệu lấy cỡ qua vatKep / vatXoay. */
   var VAT_SAN = 57, VAT_NANG = 1.2;
   var BONG_SAN = 0.19, BONG_NANG = 0.32;          // bóng đổ của vật lệch bấy nhiêu lần cạnh hộp vật: sát đất như vật nằm sàn (2 / 10,5), nâng thì xa hơn và nhạt (> 0,3: HU.bongVat 'cao')
-  var KHOA_LUU = 'duong-hoc:ve-vector';
   var loiGia = { gocXoay: false, demBoCo: false, coVatCu: false, kheCu: false, xoayBat: false };   // chỉ máy kiểm --loi-gia bật (V6b: coVatCu = vật trong tay cỡ cũ 24% không theo độ nâng, kheCu = càng kẹp khe cũ; V7a: xoayBat = tay xoay bỏ moK, khe bật một phát)
 
-  /* ---------------------------------------------------------------- công tắc */
-  var cheDo = null;
-  function doCheDo() {
-    var q = (root.location && root.location.search) || '';
-    if (/[?&]ve=vector(?:&|$)/.test(q)) return true;
-    if (/[?&]ve=pixel(?:&|$)/.test(q)) return false;
-    try { if (root.localStorage && root.localStorage.getItem(KHOA_LUU) === 'pixel') return false; } catch (e) { /* không có localStorage */ }
-    return true;                                  // V7b: mặc định vector (kể cả Node không có location / localStorage)
-  }
-  /** Đang ở chế độ vector? Tính một lần (đổi giữa phiên phải nạp lại sân: datCheDo chỉ cho máy kiểm / trang thử). */
-  function bat() { if (cheDo === null) cheDo = doCheDo(); return cheDo; }
-  function datCheDo(v) { cheDo = v === 'vector' || v === true; return cheDo; }
-  /** Ghi lựa chọn cho lần mở sau ('vector' | 'pixel'); có hiệu lực sau khi nạp lại trang. V7b: 'pixel' GHI 'pixel' (lựa chọn pixel được lưu), còn lại ghi 'vector'. */
-  function luuCheDo(v) { try { root.localStorage.setItem(KHOA_LUU, v === 'pixel' ? 'pixel' : 'vector'); return true; } catch (e) { return false; } }
+  /* ---------------------------------------------------------------- chế độ: V7c1 (28/10) game LUÔN VECTOR. Công tắc trên địa chỉ (ve=), khoá lưu trong kho trình duyệt
+     (duong-hoc:ve-vector) và hàng Cài đặt "Kiểu vẽ" đã gỡ. bat() giữ tên (san-ve.js this.vec, VeRobot, huy-hieu.js, man-dau.js… đọc) và luôn true; datCheDo chỉ còn cho trang xem hinh-mau
+     (không đổi gì). Nhánh pixel còn lại trong các tệp là MÃ CHẾT, V7c2 xoá. */
+  function bat() { return true; }
+  function datCheDo() { return true; }
   /** GIAO DIỆN (gói V5a): ở vector, <body> mang lớp `ve-vector` → choi-vector.css phủ giao diện phẳng diem10code lên choi.css; pixel không có lớp, y như cũ.
    *  Gọi ngay khi nạp tệp (choi.html nạp ve-vector.js trong <body>, trước mọi tệp dựng màn hình). */
   var LOP_GIAO_DIEN = 've-vector';
@@ -409,7 +398,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   apGiaoDien();
   return {
     HE: HE, CO_THAN: CO_THAN, TAM_THAN: TAM_THAN, H: H, CanvasGia: CanvasGia, taoCanvas: taoCanvas,
-    bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
+    bat: bat, datCheDo: datCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
     o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, tamVoi: tamVoi, nangCua: nangCua, coVatKep: coVatKep, VAT_SAN: VAT_SAN, VAT_NANG: VAT_NANG, BONG_SAN: BONG_SAN, BONG_NANG: BONG_NANG, gocXoay: gocXoay, gocCua: gocCua,
     diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, hamGoc: hamGoc, doiCam: doiCam, oTay: oTay,

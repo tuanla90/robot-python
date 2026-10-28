@@ -827,17 +827,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Gói V5b: ghi TÊN icon lên canvas (c._vi) để ve-vector-icon.js thay bằng hình vector (V5b: các màn ngoài màn chơi; V6c: cả màn chơi, mũi tên bong bóng, trùm),
    *  chỉ khi body.ve-vector. Hình pixel không đổi. */
   function nhan(c, ten, tuyChon, phu) { c._vi = { ten: ten, tuyChon: tuyChon || {}, phu: phu || '' }; return c; }
-  /* V7b (28/10, gỡ cầu C1): ở giao diện vector Ve.ico / sao / mui / khoa / hydrate('trum') trả THẲNG <svg> của VeIcon (VeIcon.svg: lớp `pxi vi vi-<tên>` + phu,
-     style width / height = cạnh lớn của bản pixel × s, y như Ve.mk + thayMot trước đây), KHÔNG vẽ canvas điểm ảnh, không cần MutationObserver thay sau.
-     Cỡ bản pixel: hình HINH = (cột + 2) × (hàng + 2) (viền 1 điểm mỗi bên), hình vẽ riêng đo từ Painter (CO_RIENG). Pixel (không body.ve-vector): y như cũ. */
-  var CO_RIENG = { edit: [9, 9], star: [11, 10], lock: [12, 14], lockNho: [10, 11], mui: [10, 9], trum: [24, 24] };
-  function coIcon(ten, nho) {
-    if (CO_RIENG[ten]) return nho && ten === 'lock' ? CO_RIENG.lockNho : CO_RIENG[ten];
-    var rows = HINH[ten]; return rows ? [rows[0].length + 2, rows.length + 2] : null;
-  }
+  /* V7b (28/10, gỡ cầu C1): Ve.ico / sao / mui / khoa / hydrate('trum') trả THẲNG <svg> của VeIcon (VeIcon.svg: lớp `pxi vi vi-<tên>` + phu,
+     style width / height = cạnh lớn của bản pixel × s, y như Ve.mk + thayMot trước đây), KHÔNG vẽ canvas điểm ảnh, không cần MutationObserver thay sau. */
+  /* V7c1 (28/10): game luôn vector → cỡ icon (px CSS ở s = 1) là BẢNG SỐ cố định, đo một lần từ bản pixel (lưới HINH = (cột + 2) × (hàng + 2); hình vẽ riêng
+     edit / star / lock / mui / trum đo Painter) bằng scratchpad co-icon.cjs tại c830c12; không còn đọc lưới HINH pixel hay rẽ theo body.ve-vector. */
+  var CO_ICON = { play: [14, 14], step: [14, 14], reset: [15, 16], back: [7, 10], next: [7, 10], plus: [10, 10], check: [10, 9], cross: [9, 9], close: [9, 9], x5: [7, 7], menu: [12, 10], help: [9, 11], bulb: [14, 14], trash: [11, 11], del: [12, 9], thutvao: [11, 10], thutra: [11, 10], dot: [6, 6], book: [13, 11], gear: [13, 13], banhRang: [13, 13], xu: [13, 13], box: [13, 13],
+    loa: [11, 10], nhac: [10, 10], canhbao: [14, 12], mau: [9, 9], car: [14, 10], wall: [14, 10], pin: [14, 9], sac: [11, 13], denBanh: [13, 13], denXich: [13, 11], denTruot: [13, 13], denTayLen: [13, 13], denTayXuong: [13, 13], denXoay: [13, 12], denKepMo: [13, 12], denKepDong: [13, 12], denNamCham: [13, 10], denNem: [13, 12], denSung: [13, 9], denSon: [13, 13], denCam: [13, 9], denChan: [13, 11], denCanh: [13, 13], denLogic: [13, 13],
+    rao: [13, 9], ro: [13, 10], nutban: [13, 11], thung: [13, 13], bac: [13, 10], gam: [13, 8], ho: [13, 9], bang: [13, 8], cua: [13, 10],
+    edit: [9, 9], star: [11, 10], lock: [12, 14], lockNho: [10, 11], mui: [10, 9], trum: [24, 24] };
+  function coIcon(ten, nho) { return (nho && ten === 'lock' ? CO_ICON.lockNho : CO_ICON[ten]) || null; }
   function svgVec(ten, s, tuyChon, phu, nho) {
     var VI = typeof window !== 'undefined' && window.VeIcon;
-    if (!giaoDienVec() || !VI || !VI.svg || !VI.co(ten)) return null;
+    if (!VI || !VI.svg || !VI.co(ten)) return null;          // thiếu VeIcon / tên lạ: rơi về canvas pixel bên dưới (mã chết trong game, V7c2 xoá)
     var c = coIcon(ten, nho); if (!c) return null;
     return VI.svg(ten, Math.max(c[0], c[1]) * (s || 2), tuyChon, phu);
   }

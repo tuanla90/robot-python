@@ -14,10 +14,10 @@
 <!-- bảng màu theo vai (gói A1): nạp TRƯỚC mọi tệp dùng màu; ghi biến CSS --g-<vai> cho choi.css -->
 <script src="bang-mau.js"></script>
 <link rel="stylesheet" href="choi.css">
-<!-- giao diện phẳng diem10code (gói V5a màn chơi + V5b các màn ngoài, V7b nối thành một tệp): chỉ áp khi <body> có lớp ve-vector (VeVector.apGiaoDien), pixel giữ choi.css y nguyên -->
+<!-- giao diện phẳng diem10code (gói V5a màn chơi + V5b các màn ngoài, V7b nối thành một tệp): áp theo lớp ve-vector của <body> (V7c1: đặt sẵn trong HTML, game luôn vector; choi.css là nền bố cục) -->
 <link rel="stylesheet" href="choi-vector.css">
 </head>
-<body>
+<body class="ve-vector">
 <div id="stage">
   <div class="screen hidden" id="sc-dau"><div class="deco"></div></div>
   <div class="screen hidden" id="sc-goi"><div class="deco"></div></div>
@@ -129,7 +129,7 @@
 <script src="part/part-camera.js"></script>
 <script src="part/part-camera-bay.js"></script>
 <script src="part/part-hong-ngoai.js"></script>
-<!-- bộ vẽ VECTOR (gói V1): chạy song song với pixel, V7b: mặc định VECTOR, ?ve=pixel hay Cài đặt "Kiểu vẽ" để chạy pixel. Kho hình: ô sân, thân, tay -->
+<!-- bộ vẽ VECTOR (gói V1): V7c1 (28/10) game LUÔN vector (hết công tắc ?ve= / Cài đặt "Kiểu vẽ"); ve.js / part/ là mã chết chờ V7c2. Kho hình: ô sân, thân, tay -->
 <script src="ve-vector.js"></script>
 <!-- icon vector các màn ngoài màn chơi (gói V5b): thay icon điểm ảnh có nhãn của ve.js bằng SVG màu theo vai, chỉ ở body.ve-vector -->
 <script src="ve-vector-icon.js"></script>

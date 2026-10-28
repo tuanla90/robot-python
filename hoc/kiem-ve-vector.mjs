@@ -9,8 +9,8 @@
      6. Màu đội: R1 (sơn '' / vang) và R2 ('lam') cho hai luồng lệnh y hệt, chỉ khác ở đúng ba chỗ kính (gradient), mắt (viền), chấm ăng-ten (tô);
         sơn mở khoá ('ngoc'…) lấy bộ ba SON của bảng màu; không lẫn màu đội kia.
      7. Bộ đệm: cùng (tên, cỡ, trạng thái) → cùng canvas; khác cỡ / trạng thái / hướng / sơn → canvas khác.
-     8. coDu(): chỉ cấu hình đủ hình vector mới vẽ bằng vector; công tắc mặc định VECTOR từ V7b (bat() = true khi không có ?ve=pixel / lưu 'pixel').
-     9. VeRobot (ve-robot.js): tiLeChoO / vatKep / REACH đổi theo chế độ và theo coDu; chế độ pixel giữ công thức cũ.
+     8. coDu(): chỉ cấu hình đủ hình vector mới vẽ bằng vector; V7c1: game LUÔN vector (bat() = true, không còn ?ve= / luuCheDo).
+     9. VeRobot (ve-robot.js): tiLeChoO / vatKep / REACH theo VeVector và theo coDu (cấu hình thiếu hình vẫn rơi về công thức pixel).
   10. (gói V2) Mọi ký hiệu sân và mọi vật có hình vector — liệt kê TỪ CODE, không gõ tay: ký hiệu = mọi ký tự SanHoc.docSan nhận (thử từng ký tự in được),
        ô pixel = mọi khoá của Ve.tiles() (đọc từ nguồn ve.js), hàm vẽ trực tiếp = mọi lời gọi Ve.make* / Ve.ve* trong san-ve.js, vật = mọi chất SanHoc.CHAT_KY × màu
        SanHoc.MAU_TEN; mỗi thứ phải có trong bảng nối ve-vector-ky-hieu.js và trỏ tới hình đã đăng ký; mỗi hàm Field.* trong bảng có nhánh this.vec.
@@ -22,11 +22,11 @@
        (tay trước, hongTrai trái, hongPhai phải, tren góc mũi trái, sau đuôi); màu đội đúng ba chỗ trên mọi tổ hợp; trạng thái động ra hình khác; MỌI MÀN (cả từng robot
        của màn đội) vẽ được bằng vector qua VeRobot.ve.
   13. (gói V4) Hoạt cảnh trên sân: chạy san-ve.js THẬT trong ngữ cảnh vm (canvas giả, đồng hồ ảo, Math.random hạt cố định), phát lại vết ChamHoc (lời giải + lời sai) của 22 màn
-       (cả hai-robot): PIXEL y nguyên từng lệnh so với commit nền a962f7b; VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
+       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền c830c12 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
        sự kiện đâm / ? / tới cờ / xong màn / húc bạn / chờ → đúng biểu cảm, chớp 2,5–5 s lệch nhau); camera không đổi mắt (ống kính ở đuôi); cảm biến dính vỏ; VeRobot.veCo; cờ bay, sàn bàn cờ.
   14. (gói V5a) Giao diện phẳng màn chơi (choi-vector.css): nạp đủ phông Google Sans Flex / Code + choi-vector.css sau choi.css; mọi bộ chọn trong body.ve-vector (pixel y nguyên);
        không steps( / pixelated / Handjet / VT323; mọi steps() màn chơi của choi.css (và huong-dan.js) có luật phủ mượt, có prefers-reduced-motion; chữ canvas vector không VT323;
-       tương phản WCAG AA mọi cặp chữ / nền khai cùng luật; công tắc Cài đặt Kiểu vẽ (luuCheDo ghi / xoá khoá); trang xem có mục V5a.
+       tương phản WCAG AA mọi cặp chữ / nền khai cùng luật; (14f, V7c1) hết công tắc Kiểu vẽ / ?ve= / luuCheDo, body có sẵn lớp ve-vector; trang xem có mục V5a.
    (gói V6b) mục 13h: cỡ vật trong tay ở vector (phát lại màn kẹp / tay xoay / nam châm): hạ = vật nằm sàn, nâng 1,15–1,25 lần, chuyển dần, bóng nâng xa hơn, vật dính
        nam châm = cỡ nâng; càng / ngón ôm vật ở mọi độ nâng. Mục 4 / 9 / 12: vật trong tay to chờm sang ô trước mặt, nằm trong tầm lớp phủ (VeVector.tamVoi, reachCua).
    (gói V7a) mục 13i: vật treo dưới drone nam châm = cỡ vật nâng (phát lại drone.7, che-drone.6); tay xoay mở / khép dần (khe theo moK); dây nối nút ↔ cửa theo cfg.noi (dungDayNoi, chỉ vector vẽ).
@@ -34,7 +34,7 @@
    (bỏ ký hiệu hố khỏi bảng nối, bỏ ô bậc thang của Ve.tiles khỏi bảng, băng chuyền bỏ qua pha, sàn màu vàng tô màu ngoài nhóm LUAT) và bốn lỗi V3 (drone mất cờ không hướng,
    xích đổi chỗ hai ổ hông, nam châm tô màu đội, camera-bay sai ổ) và sáu lỗi V4 (nhánh pixel veDau tô thêm, hạt vector dùng fillRect, tia từ tâm xe, matSuKien bỏ qua,
    veCo vector bỏ devicePixelRatio, ổ hông hai-banh dời ra 10 đơn vị) và năm lỗi V5a (luật không có body.ve-vector có steps(), bỏ phủ .ffr.rung, chữ canvas về VT323,
-   luuCheDo không ghi, cặp chữ / nền 2:1) và hai lỗi V6b (vật trong tay cỡ cũ không theo độ nâng, càng kẹp khe cũ) → máy kiểm phải ĐỎ.
+   hàng Kiểu vẽ quay lại, cặp chữ / nền 2:1) và hai lỗi V6b (vật trong tay cỡ cũ không theo độ nâng, càng kẹp khe cũ) → máy kiểm phải ĐỎ.
    Chạy: node hoc/kiem-ve-vector.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
@@ -61,6 +61,9 @@ const TEP_VEC = [...CHOI_SRC.matchAll(/<script src="(ve-vector-[\w-]+\.js)"/g)].
 for (const f of TEP_VEC) require(path.join(GAME, f));
 let VeRobot = null;
 try { VeRobot = require(path.join(GAME, 've-robot.js')); } catch (e) { console.log('(không nạp được ve-robot.js ở Node: ' + e.message + ')'); }
+/* V7c1: nạp bộ màn NGAY (trước khi cắm lỗi giả): lap-rap.js macDinh nay xét ghép bằng VeVector (globalThis.VeVector = V) — cắm lỗi giả lên V trước rồi mới nạp màn thì màn lắp ráp hỏng, mục 12g ném */
+for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1']) require(path.join(day, f + '.js'));
+for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f)).sort()) require(path.join(day, f));
 
 if (LOI_GIA) {
   console.log('(đang cắm sáu lỗi giả: neo tay y = 20, góc xoay lệch 90°, màu R2 = R1, đệm bỏ cỡ, ô tường tô #123456, ổ tay thân y = 140 — máy kiểm phải ĐỎ)');
@@ -269,19 +272,14 @@ console.log('\n== 8. coDu() và công tắc ==');
     V.coDu({ than: 'hai-banh' }) && V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [] }) && V.coDu({ than: 'xich' }) && V.coDu({ than: 'hai-banh', tay: 'nam-cham' })
     && V.coDu({ than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'mau', o: 'hong' }] }) && V.coDu({ than: 'drone' }) && !V.coDu({ than: 'khong-co' }) && !V.coDu({ than: 'hai-banh', tay: 'khong-co' }) && !V.coDu({ than: 'hai-banh', camBien: [{ ma: 'khong-co', o: 'hong' }] }));
   kiem('robot() với cấu hình thiếu hình → null (không ném)', V.robot({ than: 'khong-co' }, {}, 0, 56) === null && V.robot({ than: 'hai-banh', tay: 'khong-co' }, {}, 0, 56) === null);
-  kiem('mặc định VECTOR (V7b): bat() = true khi không có ?ve=pixel và chưa lưu pixel', V.bat() === true);
-  kiem("datCheDo('vector') → bat() = true; datCheDo('pixel') → false", V.datCheDo('vector') === true && V.bat() === true && V.datCheDo('pixel') === false && V.bat() === false);
+  kiem('(V7c1) game LUÔN vector: bat() = true kể cả sau datCheDo(\'pixel\'); ve-vector.js không còn doCheDo / luuCheDo / KHOA_LUU / ?ve=', V.bat() === true && V.datCheDo('pixel') === true && V.bat() === true && !/doCheDo|luuCheDo|KHOA_LUU|ve=pixel/.test(docGame('ve-vector.js')));
 }
 
 /* ================================================================= 9. VeRobot theo chế độ */
 console.log('\n== 9. VeRobot (ve-robot.js) theo chế độ ==');
 if (!VeRobot) kiem('nạp ve-robot.js ở Node', false, 'không nạp được');
 else {
-  V.datCheDo('pixel');
-  const pixel = (S, w) => { const n = Math.floor(0.9 * S / w); return n >= 1 && n * w >= 0.8 * S ? n : Math.max(0.3, 0.85 * S / w); };
-  kiem('pixel: tiLeChoO(42) = ' + pixel(42, 20) + ', tiLeChoO(84) = ' + pixel(84, 20) + ' (công thức cũ, thân 20 px khi chưa nạp Part)', VeRobot.tiLeChoO(42, { than: 'hai-banh' }) === pixel(42, 20) && VeRobot.tiLeChoO(84, { than: 'hai-banh' }) === pixel(84, 20));
-  kiem('pixel: vatKep(hai-banh, tren) = { ahead: 18, n: 10 }; REACH = 26', J(VeRobot.vatKep({ than: 'hai-banh' }, 'tren')) === J({ ahead: 18, n: 10 }) && VeRobot.REACH === 26);
-  V.datCheDo('vector');
+  const pixel = (S, w) => { const n = Math.floor(0.9 * S / w); return n >= 1 && n * w >= 0.8 * S ? n : Math.max(0.3, 0.85 * S / w); };   // công thức cũ: chỉ còn cho cấu hình thiếu hình
   kiem('vector: tiLeChoO(S, hai-banh + kẹp) = S / 100 (84 → 0.84); REACH = 50 (nửa ô)', VeRobot.tiLeChoO(84, { than: 'hai-banh', tay: 'kep' }) === 0.84 && VeRobot.REACH === 50);
   kiem('vector (gói V3): mọi thân đều theo hệ 1/100 ô (xích 84 → 0.84, drone); cấu hình thiếu hình (mã lạ) vẫn dùng công thức pixel',
     VeRobot.tiLeChoO(84, { than: 'xich' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'drone', tay: 'nam-cham' }) === 0.84 && VeRobot.tiLeChoO(84, { than: 'khong-co' }) === pixel(84, 20));
@@ -293,13 +291,9 @@ else {
   const rK = VeRobot.reachCua({ than: 'hai-banh', tay: 'kep' }), rX = VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }), vkN = V.vatKep({ than: 'hai-banh', tay: 'kep' }, 'tren', 1);
   kiem('vector: hinhHoc (mz / mzs / bk / pp / dinh) lấy từ VeVector; reachCua = VeVector.tamVoi: 50 khi tay không cầm vật (súng hơi), kẹp / tay xoay chừa cả vật nâng to + bóng (' + rK.toFixed(1) + ' / ' + rX.toFixed(1) + ')',
     J(hh) === J(hv) && VeRobot.reachCua({ than: 'hai-banh', tay: 'hoi' }) === 50 && rK === V.tamVoi({ than: 'hai-banh', tay: 'kep' }) && rK >= vkN.ahead + vkN.n / 2 && rX > 50 + 100 * V.tranCua({ tay: 'xoay' }) - 1e-9);
-  V.datCheDo('pixel');
-  kiem('pixel: hinhHoc = hằng pixel part { mz 24, mzs 10,5, bk 23,5, pp 1, dinh 11 }; reachCua = REACH 26; vatXoay công thức cũ', J(VeRobot.hinhHoc({ than: 'hai-banh', tay: 'hoi' })) === J({ mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 }) && VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }) === 26
-    && J(VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0)) === J({ f: 22, l: 0, n: 10 }));
-  V.datCheDo('pixel');
   {   /* V7c1 (28/10): bỏ sơn mở khoá: sonHieuLuc không đọc Luu / Part nữa; '' / 'vang' → vang (màu đội), 'lam' / 'do' giữ, 'goc' → null; cùng kết quả ở cả hai chế độ; không còn sonChon */
     const thu = () => ['', 'vang', 'lam', 'do', 'goc'].map((s) => VeRobot.sonHieuLuc(s));
-    V.datCheDo('pixel'); const px = thu(); V.datCheDo('vector'); const vec = thu(); V.datCheDo('pixel');
+    const px = thu(), vec = thu();
     const vr = docGame('ve-robot.js'), cd = docGame('cai-dat.js'), luu = docGame('luu.js'), chu = docGame('chu.js');
     const sach = !('sonChon' in VeRobot) && !/sonChon|docCaiDat\(\)\.son|P\.SON|DS_SON/.test(vr) && !/hangSon|DS_SON|caiDat\.son/.test(cd) && !/\bson\b/.test(luu.split('cài đặt (cai-dat.js)')[1].split('mùa đã mua')[0]) && !/'caiDat\.son/.test(chu);
     kiem('(V7c1) bỏ sơn mở khoá: sonHieuLuc → vang / vang / lam / do / null ở cả hai chế độ, không đọc Luu / Part; ve-robot.js hết sonChon, cai-dat.js hết hangSon / DS_SON, luu.js hết khoá son, chu.js hết caiDat.son*', J(px) === J(vec) && J(px) === J(['vang', 'vang', 'lam', 'do', null]) && sach, J({ px, vec, sach }));
@@ -541,7 +535,6 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   for (const f of ['thu-tu-chuong', 'so-lenh', 'man-chuoi-1']) require(path.join(day, f + '.js'));
   for (const f of fs.readdirSync(day).filter((f) => /^man-.*\.js$/.test(f)).sort()) require(path.join(day, f));
   const ManHoc = require(path.join(day, 'man-chuoi-1.js'));
-  V.datCheDo('vector');
   const cacCfg = new Map(), roiPixel = [];
   for (const m of ManHoc.danhSach) {
     const ds = m.doi ? m.doi.map((r) => { const o = Object.assign({}, m, r); delete o.doi; return o; }) : [m];
@@ -562,7 +555,6 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     try { cam = VeRobot.ve({ than: 'drone', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] }, {}, 0, 0.56); } catch (e) { cam = null; /* Node: hình tạm cần Ve của trình duyệt */ } console.warn = cw;
   } catch (e) { /* lỗi giả: cấu hình rơi về hình tạm (cần Ve của trình duyệt) */ }
   kiem('VeRobot (như bộ pixel): nhện không tay và drone không quay theo hướng; cấu hình cấm báo một lần rồi không trả hình vector', nhenKhongTay && droneMoi && bao === 1 && !(cam && cam.laVector));
-  V.datCheDo('pixel');
 }
 
 
@@ -579,17 +571,16 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
        g. cờ bay (pha khác → hình khác), sàn bàn cờ hai tông, trang xem có mục V4.
    ====================================================================================================================================== */
 {
-  console.log('\n== 13. (V4) Hoạt cảnh / hiệu ứng trên sân: pixel y nguyên so với nền, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
+  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền c830c12, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
   const vm = await import('node:vm');
   const { execFileSync } = await import('node:child_process');
-  const NEN_V4 = 'a962f7b';
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const NEN_VEC = 'c830c12';                                                           // V7c1 (28/10): nền VECTOR = nhánh chính sau khi gộp V7b (mặc định vector, hết cầu tạm); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };
-  const docNen = docTai(NEN_V4), docNenVec = docTai(NEN_VEC);
+  const docNenVec = docTai(NEN_VEC);
 
   /** Ngữ cảnh trình duyệt giả chạy bang-mau / ve / part / ve-vector* / ve-robot / san-ve theo đúng thứ tự choi.html. */
   function taoKhung(docTep, cheDo, dpr) {
@@ -720,24 +711,6 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   }
   const MAN_V4 = ['hai-banh.3', 'tay-gap.4', 'khoang-cach.4', 'che-cam-bien.4', 'nhen.5', 'xich.4', 'omni.3', 'sung-hoi.3', 'luc-ban.8', 'mau.8', 'may-son.3', 'nam-cham.6', 'che-nam-cham.2', 'tay-xoay.3', 'may-nem.2', 'may-nem.7', 'drone.3', 'drone.5', 'flycam.2', 'ban-xoay.1', 'hai-robot.2', 'hai-robot.6'];
   const CA = []; for (const ma of MAN_V4) { const m = ManHoc.danhSach.find((x) => x.ma === ma); if (!m) continue; for (const sai of [undefined, 0]) { const v = vetCua(m, sai); if (v && v.vet.length) CA.push({ m, v, ten: ma + (sai === undefined ? '' : ':sai') }); } }
-
-  /* a. pixel y nguyên so với nền */
-  if (!coGit || docNen('san-ve.js') === null) kiem('(13a) cần git và commit nền ' + NEN_V4 + ' để so chế độ pixel', false, 'git show lỗi');
-  else {
-    const KA = taoKhung(docNen, 'pixel', 2), KB = taoKhung(docMoi, 'pixel', 2);
-    if (LOI_GIA) { const P = KB.ctx.SanVe.Field.prototype, cu = P.veDau; P.veDau = function (g) { g.fillRect(0, 0, 1, 1); return cu.apply(this, arguments); }; }
-    const khac = []; let soKhung = 0;
-    for (const c of CA) {
-      const A = [], B = [];
-      KA.datHat(777); KB.datHat(777); KA.datGio(1000); KB.datGio(1000);
-      await phat(KA, c.m, c.v, (a, b) => A.push(a.join('\n') + '\n||\n' + b.join('\n')));
-      await phat(KB, c.m, c.v, (a, b) => B.push(a.join('\n') + '\n||\n' + b.join('\n')));
-      soKhung += A.length;
-      let i = 0; while (i < Math.max(A.length, B.length) && A[i] === B[i]) i++;
-      if (i < Math.max(A.length, B.length)) { const a = (A[i] || '').split('\n'), b = (B[i] || '').split('\n'); let j = 0; while (a[j] === b[j]) j++; khac.push(c.ten + ' khung ' + i + ': nền ' + a[j] + ' / mới ' + b[j]); }
-    }
-    kiem('(13a) CHẾ ĐỘ PIXEL y nguyên: ' + CA.length + ' lần phát lại (lời giải + lời sai, ' + MAN_V4.length + ' màn kể cả màn nhiều robot), ' + soKhung + ' khung — canvas sân + lớp phủ robot của bản mới ra đúng từng lệnh như nền ' + NEN_V4, khac.length === 0 && soKhung > 2000, khac.slice(0, 3).join('\n      '));
-  }
 
   /* a-v (V7c1). VECTOR y nguyên so với nền NEN_VEC: cùng harness, cùng CA, cùng hạt; canvas sân + lớp phủ robot ra đúng từng lệnh. Đây là phanh thay cho 13a khi mã pixel bị gỡ. */
   if (!coGit || docNenVec('san-ve.js') === null) kiem('(13a-v) cần git và commit nền vector ' + NEN_VEC, false, 'git show lỗi');
@@ -883,18 +856,16 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     kiem('(13e) cảm biến DÍNH VỎ: mọi thân × cảm biến × ổ hợp lệ, hộp bao hình cảm biến chạm hộp vỏ thân và chân đế (điểm gắn) nằm trên vỏ (≤ 2 đơn vị /100; camera ở đuôi: than.oCam)', dinh.length === 0, dinh.slice(0, 5).join('; '));
   }
 
-  /* f. veCo: robot ngoài sân theo cỡ hiển thị */
+  /* f. veCo: robot ngoài sân theo cỡ hiển thị (V7c1: chỉ còn vế vector) */
   {
-    const KP = taoKhung(docMoi, 'pixel', 2), sai = [];
+    const sai = [];
     for (const cfg of [{ than: 'hai-banh', tay: null, camBien: [] }, { than: 'xich', tay: 'kep', camBien: [] }, { than: 'drone', tay: null, camBien: [] }]) for (const ti of [1.5, 2, 3, 4]) {
-      const a = KP.ctx.VeRobot.veCo(cfg, {}, 0, ti * 24), b = KP.ctx.VeRobot.ve(cfg, {}, 0, ti);
-      if (a !== b || KP.ctx.VeRobot.heSoCss(a) !== 1) sai.push('pixel ' + cfg.than + ' ×' + ti);
       const v = KV.ctx.VeRobot.veCo(cfg, {}, 0, ti * 24);
       const ph = KV.ctx.VeRobot.PHONG_NGOAI_SAN;                                  // V5a: vector ngoài sân phóng ×1,2 (bằng bản pixel)
       if (ph !== 1.2 || !v || !v.laVector || v.width !== Math.round(ti * 24 * ph * 2) || Math.abs(KV.ctx.VeRobot.heSoCss(v) * v.width - ti * 24 * ph) > 1e-6) sai.push('vector ' + cfg.than + ' ' + ti * 24 + ' px → ' + (v && v.width));
     }
     const nguon = ['man-lap.js', 'the-part.js', 'mo-dau.js', 'man-dau.js', 'phim-goi.js'].filter((f) => !/VeRobot\.veCo\(/.test(fs.readFileSync(path.join(GAME, f), 'utf8')) || /VeRobot\.ve\(/.test(fs.readFileSync(path.join(GAME, f), 'utf8')));
-    kiem('(13f) VeRobot.veCo (robot ngoài sân): pixel cùng canvas với ve(…, pxCss / 24) (48 → ×2, 72 → ×3…), vector một ô pxCss × 1,2 (V5a) × dpr (heSoCss = 1 / dpr); màn Lắp robot, thẻ Bộ phận mới, mở đầu, màn đầu, phim đều gọi veCo',
+    kiem('(13f) VeRobot.veCo (robot ngoài sân): vector một ô pxCss × 1,2 (V5a) × dpr (heSoCss = 1 / dpr); màn Lắp robot, thẻ Bộ phận mới, mở đầu, màn đầu, phim đều gọi veCo',
       sai.length === 0 && nguon.length === 0, sai.concat(nguon).slice(0, 5).join('; '));
   }
 
@@ -1018,14 +989,14 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
 {
   const doc = (f) => fs.readFileSync(path.join(GAME, f), 'utf8');
   let cssV = doc('choi-vector.css'), cssP = doc('choi.css'), hieuUng = doc('ve-vector-hieu-ung.js'), fontCss = doc('font/font.css');
-  const caiDat = doc('cai-dat.js'), chu = doc('chu.js'), thanhPhan = doc('thanh-phan.js'), huongDan = doc('huong-dan.js');
+  let caiDat = doc('cai-dat.js'); const chu = doc('chu.js'), thanhPhan = doc('thanh-phan.js'), huongDan = doc('huong-dan.js');
   const V5 = V;                                                                          // VeVector của Node (luuCheDo / bat)
   if (LOI_GIA) {
-    console.log('(và năm lỗi giả V5a: thêm một luật không có body.ve-vector có steps(), bỏ phần phủ .ffr.rung, chữ canvas về VT323, luuCheDo không ghi gì; thêm một cặp chữ / nền tương phản 2:1)');
+    console.log('(và năm lỗi giả V5a: thêm một luật không có body.ve-vector có steps(), bỏ phần phủ .ffr.rung, chữ canvas về VT323, hàng Kiểu vẽ quay lại (14f); thêm một cặp chữ / nền tương phản 2:1)');
     cssV += '\n.brick{animation:blink .4s steps(1) 4}\n';
     cssV = cssV.replace(/body\.ve-vector \.ffr\.rung\{[^}]*\}/, '');
     hieuUng = hieuUng.replace("var PHONG_CHU = '", "var PHONG_CHU = '8px VT323, monospace'; var _bo = '");
-    V5.luuCheDo = function () { return true; };
+    caiDat += '\nfunction hangKieuVe() { return VeVector.luuCheDo("pixel"); }\n';   // V7c1: lỗi giả hàng Kiểu vẽ quay lại → 14f đỏ
     cssV += '\nbody.ve-vector .thu-loi-gia{color:var(--g-vecKeDam);background:var(--g-vecThe)}\n';
   }
   /* bộ tách luật CSS phẳng: [{ sel, than, trong }] (trong = '@media …' nếu nằm trong @media); bỏ @keyframes */
@@ -1104,26 +1075,16 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     }
     kiem('(14e) tương phản chữ WCAG AA: ' + soCap + ' cặp chữ / nền của choi-vector.css (phần V5a, trước dòng mốc V7b) đều ≥ 4,5:1', soCap > 40 && !sai.length, sai.slice(0, 8).join('; '));
   }
-  /* f. công tắc Cài đặt "Kiểu vẽ": luuCheDo ghi / xoá đúng khoá, bat() đọc lại; cai-dat.js có hàng hai nút, tải lại bỏ ?ve=; chữ hiển thị không emoji / gạch dài */
+  /* f. (V7c1) hết công tắc: cai-dat.js không còn hàng Kiểu vẽ / luuCheDo, chu.js không còn caiDat.kieuVe*, ve-vector.js không ?ve= / localStorage, choi.html đặt sẵn body.ve-vector */
   {
-    const kho = {}, ls = { getItem: (k) => (k in kho ? kho[k] : null), setItem: (k, v) => { kho[k] = String(v); }, removeItem: (k) => { delete kho[k]; } };
-    const cuLs = globalThis.localStorage, cuLoc = globalThis.location;
-    let vao = null, ra = null;
-    const veSrc = doc('ve-vector.js'), sau = /getItem\(KHOA_LUU\) === 'pixel'/.test(veSrc) && /setItem\(KHOA_LUU, v === 'pixel' \? 'pixel' : 'vector'\)/.test(veSrc);   // bat() đọc lại đúng khoá luuCheDo ghi
-    try {
-      Object.defineProperty(globalThis, 'localStorage', { value: ls, configurable: true, writable: true });
-      Object.defineProperty(globalThis, 'location', { value: { search: '' }, configurable: true, writable: true });
-      V5.luuCheDo('vector'); vao = kho['duong-hoc:ve-vector'] || null; V5.datCheDo(null);
-      V5.luuCheDo('pixel'); ra = 'duong-hoc:ve-vector' in kho ? kho['duong-hoc:ve-vector'] : null;
-    } finally {
-      Object.defineProperty(globalThis, 'localStorage', { value: cuLs, configurable: true, writable: true });
-      Object.defineProperty(globalThis, 'location', { value: cuLoc, configurable: true, writable: true });
-    }
-    const chuHt = ['caiDat.kieuVe', 'caiDat.netMoi', 'caiDat.diemAnh', 'caiDat.kieuVeDang', 'caiDat.kieuVeDoi'].map((k) => { const m = chu.match(new RegExp("'" + k.replace('.', '\\.') + "': '([^']*)'")); return m ? m[1] : null; });
-    const chuOk = chuHt.every((s) => s && !/[—–]|\p{Extended_Pictographic}/u.test(s));
-    const nguon = /function hangKieuVe\(\)/.test(caiDat) && /VeVector\.luuCheDo\(x\[0\]\)/.test(caiDat) && /searchParams\.delete\('ve'\)/.test(caiDat) && /'cd-kieu-ve-' \+ x\[0\]/.test(caiDat) && /aria-pressed/.test(caiDat) && /hangKieuVe\(\); if \(kv\)/.test(caiDat);
-    kiem('(14f) công tắc Cài đặt "Kiểu vẽ: Nét mới / Điểm ảnh": luuCheDo(\'vector\') ghi khoá duong-hoc:ve-vector = vector, luuCheDo(\'pixel\') GHI pixel (V7b: lựa chọn pixel được lưu); cai-dat.js dựng hai nút (aria-pressed), bấm thì lưu rồi tải lại bỏ ?ve=; chữ không emoji / gạch dài',
-      vao === 'vector' && ra === 'pixel' && sau === true && nguon && chuOk, J({ vao, ra, sau, nguon, chuHt }));
+    const html = doc('choi.html'), veSrc = doc('ve-vector.js');
+    const sai = [];
+    if (/hangKieuVe|luuCheDo|kieu-ve/.test(caiDat)) sai.push('cai-dat.js còn hàng Kiểu vẽ');
+    if (/'caiDat\.(kieuVe|netMoi|diemAnh|kieuVeDang|kieuVeDoi)'/.test(chu)) sai.push('chu.js còn khoá caiDat.kieuVe*');
+    if (/doCheDo|luuCheDo|KHOA_LUU|localStorage|ve=pixel|ve=vector/.test(veSrc)) sai.push('ve-vector.js còn công tắc');
+    if (!/<body class="ve-vector">/.test(html)) sai.push('choi.html thiếu <body class="ve-vector">');
+    if (!/function bat\(\) \{ return true; \}/.test(veSrc)) sai.push('bat() không phải hằng true');
+    kiem('(14f) V7c1 gỡ công tắc: cai-dat.js hết hàng Kiểu vẽ / luuCheDo, chu.js hết 5 khoá caiDat.kieuVe*, ve-vector.js hết ?ve= / localStorage (bat() luôn true), choi.html <body class="ve-vector"> có sẵn', !sai.length, sai.join(' | '));
   }
   /* g. trang xem có mục V5a (bảng mẫu nút / khối lệnh / khung code ở các trạng thái, nạp choi-vector.css) */
   {
