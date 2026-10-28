@@ -466,7 +466,7 @@
       veMaMau: 'Chương trình chính bị khóa. Tạo go_fire() hai dòng.',
       san: SAN_C7, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(2, 0, [[3, 3]]), noi(6, 0, [[7, 3]]), noi(9, 0, [[10, 3]])],
       maMau: bai(C_C7),
-      sao: { o: 20, nhip: 25 },
+      sao: { o: 21, nhip: 25 },
       loiGiai: { chinh: C_C7.slice(), hamCuaEmMoi: [H('go_fire', [], T_GF)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C7), hamCuaEmMoi: [H('go_fire', [], ['# tới sát cửa, bắn nút mở cửa'].concat(T_GF))] },
       loiSai: [
@@ -484,7 +484,7 @@
       veMaMau: 'Chương trình chính bị khóa. Tạo visit() với biến d.',
       san: SAN_C8, batDau: { x: 4, y: 4, huong: 1 }, noi: [noi(1, 2, [[6, 4]]), noi(5, 1, [[9, 4]])],
       maMau: bai(C_C8),
-      sao: { o: 30, nhip: 34 },
+      sao: { o: 32, nhip: 34 },
       loiGiai: { chinh: C_C8.slice(), hamCuaEmMoi: [H('visit', [], T_VI)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C8), hamCuaEmMoi: [H('visit', [], ['# đo ngõ, vào, bắn, lùi ra đúng chừng ấy'].concat(T_VI))] },
       loiSai: [
@@ -502,12 +502,12 @@
       veMaMau: 'Chương trình chính bị khóa. Tạo push_blast() hai dòng.',
       san: SAN_C9, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(3, 0, [[5, 3]]), noi(4, 0, [[6, 3]])],
       maMau: bai(C_C9),
-      sao: { o: 20, nhip: 15 },
+      sao: { o: 22, nhip: 15 },
       loiGiai: { chinh: C_C9.slice(), hamCuaEmMoi: [H('push_blast', [], T_PB)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_blast', [], ['# đẩy thùng một ô, bắn mở cửa trước thùng'].concat(T_PB))] },
       loiSai: [
         { moTa: 'Bắn trước rồi mới đẩy: phát đầu bắn từ chỗ xuất phát, trúng tường', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_blast', [], ['blast_left()', 'push(1)'])], phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Đẩy hai ô mỗi lần: thùng vướng cửa còn đóng', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_blast', [], ['push(2)', 'blast_left()'])], phaiCoMa: ['chua-day-thung'] }
+        { moTa: 'Quên blast_left(): cửa không mở, thùng vướng cửa đóng, không tới ô đích', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_blast', [], ['push(1)'])], phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['push(1) đo distance() tới thùng, đi tới sát rồi đẩy một ô.', 'push(1), rồi blast_left().']
     })
