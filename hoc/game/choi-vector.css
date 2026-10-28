@@ -293,7 +293,7 @@ body.ve-vector .keo-dong.wh{background:var(--g-vecTroiNhat);font-size:11px}
 body.ve-vector .keo-bong.keo-dong.bad{background:var(--g-vecLoiNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi)}
 body.ve-vector .keo-bong.brick.bad{box-shadow:inset 4px 0 0 var(--g-vecLoi),inset 0 0 0 1.5px var(--g-vecLoi)}
 body.ve-vector .strip.slot{background:var(--g-vecBrandNhat);border:1.5px dashed var(--g-vecBrand);box-shadow:none;animation:vec-slot 1s ease-in-out infinite alternate}
-@keyframes vec-slot{from{border-color:var(--g-vecBrand);background:var(--g-vecBrandNhat)}to{border-color:var(--g-vecKeDam);background:var(--g-vecThe)}}
+@keyframes vec-slot{from{border-color:var(--g-vecKeDam);background:var(--g-vecThe)}to{border-color:var(--g-vecBrand);background:var(--g-vecBrandNhat)}}   /* đích ở 'to': giảm chuyển động thì dừng ở trạng thái rõ nhất */
 body.ve-vector .pan.keo-dich{box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam),0 0 0 3px rgba(var(--g-vecBrandRgb),.18),var(--elev-2)}
 body.ve-vector .pan.keo-co-cho{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.25),var(--elev-2)}
 body.ve-vector .strip.cam{animation:vec-cam .38s cubic-bezier(.16,1,.3,1) 1}
@@ -490,3 +490,16 @@ body.ve-vector .chon-so .cs.mau-nut[data-mau="yellow"]{background:var(--g-luatSa
 body.ve-vector .chon-so .cs.mau-nut[data-mau="none"]{background:var(--g-vecTheLom);color:var(--g-vecChu);box-shadow:inset 0 0 0 1px var(--g-vecKeDam)}
 body.ve-vector .chon-so .cs.mau-nut.on{outline:2px solid var(--g-vecBrand);outline-offset:2px}
 body.ve-vector .chon-so.muc .cs.muc-nut{padding:0 8px;font:600 12px/1 var(--px)}
+
+/* ============================================================ 7. CHUYỂN ĐỘNG: bỏ steps() còn lại của màn chơi, tôn trọng prefers-reduced-motion
+   Các steps() của khối / dòng / hộp đã thay ở vùng 3–5 (vec-*); ở đây là phần còn lại của màn chơi. Phim mở đầu / phim gói (.md-*, .pg-*) và
+   màn ngoài màn chơi (.g-the, .c-man, .lr-*) để V5b / V6. Dòng code đổi chỗ (thanh-phan.js, Web Animations) cũng trượt mượt ở vector. */
+body.ve-vector .ffr.rung{animation:rung .32s ease-in-out 1}
+body.ve-vector .ws-ov{transition:transform .34s cubic-bezier(.16,1,.3,1)}
+body.ve-vector [data-nut="lap-lai"].nhay{animation:vec-nut-nhay 1.1s ease-in-out infinite alternate}
+@keyframes vec-nut-nhay{from{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}to{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.22)}}
+/* giảm chuyển động: mọi hoạt cảnh / chuyển tiếp của giao diện chạy tức thì, dừng ở khung cuối (các vec-* lặp đặt trạng thái rõ nhất ở 'to');
+   trừ phim (.md: hiện từng hình theo animation-delay, gói V6 làm lại) */
+@media (prefers-reduced-motion:reduce){
+  body.ve-vector #stage>:not(.md),body.ve-vector #stage>:not(.md) *,body.ve-vector #stage>:not(.md) *::before,body.ve-vector #stage>:not(.md) *::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
+}

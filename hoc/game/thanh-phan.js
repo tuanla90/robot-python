@@ -458,6 +458,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   /* ------------------------------------------------------------- Editor */
+  /** Giao diện vector (V5a): dòng code đổi chỗ trượt mượt thay vì nhảy bậc steps(); máy đặt giảm chuyển động thì không trượt. Pixel giữ steps(3). */
+  function veMuot() { return typeof document !== 'undefined' && !!document.body && document.body.classList.contains('ve-vector'); }
+  function giamChuyenDong() { try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } }
   /**
    * Khung 10 ô. tuyChon: { tong: 10, dung: số ô dùng được, lay: () => mảng dòng (sửa tại chỗ),
    *   bang: phần tử panel (để nháy đỏ + chứa thông báo "Đã xóa · Hoàn tác"), dem: phần tử đếm, khiDoi: fn, khiKhoa: fn,
@@ -1158,8 +1161,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       list.forEach(function (it, k) {
         if (!it || it.slot) return;
         moi[it.id] = k;
-        if (cu && cu[it.id] !== undefined && cu[it.id] !== k && pitch && strips[k].animate) {
-          try { strips[k].animate([{ transform: 'translateY(' + ((cu[it.id] - k) * pitch) + 'px)' }, { transform: 'translateY(0)' }], { duration: 130, easing: 'steps(3,end)' }); } catch (e) { /* bỏ qua */ }
+        if (cu && cu[it.id] !== undefined && cu[it.id] !== k && pitch && strips[k].animate && !(veMuot() && giamChuyenDong())) {
+          try { strips[k].animate([{ transform: 'translateY(' + ((cu[it.id] - k) * pitch) + 'px)' }, { transform: 'translateY(0)' }], veMuot() ? { duration: 170, easing: 'cubic-bezier(.16,1,.3,1)' } : { duration: 130, easing: 'steps(3,end)' }); } catch (e) { /* bỏ qua */ }
         }
       });
       viTri = moi;
