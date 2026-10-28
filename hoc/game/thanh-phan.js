@@ -458,8 +458,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   /* ------------------------------------------------------------- Editor */
-  /** Giao diện vector (V5a): dòng code đổi chỗ trượt mượt thay vì nhảy bậc steps(); máy đặt giảm chuyển động thì không trượt. Pixel giữ steps(3). */
-  function veMuot() { return typeof document !== 'undefined' && !!document.body && document.body.classList.contains('ve-vector'); }
+  /** Giao diện vector (V5a): dòng code đổi chỗ trượt mượt thay vì nhảy bậc steps(); máy đặt giảm chuyển động thì không trượt. (V7c2: luôn vector.) */
+  function veMuot() { return true; }
   function giamChuyenDong() { try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } }
   /**
    * Khung 10 ô. tuyChon: { tong: 10, dung: số ô dùng được, lay: () => mảng dòng (sửa tại chỗ),
@@ -1737,7 +1737,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    * Khối KHÔNG co nhỏ (cỡ chạm đủ lớn trên điện thoại): khay dài thì cuộn bằng vuốt dọc, lăn chuột hay ▲ ▼.
    */
   var MAU_THE = { than: BM.xanhLoSang2V1, tay: BM.cam, cam: BM.tim };                       // màu icon tiêu đề thẻ: Thân xanh, Tay cam, Logic tím (như khối for)
-  var HINH_PART = {};                                                                       // bộ đệm hình bộ phận của tiêu đề thẻ (hinhPart), khóa 'than/hai-banh'
   function Palette(host, cb) {
     this.host = host;
     var bricks = {}, lastSpec = null, pal = this;
@@ -1838,33 +1837,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       the.forEach(function (x, k) { theCham.appendChild(h('i', k === i ? 'on' : '')); });
       theEl.setAttribute('aria-label', t('choi.theSo', { ten: the[i].ten, i: i + 1, n: the.length }));
     }
-    /** Hình một bộ phận cho tiêu đề thẻ: { loai: 'than' | 'tay', ma } → canvas đã cắt lề trong suốt (bộ PART, part/part.js), hay null nếu chưa nạp bộ PART / không có mã. */
+    /** Hình một bộ phận cho tiêu đề thẻ: { loai: 'than' | 'tay', ma } → canvas vector đã cắt lề (VeIcon.hinhPartVec, cạnh 56 px thiết bị, lớp vi-part), hay null nếu không có mã.
+     *  (V7c2: hết đường lùi bộ PART pixel.) */
     function hinhPart(bp) {
-      if (!bp || !bp.ma) return null;
-      if (window.VeVector && VeVector.bat() && window.VeIcon && VeIcon.hinhPartVec) {        // V7b (gỡ C3): vector vẽ thẳng hình bộ phận bằng VeVector (cạnh 56 px thiết bị, đã cắt lề), lớp vi-part như trước
-        var cvv = VeIcon.hinhPartVec(bp); if (!cvv) return null;
-        cvv.className = 'pxi vi-part'; return cvv;
-      }
-      if (!window.Part || !Part._veMot || !window.Ve) return null;
-      var k = bp.loai + '/' + bp.ma;
-      if (!(k in HINH_PART)) {
-        HINH_PART[k] = null;
-        try {
-          var d = Part.lay(bp.loai, bp.ma), cv = d && Part._veMot(d, {}).canvas();
-          if (cv && cv.getContext) HINH_PART[k] = catLe(cv);
-        } catch (e) { /* bộ PART lỗi: dùng icon đèn */ }
-      }
-      return HINH_PART[k] ? Ve.mk(HINH_PART[k], 1) : null;                               // 1× đã cỡ 16–24px, ngang icon đèn cũ; súng hơi (cao 35px) thu lại bằng CSS
-    }
-    /** Cắt lề trong suốt quanh hình bộ phận (tấm vẽ PART 24×24 có lề). */
-    function catLe(cv) {
-      var g = cv.getContext('2d'), w = cv.width, hh = cv.height, d = g.getImageData(0, 0, w, hh).data;
-      var x0 = w, y0 = hh, x1 = -1, y1 = -1;
-      for (var y = 0; y < hh; y++) for (var x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-      if (x1 < 0) return null;
-      var c = document.createElement('canvas'); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
-      var g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(cv, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
-      return c;
+      if (!bp || !bp.ma || !window.VeIcon || !VeIcon.hinhPartVec) return null;
+      var cvv = VeIcon.hinhPartVec(bp); if (!cvv) return null;
+      cvv.className = 'pxi vi-part'; return cvv;
     }
     /** Tên thẻ dài thì co chữ cho vừa ô (đo được khi khay đã hiện: Xưởng gọi lại qua vua() sau khi mở). */
     function vuaTenThe() {

@@ -24,22 +24,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var KEP_R2 = { than: 'hai-banh', tay: 'kep', camBien: [], son: 'lam' };  // R2 sơn lam
   var HUY = ['hai-banh', 'tay-gap', 'khoang-cach', 'che-tay', 'che-xe', 'tay-xoay', 'cam-bien-ben', 'hai-robot'];   // huy hiệu các gói mùa 1 (HuyHieu)
   var Y = 158;                                    // tâm thân R1 khi đứng trên sàn (tỉ lệ 3)
-  /* Gói V6: ở vector robot vẽ trong MỘT Ô cạnh tỉ lệ · 24 · 1,2 px (VeRobot.veCo) nên thùng trong kẹp theo VeVector.vatKep (1/100 ô), không theo hằng pixel.
-     VAT / VAT2: tâm thùng trong kẹp cách tâm thân (px khung) ở tỉ lệ 3 / 2; NUA / NUA2: nửa cạnh ô thùng (thùng vector vẽ trong hộp 76% ô). Pixel: y như cũ (57, 38, 14). */
-  var VEC = (function () { try { return !!(goc.VeVector && goc.VeVector.bat() && goc.VeRobot && goc.VeRobot.veVector && goc.VeRobot.veVector(KEP)); } catch (e) { return false; } })();
-  function oPx(tl) { return tl * (goc.VeRobot.PX_O_PART || 24) * (goc.VeRobot.PHONG_NGOAI_SAN || 1); }
-  function kepPx(tl) { var v = goc.VeRobot.vatKep(KEP, 'tren'); return { vat: v.ahead * oPx(tl) / 100, nua: v.n / 0.76 * oPx(tl) / 200 }; }
-  var VAT = VEC ? kepPx(3).vat : 57;              // pixel: tỉ lệ 3, VeRobot.vatKep ≈ 18–20 pixel part
-  var NUA = VEC ? kepPx(3).nua : 14, VAT2 = VEC ? kepPx(2).vat : 38, NUA2 = VEC ? kepPx(2).nua : 14;
+  /* Gói V6: robot vẽ trong MỘT Ô cạnh tỉ lệ · 24 · 1,2 px (VeRobot.veCo) nên thùng trong kẹp theo VeVector.vatKep (1/100 ô).
+     VAT / VAT2: tâm thùng trong kẹp cách tâm thân (px khung) ở tỉ lệ 3 / 2; NUA / NUA2: nửa cạnh ô thùng (thùng vector vẽ trong hộp 76% ô). V7c2: hết hằng pixel (57, 38, 14) / biến VEC. */
+  var VR = goc.VeRobot || {};                                                                   // Node (máy kiểm đọc lời / khung) không nạp ve-robot: số dự phòng
+  function oPx(tl) { return tl * (VR.PX_O_PART || 24) * (VR.PHONG_NGOAI_SAN || 1.2); }
+  function kepPx(tl) { var v = (VR.vatKep && VR.vatKep(KEP, 'tren')) || { ahead: 75, n: 42 }; return { vat: v.ahead * oPx(tl) / 100, nua: v.n / 0.76 * oPx(tl) / 200 }; }
+  var VAT = kepPx(3).vat;
+  var NUA = kepPx(3).nua, VAT2 = kepPx(2).vat, NUA2 = kepPx(2).nua;
   var NANG_MO = { tay: { tuThe: 'tren', kep: false } }, HA_MO = { tay: { tuThe: 'duoi', kep: false } };
   var HA_CAM = { tay: { tuThe: 'duoi', kep: true, cam: true } }, NANG_CAM = { tay: { tuThe: 'tren', kep: true, cam: true } };
 
-  /* Gói V6b (user 28/10 "Nâng lên to ra"): ở vector thùng dựng ở cỡ vật NÂNG (NUA theo vatKep 'tren'); nằm sàn / tay hạ thì coT(tg, false) thu về cỡ vật nằm sàn
-     bằng thuộc tính CSS `scale` (quanh tâm, không đụng transform của lớp hoạt cảnh), tay nâng coT(tg, true) trả về cỡ nâng. Pixel: coT không làm gì. */
-  var CO_SAN = VEC ? String(goc.VeVector.coVatKep(0) / goc.VeVector.coVatKep(1)) : '';
-  function coT(tg, nang) { if (VEC) tg.style.scale = nang ? '' : CO_SAN; return tg; }
-  /** Thùng nhỏ (cạnh 28; vector: cạnh 2 · nua, mặc định NUA) đặt tâm ở (x, y). */
-  function thung(c, x, y, cls, nua) { nua = nua || NUA; return c.dat(c.o('crate', VEC ? 2 * nua / 14 : 2), x - nua, y - nua, cls); }
+  /* Gói V6b (user 28/10 "Nâng lên to ra"): thùng dựng ở cỡ vật NÂNG (NUA theo vatKep 'tren'); nằm sàn / tay hạ thì coT(tg, false) thu về cỡ vật nằm sàn
+     bằng thuộc tính CSS `scale` (quanh tâm, không đụng transform của lớp hoạt cảnh), tay nâng coT(tg, true) trả về cỡ nâng. */
+  var CO_SAN = goc.VeVector && goc.VeVector.coVatKep ? String(goc.VeVector.coVatKep(0) / goc.VeVector.coVatKep(1)) : '';
+  function coT(tg, nang) { tg.style.scale = nang ? '' : CO_SAN; return tg; }
+  /** Thùng nhỏ (cạnh 2 · nua, mặc định NUA) đặt tâm ở (x, y). */
+  function thung(c, x, y, cls, nua) { nua = nua || NUA; return c.dat(c.o('crate', 2 * nua / 14), x - nua, y - nua, cls); }
   /** Dời phần tử (left/top) sau ms, có trượt (lớp pg-truot, thời lượng giây). */
   function truot(c, e, ms, x, y, giay) {
     e.classList.add('pg-truot'); e.style.setProperty('--tg', (giay || 1) + 's');
@@ -80,7 +80,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var r = c.xe(KEP, NANG_MO, 1, 3, 110, Y); k.appendChild(r);
         c.sau(600, function () { r.ve(HA_MO); c.keu('bam'); });
         c.sau(1200, function () { r.ve(HA_CAM); c.keu('kep'); });
-        c.sau(1800, function () { r.ve(NANG_CAM); if (VEC) coT(tg, true); else tg.classList.add('pg-nhac'); c.keu('bam'); });      // vector (V6b): nhấc lên thì thùng to ra
+        c.sau(1800, function () { r.ve(NANG_CAM); coT(tg, true); c.keu('bam'); });      // vector (V6b): nhấc lên thì thùng to ra
         c.sau(2100, function () { r.mat('vui'); });
       },
       // 4 · code arm_down() grab() arm_up(); R1 đặt thùng vào ô đích khung vàng, sao lóe
@@ -88,7 +88,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.nen(k, 'md-san');
         c.code(k, ['arm_down()', 'grab()', 'arm_up()'], 10, 14);
         var dich = c.dat(c.h('div', 'pg-dich'), 248, 136); dich.style.width = dich.style.height = '40px'; k.appendChild(dich);
-        var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', (VEC ? 268 - 110 - VAT : 101) + 'px');      // vector: tay ngắn hơn, đi thêm cho thùng vẫn vào giữa ô đích (tâm 268)
+        var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', (268 - 110 - VAT) + 'px');      // vector: tay ngắn hơn, đi thêm cho thùng vẫn vào giữa ô đích (tâm 268)
         var tg = thung(c, 110 + VAT, Y - 4); nhom.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 1, 3, 110, Y); nhom.appendChild(r);
         k.appendChild(nhom);
@@ -179,7 +179,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var tg = thung(c, a.x, a.y - VAT2, '', NUA2); k.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 0, 2, a.x, a.y); k.appendChild(r);
         c.sau(500, function () { r.ve(HA_CAM); coT(tg, false); });                       // vector (V6b): tay hạ, thùng về cỡ vật nằm sàn rồi nằm trên nút đúng cỡ đó
-        if (VEC) truot(c, tg, 1000, a.x - NUA2, b.y - NUA2, 0.3);                          // vector: tay ngắn hơn, thùng trượt lên nút thay vì nhảy
+        truot(c, tg, 1000, a.x - NUA2, b.y - NUA2, 0.3);                          // vector: tay ngắn hơn, thùng trượt lên nút thay vì nhảy
         c.sau(1000, function () { r.ve(HA_MO); tg.style.top = (b.y - NUA2) + 'px'; c.keu('tha'); });
         c.sau(1300, function () { nut.dat(true); cua.dat(true); c.keu('moKhoa'); r.ve(NANG_MO); });
         c.sau(1900, function () { r.ve(NANG_MO, 1); });
@@ -359,7 +359,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(3000, function () { r2.ve(HA_CAM); c.keu('kep'); });
         c.sau(3300, function () { r2.ve(NANG_CAM); coT(tg, true); tg.style.top = (Y - 4 - NUA) + 'px'; });
         c.sau(3700, function () { r2.ve(null, 1); tg.style.left = (110 + 3 * VAT - NUA) + 'px'; c.keu('buoc'); });
-        if (VEC) { truot(c, r2, 3750, 282 - VAT, Y, 0.35); truot(c, tg, 3750, 282 - NUA, undefined, 0.35); }   // vector: tay ngắn hơn, R2 lăn thêm tới ô đích (tâm 282)
+        truot(c, r2, 3750, 282 - VAT, Y, 0.35); truot(c, tg, 3750, 282 - NUA, undefined, 0.35);   // vector: tay ngắn hơn, R2 lăn thêm tới ô đích (tâm 282)
         c.sau(4100, function () { r2.ve(HA_MO); coT(tg, false); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         var sa = c.dat(c.sao(3), 270, 96, 'md-pop md-sang'); sa.style.animationDelay = '4.3s, 4.3s'; k.appendChild(sa);
         c.sau(4300, function () { c.keu('thang'); r1.mat('vui'); r2.mat('vui'); });
@@ -467,7 +467,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Tâm vật trong tay xoay so với tâm thân (xe hướng phải): x = về phía mũi, y = về bên phải xe (xuống). */
   function vatXoay(g, tuThe, tl) {
     var v = (window.VeRobot && VeRobot.vatXoay) ? VeRobot.vatXoay(XOAY, tuThe, g) : { f: 12, l: g < 0 ? -10 : g > 0 ? 10 : 0 };
-    var k = VEC ? oPx(tl) / 100 : tl;               // vector: VeRobot.vatXoay theo 1/100 ô; pixel: pixel part × tỉ lệ
+    var k = oPx(tl) / 100;               // vector: VeRobot.vatXoay theo 1/100 ô; pixel: pixel part × tỉ lệ
     return { x: v.f * k, y: v.l * k };
   }
   /** Tay xoay sang trái nhặt thùng rồi xoay về trước; xe đứng yên. tre: giây bắt đầu; cx: tâm xe. */

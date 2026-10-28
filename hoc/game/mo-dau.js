@@ -43,22 +43,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(cv, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
     return c;
   }
-  /** Gói V6c: ở chế độ vector (VeVector.bat()) mọi hình của cảnh lấy từ bộ vẽ vector (PhimVector: icon chung VeIcon, ô / vật / cờ / xe tải; VeRobot: R1 có mắt
-   *  biểu cảm), cùng cỡ CSS với bản pixel nên vị trí, hoạt cảnh, lời, thứ tự khung, thời lượng giữ nguyên; pixel (không bật) y như cũ. */
-  function PV() { return window.PhimVector && PhimVector.bat() ? PhimVector : null; }
-  /** R1 (thân hai bánh, không tay) đã cắt lề: tỉ lệ 3 ≈ 51×60, tỉ lệ 4 ≈ 68×80. mat: biểu cảm mắt (chỉ vector, VeVector H.kinh). */
+  /** Gói V6c: mọi hình của cảnh lấy từ bộ vẽ vector (PhimVector: icon chung VeIcon, ô / vật / cờ / xe tải; VeRobot: R1 có mắt biểu cảm), cùng cỡ CSS với
+   *  bản pixel cũ nên vị trí, hoạt cảnh, lời, thứ tự khung, thời lượng giữ nguyên. V7c2 (28/10): hết đường lùi pixel (Ve.tiles / Ve.mk ô). */
+  function PV() { return window.PhimVector || null; }
+  /** R1 (thân hai bánh, không tay) đã cắt lề: tỉ lệ 3 ≈ 51×60, tỉ lệ 4 ≈ 68×80. mat: biểu cảm mắt (VeVector H.kinh). */
   function r1(huong, tiLe, mat) {
     try {
-      var tt = { wl: 0, wr: 0, ph: 0, tay: null }; if (PV() && mat) tt.mat = mat;
-      var cv = VeRobot.veCo(R1, tt, huong, tiLe * VeRobot.PX_O_PART), cl = catLe(cv); if (cv.laVector) cl.laVector = true;      // vector: bản cắt lề vẫn là hình vector (Ve.mk không phóng điểm ảnh)
-      var c = Ve.mk(cl, VeRobot.heSoCss(cv)); if (cl.laVector) c.laVector = true; c.classList.add('pxi'); return c;      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
+      var tt = { wl: 0, wr: 0, ph: 0, tay: null }; if (mat) tt.mat = mat;
+      var cv = VeRobot.veCo(R1, tt, huong, tiLe * VeRobot.PX_O_PART), cl = catLe(cv); cl.laVector = true;      // bản cắt lề vẫn là hình vector (Ve.mk không phóng điểm ảnh)
+      var c = Ve.mk(cl, VeRobot.heSoCss(cv)); c.laVector = true; c.classList.add('pxi'); return c;      // tiLe = bội số "pixel part" → cỡ ô hiển thị (VeRobot.veCo)
     }
     catch (e) { return h('div'); }
   }
-  function ico(ten, s, mau) { var v = PV() && PhimVector.ico(ten, s, mau || VANG); if (v) return v; var c = Ve.ico(ten, s, { fill: mau || VANG, line: MUC }); c.classList.add('pxi'); return c; }
-  function o(ten, s) { var v = PV() && PhimVector.o(ten, s, 0); if (v) return v; var c = Ve.mk(Ve.tiles()[ten], s); c.classList.add('pxi'); return c; }
-  function co(s) { var v = PV() && PhimVector.co(s); if (v) { v.classList.add('md-co'); return v; } var c = Ve.mk(Ve.tiles().flags[0], s); c.classList.add('pxi', 'md-co'); return c; }
-  /** Xe chở linh kiện (pixel: icon 'car' tỉ lệ 6 màu đỏ; vector: xe tải PhimVector.xeTai cùng cỡ 84 × 60). */
+  function ico(ten, s, mau) { return (PV() && PhimVector.ico(ten, s, mau || VANG)) || Ve.ico(ten, s, { fill: mau || VANG, line: MUC }); }     // Ve.ico: svg VeIcon (tên ngoài bộ phim)
+  function o(ten, s) { return (PV() && PhimVector.o(ten, s, 0)) || h('div'); }
+  function co(s) { var v = PV() && PhimVector.co(s); if (!v) return h('div'); v.classList.add('md-co'); return v; }
+  /** Xe chở linh kiện: xe tải PhimVector.xeTai cỡ 84 × 60 (dự phòng: icon 'car' tỉ lệ 6 màu đỏ). */
   function xeHang() { var v = PV() && PhimVector.xeTai(84, 60); return v || ico('car', 6, BM.do); }
   /** Thùng linh kiện trên xe (pixel: icon 'box' tỉ lệ 3 = 39 × 39; vector: thùng gỗ của sân cùng cỡ). */
   function thungHang() { var v = PV() && PhimVector.o('crate', 39 / 14, 0); return v || ico('box', 3, BM.camToiV1); }
