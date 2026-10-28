@@ -59,7 +59,7 @@ GÓP Ý USER 28/10 (gửi SendMessage): cảm biến phải dính vỏ theo từ
 | V5a-tiếp · làm tiếp V5a từ WIP 91b81ae (soát vùng 2 → 4 → 5 → 7–11 → máy kiểm → npm test) | opus | 28/10 (phiên mới) | worktree CŨ agent-a2b177d2cde83df28, nhánh claude/ve-vector-giao-dien-a | fa3702f | ĐẠT: gộp 93209af, kiem-ve-vector 92, kiem-bang-mau 19, xem omni.3 vector + hai-robot.2 pixel (agent npm test 81/81) | xong; brief sai: WIP 91b81ae là vùng 4 chứ không phải vùng 2 |
 
 ## Song song 28/10 (user: "giao nhiều agent làm các việc song song"; hạn chế build/test vì hết RAM → agent CẤM npm test, người giao chạy cả bộ sau khi gộp; luật chung: luat-song-song.md)
-| V5b · giao diện các màn khác vector | opus | 28/10 09:51 | v5b-giao-dien-b, nhánh claude/ve-vector-giao-dien-b từ fa3702f | fa3702f | — | đang chạy; brief-V5b.md; cổng 4201 |
-| V6 · huy hiệu + phim vector | opus | 28/10 09:51 | v6-huy-hieu-phim, nhánh claude/ve-vector-huy-hieu-phim từ fa3702f | fa3702f | — | đang chạy; brief-V6.md; cổng 4202 |
+| V5b · giao diện các màn khác vector | opus | 28/10 09:51 | v5b-giao-dien-b, nhánh claude/ve-vector-giao-dien-b từ fa3702f | dff5887 | ĐẠT: gộp 7dd4c3a, 5 máy kiểm vector đạt, xem màn đầu / chọn gói / phim | xong; thêm 4 việc (3 V5a để lại + ẩn Màu sơn R1) qua SendMessage |
+| V6 · huy hiệu + phim vector | opus | 28/10 09:51 | v6-huy-hieu-phim, nhánh claude/ve-vector-huy-hieu-phim từ fa3702f | 46ea4dc | ĐẠT: gộp 9535d15, kiem-huy-hieu-phim-vector 10, xem trang V6 78/78 | xong; brief sai tên tệp |
 | Gói 8 Đội mùa 2 | opus (user đổi từ Gemini: agy bị auto mode chặn) | 28/10 09:53 | goi8-doi-mua-2, nhánh claude/doi-mua-2 từ d3af762 | d3af762 | — | đang chạy; brief-goi8.md |
 | Gói 9 Bệ súng xích mùa 2 | opus (như gói 8) | 28/10 09:53 | goi9-be-sung, nhánh claude/be-sung từ d3af762 | d3af762 | — | đang chạy; brief-goi9.md |

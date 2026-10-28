@@ -114,6 +114,18 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   (cả ở pixel, để đổi qua lại), cỡ ô nhỏ nhất 14 px (che-day-thung.9 ở 360 × 640), tương phản AA đo trong trang (thẻ R1 chữ trắng trên #38BDF8 2,14:1 đã sửa). Máy kiểm mục 14.
   Còn lại → V5b: icon `.pxi` (bàn tay hướng dẫn, nút sân) còn pixel; nút chỉ icon thiếu title; nút cuộn khay 20–22 px. → V6: phim `.md` / `.pg-*` còn mực / kem pixel và loại khỏi reduced-motion.
   User 28/10 chốt: mục "Màu sơn R1" trong Cài đặt ẨN ở vector (R1 cố định #38BDF8), pixel giữ; giao V5b.
+- **28/10 V6 · Huy hiệu + phim vector xong** (nhánh claude/ve-vector-huy-hieu-phim, chạy song song với V5b, gộp 9535d15). `huy-hieu-vector.js`: 78 / 78 mã có bản vector (vòng thép / vàng / xám,
+  đĩa trắng, hình robot / ô / vật thật); huy hiệu chưa có bản vector tự rơi về `vePixel`; hiển thị qua `HuyHieu.mk(ma, tt, s)` + cầu nối bọc `Ve.mk` / `Ve.hydrate` chỉ ở vector.
+  `phim-vector.js`: ô / cờ / nút / cửa / sao / icon phim vector; phim-mua-1 thùng trong kẹp theo `VeRobot.vatKep` (bỏ VAT = 57 ở vector); mắt biểu cảm ở 9 / 9 phim.
+  Máy kiểm `kiem-huy-hieu-phim-vector.mjs` (10, lỗi giả đỏ 7); trang xem `hinh-mau/xem-vector-v6.html`. Brief sai tên tệp (ve-vector-*.js bị kiem-ve-vector mục 12 bắt nạp ở xem-vector.html).
+- **28/10 V5b · Giao diện các màn khác xong** (nhánh claude/ve-vector-giao-dien-b, gộp 7dd4c3a, không xung đột với V6). `giao-dien-vector-b.css`: màn đầu (robot mắt chớp / cười / liếc),
+  chọn gói, lưới màn, Lắp robot, Sổ lệnh, khung phim; `ve-vector-icon.js` (VeIcon: icon SVG theo vai, thay `.pxi` qua MutationObserver trong #sc-dau, #sc-goi, #sc-chon, #sc-lap, #lop-hop, .md);
+  title cho nút chỉ icon, nút cuộn khay 24 px, ẩn Màu sơn R1 ở vector. Máy kiểm `kiem-giao-dien-vector-b.mjs` (16, lỗi giả đỏ 9); kiem-ve-vector NGOAI còn `md|pg-`.
+  Sau gộp (người giao): kiem-giao-dien-vector-b 16, kiem-huy-hieu-phim-vector 10, kiem-ve-vector 92, kiem-bang-mau 19, kiem-phim-goi 33; trình duyệt màn đầu, chọn gói (huy hiệu vector), phim mở đầu,
+  không lỗi console. npm test cả bộ: chạy một lần sau khi gộp gói 8, 9.
+  → V7: icon màn chơi #sc-choi còn pixel (thêm vào PHAM_VI); gộp hai bộ icon trùng 7 tên (VeIcon.HINH với PhimVector.ICON); icon `trum`, `mui` còn pixel; cảnh phim mở đầu `mo-dau.js` còn pixel (mưa, xe);
+  gộp cầu nối Ve.mk vào ve.js; gộp giao-dien-vector-b.css vào choi-vector.css; nền phim .md còn mực / kem; huy hiệu gói 8, 9 mùa 2 cần bản vector (`VeVector.HUY_HIEU.dangKy`).
+  Chờ user: thùng đặt xuống nút trong phim kho-hang.3 nhỏ (24% ô như trên sân); 4 nút icon Xưởng hàm chưa title (xuong-ham.js chưa trong SUA_SAU_NEN); nhãn "Menu", "Ẩn", "Cài đặt" chưa nói nút làm gì.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
