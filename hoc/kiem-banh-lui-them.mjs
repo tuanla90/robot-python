@@ -25,6 +25,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const require = createRequire(import.meta.url);
 const Cham = require('./cham.js');
@@ -119,8 +120,7 @@ kiem('huy hiệu: chỉ trùm banh-lui.4 mang huy hiệu banh-lui (huy-hieu.js c
   const t2 = get('che-xe.10');
   assert.equal(t2.chuong, 'che-banh-lui'); assert.equal(t2.hang, 'trum'); assert.equal(t2.huyHieu.ma, 'che-xe');
   for (const m of M.danhSach.filter((x) => goi.chuong.includes(x.chuong) && x.hang !== 'trum')) assert.ok(!m.huyHieu, m.ma + ' không phải trùm mà có huy hiệu');
-  const hh = fs.readFileSync(new URL('./game/huy-hieu.js', import.meta.url), 'utf8');
-  assert.ok(/HINH\['banh-lui'\]\s*=\s*function/.test(hh), "huy-hieu.js thiếu HINH['banh-lui']");
+  assert.ok(coHinhRieng('banh-lui'), "huy-hieu-vector.js thiếu hình huy hiệu 'banh-lui'");
 });
 kiem('choi.html nạp man-banh-lui-them.js trước lo-trinh-hoc.js', () => {
   const html = fs.readFileSync(new URL('./game/choi.html', import.meta.url), 'utf8');

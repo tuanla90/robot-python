@@ -15,6 +15,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const require = createRequire(import.meta.url);
 const SanHoc = require('./san-hoc.js');
@@ -51,8 +52,7 @@ kiem('huy hiệu nut-de: màn 10 là trùm có huyHieu, huy-hieu.js có HINH ri�
   assert.deepEqual(trum.huyHieu && trum.huyHieu.ma, 'nut-de');
   assert.ok(typeof trum.huyHieu.ten === 'string' && trum.huyHieu.ten.length > 0);
   for (const m of DS.slice(0, -1)) assert.ok(!m.huyHieu, m.ma + ' không phải trùm mà có huy hiệu');
-  const hh = fs.readFileSync(new URL('./game/huy-hieu.js', import.meta.url), 'utf8');
-  assert.ok(/HINH\['nut-de'\]\s*=\s*function/.test(hh), "huy-hieu.js thiếu HINH['nut-de'] (hình vẽ riêng)");
+  assert.ok(coHinhRieng('nut-de'), "huy-hieu-vector.js thiếu hình huy hiệu 'nut-de' (hình vẽ riêng)");
 });
 
 /* ------------------------------------------------------------------ kho hàm của em theo thứ tự lộ trình */

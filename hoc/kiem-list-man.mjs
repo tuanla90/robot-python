@@ -15,6 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SanHoc, ChamHoc, KhoHam, KhungCode, ThuTu, SoLenh, ManHoc, tatCa, tenCotTruyen, J, H, maCua, maLoi, sanCua, batDauCua, khoTruoc, tron, laHanhLang, docDuong, tayNhapDuoc } from './dung-chung-list.mjs';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 const DoDuong = await import('./do-duong-che-cam-bien.mjs');
 const { nhipCheCamBienTatCa, nhipCheCamBienSan } = DoDuong;
 
@@ -196,8 +197,7 @@ console.log('\n== 4. Đường BFS (do-duong-che-cam-bien.mjs) đổi thành l�
 /* ================================================================= 5. HUY HIỆU, SỔ LỆNH, THẺ SCRIPT */
 console.log('\n== 5. Huy hiệu, Sổ lệnh, thẻ script ==');
 {
-  const hh = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
-  kiem("huy hiệu: game/huy-hieu.js có HINH['list'] (danh sách [ 4 2 3 ] dựng bằng code) và HINH['che-list'] (danh sách nhỏ + bánh răng themBanhRang)", /HINH\['list'\] = function \(\)/.test(hh) && /HINH\['che-list'\] = function \(\)[\s\S]*?themBanhRang\(p\);\s*return p;\s*\};/.test(hh));
+  kiem("huy hiệu: bộ vector có hình riêng 'list' và 'che-list' (huy-hieu-vector.js; V7c1)", coHinhRieng('list') && coHinhRieng('che-list'));
   kiem('Sổ lệnh có nhóm "list" (Danh sách) sau nhóm nhen; chương list KHÔNG có hàm nào trong Sổ lệnh (không chế hàm); các hàm nhận danh sách của em nằm ở che-list', SoLenh.tenNhom.list === 'Danh sách' && SoLenh.thuTuNhom.indexOf('list') === SoLenh.thuTuNhom.indexOf('nhen') + 1 && SoLenh.theoChuong('list').length === 0 &&
     J(SoLenh.theoChuong('che-list').map((h) => h.ten)) === '["route","route_left","scan","box"]');
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');

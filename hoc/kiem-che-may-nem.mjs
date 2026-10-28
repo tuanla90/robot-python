@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -385,8 +386,7 @@ console.log('\n== 8. game/choi.html nạp man-che-may-nem.js đúng thứ tự =
   const vtri = (f) => tags.indexOf('../' + f);
   kiem('choi.html có thẻ script ../man-che-may-nem.js đúng một lần, sau man-may-nem.js (cùng sổ màn)', tags.filter((t) => t === '../man-che-may-nem.js').length === 1 && vtri('man-che-may-nem.js') > vtri('man-may-nem.js'), J(tags.filter((t) => /man-/.test(t))));
   kiem('so-lenh.js nạp trước man-che-may-nem.js', vtri('so-lenh.js') >= 0 && vtri('so-lenh.js') < vtri('man-che-may-nem.js'));
-  const hh = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
-  kiem('game/huy-hieu.js có HINH["che-may-nem"] (hình máy ném + bánh răng)', hh.includes("HINH['che-may-nem']") && /HINH\['che-may-nem'\][\s\S]{0,900}themBanhRang\(p\)/.test(hh));
+  kiem("huy hiệu: bộ vector có hình riêng 'che-may-nem' (huy-hieu-vector.js; V7c1)", coHinhRieng('che-may-nem'));
 }
 
 console.log('\n---------------------------------------------');

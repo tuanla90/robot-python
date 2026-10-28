@@ -23,6 +23,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const require = createRequire(import.meta.url);
 const Cham = require('./cham.js');
@@ -166,13 +167,12 @@ kiem('tên màn không trùng trong chương và không trùng màn khác của 
   for (const t of ten) assert.ok(!cu.includes(t), 'tên "' + t + '" trùng một màn khác');
 });
 kiem('huy hiệu: chỉ trùm mang, mã che-luc-ban; huy-hieu.js có hình', () => {
-  const hh = fs.readFileSync(new URL('./game/huy-hieu.js', import.meta.url), 'utf8');
   const trum = DS[DS.length - 1];
   assert.equal(trum && trum.hang, 'trum');
   assert.equal(trum.huyHieu && trum.huyHieu.ma, CHUONG, 'trùm thiếu huy hiệu');
   assert.ok(trum.huyHieu.ten && !/[—]/.test(trum.huyHieu.ten));
   for (const m of DS.slice(0, -1)) assert.ok(!m.huyHieu, m.ma + ' không phải trùm mà có huy hiệu');
-  assert.ok(/HINH\['che-luc-ban'\]\s*=\s*function/.test(hh), "huy-hieu.js thiếu HINH['che-luc-ban']");
+  assert.ok(coHinhRieng('che-luc-ban'), "huy-hieu-vector.js thiếu hình huy hiệu 'che-luc-ban'");
 });
 
 /* ------------------------------------------------------------------ 2–4, 6. từng màn */

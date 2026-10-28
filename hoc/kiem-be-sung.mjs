@@ -31,6 +31,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const require = createRequire(import.meta.url);
 const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -267,14 +268,13 @@ async function main() {
     for (const t of ten) assert.ok(!cu.includes(t), 'tên "' + t + '" trùng một màn khác');
   });
   kiem('huy hiệu: chỉ trùm mang, đúng mã chương; huy-hieu.js có hình', () => {
-    const hh = fs.readFileSync(new URL('./game/huy-hieu.js', import.meta.url), 'utf8');
     for (const c of CHUONG) {
       const ds = DS_C[c], trum = ds[ds.length - 1];
       assert.equal(trum && trum.hang, 'trum', c + ': chưa có trùm');
       assert.equal(trum.huyHieu && trum.huyHieu.ma, c, c + ': trùm thiếu huy hiệu');
       assert.ok(trum.huyHieu.ten && !/[—]/.test(trum.huyHieu.ten));
       for (const m of ds.slice(0, -1)) assert.ok(!m.huyHieu, m.ma + ' không phải trùm mà có huy hiệu');
-      assert.ok(new RegExp("HINH\\['" + c + "'\\]\\s*=\\s*function").test(hh), "huy-hieu.js thiếu HINH['" + c + "']");
+      assert.ok(coHinhRieng(c), "huy-hieu-vector.js thiếu hình huy hiệu '" + c + "'");
     }
   });
 
