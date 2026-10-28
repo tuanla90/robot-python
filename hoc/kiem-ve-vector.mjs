@@ -575,6 +575,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   const { execFileSync } = await import('node:child_process');
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
+  const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
   const NEN_VEC = '8780764';                                                           // V7c3 (29/10): nền VECTOR = commit gộp V7c2 (V7c2 chứng minh hình y hệt c830c12, nền V7c1 sau gộp V7b); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
@@ -725,6 +726,15 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
       soKhung += A.length;
       let i = 0; while (i < Math.max(A.length, B.length) && A[i] === B[i]) i++;
       if (i < Math.max(A.length, B.length)) { const a = (A[i] || '').split('\n'), b = (B[i] || '').split('\n'); let j = 0; while (a[j] === b[j]) j++; khac.push(c.ten + ' khung ' + i + ': nền ' + a[j] + ' / mới ' + b[j]); }
+      if (CHI_TIET_13A) {                                                                   // V7c3: `--chi-tiet-13a` in MỌI khung khác + lệnh bớt / thêm (đếm theo dòng lệnh) để soát đổi lệnh có chủ ý
+        let soKhac = 0; const gom = {};
+        for (let k = 0; k < Math.max(A.length, B.length); k++) {
+          if (A[k] === B[k]) continue; soKhac++;
+          const dem = new Map(); for (const l of (A[k] || '').split('\n')) dem.set(l, (dem.get(l) || 0) + 1); for (const l of (B[k] || '').split('\n')) dem.set(l, (dem.get(l) || 0) - 1);
+          for (const [l, n] of dem) if (n) { const kh = (n > 0 ? '− ' : '+ ') + l; (gom[kh] = gom[kh] || []).push(k); }
+        }
+        if (soKhac) console.log('    [chi tiết 13a-v] ' + c.ten + ': ' + soKhac + ' / ' + Math.max(A.length, B.length) + ' khung khác\n' + Object.keys(gom).map((kh) => '      ' + kh + '   (' + gom[kh].length + ' khung, đầu ' + gom[kh].slice(0, 4).join(',') + ')').join('\n'));
+      }
     }
     kiem('(13a-v) CHẾ ĐỘ VECTOR y nguyên: ' + CA.length + ' lần phát lại (lời giải + lời sai, ' + MAN_V4.length + ' màn kể cả màn nhiều robot), ' + soKhung + ' khung — canvas sân + lớp phủ robot của bản mới ra đúng từng lệnh như nền vector ' + NEN_VEC, khac.length === 0 && soKhung > 2000, khac.slice(0, 3).join('\n      '));
   }

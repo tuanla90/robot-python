@@ -590,7 +590,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var b = this.vis.bongMau; if (!b || b.den <= now) return;
       var col = this.mauHien(b.mau), txt = '"' + b.mau + '"';
       g.save();
-      g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'center';
+      g.font = HU().PHONG_CHU; g.textBaseline = 'middle'; g.textAlign = 'center';         // V7c3: đo bằng đúng phông HU.bongMau vẽ chữ (trước: phông pixel cũ 8px)
       var w = Math.ceil(g.measureText(txt).width) + 5, hh = 9, pos = this.viTriBong(cx, cy, w + 2, hh + 2), x = pos.x + 1, y = pos.y + 1;
       g.restore(); HU().bongMau(g, x, y, w, hh, col, txt, Math.min(1, (b.den - now) / 120));      // viên thuốc trắng viền màu (gói V4)
     },
@@ -997,7 +997,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         g.imageSmoothingEnabled = false;
         if (laTayKep(c.robot.tay)) this.veVatKep(g, X, Y, now);                           // vật trong kẹp: dưới hình robot, hai càng đè lên mép vật
         var w = spr.width, h = spr.height, sc = 1;                                        // hình robot vector đã đúng pixel thiết bị
-        if (!v.dr) g.fillStyle = this.xe ? (this.cfgXe[this.xeDang].mauXe || MAU_XE[this.xeDang % MAU_XE.length]) : BM.moToiV22;      // (V7c2: lệnh đặt màu giữ nguyên cho phanh 13a-v; bóng đổ nằm trong hình robot vector, màu đội ở kính + mắt + ăng-ten; drone có bóng riêng veDuoiDrone)
         if (duoi) g.globalAlpha = v.dr ? 0.7 : 0.66;                                    // vật nằm ngay dưới thân (kể cả drone lơ lửng phía trên): thân hơi trong suốt cho lộ vật
         var gocV = ((v.goc || 0) + (v.gocMem || 0)) || (v.dr && v.dr.roi ? 0.22 : 0);      // cộng góc quay mượt (gói V4); drone đã rơi: nằm nghiêng
         if (gocV || v.roi) {                                                              // xích quay dở: xoay thêm góc `goc` (rad) quanh tâm thân; nhện RƠI HỐ (v.roi 0→1): nhỏ dần, xoay, mờ dần
@@ -1197,7 +1196,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veThanhPin: function (g, cx, cy, now) {
       var d = this.vis.dr; if (!d || d.pin === null || d.pin === undefined || !d.pinMax) return;
       var W = 10, so = String(Math.max(0, Math.round(d.pin)));
-      g.save(); g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left';         // đo bề ngang số (phông như cũ: giữ cho phanh 13a-v; V7c3 cân nhắc)
+      g.save(); g.font = HU().PHONG_SO; g.textBaseline = 'middle'; g.textAlign = 'left';         // đo bề ngang số bằng đúng phông HU.thanhPin vẽ số (V7c3; trước: phông pixel cũ 8px)
       var tw = Math.ceil(g.measureText(so).width), tong = W + 3 + tw + 2;
       var tl = Math.max(0, Math.min(1, d.pin / d.pinMax));
       var sac = d.sacLoe > now, nay = d.nhay > now && ((now / 90 | 0) & 1) === 0, thap = d.pin <= Math.max(1.5, d.pinMax * 0.25), nguy = thap && !d.roi && ((now / 240 | 0) & 1) === 0;
@@ -1502,7 +1501,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var sg = this.vis.sung; if (!sg || sg.dan === null || sg.dan === undefined) return;
       var txt = '×' + sg.dan, het = sg.dan <= 0, nhay = sg.het > now && ((now / 110 | 0) & 1) === 0;
       g.save();
-      g.font = '8px VT323, monospace'; g.textBaseline = 'middle'; g.textAlign = 'left';
+      g.font = HU().PHONG_SO; g.textBaseline = 'middle'; g.textAlign = 'left';            // V7c3: đo bằng đúng phông HU.theDan vẽ chữ (trước: phông pixel cũ 8px)
       var w = Math.ceil(g.measureText(txt).width) + 10, hh = 9, x = 1, y = 1;
       g.restore(); HU().theDan(g, this.cfg.ox * T + x + 0.5, this.cfg.oy * T + y + 0.5, w, hh, txt, het, nhay);     // gói V4: thẻ viên thuốc ở góc cửa sổ vẽ
     },

@@ -409,6 +409,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep,
     tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong,
     bongVat: bongVat, toDo: toDo, bongElip: bongElip, vongHut: vongHut, vienLoi: vienLoi, ngam: ngam, vetCung: vetCung, sacLoe: sacLoe, thoSac: thoSac, bongDrone: bongDrone, thanhPin: thanhPin, theDan: theDan,
-    sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach, dayNoi: dayNoi };
+    sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach, dayNoi: dayNoi,
+    PHONG_CHU: PHONG_CHU, PHONG_SO: PHONG_SO };                                    // V7c3: san-ve.js đo bề ngang chữ bằng đúng phông vẽ chữ
   if (typeof module === 'object' && module.exports) module.exports = V.HU;
 })(typeof window !== 'undefined' ? window : globalThis);

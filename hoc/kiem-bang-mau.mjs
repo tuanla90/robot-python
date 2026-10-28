@@ -161,7 +161,7 @@ console.log('\n== 3. Token và thứ tự nạp ==');
   }
   kiem('mọi BM.<vai> / var(--g-<vai>) có trong bảng màu', thieu.length === 0, thieu.slice(0, 10).join(', '));
   /* V7c1 (28/10): bảng sơn dự phòng của cai-dat.js (hàng "Màu sơn R1") đã bỏ → 11 vai này không còn chỗ dùng; V7c3 (bảng màu) xoá khỏi bang-mau.js rồi xoá danh sách này */
-  const VAI_CHO_V7C3 = [/* V7c3 e2 (29/10): choi.css xoá .deco .surf / .bev (khung gỗ, phần tử không còn được tạo) → 4 vai sau hết chỗ dùng; e4 xoá cùng cả danh sách */ 'moCamToi', 'camSangV4', 'goV7', 'goV8',
+  const VAI_CHO_V7C3 = [/* V7c3 e2 (29/10): choi.css xoá .deco .surf / .bev (khung gỗ, phần tử không còn được tạo) → 4 vai sau hết chỗ dùng; e3: san-ve.js veLopXe bỏ fillStyle bóng thân thừa → moToiV22; e4 xoá cùng cả danh sách */ 'moCamToi', 'camSangV4', 'goV7', 'goV8', 'moToiV22',
     'kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3',
     /* V7c2 (28/10) san-ve.js xoá nhánh pixel (tia, mắt LED, ảnh nhỏ, vật, thanh pin, thẻ đạn…) → 45 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js rồi xoá dòng này */
     'sanTim', 'sanDoSang', 'sanNgocToi', 'moDo', 'moLam', 'moDoToiV2', 'moSangV5', 'moToiV20', 'moToiV21', 'moToiV23', 'moToiSangV8', 'moToiSangV9', 'moVangV4', 'moVangV5', 'moVangV6', 'moVangV7',

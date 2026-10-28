@@ -1,15 +1,16 @@
 /* ============================================================================
-   choi.css — "Robot Chấn Hưng": giao diện v3 (bàn xưởng gỗ, khối có núm, bảng xanh).
-   Chữ: Handjet (giao diện) + VT323 (code); không có mạng thì rơi về system-ui / monospace (body.fb: hệ số cỡ = 1).
+   choi.css — "Robot Chấn Hưng": BỐ CỤC chung mọi màn (kích thước, lưới, vị trí); giao diện phẳng phủ lên ở choi-vector.css (body.ve-vector).
+   V7c3 (29/10): đã bỏ vân gỗ / bảng phấn / núm khối, image-rendering pixelated, steps(), viền răng cưa và phông pixel Handjet / VT323.
+   Chữ: Google Sans Flex (giao diện) + Google Sans Code (mã), font/font.css; không tải được phông thì rơi về system-ui / monospace (body.fb).
    Một màn 360×640 co giãn đều bằng transform, KHÔNG có thanh cuộn ở bất kỳ đâu.
    ========================================================================== */
 :root{
   --ink:var(--g-vienDam); --cream:var(--g-kemSang);
-  --px:"Handjet",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --mono:"VT323",Consolas,"SF Mono","Courier New",monospace;
-  --kp:1.4;   /* hệ số cỡ chữ giao diện (Handjet nhỏ hơn Baloo 2 cùng cỡ) */
-  --km:1.5;   /* hệ số cỡ chữ code (VT323 hẹp và thấp) */
-  --wm:400;   /* VT323 chỉ có một độ đậm; phông dự phòng thì đậm 700 */
+  --px:"Google Sans Flex",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Google Sans Code",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,Consolas,monospace;
+  --kp:1;     /* hệ số cỡ chữ giao diện (phông pixel cũ cần 1,4) */
+  --km:1;     /* hệ số cỡ chữ code (phông pixel cũ cần 1,5) */
+  --wm:500;   /* độ đậm chữ code */
 }
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
@@ -422,7 +423,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .th-luu .k{display:block;font:700 calc(11px*var(--kp))/1.2 var(--px);color:var(--g-vang);margin-bottom:2px}
 .th-luu p{margin:0 0 3px}
 
-/* phông dự phòng (không tải được Handjet / VT323): hệ số cỡ về 1 và chữ nhỏ lại một chút cho vừa khung */
+/* phông dự phòng (không tải được Google Sans, ung-dung.js phongDuPhong): hệ số cỡ về 1 và chữ nhỏ lại một chút cho vừa khung */
 .fb{--kp:1;--km:1;--wm:700}
 .fb .gl{font-size:9px}.fb .gl .nb{font-size:8.5px;padding:1px 3px 0}.fb .gl .tg{font-size:8px;padding:2px 2px 1px}
 .fb .bh .tt{font-size:9px}.fb .bh .ct{font-size:10px}

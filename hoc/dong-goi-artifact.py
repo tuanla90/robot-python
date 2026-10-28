@@ -34,17 +34,15 @@ def goi(nhom, idx, chu):
 
 # CSS theo đúng thứ tự choi.html nạp (V7b 28/10): phông tự chứa, nền bố cục choi.css, rồi giao diện vector choi-vector.css
 # (mặc định vector nên bản Artifact PHẢI có chúng; thiếu thì body.ve-vector mà không có luật phủ → giao diện vỡ).
-# Phông: nhúng woff2 Google Sans Flex / Code (chế độ vector) dạng data: ngay trong font.css, KHÔNG gọi Google Fonts.
-# Handjet / VT323 (chỉ pixel) không nhúng: bỏ khối @font-face (bản Artifact chạy vector).
+# Phông: nhúng woff2 Google Sans Flex / Code dạng data: ngay trong font.css, KHÔNG gọi Google Fonts.
+# (V7c3 29/10: font.css chỉ còn 6 @font-face Google Sans; bộ lọc phông pixel Handjet / VT323 bỏ cùng tệp woff2.)
 CSS = ['font/font.css', 'choi.css', 'choi-vector.css']   # V7b việc 10: giao-dien-vector-b.css đã nối vào cuối choi-vector.css
 PHONG_NHUNG = re.compile(r'url\((gs(?:flex|code)-[a-z-]+\.woff2)\)')
-PHONG_PIXEL = re.compile(r'@font-face\s*\{[^}]*(?:handjet|vt323)-[a-z-]+\.woff2[^}]*\}\s*')
 
 def nhung_phong(css):
     def thay(m):
         du_lieu = open(os.path.join(GAME, 'font', m.group(1)), 'rb').read()
         return 'url(data:font/woff2;base64,' + base64.b64encode(du_lieu).decode('ascii') + ')'
-    css = PHONG_PIXEL.sub('', css)
     return PHONG_NHUNG.sub(thay, css)
 
 for i, ten_css in enumerate(CSS):
