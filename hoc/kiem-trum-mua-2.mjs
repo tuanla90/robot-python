@@ -5,7 +5,7 @@
       tong-hop-2.1 đứng ngay sau màn cuối của gói 9 (che-be-sung.10), trum-mua-2.1 ngay sau tong-hop-2.10; trùm mang huy hiệu (huy-hieu.js có hình), màn khác không mang.
    2. Từng màn: đủ trường (cả kieuBai, ≥ 2 lời sai có phaiCoMa); XÍCH gắn SÚNG HƠI, cờ beSung; màn một robot có xichDay + lucBan; màn hai robot: R1 xích + súng + mắt (lucBan),
       R2 xích + mắt (xichDay), cả hai khóa, cờ riêng; màn có mắt thì khay có distance + warm; nhiều sân chỉ ở trùm (+ nhipTheo 'tong'); lời giải thắng 3 sao, đúng sao.o / sao.nhip,
-      KHÔNG chẩn đoán; mã mẫu chưa thắng; lời giải khác đúng 2 sao; công thức khác thắng; lời sai thua và có đủ mã phaiCoMa; chữ hiển thị không emoji, không gạch dài.
+      KHÔNG chẩn đoán ngoài mức thông tin (vd ban-bi-chan khi cố ý bắn vào cửa nhịp đang đóng); mã mẫu chưa thắng; lời giải khác đúng 2 sao; công thức khác thắng; lời sai thua và có đủ mã phaiCoMa; chữ hiển thị không emoji, không gạch dài.
    3. Hàm của em: mọi hàm màn cần đã được tạo ở màn đứng trước, mọi lời gọi khai trong hamCuaEmCan; hàm mới (taoHam) không trùng hàm cốt truyện nào, có mục Sổ lệnh đúng màn / chương,
       nhóm hoi; hàm của màn không trùng hàm cốt truyện / hàm trong kho.
    4. Không dùng thứ lạ: return (mùa 5); sân không S / u / n; không nút đè M (bộ dò gói 9 không mô phỏng).
@@ -284,7 +284,7 @@ async function main() {
       assert.equal(r.soO, m.sao.o, m.ma + ' soO=' + r.soO + ' khai ' + m.sao.o);
       assert.equal(r.soNhip, m.sao.nhip, m.ma + ' soNhip=' + r.soNhip + ' khai ' + m.sao.nhip);
       assert.equal(r.sao, 3, m.ma + ' sao=' + r.sao);
-      assert.deepEqual(r.chanDoan.map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
+      assert.deepEqual(r.chanDoan.filter((c) => c.muc !== 'thong-tin').map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán (ngoài thông tin)');
       assert.ok(r.theoSan.length === soSan(m) && r.theoSan.every((s) => s.thang));
       const rm = cham(m, m.maMau);
       assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');

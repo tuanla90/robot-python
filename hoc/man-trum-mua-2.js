@@ -144,6 +144,28 @@
   var T_BOX = ['step_clear()'];                                            // box_step(): còn sát vật cản (thùng hay bạn) thì chờ, rồi tiến (gói 8)
   var L_T10 = ['push(1)', 'lock_left()', 'push(2)'];
 
+  /* ------------------------------------------------------------------- sân chương trum-mua-2 */
+
+  // trum-mua-2.1: ba làn. Xe (1,1) quay phải ở làn trên; làn giữa có thùng A (3,2) rồi ô đích (4,2); làn dưới có thùng B (6,3) rồi ô đích (7,3).
+  //   side_push() = sidestep() (xuống làn dưới) rồi push(1): lần 1 thùng cách một ô, lần 2 cách hai ô (đếm cứng thì hụt).
+  var SAN_U1 = ['#########', '#.......#', '#..HD...#', '#.....HD#', '#########'];
+  // trum-mua-2.2: hành lang (1..7, 3), hai trạm (2,3), (5,3); mỗi trạm: giếng lên tới nút ((2,0), (5,0)) qua một CỬA NHỊP ((2,1), (5,1)) tự đóng mở; hốc phía dưới.
+  //   Nút (2,0) mở cửa (3,3), nút (5,0) mở cửa (6,3); cờ (7,3). fire_on(): bắn tụ tới khi nút nóng: trạm đầu cửa nhịp còn đóng hai nhịp (hai phát trúng cửa), trạm sau mở ngay.
+  var SAN_U2 = ['##N##N###', '##c##c###', '##.##.###', '#..C..CF#', '##.##.###', '#########'];
+  // trum-mua-2.3: ngã ba ở (2,3). Thùng A (2,2) ngay trước mũi, ô đích (2,1); thùng B (5,3) bên phải cách hai ô, ô đích (6,3); thùng C (2,5) bên dưới cách một ô, ô đích (2,6).
+  //   nudge() của Sola: d = distance(), push(1), back(): chỉ lùi một ô, không về ngã ba. Sửa: lùi thêm d ô.
+  var SAN_U3 = ['########', '##D#####', '##H#####', '#....HD#', '##.#####', '##H#####', '##D#####', '########'];
+
+  /* ------------------------------------------------------------- chương trình chương trum-mua-2 */
+
+  var C_U1 = FOR(2, ['side_push()']);
+  var T_SIDE = ['sidestep()', 'push(1)'];                                 // side_push(): né xuống làn dưới rồi đẩy thùng một ô
+  var C_U2 = nhieu(['move()'], FOR(2, ['tr_left()', 'fire_on()', 'tr_right()', 'forward(3)']));
+  var T_FON = WHILE('not warm()', ['fire("charge")']);                     // fire_on(): bắn tụ tới khi nút trước mặt nóng
+  var C_U3 = ['nudge()', 'tr_right()', 'nudge()', 'tr_right()', 'nudge()'];
+  var T_NUDGE_LOI = ['d = distance()', 'push(1)', 'back()'];
+  var T_NUDGE = T_NUDGE_LOI.concat(FOR('d', ['back()']));                 // nudge(): đẩy thùng một ô rồi lùi về đúng chỗ cũ
+
   var DS = [
     /* ================================================================ chương tong-hop-2: Tổng hợp */
     man({
@@ -341,6 +363,64 @@
         { moTa: 'Đẩy ba ô một mạch rồi mới bắn: xe đã đi quá trạm', baiLam: bai(['push(1)', 'push(2)', 'lock_left()']), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['push(1) đo distance() tới thùng, tới sát rồi đẩy một ô: xe đứng đúng trạm.', 'push(1), lock_left(), push(2).']
+    }),
+
+    /* ================================================================ chương trum-mua-2: Trùm mùa */
+    man({
+      chuong: 'trum-mua-2', so: 1, ten: 'Hàm side_push()', yMoi: 'chế hàm cho dây chuyền: sidestep() rồi push(1); chương trình chính khóa gọi hai lần, thùng xa gần khác nhau',
+      kieuBai: 'che-ham', mucTieu: 'day-thung', mat: true, chinhCoDinh: true, taoHam: ['side_push'], hamCuaEmCan: ['sidestep', 'push', 'tr_right', 'tr_left', 'forward', 'move'],
+      deBai: 'Nhà máy chạy lại từng làn một. Mỗi làn dưới có một thùng cần đẩy một ô vào ô đích, thùng xa gần khác nhau. Em chế side_push(): sidestep() xuống làn dưới rồi push(1) của gói Đẩy thùng ' +
+        '(đo distance() tới thùng, tới sát rồi đẩy một ô). Hàm này sẽ theo em suốt chương. Chương trình chính đã khóa: hai lần side_push().',
+      veMaMau: 'Chương trình chính bị khóa. Mở Xưởng hàm, tạo side_push() hai dòng.',
+      san: SAN_U1, batDau: { x: 1, y: 1, huong: 1 },
+      maMau: bai(C_U1),
+      sao: { o: 19, nhip: 15 },
+      loiGiai: { chinh: C_U1.slice(), hamCuaEmMoi: [H('side_push', [], T_SIDE)] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_U1), hamCuaEmMoi: [H('side_push', [], ['# xuống làn dưới rồi đẩy một ô'].concat(T_SIDE))] },
+      loiSai: [
+        { moTa: 'Đếm cứng forward(2) theo làn đầu: làn sau thùng ở xa hơn, chưa tới thùng', baiLam: bai(C_U1), hamCuaEmMoi: [H('side_push', [], ['sidestep()', 'forward(2)'])], phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Quên sidestep(): xe đẩy ở làn trên, không có thùng', baiLam: bai(C_U1), hamCuaEmMoi: [H('side_push', [], ['push(1)'])], phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['push(1) tự đo khoảng cách tới thùng.', 'sidestep(), push(1).']
+    }),
+
+    man({
+      chuong: 'trum-mua-2', so: 2, ten: 'Hàm fire_on()', yMoi: 'chế hàm while not warm(): fire("charge"): bắn tụ tới khi nút nóng; cửa nhịp chắn bóng lâu chóng khác nhau',
+      kieuBai: 'doc-nhiet', mat: true, chinhCoDinh: true, taoHam: ['fire_on'], hamCuaEmCan: ['side_push', 'lock_on', 'fire', 'tr_left', 'tr_right', 'forward', 'move'],
+      deBai: 'Nút ở cuối giếng nằm sau một cánh cửa tự đóng mở theo nhịp. Cửa đóng thì bóng trúng cửa, nút không đổi. Em chế fire_on(): còn chưa thấy nút nóng thì bắn tụ, rồi bắn nữa. ' +
+        'Trạm đầu phải bắn ba phát mới trúng, trạm sau trúng ngay. Chương trình chính đã khóa: ở mỗi trạm quay lên, fire_on(), quay lại, tiến.',
+      veMaMau: 'Chương trình chính bị khóa. fire_on() có sẵn chỉ bắn một phát: ở trạm đầu bóng trúng cửa đang đóng.',
+      san: SAN_U2, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(2, 0, [[3, 3]]), noi(5, 0, [[6, 3]])],
+      cuaNhip: [{ x: 2, y: 1, mo: 3, dong: 4, pha: 2 }, { x: 5, y: 1, mo: 3, dong: 4, pha: 1 }],
+      maMau: bai(C_U2),
+      sao: { o: 21, nhip: 18 },
+      loiGiai: { chinh: C_U2.slice(), hamCuaEmMoi: [H('fire_on', [], T_FON)] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_U2), hamCuaEmMoi: [H('fire_on', [], ['# bắn tới khi nút nóng'].concat(T_FON))] },
+      loiSai: [
+        { moTa: 'Chỉ bắn một phát (lock_on): ở trạm đầu bóng trúng cửa đang đóng', baiLam: bai(C_U2), hamCuaEmMoi: [H('fire_on', [], ['lock_on()'])], phaiCoMa: ['ban-bi-chan', 'dam-tuong'] },
+        { moTa: 'Bắn hai phát cứng: trạm đầu cả hai đều trúng cửa đang đóng', baiLam: bai(C_U2), hamCuaEmMoi: [H('fire_on', [], ['fire("charge")', 'fire("charge")'])], phaiCoMa: ['ban-bi-chan', 'dam-tuong'] },
+        { moTa: 'Bắn nhanh trong vòng lặp: nút cách ba ô, không bao giờ nóng, lặp mãi', baiLam: bai(C_U2), hamCuaEmMoi: [H('fire_on', [], WHILE('not warm()', ['fire("fast")']))], phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['Cửa đóng thì warm() không thấy nút: bắn thêm phát nữa.', 'while not warm(): fire("charge").']
+    }),
+
+    man({
+      chuong: 'trum-mua-2', so: 3, ten: 'Sửa hàm nudge()', yMoi: 'sửa hàm lỗi: biến d = distance() đã đo mà quên dùng; lùi về chỗ cũ phải lùi thêm d ô',
+      kieuBai: 'sua-ham', mucTieu: 'day-thung', mat: true, chinhCoDinh: true, hamCuaEmCan: ['push', 'tr_right', 'forward', 'back', 'move'],
+      deBai: 'Xe đứng ở ngã ba, ba thùng ở ba phía, xa gần khác nhau, mỗi thùng cần đẩy một ô vào ô đích. nudge() của Sola đo d = distance(), push(1), rồi back() để về ngã ba, ' +
+        'nhưng xe chỉ lùi một ô: thùng ở xa thì xe không về tới ngã ba, lần quay sau lệch chỗ. Chương trình chính đã khóa: nudge(), quay phải, nudge(), quay phải, nudge(). Sửa hàm.',
+      veMaMau: 'Chạy thử. Sau thùng bên phải, xe đứng ở đâu?',
+      san: SAN_U3, batDau: { x: 2, y: 3, huong: 0 },
+      maMau: bai(C_U3, [H('nudge', [], T_NUDGE_LOI)]),
+      sao: { o: 22, nhip: 14 },
+      loiGiai: bai(C_U3, [H('nudge', [], T_NUDGE)]),
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: bai(C_U3, [H('nudge', [], ['# lùi về đúng chỗ cũ: một ô đẩy và d ô đã đi'].concat(T_NUDGE))]) },
+      congThucKhac: [{ moTa: 'Lùi d + 1 ô bằng một vòng for', baiLam: bai(C_U3, [H('nudge', [], ['d = distance()', 'push(1)'].concat(FOR('d + 1', ['back()'])))]) }],
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: sau thùng bên phải xe chưa về ngã ba, quay xuống đẩy vào tường', baiLam: bai(C_U3, [H('nudge', [], T_NUDGE_LOI)]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Lùi cứng ba ô: thùng đầu ở sát, xe lùi quá ngã ba vào thùng dưới', baiLam: bai(C_U3, [H('nudge', [], ['push(1)', 'back()', 'back()', 'back()'])]), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['push(1) đi d + 1 ô: lùi về cũng phải d + 1 ô.', 'Sau back(), thêm for i in range(d): back().']
     })
   ];
 

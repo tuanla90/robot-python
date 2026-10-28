@@ -246,7 +246,10 @@
     m('lock_row', 'hoi', 'n trạm: nút xa bên trái còn tắt thì bắn tụ, rồi tiến một ô', 'che-be-sung', 'che-be-sung.6'),
     m('go_fire', 'hoi', 'Đi thẳng tới sát cửa đóng rồi bắn tụ nút bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
     m('visit', 'hoi', 'Đo ngõ cụt sâu d ô, vào bắn tụ nút bên trái, rồi lùi ra đúng d ô', 'che-be-sung', 'che-be-sung.8'),
-    m('push_blast', 'hoi', 'Đẩy thùng một ô rồi bắn tụ nút bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9')
+    m('push_blast', 'hoi', 'Đẩy thùng một ô rồi bắn tụ nút bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9'),
+    // gói 10 · chương trum-mua-2 · Trùm mùa (man-trum-mua-2.js): hàm cho dây chuyền nhà máy chạy lại, nhóm Súng hơi (nudge, pair_shot, peek… là hàm của màn nên không có ở đây)
+    m('side_push', 'hoi', 'Né xuống làn bên phải rồi đẩy thùng trước mặt một ô', 'trum-mua-2', 'trum-mua-2.1'),
+    m('fire_on', 'hoi', 'Bắn tụ tới khi nút trước mặt nóng lên', 'trum-mua-2', 'trum-mua-2.2')
   );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
