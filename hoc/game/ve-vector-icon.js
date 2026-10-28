@@ -231,29 +231,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     e._vi = v;
     return e;
   }
-  /** Người gọi có thể còn giữ canvas cũ để đổi sau (den-bo-phan.js bật / tắt đèn bằng cv.style.display; thanh-phan.js thêm lớp): canvas đã gỡ
-   *  chuyển style / classList / className sang hình thay nó, nên mọi thay đổi về sau vẫn tới hình đang hiện. */
-  function noiVe(c, moi) {
-    try {
-      Object.defineProperty(c, 'style', { configurable: true, get: function () { return moi.style; } });
-      Object.defineProperty(c, 'classList', { configurable: true, get: function () { return moi.classList; } });
-      Object.defineProperty(c, 'className', { configurable: true, get: function () { return moi.getAttribute('class') || ''; }, set: function (v) { moi.setAttribute('class', v); } });
-    } catch (e) { /* trình duyệt không cho định nghĩa lại: bỏ qua */ }
-    c._thay = moi;
-  }
-  /** Thay một canvas icon có nhãn bằng svg (trả svg, hoặc null nếu không thay). */
-  function thayMot(c) {
-    var v = c._vi; if (!v || !HINH[v.ten] || !c.parentNode) return null;
-    var w = parseFloat(c.style.width) || c.width, h = parseFloat(c.style.height) || c.height, k = Math.max(w, h);   // ô vuông theo cạnh lớn: icon hẹp (‹ › 7 × 10 điểm) không bị thu nhỏ
-    var svg = taoSvg(v.ten, k, k); if (!svg) return null;
-    var phu = phuCua(v);
-    svg.setAttribute('class', (c.getAttribute('class') || '') + ' vi vi-' + v.ten + (phu ? ' ' + phu : ''));
-    if (c.style.cssText) { svg.style.cssText = c.style.cssText; svg.style.width = k + 'px'; svg.style.height = k + 'px'; }
-    svg._vi = v;
-    c.parentNode.replaceChild(svg, c);
-    noiVe(c, svg);
-    return svg;
-  }
+  /* V7b việc 8: cầu C2 (noiVe: chuyển style / classList của canvas đã gỡ sang svg) và thayMot đã gỡ: ve.js trả svg thẳng, người gọi giữ đúng phần tử đang hiện. */
   /* ---- hình BỘ PHẬN THẬT ở tiêu đề thẻ khay (thanh-phan.js hinhPart: Part._veMot → cắt lề → Ve.mk, ảnh điểm ảnh không nhãn).
      Ở vector: Part._veMot đánh dấu canvas bộ phận (_partVi = { loai, ma }), dấu đi theo drawImage sang canvas chép (cắt lề, Ve.mk); canvas có dấu nằm trong
      tiêu đề thẻ (.co-part) được thay bằng hình bộ phận vẽ bằng VeVector (thân: VeVector.robot không tay; tay: hình tay đứng một mình), cùng cỡ chỗ đặt.
@@ -287,7 +265,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var moi = hinhPartVec(c[DAU_PART]); if (!moi || !c.parentNode) return null;
     moi.className = (c.getAttribute('class') || 'pxi') + ' vi-part';
     c.parentNode.replaceChild(moi, c);
-    noiVe(c, moi);
     return moi;
   }
   var daNoiPart = false;
@@ -347,7 +324,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return true;
   }
 
-  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, svg: svg, hinhPartVec: hinhPartVec, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, thayMot: thayMot, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
+  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, svg: svg, hinhPartVec: hinhPartVec, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
   root.VeIcon = VeIcon;
   if (typeof module === 'object' && module.exports) module.exports = VeIcon;
   if (root.document && root.document.body) batDau();
