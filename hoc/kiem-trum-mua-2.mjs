@@ -110,11 +110,13 @@ async function main() {
     return Cham.cham(Object.assign({}, m, them || {}), b, [...hs.values()]);
   }
   const PY = new Set(['range', 'print', 'len']);
+  /** Hàm của em mới của một lời (màn thường: x.hamCuaEmMoi; màn đội: nằm trong x.baiLam; chuanHoa để [] nên không dùng ||). */
+  const hamMoiCua = (x) => ((x.hamCuaEmMoi && x.hamCuaEmMoi.length) ? x.hamCuaEmMoi : (x.baiLam && x.baiLam.hamCuaEmMoi) || []);
   function moiBai(m) {
     const ds = [{ ten: 'maMau', b: m.maMau, moi: [] }, { ten: 'loiGiai', b: m.loiGiai, moi: m.loiGiai.hamCuaEmMoi }];
-    if (m.loiGiaiKhac) ds.push({ ten: 'loiGiaiKhac', b: m.loiGiaiKhac.baiLam, moi: m.loiGiaiKhac.hamCuaEmMoi || m.loiGiaiKhac.baiLam.hamCuaEmMoi });
-    (m.congThucKhac || []).forEach((c, i) => ds.push({ ten: 'congThucKhac[' + i + ']', b: c.baiLam, moi: c.hamCuaEmMoi || c.baiLam.hamCuaEmMoi }));
-    m.loiSai.forEach((ls, i) => ds.push({ ten: 'loiSai[' + i + ']', b: ls.baiLam, moi: ls.hamCuaEmMoi || ls.baiLam.hamCuaEmMoi }));
+    if (m.loiGiaiKhac) ds.push({ ten: 'loiGiaiKhac', b: m.loiGiaiKhac.baiLam, moi: hamMoiCua(m.loiGiaiKhac) });
+    (m.congThucKhac || []).forEach((c, i) => ds.push({ ten: 'congThucKhac[' + i + ']', b: c.baiLam, moi: hamMoiCua(c) }));
+    m.loiSai.forEach((ls, i) => ds.push({ ten: 'loiSai[' + i + ']', b: ls.baiLam, moi: hamMoiCua(ls) }));
     return ds;
   }
   const dongCua = (x) => [...(x.b.chinh || []), ...(x.b.doi || []).flatMap((d) => d.chinh || []), ...(x.b.hamCuaMan || []).concat(x.moi || []).flatMap((h) => h.than)];
