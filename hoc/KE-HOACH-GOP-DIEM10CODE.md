@@ -155,7 +155,7 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   CHO_V7B = tong-hop-2, nha-may-chay (gói 10, V7b vẽ). (2) vật treo dưới drone nam châm = cỡ vật nâng, hút lên to dần, thả thu về cỡ sàn. (3) tay xoay mở / khép dần (moK), ngón ôm sát mép vật.
   (4) dây nối nút ↔ cửa (chỉ vector): san-ve.js dungDayNoi theo cfg.noi (không noi: mọi nút nối mọi cửa không nhịp, như lõi), đường rẻ nhất theo ô ưu tiên tường, mờ trung tính, sáng khi nút bật.
   (5) trời mưa mở đầu có lớp co-mua (không cần :has). (6) kiem-ve-vector mục 13i (drone, tay xoay, dây nối; ba lỗi giả đỏ). Sau gộp: kiem-ve-vector 97, kiem-huy-hieu-phim-vector 11,
-  kiem-nut-mo-dau-phim-vector 11, kiem-giao-dien-vector-b 16, kiem-phim-goi 41, kiem-bang-mau 19, kiem-nut-de 62. Chưa xem trình duyệt.
+  kiem-nut-mo-dau-phim-vector 11, kiem-giao-dien-vector-b 16, kiem-phim-goi 41, kiem-bang-mau 19, kiem-nut-de 62. npm test cả bộ ở 4d14382 (sau gộp phim mùa 2, gói 10, V7a): 87/87 bộ đạt. Chưa xem trình duyệt.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
