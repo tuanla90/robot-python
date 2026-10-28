@@ -222,3 +222,84 @@ body.ve-vector .hoan-tac .hoan-nut{height:24px;padding:0 10px;border-radius:7px;
 body.ve-vector .tc-ray{width:8px;border-radius:var(--r-full);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
 body.ve-vector .tc-cuc{border-radius:var(--r-full);background:var(--g-vecKeDam);box-shadow:none;transition:background-color .15s ease}
 body.ve-vector .tc-cuc:hover,body.ve-vector .tc-ray.dang-keo .tc-cuc{background:var(--g-vecBrand)}
+
+/* ============================================================ 4. KHỐI LỆNH: thẻ phẳng bo góc, nền nhạt + dải trái đậm theo NHÓM lệnh, không núm; ô tham số là viên thuốc
+   --bc = màu đậm của nhóm (dải trái, viền khi chọn), --bn = nền nhạt của nhóm. Chữ luôn chàm đậm (đủ tương phản trên mọi nền nhạt). */
+body.ve-vector .brick{--bc:var(--g-vecChuPhu);--bn:var(--g-vecThe);
+  height:28px;margin-top:7px;padding:0 6px 0 11px;border-radius:8px;font:500 13px/1 var(--mono);color:var(--g-vecChu);text-shadow:none;
+  background:var(--bn);box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKe),var(--elev-1);
+  transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s ease,opacity .18s ease,filter .18s ease}
+body.ve-vector .brick::before{display:none}
+body.ve-vector .brick.cy{--bc:var(--g-vecCyanDam);--bn:var(--g-vecCyanNhat)}
+body.ve-vector .brick.yl{--bc:var(--g-vecHoPhach);--bn:var(--g-vecHoPhachNhat)}
+body.ve-vector .brick.gr{--bc:var(--g-vecLa);--bn:var(--g-vecLaNhat)}
+body.ve-vector .brick.pu,body.ve-vector .brick.vong{--bc:var(--g-vecTimDam);--bn:var(--g-vecTimNhat)}
+body.ve-vector .brick.or{--bc:var(--g-vecCamDam);--bn:var(--g-vecCamNhat)}
+body.ve-vector .brick.tay{--bc:var(--g-vecCamDam);--bn:var(--g-vecHoPhachNhat)}
+body.ve-vector .brick.bien,body.ve-vector .brick.dem{--bc:var(--g-vecHongDam);--bn:var(--g-vecHongNhat)}
+body.ve-vector .brick.chan{--bc:var(--g-vecLamDam);--bn:var(--g-vecLamNhat)}
+body.ve-vector .brick.truot{--bc:var(--g-vecChanhDam);--bn:var(--g-vecLaNhat)}
+body.ve-vector .brick.dk{--bc:var(--g-vecNgocDam);--bn:var(--g-vecNgocNhat)}
+body.ve-vector .brick.wh{--bc:var(--g-vecTroiDam);--bn:var(--g-vecTroiNhat)}
+body.ve-vector .brick.ls{--bc:var(--g-vecChanhDam);--bn:var(--g-vecChanhNhat)}
+@media (hover:hover){
+  body.ve-vector .brick:hover{transform:translateY(-1px);box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKeDam),var(--elev-2)}
+}
+body.ve-vector .brick:active{transform:scale(.98)}
+body.ve-vector .brick.giu{transform:translateY(-3px) scale(1.02);filter:none;box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1.5px var(--bc),var(--elev-3)}
+/* khối đang chạy (lệnh của dòng đang chạy): vòng hổ phách thở; khối gây lỗi: vòng đỏ */
+body.ve-vector .brick.lit{box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKe),0 0 0 2px var(--g-vecHoPhach);animation:vec-lit 1s ease-in-out infinite alternate}
+@keyframes vec-lit{from{filter:none}to{filter:brightness(1.06) saturate(1.15)}}
+body.ve-vector .brick.err{box-shadow:inset 4px 0 0 var(--g-vecLoi),inset 0 0 0 1px var(--g-vecLoi),0 0 0 2px rgba(var(--g-vecLoiRgb),.25)}
+/* nút sửa / ổ khoá bên phải khối hàm: ô vuông bo trắng */
+body.ve-vector .brick .ed{right:3px;top:3px;bottom:3px;width:24px;border-radius:6px;background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .brick .ed:active{background:var(--g-vecTheLom)}
+body.ve-vector .brick.or .ed{background:var(--g-vecThe)}
+body.ve-vector .brick .ed.khoa{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .brick.khoa{filter:none}
+body.ve-vector .brick[data-loai="em"],body.ve-vector .brick[data-loai="man"]{padding-right:32px}
+/* khối của bộ phận đã có lệnh trong nhịp đang soạn: mờ + gạch ngang */
+body.ve-vector .brick.cam-nhip{filter:grayscale(.8);opacity:.5;box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+/* về sân từ Xưởng: khối hàm vừa xem thở sáng ba lần */
+body.ve-vector .brick.nhay-ve{animation:vec-nhay .5s ease-in-out 4 alternate}
+@keyframes vec-nhay{from{box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKe),0 0 0 0 rgba(var(--g-vecBrandRgb),0)}to{box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.3)}}
+/* ô tham số trong dòng / khối: viên thuốc màu đặc chữ trắng */
+body.ve-vector .num{min-width:1.1em;padding:1px 5px;margin:0 1px;border-radius:var(--r-full);color:var(--g-vecThe);background:var(--g-vecTimDam);box-shadow:none;font-weight:600}
+body.ve-vector .num.bien,body.ve-vector .strip .num.dkm.rhs.bien{background:var(--g-vecHongDam);box-shadow:none}
+body.ve-vector .num.chuoi,body.ve-vector .num.mc-sai,body.ve-vector .strip .num.dkm.noi{background:var(--g-vecCamDam);box-shadow:none}
+body.ve-vector .num.dkc{background:var(--g-vecCyanDam);box-shadow:none}
+body.ve-vector .num.lsten{background:var(--g-vecChanhDam);box-shadow:none}
+body.ve-vector .num.ptu.them{background:var(--g-vecLaNhat);color:var(--g-vecLaDam);box-shadow:inset 0 0 0 1px var(--g-vecLa)}
+body.ve-vector .strip .num.dkm.op{background:var(--g-vecChuPhu);box-shadow:none}
+body.ve-vector .strip .num.dkm.rhs.pinso{background:var(--g-vecTimDam)}
+body.ve-vector .num.chuoi-mau{text-shadow:none}
+body.ve-vector .num.mc-red{background:var(--g-luatSanDo);box-shadow:none}
+body.ve-vector .num.mc-green{background:var(--g-luatSanXanhLaToi);box-shadow:none}
+body.ve-vector .num.mc-blue{background:var(--g-luatSanXanhDuong);box-shadow:none}
+body.ve-vector .num.mc-yellow{background:var(--g-luatSanVang);color:var(--g-vecChu);box-shadow:none}
+body.ve-vector .num.mc-none{background:var(--g-vecTheLom);color:var(--g-vecChu);box-shadow:inset 0 0 0 1px var(--g-vecKeDam)}
+body.ve-vector .strip .lap{right:3px;top:3px;bottom:3px;padding:0 6px;border-radius:var(--r-full);font:600 10px/1 var(--mono);color:var(--g-vecThe);background:var(--g-vecTimDam);box-shadow:none}
+body.ve-vector .strip.hai .num{padding:0 4px}
+/* KÉO THẢ: bóng kéo nổi mềm; ô thả nét đứt tím chàm thở; khung nhận sáng viền */
+body.ve-vector .keo-bong{transform:rotate(-2deg) scale(1.04);filter:drop-shadow(0 10px 18px rgba(var(--g-vecBrandRgb),.22))}
+body.ve-vector .keo-bong.bad{filter:drop-shadow(0 10px 18px rgba(var(--g-vecLoiRgb),.25)) saturate(.7)}
+body.ve-vector .keo-bong.vao-thung{transform:rotate(4deg) scale(.84);opacity:.9}
+body.ve-vector .keo-dong{padding:0 8px;border-radius:8px;background:var(--g-vecMa);box-shadow:inset 0 0 0 1px var(--g-vecMaKe),0 0 0 2px var(--g-vecBrand);font:500 13px/1 var(--mono);color:var(--g-vecChu)}
+body.ve-vector .keo-dong.for{background:var(--g-vecTimNhat);font-size:11px}
+body.ve-vector .keo-dong.if{background:var(--g-vecNgocNhat);font-size:11px}
+body.ve-vector .keo-dong.wh{background:var(--g-vecTroiNhat);font-size:11px}
+body.ve-vector .keo-bong.keo-dong.bad{background:var(--g-vecLoiNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi)}
+body.ve-vector .keo-bong.brick.bad{box-shadow:inset 4px 0 0 var(--g-vecLoi),inset 0 0 0 1.5px var(--g-vecLoi)}
+body.ve-vector .strip.slot{background:var(--g-vecBrandNhat);border:1.5px dashed var(--g-vecBrand);box-shadow:none;animation:vec-slot 1s ease-in-out infinite alternate}
+@keyframes vec-slot{from{border-color:var(--g-vecBrand);background:var(--g-vecBrandNhat)}to{border-color:var(--g-vecKeDam);background:var(--g-vecThe)}}
+body.ve-vector .pan.keo-dich{box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam),0 0 0 3px rgba(var(--g-vecBrandRgb),.18),var(--elev-2)}
+body.ve-vector .pan.keo-co-cho{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.25),var(--elev-2)}
+body.ve-vector .strip.cam{animation:vec-cam .38s cubic-bezier(.16,1,.3,1) 1}
+@keyframes vec-cam{0%{transform:translateY(-6px) scale(1.04)}60%{transform:translateY(1px) scale(.99)}100%{transform:none}}
+/* thùng rác (thế chỗ khay khi kéo một dòng code ra) */
+body.ve-vector .thung{left:4px;right:4px;top:4px;bottom:4px;border-radius:12px;background:var(--g-vecLoiNhat);background-image:none;box-shadow:inset 0 0 0 2px var(--g-vecLoi);border:0;transition:background-color .2s ease}
+body.ve-vector .thung-chu{font:700 14px/1.2 var(--px);color:var(--g-vecLoiDam);text-shadow:none}
+body.ve-vector .thung.on{background:var(--g-vecLoi);box-shadow:inset 0 0 0 2px var(--g-vecLoiDam)}
+body.ve-vector .thung.on .thung-chu{color:var(--g-vecThe)}
+body.ve-vector .thung.on .thung-ic{animation:vec-thung .5s ease-in-out infinite alternate}
+@keyframes vec-thung{from{transform:translateY(0) rotate(-5deg) scale(1.1)}to{transform:translateY(-3px) rotate(5deg) scale(1.1)}}
