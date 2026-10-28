@@ -34,6 +34,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var NANG_MO = { tay: { tuThe: 'tren', kep: false } }, HA_MO = { tay: { tuThe: 'duoi', kep: false } };
   var HA_CAM = { tay: { tuThe: 'duoi', kep: true, cam: true } }, NANG_CAM = { tay: { tuThe: 'tren', kep: true, cam: true } };
 
+  /* Gói V6b (user 28/10 "Nâng lên to ra"): ở vector thùng dựng ở cỡ vật NÂNG (NUA theo vatKep 'tren'); nằm sàn / tay hạ thì coT(tg, false) thu về cỡ vật nằm sàn
+     bằng thuộc tính CSS `scale` (quanh tâm, không đụng transform của lớp hoạt cảnh), tay nâng coT(tg, true) trả về cỡ nâng. Pixel: coT không làm gì. */
+  var CO_SAN = VEC ? String(goc.VeVector.coVatKep(0) / goc.VeVector.coVatKep(1)) : '';
+  function coT(tg, nang) { if (VEC) tg.style.scale = nang ? '' : CO_SAN; return tg; }
   /** Thùng nhỏ (cạnh 28; vector: cạnh 2 · nua, mặc định NUA) đặt tâm ở (x, y). */
   function thung(c, x, y, cls, nua) { nua = nua || NUA; return c.dat(c.o('crate', VEC ? 2 * nua / 14 : 2), x - nua, y - nua, cls); }
   /** Dời phần tử (left/top) sau ms, có trượt (lớp pg-truot, thời lượng giây). */
@@ -72,11 +76,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 3 · R1 hạ tay, kẹp thùng, nhấc lên
       function (k, c) {
         c.nen(k, 'md-san');
-        var tg = thung(c, 110 + VAT, Y); k.appendChild(tg);
+        var tg = coT(thung(c, 110 + VAT, Y), false); k.appendChild(tg);
         var r = c.xe(KEP, NANG_MO, 1, 3, 110, Y); k.appendChild(r);
         c.sau(600, function () { r.ve(HA_MO); c.keu('bam'); });
         c.sau(1200, function () { r.ve(HA_CAM); c.keu('kep'); });
-        c.sau(1800, function () { r.ve(NANG_CAM); tg.classList.add('pg-nhac'); c.keu('bam'); });
+        c.sau(1800, function () { r.ve(NANG_CAM); if (VEC) coT(tg, true); else tg.classList.add('pg-nhac'); c.keu('bam'); });      // vector (V6b): nhấc lên thì thùng to ra
         c.sau(2100, function () { r.mat('vui'); });
       },
       // 4 · code arm_down() grab() arm_up(); R1 đặt thùng vào ô đích khung vàng, sao lóe
@@ -88,7 +92,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var tg = thung(c, 110 + VAT, Y - 4); nhom.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 1, 3, 110, Y); nhom.appendChild(r);
         k.appendChild(nhom);
-        c.sau(2600, function () { r.ve(HA_MO); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
+        c.sau(2600, function () { r.ve(HA_MO); coT(tg, false); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         var s = c.dat(c.sao(3), 255, 96, 'md-pop md-sang'); s.style.animationDelay = '2.9s, 2.9s'; k.appendChild(s);
         for (var i = 0; i < 5; i++) c.sau(1000 + i * 280, function () { c.keu('buoc'); });
         c.sau(2900, function () { c.keu('thang'); r.mat('vui'); });
@@ -174,7 +178,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var a = s.o(1, 1), b = s.o(1, 0);
         var tg = thung(c, a.x, a.y - VAT2, '', NUA2); k.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 0, 2, a.x, a.y); k.appendChild(r);
-        c.sau(500, function () { r.ve(HA_CAM); });
+        c.sau(500, function () { r.ve(HA_CAM); coT(tg, false); });                       // vector (V6b): tay hạ, thùng về cỡ vật nằm sàn rồi nằm trên nút đúng cỡ đó
         if (VEC) truot(c, tg, 1000, a.x - NUA2, b.y - NUA2, 0.3);                          // vector: tay ngắn hơn, thùng trượt lên nút thay vì nhảy
         c.sau(1000, function () { r.ve(HA_MO); tg.style.top = (b.y - NUA2) + 'px'; c.keu('tha'); });
         c.sau(1300, function () { nut.dat(true); cua.dat(true); c.keu('moKhoa'); r.ve(NANG_MO); });
@@ -233,14 +237,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     'tay-xoay': [
       // 1 · thùng nằm bên trái R1; R1 phải quay cả xe (mũi tên vòng, 2 nhịp)
       function (k, c) {
-        var cx = 150, cy = 140, tg = thung(c, cx, cy - VAT); k.appendChild(tg);
+        var cx = 150, cy = 140, tg = coT(thung(c, cx, cy - VAT), false); k.appendChild(tg);
         var r = c.xe(KEP, NANG_MO, 1, 3, cx, cy); k.appendChild(r);
         var vong = c.dat(c.ico('reset', 3, BM.vang), cx + 46, cy - 70, 'md-pop'); vong.style.animationDelay = '.3s'; k.appendChild(vong);
         nhip(k, c, '1', cx - 70, cy - 40, 0.6);
         c.sau(600, function () { r.ve(null, 0); c.keu('buoc'); });
         c.sau(1100, function () { r.ve(HA_MO); });
         c.sau(1500, function () { r.ve(HA_CAM); c.keu('kep'); });
-        c.sau(1900, function () { r.ve(NANG_CAM); });
+        c.sau(1900, function () { r.ve(NANG_CAM); coT(tg, true); });
         nhip(k, c, '2', cx - 70, cy + 10, 2.4);
         c.sau(2400, function () { r.ve(null, 1); tg.style.left = (cx + VAT - NUA) + 'px'; tg.style.top = (cy - NUA) + 'px'; c.keu('buoc'); });
         c.sau(2700, function () { c.keu('loi'); r.mat('buon'); });
@@ -347,16 +351,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var r1 = c.xe(KEP, NANG_CAM, 1, 3, 60, Y); k.appendChild(r1);
         var r2 = c.xe(KEP_R2, NANG_MO, 3, 3, 250, Y); k.appendChild(r2);
         truot(c, r1, 300, 110, Y, 0.8); truot(c, tg, 300, 110 + VAT - NUA, Y - 4 - NUA, 0.8);
-        c.sau(1300, function () { r1.ve(HA_CAM); });
+        c.sau(1300, function () { r1.ve(HA_CAM); coT(tg, false); });
         c.sau(1600, function () { r1.ve(HA_MO); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         c.sau(1900, function () { r1.ve(NANG_MO); });
         truot(c, r2, 2000, 110 + 2 * VAT, Y, 0.6);
         c.sau(2700, function () { r2.ve(HA_MO); });
         c.sau(3000, function () { r2.ve(HA_CAM); c.keu('kep'); });
-        c.sau(3300, function () { r2.ve(NANG_CAM); tg.style.top = (Y - 4 - NUA) + 'px'; });
+        c.sau(3300, function () { r2.ve(NANG_CAM); coT(tg, true); tg.style.top = (Y - 4 - NUA) + 'px'; });
         c.sau(3700, function () { r2.ve(null, 1); tg.style.left = (110 + 3 * VAT - NUA) + 'px'; c.keu('buoc'); });
         if (VEC) { truot(c, r2, 3750, 282 - VAT, Y, 0.35); truot(c, tg, 3750, 282 - NUA, undefined, 0.35); }   // vector: tay ngắn hơn, R2 lăn thêm tới ô đích (tâm 282)
-        c.sau(4100, function () { r2.ve(HA_MO); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
+        c.sau(4100, function () { r2.ve(HA_MO); coT(tg, false); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         var sa = c.dat(c.sao(3), 270, 96, 'md-pop md-sang'); sa.style.animationDelay = '4.3s, 4.3s'; k.appendChild(sa);
         c.sau(4300, function () { c.keu('thang'); r1.mat('vui'); r2.mat('vui'); });
       }
@@ -470,14 +474,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function xoayNhat(k, c, tre, cx) {
     cx = cx || 150; var cy = 140, ms = tre * 1000;
     var p0 = vatXoay(-90, 'duoi', 3);
-    var tg = thung(c, cx + p0.x, cy + p0.y - 30); k.appendChild(tg);
+    var tg = coT(thung(c, cx + p0.x, cy + p0.y - 30), false); k.appendChild(tg);
     var r = c.xe(XOAY, NANG_MO, 1, 3, cx, cy); k.appendChild(r);
     var T = function (tuThe, kep, goc) { return { tay: { tuThe: tuThe, kep: kep, cam: kep, goc: goc } }; };
     [-30, -60, -90].forEach(function (g, i) { c.sau(ms + i * 180, function () { r.ve(T('tren', false, g)); }); });
     c.sau(ms + 200, function () { c.keu('bam'); });
     c.sau(ms + 700, function () { r.ve(T('duoi', false, -90)); tg.classList.add('pg-truot'); tg.style.setProperty('--tg', '.3s'); tg.style.top = (cy + p0.y - NUA) + 'px'; });
     c.sau(ms + 1100, function () { r.ve(T('duoi', true, -90)); c.keu('kep'); });
-    c.sau(ms + 1400, function () { r.ve(T('tren', true, -90)); });
+    c.sau(ms + 1400, function () { r.ve(T('tren', true, -90)); coT(tg, true); });
     [-60, -30, 0].forEach(function (g, i) {
       c.sau(ms + 1800 + i * 180, function () { var p = vatXoay(g, 'tren', 3); r.ve(T('tren', true, g)); tg.style.setProperty('--tg', '.15s'); tg.style.left = (cx + p.x - NUA) + 'px'; tg.style.top = (cy + p.y - NUA) + 'px'; });
     });
