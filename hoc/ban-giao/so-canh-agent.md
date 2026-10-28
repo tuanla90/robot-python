@@ -67,6 +67,6 @@ GÓP Ý USER 28/10 (gửi SendMessage): cảm biến phải dính vỏ theo từ
 | V6c · mọi nút + cảnh mở màn + phim sang vector (user: "button, cảnh mở màn, video cũng sang vector hết") | opus | 28/10 | v6c-nut-mo-dau-phim, nhánh claude/ve-vector-nut-mo-dau-phim từ 4ac900f | b70001a | ĐẠT: gộp abd1ef9, 7 máy kiểm đạt; agent soát trong trang bằng Chrome headless | xong |
 | Gói 9 (lần 1) | opus | 28/10 09:53 | goi9-be-sung | 063bd80 (10:27) | 13:07 nhắc; phiên giao việc tắt, agent dừng | DỪNG: đứng ~4 tiếng không commit; người giao cất WIP 2fa95a2 (19/20 màn, kiem-be-sung 89 đạt / 13 hỏng) |
 | Gói 9 làm tiếp | fable (giao lại nâng một bậc) | 28/10 14:1x | goi9-be-sung, nhánh claude/be-sung từ 2fa95a2 | 9f84e72 (~14:10) | 16:12 nhắc; user bảo người giao nhận lại, dừng agent | DỪNG ở bước kiểm: 4 việc xong (fcdaf0f, fdc52cd, 48c701e, 9f84e72), không báo cáo; người giao chạy kiểm (107 đạt), gộp 793a8e4 |
-| Gói 10 mùa 2 Nhà máy chạy lại | fable | 28/10 16:38 | goi10-trum-mua-2, nhánh claude/trum-mua-2 từ 6348c9f | 6348c9f | — | đang chạy; brief-goi10.md |
+| Gói 10 mùa 2 Nhà máy chạy lại | fable | 28/10 16:38 | goi10-trum-mua-2, nhánh claude/trum-mua-2 từ 6348c9f | a90973a | — | ĐẠT: gộp 0045111, 11 máy kiểm đạt sau gộp |
 | Phim mùa 2 | opus | 28/10 16:38 | phim-mua-2, nhánh claude/phim-mua-2 từ 6348c9f | f02eb86 | — | ĐẠT: gộp 529281e, 4 máy kiểm đạt sau gộp |
 | V7a vector dọn đuôi (huy hiệu, drone nam châm, tay xoay, dây nối, :has) | opus | 28/10 16:38 | v7a-ve-vector-duoi, nhánh claude/ve-vector-duoi từ 6348c9f | 6348c9f | — | đang chạy; brief-V7a.md |

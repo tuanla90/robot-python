@@ -150,3 +150,11 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   kiem-phim-goi 41 (mục 1b mùa 2 đọc MUA_2; lỗi giả 6 → đỏ 15); kiem-huy-hieu-phim-vector B5 chỉ so pixel nền cho 9 phim mùa 1 (phim mới chỉ cần chạy ở pixel): người giao duyệt.
   Người giao tự quyết: robot trong phim theo truyện (R1 lắp dần part), không theo robot từng màn. Chưa xem chuyển động thật (ô trình duyệt ẩn, agent chỉ xem trạng thái cuối): xem khi soát cuối.
   Còn: phim 10 dùng icon trong khung tròn cho huy hiệu chưa có vector (hết khi V7a gộp); màn chọn gói ghi mùa 2 là "Địa hình" còn kế hoạch gọi "Ghi nhớ" (chưa đổi); ở 360 px #stage phóng 1,2 nên khung phim tràn 12 px mỗi bên (cả mùa 1, sửa ở V7b).
+- **28/10 P10 · Gói 10 Nhà máy chạy lại xong — MÙA 2 ĐỦ 10 GÓI** (agent Claude fable, nhánh claude/trum-mua-2, gộp 0045111, không xung đột). 20 màn trong `man-trum-mua-2.js`:
+  chương `tong-hop-2` Tổng hợp (băng chuyền giúp đẩy, đố jet_back() trên bệ súng, giếng sau lưng, sidestep đẩy thùng, mở cửa cho thùng sau lưng, sửa pair_shot(), trạm xa gần, hai màn hai robot,
+  trùm "Ba dây chuyền thùng" 3 sân, huy hiệu tong-hop-2); chương `trum-mua-2` Trùm mùa (hàm của em side_push, fire_on, lane_row(n), box_shot cho đội, gate_push, check_lane, far_push; sửa nudge();
+  đố băng không chở xích; trùm cuối mùa "Nhà máy chạy lại" 2 sân nối năm hàm, huy hiệu nha-may-chay). Máy kiểm `kiem-trum-mua-2.mjs` 107 (lỗi giả 9 → đỏ 13) + bộ dò `do-duong-trum-mua-2.mjs`.
+  Recall gói 10: 1:8 · 2:17 · 3:11 · 4:14 · 5:11 · 6:12 · 7:6 · 8:3 · 9:11; gộp gói 9 + 10: 1:10 · 2:35 · 3:16 · 4:34 · 5:14 · 6:28 · 7:12 · 8:3 · 9:31 (luật ≥ 3 đạt; gói 8 mỏng nhất).
+  Người giao chạy lại sau gộp: kiem-trum-mua-2 107, do-duong, kiem-be-sung 107, kiem-doi-mua-2 107, kiem-lo-trinh 894, kiem-che-xe 270, kiem-loi-mua-2 93, kiem-nut-bat-san 30, kiem-bang-mau 19, kiem-phim-goi 41, kiem-khay 184.
+  Người giao chấp nhận: ban-bi-chan mức thông tin ở trum-mua-2.2 (cố ý bắn cửa nhịp đang đóng); recall gói 9 chỉ tính màn cần bệ súng / gọi hàm gói 9; ba màn đội khóa như gói 8; trùm cuối 2 sân; cấm nút đè M ở gói 10 (bộ mô phỏng không có).
+  Còn: huy hiệu vector tong-hop-2 / nha-may-chay (V7b); thêm hai mã đó vào HUY của phim-mua-2.js (V7b); chưa xem trình duyệt.
