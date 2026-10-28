@@ -161,7 +161,11 @@ console.log('\n== 3. Token và thứ tự nạp ==');
   }
   kiem('mọi BM.<vai> / var(--g-<vai>) có trong bảng màu', thieu.length === 0, thieu.slice(0, 10).join(', '));
   /* V7c1 (28/10): bảng sơn dự phòng của cai-dat.js (hàng "Màu sơn R1") đã bỏ → 11 vai này không còn chỗ dùng; V7c3 (bảng màu) xoá khỏi bang-mau.js rồi xoá danh sách này */
-  const VAI_CHO_V7C3 = ['kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3'];
+  const VAI_CHO_V7C3 = ['kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3',
+    /* V7c2 (28/10) san-ve.js xoá nhánh pixel (tia, mắt LED, ảnh nhỏ, vật, thanh pin, thẻ đạn…) → 45 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js rồi xoá dòng này */
+    'sanTim', 'sanDoSang', 'sanNgocToi', 'moDo', 'moLam', 'moDoToiV2', 'moSangV5', 'moToiV20', 'moToiV21', 'moToiV23', 'moToiSangV8', 'moToiSangV9', 'moVangV4', 'moVangV5', 'moVangV6', 'moVangV7',
+    'sanCamToiV2', 'sanDoV2', 'sanDoV3', 'sanDoV6', 'sanDoV7', 'sanDoSangV1', 'sanKemV1', 'sanLamV8', 'sanLamV16', 'sanLamV17', 'sanLamToiV1', 'sanLamToiV7', 'sanLamToiV8', 'sanLamToiV9', 'sanLamToiV10',
+    'sanNauSangV3', 'sanTimSangV2', 'sanTrangV6', 'sanXamToiV4', 'sanXamToiV5', 'sanXanhLaToiV1', 'sanXanhLaToiV6', 'sanXanhLoV6', 'sanXanhLoV7', 'sanXanhLoV8', 'sanXanhLoToiV3', 'sanXanhLoToiV4', 'tiaDoV1Rgb', 'tiaDoV6Rgb'];
   const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
   const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));

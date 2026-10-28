@@ -153,12 +153,10 @@ console.log('\n== 6. Giao diện (theo mã nguồn) ==');
   const sv = fs.readFileSync(path.join(day, 'game', 'san-ve.js'), 'utf8');
   const mc = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8');
   const ml = fs.readFileSync(path.join(day, 'game', 'man-lap.js'), 'utf8');
-  kiem('san-ve.js nap(): cfg.nutBat giữ trong this.cfg; datLaiCua bật nút đó ngay khung đầu (veNong vẽ quầng vì nutT bat)',
-    /nutBat: Array\.isArray\(cfg\.nutBat\) \? cfg\.nutBat : null/.test(sv) && /\(\(this\.cfg && this\.cfg\.nutBat\) \|\| \[\]\)\.forEach\(function \(o\) \{ self\.nutO\(o\.x, o\.y\)\.bat = true; \}\)/.test(sv) && /ch === 'N' && this\.nutT\[kO\] && this\.nutT\[kO\]\.bat\) this\.veNong/.test(sv));
-  // màu đi qua bảng màu (game/bang-mau.js, gói A1): tìm token BM.<vai> ở hai nhánh rồi tra giá trị
-  const BMv = require(path.join(day, 'game', 'bang-mau.js'));
-  const mNb = /nbT \? BM\.(\w+) : BM\.(\w+)/.exec(sv);
-  kiem('san-ve.js thuSan (ảnh nhỏ): nút bật sẵn vẽ xanh, viền cam', /lopMau && lopMau\.nutBat/.test(sv) && !!mNb && BMv[mNb[1]] === '#5fe08a' && BMv[mNb[2]] === '#e8604a');
+  kiem('san-ve.js nap(): cfg.nutBat giữ trong this.cfg; datLaiCua bật nút đó ngay khung đầu (veOVec vẽ nút bật + veNong quầng nóng vì nutT bat; V7c2: hết nhánh pixel)',
+    /nutBat: Array\.isArray\(cfg\.nutBat\) \? cfg\.nutBat : null/.test(sv) && /\(\(this\.cfg && this\.cfg\.nutBat\) \|\| \[\]\)\.forEach\(function \(o\) \{ self\.nutO\(o\.x, o\.y\)\.bat = true; \}\)/.test(sv) && /ve\('nut-ban', \{ bat: bat, loe: [^}]*\}\); if \(bat\) this\.veNong\(g, x, y, now\)/.test(sv));
+  // ảnh nhỏ: nút bật sẵn → hình vector 'nut-ban' {bat} (thuOVec, V7c2: hết bản pixel xanh / viền cam)
+  kiem('san-ve.js thuSan (ảnh nhỏ): nút bật sẵn vẽ hình nut-ban trạng thái bat (thuOVec)', /lopMau && lopMau\.nutBat/.test(sv) && /else if \(ma === 'nut-ban' && nutBat\[x \+ ',' \+ y\]\) st\.bat = true;/.test(sv));
   kiem('man-choi.js cauHinhSan + ảnh nhỏ từng sân, man-lap.js ảnh nhỏ: truyền nutBat', /nutBat: lm\.nutBat \|\| undefined/.test(mc) && /nutBat: ch\.nutBat/.test(mc) && /nutBat: lm\.nutBat \}/.test(ml));
 }
 

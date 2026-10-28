@@ -333,20 +333,19 @@ const coHinh = (loai, ma) => !!V.lay(loai, ma);
   const svSrc = fs.readFileSync(path.join(GAME, 'san-ve.js'), 'utf8');
   const goi = [...new Set([...svSrc.matchAll(/Ve\.((?:make|ve)[A-Z]\w*)\(/g)].map((x) => 'Ve.' + x[1]))];
   const thieuG = goi.filter((k) => !V.VE_TRUC_TIEP[k]);
-  kiem(goi.length + ' hàm vẽ trực tiếp san-ve.js gọi (' + goi.join(', ') + ') đều có trong VeVector.VE_TRUC_TIEP', goi.length >= 3 && thieuG.length === 0, 'thiếu: ' + J(thieuG));
+  kiem('(V7c2) san-ve.js không còn gọi hàm vẽ pixel Ve.make* / Ve.ve* nào (trước: ' + Object.keys(V.VE_TRUC_TIEP).filter((k) => k.startsWith('Ve.')).join(', ') + ' đã có hình vector trong VE_TRUC_TIEP)', goi.length === 0 && thieuG.length === 0, 'còn gọi: ' + J(goi));
   const saiTT = [];
   for (const k of Object.keys(V.VE_TRUC_TIEP)) {
     const [loai, ...ma] = V.VE_TRUC_TIEP[k];
     for (const x of ma) if (!coHinh(loai, x)) saiTT.push(k + '→' + loai + '/' + x);
     if (k.startsWith('Field.')) {
       const ten = k.slice(6), i = svSrc.indexOf('\n    ' + ten + ': function');
-      const than = i < 0 ? '' : svSrc.slice(i, svSrc.indexOf('\n    },', i));
-      if (!/this\.vec/.test(than)) saiTT.push(k + ' không có nhánh this.vec');
+      if (i < 0) saiTT.push(k + ' không có trong san-ve.js');                     // V7c2: hết nhánh this.vec (game luôn vector), chỉ còn đòi hàm có thật
     }
   }
-  kiem('VE_TRUC_TIEP trỏ tới hình đã đăng ký; mỗi Field.* có nhánh this.vec trong san-ve.js', saiTT.length === 0, saiTT.join(', '));
-  kiem('draw() của san-ve.js vẽ mọi ô bằng veOVec ở chế độ vector; ảnh nhỏ thuSan dùng VeVector.KY_HIEU',
-    /if \(this\.vec\) \{ this\.veOVec\(/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /if \(vecT\) thuOVec\(/.test(svSrc));
+  kiem('VE_TRUC_TIEP trỏ tới hình đã đăng ký; mỗi Field.* có trong san-ve.js', saiTT.length === 0, saiTT.join(', '));
+  kiem('draw() của san-ve.js vẽ mọi ô bằng veOVec (V7c2: không còn rẽ this.vec); ảnh nhỏ thuSan dùng VeVector.KY_HIEU (thuOVec, không còn vecT)',
+    /this\.veOVec\(g, x, y, c\.rows\[y\]\[x\]/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /\n    thuOVec\(g, rows, w, h, s, mauO/.test(svSrc) && !/this\.vec\b|\bvecT\b/.test(svSrc));
   const kySrc = fs.readFileSync(path.join(GAME, 've-vector-ky-hieu.js'), 'utf8');
   const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'"));
   kiem('mọi hình ô / vật trong kho đều được san-ve.js hay bảng nối dùng tới (không hình thừa)', khongDung.length === 0, J(khongDung));
@@ -968,8 +967,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
       }
     }
     const svSrc = fs.readFileSync(path.join(GAME, 'san-ve.js'), 'utf8');
-    kiem('(13i) V7a dây nối nút ↔ cửa: ' + coDay + ' / ' + coNut + ' màn có nút + cửa có dây (theo cfg.noi; đầu ô nút, cuối ô cửa); màn không nút không dây; chỉ nhánh vector vẽ (this.vec → veDayNoi)',
-      saiD.length === 0 && coDay >= 10 && /if \(this\.vec\) this\.veDayNoi\(/.test(svSrc), saiD.slice(0, 4).join('; '));
+    kiem('(13i) V7a dây nối nút ↔ cửa: ' + coDay + ' / ' + coNut + ' màn có nút + cửa có dây (theo cfg.noi; đầu ô nút, cuối ô cửa); màn không nút không dây; draw() gọi veDayNoi (V7c2: hết điều kiện this.vec)',
+      saiD.length === 0 && coDay >= 10 && /\n      this\.veDayNoi\(g, now\);/.test(svSrc), saiD.slice(0, 4).join('; '));
   }
 
   /* g. cờ bay, sàn bàn cờ, trang xem */
