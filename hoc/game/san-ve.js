@@ -212,7 +212,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var c = this.cfg; if (!c) return;
       this.pxO = pxO; this.sv = pxO / T;
       this.cv.width = c.vw * pxO; this.cv.height = c.vh * pxO;
-      this.cv.style.imageRendering = 'auto';
       this.g = this.cv.getContext('2d'); this.g.imageSmoothingEnabled = false;
     },
     /** Chế độ vector: canvas đệm của ô vector `ma` (trạng thái s) cạnh MỘT Ô theo pixel thiết bị của g (canvas sân: pxO; lớp phủ robot: theo phép biến hình của nó). */
@@ -951,7 +950,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var mc = Math.max(4, Math.ceil((VeRobot.reachCua(c.robot) * p - S / 2) / f) + 3);          // lề (px CSS): tay nhô ra khi xe sát mép sân (tay xoay vươn sang ô bên)
       var cw = ow + 2 * mc, ch = cv.offsetHeight + 2 * mc, l = this.lop;
       l.width = Math.max(1, Math.round(cw * f)); l.height = Math.max(1, Math.round(ch * f));
-      l.style.width = cw + 'px'; l.style.height = ch + 'px'; l.style.imageRendering = 'auto';
+      l.style.width = cw + 'px'; l.style.height = ch + 'px';
       l.style.left = (cv.offsetLeft - mc) + 'px'; l.style.top = (cv.offsetTop - mc) + 'px';
       this.kk = kk; this.u = l.width / cw; this.mc = mc; this.p = p;
       var hh = this.hh = VeRobot.hinhHoc(c.robot);                                   // hình học tay: 1/100 ô đo từ hình vector (gói V3)

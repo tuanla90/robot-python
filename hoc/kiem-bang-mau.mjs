@@ -39,6 +39,7 @@ const SUA_SAU_NEN = {
   'gioi-thieu.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk (gỡ cầu C4); màu không đổi',
   'man-chon.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk (gỡ cầu C4); màu không đổi',
   'man-goi.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk (gỡ cầu C4); màu không đổi',
+  'choi.css': 'V7c3 e2 (29/10): bỏ khai báo pixel (vân gỗ / bảng phấn / núm --wood* --chalk --stud, image-rendering pixelated, steps(), clip-path răng cưa, .deco .surf / .bev / canvas); màu còn lại không đổi (máy đo kiểu tính tools/do-kieu-tinh.mjs: 0 khác)',
 };
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
@@ -160,7 +161,8 @@ console.log('\n== 3. Token và thứ tự nạp ==');
   }
   kiem('mọi BM.<vai> / var(--g-<vai>) có trong bảng màu', thieu.length === 0, thieu.slice(0, 10).join(', '));
   /* V7c1 (28/10): bảng sơn dự phòng của cai-dat.js (hàng "Màu sơn R1") đã bỏ → 11 vai này không còn chỗ dùng; V7c3 (bảng màu) xoá khỏi bang-mau.js rồi xoá danh sách này */
-  const VAI_CHO_V7C3 = ['kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3',
+  const VAI_CHO_V7C3 = [/* V7c3 e2 (29/10): choi.css xoá .deco .surf / .bev (khung gỗ, phần tử không còn được tạo) → 4 vai sau hết chỗ dùng; e4 xoá cùng cả danh sách */ 'moCamToi', 'camSangV4', 'goV7', 'goV8',
+    'kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3',
     /* V7c2 (28/10) san-ve.js xoá nhánh pixel (tia, mắt LED, ảnh nhỏ, vật, thanh pin, thẻ đạn…) → 45 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js rồi xoá dòng này */
     'sanTim', 'sanDoSang', 'sanNgocToi', 'moDo', 'moLam', 'moDoToiV2', 'moSangV5', 'moToiV20', 'moToiV21', 'moToiV23', 'moToiSangV8', 'moToiSangV9', 'moVangV4', 'moVangV5', 'moVangV6', 'moVangV7',
     'sanCamToiV2', 'sanDoV2', 'sanDoV3', 'sanDoV6', 'sanDoV7', 'sanDoSangV1', 'sanKemV1', 'sanLamV8', 'sanLamV16', 'sanLamV17', 'sanLamToiV1', 'sanLamToiV7', 'sanLamToiV8', 'sanLamToiV9', 'sanLamToiV10',

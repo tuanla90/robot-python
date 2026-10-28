@@ -41,7 +41,9 @@ const DO = '(' + String(function do_(P) {
   // js = phần tử JS đặt transform nội tuyến theo thời gian (robot màn đầu đi lại…): hộp bao + transform đổi theo lúc đo, không phải CSS → ghi 'js'
   const ghi = (k, cs, hop, js) => {
     const o = (js ? 'js' : hop ? [r5(hop.left), r5(hop.top), r5(hop.width), r5(hop.height)].join(',') : '') + '|';
-    kq[k] = o + P.map((p) => (js && p === 'transform' ? 'js' : p === 'content' && (cs[p] === 'normal' || cs[p] === 'none') ? '' : cs[p])).join('|');
+    // không có ảnh nền thì cỡ / vị trí / lặp của ảnh nền không hiện gì: ghi '·' (V7c3 e2: .md bỏ background-size của vân gỗ, ảnh nền vector = none)
+    const voHinh = (p) => cs.backgroundImage === 'none' && (p === 'backgroundSize' || p === 'backgroundPosition' || p === 'backgroundRepeat');
+    kq[k] = o + P.map((p) => (js && p === 'transform' ? 'js' : voHinh(p) ? '·' : p === 'content' && (cs[p] === 'normal' || cs[p] === 'none') ? '' : cs[p])).join('|');
   };
   const di = (el, k) => {
     const cs = getComputedStyle(el);

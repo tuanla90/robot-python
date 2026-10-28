@@ -32,7 +32,6 @@ body.ve-vector,body.ve-vector *{image-rendering:auto!important}
 body.ve-vector .screen,body.ve-vector .ws-ov{background:var(--g-vecNen);background-image:none;clip-path:none}
 body.ve-vector:not(.dien-thoai) .screen{border-radius:var(--r-lg);box-shadow:var(--elev-3),0 0 0 1px var(--g-vecKe)}
 body.ve-vector:not(.dien-thoai) .screen>.ovwrap{border-radius:var(--r-lg)}
-body.ve-vector .deco .surf,body.ve-vector .deco .bev,body.ve-vector .deco>canvas{display:none}
 /* phim mở đầu / phim gói (.md): gói V6c đã chuyển hẳn sang vector (giao-dien-vector-b.css mục 7, 10), mực / kem theo body.ve-vector như mọi chỗ khác */
 
 /* chữ code / tên lệnh trong câu (`move()`): Google Sans Code cùng cỡ, ngoặc đứng riêng giữ phông chữ thường */
