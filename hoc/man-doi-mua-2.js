@@ -175,6 +175,11 @@
   var R1_C1 = nhieu(['move()'], CHO(4), ['forward(5)']);
   var R2_C1 = nhieu(FOR(2, ['move()', 'turn_left()', 'wait_clear()', 'fire("charge")', 'turn_right()', 'move()']), ['move()']);
 
+  // che-doi-mua-2.2: sân của doi-mua-2.5, nhưng không ai dừng sẵn: CẢ HAI robot đi từng bước bằng yield_step() của em. R1 (hàng 3) và R2 (đường chữ U) gặp nhau ở ngã tư (3,3):
+  //   R2 vào trước, R1 phải nhường. Cờ R1 (10,4), cờ R2 (7,1).
+  var R1_C2 = nhieu(FOR(9, ['yield_step()']), ['tr_right()', 'move()']);
+  var R2_C2 = nhieu(FOR(3, ['yield_step()']), ['turn_left()'], FOR(4, ['yield_step()']), ['turn_left()'], FOR(4, ['yield_step()']));
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -409,6 +414,25 @@
         { moTa: 'Dùng if thay cho while: chỉ chờ một nhịp, R1 còn đứng đó', hamEm: [H('wait_clear', [], IF('warm()', ['wait()']))], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] }
       ],
       goiY: ['Hàm của em vào kho, các màn sau gọi lại được.', 'Thân wait_clear(): while warm(): wait().']
+    }),
+
+    man({
+      chuong: 'che-doi-mua-2', so: 2, ten: 'Hàm yield_step() cho cả đội', yMoi: 'một hàm của em cho CẢ HAI robot: thân chỉ dùng lệnh xe nào cũng có',
+      hamCuaEmCan: ['wait_clear', 'move', 'tr_right', 'turn_left'], taoHam: ['yield_step'],
+      deBai: 'Lần này cả hai xe cùng đi từng bước bằng một hàm của em: yield_step() = wait_clear() rồi tiến một ô. Xe xích và xe súng đều có move() và mắt hồng ngoại, ' +
+        'nên hàm viết một lần dùng được cho cả đội. Hai đường đi cắt nhau ở ngã tư: xe tới sau phải nhường. Chương trình hai xe đã khóa.',
+      veMaMau: 'Hai chương trình bị khóa, cùng gọi yield_step(). Tạo yield_step() hai dòng.',
+      san: SAN_5, bd: [{ x: 1, y: 3, huong: 1 }, { x: 3, y: 2, huong: 2 }], co: [[o(10, 4)], [o(7, 1)]],
+      chinh: [R1_C2, R2_C2],
+      hamEm: [H('yield_step', [], ['wait_clear()', 'move()'])],
+      sao: { o: 24, nhip: 13 },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('yield_step', [], ['# nhường bạn rồi mới đi', 'wait_clear()', 'move()'])] },
+      congThucKhac: [{ moTa: 'Viết thẳng while warm(): wait() thay cho gọi wait_clear()', hamEm: [H('yield_step', [], CHO_DI.concat(['move()']))] }],
+      loiSai: [
+        { moTa: 'Chỉ có move(): R1 húc vào R2 ở ngã tư', hamEm: [H('yield_step', [], ['move()'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Chờ ngược điều kiện (while not warm()): hành lang trống, R1 chờ mãi', hamEm: [H('yield_step', [], CHO_TOI.concat(['move()']))], phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['Hàm của em gọi được hàm của em: wait_clear() đã chế ở màn trước.', 'Thân yield_step(): wait_clear() rồi move().']
     })
   ];
 
