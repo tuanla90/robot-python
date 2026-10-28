@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -358,8 +359,7 @@ console.log('\n== 6. Sổ lệnh, huy hiệu, game/choi.html ==');
     moi.every((t) => { const h = SoLenh.tim(t); return h && h.nhom === 'mau' && h.chuong === 'che-mau' && h.man === che.find((m) => m.taoHam.includes(t)).ma && h.moTa.length <= 80 && !/[.]$/.test(h.moTa); }) && J(SoLenh.theoChuong('che-mau').map((h) => h.ten)) === J(moi));
   const nhomMau = SoLenh.theoNhom('mau').map((h) => h.ten);
   kiem('nhóm mau của Sổ lệnh: read_turn (chương mau) rồi năm hàm của che-mau, ngay sau nhau', nhomMau.indexOf('read_turn') >= 0 && J(nhomMau.slice(nhomMau.indexOf('read_turn'), nhomMau.indexOf('read_turn') + 6)) === J(['read_turn'].concat(moi)), J(nhomMau));
-  const huy = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
-  kiem("huy hiệu: game/huy-hieu.js có HINH['che-mau'] vẽ ô màu và bánh răng (themBanhRang)", /HINH\['che-mau'\]\s*=\s*function/.test(huy) && /HINH\['che-mau'\][\s\S]{0,1500}themBanhRang\(p\)/.test(huy));
+  kiem("huy hiệu: bộ vector có hình riêng 'che-mau' (huy-hieu-vector.js; V7c1)", coHinhRieng('che-mau'));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   const vtri = (f) => tags.indexOf('../' + f);

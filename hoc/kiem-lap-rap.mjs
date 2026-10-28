@@ -1,7 +1,9 @@
 /* ============================================================================
    kiem-lap-rap.mjs — máy kiểm LÕI + GIAO DIỆN CHẾ ĐỘ LẮP RÁP của "Robot Chấn Hưng" (lap-rap.js, KE-HOACH-LAP-RAP.md). Dùng MÀN TẠM trong bộ nhớ (không thêm màn nào vào game). Gồm:
-   1. danh mục part: mã part thật có trong game/part, giá đúng bảng kế hoạch (thân 2 3 4 4 5 · tay 2 3 3 3 3 · não 1 2 2 2 2), icon có trong ve.js, mỗi mục có một dòng "vượt được gì";
-   2. luật ghép: bảng luật của lõi khớp từng tổ hợp (5 thân × 6 tay × 6 não = 180) với Part.ghep VÀ với SanHoc.chay (cấu hình robot đúng thì chay() không ném lỗi); các ca cụ thể + lý do tiếng Việt;
+   1. danh mục part: mã part thật có trong bộ vẽ vector game/ve-vector-*.js (VeVector.lay; V7c1: không còn đọc game/part pixel), giá đúng bảng kế hoạch (thân 2 3 4 4 5 · tay 2 3 3 3 3 · não 1 2 2 2 2),
+      icon có trong ve.js, mỗi mục có một dòng "vượt được gì"; `ham` đúng hamGoc của bộ phận vector VÀ đúng dữ liệu chụp từ bộ pixel (hoc/du-lieu-chup-pixel.json, c0 V7c1);
+   2. luật ghép: bảng luật của lõi khớp từng tổ hợp (5 thân × 6 tay × 6 não = 180) với VeVector.kiemGhep VÀ với SanHoc.chay (cấu hình robot đúng thì chay() không ném lỗi); các ca cụ thể + lý do tiếng Việt;
+      VeVector.kiemGhep / hamGoc ra ĐÚNG câu lỗi / hợp lệnh như Part.ghep / Part.hamGoc đã chụp (180 tổ hợp, du-lieu-chup-pixel.json);
    3. kiemCachLap: part ngoài danh sách màn, thiếu khe bắt buộc, vượt ngân sách (thieu), giá, bí danh `giá`; dsCachLap đếm đúng (đếm độc lập bằng tay);
    4. apDung: loaiRobot, robot, hamGoc (hợp lệnh các part + wait; battery chỉ khi drone có pin; pin bị bỏ khi thân khác), không đổi màn gốc, ném lỗi khi ghép sai;
    5. chấm thắng một màn tạm bằng hai cách lắp khác nhau (xích đi thẳng qua bậc · hai bánh đi vòng), lời giải cách này trượt trên robot kia, thongKeMau, không cách nào hơn hẳn;
@@ -20,7 +22,8 @@ const LapRap = require(path.join(day, 'lap-rap.js'));
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
 const ManHoc = require(path.join(day, 'man-chuoi-1.js'));
-const Part = LapRap.part();
+const VV = LapRap.veVector();
+const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'));     // V7c1 c0: dữ liệu logic chụp từ bộ pixel trước khi tách
 
 let dat = 0, hong = 0;
 function kiem(ten, ok, chiTiet) {
@@ -40,14 +43,25 @@ for (const khe of LapRap.KHE) {
   const ds = LapRap.DANH_MUC[khe];
   kiem('khe ' + khe + ': đúng ' + Object.keys(GIA[khe]).length + ' part, mã không trùng', ds.length === Object.keys(GIA[khe]).length && new Set(ds.map((d) => d.ma)).size === ds.length, ds.map((d) => d.ma).join(','));
   kiem('khe ' + khe + ': giá đúng bảng kế hoạch', ds.every((d) => d.gia === GIA[khe][d.ma]), ds.map((d) => d.ma + '=' + d.gia).join(' '));
-  kiem('khe ' + khe + ': mã part thật có trong game/part (Part.lay)', ds.every((d) => !!Part.lay(LOAI_PART[khe], d.part)), ds.filter((d) => !Part.lay(LOAI_PART[khe], d.part)).map((d) => d.ma).join(','));
+  kiem('khe ' + khe + ': mã part thật có trong bộ vẽ vector (VeVector.lay)', ds.every((d) => !!VV.lay(LOAI_PART[khe], d.part)), ds.filter((d) => !VV.lay(LOAI_PART[khe], d.part)).map((d) => d.ma).join(','));
   kiem('khe ' + khe + ': có tên và một dòng "vượt được gì" ngắn (≤ 40 chữ)', ds.every((d) => d.ten && d.vuot && d.vuot.length <= 40), ds.filter((d) => !d.ten || !d.vuot || d.vuot.length > 40).map((d) => d.ma + ':' + (d.vuot || '').length).join(','));
 }
 kiem('thân: loại robot đúng lõi SanHoc (hai-banh→banh, còn lại cùng tên)', LapRap.DANH_MUC.than.every((d) => d.loai === (d.ma === 'hai-banh' ? 'banh' : d.ma) && !!SanHoc.HAM_GOC[d.loai]));
 kiem('cảm biến từ (tu) dùng part khoang-cach + hai hàm front_metal / front_pole', LapRap.tim('camBien', 'tu').part === 'khoang-cach' && ['front_metal', 'front_pole'].every((h) => LapRap.tim('camBien', 'tu').ham.includes(h)));
 for (const khe of LapRap.KHE) {
-  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = Part.lay(LOAI_PART[khe], d.part), ex = d.ma === 'tu' ? ['front_metal', 'front_pole'] : []; return !bang(d.ham, p.hamGoc.concat(ex)); });
-  kiem('khe ' + khe + ': `ham` của từng mục đúng Part.hamGoc (cảm biến từ thêm front_metal / front_pole)', sai.length === 0, sai.map((d) => d.ma).join(','));
+  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part), ex = d.ma === 'tu' ? ['front_metal', 'front_pole'] : []; return !bang(d.ham, p.hamGoc.concat(ex)); });
+  kiem('khe ' + khe + ': `ham` của từng mục đúng hamGoc của bộ phận vector (cảm biến từ thêm front_metal / front_pole)', sai.length === 0, sai.map((d) => d.ma).join(','));
+}
+{
+  const sai = [];
+  for (const b of CHUP.boPhan) {
+    const v = VV.lay(b.loai, b.ma);
+    if (!v) { sai.push(b.loai + '/' + b.ma + ' không có trong bộ vẽ vector'); continue; }
+    if (J(v.hamGoc) !== J(b.hamGoc)) sai.push(b.loai + '/' + b.ma + ' hamGoc ' + J(v.hamGoc) + ' ≠ chụp ' + J(b.hamGoc));
+    if (b.loai !== 'than' && (J([].concat(v.gan)) !== J(b.gan) || v.ten !== b.ten)) sai.push(b.loai + '/' + b.ma + ' gan / ten khác chụp');
+    if (b.loai === 'than') for (const o of Object.keys(b.oGan)) if (!v.oGan[o]) sai.push('than/' + b.ma + ' thiếu ổ ' + o);
+  }
+  kiem('(V7c1) ' + CHUP.boPhan.length + ' bộ phận trong dữ liệu chụp (' + CHUP.commit + ') có trong bộ vẽ vector, cùng hamGoc / gan / ten / ổ', !sai.length, sai.slice(0, 4).join(' | '));
 }
 const hinhVe = doc('game/ve.js');
 const iconCan = [...new Set(['than', 'tay', 'camBien'].flatMap((k) => LapRap.DANH_MUC[k].map((d) => d.icon)).concat(['xu', 'banhRang']))];
@@ -62,10 +76,10 @@ for (const th of THANS) for (const ta of TAYS) for (const cb of CAMS) {
   soTo++;
   const c = { than: th, tay: ta, camBien: cb }, r = LapRap.kiemGhep(c);
   let partOk = true, simOk = true, simLoi = '';
-  try { Part.ghep(LapRap.cauHinhCua(c)); } catch (e) { partOk = false; }
+  try { VV.kiemGhep(LapRap.cauHinhCua(c)); } catch (e) { partOk = false; }
   try {
     const goc = LapRap.tim('than', th).loai, ch = LapRap.cauHinhCua(c);
-    const hg = new Set(Part.hamGoc(ch)); (cb && LapRap.tim('camBien', cb).hamThem || []).forEach((h) => hg.add(h));
+    const hg = new Set(VV.hamGoc(ch)); (cb && LapRap.tim('camBien', cb).hamThem || []).forEach((h) => hg.add(h));
     if (th !== 'drone') hg.delete('battery');
     const cam = ch.camBien.slice(); if (th === 'drone') cam.push({ ma: 'pin', o: 'than' });
     SanHoc.chay({ san: ['.....', '.....', '..F..'], batDau: { x: 2, y: 0, huong: 0 }, loaiRobot: goc, hamGoc: [...hg], camBien: cam, pin: th === 'drone' ? 9 : undefined }, 'wait()\n');
@@ -73,7 +87,18 @@ for (const th of THANS) for (const ta of TAYS) for (const cb of CAMS) {
   if (r.ok) soDat++;
   if (r.ok !== (partOk && simOk)) lech.push(th + '/' + ta + '/' + cb + ' bảng=' + r.ok + ' part=' + partOk + ' sim=' + simOk + ' ' + simLoi);
 }
-kiem('bảng luật khớp Part.ghep VÀ SanHoc.chay ở cả ' + soTo + ' tổ hợp (' + soDat + ' ghép được)', lech.length === 0, lech.slice(0, 3).join(' | '));
+kiem('bảng luật khớp VeVector.kiemGhep VÀ SanHoc.chay ở cả ' + soTo + ' tổ hợp (' + soDat + ' ghép được)', lech.length === 0, lech.slice(0, 3).join(' | '));
+{
+  const khac = [];
+  for (const r of CHUP.lapRap) {
+    let loi = null, hg; try { VV.kiemGhep(r.cfg); } catch (e) { loi = e.message; }
+    try { hg = VV.hamGoc(r.cfg); } catch (e) { hg = 'ném: ' + e.message; }
+    if (loi !== r.loi) khac.push(J(r.cach) + ' lỗi: vector ' + loi + ' ≠ chụp ' + r.loi);
+    if (J(hg) !== J(r.hamGoc)) khac.push(J(r.cach) + ' hamGoc: vector ' + J(hg) + ' ≠ chụp ' + J(r.hamGoc));
+    if (LapRap.kiemGhep(r.cach).ok !== (r.loi === null) && !(r.loi === null && !LapRap.kiemGhep(r.cach).ok)) khac.push(J(r.cach) + ' kiemGhep.ok ≠ chụp');
+  }
+  kiem('(V7c1) ' + CHUP.lapRap.length + ' tổ hợp Lắp robot: VeVector.kiemGhep ra ĐÚNG câu lỗi và VeVector.hamGoc ra đúng hợp lệnh như Part.ghep / Part.hamGoc đã chụp (' + CHUP.commit + ')', !khac.length, khac.slice(0, 3).join(' | '));
+}
 const gh = (th, ta, cb) => LapRap.kiemGhep({ than: th, tay: ta, camBien: cb });
 const ca = [
   ['drone + tay kẹp: sai, lý do nhắc nam châm', gh('drone', 'kep', null), false, /nam châm/],

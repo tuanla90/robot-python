@@ -28,6 +28,7 @@ import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { GOI_RECALL_2, recallMan2 } from './kiem-be-sung.mjs';
 import { doMan, docCamBien, dongBacCau, suKienCua } from './do-duong-trum-mua-2.mjs';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const require = createRequire(import.meta.url);
 const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -202,14 +203,13 @@ async function main() {
     for (const t of ten) assert.ok(!cu.includes(t), 'tên "' + t + '" trùng một màn khác');
   });
   kiem('huy hiệu: chỉ trùm mang, đúng mã (tong-hop-2, nha-may-chay); huy-hieu.js có hình', () => {
-    const hh = fs.readFileSync(new URL('./game/huy-hieu.js', import.meta.url), 'utf8');
     for (const c of CHUONG) {
       const ds = DS_C[c], trum = ds[ds.length - 1];
       assert.equal(trum && trum.hang, 'trum', c + ': chưa có trùm');
       assert.equal(trum.huyHieu && trum.huyHieu.ma, HUY_HIEU[c], c + ': trùm thiếu huy hiệu ' + HUY_HIEU[c]);
       assert.ok(trum.huyHieu.ten && !/[—]/.test(trum.huyHieu.ten));
       for (const m of ds.slice(0, -1)) assert.ok(!m.huyHieu, m.ma + ' không phải trùm mà có huy hiệu');
-      assert.ok(new RegExp("HINH\\['" + HUY_HIEU[c] + "'\\]\\s*=\\s*function").test(hh), "huy-hieu.js thiếu HINH['" + HUY_HIEU[c] + "']");
+      assert.ok(coHinhRieng(HUY_HIEU[c]), "huy-hieu-vector.js thiếu hình huy hiệu '" + HUY_HIEU[c] + "'");
     }
   });
 

@@ -5,7 +5,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var MAU = { red: ['luatSonDo', 'luatSonDoSang', 'luatSonDoToi'], green: ['luatSonXanhLa', 'luatSonXanhLaSang', 'luatSonXanhLaToi'], blue: ['luatSonXanhDuong', 'luatSonXanhDuongSang', 'luatSonXanhDuongToi'], yellow: ['luatSonVang', 'luatSonVangSang', 'luatSonVangToi'] };
-  V.dangKy({ loai: 'tay', ma: 'son', ten: 'Đầu sơn có chổi', gan: 'tay', diemNeo: { x: 50, y: 80 }, MAU_SON: MAU, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'son', hamGoc: ['ink',  'dot',  'pen_down',  'pen_up'], ten: 'Đầu sơn có chổi', gan: 'tay', diemNeo: { x: 50, y: 80 }, MAU_SON: MAU, ve: function (g, s, M, H) {
     s = s || {};
     var k = MAU[s.mauSon] || MAU.red, c = [BM[k[0]], BM[k[1]], BM[k[2]]], ha = s.tuThe === 'duoi', dau = ha ? 101 : 96;
     H.bo(g, 37, 76, 26, 10, 5); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.5);

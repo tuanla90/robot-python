@@ -8,6 +8,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const THU_MUC = day;                                              // 'day' bị che ở mục 13 (kho đầy đủ)
@@ -845,9 +846,9 @@ let khoCuoi = null;
       if (sai.length) console.log('     ' + sai.slice(0, 8).join(' | ')); return sai.length === 0; })());
   kiem('trùm chỉ nhận huy hiệu: mọi màn trùm (x.10) có huyHieu, các màn khác không',
     ds.every((m) => (m.hang === 'trum' && m.so === 10) === !!(m.huyHieu && m.huyHieu.ma && m.huyHieu.ten)));
-  kiem('mã huy hiệu theo thứ tự chương: mỗi chương có màn đúng MỘT huy hiệu, mã = mã chương, theo thứ tự thu-tu-chuong.js; mọi mã có hình trong game/huy-hieu.js',
+  kiem('mã huy hiệu theo thứ tự chương: mỗi chương có màn đúng MỘT huy hiệu, mã = mã chương, theo thứ tự thu-tu-chuong.js; mọi mã có hình trong bộ vector (huy-hieu-ds.mjs, V7c1)',
     J(ds.filter((m) => m.huyHieu).map((m) => m.huyHieu.ma)) === J(ManHoc.chuong().map((c) => c.ma)) &&
-      ManHoc.chuong().every((c) => require('node:fs').readFileSync(path.join(THU_MUC, 'game', 'huy-hieu.js'), 'utf8').includes("HINH['" + c.ma + "']")) &&
+      ManHoc.chuong().every((c) => coHuyHieu(c.ma)) &&
       cap('robot-hoan-thien')[9].huyHieu.ma === 'robot-hoan-thien' && cap('robot-hoan-thien')[9].huyHieu.ten === 'Huy hiệu Robot hoàn thiện' &&
       cap('che-xe')[9].huyHieu.ma === 'che-xe' && cap('che-xe')[9].huyHieu.ten === 'Huy hiệu Chế lệnh xe' && cap('che-tay')[9].huyHieu.ma === 'che-tay' && cap('che-tay')[9].huyHieu.ten === 'Huy hiệu Chế lệnh tay');
   kiem('sân tối đa 7 cột × 9 hàng, màn nhiều sân thì từng sân (6.10 cần năm hàng để code khớp đường; sân tự co giãn nên vẫn vừa khung)', ds.every((m) => (Array.isArray(m.san[0]) ? m.san : [m.san]).every((s) => s.length <= 9 && s.every((h) => h.length <= 7))), ds.filter((m) => !(Array.isArray(m.san[0]) ? m.san : [m.san]).every((s) => s.length <= 9 && s.every((h) => h.length <= 7))).map((m) => m.ma).join(', '));

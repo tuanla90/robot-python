@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -250,10 +251,10 @@ for (const { m, mauCuaThan } of bangMu) console.log('   ' + m.id.padEnd(5) + m.t
 
 /* --------------------------------------------------------------------- 6. giao diện + nối máy kiểm */
 console.log('\n6. giao diện · nối máy kiểm');
-const hdm = doc('game/huong-dan-man.js'), huy = doc('game/huy-hieu.js'), html = doc('game/choi.html'), kh = doc('kiem-hoc.mjs'), lap = doc('game/man-lap.js');
+const hdm = doc('game/huong-dan-man.js'), html = doc('game/choi.html'), kh = doc('kiem-hoc.mjs'), lap = doc('game/man-lap.js');
 kiem('huong-dan-man.js: hướng dẫn màn Lắp robot cho ' + ds[0].ma + ' (khe thân, thẻ part, thanh xu, nút Lắp xong)', /H\['rap-nao\.1'\]/.test(hdm) && /lap-xong/.test(hdm) && /lr-xu/.test(hdm) && /lr-the/.test(hdm));
 kiem('man-lap.js gọi HuongDan.vaoMan khi vào màn Lắp robot và dừng khi Lắp xong', /HuongDan\.vaoMan/.test(lap) && /HuongDan\.(xongMan|dung)/.test(lap));
-kiem("huy-hieu.js: có hình HINH['rap-nao']", /HINH\['rap-nao'\]/.test(huy));
+kiem("huy hiệu 'rap-nao' có trong bộ vector (V7c1)", coHuyHieu('rap-nao'));
 kiem('choi.html nạp man-rap-nao.js', /src="\.\.\/man-rap-nao\.js"/.test(html));
 kiem('kiem-hoc.mjs: nạp man-rap-nao.js, bộ dò đường của chương (nhipRapNaoTatCa) và ghi chương vào danh sách kiểm', /man-rap-nao\.js/.test(kh) && /nhipRapNaoTatCa/.test(kh) && /do-duong-rap-nao/.test(kh) && /'rap-nao'/.test(kh));
 

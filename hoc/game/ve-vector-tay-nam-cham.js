@@ -21,7 +21,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function gon(g, H, cuc, cy, r1, r2) {
     [r1, r2].forEach(function (r) { g.beginPath(); g.arc(50, cy, r, Math.PI * 0.2, Math.PI * 0.8); H.vien(g, mauTu(cuc), 2.2); });
   }
-  V.dangKy({ loai: 'tay', ma: 'nam-cham', ten: 'Nam châm chữ U trước mũi', gan: ['tay', 'duoi'], diemNeo: { x: 50, y: 80 }, diemNeoDuoi: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'nam-cham', hamGoc: ['magnet_n',  'magnet_s',  'magnet_off'], ten: 'Nam châm chữ U trước mũi', gan: ['tay', 'duoi'], diemNeo: { x: 50, y: 80 }, diemNeoDuoi: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     s = s || {};
     if (s.duoi) {                                                            // treo dưới bụng drone (hệ màn hình)
       H.duong(g, 'M50 49 V58'); H.vien(g, BM.vecVien, 4.5); H.duong(g, 'M50 49 V58'); H.vien(g, BM.vecBacToi, 2);

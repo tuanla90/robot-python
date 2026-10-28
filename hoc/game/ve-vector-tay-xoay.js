@@ -22,7 +22,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function gocCua(s) { return s.goc !== undefined && s.goc !== null ? +s.goc : ({ trai: -90, phai: 90 }[s.xoay] || 0); }
   /** Tâm vật cách khớp bao nhiêu theo góc; ha = phần hạ 0..1 (gói V6b: chuyển dần theo độ nâng). */
   function dai(goc, ha) { return L0 + (L1 - L0) * Math.abs(Math.sin(goc * Math.PI / 180)) + HA * (ha === true ? 1 : +ha || 0); }
-  V.dangKy({ loai: 'tay', ma: 'xoay', ten: 'Tay xoay có khớp tròn', gan: 'tay', diemNeo: { x: 50, y: 80 }, tran: 0.3, khop: KHOP, vatKep: { y: KHOP.y + L0, canh: CANH, ha: HA },
+  V.dangKy({ loai: 'tay', ma: 'xoay', hamGoc: ['arm_down',  'arm_up',  'grab',  'release',  'arm_left',  'arm_right'], ten: 'Tay xoay có khớp tròn', gan: 'tay', diemNeo: { x: 50, y: 80 }, tran: 0.3, khop: KHOP, vatKep: { y: KHOP.y + L0, canh: CANH, ha: HA },
     vatXoay: function (tuThe, goc, k) {
       var b = (goc || 0) * Math.PI / 180, L = dai(goc || 0, 1 - V.nangCua(tuThe, k));
       return { x: KHOP.x - L * Math.sin(b), y: KHOP.y + L * Math.cos(b), canh: CANH };       // mặt quay xuống: bên phải xe là phía x nhỏ; cạnh thân vật thật: VeVector.coVatKep(k)

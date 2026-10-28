@@ -17,6 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SanHoc, ChamHoc, KhoHam, KhungCode, ThuTu, SoLenh, ManHoc, tatCa, tenCotTruyen, J, H, maCua, maLoi, sanCua, batDauCua, khoTruoc, tron, laHanhLang, docDuong, tayNhapDuoc } from './dung-chung-list.mjs';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 const DoDuong = await import('./do-duong-che-cam-bien.mjs');
 const { nhipCheCamBienTatCa, nhipCheCamBienSan } = DoDuong;
 
@@ -246,8 +247,7 @@ console.log('\n== 6. Kho hàm của em, huy hiệu, thẻ script ==');
       J(cuoi.find((h) => h.ten === 'route').than) === J(['for n in steps:', '    forward(n)', '    turn_right()']) && J(cuoi.find((h) => h.ten === 'scan').thamSo) === '["seen"]');
   const sach = KhoHam.moi({ tenCoDinh: tenCotTruyen });
   kiem('KhoHam khóa tên: người chơi không tạo được hàm tên route / route_left / scan / box ngoài màn chế nó', ['route', 'route_left', 'scan', 'box'].every((t) => tenCotTruyen.includes(t) && sach.tenCoDinh(t)));
-  const hh = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
-  kiem("huy hiệu: game/huy-hieu.js có HINH['che-list'] dựng bằng code (danh sách nhỏ + bánh răng themBanhRang)", /HINH\['che-list'\] = function \(\)[\s\S]*?themBanhRang\(p\);\s*return p;\s*\};/.test(hh));
+  kiem("huy hiệu: bộ vector có hình riêng 'che-list' (huy-hieu-vector.js; V7c1)", coHinhRieng('che-list'));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   const vtri = (f) => tags.indexOf('../' + f);

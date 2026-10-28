@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -148,8 +149,7 @@ console.log('\n== 4. Đăng ký ==');
   kiem('choi.html nạp man-may-son.js, man-che-may-son.js (sau man-che-mau.js) và part/part-son.js', html.indexOf('../man-may-son.js') > html.indexOf('../man-che-mau.js') && html.indexOf('../man-che-may-son.js') > html.indexOf('../man-may-son.js') && html.includes('part/part-son.js'));
   kiem('Sổ lệnh: nhóm "son", bảy hàm cốt truyện đúng chương, bốn lệnh gốc', SoLenh.tenNhom.son && ['dots', 'frame', 'line', 'color_line', 'next_row', 'stripes', 'copy_row', 'grid', 'border', 'fill_gaps'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).nhom === 'son') &&
     ['ink', 'dot', 'pen_down', 'pen_up'].every((t) => SoLenh.lenhGoc.some((l) => l.ten === t)));
-  const hh = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
-  kiem('huy hiệu may-son và che-may-son có hình', hh.includes("HINH['may-son']") && hh.includes("HINH['che-may-son']"));
+  kiem('huy hiệu may-son và che-may-son có hình (bộ vector, V7c1)', coHuyHieu('may-son') && coHuyHieu('che-may-son'));
   kiem('thẻ giới thiệu bộ phận "son" (khe tay, bốn lệnh)', GT.DS.son && GT.DS.son.khe === 'tay' && J(GT.DS.son.lenh) === '["ink","dot","pen_down","pen_up"]');
   kiem('kế hoạch hoc/KE-HOACH-MAY-SON.md có trên đĩa', fs.existsSync(path.join(day, 'KE-HOACH-MAY-SON.md')));
 }

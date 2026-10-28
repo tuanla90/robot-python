@@ -7,15 +7,13 @@
         choi.html nạp bang-mau.js trong <head> trước mọi script; xem-part.html nạp trước part.js.
      4. TƯƠNG ĐƯƠNG TỪNG CHỖ với commit nền NEN (trước khi gom màu): thay mọi token bằng giá trị trong bảng
         → ra ĐÚNG từng byte tệp cũ (chỉ chuẩn hoá nháy kép / nháy đơn quanh chuỗi màu).
-     5. TƯƠNG ĐƯƠNG ĐIỂM ẢNH: Part.ghep mọi thân × tay × cảm biến × ổ × sơn × trạng thái, Part._veMot, veVatNho, veMat,
-        bảng K / SON / DS_SON / LOP_SON: bản nền (git show NEN) và bản mới cho ra buffer y hệt.
-   Mục 4–5 là phép chứng minh của gói A1 (không đổi màu). Từ gói A2 (đổi giá trị bảng màu / sửa code các tệp màu)
+     (5. tương đương điểm ảnh bộ PART pixel: đã bỏ ở V7c1, game luôn vector.)
+   Mục 4 là phép chứng minh của gói A1 (không đổi màu). Từ gói A2 (đổi giá trị bảng màu / sửa code các tệp màu)
    đặt NEN = null để chỉ giữ mục 1–3.
-   Cờ --loi-gia: đổi giá trị một vai (vienDam) và một biến thể trong bộ nhớ → mục 4–5 phải đỏ.
+   Cờ --loi-gia: đổi giá trị một vai (vienDam) và một biến thể trong bộ nhớ → mục 4 phải đỏ.
    Chạy: node hoc/kiem-bang-mau.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -28,12 +26,12 @@ const SUA_SAU_NEN = {
   'phim-mua-1.js': 'V6 (28/10): thùng trong kẹp theo VeRobot.vatKep ở vector, mắt biểu cảm; pixel y nguyên (kiem-huy-hieu-phim-vector.mjs B5)',
   'huy-hieu.js': 'V6 (28/10): ve cũ đổi tên vePixel (thân y nguyên), thêm nhánh vector + HuyHieu.mk; điểm ảnh pixel so ở kiem-huy-hieu-phim-vector.mjs A3; gói 8 mùa 2 Đội (28/10) thêm HINH doi-mua-2, che-doi-mua-2 (màu qua token BM); gói 9 Bệ súng xích (28/10) thêm HINH be-sung, che-be-sung kiểu pixel (chỉ thêm dòng); gói 10 Nhà máy chạy lại (28/10) thêm HINH tong-hop-2, nha-may-chay kiểu pixel (chỉ thêm dòng)',
   'san-ve.js': 'V1 (27/10): chế độ vector — canvas theo pixel thiết bị, ô / vật vector',
-  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector',
+  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector; V7c1 (28/10): bỏ sonChon (sơn mở khoá), sonHieuLuc luôn vang',
   'man-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'man-lap.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'mo-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'phim-goi.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'the-part.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'man-choi.js': 'V5a (28/10): thẻ R1 / R2 thêm thuộc tính data-son cho CSS giao diện vector (màu đội)',
-  'cai-dat.js': 'V5a (28/10): Cài đặt thêm hàng Kiểu vẽ (Nét mới / Điểm ảnh, VeVector.luuCheDo + tải lại); màu icon là token có sẵn',
+  'cai-dat.js': 'V5a (28/10): Cài đặt thêm hàng Kiểu vẽ (Nét mới / Điểm ảnh, VeVector.luuCheDo + tải lại); màu icon là token có sẵn; V7c1 (28/10): bỏ hàng Màu sơn R1 (hangSon + bảng sơn dự phòng) và hàng Kiểu vẽ (hangKieuVe)',
   'thanh-phan.js': 'V5a (28/10): giao diện vector — dòng code đổi chỗ trượt mượt (không steps), tôn trọng prefers-reduced-motion; pixel giữ steps(3)',
   've.js': 'V5a (28/10): giao diện vector — mk() phóng sẵn icon điểm ảnh (bỏ image-rendering: pixelated), viền icon mặc định chàm; pixel giữ nhánh cũ',
   'xuong-ham.js': 'V6b (28/10): bốn nút chỉ icon (về sân, lấy lại, xoá hàm, xoá hết) thêm title trùng aria-label, cả hai chế độ; màu icon là token có sẵn',
@@ -162,7 +160,10 @@ console.log('\n== 3. Token và thứ tự nạp ==');
     if (f.endsWith('.js') && /(?<![\w$.])BM\./.test(s) && s.split('\n')[0] !== (f.startsWith('part/') ? ALIAS.part : ALIAS.game)) khongAlias.push(f);
   }
   kiem('mọi BM.<vai> / var(--g-<vai>) có trong bảng màu', thieu.length === 0, thieu.slice(0, 10).join(', '));
-  const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG);
+  /* V7c1 (28/10): bảng sơn dự phòng của cai-dat.js (hàng "Màu sơn R1") đã bỏ → 11 vai này không còn chỗ dùng; V7c3 (bảng màu) xoá khỏi bang-mau.js rồi xoá danh sách này */
+  const VAI_CHO_V7C3 = ['kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3'];
+  const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
+  const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));
   kiem('tệp JS dùng BM có dòng lấy bảng màu ở dòng 1 (window.BangMau, ở Node thì require, ngữ cảnh giả thì {})', khongAlias.length === 0, khongAlias.join(', '));
   const html = doc('choi.html'), dau = html.indexOf('<script src="bang-mau.js"></script>');
@@ -205,42 +206,7 @@ if (NEN_OK) {
   kiem('danh sách SUA_SAU_NEN chỉ gồm tệp có thật và thật sự khác bản nền', Object.keys(SUA_SAU_NEN).every((f) => TEP.includes(f) && gitShow('hoc/game/' + f) !== null && gitShow('hoc/game/' + f) !== doc(f)), Object.keys(SUA_SAU_NEN).join(', '));
 }
 
-/* ================================================================= 5. tương đương điểm ảnh của bộ PART */
-if (NEN_OK) {
-  console.log('\n== 5. Tương đương điểm ảnh: bộ PART bản nền và bản mới ==');
-  const TEP_PART = fs.readdirSync(path.join(GAME, 'part')).filter((f) => /^part.*\.js$/.test(f));
-  const tam = fs.mkdtempSync(path.join(os.tmpdir(), 'kiem-bang-mau-'));
-  fs.mkdirSync(path.join(tam, 'part'));
-  for (const f of TEP_PART) { const s = gitShow('hoc/game/part/' + f); if (s !== null) fs.writeFileSync(path.join(tam, 'part', f), s); }
-  const thuTu = ['hai-banh', 'xich', 'nhen', 'omni', 'drone', 'kep', 'tay-xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'mau', 'cham', 'camera', 'camera-bay', 'hong-ngoai'];
-  const nap = (d) => { const P = require(path.join(d, 'part.js')); for (const x of thuTu) if (fs.existsSync(path.join(d, 'part-' + x + '.js'))) require(path.join(d, 'part-' + x + '.js')); return P; };
-  const PC = nap(path.join(tam, 'part')), PM = nap(path.join(GAME, 'part'));
-  const J = JSON.stringify;
-  kiem('bảng K / SON / DS_SON / LOP_SON giống bản nền', ['K', 'SON', 'DS_SON', 'LOP_SON'].every((k) => J(PC[k]) === J(PM[k])), ['K', 'SON', 'DS_SON', 'LOP_SON'].filter((k) => J(PC[k]) !== J(PM[k])).join(', '));
-  const anh = (P, f) => { try { const p = f(P); return J(p.buf || p); } catch (e) { return 'LỖI ' + e.message; } };
-  const TRANG_THAI = [{}, { bat: true }, { mat: true }, { tuThe: 'duoi', kep: 'dong', cam: true }, { xoay: 'trai', quay: true, banh: true }, { xoay: 'phai', cuc: 'N', doc: true, ngam: 2 },
-    { dangNem: true, dangBanTruoc: true, dangBanSau: true, cuc: 'S' }, { low: true, sang: true, duoi: true }];
-  let so = 0; const khac = [];
-  const thans = PM.ds('than').map((d) => d.ma), tays = [null].concat(PM.ds('tay').map((d) => d.ma));
-  const cams = [[]]; for (const d of PM.ds('cam-bien')) for (const o of (Array.isArray(d.gan) ? d.gan : [d.gan])) cams.push([{ ma: d.ma, o }]);
-  cams.push([{ ma: 'khoang-cach', o: 'hong' }, { ma: 'camera', o: 'tren' }]);
-  const sons = [undefined].concat(Object.keys(PM.SON));
-  for (const than of thans) for (const tay of tays) for (const cb of cams) {
-    const thu = (cfg, st) => { so++; const a = anh(PC, (P) => P.ghep(cfg, st)), b = anh(PM, (P) => P.ghep(cfg, st)); if (a !== b) khac.push(J(cfg) + ' ' + J(st)); };
-    for (const st of TRANG_THAI) thu({ than, tay, camBien: cb }, st);
-    for (const son of sons) thu({ than, tay, camBien: cb, son }, {});
-  }
-  for (const loai of ['than', 'tay', 'cam-bien']) for (const d of PM.ds(loai)) for (const st of TRANG_THAI) {
-    so++; const a = anh(PC, (P) => P._veMot(P.lay(loai, d.ma), st)), b = anh(PM, (P) => P._veMot(P.lay(loai, d.ma), st)); if (a !== b) khac.push(loai + '/' + d.ma + ' ' + J(st));
-  }
-  for (const n of [4, 6, 8, 10]) for (const chat of [undefined, 'go', 'sat']) for (const mau of [undefined, 'red', 'green', 'blue', 'yellow']) {
-    const ve = (P) => { const p = new P.Painter(16, 16); P.veVatNho(p, 1, 1, n, chat, mau); return p; };
-    so++; if (anh(PC, ve) !== anh(PM, ve)) khac.push('veVatNho ' + n + ' ' + chat + ' ' + mau);
-  }
-  for (const sang of [false, true]) { const ve = (P) => { const p = new P.Painter(24, 24); P.veMat(p, 4, 4, 6, 3, sang); return p; }; so++; if (anh(PC, ve) !== anh(PM, ve)) khac.push('veMat ' + sang); }
-  kiem(so + ' ảnh (ghép thân × tay × cảm biến × ổ × sơn × trạng thái, từng part, vật nhỏ, mắt): buffer bản mới y hệt bản nền', khac.length === 0, khac.length + ' ảnh khác, ví dụ ' + khac.slice(0, 4).join(' | '));
-  fs.rmSync(tam, { recursive: true, force: true });
-}
+/* (V7c1, 28/10) mục 5 "tương đương điểm ảnh bộ PART" (8528 ảnh Part.ghep bản nền / bản mới) đã bỏ: game luôn vector, part/ là mã chết chờ V7c2; hình vector so ở kiem-ve-vector 12 / 13a-v. */
 
 console.log('\n---------------------------------------------');
 console.log((hong ? 'HỎNG ' + hong + ' / ' + (dat + hong) : 'ĐẠT ' + dat + ' · HỎNG 0') + ' kiểm' + (LOI_GIA ? ' (đang cắm lỗi giả: phải đỏ)' : ''));

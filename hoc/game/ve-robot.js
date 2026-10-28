@@ -163,25 +163,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return Math.max(0.3, THAN_DICH * canhO / w);
   }
 
-  /** Màu sơn R1 mà người chơi đang chọn trong Cài đặt (nếu đã đủ sao mở khóa), hoặc '' (nguyên bản). */
-  function sonChon() {
-    var L = typeof window !== 'undefined' && window.Luu, P = typeof window !== 'undefined' && window.Part;
-    if (!L || !L.docCaiDat || !P || !P.SON) return '';
-    var s = L.docCaiDat().son;
-    if (!s || !P.SON[s]) return '';
-    if (P.DS_SON && typeof window !== 'undefined' && window.App && App.tongSao && !App.moHet) {
-      var muc = P.DS_SON.filter(function (x) { return x.ma === s; })[0];
-      if (muc && muc.saoCan > App.tongSao()) return '';
-    }
-    return s;
-  }
   /** Màu sơn thật khi vẽ (26/10 user: mọi thân cùng một màu để chia phe và làm gói sơn): màu đội khác vàng giữ nguyên; còn lại là màu người chơi chọn,
    *  thiếu thì VÀNG, kể cả màn một robot (nhện, omni, xích, drone cũng sơn vàng như xe hai bánh). 'goc' = màu nhận diện gốc của thân (không sơn). */
   function sonHieuLuc(son) {
     if (son === 'goc') return null;
     if (son && son !== 'vang') return son;
-    if (cheDoVector()) return 'vang';                 // V7b (28/10, người giao quyết): ở vector R1 LUÔN màu đội (vecDoiR1 #38BDF8), bỏ qua sơn đã chọn / lưu từ pixel (Luu.son giữ nguyên, hàng sơn ẩn ở vector)
-    return sonChon() || 'vang';
+    return 'vang';                                    // V7c1 (28/10): bỏ sơn mở khoá (hàm chọn sơn / Luu.son / Part.SON): R1 luôn 'vang' = màu đội (vector: vecDoiR1 #38BDF8)
   }
 
   function veGhep(cauHinh, tt, huong, tiLe) {
@@ -343,7 +330,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function reachCua(cauHinh) { if (veVector(cauHinh)) return VV().tamVoi ? VV().tamVoi(cauHinh) : 50 + 100 * VV().tranCua(cauHinh); return cheDoVector() ? 50 : REACH; }      // vector (gói V6b): chừa cả vật to trong tay nâng
 
   var VeRobot = {
-    ve: ve, veCo: veCo, heSoCss: heSoCss, PX_O_PART: PX_O_PART, PHONG_NGOAI_SAN: PHONG_NGOAI_SAN, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
+    ve: ve, veCo: veCo, heSoCss: heSoCss, PX_O_PART: PX_O_PART, PHONG_NGOAI_SAN: PHONG_NGOAI_SAN, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonHieuLuc: sonHieuLuc,
     cheDoVector: cheDoVector, veVector: veVector,
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };

@@ -21,6 +21,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const require = createRequire(import.meta.url);
 const Cham = require('./cham.js');
@@ -112,8 +113,7 @@ kiem('huy hiệu che-cam-bien: chỉ trùm che-cam-bien.16 mang, huy-hieu.js có
   assert.deepEqual(M.danhSach.filter((m) => m.huyHieu && m.huyHieu.ma === 'che-cam-bien').map((m) => m.ma), ['che-cam-bien.16']);
   assert.equal(get('khoang-cach.10').huyHieu.ma, 'khoang-cach');
   for (const m of M.danhSach.filter((x) => goi.chuong.includes(x.chuong) && x.hang !== 'trum')) assert.ok(!m.huyHieu, m.ma + ' không phải trùm mà có huy hiệu');
-  const hh = fs.readFileSync(new URL('./game/huy-hieu.js', import.meta.url), 'utf8');
-  assert.ok(/HINH\['che-cam-bien'\]\s*=\s*function/.test(hh), "huy-hieu.js thiếu HINH['che-cam-bien']");
+  assert.ok(coHinhRieng('che-cam-bien'), "huy-hieu-vector.js thiếu hình huy hiệu 'che-cam-bien'");
 });
 
 /* ------------------------------------------------------------------ 5. bộ dò khối chuẩn */

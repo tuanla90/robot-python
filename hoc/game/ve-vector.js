@@ -1,8 +1,7 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    ve-vector.js — "Robot Chấn Hưng": BỘ VẼ VECTOR (window.VeVector), gói V1 (27/10).
-   Chạy song song với bộ vẽ pixel (ve.js / part/), chọn bằng công tắc. V7b (28/10): MẶC ĐỊNH VECTOR:
-     ?ve=pixel trên địa chỉ hay đã lưu VeVector.luuCheDo('pixel') (localStorage duong-hoc:ve-vector = 'pixel') → pixel; ?ve=vector ép vector; còn lại vector.
+   V7b (28/10) mặc định vector; V7c1 (28/10) GAME LUÔN VECTOR: hết công tắc ?ve= / Cài đặt "Kiểu vẽ", bat() luôn true; bộ pixel (ve.js / part/) chỉ còn là mã chết chờ V7c2 xoá.
    Mẫu chuẩn: hoc/hinh-mau/thu-vector.html (thân A, sân lab trắng). Mọi hình vẽ trên hệ toạ độ 100 × 100 của MỘT Ô
    bằng lệnh canvas (không Path2D, để chạy được ở Node với canvas giả), rồi rasterise ra canvas đệm đúng cỡ điểm ảnh thật
    (cạnh ô × devicePixelRatio) nên nét ở mọi cỡ ô, không cần bội số 14. Bộ đệm theo (tên, cỡ, trạng thái, màu đội).
@@ -10,6 +9,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    KHO HÌNH: VeVector.dangKy({ loai: 'o' | 'vat' | 'than' | 'tay' | 'cam-bien', ma, ten, ve(g, s, M), ... })
      o / vat    ve(g, s): vẽ một ô / một vật đầy ô 100 × 100 (vật vẽ ở giữa, cỡ do người gọi quyết khi rasterise).
      than       quay mặt XUỐNG trong ô 100 × 100, tâm thân ở TAM_THAN; oGan: { tay: {x, y}, … } điểm gắn (hệ của thân);
+     (V7c1, 28/10) than / tay / cam-bien mang cả DỮ LIỆU LOGIC của bộ phận (trước nằm trong part/*.js pixel): ten (câu báo lỗi ghép), gan / oGan (ổ), hamGoc (lệnh gốc
+                bộ phận mở ra; hamGoc(cfg) = hợp lệnh của cấu hình, lap-rap.js / kiem-lap-rap so). kiemGhep là LUẬT GHÉP duy nhất của game (lap-rap.js gọi lúc chơi).
                 ve(g, s, M) với M = màu đội { chinh, toi } (mauDoi) cho kính + mắt + chấm ăng-ten.
      tay        diemNeo {x, y}: điểm của tay đặt trùng ổ gắn; gan: 'tay'; ve(g, s, M); vatKep: { y, canh } (vật trong kẹp, hệ của tay, tay nâng).
    ROBOT: VeVector.robot(cauHinh, trangThai, huong, canhPx) → canvas canhPx × canhPx (một ô), tâm thân = tâm canvas, cờ .laPart và .laVector.
@@ -35,23 +36,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      VAT_NANG lần (gần camera hơn). Tay vẽ khe kẹp ôm vật cỡ đó (s.nangK); san-ve.js / phim / huy hiệu lấy cỡ qua vatKep / vatXoay. */
   var VAT_SAN = 57, VAT_NANG = 1.2;
   var BONG_SAN = 0.19, BONG_NANG = 0.32;          // bóng đổ của vật lệch bấy nhiêu lần cạnh hộp vật: sát đất như vật nằm sàn (2 / 10,5), nâng thì xa hơn và nhạt (> 0,3: HU.bongVat 'cao')
-  var KHOA_LUU = 'duong-hoc:ve-vector';
   var loiGia = { gocXoay: false, demBoCo: false, coVatCu: false, kheCu: false, xoayBat: false };   // chỉ máy kiểm --loi-gia bật (V6b: coVatCu = vật trong tay cỡ cũ 24% không theo độ nâng, kheCu = càng kẹp khe cũ; V7a: xoayBat = tay xoay bỏ moK, khe bật một phát)
 
-  /* ---------------------------------------------------------------- công tắc */
-  var cheDo = null;
-  function doCheDo() {
-    var q = (root.location && root.location.search) || '';
-    if (/[?&]ve=vector(?:&|$)/.test(q)) return true;
-    if (/[?&]ve=pixel(?:&|$)/.test(q)) return false;
-    try { if (root.localStorage && root.localStorage.getItem(KHOA_LUU) === 'pixel') return false; } catch (e) { /* không có localStorage */ }
-    return true;                                  // V7b: mặc định vector (kể cả Node không có location / localStorage)
-  }
-  /** Đang ở chế độ vector? Tính một lần (đổi giữa phiên phải nạp lại sân: datCheDo chỉ cho máy kiểm / trang thử). */
-  function bat() { if (cheDo === null) cheDo = doCheDo(); return cheDo; }
-  function datCheDo(v) { cheDo = v === 'vector' || v === true; return cheDo; }
-  /** Ghi lựa chọn cho lần mở sau ('vector' | 'pixel'); có hiệu lực sau khi nạp lại trang. V7b: 'pixel' GHI 'pixel' (lựa chọn pixel được lưu), còn lại ghi 'vector'. */
-  function luuCheDo(v) { try { root.localStorage.setItem(KHOA_LUU, v === 'pixel' ? 'pixel' : 'vector'); return true; } catch (e) { return false; } }
+  /* ---------------------------------------------------------------- chế độ: V7c1 (28/10) game LUÔN VECTOR. Công tắc trên địa chỉ (ve=), khoá lưu trong kho trình duyệt
+     (duong-hoc:ve-vector) và hàng Cài đặt "Kiểu vẽ" đã gỡ. bat() giữ tên (san-ve.js this.vec, VeRobot, huy-hieu.js, man-dau.js… đọc) và luôn true; datCheDo chỉ còn cho trang xem hinh-mau
+     (không đổi gì). Nhánh pixel còn lại trong các tệp là MÃ CHẾT, V7c2 xoá. */
+  function bat() { return true; }
+  function datCheDo() { return true; }
   /** GIAO DIỆN (gói V5a): ở vector, <body> mang lớp `ve-vector` → choi-vector.css phủ giao diện phẳng diem10code lên choi.css; pixel không có lớp, y như cũ.
    *  Gọi ngay khi nạp tệp (choi.html nạp ve-vector.js trong <body>, trước mọi tệp dựng màn hình). */
   var LOP_GIAO_DIEN = 've-vector';
@@ -222,8 +213,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   /* ---------------------------------------------------------------- màu đội */
-  /** son (mã sơn của Part.SON / VeRobot.sonHieuLuc) → { chinh, toi }: '' / 'vang' = R1 xanh Sola; 'lam' = R2 hồng Luna; đối thủ 'do'; bộ sơn mở khoá theo bộ ba SON (nền, tối). */
-  var SON_DOI = { do: ['sonDo', 'sonDoToi'], tim: ['sonTim', 'sonTimToi'], ngoc: ['sonNgoc', 'sonNgocToi'], cam: ['sonCam', 'sonCamToi'], trang: ['sonTrang', 'sonTrangToi'], 'hoang-kim': ['sonHoangKim', 'sonHoangKimToi'] };
+  /** son (mã màu đội của VeRobot.sonHieuLuc / san-ve.js SON_XE) → { chinh, toi }: '' / 'vang' = R1 xanh Sola; 'lam' = R2 hồng Luna; đối thủ 'do'; dự phòng 'tim'.
+   *  V7c1 (28/10): bộ sơn mở khoá (ngoc / cam / trang / hoang-kim) đã bỏ cùng hàng Cài đặt: mã lạ → R1. */
+  var SON_DOI = { do: ['sonDo', 'sonDoToi'], tim: ['sonTim', 'sonTimToi'] };
   function mauDoi(son) {
     if (son === 'lam') return { ma: 'R2', chinh: BM.vecDoiR2, toi: BM.vecDoiR2Toi };
     var k = SON_DOI[son];
@@ -264,6 +256,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (ganCua(d).indexOf(cams[i].o) < 0) throw new Error('Cảm biến ' + d.ma + ' không gắn được vào ổ ' + cams[i].o + '.');
     }
     return { than: than, tay: tay, cams: cams };
+  }
+  /** Lệnh gốc mà cấu hình { than, tay, camBien } mở ra: hợp hamGoc của thân, tay rồi từng cảm biến, giữ thứ tự, không trùng (y Part.hamGoc của bộ pixel; V7c1). Thiếu bộ phận: ném "Không có …". */
+  function hamGoc(cfg) {
+    cfg = cfg || {};
+    var a = [], them = function (d) { (d.hamGoc || []).forEach(function (h) { if (a.indexOf(h) < 0) a.push(h); }); };
+    var than = lay('than', cfg.than); if (!than) throw new Error('Không có than "' + cfg.than + '".');
+    them(than);
+    if (cfg.tay) { var tay = lay('tay', cfg.tay); if (!tay) throw new Error('Không có tay "' + cfg.tay + '".'); them(tay); }
+    (cfg.camBien || []).forEach(function (c) { var d = lay('cam-bien', c.ma); if (!d) throw new Error('Không có cam-bien "' + c.ma + '".'); them(d); });
+    return a;
   }
 
   /* ---------------------------------------------------------------- robot: ghép rồi xoay cả nhóm */
@@ -396,10 +398,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   apGiaoDien();
   return {
     HE: HE, CO_THAN: CO_THAN, TAM_THAN: TAM_THAN, H: H, CanvasGia: CanvasGia, taoCanvas: taoCanvas,
-    bat: bat, datCheDo: datCheDo, luuCheDo: luuCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
+    bat: bat, datCheDo: datCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
     o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, tamVoi: tamVoi, nangCua: nangCua, coVatKep: coVatKep, VAT_SAN: VAT_SAN, VAT_NANG: VAT_NANG, BONG_SAN: BONG_SAN, BONG_NANG: BONG_NANG, gocXoay: gocXoay, gocCua: gocCua,
-    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, doiCam: doiCam, oTay: oTay,
+    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, hamGoc: hamGoc, doiCam: doiCam, oTay: oTay,
     xoaDem: xoaDem, _loiGia: loiGia
   };
 });

@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -197,9 +198,9 @@ console.log('4. bẫy có chủ ý');
 /* --------------------------------------------------------------------- 5. giao diện */
 console.log('5. giao diện (tệp)');
 {
-  const html = doc('game/choi.html'), hieu = doc('game/huy-hieu.js'), kh = doc('kiem-hoc.mjs');
+  const html = doc('game/choi.html'), kh = doc('kiem-hoc.mjs');
   kiem('choi.html nạp man-rap-tay.js (sau man-che-may-nem.js, trước man-drone.js), sau lap-rap.js', /src="\.\.\/man-rap-tay\.js"/.test(html) && html.indexOf('man-rap-tay.js') > html.indexOf('man-che-may-nem.js') && html.indexOf('man-rap-tay.js') < html.indexOf('man-drone.js') && html.indexOf('lap-rap.js') < html.indexOf('man-rap-tay.js'));
-  kiem("huy-hieu.js có HINH['rap-tay']", /HINH\['rap-tay'\]/.test(hieu));
+  kiem("huy hiệu 'rap-tay' có trong bộ vector (V7c1)", coHuyHieu('rap-tay'));
   kiem('kiem-hoc.mjs nạp man-rap-tay.js, có nhánh nhipTat cho chương rap-tay và dùng kho thật cho chương này', /man-rap-tay\.js/.test(kh) && /nhipRapTayTatCa/.test(kh) && /m\.chuong === 'rap-tay'/.test(kh));
   kiem('lap-rap.js có khoMau (kho tham chiếu) và kiemCanMan nhận kho', typeof LapRap.khoMau === 'function' && LapRap.khoMau(ds[0]).length > 90 && LapRap.khoMau(ds[0]).every((h) => h.ten && Array.isArray(h.than)));
   kiem('kho tham chiếu lúc tới màn gồm các hàm cần dùng: forward · pick · drop · turn_right · back · u_turn · carry_throw · slide_r · pick_left · jet_fwd · jump · tr_right · bend_left · leap',

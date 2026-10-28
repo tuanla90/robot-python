@@ -806,11 +806,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var CO_GOC = N, SIEU_MAU = 2;                                     // cạnh hiển thị = 36 · s px CSS; rasterise × dpr × 2 (chừa phép phóng của #stage) rồi trình duyệt thu mịn
   function VV() { return (typeof window !== 'undefined' && window.VeVector && window.VeVector.HUY_HIEU) ? window.VeVector : null; }
   function cheDoVec() { var v = VV(); return !!(v && v.bat()); }
+  /** Mã có bản vector cho `ma`: chính nó, hay mã gốc theo bảng bí danh VeVector.HUY_HIEU.BI_DANH (V7c1: dữ liệu, không còn so HINH[k] === HINH[ma] của bộ pixel); null nếu chưa có. */
   function maVec(ma) {
-    var v = VV(); if (!v || !HINH[ma]) return null;
+    var v = VV(); if (!v) return null;
     if (v.HUY_HIEU.co(ma)) return ma;
-    for (var k in HINH) if (HINH[k] === HINH[ma] && v.HUY_HIEU.co(k)) return k;
-    return null;
+    var g = v.HUY_HIEU.maGoc(ma); return g !== ma && v.HUY_HIEU.co(g) ? g : null;
   }
   function canhVec(s) { return Math.max(8, Math.round(CO_GOC * (s > 0 ? s : 2) * ((typeof window !== 'undefined' && window.devicePixelRatio) || 1) * SIEU_MAU)); }
   function veVec(ma, tt, s) {
@@ -851,6 +851,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   HINH['che-doi-tay-xoay'] = HINH['hai-robot'];
   HINH['doi-drone'] = HINH['hai-robot'];
   HINH['che-doi-drone'] = HINH['hai-robot'];
-  window.HuyHieu = { ve: ve, DS: Object.keys(HINH) };
+  /* V7c1 (28/10): DANH SÁCH MÃ (HuyHieu.DS) lấy từ dữ liệu bộ vector (hình riêng + bí danh, huy-hieu-vector.js), không còn là Object.keys(HINH) của bộ pixel; máy kiểm
+     kiem-huy-hieu-phim-vector A7 so với dữ liệu chụp hoc/du-lieu-chup-pixel.json. Các dòng HINH[a] = HINH[b] ở trên chỉ còn cho nhánh pixel (V7c2 xoá). */
+  window.HuyHieu = { ve: ve, DS: VV() ? VV().HUY_HIEU.dsTatCa() : Object.keys(HINH) };
   window.HuyHieu.mk = mk; window.HuyHieu.vePixel = vePixel; window.HuyHieu.veVec = veVec; window.HuyHieu.maVec = maVec;   // gói V6: bản vector (xem khối VECTOR ở trên)
 })();

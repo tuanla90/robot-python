@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -436,8 +437,7 @@ console.log('\n== 7. Kho hàm của em, huy hiệu, thẻ script ==');
       J(cuoi.find((h) => h.ten === 'fly').than) === J(['for c in path:', '    go(c)', '    recharge()']));
   const sach = KhoHam.moi({ tenCoDinh: tenCotTruyen });
   kiem('KhoHam khóa tên: người chơi không tạo được hàm tên hurdle / scout / glide / fly / airlift bằng tên trùng ngoài màn chế nó', ['hurdle', 'scout', 'glide', 'fly', 'airlift'].every((t) => tenCotTruyen.includes(t) && sach.tao(t, [], {}).ok === false));
-  const hh = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
-  kiem("huy hiệu: game/huy-hieu.js có HINH['che-drone'] dựng bằng code từ thân drone, có bánh răng (themBanhRang)", /HINH\['che-drone'\] = function \(\)[\s\S]*?thanPart\('drone'\)[\s\S]*?themBanhRang\(p\);\s*return p;\s*\};/.test(hh));
+  kiem("huy hiệu: bộ vector có hình riêng 'che-drone' (huy-hieu-vector.js; V7c1: không còn đọc huy-hieu.js pixel)", coHinhRieng('che-drone'));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   const vtri = (f) => tags.indexOf('../' + f);

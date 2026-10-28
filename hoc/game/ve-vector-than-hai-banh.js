@@ -13,7 +13,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Thêm một thân: VeVector.dangKy({ loai: 'than', ma, ten, oGan: { tay: {x, y}, … }, ve(g, s, M, H) }) — vẽ quay xuống, tâm ở TAM_THAN. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
-  V.dangKy({ loai: 'than', ma: 'hai-banh', ten: 'Thân hai bánh (A)', oGan: { tay: { x: 50, y: 80 }, hongTrai: { x: 74, y: 46 }, hongPhai: { x: 26, y: 46 }, tren: { x: 71, y: 76 }, sau: { x: 36, y: 25 } }, oCam: { x: 64, y: 28 }, vo: { x: 20, y: 23, w: 60, h: 58 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'than', ma: 'hai-banh', hamGoc: ['left_move',  'right_move',  'left_back',  'right_back',  'wait'], ten: 'Thân hai bánh (A)', oGan: { tay: { x: 50, y: 80 }, hongTrai: { x: 74, y: 46 }, hongPhai: { x: 26, y: 46 }, tren: { x: 71, y: 76 }, sau: { x: 36, y: 25 } }, oCam: { x: 64, y: 28 }, vo: { x: 20, y: 23, w: 60, h: 58 }, ve: function (g, s, M, H) {
     var quay = s && s.banh && (s.banh.trai || s.banh.phai), lech = typeof s.lan === 'number' ? s.lan * 8 : quay && s.buoc ? 4 : 0, i, y;       // s.lan (0..1, gói V4): pha bánh theo quãng đi
     /* hai bánh con nhộng */
     [10, 74].forEach(function (x) { H.bo(g, x, 36, 16, 44, 8); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 3); });

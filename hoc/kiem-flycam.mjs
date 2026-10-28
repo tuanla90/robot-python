@@ -19,6 +19,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -268,8 +269,7 @@ console.log('\n== 4. Sổ lệnh, gói Drone, huy hiệu, choi.html ==');
   const cuoi = khoTruoc('het');
   kiem('kho cuối game có đủ sáu hàm flycam; đối số: survey / obey / dispatch / patrol nhận seen (danh sách), seek_red và steer không đối số; go_out, come_back, scan_row, fetch_red không có trong kho',
     moi.every((t) => cuoi.some((h) => h.ten === t)) && ['survey', 'obey', 'dispatch', 'patrol'].every((t) => J(cuoi.find((h) => h.ten === t).thamSo) === '["seen"]') && ['seek_red', 'steer'].every((t) => cuoi.find((h) => h.ten === t).thamSo.length === 0) && ['go_out', 'come_back', 'scan_row', 'fetch_red'].every((t) => !cuoi.some((h) => h.ten === t)));
-  const hh = fs.readFileSync(path.join(day, 'game', 'huy-hieu.js'), 'utf8');
-  kiem("huy hiệu: game/huy-hieu.js có HINH['flycam'] dựng bằng code từ thân drone + camera nhìn xuống camera-bay", /HINH\['flycam'\] = function \(\)[\s\S]*?partTho\('than', 'drone'\)[\s\S]*?partTho\('cam-bien', 'camera-bay'[\s\S]*?return p;\s*\};/.test(hh));
+  kiem("huy hiệu: bộ vector có hình riêng 'flycam' (huy-hieu-vector.js; V7c1)", coHinhRieng('flycam'));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   const vtri = (f) => tags.indexOf('../' + f);

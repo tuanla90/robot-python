@@ -25,6 +25,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { GOI_RECALL, recallMan, kiemRecall, khoTheoLoTrinh } from './kiem-combo-mua-1.mjs';
+import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const require = createRequire(import.meta.url);
 const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -107,8 +108,7 @@ const tran = (a, b, bu) => a <= Math.max(1.5 * b, b + bu);
 const goi = TT.goi.find((g) => g.ma === 'robot');
 const mua1 = TT.goi.filter((g) => g.mua === 'mua-1');
 const chuongDS = (c) => M.danhSach.filter((m) => m.chuong === c);
-const hh = fs.readFileSync(new URL('./game/huy-hieu.js', import.meta.url), 'utf8');
-const coHinh = (ma) => new RegExp("HINH\\['" + ma + "'\\]\\s*=").test(hh);
+const coHinh = coHuyHieu;   // V7c1: mã có trong dữ liệu bộ vector (hình riêng hay bí danh)
 kiem('gói robot "R1 xuất xưởng" là gói cuối mùa 1, đứng sau combo; hai chương robot-hoan-thien / trum-mua-1 đúng thứ tự, đúng hàng, đúng tên', () => {
   assert.ok(goi && goi.mua === 'mua-1');
   assert.equal(goi.ten, 'R1 xuất xưởng');

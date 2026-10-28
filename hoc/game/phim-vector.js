@@ -65,7 +65,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     s = s || 2;
     var rows = root.Ve && root.Ve.HINH && root.Ve.HINH[ten];
     if (ten === 'edit') return { w: 9 * s, h: 9 * s };
-    var RIENG = { star: [11, 10], lock: [12, 14], mui: [10, 9], trum: [26, 26] };     // hình vẽ riêng của ve.js (spriteStar / spriteLock / spriteMui / spriteTrum)
+    var RIENG = { star: [11, 10], lock: [12, 14], mui: [10, 9], trum: [24, 24] };     // hình vẽ riêng của ve.js (spriteStar / spriteLock / spriteMui / spriteTrum; V7c1: trùm 24 × 24 như ve.js CO_ICON, trước ghi nhầm 26)
     if (!rows) { var r = RIENG[ten] || [12, 12]; return { w: r[0] * s, h: r[1] * s }; }
     return { w: (rows[0].length + 2) * s, h: (rows.length + 2) * s };
   }

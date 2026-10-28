@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -325,9 +326,9 @@ console.log('\n== 5. Mọi dòng lời giải mẫu dựng được từ khối 
 console.log('\n== 6. Gói, huy hiệu, choi.html, kiem-hoc.mjs ==');
 {
   const doc = (f) => fs.readFileSync(path.join(day, f), 'utf8');
-  const html = doc('game/choi.html'), huy = doc('game/huy-hieu.js'), kh = doc('kiem-hoc.mjs');
+  const html = doc('game/choi.html'), kh = doc('kiem-hoc.mjs');
   kiem('choi.html nạp man-rap-du.js sau man-flycam.js (chương cuối)', /src="\.\.\/man-rap-du\.js"/.test(html) && html.indexOf('man-rap-du.js') > html.indexOf('man-flycam.js'));
-  kiem("huy hiệu HINH['rap-du'] có trong game/huy-hieu.js và ManHoc.chuong() gồm rap-du", /HINH\['rap-du'\]\s*=/.test(huy) && ManHoc.chuong().some((c) => c.ma === 'rap-du' && c.soMan === 10 && c.so === VT));
+  kiem("huy hiệu 'rap-du' có trong bộ vector (V7c1) và ManHoc.chuong() gồm rap-du", coHuyHieu('rap-du') && ManHoc.chuong().some((c) => c.ma === 'rap-du' && c.soMan === 10 && c.so === VT));
   kiem('kiem-hoc.mjs: require man-rap-du.js, nhánh nhipTat cho rap-du (do-duong-rap-du.mjs), cauTruc rap-du, camera rap-du.8', /require\(path\.join\(day, 'man-rap-du\.js'\)\)/.test(kh) && /nhipRapDuTatCa/.test(kh) && /m\.chuong === 'rap-du' \? nhipRapDuTatCa/.test(kh) && /m\.chuong === 'rap-du'/.test(kh) && /'rap-du\.8'/.test(kh));
 }
 
