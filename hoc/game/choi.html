@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <title>Robot Chấn Hưng</title>
-<meta name="theme-color" content="#2a1d14">
+<meta name="theme-color" content="#e8e6f6">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon/icon-192.png">
@@ -14,10 +14,8 @@
 <!-- bảng màu theo vai (gói A1): nạp TRƯỚC mọi tệp dùng màu; ghi biến CSS --g-<vai> cho choi.css -->
 <script src="bang-mau.js"></script>
 <link rel="stylesheet" href="choi.css">
-<!-- giao diện phẳng diem10code (gói V5a): chỉ áp khi <body> có lớp ve-vector (VeVector.apGiaoDien), pixel giữ choi.css y nguyên -->
+<!-- giao diện phẳng diem10code (gói V5a màn chơi + V5b các màn ngoài, V7b nối thành một tệp): chỉ áp khi <body> có lớp ve-vector (VeVector.apGiaoDien), pixel giữ choi.css y nguyên -->
 <link rel="stylesheet" href="choi-vector.css">
-<!-- giao diện phẳng các màn NGOÀI màn chơi (gói V5b): màn đầu, chọn gói / màn, Lắp robot, Sổ lệnh, hộp Bộ phận mới / mở khoá, màn xong, khung phim; chỉ áp ở body.ve-vector -->
-<link rel="stylesheet" href="giao-dien-vector-b.css">
 </head>
 <body>
 <div id="stage">
@@ -131,7 +129,7 @@
 <script src="part/part-camera.js"></script>
 <script src="part/part-camera-bay.js"></script>
 <script src="part/part-hong-ngoai.js"></script>
-<!-- bộ vẽ VECTOR (gói V1): chạy song song với pixel, bật bằng ?ve=vector (mặc định pixel). Kho hình: ô sân, thân, tay -->
+<!-- bộ vẽ VECTOR (gói V1): chạy song song với pixel, V7b: mặc định VECTOR, ?ve=pixel hay Cài đặt "Kiểu vẽ" để chạy pixel. Kho hình: ô sân, thân, tay -->
 <script src="ve-vector.js"></script>
 <!-- icon vector các màn ngoài màn chơi (gói V5b): thay icon điểm ảnh có nhãn của ve.js bằng SVG màu theo vai, chỉ ở body.ve-vector -->
 <script src="ve-vector-icon.js"></script>

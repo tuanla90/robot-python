@@ -93,7 +93,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     // dải bìa gói
     el.bia.innerHTML = '';
     var hinh = h('div', 'c-bia-hinh'), coHinh = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0, quaHet = App.soQua(g) === g.man.length;
-    hinh.appendChild(coHinh ? Ve.mk(HuyHieu.ve(g.hinh, quaHet ? 'xong' : 'mo'), 2) : Ve.ico('plus', 4, { fill: BM.vang, line: BM.vienDam }));
+    hinh.appendChild(coHinh ? HuyHieu.mk(g.hinh, quaHet ? 'xong' : 'mo', 2) : Ve.ico('plus', 4, { fill: BM.vang, line: BM.vienDam }));
     el.bia.appendChild(hinh);
     var bx = h('div', 'c-bia-bx');
     bx.appendChild(h('div', 'c-bia-ten', g.ten));

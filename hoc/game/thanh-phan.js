@@ -742,7 +742,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     for (var i = 0; i < tong; i++) {
       var r = h('div', 'row'), tb = h('div', 'tab'), s = h('div', 'strip empty'), bk = h('div', 'brk'), nj = h('div', 'nj');
       tb.appendChild(h('span', 'tn', i + 1));
-      var xi = Ve.ico('x5', 2, { fill: BM.trang, line: BM.doToiV8 }); xi.className += ' tx'; tb.appendChild(xi);
+      var xi = Ve.ico('x5', 2, { fill: BM.trang, line: BM.doToiV8 }); xi.classList.add('tx'); tb.appendChild(xi);      // V7b: ở vector là <svg> (className không phải chuỗi)
       r.appendChild(tb); r.appendChild(s); r.appendChild(bk); r.appendChild(nj); host.appendChild(r); rows.push(r); strips.push(s); brks.push(bk); njs.push(nj);
       (function (i) {
         r.addEventListener('click', function (ev) {
@@ -1840,7 +1840,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     /** Hình một bộ phận cho tiêu đề thẻ: { loai: 'than' | 'tay', ma } → canvas đã cắt lề trong suốt (bộ PART, part/part.js), hay null nếu chưa nạp bộ PART / không có mã. */
     function hinhPart(bp) {
-      if (!bp || !bp.ma || !window.Part || !Part._veMot || !window.Ve) return null;
+      if (!bp || !bp.ma) return null;
+      if (window.VeVector && VeVector.bat() && window.VeIcon && VeIcon.hinhPartVec) {        // V7b (gỡ C3): vector vẽ thẳng hình bộ phận bằng VeVector (cạnh 56 px thiết bị, đã cắt lề), lớp vi-part như trước
+        var cvv = VeIcon.hinhPartVec(bp); if (!cvv) return null;
+        cvv.className = 'pxi vi-part'; return cvv;
+      }
+      if (!window.Part || !Part._veMot || !window.Ve) return null;
       var k = bp.loai + '/' + bp.ma;
       if (!(k in HINH_PART)) {
         HINH_PART[k] = null;
@@ -2587,12 +2592,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var cu = b.querySelector('.bg-mui'); if (cu) b.removeChild(cu);
     if (!hangEl || !b.classList.contains('show')) return;
     var m = Ve.mui(b.classList.contains('tin') ? BM.lamSangV24 : BM.doV8, 2);
-    m.className += ' bg-mui';
+    m.classList.add('bg-mui');                                             // V7b: ở vector là <svg>
     b.appendChild(m);
     var rb = b.getBoundingClientRect(), rh = hangEl.getBoundingClientRect();
     var k = b.offsetHeight ? rb.height / b.offsetHeight : 1;
-    var y = (rh.top + rh.height / 2 - rb.top) / k - m.offsetHeight / 2;
-    y = Math.max(2, Math.min(b.offsetHeight - m.offsetHeight - 2, y));
+    var mh = parseFloat(m.style.height) || m.offsetHeight || 0;             // svg không có offsetHeight: cỡ CSS đặt sẵn trong style
+    var y = (rh.top + rh.height / 2 - rb.top) / k - mh / 2;
+    y = Math.max(2, Math.min(b.offsetHeight - mh - 2, y));
     m.style.top = Math.round(y) + 'px';
   }
 
@@ -2612,6 +2618,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var than = h('div', 'hop-than'); hop.appendChild(than);
     g.appendChild(hop);
     for (var i = 0; i < 4; i++) hop.appendChild(h('i', 'rv ' + 'abcd'.charAt(i)));
+    if (window.VeIcon && VeIcon.thay) Promise.resolve().then(function () { VeIcon.thay(g); });      // V7b: nút chỉ icon trong hộp có title (sau khi người gọi dựng xong nội dung)
     return { hop: hop, than: than, nut: null };
   }
   function nut(mau, chu, khiBam, ten) {

@@ -1,3 +1,5 @@
+# V7b (28/10): icon app hoc/game/icon/*.png đã VẼ LẠI theo bộ vẽ vector (VeVector.robot thân hai bánh + tay kẹp + cảm biến khoảng cách trên nền tím chàm vecBrand,
+#   bo góc 22% cho icon thường, tràn cạnh cho maskable; xuất từ trình duyệt bằng canvas.toDataURL). Tệp này là bản PIXEL cũ, giữ để tham khảo tới V7c; chạy lại sẽ ghi đè icon vector.
 # Vẽ icon app (hoc/game/icon/*.png) từ hình robot pixel của màn khởi đầu (thân hai bánh + tay kẹp + cảm biến khoảng cách; thân xe bản 22/10: mũi thuôn, đèn hậu đỏ).
 # Hình robot chép từ VeRobot.ve(..., tỉ lệ 1) trong trình duyệt, cắt sát mép; đổi robot thì chép lại ROBOT / BANG_MAU.
 # Dùng: python -I tools/ve-icon.py   (cần Pillow)

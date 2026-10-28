@@ -322,6 +322,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('be-sung', function (g, c) { beSung(g, c, 36, 54, 50, [8, 20]); });
   dk('che-be-sung', che(function (g, c) { beSung(g, c, 38, 62, 50); }));
+  /* gói V7b (28/10): gói 10 mùa 2 "Nhà máy chạy lại" (gói 10 chỉ vẽ pixel, bản vector V7b lo): tong-hop-2 = bệ súng xích tì mũi vào thùng nặng
+     (tổng hợp xích + súng hơi + thùng); nha-may-chay (trùm cuối mùa 2) = bệ súng xích vừa bắn bóng to, hai sao hai góc trên như xuat-xuong. */
+  dk('tong-hop-2', function (g, c) {
+    var cx = 32, cy = 56, canh = 46, p = c.truoc(1, cx, cy, canh, c.hh({ than: 'xich', tay: 'hoi' }).mz + 18);
+    c.vat('thung-nang', {}, p.x + 7, p.y, 26);
+    beSung(g, c, cx, cy, canh);
+  });
+  dk('nha-may-chay', function (g, c) { beSung(g, c, 36, 58, 48, [8, 18]); c.sao(22, 26, 7); c.sao(78, 26, 7); });
   dk('che-hai-robot', function (g, c) {
     c.o('nut-de', { de: true }, 30, 62, 32); c.robot({ than: 'hai-banh', son: '' }, st(), 0, 30, 62, 34);
     c.o('cua', { k: 1, doc: true }, 68, 34, 30);

@@ -139,6 +139,7 @@
     if (ten === 'dau') Dau.ve();
     else if (ten === 'goi') { ChonGoi.ve(); App.baoGoiMoi(); }
     else if (ten === 'chon') { Chon.ve(); App.baoGoiMoi(); }   // an toàn: bảng "Mở gói mới!" chưa kịp hiện (vd mở lại game) thì hiện ở đây
+    if (window.VeIcon && VeIcon.thay) Promise.resolve().then(function () { VeIcon.thay(document.getElementById(MAN_HINH[ten]) || document.getElementById('stage')); });   // V7b: nút chỉ icon có title (sau khi màn dựng xong)
   };
   /** Vẽ lại màn hình đang thấy (sau khi bảng Gỡ lỗi đổi tiến độ / "Mở hết"). */
   App.veLai = function () {

@@ -190,7 +190,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     b.appendChild(h('div', 'g-so', tt ? t('goi.thuThach') : t('goi.so', { n: k + 1 })));
     var mat = h('div', 'g-mat chalk');
     var co = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0;
-    mat.appendChild(co ? Ve.mk(HuyHieu.ve(g.hinh, g.sapCo || !mo ? 'khoa' : xong ? 'xong' : 'mo'), 3) : Ve.ico('plus', 5, { fill: BM.vang, line: BM.vienDam }));
+    mat.appendChild(co ? HuyHieu.mk(g.hinh, g.sapCo || !mo ? 'khoa' : xong ? 'xong' : 'mo', 3) : Ve.ico('plus', 5, { fill: BM.vang, line: BM.vienDam }));
     b.appendChild(mat);
     b.appendChild(h('div', 'g-ten', g.ten));
     if (g.sapCo) {

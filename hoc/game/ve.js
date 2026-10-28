@@ -827,10 +827,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Gói V5b: ghi TÊN icon lên canvas (c._vi) để ve-vector-icon.js thay bằng hình vector (V5b: các màn ngoài màn chơi; V6c: cả màn chơi, mũi tên bong bóng, trùm),
    *  chỉ khi body.ve-vector. Hình pixel không đổi. */
   function nhan(c, ten, tuyChon, phu) { c._vi = { ten: ten, tuyChon: tuyChon || {}, phu: phu || '' }; return c; }
-  function ico(ten, s, tuyChon) { return nhan(mk(ten === 'edit' ? spriteBut() : icon(ten, tuyChon), s || 2), ten, tuyChon); }
-  function sao(bat, s) { return nhan(mk(spriteStar(bat), s || 2), 'star', null, bat ? '' : 'tat'); }
-  function mui(mau, s) { return nhan(mk(spriteMui(mau), s || 2), 'mui', { fill: mau }); }        // gói V6c: nhãn để màn chơi vector thay bằng mũi tên vector
-  function khoa(s, tran) { return nhan(mk(spriteLock(tran, tran), s || 2), 'lock'); }
+  /* V7b (28/10, gỡ cầu C1): ở giao diện vector Ve.ico / sao / mui / khoa / hydrate('trum') trả THẲNG <svg> của VeIcon (VeIcon.svg: lớp `pxi vi vi-<tên>` + phu,
+     style width / height = cạnh lớn của bản pixel × s, y như Ve.mk + thayMot trước đây), KHÔNG vẽ canvas điểm ảnh, không cần MutationObserver thay sau.
+     Cỡ bản pixel: hình HINH = (cột + 2) × (hàng + 2) (viền 1 điểm mỗi bên), hình vẽ riêng đo từ Painter (CO_RIENG). Pixel (không body.ve-vector): y như cũ. */
+  var CO_RIENG = { edit: [9, 9], star: [11, 10], lock: [12, 14], lockNho: [10, 11], mui: [10, 9], trum: [24, 24] };
+  function coIcon(ten, nho) {
+    if (CO_RIENG[ten]) return nho && ten === 'lock' ? CO_RIENG.lockNho : CO_RIENG[ten];
+    var rows = HINH[ten]; return rows ? [rows[0].length + 2, rows.length + 2] : null;
+  }
+  function svgVec(ten, s, tuyChon, phu, nho) {
+    var VI = typeof window !== 'undefined' && window.VeIcon;
+    if (!giaoDienVec() || !VI || !VI.svg || !VI.co(ten)) return null;
+    var c = coIcon(ten, nho); if (!c) return null;
+    return VI.svg(ten, Math.max(c[0], c[1]) * (s || 2), tuyChon, phu);
+  }
+  function ico(ten, s, tuyChon) { return svgVec(ten, s, tuyChon) || nhan(mk(ten === 'edit' ? spriteBut() : icon(ten, tuyChon), s || 2), ten, tuyChon); }
+  function sao(bat, s) { return svgVec('star', s, null, bat ? '' : 'tat') || nhan(mk(spriteStar(bat), s || 2), 'star', null, bat ? '' : 'tat'); }
+  function mui(mau, s) { return svgVec('mui', s, { fill: mau }) || nhan(mk(spriteMui(mau), s || 2), 'mui', { fill: mau }); }        // gói V6c: nhãn để màn chơi vector thay bằng mũi tên vector
+  function khoa(s, tran) { return svgVec('lock', s, null, '', tran) || nhan(mk(spriteLock(tran, tran), s || 2), 'lock'); }
 
   /** Điền icon vào mọi [data-i] chưa có nội dung. data-s tỉ lệ, data-l màu viền, data-f màu tô. */
   function hydrate(goc) {
@@ -842,8 +856,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var node;
       if (ten === 'star') node = sao(el.getAttribute('data-on') !== '0', s);
       else if (ten === 'lock') node = khoa(s);
-      else if (ten === 'trum') node = nhan(mk(spriteTrum(el.getAttribute('data-on') !== '0'), s), 'trum', null, el.getAttribute('data-on') !== '0' ? '' : 'tat');
-      else if (ten === 'huyhieu') node = mk(window.HuyHieu && el.getAttribute('data-ma') ? HuyHieu.ve(el.getAttribute('data-ma'), el.getAttribute('data-tt') || 'xong') : spriteHuyHieu(), s);
+      else if (ten === 'trum') node = svgVec('trum', s, null, el.getAttribute('data-on') !== '0' ? '' : 'tat') || nhan(mk(spriteTrum(el.getAttribute('data-on') !== '0'), s), 'trum', null, el.getAttribute('data-on') !== '0' ? '' : 'tat');
+      else if (ten === 'huyhieu') node = window.HuyHieu && el.getAttribute('data-ma') ? HuyHieu.mk(el.getAttribute('data-ma'), el.getAttribute('data-tt') || 'xong', s) : mk(spriteHuyHieu(), s);   // V7b: HuyHieu.mk tự chọn vector / pixel (hết bọc Ve.mk / Ve.hydrate)
       else node = ico(ten, s, opt);
       el.appendChild(node); el.style.display = 'flex';
     }

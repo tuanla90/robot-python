@@ -1,8 +1,8 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    ve-vector.js — "Robot Chấn Hưng": BỘ VẼ VECTOR (window.VeVector), gói V1 (27/10).
-   Chạy song song với bộ vẽ pixel (ve.js / part/), bật bằng công tắc (mặc định PIXEL):
-     ?ve=vector trên địa chỉ (hay ?ve=pixel để ép pixel), hoặc đã lưu VeVector.luuCheDo('vector') (localStorage duong-hoc:ve-vector).
+   Chạy song song với bộ vẽ pixel (ve.js / part/), chọn bằng công tắc. V7b (28/10): MẶC ĐỊNH VECTOR:
+     ?ve=pixel trên địa chỉ hay đã lưu VeVector.luuCheDo('pixel') (localStorage duong-hoc:ve-vector = 'pixel') → pixel; ?ve=vector ép vector; còn lại vector.
    Mẫu chuẩn: hoc/hinh-mau/thu-vector.html (thân A, sân lab trắng). Mọi hình vẽ trên hệ toạ độ 100 × 100 của MỘT Ô
    bằng lệnh canvas (không Path2D, để chạy được ở Node với canvas giả), rồi rasterise ra canvas đệm đúng cỡ điểm ảnh thật
    (cạnh ô × devicePixelRatio) nên nét ở mọi cỡ ô, không cần bội số 14. Bộ đệm theo (tên, cỡ, trạng thái, màu đội).
@@ -44,14 +44,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var q = (root.location && root.location.search) || '';
     if (/[?&]ve=vector(?:&|$)/.test(q)) return true;
     if (/[?&]ve=pixel(?:&|$)/.test(q)) return false;
-    try { if (root.localStorage && root.localStorage.getItem(KHOA_LUU) === 'vector') return true; } catch (e) { /* không có localStorage */ }
-    return false;
+    try { if (root.localStorage && root.localStorage.getItem(KHOA_LUU) === 'pixel') return false; } catch (e) { /* không có localStorage */ }
+    return true;                                  // V7b: mặc định vector (kể cả Node không có location / localStorage)
   }
   /** Đang ở chế độ vector? Tính một lần (đổi giữa phiên phải nạp lại sân: datCheDo chỉ cho máy kiểm / trang thử). */
   function bat() { if (cheDo === null) cheDo = doCheDo(); return cheDo; }
   function datCheDo(v) { cheDo = v === 'vector' || v === true; return cheDo; }
-  /** Ghi lựa chọn cho lần mở sau ('vector' | 'pixel'); có hiệu lực sau khi nạp lại trang. */
-  function luuCheDo(v) { try { if (v === 'vector') root.localStorage.setItem(KHOA_LUU, 'vector'); else root.localStorage.removeItem(KHOA_LUU); return true; } catch (e) { return false; } }
+  /** Ghi lựa chọn cho lần mở sau ('vector' | 'pixel'); có hiệu lực sau khi nạp lại trang. V7b: 'pixel' GHI 'pixel' (lựa chọn pixel được lưu), còn lại ghi 'vector'. */
+  function luuCheDo(v) { try { root.localStorage.setItem(KHOA_LUU, v === 'pixel' ? 'pixel' : 'vector'); return true; } catch (e) { return false; } }
   /** GIAO DIỆN (gói V5a): ở vector, <body> mang lớp `ve-vector` → choi-vector.css phủ giao diện phẳng diem10code lên choi.css; pixel không có lớp, y như cũ.
    *  Gọi ngay khi nạp tệp (choi.html nạp ve-vector.js trong <body>, trước mọi tệp dựng màn hình). */
   var LOP_GIAO_DIEN = 've-vector';
