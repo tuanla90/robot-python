@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Xem bộ vẽ vector (gói V1 tới V5a)</title>
+<title>Xem bộ vẽ vector (gói V1 tới V5b)</title>
 <style>
   body{margin:0;background:var(--g-vecSanToi);font-family:system-ui,sans-serif;color:var(--g-vecVien);padding:16px}
   h2{font-size:15px;font-weight:600;margin:18px 0 8px}
@@ -32,6 +32,7 @@
 <script src="../game/ve-vector-tay-xoay.js"></script>
 <script src="../game/ve-vector-tay-son.js"></script>
 <script src="../game/ve-vector-hieu-ung.js"></script>
+<script src="../game/ve-vector-icon.js"></script>
 <!--V4: sân thật (SanVe.Field) + lõi SanHoc để phát lại chương trình mẫu-->
 <script src="../../nhan/san-robot-core.js"></script>
 <script src="../san-hoc.js"></script>
@@ -442,6 +443,89 @@
     '<link rel="stylesheet" href="../game/font/font.css"><link rel="stylesheet" href="../game/choi.css"><link rel="stylesheet" href="../game/choi-vector.css"></head>' +
     '<body class="ve-vector">' + tpl.innerHTML + '</body></html>');
   d.close();
+})();
+</script>
+<h2 id="v5b">Gói V5b — GIAO DIỆN PHẲNG các màn NGOÀI màn chơi ở vector (hoc/game/giao-dien-vector-b.css, chỉ áp khi body có lớp ve-vector) và ICON VECTOR (hoc/game/ve-vector-icon.js: SVG, màu theo vai bằng currentColor). Trang con nạp choi.css + choi-vector.css + giao-dien-vector-b.css thật</h2>
+<iframe id="v5b-khung" title="Mẫu giao diện vector V5b" style="width:100%;max-width:760px;height:1250px;border:1px solid var(--g-vecVoToi);border-radius:12px;background:var(--g-vecVo)"></iframe>
+<template id="v5b-mau">
+<style>
+  html,body{position:static;overflow:auto;height:auto}
+  body.ve-vector{padding:14px;-webkit-user-select:text;user-select:text}
+  .m-td{font:700 12px/1.2 var(--px);color:var(--g-vecChuPhu);text-transform:uppercase;letter-spacing:.4px;margin:16px 0 8px}
+  .m-hang{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .m-ic{width:64px;display:flex;flex-direction:column;align-items:center;gap:4px;font:500 10px/1.1 var(--mono);color:var(--g-vecChuPhu);text-align:center;word-break:break-all}
+  .m-ic .o{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe);color:var(--g-vecChu)}
+  .m-goi{position:relative;width:212px;height:330px}
+  .m-goi .g-the{position:relative;left:0 !important;height:330px;transform:none}
+  .m-luoi{display:grid;grid-template-columns:repeat(5,58px);gap:10px 8px}
+  .m-luoi .c-man{height:64px}
+  .m-lr{display:flex;gap:8px}
+  .m-lr .lr-the{width:110px;height:120px;flex:none}
+  .m-so{width:300px;display:flex;flex-direction:column;gap:8px}
+</style>
+<div class="m-td">Icon vector (VeIcon.HINH): màu chữ chàm, chi tiết phụ trắng</div>
+<div class="m-hang" id="m-icon"></div>
+<div class="m-td">Màn đầu: CHƠI (nút chính) · Chơi tiếp · tổng sao · Sổ lệnh · Cài đặt (chỉ icon)</div>
+<div class="m-hang">
+  <button class="bt g-gr d-choi"><span data-i="play" data-s="3"></span><span class="d-choi-chu">CHƠI</span></button>
+  <button class="bt g-yl d-tiep"><span>Chơi tiếp · 1.2</span><span class="d-tiep-ten">Ba bước</span></button>
+  <div class="d-sao"><span data-i="star"></span><span>12</span></div>
+  <button class="bt g-cy d-so" aria-label="Sổ lệnh"><span data-i="book" data-s="2"></span><span>Sổ lệnh</span></button>
+  <button class="bt g-wd d-cai" aria-label="Cài đặt" title="Cài đặt"><span data-i="gear" data-s="2"></span></button>
+</div>
+<div class="m-td">Hộp gói: đang mở · đã xong · thử thách · khoá</div>
+<div class="m-hang">
+  <div class="m-goi"><div class="g-the bt mo giua"><div class="g-so">GÓI 1</div><div class="g-mat chalk"><span data-i="plus" data-s="5"></span></div><div class="g-ten">Xe hai bánh</div><div class="g-mota">2 chương · 20 màn</div><div class="g-dong"><span data-i="star"></span><span>12/60</span></div></div></div>
+  <div class="m-goi"><div class="g-the bt xong giua"><div class="g-so">GÓI 2</div><div class="g-mat chalk"><span data-i="plus" data-s="5"></span></div><div class="g-ten">Tay gắp</div><div class="g-mota">2 chương · 20 màn</div><div class="g-dong"><span data-i="star"></span><span>60/60</span></div><div class="g-xong">Xong</div></div></div>
+  <div class="m-goi"><div class="g-the bt mo thu-thach giua"><div class="g-so">THỬ THÁCH</div><div class="g-mat chalk"><span data-i="plus" data-s="5"></span></div><div class="g-ten">Combo</div><div class="g-mota">10 màn</div><div class="g-dong"><span data-i="star"></span><span>0/30</span></div></div></div>
+  <div class="m-goi"><div class="g-the bt khoa giua"><div class="g-so">GÓI 4</div><div class="g-mat chalk"><span data-i="lock" data-s="3"></span></div><div class="g-ten">Kho hàng</div><div class="g-mota">2 chương · 20 màn</div><div class="g-dong"><span data-i="star"></span><span class="g-can">Cần 45 sao</span></div></div></div>
+</div>
+<div class="m-td">Lưới màn: đã qua · màn kế tiếp (thở) · đã mở · khoá · trùm khoá</div>
+<div class="m-luoi">
+  <button class="bt c-man done"><div class="num">1</div><div class="stars"><span data-i="star"></span><span data-i="star"></span><span data-i="star" data-on="0"></span></div></button>
+  <button class="bt c-man cur"><div class="num">2</div><div class="go">CHƠI!</div></button>
+  <button class="bt c-man open"><div class="num">3</div><div class="stars"><span data-i="star" data-on="0"></span><span data-i="star" data-on="0"></span><span data-i="star" data-on="0"></span></div></button>
+  <button class="bt c-man lock"><div class="num">4</div><div class="lk"><span data-i="lock"></span></div></button>
+  <button class="bt c-man trum lock"><div class="num">10</div><div class="lk"><span data-i="lock"></span></div></button>
+</div>
+<div class="m-td">Lắp robot: thẻ phần đang chọn · thường · không gắn được</div>
+<div class="m-lr">
+  <button class="lr-the chon" data-khe="than"><div class="lr-the-hd"><span class="lr-the-ic"><span data-i="denBanh" data-s="2"></span></span><span class="lr-gia"><span data-i="xu" data-s="1"></span><span>2</span></span></div><div class="lr-the-ten">Hai bánh</div><div class="lr-the-vuot">Đi, rẽ trên sàn phẳng</div><span class="lr-tick"><span data-i="check" data-s="1"></span></span></button>
+  <button class="lr-the" data-khe="tay"><div class="lr-the-hd"><span class="lr-the-ic"><span data-i="denKepMo" data-s="2"></span></span><span class="lr-gia"><span data-i="xu" data-s="1"></span><span>1</span></span></div><div class="lr-the-ten">Tay kẹp</div><div class="lr-the-vuot">Nhặt vật lên</div></button>
+  <button class="lr-the mo" data-khe="camBien"><div class="lr-the-hd"><span class="lr-the-ic"><span data-i="denCam" data-s="2"></span></span><span class="lr-gia"><span data-i="xu" data-s="1"></span><span>3</span></span></div><div class="lr-the-ten">Camera</div><div class="lr-the-vuot">Quá ngân sách</div></button>
+</div>
+<div class="m-td">Sổ lệnh: hàm đã biết · hàm chưa biết · lệnh gốc</div>
+<div class="m-so">
+  <div class="so-the co"><div class="so-hd"><span class="so-ten">move()</span><span class="so-ok"><span data-i="check" data-s="1"></span></span></div><div class="so-mota">Tiến lên một ô</div><pre class="so-than">def move():
+    left_move()
+    right_move()
+    wait()</pre></div>
+  <div class="so-the chua"><div class="so-hd"><span class="so-ten">Chưa biết</span><span class="so-nhan">Chưa chế</span></div><div class="so-che">Chế ở chương Xưởng hàm</div></div>
+  <div class="so-the goc"><div class="so-hd goc"><span class="so-ten">left_move()</span><span class="so-cap"><span data-i="back" data-s="1"></span><span data-i="next" data-s="1"></span></span><span class="so-ten">left_back()</span></div><div class="so-mota">Bánh trái quay tới</div></div>
+</div>
+</template>
+<script>
+/* V5b: trang con như V5a, nạp thêm giao-dien-vector-b.css; icon: VeIcon.taoSvg cho từng [data-i] (cạnh 10 × data-s px), không cần ve.js */
+(function () {
+  var f = document.getElementById('v5b-khung'), tpl = document.getElementById('v5b-mau');
+  if (!f || !tpl || !window.VeIcon) return;
+  var d = f.contentDocument; d.open();
+  d.write('<!doctype html><html lang="vi"><head><meta charset="utf-8"><script src="../game/bang-mau.js"><\/script>' +
+    '<link rel="stylesheet" href="../game/font/font.css"><link rel="stylesheet" href="../game/choi.css"><link rel="stylesheet" href="../game/choi-vector.css"><link rel="stylesheet" href="../game/giao-dien-vector-b.css"></head>' +
+    '<body class="ve-vector">' + tpl.innerHTML + '</body></html>');
+  d.close();
+  var ds = d.getElementById('m-icon');
+  Object.keys(VeIcon.HINH).forEach(function (ten) {
+    var o = d.createElement('div'); o.className = 'm-ic';
+    var k = d.createElement('div'); k.className = 'o'; k.appendChild(VeIcon.taoSvg(ten, 24, 24, d)); o.appendChild(k);
+    o.appendChild(d.createTextNode(ten)); ds.appendChild(o);
+  });
+  Array.prototype.forEach.call(d.querySelectorAll('[data-i]'), function (el) {
+    var ten = el.getAttribute('data-i'), s = +(el.getAttribute('data-s') || 2), c = 10 * s;
+    var svg = VeIcon.taoSvg(ten, c, c, d); if (!svg) return;
+    var tat = ten === 'star' && el.getAttribute('data-on') === '0';
+    svg.setAttribute('class', 'pxi vi vi-' + ten + (tat ? ' tat' : '')); el.appendChild(svg); el.style.display = 'flex';
+  });
 })();
 </script>
 </body></html>

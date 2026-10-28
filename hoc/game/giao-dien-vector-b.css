@@ -60,7 +60,6 @@ body.ve-vector .g-the.khoa,body.ve-vector .g-the.sap{--ac:var(--g-vecChuPhu);--a
 }
 body.ve-vector .g-the.bt:active{transform:scale(.86) translateY(1px)}
 body.ve-vector .g-the.giua.bt:active{transform:scale(.98)}
-body.ve-vector .g-the.nope,body.ve-vector .c-man.nope,body.ve-vector .g-mua-nut.nope{animation:vec-rung .32s ease-in-out 1}
 body.ve-vector .g-so{margin:0 -12px;height:38px;padding-top:0;border-radius:var(--r-lg) var(--r-lg) 0 0;font:700 13px/1 var(--px);letter-spacing:1.2px;color:var(--ac);text-shadow:none;
   background:var(--an);box-shadow:inset 0 -1px 0 var(--g-vecKe)}
 body.ve-vector .g-so::before,body.ve-vector .g-so::after{display:none}
@@ -118,8 +117,7 @@ body.ve-vector .c-man .num{min-width:0;margin:0;padding:0;border-radius:0;backgr
 body.ve-vector .c-man.done{box-shadow:inset 0 0 0 1.5px var(--g-vecLa),var(--elev-1)}
 body.ve-vector .c-man.done .num{color:var(--g-vecLaDam)}
 body.ve-vector .c-man.open .num{color:var(--g-vecBrand)}
-body.ve-vector .c-man.cur{background:var(--g-vecBrand);box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.32);animation:vec-cur 1.4s ease-in-out infinite alternate}
-@keyframes vec-cur{from{box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.32),0 0 0 0 rgba(var(--g-vecBrandRgb),0)}to{box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.32),0 0 0 4px rgba(var(--g-vecBrandRgb),.22)}}
+body.ve-vector .c-man.cur{background:var(--g-vecBrand);box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.32)}   /* quầng thở: choi-vector.css mục 7 (vec-cur) */
 body.ve-vector .c-man.cur .num{color:var(--g-vecThe);text-shadow:none}
 body.ve-vector .c-man.cur .go{font:700 12px/18px var(--px);color:var(--g-vecThe);padding-top:0}
 body.ve-vector .c-man.lock{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
@@ -131,13 +129,12 @@ body.ve-vector .c-man.trum.lock{background:var(--g-vecTheLom);box-shadow:inset 0
   body.ve-vector .c-man:not(.lock):not(.cur):hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1.5px var(--g-vecBrand),var(--elev-2)}
 }
 
-/* ============================================================ 3. LẮP ROBOT (man-lap.js, #sc-lap) */
+/* ============================================================ 3. LẮP ROBOT (man-lap.js, #sc-lap)
+   (chuyển động thay steps() của các màn ngoài màn chơi: lắc, nảy, thở nằm ở choi-vector.css mục 7 để máy kiểm 14c đọc được) */
 /* bảng robot + xu + lời: thẻ trắng; ô robot là mặt lõm bo 12 (thay bảng phấn / viền mực) */
 body.ve-vector .lr-bang,body.ve-vector .lr-bang.chalk,body.ve-vector #sc-lap.cao .lr-hang-de,body.ve-vector .lr-hang-de.chalk{padding:6px 8px 6px 6px;border-radius:var(--r-md);
   background:var(--g-vecThe);background-image:none;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
 body.ve-vector .lr-robot,body.ve-vector .lr-san,body.ve-vector .lr-hop-san{border-radius:12px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
-body.ve-vector .lr-robot.doi .lr-hinh{animation:vec-lr-pop .32s cubic-bezier(.34,1.56,.64,1) 1}
-@keyframes vec-lr-pop{0%{transform:scale(.86)}100%{transform:scale(1)}}
 body.ve-vector .lr-xu{gap:3px}
 body.ve-vector .lr-xu-chu{font:700 13px/1 var(--px);color:var(--g-vecHoPhachChu)}
 body.ve-vector .lr-xu-chu.qua{color:var(--g-vecLoiDam)}
@@ -165,7 +162,6 @@ body.ve-vector .lr-the-vuot{padding-top:2px;font:500 11.5px/1.25 var(--px);color
 body.ve-vector .lr-the.chon{background:var(--g-vecBrandNhat);box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-2)}
 body.ve-vector .lr-the.chon .lr-the-ten{color:var(--g-vecBrandDam)}
 body.ve-vector .lr-the.mo{filter:none;opacity:.5}
-body.ve-vector .lr-the.rung,body.ve-vector .lr-xong.rung{animation:vec-rung .32s ease-in-out 1}
 body.ve-vector .lr-tick{right:6px;bottom:5px}
 /* Lắp xong: nút chính tím chàm cao 46, dòng phụ nhạt; chưa lắp đủ: mờ, không đổi màu */
 body.ve-vector .lr-xong{height:46px;gap:3px;padding-top:0;border-radius:var(--r-md);font:700 17px/1 var(--px);color:var(--g-vecThe);text-shadow:none;

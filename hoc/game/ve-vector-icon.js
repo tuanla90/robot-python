@@ -129,7 +129,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return '';
   }
 
-  function giaoDienVec() { var d = root.document; return !!(d && d.body && d.body.classList.contains('ve-vector')); }
+  function giaoDienVec() { var d = root.document; return !!(d && d.body && d.body.classList && d.body.classList.contains && d.body.classList.contains('ve-vector')); }   // DOM giả của máy kiểm có thể thiếu classList
   /** Thay một canvas icon có nhãn bằng svg (trả svg, hoặc null nếu không thay). */
   function thayMot(c) {
     var v = c._vi; if (!v || !HINH[v.ten] || !c.parentNode) return null;
@@ -163,7 +163,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Bắt đầu theo dõi #stage (gọi một lần khi nạp, sau VeVector.apGiaoDien). */
   function batDau() {
     var d = root.document; if (!giaoDienVec() || quanSat || !root.MutationObserver) return false;
-    var st = d.getElementById('stage') || d.body;
+    var st = (d.getElementById && d.getElementById('stage')) || d.body;
     quanSat = new root.MutationObserver(function (ds) {
       for (var i = 0; i < ds.length; i++) for (var j = 0; j < ds[i].addedNodes.length; j++) { var nd = ds[i].addedNodes[j]; if (nd.nodeType === 1) thay(nd); }
     });
