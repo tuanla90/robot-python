@@ -84,7 +84,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.nen(k, 'md-san');
         c.code(k, ['arm_down()', 'grab()', 'arm_up()'], 10, 14);
         var dich = c.dat(c.h('div', 'pg-dich'), 248, 136); dich.style.width = dich.style.height = '40px'; k.appendChild(dich);
-        var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', '101px');
+        var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', (VEC ? 268 - 110 - VAT : 101) + 'px');      // vector: tay ngắn hơn, đi thêm cho thùng vẫn vào giữa ô đích (tâm 268)
         var tg = thung(c, 110 + VAT, Y - 4); nhom.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 1, 3, 110, Y); nhom.appendChild(r);
         k.appendChild(nhom);
@@ -175,6 +175,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var tg = thung(c, a.x, a.y - VAT2, '', NUA2); k.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 0, 2, a.x, a.y); k.appendChild(r);
         c.sau(500, function () { r.ve(HA_CAM); });
+        if (VEC) truot(c, tg, 1000, a.x - NUA2, b.y - NUA2, 0.3);                          // vector: tay ngắn hơn, thùng trượt lên nút thay vì nhảy
         c.sau(1000, function () { r.ve(HA_MO); tg.style.top = (b.y - NUA2) + 'px'; c.keu('tha'); });
         c.sau(1300, function () { nut.dat(true); cua.dat(true); c.keu('moKhoa'); r.ve(NANG_MO); });
         c.sau(1900, function () { r.ve(NANG_MO, 1); });
@@ -354,6 +355,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(3000, function () { r2.ve(HA_CAM); c.keu('kep'); });
         c.sau(3300, function () { r2.ve(NANG_CAM); tg.style.top = (Y - 4 - NUA) + 'px'; });
         c.sau(3700, function () { r2.ve(null, 1); tg.style.left = (110 + 3 * VAT - NUA) + 'px'; c.keu('buoc'); });
+        if (VEC) { truot(c, r2, 3750, 282 - VAT, Y, 0.35); truot(c, tg, 3750, 282 - NUA, undefined, 0.35); }   // vector: tay ngắn hơn, R2 lăn thêm tới ô đích (tâm 282)
         c.sau(4100, function () { r2.ve(HA_MO); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         var sa = c.dat(c.sao(3), 270, 96, 'md-pop md-sang'); sa.style.animationDelay = '4.3s, 4.3s'; k.appendChild(sa);
         c.sau(4300, function () { c.keu('thang'); r1.mat('vui'); r2.mat('vui'); });

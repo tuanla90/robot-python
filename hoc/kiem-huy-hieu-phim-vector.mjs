@@ -267,13 +267,19 @@ const kho = (G, ma) => G.ctx.PhimGoi.soKhung(ma);
     else { const t = tam(tg), muon = parseFloat(xe.style.top) - vk.ahead * oPx(2) / 100; if (lech(t.y, muon) || lech(t.x, parseFloat(xe.style.left))) sai.push('kho-hang.3: tâm thùng y ' + t.y.toFixed(1) + ' ≠ ' + muon.toFixed(1)); }
     VE.hen.length = 0;
   }
-  // hai-robot.3 (cuối): R2 hướng phải đặt thùng, tâm thùng x = 110 + 3·VAT
+  // hai-robot.3 (cuối): R2 hướng phải đặt thùng vào giữa ô đích (tâm x 282), thùng ngay trước kẹp R2 (R2 cách thùng đúng VAT)
   {
-    const k = chieu(VE, 'hai-robot', 3), tg = k.children.find((e) => e.__cv && e.classList.contains('md-a') && !e.classList.contains('pg-xe'));
-    const muon = 110 + 3 * vk.ahead * oPx(3) / 100;
-    if (!tg || lech(tam(tg).x, muon)) sai.push('hai-robot.3: tâm thùng x ' + (tg ? tam(tg).x.toFixed(1) : '?') + ' ≠ 110 + 3·VAT = ' + muon.toFixed(1));
+    const k = chieu(VE, 'hai-robot', 3), tg = k.children.find((e) => e.__cv && e.classList.contains('md-a') && !e.classList.contains('pg-xe')), xe = k.tim((e) => e.classList.contains('pg-xe'))[1];
+    const VAT = vk.ahead * oPx(3) / 100;
+    if (!tg || !xe || lech(tam(tg).x, 282) || lech(parseFloat(xe.style.left) + VAT, 282)) sai.push('hai-robot.3: tâm thùng x ' + (tg ? tam(tg).x.toFixed(1) : '?') + ', R2 ' + (xe ? xe.style.left : '?') + ' (cần thùng 282, R2 282 − VAT)');
   }
-  kiem('(B3) vector: thùng nằm đúng trong kẹp theo VeRobot.vatKep × cạnh ô veCo (VAT = ' + (vk.ahead * oPx(3) / 100).toFixed(1) + ' px thay hằng pixel 57; tay-gap.3, kho-hang.3, hai-robot.3)', !sai.length, sai.join(' | '));
+  // tay-gap.4: cả nhóm (robot + thùng) đi --d để thùng vào giữa ô đích (tâm 268)
+  {
+    const k = chieu(VE, 'tay-gap', 4), nhom = k.tim((e) => e.classList.contains('md-di'))[0];
+    const d = nhom ? parseFloat(nhom.style['--d']) : NaN, VAT = vk.ahead * oPx(3) / 100;
+    if (lech(110 + d + VAT, 268)) sai.push('tay-gap.4: thùng tới x ' + (110 + d + VAT).toFixed(1) + ' ≠ tâm ô đích 268');
+  }
+  kiem('(B3) vector: thùng nằm đúng trong kẹp theo VeRobot.vatKep × cạnh ô veCo (VAT = ' + (vk.ahead * oPx(3) / 100).toFixed(1) + ' px thay hằng pixel 57; tay-gap.3, kho-hang.3) và vào giữa ô đích (tay-gap.4, hai-robot.3)', !sai.length, sai.join(' | '));
 }
 {
   const V = VE.ctx, g0 = V.VeRobot.veCo, mat = {}; let phim = null;
