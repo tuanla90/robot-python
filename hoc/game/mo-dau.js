@@ -51,7 +51,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     try {
       var tt = { wl: 0, wr: 0, ph: 0, tay: null }; if (PV() && mat) tt.mat = mat;
       var cv = VeRobot.veCo(R1, tt, huong, tiLe * VeRobot.PX_O_PART), cl = catLe(cv); if (cv.laVector) cl.laVector = true;      // vector: bản cắt lề vẫn là hình vector (Ve.mk không phóng điểm ảnh)
-      var c = Ve.mk(cl, VeRobot.heSoCss(cv)); c.classList.add('pxi'); return c;      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
+      var c = Ve.mk(cl, VeRobot.heSoCss(cv)); if (cl.laVector) c.laVector = true; c.classList.add('pxi'); return c;      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
     }
     catch (e) { return h('div'); }
   }

@@ -50,7 +50,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function coCua(e) { return { w: parseFloat(e.style.width) || e.width, h: parseFloat(e.style.height) || e.height }; }
   function sao(s) {
     if (!bat() || !V.HUY_HIEU) return null;
-    var m = coCua(root.Ve.sao(true, s));
+    var m = { w: 11 * (s || 2), h: 10 * (s || 2) };                   // cỡ Ve.sao(true, s): sao 11 × 10 điểm (không vẽ bản pixel để đo, gói V6c)
     return the(m.w, m.h, function (g) { var r = Math.min(m.w, m.h) / 2; g.save(); g.translate(m.w / 2, m.h / 2 + r * 0.06); g.scale(r / 50, r / 50); V.HUY_HIEU._sao(g, 0, 0, 46); g.restore(); });
   }
 
@@ -60,10 +60,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [BM.timV7, 'vecCong2'], [BM.do, 'vecDo']];
   /** Màu pixel của phim → vai vector cùng họ (không có thì tím chàm thương hiệu). */
   function mauVec(mau) { for (var i = 0; i < MAU_VEC.length; i++) if (MAU_VEC[i][0] === mau) return BM[MAU_VEC[i][1]]; return BM.vecBrand; }
+  /** Cỡ CSS của Ve.ico(ten, s) tính từ lưới hình (Ve.HINH: cột / hàng + viền 1 điểm mỗi bên; 'edit' là bút chì 9 × 9), không vẽ canvas pixel nào (gói V6c). */
+  function coIco(ten, s) {
+    s = s || 2;
+    var rows = root.Ve && root.Ve.HINH && root.Ve.HINH[ten];
+    if (ten === 'edit') return { w: 9 * s, h: 9 * s };
+    var RIENG = { star: [11, 10], lock: [12, 14], mui: [10, 9], trum: [26, 26] };     // hình vẽ riêng của ve.js (spriteStar / spriteLock / spriteMui / spriteTrum)
+    if (!rows) { var r = RIENG[ten] || [12, 12]; return { w: r[0] * s, h: r[1] * s }; }
+    return { w: (rows[0].length + 2) * s, h: (rows.length + 2) * s };
+  }
   function ico(ten, s, mau) {
     var VI = root.VeIcon;
     if (!bat() || !VI || !VI.HINH[ten]) return null;
-    var m = coCua(root.Ve.ico(ten, s, { fill: mau || BM.vang, line: BM.vienDam }));
+    var m = coIco(ten, s);
     return the(m.w, m.h, function (g) { var r = Math.min(m.w, m.h) * 0.92; VI.veCanvas(g, ten, (m.w - r) / 2, (m.h - r) / 2, r, mauVec(mau || BM.vang), { vien: BM.vecVien, day: 1.5 }); });
   }
 
