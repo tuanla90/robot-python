@@ -122,11 +122,26 @@
   var R1_4 = nhieu(['forward(6)'], CHO(8), ['forward(3)'], CHO(5), ['forward(2)']);
   var R2_4 = FOR(3, ['after_pass()', 'fire("charge")', 'turn_right()', 'forward(3)', 'turn_left()']);
 
+  // doi-mua-2.5: hành lang ngang (hàng 3) của R1; R2 đi một đường chữ U cắt ngang hành lang hai lần, ở ngã tư (3,3) và (7,3). R2 dừng ở ngã tư đầu ba nhịp.
+  //   R1 gọi wait_cross() trước mỗi bước (chín bước tới cuối hành lang, rồi quay xuống cờ (10,4)); húc vào R2 thì mất bước. Cờ R2 (7,1).
+  var SAN_5 = ['#############', '#######F#####', '###.###.#####', '#..........##', '###.###.##F##', '###.....#####', '#############'];
+  var R1_5 = nhieu(FOR(9, ['wait_cross()', 'move()']), ['tr_right()', 'move()']);
+  var R2_5 = nhieu(['move()'], CHO(3), ['forward(2)', 'turn_left()', 'forward(4)', 'turn_left()', 'forward(4)']);
+
+  // doi-mua-2.6: như doi-mua-2.1 nhưng R1 xích (xichDay) đẩy một thùng nặng dọc hành lang giữa (hàng 2): đẩy thùng vào ngã giếng đầu (4,2), dừng bốn nhịp, rồi đẩy tiếp tới cuối.
+  //   Thùng không nóng: warm() không thấy nó, bóng bắn lúc thùng còn trong giếng thì trúng thùng. Giếng (4,1)…(4,3), (7,…), (10,…), nút ở hàng 0, cửa của R2 (5,4), (8,4), (11,4).
+  //   R2 nhìn lên: giếng trống thì distance() là 3 (tới nút), thùng hay R1 ở ngã giếng thì là 1. Cờ R1 (11,2), cờ R2 (12,4).
+  var SAN_6 = ['####N##N##N###', '####.##.##.###', '#.H........F.#', '####.##.##.###', '###..C..C..CF#', '##############'];
+  var NOI_6 = [noi(4, 0, [[5, 4]]), noi(7, 0, [[8, 4]]), noi(10, 0, [[11, 4]])];
+  var R1_6 = nhieu(['forward(2)'], CHO(4), ['forward(8)']);
+  var R2_6 = nhieu(['move()'], FOR(3, ['turn_left()', 'clear_line()', 'fire("charge")', 'turn_right()', 'forward(3)']));
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
   var CHO_SAT = WHILE('distance() == 0', ['wait()']);    // sát vật cản (đồng đội) thì chờ
   var CHO_QUA = CHO_TOI.concat(CHO_DI);                  // chờ bạn tới rồi chờ bạn đi khỏi
+  var CHO_GIENG = WHILE('distance() < 3', ['wait()']);   // giếng chưa trống (thùng hay bạn còn ở ngã giếng) thì chờ
 
   var DS = [
     /* ================================================================ chương doi-mua-2: hồng ngoại thấy robot */
@@ -212,6 +227,47 @@
         { moTa: 'Chỉ chờ bạn đi khỏi: cửa sổ còn trống nên bắn ngay, cửa vào đóng trước mặt R1', ham: [H('after_pass', [], CHO_DI)], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       goiY: ['Hai vòng while nối nhau: vòng đầu chờ warm() thành True, vòng sau chờ nó thành False.', 'while not warm(): wait() rồi while warm(): wait().']
+    }),
+
+    man({
+      chuong: 'doi-mua-2', so: 5, ten: 'Xích nhường ở ngã tư', yMoi: 'xe xích cũng có mắt hồng ngoại: hàm do R1 gọi trước mỗi bước, thấy bạn ở ngã tư thì chờ',
+      hamCuaEmCan: ['move', 'forward', 'turn_left', 'tr_right'],
+      deBai: 'Lần này R1 xe xích phải nhường. R1 đi dọc hành lang, trước mỗi bước gọi wait_cross() rồi tiến một ô. R2 đi đường vòng cắt ngang hành lang ở hai ngã tư, có lúc dừng lại ngay giữa ngã tư. ' +
+        'R1 húc vào R2 thì mất bước đó, không tới được cờ. Viết thân wait_cross(): còn thấy bạn trước mũi xe thì chờ.',
+      veMaMau: 'Hai chương trình bị khóa. wait_cross() còn trống: chạy thử xem R1 húc R2 ở đâu.',
+      san: SAN_5, bd: [{ x: 1, y: 3, huong: 1 }, { x: 3, y: 2, huong: 2 }], co: [[o(10, 4)], [o(7, 1)]],
+      chinh: [R1_5, R2_5],
+      hamMau: [H('wait_cross', [], ['pass'])],
+      ham: [H('wait_cross', [], CHO_DI)],
+      sao: { o: 25, nhip: 16 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('wait_cross', [], ['# bạn đang ở ngã tư thì chờ'].concat(CHO_DI))] },
+      congThucKhac: [{ moTa: 'Chờ khi sát vật cản (while distance() == 0): ở đây cũng đúng', ham: [H('wait_cross', [], CHO_SAT)] }],
+      loiSai: [
+        { moTa: 'Để trống: R1 húc vào R2 đang đứng ở ngã tư', ham: [H('wait_cross', [], ['pass'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Chờ cố định một nhịp mỗi bước: vẫn húc R2 ở ngã tư đầu', ham: [H('wait_cross', [], ['wait()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Viết while not warm(): hành lang trống thì R1 chờ mãi', ham: [H('wait_cross', [], CHO_TOI)], phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['Mắt hồng ngoại của R1 ở mũi xích: R2 đứng ở ngã tư trước mặt thì warm() là True.', 'Thân wait_cross(): while warm(): wait().']
+    }),
+
+    man({
+      chuong: 'doi-mua-2', so: 6, ten: 'Thùng không nóng', yMoi: 'thùng nặng không nóng: warm() không thấy nó, distance() thì thấy cả thùng lẫn bạn',
+      hamCuaEmCan: ['forward', 'move', 'turn_left', 'turn_right', 'fire'], xichDay: true,
+      deBai: 'R1 xe xích đẩy một thùng nặng dọc hành lang giữa: thùng dừng ở giếng đầu một lúc rồi đi tiếp. R2 lại bắn nút qua giếng để mở cửa. Thùng nặng không nóng: ' +
+        'warm() không thấy thùng, bóng bắn lúc thùng còn trong giếng thì trúng thùng. Giếng trống thì mắt hồng ngoại đo được 3 ô tới nút. Viết thân clear_line(): giếng chưa trống thì chờ.',
+      veMaMau: 'Hai chương trình bị khóa. clear_line() viết bằng warm(): chạy thử xem bóng đầu tiên trúng gì.',
+      san: SAN_6, noi: NOI_6, bd: [{ x: 1, y: 2, huong: 1 }, { x: 3, y: 4, huong: 1 }], co: [[o(11, 2)], [o(12, 4)]],
+      chinh: [R1_6, R2_6],
+      hamMau: [H('clear_line', [], CHO_DI)],
+      ham: [H('clear_line', [], CHO_GIENG)],
+      sao: { o: 24, nhip: 24 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('clear_line', [], ['# giếng trống thì đo được 3 ô'].concat(CHO_GIENG))] },
+      loiSai: [
+        { moTa: 'Để nguyên while warm(): thùng không nóng, bóng trúng thùng', ham: [H('clear_line', [], CHO_DI)], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
+        { moTa: 'Để trống: bắn ngay khi thùng còn trong giếng', ham: [H('clear_line', [], ['pass'])], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
+        { moTa: 'Viết while distance() < 1: thùng ở ngã giếng cách 1 ô nên không chờ', ham: [H('clear_line', [], WHILE('distance() < 1', ['wait()']))], phaiCoMa: ['ban-bi-chan'] }
+      ],
+      goiY: ['Giếng trống: distance() là 3. Thùng hay R1 ở ngã giếng: distance() là 1.', 'Thân clear_line(): while distance() < 3: wait().']
     })
   ];
 
