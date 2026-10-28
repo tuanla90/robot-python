@@ -124,3 +124,14 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   Chương 1 từ màn 5 khóa chương trình chính (màn mở một sân bị cú giật súng hơi né warm()); lời giải được có chẩn đoán thông tin `giat-chan`.
   Đề xuất để sau: mục tiêu "trạng thái nút cuối màn" để bẫy "bắn nút nóng là tắt nó" thua ngay. `warm()` với robot khác để gói 8 Đội.
   Thứ tự tiếp theo (user 27/10): A1 bảng màu → A2 lab trắng + thân M1 (KE-HOACH-GOP-DIEM10CODE mục 2a) → gói 8, 9, 10 → phim mùa 2.
+
+- **28/10 P8 · Gói 8 Đội xong** (agent Claude opus, user đổi từ Gemini vì auto mode chặn agy; nhánh claude/doi-mua-2, gộp 7291700; chạy song song V5b / V6 / gói 9).
+  20 màn trong `man-doi-mua-2.js`: R1 xe xích + hồng ngoại (`xichDay` ở màn có thùng), R2 xe hai bánh + súng hơi + hồng ngoại (`lucBan` ở `doi[1]`); warm() thấy đồng đội.
+  MỌI màn khóa chương trình của cả hai robot, người chơi viết / sửa một hàm được gọi nhiều chỗ (chờ dài ngắn khác nhau). Chương 1 hàm của màn (clear_shot, mate_in, keep_gap, after_pass,
+  wait_cross, clear_line, pass_safe, wait_aim, cross_safe; trùm safe_step 3 sân); chương 2 hàm của em (Sổ lệnh nhóm Hồng ngoại): wait_clear, yield_step, wait_mate, pass_mate,
+  shot_clear(p), step_clear, cover, guard (trùm 2 sân); sửa hàm keep_close, cross_ok. Máy kiểm `kiem-doi-mua-2.mjs` (107, lỗi giả 9 → đỏ 14) + bộ dò `do-duong-doi-mua-2.mjs`
+  (không thân cố định nào thắng). Người giao chạy lại sau gộp: kiem-doi-mua-2 107, do-duong, kiem-lo-trinh 854, kiem-che-xe 270, kiem-nut-bat-san 30, kiem-bang-mau 19, kiem-khay 184,
+  kiem-luc-ban 104, kiem-goi-doi 979. Sửa thêm (người giao, 4ac900f): thẻ shoot hiện chip lực khi `lucBan` ở `man.doi[i]` (trước R2 không chọn được bắn nhanh / tụ).
+  Chưa xem trình duyệt (ô trình duyệt treo, service worker giữ bản cũ): huy hiệu doi-mua-2 / che-doi-mua-2 (pixel, chưa có bản vector), hai robot khóa, chip lực R2. npm test cả bộ: sau gói 9.
+  Chờ user: không có màn mở (mọi màn khóa vì trên sân cố định `for … wait()` viết cứng tốn bằng `while warm()`); R1 "dừng ở trạm" bằng `for i in range(k): wait()` trong chương trình khóa;
+  biên thua của lời cố định mỏng (vd doi-mua-2.4: 28 so với ngưỡng 27). Đề xuất gói 10: bộ dò mô phỏng chung hai robot hoặc luật "húc bạn thì mất bước" nếu muốn màn mở.
