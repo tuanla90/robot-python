@@ -67,5 +67,25 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return the(m.w, m.h, function (g) { var r = Math.min(m.w, m.h) * 0.92; VI.veCanvas(g, ten, (m.w - r) / 2, (m.h - r) / 2, r, mauVec(mau || BM.vang), { vien: BM.vecVien, day: 1.5 }); });
   }
 
-  root.PhimVector = { bat: bat, o: o, co: co, nutDe: nutDe, cua: cua, sao: sao, ico: ico, mauVec: mauVec, the: the };
+  /** Gói V6c: xe tải chở linh kiện của cảnh mở màn (mo-dau.js khung 1, 2) nhìn ngang, đầu quay phải, cỡ CSS w × h (bản pixel: icon 'car' tỉ lệ 6 = 84 × 60).
+   *  Thùng sau thấp (thùng gỗ đặt lên trên), cabin đỏ có kính, đèn pha vàng, hai bánh con nhộng tối có trục trắng, viền chàm đậm. */
+  function xeTai(w, h) {
+    if (!bat()) return null;
+    w = w || 84; h = h || 60;
+    return the(w, h, function (g) {
+      var H = V.H, k = Math.min(w / 84, h / 60);
+      g.save(); g.scale(k, k);
+      H.bo(g, 3, 30, 52, 15, 4); g.fillStyle = H.gradDoc(g, 0, 30, 0, 45, [[0, BM.vecDoSang], [1, BM.vecDo]]); g.fill(); H.vien(g, BM.vecVien, 2.4);   // thùng sau
+      H.duong(g, 'M8 36 H50'); H.vien(g, BM.vecVo, 1.6);                                                                                       // nẹp sáng
+      H.duong(g, 'M53 45 V22 C53 18 55 16 59 16 H69 C72 16 74 18 76 21 L81 30 V45 Z');
+      g.fillStyle = H.gradDoc(g, 0, 16, 0, 45, [[0, BM.vecDoSang], [0.35, BM.vecDo], [1, BM.vecDo]]); g.fill(); H.vien(g, BM.vecVien, 2.4);          // cabin
+      H.duong(g, 'M58 21 H69 L74 29 H58 Z'); H.to(g, BM.vecMat); H.vien(g, BM.vecVien, 1.8);                                                   // kính
+      H.bo(g, 76, 34, 5, 4, 1.5); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.4);                                                             // đèn pha
+      H.duong(g, 'M2 45 H82'); H.vien(g, BM.vecVien, 3);                                                                                       // sàn xe
+      [18, 66].forEach(function (x) { H.tron(g, x, 47, 9); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 2.4); H.tron(g, x, 47, 3.4); H.to(g, BM.vecVo); });
+      g.restore();
+    });
+  }
+
+  root.PhimVector = { bat: bat, o: o, co: co, nutDe: nutDe, cua: cua, sao: sao, ico: ico, xeTai: xeTai, mauVec: mauVec, the: the };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -256,3 +256,27 @@ body.ve-vector .cb-ic .vi-canhbao .vi2{color:var(--g-vecChu);opacity:1}         
 body.ve-vector .vi-trum{color:var(--g-vecChuPhu)}
 body.ve-vector .vi-trum.tat{color:var(--g-vecKeDam)}
 body.ve-vector .pal-the .the-chu.co-part canvas.vi-part{max-height:24px}                    /* hình bộ phận thật (VeVector) ở tiêu đề thẻ khay */
+
+/* ============================================================ 10. NỘI DUNG CẢNH PHIM (gói V6c: mo-dau.js phim mở đầu, phim-goi.js + phim-mua-*.js phim gói)
+   Hình trong cảnh đã vẽ bằng bộ vẽ vector (PhimVector / VeIcon / VeRobot); ở đây là nền cảnh, chữ trong tranh, bảng code, hoạt cảnh mượt (thay steps()).
+   Tông lab trắng như sân vector: tường lavender nhạt, sàn bàn cờ hai tông, trời mưa xanh xám nhạt, đường nhựa chàm. */
+body.ve-vector .md-khung,body.ve-vector .md-khung.chalk{background-color:var(--g-vecNen);background-size:auto;background-image:linear-gradient(180deg,var(--g-vecThe) 0,var(--g-vecNen) 55%,var(--g-vecNenSau) 100%)}
+body.ve-vector .md-khung:has(.md-mua){background-image:linear-gradient(180deg,var(--g-vecKeDam) 0,var(--g-vecNenSau) 70%,var(--g-vecNen) 100%)}   /* trời mưa ngoài cửa xưởng */
+body.ve-vector .md-mua{opacity:1;background-image:repeating-linear-gradient(110deg,transparent 0 17px,rgba(var(--g-vecBrandRgb),.2) 17px 18.5px,transparent 18.5px 30px);background-size:60px 60px;animation:md-mua .6s linear infinite}
+body.ve-vector .md-duong{height:40px;background:var(--g-vecBanh);box-shadow:inset 0 3px 0 var(--g-vecBanhGach),0 -1px 0 var(--g-vecVien)}
+body.ve-vector .md-duong::after{top:19px;height:3px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--g-vecVang) 0 20px,transparent 20px 44px);animation:md-vach .4s linear infinite}
+body.ve-vector .md-san{height:30px;background:repeating-conic-gradient(var(--g-vecSanChan) 0 25%,var(--g-vecSanLe) 0 50%) 0 0/30px 30px;box-shadow:inset 0 1.5px 0 var(--g-vecKeDam)}
+/* chữ trong tranh: RẦM! / CẠCH! cam đậm viền trắng, dấu ? ! tím chàm viền trắng; bóng mềm thay bóng mực nhiều lớp */
+body.ve-vector .md-ram{font:800 46px/1 var(--px);color:var(--g-vecCamDam);text-shadow:none;-webkit-text-stroke:7px var(--g-vecThe);paint-order:stroke fill;filter:drop-shadow(0 4px 10px rgba(var(--g-vecBongRgb),.18));animation-timing-function:cubic-bezier(.34,1.56,.64,1)}
+body.ve-vector .md-hoi{font:800 30px/1 var(--px);color:var(--g-vecBrand);text-shadow:none;-webkit-text-stroke:6px var(--g-vecThe);paint-order:stroke fill;animation-timing-function:cubic-bezier(.34,1.56,.64,1)}
+/* bảng code trong tranh: dòng thẻ ô mã bo góc, số dòng chữ phụ, lệnh phông mã chàm đậm */
+body.ve-vector .md-code{gap:5px}
+body.ve-vector .md-dong{height:24px;padding:0 10px 0 8px;gap:8px;border-radius:8px;background:var(--g-vecMa);box-shadow:inset 0 0 0 1px var(--g-vecMaKe),var(--elev-1);animation-timing-function:cubic-bezier(.34,1.56,.64,1)}
+body.ve-vector .md-dong .so{font:500 12px/1 var(--mono);color:var(--g-vecChuPhu);background:var(--g-vecMa)}
+body.ve-vector .md-dong .kc{font:500 13px/1 var(--mono);color:var(--g-vecChu);background:var(--g-vecMa)}
+/* hoạt cảnh: cùng khung hình, cùng thời lượng, chuyển động mượt thay bước nhảy */
+body.ve-vector .md-nhun,body.ve-vector .md-lac,body.ve-vector .md-quay,body.ve-vector .md-rung{animation-timing-function:ease-in-out}
+body.ve-vector .md-di{animation-timing-function:cubic-bezier(.45,0,.55,1)}
+body.ve-vector .md-mat{animation-timing-function:cubic-bezier(.3,0,.6,1)}
+body.ve-vector .md-pop{animation-timing-function:cubic-bezier(.34,1.56,.64,1)}
+body.ve-vector .md-pop.md-sang{animation-timing-function:cubic-bezier(.34,1.56,.64,1),ease-in-out}

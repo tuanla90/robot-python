@@ -9,6 +9,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    ung-dung.js chiếu một lần khi chưa có cờ 'mo-dau' (Luu.daXem); Cài đặt có nút "Xem lại phim mở đầu".
    Chạm khung tranh hoặc nút Tiếp để sang khung; "Bỏ qua" ở góc trên.
    Hình lấy từ bộ vẽ sẵn có: VeRobot (R1), Ve.ico (xe, thùng, icon đèn bộ phận), Ve.tiles() (tường, thùng gỗ, cờ).
+   Gói V6c: ở vector cùng các hình đó vẽ bằng bộ vẽ vector (PhimVector, VeIcon, VeRobot mắt biểu cảm); nền cảnh (mưa, đường, sàn) ở giao-dien-vector-b.css mục 10.
    ========================================================================== */
 (function () {
   'use strict';
@@ -42,14 +43,25 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(cv, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
     return c;
   }
-  /** R1 (thân hai bánh, không tay) đã cắt lề: tỉ lệ 3 ≈ 51×60, tỉ lệ 4 ≈ 68×80. */
-  function r1(huong, tiLe) {
-    try { var cv = VeRobot.veCo(R1, { wl: 0, wr: 0, ph: 0, tay: null }, huong, tiLe * VeRobot.PX_O_PART), c = Ve.mk(catLe(cv), VeRobot.heSoCss(cv)); c.classList.add('pxi'); return c; }      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
+  /** Gói V6c: ở chế độ vector (VeVector.bat()) mọi hình của cảnh lấy từ bộ vẽ vector (PhimVector: icon chung VeIcon, ô / vật / cờ / xe tải; VeRobot: R1 có mắt
+   *  biểu cảm), cùng cỡ CSS với bản pixel nên vị trí, hoạt cảnh, lời, thứ tự khung, thời lượng giữ nguyên; pixel (không bật) y như cũ. */
+  function PV() { return window.PhimVector && PhimVector.bat() ? PhimVector : null; }
+  /** R1 (thân hai bánh, không tay) đã cắt lề: tỉ lệ 3 ≈ 51×60, tỉ lệ 4 ≈ 68×80. mat: biểu cảm mắt (chỉ vector, VeVector H.kinh). */
+  function r1(huong, tiLe, mat) {
+    try {
+      var tt = { wl: 0, wr: 0, ph: 0, tay: null }; if (PV() && mat) tt.mat = mat;
+      var cv = VeRobot.veCo(R1, tt, huong, tiLe * VeRobot.PX_O_PART), cl = catLe(cv); if (cv.laVector) cl.laVector = true;      // vector: bản cắt lề vẫn là hình vector (Ve.mk không phóng điểm ảnh)
+      var c = Ve.mk(cl, VeRobot.heSoCss(cv)); c.classList.add('pxi'); return c;      // tiLe = bội số pixel part → cỡ ô hiển thị (VeRobot.veCo)
+    }
     catch (e) { return h('div'); }
   }
-  function ico(ten, s, mau) { var c = Ve.ico(ten, s, { fill: mau || VANG, line: MUC }); c.classList.add('pxi'); return c; }
-  function o(ten, s) { var c = Ve.mk(Ve.tiles()[ten], s); c.classList.add('pxi'); return c; }
-  function co(s) { var c = Ve.mk(Ve.tiles().flags[0], s); c.classList.add('pxi', 'md-co'); return c; }
+  function ico(ten, s, mau) { var v = PV() && PhimVector.ico(ten, s, mau || VANG); if (v) return v; var c = Ve.ico(ten, s, { fill: mau || VANG, line: MUC }); c.classList.add('pxi'); return c; }
+  function o(ten, s) { var v = PV() && PhimVector.o(ten, s, 0); if (v) return v; var c = Ve.mk(Ve.tiles()[ten], s); c.classList.add('pxi'); return c; }
+  function co(s) { var v = PV() && PhimVector.co(s); if (v) { v.classList.add('md-co'); return v; } var c = Ve.mk(Ve.tiles().flags[0], s); c.classList.add('pxi', 'md-co'); return c; }
+  /** Xe chở linh kiện (pixel: icon 'car' tỉ lệ 6 màu đỏ; vector: xe tải PhimVector.xeTai cùng cỡ 84 × 60). */
+  function xeHang() { var v = PV() && PhimVector.xeTai(84, 60); return v || ico('car', 6, BM.do); }
+  /** Thùng linh kiện trên xe (pixel: icon 'box' tỉ lệ 3 = 39 × 39; vector: thùng gỗ của sân cùng cỡ). */
+  function thungHang() { var v = PV() && PhimVector.o('crate', 39 / 14, 0); return v || ico('box', 3, BM.camToiV1); }
   function chu(cls, s) { return h('div', 'md-a ' + cls, s); }
   function nen(k, cls) { k.appendChild(h('div', cls)); }
 
@@ -68,15 +80,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       nen(k, 'md-mua'); nen(k, 'md-duong');
       var xe = h('div', 'md-a md-xe'); xe.style.top = '106px';
       var nhun = h('div', 'md-nhun');
-      nhun.appendChild(dat(ico('box', 3, BM.camToiV1), 6, 0));
-      nhun.appendChild(dat(ico('car', 6, BM.do), 0, 26));
+      nhun.appendChild(dat(thungHang(), 6, 0));
+      nhun.appendChild(dat(xeHang(), 0, 26));
       xe.appendChild(nhun); k.appendChild(xe);
     },
     // 2 · sụp ổ gà, thùng bật, đồ văng
     function (k) {
       nen(k, 'md-mua'); nen(k, 'md-duong');
-      k.appendChild(dat(ico('car', 6, BM.do), 118, 132, 'md-rung'));
-      k.appendChild(dat(ico('box', 3, BM.camToiV1), 124, 106, 'md-bat'));
+      k.appendChild(dat(xeHang(), 118, 132, 'md-rung'));
+      k.appendChild(dat(thungHang(), 124, 106, 'md-bat'));
       DO.forEach(function (d, i) {
         var vx = h('div', 'md-a md-vx'); vx.style.left = '140px'; vx.style.top = '110px';
         vx.style.setProperty('--x', d.x + 'px'); vx.style.animationDelay = (0.12 + i * 0.05) + 's';
@@ -91,7 +103,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       nen(k, 'md-san');
       k.appendChild(dat(o('wall', 3), 18, 66)); k.appendChild(dat(o('wall', 3), 60, 66));
       k.appendChild(dat(ico('denXich', 3, BM.lamSang), 40, 36, 'md-lac'));
-      k.appendChild(dat(ico('denKepMo', 3, BM.vang), 228, 156, 'md-lac'));      // thò nửa ra khỏi gầm tủ (thùng vẽ sau, che nửa trái)
+      k.appendChild(dat(ico('denKepMo', 3, BM.vang), PV() ? 212 : 228, 156, 'md-lac'));      // vector: thùng gỗ vẽ gọn hơn trong ô, dời kẹp vào gầm cho thùng vẫn che nửa      // thò nửa ra khỏi gầm tủ (thùng vẽ sau, che nửa trái)
       k.appendChild(dat(o('crate', 5), 178, 104));
       k.appendChild(dat(ico('denCanh', 2, BM.xanhLaSangV9), 250, 70, 'md-mat'));
       k.appendChild(chu('md-hoi md-hoi-xa', '?'));
@@ -99,14 +111,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     // 4 · còn lại mỗi R1
     function (k) {
       nen(k, 'md-san');
-      k.appendChild(dat(r1(1, 4), 126, 106, 'md-nhun'));
+      k.appendChild(dat(r1(1, 4, 'ngac'), 126, 106, 'md-nhun'));
       k.appendChild(chu('md-hoi md-hoi-bi', '?'));
     },
     // 5 · R1 muốn đi mà quay mòng mòng
     function (k) {
       nen(k, 'md-san');
       k.appendChild(dat(co(4), 252, 138));
-      k.appendChild(dat(r1(1, 3), 70, 126, 'md-quay'));
+      k.appendChild(dat(r1(1, 3, 'xoay'), 70, 126, 'md-quay'));
       var hoi = chu('md-hoi md-hoi-quay', '?!'); k.appendChild(hoi);
       sau(1300, function () { keu('loi'); });
     },
@@ -120,7 +132,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       });
       k.appendChild(code);
       k.appendChild(dat(co(4), 262, 138));
-      var b = dat(r1(1, 3), 60, 126, 'md-di'); b.style.setProperty('--d', '155px'); k.appendChild(b);      // dừng sát chân cờ
+      var b = dat(r1(1, 3, 'vui'), 60, 126, 'md-di'); b.style.setProperty('--d', (PV() ? 147 : 155) + 'px'); k.appendChild(b);      // dừng sát chân cờ
       for (var i = 0; i < 5; i++) sau(1000 + i * 260, function () { keu('buoc'); });
     }
   ];
