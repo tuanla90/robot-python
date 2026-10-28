@@ -501,6 +501,12 @@ body.ve-vector .chon-so .cs.mau-nut[data-mau="none"]{background:var(--g-vecTheLo
 body.ve-vector .chon-so .cs.mau-nut.on{outline:2px solid var(--g-vecBrand);outline-offset:2px}
 body.ve-vector .chon-so.muc .cs.muc-nut{padding:0 8px;font:600 12px/1 var(--px)}
 
+/* vùng chạm tối thiểu 24 × 24 (luật UI): nút nhỏ hơn mà khung không nới được (hàng tốc độ / Đề bài cao 22, nút cuộn khay rộng 20 / 22, "Hàm mới" cao 18,
+   nút khoá / sửa của khối hàm cao 22) được nới VÙNG BẤM vô hình bằng ::before, hình không đổi chỗ (cách bong bóng .bg-x của choi.css đã làm) */
+body.ve-vector .mini .bt,body.ve-vector .cuon-b,body.ve-vector .gl .nb,body.ve-vector .brick .ed{position:relative}
+body.ve-vector .brick .ed{position:absolute}
+body.ve-vector .mini .bt::before,body.ve-vector .cuon-b::before,body.ve-vector .gl .nb::before,body.ve-vector .brick .ed::before{content:"";position:absolute;left:-1px;right:-1px;top:-3px;bottom:-3px}
+
 /* ============================================================ 7. CHUYỂN ĐỘNG: bỏ steps() còn lại của màn chơi, tôn trọng prefers-reduced-motion
    Các steps() của khối / dòng / hộp đã thay ở vùng 3–5 (vec-*); ở đây là phần còn lại của màn chơi. Phim mở đầu / phim gói (.md-*, .pg-*) và
    màn ngoài màn chơi (.g-the, .c-man, .lr-*) để V5b / V6. Dòng code đổi chỗ (thanh-phan.js, Web Animations) cũng trượt mượt ở vector. */
