@@ -506,6 +506,9 @@ body.ve-vector .chon-so.muc .cs.muc-nut{padding:0 8px;font:600 12px/1 var(--px)}
 body.ve-vector .mini .bt,body.ve-vector .cuon-b,body.ve-vector .gl .nb,body.ve-vector .brick .ed{position:relative}
 body.ve-vector .brick .ed{position:absolute}
 body.ve-vector .mini .bt::before,body.ve-vector .cuon-b::before,body.ve-vector .gl .nb::before,body.ve-vector .brick .ed::before{content:"";position:absolute;left:-1px;right:-1px;top:-3px;bottom:-3px}
+/* (gói V5b) nút cuộn khay ▲ ▼ rộng 20 (choi.css .bh .cuon-nut .cuon-b), khe 3: nới vùng bấm -1 px mỗi bên chỉ được 22 và hai tâm cách 23 < 24 (WCAG 2.5.8).
+   Ở vector nút rộng 22: vùng bấm 24 × 26, hai tâm cách 25, khe giữa hai vùng nới còn 1 px; tiêu đề thẻ bộ phận (.pal-the, flex co giãn) nhường 4 px */
+body.ve-vector .bh .cuon-nut .cuon-b{width:22px}
 
 /* ============================================================ 7. CHUYỂN ĐỘNG: bỏ steps() còn lại của màn chơi, tôn trọng prefers-reduced-motion
    Các steps() của khối / dòng / hộp đã thay ở vùng 3–5 (vec-*); ở đây là phần còn lại của màn chơi. Phim mở đầu / phim gói (.md-*, .pg-*) và
