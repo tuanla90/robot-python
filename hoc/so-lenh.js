@@ -226,7 +226,16 @@
     m('aim_on', 'hong-ngoai', 'Nút chưa nóng thì tự chọn lực bắn theo xa gần', 'che-do-nhiet', 'che-do-nhiet.5'),
     m('scan_on', 'hong-ngoai', 'n lần: bật nút bên trái nếu còn tắt rồi tiến một ô', 'che-do-nhiet', 'che-do-nhiet.6'),
     m('switch_right', 'hong-ngoai', 'Quay phải, bật nút bên phải nếu nó còn tắt, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.7'),
-    m('aim_left_on', 'hong-ngoai', 'Quay trái, nút chưa nóng thì tự chọn lực bắn, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8')
+    m('aim_left_on', 'hong-ngoai', 'Quay trái, nút chưa nóng thì tự chọn lực bắn, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8'),
+    // gói 9 · chương che-be-sung · Hàm bệ súng (man-be-sung.js): xích gắn súng hơi bắn tụ không giật, nhóm Súng hơi (left_shot là hàm của màn nên không có ở đây)
+    m('blast_left', 'hoi', 'Quay trái, bắn tụ nút bên trái, rồi quay lại: bệ súng không giật', 'che-be-sung', 'che-be-sung.1'),
+    m('blast_right', 'hoi', 'Quay phải, bắn tụ nút bên phải, rồi quay lại', 'che-be-sung', 'che-be-sung.2'),
+    m('lock_on', 'hoi', 'Đo nhiệt nút trước mũi xe: chưa nóng thì bắn tụ', 'che-be-sung', 'che-be-sung.4'),
+    m('lock_left', 'hoi', 'Quay trái, nút bên trái chưa nóng thì bắn tụ, rồi quay lại', 'che-be-sung', 'che-be-sung.5'),
+    m('lock_row', 'hoi', 'n trạm: nút xa bên trái còn tắt thì bắn tụ, rồi tiến một ô', 'che-be-sung', 'che-be-sung.6'),
+    m('go_fire', 'hoi', 'Đi thẳng tới sát cửa đóng rồi bắn tụ nút bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
+    m('visit', 'hoi', 'Đo ngõ cụt sâu d ô, vào bắn tụ nút bên trái, rồi lùi ra đúng d ô', 'che-be-sung', 'che-be-sung.8'),
+    m('push_blast', 'hoi', 'Đẩy thùng một ô rồi bắn tụ nút bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9')
   ];
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
