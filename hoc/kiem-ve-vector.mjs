@@ -845,10 +845,11 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
       const a = KP.ctx.VeRobot.veCo(cfg, {}, 0, ti * 24), b = KP.ctx.VeRobot.ve(cfg, {}, 0, ti);
       if (a !== b || KP.ctx.VeRobot.heSoCss(a) !== 1) sai.push('pixel ' + cfg.than + ' ×' + ti);
       const v = KV.ctx.VeRobot.veCo(cfg, {}, 0, ti * 24);
-      if (!v || !v.laVector || v.width !== Math.round(ti * 24 * 2) || Math.abs(KV.ctx.VeRobot.heSoCss(v) * v.width - ti * 24) > 1e-6) sai.push('vector ' + cfg.than + ' ' + ti * 24 + ' px → ' + (v && v.width));
+      const ph = KV.ctx.VeRobot.PHONG_NGOAI_SAN;                                  // V5a: vector ngoài sân phóng ×1,2 (bằng bản pixel)
+      if (ph !== 1.2 || !v || !v.laVector || v.width !== Math.round(ti * 24 * ph * 2) || Math.abs(KV.ctx.VeRobot.heSoCss(v) * v.width - ti * 24 * ph) > 1e-6) sai.push('vector ' + cfg.than + ' ' + ti * 24 + ' px → ' + (v && v.width));
     }
     const nguon = ['man-lap.js', 'the-part.js', 'mo-dau.js', 'man-dau.js', 'phim-goi.js'].filter((f) => !/VeRobot\.veCo\(/.test(fs.readFileSync(path.join(GAME, f), 'utf8')) || /VeRobot\.ve\(/.test(fs.readFileSync(path.join(GAME, f), 'utf8')));
-    kiem('(13f) VeRobot.veCo (robot ngoài sân): pixel cùng canvas với ve(…, pxCss / 24) (48 → ×2, 72 → ×3…), vector đúng một ô pxCss × dpr (heSoCss = 1 / dpr); màn Lắp robot, thẻ Bộ phận mới, mở đầu, màn đầu, phim đều gọi veCo',
+    kiem('(13f) VeRobot.veCo (robot ngoài sân): pixel cùng canvas với ve(…, pxCss / 24) (48 → ×2, 72 → ×3…), vector một ô pxCss × 1,2 (V5a) × dpr (heSoCss = 1 / dpr); màn Lắp robot, thẻ Bộ phận mới, mở đầu, màn đầu, phim đều gọi veCo',
       sai.length === 0 && nguon.length === 0, sai.concat(nguon).slice(0, 5).join('; '));
   }
 

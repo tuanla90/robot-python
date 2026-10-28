@@ -418,6 +418,8 @@ body.ve-vector .th-cach-dong.cung .ten{color:var(--g-vecLaDam)}
 body.ve-vector .th-cach-dong.hong .so{color:var(--g-vecLoiDam)}
 /* thẻ Bộ phận mới (the-part.js) */
 body.ve-vector .tp-hinh{border-radius:var(--r-md);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+/* robot vector ×1,2 (VeRobot.PHONG_NGOAI_SAN, vùng 9) cao tới ~75 px: nới trần 72 px của pixel và giữ đúng tỉ lệ (trần cũ làm méo hình) */
+body.ve-vector .tp-hinh-cv{max-width:76px;max-height:76px;object-fit:contain}
 body.ve-vector .tp-khe{font:700 11px/1 var(--px);color:var(--g-vecChuPhu);letter-spacing:.5px}
 body.ve-vector .tp-ten{font:700 22px/1.1 var(--px);color:var(--g-vecBrand);text-shadow:none}
 body.ve-vector .hop-part.doi-thu .tp-ten{color:var(--g-vecLoiDam)}

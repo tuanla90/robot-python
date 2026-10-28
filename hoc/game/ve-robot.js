@@ -271,12 +271,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  (48 → 2, 72 → 3, 96 → 4, 36 → 1,5: Y NHƯ cũ); vector: canvas đúng một ô cạnh pxCss × devicePixelRatio (tay xoay: tràn sang ô bên), cờ .cssMoiPx = px CSS mỗi px canvas
    *  (người gọi hiển thị canvas cỡ width × heSoCss(cv)). Cấu hình vector không ghép được: rơi về pixel cùng cỡ như ve(). */
   var PX_O_PART = 24;
+  /** Gói V5a (28/10): robot vector ngoài sân vẽ trong đúng một ô nên nhỏ hơn bản pixel cùng pxCss ~17% (sprite pixel tràn ô);
+   *  người giao chốt phóng ×1,2 cho bằng bản pixel ở Lắp robot / thẻ Bộ phận mới. Chỉ nhánh vector; pixel không đổi. */
+  var PHONG_NGOAI_SAN = 1.2;
   function veCo(cauHinh, trangThai, huong, pxCss) {
     pxCss = pxCss > 0 ? pxCss : 2 * PX_O_PART;
     if (veVector(cauHinh)) {
-      var dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1, canh = Math.max(1, Math.round(pxCss * dpr));
+      var co = pxCss * PHONG_NGOAI_SAN;
+      var dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1, canh = Math.max(1, Math.round(co * dpr));
       var cv = ve(cauHinh, trangThai, huong, canh / 100);
-      if (cv && cv.laVector) { cv.cssMoiPx = pxCss / canh; return cv; }
+      if (cv && cv.laVector) { cv.cssMoiPx = co / canh; return cv; }
     }
     return ve(cauHinh, trangThai, huong, pxCss / PX_O_PART);
   }
@@ -338,7 +342,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function reachCua(cauHinh) { if (veVector(cauHinh)) return 50 + 100 * VV().tranCua(cauHinh); return cheDoVector() ? 50 : REACH; }
 
   var VeRobot = {
-    ve: ve, veCo: veCo, heSoCss: heSoCss, PX_O_PART: PX_O_PART, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
+    ve: ve, veCo: veCo, heSoCss: heSoCss, PX_O_PART: PX_O_PART, PHONG_NGOAI_SAN: PHONG_NGOAI_SAN, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
     cheDoVector: cheDoVector, veVector: veVector,
     dungPart: !/[?&]part=0/.test((typeof location !== 'undefined' && location.search) || '')
   };
