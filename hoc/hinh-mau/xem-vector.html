@@ -514,6 +514,9 @@
     '<link rel="stylesheet" href="../game/font/font.css"><link rel="stylesheet" href="../game/choi.css"><link rel="stylesheet" href="../game/choi-vector.css"><link rel="stylesheet" href="../game/giao-dien-vector-b.css"></head>' +
     '<body class="ve-vector">' + tpl.innerHTML + '</body></html>');
   d.close();
+  if (d.readyState === 'complete' && d.getElementById('m-icon')) dien(); else f.addEventListener('load', dien, { once: true });   // bang-mau.js ngoài: trình phân tích chờ tải xong mới tới phần thân
+  function dien() {
+  d = f.contentDocument;
   var ds = d.getElementById('m-icon');
   Object.keys(VeIcon.HINH).forEach(function (ten) {
     var o = d.createElement('div'); o.className = 'm-ic';
@@ -526,6 +529,7 @@
     var tat = ten === 'star' && el.getAttribute('data-on') === '0';
     svg.setAttribute('class', 'pxi vi vi-' + ten + (tat ? ' tat' : '')); el.appendChild(svg); el.style.display = 'flex';
   });
+  }
 })();
 </script>
 </body></html>

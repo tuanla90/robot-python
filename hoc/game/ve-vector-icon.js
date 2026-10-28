@@ -98,7 +98,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     doc = doc || root.document;
     var svg = doc.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('width', String(w)); svg.setAttribute('height', String(h));
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+    svg.setAttribute('class', 'vi vi-' + ten); svg.setAttribute('preserveAspectRatio', 'xMidYMid meet'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
     ds.forEach(function (q) {
       var e, lop = '';
       if (q[0] === 'p') {
