@@ -1609,7 +1609,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function taoKieu(layCtx) {
     return function (ten, k) {
       var cx = layCtx() || {};
-      if ((ten === 'shoot' || ten === 'shoot_back') && cx.man && cx.man.lucBan) return 'luc';      // màn Lực bắn: thẻ shoot chèn sẵn lực, chạm để đổi
+      if ((ten === 'shoot' || ten === 'shoot_back') && cx.man && (cx.man.lucBan || (cx.man.doi || []).some(function (d) { return d && d.lucBan; }))) return 'luc';      // màn Lực bắn: thẻ shoot chèn sẵn lực, chạm để đổi; màn đội: lucBan nằm ở phần riêng robot có súng (man.doi[i])
       function tim(n) {
         var l = [(cx.hamCuaMan || []), (cx.kho || [])], i, j;
         for (i = 0; i < l.length; i++) for (j = 0; j < l[i].length; j++) if (l[i][j].ten === n) return l[i][j];
