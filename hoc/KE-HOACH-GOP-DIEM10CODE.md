@@ -126,6 +126,14 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   → V7: icon màn chơi #sc-choi còn pixel (thêm vào PHAM_VI); gộp hai bộ icon trùng 7 tên (VeIcon.HINH với PhimVector.ICON); icon `trum`, `mui` còn pixel; cảnh phim mở đầu `mo-dau.js` còn pixel (mưa, xe);
   gộp cầu nối Ve.mk vào ve.js; gộp giao-dien-vector-b.css vào choi-vector.css; nền phim .md còn mực / kem; huy hiệu gói 8, 9 mùa 2 cần bản vector (`VeVector.HUY_HIEU.dangKy`).
   Chờ user: thùng đặt xuống nút trong phim kho-hang.3 nhỏ (24% ô như trên sân); 4 nút icon Xưởng hàm chưa title (xuong-ham.js chưa trong SUA_SAU_NEN); nhãn "Menu", "Ẩn", "Cài đặt" chưa nói nút làm gì.
+  User 28/10 trả lời: thùng → "Nâng lên to ra" (gói V6b); title Xưởng hàm + nhãn nút → làm (V6b); "button, cảnh mở màn, video cũng sang vector hết" (gói V6c).
+- **28/10 V6b · Vật kẹp nâng lên to ra + title + nhãn xong** (nhánh claude/ve-vector-thung-nhan, gộp 275e7aa). Chỉ vector: vật sàn 57% ô, tay hạ 57%, nâng 68,4% (`VAT_SAN`, `VAT_NANG` 1,2 trong
+  ve-vector.js), chuyển cỡ mượt theo `nangK`, bóng lệch 0,19 → 0,32; càng kẹp / ngón tay xoay ôm vật theo cỡ; nam châm (vật dính, vật bay to dần), xe mờ, phim-mua-1 (`coT()`). Vật to hơn vỏ
+  robot (≈ 52% ô) nên tâm vật ≈ 0,4 ô trước tâm thân, chờm ô trước mặt. Title 4 nút Xưởng hàm; nhãn "Mở menu" (tiêu đề hộp giữ "Menu", khoá mới `menu.tieuDe`), "Ẩn khung nhắc này",
+  "Mở cài đặt". kiem-ve-vector 94 (mục 13h mới: phát lại 5 màn đo cỡ từng khung; lỗi giả đỏ), sau gộp người giao chạy 7 máy kiểm đạt.
+  Brief của người giao SAI một chỗ: so pixel "sàn 8, kẹp 10" là hai đơn vị khác nhau; pixel thật nâng 42,5%, hạ 38%, sàn 57% (pixel không đổi).
+  Chờ user xem ảnh: vật chờm ô trước mặt (tâm 0,4 ô) hay sát càng (0,52 ô); càng kẹp mở rộng trông như "sừng"; tay xoay bật khe lớn khi cầm (chưa có hoạt cảnh mở dần).
+  → V7: huy hiệu tay-gap / tay-xoay / combo thùng to lẹm viền (truyền k = 0); vật treo dưới drone nam châm chưa theo luật mới; hoạt cảnh mở dần cho tay xoay.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
