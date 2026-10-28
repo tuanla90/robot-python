@@ -296,6 +296,14 @@ else {
   kiem('pixel: hinhHoc = hằng pixel part { mz 24, mzs 10,5, bk 23,5, pp 1, dinh 11 }; reachCua = REACH 26; vatXoay công thức cũ', J(VeRobot.hinhHoc({ than: 'hai-banh', tay: 'hoi' })) === J({ mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 }) && VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }) === 26
     && J(VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0)) === J({ f: 22, l: 0, n: 10 }));
   V.datCheDo('pixel');
+  {   /* V7b (28/10): ở vector R1 LUÔN màu đội (vecDoiR1), bỏ qua sơn đã chọn / lưu từ pixel; pixel vẫn nhận sơn (Luu.son giữ nguyên) */
+    const coW = 'window' in globalThis, cuW = globalThis.window;
+    globalThis.window = { VeVector: V, Luu: { docCaiDat: () => ({ son: 'ngoc' }) }, Part: { SON: { ngoc: 1 }, DS_SON: [{ ma: 'ngoc', saoCan: 0 }] } };
+    let px = null, vec = null, vecLam = null;
+    try { V.datCheDo('pixel'); px = VeRobot.sonHieuLuc('vang'); V.datCheDo('vector'); vec = VeRobot.sonHieuLuc(''); vecLam = VeRobot.sonHieuLuc('lam'); }
+    finally { if (coW) globalThis.window = cuW; else delete globalThis.window; V.datCheDo('pixel'); }
+    kiem('(V7b) sơn đã lưu (ngoc) chỉ có hiệu lực ở PIXEL; ở vector sonHieuLuc bỏ qua sơn đã lưu → R1 = vang (màu đội vecDoiR1), R2 lam giữ', px === 'ngoc' && vec === 'vang' && vecLam === 'lam', J({ px, vec, vecLam }));
+  }
 }
 
 /* ================================================================= 10. mọi ký hiệu / ô / vật có hình vector (liệt kê từ code) */
@@ -580,7 +588,7 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
   const { execFileSync } = await import('node:child_process');
   const NEN_V4 = 'a962f7b';
   const GOC = path.resolve(day, '..');
-  const docMoi = (f) => fs.readFileSync(path.join(GAME, f), 'utf8');
+  const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const _nen = {};
   let coGit = true;
   const docNen = (f) => { if (_nen[f] === undefined) { try { _nen[f] = execFileSync('git', ['-C', GOC, 'show', NEN_V4 + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[f] = null; coGit = false; } } return _nen[f]; };
@@ -739,6 +747,7 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
     const hu = KV.ctx.VeVector.HU, cu = hu.hat; hu.hat = function (g, ds) { if (ds.length) g.fillRect(ds[0].x, ds[0].y, 1, 1); return cu.apply(this, arguments); };
     KV.ctx.SanVe.Field.prototype.oTia = function (d) { return [{ x: d.tu.x * 14 + 7, y: d.tu.y * 14 + 7 }]; };
     console.log('(và năm lỗi giả V4: nhánh pixel veDau tô thêm, hạt vector dùng fillRect, tia từ tâm xe, veCo vector bỏ devicePixelRatio, ổ hông hai-banh dời ra 10 đơn vị; matSuKien bỏ qua)');
+    console.log('(và lỗi giả V7b: bieuCam bỏ qua Cài đặt "Biểu cảm mắt", mục 13d phải đỏ)');
     KV.ctx.SanVe.Field.prototype.matSuKien = function () {};
     const vr = KV.ctx.VeRobot, cu2 = vr.veCo; vr.veCo = function (a, b, c, d) { return vr.ve(a, b, c, d / 100); };
     V.lay('than', 'hai-banh').oGan.hongTrai.x += 10;
@@ -788,6 +797,15 @@ console.log('\n== 12. (V3) Thân / tay / cảm biến: liệt kê từ part/*.js
     KV.datGio(KV.gio() + 3000); F.mungThang(); KV.datGio(KV.gio() + 700); kq.mung = mat();
     kiem('(13d) sự kiện vết kích hoạt đúng biểu cảm: đâm tường → ' + kq.dam + ', dấu ? → ' + kq.ngac + ', tới cờ → ' + kq.vui + ', xong màn (giữ tới khi hộp kết quả hiện, 700 ms) → ' + kq.mung,
       kq.dam === 'dam' && kq.ngac === 'ngac' && kq.vui === 'vui' && kq.mung === 'vui', J(kq));
+    {   /* V7b (28/10): Cài đặt "Biểu cảm mắt" TẮT (Luu.docCaiDat().mat === false) → ở vector cũng có tác dụng: mắt thường (không liếc / rung / nảy), chỉ còn chớp */
+      KV.ctx.Luu = { docCaiDat: () => ({ mat: false }) };
+      KV.datGio(KV.gio() + 3000); F.baoHieu('?', 900); const tatNgac = mat(); F.vis.gocMem = 1; const tt2 = {}; F.bieuCam(F.vis, tt2, KV.gio(), 0); F.vis.gocMem = 0;
+      await KV.chayToi(F.phatNhip({ robot: { x: 1, y: 0, huong: 2, banh: { trai: 1, phai: 1 } }, suKien: [{ ma: 'dam-tuong', tu: { x: 1, y: 0 }, den: { x: 1, y: 1 }, vat: 'tuong' }] }, 300), F); const tatDam = mat(), lac = F.vis.lacMat;
+      let coChop = false; for (let i = 0; i < 400 && !coChop; i++) { KV.datGio(KV.gio() + 25); const t3 = {}; F.bieuCam(F.vis, t3, KV.gio(), 0); if (/^chop/.test(t3.mat)) coChop = true; }
+      delete KV.ctx.Luu; KV.datGio(KV.gio() + 3000);
+      kiem('(13d, V7b) Cài đặt "Biểu cảm mắt" tắt → vector: dấu ? / đâm tường / quay vẫn mắt thường, không liếc, không rung; vẫn chớp (quét 10 s)',
+        tatNgac === 'thuong' && tatDam === 'thuong' && tt2.mat === 'thuong' && !lac && coChop, J({ tatNgac, tatDam, quay: tt2.mat, lac, coChop }));
+    }
     /* chớp theo thời gian: 2 xe của một sân nhiều robot, 14 giây không sự kiện */
     const cv2 = new KV.Cv(); cv2.parentNode = KV.cha; const F2 = new KV.ctx.SanVe.Field(cv2, {});
     F2.nap({ san: ['....', '....'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'banh', robot: { than: 'hai-banh', tay: null, camBien: [] }, doi: [{ batDau: { x: 0, y: 0, huong: 1 }, robot: { than: 'hai-banh', tay: null, camBien: [] } }, { batDau: { x: 3, y: 1, huong: 3 }, robot: { than: 'omni', tay: null, camBien: [] } }] });

@@ -1397,6 +1397,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         else if (kc >= (v.chopDoi ? 380 : 150)) { v.chopKe = now + 2500 + this.soMat(v) * 2500; v.chopDoi = this.soMat(v) < 0.25; }
       }
       v.lacMat = 0; v.nayMat = 0;
+      if (!coMatDong()) { ttR.mat = chop && !giam ? chop : 'thuong'; return; }      // V7b (28/10): Cài đặt "Biểu cảm mắt" tắt (hay ?mat=0) → mắt thường, chỉ chớp; không rung / nảy / liếc
       if (sk) {
         kieu = sk.kieu;
         var p = (now - sk.t0) / Math.max(1, sk.den - sk.t0);

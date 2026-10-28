@@ -180,6 +180,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function sonHieuLuc(son) {
     if (son === 'goc') return null;
     if (son && son !== 'vang') return son;
+    if (cheDoVector()) return 'vang';                 // V7b (28/10, người giao quyết): ở vector R1 LUÔN màu đội (vecDoiR1 #38BDF8), bỏ qua sơn đã chọn / lưu từ pixel (Luu.son giữ nguyên, hàng sơn ẩn ở vector)
     return sonChon() || 'vang';
   }
 
