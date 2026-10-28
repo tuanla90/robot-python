@@ -113,7 +113,7 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   khay / bong bóng / hướng dẫn / hộp thoại trên lớp phủ chàm, bỏ `steps()` + prefers-reduced-motion, chữ canvas Google Sans, `VeRobot.PHONG_NGOAI_SAN` ×1,2, Cài đặt hàng "Kiểu vẽ"
   (cả ở pixel, để đổi qua lại), cỡ ô nhỏ nhất 14 px (che-day-thung.9 ở 360 × 640), tương phản AA đo trong trang (thẻ R1 chữ trắng trên #38BDF8 2,14:1 đã sửa). Máy kiểm mục 14.
   Còn lại → V5b: icon `.pxi` (bàn tay hướng dẫn, nút sân) còn pixel; nút chỉ icon thiếu title; nút cuộn khay 20–22 px. → V6: phim `.md` / `.pg-*` còn mực / kem pixel và loại khỏi reduced-motion.
-  Chờ user: mục "Màu sơn R1" trong Cài đặt vẫn đổi bảng sơn pixel, ở vector R1 cố định #38BDF8 (ẩn ở vector?).
+  User 28/10 chốt: mục "Màu sơn R1" trong Cài đặt ẨN ở vector (R1 cố định #38BDF8), pixel giữ; giao V5b.
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
