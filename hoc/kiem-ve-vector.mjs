@@ -22,7 +22,7 @@
        (tay trước, hongTrai trái, hongPhai phải, tren góc mũi trái, sau đuôi); màu đội đúng ba chỗ trên mọi tổ hợp; trạng thái động ra hình khác; MỌI MÀN (cả từng robot
        của màn đội) vẽ được bằng vector qua VeRobot.ve.
   13. (gói V4) Hoạt cảnh trên sân: chạy san-ve.js THẬT trong ngữ cảnh vm (canvas giả, đồng hồ ảo, Math.random hạt cố định), phát lại vết ChamHoc (lời giải + lời sai) của 22 màn
-       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền c830c12 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
+       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền 6e04104 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
        sự kiện đâm / ? / tới cờ / xong màn / húc bạn / chờ → đúng biểu cảm, chớp 2,5–5 s lệch nhau); camera không đổi mắt (ống kính ở đuôi); cảm biến dính vỏ; VeRobot.veCo; cờ bay, sàn bàn cờ.
   14. (gói V5a) Giao diện phẳng màn chơi (choi-vector.css): nạp đủ phông Google Sans Flex / Code + choi-vector.css sau choi.css; mọi bộ chọn trong body.ve-vector (pixel y nguyên);
        không steps( / pixelated / Handjet / VT323; mọi steps() màn chơi của choi.css (và huong-dan.js) có luật phủ mượt, có prefers-reduced-motion; chữ canvas vector không VT323;
@@ -570,12 +570,13 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
        g. cờ bay (pha khác → hình khác), sàn bàn cờ hai tông, trang xem có mục V4.
    ====================================================================================================================================== */
 {
-  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền c830c12, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
+  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền 6e04104, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
   const vm = await import('node:vm');
   const { execFileSync } = await import('node:child_process');
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
-  const NEN_VEC = 'c830c12';                                                           // V7c1 (28/10): nền VECTOR = nhánh chính sau khi gộp V7b (mặc định vector, hết cầu tạm); 13a-v phát lại vector so với nền này
+  const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
+  const NEN_VEC = '6e04104';                                                           // V7c3 e3 (29/10): nền VECTOR = commit e3 của V7c3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };
@@ -725,6 +726,15 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
       soKhung += A.length;
       let i = 0; while (i < Math.max(A.length, B.length) && A[i] === B[i]) i++;
       if (i < Math.max(A.length, B.length)) { const a = (A[i] || '').split('\n'), b = (B[i] || '').split('\n'); let j = 0; while (a[j] === b[j]) j++; khac.push(c.ten + ' khung ' + i + ': nền ' + a[j] + ' / mới ' + b[j]); }
+      if (CHI_TIET_13A) {                                                                   // V7c3: `--chi-tiet-13a` in MỌI khung khác + lệnh bớt / thêm (đếm theo dòng lệnh) để soát đổi lệnh có chủ ý
+        let soKhac = 0; const gom = {};
+        for (let k = 0; k < Math.max(A.length, B.length); k++) {
+          if (A[k] === B[k]) continue; soKhac++;
+          const dem = new Map(); for (const l of (A[k] || '').split('\n')) dem.set(l, (dem.get(l) || 0) + 1); for (const l of (B[k] || '').split('\n')) dem.set(l, (dem.get(l) || 0) - 1);
+          for (const [l, n] of dem) if (n) { const kh = (n > 0 ? '− ' : '+ ') + l; (gom[kh] = gom[kh] || []).push(k); }
+        }
+        if (soKhac) console.log('    [chi tiết 13a-v] ' + c.ten + ': ' + soKhac + ' / ' + Math.max(A.length, B.length) + ' khung khác\n' + Object.keys(gom).map((kh) => '      ' + kh + '   (' + gom[kh].length + ' khung, đầu ' + gom[kh].slice(0, 4).join(',') + ')').join('\n'));
+      }
     }
     kiem('(13a-v) CHẾ ĐỘ VECTOR y nguyên: ' + CA.length + ' lần phát lại (lời giải + lời sai, ' + MAN_V4.length + ' màn kể cả màn nhiều robot), ' + soKhung + ' khung — canvas sân + lớp phủ robot của bản mới ra đúng từng lệnh như nền vector ' + NEN_VEC, khac.length === 0 && soKhung > 2000, khac.slice(0, 3).join('\n      '));
   }
@@ -994,6 +1004,7 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     console.log('(và năm lỗi giả V5a: thêm một luật không có body.ve-vector có steps(), bỏ phần phủ .ffr.rung, chữ canvas về VT323, hàng Kiểu vẽ quay lại (14f); thêm một cặp chữ / nền tương phản 2:1)');
     cssV += '\n.brick{animation:blink .4s steps(1) 4}\n';
     cssV = cssV.replace(/body\.ve-vector \.ffr\.rung\{[^}]*\}/, '');
+    cssP += '\n.ffr.rung{animation:rung .3s steps(2) 1}\n';                       // V7c3: choi.css hết steps() nên lỗi giả "bỏ phủ .ffr.rung" phải kèm steps() quay lại choi.css (không thì 14c không đỏ)
     hieuUng = hieuUng.replace("var PHONG_CHU = '", "var PHONG_CHU = '8px VT323, monospace'; var _bo = '");
     caiDat += '\nfunction hangKieuVe() { return VeVector.luuCheDo("pixel"); }\n';   // V7c1: lỗi giả hàng Kiểu vẽ quay lại → 14f đỏ
     cssV += '\nbody.ve-vector .thu-loi-gia{color:var(--g-vecKeDam);background:var(--g-vecThe)}\n';
@@ -1030,11 +1041,11 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     kiem('(14a) choi.html nạp font/font.css và choi-vector.css SAU choi.css; font.css khai Google Sans Flex / Code đủ bộ latin + latin-ext + vietnamese (tệp .woff2 có thật); body.ve-vector đặt --px / --mono về phông mới',
       ok, J({ linkCss, thieu, goc: !!goc }));
   }
-  /* b. pixel y nguyên: mọi luật của choi-vector.css chỉ chọn trong body.ve-vector; tệp không có steps( / pixelated / Handjet / VT323 */
+  /* b. mọi luật của choi-vector.css chỉ chọn trong body.ve-vector (giữ độ ưu tiên phủ lên choi.css); tệp không có steps( / pixelated / Handjet / VT323 */
   {
     const ngoai = []; for (const r of luatV) for (const s of r.sel.split(',')) if (!/^body\.ve-vector[\s.:>[]|^body\.ve-vector$/.test(s.trim())) ngoai.push(s.trim());
     const cam = ['steps(', 'pixelated', 'Handjet', 'VT323'].filter((w) => luatV.some((r) => r.than.includes(w)));
-    kiem('(14b) choi-vector.css: mọi bộ chọn bắt đầu bằng body.ve-vector (chế độ pixel không có lớp này → choi.css chạy y nguyên); không có steps( / pixelated / Handjet / VT323 trong khai báo',
+    kiem('(14b) choi-vector.css: mọi bộ chọn bắt đầu bằng body.ve-vector (body luôn có lớp này; tiền tố giữ độ ưu tiên phủ lên choi.css, V7c3 giữ); không có steps( / pixelated / Handjet / VT323 trong khai báo',
       !ngoai.length && !cam.length, J({ ngoai: ngoai.slice(0, 6), cam }));
   }
   /* c. mọi hoạt cảnh steps() của MÀN CHƠI trong choi.css (và kiểu chèn của huong-dan.js) có luật phủ ở vector đặt lại animation / transition;
@@ -1047,10 +1058,11 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     const thieu = can.concat(hdChen).filter((s) => !phu.has(s) || /steps\(/.test(phu.get(s)));
     const tpOk = /veMuot\(\) \? \{ duration: \d+, easing: 'cubic-bezier/.test(thanhPhan) && /giamChuyenDong\(\)/.test(thanhPhan);
     const giam = luatV.some((r) => /prefers-reduced-motion:\s*reduce/.test(r.trong) && /animation-duration:\.01ms!important/.test(r.than) && /transition-duration:\.01ms!important/.test(r.than));
-    kiem('(14c) không còn steps() ở màn chơi vector: ' + can.length + ' bộ chọn steps() của choi.css (+ kiểu chèn huong-dan.js) đều có luật phủ animation / transition mượt; dòng code đổi chỗ (thanh-phan.js) trượt cubic-bezier; có @media prefers-reduced-motion',
-      !thieu.length && tpOk && giam, J({ thieu: thieu.slice(0, 8), tpOk, giam }));
+    const conSteps = luatP.filter((r) => /steps\(/.test(r.than)).map((r) => r.sel);                // V7c3: choi.css không còn steps() nào (kể cả phim / màn chọn)
+    kiem('(14c) không còn steps() ở màn chơi vector: choi.css 0 bộ chọn steps() (V7c3; có ' + can.length + ' ngoài phim thì phải có luật phủ mượt), kiểu chèn huong-dan.js có luật phủ; dòng code đổi chỗ (thanh-phan.js) trượt cubic-bezier; có @media prefers-reduced-motion',
+      !thieu.length && !conSteps.length && tpOk && giam, J({ thieu: thieu.slice(0, 8), conSteps: conSteps.slice(0, 8), tpOk, giam }));
   }
-  /* d. phông chữ: choi.css chỉ gõ Handjet / VT323 qua --px / --mono (vector đã đổi biến); chữ canvas vector (ve-vector-hieu-ung.js) không còn VT323 */
+  /* d. phông chữ: choi.css không gõ thẳng phông pixel cũ (V7c3: --px / --mono của choi.css cũng trỏ Google Sans); chữ canvas vector (ve-vector-hieu-ung.js) không còn VT323 */
   {
     const goThang = luatP.filter((r) => /font(-family)?\s*:[^;]*(Handjet|VT323)/.test(r.than)).map((r) => r.sel);
     const canvasCu = (hieuUng.match(/'[^'\n]*VT323[^'\n]*'/g) || []).length;                // chuỗi phông trong mã (chú thích được nhắc tên VT323)
@@ -1105,7 +1117,7 @@ console.log('\n== 15. (V7c2) Phanh chống tái phát: không thư mục game/pa
     ['Ve.tiles / make* / veCua / HINH / khungGo / datChatLieu', /(?<!['"])\bVe\.(tiles|make[A-Z]\w*|veCua|HINH|Painter|khungGo|datChatLieu|spriteTrum|icon)\b/],     // (?<!['"]): khoá chuỗi 'Ve.makeConv' của bảng VE_TRUC_TIEP (ve-vector-ky-hieu.js) là dữ liệu, không phải lời gọi
     ['pixelated', /pixelated/],                                                                                 // image-rendering trong JS (CSS để V7c3)
     ['?ve=pixel / rẽ theo VeVector.bat() / cheDoVector()', /ve=pixel|VeVector\.bat\(\)\s*[?&|]|cheDoVector\(\)\s*[?&|]|VeRobot\.coPart|dungPart|\?part=0/],
-    ['Handjet / VT323 làm phông dự phòng', /["']Handjet["']|["']VT323["']/]                                       // phông pixel (g.font đo chữ '8px VT323, monospace' của san-ve.js không khớp mẫu này: V7c3 xét)
+    ['Handjet / VT323 làm phông dự phòng', /["']Handjet["']|["']VT323["']/]                                       // phông pixel; chuỗi có VT323 / Handjet ở bất kỳ đâu: mục 15c (V7c3)
   ];
   const boChuThich = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:\\'"])\/\/[^\n]*/g, '$1');
   const tepGame = fs.readdirSync(GAME).filter((f) => /\.js$/.test(f)).sort();
@@ -1120,6 +1132,29 @@ console.log('\n== 15. (V7c2) Phanh chống tái phát: không thư mục game/pa
   if (/<script src="part\//.test(html)) sai.push('choi.html còn nạp part/');
   for (const f of tepGame) for (const [ten, re] of MAU_CAM) if (re.test(nguonJs[f])) sai.push(f + ': ' + ten);
   kiem('(15) V7c2: không thư mục game/part, choi.html không nạp part/, ' + tepGame.length + ' tệp JS của hoc/game (bỏ chú thích) không còn ' + MAU_CAM.map((m) => m[0]).join(' · '), !sai.length, sai.slice(0, 12).join(' | '));
+  /* 15c (V7c3, 29/10): CSS / phông / bộ đệm. Soát trên nguồn đã bỏ chú thích. */
+  {
+    const boCT = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '');
+    const css = { 'choi.css': boCT(docGame('choi.css')), 'choi-vector.css': boCT(docGame('choi-vector.css')) };
+    let font = docGame('font/font.css'), sw = docGame('sw.js'), tepFont = fs.readdirSync(path.join(GAME, 'font'));
+    const js = Object.assign({}, nguonJs);
+    if (LOI_GIA) {
+      console.log('(đang cắm lỗi giả mục 15c: choi.css có pixelated / steps() / --wood / VT323, font.css thêm @font-face Handjet + tệp handjet-latin.woff2, san-ve.js đo chữ VT323, sw.js BAN duong-hoc-v1 — phải ĐỎ)');
+      css['choi.css'] += '\n.loi-gia{image-rendering:pixelated;animation:x 1s steps(2);background-image:var(--wood);font-family:"VT323"}\n';
+      font += "\n@font-face { font-family: 'Handjet'; src: url(handjet-latin.woff2) format('woff2'); }\n"; tepFont = tepFont.concat('handjet-latin.woff2');
+      js['san-ve.js'] += "\ng.font = '8px VT323, monospace';\n"; sw = sw.replace(/var BAN = '[^']*'/, "var BAN = 'duong-hoc-v1'");
+    }
+    const sai = [];
+    for (const [f, t] of Object.entries(css)) for (const [ten, re] of [['pixelated', /pixelated/], ['steps(', /steps\(/], ['--wood / --chalk / --stud', /--(wood|chalk|stud)\b/], ['Handjet / VT323', /Handjet|VT323/]]) if (re.test(t)) sai.push(f + ': ' + ten);
+    const soFF = (boCT(font).match(/@font-face/g) || []).length;
+    if (soFF !== 6) sai.push('font.css có ' + soFF + ' @font-face (phải 6)');
+    if (/Handjet|VT323/.test(boCT(font))) sai.push('font.css còn Handjet / VT323');
+    const woffCu = tepFont.filter((f) => /^(handjet|vt323)-/i.test(f)); if (woffCu.length) sai.push('font/ còn ' + woffCu.join(', '));
+    for (const f of tepGame) if (/['"][^'"\n]*(VT323|Handjet)[^'"\n]*['"]/.test(js[f])) sai.push(f + ': chuỗi có VT323 / Handjet');
+    const ban = /var BAN = '([^']*)'/.exec(sw); if (!ban || ban[1] === 'duong-hoc-v1') sai.push("sw.js BAN = 'duong-hoc-v1' (bộ đệm cũ còn part/*.js, woff2 pixel)");
+    kiem('(15c) V7c3: choi.css / choi-vector.css (bỏ chú thích) không pixelated / steps( / --wood --chalk --stud / Handjet VT323; font.css đúng 6 @font-face, không Handjet / VT323, thư mục font không còn woff2 handjet / vt323; ' + tepGame.length + " tệp JS game không còn chuỗi VT323 / Handjet (cả chuỗi đo chữ); sw.js BAN ≠ 'duong-hoc-v1'",
+      !sai.length, sai.slice(0, 14).join(' | '));
+  }
   kiem('(15b) V7c2: hoc/chup-du-lieu-pixel.mjs và tools/ve-icon.py đã xoá; du-lieu-chup-pixel.json còn (chuẩn của kiem-lap-rap / mục 12 / A7); hoc/game/ve.js chỉ còn icon svg + mk + MAU + CO_ICON (< 120 dòng)',
     !fs.existsSync(path.join(day, 'chup-du-lieu-pixel.mjs')) && !fs.existsSync(path.join(day, '..', 'tools', 've-icon.py')) && fs.existsSync(path.join(day, 'du-lieu-chup-pixel.json')) && docGame('ve.js').split('\n').length < 120);
 }

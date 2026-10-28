@@ -94,7 +94,7 @@ console.log('\n== c. phông: Google Sans Flex / Code nhúng data:, không Handje
     if (!fontCss.includes('url(data:font/woff2;base64,' + b64 + ')')) doi.push(f);
   }
   kiem('6 tệp gsflex-* / gscode-*.woff2 có trong font.css gói đúng từng byte base64', doi.length === 0, 'khác / thiếu: ' + J(doi));
-  kiem('không @font-face Handjet / VT323 (phông pixel) trong gói; nguồn font.css vẫn có 12 @font-face (pixel giữ cho ?ve=pixel ngoài Artifact)', !/Handjet|VT323/.test(ho.join()) && (doc('font/font.css').match(/@font-face/g) || []).length === 12, J(ho));
+  kiem('không @font-face Handjet / VT323 (phông pixel) trong gói; nguồn font.css đúng 6 @font-face (V7c3: Handjet / VT323 + 6 woff2 đã xoá)', !/Handjet|VT323/.test(ho.join()) && (doc('font/font.css').match(/@font-face/g) || []).length === 6, J(ho));
   kiem('index.html không gọi Google Fonts (fonts.googleapis / fonts.gstatic)', !/fonts\.g(oogleapis|static)\.com/.test(index));
 }
 

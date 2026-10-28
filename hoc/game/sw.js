@@ -8,7 +8,7 @@
    ========================================================================== */
 'use strict';
 
-var BAN = 'duong-hoc-v1';
+var BAN = 'duong-hoc-v2';      // V7c3 (29/10): v1 → v2 bỏ bộ đệm cũ (part/*.js, ve.js / huy-hieu.js pixel, woff2 Handjet / VT323); activate dưới xoá mọi bộ đệm khác tên
 var HEN_MS = 4000;
 var THEM = ['choi.html', 'manifest.webmanifest', 'font/font.css', 'icon/icon-192.png', 'icon/icon-512.png', 'icon/icon-maskable-512.png'];
 

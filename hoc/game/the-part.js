@@ -54,7 +54,7 @@
     var c = Ve.mk(catLe(cv), VeRobot.heSoCss(cv)); c.classList.add('tp-hinh-cv');
     return c;
   }
-  /** Câu chữ có tên lệnh: phần `ten()`, True / False, "chuỗi" vẽ bằng phông code (phông Handjet vẽ "()" như "[]"). */
+  /** Câu chữ có tên lệnh: phần `ten()`, True / False, "chuỗi" vẽ bằng phông code (lý do gốc: phông pixel cũ vẽ "()" như "[]"). */
   var RE_CODE = /([A-Za-z_…]+\((?:n|path|d)?\)|\bTrue\b|\bFalse\b|"[a-zA-Z]+")/;
   function chuCode(lop, s) {
     var el = h('span', lop);
