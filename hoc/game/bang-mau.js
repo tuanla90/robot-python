@@ -242,6 +242,7 @@
     vecThe: '#ffffff',                 // mặt thẻ / nút phụ / hộp thoại (--surface)
     vecTheLom: '#f1f0f9',              // mặt lõm: ô nhập, vùng phụ, đáy khay (--surface-sunken ngả lavender)
     vecChu: '#1e1b4b',                 // chữ chính chàm đậm (indigo-950): 15,9:1 trên trắng
+    vecChuRgb: '30,27,75',             // bộ ba của vecChu: lớp phủ chàm mờ sau hộp thoại (#lop-hop)
     vecChuPhu: '#475569',              // chữ phụ (slate-600, --fg-muted): 7,6:1 trên trắng
     vecChuMo: '#5f6d82',               // chữ mờ nhất còn đọc được (slate-550, --fg-faint): 4,8:1 trên nền lõm
     vecKe: '#e2e0f0',                  // viền thường (--stroke ngả lavender)

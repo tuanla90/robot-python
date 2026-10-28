@@ -361,7 +361,7 @@ body.ve-vector .hd-bong.duoi .hd-mui{box-shadow:-1.5px -1.5px 0 var(--g-vecBrand
 body.ve-vector .hd-bong.tren .hd-mui{box-shadow:1.5px 1.5px 0 var(--g-vecBrand)}
 
 /* --- hộp thoại (TP.Hop: kết quả màn, menu, xác nhận, Bộ phận mới, mở khoá, mẹo chơi, Cài đặt, Hàm mới): thẻ trắng bo lớn trên lớp phủ chàm mờ */
-body.ve-vector #lop-hop{background:rgba(30,27,75,.4)}                    /* không backdrop-filter: #stage co giãn bằng transform, mờ nền làm lặp mép */
+body.ve-vector #lop-hop{background:rgba(var(--g-vecChuRgb),.4)}                    /* không backdrop-filter: #stage co giãn bằng transform, mờ nền làm lặp mép */
 body.ve-vector .hop{padding:8px;background:var(--g-vecThe);background-image:none;border-radius:var(--r-lg);box-shadow:inset 0 0 0 1px var(--g-vecKe),var(--elev-3),0 2px 6px rgba(var(--g-vecBongRgb),.1)}
 body.ve-vector .hop-td{height:40px;margin:0 0 2px;padding:0 12px;background:none;color:var(--g-vecChu);font:700 18px/1.2 var(--px);letter-spacing:0;box-shadow:none}
 body.ve-vector .hop-than{padding:6px 12px 12px;background:none;background-image:none;box-shadow:none;color:var(--g-vecChu)}
