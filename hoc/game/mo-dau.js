@@ -8,7 +8,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Xong phim là ba trang mẹo chơi (gioi-thieu.js: viết lệnh + Chạy, gom sao, mở bộ phận mới).
    ung-dung.js chiếu một lần khi chưa có cờ 'mo-dau' (Luu.daXem); Cài đặt có nút "Xem lại phim mở đầu".
    Chạm khung tranh hoặc nút Tiếp để sang khung; "Bỏ qua" ở góc trên.
-   Hình lấy từ bộ vẽ sẵn có: VeRobot (R1), Ve.ico (xe, thùng, icon đèn bộ phận), Ve.tiles() (tường, thùng gỗ, cờ).
+   Hình lấy từ bộ vẽ vector sẵn có: VeRobot (R1), PhimVector (icon VeIcon, ô tường / thùng gỗ / cờ, xe tải).
    Gói V6c: ở vector cùng các hình đó vẽ bằng bộ vẽ vector (PhimVector, VeIcon, VeRobot mắt biểu cảm); nền cảnh (mưa, đường, sàn) ở giao-dien-vector-b.css mục 10.
    ========================================================================== */
 (function () {

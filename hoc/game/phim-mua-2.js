@@ -6,7 +6,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Lời khung n ở chu.js khóa 'pg.<mã gói>.<n>' (≤ 14 từ). Truyện nối phim gói 10 mùa 1: R1 lăn ra khỏi xưởng, thấy bánh xích trên đồi;
    mùa 2 R1 lắp lại xích, nhận súng hơi, mắt hồng ngoại, rồi làm nhà máy cũ chạy lại; phim cuối nhá mùa 3 "Tín hiệu" (nhện, nam châm, sóng từ).
    Hình: sân mini nhìn từ trên (c.san, ô 56 px, robot tỉ lệ 2) hay dải sàn (md-san, robot tỉ lệ 3). Cơ chế mới của mùa 2 (băng chuyền, nút bắn và quầng nóng,
-   thùng nặng, bóng hơi) vẽ bằng PhimVector.bang / nutBan / thungNang / bong / nong ở vector; ở pixel rơi về Ve.tiles / Ve.ico (chỉ cần chạy không lỗi).
+   thùng nặng, bóng hơi) vẽ bằng PhimVector.bang / nutBan / thungNang / bong / nong (V7c2: hết đường lùi pixel; thiếu thì icon / div).
    Huy hiệu mùa 2 chưa có bản vector thì ở vector thay bằng icon bộ phận (không có canvas pixel trong phim vector).
    R1 sơn mặc định (vector: xanh đội R1), R2 sơn lam (vector: hồng đội R2).
    Node (máy kiểm kiem-phim-goi.mjs) require tệp này lấy bảng PHIM (không chạy hàm vẽ nào).

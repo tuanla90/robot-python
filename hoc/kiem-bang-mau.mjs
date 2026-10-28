@@ -184,7 +184,30 @@ console.log('\n== 3. Token và thứ tự nạp ==');
     'hhNauV11', 'hhTimV1', 'hhTimV2', 'hhTimV3', 'hhTrangV1', 'hhTrangV2', 'hhTrangV3', 'hhVangV1', 'hhVangV2', 'hhVangV3', 'hhVangV4', 'hhVangV5',
     'hhVangV6', 'hhVangV7', 'hhXamV1', 'hhXamV2', 'hhXamV3', 'hhXamV4', 'hhXamV5', 'hhXamV6', 'hhXamV7', 'hhXamV8', 'hhXamV9', 'hhXamV10',
     'hhXamV11', 'hhXamV12', 'hhXamV13', 'hhXamV14', 'hhXanhLaV1', 'hhXanhLaV2', 'hhXanhLaV3', 'hhXanhLaV4', 'hhXanhLaV5', 'hhXanhLoV1', 'hhXanhLoV2', 'hhXanhLoV3',
-    'hhXanhLoV4', 'hhXanhLoV5', 'hhXanhLoV6', 'hhXanhLoV7', 'hhXanhLoV8'];
+    'hhXanhLoV4', 'hhXanhLoV5', 'hhXanhLoV6', 'hhXanhLoV7', 'hhXanhLoV8',
+    /* V7c2 d6 (28/10): ve.js bỏ Painter / chất liệu / lưới icon HINH / sprite / ô sân / robot tạm -> vai sau hết chỗ dùng; V7c3 xoá (257 vai) */
+    'sanLamToi', 'sanXanhLoToi', 'sanNgoc', 'sanNau', 'co', 'coSang', 'coToi', 'tuong', 'tuongSang', 'tuongToi', 'sanDen', 'vatCam',
+    'vatNau', 'vatKem', 'vatLam', 'vatTrang', 'vatXam', 'vatVang', 'vatDo', 'robotLamToi', 'robotTrang', 'robotXanhLo', 'robotDo', 'robotNau',
+    'robotNauSang', 'robotVang', 'robotVangSang', 'tiaDenRgb', 'moXanhLa', 'bangSangV6', 'bangSangV7', 'bangSangV8', 'camV4', 'camV5', 'camSangV6', 'camToiV5',
+    'camToiV6', 'camToiV7', 'camToiV8', 'camToiV9', 'camToiV10', 'camToiV11', 'coV1', 'coV2', 'coV3', 'coSangV1', 'coSangV2', 'coSangV3',
+    'coSangV4', 'coToiV1', 'denV5', 'doV17', 'doSangV2', 'doSangV12', 'doToiV10', 'doToiV11', 'goV14', 'goV15', 'goV16', 'goV17',
+    'goV18', 'goV19', 'goV20', 'goV21', 'goV22', 'goV23', 'goV24', 'goV25', 'goV26', 'goV27', 'goV28', 'goV29',
+    'goV30', 'goV31', 'goV32', 'goV33', 'goV34', 'goV35', 'goV36', 'goV37', 'goSangV21', 'goSangV22', 'goSangV23', 'goSangV24',
+    'goSangV25', 'goSangV26', 'goSangV27', 'goSangV28', 'goSangV29', 'goSangV30', 'goSangV31', 'goSangV32', 'goSangV33', 'goSangV34', 'goSangV35', 'goSangV36',
+    'goSangV37', 'goSangV38', 'goToiV14', 'goToiV15', 'goToiV16', 'goToiV17', 'goToiV18', 'goToiV19', 'goToiV20', 'hongV3', 'kemV12', 'kemV13',
+    'kemSangV5', 'lamV16', 'lamSangV11', 'lamToiV1', 'moToiV25', 'robotLamV10', 'robotNauV4', 'robotTimV5', 'robotTimV6', 'robotTimSangV3', 'robotTimSangV4', 'robotTimSangV5',
+    'robotTrangV1', 'robotVangSangV1', 'robotXamV1', 'robotXamToiV3', 'robotXamToiV4', 'robotXanhLoV3', 'robotXanhLoV4', 'robotXanhLoToiV1', 'robotXanhLoToiV3', 'sanCamV2', 'sanCamV3', 'sanCamV4',
+    'sanCamV5', 'sanCamV6', 'sanCamV7', 'sanCamToiV1', 'sanCamToiV3', 'sanCamToiV4', 'sanCamToiV5', 'sanDenV1', 'sanDoV4', 'sanDoV5', 'sanDoV8', 'sanDoV9',
+    'sanDoV10', 'sanDoV11', 'sanDoSangV2', 'sanDoSangV5', 'sanKemV3', 'sanKemV4', 'sanKemV5', 'sanKemToiV1', 'sanLamV9', 'sanLamV10', 'sanLamV11', 'sanLamV18',
+    'sanLamV19', 'sanLamV20', 'sanLamV21', 'sanLamV22', 'sanLamToiV2', 'sanLamToiV3', 'sanLamToiV4', 'sanLamToiV5', 'sanLamToiV11', 'sanLamToiV12', 'sanLamToiV13', 'sanLamToiV14',
+    'sanLamToiV15', 'sanLamToiV16', 'sanLamToiV17', 'sanLamToiV18', 'sanNauV2', 'sanNauSangV1', 'sanNauSangV4', 'sanNauSangV5', 'sanNauSangV6', 'sanNauSangV7', 'sanNauSangV8', 'sanNauSangV9',
+    'sanNauSangV10', 'sanNauSangV11', 'sanNauSangV12', 'sanTimV1', 'sanTrangV4', 'sanTrangV7', 'sanTrangV8', 'sanTrangV9', 'sanVangSangV2', 'sanVangSangV3', 'sanVangSangV4', 'sanXamToiV2',
+    'sanXamToiV6', 'sanXamToiV7', 'sanXamToiV8', 'sanXamToiV9', 'sanXanhLaV1', 'sanXanhLaV2', 'sanXanhLaV3', 'sanXanhLaToiV3', 'sanXanhLaToiV4', 'sanXanhLaToiV5', 'sanXanhLaToiV7', 'sanXanhLaToiV8',
+    'sanXanhLaToiV9', 'sanXanhLoV9', 'sanXanhLoV10', 'sanXanhLoToiV5', 'sanXanhLoToiV6', 'sanXanhLoToiV7', 'sanXanhLoToiV8', 'timV8', 'trangV15', 'trangV16', 'trangToiV3', 'trangToiV8',
+    'tuongV1', 'tuongV2', 'tuongSangV1', 'tuongToiV1', 'vangV9', 'vangToiV2', 'vangToiV4', 'vangToiV5', 'vangToiV6', 'vatCamV1', 'vatLamV1', 'vatLamV2',
+    'vatLamV3', 'vatLamV4', 'vatLamV5', 'vatLamV6', 'vatLamV7', 'vatLamV8', 'vatLamV9', 'vatLamV10', 'vatLamV11', 'vatLamV12', 'vatLamV13', 'vatLamV14',
+    'vatLamV15', 'vatLamV16', 'vatNauV1', 'vatTrangV1', 'vatXamV1', 'xamV3', 'xamV10', 'xamV11', 'xamV12', 'xamToiV6', 'xamToiV10', 'xamToiV11',
+    'xamToi2V6', 'xamToi2V7', 'xamToi2V8', 'xanhLaSangV17', 'xanhLoSang2V9'];
   const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
   const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));

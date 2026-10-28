@@ -322,11 +322,11 @@ const coHinh = (loai, ma) => !!V.lay(loai, ma);
   const kyHinh = []; for (const loai of ['o', 'vat']) for (const ma of V.ds(loai)) for (const k of V.lay(loai, ma).ky || []) kyHinh.push(k);
   kiem('ký hiệu khai trong từng hình (ky) đều là ký hiệu sân thật', kyHinh.every((k) => ky.includes(k)), J(kyHinh.filter((k) => !ky.includes(k))));
 
-  /* ô pixel: mọi khoá của tileCache trong ve.js */
-  const veSrc = fs.readFileSync(path.join(GAME, 've.js'), 'utf8'), m = /tileCache = \{([\s\S]*?)\n    \};/.exec(veSrc);
-  const khoa = m ? [...new Set([...m[1].matchAll(/(?:^|[\s,{])([A-Za-z]\w*)\s*:/g)].map((x) => x[1]))] : [];
+  /* bảng nối TILES (tên ô của bộ pixel cũ → hình vector; V7c2: Ve.tiles() đã xoá, bảng là dữ liệu của ve-vector-ky-hieu.js) */
+  const veSrc = fs.readFileSync(path.join(GAME, 've.js'), 'utf8');
+  const khoa = Object.keys(V.TILES);
   const thieuT = khoa.filter((k) => !V.TILES[k] || !(coHinh('o', V.TILES[k]) || coHinh('vat', V.TILES[k])));
-  kiem(khoa.length + ' ô của Ve.tiles() (đọc từ ve.js: ' + khoa.join(', ') + ') đều có hình vector trong VeVector.TILES', khoa.length >= 15 && thieuT.length === 0, 'thiếu: ' + J(thieuT));
+  kiem(khoa.length + ' tên ô của bảng nối VeVector.TILES (' + khoa.join(', ') + ') đều trỏ tới hình vector đã đăng ký; ve.js không còn Ve.tiles / Painter (V7c2)', khoa.length >= 15 && thieuT.length === 0 && !/tileCache = |function Painter\(|function tiles\(/.test(veSrc), 'thiếu: ' + J(thieuT));
 
   /* hàm vẽ trực tiếp của san-ve.js */
   const svSrc = fs.readFileSync(path.join(GAME, 'san-ve.js'), 'utf8');
@@ -1091,6 +1091,37 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
     const ok = xem.includes('id="v5a"') && /choi-vector\.css/.test(xem) && /class="[^"]*\bbrick\b/.test(xem) && /class="[^"]*\bstrip\b/.test(xem) && /class="[^"]*\bbt\b/.test(xem);
     kiem('(14g) trang xem hinh-mau/xem-vector.html có mục V5a (nạp choi-vector.css; mẫu nút, khối lệnh, dòng code ở các trạng thái)', ok);
   }
+}
+
+/* ============================================================ 15. (V7c2, 28/10) PHANH CHỐNG TÁI PHÁT: bộ vẽ pixel không quay lại */
+console.log('\n== 15. (V7c2) Phanh chống tái phát: không thư mục game/part, choi.html không nạp part/, mã game không còn Part. / this.vec / HINH pixel / Painter / Ve.tiles / pixelated / rẽ theo chế độ ==');
+{
+  // Mẫu cấm (soát trên nguồn JS của hoc/game đã bỏ chú thích khối và chú thích dòng; mẫu nào cũng là thứ V7c1 / V7c2 đã gỡ):
+  const MAU_CAM = [
+    ['Part.*', /(?<![\w$.])Part\.(ghep|lay|hamGoc|_veMot|veVatNho|rot90|ds|SON|DS_SON|LOP_SON|K)\b/],          // bộ pixel game/part
+    ['this.vec', /\bthis\.vec\b/],                                                                              // san-ve.js rẽ chế độ
+    ["HINH['x'] = function", /HINH\['[\w-]+'\] = function/],                                                    // huy hiệu pixel
+    ['Painter', /\bnew Painter\(|function Painter\(|\bPainter\.prototype\b/],                                   // bộ vẽ điểm ảnh của ve.js / huy-hieu.js
+    ['Ve.tiles / make* / veCua / HINH / khungGo / datChatLieu', /(?<!['"])\bVe\.(tiles|make[A-Z]\w*|veCua|HINH|Painter|khungGo|datChatLieu|spriteTrum|icon)\b/],     // (?<!['"]): khoá chuỗi 'Ve.makeConv' của bảng VE_TRUC_TIEP (ve-vector-ky-hieu.js) là dữ liệu, không phải lời gọi
+    ['pixelated', /pixelated/],                                                                                 // image-rendering trong JS (CSS để V7c3)
+    ['?ve=pixel / rẽ theo VeVector.bat() / cheDoVector()', /ve=pixel|VeVector\.bat\(\)\s*[?&|]|cheDoVector\(\)\s*[?&|]|VeRobot\.coPart|dungPart|\?part=0/],
+    ['Handjet / VT323 làm phông dự phòng', /["']Handjet["']|["']VT323["']/]                                       // phông pixel (g.font đo chữ '8px VT323, monospace' của san-ve.js không khớp mẫu này: V7c3 xét)
+  ];
+  const boChuThich = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:\\'"])\/\/[^\n]*/g, '$1');
+  const tepGame = fs.readdirSync(GAME).filter((f) => /\.js$/.test(f)).sort();
+  const nguonJs = Object.fromEntries(tepGame.map((f) => [f, boChuThich(docGame(f))]));
+  let html = CHOI_SRC, coPart = fs.existsSync(path.join(GAME, 'part'));
+  if (LOI_GIA) {                                                                                               // lỗi giả: bộ pixel "quay lại" ở ba chỗ
+    console.log('(đang cắm lỗi giả mục 15: coi như còn thư mục part, choi.html nạp part/part.js, san-ve.js có this.vec + Part.ghep — phải ĐỎ)');
+    coPart = true; html += '\n<script src="part/part.js"></script>'; nguonJs['san-ve.js'] += '\nif (this.vec) Part.ghep(cfg, st, h);\n';
+  }
+  const sai = [];
+  if (coPart) sai.push('còn thư mục hoc/game/part');
+  if (/<script src="part\//.test(html)) sai.push('choi.html còn nạp part/');
+  for (const f of tepGame) for (const [ten, re] of MAU_CAM) if (re.test(nguonJs[f])) sai.push(f + ': ' + ten);
+  kiem('(15) V7c2: không thư mục game/part, choi.html không nạp part/, ' + tepGame.length + ' tệp JS của hoc/game (bỏ chú thích) không còn ' + MAU_CAM.map((m) => m[0]).join(' · '), !sai.length, sai.slice(0, 12).join(' | '));
+  kiem('(15b) V7c2: hoc/chup-du-lieu-pixel.mjs và tools/ve-icon.py đã xoá; du-lieu-chup-pixel.json còn (chuẩn của kiem-lap-rap / mục 12 / A7); hoc/game/ve.js chỉ còn icon svg + mk + MAU + CO_ICON (< 120 dòng)',
+    !fs.existsSync(path.join(day, 'chup-du-lieu-pixel.mjs')) && !fs.existsSync(path.join(day, '..', 'tools', 've-icon.py')) && fs.existsSync(path.join(day, 'du-lieu-chup-pixel.json')) && docGame('ve.js').split('\n').length < 120);
 }
 
 console.log('\n---------------------------------------------');

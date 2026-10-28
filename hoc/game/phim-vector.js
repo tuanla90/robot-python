@@ -60,14 +60,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [BM.timV7, 'vecCong2'], [BM.do, 'vecDo']];
   /** Màu pixel của phim → vai vector cùng họ (không có thì tím chàm thương hiệu). */
   function mauVec(mau) { for (var i = 0; i < MAU_VEC.length; i++) if (MAU_VEC[i][0] === mau) return BM[MAU_VEC[i][1]]; return BM.vecBrand; }
-  /** Cỡ CSS của Ve.ico(ten, s) tính từ lưới hình (Ve.HINH: cột / hàng + viền 1 điểm mỗi bên; 'edit' là bút chì 9 × 9), không vẽ canvas pixel nào (gói V6c). */
+  /** Cỡ CSS của Ve.ico(ten, s): bảng số Ve.CO_ICON (ve.js; V7c2: lưới pixel Ve.HINH đã xoá, bảng là nguồn duy nhất); tên không có: 12 × 12. */
   function coIco(ten, s) {
     s = s || 2;
-    var rows = root.Ve && root.Ve.HINH && root.Ve.HINH[ten];
-    if (ten === 'edit') return { w: 9 * s, h: 9 * s };
-    var RIENG = { star: [11, 10], lock: [12, 14], mui: [10, 9], trum: [24, 24] };     // hình vẽ riêng của ve.js (spriteStar / spriteLock / spriteMui / spriteTrum; V7c1: trùm 24 × 24 như ve.js CO_ICON, trước ghi nhầm 26)
-    if (!rows) { var r = RIENG[ten] || [12, 12]; return { w: r[0] * s, h: r[1] * s }; }
-    return { w: (rows[0].length + 2) * s, h: (rows.length + 2) * s };
+    var c = (root.Ve && root.Ve.CO_ICON && root.Ve.CO_ICON[ten]) || [12, 12];
+    return { w: c[0] * s, h: c[1] * s };
   }
   function ico(ten, s, mau) {
     var VI = root.VeIcon;

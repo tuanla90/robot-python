@@ -182,7 +182,7 @@ console.log('\n== B. Icon: Ve.ico / sao / khoa / mui trả thẳng svg ở vecto
   if (!/function svg\(ten, k, tuyChon, phu\)/.test(src)) sai.push('ve-vector-icon.js thiếu VeIcon.svg');
   if (!/function svgVec\(ten, s, tuyChon, phu, nho\)/.test(veJs) || !/else if \(ten === 'trum'\) node = svgVec\('trum', s, null,/.test(veJs)) sai.push('ve.js thiếu svgVec / hydrate trum chưa qua svgVec');
   if (!/var CO_ICON = \{/.test(veJs) || !/function coIcon\(ten, nho\) \{ return \(nho && ten === 'lock' \? CO_ICON\.lockNho : CO_ICON\[ten\]\) \|\| null; \}/.test(veJs) || /!giaoDienVec\(\) \|\| !VI/.test(veJs)) sai.push('ve.js svgVec chưa dùng bảng CO_ICON / còn rẽ theo body.ve-vector (V7c1)');
-  if (!/trum: \[24, 24\]/.test(nguon('phim-vector.js'))) sai.push('phim-vector.js RIENG trum chưa 24 × 24');
+  if (!/root\.Ve\.CO_ICON\[ten\]/.test(nguon('phim-vector.js')) || /Ve\.HINH/.test(nguon('phim-vector.js').replace(/\/\*[\s\S]*?\*\//g, ''))) sai.push('phim-vector.js coIco chưa đọc bảng Ve.CO_ICON (V7c2: hết lưới Ve.HINH / bảng RIENG)');
   kiem('(B2) V7b / V7c1: Ve.ico / sao / khoa / mui trả thẳng <svg class="pxi vi vi-<tên>"> (sao / xu tắt thêm .tat), cỡ = cạnh lớn bảng CO_ICON × s, có nhãn _vi; ve.js không đọc lưới pixel / không rẽ theo chế độ; phim-vector trùm 24; hydrate trum qua svgVec', !sai.length, sai.join(' | '));
 }
 {
@@ -230,9 +230,8 @@ function chieuMoDau(G, n) {
 }
 const SO = VE.ctx.MoDau.SO_KHUNG;
 {
-  const V = VE.ctx, dem = { painter: 0, tiles: 0, ico: 0 }, g0 = { canvas: V.Ve.Painter.prototype.canvas, tiles: V.Ve.tiles, ico: V.Ve.ico };
-  V.Ve.Painter.prototype.canvas = function () { dem.painter++; return g0.canvas.apply(this, arguments); };
-  V.Ve.tiles = function () { dem.tiles++; return g0.tiles.apply(this, arguments); };
+  const V = VE.ctx, dem = { painter: 0, tiles: 0, ico: 0 }, g0 = { ico: V.Ve.ico };          // V7c2: Ve.Painter / Ve.tiles đã xoá khỏi ve.js (phải KHÔNG còn), chỉ còn đếm Ve.ico (đường lùi icon ngoài bộ phim)
+  if (V.Ve.Painter || V.Ve.tiles) dem.painter++;
   V.Ve.ico = function () { dem.ico++; return g0.ico.apply(this, arguments); };
   const sai = [], soHinh = [], loi = [];
   const cb0 = VE.canhBao.length;
@@ -242,7 +241,7 @@ const SO = VE.ctx.MoDau.SO_KHUNG;
     if (px.length) sai.push('khung ' + n + ': ' + px.length + ' canvas pixel');
     soHinh.push(k.tim((e) => e.classList.contains('md-a')).length);
   }
-  V.Ve.Painter.prototype.canvas = g0.canvas; V.Ve.tiles = g0.tiles; V.Ve.ico = g0.ico;
+  V.Ve.ico = g0.ico;
   VE.canhBao.slice(cb0).forEach((s) => loi.push(s));
   kiem('(C1) vector: ' + SO + ' khung mở đầu mọi canvas là hình vector, không gọi Painter pixel / Ve.tiles / Ve.ico khi chiếu; số hình mỗi khung 3 7 7 2 3 3 (' + soHinh.join(' ') + ')',
     !sai.length && !loi.length && !dem.painter && !dem.tiles && !dem.ico && J(soHinh) === J([3, 7, 7, 2, 3, 3]), sai.concat(loi).slice(0, 5).join(' | ') + ' · Painter ' + dem.painter + ', tiles ' + dem.tiles + ', ico ' + dem.ico);
