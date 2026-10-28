@@ -136,6 +136,20 @@
   var R1_6 = nhieu(['forward(2)'], CHO(4), ['forward(8)']);
   var R2_6 = nhieu(['move()'], FOR(3, ['turn_left()', 'clear_line()', 'fire("charge")', 'turn_right()', 'forward(3)']));
 
+  // doi-mua-2.7: hành lang ngang (hàng 3) của R2, cuối hành lang là đèn nóng (nút bật sẵn (11,3), không nối gì). R1 xích đi dọc xuống, cắt ngang ở ngã tư (4,3)
+  //   và dừng ở đó ba nhịp. R2 gọi pass_safe() trước mỗi bước (chín bước tới cuối hành lang rồi quay xuống cờ). Đèn nóng nên warm() luôn là True: bản của Sola
+  //   (while warm()) chờ mãi. Cờ R1 (4,5), cờ R2 (10,4).
+  var SAN_7 = ['#############', '####.########', '####.########', '#..........N#', '####.#####F##', '####F########', '#############'];
+  var R1_7 = nhieu(['forward(2)'], CHO(3), ['forward(2)']);
+  var R2_7 = nhieu(FOR(9, ['pass_safe()', 'move()']), ['turn_right()', 'move()']);
+
+  // doi-mua-2.8: hai giếng bắn. Giếng đầu (3,·): nút xa (3,1), sau lưng R2 là tường: bắn tụ. Giếng sau (5,·): nút gần (5,2), sau lưng R2 là hốc (5,5): bắn tụ thì xe giật xuống hốc,
+  //   phải bắn nhanh. R1 đi hành lang (hàng 3) ngang qua hai giếng, dừng ở giếng đầu ba nhịp. Nút mở cửa của R2 (4,4), (6,4). Cờ R1 (8,3), cờ R2 (7,4).
+  var SAN_8 = ['##########', '###N######', '###.#N####', '#.......F#', '##..C.CF##', '#####.####', '##########'];
+  var NOI_8 = [noi(3, 1, [[4, 4]]), noi(5, 2, [[6, 4]])];
+  var R1_8 = nhieu(['forward(2)'], CHO(3), ['forward(5)']);
+  var R2_8 = nhieu(FOR(2, ['move()', 'turn_left()', 'wait_aim()', 'turn_right()', 'move()']), ['move()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -268,6 +282,46 @@
         { moTa: 'Viết while distance() < 1: thùng ở ngã giếng cách 1 ô nên không chờ', ham: [H('clear_line', [], WHILE('distance() < 1', ['wait()']))], phaiCoMa: ['ban-bi-chan'] }
       ],
       goiY: ['Giếng trống: distance() là 3. Thùng hay R1 ở ngã giếng: distance() là 1.', 'Thân clear_line(): while distance() < 3: wait().']
+    }),
+
+    /* ------------------------------------------------ hàng 3: biến thể */
+    man({
+      chuong: 'doi-mua-2', so: 7, ten: 'Đố: Sola chờ mãi', yMoi: 'tìm lỗi: đèn nóng cuối hành lang cũng làm warm() True, phải đo distance() tới bạn',
+      hamCuaEmCan: ['forward', 'move', 'turn_right'], nutBat: [o(11, 3)],
+      deBai: 'Sola viết pass_safe() cho R2: while warm(): wait(), để chờ R1 đi qua ngã tư. Chạy thử: R2 không nhúc nhích. Cuối hành lang có một đèn nóng (nút đang bật). ' +
+        'Mắt hồng ngoại chỉ đo xa gần và nóng lạnh: đèn nóng cũng nóng như đồng đội. Sửa pass_safe() để R2 chỉ chờ khi bạn đứng sát mũi xe.',
+      veMaMau: 'Chạy thử. Khi ngã tư trống, mắt hồng ngoại của R2 thấy gì ở cuối hành lang?',
+      san: SAN_7, bd: [{ x: 4, y: 1, huong: 2 }, { x: 1, y: 3, huong: 1 }], co: [[o(4, 5)], [o(10, 4)]],
+      chinh: [R1_7, R2_7],
+      hamMau: [H('pass_safe', [], CHO_DI)],
+      ham: [H('pass_safe', [], CHO_SAT)],
+      sao: { o: 18, nhip: 15 },
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích', ham: [H('pass_safe', [], ['# chỉ chờ khi bạn đứng sát mũi xe'].concat(CHO_SAT))] },
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: đèn nóng nên warm() luôn True, R2 chờ mãi', ham: [H('pass_safe', [], CHO_DI)], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Bỏ hết chờ: R2 húc vào R1 đang đứng ở ngã tư', ham: [H('pass_safe', [], ['pass'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+      ],
+      goiY: ['Đèn ở xa, đồng đội ở ngã tư thì sát mũi xe: distance() khác nhau.', 'Thân pass_safe(): while distance() == 0: wait().']
+    }),
+
+    man({
+      chuong: 'doi-mua-2', so: 8, ten: 'Chờ bạn rồi chọn lực', yMoi: 'hàm chờ bạn đi khỏi rồi gọi aim_fire(): đo xa gần khi đường bóng đã trống',
+      hamCuaEmCan: ['forward', 'move', 'turn_left', 'turn_right', 'aim_fire', 'fire'],
+      deBai: 'Hai giếng bắn. Giếng đầu nút ở xa, sau lưng R2 là tường: bắn tụ được. Giếng sau nút ở gần, sau lưng R2 là một hốc: bắn tụ thì xe giật xuống hốc, phải bắn nhanh. ' +
+        'R1 đi hành lang giữa và dừng ở giếng đầu một lúc. aim_fire() của gói Lực bắn tự chọn lực theo distance(), nhưng R1 đứng chắn thì nó đo nhầm. Viết thân wait_aim(): chờ bạn đi khỏi rồi aim_fire().',
+      veMaMau: 'Hai chương trình bị khóa. wait_aim() có sẵn chỉ gọi aim_fire(): chạy thử xem bóng đầu tiên trúng gì.',
+      san: SAN_8, noi: NOI_8, bd: [{ x: 1, y: 3, huong: 1 }, { x: 2, y: 4, huong: 1 }], co: [[o(8, 3)], [o(7, 4)]],
+      chinh: [R1_8, R2_8],
+      hamMau: [H('wait_aim', [], ['aim_fire()'])],
+      ham: [H('wait_aim', [], CHO_DI.concat(['aim_fire()']))],
+      sao: { o: 29, nhip: 15 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('wait_aim', [], ['# bạn đi rồi mới đo và bắn'].concat(CHO_DI, ['aim_fire()']))] },
+      loiSai: [
+        { moTa: 'Để nguyên aim_fire(): R1 đứng chắn, bóng nhanh trúng R1', ham: [H('wait_aim', [], ['aim_fire()'])], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
+        { moTa: 'Chờ rồi luôn bắn tụ: ở giếng sau xe giật xuống hốc', ham: [H('wait_aim', [], CHO_DI.concat(['fire("charge")']))], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chờ rồi luôn bắn nhanh: nút giếng đầu ở xa, bóng rơi giữa đường', ham: [H('wait_aim', [], CHO_DI.concat(['fire("fast")']))], phaiCoMa: ['ban-ngan', 'chua-toi-co'] }
+      ],
+      goiY: ['Đo xa gần khi R1 còn đứng chắn thì distance() là 0.', 'while warm(): wait() rồi aim_fire().']
     })
   ];
 
