@@ -380,7 +380,7 @@ async function main() {
       };
       if (m.chinhCoDinh) {
         assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để viết / sửa');
-        const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than, { beSung: false }), { beSung: false });
+        const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than, { beSung: false }), { beSung: false, thamSo: hm.thamSo });
         bang[m.ma].khong += ' (khóa: ' + (t.khong ? 'không thân cố định nào 3 sao' : 'thân ' + t.than.join(' / ')) + ')';
         if (!t.khong) assert.fail(m.ma + ': không bệ súng, thân cố định ' + t.than.join(' / ') + ' vẫn 3 sao');
       } else if (soSan(m) > 1) {
@@ -402,7 +402,7 @@ async function main() {
       }
       assert.ok(m.chinhCoDinh, m.ma + ': màn mở một sân không được đọc cảm biến (khóa chương trình chính hay làm trùm nhiều sân)');
       assert.ok(bacCau(kho, { chinh: [], hamCuaMan: [hm] }).dong.some((l) => /\b(distance|warm)\(\)/.test(l)), m.ma + ': thân ' + hm.ten + ' không đọc cảm biến');
-      const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than));
+      const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than), { thamSo: hm.thamSo });
       bang[m.ma].ne = 'khóa: ' + (t.khong ? 'không thân cố định nào 3 sao (' + t.soThan + ' thân, ' + t.soThang + ' thắng' + (t.moDuoc ? '' : ', chấm thật tới 2 dòng') + ')' : 'thân ' + t.than.join(' / '));
       if (!t.khong) assert.fail(m.ma + ': thân ' + hm.ten + ' cố định ' + t.soO + ' ô, ' + t.soNhip + ' nhịp được 3 sao: ' + t.than.join(' / '));
     });

@@ -345,6 +345,9 @@ export function moChinh(dong, bang, tenX) {
       const t = ds[i].trim(), f = t.match(/^for\s+\w+\s+in\s+range\((\d+)\):$/);
       if (f) { let j = i + 1; while (j < b && thut(ds[j]) > thut(ds[i])) j++; const k = khoi(i + 1, j); if (k === null) return null; kq += k.repeat(+f[1]); i = j - 1; continue; }
       if (t === tenX + '()') { kq += 'X'; continue; }
+      if (t === 'go_to_wall()') { kq += 'G'; continue; }                 // chương trình chính khóa có go_to_wall(): mô phỏng thẳng (tiến tới khi ô trước bị chặn)
+      const fw = t.match(/^forward((d+))$/);
+      if (fw && ma.has('move()')) { kq += 'M'.repeat(+fw[1]); continue; }
       if (!ma.has(t)) return null;
       kq += ma.get(t);
     }
@@ -353,11 +356,28 @@ export function moChinh(dong, bang, tenX) {
   return khoi(0, ds.length);
 }
 /** Mô phỏng một dãy cố định trên màn một sân; trả số nhịp nếu thắng trong gioiHan, không thì false. */
+const CTX = new WeakMap();
 export function chayDay(m, day, tuy = {}) {
-  const ctx = ngoCanh(m, 0), t = tuyCua(m, tuy);
+  if (!CTX.has(m)) CTX.set(m, ngoCanh(m, 0));
+  const ctx = CTX.get(m), t = tuyCua(m, tuy), { rong } = ctx;
+  const truocTrong = (S) => {                                             // go_to_wall(): distance() > 0 khi ô ngay trước mũi trống (không tường, nút, rào, cửa đóng, thùng)
+    const v = VEC[S.h], x = S.x + v[0], y = S.y + v[1];
+    if (!ctx.trongSan(x, y)) return false;
+    const c = y * rong + x, j = ctx.cuaIdx[c];
+    return !ctx.chan[c] && !(j >= 0 && !((S.cm >> j) & 1)) && S.p.indexOf(c) < 0;
+  };
   let S = Bo.trangThaiDau(ctx), nhip = 0;
   const gioiHan = tuy.gioiHan === undefined ? m.sao.nhip : tuy.gioiHan;
   for (const a of day) {
+    if (a === 'G') {
+      while (truocTrong(S)) {
+        const b = buoc(ctx, S, 'M', t);
+        S = b.S; nhip += b.nhip;
+        if (S.chet || nhip > gioiHan) return false;
+        if (thangNgay(ctx) && Bo.laDich(ctx, S)) return nhip;
+      }
+      continue;
+    }
     const b = buoc(ctx, S, a, t);
     S = b.S; nhip += b.nhip;
     if (S.chet || nhip > gioiHan) return false;
@@ -380,6 +400,10 @@ export function thanCoDinh(m, kho, tenX, chamThan, tuy = {}) {
       for (const [l] of bang) { than.push(l); di(than); than.pop(); }
     })([]);
     soThan++; thu(['pass']);
+    if (tuy.thamSo && tuy.thamSo.length) {                                 // hàm có tham số n: thêm thân "for i in range(n):" với một hay hai dòng cố định
+      const n = tuy.thamSo[0];
+      for (const [a] of bang) { soThan++; thu(['for i in range(' + n + '):', '    ' + a]); for (const [b] of bang) { soThan++; thu(['for i in range(' + n + '):', '    ' + a, '    ' + b]); } }
+    }
   } else {
     const thang = new Map();                                              // dãy x thắng → các thân ngắn nhất cho ra x
     (function di(than, x) {
