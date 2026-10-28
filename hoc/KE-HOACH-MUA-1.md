@@ -47,6 +47,13 @@ Giữ nguyên `ma` của mọi màn (khóa lưu sao); chỉ đổi chương / th
   | 10 R1 xuất xưởng | `robot-hoan-thien` (Tổng hợp) 10 | `trum-mua-1` (Trùm mùa) 10 | 20 |
   | | | **Tổng** | **200** |
 
+- **29/10 MÙA 1 XONG Ở BẢN VECTOR** (soát sau khi gộp V7c3 c258019; game luôn vector, mã / CSS / phông pixel đã gỡ hết, KE-HOACH-GOP-DIEM10CODE.md mục 2c). Người giao soát trong trình duyệt thật (cổng 4181):
+  màn chọn gói đủ 10 gói mùa 1, mỗi gói 2 chương 20 màn, ngưỡng sao 0 / 30 / 60 / … / 270; **200 / 200 màn** nạp hàm chuẩn + lời giải chuẩn rồi bấm Chạy thật: máy chấm của game báo THẮNG cả 200
+  (kể cả 23 màn hai robot), 0 lỗi JS, 0 canvas pixelated; phim mở đầu (6 khung) + 9 phim gói chạy hết khung (gói 1 dùng phim mở đầu), 0 hình pixel; 20 huy hiệu trùm chương (hai-banh … xuat-xuong) đều có hình vector;
+  trùm mùa trum-mua-1.10 và Sổ lệnh ở khổ 360 × 640 không tràn ngang; document.fonts chỉ Google Sans Flex / Code. npm test 87/87. Lỗi console duy nhất là đăng ký service worker trong ô trình duyệt của app (môi trường).
+  Mục "Còn treo" của gói B (dây nối nút đè ↔ cửa) đã làm ở V7a; "Vướng cần biết" 1–5 và "Việc phải làm khi bắt tay" bên dưới là ghi chép lúc lập kế hoạch, đã làm xong qua gói A–G
+  (bậc thang xuong-ham.6 đã thành tường; hộp màu mùa 1 giữ theo user 26/10). Chưa gộp vào main (chờ user).
+
 ## Danh sách 10 gói
 
 | Gói | Chương 1 (10) | Chương 2 (10) | Có | Mới | Sửa |
