@@ -311,12 +311,13 @@ for (const m of DS) {
   kiem(m.ma + ': bộ dò: không thân cố định (không đọc cảm biến) nào thắng trong sao.nhip', () => {
     const hv = hamViet(m)[0];
     const laMan = !(m.loiGiai.hamCuaEmMoi || []).length;
+    const ngan = { nhipToiDa: m.sao.nhip + 1 };              // chỉ cần biết có thắng trong ngưỡng không: chạy ngắn
     const chamThan = (than) => {
       const h = Object.assign({}, hv, { than });
-      return laMan ? cham(m, Object.assign({}, m.loiGiai, { hamCuaMan: [h] }), []) : cham(m, Object.assign({}, m.loiGiai, { hamCuaMan: m.loiGiai.hamCuaMan }), [h]);
+      return laMan ? cham(m, Object.assign({}, m.loiGiai, { hamCuaMan: [h] }), [], ngan) : cham(m, Object.assign({}, m.loiGiai, { hamCuaMan: m.loiGiai.hamCuaMan }), [h], ngan);
     };
     const t = timThanCoDinhDoi(m, hv.ten, kho, chamThan);
-    bang[m.ma].ne = 'thân cố định dài ≤ ' + t.L + (t.demDuoc ? '' : ' (không đếm tĩnh được: chặn ' + t.L + ')') + ' trên ' + t.chu.length + ' chữ: thử ' + t.soThu + ', thắng trong ngưỡng ' + t.thang.length;
+    bang[m.ma].ne = 'thân cố định: đủ mọi dãy dài ≤ ' + t.du + (t.L > t.du ? ', chờ + ≤ 2 lệnh tới dài ' + t.L : '') + (t.demDuoc ? '' : ' (không đếm tĩnh được)') + ' trên ' + t.chu.length + ' chữ: thử ' + t.soThu + ', thắng trong ngưỡng ' + t.thang.length;
     if (t.thang.length) assert.fail(m.ma + ': thân ' + hv.ten + ' cố định thắng ' + t.thang[0].soNhip + ' nhịp ≤ ' + m.sao.nhip + ': ' + t.thang[0].than.join(' / ') + ' (' + t.thang.length + ' thân)');
   });
 }

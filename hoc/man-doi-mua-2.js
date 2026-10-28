@@ -108,9 +108,25 @@
   var R1_2 = nhieu(FOR(3, nhieu(['go_to_wall()'], WHILE('distance() == 0', ['wait()']))), ['go_to_wall()']);
   var R2_2 = FOR(3, ['mate_in()', 'u_turn()', 'fire("fast")', 'turn_left()', 'forward(4)', 'turn_left()']);
 
+  // doi-mua-2.3: hành lang bậc thang (phải 3, xuống 2, ba lần). R1 xích đi trước, mỗi góc quay mất hai nhịp (tr_right / tr_left); R2 đi sau, mỗi bước gọi keep_gap()
+  //   rồi tiến một ô. R2 húc vào R1 thì mất bước đó (chương trình khóa đếm đúng số bước). Cờ R2 (10,7) ở chân bậc cuối, cờ R1 (12,7) phía trước.
+  var SAN_3 = ['###############', '#....##########', '####.##########', '####....#######', '#######.#######', '#######....####', '##########.####', '##########F.F##', '###############'];
+  var R1_3 = nhieu(['move()'], FOR(3, ['tr_right()', 'forward(2)', 'tr_left()', 'forward(3)']));
+  var R2_3 = FOR(3, nhieu(FOR(3, ['keep_gap()', 'move()'], 'j'), ['turn_right()'], FOR(2, ['keep_gap()', 'move()'], 'j'), ['turn_left()']));
+
+  // doi-mua-2.4: ba khoang: cửa vào của R1 (3,1), (6,1), (9,1) đang mở; R1 đi qua ô cửa sổ (4,1), (7,1), (10,1) ngay trên giếng của R2. Nút (4,0), (7,0), (10,0) ở tường trên,
+  //   bắn qua cửa sổ mới trúng: nút đổi cửa vào của R1 (mở thành đóng) và cửa của R2 ở hành lang dưới (5,3), (8,3), (11,3) (đóng thành mở).
+  //   Bắn trước khi R1 qua cửa vào thì cửa đóng trước mặt R1; bắn khi R1 còn đứng ở cửa sổ thì bóng trúng R1. R1 đứng ở cửa sổ 2 tám nhịp, cửa sổ 3 năm nhịp.
+  var SAN_4 = ['####N##N##N###', '#..c..c..c..F#', '####.##.##.###', '####.C..C..CF#', '##############'];
+  var NOI_4 = [noi(4, 0, [[3, 1], [5, 3]]), noi(7, 0, [[6, 1], [8, 3]]), noi(10, 0, [[9, 1], [11, 3]])];
+  var R1_4 = nhieu(['forward(6)'], CHO(8), ['forward(3)'], CHO(5), ['forward(2)']);
+  var R2_4 = FOR(3, ['after_pass()', 'fire("charge")', 'turn_right()', 'forward(3)', 'turn_left()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
+  var CHO_SAT = WHILE('distance() == 0', ['wait()']);    // sát vật cản (đồng đội) thì chờ
+  var CHO_QUA = CHO_TOI.concat(CHO_DI);                  // chờ bạn tới rồi chờ bạn đi khỏi
 
   var DS = [
     /* ================================================================ chương doi-mua-2: hồng ngoại thấy robot */
@@ -153,6 +169,49 @@
         { moTa: 'Chờ cố định hai nhịp: R1 còn chưa tới cửa vào khoang đầu', ham: [H('mate_in', [], CHO(2))], phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['Khoang trống thì mắt hồng ngoại thấy tường phía trên: không nóng. R1 vào khoang thì warm() là True.', 'Thân mate_in(): while not warm(): wait().']
+    }),
+
+    man({
+      chuong: 'doi-mua-2', so: 3, ten: 'Theo sau xe xích', yMoi: 'distance() đếm ô trống tới đồng đội: sát bạn (distance() == 0) thì chờ, không húc vào bạn',
+      hamCuaEmCan: ['move', 'tr_right', 'tr_left', 'forward', 'turn_right', 'turn_left', 'back'],
+      deBai: 'Hành lang bậc thang hẹp. R1 xe xích đi trước, tới mỗi góc phải quay mất hai nhịp. R2 đi sau: mỗi bước gọi keep_gap() rồi tiến một ô. ' +
+        'R2 húc vào R1 thì bước đó mất, R2 không tới được cờ. distance() đếm cả số ô trống tới đồng đội. Viết thân keep_gap(): còn sát bạn thì chờ.',
+      veMaMau: 'Hai chương trình bị khóa. keep_gap() còn trống: chạy thử xem R2 húc R1 ở góc nào.',
+      san: SAN_3, bd: [{ x: 3, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[o(12, 7)], [o(10, 7)]],
+      chinh: [R1_3, R2_3],
+      hamMau: [H('keep_gap', [], ['pass'])],
+      ham: [H('keep_gap', [], CHO_SAT)],
+      sao: { o: 32, nhip: 27 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('keep_gap', [], ['# sát bạn thì chờ'].concat(CHO_SAT))] },
+      congThucKhac: [{ moTa: 'Chờ khi còn thấy bạn trước mặt (while warm()): vẫn tới cờ nhưng chậm hơn một nhịp', ham: [H('keep_gap', [], CHO_DI)] }],
+      loiSai: [
+        { moTa: 'Để trống: tới góc thứ nhất R2 húc vào R1 đang quay', ham: [H('keep_gap', [], ['pass'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Sát bạn thì lùi một ô: R2 mất một bước, dừng trước cờ', ham: [H('keep_gap', [], IF('distance() == 0', ['back()']))], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Viết while distance() > 0: còn khoảng trống thì chờ, R2 đứng mãi', ham: [H('keep_gap', [], WHILE('distance() > 0', ['wait()']))], phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['R1 ngay trước mũi R2 thì distance() là 0.', 'Thân keep_gap(): while distance() == 0: wait().']
+    }),
+
+    /* ------------------------------------------------ hàng 2: luyện */
+    man({
+      chuong: 'doi-mua-2', so: 4, ten: 'Bạn qua rồi mới bắn', yMoi: 'hai vòng chờ nối nhau trong một hàm: chờ bạn tới cửa sổ, rồi chờ bạn đi khỏi đường bóng',
+      hamCuaEmCan: ['forward', 'move', 'turn_right', 'turn_left', 'fire'],
+      deBai: 'Mỗi nút ở tường trên đổi hai cửa: cửa vào của R1 (đang mở thành đóng) và cửa của R2 ở hành lang dưới (đang đóng thành mở). R2 bắn qua giếng và ô cửa sổ trên đường R1. ' +
+        'Bắn khi R1 chưa qua cửa vào thì cửa đóng ngay trước mặt R1. Bắn khi R1 còn đứng ở cửa sổ thì bóng trúng R1. R1 đứng ở các cửa sổ lâu chóng khác nhau. ' +
+        'Viết thân after_pass(): chờ tới khi thấy R1 ở cửa sổ, rồi chờ tới khi R1 đi khỏi.',
+      veMaMau: 'Hai chương trình bị khóa. after_pass() còn trống: chạy thử xem cửa nào đóng trước mặt R1.',
+      san: SAN_4, noi: NOI_4, bd: [{ x: 1, y: 1, huong: 1 }, { x: 4, y: 3, huong: 0 }], co: [[o(12, 1)], [o(12, 3)]],
+      chinh: [R1_4, R2_4],
+      hamMau: [H('after_pass', [], ['pass'])],
+      ham: [H('after_pass', [], CHO_QUA)],
+      sao: { o: 28, nhip: 27 },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('after_pass', [], ['# chờ bạn tới rồi chờ bạn đi'].concat(CHO_QUA))] },
+      loiSai: [
+        { moTa: 'Để trống: bắn ngay, cửa vào đóng trước mặt R1', ham: [H('after_pass', [], ['pass'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Chỉ chờ bạn tới: bắn lúc R1 còn đứng ở cửa sổ, bóng trúng R1', ham: [H('after_pass', [], CHO_TOI)], phaiCoMa: ['ban-bi-chan'] },
+        { moTa: 'Chỉ chờ bạn đi khỏi: cửa sổ còn trống nên bắn ngay, cửa vào đóng trước mặt R1', ham: [H('after_pass', [], CHO_DI)], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+      ],
+      goiY: ['Hai vòng while nối nhau: vòng đầu chờ warm() thành True, vòng sau chờ nó thành False.', 'while not warm(): wait() rồi while warm(): wait().']
     })
   ];
 

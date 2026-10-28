@@ -14,7 +14,10 @@
    L: robot r gọi X c_r lần (đếm tĩnh: mở chương trình khóa bằng moRong của gói 6, X giữ thành chữ 'X'; chương trình có while / if thì không đếm được)
    và các lệnh đứng TRƯỚC lần gọi X cuối của r tốn b_r nhịp; thắng trong sao.nhip thì c_r · |x| + b_r ≤ sao.nhip (mỗi chữ ≥ 1 nhịp), với giả thiết
    mọi lần gọi đều chạy (cờ của robot nằm sau lần gọi cuối: thân X không tự đưa robot tới cờ sớm, vì đường tới cờ cần phần chương trình khóa sau đó:
-   cửa phải được bắn mở, bạn phải đi qua…). L = min theo r, tối thiểu TOI_THIEU_L (2), chặn trên TRAN_L (3). Không đếm được thì dùng TRAN_L và ghi rõ.
+   cửa phải được bắn mở, bạn phải đi qua…). L = min theo r, tối thiểu TOI_THIEU_L (2), chặn trên TRAN_L_CHO (8). Không đếm được thì dùng TRAN_L_CHO và ghi rõ.
+   Liệt kê: ĐỦ mọi dãy dài ≤ min(L, TRAN_L_DU = 3); với 4 ≤ |x| ≤ L (khi ngưỡng nhịp còn rộng) thì liệt kê các dãy "chờ rồi làm" W…W y và "làm rồi chờ" y W…W
+   (|y| ≤ 2, y tùy ý): thân dài mà không chủ yếu là chờ thì làm xe lệch chỗ / lệch hướng / bắn đổi nút ở mọi lần gọi, chương trình khóa phía sau đi sai.
+   Chạy thử với nhipToiDa = sao.nhip + 1 (chỉ cần biết có thắng trong ngưỡng không), nên mỗi lần chấm ngắn.
 
    Hàm xuất: CHU_DOI, demGoi, timThanCoDinhDoi
    ========================================================================== */
@@ -24,7 +27,7 @@ export const CHU_DOI = {
   M: ['move()'], B: ['back()'], W: ['wait()'], R: ['turn_right()'], L: ['turn_left()'], U: ['u_turn()'], P: ['tr_right()'], Q: ['tr_left()'],
   f: ['fire("fast")'], c: ['fire("charge")'], g: ['fire_back("fast")'], h: ['fire_back("charge")']
 };
-const TRAN_L = 3, TOI_THIEU_L = 2;
+const TRAN_L_DU = 3, TRAN_L_CHO = 8, TOI_THIEU_L = 2;
 
 /** Số lần chương trình (dòng) gọi tenX và số nhịp tối thiểu của phần còn lại; null nếu không mở tĩnh được. */
 export function demGoi(dong, kho, tenX) {
@@ -44,7 +47,7 @@ export function timThanCoDinhDoi(m, tenX, kho, chamThan, tuy = {}) {
   const sung = m.doi.every((d, i) => !coGoi[i] || (d.hamGoc || []).includes('shoot'));
   const chu = 'MBWRLUPQ' + (sung ? 'fcgh' : '');
   const bang = [];
-  let L = tuy.L || TRAN_L, demDuoc = true;
+  let L = tuy.L || TRAN_L_CHO, demDuoc = true;
   chinh.forEach((c, i) => {
     if (!coGoi[i]) return;
     const d = demGoi(c, kho, tenX);
@@ -52,18 +55,21 @@ export function timThanCoDinhDoi(m, tenX, kho, chamThan, tuy = {}) {
     bang.push({ robot: i, goi: d.goi, nhip: d.nhip });
     L = Math.min(L, Math.floor((m.sao.nhip - d.nhip) / d.goi));
   });
-  L = Math.min(TRAN_L, Math.max(TOI_THIEU_L, L));
-  const thang = [];
+  L = Math.min(TRAN_L_CHO, Math.max(TOI_THIEU_L, L));
+  const thang = [], da = new Set();
   let soThu = 0;
-  (function di(x) {
-    soThu++;
+  function thu(x) {
+    if (da.has(x)) return;
+    da.add(x); soThu++;
     const than = x ? [...x].flatMap((k) => CHU_DOI[k]) : ['pass'];
     const r = chamThan(than);
     if (r.thang && r.soNhip <= m.sao.nhip) thang.push({ day: x, than, soO: r.soO, soNhip: r.soNhip, sao: r.sao });
-    if (x.length >= L) return;
-    for (const k of chu) di(x + k);
-  })('');
-  return { L, demDuoc, bang, soThu, chu, thang };
+  }
+  const du = Math.min(L, TRAN_L_DU);
+  (function di(x) { thu(x); if (x.length < du) for (const k of chu) di(x + k); })('');
+  const ngan = [''].concat([...chu], [...chu].flatMap((a) => [...chu].map((b) => a + b)));
+  for (let n = du + 1; n <= L; n++) for (const y of ngan) if (y.length < n) { thu('W'.repeat(n - y.length) + y); thu(y + 'W'.repeat(n - y.length)); }
+  return { L, du, demDuoc, bang, soThu, chu, thang };
 }
 
 /** X có được gọi trong chương trình (thẳng hay qua một hàm của em gọi X) không. */
