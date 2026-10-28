@@ -200,6 +200,11 @@
   // che-doi-mua-2.6: hai giếng của doi-mua-2.8 (nút xa: bắn tụ; nút gần, sau lưng là hốc: bắn nhanh). shot_clear(p) của em = wait_clear() rồi fire(p).
   var R2_C6 = ['move()', 'turn_left()', 'shot_clear("charge")', 'turn_right()', 'forward(2)', 'turn_left()', 'shot_clear("fast")', 'turn_right()', 'forward(2)'];
 
+  // che-doi-mua-2.7: sân của doi-mua-2.7 (đèn nóng cuối hành lang của R2). CẢ HAI robot đi bằng step_clear() của em: R1 đi hai bước vào ngã tư (4,3), dừng ba nhịp,
+  //   rồi đi tiếp hai bước xuống cờ (4,5); R2 chín bước dọc hành lang rồi quay xuống cờ (10,4).
+  var R1_C7 = nhieu(FOR(2, ['step_clear()']), CHO(3), FOR(2, ['step_clear()']));
+  var R2_C7 = nhieu(FOR(9, ['step_clear()']), ['turn_right()', 'move()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -529,6 +534,25 @@
         { moTa: 'Quên tham số, luôn bắn tụ: ở giếng sau xe giật xuống hốc', hamEm: [H('shot_clear', ['p'], ['wait_clear()', 'fire("charge")'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['shot_clear("fast") thì p là "fast"; fire(p) bắn đúng lực đó.', 'Thân shot_clear(p): wait_clear() rồi fire(p).']
+    }),
+
+    /* ------------------------------------------------ hàng 3: biến thể */
+    man({
+      chuong: 'che-doi-mua-2', so: 7, ten: 'Hàm step_clear()', yMoi: 'hàm cả đội dùng distance(): đèn nóng làm warm() vô dụng, đo khoảng cách thì không nhầm',
+      hamCuaEmCan: ['move', 'turn_right', 'yield_step', 'wait_clear'], taoHam: ['step_clear'], nutBat: [o(11, 3)],
+      deBai: 'Cả hai xe đi từng bước bằng một hàm của em. Cuối hành lang của R2 có đèn nóng: yield_step() của em dựa vào warm() nên R2 sẽ chờ mãi. ' +
+        'Em chế step_clear(): còn sát vật cản (bạn) thì chờ, rồi tiến một ô. Chương trình hai xe đã khóa, cùng gọi step_clear().',
+      veMaMau: 'Hai chương trình bị khóa. Tạo step_clear() ba dòng bằng distance().',
+      san: SAN_7, bd: [{ x: 4, y: 1, huong: 2 }, { x: 1, y: 3, huong: 1 }], co: [[o(4, 5)], [o(10, 4)]],
+      chinh: [R1_C7, R2_C7],
+      hamEm: [H('step_clear', [], CHO_SAT.concat(['move()']))],
+      sao: { o: 18, nhip: 15 },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('step_clear', [], ['# sát bạn thì chờ, rồi tiến'].concat(CHO_SAT, ['move()']))] },
+      loiSai: [
+        { moTa: 'Gọi yield_step(): đèn nóng nên warm() luôn True, R2 chờ mãi', hamEm: [H('step_clear', [], ['yield_step()'])], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Chỉ có move(): R2 húc vào R1 đang đứng ở ngã tư', hamEm: [H('step_clear', [], ['move()'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+      ],
+      goiY: ['Đèn ở xa, bạn ở ngã tư thì sát mũi xe: distance() phân biệt được.', 'Thân step_clear(): while distance() == 0: wait() rồi move().']
     })
   ];
 
