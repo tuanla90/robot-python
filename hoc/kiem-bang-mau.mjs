@@ -24,16 +24,16 @@ const NEN = '13b8a97';   // commit nền của gói A1 (trước khi gom màu)
    Mỗi mục ghi gói + lý do; đổi màu thật (A2) thì đặt NEN = null. */
 const SUA_SAU_NEN = {
   'phim-mua-1.js': 'V6 (28/10): thùng trong kẹp theo VeRobot.vatKep ở vector, mắt biểu cảm; pixel y nguyên (kiem-huy-hieu-phim-vector.mjs B5)',
-  'huy-hieu.js': 'V6 (28/10): ve cũ đổi tên vePixel (thân y nguyên), thêm nhánh vector + HuyHieu.mk; điểm ảnh pixel so ở kiem-huy-hieu-phim-vector.mjs A3; gói 8 mùa 2 Đội (28/10) thêm HINH doi-mua-2, che-doi-mua-2 (màu qua token BM); gói 9 Bệ súng xích (28/10) thêm HINH be-sung, che-be-sung kiểu pixel (chỉ thêm dòng); gói 10 Nhà máy chạy lại (28/10) thêm HINH tong-hop-2, nha-may-chay kiểu pixel (chỉ thêm dòng)',
-  'san-ve.js': 'V1 (27/10): chế độ vector — canvas theo pixel thiết bị, ô / vật vector',
-  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector; V7c1 (28/10): bỏ sonChon (sơn mở khoá), sonHieuLuc luôn vang',
+  'huy-hieu.js': 'V6 (28/10): ve cũ đổi tên vePixel (thân y nguyên), thêm nhánh vector + HuyHieu.mk; điểm ảnh pixel so ở kiem-huy-hieu-phim-vector.mjs A3; gói 8 mùa 2 Đội (28/10) thêm HINH doi-mua-2, che-doi-mua-2 (màu qua token BM); gói 9 Bệ súng xích (28/10) thêm HINH be-sung, che-be-sung kiểu pixel (chỉ thêm dòng); gói 10 Nhà máy chạy lại (28/10) thêm HINH tong-hop-2, nha-may-chay kiểu pixel (chỉ thêm dòng); V7c2 (28/10): viết lại thành lớp mỏng trên VeVector.HUY_HIEU, bỏ HINH pixel (khác nền hẳn)',
+  'san-ve.js': 'V1 (27/10): chế độ vector — canvas theo pixel thiết bị, ô / vật vector; V7c2 (28/10): bỏ nhánh pixel; V7c3 e2 / e3 (29/10): bỏ imageRendering thừa, đo chữ bằng phông vector, bỏ fillStyle bóng thân thừa',
+  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector; V7c1 (28/10): bỏ sonChon (sơn mở khoá), sonHieuLuc luôn vang; V7c2 (28/10): chỉ còn vector',
   'man-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'man-lap.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'mo-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'phim-goi.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'the-part.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'man-choi.js': 'V5a (28/10): thẻ R1 / R2 thêm thuộc tính data-son cho CSS giao diện vector (màu đội)',
   'cai-dat.js': 'V5a (28/10): Cài đặt thêm hàng Kiểu vẽ (Nét mới / Điểm ảnh, VeVector.luuCheDo + tải lại); màu icon là token có sẵn; V7c1 (28/10): bỏ hàng Màu sơn R1 (hangSon + bảng sơn dự phòng) và hàng Kiểu vẽ (hangKieuVe)',
   'thanh-phan.js': 'V5a (28/10): giao diện vector — dòng code đổi chỗ trượt mượt (không steps), tôn trọng prefers-reduced-motion; pixel giữ steps(3)',
-  've.js': 'V5a (28/10): giao diện vector — mk() phóng sẵn icon điểm ảnh (bỏ image-rendering: pixelated), viền icon mặc định chàm; pixel giữ nhánh cũ',
+  've.js': 'V5a (28/10): giao diện vector — mk() phóng sẵn icon điểm ảnh (bỏ image-rendering: pixelated), viền icon mặc định chàm; pixel giữ nhánh cũ; V7c2 (28/10): viết lại còn icon svg + mk + MAU (khác nền hẳn)',
   'xuong-ham.js': 'V6b (28/10): bốn nút chỉ icon (về sân, lấy lại, xoá hàm, xoá hết) thêm title trùng aria-label, cả hai chế độ; màu icon là token có sẵn',
   'bang-mo-khoa.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk(ma, tt, s) thay Ve.mk(HuyHieu.ve(…)) (gỡ cầu C4); màu không đổi',
   'gioi-thieu.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk (gỡ cầu C4); màu không đổi',
@@ -53,7 +53,7 @@ function kiem(ten, ok, chiTiet) {
 }
 
 const BM = require(path.join(GAME, 'bang-mau.js'));
-if (LOI_GIA) { BM.vienDam = '#1b120b'; const bt = BM._tang.BT[0]; BM[bt] = '#000001'; console.log('(đang cắm lỗi giả: vienDam và ' + bt + ' đổi giá trị, mục 4–5 phải đỏ)'); }
+if (LOI_GIA) { BM.vienDam = '#1b120b'; const bt = BM._tang.BT[0]; BM[bt] = '#000001'; BM.vaiThuaGia = '#123457'; console.log('(đang cắm lỗi giả: vienDam và ' + bt + ' đổi giá trị, mục 4 phải đỏ; V7c3: thêm vai vaiThuaGia không ai dùng → "vai nào cũng có chỗ dùng" đỏ; choi.css chèn color:#123456 → "không có mã màu gõ thẳng" đỏ)'); }
 const KEYS = Object.keys(BM);
 
 const HEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
@@ -111,7 +111,7 @@ const TEP = [];
     else if (/\.(js|css|html)$/.test(f) && f !== 'bang-mau.js') TEP.push(path.relative(GAME, p).split(path.sep).join('/'));
   }
 })(GAME);
-const doc = (f) => fs.readFileSync(path.join(GAME, f), 'utf8');
+const doc = (f) => fs.readFileSync(path.join(GAME, f), 'utf8') + (LOI_GIA && f === 'choi.css' ? '\n.loi-gia-v7c3{color:#123456}\n' : '');
 
 /* ================================================================= 1. bảng màu */
 console.log('== 1. Bảng màu (game/bang-mau.js) ==');
@@ -160,58 +160,13 @@ console.log('\n== 3. Token và thứ tự nạp ==');
     if (f.endsWith('.js') && /(?<![\w$.])BM\./.test(s) && s.split('\n')[0] !== (f.startsWith('part/') ? ALIAS.part : ALIAS.game)) khongAlias.push(f);
   }
   kiem('mọi BM.<vai> / var(--g-<vai>) có trong bảng màu', thieu.length === 0, thieu.slice(0, 10).join(', '));
-  /* V7c1 (28/10): bảng sơn dự phòng của cai-dat.js (hàng "Màu sơn R1") đã bỏ → 11 vai này không còn chỗ dùng; V7c3 (bảng màu) xoá khỏi bang-mau.js rồi xoá danh sách này */
-  const VAI_CHO_V7C3 = [/* V7c3 e2 (29/10): choi.css xoá .deco .surf / .bev (khung gỗ, phần tử không còn được tạo) → 4 vai sau hết chỗ dùng; e3: san-ve.js veLopXe bỏ fillStyle bóng thân thừa → moToiV22; e4 xoá cùng cả danh sách */ 'moCamToi', 'camSangV4', 'goV7', 'goV8', 'moToiV22',
-    'kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3',
-    /* V7c2 (28/10) san-ve.js xoá nhánh pixel (tia, mắt LED, ảnh nhỏ, vật, thanh pin, thẻ đạn…) → 45 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js rồi xoá dòng này */
-    'sanTim', 'sanDoSang', 'sanNgocToi', 'moDo', 'moLam', 'moDoToiV2', 'moSangV5', 'moToiV20', 'moToiV21', 'moToiV23', 'moToiSangV8', 'moToiSangV9', 'moVangV4', 'moVangV5', 'moVangV6', 'moVangV7',
-    'sanCamToiV2', 'sanDoV2', 'sanDoV3', 'sanDoV6', 'sanDoV7', 'sanDoSangV1', 'sanKemV1', 'sanLamV8', 'sanLamV16', 'sanLamV17', 'sanLamToiV1', 'sanLamToiV7', 'sanLamToiV8', 'sanLamToiV9', 'sanLamToiV10',
-    'sanNauSangV3', 'sanTimSangV2', 'sanTrangV6', 'sanXamToiV4', 'sanXamToiV5', 'sanXanhLaToiV1', 'sanXanhLaToiV6', 'sanXanhLoV6', 'sanXanhLoV7', 'sanXanhLoV8', 'sanXanhLoToiV3', 'sanXanhLoToiV4', 'tiaDoV1Rgb', 'tiaDoV6Rgb',
-    /* V7c2 d4 (28/10): xoá bộ pixel game/part (17 tệp bộ phận: vai robot* / son* / luatSon* / luatVat* / dsSon*), ve-robot.js hình tạm, phim pixel → 117 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js (kể cả 'ds mau son' Part.SON) rồi xoá khối này */
-    'robotDen', 'robotLam', 'robotNgoc', 'robotXanhLoToi', 'robotDoToi', 'robotCamToi', 'robotHong', 'robotTim', 'robotTimSang', 'robotKem', 'robotKemToi', 'robotXanhLa',
-    'robotXanhLaToi', 'robotXam', 'robotXamToi', 'sonVang', 'sonVangSang', 'sonVangToi', 'sonLam', 'sonLamSang', 'sonLamToi', 'sonDoSang', 'sonDoToi', 'sonTimSang',
-    'sonTimToi', 'sonNgoc', 'sonNgocSang', 'sonNgocToi', 'sonCam', 'sonCamSang', 'sonCamToi', 'sonTrang', 'sonTrangSang', 'sonTrangToi', 'sonHoangKim', 'sonHoangKimSang',
-    'sonHoangKimToi', 'dsSonGoc', 'dsSonGocSang', 'dsSonGocToi', 'luatSonDoSang', 'luatSonDoToi', 'luatSonXanhLa', 'luatSonXanhLaSang', 'luatSonXanhLaToi', 'luatSonXanhDuong', 'luatSonXanhDuongSang', 'luatSonXanhDuongToi',
-    'luatSonVang', 'luatSonVangSang', 'luatSonVangToi', 'luatVatDoSang', 'luatVatDoToi', 'luatVatXanhLa', 'luatVatXanhLaSang', 'luatVatXanhLaToi', 'luatVatXanhDuongSang', 'luatVatXanhDuongToi', 'luatVatVang', 'luatVatVangSang',
-    'luatVatVangToi', 'bangSangV5', 'camSangV5', 'doToiV7', 'goV13', 'kemV10', 'kemSangV4', 'lamSangV23', 'robotCamV1', 'robotCamV2', 'robotCamV3', 'robotCamV4',
-    'robotCamToiV1', 'robotCamToiV2', 'robotCamToiV3', 'robotDoV1', 'robotDoV2', 'robotDoV3', 'robotDoV4', 'robotDoV5', 'robotDoV6', 'robotDoV7', 'robotDoV8', 'robotDoV9',
-    'robotLamV1', 'robotLamV2', 'robotLamV3', 'robotLamV4', 'robotLamV5', 'robotLamV6', 'robotLamV7', 'robotLamV8', 'robotLamV9', 'robotLamToiV1', 'robotNauV1', 'robotNauV2',
-    'robotNauV3', 'robotNauSangV1', 'robotNauSangV2', 'robotNauSangV3', 'robotNauSangV4', 'robotNgocV1', 'robotTimV1', 'robotTimV2', 'robotTimV3', 'robotTimV4', 'robotTimSangV1', 'robotTimSangV2',
-    'robotXamToiV1', 'robotXamToiV2', 'robotXanhLaV1', 'robotXanhLoV1', 'robotXanhLoV2', 'robotXanhLoToiV2', 'trangV14', 'xanhLaV13', 'xanhLaToiV8',
-    /* V7c2 d5 (28/10): huy-hieu.js bỏ bộ huy hiệu pixel (HINH pixel, Painter) -> vai hh* hết chỗ dùng; V7c3 xoá (89 vai) */
-    'hhTim', 'hhTrang', 'hhXanhLo', 'hhVang', 'hhXanhLa', 'hhKem', 'hhNau', 'hhXam', 'hhLam', 'hhDo', 'hhCam', 'hhNgoc',
-    'hhCamV1', 'hhDoV1', 'hhDoV2', 'hhDoV3', 'hhDoV4', 'hhDoV5', 'hhDoV6', 'hhDoV7', 'hhDoV8', 'hhDoV9', 'hhDoV10', 'hhDoV11',
-    'hhKemV1', 'hhKemV2', 'hhLamV1', 'hhLamV2', 'hhLamV3', 'hhLamV4', 'hhLamV5', 'hhLamV6', 'hhLamV7', 'hhLamV8', 'hhLamV9', 'hhLamV10',
-    'hhLamV11', 'hhLamV12', 'hhNauV1', 'hhNauV2', 'hhNauV3', 'hhNauV4', 'hhNauV5', 'hhNauV6', 'hhNauV7', 'hhNauV8', 'hhNauV9', 'hhNauV10',
-    'hhNauV11', 'hhTimV1', 'hhTimV2', 'hhTimV3', 'hhTrangV1', 'hhTrangV2', 'hhTrangV3', 'hhVangV1', 'hhVangV2', 'hhVangV3', 'hhVangV4', 'hhVangV5',
-    'hhVangV6', 'hhVangV7', 'hhXamV1', 'hhXamV2', 'hhXamV3', 'hhXamV4', 'hhXamV5', 'hhXamV6', 'hhXamV7', 'hhXamV8', 'hhXamV9', 'hhXamV10',
-    'hhXamV11', 'hhXamV12', 'hhXamV13', 'hhXamV14', 'hhXanhLaV1', 'hhXanhLaV2', 'hhXanhLaV3', 'hhXanhLaV4', 'hhXanhLaV5', 'hhXanhLoV1', 'hhXanhLoV2', 'hhXanhLoV3',
-    'hhXanhLoV4', 'hhXanhLoV5', 'hhXanhLoV6', 'hhXanhLoV7', 'hhXanhLoV8',
-    /* V7c2 d6 (28/10): ve.js bỏ Painter / chất liệu / lưới icon HINH / sprite / ô sân / robot tạm -> vai sau hết chỗ dùng; V7c3 xoá (257 vai) */
-    'sanLamToi', 'sanXanhLoToi', 'sanNgoc', 'sanNau', 'co', 'coSang', 'coToi', 'tuong', 'tuongSang', 'tuongToi', 'sanDen', 'vatCam',
-    'vatNau', 'vatKem', 'vatLam', 'vatTrang', 'vatXam', 'vatVang', 'vatDo', 'robotLamToi', 'robotTrang', 'robotXanhLo', 'robotDo', 'robotNau',
-    'robotNauSang', 'robotVang', 'robotVangSang', 'tiaDenRgb', 'moXanhLa', 'bangSangV6', 'bangSangV7', 'bangSangV8', 'camV4', 'camV5', 'camSangV6', 'camToiV5',
-    'camToiV6', 'camToiV7', 'camToiV8', 'camToiV9', 'camToiV10', 'camToiV11', 'coV1', 'coV2', 'coV3', 'coSangV1', 'coSangV2', 'coSangV3',
-    'coSangV4', 'coToiV1', 'denV5', 'doV17', 'doSangV2', 'doSangV12', 'doToiV10', 'doToiV11', 'goV14', 'goV15', 'goV16', 'goV17',
-    'goV18', 'goV19', 'goV20', 'goV21', 'goV22', 'goV23', 'goV24', 'goV25', 'goV26', 'goV27', 'goV28', 'goV29',
-    'goV30', 'goV31', 'goV32', 'goV33', 'goV34', 'goV35', 'goV36', 'goV37', 'goSangV21', 'goSangV22', 'goSangV23', 'goSangV24',
-    'goSangV25', 'goSangV26', 'goSangV27', 'goSangV28', 'goSangV29', 'goSangV30', 'goSangV31', 'goSangV32', 'goSangV33', 'goSangV34', 'goSangV35', 'goSangV36',
-    'goSangV37', 'goSangV38', 'goToiV14', 'goToiV15', 'goToiV16', 'goToiV17', 'goToiV18', 'goToiV19', 'goToiV20', 'hongV3', 'kemV12', 'kemV13',
-    'kemSangV5', 'lamV16', 'lamSangV11', 'lamToiV1', 'moToiV25', 'robotLamV10', 'robotNauV4', 'robotTimV5', 'robotTimV6', 'robotTimSangV3', 'robotTimSangV4', 'robotTimSangV5',
-    'robotTrangV1', 'robotVangSangV1', 'robotXamV1', 'robotXamToiV3', 'robotXamToiV4', 'robotXanhLoV3', 'robotXanhLoV4', 'robotXanhLoToiV1', 'robotXanhLoToiV3', 'sanCamV2', 'sanCamV3', 'sanCamV4',
-    'sanCamV5', 'sanCamV6', 'sanCamV7', 'sanCamToiV1', 'sanCamToiV3', 'sanCamToiV4', 'sanCamToiV5', 'sanDenV1', 'sanDoV4', 'sanDoV5', 'sanDoV8', 'sanDoV9',
-    'sanDoV10', 'sanDoV11', 'sanDoSangV2', 'sanDoSangV5', 'sanKemV3', 'sanKemV4', 'sanKemV5', 'sanKemToiV1', 'sanLamV9', 'sanLamV10', 'sanLamV11', 'sanLamV18',
-    'sanLamV19', 'sanLamV20', 'sanLamV21', 'sanLamV22', 'sanLamToiV2', 'sanLamToiV3', 'sanLamToiV4', 'sanLamToiV5', 'sanLamToiV11', 'sanLamToiV12', 'sanLamToiV13', 'sanLamToiV14',
-    'sanLamToiV15', 'sanLamToiV16', 'sanLamToiV17', 'sanLamToiV18', 'sanNauV2', 'sanNauSangV1', 'sanNauSangV4', 'sanNauSangV5', 'sanNauSangV6', 'sanNauSangV7', 'sanNauSangV8', 'sanNauSangV9',
-    'sanNauSangV10', 'sanNauSangV11', 'sanNauSangV12', 'sanTimV1', 'sanTrangV4', 'sanTrangV7', 'sanTrangV8', 'sanTrangV9', 'sanVangSangV2', 'sanVangSangV3', 'sanVangSangV4', 'sanXamToiV2',
-    'sanXamToiV6', 'sanXamToiV7', 'sanXamToiV8', 'sanXamToiV9', 'sanXanhLaV1', 'sanXanhLaV2', 'sanXanhLaV3', 'sanXanhLaToiV3', 'sanXanhLaToiV4', 'sanXanhLaToiV5', 'sanXanhLaToiV7', 'sanXanhLaToiV8',
-    'sanXanhLaToiV9', 'sanXanhLoV9', 'sanXanhLoV10', 'sanXanhLoToiV5', 'sanXanhLoToiV6', 'sanXanhLoToiV7', 'sanXanhLoToiV8', 'timV8', 'trangV15', 'trangV16', 'trangToiV3', 'trangToiV8',
-    'tuongV1', 'tuongV2', 'tuongSangV1', 'tuongToiV1', 'vangV9', 'vangToiV2', 'vangToiV4', 'vangToiV5', 'vangToiV6', 'vatCamV1', 'vatLamV1', 'vatLamV2',
-    'vatLamV3', 'vatLamV4', 'vatLamV5', 'vatLamV6', 'vatLamV7', 'vatLamV8', 'vatLamV9', 'vatLamV10', 'vatLamV11', 'vatLamV12', 'vatLamV13', 'vatLamV14',
-    'vatLamV15', 'vatLamV16', 'vatNauV1', 'vatTrangV1', 'vatXamV1', 'xamV3', 'xamV10', 'xamV11', 'xamV12', 'xamToiV6', 'xamToiV10', 'xamToiV11',
-    'xamToi2V6', 'xamToi2V7', 'xamToi2V8', 'xanhLaSangV17', 'xanhLoSang2V9'];
-  const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
-  const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
+  /* V7c3 e4 (29/10): danh sách VAI_CHO_V7C3 (524 vai: V7c1 cai-dat 11, V7c2 san-ve 45 / part + ve-robot 117 / huy-hieu 89 / ve.js 257, V7c3 e2-e3 choi.css + san-ve 5) xử lý xong:
+     500 vai xoá khỏi bang-mau.js; GIỮ 19 vai còn CHỖ DÙNG ĐỘNG (tên vai là chuỗi trong bảng tra rồi đọc BM[tên]: ve-vector-tay-son MAU luatSon*, ve-vector-vat / ve-vector-o
+     MAU_DAI + CUC luatVat*, ve-vector.js SON_DOI sonDoToi / sonTimToi — V7c2 tưởng thừa vì mục này chỉ đọc BM.<vai>) và 5 gốc G của biến thể còn dùng
+     (kemToi, sanDoSang, sanLamToi, sanXanhLoToi, sanNau: A2 gộp biến thể về gốc qua GOP_HET nên gốc là chỗ dùng). Hai luật sau đưa hai kiểu chỗ dùng đó vào phép đếm. */
+  for (const f of TEP) if (f.endsWith('.js') && f !== 'bang-mau.js') for (const m of doc(f).replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/'([A-Za-z][\w]*)'/g)) if (m[1] in BM) dung.add(m[1]);   // tên vai trong chuỗi (bảng tra BM[tên])
+  for (const k of [...dung]) if (BM._gocCua[k]) dung.add(BM._gocCua[k]);                                                                                     // gốc của biến thể đang dùng
+  const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG);
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));
   kiem('tệp JS dùng BM có dòng lấy bảng màu ở dòng 1 (window.BangMau, ở Node thì require, ngữ cảnh giả thì {})', khongAlias.length === 0, khongAlias.join(', '));
   const html = doc('choi.html'), dau = html.indexOf('<script src="bang-mau.js"></script>');
