@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-giao-dien-vector-b.mjs — máy kiểm gói V5b của "Robot Chấn Hưng": GIAO DIỆN PHẲNG các màn NGOÀI màn chơi ở chế độ vector
    (hoc/game/giao-dien-vector-b.css) và ICON VECTOR (hoc/game/ve-vector-icon.js). Chạy ở Node, không trình duyệt, không nặng.
-     a. choi.html nạp giao-dien-vector-b.css SAU choi-vector.css, ve-vector-icon.js sau ve-vector.js và trước mọi tệp dựng màn hình.
+     a. phần V5b (giao-dien-vector-b, V7b việc 10 nối NGUYÊN VĂN vào cuối choi-vector.css sau dòng mốc; máy kiểm tách theo mốc) nằm SAU phần V5a, ve-vector-icon.js sau ve-vector.js và trước mọi tệp dựng màn hình.
      b. Pixel y nguyên: mọi bộ chọn của giao-dien-vector-b.css bắt đầu bằng body.ve-vector; tệp không có steps( / pixelated / Handjet / VT323 /
         vân gỗ (--wood*) / bảng phấn (--chalk) / ảnh nền url( trong khai báo; rê chuột (:hover) chỉ nằm trong @media (hover:hover).
      c. Các màn ngoài màn chơi (màn đầu .d-, chọn gói .g-, lưới màn .c-, Lắp robot .lr-, Sổ lệnh .so-, khung phim .md / .md-loi / .md-cham / .md-tiep / .md-bo-qua /
@@ -37,7 +37,9 @@ function kiem(ten, ok, chiTiet) {
   if (ok) { dat++; console.log('  ✓ ' + ten); } else { hong++; console.log('  ✗ HỎNG ' + ten + (chiTiet ? '\n      ' + String(chiTiet).slice(0, 1500) : '')); }
 }
 
-let cssB = doc('giao-dien-vector-b.css'), cssV = doc('choi-vector.css');
+const MOC_B = /\n\/\* =+ V7b \(28\/10\): từ đây là NGUYÊN VĂN giao-dien-vector-b\.css[^\n]*\n/;   // V7b việc 10: giao-dien-vector-b.css nối NGUYÊN VĂN vào cuối choi-vector.css sau dòng mốc này
+const cssGop = doc('choi-vector.css'), viTriMoc = cssGop.search(MOC_B);
+let cssB = viTriMoc >= 0 ? cssGop.slice(viTriMoc).replace(MOC_B, '') : '', cssV = viTriMoc >= 0 ? cssGop.slice(0, viTriMoc) : cssGop;
 const cssP = doc('choi.css'), html = doc('choi.html'), veJs = doc('ve.js'), xem = fs.readFileSync(path.join(day, 'hinh-mau', 'xem-vector.html'), 'utf8');
 let iconSrc = doc('ve-vector-icon.js'), manDau = doc('man-dau.js');
 const manChoi = doc('man-choi.js'), thanhPhan = doc('thanh-phan.js');
@@ -75,10 +77,10 @@ console.log('== a. choi.html nạp tệp của gói ==');
 {
   const link = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]);
   const scr = [...html.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
-  const iB = link.indexOf('giao-dien-vector-b.css'), iV = link.indexOf('choi-vector.css');
+  const iB = viTriMoc >= 0 ? link.indexOf('choi-vector.css') + 1 : -1, iV = link.indexOf('choi-vector.css');   // V7b: phần B nằm sau phần V trong cùng tệp (mốc có thật)
   const iI = scr.indexOf('ve-vector-icon.js'), iVV = scr.indexOf('ve-vector.js'), iDau = scr.indexOf('man-dau.js');
   const dung = ['man-dau.js', 'man-goi.js', 'man-chon.js', 'man-lap.js', 'mo-dau.js', 'ung-dung.js'].map((f) => scr.indexOf(f)).filter((k) => k >= 0);
-  kiem('giao-dien-vector-b.css nạp sau choi-vector.css; ve-vector-icon.js sau ve-vector.js, trước mọi tệp dựng màn hình (' + dung.length + ' tệp)',
+  kiem('phần giao-dien-vector-b (V7b: nối vào cuối choi-vector.css sau dòng mốc, choi.html không còn link riêng) nằm sau phần V5a; ve-vector-icon.js sau ve-vector.js, trước mọi tệp dựng màn hình (' + dung.length + ' tệp)',
     iB > iV && iV >= 0 && iI > iVV && iVV >= 0 && dung.every((k) => k > iI) && iDau > iI, J({ iB, iV, iI, iVV, iDau }));
 }
 
@@ -258,8 +260,8 @@ console.log('\n== i. Cài đặt: "Màu sơn R1" ẩn ở vector (R1 cố địn
 /* ================================================================= h. trang xem */
 console.log('\n== h. Trang xem ==');
 {
-  const ok = /id="v5b"/.test(xem) && /giao-dien-vector-b\.css/.test(xem) && /<script src="\.\.\/game\/ve-vector-icon\.js"><\/script>/.test(xem) && /VeIcon\.taoSvg/.test(xem);
-  kiem('hinh-mau/xem-vector.html có mục V5b (nạp giao-dien-vector-b.css, ve-vector-icon.js; bảng mọi icon, mẫu màn đầu / hộp gói / lưới màn / Lắp robot / Sổ lệnh)', ok);
+  const ok = /id="v5b"/.test(xem) && /href="\.\.\/game\/choi-vector\.css"/.test(xem) && !/href="\.\.\/game\/giao-dien-vector-b\.css"/.test(xem) && /<script src="\.\.\/game\/ve-vector-icon\.js"><\/script>/.test(xem) && /VeIcon\.taoSvg/.test(xem);   // V7b: trang con chỉ nạp choi-vector.css (đã gồm phần V5b)
+  kiem('hinh-mau/xem-vector.html có mục V5b (nạp choi-vector.css đã gồm phần V5b, không còn link giao-dien-vector-b.css; ve-vector-icon.js; bảng mọi icon, mẫu màn đầu / hộp gói / lưới màn / Lắp robot / Sổ lệnh)', ok);
 }
 
 console.log('\n---------------------------------------------');

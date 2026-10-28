@@ -32,11 +32,11 @@ def goi(nhom, idx, chu):
         ten = 'g/%s%03d.js' % (nhom, len(tep))
         tep.append((ten, 'window.__DH=window.__DH||{c:[],j:[]};__DH.%s.push([%d,%s]);\n' % (nhom, idx, json.dumps(m))))
 
-# CSS theo đúng thứ tự choi.html nạp (V7b 28/10): phông tự chứa, nền bố cục choi.css, rồi hai tệp giao diện vector
+# CSS theo đúng thứ tự choi.html nạp (V7b 28/10): phông tự chứa, nền bố cục choi.css, rồi giao diện vector choi-vector.css
 # (mặc định vector nên bản Artifact PHẢI có chúng; thiếu thì body.ve-vector mà không có luật phủ → giao diện vỡ).
 # Phông: nhúng woff2 Google Sans Flex / Code (chế độ vector) dạng data: ngay trong font.css, KHÔNG gọi Google Fonts.
 # Handjet / VT323 (chỉ pixel) không nhúng: bỏ khối @font-face (bản Artifact chạy vector).
-CSS = ['font/font.css', 'choi.css', 'choi-vector.css', 'giao-dien-vector-b.css']
+CSS = ['font/font.css', 'choi.css', 'choi-vector.css']   # V7b việc 10: giao-dien-vector-b.css đã nối vào cuối choi-vector.css
 PHONG_NHUNG = re.compile(r'url\((gs(?:flex|code)-[a-z-]+\.woff2)\)')
 PHONG_PIXEL = re.compile(r'@font-face\s*\{[^}]*(?:handjet|vt323)-[a-z-]+\.woff2[^}]*\}\s*')
 

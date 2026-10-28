@@ -445,7 +445,7 @@
   d.close();
 })();
 </script>
-<h2 id="v5b">Gói V5b — GIAO DIỆN PHẲNG các màn NGOÀI màn chơi ở vector (hoc/game/giao-dien-vector-b.css, chỉ áp khi body có lớp ve-vector) và ICON VECTOR (hoc/game/ve-vector-icon.js: SVG, màu theo vai bằng currentColor). Trang con nạp choi.css + choi-vector.css + giao-dien-vector-b.css thật</h2>
+<h2 id="v5b">Gói V5b — GIAO DIỆN PHẲNG các màn NGOÀI màn chơi ở vector (trước là hoc/game/giao-dien-vector-b.css, V7b nối vào cuối hoc/game/choi-vector.css; chỉ áp khi body có lớp ve-vector) và ICON VECTOR (hoc/game/ve-vector-icon.js: SVG, màu theo vai bằng currentColor). Trang con nạp choi.css + choi-vector.css + giao-dien-vector-b.css thật</h2>
 <iframe id="v5b-khung" title="Mẫu giao diện vector V5b" style="width:100%;max-width:760px;height:1250px;border:1px solid var(--g-vecVoToi);border-radius:12px;background:var(--g-vecVo)"></iframe>
 <template id="v5b-mau">
 <style>
@@ -505,13 +505,13 @@
 </div>
 </template>
 <script>
-/* V5b: trang con như V5a, nạp thêm giao-dien-vector-b.css; icon: VeIcon.taoSvg cho từng [data-i] (cạnh 10 × data-s px), không cần ve.js */
+/* V5b: trang con như V5a (choi-vector.css nay gồm cả phần V5b, V7b); icon: VeIcon.taoSvg cho từng [data-i] (cạnh 10 × data-s px), không cần ve.js */
 (function () {
   var f = document.getElementById('v5b-khung'), tpl = document.getElementById('v5b-mau');
   if (!f || !tpl || !window.VeIcon) return;
   var d = f.contentDocument; d.open();
   d.write('<!doctype html><html lang="vi"><head><meta charset="utf-8"><script src="../game/bang-mau.js"><\/script>' +
-    '<link rel="stylesheet" href="../game/font/font.css"><link rel="stylesheet" href="../game/choi.css"><link rel="stylesheet" href="../game/choi-vector.css"><link rel="stylesheet" href="../game/giao-dien-vector-b.css"></head>' +
+    '<link rel="stylesheet" href="../game/font/font.css"><link rel="stylesheet" href="../game/choi.css"><link rel="stylesheet" href="../game/choi-vector.css"></head>' +
     '<body class="ve-vector">' + tpl.innerHTML + '</body></html>');
   d.close();
   if (d.readyState === 'complete' && d.getElementById('m-icon')) dien(); else f.addEventListener('load', dien, { once: true });   // bang-mau.js ngoài: trình phân tích chờ tải xong mới tới phần thân

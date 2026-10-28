@@ -43,8 +43,7 @@ if (LOI_GIA) {
   SUA['ve-vector-icon.js'] = (s) => s.replace("var PHAM_VI = '#stage';", "var PHAM_VI = '#sc-dau';").replace(/\n {4}mui: \[[^\n]*\n/, '\n');   // V7b: phạm vi thiếu → B1 (và B3: nút ở #sc-choi không có title) đỏ
   SUA['phim-vector.js'] = (s) => s.replace('var MAU_VEC = [', 'var ICON = { denCam: function () {} }; var MAU_VEC = [').replace('mauVec: mauVec, the: the };', 'mauVec: mauVec, the: the, ICON: ICON };');
   SUA['mo-dau.js'] = (s) => s.replace('var v = PV() && PhimVector.o(ten, s, 0);', 'var v = null;');
-  SUA['choi-vector.css'] = (s) => s + '\nbody.ve-vector .md{--ink:var(--g-vienDam);--cream:var(--g-kemSang)}\n@media (prefers-reduced-motion:reduce){body.ve-vector #stage>:not(.md){animation-duration:.01ms!important}}\n';
-  SUA['giao-dien-vector-b.css'] = (s) => s.replace(/body\.ve-vector \.md-ram\{[^}]*\}/, '');
+  SUA['choi-vector.css'] = (s) => s.replace(/body\.ve-vector \.md-ram\{[^}]*\}/, '') + '\nbody.ve-vector .md{--ink:var(--g-vienDam);--cream:var(--g-kemSang)}\n@media (prefers-reduced-motion:reduce){body.ve-vector #stage>:not(.md){animation-duration:.01ms!important}}\n';   // V7b: + bỏ luật .md-ram (phần B nay trong cùng tệp)
 }
 const nguon = (f) => { const s = doc(f); return SUA[f] ? SUA[f](s) : s; };
 
@@ -292,7 +291,8 @@ function tachLuat(src) {
   })(src, '');
   return kq;
 }
-const cssV = nguon('choi-vector.css'), cssB = nguon('giao-dien-vector-b.css'), cssP = doc('choi.css');
+const MOC_B = /\n\/\* =+ V7b \(28\/10\): từ đây là NGUYÊN VĂN giao-dien-vector-b\.css[^\n]*\n/, cssGop = nguon('choi-vector.css'), viTriMoc = cssGop.search(MOC_B);   // V7b việc 10: hai phần trong một tệp
+const cssV = viTriMoc >= 0 ? cssGop.slice(0, viTriMoc) : cssGop, cssB = viTriMoc >= 0 ? cssGop.slice(viTriMoc).replace(MOC_B, '') : '', cssP = doc('choi.css');
 const luatV = tachLuat(cssV).concat(tachLuat(cssB)), luatP = tachLuat(cssP);
 {
   const giu = luatV.filter((r) => r.sel.split(',').some((s) => /^body\.ve-vector \.md$/.test(s.trim())) && /--(ink|cream)\s*:\s*var\(--g-(vienDam|kem)/.test(r.than));

@@ -3,8 +3,8 @@
    Từ V7b mặc định là bộ vẽ VECTOR nên bản Artifact phải có đủ giao diện vector; trước V7b bản gói chỉ có choi.css + phông pixel từ Google Fonts.
    Chạy python -X utf8 -I hoc/dong-goi-artifact.py hoc/game <thư mục tạm> rồi ghép lại các mảnh (window.__DH) và soát:
      a. chạy được, ra index.html + g/*.js, mỗi tệp mảnh < 40 KB (giới hạn EBADF của máy).
-     b. CSS ghép lại (đúng thứ tự chỉ số) chứa đủ 4 tệp theo thứ tự choi.html: font/font.css, choi.css, choi-vector.css, giao-dien-vector-b.css;
-        hai tệp vector NGUYÊN VĂN (từng byte).
+     b. CSS ghép lại (đúng thứ tự chỉ số) chứa đủ 3 tệp theo thứ tự choi.html: font/font.css, choi.css, choi-vector.css (V7b việc 10 đã nối giao-dien-vector-b.css vào);
+        choi.css / choi-vector.css NGUYÊN VĂN (từng byte).
      c. Phông vector: 6 @font-face Google Sans Flex / Code nhúng data:font/woff2 (đúng số byte base64 của 6 tệp woff2); không còn url(*.woff2) tương đối;
         không @font-face Handjet / VT323; index.html không gọi fonts.googleapis / gstatic.
      d. Script: mọi <script src> của choi.html đều có trong gói, đúng thứ tự, ghép lại y nguyên; có mọi tệp vector (ve-vector*.js, huy-hieu-vector.js).
@@ -69,12 +69,12 @@ function ghep(ds) { const g = {}; for (const [i, m] of ds) (g[i] = g[i] || []).p
 const cssDs = ghep(DH.c), jsDs = ghep(DH.j);
 
 /* ---------------------------------------------------------------- b. CSS */
-console.log('\n== b. CSS: đủ 4 tệp đúng thứ tự choi.html, hai tệp vector nguyên văn ==');
+console.log('\n== b. CSS: đủ 3 tệp đúng thứ tự choi.html, choi.css / choi-vector.css nguyên văn ==');
 const CSS_HTML = [...doc('choi.html').matchAll(/<link rel="stylesheet" href="([^"]+)">/g)].map((m) => m[1]);
-kiem('choi.html nạp 4 CSS: font/font.css, choi.css, choi-vector.css, giao-dien-vector-b.css', J(CSS_HTML) === J(['font/font.css', 'choi.css', 'choi-vector.css', 'giao-dien-vector-b.css']), J(CSS_HTML));
+kiem('choi.html nạp 3 CSS: font/font.css, choi.css, choi-vector.css (giao-dien-vector-b.css đã nối vào choi-vector.css, V7b việc 10)', J(CSS_HTML) === J(['font/font.css', 'choi.css', 'choi-vector.css']) && !fs.existsSync(path.join(GAME, 'giao-dien-vector-b.css')), J(CSS_HTML));
 const tenCss = cssDs.map((c) => (c.match(/^\/\* ([^*]+) \*\//) || [])[1] || '?');
 kiem('gói CSS ' + cssDs.length + ' tệp, đúng thứ tự choi.html: ' + tenCss.join(' → '), J(tenCss) === J(CSS_HTML), J(tenCss));
-for (const f of ['choi.css', 'choi-vector.css', 'giao-dien-vector-b.css']) {
+for (const f of ['choi.css', 'choi-vector.css']) {
   const i = tenCss.indexOf(f), nguyen = i >= 0 && cssDs[i] === '/* ' + f + ' */\n' + doc(f) + '\n';
   kiem(f + ' trong gói NGUYÊN VĂN (từng byte)', nguyen, i < 0 ? 'thiếu' : 'khác nguồn');
 }
