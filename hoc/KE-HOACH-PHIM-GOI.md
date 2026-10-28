@@ -41,6 +41,32 @@ Ghi chú:
 - **User 27/10: các mùa khác cũng phải có phim** cho mọi gói. Kịch bản mùa n viết cùng lúc lên danh sách màn mùa n (KE-HOACH-MUA-n.md), dữ liệu ở `game/phim-mua-n.js`.
 - Mùa sau: phim mở gói bộ phận = R1 tìm lại món văng mất (xích, cánh drone…) hay nhận món mới; phim gói sân = cơ chế mới làm gì; phim gói đội = robot mới xuất hiện.
 
+## 3b. Kịch bản mùa 2 "Ghi nhớ" (28/10, theo mảng MUA_2 của lo-trinh-hoc.js và KE-HOACH-MUA-2.md; dữ liệu `game/phim-mua-2.js`)
+
+Truyện nối phim gói 10 mùa 1: R1 ra khỏi xưởng, nhặt lại bánh xích trên đồi, nhận súng hơi, mắt hồng ngoại, gặp lại R2, rồi làm nhà máy cũ chạy lại;
+phim cuối nhá mùa 3 "Tín hiệu" (chân nhện, nam châm, sóng từ). R1 vẽ theo phần đã có ở gói đó (xích → xích + súng hơi → xích + súng hơi + hồng ngoại); R2 hai bánh + súng hơi + hồng ngoại, sơn lam.
+Hình: sân mini nhìn từ trên (`c.san`, ô 56 px) hay dải sàn; cơ chế mới (băng chuyền chạy, nút bắn + quầng nóng, thùng nặng, bóng hơi) vẽ thêm trong `phim-vector.js` (`PhimVector.bang / nutBan / thungNang / bong / nong`), ở pixel rơi về `Ve.tiles` / `Ve.ico`.
+Lời ở `chu.js` khóa `pg.<mã gói>.<n>`; lệnh trong khung code là lệnh / hàm thật của màn (`tr_right` xich.3, `forward(n)` tham-so.3, `distance`, `push(n)` che-day-thung, `shoot("fast" | "charge")`, `warm`).
+
+| Gói | Khung 1 | Khung 2 | Khung 3 | Khung 4 |
+|---|---|---|---|---|
+| 1 Bánh xích `xich` | ngoài xưởng, bánh xích nằm trên đồi nhấp nháy; R1 hai bánh lăn tới, "!" | xích bay vào thân, R1 thành xe xích, CẠCH! | xích quay chậm: nhịp 1 nửa góc, nhịp 2 đủ góc vuông | code `def tr_right(): for i in range(2): left_move(); wait()`, R1 quay hai nhịp; lời nhắc biến `n` đếm bước (chương 2) |
+| 2 Súng hơi `sung-hoi` | sau đống thùng có khẩu súng hơi lắc lắc; R1 xích lăn tới | súng bay lên mũi xe, CẠCH! | `shoot()`: bóng bay ra trước, xe giật lùi một ô, PHỤT! | code `shoot_back()` + `def forward(n)`; R1 bắn ra sau, giật tới |
+| 3 Hồng ngoại `hong-ngoai` | tường phía trước, "?": còn xa hay gần? | mắt hồng ngoại đỏ lăn ra, gắn lên mũi, CẠCH! | tia đỏ tới tường, số 1 2 3 bật lên từng ô | code `d = distance()` `for j in range(d): move()`, R1 đi đúng 3 ô dừng sát tường |
+| 4 Nhà máy `nha-may` | băng chuyền đứng yên, cửa đóng, nút bắn tắt, "?" | băng chạy, thùng nặng trôi theo mũi tên | R1 quay lên bắn trúng nút: nút bật (quầng nóng), cửa cuối băng mở | thùng nặng sau xe: xe bắn, cú giật hất thùng lùi một ô, HẤT! |
+| 5 Đẩy thùng `day-thung` | thùng nặng chắn lối, bắn vào: BỤP, thùng rung, không nhúc nhích | xích tiến hai lần, thùng trượt hai ô vào ô đích, sao | sau thùng là tường: RẦM, thùng kẹt | code `def push(n)` … `push(2)`, R1 đẩy thùng vào ô đích |
+| 6 Lực bắn `luc-ban` | `shoot("charge")`: bóng bay tới nút, nút bật, xe giật lùi | `shoot("fast")`: bóng bay 2 ô (số 1, 2) rồi rơi, xe đứng yên | code `if distance() > 1: shoot("charge") else: shoot("fast")`; tia đo, bắn nhanh trúng nút gần | |
+| 7 Đo nhiệt `do-nhiet` | nút đang bật (nóng); R1 lỡ bắn vào, nút tắt, "?!" | R1 dùng tia hồng ngoại: nút nóng hiện NÓNG!, để yên; sang nút nguội, bắn cho bật | code `if not warm(): shoot()`; nút nguội được bắn bật, quầng nóng hiện | |
+| 8 Đội `doi-mua-2` | cửa xưởng mở, R2 (hai bánh, súng hơi, hồng ngoại, sơn lam) lăn vào | R1 chạy ngang qua trước mũi R2: tia của R2 thấy R1, NÓNG!, R2 chờ | R1 qua, đường trống: R2 bắn trúng nút, cửa mở, R1 đi tiếp | hai bảng code R1 `forward(4)` / R2 `while warm(): wait()` `shoot()` |
+| 9 Bệ súng xích `be-sung` | R2 hai bánh bắn tụ: giật lùi, hất thùng nặng phía sau, HẤT! | R1 xích bắn tụ cùng chỗ: xe rung nhẹ, đứng yên, VỮNG! | R1 đứng một chỗ quay ba hướng, bắn ba nút, số 1 2 3 | |
+| 10 Nhà máy chạy lại `nha-may-chay` | R1 đủ bộ giữa nhà máy, 8 huy hiệu chương 1 các gói mùa 2 bay quanh | hai nút bật, hai băng chạy, thùng nặng trôi, R1 và R2 vui | ngoài xưởng, xa xa nhấp nháy chân nhện, nam châm, sóng từ, "?" (nhá mùa 3) | |
+
+Ghi chú mùa 2:
+- Gói 10 `nha-may-chay` chưa có màn (đang viết song song) nên chưa vào ThuTuChuong.goi; phim khai sẵn, máy kiểm lấy danh sách gói từ mảng MUA_2 (đọc nguồn).
+  Khi gói 10 xong: xem lại khung 2 (nếu trùm có cơ chế riêng thì cho vào) và danh sách huy hiệu bay ở khung 1 (thêm huy hiệu `tong-hop-2` / `trum-mua-2` nếu có).
+- Huy hiệu mùa 2 nào chưa có bản vector thì ở vector phim 10 vẽ icon bộ phận thay (không để canvas pixel trong phim vector); khi V7a có bản vector thì tự dùng.
+- Gói 8, 9 (thử thách) và 4, 5, 6, 7 (sân / nâng cấp) không bắt buộc khung code; 4 gói 5, 6, 7, 8 vẫn có code vì lệnh / hàm mới là ý chính của gói.
+
 ## 4. Kiểm
 - Máy kiểm `kiem-phim-goi.mjs` (Node): mọi gói mùa 1 trừ gói 1 có phim; mỗi phim 3–4 khung; mọi khóa chữ `pg.*` có trong chu.js; câu ≤ 14 từ; cờ đúng mã gói.
 - Trình duyệt: người giao bấm xem từng phim (vào gói lần đầu, xem lại bằng ▶), kiểm Bỏ qua, chạm khung, không lỗi console, đúng cỡ trên màn hình điện thoại.

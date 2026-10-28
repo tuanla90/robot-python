@@ -14,7 +14,8 @@
      B3 vector: thùng nằm đúng trong kẹp — tâm thùng = tâm thân + VeRobot.vatKep (1/100 ô) × cạnh ô veCo, không theo hằng pixel 57 (tay-gap.3, kho-hang.3, hai-robot.3);
         cạnh thùng theo vatKep.n.
      B4 vector: robot trong phim dùng mắt biểu cảm (VeRobot.veCo nhận trangThai.mat) ở ≥ 8 phim, có cả 'vui' lẫn 'ngac'.
-     B5 pixel y nguyên: cây DOM của từng khung (sau mọi hẹn giờ) bản mới = bản nền (phim-goi.js, phim-mua-1.js, huy-hieu.js của NEN).
+     B5 pixel y nguyên: cây DOM của từng khung (sau mọi hẹn giờ) bản mới = bản nền (phim-goi.js, phim-mua-1.js, huy-hieu.js của NEN);
+        phim bản nền chưa có (phim-mua-2.js, 28/10) chỉ cần chạy ở pixel không lỗi / cảnh báo.
    Cờ --loi-gia: cắm sáu lỗi (hình tay-gap gọi Part.ghep, vePixel dời sao, hình xich ném lỗi, VAT về 57, PhimVector bỏ ô tường, xe().mat không đổi gì) → máy kiểm phải ĐỎ.
    Chạy: node hoc/kiem-huy-hieu-phim-vector.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
@@ -129,6 +130,7 @@ function napGame(cheDo, nen) {
   for (const f of DS_TEP) {
     const laNen = nen && ['huy-hieu.js', 'phim-goi.js', 'phim-mua-1.js'].includes(f);
     if (nen && ['huy-hieu-vector.js', 'phim-vector.js'].includes(f)) continue;          // bản nền chưa có tệp V6
+    if (nen && /^phim-mua-(?:[2-9]|\d{2,})\.js$/.test(f)) continue;                     // bản nền chưa có phim mùa 2+ (phim-mua-2.js, 28/10)
     vm.runInContext(laNen ? docNen(f) : nguon(f), ctx, { filename: f });
   }
   if (LOI_GIA && !nen && ctx.VeVector && ctx.VeVector.HUY_HIEU) {
@@ -300,13 +302,16 @@ const kho = (G, ma) => G.ctx.PhimGoi.soKhung(ma);
       return cv._w + 'x' + cv._h + '[' + (cv._data ? cv._data.length + ':' + cv._data.slice(0, 80) : '') + '|' + JSON.stringify(cv.__ctx.lenh).replace(/cv#\d+/g, 'cv') + '|' + cv.nguon.map((x) => tuan(x, sau + 1)).join(';') + ']';
     };
     const cay = (e) => (e.__cv ? 'canvas{' + JSON.stringify(e.style) + tuan(e, 0) + '}' : e.tag + '.' + e.className + JSON.stringify(e.style) + JSON.stringify(e.attrs) + (e._text || '') + '(' + e.children.map(cay).join(',') + ')');
-    const khac = [];
-    for (const ma of PHIM_DS) for (let n = 1; n <= kho(PX2, ma); n++) {
+    const khac = [], PHIM_NEN = NEN_G.ctx.PhimGoi.ds(), moi = PHIM_DS.filter((m) => !PHIM_NEN.includes(m)), loiMoi = [], cb0 = PX2.canhBao.length;
+    for (const ma of moi) for (let n = 1; n <= kho(PX2, ma); n++) { try { chieu(PX2, ma, n); } catch (e) { loiMoi.push(ma + '.' + n + ': ' + e.message); } }    // phim mới (mùa 2, 28/10): pixel chạy không lỗi
+    PX2.canhBao.slice(cb0).forEach((s) => loiMoi.push(s));
+    if (loiMoi.length) khac.push('pixel, phim mới lỗi: ' + loiMoi.slice(0, 3).join(' | '));
+    for (const ma of PHIM_NEN) for (let n = 1; n <= kho(PX2, ma); n++) {
       ma2.clear(); so = 0; const a = cay(chieu(PX2, ma, n));
       ma2.clear(); so = 0; const b = cay(chieu(NEN_G, ma, n));
       if (a !== b) { let i = 0; while (i < a.length && a[i] === b[i]) i++; khac.push(ma + '.' + n + ' lệch ở ký tự ' + i + ': …' + a.slice(Math.max(0, i - 60), i + 60) + ' / …' + b.slice(Math.max(0, i - 60), i + 60)); }
     }
-    kiem('(B5) pixel y nguyên: cây DOM + lệnh vẽ của mọi khung (sau mọi hẹn giờ) bản mới = bản ' + NEN, !khac.length, khac.slice(0, 2).join('\n      '));
+    kiem('(B5) pixel y nguyên: cây DOM + lệnh vẽ của mọi khung (sau mọi hẹn giờ) của ' + PHIM_NEN.length + ' phim bản ' + NEN + ' = bản mới; ' + moi.length + ' phim mới (mùa 2) chạy ở pixel không lỗi', !khac.length, khac.slice(0, 2).join('\n      '));
   }
 }
 
