@@ -460,6 +460,30 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     themBanhRang(p);
     return p;
   };
+  /** gói 9 Bệ súng xích: nòng súng hơi nằm ngang trên thân xích (viền mực, ống thép, bầu hơi tối phía sau), họng súng ở (x0 + 13, y0 + 2). */
+  function veNongNgang(p, x0, y0) {
+    p.rect(x0 + 3, y0, 11, 5, INK); p.rect(x0 + 4, y0 + 1, 9, 3, KK.thepSang || BM.hhXamV8); p.rect(x0 + 4, y0 + 1, 9, 1, BM.hhTrang);   // ống
+    p.rect(x0, y0 - 1, 5, 7, INK); p.rect(x0 + 1, y0, 3, 5, KK.den || BM.hhXamV9);                                                      // bầu hơi
+  }
+  /** quả bóng to 7 × 7 (bắn tụ) tại (x0, y0). */
+  function veBongTo(p, x0, y0) {
+    var M = ['..XXX..', '.XwyyX.', 'XwyyyyX', 'XyyyyyX', 'XyyyydX', '.XdddX.', '..XXX..'], CB = { X: INK, w: BM.hhKemV1, y: BM.hhVangV2, d: BM.hhNauV1 };
+    for (var j = 0; j < 7; j++) for (var i = 0; i < 7; i++) if (M[j].charAt(i) !== '.') p.px(x0 + i, y0 + j, CB[M[j].charAt(i)]);
+  }
+  HINH['be-sung'] = function () {                               // bệ súng xích: xe xích nhìn ngang, nòng súng hơi nằm ngang trên thân, bóng to vừa bắn ra, xe đứng yên
+    var p = P(T26, T26);
+    veXichNgang(p, 0, 14);
+    veNongNgang(p, 2, 9);
+    veBongTo(p, 18, 7);
+    return p;
+  };
+  HINH['che-be-sung'] = function () {                           // bệ súng xích (thân xích + nòng ngang) + bánh răng
+    var p = P(T26, T26);
+    veXichNgang(p, 0, 15);
+    veNongNgang(p, 0, 10);
+    themBanhRang(p);
+    return p;
+  };
   HINH['che-omni'] = function () {                             // thân omni (bốn bánh nhỏ ở góc, nhìn từ trên) + bánh răng
     var p = P(T26, T26), t = thanPart('omni');
     chep(p, t, 2, Math.max(0, T26 - 3 - t.h), 1);          // thân gọn trong vòng tròn; bánh răng che một chút góc phải trên

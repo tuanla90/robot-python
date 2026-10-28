@@ -237,7 +237,16 @@
     m('shot_clear', 'hong-ngoai', 'Chờ bạn đi khỏi đường bóng rồi bắn với lực p', 'che-doi-mua-2', 'che-doi-mua-2.6'),
     m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.7'),
     m('cover', 'hong-ngoai', 'Chờ bạn tới rồi đi khỏi (pass_mate) rồi bắn tụ', 'che-doi-mua-2', 'che-doi-mua-2.8'),
-    m('guard', 'hong-ngoai', 'Chờ bạn qua (pass_mate) rồi tự chọn lực bắn theo xa gần', 'che-doi-mua-2', 'che-doi-mua-2.10')
+    m('guard', 'hong-ngoai', 'Chờ bạn qua (pass_mate) rồi tự chọn lực bắn theo xa gần', 'che-doi-mua-2', 'che-doi-mua-2.10'),
+    // gói 9 · chương che-be-sung · Hàm bệ súng (man-be-sung.js): xích gắn súng hơi bắn tụ không giật, nhóm Súng hơi (left_shot là hàm của màn nên không có ở đây)
+    m('blast_left', 'hoi', 'Quay trái, bắn tụ nút bên trái, rồi quay lại: bệ súng không giật', 'che-be-sung', 'che-be-sung.1'),
+    m('blast_right', 'hoi', 'Quay phải, bắn tụ nút bên phải, rồi quay lại', 'che-be-sung', 'che-be-sung.2'),
+    m('lock_on', 'hoi', 'Đo nhiệt nút trước mũi xe: chưa nóng thì bắn tụ', 'che-be-sung', 'che-be-sung.4'),
+    m('lock_left', 'hoi', 'Quay trái, nút bên trái chưa nóng thì bắn tụ, rồi quay lại', 'che-be-sung', 'che-be-sung.5'),
+    m('lock_row', 'hoi', 'n trạm: nút xa bên trái còn tắt thì bắn tụ, rồi tiến một ô', 'che-be-sung', 'che-be-sung.6'),
+    m('go_fire', 'hoi', 'Đi thẳng tới sát cửa đóng rồi bắn tụ nút bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
+    m('visit', 'hoi', 'Đo ngõ cụt sâu d ô, vào bắn tụ nút bên trái, rồi lùi ra đúng d ô', 'che-be-sung', 'che-be-sung.8'),
+    m('push_blast', 'hoi', 'Đẩy thùng một ô rồi bắn tụ nút bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9')
   );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
