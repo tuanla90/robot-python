@@ -4,7 +4,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Hiện TRƯỚC khi chơi một màn có man.lapRap: người chơi chọn part cho ba khe (THÂN · TAY · NÃO = cảm biến) dưới ngân sách xu rồi bấm "Lắp xong".
      · mỗi khe là một hàng thẻ lướt ngang: icon bộ phận + tên + giá (xu) + một dòng "vượt được gì"; khe màn không có thì ẩn; khe tay / não có thẻ "Không gắn" (trừ khe bắt buộc);
      · thẻ ghép không hợp lệ với các khe đang chọn thì MỜ; chạm vào thì thẻ rung, bảng báo lý do (lõi: LapRap.kiemGhep) và cách gỡ ("Bỏ tay kẹp trước nhé");
-     · hình robot ghép ngay (VeRobot.ve → Part.ghep), hàng xu còn lại; vượt ngân sách thì nút "Lắp xong" khóa và nói thiếu bao nhiêu xu (LapRap.kiemCachLap);
+     · hình robot ghép ngay (VeRobot.ve → VeVector, luật ghép VeVector.kiemGhep), hàng xu còn lại; vượt ngân sách thì nút "Lắp xong" khóa và nói thiếu bao nhiêu xu (LapRap.kiemCachLap);
      · Lắp xong: lưu cách lắp theo màn (Luu.ghiLap) rồi gọi tuyChon.khiXong(cach); ◀ gọi tuyChon.khiVe().
    Ô chữ cạnh robot (E.loi) là một chỗ duy nhất cho lời: mặc định là đề bài (chạm để xem đề bài + sân đầy đủ), khi cần thì đổi thành lý do ghép sai / thiếu xu.
    Khung thấp (≈640): bảng robot + xu + ba hàng thẻ; khung cao (điện thoại dài, ≥ 700): có thêm hàng "sân + đề bài" riêng.

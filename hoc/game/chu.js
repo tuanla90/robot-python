@@ -438,7 +438,7 @@
       'caiDat.xoaCanh': 'Không lấy lại được.',
       'caiDat.xoaCo': 'Xóa hết',
       'caiDat.phienBan': 'Phiên bản {v}',
-      'caiDat.thongTinChu': 'Robot Chấn Hưng\nViết Python điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Handjet, VT323 (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
+      'caiDat.thongTinChu': 'Robot Chấn Hưng\nViết Python điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Google Sans Flex, Google Sans Code (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
 
       /* ---- phim mở đầu (mo-dau.js) */
       'md.boQua': 'Bỏ qua',

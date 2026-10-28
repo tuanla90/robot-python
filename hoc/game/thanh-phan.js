@@ -14,8 +14,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return e;
   }
   /**
-   * Điền văn bản vào el; các lời gọi như `wait()`, `move()` và mọi dấu ngoặc tròn được tách ra, hiện bằng phông code (VT323)
-   * vì ở Handjet dấu ngoặc tròn trông giống ngoặc vuông. textContent vẫn đúng như chuỗi gốc.
+   * Điền văn bản vào el; các lời gọi như `wait()`, `move()` và mọi dấu ngoặc tròn được tách ra, hiện bằng phông code (Google Sans Code)
+   * (lý do gốc: phông pixel cũ vẽ ngoặc tròn giống ngoặc vuông; nay giữ để tên lệnh nổi bật). textContent vẫn đúng như chuỗi gốc.
    */
   function vanBan(el, s) {
     s = String(s === undefined || s === null ? '' : s);
@@ -23,7 +23,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var re = /[A-Za-z_][A-Za-z0-9_]*\(\)|[()]/g, i = 0, m;
     while ((m = re.exec(s))) {
       if (m.index > i) el.appendChild(document.createTextNode(s.slice(i, m.index)));
-      var k = document.createElement('span'); k.className = m[0].length === 1 ? 'kc ngoac' : 'kc'; k.textContent = m[0]; el.appendChild(k);     // ngoặc đứng riêng trong câu: phông thường (VT323 vẽ ngoặc như vạch đứng)
+      var k = document.createElement('span'); k.className = m[0].length === 1 ? 'kc ngoac' : 'kc'; k.textContent = m[0]; el.appendChild(k);     // ngoặc đứng riêng trong câu: phông thường (phông pixel cũ vẽ ngoặc như vạch đứng)
       i = m.index + m[0].length;
     }
     if (i < s.length) el.appendChild(document.createTextNode(s.slice(i)));

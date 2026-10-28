@@ -40,13 +40,14 @@ function kiem(ten, ok, chiTiet) {
 const MOC_B = /\n\/\* =+ V7b \(28\/10\): từ đây là NGUYÊN VĂN giao-dien-vector-b\.css[^\n]*\n/;   // V7b việc 10: giao-dien-vector-b.css nối NGUYÊN VĂN vào cuối choi-vector.css sau dòng mốc này
 const cssGop = doc('choi-vector.css'), viTriMoc = cssGop.search(MOC_B);
 let cssB = viTriMoc >= 0 ? cssGop.slice(viTriMoc).replace(MOC_B, '') : '', cssV = viTriMoc >= 0 ? cssGop.slice(0, viTriMoc) : cssGop;
-const cssP = doc('choi.css'), html = doc('choi.html'), veJs = doc('ve.js'), xem = fs.readFileSync(path.join(day, 'hinh-mau', 'xem-vector.html'), 'utf8');
+let cssP = doc('choi.css'); const html = doc('choi.html'), veJs = doc('ve.js'), xem = fs.readFileSync(path.join(day, 'hinh-mau', 'xem-vector.html'), 'utf8');
 let iconSrc = doc('ve-vector-icon.js'), manDau = doc('man-dau.js');
 const manChoi = doc('man-choi.js'), thanhPhan = doc('thanh-phan.js');
 if (LOI_GIA) {
   console.log('(đang cắm lỗi giả: bảy lỗi, các mục b, c, d, e, f, i phải đỏ)');
   cssB += '\n.g-the.nope{animation:shake .25s steps(2) 2}\n';                                                  // b: luật ngoài body.ve-vector có steps(
-  cssB = cssB.replace(/body\.ve-vector \.d-san,body\.ve-vector \.d-san\.chalk\{[^}]*\}/, '');                  // c: bỏ luật phủ bảng phấn của tấm sân màn đầu
+  cssB = cssB.replace(/body\.ve-vector \.d-san,body\.ve-vector \.d-san\.chalk\{[^}]*\}/, '');
+  cssP += '\n.d-san{background-image:var(--chalk)}\n';                                                  // c (V7c3): choi.css đã hết bảng phấn → cắm lại để bỏ luật phủ còn làm mục c đỏ                  // c: bỏ luật phủ bảng phấn của tấm sân màn đầu
   iconSrc = iconSrc.replace(/\n {4}book: \[[^\n]*\n/, '\n');                                                    // d: mất icon book (Sổ lệnh)
   cssB += '\nbody.ve-vector .g-mota{color:var(--g-vecKeDam);background:var(--g-vecThe)}\n';                   // e: chữ 1,7:1
   cssB += '\nbody.ve-vector .c-man:hover{transform:none}\n';                                                    // b: rê chuột ngoài @media (hover:hover)

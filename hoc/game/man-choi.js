@@ -308,7 +308,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var rows = LapRap.lenhKhongCon(S.man, S.bai.chinh);
     if (!rows.length) return;
     S.ed.datLoi(rows.slice());
-    toast(t('lap.lenhMat', { ds: rows.ten.join(', ') }), 'bad', 4800);                  // tên lệnh không kèm ngoặc: phông Handjet vẽ "()" như "[]"
+    toast(t('lap.lenhMat', { ds: rows.ten.join(', ') }), 'bad', 4800);                  // tên lệnh không kèm ngoặc (lý do gốc: phông pixel cũ vẽ "()" như "[]")
   }
   function cauHinhSan(i) {
     var m = S.man, nhieu = Array.isArray(m.san[0]), lm = SanHoc.lopMauCuaSan(m, i);

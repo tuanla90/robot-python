@@ -1,7 +1,7 @@
 /* ============================================================================
-   thanh-cuon.js — "Robot Chấn Hưng": THANH CUỘN KIỂU PIXEL (window.ThanhCuon).
+   thanh-cuon.js — "Robot Chấn Hưng": THANH CUỘN RIÊNG (window.ThanhCuon); kiểu ở choi-vector.css (rãnh bo tròn, cục kéo tím chàm nhạt).
    Thanh cuộn của trình duyệt không hợp giao diện, và trên điện thoại (iOS, Android) không đổi kiểu được bằng CSS. Nên vùng cuộn trong hộp
-   (thẻ bộ phận, sổ lệnh, bảng mở gói) ẩn thanh gốc và vẽ thanh riêng: rãnh tối viền mực, cục kéo vàng như nút game.
+   (thẻ bộ phận, sổ lệnh, bảng mở gói) ẩn thanh gốc và vẽ thanh riêng (rãnh + cục kéo).
    ThanhCuon.gan(el)  el là phần tử có overflow-y:auto. Thanh nằm bên phải el (cha của el được đặt position:relative), tự ẩn khi không có gì để cuộn.
                       Vuốt / lăn trong el như cũ; kéo cục vàng để cuộn; chạm vào rãnh thì cuộn một trang về phía đó.
    ========================================================================== */
