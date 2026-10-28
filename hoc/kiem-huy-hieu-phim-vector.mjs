@@ -195,15 +195,15 @@ const conPixel = [];
 }
 {
   const V = VE.ctx, sai = [], ma = DS.find((m) => V.HuyHieu.maVec(m) === m && m !== 'xich' && m !== 'tay-gap') || DS[0];
-  const e = V.Ve.mk(V.HuyHieu.ve(ma, 'mo'), 3);
-  if (!e.laVector || e.style.width !== '108px') sai.push('Ve.mk(HuyHieu.ve(' + ma + '), 3): ' + e.style.width + ' vector=' + !!e.laVector);
+  const e = V.HuyHieu.mk(ma, 'mo', 3);
+  if (!e.laVector || e.style.width !== '108px') sai.push('HuyHieu.mk(' + ma + ', mo, 3): ' + e.style.width + ' vector=' + !!e.laVector);
   if (e.width !== Math.round(36 * 3 * 2 * 2)) sai.push('rasterise ' + e.width + ' px (cần 36·3·dpr 2·2 = 432)');
   const b = new VE.El('div'); b.innerHTML = '<span data-i="huyhieu" data-s="1" data-ma="' + ma + '" data-tt="xong"></span><span data-i="huyhieu" data-s="2" data-ma="khong-co-ma"></span>';
   V.Ve.hydrate(b);
   const [h1, h2] = b.children.map((c) => c.firstChild);
   if (!h1 || !h1.laVector || h1.style.width !== '36px') sai.push('hydrate data-ma=' + ma + ': ' + (h1 && h1.style.width) + ' vector=' + !!(h1 && h1.laVector));
   if (!h2 || h2.laVector) sai.push('hydrate mã lạ: phải ra hình pixel');
-  kiem('(A4) vector: Ve.mk(HuyHieu.ve(…), s) → canvas vector 36·s px CSS (rasterise × dpr × 2); Ve.hydrate [data-i="huyhieu"] điền bản vector, mã lạ vẫn pixel', !sai.length, sai.join(' | '));
+  kiem('(A4) vector: HuyHieu.mk(ma, tt, s) → canvas vector 36·s px CSS (rasterise × dpr × 2); Ve.hydrate [data-i="huyhieu"] gọi HuyHieu.mk → bản vector, mã lạ vẫn pixel; V7b: không còn bọc Ve.mk / Ve.hydrate ở cả hai chế độ', !sai.length, sai.join(' | '));
 }
 {
   const TTC = require(path.join(day, 'thu-tu-chuong.js'));

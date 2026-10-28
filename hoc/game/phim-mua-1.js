@@ -421,7 +421,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var cho = [[30, 30], [110, 14], [196, 14], [262, 40], [20, 100], [266, 104], [64, 60], [222, 72]];
         ds.forEach(function (m, i) {
           if (!cho[i]) return;
-          var hh; try { hh = Ve.mk(HuyHieu.ve(m, 'xong'), 1); hh.classList.add('pxi'); } catch (e) { hh = c.sao(2); }
+          var hh; try { hh = HuyHieu.mk(m, 'xong', 1); hh.classList.add('pxi'); } catch (e) { hh = c.sao(2); }
           var o = c.dat(c.h('div', 'pg-bay'), cho[i][0], cho[i][1]); o.style.animationDelay = (-i * 0.3) + 's';
           var p = c.dat(c.h('div', 'md-pop'), 0, 0); p.style.animationDelay = (0.2 + i * 0.15) + 's'; p.appendChild(hh);
           o.appendChild(p); k.appendChild(o);

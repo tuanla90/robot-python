@@ -122,7 +122,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       try { if (HH && HH.maVec && HH.maVec(ma) && HH.mk) { var v = HH.mk(ma, 'xong', 1); if (v && v.laVector) return v; } } catch (e) { /* rơi về sao */ }
       return c.sao(2);                                                   // V7b: mọi mã đều có bản vector (máy kiểm A6), đường tạm icon trong khung tròn đã gỡ
     }
-    try { if (HH && HH.DS && HH.DS.indexOf(ma) >= 0) { var p = HH.mk ? HH.mk(ma, 'xong', 1) : Ve.mk(HH.ve(ma, 'xong'), 1); p.classList.add('pxi'); return p; } } catch (e) { /* rơi về sao */ }
+    try { if (HH && HH.DS && HH.DS.indexOf(ma) >= 0) { var p = HH.mk(ma, 'xong', 1); p.classList.add('pxi'); return p; } } catch (e) { /* rơi về sao */ }
     return c.sao(2);
   }
   /** Chữ qua t() của chu.js (Node không có t: trả khóa). */

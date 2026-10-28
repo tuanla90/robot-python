@@ -20,7 +20,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Hình của một gói: huy hiệu của chương `hinh` nếu có, không thì dấu + để giữ chỗ. */
   function hinhGoi(g) {
     var co = window.HuyHieu && HuyHieu.DS && HuyHieu.DS.indexOf(g.hinh) >= 0;
-    return co ? Ve.mk(HuyHieu.ve(g.hinh, 'mo'), 2) : Ve.ico('plus', 4, { fill: BM.vang, line: BM.vienDam });
+    return co ? HuyHieu.mk(g.hinh, 'mo', 2) : Ve.ico('plus', 4, { fill: BM.vang, line: BM.vienDam });
   }
 
   /** Mở bảng cho các gói ds; bấm "Tuyệt!" thì đóng và gọi khiXong (nếu có). */

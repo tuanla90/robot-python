@@ -802,8 +802,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      Ở chế độ vector (VeVector.bat()) huy hiệu nào có bản vector (VeVector.HUY_HIEU, huy-hieu-vector.js) thì vẽ bằng vector, KHÔNG gọi Part.* (mã dùng chung hình
      — HINH[ma] === HINH[mã khác] như doi-* = hai-robot — dùng bản vector của mã kia); chưa có bản vector thì RƠI VỀ PIXEL (vePixel, y như cũ). Chế độ pixel: ve = vePixel.
      HuyHieu.ve(ma, tt) ở vector trả canvas vector (cờ .huyHieu = { ma, tt }); HuyHieu.mk(ma, tt, s) → phần tử canvas hiển thị 36·s px CSS, rasterise đúng điểm ảnh thiết bị.
-     CẦU NỐI tạm (tới khi gom vào ve.js): ở vector, Ve.mk(cv, s) gặp canvas có .huyHieu thì chuyển sang HuyHieu.mk (không thì y như cũ), Ve.hydrate điền trước
-     [data-i="huyhieu"] có bản vector. Chế độ pixel không cài cầu nối. */
+     V7b (28/10): người gọi dùng thẳng HuyHieu.mk(ma, tt, s) (ở pixel = Ve.mk(vePixel)); Ve.hydrate [data-i="huyhieu"] gọi HuyHieu.mk. Cầu bọc Ve.mk / Ve.hydrate (C4) đã gỡ. */
   var CO_GOC = N, SIEU_MAU = 2;                                     // cạnh hiển thị = 36 · s px CSS; rasterise × dpr × 2 (chừa phép phóng của #stage) rồi trình duyệt thu mịn
   function VV() { return (typeof window !== 'undefined' && window.VeVector && window.VeVector.HUY_HIEU) ? window.VeVector : null; }
   function cheDoVec() { var v = VV(); return !!(v && v.bat()); }
@@ -830,21 +829,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     e.style.width = e.style.height = CO_GOC * s + 'px'; e.className = 'pxi'; e.laVector = true;
     return e;
   }
-  var mkGoc = function (cv, s) { return Ve.mk(cv, s); };
-  if (cheDoVec() && typeof Ve !== 'undefined' && Ve.mk) {
-    var mk0 = Ve.mk, hy0 = Ve.hydrate;
-    mkGoc = mk0;
-    Ve.mk = function (cv, s) { return cv && cv.huyHieu ? mk(cv.huyHieu.ma, cv.huyHieu.tt, s) : mk0.apply(this, arguments); };
-    if (hy0) Ve.hydrate = function (goc) {
-      var els = goc && goc.querySelectorAll ? goc.querySelectorAll('[data-i="huyhieu"]') : [];
-      for (var i = 0; i < els.length; i++) {
-        var el = els[i], ma = el.getAttribute('data-ma');
-        if (el.firstChild || !ma || !maVec(ma)) continue;
-        el.appendChild(mk(ma, el.getAttribute('data-tt') || 'xong', +(el.getAttribute('data-s') || 2))); el.style.display = 'flex';
-      }
-      return hy0.apply(this, arguments);
-    };
-  }
+  function mkGoc(cv, s) { return Ve.mk(cv, s); }
 
   HINH['me-cung'] = HINH['khoang-cach'];
   HINH['cam-bien-ben'] = HINH['khoang-cach'];

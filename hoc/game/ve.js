@@ -843,7 +843,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (ten === 'star') node = sao(el.getAttribute('data-on') !== '0', s);
       else if (ten === 'lock') node = khoa(s);
       else if (ten === 'trum') node = nhan(mk(spriteTrum(el.getAttribute('data-on') !== '0'), s), 'trum', null, el.getAttribute('data-on') !== '0' ? '' : 'tat');
-      else if (ten === 'huyhieu') node = mk(window.HuyHieu && el.getAttribute('data-ma') ? HuyHieu.ve(el.getAttribute('data-ma'), el.getAttribute('data-tt') || 'xong') : spriteHuyHieu(), s);
+      else if (ten === 'huyhieu') node = window.HuyHieu && el.getAttribute('data-ma') ? HuyHieu.mk(el.getAttribute('data-ma'), el.getAttribute('data-tt') || 'xong', s) : mk(spriteHuyHieu(), s);   // V7b: HuyHieu.mk tự chọn vector / pixel (hết bọc Ve.mk / Ve.hydrate)
       else node = ico(ten, s, opt);
       el.appendChild(node); el.style.display = 'flex';
     }
