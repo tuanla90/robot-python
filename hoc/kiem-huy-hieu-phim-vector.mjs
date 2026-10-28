@@ -8,7 +8,9 @@
      A3 pixel y nguyên: HuyHieu.vePixel bản mới = HuyHieu.ve bản nền (commit NEN) từng điểm ảnh; ở pixel HuyHieu.ve = vePixel; Ve.mk / Ve.hydrate không bị bọc.
      A4 vector: cầu nối Ve.mk(HuyHieu.ve(…), s) ra canvas vector cỡ 36·s px CSS; Ve.hydrate điền [data-i="huyhieu"] bằng bản vector; mã lạ vẫn ra hình pixel.
      A5 phủ: huy hiệu của mọi gói mùa 1 (ThuTuChuong.goi: hinh / chương đầu) và các huy hiệu bay trong phim "robot" đều có bản vector.
-     A6 (gói V7a) phủ hết: MỌI mã HINH của huy-hieu.js (HuyHieu.DS = Object.keys(HINH), không danh sách cứng: gói sau thêm mã là thấy thiếu) có bản vector (HuyHieu.maVec).
+     A6 (gói V7a) phủ hết: MỌI mã của HuyHieu.DS (V7c1: = VeVector.HUY_HIEU.dsTatCa(), hình riêng + bí danh; không danh sách cứng) có bản vector (HuyHieu.maVec).
+     A7 (V7c1) danh sách mã + bí danh là DỮ LIỆU ở huy-hieu-vector.js: HuyHieu.DS (tập) và BI_DANH y hệt dữ liệu chụp từ bộ pixel (hoc/du-lieu-chup-pixel.json, c0);
+        mọi HINH['x'] = function của huy-hieu.js pixel còn lại đều có trong DS (bộ pixel không được thêm mã mà bộ vector không biết); maVec(bí danh) = mã gốc.
    B. PHIM (mọi phim ở PhimGoi, chạy đủ khung và mọi hẹn giờ)
      B1 vector: mọi khung vẽ được, không lỗi / cảnh báo.
      B2 vector: mọi canvas trong khung tranh là hình vector (.laVector: ô, cờ, nút đè, cửa, sao, icon bộ phận, robot, huy hiệu); không gọi Ve.tiles / Ve.makeNutDe / Ve.veCua.
@@ -248,7 +250,18 @@ const conPixel = [];
   const thieu = DS.filter((m) => !VE.ctx.HuyHieu.maVec(m) && !CHO_V7B.includes(m)), cho = CHO_V7B.filter((m) => DS.includes(m) && !VE.ctx.HuyHieu.maVec(m)), thua = CHO_V7B.filter((m) => VE.ctx.HuyHieu.maVec(m));
   if (cho.length) console.log('  (A6) chờ V7b vẽ bản vector: ' + cho.join(', '));
   if (thua.length) console.log('  (A6) đã có bản vector, xoá khỏi CHO_V7B: ' + thua.join(', '));
-  kiem('(A6) gói V7a: mọi mã HINH của huy-hieu.js (' + DS.length + ' mã, đọc từ HuyHieu.DS) có bản vector, không mã nào rơi về pixel (trừ CHO_V7B)', !thieu.length, 'thiếu: ' + thieu.join(', '));
+  kiem('(A6) gói V7a: mọi mã huy hiệu (' + DS.length + ' mã, đọc từ HuyHieu.DS = VeVector.HUY_HIEU.dsTatCa()) có bản vector, không mã nào rơi về pixel (trừ CHO_V7B)', !thieu.length, 'thiếu: ' + thieu.join(', '));
+}
+{
+  const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8')).huyHieu, HH = VE.ctx.VeVector.HUY_HIEU, sai = [];
+  const tap = (a) => JSON.stringify([...a].sort());
+  if (tap(DS) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS.includes(m)).join(',') + ' / thừa ' + DS.filter((m) => !CHUP.DS.includes(m)).join(','));
+  if (JSON.stringify(HH.BI_DANH) !== JSON.stringify(CHUP.biDanh)) sai.push('BI_DANH ≠ chụp');
+  for (const a of Object.keys(CHUP.biDanh)) if (VE.ctx.HuyHieu.maVec(a) !== CHUP.biDanh[a]) sai.push('maVec(' + a + ') = ' + VE.ctx.HuyHieu.maVec(a) + ' ≠ ' + CHUP.biDanh[a]);
+  const rieng = [...nguon('huy-hieu.js').matchAll(/^\s*HINH\['([\w-]+)'\] = function/gm)].map((m) => m[1]).filter((m) => !DS.includes(m));
+  if (rieng.length) sai.push('HINH pixel không có trong DS: ' + rieng.join(','));
+  if (DS.some((m) => !HH.co(m) && !HH.BI_DANH[m])) sai.push('mã trong DS không có hình riêng lẫn bí danh');
+  kiem('(A7) V7c1: HuyHieu.DS (' + DS.length + ' mã) + BI_DANH (' + Object.keys(HH.BI_DANH).length + ') là dữ liệu của huy-hieu-vector.js, y hệt dữ liệu chụp ' + JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8')).commit + '; mọi HINH pixel còn lại có trong DS; maVec(bí danh) = mã gốc', !sai.length, sai.join(' | '));
 }
 
 /* ---------------------------------------------------------------- B. PHIM */

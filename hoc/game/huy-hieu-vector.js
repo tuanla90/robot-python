@@ -8,7 +8,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      VeVector.HUY_HIEU.co(ma)              → có bản vector cho mã này?
      VeVector.HUY_HIEU.ve(ma, tt, canhPx)  → canvas canhPx × canhPx (cờ .laVector, .laHuyHieu); null nếu chưa có bản vector (huy-hieu.js rơi về pixel)
      VeVector.HUY_HIEU.dangKy(ma, f)       → thêm hình: f(g, c) vẽ trong hệ 100 (đã cắt trong đĩa); c = bộ dựng bên dưới (c.robot, c.vat, c.o, c.banhRang…)
-     VeVector.HUY_HIEU.ds()                → các mã đã có bản vector.
+     VeVector.HUY_HIEU.ds()                → các mã đã có bản vector (hình riêng).
+     (V7c1, 28/10) DANH SÁCH MÃ HUY HIỆU của game nằm ở đây (trước là Object.keys(HINH) của huy-hieu.js pixel):
+     VeVector.HUY_HIEU.BI_DANH             { mã: mã gốc } mã dùng chung hình của mã khác (doi-* / che-doi-* = hai-robot; me-cung / cam-bien-ben = khoang-cach)
+     VeVector.HUY_HIEU.maGoc(ma)           → mã có hình (bí danh → mã gốc; mã thường → chính nó)
+     VeVector.HUY_HIEU.dsTatCa()           → mọi mã: hình riêng + bí danh (= HuyHieu.DS)
    Node: canvas giả của VeVector (ghi lệnh) — máy kiểm hoc/kiem-huy-hieu-phim-vector.mjs.
    ========================================================================== */
 (function (root) {
@@ -162,6 +166,31 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var VUI = { than: { mat: 'vui' } };
   function st(than, tay, cam) { var s = { than: Object.assign({ mat: 'vui' }, than || {}) }; if (tay) s.tay = tay; if (cam) s.camBien = cam; return s; }
   function dk(ma, f) { HINH[ma] = f; }
+  /* BÍ DANH (V7c1): mã huy hiệu dùng lại hình của mã khác. Dữ liệu chụp từ huy-hieu.js pixel (HINH[a] = HINH[b]) ở c0, máy kiểm so với hoc/du-lieu-chup-pixel.json. */
+  var BI_DANH = {
+    'me-cung': 'khoang-cach',
+    'cam-bien-ben': 'khoang-cach',
+    'doi-ho-bang': 'hai-robot',
+    'doi-gap-nem': 'hai-robot',
+    'che-doi-ho-bang': 'hai-robot',
+    'che-doi-gap-nem': 'hai-robot',
+    'doi-xich': 'hai-robot',
+    'che-doi-xich': 'hai-robot',
+    'doi-omni': 'hai-robot',
+    'che-doi-omni': 'hai-robot',
+    'doi-sung-hoi': 'hai-robot',
+    'che-doi-sung-hoi': 'hai-robot',
+    'doi-mau': 'hai-robot',
+    'che-doi-mau': 'hai-robot',
+    'doi-nam-cham': 'hai-robot',
+    'che-doi-nam-cham': 'hai-robot',
+    'doi-tay-xoay': 'hai-robot',
+    'che-doi-tay-xoay': 'hai-robot',
+    'doi-drone': 'hai-robot',
+    'che-doi-drone': 'hai-robot'
+  };
+  function maGoc(ma) { return BI_DANH[ma] || ma; }
+  function dsTatCa() { return Object.keys(HINH).concat(Object.keys(BI_DANH).filter(function (k) { return !HINH[k]; })); }
   /** Robot cầm vật (tay kẹp / tay xoay): vật vẽ trước (dưới càng), rồi robot. */
   function robotCam(c, cfg, s, huong, cx, cy, canh, vat, goc) {
     var tt = s.tay && s.tay.tuThe === 'duoi' ? 'duoi' : 'tren', o = c.vua(cfg, tt, huong, cx, cy, canh, goc);   // gói V7a: vừa đĩa, không lẹm viền
@@ -358,6 +387,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     ve: ve,
     dangKy: function (ma, f) { if (typeof f !== 'function') throw new Error('HUY_HIEU.dangKy: cần hàm vẽ'); HINH[ma] = f; dem = {}; },
     ds: function () { return Object.keys(HINH); },
+    BI_DANH: BI_DANH, maGoc: maGoc, dsTatCa: dsTatCa,
     R_DIA: R_DIA, R_HINH: R_HINH, _sao: sao
   };
 })(typeof window !== 'undefined' ? window : globalThis);
