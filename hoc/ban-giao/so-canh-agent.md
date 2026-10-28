@@ -61,5 +61,5 @@ GÓP Ý USER 28/10 (gửi SendMessage): cảm biến phải dính vỏ theo từ
 ## Song song 28/10 (user: "giao nhiều agent làm các việc song song"; hạn chế build/test vì hết RAM → agent CẤM npm test, người giao chạy cả bộ sau khi gộp; luật chung: luat-song-song.md)
 | V5b · giao diện các màn khác vector | opus | 28/10 09:51 | v5b-giao-dien-b, nhánh claude/ve-vector-giao-dien-b từ fa3702f | fa3702f | — | đang chạy; brief-V5b.md; cổng 4201 |
 | V6 · huy hiệu + phim vector | opus | 28/10 09:51 | v6-huy-hieu-phim, nhánh claude/ve-vector-huy-hieu-phim từ fa3702f | fa3702f | — | đang chạy; brief-V6.md; cổng 4202 |
-| Gói 8 Đội mùa 2 | Gemini (agy) | — | goi8-doi-mua-2, nhánh claude/doi-mua-2 từ d3af762 | d3af762 | — | CHƯA CHẠY: lệnh agy --dangerously-skip-permissions bị bộ lọc auto mode chặn, chờ user |
-| Gói 9 Bệ súng xích mùa 2 | Gemini (agy) | — | goi9-be-sung, nhánh claude/be-sung từ d3af762 | d3af762 | — | CHƯA CHẠY: như gói 8 |
+| Gói 8 Đội mùa 2 | opus (user đổi từ Gemini: agy bị auto mode chặn) | 28/10 09:53 | goi8-doi-mua-2, nhánh claude/doi-mua-2 từ d3af762 | d3af762 | — | đang chạy; brief-goi8.md |
+| Gói 9 Bệ súng xích mùa 2 | opus (như gói 8) | 28/10 09:53 | goi9-be-sung, nhánh claude/be-sung từ d3af762 | d3af762 | — | đang chạy; brief-goi9.md |
