@@ -313,8 +313,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /** Vật trong tay kẹp (luật vật 14/10): tâm vật cách tâm thân bao nhiêu pixel PART về phía mũi xe (tay nâng; tay hạ xa thêm 2: càng dài ra chạm đất) và cạnh vật (pixel part).
    *  Part kẹp chừa khe giữa hai càng cho vật (cột 7..16, hàng 8..17 của ảnh tay); thân hai bánh có ổ tay ở y = 4, các thân khác y = 5. */
-  function vatKep(cauHinh, tuThe) {
-    if (veVector(cauHinh) && cauHinh && cauHinh.tay) { var vk = VV().vatKep(cauHinh, tuThe); if (vk) return vk; }     // vector: đơn vị 1/100 ô (tiLe = cạnh ô / 100)
+  function vatKep(cauHinh, tuThe, nangK) {
+    if (veVector(cauHinh) && cauHinh && cauHinh.tay) { var vk = VV().vatKep(cauHinh, tuThe, nangK); if (vk) return vk; }     // vector: đơn vị 1/100 ô (tiLe = cạnh ô / 100); gói V6b: cỡ theo độ nâng nangK (0..1, bỏ trống = theo tư thế)
     var oy = 4, P = (typeof window !== 'undefined') ? window.Part : null;
     try { var d = P && P.lay('than', (cauHinh && cauHinh.than) || 'hai-banh'); if (d && d.oGan && d.oGan.tay) oy = d.oGan.tay.y; } catch (e) { /* giữ 4 */ }
     return { ahead: 22 - oy + (tuThe === 'duoi' ? 2 : 0), n: 10 };
@@ -323,8 +323,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** TAY XOAY: vị trí vật trong kẹp khi khớp ở góc `goc` độ (0 = phía trước, âm = sang trái, dương = sang phải; mặc định theo nấc `xoay`): { f, l, n } = vật cách tâm thân f pixel part
    *  về phía MŨI xe và l pixel về bên PHẢI xe (theo hướng xe), cạnh vật n. Khớp ở mũi xe, trụ ngắn: tâm khớp cách tâm thân F0 = 16 - (y ổ tay của thân) pixel về phía mũi; vật cách khớp U = 10 pixel
    *  theo hướng cánh tay (tay hạ: +1,5, vật nhỏ hơn một pixel). Cùng hằng số với part-tay-xoay.js (U_VAT). */
-  function vatXoay(cauHinh, tuThe, goc) {
-    if (veVector(cauHinh)) { var vx = VV().vatXoay(cauHinh, tuThe, goc); if (vx) return vx; }     // vector: đơn vị 1/100 ô, hình học ở tay xoay vector
+  function vatXoay(cauHinh, tuThe, goc, nangK) {
+    if (veVector(cauHinh)) { var vx = VV().vatXoay(cauHinh, tuThe, goc, nangK); if (vx) return vx; }     // vector: đơn vị 1/100 ô, hình học ở tay xoay vector; gói V6b: cỡ theo độ nâng
     var oy = 4, P = (typeof window !== 'undefined') ? window.Part : null, U = 10;
     try {
       var d = P && P.lay('than', (cauHinh && cauHinh.than) || 'hai-banh'); if (d && d.oGan && d.oGan.tay) oy = d.oGan.tay.y;
@@ -339,7 +339,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var HH_PIXEL = { mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 };
   function hinhHoc(cauHinh) { if (veVector(cauHinh)) { var h = VV().hinhHoc(cauHinh); if (h) return h; } return HH_PIXEL; }
   /** Tầm với của hình (tâm thân → mép xa nhất, cùng đơn vị tiLe) cho lề lớp phủ: pixel REACH (26); vector nửa canvas (50, tay xoay vươn sang ô bên thì hơn). */
-  function reachCua(cauHinh) { if (veVector(cauHinh)) return 50 + 100 * VV().tranCua(cauHinh); return cheDoVector() ? 50 : REACH; }
+  function reachCua(cauHinh) { if (veVector(cauHinh)) return VV().tamVoi ? VV().tamVoi(cauHinh) : 50 + 100 * VV().tranCua(cauHinh); return cheDoVector() ? 50 : REACH; }      // vector (gói V6b): chừa cả vật to trong tay nâng
 
   var VeRobot = {
     ve: ve, veCo: veCo, heSoCss: heSoCss, PX_O_PART: PX_O_PART, PHONG_NGOAI_SAN: PHONG_NGOAI_SAN, bongTay: bongTay, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, reachCua: reachCua, cauHinhCua: cauHinhCua, cauHinhRobot: cauHinhCua, chuanTay: chuanTay, tiLeChoO: tiLeChoO, coPart: coPart, sonChon: sonChon, sonHieuLuc: sonHieuLuc,
