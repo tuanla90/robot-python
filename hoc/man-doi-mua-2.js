@@ -180,6 +180,19 @@
   var R1_C2 = nhieu(FOR(9, ['yield_step()']), ['tr_right()', 'move()']);
   var R2_C2 = nhieu(FOR(3, ['yield_step()']), ['turn_left()'], FOR(4, ['yield_step()']), ['turn_left()'], FOR(4, ['yield_step()']));
 
+  // che-doi-mua-2.3: hành lang chữ L (phải tới (9,1), xuống tới cờ). R1 xích đi trước, tới góc dừng hai nhịp rồi quay (hai nhịp nữa); R2 theo sau, mỗi bước gọi keep_close()
+  //   của Sola rồi tiến. Cờ R2 (9,4), cờ R1 (9,5).
+  var SAN_C3 = ['############', '#.........##', '#########.##', '#########.##', '#########F##', '#########F##', '############'];
+  var R1_C3 = nhieu(['forward(6)'], CHO(2), ['tr_right()', 'forward(4)']);
+  var R2_C3 = nhieu(FOR(8, ['keep_close()', 'move()']), ['turn_right()'], FOR(3, ['keep_close()', 'move()']));
+
+  // che-doi-mua-2.4: hai khoang như doi-mua-2.2, nhỏ hơn: cửa vào (3,1), (6,1) đang mở, cửa ra (5,1), (8,1) đang đóng, khoang (4,1), (7,1). Nút dưới chân R2 (4,4), (7,4):
+  //   R2 nhìn lên khoang, thấy R1 trong khoang thì bắn NGƯỢC (fire_back("fast"): không giật) vào nút sau lưng. R1 nạp hàng bốn nhịp rồi mới đi. Cờ R1 (9,1), cờ R2 (8,3).
+  var SAN_C4 = ['###########', '#..c.Cc.CF#', '####.##.###', '####....F##', '####N##N###', '###########'];
+  var NOI_C4 = [noi(4, 4, [[3, 1], [5, 1]]), noi(7, 4, [[6, 1], [8, 1]])];
+  var R1_C4 = nhieu(CHO(4), FOR(2, nhieu(['go_to_wall()'], WHILE('distance() == 0', ['wait()']))), ['go_to_wall()']);
+  var R2_C4 = FOR(2, ['wait_mate()', 'fire_back("fast")', 'turn_right()', 'forward(3)', 'turn_left()']);
+
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // còn thấy đồng đội (hay nút nóng) trước mũi xe thì chờ
   var CHO_TOI = WHILE('not warm()', ['wait()']);         // chờ tới khi thấy đồng đội trước mũi xe
@@ -433,6 +446,45 @@
         { moTa: 'Chờ ngược điều kiện (while not warm()): hành lang trống, R1 chờ mãi', hamEm: [H('yield_step', [], CHO_TOI.concat(['move()']))], phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['Hàm của em gọi được hàm của em: wait_clear() đã chế ở màn trước.', 'Thân yield_step(): wait_clear() rồi move().']
+    }),
+
+    man({
+      chuong: 'che-doi-mua-2', so: 3, ten: 'Sửa hàm keep_close()', yMoi: 'sửa hàm lỗi: if chỉ chờ một nhịp, bạn quay lâu hơn thì phải while',
+      hamCuaEmCan: ['move', 'forward', 'tr_right', 'turn_right', 'wait_clear'],
+      deBai: 'Sola chế keep_close() để R2 đi sát sau R1: if distance() == 0: wait(). Chương trình hai xe đã khóa. Ở góc, R1 dừng rồi quay, mất bốn nhịp: R2 chờ một nhịp rồi húc vào R1. ' +
+        'Sửa một chữ trong keep_close().',
+      veMaMau: 'Chạy thử. Ở góc, R2 chờ được mấy nhịp?',
+      san: SAN_C3, bd: [{ x: 3, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[o(9, 5)], [o(9, 4)]],
+      chinh: [R1_C3, R2_C3],
+      hamMau: [H('keep_close', [], IF('distance() == 0', ['wait()']))],
+      ham: [H('keep_close', [], CHO_SAT)],
+      sao: { o: 24, nhip: 16 },
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', ham: [H('keep_close', [], ['# chờ tới khi bạn đi khỏi'].concat(CHO_SAT))] },
+      loiSai: [
+        { moTa: 'Để nguyên bản của Sola: ở góc R2 húc vào R1', ham: [H('keep_close', [], IF('distance() == 0', ['wait()']))], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Sửa thành while distance() > 0: còn khoảng trống thì chờ, R2 đứng mãi', ham: [H('keep_close', [], WHILE('distance() > 0', ['wait()']))], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Gọi wait_clear(): xuống tới đoạn dọc thì R1 đứng ở cờ ngay trước mặt, R2 chờ mãi', ham: [H('keep_close', [], ['wait_clear()'])], phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['if chỉ hỏi một lần; while hỏi lại sau mỗi nhịp chờ.', 'Đổi if thành while.']
+    }),
+
+    /* ------------------------------------------------ hàng 2: luyện */
+    man({
+      chuong: 'che-doi-mua-2', so: 4, ten: 'Hàm wait_mate()', yMoi: 'chế hàm chờ tới khi thấy bạn; bắn ngược fire_back("fast") để không phải quay',
+      hamCuaEmCan: ['go_to_wall', 'fire_back', 'turn_right', 'turn_left', 'forward', 'move', 'wait_clear'], taoHam: ['wait_mate'],
+      deBai: 'Hai khoang hai cửa như màn Đón bạn vào khoang. R2 nhìn lên khoang; nút ở ngay sau lưng R2 nên R2 bắn ngược fire_back("fast"), không cần quay, không bị giật. ' +
+        'R1 nạp hàng xong mới đi. Em chế wait_mate(): chờ tới khi thấy đồng đội trước mũi xe. Chương trình hai xe đã khóa.',
+      veMaMau: 'Hai chương trình bị khóa. Tạo wait_mate() hai dòng.',
+      san: SAN_C4, noi: NOI_C4, bd: [{ x: 1, y: 1, huong: 1 }, { x: 4, y: 3, huong: 0 }], co: [[o(9, 1)], [o(8, 3)]],
+      chinh: [R1_C4, R2_C4],
+      hamEm: [H('wait_mate', [], CHO_TOI)],
+      sao: { o: 28, nhip: 16 },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('wait_mate', [], ['# chờ tới khi thấy bạn'].concat(CHO_TOI))] },
+      loiSai: [
+        { moTa: 'Thân chỉ có pass: bắn ngay, cửa vào đóng trước mặt R1', hamEm: [H('wait_mate', [], ['pass'])], phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Gọi wait_clear(): khoang trống không nóng nên bắn ngay', hamEm: [H('wait_mate', [], ['wait_clear()'])], phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['wait_mate() ngược với wait_clear(): chờ cho tới KHI thấy bạn.', 'Thân wait_mate(): while not warm(): wait().']
     })
   ];
 

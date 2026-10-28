@@ -231,7 +231,8 @@
   // chương che-doi-mua-2 · Đội phối hợp (gói 8 mùa 2, man-doi-mua-2.js; hàm của màn không có ở đây)
   ds.push(
     m('wait_clear', 'hong-ngoai', 'Còn thấy đồng đội (vật nóng) trước mũi xe thì chờ', 'che-doi-mua-2', 'che-doi-mua-2.1'),
-    m('yield_step', 'hong-ngoai', 'Chờ tới khi không còn thấy bạn trước mũi xe rồi tiến một ô (xe nào trong đội cũng gọi được)', 'che-doi-mua-2', 'che-doi-mua-2.2')
+    m('yield_step', 'hong-ngoai', 'Chờ tới khi không còn thấy bạn trước mũi xe rồi tiến một ô (xe nào trong đội cũng gọi được)', 'che-doi-mua-2', 'che-doi-mua-2.2'),
+    m('wait_mate', 'hong-ngoai', 'Chờ tới khi thấy đồng đội (vật nóng) trước mũi xe', 'che-doi-mua-2', 'che-doi-mua-2.4')
   );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
