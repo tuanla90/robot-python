@@ -108,6 +108,12 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   ngoài sân (Lắp robot, thẻ Bộ phận mới, mở đầu, phim). Máy kiểm 85 (pixel: phát lại 22 màn, 8103 khung khớp từng lệnh vẽ với nền a962f7b).
   Tự quyết (người giao): robot vector ngoài sân phóng ×1,2 cho bằng pixel → V5a; hông cảm biến nằm trên vỏ (không chờm bánh): giữ.
   Còn lại → V5: chữ canvas còn VT323 (bong bóng, pin); robot màn đầu chưa có mắt biểu cảm. → V6: `phim-mua-1.js` hằng VAT = 57 chưa theo veCo (thùng lệch kẹp ở vector). Nòng sau súng hơi lệch trái ăng-ten ~0,12 ô: giữ. Bộ vẽ pixel (user chốt 27/10): GIỮ tới hết V6, sau đó đổi mặc định sang vector rồi mới gỡ pixel (gói gỡ riêng sau V6).
+- **28/10 V5a · Giao diện màn chơi phẳng xong** (nhánh claude/ve-vector-giao-dien-a, gộp 93209af; agent chạy npm test 81/81, người giao chạy lại kiem-ve-vector 92 + lỗi giả đỏ 44, kiem-bang-mau 19;
+  cả bộ chạy lại sau đợt gộp song song). `choi-vector.css` (áp khi `body.ve-vector`): phông Google Sans Flex / Code, thẻ trắng bo góc, khối lệnh phẳng (dải trái theo nhóm, ô tham số viên thuốc),
+  khay / bong bóng / hướng dẫn / hộp thoại trên lớp phủ chàm, bỏ `steps()` + prefers-reduced-motion, chữ canvas Google Sans, `VeRobot.PHONG_NGOAI_SAN` ×1,2, Cài đặt hàng "Kiểu vẽ"
+  (cả ở pixel, để đổi qua lại), cỡ ô nhỏ nhất 14 px (che-day-thung.9 ở 360 × 640), tương phản AA đo trong trang (thẻ R1 chữ trắng trên #38BDF8 2,14:1 đã sửa). Máy kiểm mục 14.
+  Còn lại → V5b: icon `.pxi` (bàn tay hướng dẫn, nút sân) còn pixel; nút chỉ icon thiếu title; nút cuộn khay 20–22 px. → V6: phim `.md` / `.pg-*` còn mực / kem pixel và loại khỏi reduced-motion.
+  Chờ user: mục "Màu sơn R1" trong Cài đặt vẫn đổi bảng sơn pixel, ở vector R1 cố định #38BDF8 (ẩn ở vector?).
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
