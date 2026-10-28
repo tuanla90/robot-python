@@ -56,6 +56,7 @@ const BM = require(path.join(GAME, 'bang-mau.js'));
 const V = require(path.join(GAME, 've-vector.js'));
 /* tệp hình vector: đúng thứ tự choi.html nạp (gói V3: máy kiểm mục 12 đòi mọi ve-vector*.js của hoc/game đều có trong choi.html và trang xem) */
 const CHOI_SRC = fs.readFileSync(path.join(GAME, 'choi.html'), 'utf8');
+const docGame = (f) => fs.readFileSync(path.join(GAME, f), 'utf8');   // V7c1: đọc nguồn một tệp game (mục 6, 9)
 const TEP_VEC = [...CHOI_SRC.matchAll(/<script src="(ve-vector-[\w-]+\.js)"/g)].map((m) => m[1]);
 for (const f of TEP_VEC) require(path.join(GAME, f));
 let VeRobot = null;
@@ -242,8 +243,8 @@ console.log('\n== 6. Màu đội: kính + mắt + chấm ăng-ten ==');
   const mat = r2.filter((s) => s === 'strokeStyle ' + M2.chinh).length, cham = r2.filter((s) => s === 'fillStyle ' + M2.chinh).length;
   kiem('R2: kính = 1 gradient (toi → chinh), mắt = 2 viền chinh, chấm ăng-ten = 1 tô chinh', kinh === 1 && mat === 2 && cham === 1, 'kính ' + kinh + ', mắt ' + mat + ', chấm ' + cham);
   kiem('luồng R2 không còn màu R1 và ngược lại', !r2.some((s) => s.includes(M1.chinh) || s.includes(M1.toi)) && !r1.some((s) => s.includes(M2.chinh) || s.includes(M2.toi)));
-  const Mn = V.mauDoi('ngoc'), Md = V.mauDoi('do');
-  kiem("sơn mở khoá 'ngoc' → sonNgoc / sonNgocToi; đối thủ 'do' → sonDo / sonDoToi", Mn.chinh === BM.sonNgoc && Mn.toi === BM.sonNgocToi && Md.chinh === BM.sonDo && Md.toi === BM.sonDoToi);
+  const Mn = V.mauDoi('ngoc'), Md = V.mauDoi('do'), Mt = V.mauDoi('tim');
+  kiem("(V7c1) sơn mở khoá đã bỏ: 'ngoc' → R1 (vecDoiR1); đối thủ 'do' → sonDo / sonDoToi; dự phòng 'tim' → sonTim", Mn.ma === 'R1' && Mn.chinh === BM.vecDoiR1 && Md.chinh === BM.sonDo && Md.toi === BM.sonDoToi && Mt.chinh === BM.sonTim && !/ngoc|hoang-kim/.test(docGame('ve-vector.js').split('var SON_DOI')[1].split('\n')[0]));
 }
 
 /* ================================================================= 7. bộ đệm */
@@ -296,13 +297,12 @@ else {
   kiem('pixel: hinhHoc = hằng pixel part { mz 24, mzs 10,5, bk 23,5, pp 1, dinh 11 }; reachCua = REACH 26; vatXoay công thức cũ', J(VeRobot.hinhHoc({ than: 'hai-banh', tay: 'hoi' })) === J({ mz: 24, mzs: 10.5, bk: 23.5, pp: 1, dinh: 11 }) && VeRobot.reachCua({ than: 'hai-banh', tay: 'xoay' }) === 26
     && J(VeRobot.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0)) === J({ f: 22, l: 0, n: 10 }));
   V.datCheDo('pixel');
-  {   /* V7b (28/10): ở vector R1 LUÔN màu đội (vecDoiR1), bỏ qua sơn đã chọn / lưu từ pixel; pixel vẫn nhận sơn (Luu.son giữ nguyên) */
-    const coW = 'window' in globalThis, cuW = globalThis.window;
-    globalThis.window = { VeVector: V, Luu: { docCaiDat: () => ({ son: 'ngoc' }) }, Part: { SON: { ngoc: 1 }, DS_SON: [{ ma: 'ngoc', saoCan: 0 }] } };
-    let px = null, vec = null, vecLam = null;
-    try { V.datCheDo('pixel'); px = VeRobot.sonHieuLuc('vang'); V.datCheDo('vector'); vec = VeRobot.sonHieuLuc(''); vecLam = VeRobot.sonHieuLuc('lam'); }
-    finally { if (coW) globalThis.window = cuW; else delete globalThis.window; V.datCheDo('pixel'); }
-    kiem('(V7b) sơn đã lưu (ngoc) chỉ có hiệu lực ở PIXEL; ở vector sonHieuLuc bỏ qua sơn đã lưu → R1 = vang (màu đội vecDoiR1), R2 lam giữ', px === 'ngoc' && vec === 'vang' && vecLam === 'lam', J({ px, vec, vecLam }));
+  {   /* V7c1 (28/10): bỏ sơn mở khoá: sonHieuLuc không đọc Luu / Part nữa; '' / 'vang' → vang (màu đội), 'lam' / 'do' giữ, 'goc' → null; cùng kết quả ở cả hai chế độ; không còn sonChon */
+    const thu = () => ['', 'vang', 'lam', 'do', 'goc'].map((s) => VeRobot.sonHieuLuc(s));
+    V.datCheDo('pixel'); const px = thu(); V.datCheDo('vector'); const vec = thu(); V.datCheDo('pixel');
+    const vr = docGame('ve-robot.js'), cd = docGame('cai-dat.js'), luu = docGame('luu.js'), chu = docGame('chu.js');
+    const sach = !('sonChon' in VeRobot) && !/sonChon|docCaiDat\(\)\.son|P\.SON|DS_SON/.test(vr) && !/hangSon|DS_SON|caiDat\.son/.test(cd) && !/\bson\b/.test(luu.split('cài đặt (cai-dat.js)')[1].split('mùa đã mua')[0]) && !/'caiDat\.son/.test(chu);
+    kiem('(V7c1) bỏ sơn mở khoá: sonHieuLuc → vang / vang / lam / do / null ở cả hai chế độ, không đọc Luu / Part; ve-robot.js hết sonChon, cai-dat.js hết hangSon / DS_SON, luu.js hết khoá son, chu.js hết caiDat.son*', J(px) === J(vec) && J(px) === J(['vang', 'vang', 'lam', 'do', null]) && sach, J({ px, vec, sach }));
   }
 }
 

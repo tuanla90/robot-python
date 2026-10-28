@@ -224,8 +224,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   /* ---------------------------------------------------------------- màu đội */
-  /** son (mã sơn của Part.SON / VeRobot.sonHieuLuc) → { chinh, toi }: '' / 'vang' = R1 xanh Sola; 'lam' = R2 hồng Luna; đối thủ 'do'; bộ sơn mở khoá theo bộ ba SON (nền, tối). */
-  var SON_DOI = { do: ['sonDo', 'sonDoToi'], tim: ['sonTim', 'sonTimToi'], ngoc: ['sonNgoc', 'sonNgocToi'], cam: ['sonCam', 'sonCamToi'], trang: ['sonTrang', 'sonTrangToi'], 'hoang-kim': ['sonHoangKim', 'sonHoangKimToi'] };
+  /** son (mã màu đội của VeRobot.sonHieuLuc / san-ve.js SON_XE) → { chinh, toi }: '' / 'vang' = R1 xanh Sola; 'lam' = R2 hồng Luna; đối thủ 'do'; dự phòng 'tim'.
+   *  V7c1 (28/10): bộ sơn mở khoá (ngoc / cam / trang / hoang-kim) đã bỏ cùng hàng Cài đặt: mã lạ → R1. */
+  var SON_DOI = { do: ['sonDo', 'sonDoToi'], tim: ['sonTim', 'sonTimToi'] };
   function mauDoi(son) {
     if (son === 'lam') return { ma: 'R2', chinh: BM.vecDoiR2, toi: BM.vecDoiR2Toi };
     var k = SON_DOI[son];

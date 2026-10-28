@@ -28,12 +28,12 @@ const SUA_SAU_NEN = {
   'phim-mua-1.js': 'V6 (28/10): thùng trong kẹp theo VeRobot.vatKep ở vector, mắt biểu cảm; pixel y nguyên (kiem-huy-hieu-phim-vector.mjs B5)',
   'huy-hieu.js': 'V6 (28/10): ve cũ đổi tên vePixel (thân y nguyên), thêm nhánh vector + HuyHieu.mk; điểm ảnh pixel so ở kiem-huy-hieu-phim-vector.mjs A3; gói 8 mùa 2 Đội (28/10) thêm HINH doi-mua-2, che-doi-mua-2 (màu qua token BM); gói 9 Bệ súng xích (28/10) thêm HINH be-sung, che-be-sung kiểu pixel (chỉ thêm dòng); gói 10 Nhà máy chạy lại (28/10) thêm HINH tong-hop-2, nha-may-chay kiểu pixel (chỉ thêm dòng)',
   'san-ve.js': 'V1 (27/10): chế độ vector — canvas theo pixel thiết bị, ô / vật vector',
-  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector',
+  've-robot.js': 'V1 (27/10): chế độ vector — tiLeChoO / vatKep / REACH / ve() theo VeVector; V7c1 (28/10): bỏ sonChon (sơn mở khoá), sonHieuLuc luôn vang',
   'man-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'man-lap.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'mo-dau.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)', 'phim-goi.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'the-part.js': 'V4 (27/10): robot ngoài sân theo cỡ hiển thị (VeRobot.veCo)',
   'man-choi.js': 'V5a (28/10): thẻ R1 / R2 thêm thuộc tính data-son cho CSS giao diện vector (màu đội)',
-  'cai-dat.js': 'V5a (28/10): Cài đặt thêm hàng Kiểu vẽ (Nét mới / Điểm ảnh, VeVector.luuCheDo + tải lại); màu icon là token có sẵn',
+  'cai-dat.js': 'V5a (28/10): Cài đặt thêm hàng Kiểu vẽ (Nét mới / Điểm ảnh, VeVector.luuCheDo + tải lại); màu icon là token có sẵn; V7c1 (28/10): bỏ hàng Màu sơn R1 (hangSon + bảng sơn dự phòng)',
   'thanh-phan.js': 'V5a (28/10): giao diện vector — dòng code đổi chỗ trượt mượt (không steps), tôn trọng prefers-reduced-motion; pixel giữ steps(3)',
   've.js': 'V5a (28/10): giao diện vector — mk() phóng sẵn icon điểm ảnh (bỏ image-rendering: pixelated), viền icon mặc định chàm; pixel giữ nhánh cũ',
   'xuong-ham.js': 'V6b (28/10): bốn nút chỉ icon (về sân, lấy lại, xoá hàm, xoá hết) thêm title trùng aria-label, cả hai chế độ; màu icon là token có sẵn',
@@ -162,7 +162,10 @@ console.log('\n== 3. Token và thứ tự nạp ==');
     if (f.endsWith('.js') && /(?<![\w$.])BM\./.test(s) && s.split('\n')[0] !== (f.startsWith('part/') ? ALIAS.part : ALIAS.game)) khongAlias.push(f);
   }
   kiem('mọi BM.<vai> / var(--g-<vai>) có trong bảng màu', thieu.length === 0, thieu.slice(0, 10).join(', '));
-  const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG);
+  /* V7c1 (28/10): bảng sơn dự phòng của cai-dat.js (hàng "Màu sơn R1") đã bỏ → 11 vai này không còn chỗ dùng; V7c3 (bảng màu) xoá khỏi bang-mau.js rồi xoá danh sách này */
+  const VAI_CHO_V7C3 = ['kemToi', 'camToiV4', 'goSangV19', 'goSangV20', 'kemV11', 'lamSangV21', 'lamSangV22', 'ngocV5', 'ngocToiV3', 'ngocToi2V6', 'vangToiV3'];
+  const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
+  const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));
   kiem('tệp JS dùng BM có dòng lấy bảng màu ở dòng 1 (window.BangMau, ở Node thì require, ngữ cảnh giả thì {})', khongAlias.length === 0, khongAlias.join(', '));
   const html = doc('choi.html'), dau = html.indexOf('<script src="bang-mau.js"></script>');

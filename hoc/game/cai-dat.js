@@ -43,94 +43,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return d;
   }
 
-  function tenSon(it) { return it.ma ? t('caiDat.son.' + it.ma) : t('caiDat.sonGoc'); }
-
-  /** Hàng chọn màu sơn R1 (mở khóa theo mốc tổng sao: 0 / 60 / 150 / 300 / 450). */
-  function hangSon() {
-    var ds = (window.Part && Part.DS_SON) || [
-      { ma: '', saoCan: 0, mau: [BM.vangV3, BM.vangV5, BM.goSangV5] },
-      { ma: 'ngoc', saoCan: 60, mau: [BM.ngocToiV3, BM.ngocV5, BM.ngocToi2V6] },
-      { ma: 'cam', saoCan: 150, mau: [BM.camToiV4, BM.kemToi, BM.goSangV19] },
-      { ma: 'trang', saoCan: 300, mau: [BM.lamSangV21, BM.trangV2, BM.lamSangV22] },
-      { ma: 'hoang-kim', saoCan: 450, mau: [BM.vangToiV3, BM.kemV11, BM.goSangV20] }
-    ];
-    var khung = h('div', 'cd-son'); khung.setAttribute('data-cd', 'son');
-    var hd = h('div', 'cd-son-hd');
-    var ten = h('div', 'cd-ten');
-    var ic = h('span'); ic.setAttribute('data-i', 'mau'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-f', BM.vang); ic.setAttribute('data-l', BM.vienDam);
-    ten.appendChild(ic); ten.appendChild(h('span', null, t('caiDat.son')));
-    var dang = h('div', 'cd-son-dang');
-    hd.appendChild(ten); hd.appendChild(dang);
-    var hang = h('div', 'cd-son-hang');
-    var tb = h('div', 'cd-son-tb');
-    var tbHen = null;
-
-    function saoHienTai() { return (window.App && App.tongSao) ? App.tongSao() : 0; }
-    function daMo(it) { return !!(window.App && App.moHet) || saoHienTai() >= it.saoCan; }
-    function maChon() {
-      var s = (window.VeRobot && VeRobot.sonChon) ? VeRobot.sonChon() : (window.Luu && Luu.docCaiDat ? Luu.docCaiDat().son : '');
-      return s || '';
-    }
-
-    function ve() {
-      var chon = maChon();
-      var cur = ds.filter(function (x) { return x.ma === chon; })[0] || ds[0];
-      dang.textContent = tenSon(cur);
-      hang.innerHTML = '';
-      ds.forEach(function (it) {
-        var mo = daMo(it), on = chon === it.ma;
-        var b = h('button', 'cd-son-o' + (on ? ' on' : '') + (mo ? '' : ' khoa'));
-        b.setAttribute('data-nut', 'son-' + (it.ma || 'goc'));
-        b.setAttribute('data-son', it.ma || '');
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-        b.title = mo ? tenSon(it) : t('caiDat.sonKhoa', { n: it.saoCan, ten: tenSon(it) });
-        var m = h('span', 'cd-son-mau');
-        m.style.setProperty('--c0', it.mau[0]);
-        m.style.setProperty('--c1', it.mau[1]);
-        m.style.setProperty('--c2', it.mau[2]);
-        if (on && mo) {
-          var ck = h('span', 'cd-son-ic');
-          ck.appendChild(Ve.ico('check', 1, { fill: BM.trangV2, line: BM.vienDam }));
-          m.appendChild(ck);
-        } else if (!mo) {
-          var lk = h('span', 'cd-son-ic');
-          lk.appendChild(Ve.khoa(1, true));
-          m.appendChild(lk);
-        }
-        b.appendChild(m);
-        if (it.saoCan > 0) {
-          var s = h('span', 'cd-son-sao');
-          s.appendChild(Ve.sao(!mo ? false : true, 1));
-          s.appendChild(h('span', null, String(it.saoCan)));
-          b.appendChild(s);
-        } else {
-          b.appendChild(h('span', 'cd-son-sao', '0'));
-        }
-        b.addEventListener('click', function () {
-          if (!mo) {
-            b.classList.remove('rung'); void b.offsetWidth; b.classList.add('rung');
-            if (window.AmThanh) AmThanh.phat('loi');
-            tb.textContent = t('caiDat.sonKhoa', { n: it.saoCan, ten: tenSon(it) });
-            clearTimeout(tbHen);
-            tbHen = setTimeout(function () { tb.textContent = ''; }, 2400);
-            return;
-          }
-          tb.textContent = '';
-          if (window.Luu && Luu.ghiCaiDat) Luu.ghiCaiDat({ son: it.ma });
-          if (window.AmThanh) AmThanh.phat('lat');
-          ve();
-          if (window.App && App.veLai) App.veLai();
-        });
-        hang.appendChild(b);
-      });
-    }
-
-    khung.appendChild(hd);
-    khung.appendChild(hang);
-    khung.appendChild(tb);
-    ve();
-    return khung;
-  }
+  /* V7c1 (28/10): hàng 'Màu sơn R1' (sơn mở khoá theo sao, bảng sơn của part/ pixel) đã bỏ: R1 cố định màu đội (vecDoiR1). */
 
   /** Hàng bật / tắt Biểu cảm mắt (mắt LED chuyển động trên kính robot; có thể tắt bất cứ lúc nào). */
   function hangMat() {
@@ -207,7 +120,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     hop.than.appendChild(hangMat());
     var kv = hangKieuVe(); if (kv) hop.than.appendChild(kv);
-    if (!(window.VeVector && VeVector.bat())) hop.than.appendChild(hangSon());       // gói V5b (user 28/10 "Ẩn ở vector"): ở vector R1 cố định màu đội (vecDoiR1), không chọn sơn
     var cot = h('div', 'cd-cot');
     if (window.MoDau) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.gioiThieu'), function () { TP.Hop.dong(); MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(function () { mo(khiDong); }); else mo(khiDong); }); }, 'cd-mo-dau'));
     if (window.PhimGoi && window.App && App.dsGoi) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.phimGoi'), function () { phimGoi(khiDong); }, 'cd-phim-goi'));

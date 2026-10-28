@@ -426,13 +426,6 @@
       'caiDat.nut': 'Mở cài đặt',                              // nút bánh răng (chỉ có icon) ở màn đầu
       'caiDat.hieuUng': 'Hiệu ứng',
       'caiDat.nhac': 'Nhạc nền',
-      'caiDat.son': 'Màu sơn R1',
-      'caiDat.sonKhoa': 'Cần {n} sao để mở màu {ten}',
-      'caiDat.sonGoc': 'Nguyên bản',
-      'caiDat.son.ngoc': 'Xanh Ngọc',
-      'caiDat.son.cam': 'Cam Hỏa Tinh',
-      'caiDat.son.trang': 'Trắng Vũ Trụ',
-      'caiDat.son.hoang-kim': 'Hoàng Kim',
       'caiDat.mat': 'Biểu cảm mắt',
       'caiDat.kieuVe': 'Kiểu vẽ',
       'caiDat.netMoi': 'Nét mới',

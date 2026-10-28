@@ -148,16 +148,15 @@
     return true;
   }
 
-  /* ---- cài đặt (cai-dat.js): duong-hoc:cai-dat = { hieuUng: 0..4, nhac: 0..4, son: '' | mã sơn, mat: bool }. Xóa tiến độ không đụng tới. */
+  /* ---- cài đặt (cai-dat.js): duong-hoc:cai-dat = { hieuUng: 0..4, nhac: 0..4, mat: bool }. Xóa tiến độ không đụng tới. V7c1 (28/10): bỏ trường màu sơn R1 (sơn mở khoá đã bỏ; trường cũ trong kho bị bỏ qua). */
   var KHOA_CAI_DAT = 'duong-hoc:cai-dat';
-  var CAI_DAT_GOC = { hieuUng: 3, nhac: 2, son: '', mat: true };
+  var CAI_DAT_GOC = { hieuUng: 3, nhac: 2, mat: true };
   function docCaiDat() {
     var d = docJson(KHOA_CAI_DAT), kq = {};
     ['hieuUng', 'nhac'].forEach(function (k) {
       var v = d && typeof d === 'object' ? d[k] : undefined;
       kq[k] = typeof v === 'number' && v >= 0 && v <= 4 ? Math.floor(v) : CAI_DAT_GOC[k];
     });
-    kq.son = d && typeof d === 'object' && typeof d.son === 'string' ? d.son : '';
     kq.mat = d && typeof d === 'object' && typeof d.mat === 'boolean' ? d.mat : true;
     return kq;
   }
@@ -166,7 +165,6 @@
     return ghiJson(KHOA_CAI_DAT, {
       hieuUng: typeof moi.hieuUng === 'number' ? Math.max(0, Math.min(4, Math.floor(moi.hieuUng))) : cur.hieuUng,
       nhac: typeof moi.nhac === 'number' ? Math.max(0, Math.min(4, Math.floor(moi.nhac))) : cur.nhac,
-      son: typeof moi.son === 'string' ? moi.son : cur.son,
       mat: typeof moi.mat === 'boolean' ? moi.mat : cur.mat
     });
   }
