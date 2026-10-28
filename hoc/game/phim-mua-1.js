@@ -24,12 +24,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var KEP_R2 = { than: 'hai-banh', tay: 'kep', camBien: [], son: 'lam' };  // R2 sơn lam
   var HUY = ['hai-banh', 'tay-gap', 'khoang-cach', 'che-tay', 'che-xe', 'tay-xoay', 'cam-bien-ben', 'hai-robot'];   // huy hiệu các gói mùa 1 (HuyHieu)
   var Y = 158;                                    // tâm thân R1 khi đứng trên sàn (tỉ lệ 3)
-  var VAT = 57;                                   // tâm thùng trong kẹp cách tâm thân (pixel khung, tỉ lệ 3: VeRobot.vatKep ≈ 18–20 pixel part)
+  /* Gói V6: ở vector robot vẽ trong MỘT Ô cạnh tỉ lệ · 24 · 1,2 px (VeRobot.veCo) nên thùng trong kẹp theo VeVector.vatKep (1/100 ô), không theo hằng pixel.
+     VAT / VAT2: tâm thùng trong kẹp cách tâm thân (px khung) ở tỉ lệ 3 / 2; NUA / NUA2: nửa cạnh ô thùng (thùng vector vẽ trong hộp 76% ô). Pixel: y như cũ (57, 38, 14). */
+  var VEC = (function () { try { return !!(goc.VeVector && goc.VeVector.bat() && goc.VeRobot && goc.VeRobot.veVector && goc.VeRobot.veVector(KEP)); } catch (e) { return false; } })();
+  function oPx(tl) { return tl * (goc.VeRobot.PX_O_PART || 24) * (goc.VeRobot.PHONG_NGOAI_SAN || 1); }
+  function kepPx(tl) { var v = goc.VeRobot.vatKep(KEP, 'tren'); return { vat: v.ahead * oPx(tl) / 100, nua: v.n / 0.76 * oPx(tl) / 200 }; }
+  var VAT = VEC ? kepPx(3).vat : 57;              // pixel: tỉ lệ 3, VeRobot.vatKep ≈ 18–20 pixel part
+  var NUA = VEC ? kepPx(3).nua : 14, VAT2 = VEC ? kepPx(2).vat : 38, NUA2 = VEC ? kepPx(2).nua : 14;
   var NANG_MO = { tay: { tuThe: 'tren', kep: false } }, HA_MO = { tay: { tuThe: 'duoi', kep: false } };
   var HA_CAM = { tay: { tuThe: 'duoi', kep: true, cam: true } }, NANG_CAM = { tay: { tuThe: 'tren', kep: true, cam: true } };
 
-  /** Thùng nhỏ (cạnh 28) đặt tâm ở (x, y). */
-  function thung(c, x, y, cls) { return c.dat(c.o('crate', 2), x - 14, y - 14, cls); }
+  /** Thùng nhỏ (cạnh 28; vector: cạnh 2 · nua, mặc định NUA) đặt tâm ở (x, y). */
+  function thung(c, x, y, cls, nua) { nua = nua || NUA; return c.dat(c.o('crate', VEC ? 2 * nua / 14 : 2), x - nua, y - nua, cls); }
   /** Dời phần tử (left/top) sau ms, có trượt (lớp pg-truot, thời lượng giây). */
   function truot(c, e, ms, x, y, giay) {
     e.classList.add('pg-truot'); e.style.setProperty('--tg', (giay || 1) + 's');
@@ -48,13 +54,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         truot(c, r, 60, 86, Y, 1.2);
         k.appendChild(c.chu('md-hoi pg-hoi-r1', '!'));
         c.sau(400, function () { c.keu('buoc'); });
+        c.sau(1300, function () { r.mat('ngac'); });                   // biểu cảm mắt (chỉ vector, gói V6): thấy thùng
       },
       // 2 · tay kẹp bay lên, gắn vào mũi R1, CẠCH!
       function (k, c) {
         c.nen(k, 'md-san');
         k.appendChild(c.dat(c.o('crate', 5), 180, 120));
         k.appendChild(c.tu(c.xe(XE, {}, 1, 3, 86, Y), 0.95, true));
-        k.appendChild(c.tu(c.xe(KEP, NANG_MO, 1, 3, 86, Y), 0.95));
+        var r2 = c.xe(KEP, NANG_MO, 1, 3, 86, Y); k.appendChild(c.tu(r2, 0.95));
+        c.sau(1100, function () { r2.mat('vui'); });
         var vx = c.h('div', 'md-a md-vx'); vx.style.left = '236px'; vx.style.top = '156px'; vx.style.setProperty('--x', '-100px'); vx.style.animationDelay = '.1s';
         var vy = c.h('div', 'md-vy'); vy.style.setProperty('--y', '-10px'); vy.style.setProperty('--r', '360deg'); vy.style.animationDelay = '.1s';
         vy.appendChild(c.ico('denKepMo', 3, BM.vang)); vx.appendChild(vy); k.appendChild(c.tu(vx, 0.95, true));
@@ -69,20 +77,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(600, function () { r.ve(HA_MO); c.keu('bam'); });
         c.sau(1200, function () { r.ve(HA_CAM); c.keu('kep'); });
         c.sau(1800, function () { r.ve(NANG_CAM); tg.classList.add('pg-nhac'); c.keu('bam'); });
+        c.sau(2100, function () { r.mat('vui'); });
       },
       // 4 · code arm_down() grab() arm_up(); R1 đặt thùng vào ô đích khung vàng, sao lóe
       function (k, c) {
         c.nen(k, 'md-san');
         c.code(k, ['arm_down()', 'grab()', 'arm_up()'], 10, 14);
         var dich = c.dat(c.h('div', 'pg-dich'), 248, 136); dich.style.width = dich.style.height = '40px'; k.appendChild(dich);
-        var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', '101px');
+        var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', (VEC ? 268 - 110 - VAT : 101) + 'px');      // vector: tay ngắn hơn, đi thêm cho thùng vẫn vào giữa ô đích (tâm 268)
         var tg = thung(c, 110 + VAT, Y - 4); nhom.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 1, 3, 110, Y); nhom.appendChild(r);
         k.appendChild(nhom);
-        c.sau(2600, function () { r.ve(HA_MO); tg.style.top = (Y - 14) + 'px'; c.keu('tha'); });
+        c.sau(2600, function () { r.ve(HA_MO); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         var s = c.dat(c.sao(3), 255, 96, 'md-pop md-sang'); s.style.animationDelay = '2.9s, 2.9s'; k.appendChild(s);
         for (var i = 0; i < 5; i++) c.sau(1000 + i * 280, function () { c.keu('buoc'); });
-        c.sau(2900, function () { c.keu('thang'); });
+        c.sau(2900, function () { c.keu('thang'); r.mat('vui'); });
       }
     ],
 
@@ -93,15 +102,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.nen(k, 'md-san'); tuong(k, c, 270);
         var r = c.xe(XE, {}, 1, 3, 40, Y); k.appendChild(r);
         truot(c, r, 60, 238, Y, 0.8);
-        c.sau(880, function () { r.classList.add('md-rung'); c.keu('dam'); });
+        c.sau(880, function () { r.classList.add('md-rung'); c.keu('dam'); r.mat('xoay'); });
+        c.sau(1500, function () { r.mat('dam'); });
         var ram = c.chu('md-ram', 'RẦM!'); ram.style.animationDelay = '.88s'; k.appendChild(ram);
         saoQuay(k, c, 238, 0.95);
       },
       // 2 · đèn cảm biến xanh lăn ra từ góc xưởng
       function (k, c) {
         c.nen(k, 'md-san'); tuong(k, c, 270);
-        k.appendChild(c.xe(XE, {}, 1, 3, 230, Y));
+        var r = c.xe(XE, {}, 1, 3, 230, Y); k.appendChild(r.mat('dam'));
         saoQuay(k, c, 230, 0);
+        c.sau(1400, function () { r.mat('ngac'); });
         var den = c.dat(c.ico('denCam', 3, BM.xanhLoSang2), -30, 160, 'pg-lan'); den.style.setProperty('--x', '150px'); k.appendChild(c.tu(den, 1.4, true));
         var nhay = c.dat(c.h('div'), 0, 0); k.appendChild(c.tu(nhay, 1.4));
         nhay.appendChild(c.dat(c.ico('denCam', 3, BM.xanhLoSang2), 120, 160, 'pg-nhay'));
@@ -113,10 +124,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.nen(k, 'md-san'); tuong(k, c, 270);
         var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', '140px');
         var tia = c.dat(c.h('div', 'pg-tia pg-do'), 92, Y - 4); tia.style.width = '38px'; tia.style.setProperty('--t', '2.4s'); nhom.appendChild(tia);
-        nhom.appendChild(c.xe(CAM_XE, { camBien: { bat: true } }, 1, 3, 60, Y));
+        var r = c.xe(CAM_XE, { camBien: { bat: true } }, 1, 3, 60, Y); nhom.appendChild(r);
         k.appendChild(nhom);
         c.sau(300, function () { c.keu('quet'); });
-        c.sau(2400, function () { c.keu('loi'); });
+        c.sau(2400, function () { c.keu('loi'); r.mat('ngac'); });
       },
       // 4 · code while front_clear(): move(); R1 dừng sát tường
       function (k, c) {
@@ -124,12 +135,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.code(k, ['while front_clear():', '    move()'], 10, 14);
         var nhom = c.dat(c.h('div', 'pg-nhom md-di'), 0, 0); nhom.style.setProperty('--d', '178px');
         var tia = c.dat(c.h('div', 'pg-tia pg-do'), 92, Y - 4); tia.style.width = '0px'; tia.style.setProperty('--t', '2.4s'); nhom.appendChild(tia);
-        nhom.appendChild(c.xe(CAM_XE, { camBien: { bat: true } }, 1, 3, 60, Y));
+        var r = c.xe(CAM_XE, { camBien: { bat: true } }, 1, 3, 60, Y); nhom.appendChild(r);
         k.appendChild(nhom);
         c.sau(400, function () { tia.style.width = '38px'; });
         c.sau(2100, function () { tia.style.width = '2px'; });
         for (var i = 0; i < 5; i++) c.sau(1000 + i * 280, function () { c.keu('buoc'); });
-        c.sau(2500, function () { c.keu('thang'); });
+        c.sau(2500, function () { c.keu('thang'); r.mat('vui'); });
       }
     ],
 
@@ -139,7 +150,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       function (k, c) {
         var s = c.san(k, KHO, 4, 20, 26);
         s.nut['1,0'].classList.add('pg-nhay');
-        k.appendChild(c.xe(XE, {}, 1, 2, s.o(0, 1).x, s.o(0, 1).y));
+        var r = c.xe(XE, {}, 1, 2, s.o(0, 1).x, s.o(0, 1).y); k.appendChild(r);
+        c.sau(800, function () { r.mat('ngac'); });
         var hoi = c.chu('md-hoi md-hoi-xa', '?'); hoi.style.left = '196px'; hoi.style.top = '30px'; hoi.style.animationDelay = '.8s'; k.appendChild(hoi);
       },
       // 2 · R1 lên nút: cửa mở; rời nút: cửa đóng sập, "?!"
@@ -152,21 +164,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(1700, function () { r.ve(null, 2); });
         truot(c, r, 2000, a.x, a.y, 0.6);
         c.sau(2400, function () { nut.dat(false); });
-        c.sau(2700, function () { cua.dat(false); cua.classList.add('md-rung'); c.keu('dam'); });
+        c.sau(900, function () { r.mat('vui'); });
+        c.sau(2700, function () { cua.dat(false); cua.classList.add('md-rung'); c.keu('dam'); r.mat('buon'); });
         var hoi = c.chu('md-hoi', '?!'); hoi.style.left = (a.x - 14) + 'px'; hoi.style.top = (a.y + 14) + 'px'; hoi.style.animationDelay = '2.9s'; k.appendChild(hoi);
       },
       // 3 · R1 đặt thùng gỗ lên nút, cửa mở, R1 đi qua
       function (k, c) {
         var s = c.san(k, KHO, 4, 20, 26), nut = s.nut['1,0'], cua = s.cua['3,1'];
         var a = s.o(1, 1), b = s.o(1, 0);
-        var tg = thung(c, a.x, a.y - 38); k.appendChild(tg);
+        var tg = thung(c, a.x, a.y - VAT2, '', NUA2); k.appendChild(tg);
         var r = c.xe(KEP, NANG_CAM, 0, 2, a.x, a.y); k.appendChild(r);
         c.sau(500, function () { r.ve(HA_CAM); });
-        c.sau(1000, function () { r.ve(HA_MO); tg.style.top = (b.y - 14) + 'px'; c.keu('tha'); });
+        if (VEC) truot(c, tg, 1000, a.x - NUA2, b.y - NUA2, 0.3);                          // vector: tay ngắn hơn, thùng trượt lên nút thay vì nhảy
+        c.sau(1000, function () { r.ve(HA_MO); tg.style.top = (b.y - NUA2) + 'px'; c.keu('tha'); });
         c.sau(1300, function () { nut.dat(true); cua.dat(true); c.keu('moKhoa'); r.ve(NANG_MO); });
         c.sau(1900, function () { r.ve(NANG_MO, 1); });
         var dich = s.o(4, 1);
         truot(c, r, 2200, dich.x - 40, dich.y, 1.2);
+        c.sau(1300, function () { r.mat('vui'); });
         c.sau(3500, function () { c.keu('thang'); });
       }
     ],
@@ -178,7 +193,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var s = c.san(k, NGO, 4, 20, 26), p = s.o(3, 1);
         var r = c.xe(XE, {}, 1, 2, s.o(1, 1).x, p.y); k.appendChild(r);
         truot(c, r, 100, p.x, p.y, 0.8);
-        c.sau(1100, function () { r.classList.add('pg-lac-xe'); c.keu('loi'); });
+        c.sau(1100, function () { r.classList.add('pg-lac-xe'); c.keu('loi'); r.mat('buon'); });
         var hoi = c.chu('md-hoi', '?'); hoi.style.left = (p.x - 8) + 'px'; hoi.style.top = '6px'; hoi.style.animationDelay = '1.6s'; k.appendChild(hoi);
       },
       // 2 · hộp linh kiện bật nắp, hai bánh R1 sáng lên
@@ -190,14 +205,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var vx = c.h('div', 'md-a md-vx'); vx.style.left = (h.x - 16) + 'px'; vx.style.top = (h.y - 16) + 'px'; vx.style.setProperty('--x', (p.x - h.x) + 'px'); vx.style.animationDelay = '.3s';
         var vy = c.h('div', 'md-vy'); vy.style.setProperty('--y', (p.y - h.y) + 'px'); vy.style.setProperty('--r', '360deg'); vy.style.animationDelay = '.3s';
         vy.appendChild(c.ico('denBanh', 3, BM.lamSang)); vx.appendChild(vy); k.appendChild(c.tu(vx, 1.2, true));
-        c.sau(1200, function () { r.classList.add('pg-nhay'); r.ve({ wl: 2, wr: 2 }); c.keu('moKhoa'); });
+        r.mat('buon');
+        c.sau(1200, function () { r.classList.add('pg-nhay'); r.ve({ wl: 2, wr: 2 }); c.keu('moKhoa'); r.mat('ngac'); });
+        c.sau(1700, function () { r.mat('vui'); });
       },
       // 3 · R1 lùi ra khỏi ngõ, vệt bánh
       function (k, c) {
         var s = c.san(k, NGO, 4, 20, 26), p = s.o(3, 1), q = s.o(0, 1);
         var vet = c.dat(c.h('div', 'pg-vet'), q.x, p.y - 3); vet.style.width = (p.x - q.x) + 'px'; k.appendChild(vet);
         var r = c.xe(XE, { wl: 2, wr: 2 }, 1, 2, p.x, p.y); k.appendChild(r);
-        truot(c, r, 500, q.x, q.y, 1.4);
+        truot(c, r, 500, q.x, q.y, 1.4); r.mat('vui');
         for (var i = 0; i < 3; i++) c.sau(600 + i * 450, function () { c.keu('buoc'); });
       },
       // 4 · code left_back() right_back() wait()
@@ -208,7 +225,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(1100, function () { r.ve({ wl: 2, wr: 0 }); c.keu('buoc'); });
         c.sau(1400, function () { r.ve({ wl: 2, wr: 2 }); c.keu('buoc'); });
         truot(c, r, 1500, q.x, q.y, 0.6);
-        c.sau(2200, function () { r.ve({}); c.keu('thang'); });
+        c.sau(2200, function () { r.ve({}); c.keu('thang'); r.mat('vui'); });
       }
     ],
 
@@ -225,15 +242,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(1500, function () { r.ve(HA_CAM); c.keu('kep'); });
         c.sau(1900, function () { r.ve(NANG_CAM); });
         nhip(k, c, '2', cx - 70, cy + 10, 2.4);
-        c.sau(2400, function () { r.ve(null, 1); tg.style.left = (cx + VAT - 14) + 'px'; tg.style.top = (cy - 14) + 'px'; c.keu('buoc'); });
-        c.sau(2700, function () { c.keu('loi'); });
+        c.sau(2400, function () { r.ve(null, 1); tg.style.left = (cx + VAT - NUA) + 'px'; tg.style.top = (cy - NUA) + 'px'; c.keu('buoc'); });
+        c.sau(2700, function () { c.keu('loi'); r.mat('buon'); });
       },
       // 2 · khớp xoay lấp lánh trên kệ, gắn vào tay
       function (k, c) {
         var cx = 110, cy = 140;
         k.appendChild(c.dat(c.o('thung', 4), 228, 36));
         k.appendChild(c.tu(c.xe(KEP, NANG_MO, 1, 3, cx, cy), 1.2, true));
-        k.appendChild(c.tu(c.xe(XOAY, NANG_MO, 1, 3, cx, cy, 'pg-sang'), 1.2));
+        var rx = c.xe(XOAY, NANG_MO, 1, 3, cx, cy, 'pg-sang'); k.appendChild(c.tu(rx, 1.2));
+        c.sau(1300, function () { rx.mat('vui'); });
         var vx = c.h('div', 'md-a md-vx'); vx.style.left = '240px'; vx.style.top = '46px'; vx.style.setProperty('--x', (cx + 30 - 240) + 'px'); vx.style.animationDelay = '.4s';
         var vy = c.h('div', 'md-vy pg-nhay'); vy.style.setProperty('--y', (cy - 62) + 'px'); vy.style.setProperty('--r', '360deg'); vy.style.animationDelay = '.4s';
         vy.appendChild(c.ico('denXoay', 3, BM.timV7)); vx.appendChild(vy); k.appendChild(c.tu(vx, 1.2, true));
@@ -254,7 +272,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 1 · R1 ở ngã ba mê cung, "?"
       function (k, c) {
         var s = c.san(k, ME, 3, 13, 5), p = s.o(3, 1);
-        k.appendChild(c.xe(XE, {}, 1, 1.5, p.x, p.y));
+        var r = c.xe(XE, {}, 1, 1.5, p.x, p.y); k.appendChild(r);
+        c.sau(600, function () { r.mat('ngac'); });
         var hoi = c.chu('md-hoi', '?'); hoi.style.left = (p.x + 4) + 'px'; hoi.style.top = (p.y - 40) + 'px'; hoi.style.animationDelay = '.6s'; k.appendChild(hoi);
         var hoi2 = c.chu('md-hoi', '?'); hoi2.style.left = (p.x - 26) + 'px'; hoi2.style.top = (p.y - 34) + 'px'; hoi2.style.animationDelay = '1.1s'; k.appendChild(hoi2);
       },
@@ -262,7 +281,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       function (k, c) {
         var s = c.san(k, ME, 3, 13, 5), p = s.o(3, 1);
         k.appendChild(c.tu(c.xe(XE, {}, 1, 1.5, p.x, p.y), 0.6, true));
-        k.appendChild(c.tu(c.xe(CAM_XE, { camBien: { bat: true } }, 1, 1.5, p.x, p.y, 'pg-sang'), 0.6));
+        var rc = c.xe(CAM_XE, { camBien: { bat: true } }, 1, 1.5, p.x, p.y, 'pg-sang'); k.appendChild(c.tu(rc, 0.6));
+        c.sau(1100, function () { rc.mat('vui'); });
         var tren = c.dat(c.h('div', 'pg-tia doc pg-do'), p.x - 4, p.y - 21 - 4); tren.style.height = '4px'; tren.style.setProperty('--t', '1.2s');
         var duoi = c.dat(c.h('div', 'pg-tia doc'), p.x - 4, p.y + 14); duoi.style.height = '52px';
         k.appendChild(c.tu(tren, 1.0)); k.appendChild(c.tu(duoi, 1.0));
@@ -280,7 +300,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         });
         var sx = s.o(5, 1);
         var sa = c.dat(c.sao(3), sx.x - 10, sx.y - 40, 'md-pop md-sang'); sa.style.animationDelay = (0.4 + duong.length * 0.26) + 's, ' + (0.4 + duong.length * 0.26) + 's'; k.appendChild(sa);
-        c.sau(500 + duong.length * 260, function () { c.keu('thang'); });
+        c.sau(500 + duong.length * 260, function () { c.keu('thang'); r.mat('vui'); });
       },
       // 4 · code if right_clear(): turn_right()
       function (k, c) {
@@ -300,19 +320,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 1 · cửa xưởng mở, R2 sơn lam lăn vào
       function (k, c) {
         c.nen(k, 'md-san');
-        k.appendChild(c.xe(KEP, NANG_MO, 1, 3, 70, Y));
+        var r1 = c.xe(KEP, NANG_MO, 1, 3, 70, Y); k.appendChild(r1);
+        c.sau(700, function () { r1.mat('ngac'); });
         var anh = c.dat(c.h('div', 'pg-anh'), 200, 20); anh.style.width = '120px'; anh.style.height = '170px'; k.appendChild(anh);
         var cua = c.dat(c.h('div', 'pg-cua-lon pg-mo-cua'), 236, 20); k.appendChild(cua);
         var r2 = c.xe(KEP_R2, NANG_MO, 3, 3, 360, Y); k.appendChild(r2);
         truot(c, r2, 1700, 236, Y, 1.0);
+        c.sau(2800, function () { r1.mat('vui'); r2.mat('vui'); });
         c.sau(500, function () { c.keu('moKhoa'); });
         c.sau(1800, function () { c.keu('buoc'); });
       },
       // 2 · R1 và R2 nhìn nhau; hai bảng code R1 / R2 hiện cạnh nhau
       function (k, c) {
         c.nen(k, 'md-san');
-        k.appendChild(c.xe(KEP, NANG_MO, 1, 3, 70, Y));
-        k.appendChild(c.xe(KEP_R2, NANG_MO, 3, 3, 250, Y));
+        k.appendChild(c.xe(KEP, NANG_MO, 1, 3, 70, Y).mat('vui'));
+        k.appendChild(c.xe(KEP_R2, NANG_MO, 3, 3, 250, Y).mat('vui'));
         var b1 = c.code(k, ['pick()', 'move()', 'drop()'], 8, 8); bangTen(c, b1, t2('pg.tenR1'), '');
         var b2 = c.code(k, ['wait()', 'pick()', 'move()'], 186, 8, 0.5); bangTen(c, b2, t2('pg.tenR2'), 'pg-ten-r2');
         c.sau(300, function () { c.keu('bam'); });
@@ -324,18 +346,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var tg = thung(c, 60 + VAT, Y - 4); k.appendChild(tg);
         var r1 = c.xe(KEP, NANG_CAM, 1, 3, 60, Y); k.appendChild(r1);
         var r2 = c.xe(KEP_R2, NANG_MO, 3, 3, 250, Y); k.appendChild(r2);
-        truot(c, r1, 300, 110, Y, 0.8); truot(c, tg, 300, 110 + VAT - 14, Y - 18, 0.8);
+        truot(c, r1, 300, 110, Y, 0.8); truot(c, tg, 300, 110 + VAT - NUA, Y - 4 - NUA, 0.8);
         c.sau(1300, function () { r1.ve(HA_CAM); });
-        c.sau(1600, function () { r1.ve(HA_MO); tg.style.top = (Y - 14) + 'px'; c.keu('tha'); });
+        c.sau(1600, function () { r1.ve(HA_MO); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         c.sau(1900, function () { r1.ve(NANG_MO); });
         truot(c, r2, 2000, 110 + 2 * VAT, Y, 0.6);
         c.sau(2700, function () { r2.ve(HA_MO); });
         c.sau(3000, function () { r2.ve(HA_CAM); c.keu('kep'); });
-        c.sau(3300, function () { r2.ve(NANG_CAM); tg.style.top = (Y - 18) + 'px'; });
-        c.sau(3700, function () { r2.ve(null, 1); tg.style.left = (110 + 3 * VAT - 14) + 'px'; c.keu('buoc'); });
-        c.sau(4100, function () { r2.ve(HA_MO); tg.style.top = (Y - 14) + 'px'; c.keu('tha'); });
+        c.sau(3300, function () { r2.ve(NANG_CAM); tg.style.top = (Y - 4 - NUA) + 'px'; });
+        c.sau(3700, function () { r2.ve(null, 1); tg.style.left = (110 + 3 * VAT - NUA) + 'px'; c.keu('buoc'); });
+        if (VEC) { truot(c, r2, 3750, 282 - VAT, Y, 0.35); truot(c, tg, 3750, 282 - NUA, undefined, 0.35); }   // vector: tay ngắn hơn, R2 lăn thêm tới ô đích (tâm 282)
+        c.sau(4100, function () { r2.ve(HA_MO); tg.style.top = (Y - NUA) + 'px'; c.keu('tha'); });
         var sa = c.dat(c.sao(3), 270, 96, 'md-pop md-sang'); sa.style.animationDelay = '4.3s, 4.3s'; k.appendChild(sa);
-        c.sau(4300, function () { c.keu('thang'); });
+        c.sau(4300, function () { c.keu('thang'); r1.mat('vui'); r2.mat('vui'); });
       }
     ],
 
@@ -344,7 +367,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 1 · kho chật, thùng nằm hai bên lối đi
       function (k, c) {
         var s = c.san(k, CHAT, 4, 20, 26), p = s.o(0, 1);
-        k.appendChild(c.xe(DU_BO, {}, 1, 2, p.x, p.y));
+        var r = c.xe(DU_BO, {}, 1, 2, p.x, p.y); k.appendChild(r);
+        c.sau(600, function () { r.mat('ngac'); });
         var hoi = c.chu('md-hoi', '?'); hoi.style.left = (p.x + 20) + 'px'; hoi.style.top = (p.y - 46) + 'px'; hoi.style.animationDelay = '.6s'; k.appendChild(hoi);
       },
       // 2 · cảm biến bên nháy ở bên có thùng, tay xoay sang đúng bên đó nhặt
@@ -379,7 +403,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         k.appendChild(c.tu(chong, 3.3));
         c.sau(3300, function () { r.ve(B('tren', false, 0)); c.keu('tha'); });
         var sa = c.dat(c.sao(3), d.x - 10, d.y - 70, 'md-pop md-sang'); sa.style.animationDelay = '3.5s, 3.5s'; k.appendChild(sa);
-        c.sau(3500, function () { c.keu('thang'); });
+        c.sau(3500, function () { c.keu('thang'); r.mat('vui'); });
       }
     ],
 
@@ -388,7 +412,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // 1 · R1 đủ bộ giữa xưởng, các huy hiệu mùa 1 bay quanh
       function (k, c) {
         c.nen(k, 'md-san');
-        k.appendChild(c.xe(DU_BO, { camBien: { bat: true } }, 1, 3, 150, Y, 'md-nhun'));
+        k.appendChild(c.xe(DU_BO, { camBien: { bat: true } }, 1, 3, 150, Y, 'md-nhun').mat('vui'));
         var ds = HUY.filter(function (m) { return window.HuyHieu && HuyHieu.DS.indexOf(m) >= 0; });
         var cho = [[30, 30], [110, 14], [196, 14], [262, 40], [20, 100], [266, 104], [64, 60], [222, 72]];
         ds.forEach(function (m, i) {
@@ -406,8 +430,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var anh = c.dat(c.h('div', 'pg-anh pg-anh-lon'), 150, 10); k.appendChild(anh);
         var trai = c.dat(c.h('div', 'pg-cua-lon pg-mo-cua'), 196, 10); trai.style.transformOrigin = '0 50%'; k.appendChild(trai);
         var phai = c.dat(c.h('div', 'pg-cua-lon pg-mo-cua'), 256, 10); phai.style.transformOrigin = '100% 50%'; k.appendChild(phai);
-        k.appendChild(c.xe(DU_BO, {}, 1, 3, 80, Y));
-        c.sau(500, function () { c.keu('moKhoa'); });
+        var r = c.xe(DU_BO, {}, 1, 3, 80, Y); k.appendChild(r);
+        c.sau(500, function () { c.keu('moKhoa'); r.mat('ngac'); });
+        c.sau(1600, function () { r.mat('vui'); });
       },
       // 3 · R1 lăn ra ngoài; xa xa trên đồi thấy bánh xích văng hôm trước (nhá mùa 2)
       function (k, c) {
@@ -417,7 +442,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var r = c.xe(DU_BO, {}, 1, 3, -40, Y); k.appendChild(r);
         truot(c, r, 100, 130, Y, 1.6);
         for (var i = 0; i < 6; i++) c.sau(200 + i * 270, function () { c.keu('buoc'); });
-        c.sau(2000, function () { c.keu('moKhoa'); });
+        c.sau(2000, function () { c.keu('moKhoa'); r.mat('ngac'); });
       }
     ]
   };
@@ -438,7 +463,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Tâm vật trong tay xoay so với tâm thân (xe hướng phải): x = về phía mũi, y = về bên phải xe (xuống). */
   function vatXoay(g, tuThe, tl) {
     var v = (window.VeRobot && VeRobot.vatXoay) ? VeRobot.vatXoay(XOAY, tuThe, g) : { f: 12, l: g < 0 ? -10 : g > 0 ? 10 : 0 };
-    return { x: v.f * tl, y: v.l * tl };
+    var k = VEC ? oPx(tl) / 100 : tl;               // vector: VeRobot.vatXoay theo 1/100 ô; pixel: pixel part × tỉ lệ
+    return { x: v.f * k, y: v.l * k };
   }
   /** Tay xoay sang trái nhặt thùng rồi xoay về trước; xe đứng yên. tre: giây bắt đầu; cx: tâm xe. */
   function xoayNhat(k, c, tre, cx) {
@@ -449,13 +475,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var T = function (tuThe, kep, goc) { return { tay: { tuThe: tuThe, kep: kep, cam: kep, goc: goc } }; };
     [-30, -60, -90].forEach(function (g, i) { c.sau(ms + i * 180, function () { r.ve(T('tren', false, g)); }); });
     c.sau(ms + 200, function () { c.keu('bam'); });
-    c.sau(ms + 700, function () { r.ve(T('duoi', false, -90)); tg.classList.add('pg-truot'); tg.style.setProperty('--tg', '.3s'); tg.style.top = (cy + p0.y - 14) + 'px'; });
+    c.sau(ms + 700, function () { r.ve(T('duoi', false, -90)); tg.classList.add('pg-truot'); tg.style.setProperty('--tg', '.3s'); tg.style.top = (cy + p0.y - NUA) + 'px'; });
     c.sau(ms + 1100, function () { r.ve(T('duoi', true, -90)); c.keu('kep'); });
     c.sau(ms + 1400, function () { r.ve(T('tren', true, -90)); });
     [-60, -30, 0].forEach(function (g, i) {
-      c.sau(ms + 1800 + i * 180, function () { var p = vatXoay(g, 'tren', 3); r.ve(T('tren', true, g)); tg.style.setProperty('--tg', '.15s'); tg.style.left = (cx + p.x - 14) + 'px'; tg.style.top = (cy + p.y - 14) + 'px'; });
+      c.sau(ms + 1800 + i * 180, function () { var p = vatXoay(g, 'tren', 3); r.ve(T('tren', true, g)); tg.style.setProperty('--tg', '.15s'); tg.style.left = (cx + p.x - NUA) + 'px'; tg.style.top = (cy + p.y - NUA) + 'px'; });
     });
-    c.sau(ms + 2400, function () { c.keu('thang'); });
+    c.sau(ms + 2400, function () { c.keu('thang'); r.mat('vui'); });
   }
 
   /** Cột tường ở x (ba ô tường cạnh 42, đáy chạm sàn). */
