@@ -71,3 +71,4 @@ GÓP Ý USER 28/10 (gửi SendMessage): cảm biến phải dính vỏ theo từ
 | Phim mùa 2 | opus | 28/10 16:38 | phim-mua-2, nhánh claude/phim-mua-2 từ 6348c9f | f02eb86 | — | ĐẠT: gộp 529281e, 4 máy kiểm đạt sau gộp |
 | V7a vector dọn đuôi (huy hiệu, drone nam châm, tay xoay, dây nối, :has) | opus | 28/10 16:38 | v7a-ve-vector-duoi, nhánh claude/ve-vector-duoi từ 6348c9f | cd1bdc3 | 18:20 nhắc (không đáp); 19:03 dừng | DỪNG ở việc 5 sau ~2 tiếng không commit; người giao commit việc 5 (b1a0e86), làm việc 6 (eba2b2f), gộp ad0d875 |
 | Scout gỡ pixel | opus | 28/10 | chỉ đọc nhánh chính | — | — | ĐẠT: báo cáo hoc/ban-giao/scout-go-pixel.md |
+| V7b đổi mặc định vector + gỡ cầu tạm C1–C5 + gói Artifact | fable | 28/10 19:15 | v7b-mac-dinh-vector, nhánh claude/ve-vector-mac-dinh từ 4d14382 | 4d14382 | — | đang chạy; brief-V7b.md |
