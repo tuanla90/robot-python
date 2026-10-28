@@ -173,7 +173,21 @@ async function main() {
   /** Số dòng lời giải người chơi viết / sửa: chương trình chính (trừ khi khóa) + thân hàm mới + thân hàm của màn. */
   const soDong = (m) => (m.chinhCoDinh ? 0 : m.loiGiai.chinh.length) + (m.loiGiai.hamCuaMan || []).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
   const coSan = (m) => Math.max(...dsSan(m).map((rows) => rows.join('').replace(/#/g, '').length));
-  const docCamBien = (m) => bacCau(khoTruoc.get(m.ma), m.loiGiai).dong.some((l) => /\b(distance|warm)\(\)/.test(l));
+  /** Lời "bù giật": thêm move() (cùng thụt lề) sau mỗi dòng bắn tụ ra trước, back() sau mỗi dòng bắn tụ ra sau (thói quen xe hai bánh bị giật). */
+  function buGiat(lg) {
+    const them = (dong) => dong.flatMap((l, i) => {
+      const th = l.match(/^\s*/)[0], t = l.trim(), truoc = (dong[i - 1] || '').trim();
+      const tu = /^(fire\("charge"\)|jet_back\(\)|shoot\("charge"\)|shoot\(\))$/.test(t) && !/^shoot/.test(t);
+      const sau = /^(fire_back\("charge"\)|jet_fwd\(\))$/.test(t);
+      const choSau = t === 'wait()' && /^shoot(_back)?\((\)|"charge"\))$/.test(truoc);
+      if (tu || (choSau && /^shoot\(/.test(truoc))) return [l, th + 'move()'];
+      if (sau || (choSau && /^shoot_back\(/.test(truoc))) return [l, th + 'back()'];
+      return [l];
+    });
+    const h = (ds) => (ds || []).map((x) => Object.assign({}, x, { than: them(x.than) }));
+    return { chinh: them(lg.chinh || []), hamCuaMan: h(lg.hamCuaMan), hamCuaEmMoi: h(lg.hamCuaEmMoi) };
+  }
+  const docCamBien = (m) =>bacCau(khoTruoc.get(m.ma), m.loiGiai).dong.some((l) => /\b(distance|warm)\(\)/.test(l));
 
   /* ---------------------------------------------------------------- đặc trưng (điều mới) của một màn, đọc từ lời giải và sân */
   const RE_SO_SANH = /(<=|>=|==|!=|<|>)\s*(\d+|[A-Za-z_]\w*)/g;
@@ -369,6 +383,13 @@ async function main() {
         const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than, { beSung: false }), { beSung: false });
         bang[m.ma].khong += ' (khóa: ' + (t.khong ? 'không thân cố định nào 3 sao' : 'thân ' + t.than.join(' / ')) + ')';
         if (!t.khong) assert.fail(m.ma + ': không bệ súng, thân cố định ' + t.than.join(' / ') + ' vẫn 3 sao');
+      } else if (soSan(m) > 1) {
+        // nhiều sân: BFS từng sân riêng (cộng lại) là cận dưới quá lỏng cho MỘT chương trình chung đọc cảm biến, nên chỉ in ra; "cần bệ súng" = lời giải và lời "bù giật"
+        // (thói quen xe hai bánh: thêm move() sau mỗi phát bắn tụ ra trước, back() sau mỗi phát ra sau) chạy không bệ súng đều không được 3 sao
+        const bu = buGiat(m.loiGiai);
+        const rb = cham(m, bu, bu.hamCuaEmMoi, { beSung: false });
+        bang[m.ma].khong += ' (từng sân riêng; lời bù giật: ' + (rb.thang ? rb.sao + ' sao, ' + rb.soNhip + ' nhịp' : 'thua') + ')';
+        assert.ok(rb.sao < 3, m.ma + ': lời bù giật chạy không bệ súng vẫn 3 sao');
       } else assert.ok(khong.nhip === null || khong.nhip > m.sao.nhip, m.ma + ': xích KHÔNG bệ súng vẫn kịp trong ' + khong.nhip + ' ≤ ' + m.sao.nhip + ' nhịp: ' + (khong.chuoi || []).join(' | '));
       if (soSan(m) === 1) { const hb = D.nhipNganNhat(m, { haiBanh: true }); bang[m.ma].haiBanh = hb.nhip === null ? 'không tới' : hb.nhip; }
       if (!docCamBien(m)) { bang[m.ma].ne = 'không đọc cảm biến'; return; }

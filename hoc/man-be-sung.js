@@ -84,6 +84,13 @@
   // be-sung.9: xe ở ngã tư (3,3) quay lên. Nút trên (3,0) mở cửa phải (4,3); nút phải (6,3) mở cửa dưới (3,4); nút dưới (3,6) mở cửa trái (2,3); cờ (1,3).
   //   Không bệ súng: phát thứ ba (bắn xuống) giật xe lên (3,2).
   var SAN_B9 = ['###N###', '###.###', '###.###', '#FC.C.N', '###C###', '###.###', '###N###'];
+  // be-sung.10: ba hành lang trạm như be-sung.6 (ba trạm liền nhau (2..4, 3), nút xa phía trên, hốc phía dưới, hai cửa nối tiếp (5,3), (6,3) ở cuối). Nút đang bật mỗi sân một chỗ:
+  //   sân 1 trạm đầu, sân 2 trạm giữa, sân 3 trạm cuối; sau cửa, cờ xa dần (sân 1 sát cửa, sân 3 cách hai ô).
+  var SAN_B10 = [
+    ['##NNN####', '##...####', '##...####', '#....CCF#', '##...####', '#########'],
+    ['##NNN#####', '##...#####', '##...#####', '#....CC.F#', '##...#####', '##########'],
+    ['##NNN######', '##...######', '##...######', '#....CC..F#', '##...######', '###########']
+  ];
 
   /* ------------------------------------------------------------- chương trình */
 
@@ -99,6 +106,7 @@
   var M_B7 = ['turn_left()', 'fire("charge")', 'move()', 'turn_right()', 'forward(2)', 'sidestep()', 'forward(2)'];
   var L_B8 = ['tr_left()', 'fire("charge")', 'tr_right()', 'forward(3)'];
   var L_B9 = FOR(3, ['fire("charge")', 'tr_right()']).concat(['forward(2)']);
+  var L_B10 = ['move()'].concat(FOR(3, T_B6.concat(['move()'])), ['go_to_wall()']);
 
   var DS = [
     /* ================================================================ chương be-sung: xích bắn tụ không giật */
@@ -266,6 +274,30 @@
         { moTa: 'Chỉ bắn hai phát: cửa trái còn đóng', baiLam: bai(FOR(2, ['fire("charge")', 'tr_right()']).concat(['tr_right()', 'forward(2)'])), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Thứ tự: trên, phải, dưới; mỗi lần quay phải.', 'for i in range(3): fire("charge"), tr_right(); rồi forward(2).']
+    }),
+
+    /* ------------------------------------------------ trùm */
+    man({
+      chuong: 'be-sung', so: 10, ten: 'Trùm: Ba hành lang trạm', yMoi: 'một chương trình cho ba hành lang: đo nhiệt từng trạm, bắn tụ nút còn tắt, go_to_wall() tới cờ',
+      hang: 'trum', kieuBai: 'trum', mat: true, lucBan: true, hamCuaEmCan: ['tr_left', 'tr_right', 'fire', 'go_to_wall', 'forward', 'move'],
+      huyHieu: { ma: 'be-sung', ten: 'Huy hiệu Bệ súng xích' },
+      deBai: 'Ba hành lang, một chương trình. Hành lang nào cũng có ba trạm liền nhau với nút xa phía trên và hốc phía dưới, cuối hành lang là hai cánh cửa nối tiếp. ' +
+        'Nút đang bật mỗi sân nằm một chỗ, cờ sau cửa cũng xa gần khác nhau. Ở mỗi trạm: quay lên, nút chưa nóng thì bắn tụ, quay lại, tiến. Qua cửa thì đi tới sát tường.',
+      veMaMau: 'Chương trình có sẵn bắn mọi nút rồi đi hai ô: tắt mất nút đang bật, và sân 2, sân 3 chưa tới cờ.',
+      san: SAN_B10, batDau: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 3, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      noi: [[noi(3, 0, [[5, 3]]), noi(4, 0, [[6, 3]])], [noi(2, 0, [[5, 3]]), noi(4, 0, [[6, 3]])], [noi(2, 0, [[5, 3]]), noi(3, 0, [[6, 3]])]],
+      nutBat: [[o(2, 0)], [o(3, 0)], [o(4, 0)]],
+      maMau: bai(['move()'].concat(FOR(3, ['tr_left()', 'fire("charge")', 'tr_right()', 'move()']), ['forward(2)'])),
+      sao: { o: 21, nhip: 63 },
+      loiGiai: bai(L_B10),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# đo nhiệt từng trạm, bắn tụ nút còn tắt'].concat(L_B10)) },
+      congThucKhac: [{ moTa: 'Bắn mọi nút không đo: vẫn tới cờ nhưng mỗi sân tắt một nút đang bật, phí ba nhịp', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()', 'fire("charge")', 'tr_right()', 'move()']), ['go_to_wall()'])) }],
+      loiSai: [
+        { moTa: 'Đi hai ô sau cửa như sân 1: sân 2, sân 3 chưa tới cờ', baiLam: bai(['move()'].concat(FOR(3, T_B6.concat(['move()'])), ['forward(2)'])), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bắn nhanh: nút cách ba ô, bóng rơi giữa giếng', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()'].concat(IF('not warm()', ['fire("fast")']), ['tr_right()', 'move()'])), ['go_to_wall()'])), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Viết if warm(): bắn nút đang bật, bỏ nút tắt', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()'].concat(IF('warm()', ['fire("charge")']), ['tr_right()', 'move()'])), ['go_to_wall()'])), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Thân vòng lặp như hàm check() của màn Trạm nào còn tắt, thêm move().', 'Sau vòng lặp, go_to_wall() đưa xe qua hai cửa đã mở tới cờ.']
     })
   ];
 
