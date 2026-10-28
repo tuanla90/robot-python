@@ -1040,7 +1040,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var nhun = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 2) : 0;
       for (var i = 0; i < this.objs.length; i++) {
         var o = this.objs[i], rg = o.rung > now ? Math.sin(now / 22) * 1.3 : 0;
-        if (o.tt === 'dat' && this.vec && o.nang > 0) {                                  // vector (gói V6b): vật đang ở trên cao (nam châm thả, vật nảy) to hơn, bóng xa hơn, thu về cỡ sàn khi chạm đất
+        if (o.tt === 'dat' && this.vec && this.vis.dr && o.nang < 0) {                   // vector (gói V7a): drone vừa nhả vật (thaVat: o.nang từ −(HANG − ALT) về 0): vật đang treo cao thu dần từ cỡ nâng về cỡ sàn, bóng gần lại
+          var kd = Math.min(1, o.nang / -(HANG - ALT)), szd = this.coVatDat() + (this.coVatNang() - this.coVatDat()) * kd;
+          this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - o.nang, szd, szd * (VeVector.BONG_SAN + (VeVector.BONG_NANG - VeVector.BONG_SAN) * kd));
+        } else if (o.tt === 'dat' && this.vec && o.nang > 0) {                                  // vector (gói V6b): vật đang ở trên cao (nam châm thả, vật nảy) to hơn, bóng xa hơn, thu về cỡ sàn khi chạm đất
           var cv = this.coVatCao(o.nang, 3);
           this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - o.nang + (this.vatTaiDich(o) ? nhun : 0), cv.sz, cv.sz * (VeVector.BONG_SAN + (VeVector.BONG_NANG - VeVector.BONG_SAN) * cv.k));
         } else if (o.tt === 'dat') this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - (o.nang || 0) + (this.vatTaiDich(o) ? nhun : 0), this.coVatDat(), 2);
@@ -1429,6 +1432,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         o = this.objs[i];
         if (o.tt !== 'cam') continue;
         var rung = v.nc && v.nc.rung > now, lech = rung ? Math.sin(now / 22) * 1.3 : 0;
+        if (this.vec) {                                                                 // vector (gói V7a, luật cỡ vật V6b): vật treo đã nhấc khỏi sàn = cỡ vật nâng, bóng xa và nhạt; drone rơi nằm đất thì cỡ sàn
+          var hd = d.roi ? this.coVatDat() : this.coVatNang();
+          this.veMotVat(g, o, 8, cx + lech, d.roi ? cy - 1 : cy - alt + HANG, hd, hd * (d.roi ? VeVector.BONG_SAN : VeVector.BONG_NANG), rung ? 0.3 + 0.2 * Math.abs(Math.sin(now / 60)) : 0);
+        } else
         this.veMotVat(g, o, 8, cx + lech, d.roi ? cy - 1 : cy - alt + HANG, 8, d.roi ? 2 : 3.2, rung ? 0.3 + 0.2 * Math.abs(Math.sin(now / 60)) : 0);     // treo ngay dưới thân: hai càng nam châm đè lên mép trên của vật
       }
     },
@@ -1573,7 +1580,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           px = b.x * T + 7; py = b.y * T + 7 - b.cao;
           if (this.vec) {                                                       // vector (gói V4): bóng elip mềm, thân vật 8 pixel sân như hình pixel, vòng hút bo góc
             HU().bongElip(g, b.x * T + 7, b.y * T + 11, 3.6, 1.3, 0.24);
-            this.veVatVec(g, o, px + (b.rx || 0), py - 1 + (b.ry || 0), v.dr ? 8 : this.coVatCao(b.cao, 1.5).sz * 0.76);   // gói V6b: vật bị hút lên to dần tới cỡ vật nâng (drone: giữ cỡ cũ)
+            this.veVatVec(g, o, px + (b.rx || 0), py - 1 + (b.ry || 0), (v.dr ? this.coVatDat() + (this.coVatNang() - this.coVatDat()) * (b.kd || 0) : this.coVatCao(b.cao, 1.5).sz) * 0.76);   // gói V6b: vật bị hút lên to dần tới cỡ vật nâng; V7a: drone cũng vậy, theo tiến độ trôi vào chỗ treo (b.kd)
             if (b.vong) HU().vongHut(g, px, py, 0.35 + 0.35 * Math.abs(Math.sin(now / 60)));
             continue;
           }
@@ -1600,6 +1607,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var k2 = k * k * (3 - 2 * k);
         o.bay.x = x0 + (x1 - x0) * k2; o.bay.y = y0 + (y1 - y0) * k2;
         o.bay.cao = v.dr ? -(HANG - ALT) * k2 + Math.sin(k * Math.PI) * 2.5 : 1.5 + Math.sin(k * Math.PI) * 2.5;       // drone: vật nhấc nhẹ rồi trôi vào chỗ treo ngay dưới nam châm
+        o.bay.kd = k2;                                                                    // gói V7a: tiến độ trôi vào chỗ treo (chỉ nhánh vector đọc: cỡ vật drone to dần)
         if (Math.random() < 0.7) self.burst(o.bay.x * T + 7 - (x1 - x0) * 3 * (1 - k), o.bay.y * T + 7 - (y1 - y0) * 3 * (1 - k), 1, [BM.sanTrangV3, BM.sanXanhLoV2, BM.sanTrangV1], 0.3);
       });
       if (my !== this.rid) return;
