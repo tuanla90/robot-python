@@ -235,7 +235,8 @@
     m('wait_mate', 'hong-ngoai', 'Chờ tới khi thấy đồng đội (vật nóng) trước mũi xe', 'che-doi-mua-2', 'che-doi-mua-2.4'),
     m('pass_mate', 'hong-ngoai', 'Chờ bạn tới trước mũi xe rồi chờ bạn đi khỏi (wait_mate rồi wait_clear)', 'che-doi-mua-2', 'che-doi-mua-2.5'),
     m('shot_clear', 'hong-ngoai', 'Chờ bạn đi khỏi đường bóng rồi bắn với lực p', 'che-doi-mua-2', 'che-doi-mua-2.6'),
-    m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô (đo khoảng cách, không nhầm đèn nóng)', 'che-doi-mua-2', 'che-doi-mua-2.7')
+    m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô (đo khoảng cách, không nhầm đèn nóng)', 'che-doi-mua-2', 'che-doi-mua-2.7'),
+    m('cover', 'hong-ngoai', 'Chờ bạn tới rồi đi khỏi (pass_mate) rồi bắn tụ', 'che-doi-mua-2', 'che-doi-mua-2.8')
   );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
