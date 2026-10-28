@@ -1,1 +1,0 @@
-(function(root){var P=root.Part||(typeof module==='object'&&require('./part'));P.dangKy({loai:'cam-bien',ma:'camera',ten:'Camera (đôi mắt)',hamGoc:['color'],gan:'tren',diemNeo:{x:12,y:12},ve:function(){/* Đôi mắt sáng được vẽ trực tiếp trên thân. */}});})(typeof window!=='undefined'?window:globalThis);

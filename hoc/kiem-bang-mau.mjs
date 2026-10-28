@@ -67,9 +67,8 @@ const ALIAS = {
   trang: 'var BM = window.BangMau;'
 };
 const CHEN = {   // phần gói A1 chèn thêm (bỏ đi khi so với bản nền)
-  'choi.html': ['<!-- bảng màu theo vai (gói A1): nạp TRƯỚC mọi tệp dùng màu; ghi biến CSS --g-<vai> cho choi.css -->\n<script src="bang-mau.js"></script>\n'],
-  'part/xem-part.html': ['<script src="../bang-mau.js"></script>', ALIAS.trang]
-};
+  'choi.html': ['<!-- bảng màu theo vai (gói A1): nạp TRƯỚC mọi tệp dùng màu; ghi biến CSS --g-<vai> cho choi.css -->\n<script src="bang-mau.js"></script>\n']
+};   // V7c2 (28/10): part/xem-part.html đã xoá cùng bộ pixel game/part
 // mã màu được phép gõ thẳng: tệp tĩnh không chạy JS; giá trị phải bằng đúng vai ghi kèm
 const VAI_NEN_TRANG = 'vecNenSau';   // V7b (28/10): mặc định vector → nền tĩnh là nền trang vector (chàm nhạt), không còn nâu gỗ goToiV11
 const NGOAI_LE = [
@@ -165,7 +164,18 @@ console.log('\n== 3. Token và thứ tự nạp ==');
     /* V7c2 (28/10) san-ve.js xoá nhánh pixel (tia, mắt LED, ảnh nhỏ, vật, thanh pin, thẻ đạn…) → 45 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js rồi xoá dòng này */
     'sanTim', 'sanDoSang', 'sanNgocToi', 'moDo', 'moLam', 'moDoToiV2', 'moSangV5', 'moToiV20', 'moToiV21', 'moToiV23', 'moToiSangV8', 'moToiSangV9', 'moVangV4', 'moVangV5', 'moVangV6', 'moVangV7',
     'sanCamToiV2', 'sanDoV2', 'sanDoV3', 'sanDoV6', 'sanDoV7', 'sanDoSangV1', 'sanKemV1', 'sanLamV8', 'sanLamV16', 'sanLamV17', 'sanLamToiV1', 'sanLamToiV7', 'sanLamToiV8', 'sanLamToiV9', 'sanLamToiV10',
-    'sanNauSangV3', 'sanTimSangV2', 'sanTrangV6', 'sanXamToiV4', 'sanXamToiV5', 'sanXanhLaToiV1', 'sanXanhLaToiV6', 'sanXanhLoV6', 'sanXanhLoV7', 'sanXanhLoV8', 'sanXanhLoToiV3', 'sanXanhLoToiV4', 'tiaDoV1Rgb', 'tiaDoV6Rgb'];
+    'sanNauSangV3', 'sanTimSangV2', 'sanTrangV6', 'sanXamToiV4', 'sanXamToiV5', 'sanXanhLaToiV1', 'sanXanhLaToiV6', 'sanXanhLoV6', 'sanXanhLoV7', 'sanXanhLoV8', 'sanXanhLoToiV3', 'sanXanhLoToiV4', 'tiaDoV1Rgb', 'tiaDoV6Rgb',
+    /* V7c2 d4 (28/10): xoá bộ pixel game/part (17 tệp bộ phận: vai robot* / son* / luatSon* / luatVat* / dsSon*), ve-robot.js hình tạm, phim pixel → 117 vai sau hết chỗ dùng; V7c3 xoá khỏi bang-mau.js (kể cả 'ds mau son' Part.SON) rồi xoá khối này */
+    'robotDen', 'robotLam', 'robotNgoc', 'robotXanhLoToi', 'robotDoToi', 'robotCamToi', 'robotHong', 'robotTim', 'robotTimSang', 'robotKem', 'robotKemToi', 'robotXanhLa',
+    'robotXanhLaToi', 'robotXam', 'robotXamToi', 'sonVang', 'sonVangSang', 'sonVangToi', 'sonLam', 'sonLamSang', 'sonLamToi', 'sonDoSang', 'sonDoToi', 'sonTimSang',
+    'sonTimToi', 'sonNgoc', 'sonNgocSang', 'sonNgocToi', 'sonCam', 'sonCamSang', 'sonCamToi', 'sonTrang', 'sonTrangSang', 'sonTrangToi', 'sonHoangKim', 'sonHoangKimSang',
+    'sonHoangKimToi', 'dsSonGoc', 'dsSonGocSang', 'dsSonGocToi', 'luatSonDoSang', 'luatSonDoToi', 'luatSonXanhLa', 'luatSonXanhLaSang', 'luatSonXanhLaToi', 'luatSonXanhDuong', 'luatSonXanhDuongSang', 'luatSonXanhDuongToi',
+    'luatSonVang', 'luatSonVangSang', 'luatSonVangToi', 'luatVatDoSang', 'luatVatDoToi', 'luatVatXanhLa', 'luatVatXanhLaSang', 'luatVatXanhLaToi', 'luatVatXanhDuongSang', 'luatVatXanhDuongToi', 'luatVatVang', 'luatVatVangSang',
+    'luatVatVangToi', 'bangSangV5', 'camSangV5', 'doToiV7', 'goV13', 'kemV10', 'kemSangV4', 'lamSangV23', 'robotCamV1', 'robotCamV2', 'robotCamV3', 'robotCamV4',
+    'robotCamToiV1', 'robotCamToiV2', 'robotCamToiV3', 'robotDoV1', 'robotDoV2', 'robotDoV3', 'robotDoV4', 'robotDoV5', 'robotDoV6', 'robotDoV7', 'robotDoV8', 'robotDoV9',
+    'robotLamV1', 'robotLamV2', 'robotLamV3', 'robotLamV4', 'robotLamV5', 'robotLamV6', 'robotLamV7', 'robotLamV8', 'robotLamV9', 'robotLamToiV1', 'robotNauV1', 'robotNauV2',
+    'robotNauV3', 'robotNauSangV1', 'robotNauSangV2', 'robotNauSangV3', 'robotNauSangV4', 'robotNgocV1', 'robotTimV1', 'robotTimV2', 'robotTimV3', 'robotTimV4', 'robotTimSangV1', 'robotTimSangV2',
+    'robotXamToiV1', 'robotXamToiV2', 'robotXanhLaV1', 'robotXanhLoV1', 'robotXanhLoV2', 'robotXanhLoToiV2', 'trangV14', 'xanhLaV13', 'xanhLaToiV8'];
   const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
   const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));
