@@ -19,7 +19,8 @@
      dayChung(man, gioiHan, tuy)             → { nhip, chuoi } dãy hành động CHUNG thắng mọi sân với tổng nhịp ≤ gioiHan (nhipTheo 'tong'), hay null
      chuoiThanhMa(chuoi, man)                → mã Python lệnh gốc của một dãy hành động
      kiemCheo(man, soLan, hat)               → '' nếu bộ mô phỏng khớp lõi trên soLan dãy ngẫu nhiên mỗi sân, chuỗi lỗi nếu lệch
-     thanCoDinh(man, tenHam, chamThan, tuy)  → màn khóa: thân cố định (không cảm biến) rẻ nhất được 3 sao, hay { khong: true, soThan }
+     thanCoDinh(man, kho, tenHam, chamThan, tuy) → màn khóa: thân cố định (không cảm biến) rẻ nhất được 3 sao, hay { khong: true, soThan }
+     moChinh(dong, bang, tenX), chayDay(man, day, tuy) → mở chương trình chính khóa thành dãy; chạy một dãy cố định
    ========================================================================== */
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
@@ -316,31 +317,86 @@ export function kiemCheo(m, soLan = 60, hat = 7) {
 }
 
 /* ------------------------------------------------------------------ 5. màn khóa: thân cố định (không cảm biến) của hàm tenHam
-   Mọi thân ghép từ các dòng không đọc cảm biến (lệnh của xích, hàm của em không cảm biến, lệnh bắn), dài tới tuy.dai dòng (mặc định 3), chấm THẬT bằng cham.js
-   (chamThan(than) → kết quả cham). Trả thân rẻ nhất được 3 sao hay { khong: true, soThan }. Dòng thử: tuy.dong (mặc định DONG_CO_DINH theo màn). */
-export function dongCoDinh(m, kho) {
-  const tu = m.lucBan ? '("charge")' : '()';
-  const ds = ['move()', 'back()', 'tr_right()', 'tr_left()', 'wait()', 'shoot' + tu, 'pass'];
-  if ((m.hamGoc || []).includes('shoot_back')) ds.push('shoot_back' + tu);
-  if (m.lucBan) ds.push('shoot("fast")', 'fire("charge")', 'fire("fast")');
-  const ten = new Set(kho.map((h) => h.ten));
-  for (const t of ['spin', 'jet_back', 'jet_fwd', 'sidestep']) if (ten.has(t)) ds.push(t + '()');
-  if (ten.has('forward')) ds.push('forward(2)', 'forward(3)');
-  return ds.filter((l) => l === 'pass' || !/^(\w+)\(/.test(l) || (m.hamGoc || []).includes(l.match(/^(\w+)\(/)[1]) || ten.has(l.match(/^(\w+)\(/)[1]));
+   Thân cố định = ghép tới tuy.dai (mặc định 4) dòng không đọc cảm biến, mỗi dòng một khối hành động (bảng DONG: lệnh của xích, hàm của em không cảm biến, lệnh bắn có lực).
+   Một thân cố định chạy ra CÙNG một dãy hành động ở mọi lần gọi, nên chương trình chính khóa (mở được thành dãy: for số cố định, lệnh trong bảng, X = lời gọi hàm) thành
+   một dãy cố định: mô phỏng nhanh bằng bộ mô phỏng (beSung theo tuy), chỉ thân nào THẮNG trong sao.nhip mới chấm thật bằng cham.js (chamThan(than) → kết quả cham, để lấy ô và sao).
+   Chương trình chính không mở được (có lời gọi đọc cảm biến): chấm thật mọi thân tới 2 dòng. Trả thân rẻ nhất được 3 sao hay { khong: true, soThan, soThang }. */
+function bangDong(m, kho) {
+  const ten = new Set(kho.map((h) => h.ten)), hg = m.hamGoc || [];
+  const ds = [['move()', 'M'], ['back()', 'B'], ['tr_right()', 'R'], ['tr_left()', 'L'], ['spin()', 'RR'], ['sidestep()', 'RML'], ['wait()', 'W'],
+    ['jet_back()', 'c'], ['jet_fwd()', 'h'], ['forward(2)', 'MM'], ['forward(3)', 'MMM']];
+  if (m.lucBan) ds.push(['fire("charge")', 'c'], ['fire("fast")', 'f'], ['fire_back("charge")', 'h'], ['fire_back("fast")', 'g']);
+  return ds.filter(([l, a]) => {
+    const t = l.match(/^(\w+)\(/)[1];
+    if (!(hg.includes(t) || ten.has(t))) return false;
+    if (/[hg]/.test(a) && !hg.includes('shoot_back')) return false;
+    if (/[cf]/.test(a) && !hg.includes('shoot')) return false;
+    return true;
+  });
 }
-export function thanCoDinh(m, kho, chamThan, tuy = {}) {
-  const ds = tuy.dong || dongCoDinh(m, kho), dai = tuy.dai || 3;
-  let tot = null, soThan = 0;
-  (function di(than) {
-    if (than.length) {
-      soThan++;
-      const r = chamThan(than);
-      if (r.thang && r.sao === 3 && (!tot || r.soO < tot.soO)) tot = { soO: r.soO, soNhip: r.soNhip, than: than.slice() };
+/** Mở chương trình chính khóa thành dãy hành động ('X' = lời gọi hàm tenX), hay null nếu có dòng ngoài bảng (cảm biến, if, while…). */
+export function moChinh(dong, bang, tenX) {
+  const ma = new Map(bang);
+  const ds = dong.map((l) => l.replace(/#.*$/, '')).filter((l) => l.trim());
+  const thut = (l) => l.match(/^ */)[0].length;
+  function khoi(a, b) {
+    let kq = '';
+    for (let i = a; i < b; i++) {
+      const t = ds[i].trim(), f = t.match(/^for\s+\w+\s+in\s+range\((\d+)\):$/);
+      if (f) { let j = i + 1; while (j < b && thut(ds[j]) > thut(ds[i])) j++; const k = khoi(i + 1, j); if (k === null) return null; kq += k.repeat(+f[1]); i = j - 1; continue; }
+      if (t === tenX + '()') { kq += 'X'; continue; }
+      if (!ma.has(t)) return null;
+      kq += ma.get(t);
     }
-    if (than.length >= dai) return;
-    for (const l of ds) { if (l === 'pass' && than.length) continue; than.push(l); di(than); than.pop(); if (l === 'pass') continue; }
-  })([]);
-  return tot ? Object.assign(tot, { soThan }) : { khong: true, soThan };
+    return kq;
+  }
+  return khoi(0, ds.length);
+}
+/** Mô phỏng một dãy cố định trên màn một sân; trả số nhịp nếu thắng trong gioiHan, không thì false. */
+export function chayDay(m, day, tuy = {}) {
+  const ctx = ngoCanh(m, 0), t = tuyCua(m, tuy);
+  let S = Bo.trangThaiDau(ctx), nhip = 0;
+  const gioiHan = tuy.gioiHan === undefined ? m.sao.nhip : tuy.gioiHan;
+  for (const a of day) {
+    const b = buoc(ctx, S, a, t);
+    S = b.S; nhip += b.nhip;
+    if (S.chet || nhip > gioiHan) return false;
+    if (thangNgay(ctx) && Bo.laDich(ctx, S)) return nhip;
+  }
+  return !thangNgay(ctx) && Bo.laDich(ctx, S) ? nhip : false;
+}
+export function thanCoDinh(m, kho, tenX, chamThan, tuy = {}) {
+  const bang = bangDong(m, kho), dai = tuy.dai || 4;
+  const chinh = moChinh(m.loiGiai.chinh, bang, tenX);
+  let tot = null, soThan = 0, soThang = 0;
+  const thu = (than) => {
+    const r = chamThan(than);
+    if (r.thang && r.sao === 3 && (!tot || r.soO < tot.soO)) tot = { soO: r.soO, soNhip: r.soNhip, than: than.slice() };
+  };
+  if (chinh === null) {
+    (function di(than) {
+      if (than.length) { soThan++; thu(than); }
+      if (than.length >= 2) return;
+      for (const [l] of bang) { than.push(l); di(than); than.pop(); }
+    })([]);
+    soThan++; thu(['pass']);
+  } else {
+    const thang = new Map();                                              // dãy x thắng → các thân ngắn nhất cho ra x
+    (function di(than, x) {
+      soThan++;
+      const n = chayDay(m, chinh.split('X').join(x), tuy);
+      if (n !== false) {
+        soThang++;
+        const ds = thang.get(x) || [];
+        if (!ds.length || ds[0].length === than.length) { ds.push(than.slice()); thang.set(x, ds); }
+        else if (than.length < ds[0].length) thang.set(x, [than.slice()]);
+      }
+      if (than.length >= dai) return;
+      for (const [l, a] of bang) { than.push(l); di(than, x + a); than.pop(); }
+    })([], '');
+    for (const ds of thang.values()) for (const than of ds) thu(than.length ? than : ['pass']);
+  }
+  return tot ? Object.assign(tot, { soThan, soThang, moDuoc: chinh !== null }) : { khong: true, soThan, soThang, moDuoc: chinh !== null };
 }
 
 /* ------------------------------------------------------------------ chạy riêng: in bảng */

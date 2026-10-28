@@ -351,13 +351,25 @@ async function main() {
       const co = D.nhipNganNhat(m);
       assert.ok(co.nhip !== null && co.nhip <= m.sao.nhip, m.ma + ' BFS bệ súng ' + co.nhip + ' > sao.nhip ' + m.sao.nhip);
       bang[m.ma].bfs = co.nhip;
-      const khong = D.nhipNganNhat(m, { beSung: false });
-      assert.ok(!khong.catNgang, m.ma + ': BFS không bệ súng bị cắt ngang');
-      bang[m.ma].khong = khong.nhip === null ? 'không tới' : khong.nhip;
-      assert.ok(khong.nhip === null || khong.nhip > m.sao.nhip, m.ma + ': xích KHÔNG bệ súng vẫn kịp trong ' + khong.nhip + ' ≤ ' + m.sao.nhip + ' nhịp: ' + (khong.chuoi || []).join(' | '));
       const rk = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi, { beSung: false });
       assert.ok(rk.sao < 3, m.ma + ': lời giải chạy không bệ súng vẫn 3 sao');
       bang[m.ma].loiKhong = rk.thang ? rk.sao + ' sao' : 'thua';
+      const khong = D.nhipNganNhat(m, { beSung: false });
+      assert.ok(!khong.catNgang, m.ma + ': BFS không bệ súng bị cắt ngang');
+      bang[m.ma].khong = khong.nhip === null ? 'không tới' : khong.nhip;
+      // màn khóa: đường tự do không làm được (chương trình chính khóa), nên "cần bệ súng" = không thân nào (lời giải, mọi thân cố định) được 3 sao khi không bệ súng
+      const hm = (m.loiGiai.hamCuaEmMoi || [])[0] || (m.loiGiai.hamCuaMan || [])[0];
+      const laMan = !(m.loiGiai.hamCuaEmMoi || []).length;
+      const chamThan = (than, them) => {
+        const h = Object.assign({}, hm, { than });
+        return laMan ? cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: [h] }, [], them) : cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: m.loiGiai.hamCuaMan }, [h], them);
+      };
+      if (m.chinhCoDinh) {
+        assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để viết / sửa');
+        const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than, { beSung: false }), { beSung: false });
+        bang[m.ma].khong += ' (khóa: ' + (t.khong ? 'không thân cố định nào 3 sao' : 'thân ' + t.than.join(' / ')) + ')';
+        if (!t.khong) assert.fail(m.ma + ': không bệ súng, thân cố định ' + t.than.join(' / ') + ' vẫn 3 sao');
+      } else assert.ok(khong.nhip === null || khong.nhip > m.sao.nhip, m.ma + ': xích KHÔNG bệ súng vẫn kịp trong ' + khong.nhip + ' ≤ ' + m.sao.nhip + ' nhịp: ' + (khong.chuoi || []).join(' | '));
       if (soSan(m) === 1) { const hb = D.nhipNganNhat(m, { haiBanh: true }); bang[m.ma].haiBanh = hb.nhip === null ? 'không tới' : hb.nhip; }
       if (!docCamBien(m)) { bang[m.ma].ne = 'không đọc cảm biến'; return; }
       if (soSan(m) > 1) {
@@ -368,15 +380,9 @@ async function main() {
         return;
       }
       assert.ok(m.chinhCoDinh, m.ma + ': màn mở một sân không được đọc cảm biến (khóa chương trình chính hay làm trùm nhiều sân)');
-      const hm = (m.loiGiai.hamCuaEmMoi || [])[0] || (m.loiGiai.hamCuaMan || [])[0];
-      assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để viết / sửa');
-      const laMan = !(m.loiGiai.hamCuaEmMoi || []).length;
-      const chamThan = (than) => {
-        const h = Object.assign({}, hm, { than });
-        return laMan ? cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: [h] }, []) : cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: m.loiGiai.hamCuaMan }, [h]);
-      };
-      const t = D.thanCoDinh(m, kho, chamThan);
-      bang[m.ma].ne = 'khóa: ' + (t.khong ? 'không thân cố định nào 3 sao (' + t.soThan + ' thân)' : 'thân ' + t.than.join(' / '));
+      assert.ok(bacCau(kho, { chinh: [], hamCuaMan: [hm] }).dong.some((l) => /\b(distance|warm)\(\)/.test(l)), m.ma + ': thân ' + hm.ten + ' không đọc cảm biến');
+      const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than));
+      bang[m.ma].ne = 'khóa: ' + (t.khong ? 'không thân cố định nào 3 sao (' + t.soThan + ' thân, ' + t.soThang + ' thắng' + (t.moDuoc ? '' : ', chấm thật tới 2 dòng') + ')' : 'thân ' + t.than.join(' / '));
       if (!t.khong) assert.fail(m.ma + ': thân ' + hm.ten + ' cố định ' + t.soO + ' ô, ' + t.soNhip + ' nhịp được 3 sao: ' + t.than.join(' / '));
     });
   }
