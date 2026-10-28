@@ -122,6 +122,84 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return svg;
   }
 
+  /* ---------------------------------------------------------------- cùng hình HINH, vẽ lên canvas 2D (gói V6c: phim mở gói, cảnh mở màn)
+     MỘT bộ icon cho cả giao diện (svg currentColor) lẫn phim (canvas có màu + viền dán): phim-vector.js không còn bộ ICON riêng.
+     Đọc chuỗi đường SVG bằng lệnh canvas thường (không Path2D) để chạy được cả với canvas giả của máy kiểm Node. */
+  function tachDuong(d) { return String(d).match(/[A-Za-z]|-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/g) || []; }
+  /** Cung elip SVG (A rx ry góc lớn quét x y) → g.ellipse theo tâm (SVG 1.1, phụ lục F.6.5). */
+  function cung(g, x1, y1, rx, ry, phiDo, lon, quet, x2, y2) {
+    rx = Math.abs(rx); ry = Math.abs(ry);
+    if (!rx || !ry || (x1 === x2 && y1 === y2)) { g.lineTo(x2, y2); return; }
+    var phi = phiDo * Math.PI / 180, cs = Math.cos(phi), sn = Math.sin(phi);
+    var dx = (x1 - x2) / 2, dy = (y1 - y2) / 2, xp = cs * dx + sn * dy, yp = -sn * dx + cs * dy;
+    var lam = xp * xp / (rx * rx) + yp * yp / (ry * ry); if (lam > 1) { lam = Math.sqrt(lam); rx *= lam; ry *= lam; }
+    var tu = rx * rx * ry * ry - rx * rx * yp * yp - ry * ry * xp * xp, mau = rx * rx * yp * yp + ry * ry * xp * xp;
+    var he = Math.sqrt(Math.max(0, tu / mau)) * (lon === quet ? -1 : 1), cxp = he * rx * yp / ry, cyp = -he * ry * xp / rx;
+    var cx = cs * cxp - sn * cyp + (x1 + x2) / 2, cy = sn * cxp + cs * cyp + (y1 + y2) / 2;
+    var t1 = Math.atan2((yp - cyp) / ry, (xp - cxp) / rx), t2 = Math.atan2((-yp - cyp) / ry, (-xp - cxp) / rx), dt = t2 - t1;
+    if (quet && dt < 0) dt += Math.PI * 2; else if (!quet && dt > 0) dt -= Math.PI * 2;
+    g.ellipse(cx, cy, rx, ry, phi, t1, t1 + dt, !quet);
+  }
+  /** Dựng đường SVG d (M L H V C S Q A Z, hoa / thường) thành path hiện hành của g. */
+  function duong(g, d) {
+    var tk = tachDuong(d), i = 0, c = '', x = 0, y = 0, sx = 0, sy = 0, kx = 0, ky = 0, truoc = '';
+    function so() { return parseFloat(tk[i++]); }
+    g.beginPath();
+    while (i < tk.length) {
+      if (/[A-Za-z]/.test(tk[i])) c = tk[i++];
+      var C = c.toUpperCase(), tg = c !== C, ox = tg ? x : 0, oy = tg ? y : 0, a, b;
+      if (C === 'Z') { g.closePath(); x = sx; y = sy; truoc = 'Z'; if (i < tk.length && !/[A-Za-z]/.test(tk[i])) break; continue; }
+      if (C === 'M') { x = ox + so(); y = oy + so(); sx = x; sy = y; g.moveTo(x, y); c = tg ? 'l' : 'L'; }
+      else if (C === 'L') { x = ox + so(); y = oy + so(); g.lineTo(x, y); }
+      else if (C === 'H') { x = ox + so(); g.lineTo(x, y); }
+      else if (C === 'V') { y = oy + so(); g.lineTo(x, y); }
+      else if (C === 'C') { a = ox + so(); b = oy + so(); kx = ox + so(); ky = oy + so(); x = ox + so(); y = oy + so(); g.bezierCurveTo(a, b, kx, ky, x, y); }
+      else if (C === 'S') { a = /[CS]/.test(truoc) ? 2 * x - kx : x; b = /[CS]/.test(truoc) ? 2 * y - ky : y; kx = ox + so(); ky = oy + so(); x = ox + so(); y = oy + so(); g.bezierCurveTo(a, b, kx, ky, x, y); }
+      else if (C === 'Q') { kx = ox + so(); ky = oy + so(); x = ox + so(); y = oy + so(); g.quadraticCurveTo(kx, ky, x, y); }
+      else if (C === 'A') { var rx = so(), ry = so(), phi = so(), lon = so(), quet = so(), x2 = ox + so(), y2 = oy + so(); cung(g, x, y, rx, ry, phi, lon, quet, x2, y2); x = x2; y = y2; }
+      else throw new Error('VeIcon: lệnh đường lạ "' + c + '"');
+      if (isNaN(x) || isNaN(y)) throw new Error('VeIcon: đường hỏng ' + d);
+      truoc = C;
+    }
+  }
+  function chuNhatBo(g, x, y, w, h, r) {
+    r = Math.min(r || 0, w / 2, h / 2);
+    g.beginPath(); g.moveTo(x + r, y); g.lineTo(x + w - r, y); g.arcTo(x + w, y, x + w, y + r, r); g.lineTo(x + w, y + h - r); g.arcTo(x + w, y + h, x + w - r, y + h, r);
+    g.lineTo(x + r, y + h); g.arcTo(x, y + h, x, y + h - r, r); g.lineTo(x, y + r); g.arcTo(x, y, x + r, y, r); g.closePath();
+  }
+  /**
+   * Vẽ icon ten (khung 24) vào ô vuông (x, y, canh) của canvas g: nét / mảng tô màu mau, chi tiết phụ (vi2) màu tc.phu (mặc định trắng thẻ);
+   * tc.vien: màu viền dán quanh hình (rộng thêm tc.day đơn vị 24 mỗi bên, mặc định 1,6), như nhãn dán của bộ vẽ vector. Trả false nếu không có hình.
+   */
+  function veCanvas(g, ten, x, y, canh, mau, tc) {
+    var ds = HINH[ten]; if (!ds) return false;
+    tc = tc || {};
+    var phu = tc.phu || BM.vecThe, day = tc.day === undefined ? 1.6 : tc.day;
+    function dung(q) {
+      if (q[0] === 'p' || q[0] === 's') duong(g, q[1]);
+      else if (q[0] === 'c') { g.beginPath(); g.arc(q[1], q[2], q[3], 0, Math.PI * 2); g.closePath(); }
+      else chuNhatBo(g, q[1], q[2], q[3], q[4], q[5]);
+    }
+    function lopCua(q) { return q[0] === 'p' ? q[3] : q[0] === 's' ? q[3] : q[0] === 'c' ? q[4] : q[6]; }
+    g.save(); g.translate(x, y); g.scale(canh / 24, canh / 24);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    if (tc.vien) ds.forEach(function (q) {                                  // lượt 1: viền dán (chi tiết phụ không viền)
+      if (lopCua(q) === 'vi2') return;
+      dung(q); g.strokeStyle = tc.vien;
+      g.lineWidth = (q[0] === 's' ? q[2] : q[0] === 'p' && q[4] ? q[4] : 0) + day * 2; g.stroke();
+      if (q[0] !== 's') { g.fillStyle = tc.vien; g.fill(q[0] === 'p' && q[2] === 'evenodd' ? 'evenodd' : 'nonzero'); }
+    });
+    ds.forEach(function (q) {                                               // lượt 2: hình
+      var m = lopCua(q) === 'vi2' ? phu : mau;
+      dung(q);
+      if (q[0] === 's') { g.strokeStyle = m; g.lineWidth = q[2]; g.stroke(); return; }
+      g.fillStyle = m; g.fill(q[0] === 'p' && q[2] === 'evenodd' ? 'evenodd' : 'nonzero');
+      if (q[0] === 'p' && q[4]) { g.strokeStyle = m; g.lineWidth = q[4]; g.stroke(); }
+    });
+    g.restore();
+    return true;
+  }
+
   /** Trạng thái phụ của icon (lớp CSS): sao tắt (Ve.sao(false)), xu đã tiêu / không đủ (man-lap.js xuIcon(false): tô xám). */
   function phuCua(v) {
     if (v.phu) return v.phu;
@@ -172,7 +250,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return true;
   }
 
-  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, taoSvg: taoSvg, thay: thay, thayMot: thayMot, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
+  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, thayMot: thayMot, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
   root.VeIcon = VeIcon;
   if (typeof module === 'object' && module.exports) module.exports = VeIcon;
   if (root.document && root.document.body) batDau();

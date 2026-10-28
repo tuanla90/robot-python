@@ -8,8 +8,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      PhimVector.nutDe(bat, s)     nút đè (VeVector.o('nut-de', { de })) trên sàn
      PhimVector.cua(mo, s, doc)   cửa (VeVector.o('cua', { k, doc })) trên sàn
      PhimVector.sao(s)            sao vàng (cùng cỡ Ve.sao(true, s))
-     PhimVector.ico(ten, s, mau)  icon bộ phận của phim: denKepMo, denCam, denBanh, denXich, denXoay, box, reset (cùng cỡ Ve.ico); tên khác → null
-   ICON CHUNG: ICON[ten](g, H, mau) vẽ trong hệ 100 × 100; V5b / người giao có thể gom vào bộ icon vector chung của giao diện.
+     PhimVector.ico(ten, s, mau)  icon của phim (cùng cỡ Ve.ico): MỌI tên của bộ icon chung VeIcon.HINH (ve-vector-icon.js), vẽ có màu + viền dán; tên không có → null
+   (gói V6c gộp: bộ ICON riêng hệ 100 của V6 trùng 7 tên với VeIcon.HINH đã bỏ, một bộ icon cho cả giao diện và phim)
    ========================================================================== */
 (function (root) {
   'use strict';
@@ -54,50 +54,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return the(m.w, m.h, function (g) { var r = Math.min(m.w, m.h) / 2; g.save(); g.translate(m.w / 2, m.h / 2 + r * 0.06); g.scale(r / 50, r / 50); V.HUY_HIEU._sao(g, 0, 0, 46); g.restore(); });
   }
 
-  /* ---------------------------------------------------------------- icon bộ phận của phim (hệ 100) */
-  var ICON = {};
-  function nen(g, H, d, mau) { H.duong(g, d); H.to(g, mau); H.vien(g, BM.vecVien, 6); }
-  ICON.denKepMo = function (g, H, mau) {                                  // càng kẹp mở: hai ngón cong trên cổ tay
-    H.duong(g, 'M50 62 C36 52 22 38 20 12 M50 62 C64 52 78 38 80 12'); H.vien(g, BM.vecVien, 17); H.vien(g, mau, 9);
-    H.bo(g, 38, 58, 24, 16, 6); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 5);
-    H.duong(g, 'M50 74 V92'); H.vien(g, BM.vecVien, 13); H.vien(g, mau, 6);
-  };
-  ICON.denCam = function (g, H, mau) {                                    // mắt cảm biến: vỏ tròn, thấu kính, vệt sáng
-    H.elip(g, 50, 50, 44, 32); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 6);
-    H.tron(g, 50, 50, 19); H.to(g, mau); H.vien(g, BM.vecVien, 5);
-    H.tron(g, 43, 43, 6); H.to(g, BM.vecVo);
-  };
-  ICON.denBanh = function (g, H, mau) {                                   // bánh xe: lốp, vành màu, trục
-    H.tron(g, 50, 50, 44); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 6);
-    H.tron(g, 50, 50, 27); H.to(g, mau); H.vien(g, BM.vecVien, 5);
-    H.tron(g, 50, 50, 9); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 4);
-  };
-  ICON.denXich = function (g, H, mau) {                                   // dải xích: vòng bo tròn, mắt xích, hai bánh dẫn
-    H.bo(g, 4, 18, 92, 64, 32); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 6);
-    g.beginPath(); for (var x = 22; x <= 78; x += 14) { g.moveTo(x, 20); g.lineTo(x, 28); g.moveTo(x, 72); g.lineTo(x, 80); } H.vien(g, BM.vecXichMat, 5);
-    [30, 70].forEach(function (x) { H.tron(g, x, 50, 15); H.to(g, mau); H.vien(g, BM.vecVien, 5); H.tron(g, x, 50, 5); H.to(g, BM.vecVo); });
-  };
-  ICON.denXoay = function (g, H, mau) {                                   // khớp xoay: cung mũi tên quanh khớp tròn trên cột
-    g.beginPath(); g.arc(50, 40, 32, Math.PI * 1.05, Math.PI * 1.95); H.vien(g, BM.vecVien, 13); H.vien(g, mau, 6);
-    nen(g, H, 'M76 14 L88 30 L70 32 Z', mau);
-    H.duong(g, 'M50 52 V90'); H.vien(g, BM.vecVien, 13); H.vien(g, BM.vecVo, 6);
-    H.tron(g, 50, 48, 13); H.to(g, mau); H.vien(g, BM.vecVien, 5);
-  };
-  ICON.box = function (g, H, mau) {                                       // hộp linh kiện: thân màu, nắp, vệt sáng
-    H.bo(g, 8, 22, 84, 70, 12); g.fillStyle = H.gradDoc(g, 0, 22, 0, 92, [[0, mau], [1, mau]]); g.fill(); H.vien(g, BM.vecVien, 6);
-    H.bo(g, 4, 10, 92, 22, 8); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 6);
-    H.bo(g, 40, 44, 20, 12, 4); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 4);
-  };
-  ICON.reset = function (g, H, mau) {                                     // mũi tên vòng (quay cả xe)
-    g.beginPath(); g.arc(50, 52, 32, -Math.PI * 0.3, Math.PI * 1.3); H.vien(g, BM.vecVien, 17); H.vien(g, mau, 9);
-    var a = Math.PI * 1.3, ex = 50 + Math.cos(a) * 32, ey = 52 + Math.sin(a) * 32;
-    nen(g, H, 'M' + (ex - 18) + ' ' + (ey - 2) + ' L' + (ex + 12) + ' ' + (ey - 14) + ' L' + (ex + 6) + ' ' + (ey + 18) + ' Z', mau);
-  };
+  /* ---------------------------------------------------------------- icon của phim: CÙNG MỘT BỘ với giao diện (VeIcon.HINH, ve-vector-icon.js; gói V6c)
+     Phim vẽ icon lên canvas bằng VeIcon.veCanvas: nét / mảng màu theo vai vector của màu pixel người gọi đưa (MAU_VEC), viền dán chàm đậm, chi tiết phụ trắng. */
+  var MAU_VEC = [[BM.vang, 'vecVang'], [BM.xanhLoSang2, 'vecDen'], [BM.lamSang, 'vecLam'], [BM.xanhLaSangV9, 'vecXanhLa'], [BM.camToiV1, 'vecHoPhach'],
+    [BM.timV7, 'vecCong2'], [BM.do, 'vecDo']];
+  /** Màu pixel của phim → vai vector cùng họ (không có thì tím chàm thương hiệu). */
+  function mauVec(mau) { for (var i = 0; i < MAU_VEC.length; i++) if (MAU_VEC[i][0] === mau) return BM[MAU_VEC[i][1]]; return BM.vecBrand; }
   function ico(ten, s, mau) {
-    if (!bat() || !ICON[ten]) return null;
+    var VI = root.VeIcon;
+    if (!bat() || !VI || !VI.HINH[ten]) return null;
     var m = coCua(root.Ve.ico(ten, s, { fill: mau || BM.vang, line: BM.vienDam }));
-    return the(m.w, m.h, function (g) { var r = Math.min(m.w, m.h); g.save(); g.translate((m.w - r) / 2, (m.h - r) / 2); g.scale(r / 100, r / 100); ICON[ten](g, V.H, mau || BM.vang); g.restore(); });
+    return the(m.w, m.h, function (g) { var r = Math.min(m.w, m.h) * 0.92; VI.veCanvas(g, ten, (m.w - r) / 2, (m.h - r) / 2, r, mauVec(mau || BM.vang), { vien: BM.vecVien, day: 1.5 }); });
   }
 
-  root.PhimVector = { bat: bat, o: o, co: co, nutDe: nutDe, cua: cua, sao: sao, ico: ico, ICON: ICON, the: the };
+  root.PhimVector = { bat: bat, o: o, co: co, nutDe: nutDe, cua: cua, sao: sao, ico: ico, mauVec: mauVec, the: the };
 })(typeof window !== 'undefined' ? window : globalThis);
