@@ -175,7 +175,16 @@ console.log('\n== 3. Token và thứ tự nạp ==');
     'robotCamToiV1', 'robotCamToiV2', 'robotCamToiV3', 'robotDoV1', 'robotDoV2', 'robotDoV3', 'robotDoV4', 'robotDoV5', 'robotDoV6', 'robotDoV7', 'robotDoV8', 'robotDoV9',
     'robotLamV1', 'robotLamV2', 'robotLamV3', 'robotLamV4', 'robotLamV5', 'robotLamV6', 'robotLamV7', 'robotLamV8', 'robotLamV9', 'robotLamToiV1', 'robotNauV1', 'robotNauV2',
     'robotNauV3', 'robotNauSangV1', 'robotNauSangV2', 'robotNauSangV3', 'robotNauSangV4', 'robotNgocV1', 'robotTimV1', 'robotTimV2', 'robotTimV3', 'robotTimV4', 'robotTimSangV1', 'robotTimSangV2',
-    'robotXamToiV1', 'robotXamToiV2', 'robotXanhLaV1', 'robotXanhLoV1', 'robotXanhLoV2', 'robotXanhLoToiV2', 'trangV14', 'xanhLaV13', 'xanhLaToiV8'];
+    'robotXamToiV1', 'robotXamToiV2', 'robotXanhLaV1', 'robotXanhLoV1', 'robotXanhLoV2', 'robotXanhLoToiV2', 'trangV14', 'xanhLaV13', 'xanhLaToiV8',
+    /* V7c2 d5 (28/10): huy-hieu.js bỏ bộ huy hiệu pixel (HINH pixel, Painter) -> vai hh* hết chỗ dùng; V7c3 xoá (89 vai) */
+    'hhTim', 'hhTrang', 'hhXanhLo', 'hhVang', 'hhXanhLa', 'hhKem', 'hhNau', 'hhXam', 'hhLam', 'hhDo', 'hhCam', 'hhNgoc',
+    'hhCamV1', 'hhDoV1', 'hhDoV2', 'hhDoV3', 'hhDoV4', 'hhDoV5', 'hhDoV6', 'hhDoV7', 'hhDoV8', 'hhDoV9', 'hhDoV10', 'hhDoV11',
+    'hhKemV1', 'hhKemV2', 'hhLamV1', 'hhLamV2', 'hhLamV3', 'hhLamV4', 'hhLamV5', 'hhLamV6', 'hhLamV7', 'hhLamV8', 'hhLamV9', 'hhLamV10',
+    'hhLamV11', 'hhLamV12', 'hhNauV1', 'hhNauV2', 'hhNauV3', 'hhNauV4', 'hhNauV5', 'hhNauV6', 'hhNauV7', 'hhNauV8', 'hhNauV9', 'hhNauV10',
+    'hhNauV11', 'hhTimV1', 'hhTimV2', 'hhTimV3', 'hhTrangV1', 'hhTrangV2', 'hhTrangV3', 'hhVangV1', 'hhVangV2', 'hhVangV3', 'hhVangV4', 'hhVangV5',
+    'hhVangV6', 'hhVangV7', 'hhXamV1', 'hhXamV2', 'hhXamV3', 'hhXamV4', 'hhXamV5', 'hhXamV6', 'hhXamV7', 'hhXamV8', 'hhXamV9', 'hhXamV10',
+    'hhXamV11', 'hhXamV12', 'hhXamV13', 'hhXamV14', 'hhXanhLaV1', 'hhXanhLaV2', 'hhXanhLaV3', 'hhXanhLaV4', 'hhXanhLaV5', 'hhXanhLoV1', 'hhXanhLoV2', 'hhXanhLoV3',
+    'hhXanhLoV4', 'hhXanhLoV5', 'hhXanhLoV6', 'hhXanhLoV7', 'hhXanhLoV8'];
   const thua = KEYS.filter((k) => !dung.has(k) && k !== VAI_NEN_TRANG && !VAI_CHO_V7C3.includes(k));
   const daDung = VAI_CHO_V7C3.filter((k) => dung.has(k)); if (daDung.length) console.log('  (VAI_CHO_V7C3 có vai đã có chỗ dùng, xoá khỏi danh sách: ' + daDung.join(', ') + ')');
   kiem('vai nào cũng có chỗ dùng (' + dung.size + ' vai được dùng)', thua.length === 0, thua.slice(0, 20).join(', '));
