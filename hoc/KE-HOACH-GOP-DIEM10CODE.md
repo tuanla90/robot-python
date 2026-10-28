@@ -163,7 +163,7 @@ User 27/10: "vẫn muốn đổi art / color cho đồng bộ, pixel style thì 
   Gói Artifact có CSS vector + nhúng 6 woff2 Google Sans (bỏ Handjet / VT323), máy kiểm mới `kiem-dong-goi-artifact.mjs` (14, lỗi giả đỏ). R1 luôn màu đội ở vector (sonHieuLuc bỏ sơn đã lưu);
   "Biểu cảm mắt" có tác dụng ở vector. Huy hiệu vector tong-hop-2, nha-may-chay (CHO_V7B rỗng); phim gói 10 bay đủ 10 huy hiệu. Icon app 192 / 512 / maskable vẽ lại theo vector.
   Agent chạy: kiem-ve-vector 99, kiem-huy-hieu-phim-vector 11, kiem-nut-mo-dau-phim-vector 12, kiem-giao-dien-vector-b 16, kiem-phim-goi 41, kiem-bang-mau 19, kiem-lap-rap 125, kiem-khay 184, kiem-dong-goi-artifact 14.
-  Người giao quyết: brief sai chỗ "360 px khung phim tràn 12 px" (không tái hiện: bỏ); Artifact bỏ phông pixel (chấp nhận); trum 24 × 24 (phim-vector.js RIENG còn 26: V7c1 sửa).
+  npm test cả bộ sau gộp: 88/88 bộ đạt. Người giao quyết: brief sai chỗ "360 px khung phim tràn 12 px" (không tái hiện: bỏ); Artifact bỏ phông pixel (chấp nhận); trum 24 × 24 (phim-vector.js RIENG còn 26: V7c1 sửa).
 
 ## 2b. Linh vật Sola / Luna bản pixel
 
