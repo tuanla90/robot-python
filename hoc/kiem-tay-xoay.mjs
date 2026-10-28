@@ -342,21 +342,21 @@ console.log('\n== 6. Chương tay-xoay (chương 21): mười màn ==');
 /* ================================================================= 7. GIAO DIỆN: part, VeRobot, đèn, khay, hướng dẫn, choi.html */
 console.log('\n== 7. Giao diện: part tay xoay, VeRobot, đèn khớp xoay, khay, hướng dẫn ==');
 {
-  const Part = require(path.join(day, 'game', 'part', 'part.js'));
-  for (const x of ['hai-banh', 'xich', 'nhen', 'omni', 'drone', 'kep', 'nam-cham', 'nem', 'hoi', 'tay-xoay', 'khoang-cach', 'mau', 'cham', 'camera']) require(path.join(day, 'game', 'part', 'part-' + x + '.js'));
-  const px = Part.lay('tay', 'xoay');
-  kiem('part tay xoay đã đăng ký: loại tay, mã "xoay", gắn ở ổ "tay", có điểm neo, tấm vẽ rộng hơn 24×24, mở sáu hàm gốc (bốn lệnh tay + arm_left / arm_right)', !!px && px.gan === 'tay' && px.diemNeo.y === 23 && px.kich.w > 24 && J(Part.hamGoc({ than: 'hai-banh', tay: 'xoay' }).filter((h) => /^(arm|grab|release)/.test(h)).sort()) === J(['arm_down', 'arm_left', 'arm_right', 'arm_up', 'grab', 'release']));
-  const anh = (st, than) => Part.ghep({ than: than || 'hai-banh', tay: 'xoay' }, { tay: st });
-  kiem('tay xoay vẽ khác nhau ở ba nấc trái / trước / phải, trái và phải là ảnh gương nhau, góc giữa chừng (goc) vẽ được', J(anh({ xoay: 'trai' }).buf) !== J(anh({ xoay: 'truoc' }).buf) && J(anh({ xoay: 'phai' }).buf) !== J(anh({ xoay: 'truoc' }).buf) && J(anh({ goc: -90 }).buf) === J(anh({ xoay: 'trai' }).buf) && anh({ goc: 30 }).buf.some(Boolean));
-  // VeRobot cần window: nạp trong vm với Part có sẵn
+  /* V7c2 (28/10): bộ pixel game/part đã xoá; bộ phận, luật ghép, hàm gốc và hình đọc từ bộ vẽ VECTOR (VeVector; lap-rap.js tự nạp ve-vector*.js ở Node) */
+  const VV = require(path.join(day, 'lap-rap.js')).veVector();
+  const px = VV.lay('tay', 'xoay');
+  kiem('bộ phận tay xoay đã đăng ký ở bộ vẽ vector: loại tay, mã "xoay", gắn ở ổ "tay", có điểm neo, mở sáu hàm gốc (bốn lệnh tay + arm_left / arm_right)', !!px && px.gan === 'tay' && !!px.diemNeo && J(VV.hamGoc({ than: 'hai-banh', tay: 'xoay' }).filter((h) => /^(arm|grab|release)/.test(h)).sort()) === J(['arm_down', 'arm_left', 'arm_right', 'arm_up', 'grab', 'release']));
+  const anh = (st, than) => VV.robot({ than: than || 'hai-banh', tay: 'xoay', camBien: [] }, { tay: Object.assign({ tuThe: 'tren', kep: 'mo' }, st) }, 0, 48);
+  kiem('tay xoay vẽ khác nhau ở ba nấc trái / trước / phải, góc -90 trùng nấc trái, góc giữa chừng (goc) vẽ khác nấc trước (so lệnh vẽ canvas giả)', J(anh({ xoay: 'trai' }).lenh) !== J(anh({ xoay: 'truoc' }).lenh) && J(anh({ xoay: 'phai' }).lenh) !== J(anh({ xoay: 'truoc' }).lenh) && J(anh({ goc: -90 }).lenh) === J(anh({ xoay: 'trai' }).lenh) && J(anh({ goc: 30 }).lenh) !== J(anh({ xoay: 'truoc' }).lenh));
+  // VeRobot cần window: nạp trong vm với VeVector có sẵn
   const ctx = vm.createContext({ console, window: null, document: { createElement: () => ({ getContext: () => null }) }, location: { search: '' } });
-  ctx.window = ctx; ctx.Part = Part;
+  ctx.window = ctx; ctx.VeVector = VV;
   vm.runInContext(doc('game/ve-robot.js'), ctx, { filename: 've-robot.js' });
   const VR = ctx.VeRobot;
   kiem('VeRobot.cauHinhCua: màn có arm_left / arm_right (không khai man.robot.tay) → tay "xoay", ưu tiên hơn "kep"; man.robot.tay "xoay" được giữ', VR.cauHinhCua({ hamGoc: ['left_move', 'right_move', 'wait', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'] }).tay === 'xoay' && VR.cauHinhCua(man(1)).tay === 'xoay' && VR.cauHinhCua({ hamGoc: ['arm_down', 'grab'] }).tay === 'kep');
   const vq = VR.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 0), vl = VR.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', -90), vp = VR.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'tren', 90), vh = VR.vatXoay({ than: 'hai-banh', tay: 'xoay' }, 'duoi', 0);
-  kiem('VeRobot.vatXoay: vật trong kẹp ở phía trước (l = 0), sang trái (l < 0), sang phải (l > 0, đối xứng); tay hạ xa thêm; khớp ở mũi xe nên f (về phía mũi) cùng cỡ ở hai bên hông',
-    Math.abs(vq.l) < 1e-9 && vl.l < -5 && Math.abs(vl.l + vp.l) < 1e-9 && vq.f > vl.f && vl.f === vp.f && vh.f > vq.f && vl.n === 10 && vh.n === 9, J([vq, vl, vp, vh]));
+  kiem('VeRobot.vatXoay (vector, 1/100 ô): vật trong kẹp ở phía trước (l = 0), sang trái (l < 0), sang phải (l > 0, đối xứng); tay hạ xa thêm và vật nhỏ lại; khớp ở mũi xe nên f (về phía mũi) cùng cỡ ở hai bên hông',
+    Math.abs(vq.l) < 1e-9 && vl.l < -5 && Math.abs(vl.l + vp.l) < 1e-9 && vq.f > vl.f && vl.f === vp.f && vh.f > vq.f && vl.n === vq.n && vh.n < vq.n, J([vq, vl, vp, vh]));
   const chuaChay = vm.createContext({ window: {}, console });
   const dbp = {};
   const ctx2 = vm.createContext({ console, window: dbp });
@@ -365,11 +365,11 @@ console.log('\n== 7. Giao diện: part tay xoay, VeRobot, đèn khớp xoay, kha
   kiem('đèn theo bộ phận: màn tay xoay có thêm đèn "xoay" giữa đèn tay và đèn kẹp; màn tay kẹp thường không có', J(DB.boPhanCuaMan(man(1))) === J(['banhT', 'banhP', 'tay', 'xoay', 'kep']) && !DB.boPhanCuaMan(ManHoc.timMa('tay-gap.1')).includes('xoay'), J(DB.boPhanCuaMan(man(1))));
   kiem('đèn "xoay" sáng ở nhịp có arm_left / arm_right (tay và kẹp không sáng nếu nhịp không có lệnh đó)', (() => { const p = DB.phan({ robot: { banh: { trai: 0, phai: 0 } }, suKien: [] }, [{ ten: 'arm_left' }]); return p.xoay === true && p.tay === false && p.kep === false; })() && DB.phan({ robot: {}, suKien: [] }, [{ ten: 'wait' }]).xoay === false);
   const nguon = { tp: doc('game/thanh-phan.js'), sv: doc('game/san-ve.js'), chu: doc('game/chu.js'), ve: doc('game/ve.js'), hd: doc('game/huong-dan-man.js'), html: doc('game/choi.html') };
-  kiem('đèn xoay có hình pixel (Ve.ico denXoay) và nhãn chữ; khay có thẻ "Tay xoay" (choi.the.tayXoay) và hai lệnh arm_left / arm_right trong TAY_TEN, LENH_NHIP, LENH_GOC', /denXoay:/.test(nguon.ve) && /'choi\.den\.xoay'/.test(nguon.chu) && /'choi\.the\.tayXoay': 'Tay xoay'/.test(nguon.chu) &&
+  kiem('đèn xoay có icon (ve.js CO_ICON denXoay + hình vector VeIcon denXoay) và nhãn chữ; khay có thẻ "Tay xoay" (choi.the.tayXoay) và hai lệnh arm_left / arm_right trong TAY_TEN, LENH_NHIP, LENH_GOC', /denXoay:/.test(nguon.ve) && /denXoay/.test(doc('game/ve-vector-icon.js')) && /'choi\.den\.xoay'/.test(nguon.chu) && /'choi\.the\.tayXoay': 'Tay xoay'/.test(nguon.chu) &&
     /var TAY_TEN = \[[^\]]*'arm_left', 'arm_right'\]/.test(nguon.tp) && /LENH_NHIP = \[[^\]]*'arm_left', 'arm_right'/.test(nguon.tp) && /LENH_GOC = \[[^\]]*'arm_left', 'arm_right'/.test(nguon.tp));
   kiem('san-ve.js: tay xoay (laTayKep) vẽ vật trong kẹp, xe mờ có nấc khớp (bongMo.xoay), hoạt cảnh xoay khớp giữa hai nấc trong apTay', /function laTayKep/.test(nguon.sv) && /VeRobot\.vatXoay/.test(nguon.sv) && /GOC_XOAY/.test(nguon.sv) && /xoay: b\.xoay === 'trai'/.test(nguon.sv) && /doiXoay/.test(nguon.sv));
-  kiem('game/choi.html nạp part-tay-xoay.js sau part-kep.js và trước ve-robot.js; tệp có trên đĩa; nạp man-tay-xoay.js và man-che-tay-xoay.js sau các chương trước',
-    nguon.html.indexOf('part/part-tay-xoay.js') > nguon.html.indexOf('part/part-kep.js') && nguon.html.indexOf('part/part-tay-xoay.js') < nguon.html.indexOf('ve-robot.js') && fs.existsSync(path.join(day, 'game', 'part', 'part-tay-xoay.js')) && nguon.html.indexOf('man-tay-xoay.js') > 0 && nguon.html.indexOf('man-che-tay-xoay.js') > nguon.html.indexOf('man-tay-xoay.js'));
+  kiem('game/choi.html nạp ve-vector-tay-xoay.js sau ve-vector-tay-kep.js và trước ve-robot.js; tệp có trên đĩa; nạp man-tay-xoay.js và man-che-tay-xoay.js sau các chương trước',
+    nguon.html.indexOf('ve-vector-tay-xoay.js') > nguon.html.indexOf('ve-vector-tay-kep.js') && nguon.html.indexOf('ve-vector-tay-xoay.js') < nguon.html.indexOf('ve-robot.js') && fs.existsSync(path.join(day, 'game', 've-vector-tay-xoay.js')) && nguon.html.indexOf('man-tay-xoay.js') > 0 && nguon.html.indexOf('man-che-tay-xoay.js') > nguon.html.indexOf('man-tay-xoay.js'));
   kiem('hướng dẫn sáng nút cho 21.1 (chạy thử, khối arm_up / arm_right, khối arm_down / release, chạy) và 21.6 (tạo hàm clear_left rồi ghép thân hàm)', /H\['tay-xoay\.1'\]/.test(nguon.hd) && /khoi:arm_up', 'khoi:arm_right'/.test(nguon.hd) && /H\['tay-xoay\.6'\]/.test(nguon.hd) && /buocTaoHam\('clear_left'/.test(nguon.hd));
 }
 

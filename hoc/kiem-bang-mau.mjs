@@ -169,9 +169,7 @@ console.log('\n== 3. Token và thứ tự nạp ==');
   const html = doc('choi.html'), dau = html.indexOf('<script src="bang-mau.js"></script>');
   kiem('choi.html: bang-mau.js nạp trong <head>, trước choi.css và trước mọi <script src> khác',
     dau > 0 && dau < html.indexOf('</head>') && dau < html.indexOf('href="choi.css"') && dau === html.indexOf('<script src='));
-  const xp = doc('part/xem-part.html');
-  kiem('part/xem-part.html: ../bang-mau.js nạp trước part.js; script nội tuyến lấy BM = window.BangMau',
-    xp.indexOf('<script src="../bang-mau.js"></script>') >= 0 && xp.indexOf('<script src="../bang-mau.js"></script>') < xp.indexOf('<script src="part.js">') && xp.includes('<script>' + ALIAS.trang));
+  /* V7c2 (28/10): mục "part/xem-part.html nạp ../bang-mau.js" bỏ (bộ pixel game/part xoá ở V7c2; phanh "không còn part/" nằm ở kiem-ve-vector mục 15) */
 }
 
 /* ================================================================= 4. tương đương từng chỗ với bản nền */
