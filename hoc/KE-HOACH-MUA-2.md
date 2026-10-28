@@ -135,3 +135,13 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   Chưa xem trình duyệt (ô trình duyệt treo, service worker giữ bản cũ): huy hiệu doi-mua-2 / che-doi-mua-2 (pixel, chưa có bản vector), hai robot khóa, chip lực R2. npm test cả bộ: sau gói 9.
   Chờ user: không có màn mở (mọi màn khóa vì trên sân cố định `for … wait()` viết cứng tốn bằng `while warm()`); R1 "dừng ở trạm" bằng `for i in range(k): wait()` trong chương trình khóa;
   biên thua của lời cố định mỏng (vd doi-mua-2.4: 28 so với ngưỡng 27). Đề xuất gói 10: bộ dò mô phỏng chung hai robot hoặc luật "húc bạn thì mất bước" nếu muốn màn mở.
+- **28/10 P9 · Gói 9 Bệ súng xích xong** (agent Claude opus dừng sau ~4 tiếng, người giao cất WIP 2fa95a2; agent fable làm tiếp 4 việc rồi đứng ở bước kiểm; người giao nhận lại, chạy kiểm, gộp 793a8e4).
+  20 màn trong `man-be-sung.js`: `cfg.beSung` xích + súng hơi bắn tụ không giật. Chương 1 (be-sung.1–10): bắn tụ không giật, bắn sau lưng, hai / ba phát một chỗ, thùng nằm yên,
+  hành lang có hốc, đọc warm() ở trạm, đố turn_left() nửa vòng trên xích, đẩy thùng qua cửa; trùm "Ba hành lang trạm" (3 sân, go_to_wall). Chương 2 hàm của em (Sổ lệnh nhóm Súng hơi):
+  blast_left, blast_right, lock_on, lock_left, lock_row(n), go_fire, visit (biến d = distance()), push_blast; sửa hàm left_shot (che-be-sung.3); trùm "Hai dây chuyền" (2 sân, nối
+  lock_row(2), go_fire(), visit()). Huy hiệu pixel be-sung / che-be-sung (vector rơi về pixel như các gói mùa 2). Máy kiểm `kiem-be-sung.mjs` 107 (lỗi giả 8 → đỏ 12) + bộ dò
+  `do-duong-be-sung.mjs` (so chéo lõi khớp mọi màn; mọi màn không bệ súng thì chậm hơn sao.nhip). Agent fable sửa che-be-sung.7–9 (sao.o khai đúng số ô đo; lời sai .9 cũ vẫn thắng).
+  Gộp tay với gói 8: huy-hieu.js, kiem-che-xe.mjs, kiem-bang-mau.mjs giữ cả hai; so-lenh.js dời khối che-be-sung xuống sau che-doi-mua-2 (thứ tự chế); kiem-be-sung.mjs đếm dòng màn đội
+  (mốc chương be-sung giờ là màn cuối gói 8). Sau gộp: kiem-be-sung 107, kiem-doi-mua-2 107, kiem-lo-trinh 874, kiem-che-xe 270, kiem-loi-mua-2 93, kiem-bang-mau 19, kiem-huy-hieu-phim-vector 10.
+  Recall gói 9 (số màn nhắc mỗi gói): 1:2 · 2:18 · 3:5 · 4:20 · 5:3 · 6:16 · 7:6 · 8:0 (nhánh tách trước khi có gói 8). Gói 10 phải bù: gói 1 (biến, sidestep), 3, 5 (đẩy thùng), 8 (đội, warm() thấy bạn).
+  kiem-nut-bat-san: thêm chương be-sung / che-be-sung vào nhóm được khai nutBat (màn đọc warm() ở trạm). npm test cả bộ 86 bộ: 85 đạt + kiem-nut-bat-san đạt sau sửa. Chưa xem trình duyệt.
