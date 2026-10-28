@@ -239,7 +239,7 @@ body.ve-vector .brick.pu,body.ve-vector .brick.vong{--bc:var(--g-vecTimDam);--bn
 body.ve-vector .brick.or{--bc:var(--g-vecCamDam);--bn:var(--g-vecCamNhat)}
 body.ve-vector .brick.tay{--bc:var(--g-vecCamDam);--bn:var(--g-vecHoPhachNhat)}
 body.ve-vector .brick.bien,body.ve-vector .brick.dem{--bc:var(--g-vecHongDam);--bn:var(--g-vecHongNhat)}
-body.ve-vector .brick.chan{--bc:var(--g-vecLamDam);--bn:var(--g-vecLamNhat)}
+body.ve-vector .brick.chan{--bc:var(--g-vecLam);--bn:var(--g-vecLamNhat)}
 body.ve-vector .brick.truot{--bc:var(--g-vecChanhDam);--bn:var(--g-vecLaNhat)}
 body.ve-vector .brick.dk{--bc:var(--g-vecNgocDam);--bn:var(--g-vecNgocNhat)}
 body.ve-vector .brick.wh{--bc:var(--g-vecTroiDam);--bn:var(--g-vecTroiNhat)}
