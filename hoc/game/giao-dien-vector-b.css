@@ -129,3 +129,46 @@ body.ve-vector .c-man.trum.lock{background:var(--g-vecTheLom);box-shadow:inset 0
 @media (hover:hover){
   body.ve-vector .c-man:not(.lock):not(.cur):hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1.5px var(--g-vecBrand),var(--elev-2)}
 }
+
+/* ============================================================ 3. LẮP ROBOT (man-lap.js, #sc-lap) */
+/* bảng robot + xu + lời: thẻ trắng; ô robot là mặt lõm bo 12 (thay bảng phấn / viền mực) */
+body.ve-vector .lr-bang,body.ve-vector .lr-bang.chalk,body.ve-vector #sc-lap.cao .lr-hang-de,body.ve-vector .lr-hang-de.chalk{padding:6px 8px 6px 6px;border-radius:var(--r-md);
+  background:var(--g-vecThe);background-image:none;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
+body.ve-vector .lr-robot,body.ve-vector .lr-san,body.ve-vector .lr-hop-san{border-radius:12px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .lr-robot.doi .lr-hinh{animation:vec-lr-pop .32s cubic-bezier(.34,1.56,.64,1) 1}
+@keyframes vec-lr-pop{0%{transform:scale(.86)}100%{transform:scale(1)}}
+body.ve-vector .lr-xu{gap:3px}
+body.ve-vector .lr-xu-chu{font:700 13px/1 var(--px);color:var(--g-vecHoPhachChu)}
+body.ve-vector .lr-xu-chu.qua{color:var(--g-vecLoiDam)}
+body.ve-vector .lr-loi{padding:6px 8px;border-radius:10px;font:500 12.5px/1.3 var(--px);color:var(--g-vecChu);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .lr-loi.de{color:var(--g-vecBrandDam);background:var(--g-vecBrandNhat);box-shadow:inset 0 0 0 1px rgba(var(--g-vecBrandRgb),.3)}
+body.ve-vector .lr-loi.canh{color:var(--g-vecHoPhachChu);background:var(--g-vecHoPhachNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecHoPhach)}
+body.ve-vector .lr-loi.bad{color:var(--g-vecLoiDam);background:var(--g-vecLoiNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecLoi)}
+body.ve-vector .lr-loi .kc{font-size:.96em}
+body.ve-vector .lr-de-dai{font:500 13px/1.35 var(--px);color:var(--g-vecChu);padding-top:0}
+body.ve-vector .lr-de{height:34px;padding:0 12px;font:600 13px/1 var(--px);color:var(--g-vecChu);text-shadow:none}
+/* khe: tên khe chữ hoa nhỏ chữ phụ, phần đang gắn tím chàm; thẻ phần là thẻ trắng bo 12, thẻ đang chọn nền tím nhạt viền tím chàm */
+body.ve-vector .lr-khe-ten{font:700 11.5px/1 var(--px);letter-spacing:.8px;color:var(--g-vecChuPhu);padding-top:0}
+body.ve-vector .lr-khe-dang{font:600 12px/1 var(--px);color:var(--g-vecBrand);padding-top:0}
+body.ve-vector .lr-hang{gap:8px;padding:5px 5px 8px}
+body.ve-vector .lr-the{padding:5px 8px 5px;border-radius:12px;color:var(--g-vecChu);background:var(--g-vecThe);background-image:none;
+  box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1);transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s ease,background-color .18s ease,opacity .18s ease}
+@media (hover:hover){
+  body.ve-vector .lr-the:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam),var(--elev-2)}
+}
+body.ve-vector .lr-the:active{transform:scale(.98)}
+body.ve-vector .lr-the:focus-visible{outline:2px solid var(--g-vecBrand);outline-offset:2px}
+body.ve-vector .lr-gia{gap:3px;font:600 14px/1 var(--mono);color:var(--g-vecHoPhachChu)}
+body.ve-vector .lr-the-ten{padding-top:0;font:700 13px/1.15 var(--px);color:var(--g-vecChu)}
+body.ve-vector .lr-the-vuot{padding-top:2px;font:500 11.5px/1.25 var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .lr-the.chon{background:var(--g-vecBrandNhat);box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-2)}
+body.ve-vector .lr-the.chon .lr-the-ten{color:var(--g-vecBrandDam)}
+body.ve-vector .lr-the.mo{filter:none;opacity:.5}
+body.ve-vector .lr-the.rung,body.ve-vector .lr-xong.rung{animation:vec-rung .32s ease-in-out 1}
+body.ve-vector .lr-tick{right:6px;bottom:5px}
+/* Lắp xong: nút chính tím chàm cao 46, dòng phụ nhạt; chưa lắp đủ: mờ, không đổi màu */
+body.ve-vector .lr-xong{height:46px;gap:3px;padding-top:0;border-radius:var(--r-md);font:700 17px/1 var(--px);color:var(--g-vecThe);text-shadow:none;
+  background:var(--g-vecBrand);box-shadow:0 4px 14px rgba(var(--g-vecBrandRgb),.3)}
+@media (hover:hover){body.ve-vector .lr-xong:not(.khoa):hover{background:var(--g-vecBrandDam)}}
+body.ve-vector .lr-xong .lx-phu{font:600 11px/1 var(--px);color:var(--g-vecBrandNhat);text-shadow:none}
+body.ve-vector .lr-xong.khoa{filter:none;opacity:.5;box-shadow:none}
