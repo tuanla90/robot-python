@@ -1,21 +1,17 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    ve-vector-icon.js — "Robot Chấn Hưng": ICON VECTOR (window.VeIcon, gói V5b, 28/10) cho chế độ vector.
-   Icon điểm ảnh của ve.js (Ve.ico / Ve.sao / Ve.khoa, kể cả qua Ve.hydrate) mang nhãn c._vi = { ten, tuyChon, phu }. Ở body.ve-vector, mọi canvas có nhãn
-   nằm trong PHAM_VI (các màn NGOÀI màn chơi: màn đầu, chọn gói, lưới màn, Lắp robot, hộp thoại, phim) được thay bằng <svg> cùng cỡ hiển thị (style width / height
-   của Ve.mk), cùng lớp (giữ .pxi và lớp người gọi thêm), thêm lớp `vi vi-<tên>` (+ `tat` cho sao / xu tắt). Màu: fill / stroke = currentColor, nên MÀU THEO VAI
-   đặt bằng CSS (giao-dien-vector-b.css mục 8: color: var(--g-vec…)); chi tiết phụ (lỗ khoá, vành xu…) mang lớp `vi2`.
-   Thay bằng MutationObserver trên #stage: dựng màn / hộp xong là đổi ngay trong cùng vi tác vụ, trước khi trình duyệt vẽ (không chớp hình pixel).
-   Gói V6c (28/10): màn chơi #sc-choi (PHAM_VI_CHOI, cả Xưởng hàm) cũng thay; thêm mui (mũi tên bong bóng), trum, icon vật Xưởng hàm; hình bộ phận thật ở tiêu đề
-   thẻ khay vẽ bằng VeVector (thayPart); canvas đã thay chuyển style / lớp sang hình mới (noiVe) vì người gọi có thể còn giữ nó. Phim vẽ cùng bộ hình lên canvas (veCanvas).
-   Pixel (không body.ve-vector): không làm gì.
-   Cùng lúc: nút chỉ có icon trong PHAM_VI có aria-label mà thiếu title thì được thêm title cùng chữ (luật UI), chỉ ở vector.
+   V7b (28/10, gỡ cầu C1 / C5): ở body.ve-vector, ve.js (Ve.ico / Ve.sao / Ve.khoa / Ve.mui / Ve.hydrate) gọi VeIcon.svg(ten, k, tuyChon, phu) và trả THẲNG <svg>
+   cùng cỡ hiển thị như bản pixel qua Ve.mk (ô vuông cạnh k = cạnh lớn × s), lớp `pxi vi vi-<tên>` (+ `tat` cho sao / xu / trùm tắt), nhãn _vi; không còn canvas
+   điểm ảnh có nhãn phải thay sau, không MutationObserver cho icon. Màu: fill / stroke = currentColor, nên MÀU THEO VAI đặt bằng CSS (giao-dien-vector-b.css mục 8:
+   color: var(--g-vec…)); chi tiết phụ (lỗ khoá, vành xu…) mang lớp `vi2`. Phim vẽ cùng bộ hình lên canvas (veCanvas). Pixel (không body.ve-vector): không làm gì.
+   Một phạm vi PHAM_VI = '#stage' (cả khung game): nút chỉ có icon trong đó có aria-label mà thiếu title thì được thêm title cùng chữ (luật UI, datTitle), chỉ ở vector.
+   Còn lại (V7b việc 9 gỡ tiếp): hình bộ phận thật ở tiêu đề thẻ khay (thayPart / noiPart: móc Part._veMot + drawImage) thay qua MutationObserver trên #stage.
    ========================================================================== */
 (function (root) {
   'use strict';
 
-  var PHAM_VI = '#sc-dau,#sc-goi,#sc-chon,#sc-lap,#lop-hop,.md';
-  var PHAM_VI_CHOI = '#sc-choi';                         // gói V6c: màn chơi cũng thay (nút Chạy / Nhịp / Lại / Gợi ý, thẻ khay, đèn nhịp, menu, xoá, thụt lề, bong bóng, Xưởng hàm)
+  var PHAM_VI = '#stage';                                // V7b (gỡ C5): MỘT phạm vi = cả khung game (mọi màn, #lop-hop, phim .md); chỉ còn dùng cho datTitle (nút chỉ icon)
   var NS = 'http://www.w3.org/2000/svg';
 
   /* ---------------------------------------------------------------- dựng hình (khung 24 × 24) */
@@ -223,8 +219,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   function giaoDienVec() { var d = root.document; return !!(d && d.body && d.body.classList && d.body.classList.contains && d.body.classList.contains('ve-vector')); }   // DOM giả của máy kiểm có thể thiếu classList
-  /** Gói V6c: chỗ cần thay nằm trong các màn ngoài (PHAM_VI) hoặc màn chơi (PHAM_VI_CHOI, kể cả Xưởng hàm và lớp chạy trong #sc-choi). */
-  function trongPhamVi(e) { return !!(e.closest && (e.closest(PHAM_VI) || e.closest(PHAM_VI_CHOI))); }
+  function trongPhamVi(e) { return !!(e.closest && e.closest(PHAM_VI)); }
+  /** V7b (gỡ C1): <svg> icon dùng THẲNG trong giao diện (ve.js Ve.ico / sao / mui / khoa / hydrate gọi ở body.ve-vector): cạnh k px CSS (ô vuông theo cạnh lớn của bản pixel),
+   *  lớp `pxi vi vi-<tên>` (+ phu: 'tat' cho sao / xu / trùm tắt), nhãn _vi như canvas pixel. Trả null nếu không có hình hay DOM không dựng được svg (Node không createElementNS). */
+  function svg(ten, k, tuyChon, phu) {
+    var d = root.document; if (!HINH[ten] || !d || typeof d.createElementNS !== 'function') return null;
+    var v = { ten: ten, tuyChon: tuyChon || {}, phu: phu || '' }, p = phuCua(v), e = taoSvg(ten, k, k, d);
+    if (!e) return null;
+    e.setAttribute('class', 'pxi vi vi-' + ten + (p ? ' ' + p : ''));
+    e.style.width = k + 'px'; e.style.height = k + 'px';
+    e._vi = v;
+    return e;
+  }
   /** Người gọi có thể còn giữ canvas cũ để đổi sau (den-bo-phan.js bật / tắt đèn bằng cv.style.display; thanh-phan.js thêm lớp): canvas đã gỡ
    *  chuyển style / classList / className sang hình thay nó, nên mọi thay đổi về sau vẫn tới hình đang hiện. */
   function noiVe(c, moi) {
@@ -320,9 +326,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (goc.tagName === 'CANVAS') ds.push(goc);
     var cs = goc.querySelectorAll('canvas.pxi'); for (i = 0; i < cs.length; i++) ds.push(cs[i]);
     for (i = 0; i < ds.length; i++) {
-      var c = ds[i];
-      if (c._vi) { if (trongPhamVi(c) && thayMot(c)) n++; }
-      else if (c[DAU_PART] && !c.laVector && c.closest && c.closest('.co-part') && thayPart(c)) n++;
+      var c = ds[i];                                                     // V7b: icon có nhãn _vi không thay nữa (ve.js đã trả svg thẳng); chỉ còn hình bộ phận (C3)
+      if (!c._vi && c[DAU_PART] && !c.laVector && c.closest && c.closest('.co-part') && thayPart(c)) n++;
     }
     var bs = goc.tagName === 'BUTTON' ? [goc] : goc.querySelectorAll('button[aria-label]:not([title])');
     for (i = 0; i < bs.length; i++) if (trongPhamVi(bs[i])) datTitle(bs[i]);
@@ -342,7 +347,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return true;
   }
 
-  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, PHAM_VI_CHOI: PHAM_VI_CHOI, hinhPartVec: hinhPartVec, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, thayMot: thayMot, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
+  var VeIcon = { HINH: HINH, PHAM_VI: PHAM_VI, svg: svg, hinhPartVec: hinhPartVec, taoSvg: taoSvg, veCanvas: veCanvas, duong: duong, thay: thay, thayMot: thayMot, batDau: batDau, co: function (ten) { return !!HINH[ten]; } };
   root.VeIcon = VeIcon;
   if (typeof module === 'object' && module.exports) module.exports = VeIcon;
   if (root.document && root.document.body) batDau();

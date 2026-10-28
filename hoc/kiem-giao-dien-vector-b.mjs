@@ -166,10 +166,10 @@ console.log('\n== d. Icon vector ==');
     }
   }
   kiem('VeIcon.taoSvg: mọi icon là <svg viewBox="0 0 24 24">, mọi mảng tô / nét là currentColor (màu theo vai đặt bằng CSS), không mã màu', !sai.length, J(sai.slice(0, 8)));
-  const nhan = /function nhan\(c, ten, tuyChon, phu\) \{ c\._vi = /.test(veJs) && /function ico\(ten, s, tuyChon\) \{ return nhan\(/.test(veJs) && /function sao\(bat, s\) \{ return nhan\(/.test(veJs) && /function khoa\(s, tran\) \{ return nhan\(/.test(veJs);
-  const phamVi = VI && VI.PHAM_VI.split(',');
-  kiem('ve.js ghi nhãn _vi ở Ve.ico / Ve.sao / Ve.khoa (hình pixel không đổi); phạm vi thay: ' + (phamVi || []).join(' ') + ' (không gồm #sc-choi: màn chơi giữ icon V5a)',
-    nhan && !!phamVi && phamVi.includes('#sc-dau') && phamVi.includes('#lop-hop') && !phamVi.includes('#sc-choi'));
+  const svgVec = /function svgVec\(ten, s, tuyChon, phu, nho\)/.test(veJs) && /function ico\(ten, s, tuyChon\) \{ return svgVec\(ten, s, tuyChon\) \|\|/.test(veJs) && /function sao\(bat, s\) \{ return svgVec\('star'/.test(veJs) && /function khoa\(s, tran\) \{ return svgVec\('lock'/.test(veJs) && /function mui\(mau, s\) \{ return svgVec\('mui'/.test(veJs);
+  const phamVi = VI && VI.PHAM_VI;
+  kiem('V7b: ve.js Ve.ico / sao / khoa / mui ở vector trả thẳng svg (svgVec → VeIcon.svg), pixel vẫn canvas có nhãn _vi; một phạm vi VeIcon.PHAM_VI = #stage (cả khung game, kể cả #sc-choi) cho datTitle',
+    svgVec && phamVi === '#stage' && !!VI.svg && !('PHAM_VI_CHOI' in VI));
   const css8 = ['.vi-star', '.vi-star.tat', '.vi-xu', '.vi-lock', '.vi .vi2'].filter((s) => !luatB.some((r) => r.sel.split(',').some((x) => x.trim() === 'body.ve-vector ' + s) && /color\s*:\s*var\(--g-vec\w+\)/.test(r.than)));
   kiem('màu icon đặt theo vai vec* ở giao-dien-vector-b.css (sao, sao tắt, xu, khoá, chi tiết phụ)', !css8.length, J(css8));
 }
