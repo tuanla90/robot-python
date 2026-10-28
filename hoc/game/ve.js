@@ -824,10 +824,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (!giaoDienVec() || cv.laVector || !(s > 0)) return 1;
     return Math.max(1, Math.min(8, Math.ceil(s * (window.devicePixelRatio || 1) * 2)));
   }
-  function ico(ten, s, tuyChon) { return mk(ten === 'edit' ? spriteBut() : icon(ten, tuyChon), s || 2); }
-  function sao(bat, s) { return mk(spriteStar(bat), s || 2); }
+  /** Gói V5b: ghi TÊN icon lên canvas (c._vi) để ve-vector-icon.js thay bằng hình vector ở các màn ngoài màn chơi (chỉ khi body.ve-vector). Hình pixel không đổi. */
+  function nhan(c, ten, tuyChon, phu) { c._vi = { ten: ten, tuyChon: tuyChon || {}, phu: phu || '' }; return c; }
+  function ico(ten, s, tuyChon) { return nhan(mk(ten === 'edit' ? spriteBut() : icon(ten, tuyChon), s || 2), ten, tuyChon); }
+  function sao(bat, s) { return nhan(mk(spriteStar(bat), s || 2), 'star', null, bat ? '' : 'tat'); }
   function mui(mau, s) { return mk(spriteMui(mau), s || 2); }
-  function khoa(s, tran) { return mk(spriteLock(tran, tran), s || 2); }
+  function khoa(s, tran) { return nhan(mk(spriteLock(tran, tran), s || 2), 'lock'); }
 
   /** Điền icon vào mọi [data-i] chưa có nội dung. data-s tỉ lệ, data-l màu viền, data-f màu tô. */
   function hydrate(goc) {

@@ -207,7 +207,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     hop.than.appendChild(hangMat());
     var kv = hangKieuVe(); if (kv) hop.than.appendChild(kv);
-    hop.than.appendChild(hangSon());
+    if (!(window.VeVector && VeVector.bat())) hop.than.appendChild(hangSon());       // gói V5b (user 28/10 "Ẩn ở vector"): ở vector R1 cố định màu đội (vecDoiR1), không chọn sơn
     var cot = h('div', 'cd-cot');
     if (window.MoDau) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.gioiThieu'), function () { TP.Hop.dong(); MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(function () { mo(khiDong); }); else mo(khiDong); }); }, 'cd-mo-dau'));
     if (window.PhimGoi && window.App && App.dsGoi) cot.appendChild(TP.Hop.nut('g-cy', t('caiDat.phimGoi'), function () { phimGoi(khiDong); }, 'cd-phim-goi'));

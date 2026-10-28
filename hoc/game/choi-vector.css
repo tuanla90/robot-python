@@ -506,6 +506,9 @@ body.ve-vector .chon-so.muc .cs.muc-nut{padding:0 8px;font:600 12px/1 var(--px)}
 body.ve-vector .mini .bt,body.ve-vector .cuon-b,body.ve-vector .gl .nb,body.ve-vector .brick .ed{position:relative}
 body.ve-vector .brick .ed{position:absolute}
 body.ve-vector .mini .bt::before,body.ve-vector .cuon-b::before,body.ve-vector .gl .nb::before,body.ve-vector .brick .ed::before{content:"";position:absolute;left:-1px;right:-1px;top:-3px;bottom:-3px}
+/* (gói V5b) nút cuộn khay ▲ ▼ rộng 20 (choi.css .bh .cuon-nut .cuon-b), khe 3: nới vùng bấm -1 px mỗi bên chỉ được 22 và hai tâm cách 23 < 24 (WCAG 2.5.8).
+   Ở vector nút rộng 22: vùng bấm 24 × 26, hai tâm cách 25, khe giữa hai vùng nới còn 1 px; tiêu đề thẻ bộ phận (.pal-the, flex co giãn) nhường 4 px */
+body.ve-vector .bh .cuon-nut .cuon-b{width:22px}
 
 /* ============================================================ 7. CHUYỂN ĐỘNG: bỏ steps() còn lại của màn chơi, tôn trọng prefers-reduced-motion
    Các steps() của khối / dòng / hộp đã thay ở vùng 3–5 (vec-*); ở đây là phần còn lại của màn chơi. Phim mở đầu / phim gói (.md-*, .pg-*) và
@@ -513,6 +516,13 @@ body.ve-vector .mini .bt::before,body.ve-vector .cuon-b::before,body.ve-vector .
 body.ve-vector .ffr.rung{animation:rung .32s ease-in-out 1}
 body.ve-vector .ws-ov{transition:transform .34s cubic-bezier(.16,1,.3,1)}
 body.ve-vector [data-nut="lap-lai"].nhay{animation:vec-nut-nhay 1.1s ease-in-out infinite alternate}
+/* (gói V5b) các màn ngoài màn chơi: lắc khi chạm hộp gói / ô màn / mùa / thẻ phần / Lắp xong chưa được (thay shake steps(2)); màn kế tiếp ở lưới màn thở quầng
+   tím chàm (thay blink steps(1)); robot ở Lắp robot đổi hình nảy mượt (thay lr-pop steps(3)). Hình dáng các màn này: giao-dien-vector-b.css */
+body.ve-vector .g-the.nope,body.ve-vector .c-man.nope,body.ve-vector .g-mua-nut.nope,body.ve-vector .lr-the.rung,body.ve-vector .lr-xong.rung{animation:vec-rung .32s ease-in-out 1}
+body.ve-vector .c-man.cur{animation:vec-cur 1.4s ease-in-out infinite alternate}
+@keyframes vec-cur{from{box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.32),0 0 0 0 rgba(var(--g-vecBrandRgb),0)}to{box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.32),0 0 0 4px rgba(var(--g-vecBrandRgb),.22)}}
+body.ve-vector .lr-robot.doi .lr-hinh{animation:vec-lr-pop .32s cubic-bezier(.34,1.56,.64,1) 1}
+@keyframes vec-lr-pop{0%{transform:scale(.86)}100%{transform:scale(1)}}
 @keyframes vec-nut-nhay{from{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}to{box-shadow:inset 0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.22)}}
 /* giảm chuyển động: mọi hoạt cảnh / chuyển tiếp của giao diện chạy tức thì, dừng ở khung cuối (các vec-* lặp đặt trạng thái rõ nhất ở 'to');
    trừ phim (.md: hiện từng hình theo animation-delay, gói V6 làm lại) */

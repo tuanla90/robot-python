@@ -32,7 +32,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         '<div class="plaque"><span class="n"></span><span class="d"></span><span class="t"></span></div>' +
         '<div class="stars"></div>' +
         '<button class="bt g-or lap-lai" data-nut="lap-lai" style="display:none" aria-label="' + t('lap.lapLaiNhan') + '"><span data-i="banhRang" data-s="1" data-l="' + BM.goToiV13 + '"></span><span class="ll-chu">' + t('lap.lapLai') + '</span></button>' +
-        '<button class="bt g-pu menu" data-nut="menu" aria-label="' + t('choi.menu') + '"><span data-i="menu" data-s="2" data-l="' + BM.timToi2 + '"></span></button>' +
+        '<button class="bt g-pu menu" data-nut="menu" aria-label="' + t('choi.menu') + '" title="' + t('choi.menu') + '"><span data-i="menu" data-s="2" data-l="' + BM.timToi2 + '"></span></button>' +
       '</div>' +
       '<div class="fblock">' +
         '<div class="ffr"><canvas class="tex" id="field"></canvas><div class="toast"></div></div>' +
@@ -50,7 +50,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       '<div class="low">' +
         '<div class="pan p-prog" id="pan-main"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="xe-tabs"></span><span class="tt">' + t('choi.chuongTrinh') + '</span><span class="ham-dem" data-nut="ham-dem" style="display:none" title="' + t('choi.hamDemNhan') + '"></span><span class="ct">0/10</span><span class="chinh-khoa" data-nut="chinh-khoa"><span class="ck-ic"></span><span class="ck-chu">' + t('choi.chinhKhoaNhan') + '</span></span>' +
-            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="' + BM.doToi + '"></span></button></div>' +
+            '<button class="bt g-rd del het" data-nut="xoa-het" aria-label="' + t('choi.xoaHet') + '" title="' + t('choi.xoaHet') + '"><span data-i="trash" data-s="2" data-l="' + BM.doToi + '"></span></button></div>' +
             '<div class="rows"></div></div></div>' +
         '<div class="pan p-pal"><i class="rv a"></i><i class="rv b"></i><i class="rv c"></i><i class="rv d"></i>' +
           '<div class="board chalk"><div class="bh"><span class="tt">' + t('choi.khoiLenh') + '</span></div><div class="pal"></div></div>' +

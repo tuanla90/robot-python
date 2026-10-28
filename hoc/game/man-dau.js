@@ -12,7 +12,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var GIU_LAU_MS = 2000;
   var ROBOT = { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] };   // robot hoàn thiện (chương Robot hoàn thiện)
   var TI_LE = 3, NHIP_MS = 110, BUOC = 4, NGHI = 6;
-  var S = { hen: null, x: 0, huong: 1, ph: 0, nghi: 0 };
+  var S = { hen: null, x: 0, huong: 1, ph: 0, nghi: 0, nhip: 0 };
+  /* MẮT BIỂU CẢM (gói V5b, chỉ robot vector: VeRobot chuyển trangThai.mat cho H.kinh của ve-vector.js; pixel không đọc trường này).
+     Chạy: mắt thường, chớp ba nhịp (nửa nhắm, khép, nửa nhắm) cứ CHOP_NHIP nhịp một lần (lần thứ ba chớp đôi); dừng ở mép bảng: cười "^ ^" rồi liếc về hướng sắp đi.
+     Không Math.random (đếm nhịp, lặp lại được); giảm chuyển động (prefers-reduced-motion): không chớp, không liếc. */
+  var CHOP_NHIP = 27, CHOP = ['chop1', 'chop2', 'chop1'];
+  function giamDong() { try { return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } }
+  function matDau() {
+    if (S.nghi > 0) return S.nghi > 2 || giamDong() ? 'vui' : 'thuong:' + (S.huong === 1 ? -1 : 1);
+    if (giamDong()) return 'thuong';
+    var k = S.nhip % CHOP_NHIP, lan = ((S.nhip / CHOP_NHIP) | 0) % 3;
+    if (k < 3) return CHOP[k];
+    if (lan === 2 && k >= 4 && k < 7) return CHOP[k - 4];
+    return 'thuong';
+  }
 
   function dung(host) {
     host.innerHTML = '';
@@ -76,7 +89,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       el.hang.appendChild(bs);
     }
     if (window.CaiDat) {
-      var bc = h('button', 'bt g-wd d-cai'); bc.setAttribute('data-nut', 'cai-dat'); bc.setAttribute('aria-label', t('caiDat.nut'));
+      var bc = h('button', 'bt g-wd d-cai'); bc.setAttribute('data-nut', 'cai-dat'); bc.setAttribute('aria-label', t('caiDat.nut')); bc.title = t('caiDat.nut');
       var ic = h('span'); ic.setAttribute('data-i', 'gear'); ic.setAttribute('data-s', '2'); ic.setAttribute('data-l', BM.goToiV1); bc.appendChild(ic);
       bc.addEventListener('click', function () { CaiDat.mo(); });
       el.hang.appendChild(bc);
@@ -89,7 +102,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ---------------------------------------------------------------- robot chạy qua lại */
   function hinh() {
     if (!window.VeRobot) return null;
-    try { return VeRobot.veCo(ROBOT, { wl: S.nghi ? 0 : 2, wr: S.nghi ? 0 : 2, ph: S.ph, tay: { tuThe: 'tren', kep: false } }, S.huong, TI_LE * VeRobot.PX_O_PART); } catch (e) { return null; }      // cỡ ô hiển thị (VeRobot.veCo): pixel = bội số TI_LE như cũ
+    var tt = { wl: S.nghi ? 0 : 2, wr: S.nghi ? 0 : 2, ph: S.ph, tay: { tuThe: 'tren', kep: false } };
+    if (window.VeVector && VeVector.bat()) tt.mat = matDau();                                   // gói V5b: mắt biểu cảm (chỉ vector)
+    try { return VeRobot.veCo(ROBOT, tt, S.huong, TI_LE * VeRobot.PX_O_PART); } catch (e) { return null; }      // cỡ ô hiển thị (VeRobot.veCo): pixel = bội số TI_LE như cũ
   }
   function veRobot() {
     var cv = hinh(); if (!cv) return;
@@ -101,6 +116,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.style.transform = 'translate(' + S.x + 'px,-50%)';
   }
   function nhip() {
+    S.nhip++;
     var rong = el.san.clientWidth, w = el.robot.width || 0, le = -Math.round(w * 0.22), max = rong - w - le;   // hình có lề trong suốt: cho thân sát mép tấm bảng
     if (S.nghi > 0) { S.nghi--; if (!S.nghi) S.huong = S.huong === 1 ? 3 : 1; }
     else {

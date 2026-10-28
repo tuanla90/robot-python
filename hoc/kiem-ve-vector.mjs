@@ -924,7 +924,7 @@ console.log('\n== 14. (V5a) Giao diện phẳng màn chơi: phông mới, choi-v
   /* c. mọi hoạt cảnh steps() của MÀN CHƠI trong choi.css (và kiểu chèn của huong-dan.js) có luật phủ ở vector đặt lại animation / transition;
         ngoài phạm vi V5a (phim .md / .pg-, màn chọn .g-the / .c-man, Lắp robot .lr-, mua gói .g-mua-nut) để V5b / V6 */
   {
-    const NGOAI = /^\.(md|pg-|g-the|c-man|lr-|g-mua-nut)/;
+    const NGOAI = /^\.(md|pg-)/;
     const phu = new Map(); for (const r of luatV) if (/(^|;)\s*(animation|transition)\s*:/.test(r.than)) for (const s of r.sel.split(',')) phu.set(s.trim().replace(/^body\.ve-vector\s+/, ''), r.than);
     const can = []; for (const r of luatP) if (/steps\(/.test(r.than)) for (const s of r.sel.split(',')) { const t = s.trim(); if (!NGOAI.test(t)) can.push(t); }
     const hdChen = /#stage>\.hd-vien\{[^}]*steps\(/.test(huongDan) ? ['#stage>.hd-vien'] : [];
