@@ -1,0 +1,41 @@
+/* ============================================================================
+   giao-dien-vector-b.css — "Robot Chấn Hưng": GIAO DIỆN PHẲNG kiểu diem10code cho các màn NGOÀI màn chơi (gói V5b, 28/10), chế độ VECTOR.
+   Nối tiếp ngôn ngữ của choi-vector.css (gói V5a, màn chơi): cùng biến (--r-sm / --r-md / --r-lg, --elev-1..3, --vc), cùng vai vec* của bang-mau.js,
+   cùng phông Google Sans Flex / Code. Nạp SAU choi-vector.css (choi.html); mọi bộ chọn bắt đầu bằng `body.ve-vector`, pixel giữ choi.css y nguyên.
+   Không vân gỗ (--wood*), không bảng phấn (--chalk), không viền vát nhiều lớp, không phông Handjet / VT323, không steps(): chuyển động ease mượt,
+   prefers-reduced-motion đã được choi-vector.css (mục 7) cắt cho mọi thứ trong #stage trừ phim (.md).
+   Thứ tự: 1 màn đầu · 2 chọn gói, lưới màn · 3 Lắp robot · 4 Sổ lệnh · 5 hộp Bộ phận mới / mở khoá, mẹo chơi · 6 màn xong · 7 khung phim · 8 icon vector.
+   ========================================================================== */
+
+/* ============================================================ 1. MÀN ĐẦU (man-dau.js, #sc-dau) */
+/* logo: chữ chàm đậm, không viền mực chồng nhiều lớp; vạch nhấn tím chàm → cyan dưới tên */
+body.ve-vector .d-ten{font:800 40px/1.04 var(--px);letter-spacing:.5px;color:var(--g-vecChu);text-shadow:none;padding-top:0}
+body.ve-vector .d-ten::after{content:"";display:block;width:56px;height:5px;margin:12px auto 0;border-radius:var(--r-full);background:linear-gradient(90deg,var(--g-vecBrand),var(--g-vecDen))}
+body.ve-vector .d-phu{margin-top:10px;font:500 15px/1.3 var(--px);color:var(--g-vecChuPhu);text-shadow:none}
+/* tấm sân robot chạy: thẻ trắng bo góc, sàn bàn cờ hai tông như sân vector (vecSanChan / vecSanLe), bóng mềm */
+body.ve-vector .d-san,body.ve-vector .d-san.chalk{border-radius:var(--r-md);background-color:var(--g-vecSanChan);
+  background-image:repeating-conic-gradient(var(--g-vecSanLe) 0 25%,transparent 0 50%);background-size:64px 64px;background-position:-8px -4px;
+  box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}
+/* robot đi 4 px mỗi nhịp 110 ms (man-dau.js): ở vector trượt mượt giữa hai nhịp thay vì nhảy bậc */
+body.ve-vector .d-robot{transition:transform .11s linear}
+/* tổng sao: viên thuốc trắng, số phông mã */
+body.ve-vector .d-sao{height:34px;padding:0 14px 0 10px;gap:6px;border-radius:var(--r-full);font:600 17px/1 var(--mono);color:var(--g-vecChu);text-shadow:none;
+  background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
+/* CHƠI: nút chính tím chàm đặc chữ trắng; Chơi tiếp: thẻ trắng, tên màn chữ phụ */
+body.ve-vector .d-choi{height:62px;gap:12px;padding-top:0;border-radius:var(--r-md);font:800 26px/1 var(--px);letter-spacing:2px;color:var(--g-vecThe);text-shadow:none;
+  background:var(--g-vecBrand);box-shadow:0 6px 18px rgba(var(--g-vecBrandRgb),.32)}
+@media (hover:hover){
+  body.ve-vector .d-choi:hover{background:var(--g-vecBrandDam);box-shadow:0 8px 22px rgba(var(--g-vecBrandRgb),.4)}
+}
+body.ve-vector .d-choi:active{background:var(--g-vecBrandDam);box-shadow:0 2px 6px rgba(var(--g-vecBrandRgb),.3)}
+body.ve-vector .d-choi .d-choi-chu{padding-top:0}
+body.ve-vector .d-tiep{height:48px;gap:4px;padding-top:0;font:700 15px/1 var(--px);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .d-tiep .d-tiep-ten{font:500 12px/1 var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .d-tiep.het{filter:none;opacity:.55}
+/* hàng dưới: Sổ lệnh (nút chữ có ô icon màu), Cài đặt (nút chỉ icon) */
+body.ve-vector .d-so{height:38px;padding:0 14px 0 5px;gap:8px;font:600 15px/1 var(--px);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .d-so>span[data-i]{width:28px;height:28px;margin-bottom:0;border-radius:8px;background:var(--g-vecCyanDam);align-items:center;justify-content:center}
+body.ve-vector .d-cai{width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:var(--g-vecChuPhu)}
+/* thông báo nổi đáy màn (màn đầu, chọn gói, lưới màn: .c-tb) */
+body.ve-vector .c-tb{left:24px;right:24px;bottom:22px;padding:9px 12px;border-radius:var(--r-sm);font:600 13px/1.3 var(--px);color:var(--g-vecChu);
+  background:var(--g-vecHoPhachNhat);box-shadow:inset 0 0 0 1.5px var(--g-vecHoPhach),var(--elev-2)}
