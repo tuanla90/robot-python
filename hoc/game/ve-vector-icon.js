@@ -250,7 +250,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /* ---- hình BỘ PHẬN THẬT ở tiêu đề thẻ khay (thanh-phan.js hinhPart: Part._veMot → cắt lề → Ve.mk, ảnh điểm ảnh không nhãn).
      Ở vector: Part._veMot đánh dấu canvas bộ phận (_partVi = { loai, ma }), dấu đi theo drawImage sang canvas chép (cắt lề, Ve.mk); canvas có dấu nằm trong
-     tiêu đề thẻ (.co-part) được thay bằng hình bộ phận vẽ bằng VeVector (thân: VeVector.robot không tay; tay: hình tay đứng một mình), cùng cỡ chỗ đặt. */
+     tiêu đề thẻ (.co-part) được thay bằng hình bộ phận vẽ bằng VeVector (thân: VeVector.robot không tay; tay: hình tay đứng một mình), cùng cỡ chỗ đặt.
+     Cùng chỗ nối: canvas MỚI mà lần vẽ đầu là chép một hình vector (.laVector, ví dụ the-part.js / mo-dau.js cắt lề robot) cũng mang .laVector. */
   var DAU_PART = '_partVi';
   function catLe(cv) {
     var g = cv.getContext('2d'), w = cv.width, hh = cv.height, d = g.getImageData(0, 0, w, hh).data, x0 = w, y0 = hh, x1 = -1, y1 = -1, x, y;
@@ -295,7 +296,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return p;
     };
     var di0 = C2.prototype.drawImage;
-    C2.prototype.drawImage = function (nguon) { if (nguon && nguon[DAU_PART] && this.canvas && !this.canvas[DAU_PART]) this.canvas[DAU_PART] = nguon[DAU_PART]; return di0.apply(this, arguments); };
+    C2.prototype.drawImage = function (nguon) {
+      var dich = this.canvas;
+      if (dich && nguon) {
+        if (nguon[DAU_PART] && !dich[DAU_PART]) dich[DAU_PART] = nguon[DAU_PART];
+        if (nguon.laVector && dich._daVe === undefined && !dich.laVector) dich.laVector = true;    // bản chép (cắt lề) của hình vector, lần vẽ ĐẦU vào canvas mới: Ve.mk không phóng điểm ảnh
+        dich._daVe = 1;
+      }
+      return di0.apply(this, arguments);
+    };
     return true;
   }
   /** Nút chỉ có icon (không chữ) mang aria-label mà thiếu title: thêm title cùng chữ (luật UI: title + aria-label). */

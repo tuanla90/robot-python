@@ -255,7 +255,11 @@ body.ve-vector .cb-ic .vi-canhbao{color:var(--g-vecHoPhach)}
 body.ve-vector .cb-ic .vi-canhbao .vi2{color:var(--g-vecChu);opacity:1}                     /* dấu ! chàm đậm trên tam giác hổ phách */
 body.ve-vector .vi-trum{color:var(--g-vecChuPhu)}
 body.ve-vector .vi-trum.tat{color:var(--g-vecKeDam)}
-body.ve-vector .pal-the .the-chu.co-part canvas.vi-part{max-height:24px}                    /* hình bộ phận thật (VeVector) ở tiêu đề thẻ khay */
+body.ve-vector .pal-the .the-chu.co-part canvas.vi-part{max-height:24px}
+/* dấu xoá dòng (x5, lớp .tx) ở cột số dòng: ẩn / hiện như choi.css (svg.vi đặt display:block ở mục 8 nên nhắc lại luật ẩn với cùng độ ưu tiên) */
+body.ve-vector .tab svg.tx{display:none}
+body.ve-vector .row.xx .tab svg.tx{display:block}
+body.ve-vector.dang-keo .row.xx .tab svg.tx{display:none}                    /* hình bộ phận thật (VeVector) ở tiêu đề thẻ khay */
 
 /* ============================================================ 10. NỘI DUNG CẢNH PHIM (gói V6c: mo-dau.js phim mở đầu, phim-goi.js + phim-mua-*.js phim gói)
    Hình trong cảnh đã vẽ bằng bộ vẽ vector (PhimVector / VeIcon / VeRobot); ở đây là nền cảnh, chữ trong tranh, bảng code, hoạt cảnh mượt (thay steps()).
