@@ -13,14 +13,16 @@
      f. Robot màn đầu: man-dau.js chỉ đặt trangThai.mat khi VeVector.bat() (pixel không đổi), có chớp / cười / liếc, tôn trọng prefers-reduced-motion.
      g. Luật UI: nút chỉ có icon của màn chơi (menu, xoá hết, thụt lề, cuộn khay, ẩn bong bóng) có title; ve-vector-icon.js thêm title cho nút chỉ icon thiếu title.
      h. Trang xem hinh-mau/xem-vector.html có mục V5b nạp giao-dien-vector-b.css và ve-vector-icon.js.
-   Cờ --loi-gia: cắm sáu lỗi giả trong bộ nhớ (luật ngoài body.ve-vector có steps(), bỏ luật phủ bảng phấn của .d-san, bỏ icon book, cặp chữ 1,7:1,
-   :hover ngoài @media, bỏ điều kiện VeVector.bat() của mắt) → phải đỏ đúng các mục b, c, d, e, b, f.
+     i. Cài đặt (user 28/10 "Ẩn ở vector"): CaiDat.mo() chạy trong DOM giả: ở vector KHÔNG có mục "Màu sơn R1" (R1 cố định màu đội), ở pixel CÓ như cũ.
+   Cờ --loi-gia: cắm bảy lỗi giả trong bộ nhớ (luật ngoài body.ve-vector có steps(), bỏ luật phủ bảng phấn của .d-san, bỏ icon book, cặp chữ 1,7:1,
+   :hover ngoài @media, bỏ điều kiện VeVector.bat() của mắt, Cài đặt vector vẫn có mục sơn) → phải đỏ đúng các mục b, c, d, e, b, f, i.
    Chạy: node hoc/kiem-giao-dien-vector-b.mjs [--loi-gia]   (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import vm from 'node:vm';
 
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
@@ -40,7 +42,7 @@ const cssP = doc('choi.css'), html = doc('choi.html'), veJs = doc('ve.js'), xem 
 let iconSrc = doc('ve-vector-icon.js'), manDau = doc('man-dau.js');
 const manChoi = doc('man-choi.js'), thanhPhan = doc('thanh-phan.js');
 if (LOI_GIA) {
-  console.log('(đang cắm lỗi giả: sáu lỗi, các mục b, c, d, e, f phải đỏ)');
+  console.log('(đang cắm lỗi giả: bảy lỗi, các mục b, c, d, e, f, i phải đỏ)');
   cssB += '\n.g-the.nope{animation:shake .25s steps(2) 2}\n';                                                  // b: luật ngoài body.ve-vector có steps(
   cssB = cssB.replace(/body\.ve-vector \.d-san,body\.ve-vector \.d-san\.chalk\{[^}]*\}/, '');                  // c: bỏ luật phủ bảng phấn của tấm sân màn đầu
   iconSrc = iconSrc.replace(/\n {4}book: \[[^\n]*\n/, '\n');                                                    // d: mất icon book (Sổ lệnh)
@@ -216,6 +218,41 @@ console.log('\n== g. Nút chỉ có icon có title ==');
   ];
   const thieu = can.filter((x) => !x[1]).map((x) => x[0]);
   kiem(can.length + ' chỗ dựng nút chỉ có icon có title cùng chữ aria-label', !thieu.length, J(thieu));
+}
+
+/* ================================================================= i. Cài đặt: mục Màu sơn R1 ẩn ở vector */
+console.log('\n== i. Cài đặt: "Màu sơn R1" ẩn ở vector (R1 cố định màu đội), pixel còn ==');
+{
+  let caiDat = doc('cai-dat.js');
+  if (LOI_GIA) caiDat = caiDat.replace('if (!(window.VeVector && VeVector.bat())) hop.than.appendChild(hangSon());', 'hop.than.appendChild(hangSon());');   // lỗi giả: vector vẫn có mục sơn
+  // DOM giả tối thiểu: đủ cho CaiDat.mo dựng cây phần tử
+  function El(tag, cls, chu) { this.tagName = tag; this.className = cls || ''; this.attrs = {}; this.con = []; this.style = { setProperty() {} }; this.textContent = chu || ''; this.dataset = {};
+    this.classList = { add() {}, remove() {}, toggle() {}, contains: () => false }; }
+  El.prototype.setAttribute = function (k, v) { this.attrs[k] = String(v); };
+  El.prototype.getAttribute = function (k) { return k in this.attrs ? this.attrs[k] : null; };
+  El.prototype.appendChild = function (c) { this.con.push(c); return c; };
+  El.prototype.addEventListener = function () {};
+  El.prototype.querySelector = function () { return null; };
+  El.prototype.querySelectorAll = function () { return []; };
+  const tim = (e, k, v) => !!e && (e.attrs && e.attrs[k] === v || (e.con || []).some((c) => tim(c, k, v)));
+  function dung(vector) {
+    const than = new El('div', 'hop-than');
+    const w = {
+      BangMau: BM, TP: { h: (tag, cls, chu) => new El(tag, cls, chu), Hop: { mo: () => ({ hop: new El('div', 'hop'), than }), nut: (c, chu) => new El('button', c, chu), dong() {} } },
+      Ve: { hydrate() {}, ico: () => new El('canvas'), khoa: () => new El('canvas'), sao: () => new El('canvas') },
+      VeVector: { bat: () => vector, luuCheDo: () => true }, VeRobot: { sonChon: () => '', sonHieuLuc: () => '' },
+      Luu: { docCaiDat: () => ({ son: '', mat: true }), ghiCaiDat() {}, daXem: () => true }, App: { tongSao: () => 0 },
+      SanVe: { coMatDong: () => true }, location: { href: 'http://x/choi.html', search: '' }
+    };
+    w.window = w;
+    w.t = (k) => k; w.require = require;
+    try { vm.runInNewContext(caiDat, w); w.CaiDat.mo(); }
+    catch (e) { return { loi: String(e && e.message || e) }; }
+    return { son: tim(than, 'data-cd', 'son'), kieuVe: tim(than, 'data-cd', 'kieu-ve'), mat: tim(than, 'data-cd', 'mat') };
+  }
+  const v = dung(true), p = dung(false);
+  kiem('CaiDat.mo() ở vector: KHÔNG có mục Màu sơn R1 (data-cd="son"), vẫn có Kiểu vẽ / mắt; ở pixel: CÓ mục Màu sơn R1 như cũ',
+    !v.loi && !p.loi && v.son === false && p.son === true && v.kieuVe && p.kieuVe && v.mat && p.mat, J({ vector: v, pixel: p }));
 }
 
 /* ================================================================= h. trang xem */
