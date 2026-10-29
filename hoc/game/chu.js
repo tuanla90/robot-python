@@ -491,8 +491,11 @@
       'pg.combo.2': 'Cảm biến nháy bên có thùng. Tay xoay ngay sang đúng bên đó.',
       'pg.combo.3': 'R1 lướt dọc lối đi, nhặt cả hai bên mà chẳng cần quay xe!',
       'pg.robot.1': 'R1 đã đủ bộ: tay xoay, cảm biến. Huy hiệu sáng rực!',
-      'pg.robot.2': 'Cánh cửa lớn của xưởng từ từ mở. Ánh nắng tràn vào.',
+      'pg.robot.2': 'Cửa xưởng mở, tem đóng cộp: Xe chở hàng R1 xuất xưởng!',
       'pg.robot.3': 'R1 lăn ra ngoài. Xa xa trên đồi, bánh xích đang chờ!',
+      'pg.tem.xuat-xuong': 'XUẤT XƯỞNG',                 // chữ trên tem của phim gói 10 mọi mùa (PhimVector.xuatXuong)
+      'pg.tem.xe-cho-hang': 'Xe chở hàng R1',             // cỗ máy mùa 1 (KE-HOACH-7-MUA.md "Cỗ máy của mỗi mùa")
+      'pg.tem.xe-tang': 'Xe tăng R1',                     // cỗ máy mùa 2
       // Phim mùa 2 (phim-mua-2.js; kịch bản KE-HOACH-PHIM-GOI.md mục "Kịch bản mùa 2")
       'pg.xich.1': 'Trên đồi, bánh xích văng hôm trước vẫn nằm chờ. R1 lăn tới!',
       'pg.xich.2': 'CẠCH! Lắp bánh xích vào thân, R1 bám sàn chắc như xe tăng.',
