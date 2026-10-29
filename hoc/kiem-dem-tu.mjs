@@ -13,7 +13,21 @@ const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
-const ManHoc = require(path.join(day, 'man-dem-tu-thu.js'));
+const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));         // nạp cả lộ trình (có man-dem-tu-thu.js) để lấy kho hàm thật của học sinh lúc tới màn
+const KhoHam = require(path.join(day, 'kho-ham.js'));
+const TT = require(path.join(day, 'thu-tu-chuong.js'));
+const tatCa = ManHoc.danhSach;
+const tenCotTruyen = [...new Set(tatCa.flatMap((m) => m.taoHam))];
+/** Kho của học sinh LÚC TỚI màn `id` (đã chơi mọi màn trước, mỗi màn tạo / sửa hàm theo lời giải): như kiem-nam-cham.mjs. */
+function khoTruoc(id) {
+  const kho = KhoHam.moi({ tenCoDinh: tenCotTruyen });
+  for (const m of tatCa) {
+    if (m.id === id) break;
+    if (m.tietKiemNhip === true) continue;
+    for (const h of m.loiGiai.hamCuaEmMoi) { if (!kho.tim(h.ten)) kho.tao(h.ten, h.thamSo, { taoHam: m.taoHam }); kho.sua(h.ten, h.than); }
+  }
+  return kho.ds();
+}
 
 const LOI_GIA = process.argv.includes('--loi-gia');
 let dat = 0, hong = 0;
@@ -104,25 +118,29 @@ console.log('A. Lõi đệm từ');
 
 console.log('B. Màn chương dem-tu-thu');
 {
-  const DS = ManHoc.manDemTuThu || [];
-  kiem('ngân hàng có 5–6 màn, so 1.., chương dem-tu-thu, mỗi màn có demTu', DS.length >= 5 && DS.length <= 6 && DS.every((m, i) => m.so === i + 1 && m.chuong === 'dem-tu-thu' && (Array.isArray(m.demTu) && m.demTu.length > 0)), DS.length);
+  const DS = tatCa.filter((m) => m.chuong === 'dem-tu-thu');
+  kiem('lộ trình có chương dem-tu-thu 5–6 màn, so 1.., mỗi màn có demTu, xe hai bánh tay nam châm', DS.length >= 5 && DS.length <= 6 && DS.every((m, i) => m.so === i + 1 && Array.isArray(m.demTu) && m.demTu.length > 0 && m.loaiRobot === 'banh' && m.robot.tay === 'nam-cham'), DS.length);
+  const goi = TT.goi.find((g) => g.ma === 'dem-tu-thu');
+  kiem('gói "Thử đệm từ" đứng đầu mùa 3, sao cần 0', !!goi && goi.mua === 'mua-3' && goi.sao === 0 && TT.goi.filter((g) => g.mua === 'mua-3')[0] === goi, J(goi && { mua: goi.mua, sao: goi.sao, dau: TT.goi.filter((g) => g.mua === 'mua-3')[0] && TT.goi.filter((g) => g.mua === 'mua-3')[0].ma }));
   DS.forEach((m) => {
-    const kq = ChamHoc.cham(m, m.loiGiai, []);
+    const kho = khoTruoc(m.id);
+    const kq = ChamHoc.cham(m, m.loiGiai, kho);
     kiem('màn ' + m.so + ' "' + m.ten + '": lời giải thắng 3 sao (' + (kq.nhip || '?') + ' nhịp)', kq.thang && kq.sao === 3, J({ thang: kq.thang, sao: kq.sao, loi: kq.loi, cd: (kq.chanDoan || []).map((c) => c.ma) }));
     if (m.so === 1) {
-      const km = ChamHoc.cham(m, m.maMau, []);
+      const km = ChamHoc.cham(m, m.maMau, kho);
       kiem('màn 1 trình diễn: mã mẫu bấm Chạy là thắng 3 sao', km.thang && km.sao === 3, J({ thang: km.thang, sao: km.sao }));
     }
     if (m.loiGiaiKhac) {
-      const kk = ChamHoc.cham(m, m.loiGiaiKhac.baiLam, []);
+      const kk = ChamHoc.cham(m, m.loiGiaiKhac.baiLam, kho);
       kiem('màn ' + m.so + ' lời khác (' + m.loiGiaiKhac.moTa + '): ' + (m.loiGiaiKhac.sao !== undefined ? 'thắng ' + m.loiGiaiKhac.sao + ' sao' : 'thắng'), kk.thang && (m.loiGiaiKhac.sao === undefined || kk.sao === m.loiGiaiKhac.sao), J({ thang: kk.thang, sao: kk.sao }));
     }
     (m.loiSai || []).forEach((ls, i) => {
-      const ks = ChamHoc.cham(m, ls.baiLam, []);
+      const ks = ChamHoc.cham(m, ls.baiLam, kho);
       const ma = (ks.chanDoan || []).map((c) => c.ma);
       const du = (ls.phaiCoMa || []).every((x) => ma.includes(x) || (ks.loi && ks.loi.loai === x));
       kiem('màn ' + m.so + ' lời sai ' + (i + 1) + ' (' + ls.moTa + '): không thắng' + (ls.phaiCoMa ? ', có ' + ls.phaiCoMa.join('+') : ''), !ks.thang && du, J({ thang: ks.thang, ma, loi: ks.loi }));
     });
+    if (m.so > 1) { const km2 = ChamHoc.cham(m, m.maMau, kho); kiem('màn ' + m.so + ' mã mẫu chưa thắng (phải sửa mới thắng)', !km2.thang, J({ thang: km2.thang })); }
     kiem('màn ' + m.so + ': có lời sai và gợi ý', (m.loiSai || []).length >= 1 && (m.goiY || []).length >= 1);
   });
 }

@@ -14,7 +14,7 @@
       'che-drone', 'drone', 'flycam', 'rap-du',
       // gói đội hai robot còn đang làm (tệp có thể chưa có màn)
       'doi-xich', 'doi-omni', 'doi-sung-hoi', 'doi-mau', 'doi-nam-cham', 'doi-tay-xoay', 'doi-drone',
-      'ban-xoay', 'dua-robot', 'doi-thu-manh',
+      'ban-xoay', 'dua-robot', 'doi-thu-manh', 'dem-tu-thu',
       // 7 màn mới của gói 3 Cảm biến khoảng cách (chỉ khai, lộ trình thêm vào chương bên dưới)
       'cam-bien-them',
       // 8 màn mới của gói 5 Bánh lùi (chỉ khai, lộ trình thêm vào hai chương bên dưới)
@@ -666,6 +666,13 @@
     if (dau3) dau3.sao = 0;
     M.mua2 = MUA_2;
     M.tinhLai();
+  })();
+  // GÓI THỬ ĐỆM TỪ (man-dem-tu-thu.js, chuongCoChe sau tham-so): đứng ĐẦU mùa 3 (khối trên đặt gói đầu mùa 3 = 0 ★), nên Sân cơ khí lùi xuống thứ hai:
+  // ngưỡng của nó phải <= tổng sao gói thử (6 màn × 3 = 18 ★). Bỏ gói thử thì xoá khối này.
+  (function () {
+    var thu = TT.goi.filter(function (g) { return g.ma === 'dem-tu-thu'; })[0];
+    var coKhi = TT.goi.filter(function (g) { return g.ma === 'ban-xoay'; })[0];
+    if (thu && coKhi && thu.mua === 'mua-3' && coKhi.mua === 'mua-3' && coKhi.sao > 15) { coKhi.sao = 15; M.tinhLai(); }
   })();
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
   // Sổ lệnh: hàm được chế ở màn đã dời chương (che-xe.4 → banh-lui…) ghi theo chương mới của màn đó; màn đã cất thì giữ như ngân hàng.

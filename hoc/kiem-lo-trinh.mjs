@@ -27,7 +27,8 @@ function cham(m, lg, truoc = khoTruoc.get(m.ma) || []) {
 const chuongMua1 = new Set(TT.goi.filter(g => g.mua === 'mua-1').flatMap(g => g.chuong));
 const chuongMua2 = new Set(TT.goi.filter(g => g.mua === 'mua-2').flatMap(g => g.chuong));
 // che-xich (mùa 3, ẩn): năm màn bậc thang rời mùa 2 nhưng giữ vì che-xich.4 tạo climb() cho gói đội mùa ẩn.
-const chuongTam = new Set([...chuongMua1, ...chuongMua2, 'che-xich']);
+// dem-tu-thu (mùa 3, ẩn): gói THỬ đệm từ 6 màn (brief-dem-tu-thu.md), chưa phải gói thật.
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, 'che-xich', 'dem-tu-thu']);
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
   assert.equal(new Set(M.danhSach.map(m => m.ma)).size, M.danhSach.length);
