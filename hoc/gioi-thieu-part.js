@@ -217,6 +217,15 @@
       khong: ['Tường, rào, thùng, cửa đóng, mép sân: color() trả "none"', 'Không gắn chung với cảm biến màu ở bụng'],
       luuY: ['Cùng tên color() với cảm biến màu, nhưng đọc chỗ khác. Kết quả của hàm tùy vào bộ phận gắn trên xe.']
     },
+    'camera-4': {
+      khe: 'camBien', ten: 'Camera bốn hướng',
+      moTa: 'Tháp camera trên nóc, bốn ống kính nhìn bốn ô quanh robot.',
+      lenh: ['color'],
+      moTaLenh: { color: 'Đọc màu ở ô theo hướng ghi trong lệnh' },
+      gioi: ['Xe nhìn "front", "left", "right", "back" theo mũi xe', 'Drone nhìn "up", "down", "left", "right" theo bản đồ', 'Đọc không tốn nhịp'],
+      khong: ['Tường, rào, thùng, cửa đóng, mép sân: trả "none"', 'Không gắn chung với cảm biến màu ở bụng hay camera trước'],
+      luuY: ['Phải ghi hướng: color() để trống là lỗi.', 'Bản nâng cấp nhìn thêm ô dưới chân: hướng "here".']
+    },
     'camera-bay': {
       khe: 'camBien', ten: 'Camera bụng drone',
       moTa: 'Ống kính dưới bụng drone, nhìn ô ngay bên dưới.',
@@ -226,7 +235,7 @@
       luuY: []
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-bay'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -242,7 +251,7 @@
     them('khoang-cach');
     them('tu');
     them('hong-ngoai');
-    if (co(goc, 'color')) them(co(cam, 'camera') ? 'camera' : 'mau');
+    if (co(goc, 'color')) them(co(cam, 'camera-4') ? 'camera-4' : co(cam, 'camera') ? 'camera' : 'mau');
     them('camera-bay');
     return kq;
   }

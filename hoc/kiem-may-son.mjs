@@ -71,9 +71,9 @@ console.log('== 1. Luật lõi ==');
   kiem('tô sai màu trong hình thì tô lại được rồi thắng', r.thang && r.nhip === 2 && r.suKien.some((e) => e.ma === 'to-sai-mau'));
   r = chay(S5, null, 'pen_down()\n' + F);
   kiem('vết nhịp có robot.son và daSon', r.vet.filter((e) => e.loai === 'nhip').every((e) => e.robot.son && Array.isArray(e.daSon)));
-  kiem('lỗi cấu hình: máy sơn đi chung tay kẹp / chỉ gắn xe bánh / hình trên tường / hinh ngoài to-hinh',
+  kiem('lỗi cấu hình: máy sơn đi chung tay kẹp / chỉ gắn xe bánh hay drone (P1 mùa 4: drone treo dưới bụng, nhện thì không) / hình trên tường / hinh ngoài to-hinh',
     /một tay/.test(loi(() => SanHoc.chay({ san: S5, batDau: { x: 0, y: 0 }, hamGoc: KHAY.concat(['grab']) }, ''))) &&
-      /xe có bánh/.test(loi(() => SanHoc.chay({ san: S5, batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'wait', 'dot'] }, ''))) &&
+      /xe có bánh/.test(loi(() => SanHoc.chay({ san: S5, batDau: { x: 0, y: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'dot'] }, ''))) &&
       /tường/.test(loi(() => SanHoc.chay({ san: ['#....'], batDau: { x: 1, y: 0 }, hamGoc: KHAY, mucTieu: 'to-hinh', hinh: ['r....'] }, ''))) &&
       /to-hinh/.test(loi(() => SanHoc.chay({ san: S5, batDau: { x: 0, y: 0 }, hamGoc: KHAY, hinh: S5 }, ''))));
   kiem('LENH_NGUOC: pen_down ↔ pen_up', SanHoc.LENH_NGUOC.pen_down === 'pen_up' && SanHoc.LENH_NGUOC.pen_up === 'pen_down');

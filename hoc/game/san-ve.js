@@ -475,14 +475,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var now = performance.now(), key = d.tu.x + ',' + d.tu.y + '>' + (d.o ? d.o.x + ',' + d.o.y : '-' + d.huong), ds = this.docs, i;
       ms = Math.max(140, ms || 360);
       for (i = ds.length - 1; i >= 0; i--) if (ds[i].key === key) { ds.splice(i, 1); break; }
-      ds.push({ key: key, tu: d.tu, o: d.o, huong: d.huong, trong: !!d.trong, vat: d.vat || null, cam: d.cam || null, mau: d.mau || null, nguon: d.nguon || null, chat: d.chat || null, dai: d.cam === 'tu' ? this.tamTrong(d.tu, d.huong) : 0, ham: d.ham || null, khoang: d.khoang || 0, nong: !!d.nong, t0: now, ms: ms });     // ham / khoang / nong: hồng ngoại (distance / warm)
+      var c4 = d.cam === 'camera-4', cam = c4 && d.huong === 'here' ? 'camera-bay' : (d.cam || null);          // camera bốn hướng (mùa 4): tia như camera trước theo hướng tuyệt đối huongDoc; "here" vẽ như camera nhìn xuống
+      ds.push({ key: key, tu: d.tu, o: d.o, huong: c4 ? d.huongDoc : d.huong, trong: !!d.trong, vat: d.vat || null, cam: cam, mau: d.mau || null, nguon: d.nguon || null, chat: d.chat || null, dai: d.cam === 'tu' ? this.tamTrong(d.tu, d.huong) : 0, ham: d.ham || null, khoang: d.khoang || 0, nong: !!d.nong, t0: now, ms: ms });     // ham / khoang / nong: hồng ngoại (distance / warm)
       while (ds.length > 6) ds.shift();
       if (d.cam === 'pin' && this.vis && this.vis.dr) this.vis.dr.nhay = now + Math.max(ms, 320);                 // đọc battery(): thanh pin nháy, đèn thân sáng
-      if ((d.cam === 'mau' || d.cam === 'camera' || d.cam === 'camera-bay') && this.vis) this.vis.bongMau = { mau: d.mau || 'none', den: now + Math.max(ms, 300), o: d.o ? { x: d.o.x, y: d.o.y } : null, tu: d.tu ? { x: d.tu.x, y: d.tu.y } : null };      // bong chữ màu vừa đọc nổi trên xe trong khoảng một nhịp (cảm biến bụng và camera)
+      if ((d.cam === 'mau' || d.cam === 'camera' || d.cam === 'camera-bay' || d.cam === 'camera-4') && this.vis) this.vis.bongMau = { mau: d.mau || 'none', den: now + Math.max(ms, 300), o: d.o ? { x: d.o.x, y: d.o.y } : null, tu: d.tu ? { x: d.tu.x, y: d.tu.y } : null };      // bong chữ màu vừa đọc nổi trên xe trong khoảng một nhịp (cảm biến bụng và camera)
     },
     /** Camera đang đọc không (hai đốm mắt trên thân sáng rực trong lúc tia còn chạy). */
     camMatSang: function (now) {
-      for (var i = 0; i < this.docs.length; i++) if ((this.docs[i].cam === 'camera' || this.docs[i].cam === 'camera-bay') && now - this.docs[i].t0 < this.docs[i].ms * 0.85) return true;       // camera ở xe (hai mắt) hay camera nhìn xuống của drone (kính)
+      for (var i = 0; i < this.docs.length; i++) if ((this.docs[i].cam === 'camera' || this.docs[i].cam === 'camera-bay' || this.docs[i].cam === 'camera-4') && now - this.docs[i].t0 < this.docs[i].ms * 0.85) return true;       // camera ở xe (hai mắt) hay camera nhìn xuống của drone (kính)
       return false;
     },
     /** Còn tia cảm biến đang sáng không (cảm biến trên thân xe sáng cùng lúc). */
@@ -505,7 +506,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var ds = this.docs, i;
       for (i = 0; i < ds.length; i++) {
         var d = ds[i], u = (now - d.t0) / d.ms, a = u < 0.55 ? 1 : Math.max(0, 1 - (u - 0.55) / 0.45);
-        if ((d.cam === 'camera' || d.cam === 'camera-bay') && u < 1) this.veTiaVec(g, d, now, u, a, 'duoi');
+        if ((d.cam === 'camera' || d.cam === 'camera-bay' || d.cam === 'camera-4') && u < 1) this.veTiaVec(g, d, now, u, a, 'duoi');
       }
     },
     /** GỐC TIA của một lần đọc d (chế độ vector, gói V4): ổ THẬT của cảm biến trên robot đang xét (VeVector.diemCamBien / diemMat, theo hướng xe lúc vẽ), pixel sân.
@@ -513,6 +514,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      *  Không có ổ (cấu hình lạ): mũi xe (5 / 7 pixel sân trước tâm ô; cảm biến từ thiếu tai thì ở ổ tay nam châm). */
     oTia: function (d) {
       var r = this.cfg.robot, v = this.vis, h = v.d || 0, dx = DX[d.huong] || 0, dy = DY[d.huong] || 0, bx = d.tu.x * T, by = d.tu.y * T - (v.dr ? v.hop : 0), ds, i;
+      if (d.cam === 'camera-4') { var t4 = VeVector.diemCamBien(r, 'camera-4', h, T); if (t4.length) return [{ x: bx + t4[0].x + dx * 2.5, y: by + t4[0].y + dy * 2.5 }]; }      // camera bốn hướng: gốc ở tâm tháp, lệch về hướng đọc
       if (d.cam === 'camera') { var ok = VeVector.diemOngKinh(r, h, T); ds = ok ? [{ x: ok.x - dy * 0.7, y: ok.y + dx * 0.7 }, { x: ok.x + dy * 0.7, y: ok.y - dx * 0.7 }] : VeVector.diemMat(r, h, T); }   // gói V4: chùm từ ống kính camera ở đuôi (mép trái / phải ống kính)
       else ds = VeVector.diemCamBien(r, d.cam === 'hong-ngoai' ? 'hong-ngoai' : 'khoang-cach', h, T);
       if (!ds.length && d.cam === 'tu') { var gn = VeVector.diemGan(r, h, T); if (gn) ds = [gn]; }
@@ -526,7 +528,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Một tia cảm biến ở chế độ vector (gói V4, VeVector.HU): pha 'duoi' (dưới robot: chùm camera, ô ám của camera nhìn xuống) hay 'tren'. */
     veTiaVec: function (g, d, now, u, a, pha) {
       var hu = HU(), c = this.cfg, col = d.nguon === 'chan' ? BM.sanLamV3 : this.mauHien(d.mau);
-      if (d.cam === 'camera') hu.tiaCamera(g, d, now, u, a, pha, this.oTia(d), col, DX, DY);
+      if (d.cam === 'camera' || d.cam === 'camera-4') hu.tiaCamera(g, d, now, u, a, pha, this.oTia(d), col, DX, DY);
       else if (d.cam === 'camera-bay') hu.tiaNhin(g, d, now, u, a, pha, col);
       else if (d.cam === 'tu') hu.tiaTu(g, d, u, a, this.oTia(d), now, DX, DY);
       else if (d.cam === 'hong-ngoai') hu.tiaHongNgoai(g, d, now, u, a, this.oTia(d), d.o.x >= c.ox && d.o.y >= c.oy && d.o.x < c.ox + c.vw && d.o.y < c.oy + c.vh, DX, DY);

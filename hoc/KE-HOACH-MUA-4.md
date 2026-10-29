@@ -123,6 +123,15 @@ Ghi chú chia:
   che-may-son: 1 · 9 · 2 · 11 · 4 · 3 · 12 · 6 · 5 · 10. che-may-son.7 Lưới chấm và .8 Khung lồng khung (37 / 44 nhịp, sân 49 ô, khó hơn trùm 26 nhịp)
   dời sang gói 10 chương tong-hop-4 "Đủ bộ" (màn nhắc lại; gói 10 hiện có hai màn đó, chưa đủ).
   kiem-man-mua-4 thêm: hàm em chế ở màn mới không được trùng tên hàm đã có trong kho (bắt corner() mùa 1, đã đổi thành bend).
+- **30/10 P1 lõi** (nhánh claude/khung-mua-4, đã gộp main ffc9492 trước khi làm; báo phiên Mùa 3 trước khi sửa tệp chung, bên đó không đụng các chỗ này):
+  - N1 đáp đất sạc (587c16b): khay có land / take_off thì ô P chỉ sạc khi land() trên đó (đầy ngay); nhịp đậu trọn không tốn pin, nhịp land / take_off tốn 1;
+    go_*() lúc đậu: đứng yên mất nhịp, chẩn đoán dang-dau (không dừng chương trình); land() trên rào / hố / băng / bậc / thùng / vật: dap-bi-chan, vẫn bay.
+    Drone gốc (không có land) GIỮ sạc tự động trên P để màn cũ ngoài mùa 4 không đổi; mùa 4 gói 1–4 không có ô P (máy kiểm (d)). kiem-dap-sac.mjs.
+  - N2 camera bốn hướng (587c16b): bộ phận mới camera-4 (tháp bốn ống kính trên nóc), color(huong): xe "front" / "left" / "right" / "back" theo mũi, drone / nhện
+    "up" / "down" / "left" / "right" theo bản đồ; nâng cấp { ma: 'camera-4', taiCho: true } thêm "here". color() để trống, hướng lạ, "here" chưa nâng cấp: lỗi chạy
+    huong-cam-sai. Cảm biến bụng / camera trước cũ giữ color() không đối số (61 màn cũ không đổi). kiem-cam-4.mjs. Khay: khối mẫu chèn sẵn color("front") / color("up").
+  - N3 drone gắn máy sơn: đầu sơn treo dưới bụng, tô ô dưới drone, cùng luật máy sơn của xe; nhịp có tô tốn thêm 1 pin; bút còn hạ khi bay ngang rào / hố là tô lên đó
+    (ô hình không được nằm trên rào / hố nên là tô ngoài hình). Không đi chung nam châm. kiem-drone-son.mjs.
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -137,4 +146,18 @@ Ghi chú chia:
 8. Hai chỗ nhảy ở ranh giới gói chưa dựng xong, để lại: may-son.3 (đầu gói 6, 18 ô) sau che-drone.9 (cuối gói 5, 9 ô): gói 5 dựng lại sau lõi P1;
    che-may-son.7 (đầu gói 10, 37 nhịp, 49 ô) sau che-doi-nam-cham.9 (gói 8): gói 9 còn trống, gói 10 sẽ có màn đứng trước.
 9. Dời che-may-son.7 / .8 sang gói 10: đồng ý không, hay muốn cắt hẳn (gói 10 sẽ dựng màn nhắc lại mới)?
+10. Câu hỏi 2 (camera của drone theo bản đồ hay theo hướng bay): tôi đã làm THEO BẢN ĐỒ ("up" / "down" / "left" / "right", khớp go_up…). Đổi được nếu cần.
+11. Luật pin tự đặt (đơn giản, đổi được): nhịp land() / take_off() tốn 1 pin, đậu trọn nhịp không tốn; sơn từ drone tốn thêm 1 pin mỗi nhịp có tô.
+12. go_*() lúc drone đang đậu: tôi cho đứng yên mất nhịp + lỗi dang-dau (như đâm tường), KHÔNG dừng chương trình. Muốn dừng hẳn thì đổi một dòng.
+13. Giao diện color("hướng"): khay chèn sẵn color("front") / color("up"); chưa thử trên trình duyệt việc chạm chữ "front" để đổi hướng (cần màn gói 3).
+    Bộ lắp ráp (màn lắp robot) chưa có camera-4 trong danh mục mua (giá, bảng kế hoạch): thêm khi dựng màn lắp ráp mùa 4.
+14. **Chặn gói 3, 5, 7 (cần user chọn)**: màn cũ của ba gói dạy cơ chế mà user đã thay.
+    - Gói 5: drone.5 TẠO hàm cốt truyện recharge() = bay lên ô P rồi xuống (sạc tự động). recharge() còn được drone.6, drone.10, che-drone.5, .8, .9, .10, flycam.6
+      VÀ ba màn đội drone ẩn ở mùa 5 (doi-drone.6, .10, che-doi-drone.10) dùng. Luật mới "đáp mới sạc" làm recharge() cũ sai nghĩa.
+    - Gói 3: chương mau / che-mau dạy cảm biến màu Ở BỤNG (color() đọc ô dưới xe) và camera trước, không phải camera bốn hướng. Ô dưới chân lại chính là nâng cấp "here" của gói 7.
+    - Gói 7: flycam dùng look() (user bỏ look).
+    Phương án: (A) dời các màn cũ đó sang một chương chứa ở mùa 5 (ẩn, cạnh đội drone để recharge() vẫn được tạo trước khi đội drone dùng), dựng gói 3, 5, 7
+    bằng màn mới theo luật mới (khoảng 40 màn mới); (B) giữ màn cũ, viết lại lời giải từng màn theo luật mới (recharge() mới = đáp, sạc, cất cánh; đo lại sao, sửa cả
+    ba màn đội drone mùa 5); (C) giữ nguyên, chỉ thêm màn mới (mâu thuẫn luật user chốt). Tôi nghiêng về A: màn cũ thiết kế quanh "ghé P liên tục", đúng điều user
+    muốn tránh; viết lại theo B gần bằng làm mới mà vẫn kẹt bố cục cũ. Chưa làm, chờ user.
 

@@ -64,6 +64,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, 49.2, 59.2, 0.8); H.to(g, BM.vecVo);
   } });
 
+  /* CAMERA BỐN HƯỚNG (mùa 4 gói 3, color(huong)): tháp tròn trên nóc, bốn ống kính nhỏ chĩa trước / sau / trái / phải; đang đọc (s.mat): bốn ống kính sáng rực + quầng.
+     Ổ logic 'tren' (xe, nhện, drone đều có). Tia đọc: san-ve.js veTiaVec như camera trước, gốc ở tâm tháp. */
+  V.dangKy({ loai: 'cam-bien', ma: 'camera-4', hamGoc: ['color'], ten: 'Camera bốn hướng', gan: 'tren', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+    var sang = !!s.mat;
+    if (sang) { H.tron(g, 50, 50, 11); H.to(g, H.rgba(BM.vecMatSangRgb, 0.35)); }
+    H.tron(g, 50, 50, 8.5); g.fillStyle = H.gradVo(g, 41.5, 41.5, 17, 17); g.fill(); H.vien(g, BM.vecVien, 2.2);       // tháp
+    [[50, 43], [57, 50], [50, 57], [43, 50]].forEach(function (p) {                                                    // bốn ống kính
+      H.tron(g, p[0], p[1], 2.4); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 1);
+      H.tron(g, p[0], p[1], 1.4); H.to(g, sang ? BM.vecMatSang : s.bat ? BM.vecDenSang : BM.vecDen);
+    });
+    H.tron(g, 50, 50, 2.6); H.to(g, BM.vecBacToi); H.vien(g, BM.vecVien, 1);
+  } });
+
   /* HỒNG NGOẠI (distance() / warm(), mùa 2): mắt đo nhỏ ở góc mũi bên trái, vỏ tròn trắng, thấu kính đỏ: tắt = đỏ sẫm, đang đọc = đỏ hồng rực + lõi sáng + hai chấm nhô về phía trước
      (tia dài trên sân do san-ve.js / gói V4 vẽ). */
   V.dangKy({ loai: 'cam-bien', ma: 'hong-ngoai', hamGoc: ['distance',  'warm'], ten: 'Cảm biến hồng ngoại (mắt đỏ ở mũi)', gan: 'tren', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {

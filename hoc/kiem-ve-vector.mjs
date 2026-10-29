@@ -431,7 +431,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   for (const loai of ['than', 'tay', 'cam-bien']) {
     const mp = BP[loai].map((d) => d.ma), mv = V.ds(loai);
     for (const ma of mp) if (!mv.includes(ma)) thieu.push(loai + '/' + ma);
-    const THEM_SAU_CHUP = { 'cam-bien': ['tu'] };                                                   // P1 mùa 3 (29/10): cảm biến từ 'tu' thành part vector riêng (bộ pixel chưa từng có)
+    const THEM_SAU_CHUP = { 'cam-bien': ['tu', 'camera-4'] };                                       // camera-4: camera bốn hướng color(huong), P1 mùa 4 (30/10)                                                   // P1 mùa 3 (29/10): cảm biến từ 'tu' thành part vector riêng (bộ pixel chưa từng có)
     for (const ma of mv) if (!mp.includes(ma) && !(THEM_SAU_CHUP[loai] || []).includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
     for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;
@@ -449,8 +449,11 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 
   /* b. mọi tổ hợp: thân × (không tay + tay) × bộ cảm biến (không, từng cảm biến ở từng ổ, vài cặp) — Part.ghep (đã chụp) ném ⇔ VeVector.kiemGhep ném, cùng câu báo */
   const hopLe = [], lechLuat = []; let soCam = 0;
+  // 30/10 P1 mùa 4: drone được treo máy sơn dưới bụng (như nam châm). Kỳ vọng của drone + máy sơn = kỳ vọng đã chụp của drone + nam châm cùng bộ cảm biến.
+  const loiChup = new Map(CHUP.ghep.map((g) => [J(g.cfg), g.loi]));
+  const kyVong = (cfg, loi) => (cfg.than === 'drone' && cfg.tay === 'son' ? loiChup.get(J(Object.assign({}, cfg, { tay: 'nam-cham' }))) : loi);
   for (const g of CHUP.ghep) {
-    const cfg = g.cfg, ep = tenMoi(g.loi);
+    const cfg = g.cfg, ep = tenMoi(kyVong(cfg, g.loi));
     let ev = null;
     try { V.kiemGhep(cfg); } catch (e) { ev = e.message; }
     if (ep !== ev) lechLuat.push(J(cfg) + ' pixel (chụp): ' + ep + ' | vector: ' + ev);
