@@ -278,16 +278,8 @@
     "nhip": 11
   },
   "sung-hoi.1": {
-    "o": 3,
-    "nhip": 3
-  },
-  "sung-hoi.3": {
-    "o": 7,
+    "o": 10,
     "nhip": 4
-  },
-  "sung-hoi.8": {
-    "o": 7,
-    "nhip": 8
   },
   "tham-so.1": {
     "o": 14,
@@ -308,10 +300,6 @@
   "bang-chuyen.8": {
     "o": 23,
     "nhip": 20
-  },
-  "che-sung-hoi.7": {
-    "o": 15,
-    "nhip": 5
   },
   "che-nhen.8": {
     "o": 14,

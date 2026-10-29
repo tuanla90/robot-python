@@ -119,7 +119,7 @@
     }),
 
     man({
-      so: 2, ten: 'Van sau lưng', hang: 'lam-quen', hamGoc: KHAY_2, hamCuaEmCan: ['move'],
+      so: 2, ten: 'Van phía sau', hang: 'lam-quen', hamGoc: KHAY_2, hamCuaEmCan: ['move'],
       deBai: 'Van mở cửa nằm sau lưng xe. spray_back() phun tia nước ra phía sau. Đổi lệnh phun cho trúng van, rồi đưa xe qua cửa tới cờ.',
       veMaMau: 'Chương trình có sẵn phun ra trước. Chạy thử, xem tia nước bay về đâu rồi sửa.',
       san: SAN_2, batDau: BD_2,

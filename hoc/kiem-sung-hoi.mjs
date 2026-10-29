@@ -554,7 +554,7 @@ console.log('\n== 8. Chương sung-hoi (30/10 dựng lại theo PHUN NHẸ): d�
 const BANG = [];
 {
   const viTriChuong = ThuTu.thuTu.indexOf('sung-hoi') + 1;
-  const TEN = ['Phun mở van', 'Van sau lưng', 'Hai ô là hết tầm', 'Phun qua hàng rào', 'Quay về phía van', 'Tắt băng', 'Một van hai cửa', 'Thùng chắn tia nước', 'Hai van hai cửa', 'Nhà máy hơi'];
+  const TEN = ['Phun mở van', 'Van phía sau', 'Hai ô là hết tầm', 'Phun qua hàng rào', 'Quay về phía van', 'Tắt băng', 'Một van hai cửa', 'Thùng chắn tia nước', 'Hai van hai cửa', 'Nhà máy hơi'];
   kiem('đúng 10 màn, số 1..10, mã sung-hoi.1…, id theo vị trí trong thuTu (không ghi cứng số chương), chương đứng sau che-omni và trước che-sung-hoi, tên "Vòi phun"',
     ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === viTriChuong + '.' + (i + 1) && m.ma === 'sung-hoi.' + (i + 1)) && ThuTu.thuTu.indexOf('sung-hoi') === ThuTu.thuTu.indexOf('che-omni') + 1 && ThuTu.thuTu.indexOf('che-sung-hoi') === ThuTu.thuTu.indexOf('sung-hoi') + 1 && ThuTu.ten['sung-hoi'] === 'Vòi phun' && ThuTu.laDot2('sung-hoi'));
   kiem('tên các màn: ' + TEN.join(', ') + '; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu sung-hoi "Huy hiệu Vòi phun"',
