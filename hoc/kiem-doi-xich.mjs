@@ -42,8 +42,10 @@ function cham(m, bai, hamMoi) {
 }
 const ma = (r) => r.chanDoan.map((c) => c.ma);
 const tim = (x) => M.danhSach.find((m) => m.ma === x);
-const c1 = M.danhSach.filter((m) => m.chuong === 'doi-xich');
-const c2 = M.danhSach.filter((m) => m.chuong === 'che-doi-xich');
+// 29/10 khung mùa 3: màn chia lại chương (doi-xich.3, .9 ở mùa 3; còn lại ở doi-xich-bac / che-doi-xich-bac, mùa 4) nên lấy theo MÃ gốc 1–10, thứ tự theo số mã.
+const theoMa = (c) => M.danhSach.filter((m) => new RegExp('^' + c + '\\.([1-9]|10)$').test(m.ma)).sort((a, b) => Number(a.ma.split('.')[1]) - Number(b.ma.split('.')[1]));
+const c1 = theoMa('doi-xich');
+const c2 = theoMa('che-doi-xich');
 const ca = c1.concat(c2);
 
 console.log('— đội và sân');
@@ -98,12 +100,12 @@ for (const [x, ten] of Object.entries(TAO)) {
   kiem(x + ': màn bắt chế ' + ten + '(), tên mới chưa có trong kho', J(m.taoHam) === J([ten]) && !khoTruoc.get(x).some((h) => h.ten === ten) && m.loiGiai.hamCuaEmMoi.some((h) => h.ten === ten));
   kiem(x + ': không chế ' + ten + '() thì chưa thắng (mẫu, kho chưa có hàm)', !cham(m, m.loiGiai, []).thang);
 }
-const tenKhac = M.danhSach.filter((m) => !m.chuong.endsWith('doi-xich')).flatMap((m) => m.taoHam.concat((m.loiGiai.hamCuaEmMoi || []).map((h) => h.ten), (m.loiGiai.hamCuaMan || []).map((h) => h.ten)));
+const tenKhac = M.danhSach.filter((m) => !ca.includes(m)).flatMap((m) => m.taoHam.concat((m.loiGiai.hamCuaEmMoi || []).map((h) => h.ten), (m.loiGiai.hamCuaMan || []).map((h) => h.ten)));
 kiem('wait_box, lift_up, duck không trùng tên hàm của chương nào khác', Object.values(TAO).every((t) => !tenKhac.includes(t)));
 kiem('pause và hop_box đã học trước gói (che-doi-ho-bang), chương 2 không bắt chế lại mà dùng như hàm đã có',
   ['pause', 'hop_box'].every((t) => khoTruoc.get('che-doi-xich.1').some((h) => h.ten === t) && !c2.some((m) => m.taoHam.includes(t))) &&
   c2.filter((m) => /pause\(|hop_box\(/.test(J(m.loiGiai.doi))).every((m) => /pause|hop_box/.test(J(m.hamCuaEmCan))));
-kiem('chương 2 chỉ màn 1–3 chế hàm mới', c2.filter((m) => m.taoHam.length).map((m) => m.so).join() === '1,2,3');
+kiem('chương 2 chỉ màn 1–3 chế hàm mới', c2.filter((m) => m.taoHam.length).map((m) => m.ma.split('.')[1]).join() === '1,2,3');
 { // che-doi-xich.5: nhện tự động gọi pause(8) và hop_box: xích phải kịp giờ
   const m = tim('che-doi-xich.5');
   kiem('che-doi-xich.5: nhện khóa và chương trình nhện gọi pause và hop_box', m.doi[1].coDinh && /pause\(/.test(J(m.maMau.doi[1])) && /hop_box\(/.test(J(m.maMau.doi[1])));

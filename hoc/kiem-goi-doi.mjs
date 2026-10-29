@@ -52,8 +52,17 @@ for (const c of goiDoi) {
   // Khung mùa 2 (27/10, KE-HOACH-MUA-2.md): chương neo `sau` đã vào bảng 10 gói mùa 2 còn gói đội thì rời mùa 2 sang mùa ẩn (xếp lại khi làm mùa của nó).
   // Gói đó chỉ cần: ở mùa ẩn sau mùa 2, chương đứng sau `sau` trong thuTu, ngưỡng sao có khai, giữ khongTangNguong.
   const goiSau = TT.goi.find((g) => g.chuong.includes(c.sau));
-  const roiMua2 = goiSau && goiSau.mua === 'mua-2' && TT.goi[gi] && TT.goi[gi].mua !== 'mua-2';
-  if (roiMua2) {
+  // Khung mùa 3 (29/10, KE-HOACH-MUA-3.md) cũng vậy: chương neo vào MUA_3 (che-nhen) hay hết màn (che-nam-cham chia vào các chương mùa 3) mà gói đội ở mùa ẩn sau.
+  const roiMua2 = TT.goi[gi] && (goiSau ? (goiSau.mua === 'mua-2' || goiSau.mua === 'mua-3') && TT.goi[gi].mua !== goiSau.mua : vt < 0);
+  // Gói đội vào thẳng MUA_3 (doi-xich = gói 8): màn không bậc thang ở lại mùa 3, màn còn lại thành chương rời (M.roiMua3) đứng đúng chỗ cũ sau chương neo.
+  const khung3 = TT.goi[gi] && TT.goi[gi].mua === 'mua-3' && (M.mua3 || []).some((g) => g.ma === c.goi.ma);
+  if (khung3) {
+    const roi = Object.keys(M.roiMua3 || {}).filter((x) => M.roiMua3[x].some((ma) => c.chuong.some((y) => ma.startsWith(y.ma + '.'))));
+    const gr = TT.goi.findIndex((g) => roi.length > 0 && g.chuong.includes(roi[0]));
+    kiem(c.goi.ma + ': gói đội vào khung mùa 3 (MUA_3): mùa 3 ẩn; chương rời ' + roi.join(', ') + ' đứng ngay sau ' + c.sau + ', gói rời ngay sau gói part, có ngưỡng sao',
+      TT.mua.find((x) => x.ma === 'mua-3').an === true && roi.length > 0 && J(TT.thuTu.slice(vt + 1, vt + 1 + roi.length)) === J(roi) &&
+      gr > 0 && TT.goi[gr - 1].chuong.includes(c.sau) && typeof TT.goi[gr].sao === 'number' && TT.goi[gr].sao >= TT.goi[gr - 1].sao && TT.goi[gr].khongTangNguong === true);
+  } else if (roiMua2) {
     const g = TT.goi[gi], mua = TT.mua.find((x) => x.ma === g.mua);
     kiem(c.goi.ma + ': gói đội rời mùa 2 (neo ' + c.sau + ' ở khung mùa 2): ở mùa ẩn sau mùa 2, chương đứng sau ' + c.sau + ', có ngưỡng sao',
       mua && mua.an === true && TT.mua.indexOf(mua) > TT.mua.findIndex((x) => x.ma === 'mua-2') && c.coMan.every((x) => TT.thuTu.indexOf(x) > vt) &&
@@ -63,11 +72,19 @@ for (const c of goiDoi) {
     kiem(c.goi.ma + ': gói nằm ngay sau gói part, ngưỡng sao không thấp hơn', gi > 0 && TT.goi[gi - 1].chuong.includes(c.sau) && TT.goi[gi].sao >= TT.goi[gi - 1].sao && TT.goi[gi].khongTangNguong === true,
       gi > 0 ? TT.goi[gi - 1].ma + ' ' + TT.goi[gi - 1].sao + ' → ' + TT.goi[gi].sao : 'không thấy gói');
   }
-  for (const ch of c.coMan) {
-    const ds = M.danhSach.filter((m) => m.chuong === ch);
+  // Màn của gói theo MÃ (ma = chương gốc + '.' + 1–10, không đổi): khung mùa 3 chia lại chương (doi-xich → doi-xich + doi-xich-bac) mà mã giữ nguyên.
+  for (const ch of c.chuong.map((x) => x.ma)) {
+    const ds = M.danhSach.filter((m) => new RegExp('^' + ch + '\\.([1-9]|10)$').test(m.ma)).sort((a, b) => Number(a.ma.split('.')[1]) - Number(b.ma.split('.')[1]));
+    if (!ds.length) continue;
+    if (!ds.every((m) => m.chuong === ch)) {
+      // Chia lại ở khung mùa 3: đủ 10 màn gốc, mỗi màn ở chương MUA_3 hay chương rời; cỡ chương / hàng do kiem-lo-trinh.mjs kiểm.
+      kiem(ch + ': 10 màn gốc còn đủ, chia vào chương mùa 3 / chương rời (khung mùa 3)', ds.length === 10 &&
+        ds.every((m) => m.chuong === ch || Object.keys(M.roiMua3 || {}).includes(m.chuong)), ds.map((m) => m.chuong).join(','));
+    } else {
     kiem(ch + ': 10 màn, hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', ds.length === 10 && J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
     kiem(ch + ': 10 màn khác nhau và tên khác nhau', new Set(ds.map((m) => J([m.san, m.loiGiai]))).size === 10 && new Set(ds.map((m) => m.ten)).size === 10);
     kiem(ch + ': màn 1–9 một sân, trùm ba sân; chỉ trùm có huy hiệu', ds.every((m) => soSan(m) === (m.so === 10 ? 3 : 1) && !!m.huyHieu === (m.so === 10)), ds.map((m) => soSan(m)).join(''));
+    }
     for (const m of ds) {
       const ten = m.ma + ' ' + m.ten;
       if (!(Array.isArray(m.doi) && m.doi.length >= 2 && m.maMau.doi && m.maMau.doi.length === m.doi.length && m.loiGiai.doi.length === m.doi.length)) { kiem(ten + ': dữ liệu nhiều robot', false); continue; }
