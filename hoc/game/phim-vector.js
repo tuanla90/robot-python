@@ -131,7 +131,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var H = V.H;
     H.bo(g, 2, 2, w - 4, h - 4, 6); H.to(g, BM.vecVo); H.vien(g, BM.vecDo, 3);
     H.bo(g, 7, 7, w - 14, h - 14, 3); H.vien(g, BM.vecDo, 1.4);
-    [15, w - 15].forEach(function (x) {                                                                                             // sao năm cánh cùng mực đỏ (dấu một màu)
+    [14, w - 14].forEach(function (x) {                                                                                             // sao năm cánh cùng mực đỏ (dấu một màu)
       g.beginPath();
       for (var i = 0; i < 10; i++) { var r = i % 2 ? 2.4 : 5.6, a = -Math.PI / 2 + i * Math.PI / 5; g[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), h / 2 + r * Math.sin(a)); }
       g.closePath(); H.to(g, BM.vecDo);
@@ -143,7 +143,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function el(cls, chu) { var e = d.createElement('div'); e.className = cls; if (chu) e.textContent = chu; return e; }
     var khoi = el('pg-xx');
     var tem = el('pg-xx-tem'); tem.style.animationDelay = Math.max(0, t - 0.45) + 's';
-    tem.appendChild(the(160, 42, function (g) { khungTem(g, 160, 42); }));
+    tem.appendChild(the(178, 42, function (g) { khungTem(g, 178, 42); }));
     tem.appendChild(el('pg-xx-chu', o.tem || ''));
     var ten = el('pg-xx-ten', o.ten || ''); ten.style.animationDelay = (t + 0.3) + 's';
     var hang = el('pg-xx-part');
