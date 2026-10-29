@@ -165,3 +165,8 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   Người giao kiểm: đo đường cong độc lập 0 chỗ nhảy; chấm trong trình duyệt 200 / 200 màn 3 sao (kho hàm cộng dồn theo lộ trình); trùm bien-xich chơi 3 sao; mùa "Ghi nhớ" hiện ở màn chọn gói
   với nút mua sẵn có; khổ 360 px không tràn; không lỗi console. npm test trên main sau gộp: 88/88.
   Còn: gói T (màn trình diễn `chiChay` cho khối mới mùa 2 + màn giấu hàm cũ, máy dò lách mùa 2), chờ main có cờ `chiChay` của gói HD1 (KE-HOACH-MUA-3.md mục 4 câu 4).
+
+29/10 GÓI T NGHIỆM THU ĐẠT (nhánh claude/t-trinh-dien-mua-2, chưa gộp): màn trình diễn chiChay ở xich, bien-xich (che-cam-bien.6), sung-hoi, tham-so, hong-ngoai, bang-chuyen, day-thung, luc-ban, do-nhiet, be-sung;
+  màn ép kế tiếp (mã mẫu sai một chỗ / giấu lệnh cũ / ba sân + đâm-là-thua ở che-cam-bien.5, .9, robot-hoan-thien.9) + hướng dẫn từng bước. Máy dò hoc/kiem-lach-mua-2.mjs (lách A–F, 282 phép dò, 0 lỗ;
+  phanh mã mẫu không được thắng sẵn). Còn: màn trình diễn đội (doi-mua-2, che-doi-mua-2) chờ HD3; LỖI CÓ SẴN: bảng chọn số của khay không có distance() / biến gán từ distance(),
+  12 màn dùng range(distance()), forward(distance() + n), d = distance() → forward(d) không ghép được bằng khối (máy chấm thì qua).
