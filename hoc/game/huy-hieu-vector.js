@@ -286,6 +286,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('list', function (g, c) { veDs(g, c, ['4', '2', '3'], 50, 50, 18); });
   dk('che-list', che(function (g, c) { veDs(g, c, ['2', '3'], 40, 60, 16); }));
   dk('che-xich', che(function (g, c) { c.robot({ than: 'xich' }, st(), 1, 42, 60, 56); }));
+  // Mùa 2 gói 1 chương 2 "Biến cho xích" (trùm bien-xich.10 đếm bước bằng biến n): xe xích đi lên + khối biến "n+1" + mũi tên đếm.
+  dk('bien-xich', function (g, c) {
+    c.robot({ than: 'xich' }, st({ banh: { trai: 1, phai: 1 } }), 0, 36, 62, 46);
+    c.khoi(66, 34, 40, 26, BM.vecTroiDam, [['n', BM.vecVo, 18, -9], ['+1', BM.vecVang, 15, 9]]);
+    c.muiTen(68, 80, 68, 56, BM.vecVang, 4.5);
+  });
   function dayThung(g, c, cx, cy, canh) {
     c.vat('thung-nang', {}, cx + canh * 0.6, cy, canh * 0.62);
     c.robot({ than: 'xich' }, st({ banh: { trai: 1, phai: 1 } }), 1, cx, cy, canh);
