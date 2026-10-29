@@ -163,8 +163,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* ---------------------------------------------------------------- hình của từng chương */
   var KEP = { than: 'hai-banh', tay: 'kep', camBien: [] }, CAM = [{ ma: 'khoang-cach', o: 'hong' }];
-  var VUI = { than: { mat: 'vui' } };
-  function st(than, tay, cam) { var s = { than: Object.assign({ mat: 'vui' }, than || {}) }; if (tay) s.tay = tay; if (cam) s.camBien = cam; return s; }
+  /** Trạng thái robot trong hình: mắt thường (29/10: user muốn robot trên hình gói mắt bình thường, không mắt vui). */
+  function st(than, tay, cam) { var s = { than: Object.assign({}, than || {}) }; if (tay) s.tay = tay; if (cam) s.camBien = cam; return s; }
   function dk(ma, f) { HINH[ma] = f; }
   /* BÍ DANH (V7c1): mã huy hiệu dùng lại hình của mã khác. Dữ liệu chụp từ huy-hieu.js pixel (HINH[a] = HINH[b]) ở c0, máy kiểm so với hoc/du-lieu-chup-pixel.json. */
   var BI_DANH = {

@@ -135,7 +135,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function pxMoiDv(g) { try { var m = g.getTransform(); return Math.sqrt(Math.abs(m.a * m.d - (m.b || 0) * (m.c || 0))) || 1; } catch (e) { return 1; } }
   /** MẮT BIỂU CẢM (gói V4, sửa theo góp ý 28/10: nét DÀY, hình TO gần hết chiều cao dải kính, quầng sáng cho tương phản) — mắt tâm (cx, cy) trên kính w × h,
    *  hệ của thân (mặt quay xuống: "trên" của khuôn mặt là −y). Nét = max(0,3·h, 2 px thiết bị) (trần 0,55·h), đầu bo tròn; màu lõi sáng vecMat trên quầng vecMatSang.
-   *  chop1 nửa nhắm · chop2 khép thành vạch · lim lim dim (nửa dưới) · dam chữ X · xoay "> <" (va nhau) · vui chữ "^" · ngac tròn to có con ngươi · buon vạch xệ ra ngoài ·
+   *  chop1 nửa nhắm · chop2 khép thành vạch · lim lim dim (nửa dưới) · dam chữ X · xoay "> <" (va nhau) · vui cung cười nhỏ "◠" · ngac tròn to có con ngươi · buon vạch xệ ra ngoài ·
    *  cho chấm nhỏ. Trả true nếu đã vẽ (kiểu khác 'thuong'). */
   function veMat(g, M, kieu, cx, cy, w, h, trong) {
     if (!kieu || kieu === 'thuong') return false;
@@ -148,7 +148,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       case 'lim': g.beginPath(); g.moveTo(cx - rw, cy - rh * 0.05); g.lineTo(cx + rw, cy - rh * 0.05); g.arc(cx, cy - rh * 0.05, rw, 0, Math.PI); g.closePath(); dac(); return true;
       case 'dam': g.beginPath(); g.moveTo(cx - rw, cy - rh * 0.85); g.lineTo(cx + rw, cy + rh * 0.85); g.moveTo(cx + rw, cy - rh * 0.85); g.lineTo(cx - rw, cy + rh * 0.85); net(day * 0.85); return true;
       case 'xoay': g.beginPath(); g.moveTo(cx - trong * rw, cy - rh * 0.8); g.lineTo(cx + trong * rw * 0.9, cy); g.lineTo(cx - trong * rw, cy + rh * 0.8); net(day * 0.9); return true;      // "> <" nhăn mắt (va nhau): khác hẳn X và tròn ở ô nhỏ
-      case 'vui': g.beginPath(); g.moveTo(cx - rw * 1.1, cy + rh * 0.55); g.lineTo(cx, cy - rh * 0.65); g.lineTo(cx + rw * 1.1, cy + rh * 0.55); net(); return true;
+      case 'vui': g.beginPath(); g.moveTo(cx - rw * 0.9, cy - rh * 0.25); g.quadraticCurveTo(cx, cy + rh * 0.95, cx + rw * 0.9, cy - rh * 0.25); net(day * 0.8); return true;      // cung cười nhỏ, mềm, đỉnh về phía mũi (+y trước khi xoay) nên trên màn hình là "◠" (29/10: chữ V cũ to và nhọn quá)
       case 'ngac': var R = rh * 1.05; tron(g, cx, cy, R); dac(); tron(g, cx, cy + R * 0.1, R * 0.42); to(g, M.toi); return true;
       case 'buon': g.beginPath(); g.moveTo(cx - trong * rw * 1.1, cy + rh * 0.75); g.lineTo(cx + trong * rw * 0.8, cy - rh * 0.55); net(); return true;      // vạch xệ dốc: ngoài thấp, trong cao
       case 'cho': tron(g, cx, cy + rh * 0.15, day * 0.62); to(g, BM.vecMat); return true;

@@ -68,12 +68,35 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (cls === 'md-mua' && PV()) k.classList.add('co-mua');        // gói V7a: đường lùi cho luật CSS :has(.md-mua) (Safari < 15.4, Firefox < 121): chỉ vector, pixel y nguyên
   }
 
-  // bốn bộ phận văng ra: icon đèn bộ phận + màu
+  /** Hình bộ phận THẬT (cùng hình ở màn Lắp robot), cạnh dài nhất `cao` px CSS. bp = { loai: 'than' | 'tay' | 'cam-bien', ma }.
+   *  Thân / tay: VeIcon.hinhPartVec; cảm biến không có hình rời nên vẽ riêng khối cảm biến trong hệ 100 rồi cắt lề.
+   *  Không có hình (chưa nạp bộ vẽ) thì dùng icon đèn bộ phận bp.du như trước (29/10: user thấy icon không giống bộ phận trong game). */
+  function boPhan(bp, cao) {
+    var cv = null, V = window.VeVector;
+    try {
+      if (bp.loai === 'cam-bien') {
+        var d = V && V.lay && V.lay('cam-bien', bp.ma);
+        if (d) {
+          var P = Math.round(cao * 6 * (window.devicePixelRatio || 1)), c0 = document.createElement('canvas'); c0.width = c0.height = P;
+          var g = c0.getContext('2d'); g.scale(P / 100, P / 100); d.ve(g, {}, V.mauDoi(), V.H); cv = catLe(c0);
+        }
+      } else if (window.VeIcon && VeIcon.hinhPartVec) cv = VeIcon.hinhPartVec(bp);
+    } catch (e) { cv = null; }
+    if (!cv) return ico(bp.du, 3, bp.mau);
+    var k = cao / Math.max(cv.width, cv.height);
+    cv.style.width = Math.round(cv.width * k) + 'px'; cv.style.height = Math.round(cv.height * k) + 'px';
+    cv.classList.add('pxi'); cv.laVector = true;
+    return cv;
+  }
+  var KEP = { loai: 'tay', ma: 'kep', du: 'denKepMo', mau: BM.vang }, CAM = { loai: 'cam-bien', ma: 'camera', du: 'denCam', mau: BM.xanhLoSang2 },
+    XICH = { loai: 'than', ma: 'xich', du: 'denXich', mau: BM.lamSang }, CANH = { loai: 'than', ma: 'drone', du: 'denCanh', mau: BM.xanhLaSangV9 };
+
+  // bốn bộ phận văng ra: tay gắp, camera, thân xích, thân drone (cánh quạt)
   var DO = [
-    { ten: 'denKepMo', mau: BM.vang, x: -120, y: 40, r: '-200deg' },
-    { ten: 'denCam', mau: BM.xanhLoSang2, x: 110, y: 30, r: '160deg' },
-    { ten: 'denXich', mau: BM.lamSang, x: -70, y: -40, r: '-90deg' },
-    { ten: 'denCanh', mau: BM.xanhLaSangV9, x: 80, y: -90, r: '540deg' }
+    { bp: KEP, x: -120, y: 40, r: '-200deg' },
+    { bp: CAM, x: 110, y: 30, r: '160deg' },
+    { bp: XICH, x: -70, y: -40, r: '-90deg' },
+    { bp: CANH, x: 80, y: -90, r: '540deg' }
   ];
 
   /* ------------------------------------------------------------- bảy khung */
@@ -83,7 +106,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       nen(k, 'md-mua'); nen(k, 'md-duong');
       var xe = h('div', 'md-a md-xe'); xe.style.top = '106px';
       var nhun = h('div', 'md-nhun');
-      nhun.appendChild(dat(thungHang(), 6, 0));
+      nhun.appendChild(dat(thungHang(), 10, 22));      // đáy thùng (vẽ chừa lề ~5 px) chạm sàn thùng xe (xe: sàn ở y 30); trước 29/10 thùng lơ lửng cách sàn ~20 px
       nhun.appendChild(dat(xeHang(), 0, 26));
       xe.appendChild(nhun); k.appendChild(xe);
     },
@@ -91,12 +114,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function (k) {
       nen(k, 'md-mua'); nen(k, 'md-duong');
       k.appendChild(dat(xeHang(), 118, 132, 'md-rung'));
-      k.appendChild(dat(thungHang(), 124, 106, 'md-bat'));
+      k.appendChild(dat(thungHang(), 128, 128, 'md-bat'));
       DO.forEach(function (d, i) {
         var vx = h('div', 'md-a md-vx'); vx.style.left = '140px'; vx.style.top = '110px';
         vx.style.setProperty('--x', d.x + 'px'); vx.style.animationDelay = (0.12 + i * 0.05) + 's';
         var vy = h('div', 'md-vy'); vy.style.setProperty('--y', d.y + 'px'); vy.style.setProperty('--r', d.r); vy.style.animationDelay = vx.style.animationDelay;
-        vy.appendChild(ico(d.ten, 3, d.mau)); vx.appendChild(vy); k.appendChild(vx);
+        vy.appendChild(boPhan(d.bp, 36)); vx.appendChild(vy); k.appendChild(vx);
       });
       k.appendChild(chu('md-ram', 'RẦM!'));
       sau(120, function () { keu('dam'); });
@@ -105,10 +128,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function (k) {
       nen(k, 'md-san');
       k.appendChild(dat(o('wall', 3), 18, 66)); k.appendChild(dat(o('wall', 3), 60, 66));
-      k.appendChild(dat(ico('denXich', 3, BM.lamSang), 40, 36, 'md-lac'));
-      k.appendChild(dat(ico('denKepMo', 3, BM.vang), PV() ? 212 : 228, 156, 'md-lac'));      // vector: thùng gỗ vẽ gọn hơn trong ô, dời kẹp vào gầm cho thùng vẫn che nửa      // thò nửa ra khỏi gầm tủ (thùng vẽ sau, che nửa trái)
+      k.appendChild(dat(boPhan(XICH, 38), 42, 30, 'md-lac'));
+      k.appendChild(dat(boPhan(KEP, 44), 222, 160, 'md-lac'));      // tay gắp thò nửa ra khỏi gầm thùng (thùng vẽ sau, che nửa trái)
       k.appendChild(dat(o('crate', 5), 178, 104));
-      k.appendChild(dat(ico('denCanh', 2, BM.xanhLaSangV9), 250, 70, 'md-mat'));
+      k.appendChild(dat(boPhan(CANH, 30), 252, 66, 'md-mat'));
       k.appendChild(chu('md-hoi md-hoi-xa', '?'));
     },
     // 4 · còn lại mỗi R1
