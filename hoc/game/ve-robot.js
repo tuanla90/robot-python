@@ -103,6 +103,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (st.tay && tay.vung !== null) st.tay.vung = tay.vung;
     if (cfg.than !== 'drone') { delete st.than.quat; delete st.than.doc; }
     if (cfg.than !== 'nhen') delete st.than.co;
+    else {                                                                                      // V8a: dáng bò của nhện (san-ve.js dangBo): hướng đi trong hệ thân, nhịp chuẩn bị nhấc chân
+      if (typeof tt.di === 'number') st.than.di = tt.di;
+      if (typeof tt.nhac === 'number') st.than.nhac = tt.nhac;
+    }
     if (!cfg.camBien.length) delete st.camBien;
     try { return VV().robot(cfg, st, h, Math.round(tiLe * 100)); }
     catch (e) {
@@ -122,7 +126,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var son = sonHieuLuc(cauHinh.son) || '';
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
       cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', son,
-      typeof tt.lan === 'number' ? tt.lan : '', tt.mat || '', tay.moK === null ? '' : tay.moK, tay.vung === null ? '' : tay.vung].join('|');
+      typeof tt.lan === 'number' ? tt.lan : '', typeof tt.di === 'number' ? 'd' + tt.di : '', typeof tt.nhac === 'number' ? 'n' + tt.nhac : '', tt.mat || '', tay.moK === null ? '' : tay.moK, tay.vung === null ? '' : tay.vung].join('|');
     if (cache[khoa]) return cache[khoa];
     var cv = veVector(cauHinh) ? veVec(cauHinh, tt, tay, son, huong, tiLe) : null;      // VeVector tự đệm; tiLe = cạnh ô / 100 → canvas đúng một ô (tay xoay: tràn sang ô bên)
     if (!cv) cv = veVec({ than: 'hai-banh', tay: null, camBien: [] }, { wl: wl, wr: wr, ph: ph }, tay, son, huong, tiLe);     // hình TẠM (cấu hình cấm / mã lạ): xe hai bánh vector không tay (V7c2: trước là hình pixel Ve.makeRobot)
