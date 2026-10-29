@@ -170,3 +170,8 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   màn ép kế tiếp (mã mẫu sai một chỗ / giấu lệnh cũ / ba sân + đâm-là-thua ở che-cam-bien.5, .9, robot-hoan-thien.9) + hướng dẫn từng bước. Máy dò hoc/kiem-lach-mua-2.mjs (lách A–F, 282 phép dò, 0 lỗ;
   phanh mã mẫu không được thắng sẵn). Còn: màn trình diễn đội (doi-mua-2, che-doi-mua-2) chờ HD3; LỖI CÓ SẴN: bảng chọn số của khay không có distance() / biến gán từ distance(),
   12 màn dùng range(distance()), forward(distance() + n), d = distance() → forward(d) không ghép được bằng khối (máy chấm thì qua).
+
+29/10 GÓI T ĐÃ GỘP (00244a2, main 90/90). SỬA BẢNG CHỌN SỐ (nhánh claude/so-distance 31c60bf, 91/91): ô số có distance(), distance() + <đối số>,
+  biến gán d = distance(); range(distance()) / forward(distance() + n) tách được ô; dòng dài xuống hai dòng. Máy kiểm hoc/kiem-o-so.mjs chạm từng ô số của lời giải
+  400 màn mùa 1, 2 trên khung thật. CÒN CHỜ USER (10 ô, máy in ra mỗi lần chạy): bang-chuyen.7 cần range(10), che-hong-ngoai.10 cần go_safe(0) (bảng chọn chỉ 1–9);
+  khoang-cach.6, me-cung.7–10, che-hong-ngoai.8 lời giải range(20 / 30 / 60) (màn có while, có lẽ giải được bằng while, chưa kiểm); hong-ngoai.6 range(20) có sẵn trong mã mẫu.
