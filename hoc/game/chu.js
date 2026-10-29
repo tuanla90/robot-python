@@ -97,6 +97,8 @@
       'choi.chinhKhoaNhan': 'Cố định',
       'choi.chiChay': 'Màn này chỉ xem: bấm Chạy để thấy khối mới làm gì. Màn sau em tự viết.',
       'choi.chiChayNhan': 'Chỉ chạy',
+      'choi.damLaThua': 'Đâm tường là thua',
+      'choi.damLaThuaDe': 'Màn này đâm tường là thua: xe dừng ngay tại cú đâm.',
       'choi.canhBao': 'Lưu ý trên sân',
       'choi.nhom.goc': 'LỆNH CÓ SẴN',
       'choi.nhom.tay': 'TAY',

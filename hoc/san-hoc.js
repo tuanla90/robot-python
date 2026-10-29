@@ -96,6 +96,9 @@
         - BỆ SÚNG XÍCH (mùa 2; màn khai cfg.beSung = true; robot không súng bỏ qua cờ): XÍCH gắn súng hơi bắn TỤ ("charge" hay không đối số) thì bóng bay như cũ nhưng xe KHÔNG GIẬT:
           không có sự kiện 'giat', thùng sau xe không bị hất; thay bằng sự kiện 'be-sung' { nhip, huong } (thông tin cho hoạt cảnh: xe rung nhẹ, bệ giữ). Bắn nhanh ("fast") như cũ.
           Thân khác (hai bánh, omni) có beSung vẫn giật như thường; không khai cờ thì xích cũng giật như hiện nay.
+        - ĐÂM LÀ THUA (HD2, 29/10; màn ÉP khối mới của mùa 1 khai cfg.damLaThua = true; mặc định tắt, không khai thì luật cũ y nguyên): nhịp nào có sự kiện
+          'dam-tuong' (tường, mép sân, cửa đóng, thùng nặng, vật nằm đất... mọi loại) mà chưa thắng thì chương trình DỪNG NGAY cuối nhịp đó (dungSom = 'dam-tuong'),
+          robot đứng lại ở cú đâm, không chạy tiếp các nhịp sau; sân đó không thắng. Lời chẩn đoán dam-tuong của cham.js nói rõ luật. Chỉ màn một robot.
 
    'omni' (xe BÁNH OMNI): có MỌI lệnh bánh của xe hai bánh (left_move / right_move / left_back / right_back, wait và tay gắp
         nếu có) với đúng luật cũ (tiến / lùi 1 ô, quay 90° trong 1 nhịp), nên move(), turn_right(), turn_left() cũ chạy ĐÚNG. Thêm HAI
@@ -668,7 +671,7 @@
    *     'banh-goi-lai' / 'tay-goi-lai' có thêm `truoc` = lệnh đã giữ bánh / nhóm đó trong nhịp {ten, dongPy}
    *     Trong vet.suKien của nhịp còn có 'nhat-vat', 'dat-vat' (thông tin cho hoạt cảnh) và 'xong-dua-vat'.
    *   - tay, vat: trạng thái CUỐI (tay null nếu không có tay gắp); vatBanDau: vật lúc xuất phát;
-   *     dich: các ô đích [{x,y}]; dungSom: null | 'vat-vo' (dừng sớm vì vật vỡ, chỉ ở mục tiêu dua-vat)
+   *     dich: các ô đích [{x,y}]; dungSom: null | 'vat-vo' (dừng sớm vì vật vỡ, chỉ ở mục tiêu dua-vat) | 'dam-tuong' (cfg.damLaThua) | ...
    *   - soLanDoc: số lần đọc cảm biến; docConLai: các sự kiện 'doc-cam-bien' chưa gắn vào nhịp nào (đọc sau nhịp cuối).
    */
   function chay(cfg, codeVao, opt) {
@@ -701,6 +704,7 @@
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
       soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung;
     var nhip = 0, thang = false, dungSom = null;
+    var damLaThua = !!cfg.damLaThua;                                       // HD2: màn ép, đâm tường (mọi loại vật cản) là thua, dừng ngay cuối nhịp đó
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
     function khoiRobot(rc) {
       laR1 = rc === dsRc[0];                                               // robot của người chơi (đối kháng: R1)
@@ -1956,6 +1960,7 @@
           var erh = { ma: 'roi-ho', nhip: nhip, o: { x: rb.x, y: rb.y }, lenh: lenhNhip };
           sk.push(erh); suKienChan.push(erh);
         }
+        if (!daThang && !dungSom && damLaThua && sk.some(function (e) { return e.ma === 'dam-tuong'; })) dungSom = 'dam-tuong';   // HD2: đâm là thua, robot đứng lại ở cú đâm
         var r = chup(); r.banh = banhGhi;
         if (loai === 'nhen') r.chan = chan;                                    // nhện: tư thế chân cuối nhịp ('dung' | 'co')
         if (loai === 'xich') r.quayDo = quayDo ? quayDo.huong : 0;

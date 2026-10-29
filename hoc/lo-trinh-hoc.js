@@ -531,6 +531,19 @@
     delete m.congThucKhac; delete m.huyHieu;
     m.phienBanNoiDung = 2;
   })();
+  // HD2 (29/10, user: ở màn ép, húc tường thì THUA): cờ damLaThua (san-hoc.js cfg.damLaThua, cham.js) cho đúng các màn ÉP theo định nghĩa của máy dò
+  // hoc/kiem-lach-mua-1.mjs (khái niệm cấu trúc mới ở màn ≤ 4 của chương đầu tiên dùng nó; thân hàm người chơi viết phải dùng lại được; taoHam), trừ màn
+  // trình diễn chiChay (chương trình khoá). Lời giải chuẩn của mọi màn này không đâm tường ở sân nào (máy dò kiểm). Mùa 2 không gắn (phiên mùa 2 tự quyết).
+  // Lời giải lách (đếm cứng thay if / while) thường húc tường ở sân ngắn: nay là THUA chứ không còn 1–2 sao. Giao diện: nhãn trên sân + câu trong đề bài (man-choi.js).
+  var DAM_LA_THUA = ['xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'xuong-ham.4', 'xuong-ham.5', 'xuong-ham.7', 'xuong-ham.9', 'xuong-ham.10',
+    'tay-gap.5', 'tay-gap.6', 'tay-gap.10', 'vong-lap.2', 'vong-lap.3', 'vong-lap.4', 'vong-lap.6', 'che-lap.5', 'vong-lap.10',
+    'khoang-cach.12', 'khoang-cach.13', 'khoang-cach.5', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.7', 'che-cam-bien.13', 'che-cam-bien.15',
+    'che-xe.1', 'che-xe.2', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6', 'che-xe.4', 'che-xe.6', 'che-tay.5', 'che-lap.7', 'che-lap.9',
+    'tay-xoay.6', 'tay-xoay.10', 'che-tay-xoay.1', 'che-tay-xoay.2', 'che-tay-xoay.4', 'che-tay-xoay.5', 'che-tay-xoay.6',
+    'che-cam-bien.4', 'cam-bien-ben.5', 'cam-bien-ben.7', 'me-cung.6', 'me-cung.9', 'combo.3', 'combo.7', 'combo.8', 'che-combo.3', 'che-combo.7', 'che-cam-bien.10', 'che-combo.9',
+    'robot-hoan-thien.11', 'trum-mua-1.3', 'trum-mua-1.6', 'trum-mua-1.9', 'trum-mua-1.10'];
+  DAM_LA_THUA.forEach(function (ma) { get(ma).damLaThua = true; });
+  M.manDamLaThua = DAM_LA_THUA.slice();
   // Hàm của màn side_pick / side_drop gọi các hàm của em này mà ngân hàng chưa khai (khóa đúng màn khi kho thiếu, mo-goi.js luật 3 / 3b).
   get('che-tay-xoay.9').hamCuaEmCan = get('che-tay-xoay.9').hamCuaEmCan.concat(['turn_left', 'turn_right', 'pick', 'drop']);
   // Game bỏ bậc thang: xuong-ham.6 dùng ô S như tường (xe hai bánh không leo), đổi thành tường thường. Sửa thẳng sân (không qua sua()) để giữ lỗi mẫu của bài.
