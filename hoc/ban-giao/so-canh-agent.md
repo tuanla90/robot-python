@@ -80,3 +80,4 @@ GÓP Ý USER 28/10 (gửi SendMessage): cảm biến phải dính vỏ theo từ
 - 29/10 00:09 canh V7c3: mới giao 3 phút, đang e0 (sw.js + đổi nền phanh, chưa commit); ổn.
 - 29/10 01:09 canh V7c3: e0 (9233a92), e1 máy đo kiểu tính 10658 phần tử (6114524), e2 choi.css (85cb56b 00:58); đang e3 phông (chưa commit); ổn.
 - 29/10 02:08: V7c3 gộp (c258019); soát mùa 1 ở vector ĐẠT (200/200 màn thắng, 10 phim, 20 huy hiệu trùm, 360 px); dừng canh theo mốc user.
+| HD2 vá tiếp hướng dẫn mùa 1 (đâm tường là thua ở màn ép, che-cam-bien.10 hai kho, vong-lap.1 trình diễn for, trình diễn gói 4-8) | fable | 29/10 10:36 | hd2-huong-dan-mua-1, nhánh claude/hd2-huong-dan-mua-1 từ 9c80b13 | | | đang chạy |
