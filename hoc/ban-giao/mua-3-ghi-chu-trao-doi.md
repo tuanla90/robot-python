@@ -11,3 +11,15 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
 
 ## Câu hỏi cần user trả lời
 (ghi dần)
+
+## Gói 2 Nam châm (xong 29/10 đêm, commit ebe6ff5)
+- Tự chốt: khay gói 2 chỉ cực N (magnet_n, magnet_off) như P0. Hàm của em mới: `to_turn()` (while front_clear() and not right_clear(): move()).
+- Tự chốt (giao diện, cần user xem): **trình soạn khối trước đây chỉ cho ghép hai vế and / or ở màn có color() hay battery()**. Mùa 3 cần and / or với cảm biến
+  khoảng cách nên tôi thêm cờ màn `vaHoac: true` (thanh-phan.js CHE_VH, man-choi.js truyền cờ): điều kiện toàn cảm biến tách ô, chạm vế có nút "+ and" / "+ or",
+  vế mới là cảm biến. Đã thử trên trình duyệt: logic-nam-cham.2 ghép and bằng chạm, chạy 3 sao. Màn màu cũ không đổi (kiem-mau 148/0).
+- Lưu ý thiết kế: vừa rẽ phải ở chỗ rẽ thì bên phải là đường cũ, nên `not right_clear()` sai ngay; màn to_turn cho xe tiến một ô sau mỗi lần rẽ.
+- Đo đường cong theo luật mùa 2 khiến vài màn phải thêm "ô phụ" (ô sàn tách rời không nằm trên đường) để số ô tăng dần (logic-nam-cham.4 / .5). Nếu user thấy lạ thì bỏ được bằng cách đổi thứ tự.
+
+## Câu hỏi
+1. Huy hiệu trùm mùa 3: mỗi chương một huy hiệu như mùa 1–2, hay chỉ trùm gói? Hiện trùm mới chưa có huy hiệu.
+2. Máy dò lời giải lách mùa 3 (kiem-lach-mua-3, như mùa 1–2): sẽ làm khi xong 10 gói.
