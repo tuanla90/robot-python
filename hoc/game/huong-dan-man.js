@@ -715,6 +715,31 @@
     buocTaoHam('trail', 'Bấm Hàm mới, đặt tên trail và thêm đối số path.', CHU_TAO)
   ].concat(buocThuVeChay('Thân hàm: for c in path: rồi go(c). Bấm Chạy.'));
 
+  // MÙA 3 gói 2: nam châm cực N (nam-cham.11 trình diễn), and / or (logic-nam-cham.1 trình diễn, .2 ghép and, .4 ghép or, .7 tạo to_turn)
+  H['nam-cham.11'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: magnet_n() hút vật sắt về mũi xe, magnet_off() thả nó xuống ô đích.');
+  H['logic-nam-cham.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: xe đi khi trước mặt trống VÀ bên phải chưa có lối, nên dừng đúng chỗ rẽ.');
+  function buocGhep(nx, chuVe, chuNut, daLam) {
+    return [
+      { dich: '.num.dkm.cam', chu: chuVe, xong: 'bam', han: 0, rong: 170, daLam: function () { return thay('nut:chon-ghep') || daLam(); } },
+      { phu: true, dich: '[data-ghep="' + nx + '"]', chu: chuNut, xong: 'bam', han: 0, rong: 170, daLam: daLam }
+    ];
+  }
+  H['logic-nam-cham.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: sân 1 xe đi quá chỗ rẽ vì chỉ hỏi front_clear().', xong: 'chay', daLam: daChay }
+  ].concat(buocGhep('and', 'Chạm front_clear() trên dòng while.', 'Chạm + and để ghép thêm một vế.', function () { return dongCo(/^\s*while .+ and /) >= 0; }),
+    [{ dich: function () { var c = document.querySelectorAll('.num.dkm.cam'); return c.length > 1 ? [c[1]] : []; }, chu: 'Chạm vế thứ hai, chọn not right_clear().', xong: 'bam', han: 0, rong: 170,
+      daLam: function () { return dongCo(/^\s*while front_clear\(\) and not right_clear\(\):/) >= 0; } },
+    buocChay('Xe đi khi trước mặt trống và bên phải chưa có lối. Bấm Chạy.')]);
+  H['logic-nam-cham.4'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tới góc đầu tiên trước mặt là tường nên xe dừng.', xong: 'chay', daLam: daChay }
+  ].concat(buocGhep('or', 'Chạm front_clear() trên dòng while.', 'Chạm + or: chỉ cần một vế đúng là đi tiếp.', function () { return dongCo(/^\s*while .+ or /) >= 0; }),
+    [{ dich: function () { var c = document.querySelectorAll('.num.dkm.cam'); return c.length > 1 ? [c[1]] : []; }, chu: 'Chạm vế thứ hai, chọn right_clear().', xong: 'bam', han: 0, rong: 170,
+      daLam: function () { return dongCo(/^\s*while front_clear\(\) or right_clear\(\):/) >= 0; } },
+    buocChay('Bấm Chạy.')]);
+  H['logic-nam-cham.7'] = [
+    buocTaoHam('to_turn', 'Bấm Hàm mới để tạo to_turn().', CHU_TAO)
+  ].concat(buocThuVeChay('Thân hàm: while front_clear() and not right_clear(): rồi move(). Bấm Chạy.'));
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn
