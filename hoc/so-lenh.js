@@ -131,17 +131,16 @@
     m('bypass', 'omni', 'Vòng qua khối tường chắn ngay trước mặt, đứng ngay sau nó', 'che-omni', 'che-omni.4'),
     m('cross_belt', 'omni', 'Qua hai băng chuyền chạy xuống rồi về cùng hàng', 'che-omni', 'che-omni.5'),
     m('shift', 'omni', 'Dời vật trước mặt sang cột bên phải, xe về chỗ cũ', 'che-omni', 'che-omni.6'),
-    // chương Chế lệnh súng hơi (jet_back, jet_fwd, kick_right, tap_right, kick_left, kick_ahead; fixed_jet, fixed_kick, go_out, come_back là hàm CỦA MÀN nên không có ở đây)
-    m('jet_back', 'hoi', 'Lùi một ô bằng cú giật của vòi phun, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.1'),
-    m('jet_fwd', 'hoi', 'Tiến một ô bằng cú giật của đầu phun sau, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.2'),
-    m('kick_right', 'hoi', 'Đá thùng nặng bên phải xe trượt sang phải, xe giữ chỗ và hướng', 'che-sung-hoi', 'che-sung-hoi.4'),
-    m('tap_right', 'hoi', 'Bắn van bên phải xe rồi về đúng chỗ cũ, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.5'),
-    m('kick_left', 'hoi', 'Đá thùng nặng bên trái xe trượt sang trái, xe giữ chỗ và hướng', 'che-sung-hoi', 'che-sung-hoi.6'),
-    m('kick_ahead', 'hoi', 'Đá thùng nặng ngay trước mặt trượt đi xa, xe quay mặt như cũ', 'che-sung-hoi', 'che-sung-hoi.8'),
-    // chương Lực bắn (tap_left, pick_fire là hàm của màn nên không có ở đây)
-    m('fire', 'hoi', 'Bắn ra trước với lực p, "fast" hay "charge", rồi chờ một nhịp', 'luc-ban', 'luc-ban.4'),
-    m('fire_back', 'hoi', 'Bắn ra sau với lực p rồi chờ một nhịp', 'luc-ban', 'luc-ban.5'),
-    m('smart_fire', 'hoi', 'Trước mũi trống thì bắn tụ cho tia nước bay xa, có vật sát mũi thì bắn nhanh', 'luc-ban', 'luc-ban.8'),
+    // chương Chế lệnh vòi phun (30/10 phun nhẹ: puff, puff_back, open_left, open_right, open_behind; fixed_open, go_out, come_back là hàm CỦA MÀN nên không có ở đây)
+    m('puff', 'hoi', 'Phun một phát ra trước, rồi chờ hết nhịp', 'che-sung-hoi', 'che-sung-hoi.1'),
+    m('puff_back', 'hoi', 'Phun một phát ra sau, rồi chờ hết nhịp', 'che-sung-hoi', 'che-sung-hoi.2'),
+    m('open_left', 'hoi', 'Phun van bên trái xe rồi quay lại, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.4'),
+    m('open_right', 'hoi', 'Phun van bên phải xe rồi quay lại, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.6'),
+    m('open_behind', 'hoi', 'Phun van sau lưng bằng đầu phun trước (đầu sau hỏng), mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.8'),
+    // chương Lực bắn (tap_left, pick_spray là hàm của màn nên không có ở đây)
+    m('squirt', 'hoi', 'Bắn ra trước với lực p, "low" hay "high", rồi chờ một nhịp', 'luc-ban', 'luc-ban.4'),
+    m('squirt_back', 'hoi', 'Bắn ra sau với lực p rồi chờ một nhịp', 'luc-ban', 'luc-ban.5'),
+    m('smart_spray', 'hoi', 'Trước mũi trống thì bắn tụ cho tia nước bay xa, có vật sát mũi thì bắn nhanh', 'luc-ban', 'luc-ban.8'),
     // đợt 2: cảm biến màu, nam châm, máy ném, drone
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
     // chương Chế lệnh màu (go_out, come_back, line_step, trace là hàm của màn nên không có ở đây)
@@ -211,22 +210,22 @@
     m('go_around', 'xich', 'Đi vòng sang bên phải thùng rồi quay mũi xích vào thùng', 'che-day-thung', 'che-day-thung.3'),
     m('push_around', 'xich', 'Đi vòng sang hông thùng rồi đẩy thùng n ô', 'che-day-thung', 'che-day-thung.6'),
     m('push_back', 'xich', 'Quay đầu rồi đẩy thùng ở phía sau n ô', 'che-day-thung', 'che-day-thung.9'),
-    // chương che-luc-ban · Hàm lực bắn (quick_aim, shot_right là hàm của màn nên không có ở đây)
-    m('aim_fire', 'hoi', 'Mắt hồng ngoại đo: van xa từ 2 ô trống thì bắn tụ, gần hơn thì bắn nhanh', 'che-luc-ban', 'che-luc-ban.1'),
-    m('aim_left', 'hoi', 'Quay trái, tự chọn lực bắn van bên trái, rồi quay lại', 'che-luc-ban', 'che-luc-ban.2'),
-    m('aim_right', 'hoi', 'Quay phải, tự chọn lực bắn van bên phải, rồi quay lại', 'che-luc-ban', 'che-luc-ban.4'),
-    m('fire_left', 'hoi', 'Quay trái, bắn với lực p, rồi quay lại', 'che-luc-ban', 'che-luc-ban.5'),
-    m('close_fire', 'hoi', 'Đi tới sát van rồi bắn nhanh, xe đứng yên', 'che-luc-ban', 'che-luc-ban.6'),
+    // chương che-luc-ban · Hàm lực bắn (quick_pick, squirt_right là hàm của màn nên không có ở đây)
+    m('auto_spray', 'hoi', 'Mắt hồng ngoại đo: van xa từ 2 ô trống thì bắn tụ, gần hơn thì bắn nhanh', 'che-luc-ban', 'che-luc-ban.1'),
+    m('auto_left', 'hoi', 'Quay trái, tự chọn lực bắn van bên trái, rồi quay lại', 'che-luc-ban', 'che-luc-ban.2'),
+    m('auto_right', 'hoi', 'Quay phải, tự chọn lực bắn van bên phải, rồi quay lại', 'che-luc-ban', 'che-luc-ban.4'),
+    m('squirt_left', 'hoi', 'Quay trái, bắn với lực p, rồi quay lại', 'che-luc-ban', 'che-luc-ban.5'),
+    m('close_spray', 'hoi', 'Đi tới sát van rồi bắn nhanh, xe đứng yên', 'che-luc-ban', 'che-luc-ban.6'),
     m('scan_left', 'hoi', 'Hai lần: tự chọn lực bắn van bên trái rồi tiến một ô', 'che-luc-ban', 'che-luc-ban.7'),
-    m('aim_turn', 'hoi', 'Tự chọn lực bắn van trước mặt rồi quay trái', 'che-luc-ban', 'che-luc-ban.8'),
+    m('auto_turn', 'hoi', 'Tự chọn lực bắn van trước mặt rồi quay trái', 'che-luc-ban', 'che-luc-ban.8'),
     // chương che-do-nhiet · Hàm đo nhiệt (light, find_hot là hàm của màn nên không có ở đây)
     m('switch_on', 'hong-ngoai', 'Đo nhiệt van trước mũi xe: chưa nóng thì bắn nhanh cho mở', 'che-do-nhiet', 'che-do-nhiet.1'),
     m('switch_left', 'hong-ngoai', 'Quay trái, mở van bên trái nếu nó còn đóng, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.2'),
     m('find_warm', 'hong-ngoai', 'Quay khỏi đèn vừa tới rồi quay tới khi thấy đèn nóng', 'che-do-nhiet', 'che-do-nhiet.4'),
-    m('aim_on', 'hong-ngoai', 'Van chưa nóng thì tự chọn lực bắn theo xa gần', 'che-do-nhiet', 'che-do-nhiet.5'),
+    m('auto_on', 'hong-ngoai', 'Van chưa nóng thì tự chọn lực bắn theo xa gần', 'che-do-nhiet', 'che-do-nhiet.5'),
     m('scan_on', 'hong-ngoai', 'n lần: mở van bên trái nếu còn đóng rồi tiến một ô', 'che-do-nhiet', 'che-do-nhiet.6'),
     m('switch_right', 'hong-ngoai', 'Quay phải, mở van bên phải nếu nó còn đóng, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.7'),
-    m('aim_left_on', 'hong-ngoai', 'Quay trái, van chưa nóng thì tự chọn lực bắn, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8')
+    m('auto_left_on', 'hong-ngoai', 'Quay trái, van chưa nóng thì tự chọn lực bắn, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8')
   ];
   // chương che-doi-mua-2 · Đội phối hợp (gói 8 mùa 2, man-doi-mua-2.js; hàm của màn không có ở đây)
   ds.push(
@@ -234,24 +233,24 @@
     m('yield_step', 'hong-ngoai', 'Chờ tới khi không còn thấy bạn trước mũi xe rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.2'),
     m('wait_mate', 'hong-ngoai', 'Chờ tới khi thấy đồng đội (vật nóng) trước mũi xe', 'che-doi-mua-2', 'che-doi-mua-2.4'),
     m('pass_mate', 'hong-ngoai', 'Chờ bạn tới trước mũi xe rồi chờ bạn đi khỏi', 'che-doi-mua-2', 'che-doi-mua-2.5'),
-    m('shot_clear', 'hong-ngoai', 'Chờ bạn đi khỏi đường tia nước rồi bắn với lực p', 'che-doi-mua-2', 'che-doi-mua-2.6'),
+    m('clear_squirt', 'hong-ngoai', 'Chờ bạn đi khỏi đường tia nước rồi bắn với lực p', 'che-doi-mua-2', 'che-doi-mua-2.6'),
     m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.7'),
     m('cover', 'hong-ngoai', 'Chờ bạn tới rồi đi khỏi (pass_mate) rồi bắn tụ', 'che-doi-mua-2', 'che-doi-mua-2.8'),
     m('guard', 'hong-ngoai', 'Chờ bạn qua (pass_mate) rồi tự chọn lực bắn theo xa gần', 'che-doi-mua-2', 'che-doi-mua-2.10'),
-    // gói 9 · chương che-be-sung · Hàm bệ súng (man-be-sung.js): xích gắn súng hơi bắn tụ không giật, nhóm Súng hơi (left_shot là hàm của màn nên không có ở đây)
-    m('blast_left', 'hoi', 'Quay trái, bắn tụ van bên trái, rồi quay lại: bệ vòi không giật', 'che-be-sung', 'che-be-sung.1'),
-    m('blast_right', 'hoi', 'Quay phải, bắn tụ van bên phải, rồi quay lại', 'che-be-sung', 'che-be-sung.2'),
-    m('lock_on', 'hoi', 'Đo nhiệt van trước mũi xe: chưa nóng thì bắn tụ', 'che-be-sung', 'che-be-sung.4'),
-    m('lock_left', 'hoi', 'Quay trái, van bên trái chưa nóng thì bắn tụ, rồi quay lại', 'che-be-sung', 'che-be-sung.5'),
-    m('lock_row', 'hoi', 'n trạm: van xa bên trái còn đóng thì bắn tụ, rồi tiến một ô', 'che-be-sung', 'che-be-sung.6'),
-    m('go_fire', 'hoi', 'Đi thẳng tới sát cửa đóng rồi bắn tụ van bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
+    // gói 9 · chương che-be-sung · Hàm bệ súng (man-be-sung.js): xích gắn súng hơi bắn tụ không giật, nhóm Súng hơi (side_spray là hàm của màn nên không có ở đây)
+    m('spray_left', 'hoi', 'Quay trái, bắn tụ van bên trái, rồi quay lại: bệ vòi không giật', 'che-be-sung', 'che-be-sung.1'),
+    m('spray_right', 'hoi', 'Quay phải, bắn tụ van bên phải, rồi quay lại', 'che-be-sung', 'che-be-sung.2'),
+    m('valve_on', 'hoi', 'Đo nhiệt van trước mũi xe: chưa nóng thì bắn tụ', 'che-be-sung', 'che-be-sung.4'),
+    m('valve_left', 'hoi', 'Quay trái, van bên trái chưa nóng thì bắn tụ, rồi quay lại', 'che-be-sung', 'che-be-sung.5'),
+    m('valve_row', 'hoi', 'n trạm: van xa bên trái còn đóng thì bắn tụ, rồi tiến một ô', 'che-be-sung', 'che-be-sung.6'),
+    m('go_spray', 'hoi', 'Đi thẳng tới sát cửa đóng rồi bắn tụ van bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
     m('visit', 'hoi', 'Đo ngõ cụt sâu d ô, vào bắn tụ van bên trái, rồi lùi ra đúng d ô', 'che-be-sung', 'che-be-sung.8'),
-    m('push_blast', 'hoi', 'Đẩy thùng một ô rồi bắn tụ van bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9'),
-    // gói 10 · chương trum-mua-2 · Trùm mùa (man-trum-mua-2.js): hàm cho dây chuyền nhà máy chạy lại, nhóm Súng hơi (nudge, pair_shot, peek… là hàm của màn nên không có ở đây)
+    m('push_spray', 'hoi', 'Đẩy thùng một ô rồi bắn tụ van bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9'),
+    // gói 10 · chương trum-mua-2 · Trùm mùa (man-trum-mua-2.js): hàm cho dây chuyền nhà máy chạy lại, nhóm Súng hơi (nudge, pair_spray, peek… là hàm của màn nên không có ở đây)
     m('side_push', 'hoi', 'Né xuống làn bên phải rồi đẩy thùng trước mặt một ô', 'trum-mua-2', 'trum-mua-2.1'),
-    m('fire_on', 'hoi', 'Bắn tụ tới khi van trước mặt nóng lên', 'trum-mua-2', 'trum-mua-2.2'),
+    m('open_valve', 'hoi', 'Bắn tụ tới khi van trước mặt nóng lên', 'trum-mua-2', 'trum-mua-2.2'),
     m('lane_row', 'hoi', 'n làn: làn nào cũng né xuống rồi đẩy thùng một ô', 'trum-mua-2', 'trum-mua-2.4'),
-    m('box_shot', 'hoi', 'Thùng hay bạn còn trong giếng thì chờ, rồi bắn tụ', 'trum-mua-2', 'trum-mua-2.5'),
+    m('box_spray', 'hoi', 'Thùng hay bạn còn trong giếng thì chờ, rồi bắn tụ', 'trum-mua-2', 'trum-mua-2.5'),
     m('gate_push', 'hoi', 'Tới sát thùng, bắn van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
     m('check_lane', 'hoi', 'Van trên đầu còn đóng thì bắn mở cửa xuống làn, rồi né xuống đẩy thùng', 'trum-mua-2', 'trum-mua-2.7'),
     m('far_push', 'hoi', 'Thùng cách d ô thì đẩy nó đi đúng d ô', 'trum-mua-2', 'trum-mua-2.9')
@@ -279,8 +278,8 @@
     g('stand', 'crouch', 'Nhện duỗi chân ra; duỗi ngay trước một bước đi lúc đang co là nhảy'),
     g('slide_left', 'slide_right', 'Xe omni trượt sang trái một ô'),
     g('slide_right', 'slide_left', 'Xe omni trượt sang phải một ô'),
-    g('shoot', 'shoot_back', 'Vòi phun: bắn tia nước ra trước, xe giật lùi một ô. Màn Lực bắn: lực "fast" bắn nhanh, bay 2 ô, xe không giật'),
-    g('shoot_back', 'shoot', 'Vòi phun: bắn tia nước ra sau, xe giật tới một ô. Màn Lực bắn: lực "fast" bắn nhanh, xe không giật'),
+    g('spray', 'spray_back', 'Vòi phun: phun tia nước ra trước, bay 2 ô, xe đứng yên. Từ gói Lực phun, lực "high" bay xa, xe giật lùi một ô'),
+    g('spray_back', 'spray', 'Vòi phun: phun tia nước ra sau, bay 2 ô, xe đứng yên. Từ gói Lực phun, lực "high" bay xa, xe giật tới một ô'),
     g('front_clear', null, 'Hỏi: ô trước mặt có trống không'),
     g('left_clear', null, 'Hỏi: ô bên trái có trống không'),
     g('right_clear', null, 'Hỏi: ô bên phải có trống không'),

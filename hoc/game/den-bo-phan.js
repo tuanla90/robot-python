@@ -7,7 +7,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Dữ liệu lấy từ VẾT của lõi, không tự suy ra luật: với mỗi sự kiện 'nhip' e và các mục 'lenh' đứng ngay trước nó (các lệnh chạy trong nhịp đó):
      bánh trái / phải: e.robot.banh.trai / .phai ≠ 0 (omni trượt: e.robot.truot ≠ 0 thì cả hai bánh + đèn trượt);
      tay: có lệnh arm_up / arm_down; kẹp: có lệnh grab / release (hình tay lên / xuống, kẹp mở / đóng theo e.robot.tay);
-     nam châm: có magnet_n / magnet_s / magnet_off hoặc nam châm đang bật (e.robot.namCham.bat); máy ném: load / throw; súng hơi: shoot / shoot_back;
+     nam châm: có magnet_n / magnet_s / magnet_off hoặc nam châm đang bật (e.robot.namCham.bat); máy ném: load / throw; súng hơi: spray / spray_back;
      cảm biến: có lệnh đọc cảm biến (mục 'lenh' có docCamBien, hay front_clear / left_clear / right_clear / front_metal / color / look / battery / distance / warm) hoặc e.robot.camBien;
      nhện: chân sáng ở nhịp chuẩn bị ('chuan-bi'), nhịp bước ('di'), nhịp nhảy ('nhay') và nhịp co / duỗi chân ('doi-chan'); drone: cánh sáng ở nhịp bay ('di') và nhịp lơ lửng ('dung-yen').
    Dùng:  DenBoPhan.dung(phanTuClock)  (một lần, dựng vùng đèn)  ·  DenBoPhan.nap(man)  (vào màn: chọn các bộ phận có trên màn)  ·
@@ -52,7 +52,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (co(KEP_LEN)) kq.push('kep');
     if (co(NC_LEN)) kq.push('namCham');
     if (co(['aim', 'load', 'throw'])) kq.push('nem');
-    if (co(['shoot', 'shoot_back'])) kq.push('sung');
+    if (co(['spray', 'spray_back'])) kq.push('sung');
     if (co(['dot', 'pen_down', 'pen_up'])) kq.push('son');         // máy sơn: đèn sáng khi chấm / hạ / nhấc, và cả nhịp đầu sơn đang hạ (đang tô nét)
     if (co(CAM_BIEN)) kq.push('camBien');
     return THU_TU.filter(function (k) { return kq.indexOf(k) >= 0; });
@@ -71,7 +71,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     kq.kep = coTrong(lenhTruoc, KEP_LEN);
     kq.namCham = coTrong(lenhTruoc, NC_LEN) || !!(rb.namCham && rb.namCham.bat);
     kq.nem = coTrong(lenhTruoc, NEM_LEN);
-    kq.sung = coTrong(lenhTruoc, ['shoot', 'shoot_back']);
+    kq.sung = coTrong(lenhTruoc, ['spray', 'spray_back']);
     kq.son = coTrong(lenhTruoc, ['dot', 'pen_down', 'pen_up']) || !!(rb.son && rb.son.ha);
     kq.camBien = (lenhTruoc || []).some(function (x) { return x && (x.docCamBien || CAM_BIEN.indexOf(x.ten) >= 0); }) || coSk('doc-cam-bien') || !!rb.camBien;
     kq.chan = coSk('chuan-bi') || coSk('di') || coSk('doi-chan') || coSk('nhay');

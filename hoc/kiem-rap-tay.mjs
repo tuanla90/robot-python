@@ -203,8 +203,8 @@ console.log('5. giao diện (tệp)');
   kiem("huy hiệu 'rap-tay' có trong bộ vector (V7c1)", coHuyHieu('rap-tay'));
   kiem('kiem-hoc.mjs nạp man-rap-tay.js, có nhánh nhipTat cho chương rap-tay và dùng kho thật cho chương này', /man-rap-tay\.js/.test(kh) && /nhipRapTayTatCa/.test(kh) && /m\.chuong === 'rap-tay'/.test(kh));
   kiem('lap-rap.js có khoMau (kho tham chiếu) và kiemCanMan nhận kho', typeof LapRap.khoMau === 'function' && LapRap.khoMau(ds[0]).length > 90 && LapRap.khoMau(ds[0]).every((h) => h.ten && Array.isArray(h.than)));
-  kiem('kho tham chiếu lúc tới màn gồm các hàm cần dùng: forward · pick · drop · turn_right · back · u_turn · carry_throw · slide_r · pick_left · jet_fwd · jump · tr_right · bend_left · leap',
-    ['forward', 'pick', 'drop', 'turn_right', 'turn_left', 'back', 'u_turn', 'carry_throw', 'toss', 'slide_r', 'slide_l', 'pick_left', 'drop_right', 'jet_fwd', 'jet_back', 'jump', 'go', 'walk', 'leap', 'tr_right', 'bend_left'].every((t) => LapRap.khoMau(ds[0]).some((h) => h.ten === t)));
+  kiem('kho tham chiếu lúc tới màn gồm các hàm cần dùng: forward · pick · drop · turn_right · back · u_turn · carry_throw · slide_r · pick_left · squirt_back · jump · tr_right · bend_left · leap',
+    ['forward', 'pick', 'drop', 'turn_right', 'turn_left', 'back', 'u_turn', 'carry_throw', 'toss', 'slide_r', 'slide_l', 'pick_left', 'drop_right', 'squirt_back', 'squirt', 'jump', 'go', 'walk', 'leap', 'tr_right', 'bend_left'].every((t) => LapRap.khoMau(ds[0]).some((h) => h.ten === t)));
   kiem('kho tham chiếu KHÔNG có hàm của chương sau (drone: recharge, airlift; flycam: seek_red)', ['recharge', 'airlift', 'seek_red'].every((t) => !LapRap.khoMau(ds[0]).some((h) => h.ten === t)));
 }
 

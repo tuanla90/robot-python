@@ -120,11 +120,11 @@ function dacTrung(m) {
     else if (/^\s*[A-Za-z_]\w*\s*=\s*\d+\s*$/.test(l)) f.add('bien = so');
     else if (/^\s*[A-Za-z_]\w*\s*([-+]=|=\s*[A-Za-z_]\w*\s*[-+])/.test(l)) f.add('bien dem');
     for (const x of l.matchAll(RE_SO_SANH)) if (!/^\s*for\b/.test(l)) f.add('so sanh ' + x[1] + (/^\d+$/.test(x[2]) ? ' so' : ' bien'));
-    if (/\b(shoot|shoot_back|fire|fire_back)\("(fast|charge)"\)/.test(l)) f.add('luc ban');
+    if (/\b(spray|spray_back|squirt|squirt_back)\("(low|high)"\)/.test(l)) f.add('luc ban');
   }
   for (const h of moi.concat(cuaMan)) {
-    if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(shoot|shoot_back|fire|fire_back)\(/.test(l))) f.add('tham so luc');
-    if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(shoot|fire)\w*\(/.test(l))) f.add('chon luc theo distance');
+    if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(spray|spray_back|squirt|squirt_back)\(/.test(l))) f.add('tham so luc');
+    if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(spray|squirt)\w*\(/.test(l))) f.add('chon luc theo distance');
   }
   for (const h of moi) {
     f.add(h.thamSo.length > 1 ? 'tao ham hai tham so' : h.thamSo.length ? 'tao ham co tham so' : 'tao ham');
@@ -192,7 +192,7 @@ for (const m of DS) {
     assert.equal(m.robot.than, 'hai-banh');
     assert.equal(m.robot.tay, 'hoi', m.ma + ' tay ' + m.robot.tay);
     assert.equal(m.lucBan, true, m.ma + ' thiếu lucBan: true');
-    for (const h of ['shoot', 'shoot_back']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
+    for (const h of ['spray', 'spray_back']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
     const coMat = m.hamGoc.includes('distance');
     assert.deepEqual(m.robot.camBien.map((c) => c.ma), coMat ? ['hong-ngoai'] : [], m.ma + ' hồng ngoại phải gắn đúng khi khay có distance');
     assert.ok(['toi-co', 'bong-mo', 'day-thung'].includes(m.mucTieu), m.ma + ' mục tiêu ' + m.mucTieu);

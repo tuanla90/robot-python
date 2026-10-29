@@ -16,6 +16,7 @@ VIỆC:
 3. Gói 6 chương luc-ban (10 màn) và che-luc-ban: thành nơi lần đầu xe giật. .1 trình diễn (khoá) spray("high"): tia bay xa tới van, xe giật lùi một ô; .2 ép: mã mẫu spray() không tới van xa, em thêm "high" (H); sau đó đưa vào các ý giật cũ của gói 2: spray_back("high") để đi tới, thùng sau lưng nhích một ô (luật giật một ô), thùng lên băng bằng cú giật, chọn lực ("low" khi thùng sau lưng không được xô, "high" khi van xa); .9 .10 phong phú. Lấy lại các màn hay đang có của sung-hoi (sau luật giật một ô) và luc-ban nếu hợp, ghi rõ màn nào chuyển từ đâu. che-luc-ban: hàm tự chế dùng lực (aim_fire cũ đã đổi tên ở brief A).
 4. Chữ đi theo ý dạy mới: đề bài, gợi ý, veMaMau, lời sai, hướng dẫn màn (huong-dan-man.js), thẻ bộ phận Vòi phun (gioi-thieu-part.js: không còn "phun thì xe giật lùi"), thẻ / thông báo mở khoá Lực phun, Sổ lệnh, phim gói 2 (phim-mua-2.js 'sung-hoi' khung 3–4 đang vẽ giật lùi / cú giật hất thùng: đổi thành phun nhẹ mở van) và phim gói 6 ('luc-ban': cái mới là phun mạnh, xe giật). Giọng kể: em là nhân vật chính, R1 là bộ não; "phun / xịt" không "bắn".
 5. Màn trình diễn (chiChay) và màn đội đứng trước gói 6 nếu có dùng giật: tự đo, sửa theo cùng nguyên tắc.
+6. Sót lại từ đợt giật một ô (người giao chốt 29/10): che-doi-sung-hoi.5 "Đỡ ba thùng" hiện R2 tự thắng, omni không còn việc: dựng lại để CẢ HAI xe đều cần (vd thùng phải qua chỗ chỉ omni dọn / đón được; máy kiểm "R1 sai thì thua" VÀ "R2 sai thì thua"). che-luc-ban.8 hiện phải thêm hai back() chỉ để qua phanh đường cong: làm lại cho tự nhiên khi dựng gói 6. doi-sung-hoi.5 đã đổi tên "Chờ bạn qua rồi đẩy" (giữ).
 
 BỐI CẢNH:
 - Sau brief A, máy kiểm sung-hoi / che-sung-hoi đỏ đúng các màn trước gói 6 (danh sách trong báo cáo A, sổ canh hoc/ban-giao/so-canh-agent.md). Đó là điểm bắt đầu của bạn.
@@ -23,7 +24,7 @@ BỐI CẢNH:
 - Máy dò lách (kiem-lach-mua-2): màn mới không được thắng bằng cách lách (vd không dùng khối mới).
 
 PHẠM VI: được sửa các tệp màn ở trên, hoc/lo-trinh-hoc.js, hoc/lo-trinh-sao.js, hoc/do-duong-*.mjs, hoc/kiem-*.mjs liên quan, huong-dan-man.js, gioi-thieu-part.js, so-lenh.js, chu.js, phim-mua-2.js, KE-HOACH-MUA-2.md (trạng thái gói 2 và gói 6).
-KHÔNG sửa: luật lõi (san-hoc.js trừ khi phát hiện lỗi; báo trước khi sửa), tên lệnh đã chốt ở brief A, màn mùa 1, màn sau gói 6 ngoài chương luc-ban / che-luc-ban.
+KHÔNG sửa: luật lõi (san-hoc.js trừ khi phát hiện lỗi; báo trước khi sửa), tên lệnh đã chốt ở brief A, màn mùa 1, màn sau gói 6 ngoài chương luc-ban / che-luc-ban và việc 6 (man-doi-sung-hoi.js được sửa cho che-doi-sung-hoi.5).
 
 PHẢN BIỆN: brief này là phán đoán từ bên ngoài; bạn ở trong code sâu hơn. Được phép và được khuyến khích nói ngược lại (có bằng chứng): ý dạy gói 2 khác hay hơn, tầm phun nhẹ 2 ô quá ngặt cho gói 2 (đề xuất, KHÔNG tự đổi luật), màn bị bỏ sót, hàm tự chế đổi nghĩa làm hỏng màn sau. Bất đồng chặn đường → dừng, commit WIP, ghi câu hỏi.
 

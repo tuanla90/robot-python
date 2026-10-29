@@ -180,3 +180,7 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
 
 29/10 TÊN VÀ PHIM MÙA 2 THEO QUY TẮC (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể"): tên mùa "Nhà máy"; gói đổi: nha-may → Băng chuyền, hong-ngoai → Cảm biến hồng ngoại,
   luc-ban → Lực phun, doi-mua-2 → R2 trở lại, nha-may-chay → Xe cứu hỏa R1; 20 chương là việc em làm; 10 phim giọng em, phun thay bắn. Còn: chữ "bắn" trong màn (đợt riêng sau giật một ô).
+29/10 GIẬT MỘT Ô (nhánh claude/giat-mot-o, gộp 29/10; brief ban-giao/brief-giat-mot-o.md): user chốt cú giật trúng thùng nặng chỉ đẩy thùng nhích ĐÚNG 1 ô, xe theo 1 ô vào ô thùng
+  vừa rời (như xích đẩy thùng); ô sau thùng bị chặn thì cả hai đứng yên; tia nước không đẩy thùng, "fast" và bệ vòi xích không giật. Lõi san-hoc.js (chú thích SÚNG HƠI), bộ dò
+  do-duong-sung-hoi / be-sung, hoạt cảnh san-ve.js. Dựng lại 16 màn: sung-hoi.4/5/6/7/9/10, che-sung-hoi.4/6/7/8/10 (+ bản lộ trình .6, .7 "Đá hai bên"), che-luc-ban.8, rap-du.7,
+  doi-sung-hoi.2/.5 ("Chờ bạn qua rồi đẩy", omni hết vai chốt chặn), che-doi-sung-hoi.5; chữ thẻ Vòi phun, Sổ lệnh, chẩn đoán thung-chan, hướng dẫn sung-hoi.4; đo lại sao (lo-trinh-sao, SAO đội).

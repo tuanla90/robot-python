@@ -19,7 +19,7 @@
      10 Ca phân loại            R1 khóa   trùm ba sân: hộp đổi màu, R2 xuất phát xa gần khác nhau, go_wall() lên chốt rồi đọc tín hiệu
    Chương che-doi-mau (hàm của em MỚI, tên cốt truyện):
      1  Canh hai bên            R1 khóa   chế watch_side() = while left_clear() and right_clear(): wait()
-     2  Trả lời theo phía       R1 khóa   chế answer_side() = bên trái có người thì shoot(), không thì shoot_back(); wait()
+     2  Trả lời theo phía       R1 khóa   chế answer_side() = bên trái có người thì spray("high"), không thì spray_back("high"); wait()
      3  Báo màu                 R2 khóa   chế show_color() = c = color(), pick(), đỏ thì dodge_left() không thì dodge_right()
      4  Lộn ngược               —         cả đội dùng ba hàm trên sân lộn ngược: hàm tính theo mũi robot nên vẫn đúng
      5  Chốt trên cao           R1 khóa   R1 tự động gọi show_color(); R2 đi xuống chốt, quay mặt xuống, nút trên mở cửa đỏ
@@ -70,7 +70,7 @@
   var TAY = ['arm_down', 'arm_up', 'grab', 'release'];
   var KC = ['front_clear', 'left_clear', 'right_clear'];
   var MAU = { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'camera', o: 'tren' }, { ma: 'khoang-cach', o: 'hong' }] }, hamGoc: BANH.concat(TAY, ['color'], KC) };
-  var SUNG = { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'hoi', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }, hamGoc: BANH.concat(['shoot', 'shoot_back'], KC) };
+  var SUNG = { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'hoi', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }, hamGoc: BANH.concat(['spray', 'spray_back'], KC) };
 
   function sao(x) { return JSON.parse(JSON.stringify(x)); }
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
@@ -113,7 +113,7 @@
 
   var CHO_CUA = ['while not front_clear():', '    wait()'];
   var CHO_BAO = ['while left_clear() and right_clear():', '    wait()'];
-  var TRA_LOI = ['if not left_clear():', '    shoot()', 'else:', '    shoot_back()', 'wait()'];
+  var TRA_LOI = ['if not left_clear():', '    spray("high")', 'else:', '    spray_back("high")', 'wait()'];
 
   /* ---- sân */
   // 1: làn trên của R1: cửa (3,2), hộp đỏ (5,2), đích xanh (4,1) / đỏ (4,3); làn dưới của R2: nút (1,5) sau lưng R2 (5,5)
@@ -155,7 +155,7 @@
   /* ---- chương 2: sân, hàm, chương trình */
   var CHE = 'che-' + CHUONG;
   var T_WATCH = ['while left_clear() and right_clear():', '    wait()'];
-  var T_ANSWER = ['if not left_clear():', '    shoot()', 'else:', '    shoot_back()', 'wait()'];
+  var T_ANSWER = ['if not left_clear():', '    spray("high")', 'else:', '    spray_back("high")', 'wait()'];
   var T_SHOW = ['c = color()', 'pick()', 'if c == "red":', '    dodge_left()', 'else:', '    dodge_right()'];
   var T_PICK_HONG = ['c = color()', 'pick()', 'if c == "red":', '    dodge_right()', 'else:', '    dodge_left()'];
   var T_STAND_HONG = ['while left_clear() and right_clear():', '    pass'];
@@ -189,16 +189,16 @@
   function noiC10(yB) { return [{ nut: { x: 3, y: 2 }, cua: [{ x: 2, y: 2 }] }, { nut: { x: 3, y: yB }, cua: [{ x: 4, y: 2 }] }]; }
 
   var R1_C1 = nhieu(['go_wall()', 'turn_right()', 'go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']);
-  var R2_C1 = ['watch_side()', 'shoot()', 'wait()'];
+  var R2_C1 = ['watch_side()', 'spray("high")', 'wait()'];
   var R2_HAM = ['watch_side()', 'answer_side()'];
   var R1_HAM = nhieu(['show_color()', 'go_wall()'], CHO_CUA, ['move()', 'drop()']);
   var R1_C6 = nhieu(['show_color()', 'go_wall()'], CHO_CUA, ['go_wall()']);
-  var R2_C6 = ['watch_side()', 'if left_clear():', '    shoot()', '    wait()', '    dodge_left()', 'else:', '    shoot()', '    wait()', '    dodge_right()', 'go_wall()'];
-  var R2_C9_HONG = ['watch_side()', 'if left_clear():', '    shoot()', '    wait()', '    dodge_right()', 'else:', '    shoot()', '    wait()', '    dodge_left()', 'go_wall()'];
+  var R2_C6 = ['watch_side()', 'if left_clear():', '    spray("high")', '    wait()', '    dodge_left()', 'else:', '    spray("high")', '    wait()', '    dodge_right()', 'go_wall()'];
+  var R2_C9_HONG = ['watch_side()', 'if left_clear():', '    spray("high")', '    wait()', '    dodge_right()', 'else:', '    spray("high")', '    wait()', '    dodge_left()', 'go_wall()'];
   var R1_C7 = nhieu(['pick_side()', 'go_wall()'], CHO_CUA, ['move()', 'drop()']);
   var R2_C8 = ['stand_by()', 'answer_side()'];
 
-  var R2_5 = nhieu(CHO_BAO, ['if not right_clear():', '    shoot()', 'else:', '    shoot_back()', 'wait()']);
+  var R2_5 = nhieu(CHO_BAO, ['if not right_clear():', '    spray("high")', 'else:', '    spray_back("high")', 'wait()']);
 
   var DS = [
     man({
@@ -207,7 +207,7 @@
       veMaMau: 'Chương trình R2 bị khóa, bấm thẻ R2 để xem. Viết chương trình R1.',
       san: SAN_1, mau: lop(SAN_1, { '4,1': 'b', '4,3': 'r' }), vatMau: lop(SAN_1, { '5,2': 'r' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 5, y: 5, huong: 1 }],
-      maMau: B([], ['shoot_back()', 'wait()']), loiGiai: B(['forward(3)', 'sort_color()'], ['shoot_back()', 'wait()']),
+      maMau: B([], ['spray_back("high")', 'wait()']), loiGiai: B(['forward(3)', 'sort_color()'], ['spray_back("high")', 'wait()']),
       hamCuaEmCan: ['forward', 'sort_color'],
       goiY: ['Cửa mở xong ở cuối nhịp đầu, nên R1 đi thẳng qua được.', 'sort_color() nhìn màu hộp trước mặt rồi đặt sang phải nếu đỏ, sang trái nếu không.']
     }),
@@ -218,7 +218,7 @@
       san: SAN_2, mau: lop(SAN_2, { '6,1': 'b', '6,3': 'r' }), vatMau: lop(SAN_2, { '7,2': 'b' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 1, y: 7, huong: 0 }],
       maMau: B(nhieu(['go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']), []),
-      loiGiai: B(nhieu(['go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']), ['forward(2)', 'turn_right()', 'shoot()', 'wait()']),
+      loiGiai: B(nhieu(['go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']), ['forward(2)', 'turn_right()', 'spray("high")', 'wait()']),
       hamCuaEmCan: ['go_wall', 'sort_color', 'forward', 'turn_right'],
       goiY: ['Tia nước bay thẳng theo hướng mũi xe: R2 phải đứng cùng hàng với van.', 'forward(2), turn_right(), rồi bắn.']
     }),
@@ -228,8 +228,8 @@
       veMaMau: 'Chạy thử: tia nước của R2 trúng hộp. Thêm vòng chờ cho R2 và viết tiếp cho R1.',
       san: SAN_3, mau: lop(SAN_3, { '2,3': 'b', '2,5': 'r', '6,3': 'b', '6,5': 'r' }), vatMau: lop(SAN_3, { '3,4': 'r', '7,4': 'b' }),
       bd: [{ x: 1, y: 4, huong: 1 }, { x: 3, y: 5, huong: 0 }],
-      maMau: B(['move()', 'sort_color()'], ['shoot()', 'wait()']),
-      loiGiai: B(['move()', 'sort_color()', 'go_wall()', 'sort_color()'], ['while not front_clear():', '    wait()', 'shoot()', 'wait()']),
+      maMau: B(['move()', 'sort_color()'], ['spray("high")', 'wait()']),
+      loiGiai: B(['move()', 'sort_color()', 'go_wall()', 'sort_color()'], ['while not front_clear():', '    wait()', 'spray("high")', 'wait()']),
       hamCuaEmCan: ['move', 'sort_color', 'go_wall'],
       goiY: ['Hộp còn nằm trước mũi R2 thì front_clear() trả False.', 'R1: move(), sort_color(), go_wall(), sort_color().']
     }),
@@ -259,9 +259,9 @@
       veMaMau: 'Chương trình R1 bị khóa, bấm thẻ R1 để xem. Viết chương trình R2.',
       san: SAN_6, mau: lop(SAN_6, { '8,1': 'b' }), vatMau: lop(SAN_6, { '9,2': 'b' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 6, y: 3, huong: 1 }],
-      maMau: B(R1_6, []), loiGiai: B(R1_6, ['while left_clear():', '    wait()', 'shoot()', 'wait()']),
+      maMau: B(R1_6, []), loiGiai: B(R1_6, ['while left_clear():', '    wait()', 'spray("high")', 'wait()']),
       hamCuaEmCan: ['go_wall', 'sort_color'],
-      goiY: ['R2 quay mặt sang phải thì bên trái của R2 là phía trên.', 'while left_clear(): wait() rồi mới shoot().']
+      goiY: ['R2 quay mặt sang phải thì bên trái của R2 là phía trên.', 'while left_clear(): wait() rồi mới spray("high").']
     }),
     man({
       so: 7, ten: 'Sửa vòng chờ', khoa: 0, dan: 1, noi: NOI_PHONG,
@@ -292,7 +292,7 @@
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 2, y: 3, huong: 1 }],
       maMau: B([], []),
       loiGiai: B(nhieu(['for i in range(3):', '    go_wall()', '    while not front_clear():', '        wait()', '    move()'], ['go_wall()', 'sort_color()']),
-        ['for i in range(3):', '    while left_clear():', '        wait()', '    shoot()', '    wait()', '    forward(3)']),
+        ['for i in range(3):', '    while left_clear():', '        wait()', '    spray("high")', '    wait()', '    forward(3)']),
       hamCuaEmCan: ['go_wall', 'move', 'sort_color', 'forward'],
       goiY: ['Bắn xong R2 giật lùi một ô, nên phải tiến ba ô mới tới cổng sau.', 'Mỗi lượt R1: go_wall(), chờ cổng mở, move().']
     }),
@@ -329,7 +329,7 @@
       bd: [{ x: 4, y: 7, huong: 0 }, { x: 3, y: 3, huong: 0 }],
       maMau: B(R1_PHONG, ['watch_side()']), loiGiai: Object.assign(B(R1_PHONG, R2_HAM), { hamCuaEmMoi: [H('answer_side', T_ANSWER)] }),
       hamCuaEmCan: ['watch_side', 'pick', 'drop', 'move', 'dodge_left', 'go_wall'],
-      goiY: ['Bắn xong phải có wait() thì phát bắn mới chạy.', 'if not left_clear(): shoot() / else: shoot_back() / wait()']
+      goiY: ['Bắn xong phải có wait() thì phát bắn mới chạy.', 'if not left_clear(): spray("high") / else: spray_back("high") / wait()']
     }),
     man({
       chuong: CHE, so: 3, ten: 'Báo màu', khoa: 1, dan: 1, noi: NOI_C3, taoHam: ['show_color'],

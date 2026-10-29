@@ -225,11 +225,45 @@
     } catch (e) { /* chạy không chuyển */ }
   }
 
+  /** 29/10 (user chốt): vòi phun đổi tên lệnh shoot → spray, lực "fast" / "charge" → "low" / "high", hàm em tự chế có chữ vũ khí đổi tên theo.
+   *  Chuyển MỘT LẦN mọi chuỗi đã lưu (kho hàm, bản nháp, sân thử: cả khóa duong-hoc:san-thu:<tên cũ>), cờ KHOA_DOI_TEN_PHUN. Bảng giống bảng đổi tên lời giải. */
+  var KHOA_DOI_TEN_PHUN = 'duong-hoc:doi-ten-phun';
+  var TEN_PHUN = {
+    shoot_back: 'spray_back', shoot: 'spray', fire_back: 'squirt_back', fire: 'squirt', smart_fire: 'smart_spray', pick_fire: 'pick_spray',
+    aim_fire: 'auto_spray', aim_left_on: 'auto_left_on', aim_left: 'auto_left', quick_aim: 'quick_pick', aim_right: 'auto_right', fire_left: 'squirt_left',
+    close_fire: 'close_spray', aim_turn: 'auto_turn', shot_right: 'squirt_right', aim_on: 'auto_on', clear_shot: 'wait_cool', wait_aim: 'wait_auto',
+    shot_clear: 'clear_squirt', blast_left: 'spray_left', blast_right: 'spray_right', left_shot: 'side_spray', lock_on: 'valve_on', lock_left: 'valve_left',
+    lock_row: 'valve_row', go_fire: 'go_spray', push_blast: 'push_spray', pair_shot: 'pair_spray', cover_shot: 'cover_spray', fire_on: 'open_valve',
+    box_shot: 'box_spray', fire_clear: 'wait_spray'
+  };
+  var RE_TEN_PHUN = new RegExp('(^|[^A-Za-z0-9_])(' + Object.keys(TEN_PHUN).sort(function (a, b) { return b.length - a.length; }).join('|') + ')(?![A-Za-z0-9_])', 'g');
+  /** Đổi tên trong một chuỗi (mã Python hay JSON của mã): tên lệnh / hàm theo ranh giới từ, "fast" / "charge" trong dấu nháy (kể cả \" của JSON). */
+  function doiTenPhun(s) {
+    return String(s).replace(RE_TEN_PHUN, function (_, dau, ten) { return dau + TEN_PHUN[ten]; })
+      .replace(/(\\?["'])(fast|charge)(\\?["'])/g, function (_, a, l, b) { return a + (l === 'fast' ? 'low' : 'high') + b; });
+  }
+  function chuyenTenPhun() {
+    try {
+      if (kho.getItem(KHOA_DOI_TEN_PHUN) === '1' || typeof kho.length !== 'number') return;
+      var khoa = [];
+      for (var i = 0; i < kho.length; i++) { var k = kho.key(i); if (k && k.indexOf('duong-hoc:') === 0) khoa.push(k); }
+      khoa.forEach(function (k) {
+        var v = kho.getItem(k);
+        if (typeof v !== 'string') return;
+        var v2 = doiTenPhun(v), k2 = k.indexOf(KHOA_SAN_THU) === 0 ? KHOA_SAN_THU + doiTenPhun(k.slice(KHOA_SAN_THU.length)) : k;
+        if (k2 !== k) { if (kho.getItem(k2) === null) kho.setItem(k2, v2); kho.removeItem(k); }
+        else if (v2 !== v) kho.setItem(k, v2);
+      });
+      kho.setItem(KHOA_DOI_TEN_PHUN, '1');
+    } catch (e) { /* chạy không chuyển */ }
+  }
+
   docTienDo();
   chuyenCu();
+  chuyenTenPhun();
 
   var Luu = {
-    chuyenCu: chuyenCu, docTienDo: docTienDo,
+    chuyenCu: chuyenCu, docTienDo: docTienDo, doiTenPhun: doiTenPhun, chuyenTenPhun: chuyenTenPhun, TEN_PHUN: TEN_PHUN,
     kho: kho, laBoNho: laBoNho,
     saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,

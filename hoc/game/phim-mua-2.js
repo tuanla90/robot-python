@@ -199,26 +199,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         bayToi(k, c, veVoi(c), q.x - 2, q.y + 2, p.x + 10, p.y - 14, 0.1, 0.95);
         lap(k, c, c.xe(XICH, {}, 1, 2, p.x, p.y), c.xe(XH, YEN, 1, 2, p.x, p.y).mat('vui'), 0.95);
       },
-      // 3 · shoot(): nước phun ra trước, xe giật lùi một ô
+      // 3 · spray(): nước phun ra trước hai ô trúng van, van quay mở; xe đứng yên (30/10: phun nhẹ, không giật)
       function (k, c) {
-        var s = c.san(k, ['#####', '....#', '#####'], 4, X0, Y0), p = s.o(2, 1), sau = s.o(1, 1), tuongO = s.o(4, 1);
+        var s = san2(k, c, ['#####', '....N', '#####'], 4, X0, Y0), p = s.o(2, 1), n = s.o(4, 1);
         var r = c.xe(XH, YEN, 1, 2, p.x, p.y); k.appendChild(r);
         c.sau(500, function () { r.ve(BAN); });
-        banBong(k, c, 2, p.x + 30, p.y, tuongO.x - 30, tuongO.y, 520, 0.4);
+        banBong(k, c, 2, p.x + 30, p.y, n.x, n.y, 520, 0.4);
         tieng(k, c, 'PHỤT!', p.x - 40, 40, 0.55);
-        truot(c, r, 560, sau.x, sau.y, 0.3);
-        c.sau(700, function () { r.ve(YEN); r.mat('ngac'); });
-        c.sau(1700, function () { r.mat('vui'); });
+        c.sau(950, function () { s.nb['4,1'].dat(true); r.ve(YEN); c.keu('moKhoa'); r.mat('vui'); });
       },
-      // 4 · code shoot_back() + hàm có tham số forward(n)
+      // 4 · code spray_back() + hàm có tham số forward(n)
       function (k, c) {
         c.nen(k, 'md-san');
-        c.code(k, ['shoot_back()', 'def forward(n):', '    for i in range(n):', '        move()'], 10, 14);
+        c.code(k, ['spray_back()', 'def forward(n):', '    for i in range(n):', '        move()'], 10, 14);
         var r = c.xe(XH, YEN, 1, 3, 200, Y); k.appendChild(r);
         c.sau(1500, function () { r.ve(BAN_SAU); });
-        banBong(k, c, 3, 160, Y, -20, Y, 1520, 0.5);
-        truot(c, r, 1560, 242, Y, 0.3);
-        c.sau(1800, function () { r.ve(YEN); r.mat('vui'); c.keu('thang'); });
+        banBong(k, c, 3, 160, Y, 80, Y, 1520, 0.5, true);
+        c.sau(1900, function () { r.ve(YEN); r.mat('vui'); c.keu('thang'); });
       }
     ],
 
@@ -289,18 +286,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         s.chay(900, 16);
         c.sau(1100, function () { r.mat('vui'); });
       },
-      // 4 · thùng nặng: xe húc không nhúc nhích, cú giật vòi phun mới hất được
+      // 4 · thùng nặng chắn lối: xe húc không nổi, tia nước cũng dừng ở thùng (30/10: phun nhẹ không đẩy; nhá gói 5 Đẩy thùng)
       function (k, c) {
-        var s = san2(k, c, ['#####', '.H..#', '#####'], 4, X0, Y0), p = s.o(2, 1), q = s.o(1, 1), z = s.o(0, 1), tuongO = s.o(4, 1);
-        var tg = s.nang['1,1'];
-        var r = c.xe(XHN, YEN, 1, 2, p.x, p.y); k.appendChild(r);
+        var s = san2(k, c, ['#####', '.H..#', '#####'], 4, X0, Y0), p = s.o(2, 1), q = s.o(1, 1);
+        var r = c.xe(XHN, YEN, 3, 2, p.x, p.y); k.appendChild(r);
         c.sau(300, function () { r.mat('ngac'); });
         c.sau(700, function () { r.ve(BAN); });
-        banBong(k, c, 2, p.x + 30, p.y, tuongO.x - 30, tuongO.y, 720, 0.3);
-        truot(c, r, 760, q.x, q.y, 0.3);
-        truot(c, tg, 760, z.x - C1 / 2, z.y - C1 / 2, 0.3);
-        tieng(k, c, 'HẤT!', 40, 130, 0.8);
-        c.sau(1000, function () { r.ve(YEN); r.mat('vui'); c.keu('dam'); });
+        banBong(k, c, 2, p.x - 30, p.y, q.x + 24, q.y, 720, 0.25);
+        tieng(k, c, 'CỘP!', 40, 130, 0.9);
+        c.sau(1100, function () { r.ve(YEN); r.mat('buon'); c.keu('dam'); });
       }
     ],
 
@@ -355,7 +349,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     /* ---------------------------------------------------------------- 6 · Lực bắn */
     'luc-ban': [
-      // 1 · bắn tụ shoot("charge"): tia nước tới nút, xe giật lùi một ô
+      // 1 · phun mạnh spray("high") (30/10: lần đầu có cú giật): tia nước bay xa tới van, xe giật lùi một ô
       function (k, c) {
         var s = san2(k, c, ['#####', '....N', '#####'], 4, X0, Y0), p = s.o(1, 1), n = s.o(4, 1);
         var r = c.xe(XHN, YEN, 1, 2, p.x, p.y); k.appendChild(r);
@@ -365,7 +359,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(1140, function () { s.nb['4,1'].dat(true); r.ve(YEN); c.keu('moKhoa'); r.mat('ngac'); });
         tieng(k, c, 'GIẬT!', 10, 130, 0.6);
       },
-      // 2 · bắn nhanh shoot("fast"): nước bay hai ô rồi rơi, xe đứng yên
+      // 2 · phun nhẹ spray() như mọi khi: nước bay hai ô rồi rơi, xe đứng yên
       function (k, c) {
         var s = san2(k, c, ['#####', '....N', '#####'], 4, X0, Y0), p = s.o(1, 1), roi = s.o(3, 1);
         var r = c.xe(XHN, YEN, 1, 2, p.x, p.y); k.appendChild(r);
@@ -374,10 +368,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         [s.o(2, 1), roi].forEach(function (o, i) { nhip(k, c, String(i + 1), o.x - 8, o.y - 54, 0.6 + i * 0.2); });
         c.sau(900, function () { r.ve(YEN); r.mat('vui'); });
       },
-      // 3 · gần thì bắn nhanh, xa thì bắn tụ: hỏi distance() để chọn lực
+      // 3 · gần thì phun nhẹ, xa thì phun mạnh: hỏi distance() để chọn lực
       function (k, c) {
         c.nen(k, 'md-san');
-        c.code(k, ['if distance() > 1:', '    shoot("charge")', 'else:', '    shoot("fast")'], 10, 14);
+        c.code(k, ['if distance() > 1:', '    spray("high")', 'else:', '    spray("low")'], 10, 14);
         var nut = c.dat(c.h('div'), 226, Y - 21); nut.appendChild(veNut(c, false, 3)); k.appendChild(nut);
         var r = c.xe(XHN, DO, 1, 3, 150, Y); k.appendChild(r);
         var tia = c.dat(c.h('div', 'pg-tia pg-do'), 190, Y - 4); tia.style.width = '36px'; tia.style.setProperty('--t', '0s'); k.appendChild(c.tu(tia, 1.4));
@@ -414,10 +408,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         banBong(k, c, 2, b.x, b.y - 26, nb.x, nb.y, 2720, 0.25);
         c.sau(3000, function () { s.nb['3,0'].dat(true); r.ve(DO); r.mat('vui'); c.keu('moKhoa'); });
       },
-      // 3 · code if not warm(): shoot()
+      // 3 · code if not warm(): spray()
       function (k, c) {
         c.nen(k, 'md-san');
-        c.code(k, ['if not warm():', '    shoot()'], 10, 14);
+        c.code(k, ['if not warm():', '    spray()'], 10, 14);
         var nut = c.dat(c.h('div'), 226, Y - 21); nut.appendChild(veNut(c, false, 3)); k.appendChild(nut);
         var r = c.xe(XHN, DO, 1, 3, 150, Y); k.appendChild(r);
         var tia = c.dat(c.h('div', 'pg-tia pg-do'), 190, Y - 4); tia.style.width = '36px'; tia.style.setProperty('--t', '0s'); k.appendChild(c.tu(tia, 0.9));
@@ -473,7 +467,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         k.appendChild(c.xe(XHN, YEN, 1, 3, 70, Y).mat('vui'));
         k.appendChild(c.xe(R2, DO, 3, 3, 250, Y).mat('vui'));
         var b1 = c.code(k, ['forward(4)', 'wait()'], 8, 8); bangTen(c, b1, t2('pg.tenR1'), '');
-        var b2 = c.code(k, ['while warm():', '    wait()', 'shoot()'], 170, 8, 0.5); bangTen(c, b2, t2('pg.tenR2'), 'pg-ten-r2');
+        var b2 = c.code(k, ['while warm():', '    wait()', 'spray()'], 170, 8, 0.5); bangTen(c, b2, t2('pg.tenR2'), 'pg-ten-r2');
         c.sau(300, function () { c.keu('bam'); });
       }
     ],

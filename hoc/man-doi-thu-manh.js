@@ -33,7 +33,7 @@
     omni: function () { return { loaiRobot: 'omni', robot: { than: 'omni', tay: null, camBien: CAM, son: 'do' }, hamGoc: BANH.concat(['slide_left', 'slide_right', 'front_clear']) }; },
     nhen: function () { return { loaiRobot: 'nhen', robot: { than: 'nhen', tay: null, camBien: [], son: 'do' }, hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'] }; },
     drone: function (pin) { return { loaiRobot: 'drone', robot: { than: 'drone', tay: null, camBien: [{ ma: 'pin', o: 'than' }], son: 'do' }, hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'battery'], pin: pin }; },
-    hoi: function () { return { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'hoi', camBien: CAM, son: 'do' }, hamGoc: BANH.concat(['shoot', 'shoot_back', 'front_clear']) }; },
+    hoi: function () { return { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'hoi', camBien: CAM, son: 'do' }, hamGoc: BANH.concat(['spray', 'spray_back', 'front_clear']) }; },
     namCham: function () { return { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'nam-cham', camBien: CAM, son: 'do' }, hamGoc: BANH.concat(['magnet_n', 'magnet_s', 'magnet_off', 'front_clear']) }; },
     nem: function () { return { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'nem', camBien: CAM, son: 'do' }, hamGoc: BANH.concat(['aim', 'load', 'throw', 'front_clear']) }; }
   };
@@ -196,11 +196,11 @@
       san: ['#######', '#.....#', '#.###F#', '#.###C#', 'N.....#', '#.#####', '#######'],
       bd: [{ x: 1, y: 5, huong: 0 }, { x: 5, y: 4, huong: 3 }],
       r2: R2.hoi(),
-      c2: ['wait()', 'wait()', 'shoot()', 'wait()', 'turn_right()'].concat(FOR(20, ['if front_clear():', '    move()', 'else:', '    wait()'])),
+      c2: ['wait()', 'wait()', 'spray("high")', 'wait()', 'turn_right()'].concat(FOR(20, ['if front_clear():', '    move()', 'else:', '    wait()'])),
       c1Mau: ['go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
       c1Giai: ['move()', 'wait()', 'wait()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
       doiThu: { part: 'hoi', manh: ['Bắn van N từ xa để mở cửa', 'Giật lùi đi một ô mỗi phát, không cần quay'], yeu: ['Tia nước bay thẳng, gặp xe là dừng: đứng chắn là van không bị bắn'] },
-      goiY: ['R2 chờ 2 nhịp rồi shoot() ở nhịp 3, tia nước bay dọc hàng dưới tới van N.', 'R1 vào ô (1, 4) ở nhịp 1 rồi wait() hai lần: tia nước đập vào R1, cửa C vẫn đóng.']
+      goiY: ['R2 chờ 2 nhịp rồi spray("high") ở nhịp 3, tia nước bay dọc hàng dưới tới van N.', 'R1 vào ô (1, 4) ở nhịp 1 rồi wait() hai lần: tia nước đập vào R1, cửa C vẫn đóng.']
     }),
 
     // 6. Drone bay qua hàng rào nhưng pin ít, phải vòng qua ô sạc P: R1 đi cổng dịch chuyển 1 tới gần cờ.
