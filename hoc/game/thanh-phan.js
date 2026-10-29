@@ -299,7 +299,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       else if (RE_CL_CAM.test(cl[i])) tok.push({ vt: 'cam', ci: i, t: cl[i] });
       else return null;
     }
-    if (!CHE_MAU && !coVePin) return null;                                 // chỉ màn drone có pin: chỉ điều kiện có battery() mới tách ô (các `if d == "U":` giữ cách cũ)
+    var chiCam = tok.every(function (x) { return x.vt === 'cam' || x.vt === 'noi'; });
+    if (!CHE_MAU && !coVePin && !(CHE_VH && chiCam)) return null;          // chỉ màn drone có pin: chỉ điều kiện có battery() mới tách ô (các `if d == "U":` giữ cách cũ); màn vaHoac (mùa 3): điều kiện toàn cảm biến cũng tách
     return { loai: 'dkm', ten: '', tien: m[1], ds: tok.map(function (x) { return x.t; }), noi: ' ', hau: m[3], laFor: false, tok: tok, cl: cl, nx: nx };
   }
   function ghepDKM(d, cl, nx) {
