@@ -54,6 +54,11 @@ Nên cái MỚI của mùa 3: Python B = `and` / `or` (elif là recall); Python 
 2. **Đệm từ**: user hỏi lại "nếu trừ lúc nhảy thì khác gì hố ver2?". Người giao đề xuất (chờ user gật): đệm KHÔNG có ngoại lệ nhảy; đệm khác hố ở chỗ nó **dời** robot (kéo / đẩy 1 ô mỗi nhịp dọc hàng / cột) chứ không chặn hay làm rơi,
    và người chơi **chọn chiều** bằng cực nam châm của mình (khác cực: bị hút về đệm; cùng cực: bị đẩy ra xa; không bật: bị hút như sắt). Đệm là công cụ (đẩy mình qua hàng rào chỗ khó đi, kéo về đúng làn), không phải chướng ngại.
    Nhện không có nam châm bụng (gói 1–8): bị hút như sắt; có nam châm bụng (gói 9): chọn hút / đẩy như xe. Drone mùa 4 bay qua: không bị hút (chốt ở mùa 4).
+   **29/10 USER CHỐT ĐỆM TỪ** (qua phiên vector): "cho tôi nhảy và bay k bị hút" = nhện ĐANG NHẢY và drone ĐANG BAY thì đệm không tác động; mặt đất như bản thử claude/dem-tu-thu
+   (P1 gộp lõi đó). "Nhện đáp xuống thì lượt sau bị hút" = đáp xuống trong vùng đệm thì nhịp kế tiếp mới bị hút / đẩy.
+   **Nam châm điện = đệm từ có công tắc NÚT ĐÈ** (phương án A, user: "A sẽ làm game có chiều sâu hơn"): đè nút thì đệm có điện, rời nút thì đệm tắt.
+   **Đệm tương tác với vật kim loại**: đệm hút / đẩy cả vật sắt và vật nam châm (không chỉ robot). Hai việc này giao ở P1b (phiên vector), sau gói giật một ô.
+   Cảm biến từ: user chưa chơi thật, chưa nhận xét.
 3. Gói 3 trả về gì: bảng "Cảm biến trả về (gói 3)" ghi chuỗi "N" / "S", còn bảng part ghi gốc "sắt" rồi mới "đọc cực". Người giao chọn: gói 3 `front_metal()` (bool), gói 7 `front_pole()` (chuỗi), đúng thứ tự gốc → nâng cấp.
 4. **Màn trình diễn bù cả mùa 1, 2** (user 29/10). Mùa 1 do phiên "Vector hình ảnh theo plan mới" làm (gói HD1, brief-HD1-huong-dan-mua-1.md trên nhánh claude/tay-gap-xoay-comparison-00c53c).
    Phiên này làm gói riêng **T chỉ cho mùa 2**, ngay sau khi gộp mùa 2, TRƯỚC P0 mùa 3. Cờ màn trình diễn tên **`chiChay: true`** (không kéo / sửa / xoá, chỉ Chạy; máy kiểm miễn "mã mẫu không thắng"): ai làm trước thì định nghĩa, người sau dùng lại, báo phiên kia một dòng.
