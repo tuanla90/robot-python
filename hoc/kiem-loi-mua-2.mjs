@@ -227,7 +227,7 @@ console.log('\n== 3. Xích đẩy thùng nặng (cfg.xichDay) ==');
   kiem('cham.js: xích LÙI vào thùng ở màn xichDay → nhắc "chỉ đẩy được thùng khi TIẾN"', !!cd && /khi TIẾN/.test(cd.loi), cd && cd.loi);
   kq = ChamHoc.cham(Object.assign({}, man, { xichDay: false }), { chinh: ['left_move()', 'right_move()', 'wait()'], hamCuaMan: [] }, []);
   cd = kq.chanDoan.find((c) => c.ma === 'dam-tuong');
-  kiem('cham.js: màn không khai xichDay → lời cũ y nguyên ("chỉ cú giật của súng hơi mới dời được thùng")', !!cd && /chỉ cú giật của súng hơi mới dời được thùng\.$/.test(cd.loi), cd && cd.loi);
+  kiem('cham.js: màn không khai xichDay → lời cũ y nguyên ("chỉ cú giật của vòi phun mới dời được thùng")', !!cd && /chỉ cú giật của vòi phun mới dời được thùng\.$/.test(cd.loi), cd && cd.loi);
 }
 
 console.log('\n== 4. Bệ súng xích (cfg.beSung) ==');

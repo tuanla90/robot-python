@@ -343,10 +343,10 @@ console.log('\n== 5. Cửa nhịp + front_clear; nhịp có bắn (ban-dung-yen,
   const S1 = ['.....N', '......'];
   const d = chay(S1, { x: 2, y: 0, huong: 1 }, BAN + BAN + BAN, { danToiDa: 2 });
   kiem('danToiDa 2: hai phát đầu bắn và giật (xe lùi hai ô), phát thứ ba het-dan (lỗi): KHÔNG bắn và KHÔNG giật nhưng vẫn mất 1 nhịp; sung.dan 0', ev(d, 'ban').length === 2 && ev(d, 'giat').length === 2 && maSK(d, 'het-dan').length === 1 && d.nhip === 3 && d.sung.dan === 0 && viTri(d.robot) === '0,0');
-  kiem('chẩn đoán het-dan: lỗi, nói số viên và xe không giật, có `cho`', (() => {
+  kiem('chẩn đoán het-dan: lỗi, nói số lượt phun và xe không giật, có `cho`', (() => {
     const rr = ChamHoc.cham(Object.assign({}, man(3), { danToiDa: 1, san: ['....N'], batDau: { x: 1, y: 0, huong: 1 } }), { chinh: ['shoot()', 'wait()', 'shoot()', 'wait()'] }, []);
     const c2 = rr.chanDoan.find((x) => x.ma === 'het-dan');
-    return c2 && c2.muc === 'loi' && /1 viên/.test(c2.loi) && /không giật/.test(c2.loi) && c2.cho && c2.cho.dong === 3;
+    return c2 && c2.muc === 'loi' && /1 lượt phun/.test(c2.loi) && /không giật/.test(c2.loi) && c2.cho && c2.cho.dong === 3;
   })());
   kiem('danToiDa cho robot không có súng → lỗi cấu hình; danToiDa âm / lẻ cũng lỗi; không khai thì đạn vô hạn', /chỉ dùng cho robot có súng hơi/.test(loi(() => SanHoc.chay({ san: ['..'], batDau: { x: 0, y: 0, huong: 0 }, loaiRobot: 'banh', danToiDa: 1 }, ''))) &&
     /số nguyên không âm/.test(loi(() => chay(S1, { x: 2, y: 0, huong: 1 }, '', { danToiDa: -1 }))) && chay(S1, { x: 2, y: 0, huong: 1 }, BAN.repeat(2)).sung.dan === null);
@@ -392,7 +392,7 @@ console.log('\n== 6. daoChieu "sung"; phần cứng thiếu một nòng (lenh-go
   kiem('chẩn đoán lenh-goc-hong nói "Nòng sau" (canhBao của màn) và tên lệnh shoot_back, có `cho`', !k || (k.chanDoan.some((c) => c.ma === 'lenh-goc-hong' && /Nòng sau hỏng/.test(c.loi) && /shoot_back\(\) không chạy được/.test(c.loi) && c.cho && c.cho.dong === 1)),
     k ? J(k.chanDoan) : '');
   const k2 = ChamHoc.cham(Object.assign({}, man(3), { phanCung: BANH.concat(['shoot']), hamGoc: BANH.concat(['shoot']), canhBao: undefined }), { chinh: ['shoot_back()', 'wait()'] }, []);
-  kiem('không khai canhBao: lời mặc định "Nòng sau của súng hơi hỏng"', k2.chanDoan.some((c) => c.ma === 'lenh-goc-hong' && /Nòng sau của súng hơi hỏng/.test(c.loi)), J(k2.chanDoan.map((c) => c.loi)));
+  kiem('không khai canhBao: lời mặc định "Đầu phun sau của vòi phun hỏng"', k2.chanDoan.some((c) => c.ma === 'lenh-goc-hong' && /Đầu phun sau của vòi phun hỏng/.test(c.loi)), J(k2.chanDoan.map((c) => c.loi)));
   // thùng mờ
   const SANT = ['.....', '.....', '.H...', '.....', '.....'], bdT = { x: 3, y: 2, huong: 1 };
   const BM = (bongMo, code) => chay(SANT, bdT, code, { mucTieu: 'bong-mo', bongMo });
@@ -539,8 +539,8 @@ console.log('\n== 8. Chương sung-hoi: dữ liệu và luật từng màn ==');
 const BANG = [];
 {
   const viTriChuong = ThuTu.thuTu.indexOf('sung-hoi') + 1;
-  kiem('đúng 10 màn, số 1..10, mã sung-hoi.1…, id theo vị trí trong thuTu (không ghi cứng số chương), chương đứng sau che-omni và trước che-sung-hoi, tên "Súng hơi"',
-    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === viTriChuong + '.' + (i + 1) && m.ma === 'sung-hoi.' + (i + 1)) && ThuTu.thuTu.indexOf('sung-hoi') === ThuTu.thuTu.indexOf('che-omni') + 1 && ThuTu.thuTu.indexOf('che-sung-hoi') === ThuTu.thuTu.indexOf('sung-hoi') + 1 && ThuTu.ten['sung-hoi'] === 'Súng hơi' && ThuTu.laDot2('sung-hoi'));
+  kiem('đúng 10 màn, số 1..10, mã sung-hoi.1…, id theo vị trí trong thuTu (không ghi cứng số chương), chương đứng sau che-omni và trước che-sung-hoi, tên "Vòi phun"',
+    ds.length === 10 && ds.every((m, i) => m.so === i + 1 && m.id === viTriChuong + '.' + (i + 1) && m.ma === 'sung-hoi.' + (i + 1)) && ThuTu.thuTu.indexOf('sung-hoi') === ThuTu.thuTu.indexOf('che-omni') + 1 && ThuTu.thuTu.indexOf('che-sung-hoi') === ThuTu.thuTu.indexOf('sung-hoi') + 1 && ThuTu.ten['sung-hoi'] === 'Vòi phun' && ThuTu.laDot2('sung-hoi'));
   kiem('tên các màn: Bắn là lùi, Bắn ra sau, Nút ở sau lưng, Thùng sau lưng, Hai thùng hai phía, Quay rồi đẩy, Thùng đi băng, Tắt băng, Thùng chắn bóng, Kho hàng; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu sung-hoi "Huy hiệu Súng hơi"',
     J(ds.map((m) => m.ten)) === J(['Bắn là lùi', 'Bắn ra sau', 'Nút ở sau lưng', 'Thùng sau lưng', 'Hai thùng hai phía', 'Quay rồi đẩy', 'Thùng đi băng', 'Tắt băng', 'Thùng chắn bóng', 'Kho hàng']) &&
       J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && ds.every((m) => !!m.huyHieu === (m.so === 10)) && ds[9].huyHieu.ma === 'sung-hoi' && ds[9].huyHieu.ten === 'Huy hiệu Súng hơi');

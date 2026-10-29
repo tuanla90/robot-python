@@ -114,7 +114,7 @@ console.log('\n== 2. Màn hỏng: phanCung thiếu shoot_back ==');
   const cd = k.chanDoan.find((c) => c.ma === 'lenh-goc-hong');
   kiem('gọi shoot_back() ở màn hỏng: lenh-goc-hong (không phải ham-chua-co), lời nêu canhBao và tên lệnh, chỉ dòng của lệnh', !!cd && cd.ten === 'shoot_back' && /Nòng sau hỏng/.test(cd.loi) && /shoot_back\(\) không chạy được/.test(cd.loi) && !maCua(k).includes('ham-chua-co') && cd.cho && cd.cho.cot === 'chinh' && cd.cho.dong === 1, J(k.chanDoan));
   const k2 = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false, canhBao: undefined }), { chinh: ['shoot_back()', 'wait()'] }, khoTruoc(m8.id));
-  kiem('không khai canhBao: lời mặc định "Nòng sau của súng hơi hỏng"', /Nòng sau của súng hơi hỏng/.test((k2.chanDoan.find((c) => c.ma === 'lenh-goc-hong') || {}).loi || ''));
+  kiem('không khai canhBao: lời mặc định "Đầu phun sau của vòi phun hỏng"', /Đầu phun sau của vòi phun hỏng/.test((k2.chanDoan.find((c) => c.ma === 'lenh-goc-hong') || {}).loi || ''));
   kiem('kick_ahead (u_turn, shoot, u_turn) chạy được ở màn hỏng: không lenh-goc-hong, thùng bị đá lên mép', (() => { const r = ChamHoc.cham(m8, m8.loiGiai, tron(khoTruoc(m8.id), m8.loiGiai.hamCuaEmMoi)); return r.thang && !maCua(r).includes('lenh-goc-hong'); })());
   const hd = DoDuong.Bo.hanhDongChoPhep(m8);
   kiem('bộ dò: màn hỏng nòng sau chỉ cho ban-truoc (thiếu ban-sau); màn thường cho cả hai', hd.some((x) => x.ban === 'truoc') && !hd.some((x) => x.ban === 'sau') && DoDuong.Bo.hanhDongChoPhep(man(1)).filter((x) => x.ban).length === 2);
@@ -169,8 +169,8 @@ console.log('\n== 5. Chương che-sung-hoi: dữ liệu và luật từng màn =
 const BANG = [];
 {
   const vt = ThuTu.thuTu.indexOf('che-sung-hoi') + 1;
-  kiem('đúng 10 màn, số 1..10, mã che-sung-hoi.1…, id theo vị trí trong thuTu (ngay sau sung-hoi), tên "Chế lệnh súng hơi"',
-    che.length === 10 && che.every((m, i) => m.so === i + 1 && m.id === vt + '.' + (i + 1) && m.ma === 'che-sung-hoi.' + (i + 1)) && ThuTu.thuTu.indexOf('che-sung-hoi') === ThuTu.thuTu.indexOf('sung-hoi') + 1 && ThuTu.ten['che-sung-hoi'] === 'Chế lệnh súng hơi' && ThuTu.laDot2('che-sung-hoi'));
+  kiem('đúng 10 màn, số 1..10, mã che-sung-hoi.1…, id theo vị trí trong thuTu (ngay sau sung-hoi), tên "Chế lệnh vòi phun"',
+    che.length === 10 && che.every((m, i) => m.so === i + 1 && m.id === vt + '.' + (i + 1) && m.ma === 'che-sung-hoi.' + (i + 1)) && ThuTu.thuTu.indexOf('che-sung-hoi') === ThuTu.thuTu.indexOf('sung-hoi') + 1 && ThuTu.ten['che-sung-hoi'] === 'Chế lệnh vòi phun' && ThuTu.laDot2('che-sung-hoi'));
   kiem('tên các màn: Lùi bằng giật, Tiến bằng giật, Giật tới giật lùi, Đá thùng sang phải, Bắn nút rồi về, Đá thùng sang trái, Súng lắp ngược, Nòng sau hỏng, Đường về, Kho hàng; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-sung-hoi "Huy hiệu Chế lệnh súng hơi"',
     J(che.map((m) => m.ten)) === J(['Lùi bằng giật', 'Tiến bằng giật', 'Giật tới giật lùi', 'Đá thùng sang phải', 'Bắn nút rồi về', 'Đá thùng sang trái', 'Súng lắp ngược', 'Nòng sau hỏng', 'Đường về', 'Kho hàng']) &&
       J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-sung-hoi' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh súng hơi');

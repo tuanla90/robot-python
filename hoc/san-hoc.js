@@ -2192,7 +2192,7 @@
         if (yc.thamSo && yc.thamSo.length) {
           var lb = yc.thamSo.length === 1 ? yc.thamSo[0] : undefined;
           if (!lucBan) {
-            loi = { loai: 'runtime-error', ma: 'luc-chua-mo', dong: yc.dong, ten: yc.ten, thongDiep: 'Súng ở màn này chưa chọn được lực bắn: viết ' + yc.ten + '() không có đối số.' };
+            loi = { loai: 'runtime-error', ma: 'luc-chua-mo', dong: yc.dong, ten: yc.ten, thongDiep: 'Vòi phun ở màn này chưa chọn được lực bắn: viết ' + yc.ten + '() không có đối số.' };
             return true;
           }
           if (LUC_BAN.indexOf(lb) < 0) {
