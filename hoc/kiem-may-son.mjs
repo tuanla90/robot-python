@@ -143,7 +143,8 @@ console.log('\n== 4. Đăng ký ==');
   const g = ThuTu.goi.find((x) => x.ma === 'may-son'), i = ThuTu.goi.indexOf(g);
   // lo-trinh-hoc.js đã chèn gói đội vào chính mảng ThuTu.goi: gói đội Cảm biến màu (nếu có) đứng giữa gói mau và gói may-son
   const truoc = ThuTu.goi.slice(0, i).filter((x) => x.ma !== 'doi-mau').pop();
-  kiem('gói may-son: bộ phận, mùa 3, hai chương, ngay sau gói Cảm biến màu (và gói đội của nó)', g && g.loai === 'bo-phan' && g.mua === 'mua-3' && J(g.chuong) === '["may-son","che-may-son"]' && truoc.ma === 'mau' && ThuTu.goi[i - 1].mua === 'mua-3');
+  // 29/10 khung mùa 3 (KE-HOACH-MUA-3.md): may-son ngoài khuôn mùa 3, sang đầu mùa 4 (ẩn) cùng gói Cảm biến màu, giữ thứ tự.
+  kiem('gói may-son: bộ phận, mùa 4, hai chương, ngay sau gói Cảm biến màu (và gói đội của nó)', g && g.loai === 'bo-phan' && g.mua === 'mua-4' && J(g.chuong) === '["may-son","che-may-son"]' && truoc.ma === 'mau' && ThuTu.goi[i - 1].mua === 'mua-4');
   kiem('thuTu: may-son, che-may-son đứng sau che-mau (và chương đội của nó), trước rap-nao', ThuTu.thuTu.indexOf('may-son') > ThuTu.thuTu.indexOf('che-mau') && ThuTu.thuTu.indexOf('che-may-son') === ThuTu.thuTu.indexOf('may-son') + 1 && ThuTu.thuTu.indexOf('rap-nao') === ThuTu.thuTu.indexOf('che-may-son') + 1);
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   kiem('choi.html nạp man-may-son.js, man-che-may-son.js (sau man-che-mau.js) và ve-vector-tay-son.js (V7c2: bộ pixel part/ đã xoá)', html.indexOf('../man-may-son.js') > html.indexOf('../man-che-mau.js') && html.indexOf('../man-che-may-son.js') > html.indexOf('../man-may-son.js') && html.includes('ve-vector-tay-son.js'));
