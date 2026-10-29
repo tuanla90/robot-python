@@ -767,6 +767,12 @@
   H['che-doc-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm catch() tự đọc chữ trên vật rồi bật cực khác để kéo.');
   H['che-doc-cuc.2'] = [buocTaoHam('sort_drop', 'Bấm Hàm mới, đặt tên sort_drop và thêm đối số p.', CHU_TAO)].concat(buocThuVeChay('p là "N" thì rẽ trái, không thì rẽ phải, rồi thả. Bấm Chạy.'));
 
+  // MÙA 3 gói 4: đệm từ (bai-tu.1 trình diễn), hàm cho bãi từ (che-bai-tu.1 trình diễn; .2 iron_run(n), .4 detour(k), .7 call_iron)
+  H['bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đi ngang đệm S, xe bị kéo lên hàng trên đúng tới lá cờ.');
+  H['che-bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: iron_run(3) bật N, đi qua đệm, hút sắt rồi quay về.');
+  H['che-bai-tu.2'] = [buocTaoHam('iron_run', 'Bấm Hàm mới, đặt tên iron_run và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n(), đi n ô, u_turn(), đi n ô. Bấm Chạy.'));
+  H['che-bai-tu.4'] = [buocTaoHam('detour', 'Bấm Hàm mới, đặt tên detour và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Ba lần: rẽ phải, đi k ô. Bấm Chạy.'));
+  H['che-bai-tu.7'] = [buocTaoHam('call_iron', 'Bấm Hàm mới để tạo call_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait(), move(), magnet_n(), wait(). Bấm Chạy.'));
   // MÙA 3 gói 9: nam châm bụng nhện (bung-nhen.1 trình diễn; che-bung-nhen.1 trình diễn hàm lift; .2 hook, .3 unhook, .5 tote(path), .7 hook_for(p))
   H['bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện đứng trên vật sắt, magnet_n() hút nó lên dưới bụng, tới ô đích thì thả.');
   H['che-bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm lift() bật nam châm bụng nhấc vật sắt.');
