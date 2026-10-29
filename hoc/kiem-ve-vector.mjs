@@ -373,6 +373,12 @@ const coHinh = (loai, ma) => !!V.lay(loai, ma);
   kiem('mọi vật (chất ' + chat.join(' / ') + ' × không màu + ' + SanHoc.MAU_TEN.length + ' màu) có hình vector qua vatCua; vật màu có đai màu luật (luatVat*)', saiV.length === 0, saiV.slice(0, 6).join('; '));
   kiem('nam châm N tô luatVatDo, S tô luatVatXanhDuong (như bộ pixel); thùng nặng H / h và bóng hơi có hình',
     mauCua(V.vat('nam-cham', 30, { cuc: 'N' }).lenh).includes(BM.luatVatDo) && mauCua(V.vat('nam-cham', 30, { cuc: 'S' }).lenh).includes(BM.luatVatXanhDuong) && coHinh('vat', 'thung-nang') && coHinh('vat', 'bong'));
+  /* đệm từ (mùa 3, bản thử: cfg.demTu, ô '.' nên không có ký hiệu): N tô luatVatDo, S tô luatVatXanhDuong; vẽ được, nằm trong ô ở 14 / 24 / 56; san-ve.js vẽ qua veOVec và trượt dem-hut / dem-day */
+  const demO = (c, n) => V.o('dem-tu', n, { cuc: c });
+  kiem('ô đệm từ: có hình, N tô luatVatDo, S tô luatVatXanhDuong, vẽ được và trong ô ở 14 / 24 / 56; san-ve.js vẽ đệm (demTuT) và trượt xe khi dem-hut / dem-day',
+    coHinh('o', 'dem-tu') && mauCua(demO('N', 56).lenh).includes(BM.luatVatDo) && mauCua(demO('S', 56).lenh).includes(BM.luatVatXanhDuong) &&
+    ['N', 'S'].every((c) => [14, 24, 56].every((n) => coVe(demO(c, n).lenh) && ngoaiO(demO(c, n)).length === 0)) &&
+    /ve\('dem-tu', \{ cuc: dt\.cuc \}\)/.test(svSrc) && /s\.ma === 'dem-hut' \|\| s\.ma === 'dem-day'/.test(svSrc));
 }
 
 /* ================================================================= 11. mọi trạng thái mẫu × 3 cỡ, màu luật */
