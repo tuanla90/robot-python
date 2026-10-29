@@ -30,7 +30,7 @@ tên gọi; **không quyết định luật** (hội đồng 29/10, cả bốn t
 | 1 | Xe chở hàng | kho hàng | hai bánh chở, tay gắp bốc thùng, cảm biến tránh va | (không) |
 | 2 | Xe tăng | nhà máy | xích, súng hơi trên bệ (combo bệ súng), hồng ngoại đo nhiệt như kính ngắm nhiệt | (không) |
 | 3 | Xe thăm dò quặng, dáng cua | mỏ quặng | nhện vượt khe nứt, cảm ứng từ là máy dò kim loại, nam châm bụng cắp quặng (combo) | sắt là quặng, hố là khe nứt |
-| 4 | Drone nông trại | nông trại | drone bay theo lưới ruộng, camera nhìn xuống, về ô sạc khi hết pin | máy sơn: **chờ user** (đổi thành nước tưới, hay giữ sơn: drone kẻ vạch / vẽ; giữ sơn thì camera vẫn đọc nhiều màu) |
+| 4 | Drone kẻ vạch / vẽ | thành phố | drone bay theo lưới phố, máy sơn kẻ vạch đường / vẽ tranh tường, camera nhìn xuống đọc màu, về ô sạc khi hết pin | **giữ máy sơn** (user chốt 29/10: ô màu đã gần hoàn thiện, đổi sang nước là làm lại nhiều tính năng) |
 | 5 | Robot cầu thủ | sân bóng | omni chạy ngang, máy ném thành chân sút, radar tròn quét sân (như robot RoboCup) | máy ném → chân sút (ném qua rào = sút bổng); bàn xoay = xoay người trên sân tập |
 | 6 | Xe tuần tra núi tuyết | núi tuyết | bánh gai bám băng; **loa chủ động làm tuyết lăn** (lở có kiểm soát); cảm biến âm thanh nghe tín hiệu người cần cứu | cổng dịch chuyển → đường hầm (**user chốt 29/10**) |
 | 7 | Máy của em | xưởng của em | tự chọn part | |

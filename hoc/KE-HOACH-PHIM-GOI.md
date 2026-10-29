@@ -71,7 +71,7 @@ Ghi chú mùa 2:
 
 Truyện khung: **mỗi mùa R1 lắp một cỗ máy cho một nơi đang cần**, gói 10 là **cỗ máy đó xuất xưởng** (như "R1 xuất xưởng" mùa 1).
 Cỗ máy và nơi làm việc của từng mùa: KE-HOACH-7-MUA.md mục "Cỗ máy của mỗi mùa".
-Chuỗi nơi: kho hàng → nhà máy → mỏ quặng → nông trại → sân bóng → núi tuyết → xưởng của em.
+Chuỗi nơi: kho hàng → nhà máy → mỏ quặng → thành phố → sân bóng → núi tuyết → xưởng của em.
 
 Khuôn phim chung (mọi mùa, viết vào kịch bản khi lập danh sách màn của mùa):
 - **Gói 1, khung 1: đơn việc.** Nơi mới hiện ra cùng việc đang kẹt (vd mùa 3: quặng nằm bên kia khe nứt, xe bánh không qua được). Khung sau như cũ: R1 nhặt / nhận thân mới.
