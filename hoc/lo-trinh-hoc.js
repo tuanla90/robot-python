@@ -1406,12 +1406,12 @@
       'Xích của xe đã được nâng cấp: tiến vào thùng nặng thì thùng trượt đi một ô, xe tiến theo. Thùng cách ô đích khung vàng hai ô. Bấm Chạy xem hai bước tiến đẩy thùng vào đích.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: mỗi move() vào thùng là thùng dời một ô.',
       ['Xe lùi thì không kéo được thùng: chỉ tiến mới đẩy.', 'Màn sau thùng ở xa hơn: em tự lặp move() đủ số lần.']);
-    // Gói 6 chương luc-ban: cái mới là CHỌN LỰC BẮN spray("low") / spray("high"). luc-ban.1 trình diễn bắn nhanh (nút gần, thùng sau lưng nằm yên);
-    // luc-ban.2 ép: mã mẫu bắn nhanh không tới nút cách ba ô, người chơi đổi chữ "low" thành "high" (H). che-luc-ban.1 chế auto_spray() (H).
+    // Gói 6 chương luc-ban (30/10): cái mới là PHUN MẠNH spray("high"): tia bay xa và xe GIẬT lùi một ô (lần đầu trong mùa có cú giật). luc-ban.1 trình diễn
+    // (van cách ba ô, phun mạnh mở cửa, cú giật đưa xe tới hàng cửa); luc-ban.2 ép: mã mẫu phun nhẹ không tới van xa, người chơi đổi "low" thành "high" (H). che-luc-ban.1 chế auto_spray() (H).
     trinhDien('luc-ban.1', null,
-      'Vòi phun giờ chọn được lực: spray("high") bắn tụ như mọi khi (tia nước bay xa, xe bị giật lùi); spray("low") bắn nhanh (tia nước chỉ bay hai ô, xe đứng yên). Van cách xe hai ô, thùng nằm ngay sau lưng. Bấm Chạy xem bắn nhanh mở cửa mà thùng không bị xô.',
-      'Chương trình đã viết sẵn và khoá. Bấm Chạy: chữ "low" trong ngoặc là lực bắn nhanh.',
-      ['Bắn tụ thì cú giật hất thùng sau lưng trượt đi.', 'Màn sau van ở xa: em tự chọn lực.']);
+      'Vòi phun giờ có lực mạnh: spray("high") phun tia nước bay xa tới vật cản đầu tiên, nhưng cú phun mạnh làm xe giật lùi một ô. Van cách xe ba ô, phun nhẹ không tới. Bấm Chạy xem phun mạnh mở cửa và cú giật đưa xe tới hàng cửa.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: chữ "high" trong ngoặc là lực phun mạnh.',
+      ['Phun mạnh thì tia bay xa, xe giật lùi một ô.', 'Màn sau van ở xa: em tự chọn lực.']);
     // Gói 7 chương do-nhiet: cái mới là ĐO NHIỆT warm() (nút bắn đang bật thì nóng). do-nhiet.1 trình diễn (if not warm(): squirt("low") ở mỗi khúc quanh);
     // do-nhiet.2 ép while not warm(): turn_right() (H). che-do-nhiet.1 chế switch_on() (H).
     trinhDien('do-nhiet.1', null,

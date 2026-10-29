@@ -621,14 +621,14 @@
     buocTaoHam('push', 'Bấm Hàm mới để chế push(n) với tham số n.', CHU_TAO),
     buocThanHam('push', ['.p-pal .pal'], 'Ghép thân hàm: forward với số là distance() + n: tới sát thùng rồi đẩy thêm n ô.', 1, 'tren')
   ].concat(buocThuVeChay('Ba thùng xa gần khác nhau, cùng một push(n). Bấm Chạy.'));
-  // Gói 6: chọn lực bắn (luc-ban.1 trình diễn bắn nhanh, luc-ban.2 đổi "low" thành "high", che-luc-ban.1 chế auto_spray())
-  H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: spray("low") bắn nhanh, nước bay hai ô trúng van, xe đứng yên nên thùng không bị xô.', 1,
-    'Chữ trong ngoặc là lực: "low" bắn nhanh không giật, "high" bắn tụ bay xa. Màn sau em tự chọn lực.');
+  // Gói 6 (30/10): phun mạnh (luc-ban.1 trình diễn spray("high"), luc-ban.2 đổi "low" thành "high", che-luc-ban.1 chế auto_spray())
+  H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: spray("high") phun mạnh, tia nước bay ba ô trúng van, xe giật lùi một ô tới hàng cửa.', 1,
+    'Chữ trong ngoặc là lực: "high" bay xa nhưng xe giật, "low" là phun nhẹ. Màn sau em tự chọn lực.');
   H['luc-ban.2'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bắn nhanh chỉ bay hai ô, van cách ba ô nên tia nước rơi giữa đường.', xong: 'chay', daLam: daChay },
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: phun nhẹ chỉ bay hai ô, van cách ba ô nên tia nước rơi giữa đường.', xong: 'chay', daLam: daChay },
     { phu: true, huong: 'tren', rong: 180, han: 0,
       dich: function () { return thay('nut:chon-chuoi') ? 'nut:chon-chuoi' : 'so:1'; },
-      chu: function () { return thay('nut:chon-chuoi') ? 'Chọn "high": bắn tụ bay xa tới van.' : 'Chạm chữ "low" trên dòng spray để đổi lực.'; },
+      chu: function () { return thay('nut:chon-chuoi') ? 'Chọn "high": phun mạnh bay xa tới van.' : 'Chạm chữ "low" trên dòng spray để đổi lực.'; },
       daLam: function () { return dongCo(/"high"/) >= 0; } },
     buocChay('Cửa mở rồi thì rẽ trái, đi hai ô tới cờ. Bấm Chạy.')
   ];
@@ -685,5 +685,5 @@
 
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
-    'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2 };       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
+    'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2 };       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
 })();

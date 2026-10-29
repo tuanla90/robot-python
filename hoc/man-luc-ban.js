@@ -57,14 +57,13 @@
 
   /* ------------------------------------------------------------------- sân */
 
-  // 1: xe (3,1) quay trái, nút (1,1) cách 2 ô; thùng (4,1) ngay sau lưng, có chỗ trượt tới (5,1); cửa (3,2) dưới xe, xe mờ (3,4)
+  // 1 (30/10, trình diễn PHUN MẠNH): hành lang đứng, xe (1,3) quay lên, van (1,0) cách ba ô (phun nhẹ không tới); cú giật đưa xe lùi tới (1,4) ngay cạnh cửa (2,4); cờ (3,4)
+  var SAN_MANH = ['#N###', '#.###', '#.###', '#.###', '#.CF#', '#####'];
+  // 3 (trước 30/10 là màn 1): xe (3,1) quay trái, nút (1,1) cách 2 ô; thùng (4,1) ngay sau lưng, có chỗ nhích tới (5,1); cửa (3,2) dưới xe, xe mờ (3,4)
   var SAN_1 = ['#######', '#N..H.#', '###C###', '###.###', '###.###', '#######'];
   // 2: xe (4,1) quay trái, nút (1,1) cách 3 ô; cú giật đưa xe lùi tới (5,1), ngay trên cửa (5,2); cờ (5,3)
   var SAN_2 = ['#######', '#N....#', '#####C#', '#####F#', '#######'];
-  // 3: xe (3,3) quay trái; nút gần (1,3) cách 2 ô, thùng (4,3) sau lưng; nút xa (3,0) cách 3 ô; cửa 1 (3,4) theo nút gần, cửa 2 (3,6) theo nút xa; xe mờ (3,7)
-  var SAN_3 = ['###N###', '###.###', '###.###', '#N..H.#', '###C###', '###.###', '###C###', '###.###', '#######'];
-  var NOI_3 = [{ nut: { x: 1, y: 3 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 3, y: 0 }, cua: [{ x: 3, y: 6 }] }];
-  // 4: như 3 nhưng soi gương: xe (3,3) quay phải, nút gần (5,3), thùng (2,3) sau lưng; nút xa (3,0)
+  // 4: hai van hai cửa, soi gương của màn 3 cũ (bỏ 30/10): xe (3,3) quay phải, nút gần (5,3), thùng (2,3) sau lưng; nút xa (3,0)
   var SAN_4 = ['###N###', '###.###', '###.###', '#.H..N#', '###C###', '###.###', '###C###', '###.###', '#######'];
   var NOI_4 = [{ nut: { x: 5, y: 3 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 3, y: 0 }, cua: [{ x: 3, y: 6 }] }];
   // 5: xe (2,3) quay lên; nút (2,5) SAU LƯNG cách 2 ô; thùng (2,2) trước mũi, có chỗ trượt tới (2,1); cửa (3,3) bên phải, xe mờ (5,3)
@@ -91,9 +90,9 @@
 
   /* ------------------------------------------------------------- chương trình */
 
+  var L_MANH = ['spray("high")', 'wait()', 'turn_right()', 'move()', 'move()'];
   var L_1 = ['spray("low")', 'wait()', 'turn_left()', 'forward(3)'];
   var L_2 = ['spray("high")', 'wait()', 'turn_left()', 'forward(2)'];
-  var L_3 = ['spray("low")', 'wait()', 'turn_right()', 'spray("high")', 'wait()', 'u_turn()', 'forward(3)'];
   var C_4 = ['squirt("low")', 'turn_left()', 'squirt("high")', 'u_turn()', 'forward(3)'];
   var C_5 = ['squirt_back("low")', 'turn_right()', 'forward(3)'];
   var L_6 = ['squirt("low")', 'turn_left()', 'forward(2)', 'turn_left()', 'squirt("high")'];
@@ -103,24 +102,21 @@
   var L_10 = ['smart_spray()', 'turn_left()', 'go_wall()'];
 
   var DS = [
-    /* ------------------------------------------------ hàng 1: làm quen */
+    /* -------------------------------- hàng 1: làm quen */
     man({
-      so: 1, ten: 'Bắn nhanh', hang: 'lam-quen', mucTieu: 'bong-mo', hamCuaEmCan: ['turn_left', 'forward', 'move'],
-      deBai: 'spray("high") bắn tụ như mọi khi: tia nước bay xa, xe bị giật. spray("low") bắn nhanh: tia nước chỉ bay 2 ô nhưng xe đứng yên. ' +
-        'Van cách xe 2 ô, thùng nằm ngay sau lưng: mở cửa mà không làm xô thùng, rồi đưa xe tới chỗ xe mờ.',
-      veMaMau: 'Chương trình có sẵn bắn tụ. Chạy thử xem thùng sau lưng bị xô đi đâu, rồi chạm chữ "high" để đổi sang "low".',
-      san: SAN_1, batDau: { x: 3, y: 1, huong: 3 },
-      bongMo: { x: 3, y: 4, huong: 2, thung: [{ x: 4, y: 1 }] },
-      maMau: { chinh: ['spray("high")', 'wait()', 'turn_left()', 'forward(3)'] },
-      sao: { o: 11, nhip: 5 },
-      loiGiai: { chinh: L_1.slice() },
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# bắn nhanh cho thùng nằm yên'].concat(L_1) } },
+      so: 1, ten: 'Phun mạnh', hang: 'lam-quen', hamCuaEmCan: ['turn_right', 'move'],
+      deBai: 'Vòi phun giờ có lực mạnh: spray("high") phun tia nước bay xa tới vật cản đầu tiên, nhưng cú phun mạnh làm xe giật lùi một ô. Van cách xe ba ô, phun nhẹ không tới. Phun mạnh mở cửa rồi đưa xe tới cờ.',
+      veMaMau: 'Chương trình có sẵn phun mạnh. Chạy thử, xem xe giật lùi tới đâu.',
+      san: SAN_MANH, batDau: { x: 1, y: 3, huong: 0 },
+      maMau: { chinh: L_MANH.slice() },
+      sao: { o: 10, nhip: 4 },
+      loiGiai: { chinh: L_MANH.slice() },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# van xa thì phun mạnh'].concat(L_MANH) } },
       loiSai: [
-        { moTa: 'Bắn tụ: cú giật hất thùng sau lưng nhích sang phải, xe theo một ô', baiLam: { chinh: ['spray("high")', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Viết lực bằng chữ hoa: "Fast" không phải tên lực', baiLam: { chinh: ['spray("Fast")', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['luc-ban-sai'] },
-        { moTa: 'Quên dấu nháy: Python tưởng low là tên một biến', baiLam: { chinh: ['spray(low)', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['loi-chay'] }
+        { moTa: 'Phun nhẹ: tia nước rơi sau hai ô, cửa vẫn đóng', baiLam: { chinh: ['spray()', 'wait()', 'turn_right()', 'move()', 'move()'] }, phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Quay trái thay vì quay phải: xe đâm tường, không tới cửa', baiLam: { chinh: ['spray("high")', 'wait()', 'turn_left()', 'move()', 'move()'] }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Bắn tụ thì xe giật lùi đúng vào thùng sau lưng.', 'Van chỉ cách 2 ô, vừa tầm bắn nhanh: spray("low").']
+      goiY: ['Phun mạnh thì tia nước bay xa, và xe bị giật lùi một ô.', 'Xe giật lùi đúng vào hàng cửa: quay phải là thấy cửa.']
     }),
 
     man({
@@ -140,23 +136,25 @@
     }),
 
     man({
-      so: 3, ten: 'Nhanh hay tụ', hang: 'lam-quen', mucTieu: 'bong-mo', hamCuaEmCan: ['turn_right', 'u_turn', 'forward', 'move'],
-      deBai: 'Hai van, hai cửa: van bên trái mở cửa gần, van phía trên mở cửa xa. Thùng sau lưng phải nằm yên. Mỗi phát bắn chọn đúng lực, rồi đưa xe tới chỗ xe mờ.',
-      veMaMau: 'Chương trình có sẵn bắn van bên trái. Viết tiếp: quay lên, bắn van trên, rồi đi xuống.',
-      san: SAN_3, batDau: { x: 3, y: 3, huong: 3 }, noi: NOI_3, nhipTheoLoiGiai: true,
-      bongMo: { x: 3, y: 7, huong: 2, thung: [{ x: 4, y: 3 }] },
-      maMau: { chinh: ['spray("low")', 'wait()'] },
-      sao: { o: 17, nhip: 7 },
-      loiGiai: { chinh: L_3.slice() },
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# trái gần: nhanh, trên xa: tụ'].concat(L_3) } },
+      so: 3, ten: 'Thùng sau lưng', hang: 'lam-quen', mucTieu: 'bong-mo', hamCuaEmCan: ['turn_left', 'forward', 'move'],
+      deBai: 'Phun mạnh thì xe giật lùi, đẩy thùng sau lưng nhích một ô. Phun nhẹ spray("low") chỉ bay 2 ô nhưng xe đứng yên. ' +
+        'Van cách xe 2 ô, thùng nằm ngay sau lưng: mở cửa mà không làm xô thùng, rồi đưa xe tới chỗ xe mờ.',
+      veMaMau: 'Chương trình có sẵn phun mạnh. Chạy thử xem thùng sau lưng bị xô đi đâu, rồi chạm chữ "high" để đổi sang "low".',
+      san: SAN_1, batDau: { x: 3, y: 1, huong: 3 },
+      bongMo: { x: 3, y: 4, huong: 2, thung: [{ x: 4, y: 1 }] },
+      maMau: { chinh: ['spray("high")', 'wait()', 'turn_left()', 'forward(3)'] },
+      sao: { o: 11, nhip: 5 },
+      loiGiai: { chinh: L_1.slice() },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# bắn nhanh cho thùng nằm yên'].concat(L_1) } },
       loiSai: [
-        { moTa: 'Bắn nhanh cả hai: van trên cách 3 ô nên tia nước rơi giữa đường', baiLam: { chinh: ['spray("low")', 'wait()', 'turn_right()', 'spray("low")', 'wait()', 'u_turn()', 'forward(3)'] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
-        { moTa: 'Bắn tụ cả hai: phát đầu hất thùng sau lưng đi', baiLam: { chinh: ['spray("high")', 'wait()', 'turn_right()', 'spray("high")', 'wait()', 'u_turn()', 'forward(3)'] }, phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Bắn tụ: cú giật hất thùng sau lưng nhích sang phải, xe theo một ô', baiLam: { chinh: ['spray("high")', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Viết lực bằng chữ hoa: "Fast" không phải tên lực', baiLam: { chinh: ['spray("Fast")', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['luc-ban-sai'] },
+        { moTa: 'Quên dấu nháy: Python tưởng low là tên một biến', baiLam: { chinh: ['spray(low)', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['loi-chay'] }
       ],
-      goiY: ['Van trái cách 2 ô và sau lưng có thùng: bắn nhanh. Van trên cách 3 ô: chỉ bắn tụ mới tới.', 'Bắn tụ lên trên thì xe giật xuống một ô, qua cửa gần vừa mở.']
+      goiY: ['Bắn tụ thì xe giật lùi đúng vào thùng sau lưng.', 'Van chỉ cách 2 ô, vừa tầm bắn nhanh: spray("low").']
     }),
 
-    /* ------------------------------------------------ hàng 2: luyện */
+    /* ----------------------------------- hàng 2: luyện */
     man({
       so: 4, ten: 'Hàm squirt(p)', hang: 'luyen', mucTieu: 'bong-mo', hamCuaEmCan: ['turn_left', 'u_turn', 'forward', 'move'], taoHam: ['squirt'],
       deBai: 'Chương trình chính gọi squirt("low") rồi squirt("high"). Em tự chế squirt(p): bắn ra trước với lực p mà lời gọi đưa vào, rồi chờ một nhịp. Thùng sau lưng phải nằm yên.',
@@ -210,7 +208,7 @@
       goiY: ['Mở cửa thì không được giật. Đẩy thùng thì phải giật.', 'Ở dưới, xe quay mặt sang phải rồi bắn tụ: cú giật đẩy thùng bên trái nhích vào đích.']
     }),
 
-    /* ------------------------------------------------ hàng 3: biến thể */
+    /* -------------------------------- hàng 3: biến thể */
     man({
       so: 7, ten: 'Đố: quên dùng p', hang: 'bien-the', mucTieu: 'bong-mo', hamCuaEmCan: ['turn_left', 'turn_right', 'forward', 'move'],
       deBai: 'Chương trình chính gọi tap_left("low"): quay trái, bắn van, quay lại. Nhưng hàm tap_left(p) của màn đang có lỗi nên thùng bên phải bị hất đi. Tìm và sửa một dòng trong tap_left(p).',
@@ -265,7 +263,7 @@
       goiY: ['Nhánh if chạy khi trước mũi TRỐNG: lúc đó van ở xa.', 'Đổi chỗ "low" và "high" cho nhau.']
     }),
 
-    /* ------------------------------------------------ trùm */
+    /* -------------------------------------------- trùm */
     man({
       so: 10, ten: 'Trùm: Ba cửa ba lực', hang: 'trum', mucTieu: 'bong-mo', coCam: true, nhipTheo: 'tong', hamCuaEmCan: ['smart_spray', 'squirt', 'turn_left', 'go_wall', 'move'],
       deBai: 'Ba sân, một chương trình. Sân nào cũng có van bên trái và cửa đi xuống, nhưng van lúc thì sát mũi, lúc thì cách 3 ô, và có sân có thùng sau lưng. Mở cửa, đi xuống tới chỗ xe mờ trên cả ba sân.',
