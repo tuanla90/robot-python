@@ -117,14 +117,12 @@ function chamO(E, i, k) {
   return { cham: true, chon };
 }
 
-/** Ô kẹt đã biết, CHỜ USER QUYẾT (29/10): bảng chọn số của range / đối số chỉ có 1–9 (không 0, không ≥ 10). In ra mỗi lần chạy, không làm đỏ;
+/** Ô kẹt đã biết, CHỜ USER QUYẾT (29/10): bảng chọn số 1–12 (đối số hàm thêm 0) mà lời giải lặp 20 / 30 / 60 lần. In ra mỗi lần chạy, không làm đỏ;
  *  ô kẹt MỚI (khác danh sách) thì đỏ. Khoá: mã màn + giá trị. */
 const CHAP_NHAN = {
   'khoang-cach.6 30': 'range(30) lặp đủ lâu: màn có while (có lẽ giải bằng while, chưa kiểm)',
   'me-cung.7 20': 'range(20) lặp đủ lâu: màn có while', 'me-cung.8 60': 'range(60): màn có while', 'me-cung.9 60': 'range(60): màn có while', 'me-cung.10 60': 'range(60): màn có while',
-  'hong-ngoai.6 20': 'range(20) có sẵn trong mã mẫu', 'che-hong-ngoai.8 30': 'range(30) lặp đủ lâu: màn có while',
-  'bang-chuyen.7 10': 'LỖI THẬT mùa 2: màn "Sửa số lần lặp" cần 10, bảng chọn tới 9',
-  'che-hong-ngoai.10 0': 'LỖI THẬT mùa 2: trùm cần go_safe(0), bảng chọn không có 0'
+  'hong-ngoai.6 20': 'range(20) có sẵn trong mã mẫu', 'che-hong-ngoai.8 30': 'range(30) lặp đủ lâu: màn có while'
 };
 const loi = [], loiAn = [], daBiet = [];
 let soO = 0, soMan = 0;

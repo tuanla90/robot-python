@@ -879,6 +879,7 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .chon-so .cs-bien.xuong{flex-wrap:wrap}
 .chon-so .cs-bien.xuong .cs.bien{flex:1 1 auto;padding:2px 6px 0;white-space:nowrap}
 .chon-so.bien-dai{grid-template-columns:repeat(3,36px)}
+.chon-so.rong.bien-dai{grid-template-columns:repeat(5,28px)}
 .chon-so.bien-dai .cs.bien{font-size:calc(11px*var(--km))}      /* chip distance() + n (mùa 2): vừa khung bảng chọn */
 /* Xưởng: danh sách thử của hàm nằm trên thanh tên hàm (chip rộng hơn ô số, các ô phần tử chạm được) */
 .dso-o.dso-ls{width:auto;min-width:33px;max-width:150px;padding:1px 5px 0;gap:2px}
