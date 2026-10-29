@@ -2,10 +2,11 @@
    man-cham-son.js — "Mật Lệnh Robot": NGÂN HÀNG MÀN MỚI của mùa 4, gói 2 "Chấm sơn" (KE-HOACH-MUA-4.md; phiên "Mùa 4" tự viết, 29/10).
    Khung mùa 4 (lo-trinh-hoc.js, khối "MÙA 4 = 10 GÓI", mảng MUA_4) xếp màn: dòng chương trong MUA_4 khai ĐỦ thứ tự 10 màn.
      - `may-son`: chương 1 "Chấm từng ô": màn mới khai so từ 11 (may-son.1 … .10 đã có; gói này giữ .1, .2, .6, .7 dùng dot(), các màn nét liền về gói 6).
-       Thứ tự: 11 (trình diễn) · 1 · 2 · 12 · 6 · 13 · 7 · 14 · 15 · 16 (trùm).
+       Thứ tự: 11 (trình diễn) · 1 · 2 · 12 · 6 · 7 · 14 · 15 · 13 · 16 (trùm) (xếp theo đường cong nhịp).
        Cái mới của gói: em lắp MÁY SƠN cho R1 (xe hai bánh, như các màn may-son có sẵn): ink(c) chọn màu, dot() chấm ô đang đứng. CHƯA có bút liền
        pen_down / pen_up (gói 6 Nét liền). Python mùa 4: danh sách màu (for c in [...]).
-     - `che-list`: chương 2 "Chế lệnh: đi theo danh sách" (10 màn có sẵn che-list.1 … .10).
+     - `che-list`: chương 2 "Chế lệnh: đi theo danh sách" (10 màn có sẵn che-list.1 … .10), thứ tự 1 · 2 · 3 · 4 · 5 · 6 · 8 · 9 · 7 · 10
+       (Đường về 26 nhịp dời sau hai màn sửa 18 nhịp cho khỏi nhảy).
    Luật máy sơn (san-hoc.js phần MÁY SƠN): mục tiêu 'to-hinh': tô đủ hình mờ (man.hinh, chữ r g b y) đúng màu, KHÔNG tô ra ngoài hình (tô ngoài là thua ngay,
    'to-thua'); dot() chỉ ra lệnh, có hiệu lực ở nhịp kế (move() hay wait()); ink(c) đổi màu ngay, không tốn nhịp.
    Máy kiểm: hoc/kiem-man-mua-4.mjs, hoc/kiem-lo-trinh.mjs mục mùa 4, hoc/kiem-may-son.mjs.

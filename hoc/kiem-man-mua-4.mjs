@@ -67,6 +67,8 @@ for (const g of goi4) for (const [c] of g.chuong) {
       for (const h of b.hamCuaEmMoi || []) { const i = kq.findIndex((x) => x.ten === h.ten), x = { ten: h.ten, thamSo: (h.thamSo || []).slice(), than: h.than.slice() }; if (i >= 0) kq[i] = x; else kq.push(x); }
       return Cham.cham(m, b, kq);
     };
+    // hàm em chế ở màn này (taoHam) không được trùng tên hàm của em đã có trong kho (vd corner() mùa 1): trùng thì gọi sai số đối số, lỗi khó hiểu
+    for (const t of m.taoHam || []) kiem(m.ma + ' hàm mới ' + t + '() chưa có trong kho', !kho.some((h) => h.ten === t));
     let lg = m.loiGiai;
     // màn trình diễn khoá chương trình (máy chấm chạy mã mẫu khoá) nên cắm lỗi giả ở màn mới đầu tiên KHÔNG trình diễn
     if (LOI_GIA && !daLoiGia && !m.chiChay) { lg = Object.assign({}, lg, { chinh: lg.chinh.slice(0, -1) }); daLoiGia = true; }

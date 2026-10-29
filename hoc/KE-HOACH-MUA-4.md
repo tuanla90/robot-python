@@ -117,6 +117,12 @@ Ghi chú chia:
 - **30/10 Gói 2 Chấm sơn xong**: man-cham-son.js may-son.11 (trình diễn ink / dot) · .12 · .13 · .14 · .15 · .16 (trùm, chế paint_row(colors)).
   Thứ tự may-son 11 · 1 · 2 · 12 · 6 · 7 · 14 · 15 · 13 · 16; che-list 1 · 2 · 3 · 4 · 5 · 6 · 8 · 9 · 7 · 10 (Đường về 26 nhịp dời ra sau cho khỏi nhảy).
   kiem-man-mua-4 siết: lời giải không được kèm chẩn đoán (bắt được may-son.14 / .15 đâm tường cuối hàng, đã nới sân). 96 / 96 bộ đạt.
+- **30/10 Gói 6 Nét liền xong**: man-net-lien.js net-lien.1 (trình diễn pen_down / pen_up) · .2 Nét đứt · .3 Khung chữ nhật · .4 Dấu bằng hai màu;
+  che-may-son.11 Nét gập hai màu (chế bend(c, n)) · .12 Ô cờ hai màu (chế checker(a, b, n)) làm cầu nối nhịp.
+  Thứ tự net-lien: net-lien.1 · may-son.3 · may-son.4 · net-lien.2 · may-son.5 · may-son.8 · may-son.9 · net-lien.3 · net-lien.4 · may-son.10 (trùm);
+  che-may-son: 1 · 9 · 2 · 11 · 4 · 3 · 12 · 6 · 5 · 10. che-may-son.7 Lưới chấm và .8 Khung lồng khung (37 / 44 nhịp, sân 49 ô, khó hơn trùm 26 nhịp)
+  dời sang gói 10 chương tong-hop-4 "Đủ bộ" (màn nhắc lại; gói 10 hiện có hai màn đó, chưa đủ).
+  kiem-man-mua-4 thêm: hàm em chế ở màn mới không được trùng tên hàm đã có trong kho (bắt corner() mùa 1, đã đổi thành bend).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -128,4 +134,7 @@ Ghi chú chia:
 6. Đường cong gói 2: che-list.4 (Đo một cạnh) nhảy số ô 12 → 47 so với che-list.3. Ba sân của các màn đo là bãi trống 7 × 7, xe chỉ đi chu vi tối đa
    4 × 4 nên tôi để nguyên (coi số ô của bãi trống là đo lệch). Muốn mượt hẳn thì thu bãi về 5 × 5 hoặc 6 × 6 (sửa PHONG trong man-che-list.js, đo lại sao).
 7. Chương che-list (gói 2) không có màn trình diễn: không có khối mới (hàm nhận danh sách ghép hai thứ đã học), nên tôi không thêm.
+8. Hai chỗ nhảy ở ranh giới gói chưa dựng xong, để lại: may-son.3 (đầu gói 6, 18 ô) sau che-drone.9 (cuối gói 5, 9 ô): gói 5 dựng lại sau lõi P1;
+   che-may-son.7 (đầu gói 10, 37 nhịp, 49 ô) sau che-doi-nam-cham.9 (gói 8): gói 9 còn trống, gói 10 sẽ có màn đứng trước.
+9. Dời che-may-son.7 / .8 sang gói 10: đồng ý không, hay muốn cắt hẳn (gói 10 sẽ dựng màn nhắc lại mới)?
 

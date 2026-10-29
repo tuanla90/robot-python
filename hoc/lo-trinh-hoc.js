@@ -1118,7 +1118,7 @@
     { ma: 'tram-sac', ten: 'Trạm sạc', loai: 'bo-phan', hinh: 'drone',
       chuong: [['tram-sac', day('drone', [4, 5, 6, 10])], ['che-drone', day('che-drone', MUOI)]] },
     { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'may-son',
-      chuong: [['net-lien', day('may-son', [3, 4, 5, 8, 9, 10])], ['che-may-son', day('che-may-son', MUOI)]] },
+      chuong: [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]] },
     { ma: 'flycam', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'flycam',
       chuong: [['flycam', day('flycam', MUOI)], ['che-flycam', []]] },
     { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach',
@@ -1126,7 +1126,7 @@
     { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach',
       chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
     { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach',
-      chuong: [['tong-hop-4', []], ['trum-mua-4', []]] }
+      chuong: [['tong-hop-4', day('che-may-son', [7, 8])], ['trum-mua-4', []]] }
   ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
   var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: đi theo danh sách',

@@ -723,11 +723,11 @@ const BANG_MUA_4 = [
   ['mau', 'bo-phan', [['mau', day('mau', MUOI)], ['che-mau', day('che-mau', MUOI)]]],
   ['pho-mau', undefined, [['pho-mau', []], ['che-pho-mau', []]]],
   ['tram-sac', 'bo-phan', [['tram-sac', day('drone', [4, 5, 6, 10])], ['che-drone', day('che-drone', MUOI)]]],
-  ['net-lien', 'bo-phan', [['net-lien', day('may-son', [3, 4, 5, 8, 9, 10])], ['che-may-son', day('che-may-son', MUOI)]]],
+  ['net-lien', 'bo-phan', [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]]],
   ['flycam', 'bo-phan', [['flycam', day('flycam', MUOI)], ['che-flycam', []]]],
   ['doi-nam-cham', 'thu-thach', [['doi-nam-cham', day('doi-nam-cham', MUOI)], ['che-doi-nam-cham', day('che-doi-nam-cham', MUOI)]]],
   ['son-tren-cao', 'thu-thach', [['son-tren-cao', []], ['che-son-tren-cao', []]]],
-  ['drone-ke-vach', 'thu-thach', [['tong-hop-4', []], ['trum-mua-4', []]]]
+  ['drone-ke-vach', 'thu-thach', [['tong-hop-4', day('che-may-son', [7, 8])], ['trum-mua-4', []]]]
 ];
 const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
 const moiMua4 = TEP_MUA_4.flatMap(k => M[k] || []);
