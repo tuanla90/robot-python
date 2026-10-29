@@ -1398,6 +1398,22 @@
       m.maMau = bai(['forward(3)', 'turn_right()', 'forward(5)', 'turn_right()', 'forward(2)'], [ham('forward', ['for i in range(2):', '    move()'], ['n'])]);
       m.goiY = ['Chạy thử bản có sẵn: n bằng 3 mà xe đi được mấy ô?', 'Số lần lặp phải là n: chạm số 2 trong range rồi chọn biến n.'];
     })();
+    /** Màn mới của mùa 2 (ngân hàng có loiSai / loiGiaiKhac mà máy kiểm chương đòi): thành màn trình diễn bằng get() (không qua sua(), giữ lời sai / lời giải khác),
+     *  mã mẫu = lời giải (không đổi nên không đo lại sao). */
+    function trinhDien(ma, ten, deBai, veMaMau, goiY) {
+      var m = get(ma);
+      m.chiChay = true; m.chinhCoDinh = true; m.maMau = copy(m.loiGiai);
+      delete m.maMau.hamCuaEmMoi;
+      if (ten) m.ten = ten;
+      m.deBai = deBai; m.veMaMau = veMaMau; m.goiY = goiY;
+      return m;
+    }
+    // Gói 3 chương hong-ngoai: cái mới là MẮT HỒNG NGOẠI distance() (số ô trống phía trước). hong-ngoai.1 trình diễn (đọc d = distance() rồi đi đúng d ô, ba đoạn dài ngắn khác nhau);
+    // hong-ngoai.2 ép range(distance()) (mã mẫu lặp cứng 3; bộ dò lời né của kiem-hong-ngoai.mjs chứng minh đếm cứng không đủ sao; H từng bước). che-hong-ngoai.1 tạo go_to_wall() (H).
+    trinhDien('hong-ngoai.1', 'Mỗi ô là 10 cm',
+      'Xe có mắt hồng ngoại ở mũi: distance() cho biết phía trước còn bao nhiêu ô trống tới tường, mỗi ô là 10 cm. Đường có ba đoạn dài ngắn khác nhau: ở đầu mỗi đoạn, chương trình đọc số vào biến d rồi đi đúng d ô, rẽ phải và làm lại. Bấm Chạy xem tia đo và xe tới cờ.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: d = distance() đọc số ô trống, for j in range(d) đi đúng chừng ấy ô.',
+      ['distance() đếm số ô trống phía trước mũi xe. Xe đứng sát tường thì distance() là 0.', 'Màn sau em đặt thẳng distance() vào range().']);
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

@@ -24,7 +24,7 @@
    chuẩn không đâm tường ở sân nào. Màn hai robot (man.doi) bỏ qua (ghi).
    Chạy: node hoc/kiem-lach-mua-2.mjs [--tat-ca] [--bang] [--loi-gia]
      --tat-ca: in cả dòng không lỗ; --bang: in bảng chương · cái mới · trình diễn · ép · H (hoc/ban-giao/bang-t-mua-2.md);
-     --loi-gia: gộp màn ép distance / warm nhiều sân đầu tiên về một sân rồi dò, phải thấy LỖ (máy dò tự chứng minh).
+     --loi-gia: nới ngưỡng sao (+9 ô, +9 nhịp) của màn ép distance / warm đầu tiên rồi dò: lách hằng (E / C) phải thành LỖ (máy dò tự chứng minh).
    Trượt (có LỖ ngoài CHAP_NHAN) thì thoát mã 1.
    ========================================================================== */
 import { createRequire } from 'node:module';
@@ -127,7 +127,7 @@ for (const m of dsTruoc) if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEm
     for (const m of ds) {
       const kn = khaiNiemCua(m, [...k3.values()]);
       const ep = dangEp(m, kn);
-      if (!MAN_LOI_GIA && !m.chiChay && !Array.isArray(m.doi) && Array.isArray(m.san[0]) && (ep.has('distance') || ep.has('warm'))) MAN_LOI_GIA = m.ma;
+      if (!MAN_LOI_GIA && !m.chiChay && !Array.isArray(m.doi) && (ep.has('distance') || ep.has('warm'))) MAN_LOI_GIA = m.ma;
       if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEmMoi || []) k3.set(h.ten, clone(h));
     }
   }
@@ -140,11 +140,7 @@ for (const m of ds) {
   const hamCuaEm = [...hamEm.values()];
   if (!m.tietKiemNhip) for (const h of lg.hamCuaEmMoi || []) kho.set(h.ten, clone(h));
   if (Array.isArray(m.doi)) { bang.push({ ma: m.ma, ghi: 'hai robot: bỏ qua' }); continue; }
-  if (LOI_GIA && m.ma === MAN_LOI_GIA && Array.isArray(m.san[0])) {
-    m.san = m.san[0];
-    ['batDau', 'bongMo', 'mau', 'vatMau', 'vatThem', 'noi', 'nutBat', 'cuaNhip', 'hinh'].forEach((k) => { if (Array.isArray(m[k]) && (k !== 'nutBat' || Array.isArray(m[k][0]))) m[k] = m[k][0]; });
-    delete m.nhipTheo;
-  }
+  if (LOI_GIA && m.ma === MAN_LOI_GIA) m.sao = { o: m.sao.o + 9, nhip: m.sao.nhip + 9 };     // lỗi giả: nới ngưỡng sao của màn ép distance / warm đầu tiên: lách hằng phải thành 3 sao → LỖ
   const chuan = cham(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [] }, hamCuaEm);
   if (!chuan.thang || chuan.sao !== 3) { bang.push({ ma: m.ma, ghi: 'lời giải chuẩn không 3 sao: ' + JSON.stringify(chuan) }); continue; }
   const kn = khaiNiemCua(m, truoc), ep = dangEp(m, kn);
@@ -365,7 +361,7 @@ for (const d of loGhi) theoChuong[M.timMa(d.ma).chuong] = (theoChuong[M.timMa(d.
 console.log('\nLỗ theo chương: ' + (Object.entries(theoChuong).map(([c, n]) => c + ' ' + n).join(' · ') || 'không'));
 if (LOI_GIA) {
   const co = MAN_LOI_GIA && loGhi.some((d) => d.ma === MAN_LOI_GIA);
-  console.log('Lỗi giả (gộp ' + MAN_LOI_GIA + ' về một sân): ' + (co ? 'máy dò BẮT ĐƯỢC (ĐẠT)' : 'máy dò KHÔNG bắt được (HỎNG)' + (MAN_LOI_GIA ? '' : ': không có màn ép distance / warm nhiều sân')));
+  console.log('Lỗi giả (nới ngưỡng sao của ' + MAN_LOI_GIA + ' thêm 9 ô / 9 nhịp): ' + (co ? 'máy dò BẮT ĐƯỢC (ĐẠT)' : 'máy dò KHÔNG bắt được (HỎNG)' + (MAN_LOI_GIA ? '' : ': không có màn ép distance / warm')));
   process.exit(co ? 0 : 1);
 }
 console.log((soLo ? 'HỎNG ' : 'ĐẠT ') + soLo + ' lỗ ngoài danh sách chấp nhận · ' + soLoChapNhan + ' lỗ chấp nhận · ' + bang.filter((d) => !d.ghi).length + ' phép dò trên ' + ds.length + ' màn mùa 2.');

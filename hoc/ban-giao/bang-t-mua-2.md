@@ -67,8 +67,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | hong-ngoai.1 | Mỗi ô là 10 cm | distance(), lệnh distance |  |  | distance |  |  |
-| 2 | hong-ngoai.2 | Đưa thẳng số đo vào vòng lặp |  |  |  | distance |  |  |
+| 1 | hong-ngoai.1 | Mỗi ô là 10 cm | distance(), lệnh distance | có | có | distance |  |  |
+| 2 | hong-ngoai.2 | Đưa thẳng số đo vào vòng lặp |  | có |  | distance |  |  |
 | 3 | hong-ngoai.3 | Còn ô trống thì đi |  |  |  | distance |  |  |
 | 4 | hong-ngoai.4 | Dừng cách tường 20 cm |  |  |  | distance |  |  |
 | 5 | hong-ngoai.5 | Biến an_toan |  |  |  |  |  |  |
@@ -82,7 +82,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | che-hong-ngoai.1 | Hàm go_to_wall() |  |  |  | def, while, distance |  |  |
+| 1 | che-hong-ngoai.1 | Hàm go_to_wall() |  | có |  | def, while, distance |  |  |
 | 2 | che-hong-ngoai.2 | Hàm go_safe(an_toan) |  |  |  | def, while, distance, tham-so |  |  |
 | 3 | che-hong-ngoai.3 | Một bước hút bụi |  |  |  | def, if, distance, tham-so |  |  |
 | 4 | che-hong-ngoai.4 | Đi lấy rồi về: go_get() |  |  |  | def, bien, distance, tham-so |  |  |

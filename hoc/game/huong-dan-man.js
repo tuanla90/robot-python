@@ -573,6 +573,25 @@
       chu: function () { return thay('nut:chon-bien') ? 'Chọn n: số lần lặp lấy từ đối số của hàm.' : 'Chạm số 2 trong range để đổi nó thành n.'; },
       daLam: function () { return /range\(\s*n\s*\)/.test(chuThan('forward')); } }
   ].concat(buocThuVeChay('forward(n) lặp đúng n lần rồi. Bấm Chạy.'));
+  // Gói 3: mắt hồng ngoại distance() (hong-ngoai.1 trình diễn, hong-ngoai.2 đặt distance() vào range, che-hong-ngoai.1 chế go_to_wall với while distance() > 0)
+  H['hong-ngoai.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: ở đầu mỗi đoạn, tia đỏ đo số ô trống rồi xe đi đúng chừng ấy ô.', 2,
+    'd = distance() đọc số ô trống phía trước vào d; range(d) lặp đúng d lần. Màn sau em tự đặt số đo vào range.');
+  H['hong-ngoai.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: mỗi đoạn đi cứng ba ô, mà đoạn đầu dài năm ô nên xe rẽ sớm.', xong: 'chay', daLam: daChay },
+    { phu: true, huong: 'tren', rong: 180, han: 0,
+      dich: function () { return thay('nut:chon-so') ? 'nut:chon-so' : 'so:2'; },
+      chu: function () { return thay('nut:chon-so') ? 'Chọn distance(): số ô đo được ngay lúc bắt đầu vòng lặp.' : 'Chạm số 3 trong range để thay nó bằng distance().'; },
+      daLam: function () { return dongCo(/range\(\s*distance\(\)\s*\)/) >= 0; } },
+    buocChay('Bấm Chạy: bốn đoạn dài ngắn khác nhau, cùng một vòng lặp.')
+  ];
+  H['che-hong-ngoai.1'] = [
+    { dich: 'dong:1', chu: 'Main đã khoá: nó gọi go_to_wall() ba lần, mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('go_to_wall', 'Bấm Hàm mới để chế go_to_wall().', CHU_TAO),
+    khoiTheo(['khoi:vong:while'], 'Chạm khối while distance() > 0: lặp chừng nào phía trước còn ô trống.', CHU_THE_LOGIC,
+      { xuong: true, daLam: function () { return /while/.test(chuThan('go_to_wall')); } }),
+    khoiTheo(['khoi:em:move'], 'Rồi chạm move(): nó tự thụt vào, nằm trong while.', CHU_THE_XE,
+      { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('go_to_wall'); return /while/.test(c) && /move/.test(c); } })
+  ].concat(buocThuVeChay('Ba đoạn dài ngắn khác nhau, cùng một go_to_wall(). Bấm Chạy.'));
   H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xe đi tới tường, mỗi bước n tăng một, rồi lùi đúng n bước về xe mờ.', 1,
     'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
 
