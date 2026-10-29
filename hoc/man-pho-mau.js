@@ -41,6 +41,22 @@
   // Chở một hộp: đọc màu hộp bên phải, bay tới, hút; hộp đỏ thì bay thêm một ô (đích đỏ ở xa hơn đích xanh), thả.
   var CHO_1 = ['c = color("right")', 'go_right()', 'magnet_n()', 'wait()', 'go_right()', 'if c == "red":', '    go_right()', 'magnet_off()', 'wait()'];
   var DO_DUONG = ['for i in range(6):', '    if color("right") == "green":', '        go_right()', '    else:', '        go_down()'];
+  function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
+  /** Màn chương che-pho-mau: chương trình chính khóa, em chế hàm (như che-may-son). */
+  function manChe(m) { m.chuong = 'che-pho-mau'; if (m.chinhCoDinh !== false) m.chinhCoDinh = true; else delete m.chinhCoDinh; return man(m); }
+  var T_TIM = ['while color("right") == "none":', '    go_right()'];
+  var C_TIM = ['find_box()', 'go_right()', 'magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'];
+  var T_BAY = ['while color("right") != col:', '    go_right()'];
+  var C_BAY = ['fly_to("yellow")', 'go_right()'];
+  var T_GHI = ['for i in range(n):', '    go_right()', '    a.append(color("up"))'];
+  var C_GHI = ['a = []', 'read_row(a, 2)', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
+  var T_THEO = ['for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
+  var C_THEO = ['a = []', 'read_row(a, 3)', 'follow_code(a)'];
+  var T_THA = ['magnet_n()', 'wait()', 'for i in range(n):', '    go_down()', 'magnet_off()', 'wait()'];
+  var C_THA = ['n = 0', 'for i in range(3):', '    go_right()', '    if color("up") == "red":', '        n = n + 1', 'drop_down(n)'];
+  var T_DEM = ['for i in range(n):', '    go_right()', '    if color("up") == "red":', '        a.append(1)'];
+  var C_DEM = ['a = []', 'red_count(a, 3)', 'drop_down(len(a))'];
+  var C_XEP = ['find_box()', 'place_box()'];
 
   var DS = [
     man({
@@ -220,6 +236,193 @@
         { moTa: 'Bay xuống cố định hai tầng: sân thứ hai thả nhầm tầng', baiLam: bai(['n = 0', 'for i in range(3):', '    go_right()', '    if color("up") == "red":', '        n = n + 1', 'magnet_n()', 'wait()', 'go_down()', 'go_down()', 'magnet_off()', 'wait()']), phaiCoMa: [] }
       ],
       goiY: ['Hộp nằm ngay dưới drone ở cuối phố: bật nam châm rồi wait() là hút.', 'Bay xuống bằng vòng for i in range(n): như màn Đếm nhà đỏ.']
+    }),
+
+    /* ================================================= chương che-pho-mau "Chế lệnh: qua phố" ================================================= */
+    manChe({
+      so: 1, ten: 'Hàm tìm hộp', hang: 'lam-quen', nam: true, taoHam: ['find_box'], hamCuaEmCan: [],
+      deBai: 'Chương trình chính đã khóa: find_box() rồi chở hộp sang ô đích ngay sau. Chế find_box(): bay sang phải cho tới khi camera thấy hộp ở ô bên phải. Hai sân, hộp nằm xa gần khác nhau.',
+      veMaMau: 'Mở Xưởng hàm, tạo find_box() không có đối số. Thân hàm là vòng while như màn Tìm hộp trên phố.',
+      san: [['...oD.'], ['..oD..']],
+      vatMau: [['...y..'], ['..g...']],
+      vatChat: [['...s..'], ['..s...']],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_TIM),
+      loiGiai: bai(C_TIM, { hamCuaEmMoi: [H('find_box', [], T_TIM)] }),
+      sao: { o: 9, nhip: 6 },
+      congThucKhac: [{ moTa: 'Điều kiện viết ngược lại bằng not', hamCuaEmMoi: [H('find_box', [], ['while not color("right") != "none":', '    go_right()'])] }],
+      loiSai: [
+        { moTa: 'Gọi find_box() mà chưa chế hàm', baiLam: bai(C_TIM), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'find_box() bay cố định hai ô: sân thứ hai bay quá hộp', baiLam: bai(C_TIM), hamCuaEmMoi: [H('find_box', [], ['go_right()', 'go_right()'])], phaiCoMa: [] }
+      ],
+      goiY: ['Ô phố trống có màu "none"; hộp có màu.', 'Hàm dừng đúng lúc hộp nằm bên phải drone.']
+    }),
+
+    manChe({
+      so: 2, ten: 'Bay tới màu', hang: 'lam-quen', taoHam: ['fly_to'], hamCuaEmCan: [],
+      deBai: 'Chế fly_to(col): bay sang phải cho tới khi ô bên phải có màu col. Chương trình chính gọi fly_to("yellow") rồi bay thêm một ô vào cờ vàng. Hai sân, cờ vàng ở hai chỗ, giữa đường có ô màu khác.',
+      veMaMau: 'Tạo fly_to với một đối số col. So color("right") với col, không so với một màu viết sẵn.',
+      san: [['.r.gF'], ['.gF.r']],
+      mau: [['....y'], ['..y..']],
+      batDau: { x: 0, y: 0 },
+      mucTieu: 'toi-co',
+      maMau: bai(C_BAY),
+      loiGiai: bai(C_BAY, { hamCuaEmMoi: [H('fly_to', ['col'], T_BAY)] }),
+      sao: { o: 4, nhip: 4 },
+      congThucKhac: [{ moTa: 'So bằng not và ==', hamCuaEmMoi: [H('fly_to', ['col'], ['while not color("right") == col:', '    go_right()'])] }],
+      loiSai: [
+        { moTa: 'Gọi fly_to mà chưa chế hàm', baiLam: bai(C_BAY), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Bay tới ô có màu bất kỳ: dừng ở ô đỏ, ô xanh', baiLam: bai(C_BAY), hamCuaEmMoi: [H('fly_to', ['col'], ['while color("right") == "none":', '    go_right()'])], phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Điều kiện while là: màu bên phải còn KHÁC col.', 'Chương trình chính truyền "yellow" vào col.']
+    }),
+
+    manChe({
+      so: 3, ten: 'Hàm ghi mật lệnh', hang: 'lam-quen', taoHam: ['read_row'], hamCuaEmCan: [],
+      deBai: 'Chế read_row(a, n): bay sang phải n ô, mỗi ô ghi màu ngôi nhà phía trên vào cuối danh sách a. Chương trình chính đã khóa: ghi mật lệnh hai nhà rồi đi theo (đỏ là xuống, màu khác là sang phải).',
+      veMaMau: 'Tạo read_row với hai đối số a và n. Thân hàm giống phần ghi mật lệnh ở màn Mật lệnh màu.',
+      san: [['.rr##', '.....', '##.##', '##F##'], ['.gg##', '....F', '##.##', '##.##']],
+      batDau: { x: 0, y: 1 },
+      mucTieu: 'toi-co',
+      maMau: bai(C_GHI),
+      loiGiai: bai(C_GHI, { hamCuaEmMoi: [H('read_row', ['a', 'n'], T_GHI)] }),
+      sao: { o: 10, nhip: 4 },
+      congThucKhac: [{ moTa: 'Ghi màu vào biến rồi mới thêm vào danh sách', hamCuaEmMoi: [H('read_row', ['a', 'n'], ['for i in range(n):', '    go_right()', '    c = color("up")', '    a.append(c)'])] }],
+      loiSai: [
+        { moTa: 'Gọi read_row mà chưa chế hàm', baiLam: bai(C_GHI), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Ghi màu trước khi bay sang nhà: mật lệnh lệch một nhà', baiLam: bai(C_GHI), hamCuaEmMoi: [H('read_row', ['a', 'n'], ['for i in range(n):', '    a.append(color("up"))', '    go_right()'])], phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Mỗi vòng: bay sang một ô rồi mới đọc nhà phía trên.', 'a.append(…) thêm vào cuối danh sách a mà chương trình chính đưa vào.']
+    }),
+
+    manChe({
+      so: 4, ten: 'Hàm đi theo mật lệnh', hang: 'luyen', taoHam: ['follow_code'], hamCuaEmCan: ['read_row'],
+      deBai: 'Chế follow_code(a): duyệt từng màu trong a, đỏ thì bay xuống, màu khác thì bay sang phải. Chương trình chính đã khóa: ghi mật lệnh ba nhà bằng read_row rồi gọi follow_code.',
+      veMaMau: 'Tạo follow_code với một đối số a. Thân hàm là vòng for c in a: có if / else bên trong.',
+      san: [['.rgr..', '......', '###..#', '####F#'], ['.grg..', '......', '###..F', '######']],
+      batDau: { x: 0, y: 1 },
+      mucTieu: 'toi-co',
+      maMau: bai(C_THEO),
+      loiGiai: bai(C_THEO, { hamCuaEmMoi: [H('follow_code', ['a'], T_THEO)] }),
+      sao: { o: 11, nhip: 6 },
+      congThucKhac: [{ moTa: 'Hỏi màu khác đỏ trước', hamCuaEmMoi: [H('follow_code', ['a'], ['for c in a:', '    if c != "red":', '        go_right()', '    else:', '        go_down()'])] }],
+      loiSai: [
+        { moTa: 'Gọi follow_code mà chưa chế hàm', baiLam: bai(C_THEO), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Đảo hai nhánh: đi ngược mật lệnh', baiLam: bai(C_THEO), hamCuaEmMoi: [H('follow_code', ['a'], ['for c in a:', '    if c == "red":', '        go_right()', '    else:', '        go_down()'])], phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['for c in a: lấy lần lượt từng màu mà read_row đã ghi.', 'Mỗi màu là đúng một bước bay.']
+    }),
+
+    manChe({
+      so: 5, ten: 'Hàm thả xuống tầng', hang: 'luyen', nam: true, bienDem: true, taoHam: ['drop_down'], hamCuaEmCan: [],
+      deBai: 'Như màn Giao hàng theo số nhà đỏ, nhưng phần giao hàng nằm trong hàm. Chế drop_down(n): hút hộp ngay dưới drone, bay xuống n tầng rồi thả. Chương trình chính đã khóa: đếm nhà đỏ vào n rồi gọi drop_down(n).',
+      veMaMau: 'Tạo drop_down với một đối số n. Thân hàm: bật nam châm, chờ, lặp n lần bay xuống, tắt nam châm, chờ.',
+      san: [['.rrg', '...o', '###.', '###D'], ['.grb', '...o', '###D', '###.']],
+      vatChat: [['....', '...s', '....', '....'], ['....', '...s', '....', '....']],
+      vatMau: [['....', '...y', '....', '....'], ['....', '...y', '....', '....']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(C_THA),
+      loiGiai: bai(C_THA, { hamCuaEmMoi: [H('drop_down', ['n'], T_THA)] }),
+      sao: { o: 12, nhip: 7 },
+      congThucKhac: [{ moTa: 'Bay xuống bằng go_down() trong while đếm ngược', hamCuaEmMoi: [H('drop_down', ['n'], ['magnet_n()', 'wait()', 'while n > 0:', '    go_down()', '    n = n - 1', 'magnet_off()', 'wait()'])] }],
+      loiSai: [
+        { moTa: 'Gọi drop_down mà chưa chế hàm', baiLam: bai(C_THA), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Bay xuống hai tầng cố định: sân thứ hai thả nhầm tầng', baiLam: bai(C_THA), hamCuaEmMoi: [H('drop_down', ['n'], ['magnet_n()', 'wait()', 'go_down()', 'go_down()', 'magnet_off()', 'wait()'])], phaiCoMa: [] }
+      ],
+      goiY: ['Số tầng bay xuống chính là n mà chương trình chính đưa vào.', 'Hút trước khi bay, thả sau khi tới tầng.']
+    }),
+
+    manChe({
+      so: 6, ten: 'Hàm xếp hộp', hang: 'luyen', nam: true, taoHam: ['place_box'], hamCuaEmCan: ['find_box'],
+      deBai: 'Chế place_box(): đọc màu hộp bên phải, bay tới hút hộp, rồi đưa về ô đích cùng màu (ô đích xanh dương ngay sau hộp, ô đích đỏ xa thêm một ô). Chương trình chính đã khóa: find_box() rồi place_box().',
+      veMaMau: 'Tạo place_box() không có đối số. Thân hàm giống chương trình của màn Hộp nào cũng đúng.',
+      san: [['...oDD'], ['.oDD..']],
+      mau: [['....br'], ['..br..']],
+      vatMau: [['...r..'], ['.b....']],
+      vatChat: [['...s..'], ['.s....']],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_XEP),
+      loiGiai: bai(C_XEP, { hamCuaEmMoi: [H('place_box', [], CHO_1)] }),
+      sao: { o: 13, nhip: 7 },
+      congThucKhac: [{ moTa: 'Hỏi hộp khác xanh dương', hamCuaEmMoi: [H('place_box', [], ['c = color("right")', 'go_right()', 'magnet_n()', 'wait()', 'go_right()', 'if c != "blue":', '    go_right()', 'magnet_off()', 'wait()'])] }],
+      loiSai: [
+        { moTa: 'Gọi place_box() mà chưa chế hàm', baiLam: bai(C_XEP), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Không đọc màu: hộp nào cũng tới ô xanh', baiLam: bai(C_XEP), hamCuaEmMoi: [H('place_box', [], ['go_right()', 'magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'])], phaiCoMa: [] }
+      ],
+      goiY: ['Đọc màu hộp NGAY đầu hàm, khi hộp còn ở bên phải.', 'Hộp đỏ bay thêm một ô so với hộp xanh.']
+    }),
+
+    manChe({
+      so: 7, ten: 'Sửa hàm dò phố', hang: 'bien-the', nam: true, hamCuaEmCan: ['place_box'],
+      deBai: 'Hàm của màn scan_street() phải bay tới khi gặp hộp, nhưng điều kiện viết ngược nên drone không bay ô nào. Sửa scan_street(); chương trình chính đã khóa: scan_street() rồi place_box().',
+      veMaMau: 'Chạy thử: drone đứng yên và hút hụt. Mở scan_street() trong Xưởng hàm, đổi phép so sánh.',
+      san: [['....oDD'], ['..oDD..']],
+      mau: [['.....br'], ['...br..']],
+      vatMau: [['....b..'], ['..r....']],
+      vatChat: [['....s..'], ['..s....']],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(['scan_street()', 'place_box()'], { hamCuaMan: [H('scan_street', [], ['while color("right") != "none":', '    go_right()'])] }),
+      loiGiai: bai(['scan_street()', 'place_box()'], { hamCuaMan: [H('scan_street', [], ['while color("right") == "none":', '    go_right()'])] }),
+      sao: { o: 13, nhip: 7 },
+      loiSai: [
+        { moTa: 'Không sửa: drone không bay, hút hụt', baiLam: bai(['scan_street()', 'place_box()'], { hamCuaMan: [H('scan_street', [], ['while color("right") != "none":', '    go_right()'])] }), phaiCoMa: [] }
+      ],
+      goiY: ['Còn bay khi ô bên phải TRỐNG, tức là màu bằng "none".', 'Chỉ cần đổi != thành ==.']
+    }),
+
+    manChe({
+      so: 8, ten: 'Đếm bằng danh sách', hang: 'bien-the', nam: true, taoHam: ['red_count'], hamCuaEmCan: ['drop_down'],
+      deBai: 'Đếm nhà đỏ mà không cần biến đếm: chế red_count(a, n) bay qua n nhà, gặp nhà đỏ thì thêm một phần tử vào a. Số nhà đỏ là len(a). Chương trình chính đã khóa: red_count(a, 3) rồi drop_down(len(a)).',
+      veMaMau: 'Tạo red_count với hai đối số a và n. Thêm gì vào a cũng được, miễn mỗi nhà đỏ thêm đúng một lần.',
+      san: [['.rrr', '...o', '###.', '###.', '###D'], ['.gbr', '...o', '###D', '###.', '###.']],
+      vatChat: [['....', '...s', '....', '....', '....'], ['....', '...s', '....', '....', '....']],
+      vatMau: [['....', '...g', '....', '....', '....'], ['....', '...g', '....', '....', '....']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(C_DEM),
+      loiGiai: bai(C_DEM, { hamCuaEmMoi: [H('red_count', ['a', 'n'], T_DEM)] }),
+      sao: { o: 13, nhip: 8 },
+      congThucKhac: [{ moTa: 'Ghi luôn màu đỏ vào danh sách', hamCuaEmMoi: [H('red_count', ['a', 'n'], ['for i in range(n):', '    go_right()', '    if color("up") == "red":', '        a.append("red")'])] }],
+      loiSai: [
+        { moTa: 'Gọi red_count mà chưa chế hàm', baiLam: bai(C_DEM), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thêm mọi nhà vào a: len(a) luôn là 3', baiLam: bai(C_DEM), hamCuaEmMoi: [H('red_count', ['a', 'n'], ['for i in range(n):', '    go_right()', '    a.append(color("up"))'])], phaiCoMa: [] }
+      ],
+      goiY: ['len(a) là số phần tử của a.', 'Chỉ thêm vào a khi color("up") == "red".']
+    }),
+
+    manChe({
+      so: 9, ten: 'Sửa hàm đi mật lệnh', hang: 'bien-the', hamCuaEmCan: ['read_row'],
+      deBai: 'Mật lệnh bốn nhà. Hàm của màn walk_code(a) đi ngược luật (đỏ phải là bay xuống). Sửa walk_code(a); chương trình chính đã khóa: read_row(a, 4) rồi walk_code(a).',
+      veMaMau: 'Chạy thử ở sân thứ nhất: nhà đầu đỏ mà drone bay sang phải. Đổi lại hai nhánh trong walk_code.',
+      san: [['.rbrr###', '......##', '####....', '#####.##', '#####F##'], ['.grgg###', '......##', '####...F', '#####.##', '#####.##']],
+      batDau: { x: 0, y: 1 },
+      mucTieu: 'toi-co',
+      maMau: bai(['a = []', 'read_row(a, 4)', 'walk_code(a)'], { hamCuaMan: [H('walk_code', ['a'], ['for c in a:', '    if c == "red":', '        go_right()', '    else:', '        go_down()'])] }),
+      loiGiai: bai(['a = []', 'read_row(a, 4)', 'walk_code(a)'], { hamCuaMan: [H('walk_code', ['a'], T_THEO)] }),
+      sao: { o: 11, nhip: 8 },
+      loiSai: [
+        { moTa: 'Không sửa: đi ngược mật lệnh', baiLam: bai(['a = []', 'read_row(a, 4)', 'walk_code(a)'], { hamCuaMan: [H('walk_code', ['a'], ['for c in a:', '    if c == "red":', '        go_right()', '    else:', '        go_down()'])] }), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Nhà đỏ là bay xuống.', 'Đổi chỗ go_right() và go_down() giữa hai nhánh.']
+    }),
+
+    manChe({
+      so: 10, ten: 'Thành phố mật lệnh', hang: 'trum', nam: true, chinhCoDinh: false, hamCuaEmCan: ['read_row', 'follow_code', 'place_box'],
+      deBai: 'Ba ngôi nhà đầu phố là mật lệnh dẫn tới chỗ hộp hàng. Ghi mật lệnh, đi theo nó, tới nơi thì hộp nằm ngay bên phải: xếp hộp về đúng ô đích màu. ' +
+        'Tự viết chương trình chính, chỉ dùng các hàm em đã chế. Hai sân, mật lệnh và màu hộp khác nhau.',
+      veMaMau: 'Chương trình có sẵn mới ghi mật lệnh. Viết tiếp bằng follow_code và place_box.',
+      san: [['.rgr#####', '.....####', '###..####', '####.oDD#'], ['.grg#####', '.....####', '####..oDD', '#########']],
+      mau: [['.........', '.........', '.........', '......br.'], ['.........', '.........', '.......br', '.........']],
+      vatMau: [['.........', '.........', '.........', '.....r...'], ['.........', '.........', '......b..', '.........']],
+      vatChat: [['.........', '.........', '.........', '.....s...'], ['.........', '.........', '......s..', '.........']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(['a = []', 'read_row(a, 3)']),
+      loiGiai: bai(['a = []', 'read_row(a, 3)', 'follow_code(a)', 'place_box()']),
+      sao: { o: 21, nhip: 11 },
+      loiSai: [
+        { moTa: 'Quên đi theo mật lệnh: drone đứng đầu phố, hút hụt', baiLam: bai(['a = []', 'read_row(a, 3)', 'place_box()']), phaiCoMa: [] },
+        { moTa: 'Đi theo mật lệnh mà không xếp hộp', baiLam: bai(['a = []', 'read_row(a, 3)', 'follow_code(a)']), phaiCoMa: [] }
+      ],
+      goiY: ['Ba hàm, đúng thứ tự: ghi mật lệnh, đi theo, xếp hộp.', 'follow_code(a) dừng đúng chỗ hộp nằm bên phải drone.']
     })
   ];
 

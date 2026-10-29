@@ -132,6 +132,15 @@ Ghi chú chia:
     huong-cam-sai. Cảm biến bụng / camera trước cũ giữ color() không đối số (61 màn cũ không đổi). kiem-cam-4.mjs. Khay: khối mẫu chèn sẵn color("front") / color("up").
   - N3 drone gắn máy sơn: đầu sơn treo dưới bụng, tô ô dưới drone, cùng luật máy sơn của xe; nhịp có tô tốn thêm 1 pin; bút còn hạ khi bay ngang rào / hố là tô lên đó
     (ô hình không được nằm trên rào / hố nên là tô ngoài hình). Không đi chung nam châm. kiem-drone-son.mjs.
+- **30/10 Gói 4 Phố màu xong (20 màn mới)**: man-pho-mau.js. Robot: drone gắn camera bốn hướng (+ nam châm khi chở hộp). Cái mới của gói: phố màu có hộp màu
+  và ô đích màu (đích chỉ nhận hộp cùng màu), camera đọc ô bên cạnh để chọn đường.
+  - pho-mau (Đi giữa phố màu): 1 trình diễn hộp về đúng màu · 2 ép đọc màu (hai sân khác màu hộp) · 3 phố đèn xanh · 4 theo vạch xanh (for + if) · 5 tìm hộp (while)
+    · 6 tìm hộp rồi chọn đích · 7 đếm nhà đỏ (biến đếm) · 8 mật lệnh màu (danh sách, append, for c in a) · 9 sửa mật lệnh · 10 trùm giao hàng theo số nhà đỏ.
+  - che-pho-mau (Chế lệnh: qua phố): find_box() · fly_to(col) · read_row(a, n) · follow_code(a) · drop_down(n) · place_box() · sửa hàm của màn scan_street
+    · red_count(a, n) với len(a) · sửa hàm của màn walk_code · trùm tự viết chương trình chính bằng read_row / follow_code / place_box.
+  - Màn đọc camera dùng hai sân khác màu để chương trình viết cứng không qua (thêm vào ngoại lệ NHIEU_SAN_KHONG_TRUM của kiem-lo-trinh.mjs).
+  - Đường cong trong gói không nhảy; còn một chỗ ở đầu gói (pho-mau.2 9 dòng sau che-mau.9 2 dòng): gói 3 dựng lại sẽ có màn đứng trước.
+  - Giao diện: chạm chữ hướng trong c = color("up") mở bảng chọn hướng; bảng chọn vế trái của điều kiện có nút cho từng hướng (đã thử trên trình duyệt).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 

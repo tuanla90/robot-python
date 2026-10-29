@@ -50,6 +50,7 @@ const ma = (r) => r.chanDoan.map((c) => c.ma);
 const GACH = /[—–]|[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
 
 const goi4 = M.mua4;
+const tenHamMan = new Set(tatCa.flatMap((m) => [m.loiGiai, m.maMau].filter(Boolean).flatMap((b) => (b.hamCuaMan || []).map((h) => h.ten))));
 const bang = [];
 let daLoiGia = false;
 for (const g of goi4) for (const [c] of g.chuong) {
@@ -69,6 +70,8 @@ for (const g of goi4) for (const [c] of g.chuong) {
     };
     // hàm em chế ở màn này (taoHam) không được trùng tên hàm của em đã có trong kho (vd corner() mùa 1): trùng thì gọi sai số đối số, lỗi khó hiểu
     for (const t of m.taoHam || []) kiem(m.ma + ' hàm mới ' + t + '() chưa có trong kho', !kho.some((h) => h.ten === t));
+    // … và không trùng tên HÀM CỦA MÀN ở bất kỳ màn nào (kiem-goi-doi.mjs cũng cấm; vd follow của che-doi-omni.7 ở mùa 5)
+    for (const t of m.taoHam || []) kiem(m.ma + ' hàm mới ' + t + '() không trùng tên hàm của màn nào', !tenHamMan.has(t));
     let lg = m.loiGiai;
     // màn trình diễn khoá chương trình (máy chấm chạy mã mẫu khoá) nên cắm lỗi giả ở màn mới đầu tiên KHÔNG trình diễn
     if (LOI_GIA && !daLoiGia && !m.chiChay) { lg = Object.assign({}, lg, { chinh: lg.chinh.slice(0, -1) }); daLoiGia = true; }

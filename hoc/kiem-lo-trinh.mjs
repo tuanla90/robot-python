@@ -50,7 +50,8 @@ const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.
   'che-cam-bien.10'];      // HD2: hai kho dài ngắn khác nhau (fetch_back đếm cứng không thắng cả hai)
 NHIEU_SAN_KHONG_TRUM.push('che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9');      // gói T mùa 2: ba màn ép biến đếm (chương bien-xich) lấy lại ba sân của ngân hàng
 // mùa 4 gói 4 Phố màu (30/10): màn đọc camera bốn hướng có hai sân khác màu để chương trình viết cứng không qua (như HD1)
-NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'pho-mau.6', 'pho-mau.7', 'pho-mau.8', 'pho-mau.9');
+NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'pho-mau.6', 'pho-mau.7', 'pho-mau.8', 'pho-mau.9',
+  'che-pho-mau.1', 'che-pho-mau.2', 'che-pho-mau.3', 'che-pho-mau.4', 'che-pho-mau.5', 'che-pho-mau.6', 'che-pho-mau.7', 'che-pho-mau.8', 'che-pho-mau.9');
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
