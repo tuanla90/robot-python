@@ -746,11 +746,11 @@
       if (coNem && loai === 'nhen') throw new Error('Nhện không gắn máy ném (nhện không có hướng mặt).');
       if (coNem && (coTay || coNamCham)) throw new Error('Một robot chỉ có một tay: máy ném không đi chung với tay kẹp hay nam châm.');
       coHoi = hamGoc.some(function (t) { return TAY_HOI.indexOf(t) >= 0; });                  // tay súng hơi (shoot / shoot_back)
-      if (coHoi && loai === 'nhen') throw new Error('Nhện không gắn súng hơi (nhện không có hướng mặt).');
-      if (coHoi && (coTay || coNamCham || coNem)) throw new Error('Một robot chỉ có một tay: súng hơi không đi chung với tay kẹp, nam châm hay máy ném.');
+      if (coHoi && loai === 'nhen') throw new Error('Nhện không gắn vòi phun (nhện không có hướng mặt).');
+      if (coHoi && (coTay || coNamCham || coNem)) throw new Error('Một robot chỉ có một tay: vòi phun không đi chung với tay kẹp, nam châm hay máy ném.');
       coSon = hamGoc.some(laLenhSon);                                                         // đầu MÁY SƠN (ink / dot / pen_down / pen_up)
       if (coSon && !laBanh) throw new Error('Máy sơn chỉ gắn lên xe có bánh (xe bánh, xích, omni).');
-      if (coSon && (coTay || coNamCham || coNem || coHoi)) throw new Error('Một robot chỉ có một tay: máy sơn không đi chung với tay kẹp, nam châm, máy ném hay súng hơi.');
+      if (coSon && (coTay || coNamCham || coNem || coHoi)) throw new Error('Một robot chỉ có một tay: máy sơn không đi chung với tay kẹp, nam châm, máy ném hay vòi phun.');
       coCamBien = hamGoc.some(function (t) { return CAM_BIEN_HAM[t] !== undefined; });     // cảm biến khoảng cách (front_clear…)
       coCamTu = hamGoc.some(function (t) { return CAM_TU_HAM.indexOf(t) >= 0; });         // cảm biến từ front_metal (gắn vào cảm biến khoảng cách)
       if ((coCamBien || coCamTu) && loai === 'nhen') throw new Error('Nhện không gắn cảm biến khoảng cách (nhện không có hướng mặt).');
@@ -772,7 +772,7 @@
       if (laDrone) {
         if (coTay) throw new Error('Drone không gắn tay kẹp (arm_down, arm_up, grab, release): thân drone chỉ gắn được nam châm treo.');
         if (coNem) throw new Error('Drone không gắn máy ném (aim, throw, load): thân drone chỉ gắn được nam châm treo.');
-        if (coHoi) throw new Error('Drone không gắn súng hơi (shoot, shoot_back): thân drone chỉ gắn được nam châm treo.');
+        if (coHoi) throw new Error('Drone không gắn vòi phun (shoot, shoot_back): thân drone chỉ gắn được nam châm treo.');
         if (coCamBien || coCamTu) throw new Error('Drone không gắn cảm biến khoảng cách hay cảm biến từ (drone không có hướng mặt để đo "phía trước").');
         if (coHongNgoai) throw new Error('Drone không gắn cảm biến hồng ngoại (drone không có hướng mặt để đo "phía trước").');
       } else if (coPinCamBien) throw new Error('battery() chỉ dành cho drone (robot có pin).');
@@ -794,7 +794,7 @@
           if (b === DAO_CHIEU_CHAN && loai !== 'nhen') throw new Error('daoChieu "chan" chỉ dùng cho nhện (chân co / duỗi).');
           if (DAO_CHIEU_TAY.indexOf(b) >= 0 && !coTay) throw new Error('daoChieu "' + b + '" cần robot có tay kẹp (hamGoc có arm_down, arm_up, grab, release).');
           if (b === 'xoay' && !coXoay) throw new Error('daoChieu "xoay" cần robot có tay xoay (hamGoc có arm_left, arm_right).');
-          if (b === DAO_CHIEU_SUNG && !coHoi) throw new Error('daoChieu "sung" cần robot có súng hơi (hamGoc có shoot, shoot_back).');
+          if (b === DAO_CHIEU_SUNG && !coHoi) throw new Error('daoChieu "sung" cần robot có vòi phun (hamGoc có shoot, shoot_back).');
           if (b === DAO_CHIEU_CUC && !coNamCham) throw new Error('daoChieu "cuc" cần robot có tay nam châm (hamGoc có magnet_n, magnet_s, magnet_off).');
           if (b === DAO_CHIEU_CAM && !coCamBien) throw new Error('daoChieu "cam" cần robot có cảm biến khoảng cách (hamGoc có front_clear / left_clear / right_clear).');
           dao[b] = true;
@@ -821,12 +821,12 @@
       if (MAU_TEN.indexOf(mbd) < 0) throw new Error('mucBanDau phải là "red", "green", "blue" hoặc "yellow".');
       son = { ha: false, mau: mbd };          // máy sơn: đầu sơn đang hạ (giữ sơn) không, màu đang chọn
       if (rc.danToiDa !== undefined && rc.danToiDa !== null) {
-        if (!coHoi) throw new Error('danToiDa chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
+        if (!coHoi) throw new Error('danToiDa chỉ dùng cho robot có vòi phun (hamGoc có shoot, shoot_back).');
         if (typeof rc.danToiDa !== 'number' || Math.floor(rc.danToiDa) !== rc.danToiDa || rc.danToiDa < 0) throw new Error('danToiDa phải là số nguyên không âm.');
         dan = rc.danToiDa;
       }
       lucBan = !!rc.lucBan;                   // súng hơi: shoot(p) / shoot_back(p) chọn được lực "fast" / "charge"
-      if (lucBan && !coHoi) throw new Error('lucBan chỉ dùng cho robot có súng hơi (hamGoc có shoot, shoot_back).');
+      if (lucBan && !coHoi) throw new Error('lucBan chỉ dùng cho robot có vòi phun (hamGoc có shoot, shoot_back).');
       xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
       beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật; robot không súng bỏ qua cờ, để màn nhiều robot khai một chỗ)
       vet = [], suKienChan = [];
@@ -2192,7 +2192,7 @@
         if (yc.thamSo && yc.thamSo.length) {
           var lb = yc.thamSo.length === 1 ? yc.thamSo[0] : undefined;
           if (!lucBan) {
-            loi = { loai: 'runtime-error', ma: 'luc-chua-mo', dong: yc.dong, ten: yc.ten, thongDiep: 'Súng ở màn này chưa chọn được lực bắn: viết ' + yc.ten + '() không có đối số.' };
+            loi = { loai: 'runtime-error', ma: 'luc-chua-mo', dong: yc.dong, ten: yc.ten, thongDiep: 'Vòi phun ở màn này chưa chọn được lực bắn: viết ' + yc.ten + '() không có đối số.' };
             return true;
           }
           if (LUC_BAN.indexOf(lb) < 0) {

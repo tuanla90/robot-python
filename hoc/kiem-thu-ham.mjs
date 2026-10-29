@@ -247,8 +247,8 @@ console.log('\n== Sân thử có THÙNG NẶNG (màn có súng hơi, hamGoc có 
   const e = thuD([...TIEN, 'shoot_back()', 'wait()'], st);
   kiem('tiến một ô rồi shoot_back(): cú giật đẩy thùng trượt tới mép trên (2,0), xe đứng yên ở (2,3), không chẩn đoán', J(xy(e.thung)) === J([{ x: 2, y: 0 }]) && e.robot.y === 3 && e.chanDoan.length === 0, J([xy(e.thung), e.robot, e.chanDoan]));
   const f = ChamHoc.thuHam(man, {}, 'h', [H('h', [...TIEN, ...TIEN])], { sanThu: st });
-  kiem('màn KHÔNG có súng hơi: xe đâm thùng nặng như tường (dam-tuong, nói rõ chỉ cú giật của súng hơi mới dời được thùng)',
-    maCua(f).includes('dam-tuong') && /súng hơi/.test(f.chanDoan[0].loi) && J(xy(f.thung)) === J([{ x: 2, y: 2 }]) && f.robot.y === 3, J(f.chanDoan));
+  kiem('màn KHÔNG có súng hơi: xe đâm thùng nặng như tường (dam-tuong, nói rõ chỉ cú giật của vòi phun mới dời được thùng)',
+    maCua(f).includes('dam-tuong') && /vòi phun/.test(f.chanDoan[0].loi) && J(xy(f.thung)) === J([{ x: 2, y: 2 }]) && f.robot.y === 3, J(f.chanDoan));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);

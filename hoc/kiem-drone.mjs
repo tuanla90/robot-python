@@ -314,9 +314,9 @@ console.log('\n== 6. Ghép sai: drone không gắn tay kẹp, tấm đẩy, máy
 {
   const cfg = (hamGoc) => () => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'drone', hamGoc }, '');
   kiem('tay kẹp (arm_down, arm_up, grab, release) → lỗi cấu hình nói rõ', /Drone không gắn tay kẹp/.test(loi(cfg(BAY.concat(['arm_down', 'arm_up', 'grab', 'release'])))));
-  kiem('súng hơi shoot_back → lỗi', /Drone không gắn súng hơi/.test(loi(cfg(BAY.concat(['shoot_back'])))));
+  kiem('vòi phun shoot_back → lỗi', /Drone không gắn vòi phun/.test(loi(cfg(BAY.concat(['shoot_back'])))));
   kiem('máy ném aim / throw / load → lỗi', /Drone không gắn máy ném/.test(loi(cfg(BAY.concat(['aim', 'throw', 'load'])))));
-  kiem('súng hơi shoot → lỗi', /Drone không gắn súng hơi/.test(loi(cfg(BAY.concat(['shoot'])))));
+  kiem('vòi phun shoot → lỗi', /Drone không gắn vòi phun/.test(loi(cfg(BAY.concat(['shoot'])))));
   kiem('cảm biến khoảng cách front_clear / left_clear / right_clear → lỗi (drone không có hướng mặt)', ['front_clear', 'left_clear', 'right_clear'].every((t) => /Drone không gắn cảm biến khoảng cách/.test(loi(cfg(BAY.concat([t]))))));
   kiem('cảm biến từ front_metal → lỗi', /Drone không gắn cảm biến khoảng cách hay cảm biến từ/.test(loi(cfg(BAY.concat(['front_metal'])))));
   kiem('lệnh của xe bánh (left_move…) không thuộc drone → lỗi cấu hình', /không thuộc loại robot drone/.test(loi(cfg(BAY.concat(['left_move'])))));

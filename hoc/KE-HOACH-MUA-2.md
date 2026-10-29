@@ -3,6 +3,7 @@
 Khuôn: [KE-HOACH-7-MUA.md](KE-HOACH-7-MUA.md) (10 gói × 2 chương × 10 màn; chương 1 làm quen, chương 2 "hàm cho …"). Bảng mùa 2:
 thân **Xích → đẩy thùng nặng** · tay **Súng hơi → lực bắn** · cảm biến **Hồng ngoại `distance()` → đo nhiệt `warm()`** ·
 vật **thùng nặng** · sàn **băng chuyền** · cơ chế **cửa + nút bắn (nút đang bật thì nóng)** · Python A **biến**, Python B **tham số** · combo **Bệ súng xích** (xích bắn tụ không giật).
+Đổi tên (29/10, nhánh claude/voi-phun-chu): chữ người chơi thấy đổi "súng hơi" thành **vòi phun** (gói Vòi phun, Bệ vòi xích, Hàm bệ vòi, Chế lệnh vòi phun; bóng thành tia nước, nòng thành đầu phun, đạn thành lượt phun); mã nội bộ (`sung-hoi`, `be-sung`, tay `'hoi'`), lệnh `shoot()` và chú thích giữ nguyên; phần hình (tên part "Vòi phun hai đầu", phim `pg.*`) ở nhánh claude/voi-phun-hinh.
 Luật học: đường cong mượt (luật đo ở KE-HOACH-MUA-1.md mục Trạng thái), gói 9–10 phong phú, recall (memory `duong-cong-hoc-va-recall`); mùa 2 được dùng mọi thứ mùa 1. Mỗi gói có phim mở gói.
 
 ## 1. Rà màn hiện có (script đọc lời giải, bắc cầu qua hàm của em)

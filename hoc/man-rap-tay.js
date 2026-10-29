@@ -253,15 +253,15 @@
       congThucKhac: [
         { moTa: 'Lùi ba ô bằng vòng for (19 ô)', dat3sao: true, baiLam: { chinh: nhieu(['forward(2)', 'turn_right()', 'back()', 'jet_fwd()', 'turn_right()'], lap(3, ['back()'])) } },
         { moTa: 'Quay mặt sang nút, bắn ra trước rồi quay lại đi lên (cùng 9 nhịp)', dat3sao: true, baiLam: { chinh: ['forward(2)', 'turn_left()', 'jet_back()', 'move()', 'turn_right()', 'forward(3)'] } },
-        { moTa: 'Gắn súng hơi mà vẫn đi vòng (chậm hơn)', baiLam: { chinh: ['forward(3)', 'turn_right()', 'forward(4)', 'turn_right()', 'back()', 'back()', 'turn_right()', 'forward(4)'] } }
+        { moTa: 'Gắn vòi phun mà vẫn đi vòng (chậm hơn)', baiLam: { chinh: ['forward(3)', 'turn_right()', 'forward(4)', 'turn_right()', 'back()', 'back()', 'turn_right()', 'forward(4)'] } }
       ],
       loiSai: [
         { moTa: 'Đi thẳng: xe đâm vào cửa đóng', baiLam: { chinh: ['forward(5)'] }, phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Quay phải rồi bắn ra trước: bóng bay sang phải, không trúng nút', baiLam: { chinh: ['forward(2)', 'turn_right()', 'jet_back()'] }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Bắn ra trước khi chưa quay: bóng bay lên phía cửa, cửa vẫn đóng', baiLam: { chinh: ['forward(2)', 'jet_back()', 'forward(3)'] }, phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quay phải rồi bắn ra trước: tia nước bay sang phải, không trúng nút', baiLam: { chinh: ['forward(2)', 'turn_right()', 'jet_back()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bắn ra trước khi chưa quay: tia nước bay lên phía cửa, cửa vẫn đóng', baiLam: { chinh: ['forward(2)', 'jet_back()', 'forward(3)'] }, phaiCoMa: ['dam-tuong'] },
         { moTa: 'Bắn trúng nút, cửa mở nhưng xe vẫn quay mặt sang trái: đi thẳng là đâm vào tường chứa nút', baiLam: { chinh: ['forward(2)', 'turn_left()', 'jet_back()', 'forward(3)'] }, phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Nút nằm ở tường bên trái: xe phải đứng cùng hàng với nút thì bóng mới bay tới.', 'Cú giật của súng hơi cũng là một bước đi.']
+      goiY: ['Nút nằm ở tường bên trái: xe phải đứng cùng hàng với nút thì tia nước mới bay tới.', 'Cú giật của vòi phun cũng là một bước đi.']
     }),
 
     man({
@@ -344,7 +344,7 @@
       ],
       loiSai: [
         { moTa: 'Đi thẳng lối giữa: xe đâm vào cửa đóng', baiLam: { chinh: ['forward(6)'] }, phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Bắn từ sai hàng: bóng không trúng nút nên cửa vẫn đóng', baiLam: { chinh: ['move()', 'jet_back()', 'turn_right()', 'forward(6)'] }, phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Bắn từ sai hàng: tia nước không trúng nút nên cửa vẫn đóng', baiLam: { chinh: ['move()', 'jet_back()', 'turn_right()', 'forward(6)'] }, phaiCoMa: ['dam-tuong'] },
         { moTa: 'Đi lối phải bằng xe hai bánh: xe không leo được bậc thang', baiLam: { chinh: ['move()', 'turn_right()', 'forward(2)', 'turn_left()', 'forward(6)'] }, phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Mỗi lối cần một bộ phận khác nhau, mà ngân sách chỉ đủ cho vài cách.', 'Tính xem lối nào ít nhịp nhất với số xu em có.']

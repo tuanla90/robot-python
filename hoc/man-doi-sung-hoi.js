@@ -126,8 +126,8 @@
   var DS = [
     man({
       so: 1, ten: 'Băng ngược chiều',
-      deBai: 'Hai robot ở hai làn riêng. Omni đã có chương trình trượt tới cờ. Làn của xe súng là băng chuyền chạy về phía nút N, đẩy xe xa cờ. Bắn trúng nút thì băng tắt: cho xe súng tới cờ của nó.',
-      veMaMau: 'Chạy thử: omni tới cờ, xe súng đứng yên. Viết chương trình R1.',
+      deBai: 'Hai robot ở hai làn riêng. Omni đã có chương trình trượt tới cờ. Làn của xe vòi phun là băng chuyền chạy về phía nút N, đẩy xe xa cờ. Bắn trúng nút thì băng tắt: cho xe vòi phun tới cờ của nó.',
+      veMaMau: 'Chạy thử: omni tới cờ, xe vòi phun đứng yên. Viết chương trình R1.',
       san: ['#########', '#N<<<<<F#', '#########', '#.....###', '#####.###', '#####F###', '#########'],
       bd: [{ x: 2, y: 1, huong: 3 }, { x: 1, y: 3, huong: 2 }], co: [[{ x: 7, y: 1 }], [{ x: 5, y: 5 }]],
       maMau: B([], L1[1]), loiGiai: B(L1[0], L1[1]),
@@ -136,7 +136,7 @@
     }),
     man({
       so: 2, ten: 'Dọn thùng khỏi lối', khoa: 0,
-      deBai: 'Thùng nặng chắn lối của omni, omni không đẩy được. Xe súng đã có chương trình cố định: bắn lên tường để cú giật đẩy thùng xuống hốc, rồi về cờ. Viết chương trình cho omni đi qua lối vừa trống tới cờ của nó.',
+      deBai: 'Thùng nặng chắn lối của omni, omni không đẩy được. Xe vòi phun đã có chương trình cố định: bắn lên tường để cú giật đẩy thùng xuống hốc, rồi về cờ. Viết chương trình cho omni đi qua lối vừa trống tới cờ của nó.',
       veMaMau: 'Chương trình R1 bị khóa, bấm vào thẻ R1 để đọc. Viết chương trình R2.',
       san: ['#########', '####..F##', '#...H...#', '####.##.#', '#######F#', '#########'],
       bd: [{ x: 4, y: 1, huong: 0 }, { x: 1, y: 2, huong: 0 }], co: [[{ x: 6, y: 1 }], [{ x: 7, y: 4 }]],
@@ -146,7 +146,7 @@
     }),
     man({
       so: 3, ten: 'Mở cửa cho bạn',
-      deBai: 'Cửa C chắn đường omni. Xe súng quay sang trái, bắn trúng nút N thì cửa mở, và cú giật đưa xe lùi đúng vào cờ của nó. Omni chờ tới khi trước mặt trống rồi mới đi tiếp.',
+      deBai: 'Cửa C chắn đường omni. Xe vòi phun quay sang trái, bắn trúng nút N thì cửa mở, và cú giật đưa xe lùi đúng vào cờ của nó. Omni chờ tới khi trước mặt trống rồi mới đi tiếp.',
       veMaMau: 'Mỗi robot đã có nửa chương trình. Viết tiếp cho cả hai.',
       san: ['#########', '##.C...F#', '#########', 'N...F####', '#########'],
       bd: [{ x: 3, y: 3, huong: 0 }, { x: 2, y: 1, huong: 1 }], co: [[{ x: 4, y: 3 }], [{ x: 7, y: 1 }]],
@@ -156,37 +156,37 @@
     }),
     man({
       so: 4, ten: 'Tắt băng cho bạn',
-      deBai: 'Cờ của omni ở đầu một dải băng chuyền chạy xuống. Omni đi ngược băng thì cứ bị đẩy về chỗ cũ. Xe súng chạy tới dưới nút N, bắn để tắt băng (cú giật đưa xe về cờ của nó). Omni cứ thử đi lên, băng tắt là lên được.',
+      deBai: 'Cờ của omni ở đầu một dải băng chuyền chạy xuống. Omni đi ngược băng thì cứ bị đẩy về chỗ cũ. Xe vòi phun chạy tới dưới nút N, bắn để tắt băng (cú giật đưa xe về cờ của nó). Omni cứ thử đi lên, băng tắt là lên được.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: ['#N#######', '#.....#F#', '#.....#v#', '#.....#v#', '#F#...#v#', '#######.#', '#########'],
       bd: [{ x: 4, y: 3, huong: 0 }, { x: 7, y: 5, huong: 0 }], co: [[{ x: 1, y: 4 }], [{ x: 7, y: 1 }]],
       maMau: B([], []), loiGiai: B(L4[0], L4[1]),
       hamCuaEmCan: ['turn_left', 'turn_right', 'forward', 'go_wall'],
-      goiY: ['Bóng bay thẳng: xe phải đứng ngay dưới nút, quay mặt lên rồi mới bắn.', 'Băng đang chạy thì front_clear() vẫn là True: go_wall() cứ thử đi mãi, băng tắt là omni lên tới cờ.']
+      goiY: ['Tia nước bay thẳng: xe phải đứng ngay dưới nút, quay mặt lên rồi mới bắn.', 'Băng đang chạy thì front_clear() vẫn là True: go_wall() cứ thử đi mãi, băng tắt là omni lên tới cờ.']
     }),
     man({
       so: 5, ten: 'Chặn thùng giúp bạn', mucTieu: 'day-thung',
-      deBai: 'Phải đưa thùng nặng vào ô đích. Cú giật đẩy thùng trượt xuống tới khi gặp vật cản, nên nó trượt quá ô đích. Omni tới đứng ngay dưới ô đích làm chốt chặn, xe súng bắn lên để giật thùng xuống. Xe súng không có cảm biến: xem omni cần mấy nhịp rồi chờ cho đủ.',
+      deBai: 'Phải đưa thùng nặng vào ô đích. Cú giật đẩy thùng trượt xuống tới khi gặp vật cản, nên nó trượt quá ô đích. Omni tới đứng ngay dưới ô đích làm chốt chặn, xe vòi phun bắn lên để giật thùng xuống. Xe vòi phun không có cảm biến: xem omni cần mấy nhịp rồi chờ cho đủ.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: ['#########', '#...#####', '###H#####', '###.#####', '###D#####', '#.......#', '#########'],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 7, y: 5, huong: 0 }],
       maMau: B([], []), loiGiai: B(L5[0], L5[1]),
       hamCuaEmCan: ['forward', 'turn_left', 'slide_l'],
-      goiY: ['Thùng trượt dừng ngay trước robot đồng đội, như trước tường.', 'Omni cần 4 nhịp để tới chỗ chặn; xe súng tới chỗ bắn sau 3 nhịp, nên chờ thêm một nhịp.']
+      goiY: ['Thùng trượt dừng ngay trước robot đồng đội, như trước tường.', 'Omni cần 4 nhịp để tới chỗ chặn; xe vòi phun tới chỗ bắn sau 3 nhịp, nên chờ thêm một nhịp.']
     }),
     man({
       so: 6, ten: 'Bạn tới thì bắn', khoa: 0, r: [SUNG_CB, OMNI],
-      deBai: 'Xe súng có cảm biến và chương trình cố định: chờ tới khi thấy omni đứng ngay trước mũi, rồi quay sang bắn nút mở cửa. Đưa omni tới đúng chỗ đó, chờ cửa mở rồi lên cờ của nó.',
+      deBai: 'Xe vòi phun có cảm biến và chương trình cố định: chờ tới khi thấy omni đứng ngay trước mũi, rồi quay sang bắn nút mở cửa. Đưa omni tới đúng chỗ đó, chờ cửa mở rồi lên cờ của nó.',
       veMaMau: 'Đọc chương trình R1 bị khóa. Viết chương trình R2.',
       san: ['#########', '####F####', '####C####', '#.......#', '###F..N##', '#########'],
       bd: [{ x: 4, y: 4, huong: 0 }, { x: 1, y: 3, huong: 0 }], co: [[{ x: 3, y: 4 }], [{ x: 4, y: 1 }]],
       maMau: B(L6[0], []), loiGiai: B(L6[0], L6[1]),
       hamCuaEmCan: ['turn_right', 'slide_r', 'forward'],
-      goiY: ['Omni chưa tới trước mũi xe súng thì cửa không bao giờ mở.', 'Tới nơi thì chờ bằng while not front_clear(): wait(), không đoán số nhịp.']
+      goiY: ['Omni chưa tới trước mũi xe vòi phun thì cửa không bao giờ mở.', 'Tới nơi thì chờ bằng while not front_clear(): wait(), không đoán số nhịp.']
     }),
     man({
       so: 7, ten: 'Canh cửa theo chu kỳ', khoa: 0,
-      deBai: 'Xe súng tựa lưng vào tường, cứ ba nhịp bắn nút một lần: cửa mở, đóng, rồi mở lại. Omni tới cửa đúng lúc cửa đang đóng nhưng lại lao vào cửa. Sửa điều kiện chờ của omni.',
+      deBai: 'Xe vòi phun tựa lưng vào tường, cứ ba nhịp bắn nút một lần: cửa mở, đóng, rồi mở lại. Omni tới cửa đúng lúc cửa đang đóng nhưng lại lao vào cửa. Sửa điều kiện chờ của omni.',
       veMaMau: 'R1 bị khóa. Chạy thử, xem omni đâm cửa ở nhịp nào rồi sửa chương trình R2.',
       san: ['#N#######', '#.F.....#', '####C##.#', '####.##.#', '####F##.#', '#########'],
       bd: [{ x: 1, y: 1, huong: 0 }, { x: 7, y: 4, huong: 2 }], co: [[{ x: 2, y: 1 }], [{ x: 4, y: 4 }]],
@@ -196,17 +196,17 @@
     }),
     man({
       so: 8, ten: 'Sửa giờ bắn', khoa: 1, r: [SUNG_CB, OMNI],
-      deBai: 'Một nút điều khiển hai cửa: bắn trúng thì cửa đang mở đóng lại, cửa đang đóng mở ra. Omni (chương trình cố định) đi qua cửa mở vào khoang giữa, chờ cửa kia mở. Xe súng bắn ngay từ đầu nên omni bị nhốt ngoài. Sửa cho xe súng chờ omni vào tới cửa đầu (cảm biến bên trái) rồi mới bắn.',
+      deBai: 'Một nút điều khiển hai cửa: bắn trúng thì cửa đang mở đóng lại, cửa đang đóng mở ra. Omni (chương trình cố định) đi qua cửa mở vào khoang giữa, chờ cửa kia mở. Xe vòi phun bắn ngay từ đầu nên omni bị nhốt ngoài. Sửa cho xe vòi phun chờ omni vào tới cửa đầu (cảm biến bên trái) rồi mới bắn.',
       veMaMau: 'R2 bị khóa. Chạy thử rồi sửa chương trình R1.',
       san: ['##########', '#...c.C.F#', '###F.N####', '##########'],
       bd: [{ x: 4, y: 2, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[{ x: 3, y: 2 }], [{ x: 8, y: 1 }]],
       maMau: B(['shoot()', 'wait()'], L8[1]), loiGiai: B(L8[0], L8[1]),
       hamCuaEmCan: ['forward'],
-      goiY: ['Cửa không đóng xuống chỗ đang có robot. Bắn lúc omni đã tới cửa đầu thì không nhốt được omni.', 'Xe súng quay mặt sang phải nên cửa đầu nằm bên trái xe: while left_clear(): wait().']
+      goiY: ['Cửa không đóng xuống chỗ đang có robot. Bắn lúc omni đã tới cửa đầu thì không nhốt được omni.', 'Xe vòi phun quay mặt sang phải nên cửa đầu nằm bên trái xe: while left_clear(): wait().']
     }),
     man({
       so: 9, ten: 'Bốn cửa bốn nút',
-      deBai: 'Làn dưới có bốn cửa, mỗi cửa một nút riêng trên tường làn trên. Xe súng đi dọc làn trên, tới dưới mỗi nút thì quay lên bắn. Omni qua từng cửa khi nó mở. Viết thẳng thì tràn khung: dùng vòng lặp cho cả hai.',
+      deBai: 'Làn dưới có bốn cửa, mỗi cửa một nút riêng trên tường làn trên. Xe vòi phun đi dọc làn trên, tới dưới mỗi nút thì quay lên bắn. Omni qua từng cửa khi nó mở. Viết thẳng thì tràn khung: dùng vòng lặp cho cả hai.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: ['##N#N#N#N##', '#........F#', '###########', '#.C.C.C.CF#', '###########'],
       noi: [2, 4, 6, 8].map(function (x) { return { nut: { x: x, y: 0 }, cua: [{ x: x, y: 3 }] }; }),
@@ -217,7 +217,7 @@
     }),
     man({
       so: 10, ten: 'Ca mở đường', r: [SUNG_CB, OMNI],
-      deBai: 'Ba sân. Xe súng lên hết lối thì gặp nút ở bên trái hay bên phải; bắn trúng nút là cú giật đưa xe sang cờ bên kia. Omni đi lên: cửa đóng ở chỗ xa chỗ gần, sân ba là băng chuyền chạy xuống thay cho cửa. Một chương trình cho mỗi robot phải thắng cả ba sân.',
+      deBai: 'Ba sân. Xe vòi phun lên hết lối thì gặp nút ở bên trái hay bên phải; bắn trúng nút là cú giật đưa xe sang cờ bên kia. Omni đi lên: cửa đóng ở chỗ xa chỗ gần, sân ba là băng chuyền chạy xuống thay cho cửa. Một chương trình cho mỗi robot phải thắng cả ba sân.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: [
         ['#########', '##N.F.F##', '###.##.##', '###.##C##', '###.##.##', '###.##.##', '#########'],
@@ -229,7 +229,7 @@
       maMau: B([], []), loiGiai: B(L10[0], L10[1]),
       hamCuaEmCan: ['go_wall', 'turn_left', 'turn_right'],
       goiY: ['Nút nằm trên tường nên left_clear() là False khi nút ở bên trái.', 'Omni: go_wall() tới cửa, chờ cửa mở, rồi go_wall() lần nữa. Băng chạy thì go_wall() cứ thử đi lên tới khi băng tắt.'],
-      huyHieu: { ma: CHUONG, ten: 'Huy hiệu Đội súng hơi và omni' }
+      huyHieu: { ma: CHUONG, ten: 'Huy hiệu Đội vòi phun và omni' }
     })
   ];
 
@@ -277,7 +277,7 @@
   DS = DS.concat([
     man({
       so: 1, chuong: CHE, ten: 'Hàm chờ cửa', khoa: 1, taoHam: ['wait_gate'],
-      deBai: 'Chương trình của omni bị khóa và gọi wait_gate(): em tự chế lệnh này để omni đứng chờ tới khi cửa trước mặt mở. Rồi viết cho xe súng lên hai ô, quay phải và bắn nút N (cú giật đưa xe về cờ của nó).',
+      deBai: 'Chương trình của omni bị khóa và gọi wait_gate(): em tự chế lệnh này để omni đứng chờ tới khi cửa trước mặt mở. Rồi viết cho xe vòi phun lên hai ô, quay phải và bắn nút N (cú giật đưa xe về cờ của nó).',
       veMaMau: 'Mở Xưởng hàm, tạo wait_gate(). Viết chương trình R1.',
       san: ['#########', '#...C..F#', '#########', '#F.....N#', '##.######', '##.######', '#########'],
       bd: [{ x: 2, y: 5, huong: 0 }, { x: 1, y: 1, huong: 1 }], co: [[{ x: 1, y: 3 }], [{ x: 7, y: 1 }]],
@@ -287,17 +287,17 @@
     }),
     man({
       so: 2, chuong: CHE, ten: 'Bắn khi đường trống', khoa: 0, r: [SUNG_CB, OMNI], taoHam: ['fire_clear'],
-      deBai: 'Omni đứng ngay trước mũi xe súng, chắn đường bóng tới nút N. Xe súng (bị khóa) gọi fire_clear(): em chế lệnh này để xe chờ tới khi trước mặt trống rồi mới bắn. Rồi đưa omni tránh khỏi đường bắn, qua cửa vừa mở tới cờ.',
+      deBai: 'Omni đứng ngay trước mũi xe vòi phun, chắn đường tia nước tới nút N. Xe vòi phun (bị khóa) gọi fire_clear(): em chế lệnh này để xe chờ tới khi trước mặt trống rồi mới bắn. Rồi đưa omni tránh khỏi đường bắn, qua cửa vừa mở tới cờ.',
       veMaMau: 'Tạo fire_clear() trong Xưởng hàm, rồi viết chương trình R2.',
       san: ['####N####', '#FC..####', '###..####', '####.F###', '#########'],
       bd: [{ x: 4, y: 3, huong: 0 }, { x: 4, y: 2, huong: 0 }], co: [[{ x: 5, y: 3 }], [{ x: 1, y: 1 }]],
       maMau: B(C2[0], []), loiGiai: Object.assign(B(C2[0], C2[1]), { hamCuaEmMoi: [H('fire_clear', T_FIRE_CLEAR)] }),
       hamCuaEmCan: ['turn_right', 'move', 'slide_l'],
-      goiY: ['Bóng dừng ở robot đồng đội. Omni phải ra khỏi cả cột trước mũi xe súng, không chỉ ô sát mũi.', 'Omni trượt sang trái trước, rồi mới đi lên.']
+      goiY: ['Tia nước dừng ở robot đồng đội. Omni phải ra khỏi cả cột trước mũi xe vòi phun, không chỉ ô sát mũi.', 'Omni trượt sang trái trước, rồi mới đi lên.']
     }),
     man({
       so: 3, chuong: CHE, ten: 'Chở hộp qua cửa', khoa: 0, r: [SUNG, OMNI_KEP], mucTieu: 'dua-vat', taoHam: ['pass_gate'],
-      deBai: 'Omni có tay kẹp phải chở hộp qua cửa vào ô đích. Chế pass_gate(): chờ cửa mở (dùng wait_gate) rồi tiến hai ô. Xe súng đã có chương trình cố định: chạy lên, quay trái, bắn nút.',
+      deBai: 'Omni có tay kẹp phải chở hộp qua cửa vào ô đích. Chế pass_gate(): chờ cửa mở (dùng wait_gate) rồi tiến hai ô. Xe vòi phun đã có chương trình cố định: chạy lên, quay trái, bắn nút.',
       veMaMau: 'Tạo pass_gate() rồi viết chương trình R2.',
       san: ['#########', '#.o.C.D.#', '#########', '#N.....##', '###.#####', '###.#####', '###.#####', '#########'],
       bd: [{ x: 3, y: 6, huong: 0 }, { x: 1, y: 1, huong: 1 }],
@@ -307,17 +307,17 @@
     }),
     man({
       so: 4, chuong: CHE, ten: 'Cả hai cùng chờ', r: [SUNG_CB, OMNI],
-      deBai: 'Hai robot chung một hành lang, omni đứng ngay trước xe súng. Xe súng phải tới dưới nút N bắn mở cửa, rồi về cờ của nó, đúng chỗ omni đang đứng chờ cửa. Cả hai robot dùng wait_gate() để không húc nhau.',
+      deBai: 'Hai robot chung một hành lang, omni đứng ngay trước xe vòi phun. Xe vòi phun phải tới dưới nút N bắn mở cửa, rồi về cờ của nó, đúng chỗ omni đang đứng chờ cửa. Cả hai robot dùng wait_gate() để không húc nhau.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: ['###N######', '#...FC..F#', '##########'],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }], co: [[{ x: 4, y: 1 }], [{ x: 8, y: 1 }]],
       maMau: B([], []), loiGiai: B(C4[0], C4[1]),
       hamCuaEmCan: ['wait_gate', 'forward', 'turn_left', 'turn_right', 'move'],
-      goiY: ['Đồng đội trước mặt cũng làm front_clear() là False, nên wait_gate() chờ được cả bạn lẫn cửa.', 'Xe súng: wait_gate() trước khi tiến, vì omni còn đứng chắn.']
+      goiY: ['Đồng đội trước mặt cũng làm front_clear() là False, nên wait_gate() chờ được cả bạn lẫn cửa.', 'Xe vòi phun: wait_gate() trước khi tiến, vì omni còn đứng chắn.']
     }),
     man({
       so: 5, chuong: CHE, ten: 'Đỡ ba thùng', mucTieu: 'day-thung', taoHam: ['catch_crate'],
-      deBai: 'Ba thùng nặng phải trượt vào ba ô đích. Xe súng đi dọc làn trên, giật từng thùng xuống. Omni chạy dọc làn dưới làm chốt chặn. Chế catch_crate(): omni đứng chờ tới khi thùng nằm ngay trước mặt, rồi mới sang cột kế.',
+      deBai: 'Ba thùng nặng phải trượt vào ba ô đích. Xe vòi phun đi dọc làn trên, giật từng thùng xuống. Omni chạy dọc làn dưới làm chốt chặn. Chế catch_crate(): omni đứng chờ tới khi thùng nằm ngay trước mặt, rồi mới sang cột kế.',
       veMaMau: 'Tạo catch_crate(), rồi viết cả hai chương trình bằng vòng lặp.',
       san: ['#########', '#.......#', '##H#H#H##', '##.#.#.##', '##D#D#D##', '#.......#', '#########'],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 5, huong: 0 }],
@@ -327,7 +327,7 @@
     }),
     man({
       so: 6, chuong: CHE, ten: 'Robot gác gọi hàm em', khoa: 0, taoHam: ['open_step'],
-      deBai: 'Xe súng bị khóa: ba lần gọi open_step(). Mỗi nút dưới tường làn dưới mở một cửa ở làn trên. Chế open_step() để xe bắn nút bên trái rồi tiến tới nút kế (hai ô). Rồi cho omni qua ba cửa bằng pass_gate().',
+      deBai: 'Xe vòi phun bị khóa: ba lần gọi open_step(). Mỗi nút dưới tường làn dưới mở một cửa ở làn trên. Chế open_step() để xe bắn nút bên trái rồi tiến tới nút kế (hai ô). Rồi cho omni qua ba cửa bằng pass_gate().',
       veMaMau: 'Tạo open_step(), rồi viết chương trình R2.',
       san: ['#########', '#FC.C.C.#', '#########', '#F......#', '##N#N#N##'],
       noi: [6, 4, 2].map(function (x) { return { nut: { x: x, y: 4 }, cua: [{ x: x, y: 1 }] }; }),
@@ -338,7 +338,7 @@
     }),
     man({
       so: 7, chuong: CHE, ten: 'Sửa hàm mở cửa', khoa: 0, r: [SUNG_CB, OMNI],
-      deBai: 'Xe súng (bị khóa) gọi open_gate() để mở cửa cho omni. Nhưng hàm bắn hai phát: cửa mở rồi đóng lại trước khi omni tới. Sửa thân open_gate().',
+      deBai: 'Xe vòi phun (bị khóa) gọi open_gate() để mở cửa cho omni. Nhưng hàm bắn hai phát: cửa mở rồi đóng lại trước khi omni tới. Sửa thân open_gate().',
       veMaMau: 'Chương trình hai robot đã đúng. Chỉ sửa hàm của màn open_gate().',
       san: ['##########', '#.....C.F#', '##########', '#N......F#', '##########'],
       bd: [{ x: 2, y: 3, huong: 0 }, { x: 1, y: 1, huong: 1 }], co: [[{ x: 8, y: 3 }], [{ x: 8, y: 1 }]],
@@ -347,8 +347,8 @@
       goiY: ['Mỗi phát trúng nút đổi cửa một lần: hai phát là về như cũ.', 'Bỏ phát bắn thứ hai.']
     }),
     man({
-      so: 8, chuong: CHE, ten: 'Sửa nòng bắn', khoa: 0, r: [SUNG_CB, OMNI],
-      deBai: 'Nút N nằm sau đuôi xe súng. Hàm của màn open_back() bắn nhầm nòng trước nên bóng bay vào tường và xe giật lùi. Sửa open_back(), rồi viết cho omni qua cửa tới cờ.',
+      so: 8, chuong: CHE, ten: 'Sửa đầu phun', khoa: 0, r: [SUNG_CB, OMNI],
+      deBai: 'Nút N nằm sau đuôi xe vòi phun. Hàm của màn open_back() bắn nhầm đầu phun trước nên tia nước bay vào tường và xe giật lùi. Sửa open_back(), rồi viết cho omni qua cửa tới cờ.',
       veMaMau: 'R1 bị khóa. Sửa open_back() và viết chương trình R2.',
       san: ['#########', '#N.....F#', '#########', '#..C...F#', '#########'],
       bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }], co: [[{ x: 7, y: 1 }], [{ x: 7, y: 3 }]],
@@ -358,17 +358,17 @@
     }),
     man({
       so: 9, chuong: CHE, ten: 'Đổi chỗ cho nhau', khoa: 1,
-      deBai: 'Hai robot đổi phía: cờ của xe súng ở sau lưng omni, cờ của omni ở sau lưng xe súng. Hành lang một làn, giữa có cửa. Omni (bị khóa) gọi make_way() để nép vào hốc nhường đường, nhưng hàm ra khỏi hốc quá sớm nên hai robot chặn nhau. Sửa make_way() và viết chương trình xe súng.',
+      deBai: 'Hai robot đổi phía: cờ của xe vòi phun ở sau lưng omni, cờ của omni ở sau lưng xe vòi phun. Hành lang một làn, giữa có cửa. Omni (bị khóa) gọi make_way() để nép vào hốc nhường đường, nhưng hàm ra khỏi hốc quá sớm nên hai robot chặn nhau. Sửa make_way() và viết chương trình xe vòi phun.',
       veMaMau: 'R2 bị khóa. Sửa make_way() và viết chương trình R1.',
       san: ['##N######', '#F..C..F#', '#####.###', '#########'],
       bd: [{ x: 2, y: 1, huong: 1 }, { x: 6, y: 1, huong: 3 }], co: [[{ x: 7, y: 1 }], [{ x: 1, y: 1 }]],
       maMau: B([], C9[1], [H('make_way', T_MAKE_WAY_CU)]), loiGiai: B(C9[0], C9[1], [H('make_way', T_MAKE_WAY)]),
       hamCuaEmCan: ['turn_left', 'turn_right', 'forward', 'move'],
-      goiY: ['Trong hốc, omni quay mặt sang trái nên hành lang nằm bên phải nó: right_clear().', 'Chờ xe súng tới ngang hốc, rồi chờ nó đi qua hẳn mới ra.']
+      goiY: ['Trong hốc, omni quay mặt sang trái nên hành lang nằm bên phải nó: right_clear().', 'Chờ xe vòi phun tới ngang hốc, rồi chờ nó đi qua hẳn mới ra.']
     }),
     man({
       so: 10, chuong: CHE, ten: 'Hành lang nhiều cửa', r: [SUNG_CB, OMNI],
-      deBai: 'Ba sân, số cửa và chỗ đặt nút khác nhau. Mỗi nút trên tường mở cửa ngay dưới nó ở làn omni. Xe súng đi dọc làn trên, gặp nút ở bên trái thì bắn. Omni đi qua bốn đoạn hai ô bằng pass_gate(). Một chương trình mỗi robot cho cả ba sân.',
+      deBai: 'Ba sân, số cửa và chỗ đặt nút khác nhau. Mỗi nút trên tường mở cửa ngay dưới nó ở làn omni. Xe vòi phun đi dọc làn trên, gặp nút ở bên trái thì bắn. Omni đi qua bốn đoạn hai ô bằng pass_gate(). Một chương trình mỗi robot cho cả ba sân.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: NUT_10.map(sanNut), noi: NUT_10.map(noiNut),
       bd: [[0, 1, 2].map(function () { return { x: 1, y: 1, huong: 1 }; }), [0, 1, 2].map(function () { return { x: 1, y: 3, huong: 1 }; })],
@@ -376,15 +376,15 @@
       maMau: B([], []), loiGiai: B(C10[0], C10[1]),
       hamCuaEmCan: ['kick_right', 'move', 'pass_gate'],
       goiY: ['Ô trống phía trên làn thì left_clear() là True; nút N thì False.', 'Đoạn không có cửa thì wait_gate() trong pass_gate() không phải chờ.'],
-      huyHieu: { ma: CHE, ten: 'Huy hiệu Chế lệnh đội súng hơi' }
+      huyHieu: { ma: CHE, ten: 'Huy hiệu Chế lệnh đội vòi phun' }
     })
   ]);
 
   // Chỉ khai báo: lo-trinh-hoc.js chèn chương vào thứ tự xuất bản rồi mới thêm màn, nên ngân hàng gốc và id các chương cũ giữ nguyên.
   ManHoc.chuongThem = (ManHoc.chuongThem || []).concat([{
     sau: 'luc-ban', ds: DS,
-    chuong: [{ ma: CHUONG, ten: 'Đội súng hơi và omni' }, { ma: 'che-' + CHUONG, ten: 'Chế lệnh đội súng hơi' }],
-    goi: { ma: CHUONG, ten: 'Đội súng hơi và omni', hinh: 'sung-hoi' }
+    chuong: [{ ma: CHUONG, ten: 'Đội vòi phun và omni' }, { ma: 'che-' + CHUONG, ten: 'Chế lệnh đội vòi phun' }],
+    goi: { ma: CHUONG, ten: 'Đội vòi phun và omni', hinh: 'sung-hoi' }
   }]);
   if (laNode) module.exports = ManHoc;
   if (typeof window !== 'undefined') window.ManHoc = ManHoc;

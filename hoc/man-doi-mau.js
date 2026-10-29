@@ -203,7 +203,7 @@
   var DS = [
     man({
       so: 1, ten: 'Hai làn, một cửa', khoa: 1,
-      deBai: 'Hai robot ở hai làn riêng. Robot súng R2 đã có chương trình: bắn ra sau trúng nút, cửa trên làn của R1 mở. Viết chương trình cho robot màu R1: đi qua cửa, nhìn màu hộp rồi đặt vào ô đích cùng màu.',
+      deBai: 'Hai robot ở hai làn riêng. Robot vòi phun R2 đã có chương trình: bắn ra sau trúng nút, cửa trên làn của R1 mở. Viết chương trình cho robot màu R1: đi qua cửa, nhìn màu hộp rồi đặt vào ô đích cùng màu.',
       veMaMau: 'Chương trình R2 bị khóa, bấm thẻ R2 để xem. Viết chương trình R1.',
       san: SAN_1, mau: lop(SAN_1, { '4,1': 'b', '4,3': 'r' }), vatMau: lop(SAN_1, { '5,2': 'r' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 5, y: 5, huong: 1 }],
@@ -220,12 +220,12 @@
       maMau: B(nhieu(['go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']), []),
       loiGiai: B(nhieu(['go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']), ['forward(2)', 'turn_right()', 'shoot()', 'wait()']),
       hamCuaEmCan: ['go_wall', 'sort_color', 'forward', 'turn_right'],
-      goiY: ['Bóng bay thẳng theo hướng mũi xe: R2 phải đứng cùng hàng với nút.', 'forward(2), turn_right(), rồi bắn.']
+      goiY: ['Tia nước bay thẳng theo hướng mũi xe: R2 phải đứng cùng hàng với nút.', 'forward(2), turn_right(), rồi bắn.']
     }),
     man({
       so: 3, ten: 'Dọn đường bắn',
-      deBai: 'Hộp đỏ nằm ngay trước mũi R2, chắn đường bóng lên nút mở kho. R1 nhặt hộp đó đặt vào đích cùng màu; R2 chờ tới khi trước mặt trống rồi mới bắn. Cửa mở thì R1 vào kho phân loại hộp thứ hai.',
-      veMaMau: 'Chạy thử: bóng của R2 trúng hộp. Thêm vòng chờ cho R2 và viết tiếp cho R1.',
+      deBai: 'Hộp đỏ nằm ngay trước mũi R2, chắn đường tia nước lên nút mở kho. R1 nhặt hộp đó đặt vào đích cùng màu; R2 chờ tới khi trước mặt trống rồi mới bắn. Cửa mở thì R1 vào kho phân loại hộp thứ hai.',
+      veMaMau: 'Chạy thử: tia nước của R2 trúng hộp. Thêm vòng chờ cho R2 và viết tiếp cho R1.',
       san: SAN_3, mau: lop(SAN_3, { '2,3': 'b', '2,5': 'r', '6,3': 'b', '6,5': 'r' }), vatMau: lop(SAN_3, { '3,4': 'r', '7,4': 'b' }),
       bd: [{ x: 1, y: 4, huong: 1 }, { x: 3, y: 5, huong: 0 }],
       maMau: B(['move()', 'sort_color()'], ['shoot()', 'wait()']),
@@ -235,7 +235,7 @@
     }),
     man({
       so: 4, ten: 'Đứng bên nào', dan: 1, noi: NOI_4,
-      deBai: 'Mỗi màu một phòng: đích đỏ sau cửa trái, đích xanh sau cửa phải. R1 nhìn màu hộp rồi tới đứng chờ trước cửa cùng màu, ngay bên trái hay bên phải R2. R2 không biết màu, chỉ có một viên đạn: hỏi bên nào có đồng đội rồi bắn nút trước mặt (cửa trái) hay nút sau lưng (cửa phải).',
+      deBai: 'Mỗi màu một phòng: đích đỏ sau cửa trái, đích xanh sau cửa phải. R1 nhìn màu hộp rồi tới đứng chờ trước cửa cùng màu, ngay bên trái hay bên phải R2. R2 không biết màu, chỉ có một lượt phun: hỏi bên nào có đồng đội rồi bắn nút trước mặt (cửa trái) hay nút sau lưng (cửa phải).',
       veMaMau: 'R1 đã tới chỗ chờ. Viết tiếp cho R1 và viết chương trình R2.',
       san: SAN_4, mau: lop(SAN_4, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_4, { '4,4': 'r' }),
       bd: [{ x: 4, y: 5, huong: 0 }, { x: 3, y: 3, huong: 0 }],
@@ -307,7 +307,7 @@
       maMau: B(R1_PHONG, []), loiGiai: B(R1_PHONG, nhieu(['go_wall()'], CHO_BAO, TRA_LOI)),
       hamCuaEmCan: ['pick', 'drop', 'move', 'dodge_left', 'go_wall'],
       goiY: ['go_wall() đưa R2 lên tới chốt: trước mặt là nút nên dừng.', 'Không đếm nhịp được: mỗi sân R1 tới lúc khác.'],
-      huyHieu: { ma: CHUONG, ten: 'Huy hiệu Đội màu và súng hơi' }
+      huyHieu: { ma: CHUONG, ten: 'Huy hiệu Đội màu và vòi phun' }
     }),
 
     /* =================================================================== chương 2: che-doi-mau */
@@ -419,8 +419,8 @@
   // Chỉ khai báo: lo-trinh-hoc.js chèn chương vào thứ tự xuất bản rồi mới thêm màn, nên ngân hàng gốc và id các chương cũ giữ nguyên.
   ManHoc.chuongThem = (ManHoc.chuongThem || []).concat([{
     sau: 'che-mau', ds: DS,
-    chuong: [{ ma: CHUONG, ten: 'Đội màu và súng hơi' }, { ma: 'che-' + CHUONG, ten: 'Chế lệnh đội màu' }],
-    goi: { ma: CHUONG, ten: 'Đội màu và súng hơi', hinh: 'mau' }
+    chuong: [{ ma: CHUONG, ten: 'Đội màu và vòi phun' }, { ma: 'che-' + CHUONG, ten: 'Chế lệnh đội màu' }],
+    goi: { ma: CHUONG, ten: 'Đội màu và vòi phun', hinh: 'mau' }
   }]);
   if (laNode) module.exports = ManHoc;
   if (typeof window !== 'undefined') window.ManHoc = ManHoc;
