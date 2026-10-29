@@ -903,7 +903,8 @@
   // Thứ tự trong chương: dễ trước khó (luật đo đường cong của mục mùa 2 (g)), màn khó nhất có sẵn đứng cuối.
   var MUA_3 = [
     { ma: 'nhen', ten: 'Nhện', loai: 'bo-phan', hinh: 'nhen',
-      chuong: [['nhen', ['nhen.1', 'nhen.8']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]] },
+      // 29/10 (phiên Mùa 3): khai đủ thứ tự, màn mới (man-than-nhen.js) xen giữa màn có sẵn; màn mới chưa khai ở đây thì nối cuối như cũ.
+      chuong: [['nhen', ['nhen.11', 'nhen.1', 'nhen.12', 'nhen.13', 'nhen.14', 'nhen.15', 'nhen.8', 'nhen.16', 'nhen.17', 'nhen.18']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]] },
     { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', hinh: 'nam-cham',
       chuong: [['nam-cham', ['nam-cham.1', 'nam-cham.4', 'nam-cham.7', 'nam-cham.8', 'nam-cham.5']], ['logic-nam-cham', ['che-nam-cham.1', 'che-nam-cham.8']]] },
     { ma: 'cam-ung-tu', ten: 'Cảm biến từ', loai: 'bo-phan',      // user 29/10: theo tên thẻ part (gioi-thieu-part.js), trước: Cảm ứng từ
@@ -1008,7 +1009,7 @@
     moi.forEach(function (m) { nguon[m.ma] = copy(m); });
     MUA_3.forEach(function (g) {
       g.chuong.forEach(function (c) {
-        var them = moi.filter(function (m) { return m.chuong === c[0]; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });   // màn mới đã khai thứ tự trong MUA_3 thì không nối thêm
         var cuoi = c[1][c[1].length - 1];
         c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
       });

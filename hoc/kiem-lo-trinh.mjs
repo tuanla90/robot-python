@@ -382,7 +382,7 @@ const LOI_GIA_3 = process.argv.includes('--loi-gia-mua-3');
 // (chen trước màn trùm có sẵn cuối chương). Khác bảng brief (đo 29/10, lý do ở lo-trinh-hoc.js khối mùa 3): che-nam-cham.2, .3, .4, .7, .9 ở che-doc-cuc;
 // che-doi-xich cả 10 màn rời mùa 3.
 const BANG_MUA_3 = [
-  ['nhen', 'bo-phan', [['nhen', ['nhen.1', 'nhen.8']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]]],
+  ['nhen', 'bo-phan', [['nhen', ['nhen.11', 'nhen.1', 'nhen.12', 'nhen.13', 'nhen.14', 'nhen.15', 'nhen.8', 'nhen.16', 'nhen.17', 'nhen.18']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]]],      // 29/10 phiên Mùa 3: bảng khai đủ thứ tự (có sẵn xen màn mới), như dòng chương trong MUA_3
   ['nam-cham', 'bo-phan', [['nam-cham', day('nam-cham', [1, 4, 7, 8, 5])], ['logic-nam-cham', day('che-nam-cham', [1, 8])]]],
   ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', []], ['che-cam-ung-tu', []]]],
   ['bai-tu', undefined, [['bai-tu', []], ['che-bai-tu', []]]],
@@ -398,7 +398,7 @@ const moiMua3 = TEP_MUA_3.flatMap(k => M[k] || []);
 const laTrum3 = ma => { const m = get(ma); return m && (m.hang === 'trum'); };
 /** Màn của chương c theo bảng: có sẵn + màn mới (theo so), màn mới chen trước trùm có sẵn cuối chương. */
 const manBang3 = (c, coSan) => {
-  const them = moiMua3.filter(m => m.chuong === c).sort((a, b) => a.so - b.so).map(m => m.ma);
+  const them = moiMua3.filter(m => m.chuong === c && !coSan.includes(m.ma)).sort((a, b) => a.so - b.so).map(m => m.ma);
   const cuoi = coSan[coSan.length - 1];
   return cuoi && laTrum3(cuoi) ? coSan.slice(0, -1).concat(them, [cuoi]) : coSan.concat(them);
 };
@@ -536,7 +536,7 @@ kiem3('(h) ĐO đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nh
   const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le), nhay = [];
   let moc = null;
   for (const g of goi3()) for (const c of g.chuong) for (const m of M.danhSach.filter(x => x.chuong === c).sort((a, b) => a.so - b.so)) {
-    if (m.hang === 'trum') continue;
+    if (m.hang === 'trum' || m.chiChay) continue;      // trùm và màn trình diễn (chiChay, như mùa 2 (g)) miễn, không làm mốc
     if (moc) {
       const v = chiSoCong(m), t = chiSoCong(moc);
       for (const k of ['dong', 'nhip', 'o']) if (!tran(v[k], t[k], LE_CONG[k])) nhay.push([g.ma, m.chuong + '.' + m.so, m.ma, moc.ma, k, t[k], v[k]]);
