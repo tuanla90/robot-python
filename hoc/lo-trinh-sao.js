@@ -1,6 +1,10 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "vong-lap.1": {
+    "o": 5,
+    "nhip": 6
+  },
   "vong-lap.8": {
     "o": 22,
     "nhip": 14
@@ -9,13 +13,17 @@
     "o": 21,
     "nhip": 21
   },
+  "khoang-cach.1": {
+    "o": 6,
+    "nhip": 3
+  },
+  "khoang-cach.2": {
+    "o": 5,
+    "nhip": 6
+  },
   "khoang-cach.8": {
     "o": 10,
     "nhip": 8
-  },
-  "khoang-cach.4": {
-    "o": 10,
-    "nhip": 7
   },
   "khoang-cach.5": {
     "o": 12,
@@ -25,21 +33,17 @@
     "o": 10,
     "nhip": 10
   },
-  "khoang-cach.9": {
-    "o": 21,
-    "nhip": 8
-  },
   "khoang-cach.10": {
     "o": 21,
     "nhip": 24
   },
   "che-cam-bien.1": {
     "o": 8,
-    "nhip": 1
+    "nhip": 4
   },
   "che-cam-bien.2": {
     "o": 5,
-    "nhip": 2
+    "nhip": 6
   },
   "che-cam-bien.7": {
     "o": 8,
@@ -48,6 +52,10 @@
   "che-cam-bien.3": {
     "o": 13,
     "nhip": 17
+  },
+  "nut-de.1": {
+    "o": 26,
+    "nhip": 10
   },
   "che-tay.1": {
     "o": 19,
@@ -77,6 +85,10 @@
     "o": 6,
     "nhip": 3
   },
+  "tay-xoay.1": {
+    "o": 10,
+    "nhip": 3
+  },
   "tay-xoay.7": {
     "o": 10,
     "nhip": 3
@@ -85,13 +97,13 @@
     "o": 16,
     "nhip": 4
   },
-  "che-cam-bien.4": {
-    "o": 6,
-    "nhip": 4
-  },
   "cam-bien-ben.1": {
     "o": 11,
     "nhip": 5
+  },
+  "che-cam-bien.4": {
+    "o": 6,
+    "nhip": 11
   },
   "cam-bien-ben.2": {
     "o": 13,
@@ -107,7 +119,7 @@
   },
   "cam-bien-ben.5": {
     "o": 15,
-    "nhip": 9
+    "nhip": 10
   },
   "cam-bien-ben.6": {
     "o": 16,
@@ -115,7 +127,7 @@
   },
   "cam-bien-ben.7": {
     "o": 12,
-    "nhip": 6
+    "nhip": 10
   },
   "cam-bien-ben.8": {
     "o": 18,
@@ -146,8 +158,8 @@
     "nhip": 2
   },
   "me-cung.6": {
-    "o": 13,
-    "nhip": 2
+    "o": 16,
+    "nhip": 5
   },
   "me-cung.7": {
     "o": 14,

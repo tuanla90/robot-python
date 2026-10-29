@@ -36,9 +36,11 @@ function kiem(ten, fn) {
   try { fn(); dat++; } catch (e) { hong++; console.log('  HỎNG ' + ten + '\n       ' + (e && e.message ? e.message.split('\n')[0] : e)); }
 }
 
-const MOI = ['khoang-cach.11', 'che-cam-bien.11', 'che-cam-bien.12', 'che-cam-bien.13', 'che-cam-bien.14', 'che-cam-bien.15', 'che-cam-bien.16'];
+// HD1 (29/10): khoang-cach.12 (ép if) và .13 (ép while) hai sân, đứng ngay sau màn trình diễn kc.1 / kc.2 (chiChay); kc.4, kc.9 cất.
+const MOI = ['khoang-cach.11', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.11', 'che-cam-bien.12', 'che-cam-bien.13', 'che-cam-bien.14', 'che-cam-bien.15', 'che-cam-bien.16'];
+const HAI_SAN = ['khoang-cach.12', 'khoang-cach.13'];
 const THU_TU = {
-  'khoang-cach': [1, 2, 3, 8, 4, 11, 5, 6, 9, 10].map((n) => 'khoang-cach.' + n),
+  'khoang-cach': [1, 12, 2, 13, 3, 11, 8, 5, 6, 10].map((n) => 'khoang-cach.' + n),
   'che-cam-bien': [1, 2, 7, 11, 12, 13, 3, 14, 15, 16].map((n) => 'che-cam-bien.' + n)
 };
 /** Màn mà đường khối chuẩn ngắn hơn ngưỡng: lý do (kiểm thêm bằng đếm cứng ở mục 5). */
@@ -197,7 +199,7 @@ for (const m of DS) {
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
-    assert.equal(soSan(m), m.hang === 'trum' ? 3 : 1, m.ma + ' số sân');
+    assert.equal(soSan(m), m.hang === 'trum' ? 3 : HAI_SAN.includes(m.ma) ? 2 : 1, m.ma + ' số sân');
     for (const rows of dsSan(m)) assert.ok(!/[MCcS]/.test(rows.join('')), m.ma + ' sân có nút đè / cửa / bậc thang');
     assert.equal(m.robot.than, 'hai-banh');
     assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['khoang-cach']);
@@ -271,7 +273,9 @@ for (const m of DS) {
       for (let i = 0; i < duong.length; i++) {
         const mr = Object.assign(clone(m), { khung: Object.assign({}, m.khung, { chinh: 99 }) });
         const r = cham(mr, { chinh: duong[i] });
-        assert.ok(!r.thang && r.theoSan[i].thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ba sân (hay thua chính sân đó)');
+        // HD1: màn ép hai sân (HAI_SAN) chỉ cần đếm cứng KHÔNG ĐỦ 3 SAO (đếm theo sân dài thì thắng cả hai nhưng húc tường ở sân ngắn, mất nhịp)
+        const chan = HAI_SAN.includes(m.ma) ? !(r.thang && r.sao === 3) : !r.thang;
+        assert.ok(chan && r.theoSan[i].thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ' + soSan(m) + ' sân' + (HAI_SAN.includes(m.ma) ? ' đủ 3 sao' : '') + ' (hay thua chính sân đó)');
       }
     }
     Object.assign(bang[m.ma], { khoi: tong, gop: tongGop });
@@ -323,6 +327,50 @@ const recall = (m) => {
 kiem('recall: ít nhất 3 màn mới dùng hàm hay vòng for của gói 1–2', () => {
   const co = DS.filter((m) => m && recall(m).length);
   assert.ok(co.length >= 3, 'chỉ ' + co.length + ' màn mới recall gói 1–2');
+});
+
+/* ------------------------------------------------------------------ HD2. đâm là thua ở màn ép (damLaThua) */
+kiem('HD2 đâm là thua: khoang-cach.12 / .13 có cờ damLaThua; màn trình diễn kc.1 / kc.2 không; mọi mã trong M.manDamLaThua có cờ, không màn mùa 2 nào có', () => {
+  for (const ma of HAI_SAN) assert.ok(get(ma).damLaThua === true, ma);
+  for (const ma of ['khoang-cach.1', 'khoang-cach.2']) assert.ok(!get(ma).damLaThua, ma);
+  assert.ok(Array.isArray(M.manDamLaThua) && M.manDamLaThua.length >= 50);
+  for (const ma of M.manDamLaThua) assert.ok(get(ma) && get(ma).damLaThua === true, ma);
+  const chuongMua1 = TT.goi.filter((g) => g.mua === 'mua-1').flatMap((g) => g.chuong);
+  const mua2 = M.danhSach.filter((m) => m.damLaThua && !chuongMua1.includes(m.chuong)).map((m) => m.ma);
+  assert.deepEqual(mua2, []);
+});
+kiem('HD2 khoang-cach.12: đếm cứng move() ×4 THUA (trước: 1 sao): sân ngắn dừng ngay ở cú đâm (3 nhịp), chẩn đoán dam-tuong nói luật; bỏ cờ thì lại thắng 1 sao; lời giải chuẩn vẫn 3 sao', () => {
+  const m = get('khoang-cach.12'), demCung = { chinh: ['move()', 'move()', 'move()', 'move()'] };
+  const r = cham(m, demCung);
+  assert.ok(!r.thang && r.sao === 0, 'phải thua: ' + JSON.stringify({ thang: r.thang, sao: r.sao }));
+  const s1 = r.theoSan[0];
+  assert.ok(!s1.thang && s1.vet.filter((e) => e.loai === 'nhip').length === 3, 'sân 1 dừng ở cú đâm nhịp 3');
+  const d = r.chanDoan.find((c) => c.ma === 'dam-tuong');
+  assert.ok(d && d.damLaThua === true && /đâm tường là thua/.test(d.loi) && d.cho && d.cho.dong >= 1, 'lời chẩn đoán nói luật, trỏ dòng');
+  assert.ok(!r.chanDoan.some((c) => c.ma === 'chua-toi-co' || c.ma === 'lech-bong-mo'), 'không chẩn đoán chạy xong');
+  const cu = clone(m); delete cu.damLaThua;
+  const r0 = cham(cu, demCung);
+  assert.ok(r0.thang && r0.sao === 1, 'bỏ cờ: luật cũ thắng 1 sao: ' + JSON.stringify({ thang: r0.thang, sao: r0.sao }));
+  const rc = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);
+  assert.ok(rc.thang && rc.sao === 3 && !rc.chanDoan.some((c) => c.ma === 'dam-tuong'), 'lời giải chuẩn 3 sao, không đâm');
+});
+kiem('HD2 khoang-cach.13: đếm cứng for i in range(6): move() THUA ở sân ngắn (trước: 2 sao); while front_clear() vẫn 3 sao', () => {
+  const m = get('khoang-cach.13');
+  const r = cham(m, { chinh: ['for i in range(6):', '    move()'] });
+  assert.ok(!r.thang && r.chanDoan.some((c) => c.ma === 'dam-tuong' && c.damLaThua), JSON.stringify({ thang: r.thang, sao: r.sao }));
+  const rc = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);
+  assert.ok(rc.thang && rc.sao === 3);
+});
+kiem('HD2 giao diện: chu.js có choi.damLaThua / choi.damLaThuaDe (không gạch dài); man-choi.js đặt nhãn trên sân và câu trong đề bài theo m.damLaThua', () => {
+  const chu = fs.readFileSync(new URL('./game/chu.js', import.meta.url), 'utf8');
+  const mc = fs.readFileSync(new URL('./game/man-choi.js', import.meta.url), 'utf8');
+  for (const k of ['choi.damLaThua', 'choi.damLaThuaDe']) {
+    const mm = new RegExp("'" + k.replace('.', '[.]') + "': '([^']+)'").exec(chu);
+    assert.ok(mm, k);
+    assert.ok(!/[\u2014\u2013]/.test(mm[1]), k + ' có gạch dài');
+  }
+  assert.ok(/m[.]damLaThua [?] t\('choi[.]damLaThua'\)/.test(mc) && /datCanhBao\(E[.]ffr, \[m[.]canhBao, m[.]damLaThua/.test(mc), 'nhãn trên sân');
+  assert.ok(/m[.]deBai [+] \(m[.]damLaThua [?] ' ' [+] t\('choi[.]damLaThuaDe'\)/.test(mc), 'câu trong đề bài');
 });
 
 console.log('chương | số | mã | tên | dòng | nhịp | ô | cỡ sân | khối chuẩn | BFS gộp | recall gói 1–2');

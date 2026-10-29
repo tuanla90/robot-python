@@ -39,7 +39,10 @@ kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mù
   }
 });
 // cam-bien-ben.10 (ba sân) là trùm cũ của Cảm biến hai bên, nay đứng thứ 9 chương Tổng hợp trước trùm mùa.
-const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10'];
+// HD1 (29/10): màn ÉP khối mới có hai sân dài ngắn khác nhau để đếm cứng không đủ sao (khoang-cach.12 ép if, khoang-cach.13 ép while).
+// Màn CHẾ HÀM có while / if lấy lại bản nhiều sân của ngân hàng (che-cam-bien.1, .2, .4) hay thêm sân (me-cung.6, cam-bien-ben.7): thân hàm đếm cứng không qua.
+const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4', 'cam-bien-ben.7', 'me-cung.6',
+  'che-cam-bien.10'];      // HD2: hai kho dài ngắn khác nhau (fetch_back đếm cứng không thắng cả hai)
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -54,8 +57,11 @@ kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chươn
   for (const ma of ['robot-hoan-thien.11', 'trum-mua-1.10']) assert.equal(soSan(get(ma)), 3, ma);
 });
 kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến', () => {
-  assert.equal(get('khoang-cach.8').so, 4);
+  assert.equal(get('khoang-cach.8').so, 7);                        // HD1: sau hai màn trình diễn + hai màn ép + kc.3 + kc.11
   assert.equal(get('khoang-cach.7'), null, 'khoang-cach.7 đã cất khỏi lộ trình');
+  assert.equal(get('khoang-cach.4'), null, 'khoang-cach.4 đã cất (HD1)');
+  assert.equal(get('khoang-cach.9'), null, 'khoang-cach.9 đã cất (HD1)');
+  for (const ma of ['khoang-cach.1', 'khoang-cach.2', 'vong-lap.1', 'nut-de.1', 'tay-xoay.1', 'cam-bien-ben.1']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
   assert.ok(get('cam-bien-ben.1').deBai.includes('left_clear'));
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'bien-the');
@@ -101,7 +107,7 @@ const MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const BANG_MUA_1 = [
   ['xe', [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]]],
   ['tay-gap', [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9, 10]).concat('che-lap.5')]]],
-  ['cam-bien', [['khoang-cach', day('khoang-cach', [1, 2, 3, 4, 5, 6, 8, 9, 10, 11])], ['che-cam-bien', day('che-cam-bien', [1, 2, 3, 7, 11, 12, 13, 14, 15, 16])]]],
+  ['cam-bien', [['khoang-cach', day('khoang-cach', [1, 2, 3, 5, 6, 8, 10, 11, 12, 13])], ['che-cam-bien', day('che-cam-bien', [1, 2, 3, 7, 11, 12, 13, 14, 15, 16])]]],
   ['kho-hang', [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-tay', [1, 2, 3, 4, 6, 8, 10]).concat(day('che-xe', [1, 2, 3]))]]],
   ['banh-lui', [['banh-lui', day('che-xe', [4, 5, 6, 7, 8, 9]).concat(day('banh-lui', [1, 2, 3, 4]))], ['che-banh-lui', ['che-xe.10'].concat(day('che-tay', [5, 7, 9]), day('che-lap', [7, 9]), day('che-banh-lui', [1, 2, 3, 4]))]]],
   ['tay-xoay', [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]]],
@@ -110,7 +116,7 @@ const BANG_MUA_1 = [
   ['combo', [['combo', day('combo', MUOI)], ['che-combo', day('che-combo', [1, 2, 3, 4, 5, 6, 7, 8, 9]).concat('che-cam-bien.10')]]],
   ['robot', [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8, 11]).concat('cam-bien-ben.10')], ['trum-mua-1', day('trum-mua-1', MUOI)]]]
 ];
-const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10'];
+const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10', 'khoang-cach.4', 'khoang-cach.9'];
 const BIEN_MUA_2 = ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
 // Mùa 2 (27/10): che-xich 3, 4, 5, 7, 10 (bậc thang + hàm có tham số) rời mùa 2, sang chương che-xich ở mùa 3 (ẩn); không màn nào cất thêm.
 const XICH_CU = ['che-xich.3', 'che-xich.4', 'che-xich.5', 'che-xich.7', 'che-xich.10'];
@@ -364,12 +370,13 @@ if (LOI_GIA_2) {
 if (hong2) { console.log('Mùa 2: HỎNG ' + hong2 + ' mục.'); process.exit(1); }
 
 // 26/10: chương cam-bien-ben = che-cam-bien.4 (chế to_gap) + cam-bien-ben 1–9, đều một sân; trùm ba sân cũ cam-bien-ben.10 sang chương Tổng hợp.
+// HD2 (29/10): cam-bien-ben.1 (trình diễn left_clear, chiChay) đứng đầu chương, che-cam-bien.4 thứ hai.
 kiem('gói cảm biến hai bên: mười màn khác nhau, một sân; trùm cũ ba sân', () => {
   for (const c of ['cam-bien-ben']) {
     const ds = M.danhSach.filter(m => m.chuong === c);
     assert.equal(new Set(ds.map(m => JSON.stringify([m.san, m.loiGiai]))).size, 10, c + ' có màn trùng nhau');
     assert.equal(new Set(ds.map(m => m.ten)).size, 10, c + ' trùng tên màn');
-    for (const m of ds) assert.equal(soSan(m), 1, m.ma);
+    for (const m of ds) assert.equal(soSan(m), m.ma === 'che-cam-bien.4' ? 3 : m.ma === 'cam-bien-ben.7' ? 2 : 1, m.ma);      // HD1: màn chế / sửa hàm nhiều sân
   }
   assert.equal(soSan(get('cam-bien-ben.10')), 3);
   for (const m of M.danhSach.filter(m => m.chuong === 'cam-bien-ben')) {
@@ -486,7 +493,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   for (const g of browser.MoGoi.dsMua()[1].goi) { assert.equal(g.saoCan, Math.floor(browser.MoGoi.TI_LE_SAO * tr / 5) * 5, 'mùa 2 ' + g.ma); tr += g.saoToiDa; }
   const ds = browser.MoGoi.dsMua()[0].goi;
   assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
-  assert.equal(ds[6].man[0].ma, 'che-cam-bien.4');
+  assert.equal(ds[6].man[0].ma, 'cam-bien-ben.1');      // HD2: màn trình diễn left_clear đứng đầu gói 7
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
   assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 90);
 });
@@ -501,7 +508,7 @@ kiem('bản lưu cũ giữ sao theo mã, bỏ nháp lỗi thời, nháp mới đ
   assert.equal(browser.Luu.saoTot('khoang-cach.8'), 3);
   assert.equal(browser.Luu.saoTot('rap-du.10'), 2);
   assert.equal(browser.Luu.saoTot('me-cung.6'), 3);
-  assert.equal(browser.ManHoc.timMa('khoang-cach.8').so, 4);
+  assert.equal(browser.ManHoc.timMa('khoang-cach.8').so, 7);        // HD1: kc.8 đứng thứ 7
   assert.equal(browser.Luu.docNhap('che-tay.1'), null);         // 26/10: che-tay.1 đổi số nhịp (u_turn trước gói Bánh lùi) nên nháp cũ bỏ
   assert.equal(browser.Luu.docNhap('hai-banh.1').chinh[0], 'wait()');
   browser.Luu.ghiNhap('che-tay.1', { chinh: ['new()'], hamCuaMan: [] });

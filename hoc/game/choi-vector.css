@@ -122,10 +122,11 @@ body.ve-vector .ffr .khung-san{background:var(--g-vecThe);background-image:none;
 body.ve-vector .sanbt{background:var(--g-vecThe);border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1);transition:box-shadow .18s ease,transform .18s ease}
 body.ve-vector .sanbt.on{box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-2)}
 body.ve-vector .sanbt .sn{font:700 9px/1 var(--px);color:var(--g-vecThe);text-shadow:none;left:2px;top:2px;padding:1px 3px;border-radius:4px;background:var(--g-vecChu)}
-body.ve-vector .sanbt .dau{border-radius:50%;box-shadow:0 0 0 1.5px var(--g-vecThe)}
+body.ve-vector .sanbt .dau{right:2px;bottom:2px;border-radius:50%;box-shadow:0 0 0 1.5px var(--g-vecThe)}      /* 29/10: dấu ✓ / ✗ nằm trong nút (choi.css đặt -3px, nút vector overflow:hidden cắt thành mẩu vuông lòi mép) */
 body.ve-vector .sanbt .dau.ok{background:var(--g-vecLa)}
 body.ve-vector .sanbt .dau.sai{background:var(--g-vecLoi)}
-body.ve-vector .side.busy .sanbt{filter:none;opacity:.55}
+body.ve-vector #sc-choi .sanbt .dau .vi{color:var(--g-vecThe);width:8px!important;height:8px!important}      /* ✓ / ✗ trắng trên chấm màu (luật #sc-choi .vi-cross tô đỏ trùng nền đỏ) */
+body.ve-vector .side.busy .sanbt{filter:none;pointer-events:auto}      /* 29/10: đang phát lại vẫn chạm được ảnh sân (man-choi.js xemSan dừng phát, chuyển sân, phát tiếp sân mới) */
 /* toast bám đáy khung sân: viên bo, nền nhạt + viền màu theo loại */
 body.ve-vector .toast{padding:6px 10px;font:600 12.5px/1.25 var(--px);color:var(--g-vecChu);background:var(--g-vecHoPhachNhat);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1.5px var(--g-vecHoPhach),var(--elev-2)}
 body.ve-vector .toast.win{background:var(--g-vecLaNhat);color:var(--g-vecLaDam);box-shadow:inset 0 0 0 1.5px var(--g-vecLa),var(--elev-2)}
@@ -138,6 +139,7 @@ body.ve-vector .canh-bao .cb-ic{margin-bottom:0}
 body.ve-vector .pan{padding:4px;background:var(--g-vecThe);background-image:none;border-radius:var(--r-md);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2);transition:box-shadow .2s ease}
 body.ve-vector .pan .rv,body.ve-vector .hop .rv{display:none}
 body.ve-vector .board,body.ve-vector .board.chalk,body.ve-vector .tenham.chalk{background:transparent;background-image:none;box-shadow:none}
+body.ve-vector .tenham{color:var(--g-vecLaChu);text-shadow:none}body.ve-vector .ws-ov[data-loai="man"] .tenham{color:var(--g-vecCamDam)}   /* 29/10: tên hàm ở Xưởng còn màu pixel (xanh lá nhạt, bóng tối) trên nền trắng: khó đọc */
 body.ve-vector .board{padding:2px 3px 3px}
 body.ve-vector .bh{height:32px;gap:5px}
 body.ve-vector .bh .tt{font:700 11px/1 var(--px);color:var(--g-vecChuPhu);letter-spacing:.4px;text-transform:uppercase;padding-top:0}
@@ -332,6 +334,8 @@ body.ve-vector .gl.g-tay{color:var(--g-vecCamDam)}
 body.ve-vector .gl .tg{font:700 9px/1 var(--px);padding:2px 5px;border-radius:var(--r-full);color:var(--g-vecThe);background:var(--g-vecCamDam);box-shadow:none;text-transform:none}
 body.ve-vector .gl .nb{height:18px;padding:0 6px 0 4px;border-radius:var(--r-full);font:600 10px/1 var(--px);color:var(--g-vecBrandDam);background:var(--g-vecBrandNhat);border:1px dashed var(--g-vecBrand);text-transform:none;letter-spacing:0;transition:background-color .18s ease}
 body.ve-vector .gl .nb:active{background:var(--g-vecThe)}
+body.ve-vector .gl .gl-chu{min-width:0;overflow:hidden;text-overflow:ellipsis}                                  /* 29/10: "HÀM CÓ SẴN" + nút Hàm mới rộng hơn thẻ khay → nút bị cắt chữ; chữ nhóm co trước */
+body.ve-vector .gl:has(.nb){letter-spacing:0;gap:3px}body.ve-vector .gl:has(.nb)::after{display:none}body.ve-vector .gl:has(.nb) .nb{margin-left:auto;padding:0 5px 0 3px}   /* nhóm có nút: bỏ vạch kẻ để đủ chỗ cho cả chữ nhóm lẫn nút */
 body.ve-vector .pal .nk{height:24px;padding:0 8px;border-radius:8px;font:600 11px/1 var(--px);color:var(--g-vecChuPhu);background:var(--g-vecTheLom);border:1px dashed var(--g-vecKeDam);transition:background-color .18s ease}
 body.ve-vector .pal .nk:active{background:var(--g-vecThe)}
 body.ve-vector .pal .nk.mo{color:var(--g-vecLaDam);border-style:solid}
@@ -782,11 +786,12 @@ body.ve-vector .bong .vi-mui{color:var(--g-vecLoi)}                             
 body.ve-vector .bong.tin .vi-mui{color:var(--g-vecLam)}                                      /* bong bóng tin (không phải lỗi) */
 body.ve-vector #sc-choi .vi-check{color:var(--g-vecLa)}
 body.ve-vector #sc-choi .vi-cross,body.ve-vector .tab .vi-x5,body.ve-vector .thung-ic .vi-trash{color:var(--g-vecLoi)}
+body.ve-vector .row.xx .tab .vi-x5{color:var(--g-vecThe)}                    /* 29/10: X đỏ trên nền ô đỏ (luật trên) là nút xoá đỏ trơn, không thấy X: X trắng */
 body.ve-vector .cb-ic .vi-canhbao{color:var(--g-vecHoPhach)}
 body.ve-vector .cb-ic .vi-canhbao .vi2{color:var(--g-vecChu);opacity:1}                     /* dấu ! chàm đậm trên tam giác hổ phách */
 body.ve-vector .vi-trum{color:var(--g-vecChuPhu)}
 body.ve-vector .vi-trum.tat{color:var(--g-vecKeDam)}
-body.ve-vector .pal-the .the-chu.co-part canvas.vi-part{max-height:24px}
+body.ve-vector .pal-the .the-chu.co-part canvas.vi-part{max-height:24px;max-width:100%}
 /* dấu xoá dòng (x5, lớp .tx) ở cột số dòng: ẩn / hiện như choi.css (svg.vi đặt display:block ở mục 8 nên nhắc lại luật ẩn với cùng độ ưu tiên) */
 body.ve-vector .tab svg.tx{display:none}
 body.ve-vector .row.xx .tab svg.tx{display:block}

@@ -234,9 +234,10 @@
   ].concat(buocThuVeChay('Chương trình gọi được pick() rồi. Bấm Chạy.'));
 
   /* ============================================================ Chương 6 · Vòng lặp */
+  // HD2 (29/10): vong-lap.1 là màn trình diễn for (chiChay): chỉ bấm Chạy; việc đổi số dời sang vong-lap.2.
   H['vong-lap.1'] = [
-    buocDoiSo(1, 'Số trong range() là số lần lặp. Chạm số này để đổi.', 'Chọn số lần xe cần đi tới cờ.', daDoiSoLap),
-    buocChay('Bấm Chạy.')
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: vòng for chạy dòng move() sáu lần.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'range(6) là lặp sáu lần. Màn sau em tự viết vòng for và chọn số.', xong: 'bam', han: 9000, rong: 170 }
   ];
   H['vong-lap.2'] = [
     khoiTheo(['khoi:vong:for'], 'Chạm khối for: nó lặp lại những dòng thụt vào bên dưới.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
@@ -267,26 +268,50 @@
       chu: '⇥ thụt vào: dòng nằm trong vòng lặp. ⇤ thụt ra: dòng nằm ngoài vòng lặp.' }
   ];
 
-  /* ============================================================ Chương 8 · Cảm biến khoảng cách */
+  /* ============================================================ Chương 8 · Cảm biến khoảng cách (HD1 29/10, show don't tell: trình diễn → ép → thả)
+     khoang-cach.1 trình diễn if (chiChay), .12 ép if (hai sân, màn nhiều sân ĐẦU TIÊN của lộ trình), .2 trình diễn while (chiChay), .13 ép while (hai sân), .5 chế go_wall(). */
+  var CHU_THE_LOGIC = 'Khối này nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.';
+  var CHU_THE_XE = 'move() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để quay lại thẻ đó.';
+  var BUOC_SANBAR = { khongAn: true, dich: '.sanbar', chu: 'Màn này có hai sân dài ngắn khác nhau. Chạm ảnh nhỏ để xem từng sân.', xong: ['xem-san', 'chay'], han: 12000, rong: 160, huong: 'duoi' };
   H['khoang-cach.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: xe hỏi cảm biến front_clear() rồi mới tiến một ô.', xong: 'chay', daLam: daChay },
-    khoiTheo(['khoi:vong:for'], 'if chỉ hỏi cảm biến một lần. Bọc nó trong vòng for để hỏi nhiều lần: chạm khối for.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: mỗi lần lặp xe hỏi front_clear() rồi mới tiến.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:2', chu: 'Dòng if hỏi cảm biến: tới tường thì trả False nên xe dừng, không húc.', xong: 'bam', han: 9000, rong: 170 }
+  ];
+  H['khoang-cach.12'] = [
+    BUOC_SANBAR,
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: if chỉ hỏi cảm biến một lần, xe mới đi được một ô.', xong: 'chay', daLam: daChay },
+    khoiTheo(['khoi:vong:for'], 'Bọc if trong vòng for để hỏi nhiều lần: chạm khối for.', CHU_THE_LOGIC,
       { daLam: function () { return dongCo(/^\s*for\b/) >= 0; } }),
     buocThutVao(/^\s*if\s/, 1, 'if đang đứng ngoài vòng for. Chạm vào dòng này.', 'Bấm ⇥ để thụt vào: if phải nằm trong vòng for.'),
     buocThutVao(/^\s*move\(\)/, 2, 'move() phải nằm trong if. Chạm vào dòng này.', 'Bấm ⇥ để thụt vào: move() chỉ chạy khi if đúng.'),
-    buocDoiSo(1, 'Chạm số này để đổi số lần xe hỏi cảm biến.', 'Chọn số lần hỏi, bằng số ô xe cần đi.', daDoiSoLap),
-    buocChay('Bấm Chạy.')
+    buocDoiSo(1, 'Chạm số này: lặp 5 lần là đủ cho cả sân dài.', 'Chọn 5: đủ cho sân dài, sân ngắn thì if lo phần dừng.', daDoiSoLap),
+    buocChay('Bấm Chạy: một chương trình phải tới chỗ xe mờ ở cả hai sân.')
   ];
   H['khoang-cach.2'] = [
-    { dich: 'nut:xoa-het', chu: 'Bài này cần while thay cho if. Bấm thùng rác để xóa chương trình cũ.', huong: 'duoi', rong: 160, han: 20000,
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá: while hỏi lại sau mỗi bước. Bấm Chạy, xe tự đi hết hành lang.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'Không có số ô nào trong chương trình: hành lang dài bao nhiêu xe cũng tới.', xong: 'bam', han: 9000, rong: 170 }
+  ];
+  H['khoang-cach.13'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: đếm cứng 4 bước thì sân ngắn húc tường, sân dài chưa tới.', xong: 'chay', daLam: daChay },
+    { dich: 'nut:xoa-het', chu: 'Bài này cần while thay cho đếm cứng. Bấm thùng rác để xóa chương trình cũ.', huong: 'duoi', rong: 160, han: 20000,
       daLam: function () { return hopMo() || soDongChinh() === 0 || dongCo(/^\s*while\b/) >= 0; } },                      // bấm thùng rác thì hộp hỏi lại mở: bước qua (kiểm theo nhịp đồng hồ, không đợi cú bấm)
     { phu: true, dich: 'nut:co', chu: 'Bấm Xóa hết để dọn sạch.', huong: 'duoi', rong: 150, daLam: function () { return !hopMo(); } },
-    khoiTheo(['khoi:vong:while'], 'while hỏi cảm biến lại sau mỗi bước, if chỉ hỏi một lần. Chạm khối while.', 'Khối while nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+    khoiTheo(['khoi:vong:while'], 'while hỏi cảm biến lại sau mỗi bước. Chạm khối while.', CHU_THE_LOGIC,
       { daLam: function () { return dongCo(/^\s*while\s+front_clear\(\)/) >= 0; } }),
-    khoiTheo(['khoi:em:move'], 'Rồi chạm move(): dòng mới tự thụt vào, nằm trong while.', 'move() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để quay lại thẻ đó.',
+    khoiTheo(['khoi:em:move'], 'Rồi chạm move(): dòng mới tự thụt vào, nằm trong while.', CHU_THE_XE,
       { daLam: function () { var w = dongCo(/^\s*while\s+front_clear\(\)/); return w >= 0 && /^\s+move\(\)/.test(String(dsChinh()[w + 1] || '')); } }),
-    buocChay('Bấm Chạy.')
+    buocChay('Bấm Chạy: cùng hai dòng này xe tới chỗ xe mờ ở cả hai sân.')
   ];
+  /* chế go_wall(): bấm Hàm mới, ghép while + move trong Xưởng, Thử, Về sân, Chạy */
+  H['khoang-cach.5'] = [
+    { dich: 'dong:1', chu: 'Dòng này gọi go_wall(), mà em chưa chế hàm đó. Chế nó trong Xưởng.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('go_wall', 'Bấm Hàm mới để chế go_wall().', CHU_TAO),
+    khoiTheo(['khoi:vong:while'], 'Chạm khối while: lặp chừng nào trước mặt còn trống.', CHU_THE_LOGIC,
+      { xuong: true, daLam: function () { return /while/.test(chuThan('go_wall')); } }),
+    khoiTheo(['khoi:em:move'], 'Rồi chạm move(): nó tự thụt vào, nằm trong while.', CHU_THE_XE,
+      { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('go_wall'); return /while/.test(c) && /move/.test(c); } })
+  ].concat(buocThuVeChay('Chương trình gọi go_wall() ba lần, mỗi đoạn dài khác nhau. Bấm Chạy.'));
+
   /* màn nhiều sân đầu tiên (3 sân): dải ảnh nhỏ bên trên nút Chạy; chạm một ảnh để xem sân đó, sau khi Chạy có ✓ / ✗ */
   H['khoang-cach.10'] = [
     { khongAn: true, dich: '.sanbar', chu: 'Màn này có ba sân khác nhau. Chạm ảnh nhỏ để xem từng sân.', xong: ['xem-san', 'chay'], han: 12000, rong: 160, huong: 'duoi' },
@@ -306,7 +331,39 @@
     buocChay('Bấm Chạy: hai robot chạy cùng lúc.')
   ];
 
-  /* ============================================================ Chương 9 · Chế lệnh có if, while (biến đếm) */
+  /* ============================================================ Gói 7 · Cảm biến bên (HD2: cam-bien-ben.1 trình diễn left_clear, chiChay, đứng đầu chương) */
+  H['cam-bien-ben.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tới tường, xe hỏi bên trái rồi rẽ trái.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:2', chu: 'left_clear() hỏi ô bên trái xe: trống thì True. Màn sau em dùng right_clear().', xong: 'bam', han: 9000, rong: 170 }
+  ];
+
+  /* ============================================================ Gói 4 · Nút đè (HD2: nut-de.1 trình diễn cơ chế thùng giữ cửa, chiChay) */
+  H['nut-de.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: carry() đặt thùng lên nút M, cửa C mở ra.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'Thùng đè lên nút M thì cửa C mở. Màn sau em tự nhặt thùng đặt lên nút.', xong: 'bam', han: 9000, rong: 170 }
+  ];
+
+  /* ============================================================ Chương 9 · Hàm cho cảm biến (HD1: che-cam-bien.1 chế safe_move có if, .2 chế face_open có while not) */
+  H['che-cam-bien.1'] = [
+    { dich: 'dong:1', chu: 'Main đã khoá: nó gọi safe_move() ba lần, mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('safe_move', 'Bấm Hàm mới để chế safe_move().', CHU_TAO),
+    khoiTheo(['khoi:dk:if'], 'Chạm khối if: chỉ tiến khi trước mặt trống.', CHU_THE_LOGIC,
+      { xuong: true, daLam: function () { return /if/.test(chuThan('safe_move')); } }),
+    khoiTheo(['khoi:em:move'], 'Rồi chạm move(): nó tự thụt vào, nằm trong if.', CHU_THE_XE,
+      { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('safe_move'); return /if/.test(c) && /move/.test(c); } })
+  ].concat(buocThuVeChay('Main gọi safe_move() ba lần, xe chỉ tiến khi trước mặt trống. Bấm Chạy.'));
+  H['che-cam-bien.2'] = [
+    { dich: 'dong:1', chu: 'Main đã khoá: nó gọi face_open(), mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('face_open', 'Bấm Hàm mới để chế face_open().', CHU_TAO),
+    khoiTheo(['khoi:vong:while'], 'Chạm khối while.', CHU_THE_LOGIC,
+      { xuong: true, daLam: function () { return /while/.test(chuThan('face_open')); } }),
+    { xuong: true, phu: true, huong: 'tren', rong: 180, han: 0,
+      dich: function () { return thay('nut:chon-dk') ? 'nut:chon-dk' : xuongMo() ? 'so:1' : []; },
+      chu: function () { return thay('nut:chon-dk') ? 'Chọn not front_clear(): lặp chừng nào trước mặt còn bị chắn.' : 'Chạm vào front_clear() trên dòng while để đổi điều kiện.'; },
+      daLam: function () { return /not/.test(chuThan('face_open')); } },
+    khoiTheo(['khoi:em:turn_right'], 'Rồi chạm turn_right(): quay phải cho tới khi thấy lối mở.', 'turn_right() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để về thẻ đó.',
+      { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('face_open'); return /not/.test(c) && /turn_right/.test(c); } })
+  ].concat(buocThuVeChay('Xe quay cho tới khi nhìn thấy lối mở. Bấm Chạy.'));
   H['che-cam-bien.5'] = [
     buocTaoHam('bounce', 'Chế hàm bounce() trong Xưởng: bấm Hàm mới.', CHU_TAO),
     khoiTheo(['khoi:dem:dem-gan', 'khoi:dem:dem-tang', 'khoi:dem:dem-lap'],
@@ -332,12 +389,15 @@
   ].concat(buocThuVeChay('Chương trình gọi được grip() rồi. Bấm Chạy.'));
 
   /* ============================================================ Chương 21 · Tay xoay (làm quen): lệnh gốc mới arm_left / arm_right, thẻ Tay xoay */
+  // HD2 (29/10): tay-xoay.1 là màn trình diễn arm_left / arm_right (chiChay): chỉ bấm Chạy; tay-xoay.2 ép sửa lệnh xoay (vật bên phải).
   H['tay-xoay.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tay xoay sang trái rồi nhặt vật ở bên hông xe.', xong: 'chay', daLam: daChay },
-    khoiTheo(['khoi:arm_up', 'khoi:arm_right'], 'Nâng tay (arm_up), rồi xoay sang phải (arm_right) để đưa vật về phía trước.', 'Khối của tay nằm ở thẻ Tay xoay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { daLam: function () { return dongCo(/^\s*arm_right\(\)/) >= 0; } }),
-    khoiTheo(['khoi:arm_down', 'khoi:release'], 'Hạ tay (arm_down), rồi mở kẹp (release) để đặt vật xuống ô đích.', 'Khối của tay nằm ở thẻ Tay xoay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { daLam: function () { return dongCo(/^\s*release\(\)/) >= 0; } }),
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tay xoay sang trái nhặt vật rồi xoay về trước đặt.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'arm_left() xoay tay sang trái, arm_right() xoay sang phải: xe không cần quay.', xong: 'bam', han: 9000, rong: 170 }
+  ];
+  H['tay-xoay.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: vật nằm bên phải mà tay xoay sang trái nên kẹp hụt.', xong: 'chay', daLam: daChay },
+    { dich: 'dong:1', chu: 'Chạm dòng arm_left() rồi đổi thành arm_right(); dòng arm_right() phía dưới đổi thành arm_left().', xong: 'chon-dong', han: 12000, rong: 180,
+      daLam: function () { return dongCo(/^\s*arm_right\(\)/) === 0; } },
     buocChay('Bấm Chạy.')
   ];
   H['tay-xoay.6'] = [
@@ -487,5 +547,5 @@
   ];
 
   window.HuongDanMan = H;
-  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.3': 2 };
+  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2 };
 })();

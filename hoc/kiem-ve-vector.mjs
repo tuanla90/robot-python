@@ -22,7 +22,7 @@
        (tay trước, hongTrai trái, hongPhai phải, tren góc mũi trái, sau đuôi); màu đội đúng ba chỗ trên mọi tổ hợp; trạng thái động ra hình khác; MỌI MÀN (cả từng robot
        của màn đội) vẽ được bằng vector qua VeRobot.ve.
   13. (gói V4) Hoạt cảnh trên sân: chạy san-ve.js THẬT trong ngữ cảnh vm (canvas giả, đồng hồ ảo, Math.random hạt cố định), phát lại vết ChamHoc (lời giải + lời sai) của 22 màn
-       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền 6e04104 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
+       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền 3fe6fa8 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
        sự kiện đâm / ? / tới cờ / xong màn / húc bạn / chờ → đúng biểu cảm, chớp 2,5–5 s lệch nhau); camera không đổi mắt (ống kính ở đuôi); cảm biến dính vỏ; VeRobot.veCo; cờ bay, sàn bàn cờ.
   14. (gói V5a) Giao diện phẳng màn chơi (choi-vector.css): nạp đủ phông Google Sans Flex / Code + choi-vector.css sau choi.css; mọi bộ chọn trong body.ve-vector (pixel y nguyên);
        không steps( / pixelated / Handjet / VT323; mọi steps() màn chơi của choi.css (và huong-dan.js) có luật phủ mượt, có prefers-reduced-motion; chữ canvas vector không VT323;
@@ -30,6 +30,8 @@
    (gói V6b) mục 13h: cỡ vật trong tay ở vector (phát lại màn kẹp / tay xoay / nam châm): hạ = vật nằm sàn, nâng 1,15–1,25 lần, chuyển dần, bóng nâng xa hơn, vật dính
        nam châm = cỡ nâng; càng / ngón ôm vật ở mọi độ nâng. Mục 4 / 9 / 12: vật trong tay to chờm sang ô trước mặt, nằm trong tầm lớp phủ (VeVector.tamVoi, reachCua).
    (gói V7a) mục 13i: vật treo dưới drone nam châm = cỡ vật nâng (phát lại drone.7, che-drone.6); tay xoay mở / khép dần (khe theo moK); dây nối nút ↔ cửa theo cfg.noi (dungDayNoi, chỉ vector vẽ).
+   (gói V8a) mục 13j: dáng bò nhện theo pha liên tục (lan / di / nhac): pha 0 / cuối nhịp = tư thế đứng, 15 pha 1/16 khác nhau, 4 hướng đi khác nhau; phát nhịp chuẩn bị + nhịp bước
+       trên sân: hai cặp chân nhấc luân phiên, pha ≥ 8 bậc, hướng đổi đúng sang hệ thân (cả nhện có tay quay mặt), xong bước về đứng. --loi-gia: bỏ dangBo → 13j đỏ.
    Cờ --loi-gia: cắm sáu lỗi giả (neo tay lệch, góc xoay lệch 90°, màu R2 = R1, đệm bỏ cỡ, ô tường tô mã màu ngoài bảng, ổ tay thân ra ngoài ô) và bốn lỗi V2
    (bỏ ký hiệu hố khỏi bảng nối, bỏ ô bậc thang của Ve.tiles khỏi bảng, băng chuyền bỏ qua pha, sàn màu vàng tô màu ngoài nhóm LUAT) và bốn lỗi V3 (drone mất cờ không hướng,
    xích đổi chỗ hai ổ hông, nam châm tô màu đội, camera-bay sai ổ) và sáu lỗi V4 (nhánh pixel veDau tô thêm, hạt vector dùng fillRect, tia từ tâm xe, matSuKien bỏ qua,
@@ -570,13 +572,13 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
        g. cờ bay (pha khác → hình khác), sàn bàn cờ hai tông, trang xem có mục V4.
    ====================================================================================================================================== */
 {
-  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền 6e04104, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
+  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền 3fe6fa8, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
   const vm = await import('node:vm');
   const { execFileSync } = await import('node:child_process');
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
-  const NEN_VEC = '6e04104';                                                           // V7c3 e3 (29/10): nền VECTOR = commit e3 của V7c3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
+  const NEN_VEC = '3fe6fa8';                                                           // 29/10 gộp V8a: nền VECTOR = 3fe6fa8 (thân omni / nhện vuông bo, chân nhện ba khúc, dáng bò; trước đó 8d930ae: mắt vui cung tròn mảnh, mắt tim viền trắng thắng màn; trước đó f8331e9, trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };
@@ -779,12 +781,12 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 
   /* d. mắt biểu cảm */
   {
-    const VV = KV.ctx.VeVector, KIEU = ['thuong', 'chop1', 'chop2', 'dam', 'xoay', 'vui', 'ngac', 'buon', 'lim', 'cho', 'thuong:1', 'thuong:-1'], trung = [];
+    const VV = KV.ctx.VeVector, KIEU = ['thuong', 'chop1', 'chop2', 'dam', 'xoay', 'vui', 'tim', 'ngac', 'buon', 'lim', 'cho', 'thuong:1', 'thuong:-1'], trung = [];
     for (const than of VV.ds('than')) {
       const thay = new Map();
       for (const k of KIEU) { VV.xoaDem(); const s = VV.robot({ than }, { than: { mat: k, quat: true } }, 2, 84).getContext().lenh.join('\n'); if (thay.has(s)) trung.push(than + ': ' + thay.get(s) + ' = ' + k); thay.set(s, k); }
     }
-    kiem('(13d) mắt biểu cảm: ' + KIEU.length + ' kiểu (thường, chớp nửa / khép, đâm X, va nhau > <, vui ^ ^, ngạc nhiên, buồn, lim dim, chờ, liếc trái / phải) ra hình KHÁC NHAU trên cả 5 thân', trung.length === 0, trung.slice(0, 4).join('; '));
+    kiem('(13d) mắt biểu cảm: ' + KIEU.length + ' kiểu (thường, chớp nửa / khép, đâm X, va nhau > <, vui ◠ ◠, tim (thắng màn), ngạc nhiên, buồn, lim dim, chờ, liếc trái / phải) ra hình KHÁC NHAU trên cả 5 thân', trung.length === 0, trung.slice(0, 4).join('; '));
     /* sự kiện → biểu cảm: phát một nhịp có sự kiện rồi hỏi bieuCam ngay sau */
     const cv = new KV.Cv(); cv.parentNode = KV.cha; const F = new KV.ctx.SanVe.Field(cv, {});
     F.nap({ san: ['....F', '..#..', '.....'], batDau: { x: 1, y: 0, huong: 2 }, loaiRobot: 'banh', robot: { than: 'hai-banh', tay: null, camBien: [] } });
@@ -794,7 +796,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     KV.datGio(KV.gio() + 2000); await KV.chayToi(F.phatNhip({ robot: { x: 4, y: 0, huong: 1, banh: { trai: 1, phai: 1 } }, suKien: [{ ma: 'tien', den: { x: 4, y: 0 } }, { ma: 'toi-co' }] }, 300), F); kq.vui = mat();
     KV.datGio(KV.gio() + 3000); F.mungThang(); KV.datGio(KV.gio() + 700); kq.mung = mat();
     kiem('(13d) sự kiện vết kích hoạt đúng biểu cảm: đâm tường → ' + kq.dam + ', dấu ? → ' + kq.ngac + ', tới cờ → ' + kq.vui + ', xong màn (giữ tới khi hộp kết quả hiện, 700 ms) → ' + kq.mung,
-      kq.dam === 'dam' && kq.ngac === 'ngac' && kq.vui === 'vui' && kq.mung === 'vui', J(kq));
+      kq.dam === 'dam' && kq.ngac === 'ngac' && kq.vui === 'vui' && kq.mung === 'tim', J(kq));      // 29/10 user: việc nhỏ (tới cờ) = vui, thắng màn = tim
     {   /* V7b (28/10): Cài đặt "Biểu cảm mắt" TẮT (Luu.docCaiDat().mat === false) → ở vector cũng có tác dụng: mắt thường (không liếc / rung / nảy), chỉ còn chớp */
       KV.ctx.Luu = { docCaiDat: () => ({ mat: false }) };
       KV.datGio(KV.gio() + 3000); F.baoHieu('?', 900); const tatNgac = mat(); F.vis.gocMem = 1; const tt2 = {}; F.bieuCam(F.vis, tt2, KV.gio(), 0); F.vis.gocMem = 0;
@@ -990,6 +992,50 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     const trang = ['v4', 'v4-mat', 'v4-mat-nho', 'v4-cam', 'v4-san'].every((id) => xem.includes('id="' + id + '"')) && /SanHoc\.chay/.test(xem) && /ve-vector-hieu-ung\.js/.test(xem);
     kiem('(13g) cờ bay (pha / phất mạnh ra hình khác), sàn bàn cờ hai tông (ô chẵn / lẻ khác nhau, san-ve theo (x + y)), trang xem có mục V4 (mắt, mắt ô nhỏ, cảm biến dính vỏ, sân mẫu chạy SanHoc)',
       coBay && banCo && /le: 1/.test(svSrc) && trang, J({ coBay, banCo, trang }));
+  }
+
+  /* j. V8a (29/10, user "ko tạo cảm giác đang bò"): DÁNG BÒ của nhện theo pha liên tục, không còn hai khung buoc 0 / 1 */
+  {
+    const VV = KV.ctx.VeVector, ve = (st) => { VV.xoaDem(); return VV.robot({ than: 'nhen' }, { than: st }, 2, 84).getContext().lenh.join('\n'); }, sai = [];
+    /* (1) hình: pha 0 / 1 (cuối nhịp), nhac 0 = tư thế đứng; mỗi pha 1/16 một hình riêng; 4 hướng đi khác nhau; chuẩn bị: hai cặp nhấc khác nhau; co chân cũng bò */
+    for (const co of [false, true]) {
+      const c = co ? { co: true } : {}, dung = ve(c), thay = new Map([[dung, 'đứng']]);
+      for (const st of [{ lan: 0 }, { lan: 1 }, { lan: 0, di: 3 }, { nhac: 0 }]) if (ve(Object.assign({}, c, st)) !== dung) sai.push((co ? 'co ' : '') + J(st) + ' khác tư thế đứng');
+      for (let i = 1; i < 16; i++) { const k = ve(Object.assign({}, c, { lan: i / 16 })); if (thay.has(k)) sai.push((co ? 'co ' : '') + 'lan ' + i + '/16 trùng ' + thay.get(k)); thay.set(k, 'lan ' + i + '/16'); }
+      const huong = new Set([0, 1, 2, 3].map((d) => ve(Object.assign({}, c, { lan: 0.25, di: d })))); if (huong.size !== 4) sai.push((co ? 'co ' : '') + 'bốn hướng đi chỉ ra ' + huong.size + ' hình');
+      if (ve(Object.assign({}, c, { nhac: 0.25 })) === ve(Object.assign({}, c, { nhac: 0.75 })) || ve(Object.assign({}, c, { nhac: 0.25 })) === dung) sai.push((co ? 'co ' : '') + 'nhịp chuẩn bị: hai cặp nhấc không khác nhau');
+    }
+    /* (2) đường trạng thái san-ve → VeRobot: phát nhịp chuẩn bị + nhịp bước của nhện, ghi trạng thái truyền cho VeRobot.ve mỗi khung */
+    const VR = KV.ctx.VeRobot, veCu = VR.ve, ghi = [];
+    VR.ve = function (cfg, tt) { if (cfg.than === 'nhen') ghi.push({ lan: tt.lan, di: tt.di, nhac: tt.nhac }); return veCu.apply(this, arguments); };
+    const buoc = async (robot, h, tu, den) => {
+      const cv = new KV.Cv(); cv.parentNode = KV.cha; const F = new KV.ctx.SanVe.Field(cv, {});
+      F.nap({ san: ['.....', '.....', '.....', '.....'], batDau: { x: tu.x, y: tu.y, huong: h }, loaiRobot: 'nhen', robot });
+      if (LOI_GIA) F.dangBo = function () {};                                    // lỗi giả V8a: bỏ dáng bò (như bản cũ: chỉ khung buoc), mục 13j phải đỏ
+      ghi.length = 0; KV.datGio(KV.gio() + 3000);
+      await KV.chayToi(F.phatNhip({ robot: { x: tu.x, y: tu.y, huong: h, banh: { trai: 0, phai: 0 } }, suKien: [{ ma: 'chuan-bi', nhay: false }] }, 400), F);
+      const chuanBi = ghi.splice(0);
+      await KV.chayToi(F.phatNhip({ robot: { x: den.x, y: den.y, huong: h, banh: { trai: 0, phai: 0 } }, suKien: [{ ma: 'di', tu, den }] }, 400), F);
+      const di = ghi.splice(0);
+      await KV.chayToi(new Promise((r) => KV.ctx.setTimeout(r, 50)), F);
+      return { nhac: new Set(chuanBi.map((t) => t.nhac)), lan: new Set(di.map((t) => t.lan).filter((x) => x !== undefined)), di: new Set(di.filter((t) => t.lan > 0).map((t) => t.di)), sau: ghi.slice(-1)[0] || {} };
+    };
+    const KQ = [
+      ['nhện không tay sang PHẢI (vẽ hướng 0 → hệ thân −x)', { than: 'nhen', tay: null, camBien: [] }, 0, { x: 1, y: 1 }, { x: 2, y: 1 }, 3],
+      ['nhện không tay XUỐNG (hệ thân −y, phía đuôi)', { than: 'nhen', tay: null, camBien: [] }, 0, { x: 1, y: 1 }, { x: 1, y: 2 }, 2],
+      ['nhện tay kẹp quay PHẢI, đi phải (về phía mũi +y)', { than: 'nhen', tay: 'kep', camBien: [] }, 1, { x: 1, y: 1 }, { x: 2, y: 1 }, 0]
+    ], tom = [];
+    for (const [ten, robot, h, tu, den, diMong] of KQ) {
+      const k = await buoc(robot, h, tu, den);
+      tom.push(ten.split(' (')[0] + ': nhac ' + k.nhac.size + ' / lan ' + k.lan.size + ' / di ' + [...k.di].join(','));
+      if (k.nhac.size < 5 || !k.nhac.has(0.25) || !k.nhac.has(0.75)) sai.push(ten + ': nhịp chuẩn bị chỉ có nhac ' + J([...k.nhac]));
+      if (k.lan.size < 8) sai.push(ten + ': nhịp bước chỉ có ' + k.lan.size + ' pha ' + J([...k.lan]));
+      if (k.di.size !== 1 || !k.di.has(diMong)) sai.push(ten + ': hướng trong hệ thân ' + J([...k.di]) + ', cần ' + diMong);
+      if (k.sau.lan !== undefined || k.sau.nhac !== undefined) sai.push(ten + ': xong bước chưa về tư thế đứng ' + J(k.sau));
+    }
+    VR.ve = veCu;
+    kiem('(13j) V8a dáng bò nhện: pha 0 / cuối nhịp = tư thế đứng (cả co chân), 15 pha 1/16 ra 15 hình khác nhau, 4 hướng đi khác nhau; trên sân nhịp chuẩn bị hai cặp chân nhấc luân phiên, nhịp bước pha liên tục ≥ 8 bậc, hướng đổi đúng sang hệ thân (cả nhện có tay quay mặt), xong bước về đứng (' + tom.join('; ') + ')',
+      sai.length === 0, sai.slice(0, 5).join('\n      '));
   }
 }
 

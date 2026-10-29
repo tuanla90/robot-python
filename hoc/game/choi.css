@@ -146,8 +146,9 @@ body.san-sang #stage{visibility:visible}
 .den.sang{background:var(--g-xanhLoV4);box-shadow:0 0 0 2px var(--ink),0 0 0 3px var(--g-ngocV2)}
 .den-bo.n5{flex-wrap:nowrap;gap:2px;padding-left:1px}                                  /* tối đa cả game là 5 bộ phận (bánh trái, bánh phải, tay, kẹp / xoay, cảm biến): một hàng, không rớt dòng */
 .den-bo.n5 .den{width:14px;height:14px}
-.den-bo.n6,.den-bo.n7{gap:4px 2px}
-.den-bo.n6 .den,.den-bo.n7 .den{width:13px;height:13px}
+.den-bo.n6,.den-bo.n7{flex-wrap:nowrap;gap:2px}                                             /* 29/10: 6 – 7 đèn (combo) cũng một hàng: hàng hai tràn khỏi ô 40px (rơi đèn / chữ) */
+.den-bo.n6 .den{width:12px;height:12px}.den-bo.n7{gap:1px}.den-bo.n7 .den{width:11px;height:11px}
+.den-bo.n6 .den svg,.den-bo.n7 .den svg{width:9px!important;height:9px!important}
 
 /* ---------- nửa dưới: chương trình | kho khối ---------- */
 .low{flex:1 1 auto;min-height:344px;display:flex;gap:6px}
@@ -747,7 +748,7 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .canh-bao{position:absolute;left:6px;top:6px;z-index:1;pointer-events:none;max-width:calc(100% - 12px);display:flex;align-items:center;gap:4px;padding:3px 6px 1px 4px;
   background:var(--g-moVangSangV1);color:var(--ink);font:700 calc(11px*var(--kp))/1.1 var(--px);box-shadow:0 0 0 2px var(--ink)}
 .canh-bao .cb-ic{flex:none;display:flex;margin-bottom:2px}
-.canh-bao .cb-chu{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.canh-bao .cb-chu{min-width:0;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}   /* nhãn ghép (canhBao · Đâm tường là thua) trên khổ hẹp: xuống tối đa hai dòng thay vì cắt "..." */
 
 /* ---------- chương trình chính cố định (màn khai chinhCoDinh): chỉ đọc, có ổ khóa ở tiêu đề ---------- */
 .bh .chinh-khoa{display:none;flex:none;align-items:center;gap:3px;margin-left:auto;height:20px;padding:2px 5px 0 4px;background:var(--g-moToiV4);box-shadow:inset 0 0 0 1px var(--g-vang);

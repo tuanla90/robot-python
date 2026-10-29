@@ -1921,7 +1921,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.chonThe = function (khoa) { if (khoa !== theChon && chiSo(khoa) >= 0) { theChon = khoa; veThe(0); } };
     this.theHienTai = function () { return theChon; };
     this.dsThe = function () { return the.map(function (x) { return x.khoa; }); };
-    function nhan(chu, cls) { var g = h('div', 'gl ' + cls); g.appendChild(document.createTextNode(chu)); host.appendChild(g); return g; }
+    function nhan(chu, cls) { var g = h('div', 'gl ' + cls); g.appendChild(h('span', 'gl-chu', chu)); host.appendChild(g); return g; }      // chữ trong span: thiếu chỗ thì chữ co (…), nút trong nhóm (Hàm mới) luôn đủ chữ
     function gach(ten, lopGach, loai, hamTS, cha) {
       var d = h('div', 'brick ' + lopGach); d.setAttribute('role', 'button');
       // chèn: mỗi đối số là 1 (số), "U" (một chữ) hoặc "R" (chuỗi chữ) tùy kiểu; hiện: tên đối số

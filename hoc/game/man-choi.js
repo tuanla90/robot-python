@@ -212,7 +212,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var hm = nhap ? nhap.hamCuaMan : ((m.maMau && m.maMau.hamCuaMan) || []).map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; });
       return { doi: doi, chinh: doi[0].chinh, hamCuaMan: hm };
     }
-    if (nhap && m.chinhCoDinh) nhap.chinh = m.maMau.chinh.slice();                     // chương trình chính cố định: bản nháp cũ (nếu có) không được lệch khỏi chương trình của màn
+    if (nhap && (m.chinhCoDinh || m.chiChay)) nhap.chinh = m.maMau.chinh.slice();                     // chương trình chính cố định: bản nháp cũ (nếu có) không được lệch khỏi chương trình của màn
     if (nhap) {
       // hàm của màn mà màn cho sẵn thì luôn phải có mặt (bản nháp hỏng / cũ có thể thiếu)
       (m.maMau.hamCuaMan || []).forEach(function (f) {
@@ -247,7 +247,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var dung = KhungCode.soODung(k);
     S.dung = dung;
     E.n.textContent = m.id; E.t.textContent = m.ten;
-    SanVe.datCanhBao(E.ffr, m.canhBao);                                                // nhãn ⚠ trên sân ("Dây bánh trái đấu ngược"); màn không có thì ẩn
+    SanVe.datCanhBao(E.ffr, [m.canhBao, m.damLaThua ? t('choi.damLaThua') : null].filter(Boolean).join(' · ') || null);   // nhãn ⚠ trên sân ("Dây bánh trái đấu ngược", HD2 "Đâm tường là thua"); màn không có thì ẩn
     DenBoPhan.nap(manXe());                                                                  // đèn theo bộ phận cạnh đồng hồ NHỊP: chỉ các bộ phận robot của màn có (den-bo-phan.js)
     E.host.querySelector('.plaque .d').style.display = '';
     sao3(Luu.saoTot(m.ma));
@@ -272,6 +272,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (m.huongDan || (window.HuongDanMan && HuongDanMan[m.ma])) anBongD();
         else hienDeBai();
         if (window.HuongDan) HuongDan.vaoMan(m);                                        // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
+        Array.prototype.forEach.call(document.querySelectorAll('.chinh-khoa .ck-chu'), function (e) { e.textContent = t(m.chiChay ? 'choi.chiChayNhan' : 'choi.chinhKhoaNhan'); });     // nhãn ổ khóa (khung chính và bản trong Xưởng): màn trình diễn (chỉ Chạy) hay main cố định (sửa hàm)
       });
     }
     if (window.ThePart && m.doi && m.doiThu) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.doiThu(m, batDau); });     // đối thủ part mạnh: thẻ "ĐỐI THỦ" thay cho thẻ bộ phận của R2
@@ -398,10 +399,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Chạm / kéo thả vào chương trình chính khi màn khai chinhCoDinh: nhắc rằng chỉ sửa được hàm trong Xưởng. */
   function baoChinhCoDinh() {
     var xeKhoa = S.man && S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh;
-    toast(xeKhoa ? t('choi.xeCoDinh', { n: S.xe + 1 }) : t('choi.chinhCoDinh'), '', 3200);
+    toast(xeKhoa ? t('choi.xeCoDinh', { n: S.xe + 1 }) : S.man && S.man.chiChay ? t('choi.chiChay') : t('choi.chinhCoDinh'), '', 3200);
   }
-  /** Khung chương trình đang xem chỉ đọc: chương trình chính cố định (màn chế lệnh) hay robot tự động khóa của màn nhiều robot (man.doi[i].coDinh). */
-  function khungCoDinh() { return !!(S.man && (S.man.chinhCoDinh || (S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh))); }
+  /** Khung chương trình đang xem chỉ đọc: chương trình chính cố định (màn chế lệnh), màn trình diễn chỉ bấm Chạy (man.chiChay, HD1) hay robot tự động khóa
+   *  của màn nhiều robot (man.doi[i].coDinh). */
+  function khungCoDinh() { return !!(S.man && (S.man.chinhCoDinh || S.man.chiChay || (S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh))); }
 
   /* ------------------------------------------------------------- bong bóng */
   // Mọi bong bóng (đề bài, gợi ý, chẩn đoán sau khi chạy) đè lên cột KHỐI LỆNH (E.bongD), kho khối tạm ẩn khi bong bóng mở;
@@ -425,7 +427,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Đề bài = mục tiêu (luôn đúng). Câu nói về code mẫu (veMaMau) chỉ hiện khi bài làm còn là code mẫu. */
   function hienDeBai() {
     var m = S.man;
-    bong({ kieu: 'de', tieuDe: m.id + ' · ' + m.ten, chu: m.deBai, phu: m.veMaMau && trungMaMau() ? m.veMaMau : null });
+    bong({ kieu: 'de', tieuDe: m.id + ' · ' + m.ten, chu: m.deBai + (m.damLaThua ? ' ' + t('choi.damLaThuaDe') : ''), phu: m.veMaMau && trungMaMau() ? m.veMaMau : null });   // HD2: luật đâm là thua nói trong đề bài
   }
   /** Menu ☰: về màn chọn / làm lại từ đầu (nạp lại code mẫu, bỏ bản nháp; không đụng kho hàm của em và sao). */
   function moMenu() {
@@ -554,13 +556,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Xem sân i (chạm ảnh nhỏ): nạp sân, và nếu đã chạy thì chuẩn bị phát lại vết của sân đó (nút Chạy phát lại). */
   function xemSan(i) {
-    if (S.busy || !nhieuSan() || i === S.si || i < 0 || i >= S.man.san.length) return;
+    if (!nhieuSan() || i === S.si || i < 0 || i >= S.man.san.length) return;
+    var dangPhat = S.busy && S.ket && !loiKhung();                                      // 29/10: đang phát lại vẫn đổi sân được (trước đây chạm bị bỏ qua, người chơi tưởng hỏng)
+    if (S.busy && !dangPhat) return;
+    if (dangPhat) { S.rid++; S.busy = false; E.side.classList.remove('busy'); sang(null); DenBoPhan.tat(true); }
     if (window.HuongDan) HuongDan.bao('xem-san', { i: i });                           // hướng dẫn từng bước: đã chạm ảnh nhỏ của một sân
     anToast();
     S.field.nap(cauHinhSan(i));
     S.ed.datChay(null); S.pal.datSang(null);
     if (S.ket && !loiKhung()) datVet(i); else { S.si = i; S.nhip = 0; veDongHo(); veSanBar(); }
     if (S.ket && !S.ket.thang && E.bongD.hasAttribute('data-ca')) { dungChanDoan(S.ket); hienChanDoan(); }      // đang mở chẩn đoán: đổi sang chẩn đoán của sân này
+    if (dangPhat) chay();                                                               // đang phát thì phát tiếp sân vừa chọn từ đầu
   }
   /** Chỉ số dòng (từ 0) của chương trình mà sự kiện lệnh e đang chạy (kể cả khi lệnh nằm trong hàm được gọi từ dòng đó). */
   function dongChinhCua(e) {

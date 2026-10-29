@@ -64,6 +64,8 @@
    - vong-vo-han (lỗi): vòng while chạy mãi — hoặc nhân bắt vòng không có nhịp (loaiCore 'infinite-loop'), hoặc robot chạy quá nhipToiDa mà chương
      trình có `while` (loaiCore 'qua-nhieu-nhip'); `cho` trỏ tới dòng while. Chương trình KHÔNG có while mà quá nhịp thì vẫn là qua-nhieu-nhip.
    - chua-gan-cam-bien (lỗi): gọi front_clear / left_clear / right_clear mà màn không cho (robot chưa gắn cảm biến, hay màn này chưa mở hàm đó).
+   ĐÂM LÀ THUA (HD2, 29/10): man.damLaThua === true (màn ÉP khối mới của mùa 1) đưa xuống lõi (cfg.damLaThua): đâm tường / vật cản bất kỳ là chương trình dừng ngay cuối
+   nhịp đó, sân không thắng (res.dungSom = 'dam-tuong'); lời dam-tuong nói thêm luật, không thêm chua-toi-co / lech-bong-mo (chương trình chưa chạy xong). Mặc định tắt.
    NHIỀU SÂN: mặc định soNhip = số nhịp của sân DÀI NHẤT. man.nhipTheo === 'tong' thì soNhip = TỔNG nhịp mọi sân (dùng cho sao.nhip), để chương trình
    viết cứng số bước (bước thừa chỉ húc tường ở sân ngắn) mất sao nhịp. Kết quả luôn có thêm nhipMax, nhipTong.
 
@@ -600,7 +602,8 @@
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
           (man.loaiRobot === 'drone' ? ' Kiểm tra lại hướng của lệnh go_* (drone không quay, bay thẳng theo hướng em chọn). Drone bay qua được hàng rào thấp, băng chuyền, vật và bậc thang, nhưng không qua được tường cao hay mép sân.' : man.loaiRobot === 'nhen' ? ' Kiểm tra lại hướng của lệnh go_* (nhện không quay, đi thẳng theo hướng em chọn).' : man.loaiRobot === 'omni' ? ' Kiểm tra lại robot đang quay mặt hướng nào: slide_left() và slide_right() tính theo hướng mặt của xe.' : ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.');
       }
-      them('dam-tuong', s2, { nhip: e0.nhip, den: e0.den, soLan: tuong.length, cho: cho(e0.lenh ? (g.anhXa[e0.lenh.dongPy] || null) : null) });
+      if (res.dungSom === 'dam-tuong') s2 += ' Màn này đâm tường là thua: chương trình dừng ngay tại cú đâm, robot không chạy tiếp. Sửa dòng gây ra cú đâm rồi chạy lại.';   // HD2
+      them('dam-tuong', s2, { nhip: e0.nhip, den: e0.den, soLan: tuong.length, cho: cho(e0.lenh ? (g.anhXa[e0.lenh.dongPy] || null) : null), damLaThua: res.dungSom === 'dam-tuong' || undefined });
     }
     var thungChan = res.suKien.filter(function (e) { return e.ma === 'thung-chan'; });
     if (thungChan.length) {
@@ -1025,7 +1028,7 @@
           if (chuaQua.length) them('chua-qua-diem', (man.loaiRobot === 'drone' ? 'Drone' : 'Xe') + ' chưa đi qua điểm ◆' + (chuaQua.length > 1 ? ' (còn thiếu ' + chuaQua.length + ' điểm)' : '') + ' trên đường. Chương trình phải đưa ' + (man.loaiRobot === 'drone' ? 'drone' : 'xe') + ' ghé qua mọi điểm ◆ rồi mới tới bóng mờ.', { conLai: chuaQua.length, o: { x: chuaQua[0].x, y: chuaQua[0].y } });
         }
       }
-    } else if (!sanThu && !res.thang && !res.loi && res.dungSom !== 'doi-thu-thang') {
+    } else if (!sanThu && !res.thang && !res.loi && res.dungSom !== 'doi-thu-thang' && res.dungSom !== 'dam-tuong') {
       var r = res.robot;
       them('chua-toi-co', 'Chương trình chạy xong mà robot chưa tới cờ: robot đang ở ô (' + r.x + ', ' + r.y + ')' +
         (man.loaiRobot === 'nhen' || man.loaiRobot === 'drone' ? '' : ', quay mặt hướng ' + SanHoc.TEN_HUONG[r.huong]) +
@@ -1136,9 +1139,10 @@
 
   /* ------------------------------------------------------------------- chấm */
 
-  /** man.chinhCoDinh: chương trình chính luôn là bản mẫu của màn; man.khoaHamMan: các hàm của màn này luôn là bản mẫu (người chơi chỉ xem). */
+  /** man.chinhCoDinh: chương trình chính luôn là bản mẫu của màn; man.chiChay (HD1, màn trình diễn: chỉ bấm Chạy) cũng khoá như vậy;
+   *  man.khoaHamMan: các hàm của màn này luôn là bản mẫu (người chơi chỉ xem). */
   function ganCoDinh(man, baiLam) {
-    if (man.chinhCoDinh === true && man.maMau && man.maMau.chinh) baiLam.chinh = man.maMau.chinh.slice();
+    if ((man.chinhCoDinh === true || man.chiChay === true) && man.maMau && man.maMau.chinh) baiLam.chinh = man.maMau.chinh.slice();
     (man.khoaHamMan || []).forEach(function (ten) {
       var mau = ((man.maMau && man.maMau.hamCuaMan) || []).filter(function (h) { return h.ten === ten; })[0];
       if (!mau) return;
@@ -1202,6 +1206,7 @@
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
+        damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
         bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
