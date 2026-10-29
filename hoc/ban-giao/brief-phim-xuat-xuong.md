@@ -1,3 +1,5 @@
+ĐỔI 29/10 (user, đã nhắn agent): mọi chỗ "Xe tăng R1" dưới đây đọc là "Xe cứu hỏa R1" (robot chữa cháy bánh xích); tên gói "Xe cứu hỏa R1 xuất xưởng"; thêm việc: bỏ chữ "xe tăng" trong pg.xich.2.
+
 NHỊP (đọc trước): commit đầu tiên trong ~20 phút (vd hình tem XUẤT XƯỞNG trong phim-vector.js + phim gói 10 mùa 1); sau đó mỗi phim một commit; TỐI ĐA 40 phút một commit. CẤM khảo sát dài trước khi viết dòng đầu tiên. Làm phim nào xem phim đó. Hết sức thì dừng và báo còn gì. Vướng mà tự quyết có thể sai hướng → DỪNG, commit WIP, ghi câu hỏi.
 
 SONG SONG: agent "Gói T màn trình diễn mùa 2" (nhánh claude/t-trinh-dien-mua-2) đang chạy, có thể sửa hoc/lo-trinh-hoc.js, hoc/game/chu.js, các tệp màn mùa 2. Bạn chỉ sửa ĐÚNG các dòng cần ở hai tệp dùng chung đó, CẤM định dạng lại. CẤM npm test cả bộ (máy từng hết RAM). Cổng server tạm của bạn: 4203.

@@ -77,7 +77,7 @@ Khuôn phim chung (mọi mùa, viết vào kịch bản khi lập danh sách mà
 - **Gói 1, khung 1: đơn việc.** Nơi mới hiện ra cùng việc đang kẹt (vd mùa 3: quặng nằm bên kia khe nứt, xe bánh không qua được). Khung sau như cũ: R1 nhặt / nhận thân mới.
 - **Gói 10 "<cỗ máy> xuất xưởng"**, 4 khung:
   1. R1 đủ bộ giữa xưởng, huy hiệu mùa bay quanh (như hiện nay).
-  2. **Tem XUẤT XƯỞNG** đóng lên, hiện tên cỗ máy (vd "Xe tăng R1") và ba part ghép thành nó.
+  2. **Tem XUẤT XƯỞNG** đóng lên, hiện tên cỗ máy (vd "Xe cứu hỏa R1") và ba part ghép thành nó.
   3. Cỗ máy làm đúng việc ở nơi cần nó (kho chạy, nhà máy chạy, quặng về bãi…): việc kẹt ở gói 1 khung 1 được gỡ.
   4. Nhá mùa sau: part hay nơi mới nhấp nháy xa xa (như hiện nay).
 - Mùa 7: phim cuối là **máy của em xuất xưởng**, sáu cỗ máy các mùa trước xếp hàng chào.
@@ -85,7 +85,7 @@ Khuôn phim chung (mọi mùa, viết vào kịch bản khi lập danh sách mà
 
 Phải sửa phim đã có:
 - Mùa 1 gói 10 (`robot`): khung 2 thêm tem XUẤT XƯỞNG và tên **"Xe chở hàng R1"**; còn lại giữ.
-- Mùa 2 gói 10 (`nha-may-chay`, phim-mua-2.js + chu.js `pg.nha-may-chay.*`): đổi theo khuôn; tên hiển thị gói đề xuất **"Xe tăng R1 xuất xưởng"** (mã gói giữ nguyên).
+- Mùa 2 gói 10 (`nha-may-chay`, phim-mua-2.js + chu.js `pg.nha-may-chay.*`): đổi theo khuôn; tên hiển thị gói đề xuất **"Xe cứu hỏa R1 xuất xưởng"** (user 29/10 bỏ "xe tăng": chủ đề chiến tranh) (mã gói giữ nguyên).
   Khung 3 giữ ý "nhà máy chạy lại" làm việc được gỡ; khung 1 gói 1 mùa 2 (`xich`) thêm ý đơn việc: nhà máy cũ đứng im.
 - Mùa 3 trở đi: viết thẳng theo khuôn (mùa 3: "Xe thăm dò R1 xuất xưởng").
 

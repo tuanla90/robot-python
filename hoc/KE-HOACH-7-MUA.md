@@ -28,7 +28,7 @@ tên gọi; **không quyết định luật** (hội đồng 29/10, cả bốn t
 | Mùa | Cỗ máy | Nơi làm việc | Ghép thế nào | Đổi hình / tên (luật giữ) |
 |---|---|---|---|---|
 | 1 | Xe chở hàng | kho hàng | hai bánh chở, tay gắp bốc thùng, cảm biến tránh va | (không) |
-| 2 | Xe tăng | nhà máy | xích, súng hơi trên bệ (combo bệ súng), hồng ngoại đo nhiệt như kính ngắm nhiệt | (không) |
+| 2 | Xe cứu hỏa (robot chữa cháy bánh xích) | nhà máy | xích leo đống đổ nát, ủi thùng; súng hơi như vòi phun (tia nhanh / tia mạnh); hồng ngoại đo nhiệt như camera nhiệt tìm điểm nóng | user 29/10 bỏ "xe tăng" (chủ đề chiến tranh); tên part "súng hơi" tạm giữ, chỉ lời phim gọi vòi phun |
 | 3 | Xe thăm dò quặng, dáng cua | mỏ quặng | nhện vượt khe nứt, cảm ứng từ là máy dò kim loại, nam châm bụng cắp quặng (combo) | sắt là quặng, hố là khe nứt |
 | 4 | Drone kẻ vạch / vẽ | thành phố | drone bay theo lưới phố, máy sơn kẻ vạch đường / vẽ tranh tường, camera nhìn xuống đọc màu, về ô sạc khi hết pin | **giữ máy sơn** (user chốt 29/10: ô màu đã gần hoàn thiện, đổi sang nước là làm lại nhiều tính năng) |
 | 5 | Robot cầu thủ | sân bóng | omni chạy ngang, máy ném thành chân sút, radar tròn quét sân (như robot RoboCup) | máy ném → chân sút (ném qua rào = sút bổng); bàn xoay = xoay người trên sân tập |
