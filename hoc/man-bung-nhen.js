@@ -189,6 +189,163 @@
     })
   ];
 
+  /* ================================================= chương che-bung-nhen "Hàm cho bụng nhện" =================================================
+     Hàm của em mới: hook() (magnet_n, wait: hút sắt dưới bụng) · unhook() (magnet_off, wait) · tote(path) (hook, trail(path), unhook: chở vật theo chuỗi) ·
+     hook_for(p) (p là chữ trên vật: "N" thì bật cực S, không thì cực N). */
+  function che(m) { m.chuong = 'che-bung-nhen'; return man(m); }
+  var T_HOOK = ['magnet_n()', 'wait()'], T_UNHOOK = ['magnet_off()', 'wait()'];
+  var T_TOTE = ['hook()', 'trail(path)', 'unhook()'];
+  var T_HOOK_FOR = ['if p == \"N\":', '    magnet_s()', 'else:', '    magnet_n()', 'wait()'];
+
+  DS.push(
+    che({
+      so: 1, ten: 'Hàm nhấc vật', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoaHamMan: ['lift'],
+      deBai: 'Hàm lift() của màn bật nam châm bụng để nhấc vật sắt ở ô dưới nhện. Bấm Chạy.',
+      veMaMau: 'Chương trình và hàm của màn đã viết sẵn, khoá. Bấm Chạy.',
+      san: ['.o.D'], vatChat: ['.s..'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(nhieu(['go_right()', 'lift()', 'go_right()', 'go_right()'], DAT), { hamCuaMan: [H('lift', [], T_HOOK)] }),
+      loiGiai: bai(nhieu(['go_right()', 'lift()', 'go_right()', 'go_right()'], DAT), { hamCuaMan: [H('lift', [], T_HOOK)] }),
+      sao: { o: 8, nhip: 8 },
+      goiY: ['Mở Xưởng xem thân lift().', 'Màn sau em tự tạo hàm như thế.']
+    }),
+
+    che({
+      so: 2, ten: 'Hàm hook()', hang: 'lam-quen', taoHam: ['hook'],
+      deBai: 'Tạo hàm hook(): bật nam châm bụng hút vật sắt (magnet_n(), wait()). Rồi mang vật xuống ô đích và thả.',
+      veMaMau: 'Chương trình có sẵn gọi hook() nhưng em chưa có hàm đó. Bấm Hàm mới.',
+      san: ['..o', '...', '..D'], vatChat: ['..s', '...', '...'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(nhieu(LAP(2, 'go_right()'), ['hook()'], LAP(2, 'go_down()'), DAT)),
+      loiGiai: bai(nhieu(LAP(2, 'go_right()'), ['hook()'], LAP(2, 'go_down()'), DAT), { hamCuaEmMoi: [H('hook', [], T_HOOK)] }),
+      sao: { o: 9, nhip: 10 },
+      loiSai: [
+        { moTa: 'Chưa tạo hàm hook mà đã gọi nó', baiLam: bai(nhieu(LAP(2, 'go_right()'), ['hook()'], LAP(2, 'go_down()'), DAT)), phaiCoMa: ['ham-chua-co'] }
+      ],
+      goiY: ['Thân hàm hai dòng: magnet_n() rồi wait().', 'Gọi hook() khi đang đứng trên vật.']
+    }),
+
+    che({
+      so: 3, ten: 'Hàm unhook()', hang: 'lam-quen', taoHam: ['unhook'], hamCuaEmCan: ['hook'],
+      deBai: 'Tạo hàm unhook(): ngắt nam châm để thả vật (magnet_off(), wait()). Mang vật sắt sang phải tới ô đích.',
+      veMaMau: 'Chương trình có sẵn gọi unhook(). Tạo hàm đó.',
+      san: ['o...D'], vatChat: ['s....'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(nhieu(['hook()'], LAP(4, 'go_right()'), ['unhook()'])),
+      loiGiai: bai(nhieu(['hook()'], LAP(4, 'go_right()'), ['unhook()']), { hamCuaEmMoi: [H('unhook', [], T_UNHOOK)] }),
+      sao: { o: 8, nhip: 10 },
+      loiSai: [
+        { moTa: 'Trong hàm quên wait(): lệnh ngắt chưa kịp chạy', baiLam: bai(nhieu(['hook()'], LAP(4, 'go_right()'), ['unhook()'])), hamCuaEmMoi: [H('unhook', [], ['magnet_off()'])], phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Thân hàm: magnet_off() rồi wait().', 'hook() và unhook() là một cặp.']
+    }),
+
+    che({
+      so: 4, ten: 'Hai chuyến bằng hàm', hang: 'luyen', hamCuaEmCan: ['hook', 'unhook'],
+      deBai: 'Hai vật sắt ở hàng trên, hai ô đích ngay bên dưới. Dùng hook() và unhook() trong vòng for.',
+      veMaMau: 'Chương trình có sẵn làm một chuyến. Đặt vào vòng for.',
+      san: ['o.o', 'D.D'], vatChat: ['s.s', '...'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['hook()', 'go_down()', 'unhook()']),
+      loiGiai: bai(LAP(2, ['hook()', 'go_down()', 'unhook()', 'go_up()', 'go_right()', 'go_right()'])),
+      sao: { o: 11, nhip: 14 },
+      loiSai: [
+        { moTa: 'Quên lên lại: chuyến hai nhện đi ở hàng dưới', baiLam: bai(LAP(2, ['hook()', 'go_down()', 'unhook()', 'go_right()', 'go_right()'])), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Một chuyến: hook, xuống, unhook, lên, sang hai ô.', 'Lặp hai lần.']
+    }),
+
+    che({
+      so: 5, ten: 'Hàm tote(path)', hang: 'luyen', taoHam: ['tote'], hamCuaEmCan: ['hook', 'unhook', 'trail', 'go'],
+      deBai: 'Tạo hàm tote(path): hook(), đi theo chuỗi path bằng trail(path), rồi unhook(). Chở vật sắt theo đường quanh co tới ô đích.',
+      veMaMau: 'Chương trình có sẵn gọi tote(\"RRDDRRD\"). Tạo hàm tote có đối số path.',
+      san: ['o..##', '##.##', '##...', '####D'], vatChat: ['s....', '.....', '.....', '.....'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['tote(\"RRDDRRD\")']),
+      loiGiai: bai(['tote(\"RRDDRRD\")'], { hamCuaEmMoi: [H('tote', ['path'], T_TOTE)] }),
+      sao: { o: 18, nhip: 16 },
+      loiSai: [
+        { moTa: 'Trong hàm quên hook(): nhện đi một mình', baiLam: bai(['tote(\"RRDDRRD\")']), hamCuaEmMoi: [H('tote', ['path'], ['trail(path)', 'unhook()'])], phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Thân hàm ba dòng: hook(), trail(path), unhook().', 'path là chuỗi chỉ đường được truyền vào.']
+    }),
+
+    che({
+      so: 6, ten: 'Hai đơn hàng', hang: 'luyen', hamCuaEmCan: ['tote', 'trail', 'go'],
+      deBai: 'Hai vật sắt, hai ô đích, đường khác nhau. Chở vật đầu bằng tote(...), đi tới vật thứ hai, rồi chở nó bằng tote(...) với chuỗi khác.',
+      veMaMau: 'Chương trình có sẵn chở được vật đầu. Viết tiếp.',
+      san: ['o.D', '...', 'o.D'], vatChat: ['s..', '...', 's..'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['tote(\"RR\")']),
+      loiGiai: bai(['tote(\"RR\")', 'trail(\"DDLL\")', 'tote(\"RR\")']),
+      sao: { o: 20, nhip: 20 },
+      loiSai: [
+        { moTa: 'Chở vật thứ hai mà chưa đi tới nó', baiLam: bai(['tote(\"RR\")', 'tote(\"DD\")']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Giữa hai chuyến: trail(...) đi tới vật thứ hai.', 'Mỗi chuyến một chuỗi riêng.']
+    }),
+
+    che({
+      so: 7, ten: 'Hàm hook_for(p)', hang: 'bien-the', taoHam: ['hook_for'], hamCuaEmCan: ['unhook'],
+      deBai: 'Tạo hàm hook_for(p): p là chữ trên vật; \"N\" thì bật cực S, không thì bật cực N, rồi wait(). Mang vật chữ N và vật chữ S về hai ô đích.',
+      veMaMau: 'Chương trình có sẵn gọi hook_for(\"N\") và hook_for(\"S\"). Tạo hàm đó.',
+      san: ['oo', 'DD'], vatChat: ['NS', '..'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['hook_for(\"N\")', 'go_down()', 'unhook()', 'go_up()', 'go_right()', 'hook_for(\"S\")', 'go_down()', 'unhook()']),
+      loiGiai: bai(['hook_for(\"N\")', 'go_down()', 'unhook()', 'go_up()', 'go_right()', 'hook_for(\"S\")', 'go_down()', 'unhook()'], { hamCuaEmMoi: [H('hook_for', ['p'], T_HOOK_FOR)] }),
+      sao: { o: 15, nhip: 12 },
+      loiSai: [
+        { moTa: 'Trong hàm bật cùng cực với chữ: vật nằm yên', baiLam: bai(['hook_for(\"N\")', 'go_down()', 'unhook()', 'go_up()', 'go_right()', 'hook_for(\"S\")', 'go_down()', 'unhook()']), hamCuaEmMoi: [H('hook_for', ['p'], ['if p == \"N\":', '    magnet_n()', 'else:', '    magnet_s()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Khác cực mới hút: chữ N thì cực S.', 'p là chuỗi \"N\" hay \"S\" truyền vào lúc gọi.']
+    }),
+
+    che({
+      so: 8, ten: 'Đơn hàng qua gầm và hố', hang: 'bien-the', hamCuaEmCan: ['hook', 'unhook'],
+      deBai: 'Vật sắt phải chui qua một gầm thấp rồi qua một cái hố tới ô đích. trail() không nhảy được, nên giữa hai hàm của em phải viết phần co chân, duỗi chân bằng crouch() / stand().',
+      veMaMau: 'Chương trình có sẵn đã nhặt vật. Viết tiếp.',
+      san: ['#########', 'o.n.u.D..', '#########'], vatChat: ['.........', 's........', '.........'],
+      batDau: { x: 0, y: 1, huong: 0 },
+      maMau: bai(['hook()']),
+      loiGiai: bai(['hook()', 'crouch()', 'go_right()', 'go_right()', 'go_right()', 'stand()', 'go_right()', 'go_right()', 'unhook()']),
+      sao: { o: 13, nhip: 12 },
+      loiSai: [
+        { moTa: 'Không co chân: nhện mang vật đụng gầm', baiLam: bai(['hook()', 'go_right()', 'go_right()', 'go_right()', 'stand()', 'go_right()', 'go_right()', 'unhook()']), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Co chân từ đầu để chui gầm; đứng sát mép hố thì duỗi chân rồi bước.', 'Vật dính bay theo khi nhảy.']
+    }),
+
+    che({
+      so: 9, ten: 'Sửa đường chở', hang: 'bien-the', hamCuaEmCan: ['tote', 'trail', 'go'],
+      deBai: 'Hai đơn hàng như màn Hai đơn hàng, nhưng chương trình có sẵn viết sai một chuỗi nên vật thứ hai rơi lệch. Chạy thử rồi sửa chuỗi.',
+      veMaMau: 'Chạy thử: nhìn vật thứ hai rơi ở đâu.',
+      san: ['o.D', '...', 'o.D'], vatChat: ['s..', '...', 's..'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['tote(\"RR\")', 'trail(\"DDLL\")', 'tote(\"R\")']),
+      loiGiai: bai(['tote(\"RR\")', 'trail(\"DDLL\")', 'tote(\"RR\")']),
+      sao: { o: 20, nhip: 20 },
+      loiSai: [
+        { moTa: 'Sửa nhầm chuỗi đi tới vật: nhện không tới đúng vật thứ hai', baiLam: bai(['tote(\"RR\")', 'trail(\"DDL\")', 'tote(\"R\")']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Vật thứ hai cũng cần chở sang phải hai ô.', 'Chỉ sửa chuỗi trong tote cuối.']
+    }),
+
+    che({
+      so: 10, ten: 'Xưởng bụng nhện', hang: 'trum', khung: { chinh: 14, moiHam: 10 }, hamCuaEmCan: ['tote', 'trail', 'go', 'hook_for', 'unhook', 'hook'],
+      deBai: 'Ba đơn hàng: một vật sắt, một vật chữ N, một vật chữ S, mỗi vật một ô đích. Dùng tote() cho sắt, hook_for() cho vật nam châm, trail() để đi giữa các đơn.',
+      veMaMau: 'Chương trình có sẵn mới chở vật sắt.',
+      san: ['o..D', '....', 'o..D', '....', 'o..D'], vatChat: ['s...', '....', 'N...', '....', 'S...'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['tote(\"RRR\")']),
+      loiGiai: bai(['tote(\"RRR\")', 'trail(\"DDLLL\")', 'hook_for(\"N\")', 'trail(\"RRR\")', 'unhook()', 'trail(\"DDLLL\")', 'hook_for(\"S\")', 'trail(\"RRR\")', 'unhook()']),
+      sao: { o: 31, nhip: 44 },
+      loiSai: [
+        { moTa: 'Chở vật N bằng tote(): hook() bật cực N, cùng cực nên vật nằm yên', baiLam: bai(['tote(\"RRR\")', 'trail(\"DDLLL\")', 'tote(\"RRR\")', 'trail(\"DDLLL\")', 'hook_for(\"S\")', 'trail(\"RRR\")', 'unhook()']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['tote() dùng hook() (cực N): chỉ hợp với sắt và vật chữ S.', 'Vật chữ N: hook_for(\"N\") rồi trail, unhook.']
+    })
+  );
+
   ManHoc.manBungNhen = DS;
   if (laNode) module.exports = ManHoc;
 })();

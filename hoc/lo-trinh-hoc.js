@@ -921,7 +921,7 @@
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
       chuong: [['doi-xich', ['doi-xich.3', 'doi-xich.9']], ['che-doi-xich', []]] },
     { ma: 'bung-nhen', ten: 'Nam châm bụng nhện', loai: 'thu-thach',
-      chuong: [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', []]] },
+      chuong: [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', ['che-bung-nhen.1', 'che-bung-nhen.2', 'che-bung-nhen.3', 'che-bung-nhen.4', 'che-bung-nhen.8', 'che-bung-nhen.7', 'che-bung-nhen.5', 'che-bung-nhen.6', 'che-bung-nhen.9', 'che-bung-nhen.10']]] },
     { ma: 'tong-hop-3', ten: 'Tổng hợp', loai: 'thu-thach',
       chuong: [['tong-hop-3', []], ['trum-mua-3', []]] }
   ];
