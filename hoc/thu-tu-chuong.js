@@ -85,7 +85,7 @@
       { ma: 'list', ten: 'Danh sách', mua: 'mua-2', sao: 75, chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
       { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', mua: 'mua-2', sao: 105, chuong: ['xich', 'che-xich'] },
       { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', mua: 'mua-2', sao: 135, chuong: ['omni', 'che-omni'] },
-      { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi', 'luc-ban'] },        // 26/10: thêm chương Lực bắn (shoot("fast") / shoot("charge"))
+      { ma: 'sung-hoi', ten: 'Vòi phun', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi', 'luc-ban'] },        // 26/10: thêm chương Lực bắn (shoot("fast") / shoot("charge"))
       { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', mua: 'mua-3', sao: 30, chuong: ['mau', 'che-mau'] },
       { ma: 'may-son', ten: 'Máy sơn', loai: 'bo-phan', mua: 'mua-3', sao: 60, chuong: ['may-son', 'che-may-son'] },       // 25/10 tô màu: chấm, nét liền qua góc, chọn màu (KE-HOACH-MAY-SON.md)
       { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', mua: 'mua-3', sao: 90, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
@@ -124,8 +124,8 @@
       'drone': 'Drone',
       'che-xich': 'Chế lệnh xích',
       'che-omni': 'Chế lệnh omni',
-      'sung-hoi': 'Súng hơi',
-      'che-sung-hoi': 'Chế lệnh súng hơi',
+      'sung-hoi': 'Vòi phun',
+      'che-sung-hoi': 'Chế lệnh vòi phun',
       'luc-ban': 'Lực bắn',
       'che-mau': 'Chế lệnh màu',
       'may-son': 'Máy sơn',

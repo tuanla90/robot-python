@@ -640,7 +640,7 @@
       // Màn mới (đếm nhịp quay) của man-bien-xich.js nối vào cuối chương và thành trùm (màn thứ 10).
       chuong: [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6', 'che-cam-bien.6', 'che-cam-bien.5',
         'che-cam-bien.9', 'robot-hoan-thien.9', 'che-xich.9']]] },
-    { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', hinh: 'sung-hoi', sao: 30,
+    { ma: 'sung-hoi', ten: 'Vòi phun', loai: 'bo-phan', hinh: 'sung-hoi', sao: 30,
       // 29/10 (đường cong): sung-hoi.9 (8 dòng) lên sau sung-hoi.6 (5 dòng); sung-hoi.8 thành mốc của tham-so.1 (nhịp 8 → 11 trong lề).
       chuong: [['sung-hoi', day('sung-hoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])], ['tham-so', day('tham-so', MUOI)]] },
     { ma: 'hong-ngoai', ten: 'Hồng ngoại', loai: 'bo-phan', sao: 60,
@@ -657,14 +657,14 @@
       chuong: [['do-nhiet', []], ['che-do-nhiet', []]] },
     { ma: 'doi-mua-2', ten: 'Đội', loai: 'thu-thach', sao: 210,
       chuong: [['doi-mua-2', []], ['che-doi-mua-2', []]] },
-    { ma: 'be-sung', ten: 'Bệ súng xích', loai: 'thu-thach', sao: 240,
+    { ma: 'be-sung', ten: 'Bệ vòi xích', loai: 'thu-thach', sao: 240,
       chuong: [['be-sung', []], ['che-be-sung', []]] },
     { ma: 'nha-may-chay', ten: 'Xe cứu hỏa R1 xuất xưởng', loai: 'thu-thach', sao: 270,
       chuong: [['tong-hop-2', []], ['trum-mua-2', []]] }
   ];
   var TEN_MUA_2 = { 'bien-xich': 'Biến cho xích', 'hong-ngoai': 'Hồng ngoại', 'che-hong-ngoai': 'Hàm cho hồng ngoại', 'day-thung': 'Đẩy thùng',
     'che-day-thung': 'Hàm đẩy thùng', 'che-luc-ban': 'Hàm lực bắn', 'do-nhiet': 'Đo nhiệt', 'che-do-nhiet': 'Hàm đo nhiệt', 'doi-mua-2': 'Đội',
-    'che-doi-mua-2': 'Đội phối hợp', 'be-sung': 'Bệ súng xích', 'che-be-sung': 'Hàm bệ súng', 'tong-hop-2': 'Tổng hợp', 'trum-mua-2': 'Trùm mùa' };
+    'che-doi-mua-2': 'Đội phối hợp', 'be-sung': 'Bệ vòi xích', 'che-be-sung': 'Hàm bệ vòi', 'tong-hop-2': 'Tổng hợp', 'trum-mua-2': 'Trùm mùa' };
   // Rời mùa 2: che-xich 3, 4, 5, 7, 10 dùng bậc thang (game đã bỏ) và hàm có tham số trước gói 2. KHÔNG cất hẳn: che-xich.4 tạo climb() mà
   // che-doi-xich.1, .2 và che-doi-omni.5 (mùa ẩn) cần; năm màn thành chương `che-xich` (5 màn) đứng trước gói Đội xích và nhện ở mùa 3 (ẩn).
   // Gói 5 Đẩy thùng có thể lấy lại màn nào cứu được (bỏ bậc thang) về chương của mình.
@@ -1396,7 +1396,7 @@
     // Gói 2 chương sung-hoi: cái mới là SÚNG HƠI (shoot() bắn ra trước, cú giật đẩy xe lùi). sung-hoi.1 trình diễn (khoá, ba phát lùi ba ô); sung-hoi.2 ép shoot_back (H đã có).
     sua('sung-hoi.1', {
       ten: 'Bắn là lùi', chiChay: true, chinhCoDinh: true,
-      deBai: 'Xe có súng hơi ở mũi. shoot() bắn một quả bóng ra phía trước, và cú giật làm xe lùi một ô; sau shoot() phải có wait() thì nhịp mới trôi. Lá cờ nằm phía sau xe ba ô: bấm Chạy xem ba phát bắn đưa xe lùi tới cờ.',
+      deBai: 'Xe có vòi phun ở mũi. shoot() bắn một tia nước ra phía trước, và cú giật làm xe lùi một ô; sau shoot() phải có wait() thì nhịp mới trôi. Lá cờ nằm phía sau xe ba ô: bấm Chạy xem ba phát bắn đưa xe lùi tới cờ.',
       veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: mỗi vòng lặp bắn một phát rồi chờ một nhịp, xe lùi một ô.',
       maMau: bai(['for i in range(3):', '    shoot()', '    wait()']), loiGiai: bai(['for i in range(3):', '    shoot()', '    wait()']),
       goiY: ['Bắn ra trước thì xe bị giật lùi một ô.', 'Màn sau em dùng shoot_back(): bắn ra sau, xe giật tới.']
@@ -1452,7 +1452,7 @@
     // Gói 6 chương luc-ban: cái mới là CHỌN LỰC BẮN shoot("fast") / shoot("charge"). luc-ban.1 trình diễn bắn nhanh (nút gần, thùng sau lưng nằm yên);
     // luc-ban.2 ép: mã mẫu bắn nhanh không tới nút cách ba ô, người chơi đổi chữ "fast" thành "charge" (H). che-luc-ban.1 chế aim_fire() (H).
     trinhDien('luc-ban.1', null,
-      'Súng hơi giờ chọn được lực: shoot("charge") bắn tụ như mọi khi (bóng bay xa, xe bị giật lùi); shoot("fast") bắn nhanh (bóng chỉ bay hai ô, xe đứng yên). Nút cách xe hai ô, thùng nằm ngay sau lưng. Bấm Chạy xem bắn nhanh mở cửa mà thùng không bị xô.',
+      'Vòi phun giờ chọn được lực: shoot("charge") bắn tụ như mọi khi (tia nước bay xa, xe bị giật lùi); shoot("fast") bắn nhanh (tia nước chỉ bay hai ô, xe đứng yên). Nút cách xe hai ô, thùng nằm ngay sau lưng. Bấm Chạy xem bắn nhanh mở cửa mà thùng không bị xô.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: chữ "fast" trong ngoặc là lực bắn nhanh.',
       ['Bắn tụ thì cú giật hất thùng sau lưng trượt đi.', 'Màn sau nút ở xa: em tự chọn lực.']);
     // Gói 7 chương do-nhiet: cái mới là ĐO NHIỆT warm() (nút bắn đang bật thì nóng). do-nhiet.1 trình diễn (if not warm(): fire("fast") ở mỗi khúc quanh);
@@ -1464,9 +1464,9 @@
     // Gói 9 chương be-sung: cái mới là BỆ SÚNG XÍCH (xích + súng hơi: bắn tụ không giật). be-sung.1 trình diễn (bắn nút rồi rẽ phải, không cần move() bù giật);
     // be-sung.2 ép: mã mẫu của Sola có back() bù giật thừa, người chơi bỏ dòng đó (H). che-be-sung.1 chế blast_left() (H).
     trinhDien('be-sung.1', null,
-      'Xe xích của em đã gắn súng hơi thành BỆ SÚNG: xích bám chắc nên bắn tụ không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe bắn nút cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
+      'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên bắn tụ không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe bắn nút cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau shoot() và wait(), xe vẫn đứng nguyên ô.',
-      ['Xe hai bánh bắn tụ thì giật lùi một ô; bệ súng xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
+      ['Xe hai bánh bắn tụ thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.
