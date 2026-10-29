@@ -59,8 +59,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, cx, cy, 21); H.vien(g, BM.vecVien, 9.5); H.vien(g, vanh, 5.5);                                                                     // vành bánh van
     g.beginPath(); for (i = 0; i < 3; i++) { a = a0 + i * Math.PI * 2 / 3; g.moveTo(cx, cy); g.lineTo(cx + 21 * Math.cos(a), cy + 21 * Math.sin(a)); }
     H.vien(g, BM.vecVien, 7); H.vien(g, mo ? BM.vecCamDam : BM.vecVanNguoiToi, 3.5);                                                             // ba nan
-    g.save(); g.translate(cx + 21 * Math.cos(a0), cy + 21 * Math.sin(a0)); g.rotate(a0 + Math.PI / 2);                                            // cánh hứng nước ở đầu nan 0 (lòng chén quay ra ngoài)
-    H.duong(g, 'M-11 -2 C-11 -14 11 -14 11 -2 L6 -2 C6 -8 -6 -8 -6 -2 Z'); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 2.2);
+    g.save(); g.translate(cx + 19 * Math.cos(a0), cy + 19 * Math.sin(a0)); g.rotate(a0 + Math.PI / 2);                                            // cánh hứng nước (chén vàng) ở đầu nan 0, lòng chén quay ra ngoài
+    H.duong(g, 'M-12 0 C-12 -18 12 -18 12 0 Z'); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 2.5);
+    H.duong(g, 'M-6.5 -1.5 C-6.5 -10 6.5 -10 6.5 -1.5 Z'); H.to(g, BM.vecVangToi);
     g.restore();
     H.tron(g, cx, cy, 7.5); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 2);                                                                        // trục
     H.tron(g, cx - 2.2, cy - 2.2, 2.2); H.to(g, mo ? BM.vecVanNongSang : BM.vecBacSang);
