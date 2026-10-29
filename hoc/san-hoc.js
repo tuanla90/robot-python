@@ -236,7 +236,8 @@
         - VẬT ĐANG DÍNH khi đổi cực: SẮT vẫn dính (cực nào cũng hút sắt; 'sat-khong-day', thông tin, khi đổi cực lúc đang dính sắt). VẬT NAM CHÂM: đổi sang CÙNG cực với chữ ghi trên vật thì bị BẮN RA: vật rời mũi xe,
           rơi xuống ô sát mũi rồi trượt như bị đẩy ('day-vat' có tuMui: true); ô sát mũi bị chặn thì bắn không ra, vật vẫn dính ('day-bi-chan', tuMui: true). magnet_off thả vật xuống ô sát mũi, không trượt.
         - Vật nằm trên băng chuyền vẫn hút được; vật nằm dưới đất (kể cả đang trượt) không bị băng kéo (như mọi vật). Quên wait() sau lệnh nam châm → 'quen-wait'.
-        - CẢM BIẾN TỪ (gắn vào cảm biến khoảng cách ở hông; khai trong hamGoc). Đọc KHÔNG tốn nhịp, ghi mục lệnh có `docCamBien` { cam:'tu', ham, tu, huong, o, khoang, chat, cuc, idVat, trong, nhip } và sự kiện
+        - CẢM BIẾN TỪ (part riêng 'tu' từ P1 mùa 3 29/10: màn mùa 3 khai robot.camBien [{ ma:'tu', o:'hong' }] + hamGoc front_metal / front_pole; màn cũ khai khoang-cach + hai hàm
+          vẫn chạy y nguyên vì lõi chỉ nhìn hamGoc, không đòi part; drone / nhện không gắn vì không có hướng mặt). Đọc KHÔNG tốn nhịp, ghi mục lệnh có `docCamBien` { cam:'tu', ham, tu, huong, o, khoang, chat, cuc, idVat, trong, nhip } và sự kiện
           'doc-cam-bien' (cùng bộ đếm 1000 lần đọc liên tiếp). Cùng phép tìm với HÚT / ĐẨY (3 ô, vật đầu tiên):
             front_metal() → True nếu vật đầu tiên là SẮT và cách xe ≤ 2 ô (bật nam châm lúc này hút được sắt); gỗ, vật nam châm, tường hay không có vật → False.
             front_pole()  → "N" hay "S" nếu vật đầu tiên trong 3 ô là VẬT NAM CHÂM (chữ ghi trên vật); còn lại (sắt, gỗ, không có gì) → "none". Trả CHUỖI, như color().

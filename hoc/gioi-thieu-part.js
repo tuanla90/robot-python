@@ -182,7 +182,7 @@
     },
     'tu': {
       khe: 'camBien', ten: 'Cảm biến từ',
-      moTa: 'Gắn cạnh cảm biến khoảng cách, cho biết vật phía trước là sắt hay nam châm.',
+      moTa: 'Đầu dò chữ U ở hông xe, cho biết vật phía trước là sắt hay nam châm cực N, cực S.',
       lenh: ['front_metal', 'front_pole'],
       gioi: ['Hỏi không tốn nhịp', { chu: 'front_metal() trả True khi vật gần nhất phía trước là sắt và cách xe tới 2 ô', can: ['front_metal'] },
         { chu: 'front_pole() trả "N" hoặc "S" khi vật gần nhất trong 3 ô là nam châm', can: ['front_pole'] }],

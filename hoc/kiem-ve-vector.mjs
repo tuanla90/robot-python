@@ -428,7 +428,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   for (const loai of ['than', 'tay', 'cam-bien']) {
     const mp = BP[loai].map((d) => d.ma), mv = V.ds(loai);
     for (const ma of mp) if (!mv.includes(ma)) thieu.push(loai + '/' + ma);
-    for (const ma of mv) if (!mp.includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
+    const THEM_SAU_CHUP = { 'cam-bien': ['tu'] };                                                   // P1 mùa 3 (29/10): cảm biến từ 'tu' thành part vector riêng (bộ pixel chưa từng có)
+    for (const ma of mv) if (!mp.includes(ma) && !(THEM_SAU_CHUP[loai] || []).includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
     for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;
       if (loai !== 'than' && (J([].concat(v.gan)) !== J(d.gan) || v.ten !== tenMoi(d.ten))) sai.push(loai + '/' + d.ma + ': gan / ten khác chụp (' + J(v.gan) + ' / ' + v.ten + ')');

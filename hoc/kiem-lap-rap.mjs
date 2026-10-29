@@ -49,10 +49,10 @@ for (const khe of LapRap.KHE) {
   kiem('khe ' + khe + ': có tên và một dòng "vượt được gì" ngắn (≤ 40 chữ)', ds.every((d) => d.ten && d.vuot && d.vuot.length <= 40), ds.filter((d) => !d.ten || !d.vuot || d.vuot.length > 40).map((d) => d.ma + ':' + (d.vuot || '').length).join(','));
 }
 kiem('thân: loại robot đúng lõi SanHoc (hai-banh→banh, còn lại cùng tên)', LapRap.DANH_MUC.than.every((d) => d.loai === (d.ma === 'hai-banh' ? 'banh' : d.ma) && !!SanHoc.HAM_GOC[d.loai]));
-kiem('cảm biến từ (tu) dùng part khoang-cach + hai hàm front_metal / front_pole', LapRap.tim('camBien', 'tu').part === 'khoang-cach' && ['front_metal', 'front_pole'].every((h) => LapRap.tim('camBien', 'tu').ham.includes(h)));
+kiem('cảm biến từ (tu) là part vector riêng "tu" (P1 mùa 3) chỉ có hai hàm front_metal / front_pole', LapRap.tim('camBien', 'tu').part === 'tu' && bang(LapRap.tim('camBien', 'tu').ham, ['front_metal', 'front_pole']));
 for (const khe of LapRap.KHE) {
-  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part), ex = d.ma === 'tu' ? ['front_metal', 'front_pole'] : []; return !bang(d.ham, p.hamGoc.concat(ex)); });
-  kiem('khe ' + khe + ': `ham` của từng mục đúng hamGoc của bộ phận vector (cảm biến từ thêm front_metal / front_pole)', sai.length === 0, sai.map((d) => d.ma).join(','));
+  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part); return !p || !bang(d.ham, p.hamGoc); });
+  kiem('khe ' + khe + ': `ham` của từng mục đúng hamGoc của bộ phận vector', sai.length === 0, sai.map((d) => d.ma).join(','));
 }
 {
   const sai = [];
@@ -225,7 +225,7 @@ kiem('drone có pin: hamGoc có battery, magnet_*, look, go_*, wait; camBien th�
 a = LapRap.apDung(Object.assign({}, mDrone, { pin: undefined }), { than: 'drone' });
 kiem('drone KHÔNG có pin ở màn: không battery, không camBien pin', !a.hamGoc.includes('battery') && J(a.robot.camBien) === '[]' && bang(a.hamGoc, ['go_up', 'go_down', 'go_left', 'go_right', 'wait']), a.hamGoc.join(','));
 a = LapRap.apDung(mDrone, { than: 'omni', tay: null, camBien: 'tu' });
-kiem('omni + cảm biến từ: có front_clear / left_clear / right_clear + front_metal / front_pole, bánh + trượt', bang(a.hamGoc, ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait', 'front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole']) && a.loaiRobot === 'omni' && a.robot.camBien[0].ma === 'khoang-cach', a.hamGoc.join(','));
+kiem('omni + cảm biến từ (P1 mùa 3: part riêng, không kèm khoảng cách): chỉ front_metal / front_pole, bánh + trượt; robot.camBien là tu', bang(a.hamGoc, ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait', 'front_metal', 'front_pole']) && a.loaiRobot === 'omni' && a.robot.camBien[0].ma === 'tu', a.hamGoc.join(','));
 a = LapRap.apDung(mDrone, { than: 'nhen', tay: 'kep', camBien: null });
 kiem('nhện + kẹp: loaiRobot nhen, có crouch / stand / go_*', a.loaiRobot === 'nhen' && ['crouch', 'stand', 'go_up', 'go_left', 'arm_down', 'wait'].every((h) => a.hamGoc.includes(h)), a.hamGoc.join(','));
 let nem = false; try { LapRap.apDung(mDrone, { than: 'drone', tay: 'kep' }); } catch (e) { nem = /nam châm/.test(e.message); }

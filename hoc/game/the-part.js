@@ -32,7 +32,7 @@
     if (d.khe === 'tay') return { than: 'hai-banh', tay: ma, camBien: [] };
     if (ma === 'camera-bay') return { than: 'drone', tay: null, camBien: [{ ma: 'camera-bay', o: 'bung' }] };
     if (ma === 'camera') return { than: 'hai-banh', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] };
-    return { than: 'hai-banh', tay: null, camBien: [{ ma: ma === 'tu' ? 'khoang-cach' : ma, o: 'hong' }] };
+    return { than: 'hai-banh', tay: null, camBien: [{ ma: ma, o: 'hong' }] };       // 'tu' (cảm biến từ) là part vector riêng từ P1 mùa 3
   }
   /** Cắt bỏ lề trong suốt quanh hình (ảnh part có lề rộng để tâm thân nằm giữa). */
   function catLe(cv) {
