@@ -256,14 +256,25 @@ function thamSo(m) {
   return sai;
 }
 const dsSanCua = m => (Array.isArray(m.san[0]) ? m.san : [m.san]);
-kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_2 khai đủ 10 gói × 2 chương; mùa 2 ẩn; ngưỡng sao không khai cứng', () => {
+kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_2 khai đủ 10 gói × 2 chương; mùa 2 "Ghi nhớ" hiện; ngưỡng sao khai cứng khớp công thức TI_LE_SAO', () => {
   assert.deepEqual(M.mua2.map(g => [g.ma, g.chuong.map(c => c[0])]), BANG_MUA_2.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'MUA_2 khác bảng mục 2');
   assert.deepEqual(goiMua('mua-2').map(g => [g.ma, g.chuong]), goi2Bang.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'gói / chương mùa 2');
   for (const [, ds] of goi2Bang) for (const [c, dsMa] of ds) assert.deepEqual(M.danhSach.filter(m => m.chuong === c).map(m => m.ma), dsMa, c);
   assert.deepEqual(TT.thuTu.slice(chuongMua1.size, chuongMua1.size + chuongMua2.size), goi2Bang.flatMap(([, ds]) => ds.map(c => c[0])), 'chương mùa 2 đứng ngay sau mùa 1');
   for (const m of moiMua2) assert.ok(BANG_MUA_2.some(([, ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
-  assert.equal(TT.mua.find(x => x.ma === 'mua-2').an, true, 'mùa 2 phải còn ẩn');
-  for (const g of goiMua('mua-2')) assert.equal(g.sao, undefined, g.ma + ' khai cứng sao (mùa 2 đang dựng: để mo-goi.js tính TI_LE_SAO)');
+  // 29/10 mùa 2 xong: mùa 2 hiện (không `an`), tên "Ghi nhớ", vẫn bán (`ban`); ngưỡng sao gói khai cứng = công thức mo-goi.js (0,5 × tổng sao tối đa các gói trước
+  // trong mùa, làm tròn xuống bội 5) tính trên số màn thật lúc mở, và 0, 30, …, 270 như mùa 1.
+  const mua2 = TT.mua.find(x => x.ma === 'mua-2');
+  assert.ok(!mua2.an, 'mùa 2 còn ẩn');
+  assert.equal(mua2.ten, 'Ghi nhớ', 'tên mùa 2');
+  assert.ok(mua2.ban && mua2.ban.gia, 'mùa 2 mất `ban`');
+  for (const ma of ['mua-3', 'mua-4']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
+  let tr = 0;
+  for (const g of goiMua('mua-2')) {
+    assert.equal(g.sao, Math.floor(0.5 * tr / 5) * 5, g.ma + ' ngưỡng ' + g.sao + ' khác công thức');
+    tr += 3 * g.chuong.reduce((s, c) => s + M.danhSach.filter(m => m.chuong === c).length, 0);
+  }
+  assert.deepEqual(goiMua('mua-2').map(g => g.sao), [0, 30, 60, 90, 120, 150, 180, 210, 240, 270], 'ngưỡng sao mùa 2');
   // Chương cũ của mùa 2 ngoài bảng ở mùa ẩn
   for (const c of ['ban-xoay', 'nhen', 'doi-ho-bang', 'list', 'doi-xich', 'omni', 'doi-omni', 'che-xich']) assert.equal(goiCuaChuong(c).mua, 'mua-3', c);
 });

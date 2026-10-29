@@ -511,36 +511,37 @@
   // Dựng SAU khi chèn các gói đội (chenGoi): gói đội neo sau chương mùa 2 (doi-xich sau che-xich, doi-sung-hoi sau luc-ban, ban-xoay sau tham-so) đã vào
   // TT.goi, rồi mới được dời ra mùa ẩn. Đổi m.chuong / so / hang và vị trí; KHÔNG đổi `ma` (khóa lưu sao). Mã gói giữ như cũ khi được (cờ goi-mo:<mã>).
   // Mỗi gói [mã, tên, loại, [[chương 1, màn có sẵn], [chương 2, màn có sẵn]]]. Chương chưa có màn nào thì CHƯA hiện (không vào thuTu, không thành "Sắp có");
-  // gói không còn chương nào có màn thì cũng chưa hiện. Ngưỡng sao gói mùa 2 KHÔNG khai: mo-goi.js tự tính TI_LE_SAO × tổng sao tối đa các gói trước trong
-  // mùa (mùa 2 còn ẩn, `an: true`, nên ngưỡng tự đổi khi thêm màn; khi mở bán thì khai cứng như mùa 1).
+  // gói không còn chương nào có màn thì cũng chưa hiện. Ngưỡng sao gói mùa 2 KHAI CỨNG (29/10, mùa 2 "Ghi nhớ" đủ 200 màn và hiện ở màn chọn gói), như mùa 1:
+  // tính một lần bằng công thức của mo-goi.js (TI_LE_SAO 0,5 × tổng sao tối đa các gói trước trong mùa, làm tròn xuống bội 5) trên 10 gói × 20 màn
+  // = 0, 30, …, 270; thêm / bớt màn sau này không làm đổi ngưỡng đã công bố (kiem-lo-trinh.mjs mục mùa 2 (a) kiểm khớp công thức).
   // Chương đã có ở mùa 2 cũ mà không thuộc bảng (ban-xoay, nhen, doi-ho-bang, list, doi-xich, omni, doi-omni và chương 2 của chúng) dời ra đầu mùa 3 (ẩn),
   // giữ thứ tự cũ: vẫn chơi được bằng "Mở hết", hàm chúng cần vẫn được tạo ở màn đứng trước.
   var MUA_2 = [
-    { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', hinh: 'xich',
+    { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', hinh: 'xich', sao: 0,
       // Chương 2 "Biến cho xích": hàm cho xích (spin, sidestep, sửa fixed_turn, pick_behind: 29/10 fixed_turn lên trước pick_behind cho nhịp tăng dần) rồi biến đếm (count_return sửa trước, bounce, fetch_back), che-xich.9 cuối.
       // Màn mới (đếm nhịp quay) của man-bien-xich.js nối vào cuối chương và thành trùm (màn thứ 10).
       chuong: [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6', 'che-cam-bien.6', 'che-cam-bien.5',
         'che-cam-bien.9', 'robot-hoan-thien.9', 'che-xich.9']]] },
-    { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', hinh: 'sung-hoi',
+    { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', hinh: 'sung-hoi', sao: 30,
       // 29/10 (đường cong): sung-hoi.9 (8 dòng) lên sau sung-hoi.6 (5 dòng); sung-hoi.8 thành mốc của tham-so.1 (nhịp 8 → 11 trong lề).
       chuong: [['sung-hoi', day('sung-hoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])], ['tham-so', day('tham-so', MUOI)]] },
-    { ma: 'hong-ngoai', ten: 'Hồng ngoại', loai: 'bo-phan',
+    { ma: 'hong-ngoai', ten: 'Hồng ngoại', loai: 'bo-phan', sao: 60,
       chuong: [['hong-ngoai', []], ['che-hong-ngoai', []]] },
-    { ma: 'nha-may', ten: 'Nhà máy', hinh: 'bang-chuyen',
+    { ma: 'nha-may', ten: 'Nhà máy', hinh: 'bang-chuyen', sao: 90,
       // 29/10 (đường cong): bang-chuyen 1, 2, 6, 5, 7, 8, 3, 4, 9 (bc.8 hẹp lại làm mốc cho bc.3, bc.3 làm mốc cho bc.4 rộng);
       // che-sung-hoi 1–6, 8, 7, 9: che-sung-hoi.9 (8 dòng, 8 nhịp) sau che-sung-hoi.7 (6 dòng).
       chuong: [['bang-chuyen', day('bang-chuyen', [1, 2, 6, 5, 7, 8, 3, 4, 9, 10])], ['che-sung-hoi', day('che-sung-hoi', [1, 2, 3, 4, 5, 6, 8, 7, 9, 10])]] },
-    { ma: 'day-thung', ten: 'Đẩy thùng',
+    { ma: 'day-thung', ten: 'Đẩy thùng', sao: 120,
       chuong: [['day-thung', []], ['che-day-thung', []]] },
-    { ma: 'luc-ban', ten: 'Lực bắn', hinh: 'luc-ban',
+    { ma: 'luc-ban', ten: 'Lực bắn', hinh: 'luc-ban', sao: 150,
       chuong: [['luc-ban', day('luc-ban', MUOI)], ['che-luc-ban', []]] },
-    { ma: 'do-nhiet', ten: 'Đo nhiệt',
+    { ma: 'do-nhiet', ten: 'Đo nhiệt', sao: 180,
       chuong: [['do-nhiet', []], ['che-do-nhiet', []]] },
-    { ma: 'doi-mua-2', ten: 'Đội', loai: 'thu-thach',
+    { ma: 'doi-mua-2', ten: 'Đội', loai: 'thu-thach', sao: 210,
       chuong: [['doi-mua-2', []], ['che-doi-mua-2', []]] },
-    { ma: 'be-sung', ten: 'Bệ súng xích', loai: 'thu-thach',
+    { ma: 'be-sung', ten: 'Bệ súng xích', loai: 'thu-thach', sao: 240,
       chuong: [['be-sung', []], ['che-be-sung', []]] },
-    { ma: 'nha-may-chay', ten: 'Nhà máy chạy lại', loai: 'thu-thach',
+    { ma: 'nha-may-chay', ten: 'Nhà máy chạy lại', loai: 'thu-thach', sao: 270,
       chuong: [['tong-hop-2', []], ['trum-mua-2', []]] }
   ];
   var TEN_MUA_2 = { 'bien-xich': 'Biến cho xích', 'hong-ngoai': 'Hồng ngoại', 'che-hong-ngoai': 'Hàm cho hồng ngoại', 'day-thung': 'Đẩy thùng',
@@ -761,6 +762,7 @@
       var x = { ma: g.ma, ten: g.ten, mua: 'mua-2', chuong: ch };
       if (g.loai) x.loai = g.loai;
       if (g.hinh) x.hinh = g.hinh;
+      if (typeof g.sao === 'number') x.sao = g.sao;             // ngưỡng khai cứng (29/10)
       goi2.push(x);
     });
     TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goi1, goi2, conLai));
