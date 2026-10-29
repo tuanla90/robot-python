@@ -33,7 +33,7 @@ User 27/10: "mỗi gói bạn làm 1 đoạn hoạt hình ngắn giống đoạn
 | 7 Cảm biến bên | R1 ở ngã ba mê cung, "?" | hai mắt nhỏ gắn hai bên hông, tia trái / phải quét | R1 bám tường phải, đi ra khỏi mê cung tới cờ | code `if right_clear():` |
 | 8 Đội hai robot | cửa xưởng mở, R2 sơn lam lăn vào | R1 và R2 nhìn nhau; hai bảng code R1 / R2 hiện cạnh nhau | R1 chuyền thùng cho R2, R2 đưa vào ô đích | (không cần) |
 | 9 Combo (tay xoay + cảm biến bên) | kho chật, thùng nằm hai bên lối đi | cảm biến bên nháy ở bên có thùng, tay xoay sang đúng bên đó nhặt | R1 lướt dọc lối đi, nhặt hai bên không cần quay xe, chồng thùng xong | |
-| 10 R1 xuất xưởng | R1 đủ bộ (tay xoay, cảm biến) giữa xưởng, các huy hiệu mùa 1 bay quanh | cánh cửa lớn của xưởng mở, ánh sáng tràn vào | R1 lăn ra ngoài; xa xa trên đồi thấy **bánh xích** văng hôm trước (nhá mùa 2) | |
+| 10 R1 xuất xưởng | R1 đủ bộ (tay xoay, cảm biến) giữa xưởng, các huy hiệu mùa 1 bay quanh | cánh cửa lớn của xưởng mở, ánh sáng tràn vào; **tem XUẤT XƯỞNG** đóng xuống, bảng tên **"Xe chở hàng R1"**, ba part (hai bánh, tay xoay, cảm biến) (29/10, mục 3c) | R1 lăn ra ngoài; xa xa trên đồi thấy **bánh xích** văng hôm trước (nhá mùa 2) | |
 
 Ghi chú:
 - Gói 9 và 10 chưa có màn mới (gói F, G); phim vẫn làm được vì chỉ dựa vào part đã có.
@@ -50,7 +50,7 @@ Lời ở `chu.js` khóa `pg.<mã gói>.<n>`; lệnh trong khung code là lệnh
 
 | Gói | Khung 1 | Khung 2 | Khung 3 | Khung 4 |
 |---|---|---|---|---|
-| 1 Bánh xích `xich` | ngoài xưởng, bánh xích nằm trên đồi nhấp nháy; R1 hai bánh lăn tới, "!" | xích bay vào thân, R1 thành xe xích, CẠCH! | xích quay chậm: nhịp 1 nửa góc, nhịp 2 đủ góc vuông | code `def tr_right(): for i in range(2): left_move(); wait()`, R1 quay hai nhịp; lời nhắc biến `n` đếm bước (chương 2) |
+| 1 Bánh xích `xich` | **đơn việc** (29/10, mục 3c): xa xa nhà máy cũ đứng im (`PhimVector.nhaMay`, xám, cửa sổ tối); bánh xích nằm trên đồi nhấp nháy; R1 hai bánh lăn tới, "!" | xích bay vào thân, R1 thành xe xích, CẠCH! (lời 29/10: bám chắc, leo được đống đổ nát; bỏ "như xe tăng") | xích quay chậm: nhịp 1 nửa góc, nhịp 2 đủ góc vuông | code `def tr_right(): for i in range(2): left_move(); wait()`, R1 quay hai nhịp; lời nhắc biến `n` đếm bước (chương 2) |
 | 2 Súng hơi `sung-hoi` | sau đống thùng có khẩu súng hơi lắc lắc; R1 xích lăn tới | súng bay lên mũi xe, CẠCH! | `shoot()`: bóng bay ra trước, xe giật lùi một ô, PHỤT! | code `shoot_back()` + `def forward(n)`; R1 bắn ra sau, giật tới |
 | 3 Hồng ngoại `hong-ngoai` | tường phía trước, "?": còn xa hay gần? | mắt hồng ngoại đỏ lăn ra, gắn lên mũi, CẠCH! | tia đỏ tới tường, số 1 2 3 bật lên từng ô | code `d = distance()` `for j in range(d): move()`, R1 đi đúng 3 ô dừng sát tường |
 | 4 Nhà máy `nha-may` | băng chuyền đứng yên, cửa đóng, nút bắn tắt, "?" | băng chạy, thùng nặng trôi theo mũi tên | R1 quay lên bắn trúng nút: nút bật (quầng nóng), cửa cuối băng mở | thùng nặng sau xe: xe bắn, cú giật hất thùng lùi một ô, HẤT! |
@@ -59,7 +59,7 @@ Lời ở `chu.js` khóa `pg.<mã gói>.<n>`; lệnh trong khung code là lệnh
 | 7 Đo nhiệt `do-nhiet` | nút đang bật (nóng); R1 lỡ bắn vào, nút tắt, "?!" | R1 dùng tia hồng ngoại: nút nóng hiện NÓNG!, để yên; sang nút nguội, bắn cho bật | code `if not warm(): shoot()`; nút nguội được bắn bật, quầng nóng hiện | |
 | 8 Đội `doi-mua-2` | cửa xưởng mở, R2 (hai bánh, súng hơi, hồng ngoại, sơn lam) lăn vào | R1 chạy ngang qua trước mũi R2: tia của R2 thấy R1, NÓNG!, R2 chờ | R1 qua, đường trống: R2 bắn trúng nút, cửa mở, R1 đi tiếp | hai bảng code R1 `forward(4)` / R2 `while warm(): wait()` `shoot()` |
 | 9 Bệ súng xích `be-sung` | R2 hai bánh bắn tụ: giật lùi, hất thùng nặng phía sau, HẤT! | R1 xích bắn tụ cùng chỗ: xe rung nhẹ, đứng yên, VỮNG! | R1 đứng một chỗ quay ba hướng, bắn ba nút, số 1 2 3 | |
-| 10 Nhà máy chạy lại `nha-may-chay` | R1 đủ bộ giữa nhà máy, 8 huy hiệu chương 1 các gói mùa 2 bay quanh | hai nút bật, hai băng chạy, thùng nặng trôi, R1 và R2 vui | ngoài xưởng, xa xa nhấp nháy chân nhện, nam châm, sóng từ, "?" (nhá mùa 3) | |
+| 10 Xe cứu hỏa R1 xuất xưởng `nha-may-chay` (29/10: khuôn mục 3c, 4 khung; user đổi từ "Xe tăng R1": robot chữa cháy bánh xích) | R1 đủ bộ giữa nhà máy, 10 huy hiệu mùa 2 bay quanh | **tem XUẤT XƯỞNG** đóng xuống, bảng tên **"Xe cứu hỏa R1"**, ba part: xích, súng hơi vẽ thành vòi phun, mắt hồng ngoại như camera nhiệt | việc được gỡ: hai nút bật, hai băng chạy, thùng nặng trôi, R1 và R2 vui (nhà máy chạy lại) | ngoài xưởng, cửa hầm mỏ trên đồi, xa xa nhấp nháy chân nhện, nam châm, sóng từ, "?" (nhá mùa 3: mỏ quặng) |
 
 Ghi chú mùa 2:
 - Gói 10 `nha-may-chay` chưa có màn (đang viết song song) nên chưa vào ThuTuChuong.goi; phim khai sẵn, máy kiểm lấy danh sách gói từ mảng MUA_2 (đọc nguồn).
@@ -83,7 +83,7 @@ Khuôn phim chung (mọi mùa, viết vào kịch bản khi lập danh sách mà
 - Mùa 7: phim cuối là **máy của em xuất xưởng**, sáu cỗ máy các mùa trước xếp hàng chào.
 - Ý thêm (chưa làm, cần giao diện): **sổ cỗ máy**, mỗi lần xuất xưởng được một trang phiếu (tên máy, ba part, nơi làm việc, máy thật ngoài đời giống nó).
 
-Phải sửa phim đã có:
+Phải sửa phim đã có (ĐÃ LÀM 29/10, nhánh claude/phim-xuat-xuong; tem dùng chung: `PhimVector.xuatXuong({ tem, ten, part, t })` ở phim-vector.js, chữ ở chu.js `pg.tem.*`):
 - Mùa 1 gói 10 (`robot`): khung 2 thêm tem XUẤT XƯỞNG và tên **"Xe chở hàng R1"**; còn lại giữ.
 - Mùa 2 gói 10 (`nha-may-chay`, phim-mua-2.js + chu.js `pg.nha-may-chay.*`): đổi theo khuôn; tên hiển thị gói đề xuất **"Xe cứu hỏa R1 xuất xưởng"** (user 29/10 bỏ "xe tăng": chủ đề chiến tranh) (mã gói giữ nguyên).
   Khung 3 giữ ý "nhà máy chạy lại" làm việc được gỡ; khung 1 gói 1 mùa 2 (`xich`) thêm ý đơn việc: nhà máy cũ đứng im.

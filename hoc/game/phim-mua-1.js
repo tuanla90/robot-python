@@ -428,7 +428,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         });
         c.sau(300, function () { c.keu('thang'); });
       },
-      // 2 · cánh cửa lớn của xưởng mở, ánh sáng tràn vào
+      // 2 · cánh cửa lớn của xưởng mở, ánh sáng tràn vào; tem XUẤT XƯỞNG đóng xuống: "Xe chở hàng R1" + ba part (KE-HOACH-PHIM-GOI.md mục 3c)
       function (k, c) {
         c.nen(k, 'md-san');
         var anh = c.dat(c.h('div', 'pg-anh pg-anh-lon'), 150, 10); k.appendChild(anh);
@@ -437,6 +437,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var r = c.xe(DU_BO, {}, 1, 3, 80, Y); k.appendChild(r);
         c.sau(500, function () { c.keu('moKhoa'); r.mat('ngac'); });
         c.sau(1600, function () { r.mat('vui'); });
+        temXuatXuong(k, c, 'pg.tem.xe-cho-hang', [['denBanh', BM.vang], ['denXoay', BM.vang], ['denCam', BM.xanhLoSang2]], 70, 10, 2);
       },
       // 3 · R1 lăn ra ngoài; xa xa trên đồi thấy bánh xích văng hôm trước (nhá mùa 2)
       function (k, c) {
@@ -453,6 +454,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /** Chữ qua t() của chu.js (Node không có t: trả khóa). */
   function t2(khoa) { return typeof t === 'function' ? t(khoa) : khoa; }
+  /** Tem XUẤT XƯỞNG (PhimVector.xuatXuong) góc trên trái (x, y), chạm ở giây t: tiếng dấu đóng, rồi tiếng thắng khi ba part hiện. */
+  function temXuatXuong(k, c, khoaTen, part, x, y, t) {
+    var v = goc.PhimVector && PhimVector.xuatXuong({ tem: t2('pg.tem.xuat-xuong'), ten: t2(khoaTen), part: part, t: t });
+    if (!v) return;
+    k.appendChild(c.dat(v, x, y));
+    c.sau(t * 1000, function () { c.keu('dam'); });
+    c.sau(t * 1000 + 900, function () { c.keu('thang'); });
+  }
   /** Đặt nhãn tên robot lên đầu bảng code. */
   function bangTen(c, bang, ten, cls) { var d = c.h('div', 'pg-ten ' + (cls || ''), ten); bang.insertBefore(d, bang.firstChild); }
   /** Số nhịp bật lên ở (x, y) từ giây t. */

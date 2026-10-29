@@ -120,4 +120,68 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function thungNang(s) { if (!bat()) return null; var c = 14 * s; return the(c, c, function (g) { dan(g, V.vat('thung-nang', px(c), {}), 0, 0, c); }); }
   function bong(s) { if (!bat()) return null; var c = 6 * (s || 2); return the(c, c, function (g) { dan(g, V.vat('bong', px(c), {}), 0, 0, c); }); }
   root.PhimVector.bang = bang; root.PhimVector.nutBan = nutBan; root.PhimVector.thungNang = thungNang; root.PhimVector.bong = bong; root.PhimVector.nong = nong;
+
+  /* ---------------------------------------------------------------- CỖ MÁY XUẤT XƯỞNG (29/10, phim gói 10 MỌI mùa; KE-HOACH-PHIM-GOI.md mục 3c). Chỉ THÊM hàm.
+       PhimVector.xuatXuong(o)          khối tem của phim gói 10: con dấu chữ nhật o.tem ("XUẤT XƯỞNG") rơi xuống đóng, bảng tên cỗ máy o.ten, một hàng icon part
+                                        o.part = [[tên icon VeIcon, màu pixel], …] (thường ba). Chữ người gọi lấy từ chu.js (khoá pg.tem.*), không viết cứng ở đây.
+                                        Trả div .pg-xx rộng 180 (cao ~104; đặt bằng c.dat). o.t (giây, mặc định 1) = lúc tem chạm; tên hiện +0,3 s, part +0,5 s, cách 0,15 s.
+                                        Khung dấu vẽ canvas (viền đôi đỏ, hai sao), chữ là DOM để dùng phông game; hoạt cảnh: lớp .pg-xx-* ở choi.css.
+       PhimVector.voiPhun(s)            icon vòi phun cứu hỏa cạnh 12·s (đầu vòi đỏ, ba giọt nước), dùng làm part trong xuatXuong (súng hơi của Xe cứu hỏa R1)
+       PhimVector.nhaMay(w, h, chay)    nhà xưởng nhìn ngang (mái răng cưa, ống khói, cửa cuốn): chay = false im lìm (xám, cửa sổ tối), true sáng đèn */
+  function khungTem(g, w, h) {
+    var H = V.H;
+    H.bo(g, 2, 2, w - 4, h - 4, 6); H.to(g, BM.vecVo); H.vien(g, BM.vecDo, 3);
+    H.bo(g, 7, 7, w - 14, h - 14, 3); H.vien(g, BM.vecDo, 1.4);
+    [14, w - 14].forEach(function (x) {                                                                                             // sao năm cánh cùng mực đỏ (dấu một màu)
+      g.beginPath();
+      for (var i = 0; i < 10; i++) { var r = i % 2 ? 2.4 : 5.6, a = -Math.PI / 2 + i * Math.PI / 5; g[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), h / 2 + r * Math.sin(a)); }
+      g.closePath(); H.to(g, BM.vecDo);
+    });
+  }
+  function xuatXuong(o) {
+    if (!bat() || !o) return null;
+    var d = root.document, t = o.t === undefined ? 1 : o.t;
+    function el(cls, chu) { var e = d.createElement('div'); e.className = cls; if (chu) e.textContent = chu; return e; }
+    var khoi = el('pg-xx');
+    var tem = el('pg-xx-tem'); tem.style.animationDelay = Math.max(0, t - 0.45) + 's';
+    tem.appendChild(the(178, 42, function (g) { khungTem(g, 178, 42); }));
+    tem.appendChild(el('pg-xx-chu', o.tem || ''));
+    var ten = el('pg-xx-ten', o.ten || ''); ten.style.animationDelay = (t + 0.3) + 's';
+    var hang = el('pg-xx-part');
+    (o.part || []).forEach(function (p, i) {
+      var v = el('pg-xx-o'); v.style.animationDelay = (t + 0.5 + i * 0.15) + 's';
+      var hinh = typeof p[0] === 'string' ? ico(p[0], 2, p[1]) : p[0]; if (hinh) v.appendChild(hinh);      // p[0]: tên icon VeIcon, hay canvas vẽ sẵn (vd voiPhun)
+      hang.appendChild(v);
+    });
+    khoi.appendChild(tem); khoi.appendChild(ten); khoi.appendChild(hang);
+    return khoi;
+  }
+  function nhaMay(w, h, chay) {
+    if (!bat()) return null;
+    w = w || 84; h = h || 56;
+    return the(w, h, function (g) {
+      var H = V.H, k = Math.min(w / 84, h / 56);
+      g.save(); g.scale(k, k);
+      H.bo(g, 60, 4, 10, 22, 1.5); H.to(g, chay ? BM.vecThepSang : BM.vecSatToi); H.vien(g, BM.vecVien, 2);                         // ống khói
+      H.duong(g, 'M4 54 V24 L18 14 V24 L32 14 V24 L46 14 V24 L60 14 V24 L80 24 V54 Z');                                              // thân + mái răng cưa
+      g.fillStyle = H.gradDoc(g, 0, 14, 0, 54, chay ? [[0, BM.vecThepSang], [1, BM.vecThep]] : [[0, BM.vecSatToi], [1, BM.vecThepToi]]); g.fill(); H.vien(g, BM.vecVien, 2.2);
+      [10, 24, 52, 66].forEach(function (x) { H.bo(g, x, 30, 8, 8, 1); H.to(g, chay ? BM.vecVangSang : BM.vecHo); H.vien(g, BM.vecVien, 1.4); });      // cửa sổ
+      H.bo(g, 33, 34, 16, 20, 1); H.to(g, chay ? BM.vecVang : BM.vecDe); H.vien(g, BM.vecVien, 1.8);                                  // cửa cuốn
+      if (!chay) [38, 42, 46, 50].forEach(function (y) { H.duong(g, 'M35 ' + y + ' H47'); H.vien(g, BM.vecDeSang, 1); });
+      g.restore();
+    });
+  }
+  function voiPhun(s) {
+    if (!bat()) return null;
+    var c = 12 * (s || 2);
+    return the(c, c, function (g) {
+      var H = V.H; g.save(); g.scale(c / 24, c / 24);
+      H.duong(g, 'M2 9.5 H6 V14.5 H2 Z'); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 1.4);                                   // ống vòi
+      H.duong(g, 'M6 8 L14 10 V14 L6 16 Z'); H.to(g, BM.vecDo); H.vien(g, BM.vecVien, 1.6);                                 // đầu vòi loe
+      H.bo(g, 14, 10.5, 2.4, 3, 0.6); H.to(g, BM.vecBac); H.vien(g, BM.vecVien, 1.2);
+      [[19, 8, 1.6], [21, 12, 1.9], [19, 16, 1.6]].forEach(function (d) { H.tron(g, d[0], d[1], d[2]); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 1); });      // giọt nước
+      g.restore();
+    });
+  }
+  root.PhimVector.xuatXuong = xuatXuong; root.PhimVector.nhaMay = nhaMay; root.PhimVector.voiPhun = voiPhun;
 })(typeof window !== 'undefined' ? window : globalThis);

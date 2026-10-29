@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-huy-hieu-phim-vector.mjs — máy kiểm gói V6: HUY HIỆU và PHIM vẽ bằng bộ vẽ vector ("Robot Chấn Hưng").
    Chạy game THẬT trong ngữ cảnh vm (bang-mau, chu, ve, part/*, ve-vector*, huy-hieu-vector, ve-robot, huy-hieu, phim-vector, phim-goi, phim-mua-*) với DOM + canvas giả
-   ghi lệnh. V7c1 (28/10): game luôn vector; ngữ cảnh pixel và phanh pixel A3 / B5 (so nền fa3702f) đã gỡ, thay bằng A3-v / B5-v so nền vector NEN_VEC (3fe6fa8).
+   ghi lệnh. V7c1 (28/10): game luôn vector; ngữ cảnh pixel và phanh pixel A3 / B5 (so nền fa3702f) đã gỡ, thay bằng A3-v / B5-v so nền vector NEN_VEC (nay 32513bf, xem dòng khai báo).
    A. HUY HIỆU
      A1 mọi mã HuyHieu.DS × ba trạng thái (khoa / mo / xong) vẽ được (HuyHieu.ve, HuyHieu.mk), không ném lỗi.
      A2 vector: mã có bản vector (HuyHieu.maVec) ra canvas .laVector (V7c2: bộ pixel part/ đã xoá, không còn Part.* để gọi); mã chưa có bản vector (liệt kê).
@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
-const NEN_VEC = '3fe6fa8';                             // 29/10 gộp V8a: nền VECTOR = 3fe6fa8 (thân omni / nhện vuông bo, chân nhện ba khúc, dáng bò; trước đó 8d930ae: mắt vui cung tròn mảnh, mắt tim viền trắng thắng màn; trước đó f8331e9, trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); A3-v / B5-v so bản vector mới với nền này (phanh thay A3 / B5 khi gỡ pixel)
+const NEN_VEC = '32513bf';                             // 29/10 user đổi Xe tăng R1 → Xe cứu hỏa R1: nền VECTOR = 32513bf, dời CỐ Ý (so 74f39f4 chỉ nha-may-chay.2 lệch: tên tem + icon vòi phun). Trước đó 74f39f4 (phim xuất xưởng, nhánh claude/phim-xuat-xuong), dời CỐ Ý vì sửa đúng bốn khung robot.2, xich.1, nha-may-chay.2, nha-may-chay.3 (+ thêm nha-may-chay.4); trước khi dời đã chạy B5-v so 3fe6fa8: chỉ bốn khung đó lệch, A3-v đạt, nên mọi phim / huy hiệu khác ở 74f39f4 y hệt 3fe6fa8. Trước đó 3fe6fa8 = gộp V8a (thân omni / nhện vuông bo, chân nhện ba khúc, dáng bò; trước đó 8d930ae: mắt vui cung tròn mảnh, mắt tim viền trắng thắng màn; trước đó f8331e9, trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); A3-v / B5-v so bản vector mới với nền này (phanh thay A3 / B5 khi gỡ pixel)
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
 const goc = path.resolve(day, '..');

@@ -491,11 +491,14 @@
       'pg.combo.2': 'Cảm biến nháy bên có thùng. Tay xoay ngay sang đúng bên đó.',
       'pg.combo.3': 'R1 lướt dọc lối đi, nhặt cả hai bên mà chẳng cần quay xe!',
       'pg.robot.1': 'R1 đã đủ bộ: tay xoay, cảm biến. Huy hiệu sáng rực!',
-      'pg.robot.2': 'Cánh cửa lớn của xưởng từ từ mở. Ánh nắng tràn vào.',
+      'pg.robot.2': 'Cửa xưởng mở, tem đóng cộp: Xe chở hàng R1 xuất xưởng!',
       'pg.robot.3': 'R1 lăn ra ngoài. Xa xa trên đồi, bánh xích đang chờ!',
+      'pg.tem.xuat-xuong': 'XUẤT XƯỞNG',                 // chữ trên tem của phim gói 10 mọi mùa (PhimVector.xuatXuong)
+      'pg.tem.xe-cho-hang': 'Xe chở hàng R1',             // cỗ máy mùa 1 (KE-HOACH-7-MUA.md "Cỗ máy của mỗi mùa")
+      'pg.tem.xe-cuu-hoa': 'Xe cứu hỏa R1',               // cỗ máy mùa 2 (user 29/10: robot chữa cháy bánh xích, không chủ đề chiến tranh)
       // Phim mùa 2 (phim-mua-2.js; kịch bản KE-HOACH-PHIM-GOI.md mục "Kịch bản mùa 2")
-      'pg.xich.1': 'Trên đồi, bánh xích văng hôm trước vẫn nằm chờ. R1 lăn tới!',
-      'pg.xich.2': 'CẠCH! Lắp bánh xích vào thân, R1 bám sàn chắc như xe tăng.',
+      'pg.xich.1': 'Nhà máy cũ đứng im, cần cỗ máy khỏe. Bánh xích chờ trên đồi!',
+      'pg.xich.2': 'CẠCH! Lắp bánh xích, R1 bám chắc, leo được cả đống đổ nát.',
       'pg.xich.3': 'Xích quay chậm: mỗi nhịp nửa góc, hai nhịp mới đủ góc vuông.',
       'pg.xich.4': 'Chế hàm tr_right() cho xích, rồi dùng biến n để đếm bước.',
       'pg.sung-hoi.1': 'Sau đống thùng có một khẩu súng hơi nằm lăn lóc.',
@@ -528,8 +531,9 @@
       'pg.be-sung.2': 'Xích bám sàn như bệ súng: bắn tụ mà xe đứng yên.',
       'pg.be-sung.3': 'Ba phát, ba hướng, một chỗ đứng: không lùi bước nào.',
       'pg.nha-may-chay.1': 'R1 đủ bộ: xích, súng hơi, mắt hồng ngoại. Huy hiệu sáng rực!',
-      'pg.nha-may-chay.2': 'Mọi nút bật, mọi băng chạy: nhà máy chạy lại rồi!',
-      'pg.nha-may-chay.3': 'Xa xa nhấp nháy tín hiệu lạ: chân nhện, nam châm, sóng từ.',
+      'pg.nha-may-chay.2': 'Tem đóng cộp: Xe cứu hỏa R1 xuất xưởng! Vòi phun, mắt dò nhiệt.',
+      'pg.nha-may-chay.3': 'Mọi nút bật, mọi băng chạy: nhà máy chạy lại rồi!',
+      'pg.nha-may-chay.4': 'Mỏ quặng xa xa nháy tín hiệu lạ: chân nhện, nam châm, sóng từ.',
       'pg.tenR1': 'R1',
       'pg.tenR2': 'R2',
       'caiDat.phimGoi': 'Xem lại phim các gói',

@@ -130,9 +130,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var PHIM = {
     /* ---------------------------------------------------------------- 1 · Bánh xích */
     'xich': [
-      // 1 · ngoài xưởng, bánh xích văng hôm trước nằm trên đồi; R1 hai bánh lăn tới
+      // 1 · ngoài xưởng, bánh xích văng hôm trước nằm trên đồi; R1 hai bánh lăn tới. Đơn việc (KE-HOACH-PHIM-GOI.md mục 3c): xa xa nhà máy cũ đứng im, cần một cỗ máy khỏe
       function (k, c) {
-        c.nen(k, 'pg-troi'); c.nen(k, 'pg-doi'); c.nen(k, 'md-san pg-dat');
+        c.nen(k, 'pg-troi'); c.nen(k, 'pg-doi pg-doi-xa');
+        var nm = PV() && PhimVector.nhaMay(84, 56, false); if (nm) k.appendChild(c.dat(nm, 14, 72));
+        c.nen(k, 'pg-doi'); c.nen(k, 'md-san pg-dat');
         k.appendChild(c.dat(c.ico('denXich', 3, BM.lamSang), 232, 96, 'pg-nhay'));
         var r = c.xe(XE, {}, 1, 3, -40, Y); k.appendChild(r);
         truot(c, r, 80, 150, Y, 1.4);
@@ -507,7 +509,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     ],
 
-    /* ---------------------------------------------------------------- 10 · Nhà máy chạy lại (tổng hợp + trùm; nhá mùa 3) */
+    /* ---------------------------------------------------------------- 10 · Xe cứu hỏa R1 xuất xưởng (mã gói nha-may-chay; user 29/10 đổi từ Xe tăng R1; tổng hợp + trùm; khuôn "cỗ máy xuất xưởng" mục 3c; nhá mùa 3) */
     'nha-may-chay': [
       // 1 · R1 đủ bộ giữa nhà máy, các huy hiệu mùa 2 bay quanh
       function (k, c) {
@@ -521,7 +523,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         });
         c.sau(300, function () { c.keu('thang'); });
       },
-      // 2 · mọi nút bật, mọi băng chạy: nhà máy chạy lại
+      // 2 · tem XUẤT XƯỞNG đóng xuống: "Xe cứu hỏa R1" + ba part: xích, súng hơi vẽ thành vòi phun (PhimVector.voiPhun), mắt hồng ngoại như camera nhiệt
+      function (k, c) {
+        c.nen(k, 'md-san');
+        var r = c.xe(XHN, DO, 1, 3, 160, Y); k.appendChild(r);
+        c.sau(300, function () { r.mat('ngac'); });
+        c.sau(2100, function () { r.mat('vui'); });
+        var v = PV() && PhimVector.xuatXuong({ tem: t2('pg.tem.xuat-xuong'), ten: t2('pg.tem.xe-cuu-hoa'), part: [['denXich', BM.lamSang], [PhimVector.voiPhun(2)], ['denCam', BM.do]], t: 1 });
+        if (v) k.appendChild(c.dat(v, 70, 10));
+        c.sau(1000, function () { c.keu('dam'); });
+        c.sau(1900, function () { c.keu('thang'); });
+      },
+      // 3 · mọi nút bật, mọi băng chạy: nhà máy chạy lại (việc kẹt ở xich.1 được gỡ)
       function (k, c) {
         var s = san2(k, c, ['>>>>>', 'N...N', '<<<<<'], 4, X0, Y0);
         var r1 = c.xe(XHN, DO, 1, 2, s.o(1, 1).x, s.o(1, 1).y); k.appendChild(r1);
@@ -535,9 +548,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         truot(c, duoi, 1100, X0, Y0 + 2 * C1, 2.6);
         c.sau(1000, function () { r1.mat('vui'); r2.mat('vui'); c.keu('thang'); });
       },
-      // 3 · ngoài xưởng, xa xa nhấp nháy tín hiệu lạ: chân nhện, nam châm, sóng từ (nhá mùa 3)
+      // 4 · ngoài xưởng, phía mỏ quặng xa xa nhấp nháy tín hiệu lạ: chân nhện, nam châm, sóng từ (nhá mùa 3: xe thăm dò ở mỏ)
       function (k, c) {
         c.nen(k, 'pg-troi'); c.nen(k, 'pg-doi'); c.nen(k, 'md-san pg-dat');
+        k.appendChild(c.dat(c.h('div', 'pg-cua-mo'), 226, 116));                                     // cửa hầm mỏ trên đồi (gợi mùa 3: mỏ quặng)
         var r = c.xe(XHN, DO, 1, 3, -40, Y); k.appendChild(r);
         truot(c, r, 100, 110, Y, 1.4);
         for (var i = 0; i < 5; i++) c.sau(200 + i * 260, function () { c.keu('buoc'); });
