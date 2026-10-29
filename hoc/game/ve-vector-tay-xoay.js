@@ -1,5 +1,6 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-tay-xoay.js — TAY XOAY CÓ KHỚP TRÒN vector (gói V3, mã 'xoay'; arm_left / arm_right + bốn lệnh tay kẹp).
+   Gói V8c: tay kẹp (ve-vector-tay-kep.js) vẽ luôn khớp tròn này, nên ở nấc trước hai tay ra cùng một hình; mã 'xoay' chỉ là tay kẹp được mở thêm lệnh xoay.
    Gói V8b (user 29/10: "các part có nâng cấp đều dùng chung 1 hình ảnh nhưng tay kẹp và tay kẹp có cần xoay đang dùng 2 hình khác nhau"): tay xoay = TAY KẸP
    gắn trên KHỚP TRÒN. Vẽ bằng đúng hàm của tay kẹp (VeVector.lay('tay', 'kep').dungChung: hai càng cong viền chàm lõi bạc, cụm giữa trắng bo tròn, màu đèn), cái khác
    duy nhất: khớp tròn (vành bạc) ở KHOP (50, 84) hệ của tay, đèn của tay kẹp nằm giữa khớp (nâng cyan / hạ cam, như chấm đèn tay kẹp; bỏ nắp xanh lá / hổ phách cũ).
@@ -47,8 +48,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       KEP.cang(g, c[0], c[1], c[2], yDau, 0, r); H.vien(g, BM.vecNgon, 5);
       KEP.cum(g, H, 0, r - 6);                                                              // cụm giữa trắng của tay kẹp, tâm trùng gốc càng
       g.restore();
-      /* khớp tròn (cái khác duy nhất so với tay kẹp): vành bạc quanh đèn; đèn báo nâng / hạ như chấm đèn tay kẹp (cyan / cam) */
-      H.tron(g, KHOP.x, KHOP.y, 7); H.to(g, BM.vecBac); H.vien(g, BM.vecVien, 2.5);
-      H.tron(g, KHOP.x, KHOP.y, 3); H.to(g, KEP.mauDen(ha));
+      KEP.khop(g, H, KHOP.x, KHOP.y, ha);                                                   // khớp tròn của tay kẹp (gói V8c: tay kẹp cũng có khớp này), đèn nâng cyan / hạ cam
     } });
 })(typeof window !== 'undefined' ? window : globalThis);
