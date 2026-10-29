@@ -318,8 +318,8 @@ console.log('\n== 5. Mọi dòng lời giải mẫu dựng được từ khối 
     kiem(m.id + ': ' + cacBai.length + ' lời giải mẫu — mọi dòng chương trình chính là khối khay (lệnh part, for range 1–9, while / if cảm biến, c = color(), else, hàm của em) và không lỗi khung', xau.length === 0, xau.join(' | '));
   }
   // chẩn đoán khi tháo part: chương trình còn gọi lệnh của part đã bỏ thì lenhKhongCon chỉ ra đúng dòng
-  const lk = LapRap.lenhKhongCon(LapRap.apDung(man(4), { than: 'hai-banh' }), ['shoot()', 'wait()', 'turn_right()']);
-  kiem('Lắp lại: đổi Hai bánh + Súng hơi thành Hai bánh thì dòng shoot() bị tô đỏ (lenhKhongCon)', J([...lk]) === '[0]' && lk.ten.includes('shoot'));
+  const lk = LapRap.lenhKhongCon(LapRap.apDung(man(4), { than: 'hai-banh' }), ['spray()', 'wait()', 'turn_right()']);
+  kiem('Lắp lại: đổi Hai bánh + Súng hơi thành Hai bánh thì dòng spray() bị tô đỏ (lenhKhongCon)', J([...lk]) === '[0]' && lk.ten.includes('spray'));
 }
 
 /* ==================================================== 6. nối vào game */

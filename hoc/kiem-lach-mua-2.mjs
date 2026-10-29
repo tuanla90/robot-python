@@ -12,7 +12,7 @@
          đã dùng ở lời gọi (thử từng đối số); lời gọi bỏ đối số. Bỏ qua: tham-so (ở thân hàm).
      E   HẰNG THAY CẢM BIẾN SỐ: trên bản B (điều kiện theo distance() / warm() đã thành nhánh / số lượt đã chạy), mọi distance() / warm() còn lại
          (d = distance(), range(distance()), forward(distance() + n)) thay bằng một giá trị đã đo ở sân 1 (thử từng giá trị đã gặp). Bỏ qua: distance / warm.
-     F   ĐẢO LỰC: mọi "fast" ↔ "charge". Bỏ qua: luc (chọn lực không quan trọng).
+     F   ĐẢO LỰC: mọi "low" ↔ "high". Bỏ qua: luc (chọn lực không quan trọng).
    Khái niệm mỗi lách bỏ qua = khái niệm có trong lời giải chuẩn mà không còn trong bản lách (F: luc).
    LỖ = lách THẮNG mọi sân, ĐỦ 3 SAO (màn có cờ damLaThua: lách đếm cứng bỏ if / while / not / distance / warm mà thắng dù mấy sao), và khái niệm bỏ qua
    là khái niệm màn đang ÉP:
@@ -260,9 +260,9 @@ for (const m of ds) {
       })) });
     }
   }
-  // F: đảo lực "fast" ↔ "charge" ở main (nếu không khoá) và thân hàm người chơi viết
+  // F: đảo lực "low" ↔ "high" ở main (nếu không khoá) và thân hàm người chơi viết
   if (kn.tatCa.has('luc')) {
-    const dao = (dong) => dong.map((d) => d.replace(/"(fast|charge)"/g, (s, p) => (p === 'fast' ? '"charge"' : '"fast"')));
+    const dao = (dong) => dong.map((d) => d.replace(/"(low|high)"/g, (s, p) => (p === 'low' ? '"high"' : '"low"')));
     lach.push({ ten: 'F', boQua: ['luc'], bai: { chinh: m.chinhCoDinh ? lg.chinh : dao(lg.chinh), hamCuaMan: (lg.hamCuaMan || []).map((h) => ({ ten: h.ten, thamSo: h.thamSo, than: dao(h.than) })) },
       kho: hamCuaEm.map((h) => (hamMoi.some((x) => x.h.ten === h.ten) ? { ten: h.ten, thamSo: h.thamSo, than: dao(h.than) } : h)) });
   }
@@ -308,14 +308,14 @@ if (BANG) {
   const kho2 = new Map();
   for (const m of dsTruoc) if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEmMoi || []) kho2.set(h.ten, clone(h));
   const sanCua = (m) => (Array.isArray(m.san[0]) ? m.san : [m.san]).flat();
-  const TEN_KN = { bien: 'biến', 'tham-so': 'hàm có tham số', distance: 'distance()', warm: 'warm()', luc: 'lực bắn fast / charge', def: 'tạo hàm', 'goi-ham': 'gọi hàm' };
+  const TEN_KN = { bien: 'biến', 'tham-so': 'hàm có tham số', distance: 'distance()', warm: 'warm()', luc: 'lực bắn low / high', def: 'tạo hàm', 'goi-ham': 'gọi hàm' };
   const moiCua = (m) => {
     const kq = [], ghi = (k, t) => { if (!daThay.has(k)) { daThay.add(k); kq.push(t); } };
     const kn = khaiNiemCua(m, [...kho2.values()]).tatCa;
     for (const x of kn) if (KN_MUA_2.includes(x)) ghi('kn:' + x, TEN_KN[x]);
     const r = m.robot || {};
     if (r.than === 'xich' || m.loaiRobot === 'xich') ghi('than:xich', 'thân xích');
-    for (const h of m.hamGoc || []) if (['shoot', 'shoot_back', 'distance', 'warm'].includes(h)) ghi('lenh:' + h, 'lệnh ' + h);
+    for (const h of m.hamGoc || []) if (['spray', 'spray_back', 'distance', 'warm'].includes(h)) ghi('lenh:' + h, 'lệnh ' + h);
     if (sanCua(m).some((d) => /[<>^v]/.test(d))) ghi('san:bang', 'băng chuyền');
     if (sanCua(m).some((d) => /H/.test(d))) ghi('vat:thung', 'thùng nặng');
     if (sanCua(m).some((d) => /N/.test(d))) ghi('vat:nut', 'nút bắn');

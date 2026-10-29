@@ -174,7 +174,7 @@
       lapRap: {
         than: ['hai-banh', 'xich', 'nhen', 'drone'], tay: ['hoi'], camBien: [], nganSach: 5,
         cachLap: [
-          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc shoot()', chinh: ['shoot()', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa mở, đi thẳng: nhanh nhất nhưng tốn 5 xu.' },
+          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc spray()', chinh: ['spray()', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa mở, đi thẳng: nhanh nhất nhưng tốn 5 xu.' },
           { than: 'drone', tay: null, camBien: null, loiGiai: { chinh: nhieu(LAP(4, 'go_down()'), LAP(4, 'go_right()'), LAP(3, 'go_up()')) }, ghiChu: 'Bay vòng qua hàng dưới cùng, không cần mở cửa: code ngắn, đường dài.' },
           { than: 'hai-banh', tay: null, camBien: null, loiGiai: { chinh: ['u_turn()', 'forward(4)', 'turn_left()', 'forward(4)', 'turn_left()', 'forward(3)'] }, ghiChu: 'Đi vòng dưới cùng: rẻ nhất, đường dài nhất.' }
         ]
@@ -183,7 +183,7 @@
       loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng van', 'jet_back()', '# qua cửa', 'turn_right()', 'forward(4)'] } },
       loiSai: [
         { moTa: 'Không bắn van: xe đâm vào cửa đóng', baiLam: { chinh: ['turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Bắn xong quên wait(): lệnh quay dính vào nhịp bắn nên bị bỏ', baiLam: { chinh: ['shoot()', 'turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Bắn xong quên wait(): lệnh quay dính vào nhịp bắn nên bị bỏ', baiLam: { chinh: ['spray()', 'turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Tia nước chỉ bắn thẳng. Xe quay mặt lên thì van ở ngay phía trước.', 'Cửa mở xong thì quay phải rồi đi thẳng bốn ô.']
     }),
@@ -250,7 +250,7 @@
       sao: { o: 13, nhip: 9, re: { gia: 5, o: 20 } },
       loiGiaiKhac: { moTa: 'Cùng cách đẩy, ghi chú từng việc', baiLam: { chinh: nhieu(['# thùng hàng đầu'], ['jet_fwd()'], ['# hai hàng còn lại'], LAP(2, ['back()', 'slide_r(2)', 'jet_fwd()'])) } },
       loiSai: [
-        { moTa: 'Bắn ra trước thay vì ra sau: xe giật lùi, thùng đứng yên', baiLam: { chinh: nhieu(['shoot()', 'wait()'], LAP(2, ['back()', 'slide_r(2)', 'shoot()', 'wait()'])) }, phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Bắn ra trước thay vì ra sau: xe giật lùi, thùng đứng yên', baiLam: { chinh: nhieu(['spray()', 'wait()'], LAP(2, ['back()', 'slide_r(2)', 'spray()', 'wait()'])) }, phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Chỉ đẩy thùng hàng đầu rồi dừng', baiLam: { chinh: ['jet_fwd()'] }, phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['Mặt quay về phía thùng, bắn ra sau: xe giật tới, thùng nhích một ô vào đích và xe theo vào chỗ thùng.', 'Lùi một ô về cột trống rồi đổi hàng: xe quay hay trượt ngang, tùy robot.']
@@ -311,7 +311,7 @@
           { than: 'omni', lyDo: 'Năm lối đều có vật cản: hàng rào, cửa đóng, gầm thấp, bậc thang, hố. Bánh omni không qua được lối nào.' }
         ],
         cachLap: [
-          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc shoot()', chinh: ['shoot()', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa sắt mở, đi thẳng: nhanh nhất.' },
+          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc spray()', chinh: ['spray()', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa sắt mở, đi thẳng: nhanh nhất.' },
           { than: 'drone', tay: null, camBien: null, loiGiai: { chinh: nhieu(['go_right()', 'go_up()'], LAP(3, 'go_right()'), LAP(2, 'go_down()')) }, ghiChu: 'Bay qua rào, ghé ô sạc trên đường: code ngắn nhất, đường dài hơn một nhịp.' },
           { than: 'nhen', tay: null, camBien: null, loiGiai: { chinh: ['go_up()', 'crouch()', 'go_right()', 'stand()', 'go_right()', 'crouch()', 'go_right()', 'stand()', 'go_down()'] }, ghiChu: 'Nhảy qua rào bằng chân nhện: rẻ hơn, chậm hơn.' },
           { than: 'xich', tay: null, camBien: null, loiGiai: { chinh: nhieu(LAP(3, 'back()'), ['tr_left()'], LAP(4, 'back()'), ['tr_left()'], LAP(2, 'back()')) }, ghiChu: 'Leo bậc thang bằng xích, đi lùi cho khỏi quay: rẻ nhất, đường dài nhất.' }
@@ -321,7 +321,7 @@
       loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng van', 'jet_back()', '# qua cửa', 'turn_right()', 'forward(4)'] } },
       loiSai: [
         { moTa: 'Không bắn van: xe đâm vào tường cạnh cửa đóng', baiLam: { chinh: ['turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Bắn ra sau thay vì ra trước: van không quay, cửa vẫn đóng', baiLam: { chinh: ['shoot_back()', 'wait()', 'turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Bắn ra sau thay vì ra trước: van không quay, cửa vẫn đóng', baiLam: { chinh: ['spray_back()', 'wait()', 'turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Lối nào cũng đi được nếu robot đủ sức; so xem robot nào tới cờ nhanh nhất và robot nào rẻ nhất.', 'Xe quay mặt lên thì van ở ngay phía trước; drone phải ghé ô sạc P trên đường.']
     })

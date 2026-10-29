@@ -99,8 +99,8 @@ function hanhDongTu(m, tt) {
   } else if (co('load')) {
     nhomKhac = [{ code: '', chanBanh: false, ten: '' }, { code: 'load()\n', chanBanh: true, ten: 'load' }];
     for (let t = 1; t <= 3; t++) nhomKhac.push({ code: 'aim(' + t + ')\nthrow()\n', chanBanh: true, ten: 'ném' + t });
-  } else if (co('shoot')) {
-    nhomKhac = [{ code: '', chanBanh: false, ten: '' }, { code: 'shoot()\n', chanBanh: true, ten: 'bắn' }, { code: 'shoot_back()\n', chanBanh: true, ten: 'bắn_sau' }];
+  } else if (co('spray')) {
+    nhomKhac = [{ code: '', chanBanh: false, ten: '' }, { code: 'spray()\n', chanBanh: true, ten: 'bắn' }, { code: 'spray_back()\n', chanBanh: true, ten: 'bắn_sau' }];
   }
   // ---- nhóm bánh / bước
   const tenBanh = (n) => n;

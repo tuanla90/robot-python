@@ -1,26 +1,26 @@
 /* ============================================================================
    man-che-sung-hoi.js — "Robot Chấn Hưng": CHƯƠNG `che-sung-hoi` · CHẾ LỆNH SÚNG HƠI (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.3, 15/10): chương chế lệnh đi sau chương `sung-hoi`.
    Robot là XE HAI BÁNH gắn SÚNG HƠI hai nòng: robot { than: 'hai-banh', tay: 'hoi', camBien: [] }.
-   Lệnh gốc (luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI), đều chỉ RA LỆNH, wait() cho nhịp trôi, mỗi nhịp một phát, cặp lệnh ngược shoot ↔ shoot_back:
-       shoot() bắn bóng ra TRƯỚC, xe giật LÙI một ô · shoot_back() bắn bóng ra SAU, xe giật TỚI một ô · ô giật vào có thùng nặng thì thùng NHÍCH 1 Ô và xe theo 1 ô (luật 29/10) · ô bị chặn thì xe đứng yên.
+   Lệnh gốc (luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI), đều chỉ RA LỆNH, wait() cho nhịp trôi, mỗi nhịp một phát, cặp lệnh ngược spray ↔ spray_back:
+       spray() bắn bóng ra TRƯỚC, xe giật LÙI một ô · spray_back() bắn bóng ra SAU, xe giật TỚI một ô · ô giật vào có thùng nặng thì thùng NHÍCH 1 Ô và xe theo 1 ô (luật 29/10) · ô bị chặn thì xe đứng yên.
    Luật thiết kế như che-xe và che-nam-cham: lệnh gốc chỉ đổi MỘT trạng thái; động tác hay (lùi bằng giật, đá thùng sang bên, bắn nút rồi về chỗ cũ…) là thứ NGƯỜI CHƠI TỰ CHẾ.
    Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (hay `baiLam` cho hàm của màn).
 
    Mục tiêu `bong-mo` (san-hoc.js, phần BÓNG MỜ): xe phải đứng đúng tư thế "xe mờ" khi chương trình CHẠY XONG, THÙNG MỜ (bongMo.thung) cho biết mỗi thùng nặng phải nằm ở ô nào, ô ◆ (diQua) phải đi qua;
    chưa chế hàm thì không thắng. `chinhCoDinh: true` — chương trình chính khóa (bản mẫu `maMau.chinh`), người chơi chỉ sửa / tạo hàm trong Xưởng; 3 và 10 không khóa: người chơi tự viết chương trình chính.
 
-   KHAY: cả chương mở đủ bánh (có bánh lùi) và cả hai nòng. Màn 8 là màn HỎNG: khay = phần cứng, thiếu shoot_back (nòng sau hỏng).
+   KHAY: cả chương mở đủ bánh (có bánh lùi) và cả hai nòng. Màn 8 là màn HỎNG: khay = phần cứng, thiếu spray_back (nòng sau hỏng).
    Hàm của em có sẵn ở chương này: toàn bộ chương trước (move, turn_left, turn_right, u_turn một nhịp, back, forward…).
 
    Hàm của em MỚI (tên cốt truyện, khóa trong kho):
-     che-sung-hoi.1 jet_back()   = shoot(), wait()                                                           lùi một ô bằng cú giật (1 nhịp)
-     che-sung-hoi.2 jet_fwd()    = shoot_back(), wait()                                                      tiến một ô bằng cú giật (1 nhịp)
-     che-sung-hoi.4 kick_right() = turn_left(), shoot(), wait(), turn_right()                                đá thùng bên phải xe nhích sang phải một ô, xe theo một ô, hướng giữ như cũ (3 nhịp)
-     che-sung-hoi.5 tap_right()  = turn_right(), shoot(), wait(), move(), turn_left()                        bắn nút bên phải rồi về đúng chỗ cũ (4 nhịp): cú giật đẩy xe lùi một ô nên phải tiến lại
-     che-sung-hoi.6 kick_left()  = turn_right(), shoot(), wait(), turn_left()                                đá thùng bên trái xe nhích sang trái một ô, xe theo một ô, hướng giữ như cũ (3 nhịp)
-     che-sung-hoi.8 kick_ahead() = u_turn(), shoot(), wait(), u_turn()                                       đá thùng ngay trước mặt lên một ô bằng nòng trước (nòng sau hỏng): quay đầu, bắn, quay đầu lại (3 nhịp)
+     che-sung-hoi.1 jet_back()   = spray(), wait()                                                           lùi một ô bằng cú giật (1 nhịp)
+     che-sung-hoi.2 jet_fwd()    = spray_back(), wait()                                                      tiến một ô bằng cú giật (1 nhịp)
+     che-sung-hoi.4 kick_right() = turn_left(), spray(), wait(), turn_right()                                đá thùng bên phải xe nhích sang phải một ô, xe theo một ô, hướng giữ như cũ (3 nhịp)
+     che-sung-hoi.5 tap_right()  = turn_right(), spray(), wait(), move(), turn_left()                        bắn nút bên phải rồi về đúng chỗ cũ (4 nhịp): cú giật đẩy xe lùi một ô nên phải tiến lại
+     che-sung-hoi.6 kick_left()  = turn_right(), spray(), wait(), turn_left()                                đá thùng bên trái xe nhích sang trái một ô, xe theo một ô, hướng giữ như cũ (3 nhịp)
+     che-sung-hoi.8 kick_ahead() = u_turn(), spray(), wait(), u_turn()                                       đá thùng ngay trước mặt lên một ô bằng nòng trước (nòng sau hỏng): quay đầu, bắn, quay đầu lại (3 nhịp)
    HÀM CỦA MÀN (hàm chỉ đúng cho MỘT màn thì không vào kho, người chơi tự viết / sửa thân trong màn; `maMau.hamCuaMan`, không `taoHam`, không có trong Sổ lệnh):
-     che-sung-hoi.7 fixed_kick() thân ban đầu = kick_right() cũ (súng lắp ngược nên xe giật sai chiều); lời giải đổi shoot() thành shoot_back()          (daoChieu ['sung'])
+     che-sung-hoi.7 fixed_kick() thân ban đầu = kick_right() cũ (súng lắp ngược nên xe giật sai chiều); lời giải đổi spray() thành spray_back()          (daoChieu ['sung'])
      che-sung-hoi.9 go_out() = jet_back(), turn_right(), jet_back(), jet_back() (khóa, xem được); come_back() thân ban đầu `pass`, lời giải jet_fwd(), jet_fwd(), turn_left(), jet_fwd()   đi NGƯỢC lại go_out()
 
    Sao: sao.nhip = số nhịp của lời giải cách 1 chạy thật (nhipTheoLoiGiai: BFS do-duong-che-sung-hoi.mjs, mỗi phát bắn một nhịp riêng, luôn ngắn hơn hay bằng); sao.o = ô của lời giải cách 1.
@@ -33,8 +33,8 @@
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var KHAY = BANH.concat(['shoot', 'shoot_back']);                         // khay cả chương
-  var KHAY_HONG = BANH.concat(['shoot']);                                  // 8: nòng sau hỏng (không có shoot_back)
+  var KHAY = BANH.concat(['spray', 'spray_back']);                         // khay cả chương
+  var KHAY_HONG = BANH.concat(['spray']);                                  // 8: nòng sau hỏng (không có spray_back)
 
   function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
@@ -45,15 +45,15 @@
   function lap(ds, n) { var kq = []; for (var i = 0; i < n; i++) kq = kq.concat(ds); return kq; }
 
   // thân các hàm chế (cách 1, cách người chơi thường chọn)
-  var T_JET_BACK = ['shoot()', 'wait()'];
-  var T_JET_FWD = ['shoot_back()', 'wait()'];
-  var T_KICK_RIGHT = ['turn_left()', 'shoot()', 'wait()', 'turn_right()'];
-  var T_TAP_RIGHT = ['turn_right()', 'shoot()', 'wait()', 'move()', 'turn_left()'];
-  var T_KICK_LEFT = ['turn_right()', 'shoot()', 'wait()', 'turn_left()'];
-  var T_KICK_AHEAD = ['u_turn()', 'shoot()', 'wait()', 'u_turn()'];
-  // 7: thân ban đầu của fixed_kick() = kick_right() cũ (sai khi súng lắp ngược) và bản sửa (đổi shoot() thành shoot_back())
+  var T_JET_BACK = ['spray()', 'wait()'];
+  var T_JET_FWD = ['spray_back()', 'wait()'];
+  var T_KICK_RIGHT = ['turn_left()', 'spray()', 'wait()', 'turn_right()'];
+  var T_TAP_RIGHT = ['turn_right()', 'spray()', 'wait()', 'move()', 'turn_left()'];
+  var T_KICK_LEFT = ['turn_right()', 'spray()', 'wait()', 'turn_left()'];
+  var T_KICK_AHEAD = ['u_turn()', 'spray()', 'wait()', 'u_turn()'];
+  // 7: thân ban đầu của fixed_kick() = kick_right() cũ (sai khi súng lắp ngược) và bản sửa (đổi spray() thành spray_back())
   var T_FIXED_CU = T_KICK_RIGHT.slice();
-  var T_FIXED = ['turn_left()', 'shoot_back()', 'wait()', 'turn_right()'];
+  var T_FIXED = ['turn_left()', 'spray_back()', 'wait()', 'turn_right()'];
   // 9: go_out() của màn (khóa) và come_back() (thân ban đầu: pass)
   var T_GO_OUT = ['jet_back()', 'turn_right()', 'jet_back()', 'jet_back()'];
   var T_COME_BACK_TRONG = ['pass'];
@@ -124,11 +124,11 @@
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('jet_back', nhieu(['# bắn ra trước, xe giật lùi'], T_JET_BACK))] },
       congThucKhac: [
         { moTa: 'Lùi bằng hai bánh lùi, không dùng vòi phun', hamCuaEmMoi: [H('jet_back', ['left_back()', 'right_back()', 'wait()'])] },
-        { moTa: 'Bắn xong chờ thêm một nhịp (chậm hơn một nhịp)', hamCuaEmMoi: [H('jet_back', ['shoot()', 'wait()', 'wait()'])] }
+        { moTa: 'Bắn xong chờ thêm một nhịp (chậm hơn một nhịp)', hamCuaEmMoi: [H('jet_back', ['spray()', 'wait()', 'wait()'])] }
       ],
       loiSai: [
-        { moTa: 'Dùng shoot_back(): xe giật tới, không lùi', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('jet_back', T_JET_FWD)], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên wait(): lệnh bắn chưa kịp chạy', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('jet_back', ['shoot()'])], phaiCoMa: ['quen-wait', 'lech-bong-mo'] },
+        { moTa: 'Dùng spray_back(): xe giật tới, không lùi', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('jet_back', T_JET_FWD)], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên wait(): lệnh bắn chưa kịp chạy', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('jet_back', ['spray()'])], phaiCoMa: ['quen-wait', 'lech-bong-mo'] },
         { moTa: 'Bắn hai phát: xe lùi hai ô, quá xe mờ một ô', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('jet_back', nhieu(T_JET_BACK, T_JET_BACK))], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi jet_back() mà chưa chế hàm', baiLam: { chinh: C_1.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
@@ -148,11 +148,11 @@
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('jet_fwd', nhieu(['# bắn ra sau, xe giật tới'], T_JET_FWD))] },
       congThucKhac: [
         { moTa: 'Tiến bằng hai bánh tiến, không dùng vòi phun', hamCuaEmMoi: [H('jet_fwd', ['left_move()', 'right_move()', 'wait()'])] },
-        { moTa: 'Bắn xong chờ thêm một nhịp (chậm hơn một nhịp)', hamCuaEmMoi: [H('jet_fwd', ['shoot_back()', 'wait()', 'wait()'])] }
+        { moTa: 'Bắn xong chờ thêm một nhịp (chậm hơn một nhịp)', hamCuaEmMoi: [H('jet_fwd', ['spray_back()', 'wait()', 'wait()'])] }
       ],
       loiSai: [
-        { moTa: 'Dùng shoot(): xe giật lùi, không tiến', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('jet_fwd', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên wait(): lệnh bắn chưa kịp chạy', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('jet_fwd', ['shoot_back()'])], phaiCoMa: ['quen-wait', 'lech-bong-mo'] },
+        { moTa: 'Dùng spray(): xe giật lùi, không tiến', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('jet_fwd', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên wait(): lệnh bắn chưa kịp chạy', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('jet_fwd', ['spray_back()'])], phaiCoMa: ['quen-wait', 'lech-bong-mo'] },
         { moTa: 'Bắn hai phát: xe tiến hai ô, quá xe mờ một ô', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('jet_fwd', nhieu(T_JET_FWD, T_JET_FWD))], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi jet_fwd() mà chưa chế hàm', baiLam: { chinh: C_2.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
@@ -193,13 +193,13 @@
       loiGiai: { chinh: C_4.slice(), hamCuaEmMoi: [H('kick_right', T_KICK_RIGHT)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('kick_right', nhieu(['# quay trái, bắn, quay lại'], T_KICK_RIGHT))] },
       congThucKhac: [
-        { moTa: 'Quay phải rồi bắn ra sau: cú giật cũng đẩy xe sang phải, đúng vào thùng', hamCuaEmMoi: [H('kick_right', ['turn_right()', 'shoot_back()', 'wait()', 'turn_left()'])] },
-        { moTa: 'Quay trái bằng ba lần quay phải (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_right', ['turn_right()', 'turn_right()', 'turn_right()', 'shoot()', 'wait()', 'turn_right()'])] }
+        { moTa: 'Quay phải rồi bắn ra sau: cú giật cũng đẩy xe sang phải, đúng vào thùng', hamCuaEmMoi: [H('kick_right', ['turn_right()', 'spray_back()', 'wait()', 'turn_left()'])] },
+        { moTa: 'Quay trái bằng ba lần quay phải (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_right', ['turn_right()', 'turn_right()', 'turn_right()', 'spray()', 'wait()', 'turn_right()'])] }
       ],
       loiSai: [
-        { moTa: 'Đá xong không quay lại: xe quay mặt sang trái', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('kick_right', ['turn_left()', 'shoot()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đá xong không quay lại: xe quay mặt sang trái', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('kick_right', ['turn_left()', 'spray()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Không quay mà bắn luôn: xe giật lùi xuống, thùng không nhúc nhích', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('kick_right', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quay phải rồi bắn ra trước: xe giật sang trái, xa khỏi thùng', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('kick_right', ['turn_right()', 'shoot()', 'wait()', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quay phải rồi bắn ra trước: xe giật sang trái, xa khỏi thùng', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('kick_right', ['turn_right()', 'spray()', 'wait()', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi kick_right() mà chưa chế hàm', baiLam: { chinh: C_4.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Xe phải giật về phía thùng. Mặt xe quay trái thì bắn ra trước sẽ giật sang phải: thùng nhích một ô, xe theo một ô.', 'Đá xong thì quay lại cho mặt xe như lúc đầu.']
@@ -217,12 +217,12 @@
       loiGiai: { chinh: C_5.slice(), hamCuaEmMoi: [H('tap_right', T_TAP_RIGHT)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', nhieu(['# bắn van, tiến lại chỗ cũ'], T_TAP_RIGHT))] },
       congThucKhac: [
-        { moTa: 'Quay trái, bắn ra sau trúng van, rồi lùi về và quay phải', hamCuaEmMoi: [H('tap_right', ['turn_left()', 'shoot_back()', 'wait()', 'back()', 'turn_right()'])] },
-        { moTa: 'Bắn thêm một phát ra sau để cú giật đưa xe về chỗ cũ', hamCuaEmMoi: [H('tap_right', ['turn_right()', 'shoot()', 'wait()', 'shoot_back()', 'wait()', 'turn_left()'])] }
+        { moTa: 'Quay trái, bắn ra sau trúng van, rồi lùi về và quay phải', hamCuaEmMoi: [H('tap_right', ['turn_left()', 'spray_back()', 'wait()', 'back()', 'turn_right()'])] },
+        { moTa: 'Bắn thêm một phát ra sau để cú giật đưa xe về chỗ cũ', hamCuaEmMoi: [H('tap_right', ['turn_right()', 'spray()', 'wait()', 'spray_back()', 'wait()', 'turn_left()'])] }
       ],
       loiSai: [
-        { moTa: 'Quên tiến lại: cú giật đẩy xe lùi một ô nên xe lệch cột, đâm tường khi đi lên', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', ['turn_right()', 'shoot()', 'wait()', 'turn_left()'])], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Quay trái rồi bắn ra trước: tia nước bay sang trái, không tới van nên cửa vẫn đóng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', ['turn_left()', 'shoot()', 'wait()', 'move()', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên tiến lại: cú giật đẩy xe lùi một ô nên xe lệch cột, đâm tường khi đi lên', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', ['turn_right()', 'spray()', 'wait()', 'turn_left()'])], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Quay trái rồi bắn ra trước: tia nước bay sang trái, không tới van nên cửa vẫn đóng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', ['turn_left()', 'spray()', 'wait()', 'move()', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Không quay mà bắn luôn: tia nước bay lên tới cửa, không tới van', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi tap_right() mà chưa chế hàm', baiLam: { chinh: C_5.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
@@ -241,12 +241,12 @@
       loiGiai: { chinh: C_6.slice(), hamCuaEmMoi: [H('kick_left', T_KICK_LEFT)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('kick_left', nhieu(['# gương của kick_right'], T_KICK_LEFT))] },
       congThucKhac: [
-        { moTa: 'Quay trái rồi bắn ra sau: cú giật đẩy xe sang trái, đúng vào thùng', hamCuaEmMoi: [H('kick_left', ['turn_left()', 'shoot_back()', 'wait()', 'turn_right()'])] },
-        { moTa: 'Quay phải bằng ba lần quay trái (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_left', ['turn_left()', 'turn_left()', 'turn_left()', 'shoot()', 'wait()', 'turn_left()'])] }
+        { moTa: 'Quay trái rồi bắn ra sau: cú giật đẩy xe sang trái, đúng vào thùng', hamCuaEmMoi: [H('kick_left', ['turn_left()', 'spray_back()', 'wait()', 'turn_right()'])] },
+        { moTa: 'Quay phải bằng ba lần quay trái (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_left', ['turn_left()', 'turn_left()', 'turn_left()', 'spray()', 'wait()', 'turn_left()'])] }
       ],
       loiSai: [
         { moTa: 'Chép nguyên kick_right(): cú giật lần hai đẩy xe sang phải, thùng bên trái không nhúc nhích', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('kick_left', T_KICK_RIGHT)], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Đá xong không quay lại: xe quay mặt sang phải', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('kick_left', ['turn_right()', 'shoot()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đá xong không quay lại: xe quay mặt sang phải', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('kick_left', ['turn_right()', 'spray()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Không quay mà bắn luôn: xe giật lùi xuống, thùng không nhúc nhích', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('kick_left', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi kick_left() mà chưa chế hàm', baiLam: { chinh: C_6.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
@@ -257,7 +257,7 @@
     man({
       so: 7, ten: 'Vòi phun lắp ngược', hang: 'bien-the', hamCuaEmCan: ['turn_left', 'turn_right'],
       daoChieu: ['sung'], canhBao: 'Vòi phun lắp ngược',
-      deBai: 'Vòi phun bị lắp ngược nên hàm fixed_kick() của màn chạy sai: shoot() bắn ra sau, shoot_back() bắn ra trước. Sửa fixed_kick() để đá thùng bên phải sang phải như thùng mờ, xe theo một ô và giữ hướng như xe mờ.',
+      deBai: 'Vòi phun bị lắp ngược nên hàm fixed_kick() của màn chạy sai: spray() bắn ra sau, spray_back() bắn ra trước. Sửa fixed_kick() để đá thùng bên phải sang phải như thùng mờ, xe theo một ô và giữ hướng như xe mờ.',
       veMaMau: 'Chương trình chính bị khóa, chỉ gọi fixed_kick(). Hàm fixed_kick() đang giống kick_right() cũ. Thử nó trong sân thử của Xưởng hàm để thấy xe đi đâu.',
       san: SAN_4, batDau: BD_5X5,
       bongMo: { x: 3, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] },
@@ -267,23 +267,23 @@
       loiGiai: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', T_FIXED)] },
       loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', nhieu(['# vòi phun lắp ngược'], T_FIXED))] } },
       congThucKhac: [
-        { moTa: 'Quay phải thay vì quay trái: shoot() lúc này bắn ra sau, xe giật tới đúng vào thùng', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_right()', 'shoot()', 'wait()', 'turn_left()'])] } },
-        { moTa: 'Thêm một nhịp chờ trước khi quay lại (chậm hơn nhưng vẫn đúng)', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_left()', 'shoot_back()', 'wait()', 'wait()', 'turn_right()'])] } }
+        { moTa: 'Quay phải thay vì quay trái: spray() lúc này bắn ra sau, xe giật tới đúng vào thùng', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_right()', 'spray()', 'wait()', 'turn_left()'])] } },
+        { moTa: 'Thêm một nhịp chờ trước khi quay lại (chậm hơn nhưng vẫn đúng)', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_left()', 'spray_back()', 'wait()', 'wait()', 'turn_right()'])] } }
       ],
       loiSai: [
         { moTa: 'Để nguyên hàm của màn: vòi phun ngược nên xe giật sang trái, thùng không nhúc nhích', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', T_FIXED_CU)] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Chỉ đổi hướng quay mà vẫn dùng shoot_back(): xe lại giật sang trái', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_right()', 'shoot_back()', 'wait()', 'turn_left()'])] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Đổi lệnh bắn nhưng quên quay lại: xe quay mặt sang trái', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_left()', 'shoot_back()', 'wait()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Chỉ đổi hướng quay mà vẫn dùng spray_back(): xe lại giật sang trái', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_right()', 'spray_back()', 'wait()', 'turn_left()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đổi lệnh bắn nhưng quên quay lại: xe quay mặt sang trái', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', ['turn_left()', 'spray_back()', 'wait()'])] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Xóa mất hàm fixed_kick() của màn: lệnh gọi nó không còn hàm nào', baiLam: { chinh: C_7.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Thử gọi shoot() ở sân thử: xe giật tới hay giật lùi?', 'Muốn xe giật sang phải thì đổi một lệnh bắn, hoặc đổi hướng quay.']
+      goiY: ['Thử gọi spray() ở sân thử: xe giật tới hay giật lùi?', 'Muốn xe giật sang phải thì đổi một lệnh bắn, hoặc đổi hướng quay.']
     }),
 
     man({
       so: 8, ten: 'Đầu phun sau hỏng', hang: 'bien-the', hamGoc: KHAY_HONG, phanCung: KHAY_HONG, canhBao: 'Đầu phun sau hỏng',
       hamCuaEmCan: ['u_turn', 'turn_right'], taoHam: ['kick_ahead'],
-      deBai: 'Đầu phun sau của vòi phun hỏng nên shoot_back() không chạy được. Thùng nặng nằm ngay trước xe. Chương trình chính gọi kick_ahead(): em tự chế lệnh này để đá thùng nhích lên một ô bằng đầu phun trước, xe theo một ô và quay mặt như cũ.',
-      veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi kick_ahead(). Mở Xưởng hàm, tạo kick_ahead() rồi bấm Chạy. Khay chỉ còn đầu phun trước shoot().',
+      deBai: 'Đầu phun sau của vòi phun hỏng nên spray_back() không chạy được. Thùng nặng nằm ngay trước xe. Chương trình chính gọi kick_ahead(): em tự chế lệnh này để đá thùng nhích lên một ô bằng đầu phun trước, xe theo một ô và quay mặt như cũ.',
+      veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi kick_ahead(). Mở Xưởng hàm, tạo kick_ahead() rồi bấm Chạy. Khay chỉ còn đầu phun trước spray().',
       san: SAN_8, batDau: BD_5X5,
       bongMo: { x: 2, y: 1, huong: 0, thung: [{ x: 2, y: 0 }] },
       chinhCoDinh: true,
@@ -292,12 +292,12 @@
       loiGiai: { chinh: C_8.slice(), hamCuaEmMoi: [H('kick_ahead', T_KICK_AHEAD)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('kick_ahead', nhieu(['# quay đầu để thùng ở sau xe'], T_KICK_AHEAD))] },
       congThucKhac: [
-        { moTa: 'Quay đầu bằng hai lần quay phải (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_ahead', ['turn_right()', 'turn_right()', 'shoot()', 'wait()', 'turn_right()', 'turn_right()'])] },
-        { moTa: 'Quay đầu bằng hai lần quay trái (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_ahead', ['turn_left()', 'turn_left()', 'shoot()', 'wait()', 'turn_left()', 'turn_left()'])] }
+        { moTa: 'Quay đầu bằng hai lần quay phải (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_ahead', ['turn_right()', 'turn_right()', 'spray()', 'wait()', 'turn_right()', 'turn_right()'])] },
+        { moTa: 'Quay đầu bằng hai lần quay trái (chậm hơn hai nhịp)', hamCuaEmMoi: [H('kick_ahead', ['turn_left()', 'turn_left()', 'spray()', 'wait()', 'turn_left()', 'turn_left()'])] }
       ],
       loiSai: [
-        { moTa: 'Dùng shoot_back(): đầu phun sau hỏng nên lệnh không chạy được', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('kick_ahead', T_JET_FWD)], phaiCoMa: ['lenh-goc-hong'] },
-        { moTa: 'Đá xong không quay đầu lại: xe quay mặt xuống', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('kick_ahead', ['u_turn()', 'shoot()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Dùng spray_back(): đầu phun sau hỏng nên lệnh không chạy được', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('kick_ahead', T_JET_FWD)], phaiCoMa: ['lenh-goc-hong'] },
+        { moTa: 'Đá xong không quay đầu lại: xe quay mặt xuống', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('kick_ahead', ['u_turn()', 'spray()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Bắn luôn không quay đầu: xe giật lùi xuống, thùng ở trước không nhúc nhích', baiLam: { chinh: C_8.slice() }, hamCuaEmMoi: [H('kick_ahead', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi kick_ahead() mà chưa chế hàm', baiLam: { chinh: C_8.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
@@ -317,7 +317,7 @@
       loiGiaiKhac: { moTa: 'Cùng cách viết, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', nhieu(['# làm ngược lại go_out()'], T_COME_BACK))] } },
       congThucKhac: [
         { moTa: 'Tiến bằng bánh thay cho jet_fwd(): move() ba lần', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', ['move()', 'move()', 'turn_left()', 'move()'])] } },
-        { moTa: 'Viết thẳng shoot_back() và wait() thay cho jet_fwd()', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', ['shoot_back()', 'wait()', 'shoot_back()', 'wait()', 'turn_left()', 'shoot_back()', 'wait()'])] } }
+        { moTa: 'Viết thẳng spray_back() và wait() thay cho jet_fwd()', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', ['spray_back()', 'wait()', 'spray_back()', 'wait()', 'turn_left()', 'spray_back()', 'wait()'])] } }
       ],
       loiSai: [
         { moTa: 'Để nguyên thân pass: xe còn đứng ở chỗ go_out() dừng', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', T_COME_BACK_TRONG)] }, phaiCoMa: ['lech-bong-mo'] },

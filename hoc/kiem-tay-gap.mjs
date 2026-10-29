@@ -621,8 +621,8 @@ console.log('\n== 16. Chương tay-gap: dữ liệu 10 màn, bảng tóm tắt =
     const std = ChamHoc.cham(m9, m9.loiGiaiKhac.baiLam, tron(khoMau, m9.loiGiaiKhac.hamCuaEmMoi));
     kiem('4.9: cách chuẩn (pick() / drop() đầy đủ) thắng nhưng đúng 2 sao (ô = sao.o ' + m9.sao.o + ', chậm: ' + std.soNhip + ' > ' + m9.sao.nhip + ' nhịp)',
       std.thang && std.sao === 2 && std.soO === m9.sao.o && std.soNhip > m9.sao.nhip && std.chanDoan.length === 0, J([std.sao, std.soO, std.soNhip, maCua(std)]));
-    const fast = ChamHoc.cham(m9, m9.loiGiai, tron(khoMau, m9.loiGiai.hamCuaEmMoi));
-    kiem('4.9: sửa pick() / drop() thành bản gộp → 3 sao, ' + fast.soNhip + ' nhịp = BFS, ít ô hơn cách chuẩn (' + fast.soO + ' < ' + m9.sao.o + ')', fast.thang && fast.sao === 3 && fast.soNhip === nhipBfs(m9) && fast.soO < m9.sao.o);
+    const low = ChamHoc.cham(m9, m9.loiGiai, tron(khoMau, m9.loiGiai.hamCuaEmMoi));
+    kiem('4.9: sửa pick() / drop() thành bản gộp → 3 sao, ' + low.soNhip + ' nhịp = BFS, ít ô hơn cách chuẩn (' + low.soO + ' < ' + m9.sao.o + ')', low.thang && low.sao === 3 && low.soNhip === nhipBfs(m9) && low.soO < m9.sao.o);
     // người chơi thật: bản sửa ở 4.9 ở lại trong kho; các màn khác vẫn 3 sao (nhanh hơn hoặc bằng, ít ô hơn)
     const khoSau = tron(khoMau, m9.loiGiai.hamCuaEmMoi);
     const tiep = manPD.map((m) => ChamHoc.cham(m, m.loiGiai, tron(khoSau, m.loiGiai.hamCuaEmMoi.filter((h) => !['pick', 'drop'].includes(h.ten)))));
@@ -755,11 +755,11 @@ console.log('\n== 17. Luật vật mới (14/10): vật chiếm ô với MỌI t
   kiem('vật ở sau lưng không ảnh hưởng front_clear()', doc(k2)[0].trong === true);
 
   // ---- thùng nặng không bị đẩy vào ô có vật; thùng vẫn chiếm ô
-  const HP = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'shoot', 'shoot_back'];
-  const t1 = run('banh', HP, ['.Ho.'], { x: 0, y: 0, huong: 1 }, L('shoot_back()', 'wait()'));
+  const HP = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'spray', 'spray_back'];
+  const t1 = run('banh', HP, ['.Ho.'], { x: 0, y: 0, huong: 1 }, L('spray_back()', 'wait()'));
   kiem('súng hơi: cú giật vào thùng mà ô sau thùng có vật thì thung-chan (vat "vat"): xe và thùng đứng yên', maSK(t1, 'thung-chan').length === 1 && maSK(t1, 'thung-chan')[0].vat === 'vat' && vt(t1.robot) === '0,0' && vt(t1.thung[0]) === '1,0', J(t1.suKien));
-  const t2 = run('banh', HP, ['.H.o'], { x: 0, y: 0, huong: 1 }, L('shoot_back()', 'wait()'));
-  kiem('shoot_back(): thùng trượt tới sát vật thì dừng (ô vật chặn như tường) ở (2,0)', vt(t2.thung[0]) === '2,0', J(t2.suKien));
+  const t2 = run('banh', HP, ['.H.o'], { x: 0, y: 0, huong: 1 }, L('spray_back()', 'wait()'));
+  kiem('spray_back(): thùng trượt tới sát vật thì dừng (ô vật chặn như tường) ở (2,0)', vt(t2.thung[0]) === '2,0', J(t2.suKien));
   // ---- tay 'tren' + release: vật vỡ ở ô trước mặt (hay ô xe nếu ô trước ngoài sân)
   const v2 = run('banh', BANH.concat(TAY), ['...', '.o.', '...'], { x: 1, y: 2, huong: 0 }, L('arm_down()', 'grab()', 'wait()', 'arm_up()', 'left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'arm_up()', 'release()', 'wait()'));
   kiem('xe cầm vật tới sát mép sân rồi thả từ tay nâng: vật vỡ, ô vỡ = ô xe đứng (vì ô trước ngoài sân)', v2.vat[0].trangThai === 'vo' && maSK(v2, 'vat-vo').length === 1 && vt(maSK(v2, 'vat-vo')[0].o) === '1,0', J(v2.suKien));

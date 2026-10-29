@@ -6,8 +6,8 @@
    nút nào đang bật, cửa nào đang mở, băng nào đang tắt, nhịp mod chu kỳ cửa nhịp, tập ô ◆ (diQua) đã qua.
    Một HÀNH ĐỘNG mỗi nhịp, MỘT trong:
      - hiệu quả bánh: tien | lui | phai | trai | dau | cho (đứng yên) — tập cho phép do phần cứng quyết định (toHopChoPhep của do-duong-che-xe.mjs; mặc định đủ sáu);
-     - ban-truoc  (shoot không đảo: bóng ra trước, xe giật lùi)  hay  ban-sau (bóng ra sau, xe giật tới) — nếu phần cứng có shoot / shoot_back;
-       màn có man.lucBan thêm hai hành động BẮN NHANH { ban, luc: 'fast' }: bóng bay tối đa SanHoc.TAM_BAN_NHANH ô, xe không giật.
+     - ban-truoc  (spray không đảo: bóng ra trước, xe giật lùi)  hay  ban-sau (bóng ra sau, xe giật tới) — nếu phần cứng có spray / spray_back;
+       màn có man.lucBan thêm hai hành động BẮN NHANH { ban, luc: 'low' }: bóng bay tối đa SanHoc.TAM_BAN_NHANH ô, xe không giật.
    Nhịp có bắn thì bánh nghỉ (khay chặn luôn lệnh bánh cùng nhịp), nên bắn là MỘT hành động riêng.
    Thứ tự trong nhịp: bắn (bóng bay, nút đổi, băng đổi ngay) → giật (xe / thùng) → băng chuyền xe → băng chuyền thùng → cửa đổi ở cuối nhịp (cửa không đóng đè lên xe hay thùng).
    Mục tiêu: 'toi-co' (chạm cờ F), 'day-thung' (mọi thùng nằm trên ô đích; thùng kẹt góc = trạng thái chết), 'bong-mo' (xe đúng tư thế, đã qua mọi ô ◆, thùng mờ nếu khai: thắng khi chương trình CHẠY XONG nên
@@ -36,14 +36,14 @@ export const HIEU_QUA_BANH = ['cho', 'tien', 'phai', 'trai', 'lui', 'dau'];
 export function hanhDongChoPhep(man, tuyChon = {}) {
   const pc = tuyChon.phanCung || SanHoc.phanCungCua(man);
   const kq = toHopChoPhep(man, { phanCung: pc, daoChieu: (man.daoChieu || []).filter((x) => x === 'trai' || x === 'phai') }).map((b) => ({ banh: b }));
-  // daoChieu 'sung' chỉ đổi TÊN lệnh (shoot ↔ shoot_back), không đổi tập hiệu quả làm được: ban-truoc cần nòng trước, ban-sau cần nòng sau (đã tính đảo)
+  // daoChieu 'sung' chỉ đổi TÊN lệnh (spray ↔ spray_back), không đổi tập hiệu quả làm được: ban-truoc cần nòng trước, ban-sau cần nòng sau (đã tính đảo)
   const dao = (man.daoChieu || []).includes('sung');
-  const truoc = dao ? 'shoot_back' : 'shoot', sau = dao ? 'shoot' : 'shoot_back';
+  const truoc = dao ? 'spray_back' : 'spray', sau = dao ? 'spray' : 'spray_back';
   if (pc.includes(truoc)) kq.push({ ban: 'truoc' });
   if (pc.includes(sau)) kq.push({ ban: 'sau' });
   if (man.lucBan) {                                                    // màn Lực bắn: thêm bắn nhanh (bóng bay ≤ 2 ô, không giật)
-    if (pc.includes(truoc)) kq.push({ ban: 'truoc', luc: 'fast' });
-    if (pc.includes(sau)) kq.push({ ban: 'sau', luc: 'fast' });
+    if (pc.includes(truoc)) kq.push({ ban: 'truoc', luc: 'low' });
+    if (pc.includes(sau)) kq.push({ ban: 'sau', luc: 'low' });
   }
   return kq;
 }
@@ -154,7 +154,7 @@ export function buocMotNhip(ctx, S, a) {
   if (a.ban) {
     const hb = a.ban === 'sau' ? (N.h + 2) % 4 : N.h;
     // (a) bóng bay
-    const v = VEC[hb], nhanh = a.luc === 'fast';
+    const v = VEC[hb], nhanh = a.luc === 'low';
     let x = N.x, y = N.y, d = 0;
     for (;;) {
       x += v[0]; y += v[1]; d++;
@@ -319,7 +319,7 @@ export function nhipSungHoiTatCa(man, tuyChon = {}) {
 
 /**
  * Chuỗi hành động → mã Python lệnh gốc (mỗi hành động một nhóm lệnh + wait()).
- * tuyChon.daoChieu: ['sung'] thì ban-truoc viết shoot_back() và ban-sau viết shoot() (hiệu quả THẬT khác tên lệnh); ['trai'] / ['phai'] đảo lệnh bánh tương ứng.
+ * tuyChon.daoChieu: ['sung'] thì ban-truoc viết spray_back() và ban-sau viết spray() (hiệu quả THẬT khác tên lệnh); ['trai'] / ['phai'] đảo lệnh bánh tương ứng.
  */
 export function chuoiThanhMa(chuoi, tuyChon = {}) {
   const dao = tuyChon.daoChieu || [], pc = tuyChon.phanCung || null;
@@ -329,7 +329,7 @@ export function chuoiThanhMa(chuoi, tuyChon = {}) {
   const BANH = { cho: [0, 0], tien: [1, 1], lui: [-1, -1], phai: [1, 0], trai: [0, 1], dau: [1, -1] };
   const dong = [];
   for (const a of chuoi) {
-    if (a.ban) dong.push((((a.ban === 'truoc') === !daoS) ? 'shoot' : 'shoot_back') + (a.luc === 'fast' ? '("fast")' : '()'));
+    if (a.ban) dong.push((((a.ban === 'truoc') === !daoS) ? 'spray' : 'spray_back') + (a.luc === 'low' ? '("low")' : '()'));
     else { const [t, p] = BANH[a.banh]; dong.push(...tl(t), ...pl(p)); }
     dong.push('wait()');
   }

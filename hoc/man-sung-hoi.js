@@ -3,14 +3,14 @@
    (thùng nặng trượt vào đích, nút mở cửa, băng chuyền bật tắt) và thêm cái mới của GIẬT. Kế hoạch KE-HOACH-CHE-LENH.md mục 5c.3 (user chốt 15/10).
    Robot là XE HAI BÁNH gắn SÚNG HƠI có hai nòng: robot { than: 'hai-banh', tay: 'hoi', camBien: [] }.
    Hai lệnh gốc (luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI), chỉ RA LỆNH, wait() cho nhịp trôi, một nhịp một phát, cặp lệnh ngược:
-       shoot()       bắn bóng ra TRƯỚC mũi xe; xe GIẬT LÙI một ô
-       shoot_back()  bắn bóng ra SAU đuôi xe;  xe GIẬT TỚI một ô
+       spray()       bắn bóng ra TRƯỚC mũi xe; xe GIẬT LÙI một ô
+       spray_back()  bắn bóng ra SAU đuôi xe;  xe GIẬT TỚI một ô
    Ô xe giật vào bị chặn (tường, mép sân, cửa đóng, nút, hàng rào, vật…) thì xe đứng yên; ô đó có THÙNG NẶNG thì thùng NHÍCH ĐÚNG 1 Ô theo hướng giật và xe dời 1 ô theo vào ô thùng vừa rời
    (luật 29/10 "giật một ô", như xích đẩy thùng); ô sau thùng bị chặn thì cả hai đứng yên. Xe húc thùng bằng bánh = đâm như tường. Bóng bay thẳng tới vật cản đầu tiên, qua hàng rào / băng chuyền / cửa mở; trúng nút N thì nút đổi (băng đổi ngay, cửa đổi cuối nhịp).
    Thứ tự trong nhịp: bắn → giật → băng chuyền → cửa đổi. Nhịp có lệnh bắn thì bánh nghỉ (khay chặn luôn lệnh bánh cùng nhịp).
 
    Ba hàng: 1–3 làm quen (giật lùi, giật tới, bóng ra sau mở cửa) · 4–6 luyện (thùng nặng sau xe, hai thùng hai phía, quay để đẩy) · 7–9 biến thể (thùng đi băng, tắt băng cho xe, thùng chắn đường bắn) · 10 trùm.
-   Khay: màn 1 chỉ có wait và shoot; màn 2 thêm shoot_back; từ màn 3 có đủ lệnh bánh (kể cả bánh lùi). Hàm của em có sẵn từ các chương trước (move, turn_left, back, forward…).
+   Khay: màn 1 chỉ có wait và spray; màn 2 thêm spray_back; từ màn 3 có đủ lệnh bánh (kể cả bánh lùi). Hàm của em có sẵn từ các chương trước (move, turn_left, back, forward…).
    Mục tiêu: 1–3 và 8–9 tới cờ F; 4–7 và 10 'day-thung' (mọi thùng nặng nằm trên ô đích). Sân ≤ 7×9; cauTruc ['for', 'if', 'while']; chương này không tạo hàm cốt truyện mới.
 
    Sao: sao.nhip = số nhịp của lời giải chuẩn = đường ngắn nhất (BFS do-duong-sung-hoi.mjs, mỗi phát bắn một nhịp riêng, không gộp với lệnh bánh); sao.o = ô của lời giải chuẩn.
@@ -23,9 +23,9 @@
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var KHAY_1 = ['wait', 'shoot'];                                 // màn 1: chỉ có nòng trước
-  var KHAY_2 = ['wait', 'shoot', 'shoot_back'];                   // màn 2: thêm nòng sau
-  var KHAY = BANH.concat(['shoot', 'shoot_back']);                // từ màn 3
+  var KHAY_1 = ['wait', 'spray'];                                 // màn 1: chỉ có nòng trước
+  var KHAY_2 = ['wait', 'spray', 'spray_back'];                   // màn 2: thêm nòng sau
+  var KHAY = BANH.concat(['spray', 'spray_back']);                // từ màn 3
 
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
   /** Vòng for lặp các lệnh `lenh` (chuỗi hoặc mảng) `n` lần. */
@@ -35,8 +35,8 @@
   }
   function lap(ds, n) { var kq = []; for (var i = 0; i < n; i++) kq = kq.concat(ds); return kq; }
 
-  var BAN = ['shoot()', 'wait()'];                                // bắn ra trước (giật lùi)
-  var BAN_SAU = ['shoot_back()', 'wait()'];                       // bắn ra sau (giật tới)
+  var BAN = ['spray()', 'wait()'];                                // bắn ra trước (giật lùi)
+  var BAN_SAU = ['spray_back()', 'wait()'];                       // bắn ra sau (giật tới)
 
   /** Điền các trường chung của chương (không đụng tới trường màn đã khai). */
   function man(m) {
@@ -102,43 +102,43 @@
     /* ------------------------------------------------ hàng 1: làm quen */
     man({
       so: 1, ten: 'Bắn là lùi', hang: 'lam-quen', hamGoc: KHAY_1,
-      deBai: 'Xe có vòi phun ở mũi. shoot() bắn một tia nước ra phía trước, và cú giật làm xe lùi một ô. Lá cờ nằm phía sau xe: bắn để lùi tới cờ.',
+      deBai: 'Xe có vòi phun ở mũi. spray() bắn một tia nước ra phía trước, và cú giật làm xe lùi một ô. Lá cờ nằm phía sau xe: bắn để lùi tới cờ.',
       veMaMau: 'Chương trình có sẵn bắn một phát. Chạy thử, xem xe lùi mấy ô rồi viết tiếp.',
       san: SAN_1, batDau: BD_1,
       maMau: { chinh: BAN.slice() },
       sao: { o: 3, nhip: 3 },
       loiGiai: { chinh: CHINH_1.slice() },
-      loiGiaiKhac: { moTa: 'Viết thẳng ba cặp shoot(), wait() không dùng vòng for', baiLam: { chinh: lap(BAN, 3) } },
+      loiGiaiKhac: { moTa: 'Viết thẳng ba cặp spray(), wait() không dùng vòng for', baiLam: { chinh: lap(BAN, 3) } },
       loiSai: [
-        { moTa: 'Quên wait(): chỉ phát bắn đầu được tính, hai phát sau bị bỏ', baiLam: { chinh: ['shoot()', 'shoot()', 'shoot()'] }, phaiCoMa: ['ban-goi-lai', 'quen-wait', 'chua-toi-co'] },
+        { moTa: 'Quên wait(): chỉ phát bắn đầu được tính, hai phát sau bị bỏ', baiLam: { chinh: ['spray()', 'spray()', 'spray()'] }, phaiCoMa: ['ban-goi-lai', 'quen-wait', 'chua-toi-co'] },
         { moTa: 'Bắn thiếu một phát: xe dừng cách cờ một ô', baiLam: { chinh: LAP(2, BAN) }, phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Dùng bánh để lùi: lệnh left_back() chưa có trên khay ở màn này', baiLam: { chinh: ['left_back()', 'right_back()', 'wait()'] }, phaiCoMa: ['lenh-chua-mo'] }
       ],
-      goiY: ['Bắn ra trước thì xe bị giật lùi một ô. Sau shoot() phải có wait() thì nhịp mới trôi.',
+      goiY: ['Bắn ra trước thì xe bị giật lùi một ô. Sau spray() phải có wait() thì nhịp mới trôi.',
         'Cờ cách xe ba ô, nên cần ba phát bắn.']
     }),
 
     man({
       so: 2, ten: 'Bắn ra sau', hang: 'lam-quen', hamGoc: KHAY_2,
-      deBai: 'shoot_back() bắn tia nước ra phía sau, và cú giật đẩy xe tiến một ô. Cờ nằm phía trước xe: bắn ra sau để tiến tới cờ.',
+      deBai: 'spray_back() bắn tia nước ra phía sau, và cú giật đẩy xe tiến một ô. Cờ nằm phía trước xe: bắn ra sau để tiến tới cờ.',
       veMaMau: 'Chương trình có sẵn bắn một phát. Chạy thử, xem xe đi mấy ô rồi viết tiếp.',
       san: SAN_2, batDau: BD_2,
       maMau: { chinh: BAN_SAU.slice() },
       sao: { o: 3, nhip: 3 },
       loiGiai: { chinh: CHINH_2.slice() },
-      loiGiaiKhac: { moTa: 'Viết thẳng ba cặp shoot_back(), wait() không dùng vòng for', baiLam: { chinh: lap(BAN_SAU, 3) } },
+      loiGiaiKhac: { moTa: 'Viết thẳng ba cặp spray_back(), wait() không dùng vòng for', baiLam: { chinh: lap(BAN_SAU, 3) } },
       loiSai: [
-        { moTa: 'Dùng shoot() thay cho shoot_back(): xe giật lùi mà sau lưng là tường nên xe không nhúc nhích', baiLam: { chinh: LAP(3, BAN) }, phaiCoMa: ['giat-chan', 'chua-toi-co'] },
-        { moTa: 'Quên wait(): chỉ phát bắn đầu được tính', baiLam: { chinh: ['shoot_back()', 'shoot_back()', 'shoot_back()'] }, phaiCoMa: ['ban-goi-lai', 'quen-wait', 'chua-toi-co'] },
+        { moTa: 'Dùng spray() thay cho spray_back(): xe giật lùi mà sau lưng là tường nên xe không nhúc nhích', baiLam: { chinh: LAP(3, BAN) }, phaiCoMa: ['giat-chan', 'chua-toi-co'] },
+        { moTa: 'Quên wait(): chỉ phát bắn đầu được tính', baiLam: { chinh: ['spray_back()', 'spray_back()', 'spray_back()'] }, phaiCoMa: ['ban-goi-lai', 'quen-wait', 'chua-toi-co'] },
         { moTa: 'Bắn thiếu một phát: xe dừng cách cờ một ô', baiLam: { chinh: LAP(2, BAN_SAU) }, phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['shoot() bắn ra trước và xe lùi, shoot_back() bắn ra sau và xe tiến: hai lệnh ngược nhau.',
+      goiY: ['spray() bắn ra trước và xe lùi, spray_back() bắn ra sau và xe tiến: hai lệnh ngược nhau.',
         'Cờ cách xe ba ô.']
     }),
 
     man({
       so: 3, ten: 'Van ở sau lưng', hang: 'lam-quen', hamCuaEmCan: ['forward', 'move'],
-      deBai: 'Cửa đóng chắn đường tới cờ, còn van mở cửa gắn trên tường phía sau xe. shoot_back() bắn tia nước ra sau, trúng van thì cửa mở. Mở cửa rồi đưa xe tới cờ.',
+      deBai: 'Cửa đóng chắn đường tới cờ, còn van mở cửa gắn trên tường phía sau xe. spray_back() bắn tia nước ra sau, trúng van thì cửa mở. Mở cửa rồi đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn đã bắn trúng van. Chạy thử, xem cửa, rồi viết tiếp phần đưa xe tới cờ.',
       san: SAN_3, batDau: BD_3,
       maMau: { chinh: BAN_SAU.slice() },
@@ -147,8 +147,8 @@
       loiGiaiKhac: { moTa: 'Chia đoạn đi thành forward(2) rồi move()', baiLam: { chinh: nhieu(BAN_SAU, ['forward(2)', 'move()']) } },
       loiSai: [
         { moTa: 'Không bắn van: cửa vẫn đóng nên xe đâm vào cửa', baiLam: { chinh: ['forward(3)'] }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Bắn ra trước bằng shoot(): tia nước bay về phía cửa chứ không tới van, cửa vẫn đóng', baiLam: { chinh: nhieu(BAN, ['forward(3)']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Quên wait() sau shoot_back(): lệnh bánh nằm chung nhịp với lệnh bắn nên bị bỏ', baiLam: { chinh: ['shoot_back()', 'forward(3)'] }, phaiCoMa: ['ban-dung-yen', 'chua-toi-co'] },
+        { moTa: 'Bắn ra trước bằng spray(): tia nước bay về phía cửa chứ không tới van, cửa vẫn đóng', baiLam: { chinh: nhieu(BAN, ['forward(3)']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Quên wait() sau spray_back(): lệnh bánh nằm chung nhịp với lệnh bắn nên bị bỏ', baiLam: { chinh: ['spray_back()', 'forward(3)'] }, phaiCoMa: ['ban-dung-yen', 'chua-toi-co'] },
         { moTa: 'Đi thiếu một ô: xe dừng ngay trước cờ', baiLam: { chinh: nhieu(BAN_SAU, ['forward(2)']) }, phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Van ở sau lưng nên không cần quay xe: bắn ra sau là trúng, và cú giật còn đẩy xe tiến một ô.',
@@ -164,12 +164,12 @@
       maMau: { chinh: ['forward(2)'] },
       sao: { o: 3, nhip: 2 },
       loiGiai: { chinh: CHINH_4.slice() },
-      loiGiaiKhac: { moTa: 'Viết thẳng hai cặp shoot(), wait() không dùng vòng for', baiLam: { chinh: lap(BAN, 2) } },
+      loiGiaiKhac: { moTa: 'Viết thẳng hai cặp spray(), wait() không dùng vòng for', baiLam: { chinh: lap(BAN, 2) } },
       loiSai: [
         { moTa: 'Quay đầu rồi húc thùng bằng bánh: thùng nặng cản như tường', baiLam: { chinh: ['u_turn()', 'move()'] }, phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
-        { moTa: 'Dùng shoot_back(): xe giật tới, cách xa thùng, thùng không nhúc nhích', baiLam: { chinh: BAN_SAU.slice() }, phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Dùng spray_back(): xe giật tới, cách xa thùng, thùng không nhúc nhích', baiLam: { chinh: BAN_SAU.slice() }, phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Bắn một phát: thùng mới nhích một ô, chưa tới đích', baiLam: { chinh: BAN.slice() }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Quên wait(): lệnh bắn chưa kịp chạy', baiLam: { chinh: ['shoot()'] }, phaiCoMa: ['quen-wait', 'chua-day-thung'] }
+        { moTa: 'Quên wait(): lệnh bắn chưa kịp chạy', baiLam: { chinh: ['spray()'] }, phaiCoMa: ['quen-wait', 'chua-day-thung'] }
       ],
       goiY: ['Thùng nằm sau xe: bắn ra trước, xe giật lùi đúng vào thùng.',
         'Mỗi phát thùng nhích một ô, xe theo sát: đích cách thùng hai ô thì bắn hai phát.']
@@ -177,7 +177,7 @@
 
     man({
       so: 5, ten: 'Hai thùng hai phía', hang: 'luyen', mucTieu: 'day-thung',
-      deBai: 'Xe đứng giữa hai thùng nặng, mỗi thùng có một ô đích nằm sát tường. Thùng ở phía nào thì phải chọn đúng lệnh: shoot() đẩy thùng sau xe, shoot_back() đẩy thùng trước mặt xe. Đưa cả hai thùng vào đích.',
+      deBai: 'Xe đứng giữa hai thùng nặng, mỗi thùng có một ô đích nằm sát tường. Thùng ở phía nào thì phải chọn đúng lệnh: spray() đẩy thùng sau xe, spray_back() đẩy thùng trước mặt xe. Đưa cả hai thùng vào đích.',
       veMaMau: 'Chương trình có sẵn đẩy được một thùng. Chạy thử, xem xe dừng ở đâu rồi đẩy nốt thùng còn lại.',
       san: SAN_5, batDau: BD_5,
       maMau: { chinh: BAN.slice() },
@@ -188,7 +188,7 @@
         { moTa: 'Chỉ đẩy thùng phía sau: thùng phía trước vẫn nằm giữa hành lang', baiLam: { chinh: BAN.slice() }, phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Bắn hai lần cùng một chiều: thùng phía sau đã sát tường, không nhúc nhích nữa', baiLam: { chinh: nhieu(BAN, BAN) }, phaiCoMa: ['thung-chan', 'chua-day-thung'] },
         { moTa: 'Giật tới chỉ một lần: xe đã lùi theo thùng sau nên phát này chưa chạm thùng trước', baiLam: { chinh: nhieu(BAN, BAN_SAU) }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Quên wait() sau lệnh bắn thứ hai: lệnh đó chưa kịp chạy', baiLam: { chinh: nhieu(BAN, ['shoot_back()']) }, phaiCoMa: ['quen-wait', 'chua-day-thung'] }
+        { moTa: 'Quên wait() sau lệnh bắn thứ hai: lệnh đó chưa kịp chạy', baiLam: { chinh: nhieu(BAN, ['spray_back()']) }, phaiCoMa: ['quen-wait', 'chua-day-thung'] }
       ],
       goiY: ['Xe giật về phía nào thì thùng nằm phía đó bị đẩy: bắn ra trước giật lùi, bắn ra sau giật tới.',
         'Đẩy xong thùng này, xe đã dời một ô theo nó, nên cách thùng kia hai ô: giật về phía đó hai lần.']
@@ -225,7 +225,7 @@
       loiSai: [
         { moTa: 'Chờ thiếu một nhịp: thùng dừng giữa làn băng', baiLam: { chinh: nhieu(BAN_SAU, LAP(4, 'wait()')) }, phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Đẩy xong là dừng chương trình, không chờ băng', baiLam: { chinh: BAN_SAU.slice() }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Dùng shoot(): xe giật lùi mà sau lưng là tường, thùng không bị đẩy', baiLam: { chinh: nhieu(BAN, LAP(5, 'wait()')) }, phaiCoMa: ['giat-chan', 'chua-day-thung'] }
+        { moTa: 'Dùng spray(): xe giật lùi mà sau lưng là tường, thùng không bị đẩy', baiLam: { chinh: nhieu(BAN, LAP(5, 'wait()')) }, phaiCoMa: ['giat-chan', 'chua-day-thung'] }
       ],
       goiY: ['Thùng nằm ngay trước mũi xe, sát làn băng: bắn ra sau, xe giật tới đẩy thùng nhích một ô lên băng.',
         'Làn băng dài mấy ô thì thùng cần chờ bấy nhiêu lần hai nhịp.']
@@ -242,8 +242,8 @@
       loiGiaiKhac: { moTa: 'Đi bằng move() bảy lần thay cho forward(7)', baiLam: { chinh: nhieu(BAN, lap(['move()'], 7)) } },
       loiSai: [
         { moTa: 'Không tắt băng: xe vẫn tới cờ nhưng chậm hơn nhiều', baiLam: { chinh: ['forward(10)'] }, phaiCoMa: [] },
-        { moTa: 'Quên wait() sau shoot(): bước đầu của xe bị bỏ', baiLam: { chinh: ['shoot()', 'forward(7)'] }, phaiCoMa: ['ban-dung-yen'] },
-        { moTa: 'Dùng shoot_back(): tia nước bay ra sau tới tường, không tới van, băng vẫn chạy', baiLam: { chinh: nhieu(BAN_SAU, ['forward(10)']) }, phaiCoMa: [] }
+        { moTa: 'Quên wait() sau spray(): bước đầu của xe bị bỏ', baiLam: { chinh: ['spray()', 'forward(7)'] }, phaiCoMa: ['ban-dung-yen'] },
+        { moTa: 'Dùng spray_back(): tia nước bay ra sau tới tường, không tới van, băng vẫn chạy', baiLam: { chinh: nhieu(BAN_SAU, ['forward(10)']) }, phaiCoMa: [] }
       ],
       goiY: ['Van ở phía trước, nên bắn ra trước. Cú giật làm xe lùi một ô nhưng đáng giá.',
         'Tia nước bay qua làn băng và qua cả ô cờ rồi mới trúng van.']
@@ -259,7 +259,7 @@
       loiGiai: { chinh: CHINH_9.slice() },
       loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh bắn van', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], ['# quay trái, bắn trúng van'], BAN, ['back()', 'back()']) } },
       loiSai: [
-        { moTa: 'Húc thùng bằng bánh: thùng nặng cản như tường, xe không lên được', baiLam: { chinh: ['move()', 'turn_left()', 'shoot()', 'wait()'] }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Húc thùng bằng bánh: thùng nặng cản như tường, xe không lên được', baiLam: { chinh: ['move()', 'turn_left()', 'spray()', 'wait()'] }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Đẩy thùng rồi lùi mà quên bắn van: cửa vẫn đóng', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], ['back()', 'back()']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Bắn van rồi tiến thẳng: xe đang quay mặt về phía van nên đâm vào tường', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN, ['move()', 'move()']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Bắn van khi thùng còn chắn: tia nước dừng ở thùng, cửa vẫn đóng', baiLam: { chinh: nhieu(['turn_left()'], BAN) }, phaiCoMa: ['chua-toi-co'] }
@@ -278,7 +278,7 @@
       maMau: { chinh: BAN_SAU.slice() },
       sao: { o: 13, nhip: 6 },
       loiGiai: { chinh: CHINH_10.slice() },
-      loiGiaiKhac: { moTa: 'Viết thẳng hai cặp shoot(), wait() cuối không dùng vòng for', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN, ['turn_right()'], BAN, BAN) } },
+      loiGiaiKhac: { moTa: 'Viết thẳng hai cặp spray(), wait() cuối không dùng vòng for', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN, ['turn_right()'], BAN, BAN) } },
       loiSai: [
         { moTa: 'Húc thùng trước mặt bằng bánh: thùng nặng cản như tường, xe không lên được hàng van', baiLam: { chinh: ['move()', 'move()'] }, phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
         { moTa: 'Đẩy thùng thứ hai chỉ một phát: nó dừng ngay trên ô cửa, chưa tới đích', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN, ['turn_right()'], BAN) }, phaiCoMa: ['chua-day-thung'] },

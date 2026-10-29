@@ -144,7 +144,7 @@ function hanhDongTu(ctx, res) {
       if (nem.ro !== null) for (let k = 1; k <= 3; k++) ds.push({ dong: ['aim(' + k + ')', 'throw()'], chanBanh: true });
       luaTay = ds;
     } else if (ctx.tay === 'hoi') {
-      luaTay = [{ dong: [], chanBanh: false }, { dong: ['shoot()'], chanBanh: true }, { dong: ['shoot_back()'], chanBanh: true }];
+      luaTay = [{ dong: [], chanBanh: false }, { dong: ['spray()'], chanBanh: true }, { dong: ['spray_back()'], chanBanh: true }];
     }
   }
   if (loai === 'banh' || loai === 'xich' || loai === 'omni') {

@@ -50,8 +50,8 @@ const HAM_GOI = {
   3: ['go_to_wall', 'go_safe', 'clean_step', 'go_get'],
   4: ['jet_back', 'jet_fwd', 'kick_right', 'tap_right', 'kick_left', 'kick_ahead'],
   5: ['push', 'go_around', 'push_around', 'push_back'],
-  6: ['fire', 'fire_back', 'smart_fire', 'aim_fire', 'aim_left', 'aim_right', 'fire_left', 'close_fire', 'scan_left', 'aim_turn'],
-  7: ['switch_on', 'switch_left', 'find_warm', 'aim_on', 'scan_on', 'switch_right', 'aim_left_on']
+  6: ['squirt', 'squirt_back', 'smart_spray', 'auto_spray', 'auto_left', 'auto_right', 'squirt_left', 'close_spray', 'scan_left', 'auto_turn'],
+  7: ['switch_on', 'switch_left', 'find_warm', 'auto_on', 'scan_on', 'switch_right', 'auto_left_on']
 };
 /** Mọi tên hàm lời giải chạy tới (bắc cầu qua kho + hàm của màn + hàm mới) và mọi dòng của chúng. */
 function bacCau(kho, lg) {
@@ -76,7 +76,7 @@ export function recallMan2(m, kho, chay) {
   if (co(HAM_GOI[1]).length) dat(1, co(HAM_GOI[1]).join('/'));
   if ((lg.hamCuaEmMoi || []).concat(lg.hamCuaMan || []).some((h) => h.thamSo.length)) dat(2, 'tạo hàm có tham số');
   if (co(HAM_GOI[2]).length) dat(2, co(HAM_GOI[2]).join('/') + '(n)');
-  if (dong.some((l) => /distance\(\)/.test(l))) dat(3, co(HAM_GOI[3].concat(['push', 'aim_fire'])).join('/') || 'distance()');
+  if (dong.some((l) => /distance\(\)/.test(l))) dat(3, co(HAM_GOI[3].concat(['push', 'auto_spray'])).join('/') || 'distance()');
   if (/N/.test(chu) && /[Cc]/.test(chu)) dat(4, 'nút bắn mở cửa');
   if (/[<>^v]/.test(chu)) dat(4, 'băng chuyền');
   if (co(HAM_GOI[4]).length) dat(4, co(HAM_GOI[4]).join('/'));
@@ -84,7 +84,7 @@ export function recallMan2(m, kho, chay) {
   if (suKien.some((e) => e.ma === 'thung-di' && e.nguon === 'xich')) dat(5, 'xích đẩy thùng');
   if (co(HAM_GOI[5]).length) dat(5, co(HAM_GOI[5]).join('/'));
   if (co(HAM_GOI[6]).length) dat(6, co(HAM_GOI[6]).join('/'));
-  if (dong.some((l) => /\b(shoot|shoot_back)\("(fast|charge)"\)/.test(l))) dat(6, 'shoot("…")');
+  if (dong.some((l) => /\b(spray|spray_back)\("(low|high)"\)/.test(l))) dat(6, 'spray("…")');
   if (dong.some((l) => /warm\(\)/.test(l))) dat(7, co(HAM_GOI[7]).join('/') || 'warm()');
   return { goi, lyDo };
 }
@@ -179,11 +179,11 @@ async function main() {
   function buGiat(lg) {
     const them = (dong) => dong.flatMap((l, i) => {
       const th = l.match(/^\s*/)[0], t = l.trim(), truoc = (dong[i - 1] || '').trim();
-      const tu = /^(fire\("charge"\)|jet_back\(\)|shoot\("charge"\)|shoot\(\))$/.test(t) && !/^shoot/.test(t);
-      const sau = /^(fire_back\("charge"\)|jet_fwd\(\))$/.test(t);
-      const choSau = t === 'wait()' && /^shoot(_back)?\((\)|"charge"\))$/.test(truoc);
-      if (tu || (choSau && /^shoot\(/.test(truoc))) return [l, th + 'move()'];
-      if (sau || (choSau && /^shoot_back\(/.test(truoc))) return [l, th + 'back()'];
+      const tu = /^(squirt\("high"\)|jet_back\(\)|spray\("high"\)|spray\(\))$/.test(t) && !/^spray/.test(t);
+      const sau = /^(squirt_back\("high"\)|jet_fwd\(\))$/.test(t);
+      const choSau = t === 'wait()' && /^spray(_back)?\((\)|"high"\))$/.test(truoc);
+      if (tu || (choSau && /^spray\(/.test(truoc))) return [l, th + 'move()'];
+      if (sau || (choSau && /^spray_back\(/.test(truoc))) return [l, th + 'back()'];
       return [l];
     });
     const h = (ds) => (ds || []).map((x) => Object.assign({}, x, { than: them(x.than) }));
@@ -214,12 +214,12 @@ async function main() {
       else if (/^\s*[A-Za-z_]\w*\s*([-+]=|=\s*[A-Za-z_]\w*\s*[-+])/.test(l)) f.add('bien dem');
       else if (/^\s*[A-Za-z_]\w*\s*=\s*\w+\(\)/.test(l)) f.add('bien = cam bien');
       for (const x of l.matchAll(RE_SO_SANH)) if (!/^\s*for\b/.test(l)) f.add('so sanh ' + x[1] + (/^\d+$/.test(x[2]) ? ' so' : ' bien'));
-      if (/\b(shoot|shoot_back|fire|fire_back)\("(fast|charge)"\)/.test(l)) f.add('luc ban');
-      if (/\b(shoot_back|fire_back|jet_fwd)\(/.test(l)) f.add('ban sau');
+      if (/\b(spray|spray_back|squirt|squirt_back)\("(low|high)"\)/.test(l)) f.add('luc ban');
+      if (/\b(spray_back|squirt_back|jet_fwd)\(/.test(l)) f.add('ban sau');
     }
     for (const h of moi.concat(cuaMan)) {
-      if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(shoot|shoot_back|fire|fire_back)\(/.test(l))) f.add('tham so luc');
-      if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(shoot|fire)\w*\(/.test(l))) f.add('chon luc theo distance');
+      if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(spray|spray_back|squirt|squirt_back)\(/.test(l))) f.add('tham so luc');
+      if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(spray|squirt)\w*\(/.test(l))) f.add('chon luc theo distance');
       if (h.than.some((l) => /warm\(\)/.test(l))) f.add('ham doc warm');
     }
     for (const h of moi) {
@@ -296,7 +296,7 @@ async function main() {
       assert.equal(m.robot.tay, 'hoi', m.ma + ' tay ' + m.robot.tay);
       assert.equal(m.beSung, true, m.ma + ' thiếu beSung: true');
       assert.equal(m.xichDay, true, m.ma + ' thiếu xichDay: true');
-      for (const h of ['shoot', 'shoot_back']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
+      for (const h of ['spray', 'spray_back']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
       const mat = (m.robot.camBien || []).map((c) => c.ma);
       if (mat.length) { assert.deepEqual(mat, ['hong-ngoai']); for (const h of ['distance', 'warm']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h); }
       else assert.ok(!m.hamGoc.includes('distance') && !m.hamGoc.includes('warm'), m.ma + ' khay có cảm biến mà robot không gắn mắt');

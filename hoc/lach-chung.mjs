@@ -28,7 +28,7 @@ export function khaiNiem(dong) {
     if (laGan(d)) k.add('bien');
     if (/\bdistance\(\)/.test(d)) k.add('distance');
     if (/\bwarm\(\)/.test(d)) k.add('warm');
-    if (/"(fast|charge)"/.test(d)) k.add('luc');
+    if (/"(low|high)"/.test(d)) k.add('luc');
   }
   return k;
 }
@@ -75,8 +75,8 @@ export const lenhCua = (r, s) => (r.theoSan[s] ? r.theoSan[s].vet : []).filter((
 export const laDau = (e) => !!e.docCamBien && (e.ten === 'front_clear' || (e.docCamBien.ham || e.ten) === 'front_clear');
 
 /* ------------------------------------------------------------------ dựng lách */
-/** A1: dãy lệnh gốc thật (bỏ đọc cảm biến). Màn chọn lực bắn (lucBan): khối shoot trên khay luôn mang lực, nên giữ lực đã bắn: shoot("fast"). */
-export function duoiGoc(vet, lucBan) { return vet.filter((e) => !e.docCamBien).map((e) => e.ten + '(' + (lucBan && e.lucBan && /^shoot/.test(e.ten) ? '"' + e.lucBan + '"' : '') + ')'); }
+/** A1: dãy lệnh gốc thật (bỏ đọc cảm biến). Màn chọn lực bắn (lucBan): khối spray trên khay luôn mang lực, nên giữ lực đã bắn: spray("low"). */
+export function duoiGoc(vet, lucBan) { return vet.filter((e) => !e.docCamBien).map((e) => e.ten + '(' + (lucBan && e.lucBan && /^spray/.test(e.ten) ? '"' + e.lucBan + '"' : '') + ')'); }
 /** A2: dãy câu lệnh ở mức chương trình chính (dấu 'goi' cột chinh, không trong hàm). */
 export function duoiGoi(vet, banChinh, chinhGoc) {
   const kq = [];

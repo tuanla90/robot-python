@@ -238,13 +238,13 @@ const goi2Bang = BANG_MUA_2.map(([ma, ds]) => [ma, ds.map(([c, coSan]) => [c, ma
 const manMua2 = M.danhSach.filter(m => chuongMua2.has(m.chuong));
 const viTriMan = m => M.danhSach.indexOf(m);
 const LENH_MUA_1 = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear'];
-const LENH_MUA_2 = LENH_MUA_1.concat(['shoot', 'shoot_back', 'distance', 'warm']);     // + súng hơi; distance / warm khi lõi có hồng ngoại (gói 3, 7)
+const LENH_MUA_2 = LENH_MUA_1.concat(['spray', 'spray_back', 'distance', 'warm']);     // + súng hơi; distance / warm khi lõi có hồng ngoại (gói 3, 7)
 const PART_2 = { than: ['hai-banh', 'xich'], tay: ['kep', 'xoay', 'hoi'], camBien: ['khoang-cach', 'hong-ngoai'], loaiRobot: ['banh', 'xich'] };
 if (LOI_GIA_2) {
   // (a) đổi chỗ hai màn mùa 2; (b) biến ở chương xich; (c) gọi hàm có tham số ở sung-hoi; (d) bậc thang ở bang-chuyen; (e) màn cần hàm chưa ai tạo; (f) nam châm ở luc-ban.
   const a = get('sung-hoi.1'), b = get('sung-hoi.2'); [a.so, b.so] = [b.so, a.so]; M.tinhLai();
   get('xich.2').loiGiai.chinh = ['n = 3'].concat(get('xich.2').loiGiai.chinh);
-  get('sung-hoi.5').loiGiai.chinh = get('sung-hoi.5').loiGiai.chinh.concat(['shoot("fast")']);
+  get('sung-hoi.5').loiGiai.chinh = get('sung-hoi.5').loiGiai.chinh.concat(['spray("low")']);
   get('bang-chuyen.4').san = get('bang-chuyen.4').san.map((d, i) => i === 0 ? 'S' + d.slice(1) : d);
   get('che-sung-hoi.3').hamCuaEmCan = get('che-sung-hoi.3').hamCuaEmCan.concat(['fly_home']);
   get('luc-ban.2').robot = Object.assign({}, get('luc-ban.2').robot, { tay: 'nam-cham' });
@@ -432,7 +432,7 @@ function mocChuong3(c) {
 /** Dòng code bỏ chuỗi và chú thích (để tìm từ khóa). */
 const boChuoi = l => l.replace(/"[^"]*"|'[^']*'/g, '""').replace(/#.*$/, '');
 /** (b) Chuỗi làm DỮ LIỆU trong một dòng: gán chuỗi cho biến; for … in chuỗi / biến (không phải range); so sánh == / != với chuỗi; gọi hàm với đối số
- *  là chuỗi đường đi (chỉ gồm U D L R: walk("RRD"), go("R"), leap(...)). Đối số chuỗi cố định khác (shoot("fast")) KHÔNG tính. */
+ *  là chuỗi đường đi (chỉ gồm U D L R: walk("RRD"), go("R"), leap(...)). Đối số chuỗi cố định khác (spray("low")) KHÔNG tính. */
 function chuoiDuLieu(l) {
   const sai = [];
   if (/^\s*[A-Za-z_]\w*\s*=\s*["']/.test(l)) sai.push('gán chuỗi');
@@ -472,7 +472,7 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   assert.deepEqual(Object.keys(M.roiMua3).map(c => [c, M.danhSach.filter(m => m.chuong === c).map(m => m.ma)]), Object.entries(M.roiMua3), 'chương rời mùa 3');
   for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-4', c);
 });
-kiem3('(b) không màn nào trước gói 1 chương 2 mùa 3 (chuoi-nhen) dùng chuỗi làm dữ liệu (bắc cầu qua hàm của em); shoot("fast") vẫn được', () => {
+kiem3('(b) không màn nào trước gói 1 chương 2 mùa 3 (chuoi-nhen) dùng chuỗi làm dữ liệu (bắc cầu qua hàm của em); spray("low") vẫn được', () => {
   const moc = mocChuong3('chuoi-nhen'), sai = [];
   for (const m of M.danhSach.slice(0, moc)) for (const l of dongBacCau(m).dong) for (const s of chuoiDuLieu(l)) sai.push(m.ma + ' ' + s + ': ' + l.trim());
   assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 6).join(' · '));

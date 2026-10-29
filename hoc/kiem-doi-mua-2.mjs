@@ -136,11 +136,11 @@ function dacTrung(m) {
     else if (/^\s*[A-Za-z_]\w*\s*([-+]=|=\s*[A-Za-z_]\w*\s*[-+])/.test(l)) f.add('bien dem');
     else if (/^\s*[A-Za-z_]\w*\s*=\s*\w+\(\)/.test(l)) f.add('bien = cam bien');
     for (const x of l.matchAll(RE_SO_SANH)) if (!/^\s*for\b/.test(l)) f.add('so sanh ' + x[1] + (/^\d+$/.test(x[2]) ? ' so' : ' bien'));
-    if (/\b(shoot|shoot_back|fire|fire_back)\("(fast|charge)"\)/.test(l)) f.add('luc ban');
+    if (/\b(spray|spray_back|squirt|squirt_back)\("(low|high)"\)/.test(l)) f.add('luc ban');
   }
   for (const h of moi.concat(cuaMan)) {
-    if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(shoot|shoot_back|fire|fire_back)\(/.test(l))) f.add('tham so luc');
-    if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(shoot|fire)\w*\(/.test(l))) f.add('chon luc theo distance');
+    if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(spray|spray_back|squirt|squirt_back)\(/.test(l))) f.add('tham so luc');
+    if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(spray|squirt)\w*\(/.test(l))) f.add('chon luc theo distance');
     if (h.than.some((l) => /warm\(\)/.test(l))) f.add('ham doc warm');
     if (h.than.some((l) => /distance\(\)/.test(l))) f.add('ham doc distance');
     if (robotGoi(m, h.ten).length > 1) f.add('ham ca doi goi');
@@ -248,7 +248,7 @@ for (const m of DS) {
       assert.equal(r.coDinh, true, m.ma + ' chương trình chính phải khóa');
       if (m.mucTieu === 'toi-co') assert.ok(r.co && r.co.length, m.ma + ' cờ riêng từng robot');
     }
-    for (const h of ['shoot', 'shoot_back']) assert.ok(r2.hamGoc.includes(h) && !r1.hamGoc.includes(h), m.ma + ' súng chỉ ở R2');
+    for (const h of ['spray', 'spray_back']) assert.ok(r2.hamGoc.includes(h) && !r1.hamGoc.includes(h), m.ma + ' súng chỉ ở R2');
     assert.deepEqual(m.maMau.doi.map((d) => d.chinh), m.loiGiai.doi.map((d) => d.chinh), m.ma + ' chương trình khóa: mã mẫu phải trùng lời giải');
     assert.equal(m.loiGiai.chinh, undefined);
     assert.equal(hamViet(m).length, 1, m.ma + ' người chơi viết / sửa đúng một hàm');
@@ -359,21 +359,21 @@ if (!CHI) {
     }
   });
 }
-// Thứ của gói 1–7 mùa 2 hay mùa 1: hàm của em có trước gói Đội (trừ move / turn_left / turn_right / u_turn / fire / wait cơ bản), for, distance, lực "charge", băng chuyền, thùng nặng
+// Thứ của gói 1–7 mùa 2 hay mùa 1: hàm của em có trước gói Đội (trừ move / turn_left / turn_right / u_turn / squirt / wait cơ bản), for, distance, lực "high", băng chuyền, thùng nặng
 const HAM_CU = new Set(DS.length ? khoTruoc.get(DS[0].ma).map((h) => h.ten) : []);
 const recall = (m) => {
   const d = dongCua({ b: m.loiGiai, moi: m.loiGiai.hamCuaEmMoi });
-  const ds = [...loiGoi(d)].filter((t) => HAM_CU.has(t) && !['move', 'turn_left', 'turn_right', 'u_turn', 'fire'].includes(t));
+  const ds = [...loiGoi(d)].filter((t) => HAM_CU.has(t) && !['move', 'turn_left', 'turn_right', 'u_turn', 'squirt'].includes(t));
   if (d.some((l) => /^\s*for\b/.test(l))) ds.push('for');
   if (d.some((l) => /distance\(\)/.test(l))) ds.push('distance');
-  if (d.some((l) => /"charge"/.test(l))) ds.push('bắn tụ');
+  if (d.some((l) => /"high"/.test(l))) ds.push('bắn tụ');
   const chu = dsSan(m).map((s) => s.join('')).join('');
   if (/[<>^v]/.test(chu)) ds.push('băng chuyền');
   if (/[Hh]/.test(chu)) ds.push('thùng nặng');
   return [...new Set(ds)];
 };
 if (!CHI && DU) {
-  kiem('recall: mỗi chương ít nhất 4 màn dùng thứ của gói 1–7 mùa 2 hay mùa 1 (hàm của em cũ như forward, go_to_wall, aim_fire, tr_right; for; distance; bắn tụ; băng chuyền; thùng nặng)', () => {
+  kiem('recall: mỗi chương ít nhất 4 màn dùng thứ của gói 1–7 mùa 2 hay mùa 1 (hàm của em cũ như forward, go_to_wall, auto_spray, tr_right; for; distance; bắn tụ; băng chuyền; thùng nặng)', () => {
     for (const c of CHUONG) { const co = DS_C[c].filter((m) => recall(m).length); assert.ok(co.length >= 4, c + ': chỉ ' + co.length + ' màn recall'); }
   });
   kiem('có màn đố ("Đố…") ở doi-mua-2, màn sửa hàm lỗi ("Sửa…", hàm của màn) ở che-doi-mua-2; che-doi-mua-2 có hàm của em mà CẢ HAI robot cùng gọi', () => {

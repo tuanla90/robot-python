@@ -445,16 +445,16 @@
       { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { var t = chuThan('dots'); return /for/.test(t) && /dot\(\)/.test(t); } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi dots(3). Bấm Chạy.'));
 
-  /* ============================================================ Chương 19 · Súng hơi (làm quen): shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới */
+  /* ============================================================ Chương 19 · Súng hơi (làm quen): spray() bắn ra trước + giật lùi, spray_back() bắn ra sau + giật tới */
   var CHU_THE_SUNG = 'Khối của vòi phun nằm ở thẻ Vòi phun. Bấm ◀ hoặc ▶ để sang thẻ đó.';
   // Gói T mùa 2 (29/10): sung-hoi.1 là màn trình diễn súng hơi (chiChay: chỉ bấm Chạy); phiên bản 2.
   H['sung-hoi.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: mỗi phát shoot() bắn ra trước, cú giật đẩy xe lùi một ô.', xong: 'chay' },
-    { khongAn: true, dich: 'dong:2', chu: 'shoot() bắn, wait() cho nhịp trôi: ba vòng lặp là lùi ba ô. Màn sau em dùng shoot_back().', xong: 'bam', han: 9000, rong: 170 }
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: mỗi phát spray() bắn ra trước, cú giật đẩy xe lùi một ô.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:2', chu: 'spray() bắn, wait() cho nhịp trôi: ba vòng lặp là lùi ba ô. Màn sau em dùng spray_back().', xong: 'bam', han: 9000, rong: 170 }
   ];
   H['sung-hoi.2'] = [
-    khoiTheo(['khoi:shoot_back'], 'Lệnh mới shoot_back() bắn ra sau, xe giật tới. Chạm nó rồi chạm wait().', CHU_THE_SUNG,
-      { daLam: function () { return dongCo(/^\s*shoot_back\(\)/) >= 0; } }),
+    khoiTheo(['khoi:spray_back'], 'Lệnh mới spray_back() bắn ra sau, xe giật tới. Chạm nó rồi chạm wait().', CHU_THE_SUNG,
+      { daLam: function () { return dongCo(/^\s*spray_back\(\)/) >= 0; } }),
     buocChay('Bấm Chạy.')
   ];
   H['sung-hoi.3'] = [
@@ -462,21 +462,21 @@
     buocChay('Rồi viết tiếp đoạn đi qua cửa. Bấm Chạy.')
   ];
   H['sung-hoi.4'] = [
-    khoiTheo(['khoi:shoot'], 'Thùng nằm sau xe: chạm shoot(), cú giật đẩy xe lùi đúng vào thùng, thùng nhích một ô.', CHU_THE_SUNG,
-      { daLam: function () { return dongCo(/^\s*shoot\(\)/) >= 0; } }),
-    buocChay('Chạm wait(), rồi thêm một cặp shoot(), wait() nữa cho thùng nhích tới đích. Bấm Chạy.')
+    khoiTheo(['khoi:spray'], 'Thùng nằm sau xe: chạm spray(), cú giật đẩy xe lùi đúng vào thùng, thùng nhích một ô.', CHU_THE_SUNG,
+      { daLam: function () { return dongCo(/^\s*spray\(\)/) >= 0; } }),
+    buocChay('Chạm wait(), rồi thêm một cặp spray(), wait() nữa cho thùng nhích tới đích. Bấm Chạy.')
   ];
 
   /* ============================================================ Chương 20 · Chế lệnh súng hơi: thẻ Súng hơi trong Xưởng */
   H['che-sung-hoi.1'] = [
     { khongAn: true, dich: '#field', chu: 'Xe mờ là chỗ xe phải tới. Xe chỉ cần lùi một ô.', xong: 'bam', han: 7000, rong: 160, huong: 'duoi' },
     buocTaoHam('jet_back', 'Chế hàm jet_back() trong Xưởng: bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:shoot'], 'Chạm shoot() rồi wait(): xe bắn một phát và bị giật lùi một ô.', CHU_THE_SUNG,
+    khoiTheo(['khoi:spray'], 'Chạm spray() rồi wait(): xe bắn một phát và bị giật lùi một ô.', CHU_THE_SUNG,
       { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('jet_back') >= 2; } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
   H['che-sung-hoi.2'] = [
     buocTaoHam('jet_fwd', 'Chế hàm jet_fwd() trong Xưởng: bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:shoot_back'], 'Chạm shoot_back() rồi wait(): bắn ra sau thì xe được giật tới một ô.', CHU_THE_SUNG,
+    khoiTheo(['khoi:spray_back'], 'Chạm spray_back() rồi wait(): bắn ra sau thì xe được giật tới một ô.', CHU_THE_SUNG,
       { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('jet_fwd') >= 2; } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
 
@@ -624,22 +624,22 @@
     buocTaoHam('push', 'Bấm Hàm mới để chế push(n) với tham số n.', CHU_TAO),
     buocThanHam('push', ['.p-pal .pal'], 'Ghép thân hàm: forward với số là distance() + n: tới sát thùng rồi đẩy thêm n ô.', 1, 'tren')
   ].concat(buocThuVeChay('Ba thùng xa gần khác nhau, cùng một push(n). Bấm Chạy.'));
-  // Gói 6: chọn lực bắn (luc-ban.1 trình diễn bắn nhanh, luc-ban.2 đổi "fast" thành "charge", che-luc-ban.1 chế aim_fire())
-  H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: shoot("fast") bắn nhanh, nước bay hai ô trúng van, xe đứng yên nên thùng không bị xô.', 1,
-    'Chữ trong ngoặc là lực: "fast" bắn nhanh không giật, "charge" bắn tụ bay xa. Màn sau em tự chọn lực.');
+  // Gói 6: chọn lực bắn (luc-ban.1 trình diễn bắn nhanh, luc-ban.2 đổi "low" thành "high", che-luc-ban.1 chế auto_spray())
+  H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: spray("low") bắn nhanh, nước bay hai ô trúng van, xe đứng yên nên thùng không bị xô.', 1,
+    'Chữ trong ngoặc là lực: "low" bắn nhanh không giật, "high" bắn tụ bay xa. Màn sau em tự chọn lực.');
   H['luc-ban.2'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bắn nhanh chỉ bay hai ô, van cách ba ô nên tia nước rơi giữa đường.', xong: 'chay', daLam: daChay },
     { phu: true, huong: 'tren', rong: 180, han: 0,
       dich: function () { return thay('nut:chon-chuoi') ? 'nut:chon-chuoi' : 'so:1'; },
-      chu: function () { return thay('nut:chon-chuoi') ? 'Chọn "charge": bắn tụ bay xa tới van.' : 'Chạm chữ "fast" trên dòng shoot để đổi lực.'; },
-      daLam: function () { return dongCo(/"charge"/) >= 0; } },
+      chu: function () { return thay('nut:chon-chuoi') ? 'Chọn "high": bắn tụ bay xa tới van.' : 'Chạm chữ "low" trên dòng spray để đổi lực.'; },
+      daLam: function () { return dongCo(/"high"/) >= 0; } },
     buocChay('Cửa mở rồi thì rẽ trái, đi hai ô tới cờ. Bấm Chạy.')
   ];
   H['che-luc-ban.1'] = [
-    { dich: 'dong:1', chu: 'Main đã khoá: nó gọi aim_fire() hai lần, mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
-    buocTaoHam('aim_fire', 'Bấm Hàm mới để chế aim_fire().', CHU_TAO),
-    buocThanHam('aim_fire', ['.p-pal .pal'], 'Ghép: if distance() > 1 thì fire("charge"), else thì fire("fast").', 1, 'tren')
-  ].concat(buocThuVeChay('Một van xa, một van gần: cùng một aim_fire(). Bấm Chạy.'));
+    { dich: 'dong:1', chu: 'Main đã khoá: nó gọi auto_spray() hai lần, mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('auto_spray', 'Bấm Hàm mới để chế auto_spray().', CHU_TAO),
+    buocThanHam('auto_spray', ['.p-pal .pal'], 'Ghép: if distance() > 1 thì squirt("high"), else thì squirt("low").', 1, 'tren')
+  ].concat(buocThuVeChay('Một van xa, một van gần: cùng một auto_spray(). Bấm Chạy.'));
   // Gói 7: đo nhiệt warm() (do-nhiet.1 trình diễn, do-nhiet.2 quay tới khi warm(), che-do-nhiet.1 chế switch_on())
   H['do-nhiet.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: ở mỗi khúc quanh xe hỏi warm(), van chưa nóng thì bắn nhanh cho mở.', 2,
     'warm() là True khi van trước mũi đang nóng (quầng đỏ): if not warm() chỉ bắn van còn đóng. Màn sau em tự dùng warm().');
@@ -654,11 +654,11 @@
   H['che-do-nhiet.1'] = [
     { dich: 'dong:1', chu: 'Main đã khoá: nó gọi switch_on() ở mỗi van, mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
     buocTaoHam('switch_on', 'Bấm Hàm mới để chế switch_on().', CHU_TAO),
-    buocThanHam('switch_on', ['.p-pal .pal'], 'Ghép: if not warm() thì fire("fast"): chỉ mở van còn đóng.', 1, 'tren')
+    buocThanHam('switch_on', ['.p-pal .pal'], 'Ghép: if not warm() thì squirt("low"): chỉ mở van còn đóng.', 1, 'tren')
   ].concat(buocThuVeChay('Bốn van, cùng một switch_on(). Bấm Chạy.'));
-  // Gói 9: bệ súng xích không giật (be-sung.1 trình diễn, be-sung.2 bỏ dòng back() bù giật thừa, che-be-sung.1 chế blast_left())
+  // Gói 9: bệ súng xích không giật (be-sung.1 trình diễn, be-sung.2 bỏ dòng back() bù giật thừa, che-be-sung.1 chế spray_left())
   H['be-sung.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: bắn tụ xong xe vẫn đứng nguyên ô, không cần move() bù giật.', 1,
-    'Bệ vòi xích bắn tụ không giật: sau shoot() và wait() là rẽ phải ngay. Màn sau em bỏ dòng bù giật thừa của Sola.');
+    'Bệ vòi xích bắn tụ không giật: sau spray() và wait() là rẽ phải ngay. Màn sau em bỏ dòng bù giật thừa của Sola.');
   H['be-sung.2'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: xe không giật mà vẫn back() nên lệch khỏi cửa.', xong: 'chay', daLam: daChay },
     { dich: 'dong:3', chu: 'Chạm dòng back() để chọn, rồi bấm ô số có dấu xóa để bỏ nó.', xong: 'xoa-dong', han: 0, rong: 170,
@@ -666,18 +666,18 @@
     buocChay('Bấm Chạy.')
   ];
   H['che-be-sung.1'] = [
-    { dich: 'dong:2', chu: 'Main đã khoá: trong vòng lặp nó gọi blast_left(), mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
-    buocTaoHam('blast_left', 'Bấm Hàm mới để chế blast_left().', CHU_TAO),
-    buocThanHam('blast_left', ['.p-pal .pal'], 'Ghép: tr_left(), fire("charge"), tr_right(): quay trái bắn tụ rồi quay về.', 1, 'tren')
-  ].concat(buocThuVeChay('Hai van bên trái, cùng một blast_left(). Bấm Chạy.'));
-  // Gói 8 (đội, hai chương trình khoá; màn trình diễn đội chờ HD3 mở rộng khoá cho maMau.doi): doi-mua-2.1 viết thân clear_shot() của màn (bút chì mở Xưởng), che-doi-mua-2.1 chế wait_clear()
+    { dich: 'dong:2', chu: 'Main đã khoá: trong vòng lặp nó gọi spray_left(), mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('spray_left', 'Bấm Hàm mới để chế spray_left().', CHU_TAO),
+    buocThanHam('spray_left', ['.p-pal .pal'], 'Ghép: tr_left(), squirt("high"), tr_right(): quay trái bắn tụ rồi quay về.', 1, 'tren')
+  ].concat(buocThuVeChay('Hai van bên trái, cùng một spray_left(). Bấm Chạy.'));
+  // Gói 8 (đội, hai chương trình khoá; màn trình diễn đội chờ HD3 mở rộng khoá cho maMau.doi): doi-mua-2.1 viết thân wait_cool() của màn (bút chì mở Xưởng), che-doi-mua-2.1 chế wait_clear()
   H['doi-mua-2.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: clear_shot() còn trống nên R2 bắn ngay, tia nước trúng R1 đang đứng trong giếng.', xong: 'chay', daLam: daChay },
-    { dich: '[data-sua="clear_shot"]', chu: 'Chạm bút chì cạnh clear_shot() để viết thân hàm trong Xưởng.', xong: 'mo-xuong', han: 0, rong: 170, daLam: xuongMo },
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: wait_cool() còn trống nên R2 bắn ngay, tia nước trúng R1 đang đứng trong giếng.', xong: 'chay', daLam: daChay },
+    { dich: '[data-sua="wait_cool"]', chu: 'Chạm bút chì cạnh wait_cool() để viết thân hàm trong Xưởng.', xong: 'mo-xuong', han: 0, rong: 170, daLam: xuongMo },
     khoiTheo(['khoi:vong:while'], 'Chạm khối while warm(): còn thấy bạn nóng trước mũi thì lặp.', CHU_THE_LOGIC,
-      { xuong: true, daLam: function () { return /while/.test(chuThan('clear_shot')); } }),
+      { xuong: true, daLam: function () { return /while/.test(chuThan('wait_cool')); } }),
     khoiTheo(['khoi:wait', 'khoi:goc:wait'], 'Rồi chạm wait(): mỗi lượt chờ một nhịp.', CHU_THE,
-      { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('clear_shot'); return /while/.test(c) && /wait/.test(c); } })
+      { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('wait_cool'); return /while/.test(c) && /wait/.test(c); } })
   ].concat(buocThuVeChay('R2 chờ R1 đi khỏi giếng rồi mới bắn. Bấm Chạy.'));
   H['che-doi-mua-2.1'] = [
     buocTaoHam('wait_clear', 'Chế hàm wait_clear() trong Xưởng: bấm Hàm mới.', CHU_TAO),

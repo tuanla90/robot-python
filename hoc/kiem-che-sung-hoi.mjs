@@ -1,8 +1,8 @@
 /* ============================================================================
    kiem-che-sung-hoi.mjs — máy kiểm chương `che-sung-hoi` (Chế lệnh súng hơi) của "Robot Chấn Hưng" và các luật lõi mới của nó (KE-HOACH-CHE-LENH.md, mục 5c.3).
    Gồm:
-   - daoChieu 'sung' (súng lắp ngược): shoot() bắn ra sau + xe giật tới, shoot_back() bắn ra trước + giật lùi; cấu hình sai bị từ chối; sân thử của Xưởng dùng daoChieu của màn;
-   - màn hỏng (phanCung thiếu shoot_back): gọi lệnh hỏng → lenh-goc-hong nói "Nòng sau hỏng" / canhBao của màn; bộ dò chỉ cho ban-truoc;
+   - daoChieu 'sung' (súng lắp ngược): spray() bắn ra sau + xe giật tới, spray_back() bắn ra trước + giật lùi; cấu hình sai bị từ chối; sân thử của Xưởng dùng daoChieu của màn;
+   - màn hỏng (phanCung thiếu spray_back): gọi lệnh hỏng → lenh-goc-hong nói "Nòng sau hỏng" / canhBao của màn; bộ dò chỉ cho ban-truoc;
    - bongMo.thung (thùng mờ) + ô ◆ + xe mờ, chẩn đoán lech-bong-mo / chua-qua-diem nói bằng lời người;
    - Sổ lệnh có đủ sáu hàm mới (fixed_kick, go_out, come_back là HÀM CỦA MÀN nên không có ở đó, không vào kho);
    - 10 màn che-sung-hoi: lời giải 3 sao, mọi công thức khác thắng, lời giải khác đúng 2 sao, lời sai đúng mã, chinhCoDinh chặn chương trình chính gửi lên,
@@ -68,10 +68,10 @@ const tron = (kho, moi) => {
 };
 
 const BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-const HOI = ['shoot', 'shoot_back'];
+const HOI = ['spray', 'spray_back'];
 const KHAY = BANH.concat(HOI);
-const KHAY_HONG = BANH.concat(['shoot']);
-const BAN = L('shoot()', 'wait()'), BAN_SAU = L('shoot_back()', 'wait()');
+const KHAY_HONG = BANH.concat(['spray']);
+const BAN = L('spray()', 'wait()'), BAN_SAU = L('spray_back()', 'wait()');
 const trong = (n) => Array.from({ length: n }, () => '.'.repeat(n));
 const dat1 = (rows, x, y, ch) => rows.map((r, j) => (j === y ? r.slice(0, x) + ch + r.slice(x + 1) : r));
 function chay(rows, bd, code, extra) {
@@ -85,40 +85,40 @@ function cfgSan(m, i, extra) {
 }
 
 /* ================================================================= 1. SÚNG LẮP NGƯỢC (daoChieu 'sung') */
-console.log('\n== 1. daoChieu "sung": shoot() bắn ra sau và giật tới, shoot_back() bắn ra trước và giật lùi ==');
+console.log('\n== 1. daoChieu "sung": spray() bắn ra sau và giật tới, spray_back() bắn ra trước và giật lùi ==');
 {
   const rows = trong(7), bd = { x: 3, y: 3, huong: 0 };
   const dc = (code, dao, extra) => chay(rows, bd, code, Object.assign({ daoChieu: dao }, extra || {}));
   const thuong = dc(BAN, []);
-  kiem('không đảo: shoot() bắn ra trước, xe giật lùi xuống (đối chứng)', thuong.robot.y === 4 && ev(thuong, 'ban')[0].sau === false);
+  kiem('không đảo: spray() bắn ra trước, xe giật lùi xuống (đối chứng)', thuong.robot.y === 4 && ev(thuong, 'ban')[0].sau === false);
   const d1 = dc(BAN, ['sung']);
-  kiem('daoChieu ["sung"]: shoot() bắn ra SAU (bóng bay xuống, sau = true) và xe giật TỚI (lên); vết lệnh vẫn ghi tên lệnh gọi (shoot, wait)', d1.robot.y === 2 && ev(d1, 'ban')[0].sau === true && ev(d1, 'ban')[0].huong === 2 && d1.vet.filter((e) => e.loai === 'lenh').map((e) => e.ten).join() === 'shoot,wait');
+  kiem('daoChieu ["sung"]: spray() bắn ra SAU (bóng bay xuống, sau = true) và xe giật TỚI (lên); vết lệnh vẫn ghi tên lệnh gọi (spray, wait)', d1.robot.y === 2 && ev(d1, 'ban')[0].sau === true && ev(d1, 'ban')[0].huong === 2 && d1.vet.filter((e) => e.loai === 'lenh').map((e) => e.ten).join() === 'spray,wait');
   const d2 = dc(BAN_SAU, ['sung']);
-  kiem('daoChieu ["sung"]: shoot_back() bắn ra TRƯỚC (bóng bay lên) và xe giật LÙI', d2.robot.y === 4 && ev(d2, 'ban')[0].huong === 0);
-  kiem('nhịp có bắn thì bánh vẫn nghỉ khi đảo; daoChieu "sung" ghép được với "trai"', maCua(ChamHoc.cham(Object.assign({}, man(7), { daoChieu: ['sung', 'trai'], chinhCoDinh: false }), { chinh: ['shoot()', 'left_move()', 'wait()'] }, khoTruoc(man(7).id))).includes('ban-dung-yen'));
+  kiem('daoChieu ["sung"]: spray_back() bắn ra TRƯỚC (bóng bay lên) và xe giật LÙI', d2.robot.y === 4 && ev(d2, 'ban')[0].huong === 0);
+  kiem('nhịp có bắn thì bánh vẫn nghỉ khi đảo; daoChieu "sung" ghép được với "trai"', maCua(ChamHoc.cham(Object.assign({}, man(7), { daoChieu: ['sung', 'trai'], chinhCoDinh: false }), { chinh: ['spray()', 'left_move()', 'wait()'] }, khoTruoc(man(7).id))).includes('ban-dung-yen'));
   const nem = (f) => { try { f(); return false; } catch (e) { return /daoChieu/.test(e.message); } };
   kiem('daoChieu "sung" cần robot có súng hơi: robot chỉ có bánh bị từ chối', nem(() => SanHoc.chay({ san: rows, batDau: bd, loaiRobot: 'banh', hamGoc: BANH, daoChieu: ['sung'] }, '')));
-  kiem('bộ dò: ban-truoc / ban-sau là hiệu quả THẬT; chuoiThanhMa ghi tên lệnh ngược khi súng lắp ngược (ban-truoc → shoot_back, ban-sau → shoot)',
-    /shoot_back\(\)/.test(chuoiThanhMa([{ ban: 'truoc' }], { daoChieu: ['sung'], phanCung: KHAY })) && /^shoot\(\)/.test(chuoiThanhMa([{ ban: 'sau' }], { daoChieu: ['sung'], phanCung: KHAY })) && /^shoot\(\)/.test(chuoiThanhMa([{ ban: 'truoc' }], { daoChieu: [], phanCung: KHAY })));
+  kiem('bộ dò: ban-truoc / ban-sau là hiệu quả THẬT; chuoiThanhMa ghi tên lệnh ngược khi súng lắp ngược (ban-truoc → spray_back, ban-sau → spray)',
+    /spray_back\(\)/.test(chuoiThanhMa([{ ban: 'truoc' }], { daoChieu: ['sung'], phanCung: KHAY })) && /^spray\(\)/.test(chuoiThanhMa([{ ban: 'sau' }], { daoChieu: ['sung'], phanCung: KHAY })) && /^spray\(\)/.test(chuoiThanhMa([{ ban: 'truoc' }], { daoChieu: [], phanCung: KHAY })));
   const m7 = man(7);
   const thuSan = ChamHoc.thuHam(Object.assign({}, m7), { chinh: [], hamCuaMan: m7.maMau.hamCuaMan }, 'fixed_kick', khoTruoc(m7.id), { sanThu: { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, thung: [{ x: 3, y: 2 }] } });
   kiem('sân thử của Xưởng hàm dùng daoChieu của màn: fixed_kick() cũ với thùng bên phải: súng ngược nên xe giật sang TRÁI, thùng không nhúc nhích', thuSan.thung && thuSan.thung[0].x === 3 && thuSan.robot.x === 1, J([thuSan.thung, thuSan.robot]));
 }
 
 /* ================================================================= 2. MÀN HỎNG: THIẾU NÒNG SAU */
-console.log('\n== 2. Màn hỏng: phanCung thiếu shoot_back ==');
+console.log('\n== 2. Màn hỏng: phanCung thiếu spray_back ==');
 {
   const m8 = man(8);
-  kiem('che-sung-hoi.8 hỏng nòng sau: hamGoc = phanCung (có shoot, không shoot_back) và canhBao "Đầu phun sau hỏng"', J(m8.phanCung) === J(m8.hamGoc) && J(m8.hamGoc) === J(KHAY_HONG) && /Đầu phun sau hỏng/.test(m8.canhBao));
-  const k = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false }), { chinh: ['shoot_back()', 'wait()'] }, khoTruoc(m8.id));
+  kiem('che-sung-hoi.8 hỏng nòng sau: hamGoc = phanCung (có spray, không spray_back) và canhBao "Đầu phun sau hỏng"', J(m8.phanCung) === J(m8.hamGoc) && J(m8.hamGoc) === J(KHAY_HONG) && /Đầu phun sau hỏng/.test(m8.canhBao));
+  const k = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false }), { chinh: ['spray_back()', 'wait()'] }, khoTruoc(m8.id));
   const cd = k.chanDoan.find((c) => c.ma === 'lenh-goc-hong');
-  kiem('gọi shoot_back() ở màn hỏng: lenh-goc-hong (không phải ham-chua-co), lời nêu canhBao và tên lệnh, chỉ dòng của lệnh', !!cd && cd.ten === 'shoot_back' && /Đầu phun sau hỏng/.test(cd.loi) && /shoot_back\(\) không chạy được/.test(cd.loi) && !maCua(k).includes('ham-chua-co') && cd.cho && cd.cho.cot === 'chinh' && cd.cho.dong === 1, J(k.chanDoan));
-  const k2 = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false, canhBao: undefined }), { chinh: ['shoot_back()', 'wait()'] }, khoTruoc(m8.id));
+  kiem('gọi spray_back() ở màn hỏng: lenh-goc-hong (không phải ham-chua-co), lời nêu canhBao và tên lệnh, chỉ dòng của lệnh', !!cd && cd.ten === 'spray_back' && /Đầu phun sau hỏng/.test(cd.loi) && /spray_back\(\) không chạy được/.test(cd.loi) && !maCua(k).includes('ham-chua-co') && cd.cho && cd.cho.cot === 'chinh' && cd.cho.dong === 1, J(k.chanDoan));
+  const k2 = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false, canhBao: undefined }), { chinh: ['spray_back()', 'wait()'] }, khoTruoc(m8.id));
   kiem('không khai canhBao: lời mặc định "Đầu phun sau của vòi phun hỏng"', /Đầu phun sau của vòi phun hỏng/.test((k2.chanDoan.find((c) => c.ma === 'lenh-goc-hong') || {}).loi || ''));
-  kiem('kick_ahead (u_turn, shoot, u_turn) chạy được ở màn hỏng: không lenh-goc-hong, thùng bị đá lên mép', (() => { const r = ChamHoc.cham(m8, m8.loiGiai, tron(khoTruoc(m8.id), m8.loiGiai.hamCuaEmMoi)); return r.thang && !maCua(r).includes('lenh-goc-hong'); })());
+  kiem('kick_ahead (u_turn, spray, u_turn) chạy được ở màn hỏng: không lenh-goc-hong, thùng bị đá lên mép', (() => { const r = ChamHoc.cham(m8, m8.loiGiai, tron(khoTruoc(m8.id), m8.loiGiai.hamCuaEmMoi)); return r.thang && !maCua(r).includes('lenh-goc-hong'); })());
   const hd = DoDuong.Bo.hanhDongChoPhep(m8);
   kiem('bộ dò: màn hỏng nòng sau chỉ cho ban-truoc (thiếu ban-sau); màn thường cho cả hai', hd.some((x) => x.ban === 'truoc') && !hd.some((x) => x.ban === 'sau') && DoDuong.Bo.hanhDongChoPhep(man(1)).filter((x) => x.ban).length === 2);
-  kiem('hàm của em dùng được lệnh thuộc phần cứng dù chưa có trên khay; ở màn hỏng chính shoot_back() trong hàm của em báo lenh-goc-hong', (() => {
+  kiem('hàm của em dùng được lệnh thuộc phần cứng dù chưa có trên khay; ở màn hỏng chính spray_back() trong hàm của em báo lenh-goc-hong', (() => {
     const r = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false }), { chinh: ['jet_fwd()'] }, tron(khoTruoc(m8.id), []));
     return maCua(r).includes('lenh-goc-hong') && r.chanDoan.find((c) => c.ma === 'lenh-goc-hong').cho.cot === 'hamEm';
   })());
@@ -150,7 +150,7 @@ console.log('\n== 3. bongMo.thung (thùng mờ) với ô ◆ và xe mờ; lech-b
 }
 
 /* ================================================================= 4. SỔ LỆNH */
-console.log('\n== 4. Sổ lệnh: sáu hàm mới của che-sung-hoi (fixed_kick, go_out, come_back là hàm của màn); lệnh gốc shoot ↔ shoot_back ==');
+console.log('\n== 4. Sổ lệnh: sáu hàm mới của che-sung-hoi (fixed_kick, go_out, come_back là hàm của màn); lệnh gốc spray ↔ spray_back ==');
 {
   const moi = ['jet_back', 'jet_fwd', 'kick_right', 'tap_right', 'kick_left', 'kick_ahead'];
   kiem('SoLenh.theoChuong("che-sung-hoi") đúng sáu hàm theo thứ tự chế; nhóm hoi (Vòi phun)', J(SoLenh.theoChuong('che-sung-hoi').map((h) => h.ten)) === J(moi) && SoLenh.theoChuong('che-sung-hoi').every((h) => h.nhom === 'hoi') && SoLenh.tenNhom.hoi === 'Vòi phun');
@@ -161,7 +161,7 @@ console.log('\n== 4. Sổ lệnh: sáu hàm mới của che-sung-hoi (fixed_kick
   kiem('moTa là MỘT câu ngắn lớp 5: 8–80 chữ, không xuống dòng, không dấu chấm cuối', moi.every((t) => { const d = SoLenh.tim(t).moTa; return d.length >= 8 && d.length <= 80 && !/\n/.test(d) && !/[.]$/.test(d); }));
   kiem('tên hàm cốt truyện không trùng lệnh gốc hay hàm của chương khác', moi.every((t) => SoLenh.ds.filter((h) => h.ten === t).length === 1 && !KhoHam.HAM_GOC_MAC_DINH.includes(t)));
   kiem('thứ tự trong Sổ lệnh: hàm của che-sung-hoi đứng sau hàm của omni (slide_l) và trước hàm của nam châm (grip)', SoLenh.ds.findIndex((h) => h.ten === 'jet_back') > SoLenh.ds.findIndex((h) => h.ten === 'slide_l') && SoLenh.ds.findIndex((h) => h.ten === 'kick_ahead') < SoLenh.ds.findIndex((h) => h.ten === 'grip'));
-  kiem('SanHoc.LENH_NGUOC khớp bảng Sổ lệnh với shoot / shoot_back', ['shoot', 'shoot_back'].every((t) => SanHoc.LENH_NGUOC[t] === SoLenh.lenhGoc.find((l) => l.ten === t).nguoc));
+  kiem('SanHoc.LENH_NGUOC khớp bảng Sổ lệnh với spray / spray_back', ['spray', 'spray_back'].every((t) => SanHoc.LENH_NGUOC[t] === SoLenh.lenhGoc.find((l) => l.ten === t).nguoc));
 }
 
 /* ================================================================= 5. MƯỜI MÀN CHE-SUNG-HOI */
@@ -176,7 +176,7 @@ const BANG = [];
       J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-sung-hoi' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh vòi phun');
   kiem('mọi màn: xe hai bánh gắn súng hơi (robot { than "hai-banh", tay "hoi", camBien [] }), chương trình 10 ô, mỗi hàm 10 ô, Xưởng mở, được dùng hàm của em, cauTruc for/if/while, nhipTheoLoiGiai',
     che.every((m) => m.loaiRobot === 'banh' && J(m.robot) === J({ than: 'hai-banh', tay: 'hoi', camBien: [] }) && m.khung.chinh === 10 && m.khung.moiHam === 10 && m.moXuong === true && m.camHamCuaEm === false && J(m.cauTruc) === '["for","if","while"]' && m.nhipTheoLoiGiai === true));
-  kiem('khay: đủ bánh (cả lùi) và hai nòng ở mọi màn trừ 8; 8 hỏng nòng sau: khay = phần cứng = trừ shoot_back; không màn nào còn push',
+  kiem('khay: đủ bánh (cả lùi) và hai nòng ở mọi màn trừ 8; 8 hỏng nòng sau: khay = phần cứng = trừ spray_back; không màn nào còn push',
     che.every((m) => J(m.hamGoc) === J(m.so === 8 ? KHAY_HONG : KHAY) && !m.hamGoc.includes('push')) && che.every((m) => m.so === 8 || m.phanCung === undefined));
   kiem('lệnh chế ở từng màn (taoHam): jet_back, jet_fwd, —, kick_right, tap_right, kick_left, —, kick_ahead, —, —; 7 sửa fixed_kick và 9 viết come_back là HÀM CỦA MÀN (không hàm của em mới)',
     J(che.map((m) => m.taoHam)) === J([['jet_back'], ['jet_fwd'], [], ['kick_right'], ['tap_right'], ['kick_left'], [], ['kick_ahead'], [], []]) && [7, 9].every((i) => man(i).loiGiai.hamCuaEmMoi.length === 0 && man(i).congThucKhac.every((c) => !c.hamCuaEmMoi || c.hamCuaEmMoi.length === 0)) &&
@@ -231,9 +231,9 @@ const BANG = [];
 
   // luật riêng từng màn
   const m1 = man(1), k1 = khoTruoc(m1.id);
-  kiem('20.1 Lùi bằng giật: chưa chế jet_back thì không thắng (xe đứng sẵn ở sân, xe mờ ở ô sau); jet_back cách 1 (shoot + wait) và bánh lùi đều 1 nhịp; BFS 1', !ChamHoc.cham(m1, m1.maMau, k1).thang && m1.bongMo.y - m1.batDau.y === 1 && nhipCheSungHoiTatCa(m1, k1) === 1 && m1.sao.nhip === 1);
+  kiem('20.1 Lùi bằng giật: chưa chế jet_back thì không thắng (xe đứng sẵn ở sân, xe mờ ở ô sau); jet_back cách 1 (spray + wait) và bánh lùi đều 1 nhịp; BFS 1', !ChamHoc.cham(m1, m1.maMau, k1).thang && m1.bongMo.y - m1.batDau.y === 1 && nhipCheSungHoiTatCa(m1, k1) === 1 && m1.sao.nhip === 1);
   const m2 = man(2), k2 = khoTruoc(m2.id);
-  kiem('20.2 Tiến bằng giật: xe mờ ở ô trước xe một ô; jet_fwd = shoot_back + wait; BFS 1', m2.batDau.y - m2.bongMo.y === 1 && nhipCheSungHoiTatCa(m2, k2) === 1 && J(m2.loiGiai.hamCuaEmMoi[0].than) === J(['shoot_back()', 'wait()']));
+  kiem('20.2 Tiến bằng giật: xe mờ ở ô trước xe một ô; jet_fwd = spray_back + wait; BFS 1', m2.batDau.y - m2.bongMo.y === 1 && nhipCheSungHoiTatCa(m2, k2) === 1 && J(m2.loiGiai.hamCuaEmMoi[0].than) === J(['spray_back()', 'wait()']));
   const m3 = man(3), k3 = khoTruoc(m3.id);
   kiem('20.3 Giật tới giật lùi: ◆ cách xe 3 ô phía sau, xe mờ 1 ô phía sau; lùi hai ô rồi tiến một: đúng chỗ nhưng chưa qua ◆ (chua-qua-diem); dùng jet_back, jet_fwd, for; BFS 5 = sao.nhip', (() => {
     const sai = ChamHoc.cham(m3, m3.loiSai[1].baiLam, k3);
@@ -253,9 +253,9 @@ const BANG = [];
   })());
   const m7 = man(7), k7 = khoTruoc(m7.id);
   const cu = ChamHoc.cham(m7, m7.maMau, k7);
-  kiem('20.7 Vòi phun lắp ngược: hàm của màn fixed_kick() cũ (giống kick_right) chạy sai (xe đi trái, thùng đứng); đổi shoot() thành shoot_back() hoặc đổi hướng quay thì thắng', !cu.thang && maCua(cu).includes('lech-bong-mo') && ChamHoc.cham(m7, m7.loiGiai, k7).thang && ChamHoc.cham(m7, m7.congThucKhac[0].baiLam, k7).thang && !ChamHoc.cham(m7, { chinh: ['kick_right()'] }, k7).thang);
+  kiem('20.7 Vòi phun lắp ngược: hàm của màn fixed_kick() cũ (giống kick_right) chạy sai (xe đi trái, thùng đứng); đổi spray() thành spray_back() hoặc đổi hướng quay thì thắng', !cu.thang && maCua(cu).includes('lech-bong-mo') && ChamHoc.cham(m7, m7.loiGiai, k7).thang && ChamHoc.cham(m7, m7.congThucKhac[0].baiLam, k7).thang && !ChamHoc.cham(m7, { chinh: ['kick_right()'] }, k7).thang);
   const m8 = man(8), k8 = khoTruoc(m8.id);
-  kiem('20.8 Đầu phun sau hỏng: thùng ngay trước xe, chỉ còn shoot(): phải quay đầu rồi bắn rồi quay đầu lại (3 nhịp với u_turn một nhịp); BFS 3; dùng shoot_back báo lenh-goc-hong', (() => {
+  kiem('20.8 Đầu phun sau hỏng: thùng ngay trước xe, chỉ còn spray(): phải quay đầu rồi bắn rồi quay đầu lại (3 nhịp với u_turn một nhịp); BFS 3; dùng spray_back báo lenh-goc-hong', (() => {
     const hong8 = ChamHoc.cham(m8, m8.loiSai[0].baiLam, tron(k8, m8.loiSai[0].hamCuaEmMoi));
     return nhipCheSungHoiTatCa(m8, k8) === 3 && m8.sao.nhip === 3 && maCua(hong8).includes('lenh-goc-hong') && m8.bongMo.thung[0].y === 0 && m8.san[1][2] === 'H' && m8.batDau.y === 2;
   })());

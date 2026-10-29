@@ -53,10 +53,10 @@ export function ngoCanh(m, i = 0) {
 }
 export const HANH_DONG = ['M', 'B', 'R', 'L', 'W', 'c', 'h', 'f', 'g'];
 export const GIA = { M: 1, B: 1, R: 2, L: 2, W: 1, c: 1, h: 1, f: 1, g: 1 };
-/** Các hành động màn cho phép (bắn nhanh chỉ khi lucBan; bắn ra sau khi khay có shoot_back). */
+/** Các hành động màn cho phép (bắn nhanh chỉ khi lucBan; bắn ra sau khi khay có spray_back). */
 export function hanhDong(m) {
   const hg = m.hamGoc || [];
-  return HANH_DONG.filter((a) => !((a === 'f' || a === 'g') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('shoot_back')) && !((a === 'c' || a === 'f') && !hg.includes('shoot')));
+  return HANH_DONG.filter((a) => !((a === 'f' || a === 'g') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('spray_back')) && !((a === 'c' || a === 'f') && !hg.includes('spray')));
 }
 
 function coThungKet(ctx, S) {
@@ -262,11 +262,11 @@ export function dayChung(m, gioiHan, tuy = {}) {
 
 /* ------------------------------------------------------------------ 4. dãy → mã Python, so chéo với lõi */
 export function chuoiThanhMa(chuoi, m) {
-  const tu = m.lucBan ? '("charge")' : '()';
+  const tu = m.lucBan ? '("high")' : '()';
   const MA = {
     M: ['left_move()', 'right_move()', 'wait()'], B: ['left_back()', 'right_back()', 'wait()'],
     R: ['right_back()', 'wait()', 'right_back()', 'wait()'], L: ['right_move()', 'wait()', 'right_move()', 'wait()'], W: ['wait()'],
-    c: ['shoot' + tu, 'wait()'], h: ['shoot_back' + tu, 'wait()'], f: ['shoot("fast")', 'wait()'], g: ['shoot_back("fast")', 'wait()']
+    c: ['spray' + tu, 'wait()'], h: ['spray_back' + tu, 'wait()'], f: ['spray("low")', 'wait()'], g: ['spray_back("low")', 'wait()']
   };
   return [...chuoi].flatMap((a) => MA[a]).join('\n') + '\n';
 }
@@ -324,12 +324,12 @@ function bangDong(m, kho) {
   const ten = new Set(kho.map((h) => h.ten)), hg = m.hamGoc || [];
   const ds = [['move()', 'M'], ['back()', 'B'], ['tr_right()', 'R'], ['tr_left()', 'L'], ['spin()', 'RR'], ['sidestep()', 'RML'], ['wait()', 'W'],
     ['jet_back()', 'c'], ['jet_fwd()', 'h'], ['forward(2)', 'MM'], ['forward(3)', 'MMM']];
-  if (m.lucBan) ds.push(['fire("charge")', 'c'], ['fire("fast")', 'f'], ['fire_back("charge")', 'h'], ['fire_back("fast")', 'g']);
+  if (m.lucBan) ds.push(['squirt("high")', 'c'], ['squirt("low")', 'f'], ['squirt_back("high")', 'h'], ['squirt_back("low")', 'g']);
   return ds.filter(([l, a]) => {
     const t = l.match(/^(\w+)\(/)[1];
     if (!(hg.includes(t) || ten.has(t))) return false;
-    if (/[hg]/.test(a) && !hg.includes('shoot_back')) return false;
-    if (/[cf]/.test(a) && !hg.includes('shoot')) return false;
+    if (/[hg]/.test(a) && !hg.includes('spray_back')) return false;
+    if (/[cf]/.test(a) && !hg.includes('spray')) return false;
     return true;
   });
 }

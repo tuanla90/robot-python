@@ -168,7 +168,7 @@ kiem('huy hiệu: chỉ trùm mỗi chương mang, đúng mã chương; huy-hieu
 });
 
 /* ------------------------------------------------------------------ 2–4, 6. từng màn */
-const CAM_LENH = ['warm', 'shoot', 'shoot_back'];
+const CAM_LENH = ['warm', 'spray', 'spray_back'];
 const HAM_COT_TRUYEN = new Map();
 for (const m of M.danhSach) for (const t of m.taoHam || []) if (!HAM_COT_TRUYEN.has(t)) HAM_COT_TRUYEN.set(t, m.ma);
 // Màn bắt phải dùng một hàm của em không cảm biến (bộ dò mở được thân nó): lời né = chương trình không gọi hàm đó

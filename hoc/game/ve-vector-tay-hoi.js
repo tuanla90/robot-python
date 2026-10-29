@@ -1,5 +1,5 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
-/* ve-vector-tay-hoi.js — VÒI PHUN HAI ĐẦU vector (Xe cứu hỏa R1, 29/10; trước là "súng hơi hai nòng"). Mã 'hoi' giữ nguyên như part-hoi.js; shoot() phun ra trước, shoot_back() ra sau.
+/* ve-vector-tay-hoi.js — VÒI PHUN HAI ĐẦU vector (Xe cứu hỏa R1, 29/10; trước là "súng hơi hai nòng"). Mã 'hoi' giữ nguyên như part-hoi.js; spray() phun ra trước, spray_back() ra sau.
    ĐẦU TRƯỚC ở mũi: đế trắng, BÌNH NƯỚC trắng có ô kính thấy mực nước xanh, ỐNG MỀM đỏ, khớp nối vàng, ĐẦU VÒI ĐỎ thuôn (cùng kiểu PhimVector.voiPhun) miệng nhỏ;
    ĐẦU SAU ở ĐUÔI thân: ống mềm đỏ ngắn chồng lên đuôi, đầu vòi đỏ thuôn nhô khỏi đuôi.
    Đầu sau đặt theo ổ 'sau' của từng thân: VeVector.robot truyền s.sau (ổ sau của thân, đổi sang hệ của tay) — như part-hoi.js đặt theo DUOI[than].
@@ -20,7 +20,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.elip(g, 50, y, 2.6, 1.1); H.to(g, ban ? BM.vecNuocSang : BM.vecLoi); H.vien(g, BM.vecVien, 1);
   }
   function giot(g, H, x, y, r) { H.tron(g, x, y, r); H.to(g, BM.vecNuoc); H.vien(g, BM.vecNuocToi, 1); H.tron(g, x - r * 0.3, y - r * 0.3, r * 0.35); H.to(g, BM.vecNuocSang); }
-  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['shoot',  'shoot_back'], ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['spray',  'spray_back'], ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
     s = s || {};
     var tr = !!s.dangBanTruoc, sa = !!s.dangBanSau;
     /* đầu sau (vẽ trước: nằm dưới bình nước nếu thân ngắn) */

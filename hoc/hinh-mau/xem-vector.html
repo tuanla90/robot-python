@@ -312,7 +312,7 @@
     { ten: 'Nam châm: cảm biến từ (tia bạc), sóng hút theo cực, vật sắt bay về mũi; thả bị chặn (!)', san: ['....', '....'], vat: [{ x: 3, y: 0, chat: 'sat' }], batDau: { x: 0, y: 0, huong: 1 },
       robot: { than: 'hai-banh', tay: 'nam-cham', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }, hamGoc: B.concat(['magnet_n', 'magnet_s', 'magnet_off', 'front_metal']), code: 'front_metal()\nwait()\nleft_move()\nright_move()\nwait()\nmagnet_n()\nwait()\nwait()\nright_move()\nwait()\nmagnet_off()\nwait()\n' },
     { ten: 'Súng hơi: bóng bay, làn hơi, giật; trúng nút (nút lóe → nóng: quầng cam + gợn nhiệt, mắt vui)', san: ['..N', '...', '...'], batDau: { x: 2, y: 2, huong: 0 }, robot: { than: 'hai-banh', tay: 'hoi', camBien: [] },
-      hamGoc: B.concat(['shoot', 'shoot_back']), code: 'shoot()\nwait()\nwait()\nshoot_back()\nwait()\n' },
+      hamGoc: B.concat(['spray', 'spray_back']), code: 'spray()\nwait()\nwait()\nshoot_back()\nwait()\n' },
     { ten: 'Máy ném: vạch ngắm, nạp, gáo vung dần, vật bay vòng cung + bóng co theo độ cao; ném hụt (?)', san: ['.o...', '.....'], batDau: { x: 0, y: 0, huong: 1 }, robot: { than: 'hai-banh', tay: 'nem', camBien: [] },
       hamGoc: B.concat(['aim', 'throw', 'load']), code: 'load()\nwait()\naim(3)\nthrow()\nwait()\nwait()\nthrow()\nwait()\n' },
     { ten: 'Drone: bóng elip theo độ cao, thanh pin, ô sạc thở / lóe, hết pin rơi (khói, mắt lim dim)', san: ['.P...', '.....'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'drone', robot: { than: 'drone', tay: null, camBien: [{ ma: 'pin', o: 'bung' }] }, pin: 3,

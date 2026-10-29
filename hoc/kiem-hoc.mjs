@@ -1345,7 +1345,7 @@ console.log('\n== 15. KhoHam: tạo, sửa, đổi tên, xóa, tên sai, lưu / 
   KhoHam.tao('mac_dinh');
   kiem('kho mặc định dùng thẳng KhoHam.tao / ds / xoa', KhoHam.ds().length === 1 && KhoHam.xoa('mac_dinh').ok && KhoHam.ds().length === 0 && KhoHam.macDinh.soHam() === 0);
   kiem('hai kho độc lập không chia sẻ dữ liệu', KhoHam.moi().soHam() === 0 && k.soHam() === 2);
-  kiem('hàm gốc mặc định của kho phủ cả xe bánh (kể cả tay gắp), nhện, omni, súng hơi lẫn cảm biến khoảng cách', ['left_move', 'right_back', 'wait', 'go_up', 'go_right', 'arm_down', 'arm_up', 'grab', 'release', 'slide_left', 'shoot', 'shoot_back', 'front_clear', 'left_clear', 'right_clear', 'color'].every((t) => KhoHam.HAM_GOC_MAC_DINH.includes(t)));
+  kiem('hàm gốc mặc định của kho phủ cả xe bánh (kể cả tay gắp), nhện, omni, súng hơi lẫn cảm biến khoảng cách', ['left_move', 'right_back', 'wait', 'go_up', 'go_right', 'arm_down', 'arm_up', 'grab', 'release', 'slide_left', 'spray', 'spray_back', 'front_clear', 'left_clear', 'right_clear', 'color'].every((t) => KhoHam.HAM_GOC_MAC_DINH.includes(t)));
   kiem('kiemTen "color" → ten-trung-ham-goc (hàm cảm biến màu là hàm gốc)', KhoHam.moi().kiemTen('color').ma === 'ten-trung-ham-goc');
   for (const t of ['front_clear', 'left_clear', 'right_clear']) kiem('kiemTen "' + t + '" → ten-trung-ham-goc (hàm cảm biến là hàm gốc)', KhoHam.moi().kiemTen(t).ma === 'ten-trung-ham-goc');
   for (const t of ['arm_down', 'arm_up', 'grab', 'release']) kiem('kiemTen "' + t + '" → ten-trung-ham-goc (lệnh tay gắp là hàm gốc)', KhoHam.moi().kiemTen(t).ma === 'ten-trung-ham-goc');
