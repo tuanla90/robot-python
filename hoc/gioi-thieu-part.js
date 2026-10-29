@@ -165,7 +165,7 @@
       khe: 'tay', ten: 'Vòi phun',
       moTa: 'Hai đầu phun: shoot() bắn ra trước, shoot_back() bắn ra sau.',
       lenh: ['shoot', 'shoot_back'],
-      gioi: ['Tia nước bay thẳng; trúng nút thì nút đổi: cửa mở / đóng, băng chuyền bật / tắt', 'Giật: bắn ra trước thì xe lùi 1 ô, bắn ra sau thì xe tiến 1 ô', 'Xe giật vào thùng nặng thì thùng trượt tới khi gặp vật cản'],
+      gioi: ['Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền bật / tắt', 'Giật: bắn ra trước thì xe lùi 1 ô, bắn ra sau thì xe tiến 1 ô', 'Xe giật vào thùng nặng thì thùng trượt tới khi gặp vật cản'],
       khong: ['Một nhịp chỉ bắn một phát', 'Nhịp bắn thì bánh nghỉ', 'Chạy bánh húc vào thùng nặng thì không đẩy được'],
       luuY: ['Lệnh bắn cũng chỉ là ra lệnh, wait() mới bắn.', 'Ở các màn Lực bắn, lệnh bắn nhận một lực: "charge" bắn tụ như thường, bay xa và xe giật; "fast" bắn nhanh, tia nước bay 2 ô và xe không giật.']
     },
@@ -193,8 +193,8 @@
       moTa: 'Mắt đỏ ở mũi xe, đo xem phía trước còn mấy ô trống.',
       lenh: ['distance', 'warm'],
       gioi: ['Hỏi không tốn nhịp', { chu: 'distance() trả một SỐ: số ô trống tới vật cản; sát vật cản là 0. Dùng được trong phép so sánh, như if distance() > 2:', can: ['distance'] },
-        { chu: 'warm() trả True khi vật cản trước mặt NÓNG: robot khác, hay nút bắn đang bật', can: ['warm'] }],
-      khong: ['Chỉ nhìn thẳng phía trước, không nhìn hai bên', 'Không biết vật cản là gì, chỉ biết cách bao xa', { chu: 'Nút đang tắt, cửa, thùng, tường thì warm() là False', can: ['warm'] }],
+        { chu: 'warm() trả True khi vật cản trước mặt NÓNG: robot khác, hay van hơi đang mở', can: ['warm'] }],
+      khong: ['Chỉ nhìn thẳng phía trước, không nhìn hai bên', 'Không biết vật cản là gì, chỉ biết cách bao xa', { chu: 'Van đang đóng, cửa, thùng, tường thì warm() là False', can: ['warm'] }],
       luuY: [{ chu: 'Tường, mép sân, cửa đóng, thùng nặng, vật nằm đất, robot khác đều chắn tia.', can: ['distance'] }, { chu: 'Cùng một tia với distance(): warm() chỉ xét vật cản đầu tiên.', can: ['warm'] }]
     },
     'mau': {
