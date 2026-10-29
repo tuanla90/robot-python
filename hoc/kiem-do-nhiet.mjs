@@ -263,12 +263,13 @@ for (const m of DS) {
     assert.deepEqual(r.chanDoan.filter((c) => !(c.muc === 'thong-tin' && CHAN_DOAN_DUOC.includes(c.ma))).map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
     assert.ok(r.theoSan.length === soSan(m) && r.theoSan.every((s) => s.thang));
     const rm = cham(m, m.maMau);
-    assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
+    if (m.chiChay) assert.ok(rm.thang && rm.sao === 3 && m.chinhCoDinh, m.ma + ' màn trình diễn (gói T): mã mẫu khoá phải thắng 3 sao');     // gói T mùa 2: do-nhiet.1 trình diễn
+    else assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
     const rk = cham(m, m.loiGiaiKhac.baiLam, m.loiGiaiKhac.hamCuaEmMoi);
     assert.ok(rk.thang, m.ma + ' lời giải khác thua: ' + JSON.stringify(rk.chanDoan.map((c) => c.ma)));
-    assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');
+    if (!m.chiChay) assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');     // màn trình diễn: main khoá nên lời giải khác / lời sai cũng chạy mã mẫu
     (m.congThucKhac || []).forEach((c, i) => { const rc = cham(m, c.baiLam, c.hamCuaEmMoi); assert.ok(rc.thang, m.ma + ' công thức khác ' + i + ' "' + c.moTa + '" thua: ' + JSON.stringify(rc.chanDoan.map((x) => x.ma))); });
-    m.loiSai.forEach((ls, i) => {
+    if (!m.chiChay) m.loiSai.forEach((ls, i) => {
       const rl = cham(m, ls.baiLam, ls.hamCuaEmMoi);
       assert.equal(rl.thang, false, m.ma + ' lời sai ' + i + ' "' + ls.moTa + '" lại thắng');
       const ma = rl.chanDoan.map((c) => c.ma);
@@ -286,6 +287,7 @@ for (const m of DS) {
     });
     assert.ok(bfs !== null && bfs <= m.sao.nhip, m.ma + ' BFS ' + bfs + ' > sao.nhip ' + m.sao.nhip);
     bang[m.ma].bfs = bfs;
+    if (m.chiChay) { bang[m.ma].ne = 'màn trình diễn (khoá, chỉ bấm Chạy)'; return; }     // gói T mùa 2
     if (soSan(m) > 1) {
       const t = doDuongChung(m, m.sao.nhip);
       if (t) assert.fail(m.ma + ': dãy chung ' + t.nhip + ' nhịp ≤ ' + m.sao.nhip + ' thắng mọi sân không cần warm(): ' + t.chuoi);
@@ -323,7 +325,7 @@ if (!CHI) {
     for (const c of CHUONG) {
       let t = get(MOC[c]);
       for (const m of DS_C[c]) {
-        if (m.hang === 'trum') continue;
+        if (m.hang === 'trum' || m.chiChay) continue;       // gói T: màn trình diễn (chỉ bấm Chạy) miễn và không làm mốc, như kiem-lo-trinh (g)
         const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le);
         assert.ok(tran(soDong(m), soDong(t), LE.dong), m.ma + ' dòng ' + soDong(m) + ' so với ' + t.ma + ' ' + soDong(t));
         assert.ok(tran(m.sao.nhip, t.sao.nhip, LE.nhip), m.ma + ' nhịp ' + m.sao.nhip + ' so với ' + t.ma + ' ' + t.sao.nhip);

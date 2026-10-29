@@ -1435,6 +1435,18 @@
       'Súng hơi giờ chọn được lực: shoot("charge") bắn tụ như mọi khi (bóng bay xa, xe bị giật lùi); shoot("fast") bắn nhanh (bóng chỉ bay hai ô, xe đứng yên). Nút cách xe hai ô, thùng nằm ngay sau lưng. Bấm Chạy xem bắn nhanh mở cửa mà thùng không bị xô.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: chữ "fast" trong ngoặc là lực bắn nhanh.',
       ['Bắn tụ thì cú giật hất thùng sau lưng trượt đi.', 'Màn sau nút ở xa: em tự chọn lực.']);
+    // Gói 7 chương do-nhiet: cái mới là ĐO NHIỆT warm() (nút bắn đang bật thì nóng). do-nhiet.1 trình diễn (if not warm(): fire("fast") ở mỗi khúc quanh);
+    // do-nhiet.2 ép while not warm(): turn_right() (H). che-do-nhiet.1 chế switch_on() (H).
+    trinhDien('do-nhiet.1', null,
+      'Mắt hồng ngoại vừa được nâng cấp ĐO NHIỆT: warm() là True khi vật cản trước mũi xe đang nóng. Nút bắn đang bật thì nóng (có quầng đỏ), nút tắt thì không. Đường xoắn có ba khúc quanh, cuối mỗi khúc một nút; nút tắt nào cũng mở cửa của khúc sau. Bấm Chạy xem xe hỏi warm() ở mỗi khúc: nút chưa nóng thì bắn nhanh cho bật, rồi rẽ phải đi tới tường.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: if not warm() chỉ bắn khi nút trước mặt chưa nóng.',
+      ['Bắn nút đang bật là tắt nó: phải hỏi warm() trước.', 'Màn sau bốn nút nóng làm đèn chỉ đường: em quay cho tới khi warm() là True.']);
+    // Gói 9 chương be-sung: cái mới là BỆ SÚNG XÍCH (xích + súng hơi: bắn tụ không giật). be-sung.1 trình diễn (bắn nút rồi rẽ phải, không cần move() bù giật);
+    // be-sung.2 ép: mã mẫu của Sola có back() bù giật thừa, người chơi bỏ dòng đó (H). che-be-sung.1 chế blast_left() (H).
+    trinhDien('be-sung.1', null,
+      'Xe xích của em đã gắn súng hơi thành BỆ SÚNG: xích bám chắc nên bắn tụ không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe bắn nút cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau shoot() và wait(), xe vẫn đứng nguyên ô.',
+      ['Xe hai bánh bắn tụ thì giật lùi một ô; bệ súng xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

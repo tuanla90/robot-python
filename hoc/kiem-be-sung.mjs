@@ -345,12 +345,13 @@ async function main() {
       assert.deepEqual(r.chanDoan.map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
       assert.ok(r.theoSan.length === soSan(m) && r.theoSan.every((s) => s.thang));
       const rm = cham(m, m.maMau);
-      assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
+      if (m.chiChay) assert.ok(rm.thang && rm.sao === 3 && m.chinhCoDinh, m.ma + ' màn trình diễn (gói T): mã mẫu khoá phải thắng 3 sao');     // gói T mùa 2: be-sung.1 trình diễn
+      else assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
       const rk = cham(m, m.loiGiaiKhac.baiLam, m.loiGiaiKhac.hamCuaEmMoi);
       assert.ok(rk.thang, m.ma + ' lời giải khác thua: ' + JSON.stringify(rk.chanDoan.map((c) => c.ma)));
-      assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');
+      if (!m.chiChay) assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');     // màn trình diễn: main khoá nên lời giải khác / lời sai cũng chạy mã mẫu
       (m.congThucKhac || []).forEach((c, i) => { const rc = cham(m, c.baiLam, c.hamCuaEmMoi); assert.ok(rc.thang, m.ma + ' công thức khác ' + i + ' "' + c.moTa + '" thua: ' + JSON.stringify(rc.chanDoan.map((x) => x.ma))); });
-      m.loiSai.forEach((ls, i) => {
+      if (!m.chiChay) m.loiSai.forEach((ls, i) => {
         const rl = cham(m, ls.baiLam, ls.hamCuaEmMoi);
         assert.equal(rl.thang, false, m.ma + ' lời sai ' + i + ' "' + ls.moTa + '" lại thắng');
         const ma = rl.chanDoan.map((c) => c.ma);
@@ -379,6 +380,11 @@ async function main() {
         const h = Object.assign({}, hm, { than });
         return laMan ? cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: [h] }, [], them) : cham(m, { chinh: m.loiGiai.chinh, hamCuaMan: m.loiGiai.hamCuaMan }, [h], them);
       };
+      if (m.chiChay) {                                                           // gói T mùa 2: màn trình diễn (main khoá, không hàm): cần bệ súng = BFS không bệ súng không kịp
+        assert.ok(khong.nhip === null || khong.nhip > m.sao.nhip, m.ma + ': xích KHÔNG bệ súng vẫn kịp trong ' + khong.nhip + ' ≤ ' + m.sao.nhip + ' nhịp');
+        bang[m.ma].ne = 'màn trình diễn (khoá, chỉ bấm Chạy)';
+        return;
+      }
       if (m.chinhCoDinh) {
         assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để viết / sửa');
         const t = D.thanCoDinh(m, kho, hm.ten, (than) => chamThan(than, { beSung: false }), { beSung: false, thamSo: hm.thamSo });
@@ -416,7 +422,7 @@ async function main() {
         let t = MOC[c];
         assert.ok(t, c + ': không có màn mốc');
         for (const m of DS_C[c]) {
-          if (m.hang === 'trum') continue;
+          if (m.hang === 'trum' || m.chiChay) continue;       // gói T: màn trình diễn (chỉ bấm Chạy) miễn và không làm mốc, như kiem-lo-trinh (g)
           const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le);
           assert.ok(tran(soDong(m), soDong(t), LE.dong), m.ma + ' dòng ' + soDong(m) + ' so với ' + t.ma + ' ' + soDong(t));
           assert.ok(tran(m.sao.nhip, t.sao.nhip, LE.nhip), m.ma + ' nhịp ' + m.sao.nhip + ' so với ' + t.ma + ' ' + t.sao.nhip);

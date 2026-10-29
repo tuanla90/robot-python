@@ -187,8 +187,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | do-nhiet.1 | Nút nào đang nóng | warm(), lệnh warm, nút bật sẵn (nóng) |  |  | warm |  |  |
-| 2 | do-nhiet.2 | Đèn nóng chỉ đường |  |  |  | warm |  |  |
+| 1 | do-nhiet.1 | Nút nào đang nóng | warm(), lệnh warm, nút bật sẵn (nóng) | có | có | warm |  |  |
+| 2 | do-nhiet.2 | Đèn nóng chỉ đường |  | có |  | warm |  |  |
 | 3 | do-nhiet.3 | Cửa, thùng hay đèn |  |  |  | warm |  |  |
 | 4 | do-nhiet.4 | Hành lang năm nút |  |  |  | warm |  |  |
 | 5 | do-nhiet.5 | Xa gần và nóng lạnh |  |  |  | if, not, warm |  |  |
@@ -202,7 +202,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | che-do-nhiet.1 | Hàm switch_on() |  |  |  | def, if, not, warm, tham-so |  |  |
+| 1 | che-do-nhiet.1 | Hàm switch_on() |  | có |  | def, if, not, warm, tham-so |  |  |
 | 2 | che-do-nhiet.2 | Hàm switch_left() |  |  |  | def |  |  |
 | 3 | che-do-nhiet.3 | Sửa hàm light() |  |  |  | if, not, warm, tham-so |  |  |
 | 4 | che-do-nhiet.4 | Hàm find_warm() |  |  |  | def, while, not, warm |  |  |
@@ -217,7 +217,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | doi-mua-2.1 | Bạn chắn đường bóng | hai robot |  |  |  |  |  |
+| 1 | doi-mua-2.1 | Bạn chắn đường bóng | hai robot | có |  |  |  |  |
 | 2 | doi-mua-2.2 | Đón bạn vào khoang |  |  |  |  |  |  |
 | 3 | doi-mua-2.3 | Theo sau xe xích |  |  |  |  |  |  |
 | 4 | doi-mua-2.4 | Bạn qua rồi mới bắn |  |  |  |  |  |  |
@@ -232,7 +232,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | che-doi-mua-2.1 | Hàm wait_clear() |  |  |  |  |  |  |
+| 1 | che-doi-mua-2.1 | Hàm wait_clear() |  | có |  |  |  |  |
 | 2 | che-doi-mua-2.2 | Hàm yield_step() cho cả đội |  |  |  |  |  |  |
 | 3 | che-doi-mua-2.3 | Sửa hàm keep_close() |  |  |  |  |  |  |
 | 4 | che-doi-mua-2.4 | Hàm wait_mate() |  |  |  |  |  |  |
@@ -247,8 +247,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | be-sung.1 | Bệ súng không giật | bệ súng xích |  |  |  |  |  |
-| 2 | be-sung.2 | Nút sau lưng |  |  |  |  |  |  |
+| 1 | be-sung.1 | Bệ súng không giật | bệ súng xích | có | có |  |  |  |
+| 2 | be-sung.2 | Nút sau lưng |  | có |  |  |  |  |
 | 3 | be-sung.3 | Hai phát một chỗ |  |  |  |  |  |  |
 | 4 | be-sung.4 | Thùng nằm yên |  |  |  |  |  |  |
 | 5 | be-sung.5 | Hành lang có hốc |  |  |  |  |  |  |
@@ -262,7 +262,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | che-be-sung.1 | Hàm blast_left() |  |  |  | def, tham-so |  |  |
+| 1 | che-be-sung.1 | Hàm blast_left() |  | có |  | def, tham-so |  |  |
 | 2 | che-be-sung.2 | Hàm blast_right() |  |  |  | def, tham-so |  |  |
 | 3 | che-be-sung.3 | Sửa hàm left_shot() |  |  |  | tham-so |  |  |
 | 4 | che-be-sung.4 | Hàm lock_on() |  |  |  | def, if, not, warm, tham-so |  |  |
