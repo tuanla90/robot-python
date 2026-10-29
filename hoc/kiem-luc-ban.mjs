@@ -79,7 +79,7 @@ console.log('== 1. Luật lõi ==');
   kiem('bắn nhanh cũng tốn đạn: phát thứ hai hết đạn', r.suKien.some((e) => e.ma === 'het-dan'));
   let loiCfg = '';
   try { SanHoc.chay({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'wait'], san: SAN, batDau: { x: 3, y: 3, huong: 0 }, lucBan: true }, 'wait()\n'); } catch (e) { loiCfg = e.message; }
-  kiem('lucBan mà robot không có súng → lỗi cấu hình', /lucBan chỉ dùng cho robot có súng hơi/.test(loiCfg), loiCfg);
+  kiem('lucBan mà robot không có súng → lỗi cấu hình', /lucBan chỉ dùng cho robot có vòi phun/.test(loiCfg), loiCfg);
   kiem('SanHoc xuất LUC_BAN, TAM_BAN_NHANH = 2', J(SanHoc.LUC_BAN) === '["fast","charge"]' && SanHoc.TAM_BAN_NHANH === 2);
 
   // chẩn đoán qua máy chấm

@@ -93,7 +93,7 @@
       moTaLenh: { go_up: 'Bay lên một ô, 1 nhịp', go_down: 'Bay xuống một ô, 1 nhịp', go_left: 'Bay sang trái một ô, 1 nhịp', go_right: 'Bay sang phải một ô, 1 nhịp',
         wait: 'Lơ lửng một nhịp', battery: 'Hỏi: pin còn bao nhiêu' },
       gioi: ['Nhanh: mỗi lệnh go_…() là 1 nhịp, 1 ô', 'Bay qua hàng rào thấp, băng chuyền, vật, bậc thang'],
-      khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném, súng hơi',
+      khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném, vòi phun',
         { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }],
       luuY: [{ chu: 'Dừng ở ô sạc P thì pin sạc đầy ở cuối nhịp.', can: ['battery'] }]
     },
@@ -162,12 +162,12 @@
       luuY: ['Đầu sơn hạ thì xe đi tới đâu tô tới đó, kể cả lúc quay tại chỗ.', 'ink() chọn màu ngay, không tốn nhịp: "red", "green", "blue", "yellow".', 'dot(), pen_down(), pen_up() chỉ là ra lệnh, wait() mới làm.']
     },
     'hoi': {
-      khe: 'tay', ten: 'Súng hơi',
-      moTa: 'Hai nòng: shoot() bắn ra trước, shoot_back() bắn ra sau.',
+      khe: 'tay', ten: 'Vòi phun',
+      moTa: 'Hai đầu phun: shoot() bắn ra trước, shoot_back() bắn ra sau.',
       lenh: ['shoot', 'shoot_back'],
-      gioi: ['Bóng bay thẳng; trúng nút thì nút đổi: cửa mở / đóng, băng chuyền bật / tắt', 'Giật: bắn ra trước thì xe lùi 1 ô, bắn ra sau thì xe tiến 1 ô', 'Xe giật vào thùng nặng thì thùng trượt tới khi gặp vật cản'],
+      gioi: ['Tia nước bay thẳng; trúng nút thì nút đổi: cửa mở / đóng, băng chuyền bật / tắt', 'Giật: bắn ra trước thì xe lùi 1 ô, bắn ra sau thì xe tiến 1 ô', 'Xe giật vào thùng nặng thì thùng trượt tới khi gặp vật cản'],
       khong: ['Một nhịp chỉ bắn một phát', 'Nhịp bắn thì bánh nghỉ', 'Chạy bánh húc vào thùng nặng thì không đẩy được'],
-      luuY: ['Lệnh bắn cũng chỉ là ra lệnh, wait() mới bắn.', 'Ở các màn Lực bắn, lệnh bắn nhận một lực: "charge" bắn tụ như thường, bay xa và xe giật; "fast" bắn nhanh, bóng bay 2 ô và xe không giật.']
+      luuY: ['Lệnh bắn cũng chỉ là ra lệnh, wait() mới bắn.', 'Ở các màn Lực bắn, lệnh bắn nhận một lực: "charge" bắn tụ như thường, bay xa và xe giật; "fast" bắn nhanh, tia nước bay 2 ô và xe không giật.']
     },
 
     /* ------------------------------------------------------------ CẢM BIẾN */

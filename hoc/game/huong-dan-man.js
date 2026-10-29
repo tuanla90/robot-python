@@ -446,7 +446,7 @@
   ].concat(buocThuVeChay('Chương trình chính đã gọi dots(3). Bấm Chạy.'));
 
   /* ============================================================ Chương 19 · Súng hơi (làm quen): shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới */
-  var CHU_THE_SUNG = 'Khối của súng nằm ở thẻ Súng hơi. Bấm ◀ hoặc ▶ để sang thẻ đó.';
+  var CHU_THE_SUNG = 'Khối của vòi phun nằm ở thẻ Vòi phun. Bấm ◀ hoặc ▶ để sang thẻ đó.';
   // Gói T mùa 2 (29/10): sung-hoi.1 là màn trình diễn súng hơi (chiChay: chỉ bấm Chạy); phiên bản 2.
   H['sung-hoi.1'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: mỗi phát shoot() bắn ra trước, cú giật đẩy xe lùi một ô.', xong: 'chay' },
@@ -458,7 +458,7 @@
     buocChay('Bấm Chạy.')
   ];
   H['sung-hoi.3'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bóng bay ra sau trúng nút, cửa mở, xe được giật tới một ô.', xong: 'chay', daLam: daChay },
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tia nước bay ra sau trúng nút, cửa mở, xe được giật tới một ô.', xong: 'chay', daLam: daChay },
     buocChay('Rồi viết tiếp đoạn đi qua cửa. Bấm Chạy.')
   ];
   H['sung-hoi.4'] = [
@@ -625,10 +625,10 @@
     buocThanHam('push', ['.p-pal .pal'], 'Ghép thân hàm: forward với số là distance() + n: tới sát thùng rồi đẩy thêm n ô.', 1, 'tren')
   ].concat(buocThuVeChay('Ba thùng xa gần khác nhau, cùng một push(n). Bấm Chạy.'));
   // Gói 6: chọn lực bắn (luc-ban.1 trình diễn bắn nhanh, luc-ban.2 đổi "fast" thành "charge", che-luc-ban.1 chế aim_fire())
-  H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: shoot("fast") bắn nhanh, bóng bay hai ô trúng nút, xe đứng yên nên thùng không bị xô.', 1,
+  H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: shoot("fast") bắn nhanh, nước bay hai ô trúng nút, xe đứng yên nên thùng không bị xô.', 1,
     'Chữ trong ngoặc là lực: "fast" bắn nhanh không giật, "charge" bắn tụ bay xa. Màn sau em tự chọn lực.');
   H['luc-ban.2'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bắn nhanh chỉ bay hai ô, nút cách ba ô nên bóng rơi giữa đường.', xong: 'chay', daLam: daChay },
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bắn nhanh chỉ bay hai ô, nút cách ba ô nên tia nước rơi giữa đường.', xong: 'chay', daLam: daChay },
     { phu: true, huong: 'tren', rong: 180, han: 0,
       dich: function () { return thay('nut:chon-chuoi') ? 'nut:chon-chuoi' : 'so:1'; },
       chu: function () { return thay('nut:chon-chuoi') ? 'Chọn "charge": bắn tụ bay xa tới nút.' : 'Chạm chữ "fast" trên dòng shoot để đổi lực.'; },
@@ -658,7 +658,7 @@
   ].concat(buocThuVeChay('Bốn nút, cùng một switch_on(). Bấm Chạy.'));
   // Gói 9: bệ súng xích không giật (be-sung.1 trình diễn, be-sung.2 bỏ dòng back() bù giật thừa, che-be-sung.1 chế blast_left())
   H['be-sung.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: bắn tụ xong xe vẫn đứng nguyên ô, không cần move() bù giật.', 1,
-    'Bệ súng xích bắn tụ không giật: sau shoot() và wait() là rẽ phải ngay. Màn sau em bỏ dòng bù giật thừa của Sola.');
+    'Bệ vòi xích bắn tụ không giật: sau shoot() và wait() là rẽ phải ngay. Màn sau em bỏ dòng bù giật thừa của Sola.');
   H['be-sung.2'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: xe không giật mà vẫn back() nên lệch khỏi cửa.', xong: 'chay', daLam: daChay },
     { dich: 'dong:3', chu: 'Chạm dòng back() để chọn, rồi bấm ô số có dấu xóa để bỏ nó.', xong: 'xoa-dong', han: 0, rong: 170,
@@ -672,7 +672,7 @@
   ].concat(buocThuVeChay('Hai nút bên trái, cùng một blast_left(). Bấm Chạy.'));
   // Gói 8 (đội, hai chương trình khoá; màn trình diễn đội chờ HD3 mở rộng khoá cho maMau.doi): doi-mua-2.1 viết thân clear_shot() của màn (bút chì mở Xưởng), che-doi-mua-2.1 chế wait_clear()
   H['doi-mua-2.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: clear_shot() còn trống nên R2 bắn ngay, bóng trúng R1 đang đứng trong giếng.', xong: 'chay', daLam: daChay },
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: clear_shot() còn trống nên R2 bắn ngay, tia nước trúng R1 đang đứng trong giếng.', xong: 'chay', daLam: daChay },
     { dich: '[data-sua="clear_shot"]', chu: 'Chạm bút chì cạnh clear_shot() để viết thân hàm trong Xưởng.', xong: 'mo-xuong', han: 0, rong: 170, daLam: xuongMo },
     khoiTheo(['khoi:vong:while'], 'Chạm khối while warm(): còn thấy bạn nóng trước mũi thì lặp.', CHU_THE_LOGIC,
       { xuong: true, daLam: function () { return /while/.test(chuThan('clear_shot')); } }),

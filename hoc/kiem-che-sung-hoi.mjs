@@ -153,7 +153,7 @@ console.log('\n== 3. bongMo.thung (thùng mờ) với ô ◆ và xe mờ; lech-b
 console.log('\n== 4. Sổ lệnh: sáu hàm mới của che-sung-hoi (fixed_kick, go_out, come_back là hàm của màn); lệnh gốc shoot ↔ shoot_back ==');
 {
   const moi = ['jet_back', 'jet_fwd', 'kick_right', 'tap_right', 'kick_left', 'kick_ahead'];
-  kiem('SoLenh.theoChuong("che-sung-hoi") đúng sáu hàm theo thứ tự chế; nhóm hoi (Súng hơi)', J(SoLenh.theoChuong('che-sung-hoi').map((h) => h.ten)) === J(moi) && SoLenh.theoChuong('che-sung-hoi').every((h) => h.nhom === 'hoi') && SoLenh.tenNhom.hoi === 'Súng hơi');
+  kiem('SoLenh.theoChuong("che-sung-hoi") đúng sáu hàm theo thứ tự chế; nhóm hoi (Vòi phun)', J(SoLenh.theoChuong('che-sung-hoi').map((h) => h.ten)) === J(moi) && SoLenh.theoChuong('che-sung-hoi').every((h) => h.nhom === 'hoi') && SoLenh.tenNhom.hoi === 'Vòi phun');
   const dau = {};
   for (const m of tatCa) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
   kiem('fixed_kick, go_out, come_back là hàm CỦA MÀN: không là hàm cốt truyện, không trong Sổ lệnh, không trong hamCuaEmMoi của lời giải nào', ['fixed_kick', 'come_back'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null && tatCa.every((m) => !m.loiGiai.hamCuaEmMoi.some((h) => h.ten === t))));

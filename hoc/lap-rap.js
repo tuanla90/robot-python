@@ -67,7 +67,7 @@
     { ma: 'xoay', part: 'xoay', ten: 'Tay kẹp xoay', gia: 3, icon: 'denXoay', vuot: 'Kẹp vật ở trước, trái, phải', ham: ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'] },
     { ma: 'nam-cham', part: 'nam-cham', ten: 'Nam châm', gia: 3, icon: 'denNamCham', vuot: 'Hút vật sắt, vật nam châm từ xa', ham: ['magnet_n', 'magnet_s', 'magnet_off'] },
     { ma: 'nem', part: 'nem', ten: 'Máy ném', gia: 3, icon: 'denNem', vuot: 'Ném vật qua rào, xa 1 đến 3 ô', ham: ['aim', 'throw', 'load'] },
-    { ma: 'hoi', part: 'hoi', ten: 'Súng hơi', gia: 3, icon: 'denSung', vuot: 'Bắn hơi đẩy thùng nặng', ham: ['shoot', 'shoot_back'] }
+    { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Bắn hơi đẩy thùng nặng', ham: ['shoot', 'shoot_back'] }
   ];
   // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu') = part khoang-cach + hai hàm front_metal / front_pole.
   var CAM_BIEN = [
