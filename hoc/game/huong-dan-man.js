@@ -464,17 +464,17 @@
     buocChay('Cho xe đi tới gần van rồi mới phun. Bấm Chạy.')
   ];
 
-  /* ============================================================ Chương 20 · Chế lệnh súng hơi: thẻ Súng hơi trong Xưởng */
+  /* ============================================================ Gói 4 chương 2 · Chế lệnh vòi phun: thẻ Vòi phun trong Xưởng (30/10 phun nhẹ) */
   H['che-sung-hoi.1'] = [
-    { khongAn: true, dich: '#field', chu: 'Xe mờ là chỗ xe phải tới. Xe chỉ cần lùi một ô.', xong: 'bam', han: 7000, rong: 160, huong: 'duoi' },
-    buocTaoHam('jet_back', 'Chế hàm jet_back() trong Xưởng: bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:spray'], 'Chạm spray() rồi wait(): xe bắn một phát và bị giật lùi một ô.', CHU_THE_SUNG,
-      { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('jet_back') >= 2; } })
+    { khongAn: true, dich: '#field', chu: 'Xe mờ là chỗ xe phải tới. Cửa chỉ mở khi van bị phun trúng.', xong: 'bam', han: 7000, rong: 160, huong: 'duoi' },
+    buocTaoHam('puff', 'Chế hàm puff() trong Xưởng: bấm Hàm mới.', CHU_TAO),
+    khoiTheo(['khoi:spray'], 'Chạm spray() rồi wait(): phun một phát, chờ hết nhịp.', CHU_THE_SUNG,
+      { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('puff') >= 2; } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
   H['che-sung-hoi.2'] = [
-    buocTaoHam('jet_fwd', 'Chế hàm jet_fwd() trong Xưởng: bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:spray_back'], 'Chạm spray_back() rồi wait(): bắn ra sau thì xe được giật tới một ô.', CHU_THE_SUNG,
-      { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('jet_fwd') >= 2; } })
+    buocTaoHam('puff_back', 'Chế hàm puff_back() trong Xưởng: bấm Hàm mới.', CHU_TAO),
+    khoiTheo(['khoi:spray_back'], 'Chạm spray_back() rồi wait(): phun một phát ra sau.', CHU_THE_SUNG,
+      { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('puff_back') >= 2; } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
 
   /* ============================================================ Chương 13 · Thân nhện (co chân, gầm, hố, nhảy) */
@@ -685,5 +685,5 @@
 
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
-    'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2 };       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
+    'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2 };       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
 })();

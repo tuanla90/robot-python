@@ -48,7 +48,7 @@ const HAM_GOI = {
   1: ['spin', 'sidestep', 'pick_behind'],
   2: ['forward', 'right', 'deliver', 'step'],
   3: ['go_to_wall', 'go_safe', 'clean_step', 'go_get'],
-  4: ['jet_back', 'jet_fwd', 'kick_right', 'tap_right', 'kick_left', 'kick_ahead'],
+  4: ['puff', 'puff_back', 'open_left', 'open_right', 'open_behind'],
   5: ['push', 'go_around', 'push_around', 'push_back'],
   6: ['squirt', 'squirt_back', 'smart_spray', 'auto_spray', 'auto_left', 'auto_right', 'squirt_left', 'close_spray', 'scan_left', 'auto_turn'],
   7: ['switch_on', 'switch_left', 'find_warm', 'auto_on', 'scan_on', 'switch_right', 'auto_left_on']

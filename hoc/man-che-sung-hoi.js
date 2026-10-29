@@ -317,7 +317,7 @@
       loiGiai: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', T_COME_BACK)] },
       loiGiaiKhac: { moTa: 'Cùng cách viết, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', nhieu(['# làm ngược lại go_out()'], T_COME_BACK))] } },
       congThucKhac: [
-        { moTa: 'Quay đầu rồi đi tiến về chỗ cũ, cuối cùng quay đầu lại', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', ['u_turn()', 'move()', 'turn_right()', 'move()', 'u_turn()'])] } },
+        { moTa: 'Quay đầu rồi đi tiến về chỗ cũ, cuối cùng quay đầu lại', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', ['u_turn()', 'move()', 'turn_left()', 'move()', 'u_turn()'])] } },
         { moTa: 'Viết thẳng hai bánh lùi thay cho back()', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_out', T_GO_OUT), H('come_back', ['left_back()', 'right_back()', 'wait()', 'turn_left()', 'left_back()', 'right_back()', 'wait()'])] } }
       ],
       loiSai: [
