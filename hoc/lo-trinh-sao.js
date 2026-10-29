@@ -269,6 +269,14 @@
     "o": 18,
     "nhip": 19
   },
+  "bang-chuyen.2": {
+    "o": 5,
+    "nhip": 8
+  },
+  "bang-chuyen.8": {
+    "o": 23,
+    "nhip": 20
+  },
   "che-sung-hoi.7": {
     "o": 11,
     "nhip": 4

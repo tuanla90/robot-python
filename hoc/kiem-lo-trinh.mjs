@@ -211,7 +211,7 @@ const BANG_MUA_2 = [
   ['xich', [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6'].concat(BIEN_MUA_2, ['che-xich.9'])]]],
   ['sung-hoi', [['sung-hoi', day('sung-hoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])], ['tham-so', day('tham-so', MUOI)]]],     // 29/10: sung-hoi.9 lên sau .6 (đường cong)
   ['hong-ngoai', [['hong-ngoai', []], ['che-hong-ngoai', []]]],
-  ['nha-may', [['bang-chuyen', day('bang-chuyen', MUOI)], ['che-sung-hoi', day('che-sung-hoi', MUOI)]]],
+  ['nha-may', [['bang-chuyen', day('bang-chuyen', [1, 2, 6, 5, 7, 8, 3, 4, 9, 10])], ['che-sung-hoi', day('che-sung-hoi', [1, 2, 3, 4, 5, 6, 8, 7, 9, 10])]]],     // 29/10: đường cong
   ['day-thung', [['day-thung', []], ['che-day-thung', []]]],
   ['luc-ban', [['luc-ban', day('luc-ban', MUOI)], ['che-luc-ban', []]]],
   ['do-nhiet', [['do-nhiet', []], ['che-do-nhiet', []]]],
