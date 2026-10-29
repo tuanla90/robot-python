@@ -7,8 +7,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | xich.1 | Đường thẳng | thân xích |  |  |  |  |  |
-| 2 | xich.2 | Quay nửa vòng |  |  |  |  |  |  |
+| 1 | xich.1 | Xích quay hai nhịp | thân xích | có | có |  |  |  |
+| 2 | xich.2 | Quay nửa vòng |  | có |  |  |  |  |
 | 3 | xich.3 | Hàm tr_right() |  |  |  | def, for |  |  |
 | 4 | xich.4 | Hàm tr_left() | thùng nặng |  |  | def, for |  |  |
 | 5 | xich.5 | Trái rồi phải |  |  |  |  |  |  |
@@ -26,12 +26,12 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 | 2 | che-xich.2 | Né sang phải |  |  |  | def |  |  |
 | 3 | che-xich.8 | Quay chưa đủ |  |  |  | for |  |  |
 | 4 | che-xich.6 | Nhặt sau lưng |  |  |  | def |  |  |
-| 5 | che-cam-bien.6 | Đếm bước để trở về | biến |  |  | bien, while, for | LỖ B,C |  |
-| 6 | che-cam-bien.5 | Đi rồi về |  | có |  | bien, def, while, for | LỖ B,C |  |
-| 7 | che-cam-bien.9 | Lấy rồi về |  |  |  | bien, def, while, for | LỖ B,C |  |
-| 8 | robot-hoan-thien.9 | Kẹt số lùi |  |  |  | bien | LỖ A2,C |  |
+| 5 | che-cam-bien.6 | Đếm bước để trở về | biến | có | có | bien, while, for |  |  |
+| 6 | che-cam-bien.5 | Đi rồi về | nhiều sân | có |  | bien, def, while, for |  | có |
+| 7 | che-cam-bien.9 | Lấy rồi về |  |  |  | bien, def, while, for |  | có |
+| 8 | robot-hoan-thien.9 | Kẹt số lùi |  |  |  | bien |  | có |
 | 9 | che-xich.9 | Xích trái chỉ lùi |  |  |  | for |  |  |
-| 10 | bien-xich.1 | Trùm: Đếm để về đúng hàng | nhiều sân |  |  |  |  |  |
+| 10 | bien-xich.1 | Trùm: Đếm để về đúng hàng |  |  |  |  |  |  |
 
 ## sung-hoi (Súng hơi)
 

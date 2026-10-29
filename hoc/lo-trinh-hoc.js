@@ -1328,6 +1328,53 @@
   // Trùm nam châm phải cho đủ sao ô với chính kho người chơi đã học.
   get('nam-cham.10').sao.o = 23;
 
+  // ---------------------------------------------------------------- GÓI T MÙA 2 (29/10, user "show don't tell", đúng việc HD1 / HD2 đã làm cho mùa 1)
+  // Mỗi chương mùa 2 giới thiệu khối / part / cơ chế mới: màn ĐẦU là màn TRÌNH DIỄN (chiChay: chương trình khoá, bấm Chạy là 3 sao, đề chỉ nói "Bấm Chạy, xem…"),
+  // màn KẾ ép dùng nó (nhiều sân của ngân hàng / mã mẫu sai một chỗ / giấu lệnh cũ có thể lách) + hướng dẫn từng bước (huong-dan-man.js khối "gói T mùa 2"), rồi thả.
+  // Máy dò lách mùa 2: hoc/kiem-lach-mua-2.mjs (A1 / A2 / B + C hằng thay biến, D hàm có tham số, E hằng thay cảm biến số, F đảo lực); bảng: ban-giao/bang-t-mua-2.md.
+  // Khối này đặt SAU deLuyen (deLuyen ghi đề một sân cho che-cam-bien.5 / .9 mà gói T lấy lại ba sân) và TRƯỚC khi gán ngưỡng sao. Chỉ sửa màn mùa 2 qua lộ trình, giữ `ma`;
+  // lời giải đổi thì đo lại sao (tools/do-lo-trinh.mjs --ghi-sao). Lộ trình chương không đổi (10 màn, không cất màn nào).
+  (function () {
+    var di = function (n) { return lap(n, ['move()']); };
+    var QUAY_P = ['for i in range(2):', '    left_move()', '    wait()'];
+    // Gói 1 chương xich: cái mới là THÂN XÍCH quay bằng một bên xích, HAI nhịp liền mới đủ 90°. xich.1 trình diễn đúng việc đó (khoá); xich.2 ép: mã mẫu quay MỘT nhịp
+    // (range(1)), người chơi đổi số thành 2 (hướng dẫn từng bước); turn_right() của em rút khỏi khay (hamCuaEmCan) để không lách bằng hàm cũ. xich.3 tạo tr_right (ép def).
+    sua('xich.1', {
+      ten: 'Xích quay hai nhịp', chiChay: true, chinhCoDinh: true,
+      deBai: 'Xe xích không có bánh: hai dải xích nhận cùng các lệnh left_move, right_move, wait như xe hai bánh. Muốn quay 90°, chỉ một bên xích quay và phải quay HAI nhịp liền. Xe đang quay mặt vào tường: bấm Chạy xem xe quay phải rồi đi tới cờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: left_move() rồi wait() lặp hai lần là quay phải đủ 90°, rồi move() đi ba ô.',
+      san: ['####', '...F', '####'], batDau: { x: 0, y: 1, huong: 0 },
+      maMau: bai(QUAY_P.concat(di(3))), loiGiai: bai(QUAY_P.concat(di(3))),
+      goiY: ['turn_right() của xe hai bánh chỉ quay một nhịp: với xe xích chưa đủ 90°.', 'Màn sau em tự đổi số nhịp quay.']
+    });
+    (function () {
+      var m = get('xich.2'), MOT = ['for i in range(1):', '    left_move()', '    wait()'].concat(di(4));
+      m.deBai = 'Xe xích đứng ở đầu hành lang, mặt quay vào tường. Quay phải rồi đi tới cờ. Chương trình có sẵn chỉ cho xích quay MỘT nhịp: chạy thử xem xe quay được bao nhiêu.';
+      m.veMaMau = 'Chạy thử: một nhịp left_move chỉ quay được nửa góc, xe đâm tường. Đổi số lần lặp của vòng quay cho đủ hai nhịp.';
+      m.maMau = bai(MOT.slice());
+      m.hamCuaEmCan = ['move'];
+      m.goiY = ['Chạy từng nhịp và nhìn xe ở chỗ quẹo: một nhịp left_move quay được bao nhiêu độ?', 'Xe xích cần hai nhịp liên tiếp cùng một lệnh mới quay đủ 90°: đổi số trong range().'];
+      m.loiSai[0] = { moTa: 'Không sửa gì: xích quay một nhịp chưa đủ 90°, xe đâm tường', baiLam: bai(MOT.slice()), phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-toi-co'] };
+    })();
+    // Gói 1 chương bien-xich: BIẾN ĐẾM xuất hiện ở màn 5. che-cam-bien.6 thành màn TRÌNH DIỄN (count_return() đúng sẵn, hàm của màn khoá, bấm Chạy thấy xe đi tới tường rồi
+    // lùi về đúng n bước); che-cam-bien.5 (bounce), .9 (fetch_back) và robot-hoan-thien.9 (biến ở main) lấy lại ba sân của ngân hàng để đếm cứng không qua (máy dò: lỗ B / C).
+    var DEM = ['n = 0', 'while front_clear():', '    move()', '    n = n + 1', 'for i in range(n):', '    back()'];
+    sua('che-cam-bien.6', {
+      ten: 'Đếm bước để trở về', chiChay: true, chinhCoDinh: true, khoaHamMan: ['count_return'],
+      deBai: 'Biến n là một ô nhớ: n = 0 đặt nó bằng 0, n = n + 1 tăng nó thêm một. count_return() đi tới tường, mỗi bước tăng n, rồi lùi đúng n bước về chỗ cũ. Bấm Chạy xem xe về đúng xe mờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: xe đi bốn ô thì n = 4, nên vòng for lùi bốn lần.',
+      maMau: bai(['count_return()'], [ham('count_return', DEM)]), loiGiai: bai(['count_return()'], [ham('count_return', DEM)]),
+      goiY: ['Không có biến n thì hàm không biết đã đi mấy ô.', 'Màn sau em tự chế bounce() với ba khối đếm.']
+    });
+    // Nhịp sao theo sân DÀI NHẤT (bỏ nhipTheo 'tong' của ngân hàng) để đường cong nhịp của chương không nhảy gấp ba.
+    ['che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'].forEach(function (ma) { nhieuSan(ma); delete get(ma).nhipTheo; });
+    // Cờ đâm-là-thua (HD2) cho màn ÉP mùa 2 mà đếm thừa vẫn 3 sao nhờ húc tường hai đầu hành lang (máy dò: lỗ B2 ở che-cam-bien.9); gắn cả ba màn ép biến đếm cho
+    // nhất quán. Lời giải chuẩn không đâm tường ở sân nào (máy dò kiểm). Danh sách riêng của mùa 2, nối vào M.manDamLaThua.
+    var DAM_LA_THUA_2 = ['che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
+    DAM_LA_THUA_2.forEach(function (ma) { get(ma).damLaThua = true; });
+    M.manDamLaThua = M.manDamLaThua.concat(DAM_LA_THUA_2);
+  })();
+
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.
   var nguong = node ? require('./lo-trinh-sao.js') : window.NguongSaoLoTrinh;
   M.danhSach.forEach(function (m) {

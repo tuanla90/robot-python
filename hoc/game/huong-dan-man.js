@@ -546,6 +546,26 @@
     { dich: 'nut:lap-xong', chu: 'Đủ xu rồi thì bấm Lắp xong để vào màn.', rong: 150, han: 60000, xong: 'bam', huong: 'tren' }
   ];
 
+  /* ============================================================ GÓI T MÙA 2 (29/10, show don't tell, như HD1 / HD2 mùa 1): mỗi chương mùa 2 có màn TRÌNH DIỄN (chiChay:
+     chỉ bấm Chạy, bong bóng chỉ nút Chạy rồi chỉ dòng khối mới) và màn KẾ ép dùng khối mới (bong bóng chỉ đúng thao tác mới). Dữ liệu màn: lo-trinh-hoc.js khối "GÓI T MÙA 2". */
+  /** Hai bước của màn trình diễn: bấm Chạy, rồi chỉ dòng `dong` (từ 1) nói khối mới làm gì. */
+  function trinhDien(chuChay, dong, chuDong) {
+    return [
+      { khongAn: true, dich: 'nut:chay', chu: chuChay, xong: 'chay' },
+      { khongAn: true, dich: 'dong:' + dong, chu: chuDong, xong: 'bam', han: 9000, rong: 170 }
+    ];
+  }
+  // Gói 1: thân xích quay hai nhịp (xich.1 trình diễn, xich.2 đổi số nhịp quay); biến đếm (che-cam-bien.6 trình diễn count_return, che-cam-bien.5 chế bounce: H đã có)
+  H['xich.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: một bên xích quay hai nhịp là xe quay phải 90°, rồi đi tới cờ.', 1,
+    'left_move() lặp hai lần với wait(): xích quay HAI nhịp mới đủ 90°. Màn sau em tự đổi số nhịp.');
+  H['xich.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: xích chỉ quay một nhịp nên mới được nửa góc, xe đâm tường.', xong: 'chay', daLam: daChay },
+    buocSoFor(1, 2),
+    buocChay('Quay đủ hai nhịp rồi thì bấm Chạy.')
+  ];
+  H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xe đi tới tường, mỗi bước n tăng một, rồi lùi đúng n bước về xe mờ.', 1,
+    'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2 };
 })();
