@@ -239,7 +239,7 @@ console.log('\n== 6. Màu đội: kính + mắt + chấm ăng-ten ==');
   kiem('mauDoi: R1 = vecDoiR1 / vecDoiR1Toi, R2 = vecDoiR2 / vecDoiR2Toi, hai bộ khác nhau', M1.chinh === BM.vecDoiR1 && M1.toi === BM.vecDoiR1Toi && M2.chinh === BM.vecDoiR2 && M2.toi === BM.vecDoiR2Toi && M1.chinh !== M2.chinh && M1.toi !== M2.toi);
   const khac = [];
   for (let i = 0; i < Math.max(r1.length, r2.length); i++) if (r1[i] !== r2[i]) khac.push(i);
-  const doiMau = (s) => s.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi);
+  const doiMau = (s) => s.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb);      // 29/10: lõi / quầng mắt cũng theo đội
   const chiMau = khac.every((i) => doiMau(r2[i]) === r1[i]);
   const loaiKhac = khac.map((i) => r2[i].split(' ')[0]).sort();
   kiem('R1 và R2: cùng độ dài luồng (' + r1.length + '), chỉ khác ở màu đội; chỗ khác = ' + J(loaiKhac),
@@ -248,6 +248,14 @@ console.log('\n== 6. Màu đội: kính + mắt + chấm ăng-ten ==');
   const mat = r2.filter((s) => s === 'strokeStyle ' + M2.chinh).length, cham = r2.filter((s) => s === 'fillStyle ' + M2.chinh).length;
   kiem('R2: kính = 1 gradient (toi → chinh), mắt = 2 viền chinh, chấm ăng-ten = 1 tô chinh', kinh === 1 && mat === 2 && cham === 1, 'kính ' + kinh + ', mắt ' + mat + ', chấm ' + cham);
   kiem('luồng R2 không còn màu R1 và ngược lại', !r2.some((s) => s.includes(M1.chinh) || s.includes(M1.toi)) && !r1.some((s) => s.includes(M2.chinh) || s.includes(M2.toi)));
+  {   /* 29/10 (user: mắt R2 vẫn xanh, tim đỏ trên kính xanh bị lạc): lõi + quầng mắt theo đội, ở mắt thường lẫn mắt biểu cảm (vui, tim); R2 không còn lõi / quầng mắt của R1 */
+    const mR2 = ['thuong', 'vui', 'tim'].map((m) => V.robot({ than: 'hai-banh', son: 'lam' }, { than: { mat: m } }, 2, 84).lenh.map(chuoi));
+    const mR1 = ['thuong', 'vui', 'tim'].map((m) => V.robot({ than: 'hai-banh', son: '' }, { than: { mat: m } }, 2, 84).lenh.map(chuoi));
+    const coMat = (l, M) => l.some((s) => s.includes(M.mat)) && (l === mR2[0] || l === mR1[0] || l.some((s) => s.includes(M.matRgb)));
+    kiem('mắt theo đội: R1 lõi vecMat, R2 lõi vecMatR2 (mắt thường, vui, tim); R2 không dùng lõi / quầng mắt R1, tim không còn hồng cố định',
+      M1.mat === BM.vecMat && M2.mat === BM.vecMatR2 && M1.mat !== M2.mat && mR2.every((l) => coMat(l, M2)) && mR1.every((l) => coMat(l, M1)) &&
+      !mR2.some((l) => l.some((s) => s.includes(M1.mat) || s.includes(M1.matRgb))) && !mR1[2].some((s) => s.includes(BM.vecHong)));
+  }
   const Mn = V.mauDoi('ngoc'), Md = V.mauDoi('do'), Mt = V.mauDoi('tim');
   kiem("(V7c1) sơn mở khoá đã bỏ: 'ngoc' → R1 (vecDoiR1); đối thủ 'do' → sonDo / sonDoToi; dự phòng 'tim' → sonTim", Mn.ma === 'R1' && Mn.chinh === BM.vecDoiR1 && Md.chinh === BM.sonDo && Md.toi === BM.sonDoToi && Mt.chinh === BM.sonTim && !/ngoc|hoang-kim/.test(docGame('ve-vector.js').split('var SON_DOI')[1].split('\n')[0]));
 }
@@ -497,7 +505,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 
   /* e. màu đội: mọi tổ hợp R1 ↔ R2 chỉ khác màu đội, đúng ba chỗ (kính 1 gradient, mắt 2 viền, chấm ăng-ten 1 tô) */
   const M1 = V.mauDoi('vang'), M2 = V.mauDoi('lam'), doiSai = [];
-  const doiMau = (x) => x.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi);
+  const doiMau = (x) => x.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb);      // 29/10: lõi / quầng mắt cũng theo đội
   for (const cfg of hopLe.filter((c, i) => i % 3 === 0)) {
     V.xoaDem();
     const st = { tay: cfg.tay ? ST[cfg.tay] : undefined, camBien: { bat: true, mat: true }, than: { quat: true, doc: true } };
@@ -578,7 +586,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
-  const NEN_VEC = '3fe6fa8';                                                           // 29/10 gộp V8a: nền VECTOR = 3fe6fa8 (thân omni / nhện vuông bo, chân nhện ba khúc, dáng bò; trước đó 8d930ae: mắt vui cung tròn mảnh, mắt tim viền trắng thắng màn; trước đó f8331e9, trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
+  const NEN_VEC = 'fbc976e';                                                           // 29/10 V8c một tay kẹp: nền VECTOR = fbc976e (tay kẹp vẽ y hệt tay xoay ở nấc trước: cụm giữa tâm (50, 84), khớp tròn vành bạc + đèn, hàm khop dùng chung; chứng minh: hoàn ve-vector-tay-kep.js + ve-vector-tay-xoay.js về ad0899a thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 V8b tay xoay cùng hình tay kẹp: nền VECTOR = fa7637a (tay xoay vẽ bằng càng / cụm / đèn của tay kẹp, thêm khớp tròn vành bạc; chứng minh: hoàn ve-vector-tay-kep.js + ve-vector-tay-xoay.js về e4b3e11 thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 mắt theo đội: nền VECTOR = 6a4276d (lõi / quầng mắt R2 hồng, mắt trái tim cùng màu mắt đội; chứng minh: hoàn bang-mau.js + ve-vector.js về b38c6be thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 gộp V8a: nền VECTOR = 3fe6fa8 (thân omni / nhện vuông bo, chân nhện ba khúc, dáng bò; trước đó 8d930ae: mắt vui cung tròn mảnh, mắt tim viền trắng thắng màn; trước đó f8331e9, trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };
@@ -921,7 +929,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
         const [c, ...a] = l;
         if (c === 'save') ngan.push(m.slice()); else if (c === 'restore') m = ngan.pop() || m; else if (c === 'translate') m = [m[0], m[1], m[2], m[3], m[4] + m[0] * a[0] + m[2] * a[1], m[5] + m[1] * a[0] + m[3] * a[1]];
         else if (c === 'rotate') { const co = Math.cos(a[0]), si = Math.sin(a[0]); m = [m[0] * co + m[2] * si, m[1] * co + m[3] * si, -m[0] * si + m[2] * co, -m[1] * si + m[3] * co, m[4], m[5]]; }
-        else if ((ma === 'kep' && c === 'bezierCurveTo') || (ma === 'xoay' && c === 'lineTo')) { const x = ma === 'kep' ? a[4] : a[0], y = ma === 'kep' ? a[5] : a[1]; pts.push(m[0] * x + m[2] * y + m[4]); }
+        else if (c === 'bezierCurveTo') pts.push(m[0] * a[4] + m[2] * a[5] + m[4]);                       // đầu càng (V8b: tay xoay vẽ đúng càng cong của tay kẹp)
       }
       const khe = Math.max(...pts.map((x) => Math.abs(x - 50))), nua = V.coVatKep(k) / V.CO_THAN / 2;
       if (!(khe >= nua && khe <= nua + 4)) om.push(ma + ' k' + k + ': nửa khe ' + khe.toFixed(1) + ', nửa thân vật ' + nua.toFixed(1));
@@ -945,7 +953,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     const tl = ghi.map((t) => t / VV.VAT_SAN);
     kiem('(13i) V7a vật treo dưới drone nam châm = cỡ vật nâng (1,15–1,25 lần vật nằm sàn; phát lại ' + DR.map((m) => m.ma).join(', ') + ': ' + ghi.length + ' khung treo)',
       ghi.length > 0 && tl.every((k) => k >= 1.15 && k <= 1.25), ghi.length ? 'tỉ lệ ' + Math.min(...tl).toFixed(2) + '–' + Math.max(...tl).toFixed(2) : 'không khung treo nào');
-    /* tay xoay: vẽ riêng tay (canvas giả), đo nửa khe (điểm lineTo xa trục nhất) ở moK 0 / 0,5 / 1 */
+    /* tay xoay: vẽ riêng tay (canvas giả), đo nửa khe (đầu càng: điểm cuối bezierCurveTo xa trục nhất; V8b càng cong như tay kẹp) ở moK 0 / 0,5 / 1 */
     const khe = [0, 0.5, 1].map((k) => {
       const cv = new V.CanvasGia(100, 100), g = cv.getContext('2d'); V.lay('tay', 'xoay').ve(g, { kep: 'dong', cam: false, tuThe: 'tren', moK: k }, V.mauDoi(''), V.H);
       const pts = []; let m = [1, 0, 0, 1, 0, 0]; const ngan = [];
@@ -953,7 +961,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
         const [c, ...a] = l;
         if (c === 'save') ngan.push(m.slice()); else if (c === 'restore') m = ngan.pop() || m; else if (c === 'translate') m = [m[0], m[1], m[2], m[3], m[4] + m[0] * a[0] + m[2] * a[1], m[5] + m[1] * a[0] + m[3] * a[1]];
         else if (c === 'rotate') { const co = Math.cos(a[0]), si = Math.sin(a[0]); m = [m[0] * co + m[2] * si, m[1] * co + m[3] * si, -m[0] * si + m[2] * co, -m[1] * si + m[3] * co, m[4], m[5]]; }
-        else if (c === 'lineTo') pts.push(m[0] * a[0] + m[2] * a[1] + m[4]);
+        else if (c === 'bezierCurveTo') pts.push(m[0] * a[4] + m[2] * a[5] + m[4]);
       }
       return Math.max(...pts.map((x) => Math.abs(x - 50)));
     });

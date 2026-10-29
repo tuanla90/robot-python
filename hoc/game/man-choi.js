@@ -208,7 +208,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var nhap = Luu.docNhap(m.ma);
     if (m.doi) {                                                                       // nhiều robot: mỗi robot một chương trình chính, hàm của màn dùng chung
       var nd = nhap && nhap.doi && nhap.doi.length === m.doi.length ? nhap.doi : null, md = (m.maMau && m.maMau.doi) || [];
-      var doi = m.doi.map(function (r, i) { return { chinh: nd && !r.coDinh ? nd[i].chinh.slice() : ((md[i] && md[i].chinh) || []).slice() }; });   // robot tự động khóa: luôn chạy đúng chương trình của màn
+      var doi = m.doi.map(function (r, i) { return { chinh: nd && !r.coDinh && !m.chiChay ? nd[i].chinh.slice() : ((md[i] && md[i].chinh) || []).slice() }; });   // robot tự động khóa / màn trình diễn (chiChay, HD3): luôn chạy đúng chương trình của màn
       var hm = nhap ? nhap.hamCuaMan : ((m.maMau && m.maMau.hamCuaMan) || []).map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; });
       return { doi: doi, chinh: doi[0].chinh, hamCuaMan: hm };
     }

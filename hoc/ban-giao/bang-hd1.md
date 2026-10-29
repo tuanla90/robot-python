@@ -127,15 +127,15 @@ Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện tron
 
 | số | mã | tên | mới | HD | trình diễn | ép | đâm là thua |
 |---|---|---|---|---|---|---|---|
-| 1 | che-xe.4 | Bánh lùi | lệnh left_back, lệnh right_back | có |  | def | có |
-| 2 | che-xe.5 | Quay đầu một nhịp |  |  |  |  |  |
-| 3 | che-xe.6 | Đỗ lùi |  |  |  | def | có |
-| 4 | banh-lui.1 | Lùi tránh thùng |  |  |  |  |  |
-| 5 | banh-lui.2 | Lùi vào ngách |  |  |  |  |  |
-| 6 | che-xe.7 | Đường về |  |  |  |  |  |
-| 7 | banh-lui.3 | Ghé trạm rồi lùi ra |  |  |  |  |  |
-| 8 | che-xe.8 | Hai bánh cùng nhịp |  |  |  |  |  |
-| 9 | che-xe.9 | Chỉ còn số lùi |  |  |  |  |  |
+| 1 | banh-lui.5 | Xe lùi | lệnh left_back, lệnh right_back | có | có |  |  |
+| 2 | che-xe.4 | Bánh lùi |  | có |  | def | có |
+| 3 | che-xe.5 | Quay đầu một nhịp |  |  |  |  |  |
+| 4 | che-xe.6 | Đỗ lùi |  |  |  | def | có |
+| 5 | banh-lui.1 | Lùi tránh thùng |  |  |  |  |  |
+| 6 | banh-lui.2 | Lùi vào ngách |  |  |  |  |  |
+| 7 | che-xe.7 | Đường về |  |  |  |  |  |
+| 8 | che-xe.9 | Chỉ còn số lùi |  |  |  |  |  |
+| 9 | banh-lui.3 | Ghé trạm rồi lùi ra |  |  |  |  |  |
 | 10 | banh-lui.4 | Ra khỏi ngõ cụt |  |  |  |  |  |
 
 ## che-banh-lui
@@ -217,8 +217,8 @@ Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện tron
 
 | số | mã | tên | mới | HD | trình diễn | ép | đâm là thua |
 |---|---|---|---|---|---|---|---|
-| 1 | hai-robot.1 | Hai lá cờ | hai robot | có |  |  |  |
-| 2 | hai-robot.2 | Chia việc |  |  |  |  |  |
+| 1 | hai-robot.1 | Hai lá cờ | hai robot | có | có |  |  |
+| 2 | hai-robot.2 | Chia việc |  | có |  |  |  |
 | 3 | hai-robot.3 | Bàn giao |  |  |  |  |  |
 | 4 | hai-robot.4 | Chờ hàng |  |  |  |  |  |
 | 5 | hai-robot.5 | Nhường đường |  |  |  |  |  |

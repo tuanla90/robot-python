@@ -2149,7 +2149,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
       /* ---- các thẻ, theo thứ tự: Thân · Tay · Cảm biến (hàm của màn nằm trong thẻ bộ phận của nó) */
       var loaiTay = [];                                                                       // tên thẻ TAY theo bộ phận thật; nhiều loại dụng cụ cùng lúc thì tên chung "Tay"
-      if (gocTay.length) loaiTay.push(goc.indexOf('arm_left') >= 0 || goc.indexOf('arm_right') >= 0 ? 'Xoay' : 'Kep');       // tay xoay (có arm_left / arm_right) thì thẻ tên "Tay xoay"
+      if (gocTay.length) loaiTay.push(goc.indexOf('arm_left') >= 0 || goc.indexOf('arm_right') >= 0 ? 'Xoay' : 'Kep');       // tay xoay (có arm_left / arm_right): hình tay 'xoay', thẻ vẫn tên "Tay kẹp" (gói V8c: cùng một tay)
       if (gocNC.length) loaiTay.push('NamCham');
       if (gocNem.length) loaiTay.push('Nem');
       if (gocSung.length) loaiTay.push('Sung');                                               // thẻ tên "Súng hơi"

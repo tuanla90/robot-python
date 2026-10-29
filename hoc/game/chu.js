@@ -142,7 +142,7 @@
       'choi.the.drone': 'Drone',
       'choi.the.tay': 'Tay',
       'choi.the.tayKep': 'Tay kẹp',
-      'choi.the.tayXoay': 'Tay xoay',
+      'choi.the.tayXoay': 'Tay kẹp',                     // gói V8c: tay mở xoay vẫn là tay kẹp (một bộ phận từ gói 2)
       'choi.the.tayNamCham': 'Nam châm',
       'choi.the.tayNem': 'Máy ném',
       'choi.the.taySung': 'Súng hơi',
@@ -477,8 +477,8 @@
       'pg.banh-lui.3': 'Giờ bánh quay ngược được rồi. R1 lùi ra khỏi ngõ cụt.',
       'pg.banh-lui.4': 'Lệnh mới: left_back(), right_back() cho hai bánh quay lùi.',
       'pg.tay-xoay.1': 'Thùng nằm bên trái. Muốn nhặt, R1 phải quay cả xe.',
-      'pg.tay-xoay.2': 'Trên kệ có khớp xoay lấp lánh. Gắn vào tay, cạch!',
-      'pg.tay-xoay.3': 'Tay xoay sang trái nhặt thùng. Xe đứng yên, khỏi cần quay!',
+      'pg.tay-xoay.2': 'Trong thùng có món nâng cấp. Cạch! Tay kẹp của R1 giờ xoay được!',      // gói V8c: không có bộ phận mới, cùng tay kẹp được nâng cấp (như bánh lùi)
+      'pg.tay-xoay.3': 'Tay kẹp xoay sang trái nhặt thùng. Xe đứng yên, khỏi cần quay!',
       'pg.tay-xoay.4': 'Lệnh mới arm_left() xoay tay sang trái. Rồi hạ tay, kẹp!',
       'pg.me-cung.1': 'R1 lạc giữa mê cung. Tới chỗ rẽ rồi, đi lối nào đây?',
       'pg.me-cung.2': 'Hai con mắt nhỏ gắn hai bên hông. Tia quét trái, quét phải.',
@@ -488,9 +488,9 @@
       'pg.hai-robot.2': 'Mỗi robot một bảng code riêng. Hai bạn chạy cùng lúc.',
       'pg.hai-robot.3': 'R1 chuyền thùng cho R2. R2 mang thùng vào ô đích. Đội ăn ý!',
       'pg.combo.1': 'Kho chật ních. Thùng nằm hai bên lối đi, xe khó quay.',
-      'pg.combo.2': 'Cảm biến nháy bên có thùng. Tay xoay ngay sang đúng bên đó.',
+      'pg.combo.2': 'Cảm biến nháy bên có thùng. Tay kẹp xoay ngay sang đúng bên đó.',
       'pg.combo.3': 'R1 lướt dọc lối đi, nhặt cả hai bên mà chẳng cần quay xe!',
-      'pg.robot.1': 'R1 đã đủ bộ: tay xoay, cảm biến. Huy hiệu sáng rực!',
+      'pg.robot.1': 'R1 đã đủ bộ: tay kẹp xoay được, cảm biến. Huy hiệu sáng rực!',
       'pg.robot.2': 'Cửa xưởng mở, tem đóng cộp: Xe chở hàng R1 xuất xưởng!',
       'pg.robot.3': 'R1 lăn ra ngoài. Xa xa trên đồi, bánh xích đang chờ!',
       'pg.tem.xuat-xuong': 'XUẤT XƯỞNG',                 // chữ trên tem của phim gói 10 mọi mùa (PhimVector.xuatXuong)

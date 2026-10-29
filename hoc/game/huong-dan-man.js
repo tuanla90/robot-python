@@ -211,6 +211,11 @@
     buocTaoHam('dodge_right', 'Chế hàm trong Xưởng: bấm Hàm mới.', CHU_TAO),
     buocThanHam('dodge_right', ['.p-pal .pal'], 'Ghép các khối thành thân hàm để xe sang ô bên phải, mặt vẫn quay lên như bóng mờ.', 1, 'tren')
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
+  // HD3 (29/10): banh-lui.5 là màn trình diễn lệnh lùi (chiChay), đứng ngay trước che-xe.4 (chế back()).
+  H['banh-lui.5'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: hai bánh cùng quay lùi, xe lùi.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'left_back() và right_back() trong cùng một nhịp: xe lùi một ô. Màn sau em gói chúng thành back().', xong: 'bam', han: 9000, rong: 170 }
+  ];
   H['che-xe.4'] = [
     buocTaoHam('back', 'Chế hàm back() trong Xưởng: bấm Hàm mới.', CHU_TAO),
     {
@@ -323,12 +328,17 @@
   /* ============================================================ Chương 11 · Đội hai robot */
   /* màn hai robot đầu tiên: R1 đã có chương trình; chạm thẻ R2 để viết chương trình của R2 (thẻ R1 / R2 ở đầu khung chương trình) */
   function xeDangChon() { try { return Choi.trangThai().xe || 0; } catch (e) { return 0; } }
+  // HD3 (29/10): hai-robot.1 là màn trình diễn (chiChay, cả hai robot khoá go_wall()); bước "chạm R2 rồi viết cho R2" dời sang hai-robot.2 (R1 viết sẵn).
+  // Một bước: bấm Chạy là thắng ngay, thắng thì chuỗi dừng (HuongDan.xongMan) nên bước "chạm R2 để xem" đặt sau Chạy sẽ không kịp hiện.
   H['hai-robot.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Mỗi robot một chương trình, cả hai đã khoá. Bấm Chạy: R1 và R2 chạy cùng lúc.', xong: 'chay' }
+  ];
+  H['hai-robot.2'] = [
     { khongAn: true, dich: 'nut:xe-2', chu: 'Mỗi robot một chương trình. R1 đã có sẵn: chạm R2 để viết cho R2.', huong: 'duoi', rong: 170, xong: 'doi-xe',
       daLam: function () { return xeDangChon() === 1; } },
-    khoiTheo(['khoi:em:go_wall'], 'Chạm go_wall(): R2 cũng đi tới cờ như R1.', 'go_wall() nằm ở thẻ Cảm biến. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { daLam: function () { return xeDangChon() === 1 && dongCo(/^\s*go_wall\(\)/) >= 0; } }),
-    buocChay('Bấm Chạy: hai robot chạy cùng lúc.')
+    khoiTheo(['khoi:em:pick'], 'Chạm pick(): R2 làm giống R1, nhặt vật trước mặt.', CHU_THE,
+      { daLam: function () { return xeDangChon() === 1 && dongCo(/^\s*pick\(\)/) >= 0; } }),
+    buocChay('Viết đủ cho R2 như R1 rồi bấm Chạy: hai robot chạy cùng lúc.')
   ];
 
   /* ============================================================ Gói 7 · Cảm biến bên (HD2: cam-bien-ben.1 trình diễn left_clear, chiChay, đứng đầu chương) */
@@ -388,11 +398,11 @@
     buocThanHam('grip', ['.p-pal .pal'], 'Ghép các khối thành thân hàm: hỏi chữ trên vật rồi bật cực khác với nó.', 1, 'tren')
   ].concat(buocThuVeChay('Chương trình gọi được grip() rồi. Bấm Chạy.'));
 
-  /* ============================================================ Chương 21 · Tay xoay (làm quen): lệnh gốc mới arm_left / arm_right, thẻ Tay xoay */
+  /* ============================================================ Chương 21 · Tay xoay (làm quen): lệnh gốc mới arm_left / arm_right cho CÙNG tay kẹp (gói V8c: thẻ "lệnh mới", không phải bộ phận mới) */
   // HD2 (29/10): tay-xoay.1 là màn trình diễn arm_left / arm_right (chiChay): chỉ bấm Chạy; tay-xoay.2 ép sửa lệnh xoay (vật bên phải).
   H['tay-xoay.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tay xoay sang trái nhặt vật rồi xoay về trước đặt.', xong: 'chay' },
-    { khongAn: true, dich: 'dong:1', chu: 'arm_left() xoay tay sang trái, arm_right() xoay sang phải: xe không cần quay.', xong: 'bam', han: 9000, rong: 170 }
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tay kẹp xoay sang trái nhặt vật rồi xoay về trước đặt.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'Tay kẹp giờ xoay được: arm_left() xoay tay sang trái, arm_right() xoay sang phải, xe không cần quay.', xong: 'bam', han: 9000, rong: 170 }
   ];
   H['tay-xoay.2'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: vật nằm bên phải mà tay xoay sang trái nên kẹp hụt.', xong: 'chay', daLam: daChay },
@@ -677,6 +687,6 @@
     'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
 
   window.HuongDanMan = H;
-  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2,
+  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn
 })();

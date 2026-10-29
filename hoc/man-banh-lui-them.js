@@ -51,8 +51,27 @@
   }
 
   var LG_TRUM = ['go_wall()'].concat(FOR(2, ['back()']), ['turn_right()', 'if not front_clear():', '    u_turn()', 'go_wall()']);
+  // HD3 (29/10, user: "show don't tell", phương án 3a-A của HD2): màn TRÌNH DIỄN lệnh lùi, đứng ĐẦU chương banh-lui (trước che-xe.4 chế back()).
+  // Chương trình khoá (chiChay), chỉ lệnh gốc: hai bánh cùng quay lùi trong một nhịp, hai lần. Không hàm của em, không cờ damLaThua.
+  var LUI_HAI_O = ['left_back()', 'right_back()', 'wait()', 'left_back()', 'right_back()', 'wait()'];
 
   var DS = [
+    /* ================================================================ chương banh-lui: màn trình diễn (HD3, mã banh-lui.5; lo-trinh-hoc.js đặt nó số 1) */
+    man({
+      chuong: 'banh-lui', so: 5, ten: 'Xe lùi', mucTieu: 'bong-mo', chiChay: true, chinhCoDinh: true,
+      hamCuaEmCan: [],
+      deBai: 'Thùng gỗ chắn ngay trước mặt xe. Xe có thêm hai lệnh lùi: left_back() quay bánh trái lùi, right_back() quay bánh phải lùi. Hai bánh cùng lùi trong một nhịp thì xe lùi một ô, mặt vẫn quay về phía thùng. Bấm Chạy xem xe lùi tới chỗ xe mờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: mỗi nhịp hai bánh cùng quay lùi rồi wait(), xe lùi hai ô.',
+      san: ['..o..', '.....', '.....', '.....', '#####'],
+      batDau: { x: 2, y: 1, huong: 0 },
+      bongMo: { x: 2, y: 3, huong: 0 },
+      maMau: { chinh: LUI_HAI_O.slice() },
+      sao: { o: 6, nhip: 2 },
+      loiGiai: { chinh: LUI_HAI_O.slice() },
+      loiSai: [],
+      goiY: ['Một nhịp: left_back(), right_back() rồi wait().', 'Màn sau em gói ba dòng đó thành hàm back().']
+    }),
+
     /* ================================================================ chương banh-lui (4 màn) */
     man({
       chuong: 'banh-lui', so: 1, ten: 'Lùi tránh thùng', mucTieu: 'toi-co',
