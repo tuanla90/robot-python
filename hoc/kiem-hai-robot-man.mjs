@@ -166,6 +166,42 @@ console.log('\n== 5. game/choi.html ==');
     tags.filter((t) => t === '../man-hai-robot.js').length === 1 && vtri('man-hai-robot.js') > vtri('man-robot-hoan-thien.js') && vtri('man-hai-robot.js') > vtri('thu-tu-chuong.js') && fs.existsSync(path.join(day, 'man-hai-robot.js')));
 }
 
+console.log('\n== 6. HD3: màn trình diễn nhiều robot (chiChay) ==');
+{
+  // (a) máy chấm, trên bản ngân hàng (mục 1–5 ở trên chưa nạp lộ trình): bật chiChay thì mọi robot chạy maMau.doi[i], bài gửi lên bị bỏ;
+  //     không chiChay (mọi màn đội của ngân hàng) thì bài gửi lên giữ y nguyên.
+  const goc = man(1), kho = khoTruoc(goc.ma);
+  const cc = Object.assign(JSON.parse(J(goc)), { chiChay: true, chinhCoDinh: true });
+  cc.maMau = { doi: goc.loiGiai.doi.map((d) => ({ chinh: d.chinh.slice() })), hamCuaMan: [] };
+  const baiKhac = [B([], []), B(['turn_left()'], ['move()', 'move()']), B(goc.loiGiai.doi[0].chinh, [])];
+  const kqCc = baiKhac.map((b) => ChamHoc.cham(cc, b, kho));
+  kiem('màn đội chiChay: bài gửi lên khác mã mẫu (rỗng, sai, thiếu R2) vẫn chấm bằng mã mẫu khoá: thắng 3 sao, đúng sao.o / sao.nhip',
+    kqCc.every((r) => r.thang && r.sao === 3 && r.soO === goc.sao.o && r.soNhip === goc.sao.nhip && r.chanDoan.length === 0), J(kqCc.map((r) => [r.thang, r.sao, r.soO, r.soNhip, maCua(r)])));
+  const kqGoc = baiKhac.map((b) => ChamHoc.cham(goc, b, kho));
+  kiem('màn đội không chiChay: bài gửi lên giữ y nguyên (cùng ba bài đó đều thua, R2 thiếu thì chua-toi-co)',
+    kqGoc.every((r) => !r.thang) && maCua(kqGoc[2]).includes('chua-toi-co'), J(kqGoc.map((r) => [r.thang, maCua(r)])));
+  const doiThuong = ds.filter((m) => !m.chiChay && !m.doiKhang);
+  kiem('mọi màn đội không chiChay của ngân hàng: lời giải vẫn đúng sao, R2 rỗng vẫn thua (không bị thay bằng mã mẫu)',
+    doiThuong.length === 10 && doiThuong.every((m) => { const k2 = khoTruoc(m.ma), r = ChamHoc.cham(m, m.loiGiai, k2); return r.sao === 3 && !ChamHoc.cham(m, B(m.loiGiai.doi[0].chinh, []), k2).thang; }));
+
+  // (b) lộ trình mùa 1: hai-robot.1 là màn trình diễn, hai-robot.2 chạm R2 (R1 viết sẵn)
+  const L = require(path.join(day, 'lo-trinh-hoc.js'));
+  const khoLT = (ma) => { const k = new Map(); for (const x of L.danhSach) { if (x.ma === ma) break; if (x.tietKiemNhip === true) continue; for (const h of x.loiGiai.hamCuaEmMoi || []) k.set(h.ten, h); } return [...k.values()]; };
+  const r1 = L.timMa('hai-robot.1'), r2 = L.timMa('hai-robot.2');
+  kiem('lộ trình: hai-robot.1 là màn 1, chiChay + chinhCoDinh, cả hai robot có go_wall() khoá, không cờ đâm-là-thua',
+    r1.so === 1 && r1.chiChay === true && r1.chinhCoDinh === true && !r1.damLaThua && J(r1.maMau.doi.map((d) => d.chinh)) === J([['go_wall()'], ['go_wall()']]));
+  const kqLT = baiKhac.concat([r1.maMau]).map((b) => ChamHoc.cham(r1, b, khoLT(r1.ma)));
+  kiem('lộ trình: hai-robot.1 bấm Chạy (bài gửi lên bất kỳ) là hai robot cùng tới cờ, 3 sao',
+    kqLT.every((r) => r.thang && r.sao === 3 && r.soNhip === r1.sao.nhip), J(kqLT.map((r) => [r.thang, r.sao, maCua(r)])));
+  kiem('lộ trình: hai-robot.2 R1 viết sẵn đúng lời giải, R2 trống; mã mẫu chưa thắng (R2 chưa đặt vật)',
+    r2.so === 2 && J(r2.maMau.doi[0].chinh) === J(r2.loiGiai.doi[0].chinh) && r2.maMau.doi[1].chinh.length === 0 && !ChamHoc.cham(r2, r2.maMau, khoLT(r2.ma)).thang);
+
+  // (c) giao diện man-choi.js: chiChay khoá MỌI khung robot (không chỉ robot coDinh), bản nháp cũ không ghi đè chương trình khoá
+  const mc = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8');
+  kiem('man-choi.js: khungCoDinh() khoá khi S.man.chiChay (mọi thẻ R1 / R2); nhanBan bỏ bản nháp đội khi chiChay; nhãn "Chỉ chạy" theo chiChay',
+    /function khungCoDinh\(\) \{ return !!\(S\.man && \(S\.man\.chinhCoDinh \|\| S\.man\.chiChay \|\|/.test(mc) && /nd && !r\.coDinh && !m\.chiChay \?/.test(mc) && /m\.chiChay \? 'choi\.chiChayNhan'/.test(mc));
+}
+
 console.log('\n---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 if (hong) process.exit(1);
