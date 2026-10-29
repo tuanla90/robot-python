@@ -58,6 +58,8 @@ Nên cái MỚI của mùa 3: Python B = `and` / `or` (elif là recall); Python 
    (P1 gộp lõi đó). "Nhện đáp xuống thì lượt sau bị hút" = đáp xuống trong vùng đệm thì nhịp kế tiếp mới bị hút / đẩy.
    **Nam châm điện = đệm từ có công tắc NÚT ĐÈ** (phương án A, user: "A sẽ làm game có chiều sâu hơn"): đè nút thì đệm có điện, rời nút thì đệm tắt.
    **Đệm tương tác với vật kim loại**: đệm hút / đẩy cả vật sắt và vật nam châm (không chỉ robot). Hai việc này giao ở P1b (phiên vector), sau gói giật một ô.
+   **Vật sắt đang bị đệm có điện hút thì robot KHÔNG nhấc / hút được** (user: "đệm từ hút khối sắt thì ko nâng, ko hút được. phải tắt đi thì vật mới nâng lên đc"):
+   phải tắt đệm (rời nút đè) rồi mới nhấc được. Vào P1b.
    Cảm biến từ: user chưa chơi thật, chưa nhận xét.
 3. Gói 3 trả về gì: bảng "Cảm biến trả về (gói 3)" ghi chuỗi "N" / "S", còn bảng part ghi gốc "sắt" rồi mới "đọc cực". Người giao chọn: gói 3 `front_metal()` (bool), gói 7 `front_pole()` (chuỗi), đúng thứ tự gốc → nâng cấp.
 4. **Màn trình diễn bù cả mùa 1, 2** (user 29/10). Mùa 1 do phiên "Vector hình ảnh theo plan mới" làm (gói HD1, brief-HD1-huong-dan-mua-1.md trên nhánh claude/tay-gap-xoay-comparison-00c53c).
