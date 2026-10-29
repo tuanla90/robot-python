@@ -906,7 +906,7 @@
       chuong: [['nhen', ['nhen.1', 'nhen.8']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]] },
     { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', hinh: 'nam-cham',
       chuong: [['nam-cham', ['nam-cham.1', 'nam-cham.4', 'nam-cham.7', 'nam-cham.8', 'nam-cham.5']], ['logic-nam-cham', ['che-nam-cham.1', 'che-nam-cham.8']]] },
-    { ma: 'cam-ung-tu', ten: 'Cảm ứng từ', loai: 'bo-phan',
+    { ma: 'cam-ung-tu', ten: 'Cảm biến từ', loai: 'bo-phan',      // user 29/10: theo tên thẻ part (gioi-thieu-part.js), trước: Cảm ứng từ
       chuong: [['cam-ung-tu', []], ['che-cam-ung-tu', []]] },
     { ma: 'bai-tu', ten: 'Bãi từ',
       chuong: [['bai-tu', []], ['che-bai-tu', []]] },
@@ -925,7 +925,7 @@
       chuong: [['tong-hop-3', []], ['trum-mua-3', []]] }
   ];
   var TEN_MUA_3 = { nhen: 'Thân nhện', 'chuoi-nhen': 'Chuỗi cho nhện', 'nam-cham': 'Nam châm', 'logic-nam-cham': 'Logic cho nam châm',
-    'cam-ung-tu': 'Cảm ứng từ', 'che-cam-ung-tu': 'Hàm cho cảm ứng từ', 'bai-tu': 'Bãi từ', 'che-bai-tu': 'Hàm cho bãi từ', nhay: 'Nhảy',
+    'cam-ung-tu': 'Dò sắt', 'che-cam-ung-tu': 'Chế lệnh: dò sắt', 'bai-tu': 'Bãi từ', 'che-bai-tu': 'Hàm cho bãi từ', nhay: 'Nhảy',
     'che-nhen': 'Chế lệnh nhện', 'dao-cuc': 'Đảo cực', 'che-dao-cuc': 'Hàm đảo cực', 'doc-cuc': 'Đọc cực', 'che-doc-cuc': 'Hàm đọc cực',
     'doi-xich': 'Đội xích và nhện', 'che-doi-xich': 'Đội xích và nhện phối hợp', 'bung-nhen': 'Nam châm bụng nhện', 'che-bung-nhen': 'Hàm cho bụng nhện',
     'tong-hop-3': 'Tổng hợp', 'trum-mua-3': 'Trùm mùa' };
@@ -1467,6 +1467,32 @@
       'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên bắn tụ không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe bắn nút cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau shoot() và wait(), xe vẫn đứng nguyên ô.',
       ['Xe hai bánh bắn tụ thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
+  })();
+
+  // ---------------------------------------------------------------- TÊN HIỂN THỊ THEO QUY TẮC ĐẶT TÊN (user duyệt 29/10, hội đồng 20261029-1738; KE-HOACH-7-MUA.md mục "Quy tắc đặt tên")
+  // Tên mùa = nơi robot làm việc; tên gói = món mới hay tình huống mới (cùng tên với thẻ bộ phận); tên chương = việc em làm, không lặp tên gói,
+  // không "Hàm cho…"; chương tạo hàm thì "Chế lệnh: …". Chỉ đổi CHỮ HIỂN THỊ: mã gói / chương (khoá lưu tiến độ) giữ nguyên.
+  // Mùa 2 chưa đổi: gộp một lần với gói vòi phun / van hơi (phiên vector đang làm).
+  (function () {
+    var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
+                     'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
+    TT.mua.forEach(function (m) { if (TEN_MUA[m.ma]) m.ten = TEN_MUA[m.ma]; });
+    var TEN_GOI_1 = { 'tay-gap': 'Tay kẹp', 'kho-hang': 'Nút đè', 'hai-robot': 'Gặp R2', 'combo': 'Nhìn bên, nhặt bên' };
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-1' && TEN_GOI_1[g.ma]) g.ten = TEN_GOI_1[g.ma]; });
+    var TEN_CHUONG_1 = {
+      'hai-banh': 'Lăn bánh', 'xuong-ham': 'Xưởng hàm',
+      'tay-gap': 'Gắp thùng', 'vong-lap': 'Lặp cho gọn',
+      'khoang-cach': 'Dừng trước tường', 'che-cam-bien': 'Chế lệnh: tự dừng',
+      'nut-de': 'Thùng giữ cửa', 'kho-hang': 'Chế lệnh: né thùng',
+      'banh-lui': 'Lùi khỏi ngõ cụt', 'che-banh-lui': 'Chế lệnh: lùi',
+      'tay-xoay': 'Nhặt bên hông', 'che-tay-xoay': 'Chế lệnh: xoay tay',
+      'cam-bien-ben': 'Nhìn hai bên', 'me-cung': 'Mê cung',
+      'hai-robot': 'Chia việc', 'che-hai-robot': 'Phối hợp ăn ý',
+      'combo': 'Dừng cạnh thùng', 'che-combo': 'Trực kho',
+      'robot-hoan-thien': 'Đủ bộ', 'trum-mua-1': 'Ngày xuất xưởng'
+    };
+    Object.keys(TEN_CHUONG_1).forEach(function (c) { TT.ten[c] = TEN_CHUONG_1[c]; });
+    // Mùa 3: gói 3 đổi tên ngay trong MUA_3 ("Cảm biến từ", user 29/10); các tên khác của mùa 3 đặt theo quy tắc khi làm P2.
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

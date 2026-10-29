@@ -4,7 +4,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Mỗi mã gói một mảng 3–4 hàm khung (k, c): k = khung tranh 320×220, c = bộ dựng hình của PhimGoi (c.xe, c.san, c.code…).
    Lời khung n ở chu.js khóa 'pg.<mã gói>.<n>' (≤ 14 từ). Gói 'xe' không có phim (đã có phim mở đầu, mo-dau.js).
    Gói 'combo' (gói 9) có màn từ 27/10 (man-combo-mua-1.js); mọi phim mùa 1 khớp một gói thật.
-   R1 sơn vàng (sơn mặc định của VeRobot: vàng, hay màu người chơi chọn ở Cài đặt); R2 sơn lam (son: 'lam').
+   R1 sơn vàng (sơn mặc định của VeRobot: vàng, hay màu người chơi chọn ở Cài đặt); R2 mã sơn 'lam', bộ vẽ vector tô HỒNG (ve-vector.js: 'lam' = R2 hồng Luna), lời phim gọi "sơn hồng".
    Hình chiếu ngang như phim mở đầu: robot nhìn từ trên, mũi quay sang PHẢI (hướng 1), đứng trên dải sàn ở đáy khung (đỉnh sàn y = 190).
    Node (máy kiểm kiem-phim-goi.mjs) require tệp này lấy bảng PHIM (không chạy hàm vẽ nào).
    ========================================================================== */
@@ -21,7 +21,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var CHAT = ['#o###', '.....', '###o#'];        // kho chật: thùng nằm hai bên lối đi
   var XOAY = { than: 'hai-banh', tay: 'xoay', camBien: [] };
   var DU_BO = { than: 'hai-banh', tay: 'xoay', camBien: CAM };            // R1 đủ bộ cuối mùa 1: tay xoay + cảm biến hai bên
-  var KEP_R2 = { than: 'hai-banh', tay: 'kep', camBien: [], son: 'lam' };  // R2 sơn lam
+  var KEP_R2 = { than: 'hai-banh', tay: 'kep', camBien: [], son: 'lam' };  // R2: mã 'lam', vector vẽ hồng
   var HUY = ['hai-banh', 'tay-gap', 'khoang-cach', 'che-tay', 'che-xe', 'tay-xoay', 'cam-bien-ben', 'hai-robot'];   // huy hiệu các gói mùa 1 (HuyHieu)
   var Y = 158;                                    // tâm thân R1 khi đứng trên sàn (tỉ lệ 3)
   /* Gói V6: robot vẽ trong MỘT Ô cạnh tỉ lệ · 24 · 1,2 px (VeRobot.veCo) nên thùng trong kẹp theo VeVector.vatKep (1/100 ô).
@@ -321,7 +321,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     /* ---------------------------------------------------------------- 8 · Đội hai robot */
     'hai-robot': [
-      // 1 · cửa xưởng mở, R2 sơn lam lăn vào
+      // 1 · cửa xưởng mở, R2 (hồng) lăn vào
       function (k, c) {
         c.nen(k, 'md-san');
         var r1 = c.xe(KEP, NANG_MO, 1, 3, 70, Y); k.appendChild(r1);

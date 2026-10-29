@@ -266,7 +266,7 @@ function thamSo(m) {
   return sai;
 }
 const dsSanCua = m => (Array.isArray(m.san[0]) ? m.san : [m.san]);
-kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_2 khai đủ 10 gói × 2 chương; mùa 2 "Ghi nhớ" hiện; ngưỡng sao khai cứng khớp công thức TI_LE_SAO', () => {
+kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_2 khai đủ 10 gói × 2 chương; mùa 2 "Nhà máy" hiện; ngưỡng sao khai cứng khớp công thức TI_LE_SAO', () => {
   assert.deepEqual(M.mua2.map(g => [g.ma, g.chuong.map(c => c[0])]), BANG_MUA_2.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'MUA_2 khác bảng mục 2');
   assert.deepEqual(goiMua('mua-2').map(g => [g.ma, g.chuong]), goi2Bang.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'gói / chương mùa 2');
   for (const [, ds] of goi2Bang) for (const [c, dsMa] of ds) assert.deepEqual(M.danhSach.filter(m => m.chuong === c).map(m => m.ma), dsMa, c);
@@ -276,7 +276,7 @@ kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng
   // trong mùa, làm tròn xuống bội 5) tính trên số màn thật lúc mở, và 0, 30, …, 270 như mùa 1.
   const mua2 = TT.mua.find(x => x.ma === 'mua-2');
   assert.ok(!mua2.an, 'mùa 2 còn ẩn');
-  assert.equal(mua2.ten, 'Ghi nhớ', 'tên mùa 2');
+  assert.equal(mua2.ten, 'Nhà máy', 'tên mùa 2');      // 29/10 quy tắc đặt tên: tên mùa = nơi chốn (trước: Ghi nhớ)
   assert.ok(mua2.ban && mua2.ban.gia, 'mùa 2 mất `ban`');
   for (const ma of ['mua-3', 'mua-4']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
   let tr = 0;

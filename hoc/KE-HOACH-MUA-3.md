@@ -32,7 +32,7 @@ Nên cái MỚI của mùa 3: Python B = `and` / `or` (elif là recall); Python 
 |---|---|---|---|
 | 1 Nhện | đi 4 hướng không quay: nhen.1, .8 (`S` → sàn) + mới | **Chuỗi cho nhện**: walk("RRD"), `for c in path`, nhen.4, .7 + mới | 4 / 16 |
 | 2 Nam châm | một cực N: nam-cham.1, .4, .5, .7, .8 + mới | **Logic cho nam châm** (`and` / `or` / `elif` với front_clear / left_clear…): che-nam-cham.1–4, .8, .9 + mới | 11 / 9 |
-| 3 Cảm ứng từ | `front_metal()` sắt hay không | hàm cho cảm ứng từ (`if front_metal() and …`) | 0 / 20 |
+| 3 Cảm biến từ (user 29/10, trước: Cảm ứng từ; theo tên thẻ part) | `front_metal()` sắt hay không | chế lệnh dò sắt (`if front_metal() and …`) | 0 / 20 |
 | 4 Bãi từ | sắt + nam châm điện, hố, đệm từ | hàm cho sân | 0 / 20 |
 | 5 Nhảy | crouch / stand, gầm, hố: nhen.2, .3, .5, .6, .9, .10 | che-nhen 10 (.6 bỏ `S`) | 16 / 4 |
 | 6 Đảo cực | magnet_s: nam-cham.2, .3 + mới | che-nam-cham.6, .7 + mới | 4 / 16 |
@@ -74,3 +74,6 @@ Nên cái MỚI của mùa 3: Python B = `and` / `or` (elif là recall); Python 
   (h) đường cong CHỈ IN (17 chỗ nhảy, ép đỏ khi soát cuối). `--loi-gia-mua-3` 7 / 7 đỏ; người giao tự cắm magnet_s ở gói 2 → (e) đỏ 5 chỗ.
   Người giao chạy lại trên main sau gộp (main đã có HD1 / HD2 / V8a của phiên vector): npm test 89/89, lỗi giả mùa 3 7 / 7, mùa 2 8 / 8.
   Còn cho P2: gói 2 cần 13 màn mới (logic and / or); lời sai mẫu nam-cham.6 sai sẵn (một lời "sai" thắng 3 sao); ngưỡng sao vài gói dời sang mùa 4 lùi (mùa 4 dựng lại sau).
+
+29/10 USER CHỐT (qua phiên vector): mùa 3 giữ **thân nhện**; "xe thăm dò dáng cua" chỉ là chân nhện + tay nam châm trông giống cua, không có thân cua riêng.
+Gói 3 đổi tên **"Cảm biến từ"** cho trùng thẻ part (mã gói / chương cam-ung-tu giữ nguyên); tên chương theo quy tắc đặt tên (KE-HOACH-7-MUA.md): "Dò sắt" / "Chế lệnh: dò sắt".
