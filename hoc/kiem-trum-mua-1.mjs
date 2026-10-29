@@ -121,7 +121,7 @@ kiem('gói robot "R1 xuất xưởng" là gói cuối mùa 1, đứng sau combo;
     assert.deepEqual(ds.map((m) => m.so), ds.map((_, i) => i + 1), c);
     assert.deepEqual(ds.map((m) => m.hang), ds.map((_, i) => (i < 3 ? 'lam-quen' : i < 6 ? 'luyen' : i < 9 ? 'bien-the' : 'trum')), c);
   }
-  assert.equal(TT.ten[C2], 'Trùm mùa');
+  assert.equal(TT.ten[C2], 'Ngày xuất xưởng');      // tên theo quy tắc đặt tên (user duyệt 29/10)
   assert.equal(TT.thuTu.indexOf(C1), TT.thuTu.indexOf('che-combo') + 1);
   assert.equal(TT.thuTu.indexOf(C2), TT.thuTu.indexOf(C1) + 1);
 });

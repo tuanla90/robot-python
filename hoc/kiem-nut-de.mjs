@@ -36,12 +36,12 @@ const dsSan = (m) => (Array.isArray(m.san[0]) ? m.san : [m.san]);
 const theoSan = (v, i) => (Array.isArray(v) ? v[i] : v);
 
 /* ------------------------------------------------------------------ 1. vị trí trong lộ trình */
-kiem('chương nut-de là chương 1 của gói kho-hang, ngay trước chương kho-hang, tên "Nút đè"', () => {
+kiem('chương nut-de là chương 1 của gói kho-hang, ngay trước chương kho-hang, tên "Thùng giữ cửa" (gói tên "Nút đè")', () => {
   const g = TT.goi.find((x) => x.ma === 'kho-hang');
   assert.ok(g && g.mua === 'mua-1', 'gói kho-hang ở mùa 1');
   assert.deepEqual(g.chuong, ['nut-de', 'kho-hang']);
   assert.equal(TT.thuTu.indexOf('kho-hang'), TT.thuTu.indexOf('nut-de') + 1);
-  assert.equal(TT.ten['nut-de'], 'Nút đè');
+  assert.equal(TT.ten['nut-de'], 'Thùng giữ cửa');      // tên theo quy tắc đặt tên (user duyệt 29/10): gói kho-hang tên 'Nút đè'
   assert.equal(DS.length, SO_MAN, 'chương nut-de có ' + DS.length + ' màn');
   assert.deepEqual(DS.map((m) => m.so), DS.map((_, i) => i + 1));
   assert.deepEqual(DS.map((m) => m.ma), DS.map((_, i) => 'nut-de.' + (i + 1)));

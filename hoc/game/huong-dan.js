@@ -173,7 +173,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return Math.max(0, Math.min(a.right, b.right + p) - Math.max(a.left, b.left - p)) *
         Math.max(0, Math.min(a.bottom, b.bottom + p) - Math.max(a.top, b.top - p));
     }
-    var cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2, ds = [];
+    var cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2, ds = [], mx = o.mx != null ? o.mx : cx;   // mx: chỗ đuôi chỉ vào
     function them(x, y) {
       x = kep(x, pad, W - w - pad); y = kep(y, pad, H - h - pad);
       ds.push({ left: x, top: y, right: x + w, bottom: y + h });
@@ -191,6 +191,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var diem = 0;
       (o.tranh || []).forEach(function (d) { diem += giao(a, d, 4) * (d.trongSo || 30); });
       if (o.huong === 'tren' && a.bottom > r.top - 6 || o.huong === 'duoi' && a.top < r.bottom + 6) diem += 100;
+      if ((a.bottom <= r.top - 6 || a.top >= r.bottom + 6) && (mx < a.left + 14 || mx > a.right - 14)) diem += 1e5;
+      var khe = a.top >= r.bottom + 6 ? { left: mx - 8, right: mx + 8, top: r.bottom + 2, bottom: a.top }
+        : a.bottom <= r.top - 6 ? { left: mx - 8, right: mx + 8, top: a.bottom, bottom: r.top - 2 } : null;
+      if (khe && (o.tranh || []).some(function (d) { return !d.trongSo && giao(khe, d, 0) > 0; })) diem += 1e5;   // đuôi băng qua một nút khác trên đường tới đích: trông như chỉ vào nút đó (màn 2.1 bước Bấm Chạy: chỉ vào ×1)   // đuôi không với tới đích (bị kẹp ở mép hộp): trông như chỉ vào thứ khác (màn 2.1: chỉ vào thùng rác); nặng hơn đè vùng code, nhẹ hơn đè nút
       diem += Math.abs((a.left + a.right) / 2 - cx) + Math.abs((a.top + a.bottom) / 2 - cy) + i * 0.01;
       if (diem < diemTot) { diemTot = diem; tot = a; }
     });
@@ -248,7 +252,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       bo.chu = chu;
       if (window.TP && TP.vanBan) TP.vanBan(bo.nd, chu); else bo.nd.textContent = chu;
     }
-    var neoX = (rn.left + rn.width / 2 - rg.left) / k;
+    var neoX = (rn.left + Math.min(rn.width / 2, 28) - rg.left) / k;      // đuôi: giữa đích nhỏ; đích rộng (khối khay, dòng code) thì chỉ vào phần chữ bên trái, kẻo giữa đích trùng một nút nằm chen giữa (màn 2.1: "+ Hàm mới" dưới khối move())
     var hg = b.huong; if (typeof hg === 'function') { try { hg = hg(); } catch (e3) { hg = null; } }
     var bw = Math.min(W - 16, b.rong || 170);
     bo.el.className = 'hd-bong'; bo.el.style.width = bw + 'px';
@@ -258,12 +262,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     Array.prototype.forEach.call(cacNut, function (e) { if (thay(e)) tranh.push(quyDoi(e.getBoundingClientRect())); });
     var vung = xuongMo(man) ? man.querySelector('.ws-ov.open .low') : man.querySelector('.low');
     if (vung && thay(vung)) { var rv = quyDoi(vung.getBoundingClientRect()); rv.trongSo = 5; tranh.push(rv); }
+    var sanCo = !xuongMo(man) && man.querySelector('.ffr');                 // sân: đè lên là mất dấu robot (người chơi không biết xe đang ở đâu để làm tiếp), nặng hơn vùng code
+    if (sanCo && thay(sanCo)) { var rs0 = quyDoi(sanCo.getBoundingClientRect()); rs0.trongSo = 12; tranh.push(rs0); }
     var viTri = viTriBong({ W: W, H: H, w: bw, h: bo.el.offsetHeight || 50, neo: quyDoi(rn), huong: hg,
-      dich: ds.map(function (e) { return quyDoi(e.getBoundingClientRect()); }), tranh: tranh });
+      dich: ds.map(function (e) { return quyDoi(e.getBoundingClientRect()); }), tranh: tranh, mx: neoX });
     if (!viTri) { gaBong(c); return true; }
     bo.el.className = 'hd-bong ' + viTri.huong;
     bo.el.style.left = viTri.left + 'px'; bo.el.style.top = viTri.top + 'px'; bo.el.style.bottom = '';
-    bo.mui.style.left = Math.max(8, Math.min(bw - 20, neoX - viTri.left - 6)) + 'px';
+    bo.mui.style.left = Math.max(8, Math.min(bw - 22, neoX - viTri.left - 7)) + 'px';     // đuôi rộng 14 px (choi-vector.css): tâm đuôi đúng neoX
     return true;
   }
 

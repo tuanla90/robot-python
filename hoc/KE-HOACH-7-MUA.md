@@ -29,7 +29,7 @@ tên gọi; **không quyết định luật** (hội đồng 29/10, cả bốn t
 |---|---|---|---|---|
 | 1 | Xe chở hàng | kho hàng | hai bánh chở, tay gắp bốc thùng, cảm biến tránh va | (không) |
 | 2 | Xe cứu hỏa (robot chữa cháy bánh xích) | nhà máy | xích leo đống đổ nát, ủi thùng; súng hơi như vòi phun (tia nhanh / tia mạnh); hồng ngoại đo nhiệt như camera nhiệt tìm điểm nóng | user 29/10 bỏ "xe tăng" (chủ đề chiến tranh); tên part "súng hơi" tạm giữ, chỉ lời phim gọi vòi phun |
-| 3 | Xe thăm dò quặng, dáng cua | mỏ quặng | nhện vượt khe nứt, cảm ứng từ là máy dò kim loại, nam châm bụng cắp quặng (combo) | sắt là quặng, hố là khe nứt |
+| 3 | Xe thăm dò quặng, dáng cua (user 29/10 chốt: **thân nhện**; "dáng cua" chỉ là chân nhện + tay nam châm trông giống cua) | mỏ quặng | nhện vượt khe nứt, cảm biến từ là máy dò kim loại, nam châm bụng cắp quặng (combo) | sắt là quặng, hố là khe nứt |
 | 4 | Drone kẻ vạch / vẽ | thành phố | drone bay theo lưới phố, máy sơn kẻ vạch đường / vẽ tranh tường, camera nhìn xuống đọc màu, về ô sạc khi hết pin | **giữ máy sơn** (user chốt 29/10: ô màu đã gần hoàn thiện, đổi sang nước là làm lại nhiều tính năng) |
 | 5 | Robot cầu thủ | sân bóng | omni chạy ngang, máy ném thành chân sút, radar tròn quét sân (như robot RoboCup) | máy ném → chân sút (ném qua rào = sút bổng); bàn xoay = xoay người trên sân tập |
 | 6 | Xe tuần tra núi tuyết | núi tuyết | bánh gai bám băng; **loa chủ động làm tuyết lăn** (lở có kiểm soát); cảm biến âm thanh nghe tín hiệu người cần cứu | cổng dịch chuyển → đường hầm (**user chốt 29/10**) |
@@ -45,6 +45,26 @@ Mùa 6 "làm tuyết lăn" (user 29/10 hỏi, Claude góp ý, chưa chốt):
 - Gợi ý luật: **khối tuyết** nằm trên sàn dốc (sàn mùa 5, mùa 6 được dùng) chỉ lăn khi nghe **đúng nốt** của nó; lăn theo luật bóng tròn mùa 5 (tới vật cản, lấp hố).
   Python: `dict` khối → nốt (`{"A": 3, "B": 5}`), `set` khối đã lăn. Tốn một luật mới (tuyết đáp nốt) nhưng dùng lại máy lăn bóng sẵn có.
 - Còn phải chốt: khối tuyết thay hay đi cùng "nguồn phát nhạc" (vật mùa 6); nguồn phát giữ vai máy báo hiệu của người cần cứu.
+
+## Quy tắc đặt tên và giọng kể (user duyệt 29/10; hội đồng 20261029-1738)
+
+Game tên **Mật Lệnh Robot** (đổi 29/10). Chỉ đổi chữ hiển thị, mã gói / chương giữ nguyên (khoá lưu). Khối đặt tên ở cuối `hoc/lo-trinh-hoc.js`.
+1. **Tên mùa = nơi robot làm việc** (1–3 chữ): Kho hàng · Nhà máy · Mỏ quặng · Thành phố · Sân bóng · Núi tuyết · Xưởng của em (mùa 7: về lại xưởng của em).
+   Mùa 1 "Xưởng R1" → **"Kho hàng"** (user 29/10: mùa 1 là xe bê vác).
+   Khái niệm Python không làm tên mùa (nếu cần thì làm nhãn phụ cho phụ huynh, chưa quyết).
+2. **Tên gói = món mới hay tình huống mới**, gọi đúng như thẻ bộ phận (`hoc/gioi-thieu-part.js`); mỗi món một tên trong cả game. Không "Combo", không "Đội" trống.
+3. **Tên chương = việc em làm**, không lặp tên gói, không "Hàm cho…", không tên khái niệm (if, while, biến); chương dạy tạo hàm thì "Chế lệnh: …".
+4. **Phim gói 4 nhịp**: sự cố → lắp món mới ("CẠCH!") → dùng được → một lệnh mới. Mỗi khung một ý, câu đọc to nghe tự nhiên, không nhồi hai lệnh.
+   Không chữ vũ khí: dùng phun, xịt, mở van thay cho bắn, súng (mùa 2 đổi cùng gói vòi phun / van hơi).
+5. "Mật lệnh" dùng có chừng mực: phim mở đầu và phim cuối mùa (móc sang nơi tiếp theo), không rải ở mọi chương.
+6. **Nhân vật chính là EM, người chế tạo robot** (user duyệt 29/10). Không vẽ nhân vật người: phim kể bằng "em" (em tìm, em lắp, em viết mật lệnh).
+   **R1 là bộ não robot của em**, mùa nào cũng được lắp vào một thân máy mới (Xe chở hàng R1, Xe cứu hỏa R1, …); xưởng là xưởng của em; R2 là robot thứ hai em chế.
+   Câu thoại có R1 làm việc vẫn giữ ("R1 hạ tay, kẹp thùng"), câu nhặt / lắp đồ thì chủ thể là em.
+
+Đã đổi 29/10: tên 4 mùa đang có (mùa 1 sau đó thành Kho hàng), lời phim mở đầu và 9 phim gói mùa 1 theo góc nhìn em (quy tắc 6), gói và chương mùa 1 (Tay gắp → Tay kẹp, Kho hàng → Nút đè, Đội hai robot → Gặp R2, Combo → Nhìn bên, nhặt bên;
+20 chương theo quy tắc 3), phim mở đầu khung 3 (bánh xích "văng qua tường ra ngoài", khớp hình và khớp "chờ trên đồi" ở phim sau) và khung 6 ("mật lệnh").
+Mùa 3 (user 29/10): giữ thân nhện; gói 3 "Cảm ứng từ" → **"Cảm biến từ"** (trùng thẻ part), chương "Dò sắt" / "Chế lệnh: dò sắt" (mã cam-ung-tu giữ).
+Còn: mùa 2 (gộp với vòi phun), các tên khác của mùa 3 (đặt khi làm P2), nhãn Python cho phụ huynh.
 
 ## Ô còn trống
 | Ô | Gợi ý của Claude |
@@ -62,7 +82,7 @@ Mùa 6 "làm tuyết lăn" (user 29/10 hỏi, Claude góp ý, chưa chốt):
   còn điều khiển băng chuyền, `warm()` đọc nút bật là nóng, nút bật sẵn; cửa còn mở bằng nút đè (mùa 1) và cửa nhịp. Đổi là phải sửa luật, dựng lại nhiều màn mùa 2.
   Làm thành **yếu tố MỚI**: phun nước trúng thì lửa tắt hẳn (một chiều, không bật lại); `warm()` thấy lửa là nóng (đúng việc camera nhiệt);
   có thể thêm cửa chống cháy chỉ mở khi mọi đám cháy trên sân đã tắt. Chỗ hợp: trùm mùa 2 "Xe cứu hỏa R1 xuất xưởng", hoặc câu đố tổ hợp mùa 7.
-- **Nút bắn là VAN HƠI** (Claude đề xuất, **user chốt 29/10**, giao sau gói vòi phun; chỉ đổi hình và lời, luật giữ): nhà máy cũ chạy bằng hơi nước nóng. Nút N là một van tay quay
+- **Nút bắn là VAN HƠI** (Claude đề xuất, **user chốt 29/10**, giao sau gói vòi phun; chỉ đổi hình và lời, luật giữ; **ĐÃ LÀM 29/10** nhánh claude/van-hoi: hình van + ống hơi, chữ người chơi thấy, nền NEN_VEC 9a6d47c): nhà máy cũ chạy bằng hơi nước nóng. Nút N là một van tay quay
   có cánh hứng nước gắn trên tường; tia nước đập vào cánh làm van quay nửa vòng: mở ↔ đóng (đúng luật đổi qua lại). Van mở thì hơi nóng chảy qua,
   nên van **nóng** (`warm()` True), băng chuyền chạy bằng hơi, cửa khí nén mở / đóng (dây nối nút ↔ cửa vẽ thành ống hơi). Lý do phải phun từ xa:
   van đang mở nóng bỏng, không chạm tay được. Camera nhiệt nhìn van nào đang mở trước khi phun. Tránh hướng "công tắc điện" (nước với điện là bài học sai cho trẻ).

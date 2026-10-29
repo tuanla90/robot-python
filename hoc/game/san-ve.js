@@ -225,7 +225,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var self = this, c = this.cfg, px = x * T, py = y * T;
       function ve(ma, s) { g.drawImage(self.oV(ma, s), px, py, T, T); }
       if (ch === '#') { ve('tuong'); return; }
-      if (ch === 'N') { var nt = this.nutT[kO], bat = !!(nt && nt.bat); ve('nut-ban', { bat: bat, loe: !!(nt && nt.loe > now) }); if (bat) this.veNong(g, x, y, now); return; }
+      if (ch === 'N') {                                                               // van hơi (29/10): bánh van quay nửa vòng trong 450 ms sau khi đổi (nt.quay), lượng tử hoá 1/8
+        var nt = this.nutT[kO], bat = !!(nt && nt.bat), sN = { bat: bat, loe: !!(nt && nt.loe > now) }, kq = nt && nt.quay ? (now - nt.quay) / 450 : 1;
+        if (kq >= 0 && kq < 1) { kq = Math.round((1 - (1 - kq) * (1 - kq)) * 8) / 8; sN.goc = bat ? kq : 1 - kq; }
+        ve('nut-ban', sN); if (bat) this.veNong(g, x, y, now); return;
+      }
       if (BANG[ch] !== undefined) { var tat = !!this.bangTat[kO]; ve('bang', { huong: BANG[ch], pha: tat ? 0 : Math.floor((now / 130) % 5 * 4) / 4, tat: tat }); if (tat) this.veBangTat(g, x, y, now); return; }   // gói V4: băng chạy liên tục (pha lẻ 1/4)
       if (ch === 'S') { ve('bac-thang'); return; }
       if (ch === 'n') { ve('gam'); return; }
@@ -386,18 +390,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         return { nut: a, cua: b, diem: goc.map(function (c) { return [c[0] * T + 7 + lech, c[1] * T + 7 + lech]; }), le: le };
       });
     },
-    /** Gói V7a (chỉ vector): vẽ dây nối this.dayNoi. Dây sáng (màu nút bật, xanh lá) khi nút của nó đang bật (N: nutT.bat, M: nutDeT), còn lại mờ trung tính.
+    /** Gói V7a (chỉ vector): vẽ dây nối this.dayNoi. Van hơi N (29/10): ỐNG HƠI (HU.ongHoi), ấm cam + vệt hơi chạy khi van mở (nutT.bat); nút đè M: dây sáng xanh lá khi bị đè (nutDeT), còn lại mờ trung tính.
      *  Hai đầu cắt ở mép ô nút / ô cửa (không đè lên hình nút, cánh cửa), mỗi đầu một chấm ổ cắm. */
     veDayNoi: function (g, now) {
       var ds = this.dayNoi; if (!ds || !ds.length) return;
       function cat(a, b, l) { var dx = b[0] - a[0], dy = b[1] - a[1], L = Math.abs(dx) + Math.abs(dy); if (L < 0.01) return; a[0] += dx / L * Math.min(l, L * 0.45); a[1] += dy / L * Math.min(l, L * 0.45); }   // lùi đầu a về phía b
+      var rong = ds.length > 1 ? Math.min(1.8, Math.max(0.9, 0.8 * Math.min(2.2, 8 / (ds.length - 1)))) : 1.8;   // ống hơi song song: hẹp lại theo khoảng lệch của dungDayNoi
       for (var i = 0; i < ds.length; i++) {
         var d = ds[i], kN = d.nut.x + ',' + d.nut.y, sang = d.nut.ma === 'M' ? !!this.nutDeT[kN] : !!(this.nutT[kN] && this.nutT[kN].bat);
         var p = d.diem.map(function (q) { return [q[0], q[1]]; });
         var n = p.length; if (n < 2) continue;
         cat(p[0], p[1], 6);                                                                    // đầu nút: ra khỏi mặt nút
         cat(p[n - 1], p[n - 2], 7);                                                            // đầu cửa: dừng ở mép ô cửa
-        HU().dayNoi(g, p, sang, d.le, now);
+        if (d.nut.ma === 'N') HU().ongHoi(g, p, sang, d.le, now, rong); else HU().dayNoi(g, p, sang, d.le, now);   // 29/10: van hơi N nối cửa bằng ỐNG HƠI; nút đè M giữ dây
       }
     },
     /** Trạng thái hiển thị ban đầu của nút, cửa, băng chuyền: nút tắt (trừ nút bật sẵn cfg.nutBat: bật, nóng ngay khung đầu), cửa theo ký hiệu (cửa nhịp: theo pha), băng chạy hết. */
@@ -537,7 +542,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return 3 * T + 2;
     },
     /** NÚT BẮN ĐANG BẬT thì NÓNG (luật warm() mùa 2): quầng đỏ cam thở quanh tấm nút và hai gợn nhiệt bay lên, vẽ đè lên ô nút ở mọi màn có nút (nhìn thấy ngay khi đọc code). */
-    veNong: function (g, x, y, now) { HU().nong(g, x, y, now); },                  // quầng cam thở bo góc + gợn nhiệt (gói V4)
+    veNong: function (g, x, y, now) { HU().nong(g, x, y, now); HU().hoiVan(g, x, y, now); },   // quầng cam thở bo góc + gợn nhiệt (gói V4) + làn hơi trắng của van mở (29/10)
     /** BỆ SÚNG XÍCH (be-sung): bắn tụ mà xe không giật — bệ giữ, xe rung tại chỗ rất nhẹ về phía giật rồi về, tia bụi nhỏ dưới xích. */
     veGiuBe: async function (s, ms, my) {
       var v = this.vis, self = this, rx = DX[s.huong], ry = DY[s.huong];
@@ -1633,7 +1638,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         this.burst(tx + dx * 2, ty + dy * 2, 14, [BM.sanTrangV1, BM.sanVangV1, BM.sanKem, BM.sanXanhLaToi], 1.3, 1, true);
         this.bong.sq = 1;
         await ngu(ms * 0.1); if (my !== this.rid) return;
-        if (nutEv) nt.bat = !!nutEv.bat;
+        if (nutEv) { if (nt.bat !== !!nutEv.bat) nt.quay = performance.now(); nt.bat = !!nutEv.bat; }   // van hơi: bánh quay nửa vòng (veOVec)
         evs.filter(function (q) { return q.ma === 'bang-doi'; }).forEach(function (q) { var k2 = q.o.x + ',' + q.o.y; if (q.bat) delete self.bangTat[k2]; else self.bangTat[k2] = true; self.bangLoe[k2] = performance.now() + 300; });
       } else if (kind === 'cua') {
         var cd = this.cuaT[s.den.x + ',' + s.den.y]; if (cd) cd.rung = tNay + 220;

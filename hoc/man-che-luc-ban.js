@@ -127,8 +127,8 @@
     man({
       so: 1, ten: 'Hàm aim_fire()', yMoi: 'chọn lực bằng mắt hồng ngoại: distance() > 1 thì bắn tụ, còn không thì bắn nhanh',
       mucTieu: 'bong-mo', hamCuaEmCan: ['fire', 'turn_right', 'forward', 'move'], taoHam: ['aim_fire'], chinhCoDinh: true,
-      deBai: 'Bắn nhanh bay tối đa 2 ô, nên nút có distance() là 0 hay 1 thì bắn nhanh tới, từ 2 trở lên phải bắn tụ. ' +
-        'Em chế aim_fire(): đo bằng mắt hồng ngoại rồi tự chọn lực. Chương trình chính đã khóa, gọi aim_fire() hai lần: một nút xa, một nút gần có thùng sau lưng. Thùng phải nằm yên.',
+      deBai: 'Bắn nhanh bay tối đa 2 ô, nên van có distance() là 0 hay 1 thì bắn nhanh tới, từ 2 trở lên phải bắn tụ. ' +
+        'Em chế aim_fire(): đo bằng mắt hồng ngoại rồi tự chọn lực. Chương trình chính đã khóa, gọi aim_fire() hai lần: một van xa, một van gần có thùng sau lưng. Thùng phải nằm yên.',
       veMaMau: 'Chương trình chính bị khóa. Mở Xưởng hàm, tạo aim_fire() với if distance() > 1: … else: … dùng fire(p) của em.',
       san: SAN_1, batDau: { x: 3, y: 4, huong: 0 }, noi: NOI_1,
       bongMo: { x: 3, y: 8, huong: 2, thung: [{ x: 2, y: 5 }] },
@@ -137,18 +137,18 @@
       loiGiai: { chinh: C_1.slice(), hamCuaEmMoi: [AIM()] },
       loiGiaiKhac: { moTa: 'Viết điều kiện distance() >= 2 kèm một dòng chú thích: đúng, thêm một ô', baiLam: bai(C_1), hamCuaEmMoi: [H('aim_fire', [], ['# 2 ô trở lên thì bắn tụ'].concat(IF('distance() >= 2', ['fire("charge")'], ['fire("fast")'])))] },
       loiSai: [
-        { moTa: 'So với 0 như smart_fire: nút cách 2 ô cũng bị bắn tụ, xe giật lùi xô thùng', baiLam: bai(C_1), hamCuaEmMoi: [H('aim_fire', [], IF('distance() > 0', ['fire("charge")'], ['fire("fast")']))], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'So với 2: nút xa có distance() đúng bằng 2 nên bị bắn nhanh, tia nước rơi giữa đường', baiLam: bai(C_1), hamCuaEmMoi: [H('aim_fire', [], IF('distance() > 2', ['fire("charge")'], ['fire("fast")']))], phaiCoMa: ['ban-ngan'] },
-        { moTa: 'Đảo hai nhánh: nút xa bị bắn nhanh, nút gần bị bắn tụ', baiLam: bai(C_1), hamCuaEmMoi: [H('aim_fire', [], IF('distance() > 1', ['fire("fast")'], ['fire("charge")']))], phaiCoMa: ['ban-ngan'] }
+        { moTa: 'So với 0 như smart_fire: van cách 2 ô cũng bị bắn tụ, xe giật lùi xô thùng', baiLam: bai(C_1), hamCuaEmMoi: [H('aim_fire', [], IF('distance() > 0', ['fire("charge")'], ['fire("fast")']))], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'So với 2: van xa có distance() đúng bằng 2 nên bị bắn nhanh, tia nước rơi giữa đường', baiLam: bai(C_1), hamCuaEmMoi: [H('aim_fire', [], IF('distance() > 2', ['fire("charge")'], ['fire("fast")']))], phaiCoMa: ['ban-ngan'] },
+        { moTa: 'Đảo hai nhánh: van xa bị bắn nhanh, van gần bị bắn tụ', baiLam: bai(C_1), hamCuaEmMoi: [H('aim_fire', [], IF('distance() > 1', ['fire("fast")'], ['fire("charge")']))], phaiCoMa: ['ban-ngan'] }
       ],
-      goiY: ['Tia nước bắn nhanh đi qua ô thứ nhất, ô thứ hai rồi rơi. Nút ở ô thứ hai thì distance() là 1.',
+      goiY: ['Tia nước bắn nhanh đi qua ô thứ nhất, ô thứ hai rồi rơi. Van ở ô thứ hai thì distance() là 1.',
         'if distance() > 1: fire("charge") còn else: fire("fast").']
     }),
 
     man({
       so: 2, ten: 'Hàm aim_left()', yMoi: 'hàm gọi hàm có cảm biến: quay trái, aim_fire(), quay lại',
       mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'forward', 'move'], taoHam: ['aim_left'], chinhCoDinh: true,
-      deBai: 'Hành lang có hai nút ở bên trái, xa gần khác nhau; mỗi nút mở một cánh cửa phía trước. Đưa xe tới chỗ xe mờ. Em chế aim_left(): quay trái, gọi aim_fire() của em, rồi quay lại. ' +
+      deBai: 'Hành lang có hai van ở bên trái, xa gần khác nhau; mỗi van mở một cánh cửa phía trước. Đưa xe tới chỗ xe mờ. Em chế aim_left(): quay trái, gọi aim_fire() của em, rồi quay lại. ' +
         'Chương trình chính đã khóa, gọi aim_left() ở hai chỗ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo aim_left() trong Xưởng hàm: ba dòng.',
       san: SAN_2, batDau: { x: 1, y: 4, huong: 1 }, noi: NOI_2,
@@ -156,23 +156,23 @@
       maMau: bai(C_2),
       sao: { o: 22, nhip: 9 },
       loiGiai: { chinh: C_2.slice(), hamCuaEmMoi: [H('aim_left', [], T_AIM_LEFT)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['# quay về phía nút rồi tự chọn lực'].concat(T_AIM_LEFT))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['# quay về phía van rồi tự chọn lực'].concat(T_AIM_LEFT))] },
       congThucKhac: [{ moTa: 'Viết thẳng if / else trong aim_left() thay cho gọi aim_fire()', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], nhieu(['turn_left()'], T_AIM, ['turn_right()']))] }],
       loiSai: [
-        { moTa: 'Viết cứng fire("charge"): ở nút gần xe giật lùi xuống hốc', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'fire("charge")', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Viết cứng fire("fast"): nút đầu cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'fire("fast")', 'turn_right()'])], phaiCoMa: ['ban-ngan'] },
+        { moTa: 'Viết cứng fire("charge"): ở van gần xe giật lùi xuống hốc', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'fire("charge")', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Viết cứng fire("fast"): van đầu cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'fire("fast")', 'turn_right()'])], phaiCoMa: ['ban-ngan'] },
         { moTa: 'Quên quay lại: xe vẫn quay mặt lên, đi vào tường', baiLam: bai(C_2), hamCuaEmMoi: [H('aim_left', [], ['turn_left()', 'aim_fire()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Hàm của em gọi được hàm của em khác: aim_fire() đã làm ở màn trước.',
-        'Quay trái thì mắt hồng ngoại nhìn về phía nút; bắn xong quay phải để đi tiếp.']
+        'Quay trái thì mắt hồng ngoại nhìn về phía van; bắn xong quay phải để đi tiếp.']
     }),
 
     man({
       so: 3, ten: 'Sửa hàm quick_aim()', yMoi: 'sửa hàm lỗi: so với tầm bắn nhanh, distance() > 2 thành distance() > 1',
       mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'u_turn', 'forward', 'move'], chinhCoDinh: true,
-      deBai: 'Sola cũng viết một hàm tự chọn lực, quick_aim(), nhưng so distance() với 2. Chương trình chính đã khóa, gọi quick_aim() hai lần: nút gần có thùng sau lưng, rồi nút xa có distance() đúng bằng 2. ' +
+      deBai: 'Sola cũng viết một hàm tự chọn lực, quick_aim(), nhưng so distance() với 2. Chương trình chính đã khóa, gọi quick_aim() hai lần: van gần có thùng sau lưng, rồi van xa có distance() đúng bằng 2. ' +
         'Chạy thử xem phát nào hỏng, rồi sửa một dòng trong quick_aim(). Thùng phải nằm yên.',
-      veMaMau: 'Chạy thử. Nút xa có distance() bằng mấy? Bắn nhanh bay được mấy ô?',
+      veMaMau: 'Chạy thử. Van xa có distance() bằng mấy? Bắn nhanh bay được mấy ô?',
       san: SAN_3, batDau: { x: 3, y: 5, huong: 3 }, noi: NOI_3,
       bongMo: { x: 3, y: 0, huong: 1, thung: [{ x: 4, y: 5 }] },
       maMau: bai(C_3, [H('quick_aim', [], IF('distance() > 2', ['fire("charge")'], ['fire("fast")']))]),
@@ -181,19 +181,19 @@
       loiGiaiKhac: { moTa: 'Sửa thành distance() >= 2 kèm một dòng chú thích: đúng, thêm một ô', baiLam: bai(C_3, [H('quick_aim', [], ['# từ 2 trở lên thì bắn tụ'].concat(IF('distance() >= 2', ['fire("charge")'], ['fire("fast")'])))]) },
       congThucKhac: [{ moTa: 'Gọi aim_fire() của em trong quick_aim()', baiLam: bai(C_3, [H('quick_aim', [], ['aim_fire()'])]) }],
       loiSai: [
-        { moTa: 'Để nguyên bản của Sola: nút xa bị bắn nhanh, tia nước rơi giữa đường', baiLam: bai(C_3, [H('quick_aim', [], IF('distance() > 2', ['fire("charge")'], ['fire("fast")']))]), phaiCoMa: ['ban-ngan'] },
-        { moTa: 'Sửa thành distance() > 0: nút gần cũng bị bắn tụ, xe giật lùi xô thùng', baiLam: bai(C_3, [H('quick_aim', [], IF('distance() > 0', ['fire("charge")'], ['fire("fast")']))]), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Sửa nhầm chỗ: đổi chỗ hai lực, nút gần bị bắn tụ', baiLam: bai(C_3, [H('quick_aim', [], IF('distance() > 2', ['fire("fast")'], ['fire("charge")']))]), phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Để nguyên bản của Sola: van xa bị bắn nhanh, tia nước rơi giữa đường', baiLam: bai(C_3, [H('quick_aim', [], IF('distance() > 2', ['fire("charge")'], ['fire("fast")']))]), phaiCoMa: ['ban-ngan'] },
+        { moTa: 'Sửa thành distance() > 0: van gần cũng bị bắn tụ, xe giật lùi xô thùng', baiLam: bai(C_3, [H('quick_aim', [], IF('distance() > 0', ['fire("charge")'], ['fire("fast")']))]), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Sửa nhầm chỗ: đổi chỗ hai lực, van gần bị bắn tụ', baiLam: bai(C_3, [H('quick_aim', [], IF('distance() > 2', ['fire("fast")'], ['fire("charge")']))]), phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Bắn nhanh tới được nút có distance() là 0 hay 1. Nút có distance() = 2 thì phải bắn tụ.',
+      goiY: ['Bắn nhanh tới được van có distance() là 0 hay 1. Van có distance() = 2 thì phải bắn tụ.',
         'Chỉ cần sửa số trong phép so sánh.']
     }),
 
     /* ------------------------------------------------ hàng 2: luyện */
     man({
-      so: 4, ten: 'Hàm aim_right() trong vòng lặp', yMoi: 'chương trình chính gọi hàm có cảm biến trong vòng for, mỗi lần một nút xa gần khác',
+      so: 4, ten: 'Hàm aim_right() trong vòng lặp', yMoi: 'chương trình chính gọi hàm có cảm biến trong vòng for, mỗi lần một van xa gần khác',
       mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'move'], taoHam: ['aim_right'], chinhCoDinh: true,
-      deBai: 'Ba nút nằm bên PHẢI đường đi, nút đầu xa, hai nút sau gần. Chương trình chính đã khóa: vòng lặp ba lần gọi aim_right() rồi tiến một ô. ' +
+      deBai: 'Ba van nằm bên PHẢI đường đi, van đầu xa, hai van sau gần. Chương trình chính đã khóa: vòng lặp ba lần gọi aim_right() rồi tiến một ô. ' +
         'Em chế aim_right(): quay phải, aim_fire(), quay lại. Bắn tụ thì xe giật sang làn trên, bắn nhanh thì xe đứng yên. Đưa xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo aim_right() như aim_left() nhưng quay về phía bên phải.',
       san: SAN_4, batDau: { x: 1, y: 3, huong: 1 }, noi: NOI_4,
@@ -204,8 +204,8 @@
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['# quay phải, tự chọn lực, quay lại', 'turn_right()', 'aim_fire()', 'turn_left()'])] },
       loiSai: [
         { moTa: 'Quay trái thay vì quay phải: mắt hồng ngoại nhìn vào tường', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_left()', 'aim_fire()', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Viết cứng fire("fast"): nút đầu cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'fire("fast")', 'turn_left()'])], phaiCoMa: ['ban-ngan'] },
-        { moTa: 'Viết cứng fire("charge"): ở nút gần xe giật lên hốc', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'fire("charge")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Viết cứng fire("fast"): van đầu cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'fire("fast")', 'turn_left()'])], phaiCoMa: ['ban-ngan'] },
+        { moTa: 'Viết cứng fire("charge"): ở van gần xe giật lên hốc', baiLam: bai(C_4), hamCuaEmMoi: [H('aim_right', [], ['turn_right()', 'fire("charge")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Cùng một hàm chạy ba lần, mỗi lần mắt hồng ngoại đo lại nên lực tự đổi.',
         'Thân hàm ba dòng: turn_right(), aim_fire(), turn_left().']
@@ -214,7 +214,7 @@
     man({
       so: 5, ten: 'Hàm fire_left(p)', yMoi: 'hàm có tham số lực p, truyền tiếp p cho fire(p) (hàm gọi hàm)',
       hamCuaEmCan: ['fire', 'turn_left', 'turn_right', 'forward', 'move'], taoHam: ['fire_left'], chinhCoDinh: true,
-      deBai: 'Băng chuyền chạy ngược chắn đường; nút A bên trái tắt băng, nút B cuối băng và nút C bên trái ở cuối đường mở hai cửa xuống cờ. ' +
+      deBai: 'Băng chuyền chạy ngược chắn đường; van A bên trái tắt băng, van B cuối băng và van C bên trái ở cuối đường mở hai cửa xuống cờ. ' +
         'Em chế fire_left(p): quay trái, bắn với lực p bằng fire(p), quay lại. Chương trình chính đã khóa, gọi fire_left("fast") rồi fire_left("charge").',
       veMaMau: 'Chương trình chính bị khóa. Tạo fire_left(p): trong thân, gọi fire(p) để truyền tiếp lực p.',
       san: SAN_5, batDau: { x: 2, y: 3, huong: 1 }, noi: NOI_5,
@@ -223,41 +223,41 @@
       loiGiai: { chinh: C_5.slice(), hamCuaEmMoi: [H('fire_left', ['p'], T_FIRE_LEFT)] },
       loiGiaiKhac: { moTa: 'Viết shoot(p), wait() thay cho fire(p): đúng, thêm một ô', baiLam: bai(C_5), hamCuaEmMoi: [H('fire_left', ['p'], ['turn_left()', 'shoot(p)', 'wait()', 'turn_right()'])] },
       loiSai: [
-        { moTa: 'Viết cứng fire("fast"): nút C cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_5), hamCuaEmMoi: [H('fire_left', ['p'], ['turn_left()', 'fire("fast")', 'turn_right()'])], phaiCoMa: ['ban-ngan'] },
-        { moTa: 'Viết cứng fire("charge"): ở nút A xe giật lùi xuống hốc', baiLam: bai(C_5), hamCuaEmMoi: [H('fire_left', ['p'], ['turn_left()', 'fire("charge")', 'turn_right()'])], phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên quay lại: xe quay mặt lên, phát bắn nút B đi sai hướng', baiLam: bai(C_5), hamCuaEmMoi: [H('fire_left', ['p'], ['turn_left()', 'fire(p)'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Viết cứng fire("fast"): van C cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_5), hamCuaEmMoi: [H('fire_left', ['p'], ['turn_left()', 'fire("fast")', 'turn_right()'])], phaiCoMa: ['ban-ngan'] },
+        { moTa: 'Viết cứng fire("charge"): ở van A xe giật lùi xuống hốc', baiLam: bai(C_5), hamCuaEmMoi: [H('fire_left', ['p'], ['turn_left()', 'fire("charge")', 'turn_right()'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên quay lại: xe quay mặt lên, phát bắn van B đi sai hướng', baiLam: bai(C_5), hamCuaEmMoi: [H('fire_left', ['p'], ['turn_left()', 'fire(p)'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['fire_left("fast") thì p là "fast"; trong thân, fire(p) nhận đúng chữ đó.',
         'Thân hàm ba dòng: turn_left(), fire(p), turn_right().']
     }),
 
     man({
-      so: 6, ten: 'Hàm close_fire()', yMoi: 'hàm dùng go_to_wall(): đi tới sát nút rồi bắn nhanh để xe đứng yên ở chỗ rẽ',
+      so: 6, ten: 'Hàm close_fire()', yMoi: 'hàm dùng go_to_wall(): đi tới sát van rồi bắn nhanh để xe đứng yên ở chỗ rẽ',
       mucTieu: 'bong-mo', hamCuaEmCan: ['go_to_wall', 'fire', 'turn_right', 'forward', 'move'], taoHam: ['close_fire'], chinhCoDinh: true,
-      deBai: 'Ba đoạn đường dài ngắn khác nhau; cuối mỗi đoạn có một nút mở cửa ở chỗ rẽ. Em chế close_fire(): đi tới sát nút bằng go_to_wall() của gói Hồng ngoại rồi bắn nhanh. ' +
-        'Sát nút mà bắn tụ thì xe giật lùi khỏi chỗ rẽ. Chương trình chính đã khóa. Đưa xe tới chỗ xe mờ.',
+      deBai: 'Ba đoạn đường dài ngắn khác nhau; cuối mỗi đoạn có một van mở cửa ở chỗ rẽ. Em chế close_fire(): đi tới sát van bằng go_to_wall() của gói Hồng ngoại rồi bắn nhanh. ' +
+        'Sát van mà bắn tụ thì xe giật lùi khỏi chỗ rẽ. Chương trình chính đã khóa. Đưa xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo close_fire(): hai dòng.',
       san: SAN_6, batDau: { x: 1, y: 1, huong: 1 }, noi: NOI_6,
       bongMo: { x: 1, y: 3, huong: 3 },
       maMau: bai(C_6),
       sao: { o: 18, nhip: 12 },
       loiGiai: { chinh: C_6.slice(), hamCuaEmMoi: [H('close_fire', [], ['go_to_wall()', 'fire("fast")'])] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['# tới sát nút rồi bắn nhanh', 'go_to_wall()', 'fire("fast")'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['# tới sát van rồi bắn nhanh', 'go_to_wall()', 'fire("fast")'])] },
       congThucKhac: [{ moTa: 'Viết thẳng vòng while distance() > 0: move() trong hàm', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['while distance() > 0:', '    move()', 'fire("fast")'])] }],
       loiSai: [
-        { moTa: 'Bắn tụ khi đã sát nút: xe giật lùi một ô, rẽ sai chỗ', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['go_to_wall()', 'fire("charge")'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Bắn tụ khi đã sát van: xe giật lùi một ô, rẽ sai chỗ', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['go_to_wall()', 'fire("charge")'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Đếm cứng forward(2): ở đoạn đầu xe dừng sớm, rẽ vào tường', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['forward(2)', 'fire("fast")'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Bắn trước rồi mới đi: tia nước bắn nhanh chưa tới nút', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['fire("fast")', 'go_to_wall()'])], phaiCoMa: ['ban-ngan'] }
+        { moTa: 'Bắn trước rồi mới đi: tia nước bắn nhanh chưa tới van', baiLam: bai(C_6), hamCuaEmMoi: [H('close_fire', [], ['fire("fast")', 'go_to_wall()'])], phaiCoMa: ['ban-ngan'] }
       ],
-      goiY: ['go_to_wall() đi cho tới khi distance() là 0: nút ở ngay trước mũi.',
-        'Sát nút rồi thì bắn nhanh là tới, xe lại không giật.']
+      goiY: ['go_to_wall() đi cho tới khi distance() là 0: van ở ngay trước mũi.',
+        'Sát van rồi thì bắn nhanh là tới, xe lại không giật.']
     }),
 
     /* ------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Hàm scan_left()', yMoi: 'hàm có vòng lặp bên trong: mỗi vòng aim_left() rồi tiến, gọi ở hai hành lang',
       mucTieu: 'bong-mo', hamCuaEmCan: ['aim_left', 'aim_fire', 'fire', 'fire_left', 'turn_left', 'turn_right', 'move'], taoHam: ['scan_left'], chinhCoDinh: true,
-      deBai: 'Hai hành lang nối nhau, mỗi hành lang có hai nút bên trái, xa gần khác nhau. Em chế scan_left(): vòng lặp hai lần, mỗi lần aim_left() rồi tiến một ô. ' +
+      deBai: 'Hai hành lang nối nhau, mỗi hành lang có hai van bên trái, xa gần khác nhau. Em chế scan_left(): vòng lặp hai lần, mỗi lần aim_left() rồi tiến một ô. ' +
         'Chương trình chính đã khóa: scan_left(), quay phải, scan_left(). Bắn tụ thì xe giật sang làn bên cạnh. Đưa xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa. Tạo scan_left() với for i in range(2): trong thân hàm.',
       san: SAN_7, batDau: { x: 1, y: 3, huong: 1 }, noi: NOI_7,
@@ -268,8 +268,8 @@
       loiGiaiKhac: { moTa: 'Viết hai lần aim_left(), move() không dùng vòng lặp: đúng, thêm một ô', baiLam: bai(C_7), hamCuaEmMoi: [H('scan_left', [], ['aim_left()', 'move()', 'aim_left()', 'move()'])] },
       loiSai: [
         { moTa: 'Vòng lặp ba lần: xe đi quá cuối hành lang', baiLam: bai(C_7), hamCuaEmMoi: [H('scan_left', [], FOR(3, ['aim_left()', 'move()']))], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên move(): xe bắn hai lần một nút', baiLam: bai(C_7), hamCuaEmMoi: [H('scan_left', [], FOR(2, ['aim_left()']))], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Viết cứng fire_left("charge"): ở nút gần xe giật vào hốc', baiLam: bai(C_7), hamCuaEmMoi: [H('scan_left', [], FOR(2, ['fire_left("charge")', 'move()']))], phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Quên move(): xe bắn hai lần một van', baiLam: bai(C_7), hamCuaEmMoi: [H('scan_left', [], FOR(2, ['aim_left()']))], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Viết cứng fire_left("charge"): ở van gần xe giật vào hốc', baiLam: bai(C_7), hamCuaEmMoi: [H('scan_left', [], FOR(2, ['fire_left("charge")', 'move()']))], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Thân hàm cũng chứa được vòng lặp for, như chương trình chính.',
         'for i in range(2): rồi thụt vào hai dòng aim_left() và move().']
@@ -290,7 +290,7 @@
       loiSai: [
         { moTa: 'Viết cứng fire("charge"): phát thứ hai đẩy luôn thùng bên phải', baiLam: bai(C_8), hamCuaEmMoi: [H('aim_turn', [], ['fire("charge")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Viết cứng fire("fast"): không có cú giật, thùng sau lưng nằm yên chắn đường', baiLam: bai(C_8), hamCuaEmMoi: [H('aim_turn', [], ['fire("fast")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quay trước rồi mới bắn: lần đầu mắt hồng ngoại nhìn về nút gần', baiLam: bai(C_8), hamCuaEmMoi: [H('aim_turn', [], ['turn_left()', 'aim_fire()'])], phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Quay trước rồi mới bắn: lần đầu mắt hồng ngoại nhìn về van gần', baiLam: bai(C_8), hamCuaEmMoi: [H('aim_turn', [], ['turn_left()', 'aim_fire()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Cú giật của phát bắn tụ đẩy thùng ngay sau lưng trượt tới khi gặp tường.',
         'Thân hàm: aim_fire() rồi turn_left().']
@@ -300,7 +300,7 @@
       so: 9, ten: 'Đố: lực bị viết cứng', yMoi: 'sửa hàm lỗi: tham số p bị bỏ quên, thân hàm viết cứng "charge"',
       mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'forward', 'move'], chinhCoDinh: true,
       deBai: 'Sola chế shot_right(p): quay phải, bắn, quay lại. Chương trình chính đã khóa, gọi shot_right("charge") rồi shot_right("fast"). ' +
-        'Nhưng ở nút thứ hai xe vẫn giật lùi xuống hốc. Tìm và sửa một dòng trong shot_right(p).',
+        'Nhưng ở van thứ hai xe vẫn giật lùi xuống hốc. Tìm và sửa một dòng trong shot_right(p).',
       veMaMau: 'Chạy thử. Lời gọi đưa "fast" vào p, mà thân hàm có dùng p không?',
       san: SAN_9, batDau: { x: 5, y: 3, huong: 3 }, noi: NOI_9,
       bongMo: { x: 2, y: 4, huong: 3 },
@@ -310,8 +310,8 @@
       loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: bai(C_9, [H('shot_right', ['p'], ['# dùng lực của lời gọi', 'turn_right()', 'fire(p)', 'turn_left()'])]) },
       congThucKhac: [{ moTa: 'Viết shoot(p), wait() thay cho fire(p)', baiLam: bai(C_9, [H('shot_right', ['p'], ['turn_right()', 'shoot(p)', 'wait()', 'turn_left()'])]) }, { moTa: 'Dùng aim_fire() cho mắt hồng ngoại tự chọn lực (p thành thừa)', baiLam: bai(C_9, [H('shot_right', ['p'], ['turn_right()', 'aim_fire()', 'turn_left()'])]) }],
       loiSai: [
-        { moTa: 'Để nguyên bản của Sola: nút gần cũng bị bắn tụ, xe giật xuống hốc', baiLam: bai(C_9, [H('shot_right', ['p'], ['turn_right()', 'fire("charge")', 'turn_left()'])]), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Sửa thành "fast": nút đầu cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_9, [H('shot_right', ['p'], ['turn_right()', 'fire("fast")', 'turn_left()'])]), phaiCoMa: ['ban-ngan'] },
+        { moTa: 'Để nguyên bản của Sola: van gần cũng bị bắn tụ, xe giật xuống hốc', baiLam: bai(C_9, [H('shot_right', ['p'], ['turn_right()', 'fire("charge")', 'turn_left()'])]), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Sửa thành "fast": van đầu cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_9, [H('shot_right', ['p'], ['turn_right()', 'fire("fast")', 'turn_left()'])]), phaiCoMa: ['ban-ngan'] },
         { moTa: 'Viết fire("p"): có dấu nháy thì p là chữ p, không phải tham số', baiLam: bai(C_9, [H('shot_right', ['p'], ['turn_right()', 'fire("p")', 'turn_left()'])]), phaiCoMa: ['luc-ban-sai'] }
       ],
       goiY: ['Tham số p nhận chữ trong ngoặc của lời gọi: shot_right("fast") thì p là "fast".',
@@ -320,11 +320,11 @@
 
     /* ------------------------------------------------ trùm */
     man({
-      so: 10, ten: 'Trùm: Ba hành lang nút', yMoi: 'một chương trình cho ba sân: aim_left() trong vòng lặp, close_fire() ở cuối hành lang',
+      so: 10, ten: 'Trùm: Ba hành lang van', yMoi: 'một chương trình cho ba sân: aim_left() trong vòng lặp, close_fire() ở cuối hành lang',
       hang: 'trum', hamCuaEmCan: ['aim_left', 'aim_fire', 'close_fire', 'scan_left', 'go_to_wall', 'fire', 'fire_left', 'turn_left', 'turn_right', 'move'],
       huyHieu: { ma: 'che-luc-ban', ten: 'Huy hiệu Hàm lực bắn' },
-      deBai: 'Ba sân, một chương trình. Sân nào cũng có ba nút bên trái hành lang, mỗi nút mở cửa trạm kế, nhưng nút xa nằm ở trạm khác nhau. ' +
-        'Cuối hành lang là một nút nữa, xa gần khác nhau, mở cửa xuống cờ. Dùng các hàm của em để tới cờ trên cả ba sân.',
+      deBai: 'Ba sân, một chương trình. Sân nào cũng có ba van bên trái hành lang, mỗi van mở cửa trạm kế, nhưng van xa nằm ở trạm khác nhau. ' +
+        'Cuối hành lang là một van nữa, xa gần khác nhau, mở cửa xuống cờ. Dùng các hàm của em để tới cờ trên cả ba sân.',
       veMaMau: 'Chương trình có sẵn bắn cứng theo sân thứ nhất. Hãy để mắt hồng ngoại chọn lực.',
       san: SAN_10, batDau: BD_10, noi: NOI_10,
       maMau: bai(nhieu(['fire_left("charge")', 'move()'], FOR(2, ['fire_left("fast")', 'move()']), ['close_fire()', 'turn_right()', 'go_to_wall()'])),
@@ -333,12 +333,12 @@
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# mắt hồng ngoại chọn lực ở mỗi trạm'].concat(L_10)) },
       congThucKhac: [{ moTa: 'Gọi scan_left() rồi thêm một lần aim_left() thay cho vòng lặp ba lần', baiLam: bai(['scan_left()', 'aim_left()', 'move()', 'close_fire()', 'turn_right()', 'go_to_wall()']) }],
       loiSai: [
-        { moTa: 'Bắn cứng theo sân thứ nhất: ở sân khác nút xa nằm chỗ khác', baiLam: bai(nhieu(['fire_left("charge")', 'move()'], FOR(2, ['fire_left("fast")', 'move()']), ['close_fire()', 'turn_right()', 'go_to_wall()'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Luôn bắn nhanh: nút xa cách 3 ô, tia nước rơi giữa đường', baiLam: bai(nhieu(FOR(3, ['fire_left("fast")', 'move()']), ['close_fire()', 'turn_right()', 'go_to_wall()'])), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Bắn cứng theo sân thứ nhất: ở sân khác van xa nằm chỗ khác', baiLam: bai(nhieu(['fire_left("charge")', 'move()'], FOR(2, ['fire_left("fast")', 'move()']), ['close_fire()', 'turn_right()', 'go_to_wall()'])), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Luôn bắn nhanh: van xa cách 3 ô, tia nước rơi giữa đường', baiLam: bai(nhieu(FOR(3, ['fire_left("fast")', 'move()']), ['close_fire()', 'turn_right()', 'go_to_wall()'])), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
         { moTa: 'Quên close_fire(): xe rẽ ngay khi cửa phía dưới còn đóng', baiLam: bai(nhieu(FOR(3, ['aim_left()', 'move()']), ['turn_right()', 'go_to_wall()'])), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Ở mỗi trạm, aim_left() quay về phía nút và tự chọn lực theo distance().',
-        'Cuối hành lang: close_fire() đi tới sát nút rồi bắn nhanh, quay phải, go_to_wall() xuống cờ.']
+      goiY: ['Ở mỗi trạm, aim_left() quay về phía van và tự chọn lực theo distance().',
+        'Cuối hành lang: close_fire() đi tới sát van rồi bắn nhanh, quay phải, go_to_wall() xuống cờ.']
     })
   ];
 

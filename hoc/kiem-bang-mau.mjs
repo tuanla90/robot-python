@@ -39,6 +39,7 @@ const SUA_SAU_NEN = {
   'gioi-thieu.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk (gỡ cầu C4); màu không đổi',
   'man-chon.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk (gỡ cầu C4); màu không đổi',
   'man-goi.js': 'V7b (28/10): huy hiệu gọi thẳng HuyHieu.mk (gỡ cầu C4); màu không đổi',
+  'huong-dan.js': '29/10 (897fa26): bong bóng hướng dẫn tránh sân, đuôi không kẹp mép / không băng qua nút khác, neo đuôi khối rộng; màu không đổi',
   'choi.css': 'V7c3 e2 (29/10): bỏ khai báo pixel (vân gỗ / bảng phấn / núm --wood* --chalk --stud, image-rendering pixelated, steps(), clip-path răng cưa, .deco .surf / .bev / canvas); màu còn lại không đổi (máy đo kiểu tính tools/do-kieu-tinh.mjs: 0 khác)',
 };
 const day = path.dirname(fileURLToPath(import.meta.url));
