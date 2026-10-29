@@ -4,9 +4,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Kịch bản: hoc/KE-HOACH-PHIM-GOI.md mục "Kịch bản mùa 2"; nội dung gói: hoc/KE-HOACH-MUA-2.md (mảng MUA_2 trong lo-trinh-hoc.js).
    Mỗi mã gói một mảng 3–4 hàm khung (k, c): k = khung tranh 320×220, c = bộ dựng hình của PhimGoi (c.xe, c.san, c.code…).
    Lời khung n ở chu.js khóa 'pg.<mã gói>.<n>' (≤ 14 từ). Truyện nối phim gói 10 mùa 1: R1 lăn ra khỏi xưởng, thấy bánh xích trên đồi;
-   mùa 2 R1 lắp lại xích, nhận súng hơi, mắt hồng ngoại, rồi làm nhà máy cũ chạy lại; phim cuối nhá mùa 3 "Tín hiệu" (nhện, nam châm, sóng từ).
+   mùa 2 R1 lắp lại xích, nhận vòi phun (mã súng hơi), mắt hồng ngoại, rồi làm nhà máy cũ chạy lại; phim cuối nhá mùa 3 "Tín hiệu" (nhện, nam châm, sóng từ).
    Hình: sân mini nhìn từ trên (c.san, ô 56 px, robot tỉ lệ 2) hay dải sàn (md-san, robot tỉ lệ 3). Cơ chế mới của mùa 2 (băng chuyền, nút bắn và quầng nóng,
-   thùng nặng, bóng hơi) vẽ bằng PhimVector.bang / nutBan / thungNang / bong / nong (V7c2: hết đường lùi pixel; thiếu thì icon / div).
+   thùng nặng, khối nước của vòi phun) vẽ bằng PhimVector.bang / nutBan / thungNang / bong / nong (V7c2: hết đường lùi pixel; thiếu thì icon / div).
    Huy hiệu mùa 2 chưa có bản vector thì ở vector thay bằng icon bộ phận (không có canvas pixel trong phim vector).
    R1 sơn mặc định (vector: xanh đội R1), R2 sơn lam (vector: hồng đội R2).
    Node (máy kiểm kiem-phim-goi.mjs) require tệp này lấy bảng PHIM (không chạy hàm vẽ nào).
@@ -32,6 +32,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var v = PV() && PhimVector.nutBan(!!bat, s); if (v) return v;
     return c.ico('nutban', s, bat ? BM.do : BM.vang);
   }
+  function veVoi(c) { return (PV() && PhimVector.voiPhun(3)) || c.ico('denSung', 3, BM.lamSang); }      // vòi phun nằm lăn lóc / bay lên mũi xe: cùng hình với tem xuất xưởng
   function veNang(c, s) { var v = PV() && PhimVector.thungNang(s); return v || c.o('thung', s); }
   function veBong(c, s) {
     var v = PV() && PhimVector.bong(s); if (v) return v;
@@ -81,9 +82,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     e.classList.add('pg-truot'); e.style.setProperty('--tg', (giay || 1) + 's');
     c.sau(ms, function () { e.style.left = x + 'px'; if (y !== undefined) e.style.top = y + 'px'; });
   }
-  /** Bóng hơi bay từ tâm (x0, y0) tới tâm (x1, y1): hiện ở ms, bay giay giây, tới nơi thì biến mất (roi = true: rơi xuống sàn mờ dần). */
+  /** Khối nước (vòi phun, 29/10; trước: bóng hơi) bay từ tâm (x0, y0) tới tâm (x1, y1): hiện ở ms, bay giay giây, tới nơi thì biến mất (roi = true: rơi xuống sàn mờ dần).
+   *  Không rơi (bắn tụ) thì kèm TIA NƯỚC .pg-nuoc nối từ chỗ phun, dài dần theo khối nước rồi tắt cùng lúc. */
   function banBong(k, c, s, x0, y0, x1, y1, ms, giay, roi) {
-    var w = 6 * s, b = c.dat(veBong(c, s), x0 - w / 2, y0 - w / 2);
+    var w = 6 * s, dx = x1 - x0, dy = y1 - y0, L = Math.sqrt(dx * dx + dy * dy);
+    if (!roi && L > 4) {
+      var t = c.dat(c.h('div', 'pg-nuoc'), x0, y0 - s); t.style.width = L + 'px'; t.style.height = (2 * s) + 'px';
+      t.style.setProperty('--goc', Math.atan2(dy, dx).toFixed(4) + 'rad'); t.style.setProperty('--tg', giay + 's');
+      k.appendChild(c.tu(t, ms / 1000));
+      c.sau(ms + 20, function () { t.classList.add('pg-nuoc-ra'); });
+      c.sau(ms + giay * 1000 + 40, function () { t.classList.add('pg-an-ngay'); });
+    }
+    var b = c.dat(veBong(c, s), x0 - w / 2, y0 - w / 2);
     var nhom = c.tu(b, ms / 1000); k.appendChild(nhom);
     b.classList.add('pg-truot'); b.style.setProperty('--tg', giay + 's');
     c.sau(ms + 20, function () { b.style.left = (x1 - w / 2) + 'px'; b.style.top = (y1 - w / 2) + 'px'; c.keu('ban'); });
@@ -172,24 +182,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     ],
 
-    /* ---------------------------------------------------------------- 2 · Súng hơi */
+    /* ---------------------------------------------------------------- 2 · Súng hơi (mã sung-hoi; hình: vòi phun) */
     'sung-hoi': [
-      // 1 · sau đống thùng có khẩu súng hơi nằm lăn lóc; R1 xích lăn tới
+      // 1 · sau đống thùng có một vòi phun nằm lăn lóc; R1 xích lăn tới
       function (k, c) {
         var s = c.san(k, ['#o#o#', '.....', '#####'], 4, X0, Y0), q = s.o(3, 0);
-        k.appendChild(c.dat(c.ico('denSung', 3, BM.lamSang), q.x - 2, q.y + 2, 'md-lac'));
+        k.appendChild(c.dat(veVoi(c), q.x - 2, q.y + 2, 'md-lac'));
         var r = c.xe(XICH, {}, 1, 2, s.o(0, 1).x, s.o(0, 1).y); k.appendChild(r);
         truot(c, r, 100, s.o(2, 1).x, s.o(2, 1).y, 0.9);
         c.sau(1200, function () { r.mat('ngac'); c.keu('moKhoa'); });
         hoi(k, c, '!', q.x - 6, 4, 1.2);
       },
-      // 2 · súng hơi bay lên mũi xe, CẠCH!
+      // 2 · vòi phun bay lên mũi xe, CẠCH!
       function (k, c) {
         var s = c.san(k, ['#o#o#', '.....', '#####'], 4, X0, Y0), q = s.o(3, 0), p = s.o(2, 1);
-        bayToi(k, c, c.ico('denSung', 3, BM.lamSang), q.x - 2, q.y + 2, p.x + 10, p.y - 14, 0.1, 0.95);
+        bayToi(k, c, veVoi(c), q.x - 2, q.y + 2, p.x + 10, p.y - 14, 0.1, 0.95);
         lap(k, c, c.xe(XICH, {}, 1, 2, p.x, p.y), c.xe(XH, YEN, 1, 2, p.x, p.y).mat('vui'), 0.95);
       },
-      // 3 · shoot(): bóng bay ra trước, xe giật lùi một ô
+      // 3 · shoot(): nước phun ra trước, xe giật lùi một ô
       function (k, c) {
         var s = c.san(k, ['#####', '....#', '#####'], 4, X0, Y0), p = s.o(2, 1), sau = s.o(1, 1), tuongO = s.o(4, 1);
         var r = c.xe(XH, YEN, 1, 2, p.x, p.y); k.appendChild(r);
@@ -279,7 +289,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         s.chay(900, 16);
         c.sau(1100, function () { r.mat('vui'); });
       },
-      // 4 · thùng nặng: xe húc không nhúc nhích, cú giật súng hơi mới hất được
+      // 4 · thùng nặng: xe húc không nhúc nhích, cú giật vòi phun mới hất được
       function (k, c) {
         var s = san2(k, c, ['#####', '.H..#', '#####'], 4, X0, Y0), p = s.o(2, 1), q = s.o(1, 1), z = s.o(0, 1), tuongO = s.o(4, 1);
         var tg = s.nang['1,1'];
@@ -345,7 +355,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     /* ---------------------------------------------------------------- 6 · Lực bắn */
     'luc-ban': [
-      // 1 · bắn tụ shoot("charge"): bóng bay tới nút, xe giật lùi một ô
+      // 1 · bắn tụ shoot("charge"): tia nước tới nút, xe giật lùi một ô
       function (k, c) {
         var s = san2(k, c, ['#####', '....N', '#####'], 4, X0, Y0), p = s.o(1, 1), n = s.o(4, 1);
         var r = c.xe(XHN, YEN, 1, 2, p.x, p.y); k.appendChild(r);
@@ -355,7 +365,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(1140, function () { s.nb['4,1'].dat(true); r.ve(YEN); c.keu('moKhoa'); r.mat('ngac'); });
         tieng(k, c, 'GIẬT!', 10, 130, 0.6);
       },
-      // 2 · bắn nhanh shoot("fast"): bóng bay hai ô rồi rơi, xe đứng yên
+      // 2 · bắn nhanh shoot("fast"): nước bay hai ô rồi rơi, xe đứng yên
       function (k, c) {
         var s = san2(k, c, ['#####', '....N', '#####'], 4, X0, Y0), p = s.o(1, 1), roi = s.o(3, 1);
         var r = c.xe(XHN, YEN, 1, 2, p.x, p.y); k.appendChild(r);
@@ -420,7 +430,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     /* ---------------------------------------------------------------- 8 · Đội (R1 xích + R2 hai bánh; warm() thấy bạn) */
     'doi-mua-2': [
-      // 1 · R2 trở lại với súng hơi và mắt hồng ngoại
+      // 1 · R2 trở lại với vòi phun và mắt hồng ngoại
       function (k, c) {
         c.nen(k, 'md-san');
         var r1 = c.xe(XHN, YEN, 1, 3, 80, Y); k.appendChild(r1);
@@ -468,7 +478,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     ],
 
-    /* ---------------------------------------------------------------- 9 · Bệ súng xích */
+    /* ---------------------------------------------------------------- 9 · Bệ vòi xích (mã be-sung) */
     'be-sung': [
       // 1 · xe hai bánh bắn tụ là giật lùi, hất văng thùng phía sau
       function (k, c) {
@@ -481,7 +491,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(940, function () { s.nb['4,1'].dat(true); r.ve(YEN); c.keu('dam'); r.mat('ngac'); });
         tieng(k, c, 'HẤT!', 10, 130, 0.6);
       },
-      // 2 · xích bám sàn như bệ súng: bắn tụ mà xe đứng yên
+      // 2 · xích bám sàn như bệ vòi: bắn tụ mà xe đứng yên
       function (k, c) {
         var s = san2(k, c, ['#####', '.H..N', '#####'], 4, X0, Y0), p = s.o(2, 1), n = s.o(4, 1);
         var r = c.xe(XHN, YEN, 1, 2, p.x, p.y); k.appendChild(r);
@@ -523,7 +533,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         });
         c.sau(300, function () { c.keu('thang'); });
       },
-      // 2 · tem XUẤT XƯỞNG đóng xuống: "Xe cứu hỏa R1" + ba part: xích, súng hơi vẽ thành vòi phun (PhimVector.voiPhun), mắt hồng ngoại như camera nhiệt
+      // 2 · tem XUẤT XƯỞNG đóng xuống: "Xe cứu hỏa R1" + ba part: xích, vòi phun (PhimVector.voiPhun), mắt hồng ngoại như camera nhiệt
       function (k, c) {
         c.nen(k, 'md-san');
         var r = c.xe(XHN, DO, 1, 3, 160, Y); k.appendChild(r);
