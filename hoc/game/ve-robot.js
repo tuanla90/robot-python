@@ -90,7 +90,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  Cấu hình cấm (drone + camera…): VeVector ném đúng lỗi của luật ghép → báo một lần, trả null (ve() rơi về hình tạm). */
   function veVec(cauHinh, tt, tay, son, huong, tiLe) {
     var cfg = { than: cauHinh.than || 'hai-banh', tay: cauHinh.tay || null, camBien: cauHinh.camBien || [], son: son }, cb = tt.camBien || {};
-    var dThan = VV().lay('than', cfg.than), chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && !cfg.tay) || (dThan && dThan.khongHuong)) ? 0 : huong;     // không hướng: đọc cờ khongHuong của hình vector (drone)
+    var dThan = VV().lay('than', cfg.than), chay = tt.wl > 0 || tt.wr > 0, h = ((cfg.than === 'nhen' && (!cfg.tay || cfg.tay === 'nam-cham')) || (dThan && dThan.khongHuong)) ? 0 : huong;     // không hướng: đọc cờ khongHuong của hình vector (drone); nhện không tay / nam châm bụng (mùa 3) luôn hướng 0
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },
       tay: cfg.tay ? { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: !!tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBanTruoc: tay.dangBanTruoc, dangBanSau: tay.dangBanSau,

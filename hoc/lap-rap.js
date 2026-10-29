@@ -123,7 +123,7 @@
   /**
    * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). Luật = luật của VeVector.kiemGhep + luật của lõi SanHoc.chay (cấu hình robot):
    *   drone: chỉ treo nam châm dưới bụng, không camera trước / cảm biến khoảng cách / cảm biến từ (không có mặt trước); camera bụng chỉ gắn lên drone;
-   *   nhện: chỉ tay kẹp (không tay xoay, nam châm, máy ném, súng hơi), không cảm biến khoảng cách / từ (không có hướng mặt).
+   *   nhện: tay kẹp hoặc nam châm (nam châm treo dưới bụng, mùa 3 gói 9; không tay xoay, máy ném, súng hơi), không cảm biến khoảng cách / từ (không có hướng mặt).
    * Cuối cùng nhờ VeVector.kiemGhep xét lại (bắt luật ghép mới thêm vào bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
    */
   function kiemGhep(c) {
@@ -139,7 +139,7 @@
     } else {
       if (c.camBien === 'camera-bay') sai = { lyDo: 'Camera bụng chỉ gắn được lên drone.', xung: ['than', 'camBien'] };
       else if (c.than === 'nhen') {
-        if (c.tay && c.tay !== 'kep') sai = { lyDo: 'Nhện không có hướng mặt, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };
+        if (c.tay && c.tay !== 'kep' && c.tay !== 'nam-cham') sai = { lyDo: 'Nhện không có hướng mặt, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };     // nam châm: treo dưới bụng (mùa 3)
         else if (c.camBien === 'khoang-cach' || c.camBien === 'tu') sai = { lyDo: 'Nhện không có hướng mặt, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };
       }
     }

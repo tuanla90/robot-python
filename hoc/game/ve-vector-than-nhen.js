@@ -3,6 +3,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    ăng-ten chấm màu đội. V8a (29/10, user "thân nhện hơi xấu, ko tạo cảm giác đang bò"): bốn chân ba khúc chắc chắn: nắp vai bo ở bốn góc vỏ, đùi trắng vuốt thon
    viền chàm, khớp gối chàm có lõi cyan, cẳng thon dần, bàn chân chàm có chấm cyan.
    Quay mặt XUỐNG, tâm (50, 56). Ổ (không đổi): tay (50, 81); hongTrai (68, 48) / hongPhai (32, 48) trên vỏ; tren (68, 77) góc mũi trái; sau (38, 31) đuôi.
+   P1 mùa 3 (29/10): thêm chỗ treo oTayDuoi (50, 42) = giữa vỏ phía đuôi (dưới dải mắt), chỉ cho NAM CHÂM BỤNG (tayDuoi ['nam-cham']; không phải ổ trong oGan nên cảm biến không gắn được):
+   ve-vector-tay-nam-cham.js vẽ đĩa nam châm tròn đè lên giữa vỏ (s.duoi + s.than 'nhen'); hình thân y nguyên, tay kẹp vẫn ở ổ tay (50, 81).
    Trạng thái s:
      lan (0..1, V8a)  pha DÁNG BÒ ở nhịp bước (san-ve.js dangBo: một chu kỳ mỗi ô theo quãng đã đi). Chéo đôi: cặp A (trước phía x lớn + sau phía x nhỏ) nhấc và vươn tới ở nửa đầu,
                       cặp B ở nửa sau; chân đang chạm đất trôi ngược hướng đi (thân lướt qua bàn chân đứng yên); thân nhún lên khi một cặp đang nhấc. lan = 0 (hay 1) = tư thế đứng.
@@ -54,7 +56,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return { A: A, B: B, nhun: nhun };
   }
-  V.dangKy({ loai: 'than', ma: 'nhen', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'crouch',  'stand'], ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'than', ma: 'nhen', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'crouch',  'stand'], ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, tayDuoi: ['nam-cham'], oTayDuoi: { x: 50, y: 42 }, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
     s = s || {};
     var co = !!s.co, dg = dang(s), u = HUONG_DI[s.di | 0] || HUONG_DI[0], kb = co ? 0.6 : 1;
     /* bốn chân: [hông, gối, bàn] tư thế đứng (phía x nhỏ), lật sang phía x lớn; chân TRƯỚC (y lớn) rồi chân SAU */

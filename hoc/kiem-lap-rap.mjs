@@ -115,7 +115,7 @@ const ca = [
   ['hai bánh + camera bụng: sai (chỉ drone)', gh('hai-banh', null, 'camera-bay'), false, /drone/],
   ['xích + camera bụng: sai', gh('xich', 'kep', 'camera-bay'), false],
   ['nhện + tay xoay: sai (không có hướng mặt)', gh('nhen', 'xoay', null), false, /hướng mặt/],
-  ['nhện + nam châm: sai', gh('nhen', 'nam-cham', null), false],
+  ['nhện + nam châm: được (mùa 3: nam châm bụng nhện, treo ở ổ duoi)', gh('nhen', 'nam-cham', null), true],
   ['nhện + máy ném: sai', gh('nhen', 'nem', null), false],
   ['nhện + súng hơi: sai', gh('nhen', 'hoi', null), false],
   ['nhện + tay kẹp: được', gh('nhen', 'kep', null), true],
@@ -195,12 +195,12 @@ let ds = LapRap.dsCachLap(bac);
 kiem('dsCachLap màn bậc thang (ngân sách 3): đúng 3 cách = hai bánh (2) · hai bánh + khoảng cách (3) · xích (3)', ds.length === 3 && J(ds.map((x) => x.gia)) === J([2, 3, 3]) && ds[0].than === 'hai-banh' && !ds[0].camBien, J(ds));
 kiem('dsCachLap xếp theo giá tăng dần, mỗi mục có than / tay / camBien / gia', ds.every((x, i) => ('than' in x) && ('tay' in x) && ('camBien' in x) && (i === 0 || ds[i - 1].gia <= x.gia)));
 const manLon = { ma: 'tam.lon', lapRap: { than: ['hai-banh', 'nhen', 'drone'], tay: ['kep', 'nam-cham', 'xoay', 'nem'], camBien: ['mau', 'camera', 'camera-bay', 'tu', 'khoang-cach'], nganSach: 99, cachLap: [] } };
-// đếm tay: hai bánh 5 tay × 5 não (bỏ camera-bay) = 25 · nhện {không, kẹp} × {không, màu, camera} = 6 · drone {không, nam châm} × {không, màu, camera bụng} = 6
-kiem('dsCachLap màn lớn (3 thân, 4 tay, 5 não, ngân sách thừa): đúng 37 cách', LapRap.dsCachLap(manLon).length === 37, String(LapRap.dsCachLap(manLon).length));
+// đếm tay: hai bánh 5 tay × 5 não (bỏ camera-bay) = 25 · nhện {không, kẹp, nam châm bụng (mùa 3)} × {không, màu, camera} = 9 · drone {không, nam châm} × {không, màu, camera bụng} = 6
+kiem('dsCachLap màn lớn (3 thân, 4 tay, 5 não, ngân sách thừa): đúng 40 cách', LapRap.dsCachLap(manLon).length === 40, String(LapRap.dsCachLap(manLon).length));
 function demTay(nganSach) {                                                            // đếm lại độc lập bằng luật viết tay và bảng giá của kế hoạch
   let n = 0;
   const camOk = { 'hai-banh': [null, 'mau', 'camera', 'tu', 'khoang-cach'], nhen: [null, 'mau', 'camera'], drone: [null, 'mau', 'camera-bay'] };
-  const tayOk = { 'hai-banh': [null, 'kep', 'nam-cham', 'xoay', 'nem'], nhen: [null, 'kep'], drone: [null, 'nam-cham'] };
+  const tayOk = { 'hai-banh': [null, 'kep', 'nam-cham', 'xoay', 'nem'], nhen: [null, 'kep', 'nam-cham'], drone: [null, 'nam-cham'] };     // nhện + nam châm bụng (mùa 3)
   for (const th of Object.keys(camOk)) for (const ta of tayOk[th]) for (const cb of camOk[th])
     if (GIA.than[th] + (ta ? GIA.tay[ta] : 0) + (cb ? GIA.camBien[cb] : 0) <= nganSach) n++;
   return n;

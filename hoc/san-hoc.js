@@ -213,7 +213,7 @@
         - Đọc màu cũng tính vào giới hạn 1000 lần đọc liên tiếp không có nhịp ('infinite-loop').
         Kết quả chạy có `mauO` (null nếu sân không màu; không thì mảng hàng, mỗi hàng mảng màu hay null), và `vat[i].mau`, `dich[i].mau` chỉ khi có màu.
 
-   NAM CHÂM (chương `nam-cham` và `che-nam-cham`; xe bánh, xích, omni; nhện thì không vì không có hướng mặt). Robot gắn tay nam châm khi hamGoc có magnet_n / magnet_s /
+   NAM CHÂM (chương `nam-cham` và `che-nam-cham`; xe bánh, xích, omni; nhện: chỉ NAM CHÂM BỤNG, xem cuối phần này). Robot gắn tay nam châm khi hamGoc có magnet_n / magnet_s /
         magnet_off (một robot một tay: không đi chung với tay kẹp, tấm đẩy, máy ném, súng bóng). Nam châm có CỰC (15/10, đúng vật lý), ba lệnh gốc, đều chỉ RA LỆNH (wait() cho nhịp trôi):
             magnet_n()    bật cực N (màu đỏ)
             magnet_s()    bật cực S (màu xanh dương)
@@ -243,6 +243,14 @@
         - Mục tiêu 'dua-vat' + cfg.vatCan = 'sat' | 'nam-cham' | 'tu': chỉ vật sắt / chỉ vật nam châm / vật có từ (sắt + nam châm) phải nằm trên ô đích; vật gỗ để yên ở đâu cũng được.
         - daoChieu 'cuc' (chương che-nam-cham): DÂY CỰC ĐẤU NGƯỢC: magnet_n() bật cực S thật, magnet_s() bật cực N thật (vết lệnh vẫn ghi tên lệnh người chơi gọi; robot.namCham.cuc ghi cực THẬT).
         - Màn hỏng khai phanCung thiếu magnet_n hay magnet_s: gọi lệnh đó → 'lenh-goc-hong' ("Cực S hỏng…"). bongMo.cam (xe mờ đang DÍNH vật) dùng được với tay nam châm.
+        - NAM CHÂM BỤNG NHỆN (mùa 3 gói 9, P1 29/10; user: "nam châm bụng nhện"): nhện (loaiRobot 'nhen') gắn tay nam châm khi hamGoc có magnet_n / magnet_s / magnet_off,
+          treo DƯỚI BỤNG như drone (ổ 'duoi'), KHÔNG ở mũi (nhện không có hướng mặt). Cùng luật nam châm treo của drone (ncBung()): hút / thả ở Ô NGAY DƯỚI nhện (khoảng 0), cực nào
+          cũng hút sắt, vật nam châm khác cực hút, cùng cực nằm yên ('cung-cuc'), gỗ 'hut-go'. Lệnh nam châm chỉ RA LỆNH, làm việc ở nhịp kế tiếp như lệnh tay của nhện: nhịp
+          wait() hay nhịp ĐẦU (chuẩn bị) của bước go_*; hút ở CUỐI nhịp (sau khi bước / nhảy / bị đệm dời). Nhện gắn nam châm bụng ĐỨNG TRÙM LÊN vật nằm đất được (chân cao
+          choãi qua vật, vật không chiếm ô với nó: đi vào, nhảy đáp lên ô có vật đều được; nhện không nam châm vẫn bị vật chắn như cũ). Vật dính đi theo nhện khi đi bộ, khi
+          nhảy (kể cả nhảy qua hố), khi bị băng chuyền / đệm từ dời. magnet_off() thả vật xuống ô ngay dưới nhện (oThaChan: hố / gầm / đệm / thùng / vật khác thì 'tha-bi-chan');
+          nhện không bao giờ đứng trên hố nên không có "thả trên hố"; nhện rơi hố khi đang mang vật thì chương trình dừng, vật coi như rơi theo (vết nhịp cuối vẫn ghi 'cam').
+          Với ĐỆM TỪ: nhện có nam châm bụng bật thì bị hút / đẩy theo cực như xe; đang nhảy thì miễn. Không có cảm biến từ cho nhện (không hướng mặt).
         Kết quả chạy có `namCham` { bat, cuc, cam } (null nếu robot không có tay nam châm); vết nhịp có robot.namCham và vat (có `chat`; vật nam châm có thêm `cuc`).
 
    MÁY NÉM (chương `may-nem`; xe bánh, xích, omni; nhện thì không vì không có hướng mặt). Robot gắn tay máy ném khi hamGoc có aim / throw / load
@@ -742,8 +750,8 @@
       coXoay = hamGoc.some(function (t) { return TAY_XOAY.indexOf(t) >= 0; });           // tay XOAY: khớp xoay giữa trái / trước / phải (xem phần TAY XOAY)
       if (coXoay && !laBanh) throw new Error('Tay xoay chỉ gắn lên xe có bánh (xe bánh, xích, omni): nhện và drone không có.');
       coNamCham = hamGoc.some(function (t) { return TAY_NAM_CHAM.indexOf(t) >= 0; });     // tay nam châm (magnet_n / magnet_s / magnet_off)
-      if (coNamCham && loai === 'nhen') throw new Error('Nhện không gắn nam châm (nhện không có hướng mặt).');
       if (coNamCham && coTay) throw new Error('Một robot chỉ có một tay: nam châm không đi chung với tay kẹp.');
+      // Nhện + nam châm = NAM CHÂM BỤNG (mùa 3; xem phần NAM CHÂM): luật treo như drone qua ncBung(); không còn cấm "Nhện không gắn nam châm" (trước P1 mùa 3).
       coNem = hamGoc.some(function (t) { return TAY_NEM.indexOf(t) >= 0; });                  // tay máy ném (aim / throw / load)
       if (coNem && loai === 'nhen') throw new Error('Nhện không gắn máy ném (nhện không có hướng mặt).');
       if (coNem && (coTay || coNamCham)) throw new Error('Một robot chỉ có một tay: máy ném không đi chung với tay kẹp hay nam châm.');
@@ -1395,7 +1403,7 @@
           sk.push(et); suKienChan.push(et);
           return;
         }
-        var vn = (ly || laDrone) ? null : vatNamTai(nx, ny);              // drone bay qua vật nằm đất
+        var vn = (ly || ncBung()) ? null : vatNamTai(nx, ny);             // drone bay qua vật nằm đất; nhện nam châm bụng đứng trùm lên vật (mùa 3)
         if (vn) {                                                         // vật nằm đất chiếm ô: vướng vật
           var ev0 = { ma: 'dam-tuong', nhip: nhip, den: { x: nx, y: ny }, tu: { x: rb.x, y: rb.y }, vat: 'vat', idVat: vn.id, kieu: ma, lenh: lenhNhip };
           sk.push(ev0); suKienChan.push(ev0);
@@ -1439,7 +1447,7 @@
         if (!lyD && cuaDong(dx, dy)) lyD = 'cua';
         if (!lyD && oTai(san, dx, dy) === 'n') lyD = 'gam-thap';
         if (!lyD && thungTai(dx, dy)) lyD = 'thung-nang';
-        if (!lyD && vatNamTai(dx, dy)) lyD = 'vat';
+        if (!lyD && !ncBung() && vatNamTai(dx, dy)) lyD = 'vat';                        // nhện nam châm bụng đáp lên ô có vật được (mùa 3)
         if (!lyD && dongDoiChanDi(dx, dy)) lyD = 'dong-doi';
         var ly = lyG || lyD;
         if (ly) {
@@ -1517,7 +1525,7 @@
           return;
         }
         if (nc.cam === null) { nc.cuc = null; nc.bat = false; nc.lenhCuc = null; return; }
-        var v = VEC[rb.huong], fx = laDrone ? rb.x : rb.x + v[0], fy = laDrone ? rb.y : rb.y + v[1], ly = oThaChan(fx, fy), vt = vatTheoId(nc.cam);     // drone: nam châm treo DƯỚI bụng, thả xuống ô dưới nó
+        var v = VEC[rb.huong], fx = ncBung() ? rb.x : rb.x + v[0], fy = ncBung() ? rb.y : rb.y + v[1], ly = oThaChan(fx, fy), vt = vatTheoId(nc.cam);     // drone / nhện: nam châm treo DƯỚI bụng, thả xuống ô dưới nó
         if (ly) {
           var eb = { ma: 'tha-bi-chan', nhip: nhip, id: vt.id, o: { x: fx, y: fy }, vat: ly, lenh: l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null };
           sk.push(eb); suKienChan.push(eb);
@@ -1766,9 +1774,11 @@
         }
       }
 
+      /** NAM CHÂM TREO DƯỚI BỤNG (hút / thả ở ô ngay dưới robot): drone, và nhện gắn nam châm (mùa 3, xem phần NAM CHÂM "NAM CHÂM BỤNG NHỆN"). */
+      function ncBung() { return laDrone || (loai === 'nhen' && coNamCham); }
       /** Vật `vt` bị HÚT về ô sát mũi xe rồi dính (hut-vat, dinh-vat). tu = ô vật đang nằm, soO = số ô nó bay. */
       function hutVe(vt, tu, soO) {
-        var v = VEC[rb.huong], mx = laDrone ? rb.x : rb.x + v[0], my = laDrone ? rb.y : rb.y + v[1];
+        var v = VEC[rb.huong], mx = ncBung() ? rb.x : rb.x + v[0], my = ncBung() ? rb.y : rb.y + v[1];
         var e = { ma: 'hut-vat', id: vt.id, tu: { x: tu.x, y: tu.y }, den: { x: mx, y: my }, soO: soO };
         if (vt.chat === 'nam-cham') { e.chat = 'nam-cham'; e.cuc = vt.cuc; }
         sk.push(e);
@@ -1780,7 +1790,7 @@
        *  gỗ → không gì. Đang dính vật nam châm mà tay đổi sang cùng cực → bắn vật ra. */
       function hutVat() {
         if (!coNamCham || nc.cuc === null) return;
-        if (laDrone) {                                                        // nam châm treo: chỉ tác dụng vật nằm ở ô NGAY DƯỚI drone
+        if (ncBung()) {                                                       // nam châm treo (drone, nhện bụng): chỉ tác dụng vật nằm ở ô NGAY DƯỚI robot
           if (nc.cam !== null) return;
           var vd = vatNamTai(rb.x, rb.y);
           if (!vd) return;
@@ -1925,7 +1935,7 @@
           if (hanhDong.huong === null || hanhDong.huong === undefined) sk.push({ ma: 'dung-yen' });      // wait(): lơ lửng
           else thuDi(hanhDong.huong, 1, 'di');                                // (b) bay 1 ô (tường cao / mép sân / cửa đóng thì đứng yên)
         } else {
-          if (hanhDong.huong === null || hanhDong.huong === undefined) { apTay(); apChan(hanhDong.chan); sk.push({ ma: 'dung-yen' }); }
+          if (hanhDong.huong === null || hanhDong.huong === undefined) { apTay(); apChan(hanhDong.chan); apNamCham(); sk.push({ ma: 'dung-yen' }); }     // nhện: lệnh nam châm bụng (mùa 3) làm ở nhịp wait()
           else if (hanhDong.buoc === 2) {
             var nhayNay = nhayBuoc; nhayBuoc = false;
             if (coTay && tay.tuThe === 'duoi') {                              // tay hạ sát đất: chân vướng, bước bị bỏ
@@ -1933,7 +1943,7 @@
               sk.push(evn); suKienChan.push(evn);
             } else if (nhayNay) thuNhay(hanhDong.huong, hanhDong.lenhDi);     // chân vừa duỗi từ lúc đang co: bật qua một ô
             else thuDi(hanhDong.huong, 1, 'di');
-          } else { apTay(); nhayBuoc = apChan(hanhDong.chan); sk.push({ ma: 'chuan-bi', nhay: nhayBuoc }); }   // nhịp thứ nhất của lệnh go_*: chưa rời ô (tay và chân làm việc ở nhịp này)
+          } else { apTay(); nhayBuoc = apChan(hanhDong.chan); apNamCham(); sk.push({ ma: 'chuan-bi', nhay: nhayBuoc }); }   // nhịp thứ nhất của lệnh go_*: chưa rời ô (tay, chân và nam châm bụng làm việc ở nhịp này)
         }
 
         // băng chuyền — sau hành động của nhịp
@@ -2045,6 +2055,7 @@
         if (loai === 'xich') r.quayDo = quayDo ? quayDo.huong : 0;
         if (loai === 'omni') r.truot = truotGhi;
         if (laDrone) { r.pin = pin; r.dangMang = nc.cam; }
+        else if (ncBung()) r.dangMang = nc.cam;                                 // nhện nam châm bụng: vật đang treo dưới bụng
         var mucVet = { loai: 'nhip', nhip: nhip, robot: r, suKien: sk };
         if (coTay) { r.tay = chupTay(); mucVet.vat = chupVat(); }
         if (coNamCham) { r.namCham = chupNamCham(); mucVet.vat = chupVat(); }
@@ -2184,8 +2195,8 @@
           lenh.trai = 0; lenh.phai = 0; lenhTon = []; truotCho = null; ncCho = null; nemCho = null; hoiCho = null; sonCho = null;
           return motNhip(h);
         }
-        var hw = { kieu: 'nhen', huong: null, tay: rutTay(), chan: chanCho };
-        chanCho = null;
+        var hw = { kieu: 'nhen', huong: null, tay: rutTay(), chan: chanCho, nc: ncCho };      // nc: nam châm bụng nhện (mùa 3)
+        chanCho = null; ncCho = null;
         lenhTon = [];
         return motNhip(hw);
       }
@@ -2317,8 +2328,9 @@
       }
       var tayBuoc = rutTay();                                    // lệnh tay đang chờ làm ở nhịp ĐẦU của bước
       var chanBuoc = chanCho; chanCho = null;                    // lệnh chân (crouch / stand) đang chờ cũng làm ở nhịp ĐẦU của bước
+      var ncBuoc = ncCho; ncCho = null;                          // lệnh nam châm bụng (mùa 3) cũng làm ở nhịp ĐẦU của bước
       lenhTon = [];
-      return motNhip({ kieu: 'nhen', huong: hh, buoc: 1, tay: tayBuoc, chan: chanBuoc }) ||
+      return motNhip({ kieu: 'nhen', huong: hh, buoc: 1, tay: tayBuoc, chan: chanBuoc, nc: ncBuoc }) ||
         motNhip({ kieu: 'nhen', huong: hh, buoc: 2, lenhDi: { ten: yc.ten, dongPy: yc.dong } });
     }
 
