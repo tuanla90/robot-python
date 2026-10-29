@@ -28,7 +28,9 @@ function cham(m, lg, truoc = khoTruoc.get(m.ma) || []) {
 const chuongMua1 = new Set(TT.goi.filter(g => g.mua === 'mua-1').flatMap(g => g.chuong));
 const chuongMua2 = new Set(TT.goi.filter(g => g.mua === 'mua-2').flatMap(g => g.chuong));
 // che-xich (mùa 3, ẩn): năm màn bậc thang rời mùa 2 nhưng giữ vì che-xich.4 tạo climb() cho gói đội mùa ẩn.
-const chuongTam = new Set([...chuongMua1, ...chuongMua2, 'che-xich']);
+// Mùa 3 (29/10, KE-HOACH-MUA-3.md, đang dựng) cũng được có chương chưa đủ 10; chương rời mùa 3 (M.roiMua3: doi-xich-bac 8, nam-cham-omni 1) cũng vậy.
+const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.chuong));
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...Object.keys(M.roiMua3 || {}), 'che-xich']);
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
   assert.equal(new Set(M.danhSach.map(m => m.ma)).size, M.danhSach.length);
@@ -145,7 +147,7 @@ kiem('(a) mùa 1 đúng các gói của bảng, đúng thứ tự, đúng màn; 
   }
   assert.deepEqual(M.manCat, CAT_MUA_1);
   assert.deepEqual(M.danhSach.filter(m => m.chuong === 'che-xich').map(m => m.ma), XICH_CU);
-  assert.equal(goiCuaChuong('che-xich').mua, 'mua-3');
+  assert.equal(goiCuaChuong('che-xich').mua, 'mua-4');     // 29/10 P0 mùa 3: che-xich (bậc thang) rời mùa 3 sang đầu mùa 4 (ẩn)
   for (const ma of CAT_MUA_1) assert.equal(get(ma), null, ma + ' phải cất khỏi lộ trình');
   // Bốn màn dùng biến dời mùa 2: nay ở gói 1 chương 2 (bien-xich).
   for (const ma of BIEN_MUA_2) assert.equal(get(ma).chuong, 'bien-xich', ma);
@@ -275,8 +277,8 @@ kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng
     tr += 3 * g.chuong.reduce((s, c) => s + M.danhSach.filter(m => m.chuong === c).length, 0);
   }
   assert.deepEqual(goiMua('mua-2').map(g => g.sao), [0, 30, 60, 90, 120, 150, 180, 210, 240, 270], 'ngưỡng sao mùa 2');
-  // Chương cũ của mùa 2 ngoài bảng ở mùa ẩn
-  for (const c of ['ban-xoay', 'nhen', 'doi-ho-bang', 'list', 'doi-xich', 'omni', 'doi-omni', 'che-xich']) assert.equal(goiCuaChuong(c).mua, 'mua-3', c);
+  // Chương cũ của mùa 2 ngoài bảng ở mùa ẩn (29/10 P0 mùa 3: nhen, doi-xich vào MUA_3; các chương khác sang đầu mùa 4, cũng ẩn)
+  for (const c of ['ban-xoay', 'nhen', 'doi-ho-bang', 'list', 'doi-xich', 'omni', 'doi-omni', 'che-xich']) assert.ok(TT.mua.find(x => x.ma === goiCuaChuong(c).mua).an, c);
 });
 kiem2('(b) không màn nào trước gói 1 chương 2 mùa 2 (bien-xich) dùng biến (bắc cầu qua hàm của em) hay mở nhóm ĐẾM', () => {
   const moc = viTriMan(M.danhSach.find(m => m.chuong === 'bien-xich'));
@@ -381,7 +383,8 @@ kiem('gói cảm biến hai bên: mười màn khác nhau, một sân; trùm cũ
 kiem('chương mới không đổi id của ngân hàng bài gốc trong thu-tu-chuong.js', () => {
   const goc = fs.readFileSync(new URL('./thu-tu-chuong.js', import.meta.url), 'utf8');
   for (const c of ['cam-bien-ben', 'me-cung', 'doi-ho-bang', 'doi-gap-nem']) assert.ok(!goc.includes("'" + c + "'"), c);
-  assert.equal(TT.thuTu.indexOf('doi-ho-bang'), TT.thuTu.indexOf('che-nhen') + 1);
+  // 29/10 P0 mùa 3: che-nhen ở gói 5 mùa 3, doi-ho-bang (ngoài khuôn) sang đầu mùa 4: vẫn đứng sau che-nhen, không còn liền kề.
+  assert.ok(TT.thuTu.indexOf('doi-ho-bang') > TT.thuTu.indexOf('che-nhen'));
   assert.equal(TT.thuTu.indexOf('doi-gap-nem'), TT.thuTu.indexOf('che-may-nem') + 1);
   assert.ok(TT.dot2.includes('doi-ho-bang') && TT.dot2.includes('doi-gap-nem'));
 });
