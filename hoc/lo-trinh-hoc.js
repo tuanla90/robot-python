@@ -913,7 +913,7 @@
       chuong: [['bai-tu', []], ['che-bai-tu', []]] },
     { ma: 'nhay', ten: 'Nhảy', loai: 'bo-phan', hinh: 'che-nhen',
       // che-nhen (đường cong): sửa cú nhảy (.8), bò rồi nhảy (.5), sửa bò (.9) lên trước Đá lót đường (.4) và Hang động (.3); Nhện giao hàng (.6) sau Đường về (.7).
-      chuong: [['nhay', ['nhen.3', 'nhen.2', 'nhen.9', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]] },
+      chuong: [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]] },
     { ma: 'dao-cuc', ten: 'Đảo cực', loai: 'bo-phan',
       chuong: [['dao-cuc', ['nam-cham.3', 'nam-cham.2']], ['che-dao-cuc', ['che-nam-cham.6']]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',

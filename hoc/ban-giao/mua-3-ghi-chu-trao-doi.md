@@ -23,3 +23,10 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
 ## Câu hỏi
 1. Huy hiệu trùm mùa 3: mỗi chương một huy hiệu như mùa 1–2, hay chỉ trùm gói? Hiện trùm mới chưa có huy hiệu.
 2. Máy dò lời giải lách mùa 3 (kiem-lach-mua-3, như mùa 1–2): sẽ làm khi xong 10 gói.
+
+## Gói 3 Cảm biến từ (xong, commit c4ce9ba) và gói 5 Nhảy (xong)
+- Gói 3: 20 màn mới. Xe gắn CẢ cảm biến khoảng cách lẫn cảm biến từ ở hông (khay có front_clear / left_clear / right_clear và front_metal), tay nam châm cực N.
+  Hàm của em mới: seek_iron(), take_iron(), seek_safe() (and), face_iron(). kiem-lo-trinh PART_3 thêm part 'tu' (P1 tách part sau khi P0 viết danh sách).
+- Gói 5: thêm 4 màn (nhay.1 trình diễn, nhay.2 gầm rồi hố, nhay.3 hố sau góc, nhay.4 hai hố một gầm) xen giữa 6 màn có sẵn.
+- Còn MỘT chỗ nhảy đường cong ở chương che-nhen (đủ 10 màn CÓ SẴN): che-nhen.3 (12 nhịp) → che-nhen.7 (24 nhịp). Muốn mượt phải cất một màn có sẵn
+  và thêm một màn mới ở giữa. Câu hỏi: cho cất một màn che-nhen không (vd che-nhen.4 "Đá lót đường", 2 dòng)?

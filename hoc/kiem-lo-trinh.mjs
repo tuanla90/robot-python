@@ -390,7 +390,7 @@ const BANG_MUA_3 = [
   ['nam-cham', 'bo-phan', [['nam-cham', ['nam-cham.11', 'nam-cham.12'].concat(day('nam-cham', [1, 4, 7, 8, 14, 13, 5, 15]))], ['logic-nam-cham', ['logic-nam-cham.1', 'che-nam-cham.1', 'logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'che-nam-cham.8', 'logic-nam-cham.6', 'logic-nam-cham.7', 'logic-nam-cham.8']]]],
   ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]]],
   ['bai-tu', undefined, [['bai-tu', []], ['che-bai-tu', []]]],
-  ['nhay', 'bo-phan', [['nhay', day('nhen', [3, 2, 9, 5, 6, 10])], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
+  ['nhay', 'bo-phan', [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
   ['dao-cuc', 'bo-phan', [['dao-cuc', day('nam-cham', [3, 2])], ['che-dao-cuc', ['che-nam-cham.6']]]],
   ['doc-cuc', 'bo-phan', [['doc-cuc', day('nam-cham', [6, 10])], ['che-doc-cuc', day('che-nam-cham', [2, 7, 4, 5, 9, 3, 10])]]],
   ['doi-xich', 'thu-thach', [['doi-xich', day('doi-xich', [3, 9])], ['che-doi-xich', []]]],

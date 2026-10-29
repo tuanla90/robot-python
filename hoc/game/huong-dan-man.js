@@ -752,6 +752,9 @@
   H['che-cam-ung-tu.6'] = [buocTaoHam('seek_safe', 'Bấm Hàm mới để tạo seek_safe().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while front_clear() and not front_metal(): rồi move(). Bấm Chạy.'));
   H['che-cam-ung-tu.8'] = [buocTaoHam('face_iron', 'Bấm Hàm mới để tạo face_iron().', CHU_TAO)].concat(buocThuVeChay('Hai câu if lồng nhau quay xe về phía có sắt. Bấm Chạy.'));
 
+  // MÙA 3 gói 5: nhảy (nhay.1 trình diễn co chân chui gầm, duỗi chân bật qua hố)
+  H['nhay.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: crouch() co chân chui gầm, stand() ngay trước bước đi là bật qua hố.');
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn
