@@ -63,7 +63,7 @@ kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến'
   assert.equal(get('khoang-cach.7'), null, 'khoang-cach.7 đã cất khỏi lộ trình');
   assert.equal(get('khoang-cach.4'), null, 'khoang-cach.4 đã cất (HD1)');
   assert.equal(get('khoang-cach.9'), null, 'khoang-cach.9 đã cất (HD1)');
-  for (const ma of ['khoang-cach.1', 'khoang-cach.2', 'vong-lap.1', 'nut-de.1', 'tay-xoay.1', 'cam-bien-ben.1']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
+  for (const ma of ['khoang-cach.1', 'khoang-cach.2', 'vong-lap.1', 'nut-de.1', 'tay-xoay.1', 'cam-bien-ben.1', 'banh-lui.5']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
   assert.ok(get('cam-bien-ben.1').deBai.includes('left_clear'));
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'bien-the');
@@ -111,14 +111,15 @@ const BANG_MUA_1 = [
   ['tay-gap', [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9, 10]).concat('che-lap.5')]]],
   ['cam-bien', [['khoang-cach', day('khoang-cach', [1, 2, 3, 5, 6, 8, 10, 11, 12, 13])], ['che-cam-bien', day('che-cam-bien', [1, 2, 3, 7, 11, 12, 13, 14, 15, 16])]]],
   ['kho-hang', [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-tay', [1, 2, 3, 4, 6, 8, 10]).concat(day('che-xe', [1, 2, 3]))]]],
-  ['banh-lui', [['banh-lui', day('che-xe', [4, 5, 6, 7, 8, 9]).concat(day('banh-lui', [1, 2, 3, 4]))], ['che-banh-lui', ['che-xe.10'].concat(day('che-tay', [5, 7, 9]), day('che-lap', [7, 9]), day('che-banh-lui', [1, 2, 3, 4]))]]],
+  ['banh-lui', [['banh-lui', day('che-xe', [4, 5, 6, 7, 9]).concat(day('banh-lui', [1, 2, 3, 4, 5]))], ['che-banh-lui', ['che-xe.10'].concat(day('che-tay', [5, 7, 9]), day('che-lap', [7, 9]), day('che-banh-lui', [1, 2, 3, 4]))]]],
   ['tay-xoay', [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]]],
   ['me-cung', [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]]],
   ['hai-robot', [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', day('che-hai-robot', MUOI)]]],
   ['combo', [['combo', day('combo', MUOI)], ['che-combo', day('che-combo', [1, 2, 3, 4, 5, 6, 7, 8, 9]).concat('che-cam-bien.10')]]],
   ['robot', [['robot-hoan-thien', day('robot-hoan-thien', [1, 2, 3, 4, 5, 6, 7, 8, 11]).concat('cam-bien-ben.10')], ['trum-mua-1', day('trum-mua-1', MUOI)]]]
 ];
-const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10', 'khoang-cach.4', 'khoang-cach.9'];
+// HD3 (29/10): banh-lui.5 (màn trình diễn lệnh lùi) vào chương banh-lui, che-xe.8 cất.
+const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10', 'khoang-cach.4', 'khoang-cach.9', 'che-xe.8'];
 const BIEN_MUA_2 = ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
 // Mùa 2 (27/10): che-xich 3, 4, 5, 7, 10 (bậc thang + hàm có tham số) rời mùa 2, sang chương che-xich ở mùa 3 (ẩn); không màn nào cất thêm.
 const XICH_CU = ['che-xich.3', 'che-xich.4', 'che-xich.5', 'che-xich.7', 'che-xich.10'];

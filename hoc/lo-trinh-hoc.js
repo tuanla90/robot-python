@@ -357,7 +357,7 @@
   // gói 4 nut-de.1: cơ chế NÚT ĐÈ / THÙNG GIỮ CỬA (bấm Chạy thấy carry() đặt thùng lên M, cửa C mở); nut-de.2 phải tự đặt thùng lên nút (cửa đóng là cách duy nhất).
   // gói 6 tay-xoay.1: lệnh arm_left / arm_right (bấm Chạy thấy tay xoay sang hông nhặt vật rồi xoay về trước đặt); tay-xoay.2 mã mẫu sai bên, phải sửa arm_left → arm_right.
   // gói 7 cam-bien-ben.1 (đưa lên đầu chương, xem MUA_1): lệnh left_clear (bấm Chạy thấy xe tới tường, hỏi bên trái trống thì rẽ trái); che-cam-bien.4 kế tiếp chế to_gap() với right_clear.
-  // Gói 5 (bánh lùi) màn đầu là màn CHẾ HÀM che-xe.4 (back): xem báo cáo HD2. Gói 8 (hai robot): máy chấm đội chưa khoá theo chiChay.
+  // Gói 5 (bánh lùi): HD3 thêm màn trình diễn banh-lui.5 (man-banh-lui-them.js) đứng trước che-xe.4 (chế back()). Gói 8: hai-robot.1 (HD3, xem dưới).
   sua('cam-bien-ben.1', {
     ten: 'Lối bên trái', chiChay: true, chinhCoDinh: true,
     deBai: 'Cảm biến bên hỏi ô cạnh xe theo hướng xe đang quay: left_clear() là True khi ô bên trái trống. Xe đi tới tường; nếu bên trái trống thì rẽ trái và đi tiếp tới cờ. Bấm Chạy xem xe rẽ đúng lối.',
@@ -424,7 +424,9 @@
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 90, hinh: 'che-tay',
       chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
     { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 120, hinh: 'che-xe',
-      chuong: [['banh-lui', day('che-xe', [4, 5, 6]).concat(['banh-lui.1', 'banh-lui.2', 'che-xe.7', 'banh-lui.3', 'che-xe.8', 'che-xe.9', 'banh-lui.4'])],
+      // HD3 (29/10): banh-lui.5 (trình diễn lệnh lùi, chiChay) đứng đầu chương, trước che-xe.4 chế back(); che-xe.8 (sửa nhịp hai bánh, ý của gói 1) cất;
+      // che-xe.9 (sân 21 ô) lên trước banh-lui.3 (10 ô) để cỡ sân không nhảy vọt (thứ tự màn cũ giữ nguyên: che-xe.7 rồi che-xe.9).
+      chuong: [['banh-lui', ['banh-lui.5'].concat(day('che-xe', [4, 5, 6]), ['banh-lui.1', 'banh-lui.2', 'che-xe.7', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'])],
         ['che-banh-lui', ['che-tay.5', 'che-tay.7', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-lap.9', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-xe.10']]] },
     { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 150,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
@@ -446,7 +448,9 @@
   var CAT = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10',
     'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10',
     // HD1 (29/10): kc.4 trùng ý kc.3, kc.9 là bản một sân của trùm kc.10; nhường chỗ cho hai màn ép khoang-cach.12 / .13
-    'khoang-cach.4', 'khoang-cach.9'];
+    'khoang-cach.4', 'khoang-cach.9',
+    // HD3 (29/10): che-xe.8 "Hai bánh cùng nhịp" (sửa lệnh bánh ở hai nhịp: ý của gói 1, không dùng lệnh lùi) nhường chỗ cho màn trình diễn banh-lui.5
+    'che-xe.8'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
@@ -1177,7 +1181,7 @@
     delete m.daoChieu; delete m.canhBao; delete m.khoaHamMan;
     return m;
   }
-  thay('che-xe.8', {
+  if (get('che-xe.8')) thay('che-xe.8', {     // HD3: che-xe.8 đã cất (CAT) nên không còn trong lộ trình; giữ bản viết lại cho lần đưa về
     ten: 'Hai bánh cùng nhịp', chinhCoDinh: true, hamCuaEmCan: ['move'],
     deBai: 'Hàm go_one() của màn ra lệnh cho hai bánh ở hai nhịp khác nhau nên xe chỉ lắc qua lắc lại. Sửa hàm để xe tiến thẳng đúng một ô, rồi đưa xe tới cờ.',
     veMaMau: 'Chương trình chính bị khóa, gọi go_one() ba lần. Thử go_one() trong sân thử của Xưởng hàm trước để thấy xe làm gì.',

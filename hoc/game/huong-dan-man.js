@@ -211,6 +211,11 @@
     buocTaoHam('dodge_right', 'Chế hàm trong Xưởng: bấm Hàm mới.', CHU_TAO),
     buocThanHam('dodge_right', ['.p-pal .pal'], 'Ghép các khối thành thân hàm để xe sang ô bên phải, mặt vẫn quay lên như bóng mờ.', 1, 'tren')
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
+  // HD3 (29/10): banh-lui.5 là màn trình diễn lệnh lùi (chiChay), đứng ngay trước che-xe.4 (chế back()).
+  H['banh-lui.5'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: hai bánh cùng quay lùi, xe lùi.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'left_back() và right_back() trong cùng một nhịp: xe lùi một ô. Màn sau em gói chúng thành back().', xong: 'bam', han: 9000, rong: 170 }
+  ];
   H['che-xe.4'] = [
     buocTaoHam('back', 'Chế hàm back() trong Xưởng: bấm Hàm mới.', CHU_TAO),
     {

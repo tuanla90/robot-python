@@ -42,7 +42,8 @@ function kiem(ten, fn) {
 
 const MOI = ['banh-lui.1', 'banh-lui.2', 'banh-lui.3', 'banh-lui.4', 'che-banh-lui.1', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4'];
 const THU_TU = {
-  'banh-lui': ['che-xe.4', 'che-xe.5', 'che-xe.6', 'banh-lui.1', 'banh-lui.2', 'che-xe.7', 'banh-lui.3', 'che-xe.8', 'che-xe.9', 'banh-lui.4'],
+  // HD3 (29/10): banh-lui.5 (màn trình diễn lệnh lùi, chiChay) đứng đầu; che-xe.8 cất (CAT, ngân hàng giữ mã); che-xe.9 lên trước banh-lui.3 (cỡ sân 21 → 10, không nhảy 10 → 21).
+  'banh-lui': ['banh-lui.5', 'che-xe.4', 'che-xe.5', 'che-xe.6', 'banh-lui.1', 'banh-lui.2', 'che-xe.7', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'],
   'che-banh-lui': ['che-tay.5', 'che-tay.7', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-lap.9', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-xe.10']
 };
 /** Màn mà đường khối chuẩn ngắn hơn ngưỡng: lý do (kiểm thêm bằng đếm cứng ở mục 5). */
@@ -51,6 +52,8 @@ const NHANH_HON = {
   'che-banh-lui.3': 'rẽ ngay ở lối rẽ nhanh hơn đi tới tường rồi lùi một ô, nhưng phải đếm trước số bước; hàm gọi ở hai khúc dài khác nhau nên đếm cứng không thắng'
 };
 const BU = { dong: 3, nhip: 4, o: 6 };
+/** HD3: màn trình diễn (chiChay) của gói, kiểm riêng ở mục 6 (không có lời giải khác / lời sai, mã mẫu khoá thắng sẵn). */
+const TRINH_DIEN = 'banh-lui.5', CAT_HD3 = 'che-xe.8';
 const soSan = (m) => (Array.isArray(m.san[0]) ? m.san.length : 1);
 const dsSan = (m) => (Array.isArray(m.san[0]) ? m.san : [m.san]);
 const theoSan = (v, i) => (Array.isArray(v) ? v[i] : v);
@@ -356,7 +359,7 @@ kiem('đường cong hai chương: dòng / nhịp màn n ≤ max(1,5 × màn n�
       const tran = (a, b, bu) => a <= Math.max(1.5 * b, b + bu);
       assert.ok(tran(soDong(m), soDong(t), BU.dong), m.ma + ' dòng ' + soDong(m) + ' so với ' + t.ma + ' ' + soDong(t));
       assert.ok(tran(m.sao.nhip, t.sao.nhip, BU.nhip), m.ma + ' nhịp ' + m.sao.nhip + ' so với ' + t.ma + ' ' + t.sao.nhip);
-      if (MOI.includes(m.ma) || MOI.includes(t.ma)) assert.ok(tran(coSan(m), coSan(t), BU.o), m.ma + ' cỡ sân ' + coSan(m) + ' so với ' + t.ma + ' ' + coSan(t));
+      if ([...MOI, TRINH_DIEN].includes(m.ma) || [...MOI, TRINH_DIEN].includes(t.ma)) assert.ok(tran(coSan(m), coSan(t), BU.o), m.ma + ' cỡ sân ' + coSan(m) + ' so với ' + t.ma + ' ' + coSan(t));
     }
   }
 });
@@ -379,6 +382,45 @@ kiem('recall: ít nhất 4 trong 8 màn mới dùng thứ của gói trước (c
   assert.ok(co.length >= 4, 'chỉ ' + co.length + ' màn mới recall gói trước');
 });
 
+/* ------------------------------------------------------------------ 6. màn trình diễn lệnh lùi (HD3) */
+kiem(TRINH_DIEN + ': màn trình diễn đứng đầu chương banh-lui: chiChay + chinhCoDinh, chỉ lệnh gốc lùi, không cờ đâm-là-thua, không hàm của em', () => {
+  const m = get(TRINH_DIEN);
+  assert.ok(m && m.chuong === 'banh-lui' && m.so === 1 && m.hang === 'lam-quen', 'banh-lui.5 phải là màn 1 chương banh-lui');
+  assert.ok(m.chiChay === true && m.chinhCoDinh === true, 'thiếu chiChay / chinhCoDinh');
+  assert.ok(!m.damLaThua, 'màn trình diễn không gắn cờ damLaThua');
+  assert.deepEqual(m.hamCuaEmCan, []);
+  assert.deepEqual(m.taoHam || [], []);
+  assert.deepEqual((m.maMau.hamCuaMan || []).length, 0);
+  assert.deepEqual(m.maMau.chinh, m.loiGiai.chinh, 'mã mẫu khoá phải là lời giải');
+  const goi = loiGoi(m.maMau.chinh);
+  assert.deepEqual([...goi].sort(), ['left_back', 'right_back', 'wait'], 'chỉ dùng lệnh gốc left_back / right_back / wait: ' + [...goi]);
+  for (const h of goi) assert.ok(m.hamGoc.includes(h), 'khay thiếu ' + h);
+  assert.equal(m.mucTieu, 'bong-mo');
+  assert.ok(!dsSan(m)[0].join('').includes('F'), 'màn xe mờ không có cờ');
+  // ngay sau là màn chế back(): thân back() đúng là một nhịp vừa xem
+  const sau = M.danhSach.find((x) => x.chuong === 'banh-lui' && x.so === 2);
+  assert.equal(sau.ma, 'che-xe.4'); assert.deepEqual(sau.taoHam, ['back']);
+});
+kiem(TRINH_DIEN + ': bấm Chạy (bài gửi lên bất kỳ) là thắng 3 sao, đúng sao.o / sao.nhip, không chẩn đoán; xe tới xe mờ', () => {
+  const m = get(TRINH_DIEN);
+  for (const chinh of [m.maMau.chinh, [], ['move()', 'move()'], ['left_back()', 'wait()']]) {
+    const r = cham(m, { chinh });
+    assert.ok(r.thang && r.sao === 3, 'bài ' + JSON.stringify(chinh) + ' không thắng 3 sao: ' + JSON.stringify(r.chanDoan));
+    assert.equal(r.soO, m.sao.o); assert.equal(r.soNhip, m.sao.nhip);
+    assert.deepEqual(r.chanDoan.map((c) => c.ma), []);
+  }
+  // không khoá thì chương trình khác phải thua: chứng minh màn thắng là nhờ chương trình khoá, không phải sân dễ
+  const moKhoa = Object.assign(clone(m), { chiChay: false, chinhCoDinh: false });
+  assert.equal(cham(moKhoa, { chinh: ['move()'] }).thang, false, 'mở khoá mà move() vẫn thắng: sân không đòi lùi');
+  assert.equal(cham(moKhoa, { chinh: ['left_back()', 'wait()', 'left_back()', 'wait()'] }).thang, false, 'một bánh lùi cũng tới xe mờ');
+});
+kiem(CAT_HD3 + ': cất khỏi lộ trình (M.manCat), ngân hàng còn mã để sao đã lưu không mất', () => {
+  assert.ok((M.manCat || []).includes(CAT_HD3), 'che-xe.8 không có trong manCat');
+  assert.ok(!M.danhSach.some((m) => m.ma === CAT_HD3), 'che-xe.8 còn trong lộ trình');
+  const nh = fs.readFileSync(new URL('./man-che-xe.js', import.meta.url), 'utf8');      // ManHoc đã nạp là bản lộ trình (đã cất): đọc nguồn ngân hàng
+  assert.ok(/so: 8, ten: 'Đấu dây ngược'/.test(nh), 'ngân hàng man-che-xe.js mất màn số 8 (mã che-xe.8)');
+});
+
 console.log('chương | số | mã | tên | dòng | nhịp | ô | cỡ sân | khối chuẩn | BFS gộp | recall gói trước');
 for (const c of goi.chuong) {
   for (const m of M.danhSach.filter((x) => x.chuong === c)) {
@@ -387,5 +429,5 @@ for (const c of goi.chuong) {
   }
 }
 for (const ma of MOI) if (bang[ma] && bang[ma].demCung) console.log('đếm cứng ' + ma + ': ' + bang[ma].demCung);
-console.log('ĐẠT ' + dat + ' · HỎNG ' + hong + ' kiểm tra 8 màn mới gói Bánh lùi.');
+console.log('ĐẠT ' + dat + ' · HỎNG ' + hong + ' kiểm tra 8 màn mới và màn trình diễn banh-lui.5 gói Bánh lùi.');
 if (hong) process.exitCode = 1;

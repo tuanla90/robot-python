@@ -81,10 +81,6 @@
     "o": 38,
     "nhip": 32
   },
-  "che-xe.8": {
-    "o": 6,
-    "nhip": 3
-  },
   "tay-xoay.1": {
     "o": 10,
     "nhip": 3
@@ -293,6 +289,26 @@
     "o": 11,
     "nhip": 4
   },
+  "che-nhen.8": {
+    "o": 14,
+    "nhip": 6
+  },
+  "nam-cham.6": {
+    "o": 16,
+    "nhip": 6
+  },
+  "nam-cham.10": {
+    "o": 23,
+    "nhip": 31
+  },
+  "che-nam-cham.7": {
+    "o": 11,
+    "nhip": 3
+  },
+  "che-nam-cham.5": {
+    "o": 18,
+    "nhip": 4
+  },
   "ban-xoay.1": {
     "o": 5,
     "nhip": 5
@@ -372,10 +388,6 @@
   "che-ban-xoay.10": {
     "o": 23,
     "nhip": 48
-  },
-  "che-nhen.8": {
-    "o": 14,
-    "nhip": 6
   },
   "che-list.4": {
     "o": 21,
@@ -468,22 +480,6 @@
   "rap-nao.9": {
     "o": 14,
     "nhip": 7
-  },
-  "nam-cham.6": {
-    "o": 16,
-    "nhip": 6
-  },
-  "che-nam-cham.5": {
-    "o": 18,
-    "nhip": 4
-  },
-  "che-nam-cham.7": {
-    "o": 11,
-    "nhip": 3
-  },
-  "nam-cham.10": {
-    "o": 23,
-    "nhip": 31
   },
   "may-nem.6": {
     "o": 6,
