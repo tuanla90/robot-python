@@ -1,8 +1,8 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
-/* ve-vector-may.js — Ô MÁY vector có TRẠNG THÁI (gói V2): băng chuyền ^ > v <, nút bắn N, nút đè M, cửa C / c (cả cửa nhịp), bàn xoay @ %, cổng dịch chuyển 1 / 2.
+/* ve-vector-may.js — Ô MÁY vector có TRẠNG THÁI (gói V2): băng chuyền ^ > v <, van hơi N (trước là nút bắn), nút đè M, cửa C / c (cả cửa nhịp), bàn xoay @ %, cổng dịch chuyển 1 / 2.
    Hệ 100 × 100 một ô; trạng thái là tham số s (bộ đệm VeVector theo JSON của s), nên hoạt cảnh cũ (băng chạy, cửa trượt, đèn nhịp, bàn xoay) vẽ lại
    theo hệ 100 qua dangKy: san-ve.js chỉ tính trạng thái (pha theo đồng hồ, độ mở cửa lượng tử hoá) rồi lấy canvas đệm đúng cỡ.
-   Còn giữ lệnh trực tiếp trong san-ve.js (theo pixel sân, phép phóng sv của chế độ vector làm nét): quầng nóng của nút bắn bật (veNong), lóe trắng băng
+   Còn giữ lệnh trực tiếp trong san-ve.js (theo pixel sân, phép phóng sv của chế độ vector làm nét): quầng nóng + làn hơi của van hơi mở (veNong), lóe trắng băng
    vừa tắt, khung đỏ / tô đỏ của cửa kẹt, độ rung của cửa. Mỗi hình khai cacTrangThai (mẫu cho máy kiểm và trang xem); phu: true = vẽ đè lên sàn. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
@@ -42,22 +42,30 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.restore();
   } });
 
-  /* NÚT BẮN (N, nằm trên tường): khối tường lab + tấm đế tối có nút tròn. Tắt: nút đỏ nổi, đèn xám; bật: nút xanh lún xuống, quầng xanh, đèn vàng.
-     s.loe: vừa bị bóng trúng → tấm loé trắng. (Nút bật còn NÓNG: quầng cam thở do san-ve.js veNong vẽ đè.) */
-  V.dangKy({ loai: 'o', ma: 'nut-ban', ten: 'Nút bắn', ky: ['N'], cacTrangThai: [{}, { bat: true }, { loe: true }, { bat: true, loe: true }], ve: function (g, s, H) {
+  /* VAN HƠI (N, mã nội bộ 'nut-ban', nằm trên tường; 29/10 user chốt: nút bắn là VAN HƠI của nhà máy chạy bằng hơi nước nóng): khối tường lab, ống hơi chạy ngang
+     sau mặt bích tròn bốn bu lông, BÁNH VAN tay quay ba nan có CÁNH HỨNG NƯỚC vàng ở đầu một nan (tia nước của vòi phun đập vào cánh làm van quay nửa vòng).
+     Đóng: bánh thép xanh nguội, cánh hứng ở trên. Mở (s.bat): bánh cam nóng, quầng cam quanh mặt bích, cánh hứng xuống dưới (quay nửa vòng).
+     s.goc (0..1, tuỳ chọn): góc quay của bánh tính theo nửa vòng (0 đóng, 1 mở) cho hoạt cảnh quay khi đổi (san-ve.js lượng tử hoá 1/8); không có thì theo s.bat.
+     s.loe: vừa bị tia nước trúng → mặt bích loé trắng. (Van mở còn NÓNG: quầng cam thở + làn hơi trắng do san-ve.js veNong vẽ đè.) */
+  V.dangKy({ loai: 'o', ma: 'nut-ban', ten: 'Van hơi', ky: ['N'], cacTrangThai: [{}, { bat: true }, { loe: true }, { bat: true, loe: true }, { goc: 0.5 }, { bat: true, goc: 0.25 }], ve: function (g, s, H) {
+    var mo = !!s.bat, k = typeof s.goc === 'number' ? Math.max(0, Math.min(1, s.goc)) : (mo ? 1 : 0), a0 = -Math.PI / 2 + k * Math.PI, i, a;
+    var vanh = mo ? BM.vecVanNong : BM.vecVanNguoi, cx = 50, cy = 50;
     V.lay('o', 'tuong').ve(g, {}, H);
-    if (s.bat) { H.bo(g, 17, 15, 66, 66, 13); H.vien(g, BM.vecXanhLaSang, 4); }
-    H.bo(g, 22, 20, 56, 56, 10); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 3);
-    if (s.bat) {
-      H.tron(g, 50, 50, 20); H.vien(g, BM.vecXanhLaSang, 3);
-      H.tron(g, 50, 50, 14); H.to(g, BM.vecXanhLa); H.vien(g, BM.vecVien, 3);
-      H.tron(g, 46, 46, 4); H.to(g, BM.vecXanhLaSang);
-    } else {
-      H.tron(g, 50, 47, 16); H.to(g, BM.vecDo); H.vien(g, BM.vecVien, 3);
-      H.tron(g, 44, 41, 5); H.to(g, BM.vecDoSang);
-    }
-    H.bo(g, 40, 67, 20, 5, 2.5); H.to(g, s.bat ? BM.vecVang : BM.vecBacToi);
-    if (s.loe) { H.bo(g, 22, 20, 56, 56, 10); g.globalAlpha = 0.75; H.to(g, BM.vecVo); g.globalAlpha = 1; }
+    H.bo(g, 2, 41, 96, 18, 3); g.fillStyle = H.gradDoc(g, 0, 41, 0, 59, [[0, BM.vecThepSang], [1, BM.vecThep]]); g.fill(); H.vien(g, BM.vecVien, 2.5);   // ống hơi ngang trong tường
+    [10, 90].forEach(function (x) { H.bo(g, x - 3.5, 38, 7, 24, 2); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2); });                                // khớp nối ống hai bên
+    if (mo) { H.tron(g, cx, cy, 37); H.vien(g, BM.vecVanNongSang, 5); }
+    H.tron(g, cx, cy, 31); g.fillStyle = H.gradDoc(g, 0, 19, 0, 81, [[0, BM.vecSat], [1, BM.vecSatToi]]); g.fill(); H.vien(g, BM.vecVien, 3);                // mặt bích
+    for (i = 0; i < 4; i++) { a = Math.PI / 4 + i * Math.PI / 2; H.tron(g, cx + 26 * Math.cos(a), cy + 26 * Math.sin(a), 2.6); H.to(g, BM.vecDinh); H.vien(g, BM.vecDinhVien, 1.2); }
+    H.tron(g, cx, cy, 21); H.vien(g, BM.vecVien, 9.5); H.vien(g, vanh, 5.5);                                                                     // vành bánh van
+    g.beginPath(); for (i = 0; i < 3; i++) { a = a0 + i * Math.PI * 2 / 3; g.moveTo(cx, cy); g.lineTo(cx + 21 * Math.cos(a), cy + 21 * Math.sin(a)); }
+    H.vien(g, BM.vecVien, 7); H.vien(g, mo ? BM.vecCamDam : BM.vecVanNguoiToi, 3.5);                                                             // ba nan
+    g.save(); g.translate(cx + 19 * Math.cos(a0), cy + 19 * Math.sin(a0)); g.rotate(a0 + Math.PI / 2);                                            // cánh hứng nước (chén vàng) ở đầu nan 0, lòng chén quay ra ngoài
+    H.duong(g, 'M-12 0 C-12 -18 12 -18 12 0 Z'); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 2.5);
+    H.duong(g, 'M-6.5 -1.5 C-6.5 -10 6.5 -10 6.5 -1.5 Z'); H.to(g, BM.vecVangToi);
+    g.restore();
+    H.tron(g, cx, cy, 7.5); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 2);                                                                        // trục
+    H.tron(g, cx - 2.2, cy - 2.2, 2.2); H.to(g, mo ? BM.vecVanNongSang : BM.vecBacSang);
+    if (s.loe) { H.tron(g, cx, cy, 33); g.globalAlpha = 0.75; H.to(g, BM.vecVo); g.globalAlpha = 1; }
   } });
 
   /* NÚT ĐÈ GIỮ (M, vẽ đè lên sàn): như mẫu vat-nut — khung trắng, đế tối, hai vòng cyan, bốn chấm góc. s.de: đang có vật / xe đè: mặt lún xuống (lệch 2), vòng xanh lá. */

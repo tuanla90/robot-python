@@ -98,7 +98,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ---------------------------------------------------------------- PHIM MÙA 2 (28/10, phim-mua-2.js): hình cơ chế mới của mùa 2, cùng cách các hàm trên
      (trả canvas vector cỡ CSS, hay null khi không ở vector → người gọi rơi về pixel). Chỉ THÊM hàm, không đổi hàm nào ở trên.
        PhimVector.bang(s, huong, pha)   ô băng chuyền (VeVector.o('bang')) trên sàn, cạnh 14·s; huong 0 lên · 1 phải · 2 xuống · 3 trái; pha 0..5 (vạch chạy)
-       PhimVector.nutBan(bat, s)        ô nút bắn (VeVector.o('nut-ban', { bat })) trên sàn; bat = true thêm quầng nóng (VeVector.HU.nong, luật warm())
+       PhimVector.nutBan(bat, s)        ô van hơi (nút bắn N, VeVector.o('nut-ban', { bat })) trên sàn; bat = true (van mở) thêm quầng nóng (VeVector.HU.nong, luật warm()) và làn hơi (HU.hoiVan)
        PhimVector.thungNang(s)          thùng nặng (VeVector.vat('thung-nang')) đầy ô 14·s, không có sàn dưới (đặt chồng lên ô sàn)
        PhimVector.bong(s)               quả bóng hơi (VeVector.vat('bong')) cạnh 6·s
        PhimVector.nong(s, now)          riêng quầng nóng + gợn nhiệt của một ô cạnh 14·s (đặt chồng lên robot / nút đang nóng) */
@@ -114,7 +114,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (!bat()) return null; var c = 14 * s;
     return the(c, c, function (g) {
       dan(g, V.o('san', px(c), {}), 0, 0, c); dan(g, V.o('nut-ban', px(c), bat_ ? { bat: true } : {}), 0, 0, c);
-      if (bat_ && V.HU && V.HU.nong) { g.save(); g.scale(c / 14, c / 14); V.HU.nong(g, 0, 0, 0); g.restore(); }
+      if (bat_ && V.HU && V.HU.nong) { g.save(); g.scale(c / 14, c / 14); V.HU.nong(g, 0, 0, 0); if (V.HU.hoiVan) V.HU.hoiVan(g, 0, 0, 0); g.restore(); }   // 29/10: van mở thêm làn hơi trắng
     });
   }
   function thungNang(s) { if (!bat()) return null; var c = 14 * s; return the(c, c, function (g) { dan(g, V.vat('thung-nang', px(c), {}), 0, 0, c); }); }

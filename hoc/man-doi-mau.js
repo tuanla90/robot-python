@@ -203,7 +203,7 @@
   var DS = [
     man({
       so: 1, ten: 'Hai làn, một cửa', khoa: 1,
-      deBai: 'Hai robot ở hai làn riêng. Robot vòi phun R2 đã có chương trình: bắn ra sau trúng nút, cửa trên làn của R1 mở. Viết chương trình cho robot màu R1: đi qua cửa, nhìn màu hộp rồi đặt vào ô đích cùng màu.',
+      deBai: 'Hai robot ở hai làn riêng. Robot vòi phun R2 đã có chương trình: bắn ra sau trúng van, cửa trên làn của R1 mở. Viết chương trình cho robot màu R1: đi qua cửa, nhìn màu hộp rồi đặt vào ô đích cùng màu.',
       veMaMau: 'Chương trình R2 bị khóa, bấm thẻ R2 để xem. Viết chương trình R1.',
       san: SAN_1, mau: lop(SAN_1, { '4,1': 'b', '4,3': 'r' }), vatMau: lop(SAN_1, { '5,2': 'r' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 5, y: 5, huong: 1 }],
@@ -213,18 +213,18 @@
     }),
     man({
       so: 2, ten: 'Kho màu khóa cửa', khoa: 0,
-      deBai: 'Robot màu R1 tự động: đi tới cửa kho, chờ cửa mở rồi vào phân loại hộp. Nút mở cửa ở cuối hành lang của R2. Viết chương trình cho R2 tới đúng chỗ bắn trúng nút.',
+      deBai: 'Robot màu R1 tự động: đi tới cửa kho, chờ cửa mở rồi vào phân loại hộp. Van mở cửa ở cuối hành lang của R2. Viết chương trình cho R2 tới đúng chỗ bắn trúng van.',
       veMaMau: 'Chương trình R1 bị khóa, bấm thẻ R1 để xem. Viết chương trình R2.',
       san: SAN_2, mau: lop(SAN_2, { '6,1': 'b', '6,3': 'r' }), vatMau: lop(SAN_2, { '7,2': 'b' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 1, y: 7, huong: 0 }],
       maMau: B(nhieu(['go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']), []),
       loiGiai: B(nhieu(['go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']), ['forward(2)', 'turn_right()', 'shoot()', 'wait()']),
       hamCuaEmCan: ['go_wall', 'sort_color', 'forward', 'turn_right'],
-      goiY: ['Tia nước bay thẳng theo hướng mũi xe: R2 phải đứng cùng hàng với nút.', 'forward(2), turn_right(), rồi bắn.']
+      goiY: ['Tia nước bay thẳng theo hướng mũi xe: R2 phải đứng cùng hàng với van.', 'forward(2), turn_right(), rồi bắn.']
     }),
     man({
       so: 3, ten: 'Dọn đường bắn',
-      deBai: 'Hộp đỏ nằm ngay trước mũi R2, chắn đường tia nước lên nút mở kho. R1 nhặt hộp đó đặt vào đích cùng màu; R2 chờ tới khi trước mặt trống rồi mới bắn. Cửa mở thì R1 vào kho phân loại hộp thứ hai.',
+      deBai: 'Hộp đỏ nằm ngay trước mũi R2, chắn đường tia nước lên van mở kho. R1 nhặt hộp đó đặt vào đích cùng màu; R2 chờ tới khi trước mặt trống rồi mới bắn. Cửa mở thì R1 vào kho phân loại hộp thứ hai.',
       veMaMau: 'Chạy thử: tia nước của R2 trúng hộp. Thêm vòng chờ cho R2 và viết tiếp cho R1.',
       san: SAN_3, mau: lop(SAN_3, { '2,3': 'b', '2,5': 'r', '6,3': 'b', '6,5': 'r' }), vatMau: lop(SAN_3, { '3,4': 'r', '7,4': 'b' }),
       bd: [{ x: 1, y: 4, huong: 1 }, { x: 3, y: 5, huong: 0 }],
@@ -235,7 +235,7 @@
     }),
     man({
       so: 4, ten: 'Đứng bên nào', dan: 1, noi: NOI_4,
-      deBai: 'Mỗi màu một phòng: đích đỏ sau cửa trái, đích xanh sau cửa phải. R1 nhìn màu hộp rồi tới đứng chờ trước cửa cùng màu, ngay bên trái hay bên phải R2. R2 không biết màu, chỉ có một lượt phun: hỏi bên nào có đồng đội rồi bắn nút trước mặt (cửa trái) hay nút sau lưng (cửa phải).',
+      deBai: 'Mỗi màu một phòng: đích đỏ sau cửa trái, đích xanh sau cửa phải. R1 nhìn màu hộp rồi tới đứng chờ trước cửa cùng màu, ngay bên trái hay bên phải R2. R2 không biết màu, chỉ có một lượt phun: hỏi bên nào có đồng đội rồi bắn van trước mặt (cửa trái) hay van sau lưng (cửa phải).',
       veMaMau: 'R1 đã tới chỗ chờ. Viết tiếp cho R1 và viết chương trình R2.',
       san: SAN_4, mau: lop(SAN_4, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_4, { '4,4': 'r' }),
       bd: [{ x: 4, y: 5, huong: 0 }, { x: 3, y: 3, huong: 0 }],
@@ -245,7 +245,7 @@
     }),
     man({
       so: 5, ten: 'Phòng ở phía dưới', dan: 1, noi: NOI_5,
-      deBai: 'Sân lộn ngược: phòng màu ở dưới, hai robot đều quay mặt xuống. Trái phải tính theo mũi robot: R1 rẽ sang phía tây là dodge_right(), và R1 đứng ở phía tây thì là bên PHẢI của R2. Nút trước mặt R2 mở cửa đỏ, nút sau lưng mở cửa xanh.',
+      deBai: 'Sân lộn ngược: phòng màu ở dưới, hai robot đều quay mặt xuống. Trái phải tính theo mũi robot: R1 rẽ sang phía tây là dodge_right(), và R1 đứng ở phía tây thì là bên PHẢI của R2. Van trước mặt R2 mở cửa đỏ, van sau lưng mở cửa xanh.',
       veMaMau: 'R1 đã nhặt hộp. Viết tiếp cho R1 và viết chương trình R2.',
       san: SAN_5, mau: lop(SAN_5, { '2,5': 'r', '4,5': 'b' }), vatMau: lop(SAN_5, { '4,2': 'r' }),
       bd: [{ x: 4, y: 1, huong: 2 }, { x: 3, y: 3, huong: 2 }],
@@ -255,7 +255,7 @@
     }),
     man({
       so: 6, ten: 'Cổng nhịp', khoa: 0, cuaNhip: [{ x: 3, y: 2, mo: 2, dong: 4, pha: 4 }],
-      deBai: 'R1 tự động đi qua một cổng tự đóng mở theo nhịp, rồi tới đứng chờ trước cửa kho, ngay phía trên R2. Không ai biết trước R1 tới lúc nào. R2 chờ bằng cảm biến tới khi thấy R1, rồi mới bắn nút mở kho: mở sớm thì R1 chạy tuột vào kho.',
+      deBai: 'R1 tự động đi qua một cổng tự đóng mở theo nhịp, rồi tới đứng chờ trước cửa kho, ngay phía trên R2. Không ai biết trước R1 tới lúc nào. R2 chờ bằng cảm biến tới khi thấy R1, rồi mới bắn van mở kho: mở sớm thì R1 chạy tuột vào kho.',
       veMaMau: 'Chương trình R1 bị khóa, bấm thẻ R1 để xem. Viết chương trình R2.',
       san: SAN_6, mau: lop(SAN_6, { '8,1': 'b' }), vatMau: lop(SAN_6, { '9,2': 'b' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 6, y: 3, huong: 1 }],
@@ -285,8 +285,8 @@
       goiY: ['Camera nhìn ô trước mặt: hộp đã nhặt lên thì ô đó trống, color() trả "none".', 'Đổi chỗ: c = color() trước, pick() sau.']
     }),
     man({
-      so: 9, ten: 'Ba cổng một nút', noi: NOI_9,
-      deBai: 'Một nút đổi cả ba cổng: cổng đóng thì mở, cổng mở thì đóng. R1 phải qua cả ba cổng rồi đặt hộp vào đích. Mỗi lần R1 tới trước một cổng, R2 đứng ngay dưới R1 và bắn đúng lúc đó; bắn sai lúc thì cổng trước mặt R1 lại đóng. Viết thẳng thì không đủ ô.',
+      so: 9, ten: 'Ba cổng một van', noi: NOI_9,
+      deBai: 'Một van đổi cả ba cổng: cổng đóng thì mở, cổng mở thì đóng. R1 phải qua cả ba cổng rồi đặt hộp vào đích. Mỗi lần R1 tới trước một cổng, R2 đứng ngay dưới R1 và bắn đúng lúc đó; bắn sai lúc thì cổng trước mặt R1 lại đóng. Viết thẳng thì không đủ ô.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: SAN_9, mau: lop(SAN_9, { '8,1': 'b' }), vatMau: lop(SAN_9, { '9,2': 'b' }),
       bd: [{ x: 1, y: 2, huong: 1 }, { x: 2, y: 3, huong: 1 }],
@@ -298,7 +298,7 @@
     }),
     man({
       so: 10, ten: 'Ca phân loại', khoa: 0, dan: 1, noi: [noi10(6), noi10(8), noi10(7)],
-      deBai: 'Ba sân, R1 tự động phân loại một hộp mỗi sân. Màu hộp đổi theo sân, R2 xuất phát xa gần khác nhau. R2 đi lên tới chốt giữa hai nút, chờ R1 báo bằng chỗ đứng, rồi bắn đúng cửa. Một chương trình R2 cho cả ba sân.',
+      deBai: 'Ba sân, R1 tự động phân loại một hộp mỗi sân. Màu hộp đổi theo sân, R2 xuất phát xa gần khác nhau. R2 đi lên tới chốt giữa hai van, chờ R1 báo bằng chỗ đứng, rồi bắn đúng cửa. Một chương trình R2 cho cả ba sân.',
       veMaMau: 'Chương trình R1 bị khóa. Viết chương trình R2.',
       san: SAN_10,
       mau: SAN_10.map(function (s) { return lop(s, { '2,1': 'r', '4,1': 'b' }); }),
@@ -306,7 +306,7 @@
       bd: [[{ x: 4, y: 5, huong: 0 }, { x: 4, y: 5, huong: 0 }, { x: 4, y: 5, huong: 0 }], [{ x: 3, y: 5, huong: 0 }, { x: 3, y: 7, huong: 0 }, { x: 3, y: 6, huong: 0 }]],
       maMau: B(R1_PHONG, []), loiGiai: B(R1_PHONG, nhieu(['go_wall()'], CHO_BAO, TRA_LOI)),
       hamCuaEmCan: ['pick', 'drop', 'move', 'dodge_left', 'go_wall'],
-      goiY: ['go_wall() đưa R2 lên tới chốt: trước mặt là nút nên dừng.', 'Không đếm nhịp được: mỗi sân R1 tới lúc khác.'],
+      goiY: ['go_wall() đưa R2 lên tới chốt: trước mặt là van nên dừng.', 'Không đếm nhịp được: mỗi sân R1 tới lúc khác.'],
       huyHieu: { ma: CHUONG, ten: 'Huy hiệu Đội màu và vòi phun' }
     }),
 
@@ -314,7 +314,7 @@
     man({
       chuong: CHE, so: 1, ten: 'Canh hai bên', khoa: 0, taoHam: ['watch_side'],
       deBai: 'R1 tự động đi vòng tới đứng chờ cạnh R2 rồi vào kho phân loại hộp. R2 không biết R1 sẽ đứng bên nào. Chế lệnh watch_side(): R2 đứng chờ cho tới khi có đồng đội sát bên trái hoặc bên phải.',
-      veMaMau: 'R2 mới có dòng gọi watch_side() mà hàm chưa có. Mở Xưởng hàm tạo watch_side(), rồi viết tiếp cho R2 bắn nút.',
+      veMaMau: 'R2 mới có dòng gọi watch_side() mà hàm chưa có. Mở Xưởng hàm tạo watch_side(), rồi viết tiếp cho R2 bắn van.',
       san: SAN_C1, mau: lop(SAN_C1, { '3,6': 'r', '5,6': 'b' }), vatMau: lop(SAN_C1, { '4,7': 'r' }),
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 4, huong: 0 }],
       maMau: B(R1_C1, ['watch_side()']), loiGiai: Object.assign(B(R1_C1, R2_C1), { hamCuaEmMoi: [H('watch_side', T_WATCH)] }),
@@ -323,7 +323,7 @@
     }),
     man({
       chuong: CHE, so: 2, ten: 'Trả lời theo phía', khoa: 0, dan: 1, noi: NOI_PHONG, taoHam: ['answer_side'],
-      deBai: 'Phòng màu: đồng đội đứng bên trái thì bắn nút trước mặt (cửa đỏ), đứng bên phải thì bắn nút sau lưng (cửa xanh). Chế lệnh answer_side() cho R2 làm việc đó; R2 dùng watch_side() để chờ trước.',
+      deBai: 'Phòng màu: đồng đội đứng bên trái thì bắn van trước mặt (cửa đỏ), đứng bên phải thì bắn van sau lưng (cửa xanh). Chế lệnh answer_side() cho R2 làm việc đó; R2 dùng watch_side() để chờ trước.',
       veMaMau: 'R2 đã chờ bằng watch_side(). Tạo answer_side() trong Xưởng hàm rồi gọi nó ngay sau.',
       san: SAN_C2, mau: lop(SAN_C2, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_C2, { '4,6': 'b' }),
       bd: [{ x: 4, y: 7, huong: 0 }, { x: 3, y: 3, huong: 0 }],
@@ -353,17 +353,17 @@
     }),
     man({
       chuong: CHE, so: 5, ten: 'Chốt trên cao', khoa: 0, dan: 1, noi: NOI_C5,
-      deBai: 'R1 tự động dùng show_color(). R2 xuất phát ở trên, phải đi xuống hai ô tới chốt giữa hai phòng, quay mặt xuống. Nút trên cùng mở cửa đỏ, nút dưới cùng mở cửa xanh. Viết chương trình R2.',
+      deBai: 'R1 tự động dùng show_color(). R2 xuất phát ở trên, phải đi xuống hai ô tới chốt giữa hai phòng, quay mặt xuống. Van trên cùng mở cửa đỏ, van dưới cùng mở cửa xanh. Viết chương trình R2.',
       veMaMau: 'Chương trình R1 bị khóa. Viết chương trình R2.',
       san: SAN_C5, mau: lop(SAN_C5, { '2,1': 'r', '4,1': 'b' }), vatMau: lop(SAN_C5, { '3,4': 'r' }),
       bd: [{ x: 3, y: 5, huong: 0 }, { x: 3, y: 1, huong: 2 }],
       maMau: B(R1_HAM, []), loiGiai: B(R1_HAM, nhieu(['forward(2)'], R2_HAM)),
       hamCuaEmCan: ['show_color', 'watch_side', 'answer_side', 'forward', 'go_wall', 'move', 'drop'],
-      goiY: ['R2 quay mặt xuống: nút trước mặt là nút dưới, nút sau lưng là nút trên.', 'forward(2), watch_side(), answer_side()']
+      goiY: ['R2 quay mặt xuống: van trước mặt là van dưới, van sau lưng là van trên.', 'forward(2), watch_side(), answer_side()']
     }),
     man({
       chuong: CHE, so: 6, ten: 'Chia phòng', mucTieu: 'toi-co', co: [[{ x: 2, y: 1 }], [{ x: 4, y: 1 }]], noi: NOI_C6,
-      deBai: 'Mỗi robot một lá cờ riêng. R1 vào phòng cùng màu thẻ; R2 vào phòng còn lại. Một nút mở cả hai cửa. R2 chờ R1 báo bằng chỗ đứng, bắn nút, rồi né sang phía KHÔNG có R1 và đi lên cờ của mình.',
+      deBai: 'Mỗi robot một lá cờ riêng. R1 vào phòng cùng màu thẻ; R2 vào phòng còn lại. Một van mở cả hai cửa. R2 chờ R1 báo bằng chỗ đứng, bắn van, rồi né sang phía KHÔNG có R1 và đi lên cờ của mình.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: SAN_C6, vatMau: lop(SAN_C6, { '3,4': 'r' }),
       bd: [{ x: 3, y: 5, huong: 0 }, { x: 3, y: 3, huong: 0 }],
@@ -403,7 +403,7 @@
     }),
     man({
       chuong: CHE, so: 10, ten: 'Ca đêm', dan: 1, noi: [NOI_C3, noiC10(8), noiC10(7)],
-      deBai: 'Ba sân: hộp đỏ hay xanh, nằm gần hay xa R1. Cả đội dùng các lệnh đã chế: R1 tới trước hộp, báo màu, chờ cửa rồi đặt hộp; R2 canh hai bên rồi bắn đúng nút. Một chương trình cho mỗi robot chạy đúng cả ba sân.',
+      deBai: 'Ba sân: hộp đỏ hay xanh, nằm gần hay xa R1. Cả đội dùng các lệnh đã chế: R1 tới trước hộp, báo màu, chờ cửa rồi đặt hộp; R2 canh hai bên rồi bắn đúng van. Một chương trình cho mỗi robot chạy đúng cả ba sân.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: SAN_C10,
       mau: SAN_C10.map(function (s) { return lop(s, { '2,1': 'r', '4,1': 'b' }); }),

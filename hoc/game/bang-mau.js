@@ -231,7 +231,14 @@
     vecChanhChu: '#3f6212',            // chữ lệnh trượt / danh sách trong dòng code (lime-800): vecChanhDam trên vecMa chỉ 4,44:1
     // ---- VECTOR (gói V7a, 28/10): dây nối nút ↔ cửa trên sàn (ve-vector-hieu-ung.js dayNoi, san-ve.js veDayNoi)
     vecDayNoiRgb: '108,104,150',       // dây nối lúc tắt: xám chàm trung tính, ghép độ mờ thấp (chìm trên sàn trắng)
-    vecDayNoiSangRgb: '34,197,94'      // dây nối lúc nút bật: xanh lá như mặt nút bật (vecXanhLa)
+    vecDayNoiSangRgb: '34,197,94',     // dây nối lúc nút đè đang bị đè (M): xanh lá như mặt nút đè lún (vecXanhLa)
+    // ---- VECTOR (29/10, van hơi): nút bắn N vẽ thành VAN HƠI tay quay trên tường, dây nối N ↔ cửa thành ỐNG HƠI (ve-vector-may.js nut-ban, ve-vector-hieu-ung.js ongHoi / hoiVan)
+    vecVanNguoi: '#4f7cac',            // bánh van lúc ĐÓNG: thép xanh nguội (không hơi, không nóng)
+    vecVanNguoiToi: '#2f5580',         // nan / vành tối của bánh van đóng
+    vecVanNong: '#f97316',             // bánh van lúc MỞ: cam nóng (hơi nóng chảy qua, luật warm())
+    vecVanNongSang: '#fdba74',         // quầng / vệt sáng của van mở
+    vecOngHoiRgb: '120,134,160',       // ống hơi lúc van đóng: thép xám, ghép độ mờ
+    vecOngHoiNongRgb: '249,115,22'     // ống hơi lúc van mở: ấm cam như bánh van mở (vecVanNong)
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (12 sau V7c3; sơn của bộ pixel part.js / cai-dat.js đã xoá): màu đối thủ (ve-vector.js SON_DOI), vạch đế R1..R4 (san-ve.js), màu đội vector. R1 vàng, R2 lam, đối thủ đỏ

@@ -191,16 +191,16 @@
     // 5. Súng hơi bắn nút N mở cửa cho mình: R1 đứng chắn đường đạn đúng nhịp R2 bắn.
     taoMan({
       so: 5, ten: 'Chắn tia nước',
-      deBai: 'R2 có vòi phun: bắn trúng nút N là cửa C mở, R2 chạy thẳng lên cờ F chỉ vài nhịp. Nhưng tia nước bay thẳng, gặp xe là dừng. Đọc code R2 xem nó bắn ở nhịp nào, cho R1 đứng chắn đường tia nước đúng lúc đó, rồi đi vòng tới cờ.',
-      veMaMau: 'R1 chạy luôn nên R2 bắn trúng nút, mở cửa và tới cờ trước.',
+      deBai: 'R2 có vòi phun: bắn trúng van N là cửa C mở, R2 chạy thẳng lên cờ F chỉ vài nhịp. Nhưng tia nước bay thẳng, gặp xe là dừng. Đọc code R2 xem nó bắn ở nhịp nào, cho R1 đứng chắn đường tia nước đúng lúc đó, rồi đi vòng tới cờ.',
+      veMaMau: 'R1 chạy luôn nên R2 bắn trúng van, mở cửa và tới cờ trước.',
       san: ['#######', '#.....#', '#.###F#', '#.###C#', 'N.....#', '#.#####', '#######'],
       bd: [{ x: 1, y: 5, huong: 0 }, { x: 5, y: 4, huong: 3 }],
       r2: R2.hoi(),
       c2: ['wait()', 'wait()', 'shoot()', 'wait()', 'turn_right()'].concat(FOR(20, ['if front_clear():', '    move()', 'else:', '    wait()'])),
       c1Mau: ['go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
       c1Giai: ['move()', 'wait()', 'wait()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
-      doiThu: { part: 'hoi', manh: ['Bắn nút N từ xa để mở cửa', 'Giật lùi đi một ô mỗi phát, không cần quay'], yeu: ['Tia nước bay thẳng, gặp xe là dừng: đứng chắn là nút không bị bắn'] },
-      goiY: ['R2 chờ 2 nhịp rồi shoot() ở nhịp 3, tia nước bay dọc hàng dưới tới nút N.', 'R1 vào ô (1, 4) ở nhịp 1 rồi wait() hai lần: tia nước đập vào R1, cửa C vẫn đóng.']
+      doiThu: { part: 'hoi', manh: ['Bắn van N từ xa để mở cửa', 'Giật lùi đi một ô mỗi phát, không cần quay'], yeu: ['Tia nước bay thẳng, gặp xe là dừng: đứng chắn là van không bị bắn'] },
+      goiY: ['R2 chờ 2 nhịp rồi shoot() ở nhịp 3, tia nước bay dọc hàng dưới tới van N.', 'R1 vào ô (1, 4) ở nhịp 1 rồi wait() hai lần: tia nước đập vào R1, cửa C vẫn đóng.']
     }),
 
     // 6. Drone bay qua hàng rào nhưng pin ít, phải vòng qua ô sạc P: R1 đi cổng dịch chuyển 1 tới gần cờ.

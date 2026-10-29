@@ -232,8 +232,8 @@
       chuong: 'doi-mua-2', so: 1, ten: 'Bạn chắn tia nước', yMoi: 'warm() thấy đồng đội: robot trước mũi xe là nóng; while warm(): wait()',
       hamCuaEmCan: ['move', 'forward', 'turn_left', 'turn_right', 'fire'],
       deBai: 'Gói Đội: R1 là xe xích, R2 là xe vòi phun, xe nào cũng có mắt hồng ngoại. warm() là True cả khi vật cản trước mũi xe là ROBOT ĐỒNG ĐỘI: robot đang chạy thì nóng. ' +
-        'Chương trình hai xe đã khóa. R2 đi dọc hành lang dưới, ở mỗi giếng quay lên bắn nút để mở cửa phía trước. R1 chạy hành lang giữa, dừng ở các trạm lâu chóng khác nhau: ' +
-        'R1 đứng trong giếng thì tia nước trúng R1, nút không đổi. Viết thân clear_shot(): còn thấy bạn trước mũi xe thì chờ.',
+        'Chương trình hai xe đã khóa. R2 đi dọc hành lang dưới, ở mỗi giếng quay lên bắn van để mở cửa phía trước. R1 chạy hành lang giữa, dừng ở các trạm lâu chóng khác nhau: ' +
+        'R1 đứng trong giếng thì tia nước trúng R1, van không đổi. Viết thân clear_shot(): còn thấy bạn trước mũi xe thì chờ.',
       veMaMau: 'Hai chương trình bị khóa, chạm thẻ R1 / R2 để đọc. clear_shot() còn trống: chạy thử xem tia nước đầu tiên trúng gì.',
       san: SAN_1, noi: NOI_1, bd: [{ x: 2, y: 3, huong: 1 }, { x: 1, y: 5, huong: 1 }], co: [[o(8, 3)], [o(8, 5)]],
       chinh: [R1_1, R2_1],
@@ -244,7 +244,7 @@
       loiSai: [
         { moTa: 'Để trống: bắn ngay, tia nước trúng R1, cửa đầu tiên vẫn đóng', ham: [H('clear_shot', [], ['pass'])], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
         { moTa: 'Chờ cố định hai nhịp: ở giếng đầu R1 còn đứng đó', ham: [H('clear_shot', [], CHO(2))], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
-        { moTa: 'Viết while not warm(): giếng trống thì nút tắt không nóng, R2 chờ mãi', ham: [H('clear_shot', [], CHO_TOI)], phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Viết while not warm(): giếng trống thì van đóng không nóng, R2 chờ mãi', ham: [H('clear_shot', [], CHO_TOI)], phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['R1 đứng trong giếng thì warm() là True: tia nước bắn lúc đó sẽ trúng R1.', 'Thân clear_shot(): while warm(): wait().']
     }),
@@ -252,7 +252,7 @@
     man({
       chuong: 'doi-mua-2', so: 2, ten: 'Đón bạn vào khoang', yMoi: 'while not warm(): wait(): chờ tới khi thấy đồng đội đã vào khoang rồi mới bắn',
       hamCuaEmCan: ['go_to_wall', 'move', 'u_turn', 'turn_left', 'forward', 'fire'],
-      deBai: 'R1 đi qua ba khoang hai cửa: cửa vào đang mở, cửa ra đang đóng. Mỗi khoang có một nút dưới chân R2; bắn nút thì cửa vào đóng lại và cửa ra mở. ' +
+      deBai: 'R1 đi qua ba khoang hai cửa: cửa vào đang mở, cửa ra đang đóng. Mỗi khoang có một van dưới chân R2; bắn van thì cửa vào đóng lại và cửa ra mở. ' +
         'Bắn sớm khi R1 chưa vào khoang thì cửa vào đóng ngay trước mặt R1, R1 kẹt mãi. R2 nhìn lên giếng thấy khoang. Viết thân mate_in(): chờ tới khi thấy R1 trong khoang.',
       veMaMau: 'Hai chương trình bị khóa. mate_in() còn trống: chạy thử xem cửa nào đóng trước mặt R1.',
       san: SAN_2, noi: NOI_2, bd: [{ x: 1, y: 1, huong: 1 }, { x: 7, y: 3, huong: 0 }], co: [[o(17, 1)], [o(16, 3)]],
@@ -294,7 +294,7 @@
     man({
       chuong: 'doi-mua-2', so: 4, ten: 'Bạn qua rồi mới bắn', yMoi: 'hai vòng chờ nối nhau trong một hàm: chờ bạn tới cửa sổ, rồi chờ bạn đi khỏi đường tia nước',
       hamCuaEmCan: ['forward', 'move', 'turn_right', 'turn_left', 'fire'],
-      deBai: 'Mỗi nút ở tường trên đổi hai cửa: cửa vào của R1 (đang mở thành đóng) và cửa của R2 ở hành lang dưới (đang đóng thành mở). R2 bắn qua giếng và ô cửa sổ trên đường R1. ' +
+      deBai: 'Mỗi van ở tường trên đổi hai cửa: cửa vào của R1 (đang mở thành đóng) và cửa của R2 ở hành lang dưới (đang đóng thành mở). R2 bắn qua giếng và ô cửa sổ trên đường R1. ' +
         'Bắn khi R1 chưa qua cửa vào thì cửa đóng ngay trước mặt R1. Bắn khi R1 còn đứng ở cửa sổ thì tia nước trúng R1. R1 đứng ở các cửa sổ lâu chóng khác nhau. ' +
         'Viết thân after_pass(): chờ tới khi thấy R1 ở cửa sổ, rồi chờ tới khi R1 đi khỏi.',
       veMaMau: 'Hai chương trình bị khóa. after_pass() còn trống: chạy thử xem cửa nào đóng trước mặt R1.',
@@ -336,8 +336,8 @@
     man({
       chuong: 'doi-mua-2', so: 6, ten: 'Thùng không nóng', yMoi: 'thùng nặng không nóng: warm() không thấy nó, distance() thì thấy cả thùng lẫn bạn',
       hamCuaEmCan: ['forward', 'move', 'turn_left', 'turn_right', 'fire'], xichDay: true,
-      deBai: 'R1 xe xích đẩy một thùng nặng dọc hành lang giữa: thùng dừng ở giếng đầu một lúc rồi đi tiếp. R2 lại bắn nút qua giếng để mở cửa. Thùng nặng không nóng: ' +
-        'warm() không thấy thùng, tia nước bắn lúc thùng còn trong giếng thì trúng thùng. Giếng trống thì mắt hồng ngoại đo được 3 ô tới nút. Viết thân clear_line(): giếng chưa trống thì chờ.',
+      deBai: 'R1 xe xích đẩy một thùng nặng dọc hành lang giữa: thùng dừng ở giếng đầu một lúc rồi đi tiếp. R2 lại bắn van qua giếng để mở cửa. Thùng nặng không nóng: ' +
+        'warm() không thấy thùng, tia nước bắn lúc thùng còn trong giếng thì trúng thùng. Giếng trống thì mắt hồng ngoại đo được 3 ô tới van. Viết thân clear_line(): giếng chưa trống thì chờ.',
       veMaMau: 'Hai chương trình bị khóa. clear_line() viết bằng warm(): chạy thử xem tia nước đầu tiên trúng gì.',
       san: SAN_6, noi: NOI_6, bd: [{ x: 1, y: 2, huong: 1 }, { x: 3, y: 4, huong: 1 }], co: [[o(11, 2)], [o(12, 4)]],
       chinh: [R1_6, R2_6],
@@ -357,7 +357,7 @@
     man({
       chuong: 'doi-mua-2', so: 7, ten: 'Đố: Sola chờ mãi', yMoi: 'tìm lỗi: đèn nóng cuối hành lang cũng làm warm() True, phải đo distance() tới bạn',
       hamCuaEmCan: ['forward', 'move', 'turn_right'], nutBat: [o(11, 3)],
-      deBai: 'Sola viết pass_safe() cho R2: while warm(): wait(), để chờ R1 đi qua ngã tư. Chạy thử: R2 không nhúc nhích. Cuối hành lang có một đèn nóng (nút đang bật). ' +
+      deBai: 'Sola viết pass_safe() cho R2: while warm(): wait(), để chờ R1 đi qua ngã tư. Chạy thử: R2 không nhúc nhích. Cuối hành lang có một đèn nóng (van đang mở). ' +
         'Mắt hồng ngoại chỉ đo xa gần và nóng lạnh: đèn nóng cũng nóng như đồng đội. Sửa pass_safe() để R2 chỉ chờ khi bạn đứng sát mũi xe.',
       veMaMau: 'Chạy thử. Khi ngã tư trống, mắt hồng ngoại của R2 thấy gì ở cuối hành lang?',
       san: SAN_7, bd: [{ x: 4, y: 1, huong: 2 }, { x: 1, y: 3, huong: 1 }], co: [[o(4, 5)], [o(10, 4)]],
@@ -376,7 +376,7 @@
     man({
       chuong: 'doi-mua-2', so: 8, ten: 'Chờ bạn rồi chọn lực', yMoi: 'hàm chờ bạn đi khỏi rồi gọi aim_fire(): đo xa gần khi đường tia nước đã trống',
       hamCuaEmCan: ['forward', 'move', 'turn_left', 'turn_right', 'aim_fire', 'fire'],
-      deBai: 'Hai giếng bắn. Giếng đầu nút ở xa, sau lưng R2 là tường: bắn tụ được. Giếng sau nút ở gần, sau lưng R2 là một hốc: bắn tụ thì xe giật xuống hốc, phải bắn nhanh. ' +
+      deBai: 'Hai giếng bắn. Giếng đầu van ở xa, sau lưng R2 là tường: bắn tụ được. Giếng sau van ở gần, sau lưng R2 là một hốc: bắn tụ thì xe giật xuống hốc, phải bắn nhanh. ' +
         'R1 đi hành lang giữa và dừng ở giếng đầu một lúc. aim_fire() của gói Lực bắn tự chọn lực theo distance(), nhưng R1 đứng chắn thì nó đo nhầm. Viết thân wait_aim(): chờ bạn đi khỏi rồi aim_fire().',
       veMaMau: 'Hai chương trình bị khóa. wait_aim() có sẵn chỉ gọi aim_fire(): chạy thử xem tia nước đầu tiên trúng gì.',
       san: SAN_8, noi: NOI_8, bd: [{ x: 1, y: 3, huong: 1 }, { x: 2, y: 4, huong: 1 }], co: [[o(8, 3)], [o(7, 4)]],
@@ -388,7 +388,7 @@
       loiSai: [
         { moTa: 'Để nguyên aim_fire(): R1 đứng chắn, tia nước bắn nhanh trúng R1', ham: [H('wait_aim', [], ['aim_fire()'])], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
         { moTa: 'Chờ rồi luôn bắn tụ: ở giếng sau xe giật xuống hốc', ham: [H('wait_aim', [], CHO_DI.concat(['fire("charge")']))], phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Chờ rồi luôn bắn nhanh: nút giếng đầu ở xa, tia nước rơi giữa đường', ham: [H('wait_aim', [], CHO_DI.concat(['fire("fast")']))], phaiCoMa: ['ban-ngan', 'chua-toi-co'] }
+        { moTa: 'Chờ rồi luôn bắn nhanh: van giếng đầu ở xa, tia nước rơi giữa đường', ham: [H('wait_aim', [], CHO_DI.concat(['fire("fast")']))], phaiCoMa: ['ban-ngan', 'chua-toi-co'] }
       ],
       goiY: ['Đo xa gần khi R1 còn đứng chắn thì distance() là 0.', 'while warm(): wait() rồi aim_fire().']
     }),
@@ -498,7 +498,7 @@
     man({
       chuong: 'che-doi-mua-2', so: 4, ten: 'Hàm wait_mate()', yMoi: 'chế hàm chờ tới khi thấy bạn; bắn ngược fire_back("fast") để không phải quay',
       hamCuaEmCan: ['go_to_wall', 'fire_back', 'turn_right', 'turn_left', 'forward', 'move', 'wait_clear'], taoHam: ['wait_mate'],
-      deBai: 'Hai khoang hai cửa như màn Đón bạn vào khoang. R2 nhìn lên khoang; nút ở ngay sau lưng R2 nên R2 bắn ngược fire_back("fast"), không cần quay, không bị giật. ' +
+      deBai: 'Hai khoang hai cửa như màn Đón bạn vào khoang. R2 nhìn lên khoang; van ở ngay sau lưng R2 nên R2 bắn ngược fire_back("fast"), không cần quay, không bị giật. ' +
         'R1 nạp hàng xong mới đi. Em chế wait_mate(): chờ tới khi thấy đồng đội trước mũi xe. Chương trình hai xe đã khóa.',
       veMaMau: 'Hai chương trình bị khóa. Tạo wait_mate() hai dòng.',
       san: SAN_C4, noi: NOI_C4, bd: [{ x: 1, y: 1, huong: 1 }, { x: 4, y: 3, huong: 0 }], co: [[o(9, 1)], [o(8, 3)]],
@@ -535,7 +535,7 @@
     man({
       chuong: 'che-doi-mua-2', so: 6, ten: 'Hàm shot_clear(p)', yMoi: 'hàm có tham số lực p: chờ bạn đi khỏi đường tia nước rồi bắn với lực p',
       hamCuaEmCan: ['wait_clear', 'forward', 'move', 'turn_left', 'turn_right', 'fire'], taoHam: ['shot_clear'],
-      deBai: 'Hai giếng bắn: giếng đầu nút ở xa, sau lưng là tường; giếng sau nút ở gần, sau lưng là hốc. R1 đứng ở giếng đầu một lúc. ' +
+      deBai: 'Hai giếng bắn: giếng đầu van ở xa, sau lưng là tường; giếng sau van ở gần, sau lưng là hốc. R1 đứng ở giếng đầu một lúc. ' +
         'Em chế shot_clear(p): chờ bạn đi khỏi đường tia nước (wait_clear()), rồi bắn với lực p. Chương trình R2 đã khóa, gọi shot_clear("charge") ở giếng đầu và shot_clear("fast") ở giếng sau.',
       veMaMau: 'Hai chương trình bị khóa. Tạo shot_clear(p) hai dòng: hàm có một tham số p.',
       san: SAN_8, noi: NOI_8, bd: [{ x: 1, y: 3, huong: 1 }, { x: 2, y: 4, huong: 1 }], co: [[o(8, 3)], [o(7, 4)]],
@@ -613,7 +613,7 @@
       hang: 'trum', hamCuaEmCan: ['pass_mate', 'cover', 'wait_mate', 'wait_clear', 'aim_fire', 'forward', 'move', 'turn_right', 'turn_left', 'fire'], taoHam: ['guard'],
       huyHieu: { ma: 'che-doi-mua-2', ten: 'Huy hiệu Đội phối hợp' },
       deBai: 'Hai sân, cùng hai chương trình khóa. Sân nào cũng ba khoang có cửa sổ: bắn trước khi R1 qua cửa vào thì cửa đóng trước mặt R1, bắn khi R1 còn ở cửa sổ thì tia nước trúng R1. ' +
-        'Sân thứ nhất nút ở xa, sau lưng R2 là tường: phải bắn tụ. Sân thứ hai nút ở gần, dưới chân R2 là hốc: bắn tụ thì xe giật xuống hốc. Em chế guard() cho cả hai sân.',
+        'Sân thứ nhất van ở xa, sau lưng R2 là tường: phải bắn tụ. Sân thứ hai van ở gần, dưới chân R2 là hốc: bắn tụ thì xe giật xuống hốc. Em chế guard() cho cả hai sân.',
       veMaMau: 'Hai chương trình bị khóa. Tạo guard() hai dòng bằng các hàm của em và của gói Lực bắn.',
       san: SAN_C10, noi: NOI_C10,
       bd: [[{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }], [{ x: 4, y: 3, huong: 0 }, { x: 4, y: 3, huong: 0 }]],
