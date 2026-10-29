@@ -1145,8 +1145,16 @@
     //          thường thì nhện bị đệm như xe (nhện không nam châm bị hút như sắt; nhện có nam châm bụng bật thì theo cực như xe).
     //      Mọi thân dưới đất khác (hai bánh, xích, omni) luôn bị.
     //      Hai đệm cùng tác động: đệm gần hơn thắng; bằng khoảng thì chỉ dời khi mọi đệm đó cùng đẩy về một phía, ngược nhau thì đứng im ('dem-can'). Ô tới là hố thì rơi (phaE).
-    //      Bị chặn (tường, cửa đóng, thùng, vật, rào, bậc thang, đồng đội…) thì đứng im ('dem-chan', thông tin). Thùng / vật nằm đất không bị đệm tác động ở bản thử.
-    var demTus = [];
+    //      Bị chặn (tường, cửa đóng, thùng, vật, rào, bậc thang, đồng đội…) thì đứng im ('dem-chan', thông tin). Thùng không bị đệm tác động.
+    //      P1b (user 30/10): CÔNG TẮC — { nut: { x, y } } trỏ vào một nút đè M: đệm chỉ CHẠY khi nút đang bị đè (khiDe 'bat', mặc định) hay chỉ khi nút KHÔNG bị đè
+    //        (khiDe 'tat'). Trạng thái nút là trạng thái cuối nhịp trước (nút đè cập nhật ở capNhatCua cuối nhịp): đè nút ở nhịp t thì đệm đổi từ nhịp t + 1.
+    //        Đệm tắt vẫn là khối, không kéo / đẩy gì. Đệm không có nut thì luôn chạy (như bản thử).
+    //      VẬT NẰM ĐẤT (user 30/10 "đệm từ nên thêm cơ chế tương tác với vật kim loại"): sau robot, đệm đang chạy dời mỗi vật sắt / vật nam châm nằm đất cùng hàng / cột
+    //        trong TAM_DEM ô (ô giữa không chắn, kể cả robot) 1 ô: sắt và vật nam châm khác cực bị hút (dừng ở ô sát đệm), vật nam châm cùng cực bị đẩy ra xa. Gỗ thì không.
+    //        Đệm gần nhất thắng, bằng khoảng mà ngược chiều thì nằm im; ô tới bị chặn (oTruotChan, hay robot đứng đó) thì nằm im. 'dem-vat' { id, tu, den, dem, kieu }.
+    //      VẬT BỊ ĐỆM GIỮ (user 30/10 "đệm từ hút khối sắt thì không nâng, không hút được, phải tắt đi thì vật mới nâng lên được"): vật đang bị một đệm đang chạy HÚT
+    //        (trong tầm, đường thông) thì robot không nhấc được: tay kẹp gắp → 'kep-hut' lyDo 'dem-giu'; nam châm hút / đẩy → 'dem-giu-vat'. Tắt đệm (nhả nút) rồi mới lấy.
+    var demTus = [], congTacDem = {};
     san.demTu = {};
     if (cfg.demTu !== undefined && cfg.demTu !== null) {
       if (!Array.isArray(cfg.demTu)) throw new Error('demTu phải là mảng ô [{ x, y, cuc }] (cuc là "N" hay "S").');
@@ -1157,6 +1165,12 @@
         if (san.demTu[k]) throw new Error('Đệm từ: ô (' + o.x + ', ' + o.y + ') khai hai lần.');
         if (vatNamTai(o.x, o.y) || thungTai(o.x, o.y)) throw new Error('Đệm từ: ô (' + o.x + ', ' + o.y + ') đang có vật / thùng.');
         var d = { x: o.x, y: o.y, cuc: o.cuc };
+        if (o.nut !== undefined && o.nut !== null) {                       // P1b (user 30/10 "ý A"): đệm có CÔNG TẮC là một nút đè M
+          var mN = o.nut && nutDeTai[o.nut.x + ',' + o.nut.y];
+          if (!mN) throw new Error('Đệm từ (' + o.x + ', ' + o.y + '): nut phải trỏ vào một nút đè M trên sân.');
+          if (o.khiDe !== undefined && o.khiDe !== 'bat' && o.khiDe !== 'tat') throw new Error('Đệm từ (' + o.x + ', ' + o.y + '): khiDe là "bat" (đè thì đệm chạy) hay "tat" (đè thì đệm tắt).');
+          congTacDem[k] = { nut: mN, khiDe: o.khiDe || 'bat' };            // để riêng: sự kiện đệm vẫn chỉ mang { x, y, cuc }
+        } else if (o.khiDe !== undefined) throw new Error('Đệm từ (' + o.x + ', ' + o.y + '): khiDe chỉ dùng khi có nut.');
         san.demTu[k] = d; demTus.push(d);
       });
       dsRc.forEach(function (rc) { if (rc.batDau && san.demTu[rc.batDau.x + ',' + rc.batDau.y]) throw new Error('Robot xuất phát trên ô đệm từ (' + rc.batDau.x + ', ' + rc.batDau.y + ').'); });
@@ -1198,6 +1212,39 @@
       return null;
     }
     function vatTheoId(id) { return vats[id - 1]; }
+
+    /** ĐỆM TỪ P1b: đệm `d` đang chạy không (theo công tắc nút đè nếu có; trạng thái nút là của cuối nhịp trước). */
+    function demBat(d) { var ct = congTacDem[d.x + ',' + d.y]; return !ct || (ct.khiDe === 'tat' ? !ct.nut.bat : ct.nut.bat); }
+    /** ĐỆM TỪ P1b: các "lực" của đệm đang chạy lên vật `v` nằm đất: [{ dem, kc, kieu: 'hut' | 'day', vx, vy }] (vx, vy = chiều vật sẽ dời; hút sát đệm thì 0, 0).
+     *  Chỉ vật sắt / vật nam châm; đệm cùng hàng / cột trong TAM_DEM ô; ô giữa không có khối chắn từ (như khoiChanTu, thêm robot dưới đất đang xét). */
+    function lucDemLenVat(v) {
+      var kq = [];
+      if (v.trangThai !== 'dat' || (v.chat !== 'sat' && v.chat !== 'nam-cham')) return kq;
+      demTus.forEach(function (d) {
+        if (!demBat(d)) return;
+        var dx = d.x - v.x, dy = d.y - v.y;
+        if (dx !== 0 && dy !== 0) return;
+        var kc = Math.abs(dx) + Math.abs(dy);
+        if (kc === 0 || kc > TAM_DEM) return;
+        var ux = dx > 0 ? 1 : dx < 0 ? -1 : 0, uy = dy > 0 ? 1 : dy < 0 ? -1 : 0;
+        for (var i = 1; i < kc; i++) {
+          var x = v.x + ux * i, y = v.y + uy * i, c = oTai(san, x, y);
+          if (c === null || c === '#' || c === 'N' || san.demTu[x + ',' + y] || cuaDong(x, y) || thungTai(x, y) || vatNamTai(x, y) || xeDatTai(x, y) || (!laDrone && rb.x === x && rb.y === y)) return;
+        }
+        var day = v.chat === 'nam-cham' && v.cuc === d.cuc;
+        var vx = day ? -ux : ux, vy = day ? -uy : uy;
+        if (!day && kc === 1) { vx = 0; vy = 0; }
+        kq.push({ dem: d, kc: kc, kieu: day ? 'day' : 'hut', vx: vx, vy: vy });
+      });
+      return kq;
+    }
+    /** ĐỆM TỪ P1b: vật `v` đang bị một đệm đang chạy HÚT (robot không nhấc / hút / đẩy được nó). Trả đệm đó, hay null. */
+    function demGiuVat(v) {
+      var l = lucDemLenVat(v).filter(function (u) { return u.kieu === 'hut'; });
+      if (!l.length) return null;
+      l.sort(function (a, b) { return a.kc - b.kc; });
+      return l[0].dem;
+    }
 
     // ---- NHIỀU ROBOT: đồng đội là vật cản. xeKhac = [{ rb, drone }] của các đồng đội (vị trí sống), oDinhToi = ô họ ĐỊNH tới trong nhịp này,
     // oTranhKep = ô mà hai robot cùng kẹp trong nhịp này. Một robot: cả ba rỗng, không đổi gì. Drone và xe dưới đất không chặn nhau (khác độ cao).
@@ -1255,6 +1302,12 @@
         }
         v = vatNamTai(o.x, o.y);
         tay.kep = true;
+        var dgK = v && tay.tuThe === 'duoi' ? demGiuVat(v) : null;
+        if (dgK) {                                                // đệm từ đang hút vật này: tay không nhấc nổi (P1b)
+          var kdg = ghiHuongTay({ ma: 'kep-hut', nhip: nhip, o: o, lyDo: 'dem-giu', dem: dgK, lenh: lk });
+          sk.push(kdg); suKienChan.push(kdg);
+          return false;
+        }
         if (v && tay.tuThe === 'duoi') {
           v.trangThai = 'cam'; v.x = rb.x; v.y = rb.y; tay.cam = v.id;
           sk.push(ghiHuongTay({ ma: 'nhat-vat', id: v.id, o: o }));
@@ -1788,6 +1841,14 @@
         sk.push({ ma: 'dinh-vat', id: vt.id });
       }
 
+      /** ĐỆM TỪ P1b: vật `vt` (ở ô o) đang bị đệm giữ thì nam châm của robot không hút / đẩy được: ghi 'dem-giu-vat' và trả true. */
+      function demBiGiu(vt, o) {
+        var dg = demGiuVat(vt);
+        if (!dg) return false;
+        var e = { ma: 'dem-giu-vat', nhip: nhip, id: vt.id, o: { x: o.x, y: o.y }, dem: dg, lenh: nc.lenhCuc || lenhNhip };
+        sk.push(e); suKienChan.push(e);
+        return true;
+      }
       /** (d) hút / đẩy, ở cuối nhịp: nam châm có cực → vật đầu tiên trong tầm (sắt 2 ô, vật nam châm 3 ô): sắt → hút (cực nào cũng hút); vật nam châm khác cực → hút, cùng cực → đẩy;
        *  gỗ → không gì. Đang dính vật nam châm mà tay đổi sang cùng cực → bắn vật ra. */
       function hutVat() {
@@ -1796,6 +1857,7 @@
           if (nc.cam !== null) return;
           var vd = vatNamTai(rb.x, rb.y);
           if (!vd) return;
+          if (demBiGiu(vd, { x: rb.x, y: rb.y })) return;
           if (vd.chat === 'sat' || (vd.chat === 'nam-cham' && vd.cuc !== nc.cuc)) hutVe(vd, { x: rb.x, y: rb.y }, 0);
           else if (vd.chat === 'nam-cham') {                                  // cùng cực: drone không có hướng mặt để đẩy ra, vật nằm yên
             var ecc = { ma: 'cung-cuc', nhip: nhip, id: vd.id, o: { x: rb.x, y: rb.y }, cuc: vd.cuc };
@@ -1814,6 +1876,7 @@
         var nt = nhinTruoc();
         if (!nt.vat) return;
         var vt = nt.vat;
+        if ((vt.chat === 'nam-cham' || (vt.chat === 'sat' && nt.khoang <= TAM_HUT)) && demBiGiu(vt, nt.o)) return;
         if (vt.chat === 'nam-cham') {
           if (vt.cuc === nc.cuc) dayVat(vt, false);                           // cùng cực: đẩy ra xa
           else hutVe(vt, nt.o, nt.khoang - 1);                                // khác cực: hút
@@ -1842,6 +1905,7 @@
         if (sk.some(function (e) { return e.ma === 'nhay' || e.ma === 'nhay-hut'; })) return;       // nhện đang trên không (nhịp nhảy): đệm không với tới (user 29/10)
         var ung = [];
         demTus.forEach(function (d) {
+          if (!demBat(d)) return;                                                           // P1b: đệm đang tắt (công tắc nút đè)
           var dx = d.x - rb.x, dy = d.y - rb.y;
           if (dx !== 0 && dy !== 0) return;
           var kc = Math.abs(dx) + Math.abs(dy);
@@ -1874,6 +1938,28 @@
         rb.x = nx; rb.y = ny; demBang = 0;
         var ed = { ma: 'dem-' + u0.kieu, nhip: nhip, tu: o, den: { x: nx, y: ny }, dem: u0.dem, lenh: lenhNhip };
         sk.push(ed); suKienChan.push(ed);
+      }
+
+      /** ĐỆM TỪ P1b: sau demTuKeo, mỗi vật sắt / nam châm nằm đất (theo id) bị đệm đang chạy dời 1 ô (xem phần ĐỆM TỪ ở đầu chay()). */
+      function demTuVat() {
+        if (!demTus.length) return;
+        vats.forEach(function (v) {
+          var l = lucDemLenVat(v);
+          if (!l.length) return;
+          var min = Math.min.apply(null, l.map(function (u) { return u.kc; }));
+          var gan = l.filter(function (u) { return u.kc === min; }), u0 = gan[0];
+          if (gan.some(function (u) { return u.vx !== u0.vx || u.vy !== u0.vy; })) return;    // hai đệm kéo ngược nhau: nằm im
+          if (u0.vx === 0 && u0.vy === 0) return;                                           // đã sát đệm: bị giữ tại chỗ
+          var nx = v.x + u0.vx, ny = v.y + u0.vy;
+          if (oTruotChan(nx, ny) || (!laDrone && rb.x === nx && rb.y === ny)) return;
+          var tu = { x: v.x, y: v.y };
+          v.x = nx; v.y = ny;
+          sk.push({ ma: 'dem-vat', nhip: nhip, id: v.id, tu: tu, den: { x: nx, y: ny }, dem: u0.dem, kieu: u0.kieu });
+          if (dichSet[nx + ',' + ny] && !hopMauDich(v, nx, ny)) {
+            var esm = { ma: 'dat-sai-mau', nhip: nhip, id: v.id, o: { x: nx, y: ny }, mauVat: v.mau || 'none', mauDich: dichMau[nx + ',' + ny], chat: v.chat, cuc: v.cuc };
+            sk.push(esm); suKienChan.push(esm);
+          }
+        });
       }
 
       function phaA() {
@@ -1963,6 +2049,7 @@
         } else demBang = 0;
 
         demTuKeo();                                                            // ĐỆM TỪ — ngay sau băng chuyền: đệm trong tầm kéo / đẩy robot 1 ô
+        demTuVat();                                                            // rồi kéo / đẩy vật sắt, vật nam châm nằm đất 1 ô (P1b)
 
         // bàn xoay (@ xoay phải 90°, % xoay trái 90°) — xoay khi robot vừa đi vào ô bàn xoay, hoặc đứng chờ (wait) trên bàn xoay
         var cbx = oTai(san, rb.x, rb.y);

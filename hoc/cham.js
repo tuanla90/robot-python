@@ -780,6 +780,14 @@
         loi: 'Ở nhịp ' + nt0.nhip + ', vật sắt ở ô (' + nt0.o.x + ', ' + nt0.o.y + ') cách xe ' + nt0.khoang + ' ô, ngoài tầm hút của sắt (chỉ ' + SanHoc.TAM_HUT + ' ô).' + (ngoaiTam.length > 1 ? ' Chuyện này xảy ra ' + ngoaiTam.length + ' lần.' : '') +
           ' Tiến thêm một ô rồi hút. Vật nam châm có chữ N, S thì tầm xa hơn: tới ' + SanHoc.TAM_CUC + ' ô.' });
     }
+    // ĐỆM TỪ P1b (user 30/10): vật đang bị đệm đang chạy hút thì nam châm của robot không hút / đẩy được.
+    var demGiu = res.suKien.filter(function (e) { return e.ma === 'dem-giu-vat'; });
+    if (demGiu.length && !res.thang) {
+      var dg0 = demGiu[0];
+      cd.push({ ma: 'dem-giu-vat', muc: 'thong-tin', nhip: dg0.nhip, soLan: demGiu.length, o: dg0.o, dem: dg0.dem, cho: cho(dg0.lenh ? (g.anhXa[dg0.lenh.dongPy] || null) : null),
+        loi: 'Ở nhịp ' + dg0.nhip + ', nam châm không lấy được vật ở ô (' + dg0.o.x + ', ' + dg0.o.y + '): đệm từ cực ' + dg0.dem.cuc + ' ở ô (' + dg0.dem.x + ', ' + dg0.dem.y + ') đang hút giữ nó.' +
+          (demGiu.length > 1 ? ' Chuyện này xảy ra ' + demGiu.length + ' lần.' : '') + ' Đệm hút vật sắt và vật nam châm khác cực nằm cùng hàng hay cùng cột trong 2 ô. Tắt đệm trước (rời khỏi nút đè của đệm, hay đè nút tắt), rồi mới hút.' });
+    }
     var dayBiChan = res.suKien.filter(function (e) { return e.ma === 'day-bi-chan'; });
     if (dayBiChan.length && !res.thang) {                                   // chỉ nói khi chưa thắng (lời giải đúng có thể để nam châm bật sát tường)
       var db0 = dayBiChan[0];
@@ -957,6 +965,8 @@
         ma: 'kep-hut', muc: 'thong-tin', nhip: kh.nhip, lyDo: kh.lyDo, o: kh.o, cho: cho(kh.lenh ? (g.anhXa[kh.lenh.dongPy] || null) : null),
         loi: kh.lyDo === 'qua-nang'
           ? 'Ở nhịp ' + kh.nhip + ', tay kẹp không gắp nổi thùng nặng ở ô trước mặt (' + kh.o.x + ', ' + kh.o.y + '): thùng nặng chỉ đẩy được, không nhấc được.'
+          : kh.lyDo === 'dem-giu'
+          ? 'Ở nhịp ' + kh.nhip + ', tay kẹp không nhấc nổi vật ở ô (' + kh.o.x + ', ' + kh.o.y + '): đệm từ cực ' + kh.dem.cuc + ' ở ô (' + kh.dem.x + ', ' + kh.dem.y + ') đang hút giữ nó. Tắt đệm trước (rời khỏi nút đè của đệm, hay đè nút tắt), rồi mới gắp.'
           : 'Ở nhịp ' + kh.nhip + ', tay kẹp vào không khí: ' +
           (kh.lyDo === 'tay-nang' ? 'vật nằm ' + oTayNgan(kh.huongTay) + (kh.huongTay && kh.huongTay !== 'truoc' ? '' : ' xe') + ', ở ô (' + kh.o.x + ', ' + kh.o.y + '), mà tay đang nâng (hạ tay trước khi gắp).'
             : kh.huongTay && kh.huongTay !== 'truoc' ? 'ô ' + oTayNgan(kh.huongTay) + ', (' + kh.o.x + ', ' + kh.o.y + '), không có vật nào để gắp. Tay xoay gắp vật ở ô mà tay đang chỉ, không phải ô xe đứng: xem tay đang chỉ sang bên nào.'
