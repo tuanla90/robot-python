@@ -13,6 +13,9 @@
                               cauHinh = VeRobot.cauHinhCua(man) ({ than, tay, camBien: [{ ma }] }); hamGoc = man.hamGoc.
    GioiThieuPart.noiDung(ma, lenh, chiMoi, than)  → { ma, khe, ten, moTa, lenh: [{ ten, moTa }], ghep: [..], gioi: [chuỗi], khong: [chuỗi], luuY: [chuỗi] }
                               lenh = các lệnh robot đang có; chiMoi = [lệnh mới] (thẻ "lệnh mới": chỉ lấy phần dính tới lệnh mới), không có = thẻ đầy đủ.
+   GioiThieuPart.cungBoPhan(ma) → [mã] cùng một bộ phận (gói V8c: tay 'xoay' có nangCapCua 'kep': cùng tay kẹp, mở thêm arm_left / arm_right) ·
+                              theCanHien(cauHinh, hamGoc, daXem, moTaGoc) → [noiDung] thẻ cần hiện · khoaDaXem(cauHinh, hamGoc) → [khoá] cần ghi ·
+                              daGap(daXem) → [mã] mỗi bộ phận một dòng · lenhDaXem(ma, daXem) → [lệnh] (daXem(khoá) → bool; game/the-part.js dùng, máy kiểm chạy thẳng).
    Lời: lớp 5, câu ngắn, đúng luật lõi (san-hoc.js). Đổi luật lõi thì sửa thẻ ở đây.
    ========================================================================== */
 (function () {
@@ -21,6 +24,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back'];
   var DI = ['go_up', 'go_down', 'go_left', 'go_right'];
+  var XOAY = ['arm_left', 'arm_right'];
 
   var DS = {
     /* ------------------------------------------------------------ THÂN */
@@ -108,13 +112,24 @@
       khong: ['Vật nằm đất: phải hạ tay rồi mới kẹp được', 'Tay đang hạ thì xe không đi được', 'Thả vật lúc tay đang nâng thì vật rơi vỡ'],
       luuY: ['Lệnh tay cũng chỉ là ra lệnh, wait() mới làm.', 'Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.']
     },
+    /* Gói V8c: 'xoay' là CÙNG cái tay kẹp, được mở thêm arm_left / arm_right (nangCapCua: 'kep'), như bánh lùi mở thêm cho cùng hai bánh. Tên hiển thị vẫn "Tay kẹp".
+       Đã gặp tay kẹp thì thẻ của 'xoay' chỉ là thẻ "lệnh mới": các mục dưới đây có `can: XOAY` để vào được thẻ đó; mục chuỗi chỉ hiện ở thẻ đầy đủ. */
     'xoay': {
-      khe: 'tay', ten: 'Tay xoay',
-      moTa: 'Tay kẹp có khớp xoay: chỉ ra trước, sang trái hoặc sang phải xe.',
+      khe: 'tay', ten: 'Tay kẹp', nangCapCua: 'kep',
+      moTa: 'Tay gắn trước mũi xe, có khớp tròn xoay được: tay chỉ ra trước, sang trái hoặc sang phải xe.',
       lenh: ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'],
-      gioi: ['Nhặt, đặt vật ở hai bên mà không cần quay xe'],
-      khong: ['Mỗi lệnh chỉ xoay một nấc', 'Vẫn phải hạ tay mới kẹp vật nằm đất; tay hạ thì xe không đi'],
-      luuY: ['grab() và release() làm ở ô mà tay đang chỉ tới.']
+      moTaLenh: { arm_left: 'Xoay tay kẹp một nấc sang trái', arm_right: 'Xoay tay kẹp một nấc sang phải' },
+      ghep: [
+        { lenh: ['arm_left', 'arm_down', 'grab', 'wait'], ra: 'Xoay tay sang trái, hạ tay, kẹp vật bên trái xe, trong một nhịp' },
+        { lenh: ['arm_up', 'arm_right', 'wait'], ra: 'Nâng vật rồi xoay tay về phía trước, trong một nhịp' }
+      ],
+      gioi: [{ chu: 'Nhặt, đặt vật ở hai bên mà không cần quay xe', can: XOAY }, 'Nhặt vật lên, mang đi, đặt xuống'],
+      khong: [{ chu: 'Mỗi lệnh chỉ xoay một nấc: từ trái sang phải mất hai nhịp', can: XOAY },
+        { chu: 'Tay đang hạ thì khớp kẹt: nhịp đó phải có arm_up() mới xoay được', can: XOAY },
+        'Vẫn phải hạ tay mới kẹp vật nằm đất; tay hạ thì xe không đi'],
+      luuY: [{ chu: 'grab() và release() làm ở ô mà tay đang chỉ tới.', can: XOAY },
+        { chu: 'Trong một nhịp: nâng tay, rồi xoay, rồi hạ tay, rồi mới kẹp / thả.', can: XOAY },
+        'Lệnh tay cũng chỉ là ra lệnh, wait() mới làm.']
     },
     'nam-cham': {
       khe: 'tay', ten: 'Nam châm',
@@ -256,7 +271,52 @@
     return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : d.moTa, lenh: dsLenh, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
   }
 
-  var API = { DS: DS, THU_TU: THU_TU, TEN_KHE: TEN_KHE, boPhanCua: boPhanCua, noiDung: noiDung };
+  /* ---------------------------------------------------------- MỘT BỘ PHẬN, NHIỀU MÃ (gói V8c)
+     Mã có nangCapCua: X là cùng bộ phận X được mở thêm lệnh (tay 'xoay' = tay kẹp 'kep' + arm_left / arm_right). Cờ đã xem vẫn ghi theo mã của màn
+     ('part:<mã>', 'part-lenh:<mã>:<lệnh>'), nhưng đã gặp MỘT mã trong nhóm là đã gặp cả bộ phận, lệnh đã giới thiệu ở mã nào cũng tính. */
+  /** Các mã cùng một bộ phận với ma (theo THU_TU, mã gốc trước), ma không có nhóm thì [ma]. */
+  function cungBoPhan(ma) {
+    var d = DS[ma]; if (!d) return [ma];
+    var goc = d.nangCapCua || ma;
+    return THU_TU.filter(function (x) { return x === goc || DS[x].nangCapCua === goc; });
+  }
+  function daXemMot(ds, khoa, daXem) { return ds.some(function (x) { return !!daXem(khoa(x)); }); }
+  /** Các thẻ cần hiện cho robot (cauHinh, hamGoc), daXem(khoá) → bool: bộ phận chưa gặp (cả nhóm) → thẻ đầy đủ; đã gặp mà có lệnh chưa giới thiệu → thẻ "lệnh mới". */
+  function theCanHien(cauHinh, hamGoc, daXem, moTaGoc) {
+    var c = cauHinh || {}, kq = [];
+    boPhanCua(c, hamGoc).forEach(function (b) {
+      var nhom = cungBoPhan(b.ma);
+      var moi = !daXemMot(nhom, function (x) { return 'part:' + x; }, daXem);
+      var lenhMoi = b.lenh.filter(function (l) { return !daXemMot(nhom, function (x) { return 'part-lenh:' + x + ':' + l; }, daXem); });
+      if (!moi && !lenhMoi.length) return;
+      var nd = noiDung(b.ma, b.lenh, moi ? null : lenhMoi, c.than, moTaGoc);
+      if (!nd || (!moi && !nd.lenh.length)) return;
+      kq.push(nd);
+    });
+    return kq;
+  }
+  /** Các khoá đã xem cần ghi sau khi vào màn (cauHinh, hamGoc). */
+  function khoaDaXem(cauHinh, hamGoc) {
+    var kq = [];
+    boPhanCua(cauHinh, hamGoc).forEach(function (b) { kq.push('part:' + b.ma); b.lenh.forEach(function (l) { kq.push('part-lenh:' + b.ma + ':' + l); }); });
+    return kq;
+  }
+  /** Bộ phận đã gặp, mỗi bộ phận MỘT dòng (Sổ lệnh, trang "Bộ phận"): nhóm nhiều mã thì lấy mã đã gặp đứng sau cùng (tay kẹp đã mở xoay → 'xoay'). */
+  function daGap(daXem) {
+    return THU_TU.filter(function (ma) {
+      if (!daXem('part:' + ma)) return false;
+      var nhom = cungBoPhan(ma);
+      return !nhom.slice(nhom.indexOf(ma) + 1).some(function (x) { return !!daXem('part:' + x); });
+    });
+  }
+  /** Lệnh của ma đã được giới thiệu (ở bất kỳ mã nào cùng bộ phận). */
+  function lenhDaXem(ma, daXem) {
+    var nhom = cungBoPhan(ma);
+    return (DS[ma] ? DS[ma].lenh : []).filter(function (l) { return daXemMot(nhom, function (x) { return 'part-lenh:' + x + ':' + l; }, daXem); });
+  }
+
+  var API = { DS: DS, THU_TU: THU_TU, TEN_KHE: TEN_KHE, boPhanCua: boPhanCua, noiDung: noiDung,
+    cungBoPhan: cungBoPhan, theCanHien: theCanHien, khoaDaXem: khoaDaXem, daGap: daGap, lenhDaXem: lenhDaXem };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.GioiThieuPart = API;
 })();
