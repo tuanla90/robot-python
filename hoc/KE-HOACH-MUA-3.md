@@ -61,3 +61,16 @@ Nên cái MỚI của mùa 3: Python B = `and` / `or` (elif là recall); Python 
    cham.js `ganCoDinh`, man-choi.js `khungCoDinh()` / nhãn "Chỉ chạy", chu.js `choi.chiChay*`; máy dò lời lách hoc/kiem-lach-mua-1.mjs (làm bản mùa 2 dựa vào đó).
    Gói T phải tách từ nhánh có CẢ mùa 2 (claude/mua-2-xong) và 45af133: chờ user gộp hai nhánh vào main. 29/10: phiên kia đã gộp main 3fe2207 vào nhánh điều phối của họ (merge 149a075, npm test 89/89): nhánh đó có cả mùa 2 lẫn `chiChay`; gói T tách từ main sau khi user gộp nhánh đó, hoặc từ 149a075 nếu user cho. HD2 (phiên kia) đang sửa khối mùa 1, thêm cờ "đâm tường là thua" (cham.js, mặc định tắt). HD1 sửa lo-trinh-hoc.js (khối mùa 1), lo-trinh-sao.js, kiem-lo-trinh.mjs: gộp với mùa 2 có thể đụng.
    Theo thứ tự memory show-dont-tell-khoi-moi: màn trình diễn khóa sửa → màn giấu hàm cũ + tooltip → thả tự do. Đổi màn đầu của mỗi part / khối mới ở mùa 2 thành màn trình diễn (mã mẫu = lời giải, đo lại sao, đường cong vẫn đạt), máy kiểm: mọi khối mới của mùa có màn trình diễn đứng trước màn ép dùng. Mùa 3 trở đi dùng cờ đó từ đầu.
+
+## 5. Trạng thái
+- **29/10 P0 · Khung mùa 3 xong** (agent Claude opus, nhánh claude/khung-mua-3, gộp f6d514c; báo cáo ban-giao/bao-cao-P0-khung-mua-3.md). Khối "MÙA 3 = 10 GÓI" (`MUA_3`) sau khối mùa 2 trong lo-trinh-hoc.js,
+  41 màn có sẵn / 159 màn mới; mùa 3 vẫn ẩn, ngưỡng sao chưa khai cứng. Bảng có / thiếu: 1 nhen 4/16 · 2 nam-cham 7/13 · 3 cam-ung-tu 0/20 · 4 bai-tu 0/20 · 5 nhay 16/4 · 6 dao-cuc 3/17 ·
+  7 doc-cuc 9/11 · 8 doi-xich 2/18 · 9 bung-nhen 0/20 · 10 tong-hop-3 / trum-mua-3 0/20. Tệp ngân hàng: man-than-nhen, man-nam-cham-n, man-cam-ung-tu, man-bai-tu, man-nhay, man-dao-cuc,
+  man-doc-cuc, man-doi-xich-nhen, man-bung-nhen, man-trum-mua-3. Chương dùng lại mã cũ (nhen, nam-cham, doi-xich, che-doi-xich): màn mới khai `so` từ 11.
+  Khác bảng mục 2 (agent đo, người giao đồng ý): che-nam-cham.2, .3, .4, .9 gọi grip() (cần cực S + front_pole) và che-nam-cham.7 đọc cực → sang che-doc-cuc (gói 7);
+  che-doi-xich cả 10 màn rời mùa 3 (.4, .5 cần pause / hop_box của che-doi-ho-bang); gói ngoài khuôn sang đầu mùa 4 (doi-xich cũ thành doi-xich-bac, nam-cham.9 thành nam-cham-omni).
+  Sửa màn: nhen.8, che-nhen.6 bỏ `S`; nam-cham.10 bỏ color() dùng right_clear (sao đo lại o 23, nhịp 31). Khay bớt lệnh theo gói (front_metal < 3, crouch / stand < 5, magnet_s < 6, front_pole < 7).
+  kiem-lo-trinh.mjs mục mùa 3: (a) bảng, (b) chuỗi làm dữ liệu từ chuoi-nhen, (c) and / or từ logic-nam-cham, (d) part đúng mùa, (e) part mở dần, (f) không `S`, (g) hàm tạo trước;
+  (h) đường cong CHỈ IN (17 chỗ nhảy, ép đỏ khi soát cuối). `--loi-gia-mua-3` 7 / 7 đỏ; người giao tự cắm magnet_s ở gói 2 → (e) đỏ 5 chỗ.
+  Người giao chạy lại trên main sau gộp (main đã có HD1 / HD2 / V8a của phiên vector): npm test 89/89, lỗi giả mùa 3 7 / 7, mùa 2 8 / 8.
+  Còn cho P2: gói 2 cần 13 màn mới (logic and / or); lời sai mẫu nam-cham.6 sai sẵn (một lời "sai" thắng 3 sao); ngưỡng sao vài gói dời sang mùa 4 lùi (mùa 4 dựng lại sau).

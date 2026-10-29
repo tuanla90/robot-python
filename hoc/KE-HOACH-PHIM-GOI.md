@@ -67,6 +67,28 @@ Ghi chú mùa 2:
 - Huy hiệu mùa 2 nào chưa có bản vector thì ở vector phim 10 vẽ icon bộ phận thay (không để canvas pixel trong phim vector); khi V7a có bản vector thì tự dùng.
 - Gói 8, 9 (thử thách) và 4, 5, 6, 7 (sân / nâng cấp) không bắt buộc khung code; 4 gói 5, 6, 7, 8 vẫn có code vì lệnh / hàm mới là ý chính của gói.
 
+## 3c. Sợi dây chung 7 mùa (user 29/10: "end mùa nên kiểu giống mùa 1 xuất xưởng")
+
+Truyện khung: **mỗi mùa R1 lắp một cỗ máy cho một nơi đang cần**, gói 10 là **cỗ máy đó xuất xưởng** (như "R1 xuất xưởng" mùa 1).
+Cỗ máy và nơi làm việc của từng mùa: KE-HOACH-7-MUA.md mục "Cỗ máy của mỗi mùa".
+Chuỗi nơi: kho hàng → nhà máy → mỏ quặng → nông trại → sân bóng → núi tuyết → xưởng của em.
+
+Khuôn phim chung (mọi mùa, viết vào kịch bản khi lập danh sách màn của mùa):
+- **Gói 1, khung 1: đơn việc.** Nơi mới hiện ra cùng việc đang kẹt (vd mùa 3: quặng nằm bên kia khe nứt, xe bánh không qua được). Khung sau như cũ: R1 nhặt / nhận thân mới.
+- **Gói 10 "<cỗ máy> xuất xưởng"**, 4 khung:
+  1. R1 đủ bộ giữa xưởng, huy hiệu mùa bay quanh (như hiện nay).
+  2. **Tem XUẤT XƯỞNG** đóng lên, hiện tên cỗ máy (vd "Xe tăng R1") và ba part ghép thành nó.
+  3. Cỗ máy làm đúng việc ở nơi cần nó (kho chạy, nhà máy chạy, quặng về bãi…): việc kẹt ở gói 1 khung 1 được gỡ.
+  4. Nhá mùa sau: part hay nơi mới nhấp nháy xa xa (như hiện nay).
+- Mùa 7: phim cuối là **máy của em xuất xưởng**, sáu cỗ máy các mùa trước xếp hàng chào.
+- Ý thêm (chưa làm, cần giao diện): **sổ cỗ máy**, mỗi lần xuất xưởng được một trang phiếu (tên máy, ba part, nơi làm việc, máy thật ngoài đời giống nó).
+
+Phải sửa phim đã có:
+- Mùa 1 gói 10 (`robot`): khung 2 thêm tem XUẤT XƯỞNG và tên **"Xe chở hàng R1"**; còn lại giữ.
+- Mùa 2 gói 10 (`nha-may-chay`, phim-mua-2.js + chu.js `pg.nha-may-chay.*`): đổi theo khuôn; tên hiển thị gói đề xuất **"Xe tăng R1 xuất xưởng"** (mã gói giữ nguyên).
+  Khung 3 giữ ý "nhà máy chạy lại" làm việc được gỡ; khung 1 gói 1 mùa 2 (`xich`) thêm ý đơn việc: nhà máy cũ đứng im.
+- Mùa 3 trở đi: viết thẳng theo khuôn (mùa 3: "Xe thăm dò R1 xuất xưởng").
+
 ## 4. Kiểm
 - Máy kiểm `kiem-phim-goi.mjs` (Node): mọi gói mùa 1 trừ gói 1 có phim; mỗi phim 3–4 khung; mọi khóa chữ `pg.*` có trong chu.js; câu ≤ 14 từ; cờ đúng mã gói.
 - Trình duyệt: người giao bấm xem từng phim (vào gói lần đầu, xem lại bằng ▶), kiểm Bỏ qua, chạm khung, không lỗi console, đúng cỡ trên màn hình điện thoại.

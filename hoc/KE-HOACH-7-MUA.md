@@ -14,11 +14,37 @@ Mỗi mùa: **1 thân + 1 tay + 1 cảm biến**, mỗi part có **gốc → nâ
 | 3 | *chuỗi và logic (`and` / `or`, `elif`)* | Nhện → nhảy | Nam châm (một cực) → đảo cực | Cảm ứng từ: sắt → đọc cực | Sắt + nam châm (nam châm điện) | Hố | Đệm từ (hút / đẩy thân xe) |
 | 4 | *danh sách* | Drone pin ít, bay ngắn → hạ cánh / cất cánh để sạc | Máy sơn chấm ô → bút liền | Camera màu phía trước → thêm camera dưới chân | Hộp màu | Sàn màu | Ô sạc |
 | 5 | *lưới, `return`* | Omni → đi chéo | Máy ném lực 2 → chỉnh lực | Radar tròn: khoảng cách 4 hướng → hình dạng (tròn / vuông) | Bóng tròn (xe nào cũng đẩy được) | Sàn dốc | Bàn xoay |
-| 6 | `dict`, `set` | Bánh gai → thu gai | Loa: phát theo nhịp `beat()` → phát theo nốt `note(n)` | Âm thanh: nghe nhịp → nghe nốt | Nguồn phát nhạc | Sàn băng đá | Cổng dịch chuyển |
+| 6 | `dict`, `set` | Bánh gai → thu gai | Loa: phát theo nhịp `beat()` → phát theo nốt `note(n)` | Âm thanh: nghe nhịp → nghe nốt | Nguồn phát nhạc | Sàn băng đá | Đường hầm (hầm núi / hầm băng; luật của cổng dịch chuyển cũ) |
 | 7 | đọc code người khác, chiến thuật | tự chọn part · câu đố tổ hợp (hộp trên bàn xoay, bắn đạn qua cổng, ném vật, đẩy vật lấp hố) · lắp ráp, đua đối kháng, đọ sức part mạnh, gói đội | | | | | |
 
 Đủ 6 × 6: **thân** hai bánh, xích, nhện, drone, omni, bánh gai · **tay** kẹp, súng hơi, nam châm, máy sơn, máy ném, loa ·
 **cảm biến** khoảng cách, hồng ngoại, cảm ứng từ, camera, radar tròn, âm thanh · **vật / sàn / cơ chế** đủ 6 mỗi loại.
+
+## Cỗ máy của mỗi mùa (29/10, user phác, hội đồng góp ý, ĐANG BÀN)
+
+Ba part của một mùa ghép lại thành **một cỗ máy gần giống thiết bị ngoài đời** mà trẻ gọi được tên. Cỗ máy là câu chuyện, phim, hình vẽ và
+tên gọi; **không quyết định luật** (hội đồng 29/10, cả bốn thành viên đồng ý). Gói 10 mỗi mùa là cỗ máy đó **xuất xưởng** (xem KE-HOACH-PHIM-GOI.md mục Sợi dây chung).
+
+| Mùa | Cỗ máy | Nơi làm việc | Ghép thế nào | Đổi hình / tên (luật giữ) |
+|---|---|---|---|---|
+| 1 | Xe chở hàng | kho hàng | hai bánh chở, tay gắp bốc thùng, cảm biến tránh va | (không) |
+| 2 | Xe tăng | nhà máy | xích, súng hơi trên bệ (combo bệ súng), hồng ngoại đo nhiệt như kính ngắm nhiệt | (không) |
+| 3 | Xe thăm dò quặng, dáng cua | mỏ quặng | nhện vượt khe nứt, cảm ứng từ là máy dò kim loại, nam châm bụng cắp quặng (combo) | sắt là quặng, hố là khe nứt |
+| 4 | Drone nông trại | nông trại | drone bay theo lưới ruộng, camera nhìn xuống, về ô sạc khi hết pin | máy sơn: **chờ user** (đổi thành nước tưới, hay giữ sơn: drone kẻ vạch / vẽ; giữ sơn thì camera vẫn đọc nhiều màu) |
+| 5 | Robot cầu thủ | sân bóng | omni chạy ngang, máy ném thành chân sút, radar tròn quét sân (như robot RoboCup) | máy ném → chân sút (ném qua rào = sút bổng); bàn xoay = xoay người trên sân tập |
+| 6 | Xe tuần tra núi tuyết | núi tuyết | bánh gai bám băng; **loa chủ động làm tuyết lăn** (lở có kiểm soát); cảm biến âm thanh nghe tín hiệu người cần cứu | cổng dịch chuyển → đường hầm (**user chốt 29/10**) |
+| 7 | Máy của em | xưởng của em | tự chọn part | |
+
+Combo gói 9 gợi ý (hội đồng): mùa 5 **"Trượt và sút"**: omni có máy ném được ném khi đang trượt (lõi hiện bắt đứng yên: `nem-dung-yen`, `san-hoc.js` mục MÁY NÉM);
+cùng khuôn với Bệ súng xích (bỏ một điều bất lợi). Mùa 6: để lúc lập kế hoạch mùa 6 (ứng viên: phát đúng nốt thì mở đường hầm / làm khối tuyết lăn).
+
+Mùa 6 "làm tuyết lăn" (user 29/10 hỏi, Claude góp ý, chưa chốt):
+- Ngoài đời đội tuần tra núi tuyết vừa **chủ động gây lở có kiểm soát** (để tuyết không lở bất ngờ) vừa **cứu hộ**: một cỗ máy làm cả hai, dùng đủ hai part âm thanh
+  (loa phát = chủ động, cảm biến nghe = tìm người). Lưu ý cho lời thoại: ngoài đời người ta gây lở bằng pháo hơi / nổ khí, tiếng nói thường không làm tuyết lở; trong game
+  coi loa là "còi sóng âm cực mạnh", đừng dạy trẻ rằng hét to làm lở tuyết.
+- Gợi ý luật: **khối tuyết** nằm trên sàn dốc (sàn mùa 5, mùa 6 được dùng) chỉ lăn khi nghe **đúng nốt** của nó; lăn theo luật bóng tròn mùa 5 (tới vật cản, lấp hố).
+  Python: `dict` khối → nốt (`{"A": 3, "B": 5}`), `set` khối đã lăn. Tốn một luật mới (tuyết đáp nốt) nhưng dùng lại máy lăn bóng sẵn có.
+- Còn phải chốt: khối tuyết thay hay đi cùng "nguồn phát nhạc" (vật mùa 6); nguồn phát giữ vai máy báo hiệu của người cần cứu.
 
 ## Ô còn trống
 | Ô | Gợi ý của Claude |
@@ -104,7 +130,7 @@ Yếu tố sân cần một nâng cấp mới dùng được (ô sạc cần H�
 | 3 Tín hiệu | chuỗi | logic `and` / `or` / `elif` | chuỗi `"N"` / `"S"` | Nhện | Nam châm | Cảm ứng từ | sắt + nam châm, hố, đệm từ | Nhảy · Đảo cực · Đọc cực | Đội xích và nhện |
 | 4 Bầu trời | danh sách | duyệt `for x in a`, `append` | chuỗi màu → danh sách màu | Drone | Máy sơn | Camera | hộp màu, sàn màu | Hạ cánh sạc · Bút liền · Camera dưới chân | Đội nam châm và màu |
 | 5 Lưới | lưới (danh sách lồng) | `return` | danh sách 4 hướng | Omni | Máy ném | Radar tròn | bóng tròn, sàn dốc, bàn xoay | Đi chéo · Chỉnh lực · Hình dạng | Đội omni và xích |
-| 6 Âm nhạc | `dict` | `set` | nốt nghe được | Bánh gai | Loa | Âm thanh | nguồn nhạc, băng đá, cổng | Thu gai · Phát nốt · Nghe nốt | mới |
+| 6 Âm nhạc | `dict` | `set` | nốt nghe được | Bánh gai | Loa | Âm thanh | nguồn nhạc, băng đá, đường hầm | Thu gai · Phát nốt · Nghe nốt | mới |
 
 **Mùa 7 Kỹ sư (10 gói, 200):** Lắp ráp Thân + Não · Thân + Tay · Đủ bộ · Đua đối kháng · Đọ sức part mạnh · Phối hợp ×3 · Câu đố tổ hợp · Trùm cuối.
 
