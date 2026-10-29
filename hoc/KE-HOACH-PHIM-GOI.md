@@ -3,6 +3,9 @@
 **27/10 đã làm** (f027ac0 … b2671cc): bộ máy `game/phim-goi.js`, dữ liệu `game/phim-mua-1.js` (9 phim, gói combo khai sẵn), nút ▶ xem lại trên hộp gói, Cài đặt "Xem lại phim các gói", máy kiểm `kiem-phim-goi.mjs`.
 Đã quyết khi nghiệm thu: R1 trong phim theo màu sơn người chơi chọn (bảng sơn không có màu lam nên không trùng R2); phim gói 10 vẽ R1 có tay xoay (trùm mới của gói 10 sẽ dùng tay xoay).
 
+**29/10 user duyệt: nhân vật chính là EM (người chế tạo), R1 là bộ não robot của em** (KE-HOACH-7-MUA.md, Quy tắc đặt tên, mục 6). Đã viết lại lời phim mở đầu
+(md.1, .4, .5, .6) và phim gói mùa 1 có cảnh nhặt / lắp đồ theo góc nhìn em; hình giữ nguyên. Phim mùa 2 viết lại cùng đợt vòi phun / van hơi.
+
 User 27/10: "mỗi gói bạn làm 1 đoạn hoạt hình ngắn giống đoạn mở đầu để giới thiệu các robot, cơ chế mới trong màn".
 
 ## 1. Có sẵn gì

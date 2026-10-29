@@ -1474,7 +1474,8 @@
   // không "Hàm cho…"; chương tạo hàm thì "Chế lệnh: …". Chỉ đổi CHỮ HIỂN THỊ: mã gói / chương (khoá lưu tiến độ) giữ nguyên.
   // Mùa 2 chưa đổi: gộp một lần với gói vòi phun / van hơi (phiên vector đang làm).
   (function () {
-    var TEN_MUA = { 'mua-1': 'Xưởng R1', 'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
+    var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
+                     'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
     TT.mua.forEach(function (m) { if (TEN_MUA[m.ma]) m.ten = TEN_MUA[m.ma]; });
     var TEN_GOI_1 = { 'tay-gap': 'Tay kẹp', 'kho-hang': 'Nút đè', 'hai-robot': 'Gặp R2', 'combo': 'Nhìn bên, nhặt bên' };
     TT.goi.forEach(function (g) { if (g.mua === 'mua-1' && TEN_GOI_1[g.ma]) g.ten = TEN_GOI_1[g.ma]; });

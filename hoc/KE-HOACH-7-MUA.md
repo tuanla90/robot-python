@@ -49,15 +49,19 @@ Mùa 6 "làm tuyết lăn" (user 29/10 hỏi, Claude góp ý, chưa chốt):
 ## Quy tắc đặt tên và giọng kể (user duyệt 29/10; hội đồng 20261029-1738)
 
 Game tên **Mật Lệnh Robot** (đổi 29/10). Chỉ đổi chữ hiển thị, mã gói / chương giữ nguyên (khoá lưu). Khối đặt tên ở cuối `hoc/lo-trinh-hoc.js`.
-1. **Tên mùa = nơi robot làm việc** (1–3 chữ): Xưởng R1 · Nhà máy · Mỏ quặng · Thành phố · Sân bóng · Núi tuyết · Xưởng của em (mùa 7 khép vòng với mùa 1).
+1. **Tên mùa = nơi robot làm việc** (1–3 chữ): Kho hàng · Nhà máy · Mỏ quặng · Thành phố · Sân bóng · Núi tuyết · Xưởng của em (mùa 7: về lại xưởng của em).
+   Mùa 1 "Xưởng R1" → **"Kho hàng"** (user 29/10: mùa 1 là xe bê vác).
    Khái niệm Python không làm tên mùa (nếu cần thì làm nhãn phụ cho phụ huynh, chưa quyết).
 2. **Tên gói = món mới hay tình huống mới**, gọi đúng như thẻ bộ phận (`hoc/gioi-thieu-part.js`); mỗi món một tên trong cả game. Không "Combo", không "Đội" trống.
 3. **Tên chương = việc em làm**, không lặp tên gói, không "Hàm cho…", không tên khái niệm (if, while, biến); chương dạy tạo hàm thì "Chế lệnh: …".
 4. **Phim gói 4 nhịp**: sự cố → lắp món mới ("CẠCH!") → dùng được → một lệnh mới. Mỗi khung một ý, câu đọc to nghe tự nhiên, không nhồi hai lệnh.
    Không chữ vũ khí: dùng phun, xịt, mở van thay cho bắn, súng (mùa 2 đổi cùng gói vòi phun / van hơi).
 5. "Mật lệnh" dùng có chừng mực: phim mở đầu và phim cuối mùa (móc sang nơi tiếp theo), không rải ở mọi chương.
+6. **Nhân vật chính là EM, người chế tạo robot** (user duyệt 29/10). Không vẽ nhân vật người: phim kể bằng "em" (em tìm, em lắp, em viết mật lệnh).
+   **R1 là bộ não robot của em**, mùa nào cũng được lắp vào một thân máy mới (Xe chở hàng R1, Xe cứu hỏa R1, …); xưởng là xưởng của em; R2 là robot thứ hai em chế.
+   Câu thoại có R1 làm việc vẫn giữ ("R1 hạ tay, kẹp thùng"), câu nhặt / lắp đồ thì chủ thể là em.
 
-Đã đổi 29/10: tên 4 mùa đang có, gói và chương mùa 1 (Tay gắp → Tay kẹp, Kho hàng → Nút đè, Đội hai robot → Gặp R2, Combo → Nhìn bên, nhặt bên;
+Đã đổi 29/10: tên 4 mùa đang có (mùa 1 sau đó thành Kho hàng), lời phim mở đầu và 9 phim gói mùa 1 theo góc nhìn em (quy tắc 6), gói và chương mùa 1 (Tay gắp → Tay kẹp, Kho hàng → Nút đè, Đội hai robot → Gặp R2, Combo → Nhìn bên, nhặt bên;
 20 chương theo quy tắc 3), phim mở đầu khung 3 (bánh xích "văng qua tường ra ngoài", khớp hình và khớp "chờ trên đồi" ở phim sau) và khung 6 ("mật lệnh").
 Mùa 3 (user 29/10): giữ thân nhện; gói 3 "Cảm ứng từ" → **"Cảm biến từ"** (trùng thẻ part), chương "Dò sắt" / "Chế lệnh: dò sắt" (mã cam-ung-tu giữ).
 Còn: mùa 2 (gộp với vòi phun), các tên khác của mùa 3 (đặt khi làm P2), nhãn Python cho phụ huynh.
