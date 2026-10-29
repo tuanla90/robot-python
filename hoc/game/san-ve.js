@@ -2083,7 +2083,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           });
           v.dx = 0; v.dy = 0; v.hop = 0;
           if (this.onRung) this.onRung();
-        } else if (s.ma === 'roi-ho') {                             // nhện rơi hố: nhỏ dần, xoay, mờ dần, bụi đất bắn lên, dấu '!'
+        } else if (s.ma === 'roi-ho') {                             // robot rơi hố (nhện; xe hai bánh / xích / omni cũng rơi, mùa 3): nhỏ dần, xoay, mờ dần, bụi đất bắn lên, dấu '!'
           this.baoHieu('!', 2200); v.choang = performance.now() + per + 1100;
           this.burst(s.o.x * T + 7, s.o.y * T + 7, 8, [BM.sanNauSangV2, BM.sanNauV1, BM.sanTrang], 0.8, 1, true);
           await this.tween(Math.max(per, ms * 0.9), my, function (k) { v.roi = ease(k); });

@@ -143,7 +143,7 @@
    kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
    def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, chua-tao-ham (màn có taoHam: chưa gọi hàm phải tạo, robot tới đích cũng chưa thắng; màn khai batBuocTaoHam: false thì bỏ), loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
-   CHÂN NHỆN (chương nhen, che-nhen; luật ở san-hoc.js, phần CHÂN NHỆN): roi-ho (lỗi: nhện rơi hố, chương trình dừng), nhay-hut (lỗi: ô giữa hay ô đáp của cú nhảy không hợp lệ, nhện rơi lại ô cũ),
+   CHÂN NHỆN (chương nhen, che-nhen; luật ở san-hoc.js, phần CHÂN NHỆN): roi-ho (lỗi: nhện rơi hố, chương trình dừng; XE hai bánh / xích / omni đi, bị băng đẩy hay bị đệm kéo vào ô hố cũng rơi: lời nói "xe rơi xuống hố", xe không nhảy được, đi đường khác; drone bay qua), nhay-hut (lỗi: ô giữa hay ô đáp của cú nhảy không hợp lệ, nhện rơi lại ô cũ),
    dau-dung-tran (lỗi: stand() khi đang đứng trong ô gầm), chan-goi-lai (lỗi: hai lệnh chân cùng nhịp); dam-tuong với vat 'gam-thap' (đi vào gầm mà chân đang duỗi); lech-bong-mo nói cả chân co / duỗi lệch bóng mờ
    (bongMo.chan); quen-wait nói "lệnh chân" khi crouch() / stand() chưa kịp trôi nhịp.
    MÁY SƠN / MỤC TIÊU to-hinh (chương may-son, che-may-son; luật ở san-hoc.js, phần MÁY SƠN): man.hinh = hình mờ (màn nhiều sân: mảng song song với man.san), man.mucBanDau = màu sơn lúc đầu.
@@ -904,8 +904,13 @@
     }
     if (roiHo.length) {
       var rh0 = roiHo[0], mrh = rh0.lenh ? (g.anhXa[rh0.lenh.dongPy] || null) : null;
-      them('roi-ho', 'Ở nhịp ' + rh0.nhip + ', ' + (man.loaiRobot === 'nhen' ? 'nhện' : 'robot') + ' rơi xuống hố ở ô (' + rh0.o.x + ', ' + rh0.o.y + ')' + (rh0.lenh ? ' (lệnh ' + rh0.lenh.ten + '() ở ' + viTri(mrh) + ')' : '') +
-        (sanThu ? '.' : ' nên chương trình dừng ở đó.') + ' Đặt chân vào ô hố là rơi. Muốn qua hố, nhện phải nhảy: co chân (crouch()), rồi duỗi chân (stand()) cùng một bước go_*() để bật qua ô hố.', { nhip: rh0.nhip, o: rh0.o, cho: cho(mrh) });
+      // Xe (hai bánh, xích, omni) cũng rơi hố (lõi: mọi thân trừ drone; P1 mùa 3 29/10 nói rõ lời cho xe): xe không nhảy được, phải đi đường khác.
+      var laNhenRh = man.loaiRobot === 'nhen', laXeRh = man.loaiRobot === 'banh' || man.loaiRobot === 'xich' || man.loaiRobot === 'omni';
+      var bangRh = (res.vet || []).some(function (v) { return v.loai === 'nhip' && v.nhip === rh0.nhip && (v.suKien || []).some(function (e) { return e.ma === 'bang-day' && e.den && e.den.x === rh0.o.x && e.den.y === rh0.o.y; }); });
+      them('roi-ho', 'Ở nhịp ' + rh0.nhip + ', ' + (laNhenRh ? 'nhện' : laXeRh ? 'xe' : 'robot') + ' rơi xuống hố ở ô (' + rh0.o.x + ', ' + rh0.o.y + ')' + (rh0.lenh ? ' (lệnh ' + rh0.lenh.ten + '() ở ' + viTri(mrh) + ')' : '') +
+        (bangRh ? ' (băng chuyền đẩy xe vào ô hố)' : '') + (sanThu ? '.' : ' nên chương trình dừng ở đó.') +
+        (laXeRh ? ' Bánh xe lăn vào ô hố là rơi, xe không nhảy qua hố được: đi đường khác tránh ô hố' + (man.doi ? ', hay để nhện trong đội nhảy qua' : '') + '.'
+          : ' Đặt chân vào ô hố là rơi. Muốn qua hố, nhện phải nhảy: co chân (crouch()), rồi duỗi chân (stand()) cùng một bước go_*() để bật qua ô hố.'), { nhip: rh0.nhip, o: rh0.o, cho: cho(mrh) });
     }
     var omniCheo = res.suKien.filter(function (e) { return e.ma === 'omni-khong-cheo'; });
     if (omniCheo.length) {

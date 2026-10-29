@@ -335,7 +335,8 @@
         - Ô n GẦM THẤP: nhện chui qua (và đứng trong đó) được khi chân đang CO; chân đứng mà bước vào thì đâm ('dam-tuong', vat 'gam-thap', đứng yên, vẫn mất 2 nhịp). Đang đứng trong ô gầm mà
           stand() thì đầu đụng trần: chân vẫn co, sự kiện 'dau-dung-tran' { nhip, o, lenh } (lỗi). Băng chuyền đẩy nhện đang đứng vào gầm cũng đâm ('bang-chan'). Mọi thân khác (xe bánh, xích, omni) không vào gầm
           (lyDoChan 'gam-thap'); drone bay qua.
-        - Ô u HỐ: bước vào (đi, bị băng đẩy, hay nhảy rơi xuống) là RƠI: cuối nhịp đó sự kiện { ma:'roi-ho', nhip, o, lenh } (lỗi), dungSom = 'roi-ho', chương trình dừng, không thắng. Mọi thân trừ drone (bay qua).
+        - Ô u HỐ: bước vào (đi, bị băng đẩy, bị đệm từ kéo / đẩy, hay nhảy rơi xuống) là RƠI: cuối nhịp đó sự kiện { ma:'roi-ho', nhip, o, lenh } (lỗi), dungSom = 'roi-ho', chương trình dừng, không thắng.
+          Mọi thân trừ drone (bay qua): XE hai bánh / xích / omni cũng rơi (lyDoChan không chặn ô u, xe lăn vào là rơi; P1 mùa 3 29/10 xác nhận, kiem-xe-roi-ho.mjs), cham.js nói "xe rơi xuống hố".
           Vật không đặt lên ô n / u được.
         - NHẢY: nhện đang CO mà ra stand() cùng nhịp đầu với một bước go_*() thì chân bật duỗi rồi nhện BẬT QUA MỘT Ô: nhịp thứ hai của bước đưa nhện sang ô cách 2 ô theo hướng bước (bay qua ô giữa), tự duỗi chân.
           Ô giữa phải bay qua được: sàn (kể cả bậc thang, băng chuyền, vật nằm đất), hố u, hàng rào thấp =. Tường #, nút N, cửa đóng, gầm n (trần thấp) và mép sân chắn. Ô đáp phải đứng được
