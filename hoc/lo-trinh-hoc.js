@@ -382,6 +382,22 @@
     loiGiai: bai(['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
     goiY: ['Xoay tay chỉ được khi tay đang nâng (arm_up).', 'Màn sau vật nằm bên phải: em tự đổi lệnh xoay.']
   });
+  // HD3 (29/10, phương án 3b-A của HD2): hai-robot.1 là màn TRÌNH DIỄN hai robot (chiChay): R1 và R2 đều có go_wall() khoá, bấm Chạy thấy hai robot chạy
+  // cùng lúc (cham.js chamDoi dùng maMau.doi[i] khi chiChay). Việc "chạm thẻ R2 rồi viết cho R2" dời sang hai-robot.2: R1 viết sẵn lời giải, R2 trống.
+  sua('hai-robot.1', {
+    ten: 'Hai lá cờ', chiChay: true, chinhCoDinh: true,
+    deBai: 'Hai robot, mỗi robot một chương trình riêng. R1 và R2 đều đã có go_wall(). Bấm Chạy xem hai robot chạy cùng lúc, mỗi robot tới cờ của nó.',
+    veMaMau: 'Chương trình của cả hai robot đã viết sẵn và khoá. Chạm R1 / R2 ở đầu khung chương trình để xem chương trình từng robot.',
+    maMau: { doi: [{ chinh: ['go_wall()'] }, { chinh: ['go_wall()'] }], hamCuaMan: [] },
+    loiGiai: { doi: [{ chinh: ['go_wall()'] }, { chinh: ['go_wall()'] }], hamCuaMan: [], hamCuaEmMoi: [] },
+    goiY: ['Hai robot cùng chạy một nhịp chung: mỗi nhịp cả hai cùng làm một bước.', 'Màn sau em chạm thẻ R2 để tự viết chương trình cho R2.']
+  });
+  (function (m) {
+    m.maMau = { doi: [{ chinh: m.loiGiai.doi[0].chinh.slice() }, { chinh: [] }], hamCuaMan: [] };
+    m.deBai = 'Mỗi làn có một vật trước mặt robot và một ô đích sau lưng. R1 đã có chương trình: nhặt vật, quay đầu, đặt xuống. Chạm thẻ R2 rồi viết chương trình cho R2 để hai robot cùng làm.';
+    m.veMaMau = 'Chạm R1 / R2 ở đầu khung chương trình để đổi robot.';
+    m.phienBanNoiDung = 2;
+  })(get('hai-robot.2'));
   // Gói 5: 8 màn mới (man-banh-lui-them.js, mã banh-lui.1–4 và che-banh-lui.1–4). Hai chương chỉ có ở lộ trình nên chèn tạm vào cuối thuTu
   // cho ManHoc.them nhận (như nut-de); thuTu mùa 1 được dựng lại theo MUA_1 bên dưới. `nguon` giữ bản gốc như mọi màn khác.
   TT.thuTu.push('banh-lui', 'che-banh-lui');

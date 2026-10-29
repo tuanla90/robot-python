@@ -1287,6 +1287,8 @@
     var bais = man.doi.map(function (r, i) {
       var ch = ds[i] ? ds[i].chinh : (i === 0 && baiLam && baiLam.chinh ? baiLam.chinh : null);
       if (laDoiThu(i) && man.maMau && man.maMau.doi && man.maMau.doi[i]) ch = man.maMau.doi[i].chinh;
+      // HD3: màn trình diễn nhiều robot (man.chiChay, như ganCoDinh của màn một robot): mọi robot chạy chương trình khoá của bản mẫu, bỏ bài gửi lên
+      if (man.chiChay === true && man.maMau && man.maMau.doi && man.maMau.doi[i]) ch = man.maMau.doi[i].chinh;
       var hm = laDoiThu(i) && man.maMau ? (man.maMau.hamCuaMan || []) : hamCuaMan;
       return { chinh: (ch || []).slice(), hamCuaMan: hm.map(saoHam) };
     });

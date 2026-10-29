@@ -328,12 +328,18 @@
   /* ============================================================ Chương 11 · Đội hai robot */
   /* màn hai robot đầu tiên: R1 đã có chương trình; chạm thẻ R2 để viết chương trình của R2 (thẻ R1 / R2 ở đầu khung chương trình) */
   function xeDangChon() { try { return Choi.trangThai().xe || 0; } catch (e) { return 0; } }
+  // HD3 (29/10): hai-robot.1 là màn trình diễn (chiChay, cả hai robot khoá go_wall()); bước "chạm R2 rồi viết cho R2" dời sang hai-robot.2 (R1 viết sẵn).
   H['hai-robot.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Hai chương trình đã khoá. Bấm Chạy: R1 và R2 chạy cùng lúc.', xong: 'chay' },
+    { khongAn: true, dich: 'nut:xe-2', chu: 'Mỗi robot một chương trình. Chạm R2 để xem chương trình của R2.', huong: 'duoi', rong: 170, xong: ['doi-xe', 'bam'], han: 9000,
+      daLam: function () { return xeDangChon() === 1; } }
+  ];
+  H['hai-robot.2'] = [
     { khongAn: true, dich: 'nut:xe-2', chu: 'Mỗi robot một chương trình. R1 đã có sẵn: chạm R2 để viết cho R2.', huong: 'duoi', rong: 170, xong: 'doi-xe',
       daLam: function () { return xeDangChon() === 1; } },
-    khoiTheo(['khoi:em:go_wall'], 'Chạm go_wall(): R2 cũng đi tới cờ như R1.', 'go_wall() nằm ở thẻ Cảm biến. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { daLam: function () { return xeDangChon() === 1 && dongCo(/^\s*go_wall\(\)/) >= 0; } }),
-    buocChay('Bấm Chạy: hai robot chạy cùng lúc.')
+    khoiTheo(['khoi:em:pick'], 'Chạm pick(): R2 làm giống R1, nhặt vật trước mặt.', CHU_THE,
+      { daLam: function () { return xeDangChon() === 1 && dongCo(/^\s*pick\(\)/) >= 0; } }),
+    buocChay('Viết đủ cho R2 như R1 rồi bấm Chạy: hai robot chạy cùng lúc.')
   ];
 
   /* ============================================================ Gói 7 · Cảm biến bên (HD2: cam-bien-ben.1 trình diễn left_clear, chiChay, đứng đầu chương) */
@@ -552,5 +558,5 @@
   ];
 
   window.HuongDanMan = H;
-  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2 };
+  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2 };
 })();

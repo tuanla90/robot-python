@@ -45,7 +45,7 @@ console.log('== 1. HuongDanMan: màn có thật, màn làm quen đều có hư�
 kiem('huong-dan-man.js đặt window.HuongDanMan (mã màn → mảng bước)', !!HDM && typeof HDM === 'object' && maCo.length > 0 && maCo.every((m) => Array.isArray(HDM[m]) && HDM[m].length > 0));
 const khongCo = maCo.filter((m) => !ManHoc.timMa(m));
 kiem('mọi mã trong HuongDanMan là màn có thật (ManHoc.timMa)', khongCo.length === 0, khongCo.join(', '));
-const PHAI_CO = ['hai-banh.1', 'hai-banh.2', 'hai-banh.10', 'xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'che-xe.1', 'banh-lui.5', 'che-xe.4', 'tay-gap.1', 'tay-gap.5',
+const PHAI_CO = ['hai-banh.1', 'hai-banh.2', 'hai-banh.10', 'xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'che-xe.1', 'banh-lui.5', 'che-xe.4', 'hai-robot.1', 'hai-robot.2', 'tay-gap.1', 'tay-gap.5',
   'vong-lap.1', 'vong-lap.2', 'vong-lap.3', 'vong-lap.8', 'nut-de.1', 'tay-xoay.1', 'tay-xoay.2', 'cam-bien-ben.1', 'khoang-cach.1', 'khoang-cach.12', 'khoang-cach.2', 'khoang-cach.13', 'khoang-cach.5', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.5', 'nhen.2', 'nhen.3', 'sung-hoi.1', 'sung-hoi.2', 'sung-hoi.4', 'che-sung-hoi.1', 'che-sung-hoi.2', 'list.1', 'che-list.1', 'che-list.4', 'may-son.1', 'may-son.2', 'may-son.6'];
 const thieu = PHAI_CO.filter((m) => !HDM[m]);
 kiem('có hướng dẫn cho các màn có thao tác mới (nút Chạy / chèn khối / xóa / kéo / Xưởng / thụt lề / for / if / while / đếm)', thieu.length === 0, thieu.join(', '));
