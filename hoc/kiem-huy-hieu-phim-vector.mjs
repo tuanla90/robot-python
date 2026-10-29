@@ -233,7 +233,11 @@ const conPixel = [];
 {
   const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8')).huyHieu, HH = VE.ctx.VeVector.HUY_HIEU, sai = [];
   const tap = (a) => JSON.stringify([...a].sort());
-  if (tap(DS) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS.includes(m)).join(',') + ' / thừa ' + DS.filter((m) => !CHUP.DS.includes(m)).join(','));
+  // Mã huy hiệu VẼ MỚI sau khi gỡ pixel (không có trong bản chụp): phải có hình vector riêng; mọi mã khác vẫn y hệt bản chụp.
+  const MOI_SAU_CHUP = ['bien-xich'];                     // mùa 2 xong (29/10): trùm bien-xich.10
+  for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));
+  const DS_CHUP = DS.filter((m) => !MOI_SAU_CHUP.includes(m));
+  if (tap(DS_CHUP) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS_CHUP.includes(m)).join(',') + ' / thừa ' + DS_CHUP.filter((m) => !CHUP.DS.includes(m)).join(','));
   if (JSON.stringify(HH.BI_DANH) !== JSON.stringify(CHUP.biDanh)) sai.push('BI_DANH ≠ chụp');
   for (const a of Object.keys(CHUP.biDanh)) if (VE.ctx.HuyHieu.maVec(a) !== CHUP.biDanh[a]) sai.push('maVec(' + a + ') = ' + VE.ctx.HuyHieu.maVec(a) + ' ≠ ' + CHUP.biDanh[a]);
   const rieng = [...nguon('huy-hieu.js').matchAll(/^\s*HINH\['([\w-]+)'\] = function/gm)].map((m) => m[1]).filter((m) => !DS.includes(m));

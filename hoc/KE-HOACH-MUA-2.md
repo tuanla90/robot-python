@@ -158,3 +158,10 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   Người giao chạy lại sau gộp: kiem-trum-mua-2 107, do-duong, kiem-be-sung 107, kiem-doi-mua-2 107, kiem-lo-trinh 894, kiem-che-xe 270, kiem-loi-mua-2 93, kiem-nut-bat-san 30, kiem-bang-mau 19, kiem-phim-goi 41, kiem-khay 184.
   Người giao chấp nhận: ban-bi-chan mức thông tin ở trum-mua-2.2 (cố ý bắn cửa nhịp đang đóng); recall gói 9 chỉ tính màn cần bệ súng / gọi hàm gói 9; ba màn đội khóa như gói 8; trùm cuối 2 sân; cấm nút đè M ở gói 10 (bộ mô phỏng không có).
   Còn: huy hiệu vector tong-hop-2 / nha-may-chay (V7b); thêm hai mã đó vào HUY của phim-mua-2.js (V7b); chưa xem trình duyệt.
+- **29/10 MÙA 2 XONG, ĐÃ MỞ** (agent Claude opus, nhánh claude/mua-2-xong, gộp 3614e3b, không xung đột; brief ban-giao/brief-mua-2-xong.md, báo cáo ban-giao/bao-cao-mua-2-xong.md).
+  Trùm bien-xich.10 "Đếm để về đúng hàng" + huy hiệu vector bien-xich (mùa 2 đủ 20 trùm, mỗi trùm một huy hiệu vector riêng); 16 chỗ nhảy đường cong ở gói 1 / 2 / 4 sửa hết
+  (đổi thứ tự, sửa qua lộ trình, thay màn; giữ `ma`); phanh kiem-lo-trinh.mjs (g) đường cong cả mùa, (h) 20 chương × 10 màn + trùm có huy hiệu (`--loi-gia-mua-2` 8 / 8 đỏ);
+  mùa 2 bỏ `an`, tên "Ghi nhớ", ngưỡng sao gói khai cứng 0, 30, …, 270 (lo-trinh-sao.js).
+  Người giao kiểm: đo đường cong độc lập 0 chỗ nhảy; chấm trong trình duyệt 200 / 200 màn 3 sao (kho hàm cộng dồn theo lộ trình); trùm bien-xich chơi 3 sao; mùa "Ghi nhớ" hiện ở màn chọn gói
+  với nút mua sẵn có; khổ 360 px không tràn; không lỗi console. npm test trên main sau gộp: 88/88.
+  Còn: gói T (màn trình diễn `chiChay` cho khối mới mùa 2 + màn giấu hàm cũ, máy dò lách mùa 2), chờ main có cờ `chiChay` của gói HD1 (KE-HOACH-MUA-3.md mục 4 câu 4).

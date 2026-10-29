@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { coHinhRieng } from './huy-hieu-ds.mjs';   // mùa 2 xong (29/10): huy hiệu trùm chương mùa 2 phải có hình vector riêng
 
 const require = createRequire(import.meta.url);
 const M = require('./lo-trinh-hoc.js');
@@ -208,14 +209,14 @@ kiem('(f) gói đội tay xoay (cần nam châm) không ở mùa 1, đứng sau 
 });
 
 // ---------------------------------------------------------------- MÙA 2 = 10 GÓI (27/10, KE-HOACH-MUA-2.md): thứ tự gói, ràng buộc Python / part theo gói
-// Chạy với --loi-gia-mua-2: cắm sáu lỗi giả vào dữ liệu đã nạp, mục mùa 2 phải ĐỎ cả (a)–(f) rồi dừng (không chạy phần sau).
+// Chạy với --loi-gia-mua-2: cắm tám lỗi giả vào dữ liệu đã nạp, mục mùa 2 phải ĐỎ cả (a)–(h) rồi dừng (không chạy phần sau).
 const LOI_GIA_2 = process.argv.includes('--loi-gia-mua-2');
 // Bảng mục 2 KE-HOACH-MUA-2.md: [mã gói, [[chương, màn CÓ SẴN theo thứ tự]]]. Màn mới của các tệp ngân hàng mùa 2 (TEP_MUA_2) nối sau màn có sẵn.
 const BANG_MUA_2 = [
-  ['xich', [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.6', 'che-xich.8'].concat(BIEN_MUA_2, ['che-xich.9'])]]],
-  ['sung-hoi', [['sung-hoi', day('sung-hoi', MUOI)], ['tham-so', day('tham-so', MUOI)]]],
+  ['xich', [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6'].concat(BIEN_MUA_2, ['che-xich.9'])]]],
+  ['sung-hoi', [['sung-hoi', day('sung-hoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])], ['tham-so', day('tham-so', MUOI)]]],     // 29/10: sung-hoi.9 lên sau .6 (đường cong)
   ['hong-ngoai', [['hong-ngoai', []], ['che-hong-ngoai', []]]],
-  ['nha-may', [['bang-chuyen', day('bang-chuyen', MUOI)], ['che-sung-hoi', day('che-sung-hoi', MUOI)]]],
+  ['nha-may', [['bang-chuyen', day('bang-chuyen', [1, 2, 6, 5, 7, 8, 3, 4, 9, 10])], ['che-sung-hoi', day('che-sung-hoi', [1, 2, 3, 4, 5, 6, 8, 7, 9, 10])]]],     // 29/10: đường cong
   ['day-thung', [['day-thung', []], ['che-day-thung', []]]],
   ['luc-ban', [['luc-ban', day('luc-ban', MUOI)], ['che-luc-ban', []]]],
   ['do-nhiet', [['do-nhiet', []], ['che-do-nhiet', []]]],
@@ -260,14 +261,25 @@ function thamSo(m) {
   return sai;
 }
 const dsSanCua = m => (Array.isArray(m.san[0]) ? m.san : [m.san]);
-kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_2 khai đủ 10 gói × 2 chương; mùa 2 ẩn; ngưỡng sao không khai cứng', () => {
+kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_2 khai đủ 10 gói × 2 chương; mùa 2 "Ghi nhớ" hiện; ngưỡng sao khai cứng khớp công thức TI_LE_SAO', () => {
   assert.deepEqual(M.mua2.map(g => [g.ma, g.chuong.map(c => c[0])]), BANG_MUA_2.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'MUA_2 khác bảng mục 2');
   assert.deepEqual(goiMua('mua-2').map(g => [g.ma, g.chuong]), goi2Bang.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'gói / chương mùa 2');
   for (const [, ds] of goi2Bang) for (const [c, dsMa] of ds) assert.deepEqual(M.danhSach.filter(m => m.chuong === c).map(m => m.ma), dsMa, c);
   assert.deepEqual(TT.thuTu.slice(chuongMua1.size, chuongMua1.size + chuongMua2.size), goi2Bang.flatMap(([, ds]) => ds.map(c => c[0])), 'chương mùa 2 đứng ngay sau mùa 1');
   for (const m of moiMua2) assert.ok(BANG_MUA_2.some(([, ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
-  assert.equal(TT.mua.find(x => x.ma === 'mua-2').an, true, 'mùa 2 phải còn ẩn');
-  for (const g of goiMua('mua-2')) assert.equal(g.sao, undefined, g.ma + ' khai cứng sao (mùa 2 đang dựng: để mo-goi.js tính TI_LE_SAO)');
+  // 29/10 mùa 2 xong: mùa 2 hiện (không `an`), tên "Ghi nhớ", vẫn bán (`ban`); ngưỡng sao gói khai cứng = công thức mo-goi.js (0,5 × tổng sao tối đa các gói trước
+  // trong mùa, làm tròn xuống bội 5) tính trên số màn thật lúc mở, và 0, 30, …, 270 như mùa 1.
+  const mua2 = TT.mua.find(x => x.ma === 'mua-2');
+  assert.ok(!mua2.an, 'mùa 2 còn ẩn');
+  assert.equal(mua2.ten, 'Ghi nhớ', 'tên mùa 2');
+  assert.ok(mua2.ban && mua2.ban.gia, 'mùa 2 mất `ban`');
+  for (const ma of ['mua-3', 'mua-4']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
+  let tr = 0;
+  for (const g of goiMua('mua-2')) {
+    assert.equal(g.sao, Math.floor(0.5 * tr / 5) * 5, g.ma + ' ngưỡng ' + g.sao + ' khác công thức');
+    tr += 3 * g.chuong.reduce((s, c) => s + M.danhSach.filter(m => m.chuong === c).length, 0);
+  }
+  assert.deepEqual(goiMua('mua-2').map(g => g.sao), [0, 30, 60, 90, 120, 150, 180, 210, 240, 270], 'ngưỡng sao mùa 2');
   // Chương cũ của mùa 2 ngoài bảng ở mùa ẩn
   for (const c of ['ban-xoay', 'nhen', 'doi-ho-bang', 'list', 'doi-xich', 'omni', 'doi-omni', 'che-xich']) assert.equal(goiCuaChuong(c).mua, 'mua-3', c);
 });
@@ -311,9 +323,48 @@ kiem2('(f) robot mùa 2 chỉ dùng part mùa 1 + xích + súng hơi (+ hồng n
     for (const h of (m.hamGoc || []).concat((m.doi || []).flatMap(d => d.hamGoc || []))) assert.ok(LENH_MUA_2.includes(h), m.ma + ' khay có ' + h);
   }
 });
+// (g) Đường cong CẢ MÙA 2 (luật đo KE-HOACH-MUA-1.md mục Trạng thái, cách đo như kiem-be-sung.mjs mục 5): dòng lời giải (chương trình chính, 0 nếu chinhCoDinh;
+// màn đội cộng các xe không coDinh; + thân hàm của màn + hàm của em mới), nhịp sao.nhip, ô = số ô không '#' của sân lớn nhất. Màn n ≤ max(1,5 × mốc, mốc + lề),
+// lề dòng 3 / nhịp 4 / ô 6; mốc = màn không trùm đứng ngay trước theo thứ tự cả mùa (qua ranh chương, ranh gói); trùm miễn và không làm mốc.
+const LE_CONG = { dong: 3, nhip: 4, o: 6 };
+const soDongCong = m => (m.doi ? m.loiGiai.doi.filter((d, i) => !m.doi[i].coDinh).reduce((s, d) => s + d.chinh.length, 0) : (m.chinhCoDinh ? 0 : m.loiGiai.chinh.length))
+  + (m.loiGiai.hamCuaMan || []).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
+const soOCong = m => Math.max(...dsSanCua(m).map(r => r.join('').replace(/#/g, '').length));
+const chiSoCong = m => ({ dong: soDongCong(m), nhip: m.sao.nhip, o: soOCong(m) });
+const chuongTheoGoi2 = () => goiMua('mua-2').flatMap(g => g.chuong.map(c => M.danhSach.filter(m => m.chuong === c).sort((a, b) => a.so - b.so)));
 if (LOI_GIA_2) {
-  console.log('Lỗi giả mùa 2: HỎNG ' + hong2 + ' / 6 mục (a)–(f).');
-  process.exit(hong2 === 6 ? 0 : 1);
+  // (g) đảo hai màn một chương (hong-ngoai.1 ↔ hong-ngoai.7: màn sân 30 ô thành màn đầu chương); (h) trùm day-thung.10 mất huy hiệu.
+  const a = get('hong-ngoai.1'), b = get('hong-ngoai.7'); [a.so, b.so] = [b.so, a.so]; M.tinhLai();
+  delete get('day-thung.10').huyHieu;
+}
+kiem2('(g) đường cong cả mùa 2: dòng / nhịp / ô của màn n ≤ max(1,5 × mốc, mốc + lề 3 / 4 / 6), mốc = màn không trùm ngay trước (qua ranh chương), trùm miễn', () => {
+  const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le), sai = [];
+  let moc = null;
+  for (const ds of chuongTheoGoi2()) for (const m of ds) {
+    if (m.hang === 'trum') continue;
+    if (moc) {
+      const v = chiSoCong(m), t = chiSoCong(moc);
+      for (const k of ['dong', 'nhip', 'o']) if (!tran(v[k], t[k], LE_CONG[k])) sai.push(m.ma + ' (' + m.chuong + '.' + m.so + ') sau ' + moc.ma + ': ' + k + ' ' + t[k] + '→' + v[k]);
+    }
+    moc = m;
+  }
+  assert.deepEqual(sai, [], sai.length + ' chỗ nhảy: ' + sai.join(' · '));
+});
+kiem2('(h) mỗi chương mùa 2 đúng 10 màn (so 1–10), màn 10 là trùm có huy hiệu, huy hiệu có hình vector riêng (coHinhRieng); 9 màn đầu không trùm, không huy hiệu', () => {
+  const ds = chuongTheoGoi2();
+  assert.equal(ds.length, 20, 'mùa 2 có ' + ds.length + ' chương có màn');
+  for (const ch of ds) {
+    const c = ch[0].chuong;
+    assert.deepEqual(ch.map(m => m.so), MUOI, c + ': ' + ch.length + ' màn, so ' + ch.map(m => m.so).join(','));
+    const t = ch[9];
+    assert.ok(t.hang === 'trum' && t.huyHieu && t.huyHieu.ma, c + ': màn 10 ' + t.ma + ' không phải trùm có huy hiệu');
+    assert.ok(coHinhRieng(t.huyHieu.ma), c + ': huy hiệu ' + t.huyHieu.ma + ' không có hình vector riêng');
+    for (const m of ch.slice(0, 9)) assert.ok(m.hang !== 'trum' && !m.huyHieu, m.ma + ' trước màn 10 là trùm / mang huy hiệu');
+  }
+});
+if (LOI_GIA_2) {
+  console.log('Lỗi giả mùa 2: HỎNG ' + hong2 + ' / 8 mục (a)–(h).');
+  process.exit(hong2 === 8 ? 0 : 1);
 }
 if (hong2) { console.log('Mùa 2: HỎNG ' + hong2 + ' mục.'); process.exit(1); }
 

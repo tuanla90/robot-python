@@ -225,6 +225,18 @@
     "o": 20,
     "nhip": 36
   },
+  "xich.2": {
+    "o": 8,
+    "nhip": 6
+  },
+  "xich.3": {
+    "o": 11,
+    "nhip": 8
+  },
+  "xich.9": {
+    "o": 13,
+    "nhip": 13
+  },
   "che-xich.8": {
     "o": 12,
     "nhip": 7
@@ -252,6 +264,18 @@
   "sung-hoi.8": {
     "o": 7,
     "nhip": 8
+  },
+  "tham-so.5": {
+    "o": 18,
+    "nhip": 19
+  },
+  "bang-chuyen.2": {
+    "o": 5,
+    "nhip": 8
+  },
+  "bang-chuyen.8": {
+    "o": 23,
+    "nhip": 20
   },
   "che-sung-hoi.7": {
     "o": 11,
