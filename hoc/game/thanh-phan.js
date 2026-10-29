@@ -140,6 +140,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var RE_IF_DS = /^(\s*(?:if|elif)\s+)([A-Za-z_]\w*)(\s*==\s*)("[^"]*"|[A-Za-z_]\w*)(\s*:.*)$/;            // if d == "U": / elif d == "D":
   var RE_DK = /^(\s*(?:while|if|elif)\s+)((?:not\s+)?[A-Za-z_]\w*\(\)|True|False)(\s*:.*)$/;                        // while front_clear(): / if not right_clear(): / while True:
   var RE_GOI_DS = /^(\s*([A-Za-z_]\w*)\()((?:[^()]|\([^()]*\))*)(\).*)$/;                       // forward(distance() + n): ngoặc lồng không cắt đôi đối số
+  var SO_TOI_DA = 12;                                                                        // bảng chọn số: 1–12 (bang-chuyen.7 lặp 10 lần vì băng đẩy lùi); aim 1–3, pin 1–15
   var RE_SO = /^\d+$/, RE_BIEN = /^[A-Za-z_]\w*$/, RE_CHUOI = /^"[^"]*"$/, RE_BTH = /^(\d+|[A-Za-z_]\w*)\s*[-+]\s*(\d+|[A-Za-z_]\w*)$/;      // RE_BTH: biểu thức đơn giản `3 - i`, `i + 1` (đối số aim)
 
   /* ---- DANH SÁCH (gói List, man.cauTruc có 'list'; TP.datCheList): `a = [2, 3, 1]`, `for n in a:`, `for n in [2, 3]:`, `a.append(1)` và danh sách đặt thẳng làm đối số `weave([2, 3, 1])`.
@@ -492,7 +493,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.chiDoc = chiDoc;
     function choXoa() { return !xt && !dangChay() && !Chan.dang() && !chiDoc(); }
     function thutLe() { return !!(tuyChon.thutLe && tuyChon.thutLe()); }
-    function soToiDa(ten, k) { return tuyChon.soToiDa ? (tuyChon.soToiDa(ten, k) || 9) : 9; }      // đối số số lớn nhất chọn được (aim: 3); mặc định 9
+    function soToiDa(ten, k) { return tuyChon.soToiDa ? (tuyChon.soToiDa(ten, k) || SO_TOI_DA) : SO_TOI_DA; }      // đối số số lớn nhất chọn được (aim: 3); mặc định SO_TOI_DA
     function camDuoc() { return (tuyChon.camBien && tuyChon.camBien()) || []; }                  // hàm cảm biến của màn (front_clear…): điều kiện chạm đổi được
     function bienDuoc() { return (tuyChon.bienDuoc && tuyChon.bienDuoc()) || []; }       // tên các đối số của hàm đang sửa (dùng trong thân hàm)
     function kieuBienCua(ten) { return (tuyChon.kieuBien && tuyChon.kieuBien(ten)) || 'so'; }   // 'so' | 'don' (một chữ) | 'ghep' (chuỗi chữ) của một đối số của hàm đang sửa
@@ -632,7 +633,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         return;
       }
       if (kd === 'so') {
-        chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), toiDa: soToiDa(d && d.ten, kk), bien: bienTam('so', i, null, d && d.ten), khiChon: function (v) { ed.datSo(i, v, kk); } });
+        var tdA = soToiDa(d && d.ten, kk);
+        chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), toiDa: tdA, coKhong: !!d && d.loai === 'goi' && tdA > 3, bien: bienTam('so', i, null, d && d.ten), khiChon: function (v) { ed.datSo(i, v, kk); } });      // đối số của lời gọi hàm chọn được 0 (go_safe(0): đi tới sát tường); range thì không
         return;
       }
       var gia = d && d.ds[kk] !== undefined ? d.ds[kk] : '', laChu = RE_CHUOI.test(gia);
@@ -1198,7 +1200,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var st = document.getElementById('stage'), rs = st.getBoundingClientRect(), k = st.offsetWidth ? rs.width / st.offsetWidth : 1;
     var el = h('div', 'chon-so'); el.setAttribute('data-nut', 'chon-so');
     el.setAttribute('aria-label', t('choi.chonSo'));
-    var tdN = o.toiDa >= 1 && o.toiDa <= 15 ? o.toiDa : 9;
+    var tdN = o.toiDa >= 1 && o.toiDa <= 15 ? o.toiDa : SO_TOI_DA;
     if (tdN < 9) el.classList.add('hep');
     if (tdN > 9) el.classList.add('rong');                                              // pin 1–15: lưới 5 cột
     if ((o.bien || []).some(function (ten) { return ten.length > 10; })) el.classList.add('bien-dai');      // chip dài (distance() + n): lưới số nới rộng, chip chữ nhỏ cho vừa khung
@@ -1208,6 +1210,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(n); });
         el.appendChild(b);
       })(n);
+    }
+    if (o.coKhong) {                                                                    // số 0 đứng cuối lưới (sau 12), như phím 0 của bàn phím số
+      var b0 = h('button', 'bt g-pu cs' + (o.so === 0 && !o.hien ? ' on' : ''), '0'); b0.setAttribute('data-so', 0);
+      b0.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(0); });
+      el.appendChild(b0);
     }
     if (o.bien && o.bien.length) {
       var hb = h('div', 'cs-bien' + (o.bien.some(function (ten) { return /[\[(]/.test(ten); }) ? ' xuong' : '')); hb.setAttribute('data-nut', 'chon-bien');      // a[0], a[i], len(a): chip dài, xuống dòng
@@ -1648,9 +1655,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var cx = layCtx() || {}, l = [(cx.hamCuaMan || []), (cx.kho || [])], i, j, f = null;
       for (i = 0; i < l.length && !f; i++) for (j = 0; j < l[i].length && !f; j++) if (l[i][j].ten === ten) f = l[i][j];
       var p = f && f.thamSo ? f.thamSo[k] : null;
-      if (!p) return 9;
+      if (!p) return SO_TOI_DA;
       var re = new RegExp('^\\s*aim\\(\\s*' + p + '\\s*\\)');
-      return (f.than || []).some(function (d) { return re.test(String(d)); }) ? 3 : 9;
+      return (f.than || []).some(function (d) { return re.test(String(d)); }) ? 3 : SO_TOI_DA;
     };
   }
   /* ------------------------------------------------------------ Palette */

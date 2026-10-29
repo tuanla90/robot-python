@@ -509,7 +509,7 @@ console.log('\n== 5d. Chỗ cần một số: chọn a[0], a[i], len(a), biến 
   const tenChip = (b) => b ? b.querySelectorAll('[data-bien]').map((x) => x.getAttribute('data-bien')) : [];
   const E1 = dungEditor(['a = [2, 3, 1]', 'for n in a:', '    forward(3)', 'forward(2)']);
   E1.cham(2, '.num');
-  kiem('forward(3) trong for n in a: bảng số có 9 số + chip n (biến vòng), a[0], len(a)', J(tenChip(E1.bang())) === J(['n', 'a[0]', 'len(a)']) && E1.bang().querySelectorAll('[data-so]').length === 9, J(tenChip(E1.bang())));
+  kiem('forward(3) trong for n in a: bảng số có 1–12 và số 0 (đối số lời gọi hàm) + chip n (biến vòng), a[0], len(a)', J(tenChip(E1.bang())) === J(['n', 'a[0]', 'len(a)']) && E1.bang().querySelectorAll('[data-so]').length === 13, J(tenChip(E1.bang())));
   E1.nut('[data-bien="n"]').click();
   kiem('chọn n → forward(n)', E1.arr[2] === '    forward(n)', E1.arr[2]);
   E1.cham(3, '.num');
@@ -592,7 +592,7 @@ console.log('\n== 5e. Tên danh sách: chọn tên khác, đổi tên theo các 
   kiem('khối list chèn ở chương trình không có danh sách nào vẫn nguyên chữ (for n in a:) — lỗi chạy sẽ nhắc', (E7.ed.chen('for n in a:'), E7.arr[1] === 'for n in a:'));
   const E8 = dungEditor(['a = [2, 3]', 'a.append(1)']);
   E8.cham(1, '.num[data-k="1"]');
-  kiem('giá trị đem thêm a.append(1): bảng số 1–9 như số thường (không phải bảng phần tử)', !E8.bang()._cls.has('chon-ptu') && E8.bang().querySelectorAll('[data-so]').length === 9);
+  kiem('giá trị đem thêm a.append(1): bảng số 1–12 như số thường (không phải bảng phần tử)', !E8.bang()._cls.has('chon-ptu') && E8.bang().querySelectorAll('[data-so]').length === 12);
   E8.nut('[data-so="6"]').click();
   kiem('chọn 6 → a.append(6)', E8.arr[1] === 'a.append(6)', E8.arr[1]);
   const E9 = dungEditor(['seen = ["red"]', 'seen.append("blue")']);
