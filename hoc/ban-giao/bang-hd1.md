@@ -97,7 +97,7 @@ Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện tron
 
 | số | mã | tên | mới | HD | trình diễn | ép | đâm là thua |
 |---|---|---|---|---|---|---|---|
-| 1 | nut-de.1 | Thùng giữ cửa |  |  |  |  |  |
+| 1 | nut-de.1 | Thùng giữ cửa |  | có | có |  |  |
 | 2 | nut-de.2 | Tự đặt lên nút |  |  |  |  |  |
 | 3 | nut-de.3 | Thùng cuối hành lang |  |  |  |  |  |
 | 4 | nut-de.4 | Ngách đối diện |  |  |  |  |  |
@@ -157,8 +157,8 @@ Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện tron
 
 | số | mã | tên | mới | HD | trình diễn | ép | đâm là thua |
 |---|---|---|---|---|---|---|---|
-| 1 | tay-xoay.1 | Xoay sang trái | lệnh arm_left, lệnh arm_right | có |  |  |  |
-| 2 | tay-xoay.2 | Đố: sai bên |  |  |  |  |  |
+| 1 | tay-xoay.1 | Xoay sang trái | lệnh arm_left, lệnh arm_right | có | có |  |  |
+| 2 | tay-xoay.2 | Đố: sai bên |  | có |  |  |  |
 | 3 | tay-xoay.3 | Đố: khớp kẹt |  |  |  |  |  |
 | 4 | tay-xoay.4 | Mang hàng sang bên |  |  |  |  |  |
 | 5 | tay-xoay.5 | Nhanh hơn quay xe |  |  |  |  |  |

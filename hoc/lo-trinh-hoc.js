@@ -351,6 +351,26 @@
     loiGiai: bai(lap(6, ['move()'])),
     goiY: ['Số trong range() là số lần lặp.', 'Không có vòng for thì phải viết move() sáu dòng.']
   });
+  // HD2 việc 4 (29/10): màn ĐẦU của gói 4 / 6 thành màn TRÌNH DIỄN (chiChay) cho cái mới của gói, màn kế tiếp ép dùng nó:
+  // gói 4 nut-de.1: cơ chế NÚT ĐÈ / THÙNG GIỮ CỬA (bấm Chạy thấy carry() đặt thùng lên M, cửa C mở); nut-de.2 phải tự đặt thùng lên nút (cửa đóng là cách duy nhất).
+  // gói 6 tay-xoay.1: lệnh arm_left / arm_right (bấm Chạy thấy tay xoay sang hông nhặt vật rồi xoay về trước đặt); tay-xoay.2 mã mẫu sai bên, phải sửa arm_left → arm_right.
+  // Gói 5 (bánh lùi) và gói 7 (cảm biến bên) màn đầu là màn CHẾ HÀM (che-xe.4 back, che-cam-bien.4 to_gap): xem báo cáo HD2. Gói 8 (hai robot): máy chấm đội chưa khoá theo chiChay.
+  sua('nut-de.1', {
+    ten: 'Thùng giữ cửa', chiChay: true, chinhCoDinh: true,
+    deBai: 'Cửa C đang đóng. Nút đè M nằm bên trái thùng gỗ: có thùng nằm trên M thì cửa C mở. Chương trình gọi carry() để đặt thùng lên M rồi đi qua cửa tới cờ. Bấm Chạy xem cửa mở thế nào.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: carry() nhặt thùng, tiến một ô, đặt thùng sang trái lên nút M; thùng đè nút thì cửa C mở.',
+    maMau: bai(['carry()', 'move()', 'move()', 'move()']),
+    loiGiai: bai(['carry()', 'move()', 'move()', 'move()']),
+    goiY: ['Nút M chỉ mở cửa khi có thùng nằm đè lên.', 'Màn sau em tự nhặt thùng và đặt lên nút.']
+  });
+  sua('tay-xoay.1', {
+    ten: 'Xoay sang trái', chiChay: true, chinhCoDinh: true,
+    deBai: 'Một vật nằm ngay bên trái xe, ô đích nằm ngay trước mặt xe. Tay xoay nhặt được vật ở bên hông mà xe không cần quay: arm_left() xoay tay sang trái, arm_right() xoay sang phải. Bấm Chạy xem tay đưa vật tới ô đích.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: tay xoay sang trái, hạ xuống kẹp vật, nâng lên, xoay về trước rồi hạ xuống thả vào ô đích.',
+    maMau: bai(['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
+    loiGiai: bai(['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
+    goiY: ['Xoay tay chỉ được khi tay đang nâng (arm_up).', 'Màn sau vật nằm bên phải: em tự đổi lệnh xoay.']
+  });
   // Gói 5: 8 màn mới (man-banh-lui-them.js, mã banh-lui.1–4 và che-banh-lui.1–4). Hai chương chỉ có ở lộ trình nên chèn tạm vào cuối thuTu
   // cho ManHoc.them nhận (như nut-de); thuTu mùa 1 được dựng lại theo MUA_1 bên dưới. `nguon` giữ bản gốc như mọi màn khác.
   TT.thuTu.push('banh-lui', 'che-banh-lui');

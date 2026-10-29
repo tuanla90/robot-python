@@ -221,8 +221,9 @@ let truoc = null;
 for (const m of DS) {
   const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
   kiem(m.ma + ': đủ trường, đúng hàng, một sân (trừ trùm), sân có nút M và cửa', () => {
-    for (const k of ['ten', 'deBai', 'san', 'batDau', 'sao', 'maMau', 'loiGiai', 'loiGiaiKhac', 'goiY', 'hamCuaEmCan']) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
-    assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
+    // HD2: màn trình diễn (chiChay, nut-de.1) không có lời giải khác / lời sai (chương trình khoá, chỉ bấm Chạy)
+    for (const k of ['ten', 'deBai', 'san', 'batDau', 'sao', 'maMau', 'loiGiai', 'goiY', 'hamCuaEmCan'].concat(m.chiChay ? [] : ['loiGiaiKhac'])) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
+    if (!m.chiChay) assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
     assert.equal(m.hang, m.so <= 3 ? 'lam-quen' : m.so <= 6 ? 'luyen' : m.so <= 9 ? 'bien-the' : 'trum', m.ma);
@@ -269,6 +270,7 @@ for (const m of DS) {
     assert.equal(r.soNhip, m.sao.nhip, m.ma + ' soNhip=' + r.soNhip + ' khai ' + m.sao.nhip);
     assert.deepEqual(r.chanDoan.map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
     assert.ok(r.theoSan.every((s) => s.thang));
+    if (m.chiChay) { assert.ok(m.chinhCoDinh === true && cham(m, m.maMau).sao === 3, m.ma + ' màn trình diễn: mã mẫu khoá phải thắng 3 sao'); return; }   // HD2
     assert.equal(cham(m, m.maMau).thang, false, m.ma + ' mã mẫu đã thắng sẵn');
     const rk = cham(m, m.loiGiaiKhac.baiLam, m.loiGiaiKhac.hamCuaEmMoi);
     assert.ok(rk.thang, m.ma + ' lời giải khác thua: ' + JSON.stringify(rk.chanDoan));
@@ -288,7 +290,8 @@ for (const m of DS) {
         assert.ok(d <= soDong(t), m.ma + ' dòng ' + d + ' nhiều hơn trùm ' + t.ma);
       }
     } else if (m.hang !== 'trum') {
-      assert.ok(d <= 1.5 * soDong(truoc), m.ma + ' dòng ' + d + ' > 1,5 × ' + soDong(truoc));
+      const dTruoc = truoc.chiChay ? truoc.maMau.chinh.length : soDong(truoc);       // HD2: sau màn trình diễn, người chơi đã ĐỌC mã mẫu khoá: so với số dòng đó
+      assert.ok(d <= 1.5 * dTruoc, m.ma + ' dòng ' + d + ' > 1,5 × ' + dTruoc);
       assert.ok(n <= 1.5 * truoc.sao.nhip, m.ma + ' nhịp ' + n + ' > 1,5 × ' + truoc.sao.nhip);
     }
   });
