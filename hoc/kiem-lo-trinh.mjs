@@ -538,7 +538,9 @@ kiem3('(g) mùa 3 và mùa ẩn sau nó: hàm của em mà màn cần hay lời 
   }
   assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 8).join(' · '));
 });
-kiem3('(h) ĐO đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nhịp 4 / ô 6, mốc = màn không trùm đứng trước qua ranh chương / gói, trùm miễn): chỉ in, chưa ép', () => {
+// (h) chỗ nhảy được để lại, chờ user quyết (ghi ở hoc/ban-giao/mua-3-ghi-chu-trao-doi.md): mã màn nhảy → lý do
+const CHO_NHAY_3 = { 'che-nhen.7': 'chương che-nhen 10 màn có sẵn: che-nhen.3 12 nhịp → che-nhen.7 24 nhịp, không có màn nào chen vào được nếu không bỏ một màn có sẵn' };
+kiem3('(h) đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nhịp 4 / ô 6, mốc = màn không trùm đứng trước qua ranh chương / gói, trùm miễn): ép, trừ CHO_NHAY_3', () => {
   const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le), nhay = [];
   let moc = null;
   for (const g of goi3()) for (const c of g.chuong) for (const m of M.danhSach.filter(x => x.chuong === c).sort((a, b) => a.so - b.so)) {
@@ -553,6 +555,8 @@ kiem3('(h) ĐO đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nh
     console.log('Mùa 3 (h) đường cong: ' + nhay.length + ' chỗ nhảy (gói | màn | mốc | chỉ số mốc → màn)');
     for (const [g, id, ma, mc, k, a, b] of nhay) console.log('  ' + g + ' | ' + id + ' ' + ma + ' | ' + mc + ' | ' + k + ' ' + a + ' → ' + b);
   }
+  const la = nhay.filter((r) => !CHO_NHAY_3[r[2]]);
+  assert.deepEqual(la.map((r) => r[2] + ' ' + r[4] + ' ' + r[5] + ' → ' + r[6]), [], la.length + ' chỗ nhảy đường cong ngoài CHO_NHAY_3');
 });
 if (!LOI_GIA_3) {
   // (f) bảng ô hố u / gầm n theo gói mùa 3 (luật: hố là sàn mới mùa 3, đi cùng nhảy ở gói 5, bãi từ gói 4): chỉ in.

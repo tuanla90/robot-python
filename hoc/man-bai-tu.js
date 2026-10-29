@@ -237,37 +237,37 @@
     }),
 
     che({
-      so: 2, ten: 'Hàm iron_run(n)', hang: 'lam-quen', taoHam: ['iron_run'],
-      deBai: 'Tạo hàm iron_run(n) có tham số n: magnet_n(), đi n ô, u_turn(), đi n ô về. Hành lang này dài hơn, có hai đệm N: gọi iron_run(5) rồi thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn gọi iron_run(5) nhưng em chưa có hàm đó. Bấm Hàm mới.',
-      san: SAN_DAI, vatChat: CHAT_DAI, demTu: [{ x: 3, y: 0, cuc: 'N' }, { x: 6, y: 0, cuc: 'N' }],
-      batDau: { x: 1, y: 2, huong: 1 },
-      maMau: bai(nhieu(['iron_run(5)'], THA)),
-      loiGiai: bai(nhieu(['iron_run(5)'], THA), { hamCuaEmMoi: [hFetch()] }),
-      sao: { o: 15, nhip: 12 },
-      loiSai: [
-        { moTa: 'Chưa tạo hàm iron_run mà đã gọi nó', baiLam: bai(nhieu(['iron_run(5)'], THA)), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong hàm quên magnet_n(): đệm N hút xe xuống hố', baiLam: bai(nhieu(['iron_run(5)'], THA)), hamCuaEmMoi: [hFetch(nhieu(LAP('n', 'move()'), ['u_turn()'], LAP('n', 'move()')))], phaiCoMa: ['dem-roi-ho'] },
-        { moTa: 'Trong hàm quên u_turn(): xe đi tiếp vào tường', baiLam: bai(nhieu(['iron_run(5)'], THA)), hamCuaEmMoi: [hFetch(nhieu(['magnet_n()'], LAP('n', 'move()'), LAP('n', 'move()')))], phaiCoMa: ['chua-dua-vat'] }
-      ],
-      goiY: ['Viết for i in range(n): thì vòng lặp chạy đúng n lần.', 'Nam châm bật suốt chuyến: đi qua đệm N an toàn, về vẫn giữ sắt.']
-    }),
-
-    che({
-      so: 3, ten: 'Hai vật, hai chiều', hang: 'luyen', hamCuaEmCan: ['iron_run', 'turn_right'],
-      deBai: 'Xe đứng giữa ngã tư. Vật sắt bên phải ở xa, vật sắt phía trên ở gần. Ô đích ở bên trái và phía dưới. Gọi iron_run với số ô hợp với từng chiều, thả, rẽ, rồi làm lại.',
-      veMaMau: 'Chương trình có sẵn lấy xong vật bên phải. Viết tiếp cho vật phía trên.',
+      so: 2, ten: 'Hàm iron_run(n)', hang: 'lam-quen', taoHam: ['iron_run'], hamCuaEmCan: ['move', 'u_turn', 'turn_right'],
+      deBai: 'Tạo hàm iron_run(n) có tham số n: magnet_n(), đi n ô, u_turn(), đi n ô về. Xe đứng giữa ngã tư: vật sắt bên phải ở xa, vật sắt phía trên ở gần. Một hàm, hai lần gọi với số ô khác nhau: iron_run(3) rồi thả, rẽ phải, iron_run(1) rồi thả.',
+      veMaMau: 'Chương trình có sẵn gọi iron_run(3) và iron_run(1) nhưng em chưa có hàm đó. Bấm Hàm mới.',
       san: ['###o#####', '###.#.###', '###.#u###', '##D.....o', '###D#####'], vatChat: ['...s.....', '.........', '.........', '........s', '.........'],
       demTu: [{ x: 5, y: 1, cuc: 'N' }],
       batDau: { x: 3, y: 3, huong: 1 },
-      maMau: bai(nhieu(['iron_run(3)'], THA)),
-      loiGiai: bai(nhieu(['iron_run(3)'], THA, ['turn_right()', 'iron_run(1)'], THA)),
+      maMau: bai(nhieu(['iron_run(3)'], THA, ['turn_right()', 'iron_run(1)'], THA)),
+      loiGiai: bai(nhieu(['iron_run(3)'], THA, ['turn_right()', 'iron_run(1)'], THA), { hamCuaEmMoi: [hFetch()] }),
       sao: { o: 21, nhip: 13 },
       loiSai: [
-        { moTa: 'Gọi iron_run(1) cả hai lần: vật bên phải còn cách 4 ô, ngoài tầm', baiLam: bai(nhieu(['iron_run(1)'], THA, ['turn_right()', 'iron_run(1)'], THA)), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Rẽ trái thay vì rẽ phải: xe quay xuống ô đích dưới', baiLam: bai(nhieu(['iron_run(3)'], THA, ['turn_left()', 'iron_run(1)'], THA)), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chưa tạo hàm iron_run mà đã gọi nó', baiLam: bai(nhieu(['iron_run(3)'], THA, ['turn_right()', 'iron_run(1)'], THA)), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm đi cứng 1 ô: vật bên phải còn xa, ngoài tầm', baiLam: bai(nhieu(['iron_run(3)'], THA, ['turn_right()', 'iron_run(1)'], THA)), hamCuaEmMoi: [hFetch(nhieu(['magnet_n()'], LAP(1, 'move()'), ['u_turn()'], LAP(1, 'move()')))], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Trong hàm quên magnet_n(): đệm N hút xe xuống hố', baiLam: bai(nhieu(['iron_run(3)'], THA, ['turn_right()', 'iron_run(1)'], THA)), hamCuaEmMoi: [hFetch(nhieu(LAP('n', 'move()'), ['u_turn()'], LAP('n', 'move()')))], phaiCoMa: ['dem-roi-ho'] }
       ],
-      goiY: ['Đang bật nam châm thì cách sắt 2 ô là hút: phía trên chỉ cần đi 1 ô.', 'iron_run xong xe quay mặt ngược chiều đi: thả là vật rơi vào ô sau lưng lúc đầu.']
+      goiY: ['Viết for i in range(n): thì vòng lặp chạy đúng n lần.', 'Đang bật nam châm thì cách sắt 2 ô là hút: phía trên chỉ cần đi 1 ô.']
+    }),
+
+    che({
+      so: 3, ten: 'Hành lang hai đệm', hang: 'lam-quen', hamCuaEmCan: ['iron_run', 'move', 'turn_right', 'turn_left'],
+      deBai: 'Hành lang dài, có hai đệm N trên hai cái hố, vật sắt ở cuối. Xe đứng dưới đầu hành lang, trên ô đích. Tiến lên một ô, rẽ phải, gọi iron_run với số ô vừa đủ tới cách vật sắt 2 ô. Về rồi rẽ trái thả vào ô đích.',
+      veMaMau: 'Chương trình có sẵn gọi iron_run(3): chưa tới gần vật sắt. Sửa số ô và viết tiếp.',
+      san: ['###.##.##', '###u##u##', '#.......o', '#D#######'], vatChat: CHAT_DAI, demTu: [{ x: 3, y: 0, cuc: 'N' }, { x: 6, y: 0, cuc: 'N' }],
+      batDau: { x: 1, y: 3, huong: 0 },
+      maMau: bai(['move()', 'turn_right()', 'iron_run(3)']),
+      loiGiai: bai(nhieu(['move()', 'turn_right()', 'iron_run(5)', 'turn_left()'], THA)),
+      sao: { o: 22, nhip: 15 },
+      loiSai: [
+        { moTa: 'iron_run(3): dừng cách vật sắt 4 ô, ngoài tầm', baiLam: bai(nhieu(['move()', 'turn_right()', 'iron_run(3)', 'turn_left()'], THA)), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Về rồi thả luôn: vật rơi vào tường bên trái', baiLam: bai(nhieu(['move()', 'turn_right()', 'iron_run(5)'], THA)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Đếm ô từ đầu hành lang tới ô cách vật sắt 2 ô.', 'iron_run xong xe quay mặt về bên trái: rẽ trái là chĩa xuống ô đích.']
     }),
 
     che({
