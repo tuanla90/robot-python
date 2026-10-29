@@ -234,9 +234,10 @@
   ].concat(buocThuVeChay('Chương trình gọi được pick() rồi. Bấm Chạy.'));
 
   /* ============================================================ Chương 6 · Vòng lặp */
+  // HD2 (29/10): vong-lap.1 là màn trình diễn for (chiChay): chỉ bấm Chạy; việc đổi số dời sang vong-lap.2.
   H['vong-lap.1'] = [
-    buocDoiSo(1, 'Số trong range() là số lần lặp. Chạm số này để đổi.', 'Chọn số lần xe cần đi tới cờ.', daDoiSoLap),
-    buocChay('Bấm Chạy.')
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: vòng for chạy dòng move() sáu lần.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'range(6) là lặp sáu lần. Màn sau em tự viết vòng for và chọn số.', xong: 'bam', han: 9000, rong: 170 }
   ];
   H['vong-lap.2'] = [
     khoiTheo(['khoi:vong:for'], 'Chạm khối for: nó lặp lại những dòng thụt vào bên dưới.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
@@ -531,5 +532,5 @@
   ];
 
   window.HuongDanMan = H;
-  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2 };
+  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2 };
 })();

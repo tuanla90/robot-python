@@ -59,7 +59,7 @@ kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến'
   assert.equal(get('khoang-cach.7'), null, 'khoang-cach.7 đã cất khỏi lộ trình');
   assert.equal(get('khoang-cach.4'), null, 'khoang-cach.4 đã cất (HD1)');
   assert.equal(get('khoang-cach.9'), null, 'khoang-cach.9 đã cất (HD1)');
-  for (const ma of ['khoang-cach.1', 'khoang-cach.2']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
+  for (const ma of ['khoang-cach.1', 'khoang-cach.2', 'vong-lap.1']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
   assert.ok(get('cam-bien-ben.1').deBai.includes('left_clear'));
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'bien-the');

@@ -341,6 +341,16 @@
     sao: { o: 5, nhip: 6 },
     goiY: ['Xe dừng khi ô trước mặt là tường: lúc đó front_clear() trả về False.', 'Hành lang dài bao nhiêu cũng chỉ cần hai dòng này.']
   });
+  // HD2 (29/10, đề xuất 3c của HD1): vong-lap.1 là màn TRÌNH DIỄN for (chiChay, range(6) thắng ngay khi bấm Chạy); việc tự đổi số dời sang vong-lap.2
+  // (hướng dẫn vong-lap.2 đã có bước đổi số). Ngân hàng man-vong-lap.js giữ bản range(2) cho máy kiểm cũ.
+  sua('vong-lap.1', {
+    ten: 'Lặp lại', chiChay: true, chinhCoDinh: true,
+    deBai: 'Lá cờ nằm thẳng phía trước xe, cách sáu ô. Vòng for lặp lại các dòng thụt vào bên dưới nó: range(6) là lặp sáu lần. Bấm Chạy xem xe đi tới cờ chỉ với một dòng move().',
+    veMaMau: 'Chương trình đã viết sẵn và khoá: move() chỉ viết một lần nhưng chạy sáu lần. Bấm Chạy.',
+    maMau: bai(lap(6, ['move()'])),
+    loiGiai: bai(lap(6, ['move()'])),
+    goiY: ['Số trong range() là số lần lặp.', 'Không có vòng for thì phải viết move() sáu dòng.']
+  });
   // Gói 5: 8 màn mới (man-banh-lui-them.js, mã banh-lui.1–4 và che-banh-lui.1–4). Hai chương chỉ có ở lộ trình nên chèn tạm vào cuối thuTu
   // cho ManHoc.them nhận (như nut-de); thuTu mùa 1 được dựng lại theo MUA_1 bên dưới. `nguon` giữ bản gốc như mọi màn khác.
   TT.thuTu.push('banh-lui', 'che-banh-lui');

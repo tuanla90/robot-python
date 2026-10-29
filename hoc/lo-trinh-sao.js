@@ -1,6 +1,10 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "vong-lap.1": {
+    "o": 5,
+    "nhip": 6
+  },
   "vong-lap.8": {
     "o": 22,
     "nhip": 14
