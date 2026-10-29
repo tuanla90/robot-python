@@ -437,7 +437,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var r = c.xe(DU_BO, {}, 1, 3, 80, Y); k.appendChild(r);
         c.sau(500, function () { c.keu('moKhoa'); r.mat('ngac'); });
         c.sau(1600, function () { r.mat('vui'); });
-        temXuatXuong(k, c, 'pg.tem.xe-cho-hang', [['denBanh', BM.vang], ['denXoay', BM.vang], ['denCam', BM.xanhLoSang2]], 70, 6, 2);
+        temXuatXuong(k, c, 'pg.tem.xe-cho-hang', [['denBanh', BM.vang], ['denXoay', BM.vang], ['denCam', BM.xanhLoSang2]], 70, 10, 2);
       },
       // 3 · R1 lăn ra ngoài; xa xa trên đồi thấy bánh xích văng hôm trước (nhá mùa 2)
       function (k, c) {

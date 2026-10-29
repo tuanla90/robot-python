@@ -530,7 +530,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(300, function () { r.mat('ngac'); });
         c.sau(2100, function () { r.mat('vui'); });
         var v = PV() && PhimVector.xuatXuong({ tem: t2('pg.tem.xuat-xuong'), ten: t2('pg.tem.xe-tang'), part: [['denXich', BM.lamSang], ['denSung', BM.lamSang], ['denCam', BM.do]], t: 1 });
-        if (v) k.appendChild(c.dat(v, 70, 6));
+        if (v) k.appendChild(c.dat(v, 70, 10));
         c.sau(1000, function () { c.keu('dam'); });
         c.sau(1900, function () { c.keu('thang'); });
       },
