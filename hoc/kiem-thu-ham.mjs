@@ -245,7 +245,7 @@ console.log('\n== Sân thử có THÙNG NẶNG (màn có súng hơi, hamGoc có 
   const d = thuD(['spray_back()', 'wait()'], st);
   kiem('spray_back() ở xe chưa sát thùng: xe giật tới một ô (2,3), thùng đứng yên, không chẩn đoán (cú giật dời được xe)', J(xy(d.thung)) === J([{ x: 2, y: 2 }]) && d.robot.y === 3 && d.chanDoan.length === 0, J(d.chanDoan));
   const e = thuD([...TIEN, 'spray_back()', 'wait()'], st);
-  kiem('tiến một ô rồi spray_back(): cú giật đẩy thùng trượt tới mép trên (2,0), xe đứng yên ở (2,3), không chẩn đoán', J(xy(e.thung)) === J([{ x: 2, y: 0 }]) && e.robot.y === 3 && e.chanDoan.length === 0, J([xy(e.thung), e.robot, e.chanDoan]));
+  kiem('tiến một ô rồi spray_back(): cú giật đẩy thùng nhích một ô (2,1), xe theo vào (2,2) (luật giật một ô 29/10), không chẩn đoán', J(xy(e.thung)) === J([{ x: 2, y: 1 }]) && e.robot.y === 2 && e.chanDoan.length === 0, J([xy(e.thung), e.robot, e.chanDoan]));
   const f = ChamHoc.thuHam(man, {}, 'h', [H('h', [...TIEN, ...TIEN])], { sanThu: st });
   kiem('màn KHÔNG có súng hơi: xe đâm thùng nặng như tường (dam-tuong, nói rõ chỉ cú giật của vòi phun mới dời được thùng)',
     maCua(f).includes('dam-tuong') && /vòi phun/.test(f.chanDoan[0].loi) && J(xy(f.thung)) === J([{ x: 2, y: 2 }]) && f.robot.y === 3, J(f.chanDoan));

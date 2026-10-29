@@ -270,7 +270,7 @@
 
     /* ------------------------------------------------------------- trùm */
     man({
-      so: 10, ten: 'Kho hàng', hang: 'trum', mucTieu: 'day-thung', hamCuaEmCan: ['move', 'turn_left'],
+      so: 10, ten: 'Kho hàng', hang: 'trum', mucTieu: 'day-thung', hamCuaEmCan: ['move', 'turn_left', 'turn_right'],
       huyHieu: { ma: 'sung-hoi', ten: 'Huy hiệu Vòi phun' },
       deBai: 'Đưa cả hai thùng nặng vào ô đích. Thùng ở trước xe đang chắn đường bắn tới van ở tường bên trái; thùng thứ hai nằm trước cánh cửa đóng, cửa mở bằng van đó.',
       veMaMau: 'Chương trình có sẵn đẩy được một thùng. Chạy thử rồi viết tiếp.',
