@@ -305,7 +305,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('day-thung', function (g, c) { dayThung(g, c, 36, 58, 42); c.muiTen(52, 30, 76, 30, BM.vecVang, 5); });
   dk('che-day-thung', che(function (g, c) { c.vat('thung-nang', {}, 40, 62, 30); c.muiTen(22, 36, 44, 36, BM.vecVang, 4.5); }));
   function nutNong(g, c, cx, cy, canh) {
-    c.o('nut-ban', { loe: true }, cx, cy, canh);
+    c.o('nut-ban', { bat: true }, cx, cy, canh);                                     // 29/10: van hơi đang MỞ (bánh cam nóng), trước là nút bắn loé
     [-10, 0, 10].forEach(function (dx) { H.duong(g, 'M' + (cx + dx) + ' ' + (cy - canh * 0.36) + ' c-4 -5 4 -8 0 -14'); H.vien(g, BM.vecDo, 2.6); });
   }
   dk('do-nhiet', function (g, c) { nutNong(g, c, 50, 58, 50); });
