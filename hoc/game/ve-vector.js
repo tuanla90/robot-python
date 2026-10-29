@@ -153,7 +153,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         g.beginPath(); g.moveTo(cx, yt + st * 0.85);
         g.bezierCurveTo(cx - st * 1.35, yt + st * 0.05, cx - st * 0.85, yt - st * 1.05, cx, yt - st * 0.38);
         g.bezierCurveTo(cx + st * 0.85, yt - st * 1.05, cx + st * 1.35, yt + st * 0.05, cx, yt + st * 0.85); g.closePath();
-        g.lineJoin = 'round'; g.strokeStyle = rgba(BM.vecHongSangRgb, 0.6); g.lineWidth = day * 0.7; g.stroke(); to(g, BM.vecHong); return true;
+        g.lineJoin = 'round'; g.strokeStyle = rgba(BM.vecHongSangRgb, 0.55); g.lineWidth = day * 1.5; g.stroke(); g.strokeStyle = BM.vecVo; g.lineWidth = day * 0.75; g.stroke(); to(g, BM.vecHong); return true;      // quầng hồng nhạt, viền trắng (29/10 user: cho rõ trên kính xanh), lõi hồng
       case 'ngac': var R = rh * 1.05; tron(g, cx, cy, R); dac(); tron(g, cx, cy + R * 0.1, R * 0.42); to(g, M.toi); return true;
       case 'buon': g.beginPath(); g.moveTo(cx - trong * rw * 1.1, cy + rh * 0.75); g.lineTo(cx + trong * rw * 0.8, cy - rh * 0.55); net(); return true;      // vạch xệ dốc: ngoài thấp, trong cao
       case 'cho': tron(g, cx, cy + rh * 0.15, day * 0.62); to(g, BM.vecMat); return true;
