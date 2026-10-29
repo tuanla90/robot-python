@@ -10,7 +10,7 @@
   var CHU = {
     vi: {
       /* ---- chung */
-      'chung.tenGame': 'Robot Chấn Hưng',
+      'chung.tenGame': 'Mật Lệnh Robot',                 // user 29/10 đổi tên game (trước: Robot Chấn Hưng)
       'chung.dong': 'Đóng',
       'chung.dongY': 'Đồng ý',
       'chung.huy': 'Hủy',
@@ -353,7 +353,7 @@
       'moKhoa.loiThu': 'Đủ {sao} ★ rồi! Thử thách mới đã mở:',      // gói loai 'thu-thach'
       'moKhoa.loiCa': 'Đủ {sao} ★ rồi! R1 có thêm:',               // mở cùng lúc nhiều loại
       // màn khởi đầu (man-dau.js)
-      'dau.phuDe': 'Viết Python điều khiển robot',
+      'dau.phuDe': 'Học Python bằng cách ra lệnh cho robot',
       'dau.choi': 'CHƠI',
       'dau.tiep': 'Chơi tiếp · {id}',
       'dau.xongHet': 'Em đã qua hết các màn!',
@@ -442,7 +442,7 @@
       'caiDat.xoaCanh': 'Không lấy lại được.',
       'caiDat.xoaCo': 'Xóa hết',
       'caiDat.phienBan': 'Phiên bản {v}',
-      'caiDat.thongTinChu': 'Robot Chấn Hưng\nViết Python điều khiển robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Google Sans Flex, Google Sans Code (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
+      'caiDat.thongTinChu': 'Mật Lệnh Robot\nHọc Python bằng cách ra lệnh cho robot.\n\nKhông quảng cáo, không thu thập dữ liệu. Tiến độ chỉ lưu trên máy này.\n\nChữ: Google Sans Flex, Google Sans Code (giấy phép SIL Open Font License).\nÂm thanh: tạo bằng máy ngay trong game.',
 
       /* ---- phim mở đầu (mo-dau.js) */
       'md.boQua': 'Bỏ qua',

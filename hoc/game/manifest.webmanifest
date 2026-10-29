@@ -1,7 +1,7 @@
 {
-  "name": "Robot Chấn Hưng",
-  "short_name": "Robot Chấn Hưng",
-  "description": "Viết Python điều khiển robot: lắp robot, vượt từng màn.",
+  "name": "Mật Lệnh Robot",
+  "short_name": "Mật Lệnh Robot",
+  "description": "Học Python bằng cách ra lệnh cho robot: lắp robot, vượt từng màn.",
   "lang": "vi",
   "start_url": "choi.html",
   "scope": "./",
