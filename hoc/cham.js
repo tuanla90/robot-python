@@ -1136,9 +1136,10 @@
 
   /* ------------------------------------------------------------------- chấm */
 
-  /** man.chinhCoDinh: chương trình chính luôn là bản mẫu của màn; man.khoaHamMan: các hàm của màn này luôn là bản mẫu (người chơi chỉ xem). */
+  /** man.chinhCoDinh: chương trình chính luôn là bản mẫu của màn; man.chiChay (HD1, màn trình diễn: chỉ bấm Chạy) cũng khoá như vậy;
+   *  man.khoaHamMan: các hàm của màn này luôn là bản mẫu (người chơi chỉ xem). */
   function ganCoDinh(man, baiLam) {
-    if (man.chinhCoDinh === true && man.maMau && man.maMau.chinh) baiLam.chinh = man.maMau.chinh.slice();
+    if ((man.chinhCoDinh === true || man.chiChay === true) && man.maMau && man.maMau.chinh) baiLam.chinh = man.maMau.chinh.slice();
     (man.khoaHamMan || []).forEach(function (ten) {
       var mau = ((man.maMau && man.maMau.hamCuaMan) || []).filter(function (h) { return h.ten === ten; })[0];
       if (!mau) return;

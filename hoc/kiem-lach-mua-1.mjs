@@ -179,10 +179,12 @@ function khaiNiemCua(m) {
 }
 const chuongDau = {};
 for (const m of ds) for (const x of khaiNiemCua(m).tatCa) if (!chuongDau[x]) chuongDau[x] = m.chuong;
-/** Khái niệm màn đang ép: chương đầu tiên của mùa dùng nó; màn tạo hàm ép def; khái niệm trong thân hàm người chơi viết ở màn này (hàm phải dùng lại được). */
+/** Khái niệm màn đang ép: bốn màn đầu của chương đầu tiên dùng nó (trình diễn → ép, hai khối mỗi chương; từ màn 5 là thả tự do: chỉ ghi thông tin);
+ *  màn tạo hàm ép def; khái niệm trong thân hàm người chơi viết ở màn này (hàm phải dùng lại được ở màn sau). */
+const MAN_EP_CUOI = 4;
 function dangEp(m) {
   const kn = khaiNiemCua(m), ep = new Set();
-  for (const x of kn.tatCa) if (chuongDau[x] === m.chuong) ep.add(x);
+  for (const x of kn.tatCa) if (chuongDau[x] === m.chuong && m.so <= MAN_EP_CUOI) ep.add(x);
   if ((m.taoHam || []).length) ep.add('def');
   for (const x of kn.ham) ep.add(x);
   return ep;
@@ -197,6 +199,7 @@ function boQuaCua(ten, kn) {
 /* ------------------------------------------------------------------ chạy */
 const kho = new Map();
 const bang = [], loGhi = [];
+const MAN_LOI_GIA = LOI_GIA ? LOI_GIA_MAN() : null;       // tính một lần trước khi gộp sân (gộp rồi thì màn không còn nhiều sân)
 let soLo = 0, soLoChapNhan = 0;
 for (const m of ds) {
   const truoc = clone([...kho.values()]);
@@ -206,12 +209,20 @@ for (const m of ds) {
   const hamCuaEm = [...hamEm.values()];
   if (!m.tietKiemNhip) for (const h of lg.hamCuaEmMoi || []) kho.set(h.ten, clone(h));
   if (Array.isArray(m.doi)) { bang.push({ ma: m.ma, ghi: 'hai robot: bỏ qua' }); continue; }
-  if (LOI_GIA && m.ma === LOI_GIA_MAN()) {
+  if (LOI_GIA && m.ma === MAN_LOI_GIA) {
     // lỗi giả: gộp màn ép while đầu tiên (nhiều sân) về sân 1
     if (Array.isArray(m.san[0])) { m.san = m.san[0]; ['batDau', 'bongMo', 'mau', 'vatMau', 'vatThem'].forEach((k) => { if (Array.isArray(m[k])) m[k] = m[k][0]; }); delete m.nhipTheo; }
   }
   const chuan = chamLach(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [] }, hamCuaEm);
   if (!chuan.thang || chuan.sao !== 3) { bang.push({ ma: m.ma, ghi: 'lời giải chuẩn không 3 sao: ' + JSON.stringify(chuan) }); continue; }
+  if (m.chiChay) {
+    // màn trình diễn: chương trình khoá (chinhCoDinh) và bấm Chạy là thắng 3 sao, không có gì để lách
+    const mau = chamLach(m, { chinh: m.maMau.chinh, hamCuaMan: m.maMau.hamCuaMan || [] }, truoc);
+    const ok = m.chinhCoDinh === true && mau.thang && mau.sao === 3 && !(m.taoHam || []).length;
+    bang.push({ ma: m.ma, ghi: 'màn trình diễn (chiChay): ' + (ok ? 'bấm Chạy là 3 sao, chương trình khoá' : 'HỎNG ' + JSON.stringify(mau) + ' chinhCoDinh=' + m.chinhCoDinh), hong: !ok });
+    if (!ok) soLo++;
+    continue;
+  }
 
   // 1. chạy có dấu
   const cd = chenDau(lg.chinh);
@@ -229,10 +240,25 @@ for (const m of ds) {
     lach.push({ ten: 'A1', bai: { chinh: duoiGoc(vet), hamCuaMan: lg.hamCuaMan || [] }, kho: hamCuaEm });
     lach.push({ ten: 'A2', bai: { chinh: duoiGoi(vet, cd.ban, lg.chinh), hamCuaMan: lg.hamCuaMan || [] }, kho: hamCuaEm });
   }
-  const chinhB = m.chinhCoDinh ? lg.chinh : doDieuKien(lg.chinh, demDau(vet, 'chinh', null, cd.ban));
-  const hamManB = hamMan.map((x) => ({ ten: x.h.ten, thamSo: x.h.thamSo, than: doDieuKien(x.h.than, demDau(vet, 'hamMan', x.h.ten, x.cd.ban)) }));
-  const khoB = [...hamEm.values()].map((h) => { const x = hamMoi.find((y) => y.h.ten === h.ten); return x ? { ten: h.ten, thamSo: h.thamSo, than: doDieuKien(h.than, demDau(vet, 'hamEm', h.ten, x.cd.ban)) } : h; });
-  lach.push({ ten: 'B', bai: { chinh: chinhB, hamCuaMan: hamManB }, kho: khoB });
+  // B: số lượt theo sân 1; B2 (màn nhiều sân): while lấy số lượt LỚN NHẤT trong các sân (đếm thừa: tới cờ thì dừng ngay, nên nếu đích là cờ cuối hành lang
+  // thì đếm thừa vẫn thắng), nhánh if lấy nhánh đã chạy ở bất kỳ sân nào.
+  const soSan = rv.theoSan.length;
+  const vets = rv.theoSan.map((_, s) => lenhCua(rv, s));
+  function demMax(cot, ten, ban) {
+    const ds = vets.map((v) => demDau(v, cot, ten, ban)), truoc = {}, than = {};
+    for (const d of ds) for (const g of new Set([...Object.keys(d.truoc), ...Object.keys(d.than)])) {
+      const k = d.truoc[g] ? Math.round((d.than[g] || 0) / d.truoc[g]) : 0;
+      truoc[g] = 1; than[g] = Math.max(than[g] || 0, k);
+    }
+    return { truoc, than };
+  }
+  for (const [tenLach, dem] of [['B', (cot, ten, ban) => demDau(vet, cot, ten, ban)], ['B2', demMax]]) {
+    if (tenLach === 'B2' && soSan === 1) continue;
+    const chinhB = m.chinhCoDinh ? lg.chinh : doDieuKien(lg.chinh, dem('chinh', null, cd.ban));
+    const hamManB = hamMan.map((x) => ({ ten: x.h.ten, thamSo: x.h.thamSo, than: doDieuKien(x.h.than, dem('hamMan', x.h.ten, x.cd.ban)) }));
+    const khoB = [...hamEm.values()].map((h) => { const x = hamMoi.find((y) => y.h.ten === h.ten); return x ? { ten: h.ten, thamSo: h.thamSo, than: doDieuKien(h.than, dem('hamEm', h.ten, x.cd.ban)) } : h; });
+    lach.push({ ten: tenLach, bai: { chinh: chinhB, hamCuaMan: hamManB }, kho: khoB });
+  }
 
   for (const l of lach) {
     const boQua = boQuaCua(l.ten, kn);
@@ -274,7 +300,7 @@ const theoChuong = {};
 for (const d of loGhi) theoChuong[M.timMa(d.ma).chuong] = (theoChuong[M.timMa(d.ma).chuong] || 0) + 1;
 console.log('\nLỗ theo chương: ' + (Object.entries(theoChuong).map(([c, n]) => c + ' ' + n).join(' · ') || 'không'));
 if (LOI_GIA) {
-  const ma = LOI_GIA_MAN();
+  const ma = MAN_LOI_GIA;
   const co = loGhi.some((d) => d.ma === ma);
   console.log('Lỗi giả (gộp ' + ma + ' về một sân): ' + (co ? 'máy dò BẮT ĐƯỢC (ĐẠT)' : 'máy dò KHÔNG bắt được (HỎNG)'));
   process.exit(co ? 0 : 1);
