@@ -686,6 +686,35 @@
   H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xe đi tới tường, mỗi bước n tăng một, rồi lùi đúng n bước về xe mờ.', 1,
     'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
 
+  /* ============================================================ MÙA 3 gói 1 (29/10, phiên Mùa 3): thân nhện (nhen.11 trình diễn, step_down / stairs), chuỗi cho nhện
+     (chuoi-nhen.1 trình diễn, .2 sửa chuỗi, .3 thêm nhánh vào hàm của màn, .6 tạo trail). Màn trình diễn chỉ MỘT bước (nút Chạy): thắng thì chuỗi hướng dẫn dừng,
+     bước thứ hai chỉ kịp loé (báo cáo HD3 đề xuất 3a). */
+  function trinhDien1(chu) { return [{ khongAn: true, dich: 'nut:chay', chu: chu, xong: 'chay' }]; }
+  H['nhen.11'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện đi phải, xuống, trái, lên mà thân không xoay. Màn sau em tự viết.');
+  H['nhen.13'] = [
+    { dich: 'dong:2', chu: 'Dòng này gọi step_down(), mà em chưa có hàm đó. Tạo nó trong Xưởng.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('step_down', 'Bấm Hàm mới để tạo step_down().', CHU_TAO),
+    khoiTheo(['khoi:go_right', 'khoi:goc:go_right'], 'Một bậc: chạm go_right() trước.', CHU_THE, { xuong: true, daLam: function () { return /go_right/.test(chuThan('step_down')); } }),
+    khoiTheo(['khoi:go_down', 'khoi:goc:go_down'], 'Rồi chạm go_down().', CHU_THE,
+      { xuong: true, daLam: function () { var c = chuThan('step_down'); return /go_right[\s\S]*go_down/.test(c); } })
+  ].concat(buocThuVeChay('Chương trình gọi step_down() bốn lần. Bấm Chạy.'));
+  H['nhen.14'] = [
+    { dich: 'dong:1', chu: 'stairs(3) leo 3 bậc, stairs(2) leo 2 bậc: số trong ngoặc là đối số n. Tạo hàm stairs có đối số n.', xong: 'bam', han: 9000, rong: 170 },
+    buocTaoHam('stairs', 'Bấm Hàm mới, đặt tên stairs và thêm đối số n.', CHU_TAO)
+  ].concat(buocThuVeChay('Trong hàm dùng for i in range(n). Bấm Chạy.'));
+  H['chuoi-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: mỗi chữ của chuỗi "RRDRD" là một bước, R sang phải, D xuống.');
+  H['chuoi-nhen.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: chuỗi "RR" mới đi hai bước.', xong: 'chay', daLam: daChay },
+    { dich: 'so:1', chu: 'Chạm vào chuỗi "RR" để thêm chữ R hoặc D cho đủ đường.', xong: 'bam', han: 12000, rong: 170 }
+  ];
+  H['chuoi-nhen.3'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tới chữ L thì nhện đứng im, vì step_to chưa biết chữ L.', xong: 'chay', daLam: daChay },
+    { dich: '[data-sua="step_to"]', chu: 'Chạm bút chì cạnh step_to để mở thân hàm trong Xưởng.', xong: 'mo-xuong', han: 0, rong: 170, daLam: xuongMo }
+  ].concat(buocThuVeChay('Thêm nhánh elif d == "L": go_left() rồi bấm Chạy.'));
+  H['chuoi-nhen.6'] = [
+    buocTaoHam('trail', 'Bấm Hàm mới, đặt tên trail và thêm đối số path.', CHU_TAO)
+  ].concat(buocThuVeChay('Thân hàm: for c in path: rồi go(c). Bấm Chạy.'));
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn

@@ -32,6 +32,17 @@
   function hStepDown(than) { return H('step_down', [], than || T_STEP_DOWN); }
   function hStairs(than) { return H('stairs', ['n'], than || T_STAIRS); }
 
+  // chương chuoi-nhen: hàm của màn step_to(d) (chỉ vài nhánh), hàm của em go(d) (nhen.4) và trail(path) (mới)
+  var NHANH = { R: ['if d == "R":', '    go_right()'], D: ['if d == "D":', '    go_down()'], L: ['if d == "L":', '    go_left()'], U: ['if d == "U":', '    go_up()'] };
+  /** Thân step_to(d) với các nhánh theo thứ tự chữ: nhánh đầu if, nhánh sau elif. */
+  function tStepTo(chu) { var kq = []; chu.split('').forEach(function (c, i) { var n = NHANH[c]; kq.push(i ? n[0].replace('if ', 'elif ') : n[0], n[1]); }); return kq; }
+  function hStepTo(chu) { return H('step_to', ['d'], tStepTo(chu)); }
+  var T_TRAIL = ['for c in path:', '    go(c)'];
+  function hTrail(than) { return H('trail', ['path'], than || T_TRAIL); }
+  /** for c in "chuỗi": ham(c) (2 dòng). */
+  function DI(chuoi, ham) { return ['for c in "' + chuoi + '":', '    ' + (ham || 'go') + '(c)']; }
+  function chuong2(m) { m.chuong = 'chuoi-nhen'; return man(m); }
+
   function man(m) {
     m.chuong = m.chuong || 'nhen';
     m.cauTruc = ['for', 'if', 'while'];
@@ -177,6 +188,134 @@
         { moTa: 'Đi sang trái quá ít trên băng trên: nhện lên nhầm chỗ', baiLam: bai(nhieu(LAP(3, 'go_right()'), ['stairs(3)', 'go_up()'], LAP(2, 'go_left()'), LAP(2, 'go_up()'))), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Trên băng xuôi chiều mỗi bước đi hai ô; bước đầu chỉ lên được băng.', 'Ba bậc thang: stairs(3). Leo xong đi lên một ô nữa mới tới băng trên.']
+    }),
+
+    /* ================================================= chương chuoi-nhen "Chuỗi cho nhện" =================================================
+       Thứ tự (MUA_3): 1 (trình diễn) · 2 · 3 · nhen.4 (tạo go) · nhen.7 (sửa go_sai) · 4 · 5 · 6 · 7 · 8 (trùm). */
+    chuong2({
+      so: 1, ten: 'Chuỗi chỉ đường', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoaHamMan: ['step_to'],
+      deBai: 'Chuỗi là một dãy chữ trong ngoặc kép, như "RRDRD". Vòng for c in "RRDRD" lấy lần lượt từng chữ, mỗi chữ là một bước: "R" sang phải, "D" xuống. Bấm Chạy xem nhện đi theo chuỗi.',
+      veMaMau: 'Chương trình và hàm step_to(d) của màn đã viết sẵn, khoá. Mở Xưởng xem step_to đổi chữ thành bước đi, rồi bấm Chạy.',
+      san: ['...#', '##..', '###F'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(DI('RRDRD', 'step_to'), { hamCuaMan: [hStepTo('RD')] }),
+      loiGiai: bai(DI('RRDRD', 'step_to'), { hamCuaMan: [hStepTo('RD')] }),
+      sao: { o: 6, nhip: 10 },
+      goiY: ['Mỗi chữ trong chuỗi là một bước của nhện.', 'Đổi chuỗi là đổi đường đi, không cần viết thêm lệnh.']
+    }),
+
+    chuong2({
+      so: 2, ten: 'Đổi chuỗi', hang: 'lam-quen', khoaHamMan: ['step_to'], khung: { chinh: 3, moiHam: 10 },
+      deBai: 'Hàm step_to(d) của màn đi một bước theo chữ d ("R" phải, "D" xuống). Chương trình đi theo chuỗi "RR" nhưng đường tới cờ dài hơn. Sửa chuỗi cho đúng đường.',
+      veMaMau: 'Chạm vào chuỗi "RR" để thêm chữ R hoặc D. Chương trình chỉ có 3 ô, không viết thêm lệnh được.',
+      san: ['..###', '#.###', '#...#', '###.#', '###.F'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(DI('RR', 'step_to'), { hamCuaMan: [hStepTo('RD')] }),
+      loiGiai: bai(DI('RDDRRDDR', 'step_to'), { hamCuaMan: [hStepTo('RD')] }),
+      sao: { o: 6, nhip: 16 },
+      loiSai: [
+        { moTa: 'Chuỗi thiếu chữ R cuối: nhện dừng sát cờ', baiLam: bai(DI('RDDRRDD', 'step_to'), { hamCuaMan: [hStepTo('RD')] }), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chuỗi đổi chỗ hai chữ đầu: nhện đâm tường', baiLam: bai(DI('DRDRRDDR', 'step_to'), { hamCuaMan: [hStepTo('RD')] }), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Nhìn đường đi từ nhện tới cờ, ghi lại từng bước: phải là R, xuống là D.', 'Đường này có tám bước.']
+    }),
+
+    chuong2({
+      so: 3, ten: 'Thêm chữ L', hang: 'lam-quen',
+      deBai: 'Đường tới cờ phải đi sang trái, mà hàm step_to(d) của màn mới biết chữ "R" và "D". Thêm vào step_to một nhánh elif d == "L": go_left().',
+      veMaMau: 'Chuỗi đã đúng đường. Chạy thử: tới chữ L thì nhện đứng im. Mở Xưởng sửa hàm step_to.',
+      san: ['....', '###.', '....', '.###', 'F###'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(DI('RRRDDLLLDD', 'step_to'), { hamCuaMan: [hStepTo('RD')] }),
+      loiGiai: bai(DI('RRRDDLLLDD', 'step_to'), { hamCuaMan: [hStepTo('RDL')] }),
+      sao: { o: 8, nhip: 20 },
+      loiSai: [
+        { moTa: 'Nhánh "L" gọi nhầm go_right(): nhện quay ngược lại', baiLam: bai(DI('RRRDDLLLDD', 'step_to'), { hamCuaMan: [H('step_to', ['d'], tStepTo('RD').concat(['elif d == "L":', '    go_right()']))] }), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'So chữ thường "l": không khớp chữ L hoa', baiLam: bai(DI('RRRDDLLLDD', 'step_to'), { hamCuaMan: [H('step_to', ['d'], tStepTo('RD').concat(['elif d == "l":', '    go_left()']))] }), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Thêm hai dòng vào cuối hàm: elif d == "L": rồi go_left() thụt vào.', 'Chữ trong chuỗi là chữ HOA: "L", không phải "l".']
+    }),
+
+    chuong2({
+      so: 4, ten: 'Đường rắn', hang: 'luyen', hamCuaEmCan: ['go'], khung: { chinh: 8, moiHam: 10 },
+      deBai: 'Đường uốn qua lại như con rắn. Viết cả đường thành một chuỗi chữ rồi đi theo nó bằng hàm go(d) của em. Chuỗi dài tối đa 16 chữ.',
+      veMaMau: 'Chương trình có sẵn đi theo chuỗi "RRRR". Viết tiếp chuỗi cho cả đường. Chương trình chỉ có 8 ô.',
+      san: ['.....', '####.', '.....', '.####', '....F'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(DI('RRRR')),
+      loiGiai: bai(DI('RRRRDDLLLLDDRRRR')),
+      sao: { o: 10, nhip: 32 },
+      loiSai: [
+        { moTa: 'Mỗi đoạn một vòng for: năm đoạn là mười dòng, quá 8 ô', baiLam: bai(nhieu(LAP(4, 'go_right()'), LAP(2, 'go_down()'), LAP(4, 'go_left()'), LAP(2, 'go_down()'), LAP(4, 'go_right()'))), phaiCoMa: ['tran-khung'] },
+        { moTa: 'Chuỗi thiếu một chữ L: nhện xuống lệch và đâm tường', baiLam: bai(DI('RRRRDDLLLDDRRRR')), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Đếm từng đoạn: phải 4, xuống 2, trái 4, xuống 2, phải 4.', 'Ghép các đoạn thành một chuỗi: RRRR rồi DD rồi LLLL…']
+    }),
+
+    chuong2({
+      so: 5, ten: 'Biến giữ chuỗi', hang: 'luyen', hamCuaEmCan: ['go'], khung: { chinh: 8, moiHam: 10 },
+      deBai: 'Sáu bậc thang giống hệt nhau, mỗi bậc là "RRD". Cả đường dài 18 chữ, quá 16 chữ của một chuỗi. Gán bậc vào biến: path = "RRD", rồi lặp đi theo path sáu lần.',
+      veMaMau: 'Chương trình có sẵn đã có biến path và vòng lặp, nhưng path đang là "R" và chỉ lặp hai lần. Sửa cho đúng.',
+      san: ['...##########', '##...########', '####...######', '######...####', '########...##', '##########...', '############F'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['path = "R"', 'for i in range(2):', '    for c in path:', '        go(c)']),
+      loiGiai: bai(['path = "RRD"', 'for i in range(6):', '    for c in path:', '        go(c)']),
+      sao: { o: 12, nhip: 36 },
+      loiGiaiKhac: { moTa: 'Không dùng biến: viết thẳng chuỗi "RRD" trong vòng for bên trong', baiLam: bai(['for i in range(6):', '    for c in "RRD":', '        go(c)']) },
+      loiSai: [
+        { moTa: 'Lặp năm lần: nhện dừng ở bậc cuối', baiLam: bai(['path = "RRD"', 'for i in range(5):', '    for c in path:', '        go(c)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bậc viết "RDR": nhện xuống sớm và đâm tường', baiLam: bai(['path = "RDR"', 'for i in range(6):', '    for c in path:', '        go(c)']), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Biến path giữ chuỗi "RRD"; for c in path đi hết ba chữ của nó.', 'Vòng ngoài lặp sáu lần cho sáu bậc.']
+    }),
+
+    chuong2({
+      so: 6, ten: 'Hàm trail(path)', hang: 'luyen', hamCuaEmCan: ['go'], taoHam: ['trail'],
+      deBai: 'Tạo hàm trail(path) đi hết một chuỗi chỉ đường: for c in path: go(c). Rồi đi ba đoạn: trail("RRDD"), trail("RRUU"), trail("RRDD").',
+      veMaMau: 'Chương trình có sẵn gọi trail ba lần, nhưng em chưa có hàm trail. Tạo hàm trail với một đối số path.',
+      san: ['...#...', '##.#.#.', '##...#F'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['trail("RRDD")', 'trail("RRUU")', 'trail("RRDD")']),
+      loiGiai: bai(['trail("RRDD")', 'trail("RRUU")', 'trail("RRDD")'], { hamCuaEmMoi: [hTrail()] }),
+      sao: { o: 13, nhip: 24 },
+      loiSai: [
+        { moTa: 'Chưa tạo hàm trail mà đã gọi nó', baiLam: bai(['trail("RRDD")', 'trail("RRUU")', 'trail("RRDD")']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm đi theo chuỗi cố định "RRDD" thay cho path: đoạn giữa đi sai', baiLam: bai(['trail("RRDD")', 'trail("RRUU")', 'trail("RRDD")']), hamCuaEmMoi: [hTrail(['for c in "RRDD":', '    go(c)'])], phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Thân hàm chỉ hai dòng: for c in path: rồi go(c) thụt vào.', 'Đối số path là chuỗi được truyền vào lúc gọi.']
+    }),
+
+    chuong2({
+      so: 7, ten: 'Sửa chuỗi sai', hang: 'bien-the', hamCuaEmCan: ['trail'],
+      deBai: 'Đường có ba đoạn: đoạn a đi hai lần (đầu và cuối), đoạn b ở giữa. Chương trình đã gán a và b rồi gọi trail, nhưng một chuỗi viết sai một chữ. Chạy thử, tìm chỗ nhện đi lệch rồi sửa.',
+      veMaMau: 'Chạy thử và nhìn nhện đâm tường ở đâu: chỗ đó cho biết chuỗi nào sai.',
+      san: ['...', '##.', '...', '.##', '...', '##.', '##F'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['a = "RRDD"', 'b = "RRDD"', 'trail(a)', 'trail(b)', 'trail(a)']),
+      loiGiai: bai(['a = "RRDD"', 'b = "LLDD"', 'trail(a)', 'trail(b)', 'trail(a)']),
+      sao: { o: 15, nhip: 24 },
+      loiSai: [
+        { moTa: 'Sửa b thành "LLD": thiếu một bước xuống', baiLam: bai(['a = "RRDD"', 'b = "LLD"', 'trail(a)', 'trail(b)', 'trail(a)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đổi thứ tự gọi: trail(b) trước', baiLam: bai(['a = "RRDD"', 'b = "LLDD"', 'trail(b)', 'trail(a)', 'trail(a)']), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Đoạn giữa đi sang trái chứ không sang phải.', 'Sửa các chữ R trong chuỗi b thành L.']
+    }),
+
+    chuong2({
+      so: 8, ten: 'Bản đồ kho', hang: 'trum', hamCuaEmCan: ['go', 'trail'],
+      deBai: 'Đường về cờ có ba bậc thang giống nhau, một đoạn xuống, một băng chuyền chạy sang trái rồi đoạn leo lên cuối. Gán bậc thang vào biến, đi bằng trail(path), và nhớ trên băng mỗi bước đi được hai ô.',
+      veMaMau: 'Chương trình có sẵn mới xuống một bậc. Chạy thử từng đoạn rồi viết tiếp.',
+      san: ['...#######', '##...#####', '####...###', 'F#####.###', '.#####.###', '.<<<<<.###'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai(['a = "RRD"', 'trail(a)']),
+      loiGiai: bai(['a = "RRD"', 'for i in range(3):', '    trail(a)', 'trail("DD")', 'trail("LLL")', 'trail("UU")']),
+      sao: { o: 16, nhip: 32 },
+      loiGiaiKhac: { moTa: 'Trên băng đi năm bước như sàn thường: thừa hai bước đâm mép (thừa nhịp)', baiLam: bai(['a = "RRD"', 'for i in range(3):', '    trail(a)', 'trail("DD")', 'trail("LLLLL")', 'trail("UU")']) },
+      loiSai: [
+        { moTa: 'Trên băng chỉ đi hai bước: nhện chưa tới cuối băng, đi lên là đâm tường', baiLam: bai(['a = "RRD"', 'for i in range(3):', '    trail(a)', 'trail("DD")', 'trail("LL")', 'trail("UU")']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Lặp bậc thang hai lần: nhện xuống sớm, đâm tường', baiLam: bai(['a = "RRD"', 'for i in range(2):', '    trail(a)', 'trail("DD")', 'trail("LLL")', 'trail("UU")']), phaiCoMa: ['dam-tuong'] }
+      ],
+      goiY: ['Ba bậc thang "RRD" giống nhau: một biến và một vòng for.', 'Trên băng xuôi chiều mỗi bước đi hai ô: đếm thử xem cần mấy chữ L.']
     })
   ];
 
