@@ -28,7 +28,9 @@
       // MÙA 2 (KE-HOACH-MUA-2.md): mỗi gói có màn mới một tệp ngân hàng (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_2 bên dưới)
       'bien-xich', 'hong-ngoai', 'day-thung', 'che-luc-ban', 'do-nhiet', 'doi-mua-2', 'be-sung', 'trum-mua-2',
       // MÙA 3 (KE-HOACH-MUA-3.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_3 bên dưới)
-      'than-nhen', 'nam-cham-n', 'cam-ung-tu', 'bai-tu', 'nhay', 'dao-cuc', 'doc-cuc', 'doi-xich-nhen', 'bung-nhen', 'trum-mua-3'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'than-nhen', 'nam-cham-n', 'cam-ung-tu', 'bai-tu', 'nhay', 'dao-cuc', 'doc-cuc', 'doi-xich-nhen', 'bung-nhen', 'trum-mua-3',
+      // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
+      'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1094,6 +1096,126 @@
     });
     M.mua3 = MUA_3;
     M.roiMua3 = ROI_MUA_3;
+    M.tinhLai();
+  })();
+  // ---------------------------------------------------------------- MÙA 4 = 10 GÓI (29/10, KE-HOACH-MUA-4.md; cùng cách MÙA 3 ở trên, phiên "Mùa 4" tự làm)
+  // Dựng SAU khối mùa 3 (lúc đó mọi gói ngoài mùa 1–3 nằm ở mùa 4 cũ). Đổi m.chuong / so / hang và vị trí; KHÔNG đổi `ma` (khóa lưu sao).
+  // Chương chưa có màn thì CHƯA hiện; gói không còn chương nào có màn cũng chưa hiện. Ngưỡng sao gói mùa 4 KHÔNG khai cứng (mo-goi.js tính), gói đầu 0 ★.
+  // Mùa 4 vẫn ẩn (`an: true`). Gói cũ không thuộc MUA_4 (omni, máy ném, bàn xoay, lắp ráp, đua, các gói đội…) dời sang mùa 5 (ẩn), giữ thứ tự.
+  // Xếp màn có sẵn theo part mở dần (KE-HOACH-MUA-4.md mục 2): drone dùng ô sạc P về gói 5 Trạm sạc (đáp đất sạc là nâng cấp, lõi N1 ở P1);
+  // máy sơn chấm ô (dot) về gói 2, nét liền (pen_down) về gói 6. Màn camera (mau, che-mau, flycam) tạm giữ color() / look() cũ, dựng lại sau lõi N2.
+  var MUA_4 = [
+    { ma: 'drone', ten: 'Cất cánh', loai: 'bo-phan', hinh: 'drone',
+      chuong: [['drone', day('drone', [1, 2, 3, 7, 8, 9])], ['list', day('list', MUOI)]] },
+    { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
+      chuong: [['may-son', day('may-son', [1, 2, 6, 7])], ['che-list', day('che-list', MUOI)]] },
+    { ma: 'mau', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'mau',
+      chuong: [['mau', day('mau', MUOI)], ['che-mau', day('che-mau', MUOI)]] },
+    { ma: 'pho-mau', ten: 'Phố màu',
+      chuong: [['pho-mau', []], ['che-pho-mau', []]] },
+    { ma: 'tram-sac', ten: 'Trạm sạc', loai: 'bo-phan', hinh: 'drone',
+      chuong: [['tram-sac', day('drone', [4, 5, 6, 10])], ['che-drone', day('che-drone', MUOI)]] },
+    { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'may-son',
+      chuong: [['net-lien', day('may-son', [3, 4, 5, 8, 9, 10])], ['che-may-son', day('che-may-son', MUOI)]] },
+    { ma: 'flycam', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'flycam',
+      chuong: [['flycam', day('flycam', MUOI)], ['che-flycam', []]] },
+    { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach',
+      chuong: [['doi-nam-cham', day('doi-nam-cham', MUOI)], ['che-doi-nam-cham', day('che-doi-nam-cham', MUOI)]] },
+    { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach',
+      chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
+    { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach',
+      chuong: [['tong-hop-4', []], ['trum-mua-4', []]] }
+  ];
+  // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
+  var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: đi theo danh sách',
+    mau: 'Đọc màu', 'che-mau': 'Chế lệnh: dò màu', 'pho-mau': 'Đi giữa phố màu', 'che-pho-mau': 'Chế lệnh: qua phố',
+    'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Kẻ nét liền', 'che-may-son': 'Chế lệnh: vẽ hoa văn',
+    flycam: 'Nhìn xuống đọc màu', 'che-flycam': 'Chế lệnh: đọc đơn hàng', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
+    'son-tren-cao': 'Kẻ vạch qua rào', 'che-son-tren-cao': 'Chế lệnh: tranh tường', 'tong-hop-4': 'Đủ bộ', 'trum-mua-4': 'Phố mới kẻ vạch' };
+  // TỆP NGÂN HÀNG MÀN MỚI MÙA 4 (như mùa 3): mỗi gói một tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai `chuong` và `so`.
+  //   man-cat-canh.js manCatCanh (1) · man-cham-son.js manChamSon (2) · man-camera-bon-huong.js manCameraBonHuong (3) · man-pho-mau.js manPhoMau (4)
+  //   man-tram-sac.js manTramSac (5) · man-net-lien.js manNetLien (6) · man-nhin-duoi-chan.js manNhinDuoiChan (7) · man-doi-chia-hang.js manDoiChiaHang (8)
+  //   man-son-tren-cao.js manSonTrenCao (9) · man-trum-mua-4.js manTrumMua4 (10)
+  var TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
+  (function () {
+    Object.keys(TEN_MUA_4).forEach(function (c) { TT.ten[c] = TEN_MUA_4[c]; });
+    M.danhSach.forEach(function (m) { if (!nguon[m.ma]) nguon[m.ma] = copy(m); });
+    var moi = [], chuong = [];
+    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
+    TEP_MUA_4.forEach(function (k) { moi = moi.concat(M[k] || []); });
+    moi.forEach(function (m) { if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa 4 thuộc chương không có trong MUA_4: ' + m.chuong + '.' + m.so); });
+    chuong.forEach(function (c) { if (TT.thuTu.indexOf(c) < 0) TT.thuTu.push(c); });
+    M.them(moi);
+    moi.forEach(function (m) { nguon[m.ma] = copy(m); });
+    MUA_4.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        var them = moi.filter(function (m) { return m.chuong === c[0]; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var cuoi = c[1][c[1].length - 1];
+        c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
+      });
+    });
+    var chuongMua4 = [], coMan = [], da = {}, chuongCu = {};
+    MUA_4.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        chuongMua4.push(c[0]);
+        c[1].forEach(function (ma) { if (da[ma]) throw new Error('Màn xếp hai lần (mùa 4): ' + ma); da[ma] = true; chuongCu[get(ma).chuong] = true; });
+      });
+    });
+    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // Chương cũ bị chia (drone → drone + tram-sac, may-son → may-son + net-lien) không được còn sót màn ngoài MUA_4.
+    M.danhSach.forEach(function (m) {
+      if ((chuongCu[m.chuong] || chuongMua4.indexOf(m.chuong) >= 0) && !da[m.ma]) throw new Error('Màn ' + m.ma + ' nằm ở chương mùa 4 ' + m.chuong + ' mà không có trong MUA_4');
+    });
+    // thuTu: mùa 1–3, chương mùa 4 có màn, rồi phần còn lại giữ thứ tự cũ.
+    var goi123 = TT.goi.filter(function (g) { return g.mua === 'mua-1' || g.mua === 'mua-2' || g.mua === 'mua-3'; });
+    var c123 = [];
+    goi123.forEach(function (g) { c123 = c123.concat(g.chuong); });
+    var sau = TT.thuTu.filter(function (c) { return c123.indexOf(c) < 0 && chuongMua4.indexOf(c) < 0; });
+    TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(c123, coMan, sau));
+    // Gói: mùa 1–3, MUA_4, rồi gói còn lại (mùa 4 cũ → mùa 5, ẩn; gói cũ chỉ còn chương không thuộc mùa 4).
+    var conLai = [], doi5 = [];
+    TT.goi.forEach(function (g) {
+      if (goi123.indexOf(g) >= 0) return;
+      var ch = g.chuong.filter(function (c) { return chuongMua4.indexOf(c) < 0; });
+      if (!ch.length) return;
+      g.chuong = ch;
+      if (g.mua === 'mua-4') { g.mua = 'mua-5'; doi5.push(g); }
+      conLai.push(g);
+    });
+    conLai.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
+    // Ngưỡng gói dời sang mùa 5 (ẩn): như mùa 3 làm với gói dời sang mùa 4 (0,5 × tổng sao tối đa các gói thường đứng trước, bội 5; gói đội = trước + 30).
+    var tr5 = 0, truoc5 = null;
+    doi5.forEach(function (g) {
+      g.sao = g.khongTangNguong && truoc5 ? truoc5.sao + 30 : Math.floor(0.5 * tr5 / 5) * 5;
+      if (!g.khongTangNguong) tr5 += 3 * g.chuong.reduce(function (s, c) { return s + M.danhSach.filter(function (m) { return m.chuong === c; }).length; }, 0);
+      truoc5 = g;
+    });
+    var goi4 = [];
+    MUA_4.forEach(function (g) {
+      var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coMan.indexOf(c) >= 0; });
+      if (!ch.length) return;
+      var x = { ma: g.ma, ten: g.ten, mua: 'mua-4', chuong: ch };
+      if (g.loai) x.loai = g.loai;
+      if (g.hinh) x.hinh = g.hinh;
+      goi4.push(x);
+    });
+    TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goi123, goi4, conLai));
+    var dau5 = TT.goi.filter(function (g) { return g.mua === 'mua-5'; })[0];
+    if (dau5) dau5.sao = 0;
+    // Khay theo gói (như mùa 3): bút liền (pen_down / pen_up) chỉ từ gói 6. Chỉ bớt lệnh trên khay (hamGoc), phần cứng vẫn đủ.
+    MUA_4.forEach(function (g, i) {
+      if (i + 1 >= 6) return;
+      var bo = ['pen_down', 'pen_up'];
+      g.chuong.forEach(function (c) {
+        c[1].forEach(function (ma) {
+          var m = get(ma);
+          if (m.hamGoc && m.hamGoc.some(function (h) { return bo.indexOf(h) >= 0; })) m.hamGoc = m.hamGoc.filter(function (h) { return bo.indexOf(h) < 0; });
+        });
+      });
+    });
+    // may-son.6 ở gói 2 (Chấm sơn, chưa có bút liền): bỏ lời sai mẫu "hạ đầu sơn" (nó chỉ còn báo "hàm chưa có").
+    get('may-son.6').loiSai = (get('may-son.6').loiSai || []).filter(function (x) { return x.moTa.indexOf('Hạ đầu sơn') !== 0; });
+    M.mua4 = MUA_4;
     M.tinhLai();
   })();
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
