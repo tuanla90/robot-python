@@ -929,7 +929,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
         const [c, ...a] = l;
         if (c === 'save') ngan.push(m.slice()); else if (c === 'restore') m = ngan.pop() || m; else if (c === 'translate') m = [m[0], m[1], m[2], m[3], m[4] + m[0] * a[0] + m[2] * a[1], m[5] + m[1] * a[0] + m[3] * a[1]];
         else if (c === 'rotate') { const co = Math.cos(a[0]), si = Math.sin(a[0]); m = [m[0] * co + m[2] * si, m[1] * co + m[3] * si, -m[0] * si + m[2] * co, -m[1] * si + m[3] * co, m[4], m[5]]; }
-        else if ((ma === 'kep' && c === 'bezierCurveTo') || (ma === 'xoay' && c === 'lineTo')) { const x = ma === 'kep' ? a[4] : a[0], y = ma === 'kep' ? a[5] : a[1]; pts.push(m[0] * x + m[2] * y + m[4]); }
+        else if (c === 'bezierCurveTo') pts.push(m[0] * a[4] + m[2] * a[5] + m[4]);                       // đầu càng (V8b: tay xoay vẽ đúng càng cong của tay kẹp)
       }
       const khe = Math.max(...pts.map((x) => Math.abs(x - 50))), nua = V.coVatKep(k) / V.CO_THAN / 2;
       if (!(khe >= nua && khe <= nua + 4)) om.push(ma + ' k' + k + ': nửa khe ' + khe.toFixed(1) + ', nửa thân vật ' + nua.toFixed(1));
@@ -953,7 +953,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     const tl = ghi.map((t) => t / VV.VAT_SAN);
     kiem('(13i) V7a vật treo dưới drone nam châm = cỡ vật nâng (1,15–1,25 lần vật nằm sàn; phát lại ' + DR.map((m) => m.ma).join(', ') + ': ' + ghi.length + ' khung treo)',
       ghi.length > 0 && tl.every((k) => k >= 1.15 && k <= 1.25), ghi.length ? 'tỉ lệ ' + Math.min(...tl).toFixed(2) + '–' + Math.max(...tl).toFixed(2) : 'không khung treo nào');
-    /* tay xoay: vẽ riêng tay (canvas giả), đo nửa khe (điểm lineTo xa trục nhất) ở moK 0 / 0,5 / 1 */
+    /* tay xoay: vẽ riêng tay (canvas giả), đo nửa khe (đầu càng: điểm cuối bezierCurveTo xa trục nhất; V8b càng cong như tay kẹp) ở moK 0 / 0,5 / 1 */
     const khe = [0, 0.5, 1].map((k) => {
       const cv = new V.CanvasGia(100, 100), g = cv.getContext('2d'); V.lay('tay', 'xoay').ve(g, { kep: 'dong', cam: false, tuThe: 'tren', moK: k }, V.mauDoi(''), V.H);
       const pts = []; let m = [1, 0, 0, 1, 0, 0]; const ngan = [];
@@ -961,7 +961,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
         const [c, ...a] = l;
         if (c === 'save') ngan.push(m.slice()); else if (c === 'restore') m = ngan.pop() || m; else if (c === 'translate') m = [m[0], m[1], m[2], m[3], m[4] + m[0] * a[0] + m[2] * a[1], m[5] + m[1] * a[0] + m[3] * a[1]];
         else if (c === 'rotate') { const co = Math.cos(a[0]), si = Math.sin(a[0]); m = [m[0] * co + m[2] * si, m[1] * co + m[3] * si, -m[0] * si + m[2] * co, -m[1] * si + m[3] * co, m[4], m[5]]; }
-        else if (c === 'lineTo') pts.push(m[0] * a[0] + m[2] * a[1] + m[4]);
+        else if (c === 'bezierCurveTo') pts.push(m[0] * a[4] + m[2] * a[5] + m[4]);
       }
       return Math.max(...pts.map((x) => Math.abs(x - 50)));
     });
