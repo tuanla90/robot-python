@@ -205,8 +205,8 @@
     }),
 
     man({
-      so: 5, ten: 'Bắn nút rồi về', hang: 'luyen', hamCuaEmCan: ['forward', 'move', 'turn_left', 'turn_right', 'back'], taoHam: ['tap_right'],
-      deBai: 'Cửa chắn đường lên chỗ xe mờ, còn nút mở cửa nằm ở tường bên phải xe. Chương trình chính gọi tap_right() rồi forward(2): em tự chế tap_right() để bắn nút rồi trở về đúng chỗ cũ, mặt vẫn quay như cũ.',
+      so: 5, ten: 'Bắn van rồi về', hang: 'luyen', hamCuaEmCan: ['forward', 'move', 'turn_left', 'turn_right', 'back'], taoHam: ['tap_right'],
+      deBai: 'Cửa chắn đường lên chỗ xe mờ, còn van mở cửa nằm ở tường bên phải xe. Chương trình chính gọi tap_right() rồi forward(2): em tự chế tap_right() để bắn van rồi trở về đúng chỗ cũ, mặt vẫn quay như cũ.',
       veMaMau: 'Chương trình chính bị khóa: tap_right() rồi forward(2). Mở Xưởng hàm, tạo tap_right() rồi bấm Chạy.',
       san: SAN_5, batDau: BD_5X5,
       bongMo: { x: 2, y: 0, huong: 0 },
@@ -214,15 +214,15 @@
       maMau: { chinh: C_5.slice() },
       sao: { o: 16, nhip: 6 },
       loiGiai: { chinh: C_5.slice(), hamCuaEmMoi: [H('tap_right', T_TAP_RIGHT)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', nhieu(['# bắn nút, tiến lại chỗ cũ'], T_TAP_RIGHT))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', nhieu(['# bắn van, tiến lại chỗ cũ'], T_TAP_RIGHT))] },
       congThucKhac: [
-        { moTa: 'Quay trái, bắn ra sau trúng nút, rồi lùi về và quay phải', hamCuaEmMoi: [H('tap_right', ['turn_left()', 'shoot_back()', 'wait()', 'back()', 'turn_right()'])] },
+        { moTa: 'Quay trái, bắn ra sau trúng van, rồi lùi về và quay phải', hamCuaEmMoi: [H('tap_right', ['turn_left()', 'shoot_back()', 'wait()', 'back()', 'turn_right()'])] },
         { moTa: 'Bắn thêm một phát ra sau để cú giật đưa xe về chỗ cũ', hamCuaEmMoi: [H('tap_right', ['turn_right()', 'shoot()', 'wait()', 'shoot_back()', 'wait()', 'turn_left()'])] }
       ],
       loiSai: [
         { moTa: 'Quên tiến lại: cú giật đẩy xe lùi một ô nên xe lệch cột, đâm tường khi đi lên', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', ['turn_right()', 'shoot()', 'wait()', 'turn_left()'])], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Quay trái rồi bắn ra trước: tia nước bay sang trái, không tới nút nên cửa vẫn đóng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', ['turn_left()', 'shoot()', 'wait()', 'move()', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Không quay mà bắn luôn: tia nước bay lên tới cửa, không tới nút', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quay trái rồi bắn ra trước: tia nước bay sang trái, không tới van nên cửa vẫn đóng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', ['turn_left()', 'shoot()', 'wait()', 'move()', 'turn_right()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Không quay mà bắn luôn: tia nước bay lên tới cửa, không tới van', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('tap_right', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi tap_right() mà chưa chế hàm', baiLam: { chinh: C_5.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Cú giật đẩy xe lùi một ô khỏi chỗ cũ: sau khi bắn phải đưa xe về lại.', 'Chưa về chỗ cũ thì forward(2) không đưa xe lên đúng cột cửa.']
@@ -332,7 +332,7 @@
       so: 10, ten: 'Kho hàng', hang: 'trum', hamCuaEmCan: ['kick_right', 'kick_left', 'tap_right', 'forward'],
       huyHieu: { ma: 'che-sung-hoi', ten: 'Huy hiệu Chế lệnh vòi phun' },
       gioiHanHam: 4,
-      deBai: 'Hai thùng nặng nằm hai bên xe, cửa chắn đường lên chỗ xe mờ, nút mở cửa ở tường bên phải. Đá hai thùng ra xa, mở cửa rồi đưa xe tới chỗ xe mờ. Chương trình chính chỉ được gọi 4 hàm của em khác nhau.',
+      deBai: 'Hai thùng nặng nằm hai bên xe, cửa chắn đường lên chỗ xe mờ, van mở cửa ở tường bên phải. Đá hai thùng ra xa, mở cửa rồi đưa xe tới chỗ xe mờ. Chương trình chính chỉ được gọi 4 hàm của em khác nhau.',
       san: SAN_10, batDau: BD_10,
       bongMo: { x: 3, y: 0, huong: 0, thung: [{ x: 6, y: 3 }, { x: 0, y: 3 }] },
       maMau: { chinh: [] },
@@ -345,10 +345,10 @@
       loiSai: [
         { moTa: 'Quên mở cửa: xe đâm vào cửa đóng', baiLam: { chinh: ['kick_right()', 'kick_left()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
         { moTa: 'Chỉ đá thùng bên phải: thùng bên trái còn nằm sát xe', baiLam: { chinh: ['kick_right()', 'forward(1)', 'tap_right()', 'forward(2)'] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên tiến một ô trước khi bắn nút: tia nước bay ngang hàng thùng, không tới nút', baiLam: { chinh: ['kick_right()', 'kick_left()', 'tap_right()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Quên tiến một ô trước khi bắn van: tia nước bay ngang hàng thùng, không tới van', baiLam: { chinh: ['kick_right()', 'kick_left()', 'tap_right()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
         { moTa: 'Gọi 5 hàm khác nhau (kick_right, kick_left, move, tap_right, forward): vượt giới hạn 4 hàm', baiLam: { chinh: ['kick_right()', 'kick_left()', 'move()', 'tap_right()', 'forward(2)'] }, phaiCoMa: ['qua-gioi-han-ham'] }
       ],
-      goiY: ['Mỗi thùng một lần đá, xong thì xe vẫn đứng đúng chỗ. Cửa nằm trên đầu xe hai ô, nút nằm ngang xe sau khi tiến một ô.', 'Dùng lại forward() cho cả hai đoạn đi lên thì chỉ cần 4 hàm.']
+      goiY: ['Mỗi thùng một lần đá, xong thì xe vẫn đứng đúng chỗ. Cửa nằm trên đầu xe hai ô, van nằm ngang xe sau khi tiến một ô.', 'Dùng lại forward() cho cả hai đoạn đi lên thì chỉ cần 4 hàm.']
     })
   ];
 
