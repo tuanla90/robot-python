@@ -127,8 +127,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [x + w * 0.2174, x + w * 0.6304].forEach(function (ex0, i) {
       var ex = ex0 + dx, cx = ex + ew / 2, cy = ey + eh / 2, trong = i === 0 ? 1 : -1;   // trong: hướng về giữa mặt theo x (mắt x nhỏ → +x)
       if (veMat(g, M, kieu, cx, cy, w, h, trong)) return;
-      if (sang) { bo(g, ex - 2.5, ey - 2.5, ew + 5, eh + 5, (ew + 5) / 2); to(g, rgba(BM.vecMatSangRgb, 0.6)); }
-      bo(g, ex, ey, ew, eh, ew / 2); to(g, sang ? BM.vecMatSang : BM.vecMat); vien(g, M.chinh, 1);
+      if (sang) { bo(g, ex - 2.5, ey - 2.5, ew + 5, eh + 5, (ew + 5) / 2); to(g, rgba(M.matRgb, 0.6)); }
+      bo(g, ex, ey, ew, eh, ew / 2); to(g, sang ? BM.vecMatSang : M.mat); vien(g, M.chinh, 1);
     });
   }
   /** Bao nhiêu px thiết bị trên một đơn vị của g lúc này (để nét biểu cảm có SÀN theo px thật: ô sân nhỏ ~24 px vẫn đọc ra). Canvas giả (Node): 1. */
@@ -140,8 +140,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function veMat(g, M, kieu, cx, cy, w, h, trong) {
     if (!kieu || kieu === 'thuong') return false;
     var rw = w * 0.12, rh = h * 0.42, day = Math.min(h * 0.55, Math.max(h * 0.3, 2 / pxMoiDv(g)));
-    function net(d) { d = d || day; g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = rgba(BM.vecMatSangRgb, 0.55); g.lineWidth = d * 1.75; g.stroke(); g.strokeStyle = BM.vecMat; g.lineWidth = d; g.stroke(); }
-    function dac() { g.lineJoin = 'round'; g.strokeStyle = rgba(BM.vecMatSangRgb, 0.55); g.lineWidth = day * 0.75; g.stroke(); to(g, BM.vecMat); }
+    function net(d) { d = d || day; g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = rgba(M.matRgb, 0.55); g.lineWidth = d * 1.75; g.stroke(); g.strokeStyle = M.mat; g.lineWidth = d; g.stroke(); }
+    function dac() { g.lineJoin = 'round'; g.strokeStyle = rgba(M.matRgb, 0.55); g.lineWidth = day * 0.75; g.stroke(); to(g, M.mat); }
     switch (kieu) {
       case 'chop1': bo(g, cx - rw, cy - rh * 0.15, 2 * rw, rh * 0.95, rh * 0.45); dac(); return true;
       case 'chop2': g.beginPath(); g.moveTo(cx - rw, cy + rh * 0.05); g.quadraticCurveTo(cx, cy + rh * 0.45, cx + rw, cy + rh * 0.05); net(); return true;
@@ -153,10 +153,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         g.beginPath(); g.moveTo(cx, yt + st * 0.85);
         g.bezierCurveTo(cx - st * 1.35, yt + st * 0.05, cx - st * 0.85, yt - st * 1.05, cx, yt - st * 0.38);
         g.bezierCurveTo(cx + st * 0.85, yt - st * 1.05, cx + st * 1.35, yt + st * 0.05, cx, yt + st * 0.85); g.closePath();
-        g.lineJoin = 'round'; g.strokeStyle = rgba(BM.vecHongSangRgb, 0.55); g.lineWidth = day * 1.5; g.stroke(); g.strokeStyle = BM.vecVo; g.lineWidth = day * 0.75; g.stroke(); to(g, BM.vecHong); return true;      // quầng hồng nhạt, viền trắng (29/10 user: cho rõ trên kính xanh), lõi hồng
+        g.lineJoin = 'round'; g.strokeStyle = rgba(M.matRgb, 0.7); g.lineWidth = day * 1.5; g.stroke(); to(g, M.mat); return true;      // cùng màu mắt của đội: lõi sáng trên quầng (29/10 user: tim đỏ trên kính xanh bị lạc)
       case 'ngac': var R = rh * 1.05; tron(g, cx, cy, R); dac(); tron(g, cx, cy + R * 0.1, R * 0.42); to(g, M.toi); return true;
       case 'buon': g.beginPath(); g.moveTo(cx - trong * rw * 1.1, cy + rh * 0.75); g.lineTo(cx + trong * rw * 0.8, cy - rh * 0.55); net(); return true;      // vạch xệ dốc: ngoài thấp, trong cao
-      case 'cho': tron(g, cx, cy + rh * 0.15, day * 0.62); to(g, BM.vecMat); return true;
+      case 'cho': tron(g, cx, cy + rh * 0.15, day * 0.62); to(g, M.mat); return true;
       default: return false;
     }
   }
@@ -222,10 +222,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  V7c1 (28/10): bộ sơn mở khoá (ngoc / cam / trang / hoang-kim) đã bỏ cùng hàng Cài đặt: mã lạ → R1. */
   var SON_DOI = { do: ['sonDo', 'sonDoToi'], tim: ['sonTim', 'sonTimToi'] };
   function mauDoi(son) {
-    if (son === 'lam') return { ma: 'R2', chinh: BM.vecDoiR2, toi: BM.vecDoiR2Toi };
+    if (son === 'lam') return { ma: 'R2', chinh: BM.vecDoiR2, toi: BM.vecDoiR2Toi, mat: BM.vecMatR2, matRgb: BM.vecMatSangR2Rgb };      // mat / matRgb: lõi và quầng mắt theo đội (29/10)
     var k = SON_DOI[son];
-    if (k) return { ma: son, chinh: BM[k[0]], toi: BM[k[1]] };
-    return { ma: 'R1', chinh: BM.vecDoiR1, toi: BM.vecDoiR1Toi };
+    if (k) return { ma: son, chinh: BM[k[0]], toi: BM[k[1]], mat: BM.vecMat, matRgb: BM.vecMatSangRgb };
+    return { ma: 'R1', chinh: BM.vecDoiR1, toi: BM.vecDoiR1Toi, mat: BM.vecMat, matRgb: BM.vecMatSangRgb };
   }
 
   /* ---------------------------------------------------------------- luật ghép: Y NHƯ Part.ghep của bộ pixel (part/part.js) — cùng điều cấm, cùng câu báo lỗi */

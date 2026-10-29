@@ -239,7 +239,7 @@ console.log('\n== 6. Màu đội: kính + mắt + chấm ăng-ten ==');
   kiem('mauDoi: R1 = vecDoiR1 / vecDoiR1Toi, R2 = vecDoiR2 / vecDoiR2Toi, hai bộ khác nhau', M1.chinh === BM.vecDoiR1 && M1.toi === BM.vecDoiR1Toi && M2.chinh === BM.vecDoiR2 && M2.toi === BM.vecDoiR2Toi && M1.chinh !== M2.chinh && M1.toi !== M2.toi);
   const khac = [];
   for (let i = 0; i < Math.max(r1.length, r2.length); i++) if (r1[i] !== r2[i]) khac.push(i);
-  const doiMau = (s) => s.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi);
+  const doiMau = (s) => s.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb);      // 29/10: lõi / quầng mắt cũng theo đội
   const chiMau = khac.every((i) => doiMau(r2[i]) === r1[i]);
   const loaiKhac = khac.map((i) => r2[i].split(' ')[0]).sort();
   kiem('R1 và R2: cùng độ dài luồng (' + r1.length + '), chỉ khác ở màu đội; chỗ khác = ' + J(loaiKhac),
@@ -248,6 +248,14 @@ console.log('\n== 6. Màu đội: kính + mắt + chấm ăng-ten ==');
   const mat = r2.filter((s) => s === 'strokeStyle ' + M2.chinh).length, cham = r2.filter((s) => s === 'fillStyle ' + M2.chinh).length;
   kiem('R2: kính = 1 gradient (toi → chinh), mắt = 2 viền chinh, chấm ăng-ten = 1 tô chinh', kinh === 1 && mat === 2 && cham === 1, 'kính ' + kinh + ', mắt ' + mat + ', chấm ' + cham);
   kiem('luồng R2 không còn màu R1 và ngược lại', !r2.some((s) => s.includes(M1.chinh) || s.includes(M1.toi)) && !r1.some((s) => s.includes(M2.chinh) || s.includes(M2.toi)));
+  {   /* 29/10 (user: mắt R2 vẫn xanh, tim đỏ trên kính xanh bị lạc): lõi + quầng mắt theo đội, ở mắt thường lẫn mắt biểu cảm (vui, tim); R2 không còn lõi / quầng mắt của R1 */
+    const mR2 = ['thuong', 'vui', 'tim'].map((m) => V.robot({ than: 'hai-banh', son: 'lam' }, { than: { mat: m } }, 2, 84).lenh.map(chuoi));
+    const mR1 = ['thuong', 'vui', 'tim'].map((m) => V.robot({ than: 'hai-banh', son: '' }, { than: { mat: m } }, 2, 84).lenh.map(chuoi));
+    const coMat = (l, M) => l.some((s) => s.includes(M.mat)) && (l === mR2[0] || l === mR1[0] || l.some((s) => s.includes(M.matRgb)));
+    kiem('mắt theo đội: R1 lõi vecMat, R2 lõi vecMatR2 (mắt thường, vui, tim); R2 không dùng lõi / quầng mắt R1, tim không còn hồng cố định',
+      M1.mat === BM.vecMat && M2.mat === BM.vecMatR2 && M1.mat !== M2.mat && mR2.every((l) => coMat(l, M2)) && mR1.every((l) => coMat(l, M1)) &&
+      !mR2.some((l) => l.some((s) => s.includes(M1.mat) || s.includes(M1.matRgb))) && !mR1[2].some((s) => s.includes(BM.vecHong)));
+  }
   const Mn = V.mauDoi('ngoc'), Md = V.mauDoi('do'), Mt = V.mauDoi('tim');
   kiem("(V7c1) sơn mở khoá đã bỏ: 'ngoc' → R1 (vecDoiR1); đối thủ 'do' → sonDo / sonDoToi; dự phòng 'tim' → sonTim", Mn.ma === 'R1' && Mn.chinh === BM.vecDoiR1 && Md.chinh === BM.sonDo && Md.toi === BM.sonDoToi && Mt.chinh === BM.sonTim && !/ngoc|hoang-kim/.test(docGame('ve-vector.js').split('var SON_DOI')[1].split('\n')[0]));
 }
@@ -497,7 +505,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 
   /* e. màu đội: mọi tổ hợp R1 ↔ R2 chỉ khác màu đội, đúng ba chỗ (kính 1 gradient, mắt 2 viền, chấm ăng-ten 1 tô) */
   const M1 = V.mauDoi('vang'), M2 = V.mauDoi('lam'), doiSai = [];
-  const doiMau = (x) => x.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi);
+  const doiMau = (x) => x.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb);      // 29/10: lõi / quầng mắt cũng theo đội
   for (const cfg of hopLe.filter((c, i) => i % 3 === 0)) {
     V.xoaDem();
     const st = { tay: cfg.tay ? ST[cfg.tay] : undefined, camBien: { bat: true, mat: true }, than: { quat: true, doc: true } };

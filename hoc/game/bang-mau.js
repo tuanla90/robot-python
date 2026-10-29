@@ -171,7 +171,6 @@
     vecXichMat: '#4b5380',             // mắt xích bánh xích (nhạt hơn vecBanh)
     vecMatSang: '#ffffff',             // mắt camera đang đọc: lõi trắng rực
     vecMatSangRgb: '207,250,254',      // bộ ba quầng sáng quanh mắt camera / ống kính đang đọc
-    vecHongSangRgb: '254,205,211',     // bộ ba quầng sáng quanh mắt trái tim (thắng màn), cùng màu vecHongSang
     // ---- VECTOR (gói V4, 27/10): hiệu ứng trên sân bằng vector (ve-vector-hieu-ung.js) — bộ ba rgb cho lớp mờ / quầng của các màu vec đã có
     vecDoRgb: '239,68,68',             // bộ ba của vecDo: chớp đỏ, ô bị chặn / vỡ, vật thả bị chặn
     vecNgon: '#b9c2d6',                // ngón tay kẹp / tay xoay (bạc nhạt): vật trắng trong kẹp nổi rõ
@@ -246,7 +245,9 @@
     vecDoiR1: '#38bdf8',               // R1: màu chính (đáy kính, chấm ăng-ten)
     vecDoiR1Toi: '#2563eb',            // R1: đỉnh gradient kính
     vecDoiR2: '#f472b6',               // R2: màu chính
-    vecDoiR2Toi: '#db2777'             // R2: đỉnh gradient kính
+    vecDoiR2Toi: '#db2777',            // R2: đỉnh gradient kính
+    vecMatR2: '#ffe4f1',               // R2: lõi mắt (R1 dùng vecMat); mắt thường và mắt biểu cảm theo màu đội (29/10 user: mắt R2 không còn xanh)
+    vecMatSangR2Rgb: '251,207,232'     // R2: bộ ba quầng sáng quanh mắt (R1 dùng vecMatSangRgb)
   };
 
   // ======================================================================== LUẬT CHƠI (44 sau V7c3): màu đọc bằng color() / màu vật / ô sàn màu / sơn. Đổi được, nhưng bốn màu đỏ / xanh lá / xanh dương / vàng phải luôn phân biệt rõ với nhau và với nền sân
