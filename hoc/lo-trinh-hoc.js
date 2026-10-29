@@ -1373,6 +1373,31 @@
     var DAM_LA_THUA_2 = ['che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
     DAM_LA_THUA_2.forEach(function (ma) { get(ma).damLaThua = true; });
     M.manDamLaThua = M.manDamLaThua.concat(DAM_LA_THUA_2);
+    // Gói 2 chương sung-hoi: cái mới là SÚNG HƠI (shoot() bắn ra trước, cú giật đẩy xe lùi). sung-hoi.1 trình diễn (khoá, ba phát lùi ba ô); sung-hoi.2 ép shoot_back (H đã có).
+    sua('sung-hoi.1', {
+      ten: 'Bắn là lùi', chiChay: true, chinhCoDinh: true,
+      deBai: 'Xe có súng hơi ở mũi. shoot() bắn một quả bóng ra phía trước, và cú giật làm xe lùi một ô; sau shoot() phải có wait() thì nhịp mới trôi. Lá cờ nằm phía sau xe ba ô: bấm Chạy xem ba phát bắn đưa xe lùi tới cờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: mỗi vòng lặp bắn một phát rồi chờ một nhịp, xe lùi một ô.',
+      maMau: bai(['for i in range(3):', '    shoot()', '    wait()']), loiGiai: bai(['for i in range(3):', '    shoot()', '    wait()']),
+      goiY: ['Bắn ra trước thì xe bị giật lùi một ô.', 'Màn sau em dùng shoot_back(): bắn ra sau, xe giật tới.']
+    });
+    // Gói 2 chương tham-so: cái mới là HÀM CÓ THAM SỐ. tham-so.1 trình diễn (forward(n) của màn khoá, main khoá: bấm Chạy thấy forward(4) đi bốn ô, forward(3) đi ba ô);
+    // tham-so.2 ép: thân forward(n) của màn đang lặp cứng range(2), người chơi đổi số 2 thành biến n (hướng dẫn từng bước); tham-so.3 tạo forward(n) (ép def + tham số).
+    sua('tham-so.1', {
+      ten: 'Gọi hàm có số', chiChay: true, chinhCoDinh: true, khoaHamMan: ['forward'],
+      deBai: 'Hàm có tham số: forward(n) nhận một số n trong ngoặc và tiến đúng n ô. Chương trình gọi forward(4), forward(3), forward(2) cho ba đoạn đường dài khác nhau, cùng một hàm. Bấm Chạy xem xe tới cờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: số trong ngoặc là số ô của đoạn đường đó.',
+      maMau: bai(['forward(4)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(2)'], [ham('forward', ['for i in range(n):', '    move()'], ['n'])]),
+      loiGiai: bai(['forward(4)', 'turn_right()', 'forward(3)', 'turn_left()', 'forward(2)'], [ham('forward', ['for i in range(n):', '    move()'], ['n'])]),
+      goiY: ['Mỗi lần gọi, n mang một số khác: 4, rồi 3, rồi 2.', 'Màn sau thân hàm forward(n) chưa dùng n: em sửa.']
+    });
+    (function () {
+      var m = get('tham-so.2');
+      m.deBai = 'Hàm forward(n) của màn phải tiến đúng n ô, nhưng thân hàm đang lặp cứng hai lần, không nhìn tới n. Sửa thân hàm để xe đi hết đường tới cờ.';
+      m.veMaMau = 'Chương trình chính đã gọi forward(n) với đúng số ô của từng đoạn. Chạy thử: n bằng 3 hay 5 thì xe cũng chỉ đi hai ô. Mở thân hàm, đổi số 2 trong range thành n.';
+      m.maMau = bai(['forward(3)', 'turn_right()', 'forward(5)', 'turn_right()', 'forward(2)'], [ham('forward', ['for i in range(2):', '    move()'], ['n'])]);
+      m.goiY = ['Chạy thử bản có sẵn: n bằng 3 mà xe đi được mấy ô?', 'Số lần lặp phải là n: chạm số 2 trong range rồi chọn biến n.'];
+    })();
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

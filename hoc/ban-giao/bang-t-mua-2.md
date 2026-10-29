@@ -37,7 +37,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | sung-hoi.1 | Bắn là lùi | lệnh shoot | có |  |  |  |  |
+| 1 | sung-hoi.1 | Bắn là lùi | lệnh shoot | có | có |  |  |  |
 | 2 | sung-hoi.2 | Bắn ra sau | lệnh shoot_back | có |  |  |  |  |
 | 3 | sung-hoi.3 | Nút ở sau lưng | nút bắn, cửa | có |  |  |  |  |
 | 4 | sung-hoi.4 | Thùng sau lưng |  | có |  |  |  |  |
@@ -52,8 +52,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | tham-so.1 | Gọi hàm có số | hàm có tham số |  |  | tham-so, for |  |  |
-| 2 | tham-so.2 | Hoàn thành forward |  |  |  | tham-so, for |  |  |
+| 1 | tham-so.1 | Gọi hàm có số | hàm có tham số | có | có | tham-so, for |  |  |
+| 2 | tham-so.2 | Hoàn thành forward |  | có |  | tham-so, for |  |  |
 | 3 | tham-so.3 | Tạo hàm forward |  |  |  | tham-so, def, for |  |  |
 | 4 | tham-so.4 | Quay k lần |  |  |  | tham-so, def, for |  |  |
 | 5 | tham-so.5 | Đường nhiều đoạn |  |  |  |  |  |  |

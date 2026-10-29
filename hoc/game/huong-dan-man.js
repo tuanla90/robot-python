@@ -437,11 +437,10 @@
 
   /* ============================================================ Chương 19 · Súng hơi (làm quen): shoot() bắn ra trước + giật lùi, shoot_back() bắn ra sau + giật tới */
   var CHU_THE_SUNG = 'Khối của súng nằm ở thẻ Súng hơi. Bấm ◀ hoặc ▶ để sang thẻ đó.';
+  // Gói T mùa 2 (29/10): sung-hoi.1 là màn trình diễn súng hơi (chiChay: chỉ bấm Chạy); phiên bản 2.
   H['sung-hoi.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bắn một phát ra trước thì xe bị giật lùi một ô.', xong: 'chay', daLam: daChay },
-    khoiTheo(['khoi:shoot'], 'Cờ còn cách ba ô. Chạm shoot() để bắn thêm, nhớ wait() sau mỗi phát.', CHU_THE_SUNG,
-      { daLam: function () { return soDongChinh() >= 6 || dongCo(/^\s*for\b/) >= 0; } }),
-    buocChay('Bấm Chạy.')
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: mỗi phát shoot() bắn ra trước, cú giật đẩy xe lùi một ô.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:2', chu: 'shoot() bắn, wait() cho nhịp trôi: ba vòng lặp là lùi ba ô. Màn sau em dùng shoot_back().', xong: 'bam', han: 9000, rong: 170 }
   ];
   H['sung-hoi.2'] = [
     khoiTheo(['khoi:shoot_back'], 'Lệnh mới shoot_back() bắn ra sau, xe giật tới. Chạm nó rồi chạm wait().', CHU_THE_SUNG,
@@ -563,9 +562,21 @@
     buocSoFor(1, 2),
     buocChay('Quay đủ hai nhịp rồi thì bấm Chạy.')
   ];
+  // Gói 2: súng hơi (sung-hoi.1 trình diễn, sửa ở trên; sung-hoi.2 H đã có); hàm có tham số (tham-so.1 trình diễn, tham-so.2 đổi số 2 trong range thành n ở thân forward của màn)
+  H['tham-so.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: forward(4) đi bốn ô, forward(3) đi ba ô, forward(2) đi hai ô.', 1,
+    'Số trong ngoặc là tham số n: cùng một hàm forward(n), mỗi lần gọi một số khác. Màn sau em sửa thân hàm.');
+  H['tham-so.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: n bằng 3 hay 5 thì xe cũng chỉ đi hai ô, vì thân hàm lặp cứng range(2).', xong: 'chay', daLam: daChay },
+    { dich: '[data-sua="forward"]', chu: 'Chạm bút chì cạnh forward(n) để mở thân hàm trong Xưởng.', xong: 'mo-xuong', han: 0, rong: 170, daLam: xuongMo },
+    { xuong: true, phu: true, huong: 'tren', rong: 180, han: 0,
+      dich: function () { return thay('nut:chon-bien') ? 'nut:chon-bien' : xuongMo() ? 'so:1' : []; },
+      chu: function () { return thay('nut:chon-bien') ? 'Chọn n: số lần lặp lấy từ đối số của hàm.' : 'Chạm số 2 trong range để đổi nó thành n.'; },
+      daLam: function () { return /range\(\s*n\s*\)/.test(chuThan('forward')); } }
+  ].concat(buocThuVeChay('forward(n) lặp đúng n lần rồi. Bấm Chạy.'));
   H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xe đi tới tường, mỗi bước n tăng một, rồi lùi đúng n bước về xe mờ.', 1,
     'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
 
   window.HuongDanMan = H;
-  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2 };
+  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2,
+    'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn
 })();
