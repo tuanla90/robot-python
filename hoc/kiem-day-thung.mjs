@@ -310,7 +310,9 @@ const dieuMoi = {};
 kiem('mỗi màn thêm tối đa MỘT điều mới (so với mọi màn đứng trước, đặc trưng đọc từ lời giải và sân)', () => {
   const da = new Set(biet);
   for (const m of DS) {
-    const moi = [...dacTrung(m)].filter((f) => !da.has(f));
+    // 30/10 phun nhẹ: gói 2 không còn màn đẩy thùng vào ô đích, nên mục tiêu đẩy thùng ra mắt ngay ở màn TRÌNH DIỄN day-thung.1 cùng xích đẩy thùng
+    // (ô khung vàng tự nói mục tiêu; màn khoá, chỉ bấm Chạy). Chỉ miễn đúng đặc trưng đó, ở màn trình diễn.
+    const moi = [...dacTrung(m)].filter((f) => !da.has(f) && !(m.chiChay && f === 'muc tieu day-thung'));
     dieuMoi[m.ma] = moi;
     if (m.hang !== 'trum') assert.ok(moi.length <= 1, m.ma + ' thêm ' + moi.length + ' điều mới: ' + moi.join(', '));
     for (const f of dacTrung(m)) da.add(f);

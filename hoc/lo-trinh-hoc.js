@@ -1453,11 +1453,11 @@
     TT.goi.forEach(function (g) { if (g.mua === 'mua-2' && TEN_GOI_2[g.ma]) g.ten = TEN_GOI_2[g.ma]; });
     var TEN_CHUONG_2 = {
       'xich': 'Quay hai nhịp', 'bien-xich': 'Đếm bước để về',
-      'sung-hoi': 'Phun là lùi', 'tham-so': 'Đi mấy ô tùy em',
+      'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy em',
       'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
       'bang-chuyen': 'Lên băng chuyền', 'che-sung-hoi': 'Chế lệnh: mở van',
       'day-thung': 'Đẩy thùng nặng', 'che-day-thung': 'Chế lệnh: đẩy n ô',
-      'luc-ban': 'Phun nhanh, phun tụ', 'che-luc-ban': 'Chế lệnh: chọn lực',
+      'luc-ban': 'Phun mạnh, phun nhẹ', 'che-luc-ban': 'Chế lệnh: chọn lực',
       'do-nhiet': 'Tìm van nóng', 'che-do-nhiet': 'Chế lệnh: mở van',
       'doi-mua-2': 'Nhường đường', 'che-doi-mua-2': 'Chế lệnh: chờ bạn',
       'be-sung': 'Phun không lùi', 'che-be-sung': 'Chế lệnh: phun ba hướng',
