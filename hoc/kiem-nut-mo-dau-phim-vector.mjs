@@ -7,7 +7,7 @@
      B. Icon (V7b, gỡ cầu C1 / C5): một phạm vi VeIcon.PHAM_VI = #stage; Ve.ico / sao / khoa / mui trả THẲNG <svg class="pxi vi vi-<tên>"> cỡ = cạnh lớn của bảng
         CO_ICON (V7c1: bảng số cố định trong ve.js, không đọc lưới pixel) × s, có nhãn _vi; VeIcon.thay trong DOM giả chỉ còn thêm title cho nút chỉ icon trong #stage.
      C. Cảnh mở màn (mo-dau.js): mọi canvas trong 6 khung là hình vector, không gọi Painter pixel / Ve.tiles / Ve.ico khi chiếu; R1 có mắt biểu cảm;
-        (C3-v, V7c1) cây DOM + lệnh vẽ của 6 khung y như bản nền vector NEN_VEC (eb553bd) (phanh pixel C3 so 4ac900f đã gỡ).
+        (C3-v, V7c1) cây DOM + lệnh vẽ của 6 khung y như bản nền vector NEN_VEC (f8331e9) (phanh pixel C3 so 4ac900f đã gỡ).
      D. Phim .md / .pg-*: choi-vector.css không còn giữ mực / kem pixel cho .md, giảm chuyển động áp cả phim; mọi luật .md-* / .pg-* của choi.css có steps() /
         bóng chữ đều có luật vector đặt lại (giao-dien-vector-b.css hoặc choi-vector.css); luật vector của phim không phông pixel, không màu kem / mực pixel,
         nền ô cảnh không còn ảnh bảng phấn.
@@ -22,7 +22,7 @@ import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const NEN_VEC = 'eb553bd';                             // 29/10 góp ý user: nền VECTOR = eb553bd (mắt vui cung nhỏ mềm, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); C3-v so 6 khung mở đầu vector với nền này (phanh thay C3 khi gỡ pixel)
+const NEN_VEC = 'f8331e9';                             // 29/10 góp ý user: nền VECTOR = f8331e9 (mắt vui cung tròn mảnh, mắt tim thắng màn; trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); C3-v so 6 khung mở đầu vector với nền này (phanh thay C3 khi gỡ pixel)
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
 const goc = path.resolve(day, '..');

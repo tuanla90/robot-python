@@ -22,7 +22,7 @@
        (tay trước, hongTrai trái, hongPhai phải, tren góc mũi trái, sau đuôi); màu đội đúng ba chỗ trên mọi tổ hợp; trạng thái động ra hình khác; MỌI MÀN (cả từng robot
        của màn đội) vẽ được bằng vector qua VeRobot.ve.
   13. (gói V4) Hoạt cảnh trên sân: chạy san-ve.js THẬT trong ngữ cảnh vm (canvas giả, đồng hồ ảo, Math.random hạt cố định), phát lại vết ChamHoc (lời giải + lời sai) của 22 màn
-       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền eb553bd (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
+       (cả hai-robot): VECTOR y nguyên từng lệnh so với nền f8331e9 (13a-v, V7c1; phanh pixel 13a so a962f7b đã gỡ); VECTOR không còn fillRect / strokeRect; tia cảm biến từ ổ thật; mắt biểu cảm (12 kiểu khác nhau trên 5 thân,
        sự kiện đâm / ? / tới cờ / xong màn / húc bạn / chờ → đúng biểu cảm, chớp 2,5–5 s lệch nhau); camera không đổi mắt (ống kính ở đuôi); cảm biến dính vỏ; VeRobot.veCo; cờ bay, sàn bàn cờ.
   14. (gói V5a) Giao diện phẳng màn chơi (choi-vector.css): nạp đủ phông Google Sans Flex / Code + choi-vector.css sau choi.css; mọi bộ chọn trong body.ve-vector (pixel y nguyên);
        không steps( / pixelated / Handjet / VT323; mọi steps() màn chơi của choi.css (và huong-dan.js) có luật phủ mượt, có prefers-reduced-motion; chữ canvas vector không VT323;
@@ -570,13 +570,13 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
        g. cờ bay (pha khác → hình khác), sàn bàn cờ hai tông, trang xem có mục V4.
    ====================================================================================================================================== */
 {
-  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền eb553bd, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
+  console.log('\n== 13. (V4 / V7c1) Hoạt cảnh / hiệu ứng trên sân: vector y nguyên so với nền f8331e9, vector không fillRect, tia từ ổ, mắt biểu cảm, cảm biến dính vỏ, veCo ==');
   const vm = await import('node:vm');
   const { execFileSync } = await import('node:child_process');
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
-  const NEN_VEC = 'eb553bd';                                                           // 29/10 góp ý user: nền VECTOR = eb553bd (mắt vui cung nhỏ mềm, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
+  const NEN_VEC = 'f8331e9';                                                           // 29/10 góp ý user: nền VECTOR = f8331e9 (mắt vui cung tròn mảnh, mắt tim thắng màn; trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };
@@ -779,12 +779,12 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 
   /* d. mắt biểu cảm */
   {
-    const VV = KV.ctx.VeVector, KIEU = ['thuong', 'chop1', 'chop2', 'dam', 'xoay', 'vui', 'ngac', 'buon', 'lim', 'cho', 'thuong:1', 'thuong:-1'], trung = [];
+    const VV = KV.ctx.VeVector, KIEU = ['thuong', 'chop1', 'chop2', 'dam', 'xoay', 'vui', 'tim', 'ngac', 'buon', 'lim', 'cho', 'thuong:1', 'thuong:-1'], trung = [];
     for (const than of VV.ds('than')) {
       const thay = new Map();
       for (const k of KIEU) { VV.xoaDem(); const s = VV.robot({ than }, { than: { mat: k, quat: true } }, 2, 84).getContext().lenh.join('\n'); if (thay.has(s)) trung.push(than + ': ' + thay.get(s) + ' = ' + k); thay.set(s, k); }
     }
-    kiem('(13d) mắt biểu cảm: ' + KIEU.length + ' kiểu (thường, chớp nửa / khép, đâm X, va nhau > <, vui ^ ^, ngạc nhiên, buồn, lim dim, chờ, liếc trái / phải) ra hình KHÁC NHAU trên cả 5 thân', trung.length === 0, trung.slice(0, 4).join('; '));
+    kiem('(13d) mắt biểu cảm: ' + KIEU.length + ' kiểu (thường, chớp nửa / khép, đâm X, va nhau > <, vui ◠ ◠, tim (thắng màn), ngạc nhiên, buồn, lim dim, chờ, liếc trái / phải) ra hình KHÁC NHAU trên cả 5 thân', trung.length === 0, trung.slice(0, 4).join('; '));
     /* sự kiện → biểu cảm: phát một nhịp có sự kiện rồi hỏi bieuCam ngay sau */
     const cv = new KV.Cv(); cv.parentNode = KV.cha; const F = new KV.ctx.SanVe.Field(cv, {});
     F.nap({ san: ['....F', '..#..', '.....'], batDau: { x: 1, y: 0, huong: 2 }, loaiRobot: 'banh', robot: { than: 'hai-banh', tay: null, camBien: [] } });
@@ -794,7 +794,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     KV.datGio(KV.gio() + 2000); await KV.chayToi(F.phatNhip({ robot: { x: 4, y: 0, huong: 1, banh: { trai: 1, phai: 1 } }, suKien: [{ ma: 'tien', den: { x: 4, y: 0 } }, { ma: 'toi-co' }] }, 300), F); kq.vui = mat();
     KV.datGio(KV.gio() + 3000); F.mungThang(); KV.datGio(KV.gio() + 700); kq.mung = mat();
     kiem('(13d) sự kiện vết kích hoạt đúng biểu cảm: đâm tường → ' + kq.dam + ', dấu ? → ' + kq.ngac + ', tới cờ → ' + kq.vui + ', xong màn (giữ tới khi hộp kết quả hiện, 700 ms) → ' + kq.mung,
-      kq.dam === 'dam' && kq.ngac === 'ngac' && kq.vui === 'vui' && kq.mung === 'vui', J(kq));
+      kq.dam === 'dam' && kq.ngac === 'ngac' && kq.vui === 'vui' && kq.mung === 'tim', J(kq));      // 29/10 user: việc nhỏ (tới cờ) = vui, thắng màn = tim
     {   /* V7b (28/10): Cài đặt "Biểu cảm mắt" TẮT (Luu.docCaiDat().mat === false) → ở vector cũng có tác dụng: mắt thường (không liếc / rung / nảy), chỉ còn chớp */
       KV.ctx.Luu = { docCaiDat: () => ({ mat: false }) };
       KV.datGio(KV.gio() + 3000); F.baoHieu('?', 900); const tatNgac = mat(); F.vis.gocMem = 1; const tt2 = {}; F.bieuCam(F.vis, tt2, KV.gio(), 0); F.vis.gocMem = 0;
