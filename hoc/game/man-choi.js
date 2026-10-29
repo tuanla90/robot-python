@@ -272,7 +272,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (m.huongDan || (window.HuongDanMan && HuongDanMan[m.ma])) anBongD();
         else hienDeBai();
         if (window.HuongDan) HuongDan.vaoMan(m);                                        // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
-        q('.chinh-khoa .ck-chu').textContent = t(m.chiChay ? 'choi.chiChayNhan' : 'choi.chinhKhoaNhan');     // nhãn ổ khóa: màn trình diễn (chỉ Chạy) hay main cố định (sửa hàm)
+        Array.prototype.forEach.call(document.querySelectorAll('.chinh-khoa .ck-chu'), function (e) { e.textContent = t(m.chiChay ? 'choi.chiChayNhan' : 'choi.chinhKhoaNhan'); });     // nhãn ổ khóa (khung chính và bản trong Xưởng): màn trình diễn (chỉ Chạy) hay main cố định (sửa hàm)
       });
     }
     if (window.ThePart && m.doi && m.doiThu) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.doiThu(m, batDau); });     // đối thủ part mạnh: thẻ "ĐỐI THỦ" thay cho thẻ bộ phận của R2
