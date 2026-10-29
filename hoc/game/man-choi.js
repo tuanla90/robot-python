@@ -554,13 +554,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Xem sân i (chạm ảnh nhỏ): nạp sân, và nếu đã chạy thì chuẩn bị phát lại vết của sân đó (nút Chạy phát lại). */
   function xemSan(i) {
-    if (S.busy || !nhieuSan() || i === S.si || i < 0 || i >= S.man.san.length) return;
+    if (!nhieuSan() || i === S.si || i < 0 || i >= S.man.san.length) return;
+    var dangPhat = S.busy && S.ket && !loiKhung();                                      // 29/10: đang phát lại vẫn đổi sân được (trước đây chạm bị bỏ qua, người chơi tưởng hỏng)
+    if (S.busy && !dangPhat) return;
+    if (dangPhat) { S.rid++; S.busy = false; E.side.classList.remove('busy'); sang(null); DenBoPhan.tat(true); }
     if (window.HuongDan) HuongDan.bao('xem-san', { i: i });                           // hướng dẫn từng bước: đã chạm ảnh nhỏ của một sân
     anToast();
     S.field.nap(cauHinhSan(i));
     S.ed.datChay(null); S.pal.datSang(null);
     if (S.ket && !loiKhung()) datVet(i); else { S.si = i; S.nhip = 0; veDongHo(); veSanBar(); }
     if (S.ket && !S.ket.thang && E.bongD.hasAttribute('data-ca')) { dungChanDoan(S.ket); hienChanDoan(); }      // đang mở chẩn đoán: đổi sang chẩn đoán của sân này
+    if (dangPhat) chay();                                                               // đang phát thì phát tiếp sân vừa chọn từ đầu
   }
   /** Chỉ số dòng (từ 0) của chương trình mà sự kiện lệnh e đang chạy (kể cả khi lệnh nằm trong hàm được gọi từ dòng đó). */
   function dongChinhCua(e) {

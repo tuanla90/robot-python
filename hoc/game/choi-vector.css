@@ -122,10 +122,11 @@ body.ve-vector .ffr .khung-san{background:var(--g-vecThe);background-image:none;
 body.ve-vector .sanbt{background:var(--g-vecThe);border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1);transition:box-shadow .18s ease,transform .18s ease}
 body.ve-vector .sanbt.on{box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-2)}
 body.ve-vector .sanbt .sn{font:700 9px/1 var(--px);color:var(--g-vecThe);text-shadow:none;left:2px;top:2px;padding:1px 3px;border-radius:4px;background:var(--g-vecChu)}
-body.ve-vector .sanbt .dau{border-radius:50%;box-shadow:0 0 0 1.5px var(--g-vecThe)}
+body.ve-vector .sanbt .dau{right:2px;bottom:2px;border-radius:50%;box-shadow:0 0 0 1.5px var(--g-vecThe)}      /* 29/10: dấu ✓ / ✗ nằm trong nút (choi.css đặt -3px, nút vector overflow:hidden cắt thành mẩu vuông lòi mép) */
 body.ve-vector .sanbt .dau.ok{background:var(--g-vecLa)}
 body.ve-vector .sanbt .dau.sai{background:var(--g-vecLoi)}
-body.ve-vector .side.busy .sanbt{filter:none;opacity:.55}
+body.ve-vector #sc-choi .sanbt .dau .vi{color:var(--g-vecThe);width:8px!important;height:8px!important}      /* ✓ / ✗ trắng trên chấm màu (luật #sc-choi .vi-cross tô đỏ trùng nền đỏ) */
+body.ve-vector .side.busy .sanbt{filter:none;pointer-events:auto}      /* 29/10: đang phát lại vẫn chạm được ảnh sân (man-choi.js xemSan dừng phát, chuyển sân, phát tiếp sân mới) */
 /* toast bám đáy khung sân: viên bo, nền nhạt + viền màu theo loại */
 body.ve-vector .toast{padding:6px 10px;font:600 12.5px/1.25 var(--px);color:var(--g-vecChu);background:var(--g-vecHoPhachNhat);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1.5px var(--g-vecHoPhach),var(--elev-2)}
 body.ve-vector .toast.win{background:var(--g-vecLaNhat);color:var(--g-vecLaDam);box-shadow:inset 0 0 0 1.5px var(--g-vecLa),var(--elev-2)}
