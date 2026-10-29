@@ -125,7 +125,7 @@
           chuỗi p = "low" | "high". KHÔNG ĐỐI SỐ = "low".
             "low"   PHUN NHẸ: tia bay TỐI ĐA TAM_BAN_NHANH = 2 ô rồi rơi (không trúng gì: 'ban-ngan', thông tin), xe KHÔNG GIẬT (không có sự kiện 'giat'). Bánh vẫn nghỉ.
             "high"  PHUN MẠNH: tia bay tới vật cản đầu tiên, xe GIẬT một ô: spray("high") giật LÙI (về phía đuôi), spray_back("high") giật TỚI (về phía mũi).
-          p lạ (chữ khác, số, nhiều đối số) → lỗi chạy 'luc-ban-sai'. Màn không khai lucBan mà gọi có đối số → lỗi chạy 'luc-chua-mo'. Sự kiện 'ban' có thêm luc và hetTam (bóng nhanh rơi vì hết tầm).
+          p lạ (chữ khác, số, nhiều đối số) → lỗi chạy 'luc-ban-sai'. Màn không khai lucBan mà gọi có đối số → lỗi chạy 'luc-chua-mo'. Robot không vòi phun bỏ qua cờ lucBan. Sự kiện 'ban' có thêm luc và hetTam (bóng nhanh rơi vì hết tầm).
         - Nhịp có bắn thì xe không tự đi: lệnh bánh / trượt cùng nhịp bị bỏ ('ban-dung-yen', thông tin). Hai phát cùng nhịp: phát sau bị bỏ ('ban-goi-lai', lỗi). Quên wait() sau lệnh bắn →
           'quen-wait'. Đạn vô hạn, trừ khi màn khai cfg.danToiDa = n: mỗi phát tốn 1 viên, hết đạn thì không bắn VÀ không giật ('het-dan', lỗi) nhưng vẫn mất nhịp.
         - THỨ TỰ TRONG NHỊP: (a) bắn: bóng bay (nút đổi, băng chuyền nối nút đổi NGAY) → (b) GIẬT: xe (hay thùng) → (c) băng chuyền (theo trạng thái MỚI) → (d) cửa đổi ở CUỐI nhịp.
@@ -844,8 +844,8 @@
         if (typeof rc.danToiDa !== 'number' || Math.floor(rc.danToiDa) !== rc.danToiDa || rc.danToiDa < 0) throw new Error('danToiDa phải là số nguyên không âm.');
         dan = rc.danToiDa;
       }
-      lucBan = !!rc.lucBan;                   // súng hơi: spray(p) / spray_back(p) chọn được lực "low" / "high"
-      if (lucBan && !coHoi) throw new Error('lucBan chỉ dùng cho robot có vòi phun (hamGoc có spray, spray_back).');
+      lucBan = !!rc.lucBan && coHoi;          // vòi phun: spray(p) / spray_back(p) chọn được lực "low" / "high"; robot không vòi phun bỏ qua cờ
+                                              // (29/10: lộ trình bật lucBan cho mọi màn từ gói 6 Lực phun, kể cả robot không vòi phun)
       xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
       beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật; robot không súng bỏ qua cờ, để màn nhiều robot khai một chỗ)
       vet = [], suKienChan = [];

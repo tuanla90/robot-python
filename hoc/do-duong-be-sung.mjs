@@ -53,10 +53,10 @@ export function ngoCanh(m, i = 0) {
 }
 export const HANH_DONG = ['M', 'B', 'R', 'L', 'W', 'c', 'h', 'f', 'g'];
 export const GIA = { M: 1, B: 1, R: 2, L: 2, W: 1, c: 1, h: 1, f: 1, g: 1 };
-/** Các hành động màn cho phép (bắn nhanh chỉ khi lucBan; bắn ra sau khi khay có spray_back). */
+/** Các hành động màn cho phép (phun mạnh c / h chỉ khi lucBan, phun nhẹ f / g luôn có (29/10: mặc định); phun ra sau khi khay có spray_back). */
 export function hanhDong(m) {
   const hg = m.hamGoc || [];
-  return HANH_DONG.filter((a) => !((a === 'f' || a === 'g') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('spray_back')) && !((a === 'c' || a === 'f') && !hg.includes('spray')));
+  return HANH_DONG.filter((a) => !((a === 'c' || a === 'h') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('spray_back')) && !((a === 'c' || a === 'f') && !hg.includes('spray')));
 }
 
 function coThungKet(ctx, S) {
@@ -262,11 +262,10 @@ export function dayChung(m, gioiHan, tuy = {}) {
 
 /* ------------------------------------------------------------------ 4. dãy → mã Python, so chéo với lõi */
 export function chuoiThanhMa(chuoi, m) {
-  const tu = m.lucBan ? '("high")' : '()';
   const MA = {
     M: ['left_move()', 'right_move()', 'wait()'], B: ['left_back()', 'right_back()', 'wait()'],
     R: ['right_back()', 'wait()', 'right_back()', 'wait()'], L: ['right_move()', 'wait()', 'right_move()', 'wait()'], W: ['wait()'],
-    c: ['spray' + tu, 'wait()'], h: ['spray_back' + tu, 'wait()'], f: ['spray("low")', 'wait()'], g: ['spray_back("low")', 'wait()']
+    c: ['spray("high")', 'wait()'], h: ['spray_back("high")', 'wait()'], f: ['spray()', 'wait()'], g: ['spray_back()', 'wait()']
   };
   return [...chuoi].flatMap((a) => MA[a]).join('\n') + '\n';
 }

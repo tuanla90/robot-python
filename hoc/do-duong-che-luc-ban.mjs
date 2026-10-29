@@ -197,7 +197,7 @@ export function moRong(dong, kho, env = {}, tenX = null, sau = 0) {
       if (ten === tenX) { if (banh[0] || banh[1] || sung) return false; kq += 'X'; continue; }
       if (RAW_BANH[ten]) { const v = RAW_BANH[ten]; if (v[0]) banh[0] = v[0]; if (v[1]) banh[1] = v[1]; continue; }
       if (ten === 'spray' || ten === 'spray_back') {
-        const luc = doi.length ? doi[0] : 'high';
+        const luc = doi.length ? doi[0] : 'low';                                   // không đối số = phun nhẹ (29/10)
         if (luc !== 'low' && luc !== 'high') return false;
         sung = (ten === 'spray' ? 'truoc' : 'sau') + ':' + luc; continue;
       }

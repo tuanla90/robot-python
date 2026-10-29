@@ -1512,6 +1512,17 @@
     // Mùa 3: gói 3 đổi tên ngay trong MUA_3 ("Cảm biến từ", user 29/10); các tên khác của mùa 3 đặt theo quy tắc khi làm P2.
   })();
 
+  // 29/10 (user chốt): PHUN NHẸ LÀ MẶC ĐỊNH, lực mạnh spray("high") mở khoá từ gói 6 Lực phun. Mọi màn từ luc-ban.1 trở đi (và từng robot của màn đội)
+  // được chọn lực, trừ màn khai lucBan: false; lõi bỏ qua cờ ở robot không có vòi phun. Màn trước đó chỉ phun nhẹ (spray() không đối số).
+  (function () {
+    var i0 = M.danhSach.indexOf(get('luc-ban.1'));
+    M.danhSach.forEach(function (m, i) {
+      if (i < i0) return;
+      if (m.lucBan === undefined) m.lucBan = true;
+      (m.doi || []).forEach(function (r) { if (r && r.lucBan === undefined) r.lucBan = true; });
+    });
+  })();
+
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.
   var nguong = node ? require('./lo-trinh-sao.js') : window.NguongSaoLoTrinh;
   M.danhSach.forEach(function (m) {
