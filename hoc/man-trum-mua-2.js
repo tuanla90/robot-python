@@ -94,7 +94,7 @@
   // tong-hop-2.1: xe (1,1) quay phải; thùng A (2,1) trước mũi, sau nó là băng chuyền (3,1) chạy sang phải tới ô đích (4,1). Thùng B (2,3) ở giếng dưới chỗ xe sẽ đứng, ô đích (2,4):
   //   đẩy A lên băng một ô rồi để băng đưa A tới đích trong lúc xe quay xuống đi hai ô đẩy B vào đích. Tự đẩy A tới đích thì xe kẹt cuối băng, không về được giếng.
   var SAN_T1 = ['#######', '#.H>D##', '##.####', '##H####', '##D####', '#######'];
-  // tong-hop-2.2: xe (3,2) quay phải; nút (7,2) cách ba ô ở cuối hành lang mở cửa (2,3) ngay dưới ô SAU LƯNG xe; cờ (2,4). Sola lùi bằng jet_back() (bắn tụ, giật lùi): bệ súng không giật.
+  // tong-hop-2.2: xe (3,2) quay phải; nút (7,2) cách ba ô ở cuối hành lang mở cửa (2,3) ngay dưới ô SAU LƯNG xe; cờ (2,4). Sola lùi bằng squirt("high") (bắn tụ, giật lùi): bệ súng không giật.
   var SAN_T2 = ['#########', '#########', '#......N#', '##C######', '##F######', '#########'];
   // tong-hop-2.3: xe (2,2) quay lên; nút (2,5) ở cuối giếng SAU LƯNG (ba ô: phải bắn tụ ra sau); trên đầu xe là hốc (2,1): xe hai bánh bắn ra sau thì giật TỚI vào hốc.
   //   Nút mở cửa (3,2) bên phải xe; cờ (7,2).
@@ -126,8 +126,8 @@
   /* ------------------------------------------------------------- chương trình chương tong-hop-2 */
 
   var L_T1 = ['move()', 'tr_right()', 'forward(2)'];
-  var M_T2 = ['jet_back()', 'tr_right()', 'forward(2)'];                 // Sola: tưởng jet_back() lùi một ô
-  var L_T2 = ['jet_back()', 'back()', 'tr_right()', 'forward(2)'];
+  var M_T2 = ['squirt("high")', 'tr_right()', 'forward(2)'];                 // Sola: tưởng squirt("high") lùi một ô
+  var L_T2 = ['squirt("high")', 'back()', 'tr_right()', 'forward(2)'];
   var L_T3 = ['squirt_back("high")', 'tr_right()', 'forward(5)'];
   var L_T4 = ['sidestep()', 'forward(5)'];
   var L_T5 = ['squirt("high")', 'spin()', 'forward(4)'];
@@ -230,10 +230,10 @@
     }),
 
     man({
-      chuong: 'tong-hop-2', so: 2, ten: 'Đố: jet_back() không lùi', yMoi: 'tìm lỗi: jet_back() của gói Nhà máy lùi nhờ cú giật, trên bệ vòi xe đứng yên; muốn lùi phải back()',
-      kieuBai: 'do', hamCuaEmCan: ['jet_back', 'squirt', 'back', 'tr_right', 'forward', 'move'],
-      deBai: 'Sola dùng jet_back() của gói Nhà máy: bắn tụ van cuối hành lang cho cửa mở, cú giật đưa xe lùi một ô về đúng chỗ rẽ. Chạy thử trên bệ vòi: xe không lùi, rẽ phải đâm tường. ' +
-        'Vì sao? Bệ vòi xích không giật, nên jet_back() chỉ còn là một phát bắn. Sửa cho xe lùi được một ô rồi rẽ xuống cờ.',
+      chuong: 'tong-hop-2', so: 2, ten: 'Đố: squirt("high") không lùi', yMoi: 'tìm lỗi: squirt("high") của gói Nhà máy lùi nhờ cú giật, trên bệ vòi xe đứng yên; muốn lùi phải back()',
+      kieuBai: 'do', hamCuaEmCan: ['squirt', 'squirt', 'back', 'tr_right', 'forward', 'move'],
+      deBai: 'Sola dùng squirt("high") của gói Nhà máy: bắn tụ van cuối hành lang cho cửa mở, cú giật đưa xe lùi một ô về đúng chỗ rẽ. Chạy thử trên bệ vòi: xe không lùi, rẽ phải đâm tường. ' +
+        'Vì sao? Bệ vòi xích không giật, nên squirt("high") chỉ còn là một phát bắn. Sửa cho xe lùi được một ô rồi rẽ xuống cờ.',
       veMaMau: 'Chạy thử chương trình của Sola. Sau phát bắn, xe đứng ở đâu?',
       san: SAN_T2, batDau: { x: 3, y: 2, huong: 1 }, noi: [noi(7, 2, [[2, 3]])],
       maMau: bai(M_T2),
@@ -245,7 +245,7 @@
         { moTa: 'Để nguyên bản của Sola: xe không lùi, rẽ phải đâm tường', baiLam: bai(M_T2), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Bỏ luôn phát bắn: cửa còn đóng', baiLam: bai(['back()', 'tr_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['jet_back() = spray("high") rồi wait(): trên bệ vòi xe đứng yên sau phát bắn.', 'Thêm back() sau jet_back().']
+      goiY: ['squirt("high") = spray("high") rồi wait(): trên bệ vòi xe đứng yên sau phát bắn.', 'Thêm back() sau squirt("high").']
     }),
 
     man({

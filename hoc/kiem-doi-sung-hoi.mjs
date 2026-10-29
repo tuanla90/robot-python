@@ -79,7 +79,7 @@ kiem('cờ có chủ ở mọi màn tới cờ (không còn lối tắt "cờ n�
 console.log('\n— chương 1: doi-sung-hoi');
 thua('doi-sung-hoi.1', 'xe súng chỉ lùi bằng bánh, không tắt băng', { doi: [['for i in range(5):', '    back()'], null] }, 'chua-toi-co');
 thua('doi-sung-hoi.1', 'xe súng quay đầu tiến (băng vẫn đẩy về nút)', { doi: [['u_turn()', 'forward(5)'], null] }, 'chua-toi-co');
-thang('doi-sung-hoi.1', 'bắn liên tiếp năm phát (cú giật cũng đưa xe về cờ)', { doi: [['for i in range(5):', '    jet_back()'], null] });
+thang('doi-sung-hoi.1', 'bắn liên tiếp năm phát (cú giật cũng đưa xe về cờ)', { doi: [['for i in range(5):', '    squirt("high")'], null] });
 thua('doi-sung-hoi.2', 'omni đi thẳng lên không trượt (vướng tường)', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
 thua('doi-sung-hoi.3', 'omni không chờ cửa, đi thẳng', { doi: [null, ['forward(5)']] }, 'chua-toi-co');
 thua('doi-sung-hoi.3', 'xe súng quay phải (bắn vào tường)', { doi: [['turn_right()', 'spray("high")', 'wait()'], null] });
@@ -98,10 +98,10 @@ thua('doi-sung-hoi.8', 'mẫu: xe súng bắn ngay, cửa đầu đóng trước
 thua('doi-sung-hoi.8', 'xe súng chờ một nhịp rồi bắn: vẫn quá sớm', { doi: [['wait()', 'spray("high")', 'wait()'], null] });
 thang('doi-sung-hoi.8', 'xe súng đếm đúng ba nhịp rồi bắn', { doi: [nhieu(CHO(3), ['spray("high")', 'wait()']), null] });
 {
-  const thang9 = ['move()', 'kick_right()', 'move()', 'move()', 'kick_right()', 'move()', 'move()', 'kick_right()', 'move()', 'move()', 'kick_right()', 'move()'];
+  const thang9 = ['move()', 'squirt_left("high")', 'move()', 'move()', 'squirt_left("high")', 'move()', 'move()', 'squirt_left("high")', 'move()', 'move()', 'squirt_left("high")', 'move()'];
   thua('doi-sung-hoi.9', 'xe súng viết thẳng 12 dòng: tràn khung 10 ô', { doi: [thang9, null] });
   thua('doi-sung-hoi.9', 'omni đi thẳng forward(8)', { doi: [null, ['forward(8)']] }, 'chua-toi-co');
-  thua('doi-sung-hoi.9', 'xe súng chỉ bắn ba nút', { doi: [['for i in range(3):', '    move()', '    kick_right()', '    move()', 'forward(2)'], null] }, 'vong-vo-han');
+  thua('doi-sung-hoi.9', 'xe súng chỉ bắn ba nút', { doi: [['for i in range(3):', '    move()', '    squirt_left("high")', '    move()', 'forward(2)'], null] }, 'vong-vo-han');
 }
 thua('doi-sung-hoi.10', 'xe súng luôn quay trái (đúng sân 1, 3; sai sân 2)', { doi: [['go_wall()', 'turn_left()', 'spray("high")', 'wait()'], null] });
 thua('doi-sung-hoi.10', 'xe súng luôn quay phải (sai sân 1, 3)', { doi: [['go_wall()', 'turn_right()', 'spray("high")', 'wait()'], null] });
@@ -124,24 +124,24 @@ thua('che-doi-sung-hoi.3', 'pass_gate() quên chờ (chỉ forward(2))', { doi: 
 thua('che-doi-sung-hoi.4', 'xe súng không chờ omni: húc đồng đội, bắn lệch nút', { doi: [['forward(2)', 'turn_left()', 'spray("high")', 'wait()', 'turn_right()', 'move()'], null] });
 thua('che-doi-sung-hoi.4', 'omni không chờ cửa', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
 // luật giật một ô (29/10): omni không còn là chốt chặn (thùng chỉ nhích một ô, không trượt quá đích); catch_crate() là hàm đón thùng, xe vòi phun tự đẩy đủ ba thùng
-thua('che-doi-sung-hoi.5', 'xe súng không quay lên mà giật tại làn: thùng không nhích, omni đón mãi (vòng vô hạn)', { doi: [['for i in range(3):', '    move()', '    jet_back()', '    move()'], null] }, 'vong-vo-han');
-thua('che-doi-sung-hoi.5', 'xe súng đẩy xong không tiến lại làn: đâm tường cột', { doi: [['for i in range(3):', '    move()', '    turn_left()', '    jet_back()', '    turn_right()', '    move()'], null] }, 'dam-tuong');
+thua('che-doi-sung-hoi.5', 'xe súng không quay lên mà giật tại làn: thùng không nhích, omni đón mãi (vòng vô hạn)', { doi: [['for i in range(3):', '    move()', '    squirt("high")', '    move()'], null] }, 'vong-vo-han');
+thua('che-doi-sung-hoi.5', 'xe súng đẩy xong không tiến lại làn: đâm tường cột', { doi: [['for i in range(3):', '    move()', '    turn_left()', '    squirt("high")', '    turn_right()', '    move()'], null] }, 'dam-tuong');
 thang('che-doi-sung-hoi.5', 'catch_crate() đúng: omni đón từng thùng rồi sang cột kế, không cản thùng', { doi: [null, null] });
-thua('che-doi-sung-hoi.6', 'open_step() bắn nhầm phía (kick_left)', { doi: [null, null], hamEm: [H('open_step', ['kick_left()', 'forward(2)'])] });
+thua('che-doi-sung-hoi.6', 'open_step() bắn nhầm phía (kick_left)', { doi: [null, null], hamEm: [H('open_step', ['squirt_right("high")', 'forward(2)'])] });
 thua('che-doi-sung-hoi.6', 'omni đi thẳng forward(6)', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
 thua('che-doi-sung-hoi.7', 'mẫu: open_gate() bắn hai phát, cửa đóng lại trước khi omni tới', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.7').maMau.hamCuaMan });
-thang('che-doi-sung-hoi.7', 'open_gate() sửa bằng kick_right() (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_gate', ['kick_right()'])] });
+thang('che-doi-sung-hoi.7', 'open_gate() sửa bằng squirt_left("high") (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_gate', ['squirt_left("high")'])] });
 thua('che-doi-sung-hoi.8', 'mẫu: open_back() bắn nòng trước, bóng vào tường', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.8').maMau.hamCuaMan });
 thua('che-doi-sung-hoi.8', 'sửa hàm nhưng omni không chờ cửa', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
-thang('che-doi-sung-hoi.8', 'open_back() = jet_fwd() (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_back', ['jet_fwd()'])] });
+thang('che-doi-sung-hoi.8', 'open_back() = squirt_back("high") (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_back', ['squirt_back("high")'])] });
 thua('che-doi-sung-hoi.9', 'mẫu: make_way() ra khỏi hốc quá sớm, hai robot chặn nhau', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.9').maMau.hamCuaMan });
 thua('che-doi-sung-hoi.9', 'make_way() không nép vào hốc (chỉ chờ)', { doi: [null, null], hamCuaMan: [H('make_way', ['while front_clear():', '    wait()'])] });
 thua('che-doi-sung-hoi.9', 'xe súng không mở cửa, đi thẳng', { doi: [['forward(6)'], null] });
 {
-  const r = cham('che-doi-sung-hoi.10', { doi: [['for i in range(8):', '    kick_right()', '    move()'], null] });
+  const r = cham('che-doi-sung-hoi.10', { doi: [['for i in range(8):', '    squirt_left("high")', '    move()'], null] });
   kiem('che-doi-sung-hoi.10: xe súng bắn ở mọi ô (không hỏi cảm biến) → thắng nhưng mất sao nhịp', r.thang && r.sao < 3 && r.soNhip > man('che-doi-sung-hoi.10').sao.nhip, 'sao ' + r.sao + ', nhịp ' + r.soNhip);
 }
-thua('che-doi-sung-hoi.10', 'xe súng chỉ bắn ở ô 4 (đúng sân 1)', { doi: [['forward(3)', 'kick_right()', 'go_wall()'], null] });
+thua('che-doi-sung-hoi.10', 'xe súng chỉ bắn ở ô 4 (đúng sân 1)', { doi: [['forward(3)', 'squirt_left("high")', 'go_wall()'], null] });
 thua('che-doi-sung-hoi.10', 'omni đi thẳng forward(8)', { doi: [null, ['forward(8)']] });
 {
   const m = man('che-doi-sung-hoi.10');

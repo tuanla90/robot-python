@@ -623,7 +623,7 @@ kiem('drone: bỏ sạc không giao được cả hai hộp', () => {
 });
 kiem('lắp ráp: lời giải trùm cũ không thắng nhiệm vụ mới', () => {
   const m = get('rap-du.10');
-  assert.equal(cham(m, { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }).thang, false);
+  assert.equal(cham(m, { chinh: ['squirt("high")', 'turn_right()', 'forward(4)'] }).thang, false);
   const lg = clone(m.loiGiai);
   lg.hamCuaMan[0].than = ['pick()', 'arm_left()', 'drop()', 'arm_right()', 'wait()'];
   assert.equal(cham(m, lg).thang, false);

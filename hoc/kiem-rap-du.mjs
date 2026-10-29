@@ -297,7 +297,7 @@ console.log('\n== 5. Mọi dòng lời giải mẫu dựng được từ khối 
     const s = dong.trim();
     if (!s || /^#/.test(s)) return true;
     let mt;
-    if ((mt = /^([a-z_]+)\(([1-9]?|"[URDL]+")\)$/.exec(s)) && !/^(range|len)$/.test(mt[1])) return hamGoc.includes(mt[1]) || tenHam.includes(mt[1]);
+    if ((mt = /^([a-z_]+)\(([1-9]?|"[URDL]+"|"(?:low|high)")\)$/.exec(s)) && !/^(range|len)$/.test(mt[1])) return hamGoc.includes(mt[1]) || tenHam.includes(mt[1]);
     if (/^for i in range\([1-9]\):$/.test(s)) return true;
     if (/^(?:while|if|elif) (?:not )?(?:front_clear|left_clear|right_clear)\(\):$/.test(s)) return hamGoc.includes(s.match(/(front_clear|left_clear|right_clear)/)[1]);
     if (/^(?:if|elif) front_pole\(\) == "(?:N|S)":$/.test(s)) return hamGoc.includes('front_pole');

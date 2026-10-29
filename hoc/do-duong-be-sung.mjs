@@ -322,7 +322,7 @@ export function kiemCheo(m, soLan = 60, hat = 7) {
 function bangDong(m, kho) {
   const ten = new Set(kho.map((h) => h.ten)), hg = m.hamGoc || [];
   const ds = [['move()', 'M'], ['back()', 'B'], ['tr_right()', 'R'], ['tr_left()', 'L'], ['spin()', 'RR'], ['sidestep()', 'RML'], ['wait()', 'W'],
-    ['jet_back()', 'c'], ['jet_fwd()', 'h'], ['forward(2)', 'MM'], ['forward(3)', 'MMM']];
+    ['forward(2)', 'MM'], ['forward(3)', 'MMM']];
   if (m.lucBan) ds.push(['squirt("high")', 'c'], ['squirt("low")', 'f'], ['squirt_back("high")', 'h'], ['squirt_back("low")', 'g']);
   return ds.filter(([l, a]) => {
     const t = l.match(/^(\w+)\(/)[1];

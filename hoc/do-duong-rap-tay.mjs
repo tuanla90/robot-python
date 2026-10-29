@@ -40,7 +40,7 @@ export function cfgCua(m, i = 0) {
     san: nhieu ? m.san[i] : m.san, batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau, loaiRobot: m.loaiRobot || 'banh',
     hamGoc: m.hamGoc, nhipToiDa: m.nhipToiDa || 200, mucTieu: m.mucTieu || 'toi-co',
     mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: m.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau,
-    cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: m.danToiDa,
+    cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: m.danToiDa, lucBan: m.lucBan,
     pin: Array.isArray(m.pin) ? m.pin[i] : m.pin, camBien: m.robot ? m.robot.camBien : undefined,
     bongMo: lm.bongMo || undefined, daoChieu: m.daoChieu, phanCung: SanHoc.phanCungCua(m)
   };
@@ -101,6 +101,7 @@ function hanhDongTu(m, tt) {
     for (let t = 1; t <= 3; t++) nhomKhac.push({ code: 'aim(' + t + ')\nthrow()\n', chanBanh: true, ten: 'ném' + t });
   } else if (co('spray')) {
     nhomKhac = [{ code: '', chanBanh: false, ten: '' }, { code: 'spray()\n', chanBanh: true, ten: 'bắn' }, { code: 'spray_back()\n', chanBanh: true, ten: 'bắn_sau' }];
+    if (m.lucBan) nhomKhac.push({ code: 'spray("high")\n', chanBanh: true, ten: 'phun_manh' }, { code: 'spray_back("high")\n', chanBanh: true, ten: 'phun_manh_sau' });   // 29/10: phun mạnh
   }
   // ---- nhóm bánh / bước
   const tenBanh = (n) => n;

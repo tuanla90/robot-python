@@ -5,7 +5,7 @@
    Part (LapRap.DANH_MUC): thân hai-banh 2 · xich 3 · omni 4 · nhen 4 · drone 5; tay kep 2 · xoay 3 · nam-cham 3 · nem 3 · hoi 3; não khoang-cach 1 · mau 2 · camera 2 · tu 2 · camera-bay 2 (chỉ drone).
    Dữ liệu màn: `lapRap { than, tay, camBien, nganSach, phaiCo?, cachLap: [...] }`. KHÔNG khai robot / hamGoc / loiGiai ở màn: ManHoc.chuanHoa điền bản mặc định theo cachLap[0] (cách ứng với 3 sao: sao.nhip, sao.o
    khớp lời giải của cách đó); game chơi LapRap.apDung(màn, cách người chơi chọn). Mỗi cách mẫu có lời giải chạy thật. Màn khai `lapRap.dungKho: true` (man() ở dưới): lời giải mẫu dùng hàm của em có sẵn trong kho
-   (move, turn_right, forward, pick, walk, jet_back, grip, ship… ) và chạy trên KHO THAM CHIẾU (LapRap.khoMau: mọi hàm của em các màn thường đứng trước), nên bảng "Cách lắp khác" không phụ thuộc kho thật của người chơi;
+   (move, turn_right, forward, pick, walk, squirt, grip, ship… ) và chạy trên KHO THAM CHIẾU (LapRap.khoMau: mọi hàm của em các màn thường đứng trước), nên bảng "Cách lắp khác" không phụ thuộc kho thật của người chơi;
    không màn nào tạo / sửa hàm của em (taoHam rỗng, không hamCuaEmMoi), các hàm kho vẫn bị khóa. Ô = dòng chương trình + thân các hàm thực sự được gọi.
    Khung 10 ô cho chương trình chính và mỗi hàm; cauTruc ['for', 'if', 'while', 'list']; chương trình chính tự viết (maMau rỗng).
    Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên.
@@ -51,6 +51,7 @@
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = { chinh: 10, moiHam: 10 };
     m.lapRap.dungKho = true;                                                     // lời giải mẫu chạy trên KHO THAM CHIẾU (LapRap.khoMau): được dùng move(), forward(n), pick(), walk(path)… không khai lại hàm
+    m.lucBan = true;                                                             // 29/10: chương sau gói 6 Lực phun, vòi phun chọn được lực (lõi bỏ qua cờ ở robot không vòi phun)
     if (!m.maMau) m.maMau = { chinh: [] };
     if (Array.isArray(m.san[0])) {
       m.nhipTheo = 'tong';
@@ -174,13 +175,13 @@
       lapRap: {
         than: ['hai-banh', 'xich', 'nhen', 'drone'], tay: ['hoi'], camBien: [], nganSach: 5,
         cachLap: [
-          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc spray("high")', chinh: ['spray("high")', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa mở, đi thẳng: nhanh nhất nhưng tốn 5 xu.' },
+          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['squirt("high")', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc spray("high")', chinh: ['spray("high")', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa mở, đi thẳng: nhanh nhất nhưng tốn 5 xu.' },
           { than: 'drone', tay: null, camBien: null, loiGiai: { chinh: nhieu(LAP(4, 'go_down()'), LAP(4, 'go_right()'), LAP(3, 'go_up()')) }, ghiChu: 'Bay vòng qua hàng dưới cùng, không cần mở cửa: code ngắn, đường dài.' },
           { than: 'hai-banh', tay: null, camBien: null, loiGiai: { chinh: ['u_turn()', 'forward(4)', 'turn_left()', 'forward(4)', 'turn_left()', 'forward(3)'] }, ghiChu: 'Đi vòng dưới cùng: rẻ nhất, đường dài nhất.' }
         ]
       },
       sao: { o: 12, nhip: 6, re: { gia: 2, o: 16 } },
-      loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng van', 'jet_back()', '# qua cửa', 'turn_right()', 'forward(4)'] } },
+      loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng van', 'squirt("high")', '# qua cửa', 'turn_right()', 'forward(4)'] } },
       loiSai: [
         { moTa: 'Không bắn van: xe đâm vào cửa đóng', baiLam: { chinh: ['turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Bắn xong quên wait(): lệnh quay dính vào nhịp bắn nên bị bỏ', baiLam: { chinh: ['spray("high")', 'turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] }
@@ -243,15 +244,15 @@
       lapRap: {
         than: ['hai-banh', 'xich', 'omni'], tay: ['hoi'], camBien: [], nganSach: 7, phaiCo: ['tay'],
         cachLap: [
-          { than: 'omni', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['jet_fwd()'], LAP(2, ['back()', 'slide_r(2)', 'jet_fwd()'])) }, ghiChu: 'Omni trượt ngang sang hàng kế mà không phải quay: nhanh hơn, tốn 7 xu.' },
-          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['jet_fwd()'], LAP(2, ['u_turn()', 'move()', 'turn_left()', 'forward(2)', 'turn_left()', 'jet_fwd()'])) }, ghiChu: 'Hai bánh phải quay mỗi lần đổi hàng: rẻ hơn, chậm hơn.' }
+          { than: 'omni', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['squirt_back("high")'], LAP(2, ['back()', 'slide_r(2)', 'squirt_back("high")'])) }, ghiChu: 'Omni trượt ngang sang hàng kế mà không phải quay: nhanh hơn, tốn 7 xu.' },
+          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['squirt_back("high")'], LAP(2, ['u_turn()', 'move()', 'turn_left()', 'forward(2)', 'turn_left()', 'squirt_back("high")'])) }, ghiChu: 'Hai bánh phải quay mỗi lần đổi hàng: rẻ hơn, chậm hơn.' }
         ]
       },
       sao: { o: 13, nhip: 9, re: { gia: 5, o: 20 } },
-      loiGiaiKhac: { moTa: 'Cùng cách đẩy, ghi chú từng việc', baiLam: { chinh: nhieu(['# thùng hàng đầu'], ['jet_fwd()'], ['# hai hàng còn lại'], LAP(2, ['back()', 'slide_r(2)', 'jet_fwd()'])) } },
+      loiGiaiKhac: { moTa: 'Cùng cách đẩy, ghi chú từng việc', baiLam: { chinh: nhieu(['# thùng hàng đầu'], ['squirt_back("high")'], ['# hai hàng còn lại'], LAP(2, ['back()', 'slide_r(2)', 'squirt_back("high")'])) } },
       loiSai: [
         { moTa: 'Bắn ra trước thay vì ra sau: xe giật lùi, thùng đứng yên', baiLam: { chinh: nhieu(['spray("high")', 'wait()'], LAP(2, ['back()', 'slide_r(2)', 'spray("high")', 'wait()'])) }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Chỉ đẩy thùng hàng đầu rồi dừng', baiLam: { chinh: ['jet_fwd()'] }, phaiCoMa: ['chua-day-thung'] }
+        { moTa: 'Chỉ đẩy thùng hàng đầu rồi dừng', baiLam: { chinh: ['squirt_back("high")'] }, phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['Mặt quay về phía thùng, bắn ra sau: xe giật tới, thùng nhích một ô vào đích và xe theo vào chỗ thùng.', 'Lùi một ô về cột trống rồi đổi hàng: xe quay hay trượt ngang, tùy robot.']
     }),
@@ -311,14 +312,14 @@
           { than: 'omni', lyDo: 'Năm lối đều có vật cản: hàng rào, cửa đóng, gầm thấp, bậc thang, hố. Bánh omni không qua được lối nào.' }
         ],
         cachLap: [
-          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['jet_back()', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc spray("high")', chinh: ['spray("high")', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa sắt mở, đi thẳng: nhanh nhất.' },
+          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: ['squirt("high")', 'turn_right()', 'forward(4)'] }, loiGiaiPhu: { moTa: 'viết thẳng lệnh gốc spray("high")', chinh: ['spray("high")', 'wait()', 'turn_right()', 'forward(4)'] }, ghiChu: 'Bắn trúng van, cửa sắt mở, đi thẳng: nhanh nhất.' },
           { than: 'drone', tay: null, camBien: null, loiGiai: { chinh: nhieu(['go_right()', 'go_up()'], LAP(3, 'go_right()'), LAP(2, 'go_down()')) }, ghiChu: 'Bay qua rào, ghé ô sạc trên đường: code ngắn nhất, đường dài hơn một nhịp.' },
           { than: 'nhen', tay: null, camBien: null, loiGiai: { chinh: ['go_up()', 'crouch()', 'go_right()', 'stand()', 'go_right()', 'crouch()', 'go_right()', 'stand()', 'go_down()'] }, ghiChu: 'Nhảy qua rào bằng chân nhện: rẻ hơn, chậm hơn.' },
           { than: 'xich', tay: null, camBien: null, loiGiai: { chinh: nhieu(LAP(3, 'back()'), ['tr_left()'], LAP(4, 'back()'), ['tr_left()'], LAP(2, 'back()')) }, ghiChu: 'Leo bậc thang bằng xích, đi lùi cho khỏi quay: rẻ nhất, đường dài nhất.' }
         ]
       },
       sao: { o: 12, nhip: 6, re: { gia: 3, o: 14 } },
-      loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng van', 'jet_back()', '# qua cửa', 'turn_right()', 'forward(4)'] } },
+      loiGiaiKhac: { moTa: 'Cùng cách bắn, ghi chú từng việc', baiLam: { chinh: ['# bắn trúng van', 'squirt("high")', '# qua cửa', 'turn_right()', 'forward(4)'] } },
       loiSai: [
         { moTa: 'Không bắn van: xe đâm vào tường cạnh cửa đóng', baiLam: { chinh: ['turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Bắn ra sau thay vì ra trước: van không quay, cửa vẫn đóng', baiLam: { chinh: ['spray_back("high")', 'wait()', 'turn_right()', 'forward(4)'] }, phaiCoMa: ['chua-toi-co'] }

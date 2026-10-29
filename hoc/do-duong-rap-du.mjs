@@ -48,7 +48,7 @@ export function cauHinhSan(m, i = 0) {
     hamGoc: m.hamGoc, nhipToiDa: 400, mucTieu: m.mucTieu || 'toi-co',
     mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: m.vatCan, vat: lm.vatThem || undefined,
     roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau,
-    cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: m.danToiDa,
+    cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, danToiDa: m.danToiDa, lucBan: m.lucBan,
     pin: Array.isArray(m.pin) ? m.pin[i] : m.pin,
     camBien: m.robot ? m.robot.camBien : undefined,
     bongMo: lm.bongMo || undefined, daoChieu: m.daoChieu, phanCung: SanHoc.phanCungCua(m)
@@ -143,8 +143,9 @@ function hanhDongTu(ctx, res) {
       if (nem.ro === null && vatDatTai(res, oTruoc(rb, 'truoc'))) ds.push({ dong: ['load()'], chanBanh: true });
       if (nem.ro !== null) for (let k = 1; k <= 3; k++) ds.push({ dong: ['aim(' + k + ')', 'throw()'], chanBanh: true });
       luaTay = ds;
-    } else if (ctx.tay === 'hoi') {
+    } else if (ctx.tay === 'hoi') {                                                                      // phun nhẹ (không đối số); màn lucBan thêm phun mạnh (29/10)
       luaTay = [{ dong: [], chanBanh: false }, { dong: ['spray()'], chanBanh: true }, { dong: ['spray_back()'], chanBanh: true }];
+      if (ctx.lucBan) luaTay.push({ dong: ['spray("high")'], chanBanh: true }, { dong: ['spray_back("high")'], chanBanh: true });
     }
   }
   if (loai === 'banh' || loai === 'xich' || loai === 'omni') {
@@ -232,7 +233,7 @@ export function nhipNganNhat(m, i = 0, tuyChon = {}) {
   const tomTat = tomTatSan(m, i);
   const robot = m.robot || {};
   const ctx = {
-    loai: cfg.loaiRobot, tay: robot.tay || null, tomTat,
+    loai: cfg.loaiRobot, tay: robot.tay || null, tomTat, lucBan: !!cfg.lucBan,
     chanCo: { dung: true, co: true },
     vatGiong: true,                                                       // vật giống hệt (cùng chất, màu, cực) xếp tăng dần để gộp
     chuKyCua: cfg.cuaNhip && cfg.cuaNhip.length ? cfg.cuaNhip.reduce((a, c) => a * ((c.mo + c.dong) / gcd(a, c.mo + c.dong)), 1) : 0

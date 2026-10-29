@@ -23,7 +23,7 @@
      2 wait_spray()  = while not front_clear(): wait(); spray("high"); wait()     xe súng chờ đồng đội ra khỏi mũi rồi mới bắn   (R1 khóa gọi hàm; em viết R2)
      3 pass_gate()   = wait_gate(); forward(2)                              qua cửa (hàm gọi hàm), omni kẹp chở hộp        (R1 khóa)
      5 catch_crate() = while front_clear(): wait()                          chờ tới khi CÓ thùng trước mặt (ngược wait_gate)
-     6 open_step()   = kick_right(); forward(2)                             robot khóa gọi hàm em chế: bắn nút bên trái rồi tới nút kế
+     6 open_step()   = squirt_left("high"); forward(2)                             robot khóa gọi hàm em chế: bắn nút bên trái rồi tới nút kế
      4 cả hai robot cùng gọi wait_gate() (đồng đội trước mặt cũng là "chưa trống") · 5 đỡ ba thùng: hai robot cùng lặp
    HÀM CỦA MÀN (không vào kho; maMau.hamCuaMan là bản hỏng):
      7 open_gate() bắn hai phát nên cửa mở rồi đóng (R1 khóa) · 8 open_back() bắn nhầm nòng trước (R1 khóa, em viết R2)
@@ -49,18 +49,18 @@
     'doi-sung-hoi.6': { o: 19, nhip: 7 },
     'doi-sung-hoi.7': { o: 26, nhip: 11 },
     'doi-sung-hoi.8': { o: 13, nhip: 7 },
-    'doi-sung-hoi.9': { o: 21, nhip: 20 },
+    'doi-sung-hoi.9': { o: 22, nhip: 20 },
     'doi-sung-hoi.10': { o: 20, nhip: 23 },
     'che-doi-sung-hoi.1': { o: 16, nhip: 8 },
     'che-doi-sung-hoi.2': { o: 18, nhip: 4 },
     'che-doi-sung-hoi.3': { o: 29, nhip: 8 },
     'che-doi-sung-hoi.4': { o: 21, nhip: 9 },
     'che-doi-sung-hoi.5': { o: 25, nhip: 15 },
-    'che-doi-sung-hoi.6': { o: 23, nhip: 14 },
+    'che-doi-sung-hoi.6': { o: 24, nhip: 14 },
     'che-doi-sung-hoi.7': { o: 25, nhip: 9 },
     'che-doi-sung-hoi.8': { o: 19, nhip: 8 },
     'che-doi-sung-hoi.9': { o: 25, nhip: 12 },
-    'che-doi-sung-hoi.10': { o: 23, nhip: 42 }
+    'che-doi-sung-hoi.10': { o: 24, nhip: 42 }
   };
   // @sao-cuoi
 
@@ -120,7 +120,7 @@
   var L7 = [['for i in range(3):', '    spray("high")', '    wait()', '    wait()', '    wait()', 'turn_right()', 'move()'],
     nhieu(['for i in range(3):', '    back()', 'slide_r(3)'], CHO_CUA, ['forward(3)'])];
   var L8 = [['while left_clear():', '    wait()', 'spray("high")', 'wait()'], nhieu(['forward(4)'], CHO_CUA, ['forward(3)'])];
-  var L9 = [['for i in range(4):', '    move()', '    kick_right()', '    move()'], nhieu(['for i in range(4):'], thut(CHO_CUA), ['    forward(2)'])];
+  var L9 = [['for i in range(4):', '    move()', '    squirt_left("high")', '    move()'], nhieu(['for i in range(4):'], thut(CHO_CUA), ['    forward(2)'])];
   var L10 = [['go_wall()', 'if left_clear():', '    turn_right()', 'else:', '    turn_left()', 'spray("high")', 'wait()'], nhieu(['go_wall()'], CHO_CUA, ['go_wall()'])];
 
   var DS = [
@@ -212,8 +212,8 @@
       noi: [2, 4, 6, 8].map(function (x) { return { nut: { x: x, y: 0 }, cua: [{ x: x, y: 3 }] }; }),
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }], co: [[{ x: 9, y: 1 }], [{ x: 9, y: 3 }]],
       maMau: B([], []), loiGiai: B(L9[0], L9[1]),
-      hamCuaEmCan: ['move', 'kick_right', 'forward'],
-      goiY: ['kick_right() quay trái, bắn, quay lại: đúng động tác bắn van phía trên khi xe quay mặt sang phải.', 'Mỗi lượt omni: chờ cửa trước mặt mở rồi forward(2).']
+      hamCuaEmCan: ['move', 'squirt_left', 'forward'],
+      goiY: ['squirt_left("high") quay trái, bắn, quay lại: đúng động tác bắn van phía trên khi xe quay mặt sang phải.', 'Mỗi lượt omni: chờ cửa trước mặt mở rồi forward(2).']
     }),
     man({
       so: 10, ten: 'Ca mở đường', r: [SUNG_CB, OMNI],
@@ -241,7 +241,7 @@
   var T_FIRE_CLEAR = ['while not front_clear():', '    wait()', 'spray("high")', 'wait()'];
   var T_PASS_GATE = ['wait_gate()', 'forward(2)'];
   var T_CATCH_CRATE = ['while front_clear():', '    wait()'];
-  var T_OPEN_STEP = ['kick_right()', 'forward(2)'];
+  var T_OPEN_STEP = ['squirt_left("high")', 'forward(2)'];
   // hàm của màn (thân ban đầu hỏng / bản sửa)
   var T_OPEN_GATE_CU = ['turn_left()', 'spray("high")', 'wait()', 'spray("high")', 'wait()', 'turn_right()'];
   var T_OPEN_GATE = ['turn_left()', 'spray("high")', 'wait()', 'turn_right()'];
@@ -254,12 +254,12 @@
   var C2 = [['wait_spray()', 'turn_right()', 'move()'], ['slide_l(1)', 'move()', 'slide_l(2)']];
   var C3 = [['forward(3)', 'turn_left()', 'spray("high")', 'wait()'], ['pick()', 'forward(2)', 'pass_gate()', 'drop()']];
   var C4 = [['wait_gate()', 'forward(2)', 'turn_left()', 'spray("high")', 'wait()', 'turn_right()', 'move()'], ['forward(2)', 'wait_gate()', 'forward(4)']];
-  var C5 = [['for i in range(3):', '    move()', '    turn_left()', '    jet_back()', '    move()', '    turn_right()', '    move()'], ['slide_r(1)', 'for i in range(3):', '    catch_crate()', '    slide_r(2)']];   // luật giật một ô: xe quay lên, giật thùng xuống đích (xe theo vào cột), tiến lại làn rồi quay phải
+  var C5 = [['for i in range(3):', '    move()', '    turn_left()', '    squirt("high")', '    move()', '    turn_right()', '    move()'], ['slide_r(1)', 'for i in range(3):', '    catch_crate()', '    slide_r(2)']];   // luật giật một ô: xe quay lên, giật thùng xuống đích (xe theo vào cột), tiến lại làn rồi quay phải
   var C6 = [['for i in range(3):', '    open_step()'], ['for i in range(3):', '    pass_gate()']];
   var C7 = [['open_gate()', 'turn_right()', 'go_wall()'], ['forward(4)', 'pass_gate()', 'move()']];
   var C8 = [['forward(2)', 'open_back()', 'go_wall()'], ['move()', 'pass_gate()', 'forward(3)']];
   var C9 = [['turn_left()', 'spray("high")', 'wait()', 'turn_right()', 'forward(5)'], ['move()', 'make_way()', 'forward(4)']];
-  var C10 = [['while front_clear():', '    if not left_clear():', '        kick_right()', '    move()'], ['for i in range(4):', '    pass_gate()']];
+  var C10 = [['while front_clear():', '    if not left_clear():', '        squirt_left("high")', '    move()'], ['for i in range(4):', '    pass_gate()']];
 
   /** Trùm chương 2: hàng nút trên tường làn trên (x trong dsX), mỗi nút một cửa ngay dưới ở làn omni. */
   function sanNut(dsX) {
@@ -322,8 +322,8 @@
       san: ['#########', '#.......#', '##H#H#H##', '##D#D#D##', '#.......#', '#########'],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 4, huong: 0 }],
       maMau: B([], []), loiGiai: Object.assign(B(C5[0], C5[1]), { hamCuaEmMoi: [H('catch_crate', T_CATCH_CRATE)] }),
-      hamCuaEmCan: ['move', 'turn_left', 'jet_back', 'turn_right', 'slide_r'],
-      goiY: ['catch_crate() ngược với wait_gate(): chờ khi trước mặt CÒN trống.', 'Omni đi trước một cột, đón xong thùng mới trượt hai ô sang cột kế. Xe vòi phun: quay lên, jet_back() giật thùng xuống, tiến lại làn, quay phải.']
+      hamCuaEmCan: ['move', 'turn_left', 'squirt', 'turn_right', 'slide_r'],
+      goiY: ['catch_crate() ngược với wait_gate(): chờ khi trước mặt CÒN trống.', 'Omni đi trước một cột, đón xong thùng mới trượt hai ô sang cột kế. Xe vòi phun: quay lên, squirt("high") giật thùng xuống, tiến lại làn, quay phải.']
     }),
     man({
       so: 6, chuong: CHE, ten: 'Robot gác gọi hàm em', khoa: 0, taoHam: ['open_step'],
@@ -333,8 +333,8 @@
       noi: [6, 4, 2].map(function (x) { return { nut: { x: x, y: 4 }, cua: [{ x: x, y: 1 }] }; }),
       bd: [{ x: 6, y: 3, huong: 3 }, { x: 7, y: 1, huong: 3 }], co: [[{ x: 1, y: 3 }], [{ x: 1, y: 1 }]],
       maMau: B(C6[0], []), loiGiai: Object.assign(B(C6[0], C6[1]), { hamCuaEmMoi: [H('open_step', T_OPEN_STEP)] }),
-      hamCuaEmCan: ['kick_right', 'forward', 'pass_gate'],
-      goiY: ['Xe quay mặt sang trái nên van dưới chân nằm bên trái xe: kick_right() bắn đúng phía đó.', 'open_step() = kick_right(), forward(2)']
+      hamCuaEmCan: ['squirt_left', 'forward', 'pass_gate'],
+      goiY: ['Xe quay mặt sang trái nên van dưới chân nằm bên trái xe: squirt_left("high") bắn đúng phía đó.', 'open_step() = squirt_left("high"), forward(2)']
     }),
     man({
       so: 7, chuong: CHE, ten: 'Sửa hàm mở cửa', khoa: 0, r: [SUNG_CB, OMNI],
@@ -374,7 +374,7 @@
       bd: [[0, 1, 2].map(function () { return { x: 1, y: 1, huong: 1 }; }), [0, 1, 2].map(function () { return { x: 1, y: 3, huong: 1 }; })],
       co: [[0, 1, 2].map(function () { return [{ x: 9, y: 1 }]; }), [0, 1, 2].map(function () { return [{ x: 9, y: 3 }]; })],
       maMau: B([], []), loiGiai: B(C10[0], C10[1]),
-      hamCuaEmCan: ['kick_right', 'move', 'pass_gate'],
+      hamCuaEmCan: ['squirt_left', 'move', 'pass_gate'],
       goiY: ['Ô trống phía trên làn thì left_clear() là True; van N thì False.', 'Đoạn không có cửa thì wait_gate() trong pass_gate() không phải chờ.'],
       huyHieu: { ma: CHE, ten: 'Huy hiệu Chế lệnh đội vòi phun' }
     })

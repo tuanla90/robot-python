@@ -11,7 +11,7 @@
    Tệp này KHÔNG tự thêm màn vào ManHoc: danh sách nằm ở ManHoc.manBeSung, lo-trinh-hoc.js thêm vào chương rồi xếp chỗ (so, hang do dungChuong đặt).
 
    NỘI DUNG (28/10): COMBO của mùa 2 = XE BÁNH XÍCH (gói 1) gắn SÚNG HƠI (gói 2) thành BỆ SÚNG (cfg.beSung, luật ở san-hoc.js mục BỆ SÚNG XÍCH):
-   xích bắn TỤ (spray("high"), spray("high"), squirt("high"), jet_back()…) thì bóng bay tới vật cản như cũ nhưng xe KHÔNG GIẬT (thùng sau xe không bị hất);
+   xích bắn TỤ (spray("high"), squirt("high")…) thì bóng bay tới vật cản như cũ nhưng xe KHÔNG GIẬT (thùng sau xe không bị hất);
    bắn nhanh "low" như cũ (bay tối đa 2 ô, không giật). Xe hai bánh hay xích không khai cờ thì vẫn giật. Mọi màn còn khai xichDay (gói 5: xích tiến vào thùng nặng thì đẩy).
    Ý gói: lúc nào cú giật có hại (sau lưng là hốc, thùng, chỗ rẽ; bắn tụ nhiều phát liền) và bệ súng giải được. MỖI MÀN CẦN BỆ SÚNG: bộ dò (do-duong-be-sung.mjs)
    chứng minh cùng sân trên xích không bệ súng (giật) không có đường nào trong sao.nhip. Xích quay chậm: tr_right() / tr_left() hai nhịp; turn_right() / turn_left()
@@ -67,9 +67,9 @@
   // be-sung.3: xe (2,3) quay lên. Nút A (2,0) mở cửa (3,3) bên phải xe; nút B (5,3) cuối hành lang phải (bóng bay qua cửa (3,3) đã mở) mở cửa (2,4) dưới xe; cờ (2,5).
   //   Không bệ súng: phát thứ hai (quay phải) giật xe sang trái (1,3).
   var SAN_B3 = ['##N####', '##.####', '##.####', '#..C.N#', '##C####', '##F####', '#######'];
-  // be-sung.4: xe (2,2) quay lên, nút (2,0) mở cửa (3,2) bên phải xe. Ngay sau lưng xe là thùng nặng (2,3), dưới thùng là cờ (2,4).
-  //   Đường tới cờ đi vòng: (3,2) → (3,3) → (3,4) → (2,4). Không bệ súng: cú giật hất thùng trượt xuống nằm đè lên cờ.
-  var SAN_B4 = ['##N###', '##.###', '##.C##', '##H.##', '##F.##', '######'];
+  // be-sung.4: xe (2,3) quay lên, nút (2,0) cách ba ô (29/10: phun nhẹ chỉ bay hai ô, phải phun mạnh) mở cửa (3,3) bên phải xe. Ngay sau lưng xe là thùng nặng (2,4), dưới thùng là cờ (2,5).
+  //   Đường tới cờ đi vòng: (3,3) → (3,4) → (3,5) → (2,5). Không bệ súng: cú giật đẩy thùng nhích xuống nằm đè lên cờ.
+  var SAN_B4 = ['##N###', '##.###', '##.###', '##.C##', '##H.##', '##F.##', '######'];
   // be-sung.5: hành lang (1..6, 3) đi sang phải; hai trạm (2,3), (4,3), mỗi trạm có nút xa phía trên ((2,0), (4,0), giếng hai ô) mở cửa ngay sau trạm ((3,3), (5,3)),
   //   dưới mỗi trạm là một hốc ((2,4), (4,4)): xích không bệ súng bắn lên thì giật xuống hốc. Cờ (6,3).
   var SAN_B5 = ['##N#N###', '##.#.###', '##.#.###', '#..C.CF#', '##.#.###', '########'];
@@ -216,10 +216,10 @@
     man({
       chuong: 'be-sung', so: 4, ten: 'Thùng nằm yên', yMoi: 'cú giật hất thùng sau lưng đi xa; bệ vòi giữ thùng nằm yên',
       kieuBai: 'thung', hamCuaEmCan: ['tr_right', 'tr_left', 'spin', 'forward', 'move'],
-      deBai: 'Ngay sau lưng xe là một thùng nặng, dưới thùng là lá cờ. Nhớ gói Vòi phun: bắn tụ thì cú giật hất thùng sau lưng nhích đi một ô.' +
-        'Bắn van phía trên cho cửa bên phải mở, rồi đi vòng qua cửa xuống tới cờ. Bệ vòi giữ thùng nằm yên nên cờ vẫn trống.',
+      deBai: 'Ngay sau lưng xe là một thùng nặng, dưới thùng là lá cờ. Nhớ gói Lực phun: phun mạnh thì cú giật đẩy thùng sau lưng nhích đi một ô. ' +
+        'Van phía trên cách ba ô, phun nhẹ không tới: phun mạnh cho cửa bên phải mở, rồi đi vòng qua cửa xuống tới cờ. Bệ vòi giữ thùng nằm yên nên cờ vẫn trống.',
       veMaMau: 'Chương trình có sẵn bắn rồi mới đi được nửa đường. Viết tiếp đoạn vòng xuống cờ.',
-      san: SAN_B4, batDau: { x: 2, y: 2, huong: 0 },
+      san: SAN_B4, batDau: { x: 2, y: 3, huong: 0 },
       maMau: bai(['spray("high")', 'wait()', 'tr_right()', 'move()']),
       sao: { o: 16, nhip: 11 },
       loiGiai: bai(L_B4),
