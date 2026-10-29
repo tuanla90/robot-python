@@ -329,6 +329,50 @@ kiem('recall: ít nhất 3 màn mới dùng hàm hay vòng for của gói 1–2'
   assert.ok(co.length >= 3, 'chỉ ' + co.length + ' màn mới recall gói 1–2');
 });
 
+/* ------------------------------------------------------------------ HD2. đâm là thua ở màn ép (damLaThua) */
+kiem('HD2 đâm là thua: khoang-cach.12 / .13 có cờ damLaThua; màn trình diễn kc.1 / kc.2 không; mọi mã trong M.manDamLaThua có cờ, không màn mùa 2 nào có', () => {
+  for (const ma of HAI_SAN) assert.ok(get(ma).damLaThua === true, ma);
+  for (const ma of ['khoang-cach.1', 'khoang-cach.2']) assert.ok(!get(ma).damLaThua, ma);
+  assert.ok(Array.isArray(M.manDamLaThua) && M.manDamLaThua.length >= 50);
+  for (const ma of M.manDamLaThua) assert.ok(get(ma) && get(ma).damLaThua === true, ma);
+  const chuongMua1 = TT.goi.filter((g) => g.mua === 'mua-1').flatMap((g) => g.chuong);
+  const mua2 = M.danhSach.filter((m) => m.damLaThua && !chuongMua1.includes(m.chuong)).map((m) => m.ma);
+  assert.deepEqual(mua2, []);
+});
+kiem('HD2 khoang-cach.12: đếm cứng move() ×4 THUA (trước: 1 sao): sân ngắn dừng ngay ở cú đâm (3 nhịp), chẩn đoán dam-tuong nói luật; bỏ cờ thì lại thắng 1 sao; lời giải chuẩn vẫn 3 sao', () => {
+  const m = get('khoang-cach.12'), demCung = { chinh: ['move()', 'move()', 'move()', 'move()'] };
+  const r = cham(m, demCung);
+  assert.ok(!r.thang && r.sao === 0, 'phải thua: ' + JSON.stringify({ thang: r.thang, sao: r.sao }));
+  const s1 = r.theoSan[0];
+  assert.ok(!s1.thang && s1.vet.filter((e) => e.loai === 'nhip').length === 3, 'sân 1 dừng ở cú đâm nhịp 3');
+  const d = r.chanDoan.find((c) => c.ma === 'dam-tuong');
+  assert.ok(d && d.damLaThua === true && /đâm tường là thua/.test(d.loi) && d.cho && d.cho.dong >= 1, 'lời chẩn đoán nói luật, trỏ dòng');
+  assert.ok(!r.chanDoan.some((c) => c.ma === 'chua-toi-co' || c.ma === 'lech-bong-mo'), 'không chẩn đoán chạy xong');
+  const cu = clone(m); delete cu.damLaThua;
+  const r0 = cham(cu, demCung);
+  assert.ok(r0.thang && r0.sao === 1, 'bỏ cờ: luật cũ thắng 1 sao: ' + JSON.stringify({ thang: r0.thang, sao: r0.sao }));
+  const rc = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);
+  assert.ok(rc.thang && rc.sao === 3 && !rc.chanDoan.some((c) => c.ma === 'dam-tuong'), 'lời giải chuẩn 3 sao, không đâm');
+});
+kiem('HD2 khoang-cach.13: đếm cứng for i in range(6): move() THUA ở sân ngắn (trước: 2 sao); while front_clear() vẫn 3 sao', () => {
+  const m = get('khoang-cach.13');
+  const r = cham(m, { chinh: ['for i in range(6):', '    move()'] });
+  assert.ok(!r.thang && r.chanDoan.some((c) => c.ma === 'dam-tuong' && c.damLaThua), JSON.stringify({ thang: r.thang, sao: r.sao }));
+  const rc = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);
+  assert.ok(rc.thang && rc.sao === 3);
+});
+kiem('HD2 giao diện: chu.js có choi.damLaThua / choi.damLaThuaDe (không gạch dài); man-choi.js đặt nhãn trên sân và câu trong đề bài theo m.damLaThua', () => {
+  const chu = fs.readFileSync(new URL('./game/chu.js', import.meta.url), 'utf8');
+  const mc = fs.readFileSync(new URL('./game/man-choi.js', import.meta.url), 'utf8');
+  for (const k of ['choi.damLaThua', 'choi.damLaThuaDe']) {
+    const mm = new RegExp("'" + k.replace('.', '[.]') + "': '([^']+)'").exec(chu);
+    assert.ok(mm, k);
+    assert.ok(!/[\u2014\u2013]/.test(mm[1]), k + ' có gạch dài');
+  }
+  assert.ok(/m[.]damLaThua [?] t\('choi[.]damLaThua'\)/.test(mc) && /datCanhBao\(E[.]ffr, \[m[.]canhBao, m[.]damLaThua/.test(mc), 'nhãn trên sân');
+  assert.ok(/m[.]deBai [+] \(m[.]damLaThua [?] ' ' [+] t\('choi[.]damLaThuaDe'\)/.test(mc), 'câu trong đề bài');
+});
+
 console.log('chương | số | mã | tên | dòng | nhịp | ô | cỡ sân | khối chuẩn | BFS gộp | recall gói 1–2');
 for (const c of goi.chuong) {
   for (const m of M.danhSach.filter((x) => x.chuong === c)) {

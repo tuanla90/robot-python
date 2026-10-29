@@ -283,7 +283,7 @@
       loiGiai: { chinh: C_8, hamCuaMan: [H('fetch_box', FETCH_BOX)] },
       loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_8, hamCuaMan: [H('fetch_box', FETCH_BOX.slice(0, 3).concat(['# lùi tới ô đích còn trống'], FETCH_BOX.slice(3)))] } },
       loiSai: [
-        { moTa: 'Chưa sửa: thiếu chữ not, bên trái trống mà xe vẫn lùi mãi', baiLam: { chinh: C_8, hamCuaMan: [H('fetch_box', FETCH_BOX_LOI)] }, phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Chưa sửa: thiếu chữ not, bên trái trống mà xe vẫn lùi, húc tường (màn ép: đâm là thua, dừng ngay)', baiLam: { chinh: C_8, hamCuaMan: [H('fetch_box', FETCH_BOX_LOI)] }, phaiCoMa: ['dam-tuong'] },
         { moTa: 'Lùi cố định một ô: lần sau còn cách ô đích xa', baiLam: { chinh: C_8, hamCuaMan: [H('fetch_box', FETCH_BOX.slice(0, 3).concat(['back()']))] }, phaiCoMa: ['tha-bi-chan', 'chua-dua-vat'] }
       ],
       goiY: ['Bên trái là tường thì left_clear() trả False: phải lùi tiếp.', 'while not left_clear(): back(). Ô đích đã có thùng cũng làm cảm biến thấy vướng.']
@@ -479,7 +479,7 @@
       loiGiai: { chinh: L_C29, hamCuaMan: [H('find', FIND)] },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# tìm, đổi sang nút, qua cửa'].concat(L_C29), hamCuaMan: [H('find', FIND)] } },
       loiSai: [
-        { moTa: 'find() chỉ hỏi bên trái: kho có thùng bên phải thì đi quá', baiLam: { chinh: L_C29, hamCuaMan: [H('find', FOR(4, ['if left_clear():', '    move()']))] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'find() chỉ hỏi bên trái: kho có thùng bên phải thì đi quá, húc tường cuối kho (màn ép: đâm là thua)', baiLam: { chinh: L_C29, hamCuaMan: [H('find', FOR(4, ['if left_clear():', '    move()']))] }, phaiCoMa: ['dam-tuong'] },
         { moTa: 'Đếm cứng theo kho đầu: hai bước', baiLam: { chinh: L_C29, hamCuaMan: [H('find', FOR(2, ['move()']))] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Mang thùng qua cửa: nút trống, cửa đóng', baiLam: { chinh: nhieu(['find()'], NHAT_BEN, ['go_wall()']), hamCuaMan: [H('find', FIND)] }, phaiCoMa: ['lech-bong-mo'] }
       ],
