@@ -329,10 +329,9 @@
   /* màn hai robot đầu tiên: R1 đã có chương trình; chạm thẻ R2 để viết chương trình của R2 (thẻ R1 / R2 ở đầu khung chương trình) */
   function xeDangChon() { try { return Choi.trangThai().xe || 0; } catch (e) { return 0; } }
   // HD3 (29/10): hai-robot.1 là màn trình diễn (chiChay, cả hai robot khoá go_wall()); bước "chạm R2 rồi viết cho R2" dời sang hai-robot.2 (R1 viết sẵn).
+  // Một bước: bấm Chạy là thắng ngay, thắng thì chuỗi dừng (HuongDan.xongMan) nên bước "chạm R2 để xem" đặt sau Chạy sẽ không kịp hiện.
   H['hai-robot.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Hai chương trình đã khoá. Bấm Chạy: R1 và R2 chạy cùng lúc.', xong: 'chay' },
-    { khongAn: true, dich: 'nut:xe-2', chu: 'Mỗi robot một chương trình. Chạm R2 để xem chương trình của R2.', huong: 'duoi', rong: 170, xong: ['doi-xe', 'bam'], han: 9000,
-      daLam: function () { return xeDangChon() === 1; } }
+    { khongAn: true, dich: 'nut:chay', chu: 'Mỗi robot một chương trình, cả hai đã khoá. Bấm Chạy: R1 và R2 chạy cùng lúc.', xong: 'chay' }
   ];
   H['hai-robot.2'] = [
     { khongAn: true, dich: 'nut:xe-2', chu: 'Mỗi robot một chương trình. R1 đã có sẵn: chạm R2 để viết cho R2.', huong: 'duoi', rong: 170, xong: 'doi-xe',
