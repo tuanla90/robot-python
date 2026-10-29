@@ -365,6 +365,191 @@ if (LOI_GIA_2) {
 }
 if (hong2) { console.log('Mùa 2: HỎNG ' + hong2 + ' mục.'); process.exit(1); }
 
+// ---------------------------------------------------------------- MÙA 3 = 10 GÓI (29/10, KE-HOACH-MUA-3.md, đang dựng, ẩn): thứ tự gói, ràng buộc Python / part theo gói
+// Chạy với --loi-gia-mua-3: cắm bảy lỗi giả vào dữ liệu đã nạp (sau khi mục mùa 2 đã xanh), mục mùa 3 phải ĐỎ cả (a)–(g) rồi dừng. (h) chỉ in bảng.
+const LOI_GIA_3 = process.argv.includes('--loi-gia-mua-3');
+// Bảng P0 (brief-P0-khung-mua-3.md, KE-HOACH-MUA-3.md mục 2): [mã gói, loại, [[chương, màn CÓ SẴN theo thứ tự]]]. Màn mới của TEP_MUA_3 nối sau màn có sẵn
+// (chen trước màn trùm có sẵn cuối chương). Khác bảng brief (đo 29/10, lý do ở lo-trinh-hoc.js khối mùa 3): che-nam-cham.2, .3, .4, .7, .9 ở che-doc-cuc;
+// che-doi-xich cả 10 màn rời mùa 3.
+const BANG_MUA_3 = [
+  ['nhen', 'bo-phan', [['nhen', ['nhen.1', 'nhen.8']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]]],
+  ['nam-cham', 'bo-phan', [['nam-cham', day('nam-cham', [1, 4, 7, 8, 5])], ['logic-nam-cham', day('che-nam-cham', [1, 8])]]],
+  ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', []], ['che-cam-ung-tu', []]]],
+  ['bai-tu', undefined, [['bai-tu', []], ['che-bai-tu', []]]],
+  ['nhay', 'bo-phan', [['nhay', day('nhen', [3, 2, 9, 5, 6, 10])], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
+  ['dao-cuc', 'bo-phan', [['dao-cuc', day('nam-cham', [3, 2])], ['che-dao-cuc', ['che-nam-cham.6']]]],
+  ['doc-cuc', 'bo-phan', [['doc-cuc', day('nam-cham', [6, 10])], ['che-doc-cuc', day('che-nam-cham', [2, 7, 4, 5, 9, 3, 10])]]],
+  ['doi-xich', 'thu-thach', [['doi-xich', day('doi-xich', [3, 9])], ['che-doi-xich', []]]],
+  ['bung-nhen', 'thu-thach', [['bung-nhen', []], ['che-bung-nhen', []]]],
+  ['tong-hop-3', 'thu-thach', [['tong-hop-3', []], ['trum-mua-3', []]]]
+];
+const TEP_MUA_3 = ['manThanNhen', 'manNamChamN', 'manCamUngTu', 'manBaiTu', 'manNhay', 'manDaoCuc', 'manDocCuc', 'manDoiXichNhen', 'manBungNhen', 'manTrumMua3'];
+const moiMua3 = TEP_MUA_3.flatMap(k => M[k] || []);
+const laTrum3 = ma => { const m = get(ma); return m && (m.hang === 'trum'); };
+/** Màn của chương c theo bảng: có sẵn + màn mới (theo so), màn mới chen trước trùm có sẵn cuối chương. */
+const manBang3 = (c, coSan) => {
+  const them = moiMua3.filter(m => m.chuong === c).sort((a, b) => a.so - b.so).map(m => m.ma);
+  const cuoi = coSan[coSan.length - 1];
+  return cuoi && laTrum3(cuoi) ? coSan.slice(0, -1).concat(them, [cuoi]) : coSan.concat(them);
+};
+const goi3Bang = BANG_MUA_3.map(([ma, , ds]) => [ma, ds.map(([c, coSan]) => [c, manBang3(c, coSan)]).filter(x => x[1].length)]).filter(x => x[1].length);
+// Rời mùa 3 (brief: đầu mùa 4, giữ thứ tự): gói ngoài khuôn, chương rời (M.roiMua3).
+const ROI_3_GOI = ['ban-xoay', 'doi-ho-bang', 'list', 'che-xich', 'doi-xich-bac', 'omni', 'doi-omni', 'doi-sung-hoi', 'mau', 'doi-mau', 'may-son', 'rap-nao', 'nam-cham-omni', 'doi-nam-cham', 'doi-tay-xoay'];
+const LENH_MUA_3 = LENH_MUA_2.concat(['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole']);
+const PART_3 = { than: ['hai-banh', 'xich', 'nhen'], tay: ['kep', 'xoay', 'hoi', 'nam-cham'], camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu'], loaiRobot: ['banh', 'xich', 'nhen'] };
+// Lệnh của part ngoài mùa 3 (omni, drone, camera / màu, máy ném, pin): không được gọi, kể cả qua hàm của em.
+const CAM_3 = ['color', 'look', 'slide_left', 'slide_right', 'aim', 'throw', 'load', 'battery', 'recharge'];
+const goi3 = () => goiMua('mua-3');
+const chuongMua3Nay = () => new Set(goi3().flatMap(g => g.chuong));
+const manMua3 = () => M.danhSach.filter(m => chuongMua3Nay().has(m.chuong));
+/** Vị trí (trong danhSach) màn đầu của gói thứ k (1–10) của MUA_3, hay của gói có màn đầu tiên sau nó; hết mùa 3 thì màn đầu sau mùa 3. */
+function mocGoi3(k) {
+  for (let i = k - 1; i < M.mua3.length; i++) {
+    const ch = M.mua3[i].chuong.map(c => c[0]);
+    const m = M.danhSach.find(x => ch.includes(x.chuong));
+    if (m) return viTriMan(m);
+  }
+  const ds = manMua3();
+  return ds.length ? viTriMan(ds[ds.length - 1]) + 1 : M.danhSach.length;
+}
+/** Vị trí màn đầu của chương c (chương mùa 3; chưa có màn thì như mocGoi3 của gói chứa nó, tính từ chương đó). */
+function mocChuong3(c) {
+  const m = M.danhSach.find(x => x.chuong === c);
+  if (m) return viTriMan(m);
+  const k = M.mua3.findIndex(g => g.chuong.some(x => x[0] === c));
+  return mocGoi3(k + 2);     // chương 2 của gói k+1 còn trống: mốc là gói sau
+}
+/** Dòng code bỏ chuỗi và chú thích (để tìm từ khóa). */
+const boChuoi = l => l.replace(/"[^"]*"|'[^']*'/g, '""').replace(/#.*$/, '');
+/** (b) Chuỗi làm DỮ LIỆU trong một dòng: gán chuỗi cho biến; for … in chuỗi / biến (không phải range); so sánh == / != với chuỗi; gọi hàm với đối số
+ *  là chuỗi đường đi (chỉ gồm U D L R: walk("RRD"), go("R"), leap(...)). Đối số chuỗi cố định khác (shoot("fast")) KHÔNG tính. */
+function chuoiDuLieu(l) {
+  const sai = [];
+  if (/^\s*[A-Za-z_]\w*\s*=\s*["']/.test(l)) sai.push('gán chuỗi');
+  if (/^\s*for\s+[A-Za-z_]\w*\s+in\s+(?!range\s*\()/.test(l)) sai.push('for … in chuỗi / biến');
+  if (/(==|!=)\s*["']|["']\s*(==|!=)/.test(l)) sai.push('so sánh chuỗi');
+  if (/[A-Za-z_]\w*\s*\(\s*["'][UDLR]+["']\s*\)/.test(l)) sai.push('chuỗi đường đi');
+  return sai;
+}
+const coLogic = l => /\b(and|or)\b/.test(boChuoi(l));
+let hong3 = 0;
+const kiem3 = (ten, fn) => { try { fn(); dat++; } catch (e) { hong3++; console.log('  HỎNG ' + ten + '\n       ' + (e && e.message ? e.message.split('\n')[0] : e)); } };
+if (LOI_GIA_3) {
+  // (a) đổi chỗ hai màn gói 1; (b) gán chuỗi ở nhen.1 (gói 1 chương 1); (c) and ở nam-cham.1 (gói 2 chương 1); (d) cảm biến màu ở nhen.2;
+  // (e) magnet_s trên khay nam-cham.7 (gói 2); (f) bậc thang ở doi-xich.3; (g) che-nhen.4 cần hàm chưa ai tạo.
+  const a = get('nhen.1'), b = get('nhen.8'); [a.so, b.so] = [b.so, a.so]; M.tinhLai();
+  get('nhen.1').loiGiai.chinh = ['path = "RRR"'].concat(get('nhen.1').loiGiai.chinh);
+  get('nam-cham.1').loiGiai.chinh = get('nam-cham.1').loiGiai.chinh.concat(['if front_clear() and front_clear():', '    wait()']);
+  get('nhen.2').robot = Object.assign({}, get('nhen.2').robot, { camBien: [{ ma: 'mau', o: 'bung' }] });
+  get('nam-cham.7').hamGoc = get('nam-cham.7').hamGoc.concat(['magnet_s']);
+  get('doi-xich.3').san = get('doi-xich.3').san.map((d, i) => i === 0 ? 'S' + d.slice(1) : d);
+  get('che-nhen.4').hamCuaEmCan = get('che-nhen.4').hamCuaEmCan.concat(['fly_home']);
+}
+kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_3 khai đủ 10 gói × 2 chương, đúng loại; chương chưa có màn chưa hiện; mùa 3 ẩn; gói ngoài khuôn ở đầu mùa 4', () => {
+  assert.deepEqual(M.mua3.map(g => [g.ma, g.loai, g.chuong.map(c => c[0])]), BANG_MUA_3.map(([ma, loai, ds]) => [ma, loai, ds.map(c => c[0])]), 'MUA_3 khác bảng');
+  assert.deepEqual(goi3().map(g => [g.ma, g.chuong]), goi3Bang.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'gói / chương mùa 3');
+  for (const [, ds] of goi3Bang) for (const [c, dsMa] of ds) assert.deepEqual(M.danhSach.filter(m => m.chuong === c).map(m => m.ma), dsMa, c);
+  const n12 = chuongMua1.size + chuongMua2.size, ch3 = goi3Bang.flatMap(([, ds]) => ds.map(c => c[0]));
+  assert.deepEqual(TT.thuTu.slice(n12, n12 + ch3.length), ch3, 'chương mùa 3 đứng ngay sau mùa 2');
+  for (const [, , ds] of BANG_MUA_3) for (const [c] of ds) if (!ch3.includes(c)) assert.ok(!TT.thuTu.includes(c), c + ' chưa có màn mà đã vào thuTu');
+  for (const m of moiMua3) assert.ok(BANG_MUA_3.some(([, , ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
+  assert.equal(TT.mua.find(x => x.ma === 'mua-3').an, true, 'mùa 3 phải còn ẩn');
+  for (const g of goi3()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 3 đang dựng: tự tính)');
+  // Gói ngoài khuôn: đầu mùa 4, giữ thứ tự cũ, trước các gói mùa 4 cũ; chương rời của MUA_3 đúng màn.
+  const g4 = goiMua('mua-4').map(g => g.ma);
+  assert.deepEqual(g4.slice(0, ROI_3_GOI.length), ROI_3_GOI, 'đầu mùa 4');
+  assert.equal(goiMua('mua-4')[0].sao, 0, 'gói đầu mùa 4 cần 0 sao');
+  assert.deepEqual(Object.keys(M.roiMua3).map(c => [c, M.danhSach.filter(m => m.chuong === c).map(m => m.ma)]), Object.entries(M.roiMua3), 'chương rời mùa 3');
+  for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-4', c);
+});
+kiem3('(b) không màn nào trước gói 1 chương 2 mùa 3 (chuoi-nhen) dùng chuỗi làm dữ liệu (bắc cầu qua hàm của em); shoot("fast") vẫn được', () => {
+  const moc = mocChuong3('chuoi-nhen'), sai = [];
+  for (const m of M.danhSach.slice(0, moc)) for (const l of dongBacCau(m).dong) for (const s of chuoiDuLieu(l)) sai.push(m.ma + ' ' + s + ': ' + l.trim());
+  assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 6).join(' · '));
+});
+kiem3('(c) không màn nào trước gói 2 chương 2 mùa 3 (logic-nam-cham) dùng and / or (kể cả mùa 1, 2; bắc cầu qua hàm của em)', () => {
+  const moc = mocChuong3('logic-nam-cham'), sai = [];
+  for (const m of M.danhSach.slice(0, moc)) for (const l of dongBacCau(m).dong) if (coLogic(l)) sai.push(m.ma + ': ' + l.trim());
+  assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 6).join(' · '));
+});
+kiem3('(d) robot mùa 3: thân hai bánh / xích / nhện; tay mùa 1–2 + nam châm; cảm biến mùa 1–2 + cảm ứng từ; khay chỉ lệnh của các part đó; không gọi lệnh omni / drone / màu / máy ném', () => {
+  for (const m of manMua3()) {
+    if (m.loaiRobot) assert.ok(PART_3.loaiRobot.includes(m.loaiRobot), m.ma + ' loaiRobot ' + m.loaiRobot);
+    for (const r of [m.robot].concat((m.doi || []).map(d => d.robot)).filter(Boolean)) {
+      if (r.than) assert.ok(PART_3.than.includes(r.than), m.ma + ' thân ' + r.than);
+      if (r.tay) assert.ok(PART_3.tay.includes(r.tay), m.ma + ' tay ' + r.tay);
+      for (const c of r.camBien || []) assert.ok(PART_3.camBien.includes(c.ma), m.ma + ' cảm biến ' + c.ma);
+    }
+    for (const h of (m.hamGoc || []).concat((m.doi || []).flatMap(d => d.hamGoc || []))) assert.ok(LENH_MUA_3.includes(h), m.ma + ' khay có ' + h);
+    const goi = [...loiGoi(dongBacCau(m).dong)].filter(t => CAM_3.includes(t));
+    assert.deepEqual(goi, [], m.ma + ' gọi lệnh ngoài mùa 3');
+  }
+});
+// (e) part mở dần (gốc → nâng cấp): [lệnh / thân, gói mở]. Màn đứng trước màn đầu của gói đó (cả mùa 1, 2) không được gọi (bắc cầu) hay có trên khay.
+const MO_DAN_3 = [['front_metal', 3], ['crouch', 5], ['stand', 5], ['jump', 5], ['leap', 5], ['magnet_s', 6], ['front_pole', 7]];
+kiem3('(e) part mở dần: không front_metal trước gói 3, crouch / stand / jump / leap trước gói 5, magnet_s trước gói 6, front_pole trước gói 7, nhện trước gói 1 (bắc cầu + khay)', () => {
+  const sai = [];
+  for (const [t, k] of MO_DAN_3) {
+    const moc = mocGoi3(k);
+    for (const m of M.danhSach.slice(0, moc)) {
+      const khay = (m.hamGoc || []).concat((m.doi || []).flatMap(d => d.hamGoc || []));
+      if (khay.includes(t)) sai.push(m.ma + ' khay có ' + t + ' (trước gói ' + k + ')');
+      if (loiGoi(dongBacCau(m).dong).has(t)) sai.push(m.ma + ' gọi ' + t + ' (trước gói ' + k + ')');
+    }
+  }
+  for (const m of M.danhSach.slice(0, mocGoi3(1))) {
+    const r = [m.robot].concat((m.doi || []).map(d => d.robot)).filter(Boolean);
+    if (m.loaiRobot === 'nhen' || r.some(x => x.than === 'nhen') || (m.doi || []).some(d => d.loaiRobot === 'nhen')) sai.push(m.ma + ' có nhện (trước gói 1)');
+  }
+  assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 6).join(' · '));
+});
+kiem3('(f) không sân mùa 3 nào có bậc thang S', () => {
+  for (const m of manMua3()) for (const s of dsSanCua(m)) assert.ok(!/S/.test(s.join('')), m.ma + ' có bậc thang S');
+});
+// Hàm có sẵn của Python / danh sách (không phải hàm của em) khi dò lời gọi.
+const PY_SAN = ['range', 'len', 'append', 'pop', 'int', 'str', 'abs', 'min', 'max', 'print'];
+kiem3('(g) mùa 3 và mùa ẩn sau nó: hàm của em mà màn cần hay lời giải gọi thẳng đều được tạo ở màn đứng trước', () => {
+  const daTao = new Set(), c3 = chuongMua3Nay(), sau = new Set(TT.goi.filter(g => g.mua !== 'mua-1' && g.mua !== 'mua-2' && g.mua !== 'mua-3').flatMap(g => g.chuong)), sai = [];
+  for (const m of M.danhSach) {
+    if (c3.has(m.chuong) || sau.has(m.chuong)) {
+      for (const h of m.hamCuaEmCan) if (!daTao.has(h)) sai.push(m.ma + ' cần ' + h);
+      const lg = m.loiGiai, rieng = new Set((lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).map(h => h.ten));
+      const goc = new Set((m.hamGoc || []).concat((m.doi || []).flatMap(d => d.hamGoc || [])));
+      const dong = [...(lg.chinh || []), ...(lg.doi || []).flatMap(x => x.chinh || []), ...(lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).flatMap(h => h.than)];
+      for (const t of loiGoi(dong)) if (!rieng.has(t) && !goc.has(t) && !LENH_MUA_3.includes(t) && !PY_SAN.includes(t) && !daTao.has(t)) sai.push(m.ma + ' gọi ' + t + '()');
+    }
+    for (const t of (m.taoHam || []).concat((m.loiGiai.hamCuaEmMoi || []).map(h => h.ten))) daTao.add(t);
+  }
+  assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 8).join(' · '));
+});
+kiem3('(h) ĐO đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nhịp 4 / ô 6, mốc = màn không trùm đứng trước qua ranh chương / gói, trùm miễn): chỉ in, chưa ép', () => {
+  const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le), nhay = [];
+  let moc = null;
+  for (const g of goi3()) for (const c of g.chuong) for (const m of M.danhSach.filter(x => x.chuong === c).sort((a, b) => a.so - b.so)) {
+    if (m.hang === 'trum') continue;
+    if (moc) {
+      const v = chiSoCong(m), t = chiSoCong(moc);
+      for (const k of ['dong', 'nhip', 'o']) if (!tran(v[k], t[k], LE_CONG[k])) nhay.push([g.ma, m.chuong + '.' + m.so, m.ma, moc.ma, k, t[k], v[k]]);
+    }
+    moc = m;
+  }
+  if (!LOI_GIA_3) {
+    console.log('Mùa 3 (h) đường cong: ' + nhay.length + ' chỗ nhảy (gói | màn | mốc | chỉ số mốc → màn)');
+    for (const [g, id, ma, mc, k, a, b] of nhay) console.log('  ' + g + ' | ' + id + ' ' + ma + ' | ' + mc + ' | ' + k + ' ' + a + ' → ' + b);
+  }
+});
+if (!LOI_GIA_3) {
+  // (f) bảng ô hố u / gầm n theo gói mùa 3 (luật: hố là sàn mới mùa 3, đi cùng nhảy ở gói 5, bãi từ gói 4): chỉ in.
+  const ho = goi3().map(g => [g.ma, g.chuong.flatMap(c => M.danhSach.filter(m => m.chuong === c)).filter(m => dsSanCua(m).some(s => /[un]/.test(s.join(''))))
+    .map(m => m.ma + '(' + [...new Set(dsSanCua(m).flatMap(s => s.join('').match(/[un]/g) || []))].join('') + ')')]);
+  console.log('Mùa 3 (f) hố u / gầm n theo gói: ' + ho.map(([g, ds]) => g + ': ' + (ds.join(' ') || 'không')).join(' · '));
+}
+if (LOI_GIA_3) {
+  console.log('Lỗi giả mùa 3: HỎNG ' + hong3 + ' / 7 mục (a)–(g).');
+  process.exit(hong3 === 7 ? 0 : 1);
+}
+if (hong3) { console.log('Mùa 3: HỎNG ' + hong3 + ' mục.'); process.exit(1); }
+
 // 26/10: chương cam-bien-ben = che-cam-bien.4 (chế to_gap) + cam-bien-ben 1–9, đều một sân; trùm ba sân cũ cam-bien-ben.10 sang chương Tổng hợp.
 kiem('gói cảm biến hai bên: mười màn khác nhau, một sân; trùm cũ ba sân', () => {
   for (const c of ['cam-bien-ben']) {
