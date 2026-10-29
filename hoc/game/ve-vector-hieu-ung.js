@@ -347,12 +347,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.font = PHONG_SO; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = o.mauSo; g.fillText(o.so, o.x + o.W + 2, o.y + 1.7);
     g.restore();
   }
-  /** Thẻ số đạn (súng hơi) ở góc trên trái cửa sổ vẽ: viên thuốc trắng, quả bóng vàng nhỏ, "×n"; hết đạn / nháy: nền đỏ nhạt, chữ đỏ. */
+  /** Thẻ số đạn (vòi phun) ở góc trên trái cửa sổ vẽ: viên thuốc trắng, GIỌT NƯỚC nhỏ (29/10, trước: quả bóng vàng), "×n"; hết đạn / nháy: nền đỏ nhạt, chữ đỏ, giọt xám. */
   function theDan(g, x, y, w, hh, txt, het, nhay) {
     g.save();
     H.bo(g, x - 0.5, y - 0.5, w + 1, hh + 1, (hh + 1) / 2); g.fillStyle = het || nhay ? rgba(BM.vecDoRgb, 0.18) : BM.vecVo; g.fill(); g.lineWidth = 0.7; g.strokeStyle = het || nhay ? BM.vecDo : BM.vecVien; g.stroke();
-    tron(g, x + 3.6, y + hh / 2, 1.8); g.fillStyle = het ? BM.vecBacToi : BM.vecVang; g.fill(); g.lineWidth = 0.4; g.strokeStyle = het ? BM.vecBacToi : BM.vecVangToi; g.stroke();
-    tron(g, x + 3.1, y + hh / 2 - 0.5, 0.5); g.fillStyle = BM.vecVo; g.fill();
+    var gx = x + 3.6, gy = y + hh / 2 + 0.6;                                                             // giọt: đáy tròn bán kính 1,6, chóp nhọn phía trên
+    g.beginPath(); g.moveTo(gx, gy - 3.6); g.bezierCurveTo(gx + 0.6, gy - 2.2, gx + 1.6, gy - 1.2, gx + 1.6, gy); g.arc(gx, gy, 1.6, 0, Math.PI); g.bezierCurveTo(gx - 1.6, gy - 1.2, gx - 0.6, gy - 2.2, gx, gy - 3.6); g.closePath();
+    g.fillStyle = het ? BM.vecBacToi : BM.vecNuoc; g.fill(); g.lineWidth = 0.4; g.strokeStyle = het ? BM.vecBacToi : BM.vecNuocToi; g.stroke();
+    tron(g, gx - 0.6, gy - 0.4, 0.5); g.fillStyle = BM.vecVo; g.fill();
     g.font = PHONG_SO; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = het ? BM.vecDo : BM.vecVien; g.fillText(txt, x + 7, y + hh / 2 + 0.5);
     g.restore();
   }

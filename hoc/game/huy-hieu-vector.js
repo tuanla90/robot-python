@@ -231,10 +231,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('may-nem', function (g, c) { mayNem(g, c, 30, 60, 52); });
   dk('che-may-nem', che(function (g, c) { mayNem(g, c, 30, 64, 46, true); }));
+  /* 29/10 Xe cứu hỏa R1: part 'hoi' vẽ thành vòi phun, vật 'bong' thành khối nước; tiaNuoc = tia nước nằm ngang từ miệng vòi (x0) tới đầu tia (x1), dày d. */
+  function tiaNuoc(g, x0, y, x1, d) {
+    H.duong(g, 'M' + x0 + ' ' + y + ' H' + x1); H.vien(g, BM.vecVien, d + 2.4); H.vien(g, BM.vecNuoc, d);
+    H.duong(g, 'M' + (x0 + (x1 - x0) * 0.3) + ' ' + (y - d * 0.18) + ' H' + x1); H.vien(g, BM.vecNuocSang, Math.max(1, d * 0.3));
+  }
   function sungHoi(g, c, cx, cy, canh, bong) {
-    var cfg = { than: 'hai-banh', tay: 'hoi' }, mz = c.hh(cfg).mz;
+    var cfg = { than: 'hai-banh', tay: 'hoi' }, mz = c.hh(cfg).mz, ds = bong || [[8, 16]], cuoi = ds[ds.length - 1], m = c.truoc(1, cx, cy, canh, mz), q = c.truoc(1, cx, cy, canh, mz + cuoi[0]);
     c.robot(cfg, st(null, { dangBanTruoc: true }), 1, cx, cy, canh);
-    (bong || [[8, 16]]).forEach(function (b) { var p = c.truoc(1, cx, cy, canh, mz + b[0]); c.vat('bong', {}, p.x + b[1] * 0.5, p.y, b[1]); });
+    tiaNuoc(g, m.x, m.y, q.x + cuoi[1] * 0.4, cuoi[1] * 0.42);
+    ds.forEach(function (b) { var p = c.truoc(1, cx, cy, canh, mz + b[0]); c.vat('bong', {}, p.x + b[1] * 0.5, p.y, b[1]); });
   }
   dk('sung-hoi', function (g, c) { sungHoi(g, c, 34, 54, 58, [[16, 16]]); });
   dk('luc-ban', function (g, c) { sungHoi(g, c, 30, 54, 52, [[6, 10], [30, 18]]); });
@@ -349,16 +355,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('doi-mua-2', function (g, c) { doiMua2(g, c, 60, 34, true); });
   dk('che-doi-mua-2', che(function (g, c) { doiMua2(g, c, 62, 33, false); }));
-  /* gói V7a: gói 9 mùa 2 "Bệ súng xích" (be-sung): xe xích gắn súng hơi, nòng trước vừa bắn ra quả bóng to (bắn tụ), xe đứng yên; chế = thân xích + nòng, thêm bánh răng. */
+  /* gói V7a: gói 9 mùa 2 "Bệ vòi xích" (mã be-sung): xe xích gắn vòi phun, đầu trước vừa phun ra khối nước to theo tia nước (bắn tụ), xe đứng yên; chế = thân xích + vòi, thêm bánh răng. */
   function beSung(g, c, cx, cy, canh, bong) {
     var cfg = { than: 'xich', tay: 'hoi' }, mz = c.hh(cfg).mz;
     c.robot(cfg, st(null, { dangBanTruoc: !!bong }), 1, cx, cy, canh);
-    if (bong) { var p = c.truoc(1, cx, cy, canh, mz + bong[0]); c.vat('bong', {}, p.x + bong[1] * 0.5, p.y, bong[1]); }
+    if (bong) { var m = c.truoc(1, cx, cy, canh, mz), p = c.truoc(1, cx, cy, canh, mz + bong[0]); tiaNuoc(g, m.x, m.y, p.x + bong[1] * 0.4, bong[1] * 0.42); c.vat('bong', {}, p.x + bong[1] * 0.5, p.y, bong[1]); }
   }
   dk('be-sung', function (g, c) { beSung(g, c, 36, 54, 50, [8, 20]); });
   dk('che-be-sung', che(function (g, c) { beSung(g, c, 38, 62, 50); }));
-  /* gói V7b (28/10): gói 10 mùa 2 "Nhà máy chạy lại" (gói 10 chỉ vẽ pixel, bản vector V7b lo): tong-hop-2 = bệ súng xích tì mũi vào thùng nặng
-     (tổng hợp xích + súng hơi + thùng); nha-may-chay (trùm cuối mùa 2) = bệ súng xích vừa bắn bóng to, hai sao hai góc trên như xuat-xuong. */
+  /* gói V7b (28/10): gói 10 mùa 2 "Nhà máy chạy lại" (gói 10 chỉ vẽ pixel, bản vector V7b lo): tong-hop-2 = bệ vòi xích tì mũi vào thùng nặng
+     (tổng hợp xích + vòi phun + thùng); nha-may-chay (trùm cuối mùa 2) = bệ vòi xích vừa phun khối nước to, hai sao hai góc trên như xuat-xuong. */
   dk('tong-hop-2', function (g, c) {
     var cx = 32, cy = 56, canh = 46, p = c.truoc(1, cx, cy, canh, c.hh({ than: 'xich', tay: 'hoi' }).mz + 18);
     c.vat('thung-nang', {}, p.x + 7, p.y, 26);

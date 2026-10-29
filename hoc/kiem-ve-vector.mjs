@@ -414,6 +414,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 {
   /* V7c1 (28/10): nguồn so sánh là DỮ LIỆU CHỤP từ part/*.js ở c0 (hoc/chup-du-lieu-pixel.mjs), không nạp bộ pixel nữa */
   const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'));
+  /* 29/10 Xe cứu hỏa R1 (gói vòi phun hình): tên hiển thị part 'hoi' đổi 'Súng hơi hai nòng' → 'Vòi phun hai đầu'; dữ liệu chụp c0 giữ tên cũ, so sánh qua bảng đổi tên này (mã, ổ, hamGoc, luật ghép y nguyên) */
+  const DOI_TEN = { 'Súng hơi hai nòng': 'Vòi phun hai đầu' }, tenMoi = (x) => (x == null ? x : Object.keys(DOI_TEN).reduce((a, k) => a.split(k).join(DOI_TEN[k]), x));
   const BP = { than: CHUP.boPhan.filter((b) => b.loai === 'than'), tay: CHUP.boPhan.filter((b) => b.loai === 'tay'), 'cam-bien': CHUP.boPhan.filter((b) => b.loai === 'cam-bien') };
   /* a. danh sách bộ phận */
   const thieu = [], sai = [];
@@ -423,7 +425,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     for (const ma of mv) if (!mp.includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
     for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;
-      if (loai !== 'than' && (J([].concat(v.gan)) !== J(d.gan) || v.ten !== d.ten)) sai.push(loai + '/' + d.ma + ': gan / ten khác chụp (' + J(v.gan) + ' / ' + v.ten + ')');
+      if (loai !== 'than' && (J([].concat(v.gan)) !== J(d.gan) || v.ten !== tenMoi(d.ten))) sai.push(loai + '/' + d.ma + ': gan / ten khác chụp (' + J(v.gan) + ' / ' + v.ten + ')');
       if (loai === 'tay' && d.diemNeoDuoi && !v.diemNeoDuoi) sai.push('tay/' + d.ma + ' thiếu diemNeoDuoi');
       if (loai === 'than') for (const o of Object.keys(d.oGan)) if (!v.oGan[o]) sai.push('than/' + d.ma + ' thiếu ổ ' + o);
       if (J(v.hamGoc) !== J(d.hamGoc)) sai.push(loai + '/' + d.ma + ': hamGoc ' + J(v.hamGoc) + ' ≠ chụp ' + J(d.hamGoc));
@@ -438,7 +440,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   /* b. mọi tổ hợp: thân × (không tay + tay) × bộ cảm biến (không, từng cảm biến ở từng ổ, vài cặp) — Part.ghep (đã chụp) ném ⇔ VeVector.kiemGhep ném, cùng câu báo */
   const hopLe = [], lechLuat = []; let soCam = 0;
   for (const g of CHUP.ghep) {
-    const cfg = g.cfg, ep = g.loi;
+    const cfg = g.cfg, ep = tenMoi(g.loi);
     let ev = null;
     try { V.kiemGhep(cfg); } catch (e) { ev = e.message; }
     if (ep !== ev) lechLuat.push(J(cfg) + ' pixel (chụp): ' + ep + ' | vector: ' + ev);
@@ -586,7 +588,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
-  const NEN_VEC = 'aaeee1f';                                                           // 29/10 gộp nhánh điều phối vào main: nền VECTOR = aaeee1f (hợp một tay kẹp V8c + phim xuất xưởng / xich.1 của main; so fbc976e chỉ lệch robot.2, xich.1; so 32513bf chỉ lệch tay kẹp). Trước đó: 29/10 V8c một tay kẹp: nền VECTOR = fbc976e (tay kẹp vẽ y hệt tay xoay ở nấc trước: cụm giữa tâm (50, 84), khớp tròn vành bạc + đèn, hàm khop dùng chung; chứng minh: hoàn ve-vector-tay-kep.js + ve-vector-tay-xoay.js về ad0899a thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 V8b tay xoay cùng hình tay kẹp: nền VECTOR = fa7637a (tay xoay vẽ bằng càng / cụm / đèn của tay kẹp, thêm khớp tròn vành bạc; chứng minh: hoàn ve-vector-tay-kep.js + ve-vector-tay-xoay.js về e4b3e11 thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 mắt theo đội: nền VECTOR = 6a4276d (lõi / quầng mắt R2 hồng, mắt trái tim cùng màu mắt đội; chứng minh: hoàn bang-mau.js + ve-vector.js về b38c6be thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 gộp V8a: nền VECTOR = 3fe6fa8 (thân omni / nhện vuông bo, chân nhện ba khúc, dáng bò; trước đó 8d930ae: mắt vui cung tròn mảnh, mắt tim viền trắng thắng màn; trước đó f8331e9, trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
+  const NEN_VEC = '013ec5d';                                                           // 29/10 vòi phun hình (Xe cứu hỏa R1): nền VECTOR = 013ec5d (part 'hoi' vẽ thành vòi phun hai đầu, vật 'bong' thành khối nước tóe giọt, tia nước / vũng trên sân, thẻ đạn giọt nước, icon denSung vòi phun, huy hiệu có tia nước, phim mùa 2 dùng PhimVector.voiPhun + tia .pg-nuoc; so aaeee1f chỉ lệch đúng chỗ có súng / bóng: 13a-v sung-hoi.3 (giải + sai), luc-ban.8; A3-v 8 huy hiệu vẽ 'hoi' / 'bong' (sung-hoi, luc-ban, che-sung-hoi, che-luc-ban, be-sung, che-be-sung, tong-hop-2, nha-may-chay) × 3 trạng thái; B5-v 33 khung phim mùa 2 có robot gắn 'hoi' / bắn nước (mọi khung từ sung-hoi.1 tới nha-may-chay.4; xich.1–4 và phim mùa 1 y nguyên)). Trước đó: 29/10 gộp nhánh điều phối vào main: nền VECTOR = aaeee1f (hợp một tay kẹp V8c + phim xuất xưởng / xich.1 của main; so fbc976e chỉ lệch robot.2, xich.1; so 32513bf chỉ lệch tay kẹp). Trước đó: 29/10 V8c một tay kẹp: nền VECTOR = fbc976e (tay kẹp vẽ y hệt tay xoay ở nấc trước: cụm giữa tâm (50, 84), khớp tròn vành bạc + đèn, hàm khop dùng chung; chứng minh: hoàn ve-vector-tay-kep.js + ve-vector-tay-xoay.js về ad0899a thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 V8b tay xoay cùng hình tay kẹp: nền VECTOR = fa7637a (tay xoay vẽ bằng càng / cụm / đèn của tay kẹp, thêm khớp tròn vành bạc; chứng minh: hoàn ve-vector-tay-kep.js + ve-vector-tay-xoay.js về e4b3e11 thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 mắt theo đội: nền VECTOR = 6a4276d (lõi / quầng mắt R2 hồng, mắt trái tim cùng màu mắt đội; chứng minh: hoàn bang-mau.js + ve-vector.js về b38c6be thì 13a-v / A3-v / B5-v / C3-v xanh). Trước đó: 29/10 gộp V8a: nền VECTOR = 3fe6fa8 (thân omni / nhện vuông bo, chân nhện ba khúc, dáng bò; trước đó 8d930ae: mắt vui cung tròn mảnh, mắt tim viền trắng thắng màn; trước đó f8331e9, trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); 13a-v phát lại vector so với nền này
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };

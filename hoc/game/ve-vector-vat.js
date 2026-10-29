@@ -41,11 +41,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     dinh(g, H, 13.5, 13.5, 4.5); dinh(g, H, 84.5, 13.5, 4.5); dinh(g, H, 13.5, 84.5, 4.5); dinh(g, H, 84.5, 84.5, 4.5);
   } });
 
-  /* BÓNG HƠI (súng hơi bắn ra): quả bóng vàng viền chàm, vệt sáng trái trên. s.bep: lúc đập vào vật — bẹp ngang. */
-  V.dangKy({ loai: 'vat', ma: 'bong', ten: 'Bóng hơi', cacTrangThai: [{}, { bep: true }], ve: function (g, s, H) {
-    if (s.bep) H.elip(g, 50, 56, 44, 28); else H.tron(g, 50, 50, 41);
-    g.fillStyle = H.gradToa(g, 38, 36, 52, [[0, BM.vecVangSang], [0.55, BM.vecVang], [1, BM.vecVangToi]]); g.fill(); H.vien(g, BM.vecVien, 7);
-    if (s.bep) H.elip(g, 36, 48, 9, 5); else H.tron(g, 36, 35, 9);
-    g.globalAlpha = 0.85; H.to(g, BM.vecVo); g.globalAlpha = 1;
+  /* KHỐI NƯỚC (vòi phun bắn ra; mã 'bong' giữ nguyên, 29/10 thay quả bóng hơi vàng): đầu tia nước tròn xanh nước, viền chàm mảnh, vệt sáng trái trên
+     (vệt nước phía sau do san-ve.js veBong vẽ). s.bep: lúc đập vào vật — nước TÓE: vũng dẹt + năm giọt bắn ra hình vương miện. */
+  V.dangKy({ loai: 'vat', ma: 'bong', ten: 'Khối nước', cacTrangThai: [{}, { bep: true }], ve: function (g, s, H) {
+    var nuoc = function (cx, cy, r) { return H.gradToa(g, cx - r * 0.3, cy - r * 0.35, r * 1.3, [[0, BM.vecNuocSang], [0.5, BM.vecNuoc], [1, BM.vecNuocToi]]); };
+    if (s.bep) {
+      [[18, 30, 9], [34, 16, 8], [50, 11, 9], [66, 16, 8], [82, 30, 9]].forEach(function (q) { H.tron(g, q[0], q[1], q[2]); g.fillStyle = nuoc(q[0], q[1], q[2]); g.fill(); H.vien(g, BM.vecVien, 4); });
+      H.elip(g, 50, 64, 44, 24); g.fillStyle = nuoc(50, 64, 44); g.fill(); H.vien(g, BM.vecVien, 6);
+      H.elip(g, 36, 57, 10, 5);
+    } else {
+      H.tron(g, 50, 50, 41); g.fillStyle = nuoc(50, 50, 41); g.fill(); H.vien(g, BM.vecVien, 6);
+      H.tron(g, 35, 34, 10);
+    }
+    g.globalAlpha = 0.9; H.to(g, BM.vecVo); g.globalAlpha = 1;
   } });
 })(typeof window !== 'undefined' ? window : globalThis);
