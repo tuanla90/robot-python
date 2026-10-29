@@ -639,7 +639,7 @@
       chuong: [['doi-mua-2', []], ['che-doi-mua-2', []]] },
     { ma: 'be-sung', ten: 'Bệ súng xích', loai: 'thu-thach', sao: 240,
       chuong: [['be-sung', []], ['che-be-sung', []]] },
-    { ma: 'nha-may-chay', ten: 'Xe tăng R1 xuất xưởng', loai: 'thu-thach', sao: 270,
+    { ma: 'nha-may-chay', ten: 'Xe cứu hỏa R1 xuất xưởng', loai: 'thu-thach', sao: 270,
       chuong: [['tong-hop-2', []], ['trum-mua-2', []]] }
   ];
   var TEN_MUA_2 = { 'bien-xich': 'Biến cho xích', 'hong-ngoai': 'Hồng ngoại', 'che-hong-ngoai': 'Hàm cho hồng ngoại', 'day-thung': 'Đẩy thùng',

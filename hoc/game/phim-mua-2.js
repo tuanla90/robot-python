@@ -509,7 +509,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     ],
 
-    /* ---------------------------------------------------------------- 10 · Xe tăng R1 xuất xưởng (mã gói nha-may-chay; tổng hợp + trùm; khuôn "cỗ máy xuất xưởng" mục 3c; nhá mùa 3) */
+    /* ---------------------------------------------------------------- 10 · Xe cứu hỏa R1 xuất xưởng (mã gói nha-may-chay; user 29/10 đổi từ Xe tăng R1; tổng hợp + trùm; khuôn "cỗ máy xuất xưởng" mục 3c; nhá mùa 3) */
     'nha-may-chay': [
       // 1 · R1 đủ bộ giữa nhà máy, các huy hiệu mùa 2 bay quanh
       function (k, c) {
@@ -523,13 +523,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         });
         c.sau(300, function () { c.keu('thang'); });
       },
-      // 2 · tem XUẤT XƯỞNG đóng xuống: "Xe tăng R1" + ba part (xích, súng hơi, mắt hồng ngoại)
+      // 2 · tem XUẤT XƯỞNG đóng xuống: "Xe cứu hỏa R1" + ba part: xích, súng hơi vẽ thành vòi phun (PhimVector.voiPhun), mắt hồng ngoại như camera nhiệt
       function (k, c) {
         c.nen(k, 'md-san');
         var r = c.xe(XHN, DO, 1, 3, 160, Y); k.appendChild(r);
         c.sau(300, function () { r.mat('ngac'); });
         c.sau(2100, function () { r.mat('vui'); });
-        var v = PV() && PhimVector.xuatXuong({ tem: t2('pg.tem.xuat-xuong'), ten: t2('pg.tem.xe-tang'), part: [['denXich', BM.lamSang], ['denSung', BM.lamSang], ['denCam', BM.do]], t: 1 });
+        var v = PV() && PhimVector.xuatXuong({ tem: t2('pg.tem.xuat-xuong'), ten: t2('pg.tem.xe-cuu-hoa'), part: [['denXich', BM.lamSang], [PhimVector.voiPhun(2)], ['denCam', BM.do]], t: 1 });
         if (v) k.appendChild(c.dat(v, 70, 10));
         c.sau(1000, function () { c.keu('dam'); });
         c.sau(1900, function () { c.keu('thang'); });
