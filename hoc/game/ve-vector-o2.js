@@ -87,6 +87,28 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     dauHinh(g, H, MAU_SAN[s.mau] ? s.mau : 'red', 74, 74, 10);
   } });
 
+  /* Ô ĐỆM TỪ (mùa 3, cfg.demTu; ô ghi '.' trên sân nên không khai ky; vẽ đè lên sàn): khối nam châm nằm bệt màu CỰC (N đỏ, S xanh dương: cùng nhóm LUAT với vật nam châm),
+     chữ cực trắng viền chàm vẽ bằng nét (như ve-vector-vat.js), hai cung sóng từ nhẹ ở hai mép (đệm đang "phát"). Đọc được ở ô 14 px: chữ chiếm nửa ô. */
+  var CUC_DEM = { N: ['luatVatDo', 'luatVatDoSang', 'luatVatDoToi'], S: ['luatVatXanhDuong', 'luatVatXanhDuongSang', 'luatVatXanhDuongToi'] };
+  var CHU_DEM = { N: 'M38 68 V33 L62 67 V32', S: 'M61 37 C57 30 39 29 39 41 C39 52 61 48 61 59 C61 71 43 71 38 63' };
+  V.dangKy({ loai: 'o', ma: 'dem-tu', ten: 'Đệm từ', phu: true, cacTrangThai: [{ cuc: 'N' }, { cuc: 'S' }], ve: function (g, s, H) {
+    var cuc = s.cuc === 'S' ? 'S' : 'N', c = CUC_DEM[cuc], rgb = cuc === 'S' ? BM.tiaLamRgb : BM.tiaDoRgb;
+    H.elip(g, 52, 56, 44, 42); H.to(g, H.rgba(BM.vecVienRgb, 0.14));                                   // bóng đổ
+    H.bo(g, 8, 8, 84, 84, 16); g.fillStyle = H.gradDoc(g, 0, 8, 0, 92, [[0, BM[c[1]]], [0.45, BM[c[0]]], [1, BM[c[2]]]]); g.fill(); H.vien(g, BM.vecVien, 3.5);
+    H.bo(g, 17, 17, 66, 66, 10); H.vien(g, BM[c[2]], 2.5);                                            // tấm trong tối hơn (đệm nằm bệt, khác khối vật nam châm đứng)
+    H.duong(g, 'M20 16 H80'); g.globalAlpha = 0.5; H.vien(g, BM.vecVo, 3.5); g.globalAlpha = 1;      // vệt sáng mép trên
+    g.save(); g.lineCap = 'round';                                                                     // hai cung sóng từ nhẹ ở hai mép trái / phải
+    g.strokeStyle = H.rgba(rgb, 0.85); g.lineWidth = 2.5;
+    g.beginPath(); g.arc(50, 50, 40, Math.PI * 0.8, Math.PI * 1.2); g.stroke();
+    g.beginPath(); g.arc(50, 50, 40, -Math.PI * 0.2, Math.PI * 0.2); g.stroke();
+    g.strokeStyle = H.rgba(rgb, 0.45); g.lineWidth = 2;
+    g.beginPath(); g.arc(50, 50, 47, Math.PI * 0.86, Math.PI * 1.14); g.stroke();
+    g.beginPath(); g.arc(50, 50, 47, -Math.PI * 0.14, Math.PI * 0.14); g.stroke();
+    g.restore();
+    H.duong(g, CHU_DEM[cuc]); H.vien(g, BM.vecVien, 13);
+    H.duong(g, CHU_DEM[cuc]); H.vien(g, BM.vecVo, 7);
+  } });
+
   /* Ô SẠC của drone (P, vẽ đè lên sàn): đế tối bo góc, vòng cyan, tia chớp vàng ở giữa, bốn đèn góc nháy luân phiên theo s.pha (0 / 1). */
   V.dangKy({ loai: 'o', ma: 'sac', ten: 'Ô sạc', ky: ['P'], phu: true, cacTrangThai: [{ pha: 0 }, { pha: 1 }], ve: function (g, s, H) {
     var f = (s.pha || 0) & 1;
