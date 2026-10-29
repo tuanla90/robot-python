@@ -354,7 +354,16 @@
   // HD2 việc 4 (29/10): màn ĐẦU của gói 4 / 6 thành màn TRÌNH DIỄN (chiChay) cho cái mới của gói, màn kế tiếp ép dùng nó:
   // gói 4 nut-de.1: cơ chế NÚT ĐÈ / THÙNG GIỮ CỬA (bấm Chạy thấy carry() đặt thùng lên M, cửa C mở); nut-de.2 phải tự đặt thùng lên nút (cửa đóng là cách duy nhất).
   // gói 6 tay-xoay.1: lệnh arm_left / arm_right (bấm Chạy thấy tay xoay sang hông nhặt vật rồi xoay về trước đặt); tay-xoay.2 mã mẫu sai bên, phải sửa arm_left → arm_right.
-  // Gói 5 (bánh lùi) và gói 7 (cảm biến bên) màn đầu là màn CHẾ HÀM (che-xe.4 back, che-cam-bien.4 to_gap): xem báo cáo HD2. Gói 8 (hai robot): máy chấm đội chưa khoá theo chiChay.
+  // gói 7 cam-bien-ben.1 (đưa lên đầu chương, xem MUA_1): lệnh left_clear (bấm Chạy thấy xe tới tường, hỏi bên trái trống thì rẽ trái); che-cam-bien.4 kế tiếp chế to_gap() với right_clear.
+  // Gói 5 (bánh lùi) màn đầu là màn CHẾ HÀM che-xe.4 (back): xem báo cáo HD2. Gói 8 (hai robot): máy chấm đội chưa khoá theo chiChay.
+  sua('cam-bien-ben.1', {
+    ten: 'Lối bên trái', chiChay: true, chinhCoDinh: true,
+    deBai: 'Cảm biến bên hỏi ô cạnh xe theo hướng xe đang quay: left_clear() là True khi ô bên trái trống. Xe đi tới tường; nếu bên trái trống thì rẽ trái và đi tiếp tới cờ. Bấm Chạy xem xe rẽ đúng lối.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: go_wall() tới tường, if left_clear() hỏi bên trái, trống thì turn_left() rồi go_wall() tới cờ.',
+    maMau: bai(['go_wall()', 'if left_clear():', '    turn_left()', '    go_wall()']),
+    loiGiai: bai(['go_wall()', 'if left_clear():', '    turn_left()', '    go_wall()']),
+    goiY: ['left_clear() và right_clear() hỏi hai ô bên hông, không tốn nhịp.', 'Màn sau em chế to_gap(): đi tới khi bên phải trống.']
+  });
   sua('nut-de.1', {
     ten: 'Thùng giữ cửa', chiChay: true, chinhCoDinh: true,
     deBai: 'Cửa C đang đóng. Nút đè M nằm bên trái thùng gỗ: có thùng nằm trên M thì cửa C mở. Chương trình gọi carry() để đặt thùng lên M rồi đi qua cửa tới cờ. Bấm Chạy xem cửa mở thế nào.',
@@ -418,7 +427,8 @@
     { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 150,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
-      chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
+      // HD2 việc 4 (gói 7): cam-bien-ben.1 (trình diễn left_clear, chiChay) lên đầu chương, rồi che-cam-bien.4 chế to_gap() với right_clear (ép, ba sân).
+      chuong: [['cam-bien-ben', ['cam-bien-ben.1', 'che-cam-bien.4'].concat(day('cam-bien-ben', [2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
     { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 210,
       chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
     { ma: 'combo', ten: 'Combo', loai: 'thu-thach', sao: 240, hinh: 'combo',

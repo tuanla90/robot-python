@@ -187,8 +187,8 @@ Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện tron
 
 | số | mã | tên | mới | HD | trình diễn | ép | đâm là thua |
 |---|---|---|---|---|---|---|---|
-| 1 | che-cam-bien.4 | Cửa hông | lệnh right_clear |  |  | def, while, not | có |
-| 2 | cam-bien-ben.1 | Lối bên trái | lệnh left_clear |  |  |  |  |
+| 1 | cam-bien-ben.1 | Lối bên trái | lệnh left_clear, lệnh right_clear | có | có |  |  |
+| 2 | che-cam-bien.4 | Cửa hông |  |  |  | def, while, not | có |
 | 3 | cam-bien-ben.2 | Trái hay phải |  |  |  |  |  |
 | 4 | cam-bien-ben.3 | Cửa bên trái |  |  |  |  |  |
 | 5 | cam-bien-ben.4 | Rời cửa rồi mới hỏi |  |  |  |  |  |

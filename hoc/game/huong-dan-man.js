@@ -331,6 +331,12 @@
     buocChay('Bấm Chạy: hai robot chạy cùng lúc.')
   ];
 
+  /* ============================================================ Gói 7 · Cảm biến bên (HD2: cam-bien-ben.1 trình diễn left_clear, chiChay, đứng đầu chương) */
+  H['cam-bien-ben.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tới tường, xe hỏi bên trái rồi rẽ trái.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:2', chu: 'left_clear() hỏi ô bên trái xe: trống thì True. Màn sau em dùng right_clear().', xong: 'bam', han: 9000, rong: 170 }
+  ];
+
   /* ============================================================ Gói 4 · Nút đè (HD2: nut-de.1 trình diễn cơ chế thùng giữ cửa, chiChay) */
   H['nut-de.1'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: carry() đặt thùng lên nút M, cửa C mở ra.', xong: 'chay' },
