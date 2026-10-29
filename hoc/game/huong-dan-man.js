@@ -762,6 +762,11 @@
   H['che-dao-cuc.3'] = [buocTaoHam('pull_s', 'Bấm Hàm mới để tạo pull_s().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi wait(). Bấm Chạy.'));
   H['che-dao-cuc.5'] = [buocTaoHam('haul_n', 'Bấm Hàm mới, đặt tên haul_n và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Kéo bằng pull_n(), chở k ô, rồi thả. Bấm Chạy.'));
 
+  // MÙA 3 gói 7: đọc cực front_pole() (doc-cuc.1 trình diễn; che-doc-cuc.1 trình diễn hàm có if; .2 tạo sort_drop(p))
+  H['doc-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: front_pole() đọc được chữ "S" nên xe bật cực N để kéo vật về.');
+  H['che-doc-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm catch() tự đọc chữ trên vật rồi bật cực khác để kéo.');
+  H['che-doc-cuc.2'] = [buocTaoHam('sort_drop', 'Bấm Hàm mới, đặt tên sort_drop và thêm đối số p.', CHU_TAO)].concat(buocThuVeChay('p là "N" thì rẽ trái, không thì rẽ phải, rồi thả. Bấm Chạy.'));
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn

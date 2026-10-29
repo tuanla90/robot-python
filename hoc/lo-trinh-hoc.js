@@ -917,7 +917,7 @@
     { ma: 'dao-cuc', ten: 'Đảo cực', loai: 'bo-phan',
       chuong: [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'nam-cham.2', 'dao-cuc.6', 'dao-cuc.7', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.7', 'che-dao-cuc.9']]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',
-      chuong: [['doc-cuc', ['nam-cham.6', 'nam-cham.10']], ['che-doc-cuc', ['che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
+      chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'nam-cham.10']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
       chuong: [['doi-xich', ['doi-xich.3', 'doi-xich.9']], ['che-doi-xich', []]] },
     { ma: 'bung-nhen', ten: 'Nam châm bụng nhện', loai: 'thu-thach',
