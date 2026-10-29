@@ -361,9 +361,11 @@ body.ve-vector .bong .bg-x{width:26px;height:26px;border-radius:8px;--vc:var(--g
 body.ve-vector .screen>.hd-vien,body.ve-vector #stage>.hd-vien{border-radius:10px;animation:vec-hdvien 1.1s ease-in-out infinite alternate}
 @keyframes vec-hdvien{from{box-shadow:0 0 0 2px var(--g-vecBrand),0 0 0 4px rgba(var(--g-vecBrandRgb),.28)}to{box-shadow:0 0 0 2.5px var(--g-vecBrand),0 0 0 9px rgba(var(--g-vecBrandRgb),0)}}
 body.ve-vector .screen>.hd-bong,body.ve-vector #stage>.hd-bong{padding:7px 9px 6px;border-radius:var(--r-sm);font:600 12.5px/1.3 var(--px);color:var(--g-vecChu);background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecBrand),var(--elev-3);animation:none}
-body.ve-vector .hd-bong .hd-mui{background:var(--g-vecThe);border-radius:2px}
-body.ve-vector .hd-bong.duoi .hd-mui{box-shadow:-1.5px -1.5px 0 var(--g-vecBrand)}
-body.ve-vector .hd-bong.tren .hd-mui{box-shadow:1.5px 1.5px 0 var(--g-vecBrand)}
+/* đuôi: ô vuông 14 px xoay 45°, viền thật 1,5 px, cắt theo đường chéo để chỉ còn nửa thò ra ngoài; tâm đặt ĐÚNG mép trong viền hộp (cách mép ngoài 1,5 px)
+   nên nửa đuôi phủ kín đoạn viền hộp ở chân đuôi, hai cạnh viền đuôi nối liền viền hộp (bản cũ: bóng đổ lệch giả viền, chân đuôi hở) */
+body.ve-vector .hd-bong .hd-mui{box-sizing:border-box;width:14px;height:14px;border-radius:0 0 2px 0;background:var(--g-vecThe);border:1.5px solid var(--g-vecBrand);box-shadow:none}
+body.ve-vector .hd-bong.tren .hd-mui{top:auto;bottom:-5.5px;border-top:0;border-left:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
+body.ve-vector .hd-bong.duoi .hd-mui{bottom:auto;top:-5.5px;border-radius:2px 0 0 0;border-bottom:0;border-right:0;clip-path:polygon(0 0,100% 0,0 100%)}
 
 /* --- hộp thoại (TP.Hop: kết quả màn, menu, xác nhận, Bộ phận mới, mở khoá, mẹo chơi, Cài đặt, Hàm mới): thẻ trắng bo lớn trên lớp phủ chàm mờ */
 body.ve-vector #lop-hop{background:rgba(var(--g-vecChuRgb),.4)}                    /* không backdrop-filter: #stage co giãn bằng transform, mờ nền làm lặp mép */
