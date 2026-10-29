@@ -190,8 +190,10 @@
       bai(lap(2, FOLLOW)), bai(lap(2, FOLLOW.slice(0, 5))), ['Thêm else: turn_left() vào cuối quy tắc.', 'Mỗi lượt có thể chỉ quay, lượt kế mới tiến.']),
     maze(5, 'Ưu tiên ở ngã ba', 'Cả bên phải và trước mặt đều có lối. Quy tắc bám tường chọn bên phải trước. Dùng if/elif để mỗi lượt chỉ chọn một nhánh.', C, { x: 2, y: 2, huong: 0 },
       bai(FOLLOW), bai(['if front_clear():', '    move()', 'elif right_clear():', '    turn_right()', '    move()', 'else:', '    turn_left()']), ['Đổi thứ tự câu hỏi: phải trước, rồi mới phía trước.']),
-    maze(6, 'Chế một bước bám tường', 'Em đã biết ba trường hợp. Gom chúng vào hàm follow_right(): rẽ phải và tiến, hoặc tiến thẳng, hoặc quay trái.', C, { x: 2, y: 2, huong: 0 },
-      Object.assign(bai(['follow_right()']), { hamCuaEmMoi: [ham('follow_right', FOLLOW)] }), bai(['follow_right()']), ['Thân hàm là đúng quy tắc ba nhánh ở màn trước.']),
+    // HD1 (29/10): ba sân, mỗi sân một nhánh (bên phải trống / chỉ phía trước / hai phía đều chặn): một sân thì thân hàm chỉ có nhánh đầu cũng 3 sao.
+    maze(6, 'Chế một bước bám tường', 'Em đã biết ba trường hợp. Gom chúng vào hàm follow_right(): rẽ phải và tiến, hoặc tiến thẳng, hoặc quay trái. Ba sân, mỗi sân một trường hợp; chương trình gọi hàm hai lượt.',
+      [['#####', '##.##', '#..F#', '#####'], ['#####', '##F##', '##.##', '#####'], ['#####', '##F.#', '#####', '#####']], [{ x: 2, y: 2, huong: 0 }, { x: 2, y: 2, huong: 0 }, { x: 3, y: 1, huong: 0 }],
+      Object.assign(bai(lap(2, ['follow_right()'])), { hamCuaEmMoi: [ham('follow_right', FOLLOW)] }), bai(lap(2, ['follow_right()'])), ['Thân hàm là đúng quy tắc ba nhánh ở màn trước.', 'Sân ba: lượt đầu chỉ quay trái, lượt sau mới tiến.']),
     maze(7, 'Lặp những bước nhỏ', 'Hành lang có một góc rẽ. Lặp follow_right() để xe tự xử lý từng ô tới cờ.', D, { x: 1, y: 3, huong: 0 },
       bai(lap(20, ['follow_right()'])), bai(['follow_right()']), ['Một lần gọi chỉ xử lý một bước. Đặt lời gọi trong vòng for.']),
     maze(8, 'Đi vào rồi ra ngõ cụt', 'Lối bên phải dẫn vào ngõ cụt. Tiếp tục áp dụng cùng quy tắc để xe quay ra, rồi tới cờ. Quan sát hai lần quay trái khi phải quay đầu.', E, { x: 1, y: 3, huong: 0 },
@@ -203,6 +205,7 @@
   ];
   ds[5].taoHam = ['follow_right'];
   ds[5].chinhCoDinh = true;
+  ds[5].nhipTheo = 'tong';
   [6, 7, 9].forEach(function (i) { ds[i].hamCuaEmCan.push('follow_right'); });
   M.them(ds);
   // Gói Cảm biến hai bên: left_clear() mới, chọn bên, rời cửa rồi mới hỏi, ngõ cụt; quy tắc bám tường để dành cho gói Mê cung.
@@ -240,7 +243,7 @@
       ['Sau turn_right(), bên trái xe là đoạn hành lang vừa đi.', 'Thêm move() ngay sau turn_right().']),
     ben(5, 'Chế to_left_gap()', 'Tự chế to_left_gap(): đi thẳng cho tới khi bên trái trống. Chương trình chính đã có, dùng hàm hai lần để xoắn vào cờ.',
       'Chương trình chính đã cố định. Viết thân hàm to_left_gap() trong Xưởng.',
-      ['#######', '#####.#', '#####.#', '#####.#', '#.....#', '##.##.#', '##F##.#', '#######'], { x: 5, y: 6, huong: 0 },
+      ['#######', '#####.#', '#####.#', '#####.#', '#.....#', '#.###.#', '#F###.#', '#######'], { x: 5, y: 6, huong: 0 },           // HD1: hai cửa cách 2 và 3 ô, đếm cứng không qua
       Object.assign(bai(['to_left_gap()', 'turn_left()', 'move()', 'to_left_gap()', 'turn_left()', 'go_wall()']),
         { hamCuaEmMoi: [ham('to_left_gap', ['while not left_clear():', '    move()'])] }),
       bai(['to_left_gap()', 'turn_left()', 'move()', 'to_left_gap()', 'turn_left()', 'go_wall()']),
@@ -252,7 +255,7 @@
       ['Đếm số khúc quanh để chọn số lần lặp.', 'Sau vòng for còn một đoạn thẳng tới cờ.']),
     ben(7, 'Sửa hàm tìm cửa', 'Hàm door_left() phải đưa xe tới cửa bên trái, nhưng xe không nhúc nhích. Sửa hàm cho đúng; cửa bên phải chỉ là ngõ cụt.',
       'Chương trình chính đã cố định. Sửa điều kiện trong door_left().',
-      ['#####', '##.##', '#F.##', '##.##', '##..#', '##.##', '##.##', '#####'], { x: 2, y: 6, huong: 0 },
+      [['#####', '##.##', '#F.##', '##.##', '##..#', '##.##', '##.##', '#####'], ['#####', '##.##', '##.##', '##.##', '#F.##', '##.##', '##.##', '#####']], [{ x: 2, y: 6, huong: 0 }, { x: 2, y: 6, huong: 0 }],     // HD1: hai sân, cửa trái cách 4 và 2 ô
       bai(['door_left()', 'turn_left()', 'go_wall()'], [ham('door_left', ['while not left_clear():', '    move()'])]),
       bai(['door_left()', 'turn_left()', 'go_wall()'], [ham('door_left', ['while left_clear():', '    move()'])]),
       ['Vòng while chạy khi điều kiện đúng. Lúc xuất phát bên trái là tường.', 'Thiếu chữ not.']),
@@ -275,6 +278,7 @@
   dsBen[3].hamCuaEmCan.push('to_gap');
   dsBen[4].taoHam = ['to_left_gap']; dsBen[4].chinhCoDinh = true;
   dsBen[6].chinhCoDinh = true;
+  dsBen[6].nhipTheo = 'tong';
   [7, 9].forEach(function (i) { dsBen[i].hamCuaEmCan.push('u_turn'); });
   var tay = nguon['khoang-cach.9'];
   Object.assign(dsBen[8], { mucTieu: 'dua-vat', robot: copy(tay.robot), hamGoc: copy(tay.hamGoc).concat(['left_clear', 'right_clear']) });
@@ -310,6 +314,13 @@
   // HD1 (29/10, user: "show don't tell"): màn đầu của mỗi khối mới là MÀN TRÌNH DIỄN (chiChay: chương trình khoá, chỉ bấm Chạy là thấy khối chạy),
   // màn kế tiếp ÉP dùng khối đó (khoang-cach.12 ép if, khoang-cach.13 ép while: hai sân dài ngắn khác nhau, man-cam-bien-them.js). khoang-cach.4 (trùng ý
   // kc.3) và khoang-cach.9 (bản một sân của trùm kc.10) cất để chương giữ 10 màn. Máy dò lời giải lách: hoc/kiem-lach-mua-1.mjs.
+  /** Lấy lại bản nhiều sân của ngân hàng cho màn CHẾ HÀM có while / if: hàm phải chạy đúng ở mọi sân nên thân hàm đếm cứng không qua. */
+  function nhieuSan(ma) {
+    var m = get(ma), g = nguon[ma];
+    ['san', 'batDau', 'bongMo', 'nhipTheo', 'deBai', 'veMaMau', 'goiY', 'sao'].forEach(function (k) { if (g[k] !== undefined) m[k] = copy(g[k]); });
+    m.phienBanNoiDung = 2;
+  }
+  ['che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4'].forEach(nhieuSan);
   sua('khoang-cach.1', {
     ten: 'Hỏi trước khi đi', chiChay: true, chinhCoDinh: true,
     deBai: 'Cảm biến khoảng cách ở hông xe đo ô ngay trước mặt: front_clear() là True khi ô đó đi vào được, False khi là tường. Chương trình lặp 5 lần, mỗi lần hỏi front_clear() rồi mới move(). Bấm Chạy xem xe tới chỗ xe mờ thế nào.',

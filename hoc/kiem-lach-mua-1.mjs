@@ -27,7 +27,12 @@ const TAT_CA = process.argv.includes('--tat-ca');
 const LOI_GIA = process.argv.includes('--loi-gia');
 
 /** Lỗ chấp nhận: mã màn → lý do (ghi ở báo cáo HD1). */
-const CHAP_NHAN = {};
+const CHAP_NHAN = {
+  // gói 9 Combo (recall), màn 8: fetch_back() là hàm của màn viết tiếp, một sân theo quyết định 27/10 (bản ba sân của ngân hàng dùng biến đếm).
+  // Thân `for i in range(2): back()` thắng 3 sao trên sân này. Sửa sau khi user duyệt phương án (ba sân, hay hai kho dài ngắn khác nhau).
+  'che-cam-bien.10': 'gói 9 recall, một sân theo quyết định 27/10; chờ user chọn phương án nhiều sân'
+};
+const BANG = process.argv.includes('--bang');
 
 const chuongMua1 = TT.goi.filter((g) => g.mua === 'mua-1').flatMap((g) => g.chuong);
 const ds = M.danhSach.filter((m) => chuongMua1.includes(m.chuong));
@@ -170,7 +175,7 @@ const DANH_SACH_KN = ['for', 'while', 'if', 'not', 'def', 'goi-ham'];
 /** Khái niệm lời giải chuẩn dùng: chinh (main nếu không khoá), ham (thân hàm của em mới + hàm của màn lời giải viết), tatCa (cả def / goi-ham). */
 function khaiNiemCua(m) {
   const lg = m.loiGiai, chinh = new Set(), ham = new Set();
-  if (!m.chinhCoDinh) for (const x of khaiNiem(lg.chinh || (lg.doi || []).flatMap((d) => d.chinh || []))) chinh.add(x);
+  if (!m.chinhCoDinh || m.chiChay) for (const x of khaiNiem(lg.chinh || (lg.doi || []).flatMap((d) => d.chinh || []))) chinh.add(x);      // màn trình diễn: khối được THẤY ở main khoá
   for (const h of (lg.hamCuaEmMoi || []).concat(lg.hamCuaMan || [])) for (const x of khaiNiem(h.than)) ham.add(x);
   const tatCa = new Set([...chinh, ...ham]);
   if ((lg.hamCuaEmMoi || []).length || (m.taoHam || []).length) tatCa.add('def');
@@ -278,6 +283,40 @@ function LOI_GIA_MAN() {
   // màn ép while đầu tiên có nhiều sân (sau khi sửa): gộp về một sân thì B phải thắng 3 sao → LỖ
   const m = ds.find((x) => dangEp(x).has('while') && Array.isArray(x.san[0]) && !x.chinhCoDinh);
   return m ? m.ma : null;
+}
+
+/* ------------------------------------------------------------------ bảng hướng dẫn (--bang): màn nào giới thiệu gì, có H chưa, trình diễn / ép */
+if (BANG) {
+  const fs = await import('node:fs'); const vm = await import('node:vm'); const path = await import('node:path');
+  const goc = path.dirname(new URL(import.meta.url).pathname.replace(/^\/(\w:)/, '$1'));
+  const docGame = (f) => fs.readFileSync(path.join(goc, 'game', f), 'utf8');
+  const rong = () => null;
+  const ctx = vm.createContext({ console, document: { addEventListener() {}, getElementById: rong, querySelector: rong, querySelectorAll: () => [], createElement: () => ({ style: {}, appendChild() {}, classList: { add() {}, remove() {}, contains: () => false } }), head: null }, Luu: { daXem: () => false, datDaXem: () => true }, setTimeout, clearTimeout });
+  ctx.window = ctx;
+  vm.runInContext(docGame('huong-dan.js'), ctx); vm.runInContext(docGame('huong-dan-man.js'), ctx);
+  const HDM = ctx.HuongDanMan || {};
+  const daThay = new Set();
+  const moiCua = (m) => {
+    const kq = [];
+    const kn = khaiNiemCua(m).tatCa;
+    for (const x of kn) if (!daThay.has('kn:' + x)) { daThay.add('kn:' + x); kq.push(x); }
+    for (const h of m.hamGoc || []) if (!daThay.has('lenh:' + h)) { daThay.add('lenh:' + h); kq.push('lệnh ' + h); }
+    if (Array.isArray(m.san[0]) && !daThay.has('nhieu-san')) { daThay.add('nhieu-san'); kq.push('nhiều sân'); }
+    if (Array.isArray(m.doi) && !daThay.has('doi')) { daThay.add('doi'); kq.push('hai robot'); }
+    if ((m.taoHam || []).length && !daThay.has('tao-ham')) { daThay.add('tao-ham'); kq.push('tạo hàm'); }
+    if (m.chinhCoDinh && !m.chiChay && !daThay.has('chinh-co-dinh')) { daThay.add('chinh-co-dinh'); kq.push('main khoá, sửa hàm'); }
+    if (((m.loiGiai.hamCuaMan || []).length) && !daThay.has('ham-man')) { daThay.add('ham-man'); kq.push('sửa hàm của màn'); }
+    return kq;
+  };
+  console.log('# Bảng hướng dẫn mùa 1 (sinh bởi node hoc/kiem-lach-mua-1.mjs --bang)\n');
+  console.log('Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện trong lộ trình mùa 1 tại màn đó. "HD": có hướng dẫn từng bước (huong-dan-man.js). "trình diễn": chiChay. "ép": màn đang ép khái niệm (máy dò lách kiểm).\n');
+  let c = '';
+  for (const m of ds) {
+    if (m.chuong !== c) { c = m.chuong; console.log('\n## ' + c + '\n\n| số | mã | tên | mới | HD | trình diễn | ép |\n|---|---|---|---|---|---|---|'); }
+    const moi = moiCua(m), ep = Array.isArray(m.doi) ? [] : [...dangEp(m)];
+    console.log('| ' + [m.so, m.ma, m.ten, moi.join(', '), HDM[m.ma] ? 'có' : '', m.chiChay ? 'có' : '', ep.join(', ')].join(' | ') + ' |');
+  }
+  process.exit(0);
 }
 
 /* ------------------------------------------------------------------ in */

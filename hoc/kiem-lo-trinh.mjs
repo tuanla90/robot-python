@@ -39,7 +39,8 @@ kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mù
 });
 // cam-bien-ben.10 (ba sân) là trùm cũ của Cảm biến hai bên, nay đứng thứ 9 chương Tổng hợp trước trùm mùa.
 // HD1 (29/10): màn ÉP khối mới có hai sân dài ngắn khác nhau để đếm cứng không đủ sao (khoang-cach.12 ép if, khoang-cach.13 ép while).
-const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13'];
+// Màn CHẾ HÀM có while / if lấy lại bản nhiều sân của ngân hàng (che-cam-bien.1, .2, .4) hay thêm sân (me-cung.6, cam-bien-ben.7): thân hàm đếm cứng không qua.
+const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4', 'cam-bien-ben.7', 'me-cung.6'];
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -322,7 +323,7 @@ kiem('gói cảm biến hai bên: mười màn khác nhau, một sân; trùm cũ
     const ds = M.danhSach.filter(m => m.chuong === c);
     assert.equal(new Set(ds.map(m => JSON.stringify([m.san, m.loiGiai]))).size, 10, c + ' có màn trùng nhau');
     assert.equal(new Set(ds.map(m => m.ten)).size, 10, c + ' trùng tên màn');
-    for (const m of ds) assert.equal(soSan(m), 1, m.ma);
+    for (const m of ds) assert.equal(soSan(m), m.ma === 'che-cam-bien.4' ? 3 : m.ma === 'cam-bien-ben.7' ? 2 : 1, m.ma);      // HD1: màn chế / sửa hàm nhiều sân
   }
   assert.equal(soSan(get('cam-bien-ben.10')), 3);
   for (const m of M.danhSach.filter(m => m.chuong === 'cam-bien-ben')) {
