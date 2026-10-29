@@ -46,6 +46,22 @@ Mùa 6 "làm tuyết lăn" (user 29/10 hỏi, Claude góp ý, chưa chốt):
   Python: `dict` khối → nốt (`{"A": 3, "B": 5}`), `set` khối đã lăn. Tốn một luật mới (tuyết đáp nốt) nhưng dùng lại máy lăn bóng sẵn có.
 - Còn phải chốt: khối tuyết thay hay đi cùng "nguồn phát nhạc" (vật mùa 6); nguồn phát giữ vai máy báo hiệu của người cần cứu.
 
+Mùa 6 âm thanh: bài hát, cộng hưởng, R1 và R2 nói chuyện (user 29/10 đồng ý ghi, chi tiết chốt khi lập kế hoạch mùa 6):
+- **Nốt và độ dài theo nhịp nguyên** (lõi chỉ có nhịp nguyên, mọi luật đếm theo nhịp; không dùng 0,25 / 0,5): nốt 1–8 = đô rê mi fa son la si đô cao;
+  1 nhịp = nốt ngắn nhất (móc đơn), nốt đen 2, đen chấm dôi 3, trắng 4; `0` = nghỉ. Lệnh gợi ý `note(n, so_nhip)`, vd `note(3, 2)` = mi ngân 2 nhịp.
+  Game tạo tiếng bằng máy (`hoc/game/am-thanh.js`): phát được nốt thật, trẻ nghe ra bài mình lập trình.
+- **Bài hát không chỉ là dãy nốt đơn** (user: dãy nốt đơn thì ít bài đánh được): ghi theo Python của từng mùa: chuỗi `"1 2 3- 0"` (`-` ngân thêm một nhịp, mùa 3),
+  danh sách lồng `[[1, 1], [2, 1], [3, 2], [0, 1]]` (nốt, số nhịp; mùa 5 lưới); `dict` mùa 6 hợp làm bảng (tên → nốt, khối → nốt), không chứa được bài có nốt lặp.
+- **Song tấu**: R1 phát giai điệu, R2 phát bè cùng nhịp (máy chấm đã chạy nhiều robot theo nhịp); màn thắng khi hai giọng ghép đúng bài. Hợp gói đội mùa 6.
+- **Khối băng có tần số cộng hưởng riêng** (user: "1 khối băng sẽ có 1 tần số cộng hưởng riêng nên cần phát âm liên tiếp"; đúng vật lý: hát đúng nốt làm vỡ ly):
+  mỗi khối một nốt riêng + độ bền k; nghe đúng nốt đó k nhịp LIÊN TIẾP thì nứt / lăn (khối "8888": nốt 8, k = 4); nghỉ một nhịp hay sai nốt thì dao động tắt, đếm lại.
+  Vạch rung trên khối dâng dần. `note(8, 4)` (ngân 4 nhịp) cũng tính là 4 nhịp liên tiếp. Hai robot cùng phát một nốt vào khối lớn thì nứt nhanh hơn (gói đội).
+- **Đo nốt rồi phát** (màn ép cảm biến âm thanh): gõ khối băng thì nó ngân nốt riêng; robot nghe `n = listen()` rồi phát lại n đủ k nhịp; mỗi sân một nốt khác nên không viết cứng được.
+- **R1 và R2 nói chuyện bằng nốt** (lần đầu có tín hiệu thật; mùa 1–5 đội chỉ báo nhau bằng vị trí / nhiệt): bảng mật mã là `dict` (`{3: "trái", 5: "phải"}`), `set` nhớ nốt đã nghe.
+  Luật đề xuất: phát nhịp này, robot khác nghe nhịp sau; nghe cả sân (tường chặn tiếng để màn khó); mỗi robot một nốt mỗi nhịp, hai robot cùng phát thì `listen()` trả tập nốt;
+  không nghe tiếng của chính mình; `listen()` trả số, nghĩa do trẻ tự đặt.
+- Còn phải chốt: tách rõ "khối băng đáp nốt của loa" với "robot đọc nốt qua listen()" để trẻ không lẫn; tiếng của R2 có tính vào mẫu cộng hưởng không; vai của "nguồn phát nhạc".
+
 ## Quy tắc đặt tên và giọng kể (user duyệt 29/10; hội đồng 20261029-1738)
 
 Game tên **Mật Lệnh Robot** (đổi 29/10). Chỉ đổi chữ hiển thị, mã gói / chương giữ nguyên (khoá lưu). Khối đặt tên ở cuối `hoc/lo-trinh-hoc.js`.
