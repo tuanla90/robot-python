@@ -216,7 +216,7 @@
     man({
       chuong: 'be-sung', so: 4, ten: 'Thùng nằm yên', yMoi: 'cú giật hất thùng sau lưng đi xa; bệ vòi giữ thùng nằm yên',
       kieuBai: 'thung', hamCuaEmCan: ['tr_right', 'tr_left', 'spin', 'forward', 'move'],
-      deBai: 'Ngay sau lưng xe là một thùng nặng, dưới thùng là lá cờ. Nhớ gói Vòi phun: bắn tụ thì cú giật hất thùng sau lưng trượt đi tới khi gặp vật cản. ' +
+      deBai: 'Ngay sau lưng xe là một thùng nặng, dưới thùng là lá cờ. Nhớ gói Vòi phun: bắn tụ thì cú giật hất thùng sau lưng nhích đi một ô.' +
         'Bắn van phía trên cho cửa bên phải mở, rồi đi vòng qua cửa xuống tới cờ. Bệ vòi giữ thùng nằm yên nên cờ vẫn trống.',
       veMaMau: 'Chương trình có sẵn bắn rồi mới đi được nửa đường. Viết tiếp đoạn vòng xuống cờ.',
       san: SAN_B4, batDau: { x: 2, y: 2, huong: 0 },
@@ -228,7 +228,7 @@
         { moTa: 'Quay lại đẩy thùng xuống cờ: thùng vướng cờ, ô sau cờ là tường', baiLam: bai(['shoot()', 'wait()', 'spin()', 'move()', 'move()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Rẽ phải lần cuối thay vì rẽ phải: xe quay sai hướng, đâm tường', baiLam: bai(['shoot()', 'wait()', 'tr_right()', 'move()', 'tr_right()', 'forward(2)', 'tr_left()', 'move()']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Thùng không cần dời: chỉ cần nó đừng trượt lên cờ.', 'Bắn, rẽ phải, đi một ô, rẽ phải, đi hai ô, rẽ phải, đi một ô.']
+      goiY: ['Thùng không cần dời: chỉ cần nó đừng nhích lên cờ.', 'Bắn, rẽ phải, đi một ô, rẽ phải, đi hai ô, rẽ phải, đi một ô.']
     }),
 
     man({

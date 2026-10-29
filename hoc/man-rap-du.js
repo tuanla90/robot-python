@@ -22,7 +22,7 @@
      4  Cửa sắt        tay       nút mở cửa chỉ bắn trúng mới bấm: hai bánh + súng hơi 5·6·12 · drone bay vòng 5·11·6 · hai bánh đi vòng 2·14·16     (5 xu)
      5  Băng ngược     thân      băng chuyền ngược: drone 5·9·11 · xích bám chắc 3·11·11 · hai bánh bị đẩy lùi 2·14·11                               (5 xu)
      6  Hàng sắt có pin tay+thân đưa hộp sắt qua sông, pin + ô sạc P: drone + nam châm 8·8·16 · nhện + kẹp nhảy 6·11·18 · hai bánh + kẹp vòng 4·15·27 (10 xu)
-     7  Đẩy thùng      thân      ba thùng nặng vào ô đích bằng cú giật: omni + súng hơi (trượt ngang) 7·12·18 · hai bánh + súng hơi (quay) 5·18·22     (7 xu)
+     7  Đẩy thùng      thân      ba thùng nặng vào ô đích bằng cú giật (mỗi thùng nhích một ô, xe theo): omni + súng hơi (trượt ngang) 7·9·13 · hai bánh + súng hơi (quay) 5·15·20     (7 xu)
      8  Phân loại màu  não+tay   ba sân, hộp đỏ / xanh dương, camera đọc màu hộp: hai bánh + tay xoay + camera 7·9·17 · tay kẹp 6·12·21                 (7 xu)
      9  Hút từ xa      não+tay   hộp nam châm cực ẩn: hai bánh + nam châm + cảm biến từ 7·9·12 · hai bánh + tay kẹp đi lấy 4·24·23                  (7 xu)
      10 Cổng năm lối   trùm      bức tường năm lối (rào, cửa + nút, gầm, bậc thang, hố), ô sạc P: hai bánh + súng hơi 5·6·12 · drone 5·7·6 · nhện 4·10·9 · xích 3·13·14   (5 xu)

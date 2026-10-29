@@ -177,3 +177,8 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   biến gán d = distance(); range(distance()) / forward(distance() + n) tách được ô; dòng dài xuống hai dòng. Máy kiểm hoc/kiem-o-so.mjs chạm từng ô số của lời giải
   400 màn mùa 1, 2 trên khung thật. CÒN CHỜ USER (10 ô, máy in ra mỗi lần chạy): bang-chuyen.7 cần range(10), che-hong-ngoai.10 cần go_safe(0) (bảng chọn chỉ 1–9);
   khoang-cach.6, me-cung.7–10, che-hong-ngoai.8 lời giải range(20 / 30 / 60) (màn có while, có lẽ giải được bằng while, chưa kiểm); hong-ngoai.6 range(20) có sẵn trong mã mẫu.
+
+29/10 GIẬT MỘT Ô (nhánh claude/giat-mot-o, chưa gộp; brief ban-giao/brief-giat-mot-o.md): user chốt cú giật trúng thùng nặng chỉ đẩy thùng nhích ĐÚNG 1 ô, xe theo 1 ô vào ô thùng
+  vừa rời (như xích đẩy thùng); ô sau thùng bị chặn thì cả hai đứng yên; tia nước không đẩy thùng, "fast" và bệ vòi xích không giật. Lõi san-hoc.js (chú thích SÚNG HƠI), bộ dò
+  do-duong-sung-hoi / be-sung, hoạt cảnh san-ve.js. Dựng lại 16 màn: sung-hoi.4/5/6/7/9/10, che-sung-hoi.4/6/7/8/10 (+ bản lộ trình .6, .7 "Đá hai bên"), che-luc-ban.8, rap-du.7,
+  doi-sung-hoi.2/.5 ("Chờ bạn qua rồi đẩy", omni hết vai chốt chặn), che-doi-sung-hoi.5; chữ thẻ Vòi phun, Sổ lệnh, chẩn đoán thung-chan, hướng dẫn sung-hoi.4; đo lại sao (lo-trinh-sao, SAO đội).

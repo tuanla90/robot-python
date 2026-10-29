@@ -87,8 +87,9 @@ thang('doi-sung-hoi.3', 'omni đếm đúng hai nhịp chờ', { doi: [null, ['w
 thua('doi-sung-hoi.3', 'omni chờ cứng thiếu một nhịp', { doi: [null, ['wait()', 'forward(5)']] }, 'chua-toi-co');
 thua('doi-sung-hoi.4', 'omni đi đếm ô forward(4) trong khi băng còn chạy', { doi: [null, ['forward(4)']] }, 'chua-toi-co');
 thua('doi-sung-hoi.4', 'xe súng bắn ngay tại chỗ (không thẳng hàng nút)', { doi: [['shoot()', 'wait()'], null] });
-thua('doi-sung-hoi.5', 'xe súng bắn ngay khi tới, omni chưa vào chỗ chặn', { doi: [['forward(2)', 'turn_left()', 'shoot()', 'wait()'], null] }, 'chua-day-thung');
-thua('doi-sung-hoi.5', 'không có omni chặn: thùng trượt quá ô đích', { doi: [null, []] }, 'chua-day-thung');
+thua('doi-sung-hoi.5', 'xe súng bắn ngay khi tới, không chờ omni qua: phát hai đẩy thùng vào ô omni đang đứng (thung-chan)', { doi: [['forward(2)', 'turn_left()', 'shoot()', 'wait()', 'shoot()', 'wait()'], null] }, 'thung-chan');
+thua('doi-sung-hoi.5', 'omni đứng yên: thùng không xuống được lối, xe súng không tới cờ', { doi: [null, []] }, 'chua-toi-co');
+thua('doi-sung-hoi.5', 'xe súng chỉ bắn một phát: thùng mới nhích một ô, xe chưa tới cờ', { doi: [['forward(2)', 'turn_left()', 'wait()', 'shoot()', 'wait()'], null] }, 'chua-toi-co');
 thua('doi-sung-hoi.6', 'omni tới rồi đi luôn, không chờ cửa', { doi: [null, ['slide_r(3)', 'forward(2)']] }, 'chua-toi-co');
 thua('doi-sung-hoi.6', 'omni trượt qua luôn, không dừng trước mũi xe súng (cửa không bao giờ mở)', { doi: [null, ['slide_r(6)']] });
 thua('doi-sung-hoi.7', 'mẫu: while front_clear() chờ nhầm lúc cửa mở, omni đâm cửa', { doi: [null, man('doi-sung-hoi.7').maMau.doi[1].chinh] }, 'dam-tuong');
@@ -122,8 +123,10 @@ thua('che-doi-sung-hoi.3', 'omni không chờ cửa: tiến thẳng rồi thả 
 thua('che-doi-sung-hoi.3', 'pass_gate() quên chờ (chỉ forward(2))', { doi: [null, null], hamEm: [H('pass_gate', ['forward(2)'])] }, 'chua-dua-vat');
 thua('che-doi-sung-hoi.4', 'xe súng không chờ omni: húc đồng đội, bắn lệch nút', { doi: [['forward(2)', 'turn_left()', 'shoot()', 'wait()', 'turn_right()', 'move()'], null] });
 thua('che-doi-sung-hoi.4', 'omni không chờ cửa', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
-thua('che-doi-sung-hoi.5', 'omni chờ cứng một nhịp mỗi cột thay vì catch_crate()', { doi: [null, ['slide_r(1)', 'for i in range(3):', '    wait()', '    slide_r(2)']], hamEm: [] }, 'chua-day-thung');
-thua('che-doi-sung-hoi.5', 'catch_crate() viết nhầm thành wait_gate (chờ khi chưa trống)', { doi: [null, null], hamEm: [H('catch_crate', ['while not front_clear():', '    wait()'])] }, 'chua-day-thung');
+// luật giật một ô (29/10): omni không còn là chốt chặn (thùng chỉ nhích một ô, không trượt quá đích); catch_crate() là hàm đón thùng, xe vòi phun tự đẩy đủ ba thùng
+thua('che-doi-sung-hoi.5', 'xe súng không quay lên mà giật tại làn: thùng không nhích, omni đón mãi (vòng vô hạn)', { doi: [['for i in range(3):', '    move()', '    jet_back()', '    move()'], null] }, 'vong-vo-han');
+thua('che-doi-sung-hoi.5', 'xe súng đẩy xong không tiến lại làn: đâm tường cột', { doi: [['for i in range(3):', '    move()', '    turn_left()', '    jet_back()', '    turn_right()', '    move()'], null] }, 'dam-tuong');
+thang('che-doi-sung-hoi.5', 'catch_crate() đúng: omni đón từng thùng rồi sang cột kế, không cản thùng', { doi: [null, null] });
 thua('che-doi-sung-hoi.6', 'open_step() bắn nhầm phía (kick_left)', { doi: [null, null], hamEm: [H('open_step', ['kick_left()', 'forward(2)'])] });
 thua('che-doi-sung-hoi.6', 'omni đi thẳng forward(6)', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
 thua('che-doi-sung-hoi.7', 'mẫu: open_gate() bắn hai phát, cửa đóng lại trước khi omni tới', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.7').maMau.hamCuaMan });

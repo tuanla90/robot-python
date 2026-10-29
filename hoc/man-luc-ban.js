@@ -116,7 +116,7 @@
       loiGiai: { chinh: L_1.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# bắn nhanh cho thùng nằm yên'].concat(L_1) } },
       loiSai: [
-        { moTa: 'Bắn tụ: cú giật hất thùng sau lưng trượt sang phải', baiLam: { chinh: ['shoot("charge")', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Bắn tụ: cú giật hất thùng sau lưng nhích sang phải, xe theo một ô', baiLam: { chinh: ['shoot("charge")', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Viết lực bằng chữ hoa: "Fast" không phải tên lực', baiLam: { chinh: ['shoot("Fast")', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['luc-ban-sai'] },
         { moTa: 'Quên dấu nháy: Python tưởng fast là tên một biến', baiLam: { chinh: ['shoot(fast)', 'wait()', 'turn_left()', 'forward(3)'] }, phaiCoMa: ['loi-chay'] }
       ],
@@ -207,7 +207,7 @@
         { moTa: 'Bắn tụ để mở cửa: thùng đã xếp bị hất vào góc', baiLam: { chinh: ['fire("charge")', 'turn_left()', 'forward(2)', 'turn_left()', 'fire("charge")'] }, phaiCoMa: ['thung-ket'] },
         { moTa: 'Bắn nhanh để đẩy: không có cú giật nên thùng nằm yên', baiLam: { chinh: ['fire("fast")', 'turn_left()', 'forward(2)', 'turn_left()', 'fire("fast")'] }, phaiCoMa: ['chua-day-thung'] }
       ],
-      goiY: ['Mở cửa thì không được giật. Đẩy thùng thì phải giật.', 'Ở dưới, xe quay mặt sang phải rồi bắn tụ: cú giật đẩy thùng bên trái trượt vào đích.']
+      goiY: ['Mở cửa thì không được giật. Đẩy thùng thì phải giật.', 'Ở dưới, xe quay mặt sang phải rồi bắn tụ: cú giật đẩy thùng bên trái nhích vào đích.']
     }),
 
     /* ------------------------------------------------ hàng 3: biến thể */
