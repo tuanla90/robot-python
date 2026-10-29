@@ -121,7 +121,10 @@
       moTaLenh: { arm_left: 'Xoay tay kẹp một nấc sang trái', arm_right: 'Xoay tay kẹp một nấc sang phải' },
       ghep: [
         { lenh: ['arm_left', 'arm_down', 'grab', 'wait'], ra: 'Xoay tay sang trái, hạ tay, kẹp vật bên trái xe, trong một nhịp' },
-        { lenh: ['arm_up', 'arm_right', 'wait'], ra: 'Nâng vật rồi xoay tay về phía trước, trong một nhịp' }
+        { lenh: ['arm_up', 'arm_right', 'wait'], ra: 'Nâng vật rồi xoay tay về phía trước, trong một nhịp' },
+        { lenh: ['arm_down', 'grab', 'wait'], ra: 'Hạ tay rồi kẹp vật, trong một nhịp' },
+        { lenh: ['arm_up', 'wait'], ra: 'Nâng vật lên, xe đi được' },
+        { lenh: ['arm_down', 'release', 'wait'], ra: 'Hạ tay rồi đặt vật xuống' }
       ],
       gioi: [{ chu: 'Nhặt, đặt vật ở hai bên mà không cần quay xe', can: XOAY }, 'Nhặt vật lên, mang đi, đặt xuống'],
       khong: [{ chu: 'Mỗi lệnh chỉ xoay một nấc: từ trái sang phải mất hai nhịp', can: XOAY },
