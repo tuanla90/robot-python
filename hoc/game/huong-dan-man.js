@@ -445,26 +445,23 @@
       { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { var t = chuThan('dots'); return /for/.test(t) && /dot\(\)/.test(t); } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi dots(3). Bấm Chạy.'));
 
-  /* ============================================================ Chương 19 · Súng hơi (làm quen): spray() bắn ra trước + giật lùi, spray_back() bắn ra sau + giật tới */
+  /* ============================================================ Gói 2 · Vòi phun (làm quen): spray() phun ra trước, spray_back() phun ra sau; phun nhẹ bay xa nhất hai ô, không giật */
   var CHU_THE_SUNG = 'Khối của vòi phun nằm ở thẻ Vòi phun. Bấm ◀ hoặc ▶ để sang thẻ đó.';
-  // Gói T mùa 2 (29/10): sung-hoi.1 là màn trình diễn súng hơi (chiChay: chỉ bấm Chạy); phiên bản 2.
+  // Gói T mùa 2: sung-hoi.1 là màn trình diễn vòi phun (chiChay: chỉ bấm Chạy). 30/10 phun nhẹ: phiên bản 3.
   H['sung-hoi.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: mỗi phát spray() bắn ra trước, cú giật đẩy xe lùi một ô.', xong: 'chay' },
-    { khongAn: true, dich: 'dong:2', chu: 'spray() bắn, wait() cho nhịp trôi: ba vòng lặp là lùi ba ô. Màn sau em dùng spray_back().', xong: 'bam', han: 9000, rong: 170 }
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: spray() phun tia nước bay hai ô trúng van, cửa bên phải mở.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'spray() phun, wait() cho nhịp trôi. Tia nước bay xa nhất hai ô. Màn sau van ở sau lưng.', xong: 'bam', han: 9000, rong: 170 }
   ];
+  // sung-hoi.2 ép spray_back(): mã mẫu phun ra trước trúng cửa; em đổi sang spray_back().
   H['sung-hoi.2'] = [
-    khoiTheo(['khoi:spray_back'], 'Lệnh mới spray_back() bắn ra sau, xe giật tới. Chạm nó rồi chạm wait().', CHU_THE_SUNG,
-      { daLam: function () { return dongCo(/^\s*spray_back\(\)/) >= 0; } }),
-    buocChay('Bấm Chạy.')
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: spray() phun ra trước, tia nước trúng cửa đóng.', xong: 'chay', daLam: daChay },
+    khoiTheo(['khoi:spray_back'], 'Van ở sau lưng: xoá dòng spray(), chạm spray_back() để phun ra sau.', CHU_THE_SUNG,
+      { daLam: function () { return dongCo(/^\s*spray_back\(\)/) >= 0 && dongCo(/^\s*spray\(\)/) < 0; } }),
+    buocChay('spray_back() phải đứng trước wait(). Bấm Chạy.')
   ];
   H['sung-hoi.3'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tia nước bay ra sau trúng van, cửa mở, xe được giật tới một ô.', xong: 'chay', daLam: daChay },
-    buocChay('Rồi viết tiếp đoạn đi qua cửa. Bấm Chạy.')
-  ];
-  H['sung-hoi.4'] = [
-    khoiTheo(['khoi:spray'], 'Thùng nằm sau xe: chạm spray(), cú giật đẩy xe lùi đúng vào thùng, thùng nhích một ô.', CHU_THE_SUNG,
-      { daLam: function () { return dongCo(/^\s*spray\(\)/) >= 0; } }),
-    buocChay('Chạm wait(), rồi thêm một cặp spray(), wait() nữa cho thùng nhích tới đích. Bấm Chạy.')
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tia nước chỉ bay hai ô rồi rơi, chưa tới van.', xong: 'chay', daLam: daChay },
+    buocChay('Cho xe đi tới gần van rồi mới phun. Bấm Chạy.')
   ];
 
   /* ============================================================ Chương 20 · Chế lệnh súng hơi: thẻ Súng hơi trong Xưởng */
@@ -688,5 +685,5 @@
 
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
-    'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn
+    'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2 };       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
 })();

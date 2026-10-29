@@ -108,7 +108,7 @@
       veMaMau: 'Chương trình có sẵn phun một phát. Chạy thử, xem cửa rồi viết tiếp.',
       san: SAN_1, batDau: BD_1,
       maMau: { chinh: PHUN.slice() },
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 10, nhip: 4 },
       loiGiai: { chinh: CHINH_1.slice() },
       loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh phun', baiLam: { chinh: nhieu(['# phun mở van'], CHINH_1) } },
       loiSai: [
