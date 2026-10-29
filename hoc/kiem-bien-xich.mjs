@@ -33,7 +33,7 @@ const ds = tatCa.filter((m) => m.chuong === 'bien-xich').sort((a, b) => a.so - b
 const trum = M.timMa('bien-xich.1');
 
 /* ---------------------------------------------------------------- 1. vị trí, huy hiệu */
-const CO_SAN = ['che-xich.1', 'che-xich.2', 'che-xich.6', 'che-xich.8', 'che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9', 'che-xich.9'];
+const CO_SAN = ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6', 'che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9', 'che-xich.9'];
 kiem('chương bien-xich đúng 10 màn', ds.length === 10, ds.length);
 kiem('chín màn đầu là chín màn có sẵn đúng thứ tự', J(ds.slice(0, 9).map((m) => m.ma)) === J(CO_SAN), ds.slice(0, 9).map((m) => m.ma).join(' '));
 kiem('màn 10 là bien-xich.1, hạng trum', !!trum && ds[9] === trum && trum.so === 10 && trum.hang === 'trum', trum && trum.so + ' ' + trum.hang);

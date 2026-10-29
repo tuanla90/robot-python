@@ -517,9 +517,9 @@
   // giữ thứ tự cũ: vẫn chơi được bằng "Mở hết", hàm chúng cần vẫn được tạo ở màn đứng trước.
   var MUA_2 = [
     { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', hinh: 'xich',
-      // Chương 2 "Biến cho xích": hàm cho xích (spin, sidestep, pick_behind, sửa fixed_turn) rồi biến đếm (count_return sửa trước, bounce, fetch_back), che-xich.9 cuối.
+      // Chương 2 "Biến cho xích": hàm cho xích (spin, sidestep, sửa fixed_turn, pick_behind: 29/10 fixed_turn lên trước pick_behind cho nhịp tăng dần) rồi biến đếm (count_return sửa trước, bounce, fetch_back), che-xich.9 cuối.
       // Màn mới (đếm nhịp quay) của man-bien-xich.js nối vào cuối chương và thành trùm (màn thứ 10).
-      chuong: [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.6', 'che-xich.8', 'che-cam-bien.6', 'che-cam-bien.5',
+      chuong: [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6', 'che-cam-bien.6', 'che-cam-bien.5',
         'che-cam-bien.9', 'robot-hoan-thien.9', 'che-xich.9']]] },
     { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', hinh: 'sung-hoi',
       chuong: [['sung-hoi', day('sung-hoi', MUOI)], ['tham-so', day('tham-so', MUOI)]] },
@@ -602,6 +602,55 @@
     // tham-so.3: hố u (mùa 3) thành hàng rào = (chướng ngại chung); tham-so.7: gầm n (mùa 3) thành tường. Hai ô đó chỉ chắn lối tắt.
     sanThay('tham-so.3', 'u', '=');
     sanThay('tham-so.7', 'n', '#');
+  })();
+  // MÙA 2 XONG (29/10): làm mượt đường cong ở các chương DÙNG LẠI (luật đo KE-HOACH-MUA-1.md: màn n ≤ max(1,5 × mốc, mốc + lề), lề dòng 3 / nhịp 4 / ô 6;
+  // phanh: kiem-lo-trinh.mjs mục mùa 2 (g)). Giữ `ma` và ý bài; lời giải đổi thì sua() (nội dung bản 2, đo lại sao bằng tools/do-lo-trinh.mjs --ghi-sao).
+  (function () {
+    var di = function (n) { return lap(n, ['move()']); };
+    var QUAY_P = ['for i in range(2):', '    left_move()', '    wait()'];
+    // xich.2 (sau xich.1 hai dòng): bỏ đoạn đầu, xe đứng sát tường nên quay trước rồi đi; lời giải 7 → 5 dòng, ý bài (xích quay hai nhịp) giữ.
+    sua('xich.2', {
+      san: ['#####', '....F', '#####'], batDau: { x: 0, y: 1, huong: 0 },
+      deBai: 'Xe xích đứng ở đầu hành lang, mặt quay vào tường. Quay phải rồi đi tới cờ. Hàm turn_right() của em chỉ đúng với xe hai bánh, còn xe xích quay chậm hơn.',
+      veMaMau: 'Chương trình có sẵn gọi turn_right() của em rồi đi. Chạy thử, xem xe làm gì ở chỗ quay.',
+      maMau: bai(['turn_right()'].concat(di(4))), loiGiai: bai(QUAY_P.concat(di(4))),
+      loiSai: [
+        { moTa: 'Không sửa gì: turn_right() chỉ quay nửa vòng, xe đâm tường', baiLam: bai(['turn_right()'].concat(di(4))), phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Hai nhịp quay dùng hai lệnh khác nhau: không cộng lại thành 90°', baiLam: bai(['left_move()', 'wait()', 'right_back()', 'wait()'].concat(di(4))), phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Chen wait() giữa hai nhịp quay: phần quay dở mất', baiLam: bai(['left_move()', 'wait()', 'wait()', 'left_move()', 'wait()'].concat(di(4))), phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Quay nhầm sang trái: xe đâm tường', baiLam: bai(['for i in range(2):', '    right_move()', '    wait()'].concat(di(4))), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+      ]
+    }).loiGiaiKhac = { moTa: 'Viết hai nhịp quay thẳng bốn dòng, không dùng vòng lặp', baiLam: bai(['left_move()', 'wait()', 'left_move()', 'wait()'].concat(di(4))) };
+    // xich.3 (sau xich.2 năm dòng): một khúc quẹo thay hai; lời giải 11 → 8 dòng (thân tr_right ba dòng), nhịp 11 → 8 (xich.4 mười hai nhịp vẫn trong lề).
+    var C3 = di(3).concat(['tr_right()'], di(3));
+    sua('xich.3', {
+      san: ['...F', '.###', '.###', '.###'], batDau: { x: 0, y: 3, huong: 0 },
+      deBai: 'Mỗi thân robot cần bộ hàm quay riêng. Tạo hàm tr_right() quay phải 90° cho xe xích, rồi đưa xe qua khúc quẹo phải tới cờ.',
+      veMaMau: 'Chương trình có sẵn đã gọi tr_right() ở chỗ quẹo, nhưng em chưa có hàm đó. Tạo hàm tr_right không có đối số.',
+      maMau: bai(C3), loiGiai: { chinh: C3.slice(), hamCuaMan: [], hamCuaEmMoi: [{ ten: 'tr_right', thamSo: [], than: QUAY_P.slice() }] },
+      loiSai: [
+        { moTa: 'Gọi tr_right() mà chưa tạo hàm', baiLam: bai(C3), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'tr_right() chỉ có một nhịp quay (như turn_right() cũ): xe quay nửa vòng', baiLam: bai(C3), hamCuaEmMoi: [{ ten: 'tr_right', thamSo: [], than: ['left_move()', 'wait()'] }], phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-toi-co'] },
+        { moTa: 'tr_right() quên wait() trong vòng lặp: các lệnh left_move() dồn vào một nhịp', baiLam: bai(C3), hamCuaEmMoi: [{ ten: 'tr_right', thamSo: [], than: ['for i in range(2):', '    left_move()'] }], phaiCoMa: ['banh-goi-lai', 'chua-toi-co'] },
+        { moTa: 'tr_right() dùng right_move(): xe quay sang trái', baiLam: bai(C3), hamCuaEmMoi: [{ ten: 'tr_right', thamSo: [], than: ['for i in range(2):', '    right_move()', '    wait()'] }], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+      ]
+    }).loiGiaiKhac = { moTa: 'Hàm tr_right() gọi turn_right() cũ hai lần liền (hai nhịp quay cùng lệnh)', baiLam: bai(C3), hamCuaEmMoi: [{ ten: 'tr_right', thamSo: [], than: ['turn_right()', 'turn_right()'] }] };
+    // xich.9 (sau xich.8 mười một ô): bỏ hai hàng giữa của đường dài, sân 20 → 16 ô; đường bậc thang y nguyên (19 nhịp), đường dài 17 → 13 nhịp nên vẫn nhanh hơn.
+    var BAC = ['tr_right()', 'move()', 'move()', 'for i in range(2):', '    tr_left()', '    move()', '    tr_right()', '    move()', 'tr_left()', 'move()'];
+    sua('xich.9', {
+      san: ['.....#', '.###F#', '.##..#', '.#..##', '...###'], batDau: { x: 0, y: 4, huong: 0 },
+      maMau: bai(BAC), loiGiai: bai(di(4).concat(['tr_right()'], di(4), ['tr_right()', 'move()'])),
+      loiSai: [
+        { moTa: 'Đi đường ngắn gấp khúc: tới cờ nhưng mất 19 nhịp, nhiều hơn đường dài', baiLam: bai(BAC), phaiCoMa: [] },
+        { moTa: 'Đi đường dài nhưng quên ô cuối: xe dừng sát cờ', baiLam: bai(di(4).concat(['tr_right()'], di(4), ['tr_right()'])), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đi đường dài nhưng dùng turn_right() cũ: xe quay nửa vòng rồi đâm tường', baiLam: bai(di(4).concat(['turn_right()'], di(4), ['turn_right()', 'move()'])), phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-toi-co'] }
+      ]
+    }).loiGiaiKhac = { moTa: 'Đoạn đầu chia làm hai vòng lặp', baiLam: bai(di(2).concat(di(2), ['tr_right()'], di(4), ['tr_right()', 'move()'])) };
+    // che-xich.1, .2, .6 (chương bien-xich): sân 5 × 5 trống của màn chế lệnh một dòng thu bằng tường còn 3 × 3 quanh chỗ xe (25 → 9 ô). Xe quay / né tại chỗ nên
+    // lời giải, nhịp, bóng mờ không đổi (không đo lại sao).
+    get('che-xich.1').san = ['#####', '#...#', '#...#', '#...#', '#####'];
+    get('che-xich.2').san = ['#####', '#####', '#...#', '#...#', '#...#'];
+    get('che-xich.6').san = ['#####', '#...#', '#...#', '#.o.#', '#####'];
   })();
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 2 (quy ước cho các gói sau): mỗi gói có màn mới MỘT tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai
   // `chuong` (mã chương trong MUA_2) và `so`; tệp đã có trong danh sách require ở đầu tệp này và thẻ <script> của game/choi.html. Màn mới của một chương

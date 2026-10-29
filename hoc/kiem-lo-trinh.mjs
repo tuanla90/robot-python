@@ -208,7 +208,7 @@ kiem('(f) gói đội tay xoay (cần nam châm) không ở mùa 1, đứng sau 
 const LOI_GIA_2 = process.argv.includes('--loi-gia-mua-2');
 // Bảng mục 2 KE-HOACH-MUA-2.md: [mã gói, [[chương, màn CÓ SẴN theo thứ tự]]]. Màn mới của các tệp ngân hàng mùa 2 (TEP_MUA_2) nối sau màn có sẵn.
 const BANG_MUA_2 = [
-  ['xich', [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.6', 'che-xich.8'].concat(BIEN_MUA_2, ['che-xich.9'])]]],
+  ['xich', [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6'].concat(BIEN_MUA_2, ['che-xich.9'])]]],
   ['sung-hoi', [['sung-hoi', day('sung-hoi', MUOI)], ['tham-so', day('tham-so', MUOI)]]],
   ['hong-ngoai', [['hong-ngoai', []], ['che-hong-ngoai', []]]],
   ['nha-may', [['bang-chuyen', day('bang-chuyen', MUOI)], ['che-sung-hoi', day('che-sung-hoi', MUOI)]]],
