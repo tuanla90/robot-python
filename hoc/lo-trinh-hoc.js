@@ -926,8 +926,8 @@
       sau.push(c);
     });
     TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(c12, coMan, sau));
-    // Gói: mùa 1, mùa 2, MUA_3, rồi các gói còn lại (mùa 3 cũ → đầu mùa 4, giữ thứ tự; mùa 4 cũ sau đó). Gói dời bỏ ngưỡng khai cứng (tự tính trong mùa).
-    var conLai = [];
+    // Gói: mùa 1, mùa 2, MUA_3, rồi các gói còn lại (mùa 3 cũ → đầu mùa 4, giữ thứ tự; mùa 4 cũ sau đó). Gói dời tính lại ngưỡng (dưới).
+    var conLai = [], doi4 = [];
     TT.goi.forEach(function (g) {
       if (goi12.indexOf(g) >= 0) return;
       var ch = [];
@@ -936,12 +936,20 @@
       g.chuong = ch;
       if (g.mua === 'mua-3') {
         g.mua = 'mua-4';
-        delete g.sao;
+        doi4.push(g);
         if (GOI_DOI_MA[g.ma]) Object.assign(g, GOI_DOI_MA[g.ma]);
       }
       conLai.push(g);
     });
     conLai.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
+    // Ngưỡng gói dời sang mùa 4 (ẩn), tính một lần theo luật mo-goi.js trong mùa mới: gói thường 0,5 × tổng sao tối đa các gói thường dời đứng trước,
+    // làm tròn xuống bội 5 (gói đầu 0 ★); gói đội (khongTangNguong) = gói đứng trước + 30, như chenGoi. Gói mùa 4 cũ giữ ngưỡng khai cứng.
+    var tr4 = 0, truoc4 = null;
+    conLai.filter(function (g) { return doi4.indexOf(g) >= 0; }).forEach(function (g) {
+      g.sao = g.khongTangNguong && truoc4 ? truoc4.sao + 30 : Math.floor(0.5 * tr4 / 5) * 5;
+      if (!g.khongTangNguong) tr4 += 3 * g.chuong.reduce(function (s, c) { return s + M.danhSach.filter(function (m) { return m.chuong === c; }).length; }, 0);
+      truoc4 = g;
+    });
     var goi3 = [];
     MUA_3.forEach(function (g) {
       var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coMan.indexOf(c) >= 0; });
