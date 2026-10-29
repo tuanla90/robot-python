@@ -1374,6 +1374,7 @@
       ten: 'Phun mở van', chiChay: true, chinhCoDinh: true,
       deBai: 'Xe có vòi phun ở mũi. spray() phun một tia nước ra phía trước, bay xa nhất hai ô; tia trúng van thì van quay, cửa mở. Sau spray() phải có wait() thì nhịp mới trôi. Bấm Chạy xem xe phun mở cửa rồi tới cờ.',
       veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: spray() rồi wait(), cửa bên phải mở ở cuối nhịp.',
+      maMau: bai(['spray()', 'wait()', 'turn_right()', 'move()', 'move()']), loiGiai: bai(['spray()', 'wait()', 'turn_right()', 'move()', 'move()']),
       goiY: ['Tia nước bay thẳng theo mũi xe, xa nhất hai ô.', 'Màn sau van ở sau lưng: em dùng spray_back().']
     });
     // Gói 2 chương tham-so: cái mới là HÀM CÓ THAM SỐ. tham-so.1 trình diễn (forward(n) của màn khoá, main khoá: bấm Chạy thấy forward(4) đi bốn ô, forward(3) đi ba ô);
