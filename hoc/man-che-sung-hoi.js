@@ -71,7 +71,7 @@
   // 5 (người chơi tự viết): hai ngách phía trên, mỗi ngách một van mở cửa ngay sau nó
   var L_5 = LAP(2, ['move()', 'open_left()', 'move()']);
   // 10 (người chơi tự viết): van sau lưng, van trên ngách, van dưới ngách; ba cửa
-  var L_10 = ['puff_back()', 'forward(2)', 'open_left()', 'forward(2)', 'open_right()', 'forward(3)'];
+  var L_10 = ['puff_back()', 'forward(1)', 'open_left()', 'forward(2)', 'open_right()', 'forward(2)'];
 
   /** Điền các trường chung của chương (không đụng tới trường màn đã khai). */
   function man(m) {
@@ -114,10 +114,10 @@
   // 9: xe (2,1) quay mặt lên; van (2,3) sau lưng mở cửa (2,0) phía trước; go_out() đưa xe qua cửa, quay phải, tới ◆ (3,0); come_back() đưa về chỗ cũ
   var SAN_9 = ['##C.#', '##.##', '##.##', '##N##', '#####'];
   var BD_9 = { x: 2, y: 1, huong: 0 };
-  // 10: xe (1,2) quay mặt phải; van (0,2) sau lưng mở cửa (6,2); van (3,0) ngách trên mở cửa (4,2); van (5,4) ngách dưới mở cửa (7,2); xe mờ (8,2) quay phải
-  var SAN_10 = ['###N#####', '###.#####', 'N...C.CC.', '#####.###', '#####N###', '#########'];
+  // 10: xe (1,2) quay mặt phải; van (0,2) sau lưng mở cửa xa (6,2); van (2,0) ngách trên mở cửa (3,2); van (4,4) ngách dưới mở cửa (5,2); xe mờ (6,2) quay phải
+  var SAN_10 = ['##N####', '##.####', 'N..C.CC', '####.##', '####N##', '#######'];
   var BD_10 = { x: 1, y: 2, huong: 1 };
-  var NOI_10 = [{ nut: { x: 0, y: 2 }, cua: [{ x: 6, y: 2 }], bang: [] }, { nut: { x: 3, y: 0 }, cua: [{ x: 4, y: 2 }], bang: [] }, { nut: { x: 5, y: 4 }, cua: [{ x: 7, y: 2 }], bang: [] }];
+  var NOI_10 = [{ nut: { x: 0, y: 2 }, cua: [{ x: 6, y: 2 }], bang: [] }, { nut: { x: 2, y: 0 }, cua: [{ x: 3, y: 2 }], bang: [] }, { nut: { x: 4, y: 4 }, cua: [{ x: 5, y: 2 }], bang: [] }];
 
   var DS = [
     /* ------------------------------------------------------------ hàng 1: làm quen */
@@ -336,18 +336,18 @@
       gioiHanHam: 4,
       deBai: 'Ba cửa trên hành lang, ba van ở ba phía: sau lưng xe, trong ngách trên và trong ngách dưới. Mở cả ba rồi đưa xe tới chỗ xe mờ. Chương trình chính chỉ được gọi 4 hàm của em khác nhau.',
       san: SAN_10, batDau: BD_10, noi: NOI_10,
-      bongMo: { x: 8, y: 2, huong: 1 },
+      bongMo: { x: 6, y: 2, huong: 1 },
       maMau: { chinh: [] },
-      sao: { o: 25, nhip: 14 },
+      sao: { o: 25, nhip: 12 },
       loiGiai: { chinh: L_10.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# ba van, ba cửa'], L_10) } },
       congThucKhac: [
-        { moTa: 'Đi bằng move() thay cho forward(): vẫn bốn hàm khác nhau', baiLam: { chinh: ['puff_back()', 'move()', 'move()', 'open_left()', 'move()', 'move()', 'open_right()', 'move()', 'move()', 'move()'] } }
+        { moTa: 'Đi bằng move() thay cho forward(): vẫn bốn hàm khác nhau', baiLam: { chinh: ['puff_back()', 'move()', 'open_left()', 'move()', 'move()', 'open_right()', 'move()', 'move()'] } }
       ],
       loiSai: [
-        { moTa: 'Quên van sau lưng: cửa giữa còn đóng', baiLam: { chinh: ['forward(2)', 'open_left()', 'forward(2)', 'open_right()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Phun ngách dưới bằng open_left(): tia nước bay lên trúng tường', baiLam: { chinh: ['puff_back()', 'forward(2)', 'open_left()', 'forward(2)', 'open_left()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Gọi 5 hàm khác nhau (puff_back, move, forward, open_left, open_right): vượt giới hạn 4 hàm', baiLam: { chinh: ['puff_back()', 'move()', 'move()', 'open_left()', 'forward(2)', 'open_right()', 'forward(3)'] }, phaiCoMa: ['qua-gioi-han-ham'] }
+        { moTa: 'Quên van sau lưng: cửa cuối còn đóng', baiLam: { chinh: ['forward(1)', 'open_left()', 'forward(2)', 'open_right()', 'forward(2)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Phun ngách dưới bằng open_left(): tia nước bay lên trúng tường', baiLam: { chinh: ['puff_back()', 'forward(1)', 'open_left()', 'forward(2)', 'open_left()', 'forward(2)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Gọi 5 hàm khác nhau (puff_back, move, forward, open_left, open_right): vượt giới hạn 4 hàm', baiLam: { chinh: ['puff_back()', 'move()', 'open_left()', 'forward(2)', 'open_right()', 'forward(2)'] }, phaiCoMa: ['qua-gioi-han-ham'] }
       ],
       goiY: ['Van sau lưng cách đuôi xe một ô: phun ngay ở chỗ xuất phát.', 'Ngách trên dùng open_left(), ngách dưới dùng open_right().']
     })

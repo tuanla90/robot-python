@@ -634,7 +634,7 @@
   // = 0, 30, …, 270; thêm / bớt màn sau này không làm đổi ngưỡng đã công bố (kiem-lo-trinh.mjs mục mùa 2 (a) kiểm khớp công thức).
   // Chương đã có ở mùa 2 cũ mà không thuộc bảng (ban-xoay, nhen, doi-ho-bang, list, doi-xich, omni, doi-omni và chương 2 của chúng) dời ra đầu mùa 3 (ẩn),
   // giữ thứ tự cũ: vẫn chơi được bằng "Mở hết", hàm chúng cần vẫn được tạo ở màn đứng trước.
-  var THU_TU_SUNG_HOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  var THU_TU_SUNG_HOI = [1, 2, 3, 4, 5, 6, 8, 7, 9, 10];               // sung-hoi.8 (9 dòng) đứng sau .6 (6 dòng), .7 (5 dòng) làm mốc cho .9 (7 dòng)
   var THU_TU_CHE_SUNG_HOI = [1, 2, 3, 4, 5, 6, 7, 9, 8, 10];        // che-sung-hoi.9 (21 ô, có hàm của màn) đứng sau .7 (15 ô) cho đường cong ô
   var MUA_2 = [
     { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', hinh: 'xich', sao: 0,

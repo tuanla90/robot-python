@@ -164,11 +164,11 @@
     },
     'hoi': {
       khe: 'tay', ten: 'Vòi phun',
-      moTa: 'Hai đầu phun: spray() bắn ra trước, spray_back() bắn ra sau.',
+      moTa: 'Hai đầu phun: spray() phun ra trước, spray_back() phun ra sau.',
       lenh: ['spray', 'spray_back'],
-      gioi: ['Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền bật / tắt', 'Giật: bắn ra trước thì xe lùi 1 ô, bắn ra sau thì xe tiến 1 ô', 'Xe giật vào thùng nặng thì thùng nhích một ô, xe theo một ô; ô sau thùng bị chặn thì cả hai đứng yên'],
-      khong: ['Một nhịp chỉ bắn một phát', 'Nhịp bắn thì bánh nghỉ', 'Chạy bánh húc vào thùng nặng thì không đẩy được'],
-      luuY: ['Lệnh bắn cũng chỉ là ra lệnh, wait() mới bắn.', 'Ở các màn Lực bắn, lệnh bắn nhận một lực: "high" bắn tụ như thường, bay xa và xe giật; "low" bắn nhanh, tia nước bay 2 ô và xe không giật.']
+      gioi: ['Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền chạy / dừng', 'Phun nhẹ bay xa nhất 2 ô, xe đứng yên', 'Tia nước bay qua hàng rào thấp và băng chuyền'],
+      khong: ['Một nhịp chỉ phun một phát', 'Nhịp phun thì bánh nghỉ', 'Tia nước không đẩy được thùng nặng'],
+      luuY: ['Lệnh phun cũng chỉ là ra lệnh, wait() mới phun.', 'Từ gói Lực phun, lệnh phun nhận một lực: "high" phun mạnh, bay xa nhưng xe giật một ô, giật vào thùng nặng thì thùng nhích một ô; "low" hay không viết gì là phun nhẹ.']
     },
 
     /* ------------------------------------------------------------ CẢM BIẾN */

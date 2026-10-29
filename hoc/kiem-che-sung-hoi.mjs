@@ -191,7 +191,7 @@ const BANG = [];
     che.every((m) => m.mucTieu === 'bong-mo' && !!m.bongMo && !/[FDXhH]/.test(sanCua(m).flat().join('')) && /N/.test(m.san.join('')) && /C/.test(m.san.join('')) &&
       (m.chinhCoDinh === true) === ![3, 5, 10].includes(m.so) && (m.so === 9) === (J(m.khoaHamMan) === '["go_out"]') && (m.so === 7 ? J(m.daoChieu) === '["sung"]' && /lắp ngược/.test(m.canhBao) : m.daoChieu === undefined) && (m.so === 8) === !!m.phanCung && (m.so === 10 ? m.gioiHanHam === 4 : m.gioiHanHam === undefined) &&
       ((m.so === 9) === !!(m.bongMo.diQua && m.bongMo.diQua.length)) && ([3, 5, 10].includes(m.so) === !!m.noi)));
-  kiem('sân ≤ 10 cột × 9 hàng; một sân mỗi màn', che.every((m) => !Array.isArray(m.san[0]) && m.san.length <= 9 && m.san[0].length <= 10));
+  kiem('sân ≤ 7 cột × 9 hàng; một sân mỗi màn', che.every((m) => !Array.isArray(m.san[0]) && m.san.length <= 9 && m.san[0].length <= 7));
 
   for (const m of che) {
     const kho = khoTruoc(m.id);

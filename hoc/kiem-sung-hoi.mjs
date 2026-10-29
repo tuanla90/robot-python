@@ -566,7 +566,7 @@ const BANG = [];
     J(man(1).hamGoc) === J(['wait', 'spray']) && J(man(2).hamGoc) === J(['wait', 'spray', 'spray_back']) && ds.slice(2).every((m) => J(m.hamGoc) === J(BANH.concat(HOI))) && ds.every((m) => !m.hamGoc.includes('push') && m.phanCung === undefined && m.daoChieu === undefined));
   kiem('sân: mọi màn có van N; hàng rào ở 4 và 10; thùng nặng chỉ ở 8 (không ô đích); băng chuyền chỉ ở 6; cửa C ở mọi màn trừ 6; noi khai ở 9 và 10',
     ds.every((m) => { const k = m.san.join(''); return /N/.test(k) && (/=/.test(k) === [4, 10].includes(m.so)) && (/H/.test(k) === (m.so === 8)) && !/D/.test(k) && (/[><^v]/.test(k) === (m.so === 6)) && (/C/.test(k) === (m.so !== 6)) && (!!m.noi === [9, 10].includes(m.so)); }));
-  kiem('sân ≤ 10 cột × 9 hàng, một sân mỗi màn, không vật nhẹ (o, X)', ds.every((m) => !Array.isArray(m.san[0]) && m.san.length <= 9 && m.san[0].length <= 10 && !/[oX]/.test(m.san.join(''))));
+  kiem('sân ≤ 7 cột × 9 hàng, một sân mỗi màn, không vật nhẹ (o, X)', ds.every((m) => !Array.isArray(m.san[0]) && m.san.length <= 9 && m.san[0].length <= 7 && !/[oX]/.test(m.san.join(''))));
   kiem('đề bài 1–3 câu, gợi ý 1–2 câu; màn 1 không nhắc spray_back; không màn nào còn chữ "giật" hay "bắn" trong đề / gợi ý / lời sai',
     ds.every((m) => m.goiY.length >= 1 && m.goiY.length <= 2 && (m.deBai.match(/[.?!](\s|$)/g) || []).length <= 3) && !/spray_back/.test(man(1).deBai) &&
       ds.every((m) => !/giật|bắn/i.test([m.deBai, m.veMaMau].concat(m.goiY, m.loiSai.map((l) => l.moTa)).join(' '))));
@@ -631,7 +631,7 @@ const BANG = [];
     const sai = ChamHoc.cham(m8, m8.loiSai[0].baiLam, khoTruoc(m8.id));
     return ev({ vet: sai.vet }, 'ban')[0].trung === 'thung' && ev({ vet: sai.vet }, 'thung-di').length === 0;
   })());
-  kiem('màn 9 Hai van hai cửa: mỗi van một cửa (noi); lời giải là một vòng for hai lượt, 9 dòng', m9.noi.length === 2 && m9.noi.every((g) => g.cua.length === 1) && m9.loiGiai.chinh[0] === 'for i in range(2):' && m9.loiGiai.chinh.length === 9);
+  kiem('màn 9 Hai van hai cửa: mỗi van một cửa (noi); lời giải là một vòng for hai lượt, 7 dòng', m9.noi.length === 2 && m9.noi.every((g) => g.cua.length === 1) && m9.loiGiai.chinh[0] === 'for i in range(2):' && m9.loiGiai.chinh.length === 7);
   kiem('màn 10 Nhà máy hơi: van sau lưng (spray_back) mở cửa xa, van sau hàng rào mở cửa gần; quên van sau lưng thì đâm cửa xa', (() => {
     const k10 = khoTruoc(m10.id), ok = ChamHoc.cham(m10, m10.loiGiai, k10), b = ev({ vet: ok.vet }, 'ban');
     return b.length === 2 && b[0].sau === true && b[1].sau === false && b.every((e) => e.trung === 'nut') && !ChamHoc.cham(m10, m10.loiSai[0].baiLam, k10).thang;

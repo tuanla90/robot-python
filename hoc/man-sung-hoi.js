@@ -75,17 +75,17 @@
   // 7: hành lang đứng, xe (1,7) quay mặt lên; năm ô băng chạy xuống (y 2..6) đẩy xe lùi; van (2,7) ngay bên phải xe điều khiển băng; cờ (1,1)
   var SAN_7 = ['###', '#F#', '#v#', '#v#', '#v#', '#v#', '#v#', '#.N', '###'];
   var BD_7 = { x: 1, y: 7, huong: 0 };
-  // 8: hành lang ngang, xe (1,3) quay mặt phải; hai ngách phía trên có van (2,1) và (5,1); van (2,1) mở cửa (3,3), van (5,1) mở cửa (6,3); cờ (8,3)
-  var SAN_8 = ['#########', '##N##N###', '##.##.###', '#..C..C.F', '#########'];
-  var BD_8 = { x: 1, y: 3, huong: 1 };
-  var NOI_8 = [{ nut: { x: 2, y: 1 }, cua: [{ x: 3, y: 3 }], bang: [] }, { nut: { x: 5, y: 1 }, cua: [{ x: 6, y: 3 }], bang: [] }];
-  // 9: như màn 8 nhưng chỉ một van (2,1) và nó mở CẢ HAI cửa (3,3), (6,3): phun một lần là đủ, phun lần nữa thì hai cửa đóng lại
-  var SAN_9 = ['#########', '##N######', '##.######', '#..C..C.F', '#########'];
-  var BD_9 = { x: 1, y: 3, huong: 1 };
-  // 10: xe (2,3) quay mặt phải ngay dưới ngách; van (0,3) sau lưng cách hai ô mở cửa xa (8,3); van (2,1) sau hàng rào (2,2) mở cửa gần (4,3); cờ (9,3)
-  var SAN_10 = ['##########', '##N#######', '##=#######', 'N...C...CF', '##########'];
-  var BD_10 = { x: 2, y: 3, huong: 1 };
-  var NOI_10 = [{ nut: { x: 0, y: 3 }, cua: [{ x: 8, y: 3 }], bang: [] }, { nut: { x: 2, y: 1 }, cua: [{ x: 4, y: 3 }], bang: [] }];
+  // 9 (biến _8): hành lang ngang, xe (1,2) quay mặt phải ngay dưới ngách; hai ngách trên có van (1,0) và (3,0); van (1,0) mở cửa (2,2), van (3,0) mở cửa (4,2); cờ (5,2)
+  var SAN_8 = ['#N#N###', '#.#.###', '#.C.CF#', '#######'];
+  var BD_8 = { x: 1, y: 2, huong: 1 };
+  var NOI_8 = [{ nut: { x: 1, y: 0 }, cua: [{ x: 2, y: 2 }], bang: [] }, { nut: { x: 3, y: 0 }, cua: [{ x: 4, y: 2 }], bang: [] }];
+  // 7 (biến _9): xe (1,2) quay mặt lên, van (1,0) cách hai ô mở CẢ HAI cửa (2,2), (4,2): phun một lần là đủ, phun lần nữa thì hai cửa đóng lại; cờ (5,2)
+  var SAN_9 = ['#N#####', '#.#####', '#.C.CF#', '#######'];
+  var BD_9 = { x: 1, y: 2, huong: 0 };
+  // 10: xe (2,2) quay mặt phải ngay dưới ngách; van (0,2) sau lưng cách hai ô mở cửa xa (5,2); van (2,0) sau hàng rào (2,1) mở cửa gần (3,2); cờ (6,2)
+  var SAN_10 = ['##N####', '##=####', 'N..C.CF', '#######'];
+  var BD_10 = { x: 2, y: 2, huong: 1 };
+  var NOI_10 = [{ nut: { x: 0, y: 2 }, cua: [{ x: 5, y: 2 }], bang: [] }, { nut: { x: 2, y: 0 }, cua: [{ x: 3, y: 2 }], bang: [] }];
 
   /* ------------------------------------------------------------- chương trình dùng lại */
 
@@ -96,9 +96,10 @@
   var CHINH_5 = nhieu(['turn_right()'], PHUN, ['turn_right()'], LAP(3, 'move()'));
   var CHINH_6 = nhieu(['move()', 'turn_left()'], LAP(3, 'move()'), ['turn_right()'], PHUN_SAU, ['move()', 'move()']);
   var CHINH_7 = nhieu(['turn_right()'], PHUN, ['turn_left()'], LAP(6, 'move()'));
-  var CHINH_8 = nhieu(LAP(2, ['move()', 'turn_left()', 'spray()', 'wait()', 'turn_right()', 'move()', 'move()']), ['move()']);
-  var CHINH_9 = nhieu(['move()', 'turn_left()'], PHUN, ['turn_right()'], LAP(6, 'move()'));
-  var CHINH_10 = nhieu(PHUN_SAU, ['turn_left()'], PHUN, ['turn_right()'], LAP(7, 'move()'));
+  var DOAN_8 = ['turn_left()', 'spray()', 'wait()', 'turn_right()', 'move()', 'move()'];
+  var CHINH_8 = LAP(2, DOAN_8);
+  var CHINH_9 = nhieu(PHUN, ['turn_right()'], LAP(4, 'move()'));
+  var CHINH_10 = nhieu(PHUN_SAU, ['turn_left()'], PHUN, ['turn_right()'], LAP(4, 'move()'));
 
   var DS = [
     /* --------------------------------------------- hàng 1: làm quen */
@@ -206,15 +207,15 @@
       deBai: 'Lần này chỉ có một van, và nó mở cả hai cửa. Phun lần nữa thì van quay lại, hai cửa đóng. Phun đúng một lần rồi đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn phun hai lần cho chắc. Chạy thử, xem hai cửa thế nào rồi sửa.',
       san: SAN_9, batDau: BD_9,
-      maMau: { chinh: nhieu(['move()', 'turn_left()'], PHUN, PHUN, ['turn_right()'], LAP(6, 'move()')) },
-      sao: { o: 14, nhip: 10 },
+      maMau: { chinh: nhieu(PHUN, PHUN, ['turn_right()'], LAP(4, 'move()')) },
+      sao: { o: 10, nhip: 6 },
       loiGiai: { chinh: CHINH_9.slice() },
-      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh phun', baiLam: { chinh: nhieu(['move()', 'turn_left()', '# một phát mở cả hai cửa'], PHUN, ['turn_right()'], LAP(6, 'move()')) } },
+      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh phun', baiLam: { chinh: nhieu(['# một phát mở cả hai cửa'], PHUN, ['turn_right()'], LAP(4, 'move()')) } },
       loiSai: [
-        { moTa: 'Phun hai lần: van quay lại, hai cửa đóng', baiLam: { chinh: nhieu(['move()', 'turn_left()'], PHUN, PHUN, ['turn_right()'], LAP(6, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Không phun: xe đâm vào cửa thứ nhất', baiLam: { chinh: LAP(7, 'move()') }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Phun hai lần: van quay lại, hai cửa đóng', baiLam: { chinh: nhieu(PHUN, PHUN, ['turn_right()'], LAP(4, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Không phun: xe đâm vào cửa thứ nhất', baiLam: { chinh: nhieu(['turn_right()'], LAP(4, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Mỗi phát trúng làm van quay nửa vòng: mở rồi đóng.', 'Phun một lần ở ngách, rồi tiến sáu ô.']
+      goiY: ['Mỗi phát trúng làm van quay nửa vòng: mở rồi đóng.', 'Phun một lần, rồi quay phải tiến bốn ô.']
     }),
 
     man({
@@ -238,15 +239,15 @@
       deBai: 'Hai cửa trên đường tới cờ, mỗi cửa có một van riêng trong ngách phía trên. Hai đoạn đường giống hệt nhau: viết một đoạn trong vòng for.',
       veMaMau: 'Chương trình có sẵn qua được cửa thứ nhất. Chạy thử rồi viết lại bằng vòng for.',
       san: SAN_8, batDau: BD_8,
-      maMau: { chinh: ['move()', 'turn_left()', 'spray()', 'wait()', 'turn_right()', 'move()', 'move()'] },
-      sao: { o: 16, nhip: 13 },
+      maMau: { chinh: DOAN_8.slice() },
+      sao: { o: 14, nhip: 10 },
       loiGiai: { chinh: CHINH_8.slice() },
-      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trong vòng for', baiLam: { chinh: nhieu(LAP(2, ['# một cửa', 'move()', 'turn_left()', 'spray()', 'wait()', 'turn_right()', 'move()', 'move()']), ['move()']) } },
+      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trong vòng for', baiLam: { chinh: LAP(2, ['# một van, một cửa'].concat(DOAN_8)) } },
       loiSai: [
-        { moTa: 'Mở cửa thứ nhất rồi đi thẳng: cửa thứ hai còn đóng', baiLam: { chinh: nhieu(['move()', 'turn_left()', 'spray()', 'wait()', 'turn_right()', 'move()', 'move()'], LAP(4, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Viết thẳng hai đoạn: quá 10 ô', baiLam: { chinh: nhieu(lap(['move()', 'turn_left()', 'spray()', 'wait()', 'turn_right()', 'move()', 'move()'], 2), ['move()']) }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Mở cửa thứ nhất rồi đi thẳng: cửa thứ hai còn đóng', baiLam: { chinh: nhieu(DOAN_8, LAP(2, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Viết thẳng hai đoạn: quá 10 ô', baiLam: { chinh: lap(DOAN_8, 2) }, phaiCoMa: ['tran-khung'] }
       ],
-      goiY: ['Một đoạn: tiến một ô, quay trái phun, quay phải, tiến hai ô qua cửa.', 'Lặp đoạn đó hai lần rồi tiến thêm một ô tới cờ.']
+      goiY: ['Một đoạn: quay trái phun van trên ngách, quay phải, tiến hai ô qua cửa.', 'Lặp đoạn đó hai lần.']
     }),
 
     /* --------------------------------------------------------- trùm */
@@ -256,15 +257,15 @@
       deBai: 'Hai cửa, hai van. Van sau lưng xe mở cửa xa; van kia nằm sau hàng rào trong ngách phía trên, mở cửa gần. Mở cả hai rồi đưa xe tới cờ.',
       veMaMau: 'Chương trình có sẵn mở được cửa gần. Chạy thử rồi viết tiếp.',
       san: SAN_10, batDau: BD_10,
-      maMau: { chinh: nhieu(['turn_left()'], PHUN, ['turn_right()'], LAP(7, 'move()')) },
-      sao: { o: 15, nhip: 11 },
+      maMau: { chinh: nhieu(['turn_left()'], PHUN, ['turn_right()'], LAP(4, 'move()')) },
+      sao: { o: 15, nhip: 8 },
       loiGiai: { chinh: CHINH_10.slice() },
-      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước van thứ hai', baiLam: { chinh: nhieu(PHUN_SAU, ['# van trên ngách', 'turn_left()'], PHUN, ['turn_right()'], LAP(7, 'move()')) } },
+      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước van thứ hai', baiLam: { chinh: nhieu(PHUN_SAU, ['# van trên ngách', 'turn_left()'], PHUN, ['turn_right()'], LAP(4, 'move()')) } },
       loiSai: [
-        { moTa: 'Quên van sau lưng: cửa xa còn đóng', baiLam: { chinh: nhieu(['turn_left()'], PHUN, ['turn_right()'], LAP(7, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Phun ra trước thay vì quay lên: tia nước bay dọc hành lang trúng cửa gần', baiLam: { chinh: nhieu(PHUN_SAU, PHUN, LAP(7, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Quên van sau lưng: cửa xa còn đóng', baiLam: { chinh: nhieu(['turn_left()'], PHUN, ['turn_right()'], LAP(4, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Phun ra trước thay vì quay lên: tia nước bay dọc hành lang trúng cửa gần', baiLam: { chinh: nhieu(PHUN_SAU, PHUN, LAP(4, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Van sau lưng cách đuôi xe hai ô: spray_back() ngay ở chỗ xuất phát.', 'Van trên ngách: quay trái phun qua hàng rào, quay phải rồi đi thẳng bảy ô.']
+      goiY: ['Van sau lưng cách đuôi xe hai ô: spray_back() ngay ở chỗ xuất phát.', 'Van trên ngách: quay trái phun qua hàng rào, quay phải rồi đi thẳng bốn ô.']
     })
   ];
 
