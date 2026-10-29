@@ -414,6 +414,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 {
   /* V7c1 (28/10): nguồn so sánh là DỮ LIỆU CHỤP từ part/*.js ở c0 (hoc/chup-du-lieu-pixel.mjs), không nạp bộ pixel nữa */
   const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'));
+  /* 29/10 Xe cứu hỏa R1 (gói vòi phun hình): tên hiển thị part 'hoi' đổi 'Súng hơi hai nòng' → 'Vòi phun hai đầu'; dữ liệu chụp c0 giữ tên cũ, so sánh qua bảng đổi tên này (mã, ổ, hamGoc, luật ghép y nguyên) */
+  const DOI_TEN = { 'Súng hơi hai nòng': 'Vòi phun hai đầu' }, tenMoi = (x) => (x == null ? x : Object.keys(DOI_TEN).reduce((a, k) => a.split(k).join(DOI_TEN[k]), x));
   const BP = { than: CHUP.boPhan.filter((b) => b.loai === 'than'), tay: CHUP.boPhan.filter((b) => b.loai === 'tay'), 'cam-bien': CHUP.boPhan.filter((b) => b.loai === 'cam-bien') };
   /* a. danh sách bộ phận */
   const thieu = [], sai = [];
@@ -423,7 +425,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     for (const ma of mv) if (!mp.includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
     for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;
-      if (loai !== 'than' && (J([].concat(v.gan)) !== J(d.gan) || v.ten !== d.ten)) sai.push(loai + '/' + d.ma + ': gan / ten khác chụp (' + J(v.gan) + ' / ' + v.ten + ')');
+      if (loai !== 'than' && (J([].concat(v.gan)) !== J(d.gan) || v.ten !== tenMoi(d.ten))) sai.push(loai + '/' + d.ma + ': gan / ten khác chụp (' + J(v.gan) + ' / ' + v.ten + ')');
       if (loai === 'tay' && d.diemNeoDuoi && !v.diemNeoDuoi) sai.push('tay/' + d.ma + ' thiếu diemNeoDuoi');
       if (loai === 'than') for (const o of Object.keys(d.oGan)) if (!v.oGan[o]) sai.push('than/' + d.ma + ' thiếu ổ ' + o);
       if (J(v.hamGoc) !== J(d.hamGoc)) sai.push(loai + '/' + d.ma + ': hamGoc ' + J(v.hamGoc) + ' ≠ chụp ' + J(d.hamGoc));
@@ -438,7 +440,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   /* b. mọi tổ hợp: thân × (không tay + tay) × bộ cảm biến (không, từng cảm biến ở từng ổ, vài cặp) — Part.ghep (đã chụp) ném ⇔ VeVector.kiemGhep ném, cùng câu báo */
   const hopLe = [], lechLuat = []; let soCam = 0;
   for (const g of CHUP.ghep) {
-    const cfg = g.cfg, ep = g.loi;
+    const cfg = g.cfg, ep = tenMoi(g.loi);
     let ev = null;
     try { V.kiemGhep(cfg); } catch (e) { ev = e.message; }
     if (ep !== ev) lechLuat.push(J(cfg) + ' pixel (chụp): ' + ep + ' | vector: ' + ev);

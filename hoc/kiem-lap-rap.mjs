@@ -24,6 +24,8 @@ const ChamHoc = require(path.join(day, 'cham.js'));
 const ManHoc = require(path.join(day, 'man-chuoi-1.js'));
 const VV = LapRap.veVector();
 const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'));     // V7c1 c0: dữ liệu logic chụp từ bộ pixel trước khi tách
+/* 29/10 Xe cứu hỏa R1 (gói vòi phun hình): tên hiển thị part 'hoi' đổi 'Súng hơi hai nòng' → 'Vòi phun hai đầu'; dữ liệu chụp c0 giữ tên cũ, so qua bảng đổi tên (mã, ổ, hamGoc, luật ghép y nguyên; như kiem-ve-vector.mjs mục 12) */
+const DOI_TEN = { 'Súng hơi hai nòng': 'Vòi phun hai đầu' }, tenMoi = (x) => (x == null ? x : Object.keys(DOI_TEN).reduce((a, k) => a.split(k).join(DOI_TEN[k]), x));
 
 let dat = 0, hong = 0;
 function kiem(ten, ok, chiTiet) {
@@ -58,7 +60,7 @@ for (const khe of LapRap.KHE) {
     const v = VV.lay(b.loai, b.ma);
     if (!v) { sai.push(b.loai + '/' + b.ma + ' không có trong bộ vẽ vector'); continue; }
     if (J(v.hamGoc) !== J(b.hamGoc)) sai.push(b.loai + '/' + b.ma + ' hamGoc ' + J(v.hamGoc) + ' ≠ chụp ' + J(b.hamGoc));
-    if (b.loai !== 'than' && (J([].concat(v.gan)) !== J(b.gan) || v.ten !== b.ten)) sai.push(b.loai + '/' + b.ma + ' gan / ten khác chụp');
+    if (b.loai !== 'than' && (J([].concat(v.gan)) !== J(b.gan) || v.ten !== tenMoi(b.ten))) sai.push(b.loai + '/' + b.ma + ' gan / ten khác chụp');
     if (b.loai === 'than') for (const o of Object.keys(b.oGan)) if (!v.oGan[o]) sai.push('than/' + b.ma + ' thiếu ổ ' + o);
   }
   kiem('(V7c1) ' + CHUP.boPhan.length + ' bộ phận trong dữ liệu chụp (' + CHUP.commit + ') có trong bộ vẽ vector, cùng hamGoc / gan / ten / ổ', !sai.length, sai.slice(0, 4).join(' | '));
@@ -93,7 +95,7 @@ kiem('bảng luật khớp VeVector.kiemGhep VÀ SanHoc.chay ở cả ' + soTo +
   for (const r of CHUP.lapRap) {
     let loi = null, hg; try { VV.kiemGhep(r.cfg); } catch (e) { loi = e.message; }
     try { hg = VV.hamGoc(r.cfg); } catch (e) { hg = 'ném: ' + e.message; }
-    if (loi !== r.loi) khac.push(J(r.cach) + ' lỗi: vector ' + loi + ' ≠ chụp ' + r.loi);
+    if (loi !== tenMoi(r.loi)) khac.push(J(r.cach) + ' lỗi: vector ' + loi + ' ≠ chụp ' + tenMoi(r.loi));
     if (J(hg) !== J(r.hamGoc)) khac.push(J(r.cach) + ' hamGoc: vector ' + J(hg) + ' ≠ chụp ' + J(r.hamGoc));
     if (LapRap.kiemGhep(r.cach).ok !== (r.loi === null) && !(r.loi === null && !LapRap.kiemGhep(r.cach).ok)) khac.push(J(r.cach) + ' kiemGhep.ok ≠ chụp');
   }
