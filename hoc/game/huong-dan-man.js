@@ -398,11 +398,11 @@
     buocThanHam('grip', ['.p-pal .pal'], 'Ghép các khối thành thân hàm: hỏi chữ trên vật rồi bật cực khác với nó.', 1, 'tren')
   ].concat(buocThuVeChay('Chương trình gọi được grip() rồi. Bấm Chạy.'));
 
-  /* ============================================================ Chương 21 · Tay xoay (làm quen): lệnh gốc mới arm_left / arm_right, thẻ Tay xoay */
+  /* ============================================================ Chương 21 · Tay xoay (làm quen): lệnh gốc mới arm_left / arm_right cho CÙNG tay kẹp (gói V8c: thẻ "lệnh mới", không phải bộ phận mới) */
   // HD2 (29/10): tay-xoay.1 là màn trình diễn arm_left / arm_right (chiChay): chỉ bấm Chạy; tay-xoay.2 ép sửa lệnh xoay (vật bên phải).
   H['tay-xoay.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tay xoay sang trái nhặt vật rồi xoay về trước đặt.', xong: 'chay' },
-    { khongAn: true, dich: 'dong:1', chu: 'arm_left() xoay tay sang trái, arm_right() xoay sang phải: xe không cần quay.', xong: 'bam', han: 9000, rong: 170 }
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tay kẹp xoay sang trái nhặt vật rồi xoay về trước đặt.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'Tay kẹp giờ xoay được: arm_left() xoay tay sang trái, arm_right() xoay sang phải, xe không cần quay.', xong: 'bam', han: 9000, rong: 170 }
   ];
   H['tay-xoay.2'] = [
     { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: vật nằm bên phải mà tay xoay sang trái nên kẹp hụt.', xong: 'chay', daLam: daChay },

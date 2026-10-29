@@ -48,7 +48,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     else if (loai === 'drone') kq.push('canh');
     else { kq.push('banhT', 'banhP'); if (loai === 'omni' || co(['slide_left', 'slide_right'])) kq.push('truot'); }
     if (co(TAY_LEN)) kq.push('tay');
-    if (co(['arm_left', 'arm_right'])) kq.push('xoay');           // tay xoay: khớp xoay có đèn riêng
+    if (co(['arm_left', 'arm_right'])) kq.push('xoay');           // tay kẹp mở xoay (mã 'xoay'): khớp xoay của cùng tay kẹp có đèn riêng, như bánh trái / phải của cùng thân
     if (co(KEP_LEN)) kq.push('kep');
     if (co(NC_LEN)) kq.push('namCham');
     if (co(['aim', 'load', 'throw'])) kq.push('nem');
