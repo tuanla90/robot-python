@@ -603,7 +603,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     },
     mungThang: function () {
       var now = performance.now();
-      this.bounce = now + 900; this.mung = now + 900;
+      this.bounce = now + 900; this.mung = now + 1800;                                   // mắt trái tim 1,8 s (29/10: thắng màn = tim, việc nhỏ = vui)
+      if (this.xe) { for (var mi = 0; mi < this.xe.length; mi++) this.matSuKien('tim', 1800, this.xe[mi].vis); } else this.matSuKien('tim', 1800);
       var cols = [BM.sanVang, BM.sanTrang, BM.sanXanhLoToiV1, BM.sanHong, BM.sanXanhLaToiV2, BM.sanDo];
       if (this.xe) { for (var xi = 0; xi < this.xe.length; xi++) this.burst(this.xe[xi].vis.x * T + 7, this.xe[xi].vis.y * T + 4, 18, cols, 1.3, 2, true); }
       else if (this.vis) this.burst(this.vis.x * T + 7, this.vis.y * T + 4, 24, cols, 1.35, 2, true);
@@ -616,10 +617,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Đặt dấu nổi trên xe ('?' kẹp hụt, '!' ô đã có vật) trong ms mili giây. */
     baoHieu: function (kieu, ms) { this.vis.bao = kieu; this.vis.baoDen = performance.now() + (ms || 1200); this.matSuKien(kieu === '!' ? 'dam' : 'ngac', kieu === '!' ? 750 : 800); },
     /** MẮT BIỂU CẢM (gói V4, chỉ nhánh vector vẽ): đặt biểu cảm theo sự kiện cho xe đang xét trong ms mili giây — 'dam' (đâm / bị chặn: mắt X + rung), 'xoay' (va nhau: mắt xoáy + rung),
-     *  'vui' (tới đích / đặt đúng / bắn trúng nút: "^ ^" + nảy), 'ngac' (dấu ?: mắt tròn to), 'buon' (thua), 'lim' / 'cho' (đang chờ). Biểu cảm mạnh hơn không bị biểu cảm nhẹ đè. */
+     *  'vui' (việc nhỏ: tới cờ / đặt đúng / bắn trúng nút: "◠ ◠" + nảy), 'tim' (thắng màn: mắt trái tim + nảy, mạnh nhất), 'ngac' (dấu ?: mắt tròn to), 'buon' (thua), 'lim' / 'cho' (đang chờ). Biểu cảm mạnh hơn không bị biểu cảm nhẹ đè. */
     matSuKien: function (kieu, ms, v) {
       v = v || this.vis; if (!v) return;
-      var now = performance.now(), cu = v.matSK, MANH = { dam: 3, xoay: 3, vui: 2, buon: 2, ngac: 1, lim: 0, cho: 0 };
+      var now = performance.now(), cu = v.matSK, MANH = { tim: 4, dam: 3, xoay: 3, vui: 2, buon: 2, ngac: 1, lim: 0, cho: 0 };
       if (cu && cu.den > now && (MANH[cu.kieu] || 0) > (MANH[kieu] || 0)) return;
       v.matSK = { kieu: kieu, t0: now, den: now + (ms || 800) };
     },
@@ -1086,8 +1087,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         kieu = sk.kieu;
         var p = (now - sk.t0) / Math.max(1, sk.den - sk.t0);
         if (!giam && (kieu === 'dam' || kieu === 'xoay')) v.lacMat = Math.sin((now - sk.t0) / 26) * 0.75 * (1 - p);
-        if (!giam && kieu === 'vui') v.nayMat = Math.abs(Math.sin((now - sk.t0) / 95)) * 1.4 * (1 - p);
-      } else if (this.mung > now) kieu = 'vui';
+        if (!giam && (kieu === 'vui' || kieu === 'tim')) v.nayMat = Math.abs(Math.sin((now - sk.t0) / 95)) * 1.4 * (1 - p);
+      } else if (this.mung > now) kieu = 'tim';
       else if (v.dr && v.dr.roi) kieu = 'lim';
       else if (chop && !giam) kieu = chop;
       else if (now - v._tDi > 9000 && !this.camBienSang(now)) kieu = 'lim';

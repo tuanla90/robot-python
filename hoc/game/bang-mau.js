@@ -171,6 +171,7 @@
     vecXichMat: '#4b5380',             // mắt xích bánh xích (nhạt hơn vecBanh)
     vecMatSang: '#ffffff',             // mắt camera đang đọc: lõi trắng rực
     vecMatSangRgb: '207,250,254',      // bộ ba quầng sáng quanh mắt camera / ống kính đang đọc
+    vecHongSangRgb: '254,205,211',     // bộ ba quầng sáng quanh mắt trái tim (thắng màn), cùng màu vecHongSang
     // ---- VECTOR (gói V4, 27/10): hiệu ứng trên sân bằng vector (ve-vector-hieu-ung.js) — bộ ba rgb cho lớp mờ / quầng của các màu vec đã có
     vecDoRgb: '239,68,68',             // bộ ba của vecDo: chớp đỏ, ô bị chặn / vỡ, vật thả bị chặn
     vecNgon: '#b9c2d6',                // ngón tay kẹp / tay xoay (bạc nhạt): vật trắng trong kẹp nổi rõ
