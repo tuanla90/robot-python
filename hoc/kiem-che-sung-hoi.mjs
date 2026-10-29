@@ -130,8 +130,8 @@ console.log('\n== 3. bongMo.thung (thùng mờ) với ô ◆ và xe mờ; lech-b
   const SAN = ['.....', '.....', '...H.', '.....', '.....'], bd = { x: 2, y: 2, huong: 0 };
   const BM = (bongMo, code, extra) => chay(SAN, bd, code, Object.assign({ mucTieu: 'bong-mo', bongMo }, extra || {}));
   const da = L('turn_l', 'x').length && L('right_move()', 'wait()') + BAN + L('left_move()', 'wait()');          // quay trái (right_move), bắn, quay lại phải (left_move)
-  const t = BM({ x: 2, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] }, da);
-  kiem('đá thùng sang phải rồi quay lại: xe đúng tư thế và thùng đúng ô thùng mờ → thắng, nhịp cuối ghi toi-bong-mo', t.thang === true && t.bongMo.thung.length === 1 && ev(t, 'toi-bong-mo').length === 1);
+  const t = BM({ x: 3, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] }, da);           // luật giật một ô: thùng (3,2) nhích ra (4,2), xe theo vào (3,2)
+  kiem('đá thùng sang phải rồi quay lại: xe đúng tư thế (đã theo thùng một ô) và thùng đúng ô thùng mờ → thắng, nhịp cuối ghi toi-bong-mo', t.thang === true && t.bongMo.thung.length === 1 && ev(t, 'toi-bong-mo').length === 1);
   kiem('thùng chưa tới ô thùng mờ thì chưa thắng; thùng thừa / thiếu so với thùng mờ cũng không thắng', BM({ x: 2, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] }, '').thang === false && BM({ x: 2, y: 2, huong: 0, thung: [{ x: 4, y: 2 }, { x: 0, y: 0 }] }, da).thang === false && BM({ x: 2, y: 2, huong: 0, thung: [] }, da).thang === false);
   kiem('không khai bongMo.thung thì không xét thùng (thùng đứng yên vẫn thắng nếu xe đúng chỗ)', BM({ x: 2, y: 2, huong: 0 }, '').thang === true);
   const lv = (kq) => kq.chanDoan.find((c) => c.ma === 'lech-bong-mo');
@@ -247,9 +247,9 @@ const BANG = [];
     return maCua(sai).includes('dam-tuong') && nhipCheSungHoiTatCa(m5, k5) === 6 && m5.sao.nhip === 6 && /N/.test(m5.san[2]) && /C/.test(m5.san[1]);
   })());
   const m6 = man(6), k6 = khoTruoc(m6.id);
-  kiem('20.6 Đá thùng sang trái: hai thùng hai bên, chương trình chính gọi kick_right() rồi kick_left(); chép nguyên kick_right() vào kick_left() thì không thắng; BFS 4 < sao.nhip 6 (có đường tắt ngắn hơn, nên nhipTheoLoiGiai)', (() => {
+  kiem('20.6 Đá thùng sang trái (luật giật một ô): thùng phải sát xe, thùng kia bên trái phía trước; chương trình chính gọi kick_right(), move() rồi kick_left(); chép nguyên kick_right() vào kick_left() thì không thắng; BFS ≤ sao.nhip 7 (nhipTheoLoiGiai)', (() => {
     const sai = ChamHoc.cham(m6, m6.loiSai[0].baiLam, tron(k6, m6.loiSai[0].hamCuaEmMoi));
-    return !sai.thang && J(m6.maMau.chinh) === J(['kick_right()', 'kick_left()']) && nhipCheSungHoiTatCa(m6, k6) < m6.sao.nhip && m6.nhipTheoLoiGiai === true;
+    return !sai.thang && J(m6.maMau.chinh) === J(['kick_right()', 'move()', 'kick_left()']) && nhipCheSungHoiTatCa(m6, k6) <= m6.sao.nhip && m6.nhipTheoLoiGiai === true;
   })());
   const m7 = man(7), k7 = khoTruoc(m7.id);
   const cu = ChamHoc.cham(m7, m7.maMau, k7);
@@ -270,8 +270,8 @@ const BANG = [];
   const m10 = man(10), k10 = khoTruoc(m10.id);
   const r10 = ChamHoc.cham(m10, m10.loiGiai, k10);
   const gh = ChamHoc.cham(m10, m10.loiSai[3].baiLam, k10);
-  kiem('20.10 Kho hàng: gioiHanHam 4 — lời giải gọi 4 hàm khác nhau (kick_right, kick_left, forward, tap_right) vừa giới hạn; 5 hàm khác nhau bị qua-gioi-han-ham (nêu "4"); trùm không khóa chương trình chính; BFS 11 < sao.nhip 13',
-    r10.thang && J([...new Set(m10.loiGiai.chinh.map((s) => s.replace(/\(.*\)/, '')))].sort()) === J(['forward', 'kick_left', 'kick_right', 'tap_right']) && maCua(gh).join() === 'qua-gioi-han-ham' && /4/.test(gh.chanDoan[0].loi) && !gh.thang && m10.chinhCoDinh !== true && nhipCheSungHoiTatCa(m10, k10) === 11);
+  kiem('20.10 Kho hàng: gioiHanHam 4 — lời giải gọi 4 hàm khác nhau (kick_right, kick_left, forward, tap_right) vừa giới hạn; 5 hàm khác nhau bị qua-gioi-han-ham (nêu "4"); trùm không khóa chương trình chính; BFS ≤ sao.nhip 14 (luật giật một ô: xe theo thùng, thêm một đoạn tiến)',
+    r10.thang && J([...new Set(m10.loiGiai.chinh.map((s) => s.replace(/\(.*\)/, '')))].sort()) === J(['forward', 'kick_left', 'kick_right', 'tap_right']) && maCua(gh).join() === 'qua-gioi-han-ham' && /4/.test(gh.chanDoan[0].loi) && !gh.thang && m10.chinhCoDinh !== true && nhipCheSungHoiTatCa(m10, k10) <= m10.sao.nhip);
   kiem('20.10: công thức khác dùng move() cũng đúng bốn hàm khác nhau (kick_right, kick_left, move, tap_right) và thắng', (() => { const rk = ChamHoc.cham(m10, m10.congThucKhac[0].baiLam, k10); return rk.thang && maLoi(rk).length === 0; })());
 
   console.log('\n  Bảng 10 màn che-sung-hoi (lời giải cách 1, sao; BFS = nhịp ngắn nhất, lệnh bắn một nhịp riêng)');

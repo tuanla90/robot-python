@@ -42,10 +42,10 @@
   // @sao-dau (node tools/do-goi-doi.mjs <tệp này> --ghi viết lại khối này: ngưỡng sao = ô / nhịp của lời giải chuẩn)
   var SAO = {
     'doi-sung-hoi.1': { o: 17, nhip: 6 },
-    'doi-sung-hoi.2': { o: 20, nhip: 8 },
+    'doi-sung-hoi.2': { o: 21, nhip: 8 },
     'doi-sung-hoi.3': { o: 13, nhip: 7 },
     'doi-sung-hoi.4': { o: 17, nhip: 9 },
-    'doi-sung-hoi.5': { o: 16, nhip: 5 },
+    'doi-sung-hoi.5': { o: 18, nhip: 6 },
     'doi-sung-hoi.6': { o: 19, nhip: 7 },
     'doi-sung-hoi.7': { o: 26, nhip: 11 },
     'doi-sung-hoi.8': { o: 13, nhip: 7 },
@@ -55,7 +55,7 @@
     'che-doi-sung-hoi.2': { o: 18, nhip: 4 },
     'che-doi-sung-hoi.3': { o: 29, nhip: 8 },
     'che-doi-sung-hoi.4': { o: 21, nhip: 9 },
-    'che-doi-sung-hoi.5': { o: 24, nhip: 13 },
+    'che-doi-sung-hoi.5': { o: 25, nhip: 15 },
     'che-doi-sung-hoi.6': { o: 23, nhip: 14 },
     'che-doi-sung-hoi.7': { o: 25, nhip: 9 },
     'che-doi-sung-hoi.8': { o: 19, nhip: 8 },
@@ -112,10 +112,10 @@
   /* ------------------------------------------------------------- chương trình dùng lại (lời giải chuẩn) */
 
   var L1 = [['shoot()', 'wait()', 'for i in range(4):', '    back()'], ['slide_l(4)', 'forward(2)']];
-  var L2 = [['shoot()', 'wait()', 'turn_right()', 'forward(2)'], ['slide_r(6)', 'for i in range(2):', '    back()']];
+  var L2 = [['shoot()', 'wait()', 'move()', 'turn_right()', 'forward(2)'], ['slide_r(6)', 'for i in range(2):', '    back()']];   // luật giật một ô: xe theo thùng xuống một ô nên tiến lại rồi mới rẽ
   var L3 = [['turn_left()', 'shoot()', 'wait()'], nhieu(CHO_CUA, ['forward(5)'])];
   var L4 = [['turn_left()', 'forward(3)', 'turn_right()', 'shoot()', 'wait()'], ['go_wall()']];
-  var L5 = [['forward(2)', 'turn_left()', 'wait()', 'shoot()', 'wait()'], ['slide_l(4)']];
+  var L5 = [['forward(2)', 'turn_left()', 'wait()', 'shoot()', 'wait()', 'shoot()', 'wait()'], ['slide_l(6)']];   // luật giật một ô: hai phát, phát hai đẩy thùng xuống lối omni nên phải chờ omni qua
   var L6 = [['while front_clear():', '    wait()', 'turn_right()', 'shoot()', 'wait()'], nhieu(['slide_r(3)'], CHO_CUA, ['forward(2)'])];
   var L7 = [['for i in range(3):', '    shoot()', '    wait()', '    wait()', '    wait()', 'turn_right()', 'move()'],
     nhieu(['for i in range(3):', '    back()', 'slide_r(3)'], CHO_CUA, ['forward(3)'])];
@@ -136,12 +136,12 @@
     }),
     man({
       so: 2, ten: 'Dọn thùng khỏi lối', khoa: 0,
-      deBai: 'Thùng nặng chắn lối của omni, omni không đẩy được. Xe vòi phun đã có chương trình cố định: bắn lên tường để cú giật đẩy thùng xuống hốc, rồi về cờ. Viết chương trình cho omni đi qua lối vừa trống tới cờ của nó.',
+      deBai: 'Thùng nặng chắn lối của omni, omni không đẩy được. Xe vòi phun đã có chương trình cố định: bắn lên tường để cú giật đẩy thùng xuống hốc (xe theo một ô rồi tiến lại), rồi về cờ. Viết chương trình cho omni đi qua lối vừa trống tới cờ của nó.',
       veMaMau: 'Chương trình R1 bị khóa, bấm vào thẻ R1 để đọc. Viết chương trình R2.',
       san: ['#########', '####..F##', '#...H...#', '####.##.#', '#######F#', '#########'],
       bd: [{ x: 4, y: 1, huong: 0 }, { x: 1, y: 2, huong: 0 }], co: [[{ x: 6, y: 1 }], [{ x: 7, y: 4 }]],
       maMau: B(L2[0], []), loiGiai: B(L2[0], L2[1]),
-      hamCuaEmCan: ['turn_right', 'forward', 'slide_r', 'back'],
+      hamCuaEmCan: ['move', 'turn_right', 'forward', 'slide_r', 'back'],
       goiY: ['Omni quay mặt lên: slide_right() trượt sang phải mà không cần quay.', 'Tới mép phải thì back() để đi xuống mà vẫn quay mặt lên.']
     }),
     man({
@@ -165,14 +165,14 @@
       goiY: ['Tia nước bay thẳng: xe phải đứng ngay dưới van, quay mặt lên rồi mới bắn.', 'Băng đang chạy thì front_clear() vẫn là True: go_wall() cứ thử đi mãi, băng tắt là omni lên tới cờ.']
     }),
     man({
-      so: 5, ten: 'Chặn thùng giúp bạn', mucTieu: 'day-thung',
-      deBai: 'Phải đưa thùng nặng vào ô đích. Cú giật đẩy thùng trượt xuống tới khi gặp vật cản, nên nó trượt quá ô đích. Omni tới đứng ngay dưới ô đích làm chốt chặn, xe vòi phun bắn lên để giật thùng xuống. Xe vòi phun không có cảm biến: xem omni cần mấy nhịp rồi chờ cho đủ.',
+      so: 5, ten: 'Chờ bạn qua rồi đẩy',
+      deBai: 'Cờ của xe vòi phun nằm ngay dưới thùng nặng: phải bắn lên tường hai phát, mỗi phát thùng nhích xuống một ô và xe theo một ô. Phát thứ hai đẩy thùng xuống lối đi của omni, nên omni phải qua khỏi chỗ đó trước. Xe vòi phun không có cảm biến: xem omni cần mấy nhịp rồi chờ cho đủ.',
       veMaMau: 'Tự viết cả hai chương trình.',
-      san: ['#########', '#...#####', '###H#####', '###.#####', '###D#####', '#.......#', '#########'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 7, y: 5, huong: 0 }],
+      san: ['#########', '#...#####', '###H#####', '###F#####', '#F......#', '#########'],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 7, y: 4, huong: 0 }], co: [[{ x: 3, y: 3 }], [{ x: 1, y: 4 }]],
       maMau: B([], []), loiGiai: B(L5[0], L5[1]),
       hamCuaEmCan: ['forward', 'turn_left', 'slide_l'],
-      goiY: ['Thùng trượt dừng ngay trước robot đồng đội, như trước tường.', 'Omni cần 4 nhịp để tới chỗ chặn; xe vòi phun tới chỗ bắn sau 3 nhịp, nên chờ thêm một nhịp.']
+      goiY: ['Thùng không nhích được vào ô đang có robot đồng đội: cả xe lẫn thùng đứng yên.', 'Omni cần 5 nhịp để qua khỏi ô dưới cột thùng; xe vòi phun tới chỗ bắn sau 3 nhịp và phát thứ hai mới đẩy thùng xuống lối, nên chờ thêm một nhịp.']
     }),
     man({
       so: 6, ten: 'Bạn tới thì bắn', khoa: 0, r: [SUNG_CB, OMNI],
@@ -254,7 +254,7 @@
   var C2 = [['fire_clear()', 'turn_right()', 'move()'], ['slide_l(1)', 'move()', 'slide_l(2)']];
   var C3 = [['forward(3)', 'turn_left()', 'shoot()', 'wait()'], ['pick()', 'forward(2)', 'pass_gate()', 'drop()']];
   var C4 = [['wait_gate()', 'forward(2)', 'turn_left()', 'shoot()', 'wait()', 'turn_right()', 'move()'], ['forward(2)', 'wait_gate()', 'forward(4)']];
-  var C5 = [['for i in range(3):', '    move()', '    kick_right()', '    move()'], ['slide_r(1)', 'for i in range(3):', '    catch_crate()', '    slide_r(2)']];
+  var C5 = [['for i in range(3):', '    move()', '    turn_left()', '    jet_back()', '    move()', '    turn_right()', '    move()'], ['slide_r(1)', 'for i in range(3):', '    catch_crate()', '    slide_r(2)']];   // luật giật một ô: xe quay lên, giật thùng xuống đích (xe theo vào cột), tiến lại làn rồi quay phải
   var C6 = [['for i in range(3):', '    open_step()'], ['for i in range(3):', '    pass_gate()']];
   var C7 = [['open_gate()', 'turn_right()', 'go_wall()'], ['forward(4)', 'pass_gate()', 'move()']];
   var C8 = [['forward(2)', 'open_back()', 'go_wall()'], ['move()', 'pass_gate()', 'forward(3)']];
@@ -317,13 +317,13 @@
     }),
     man({
       so: 5, chuong: CHE, ten: 'Đỡ ba thùng', mucTieu: 'day-thung', taoHam: ['catch_crate'],
-      deBai: 'Ba thùng nặng phải trượt vào ba ô đích. Xe vòi phun đi dọc làn trên, giật từng thùng xuống. Omni chạy dọc làn dưới làm chốt chặn. Chế catch_crate(): omni đứng chờ tới khi thùng nằm ngay trước mặt, rồi mới sang cột kế.',
+      deBai: 'Ba thùng nặng phải nhích vào ba ô đích. Xe vòi phun đi dọc làn trên: tới mỗi cột thì quay lên, giật thùng xuống (xe theo một ô) rồi về làn. Omni chạy dọc làn dưới đón từng thùng. Chế catch_crate(): omni đứng chờ tới khi thùng nằm ngay trước mặt, rồi mới sang cột kế.',
       veMaMau: 'Tạo catch_crate(), rồi viết cả hai chương trình bằng vòng lặp.',
-      san: ['#########', '#.......#', '##H#H#H##', '##.#.#.##', '##D#D#D##', '#.......#', '#########'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 5, huong: 0 }],
+      san: ['#########', '#.......#', '##H#H#H##', '##D#D#D##', '#.......#', '#########'],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 4, huong: 0 }],
       maMau: B([], []), loiGiai: Object.assign(B(C5[0], C5[1]), { hamCuaEmMoi: [H('catch_crate', T_CATCH_CRATE)] }),
-      hamCuaEmCan: ['move', 'kick_right', 'slide_r'],
-      goiY: ['catch_crate() ngược với wait_gate(): chờ khi trước mặt CÒN trống.', 'Omni đi trước một cột, đỡ xong thùng mới trượt hai ô sang cột kế.']
+      hamCuaEmCan: ['move', 'turn_left', 'jet_back', 'turn_right', 'slide_r'],
+      goiY: ['catch_crate() ngược với wait_gate(): chờ khi trước mặt CÒN trống.', 'Omni đi trước một cột, đón xong thùng mới trượt hai ô sang cột kế. Xe vòi phun: quay lên, jet_back() giật thùng xuống, tiến lại làn, quay phải.']
     }),
     man({
       so: 6, chuong: CHE, ten: 'Robot gác gọi hàm em', khoa: 0, taoHam: ['open_step'],

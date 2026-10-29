@@ -2,8 +2,8 @@
    kiem-sung-hoi.mjs — máy kiểm SÚNG HƠI của "Robot Chấn Hưng": các luật lõi mới (KE-HOACH-CHE-LENH.md, mục 5c.3) và chương `sung-hoi` (10 màn).
    Gồm:
    - shoot() bắn ra trước + xe giật lùi, shoot_back() bắn ra sau + xe giật tới, bốn hướng; bóng bay thẳng, dừng ở từng loại vật cản, bay qua rào / băng / cửa mở, ra khỏi sân (ban-hut);
-   - giật bị chặn (tường, mép sân, cửa đóng, nút, rào, bậc thang, vật) → xe đứng yên (giat-chan); thùng nặng sau xe trượt tới vật cản (không dừng ở đích), xe đứng yên;
-     thùng bị chặn ngay (thung-chan kieu giat); xe húc thùng bằng bánh = đâm như tường; không còn push();
+   - giật bị chặn (tường, mép sân, cửa đóng, nút, rào, bậc thang, vật) → xe đứng yên (giat-chan); thùng nặng sau xe NHÍCH ĐÚNG 1 Ô, xe theo 1 ô vào ô thùng vừa rời (luật 29/10 "giật một ô");
+     ô sau thùng bị chặn thì cả hai đứng yên (thung-chan kieu giat); xe húc thùng bằng bánh = đâm như tường; không còn push();
    - thứ tự trong nhịp (bắn → giật → băng chuyền → cửa đổi cuối nhịp), nút / cửa / băng / cửa nhịp (man.noi, front_clear), cửa kẹt, băng đẩy thùng, thùng kẹt góc, mục tiêu day-thung;
    - nhịp có bắn (ban-dung-yen), gọi lại (ban-goi-lai kể cả shoot + shoot_back), quên wait, đạn (danToiDa / het-dan: không bắn thì không giật);
    - daoChieu 'sung', phần cứng thiếu một nòng (lenh-goc-hong), thân không hợp (nhện, tay khác), bongMo.thung (thùng mờ), sân thử của Xưởng, chẩn đoán tiếng Việt CÓ `cho`;
@@ -184,35 +184,49 @@ console.log('\n== 2. Ô xe giật vào bị chặn: xe đứng yên (giat-chan) 
 }
 
 /* ============================================================================ 3. THÙNG NẶNG BỊ GIẬT */
-console.log('\n== 3. Thùng nặng nhận cú giật: trượt thẳng tới vật cản, xe đứng yên; xe húc thùng bằng bánh = đâm ==');
+console.log('\n== 3. Thùng nặng nhận cú giật (luật 29/10 "giật một ô"): thùng nhích đúng 1 ô, xe theo 1 ô; ô sau thùng bị chặn thì cả hai đứng yên; xe húc thùng bằng bánh = đâm ==');
 {
   const T = (rows, xe, code, extra) => chay(rows, xe, code, Object.assign({ mucTieu: 'day-thung' }, extra || {}));
-  // thùng ngay sau xe (xe quay phải, thùng bên trái) → trượt sang trái tới mép / vật cản
+  // thùng ngay sau xe (xe (2,1) quay phải, thùng (1,1) bên trái) → thùng nhích sang (0,1), xe vào (1,1); còn chỗ nữa cũng KHÔNG trượt tiếp
+  const mot = T(['.....', '.H...', '.....'], { x: 2, y: 1, huong: 1 }, BAN);
+  const e1 = ev(mot, 'thung-di')[0], g1 = ev(mot, 'giat')[0];
+  kiem('thùng sau xe nhích ĐÚNG 1 ô (không trượt tới mép dù còn trống), xe dời 1 ô vào ô thùng vừa rời; thung-di { nguon "giat", tu, den, soO 1 }; giat { di true, den = ô thùng cũ, thung id }',
+    mot.thung[0].x === 0 && viTri(mot.robot) === '1,1' && mot.robot.huong === 1 && e1 && e1.nguon === 'giat' && e1.tu.x === 1 && e1.den.x === 0 && e1.soO === 1 && g1.di === true && g1.den.x === 1 && g1.thung === 1, J([mot.thung, mot.robot, e1, g1]));
+  const xa = T(['.....', '...H.', '.....'], { x: 4, y: 1, huong: 1 }, BAN + BAN + BAN);
+  kiem('ba phát liền: thùng nhích ba ô (3 → 0), xe theo sát (4 → 1); phát nào cũng có thung-di soO 1', xa.thung[0].x === 0 && viTri(xa.robot) === '1,1' && ev(xa, 'thung-di').length === 3 && ev(xa, 'thung-di').every((e) => e.soO === 1));
+  // ô sau thùng bị chặn: thùng (1,1), xe (2,1) quay phải, vật cản ở (0,1)
   let ok = 0, tong = 0;
-  for (const [rows, tx, mong] of [
-    [['.....', '..Hx.'.replace('x', '.'), '.....'], 2, 0],              // tới mép sân
-    [['.....', '#.H..', '.....'], 2, 1],                                // tới tường (0,1) → dừng (1,1)
-    [['.....', 'H.H..', '.....'], 2, 1],                                // tới thùng khác (0,1) → dừng (1,1)
-    [['.....', '=.H..', '.....'], 2, 1],                                // tới hàng rào
-    [['.....', 'S.H..', '.....'], 2, 1],                                // tới bậc thang
-    [['.....', 'C.H..', '.....'], 2, 1],                                // tới cửa đóng
-    [['.....', 'N.H..', '.....'], 2, 1]                                 // tới nút
+  for (const [rows, vat] of [
+    [['....', 'H...', '....'], 'ngoai-san'],                            // mép sân: thùng (0,1), xe (1,1)
+    [['.....', '#H...', '.....'], 'tuong'],
+    [['.....', 'HH...', '.....'], 'thung-nang'],
+    [['.....', '=H...', '.....'], 'rao'],
+    [['.....', 'SH...', '.....'], 'bac-thang'],
+    [['.....', 'CH...', '.....'], 'cua'],
+    [['.....', 'NH...', '.....'], 'tuong']                              // nút chặn thùng như tường
   ]) {
     tong++;
-    const k = T(rows, { x: 3, y: 1, huong: 1 }, BAN);
-    const t = k.thung.find((q) => q.x === mong || (rows[1][0] === 'H' && q.y === 1 && q.id === 2 && false));
-    const dichT = rows[1][0] === 'H' ? k.thung.find((q) => q.id === 2) : k.thung[0];
-    const e = ev(k, 'thung-di')[0];
-    if (dichT.x === mong && viTri(k.robot) === '3,1' && e && e.nguon === 'giat' && e.tu.x === 2 && e.den.x === mong && e.soO === 2 - mong && void t === undefined) ok++;
+    const mep = vat === 'ngoai-san', xe0 = { x: mep ? 1 : 2, y: 1, huong: 1 };
+    const k = T(rows, xe0, BAN);
+    const tc = maSK(k, 'thung-chan')[0], g = ev(k, 'giat')[0];
+    const th = k.thung.find((q) => q.x === (mep ? 0 : 1) && q.y === 1);
+    if (th && viTri(k.robot) === xe0.x + ',1' && tc && tc.kieu === 'giat' && tc.vat === vat && ev(k, 'thung-di').length === 0 && g && g.di === false && g.vat === 'thung-nang') ok++;
   }
-  kiem('thùng sau xe trượt tới mép sân / tường / thùng khác / rào / bậc thang / cửa đóng / nút: dừng ngay trước vật cản; xe đứng yên; thung-di { nguon "giat", tu, den, soO } (' + tong + ' ca)', ok === tong, ok + '/' + tong);
-  const di = T(['.....', '.D.H.', '.....'], { x: 4, y: 1, huong: 1 }, BAN);
-  kiem('thùng trượt qua ô đích mà KHÔNG dừng ở đó (đích ở (1,1), thùng dừng ở mép (0,1)): chưa thắng ở nhịp đó, còn trên sân', !di.thang && di.thung[0].x === 0 && di.thung[0].y === 1);
-  const dichSat = T(['#D.H..', '######'.slice(0, 6)], { x: 4, y: 0, huong: 1 }, BAN);
-  kiem('thùng trượt tới ô đích sát tường thì thắng ngay (mục tiêu day-thung), 1 nhịp', dichSat.thang && dichSat.nhip === 1 && ev(dichSat, 'xong-day-thung').length === 1 || (dichSat.thang && dichSat.nhip === 1));
-  kiem('thùng ngay TRƯỚC mặt xe: shoot_back() giật xe tới đúng vào thùng, thùng trượt đi xa phía trước tới mép; xe vẫn đứng yên; giat { di false, thung 1 }', (() => {
+  kiem('ô sau thùng là mép sân / tường / thùng khác / rào / bậc thang / cửa đóng / nút: cả xe lẫn thùng đứng yên, thung-chan kieu "giat" nêu đúng vật, không thung-di, giat { di false, vat "thung-nang" } (' + tong + ' ca)', ok === tong, ok + '/' + tong);
+  const di = T(['.....', '.D.H.', '.....'], { x: 4, y: 1, huong: 1 }, BAN + BAN);
+  kiem('đích cách thùng hai ô: phát đầu thùng nhích một ô (chưa thắng), phát hai thùng lên đích thì thắng ngay (nhịp 2)', di.thang && di.nhip === 2 && di.thung[0].x === 1 && nhipVet(di)[0].thung[0].x === 2 && viTri(di.robot) === '2,1');
+  const dichSat = T(['#D.H..', '######'.slice(0, 6)], { x: 4, y: 0, huong: 1 }, BAN + BAN);
+  kiem('thùng nhích tới ô đích sát tường thì thắng ngay (mục tiêu day-thung, xong-day-thung), không cần dừng ở vật cản', dichSat.thang && dichSat.nhip === 2 && ev(dichSat, 'xong-day-thung').length === 1 && dichSat.thung[0].x === 1);
+  kiem('thùng ngay TRƯỚC mặt xe: shoot_back() giật xe tới đúng vào thùng, thùng nhích một ô về phía trước, xe vào ô thùng vừa rời; giat { di true, thung 1 }', (() => {
     const k = T(['.....', '.....', '..H..', '.....', '.....'], { x: 2, y: 3, huong: 0 }, BAN_SAU);
-    return k.thung[0].y === 0 && viTri(k.robot) === '2,3' && ev(k, 'thung-di')[0].soO === 2 && ev(k, 'giat')[0].di === false && ev(k, 'giat')[0].thung === 1;
+    return k.thung[0].y === 1 && viTri(k.robot) === '2,2' && ev(k, 'thung-di')[0].soO === 1 && ev(k, 'giat')[0].di === true && ev(k, 'giat')[0].thung === 1;
+  })());
+  kiem('bệ súng xích (cfg.beSung) bắn tụ không giật nên không đẩy thùng; bắn nhanh "fast" không giật nên không đẩy; tia nước trúng thùng không đẩy thùng', (() => {
+    const be = SanHoc.chay({ san: ['.....', '.H...', '.....'], batDau: { x: 2, y: 1, huong: 1 }, loaiRobot: 'xich', hamGoc: BANH.concat(HOI), mucTieu: 'day-thung', beSung: true }, BAN);
+    const nhanh = T(['.....', '.H...', '.....'], { x: 2, y: 1, huong: 1 }, 'shoot("fast")\nwait()\n', { lucBan: true });
+    const tia = T(['.....', '...H.', '.....'], { x: 2, y: 1, huong: 1 }, BAN);                  // tia bay phải trúng thùng (3,1); xe giật trái vào ô trống
+    return be.thung[0].x === 1 && viTri(be.robot) === '2,1' && ev(be, 'thung-di').length === 0 && nhanh.thung[0].x === 1 && viTri(nhanh.robot) === '2,1' && ev(nhanh, 'thung-di').length === 0 &&
+      tia.thung[0].x === 3 && viTri(tia.robot) === '1,1' && ev(tia, 'ban')[0].trung === 'thung' && ev(tia, 'thung-di').length === 0;
   })());
   const chanNgay = T(['.....', '#H...', '.....'], { x: 2, y: 1, huong: 1 }, BAN);
   kiem('thùng nằm sát vật cản ngay sau lưng: cả xe lẫn thùng đứng yên, ghi thung-chan kieu "giat" (lỗi) và không có thung-di', chanNgay.thung[0].x === 1 && viTri(chanNgay.robot) === '2,1' && maSK(chanNgay, 'thung-chan').length === 1 && maSK(chanNgay, 'thung-chan')[0].kieu === 'giat' && maSK(chanNgay, 'thung-chan')[0].vat === 'tuong' && ev(chanNgay, 'thung-di').length === 0);
@@ -271,15 +285,15 @@ console.log('\n== 4. Nút đổi trạng thái; cửa và băng chuyền theo n�
     const k2 = chay(['C.H..', '.....'], { x: 3, y: 0, huong: 1 }, BAN, { mucTieu: 'day-thung' });
     return maSK(k1, 'giat-chan')[0] && maSK(k1, 'giat-chan')[0].vat === 'cua' && k2.thung[0].x === 1;
   })());
-  // thùng đi trong nhịp bắn nút mở cửa: cửa vẫn mở lúc thùng trượt qua
-  const SC = ['N.H.C.D', '#######'];
-  const xt = chay(SC, { x: 1, y: 0, huong: 3 }, BAN, { mucTieu: 'day-thung' });
-  const xt2 = chay(SC, { x: 1, y: 0, huong: 3 }, BAN_SAU.replace('shoot_back', 'shoot'), { mucTieu: 'day-thung' });
-  void xt; void xt2;
-  kiem('cú giật đẩy thùng qua cửa mở ngay trong nhịp bắn nút: cửa đổi sau cùng nên thùng trượt qua (cửa đang mở lúc đó), rồi cửa đóng ở cuối nhịp', (() => {
-    const rows = ['N.H.c.D'];
-    const k = chay(rows, { x: 1, y: 0, huong: 3 }, BAN_SAU.replace('shoot_back', 'shoot'), { mucTieu: 'day-thung' });    // quay trái, shoot() bóng trái trúng nút, giật phải: thùng (2,0) trượt qua cửa mở (4,0) tới đích (6,0)
-    return k.thang && k.thung[0].x === 6 && ev(k, 'cua-doi').length === 1 && ev(k, 'cua-doi')[0].mo === false && k.nhip === 1;
+  // thùng nhích trong nhịp bắn nút: cửa đổi ở CUỐI nhịp nên thùng vào được ô cửa đang mở; cửa định đóng mà thùng nằm đó thì kẹt
+  kiem('cú giật đẩy thùng vào ô cửa đang mở ngay trong nhịp bắn nút bảo đóng: thùng nhích 1 ô vào ô cửa (cửa đổi sau cùng), cuối nhịp cửa không đóng được (cua-ket voi "vat"), xe theo 1 ô', (() => {
+    const k = chay(['N.Hc..'], { x: 1, y: 0, huong: 3 }, BAN, { mucTieu: 'day-thung' });    // quay trái, shoot() tia trái trúng nút, giật phải: thùng (2,0) vào ô cửa mở (3,0)
+    return k.thung[0].x === 3 && viTri(k.robot) === '2,0' && cuaTai(k, 3, 0).mo === true && ev(k, 'cua-ket').length === 1 && ev(k, 'cua-ket')[0].voi === 'vat' && ev(k, 'cua-doi').length === 0;
+  })());
+  kiem('cửa đang mở (c), không có nút: hai phát shoot_back() đẩy thùng qua ô cửa tới đích, mỗi phát một ô (nhịp 1 thùng nằm trong ô cửa, nhịp 2 lên đích, thắng), xe theo sát', (() => {
+    const k = chay(['#.#', '#H#', '#c#', '#D#', '###'], { x: 1, y: 0, huong: 2 }, BAN_SAU + BAN_SAU, { mucTieu: 'day-thung' });
+    const n = nhipVet(k);
+    return k.thang && k.nhip === 2 && n[0].thung[0].y === 2 && n[0].robot.y === 1 && k.thung[0].y === 3 && viTri(k.robot) === '1,2';
   })());
   // man.noi
   const SN = ['C.C', '...', 'N.N'];
@@ -306,8 +320,8 @@ console.log('\n== 4. Nút đổi trạng thái; cửa và băng chuyền theo n�
     return k0.thung[0].x === 1 && void k === undefined && kc.thung[0].x === 3 || kc.thung[0].x === 3;
   })());
   kiem('thùng kẹt vào góc không phải ô đích: dừng ngay (dungSom "thung-ket", thung-ket lỗi); góc có ô đích thì không kẹt', (() => {
-    const k = chay(['.....', '.....', '..H.x'.replace('x', '.')], { x: 3, y: 2, huong: 1 }, BAN, { mucTieu: 'day-thung' });     // thùng (2,2) trượt trái tới (0,2) góc dưới trái
-    const kd = chay(['.....', '.....', 'D.H..'], { x: 3, y: 2, huong: 1 }, BAN, { mucTieu: 'day-thung' });
+    const k = chay(['.....', '.....', '.H...'], { x: 2, y: 2, huong: 1 }, BAN, { mucTieu: 'day-thung' });     // thùng (1,2) nhích trái vào (0,2) góc dưới trái
+    const kd = chay(['.....', '.....', 'DH...'], { x: 2, y: 2, huong: 1 }, BAN, { mucTieu: 'day-thung' });
     return k.dungSom === 'thung-ket' && maSK(k, 'thung-ket').length === 1 && kd.thang && kd.dungSom === null;
   })());
 }
@@ -401,10 +415,10 @@ console.log('\n== 6. daoChieu "sung"; phần cứng thiếu một nòng (lenh-go
     return dung.bongMo.thung.length === 1 && dung.bongMo.thung[0].x === 0;
   })());
   const t1 = BM({ x: 3, y: 2, huong: 1, thung: [{ x: 0, y: 2 }] }, L('shoot()', 'wait()'));
-  kiem('bongMo.thung: ví dụ cụ thể — xe ở (3,2) quay phải giật lùi vào (2,2) rồi thùng (1,2) bị nhận cú giật thứ hai: dùng hai phát để thùng trượt tới (0,2) và xe về đúng (2,2)', (() => {
-    const k = chay(SANT, { x: 3, y: 2, huong: 1 }, BAN + BAN, { mucTieu: 'bong-mo', bongMo: { x: 2, y: 2, huong: 1, thung: [{ x: 0, y: 2 }] } });
-    const k0 = chay(SANT, { x: 3, y: 2, huong: 1 }, BAN + BAN, { mucTieu: 'bong-mo', bongMo: { x: 2, y: 2, huong: 1, thung: [{ x: 4, y: 2 }] } });
-    const k1 = chay(SANT, { x: 3, y: 2, huong: 1 }, BAN + BAN, { mucTieu: 'bong-mo', bongMo: { x: 2, y: 2, huong: 1, thung: [{ x: 0, y: 2 }, { x: 4, y: 4 }] } });
+  kiem('bongMo.thung: ví dụ cụ thể — xe ở (3,2) quay phải giật lùi vào (2,2) rồi thùng (1,2) nhận cú giật thứ hai: hai phát thì thùng nhích tới (0,2) và xe theo vào (1,2)', (() => {
+    const k = chay(SANT, { x: 3, y: 2, huong: 1 }, BAN + BAN, { mucTieu: 'bong-mo', bongMo: { x: 1, y: 2, huong: 1, thung: [{ x: 0, y: 2 }] } });
+    const k0 = chay(SANT, { x: 3, y: 2, huong: 1 }, BAN + BAN, { mucTieu: 'bong-mo', bongMo: { x: 1, y: 2, huong: 1, thung: [{ x: 4, y: 2 }] } });
+    const k1 = chay(SANT, { x: 3, y: 2, huong: 1 }, BAN + BAN, { mucTieu: 'bong-mo', bongMo: { x: 1, y: 2, huong: 1, thung: [{ x: 0, y: 2 }, { x: 4, y: 4 }] } });
     return k.thang === true && k0.thang === false && k1.thang === false && void t1 === undefined;
   })());
   kiem('bongMo.thung sai cấu hình: không phải mảng ô, ô nằm trong tường → lỗi cấu hình tiếng Việt', /bongMo\.thung phải là mảng/.test(loi(() => BM({ x: 3, y: 2, huong: 1, thung: 5 }, ''))) && /thùng không đứng được/.test(loi(() => chay(['..#..', '.....'], { x: 0, y: 1, huong: 1 }, '', { mucTieu: 'bong-mo', bongMo: { x: 0, y: 1, huong: 1, thung: [{ x: 2, y: 0 }] } }))));
@@ -416,7 +430,7 @@ console.log('\n== 6. daoChieu "sung"; phần cứng thiếu một nòng (lenh-go
   })());
   // sân thử của Xưởng
   const thu = ChamHoc.thuHam(Object.assign({}, man(5)), { chinh: [], hamCuaMan: [] }, 'dap', [H('dap', ['shoot()', 'wait()'])], { sanThu: { rong: 5, cao: 5, batDau: { x: 3, y: 2, huong: 1 }, thung: [{ x: 2, y: 2 }], nut: [], cua: [] } });
-  kiem('sân thử của Xưởng hàm: đặt thùng nặng ngay sau xe, hàm của em gọi shoot() thì thùng trượt tới mép (thung-di nguon "giat" trong vết, thung trả về)', thu.thung && thu.thung.length === 1 && thu.thung[0].x === 0 && thu.robot.x === 3 && ev(thu, 'thung-di').length === 1, J([thu.thung, thu.robot, thu.chanDoan.map((c) => c.ma)]));
+  kiem('sân thử của Xưởng hàm: đặt thùng nặng ngay sau xe, hàm của em gọi shoot() thì thùng nhích một ô và xe theo một ô (thung-di nguon "giat" trong vết, thung trả về)', thu.thung && thu.thung.length === 1 && thu.thung[0].x === 1 && thu.robot.x === 2 && ev(thu, 'thung-di').length === 1, J([thu.thung, thu.robot, thu.chanDoan.map((c) => c.ma)]));
   const thu2 = ChamHoc.thuHam(Object.assign({}, man(5)), { chinh: [], hamCuaMan: [] }, 'dap', [H('dap', ['shoot_back()', 'wait()'])], { sanThu: { rong: 5, cao: 5, batDau: { x: 3, y: 2, huong: 1 }, nut: [{ x: 0, y: 2 }], cua: [{ x: 4, y: 0, mo: false }] } });
   kiem('sân thử của Xưởng: nút đặt ở phía sau xe, shoot_back() bắn trúng nút (cửa trong sân thử đổi), xe giật tới', thu2.nut.length === 1 && thu2.nut[0].bat === true && thu2.cua[0].mo === true && thu2.robot.x === 4, J([thu2.nut, thu2.cua, thu2.robot]));
 }
@@ -434,7 +448,7 @@ console.log('\n== 7. Bộ dò đường tắt (BFS theo nhịp, có giới hạn
   kiem('bộ dò: cờ bị cửa chặn mà không có nút → không tới được (null, không cắt ngang)', (() => { const k = nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['.C.F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: a.hamGoc }); return k.nhip === null && !k.catNgang; })());
   kiem('bộ dò có GIỚI HẠN: toiDaTrangThai nhỏ thì cắt ngang (catNgang true)', (() => { const k = nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['.......', '.......', '.......', '.......', '......F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: a.hamGoc }, { toiDaTrangThai: 5 }); return k.catNgang === true && k.nhip === null; })());
   kiem('bộ dò: không hỗ trợ vật nhẹ / tay kẹp / xích: ném lỗi rõ', /không hỗ trợ vật nhẹ/.test(loi(() => nhipSungHoiNganNhat(Object.assign({}, a, { san: ['.o.F'], batDau: { x: 0, y: 0, huong: 1 } })))) && /chỉ biết xe hai bánh/.test(loi(() => nhipSungHoiNganNhat(Object.assign({}, a, { loaiRobot: 'xich' })))));
-  kiem('bộ dò: thùng sau xe + đích sát tường = 1 nhịp (shoot); thùng kẹt góc là trạng thái chết (BFS bỏ)', nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['#######', '#D.H..#', '#######'], batDau: { x: 4, y: 1, huong: 1 }, mucTieu: 'day-thung', hamGoc: a.hamGoc }).nhip === 1 &&
+  kiem('bộ dò: thùng sau xe cách đích hai ô = 2 nhịp (hai phát shoot, mỗi phát nhích một ô); thùng kẹt góc là trạng thái chết (BFS bỏ)', nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['#######', '#D.H..#', '#######'], batDau: { x: 4, y: 1, huong: 1 }, mucTieu: 'day-thung', hamGoc: a.hamGoc }).nhip === 2 &&
     nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['.....', '.....', '..H..'], batDau: { x: 2, y: 1, huong: 2 }, mucTieu: 'day-thung', hamGoc: a.hamGoc }).nhip === null);
 
   // so chéo ngẫu nhiên
@@ -585,20 +599,20 @@ const BANG = [];
     const k3 = khoTruoc(m3.id), ok = ChamHoc.cham(m3, m3.loiGiai, k3), sai = ChamHoc.cham(m3, m3.loiSai[1].baiLam, k3);
     return ok.thang && sai.nut[0].bat === false && ok.theoSan[0].nut[0].bat === true;
   })());
-  kiem('19.4 Thùng sau lưng: cú giật đẩy thùng vào đích sát tường trong 1 nhịp; húc thùng bằng bánh thì dam-tuong vat thung-nang', (() => {
-    const k4 = khoTruoc(m4.id), ok = ChamHoc.cham(m4, m4.loiGiai, k4), sai = ChamHoc.cham(m4, m4.loiSai[0].baiLam, k4);
-    return ok.soNhip === 1 && ok.thung[0].x === 1 && sai.suKien === undefined || (ok.soNhip === 1 && maCua(sai).includes('dam-tuong'));
+  kiem('19.4 Thùng sau lưng: hai phát, mỗi phát thùng nhích một ô, xe theo sát, thùng vào đích sát tường ở nhịp 2 (xe dừng ở (2,1)); một phát thì chưa (lời sai 3); húc thùng bằng bánh thì dam-tuong vat thung-nang', (() => {
+    const k4 = khoTruoc(m4.id), ok = ChamHoc.cham(m4, m4.loiGiai, k4), sai = ChamHoc.cham(m4, m4.loiSai[0].baiLam, k4), mot = ChamHoc.cham(m4, m4.loiSai[2].baiLam, k4);
+    return ok.soNhip === 2 && ok.thung[0].x === 1 && ok.theoSan[0].robot.x === 2 && maCua(sai).includes('dam-tuong') && !mot.thang && mot.thung[0].x === 2;
   })());
-  kiem('19.5 Hai thùng hai phía: 2 nhịp, shoot() đẩy thùng sau xe và shoot_back() đẩy thùng trước mặt; thứ tự hai phát đổi chỗ cũng thắng', (() => {
-    const k5 = khoTruoc(m5.id);
-    return ChamHoc.cham(m5, { chinh: nhieuL(BAN_SAU, BAN) }, k5).thang;
+  kiem('19.5 Hai thùng hai phía: 3 nhịp, shoot() đẩy thùng sau xe (xe lùi theo) rồi shoot_back() hai lần (lần đầu chỉ đưa xe về chỗ cũ, lần hai đẩy thùng trước mặt); thứ tự hai chiều đổi chỗ (shoot_back, shoot, shoot) cũng thắng 3 nhịp', (() => {
+    const k5 = khoTruoc(m5.id), r = ChamHoc.cham(m5, { chinh: nhieuL(BAN_SAU, BAN, BAN) }, k5);
+    return r.thang && r.soNhip === 3 && ChamHoc.cham(m5, m5.loiGiai, k5).soNhip === 3;
   })());
   kiem('19.6 Quay rồi đẩy: thùng trước xe đẩy bằng shoot_back (không quay), thùng bên phải cần quay trái rồi shoot; hoặc quay phải rồi shoot_back; 3 nhịp', (() => {
     const k6 = khoTruoc(m6.id);
     const cach2 = ChamHoc.cham(m6, { chinh: ['shoot_back()', 'wait()', 'turn_right()', 'shoot_back()', 'wait()'] }, k6);
     return ChamHoc.cham(m6, m6.loiGiai, k6).soNhip === 3 && cach2.thang && cach2.soNhip === 3;
   })());
-  kiem('19.7 Thùng đi băng: thùng trượt tới mép sân đúng đầu làn băng, băng đưa thùng xuống đích sau 5 nhịp chờ (6 nhịp tổng); nút không có trong màn', (() => {
+  kiem('19.7 Thùng đi băng: cú giật đẩy thùng một ô lên đầu làn băng, băng đưa thùng xuống đích sau 5 nhịp chờ (6 nhịp tổng); nút không có trong màn', (() => {
     const k7 = khoTruoc(m7.id), r7 = ChamHoc.cham(m7, m7.loiGiai, k7);
     return r7.soNhip === 6 && ev({ vet: r7.vet }, 'thung-di').some((e) => e.nguon === 'giat') && ev({ vet: r7.vet }, 'thung-di').filter((e) => e.nguon === 'bang').length === 3 && !/N/.test(m7.san.join(''));
   })());
@@ -606,13 +620,13 @@ const BANG = [];
     const k8 = khoTruoc(m8.id), cham = ChamHoc.cham(m8, m8.loiSai[0].baiLam, k8), nhanh = ChamHoc.cham(m8, m8.loiGiai, k8);
     return nhanh.soNhip === 8 && cham.thang && cham.soNhip > 8 && cham.sao < 3 && m8.san[0][1] === 'N' && m8.san[1][1] === 'F';
   })());
-  kiem('19.9 Thùng chắn tia nước: nút ở tường bên trái bị thùng chắn; đẩy thùng lên khỏi hàng nút, quay trái bắn nút, rồi lùi qua cửa tới cờ (6 nhịp); bắn nút khi thùng còn chắn thì cửa không mở', (() => {
+  kiem('19.9 Thùng chắn tia nước: nút ở tường bên trái bị thùng chắn; đẩy thùng lên một ô khỏi hàng nút (xe theo vào đúng hàng nút), quay trái bắn nút, rồi lùi qua cửa tới cờ (5 nhịp); bắn nút khi thùng còn chắn thì cửa không mở', (() => {
     const k9 = khoTruoc(m9.id), r9 = ChamHoc.cham(m9, m9.loiGiai, k9), sai = ChamHoc.cham(m9, m9.loiSai[3].baiLam, k9);
-    return r9.soNhip === 6 && r9.thang && !sai.thang && sai.theoSan[0].nut[0].bat === false;
+    return r9.soNhip === 5 && r9.thang && !sai.thang && sai.theoSan[0].nut[0].bat === false;
   })());
-  kiem('19.10 Kho hàng: ba thùng, ba đích; bắn nút hai lần liền (mở cửa rồi đóng lại) trong khi cú giật thứ hai đẩy thùng thứ ba qua cánh cửa còn mở; 6 nhịp; lời giải đúng 10 dòng; ban-nut-lai không ghi khi đã thắng', (() => {
+  kiem('19.10 Kho hàng: hai thùng, hai đích; thùng trước mặt lên đích (xe theo vào hàng nút), bắn nút một lần mở cửa (xe giật sang đứng ngay trên thùng hai), quay lên bắn hai phát đẩy thùng hai qua cửa mở tới đích (tia bay lên tường, nút không bị bắn lại); 6 nhịp; lời giải 9 dòng', (() => {
     const k10 = khoTruoc(m10.id), r10 = ChamHoc.cham(m10, m10.loiGiai, k10);
-    return r10.thang && r10.soNhip === 6 && m10.loiGiai.chinh.length === 10 && r10.theoSan[0].thung.length === 3 && r10.chanDoan.length === 0 && ev({ vet: r10.vet }, 'nut-doi').length === 2;
+    return r10.thang && r10.soNhip === 6 && m10.loiGiai.chinh.length === 9 && r10.theoSan[0].thung.length === 2 && r10.chanDoan.length === 0 && ev({ vet: r10.vet }, 'nut-doi').length === 1 && ev({ vet: r10.vet }, 'cua-ket').length === 0;
   })());
 
   console.log('\n  Bảng 10 màn sung-hoi (lời giải chuẩn; BFS = nhịp ngắn nhất)');

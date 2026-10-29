@@ -134,10 +134,10 @@
     // chương Chế lệnh súng hơi (jet_back, jet_fwd, kick_right, tap_right, kick_left, kick_ahead; fixed_jet, fixed_kick, go_out, come_back là hàm CỦA MÀN nên không có ở đây)
     m('jet_back', 'hoi', 'Lùi một ô bằng cú giật của vòi phun, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.1'),
     m('jet_fwd', 'hoi', 'Tiến một ô bằng cú giật của đầu phun sau, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.2'),
-    m('kick_right', 'hoi', 'Đá thùng nặng bên phải xe trượt sang phải, xe giữ chỗ và hướng', 'che-sung-hoi', 'che-sung-hoi.4'),
+    m('kick_right', 'hoi', 'Đá thùng nặng bên phải xe nhích sang phải một ô, xe theo một ô, giữ hướng', 'che-sung-hoi', 'che-sung-hoi.4'),
     m('tap_right', 'hoi', 'Bắn van bên phải xe rồi về đúng chỗ cũ, mặt vẫn quay như cũ', 'che-sung-hoi', 'che-sung-hoi.5'),
-    m('kick_left', 'hoi', 'Đá thùng nặng bên trái xe trượt sang trái, xe giữ chỗ và hướng', 'che-sung-hoi', 'che-sung-hoi.6'),
-    m('kick_ahead', 'hoi', 'Đá thùng nặng ngay trước mặt trượt đi xa, xe quay mặt như cũ', 'che-sung-hoi', 'che-sung-hoi.8'),
+    m('kick_left', 'hoi', 'Đá thùng nặng bên trái xe nhích sang trái một ô, xe theo một ô, giữ hướng', 'che-sung-hoi', 'che-sung-hoi.6'),
+    m('kick_ahead', 'hoi', 'Đá thùng nặng ngay trước mặt nhích lên một ô, xe theo một ô, quay mặt như cũ', 'che-sung-hoi', 'che-sung-hoi.8'),
     // chương Lực bắn (tap_left, pick_fire là hàm của màn nên không có ở đây)
     m('fire', 'hoi', 'Bắn ra trước với lực p, "fast" hay "charge", rồi chờ một nhịp', 'luc-ban', 'luc-ban.4'),
     m('fire_back', 'hoi', 'Bắn ra sau với lực p rồi chờ một nhịp', 'luc-ban', 'luc-ban.5'),

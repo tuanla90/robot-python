@@ -310,8 +310,8 @@
     "nhip": 20
   },
   "che-sung-hoi.7": {
-    "o": 11,
-    "nhip": 4
+    "o": 15,
+    "nhip": 5
   },
   "che-nhen.8": {
     "o": 14,

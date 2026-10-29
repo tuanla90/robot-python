@@ -2,7 +2,7 @@
    man-che-sung-hoi.js — "Robot Chấn Hưng": CHƯƠNG `che-sung-hoi` · CHẾ LỆNH SÚNG HƠI (10 màn). Kế hoạch "Chế lệnh" (KE-HOACH-CHE-LENH.md, mục 5c.3, 15/10): chương chế lệnh đi sau chương `sung-hoi`.
    Robot là XE HAI BÁNH gắn SÚNG HƠI hai nòng: robot { than: 'hai-banh', tay: 'hoi', camBien: [] }.
    Lệnh gốc (luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI), đều chỉ RA LỆNH, wait() cho nhịp trôi, mỗi nhịp một phát, cặp lệnh ngược shoot ↔ shoot_back:
-       shoot() bắn bóng ra TRƯỚC, xe giật LÙI một ô · shoot_back() bắn bóng ra SAU, xe giật TỚI một ô · ô giật vào có thùng nặng thì thùng trượt đi xa, xe đứng yên · ô bị chặn thì xe đứng yên.
+       shoot() bắn bóng ra TRƯỚC, xe giật LÙI một ô · shoot_back() bắn bóng ra SAU, xe giật TỚI một ô · ô giật vào có thùng nặng thì thùng NHÍCH 1 Ô và xe theo 1 ô (luật 29/10) · ô bị chặn thì xe đứng yên.
    Luật thiết kế như che-xe và che-nam-cham: lệnh gốc chỉ đổi MỘT trạng thái; động tác hay (lùi bằng giật, đá thùng sang bên, bắn nút rồi về chỗ cũ…) là thứ NGƯỜI CHƠI TỰ CHẾ.
    Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (hay `baiLam` cho hàm của màn).
 
@@ -15,10 +15,10 @@
    Hàm của em MỚI (tên cốt truyện, khóa trong kho):
      che-sung-hoi.1 jet_back()   = shoot(), wait()                                                           lùi một ô bằng cú giật (1 nhịp)
      che-sung-hoi.2 jet_fwd()    = shoot_back(), wait()                                                      tiến một ô bằng cú giật (1 nhịp)
-     che-sung-hoi.4 kick_right() = turn_left(), shoot(), wait(), turn_right()                                đá thùng bên phải xe sang phải, xe giữ chỗ và hướng (3 nhịp)
+     che-sung-hoi.4 kick_right() = turn_left(), shoot(), wait(), turn_right()                                đá thùng bên phải xe nhích sang phải một ô, xe theo một ô, hướng giữ như cũ (3 nhịp)
      che-sung-hoi.5 tap_right()  = turn_right(), shoot(), wait(), move(), turn_left()                        bắn nút bên phải rồi về đúng chỗ cũ (4 nhịp): cú giật đẩy xe lùi một ô nên phải tiến lại
-     che-sung-hoi.6 kick_left()  = turn_right(), shoot(), wait(), turn_left()                                đá thùng bên trái xe sang trái, xe giữ chỗ và hướng (3 nhịp)
-     che-sung-hoi.8 kick_ahead() = u_turn(), shoot(), wait(), u_turn()                                       đá thùng ngay trước mặt bằng nòng trước (nòng sau hỏng): quay đầu, bắn, quay đầu lại (3 nhịp)
+     che-sung-hoi.6 kick_left()  = turn_right(), shoot(), wait(), turn_left()                                đá thùng bên trái xe nhích sang trái một ô, xe theo một ô, hướng giữ như cũ (3 nhịp)
+     che-sung-hoi.8 kick_ahead() = u_turn(), shoot(), wait(), u_turn()                                       đá thùng ngay trước mặt lên một ô bằng nòng trước (nòng sau hỏng): quay đầu, bắn, quay đầu lại (3 nhịp)
    HÀM CỦA MÀN (hàm chỉ đúng cho MỘT màn thì không vào kho, người chơi tự viết / sửa thân trong màn; `maMau.hamCuaMan`, không `taoHam`, không có trong Sổ lệnh):
      che-sung-hoi.7 fixed_kick() thân ban đầu = kick_right() cũ (súng lắp ngược nên xe giật sai chiều); lời giải đổi shoot() thành shoot_back()          (daoChieu ['sung'])
      che-sung-hoi.9 go_out() = jet_back(), turn_right(), jet_back(), jet_back() (khóa, xem được); come_back() thân ban đầu `pass`, lời giải jet_fwd(), jet_fwd(), turn_left(), jet_fwd()   đi NGƯỢC lại go_out()
@@ -64,14 +64,14 @@
   var C_2 = ['jet_fwd()'];
   var C_4 = ['kick_right()'];
   var C_5 = ['tap_right()', 'forward(2)'];
-  var C_6 = ['kick_right()', 'kick_left()'];
+  var C_6 = ['kick_right()', 'move()', 'kick_left()'];                   // luật giật một ô: đá xong thùng phải, xe đã theo một ô; tiến một ô thì thùng kia nằm ngay bên trái
   var C_7 = ['fixed_kick()'];
   var C_8 = ['kick_ahead()'];
   var C_9 = ['go_out()', 'come_back()'];
   // 3 (người chơi tự viết): lùi ba ô qua ◆, rồi tiến hai ô
   var L_3 = nhieu(LAP(3, 'jet_back()'), ['jet_fwd()', 'jet_fwd()']);
-  // 10 (người chơi tự viết): đá hai thùng, tiến một ô, bắn nút rồi về chỗ cũ, tiến hai ô qua cửa
-  var L_10 = ['kick_right()', 'kick_left()', 'forward(1)', 'tap_right()', 'forward(2)'];
+  // 10 (người chơi tự viết): đá thùng phải (xe theo một ô), tiến một ô là thùng kia ở bên trái, đá nó (xe theo một ô), tiến một ô tới hàng van, bắn van rồi về chỗ cũ, tiến hai ô qua cửa
+  var L_10 = ['kick_right()', 'forward(1)', 'kick_left()', 'forward(1)', 'tap_right()', 'forward(2)'];
 
   /** Điền các trường chung của chương (không đụng tới trường màn đã khai). */
   function man(m) {
@@ -94,19 +94,20 @@
   // 3: hành lang đứng 3×9, xe (1,3) quay mặt lên; ◆ ở (1,6) cách xe ba ô phía sau; xe mờ ở (1,4) cách xe một ô phía sau
   var SAN_3 = ['###', '#.#', '#.#', '#.#', '#.#', '#.#', '#.#', '#.#', '###'];
   var BD_3 = { x: 1, y: 3, huong: 0 };
-  // 4: thùng ngay bên phải xe ở (3,2); đá sang phải thì trượt tới mép sân (4,2)
+  // 4: thùng ngay bên phải xe ở (3,2); đá sang phải thì thùng nhích tới mép sân (4,2), xe theo vào (3,2)
   var SAN_4 = ['.....', '.....', '...H.', '.....', '.....'];
   // 5: xe (2,2) quay mặt lên, cửa ở (2,1) chắn đường lên (2,0); nút ở tường bên phải (4,2)
   var SAN_5 = ['##.##', '##C##', '#...N', '#####'];
-  // 6: hai thùng ngay hai bên xe ở (1,2) và (3,2); đá ra hai mép sân (0,2) và (4,2)
-  var SAN_6 = ['.....', '.....', '.H.H.', '.....', '.....'];
-  // 8: thùng ngay trước xe ở (2,1); đá lên thì trượt tới mép trên (2,0)
+  // 6: thùng phải ở (3,2) ngay bên phải xe (2,2); đá xong xe ở (3,2), tiến một ô lên (3,1) thì thùng kia (2,1) nằm ngay bên trái; đá nó sang (1,1), xe theo vào (2,1)
+  var SAN_6 = ['.....', '..H..', '...H.', '.....', '.....'];
+  // 8: thùng ngay trước xe ở (2,1); đá lên thì thùng nhích tới mép trên (2,0), xe theo vào (2,1)
   var SAN_8 = ['.....', '..H..', '.....', '.....', '.....'];
   // 9: sân trống 5×5; go_out() đưa xe từ (3,1) lùi xuống (3,2), quay phải, lùi hai ô tới (1,2) quay mặt phải
   var BD_9 = { x: 3, y: 1, huong: 0 };
-  // 10: xe (3,3) quay mặt lên giữa hai thùng (2,3) và (4,3); nút ở tường bên phải (6,2); cửa (3,1) chắn đường lên chỗ xe mờ (3,0)
-  var SAN_10 = ['###.###', '###C###', '......N', '..H.H..', '#######'];
-  var BD_10 = { x: 3, y: 3, huong: 0 };
+  // 10: xe (3,4) quay mặt lên; thùng phải (4,4), thùng kia (3,3) ngay trước mặt; đá phải xong xe ở (4,4), tiến lên (4,3) thì thùng kia ở bên trái, đá nó sang (2,3), xe ở (3,3);
+  //     tiến lên hàng van (3,2), nút ở tường bên phải (6,2), tap_right giật xe sang (2,2) rồi tiến lại; cửa (3,1) chắn đường lên chỗ xe mờ (3,0)
+  var SAN_10 = ['###.###', '###C###', '......N', '...H...', '....H..', '#######'];
+  var BD_10 = { x: 3, y: 4, huong: 0 };
 
   var DS = [
     /* ------------------------------------------------------------ hàng 1: làm quen */
@@ -182,10 +183,10 @@
     /* ------------------------------------------------------------ hàng 2: luyện */
     man({
       so: 4, ten: 'Đá thùng sang phải', hang: 'luyen', hamCuaEmCan: ['turn_left', 'turn_right'], taoHam: ['kick_right'],
-      deBai: 'Một thùng nặng nằm ngay bên phải xe. Chương trình chính chỉ gọi kick_right(): em tự chế lệnh này để đá thùng trượt sang phải. Xe giữ chỗ và hướng, giống xe mờ và thùng mờ.',
+      deBai: 'Một thùng nặng nằm ngay bên phải xe. Chương trình chính chỉ gọi kick_right(): em tự chế lệnh này để đá thùng nhích sang phải một ô. Xe theo thùng một ô, hướng giữ như cũ, giống xe mờ và thùng mờ.',
       veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi kick_right(). Mở Xưởng hàm, tạo kick_right() rồi bấm Chạy.',
       san: SAN_4, batDau: BD_5X5,
-      bongMo: { x: 2, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] },
+      bongMo: { x: 3, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] },
       chinhCoDinh: true,
       maMau: { chinh: C_4.slice() },
       sao: { o: 9, nhip: 3 },
@@ -201,7 +202,7 @@
         { moTa: 'Quay phải rồi bắn ra trước: xe giật sang trái, xa khỏi thùng', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('kick_right', ['turn_right()', 'shoot()', 'wait()', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi kick_right() mà chưa chế hàm', baiLam: { chinh: C_4.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Xe phải giật về phía thùng. Mặt xe quay trái thì bắn ra trước sẽ giật sang phải.', 'Đá xong thì quay lại cho mặt xe như lúc đầu.']
+      goiY: ['Xe phải giật về phía thùng. Mặt xe quay trái thì bắn ra trước sẽ giật sang phải: thùng nhích một ô, xe theo một ô.', 'Đá xong thì quay lại cho mặt xe như lúc đầu.']
     }),
 
     man({
@@ -229,14 +230,14 @@
     }),
 
     man({
-      so: 6, ten: 'Đá thùng sang trái', hang: 'luyen', hamCuaEmCan: ['kick_right', 'turn_left', 'turn_right'], taoHam: ['kick_left'],
-      deBai: 'Hai thùng nặng nằm hai bên xe. Chương trình chính gọi kick_right() rồi kick_left(): kick_right() em đã chế, còn kick_left() em tự chế để đá thùng bên trái sang trái. Xe giữ chỗ và hướng.',
-      veMaMau: 'Chương trình chính bị khóa: kick_right() rồi kick_left(). Mở Xưởng hàm, tạo kick_left() rồi bấm Chạy.',
+      so: 6, ten: 'Đá thùng sang trái', hang: 'luyen', hamCuaEmCan: ['kick_right', 'move', 'turn_left', 'turn_right'], taoHam: ['kick_left'],
+      deBai: 'Hai thùng nặng: một ngay bên phải xe, một ở bên trái phía trước. Chương trình chính gọi kick_right(), move() rồi kick_left(): đá xong thùng phải, xe đã theo một ô, tiến một ô là thùng kia nằm ngay bên trái. kick_left() em tự chế để đá nó sang trái.',
+      veMaMau: 'Chương trình chính bị khóa: kick_right(), move() rồi kick_left(). Mở Xưởng hàm, tạo kick_left() rồi bấm Chạy.',
       san: SAN_6, batDau: BD_5X5,
-      bongMo: { x: 2, y: 2, huong: 0, thung: [{ x: 4, y: 2 }, { x: 0, y: 2 }] },
+      bongMo: { x: 2, y: 1, huong: 0, thung: [{ x: 4, y: 2 }, { x: 1, y: 1 }] },
       chinhCoDinh: true,
       maMau: { chinh: C_6.slice() },
-      sao: { o: 14, nhip: 6 },
+      sao: { o: 18, nhip: 7 },
       loiGiai: { chinh: C_6.slice(), hamCuaEmMoi: [H('kick_left', T_KICK_LEFT)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('kick_left', nhieu(['# gương của kick_right'], T_KICK_LEFT))] },
       congThucKhac: [
@@ -249,17 +250,17 @@
         { moTa: 'Không quay mà bắn luôn: xe giật lùi xuống, thùng không nhúc nhích', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('kick_left', T_JET_BACK)], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi kick_left() mà chưa chế hàm', baiLam: { chinh: C_6.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['kick_left() là gương của kick_right(): quay phải để cú giật đẩy xe sang trái.', 'Quay lại cho mặt xe như lúc đầu rồi mới hết hàm.']
+      goiY: ['kick_left() là gương của kick_right(): quay phải để cú giật đẩy xe sang trái, thùng nhích một ô và xe theo một ô.', 'Quay lại cho mặt xe như lúc đầu rồi mới hết hàm.']
     }),
 
     /* ------------------------------------------------------------ hàng 3: biến thể */
     man({
       so: 7, ten: 'Vòi phun lắp ngược', hang: 'bien-the', hamCuaEmCan: ['turn_left', 'turn_right'],
       daoChieu: ['sung'], canhBao: 'Vòi phun lắp ngược',
-      deBai: 'Vòi phun bị lắp ngược nên hàm fixed_kick() của màn chạy sai: shoot() bắn ra sau, shoot_back() bắn ra trước. Sửa fixed_kick() để đá thùng bên phải sang phải như thùng mờ, xe giữ chỗ và hướng.',
+      deBai: 'Vòi phun bị lắp ngược nên hàm fixed_kick() của màn chạy sai: shoot() bắn ra sau, shoot_back() bắn ra trước. Sửa fixed_kick() để đá thùng bên phải sang phải như thùng mờ, xe theo một ô và giữ hướng như xe mờ.',
       veMaMau: 'Chương trình chính bị khóa, chỉ gọi fixed_kick(). Hàm fixed_kick() đang giống kick_right() cũ. Thử nó trong sân thử của Xưởng hàm để thấy xe đi đâu.',
       san: SAN_4, batDau: BD_5X5,
-      bongMo: { x: 2, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] },
+      bongMo: { x: 3, y: 2, huong: 0, thung: [{ x: 4, y: 2 }] },
       chinhCoDinh: true,
       maMau: { chinh: C_7.slice(), hamCuaMan: [H('fixed_kick', T_FIXED_CU)] },
       sao: { o: 9, nhip: 3 },
@@ -281,10 +282,10 @@
     man({
       so: 8, ten: 'Đầu phun sau hỏng', hang: 'bien-the', hamGoc: KHAY_HONG, phanCung: KHAY_HONG, canhBao: 'Đầu phun sau hỏng',
       hamCuaEmCan: ['u_turn', 'turn_right'], taoHam: ['kick_ahead'],
-      deBai: 'Đầu phun sau của vòi phun hỏng nên shoot_back() không chạy được. Thùng nặng nằm ngay trước xe. Chương trình chính gọi kick_ahead(): em tự chế lệnh này để đá thùng trượt đi xa bằng đầu phun trước, xe quay mặt như cũ.',
+      deBai: 'Đầu phun sau của vòi phun hỏng nên shoot_back() không chạy được. Thùng nặng nằm ngay trước xe. Chương trình chính gọi kick_ahead(): em tự chế lệnh này để đá thùng nhích lên một ô bằng đầu phun trước, xe theo một ô và quay mặt như cũ.',
       veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi kick_ahead(). Mở Xưởng hàm, tạo kick_ahead() rồi bấm Chạy. Khay chỉ còn đầu phun trước shoot().',
       san: SAN_8, batDau: BD_5X5,
-      bongMo: { x: 2, y: 2, huong: 0, thung: [{ x: 2, y: 0 }] },
+      bongMo: { x: 2, y: 1, huong: 0, thung: [{ x: 2, y: 0 }] },
       chinhCoDinh: true,
       maMau: { chinh: C_8.slice() },
       sao: { o: 8, nhip: 3 },
@@ -332,23 +333,23 @@
       so: 10, ten: 'Kho hàng', hang: 'trum', hamCuaEmCan: ['kick_right', 'kick_left', 'tap_right', 'forward'],
       huyHieu: { ma: 'che-sung-hoi', ten: 'Huy hiệu Chế lệnh vòi phun' },
       gioiHanHam: 4,
-      deBai: 'Hai thùng nặng nằm hai bên xe, cửa chắn đường lên chỗ xe mờ, van mở cửa ở tường bên phải. Đá hai thùng ra xa, mở cửa rồi đưa xe tới chỗ xe mờ. Chương trình chính chỉ được gọi 4 hàm của em khác nhau.',
+      deBai: 'Một thùng nặng bên phải xe, một thùng chắn ngay trước mặt; cửa chắn đường lên chỗ xe mờ, van mở cửa ở tường bên phải. Đá hai thùng như thùng mờ, mở cửa rồi đưa xe tới chỗ xe mờ. Chương trình chính chỉ được gọi 4 hàm của em khác nhau.',
       san: SAN_10, batDau: BD_10,
-      bongMo: { x: 3, y: 0, huong: 0, thung: [{ x: 6, y: 3 }, { x: 0, y: 3 }] },
+      bongMo: { x: 3, y: 0, huong: 0, thung: [{ x: 5, y: 4 }, { x: 2, y: 3 }] },
       maMau: { chinh: [] },
-      sao: { o: 27, nhip: 13 },
+      sao: { o: 28, nhip: 14 },
       loiGiai: { chinh: L_10.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# đá hai thùng, mở cửa, đi lên'], L_10) } },
       congThucKhac: [
-        { moTa: 'Dùng move() thay cho forward(1) và forward(2): vẫn bốn hàm khác nhau', baiLam: { chinh: ['kick_right()', 'kick_left()', 'move()', 'tap_right()', 'move()', 'move()'] } }
+        { moTa: 'Dùng move() thay cho forward(1) và forward(2): vẫn bốn hàm khác nhau', baiLam: { chinh: ['kick_right()', 'move()', 'kick_left()', 'move()', 'tap_right()', 'move()', 'move()'] } }
       ],
       loiSai: [
-        { moTa: 'Quên mở cửa: xe đâm vào cửa đóng', baiLam: { chinh: ['kick_right()', 'kick_left()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Chỉ đá thùng bên phải: thùng bên trái còn nằm sát xe', baiLam: { chinh: ['kick_right()', 'forward(1)', 'tap_right()', 'forward(2)'] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên tiến một ô trước khi bắn van: tia nước bay ngang hàng thùng, không tới van', baiLam: { chinh: ['kick_right()', 'kick_left()', 'tap_right()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Gọi 5 hàm khác nhau (kick_right, kick_left, move, tap_right, forward): vượt giới hạn 4 hàm', baiLam: { chinh: ['kick_right()', 'kick_left()', 'move()', 'tap_right()', 'forward(2)'] }, phaiCoMa: ['qua-gioi-han-ham'] }
+        { moTa: 'Quên mở cửa: xe đâm vào cửa đóng', baiLam: { chinh: ['kick_right()', 'forward(1)', 'kick_left()', 'forward(4)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Chỉ đá thùng bên phải: thùng kia còn nằm giữa sân', baiLam: { chinh: ['kick_right()', 'forward(2)', 'tap_right()', 'forward(2)'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên tiến một ô trước khi bắn van: tia nước bay ngang hàng thùng, không tới van', baiLam: { chinh: ['kick_right()', 'forward(1)', 'kick_left()', 'tap_right()', 'forward(3)'] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Gọi 5 hàm khác nhau (kick_right, kick_left, move, tap_right, forward): vượt giới hạn 4 hàm', baiLam: { chinh: ['kick_right()', 'move()', 'kick_left()', 'move()', 'tap_right()', 'forward(2)'] }, phaiCoMa: ['qua-gioi-han-ham'] }
       ],
-      goiY: ['Mỗi thùng một lần đá, xong thì xe vẫn đứng đúng chỗ. Cửa nằm trên đầu xe hai ô, van nằm ngang xe sau khi tiến một ô.', 'Dùng lại forward() cho cả hai đoạn đi lên thì chỉ cần 4 hàm.']
+      goiY: ['Mỗi lần đá, xe theo thùng một ô: đá thùng phải xong, tiến một ô là thùng kia nằm ngay bên trái. Van nằm ngang xe sau khi tiến thêm một ô nữa.', 'Dùng lại forward() cho cả ba đoạn đi lên thì chỉ cần 4 hàm.']
     })
   ];
 

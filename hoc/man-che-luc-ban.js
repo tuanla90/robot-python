@@ -84,9 +84,11 @@
   //    Rẽ phải (đi xuống): trạm (3,4) nút (5,4) gần; trạm (3,5) nút (6,5) xa: bắn tụ, xe giật sang trái (2,5). Xe mờ (2,6) quay xuống. Mỗi nút mở một cửa kế tiếp.
   var SAN_7 = ['#N######', '#.######', '#.N#####', '#..#####', '#.CC.N##', '##.C..N#', '##C#####', '########'];
   var NOI_7 = [{ nut: { x: 1, y: 0 }, cua: [{ x: 2, y: 4 }] }, { nut: { x: 2, y: 2 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 5, y: 4 }, cua: [{ x: 3, y: 5 }] }, { nut: { x: 6, y: 5 }, cua: [{ x: 2, y: 6 }] }];
-  // 8: xe (3,3) quay lên, thùng (3,4) ngay sau lưng, thùng (4,3) bên phải. Nút trên (3,0) xa: bắn tụ, cú giật đẩy thùng sau lưng trượt xuống (3,6).
-  //    Quay trái: nút (1,3) gần, thùng (4,3) giờ ở sau lưng: bắn nhanh cho thùng nằm yên. Quay trái (mặt xuống), tiến hai ô tới xe mờ (3,5).
-  var SAN_8 = ['###N###', '###.###', '###.###', '#N..H.#', '###H###', '###.###', '###.###', '#######'];
+  // 8 (luật giật một ô, 29/10): xe (3,3) quay lên, thùng (3,4) ngay sau lưng. Nút trên (3,0) xa: bắn tụ, cú giật đẩy thùng sau lưng nhích xuống (3,5), xe theo vào (3,4).
+  //    Quay trái: nút (1,4) gần, thùng (4,4) giờ ở sau lưng: bắn nhanh cho thùng nằm yên (bắn tụ thì nó bị đẩy sang (5,4)). Quay trái (mặt xuống): xe mờ (3,4) quay xuống.
+  //    (2,3), (4,3) và (3,6) trống để thân aim_turn cố định (không mắt hồng ngoại: bắn tụ cả hai lần, hay quay rồi bắn ra sau) giật lệch chỗ xe mờ / đẩy thùng quá ô thùng mờ.
+  var SAN_8 = ['###N###', '###.###', '###.###', '##...##', '#N.HH.#', '###.###', '###.###', '#######'];
+  var BM_8 = { x: 3, y: 2, huong: 2, thung: [{ x: 4, y: 4 }, { x: 3, y: 5 }] };          // sau hai lần aim_turn xe ở (3,4) quay xuống, lùi hai ô lên (3,2)
   // 9: xe (5,3) quay TRÁI, nút ở bên phải (phía trên). Trạm 1: nút (5,0) xa: bắn tụ, xe giật xuống (5,4). Trạm 2 (4,4): nút (4,2) gần, dưới là hốc (4,5).
   //    Nút 1 mở cửa (4,4), nút 2 mở cửa (3,4); xe mờ (2,4) quay trái. Hàm shot_right(p) của Sola viết cứng "charge".
   var SAN_9 = ['#####N#', '#####.#', '####N.#', '####..#', '##.CC.#', '####.##', '#######'];
@@ -117,7 +119,7 @@
 
   var C_6 = ['close_fire()', 'turn_right()', 'close_fire()', 'turn_right()', 'forward(3)'];
   var C_7 = ['scan_left()', 'turn_right()', 'scan_left()'];
-  var C_8 = ['aim_turn()', 'aim_turn()', 'forward(2)'];
+  var C_8 = ['aim_turn()', 'aim_turn()', 'back()', 'back()'];              // luật giật một ô: xe đã theo thùng xuống một ô, thùng chắn trước mặt nên lùi hai ô lên xe mờ
   var C_9 = ['shot_right("charge")', 'move()', 'shot_right("fast")', 'forward(2)'];
 
   var L_10 = FOR(3, ['aim_left()', 'move()']).concat(['close_fire()', 'turn_right()', 'go_to_wall()']);
@@ -277,14 +279,14 @@
 
     man({
       so: 8, ten: 'Hàm aim_turn()', yMoi: 'cú giật của phát bắn tụ đẩy thùng sau lưng vào chỗ thùng mờ; phát bắn nhanh giữ thùng kia nằm yên',
-      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'forward', 'move'], taoHam: ['aim_turn'], chinhCoDinh: true,
-      deBai: 'Hai thùng nặng: một thùng phải trượt xuống chỗ thùng mờ, thùng kia phải nằm yên. Nhớ lại gói Nhà máy: bắn tụ thì cú giật đẩy thùng sau lưng trượt đi. ' +
-        'Em chế aim_turn(): aim_fire() rồi quay trái. Chương trình chính đã khóa: aim_turn() hai lần rồi forward(2).',
+      mucTieu: 'bong-mo', hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'back', 'move'], taoHam: ['aim_turn'], chinhCoDinh: true,
+      deBai: 'Hai thùng nặng: thùng sau lưng phải nhích xuống chỗ thùng mờ (xe theo một ô), thùng kia phải nằm yên. Nhớ lại gói Nhà máy: bắn tụ thì cú giật đẩy thùng sau lưng nhích một ô, bắn nhanh thì không giật. ' +
+        'Em chế aim_turn(): aim_fire() rồi quay trái. Chương trình chính đã khóa: aim_turn() hai lần rồi lùi hai ô.',
       veMaMau: 'Chương trình chính bị khóa. Tạo aim_turn(): hai dòng.',
       san: SAN_8, batDau: { x: 3, y: 3, huong: 0 },
-      bongMo: { x: 3, y: 5, huong: 2, thung: [{ x: 4, y: 3 }, { x: 3, y: 6 }] },
+      bongMo: BM_8,
       maMau: bai(C_8),
-      sao: { o: 18, nhip: 6 },
+      sao: { o: 17, nhip: 6 },
       loiGiai: { chinh: C_8.slice(), hamCuaEmMoi: [H('aim_turn', [], ['aim_fire()', 'turn_left()'])] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_8), hamCuaEmMoi: [H('aim_turn', [], ['# đo, bắn, rồi quay trái', 'aim_fire()', 'turn_left()'])] },
       loiSai: [
@@ -292,7 +294,7 @@
         { moTa: 'Viết cứng fire("fast"): không có cú giật, thùng sau lưng nằm yên chắn đường', baiLam: bai(C_8), hamCuaEmMoi: [H('aim_turn', [], ['fire("fast")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Quay trước rồi mới bắn: lần đầu mắt hồng ngoại nhìn về van gần', baiLam: bai(C_8), hamCuaEmMoi: [H('aim_turn', [], ['turn_left()', 'aim_fire()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Cú giật của phát bắn tụ đẩy thùng ngay sau lưng trượt tới khi gặp tường.',
+      goiY: ['Cú giật của phát bắn tụ đẩy thùng ngay sau lưng nhích một ô, xe theo một ô; bắn nhanh thì không giật.',
         'Thân hàm: aim_fire() rồi turn_left().']
     }),
 

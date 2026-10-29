@@ -462,9 +462,9 @@
     buocChay('Rồi viết tiếp đoạn đi qua cửa. Bấm Chạy.')
   ];
   H['sung-hoi.4'] = [
-    khoiTheo(['khoi:shoot'], 'Thùng nằm sau xe: chạm shoot(), cú giật đẩy xe lùi đúng vào thùng.', CHU_THE_SUNG,
+    khoiTheo(['khoi:shoot'], 'Thùng nằm sau xe: chạm shoot(), cú giật đẩy xe lùi đúng vào thùng, thùng nhích một ô.', CHU_THE_SUNG,
       { daLam: function () { return dongCo(/^\s*shoot\(\)/) >= 0; } }),
-    buocChay('Chạm wait() rồi bấm Chạy.')
+    buocChay('Chạm wait(), rồi thêm một cặp shoot(), wait() nữa cho thùng nhích tới đích. Bấm Chạy.')
   ];
 
   /* ============================================================ Chương 20 · Chế lệnh súng hơi: thẻ Súng hơi trong Xưởng */

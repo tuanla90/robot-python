@@ -133,8 +133,11 @@
         - GIẬT: ô xe giật vào là ô sát đuôi (bắn ra trước) hay sát mũi (bắn ra sau). Sự kiện 'giat' { nhip, tu, den, huong: hướng giật, di: true nếu xe THẬT SỰ dời, vat: null | lý do không dời, thung: id thùng bị đẩy | null }.
             · ô đó đi vào được → xe dời sang đó (di true).
             · ô đó bị chặn (tường, mép sân 'ngoai-san', cửa đóng 'cua', nút 'nut', hàng rào 'rao', bậc thang 'bac-thang', vật nằm đất 'vat') → xe ĐỨNG YÊN ('giat-chan' {nhip, tu, den, vat, huong, lenh}, thông tin).
-            · ô đó có THÙNG NẶNG → thùng nhận lực: TRƯỢT thẳng theo hướng giật cho tới khi gặp vật cản (tường, mép sân, bậc thang, hàng rào, nút, cửa đóng, thùng khác, vật nằm đất; không dừng ở ô đích),
-              xe ĐỨNG YÊN ('thung-di' nguon 'giat' {id, tu, den, soO}). Thùng bị chặn ngay thì cả hai đứng yên ('thung-chan' kieu 'giat').
+            · ô đó có THÙNG NẶNG (luật 29/10, "giật một ô"): thùng nhận lực NHÍCH ĐÚNG 1 Ô theo hướng giật VÀ xe dời 1 ô vào ô thùng vừa rời (y như xích đẩy thùng khi tiến), nếu ô sau thùng
+              đi vào được: 'thung-di' nguon 'giat' {id, tu, den, soO: 1} rồi 'giat' { di: true, den: ô thùng vừa rời, thung: id }. Ô sau thùng là băng chuyền / ô đích / sàn thường thì thùng vào bình thường
+              (ô đích: tính như thùng tới đích; băng: đếm nhịp từ 0 như thùng mới lên băng). Ô sau thùng bị chặn (tường, mép sân, bậc thang, hàng rào, nút, cửa đóng, thùng khác, xe khác, vật nằm đất)
+              thì CẢ HAI ĐỨNG YÊN ('thung-chan' kieu 'giat' {id, o, den, vat}; 'giat' di false, vat 'thung-nang'). Thùng KHÔNG trượt xa tới vật cản như luật cũ (trước 29/10).
+            · Chỉ CÚ GIẬT mới đẩy thùng: TIA / bóng bắn trúng thùng không đẩy thùng (bóng dừng ở thùng, trung 'thung'); bắn nhanh "fast" không giật nên không đẩy; bệ súng xích (cfg.beSung) không giật nên không đẩy.
           Giật cũng tốn đúng nhịp của lệnh bắn: không có "bắn mà không giật".
         - Băng chuyền đẩy thùng như đẩy xe bánh: thùng nằm trên băng đủ 2 nhịp LIÊN TIẾP thì bị đẩy 1 ô theo mũi tên nếu ô kế trống (không tường, bậc thang, thùng, xe, cửa đóng); bị chặn thì đứng yên.
           Băng chuyền KHÔNG đẩy xe vào thùng (xe bị chặn: 'bang-chan').
@@ -1679,25 +1682,27 @@
       }
 
       /** SÚNG HƠI (b): GIẬT. Bóng bay theo hướng `hb` thì xe giật ngược lại 1 ô. Ô giật vào bị chặn (tường, mép sân, cửa đóng, nút, hàng rào, bậc thang, vật nằm đất) thì xe đứng yên;
-       *  có THÙNG NẶNG thì thùng trượt thẳng theo hướng giật tới vật cản đầu tiên, xe đứng yên. Trả về true nếu xe hay thùng dời được. */
+       *  có THÙNG NẶNG thì thùng nhích ĐÚNG 1 Ô theo hướng giật và xe cũng dời 1 ô vào ô thùng vừa rời (như xích đẩy thùng); ô sau thùng bị chặn thì cả hai đứng yên.
+       *  Trả về true nếu xe (và thùng) dời được. */
       function giatXe(hb, lenhGhi) {
         var hg = (hb + 2) % 4, v = VEC[hg], tu = { x: rb.x, y: rb.y }, nx = rb.x + v[0], ny = rb.y + v[1];
         var ly = lyDoChan(san, loai, nx, ny);
         if (!ly && cuaDong(nx, ny)) ly = 'cua';
         if (!ly && dongDoiChanDi(nx, ny)) ly = 'dong-doi';
         var tn = ly ? null : thungTai(nx, ny);
-        if (tn) {                                                              // thùng nặng ngay sau xe: nhận lực, trượt thẳng ra xa
-          var cx = nx, cy = ny, soO = 0;
-          while (!oThungChan(cx + v[0], cy + v[1])) { cx += v[0]; cy += v[1]; soO++; }
-          if (!soO) {
-            var ec = { ma: 'thung-chan', nhip: nhip, id: tn.id, o: { x: nx, y: ny }, den: { x: nx + v[0], y: ny + v[1] }, vat: oThungChan(nx + v[0], ny + v[1]), kieu: 'giat', lenh: lenhGhi };
+        if (tn) {                                                              // thùng nặng ngay sau xe: nhận lực, nhích 1 ô; xe theo vào ô thùng vừa rời
+          var sx = nx + v[0], sy = ny + v[1], lyS = oThungChan(sx, sy);
+          if (lyS) {
+            var ec = { ma: 'thung-chan', nhip: nhip, id: tn.id, o: { x: nx, y: ny }, den: { x: sx, y: sy }, vat: lyS, kieu: 'giat', lenh: lenhGhi };
             sk.push(ec); suKienChan.push(ec);
-          } else {
-            tn.x = cx; tn.y = cy; tn.dem = 0;
-            sk.push({ ma: 'thung-di', id: tn.id, tu: { x: nx, y: ny }, den: { x: cx, y: cy }, nguon: 'giat', soO: soO });
+            sk.push({ ma: 'giat', nhip: nhip, tu: tu, den: tu, huong: hg, di: false, vat: 'thung-nang', thung: tn.id });
+            return false;
           }
-          sk.push({ ma: 'giat', nhip: nhip, tu: tu, den: tu, huong: hg, di: false, vat: 'thung-nang', thung: tn.id });
-          return soO > 0;
+          tn.x = sx; tn.y = sy; tn.dem = 0;
+          sk.push({ ma: 'thung-di', id: tn.id, tu: { x: nx, y: ny }, den: { x: sx, y: sy }, nguon: 'giat', soO: 1 });
+          rb.x = nx; rb.y = ny;
+          sk.push({ ma: 'giat', nhip: nhip, tu: tu, den: { x: nx, y: ny }, huong: hg, di: true, vat: null, thung: tn.id });
+          return true;
         }
         if (!ly) {
           var vn = vatNamTai(nx, ny);
