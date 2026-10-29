@@ -635,6 +635,7 @@
   // Chương đã có ở mùa 2 cũ mà không thuộc bảng (ban-xoay, nhen, doi-ho-bang, list, doi-xich, omni, doi-omni và chương 2 của chúng) dời ra đầu mùa 3 (ẩn),
   // giữ thứ tự cũ: vẫn chơi được bằng "Mở hết", hàm chúng cần vẫn được tạo ở màn đứng trước.
   var THU_TU_SUNG_HOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  var THU_TU_CHE_SUNG_HOI = [1, 2, 3, 4, 5, 6, 7, 9, 8, 10];        // che-sung-hoi.9 (21 ô, có hàm của màn) đứng sau .7 (15 ô) cho đường cong ô
   var MUA_2 = [
     { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', hinh: 'xich', sao: 0,
       // Chương 2 "Biến cho xích": hàm cho xích (spin, sidestep, sửa fixed_turn, pick_behind: 29/10 fixed_turn lên trước pick_behind cho nhịp tăng dần) rồi biến đếm (count_return sửa trước, bounce, fetch_back), che-xich.9 cuối.
@@ -648,8 +649,8 @@
       chuong: [['hong-ngoai', []], ['che-hong-ngoai', []]] },
     { ma: 'nha-may', ten: 'Nhà máy', hinh: 'bang-chuyen', sao: 90,
       // 29/10 (đường cong): bang-chuyen 1, 2, 6, 5, 7, 8, 3, 4, 9 (bc.8 hẹp lại làm mốc cho bc.3, bc.3 làm mốc cho bc.4 rộng);
-      // che-sung-hoi 1–6, 8, 7, 9: che-sung-hoi.9 (8 dòng, 8 nhịp) sau che-sung-hoi.7 (6 dòng).
-      chuong: [['bang-chuyen', day('bang-chuyen', [1, 2, 6, 5, 7, 8, 3, 4, 9, 10])], ['che-sung-hoi', day('che-sung-hoi', [1, 2, 3, 4, 5, 6, 8, 7, 9, 10])]] },
+      // che-sung-hoi: 30/10 dựng lại theo phun nhẹ, thứ tự theo đường cong (THU_TU_CHE_SUNG_HOI).
+      chuong: [['bang-chuyen', day('bang-chuyen', [1, 2, 6, 5, 7, 8, 3, 4, 9, 10])], ['che-sung-hoi', day('che-sung-hoi', THU_TU_CHE_SUNG_HOI)]] },
     { ma: 'day-thung', ten: 'Đẩy thùng', sao: 120,
       chuong: [['day-thung', []], ['che-day-thung', []]] },
     { ma: 'luc-ban', ten: 'Lực bắn', hinh: 'luc-ban', sao: 150,
@@ -789,16 +790,7 @@
     }).loiGiaiKhac = { moTa: 'Hàng giữa viết thành ba lần hai move()', baiLam: bai(di(3).concat(['bend_right()', 'for i in range(3):', '    move()', '    move()', 'bend_left()'], di(3))) };
     // bang-chuyen.4 (sau bang-chuyen.3 hai mươi ô): ô xe không bao giờ tới (băng đẩy sang phải) thành tường; 35 → 27 ô, lời giải / nhịp không đổi.
     get('bang-chuyen.4').san = ['###F..#', '###...#', '#>>>>>#', '#>>>>>#', '#>>>>>#', '#>>>>>#', '###.###'];
-    // che-sung-hoi: sân 5 × 5 trống của các màn chế lệnh thu bằng tường còn đúng làn xe giật / thùng trượt (25 → 6–9 ô). Lời giải, nhịp, bóng mờ không đổi.
-    // .1, .2: phòng 3 × 3 + hai ô đầu cột giữa (lời sai "bắn hai phát" phải đi được hai ô mới lệch bóng mờ). .7 thu ở lệnh thay('che-sung-hoi.7') cuối tệp
-    // (lệnh đó đặt lại sân sau khối này).
-    var PHONG_GIAT = ['##.##', '#...#', '#...#', '#...#', '##.##'];
-    get('che-sung-hoi.1').san = PHONG_GIAT.slice();
-    get('che-sung-hoi.2').san = PHONG_GIAT.slice();
-    get('che-sung-hoi.4').san = ['#####', '##.##', '...H.', '##.##', '#####'];
-    get('che-sung-hoi.6').san = ['#####', '#.H.#', '##.H.', '##.##', '#####'];        // luật giật một ô (29/10): thùng phải (3,2) ra mép (4,2), xe theo; tiến lên (3,1), thùng kia (2,1) sang (1,1)
-    get('che-sung-hoi.8').san = ['##.##', '##H##', '.....', '##.##', '#####'];
-    get('che-sung-hoi.9').san = ['#####', '#...#', '#...#', '#####', '#####'];
+    // che-sung-hoi: 30/10 ngân hàng dựng lại theo phun nhẹ (sân đã gọn), không còn thu sân ở đây.
   })();
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 2 (quy ước cho các gói sau): mỗi gói có màn mới MỘT tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai
   // `chuong` (mã chương trong MUA_2) và `so`; tệp đã có trong danh sách require ở đầu tệp này và thẻ <script> của game/choi.html. Màn mới của một chương
@@ -1239,17 +1231,6 @@
       [ham('fixed_drive', ['left_move()', 'right_move()', 'wait()']), ham('fixed_turn', ['for i in range(2):', '    left_move()', '    wait()'])]),
     goiY: ['Xe xích cần hai nhịp liền nhau để rẽ một góc vuông.', 'Đổi số lần lặp trong fixed_turn().']
   });
-  thay('che-sung-hoi.7', {
-    ten: 'Đá hai bên', chinhCoDinh: true,
-    deBai: 'Hai thùng nặng nằm hai bên xe. Hàm kick_both() của màn mới đá được thùng bên phải. Sửa nó để đá cả hai thùng, mỗi thùng nhích một ô như thùng mờ, xe dừng như xe mờ.',
-    veMaMau: 'Chương trình chính bị khóa, chỉ gọi kick_both(). Thử nó trong sân thử của Xưởng hàm.',
-    // 29/10 mùa 2 xong (đường cong): sân 5 × 5 thu bằng tường còn làn thùng (25 → 7 ô), như che-sung-hoi.6. Luật giật một ô: đá thùng phải xong xe đã theo sang (3,2);
-    // tiến một ô về (2,2) rồi bắn ra sau: thùng trái (1,2) nhích ra mép (0,2), xe theo vào (1,2).
-    san: ['#####', '##.##', '.H.H.', '##.##', '#####'], bongMo: { x: 1, y: 2, huong: 0, thung: [{ x: 0, y: 2 }, { x: 4, y: 2 }] },
-    maMau: bai(['kick_both()'], [ham('kick_both', ['turn_left()', 'spray()', 'wait()', 'turn_right()'])]),
-    loiGiai: bai(['kick_both()'], [ham('kick_both', ['turn_left()', 'spray()', 'wait()', 'move()', 'spray_back()', 'wait()', 'turn_right()'])]),
-    goiY: ['Đá xong thùng bên phải, xe đã theo nó một ô; tiến một ô nữa là thùng bên trái nằm ngay sau lưng xe.', 'Thêm move(), spray_back() và wait() trước khi quay lại.']
-  });
   thay('che-nam-cham.7', {
     ten: 'Hút hay đẩy', chinhCoDinh: true,
     deBai: 'Hàm fixed_grip() của màn bật cùng cực với vật nên vật bị đẩy ra xa. Sửa fixed_grip() cho vật bị kéo về, để chương trình chuyền vật sang phải như vật mờ.',
@@ -1474,7 +1455,7 @@
       'xich': 'Quay hai nhịp', 'bien-xich': 'Đếm bước để về',
       'sung-hoi': 'Phun là lùi', 'tham-so': 'Đi mấy ô tùy em',
       'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
-      'bang-chuyen': 'Lên băng chuyền', 'che-sung-hoi': 'Chế lệnh: phun để đi',
+      'bang-chuyen': 'Lên băng chuyền', 'che-sung-hoi': 'Chế lệnh: mở van',
       'day-thung': 'Đẩy thùng nặng', 'che-day-thung': 'Chế lệnh: đẩy n ô',
       'luc-ban': 'Phun nhanh, phun tụ', 'che-luc-ban': 'Chế lệnh: chọn lực',
       'do-nhiet': 'Tìm van nóng', 'che-do-nhiet': 'Chế lệnh: mở van',
