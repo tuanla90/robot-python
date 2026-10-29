@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-huy-hieu-phim-vector.mjs — máy kiểm gói V6: HUY HIỆU và PHIM vẽ bằng bộ vẽ vector ("Robot Chấn Hưng").
    Chạy game THẬT trong ngữ cảnh vm (bang-mau, chu, ve, part/*, ve-vector*, huy-hieu-vector, ve-robot, huy-hieu, phim-vector, phim-goi, phim-mua-*) với DOM + canvas giả
-   ghi lệnh. V7c1 (28/10): game luôn vector; ngữ cảnh pixel và phanh pixel A3 / B5 (so nền fa3702f) đã gỡ, thay bằng A3-v / B5-v so nền vector NEN_VEC (f8331e9).
+   ghi lệnh. V7c1 (28/10): game luôn vector; ngữ cảnh pixel và phanh pixel A3 / B5 (so nền fa3702f) đã gỡ, thay bằng A3-v / B5-v so nền vector NEN_VEC (36ea3d4).
    A. HUY HIỆU
      A1 mọi mã HuyHieu.DS × ba trạng thái (khoa / mo / xong) vẽ được (HuyHieu.ve, HuyHieu.mk), không ném lỗi.
      A2 vector: mã có bản vector (HuyHieu.maVec) ra canvas .laVector (V7c2: bộ pixel part/ đã xoá, không còn Part.* để gọi); mã chưa có bản vector (liệt kê).
@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
-const NEN_VEC = 'f8331e9';                             // 29/10 góp ý user: nền VECTOR = f8331e9 (mắt vui cung tròn mảnh, mắt tim thắng màn; trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); A3-v / B5-v so bản vector mới với nền này (phanh thay A3 / B5 khi gỡ pixel)
+const NEN_VEC = '36ea3d4';                             // 29/10 V8a: nền VECTOR = 36ea3d4 (thân omni / nhện vuông bo góc, chân nhện ba khúc + dáng bò; đã chứng minh: hoàn riêng 4 tệp V8a về e758490 thì 13a-v / A3-v / B5-v / C3-v xanh với nền f8331e9); trước đó f8331e9 (góp ý user 29/10: mắt vui cung tròn mảnh, mắt tim thắng màn; trước đó eb553bd, huy hiệu mắt thường, phim mở đầu hình bộ phận thật; trước đó 6e04104 = V7c3 e3 (đo chữ bằng phông vector, bỏ fillStyle thừa; trước đó 8780764 gộp V7c2, c830c12 gộp V7b); A3-v / B5-v so bản vector mới với nền này (phanh thay A3 / B5 khi gỡ pixel)
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
 const goc = path.resolve(day, '..');
