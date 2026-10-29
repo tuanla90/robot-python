@@ -420,7 +420,9 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 {
   /* V7c1 (28/10): nguồn so sánh là DỮ LIỆU CHỤP từ part/*.js ở c0 (hoc/chup-du-lieu-pixel.mjs), không nạp bộ pixel nữa */
   const LENH_MOI = { shoot: 'spray', shoot_back: 'spray_back' };                                   // 30/10: vòi phun đổi tên lệnh (dữ liệu chụp còn tên cũ)
-  const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'), (k, v) => (typeof v === 'string' && LENH_MOI[v] ? LENH_MOI[v] : v));
+  // 30/10 mùa 4 gói 5: thân drone có thêm land / take_off (nâng cấp đáp đất để sạc); dữ liệu chụp chưa có, chèn ngay sau battery (như kiem-lap-rap.mjs)
+  const THEM_DAP = (v) => (Array.isArray(v) && v.includes('go_up') && v.includes('battery') && !v.includes('land') ? (v.splice(v.indexOf('battery') + 1, 0, 'land', 'take_off'), v) : v);
+  const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'), (k, v) => THEM_DAP(typeof v === 'string' && LENH_MOI[v] ? LENH_MOI[v] : v));
   /* 29/10 Xe cứu hỏa R1 (gói vòi phun hình): tên hiển thị part 'hoi' đổi 'Súng hơi hai nòng' → 'Vòi phun hai đầu'; dữ liệu chụp c0 giữ tên cũ, so sánh qua bảng đổi tên này (mã, ổ, hamGoc, luật ghép y nguyên) */
   const DOI_TEN = { 'Súng hơi hai nòng': 'Vòi phun hai đầu' }, tenMoi = (x) => (x == null ? x : Object.keys(DOI_TEN).reduce((a, k) => a.split(k).join(DOI_TEN[k]), x));
   const BP = { than: CHUP.boPhan.filter((b) => b.loai === 'than'), tay: CHUP.boPhan.filter((b) => b.loai === 'tay'), 'cam-bien': CHUP.boPhan.filter((b) => b.loai === 'cam-bien') };

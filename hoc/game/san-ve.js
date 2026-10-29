@@ -462,7 +462,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.vis.son = this.cfg.robot.tay === 'son' ? { ha: false, mau: this.cfg.mucBanDau || 'red' } : null;      // máy sơn: đầu sơn đang hạ không, màu đang chọn
       this.vis.sung = this.cfg.robot.tay === 'hoi' ? { dan: this.cfg.danToiDa, truoc: 0, sau: 0, het: 0 } : null;      // súng hơi: dan = số viên còn (null: vô hạn); truoc / sau = tới lúc nào nòng trước / nòng sau còn lóe; het = hết đạn, nhấp nháy đỏ
       this.vis.bung = this.cfg.robot.than === 'nhen' && this.cfg.robot.tay === 'nam-cham';      // NAM CHÂM BỤNG NHỆN (mùa 3): vật treo dưới thân, gợn từ quanh ô (veDuoiNhen)
-      this.vis.dr = this.cfg.robot.than === 'drone' ? { alt: ALT, roi: false, nguy: false, pin: this.cfg.pin, pinMax: this.cfg.pin, nhay: 0, sacLoe: 0 } : null;          // drone: alt = độ cao, roi = đã rơi xuống đất, nguy = đang rơi, pin / pinMax (null: pin vô hạn, ẩn thanh pin), nhay = tới lúc nào thanh pin còn nháy (đọc battery()), sacLoe = tới lúc nào ô sạc còn lóe
+      this.vis.dr = this.cfg.robot.than === 'drone' ? { alt: ALT, roi: false, nguy: false, dau: false, pin: this.cfg.pin, pinMax: this.cfg.pin, nhay: 0, sacLoe: 0 } : null;          // drone: alt = độ cao, roi = đã rơi xuống đất, nguy = đang rơi, pin / pinMax (null: pin vô hạn, ẩn thanh pin), nhay = tới lúc nào thanh pin còn nháy (đọc battery()), sacLoe = tới lúc nào ô sạc còn lóe
     },
     clearFx: function () { this.wh = { L: 0, R: 0 }; this.parts = []; this.bounce = 0; this.mung = 0; this.flash = 0; this.docs = []; },
     /**
@@ -1000,7 +1000,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (this.suaXe) { g.setTransform(ku, 0, 0, ku, mx, my); this.veSuaXe(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // sân thử, chế độ Đặt xe: viền nhấp nháy quanh xe, hoặc ô đích + chỗ cũ khi đang kéo (dưới thân xe)
         if (c.bm) this.veBongMoXe(g, mx, my, ku, now);                                                         // bóng mờ: xe mờ ở tư thế đích, nằm DƯỚI robot thật
         var wL = this.wh.L, wR = this.wh.R, phC = ph;
-        if (v.dr) { wL = wR = (v.dr.roi || (v.dr.nguy && ((now / 110 | 0) & 1))) ? 0 : 2; phC = wL ? (now / 70 | 0) & 1 : 0; }          // drone: cánh quạt quay không ngừng (tắt khi rơi / nằm đất), hai cặp cánh đổi nhau
+        if (v.dr) { wL = wR = (v.dr.roi || v.dr.dau || (v.dr.nguy && ((now / 110 | 0) & 1))) ? 0 : 2; phC = wL ? (now / 70 | 0) & 1 : 0; }          // drone: cánh quạt quay không ngừng (tắt khi rơi / nằm đất), hai cặp cánh đổi nhau
         if (c.robot.than === 'nhen') { wL = wR = v.chan ? 2 : 0; phC = 0; }   // nhện: chan 1 = nhấc chân, 2 = chân bước luân phiên; dáng chân theo pha liên tục (hoatVec → dangBo: lan / di / nhac), không theo nhịp 90 ms
         var ttR = { wl: wL, wr: wR, ph: phC, tay: v.son ? { tuThe: v.son.ha ? 'duoi' : 'tren', kep: false, cam: null, mauSon: v.son.mau } : v.sung ? { tuThe: 'tren', kep: false, cam: null, dangBanTruoc: v.sung.truoc > now, dangBanSau: v.sung.sau > now } : v.nem ? { tuThe: 'tren', kep: false, cam: !!this.vatRo(), ngam: v.nem.tam, dangNem: v.nem.dang > now } : v.nc ? { tuThe: 'tren', kep: false, cam: null, bat: v.nc.bat, cuc: v.nc.cuc } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true, mat: this.camMatSang(now) } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null };
         if (c.robot.than === 'nhen' && v.co) ttR.co = true;                                // nhện đang CO CHÂN: ảnh part thấp sát đất
@@ -1269,6 +1269,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       });
       if (my !== this.rid) return;
       d.pin = s.den;
+    },
+    /** Drone nâng cấp đáp đất (mùa 4): xuong = true hạ từ độ cao bay xuống sát mặt ô (cánh dừng khi chạm), false cất cánh (cánh quay rồi nâng lên). */
+    dapCatCanh: async function (xuong, ms, my) {
+      var d = this.vis.dr, cx = Math.round(this.vis.x) * T + 7, cy = Math.round(this.vis.y) * T + 8, self = this;
+      if (!d) { await ngu(ms); return; }
+      var a0 = d.alt, a1 = xuong ? 0.4 : ALT;
+      if (!xuong) d.dau = false;
+      await this.tween(ms * 0.85, my, function (k) { var e = k * k * (3 - 2 * k); d.alt = a0 + (a1 - a0) * e; });
+      if (my !== this.rid) return;
+      d.alt = a1;
+      if (xuong) { d.dau = true; this.burst(cx, cy + 3, 6, [BM.sanXamToiV1, BM.sanTrangV1], 0.35, 1, true); }
+      await ngu(ms * 0.15);
     },
     /** Hết pin ('het-pin'): cánh quạt chập chờn, drone rơi xuống mặt ô (rung nhẹ, khói xám), nằm nghiêng với cánh quạt đứng, dấu '!'. */
     hetPin: async function (s, ms, my) {
@@ -1890,7 +1902,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (my !== this.rid) return;
         v.goc = 0; tgian = Math.max(ms * 0.3, tgian - tq);
       }
-      var TRONG = function (s) { return s.ma === 'bang-khong-day' ? 0.5 : s.ma === 'ban-xoay' ? 0.95 : s.ma === 'dich-chuyen' ? 1.15 : s.ma === 'hut-vat' ? 1.5 : s.ma === 'day-vat' ? 1.6 : s.ma === 'tha-vat' ? 0.8 : s.ma === 'nem-vat' ? 2.4 : s.ma === 'nem-roi' ? 0.8 : s.ma === 'nem-vo' ? 1.2 : s.ma === 'ban' ? 2.2 : s.ma === 'cua-batch' ? 1.2 : s.ma === 'sac-pin' ? 1.3 : s.ma === 'het-pin' ? 1.7 : s.ma === 'roi-ho' ? 2.5 : 1; };
+      var TRONG = function (s) { return s.ma === 'bang-khong-day' ? 0.5 : s.ma === 'ban-xoay' ? 0.95 : s.ma === 'dich-chuyen' ? 1.15 : s.ma === 'hut-vat' ? 1.5 : s.ma === 'day-vat' ? 1.6 : s.ma === 'tha-vat' ? 0.8 : s.ma === 'nem-vat' ? 2.4 : s.ma === 'nem-roi' ? 0.8 : s.ma === 'nem-vo' ? 1.2 : s.ma === 'ban' ? 2.2 : s.ma === 'cua-batch' ? 1.2 : s.ma === 'sac-pin' ? 1.3 : s.ma === 'het-pin' ? 1.7 : s.ma === 'dap' || s.ma === 'cat-canh' ? 1.2 : s.ma === 'roi-ho' ? 2.5 : 1; };
       var tong = 0; list.forEach(function (s) { tong += TRONG(s); });
       if (!list.length) await ngu(tgian);
       for (var i = 0; i < list.length; i++) {
@@ -2011,6 +2023,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           await this.sacPin(s, per, my);
         } else if (s.ma === 'het-pin') {                             // drone: pin về 0, hạ cánh khẩn
           await this.hetPin(s, per, my);
+        } else if (s.ma === 'dap' || s.ma === 'cat-canh') {           // drone nâng cấp (mùa 4): land() hạ êm xuống mặt ô, cánh dừng; take_off() cánh quay lại, nâng lên độ cao bay
+          await this.dapCatCanh(s.ma === 'dap', per, my);
+        } else if (s.ma === 'dang-dau' || s.ma === 'dap-bi-chan' || s.ma === 'da-dau' || s.ma === 'dang-bay') {      // lệnh bay lúc đậu / đáp chỗ không đáp được: rung nhẹ, dấu '!' (lệnh thừa: '?')
+          this.baoHieu(s.ma === 'da-dau' || s.ma === 'dang-bay' ? '?' : '!', 1300);
+          await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 1.2; });
+          v.dx = 0;
         } else if (s.ma === 'tha-vat') {                             // magnet_off(): vật dính rơi xuống ô sát mũi xe (drone: ô ngay dưới bụng)
           await this.thaVat(s, per, my);
         } else if (s.ma === 'day-vat') {                             // vật nam châm CÙNG cực: bị đẩy (hay bị bắn khỏi mũi xe) trượt thẳng ra xa xe, bụi theo sau

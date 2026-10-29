@@ -44,7 +44,7 @@
   var HAM_GOC_MAC_DINH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right',
     'slide_left', 'slide_right', 'front_clear', 'left_clear', 'right_clear', 'color', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'battery', 'look', 'ink', 'dot', 'pen_down', 'pen_up', 'distance', 'warm',
-    'go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'print', 'range', 'len', 'str', 'int'];
+    'go_up', 'land', 'take_off', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'print', 'range', 'len', 'str', 'int'];
   // từ khóa Python (nhân chạy code chỉ hiểu một phần, nhưng cấm cả bộ cho khỏi nhầm)
   var TU_KHOA = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',
     'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if',

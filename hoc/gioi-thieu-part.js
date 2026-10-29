@@ -89,13 +89,14 @@
     'drone': {
       khe: 'than', ten: 'Thân drone',
       moTa: 'Bay trên cao, đi lên, xuống, trái, phải theo màn hình.',
-      lenh: DI.concat(['wait', 'battery']),
+      lenh: DI.concat(['wait', 'battery', 'land', 'take_off']),
       moTaLenh: { go_up: 'Bay lên một ô, 1 nhịp', go_down: 'Bay xuống một ô, 1 nhịp', go_left: 'Bay sang trái một ô, 1 nhịp', go_right: 'Bay sang phải một ô, 1 nhịp',
-        wait: 'Lơ lửng một nhịp', battery: 'Hỏi: pin còn bao nhiêu' },
+        wait: 'Lơ lửng một nhịp', battery: 'Hỏi: pin còn bao nhiêu', land: 'Hạ cánh xuống ô đang ở, 1 nhịp', take_off: 'Cất cánh, 1 nhịp' },
       gioi: ['Nhanh: mỗi lệnh go_…() là 1 nhịp, 1 ô', 'Bay qua hàng rào thấp, băng chuyền, vật, bậc thang'],
       khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném, vòi phun',
-        { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }],
-      luuY: [{ chu: 'Dừng ở ô sạc P thì pin sạc đầy ở cuối nhịp.', can: ['battery'] }]
+        { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }, { chu: 'Đang đậu thì không bay được: take_off() trước đã', can: ['land'] }],
+      luuY: [{ chu: 'Dừng ở ô sạc P thì pin sạc đầy ở cuối nhịp.', can: ['battery'], khongCan: ['land'] },
+        { chu: 'Bản nâng cấp: chỉ khi land() xuống ô sạc P thì pin mới đầy, bay ngang qua P không sạc. Đậu không tốn pin.', can: ['land'] }]
     },
 
     /* ------------------------------------------------------------ TAY */
@@ -249,6 +250,7 @@
   function hienMuc(m, lenh, than) {
     if (typeof m === 'string') return true;
     if (m.can && !m.can.every(function (x) { return co(lenh, x); })) return false;
+    if (m.khongCan && m.khongCan.some(function (x) { return co(lenh, x); })) return false;      // câu chỉ đúng khi robot CHƯA có lệnh đó (vd sạc tự động trên P: drone nâng cấp land() thì không)
     if (m.than && m.than !== than) return false;
     return true;
   }

@@ -204,6 +204,12 @@
             Vật đang cầm / dính / trong rổ KHÔNG tính (nó đi theo xe, không nằm ở ô trước).
         · Một robot KHÔNG gắn cả hai (cfg.camBien có cả 'mau' lẫn 'camera' và hamGoc có color → chay() ném lỗi cấu hình tiếng Việt), để color() không mơ hồ.
           Drone không gắn camera 'camera' (không có hướng mặt để nhìn "phía trước"): cfg.camBien có 'camera' trên drone → lỗi cấu hình. Drone có camera RIÊNG nhìn xuống (xem CAMERA NHÌN XUỐNG của drone, hàm look()).
+        · CAMERA BỐN HƯỚNG ({ ma:'camera-4' }, mùa 4 gói 3; user chốt 29/10 "camera gom về một lệnh color"): color(huong) đọc ô KỀ theo hướng, cùng luật thấy như CAMERA
+          (vật → màu vật, sàn → màu sàn hay sơn, tường / rào / thùng / nút / cửa đóng / ngoài sân → "none"). Robot có mũi (xe bánh, xích, omni): "front" / "left" / "right" / "back"
+          theo mũi xe; robot không có mũi (drone, nhện): "up" / "down" / "left" / "right" theo bản đồ (khớp go_up…). NÂNG CẤP { ma:'camera-4', taiCho: true } (gói 7) thêm
+          "here": ô robot đang ở (drone nhìn xuống: vật nằm dưới hay sàn; rào / thùng / cửa đóng → "none"). color() thiếu hướng, hướng lạ, "here" khi chưa nâng cấp → lỗi chạy
+          ('huong-cam-sai', dừng). Robot không gắn camera-4 mà gọi color("…") có đối số → cũng lỗi đó (color() của cảm biến bụng / camera trước không nhận hướng).
+          Không gắn chung với 'mau' hay 'camera' (lỗi cấu hình). Đọc ghi docCamBien { cam:'camera-4', ham:'color', huong, tu, o, mau, nguon, idVat, nhip }.
         - Màu ô: ký hiệu r / g / b / y trong sân (sàn màu, đi lại như sàn thường), HOẶC lớp `mau` riêng (cfg.mau: mảng chuỗi cùng cỡ sân,
           mỗi ký tự r g b y hay '.'), dùng khi ô vừa có màu vừa có thứ khác (cờ F, ô đích D, ô X…). Hai cách cộng lại; một ô mà hai nơi ghi
           hai màu khác nhau, hay màu trên ô tường, là lỗi cấu hình.
@@ -318,6 +324,13 @@
           thì drone hạ cánh khẩn, chương trình dừng ('het-pin' { nhip, o, lenh }, dungSom = 'het-pin'). Đến cờ đúng nhịp pin về 0 thì vẫn thắng. Không khai cfg.pin: pin vô hạn và
           KHÔNG có battery(). Hàm gốc battery() (hamGoc có 'battery', cần cfg.pin) trả số pin còn lại (số nguyên), KHÔNG tốn nhịp (như cảm biến), ghi mục lệnh có `docCamBien`
           { cam:'pin', ham:'battery', pin, pinToiDa } và sự kiện 'doc-cam-bien'; chung bộ đếm 1000 lần đọc liên tiếp.
+        - ĐÁP ĐẤT ĐỂ SẠC (mùa 4 gói 5, nâng cấp drone; user chốt 29/10): phần cứng có land() thì có cả take_off() (DRONE_DAP). Drone NÂNG CẤP thì ô sạc P KHÔNG sạc tự động nữa:
+          · land() hạ drone xuống ô đang ở (một nhịp). Ô không đáp được (hàng rào, hố, băng chuyền, bậc thang, thùng nặng, vật nằm đất) thì drone vẫn bay ('dap-bi-chan', lỗi).
+            Đáp trên ô sạc P thì cuối nhịp đó pin ĐẦY NGAY ('sac-pin'); đáp ô thường thì chỉ đậu. land() lúc đang đậu: không đổi gì ('da-dau', thông tin).
+          · Đang đậu: go_*() không bay được, drone đứng yên, mất nhịp ('dang-dau', lỗi: cần take_off() trước). wait() lúc đậu là nhịp nghỉ.
+          · take_off() cất cánh (một nhịp); lúc đang bay thì không đổi gì ('dang-bay', thông tin).
+          · Pin: nhịp nào drone ĐẬU CẢ ĐẦU LẪN CUỐI nhịp thì không tốn pin; các nhịp khác (kể cả nhịp land(), take_off()) tốn 1 pin như cũ. Thứ tự cuối nhịp giữ: tốn pin → sạc → thắng → hết pin.
+          Drone gốc (không có land) giữ luật cũ: dừng cuối nhịp trên P là sạc đầy (màn cũ không đổi). Vết nhịp của drone nâng cấp có robot.dau (true khi đang đậu).
         - NAM CHÂM TREO dưới bụng (khác nam châm gắn mũi xe): hút vật SẮT nằm ở Ô NGAY DƯỚI drone (khoảng 0), không phải 2 ô phía trước. Thứ tự trong nhịp: (a) lệnh nam châm
           (magnet_off thả TRƯỚC khi bay) → (b) bay → (c) HÚT ở cuối nhịp (ô dưới drone sau khi bay). Lệnh nam châm chỉ RA LỆNH và làm việc ở nhịp kế tiếp (go_*() hay wait()), nên
           "magnet_n(); go_right()" là một nhịp (bật, bay, hút vật sắt ở ô vừa tới). Vật sắt bị hút thì DÍNH lơ lửng dưới drone (trangThai 'cam', x y = ô drone), đi theo drone
@@ -429,6 +442,10 @@
   var CAM_BIEN_HAM = { front_clear: 0, right_clear: 1, left_clear: 3 };
   // cảm biến màu (chương mau): hàm gốc color() trả chuỗi. Ký hiệu r g b y ↔ tên màu
   var CAM_MAU_HAM = ['color'];
+  // CAMERA BỐN HƯỚNG (mùa 4): color(huong); lệch hướng so với mũi xe (robot có mũi) hay hướng tuyệt đối (drone, nhện)
+  var MA_CAM_4 = 'camera-4';
+  var CAM4_MUI = { front: 0, right: 1, back: 2, left: 3 };
+  var CAM4_BAN_DO = { up: 0, right: 1, down: 2, left: 3 };
   // camera NHÌN XUỐNG của drone (chương flycam): hàm gốc look() trả chuỗi màu của VẬT hay SÀN ngay dưới drone; mã part / mã cảm biến 'camera-bay'
   var CAM_NHIN_HAM = ['look'];
   var MA_CAM_BAY = 'camera-bay';
@@ -446,6 +463,7 @@
   var CUC_MAU = { N: 'red', S: 'blue' };                   // vật nam châm mang màu theo cực (ô đích đỏ / xanh dương phân loại theo cực): N đỏ, S xanh dương
   // drone (chương drone): đo pin battery() trả số nguyên (cần cfg.pin); ký hiệu P là ô sạc
   var CAM_PIN_HAM = ['battery'];
+  var DRONE_DAP = ['land', 'take_off'];         // nâng cấp drone đáp đất để sạc (mùa 4 gói 5, xem phần DRONE)
   var PIN_TOI_DA = 999;
   // tay máy ném (chương may-nem): aim(n) đặt tầm (đổi ngay, không tốn nhịp), load() nạp vật ở ô TRƯỚC MẶT vào rổ, throw() ném vật trong rổ; ký hiệu '=' là tường thấp (hàng rào)
   var TAY_NEM = ['aim', 'throw', 'load'];
@@ -478,6 +496,7 @@
     grab: 'release', release: 'grab',
     go_up: 'go_down', go_down: 'go_up',
     go_left: 'go_right', go_right: 'go_left',
+    land: 'take_off', take_off: 'land',                    // drone nâng cấp đáp đất (mùa 4)
     magnet_n: 'magnet_s', magnet_s: 'magnet_n',
     slide_left: 'slide_right', slide_right: 'slide_left',
     crouch: 'stand', stand: 'crouch',
@@ -721,7 +740,7 @@
       coNamCham, coNem, coHoi, coCamBien, coCamTu, coColor, dsCamBien, coCamMauBung, coCamera, camNhin, coPinCamBien, coLook,
       coCamBay, pinToiDa, pin, dao, rb, demBang, quayDo, lenh, lenhTon, tayCho, chanCho, nhayBuoc,
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
-      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung;
+      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung, coDap, dau, coCam4, cam4TaiCho;
     var nhip = 0, thang = false, dungSom = null;
     var damLaThua = !!cfg.damLaThua;                                       // HD2: màn ép, đâm tường (mọi loại vật cản) là thua, dừng ngay cuối nhịp đó
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
@@ -742,7 +761,7 @@
 
       hamGoc = rc.hamGoc || HAM_GOC[loai];                                  // KHAY (xem phần KHAY VÀ PHẦN CỨNG)
       function kiemTenGoc(t) {
-        if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined && CAM_MAU_HAM.indexOf(t) < 0 && CAM_NHIN_HAM.indexOf(t) < 0 && TAY_NAM_CHAM.indexOf(t) < 0 && CAM_TU_HAM.indexOf(t) < 0 && TAY_NEM.indexOf(t) < 0 && TAY_HOI.indexOf(t) < 0 && TAY_SON.indexOf(t) < 0 && CAM_PIN_HAM.indexOf(t) < 0 && CAM_HONG_NGOAI_HAM.indexOf(t) < 0) {
+        if (HAM_GOC[loai].indexOf(t) < 0 && TAY_LENH.indexOf(t) < 0 && CAM_BIEN_HAM[t] === undefined && CAM_MAU_HAM.indexOf(t) < 0 && CAM_NHIN_HAM.indexOf(t) < 0 && TAY_NAM_CHAM.indexOf(t) < 0 && CAM_TU_HAM.indexOf(t) < 0 && TAY_NEM.indexOf(t) < 0 && TAY_HOI.indexOf(t) < 0 && TAY_SON.indexOf(t) < 0 && CAM_PIN_HAM.indexOf(t) < 0 && CAM_HONG_NGOAI_HAM.indexOf(t) < 0 && !(loai === 'drone' && DRONE_DAP.indexOf(t) >= 0)) {
           throw new Error('Hàm gốc "' + t + '" không thuộc loại robot ' + loai + '.');
         }
       }
@@ -782,6 +801,10 @@
       if (coCamera && loai === 'drone') throw new Error('Drone không gắn camera: drone không có hướng mặt để nhìn "phía trước".');
       if (coColor && coCamMauBung && coCamera) throw new Error('Robot gắn cả cảm biến màu ở bụng lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
       camNhin = coColor && coCamera;                                       // color() đọc Ô TRƯỚC MẶT (camera); không thì đọc sàn dưới xe (cảm biến bụng)
+      var c4 = dsCamBien.filter(function (c) { return c && c.ma === MA_CAM_4; })[0];
+      coCam4 = !!c4; cam4TaiCho = !!(c4 && c4.taiCho);                     // camera bốn hướng color(huong) (mùa 4); taiCho: nâng cấp thêm "here"
+      if (coCam4 && (coCamMauBung || coCamera)) throw new Error('Camera bốn hướng không gắn chung với cảm biến màu ở bụng hay camera trước: color() sẽ không biết đọc kiểu nào.');
+      if (coCam4 && !coColor) throw new Error('Camera bốn hướng cần color() trên khay.');
       coPinCamBien = hamGoc.some(function (t) { return CAM_PIN_HAM.indexOf(t) >= 0; });                  // đo pin battery()
       coLook = hamGoc.some(function (t) { return CAM_NHIN_HAM.indexOf(t) >= 0; });                        // camera nhìn xuống look() (chỉ drone)
       coCamBay = dsCamBien.some(function (c) { return c && c.ma === MA_CAM_BAY; });
@@ -802,6 +825,9 @@
         pinToiDa = rc.pin; pin = rc.pin;
       }
       if (coPinCamBien && pinToiDa === null) throw new Error('battery() cần màn khai pin (rc.pin): drone không khai pin thì pin vô hạn.');
+      coDap = laDrone && phanCung.indexOf('land') >= 0;                     // drone nâng cấp đáp đất (land / take_off): chỉ sạc khi đáp trên P
+      if (laDrone && (phanCung.indexOf('land') >= 0) !== (phanCung.indexOf('take_off') >= 0)) throw new Error('land() và take_off() đi cùng nhau: drone đáp được thì cũng cất cánh được.');
+      dau = false;                                                           // drone luôn xuất phát lúc đang bay
 
       // đấu dây ngược (xem phần ĐẤU DÂY NGƯỢC): rc.daoChieu = ['trai'] | ['phai'] | cả hai
       dao = { trai: false, phai: false, cam: false, tay: false, kep: false, xoay: false, chan: false, sung: false };
@@ -875,7 +901,7 @@
         truotCho: truotCho, ncCho: ncCho, nc: nc, nem: nem, nemCho: nemCho, hoiCho: hoiCho,
         dan: dan, vet: vet, suKienChan: suKienChan, loi: loi, docCho: docCho, docLienTiep: docLienTiep,
         soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, lucBan: lucBan, laR1: laR1,
-        coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung
+        coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung, coDap: coDap, dau: dau, coCam4: coCam4, cam4TaiCho: cam4TaiCho
       };
     }
     function napRobot(o) {
@@ -888,7 +914,7 @@
       truotCho = o.truotCho; ncCho = o.ncCho; nc = o.nc; nem = o.nem; nemCho = o.nemCho; hoiCho = o.hoiCho;
       dan = o.dan; vet = o.vet; suKienChan = o.suKienChan; loi = o.loi; docCho = o.docCho; docLienTiep = o.docLienTiep;
       soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho; lucBan = o.lucBan; laR1 = o.laR1;
-      coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung;
+      coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung; coDap = o.coDap; dau = o.dau; coCam4 = o.coCam4; cam4TaiCho = o.cam4TaiCho;
     }
     khoiRobot(dsRc[0]);
 
@@ -1389,6 +1415,23 @@
       // lệnh đi / bánh gây ra chuyện của nhịp này (cho chẩn đoán trỏ đúng dòng): lệnh trượt, lệnh bánh đầu tiên, hay lệnh go_* của nhện
       var lenhNhip = (hanhDong.kieu === 'banh' ? (hanhDong.truot ? { ten: hanhDong.truot.ten, dongPy: hanhDong.truot.dongPy } : hanhDong.lenhBanh) : hanhDong.lenhDi) || (hanhDong.hoi ? { ten: hanhDong.hoi.ten, dongPy: hanhDong.hoi.dongPy } : null) || null;
       var coVo = false;
+      var dauDauNhip = false;                                                  // drone nâng cấp: đang đậu ở đầu nhịp (nhịp đậu trọn không tốn pin)
+
+      /** Drone nâng cấp: land() hạ xuống ô đang ở nếu ô đó đáp được. */
+      function apDap() {
+        var o = { x: rb.x, y: rb.y };
+        if (dau) { sk.push({ ma: 'da-dau', nhip: nhip, o: o, lenh: lenhNhip }); return; }
+        var c = oTai(san, rb.x, rb.y), ly = null;
+        if (c === '=') ly = 'rao';
+        else if (c === 'u') ly = 'ho';
+        else if (c === 'S') ly = 'bac-thang';
+        else if (c !== null && BANG[c] !== undefined) ly = 'bang';
+        else if (thungTai(rb.x, rb.y)) ly = 'thung-nang';
+        else if (vatNamTai(rb.x, rb.y)) ly = 'vat';
+        if (ly) { var eb = { ma: 'dap-bi-chan', nhip: nhip, o: o, vat: ly, lenh: lenhNhip }; sk.push(eb); suKienChan.push(eb); return; }
+        dau = true;
+        sk.push({ ma: 'dap', o: o, sac: !!sacSet[rb.x + ',' + rb.y] });
+      }
 
       function thuDi(huongDi, soBuoc, ma) {
         var v = VEC[huongDi], nx = rb.x + v[0] * soBuoc, ny = rb.y + v[1] * soBuoc;
@@ -1942,8 +1985,18 @@
           else if ((t === 0 && p === 1) || (t === -1 && p === 0)) { rb.huong = (rb.huong + 3) % 4; sk.push({ ma: 'quay-trai' }); }
           else sk.push({ ma: 'dung-yen' });
         } else if (hanhDong.kieu === 'drone') {
+          dauDauNhip = dau;
           apNamCham();                                                        // (a) lệnh nam châm (thả trước khi bay)
-          if (hanhDong.huong === null || hanhDong.huong === undefined) sk.push({ ma: 'dung-yen' });      // wait(): lơ lửng
+          if (hanhDong.dap === 'land') apDap();                               // nâng cấp đáp đất: land() / take_off() (xem phần DRONE)
+          else if (hanhDong.dap === 'take_off') {
+            if (dau) { dau = false; sk.push({ ma: 'cat-canh', o: { x: rb.x, y: rb.y } }); }
+            else sk.push({ ma: 'dang-bay', nhip: nhip, o: { x: rb.x, y: rb.y }, lenh: lenhNhip });
+          }
+          else if (hanhDong.huong === null || hanhDong.huong === undefined) sk.push({ ma: 'dung-yen' });      // wait(): lơ lửng (hay nghỉ lúc đậu)
+          else if (dau) {                                                     // đang đậu: lệnh bay không làm gì, mất nhịp
+            var edd = { ma: 'dang-dau', nhip: nhip, o: { x: rb.x, y: rb.y }, lenh: lenhNhip };
+            sk.push(edd); suKienChan.push(edd);
+          }
           else thuDi(hanhDong.huong, 1, 'di');                                // (b) bay 1 ô (tường cao / mép sân / cửa đóng thì đứng yên)
         } else {
           if (hanhDong.huong === null || hanhDong.huong === undefined) { apTay(); apChan(hanhDong.chan); apNamCham(); sk.push({ ma: 'dung-yen' }); }     // nhện: lệnh nam châm bụng (mùa 3) làm ở nhịp wait()
@@ -2016,8 +2069,11 @@
           if (cb === 'S') tren.push('bac-thang');
           if (thungTai(rb.x, rb.y)) tren.push('thung-nang');
           if (vatNamTai(rb.x, rb.y)) tren.push('vat');
-          if (tren.length) sk.push({ ma: 'bay-qua', nhip: nhip, o: { x: rb.x, y: rb.y }, tren: tren });
-          if (pin !== null) {                                                   // mỗi nhịp bay tốn 1 pin; cuối nhịp ở ô sạc thì pin đầy lại
+          if (tren.length && !dau) sk.push({ ma: 'bay-qua', nhip: nhip, o: { x: rb.x, y: rb.y }, tren: tren });
+          if (pin !== null && coDap) {                                          // drone nâng cấp: nhịp đậu trọn không tốn pin; đậu trên ô sạc thì pin đầy ngay
+            if (!(dauDauNhip && dau)) pin--;
+            if (dau && sacSet[rb.x + ',' + rb.y] && pin < pinToiDa) { sk.push({ ma: 'sac-pin', nhip: nhip, o: { x: rb.x, y: rb.y }, tu: pin, den: pinToiDa }); pin = pinToiDa; }
+          } else if (pin !== null) {                                            // drone gốc: mỗi nhịp bay tốn 1 pin; cuối nhịp ở ô sạc thì pin đầy lại
             pin--;
             if (sacSet[rb.x + ',' + rb.y]) { sk.push({ ma: 'sac-pin', nhip: nhip, o: { x: rb.x, y: rb.y }, tu: pin, den: pinToiDa }); pin = pinToiDa; }       // chỉ là sự kiện của vết (cho hoạt cảnh), không phải chẩn đoán
           }
@@ -2065,7 +2121,7 @@
         if (loai === 'nhen') r.chan = chan;                                    // nhện: tư thế chân cuối nhịp ('dung' | 'co')
         if (loai === 'xich') r.quayDo = quayDo ? quayDo.huong : 0;
         if (loai === 'omni') r.truot = truotGhi;
-        if (laDrone) { r.pin = pin; r.dangMang = nc.cam; }
+        if (laDrone) { r.pin = pin; r.dangMang = nc.cam; if (coDap) r.dau = dau; }
         else if (ncBung()) r.dangMang = nc.cam;                                 // nhện nam châm bụng: vật đang treo dưới bụng
         var mucVet = { loai: 'nhip', nhip: nhip, robot: r, suKien: sk };
         if (coTay) { r.tay = chupTay(); mucVet.vat = chupVat(); }
@@ -2107,7 +2163,40 @@
     }
 
     /** Đọc cảm biến màu ở bụng: màu SÀN ô ngay dưới xe ("none" nếu sàn không màu). Vật đang mang không tính. Không tốn nhịp, không đổi sân. */
+    /** color(huong): lỗi chạy nếu hướng thiếu / lạ / chưa nâng cấp "here", hay robot không có camera bốn hướng mà gọi có đối số. null nếu được. */
+    function loiHuongCam(yc) {
+      var ts = yc.thamSo || [];
+      function l(td) { return { loai: 'runtime-error', ma: 'huong-cam-sai', dong: yc.dong, thongDiep: td }; }
+      if (!coCam4) return ts.length ? l('color() của cảm biến này không nhận hướng: gọi color() không có gì trong ngoặc.') : null;
+      var bang = laBanh ? CAM4_MUI : CAM4_BAN_DO, ds = Object.keys(bang).concat(cam4TaiCho ? ['here'] : []);
+      var goi = ds.map(function (x) { return '"' + x + '"'; }).join(', ');
+      if (ts.length !== 1) return l('color() cần đúng 1 hướng để camera nhìn: ' + goi + '.');
+      var h = ts[0];
+      if (h === 'here' && !cam4TaiCho) return l('Camera chưa nâng cấp nên chưa nhìn được ô dưới chân ("here"). Hướng nhìn được: ' + goi + '.');
+      if (typeof h !== 'string' || ds.indexOf(h) < 0) return l('color(' + (typeof h === 'string' ? '"' + h + '"' : String(h)) + '): hướng lạ. Hướng camera nhìn được: ' + goi + '.');
+      return null;
+    }
+    /** Đọc camera bốn hướng color(huong) (đã kiểm hướng): ô kề theo hướng (hay ô đang ở với "here"), cùng luật thấy như camera trước. */
+    function docCam4(yc) {
+      var h = yc.thamSo[0], o, m = 'none', nguon = 'san', idVat = null;
+      if (h === 'here') {
+        o = { x: rb.x, y: rb.y };
+        if (oTai(san, o.x, o.y) === '=' || thungTai(o.x, o.y) || cuaDong(o.x, o.y)) nguon = 'chan';
+        else { var vd = laDrone || (loai === 'nhen' && coNamCham) ? vatNamTai(o.x, o.y) : null; if (vd) { m = vd.mau || 'none'; nguon = 'vat'; idVat = vd.id; } else { var md = mauThay(o.x, o.y); m = md.mau || 'none'; if (md.son) nguon = 'son'; } }
+      } else {
+        var huongDoc = laBanh ? (rb.huong + CAM4_MUI[h]) % 4 : CAM4_BAN_DO[h], v = VEC[huongDoc];
+        o = { x: rb.x + v[0], y: rb.y + v[1] };
+        var c = oTai(san, o.x, o.y);
+        if (c === null || c === '#' || c === '=' || c === 'N' || cuaDong(o.x, o.y) || thungTai(o.x, o.y) || xeDatTai(o.x, o.y)) nguon = 'chan';
+        else {
+          var vt = vatNamTai(o.x, o.y);
+          if (vt) { m = vt.mau || 'none'; nguon = 'vat'; idVat = vt.id; } else { var mo = mauThay(o.x, o.y); m = mo.mau || 'none'; if (mo.son) nguon = 'son'; }
+        }
+      }
+      return { ma: 'doc-cam-bien', cam: MA_CAM_4, ham: yc.ten, huong: h, tu: { x: rb.x, y: rb.y }, o: o, mau: m, nguon: nguon, idVat: idVat, nhip: nhip };
+    }
     function docMau(yc) {
+      if (coCam4) return docCam4(yc);
       if (camNhin) return docCamera(yc);
       var mt = mauThay(rb.x, rb.y);
       return { ma: 'doc-cam-bien', cam: 'mau', ham: yc.ten, tu: { x: rb.x, y: rb.y }, o: { x: rb.x, y: rb.y }, mau: mt.mau || 'none', nguon: mt.son ? 'son' : 'san', idVat: null, nhip: nhip };
@@ -2181,6 +2270,7 @@
       vet.push({ loai: 'lenh', ten: yc.ten, dongPy: yc.dong, nganPy: yc.ngan });
       if (CAM_BIEN_HAM[yc.ten] !== undefined || CAM_MAU_HAM.indexOf(yc.ten) >= 0 || CAM_NHIN_HAM.indexOf(yc.ten) >= 0 || CAM_TU_HAM.indexOf(yc.ten) >= 0 || CAM_PIN_HAM.indexOf(yc.ten) >= 0 || CAM_HONG_NGOAI_HAM.indexOf(yc.ten) >= 0) {     // cảm biến: đọc xong trả về cho chương trình (khoảng cách / từ / nhiệt: True / False; màu: chuỗi; pin / hồng ngoại distance: số), không tốn nhịp
         var laMau = CAM_MAU_HAM.indexOf(yc.ten) >= 0, laPin = CAM_PIN_HAM.indexOf(yc.ten) >= 0, laNhin = CAM_NHIN_HAM.indexOf(yc.ten) >= 0, laHN = CAM_HONG_NGOAI_HAM.indexOf(yc.ten) >= 0;
+        if (laMau) { var lh4 = loiHuongCam(yc); if (lh4) { loi = lh4; return true; } }      // camera bốn hướng: color(huong) phải có hướng đúng; cảm biến khác: color() không nhận đối số
         var ed = laNhin ? docNhin(yc) : laMau ? docMau(yc) : laPin ? docPin(yc) : laHN ? docHongNgoai(yc) : CAM_TU_HAM.indexOf(yc.ten) >= 0 ? docTu(yc) : docCamBien(yc);
         vet[vet.length - 1].docCamBien = Object.assign({}, ed);
         soLanDoc++;
@@ -2331,6 +2421,11 @@
         lenhTon.push({ ten: yc.ten, dongPy: yc.dong });
         return false;
       }
+      if (DRONE_DAP.indexOf(yc.ten) >= 0) {                     // drone nâng cấp: land() / take_off() mỗi lệnh một nhịp; lệnh nam châm đang chờ làm ở nhịp này
+        var hdp = { kieu: 'drone', huong: null, nc: ncCho, dap: yc.ten, lenhDi: { ten: yc.ten, dongPy: yc.dong } };
+        ncCho = null; lenhTon = [];
+        return motNhip(hdp);
+      }
       var hh = NHEN_HUONG[yc.ten];
       if (laDrone) {                                             // drone: go_*() bay 1 ô = đúng 1 nhịp; lệnh nam châm đang chờ làm ở nhịp này
         var hdd = { kieu: 'drone', huong: hh, nc: ncCho, lenhDi: { ten: yc.ten, dongPy: yc.dong } };
@@ -2359,7 +2454,7 @@
     /** Ô robot đang xét ĐỊNH tới ở nhịp có hành động h (tiến / lùi / trượt / bước / bay / giật súng), null nếu không định rời ô. Dùng để chặn đồng đội trước khi ai đi. */
     function duKienDi(h) {
       var d = null, v;
-      if (h.kieu === 'drone') d = h.huong === null || h.huong === undefined ? null : h.huong;
+      if (h.kieu === 'drone') d = h.huong === null || h.huong === undefined || dau ? null : h.huong;
       else if (h.kieu === 'nhen') {
         if (h.buoc !== 2) return null;
         var buoc = nhayBuoc ? 2 : 1;
