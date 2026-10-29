@@ -497,17 +497,22 @@
   Object.keys(KIEU_TONG_HOP).forEach(function (ma) { get(ma).kieuBai = KIEU_TONG_HOP[ma]; });
   // Gói 9 Combo, chương che-combo màn 8: che-cam-bien.10 "Kho hàng" cần fetch_back() của che-cam-bien.9 (biến đếm, đã sang mùa 2). Không đưa bản có biến thành hàm
   // của màn khóa như robot-hoan-thien.10 (người chơi vẫn thấy biến): viết lại fetch_back() KHÔNG BIẾN thành hàm của màn người chơi viết tiếp — đi tới hàng, nhặt,
-  // LÙI tới khi bên phải trống (đúng chỗ rẽ: trong nhánh hai bên là tường), đặt. Cảm biến bên thay biến đếm. Một sân (sân giữa) như mọi màn không phải trùm;
-  // không còn là trùm nên bỏ huy hiệu (huy hiệu che-cam-bien là của trùm che-cam-bien.16). Chương trình chính gọi 2 hàm của em (to_gap, turn_right): giới hạn 2.
+  // LÙI tới khi bên phải trống (đúng chỗ rẽ: trong nhánh hai bên là tường), đặt. Cảm biến bên thay biến đếm.
+  // Không còn là trùm nên bỏ huy hiệu (huy hiệu che-cam-bien là của trùm che-cam-bien.16). Chương trình chính gọi 2 hàm của em (to_gap, turn_right): giới hạn 2.
+  // HD2 (29/10, phương án 3b-B của HD1): HAI KHO dài ngắn khác nhau để thân fetch_back() đếm cứng không thắng cả hai. Kho 1 = sân giữa của ngân hàng (nhánh 2 ô);
+  // kho 2 mới: nhánh 1 ô và hốc trái nằm ĐỐI DIỆN cửa, nên lùi quá một ô là xe lọt vào hốc rồi đặt hàng lệch (húc tường chỉ mất nhịp, không tự chặn đếm thừa).
+  // Số nhịp tính theo sân dài nhất (mặc định) nên nhịp của màn không đổi (phanh đường cong kiem-combo-mua-1).
   (function () {
     var m = get('che-cam-bien.10');
     motSan(m, 1);
+    m.san = [m.san, ['##.####', '##.####', '#...o##', '##.####', '##.####', '##.####', '##.####']];
+    m.bongMo = [m.bongMo, { x: 2, y: 2, huong: 1, vat: [{ x: 3, y: 2 }] }];
     var FB = ['go_wall()', 'pick()', 'while not right_clear():', '    back()', 'drop()'];
     var CHINH = ['to_gap()', 'turn_right()', 'fetch_back()'];
     function lam(chinh, than) { return bai(chinh, [ham('fetch_back', than)]); }
     Object.assign(m, {
       kieuBai: 'do-duong', gioiHanHam: 2,
-      deBai: 'Hàng nằm cuối một nhánh bên phải của kho. Đi lên hành lang tới cửa bên phải (hốc bên trái chỉ là mồi), vào nhánh, lấy hàng rồi đặt nó ngay trong cửa nhánh, giống bóng mờ. ' +
+      deBai: 'Hai kho, nhánh dài ngắn khác nhau. Hàng nằm cuối một nhánh bên phải của kho. Đi lên hành lang tới cửa bên phải (hốc bên trái chỉ là mồi), vào nhánh, lấy hàng rồi đặt nó ngay trong cửa nhánh, giống bóng mờ. ' +
         'fetch_back() là hàm của màn: đi tới hàng và nhặt đã có; viết tiếp phần lùi về chỗ rẽ (bên phải trống) rồi đặt. Chương trình chỉ được gọi 2 hàm của em.',
       veMaMau: 'Viết chương trình chính (tới cửa, rẽ, gọi fetch_back()), rồi viết tiếp thân fetch_back() trong Xưởng hàm.',
       maMau: lam([], ['go_wall()', 'pick()']),
@@ -516,10 +521,12 @@
       loiSai: [
         { moTa: 'Quên rẽ phải vào nhánh: fetch_back() chạy dọc hành lang', baiLam: lam(['to_gap()', 'fetch_back()'], FB), phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Dùng thêm go_wall() trong chương trình chính: vượt quá 2 hàm của em', baiLam: lam(['to_gap()', 'turn_right()', 'go_wall()', 'fetch_back()'], FB), phaiCoMa: ['qua-gioi-han-ham'] },
-        { moTa: 'Lùi khi bên phải trống (thiếu chữ not): xe không lùi, đặt thùng về chỗ cũ', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'while right_clear():', '    back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Lùi khi bên phải trống (thiếu chữ not): xe không lùi, đặt thùng về chỗ cũ', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'while right_clear():', '    back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng hai bước lùi: đúng kho 1, ở kho 2 xe lùi lọt vào hốc trái rồi đặt hàng lệch', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'for i in range(2):', '    back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng một bước lùi: đúng kho 2, ở kho 1 chưa về tới cửa', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] }
       ],
       hamCuaEmCan: ['turn_right', 'to_gap', 'go_wall', 'pick', 'back', 'drop', 'move'],
-      goiY: ['Trong nhánh, bên phải xe là tường; về tới chỗ rẽ thì bên phải là hành lang trống.', 'while not right_clear(): back() rồi drop().']
+      goiY: ['Trong nhánh, bên phải xe là tường; về tới chỗ rẽ thì bên phải là hành lang trống.', 'while not right_clear(): back() rồi drop().', 'Hai kho nhánh dài khác nhau: đếm số bước lùi thì chỉ đúng một kho.']
     });
     delete m.congThucKhac; delete m.huyHieu;
     m.phienBanNoiDung = 2;

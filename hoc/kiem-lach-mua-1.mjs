@@ -28,9 +28,7 @@ const LOI_GIA = process.argv.includes('--loi-gia');
 
 /** Lỗ chấp nhận: mã màn → lý do (ghi ở báo cáo HD1). */
 const CHAP_NHAN = {
-  // gói 9 Combo (recall), màn 8: fetch_back() là hàm của màn viết tiếp, một sân theo quyết định 27/10 (bản ba sân của ngân hàng dùng biến đếm).
-  // Thân `for i in range(2): back()` thắng 3 sao trên sân này. Sửa sau khi user duyệt phương án (ba sân, hay hai kho dài ngắn khác nhau).
-  'che-cam-bien.10': 'gói 9 recall, một sân theo quyết định 27/10; chờ user chọn phương án nhiều sân'
+  // HD2 (29/10): che-cam-bien.10 đã thành hai kho dài ngắn khác nhau (lo-trinh-hoc.js), không còn lỗ chấp nhận nào.
 };
 const BANG = process.argv.includes('--bang');
 

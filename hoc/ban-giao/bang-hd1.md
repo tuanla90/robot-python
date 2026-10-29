@@ -52,7 +52,7 @@ Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện tron
 
 | số | mã | tên | mới | HD | trình diễn | ép |
 |---|---|---|---|---|---|---|
-| 1 | vong-lap.1 | Lặp lại | for | có |  | for |
+| 1 | vong-lap.1 | Lặp lại | for | có | có | for |
 | 2 | vong-lap.2 | Tự viết vòng lặp |  | có |  | for |
 | 3 | vong-lap.3 | Hai đoạn thẳng |  | có |  | for |
 | 4 | vong-lap.4 | Lặp một cụm |  |  |  | for |
