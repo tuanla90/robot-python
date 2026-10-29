@@ -160,6 +160,150 @@
     })
   ];
 
+  /* ================================================= chương che-dao-cuc "Hàm đảo cực" =================================================
+     Thứ tự (MUA_3): 1 (trình diễn) · 2 (tạo pull_n) · che-nam-cham.6 (chế fling) · 3 (tạo pull_s) · 4 · 5 (tạo haul_n(k)) · 6 · 7 · 8 · 9 (trùm).
+     Hàm của em mới: pull_n() = magnet_s(), wait() (kéo vật chữ N) · pull_s() = magnet_n(), wait() · haul_n(k) (kéo vật N, chở k ô, thả). */
+  function che(m) { m.chuong = 'che-dao-cuc'; return man(m); }
+  var T_PULL_N = ['magnet_s()', 'wait()'], T_PULL_S = ['magnet_n()', 'wait()'];
+  var T_HAUL = ['pull_n()', 'for i in range(k):', '    move()', 'magnet_off()', 'wait()'];
+
+  DS.push(
+    che({
+      so: 1, ten: 'Hàm kéo vật', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoaHamMan: ['reel_n'],
+      deBai: 'Hàm reel_n() của màn bật cực S để kéo vật chữ N về. Tên hàm nói việc nó làm nên chương trình dễ đọc hơn. Bấm Chạy.',
+      veMaMau: 'Chương trình và hàm của màn đã viết sẵn, khoá. Bấm Chạy.',
+      san: ['####', '.D.o', '####'], vatChat: ['....', '...N', '....'],
+      batDau: { x: 0, y: 1, huong: 1 },
+      maMau: bai(nhieu(['reel_n()'], THA), { hamCuaMan: [H('reel_n', [], T_PULL_N)] }),
+      loiGiai: bai(nhieu(['reel_n()'], THA), { hamCuaMan: [H('reel_n', [], T_PULL_N)] }),
+      sao: { o: 5, nhip: 2 },
+      goiY: ['Mở Xưởng xem thân reel_n().', 'Màn sau em tự tạo hàm như thế.']
+    }),
+
+    che({
+      so: 2, ten: 'Hàm pull_n()', hang: 'lam-quen', taoHam: ['pull_n'],
+      deBai: 'Tạo hàm pull_n(): bật cực S để kéo vật chữ N về mũi xe (hai dòng). Rồi rẽ phải và thả vật vào ô đích.',
+      veMaMau: 'Chương trình có sẵn gọi pull_n() nhưng em chưa có hàm đó. Bấm Hàm mới.',
+      san: ['..o...', '......', '......', '...D..'], vatChat: ['..N...', '......', '......', '......'],
+      batDau: { x: 2, y: 3, huong: 0 },
+      maMau: bai(nhieu(['pull_n()', 'turn_right()'], THA)),
+      loiGiai: bai(nhieu(['pull_n()', 'turn_right()'], THA), { hamCuaEmMoi: [H('pull_n', [], T_PULL_N)] }),
+      sao: { o: 8, nhip: 3 },
+      loiSai: [
+        { moTa: 'Chưa tạo hàm pull_n mà đã gọi nó', baiLam: bai(nhieu(['pull_n()', 'turn_right()'], THA)), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm bật cực N: cùng cực nên vật bị đẩy đi', baiLam: bai(nhieu(['pull_n()', 'turn_right()'], THA)), hamCuaEmMoi: [H('pull_n', [], T_PULL_S)], phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Kéo vật chữ N: bật cực S, rồi wait().', 'Hàm hai dòng, không có đối số.']
+    }),
+
+    che({
+      so: 3, ten: 'Hàm pull_s()', hang: 'lam-quen', taoHam: ['pull_s'],
+      deBai: 'Tạo hàm pull_s() kéo vật chữ S về mũi xe. Kéo vật S, rẽ trái rồi thả vào ô đích.',
+      veMaMau: 'Chương trình có sẵn gọi pull_s(). Tạo hàm đó.',
+      san: ['.....', '..o..', '.....', '.D...', '.....'], vatChat: ['.....', '..S..', '.....', '.....', '.....'],
+      batDau: { x: 2, y: 3, huong: 0 },
+      maMau: bai(nhieu(['pull_s()', 'turn_left()'], THA)),
+      loiGiai: bai(nhieu(['pull_s()', 'turn_left()'], THA), { hamCuaEmMoi: [H('pull_s', [], T_PULL_S)] }),
+      sao: { o: 8, nhip: 3 },
+      loiSai: [
+        { moTa: 'Dùng pull_n() cho vật chữ S: cùng cực nên vật bị đẩy đi', baiLam: bai(nhieu(['pull_n()', 'turn_left()'], THA)), hamCuaEmMoi: [H('pull_s', [], T_PULL_S)], phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Kéo vật chữ S: bật cực N.', 'pull_n() và pull_s() khác nhau ở cực được bật.']
+    }),
+
+    che({
+      so: 4, ten: 'Bắn và kéo', hang: 'luyen', hamCuaEmCan: ['turn_right', 'u_turn', 'fling', 'pull_s'],
+      deBai: 'Vật chữ N phía trước phải bị bắn tới ô đích sát mép trên. Vật chữ S bên phải phải được kéo về rồi thả vào ô đích bên trái xe. Dùng fling() và pull_s() của em.',
+      veMaMau: 'Chương trình có sẵn đã bắn vật N. Viết tiếp.',
+      san: ['..D..', '.....', '..o..', '.....', '.D..o'], vatChat: ['.....', '.....', '..N..', '.....', '....S'],
+      batDau: { x: 2, y: 4, huong: 0 },
+      maMau: bai(['fling()']),
+      loiGiai: bai(nhieu(['fling()', 'turn_right()', 'pull_s()', 'u_turn()'], THA)),
+      sao: { o: 17, nhip: 6 },
+      loiSai: [
+        { moTa: 'Kéo vật S bằng pull_n(): vật bị đẩy đi', baiLam: bai(nhieu(['fling()', 'turn_right()', 'pull_n()', 'u_turn()'], THA)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['fling() kéo rồi bắn vật N ra xa theo hướng mũi xe.', 'Kéo vật S về, quay đầu rồi thả.']
+    }),
+
+    che({
+      so: 5, ten: 'Hàm haul_n(k)', hang: 'luyen', taoHam: ['haul_n'], hamCuaEmCan: ['move', 'turn_right', 'pull_n'],
+      deBai: 'Tạo hàm haul_n(k): kéo vật chữ N về bằng pull_n(), chở nó tiến k ô rồi thả. Vật đầu cần chở 1 ô, vật sau cần chở 2 ô.',
+      veMaMau: 'Chương trình có sẵn gọi haul_n(1), rẽ phải, haul_n(2). Tạo hàm haul_n có đối số k.',
+      san: ['.....', '.....', '.....', '..Do.', '.....', '.o...', '.D...'], vatChat: ['.....', '.....', '.....', '...N.', '.....', '.N...', '.....'],
+      batDau: { x: 0, y: 3, huong: 1 },
+      maMau: bai(['haul_n(1)', 'turn_right()', 'haul_n(2)']),
+      loiGiai: bai(['haul_n(1)', 'turn_right()', 'haul_n(2)'], { hamCuaEmMoi: [H('haul_n', ['k'], T_HAUL)] }),
+      sao: { o: 15, nhip: 8 },
+      loiSai: [
+        { moTa: 'Trong hàm chở cứng 1 ô: vật sau chưa tới đích', baiLam: bai(['haul_n(1)', 'turn_right()', 'haul_n(2)']), hamCuaEmMoi: [H('haul_n', ['k'], ['pull_n()', 'move()', 'magnet_off()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Thân hàm: pull_n(), vòng for i in range(k): move(), rồi thả.', 'Đối số k là số ô phải chở.']
+    }),
+
+    che({
+      so: 6, ten: 'Sửa push_off()', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Hàm push_off() của màn phải đẩy vật chữ S trượt vào ô đích sát tường, nhưng nó bật nhầm cực nên vật bị hút về. Sửa thân hàm.',
+      veMaMau: 'Chạy thử: vật S bay về mũi xe. Mở Xưởng sửa push_off.',
+      san: ['......', '......', '.o.D#.', '......', '......'], vatChat: ['......', '......', '.S....', '......', '......'],
+      batDau: { x: 0, y: 4, huong: 0 },
+      maMau: bai(['move()', 'move()', 'turn_right()', 'push_off()'], { hamCuaMan: [H('push_off', [], HN)] }),
+      loiGiai: bai(['move()', 'move()', 'turn_right()', 'push_off()'], { hamCuaMan: [H('push_off', [], HS)] }),
+      sao: { o: 11, nhip: 4 },
+      loiSai: [
+        { moTa: 'Sửa thành magnet_off(): vật không bị đẩy', baiLam: bai(['move()', 'move()', 'turn_right()', 'push_off()'], { hamCuaMan: [H('push_off', [], THA)] }), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Đẩy vật chữ S thì bật cùng cực: S.', 'Chỉ cần đổi một lệnh trong hàm.']
+    }),
+
+    che({
+      so: 7, ten: 'Bắn hai vật', hang: 'bien-the', hamCuaEmCan: ['turn_right', 'fling'],
+      deBai: 'Hai vật chữ N, một ở phía trước, một ở bên phải. Mỗi vật phải bị bắn tới ô đích ở mép sân theo hướng của nó. Dùng fling() hai lần.',
+      veMaMau: 'Chương trình có sẵn bắn được vật đầu. Viết tiếp.',
+      san: ['..D...', '......', '..o...', '......', '....oD'], vatChat: ['......', '......', '..N...', '......', '....N.'],
+      batDau: { x: 2, y: 4, huong: 0 },
+      maMau: bai(['fling()']),
+      loiGiai: bai(['fling()', 'turn_right()', 'fling()']),
+      sao: { o: 9, nhip: 3 },
+      loiSai: [
+        { moTa: 'Quên rẽ phải: lần bắn thứ hai không có vật trước mặt', baiLam: bai(['fling()', 'fling()']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Bắn xong vật đầu, rẽ phải cho mũi xe quay về vật thứ hai.', 'fling() làm cả việc kéo lẫn bắn.']
+    }),
+
+    che({
+      so: 8, ten: 'Sắt thì mang, N thì bắn', hang: 'bien-the', hamCuaEmCan: ['u_turn', 'fling'],
+      deBai: 'Hai sân. Vật trước mặt có thể là vật sắt hoặc vật chữ N. Sắt thì hút về, quay đầu, thả vào ô đích sau lưng; vật N thì bắn ra xa tới ô đích ở mép trên. Dùng front_metal() để chọn.',
+      veMaMau: 'Chương trình có sẵn lúc nào cũng bắn. Thêm if front_metal(): ở đầu.',
+      san: [['..D..', '.....', '..o..', '.....', '.....', '..D..'], ['..D..', '.....', '..o..', '.....', '.....', '..D..']],
+      vatChat: [['.....', '.....', '..s..', '.....', '.....', '.....'], ['.....', '.....', '..N..', '.....', '.....', '.....']],
+      batDau: { x: 2, y: 4, huong: 0 },
+      maMau: bai(['fling()']),
+      loiGiai: bai(['if front_metal():', '    magnet_n()', '    wait()', '    u_turn()', '    magnet_off()', '    wait()', 'else:', '    fling()']),
+      sao: { o: 15, nhip: 3 },
+      loiSai: [
+        { moTa: 'Lúc nào cũng bắn: sắt không bị bắn ra, vẫn dính ở mũi xe', baiLam: bai(['fling()']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['front_metal() là True khi trước mặt là sắt.', 'Sắt không bị cùng cực đẩy, nên không bắn được sắt.']
+    }),
+
+    che({
+      so: 9, ten: 'Kho bắn và mang', hang: 'trum', hamCuaEmCan: ['move', 'u_turn', 'fling'],
+      deBai: 'Ba kho, mỗi kho một hành lang, cuối hành lang là vật sắt hoặc vật chữ N, xa gần khác nhau. Đi tới khi trước mặt hết trống hoặc thấy sắt. Sắt thì mang về ô đích sau lưng; vật N thì bắn nó vào ô đích ở cuối hành lang.',
+      veMaMau: 'Chương trình có sẵn mới đi thẳng tới vật. Viết tiếp.',
+      san: [['########', '..D..o..', '########'], ['########', '....o..D', '########'], ['########', '...D..o.', '########']],
+      vatChat: [['........', '.....s..', '........'], ['........', '....N...', '........'], ['........', '......s.', '........']],
+      batDau: { x: 0, y: 1, huong: 1 },
+      maMau: bai(['while front_clear():', '    move()']),
+      loiGiai: bai(['while front_clear() and not front_metal():', '    move()', 'if front_metal():', '    magnet_n()', '    wait()', '    u_turn()', '    magnet_off()', '    wait()', 'else:', '    fling()']),
+      sao: { o: 20, nhip: 7 },
+      loiSai: [
+        { moTa: 'Đi tới khi trước mặt hết trống: kho sắt xe sát vật rồi mới hút, thả lệch', baiLam: bai(['while front_clear():', '    move()', 'if front_metal():', '    magnet_n()', '    wait()', '    u_turn()', '    magnet_off()', '    wait()', 'else:', '    fling()']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Dừng khi gặp vật chắn hoặc thấy sắt: front_clear() and not front_metal().', 'Sắt thì mang về; không phải sắt thì fling().']
+    })
+  );
+
   ManHoc.manDaoCuc = DS;
   if (laNode) module.exports = ManHoc;
 })();

@@ -755,6 +755,13 @@
   // MÙA 3 gói 5: nhảy (nhay.1 trình diễn co chân chui gầm, duỗi chân bật qua hố)
   H['nhay.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: crouch() co chân chui gầm, stand() ngay trước bước đi là bật qua hố.');
 
+  // MÙA 3 gói 6: đảo cực (dao-cuc.1 trình diễn magnet_s; che-dao-cuc.1 trình diễn hàm kéo; .2 pull_n, .3 pull_s, .5 haul_n(k))
+  H['dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: cực S hút vật chữ N (khác cực), rồi đẩy vật chữ S (cùng cực).');
+  H['che-dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm reel_n() bật cực S kéo vật chữ N về.');
+  H['che-dao-cuc.2'] = [buocTaoHam('pull_n', 'Bấm Hàm mới để tạo pull_n().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_s() rồi wait(). Bấm Chạy.'));
+  H['che-dao-cuc.3'] = [buocTaoHam('pull_s', 'Bấm Hàm mới để tạo pull_s().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi wait(). Bấm Chạy.'));
+  H['che-dao-cuc.5'] = [buocTaoHam('haul_n', 'Bấm Hàm mới, đặt tên haul_n và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Kéo bằng pull_n(), chở k ô, rồi thả. Bấm Chạy.'));
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn
