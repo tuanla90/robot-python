@@ -177,3 +177,6 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
   biến gán d = distance(); range(distance()) / forward(distance() + n) tách được ô; dòng dài xuống hai dòng. Máy kiểm hoc/kiem-o-so.mjs chạm từng ô số của lời giải
   400 màn mùa 1, 2 trên khung thật. CÒN CHỜ USER (10 ô, máy in ra mỗi lần chạy): bang-chuyen.7 cần range(10), che-hong-ngoai.10 cần go_safe(0) (bảng chọn chỉ 1–9);
   khoang-cach.6, me-cung.7–10, che-hong-ngoai.8 lời giải range(20 / 30 / 60) (màn có while, có lẽ giải được bằng while, chưa kiểm); hong-ngoai.6 range(20) có sẵn trong mã mẫu.
+
+29/10 TÊN VÀ PHIM MÙA 2 THEO QUY TẮC (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể"): tên mùa "Nhà máy"; gói đổi: nha-may → Băng chuyền, hong-ngoai → Cảm biến hồng ngoại,
+  luc-ban → Lực phun, doi-mua-2 → R2 trở lại, nha-may-chay → Xe cứu hỏa R1; 20 chương là việc em làm; 10 phim giọng em, phun thay bắn. Còn: chữ "bắn" trong màn (đợt riêng sau giật một ô).

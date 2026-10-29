@@ -1472,7 +1472,7 @@
   // ---------------------------------------------------------------- TÊN HIỂN THỊ THEO QUY TẮC ĐẶT TÊN (user duyệt 29/10, hội đồng 20261029-1738; KE-HOACH-7-MUA.md mục "Quy tắc đặt tên")
   // Tên mùa = nơi robot làm việc; tên gói = món mới hay tình huống mới (cùng tên với thẻ bộ phận); tên chương = việc em làm, không lặp tên gói,
   // không "Hàm cho…"; chương tạo hàm thì "Chế lệnh: …". Chỉ đổi CHỮ HIỂN THỊ: mã gói / chương (khoá lưu tiến độ) giữ nguyên.
-  // Mùa 2 chưa đổi: gộp một lần với gói vòi phun / van hơi (phiên vector đang làm).
+  // Mùa 2 đổi 29/10 sau khi vòi phun / van hơi gộp (bắn → phun ở tên và phim; chữ trong màn đổi ở đợt riêng).
   (function () {
     var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
                      'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
@@ -1492,6 +1492,21 @@
       'robot-hoan-thien': 'Đủ bộ', 'trum-mua-1': 'Ngày xuất xưởng'
     };
     Object.keys(TEN_CHUONG_1).forEach(function (c) { TT.ten[c] = TEN_CHUONG_1[c]; });
+    var TEN_GOI_2 = { 'nha-may': 'Băng chuyền', 'hong-ngoai': 'Cảm biến hồng ngoại', 'luc-ban': 'Lực phun', 'doi-mua-2': 'R2 trở lại', 'nha-may-chay': 'Xe cứu hỏa R1' };
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-2' && TEN_GOI_2[g.ma]) g.ten = TEN_GOI_2[g.ma]; });
+    var TEN_CHUONG_2 = {
+      'xich': 'Quay hai nhịp', 'bien-xich': 'Đếm bước để về',
+      'sung-hoi': 'Phun là lùi', 'tham-so': 'Đi mấy ô tùy em',
+      'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
+      'bang-chuyen': 'Lên băng chuyền', 'che-sung-hoi': 'Chế lệnh: phun để đi',
+      'day-thung': 'Đẩy thùng nặng', 'che-day-thung': 'Chế lệnh: đẩy n ô',
+      'luc-ban': 'Phun nhanh, phun tụ', 'che-luc-ban': 'Chế lệnh: chọn lực',
+      'do-nhiet': 'Tìm van nóng', 'che-do-nhiet': 'Chế lệnh: mở van',
+      'doi-mua-2': 'Nhường đường', 'che-doi-mua-2': 'Chế lệnh: chờ bạn',
+      'be-sung': 'Phun không lùi', 'che-be-sung': 'Chế lệnh: phun ba hướng',
+      'tong-hop-2': 'Đủ bộ', 'trum-mua-2': 'Nhà máy chạy lại'
+    };
+    Object.keys(TEN_CHUONG_2).forEach(function (c) { TT.ten[c] = TEN_CHUONG_2[c]; });
     // Mùa 3: gói 3 đổi tên ngay trong MUA_3 ("Cảm biến từ", user 29/10); các tên khác của mùa 3 đặt theo quy tắc khi làm P2.
   })();
 

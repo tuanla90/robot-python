@@ -64,7 +64,9 @@ Game tên **Mật Lệnh Robot** (đổi 29/10). Chỉ đổi chữ hiển thị
 Đã đổi 29/10: tên 4 mùa đang có (mùa 1 sau đó thành Kho hàng), lời phim mở đầu và 9 phim gói mùa 1 theo góc nhìn em (quy tắc 6), gói và chương mùa 1 (Tay gắp → Tay kẹp, Kho hàng → Nút đè, Đội hai robot → Gặp R2, Combo → Nhìn bên, nhặt bên;
 20 chương theo quy tắc 3), phim mở đầu khung 3 (bánh xích "văng qua tường ra ngoài", khớp hình và khớp "chờ trên đồi" ở phim sau) và khung 6 ("mật lệnh").
 Mùa 3 (user 29/10): giữ thân nhện; gói 3 "Cảm ứng từ" → **"Cảm biến từ"** (trùng thẻ part), chương "Dò sắt" / "Chế lệnh: dò sắt" (mã cam-ung-tu giữ).
-Còn: mùa 2 (gộp với vòi phun), các tên khác của mùa 3 (đặt khi làm P2), nhãn Python cho phụ huynh.
+Mùa 2 (29/10, sau khi vòi phun / van hơi gộp): gói Băng chuyền, Cảm biến hồng ngoại, Lực phun, R2 trở lại, Xe cứu hỏa R1; 20 chương theo quy tắc 3;
+10 phim mùa 2 giọng em, phun thay bắn (≤ 14 từ). Chữ "bắn" trong đề bài / gợi ý / lời báo lỗi của màn mùa 2: đợt riêng (agent), sau gói giật một ô.
+Còn: các tên khác của mùa 3 (đặt khi làm P2), nhãn Python cho phụ huynh.
 
 ## Ô còn trống
 | Ô | Gợi ý của Claude |
