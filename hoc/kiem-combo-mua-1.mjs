@@ -187,8 +187,9 @@ async function main() {
       assert.deepEqual(ds.map((m) => m.so), ds.map((_, i) => i + 1), c);
       assert.deepEqual(ds.map((m) => m.hang), ds.map((_, i) => (i < 3 ? 'lam-quen' : i < 6 ? 'luyen' : i < 9 ? 'bien-the' : 'trum')), c);
     }
-    assert.equal(TT.ten[C1], 'Nhìn bên, nhặt bên');
-    assert.equal(TT.ten[C2], 'Combo mở rộng');
+    assert.equal(TT.ten[C1], 'Dừng cạnh thùng');      // tên theo quy tắc đặt tên (user duyệt 29/10): gói là 'Nhìn bên, nhặt bên'
+    assert.equal(TT.ten[C2], 'Trực kho');
+    assert.equal(goi.ten, 'Nhìn bên, nhặt bên');
     assert.equal(TT.thuTu.indexOf(C1), TT.thuTu.indexOf('che-hai-robot') + 1);
     assert.equal(TT.thuTu.indexOf(C2), TT.thuTu.indexOf(C1) + 1);
   });
