@@ -163,7 +163,7 @@ console.log('\n== 4. Đăng ký ==');
   const tt = ThuTu.thuTu;
   // Giữa che-sung-hoi (gói 4 Nhà máy) và luc-ban (gói 6) chỉ có chương của gói 5 Đẩy thùng (hiện khi đã có màn, KE-HOACH-MUA-2.md).
   const giuaLB = tt.slice(tt.indexOf('che-sung-hoi') + 1, tt.indexOf('luc-ban'));
-  kiem('thứ tự: luc-ban sau che-sung-hoi, giữa chỉ có chương gói Đẩy thùng; có tên "Lực bắn", thuộc đợt 2', tt.indexOf('luc-ban') > tt.indexOf('che-sung-hoi') && giuaLB.every((c) => ['day-thung', 'che-day-thung'].includes(c)) && ThuTu.ten['luc-ban'] === 'Lực bắn' && ThuTu.laDot2('luc-ban'), J(giuaLB));
+  kiem('thứ tự: luc-ban sau che-sung-hoi, giữa chỉ có chương gói Đẩy thùng; có tên "Phun nhanh, phun tụ" (quy tắc đặt tên 29/10, gói tên "Lực phun"), thuộc đợt 2', tt.indexOf('luc-ban') > tt.indexOf('che-sung-hoi') && giuaLB.every((c) => ['day-thung', 'che-day-thung'].includes(c)) && ThuTu.ten['luc-ban'] === 'Phun nhanh, phun tụ' && ThuTu.laDot2('luc-ban'), J(giuaLB));
   // Khung mùa 2 (27/10, KE-HOACH-MUA-2.md): Lực bắn là gói 6 riêng (chương 1 luc-ban, chương 2 che-luc-ban khi có màn), đứng ngay sau gói Nhà máy (bang-chuyen, che-sung-hoi).
   const gLB = ThuTu.goi.find((g) => g.ma === 'luc-ban'), iLB = ThuTu.goi.indexOf(gLB);
   const gTruoc = iLB > 0 && ThuTu.goi[iLB - 1].ma === 'day-thung' ? ThuTu.goi[iLB - 2] : ThuTu.goi[iLB - 1];
