@@ -135,11 +135,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function coCauTruc(man, k) { return !!(man && Array.isArray(man.cauTruc) && man.cauTruc.indexOf(k) >= 0); }
 
   /* ---- đối số của một dòng: `for i in range(n):` (một đối số) hoặc lời gọi `ten(a, b)`. Số hoặc tên biến đơn giản là "ô chạm được" (.num). */
-  var RE_FOR_DS = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+range\()([^)]*)(\):.*)$/;
+  var RE_FOR_DS = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+range\()((?:[^()]|\([^()]*\))*)(\):.*)$/;      // đối số được có một cặp ngoặc lồng: range(distance()), range(len(a))
   var RE_FOR_CH = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+)("[^"]*"|[A-Za-z_]\w*)(\s*:.*)$/;                       // for c in "UUR": / for c in path:
   var RE_IF_DS = /^(\s*(?:if|elif)\s+)([A-Za-z_]\w*)(\s*==\s*)("[^"]*"|[A-Za-z_]\w*)(\s*:.*)$/;            // if d == "U": / elif d == "D":
   var RE_DK = /^(\s*(?:while|if|elif)\s+)((?:not\s+)?[A-Za-z_]\w*\(\)|True|False)(\s*:.*)$/;                        // while front_clear(): / if not right_clear(): / while True:
-  var RE_GOI_DS = /^(\s*([A-Za-z_]\w*)\()([^)]*)(\).*)$/;
+  var RE_GOI_DS = /^(\s*([A-Za-z_]\w*)\()((?:[^()]|\([^()]*\))*)(\).*)$/;                       // forward(distance() + n): ngoặc lồng không cắt đôi đối số
   var RE_SO = /^\d+$/, RE_BIEN = /^[A-Za-z_]\w*$/, RE_CHUOI = /^"[^"]*"$/, RE_BTH = /^(\d+|[A-Za-z_]\w*)\s*[-+]\s*(\d+|[A-Za-z_]\w*)$/;      // RE_BTH: biểu thức đơn giản `3 - i`, `i + 1` (đối số aim)
 
   /* ---- DANH SÁCH (gói List, man.cauTruc có 'list'; TP.datCheList): `a = [2, 3, 1]`, `for n in a:`, `for n in [2, 3]:`, `a.append(1)` và danh sách đặt thẳng làm đối số `weave([2, 3, 1])`.
@@ -157,6 +157,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var RE_GOI_LS = /^(\s*([A-Za-z_]\w*)\()(.*)(\)\s*)$/;                                                    // ten(...): đối số có thể là danh sách, a[i], len(a)
   var RE_FOR_RANGE_LEN = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+range\()(.*len\(.*)(\):.*)$/;                      // for i in range(len(a)):
   var RE_PTU_CHI = /^[A-Za-z_]\w*\[(?:\d+|[A-Za-z_]\w*)\]$/, RE_LEN_DS = /^len\([A-Za-z_]\w*\)$/;       // a[0] · a[i] · len(a): số lấy từ danh sách
+  var RE_DO = /^distance\(\)(?:\s*[-+]\s*(?:\d+|[A-Za-z_]\w*))?$/, RE_GAN_DO = /^\s*([A-Za-z_]\w*)\s*=\s*distance\(\)\s*$/;       // ô số lấy từ mắt hồng ngoại (mùa 2): distance(), distance() + n; biến gán d = distance()
   /** Cắt chuỗi theo dấu phẩy NGOÀI ngoặc và nháy: "[1, 2], 3" → ["[1, 2]", "3"]; chuỗi rỗng → []. */
   function catTop(str) {
     var kq = [], sau = 0, sau2 = 0, nhay = null, i, c;
@@ -353,7 +354,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function oDoiSo(v, k) {
     if (RE_SO.test(v)) return '<span class="num" data-k="' + k + '" data-so="' + v + '">' + v + '</span>';
     if (RE_CHUOI.test(v)) return '<span class="num chuoi' + (MAU_DS.indexOf(v.slice(1, -1)) >= 0 ? ' chuoi-mau mc-' + v.slice(1, -1) : '') + '" data-k="' + k + '" data-so="0" data-chuoi="' + esc(v.slice(1, -1)) + '">' + esc(v) + '</span>';       // tên màu (ink("red"), stop_on("blue")): ô màu
-    if (RE_BTH.test(v) || RE_PTU_CHI.test(v) || RE_LEN_DS.test(v)) return '<span class="num bien bth" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';        // 3 - i · a[0] · a[i] · len(a)
+    if (RE_BTH.test(v) || RE_PTU_CHI.test(v) || RE_LEN_DS.test(v) || RE_DO.test(v)) return '<span class="num bien bth" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';        // 3 - i · a[0] · a[i] · len(a)
     if (RE_BIEN.test(v)) return '<span class="num bien" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';
     return '<span class="ar">' + esc(v) + '</span>';
   }
@@ -417,7 +418,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var gm = RE_GAN_MAU.exec(text);
       if (gm) return '<span class="vr">' + esc(gm[1]) + '</span><span class="pu"> = </span><span class="fn">' + gm[2] + '</span><span class="pu">()</span>';
     }
-    var f = /^for\s+([A-Za-z_]\w*)\s+in\s+range\(\s*(\d+|[A-Za-z_]\w*|len\([A-Za-z_]\w*\))\s*\):\s*$/.exec(text);
+    var f = /^for\s+([A-Za-z_]\w*)\s+in\s+range\(\s*(\d+|[A-Za-z_]\w*|len\([A-Za-z_]\w*\)|distance\(\)(?:\s*[-+]\s*(?:\d+|[A-Za-z_]\w*))?)\s*\):\s*$/.exec(text);
     if (f) {
       return '<span class="kw">for </span><span class="vr">' + esc(f[1]) + ' </span><span class="kw">in </span><span class="fn">range</span>' +
         '<span class="pu">(</span>' + oDoiSo(f[2], 0) + '<span class="pu">):</span>';
@@ -445,16 +446,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' + args + '<span class="pu">)</span>';
   }
 
-  /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi tự rút gọn bằng "…" (CSS .num.chuoi). */
+  /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`, biểu thức distance()): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi tự rút gọn bằng "…" (CSS .num.chuoi). */
   function vuaDong(el) {
     el.style.fontSize = '';
-    if (!el.clientWidth || !el.querySelector('.chuoi, .dkc, .ptu, .lsten')) return;
+    if (!el.clientWidth || !el.querySelector('.chuoi, .dkc, .ptu, .lsten, .bth')) return;       // .bth: biểu thức dài (range(distance()), forward(distance() + n))
     el.classList.add('ko-cat');                                                    // đo với chuỗi chưa bị cắt
     var fs = parseFloat(getComputedStyle(el).fontSize) || 15;
     while (el.scrollWidth > el.clientWidth + 1 && fs > 9) { fs -= 0.5; el.style.fontSize = fs + "px"; }
     var tran = el.scrollWidth > el.clientWidth + 1;
     el.classList.remove('ko-cat');
-    if (tran && el.querySelector('.ptu, .lsten') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế)
+    if (tran && el.querySelector('.ptu, .lsten, .bth') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế)
   }
 
   /* ------------------------------------------------------------- Editor */
@@ -545,7 +546,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (fr) [fr[1], fr[1] + ' + 1', '3 - ' + fr[1]].forEach(function (b) { if (kq.indexOf(b) < 0) kq.push(b); });
       }
       bienDuoc().forEach(function (ten) { if (hopKieu(slot, kieuBienCua(ten)) && kq.indexOf(ten) < 0) kq.push(ten); });
-      if (slot === 'so') for (j = 0; j < i && j < arr.length; j++) { var gd = RE_GAN_DEM.exec(chuoi(arr[j])); if (gd && kq.indexOf(gd[1]) < 0) kq.push(gd[1]); }       // biến đếm đã gán (n = 0) ở các dòng phía trên
+      if (slot === 'so') for (j = 0; j < i && j < arr.length; j++) { var gd = RE_GAN_DEM.exec(chuoi(arr[j])) || RE_GAN_DO.exec(chuoi(arr[j])); if (gd && kq.indexOf(gd[1]) < 0) kq.push(gd[1]); }       // biến đếm đã gán (n = 0) hay số đo (d = distance()) ở các dòng phía trên
+      if (slot === 'so' && camDuoc().indexOf('distance') >= 0) {                          // màn có mắt hồng ngoại: số đo đặt thẳng vào ô số (range(distance()), forward(distance() + n))
+        ['distance()'].concat(bienDuoc().filter(function (p) { return kieuBienCua(p) === 'so'; }).map(function (p) { return 'distance() + ' + p; })).forEach(function (b) { if (kq.indexOf(b) < 0) kq.push(b); });
+      }
       if (CHE_LIST && slot === 'so') {                                                    // số lấy từ danh sách: a[i] (i = biến vòng range), a[0], len(a)
         tenListTai(i).forEach(function (ds) {
           vongSo.forEach(function (v) { kq.push(ds + '[' + v + ']'); });
@@ -1197,6 +1201,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var tdN = o.toiDa >= 1 && o.toiDa <= 15 ? o.toiDa : 9;
     if (tdN < 9) el.classList.add('hep');
     if (tdN > 9) el.classList.add('rong');                                              // pin 1–15: lưới 5 cột
+    if ((o.bien || []).some(function (ten) { return ten.length > 10; })) el.classList.add('bien-dai');      // chip dài (distance() + n): lưới số nới rộng, chip chữ nhỏ cho vừa khung
     for (var n = 1; n <= tdN; n++) {
       (function (n) {
         var b = h('button', 'bt g-pu cs' + (n === o.so ? ' on' : ''), String(n)); b.setAttribute('data-so', n);

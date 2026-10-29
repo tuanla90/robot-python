@@ -730,6 +730,7 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .chon-so.hep .cs-bien{flex-wrap:wrap}
 .chon-so.hep .cs.bien{flex:1 1 100%;min-width:0}
 .num.bien.bth{white-space:nowrap}
+.strip .num.bien.bth{flex:none}      /* biểu thức (distance(), len(a), i + 1) không co lại thành chấm tròn; dòng dài thì vuaDong co cỡ chữ */
 /* Xưởng của màn máy ném: bảy nút (thêm Rào, Rổ) nên nút thấp hơn nữa */
 #sc-choi .side.xu.co-nem{gap:2px;padding-bottom:3px}
 #sc-choi .side.xu.co-nem .cbtn,#sc-choi .side.xu.co-nem .thu-hang{height:28px}
@@ -877,6 +878,8 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .chon-so .cs.ptu-bo{color:var(--g-trang)}
 .chon-so .cs-bien.xuong{flex-wrap:wrap}
 .chon-so .cs-bien.xuong .cs.bien{flex:1 1 auto;padding:2px 6px 0;white-space:nowrap}
+.chon-so.bien-dai{grid-template-columns:repeat(3,36px)}
+.chon-so.bien-dai .cs.bien{font-size:calc(11px*var(--km))}      /* chip distance() + n (mùa 2): vừa khung bảng chọn */
 /* Xưởng: danh sách thử của hàm nằm trên thanh tên hàm (chip rộng hơn ô số, các ô phần tử chạm được) */
 .dso-o.dso-ls{width:auto;min-width:33px;max-width:150px;padding:1px 5px 0;gap:2px}
 .dso-o.dso-ls .v.dls{display:flex;align-items:center;gap:2px;font:var(--wm) calc(12px*var(--km))/1 var(--mono)}
