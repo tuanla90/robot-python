@@ -1,6 +1,6 @@
 NHỊP (đọc trước): commit đầu tiên trong ~20 phút (vd hình part vòi phun trong ve-vector-tay-hoi.js); sau đó mỗi nhóm hình một commit; TỐI ĐA 40 phút một commit. CẤM khảo sát dài trước khi vẽ nét đầu tiên. Vẽ cái nào xem cái đó. Hết sức thì dừng và báo còn gì. Vướng mà tự quyết có thể sai hướng → DỪNG, commit WIP, ghi câu hỏi.
 
-SONG SONG: agent "Gói T màn trình diễn mùa 2" (nhánh claude/t-trinh-dien-mua-2) đang sửa các tệp màn mùa 2 (hoc/man-*.js), hoc/game/huong-dan-man.js, hoc/lo-trinh-hoc.js và máy kiểm từng gói. Bạn KHÔNG sửa các tệp đó (phần đổi chữ trong màn là gói sau, làm khi gói T đã gộp). chu.js: chỉ sửa đúng dòng cần, CẤM định dạng lại. CẤM npm test cả bộ (máy từng hết RAM). Cổng server tạm của bạn: 4204.
+SONG SONG (cập nhật 29/10 chiều, lần giao thứ hai: lần đầu agent dừng khi phiên kết thúc, không commit gì): gói T đã gộp. Agent "Vòi phun phần chữ" (nhánh claude/voi-phun-chu, brief hoc/ban-giao/brief-voi-phun-chu.md) chạy song song, giữ các tệp màn hoc/man-*.js, huong-dan-man.js, lo-trinh-hoc.js, san-hoc.js, cham.js, so-lenh.js, gioi-thieu-part.js, lap-rap.js, kho-ham.js, thanh-phan.js, xuong-ham.js và các máy kiểm màn. Bạn KHÔNG sửa các tệp đó. chu.js chia đôi: bạn chỉ sửa khoá phim `pg.*`; agent chữ sửa mọi khoá khác. Tên hiển thị part trong ve-vector-tay-hoi.js (`ten: 'Súng hơi hai nòng'`) là của BẠN: đổi thành 'Vòi phun hai đầu' (grep máy kiểm vẽ / lắp ráp khẳng định tên cũ và sửa theo). CẤM định dạng lại tệp, CẤM npm test cả bộ (máy từng hết RAM). Cổng server tạm của bạn: 4204.
 
 LOẠI: Ship          MODEL: opus (điểm: quy mô 1 (khoảng 6–8 tệp vẽ), choke 1 (san-ve.js đường vẽ sân chung), giá sai 1 (hình sai trên mọi màn mùa 2), mơ hồ 1 (tự thiết kế hình vòi phun và tia nước), suy luận 1 = 5)
 
@@ -19,9 +19,9 @@ BỐI CẢNH:
 - Game đã chỉ còn VECTOR (không có nhánh pixel).
 
 PHẠM VI: được sửa hoc/game/ve-vector-tay-hoi.js, ve-vector-vat.js, ve-vector-hieu-ung.js, san-ve.js (chỉ phần vẽ súng / bóng / thẻ đạn, không đổi logic đồng bộ sự kiện), den-bo-phan.js, ve-vector-icon.js (nếu icon nằm đó), huy-hieu-vector.js (chỉ huy hiệu có súng / bóng), phim-vector.js, phim-mua-2.js, chu.js (chỉ khoá phim pg.* và tên part hiển thị nếu nằm trong chu.js), bang-mau.js, choi.css (chỉ thêm lớp), các máy kiểm vẽ khi cần (kiem-ve-vector.mjs, kiem-huy-hieu-phim-vector.mjs: nền B5-v / A3-v, kiem-bang-mau.mjs…), KE-HOACH-PHIM-GOI.md (bảng kịch bản mùa 2 cho khớp lời mới).
-KHÔNG sửa: hoc/man-*.js, huong-dan-man.js, lo-trinh-hoc.js, san-hoc.js, cham.js, so-lenh.js (gói sau / gói T), phim mùa 1, mo-dau.js.
+KHÔNG sửa: các tệp của agent chữ (xem SONG SONG), phim mùa 1, mo-dau.js.
 
-PHANH: kiem-huy-hieu-phim-vector.mjs A3-v / B5-v so mọi huy hiệu, mọi khung phim với nền NEN_VEC (nay 32513bf). Đổi hình CỐ Ý sẽ đỏ đúng ở chỗ có súng / bóng: trước khi dời nền, in danh sách MỌI thứ lệch (bản sao tạm của máy kiểm, xoá sau) và chứng minh chỉ những chỗ có súng / bóng / vòi lệch; rồi dời NEN_VEC sang commit của bạn, ghi lý do trong chú thích như các lần trước. kiem-ve-vector.mjs có thể có phanh ảnh mẫu tương tự: xử cùng cách. Không chứng minh được "chỉ chỗ cố ý lệch" → dừng, hỏi.
+PHANH: kiem-huy-hieu-phim-vector.mjs A3-v / B5-v so mọi huy hiệu, mọi khung phim với nền NEN_VEC (đọc dòng khai báo; main đã dời mấy lần). Đổi hình CỐ Ý sẽ đỏ đúng ở chỗ có súng / bóng: trước khi dời nền, in danh sách MỌI thứ lệch (bản sao tạm của máy kiểm, xoá sau) và chứng minh chỉ những chỗ có súng / bóng / vòi lệch; rồi dời NEN_VEC sang commit của bạn, ghi lý do trong chú thích như các lần trước. kiem-ve-vector.mjs có thể có phanh ảnh mẫu tương tự: xử cùng cách. Không chứng minh được "chỉ chỗ cố ý lệch" → dừng, hỏi.
 
 PHẢN BIỆN: brief này là phán đoán từ bên ngoài, viết trong ít phút; bạn ở trong code sâu hơn. Được phép và được khuyến khích nói ngược lại (có bằng chứng): bằng chứng đọc sai (số dòng chỉ gần đúng), có cách đơn giản hơn, chỗ vẽ súng / bóng bị bỏ sót. Kiểm lại từng khẳng định bằng code. Bất đồng chặn đường → dừng, commit WIP, ghi câu hỏi. Quyết định của USER (không tự đi ngược): Xe cứu hỏa R1, súng hơi → vòi phun, sửa hoạt cảnh; luật / lệnh giữ; chữ không emoji, không gạch dài; luật UI (nút chỉ icon có title + aria-label nói nút làm gì, vùng chạm ≥ 24 px, rê chuột trong @media (hover:hover)).
 
@@ -43,6 +43,6 @@ CÁCH GIAO: worktree riêng do Agent tool tạo; việc đầu tiên `git checko
 BÁO CÁO CUỐI (trong câu trả lời cuối) — đủ 5 mục, mục nào trống ghi "không có":
   1. KẾT QUẢ: SHA từng commit, tệp đổi, danh sách mọi chỗ đã đổi hình (part, đạn, thẻ đạn, đèn, icon, huy hiệu, phim), lời phim mới, lệnh kiểm + kết quả nguyên văn, cách xử phanh nền, kết quả soát trình duyệt + ảnh.
   2. CÂU HỎI CẦN LÀM RÕ (kể cả chỗ brief sai / thừa / thiếu; ghi "brief không có chỗ nào sai" nếu thật vậy).
-  3. ĐỀ XUẤT: danh sách ĐẦY ĐỦ chỗ chữ "súng" / "súng hơi" / "bóng hơi" còn hiển thị mà gói này không được sửa (tệp:dòng, chữ hiện tại, chữ đề xuất), để làm gói đổi chữ ngay sau.
+  3. ĐỀ XUẤT: chỗ hình súng / bóng còn sót (nếu có), và chỗ chữ "súng" còn hiển thị trong tệp của bạn mà bạn không chắc nên đổi.
   4. PHẦN CHO NGƯỜI KHÔNG ĐỌC CODE (3–5 câu).
   5. RỦI RO CÒN LẠI.
