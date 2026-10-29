@@ -222,7 +222,7 @@
       hamCuaEmCan: ['aim_fire', 'fire', 'turn_left', 'turn_right', 'move'], chinhCoDinh: true,
       deBai: 'Hành lang như màn trước, nhưng các nút xa gần khác nhau, và dưới hành lang có hai hốc. Nhớ gói Lực bắn: bắn tụ thì xe giật lùi, sau lưng là tường thì đứng yên, là hốc thì rơi xuống hốc. ' +
         'Chương trình chính đã khóa: ở mỗi ô quay trái, gọi check_hot(), quay lại, tiến. Viết thân check_hot(): warm() cho biết có cần bắn không, aim_fire() của em chọn lực theo distance().',
-      veMaMau: 'Chương trình chính bị khóa. check_hot() có sẵn bắn nhanh mọi nút: nút đầu cách 2 ô, bóng nhanh rơi giữa đường.',
+      veMaMau: 'Chương trình chính bị khóa. check_hot() có sẵn bắn nhanh mọi nút: nút đầu cách 2 ô, tia nước rơi giữa đường.',
       san: SAN_D5, batDau: { x: 1, y: 4, huong: 1 }, noi: [noi(1, 1, [[2, 4]]), noi(3, 3, [[4, 4]]), noi(4, 3, [[5, 4]])], nutBat: [o(2, 1), o(5, 3)],
       maMau: bai(C_D5, [H('check_hot', [], ['fire("fast")'])]),
       sao: { o: 20, nhip: 18 },
@@ -230,7 +230,7 @@
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_D5, [H('check_hot', [], ['# warm() chọn có bắn không, aim_fire() chọn lực'].concat(T_D5))]) },
       congThucKhac: [{ moTa: 'Viết thẳng if / else theo distance() thay cho aim_fire()', baiLam: bai(C_D5, [H('check_hot', [], IF('not warm()', IF('distance() > 1', ['fire("charge")'], ['fire("fast")'])))]) }],
       loiSai: [
-        { moTa: 'Để nguyên bắn nhanh: nút đầu cách 2 ô, bóng rơi giữa đường', baiLam: bai(C_D5, [H('check_hot', [], ['fire("fast")'])]), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Để nguyên bắn nhanh: nút đầu cách 2 ô, tia nước rơi giữa đường', baiLam: bai(C_D5, [H('check_hot', [], ['fire("fast")'])]), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
         { moTa: 'Bỏ warm(), nút nào cũng aim_fire(): nút nóng thứ hai cách 2 ô, bắn tụ, xe giật xuống hốc', baiLam: bai(C_D5, [H('check_hot', [], ['aim_fire()'])]), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Luôn bắn tụ: nút thứ ba sát mũi, xe giật xuống hốc', baiLam: bai(C_D5, [H('check_hot', [], IF('not warm()', ['fire("charge")']))]), phaiCoMa: ['chua-toi-co'] }
       ],
@@ -294,7 +294,7 @@
       loiSai: [
         { moTa: 'Để nguyên bản của Sola: nút nóng cách 2 ô bị bắn tụ, xe giật lên hốc', baiLam: bai(C_D8, [H('scan_hot', [], ['aim_fire()'])]), phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Sửa thành if warm(): bắn nút nóng, bỏ nút tắt', baiLam: bai(C_D8, [H('scan_hot', [], IF('warm()', ['aim_fire()']))]), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Bỏ aim_fire(), bắn nhanh: nút tắt đầu tiên cách 2 ô, bóng rơi giữa đường', baiLam: bai(C_D8, [H('scan_hot', [], BAT)]), phaiCoMa: ['ban-ngan', 'lech-bong-mo'] }
+        { moTa: 'Bỏ aim_fire(), bắn nhanh: nút tắt đầu tiên cách 2 ô, tia nước rơi giữa đường', baiLam: bai(C_D8, [H('scan_hot', [], BAT)]), phaiCoMa: ['ban-ngan', 'lech-bong-mo'] }
       ],
       goiY: ['Nút đang bật thì không cần bắn: bắn chỉ tắt nó, mà bắn tụ còn làm xe giật.',
         'Bọc aim_fire() trong if not warm():.']
@@ -493,7 +493,7 @@
       loiGiai: { chinh: C_C8.slice(), hamCuaEmMoi: [H('aim_left_on', [], T_AL)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C8), hamCuaEmMoi: [H('aim_left_on', [], ['# quay trái, đo nóng lạnh và xa gần'].concat(T_AL))] },
       loiSai: [
-        { moTa: 'Gọi switch_left(): bắn nhanh nút tắt ở xa, bóng rơi giữa đường', baiLam: bai(C_C8), hamCuaEmMoi: [H('aim_left_on', [], ['switch_left()'])], phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
+        { moTa: 'Gọi switch_left(): bắn nhanh nút tắt ở xa, tia nước rơi giữa đường', baiLam: bai(C_C8), hamCuaEmMoi: [H('aim_left_on', [], ['switch_left()'])], phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
         { moTa: 'Gọi aim_left() của gói Lực bắn: bắn cả nút nóng ở xa, xe giật xuống hốc', baiLam: bai(C_C8), hamCuaEmMoi: [H('aim_left_on', [], ['aim_left()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['aim_on() đã biết đo nhiệt và chọn lực; aim_left_on() chỉ cần quay.',
