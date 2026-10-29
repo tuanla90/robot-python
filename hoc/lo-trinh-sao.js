@@ -265,6 +265,10 @@
     "o": 7,
     "nhip": 8
   },
+  "tham-so.5": {
+    "o": 18,
+    "nhip": 19
+  },
   "che-sung-hoi.7": {
     "o": 11,
     "nhip": 4

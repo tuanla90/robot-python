@@ -522,7 +522,8 @@
       chuong: [['xich', day('xich', MUOI)], ['bien-xich', ['che-xich.1', 'che-xich.2', 'che-xich.8', 'che-xich.6', 'che-cam-bien.6', 'che-cam-bien.5',
         'che-cam-bien.9', 'robot-hoan-thien.9', 'che-xich.9']]] },
     { ma: 'sung-hoi', ten: 'Súng hơi', loai: 'bo-phan', hinh: 'sung-hoi',
-      chuong: [['sung-hoi', day('sung-hoi', MUOI)], ['tham-so', day('tham-so', MUOI)]] },
+      // 29/10 (đường cong): sung-hoi.9 (8 dòng) lên sau sung-hoi.6 (5 dòng); sung-hoi.8 thành mốc của tham-so.1 (nhịp 8 → 11 trong lề).
+      chuong: [['sung-hoi', day('sung-hoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])], ['tham-so', day('tham-so', MUOI)]] },
     { ma: 'hong-ngoai', ten: 'Hồng ngoại', loai: 'bo-phan',
       chuong: [['hong-ngoai', []], ['che-hong-ngoai', []]] },
     { ma: 'nha-may', ten: 'Nhà máy', hinh: 'bang-chuyen',
@@ -651,6 +652,21 @@
     get('che-xich.1').san = ['#####', '#...#', '#...#', '#...#', '#####'];
     get('che-xich.2').san = ['#####', '#####', '#...#', '#...#', '#...#'];
     get('che-xich.6').san = ['#####', '#...#', '#...#', '#.o.#', '#####'];
+    // sung-hoi.6 (sau sung-hoi.5 bảy ô): sân 5 × 5 trống thu bằng tường còn hai làn thùng trượt (25 → 6 ô). Thùng trượt tới mép như cũ: lời giải, nhịp không đổi.
+    get('sung-hoi.6').san = ['##D##', '##.##', '##H##', '##.HD', '#####'];
+    // tham-so.5 (sau tham-so.4 mười ô): bỏ hàng cuối, đoạn đầu ngắn một ô (forward(4) → forward(3)); sân 17 → 16 ô, nhịp 20 → 19.
+    var F5 = function (a, b, c, d, e, r2) { return ['forward(' + a + ')', 'turn_right()', 'forward(' + b + ')', r2 || 'turn_left()', 'forward(' + c + ')', 'turn_right()', 'forward(' + d + ')', 'turn_right()', 'forward(' + e + ')']; };
+    var mv = function (n) { var k = []; for (var i = 0; i < n; i++) k.push('move()'); return k; };
+    sua('tham-so.5', {
+      san: ['###....', '###.##.', '....##.', '.#####.', '.#####F', '.######'], batDau: { x: 0, y: 5, huong: 0 },
+      loiGiai: bai(F5(3, 3, 2, 3, 4)),
+      loiSai: [
+        { moTa: 'Đoạn thứ ba đi dư một ô: xe đâm mép sân một nhịp, tới cờ chậm hơn', baiLam: bai(F5(3, 3, 3, 3, 4)), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Khúc rẽ thứ hai rẽ nhầm sang phải: xe đâm tường', baiLam: bai(F5(3, 3, 2, 3, 4, 'turn_right()')), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Đoạn cuối thiếu một ô: xe dừng ngay trước cờ', baiLam: bai(F5(3, 3, 2, 3, 3)), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không dùng forward(), viết move() từng lần: mười chín dòng', baiLam: bai([].concat(mv(3), ['turn_right()'], mv(3), ['turn_left()'], mv(2), ['turn_right()'], mv(3), ['turn_right()'], mv(4))), phaiCoMa: ['tran-khung'] }
+      ]
+    }).loiGiaiKhac = { moTa: 'Mọi khúc rẽ phải gọi qua right(1)', baiLam: bai(['forward(3)', 'right(1)', 'forward(3)', 'turn_left()', 'forward(2)', 'right(1)', 'forward(3)', 'right(1)', 'forward(4)']) };
   })();
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 2 (quy ước cho các gói sau): mỗi gói có màn mới MỘT tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai
   // `chuong` (mã chương trong MUA_2) và `so`; tệp đã có trong danh sách require ở đầu tệp này và thẻ <script> của game/choi.html. Màn mới của một chương
