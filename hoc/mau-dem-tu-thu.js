@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-dem-tu-thu.js — "Robot Chấn Hưng": KHO MÀN MẪU đệm từ (6 màn, chương `dem-tu-thu`, từ gói thử "Thử đệm từ" nhánh claude/dem-tu-thu).
+   mau-dem-tu-thu.js — "Robot Chấn Hưng": KHO MÀN MẪU đệm từ (6 màn, chương `dem-tu-thu`, từ gói thử "Thử đệm từ" nhánh claude/dem-tu-thu).
    Bản thử cho user chơi thử LUẬT ĐỆM TỪ (cơ chế mùa 3; luật ở san-hoc.js phần ĐỆM TỪ, cờ màn `demTu = [{ x, y, cuc: 'N' | 'S' }]`):
      - ô đệm là KHỐI (đâm như tường), kéo / đẩy robot đứng cùng hàng hay cột trong 2 ô, 1 ô mỗi nhịp, sau hành động của robot (sau băng chuyền);
      - robot không bật nam châm hay bật KHÁC cực đệm → bị HÚT về sát đệm; bật CÙNG cực → bị ĐẨY ra xa tới khi ra khỏi tầm; bị chặn thì đứng im;

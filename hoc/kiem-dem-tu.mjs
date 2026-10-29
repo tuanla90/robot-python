@@ -1,7 +1,7 @@
 /* ============================================================================
    kiem-dem-tu.mjs — máy kiểm ĐỆM TỪ (cơ chế mùa 3, bản thử; luật ở san-hoc.js phần ĐỆM TỪ) và chương `dem-tu-thu` (gói "Thử đệm từ").
    Phần A: lõi (hút / đẩy / giữ / chặn / hố / hai đệm / chắn từ / nhện / drone / cấu hình sai).
-   Phần B: màn (khi man-dem-tu-thu.js có màn): mỗi màn lời giải thắng 3 sao, mỗi lời sai không thắng, mã mẫu màn 1 thắng.
+   Phần B: màn (khi mau-dem-tu-thu.js có màn): mỗi màn lời giải thắng 3 sao, mỗi lời sai không thắng, mã mẫu màn 1 thắng.
    Chạy: node hoc/kiem-dem-tu.mjs            (trượt thì thoát mã 1)
          node hoc/kiem-dem-tu.mjs --loi-gia  (cố ý bẻ luật: phải ĐỎ; nếu xanh thì máy kiểm không bắt được gì)
    ========================================================================== */
@@ -13,7 +13,7 @@ const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 const ChamHoc = require(path.join(day, 'cham.js'));
-const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));         // nạp cả lộ trình (có man-dem-tu-thu.js) để lấy kho hàm thật của học sinh lúc tới màn
+const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));         // nạp cả lộ trình (có mau-dem-tu-thu.js) để lấy kho hàm thật của học sinh lúc tới màn
 const KhoHam = require(path.join(day, 'kho-ham.js'));
 const TT = require(path.join(day, 'thu-tu-chuong.js'));
 const tatCa = ManHoc.danhSach;
@@ -140,9 +140,9 @@ console.log('A. Lõi đệm từ');
   kiem('cham.js: xe bị đệm hút vào hố → lời nhắc dem-roi-ho nhắc "đệm từ" và cách bật cùng cực', !cham.thang && !!loiDem && /đệm từ/i.test(loiDem.loi) && /magnet_s/.test(loiDem.loi), J((cham.chanDoan || []).map((c) => c.ma + ': ' + c.loi)));
 }
 
-console.log('B. Kho màn mẫu đệm từ (man-dem-tu-thu.js, không đăng ký lộ trình; kho hàm = học sinh đã chơi hết chương tham-so mùa 2)');
+console.log('B. Kho màn mẫu đệm từ (mau-dem-tu-thu.js, không đăng ký lộ trình; kho hàm = học sinh đã chơi hết chương tham-so mùa 2)');
 {
-  const DS = require(path.join(day, 'man-dem-tu-thu.js')).manDemTuThu || [];
+  const DS = require(path.join(day, 'mau-dem-tu-thu.js')).manDemTuThu || [];
   kiem('kho mẫu có 5–6 màn, so 1.., mỗi màn có demTu, xe hai bánh tay nam châm', DS.length >= 5 && DS.length <= 6 && DS.every((m, i) => m.so === i + 1 && Array.isArray(m.demTu) && m.demTu.length > 0 && m.loaiRobot === 'banh' && m.robot.tay === 'nam-cham'), DS.length);
   kiem('kho mẫu KHÔNG nằm trong lộ trình (P1 mùa 3: màn thật của đệm từ làm ở P2 gói 4 Bãi từ)', !TT.goi.some((g) => g.ma === 'dem-tu-thu') && !tatCa.some((m) => m.chuong === 'dem-tu-thu'));
   const khoSauThamSo = khoSauChuong('tham-so');
