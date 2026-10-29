@@ -109,10 +109,10 @@ console.log('\n== 1. daoChieu "sung": shoot() bắn ra sau và giật tới, sho
 console.log('\n== 2. Màn hỏng: phanCung thiếu shoot_back ==');
 {
   const m8 = man(8);
-  kiem('che-sung-hoi.8 hỏng nòng sau: hamGoc = phanCung (có shoot, không shoot_back) và canhBao "Nòng sau hỏng"', J(m8.phanCung) === J(m8.hamGoc) && J(m8.hamGoc) === J(KHAY_HONG) && /Nòng sau hỏng/.test(m8.canhBao));
+  kiem('che-sung-hoi.8 hỏng nòng sau: hamGoc = phanCung (có shoot, không shoot_back) và canhBao "Đầu phun sau hỏng"', J(m8.phanCung) === J(m8.hamGoc) && J(m8.hamGoc) === J(KHAY_HONG) && /Đầu phun sau hỏng/.test(m8.canhBao));
   const k = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false }), { chinh: ['shoot_back()', 'wait()'] }, khoTruoc(m8.id));
   const cd = k.chanDoan.find((c) => c.ma === 'lenh-goc-hong');
-  kiem('gọi shoot_back() ở màn hỏng: lenh-goc-hong (không phải ham-chua-co), lời nêu canhBao và tên lệnh, chỉ dòng của lệnh', !!cd && cd.ten === 'shoot_back' && /Nòng sau hỏng/.test(cd.loi) && /shoot_back\(\) không chạy được/.test(cd.loi) && !maCua(k).includes('ham-chua-co') && cd.cho && cd.cho.cot === 'chinh' && cd.cho.dong === 1, J(k.chanDoan));
+  kiem('gọi shoot_back() ở màn hỏng: lenh-goc-hong (không phải ham-chua-co), lời nêu canhBao và tên lệnh, chỉ dòng của lệnh', !!cd && cd.ten === 'shoot_back' && /Đầu phun sau hỏng/.test(cd.loi) && /shoot_back\(\) không chạy được/.test(cd.loi) && !maCua(k).includes('ham-chua-co') && cd.cho && cd.cho.cot === 'chinh' && cd.cho.dong === 1, J(k.chanDoan));
   const k2 = ChamHoc.cham(Object.assign({}, m8, { chinhCoDinh: false, canhBao: undefined }), { chinh: ['shoot_back()', 'wait()'] }, khoTruoc(m8.id));
   kiem('không khai canhBao: lời mặc định "Đầu phun sau của vòi phun hỏng"', /Đầu phun sau của vòi phun hỏng/.test((k2.chanDoan.find((c) => c.ma === 'lenh-goc-hong') || {}).loi || ''));
   kiem('kick_ahead (u_turn, shoot, u_turn) chạy được ở màn hỏng: không lenh-goc-hong, thùng bị đá lên mép', (() => { const r = ChamHoc.cham(m8, m8.loiGiai, tron(khoTruoc(m8.id), m8.loiGiai.hamCuaEmMoi)); return r.thang && !maCua(r).includes('lenh-goc-hong'); })());
@@ -171,9 +171,9 @@ const BANG = [];
   const vt = ThuTu.thuTu.indexOf('che-sung-hoi') + 1;
   kiem('đúng 10 màn, số 1..10, mã che-sung-hoi.1…, id theo vị trí trong thuTu (ngay sau sung-hoi), tên "Chế lệnh vòi phun"',
     che.length === 10 && che.every((m, i) => m.so === i + 1 && m.id === vt + '.' + (i + 1) && m.ma === 'che-sung-hoi.' + (i + 1)) && ThuTu.thuTu.indexOf('che-sung-hoi') === ThuTu.thuTu.indexOf('sung-hoi') + 1 && ThuTu.ten['che-sung-hoi'] === 'Chế lệnh vòi phun' && ThuTu.laDot2('che-sung-hoi'));
-  kiem('tên các màn: Lùi bằng giật, Tiến bằng giật, Giật tới giật lùi, Đá thùng sang phải, Bắn nút rồi về, Đá thùng sang trái, Súng lắp ngược, Nòng sau hỏng, Đường về, Kho hàng; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-sung-hoi "Huy hiệu Chế lệnh súng hơi"',
-    J(che.map((m) => m.ten)) === J(['Lùi bằng giật', 'Tiến bằng giật', 'Giật tới giật lùi', 'Đá thùng sang phải', 'Bắn nút rồi về', 'Đá thùng sang trái', 'Súng lắp ngược', 'Nòng sau hỏng', 'Đường về', 'Kho hàng']) &&
-      J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-sung-hoi' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh súng hơi');
+  kiem('tên các màn: Lùi bằng giật, Tiến bằng giật, Giật tới giật lùi, Đá thùng sang phải, Bắn nút rồi về, Đá thùng sang trái, Vòi phun lắp ngược, Đầu phun sau hỏng, Đường về, Kho hàng; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-sung-hoi "Huy hiệu Chế lệnh vòi phun"',
+    J(che.map((m) => m.ten)) === J(['Lùi bằng giật', 'Tiến bằng giật', 'Giật tới giật lùi', 'Đá thùng sang phải', 'Bắn nút rồi về', 'Đá thùng sang trái', 'Vòi phun lắp ngược', 'Đầu phun sau hỏng', 'Đường về', 'Kho hàng']) &&
+      J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-sung-hoi' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh vòi phun');
   kiem('mọi màn: xe hai bánh gắn súng hơi (robot { than "hai-banh", tay "hoi", camBien [] }), chương trình 10 ô, mỗi hàm 10 ô, Xưởng mở, được dùng hàm của em, cauTruc for/if/while, nhipTheoLoiGiai',
     che.every((m) => m.loaiRobot === 'banh' && J(m.robot) === J({ than: 'hai-banh', tay: 'hoi', camBien: [] }) && m.khung.chinh === 10 && m.khung.moiHam === 10 && m.moXuong === true && m.camHamCuaEm === false && J(m.cauTruc) === '["for","if","while"]' && m.nhipTheoLoiGiai === true));
   kiem('khay: đủ bánh (cả lùi) và hai nòng ở mọi màn trừ 8; 8 hỏng nòng sau: khay = phần cứng = trừ shoot_back; không màn nào còn push',
@@ -253,9 +253,9 @@ const BANG = [];
   })());
   const m7 = man(7), k7 = khoTruoc(m7.id);
   const cu = ChamHoc.cham(m7, m7.maMau, k7);
-  kiem('20.7 Súng lắp ngược: hàm của màn fixed_kick() cũ (giống kick_right) chạy sai (xe đi trái, thùng đứng); đổi shoot() thành shoot_back() hoặc đổi hướng quay thì thắng', !cu.thang && maCua(cu).includes('lech-bong-mo') && ChamHoc.cham(m7, m7.loiGiai, k7).thang && ChamHoc.cham(m7, m7.congThucKhac[0].baiLam, k7).thang && !ChamHoc.cham(m7, { chinh: ['kick_right()'] }, k7).thang);
+  kiem('20.7 Vòi phun lắp ngược: hàm của màn fixed_kick() cũ (giống kick_right) chạy sai (xe đi trái, thùng đứng); đổi shoot() thành shoot_back() hoặc đổi hướng quay thì thắng', !cu.thang && maCua(cu).includes('lech-bong-mo') && ChamHoc.cham(m7, m7.loiGiai, k7).thang && ChamHoc.cham(m7, m7.congThucKhac[0].baiLam, k7).thang && !ChamHoc.cham(m7, { chinh: ['kick_right()'] }, k7).thang);
   const m8 = man(8), k8 = khoTruoc(m8.id);
-  kiem('20.8 Nòng sau hỏng: thùng ngay trước xe, chỉ còn shoot(): phải quay đầu rồi bắn rồi quay đầu lại (3 nhịp với u_turn một nhịp); BFS 3; dùng shoot_back báo lenh-goc-hong', (() => {
+  kiem('20.8 Đầu phun sau hỏng: thùng ngay trước xe, chỉ còn shoot(): phải quay đầu rồi bắn rồi quay đầu lại (3 nhịp với u_turn một nhịp); BFS 3; dùng shoot_back báo lenh-goc-hong', (() => {
     const hong8 = ChamHoc.cham(m8, m8.loiSai[0].baiLam, tron(k8, m8.loiSai[0].hamCuaEmMoi));
     return nhipCheSungHoiTatCa(m8, k8) === 3 && m8.sao.nhip === 3 && maCua(hong8).includes('lenh-goc-hong') && m8.bongMo.thung[0].y === 0 && m8.san[1][2] === 'H' && m8.batDau.y === 2;
   })());

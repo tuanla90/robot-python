@@ -106,7 +106,7 @@
     /* ------------------------------------------------ hàng 1: làm quen */
     man({
       so: 1, ten: 'Bắn nhanh', hang: 'lam-quen', mucTieu: 'bong-mo', hamCuaEmCan: ['turn_left', 'forward', 'move'],
-      deBai: 'shoot("charge") bắn tụ như mọi khi: bóng bay xa, xe bị giật. shoot("fast") bắn nhanh: bóng chỉ bay 2 ô nhưng xe đứng yên. ' +
+      deBai: 'shoot("charge") bắn tụ như mọi khi: tia nước bay xa, xe bị giật. shoot("fast") bắn nhanh: tia nước chỉ bay 2 ô nhưng xe đứng yên. ' +
         'Nút cách xe 2 ô, thùng nằm ngay sau lưng: mở cửa mà không làm xô thùng, rồi đưa xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình có sẵn bắn tụ. Chạy thử xem thùng sau lưng bị xô đi đâu, rồi chạm chữ "charge" để đổi sang "fast".',
       san: SAN_1, batDau: { x: 3, y: 1, huong: 3 },
@@ -126,14 +126,14 @@
     man({
       so: 2, ten: 'Nút ở xa', hang: 'lam-quen', hamCuaEmCan: ['turn_left', 'forward', 'move'],
       deBai: 'Lần này nút cách xe 3 ô, mà bắn nhanh chỉ bay được 2 ô. Chọn lực bắn tới được nút, mở cửa rồi đưa xe tới cờ.',
-      veMaMau: 'Chương trình có sẵn bắn nhanh. Chạy thử xem quả bóng rơi ở đâu, rồi sửa.',
+      veMaMau: 'Chương trình có sẵn bắn nhanh. Chạy thử xem tia nước rơi ở đâu, rồi sửa.',
       san: SAN_2, batDau: { x: 4, y: 1, huong: 3 },
       maMau: { chinh: ['shoot("fast")', 'wait()'] },
       sao: { o: 11, nhip: 4 },
       loiGiai: { chinh: L_2.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# nút xa thì bắn tụ'].concat(L_2) } },
       loiSai: [
-        { moTa: 'Bắn nhanh: bóng rơi sau 2 ô, cửa vẫn đóng', baiLam: { chinh: ['shoot("fast")', 'wait()', 'turn_left()', 'forward(2)'] }, phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Bắn nhanh: tia nước rơi sau 2 ô, cửa vẫn đóng', baiLam: { chinh: ['shoot("fast")', 'wait()', 'turn_left()', 'forward(2)'] }, phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
         { moTa: 'Lực lạ: "strong" không phải tên lực', baiLam: { chinh: ['shoot("strong")', 'wait()', 'turn_left()', 'forward(2)'] }, phaiCoMa: ['luc-ban-sai'] }
       ],
       goiY: ['Bắn nhanh chỉ bay 2 ô. Nút cách 3 ô.', 'Bắn tụ thì xe giật lùi một ô, vừa đúng ô ngay trên cửa.']
@@ -150,7 +150,7 @@
       loiGiai: { chinh: L_3.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# trái gần: nhanh, trên xa: tụ'].concat(L_3) } },
       loiSai: [
-        { moTa: 'Bắn nhanh cả hai: nút trên cách 3 ô nên bóng rơi giữa đường', baiLam: { chinh: ['shoot("fast")', 'wait()', 'turn_right()', 'shoot("fast")', 'wait()', 'u_turn()', 'forward(3)'] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
+        { moTa: 'Bắn nhanh cả hai: nút trên cách 3 ô nên tia nước rơi giữa đường', baiLam: { chinh: ['shoot("fast")', 'wait()', 'turn_right()', 'shoot("fast")', 'wait()', 'u_turn()', 'forward(3)'] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
         { moTa: 'Bắn tụ cả hai: phát đầu hất thùng sau lưng đi', baiLam: { chinh: ['shoot("charge")', 'wait()', 'turn_right()', 'shoot("charge")', 'wait()', 'u_turn()', 'forward(3)'] }, phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Nút trái cách 2 ô và sau lưng có thùng: bắn nhanh. Nút trên cách 3 ô: chỉ bắn tụ mới tới.', 'Bắn tụ lên trên thì xe giật xuống một ô, qua cửa gần vừa mở.']
@@ -188,7 +188,7 @@
       loiGiai: { chinh: C_5.slice(), hamCuaEmMoi: [FIRE_BACK()] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('fire_back', ['p'], ['# bắn ra sau với lực p', 'shoot_back(p)', 'wait()'])] },
       loiSai: [
-        { moTa: 'Bắn ra trước: bóng không tới nút sau lưng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('fire_back', ['p'], ['shoot(p)', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Bắn ra trước: tia nước không tới nút sau lưng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('fire_back', ['p'], ['shoot(p)', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Quên dùng p: shoot_back() bắn tụ, xe giật tới đẩy thùng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('fire_back', ['p'], ['shoot_back()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['shoot_back(p) cũng nhận lực như shoot(p).', 'Bắn nhanh ra sau thì xe không giật tới, thùng trước mũi nằm yên.']
@@ -260,7 +260,7 @@
       loiGiaiKhac: { moTa: 'Gọi smart_fire() của em trong pick_fire()', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('pick_fire', [], ['# dùng hàm của em', 'smart_fire()'])] } },
       loiSai: [
         { moTa: 'Để nguyên: nút sát mũi bị bắn tụ, thùng sau lưng bị hất', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('pick_fire', [], T_PICK_CU)] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Luôn bắn nhanh: nút bên dưới cách 3 ô, bóng rơi giữa đường', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('pick_fire', [], ['fire("fast")'])] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] }
+        { moTa: 'Luôn bắn nhanh: nút bên dưới cách 3 ô, tia nước rơi giữa đường', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('pick_fire', [], ['fire("fast")'])] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] }
       ],
       goiY: ['Nhánh if chạy khi trước mũi TRỐNG: lúc đó nút ở xa.', 'Đổi chỗ "fast" và "charge" cho nhau.']
     }),
