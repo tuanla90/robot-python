@@ -1,0 +1,131 @@
+/* ============================================================================
+   kiem-dem-tu.mjs — máy kiểm ĐỆM TỪ (cơ chế mùa 3, bản thử; luật ở san-hoc.js phần ĐỆM TỪ) và chương `dem-tu-thu` (gói "Thử đệm từ").
+   Phần A: lõi (hút / đẩy / giữ / chặn / hố / hai đệm / chắn từ / nhện / drone / cấu hình sai).
+   Phần B: màn (khi man-dem-tu-thu.js có màn): mỗi màn lời giải thắng 3 sao, mỗi lời sai không thắng, mã mẫu màn 1 thắng.
+   Chạy: node hoc/kiem-dem-tu.mjs            (trượt thì thoát mã 1)
+         node hoc/kiem-dem-tu.mjs --loi-gia  (cố ý bẻ luật: phải ĐỎ; nếu xanh thì máy kiểm không bắt được gì)
+   ========================================================================== */
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const day = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const SanHoc = require(path.join(day, 'san-hoc.js'));
+const ChamHoc = require(path.join(day, 'cham.js'));
+const ManHoc = require(path.join(day, 'man-dem-tu-thu.js'));
+
+const LOI_GIA = process.argv.includes('--loi-gia');
+let dat = 0, hong = 0;
+function kiem(ten, ok, chiTiet) {
+  if (ok) { dat++; console.log('  ok   ' + ten); }
+  else { hong++; console.log('  HỎNG ' + ten + (chiTiet !== undefined ? ' → ' + chiTiet : '')); }
+}
+const J = (o) => JSON.stringify(o);
+const HG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'magnet_n', 'magnet_s', 'magnet_off'];
+const MV = 'left_move()\nright_move()\nwait()\n';            // xe hai bánh tiến 1 ô (lệnh gốc, không cần kho hàm)
+const SAN4 = ['.....', '.....', '.....', '.....'];
+const chay = (cfg, code) => SanHoc.chay(Object.assign({ loaiRobot: 'banh', hamGoc: HG, mucTieu: 'toi-co' }, cfg), code);
+const nhip = (kq) => kq.vet.filter((e) => e.loai === 'nhip');
+const maNhip = (kq, i) => nhip(kq)[i - 1].suKien.map((s) => s.ma);
+const vt = (kq) => kq.robot.x + ',' + kq.robot.y;
+
+console.log('A. Lõi đệm từ');
+{
+  // 1 hút lệch làn: đệm S (2,0), xe không bật nam châm đi ngang hàng 2 → ở nhịp 2 đứng (2,2) cách đệm 2 ô cùng cột → bị hút lên (2,1); hướng mặt không đổi
+  const kq = chay({ san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, MV + MV + MV);
+  const e = nhip(kq)[1].suKien.find((s) => s.ma === 'dem-hut');
+  kiem('hút: xe không bật nam châm đi ngang đệm S bị kéo lệch 1 ô về phía đệm, cuối (3,1), hướng mặt giữ nguyên',
+    vt(kq) === (LOI_GIA ? '3,2' : '3,1') && kq.robot.huong === 1 && !!e && J(e.tu) === J({ x: 2, y: 2 }) && J(e.den) === J({ x: 2, y: 1 }) && J(e.dem) === J({ x: 2, y: 0, cuc: 'S' }) && e.nhip === 2, vt(kq) + ' ' + J(maNhip(kq, 2)));
+  // 2 cùng cực → đẩy ra xa
+  const kq2 = chay({ san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'magnet_s()\nwait()\n' + MV + MV + MV);
+  kiem('đẩy: xe bật cực S (cùng cực đệm S) bị đẩy ra xa 1 ô, cuối (3,3); sự kiện dem-day ở nhịp 3', vt(kq2) === '3,3' && maNhip(kq2, 3).includes('dem-day'), vt(kq2) + ' ' + J(maNhip(kq2, 3)));
+  // 3 khác cực → hút
+  const kq3 = chay({ san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'magnet_n()\nwait()\n' + MV + MV + MV);
+  kiem('hút: xe bật cực N (khác cực đệm S) bị hút như không bật, cuối (3,1)', vt(kq3) === '3,1' && maNhip(kq3, 3).includes('dem-hut'), vt(kq3));
+  // 4 đệm là khối, sát đệm thì giữ
+  const kq4 = chay({ san: SAN4, demTu: [{ x: 2, y: 2, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, MV + MV);
+  const dt = nhip(kq4)[1].suKien.find((s) => s.ma === 'dam-tuong');
+  kiem('khối: xe đâm vào ô đệm như tường (dam-tuong vat dem-tu), đứng sát đệm thì dem-giu (không dời)', vt(kq4) === '1,2' && !!dt && dt.vat === 'dem-tu' && maNhip(kq4, 1).includes('dem-giu'), vt(kq4) + ' ' + J(maNhip(kq4, 2)));
+  // 5 hút vào hố → rơi
+  const kq5 = chay({ san: ['.....', '..u..', '.....', '.....'], demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, MV + MV + MV);
+  kiem('hố: bị hút vào ô hố thì rơi (dem-hut rồi roi-ho cùng nhịp, chương trình dừng)', kq5.dungSom === 'roi-ho' && maNhip(kq5, 2).includes('dem-hut') && maNhip(kq5, 2).includes('roi-ho') && nhip(kq5).length === 2, J(maNhip(kq5, 2)));
+  // 6 hai đệm bằng khoảng, ngược chiều → đứng im
+  const kq6 = chay({ san: SAN4, demTu: [{ x: 0, y: 1, cuc: 'N' }, { x: 4, y: 1, cuc: 'S' }], batDau: { x: 2, y: 2, huong: 0 } }, MV);
+  kiem('hai đệm cách đều hai bên, không bật nam châm: hai lực ngược nhau, xe đứng im (dem-can)', vt(kq6) === '2,1' && maNhip(kq6, 1).includes('dem-can'), vt(kq6) + ' ' + J(maNhip(kq6, 1)));
+  // 7 hai đệm bằng khoảng, cùng chiều → dời
+  const kq7 = chay({ san: SAN4, demTu: [{ x: 0, y: 1, cuc: 'N' }, { x: 4, y: 1, cuc: 'S' }], batDau: { x: 2, y: 2, huong: 0 } }, 'magnet_n()\nwait()\n' + MV);
+  kiem('hai đệm cách đều, xe bật N: N đẩy sang phải, S hút sang phải, cùng chiều nên dời sang (3,1)', vt(kq7) === '3,1' && maNhip(kq7, 2).includes('dem-day'), vt(kq7));
+  // 7b đệm gần hơn thắng: S (2,0) cách 1, N (2,3) cách 2, xe không bật ở (2,1) → S giữ (gần hơn), không bị N kéo xuống
+  const kq7b = chay({ san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }, { x: 2, y: 3, cuc: 'N' }], batDau: { x: 1, y: 1, huong: 1 } }, MV);
+  kiem('đệm gần hơn thắng: xe tới (2,1) sát S (cách 1) và cách N 2 ô → S giữ, xe không bị N kéo', vt(kq7b) === '2,1' && maNhip(kq7b, 1).includes('dem-giu') && !maNhip(kq7b, 1).includes('dem-hut'), vt(kq7b) + ' ' + J(maNhip(kq7b, 1)));
+  // 8 tường giữa chắn từ
+  const kq8 = chay({ san: ['.....', '..#..', '.....', '.....'], demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 1, y: 2, huong: 1 } }, MV);
+  kiem('chắn từ: tường giữa đệm và xe thì đệm không tác động', vt(kq8) === '2,2' && !maNhip(kq8, 1).some((m) => m.startsWith('dem-')), vt(kq8));
+  // 8b tầm 2 ô: cách 3 không bị
+  const kq8b = chay({ san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 1, y: 3, huong: 1 } }, MV);
+  kiem('tầm: cách đệm 3 ô cùng cột thì không bị kéo', vt(kq8b) === '2,3' && !maNhip(kq8b, 1).some((m) => m.startsWith('dem-')), vt(kq8b));
+  // 9 đẩy bị chặn → đứng im
+  const kq9 = chay({ san: ['.....', '.....', '..#..', '.....'], demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 1, y: 1, huong: 1 } }, 'magnet_s()\nwait()\n' + MV);
+  const ec = nhip(kq9)[1].suKien.find((s) => s.ma === 'dem-chan');
+  kiem('đẩy bị tường chặn: xe đứng im, dem-chan { kieu day, vat tuong }', vt(kq9) === '2,1' && !!ec && ec.kieu === 'day' && ec.vat === 'tuong', vt(kq9) + ' ' + J(maNhip(kq9, 2)));
+  // 10 cấu hình sai
+  let loi10 = null; try { chay({ san: ['..#..', '.....'], demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 1, huong: 1 } }, MV); } catch (e) { loi10 = e.message; }
+  let loi10b = null; try { chay({ san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'X' }], batDau: { x: 0, y: 1, huong: 1 } }, MV); } catch (e) { loi10b = e.message; }
+  let loi10c = null; try { chay({ san: SAN4, demTu: [{ x: 0, y: 1, cuc: 'N' }], batDau: { x: 0, y: 1, huong: 1 } }, MV); } catch (e) { loi10c = e.message; }
+  kiem('cấu hình: đệm trên ô không phải "." / cực lạ / robot xuất phát trên đệm → ném lỗi', /sàn trống/.test(loi10 || '') && /"N" hay "S"/.test(loi10b || '') && /xuất phát trên ô đệm/.test(loi10c || ''), J([loi10, loi10b, loi10c]));
+  // 11 nhện bị hút (không có nam châm)
+  const kq11 = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'], mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'go_right()\ngo_right()\ngo_right()\n');
+  kiem('nhện (không nam châm) cũng bị hút như sắt: cuối (3,1)', vt(kq11) === '3,1' && maNhip(kq11, 4).includes('dem-hut'), vt(kq11));
+  // 11b nhện nhảy đáp xuống ô trong tầm cũng bị hút ngay nhịp đó (không ngoại lệ nhảy)
+  const kq11b = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'], mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'crouch()\nwait()\nstand()\ngo_right()\n');
+  const nh = nhip(kq11b).find((n) => n.suKien.some((s) => s.ma === 'nhay'));
+  kiem('nhện nhảy đáp (2,2) rồi bị hút lên (2,1) cùng nhịp (không ngoại lệ nhảy)', !!nh && nh.suKien.some((s) => s.ma === 'dem-hut') && vt(kq11b) === '2,1', vt(kq11b) + ' ' + J(nhip(kq11b).map((n) => n.suKien.map((s) => s.ma))));
+  // 12 drone không bị
+  const kq12 = SanHoc.chay({ loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'], mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'go_right()\ngo_right()\ngo_right()\n');
+  kiem('drone bay: không bị đệm kéo, bay qua được ô đệm', vt(kq12) === '3,2' && !SanHoc.lyDoChan({ rong: 5, cao: 4, o: SAN4, demTu: { '2,0': { x: 2, y: 0, cuc: 'S' } } }, 'drone', 2, 0), vt(kq12));
+  // 13 cảm biến: front_clear() trước ô đệm trả False
+  const kq13 = chay({ san: SAN4, demTu: [{ x: 2, y: 2, cuc: 'S' }], batDau: { x: 1, y: 2, huong: 1 }, hamGoc: HG.concat(['front_clear']) }, 'if front_clear():\n    ' + MV.replace(/\n/g, '\n    ').trim() + '\n');
+  kiem('cảm biến: front_clear() trước ô đệm trả False (đệm là khối), xe không đi', vt(kq13) === '1,2', vt(kq13) + ' ' + J(kq13.loi));
+  // 14 đẩy hai nhịp liền: đứng sát đệm cùng cực (cách 1) → nhịp sau ra cách 2 → nhịp sau nữa cách 3 (ra khỏi tầm) rồi yên
+  const kq14 = chay({ san: ['.....', '.....', '.....', '.....', '.....'], demTu: [{ x: 2, y: 0, cuc: 'N' }], batDau: { x: 2, y: 1, huong: 1 } }, 'magnet_n()\nwait()\nwait()\nwait()\nwait()\n');
+  const ys = nhip(kq14).map((n) => n.robot.y);
+  kiem('đẩy liên tiếp: xe sát đệm cùng cực bị đẩy 1 ô mỗi nhịp tới khi ra khỏi tầm (y: 2, 3, 3, 3)', J(ys) === J([2, 3, 3, 3]), J(ys));
+  // 15 nhiều sân: demTu mảng song song (lopMauCuaSan cắt đúng)
+  const lm = SanHoc.lopMauCuaSan({ san: [SAN4, SAN4], demTu: [[{ x: 1, y: 0, cuc: 'N' }], [{ x: 3, y: 0, cuc: 'S' }]] }, 1);
+  kiem('màn nhiều sân: lopMauCuaSan cắt demTu theo sân', J(lm.demTu) === J([{ x: 3, y: 0, cuc: 'S' }]), J(lm.demTu));
+  // 16 cham.js: bị đệm kéo vào hố → có lời nhắc đệm từ
+  const man16 = Object.assign({}, ManHoc.danhSach ? {} : {}, { ma: 'thu.1', id: 'thu.1', chuong: 'dem-tu-thu', so: 1, ten: 'thử', hang: 'lam-quen', deBai: '', san: ['.....', '..u..', '.....', '.....'], demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 }, loaiRobot: 'banh', hamGoc: HG, mucTieu: 'toi-co', cauTruc: [], moXuong: true, camHamCuaEm: false, khung: { chinh: 10, moiHam: 10 }, maMau: { chinh: [] }, hamCuaEmCan: [], taoHam: [], sao: { o: 5, nhip: 5 }, loiGiai: { chinh: ['magnet_s()', 'wait()'] }, loiSai: [], goiY: [], robot: { than: 'hai-banh', tay: 'nam-cham', camBien: [] } });
+  const m16 = ManHoc.chuanHoa ? ManHoc.chuanHoa(man16) : man16;
+  const cham = ChamHoc.cham(m16, { chinh: ['left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()'] }, []);
+  const loiDem = (cham.chanDoan || []).find((c) => c.ma === 'dem-roi-ho');
+  kiem('cham.js: xe bị đệm hút vào hố → lời nhắc dem-roi-ho nhắc "đệm từ" và cách bật cùng cực', !cham.thang && !!loiDem && /đệm từ/i.test(loiDem.loi) && /magnet_s/.test(loiDem.loi), J((cham.chanDoan || []).map((c) => c.ma + ': ' + c.loi)));
+}
+
+console.log('B. Màn chương dem-tu-thu');
+{
+  const DS = ManHoc.manDemTuThu || [];
+  kiem('ngân hàng có 5–6 màn, so 1.., chương dem-tu-thu, mỗi màn có demTu', DS.length >= 5 && DS.length <= 6 && DS.every((m, i) => m.so === i + 1 && m.chuong === 'dem-tu-thu' && (Array.isArray(m.demTu) && m.demTu.length > 0)), DS.length);
+  DS.forEach((m) => {
+    const kq = ChamHoc.cham(m, m.loiGiai, []);
+    kiem('màn ' + m.so + ' "' + m.ten + '": lời giải thắng 3 sao (' + (kq.nhip || '?') + ' nhịp)', kq.thang && kq.sao === 3, J({ thang: kq.thang, sao: kq.sao, loi: kq.loi, cd: (kq.chanDoan || []).map((c) => c.ma) }));
+    if (m.so === 1) {
+      const km = ChamHoc.cham(m, m.maMau, []);
+      kiem('màn 1 trình diễn: mã mẫu bấm Chạy là thắng 3 sao', km.thang && km.sao === 3, J({ thang: km.thang, sao: km.sao }));
+    }
+    if (m.loiGiaiKhac) {
+      const kk = ChamHoc.cham(m, m.loiGiaiKhac.baiLam, []);
+      kiem('màn ' + m.so + ' lời khác (' + m.loiGiaiKhac.moTa + '): ' + (m.loiGiaiKhac.sao !== undefined ? 'thắng ' + m.loiGiaiKhac.sao + ' sao' : 'thắng'), kk.thang && (m.loiGiaiKhac.sao === undefined || kk.sao === m.loiGiaiKhac.sao), J({ thang: kk.thang, sao: kk.sao }));
+    }
+    (m.loiSai || []).forEach((ls, i) => {
+      const ks = ChamHoc.cham(m, ls.baiLam, []);
+      const ma = (ks.chanDoan || []).map((c) => c.ma);
+      const du = (ls.phaiCoMa || []).every((x) => ma.includes(x) || (ks.loi && ks.loi.loai === x));
+      kiem('màn ' + m.so + ' lời sai ' + (i + 1) + ' (' + ls.moTa + '): không thắng' + (ls.phaiCoMa ? ', có ' + ls.phaiCoMa.join('+') : ''), !ks.thang && du, J({ thang: ks.thang, ma, loi: ks.loi }));
+    });
+    kiem('màn ' + m.so + ': có lời sai và gợi ý', (m.loiSai || []).length >= 1 && (m.goiY || []).length >= 1);
+  });
+}
+
+console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' + (dat + hong) : 'Đạt ' + dat + ' / ' + dat) + (LOI_GIA ? ' (--loi-gia: phải HỎNG)' : ''));
+process.exit(hong ? 1 : 0);

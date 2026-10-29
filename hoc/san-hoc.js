@@ -441,6 +441,7 @@
   var CHAT_KY = { s: 'sat', g: 'go', N: 'N', S: 'S' };   // ký tự lớp vatChat → chất: s sắt, g gỗ; N / S = vật NAM CHÂM có cực N / S (docSan đổi thành chat 'nam-cham' + cuc)
   var TAM_HUT = 2;                              // nam châm hút vật SẮT trong 2 ô trước mặt (cực nào cũng hút sắt)
   var TAM_CUC = 3;                              // tầm tác dụng với VẬT NAM CHÂM (hút khác cực, đẩy cùng cực): 3 ô, xa hơn sắt
+  var TAM_DEM = 2;                              // ĐỆM TỪ (mùa 3): đệm kéo / đẩy thân robot đứng cùng hàng / cột trong 2 ô (xem chay(), phần ĐỆM TỪ)
   var TAM_DAY = 3;                              // vật nam châm bị đẩy trượt tối đa 3 ô
   var DOC_LIEN_TIEP_TOI_DA = 1000;             // đọc cảm biến liên tiếp không có nhịp: quá số này coi là vòng lặp vô hạn
   var DOC_TOI_DA_MOI_NHIP = 50;                 // số sự kiện 'doc-cam-bien' tối đa gắn vào một nhịp (vết lệnh vẫn đủ)
@@ -615,7 +616,7 @@
   function lopMauCuaSan(m, i) {
     var nhieu = Array.isArray(m.san[0]);
     function lay(l) { return l ? (nhieu ? (l[i] || null) : l) : null; }
-    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
+    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), demTu: lay(m.demTu), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
   }
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
   function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_NHIN_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0 || CAM_HONG_NGOAI_HAM.indexOf(t) >= 0; }
@@ -635,6 +636,7 @@
     if (c === 'N') return 'nut';
     if (c === 'S' && (loai === 'banh' || loai === 'omni')) return 'bac-thang';
     if (c === 'n' && loai !== 'nhen' && loai !== 'drone') return 'gam-thap';       // gầm thấp: nhện chui được khi co chân (chay() xét thêm theo chân), drone bay qua, thân khác không vào
+    if (san.demTu && san.demTu[x + ',' + y] && loai !== 'drone') return 'dem-tu';  // ĐỆM TỪ (mùa 3, cfg.demTu): ô đệm là KHỐI, mọi thân dưới đất đâm như tường; drone bay qua
     return null;
   }
 
@@ -1014,6 +1016,7 @@
       if (c === '#' || c === 'N') return 'tuong';
       if (c === '=') return 'rao';
       if (c === 'S') return 'bac-thang';
+      if (san.demTu && san.demTu[x + ',' + y]) return 'dem-tu';           // ô đệm từ là khối
       if (cuaDong(x, y)) return 'cua';                                    // cửa đang đóng chặn thùng như chặn xe
       if (thungTai(x, y)) return 'thung-nang';
       if (rb.x === x && rb.y === y && !laDrone) return 'xe';              // drone lơ lửng trên thùng, không chiếm ô
@@ -1117,6 +1120,26 @@
           ': nút bật sẵn không được nối gì. Khai noi cho các nút khác (nút không có trong noi thì không điều khiển gì), hay ghi nút này với cua: [] và bang: [].');
         n.bat = true;
       });
+    }
+    // ---- ĐỆM TỪ (mùa 3, bản thử; cfg.demTu = [{ x, y, cuc: 'N' | 'S' }], màn nhiều sân: mảng song song với san như noi / nutBat). Ô đệm ghi '.' trên sân, là KHỐI
+    //      (lyDoChan trả 'dem-tu'). Sau hành động của robot trong nhịp (cùng chỗ băng chuyền), đệm trong TẦM (cùng hàng / cột, cách <= TAM_DEM ô, ô giữa không có khối chặn)
+    //      dời robot 1 ô: robot KHÔNG bật nam châm hay bật KHÁC cực đệm → HÚT về phía đệm (dừng ở ô sát đệm); bật CÙNG cực → ĐẨY ra xa. Kể cả nhện, kể cả vừa nhảy; drone bay không bị.
+    //      Hai đệm cùng tác động: đệm gần hơn thắng; bằng khoảng thì chỉ dời khi mọi đệm đó cùng đẩy về một phía, ngược nhau thì đứng im ('dem-can'). Ô tới là hố thì rơi (phaE).
+    //      Bị chặn (tường, cửa đóng, thùng, vật, rào, bậc thang, đồng đội…) thì đứng im ('dem-chan', thông tin). Thùng / vật nằm đất không bị đệm tác động ở bản thử.
+    var demTus = [];
+    san.demTu = {};
+    if (cfg.demTu !== undefined && cfg.demTu !== null) {
+      if (!Array.isArray(cfg.demTu)) throw new Error('demTu phải là mảng ô [{ x, y, cuc }] (cuc là "N" hay "S").');
+      cfg.demTu.forEach(function (o) {
+        if (!o || typeof o.x !== 'number' || typeof o.y !== 'number' || (o.cuc !== 'N' && o.cuc !== 'S')) throw new Error('Đệm từ: mỗi ô phải có x, y và cuc là "N" hay "S".');
+        var k = o.x + ',' + o.y, c = oTai(san, o.x, o.y);
+        if (c !== '.') throw new Error('Đệm từ: ô (' + o.x + ', ' + o.y + ') phải là sàn trống "." trên sân (đang là ' + (c === null ? 'ngoài sân' : '"' + c + '"') + ').');
+        if (san.demTu[k]) throw new Error('Đệm từ: ô (' + o.x + ', ' + o.y + ') khai hai lần.');
+        if (vatNamTai(o.x, o.y) || thungTai(o.x, o.y)) throw new Error('Đệm từ: ô (' + o.x + ', ' + o.y + ') đang có vật / thùng.');
+        var d = { x: o.x, y: o.y, cuc: o.cuc };
+        san.demTu[k] = d; demTus.push(d);
+      });
+      dsRc.forEach(function (rc) { if (rc.batDau && san.demTu[rc.batDau.x + ',' + rc.batDau.y]) throw new Error('Robot xuất phát trên ô đệm từ (' + rc.batDau.x + ', ' + rc.batDau.y + ').'); });
     }
     if (cuaTai[bd.x + ',' + bd.y] && !cuaTai[bd.x + ',' + bd.y].mo) throw new Error('Robot xuất phát trong ô cửa đang đóng.');
     function cuaDong(x, y) { var d = cuaTai[x + ',' + y]; return !!d && !d.mo; }
@@ -1265,6 +1288,7 @@
       if (c === 'S') return 'bac-thang';
       if (c === 'n') return 'gam-thap';
       if (c === 'u') return 'ho';
+      if (san.demTu && san.demTu[x + ',' + y]) return 'dem-tu';           // ô đệm từ là khối
       if (thungTai(x, y)) return 'thung-nang';
       if (vatNamTai(x, y)) return 'vat';
       if (xeDatTai(x, y)) return 'dong-doi';
@@ -1783,6 +1807,52 @@
         }
       }
 
+      /** ĐỆM TỪ (xem phần ĐỆM TỪ ở đầu chay()): ô (x, y) giữa robot và đệm có chắn từ trường không (tường, nút, cửa đóng, thùng, vật nằm đất, robot khác, đệm khác).
+       *  Rào thấp, bậc thang, gầm, hố, băng chuyền KHÔNG chắn (nhưng robot bị kéo vào đó vẫn bị chặn theo luật đi thường). */
+      function khoiChanTu(x, y) {
+        var c = oTai(san, x, y);
+        return c === null || c === '#' || c === 'N' || !!san.demTu[x + ',' + y] || cuaDong(x, y) || !!thungTai(x, y) || !!vatNamTai(x, y) || dongDoiTai(x, y);
+      }
+      /** ĐỆM TỪ: sau hành động của nhịp (sau băng chuyền). Mỗi đệm cùng hàng / cột trong TAM_DEM ô, không bị chắn, cho một "lực": hút (không bật nam châm hay khác cực) hay đẩy (cùng cực).
+       *  Đệm gần nhất thắng; bằng khoảng mà ngược chiều thì đứng im ('dem-can'). Hút khi đã sát đệm: không dời. Dời 1 ô: 'dem-hut' / 'dem-day' { nhip, tu, den, dem }; ô tới bị chặn: 'dem-chan'. */
+      function demTuKeo() {
+        if (!demTus.length || laDrone) return;
+        var ung = [];
+        demTus.forEach(function (d) {
+          var dx = d.x - rb.x, dy = d.y - rb.y;
+          if (dx !== 0 && dy !== 0) return;
+          var kc = Math.abs(dx) + Math.abs(dy);
+          if (kc === 0 || kc > TAM_DEM) return;
+          var ux = dx > 0 ? 1 : dx < 0 ? -1 : 0, uy = dy > 0 ? 1 : dy < 0 ? -1 : 0;        // hướng từ robot về đệm
+          for (var i = 1; i < kc; i++) if (khoiChanTu(rb.x + ux * i, rb.y + uy * i)) return;
+          var cungCuc = coNamCham && nc.cuc === d.cuc;
+          var kieu = cungCuc ? 'day' : 'hut';
+          var vx = cungCuc ? -ux : ux, vy = cungCuc ? -uy : uy;
+          if (kieu === 'hut' && kc === 1) { vx = 0; vy = 0; }                               // đã sát đệm: hút giữ tại chỗ
+          ung.push({ dem: d, kc: kc, kieu: kieu, vx: vx, vy: vy });
+        });
+        if (!ung.length) return;
+        var min = Math.min.apply(null, ung.map(function (u) { return u.kc; }));
+        var gan = ung.filter(function (u) { return u.kc === min; }), u0 = gan[0];
+        var o = { x: rb.x, y: rb.y };
+        if (gan.some(function (u) { return u.vx !== u0.vx || u.vy !== u0.vy; })) {
+          var ecn = { ma: 'dem-can', nhip: nhip, o: o, dem: gan.map(function (u) { return u.dem; }) };
+          sk.push(ecn); suKienChan.push(ecn);
+          return;
+        }
+        if (u0.vx === 0 && u0.vy === 0) { sk.push({ ma: 'dem-giu', nhip: nhip, o: o, dem: u0.dem }); return; }
+        var nx = rb.x + u0.vx, ny = rb.y + u0.vy;
+        var lyB = lyDoChan(san, loai, nx, ny) || (cuaDong(nx, ny) ? 'cua' : null) || (thungTai(nx, ny) ? 'thung-nang' : null) || (vatNamTai(nx, ny) ? 'vat' : null) || (dongDoiChanDi(nx, ny) ? 'dong-doi' : null) || (loai === 'nhen' && chan !== 'co' && oTai(san, nx, ny) === 'n' ? 'gam-thap' : null);
+        if (lyB) {
+          var ecb = { ma: 'dem-chan', nhip: nhip, o: o, den: { x: nx, y: ny }, dem: u0.dem, kieu: u0.kieu, vat: lyB };
+          sk.push(ecb); suKienChan.push(ecb);
+          return;
+        }
+        rb.x = nx; rb.y = ny; demBang = 0;
+        var ed = { ma: 'dem-' + u0.kieu, nhip: nhip, tu: o, den: { x: nx, y: ny }, dem: u0.dem, lenh: lenhNhip };
+        sk.push(ed); suKienChan.push(ed);
+      }
+
       function phaA() {
         var dauX = rb.x, dauY = rb.y;
         if (hanhDong.kieu === 'banh') {
@@ -1868,6 +1938,8 @@
             demBang = 0;
           }
         } else demBang = 0;
+
+        demTuKeo();                                                            // ĐỆM TỪ — ngay sau băng chuyền: đệm trong tầm kéo / đẩy robot 1 ô
 
         // bàn xoay (@ xoay phải 90°, % xoay trái 90°) — xoay khi robot vừa đi vào ô bàn xoay, hoặc đứng chờ (wait) trên bàn xoay
         var cbx = oTai(san, rb.x, rb.y);

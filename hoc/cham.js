@@ -165,12 +165,12 @@
     return null;
   }
 
-  var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'nút bắn (gắn trên tường: xe không đi vào được, chỉ quả bóng bắn trúng mới đổi nút)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)' };
+  var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'nút bắn (gắn trên tường: xe không đi vào được, chỉ quả bóng bắn trúng mới đổi nút)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)' };
   // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
   var TEN_CHAN_NGAN = { 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
-    'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'nút bắn', 'gam-thap': 'gầm thấp' };
+    'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'nút bắn', 'gam-thap': 'gầm thấp', 'dem-tu': 'ô đệm từ' };
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
-  var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'nút bắn' };
+  var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'nút bắn', 'dem-tu': 'ô đệm từ (khối, không đáp lên được)' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
   // lý do magnet_off() không thả được vật (san-hoc.js 'tha-bi-chan')
   var LY_THA = { 'dong-doi': 'chỗ robot đồng đội đang đứng', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn', 'rao': 'hàng rào thấp', 'cua': 'cửa đang đóng' };
@@ -877,7 +877,24 @@
         (nh1.giua ? 'ô ở giữa' : 'ô để đáp') + ' là ' + (LY_NHAY[nh1.vat] || nh1.vat) + ', nên nhện rơi xuống lại đúng ô cũ (vẫn mất hai nhịp).' +
         (nhayHut.length > 1 ? ' Chuyện này xảy ra ' + nhayHut.length + ' lần.' : '') + ' Cú nhảy bay qua đúng MỘT ô, và ô đáp phải là sàn trống: đếm lại số ô trước khi nhảy.', { nhip: nh1.nhip, soLan: nhayHut.length, tu: nh1.tu, den: nh1.den, vat: nh1.vat, cho: cho(mnh) });
     }
+    // ĐỆM TỪ (mùa 3, luật ở san-hoc.js phần ĐỆM TỪ): robot bị đệm kéo / đẩy vào hố → lời riêng (thay lời roi-ho "nhện phải nhảy"); chưa thắng mà bị đệm dời → thông tin nhắc chiều hút / đẩy.
+    var demDoi = res.suKien.filter(function (e) { return e.ma === 'dem-hut' || e.ma === 'dem-day'; });
     var roiHo = res.suKien.filter(function (e) { return e.ma === 'roi-ho'; });
+    var demRoi = roiHo.length ? demDoi.filter(function (e) { return e.nhip === roiHo[0].nhip && e.den.x === roiHo[0].o.x && e.den.y === roiHo[0].o.y; })[0] : null;
+    if (demRoi) {
+      var mdr = demRoi.lenh ? (g.anhXa[demRoi.lenh.dongPy] || null) : null, hutDr = demRoi.ma === 'dem-hut';
+      them('dem-roi-ho', 'Ở nhịp ' + demRoi.nhip + ', đệm từ cực ' + demRoi.dem.cuc + ' ở ô (' + demRoi.dem.x + ', ' + demRoi.dem.y + ') ' + (hutDr ? 'HÚT' : 'ĐẨY') + ' robot từ ô (' + demRoi.tu.x + ', ' + demRoi.tu.y + ') sang ô (' + demRoi.den.x + ', ' + demRoi.den.y + ') là hố, robot rơi' +
+        (demRoi.lenh ? ' (sau lệnh ' + demRoi.lenh.ten + '() ở ' + viTri(mdr) + ')' : '') + (sanThu ? '.' : ' nên chương trình dừng ở đó.') +
+        ' Đệm từ kéo mọi robot đứng cùng hàng hay cùng cột trong 2 ô. ' + (hutDr ? 'Robot không bật nam châm (hay bật cực khác đệm) thì bị hút về phía đệm: muốn không bị kéo, bật CÙNG cực với đệm (đệm ' + demRoi.dem.cuc + ' thì gọi magnet_' + demRoi.dem.cuc.toLowerCase() + '()) để được đẩy ra xa, hoặc đi đường khác ngoài tầm đệm.'
+          : 'Robot bật CÙNG cực với đệm thì bị đẩy ra xa: muốn không bị đẩy xuống hố, tắt nam châm (magnet_off()) hay bật cực khác để được hút lại, hoặc đi đường khác ngoài tầm đệm.'), { nhip: demRoi.nhip, o: roiHo[0].o, dem: demRoi.dem, kieu: hutDr ? 'hut' : 'day', cho: cho(mdr) });
+      roiHo = [];
+    }
+    if (demDoi.length && !res.thang && !demRoi) {
+      var dd0 = demDoi[0], mdd = dd0.lenh ? (g.anhXa[dd0.lenh.dongPy] || null) : null, hutDd = dd0.ma === 'dem-hut';
+      cd.push({ ma: 'dem-keo', muc: 'thong-tin', nhip: dd0.nhip, soLan: demDoi.length, dem: dd0.dem, kieu: hutDd ? 'hut' : 'day', cho: cho(mdd),
+        loi: 'Ở nhịp ' + dd0.nhip + ', đệm từ cực ' + dd0.dem.cuc + ' ở ô (' + dd0.dem.x + ', ' + dd0.dem.y + ') ' + (hutDd ? 'hút' : 'đẩy') + ' robot từ ô (' + dd0.tu.x + ', ' + dd0.tu.y + ') sang ô (' + dd0.den.x + ', ' + dd0.den.y + ')' +
+          (demDoi.length > 1 ? ' (đệm dời robot ' + demDoi.length + ' lần)' : '') + '. Đệm hút robot không bật nam châm hay bật cực khác đệm, và đẩy robot bật cùng cực; mỗi nhịp dời 1 ô, chỉ khi robot cùng hàng hay cùng cột với đệm trong 2 ô. Chọn cực nam châm để đi đúng chỗ.' });
+    }
     if (roiHo.length) {
       var rh0 = roiHo[0], mrh = rh0.lenh ? (g.anhXa[rh0.lenh.dongPy] || null) : null;
       them('roi-ho', 'Ở nhịp ' + rh0.nhip + ', ' + (man.loaiRobot === 'nhen' ? 'nhện' : 'robot') + ' rơi xuống hố ở ô (' + rh0.o.x + ', ' + rh0.o.y + ')' + (rh0.lenh ? ' (lệnh ' + rh0.lenh.ten + '() ở ' + viTri(mrh) + ')' : '') +
@@ -1201,7 +1218,7 @@
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, demTu: lm.demTu || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
         bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
@@ -1332,7 +1349,7 @@
       var res = SanHoc.chay({
         san: rows, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co', doiKhang: !!man.doiKhang,
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, dich: man.dich,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, demTu: lm.demTu || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,
