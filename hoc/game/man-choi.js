@@ -212,7 +212,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var hm = nhap ? nhap.hamCuaMan : ((m.maMau && m.maMau.hamCuaMan) || []).map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; });
       return { doi: doi, chinh: doi[0].chinh, hamCuaMan: hm };
     }
-    if (nhap && m.chinhCoDinh) nhap.chinh = m.maMau.chinh.slice();                     // chương trình chính cố định: bản nháp cũ (nếu có) không được lệch khỏi chương trình của màn
+    if (nhap && (m.chinhCoDinh || m.chiChay)) nhap.chinh = m.maMau.chinh.slice();                     // chương trình chính cố định: bản nháp cũ (nếu có) không được lệch khỏi chương trình của màn
     if (nhap) {
       // hàm của màn mà màn cho sẵn thì luôn phải có mặt (bản nháp hỏng / cũ có thể thiếu)
       (m.maMau.hamCuaMan || []).forEach(function (f) {
@@ -272,6 +272,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (m.huongDan || (window.HuongDanMan && HuongDanMan[m.ma])) anBongD();
         else hienDeBai();
         if (window.HuongDan) HuongDan.vaoMan(m);                                        // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
+        Array.prototype.forEach.call(document.querySelectorAll('.chinh-khoa .ck-chu'), function (e) { e.textContent = t(m.chiChay ? 'choi.chiChayNhan' : 'choi.chinhKhoaNhan'); });     // nhãn ổ khóa (khung chính và bản trong Xưởng): màn trình diễn (chỉ Chạy) hay main cố định (sửa hàm)
       });
     }
     if (window.ThePart && m.doi && m.doiThu) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.doiThu(m, batDau); });     // đối thủ part mạnh: thẻ "ĐỐI THỦ" thay cho thẻ bộ phận của R2
@@ -398,10 +399,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Chạm / kéo thả vào chương trình chính khi màn khai chinhCoDinh: nhắc rằng chỉ sửa được hàm trong Xưởng. */
   function baoChinhCoDinh() {
     var xeKhoa = S.man && S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh;
-    toast(xeKhoa ? t('choi.xeCoDinh', { n: S.xe + 1 }) : t('choi.chinhCoDinh'), '', 3200);
+    toast(xeKhoa ? t('choi.xeCoDinh', { n: S.xe + 1 }) : S.man && S.man.chiChay ? t('choi.chiChay') : t('choi.chinhCoDinh'), '', 3200);
   }
-  /** Khung chương trình đang xem chỉ đọc: chương trình chính cố định (màn chế lệnh) hay robot tự động khóa của màn nhiều robot (man.doi[i].coDinh). */
-  function khungCoDinh() { return !!(S.man && (S.man.chinhCoDinh || (S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh))); }
+  /** Khung chương trình đang xem chỉ đọc: chương trình chính cố định (màn chế lệnh), màn trình diễn chỉ bấm Chạy (man.chiChay, HD1) hay robot tự động khóa
+   *  của màn nhiều robot (man.doi[i].coDinh). */
+  function khungCoDinh() { return !!(S.man && (S.man.chinhCoDinh || S.man.chiChay || (S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh))); }
 
   /* ------------------------------------------------------------- bong bóng */
   // Mọi bong bóng (đề bài, gợi ý, chẩn đoán sau khi chạy) đè lên cột KHỐI LỆNH (E.bongD), kho khối tạm ẩn khi bong bóng mở;

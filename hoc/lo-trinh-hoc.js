@@ -190,8 +190,10 @@
       bai(lap(2, FOLLOW)), bai(lap(2, FOLLOW.slice(0, 5))), ['Thêm else: turn_left() vào cuối quy tắc.', 'Mỗi lượt có thể chỉ quay, lượt kế mới tiến.']),
     maze(5, 'Ưu tiên ở ngã ba', 'Cả bên phải và trước mặt đều có lối. Quy tắc bám tường chọn bên phải trước. Dùng if/elif để mỗi lượt chỉ chọn một nhánh.', C, { x: 2, y: 2, huong: 0 },
       bai(FOLLOW), bai(['if front_clear():', '    move()', 'elif right_clear():', '    turn_right()', '    move()', 'else:', '    turn_left()']), ['Đổi thứ tự câu hỏi: phải trước, rồi mới phía trước.']),
-    maze(6, 'Chế một bước bám tường', 'Em đã biết ba trường hợp. Gom chúng vào hàm follow_right(): rẽ phải và tiến, hoặc tiến thẳng, hoặc quay trái.', C, { x: 2, y: 2, huong: 0 },
-      Object.assign(bai(['follow_right()']), { hamCuaEmMoi: [ham('follow_right', FOLLOW)] }), bai(['follow_right()']), ['Thân hàm là đúng quy tắc ba nhánh ở màn trước.']),
+    // HD1 (29/10): ba sân, mỗi sân một nhánh (bên phải trống / chỉ phía trước / hai phía đều chặn): một sân thì thân hàm chỉ có nhánh đầu cũng 3 sao.
+    maze(6, 'Chế một bước bám tường', 'Em đã biết ba trường hợp. Gom chúng vào hàm follow_right(): rẽ phải và tiến, hoặc tiến thẳng, hoặc quay trái. Ba sân, mỗi sân một trường hợp; chương trình gọi hàm hai lượt.',
+      [['#####', '##.##', '#..F#', '#####'], ['#####', '##F##', '##.##', '#####'], ['#####', '##F.#', '#####', '#####']], [{ x: 2, y: 2, huong: 0 }, { x: 2, y: 2, huong: 0 }, { x: 3, y: 1, huong: 0 }],
+      Object.assign(bai(lap(2, ['follow_right()'])), { hamCuaEmMoi: [ham('follow_right', FOLLOW)] }), bai(lap(2, ['follow_right()'])), ['Thân hàm là đúng quy tắc ba nhánh ở màn trước.', 'Sân ba: lượt đầu chỉ quay trái, lượt sau mới tiến.']),
     maze(7, 'Lặp những bước nhỏ', 'Hành lang có một góc rẽ. Lặp follow_right() để xe tự xử lý từng ô tới cờ.', D, { x: 1, y: 3, huong: 0 },
       bai(lap(20, ['follow_right()'])), bai(['follow_right()']), ['Một lần gọi chỉ xử lý một bước. Đặt lời gọi trong vòng for.']),
     maze(8, 'Đi vào rồi ra ngõ cụt', 'Lối bên phải dẫn vào ngõ cụt. Tiếp tục áp dụng cùng quy tắc để xe quay ra, rồi tới cờ. Quan sát hai lần quay trái khi phải quay đầu.', E, { x: 1, y: 3, huong: 0 },
@@ -203,6 +205,7 @@
   ];
   ds[5].taoHam = ['follow_right'];
   ds[5].chinhCoDinh = true;
+  ds[5].nhipTheo = 'tong';
   [6, 7, 9].forEach(function (i) { ds[i].hamCuaEmCan.push('follow_right'); });
   M.them(ds);
   // Gói Cảm biến hai bên: left_clear() mới, chọn bên, rời cửa rồi mới hỏi, ngõ cụt; quy tắc bám tường để dành cho gói Mê cung.
@@ -240,7 +243,7 @@
       ['Sau turn_right(), bên trái xe là đoạn hành lang vừa đi.', 'Thêm move() ngay sau turn_right().']),
     ben(5, 'Chế to_left_gap()', 'Tự chế to_left_gap(): đi thẳng cho tới khi bên trái trống. Chương trình chính đã có, dùng hàm hai lần để xoắn vào cờ.',
       'Chương trình chính đã cố định. Viết thân hàm to_left_gap() trong Xưởng.',
-      ['#######', '#####.#', '#####.#', '#####.#', '#.....#', '##.##.#', '##F##.#', '#######'], { x: 5, y: 6, huong: 0 },
+      ['#######', '#####.#', '#####.#', '#####.#', '#.....#', '#.###.#', '#F###.#', '#######'], { x: 5, y: 6, huong: 0 },           // HD1: hai cửa cách 2 và 3 ô, đếm cứng không qua
       Object.assign(bai(['to_left_gap()', 'turn_left()', 'move()', 'to_left_gap()', 'turn_left()', 'go_wall()']),
         { hamCuaEmMoi: [ham('to_left_gap', ['while not left_clear():', '    move()'])] }),
       bai(['to_left_gap()', 'turn_left()', 'move()', 'to_left_gap()', 'turn_left()', 'go_wall()']),
@@ -252,7 +255,7 @@
       ['Đếm số khúc quanh để chọn số lần lặp.', 'Sau vòng for còn một đoạn thẳng tới cờ.']),
     ben(7, 'Sửa hàm tìm cửa', 'Hàm door_left() phải đưa xe tới cửa bên trái, nhưng xe không nhúc nhích. Sửa hàm cho đúng; cửa bên phải chỉ là ngõ cụt.',
       'Chương trình chính đã cố định. Sửa điều kiện trong door_left().',
-      ['#####', '##.##', '#F.##', '##.##', '##..#', '##.##', '##.##', '#####'], { x: 2, y: 6, huong: 0 },
+      [['#####', '##.##', '#F.##', '##.##', '##..#', '##.##', '##.##', '#####'], ['#####', '##.##', '##.##', '##.##', '#F.##', '##.##', '##.##', '#####']], [{ x: 2, y: 6, huong: 0 }, { x: 2, y: 6, huong: 0 }],     // HD1: hai sân, cửa trái cách 4 và 2 ô
       bai(['door_left()', 'turn_left()', 'go_wall()'], [ham('door_left', ['while not left_clear():', '    move()'])]),
       bai(['door_left()', 'turn_left()', 'go_wall()'], [ham('door_left', ['while left_clear():', '    move()'])]),
       ['Vòng while chạy khi điều kiện đúng. Lúc xuất phát bên trái là tường.', 'Thiếu chữ not.']),
@@ -275,6 +278,7 @@
   dsBen[3].hamCuaEmCan.push('to_gap');
   dsBen[4].taoHam = ['to_left_gap']; dsBen[4].chinhCoDinh = true;
   dsBen[6].chinhCoDinh = true;
+  dsBen[6].nhipTheo = 'tong';
   [7, 9].forEach(function (i) { dsBen[i].hamCuaEmCan.push('u_turn'); });
   var tay = nguon['khoang-cach.9'];
   Object.assign(dsBen[8], { mucTieu: 'dua-vat', robot: copy(tay.robot), hamGoc: copy(tay.hamGoc).concat(['left_clear', 'right_clear']) });
@@ -307,6 +311,36 @@
   // MUA_1 xếp chỗ; `nguon` giữ bản gốc như mọi màn khác.
   M.them(M.manCamBienThem || []);
   (M.manCamBienThem || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // HD1 (29/10, user: "show don't tell"): màn đầu của mỗi khối mới là MÀN TRÌNH DIỄN (chiChay: chương trình khoá, chỉ bấm Chạy là thấy khối chạy),
+  // màn kế tiếp ÉP dùng khối đó (khoang-cach.12 ép if, khoang-cach.13 ép while: hai sân dài ngắn khác nhau, man-cam-bien-them.js). khoang-cach.4 (trùng ý
+  // kc.3) và khoang-cach.9 (bản một sân của trùm kc.10) cất để chương giữ 10 màn. Máy dò lời giải lách: hoc/kiem-lach-mua-1.mjs.
+  /** Lấy lại bản nhiều sân của ngân hàng cho màn CHẾ HÀM có while / if: hàm phải chạy đúng ở mọi sân nên thân hàm đếm cứng không qua. */
+  function nhieuSan(ma) {
+    var m = get(ma), g = nguon[ma];
+    ['san', 'batDau', 'bongMo', 'nhipTheo', 'deBai', 'veMaMau', 'goiY', 'sao'].forEach(function (k) { if (g[k] !== undefined) m[k] = copy(g[k]); });
+    m.phienBanNoiDung = 2;
+  }
+  ['che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4'].forEach(nhieuSan);
+  sua('khoang-cach.1', {
+    ten: 'Hỏi trước khi đi', chiChay: true, chinhCoDinh: true,
+    deBai: 'Cảm biến khoảng cách ở hông xe đo ô ngay trước mặt: front_clear() là True khi ô đó đi vào được, False khi là tường. Chương trình lặp 5 lần, mỗi lần hỏi front_clear() rồi mới move(). Bấm Chạy xem xe tới chỗ xe mờ thế nào.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: vòng for lặp 5 lần nhưng xe chỉ đi 3 ô rồi dừng trước tường, không húc.',
+    san: ['###', '#.#', '#.#', '#.#', '#.#'], batDau: { x: 1, y: 4, huong: 0 }, mucTieu: 'bong-mo', bongMo: { x: 1, y: 1, huong: 0 },      // xe mờ thay cờ: tới cờ là dừng ngay, không thấy if chặn húc tường
+    maMau: bai(['for i in range(5):', '    if front_clear():', '        move()']),
+    loiGiai: bai(['for i in range(5):', '    if front_clear():', '        move()']),
+    sao: { o: 6, nhip: 3 },
+    goiY: ['Hai lần lặp cuối front_clear() trả về False nên move() không chạy.', 'Không có if thì xe húc tường hai lần.']
+  });
+  sua('khoang-cach.2', {
+    ten: 'Đi tới tường', chiChay: true, chinhCoDinh: true,
+    deBai: 'Lệnh while lặp lại chừng nào điều kiện còn đúng: while front_clear() cho xe đi tới sát tường mà không cần đếm số ô. Bấm Chạy xem xe đi hết hành lang.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá: chỉ hai dòng, không có số ô nào. Bấm Chạy.',
+    san: ['#########', '#......F#', '#########'], batDau: { x: 1, y: 1, huong: 1 },
+    maMau: bai(['while front_clear():', '    move()']),
+    loiGiai: bai(['while front_clear():', '    move()']),
+    sao: { o: 5, nhip: 6 },
+    goiY: ['Xe dừng khi ô trước mặt là tường: lúc đó front_clear() trả về False.', 'Hành lang dài bao nhiêu cũng chỉ cần hai dòng này.']
+  });
   // Gói 5: 8 màn mới (man-banh-lui-them.js, mã banh-lui.1–4 và che-banh-lui.1–4). Hai chương chỉ có ở lộ trình nên chèn tạm vào cuối thuTu
   // cho ManHoc.them nhận (như nut-de); thuTu mùa 1 được dựng lại theo MUA_1 bên dưới. `nguon` giữ bản gốc như mọi màn khác.
   TT.thuTu.push('banh-lui', 'che-banh-lui');
@@ -345,7 +379,7 @@
     { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 30,
       chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
-      chuong: [['khoang-cach', day('khoang-cach', [1, 2, 3, 8, 4, 11, 5, 6, 9, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 12, 13, 3, 14, 15, 16])]] },
+      chuong: [['khoang-cach', day('khoang-cach', [1, 12, 2, 13, 3, 11, 8, 5, 6, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 12, 13, 3, 14, 15, 16])]] },
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 90, hinh: 'che-tay',
       chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
     { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 120, hinh: 'che-xe',
@@ -368,7 +402,9 @@
   // Cất khỏi lộ trình xuất bản (ngân hàng man-*.js giữ nguyên, `nguon` còn bản gốc): trùng ý, dư so với khuôn, hay dùng cảm biến bên quá sớm.
   // che-cam-bien.10 (cất tạm 26/10) đã về gói 9 Combo, chương che-combo. robot-hoan-thien.10 (bounce / fetch_back có biến) cất, robot-hoan-thien.11 thay chỗ.
   var CAT = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10',
-    'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10'];
+    'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10',
+    // HD1 (29/10): kc.4 trùng ý kc.3, kc.9 là bản một sân của trùm kc.10; nhường chỗ cho hai màn ép khoang-cach.12 / .13
+    'khoang-cach.4', 'khoang-cach.9'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
@@ -910,8 +946,8 @@
     'rap-du.8': 'Hộp phải vào đích cùng màu. Lắp robot trong 7 xu có thể nhìn màu hộp trước khi nhặt, rồi phân loại nó vào đích đỏ hoặc xanh dương.',
     'rap-du.9': 'Hộp nam châm cách xe ba ô. Lắp robot trong 7 xu, đọc cực của hộp để chọn cực hút; hút về rồi thả vào đích sau lưng xe.'
   };
-  Object.keys(deLuyen).forEach(function (ma) { get(ma).deBai = deLuyen[ma]; });
-  get('khoang-cach.4').ten = 'Hành lang một góc';
+  Object.keys(deLuyen).forEach(function (ma) { var mk = get(ma); if (mk) mk.deBai = deLuyen[ma]; });        // màn đã cất (HD1: khoang-cach.4, .9) không còn trong lộ trình
+  if (get('khoang-cach.4')) get('khoang-cach.4').ten = 'Hành lang một góc';
   get('che-cam-bien.3').ten = 'Ghép những góc rẽ';
   get('drone.6').ten = 'Theo dõi pin';
   // Kho thật có u_turn() một nhịp (thêm một dòng so với kho cổ điển).

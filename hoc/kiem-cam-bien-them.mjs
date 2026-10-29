@@ -36,9 +36,11 @@ function kiem(ten, fn) {
   try { fn(); dat++; } catch (e) { hong++; console.log('  HỎNG ' + ten + '\n       ' + (e && e.message ? e.message.split('\n')[0] : e)); }
 }
 
-const MOI = ['khoang-cach.11', 'che-cam-bien.11', 'che-cam-bien.12', 'che-cam-bien.13', 'che-cam-bien.14', 'che-cam-bien.15', 'che-cam-bien.16'];
+// HD1 (29/10): khoang-cach.12 (ép if) và .13 (ép while) hai sân, đứng ngay sau màn trình diễn kc.1 / kc.2 (chiChay); kc.4, kc.9 cất.
+const MOI = ['khoang-cach.11', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.11', 'che-cam-bien.12', 'che-cam-bien.13', 'che-cam-bien.14', 'che-cam-bien.15', 'che-cam-bien.16'];
+const HAI_SAN = ['khoang-cach.12', 'khoang-cach.13'];
 const THU_TU = {
-  'khoang-cach': [1, 2, 3, 8, 4, 11, 5, 6, 9, 10].map((n) => 'khoang-cach.' + n),
+  'khoang-cach': [1, 12, 2, 13, 3, 11, 8, 5, 6, 10].map((n) => 'khoang-cach.' + n),
   'che-cam-bien': [1, 2, 7, 11, 12, 13, 3, 14, 15, 16].map((n) => 'che-cam-bien.' + n)
 };
 /** Màn mà đường khối chuẩn ngắn hơn ngưỡng: lý do (kiểm thêm bằng đếm cứng ở mục 5). */
@@ -197,7 +199,7 @@ for (const m of DS) {
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
-    assert.equal(soSan(m), m.hang === 'trum' ? 3 : 1, m.ma + ' số sân');
+    assert.equal(soSan(m), m.hang === 'trum' ? 3 : HAI_SAN.includes(m.ma) ? 2 : 1, m.ma + ' số sân');
     for (const rows of dsSan(m)) assert.ok(!/[MCcS]/.test(rows.join('')), m.ma + ' sân có nút đè / cửa / bậc thang');
     assert.equal(m.robot.than, 'hai-banh');
     assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['khoang-cach']);
@@ -271,7 +273,9 @@ for (const m of DS) {
       for (let i = 0; i < duong.length; i++) {
         const mr = Object.assign(clone(m), { khung: Object.assign({}, m.khung, { chinh: 99 }) });
         const r = cham(mr, { chinh: duong[i] });
-        assert.ok(!r.thang && r.theoSan[i].thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ba sân (hay thua chính sân đó)');
+        // HD1: màn ép hai sân (HAI_SAN) chỉ cần đếm cứng KHÔNG ĐỦ 3 SAO (đếm theo sân dài thì thắng cả hai nhưng húc tường ở sân ngắn, mất nhịp)
+        const chan = HAI_SAN.includes(m.ma) ? !(r.thang && r.sao === 3) : !r.thang;
+        assert.ok(chan && r.theoSan[i].thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ' + soSan(m) + ' sân' + (HAI_SAN.includes(m.ma) ? ' đủ 3 sao' : '') + ' (hay thua chính sân đó)');
       }
     }
     Object.assign(bang[m.ma], { khoi: tong, gop: tongGop });

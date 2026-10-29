@@ -42,9 +42,10 @@
     m.loaiRobot = 'banh';
     m.robot = { than: 'hai-banh', tay: coTay ? 'kep' : null, camBien: [{ ma: 'khoang-cach', o: 'hong' }] };
     m.hamGoc = BANH.concat(coTay ? TAY : [], CAM);
-    m.cauTruc = ['for', 'if', 'while'];
+    m.cauTruc = m.cauTruc || ['for', 'if', 'while'];                       // HD1: khoang-cach.12 (ép if) đứng trước màn trình diễn while nên chưa có while
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = { chinh: 10, moiHam: 10, chanBien: true };
+    if (m.cauTruc.indexOf('while') < 0) m.khung.chanWhile = true;
     if (Array.isArray(m.san[0])) {
       m.nhipTheo = 'tong';
       if (!Array.isArray(m.batDau)) m.batDau = m.san.map(function () { return Object.assign({}, m.batDau); });
@@ -72,6 +73,51 @@
         { moTa: 'Dùng if thay while: xe chỉ đi được một ô', baiLam: { chinh: ['pick()', 'if front_clear():', '    move()', 'turn_left()', 'drop()'] }, phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Thùng nằm trên tay thì không chắn cảm biến, chỉ tường mới chắn.', 'Tới tường rồi quay trái là nhìn vào ngách, rồi mới drop().']
+    }),
+
+    /* ---- HD1 (29/10, show don't tell): hai màn ÉP của chương khoang-cach, đứng ngay sau màn trình diễn (khoang-cach.1 trình diễn if, khoang-cach.2 trình diễn
+       while, cả hai chiChay ở lộ trình). HAI SÂN dài ngắn khác nhau để đếm cứng không đủ sao (húc tường mất nhịp, nhipTheo 'tong') hay thua; sao.o chặt để
+       for + if không thay được while. */
+    man({
+      chuong: 'khoang-cach', so: 12, ten: 'Hỏi rồi mới bước', cauTruc: ['for', 'if'], hamCuaEmCan: ['move'],
+      deBai: 'Hai hành lang dài ngắn khác nhau, một chương trình phải đưa xe tới chỗ xe mờ ở cả hai. Lặp đủ nhiều lần, nhưng mỗi lần hỏi front_clear() rồi mới move(): tới tường thì xe tự dừng, không húc.',
+      veMaMau: 'Chương trình có sẵn hỏi cảm biến một lần rồi tiến một ô. Bọc nó trong vòng for lặp 5 lần, nhớ thụt lề.',
+      mucTieu: 'bong-mo',
+      san: [['###', '###', '#.#', '#.#', '#.#'], ['#.#', '#.#', '#.#', '#.#', '#.#']],
+      batDau: { x: 1, y: 4, huong: 0 },
+      bongMo: [{ x: 1, y: 2, huong: 0 }, { x: 1, y: 0, huong: 0 }],
+      maMau: { chinh: ['if front_clear():', '    move()'] },
+      sao: { o: 6, nhip: 6 },
+      loiGiai: { chinh: ['for i in range(5):', '    if front_clear():', '        move()'] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# hỏi rồi mới bước', 'for i in range(5):', '    if front_clear():', '        move()'] } },
+      loiSai: [
+        { moTa: 'Giữ nguyên if: xe chỉ đi được một ô', baiLam: { chinh: ['if front_clear():', '    move()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng theo sân ngắn: sân dài xe chưa tới', baiLam: { chinh: ['for i in range(2):', '    move()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đảo điều kiện bằng not: ô trước mặt trống nên xe đứng yên', baiLam: { chinh: ['for i in range(5):', '    if not front_clear():', '        move()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Dùng while ở màn chưa học while', baiLam: { chinh: ['while front_clear():', '    move()'] }, phaiCoMa: ['cau-truc-chua-hoc'] }
+      ],
+      goiY: ['Sân ngắn 2 ô, sân dài 4 ô: lặp 5 lần là đủ cho cả hai, if lo phần dừng.', 'Đếm cứng số bước thì sân ngắn húc tường, mất nhịp.']
+    }),
+
+    man({
+      chuong: 'khoang-cach', so: 13, ten: 'Hai hành lang', hamCuaEmCan: ['move'],
+      deBai: 'Hai hành lang, một ngắn một dài, xe mờ ở sát tường cuối. Một chương trình phải tới chỗ xe mờ ở cả hai: dùng while front_clear() để xe tự đi tới khi gặp tường, không đếm bước.',
+      veMaMau: 'Chương trình có sẵn đếm cứng bốn bước: sân ngắn thì húc tường, sân dài thì chưa tới. Xóa nó đi, dùng while.',
+      mucTieu: 'bong-mo',
+      san: [['########', '#....###', '########'], ['########', '#......#', '########']],
+      batDau: { x: 1, y: 1, huong: 1 },
+      bongMo: [{ x: 4, y: 1, huong: 1 }, { x: 6, y: 1, huong: 1 }],
+      maMau: { chinh: ['for i in range(4):', '    move()'] },
+      sao: { o: 5, nhip: 8 },
+      loiGiai: { chinh: ['while front_clear():', '    move()'] },
+      loiGiaiKhac: { moTa: 'Vòng for lặp thừa, mỗi vòng hỏi cảm biến bằng if', baiLam: { chinh: ['for i in range(9):', '    if front_clear():', '        move()'] } },
+      loiSai: [
+        { moTa: 'Giữ nguyên đếm cứng bốn bước: sân dài chưa tới', baiLam: { chinh: ['for i in range(4):', '    move()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Dùng if thay while: xe chỉ đi được một ô', baiLam: { chinh: ['if front_clear():', '    move()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đảo điều kiện bằng not: vòng không chạy lần nào', baiLam: { chinh: ['while not front_clear():', '    move()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Thân vòng while chỉ chờ, không tiến: điều kiện không bao giờ sai', baiLam: { chinh: ['while front_clear():', '    wait()'] }, phaiCoMa: ['vong-vo-han'] }
+      ],
+      goiY: ['while hỏi lại sau mỗi bước, tới tường thì tự dừng ở cả sân ngắn lẫn sân dài.', 'Đếm cứng số bước thì không sân nào cũng đúng.']
     }),
 
     /* ================================================================ chương che-cam-bien (6 màn) */
