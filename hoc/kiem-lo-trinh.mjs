@@ -48,7 +48,9 @@ const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.
   'che-cam-bien.10'];      // HD2: hai kho dài ngắn khác nhau (fetch_back đếm cứng không thắng cả hai)
 NHIEU_SAN_KHONG_TRUM.push('che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9');      // gói T mùa 2: ba màn ép biến đếm (chương bien-xich) lấy lại ba sân của ngân hàng
 // Mùa 3 (29/10, phiên Mùa 3): màn ÉP and / or của logic-nam-cham có hai, ba sân (đường khác nhau) để while viết sai một vế không qua cả các sân.
-NHIEU_SAN_KHONG_TRUM.push('logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'logic-nam-cham.6', 'logic-nam-cham.7');
+NHIEU_SAN_KHONG_TRUM.push('logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'logic-nam-cham.6', 'logic-nam-cham.7',
+  'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.5', 'cam-ung-tu.6', 'cam-ung-tu.8', 'cam-ung-tu.9',
+  'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.8', 'che-cam-ung-tu.9');      // gói 3: màn ép dò sắt, hàm dò sắt nhiều sân
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -386,7 +388,7 @@ const LOI_GIA_3 = process.argv.includes('--loi-gia-mua-3');
 const BANG_MUA_3 = [
   ['nhen', 'bo-phan', [['nhen', ['nhen.11', 'nhen.1', 'nhen.12', 'nhen.13', 'nhen.14', 'nhen.15', 'nhen.8', 'nhen.16', 'nhen.17', 'nhen.18']], ['chuoi-nhen', ['chuoi-nhen.1', 'chuoi-nhen.2', 'chuoi-nhen.3', 'nhen.4', 'nhen.7', 'chuoi-nhen.4', 'chuoi-nhen.5', 'chuoi-nhen.6', 'chuoi-nhen.7', 'chuoi-nhen.8']]]],      // 29/10 phiên Mùa 3: bảng khai đủ thứ tự (có sẵn xen màn mới), như dòng chương trong MUA_3
   ['nam-cham', 'bo-phan', [['nam-cham', ['nam-cham.11', 'nam-cham.12'].concat(day('nam-cham', [1, 4, 7, 8, 14, 13, 5, 15]))], ['logic-nam-cham', ['logic-nam-cham.1', 'che-nam-cham.1', 'logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'che-nam-cham.8', 'logic-nam-cham.6', 'logic-nam-cham.7', 'logic-nam-cham.8']]]],
-  ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', []], ['che-cam-ung-tu', []]]],
+  ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]]],
   ['bai-tu', undefined, [['bai-tu', []], ['che-bai-tu', []]]],
   ['nhay', 'bo-phan', [['nhay', day('nhen', [3, 2, 9, 5, 6, 10])], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
   ['dao-cuc', 'bo-phan', [['dao-cuc', day('nam-cham', [3, 2])], ['che-dao-cuc', ['che-nam-cham.6']]]],
@@ -408,7 +410,7 @@ const goi3Bang = BANG_MUA_3.map(([ma, , ds]) => [ma, ds.map(([c, coSan]) => [c, 
 // Rời mùa 3 (brief: đầu mùa 4, giữ thứ tự): gói ngoài khuôn, chương rời (M.roiMua3).
 const ROI_3_GOI = ['ban-xoay', 'doi-ho-bang', 'list', 'che-xich', 'doi-xich-bac', 'omni', 'doi-omni', 'doi-sung-hoi', 'mau', 'doi-mau', 'may-son', 'rap-nao', 'nam-cham-omni', 'doi-nam-cham', 'doi-tay-xoay'];
 const LENH_MUA_3 = LENH_MUA_2.concat(['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole']);
-const PART_3 = { than: ['hai-banh', 'xich', 'nhen'], tay: ['kep', 'xoay', 'hoi', 'nam-cham'], camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu'], loaiRobot: ['banh', 'xich', 'nhen'] };
+const PART_3 = { than: ['hai-banh', 'xich', 'nhen'], tay: ['kep', 'xoay', 'hoi', 'nam-cham'], camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu', 'tu'], loaiRobot: ['banh', 'xich', 'nhen'] };
 // Lệnh của part ngoài mùa 3 (omni, drone, camera / màu, máy ném, pin): không được gọi, kể cả qua hàm của em.
 const CAM_3 = ['color', 'look', 'slide_left', 'slide_right', 'aim', 'throw', 'load', 'battery', 'recharge'];
 const goi3 = () => goiMua('mua-3');

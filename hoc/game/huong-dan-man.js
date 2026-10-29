@@ -740,6 +740,18 @@
     buocTaoHam('to_turn', 'Bấm Hàm mới để tạo to_turn().', CHU_TAO)
   ].concat(buocThuVeChay('Thân hàm: while front_clear() and not right_clear(): rồi move(). Bấm Chạy.'));
 
+  // MÙA 3 gói 3: cảm biến từ front_metal() (cam-ung-tu.1 trình diễn), hàm dò sắt (che-cam-ung-tu.1 trình diễn; .2 seek_iron, .3 take_iron, .6 seek_safe, .8 face_iron)
+  H['cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đầu dò chữ U thấy sắt nên front_metal() là True, xe hút vật về rồi thả.');
+  H['cam-ung-tu.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: sân 2 trước mặt là gỗ, nam châm không hút được.', xong: 'chay', daLam: daChay },
+    { dich: 'nut:pal-the-sau', chu: 'Thêm khối if ở thẻ Logic, điều kiện not front_metal(), bên trong là turn_right().', xong: 'bam', han: 12000, rong: 170 }
+  ];
+  H['che-cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: tới chỗ thấy sắt thì haul_iron() làm cả chuyến hút, quay đầu, thả.');
+  H['che-cam-ung-tu.2'] = [buocTaoHam('seek_iron', 'Bấm Hàm mới để tạo seek_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while not front_metal(): rồi move(). Bấm Chạy.'));
+  H['che-cam-ung-tu.3'] = [buocTaoHam('take_iron', 'Bấm Hàm mới để tạo take_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hút, wait(), quay đầu, thả, wait(). Bấm Chạy.'));
+  H['che-cam-ung-tu.6'] = [buocTaoHam('seek_safe', 'Bấm Hàm mới để tạo seek_safe().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while front_clear() and not front_metal(): rồi move(). Bấm Chạy.'));
+  H['che-cam-ung-tu.8'] = [buocTaoHam('face_iron', 'Bấm Hàm mới để tạo face_iron().', CHU_TAO)].concat(buocThuVeChay('Hai câu if lồng nhau quay xe về phía có sắt. Bấm Chạy.'));
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 2 };       // gói T mùa 2: màn trình diễn
