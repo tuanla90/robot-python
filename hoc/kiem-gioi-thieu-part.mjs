@@ -4,6 +4,8 @@
      2. LUẬT ĐÚNG LÕI: dòng ghép có `ket` chạy thật SanHoc.chay trên sân trống 5×5 (robot ở (2,2) mặt lên) và tới đúng chỗ, đúng hướng thẻ ghi;
      3. PHỦ HẾT: ở MỌI màn (màn lắp ráp: mọi cách lắp vừa ngân sách), mọi lệnh gốc của robot thuộc một bộ phận nào đó đều nằm trong thẻ của một bộ phận robot đang có;
         đi hết các màn theo thứ tự game, mỗi bộ phận được giới thiệu ở màn đầu tiên có nó, lệnh mở thêm sau đó vào thẻ "lệnh mới";
+        (gói V8c) đi bằng chính GioiThieuPart.theCanHien / khoaDaXem mà the-part.js dùng; tay 'xoay' = tay kẹp mở thêm xoay: đã xem tay kẹp thì chỉ thẻ lệnh mới;
+     3b. (gói V8c) MỘT TAY KẸP: đã xem 'kep' → robot 'xoay' chỉ ra thẻ lệnh mới arm_left / arm_right; chưa xem → thẻ đầy đủ; Sổ lệnh một dòng; lõi chạy đúng dòng ghép xoay;
      4. giao diện: choi.html nạp dữ liệu trước the-part.js, man-choi.js gọi ThePart.choMan trước đề bài, Sổ lệnh có trang "Bộ phận".
    Chạy: node hoc/kiem-gioi-thieu-part.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
@@ -73,7 +75,7 @@ kiem('có dòng ghép được chạy thử', soKet >= 10, soKet);
 
 console.log('3. mọi lệnh gốc của mọi màn đều có thẻ');
 const LENH_PART = new Set(GT.THU_TU.flatMap((ma) => GT.DS[ma].lenh));
-const daGap = new Set(), lenhDaGioiThieu = new Set(), moDau = {};
+const xem = new Set(), moDau = {}, moLenh = {};
 let soMan = 0;
 const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
 const viTri = (m) => ThuTu.thuTu.indexOf(m.chuong);
@@ -89,20 +91,68 @@ for (const m0 of thuTu) {
     kiem(m.ma + (m0.lapRap ? ' [' + LapRap.moTa(cfg) + ']' : '') + ': lệnh gốc nào cũng thuộc thẻ một bộ phận đang gắn', thieu.length === 0, J({ thieu, cfg: { than: cfg.than, tay: cfg.tay, cam: cfg.camBien.map((c) => c.ma) } }));
     kiem(m.ma + ': thân có thẻ', bp.length > 0 && bp[0].ma === (cfg.than || 'hai-banh'), J(bp.map((b) => b.ma)));
     if (m0.lapRap && m !== bien[0]) continue;                              // đi game theo cách lắp mặc định
-    for (const b of bp) {
-      const moi = !daGap.has(b.ma), lenhMoi = b.lenh.filter((l) => !lenhDaGioiThieu.has(b.ma + ':' + l));
-      const nd = GT.noiDung(b.ma, b.lenh, moi ? null : lenhMoi, cfg.than, moTaGoc);
-      if (moi) { moDau[b.ma] = m.ma; kiem(m.ma + ': thẻ đầy đủ của ' + b.ma + ' có mô tả', !!nd.moTa && nd.lenh.length === b.lenh.length); }
-      else if (lenhMoi.length) kiem(m.ma + ': thẻ lệnh mới của ' + b.ma + ' chỉ có lệnh mới ' + J(lenhMoi), J(nd.lenh.map((l) => l.ten).sort()) === J(lenhMoi.slice().sort()) && !nd.moTa, J(nd.lenh));
-      daGap.add(b.ma); b.lenh.forEach((l) => lenhDaGioiThieu.add(b.ma + ':' + l));
+    const daXemK = (k) => xem.has(k);
+    for (const nd of GT.theCanHien(cfg, goc, daXemK, moTaGoc)) {
+      const b = bp.find((x) => x.ma === nd.ma), nhom = GT.cungBoPhan(nd.ma);
+      const lenhMoi = b.lenh.filter((l) => !nhom.some((x) => xem.has('part-lenh:' + x + ':' + l)));
+      if (!nd.laMoi) { moDau[nd.ma] = moDau[nd.ma] || m.ma; kiem(m.ma + ': thẻ đầy đủ của ' + nd.ma + ' có mô tả', !!nd.moTa && nd.lenh.length === b.lenh.length && !nhom.some((x) => xem.has('part:' + x))); }
+      else {
+        kiem(m.ma + ': thẻ lệnh mới của ' + nd.ma + ' chỉ có lệnh mới ' + J(lenhMoi), J(nd.lenh.map((l) => l.ten).sort()) === J(lenhMoi.slice().sort()) && !nd.moTa, J(nd.lenh));
+        nd.lenh.forEach((l) => { moLenh[nd.ma + ':' + l.ten] = moLenh[nd.ma + ':' + l.ten] || m.ma; });
+      }
     }
+    GT.khoaDaXem(cfg, goc).forEach((k) => xem.add(k));
   }
 }
 kiem('đã dò ≥ 300 màn (cả các cách lắp)', soMan >= 300, soMan);
 kiem('hai bánh được giới thiệu ở màn đầu tiên', moDau['hai-banh'] === thuTu[0].ma, moDau['hai-banh']);
-for (const ma of ['xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'khoang-cach', 'tu', 'mau', 'camera', 'camera-bay'])
+for (const ma of ['xich', 'omni', 'nhen', 'drone', 'kep', 'nam-cham', 'nem', 'hoi', 'khoang-cach', 'tu', 'mau', 'camera', 'camera-bay'])
   kiem('bộ phận ' + ma + ' có màn giới thiệu trong game', !!moDau[ma]);
 console.log('   màn giới thiệu: ' + GT.THU_TU.map((ma) => ma + '=' + (moDau[ma] || '—')).join(' · '));
+// gói V8c: đi đúng thứ tự game thì tay 'xoay' KHÔNG có thẻ đầy đủ (là tay kẹp đã gặp ở gói 2), arm_left / arm_right vào thẻ lệnh mới ở tay-xoay.1
+kiem('V8c: đi đúng thứ tự game, tay xoay không có thẻ "bộ phận mới" (cùng tay kẹp)', !moDau.xoay, moDau.xoay);
+kiem('V8c: arm_left / arm_right được giới thiệu ở thẻ lệnh mới của tay-xoay.1', moLenh['xoay:arm_left'] === 'tay-xoay.1' && moLenh['xoay:arm_right'] === 'tay-xoay.1', J(moLenh));
+
+console.log('3b. (V8c) một tay kẹp: thẻ lệnh mới khi mở xoay');
+{
+  const tim = (ma) => ManHoc.danhSach.find((m) => m.ma === ma);
+  const mKep = tim('tay-gap.1'), mXoay = tim('tay-xoay.1');
+  const cK = VeRobot.cauHinhCua(mKep), cX = VeRobot.cauHinhCua(mXoay);
+  kiem('V8c: tay-gap.1 gắn tay kep, tay-xoay.1 gắn tay xoay (mã giữ nguyên)', cK.tay === 'kep' && cX.tay === 'xoay', J([cK.tay, cX.tay]));
+  kiem('V8c: xoay cùng bộ phận với kep (nangCapCua)', J(GT.cungBoPhan('xoay')) === J(['kep', 'xoay']) && J(GT.cungBoPhan('kep')) === J(['kep', 'xoay']) && J(GT.cungBoPhan('nem')) === J(['nem']));
+  kiem('V8c: tên hiển thị nhất quán: kep và xoay cùng tên "Tay kẹp"', GT.DS.kep.ten === 'Tay kẹp' && GT.DS.xoay.ten === GT.DS.kep.ten, J([GT.DS.kep.ten, GT.DS.xoay.ten]));
+  const tayCua = (ds) => ds.filter((nd) => nd.khe === 'tay');
+  // đã xem tay kẹp (vào tay-gap.1 trước) → robot tay xoay: chỉ thẻ LỆNH MỚI arm_left / arm_right
+  const daKep = new Set(GT.khoaDaXem(cK, mKep.hamGoc));
+  const t1 = tayCua(GT.theCanHien(cX, mXoay.hamGoc, (k) => daKep.has(k), moTaGoc));
+  kiem('V8c: đã xem tay kẹp → tay-xoay.1 chỉ một thẻ tay, là thẻ lệnh mới', t1.length === 1 && t1[0].laMoi === true && t1[0].ma === 'xoay' && !t1[0].moTa, J(t1.map((x) => [x.ma, x.laMoi])));
+  kiem('V8c: thẻ lệnh mới chỉ có arm_left, arm_right', t1.length === 1 && J(t1[0].lenh.map((l) => l.ten)) === J(['arm_left', 'arm_right']), t1[0] && J(t1[0].lenh));
+  kiem('V8c: thẻ lệnh mới có câu mô tả xoay trái / phải, có mục làm tốt / không làm được / nhớ về xoay', t1.length === 1 && t1[0].lenh.every((l) => /xoay/i.test(l.moTa)) && t1[0].gioi.length > 0 && t1[0].khong.length > 0 && t1[0].luuY.length > 0
+    && ![...t1[0].gioi, ...t1[0].khong, ...t1[0].luuY].includes('Lệnh tay cũng chỉ là ra lệnh, wait() mới làm.'), t1[0] && J(t1[0]));
+  kiem('V8c: thẻ lệnh mới chỉ ghép dòng có lệnh xoay', t1.length === 1 && t1[0].ghep.length > 0 && t1[0].ghep.every((g) => g.lenh.some((l) => l === 'arm_left' || l === 'arm_right')), t1[0] && J(t1[0].ghep));
+  // chưa xem tay kẹp (mở hết gói, vào thẳng gói 6) → thẻ đầy đủ
+  const t2 = tayCua(GT.theCanHien(cX, mXoay.hamGoc, () => false, moTaGoc));
+  kiem('V8c: chưa xem tay kẹp → tay-xoay.1 ra thẻ đầy đủ (mô tả + đủ lệnh của màn)', t2.length === 1 && !t2[0].laMoi && !!t2[0].moTa && t2[0].lenh.length === GT.boPhanCua(cX, mXoay.hamGoc).find((b) => b.ma === 'xoay').lenh.length, J(t2.map((x) => [x.ma, x.laMoi, x.lenh.length])));
+  // đã xem tay kẹp mở xoay trước, quay về gói 2: không lặp thẻ tay kẹp
+  const daXoay = new Set(GT.khoaDaXem(cX, mXoay.hamGoc));
+  const t3 = tayCua(GT.theCanHien(cK, mKep.hamGoc, (k) => daXoay.has(k), moTaGoc));
+  kiem('V8c: đã xem tay xoay → quay về tay-gap.1 không hiện lại thẻ tay kẹp', t3.length === 0, J(t3.map((x) => x.ma)));
+  // Sổ lệnh, trang "Bộ phận": một dòng tay, đủ lệnh đã giới thiệu
+  const ca = new Set([...daKep, ...GT.khoaDaXem(cX, mXoay.hamGoc)]), dx = (k) => ca.has(k);
+  const gap = GT.daGap(dx).filter((ma) => GT.DS[ma].khe === 'tay');
+  kiem('V8c: Sổ lệnh "Bộ phận": đã gặp tay kẹp rồi mở xoay → chỉ MỘT dòng tay', J(gap) === J(['xoay']), J(gap));
+  kiem('V8c: Sổ lệnh "Bộ phận": chỉ gặp tay kẹp → dòng kep', J(GT.daGap((k) => daKep.has(k)).filter((ma) => GT.DS[ma].khe === 'tay')) === J(['kep']));
+  kiem('V8c: lệnh đã giới thiệu của dòng tay gồm cả bốn lệnh tay kẹp + hai lệnh xoay', J(GT.lenhDaXem('xoay', dx)) === J(GT.DS.xoay.lenh), J(GT.lenhDaXem('xoay', dx)));
+  // the-part.js dùng đúng các hàm này (không tự chọn thẻ riêng)
+  const tp = fs.readFileSync(path.join(day, 'game', 'the-part.js'), 'utf8');
+  kiem('V8c: the-part.js chọn thẻ bằng GioiThieuPart.theCanHien / khoaDaXem / daGap / lenhDaXem', ['.theCanHien(', '.khoaDaXem(', '.daGap(daXem)', '.lenhDaXem(ma, daXem)'].every((x) => tp.includes(x)));
+  // dòng ghép của tay xoay chạy đúng luật lõi: vật bên trái xe nhặt được trong một nhịp, nhịp sau nâng + xoay về trước
+  const r = SanHoc.chay({ san: ['.....', '.....', '.o...', '.....', '.....'], batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: ['wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'] },
+    ['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()'].join('\n') + '\n');
+  const tay = r.tay || {};
+  kiem('V8c: xoay: "' + GT.DS.xoay.ghep[0].ra + '" rồi "' + GT.DS.xoay.ghep[1].ra + '" đúng lõi (2 nhịp, cầm vật, tay về trước, nâng)', !r.loi && r.nhip === 2 && tay.xoay === 'truoc' && tay.tuThe === 'tren' && r.vat[0].trangThai === 'cam' && tay.cam === r.vat[0].id,
+    J({ loi: r.loi, nhip: r.nhip, tay, vat: r.vat }));
+}
 
 console.log('4. giao diện');
 const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');

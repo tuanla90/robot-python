@@ -7,7 +7,8 @@
    ThePart.doiThu(m, khiXong)   màn đối kháng có m.doiThu = { part, manh, yeu }: thẻ "ĐỐI THỦ" giới thiệu part của R2 (hình R2 sơn đỏ, lệnh R2 dùng, mạnh ở / yếu ở),
                                 hiện một lần mỗi màn (cờ 'doi-thu:<mã màn>'). Không đánh dấu 'part:<mã>': người chơi chưa gắn part đó nên gặp thật sau này vẫn có thẻ đầy đủ.
    ThePart.mo(ma, khiDong)      mở thẻ đầy đủ của một bộ phận với mọi lệnh đã giới thiệu (Sổ lệnh, trang "Bộ phận").
-   ThePart.daGap()              [mã] các bộ phận người chơi đã gặp, theo GioiThieuPart.THU_TU.
+                                Gói V8c: bộ phận nhiều mã (GioiThieuPart.cungBoPhan: tay 'xoay' = tay kẹp mở thêm xoay) đã gặp một mã là đã gặp cả bộ phận.
+   ThePart.daGap()              [mã] các bộ phận người chơi đã gặp, theo GioiThieuPart.THU_TU, mỗi bộ phận một dòng.
    ThePart.hinh(ma, tiLe)       canvas hình bộ phận gắn trên thân mẫu (thân: chính nó; tay, cảm biến: trên xe hai bánh; camera bụng: trên drone).
    ========================================================================== */
 (function () {
@@ -66,8 +67,8 @@
   }
 
   /** Các lệnh của bộ phận ma đã được giới thiệu (cho Sổ lệnh). */
-  function lenhDaXem(ma) { return G().DS[ma].lenh.filter(function (l) { return daXem('part-lenh:' + ma + ':' + l); }); }
-  function daGap() { return G().THU_TU.filter(function (ma) { return daXem('part:' + ma); }); }
+  function lenhDaXem(ma) { return G().lenhDaXem(ma, daXem); }                     // gói V8c: lệnh đã giới thiệu ở mã nào cùng bộ phận cũng tính (tay kẹp / tay kẹp mở xoay)
+  function daGap() { return G().daGap(daXem); }                                    // mỗi bộ phận một dòng: tay kẹp đã mở xoay chỉ còn một dòng 'xoay' (tên "Tay kẹp")
 
   function code(ten) { return h('span', 'tp-code', ten + '()'); }
   function muc(the, tieuDe, ds, lop) {
@@ -129,25 +130,12 @@
   }
 
   /** Các thẻ cần hiện khi vào màn m (đã đánh dấu đã xem). */
+  /* Gói V8c: phép chọn thẻ nằm ở GioiThieuPart.theCanHien (máy kiểm chạy thẳng): đã gặp tay kẹp thì robot tay 'xoay' chỉ ra thẻ "lệnh mới" arm_left / arm_right. */
   function theCuaMan(m) {
     if (!G() || !window.VeRobot) return [];
-    var cfg = VeRobot.cauHinhCua(m), goc = m.hamGoc || [], mt = moTaGoc(), kq = [];
-    G().boPhanCua(cfg, goc).forEach(function (b) {
-      var moi = !daXem('part:' + b.ma), lenhMoi = b.lenh.filter(function (l) { return !daXem('part-lenh:' + b.ma + ':' + l); });
-      if (!moi && !lenhMoi.length) return;
-      var nd = G().noiDung(b.ma, b.lenh, moi ? null : lenhMoi, cfg.than, mt);
-      if (!nd || (!moi && !nd.lenh.length)) return;
-      kq.push(nd);
-    });
-    return kq;
+    return G().theCanHien(VeRobot.cauHinhCua(m), m.hamGoc || [], daXem, moTaGoc());
   }
-  function danhDau(m) {
-    var cfg = VeRobot.cauHinhCua(m);
-    G().boPhanCua(cfg, m.hamGoc || []).forEach(function (b) {
-      datXem('part:' + b.ma);
-      b.lenh.forEach(function (l) { datXem('part-lenh:' + b.ma + ':' + l); });
-    });
-  }
+  function danhDau(m) { G().khoaDaXem(VeRobot.cauHinhCua(m), m.hamGoc || []).forEach(function (k) { datXem(k); }); }
 
   function choMan(m, khiXong) {
     var ds = [];
