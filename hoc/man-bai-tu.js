@@ -225,15 +225,15 @@
 
   DS.push(
     che({
-      so: 1, ten: 'Hàm đi lấy sắt', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoaHamMan: ['iron_run'],
-      deBai: 'Hàm iron_run(n) của màn gói cả chuyến đi lấy sắt: bật N, đi n ô, quay đầu, đi n ô về. Đi qua đệm N vẫn an toàn vì nam châm đang bật. Chương trình chỉ cần gọi iron_run(3) rồi thả. Bấm Chạy.',
-      veMaMau: 'Chương trình và hàm của màn đã viết sẵn, khoá. Mở Xưởng xem iron_run, rồi bấm Chạy.',
+      so: 1, ten: 'Hàm đi lấy sắt', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoaHamMan: ['grab_run'],
+      deBai: 'Hàm grab_run(n) của màn gói cả chuyến đi lấy sắt: bật N, đi n ô, quay đầu, đi n ô về. Đi qua đệm N vẫn an toàn vì nam châm đang bật. Chương trình chỉ cần gọi grab_run(3) rồi thả. Bấm Chạy.',
+      veMaMau: 'Chương trình và hàm của màn đã viết sẵn, khoá. Mở Xưởng xem grab_run, rồi bấm Chạy.',
       san: SAN_CHO, vatChat: CHAT_CHO, demTu: [{ x: 3, y: 0, cuc: 'N' }],
       batDau: { x: 1, y: 2, huong: 1 },
-      maMau: bai(nhieu(['iron_run(3)'], THA), { hamCuaMan: [hFetch()] }),
-      loiGiai: bai(nhieu(['iron_run(3)'], THA), { hamCuaMan: [hFetch()] }),
+      maMau: bai(nhieu(['grab_run(3)'], THA), { hamCuaMan: [H('grab_run', ['n'], T_FETCH)] }),
+      loiGiai: bai(nhieu(['grab_run(3)'], THA), { hamCuaMan: [H('grab_run', ['n'], T_FETCH)] }),
       sao: { o: 15, nhip: 8 },
-      goiY: ['n là số ô đi mỗi chiều.', 'Màn sau em tự tạo hàm iron_run của mình.']
+      goiY: ['n là số ô đi mỗi chiều.', 'Màn sau em tự tạo hàm iron_run giống vậy.']
     }),
 
     che({

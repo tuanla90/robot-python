@@ -769,10 +769,16 @@
 
   // MÙA 3 gói 4: đệm từ (bai-tu.1 trình diễn), hàm cho bãi từ (che-bai-tu.1 trình diễn; .2 iron_run(n), .4 detour(k), .7 call_iron)
   H['bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đi ngang đệm S, xe bị kéo lên hàng trên đúng tới lá cờ.');
-  H['che-bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: iron_run(3) bật N, đi qua đệm, hút sắt rồi quay về.');
+  H['che-bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: grab_run(3) bật N, đi qua đệm, hút sắt rồi quay về.');
   H['che-bai-tu.2'] = [buocTaoHam('iron_run', 'Bấm Hàm mới, đặt tên iron_run và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n(), đi n ô, u_turn(), đi n ô. Bấm Chạy.'));
   H['che-bai-tu.4'] = [buocTaoHam('detour', 'Bấm Hàm mới, đặt tên detour và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Ba lần: rẽ phải, đi k ô. Bấm Chạy.'));
   H['che-bai-tu.7'] = [buocTaoHam('call_iron', 'Bấm Hàm mới để tạo call_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait(), move(), magnet_n(), wait(). Bấm Chạy.'));
+  // MÙA 3 gói 8: đội xích và nhện (doi-xich.11 trình diễn; che-doi-xich.11 trình diễn hàm stay; .12 idle(n), .14 pass_box, .15 hop_drop(d))
+  H['doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hai robot chạy cùng nhịp, mỗi robot tới cờ của mình.');
+  H['che-doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện gọi stay(2) chờ xích qua ngã tư rồi mới đi.');
+  H['che-doi-xich.12'] = [buocTaoHam('idle', 'Bấm Hàm mới, đặt tên idle và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: for i in range(n): rồi wait(). Bấm Chạy.'));
+  H['che-doi-xich.14'] = [buocTaoHam('pass_box', 'Bấm Hàm mới để tạo pass_box().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pick(), tr_left(), drop(). Bấm Chạy.'));
+  H['che-doi-xich.15'] = [buocTaoHam('hop_drop', 'Bấm Hàm mới, đặt tên hop_drop và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pick(), jump(d), drop(). Bấm Chạy.'));
   // MÙA 3 gói 9: nam châm bụng nhện (bung-nhen.1 trình diễn; che-bung-nhen.1 trình diễn hàm lift; .2 hook, .3 unhook, .5 tote(path), .7 hook_for(p))
   H['bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện đứng trên vật sắt, magnet_n() hút nó lên dưới bụng, tới ô đích thì thả.');
   H['che-bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm lift() bật nam châm bụng nhấc vật sắt.');
