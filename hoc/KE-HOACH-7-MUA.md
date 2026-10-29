@@ -58,6 +58,15 @@ Mùa 6 "làm tuyết lăn" (user 29/10 hỏi, Claude góp ý, chưa chốt):
   `san-hoc.js` (gắp / thả / sơn theo ô dưới drone, độ cao bay), máy chấm, hình vector tay hướng xuống, màn mới + máy kiểm đường tắt.
   Chỗ hợp: **mùa 4** (drone và máy sơn cùng mùa: gói nâng cấp drone hoặc gói đội), hoặc **mùa 7** (câu đố tổ hợp). Chốt khi lập kế hoạch mùa 4.
 
+- **Đám cháy** (user 29/10, xếp sau). Mùa 2 là Xe cứu hỏa nhưng chưa có lửa. KHÔNG đổi nút bắn thành lửa: nút đổi qua lại (bắn hai lần về như cũ),
+  còn điều khiển băng chuyền, `warm()` đọc nút bật là nóng, nút bật sẵn; cửa còn mở bằng nút đè (mùa 1) và cửa nhịp. Đổi là phải sửa luật, dựng lại nhiều màn mùa 2.
+  Làm thành **yếu tố MỚI**: phun nước trúng thì lửa tắt hẳn (một chiều, không bật lại); `warm()` thấy lửa là nóng (đúng việc camera nhiệt);
+  có thể thêm cửa chống cháy chỉ mở khi mọi đám cháy trên sân đã tắt. Chỗ hợp: trùm mùa 2 "Xe cứu hỏa R1 xuất xưởng", hoặc câu đố tổ hợp mùa 7.
+- **Nút bắn là VAN HƠI** (Claude 29/10, đang bàn; chỉ đổi hình và lời, luật giữ): nhà máy cũ chạy bằng hơi nước nóng. Nút N là một van tay quay
+  có cánh hứng nước gắn trên tường; tia nước đập vào cánh làm van quay nửa vòng: mở ↔ đóng (đúng luật đổi qua lại). Van mở thì hơi nóng chảy qua,
+  nên van **nóng** (`warm()` True), băng chuyền chạy bằng hơi, cửa khí nén mở / đóng (dây nối nút ↔ cửa vẽ thành ống hơi). Lý do phải phun từ xa:
+  van đang mở nóng bỏng, không chạm tay được. Camera nhiệt nhìn van nào đang mở trước khi phun. Tránh hướng "công tắc điện" (nước với điện là bài học sai cho trẻ).
+
 ## Luật dự kiến cho các yếu tố mới (user 26/10, Claude làm rõ)
 - **Đệm từ (cơ chế mùa 3)**: ô đệm có cực N hay S, kéo hoặc đẩy **thân xe** ở ô kề (1 ô mỗi nhịp, dọc theo hàng / cột).
   Xe không bật nam châm: bị hút như sắt. Xe bật nam châm **khác cực** đệm: bị hút; **cùng cực**: bị đẩy ra xa.
