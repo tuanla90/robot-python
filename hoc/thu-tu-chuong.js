@@ -67,7 +67,8 @@
     mua: [
       { ma: 'mua-1', ten: 'Xưởng R1' },
       // `an: true` (user 27/10): mùa chưa dựng lại theo khuôn 10 gói (KE-HOACH-7-MUA.md) thì ẩn khỏi màn chọn gói; bảng Gỡ lỗi "Mở hết" vẫn hiện để thử.
-      { ma: 'mua-2', ten: 'Địa hình', ban: { gia: '49.000đ' }, an: true },
+      // Mùa 2 "Ghi nhớ" đủ 10 gói × 20 màn (29/10): hiện ở màn chọn gói; ngưỡng sao gói khai cứng ở MUA_2 (lo-trinh-hoc.js).
+      { ma: 'mua-2', ten: 'Ghi nhớ', ban: { gia: '49.000đ' } },
       { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' }, an: true },
       { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' }, an: true }
     ],
