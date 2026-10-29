@@ -270,7 +270,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     g.restore();
   }
-  /** NÚT BẮN ĐANG BẬT thì NÓNG (luật warm()): quầng cam thở bo góc quanh tấm nút + hai gợn nhiệt bay lên. Giảm chuyển động: quầng đứng yên. */
+  /** VAN HƠI (nút bắn N) ĐANG MỞ thì NÓNG (luật warm()): quầng cam thở bo góc quanh tấm nút + hai gợn nhiệt bay lên. Giảm chuyển động: quầng đứng yên. */
   function nong(g, x, y, now) {
     var px = x * T, py = y * T, th = giam() ? 0.6 : 0.55 + 0.45 * Math.sin(now / 260);
     g.save();
@@ -279,6 +279,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     boO(g, x, y, 0.5, 2.6); g.fillStyle = gr; g.fill();
     boO(g, x, y, 1.4, 2.2); g.lineWidth = 0.9; g.strokeStyle = rgba(BM.tiaCamV3Rgb, 0.35 + 0.4 * th); g.stroke();
     gonNhiet(g, px + 7, py + 4.5, 2, 5, 6, now, BM.tiaCamV4Rgb, 0.5 + 0.3 * th, 0.8);
+    g.restore();
+  }
+
+  /** VAN HƠI ĐANG MỞ (29/10): ba làn hơi trắng nhỏ bốc lên từ bánh van ô (x, y), nở dần và nhạt đi (viền mực rất mờ để thấy trên sàn trắng). Giảm chuyển động: hơi đứng yên. */
+  function hoiVan(g, x, y, now) {
+    var px = x * T, py = y * T, i, t, r, a;
+    g.save();
+    for (i = 0; i < 3; i++) {
+      t = giam() ? 0.2 + i * 0.25 : ((now / 1400) + i / 3) % 1;
+      r = 0.9 + t * 1.8; a = 0.75 * (1 - t) * Math.min(1, t * 5 + 0.2);
+      tron(g, px + 7 + Math.sin(t * 5 + i * 2) * 1.3 + (i - 1) * 1.6, py + 4 - t * 8, r);
+      g.fillStyle = rgba(BM.tiaTrangRgb, a); g.fill(); g.lineWidth = 0.35; g.strokeStyle = rgba(BM.vecVienRgb, 0.22 * a); g.stroke();
+    }
     g.restore();
   }
 
@@ -408,8 +421,30 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.restore();
   }
 
+  /** 29/10 van hơi: ỐNG HƠI van N ↔ cửa trên sàn (thay dây nối của nút bắn): đường gấp khúc p như dayNoi, ống kim loại viền mực có vạch sáng, KHỚP NỐI (đai) ở mỗi góc rẽ
+   *  và giữa mỗi đoạn dài. Van đóng: thép xám mờ (le: sân chỉ một ống, mờ hơn). Van mở (mo): ống ấm cam + vệt hơi trắng chạy từ van tới cửa (giảm chuyển động: đứng yên).
+   *  rong: bề ngang thân ống (pixel sân; nhiều ống song song thì hẹp lại cho khỏi chồng). */
+  function ongHoi(g, p, mo, le, now, rong) {
+    var w = rong || 1.8, al = mo ? 1 : le ? 0.5 : 0.7, i, j;
+    function net() { g.beginPath(); g.moveTo(p[0][0], p[0][1]); for (var i = 1; i < p.length - 1; i++) g.arcTo(p[i][0], p[i][1], p[i + 1][0], p[i + 1][1], 2); g.lineTo(p[p.length - 1][0], p[p.length - 1][1]); }
+    function dai(x, y, ngang) { var d = w * 0.9 + 0.5; g.beginPath(); if (ngang) { g.moveTo(x, y - d); g.lineTo(x, y + d); } else { g.moveTo(x - d, y); g.lineTo(x + d, y); } g.lineWidth = 1.1; g.strokeStyle = rgba(BM.vecVienRgb, 0.75 * al); g.stroke(); }
+    g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (mo) { net(); g.lineWidth = w + 2.6; g.strokeStyle = rgba(BM.vecOngHoiNongRgb, 0.18); g.stroke(); }
+    net(); g.lineWidth = w + 0.9; g.strokeStyle = rgba(BM.vecVienRgb, 0.55 * al); g.stroke();
+    net(); g.lineWidth = w; g.strokeStyle = rgba(mo ? BM.vecOngHoiNongRgb : BM.vecOngHoiRgb, mo ? 0.9 : 0.8 * al); g.stroke();
+    net(); g.lineWidth = w * 0.3; g.strokeStyle = rgba(BM.tiaTrangRgb, 0.45 * al); g.stroke();
+    for (i = 1; i < p.length; i++) {                                                   // đai khớp nối: ở góc rẽ, và giữa đoạn dài (> 1,5 ô)
+      var a = p[i - 1], b = p[i], ngang = Math.abs(b[0] - a[0]) > Math.abs(b[1] - a[1]), L = Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
+      if (i < p.length - 1) dai(b[0], b[1], !ngang);
+      if (L > 21) for (j = 1; j < Math.round(L / 14); j++) dai(a[0] + (b[0] - a[0]) * j / Math.round(L / 14), a[1] + (b[1] - a[1]) * j / Math.round(L / 14), ngang);
+    }
+    if (mo && !giam()) { g.setLineDash([1.4, 5.2]); g.lineDashOffset = -((now / 45) % 6.6); net(); g.lineWidth = w * 0.6; g.strokeStyle = rgba(BM.tiaTrangRgb, 0.9); g.stroke(); g.setLineDash([]); }
+    [p[0], p[p.length - 1]].forEach(function (q) { tron(g, q[0], q[1], w * 0.75 + 0.3); g.fillStyle = rgba(mo ? BM.vecOngHoiNongRgb : BM.vecOngHoiRgb, 0.95 * al); g.fill(); g.lineWidth = 0.7; g.strokeStyle = rgba(BM.vecVienRgb, 0.7 * al); g.stroke(); });
+    g.restore();
+  }
+
   V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep,
-    tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong,
+    tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong, hoiVan: hoiVan, ongHoi: ongHoi,
     bongVat: bongVat, toDo: toDo, bongElip: bongElip, vongHut: vongHut, vienLoi: vienLoi, ngam: ngam, vetCung: vetCung, sacLoe: sacLoe, thoSac: thoSac, bongDrone: bongDrone, thanhPin: thanhPin, theDan: theDan,
     sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach, dayNoi: dayNoi,
     PHONG_CHU: PHONG_CHU, PHONG_SO: PHONG_SO };                                    // V7c3: san-ve.js đo bề ngang chữ bằng đúng phông vẽ chữ
