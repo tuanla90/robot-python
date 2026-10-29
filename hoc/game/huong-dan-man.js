@@ -234,9 +234,10 @@
   ].concat(buocThuVeChay('Chương trình gọi được pick() rồi. Bấm Chạy.'));
 
   /* ============================================================ Chương 6 · Vòng lặp */
+  // HD2 (29/10): vong-lap.1 là màn trình diễn for (chiChay): chỉ bấm Chạy; việc đổi số dời sang vong-lap.2.
   H['vong-lap.1'] = [
-    buocDoiSo(1, 'Số trong range() là số lần lặp. Chạm số này để đổi.', 'Chọn số lần xe cần đi tới cờ.', daDoiSoLap),
-    buocChay('Bấm Chạy.')
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: vòng for chạy dòng move() sáu lần.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'range(6) là lặp sáu lần. Màn sau em tự viết vòng for và chọn số.', xong: 'bam', han: 9000, rong: 170 }
   ];
   H['vong-lap.2'] = [
     khoiTheo(['khoi:vong:for'], 'Chạm khối for: nó lặp lại những dòng thụt vào bên dưới.', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
@@ -330,6 +331,18 @@
     buocChay('Bấm Chạy: hai robot chạy cùng lúc.')
   ];
 
+  /* ============================================================ Gói 7 · Cảm biến bên (HD2: cam-bien-ben.1 trình diễn left_clear, chiChay, đứng đầu chương) */
+  H['cam-bien-ben.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tới tường, xe hỏi bên trái rồi rẽ trái.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:2', chu: 'left_clear() hỏi ô bên trái xe: trống thì True. Màn sau em dùng right_clear().', xong: 'bam', han: 9000, rong: 170 }
+  ];
+
+  /* ============================================================ Gói 4 · Nút đè (HD2: nut-de.1 trình diễn cơ chế thùng giữ cửa, chiChay) */
+  H['nut-de.1'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: carry() đặt thùng lên nút M, cửa C mở ra.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'Thùng đè lên nút M thì cửa C mở. Màn sau em tự nhặt thùng đặt lên nút.', xong: 'bam', han: 9000, rong: 170 }
+  ];
+
   /* ============================================================ Chương 9 · Hàm cho cảm biến (HD1: che-cam-bien.1 chế safe_move có if, .2 chế face_open có while not) */
   H['che-cam-bien.1'] = [
     { dich: 'dong:1', chu: 'Main đã khoá: nó gọi safe_move() ba lần, mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
@@ -376,12 +389,15 @@
   ].concat(buocThuVeChay('Chương trình gọi được grip() rồi. Bấm Chạy.'));
 
   /* ============================================================ Chương 21 · Tay xoay (làm quen): lệnh gốc mới arm_left / arm_right, thẻ Tay xoay */
+  // HD2 (29/10): tay-xoay.1 là màn trình diễn arm_left / arm_right (chiChay): chỉ bấm Chạy; tay-xoay.2 ép sửa lệnh xoay (vật bên phải).
   H['tay-xoay.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tay xoay sang trái rồi nhặt vật ở bên hông xe.', xong: 'chay', daLam: daChay },
-    khoiTheo(['khoi:arm_up', 'khoi:arm_right'], 'Nâng tay (arm_up), rồi xoay sang phải (arm_right) để đưa vật về phía trước.', 'Khối của tay nằm ở thẻ Tay xoay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { daLam: function () { return dongCo(/^\s*arm_right\(\)/) >= 0; } }),
-    khoiTheo(['khoi:arm_down', 'khoi:release'], 'Hạ tay (arm_down), rồi mở kẹp (release) để đặt vật xuống ô đích.', 'Khối của tay nằm ở thẻ Tay xoay. Bấm ◀ hoặc ▶ để sang thẻ đó.',
-      { daLam: function () { return dongCo(/^\s*release\(\)/) >= 0; } }),
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tay xoay sang trái nhặt vật rồi xoay về trước đặt.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:1', chu: 'arm_left() xoay tay sang trái, arm_right() xoay sang phải: xe không cần quay.', xong: 'bam', han: 9000, rong: 170 }
+  ];
+  H['tay-xoay.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: vật nằm bên phải mà tay xoay sang trái nên kẹp hụt.', xong: 'chay', daLam: daChay },
+    { dich: 'dong:1', chu: 'Chạm dòng arm_left() rồi đổi thành arm_right(); dòng arm_right() phía dưới đổi thành arm_left().', xong: 'chon-dong', han: 12000, rong: 180,
+      daLam: function () { return dongCo(/^\s*arm_right\(\)/) === 0; } },
     buocChay('Bấm Chạy.')
   ];
   H['tay-xoay.6'] = [
@@ -531,5 +547,5 @@
   ];
 
   window.HuongDanMan = H;
-  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2 };
+  window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2 };
 })();

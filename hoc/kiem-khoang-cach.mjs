@@ -306,6 +306,35 @@ console.log('\n== Bảng 10 màn chương Cảm biến khoảng cách (lời gi�
   kiem('bảng 10 màn: số ô 6, 5, 10, 10, 12, 10, 15, 10, 21, 16 và số nhịp (tổng) 3, 4, 8, 20, 32, 34, 70, 24, 24, 45 — đều 3 sao', kq.every((r, i) => r.sao === 3 && r.soO === OLO[i] && r.soNhip === NHIP[i]), kq.map((r) => r.soO + '/' + r.soNhip).join(' '));
 }
 
+/* ================================================================= ĐÂM LÀ THUA (HD2, 29/10: cfg.damLaThua / man.damLaThua, màn ép mùa 1) */
+console.log('\n== HD2. Đâm tường là thua (cfg.damLaThua): cờ tắt y nguyên luật cũ, cờ bật dừng ngay ở cú đâm ==');
+{
+  const SAN = ['#####', '#..F#', '#####'], BD = { x: 1, y: 1, huong: 0 };        // xe quay lên: bước đầu húc tường
+  const DAM_ROI_CHO = ['left_move()', 'right_move()', 'wait()', 'wait()', 'wait()'];
+  const tat = chay(SAN, BD, 'banh', DAM_ROI_CHO.join('\n'));
+  const nhipCua = (kq) => kq.vet.filter((e) => e.loai === 'nhip').length;
+  kiem('cờ tắt (không khai): húc tường chỉ mất nhịp, chương trình chạy tiếp hết 3 nhịp, dungSom null', !tat.thang && tat.dungSom === null && nhipCua(tat) === 3 && tat.vet.some((e) => e.loai === 'nhip' && e.suKien.some((x) => x.ma === 'dam-tuong')), J({ dungSom: tat.dungSom, nhip: nhipCua(tat) }));
+  const bat = chay(SAN, BD, 'banh', DAM_ROI_CHO.join('\n'), { damLaThua: true });
+  kiem('cờ bật: nhịp 1 húc tường → dungSom "dam-tuong", chương trình dừng ngay cuối nhịp đó (1 nhịp), không thắng', !bat.thang && bat.dungSom === 'dam-tuong' && nhipCua(bat) === 1 && bat.nhip === 1, J({ dungSom: bat.dungSom, nhip: nhipCua(bat) }));
+  const ok = chay(SAN, { x: 1, y: 1, huong: 1 }, 'banh', ['left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()'].join('\n'), { damLaThua: true });
+  kiem('cờ bật mà không đâm: thắng bình thường, dungSom null', ok.thang && ok.dungSom === null, J({ thang: ok.thang, dungSom: ok.dungSom }));
+  // qua máy chấm: màn bản sao có damLaThua
+  const goc = ManHoc.timMa('vong-lap.1');
+  const mTat = Object.assign({}, goc, { san: SAN, batDau: BD, mucTieu: 'toi-co', sao: { o: 9, nhip: 9 } });
+  const mBat = Object.assign({}, mTat, { damLaThua: true });
+  const cTat = ChamHoc.cham(mTat, { chinh: DAM_ROI_CHO }, []);
+  kiem('qua máy chấm, cờ tắt: dam-tuong + chua-toi-co như cũ, lời không nói luật, không có damLaThua', maCua(cTat).includes('dam-tuong') && maCua(cTat).includes('chua-toi-co') && !/đâm tường là thua/.test(cTat.chanDoan.find((c) => c.ma === 'dam-tuong').loi) && !cTat.chanDoan.find((c) => c.ma === 'dam-tuong').damLaThua, J(maCua(cTat)));
+  const cBat = ChamHoc.cham(mBat, { chinh: DAM_ROI_CHO }, []);
+  const dBat = cBat.chanDoan.find((c) => c.ma === 'dam-tuong');
+  kiem('qua máy chấm, cờ bật: thua 0 sao, chẩn đoán dam-tuong nói "đâm tường là thua", có damLaThua, cho trỏ dòng 1, KHÔNG có chua-toi-co; vết dừng ở 1 nhịp',
+    !cBat.thang && cBat.sao === 0 && dBat && /đâm tường là thua/.test(dBat.loi) && dBat.damLaThua === true && dBat.cho && dBat.cho.dong === 1 && !maCua(cBat).includes('chua-toi-co') && cBat.vet.filter((e) => e.loai === 'nhip').length === 1 && cBat.soNhip === 1, J({ ma: maCua(cBat), cho: dBat && dBat.cho, nhip: cBat.soNhip }));
+  const cOk = ChamHoc.cham(Object.assign({}, mBat, { batDau: { x: 1, y: 1, huong: 1 } }), { chinh: ['left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()'] }, []);
+  kiem('qua máy chấm, cờ bật mà không đâm: thắng 3 sao, không chẩn đoán', cOk.thang && cOk.sao === 3 && cOk.chanDoan.length === 0, J(maCua(cOk)));
+  const cVat = ChamHoc.cham(Object.assign({}, mBat, { san: ['#####', '#.oF#', '#####'], batDau: { x: 1, y: 1, huong: 1 } }), { chinh: ['left_move()', 'right_move()', 'wait()', 'wait()'] }, []);
+  kiem('cờ bật: vướng VẬT nằm đất cũng là đâm (vat "vat") → dừng ngay, thua', !cVat.thang && cVat.chanDoan.some((c) => c.ma === 'dam-tuong' && c.damLaThua) && cVat.soNhip === 1, J({ ma: maCua(cVat), nhip: cVat.soNhip }));
+  kiem('màn ngân hàng (không qua lộ trình) không màn nào có damLaThua: cờ chỉ gắn ở lo-trinh-hoc.js', !ManHoc.danhSach.some((m) => m.damLaThua));
+}
+
 console.log('\n---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 if (hong) process.exit(1);

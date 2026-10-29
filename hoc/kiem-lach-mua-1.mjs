@@ -13,6 +13,10 @@
      - khái niệm có mặt trong phần lời giải bị biến đổi (for, while, if, not, def = tạo hàm, goi-ham = gọi hàm của em / của màn);
      - "đang ép" = chương này là chương ĐẦU TIÊN của mùa 1 (theo lộ trình) dùng khái niệm đó, hay màn có taoHam (ép tạo hàm).
    Lách thắng mà thiếu sao, hay ở chương đã "thả tự do", chỉ ghi THÔNG TIN. CHAP_NHAN: lỗ chấp nhận có lý do (không đỏ).
+   HD2 (29/10): màn có cờ damLaThua (lo-trinh-hoc.js DAM_LA_THUA; lõi: đâm tường là dừng ngay, sân không thắng) thì tiêu chí chặt hơn: lách ĐẾM CỨNG
+   (bỏ if / while / not) phải THUA, thắng dù mấy sao ở khái niệm đang ép là LỖ (lách bỏ for / def / goi-ham không húc tường được: vẫn ép bằng sao ô như cũ). Máy dò còn kiểm: (a) lời giải chuẩn của màn có cờ không đâm tường ở sân nào; (b) cờ gắn đúng
+   tập màn ép (mọi màn ép không chiChay có cờ, màn có cờ đều là màn ép). --loi-gia-dam: chấm màn có cờ đầu tiên bằng bản bỏ cờ (lõi không dừng),
+   phải thấy LỖ (máy dò tự chứng minh).
    Màn hai robot (man.doi) bỏ qua (ghi). Chạy: node hoc/kiem-lach-mua-1.mjs [--tat-ca] [--loi-gia]
      --tat-ca: in cả dòng không lỗ; --loi-gia: gộp màn ép while đầu tiên về một sân rồi dò, phải thấy LỖ (máy dò tự chứng minh).
    Trượt (có LỖ ngoài CHAP_NHAN) thì thoát mã 1.
@@ -25,12 +29,11 @@ const Cham = require('./cham.js');
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const TAT_CA = process.argv.includes('--tat-ca');
 const LOI_GIA = process.argv.includes('--loi-gia');
+const LOI_GIA_DAM = process.argv.includes('--loi-gia-dam');
 
 /** Lỗ chấp nhận: mã màn → lý do (ghi ở báo cáo HD1). */
 const CHAP_NHAN = {
-  // gói 9 Combo (recall), màn 8: fetch_back() là hàm của màn viết tiếp, một sân theo quyết định 27/10 (bản ba sân của ngân hàng dùng biến đếm).
-  // Thân `for i in range(2): back()` thắng 3 sao trên sân này. Sửa sau khi user duyệt phương án (ba sân, hay hai kho dài ngắn khác nhau).
-  'che-cam-bien.10': 'gói 9 recall, một sân theo quyết định 27/10; chờ user chọn phương án nhiều sân'
+  // HD2 (29/10): che-cam-bien.10 đã thành hai kho dài ngắn khác nhau (lo-trinh-hoc.js), không còn lỗ chấp nhận nào.
 };
 const BANG = process.argv.includes('--bang');
 
@@ -166,7 +169,9 @@ function doDieuKien(goc, dem) {
 
 /* ------------------------------------------------------------------ chấm lách */
 function chamLach(m, bai, hamCuaEm) {
-  const r = Cham.cham(m, bai, hamCuaEm);
+  let mc = m;
+  if (LOI_GIA_DAM && m.ma === MAN_LOI_GIA_DAM) { mc = clone(m); delete mc.damLaThua; }      // lỗi giả: lõi không dừng khi đâm, máy dò vẫn tin màn có cờ
+  const r = Cham.cham(mc, bai, hamCuaEm);
   return { thang: r.thang, sao: r.sao, loi: r.chanDoan.filter((c) => c.muc === 'loi').map((c) => c.ma).slice(0, 2).join(',') };
 }
 
@@ -205,7 +210,9 @@ function boQuaCua(ten, kn) {
 const kho = new Map();
 const bang = [], loGhi = [];
 const MAN_LOI_GIA = LOI_GIA ? LOI_GIA_MAN() : null;       // tính một lần trước khi gộp sân (gộp rồi thì màn không còn nhiều sân)
+const MAN_LOI_GIA_DAM = LOI_GIA_DAM ? (ds.find((x) => x.damLaThua && !x.chinhCoDinh && [...dangEp(x)].some((k) => k === 'if' || k === 'while')) || {}).ma : null;   // màn ép if / while đầu tiên có cờ
 let soLo = 0, soLoChapNhan = 0;
+const loiCo = [];     // HD2: lỗi gắn cờ damLaThua (chuẩn đâm tường / cờ lệch tập màn ép)
 for (const m of ds) {
   const truoc = clone([...kho.values()]);
   const lg = m.loiGiai;
@@ -220,6 +227,14 @@ for (const m of ds) {
   }
   const chuan = chamLach(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [] }, hamCuaEm);
   if (!chuan.thang || chuan.sao !== 3) { bang.push({ ma: m.ma, ghi: 'lời giải chuẩn không 3 sao: ' + JSON.stringify(chuan) }); continue; }
+  // HD2: cờ đâm-là-thua đúng tập màn ép, và lời giải chuẩn của màn có cờ không đâm tường ở sân nào
+  const epThat = dangEp(m).size > 0 && !m.chiChay;
+  if (!!m.damLaThua !== epThat) loiCo.push(m.ma + (m.damLaThua ? ': có cờ damLaThua mà không phải màn ép' : ': màn ép mà chưa gắn cờ damLaThua (lo-trinh-hoc.js DAM_LA_THUA)'));
+  if (m.damLaThua) {
+    const rc = Cham.cham(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [] }, hamCuaEm);
+    const sanDam = rc.theoSan.map((s, i) => (s.chanDoan.some((c) => c.ma === 'dam-tuong') ? i + 1 : 0)).filter(Boolean);
+    if (sanDam.length) loiCo.push(m.ma + ': lời giải chuẩn đâm tường ở sân ' + sanDam.join(', ') + ' (màn có cờ damLaThua)');
+  }
   if (m.chiChay) {
     // màn trình diễn: chương trình khoá (chinhCoDinh) và bấm Chạy là thắng 3 sao, không có gì để lách
     const mau = chamLach(m, { chinh: m.maMau.chinh, hamCuaMan: m.maMau.hamCuaMan || [] }, truoc);
@@ -270,7 +285,9 @@ for (const m of ds) {
     if (!boQua.length) continue;                                     // không có gì để bỏ
     const kq = chamLach(m, l.bai, l.kho);
     const epBo = boQua.filter((x) => ep.has(x));
-    const lo = kq.thang && kq.sao === 3 && epBo.length > 0;
+    // HD2: màn có cờ đâm-là-thua thì lách ĐẾM CỨNG (bỏ if / while / not) mà THẮNG là lỗ dù mấy sao; lách bỏ for (duỗi vòng lặp) / def / goi-ham vẫn ép bằng sao ô như cũ
+    const demCung = boQua.some((x) => x === 'if' || x === 'while' || x === 'not');
+    const lo = kq.thang && (kq.sao === 3 || (!!m.damLaThua && demCung)) && epBo.length > 0;
     const dong = { ma: m.ma, ten: m.ten, lach: l.ten, boQua, ep: [...ep], thang: kq.thang, sao: kq.sao, loi: kq.loi, lo,
       code: l.bai.chinh.concat(l.kho.filter((h) => hamMoi.some((x) => x.h.ten === h.ten)).flatMap((h) => ['def ' + h.ten + '():'].concat(h.than.map((d) => '    ' + d))), l.bai.hamCuaMan.flatMap((h) => ['def ' + h.ten + '():  # hàm của màn'].concat(h.than.map((d) => '    ' + d)))) };
     bang.push(dong);
@@ -309,12 +326,12 @@ if (BANG) {
     return kq;
   };
   console.log('# Bảng hướng dẫn mùa 1 (sinh bởi node hoc/kiem-lach-mua-1.mjs --bang)\n');
-  console.log('Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện trong lộ trình mùa 1 tại màn đó. "HD": có hướng dẫn từng bước (huong-dan-man.js). "trình diễn": chiChay. "ép": màn đang ép khái niệm (máy dò lách kiểm).\n');
+  console.log('Cột "mới": khái niệm / lệnh / thao tác lần đầu xuất hiện trong lộ trình mùa 1 tại màn đó. "HD": có hướng dẫn từng bước (huong-dan-man.js). "trình diễn": chiChay. "ép": màn đang ép khái niệm (máy dò lách kiểm). "đâm là thua": cờ damLaThua (HD2).\n');
   let c = '';
   for (const m of ds) {
-    if (m.chuong !== c) { c = m.chuong; console.log('\n## ' + c + '\n\n| số | mã | tên | mới | HD | trình diễn | ép |\n|---|---|---|---|---|---|---|'); }
+    if (m.chuong !== c) { c = m.chuong; console.log('\n## ' + c + '\n\n| số | mã | tên | mới | HD | trình diễn | ép | đâm là thua |\n|---|---|---|---|---|---|---|---|'); }
     const moi = moiCua(m), ep = Array.isArray(m.doi) ? [] : [...dangEp(m)];
-    console.log('| ' + [m.so, m.ma, m.ten, moi.join(', '), HDM[m.ma] ? 'có' : '', m.chiChay ? 'có' : '', ep.join(', ')].join(' | ') + ' |');
+    console.log('| ' + [m.so, m.ma, m.ten, moi.join(', '), HDM[m.ma] ? 'có' : '', m.chiChay ? 'có' : '', ep.join(', '), m.damLaThua ? 'có' : ''].join(' | ') + ' |');
   }
   process.exit(0);
 }
@@ -331,6 +348,7 @@ for (const d of bang) {
   const lo = d.lo ? (CHAP_NHAN[d.ma] ? 'LỖ (chấp nhận: ' + CHAP_NHAN[d.ma] + ')' : 'LỖ') : '';
   if (TAT_CA || d.lo || (d.thang && d.boQua.some((x) => d.ep.includes(x)))) console.log([d.ma + ' ' + d.ten, d.lach, d.boQua.join(','), d.ep.join(','), kq, lo].join(' | '));
 }
+if (loiCo.length) { soLo += loiCo.length; console.log('\nCờ đâm-là-thua (damLaThua) sai:\n  ' + loiCo.join('\n  ')); }
 if (loGhi.length) {
   console.log('\nLời giải lách thắng 3 sao ở màn đang ép:');
   for (const d of loGhi) console.log('  ' + d.ma + ' [' + d.lach + ']: ' + d.code.join(' / '));
@@ -342,6 +360,12 @@ if (LOI_GIA) {
   const ma = MAN_LOI_GIA;
   const co = loGhi.some((d) => d.ma === ma);
   console.log('Lỗi giả (gộp ' + ma + ' về một sân): ' + (co ? 'máy dò BẮT ĐƯỢC (ĐẠT)' : 'máy dò KHÔNG bắt được (HỎNG)'));
+  process.exit(co ? 0 : 1);
+}
+if (LOI_GIA_DAM) {
+  const ma = MAN_LOI_GIA_DAM;
+  const co = loGhi.some((d) => d.ma === ma);
+  console.log('Lỗi giả (bỏ cờ damLaThua của ' + ma + ' khi chấm, lõi không dừng khi đâm): ' + (co ? 'máy dò BẮT ĐƯỢC (ĐẠT)' : 'máy dò KHÔNG bắt được (HỎNG)'));
   process.exit(co ? 0 : 1);
 }
 console.log((soLo ? 'HỎNG ' : 'ĐẠT ') + soLo + ' lỗ ngoài danh sách chấp nhận · ' + soLoChapNhan + ' lỗ chấp nhận · ' + bang.filter((d) => !d.ghi).length + ' phép dò trên ' + ds.length + ' màn mùa 1.');

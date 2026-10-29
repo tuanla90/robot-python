@@ -370,7 +370,7 @@ console.log('\n== 7. Giao diện: part tay xoay, VeRobot, đèn khớp xoay, kha
   kiem('san-ve.js: tay xoay (laTayKep) vẽ vật trong kẹp, xe mờ có nấc khớp (bongMo.xoay), hoạt cảnh xoay khớp giữa hai nấc trong apTay', /function laTayKep/.test(nguon.sv) && /VeRobot\.vatXoay/.test(nguon.sv) && /GOC_XOAY/.test(nguon.sv) && /xoay: b\.xoay === 'trai'/.test(nguon.sv) && /doiXoay/.test(nguon.sv));
   kiem('game/choi.html nạp ve-vector-tay-xoay.js sau ve-vector-tay-kep.js và trước ve-robot.js; tệp có trên đĩa; nạp man-tay-xoay.js và man-che-tay-xoay.js sau các chương trước',
     nguon.html.indexOf('ve-vector-tay-xoay.js') > nguon.html.indexOf('ve-vector-tay-kep.js') && nguon.html.indexOf('ve-vector-tay-xoay.js') < nguon.html.indexOf('ve-robot.js') && fs.existsSync(path.join(day, 'game', 've-vector-tay-xoay.js')) && nguon.html.indexOf('man-tay-xoay.js') > 0 && nguon.html.indexOf('man-che-tay-xoay.js') > nguon.html.indexOf('man-tay-xoay.js'));
-  kiem('hướng dẫn sáng nút cho 21.1 (chạy thử, khối arm_up / arm_right, khối arm_down / release, chạy) và 21.6 (tạo hàm clear_left rồi ghép thân hàm)', /H\['tay-xoay\.1'\]/.test(nguon.hd) && /khoi:arm_up', 'khoi:arm_right'/.test(nguon.hd) && /H\['tay-xoay\.6'\]/.test(nguon.hd) && /buocTaoHam\('clear_left'/.test(nguon.hd));
+  kiem('hướng dẫn sáng nút cho 21.1 (HD2: màn trình diễn chiChay, chỉ bấm Chạy), 21.2 (chạy thử rồi sửa lệnh xoay) và 21.6 (tạo hàm clear_left rồi ghép thân hàm)', /H\['tay-xoay\.1'\]/.test(nguon.hd) && /H\['tay-xoay\.2'\]/.test(nguon.hd) && /H\['tay-xoay\.6'\]/.test(nguon.hd) && /buocTaoHam\('clear_left'/.test(nguon.hd));
 }
 
 console.log('\n---------------------------------------------\nĐẠT ' + dat + ' · HỎNG ' + hong);

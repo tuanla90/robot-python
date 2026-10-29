@@ -341,6 +341,45 @@
     sao: { o: 5, nhip: 6 },
     goiY: ['Xe dừng khi ô trước mặt là tường: lúc đó front_clear() trả về False.', 'Hành lang dài bao nhiêu cũng chỉ cần hai dòng này.']
   });
+  // HD2 (29/10, đề xuất 3c của HD1): vong-lap.1 là màn TRÌNH DIỄN for (chiChay, range(6) thắng ngay khi bấm Chạy); việc tự đổi số dời sang vong-lap.2
+  // (hướng dẫn vong-lap.2 đã có bước đổi số). Ngân hàng man-vong-lap.js giữ bản range(2) cho máy kiểm cũ.
+  sua('vong-lap.1', {
+    ten: 'Lặp lại', chiChay: true, chinhCoDinh: true,
+    deBai: 'Lá cờ nằm thẳng phía trước xe, cách sáu ô. Vòng for lặp lại các dòng thụt vào bên dưới nó: range(6) là lặp sáu lần. Bấm Chạy xem xe đi tới cờ chỉ với một dòng move().',
+    veMaMau: 'Chương trình đã viết sẵn và khoá: move() chỉ viết một lần nhưng chạy sáu lần. Bấm Chạy.',
+    maMau: bai(lap(6, ['move()'])),
+    loiGiai: bai(lap(6, ['move()'])),
+    goiY: ['Số trong range() là số lần lặp.', 'Không có vòng for thì phải viết move() sáu dòng.']
+  });
+  // HD2 việc 4 (29/10): màn ĐẦU của gói 4 / 6 thành màn TRÌNH DIỄN (chiChay) cho cái mới của gói, màn kế tiếp ép dùng nó:
+  // gói 4 nut-de.1: cơ chế NÚT ĐÈ / THÙNG GIỮ CỬA (bấm Chạy thấy carry() đặt thùng lên M, cửa C mở); nut-de.2 phải tự đặt thùng lên nút (cửa đóng là cách duy nhất).
+  // gói 6 tay-xoay.1: lệnh arm_left / arm_right (bấm Chạy thấy tay xoay sang hông nhặt vật rồi xoay về trước đặt); tay-xoay.2 mã mẫu sai bên, phải sửa arm_left → arm_right.
+  // gói 7 cam-bien-ben.1 (đưa lên đầu chương, xem MUA_1): lệnh left_clear (bấm Chạy thấy xe tới tường, hỏi bên trái trống thì rẽ trái); che-cam-bien.4 kế tiếp chế to_gap() với right_clear.
+  // Gói 5 (bánh lùi) màn đầu là màn CHẾ HÀM che-xe.4 (back): xem báo cáo HD2. Gói 8 (hai robot): máy chấm đội chưa khoá theo chiChay.
+  sua('cam-bien-ben.1', {
+    ten: 'Lối bên trái', chiChay: true, chinhCoDinh: true,
+    deBai: 'Cảm biến bên hỏi ô cạnh xe theo hướng xe đang quay: left_clear() là True khi ô bên trái trống. Xe đi tới tường; nếu bên trái trống thì rẽ trái và đi tiếp tới cờ. Bấm Chạy xem xe rẽ đúng lối.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: go_wall() tới tường, if left_clear() hỏi bên trái, trống thì turn_left() rồi go_wall() tới cờ.',
+    maMau: bai(['go_wall()', 'if left_clear():', '    turn_left()', '    go_wall()']),
+    loiGiai: bai(['go_wall()', 'if left_clear():', '    turn_left()', '    go_wall()']),
+    goiY: ['left_clear() và right_clear() hỏi hai ô bên hông, không tốn nhịp.', 'Màn sau em chế to_gap(): đi tới khi bên phải trống.']
+  });
+  sua('nut-de.1', {
+    ten: 'Thùng giữ cửa', chiChay: true, chinhCoDinh: true,
+    deBai: 'Cửa C đang đóng. Nút đè M nằm bên trái thùng gỗ: có thùng nằm trên M thì cửa C mở. Chương trình gọi carry() để đặt thùng lên M rồi đi qua cửa tới cờ. Bấm Chạy xem cửa mở thế nào.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: carry() nhặt thùng, tiến một ô, đặt thùng sang trái lên nút M; thùng đè nút thì cửa C mở.',
+    maMau: bai(['carry()', 'move()', 'move()', 'move()']),
+    loiGiai: bai(['carry()', 'move()', 'move()', 'move()']),
+    goiY: ['Nút M chỉ mở cửa khi có thùng nằm đè lên.', 'Màn sau em tự nhặt thùng và đặt lên nút.']
+  });
+  sua('tay-xoay.1', {
+    ten: 'Xoay sang trái', chiChay: true, chinhCoDinh: true,
+    deBai: 'Một vật nằm ngay bên trái xe, ô đích nằm ngay trước mặt xe. Tay xoay nhặt được vật ở bên hông mà xe không cần quay: arm_left() xoay tay sang trái, arm_right() xoay sang phải. Bấm Chạy xem tay đưa vật tới ô đích.',
+    veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: tay xoay sang trái, hạ xuống kẹp vật, nâng lên, xoay về trước rồi hạ xuống thả vào ô đích.',
+    maMau: bai(['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
+    loiGiai: bai(['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
+    goiY: ['Xoay tay chỉ được khi tay đang nâng (arm_up).', 'Màn sau vật nằm bên phải: em tự đổi lệnh xoay.']
+  });
   // Gói 5: 8 màn mới (man-banh-lui-them.js, mã banh-lui.1–4 và che-banh-lui.1–4). Hai chương chỉ có ở lộ trình nên chèn tạm vào cuối thuTu
   // cho ManHoc.them nhận (như nut-de); thuTu mùa 1 được dựng lại theo MUA_1 bên dưới. `nguon` giữ bản gốc như mọi màn khác.
   TT.thuTu.push('banh-lui', 'che-banh-lui');
@@ -388,7 +427,8 @@
     { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 150,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
-      chuong: [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
+      // HD2 việc 4 (gói 7): cam-bien-ben.1 (trình diễn left_clear, chiChay) lên đầu chương, rồi che-cam-bien.4 chế to_gap() với right_clear (ép, ba sân).
+      chuong: [['cam-bien-ben', ['cam-bien-ben.1', 'che-cam-bien.4'].concat(day('cam-bien-ben', [2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
     { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 210,
       chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
     { ma: 'combo', ten: 'Combo', loai: 'thu-thach', sao: 240, hinh: 'combo',
@@ -487,17 +527,22 @@
   Object.keys(KIEU_TONG_HOP).forEach(function (ma) { get(ma).kieuBai = KIEU_TONG_HOP[ma]; });
   // Gói 9 Combo, chương che-combo màn 8: che-cam-bien.10 "Kho hàng" cần fetch_back() của che-cam-bien.9 (biến đếm, đã sang mùa 2). Không đưa bản có biến thành hàm
   // của màn khóa như robot-hoan-thien.10 (người chơi vẫn thấy biến): viết lại fetch_back() KHÔNG BIẾN thành hàm của màn người chơi viết tiếp — đi tới hàng, nhặt,
-  // LÙI tới khi bên phải trống (đúng chỗ rẽ: trong nhánh hai bên là tường), đặt. Cảm biến bên thay biến đếm. Một sân (sân giữa) như mọi màn không phải trùm;
-  // không còn là trùm nên bỏ huy hiệu (huy hiệu che-cam-bien là của trùm che-cam-bien.16). Chương trình chính gọi 2 hàm của em (to_gap, turn_right): giới hạn 2.
+  // LÙI tới khi bên phải trống (đúng chỗ rẽ: trong nhánh hai bên là tường), đặt. Cảm biến bên thay biến đếm.
+  // Không còn là trùm nên bỏ huy hiệu (huy hiệu che-cam-bien là của trùm che-cam-bien.16). Chương trình chính gọi 2 hàm của em (to_gap, turn_right): giới hạn 2.
+  // HD2 (29/10, phương án 3b-B của HD1): HAI KHO dài ngắn khác nhau để thân fetch_back() đếm cứng không thắng cả hai. Kho 1 = sân giữa của ngân hàng (nhánh 2 ô);
+  // kho 2 mới: nhánh 1 ô và hốc trái nằm ĐỐI DIỆN cửa, nên lùi quá một ô là xe lọt vào hốc rồi đặt hàng lệch (húc tường chỉ mất nhịp, không tự chặn đếm thừa).
+  // Số nhịp tính theo sân dài nhất (mặc định) nên nhịp của màn không đổi (phanh đường cong kiem-combo-mua-1).
   (function () {
     var m = get('che-cam-bien.10');
     motSan(m, 1);
+    m.san = [m.san, ['##.####', '##.####', '#...o##', '##.####', '##.####', '##.####', '##.####']];
+    m.bongMo = [m.bongMo, { x: 2, y: 2, huong: 1, vat: [{ x: 3, y: 2 }] }];
     var FB = ['go_wall()', 'pick()', 'while not right_clear():', '    back()', 'drop()'];
     var CHINH = ['to_gap()', 'turn_right()', 'fetch_back()'];
     function lam(chinh, than) { return bai(chinh, [ham('fetch_back', than)]); }
     Object.assign(m, {
       kieuBai: 'do-duong', gioiHanHam: 2,
-      deBai: 'Hàng nằm cuối một nhánh bên phải của kho. Đi lên hành lang tới cửa bên phải (hốc bên trái chỉ là mồi), vào nhánh, lấy hàng rồi đặt nó ngay trong cửa nhánh, giống bóng mờ. ' +
+      deBai: 'Hai kho, nhánh dài ngắn khác nhau. Hàng nằm cuối một nhánh bên phải của kho. Đi lên hành lang tới cửa bên phải (hốc bên trái chỉ là mồi), vào nhánh, lấy hàng rồi đặt nó ngay trong cửa nhánh, giống bóng mờ. ' +
         'fetch_back() là hàm của màn: đi tới hàng và nhặt đã có; viết tiếp phần lùi về chỗ rẽ (bên phải trống) rồi đặt. Chương trình chỉ được gọi 2 hàm của em.',
       veMaMau: 'Viết chương trình chính (tới cửa, rẽ, gọi fetch_back()), rồi viết tiếp thân fetch_back() trong Xưởng hàm.',
       maMau: lam([], ['go_wall()', 'pick()']),
@@ -506,14 +551,29 @@
       loiSai: [
         { moTa: 'Quên rẽ phải vào nhánh: fetch_back() chạy dọc hành lang', baiLam: lam(['to_gap()', 'fetch_back()'], FB), phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Dùng thêm go_wall() trong chương trình chính: vượt quá 2 hàm của em', baiLam: lam(['to_gap()', 'turn_right()', 'go_wall()', 'fetch_back()'], FB), phaiCoMa: ['qua-gioi-han-ham'] },
-        { moTa: 'Lùi khi bên phải trống (thiếu chữ not): xe không lùi, đặt thùng về chỗ cũ', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'while right_clear():', '    back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Lùi khi bên phải trống (thiếu chữ not): xe không lùi, đặt thùng về chỗ cũ', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'while right_clear():', '    back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng hai bước lùi: đúng kho 1, ở kho 2 xe lùi lọt vào hốc trái rồi đặt hàng lệch', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'for i in range(2):', '    back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng một bước lùi: đúng kho 2, ở kho 1 chưa về tới cửa', baiLam: lam(CHINH, ['go_wall()', 'pick()', 'back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] }
       ],
       hamCuaEmCan: ['turn_right', 'to_gap', 'go_wall', 'pick', 'back', 'drop', 'move'],
-      goiY: ['Trong nhánh, bên phải xe là tường; về tới chỗ rẽ thì bên phải là hành lang trống.', 'while not right_clear(): back() rồi drop().']
+      goiY: ['Trong nhánh, bên phải xe là tường; về tới chỗ rẽ thì bên phải là hành lang trống.', 'while not right_clear(): back() rồi drop().', 'Hai kho nhánh dài khác nhau: đếm số bước lùi thì chỉ đúng một kho.']
     });
     delete m.congThucKhac; delete m.huyHieu;
     m.phienBanNoiDung = 2;
   })();
+  // HD2 (29/10, user: ở màn ép, húc tường thì THUA): cờ damLaThua (san-hoc.js cfg.damLaThua, cham.js) cho đúng các màn ÉP theo định nghĩa của máy dò
+  // hoc/kiem-lach-mua-1.mjs (khái niệm cấu trúc mới ở màn ≤ 4 của chương đầu tiên dùng nó; thân hàm người chơi viết phải dùng lại được; taoHam), trừ màn
+  // trình diễn chiChay (chương trình khoá). Lời giải chuẩn của mọi màn này không đâm tường ở sân nào (máy dò kiểm). Mùa 2 không gắn (phiên mùa 2 tự quyết).
+  // Lời giải lách (đếm cứng thay if / while) thường húc tường ở sân ngắn: nay là THUA chứ không còn 1–2 sao. Giao diện: nhãn trên sân + câu trong đề bài (man-choi.js).
+  var DAM_LA_THUA = ['xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'xuong-ham.4', 'xuong-ham.5', 'xuong-ham.7', 'xuong-ham.9', 'xuong-ham.10',
+    'tay-gap.5', 'tay-gap.6', 'tay-gap.10', 'vong-lap.2', 'vong-lap.3', 'vong-lap.4', 'vong-lap.6', 'che-lap.5', 'vong-lap.10',
+    'khoang-cach.12', 'khoang-cach.13', 'khoang-cach.5', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.7', 'che-cam-bien.13', 'che-cam-bien.15',
+    'che-xe.1', 'che-xe.2', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6', 'che-xe.4', 'che-xe.6', 'che-tay.5', 'che-lap.7', 'che-lap.9',
+    'tay-xoay.6', 'tay-xoay.10', 'che-tay-xoay.1', 'che-tay-xoay.2', 'che-tay-xoay.4', 'che-tay-xoay.5', 'che-tay-xoay.6',
+    'che-cam-bien.4', 'cam-bien-ben.5', 'cam-bien-ben.7', 'me-cung.6', 'me-cung.9', 'combo.3', 'combo.7', 'combo.8', 'che-combo.3', 'che-combo.7', 'che-cam-bien.10', 'che-combo.9',
+    'robot-hoan-thien.11', 'trum-mua-1.3', 'trum-mua-1.6', 'trum-mua-1.9', 'trum-mua-1.10'];
+  DAM_LA_THUA.forEach(function (ma) { get(ma).damLaThua = true; });
+  M.manDamLaThua = DAM_LA_THUA.slice();
   // Hàm của màn side_pick / side_drop gọi các hàm của em này mà ngân hàng chưa khai (khóa đúng màn khi kho thiếu, mo-goi.js luật 3 / 3b).
   get('che-tay-xoay.9').hamCuaEmCan = get('che-tay-xoay.9').hamCuaEmCan.concat(['turn_left', 'turn_right', 'pick', 'drop']);
   // Game bỏ bậc thang: xuong-ham.6 dùng ô S như tường (xe hai bánh không leo), đổi thành tường thường. Sửa thẳng sân (không qua sua()) để giữ lỗi mẫu của bài.

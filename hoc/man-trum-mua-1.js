@@ -207,7 +207,7 @@
       loiGiai: { chinh: C_3, hamCuaMan: [H('seek', SEEK)] },
       loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_3, hamCuaMan: [H('seek', ['# lùi khi kệ phải còn trống'].concat(SEEK))] } },
       loiSai: [
-        { moTa: 'Chưa sửa: xe tiến vào tường, bên phải vẫn trống nên lặp mãi', baiLam: { chinh: C_3, hamCuaMan: [H('seek', SEEK_LOI)] }, phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Chưa sửa: xe tiến vào tường (màn ép: đâm là thua, dừng ngay ở cú đâm)', baiLam: { chinh: C_3, hamCuaMan: [H('seek', SEEK_LOI)] }, phaiCoMa: ['dam-tuong'] },
         { moTa: 'Đếm cứng một bước lùi: thùng thứ hai còn xa hơn', baiLam: { chinh: C_3, hamCuaMan: [H('seek', ['back()'])] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Thêm chữ not: kệ phải đang trống nên xe không lùi', baiLam: { chinh: C_3, hamCuaMan: [H('seek', WHILE('not right_clear()', ['back()']))] }, phaiCoMa: ['chua-dua-vat'] }
       ],
@@ -261,7 +261,7 @@
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6, hamCuaMan: [H('stash', ['# lùi tới hốc trống'].concat(STASH))] } },
       loiSai: [
         { moTa: 'Không lùi, đặt sang trái ngay: thùng thứ hai đặt vào tường', baiLam: { chinh: C_6, hamCuaMan: [H('stash', ['drop_left()'])] }, phaiCoMa: ['tha-bi-chan'] },
-        { moTa: 'Lùi khi bên trái trống (thiếu chữ not): lần đầu lùi mãi vào tường', baiLam: { chinh: C_6, hamCuaMan: [H('stash', nhieu(WHILE('left_clear()', ['back()']), ['drop_left()']))] }, phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Lùi khi bên trái trống (thiếu chữ not): lần đầu lùi vào tường (màn ép: đâm là thua, dừng ngay)', baiLam: { chinh: C_6, hamCuaMan: [H('stash', nhieu(WHILE('left_clear()', ['back()']), ['drop_left()']))] }, phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Bên trái là tường hay hốc đã có thùng thì left_clear() trả False: lùi tiếp.', 'while not left_clear(): back(), rồi drop_left().']
     }),
@@ -330,7 +330,7 @@
       loiGiai: { chinh: L_10, hamCuaMan: HM_10 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# lùi tìm, mở cửa, dọn lối'].concat(L_10), hamCuaMan: HM_10 } },
       loiSai: [
-        { moTa: 'find() tiến thay vì lùi: cửa trước mặt đóng nên xe đứng yên', baiLam: { chinh: L_10, hamCuaMan: [H('find', FOR(3, ['if left_clear():', '    if right_clear():', '        move()'])), H('open_gate', DOI_KE)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'find() tiến thay vì lùi: cửa trước mặt đóng, xe húc cửa (màn ép: đâm là thua, dừng ngay)', baiLam: { chinh: L_10, hamCuaMan: [H('find', FOR(3, ['if left_clear():', '    if right_clear():', '        move()'])), H('open_gate', DOI_KE)] }, phaiCoMa: ['dam-tuong'] },
         { moTa: 'find() chỉ hỏi bên trái: kho có thùng bên phải thì lùi quá', baiLam: { chinh: L_10, hamCuaMan: [H('find', FOR(3, ['if left_clear():', '    back()'])), H('open_gate', DOI_KE)] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Đếm cứng theo kho đầu: lùi hai ô', baiLam: { chinh: L_10, hamCuaMan: [H('find', FOR(2, ['back()'])), H('open_gate', DOI_KE)] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Quên dọn thùng chắn sau cửa', baiLam: { chinh: ['find()', 'open_gate()', 'go_wall()'], hamCuaMan: HM_10 }, phaiCoMa: ['lech-bong-mo'] }

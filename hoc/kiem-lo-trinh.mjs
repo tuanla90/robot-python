@@ -41,7 +41,8 @@ kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mù
 // cam-bien-ben.10 (ba sân) là trùm cũ của Cảm biến hai bên, nay đứng thứ 9 chương Tổng hợp trước trùm mùa.
 // HD1 (29/10): màn ÉP khối mới có hai sân dài ngắn khác nhau để đếm cứng không đủ sao (khoang-cach.12 ép if, khoang-cach.13 ép while).
 // Màn CHẾ HÀM có while / if lấy lại bản nhiều sân của ngân hàng (che-cam-bien.1, .2, .4) hay thêm sân (me-cung.6, cam-bien-ben.7): thân hàm đếm cứng không qua.
-const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4', 'cam-bien-ben.7', 'me-cung.6'];
+const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4', 'cam-bien-ben.7', 'me-cung.6',
+  'che-cam-bien.10'];      // HD2: hai kho dài ngắn khác nhau (fetch_back đếm cứng không thắng cả hai)
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -60,7 +61,7 @@ kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến'
   assert.equal(get('khoang-cach.7'), null, 'khoang-cach.7 đã cất khỏi lộ trình');
   assert.equal(get('khoang-cach.4'), null, 'khoang-cach.4 đã cất (HD1)');
   assert.equal(get('khoang-cach.9'), null, 'khoang-cach.9 đã cất (HD1)');
-  for (const ma of ['khoang-cach.1', 'khoang-cach.2']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
+  for (const ma of ['khoang-cach.1', 'khoang-cach.2', 'vong-lap.1', 'nut-de.1', 'tay-xoay.1', 'cam-bien-ben.1']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
   assert.ok(get('cam-bien-ben.1').deBai.includes('left_clear'));
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'bien-the');
@@ -369,6 +370,7 @@ if (LOI_GIA_2) {
 if (hong2) { console.log('Mùa 2: HỎNG ' + hong2 + ' mục.'); process.exit(1); }
 
 // 26/10: chương cam-bien-ben = che-cam-bien.4 (chế to_gap) + cam-bien-ben 1–9, đều một sân; trùm ba sân cũ cam-bien-ben.10 sang chương Tổng hợp.
+// HD2 (29/10): cam-bien-ben.1 (trình diễn left_clear, chiChay) đứng đầu chương, che-cam-bien.4 thứ hai.
 kiem('gói cảm biến hai bên: mười màn khác nhau, một sân; trùm cũ ba sân', () => {
   for (const c of ['cam-bien-ben']) {
     const ds = M.danhSach.filter(m => m.chuong === c);
@@ -491,7 +493,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   for (const g of browser.MoGoi.dsMua()[1].goi) { assert.equal(g.saoCan, Math.floor(browser.MoGoi.TI_LE_SAO * tr / 5) * 5, 'mùa 2 ' + g.ma); tr += g.saoToiDa; }
   const ds = browser.MoGoi.dsMua()[0].goi;
   assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
-  assert.equal(ds[6].man[0].ma, 'che-cam-bien.4');
+  assert.equal(ds[6].man[0].ma, 'cam-bien-ben.1');      // HD2: màn trình diễn left_clear đứng đầu gói 7
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
   assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 90);
 });

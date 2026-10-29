@@ -247,7 +247,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var dung = KhungCode.soODung(k);
     S.dung = dung;
     E.n.textContent = m.id; E.t.textContent = m.ten;
-    SanVe.datCanhBao(E.ffr, m.canhBao);                                                // nhãn ⚠ trên sân ("Dây bánh trái đấu ngược"); màn không có thì ẩn
+    SanVe.datCanhBao(E.ffr, [m.canhBao, m.damLaThua ? t('choi.damLaThua') : null].filter(Boolean).join(' · ') || null);   // nhãn ⚠ trên sân ("Dây bánh trái đấu ngược", HD2 "Đâm tường là thua"); màn không có thì ẩn
     DenBoPhan.nap(manXe());                                                                  // đèn theo bộ phận cạnh đồng hồ NHỊP: chỉ các bộ phận robot của màn có (den-bo-phan.js)
     E.host.querySelector('.plaque .d').style.display = '';
     sao3(Luu.saoTot(m.ma));
@@ -427,7 +427,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Đề bài = mục tiêu (luôn đúng). Câu nói về code mẫu (veMaMau) chỉ hiện khi bài làm còn là code mẫu. */
   function hienDeBai() {
     var m = S.man;
-    bong({ kieu: 'de', tieuDe: m.id + ' · ' + m.ten, chu: m.deBai, phu: m.veMaMau && trungMaMau() ? m.veMaMau : null });
+    bong({ kieu: 'de', tieuDe: m.id + ' · ' + m.ten, chu: m.deBai + (m.damLaThua ? ' ' + t('choi.damLaThuaDe') : ''), phu: m.veMaMau && trungMaMau() ? m.veMaMau : null });   // HD2: luật đâm là thua nói trong đề bài
   }
   /** Menu ☰: về màn chọn / làm lại từ đầu (nạp lại code mẫu, bỏ bản nháp; không đụng kho hàm của em và sao). */
   function moMenu() {
