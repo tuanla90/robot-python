@@ -18,7 +18,147 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  var DS = [];
+  // 29/10 phiên Mùa 3. Gói 6 "Đảo cực": cái mới là magnet_s() (cực S). Khác cực thì hút (vật nam châm hút tới 3 ô), cùng cực thì đẩy (trượt tối đa 3 ô,
+  // dừng trước vật cản); sắt bị cả hai cực hút; đang dính vật nam châm mà đổi sang cùng cực thì vật bị bắn ra (luật: man-nam-cham.js đầu tệp).
+  // Chương dao-cuc (thứ tự MUA_3): 1 (trình diễn) · 2 · nam-cham.3 · 3 · nam-cham.2 · 4 · 5 · 6 · 7 · 8 (trùm).
+  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
+  var GOC = BANH.concat(['magnet_n', 'magnet_s', 'magnet_off', 'front_clear', 'left_clear', 'right_clear', 'front_metal']);
+  var HN = ['magnet_n()', 'wait()'], HS = ['magnet_s()', 'wait()'], THA = ['magnet_off()', 'wait()'];
+  function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
+  function LAP(n, than) { return ['for i in range(' + n + '):'].concat((Array.isArray(than) ? than : [than]).map(function (s) { return '    ' + s; })); }
+  function bai(chinh, them) { return Object.assign({ chinh: chinh.slice() }, them || {}); }
+  function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
+  function man(m) {
+    m.chuong = m.chuong || 'dao-cuc'; m.cauTruc = ['for', 'if', 'while']; m.vaHoac = true;
+    m.loaiRobot = 'banh';
+    m.robot = { than: 'hai-banh', tay: 'nam-cham', camBien: [{ ma: 'khoang-cach', o: 'hong' }, { ma: 'tu', o: 'hong' }] };
+    m.hamGoc = m.hamGoc || GOC;
+    m.mucTieu = m.mucTieu || 'dua-vat'; if (m.mucTieu === 'dua-vat') m.vatCan = m.vatCan || 'tu';
+    m.nhipTheoLoiGiai = true; m.moXuong = true; m.camHamCuaEm = false;
+    m.khung = m.khung || { chinh: 12, moiHam: 10 }; m.loiSai = m.loiSai || [];
+    m.hamCuaEmCan = m.hamCuaEmCan || ['move', 'turn_right', 'turn_left', 'u_turn'];
+    return ManHoc.chuanHoa(m);
+  }
+
+  var DS = [
+    man({
+      so: 1, ten: 'Hai cực của nam châm', hang: 'lam-quen', chiChay: true, chinhCoDinh: true,
+      deBai: 'magnet_s() bật cực S. Chữ trên vật nam châm là cực quay về phía xe: KHÁC cực thì hút, CÙNG cực thì đẩy. Bấm Chạy: cực S hút vật chữ N về rồi thả, sau đó đẩy vật chữ S trượt vào ô đích.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy.',
+      san: ['..o..', '..D..', '...oD'], vatChat: ['..N..', '.....', '...S.'],
+      batDau: { x: 2, y: 2, huong: 0 },
+      maMau: bai(nhieu(HS, THA, ['turn_right()'], HS)),
+      loiGiai: bai(nhieu(HS, THA, ['turn_right()'], HS)),
+      sao: { o: 9, nhip: 4 },
+      goiY: ['N và S khác nhau thì hút; giống nhau thì đẩy.', 'Vật sắt thì cực nào cũng hút.']
+    }),
+
+    man({
+      so: 2, ten: 'Kéo vật chữ N', hang: 'lam-quen',
+      deBai: 'Vật nam châm chữ N cách xe 3 ô (vật nam châm hút được xa hơn sắt). Bật cực khác chữ N để kéo nó về, chở tới ô đích rồi thả.',
+      veMaMau: 'Chương trình có sẵn bật cực N: cùng cực nên vật bị đẩy đi. Chạy thử rồi sửa.',
+      san: ['......', '...oD.', '......'], vatChat: ['......', '...N..', '......'],
+      batDau: { x: 0, y: 1, huong: 1 },
+      maMau: bai(nhieu(HN, LAP(3, 'move()'), THA)),
+      loiGiai: bai(nhieu(HS, LAP(3, 'move()'), THA)),
+      sao: { o: 9, nhip: 5 },
+      loiSai: [
+        { moTa: 'Bật cực N: cùng cực với vật nên vật bị đẩy ra xa', baiLam: bai(nhieu(HN, LAP(3, 'move()'), THA)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Vật ghi chữ N thì bật cực S.', 'Kéo về rồi tiến ba ô, ô đích ngay trước mũi xe.']
+    }),
+
+    man({
+      so: 3, ten: 'Kéo vật chữ S', hang: 'luyen',
+      deBai: 'Vật nam châm chữ S cách xe 3 ô phía trước, ô đích ở bên phải xe. Kéo vật về bằng cực khác chữ S, rẽ phải rồi thả.',
+      veMaMau: 'Chương trình có sẵn bật cực S. Chạy thử rồi sửa.',
+      san: ['.....', '..o..', '.....', '.....', '...D.'], vatChat: ['.....', '..S..', '.....', '.....', '.....'],
+      batDau: { x: 2, y: 4, huong: 0 },
+      maMau: bai(nhieu(HS, ['turn_right()'], THA)),
+      loiGiai: bai(nhieu(HN, ['turn_right()'], THA)),
+      sao: { o: 7, nhip: 3 },
+      loiSai: [
+        { moTa: 'Bật cực S: cùng cực nên vật bị đẩy ra xa', baiLam: bai(nhieu(HS, ['turn_right()'], THA)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Vật chữ S thì bật cực N để hút.', 'Vật dính ở mũi xe đi theo khi xe rẽ.']
+    }),
+
+    man({
+      so: 4, ten: 'Đẩy vật chữ S', hang: 'luyen',
+      deBai: 'Vật chữ S nằm cạnh lối, ô đích ở sát bức tường phía xa. Đứng ngay bên trái vật, quay mặt về phía nó rồi bật cực trùng chữ S: vật trượt thẳng, dừng sát tường đúng ô đích.',
+      veMaMau: 'Chương trình có sẵn đã tới đúng chỗ. Viết tiếp.',
+      san: ['......', '......', '.o.D#.', '......', '......'], vatChat: ['......', '......', '.S....', '......', '......'],
+      batDau: { x: 0, y: 4, huong: 0 },
+      maMau: bai(['move()', 'move()', 'turn_right()']),
+      loiGiai: bai(nhieu(['move()', 'move()', 'turn_right()'], HS)),
+      sao: { o: 10, nhip: 4 },
+      loiSai: [
+        { moTa: 'Bật cực N: khác cực nên vật bị hút về mũi xe', baiLam: bai(nhieu(['move()', 'move()', 'turn_right()'], HN)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Cùng chữ thì đẩy: vật S, cực S.', 'Vật trượt tới khi gặp vật cản rồi dừng.']
+    }),
+
+    man({
+      so: 5, ten: 'Một cực, hai việc', hang: 'luyen',
+      deBai: 'Trước mặt xe có hai vật nam châm xếp hàng: gần là vật chữ N, xa là vật chữ S. Chỉ dùng cực S: kéo vật N về, rẽ phải thả xuống ô đích; quay lại rồi đẩy vật S trượt vào ô đích sát tường.',
+      veMaMau: 'Chương trình có sẵn đã kéo và thả vật N. Viết tiếp phần đẩy vật S.',
+      san: ['.......', '.......', '..oo.D#', 'D......'], vatChat: ['.......', '.......', '..NS...', '.......'],
+      batDau: { x: 0, y: 2, huong: 1 },
+      maMau: bai(nhieu(HS, ['turn_right()'], THA)),
+      loiGiai: bai(nhieu(HS, ['turn_right()'], THA, ['turn_left()'], HS)),
+      sao: { o: 12, nhip: 5 },
+      loiSai: [
+        { moTa: 'Đổi sang cực N để đẩy: khác chữ S nên vật S bị hút về', baiLam: bai(nhieu(HS, ['turn_right()'], THA, ['turn_left()'], HN)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Cực S hút vật N (khác cực) và đẩy vật S (cùng cực).', 'Thả xong rẽ trái để mũi xe quay lại hàng vật.']
+    }),
+
+    man({
+      so: 6, ten: 'Đổi cực giữa chừng', hang: 'bien-the',
+      deBai: 'Hai vật nam châm đều ghi chữ N. Vật gần phải về ô đích bên phải xe, vật xa phải trượt vào ô đích sát tường. Kéo thì dùng cực khác, đẩy thì dùng cực trùng: phải đổi cực giữa chừng.',
+      veMaMau: 'Chương trình có sẵn đã kéo và thả vật đầu. Viết tiếp.',
+      san: ['.......', '.......', '..oo.D#', 'D......'], vatChat: ['.......', '.......', '..NN...', '.......'],
+      batDau: { x: 0, y: 2, huong: 1 },
+      maMau: bai(nhieu(HS, ['turn_right()'], THA)),
+      loiGiai: bai(nhieu(HS, ['turn_right()'], THA, ['turn_left()'], HN)),
+      sao: { o: 12, nhip: 5 },
+      loiSai: [
+        { moTa: 'Giữ cực S: vật N thứ hai bị hút về chứ không bị đẩy', baiLam: bai(nhieu(HS, ['turn_right()'], THA, ['turn_left()'], HS)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Vật thứ hai cũng chữ N: muốn đẩy thì bật cực N.', 'Kéo: cực khác. Đẩy: cực trùng.']
+    }),
+
+    man({
+      so: 7, ten: 'Bắn sang ngang', hang: 'bien-the',
+      deBai: 'Vật chữ N nằm phía trước, ô đích lại ở bên phải, xa ba ô. Kéo vật về mũi xe, rẽ phải, rồi đổi sang cực trùng chữ: vật đang dính bị bắn ra và trượt tới sát tường.',
+      veMaMau: 'Chương trình có sẵn kéo vật về rồi rẽ. Viết tiếp.',
+      san: ['o.....', '......', '....D#'], vatChat: ['N.....', '......', '......'],
+      batDau: { x: 0, y: 2, huong: 0 },
+      maMau: bai(nhieu(HS, ['turn_right()'])),
+      loiGiai: bai(nhieu(HS, ['turn_right()'], HN)),
+      sao: { o: 7, nhip: 3 },
+      loiSai: [
+        { moTa: 'Thả bằng magnet_off(): vật rơi ngay trước mũi xe, chưa tới đích', baiLam: bai(nhieu(HS, ['turn_right()'], THA)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Đang dính vật chữ N mà bật cực N thì vật bị bắn ra.', 'magnet_off() chỉ thả vật xuống ô sát mũi, không bắn.']
+    }),
+
+    man({
+      so: 8, ten: 'Kho hai cực', hang: 'trum', khung: { chinh: 18, moiHam: 10 },
+      deBai: 'Kho có ba vật quanh xe: vật chữ N phía trước, vật chữ S phía sau, vật sắt bên trái. Vật N phải bị bắn sang phải tới ô đích sát tường, vật S bị đẩy xuống ô đích ở mép dưới, vật sắt về ô đích ngay bên phải xe. Chọn cực cho đúng từng việc.',
+      veMaMau: 'Chương trình có sẵn mới kéo vật N về. Viết tiếp.',
+      san: ['.......', '..o....', '.......', 'o..D.D#', '..o....', '.......', '..D....'],
+      vatChat: ['.......', '..N....', '.......', 's......', '..S....', '.......', '.......'],
+      batDau: { x: 2, y: 3, huong: 0 },
+      maMau: bai(HS),
+      loiGiai: bai(nhieu(HS, ['turn_right()'], HN, THA, ['turn_right()'], HS, ['turn_right()'], HN, ['u_turn()'], THA)),
+      sao: { o: 21, nhip: 10 },
+      loiSai: [
+        { moTa: 'Đẩy vật S bằng cực N: khác cực nên vật S bị hút về', baiLam: bai(nhieu(HS, ['turn_right()'], HN, THA, ['turn_right()'], HN, ['turn_right()'], HN, ['u_turn()'], THA)), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Vật N: kéo bằng cực S, rẽ phải, bắn bằng cực N. Vật S: đẩy bằng cực S. Sắt: cực nào cũng hút.', 'Làm từng vật một: N, rồi S, rồi sắt.']
+    })
+  ];
 
   ManHoc.manDaoCuc = DS;
   if (laNode) module.exports = ManHoc;
