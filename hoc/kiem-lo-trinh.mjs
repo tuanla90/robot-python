@@ -49,6 +49,8 @@ kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mù
 const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4', 'cam-bien-ben.7', 'me-cung.6',
   'che-cam-bien.10'];      // HD2: hai kho dài ngắn khác nhau (fetch_back đếm cứng không thắng cả hai)
 NHIEU_SAN_KHONG_TRUM.push('che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9');      // gói T mùa 2: ba màn ép biến đếm (chương bien-xich) lấy lại ba sân của ngân hàng
+// mùa 4 gói 4 Phố màu (30/10): màn đọc camera bốn hướng có hai sân khác màu để chương trình viết cứng không qua (như HD1)
+NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'pho-mau.6', 'pho-mau.7', 'pho-mau.8', 'pho-mau.9');
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -739,7 +741,7 @@ const manBang4 = (c, coSan) => {
 const goi4Bang = BANG_MUA_4.map(([ma, , ds]) => [ma, ds.map(([c, coSan]) => [c, manBang4(c, coSan)]).filter(x => x[1].length)]).filter(x => x[1].length);
 // Part mùa 1–4 (bảng chuẩn KE-HOACH-7-MUA.md): mùa 4 thêm drone, máy sơn, camera trước / cảm biến màu / camera bụng drone, pin.
 const PART_4 = { than: ['hai-banh', 'xich', 'nhen', 'drone'], tay: ['kep', 'xoay', 'hoi', 'nam-cham', 'son'],
-  camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu', 'tu', 'mau', 'camera', 'camera-bay', 'pin'] };
+  camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu', 'tu', 'mau', 'camera', 'camera-bay', 'camera-4', 'pin'] };      // camera-4: camera bốn hướng (P1 mùa 4)
 // Lệnh của part ngoài mùa 4 (omni, máy ném, bánh gai, loa, âm thanh): không được gọi, kể cả qua hàm của em; không có trên khay.
 const CAM_4 = ['slide_left', 'slide_right', 'aim', 'throw', 'load', 'beat', 'note', 'listen', 'spike', 'retract'];
 const goi4 = () => goiMua('mua-4');
