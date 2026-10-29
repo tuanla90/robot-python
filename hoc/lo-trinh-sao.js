@@ -173,6 +173,14 @@
     "o": 16,
     "nhip": 70
   },
+  "hai-robot.1": {
+    "o": 7,
+    "nhip": 4
+  },
+  "hai-robot.2": {
+    "o": 19,
+    "nhip": 4
+  },
   "hai-robot.4": {
     "o": 30,
     "nhip": 12
