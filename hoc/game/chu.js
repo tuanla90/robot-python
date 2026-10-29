@@ -548,7 +548,7 @@
       'gt.3.td': 'Gom sao',
       'gt.3.chu': 'Tới cờ là qua màn. Code gọn, R1 chạy ít nhịp thì được đủ 3 sao.',
       'gt.4.td': 'Mở bộ phận mới',
-      'gt.4.chu': 'Gom sao để tìm lại tay gắp, cảm biến, bánh xích, drone… Mỗi món lại mở thêm lệnh Python mới.',
+      'gt.4.chu': 'Gom sao để em tìm lại tay kẹp, cảm biến, bánh xích, drone… Mỗi món lại mở thêm lệnh Python mới.',
 
       /* ---- vào màn mà hàm khóa bị sửa hỏng (man-choi.js hoiLayLaiHam) */
       'hong.tieuDe': 'Lấy lại hàm đúng?',

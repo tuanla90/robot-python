@@ -28,7 +28,7 @@
 
   var tenNhom = {
     'xe': 'Xe hai bánh',
-    'tay': 'Tay gắp',
+    'tay': 'Tay kẹp',
     'lap': 'Vòng lặp',
     'cam-bien': 'Cảm biến khoảng cách',
     'tham-so': 'Hàm có tham số',
