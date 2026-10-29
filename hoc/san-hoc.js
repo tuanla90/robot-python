@@ -1127,7 +1127,13 @@
     }
     // ---- ĐỆM TỪ (mùa 3, bản thử; cfg.demTu = [{ x, y, cuc: 'N' | 'S' }], màn nhiều sân: mảng song song với san như noi / nutBat). Ô đệm ghi '.' trên sân, là KHỐI
     //      (lyDoChan trả 'dem-tu'). Sau hành động của robot trong nhịp (cùng chỗ băng chuyền), đệm trong TẦM (cùng hàng / cột, cách <= TAM_DEM ô, ô giữa không có khối chặn)
-    //      dời robot 1 ô: robot KHÔNG bật nam châm hay bật KHÁC cực đệm → HÚT về phía đệm (dừng ở ô sát đệm); bật CÙNG cực → ĐẨY ra xa. Kể cả nhện, kể cả vừa nhảy; drone bay không bị.
+    //      dời robot 1 ô: robot KHÔNG bật nam châm hay bật KHÁC cực đệm → HÚT về phía đệm (dừng ở ô sát đệm); bật CÙNG cực → ĐẨY ra xa.
+    //      MIỄN (user 29/10 "cho tôi nhảy và bay không bị hút, chiều không cao hơn"): robot ĐANG TRÊN KHÔNG thì đệm không với tới:
+    //        - DRONE: mọi lúc (bay), kể cả đứng lơ lửng wait(); drone bay qua ô đệm được (lyDoChan không coi đệm là khối với drone).
+    //        - NHỆN trong NHỊP NHẢY: nhịp thứ hai của bước có chân vừa duỗi từ lúc đang co, tức nhịp ghi 'nhay' (bật qua một ô, kể cả bay qua hố rồi đáp) hay
+    //          'nhay-hut' (bật lên rồi rơi lại ô cũ): nhịp đó đệm KHÔNG hút / đẩy. Nhịp chuẩn bị (nhịp thứ nhất, chân bật duỗi, nhện còn ở ô cũ) và mọi nhịp đi bộ
+    //          thường thì nhện bị đệm như xe (nhện không nam châm bị hút như sắt; nhện có nam châm bụng bật thì theo cực như xe).
+    //      Mọi thân dưới đất khác (hai bánh, xích, omni) luôn bị.
     //      Hai đệm cùng tác động: đệm gần hơn thắng; bằng khoảng thì chỉ dời khi mọi đệm đó cùng đẩy về một phía, ngược nhau thì đứng im ('dem-can'). Ô tới là hố thì rơi (phaE).
     //      Bị chặn (tường, cửa đóng, thùng, vật, rào, bậc thang, đồng đội…) thì đứng im ('dem-chan', thông tin). Thùng / vật nằm đất không bị đệm tác động ở bản thử.
     var demTus = [];
@@ -1821,6 +1827,7 @@
        *  Đệm gần nhất thắng; bằng khoảng mà ngược chiều thì đứng im ('dem-can'). Hút khi đã sát đệm: không dời. Dời 1 ô: 'dem-hut' / 'dem-day' { nhip, tu, den, dem }; ô tới bị chặn: 'dem-chan'. */
       function demTuKeo() {
         if (!demTus.length || laDrone) return;
+        if (sk.some(function (e) { return e.ma === 'nhay' || e.ma === 'nhay-hut'; })) return;       // nhện đang trên không (nhịp nhảy): đệm không với tới (user 29/10)
         var ung = [];
         demTus.forEach(function (d) {
           var dx = d.x - rb.x, dy = d.y - rb.y;

@@ -102,13 +102,26 @@ console.log('A. Lõi đệm từ');
   // 11 nhện bị hút (không có nam châm)
   const kq11 = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'], mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'go_right()\ngo_right()\ngo_right()\n');
   kiem('nhện (không nam châm) cũng bị hút như sắt: cuối (3,1)', vt(kq11) === '3,1' && maNhip(kq11, 4).includes('dem-hut'), vt(kq11));
-  // 11b nhện nhảy đáp xuống ô trong tầm cũng bị hút ngay nhịp đó (không ngoại lệ nhảy)
-  const kq11b = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'], mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'crouch()\nwait()\nstand()\ngo_right()\n');
+  // 11b MIỄN NHẢY (user 29/10): nhện nhảy đáp xuống ô trong tầm thì nhịp đó KHÔNG bị hút; nhịp sau đứng yên (wait) mới bị hút
+  const HG_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'];
+  const kq11b = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: HG_NHEN, mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'crouch()\nwait()\nstand()\ngo_right()\n');
   const nh = nhip(kq11b).find((n) => n.suKien.some((s) => s.ma === 'nhay'));
-  kiem('nhện nhảy đáp (2,2) rồi bị hút lên (2,1) cùng nhịp (không ngoại lệ nhảy)', !!nh && nh.suKien.some((s) => s.ma === 'dem-hut') && vt(kq11b) === '2,1', vt(kq11b) + ' ' + J(nhip(kq11b).map((n) => n.suKien.map((s) => s.ma))));
+  kiem('nhện nhảy đáp (2,2): nhịp nhảy KHÔNG có dem-hut, cuối vẫn (2,2) (miễn đệm khi nhảy)', !!nh && !nh.suKien.some((s) => s.ma === 'dem-hut') && vt(kq11b) === (LOI_GIA ? '2,1' : '2,2'), vt(kq11b) + ' ' + J(nhip(kq11b).map((n) => n.suKien.map((s) => s.ma))));
+  const kq11c = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: HG_NHEN, mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'crouch()\nwait()\nstand()\ngo_right()\nwait()\n');
+  kiem('nhện nhảy đáp (2,2) rồi wait(): nhịp wait mới bị hút lên (2,1)', vt(kq11c) === '2,1' && maNhip(kq11c, 4).includes('dem-hut') && !maNhip(kq11c, 3).includes('dem-hut'), vt(kq11c) + ' ' + J(nhip(kq11c).map((n) => n.suKien.map((s) => s.ma))));
+  // 11d nhện nhảy đáp (3,2) đúng cột đệm (3,0), cách 2 ô: nhịp nhảy không bị hút lên (3,1) (luật cũ có); đi bộ tới cùng ô thì bị hút (11)
+  const kq11d = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: HG_NHEN, mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 3, y: 0, cuc: 'S' }], batDau: { x: 1, y: 2, huong: 1 } }, 'crouch()\nwait()\nstand()\ngo_right()\n');
+  kiem('nhện nhảy từ (1,2) qua (2,2) đáp (3,2) ngay dưới đệm (3,0): nhịp nhảy không bị dời, không dem-hut / dem-day', vt(kq11d) === '3,2' && !nhip(kq11d).some((n) => n.suKien.some((s) => s.ma === 'nhay') && n.suKien.some((s) => s.ma === 'dem-hut' || s.ma === 'dem-day')), vt(kq11d) + ' ' + J(nhip(kq11d).map((n) => n.suKien.map((s) => s.ma))));
+  // 11e nhện nhảy hụt (bật lên rơi lại ô cũ) cũng là trên không: nhịp đó không có sự kiện đệm nào (kể cả dem-giu). Đệm (3,2) cùng hàng: nhịp crouch nhện bị hút
+  //     (1,2) → (2,2) sát đệm; nhảy phải thì ô giữa là đệm (khối) → nhay-hut; nhịp đó không dem-giu (luật cũ có).
+  const kq11e = SanHoc.chay({ loaiRobot: 'nhen', hamGoc: HG_NHEN, mucTieu: 'toi-co', san: ['.....', '.....', '.....', '.....'], demTu: [{ x: 3, y: 2, cuc: 'S' }], batDau: { x: 1, y: 2, huong: 1 } }, 'crouch()\nwait()\nstand()\ngo_right()\n');
+  const nhe = nhip(kq11e).find((n) => n.suKien.some((s) => s.ma === 'nhay-hut'));
+  kiem('nhện bị hút sát đệm (2,2) rồi nhảy hụt (ô giữa là đệm): nhịp nhay-hut không có sự kiện dem-*, cuối (2,2)', !!nhe && !nhe.suKien.some((s) => /^dem-/.test(s.ma)) && vt(kq11e) === '2,2' && maNhip(kq11e, 1).includes('dem-hut'), vt(kq11e) + ' ' + J(nhip(kq11e).map((n) => n.suKien.map((s) => s.ma))));
   // 12 drone không bị
   const kq12 = SanHoc.chay({ loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'], mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 0, y: 2, huong: 1 } }, 'go_right()\ngo_right()\ngo_right()\n');
   kiem('drone bay: không bị đệm kéo, bay qua được ô đệm', vt(kq12) === '3,2' && !SanHoc.lyDoChan({ rong: 5, cao: 4, o: SAN4, demTu: { '2,0': { x: 2, y: 0, cuc: 'S' } } }, 'drone', 2, 0), vt(kq12));
+  const kq12b = SanHoc.chay({ loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'], mucTieu: 'toi-co', san: SAN4, demTu: [{ x: 2, y: 0, cuc: 'S' }], batDau: { x: 2, y: 2, huong: 1 } }, 'wait()\nwait()\n');
+  kiem('drone lơ lửng wait() cùng cột đệm, cách 2 ô: không bị dời, không dem-*', vt(kq12b) === '2,2' && !nhip(kq12b).some((n) => n.suKien.some((s) => /^dem-/.test(s.ma))), vt(kq12b) + ' ' + J(nhip(kq12b).map((n) => n.suKien.map((s) => s.ma))));
   // 13 cảm biến: front_clear() trước ô đệm trả False
   const kq13 = chay({ san: SAN4, demTu: [{ x: 2, y: 2, cuc: 'S' }], batDau: { x: 1, y: 2, huong: 1 }, hamGoc: HG.concat(['front_clear']) }, 'if front_clear():\n    ' + MV.replace(/\n/g, '\n    ').trim() + '\n');
   kiem('cảm biến: front_clear() trước ô đệm trả False (đệm là khối), xe không đi', vt(kq13) === '1,2', vt(kq13) + ' ' + J(kq13.loi));

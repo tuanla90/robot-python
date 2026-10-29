@@ -881,6 +881,7 @@
         (nhayHut.length > 1 ? ' Chuyện này xảy ra ' + nhayHut.length + ' lần.' : '') + ' Cú nhảy bay qua đúng MỘT ô, và ô đáp phải là sàn trống: đếm lại số ô trước khi nhảy.', { nhip: nh1.nhip, soLan: nhayHut.length, tu: nh1.tu, den: nh1.den, vat: nh1.vat, cho: cho(mnh) });
     }
     // ĐỆM TỪ (mùa 3, luật ở san-hoc.js phần ĐỆM TỪ): robot bị đệm kéo / đẩy vào hố → lời riêng (thay lời roi-ho "nhện phải nhảy"); chưa thắng mà bị đệm dời → thông tin nhắc chiều hút / đẩy.
+    // Miễn đệm (user 29/10): drone bay (mọi lúc) và nhện trong nhịp nhảy ('nhay' / 'nhay-hut') không bị đệm dời, nên không bao giờ có dem-hut / dem-day ở nhịp đó; nhện đi bộ thì bị.
     var demDoi = res.suKien.filter(function (e) { return e.ma === 'dem-hut' || e.ma === 'dem-day'; });
     var roiHo = res.suKien.filter(function (e) { return e.ma === 'roi-ho'; });
     var demRoi = roiHo.length ? demDoi.filter(function (e) { return e.nhip === roiHo[0].nhip && e.den.x === roiHo[0].o.x && e.den.y === roiHo[0].o.y; })[0] : null;
