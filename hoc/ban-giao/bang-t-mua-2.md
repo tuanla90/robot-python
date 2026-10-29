@@ -97,8 +97,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | bang-chuyen.1 | Lên băng |  |  |  |  |  |  |
-| 2 | bang-chuyen.2 | Ngược dòng |  |  |  |  |  |  |
+| 1 | bang-chuyen.1 | Lên băng |  | có | có |  |  |  |
+| 2 | bang-chuyen.2 | Ngược dòng |  | có |  |  |  |  |
 | 3 | bang-chuyen.6 | Bậc thang băng |  |  |  |  |  |  |
 | 4 | bang-chuyen.5 | Chở qua băng |  |  |  |  |  |  |
 | 5 | bang-chuyen.7 | Sửa số lần lặp |  |  |  |  |  |  |
@@ -127,8 +127,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | day-thung.1 | Thùng trượt một ô | xích đẩy thùng |  |  |  |  |  |
-| 2 | day-thung.2 | Đẩy cả đoạn đường |  |  |  |  |  |  |
+| 1 | day-thung.1 | Thùng trượt một ô | xích đẩy thùng | có | có |  |  |  |
+| 2 | day-thung.2 | Đẩy cả đoạn đường |  | có |  |  |  |  |
 | 3 | day-thung.3 | Quay xích rồi đẩy |  |  |  |  |  |  |
 | 4 | day-thung.4 | Đố: lùi có kéo được không? |  |  |  |  |  |  |
 | 5 | day-thung.5 | Ô sau thùng là tường |  |  |  |  |  |  |
@@ -142,7 +142,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | che-day-thung.1 | Hàm push(n) |  |  |  | def, distance, tham-so |  |  |
+| 1 | che-day-thung.1 | Hàm push(n) |  | có |  | def, distance, tham-so |  |  |
 | 2 | che-day-thung.2 | push trong vòng lặp |  |  |  |  |  |  |
 | 3 | che-day-thung.3 | Hàm go_around() |  |  |  | def |  |  |
 | 4 | che-day-thung.4 | Sửa hàm round_left() |  |  |  |  |  |  |
@@ -157,8 +157,8 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | luc-ban.1 | Bắn nhanh | lực bắn fast / charge, chọn lực bắn |  |  | luc |  |  |
-| 2 | luc-ban.2 | Nút ở xa |  |  |  | luc |  |  |
+| 1 | luc-ban.1 | Bắn nhanh | lực bắn fast / charge, chọn lực bắn | có | có | luc |  |  |
+| 2 | luc-ban.2 | Nút ở xa |  | có |  | luc |  |  |
 | 3 | luc-ban.3 | Nhanh hay tụ |  |  |  | luc |  |  |
 | 4 | luc-ban.4 | Hàm fire(p) |  |  |  | def, tham-so |  |  |
 | 5 | luc-ban.5 | Bắn nhanh ra sau |  |  |  | def, tham-so |  |  |
@@ -172,7 +172,7 @@ Cột "mới": khái niệm / lệnh / part / cơ chế lần đầu xuất hi�
 
 | số | mã | tên | mới | HD | trình diễn | ép | lỗ | đâm là thua |
 |---|---|---|---|---|---|---|---|---|
-| 1 | che-luc-ban.1 | Hàm aim_fire() |  |  |  | def, if, distance, tham-so |  |  |
+| 1 | che-luc-ban.1 | Hàm aim_fire() |  | có |  | def, if, distance, tham-so |  |  |
 | 2 | che-luc-ban.2 | Hàm aim_left() |  |  |  | def |  |  |
 | 3 | che-luc-ban.3 | Sửa hàm quick_aim() |  |  |  | if, distance, tham-so |  |  |
 | 4 | che-luc-ban.4 | Hàm aim_right() trong vòng lặp |  |  |  | def |  |  |

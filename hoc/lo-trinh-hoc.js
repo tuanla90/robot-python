@@ -1414,6 +1414,27 @@
       'Xe có mắt hồng ngoại ở mũi: distance() cho biết phía trước còn bao nhiêu ô trống tới tường, mỗi ô là 10 cm. Đường có ba đoạn dài ngắn khác nhau: ở đầu mỗi đoạn, chương trình đọc số vào biến d rồi đi đúng d ô, rẽ phải và làm lại. Bấm Chạy xem tia đo và xe tới cờ.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: d = distance() đọc số ô trống, for j in range(d) đi đúng chừng ấy ô.',
       ['distance() đếm số ô trống phía trước mũi xe. Xe đứng sát tường thì distance() là 0.', 'Màn sau em đặt thẳng distance() vào range().']);
+    // Gói 4 chương bang-chuyen: cái mới là BĂNG CHUYỀN (sàn đẩy xe một ô mỗi hai nhịp). bang-chuyen.1 trình diễn: bốn nhịp đứng yên mà xe trôi hai ô, rồi ba bước tới cờ
+    // (lời giải đổi, đo lại sao; ngân hàng man-bang-chuyen.js giữ bản cũ cho kiem-bang-chuyen); bang-chuyen.2 ép đi ngược băng (H). Chương che-sung-hoi.1 chế jet_back (H đã có).
+    sua('bang-chuyen.1', {
+      ten: 'Lên băng', chiChay: true, chinhCoDinh: true,
+      deBai: 'Ô mũi tên là băng chuyền: xe đứng trên băng thì cứ hai nhịp lại bị đẩy đi một ô theo chiều mũi tên, dù không bước. Chương trình đứng yên bốn nhịp rồi mới bước ba lần. Bấm Chạy xem băng đưa xe tới cờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: bốn wait() mà xe trôi hai ô, rồi ba move() tới cờ.',
+      maMau: bai(['for i in range(4):', '    wait()', 'for i in range(3):', '    move()']), loiGiai: bai(['for i in range(4):', '    wait()', 'for i in range(3):', '    move()']),
+      goiY: ['Băng chuyền đẩy xe một ô sau mỗi hai nhịp đứng trên nó.', 'Màn sau băng chạy ngược chiều xe: mỗi hai nhịp bị kéo lùi một ô.']
+    });
+    // Gói 5 chương day-thung: cái mới là XÍCH ĐẨY THÙNG NẶNG (tiến vào thùng thì thùng trượt một ô). day-thung.1 trình diễn (hai move(), thùng vào đích); day-thung.2 ép đẩy cả đoạn
+    // (mã mẫu lặp 3, người chơi đổi số: H). che-day-thung.1 chế push(n) (H).
+    trinhDien('day-thung.1', null,
+      'Xích của xe đã được nâng cấp: tiến vào thùng nặng thì thùng trượt đi một ô, xe tiến theo. Thùng cách ô đích khung vàng hai ô. Bấm Chạy xem hai bước tiến đẩy thùng vào đích.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: mỗi move() vào thùng là thùng dời một ô.',
+      ['Xe lùi thì không kéo được thùng: chỉ tiến mới đẩy.', 'Màn sau thùng ở xa hơn: em tự lặp move() đủ số lần.']);
+    // Gói 6 chương luc-ban: cái mới là CHỌN LỰC BẮN shoot("fast") / shoot("charge"). luc-ban.1 trình diễn bắn nhanh (nút gần, thùng sau lưng nằm yên);
+    // luc-ban.2 ép: mã mẫu bắn nhanh không tới nút cách ba ô, người chơi đổi chữ "fast" thành "charge" (H). che-luc-ban.1 chế aim_fire() (H).
+    trinhDien('luc-ban.1', null,
+      'Súng hơi giờ chọn được lực: shoot("charge") bắn tụ như mọi khi (bóng bay xa, xe bị giật lùi); shoot("fast") bắn nhanh (bóng chỉ bay hai ô, xe đứng yên). Nút cách xe hai ô, thùng nằm ngay sau lưng. Bấm Chạy xem bắn nhanh mở cửa mà thùng không bị xô.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: chữ "fast" trong ngoặc là lực bắn nhanh.',
+      ['Bắn tụ thì cú giật hất thùng sau lưng trượt đi.', 'Màn sau nút ở xa: em tự chọn lực.']);
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

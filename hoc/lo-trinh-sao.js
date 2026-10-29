@@ -293,6 +293,10 @@
     "o": 18,
     "nhip": 19
   },
+  "bang-chuyen.1": {
+    "o": 7,
+    "nhip": 7
+  },
   "bang-chuyen.2": {
     "o": 5,
     "nhip": 8

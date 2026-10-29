@@ -592,6 +592,44 @@
     khoiTheo(['khoi:em:move'], 'Rồi chạm move(): nó tự thụt vào, nằm trong while.', CHU_THE_XE,
       { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('go_to_wall'); return /while/.test(c) && /move/.test(c); } })
   ].concat(buocThuVeChay('Ba đoạn dài ngắn khác nhau, cùng một go_to_wall(). Bấm Chạy.'));
+  // Gói 4: băng chuyền (bang-chuyen.1 trình diễn, bang-chuyen.2 đi ngược băng; che-sung-hoi.1 H đã có)
+  H['bang-chuyen.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: bốn nhịp đứng yên mà băng vẫn đưa xe đi hai ô, rồi ba bước tới cờ.', 2,
+    'wait() trên băng: xe không bước mà vẫn trôi một ô mỗi hai nhịp. Màn sau băng chạy ngược chiều xe.');
+  H['bang-chuyen.2'] = [
+    khoiTheo(['khoi:vong:for'], 'Băng kéo xe lùi một ô mỗi hai nhịp. Chạm khối for, rồi move() vào trong.', CHU_THE_LOGIC,
+      { daLam: function () { return dongCo(/^\s*for\b/) >= 0 && dongCo(/^\s+move\(\)/) >= 0; } }),
+    buocChay('Chạy thử xem xe tới đâu, rồi đổi số lần lặp cho đủ.')
+  ];
+  // Gói 5: xích đẩy thùng nặng (day-thung.1 trình diễn, day-thung.2 đổi số lần lặp, che-day-thung.1 chế push(n))
+  H['day-thung.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xích tiến vào thùng nặng thì thùng trượt đi một ô.', 1,
+    'move() của xích đẩy được thùng nặng: mỗi bước tiến, thùng dời một ô. Màn sau em tự đẩy cả đoạn đường.');
+  H['day-thung.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: lặp ba lần thì thùng mới đi nửa đường.', xong: 'chay', daLam: daChay },
+    buocDoiSo(1, 'Thùng còn cách đích mấy ô thì lặp thêm bấy nhiêu: chạm số trong range.', 'Chọn số lần lặp mới.',
+      function () { var i = dongFor(1); return i >= 0 && !/range\(\s*3\s*\)/.test(dsChinh()[i]); }),
+    buocChay('Bấm Chạy.')
+  ];
+  H['che-day-thung.1'] = [
+    { dich: 'dong:1', chu: 'Main đã khoá: nó gọi push(1), push(2), push(1), mà em chưa chế push(n).', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('push', 'Bấm Hàm mới để chế push(n) với tham số n.', CHU_TAO),
+    buocThanHam('push', ['.p-pal .pal'], 'Ghép thân hàm: forward với số là distance() + n: tới sát thùng rồi đẩy thêm n ô.', 1, 'tren')
+  ].concat(buocThuVeChay('Ba thùng xa gần khác nhau, cùng một push(n). Bấm Chạy.'));
+  // Gói 6: chọn lực bắn (luc-ban.1 trình diễn bắn nhanh, luc-ban.2 đổi "fast" thành "charge", che-luc-ban.1 chế aim_fire())
+  H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: shoot("fast") bắn nhanh, bóng bay hai ô trúng nút, xe đứng yên nên thùng không bị xô.', 1,
+    'Chữ trong ngoặc là lực: "fast" bắn nhanh không giật, "charge" bắn tụ bay xa. Màn sau em tự chọn lực.');
+  H['luc-ban.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bắn nhanh chỉ bay hai ô, nút cách ba ô nên bóng rơi giữa đường.', xong: 'chay', daLam: daChay },
+    { phu: true, huong: 'tren', rong: 180, han: 0,
+      dich: function () { return thay('nut:chon-chuoi') ? 'nut:chon-chuoi' : 'so:1'; },
+      chu: function () { return thay('nut:chon-chuoi') ? 'Chọn "charge": bắn tụ bay xa tới nút.' : 'Chạm chữ "fast" trên dòng shoot để đổi lực.'; },
+      daLam: function () { return dongCo(/"charge"/) >= 0; } },
+    buocChay('Cửa mở rồi thì rẽ trái, đi hai ô tới cờ. Bấm Chạy.')
+  ];
+  H['che-luc-ban.1'] = [
+    { dich: 'dong:1', chu: 'Main đã khoá: nó gọi aim_fire() hai lần, mà em chưa chế hàm đó.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('aim_fire', 'Bấm Hàm mới để chế aim_fire().', CHU_TAO),
+    buocThanHam('aim_fire', ['.p-pal .pal'], 'Ghép: if distance() > 1 thì fire("charge"), else thì fire("fast").', 1, 'tren')
+  ].concat(buocThuVeChay('Một nút xa, một nút gần: cùng một aim_fire(). Bấm Chạy.'));
   H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xe đi tới tường, mỗi bước n tăng một, rồi lùi đúng n bước về xe mờ.', 1,
     'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
 
