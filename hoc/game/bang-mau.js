@@ -161,7 +161,10 @@
     vecKhop: '#e7e3f8',                // khớp / đế tay tròn (vỏ trắng ngả lavender: tách khỏi vỏ thân)
     vecTim: '#8b7fd6',                 // cổ tay xoay, cột cần ném (tím lavender đậm, cùng họ vecVoGhep)
     vecLoi: '#0f172a',                 // lòng nòng / lòng ống tối sâu
-    vecHoi: '#e0f2fe',                 // làn hơi súng hơi bắn ra (trắng xanh)
+    vecNuoc: '#3b9cf2',                // NƯỚC của vòi phun (Xe cứu hỏa R1, 29/10; thay làn hơi vecHoi): giọt, tia nước, mực nước trong bình (xanh nước, khác cyan đèn vecDen)
+    vecNuocSang: '#c4e6ff',            // nước: vệt sáng trên giọt, ô kính bình nước, miệng vòi đang phun
+    vecNuocToi: '#1e6fc4',             // nước: viền giọt, mép tia
+    vecNuocRgb: '59,156,242',          // bộ ba của vecNuoc: vệt tia nước mờ dần, vũng nước
     vecHong: '#fb7185',                // thấu kính cảm biến hồng ngoại đang đọc / đèn cần gạt khi chạm (đỏ hồng)
     vecHongToi: '#9f1239',             // thấu kính hồng ngoại lúc tắt (đỏ sẫm)
     vecHongSang: '#fecdd3',            // lõi sáng thấu kính hồng ngoại đang đọc
