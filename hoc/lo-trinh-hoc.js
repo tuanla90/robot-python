@@ -1467,7 +1467,7 @@
     // be-sung.2 ép: mã mẫu của Sola có back() bù giật thừa, người chơi bỏ dòng đó (H). che-be-sung.1 chế spray_left() (H).
     trinhDien('be-sung.1', null,
       'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên bắn tụ không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe bắn van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
-      'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau spray() và wait(), xe vẫn đứng nguyên ô.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau spray("high") và wait(), xe vẫn đứng nguyên ô.',
       ['Xe hai bánh bắn tụ thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
   })();
 
@@ -1518,8 +1518,8 @@
     var i0 = M.danhSach.indexOf(get('luc-ban.1'));
     M.danhSach.forEach(function (m, i) {
       if (i < i0) return;
-      if (m.lucBan === undefined) m.lucBan = true;
-      (m.doi || []).forEach(function (r) { if (r && r.lucBan === undefined) r.lucBan = true; });
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.lucBan === undefined) r.lucBan = true; });      // màn đội: cờ khai theo từng xe
+      else if (m.lucBan === undefined) m.lucBan = true;
     });
   })();
 

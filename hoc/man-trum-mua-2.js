@@ -245,7 +245,7 @@
         { moTa: 'Để nguyên bản của Sola: xe không lùi, rẽ phải đâm tường', baiLam: bai(M_T2), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Bỏ luôn phát bắn: cửa còn đóng', baiLam: bai(['back()', 'tr_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['jet_back() = spray() rồi wait(): trên bệ vòi xe đứng yên sau phát bắn.', 'Thêm back() sau jet_back().']
+      goiY: ['jet_back() = spray("high") rồi wait(): trên bệ vòi xe đứng yên sau phát bắn.', 'Thêm back() sau jet_back().']
     }),
 
     man({

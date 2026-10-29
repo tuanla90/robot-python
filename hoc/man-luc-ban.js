@@ -2,7 +2,7 @@
    man-luc-ban.js — "Robot Chấn Hưng": CHƯƠNG `luc-ban` · LỰC BẮN (10 màn, 26/10). Chương thứ ba của gói Súng hơi, sau `che-sung-hoi` (KE-HOACH-MUA.md mục 10).
    Robot là XE HAI BÁNH gắn SÚNG HƠI: robot { than: 'hai-banh', tay: 'hoi', camBien: [] } (8–10 thêm cảm biến khoảng cách ở hông). Mọi màn khai lucBan: true.
    Ý mới (luật ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI, mục LỰC BẮN): spray(p) / spray_back(p) nhận một CHUỖI p:
-       "high"  BẮN TỤ:    bóng bay tới vật cản đầu tiên, xe GIẬT một ô (như hai chương trước; spray() không đối số cũng là bắn tụ)
+       "high"  BẮN TỤ:    bóng bay tới vật cản đầu tiên, xe GIẬT một ô (như hai chương trước; spray("high") không đối số cũng là bắn tụ)
        "low"    BẮN NHANH: bóng bay TỐI ĐA 2 Ô rồi rơi, xe KHÔNG GIẬT
    Lý do phải chọn: nút gần mà sau lưng xe là thùng đang ở đúng chỗ (thùng mờ, ô đích) thì bắn tụ sẽ hất thùng đi → bắn nhanh; nút xa hơn 2 ô, hay cần cú giật để đẩy thùng → bắn tụ.
    Ý Python: CHUỖI làm đối số (1–3) · THAM SỐ mang chuỗi (4 squirt(p), 5 squirt_back(p)) · dùng lại hàm có tham số (6) · tham số bị bỏ quên (7) · if / else chọn đối số theo cảm biến (8 smart_spray, 9) · trùm 3 sân (10).
@@ -11,7 +11,7 @@
      luc-ban.4 squirt(p)      = spray(p), wait()                                                     bắn ra trước với lực p (1 nhịp)
      luc-ban.5 squirt_back(p) = spray_back(p), wait()                                                bắn ra sau với lực p (1 nhịp)
      luc-ban.8 smart_spray() = if front_clear(): squirt("high") / else: squirt("low")                trước mũi trống (nút ở xa) thì bắn tụ, vật sát mũi thì bắn nhanh (1 nhịp)
-   HÀM CỦA MÀN: luc-ban.7 tap_left(p) thân ban đầu bỏ quên p (spray()), sửa thành spray(p) · luc-ban.9 pick_spray() thân ban đầu đảo hai nhánh, sửa lại cho đúng.
+   HÀM CỦA MÀN: luc-ban.7 tap_left(p) thân ban đầu bỏ quên p (spray("high")), sửa thành spray(p) · luc-ban.9 pick_spray() thân ban đầu đảo hai nhánh, sửa lại cho đúng.
 
    Sao: sao.nhip = số nhịp của lời giải chuẩn = đường ngắn nhất (BFS do-duong-sung-hoi.mjs có thêm hai hành động bắn nhanh khi man.lucBan); sao.o = ô của lời giải chuẩn.
    Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên. Nối tiếp man-chuoi-1.js vào cùng window.ManHoc. Thứ tự chương: thu-tu-chuong.js.
@@ -33,7 +33,7 @@
   var T_FIRE = ['spray(p)', 'wait()'];
   var T_FIRE_BACK = ['spray_back(p)', 'wait()'];
   var T_SMART = ['if front_clear():', '    squirt("high")', 'else:', '    squirt("low")'];
-  var T_TAP_CU = ['turn_left()', 'spray()', 'wait()', 'turn_right()'];          // 7: quên dùng p
+  var T_TAP_CU = ['turn_left()', 'spray("high")', 'wait()', 'turn_right()'];          // 7: quên dùng p
   var T_TAP = ['turn_left()', 'spray(p)', 'wait()', 'turn_right()'];
   var T_PICK_CU = ['if front_clear():', '    squirt("low")', 'else:', '    squirt("high")'];   // 9: đảo nhánh
   var FIRE = function () { return H('squirt', ['p'], T_FIRE); };
@@ -160,7 +160,7 @@
     man({
       so: 4, ten: 'Hàm squirt(p)', hang: 'luyen', mucTieu: 'bong-mo', hamCuaEmCan: ['turn_left', 'u_turn', 'forward', 'move'], taoHam: ['squirt'],
       deBai: 'Chương trình chính gọi squirt("low") rồi squirt("high"). Em tự chế squirt(p): bắn ra trước với lực p mà lời gọi đưa vào, rồi chờ một nhịp. Thùng sau lưng phải nằm yên.',
-      veMaMau: 'Chương trình chính bị khóa. Mở Xưởng hàm, tạo squirt(p): trong thân, chạm ô lực của spray() để chọn p.',
+      veMaMau: 'Chương trình chính bị khóa. Mở Xưởng hàm, tạo squirt(p): trong thân, chạm ô lực của spray("high") để chọn p.',
       san: SAN_4, batDau: { x: 3, y: 3, huong: 1 }, noi: NOI_4, nhipTheoLoiGiai: true,
       bongMo: { x: 3, y: 7, huong: 2, thung: [{ x: 2, y: 3 }] },
       chinhCoDinh: true,
@@ -169,7 +169,7 @@
       loiGiai: { chinh: C_4.slice(), hamCuaEmMoi: [FIRE()] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['# bắn với lực p', 'spray(p)', 'wait()'])] },
       loiSai: [
-        { moTa: 'Quên dùng p: spray() luôn bắn tụ nên phát đầu hất thùng', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['spray()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên dùng p: spray("high") luôn bắn tụ nên phát đầu hất thùng', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['spray("high")', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Viết cứng "low" trong hàm: phát thứ hai không tới van trên', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['spray("low")', 'wait()'])], phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
         { moTa: 'Gọi squirt() mà chưa chế hàm', baiLam: { chinh: C_4.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
@@ -189,7 +189,7 @@
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('squirt_back', ['p'], ['# bắn ra sau với lực p', 'spray_back(p)', 'wait()'])] },
       loiSai: [
         { moTa: 'Bắn ra trước: tia nước không tới van sau lưng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('squirt_back', ['p'], ['spray(p)', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên dùng p: spray_back() bắn tụ, xe giật tới đẩy thùng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('squirt_back', ['p'], ['spray_back()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Quên dùng p: spray_back("high") bắn tụ, xe giật tới đẩy thùng', baiLam: { chinh: C_5.slice() }, hamCuaEmMoi: [H('squirt_back', ['p'], ['spray_back("high")', 'wait()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['spray_back(p) cũng nhận lực như spray(p).', 'Bắn nhanh ra sau thì xe không giật tới, thùng trước mũi nằm yên.']
     }),
@@ -223,10 +223,10 @@
       loiGiai: { chinh: C_7.slice(), hamCuaMan: [H('tap_left', ['p'], T_TAP)] },
       loiGiaiKhac: { moTa: 'Viết cứng "low" trong hàm (đúng ở màn này, nhưng p thành vô dụng)', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('tap_left', ['p'], ['# p chưa dùng', 'turn_left()', 'spray("low")', 'wait()', 'turn_right()'])] } },
       loiSai: [
-        { moTa: 'Để nguyên: spray() bỏ quên p nên vẫn bắn tụ', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('tap_left', ['p'], T_TAP_CU)] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Để nguyên: spray("high") bỏ quên p nên vẫn bắn tụ', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('tap_left', ['p'], T_TAP_CU)] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Bỏ quay lại: xe vẫn quay mặt sang trái nên đi vào tường', baiLam: { chinh: C_7.slice(), hamCuaMan: [H('tap_left', ['p'], ['turn_left()', 'spray(p)', 'wait()'])] }, phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Hàm có tham số p mà thân không dùng p thì lời gọi đưa "low" vào cũng như không.', 'Đổi spray() thành spray(p).']
+      goiY: ['Hàm có tham số p mà thân không dùng p thì lời gọi đưa "low" vào cũng như không.', 'Đổi spray("high") thành spray(p).']
     }),
 
     man({

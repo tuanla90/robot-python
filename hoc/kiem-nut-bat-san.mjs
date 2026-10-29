@@ -34,8 +34,8 @@ const BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
 const SUNG = BANH.concat(['spray', 'spray_back', 'distance', 'warm']);
 //  x: 0 1 2 3 4 5 6
 const SAN = ['#######', '#..N..#', '#.....#', '#.....#', '#.....#', '#######'];      // nút (3,1) trên tường trên
-const goc = (them) => Object.assign({ loaiRobot: 'banh', hamGoc: SUNG, san: SAN, batDau: { x: 3, y: 2, huong: 0 } }, them || {});
-const BA_LAN = 'a = warm()\nd1 = distance()\nshoot()\nwait()\nb = warm()\nd2 = distance()\nshoot()\nwait()\nc = warm()\nd3 = distance()\nwait()\n';
+const goc = (them) => Object.assign({ loaiRobot: 'banh', hamGoc: SUNG, san: SAN, batDau: { x: 3, y: 2, huong: 0 }, lucBan: true }, them || {});
+const BA_LAN = 'a = warm()\nd1 = distance()\nspray("high")\nwait()\nb = warm()\nd2 = distance()\nspray("high")\nwait()\nc = warm()\nd3 = distance()\nwait()\n';
 const nongs = (r) => docs(r).filter((d) => d.ham === 'warm').map((d) => d.nong);
 const khoangs = (r) => docs(r).filter((d) => d.ham === 'distance').map((d) => d.khoang);
 
@@ -62,9 +62,9 @@ console.log('== 1. warm() / distance() với nút bật sẵn ==');
   // nhiều robot: R2 bắn nút bật sẵn, R1 chờ cho tới khi nút NGUỘI (while warm(): wait())
   const CHO = {
     san: ['#######', '#.....#', '#..N..#', '#.....#', '#######'], nutBat: [{ x: 3, y: 2 }],
-    doi: [{ batDau: { x: 1, y: 2, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH.concat(['warm']) }, { batDau: { x: 3, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['spray', 'spray_back']) }]
+    doi: [{ batDau: { x: 1, y: 2, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH.concat(['warm']) }, { batDau: { x: 3, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['spray', 'spray_back']), lucBan: true }]
   };
-  const rd = SanHoc.chay(CHO, ['n = 0\nwhile warm():\n    n = n + 1\n    wait()\n', 'wait()\nwait()\nshoot()\nwait()\n']);
+  const rd = SanHoc.chay(CHO, ['n = 0\nwhile warm():\n    n = n + 1\n    wait()\n', 'wait()\nwait()\nspray("high")\nwait()\n']);
   const nd = docs(rd).filter((d) => d.ham === 'warm').map((d) => d.nong);
   kiem('nhiều robot (cfg.doi cùng sân): R1 thấy nút bật sẵn nóng, R2 bắn ở nhịp 3 thì R1 thấy nguội', !rd.loi && nd[0] === gia(true, false) && nd[nd.length - 1] === false && nd.length === 4, J([rd.loi, nd]));
 }
@@ -84,12 +84,12 @@ console.log('\n== 2. Nối cửa / băng chuyền: nút bật sẵn không đư�
   kiem('noi ghi nút bật sẵn với cua: [] và bang: [] → chạy được', e === '', e);
   // hai nút: nút (1,1) mở cửa (noi), nút (5,1) bật sẵn không nối gì
   const SAN_2 = ['#######', '#N...N#', '#.....#', '###C###', '#.....#', '#######'];
-  const cfg2 = { loaiRobot: 'banh', hamGoc: SUNG, san: SAN_2, batDau: { x: 1, y: 2, huong: 0 }, nutBat: [{ x: 5, y: 1 }], noi: [{ nut: { x: 1, y: 1 }, cua: [{ x: 3, y: 3 }] }] };
+  const cfg2 = { loaiRobot: 'banh', hamGoc: SUNG, lucBan: true, san: SAN_2, batDau: { x: 1, y: 2, huong: 0 }, nutBat: [{ x: 5, y: 1 }], noi: [{ nut: { x: 1, y: 1 }, cua: [{ x: 3, y: 3 }] }] };
   e = loiCfg(cfg2);
   kiem('noi bỏ nút bật sẵn (nút không có trong noi thì không điều khiển gì) → chạy được', e === '', e);
-  const r = SanHoc.chay(cfg2, 'spray()\nwait()\n');
+  const r = SanHoc.chay(cfg2, 'spray("high")\nwait()\n');
   kiem('nút thường (1,1) vẫn mở cửa như cũ; nút bật sẵn (5,1) vẫn bật, cửa ban đầu đúng ký hiệu C', !r.loi && J(r.cua) === '[{"x":3,"y":3,"mo":true}]' && J(r.cuaBanDau) === '[{"x":3,"y":3,"mo":false}]' && J(r.nut) === J([{ x: 1, y: 1, bat: true }, { x: 5, y: 1, bat: true }]) && J(r.nutBanDau) === J([{ x: 1, y: 1, bat: false }, { x: 5, y: 1, bat: true }]), J([r.loi, r.cua, r.nut, r.nutBanDau]));
-  const r2 = SanHoc.chay(Object.assign({}, cfg2, { batDau: { x: 5, y: 2, huong: 0 } }), 'spray()\nwait()\n');
+  const r2 = SanHoc.chay(Object.assign({}, cfg2, { batDau: { x: 5, y: 2, huong: 0 } }), 'spray("high")\nwait()\n');
   kiem('bắn nút bật sẵn: nút tắt, cửa KHÔNG đổi (không nối gì), không có sự kiện cua-doi / bang-doi', !r2.loi && J(r2.nut[1]) === J({ x: 5, y: 1, bat: false }) && J(r2.cua) === '[{"x":3,"y":3,"mo":false}]' && !r2.suKien.some((s) => s.ma === 'cua-doi' || s.ma === 'bang-doi'), J([r2.loi, r2.nut, r2.cua]));
   // cửa nhịp không do nút điều khiển: sân chỉ có cửa nhịp thì nút bật sẵn được (không nối gì)
   e = loiCfg({ loaiRobot: 'banh', hamGoc: SUNG, san: SAN_C, batDau: { x: 3, y: 2, huong: 0 }, nutBat: [{ x: 3, y: 1 }], cuaNhip: [{ x: 3, y: 3, mo: 1, dong: 1 }] });
@@ -122,7 +122,7 @@ console.log('\n== 4. cham.js và màn nhiều sân ==');
   kiem('màn hai sân (theoSan): sân 1 warm() True + nutBanDau bật, sân 2 warm() False + tắt', J(wN) === J([gia(true, false), false]) && J(bdN) === '[true,false]', J([wN, bdN]));
   // đội robot (cham chung, cfg.doi)
   const manDoi = { ma: 'thu.nut-bat-doi', san: ['#######', '#.....#', '#..N..#', '#.....#', '#######'], nutBat: [{ x: 3, y: 2 }], mucTieu: 'toi-co',
-    doi: [{ batDau: { x: 1, y: 2, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH.concat(['warm']) }, { batDau: { x: 3, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['spray', 'spray_back']) }] };
+    doi: [{ batDau: { x: 1, y: 2, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH.concat(['warm']) }, { batDau: { x: 3, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['spray', 'spray_back']), lucBan: true }] };
   const kd = ChamHoc.cham(manDoi, { doi: [{ chinh: ['w = warm()', 'wait()'] }, { chinh: ['wait()'] }], hamCuaMan: [] }, []);
   kiem('cham.js đội robot (cfg.doi) cũng đưa nutBat xuống: nutBanDau bat true', J(kd.nutBanDau) === J([{ x: 3, y: 2, bat: gia(true, false) }]), J([kd.nutBanDau, kd.chanDoan && kd.chanDoan.slice(0, 2)]));
 }

@@ -196,11 +196,11 @@
       san: ['#######', '#.....#', '#.###F#', '#.###C#', 'N.....#', '#.#####', '#######'],
       bd: [{ x: 1, y: 5, huong: 0 }, { x: 5, y: 4, huong: 3 }],
       r2: R2.hoi(),
-      c2: ['wait()', 'wait()', 'spray()', 'wait()', 'turn_right()'].concat(FOR(20, ['if front_clear():', '    move()', 'else:', '    wait()'])),
+      c2: ['wait()', 'wait()', 'spray("high")', 'wait()', 'turn_right()'].concat(FOR(20, ['if front_clear():', '    move()', 'else:', '    wait()'])),
       c1Mau: ['go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
       c1Giai: ['move()', 'wait()', 'wait()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
       doiThu: { part: 'hoi', manh: ['Bắn van N từ xa để mở cửa', 'Giật lùi đi một ô mỗi phát, không cần quay'], yeu: ['Tia nước bay thẳng, gặp xe là dừng: đứng chắn là van không bị bắn'] },
-      goiY: ['R2 chờ 2 nhịp rồi spray() ở nhịp 3, tia nước bay dọc hàng dưới tới van N.', 'R1 vào ô (1, 4) ở nhịp 1 rồi wait() hai lần: tia nước đập vào R1, cửa C vẫn đóng.']
+      goiY: ['R2 chờ 2 nhịp rồi spray("high") ở nhịp 3, tia nước bay dọc hàng dưới tới van N.', 'R1 vào ô (1, 4) ở nhịp 1 rồi wait() hai lần: tia nước đập vào R1, cửa C vẫn đóng.']
     }),
 
     // 6. Drone bay qua hàng rào nhưng pin ít, phải vòng qua ô sạc P: R1 đi cổng dịch chuyển 1 tới gần cờ.

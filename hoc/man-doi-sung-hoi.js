@@ -20,7 +20,7 @@
 
    Chương 2 `che-doi-sung-hoi` (chế lệnh phối hợp). Hàm của em MỚI (tên cốt truyện, vào kho):
      1 wait_gate()   = while not front_clear(): wait()                      omni chờ cửa trước mặt mở                       (R2 khóa gọi hàm; em viết R1)
-     2 wait_spray()  = while not front_clear(): wait(); spray(); wait()     xe súng chờ đồng đội ra khỏi mũi rồi mới bắn   (R1 khóa gọi hàm; em viết R2)
+     2 wait_spray()  = while not front_clear(): wait(); spray("high"); wait()     xe súng chờ đồng đội ra khỏi mũi rồi mới bắn   (R1 khóa gọi hàm; em viết R2)
      3 pass_gate()   = wait_gate(); forward(2)                              qua cửa (hàm gọi hàm), omni kẹp chở hộp        (R1 khóa)
      5 catch_crate() = while front_clear(): wait()                          chờ tới khi CÓ thùng trước mặt (ngược wait_gate)
      6 open_step()   = kick_right(); forward(2)                             robot khóa gọi hàm em chế: bắn nút bên trái rồi tới nút kế
@@ -111,17 +111,17 @@
 
   /* ------------------------------------------------------------- chương trình dùng lại (lời giải chuẩn) */
 
-  var L1 = [['spray()', 'wait()', 'for i in range(4):', '    back()'], ['slide_l(4)', 'forward(2)']];
-  var L2 = [['spray()', 'wait()', 'move()', 'turn_right()', 'forward(2)'], ['slide_r(6)', 'for i in range(2):', '    back()']];   // luật giật một ô: xe theo thùng xuống một ô nên tiến lại rồi mới rẽ
-  var L3 = [['turn_left()', 'spray()', 'wait()'], nhieu(CHO_CUA, ['forward(5)'])];
-  var L4 = [['turn_left()', 'forward(3)', 'turn_right()', 'spray()', 'wait()'], ['go_wall()']];
-  var L5 = [['forward(2)', 'turn_left()', 'wait()', 'spray()', 'wait()', 'spray()', 'wait()'], ['slide_l(6)']];   // luật giật một ô: hai phát, phát hai đẩy thùng xuống lối omni nên phải chờ omni qua
-  var L6 = [['while front_clear():', '    wait()', 'turn_right()', 'spray()', 'wait()'], nhieu(['slide_r(3)'], CHO_CUA, ['forward(2)'])];
-  var L7 = [['for i in range(3):', '    spray()', '    wait()', '    wait()', '    wait()', 'turn_right()', 'move()'],
+  var L1 = [['spray("high")', 'wait()', 'for i in range(4):', '    back()'], ['slide_l(4)', 'forward(2)']];
+  var L2 = [['spray("high")', 'wait()', 'move()', 'turn_right()', 'forward(2)'], ['slide_r(6)', 'for i in range(2):', '    back()']];   // luật giật một ô: xe theo thùng xuống một ô nên tiến lại rồi mới rẽ
+  var L3 = [['turn_left()', 'spray("high")', 'wait()'], nhieu(CHO_CUA, ['forward(5)'])];
+  var L4 = [['turn_left()', 'forward(3)', 'turn_right()', 'spray("high")', 'wait()'], ['go_wall()']];
+  var L5 = [['forward(2)', 'turn_left()', 'wait()', 'spray("high")', 'wait()', 'spray("high")', 'wait()'], ['slide_l(6)']];   // luật giật một ô: hai phát, phát hai đẩy thùng xuống lối omni nên phải chờ omni qua
+  var L6 = [['while front_clear():', '    wait()', 'turn_right()', 'spray("high")', 'wait()'], nhieu(['slide_r(3)'], CHO_CUA, ['forward(2)'])];
+  var L7 = [['for i in range(3):', '    spray("high")', '    wait()', '    wait()', '    wait()', 'turn_right()', 'move()'],
     nhieu(['for i in range(3):', '    back()', 'slide_r(3)'], CHO_CUA, ['forward(3)'])];
-  var L8 = [['while left_clear():', '    wait()', 'spray()', 'wait()'], nhieu(['forward(4)'], CHO_CUA, ['forward(3)'])];
+  var L8 = [['while left_clear():', '    wait()', 'spray("high")', 'wait()'], nhieu(['forward(4)'], CHO_CUA, ['forward(3)'])];
   var L9 = [['for i in range(4):', '    move()', '    kick_right()', '    move()'], nhieu(['for i in range(4):'], thut(CHO_CUA), ['    forward(2)'])];
-  var L10 = [['go_wall()', 'if left_clear():', '    turn_right()', 'else:', '    turn_left()', 'spray()', 'wait()'], nhieu(['go_wall()'], CHO_CUA, ['go_wall()'])];
+  var L10 = [['go_wall()', 'if left_clear():', '    turn_right()', 'else:', '    turn_left()', 'spray("high")', 'wait()'], nhieu(['go_wall()'], CHO_CUA, ['go_wall()'])];
 
   var DS = [
     man({
@@ -132,7 +132,7 @@
       bd: [{ x: 2, y: 1, huong: 3 }, { x: 1, y: 3, huong: 2 }], co: [[{ x: 7, y: 1 }], [{ x: 5, y: 5 }]],
       maMau: B([], L1[1]), loiGiai: B(L1[0], L1[1]),
       hamCuaEmCan: ['back', 'slide_l', 'forward'],
-      goiY: ['Xe đứng trên băng đang chạy hai nhịp liền là bị đẩy lùi một ô. Bắn van trước để tắt băng.', 'spray() làm xe giật lùi một ô về phía cờ; sau đó back() thêm bốn lần.']
+      goiY: ['Xe đứng trên băng đang chạy hai nhịp liền là bị đẩy lùi một ô. Bắn van trước để tắt băng.', 'spray("high") làm xe giật lùi một ô về phía cờ; sau đó back() thêm bốn lần.']
     }),
     man({
       so: 2, ten: 'Dọn thùng khỏi lối', khoa: 0,
@@ -200,7 +200,7 @@
       veMaMau: 'R2 bị khóa. Chạy thử rồi sửa chương trình R1.',
       san: ['##########', '#...c.C.F#', '###F.N####', '##########'],
       bd: [{ x: 4, y: 2, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[{ x: 3, y: 2 }], [{ x: 8, y: 1 }]],
-      maMau: B(['spray()', 'wait()'], L8[1]), loiGiai: B(L8[0], L8[1]),
+      maMau: B(['spray("high")', 'wait()'], L8[1]), loiGiai: B(L8[0], L8[1]),
       hamCuaEmCan: ['forward'],
       goiY: ['Cửa không đóng xuống chỗ đang có robot. Bắn lúc omni đã tới cửa đầu thì không nhốt được omni.', 'Xe vòi phun quay mặt sang phải nên cửa đầu nằm bên trái xe: while left_clear(): wait().']
     }),
@@ -238,27 +238,27 @@
   var CHE = 'che-' + CHUONG;
   // hàm của em mới (tên cốt truyện, vào kho)
   var T_WAIT_GATE = ['while not front_clear():', '    wait()'];
-  var T_FIRE_CLEAR = ['while not front_clear():', '    wait()', 'spray()', 'wait()'];
+  var T_FIRE_CLEAR = ['while not front_clear():', '    wait()', 'spray("high")', 'wait()'];
   var T_PASS_GATE = ['wait_gate()', 'forward(2)'];
   var T_CATCH_CRATE = ['while front_clear():', '    wait()'];
   var T_OPEN_STEP = ['kick_right()', 'forward(2)'];
   // hàm của màn (thân ban đầu hỏng / bản sửa)
-  var T_OPEN_GATE_CU = ['turn_left()', 'spray()', 'wait()', 'spray()', 'wait()', 'turn_right()'];
-  var T_OPEN_GATE = ['turn_left()', 'spray()', 'wait()', 'turn_right()'];
-  var T_OPEN_BACK_CU = ['spray()', 'wait()'];
-  var T_OPEN_BACK = ['spray_back()', 'wait()'];
+  var T_OPEN_GATE_CU = ['turn_left()', 'spray("high")', 'wait()', 'spray("high")', 'wait()', 'turn_right()'];
+  var T_OPEN_GATE = ['turn_left()', 'spray("high")', 'wait()', 'turn_right()'];
+  var T_OPEN_BACK_CU = ['spray("high")', 'wait()'];
+  var T_OPEN_BACK = ['spray_back("high")', 'wait()'];
   var T_MAKE_WAY_CU = ['slide_left()', 'wait()', 'while not right_clear():', '    wait()', 'slide_right()', 'wait()'];
   var T_MAKE_WAY = ['slide_left()', 'wait()', 'while right_clear():', '    wait()', 'while not right_clear():', '    wait()', 'slide_right()', 'wait()'];
 
-  var C1 = [['forward(2)', 'turn_right()', 'spray()', 'wait()'], ['forward(2)', 'wait_gate()', 'forward(4)']];
+  var C1 = [['forward(2)', 'turn_right()', 'spray("high")', 'wait()'], ['forward(2)', 'wait_gate()', 'forward(4)']];
   var C2 = [['wait_spray()', 'turn_right()', 'move()'], ['slide_l(1)', 'move()', 'slide_l(2)']];
-  var C3 = [['forward(3)', 'turn_left()', 'spray()', 'wait()'], ['pick()', 'forward(2)', 'pass_gate()', 'drop()']];
-  var C4 = [['wait_gate()', 'forward(2)', 'turn_left()', 'spray()', 'wait()', 'turn_right()', 'move()'], ['forward(2)', 'wait_gate()', 'forward(4)']];
+  var C3 = [['forward(3)', 'turn_left()', 'spray("high")', 'wait()'], ['pick()', 'forward(2)', 'pass_gate()', 'drop()']];
+  var C4 = [['wait_gate()', 'forward(2)', 'turn_left()', 'spray("high")', 'wait()', 'turn_right()', 'move()'], ['forward(2)', 'wait_gate()', 'forward(4)']];
   var C5 = [['for i in range(3):', '    move()', '    turn_left()', '    jet_back()', '    move()', '    turn_right()', '    move()'], ['slide_r(1)', 'for i in range(3):', '    catch_crate()', '    slide_r(2)']];   // luật giật một ô: xe quay lên, giật thùng xuống đích (xe theo vào cột), tiến lại làn rồi quay phải
   var C6 = [['for i in range(3):', '    open_step()'], ['for i in range(3):', '    pass_gate()']];
   var C7 = [['open_gate()', 'turn_right()', 'go_wall()'], ['forward(4)', 'pass_gate()', 'move()']];
   var C8 = [['forward(2)', 'open_back()', 'go_wall()'], ['move()', 'pass_gate()', 'forward(3)']];
-  var C9 = [['turn_left()', 'spray()', 'wait()', 'turn_right()', 'forward(5)'], ['move()', 'make_way()', 'forward(4)']];
+  var C9 = [['turn_left()', 'spray("high")', 'wait()', 'turn_right()', 'forward(5)'], ['move()', 'make_way()', 'forward(4)']];
   var C10 = [['while front_clear():', '    if not left_clear():', '        kick_right()', '    move()'], ['for i in range(4):', '    pass_gate()']];
 
   /** Trùm chương 2: hàng nút trên tường làn trên (x trong dsX), mỗi nút một cửa ngay dưới ở làn omni. */
@@ -354,7 +354,7 @@
       bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }], co: [[{ x: 7, y: 1 }], [{ x: 7, y: 3 }]],
       maMau: B(C8[0], [], [H('open_back', T_OPEN_BACK_CU)]), loiGiai: B(C8[0], C8[1], [H('open_back', T_OPEN_BACK)]),
       hamCuaEmCan: ['forward', 'go_wall', 'move', 'pass_gate'],
-      goiY: ['spray_back() bắn ra sau đuôi, và xe giật tới một ô.', 'Omni: tới sát cửa rồi pass_gate().']
+      goiY: ['spray_back("high") bắn ra sau đuôi, và xe giật tới một ô.', 'Omni: tới sát cửa rồi pass_gate().']
     }),
     man({
       so: 9, chuong: CHE, ten: 'Đổi chỗ cho nhau', khoa: 1,

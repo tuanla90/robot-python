@@ -54,7 +54,7 @@ function dung(ma, moTa, d1, d2, o = {}) {
 
 const CHO_CUA = ['while not front_clear():', '    wait()'];
 const CHO_BAO = ['while left_clear() and right_clear():', '    wait()'];
-const TRA_LOI = ['if not left_clear():', '    spray()', 'else:', '    spray_back()', 'wait()'];
+const TRA_LOI = ['if not left_clear():', '    spray("high")', 'else:', '    spray_back("high")', 'wait()'];
 const DEM = (n) => ['for i in range(' + n + '):', '    wait()'];
 
 console.log('— đội và phần cứng');
@@ -78,22 +78,22 @@ console.log('\n— chương doi-mau');
 sai('doi-mau.1', 'R1 đặt hộp đỏ sang trái (không nhìn màu) thì sai màu', ['forward(3)', 'pick()', 'turn_left()', 'drop()'], null, { phaiCo: ['dat-sai-mau'] });
 sai('doi-mau.1', 'R1 phân loại khi chưa tới trước hộp: kẹp hụt', ['forward(2)', 'sort_color()'], null);
 // 2: R2 phải tới đúng hàng nút; R1 khóa chờ cửa
-sai('doi-mau.2', 'R2 bắn ngay ở chỗ xuất phát: bóng không tới nút', null, ['spray()', 'wait()']);
-sai('doi-mau.2', 'R2 quay nhầm trái rồi bắn', null, ['forward(2)', 'turn_left()', 'spray()', 'wait()']);
+sai('doi-mau.2', 'R2 bắn ngay ở chỗ xuất phát: bóng không tới nút', null, ['spray("high")', 'wait()']);
+sai('doi-mau.2', 'R2 quay nhầm trái rồi bắn', null, ['forward(2)', 'turn_left()', 'spray("high")', 'wait()']);
 // 3: dọn đường bắn
-sai('doi-mau.3', 'R2 không chờ hộp được dọn: bóng trúng hộp', null, ['spray()', 'wait()'], { phaiCo: ['ban-bi-chan'] });
+sai('doi-mau.3', 'R2 không chờ hộp được dọn: bóng trúng hộp', null, ['spray("high")', 'wait()'], { phaiCo: ['ban-bi-chan'] });
 sai('doi-mau.3', 'R1 chỉ dọn hộp, không vào kho phân loại hộp thứ hai', ['sort_color()'], null);
 // 4: đứng bên nào
 sai('doi-mau.4', 'R2 không chờ tín hiệu (if ngay): bắn nhầm nút sau lưng', null, TRA_LOI);
-sai('doi-mau.4', 'R2 bắn cả hai nút (chỉ có một viên): nút sau trước thì hết đạn cho nút trước', null, nhieu(CHO_BAO, ['spray_back()', 'wait()', 'spray()', 'wait()']), { phaiCo: ['het-dan'] });
-sai('doi-mau.4', 'R2 mở cửa đỏ ngay từ đầu: R1 chạy tuột vào phòng', null, ['spray()', 'wait()']);
-sai('doi-mau.4', 'R2 hiểu ngược tín hiệu (bên trái thì bắn nút sau)', null, nhieu(CHO_BAO, ['if not left_clear():', '    spray_back()', 'else:', '    spray()', 'wait()']));
+sai('doi-mau.4', 'R2 bắn cả hai nút (chỉ có một viên): nút sau trước thì hết đạn cho nút trước', null, nhieu(CHO_BAO, ['spray_back("high")', 'wait()', 'spray("high")', 'wait()']), { phaiCo: ['het-dan'] });
+sai('doi-mau.4', 'R2 mở cửa đỏ ngay từ đầu: R1 chạy tuột vào phòng', null, ['spray("high")', 'wait()']);
+sai('doi-mau.4', 'R2 hiểu ngược tín hiệu (bên trái thì bắn nút sau)', null, nhieu(CHO_BAO, ['if not left_clear():', '    spray_back("high")', 'else:', '    spray("high")', 'wait()']));
 // 5: lộn ngược
 sai('doi-mau.5', 'R2 chép cách hỏi của màn 4 (left_clear): bắn nhầm', null, nhieu(CHO_BAO, TRA_LOI));
 sai('doi-mau.5', 'R1 né bằng dodge_left() như màn 4: đâm tường', nhieu(['c = color()', 'pick()', 'if c == "red":', '    dodge_left()', '    dodge_left()', 'go_wall()'], CHO_CUA, ['move()', 'drop()']), null);
 // 6: cổng nhịp
-sai('doi-mau.6', 'R2 không chờ: cửa kho mở sớm, R1 chạy tuột vào kho', null, ['spray()', 'wait()']);
-sai('doi-mau.6', 'R2 đếm nhịp đoán ít (3 nhịp) rồi bắn: cửa mở sớm', null, nhieu(DEM(3), ['spray()', 'wait()']));
+sai('doi-mau.6', 'R2 không chờ: cửa kho mở sớm, R1 chạy tuột vào kho', null, ['spray("high")', 'wait()']);
+sai('doi-mau.6', 'R2 đếm nhịp đoán ít (3 nhịp) rồi bắn: cửa mở sớm', null, nhieu(DEM(3), ['spray("high")', 'wait()']));
 {
   const m = man('doi-mau.6');
   const r1 = nhieu(['go_wall()', 'go_wall()'], CHO_CUA, ['go_wall()', 'sort_color()']);
@@ -107,17 +107,17 @@ sai('doi-mau.7', 'sửa thành chỉ canh bên trái: R1 đứng bên phải nê
 // 8: nhìn trước khi nhặt
 sai('doi-mau.8', 'mẫu: nhặt rồi mới nhìn màu thì đặt sai màu', man('doi-mau.8').maMau.doi[0].chinh, null, { phaiCo: ['dat-sai-mau'] });
 // 9: ba cổng một nút
-sai('doi-mau.9', 'R2 không chờ, cứ bắn rồi tiến: cổng đổi sai lúc', null, ['for i in range(3):', '    spray()', '    wait()', '    forward(3)']);
-sai('doi-mau.9', 'R2 đứng yên bắn ba lần liền', null, ['for i in range(3):', '    spray()', '    wait()']);
+sai('doi-mau.9', 'R2 không chờ, cứ bắn rồi tiến: cổng đổi sai lúc', null, ['for i in range(3):', '    spray("high")', '    wait()', '    forward(3)']);
+sai('doi-mau.9', 'R2 đứng yên bắn ba lần liền', null, ['for i in range(3):', '    spray("high")', '    wait()']);
 {
-  const thang = nhieu(...[0, 1, 2].map(() => ['while left_clear():', '    wait()', 'spray()', 'wait()', 'forward(3)']));
+  const thang = nhieu(...[0, 1, 2].map(() => ['while left_clear():', '    wait()', 'spray("high")', 'wait()', 'forward(3)']));
   sai('doi-mau.9', 'R2 viết thẳng ba lượt: tràn khung 10 ô', null, thang);
   const r1 = nhieu(...[0, 1, 2].map(() => nhieu(['go_wall()'], CHO_CUA, ['move()'])), ['go_wall()', 'sort_color()']);
   sai('doi-mau.9', 'R1 viết thẳng ba lượt: tràn khung 10 ô', r1, null);
 }
 // 10: trùm
-sai('doi-mau.10', 'R2 ghi cứng bắn nút trước (đỏ)', null, nhieu(['go_wall()'], CHO_BAO, ['spray()', 'wait()']));
-sai('doi-mau.10', 'R2 đếm nhịp rồi bắn (không đọc tín hiệu)', null, nhieu(['go_wall()'], DEM(10), ['spray()', 'wait()']));
+sai('doi-mau.10', 'R2 ghi cứng bắn nút trước (đỏ)', null, nhieu(['go_wall()'], CHO_BAO, ['spray("high")', 'wait()']));
+sai('doi-mau.10', 'R2 đếm nhịp rồi bắn (không đọc tín hiệu)', null, nhieu(['go_wall()'], DEM(10), ['spray("high")', 'wait()']));
 sai('doi-mau.10', 'R2 không lên chốt (chép màn 4)', null, nhieu(CHO_BAO, TRA_LOI));
 sai('doi-mau.10', 'R2 lên chốt nhưng không chờ tín hiệu', null, nhieu(['go_wall()'], TRA_LOI));
 kiem('doi-mau.10: ba sân khác màu hộp và khác chỗ xuất phát của R2', (() => {
@@ -127,7 +127,7 @@ kiem('doi-mau.10: ba sân khác màu hộp và khác chỗ xuất phát của R2
 
 console.log('\n— chương che-doi-mau');
 const T_WATCH = ['while left_clear() and right_clear():', '    wait()'];
-const T_ANSWER = ['if not left_clear():', '    spray()', 'else:', '    spray_back()', 'wait()'];
+const T_ANSWER = ['if not left_clear():', '    spray("high")', 'else:', '    spray_back("high")', 'wait()'];
 const T_SHOW = ['c = color()', 'pick()', 'if c == "red":', '    dodge_left()', 'else:', '    dodge_right()'];
 {
   const truocGoi = khoTruoc.get('che-doi-mau.1').map((h) => h.ten);
@@ -142,9 +142,9 @@ const T_SHOW = ['c = color()', 'pick()', 'if c == "red":', '    dodge_left()', '
 }
 sai('che-doi-mau.1', 'watch_side chỉ canh bên trái: R1 tới bên phải nên chờ mãi', null, null, { ham: [H('watch_side', ['while left_clear():', '    wait()'])] });
 sai('che-doi-mau.1', 'watch_side quên wait() (pass): vòng lặp không có nhịp', null, null, { ham: [H('watch_side', ['while left_clear() and right_clear():', '    pass'])] });
-sai('che-doi-mau.1', 'R2 không chờ, bắn ngay: R1 chạy tuột vào kho', null, ['spray()', 'wait()']);
+sai('che-doi-mau.1', 'R2 không chờ, bắn ngay: R1 chạy tuột vào kho', null, ['spray("high")', 'wait()']);
 sai('che-doi-mau.2', 'answer_side quên wait(): phát bắn không chạy', null, null, { ham: [H('answer_side', T_ANSWER.slice(0, 4))] });
-sai('che-doi-mau.2', 'answer_side hai nhánh ngược', null, null, { ham: [H('answer_side', ['if not left_clear():', '    spray_back()', 'else:', '    spray()', 'wait()'])] });
+sai('che-doi-mau.2', 'answer_side hai nhánh ngược', null, null, { ham: [H('answer_side', ['if not left_clear():', '    spray_back("high")', 'else:', '    spray("high")', 'wait()'])] });
 sai('che-doi-mau.3', 'show_color nhặt rồi mới nhìn màu', null, null, { ham: [H('show_color', ['pick()', 'c = color()', 'if c == "red":', '    dodge_left()', 'else:', '    dodge_right()'])], phaiCo: ['dat-sai-mau'] });
 sai('che-doi-mau.3', 'show_color né ngược', null, null, { ham: [H('show_color', ['c = color()', 'pick()', 'if c == "red":', '    dodge_right()', 'else:', '    dodge_left()'])] });
 dung('che-doi-mau.4', 'cùng chương trình hàm như màn 3 vẫn đúng khi sân lộn ngược', man('che-doi-mau.3').loiGiai.doi[0].chinh, man('che-doi-mau.3').loiGiai.doi[1].chinh);
@@ -152,7 +152,7 @@ sai('che-doi-mau.4', 'R1 tự né theo màn hình (hộp xanh sang phải màn h
 sai('che-doi-mau.5', 'R2 không đi xuống chốt', null, ['watch_side()', 'answer_side()']);
 sai('che-doi-mau.5', 'R2 xuống một ô (đứng giữa hai cửa) rồi đọc', null, ['forward(1)', 'watch_side()', 'answer_side()']);
 sai('che-doi-mau.6', 'R2 né về phía R1', null, man('che-doi-mau.9').maMau.doi[1].chinh);
-sai('che-doi-mau.6', 'R2 bắn trước rồi mới đọc (đã giật lùi khỏi chốt)', null, ['watch_side()', 'spray()', 'wait()', 'if left_clear():', '    dodge_left()', 'else:', '    dodge_right()', 'go_wall()']);
+sai('che-doi-mau.6', 'R2 bắn trước rồi mới đọc (đã giật lùi khỏi chốt)', null, ['watch_side()', 'spray("high")', 'wait()', 'if left_clear():', '    dodge_left()', 'else:', '    dodge_right()', 'go_wall()']);
 {
   const m = man('che-doi-mau.6');
   kiem('che-doi-mau.6: hai robot có cờ riêng ở hai phòng khác nhau', m.doi[0].co && m.doi[1].co && J(m.doi[0].co) !== J(m.doi[1].co));
@@ -168,7 +168,7 @@ sai('che-doi-mau.9', 'mẫu: R2 né về phía R1', null, man('che-doi-mau.9').m
   kiem('che-doi-mau.9: lời giải đưa mỗi robot tới đúng cờ riêng', r.thang && r.theoSan[0].doi.every((d) => d.toiCo));
 }
 sai('che-doi-mau.10', 'R1 không tới sát hộp trước (thiếu go_wall đầu)', man('che-doi-mau.3').loiGiai.doi[0].chinh, null);
-sai('che-doi-mau.10', 'R2 ghi cứng bắn nút trước', null, ['watch_side()', 'spray()', 'wait()']);
+sai('che-doi-mau.10', 'R2 ghi cứng bắn nút trước', null, ['watch_side()', 'spray("high")', 'wait()']);
 sai('che-doi-mau.10', 'R2 không canh, trả lời ngay', null, ['answer_side()']);
 sai('che-doi-mau.10', 'R2 đếm nhịp rồi trả lời', null, nhieu(DEM(8), ['answer_side()']));
 

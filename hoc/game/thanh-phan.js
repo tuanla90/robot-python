@@ -1602,7 +1602,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) return 'list';                                       // x in steps
     if (new RegExp('range\\(\\s*' + P + '\\s*\\)').test(src)) return 'so';
     if (new RegExp('\\bink\\(\\s*' + P + '\\s*\\)').test(src)) return 'mau';                                        // ink(c): đối số là tên MÀU sơn (máy sơn)
-    if (new RegExp('\\bshoot(_back)?\\(\\s*' + P + '\\s*\\)').test(src)) return 'luc';                              // spray(p): đối số là LỰC bắn "low" / "high" (súng hơi)
+    if (new RegExp('\\bspray(_back)?\\(\\s*' + P + '\\s*\\)').test(src)) return 'luc';                              // spray(p): đối số là LỰC bắn "low" / "high" (súng hơi)
     if ((sau || 0) < 4) {
       var re = /([A-Za-z_]\w*)\(([^()]*)\)/g, m;
       while ((m = re.exec(src))) {

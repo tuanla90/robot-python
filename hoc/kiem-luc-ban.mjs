@@ -45,10 +45,10 @@ console.log('== 1. Luật lõi ==');
   const xe = (r) => { const n = r.vet.filter((e) => e.loai === 'nhip'); return n.length ? n[n.length - 1].robot : null; };
 
   // xe (3,3) quay lên: (3,2) d1, (3,1) nút d2
-  let r = chay({}, 'spray()\nwait()\n');
-  kiem('không đối số = bắn tụ: trúng nút, xe giật lùi đẩy thùng sau lưng', !r.loi && sk(r).some((e) => e.ma === 'nut-doi') && sk(r).some((e) => e.ma === 'thung-di' && e.nguon === 'giat') && sk(r).some((e) => e.ma === 'ban' && e.luc === 'high'), J(sk(r).map((e) => e.ma)));
-  r = chay({}, 'spray("high")\nwait()\n');
-  kiem('spray("high") giống hệt spray()', !r.loi && sk(r).some((e) => e.ma === 'thung-di' && e.nguon === 'giat'));
+  let r = chay({}, 'spray("high")\nwait()\n');
+  kiem('spray("high") phun mạnh: trúng nút, xe giật lùi đẩy thùng sau lưng', !r.loi && sk(r).some((e) => e.ma === 'nut-doi') && sk(r).some((e) => e.ma === 'thung-di' && e.nguon === 'giat') && sk(r).some((e) => e.ma === 'ban' && e.luc === 'high'), J(sk(r).map((e) => e.ma)));
+  r = chay({}, 'spray()\nwait()\n');
+  kiem('không đối số = phun nhẹ (29/10), giống hệt spray("low"): không giật', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.luc === 'low') && !sk(r).some((e) => e.ma === 'giat'));
   r = chay({}, 'spray("low")\nwait()\n');
   kiem('spray("low"): trúng nút cách 2 ô, KHÔNG có sự kiện giật, thùng nằm yên, xe đứng yên',
     !r.loi && sk(r).some((e) => e.ma === 'nut-doi') && !sk(r).some((e) => e.ma === 'giat' || e.ma === 'thung-di') && xe(r).x === 3 && xe(r).y === 3 && sk(r).some((e) => e.ma === 'ban' && e.luc === 'low' && !e.hetTam), J(sk(r).map((e) => e.ma)));
@@ -59,9 +59,9 @@ console.log('== 1. Luật lõi ==');
   kiem('spray_back("low"): bóng ra sau trúng nút cách 1 ô, xe không giật tới', !r.loi && sk(r).some((e) => e.ma === 'nut-doi') && xe(r).y === 2 && !sk(r).some((e) => e.ma === 'giat'));
   r = chay({ batDau: { x: 3, y: 2, huong: 2 } }, 'spray("low")\nwait()\n');
   kiem('bắn nhanh trúng thùng: bóng dừng ở thùng, thùng không nhúc nhích', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.trung === 'thung') && !sk(r).some((e) => e.ma === 'thung-di'));
-  r = chay({}, 'p = "low"\nshoot(p)\nwait()\np = "high"\nshoot(p)\nwait()\n');
+  r = chay({}, 'p = "low"\nspray(p)\nwait()\np = "high"\nspray(p)\nwait()\n');
   kiem('biến mang lực: p = "low" rồi "high" — phát đầu không giật, phát sau giật', !r.loi && sk(r).filter((e) => e.ma === 'ban').map((e) => e.luc).join() === 'low,high' && sk(r).filter((e) => e.ma === 'thung-di').length === 1);
-  r = chay({}, 'def squirt(p):\n    spray(p)\n    wait()\nfire("low")\n');
+  r = chay({}, 'def squirt(p):\n    spray(p)\n    wait()\nsquirt("low")\n');
   kiem('tham số mang lực: squirt("low") với thân spray(p)', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.luc === 'low'));
   r = chay({}, 'spray("quick")\nwait()\n');
   kiem('lực lạ "quick" → lỗi chạy luc-ban-sai, có lucDat', r.loi && r.loi.ma === 'luc-ban-sai' && r.loi.lucDat === 'quick');
@@ -72,14 +72,14 @@ console.log('== 1. Luật lõi ==');
   r = chay({ lucBan: false }, 'spray("low")\nwait()\n');
   kiem('màn không khai lucBan mà gọi có đối số → luc-chua-mo', r.loi && r.loi.ma === 'luc-chua-mo');
   r = chay({ lucBan: false }, 'spray()\nwait()\n');
-  kiem('màn không khai lucBan: spray() không đối số vẫn chạy như cũ', !r.loi && sk(r).some((e) => e.ma === 'thung-di'));
+  kiem('màn không khai lucBan: spray() không đối số là phun nhẹ, không giật, thùng nằm yên', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.luc === 'low') && !sk(r).some((e) => e.ma === 'thung-di'));
   r = chay({ daoChieu: ['sung'], batDau: { x: 3, y: 2, huong: 2 } }, 'spray("low")\nwait()\n');
   kiem('súng lắp ngược: spray("low") bắn ra sau, vẫn không giật', !r.loi && sk(r).some((e) => e.ma === 'ban' && e.sau && e.luc === 'low') && sk(r).some((e) => e.ma === 'nut-doi') && !sk(r).some((e) => e.ma === 'giat'));
-  r = chay({ danToiDa: 1 }, 'spray("low")\nwait()\nshoot("low")\nwait()\n');
+  r = chay({ danToiDa: 1 }, 'spray("low")\nwait()\nspray("low")\nwait()\n');
   kiem('bắn nhanh cũng tốn đạn: phát thứ hai hết đạn', r.suKien.some((e) => e.ma === 'het-dan'));
   let loiCfg = '';
   try { SanHoc.chay({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'wait'], san: SAN, batDau: { x: 3, y: 3, huong: 0 }, lucBan: true }, 'wait()\n'); } catch (e) { loiCfg = e.message; }
-  kiem('lucBan mà robot không có súng → lỗi cấu hình', /lucBan chỉ dùng cho robot có vòi phun/.test(loiCfg), loiCfg);
+  kiem('lucBan mà robot không có vòi phun → bỏ qua cờ, chạy bình thường (29/10: lộ trình bật cờ cho mọi màn từ gói 6)', loiCfg === '', loiCfg);
   kiem('SanHoc xuất LUC_BAN, TAM_BAN_NHANH = 2', J(SanHoc.LUC_BAN) === '["low","high"]' && SanHoc.TAM_BAN_NHANH === 2);
 
   // chẩn đoán qua máy chấm
@@ -98,8 +98,8 @@ const ds = M.danhSach.filter((m) => m.chuong === 'luc-ban').sort((a, b) => a.so 
 {
   const coLuc = Bo.hanhDongChoPhep({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'spray', 'spray_back'], lucBan: true }, {});
   const khongLuc = Bo.hanhDongChoPhep({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'spray', 'spray_back'] }, {});
-  kiem('hành động bắn nhanh chỉ có ở màn lucBan', coLuc.filter((a) => a.luc === 'low').length === 2 && !khongLuc.some((a) => a.luc));
-  kiem('chuoiThanhMa viết spray("low") / spray_back("low")', Bo.chuoiThanhMa([{ ban: 'truoc', luc: 'low' }, { ban: 'sau', luc: 'low' }, { ban: 'truoc' }]) === 'spray("low")\nwait()\nshoot_back("low")\nwait()\nshoot()\nwait()\n');
+  kiem('phun nhẹ luôn có; phun mạnh (không luc) chỉ có ở màn lucBan', coLuc.filter((a) => a.luc === 'low').length === 2 && coLuc.filter((a) => a.ban && !a.luc).length === 2 && khongLuc.filter((a) => a.luc === 'low').length === 2 && !khongLuc.some((a) => a.ban && !a.luc));
+  kiem('chuoiThanhMa viết spray() / spray_back() cho phun nhẹ, spray("high") cho phun mạnh', Bo.chuoiThanhMa([{ ban: 'truoc', luc: 'low' }, { ban: 'sau', luc: 'low' }, { ban: 'truoc' }]) === 'spray()\nwait()\nspray_back()\nwait()\nspray("high")\nwait()\n');
   // so chéo: đường của bộ dò chạy thật bằng SanHoc (mỗi sân) cũng tới đích, đúng số nhịp
   for (const m of ds) {
     const nhieu = Array.isArray(m.san[0]), dsSan = nhieu ? m.san : [m.san];
