@@ -115,10 +115,9 @@ function motNhip(ctx, S, a, tuy) {
         const cell = ny * rong + nx;
         if (!ctx.chan[cell] && !cuaDong(cell)) {
           const i = N.p.indexOf(cell);
-          if (i >= 0) {
-            let cx = nx, cy = ny;
-            while (!thungChan(cx + vg[0], cy + vg[1])) { cx += vg[0]; cy += vg[1]; }
-            if (cx !== nx || cy !== ny) { N.p[i] = cy * rong + cx; N.e[i] = 0; }
+          if (i >= 0) {                                                   // luật 29/10: thùng nhích 1 ô, xe vào ô thùng vừa rời (như xích đẩy); ô sau thùng bị chặn thì cả hai đứng yên
+            const sx = nx + vg[0], sy = ny + vg[1];
+            if (!thungChan(sx, sy)) { N.p[i] = sy * rong + sx; N.e[i] = 0; N.x = nx; N.y = ny; }
           } else { N.x = nx; N.y = ny; }
         }
       }

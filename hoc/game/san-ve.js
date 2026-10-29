@@ -17,7 +17,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Chương súng hơi (robot.tay === 'hoi', hai nòng: nòng trước ở mũi, nòng sau ở đuôi): nút bắn N (nằm trên tường, bật / tắt theo vết `nut`), cửa C đóng / c mở (trượt mở / đóng theo vết `cua`; cửa nhịp có hàng đèn đếm nhịp),
    băng chuyền tắt (vết `bangTat`) đứng yên và mờ; thùng nặng H (thép xám, chỉ cú giật mới dời được). Một phát bắn = ban + giat chạy CÙNG LÚC: ban = bóng tròn bay thẳng từ miệng nòng (trước hay sau, theo `sau`; làn hơi phun ở miệng)
    tới ô `den` (trúng nút thì nút lóe rồi đổi, băng đổi ngay, cửa đổi ở cuối nhịp; bị chặn thì nảy ra; ra khỏi sân thì bay mất ở mép); giat = xe trượt một ô ngược hướng bắn (di), hay rung tại chỗ nếu ô sau xe bị chặn;
-   có thùng nặng sau xe thì thùng trượt thẳng đi (thung-di nguon 'giat', bụi bốc theo), thùng bị chặn ngay thì xe và thùng cùng rung + dấu ! (thung-chan). cua-ket = cửa rung đỏ, ban-hut / ban-bi-chan = dấu ?, het-dan / ban-goi-lai = dấu !,
+   có thùng nặng sau xe thì thùng nhích đúng 1 ô và xe dời 1 ô theo vào ô thùng vừa rời, cùng nhịp (thung-di nguon 'giat' soO 1 + giat di true, bụi bốc theo; luật 29/10 "giật một ô"), ô sau thùng bị chặn thì xe và thùng cùng rung + dấu ! (thung-chan). cua-ket = cửa rung đỏ, ban-hut / ban-bi-chan = dấu ?, het-dan / ban-goi-lai = dấu !,
    số đạn còn (cfg.danToiDa) ở góc sân. Bắn nhanh (s.luc "fast", màn Lực bắn): làn hơi nhỏ, không có giat; hết tầm (s.hetTam) thì bóng rơi ở ô s.cuoi, bụi nhỏ, dấu ?.
    CAMERA NHÌN XUỐNG của drone (docCamBien.cam === 'camera-bay', look() đọc vật hay sàn ở ô NGAY DƯỚI drone, 16/10): kính camera ở mép trên khung sáng rực, ô dưới drone tô màu vừa đọc (vòng sáng như cảm biến màu ở bụng xe + vạch quét chạy từ trên xuống),
    bốn góc ngắm (viewfinder) ôm ô đó ở lớp trên (nguon 'vat' thì ôm vật nhỏ hơn, 'chan' thì góc xám + X), bong chữ màu nổi cạnh drone.
@@ -1638,7 +1638,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** GIẬT của phát bắn (sự kiện 'giat' s: huong = hướng giật, di = xe có dời không, thung = id thùng nặng bị đẩy), chạy cùng lúc với bóng bay.
      *  thungs = các 'thung-di' nguon 'giat' của nhịp; chan = 'thung-chan' kieu 'giat' (thùng bị chặn ngay, cả hai đứng yên).
      *    di: xe trượt một ô ngược hướng bắn (giảm tốc), bụi sau bánh;
-     *    thùng trượt: xe nhún nhẹ về phía thùng, thùng trượt thẳng soO ô thật nhanh, vệt bụi sau thùng;
+     *    thùng nhích (luật 29/10 "giật một ô"): thùng nhích đúng 1 ô và xe dời 1 ô vào ô thùng vừa rời CÙNG NHỊP (dính sát nhau như xích đẩy thùng), vệt bụi sau thùng;
      *    bị chặn (tường, mép sân, cửa, nút, rào, bậc thang, vật): xe rung tại chỗ (nhích về phía chỗ chặn rồi về), tia bụi ở chỗ chạm. */
     giatXe: async function (s, thungs, chan, ms, my) {
       var v = this.vis, self = this, rx = DX[s.huong], ry = DY[s.huong];
@@ -1647,16 +1647,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var m = thungs.map(function (q) { var th = self.thungTheoId(q.id); return th ? { th: th, x0: q.tu.x, y0: q.tu.y, x1: q.den.x, y1: q.den.y, soO: q.soO || 1 } : null; }).filter(function (q) { return q; });
         var soO = 1; m.forEach(function (q) { if (q.soO > soO) soO = q.soO; });
         var dur = Math.min(ms * 2.2, ms * (1.0 + 0.28 * soO));
+        var xeDi = !!(s.di && s.den && (s.den.x !== s.tu.x || s.den.y !== s.tu.y)), xx0 = v.x, yy0 = v.y;
         await this.tween(dur, my, function (k) {
           var e = 1 - Math.pow(1 - k, 2.4);
           m.forEach(function (q) {
             q.th.x = q.x0 + (q.x1 - q.x0) * e; q.th.y = q.y0 + (q.y1 - q.y0) * e;
             if (k < 0.85 && Math.random() < 0.8) self.burst(q.th.x * T + 7 - rx * 7, q.th.y * T + 10 - ry * 7, 1, [BM.sanTrang, BM.sanXam, BM.sanXanhLa], 0.5);
           });
-          var a = Math.sin(Math.min(1, k * 5) * Math.PI) * (1 - k);
-          v.dx = rx * a * 1.4; v.dy = ry * a * 1.4;                                             // xe nhún về phía thùng khi thùng bị hất đi
+          if (xeDi) {                                                                           // xe theo thùng một ô, cùng nhịp, bụi sau bánh
+            v.x = xx0 + (s.den.x - xx0) * e; v.y = yy0 + (s.den.y - yy0) * e; v.hop = Math.sin(Math.min(1, k * 2.2) * Math.PI) * 0.6;
+            if (k < 0.8 && Math.random() < 0.5) self.burst(v.x * T + 7 - rx * 6, v.y * T + 10 - ry * 6, 1, [BM.sanTrang, BM.sanXam, BM.sanXanhLa], 0.45);
+          } else {
+            var a = Math.sin(Math.min(1, k * 5) * Math.PI) * (1 - k);
+            v.dx = rx * a * 1.4; v.dy = ry * a * 1.4;                                           // xe nhún về phía thùng (vết cũ không có di)
+          }
         });
         m.forEach(function (q) { q.th.x = q.x1; q.th.y = q.y1; });
+        if (xeDi) { v.x = s.den.x; v.y = s.den.y; v.hop = 0; }
         v.dx = 0; v.dy = 0;
         return;
       }
