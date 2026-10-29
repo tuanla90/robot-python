@@ -112,7 +112,8 @@ console.log('\n== 2. Chẩn đoán ==');
 console.log('\n== 3. Hai chương ==');
 {
   const ds = ManHoc.danhSach.filter((m) => m.chuong === 'may-son' || m.chuong === 'net-lien' || m.chuong === 'che-may-son');      // P0 mùa 4: may-son tách chấm ô (gói 2) / nét liền net-lien (gói 6)
-  kiem('20 màn: may-son.1–10 và che-may-son.1–10', ds.length === 20);
+  // Màn mới mùa 4 gói 2 (man-cham-son.js: may-son.11–16) nằm ở hoc/kiem-man-mua-4.mjs; ở đây chỉ đếm màn cũ.
+  kiem('20 màn: may-son.1–10 và che-may-son.1–10', ds.filter((m) => !(/^may-son\.1[1-9]$/.test(m.ma))).length === 20);
   const DOC = ['che-may-son.6', 'che-may-son.9', 'che-may-son.10'];
   kiem('mọi màn: xe hai bánh gắn đầu sơn, khay 9 lệnh, gói Chấm sơn bớt pen_down / pen_up (che-may-son 6, 9, 10: thêm color() và cảm biến màu dưới bụng), mục tiêu to-hinh, có hình mờ', ds.every((m) => m.loaiRobot === 'banh' && m.robot.tay === 'son' && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh) &&
     (DOC.includes(m.ma) ? J(m.hamGoc) === J(KHAY.concat(['color'])) && J(m.robot.camBien) === '[{"ma":"mau","o":"hong"}]' && !!m.sonBanDau : J(m.hamGoc) === J(m.chuong === 'may-son' ? KHAY.filter((t) => t !== 'pen_down' && t !== 'pen_up') : KHAY) && !m.robot.camBien.length)));

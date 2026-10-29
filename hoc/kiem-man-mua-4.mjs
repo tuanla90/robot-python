@@ -71,8 +71,9 @@ for (const g of goi4) for (const [c] of g.chuong) {
     // màn trình diễn khoá chương trình (máy chấm chạy mã mẫu khoá) nên cắm lỗi giả ở màn mới đầu tiên KHÔNG trình diễn
     if (LOI_GIA && !daLoiGia && !m.chiChay) { lg = Object.assign({}, lg, { chinh: lg.chinh.slice(0, -1) }); daLoiGia = true; }
     const r = cham(lg);
-    kiem(m.ma + ' lời giải 3 sao, đúng sao.o ' + m.sao.o + ' / sao.nhip ' + m.sao.nhip, r.thang && r.sao === 3 && r.soO === m.sao.o && r.soNhip === m.sao.nhip,
-      (r.thang ? r.sao + ' sao, ' : 'thua ' + ma(r).join(',') + ', ') + r.soO + ' ô, ' + r.soNhip + ' nhịp');
+    // lời giải không được kèm chẩn đoán (đâm tường, sơn thừa…): thắng mà vẫn đâm tường cuối hàng là lời giải dạy sai
+    kiem(m.ma + ' lời giải 3 sao, đúng sao.o ' + m.sao.o + ' / sao.nhip ' + m.sao.nhip + ', không chẩn đoán', r.thang && r.sao === 3 && r.soO === m.sao.o && r.soNhip === m.sao.nhip && !r.chanDoan.length,
+      (r.thang ? r.sao + ' sao, ' : 'thua, ') + 'chẩn đoán [' + ma(r).join(',') + '], ' + r.soO + ' ô, ' + r.soNhip + ' nhịp');
     const mm = cham(m.maMau);
     if (m.chiChay) kiem(m.ma + ' trình diễn: mã mẫu = lời giải, thắng 3 sao', J(m.maMau.chinh) === J(m.loiGiai.chinh) && mm.thang && mm.sao === 3, mm.sao + ' ' + ma(mm).join(','));
     else kiem(m.ma + ' mã mẫu thua', !mm.thang, ma(mm).join(','));

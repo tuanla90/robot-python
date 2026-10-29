@@ -1110,7 +1110,7 @@
       // list: list.1 thành màn trình diễn (dưới), list.11 màn ép sửa một số (man-cat-canh.js), list.2 (xoắn ốc 28 ô, nhảy đường cong) cất khỏi lộ trình
       chuong: [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]] },
     { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
-      chuong: [['may-son', day('may-son', [1, 2, 6, 7])], ['che-list', day('che-list', MUOI)]] },
+      chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 5, 6, 8, 9, 7, 10])]] },
     { ma: 'mau', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'mau',
       chuong: [['mau', day('mau', MUOI)], ['che-mau', day('che-mau', MUOI)]] },
     { ma: 'pho-mau', ten: 'Phố màu',

@@ -719,7 +719,7 @@ const LOI_GIA_4 = process.argv.includes('--loi-gia-mua-4');
 // (chen trước màn trùm có sẵn cuối chương).
 const BANG_MUA_4 = [
   ['drone', 'bo-phan', [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]]],
-  ['may-son', 'bo-phan', [['may-son', day('may-son', [1, 2, 6, 7])], ['che-list', day('che-list', MUOI)]]],
+  ['may-son', 'bo-phan', [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 5, 6, 8, 9, 7, 10])]]],
   ['mau', 'bo-phan', [['mau', day('mau', MUOI)], ['che-mau', day('che-mau', MUOI)]]],
   ['pho-mau', undefined, [['pho-mau', []], ['che-pho-mau', []]]],
   ['tram-sac', 'bo-phan', [['tram-sac', day('drone', [4, 5, 6, 10])], ['che-drone', day('che-drone', MUOI)]]],

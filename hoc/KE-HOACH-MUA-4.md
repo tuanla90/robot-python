@@ -112,6 +112,11 @@ Ghi chú chia:
   kiem-goi-doi: nhánh khung mùa 4; kiem-may-son: may-son tách chấm / nét liền; kiem-dua-robot, kiem-doi-thu-manh: mùa 5).
   Có / thiếu theo gói: 1 Cất cánh 16/4 · 2 Chấm sơn 14/6 · 3 Camera bốn hướng 20/0 (dựng lại sau N2) · 4 Phố màu 0/20 · 5 Trạm sạc 14/6 ·
   6 Nét liền 16/4 · 7 Nhìn dưới chân 10/10 · 8 Đội chia hàng 20/0 · 9 Sơn từ trên cao 0/20 · 10 Drone kẻ vạch R1 0/20. Tổng 110 / 90.
+- **29/10 Gói 1 Cất cánh xong** (c37bc2a): man-cat-canh.js drone.11 (trình diễn) · .12 · .13 · .14 (trùm giao hàng qua phố), list.11; list.1 thành trình diễn,
+  cắt list.2. Đường cong (lề dòng 3 / nhịp 4 / ô 6 so màn mốc trước) không nhảy.
+- **30/10 Gói 2 Chấm sơn xong**: man-cham-son.js may-son.11 (trình diễn ink / dot) · .12 · .13 · .14 · .15 · .16 (trùm, chế paint_row(colors)).
+  Thứ tự may-son 11 · 1 · 2 · 12 · 6 · 7 · 14 · 15 · 13 · 16; che-list 1 · 2 · 3 · 4 · 5 · 6 · 8 · 9 · 7 · 10 (Đường về 26 nhịp dời ra sau cho khỏi nhảy).
+  kiem-man-mua-4 siết: lời giải không được kèm chẩn đoán (bắt được may-son.14 / .15 đâm tường cuối hàng, đã nới sân). 96 / 96 bộ đạt.
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -120,4 +125,7 @@ Ghi chú chia:
 3. Gói 3 Camera bốn hướng và gói 7 Nhìn dưới chân đang chứa màn cũ dùng color() bụng / look(): dựng lại sau lõi N2 (P1), số màn mất / giữ báo sau.
 4. Mùa 5 "Sân bóng" chỉ là chỗ chứa tạm 18 gói cũ (vẫn ẩn), ngưỡng sao trong đó tính lại (vd rap-du 90 → 95 ★): dựng thật khi tới mùa 5.
 5. Lõi P1 (đáp đất sạc, camera color(huong), drone sơn ô dưới) đụng san-hoc.js / cham.js chung: chờ P1b mùa 3 và Phun nhẹ A / B gộp, hay làm luôn trên nhánh riêng rồi gộp sau (sẽ phải giải xung đột)?
+6. Đường cong gói 2: che-list.4 (Đo một cạnh) nhảy số ô 12 → 47 so với che-list.3. Ba sân của các màn đo là bãi trống 7 × 7, xe chỉ đi chu vi tối đa
+   4 × 4 nên tôi để nguyên (coi số ô của bãi trống là đo lệch). Muốn mượt hẳn thì thu bãi về 5 × 5 hoặc 6 × 6 (sửa PHONG trong man-che-list.js, đo lại sao).
+7. Chương che-list (gói 2) không có màn trình diễn: không có khối mới (hàm nhận danh sách ghép hai thứ đã học), nên tôi không thêm.
 
