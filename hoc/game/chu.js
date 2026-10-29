@@ -484,7 +484,7 @@
       'pg.me-cung.2': 'Em gắn hai mắt nhỏ bên hông R1. Tia quét trái, quét phải.',
       'pg.me-cung.3': 'R1 bám theo tường bên phải, rẽ qua rẽ lại, tới cờ!',
       'pg.me-cung.4': 'Lệnh right_clear() hỏi: bên phải trống không? Trống thì rẽ phải.',
-      'pg.hai-robot.1': 'Em chế thêm một robot sơn lam. Cửa xưởng mở: chào R2!',
+      'pg.hai-robot.1': 'Em chế thêm một robot sơn hồng. Cửa xưởng mở: chào R2!',
       'pg.hai-robot.2': 'Mỗi robot một bảng code riêng. Em viết cho cả hai, chạy cùng lúc.',
       'pg.hai-robot.3': 'R1 chuyền thùng cho R2. R2 mang thùng vào ô đích. Đội ăn ý!',
       'pg.combo.1': 'Kho chật ních. Thùng nằm hai bên lối đi, xe khó quay.',
