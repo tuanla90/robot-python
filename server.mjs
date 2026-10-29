@@ -1,5 +1,5 @@
 // Máy chủ tĩnh cho Railway và chạy thử trên máy: không cần build, không cần gói ngoài.
-//   /          → Robot Chấn Hưng (hoc/game/choi.html)
+//   /          → Mật Lệnh Robot (hoc/game/choi.html)
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
@@ -84,5 +84,5 @@ createServer(async (request, response) => {
     else createReadStream(file).pipe(response);
   }
 }).listen(port, '0.0.0.0', () => {
-  console.log(`Đội Robot Chấn Hưng: http://localhost:${port}`);
+  console.log(`Mật Lệnh Robot: http://localhost:${port}`);
 });

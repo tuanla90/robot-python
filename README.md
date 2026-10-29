@@ -1,6 +1,6 @@
-# Đội Robot Chấn Hưng
+# Mật Lệnh Robot
 
-Game dạy Python bằng robot (dòng 3 của vũ trụ Chấn Hưng). Tách ra từ repo `learn-code-by-game`
+Game dạy Python bằng robot: học Python bằng cách ra lệnh cho robot. Tên cũ: Đội Robot Chấn Hưng (dòng 3 của vũ trụ Chấn Hưng); user 29/10/2026 đổi tên hiển thị, tên thư mục và mã nội bộ giữ nguyên. Tách ra từ repo `learn-code-by-game`
 ngày 22/10/2026: lịch sử commit của thư mục `robotics/` (nhánh `robotics`) giữ nguyên.
 
 Trang tĩnh thuần HTML + JS: không build, không gói npm.

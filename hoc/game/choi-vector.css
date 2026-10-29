@@ -544,7 +544,7 @@ body.ve-vector .lr-robot.doi .lr-hinh{animation:vec-lr-pop .32s cubic-bezier(.34
 
 /* ============================================================ 1. MÀN ĐẦU (man-dau.js, #sc-dau) */
 /* logo: chữ chàm đậm, không viền mực chồng nhiều lớp; vạch nhấn tím chàm → cyan dưới tên */
-body.ve-vector .d-ten{font:800 40px/1.04 var(--px);letter-spacing:.5px;color:var(--g-vecChu);text-shadow:none;padding-top:0}
+body.ve-vector .d-ten{font:800 40px/1.22 var(--px);letter-spacing:.5px;color:var(--g-vecChu);text-shadow:none;padding-top:0}      /* 1.22: chữ hoa có dấu nặng (MẬT LỆNH) không đè dòng dưới; 1.04 cũ chỉ vừa tên không dấu nặng */
 body.ve-vector .d-ten::after{content:"";display:block;width:56px;height:5px;margin:12px auto 0;border-radius:var(--r-full);background:linear-gradient(90deg,var(--g-vecBrand),var(--g-vecDen))}
 body.ve-vector .d-phu{margin-top:10px;font:500 15px/1.3 var(--px);color:var(--g-vecChuPhu);text-shadow:none}
 /* tấm sân robot chạy: thẻ trắng bo góc, sàn bàn cờ hai tông như sân vector (vecSanChan / vecSanLe), bóng mềm */

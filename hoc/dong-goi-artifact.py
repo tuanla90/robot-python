@@ -69,7 +69,7 @@ nap_js = """<script>(function(){var d=window.__DH||{j:[]},g={};d.j.forEach(funct
 Object.keys(g).map(Number).sort(function(a,b){return a-b}).forEach(function(k){try{(0,eval)(g[k].join(''))}catch(e){console.error('Lỗi nạp tệp '+k,e)}});})();</script>"""
 
 # nền tĩnh = vecNenSau (bang-mau.js), cùng theme-color / manifest (kiem-bang-mau.mjs NGOAI_LE ghim giá trị này)
-trang = '''<title>Robot Chấn Hưng</title>
+trang = '''<title>Mật Lệnh Robot</title>
 <meta name="theme-color" content="#e8e6f6">
 <style>html,body{height:100%%;background:#e8e6f6}</style>
 %s
