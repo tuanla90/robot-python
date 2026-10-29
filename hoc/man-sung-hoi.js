@@ -5,8 +5,8 @@
    Hai lệnh gốc (luật đầy đủ ở san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI), chỉ RA LỆNH, wait() cho nhịp trôi, một nhịp một phát, cặp lệnh ngược:
        shoot()       bắn bóng ra TRƯỚC mũi xe; xe GIẬT LÙI một ô
        shoot_back()  bắn bóng ra SAU đuôi xe;  xe GIẬT TỚI một ô
-   Ô xe giật vào bị chặn (tường, mép sân, cửa đóng, nút, hàng rào, vật…) thì xe đứng yên; ô đó có THÙNG NẶNG thì thùng TRƯỢT thẳng theo hướng giật tới vật cản (không dừng ở đích), xe đứng yên.
-   Xe húc thùng bằng bánh = đâm như tường. Bóng bay thẳng tới vật cản đầu tiên, qua hàng rào / băng chuyền / cửa mở; trúng nút N thì nút đổi (băng đổi ngay, cửa đổi cuối nhịp).
+   Ô xe giật vào bị chặn (tường, mép sân, cửa đóng, nút, hàng rào, vật…) thì xe đứng yên; ô đó có THÙNG NẶNG thì thùng NHÍCH ĐÚNG 1 Ô theo hướng giật và xe dời 1 ô theo vào ô thùng vừa rời
+   (luật 29/10 "giật một ô", như xích đẩy thùng); ô sau thùng bị chặn thì cả hai đứng yên. Xe húc thùng bằng bánh = đâm như tường. Bóng bay thẳng tới vật cản đầu tiên, qua hàng rào / băng chuyền / cửa mở; trúng nút N thì nút đổi (băng đổi ngay, cửa đổi cuối nhịp).
    Thứ tự trong nhịp: bắn → giật → băng chuyền → cửa đổi. Nhịp có lệnh bắn thì bánh nghỉ (khay chặn luôn lệnh bánh cùng nhịp).
 
    Ba hàng: 1–3 làm quen (giật lùi, giật tới, bóng ra sau mở cửa) · 4–6 luyện (thùng nặng sau xe, hai thùng hai phía, quay để đẩy) · 7–9 biến thể (thùng đi băng, tắt băng cho xe, thùng chắn đường bắn) · 10 trùm.
@@ -62,26 +62,27 @@
   // 3: nút ở tường trái (0,1) PHÍA SAU xe quay mặt phải; cửa ở (4,1), cờ ở (6,1)
   var SAN_3 = ['#######', 'N...C.F', '#######'];
   var BD_3 = { x: 2, y: 1, huong: 1 };
-  // 4: xe (4,1) quay mặt phải, thùng ngay sau xe ở (3,1), ô đích sát tường ở (1,1)
+  // 4: xe (4,1) quay mặt phải, thùng ngay sau xe ở (3,1), ô đích sát tường ở (1,1): hai phát, mỗi phát thùng nhích một ô (xe theo một ô)
   var SAN_4 = ['#######', '#D.H..#', '#######'];
   var BD_4 = { x: 4, y: 1, huong: 1 };
-  // 5: hành lang đứng, xe (1,4) quay mặt lên giữa hai thùng (1,3) và (1,5); đích sát tường ở (1,1) và (1,7)
-  var SAN_5 = ['###', '#D#', '#.#', '#H#', '#.#', '#H#', '#.#', '#D#', '###'];
-  var BD_5 = { x: 1, y: 4, huong: 0 };
-  // 6: xe (2,3) quay mặt lên; thùng trước mặt ở (2,2) (đích (2,0) sát mép trên), thùng bên phải ở (3,3) (đích (4,3) sát mép phải)
-  var SAN_6 = ['..D..', '.....', '..H..', '...HD', '.....'];
+  // 5: hành lang đứng, xe (1,3) quay mặt lên giữa hai thùng (1,2) và (1,4); đích sát tường ở (1,1) và (1,5). Đẩy thùng này xong xe đã dời một ô, nên phải giật về phía kia hai lần
+  var SAN_5 = ['###', '#D#', '#H#', '#.#', '#H#', '#D#', '###'];
+  var BD_5 = { x: 1, y: 3, huong: 0 };
+  // 6: xe (2,3) quay mặt lên; thùng trước mặt ở (2,2) (đích (2,1)); thùng kia ở (3,2) (đích (4,2) sát mép phải): đẩy thùng trước xong, xe ở (2,2) và thùng kia nằm ngay bên phải
+  var SAN_6 = ['.....', '..D..', '..HHD', '.....', '.....'];
   var BD_6 = { x: 2, y: 3, huong: 0 };
-  // 7: xe (1,1) quay mặt phải sát tường trái, thùng ở (2,1); thùng trượt tới mép phải (4,1) rơi vào làn băng chạy xuống, tới ô đích (4,4)
-  var SAN_7 = ['#####', '#.H.v', '####v', '####v', '####D'];
+  // 7: xe (1,1) quay mặt phải sát tường trái, thùng ở (2,1); cú giật đẩy thùng một ô sang (3,1) lên làn băng chạy xuống, băng đưa tới ô đích (3,4)
+  var SAN_7 = ['#####', '#.Hv#', '###v#', '###v#', '###D#'];
   var BD_7 = { x: 1, y: 1, huong: 1 };
   // 8: hành lang đứng, xe (1,7) quay mặt lên; năm ô băng chạy xuống (y 2..6) đẩy xe lùi; cờ (1,1), nút ngay sau cờ ở (1,0)
   var SAN_8 = ['#N#', '#F#', '#v#', '#v#', '#v#', '#v#', '#v#', '#.#', '#.#'];
   var BD_8 = { x: 1, y: 7, huong: 0 };
-  // 9: nút ở tường trái (0,2) bị thùng (1,2) chắn đường bắn; xe (1,3) quay mặt lên; cửa (3,2), cờ (4,2); hành lang đứng (1,0)-(1,1) để thùng trượt vào
-  var SAN_9 = ['#.###', '#.###', 'NH.CF', '#.###', '#####'];
-  var BD_9 = { x: 1, y: 3, huong: 0 };
-  // 10: xe (1,3) quay mặt lên giữa thùng (1,2) và thùng (1,4); đích (1,0) và (1,5); thùng thứ ba (3,2) nằm sau nút, trước cửa (4,2), đích (6,2); nút (0,2) ở tường trái
-  var SAN_10 = ['#D#####', '#.#####', 'NH.HC.D', '#.#####', '#H#####', '#D#####', '#######'];
+  // 9: nút ở tường trái (0,1) bị thùng (1,1) chắn đường bắn; xe (1,2) quay mặt lên; cửa (3,1), cờ (4,1); ô (1,0) để thùng nhích lên, xe theo vào (1,1) vừa ngang van
+  var SAN_9 = ['#.###', 'NH.CF', '#.###', '#####'];
+  var BD_9 = { x: 1, y: 2, huong: 0 };
+  // 10: xe (1,3) quay mặt lên; thùng (1,2) ngay trước mặt chắn đường bắn tới nút (0,2), đích (1,1); đẩy xong xe ở (1,2) ngang nút; bắn nút xong xe giật sang (2,2) đứng ngay trên
+  //     thùng thứ hai (2,3), dưới nó là cửa (2,4) rồi đích (2,5): quay mặt lên, bắn hai phát, mỗi phát thùng nhích một ô qua cửa đang mở (tia bay lên tường (2,1), không chạm nút lần nữa)
+  var SAN_10 = ['#######', '#D#####', 'NH.####', '#.H.###', '##C####', '##D####', '#######'];   // (3,3) trống để thùng (2,3) không nằm trong góc chết (cửa đóng dưới nó tính như tường)
   var BD_10 = { x: 1, y: 3, huong: 0 };
 
   /* ------------------------------------------------------------- chương trình dùng lại */
@@ -89,13 +90,13 @@
   var CHINH_1 = LAP(3, BAN);
   var CHINH_2 = LAP(3, BAN_SAU);
   var CHINH_3 = nhieu(BAN_SAU, ['forward(3)']);
-  var CHINH_4 = BAN.slice();
-  var CHINH_5 = nhieu(BAN, BAN_SAU);
+  var CHINH_4 = LAP(2, BAN);
+  var CHINH_5 = nhieu(BAN, BAN_SAU, BAN_SAU);
   var CHINH_6 = nhieu(BAN_SAU, ['turn_left()'], BAN);
   var CHINH_7 = nhieu(BAN_SAU, LAP(5, 'wait()'));
   var CHINH_8 = nhieu(BAN, ['forward(7)']);
-  var CHINH_9 = nhieu(BAN_SAU, ['move()', 'turn_left()'], BAN, ['back()', 'back()']);
-  var CHINH_10 = nhieu(BAN_SAU, BAN, ['move()', 'turn_left()'], BAN, BAN);
+  var CHINH_9 = nhieu(BAN_SAU, ['turn_left()'], BAN, ['back()', 'back()']);
+  var CHINH_10 = nhieu(BAN_SAU, ['turn_left()'], BAN, ['turn_right()'], LAP(2, BAN));
 
   var DS = [
     /* ------------------------------------------------ hàng 1: làm quen */
@@ -157,44 +158,46 @@
     /* ------------------------------------------------------------- hàng 2: luyện */
     man({
       so: 4, ten: 'Thùng sau lưng', hang: 'luyen', mucTieu: 'day-thung', hamCuaEmCan: ['forward', 'u_turn', 'move'],
-      deBai: 'Thùng nặng không gắp được, xe húc bằng bánh cũng không đẩy được. Nhưng thùng nằm ngay sau xe thì cú giật đẩy nó trượt thẳng ra xa, tới khi gặp vật cản. Đưa thùng vào ô đích có khung vàng.',
+      deBai: 'Thùng nặng không gắp được, xe húc bằng bánh cũng không đẩy được. Nhưng thùng nằm ngay sau xe thì cú giật đẩy nó nhích một ô, và xe lùi theo một ô. Đưa thùng vào ô đích có khung vàng.',
       veMaMau: 'Chương trình có sẵn cho xe tiến hai ô. Chạy thử, xem thùng có nhúc nhích không rồi sửa.',
       san: SAN_4, batDau: BD_4,
       maMau: { chinh: ['forward(2)'] },
-      sao: { o: 2, nhip: 1 },
+      sao: { o: 3, nhip: 2 },
       loiGiai: { chinh: CHINH_4.slice() },
-      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh bắn', baiLam: { chinh: nhieu(['# bắn ra trước, xe lùi vào thùng'], BAN) } },
+      loiGiaiKhac: { moTa: 'Viết thẳng hai cặp shoot(), wait() không dùng vòng for', baiLam: { chinh: lap(BAN, 2) } },
       loiSai: [
         { moTa: 'Quay đầu rồi húc thùng bằng bánh: thùng nặng cản như tường', baiLam: { chinh: ['u_turn()', 'move()'] }, phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
         { moTa: 'Dùng shoot_back(): xe giật tới, cách xa thùng, thùng không nhúc nhích', baiLam: { chinh: BAN_SAU.slice() }, phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Bắn một phát: thùng mới nhích một ô, chưa tới đích', baiLam: { chinh: BAN.slice() }, phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Quên wait(): lệnh bắn chưa kịp chạy', baiLam: { chinh: ['shoot()'] }, phaiCoMa: ['quen-wait', 'chua-day-thung'] }
       ],
       goiY: ['Thùng nằm sau xe: bắn ra trước, xe giật lùi đúng vào thùng.',
-        'Thùng trượt cho tới khi gặp tường, nên nhìn xem tường nằm ở đâu.']
+        'Mỗi phát thùng nhích một ô, xe theo sát: đích cách thùng hai ô thì bắn hai phát.']
     }),
 
     man({
       so: 5, ten: 'Hai thùng hai phía', hang: 'luyen', mucTieu: 'day-thung',
       deBai: 'Xe đứng giữa hai thùng nặng, mỗi thùng có một ô đích nằm sát tường. Thùng ở phía nào thì phải chọn đúng lệnh: shoot() đẩy thùng sau xe, shoot_back() đẩy thùng trước mặt xe. Đưa cả hai thùng vào đích.',
-      veMaMau: 'Chương trình có sẵn đẩy được một thùng. Chạy thử rồi đẩy nốt thùng còn lại.',
+      veMaMau: 'Chương trình có sẵn đẩy được một thùng. Chạy thử, xem xe dừng ở đâu rồi đẩy nốt thùng còn lại.',
       san: SAN_5, batDau: BD_5,
       maMau: { chinh: BAN.slice() },
-      sao: { o: 4, nhip: 2 },
+      sao: { o: 6, nhip: 3 },
       loiGiai: { chinh: CHINH_5.slice() },
-      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích giữa hai lần bắn', baiLam: { chinh: nhieu(BAN, ['# xong thùng sau, tới thùng trước'], BAN_SAU) } },
+      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích giữa hai chiều bắn', baiLam: { chinh: nhieu(BAN, ['# xong thùng sau, giật tới hai lần cho thùng trước'], BAN_SAU, BAN_SAU) } },
       loiSai: [
         { moTa: 'Chỉ đẩy thùng phía sau: thùng phía trước vẫn nằm giữa hành lang', baiLam: { chinh: BAN.slice() }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Bắn hai lần cùng một chiều: thùng phía trước không nhúc nhích', baiLam: { chinh: nhieu(BAN, BAN) }, phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Bắn hai lần cùng một chiều: thùng phía sau đã sát tường, không nhúc nhích nữa', baiLam: { chinh: nhieu(BAN, BAN) }, phaiCoMa: ['thung-chan', 'chua-day-thung'] },
+        { moTa: 'Giật tới chỉ một lần: xe đã lùi theo thùng sau nên phát này chưa chạm thùng trước', baiLam: { chinh: nhieu(BAN, BAN_SAU) }, phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Quên wait() sau lệnh bắn thứ hai: lệnh đó chưa kịp chạy', baiLam: { chinh: nhieu(BAN, ['shoot_back()']) }, phaiCoMa: ['quen-wait', 'chua-day-thung'] }
       ],
       goiY: ['Xe giật về phía nào thì thùng nằm phía đó bị đẩy: bắn ra trước giật lùi, bắn ra sau giật tới.',
-        'Đẩy xong thùng này, xe vẫn đứng yên, nên đẩy tiếp được thùng kia.']
+        'Đẩy xong thùng này, xe đã dời một ô theo nó, nên cách thùng kia hai ô: giật về phía đó hai lần.']
     }),
 
     man({
       so: 6, ten: 'Quay rồi đẩy', hang: 'luyen', mucTieu: 'day-thung', hamCuaEmCan: ['turn_left', 'turn_right'],
-      deBai: 'Hai thùng nặng, hai ô đích. Một thùng ở trước xe, thùng kia ở bên phải. Xe phải quay để thùng nằm trước hoặc sau xe, rồi mới đẩy được.',
-      veMaMau: 'Chương trình có sẵn đẩy thùng ở trước xe. Chạy thử rồi viết tiếp cho thùng bên phải.',
+      deBai: 'Hai thùng nặng, hai ô đích. Một thùng ở trước xe; đẩy nó xong, xe tiến theo một ô và thùng kia nằm ngay bên phải xe. Xe phải quay để thùng nằm trước hoặc sau xe, rồi mới đẩy được.',
+      veMaMau: 'Chương trình có sẵn đẩy thùng ở trước xe. Chạy thử, xem xe dừng ở đâu rồi viết tiếp cho thùng bên phải.',
       san: SAN_6, batDau: BD_6,
       maMau: { chinh: BAN_SAU.slice() },
       sao: { o: 7, nhip: 3 },
@@ -224,7 +227,7 @@
         { moTa: 'Đẩy xong là dừng chương trình, không chờ băng', baiLam: { chinh: BAN_SAU.slice() }, phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Dùng shoot(): xe giật lùi mà sau lưng là tường, thùng không bị đẩy', baiLam: { chinh: nhieu(BAN, LAP(5, 'wait()')) }, phaiCoMa: ['giat-chan', 'chua-day-thung'] }
       ],
-      goiY: ['Thùng nằm bên phải xe, ở phía trước mũi xe: bắn ra sau, xe giật tới đúng vào thùng.',
+      goiY: ['Thùng nằm ngay trước mũi xe, sát làn băng: bắn ra sau, xe giật tới đẩy thùng nhích một ô lên băng.',
         'Làn băng dài mấy ô thì thùng cần chờ bấy nhiêu lần hai nhịp.']
     }),
 
@@ -249,19 +252,19 @@
     man({
       so: 9, ten: 'Thùng chắn tia nước', hang: 'bien-the', hamCuaEmCan: ['move', 'turn_left', 'back'],
       deBai: 'Van mở cửa nằm ở tường bên trái, nhưng thùng nặng đứng chắn đường bắn. Đẩy thùng ra khỏi đường bắn, bắn trúng van, rồi đưa xe qua cửa tới cờ.',
-      veMaMau: 'Chương trình có sẵn đẩy thùng lên cao. Chạy thử rồi viết tiếp.',
+      veMaMau: 'Chương trình có sẵn đẩy thùng lên một ô. Chạy thử, xem xe dừng ở đâu rồi viết tiếp.',
       san: SAN_9, batDau: BD_9,
       maMau: { chinh: BAN_SAU.slice() },
-      sao: { o: 16, nhip: 6 },
+      sao: { o: 12, nhip: 5 },
       loiGiai: { chinh: CHINH_9.slice() },
-      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh bắn van', baiLam: { chinh: nhieu(BAN_SAU, ['move()', 'turn_left()'], ['# quay trái, bắn trúng van'], BAN, ['back()', 'back()']) } },
+      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh bắn van', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], ['# quay trái, bắn trúng van'], BAN, ['back()', 'back()']) } },
       loiSai: [
         { moTa: 'Húc thùng bằng bánh: thùng nặng cản như tường, xe không lên được', baiLam: { chinh: ['move()', 'turn_left()', 'shoot()', 'wait()'] }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Đẩy thùng rồi tiến mà quên bắn van: cửa vẫn đóng', baiLam: { chinh: nhieu(BAN_SAU, ['move()', 'turn_left()'], ['back()', 'back()']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Bắn van rồi tiến thẳng: xe đang quay mặt về phía van nên đâm vào tường', baiLam: { chinh: nhieu(BAN_SAU, ['move()', 'turn_left()'], BAN, ['move()', 'move()']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Đẩy thùng rồi lùi mà quên bắn van: cửa vẫn đóng', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], ['back()', 'back()']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Bắn van rồi tiến thẳng: xe đang quay mặt về phía van nên đâm vào tường', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN, ['move()', 'move()']) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Bắn van khi thùng còn chắn: tia nước dừng ở thùng, cửa vẫn đóng', baiLam: { chinh: nhieu(['turn_left()'], BAN) }, phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Thùng nằm ngay trước xe: bắn ra sau để đẩy nó lên tận đầu hành lang, bỏ trống đường bắn.',
+      goiY: ['Thùng nằm ngay trước xe: bắn ra sau để đẩy nó lên một ô, bỏ trống đường bắn; xe tiến theo, vừa đúng ngang van.',
         'Bắn van bên trái xong xe giật sang phải. Muốn qua cửa thì lùi tiếp, khỏi phải quay mặt lại.']
     }),
 
@@ -269,21 +272,21 @@
     man({
       so: 10, ten: 'Kho hàng', hang: 'trum', mucTieu: 'day-thung', hamCuaEmCan: ['move', 'turn_left'],
       huyHieu: { ma: 'sung-hoi', ten: 'Huy hiệu Vòi phun' },
-      deBai: 'Đưa cả ba thùng nặng vào ô đích. Hai thùng ở trước và sau xe, thùng thứ ba nằm sau cánh cửa đóng; cửa mở bằng van ở tường bên trái. Thùng ở trước xe đang chắn đường bắn tới van.',
+      deBai: 'Đưa cả hai thùng nặng vào ô đích. Thùng ở trước xe đang chắn đường bắn tới van ở tường bên trái; thùng thứ hai nằm trước cánh cửa đóng, cửa mở bằng van đó.',
       veMaMau: 'Chương trình có sẵn đẩy được một thùng. Chạy thử rồi viết tiếp.',
       san: SAN_10, batDau: BD_10,
       maMau: { chinh: BAN_SAU.slice() },
-      sao: { o: 15, nhip: 6 },
+      sao: { o: 13, nhip: 6 },
       loiGiai: { chinh: CHINH_10.slice() },
-      loiGiaiKhac: { moTa: 'Dùng forward(1) thay cho move() (cùng một bước, thêm một lớp hàm)', baiLam: { chinh: nhieu(BAN_SAU, BAN, ['forward(1)', 'turn_left()'], BAN, BAN) } },
+      loiGiaiKhac: { moTa: 'Viết thẳng hai cặp shoot(), wait() cuối không dùng vòng for', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN, ['turn_right()'], BAN, BAN) } },
       loiSai: [
-        { moTa: 'Quên đẩy thùng trước xe: xe không lên được để bắn van', baiLam: { chinh: nhieu(['move()', 'turn_left()'], BAN) }, phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
-        { moTa: 'Chỉ bắn van một lần: cửa mở nhưng thùng thứ ba chưa bị đẩy', baiLam: { chinh: nhieu(BAN_SAU, BAN, ['move()', 'turn_left()'], BAN) }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Quay trái rồi bắn ra sau: tia nước bay sang phải tới thùng chứ không tới van', baiLam: { chinh: nhieu(BAN_SAU, BAN, ['move()', 'turn_left()'], BAN_SAU) }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Viết thẳng từng lệnh bánh, không dùng move() và turn_left(): quá 10 ô', baiLam: { chinh: nhieu(BAN_SAU, BAN, ['left_move()', 'right_move()', 'wait()', 'right_move()', 'wait()'], BAN, BAN) }, phaiCoMa: ['tran-khung'] }
+        { moTa: 'Húc thùng trước mặt bằng bánh: thùng nặng cản như tường, xe không lên được hàng van', baiLam: { chinh: ['move()', 'move()'] }, phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
+        { moTa: 'Đẩy thùng thứ hai chỉ một phát: nó dừng ngay trên ô cửa, chưa tới đích', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN, ['turn_right()'], BAN) }, phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Quay trái rồi bắn ra sau: tia nước bay sang phải, không tới van; xe giật vào van nên đứng yên, cửa vẫn đóng chặn thùng', baiLam: { chinh: nhieu(BAN_SAU, ['turn_left()'], BAN_SAU, ['turn_right()'], LAP(2, BAN)) }, phaiCoMa: ['giat-chan', 'chua-day-thung'] },
+        { moTa: 'Viết thẳng từng lệnh bánh, không dùng turn_left() và turn_right(): quá 10 ô', baiLam: { chinh: nhieu(BAN_SAU, ['right_move()', 'wait()'], BAN, ['left_move()', 'wait()'], BAN, BAN) }, phaiCoMa: ['tran-khung'] }
       ],
-      goiY: ['Mỗi cú giật đẩy một thùng, xe đứng yên. Đẩy hai thùng ở trước và sau xe trước tiên.',
-        'Mỗi phát trúng van đổi van một lần, còn cửa chỉ đổi ở cuối nhịp: thùng trượt qua cửa trong chính nhịp bắn.']
+      goiY: ['Đẩy thùng trước mặt lên ô đích: xe tiến theo một ô, vừa đúng ngang van.',
+        'Bắn van xong xe giật sang phải, đứng ngay trên thùng thứ hai: quay mặt lên rồi bắn hai phát, mỗi phát thùng nhích một ô qua cửa đang mở.']
     })
   ];
 

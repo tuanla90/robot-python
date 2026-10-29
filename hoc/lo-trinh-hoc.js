@@ -775,8 +775,9 @@
     get('che-xich.6').san = ['#####', '#...#', '#...#', '#.o.#', '#####'];
     // che-xich.2: lời giải khác cũ gọi forward(1), hàm có tham số chỉ có từ gói 2 (tham-so), nên ở gói 1 bị ham-chua-co (0 sao). Thay bằng thêm chú thích (2 sao).
     get('che-xich.2').loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(['sidestep()']), hamCuaEmMoi: [{ ten: 'sidestep', thamSo: [], than: ['# né sang phải một ô', 'tr_right()', 'move()', 'tr_left()'] }] };
-    // sung-hoi.6 (sau sung-hoi.5 bảy ô): sân 5 × 5 trống thu bằng tường còn hai làn thùng trượt (25 → 6 ô). Thùng trượt tới mép như cũ: lời giải, nhịp không đổi.
-    get('sung-hoi.6').san = ['##D##', '##.##', '##H##', '##.HD', '#####'];
+    // sung-hoi.6 (sau sung-hoi.5 bảy ô): sân 5 × 5 trống thu bằng tường còn hai làn thùng nhích (25 → 5 ô). Luật giật một ô (29/10): thùng trước (2,2) lên đích (2,1), xe theo vào (2,2),
+    // thùng kia (3,2) ngay bên phải xe, đích (4,2). Lời giải, nhịp như ngân hàng.
+    get('sung-hoi.6').san = ['#####', '##D##', '##HHD', '##.##', '#####'];
     // tham-so.5 (sau tham-so.4 mười ô): bỏ hàng cuối, đoạn đầu ngắn một ô (forward(4) → forward(3)); sân 17 → 16 ô, nhịp 20 → 19.
     var F5 = function (a, b, c, d, e, r2) { return ['forward(' + a + ')', 'turn_right()', 'forward(' + b + ')', r2 || 'turn_left()', 'forward(' + c + ')', 'turn_right()', 'forward(' + d + ')', 'turn_right()', 'forward(' + e + ')']; };
     var mv = function (n) { var k = []; for (var i = 0; i < n; i++) k.push('move()'); return k; };
@@ -821,7 +822,7 @@
     get('che-sung-hoi.1').san = PHONG_GIAT.slice();
     get('che-sung-hoi.2').san = PHONG_GIAT.slice();
     get('che-sung-hoi.4').san = ['#####', '##.##', '...H.', '##.##', '#####'];
-    get('che-sung-hoi.6').san = ['#####', '##.##', '.H.H.', '##.##', '#####'];
+    get('che-sung-hoi.6').san = ['#####', '#.H.#', '##.H.', '##.##', '#####'];        // luật giật một ô (29/10): thùng phải (3,2) ra mép (4,2), xe theo; tiến lên (3,1), thùng kia (2,1) sang (1,1)
     get('che-sung-hoi.8').san = ['##.##', '##H##', '.....', '##.##', '#####'];
     get('che-sung-hoi.9').san = ['#####', '#...#', '#...#', '#####', '#####'];
   })();
@@ -1266,13 +1267,14 @@
   });
   thay('che-sung-hoi.7', {
     ten: 'Đá hai bên', chinhCoDinh: true,
-    deBai: 'Hai thùng nặng nằm hai bên xe. Hàm kick_both() của màn mới đá được thùng bên trái. Sửa nó để đá cả hai thùng ra xa như thùng mờ, xe giữ chỗ và hướng.',
+    deBai: 'Hai thùng nặng nằm hai bên xe. Hàm kick_both() của màn mới đá được thùng bên phải. Sửa nó để đá cả hai thùng, mỗi thùng nhích một ô như thùng mờ, xe dừng như xe mờ.',
     veMaMau: 'Chương trình chính bị khóa, chỉ gọi kick_both(). Thử nó trong sân thử của Xưởng hàm.',
-    // 29/10 mùa 2 xong (đường cong): sân 5 × 5 thu bằng tường còn làn thùng trượt (25 → 7 ô), như che-sung-hoi.6.
-    san: ['#####', '##.##', '.H.H.', '##.##', '#####'], bongMo: { x: 2, y: 2, huong: 0, thung: [{ x: 0, y: 2 }, { x: 4, y: 2 }] },
+    // 29/10 mùa 2 xong (đường cong): sân 5 × 5 thu bằng tường còn làn thùng (25 → 7 ô), như che-sung-hoi.6. Luật giật một ô: đá thùng phải xong xe đã theo sang (3,2);
+    // tiến một ô về (2,2) rồi bắn ra sau: thùng trái (1,2) nhích ra mép (0,2), xe theo vào (1,2).
+    san: ['#####', '##.##', '.H.H.', '##.##', '#####'], bongMo: { x: 1, y: 2, huong: 0, thung: [{ x: 0, y: 2 }, { x: 4, y: 2 }] },
     maMau: bai(['kick_both()'], [ham('kick_both', ['turn_left()', 'shoot()', 'wait()', 'turn_right()'])]),
-    loiGiai: bai(['kick_both()'], [ham('kick_both', ['turn_left()', 'shoot()', 'wait()', 'shoot_back()', 'wait()', 'turn_right()'])]),
-    goiY: ['Khi xe quay trái, thùng bên phải nằm ngay sau lưng xe.', 'Thêm shoot_back() và wait() trước khi quay lại.']
+    loiGiai: bai(['kick_both()'], [ham('kick_both', ['turn_left()', 'shoot()', 'wait()', 'move()', 'shoot_back()', 'wait()', 'turn_right()'])]),
+    goiY: ['Đá xong thùng bên phải, xe đã theo nó một ô; tiến một ô nữa là thùng bên trái nằm ngay sau lưng xe.', 'Thêm move(), shoot_back() và wait() trước khi quay lại.']
   });
   thay('che-nam-cham.7', {
     ten: 'Hút hay đẩy', chinhCoDinh: true,

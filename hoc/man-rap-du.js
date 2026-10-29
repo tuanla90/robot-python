@@ -85,7 +85,7 @@
   var CHAT_6 = ['.......', '.......', '.s.....', '.......', '.......'];
 
   // 7: ba hàng, mỗi hàng một thùng nặng (cột 2) và một ô đích (cột 6); xe đi theo cột 0 giữa các hàng; xe ở (0,1) quay phải
-  var SAN_7 = ['#######', '..H...D', '.#####.', '..H...D', '.######', '..H...D', '#######'];
+  var SAN_7 = ['#######', '#.HD###', '#.#####', '#.HD###', '#.#####', '#.HD###', '#######'];     // luật giật một ô (29/10): mỗi hàng thùng (2,y) nhích một ô vào đích (3,y), xe theo vào (2,y) rồi lùi về cột 1
 
   // 8: ba sân giống nhau, hộp ở (2,1) trước mặt xe (2,2); ô đích ĐỎ ở (1,2) bên trái, ô đích XANH DƯƠNG ở (3,2) bên phải; màu hộp: đỏ / xanh dương / đỏ
   var SAN_8 = ['.....', '..o..', '.D.D.'];
@@ -237,23 +237,23 @@
 
     man({
       so: 7, ten: 'Đẩy thùng', hang: 'bien-the', mucTieu: 'day-thung',
-      deBai: 'Ba thùng nặng nằm trên ba hàng, mỗi hàng có một ô đích ở cuối. Chỉ cú giật của vòi phun mới đẩy được thùng nặng. Em có 7 xu.',
+      deBai: 'Ba thùng nặng nằm trên ba hàng, mỗi hàng có một ô đích ngay sau thùng. Chỉ cú giật của vòi phun mới đẩy được thùng nặng: thùng nhích một ô, xe theo một ô. Em có 7 xu.',
       veMaMau: 'Chương trình còn trống. Bắn ra sau thì xe giật tới: đứng sát thùng, quay mặt về phía thùng rồi bắn ra sau.',
-      san: SAN_7, batDau: { x: 0, y: 1, huong: 1 },
+      san: SAN_7, batDau: { x: 1, y: 1, huong: 1 },
       lapRap: {
         than: ['hai-banh', 'xich', 'omni'], tay: ['hoi'], camBien: [], nganSach: 7, phaiCo: ['tay'],
         cachLap: [
-          { than: 'omni', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['move()', 'jet_fwd()'], LAP(2, ['back()', 'slide_r(2)', 'move()', 'jet_fwd()'])) }, ghiChu: 'Omni trượt ngang sang hàng kế mà không phải quay: nhanh hơn, tốn 7 xu.' },
-          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['move()', 'jet_fwd()'], LAP(2, ['u_turn()', 'move()', 'turn_left()', 'forward(2)', 'turn_left()', 'move()', 'jet_fwd()'])) }, ghiChu: 'Hai bánh phải quay mỗi lần đổi hàng: rẻ hơn, chậm hơn.' }
+          { than: 'omni', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['jet_fwd()'], LAP(2, ['back()', 'slide_r(2)', 'jet_fwd()'])) }, ghiChu: 'Omni trượt ngang sang hàng kế mà không phải quay: nhanh hơn, tốn 7 xu.' },
+          { than: 'hai-banh', tay: 'hoi', camBien: null, loiGiai: { chinh: nhieu(['jet_fwd()'], LAP(2, ['u_turn()', 'move()', 'turn_left()', 'forward(2)', 'turn_left()', 'jet_fwd()'])) }, ghiChu: 'Hai bánh phải quay mỗi lần đổi hàng: rẻ hơn, chậm hơn.' }
         ]
       },
-      sao: { o: 18, nhip: 12, re: { gia: 5, o: 22 } },
-      loiGiaiKhac: { moTa: 'Cùng cách đẩy, ghi chú từng việc', baiLam: { chinh: nhieu(['# thùng hàng đầu'], ['move()', 'jet_fwd()'], ['# hai hàng còn lại'], LAP(2, ['back()', 'slide_r(2)', 'move()', 'jet_fwd()'])) } },
+      sao: { o: 13, nhip: 9, re: { gia: 5, o: 20 } },
+      loiGiaiKhac: { moTa: 'Cùng cách đẩy, ghi chú từng việc', baiLam: { chinh: nhieu(['# thùng hàng đầu'], ['jet_fwd()'], ['# hai hàng còn lại'], LAP(2, ['back()', 'slide_r(2)', 'jet_fwd()'])) } },
       loiSai: [
-        { moTa: 'Bắn ra trước thay vì ra sau: xe giật lùi, thùng đứng yên', baiLam: { chinh: nhieu(['move()', 'shoot()', 'wait()'], LAP(2, ['back()', 'slide_r(2)', 'move()', 'shoot()', 'wait()'])) }, phaiCoMa: ['chua-day-thung'] },
-        { moTa: 'Chỉ đẩy thùng hàng đầu rồi dừng', baiLam: { chinh: ['move()', 'jet_fwd()'] }, phaiCoMa: ['chua-day-thung'] }
+        { moTa: 'Bắn ra trước thay vì ra sau: xe giật lùi, thùng đứng yên', baiLam: { chinh: nhieu(['shoot()', 'wait()'], LAP(2, ['back()', 'slide_r(2)', 'shoot()', 'wait()'])) }, phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Chỉ đẩy thùng hàng đầu rồi dừng', baiLam: { chinh: ['jet_fwd()'] }, phaiCoMa: ['chua-day-thung'] }
       ],
-      goiY: ['Đứng sát thùng, mặt quay về phía thùng, bắn ra sau: xe giật tới và thùng trượt tới ô đích.', 'Đổi hàng ở cột 0: xe quay hay trượt ngang, tùy robot.']
+      goiY: ['Mặt quay về phía thùng, bắn ra sau: xe giật tới, thùng nhích một ô vào đích và xe theo vào chỗ thùng.', 'Lùi một ô về cột trống rồi đổi hàng: xe quay hay trượt ngang, tùy robot.']
     }),
 
     man({
