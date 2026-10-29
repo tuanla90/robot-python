@@ -148,7 +148,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       case 'lim': g.beginPath(); g.moveTo(cx - rw, cy - rh * 0.05); g.lineTo(cx + rw, cy - rh * 0.05); g.arc(cx, cy - rh * 0.05, rw, 0, Math.PI); g.closePath(); dac(); return true;
       case 'dam': g.beginPath(); g.moveTo(cx - rw, cy - rh * 0.85); g.lineTo(cx + rw, cy + rh * 0.85); g.moveTo(cx + rw, cy - rh * 0.85); g.lineTo(cx - rw, cy + rh * 0.85); net(day * 0.85); return true;
       case 'xoay': g.beginPath(); g.moveTo(cx - trong * rw, cy - rh * 0.8); g.lineTo(cx + trong * rw * 0.9, cy); g.lineTo(cx - trong * rw, cy + rh * 0.8); net(day * 0.9); return true;      // "> <" nhăn mắt (va nhau): khác hẳn X và tròn ở ô nhỏ
-      case 'vui': g.beginPath(); g.moveTo(cx - rw * 0.9, cy - rh * 0.25); g.quadraticCurveTo(cx, cy + rh * 0.95, cx + rw * 0.9, cy - rh * 0.25); net(day * 0.8); return true;      // cung cười nhỏ, mềm, đỉnh về phía mũi (+y trước khi xoay) nên trên màn hình là "◠" (29/10: chữ V cũ to và nhọn quá)
+      case 'vui': g.beginPath(); g.moveTo(cx - rw * 0.9, cy + rh * 0.25); g.quadraticCurveTo(cx, cy - rh * 0.95, cx + rw * 0.9, cy + rh * 0.25); net(day * 0.8); return true;      // cung cười nhỏ, mềm (29/10: "^" cũ to, nhọn); đỉnh về -y như quy ước mặt kính (chop2 võng +y): robot quay mặt xuống thì "◠ ◠"
       case 'ngac': var R = rh * 1.05; tron(g, cx, cy, R); dac(); tron(g, cx, cy + R * 0.1, R * 0.42); to(g, M.toi); return true;
       case 'buon': g.beginPath(); g.moveTo(cx - trong * rw * 1.1, cy + rh * 0.75); g.lineTo(cx + trong * rw * 0.8, cy - rh * 0.55); net(); return true;      // vạch xệ dốc: ngoài thấp, trong cao
       case 'cho': tron(g, cx, cy + rh * 0.15, day * 0.62); to(g, BM.vecMat); return true;
