@@ -1508,14 +1508,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.chopDo(180);
       await ngu(ms);
     },
-    /* ---- SÚNG HƠI: bóng bay thẳng từ hai nòng, xe giật, thùng trượt, nút, cửa */
-    /** Quả bóng (vẽ trên lớp phủ, tâm (x, y) pixel sân): hình 'bong' cỡ 7 pixel sân (bẹp khi đập vào vật), bóng đổ elip; b.a = độ đậm; b.bay = đang bay thẳng theo (b.dx, b.dy): vệt tròn mờ dần phía sau. */
+    /* ---- VÒI PHUN (mã súng hơi 'hoi'; 29/10 vẽ thành nước): khối nước bay thẳng từ hai đầu vòi, xe giật, thùng trượt, nút, cửa */
+    /** Khối nước (vẽ trên lớp phủ, tâm (x, y) pixel sân): hình 'bong' cỡ 7 pixel sân (tóe khi đập vào vật), bóng đổ elip; b.a = độ đậm; b.bay = đang bay thẳng theo (b.dx, b.dy):
+     *  TIA NƯỚC nối từ miệng vòi (b.x0, b.y0) tới khối nước, dài tối đa b.dai pixel (charge: cả tia; fast: tia ngắn), đậm dần về phía đầu; b.vung (0..1): vũng nước loang dưới khối nước rơi. */
     veBong: function (g, now) {
       var b = this.bong; if (!b) return;
-      var x = b.x, y = b.y, sq = b.sq || 0, i;
+      var x = b.x, y = b.y, sq = b.sq || 0;
       g.save(); g.globalAlpha = Math.max(0, Math.min(1, b.a === undefined ? 1 : b.a));
-      if (b.bay && (b.dx || b.dy)) for (i = 1; i <= 3; i++) {
-        g.fillStyle = 'rgba(' + BM.tiaVangV2Rgb + ',' + (0.5 - i * 0.12).toFixed(2) + ')'; g.beginPath(); g.arc(x - b.dx * (3 + i * 3), y - b.dy * (3 + i * 3), (5 - i) / 2, 0, Math.PI * 2); g.fill();
+      if (b.vung) { g.fillStyle = 'rgba(' + BM.vecNuocRgb + ',0.45)'; g.beginPath(); g.ellipse(x, y + 2.5, 2 + b.vung * 3.5, 0.9 + b.vung * 1.2, 0, 0, Math.PI * 2); g.fill(); }
+      if (b.bay && (b.dx || b.dy) && b.x0 !== undefined) {
+        var L = Math.min(b.dai || 6, Math.abs(x - b.x0) + Math.abs(y - b.y0)), ux = x - b.dx * L, uy = y - b.dy * L;
+        if (L > 0.5) {
+          var gr = g.createLinearGradient(ux, uy, x, y); gr.addColorStop(0, 'rgba(' + BM.vecNuocRgb + ',0.2)'); gr.addColorStop(1, 'rgba(' + BM.vecNuocRgb + ',0.9)');
+          g.strokeStyle = gr; g.lineWidth = b.dai > 8 ? 3.4 : 2.6; g.lineCap = 'round'; g.beginPath(); g.moveTo(ux, uy); g.lineTo(x, y); g.stroke();
+          g.strokeStyle = BM.vecNuocSang; g.lineWidth = 0.8; g.beginPath(); g.moveTo(ux + b.dx * L * 0.4, uy + b.dy * L * 0.4); g.lineTo(x, y); g.stroke();
+        }
       }
       g.fillStyle = BM.moToiV24; g.beginPath(); g.ellipse(x + 0.5, y + 4.5, 2.6, 0.8, 0, 0, Math.PI * 2); g.fill();
       g.drawImage(VeVector.vat('bong', Math.max(1, Math.round(7 * this.tiLeCua(g))), sq ? { bep: true } : undefined), x - 3.5, y - 3.5, 7, 7);
@@ -1536,11 +1543,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var nua = s.trung === 'vat' ? 4 : s.trung === 'thung' ? 6 : 7;
       return { x: s.den.x * T + 7 - dx * (nua + 4), y: s.den.y * T + 7 - dy * (nua + 4) };
     },
-    /** Làn hơi phun ra ở miệng nòng (x, y pixel sân) theo hướng bay (dx, dy): hạt trắng / xanh nhạt tỏa theo hình quạt, mờ dần. */
+    /** Bụi nước phun ra ở miệng vòi (x, y pixel sân) theo hướng bay (dx, dy): hạt trắng / xanh nước tỏa theo hình quạt, mờ dần. */
     phunHoi: function (x, y, dx, dy, n, sp) {
       for (var i = 0; i < n; i++) {
         var v = (sp || 0.9) * (0.45 + Math.random() * 0.9), ng = (Math.random() - 0.5) * 1.1;
-        this.parts.push({ x: x, y: y, vx: dx * v - dy * ng, vy: dy * v + dx * ng - 0.12, life: 14 + Math.random() * 16, c: [BM.sanTrangV1, BM.sanXanhLoV3, BM.sanXanhLo, BM.sanTrangV5][i % 4], s: i % 3 === 0 ? 2 : 1, mo: true });
+        this.parts.push({ x: x, y: y, vx: dx * v - dy * ng, vy: dy * v + dx * ng - 0.12, life: 14 + Math.random() * 16, c: [BM.sanTrangV1, BM.sanXanhLoV3, BM.vecNuoc, BM.sanTrangV5][i % 4], s: i % 3 === 0 ? 2 : 1, mo: true });
       }
     },
     /** shoot() / shoot_back(): quả bóng bay thẳng từ miệng nòng (nòng trước ở mũi xe, nòng sau ở đuôi xe; nòng sau là s.sau) tới ô `den`, kèm làn hơi ở miệng nòng và nòng lóe;
@@ -1557,21 +1564,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if ((tx - x0) * dx + (ty - y0) * dy < 0) { tx = x0; ty = y0; }                                    // vật cản dính sát miệng nòng: bóng không bay được đoạn nào
       if (sg) { var den = performance.now() + ms * 0.3; if (sau) sg.sau = den; else sg.truoc = den; }
       this.phunHoi(x0, y0, dx, dy, nhanh ? 4 : 9, nhanh ? 0.6 : 1.0);                                   // bắn nhanh: làn hơi nhỏ (không giật)
-      this.burst(x0, y0, 3, [BM.sanKem, BM.sanVangV1], 0.4, 1, true);
-      this.bong = { x: x0, y: y0, a: 1, dx: dx, dy: dy, bay: true };
+      this.burst(x0, y0, 3, [BM.vecNuocSang, BM.vecNuoc], 0.4, 1, true);
+      this.bong = { x: x0, y: y0, a: 1, dx: dx, dy: dy, bay: true, x0: x0, y0: y0, dai: nhanh ? 6 : 99 };                // tia nước: charge nối liền từ miệng vòi, fast chỉ một đoạn ngắn
       var dai = Math.abs(tx - x0) + Math.abs(ty - y0), tBay = Math.max(90, dai * 8.5 * (ms / 483));          // chậm hơn cho nhìn kịp: ~0,4 giây cho 4 ô ở ×1 (ms = 2,1 nhịp = 483), ×2 nhanh gấp đôi
       await this.tween(tBay, my, function (k) {
         if (!self.bong) return;
         self.bong.x = x0 + (tx - x0) * k; self.bong.y = y0 + (ty - y0) * k;
         if (hut && k > 0.7) self.bong.a = 1 - (k - 0.7) / 0.3;
-        if (Math.random() < 0.8) self.burst(self.bong.x - dx * 2, self.bong.y - dy * 2, 1, [BM.sanKem, BM.sanVangV1, BM.sanXanhLoV3], 0.12, 1, true);
+        if (Math.random() < 0.8) self.burst(self.bong.x - dx * 2, self.bong.y - dy * 2, 1, [BM.vecNuoc, BM.vecNuocSang, BM.sanXanhLoV3], 0.12, 1, true);
       });
       if (my !== this.rid || !this.bong) return;
       this.bong.bay = false;
       if (hut) { this.bong = null; this.baoHieu('?', 1400); return; }
-      if (roi) {                                                                                       // bắn nhanh hết tầm: bóng rơi xuống sàn, bụi nhỏ, mờ đi
-        this.burst(tx, ty + 2, 5, [BM.sanLam, BM.sanTrangV1, BM.sanXamV1], 0.35);
-        await this.tween(ms * 0.3, my, function (k) { if (!self.bong) return; self.bong.y = ty + k * 2; self.bong.a = 1 - k; });
+      if (roi) {                                                                                       // bắn nhanh hết tầm: khối nước rơi xuống sàn thành vũng nhỏ, giọt bắn, mờ đi
+        this.burst(tx, ty + 2, 5, [BM.vecNuoc, BM.sanTrangV1, BM.vecNuocSang], 0.35);
+        await this.tween(ms * 0.3, my, function (k) { if (!self.bong) return; self.bong.y = ty + k * 2; self.bong.a = 1 - k; self.bong.vung = k; self.bong.sq = k > 0.3 ? 1 : 0; });
         this.bong = null;
         if (my === this.rid) this.baoHieu('?', 1200);
         return;
@@ -1592,17 +1599,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         this.bong.sq = 1;
       } else if (kind === 'vat' || kind === 'thung') {
         og = kind === 'vat' ? this.vatTaiO(s.den.x, s.den.y) : this.thungTaiO(s.den.x, s.den.y);
-        this.burst(tx + dx * 2, ty + dy * 2, 7, [BM.sanCam, BM.sanTrang, BM.sanCamToi], 0.6);
+        this.burst(tx + dx * 2, ty + dy * 2, 9, [BM.vecNuoc, BM.vecNuocSang, BM.sanTrang], 0.9, 1, true);                  // nước tóe trên mặt vật / thùng
         this.bong.sq = 1;
       } else {
-        this.burst(tx + dx * 2, ty + dy * 2, 8, [BM.sanTrangV1, BM.sanLam, BM.sanXamV1], 0.8, 1, true);
+        this.burst(tx + dx * 2, ty + dy * 2, 8, [BM.vecNuoc, BM.vecNuocSang, BM.sanTrangV1], 0.8, 1, true);
         this.bong.sq = 1;
       }
+      if (kind === 'nut' || kind === 'cua') this.burst(tx + dx * 2, ty + dy * 2, 6, [BM.vecNuoc, BM.vecNuocSang], 0.9, 1, true);      // nút / cửa: nước tóe thêm bên cạnh chớp sáng
       var bx = this.bong.x, by = this.bong.y;
-      await this.tween(ms * 0.3, my, function (k) {                                                      // nảy ngược lại một đoạn nhỏ rồi mờ đi
+      await this.tween(ms * 0.3, my, function (k) {                                                      // nước tóe bám mặt vật cản, chảy xuống một chút rồi mờ đi (không nảy như bóng)
         if (!self.bong) return;
-        var bd = Math.sin(Math.min(1, k * 1.3) * Math.PI * 0.5) * 4;
-        self.bong.x = bx - dx * bd; self.bong.y = by - dy * bd; self.bong.a = k < 0.4 ? 1 : 1 - (k - 0.4) / 0.6; self.bong.sq = k < 0.25 ? 1 : 0;
+        var bd = Math.sin(Math.min(1, k * 1.3) * Math.PI * 0.5);
+        self.bong.x = bx - dx * bd; self.bong.y = by - dy * bd + k * 2.5; self.bong.a = k < 0.4 ? 1 : 1 - (k - 0.4) / 0.6; self.bong.sq = 1;
         if (og) { var r = Math.sin(k * Math.PI * 6) * (1 - k) * 0.9; og.dx = dx * r; og.dy = dy * r; }
       });
       if (og) { og.dx = 0; og.dy = 0; }
