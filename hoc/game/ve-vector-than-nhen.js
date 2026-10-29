@@ -20,12 +20,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var t = Math.atan2(b[1] - a[1], b[0] - a[0]);
     g.beginPath(); g.arc(a[0], a[1], ra, t + Math.PI / 2, t + Math.PI * 3 / 2); g.arc(b[0], b[1], rb, t - Math.PI / 2, t + Math.PI / 2); g.closePath();
   }
-  /** Một chân: hông (h) → gối (k) → bàn (b), [x, y] trong hệ thân; n 0..1 = bàn chân đang nhấc khỏi đất (gối nhô ra to lên, bàn thu về, bóng in ở chỗ sẽ đặt);
+  /** Một chân: hông (h) → gối (k) → bàn (b), [x, y] trong hệ thân; n 0..1 = bàn chân đang nhấc khỏi đất (gối nhô ra to lên, bàn thu về, bóng in dưới bàn chân);
    *  co: chân dang sát đất (đốt mảnh hơn). */
   function chan(g, H, h, k, b, n, co) {
     var s = co ? 0.85 : 1, rg = (4.6 + 1.2 * n) * s;
-    if (n > 0.05) { H.elip(g, b[0], b[1], 4, 2.6); H.to(g, H.rgba(BM.vecVienRgb, 0.16 * n)); }       // bóng bàn chân trên sàn khi nhấc
     var bb = [b[0] + (h[0] - b[0]) * 0.28 * n, b[1] + (h[1] - b[1]) * 0.28 * n];                     // nhấc: bàn chân thu về phía hông (nhìn từ trên xuống thấy ngắn lại)
+    if (n > 0.05) { H.elip(g, bb[0] + 1.5 * n, bb[1] + 2 * n, 4.4, 3.2); H.to(g, H.rgba(BM.vecVienRgb, 0.2 * n)); }   // bóng bàn chân in trên sàn khi nhấc
     var kk = [k[0] + (k[0] < 50 ? -1 : 1) * 3 * n, k[1]];                                         // gối nhô ra ngoài
     khuc(g, kk, bb, 3.4 * s, 2 * s); H.to(g, BM.vecVoGiua); H.vien(g, BM.vecVien, 2.2);            // cẳng thon dần
     khuc(g, h, kk, 6 * s, 4.4 * s); g.fillStyle = H.gradDoc(g, h[0], h[1], kk[0], kk[1], [[0, BM.vecVo], [1, BM.vecVoToi]]); g.fill(); H.vien(g, BM.vecVien, 2.4);   // đùi
