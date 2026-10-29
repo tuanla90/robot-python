@@ -152,6 +152,11 @@ for (const m of ds) {
     const sanDam = rc.theoSan.map((s, i) => (s.chanDoan.some((c) => c.ma === 'dam-tuong') ? i + 1 : 0)).filter(Boolean);
     if (sanDam.length) loiCo.push(m.ma + ': lời giải chuẩn đâm tường ở sân ' + sanDam.join(', ') + ' (màn có cờ damLaThua)');
   }
+  // màn không trình diễn: mã mẫu (người chơi thấy sẵn) không được thắng 3 sao, nếu không thì màn ép chẳng ép gì (nghiệm thu gói T: tham-so.2 mã mẫu dùng sẵn n vẫn xanh hết 90 bộ)
+  if (!m.chiChay && m.maMau) {
+    const mm = cham(m, { chinh: m.maMau.chinh || [], hamCuaMan: m.maMau.hamCuaMan || [] }, truoc);
+    if (mm.thang && mm.sao === 3) { bang.push({ ma: m.ma, ghi: 'HỎNG mã mẫu đã thắng 3 sao (không phải màn trình diễn)', hong: true }); soLo++; }
+  }
   if (m.chiChay) {
     const mau = cham(m, { chinh: m.maMau.chinh, hamCuaMan: m.maMau.hamCuaMan || [] }, truoc);
     const ok = m.chinhCoDinh === true && mau.thang && mau.sao === 3 && !(m.taoHam || []).length;
