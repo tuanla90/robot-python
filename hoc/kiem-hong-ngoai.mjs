@@ -289,11 +289,12 @@ for (const m of DS) {
     assert.deepEqual(r.chanDoan.map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
     assert.ok(r.theoSan.length === soSan(m) && r.theoSan.every((s) => s.thang));
     const rm = cham(m, m.maMau);
-    assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
+    if (m.chiChay) assert.ok(rm.thang && rm.sao === 3 && m.chinhCoDinh, m.ma + ' màn trình diễn (gói T): mã mẫu khoá phải thắng 3 sao');     // gói T mùa 2: hong-ngoai.1 trình diễn
+    else assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
     const rk = cham(m, m.loiGiaiKhac.baiLam, m.loiGiaiKhac.hamCuaEmMoi);
     assert.ok(rk.thang, m.ma + ' lời giải khác thua: ' + JSON.stringify(rk.chanDoan.map((c) => c.ma)));
-    assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');
-    m.loiSai.forEach((ls, i) => {
+    if (!m.chiChay) assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');     // màn trình diễn: main khoá nên lời giải khác cũng là mã mẫu (3 sao)
+    if (!m.chiChay) m.loiSai.forEach((ls, i) => {       // màn trình diễn: main khoá nên lời sai cũng chạy mã mẫu (gói T)
       const rl = cham(m, ls.baiLam, ls.hamCuaEmMoi);
       assert.equal(rl.thang, false, m.ma + ' lời sai ' + i + ' "' + ls.moTa + '" lại thắng');
       const ma = rl.chanDoan.map((c) => c.ma);
@@ -302,6 +303,7 @@ for (const m of DS) {
     Object.assign(bang[m.ma], { o: r.soO, nhip: r.soNhip });
   });
   kiem(m.ma + ': bộ dò đường tắt: không có chương trình né distance() được 3 sao', () => {
+    if (m.chiChay) { bang[m.ma].ne = '-'; bang[m.ma].tat = 'màn trình diễn (khoá, chỉ bấm Chạy)'; return; }     // gói T mùa 2
     if (soSan(m) === 1 && m.chinhCoDinh) {
       // chương trình chính khóa: người chơi chỉ sửa thân MỘT hàm (hàm mới tạo, hay hàm của màn); thân né distance() là dãy cố định
       const hm = (m.loiGiai.hamCuaEmMoi || [])[0] || (m.loiGiai.hamCuaMan || [])[0];
@@ -336,7 +338,7 @@ for (const m of DS) {
 /* ------------------------------------------------------------------ 5. đường cong, điều mới, recall */
 kiem('đường cong hai chương: dòng / nhịp / ô không tường của màn n ≤ max(1,5 × màn n−1, màn n−1 + lề), trừ trùm; màn 1 dễ', () => {
   for (const c of CHUONG) {
-    const ds = M.danhSach.filter((m) => m.chuong === c);
+    const ds = M.danhSach.filter((m) => m.chuong === c && !m.chiChay);       // gói T: màn trình diễn (chỉ bấm Chạy) miễn và không làm mốc, như kiem-lo-trinh (g)
     for (let i = 1; i < ds.length; i++) {
       const m = ds[i], t = ds[i - 1];
       if (m.hang === 'trum') continue;

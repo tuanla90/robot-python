@@ -237,6 +237,10 @@
     "o": 20,
     "nhip": 36
   },
+  "xich.1": {
+    "o": 8,
+    "nhip": 5
+  },
   "xich.2": {
     "o": 8,
     "nhip": 6
@@ -259,15 +263,19 @@
   },
   "che-cam-bien.5": {
     "o": 13,
-    "nhip": 8
+    "nhip": 10
   },
   "che-cam-bien.9": {
     "o": 25,
-    "nhip": 12
+    "nhip": 14
   },
   "robot-hoan-thien.9": {
     "o": 25,
-    "nhip": 9
+    "nhip": 11
+  },
+  "sung-hoi.1": {
+    "o": 3,
+    "nhip": 3
   },
   "sung-hoi.3": {
     "o": 7,
@@ -277,9 +285,17 @@
     "o": 7,
     "nhip": 8
   },
+  "tham-so.1": {
+    "o": 14,
+    "nhip": 11
+  },
   "tham-so.5": {
     "o": 18,
     "nhip": 19
+  },
+  "bang-chuyen.1": {
+    "o": 7,
+    "nhip": 7
   },
   "bang-chuyen.2": {
     "o": 5,

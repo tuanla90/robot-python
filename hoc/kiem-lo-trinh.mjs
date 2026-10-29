@@ -45,6 +45,7 @@ kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mù
 // Màn CHẾ HÀM có while / if lấy lại bản nhiều sân của ngân hàng (che-cam-bien.1, .2, .4) hay thêm sân (me-cung.6, cam-bien-ben.7): thân hàm đếm cứng không qua.
 const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4', 'cam-bien-ben.7', 'me-cung.6',
   'che-cam-bien.10'];      // HD2: hai kho dài ngắn khác nhau (fetch_back đếm cứng không thắng cả hai)
+NHIEU_SAN_KHONG_TRUM.push('che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9');      // gói T mùa 2: ba màn ép biến đếm (chương bien-xich) lấy lại ba sân của ngân hàng
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -330,6 +331,7 @@ kiem2('(f) robot mùa 2 chỉ dùng part mùa 1 + xích + súng hơi (+ hồng n
 // màn đội cộng các xe không coDinh; + thân hàm của màn + hàm của em mới), nhịp sao.nhip, ô = số ô không '#' của sân lớn nhất. Màn n ≤ max(1,5 × mốc, mốc + lề),
 // lề dòng 3 / nhịp 4 / ô 6; mốc = màn không trùm đứng ngay trước theo thứ tự cả mùa (qua ranh chương, ranh gói); trùm miễn và không làm mốc.
 const LE_CONG = { dong: 3, nhip: 4, o: 6 };
+// Gói T (29/10): màn trình diễn chiChay (chương trình khoá, chỉ bấm Chạy: không có việc làm) MIỄN như trùm và KHÔNG làm mốc: màn ép kế tiếp so với màn thật đứng trước.
 const soDongCong = m => (m.doi ? m.loiGiai.doi.filter((d, i) => !m.doi[i].coDinh).reduce((s, d) => s + d.chinh.length, 0) : (m.chinhCoDinh ? 0 : m.loiGiai.chinh.length))
   + (m.loiGiai.hamCuaMan || []).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
 const soOCong = m => Math.max(...dsSanCua(m).map(r => r.join('').replace(/#/g, '').length));
@@ -344,7 +346,7 @@ kiem2('(g) đường cong cả mùa 2: dòng / nhịp / ô của màn n ≤ max(
   const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le), sai = [];
   let moc = null;
   for (const ds of chuongTheoGoi2()) for (const m of ds) {
-    if (m.hang === 'trum') continue;
+    if (m.hang === 'trum' || m.chiChay) continue;
     if (moc) {
       const v = chiSoCong(m), t = chiSoCong(moc);
       for (const k of ['dong', 'nhip', 'o']) if (!tran(v[k], t[k], LE_CONG[k])) sai.push(m.ma + ' (' + m.chuong + '.' + m.so + ') sau ' + moc.ma + ': ' + k + ' ' + t[k] + '→' + v[k]);

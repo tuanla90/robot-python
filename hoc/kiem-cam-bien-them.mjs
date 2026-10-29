@@ -330,14 +330,14 @@ kiem('recall: ít nhất 3 màn mới dùng hàm hay vòng for của gói 1–2'
 });
 
 /* ------------------------------------------------------------------ HD2. đâm là thua ở màn ép (damLaThua) */
-kiem('HD2 đâm là thua: khoang-cach.12 / .13 có cờ damLaThua; màn trình diễn kc.1 / kc.2 không; mọi mã trong M.manDamLaThua có cờ, không màn mùa 2 nào có', () => {
+kiem('HD2 đâm là thua: khoang-cach.12 / .13 có cờ damLaThua; màn trình diễn kc.1 / kc.2 không; mọi mã trong M.manDamLaThua có cờ, mùa 2 chỉ ba màn ép biến đếm của gói T', () => {
   for (const ma of HAI_SAN) assert.ok(get(ma).damLaThua === true, ma);
   for (const ma of ['khoang-cach.1', 'khoang-cach.2']) assert.ok(!get(ma).damLaThua, ma);
   assert.ok(Array.isArray(M.manDamLaThua) && M.manDamLaThua.length >= 50);
   for (const ma of M.manDamLaThua) assert.ok(get(ma) && get(ma).damLaThua === true, ma);
   const chuongMua1 = TT.goi.filter((g) => g.mua === 'mua-1').flatMap((g) => g.chuong);
   const mua2 = M.danhSach.filter((m) => m.damLaThua && !chuongMua1.includes(m.chuong)).map((m) => m.ma);
-  assert.deepEqual(mua2, []);
+  assert.deepEqual(mua2.sort(), ['che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9']);      // gói T mùa 2 (29/10): ba màn ép biến đếm, lộ trình DAM_LA_THUA_2
 });
 kiem('HD2 khoang-cach.12: đếm cứng move() ×4 THUA (trước: 1 sao): sân ngắn dừng ngay ở cú đâm (3 nhịp), chẩn đoán dam-tuong nói luật; bỏ cờ thì lại thắng 1 sao; lời giải chuẩn vẫn 3 sao', () => {
   const m = get('khoang-cach.12'), demCung = { chinh: ['move()', 'move()', 'move()', 'move()'] };

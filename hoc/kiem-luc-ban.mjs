@@ -133,12 +133,13 @@ console.log('\n== 3. Mười màn ==');
     const kq = ChamHoc.cham(m, m.loiGiai, (m.loiGiai.hamCuaEmMoi || []).concat(kho));
     kiem(m.ma + ' ' + m.ten + ': lời giải 3 sao, đúng sao.o / sao.nhip, không chẩn đoán', kq.thang && kq.sao === 3 && kq.soO === m.sao.o && kq.soNhip === m.sao.nhip && !kq.chanDoan.length,
       J({ thang: kq.thang, sao: kq.sao, o: kq.soO, nhip: kq.soNhip, cd: maCua(kq) }));
+    const mMo = m.chiChay ? Object.assign({}, m, { chiChay: false, chinhCoDinh: false }) : m;       // gói T mùa 2: luc-ban.1 trình diễn (main khoá): lời giải khác / lời sai chấm trên bản không khoá
     if (m.loiGiaiKhac) {
-      const k2 = ChamHoc.cham(m, m.loiGiaiKhac.baiLam, (m.loiGiaiKhac.hamCuaEmMoi || []).concat(kho));
+      const k2 = ChamHoc.cham(mMo, m.loiGiaiKhac.baiLam, (m.loiGiaiKhac.hamCuaEmMoi || []).concat(kho));
       kiem(m.ma + ': lời giải khác đúng 2 sao', k2.thang && k2.sao === 2, J({ sao: k2.sao, o: k2.soO, nhip: k2.soNhip }));
     }
     m.loiSai.forEach((ls, i) => {
-      const k3 = ChamHoc.cham(m, ls.baiLam, (ls.hamCuaEmMoi || []).concat(kho));
+      const k3 = ChamHoc.cham(mMo, ls.baiLam, (ls.hamCuaEmMoi || []).concat(kho));
       const thieu = ls.phaiCoMa.filter((x) => !maCua(k3).includes(x));
       kiem(m.ma + ' lời sai #' + (i + 1) + ': không thắng, đủ mã ' + ls.phaiCoMa.join('+'), !k3.thang && !thieu.length, 'có ' + maCua(k3).join(','));
     });
@@ -146,7 +147,8 @@ console.log('\n== 3. Mười màn ==');
     kiem(m.ma + ': BFS ' + (m.nhipTheoLoiGiai ? '≤' : '=') + ' sao.nhip', m.nhipTheoLoiGiai ? bfs !== null && bfs <= m.sao.nhip : bfs === m.sao.nhip, 'BFS ' + bfs + ', sao.nhip ' + m.sao.nhip);
     (m.loiGiai.hamCuaEmMoi || []).forEach(them);
   }
-  kiem('màn 1: bắn tụ thì lệch bóng mờ, bắn nhanh thì thắng (lý do chọn lực)', (() => { const m = ds[0]; return !ChamHoc.cham(m, { chinh: ['shoot()', 'wait()', 'turn_left()', 'forward(3)'], hamCuaMan: [] }, kho).thang; })());
+  kiem('màn 1: bắn tụ thì lệch bóng mờ, bắn nhanh thì thắng (lý do chọn lực); gói T: màn 1 là màn trình diễn (chiChay), chấm trên bản không khoá',
+    (() => { const m = Object.assign({}, ds[0], { chiChay: false, chinhCoDinh: false }); return ds[0].chiChay === true && !ChamHoc.cham(m, { chinh: ['shoot()', 'wait()', 'turn_left()', 'forward(3)'], hamCuaMan: [] }, kho).thang; })());
   kiem('màn 2: bắn nhanh thì bóng rơi (ban-ngan), cửa không mở', (() => { const m = ds[1]; return maCua(ChamHoc.cham(m, { chinh: ['shoot("fast")', 'wait()', 'turn_left()', 'forward(2)'], hamCuaMan: [] }, kho)).includes('ban-ngan'); })());
   kiem('trùm: luôn một lực thì không qua được cả ba sân (mỗi lực trượt ít nhất một sân)', ds[9].loiSai.length >= 2 && ds[9].loiSai.every((ls) => !ChamHoc.cham(ds[9], ls.baiLam, kho).thang));
   kiem('trùm có huy hiệu luc-ban, nhịp tính tổng ba sân', ds[9].huyHieu && ds[9].huyHieu.ma === 'luc-ban' && ds[9].nhipTheo === 'tong' && ds[9].san.length === 3);
