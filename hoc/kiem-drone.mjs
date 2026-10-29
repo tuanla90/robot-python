@@ -321,7 +321,7 @@ console.log('\n== 6. Ghép sai: drone không gắn tay kẹp, tấm đẩy, máy
   kiem('cảm biến từ front_metal → lỗi', /Drone không gắn cảm biến khoảng cách hay cảm biến từ/.test(loi(cfg(BAY.concat(['front_metal'])))));
   kiem('lệnh của xe bánh (left_move…) không thuộc drone → lỗi cấu hình', /không thuộc loại robot drone/.test(loi(cfg(BAY.concat(['left_move'])))));
   kiem('nam châm, màu và đo pin hợp lệ với drone; hamGoc mặc định của drone chạy được', loi(cfg(BAY.concat(NC, ['color']))) === null && SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'drone' }, 'go_up()\n').nhip === 1);
-  kiem('nhện / xe bánh không có nam châm treo kiểu drone: nhện vẫn không gắn nam châm', /Nhện không gắn nam châm/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'magnet_n', 'magnet_off'] }, ''))));
+  kiem('nhện gắn nam châm được (mùa 3: nam châm BỤNG, luật treo như drone; kiem-bung-nhen.mjs); xe bánh vẫn là nam châm mũi', loi(() => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'magnet_n', 'magnet_off'] }, '')) === null);
   kiem('lyDoChan / loại robot lạ vẫn báo lỗi; loại "drone" được nhận', /Loại robot lạ/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'bay' }, ''))));
   kiem('drone xuất phát trên cửa đóng → lỗi; trên cửa mở, nút → xem lyDoChan', /cửa đang đóng/.test(loi(() => chay(['C.'], { x: 0, y: 0, huong: 0 }, ''))));
 }

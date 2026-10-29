@@ -236,8 +236,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     (cams || []).forEach(function (c) { var o = c.o === 'truoc' ? 'hong' : c.o; if (o === 'hong') { out.push({ ma: c.ma, o: 'hongTrai' }); out.push({ ma: c.ma, o: 'hongPhai' }); } else out.push({ ma: c.ma, o: o }); });
     return out;
   }
-  /** Ổ tay mà tay gắn vào thân: drone (khongHuong) treo ở ổ 'duoi'; thân khác ở ổ 'tay' (nếu tay gắn được ổ đó). */
-  function oTay(than, tay) { return than.khongHuong ? ['duoi'] : ganCua(tay).filter(function (o) { return o === 'tay' && than.oGan[o]; }); }
+  /** Ổ tay mà tay gắn vào thân: drone (khongHuong) treo ở ổ 'duoi'; thân khai tayDuoi [mã tay] + oTayDuoi {x, y} (nhện: nam châm bụng, mùa 3; KHÔNG phải ổ trong oGan, để
+   *  cảm biến không gắn được "ổ duoi" và luật ghép cũ y nguyên) treo tay đó ở 'duoi'; còn lại ổ 'tay' (nếu tay gắn được ổ đó). */
+  function oTay(than, tay) {
+    if (than.khongHuong) return ['duoi'];
+    if (than.tayDuoi && than.tayDuoi.indexOf(tay.ma) >= 0 && than.oTayDuoi && ganCua(tay).indexOf('duoi') >= 0) return ['duoi'];
+    return ganCua(tay).filter(function (o) { return o === 'tay' && than.oGan[o]; });
+  }
   /** Kiểm cấu hình như Part.ghep: ném Error với ĐÚNG câu báo của bộ pixel khi ghép cấm (drone + camera, drone + tay khác nam châm, camera-bay trên thân thường,
    *  camera + cảm biến màu, ổ không có / cảm biến sai ổ). Trả { than, tay, cams } (cams đã đổi 'hong' → hai ổ). Thiếu hình vector: ném "Không có …". */
   function kiemGhep(cfg) {
@@ -315,7 +320,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Dịch của tay trong hệ thân (ổ − điểm neo) và ổ đã dùng; null nếu không gắn được. */
   function dichTay(than, tay) {
     var os = oTay(than, tay)[0]; if (!os) return null;
-    var oG = than.oGan[os], neo = os === 'duoi' && tay.diemNeoDuoi ? tay.diemNeoDuoi : tay.diemNeo;
+    var oG = than.oGan[os] || (os === 'duoi' ? than.oTayDuoi : null), neo = os === 'duoi' && tay.diemNeoDuoi ? tay.diemNeoDuoi : tay.diemNeo;     // oTayDuoi: nam châm bụng nhện (mùa 3)
     return { o: os, x: oG.x - neo.x, y: oG.y - neo.y };
   }
   /** Độ nâng của tay (gói V6b): số k cho sẵn (hoạt cảnh nâng / hạ mượt) thì kẹp vào [0, 1]; không thì theo tư thế: 'duoi' 0, 'giua' 0,5, còn lại ('tren') 1. */

@@ -20,6 +20,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
   } });
 
+  /* CẢM BIẾN TỪ (P1 mùa 3, 29/10; mã 'tu', front_metal / front_pole; thẻ "Cảm biến từ"): PART RIÊNG, không còn ghép vào tai khoảng cách. Vỏ con nhộng ngắn ở hông,
+     đầu trước là ĐẦU DÒ chữ U nhỏ (nhánh đỏ N / nhánh xanh dương S, đúng màu luật nam châm) mở về phía trước; đang đọc: lõi sáng + ba vạch sóng từ toả về trước-ngoài.
+     Màn cũ (mùa 1–2, 51 màn khai camBien khoang-cach) không khai 'tu' nên hình cũ y nguyên; màn mùa 3 khai robot.camBien [{ ma: 'tu', o: 'hong' }]. */
+  V.dangKy({ loai: 'cam-bien', ma: 'tu', hamGoc: ['front_metal',  'front_pole'], ten: 'Cảm biến từ (đầu dò chữ U ở hông)', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+    var ra = s.ra || 1;
+    vo(g, H, 45, 42, 10, 14, 5);
+    H.bo(g, 46.5, 53, 7, 4, 2); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 1.2);                       // đế đầu dò
+    var d = 'M46.5 57 V62 C46.5 64.5 53.5 64.5 53.5 62 V57';                                            // chữ U nhỏ mở về phía trước (+y)
+    H.duong(g, d); H.vien(g, BM.vecVien, 4.2, 'butt');
+    H.duong(g, d); H.vien(g, BM.vecBac, 2, 'butt');
+    g.beginPath(); g.rect(45.5, 56, 2, 2.6); H.to(g, BM.luatVatDo); H.vien(g, BM.vecVien, 1, 'butt');           // nhánh N đỏ
+    g.beginPath(); g.rect(52.5, 56, 2, 2.6); H.to(g, BM.luatVatXanhDuong); H.vien(g, BM.vecVien, 1, 'butt');    // nhánh S xanh dương
+    H.tron(g, 50, 47, 2); H.to(g, s.bat ? BM.vecDenSang : BM.vecDen);                                   // đèn đọc
+    if (s.bat) for (var i = 0; i < 3; i++) { g.beginPath(); g.arc(50, 60, 4 + i * 2.5, Math.PI * 0.2, Math.PI * 0.8); H.vien(g, i % 2 ? BM.luatVatXanhDuong : BM.luatVatDo, 1.2); }
+  } });
+
   /* MÀU (dưới sườn, color()): vỏ tròn nhỏ lùi về phía đuôi so với ổ, thấu kính tím; đang đọc: lõi sáng hồng + quầng tím. */
   V.dangKy({ loai: 'cam-bien', ma: 'mau', hamGoc: ['color'], ten: 'Cảm biến màu dưới sườn', gan: ['hong', 'hongTrai', 'hongPhai'], diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     if (s.bat) { H.tron(g, 50, 40, 7.5); H.to(g, H.rgba(BM.vecVienRgb, 0.12)); }

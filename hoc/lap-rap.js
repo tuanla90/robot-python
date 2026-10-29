@@ -18,7 +18,7 @@
 
    MÃ PART lấy đúng mã bộ phận của bộ vẽ vector game/ve-vector-*.js (VeVector.lay; V7c1: bộ pixel game/part không còn là nguồn; bảng DANH_MUC giữ thêm `ham` = lệnh gốc
    của bộ phận, máy kiểm so với VeVector.hamGoc và dữ liệu chụp hoc/du-lieu-chup-pixel.json): thân hai-banh · xich · omni · nhen · drone; tay kep · xoay · nam-cham · nem · hoi;
-   cảm biến khoang-cach · mau · camera · camera-bay · và 'tu' = cảm biến khoảng cách có đầu dò từ (part khoang-cach + hai hàm front_metal / front_pole; hình giống khoang-cach).
+   cảm biến khoang-cach · mau · camera · camera-bay · và 'tu' = CẢM BIẾN TỪ, part riêng từ P1 mùa 3 29/10 (trước: part khoang-cach + hai hàm front_metal / front_pole; hình giống khoang-cach).
 
    API (window.LapRap, hay module.exports trong Node; trong Node tự nạp game/ve-vector.js + các bộ phận vector):
      KHE                          ['than', 'tay', 'camBien']
@@ -69,12 +69,13 @@
     { ma: 'nem', part: 'nem', ten: 'Máy ném', gia: 3, icon: 'denNem', vuot: 'Ném vật qua rào, xa 1 đến 3 ô', ham: ['aim', 'throw', 'load'] },
     { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Bắn nước đẩy thùng nặng', ham: ['shoot', 'shoot_back'] }
   ];
-  // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu') = part khoang-cach + hai hàm front_metal / front_pole.
+  // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu'): PART RIÊNG (P1 mùa 3 29/10; hình ve-vector-cam.js 'tu'), chỉ hai hàm front_metal / front_pole; trước đó là
+  // part khoang-cach + hai hàm. Giá giữ 2 (rap-du.9 cách mẫu 'tu' không dùng front_clear nên kết quả cũ y nguyên).
   var CAM_BIEN = [
     { ma: 'khoang-cach', part: 'khoang-cach', o: 'hong', ten: 'Khoảng cách', gia: 1, icon: 'denCam', vuot: 'Thấy tường, vật ở trước, trái, phải', ham: KHOANG_CACH },
     { ma: 'mau', part: 'mau', o: 'hong', ten: 'Màu bụng', gia: 2, icon: 'denCam', vuot: 'Đọc màu ô dưới bụng xe', ham: ['color'] },
     { ma: 'camera', part: 'camera', o: 'tren', ten: 'Camera trước', gia: 2, icon: 'denCam', vuot: 'Đọc màu và vật ở ô trước mặt', ham: ['color'] },
-    { ma: 'tu', part: 'khoang-cach', o: 'hong', ten: 'Cảm biến từ', gia: 2, icon: 'denCam', vuot: 'Biết vật sắt hay cực nam châm', ham: KHOANG_CACH.concat(['front_metal', 'front_pole']) },
+    { ma: 'tu', part: 'tu', o: 'hong', ten: 'Cảm biến từ', gia: 2, icon: 'denCam', vuot: 'Biết vật sắt hay cực nam châm', ham: ['front_metal', 'front_pole'] },
     { ma: 'camera-bay', part: 'camera-bay', o: 'bung', ten: 'Camera bụng', gia: 2, icon: 'denCam', vuot: 'Drone thấy màu ô và vật dưới bụng', ham: ['look'] }
   ];
   var DANH_MUC = { than: THAN, tay: TAY, camBien: CAM_BIEN };
@@ -123,7 +124,7 @@
   /**
    * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). Luật = luật của VeVector.kiemGhep + luật của lõi SanHoc.chay (cấu hình robot):
    *   drone: chỉ treo nam châm dưới bụng, không camera trước / cảm biến khoảng cách / cảm biến từ (không có mặt trước); camera bụng chỉ gắn lên drone;
-   *   nhện: chỉ tay kẹp (không tay xoay, nam châm, máy ném, súng hơi), không cảm biến khoảng cách / từ (không có hướng mặt).
+   *   nhện: tay kẹp hoặc nam châm (nam châm treo dưới bụng, mùa 3 gói 9; không tay xoay, máy ném, súng hơi), không cảm biến khoảng cách / từ (không có hướng mặt).
    * Cuối cùng nhờ VeVector.kiemGhep xét lại (bắt luật ghép mới thêm vào bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
    */
   function kiemGhep(c) {
@@ -139,7 +140,7 @@
     } else {
       if (c.camBien === 'camera-bay') sai = { lyDo: 'Camera bụng chỉ gắn được lên drone.', xung: ['than', 'camBien'] };
       else if (c.than === 'nhen') {
-        if (c.tay && c.tay !== 'kep') sai = { lyDo: 'Nhện không có hướng mặt, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };
+        if (c.tay && c.tay !== 'kep' && c.tay !== 'nam-cham') sai = { lyDo: 'Nhện không có hướng mặt, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };     // nam châm: treo dưới bụng (mùa 3)
         else if (c.camBien === 'khoang-cach' || c.camBien === 'tu') sai = { lyDo: 'Nhện không có hướng mặt, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };
       }
     }

@@ -91,6 +91,8 @@
    ngoai-tam (thông tin: vật sắt cách 3 ô, ngoài tầm), day-bi-chan (thông tin: vật nam châm bị đẩy mà sát vật cản), sat-khong-day (thông tin: đổi cực khi đang dính sắt), cung-cuc (thông tin, drone);
    chua-gan-cam-bien nói thêm "cảm biến từ" cho front_metal / front_pole; chua-dua-vat nói "vật sắt" / "vật nam châm" / "vật có từ" theo man.vatCan; quen-wait tính lệnh nam châm là lệnh tay.
    Bóng mờ + tay nam châm: bongMo.cam = xe mờ đang DÍNH vật (lech-bong-mo nói "dính").
+   NAM CHÂM BỤNG NHỆN (mùa 3 gói 9, luật ở san-hoc.js phần NAM CHÂM): nhện gắn tay nam châm (robot.tay 'nam-cham') treo dưới bụng như drone: hút / thả ở ô ngay dưới, đứng trùm lên vật được;
+   lời tha-bi-chan / hut-go nói "ô ngay dưới nhện"; lệnh nam châm làm ở nhịp wait() hay nhịp đầu của bước (như lệnh tay nhện, quen-wait nói "lệnh tay").
    DRONE (chương drone; luật đầy đủ ở san-hoc.js, phần DRONE): man.loaiRobot = 'drone', hamGoc go_up / go_down / go_left / go_right / wait (cùng tên lệnh với nhện, mỗi lệnh 1 nhịp),
    thêm magnet_n / magnet_s / magnet_off (nam châm TREO dưới bụng: hút / thả ở ô DƯỚI drone; cực nào cũng hút sắt), color, battery. man.pin = số nguyên (pin đầy lúc đầu; màn nhiều sân thì có thể là mảng song song với man.san;
    không khai = pin vô hạn, không có battery()). Ký hiệu sân P là ô sạc. Kết quả có thêm `pin` (còn lại cuối), `pinToiDa`, `sac` (ô sạc), ở mỗi mục theoSan cũng vậy; vết nhịp có robot.pin,
@@ -141,7 +143,7 @@
    kep-hut (thông tin), xich-quay-do (thông tin: xe xích quay dở bị mất), omni-khong-cheo (thông tin: xe omni không đi chéo, lệnh bánh cùng nhịp với slide bị bỏ), slide-goi-lai (hai lệnh slide cùng nhịp), chua-toi-co, chua-dua-vat, nhen-khong-buoc (nhện chạy xong chưa bước lần nào), tran-khung,
    def-trong-chuong-trinh, ham-trung-ten, ham-chua-co, chua-tao-ham (màn có taoHam: chưa gọi hàm phải tạo, robot tới đích cũng chưa thắng; màn khai batBuocTaoHam: false thì bỏ), loi-cu-phap, loi-thut-le, qua-gioi-han-ham (lỗi khung; man.gioiHanHam = n: chương trình chính gọi trực tiếp tối đa n hàm của em khác nhau, không khai thì không kiểm),
    loi-chay, qua-nhieu-nhip, ham-man-che-ham-em (thông tin).
-   CHÂN NHỆN (chương nhen, che-nhen; luật ở san-hoc.js, phần CHÂN NHỆN): roi-ho (lỗi: nhện rơi hố, chương trình dừng), nhay-hut (lỗi: ô giữa hay ô đáp của cú nhảy không hợp lệ, nhện rơi lại ô cũ),
+   CHÂN NHỆN (chương nhen, che-nhen; luật ở san-hoc.js, phần CHÂN NHỆN): roi-ho (lỗi: nhện rơi hố, chương trình dừng; XE hai bánh / xích / omni đi, bị băng đẩy hay bị đệm kéo vào ô hố cũng rơi: lời nói "xe rơi xuống hố", xe không nhảy được, đi đường khác; drone bay qua), nhay-hut (lỗi: ô giữa hay ô đáp của cú nhảy không hợp lệ, nhện rơi lại ô cũ),
    dau-dung-tran (lỗi: stand() khi đang đứng trong ô gầm), chan-goi-lai (lỗi: hai lệnh chân cùng nhịp); dam-tuong với vat 'gam-thap' (đi vào gầm mà chân đang duỗi); lech-bong-mo nói cả chân co / duỗi lệch bóng mờ
    (bongMo.chan); quen-wait nói "lệnh chân" khi crouch() / stand() chưa kịp trôi nhịp.
    MÁY SƠN / MỤC TIÊU to-hinh (chương may-son, che-may-son; luật ở san-hoc.js, phần MÁY SƠN): man.hinh = hình mờ (màn nhiều sân: mảng song song với man.san), man.mucBanDau = màu sơn lúc đầu.
@@ -167,12 +169,12 @@
     return null;
   }
 
-  var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước bắn trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)' };
+  var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước bắn trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)' };
   // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
   var TEN_CHAN_NGAN = { 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
-    'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'gam-thap': 'gầm thấp' };
+    'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'gam-thap': 'gầm thấp', 'dem-tu': 'ô đệm từ' };
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
-  var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'van hơi' };
+  var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'van hơi', 'dem-tu': 'ô đệm từ (khối, không đáp lên được)' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
   // lý do magnet_off() không thả được vật (san-hoc.js 'tha-bi-chan')
   var LY_THA = { 'dong-doi': 'chỗ robot đồng đội đang đứng', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn', 'rao': 'hàng rào thấp', 'cua': 'cửa đang đóng' };
@@ -748,10 +750,11 @@
         them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', release() không thả được vật: ô ' + (tbTrai ? oTayNgan(tb0.huongTay) : 'ngay trước mặt xe') + ', (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
           ' nên vật vẫn nằm trong kẹp.' + (thaChan.length > 1 ? ' Chuyện này xảy ra ' + thaChan.length + ' lần.' : '') +
           (tbTrai ? ' Vật chỉ đặt xuống được ô sàn trống mà tay đang chỉ: xoay tay sang hướng khác hay đi tới chỗ khác rồi thả.' : ' Vật chỉ đặt xuống được ô sàn trống ngay trước mặt: xoay hay đi tới chỗ khác rồi thả.'), { nhip: tb0.nhip, soLan: thaChan.length, o: tb0.o, vat: tb0.vat, kieu: 'kep', huongTay: tb0.huongTay, cho: cho(mtb) });
-      } else if (man.loaiRobot === 'drone') {
-        them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', magnet_off() không thả được vật: ô ngay dưới drone, (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
+      } else if (man.loaiRobot === 'drone' || man.loaiRobot === 'nhen') {      // nam châm treo dưới bụng: drone, nhện (mùa 3)
+        var tenBung = man.loaiRobot === 'drone' ? 'drone' : 'nhện';
+        them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', magnet_off() không thả được vật: ô ngay dưới ' + tenBung + ', (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
           ' nên vật vẫn dính ở nam châm (nam châm vẫn bật).' + (thaChan.length > 1 ? ' Chuyện này xảy ra ' + thaChan.length + ' lần.' : '') +
-          ' Nam châm treo dưới bụng drone chỉ thả được vật xuống ô sàn trống ngay bên dưới: bay sang ô khác rồi thả.', { nhip: tb0.nhip, soLan: thaChan.length, o: tb0.o, vat: tb0.vat, cho: cho(mtb) });
+          ' Nam châm treo dưới bụng ' + tenBung + ' chỉ thả được vật xuống ô sàn trống ngay bên dưới: ' + (tenBung === 'drone' ? 'bay' : 'đi') + ' sang ô khác rồi thả.', { nhip: tb0.nhip, soLan: thaChan.length, o: tb0.o, vat: tb0.vat, cho: cho(mtb) });
       } else {
       them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', magnet_off() không thả được vật: ô ngay trước mũi xe, (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
         ' nên vật vẫn dính ở nam châm (nam châm vẫn bật).' + (thaChan.length > 1 ? ' Chuyện này xảy ra ' + thaChan.length + ' lần.' : '') +
@@ -763,9 +766,9 @@
       var hg0 = hutGo[0];
       cd.push({
         ma: 'hut-go', muc: 'thong-tin', nhip: hg0.nhip, soLan: hutGo.length, o: hg0.o, khoang: hg0.khoang,
-        loi: man.loaiRobot === 'drone'
-          ? 'Ở nhịp ' + hg0.nhip + ', nam châm đang bật nhưng vật ngay dưới drone, ở ô (' + hg0.o.x + ', ' + hg0.o.y + '), là vật GỖ: nam châm chỉ hút vật sắt hay vật nam châm khác cực.' +
-            (hutGo.length > 1 ? ' Chuyện này xảy ra ' + hutGo.length + ' lần.' : '') + ' Nam châm treo dưới bụng chỉ hút vật nằm ngay dưới drone: bay tới đúng ô có vật sắt.'
+        loi: man.loaiRobot === 'drone' || man.loaiRobot === 'nhen'
+          ? 'Ở nhịp ' + hg0.nhip + ', nam châm đang bật nhưng vật ngay dưới ' + (man.loaiRobot === 'drone' ? 'drone' : 'nhện') + ', ở ô (' + hg0.o.x + ', ' + hg0.o.y + '), là vật GỖ: nam châm chỉ hút vật sắt hay vật nam châm khác cực.' +
+            (hutGo.length > 1 ? ' Chuyện này xảy ra ' + hutGo.length + ' lần.' : '') + ' Nam châm treo dưới bụng chỉ hút vật nằm ngay dưới ' + (man.loaiRobot === 'drone' ? 'drone: bay' : 'nhện: đi') + ' tới đúng ô có vật sắt.'
           : 'Ở nhịp ' + hg0.nhip + ', nam châm đang bật nhưng vật đầu tiên trước mặt, ở ô (' + hg0.o.x + ', ' + hg0.o.y + '), là vật GỖ: gỗ không có từ, nên nam châm cực nào cũng không làm gì được nó, và vật gỗ còn chắn các vật đứng sau nó.' +
           (hutGo.length > 1 ? ' Chuyện này xảy ra ' + hutGo.length + ' lần.' : '') + ' Dùng front_metal() hay front_pole() (nếu có) để biết trước mặt là gì.'
       });
@@ -880,11 +883,34 @@
         (nh1.giua ? 'ô ở giữa' : 'ô để đáp') + ' là ' + (LY_NHAY[nh1.vat] || nh1.vat) + ', nên nhện rơi xuống lại đúng ô cũ (vẫn mất hai nhịp).' +
         (nhayHut.length > 1 ? ' Chuyện này xảy ra ' + nhayHut.length + ' lần.' : '') + ' Cú nhảy bay qua đúng MỘT ô, và ô đáp phải là sàn trống: đếm lại số ô trước khi nhảy.', { nhip: nh1.nhip, soLan: nhayHut.length, tu: nh1.tu, den: nh1.den, vat: nh1.vat, cho: cho(mnh) });
     }
+    // ĐỆM TỪ (mùa 3, luật ở san-hoc.js phần ĐỆM TỪ): robot bị đệm kéo / đẩy vào hố → lời riêng (thay lời roi-ho "nhện phải nhảy"); chưa thắng mà bị đệm dời → thông tin nhắc chiều hút / đẩy.
+    // Miễn đệm (user 29/10): drone bay (mọi lúc) và nhện trong nhịp nhảy ('nhay' / 'nhay-hut') không bị đệm dời, nên không bao giờ có dem-hut / dem-day ở nhịp đó; nhện đi bộ thì bị.
+    var demDoi = res.suKien.filter(function (e) { return e.ma === 'dem-hut' || e.ma === 'dem-day'; });
     var roiHo = res.suKien.filter(function (e) { return e.ma === 'roi-ho'; });
+    var demRoi = roiHo.length ? demDoi.filter(function (e) { return e.nhip === roiHo[0].nhip && e.den.x === roiHo[0].o.x && e.den.y === roiHo[0].o.y; })[0] : null;
+    if (demRoi) {
+      var mdr = demRoi.lenh ? (g.anhXa[demRoi.lenh.dongPy] || null) : null, hutDr = demRoi.ma === 'dem-hut';
+      them('dem-roi-ho', 'Ở nhịp ' + demRoi.nhip + ', đệm từ cực ' + demRoi.dem.cuc + ' ở ô (' + demRoi.dem.x + ', ' + demRoi.dem.y + ') ' + (hutDr ? 'HÚT' : 'ĐẨY') + ' robot từ ô (' + demRoi.tu.x + ', ' + demRoi.tu.y + ') sang ô (' + demRoi.den.x + ', ' + demRoi.den.y + ') là hố, robot rơi' +
+        (demRoi.lenh ? ' (sau lệnh ' + demRoi.lenh.ten + '() ở ' + viTri(mdr) + ')' : '') + (sanThu ? '.' : ' nên chương trình dừng ở đó.') +
+        ' Đệm từ kéo mọi robot đứng cùng hàng hay cùng cột trong 2 ô. ' + (hutDr ? 'Robot không bật nam châm (hay bật cực khác đệm) thì bị hút về phía đệm: muốn không bị kéo, bật CÙNG cực với đệm (đệm ' + demRoi.dem.cuc + ' thì gọi magnet_' + demRoi.dem.cuc.toLowerCase() + '()) để được đẩy ra xa, hoặc đi đường khác ngoài tầm đệm.'
+          : 'Robot bật CÙNG cực với đệm thì bị đẩy ra xa: muốn không bị đẩy xuống hố, tắt nam châm (magnet_off()) hay bật cực khác để được hút lại, hoặc đi đường khác ngoài tầm đệm.'), { nhip: demRoi.nhip, o: roiHo[0].o, dem: demRoi.dem, kieu: hutDr ? 'hut' : 'day', cho: cho(mdr) });
+      roiHo = [];
+    }
+    if (demDoi.length && !res.thang && !demRoi) {
+      var dd0 = demDoi[0], mdd = dd0.lenh ? (g.anhXa[dd0.lenh.dongPy] || null) : null, hutDd = dd0.ma === 'dem-hut';
+      cd.push({ ma: 'dem-keo', muc: 'thong-tin', nhip: dd0.nhip, soLan: demDoi.length, dem: dd0.dem, kieu: hutDd ? 'hut' : 'day', cho: cho(mdd),
+        loi: 'Ở nhịp ' + dd0.nhip + ', đệm từ cực ' + dd0.dem.cuc + ' ở ô (' + dd0.dem.x + ', ' + dd0.dem.y + ') ' + (hutDd ? 'hút' : 'đẩy') + ' robot từ ô (' + dd0.tu.x + ', ' + dd0.tu.y + ') sang ô (' + dd0.den.x + ', ' + dd0.den.y + ')' +
+          (demDoi.length > 1 ? ' (đệm dời robot ' + demDoi.length + ' lần)' : '') + '. Đệm hút robot không bật nam châm hay bật cực khác đệm, và đẩy robot bật cùng cực; mỗi nhịp dời 1 ô, chỉ khi robot cùng hàng hay cùng cột với đệm trong 2 ô. Chọn cực nam châm để đi đúng chỗ.' });
+    }
     if (roiHo.length) {
       var rh0 = roiHo[0], mrh = rh0.lenh ? (g.anhXa[rh0.lenh.dongPy] || null) : null;
-      them('roi-ho', 'Ở nhịp ' + rh0.nhip + ', ' + (man.loaiRobot === 'nhen' ? 'nhện' : 'robot') + ' rơi xuống hố ở ô (' + rh0.o.x + ', ' + rh0.o.y + ')' + (rh0.lenh ? ' (lệnh ' + rh0.lenh.ten + '() ở ' + viTri(mrh) + ')' : '') +
-        (sanThu ? '.' : ' nên chương trình dừng ở đó.') + ' Đặt chân vào ô hố là rơi. Muốn qua hố, nhện phải nhảy: co chân (crouch()), rồi duỗi chân (stand()) cùng một bước go_*() để bật qua ô hố.', { nhip: rh0.nhip, o: rh0.o, cho: cho(mrh) });
+      // Xe (hai bánh, xích, omni) cũng rơi hố (lõi: mọi thân trừ drone; P1 mùa 3 29/10 nói rõ lời cho xe): xe không nhảy được, phải đi đường khác.
+      var laNhenRh = man.loaiRobot === 'nhen', laXeRh = man.loaiRobot === 'banh' || man.loaiRobot === 'xich' || man.loaiRobot === 'omni';
+      var bangRh = (res.vet || []).some(function (v) { return v.loai === 'nhip' && v.nhip === rh0.nhip && (v.suKien || []).some(function (e) { return e.ma === 'bang-day' && e.den && e.den.x === rh0.o.x && e.den.y === rh0.o.y; }); });
+      them('roi-ho', 'Ở nhịp ' + rh0.nhip + ', ' + (laNhenRh ? 'nhện' : laXeRh ? 'xe' : 'robot') + ' rơi xuống hố ở ô (' + rh0.o.x + ', ' + rh0.o.y + ')' + (rh0.lenh ? ' (lệnh ' + rh0.lenh.ten + '() ở ' + viTri(mrh) + ')' : '') +
+        (bangRh ? ' (băng chuyền đẩy xe vào ô hố)' : '') + (sanThu ? '.' : ' nên chương trình dừng ở đó.') +
+        (laXeRh ? ' Bánh xe lăn vào ô hố là rơi, xe không nhảy qua hố được: đi đường khác tránh ô hố' + (man.doi ? ', hay để nhện trong đội nhảy qua' : '') + '.'
+          : ' Đặt chân vào ô hố là rơi. Muốn qua hố, nhện phải nhảy: co chân (crouch()), rồi duỗi chân (stand()) cùng một bước go_*() để bật qua ô hố.'), { nhip: rh0.nhip, o: rh0.o, cho: cho(mrh) });
     }
     var omniCheo = res.suKien.filter(function (e) { return e.ma === 'omni-khong-cheo'; });
     if (omniCheo.length) {
@@ -1205,7 +1231,7 @@
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, demTu: lm.demTu || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
         damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
@@ -1339,7 +1365,7 @@
       var res = SanHoc.chay({
         san: rows, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co', doiKhang: !!man.doiKhang,
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatCan: man.vatCan, vat: lm.vatThem || undefined, dich: man.dich,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, demTu: lm.demTu || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,

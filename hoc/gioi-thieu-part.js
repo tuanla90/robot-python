@@ -141,7 +141,8 @@
       moTaLenh: { magnet_n: 'Bật nam châm cực N, màu đỏ', magnet_s: 'Bật nam châm cực S, màu xanh dương' },
       gioi: ['Hút vật sắt cách tới 2 ô về dính ở mũi xe', 'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô'],
       khong: ['Không hút được vật gỗ', 'Không đẩy được vật sắt', 'Mỗi lần chỉ dính một vật'],
-      luuY: ['magnet_off() ngắt điện, thả vật xuống ô trước mũi.', { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' }]
+      luuY: ['magnet_off() ngắt điện, thả vật xuống ô trước mũi.', { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
+        { chu: 'Trên nhện, nam châm treo dưới bụng: hút và thả vật sắt ở ô ngay dưới, mang theo khi đi và khi nhảy qua hố.', than: 'nhen' }]
     },
     'nem': {
       khe: 'tay', ten: 'Máy ném',
@@ -181,7 +182,7 @@
     },
     'tu': {
       khe: 'camBien', ten: 'Cảm biến từ',
-      moTa: 'Gắn cạnh cảm biến khoảng cách, cho biết vật phía trước là sắt hay nam châm.',
+      moTa: 'Đầu dò chữ U ở hông xe, cho biết vật phía trước là sắt hay nam châm cực N, cực S.',
       lenh: ['front_metal', 'front_pole'],
       gioi: ['Hỏi không tốn nhịp', { chu: 'front_metal() trả True khi vật gần nhất phía trước là sắt và cách xe tới 2 ô', can: ['front_metal'] },
         { chu: 'front_pole() trả "N" hoặc "S" khi vật gần nhất trong 3 ô là nam châm', can: ['front_pole'] }],

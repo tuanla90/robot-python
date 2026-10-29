@@ -49,10 +49,10 @@ for (const khe of LapRap.KHE) {
   kiem('khe ' + khe + ': có tên và một dòng "vượt được gì" ngắn (≤ 40 chữ)', ds.every((d) => d.ten && d.vuot && d.vuot.length <= 40), ds.filter((d) => !d.ten || !d.vuot || d.vuot.length > 40).map((d) => d.ma + ':' + (d.vuot || '').length).join(','));
 }
 kiem('thân: loại robot đúng lõi SanHoc (hai-banh→banh, còn lại cùng tên)', LapRap.DANH_MUC.than.every((d) => d.loai === (d.ma === 'hai-banh' ? 'banh' : d.ma) && !!SanHoc.HAM_GOC[d.loai]));
-kiem('cảm biến từ (tu) dùng part khoang-cach + hai hàm front_metal / front_pole', LapRap.tim('camBien', 'tu').part === 'khoang-cach' && ['front_metal', 'front_pole'].every((h) => LapRap.tim('camBien', 'tu').ham.includes(h)));
+kiem('cảm biến từ (tu) là part vector riêng "tu" (P1 mùa 3) chỉ có hai hàm front_metal / front_pole', LapRap.tim('camBien', 'tu').part === 'tu' && bang(LapRap.tim('camBien', 'tu').ham, ['front_metal', 'front_pole']));
 for (const khe of LapRap.KHE) {
-  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part), ex = d.ma === 'tu' ? ['front_metal', 'front_pole'] : []; return !bang(d.ham, p.hamGoc.concat(ex)); });
-  kiem('khe ' + khe + ': `ham` của từng mục đúng hamGoc của bộ phận vector (cảm biến từ thêm front_metal / front_pole)', sai.length === 0, sai.map((d) => d.ma).join(','));
+  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part); return !p || !bang(d.ham, p.hamGoc); });
+  kiem('khe ' + khe + ': `ham` của từng mục đúng hamGoc của bộ phận vector', sai.length === 0, sai.map((d) => d.ma).join(','));
 }
 {
   const sai = [];
@@ -115,7 +115,7 @@ const ca = [
   ['hai bánh + camera bụng: sai (chỉ drone)', gh('hai-banh', null, 'camera-bay'), false, /drone/],
   ['xích + camera bụng: sai', gh('xich', 'kep', 'camera-bay'), false],
   ['nhện + tay xoay: sai (không có hướng mặt)', gh('nhen', 'xoay', null), false, /hướng mặt/],
-  ['nhện + nam châm: sai', gh('nhen', 'nam-cham', null), false],
+  ['nhện + nam châm: được (mùa 3: nam châm bụng nhện, treo ở ổ duoi)', gh('nhen', 'nam-cham', null), true],
   ['nhện + máy ném: sai', gh('nhen', 'nem', null), false],
   ['nhện + súng hơi: sai', gh('nhen', 'hoi', null), false],
   ['nhện + tay kẹp: được', gh('nhen', 'kep', null), true],
@@ -195,12 +195,12 @@ let ds = LapRap.dsCachLap(bac);
 kiem('dsCachLap màn bậc thang (ngân sách 3): đúng 3 cách = hai bánh (2) · hai bánh + khoảng cách (3) · xích (3)', ds.length === 3 && J(ds.map((x) => x.gia)) === J([2, 3, 3]) && ds[0].than === 'hai-banh' && !ds[0].camBien, J(ds));
 kiem('dsCachLap xếp theo giá tăng dần, mỗi mục có than / tay / camBien / gia', ds.every((x, i) => ('than' in x) && ('tay' in x) && ('camBien' in x) && (i === 0 || ds[i - 1].gia <= x.gia)));
 const manLon = { ma: 'tam.lon', lapRap: { than: ['hai-banh', 'nhen', 'drone'], tay: ['kep', 'nam-cham', 'xoay', 'nem'], camBien: ['mau', 'camera', 'camera-bay', 'tu', 'khoang-cach'], nganSach: 99, cachLap: [] } };
-// đếm tay: hai bánh 5 tay × 5 não (bỏ camera-bay) = 25 · nhện {không, kẹp} × {không, màu, camera} = 6 · drone {không, nam châm} × {không, màu, camera bụng} = 6
-kiem('dsCachLap màn lớn (3 thân, 4 tay, 5 não, ngân sách thừa): đúng 37 cách', LapRap.dsCachLap(manLon).length === 37, String(LapRap.dsCachLap(manLon).length));
+// đếm tay: hai bánh 5 tay × 5 não (bỏ camera-bay) = 25 · nhện {không, kẹp, nam châm bụng (mùa 3)} × {không, màu, camera} = 9 · drone {không, nam châm} × {không, màu, camera bụng} = 6
+kiem('dsCachLap màn lớn (3 thân, 4 tay, 5 não, ngân sách thừa): đúng 40 cách', LapRap.dsCachLap(manLon).length === 40, String(LapRap.dsCachLap(manLon).length));
 function demTay(nganSach) {                                                            // đếm lại độc lập bằng luật viết tay và bảng giá của kế hoạch
   let n = 0;
   const camOk = { 'hai-banh': [null, 'mau', 'camera', 'tu', 'khoang-cach'], nhen: [null, 'mau', 'camera'], drone: [null, 'mau', 'camera-bay'] };
-  const tayOk = { 'hai-banh': [null, 'kep', 'nam-cham', 'xoay', 'nem'], nhen: [null, 'kep'], drone: [null, 'nam-cham'] };
+  const tayOk = { 'hai-banh': [null, 'kep', 'nam-cham', 'xoay', 'nem'], nhen: [null, 'kep', 'nam-cham'], drone: [null, 'nam-cham'] };     // nhện + nam châm bụng (mùa 3)
   for (const th of Object.keys(camOk)) for (const ta of tayOk[th]) for (const cb of camOk[th])
     if (GIA.than[th] + (ta ? GIA.tay[ta] : 0) + (cb ? GIA.camBien[cb] : 0) <= nganSach) n++;
   return n;
@@ -225,7 +225,7 @@ kiem('drone có pin: hamGoc có battery, magnet_*, look, go_*, wait; camBien th�
 a = LapRap.apDung(Object.assign({}, mDrone, { pin: undefined }), { than: 'drone' });
 kiem('drone KHÔNG có pin ở màn: không battery, không camBien pin', !a.hamGoc.includes('battery') && J(a.robot.camBien) === '[]' && bang(a.hamGoc, ['go_up', 'go_down', 'go_left', 'go_right', 'wait']), a.hamGoc.join(','));
 a = LapRap.apDung(mDrone, { than: 'omni', tay: null, camBien: 'tu' });
-kiem('omni + cảm biến từ: có front_clear / left_clear / right_clear + front_metal / front_pole, bánh + trượt', bang(a.hamGoc, ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait', 'front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole']) && a.loaiRobot === 'omni' && a.robot.camBien[0].ma === 'khoang-cach', a.hamGoc.join(','));
+kiem('omni + cảm biến từ (P1 mùa 3: part riêng, không kèm khoảng cách): chỉ front_metal / front_pole, bánh + trượt; robot.camBien là tu', bang(a.hamGoc, ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait', 'front_metal', 'front_pole']) && a.loaiRobot === 'omni' && a.robot.camBien[0].ma === 'tu', a.hamGoc.join(','));
 a = LapRap.apDung(mDrone, { than: 'nhen', tay: 'kep', camBien: null });
 kiem('nhện + kẹp: loaiRobot nhen, có crouch / stand / go_*', a.loaiRobot === 'nhen' && ['crouch', 'stand', 'go_up', 'go_left', 'arm_down', 'wait'].every((h) => a.hamGoc.includes(h)), a.hamGoc.join(','));
 let nem = false; try { LapRap.apDung(mDrone, { than: 'drone', tay: 'kep' }); } catch (e) { nem = /nam châm/.test(e.message); }

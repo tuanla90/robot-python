@@ -31,6 +31,7 @@ const chuongMua2 = new Set(TT.goi.filter(g => g.mua === 'mua-2').flatMap(g => g.
 // Mùa 3 (29/10, KE-HOACH-MUA-3.md, đang dựng) cũng được có chương chưa đủ 10; chương rời mùa 3 (M.roiMua3: doi-xich-bac 8, nam-cham-omni 1) cũng vậy.
 const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.chuong));
 const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...Object.keys(M.roiMua3 || {}), 'che-xich']);
+
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
   assert.equal(new Set(M.danhSach.map(m => m.ma)).size, M.danhSach.length);
