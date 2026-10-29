@@ -1106,7 +1106,9 @@
   // máy sơn chấm ô (dot) về gói 2, nét liền (pen_down) về gói 6. Màn camera (mau, che-mau, flycam) tạm giữ color() / look() cũ, dựng lại sau lõi N2.
   var MUA_4 = [
     { ma: 'drone', ten: 'Cất cánh', loai: 'bo-phan', hinh: 'drone',
-      chuong: [['drone', day('drone', [1, 2, 3, 7, 8, 9])], ['list', day('list', MUOI)]] },
+      // drone: đủ thứ tự 10 màn (man-cat-canh.js): 11 trình diễn · 1 · 2 · 12 · 3 · 13 · 7 · 8 · 9 · 14 trùm
+      // list: list.1 thành màn trình diễn (dưới), list.11 màn ép sửa một số (man-cat-canh.js), list.2 (xoắn ốc 28 ô, nhảy đường cong) cất khỏi lộ trình
+      chuong: [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]] },
     { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
       chuong: [['may-son', day('may-son', [1, 2, 6, 7])], ['che-list', day('che-list', MUOI)]] },
     { ma: 'mau', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'mau',
@@ -1139,6 +1141,17 @@
   var TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
   (function () {
     Object.keys(TEN_MUA_4).forEach(function (c) { TT.ten[c] = TEN_MUA_4[c]; });
+    // Cất khỏi lộ trình (ngân hàng giữ nguyên): list.2 xoắn ốc 28 ô ngay màn 2 (nhảy đường cong), trùng ý list.1.
+    cat(['list.2']);
+    // Màn trình diễn danh sách (show don't tell): list.1 khoá chương trình, bấm Chạy là thấy xe đi theo từng số của a.
+    var l1 = get('list.1');
+    sua('list.1', {
+      chiChay: true, chinhCoDinh: true, maMau: { chinh: l1.loiGiai.chinh.slice(), hamCuaMan: [] },
+      deBai: 'Danh sách a = [4, 2, 3] giữ ba số trong một biến, theo thứ tự. for n in a: lấy lần lượt từng số ra làm n: lần đầu n là 4, rồi 2, rồi 3. ' +
+        'Bấm Chạy xem xe đi đúng ba đoạn dài 4, 2, 3 ô, hết mỗi đoạn rẽ phải.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy, đếm số ô của từng đoạn và so với các số trong a.',
+      goiY: ['Mỗi số trong danh sách là độ dài một đoạn đường.', 'Màn sau một số trong danh sách bị ghi sai: em sửa.']
+    });
     M.danhSach.forEach(function (m) { if (!nguon[m.ma]) nguon[m.ma] = copy(m); });
     var moi = [], chuong = [];
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
@@ -1149,7 +1162,7 @@
     moi.forEach(function (m) { nguon[m.ma] = copy(m); });
     MUA_4.forEach(function (g) {
       g.chuong.forEach(function (c) {
-        var them = moi.filter(function (m) { return m.chuong === c[0]; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
         var cuoi = c[1][c[1].length - 1];
         c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
       });

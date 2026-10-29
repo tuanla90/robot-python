@@ -718,7 +718,7 @@ const LOI_GIA_4 = process.argv.includes('--loi-gia-mua-4');
 // Bảng mục 2 KE-HOACH-MUA-4.md: [mã gói, loại, [[chương, màn CÓ SẴN theo thứ tự]]]. Màn mới của các tệp ngân hàng mùa 4 (TEP_MUA_4) nối sau màn có sẵn
 // (chen trước màn trùm có sẵn cuối chương).
 const BANG_MUA_4 = [
-  ['drone', 'bo-phan', [['drone', day('drone', [1, 2, 3, 7, 8, 9])], ['list', day('list', MUOI)]]],
+  ['drone', 'bo-phan', [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]]],
   ['may-son', 'bo-phan', [['may-son', day('may-son', [1, 2, 6, 7])], ['che-list', day('che-list', MUOI)]]],
   ['mau', 'bo-phan', [['mau', day('mau', MUOI)], ['che-mau', day('che-mau', MUOI)]]],
   ['pho-mau', undefined, [['pho-mau', []], ['che-pho-mau', []]]],
@@ -732,7 +732,7 @@ const BANG_MUA_4 = [
 const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
 const moiMua4 = TEP_MUA_4.flatMap(k => M[k] || []);
 const manBang4 = (c, coSan) => {
-  const them = moiMua4.filter(m => m.chuong === c).sort((a, b) => a.so - b.so).map(m => m.ma);
+  const them = moiMua4.filter(m => m.chuong === c && !coSan.includes(m.ma)).sort((a, b) => a.so - b.so).map(m => m.ma);      // màn mới đã khai trong dòng chương thì không nối lại
   const cuoi = coSan[coSan.length - 1];
   return cuoi && them.length && get(cuoi).hang === 'trum' ? coSan.slice(0, -1).concat(them, [cuoi]) : coSan.concat(them);
 };
