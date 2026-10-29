@@ -120,7 +120,7 @@ kiem('gói hai-robot (mùa 1): hai chương hai-robot, che-hai-robot; chương m
   assert.deepEqual(ds.map((m) => m.ma), MOI);
   assert.deepEqual(ds.map((m) => m.so), MOI.map((_, i) => i + 1));
   assert.deepEqual(ds.map((m) => m.hang), MOI.map((_, i) => (i < 3 ? 'lam-quen' : i < 6 ? 'luyen' : i < 9 ? 'bien-the' : 'trum')));
-  assert.equal(TT.ten[CHUONG], 'Đội phối hợp');
+  assert.equal(TT.ten[CHUONG], 'Phối hợp ăn ý');      // tên theo quy tắc đặt tên (user duyệt 29/10)
   assert.equal(TT.thuTu.indexOf(CHUONG), TT.thuTu.indexOf('hai-robot') + 1, 'chương mới phải đứng ngay sau hai-robot');
 });
 kiem('mã mới không trùng màn đã cất; tên màn không trùng trong lộ trình', () => {
