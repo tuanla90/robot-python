@@ -157,7 +157,7 @@ console.log('\n== 6. Giao diện (theo mã nguồn) ==');
     /nutBat: Array\.isArray\(cfg\.nutBat\) \? cfg\.nutBat : null/.test(sv) && /\(\(this\.cfg && this\.cfg\.nutBat\) \|\| \[\]\)\.forEach\(function \(o\) \{ self\.nutO\(o\.x, o\.y\)\.bat = true; \}\)/.test(sv) && /sN = \{ bat: bat, loe: [^}]*\}[\s\S]{0,400}?ve\('nut-ban', sN\); if \(bat\) this\.veNong\(g, x, y, now\)/.test(sv));   // 29/10 van hơi: trạng thái gom vào sN (thêm góc quay goc khi đổi)
   // ảnh nhỏ: nút bật sẵn → hình vector 'nut-ban' {bat} (thuOVec, V7c2: hết bản pixel xanh / viền cam)
   kiem('san-ve.js thuSan (ảnh nhỏ): nút bật sẵn vẽ hình nut-ban trạng thái bat (thuOVec)', /lopMau && lopMau\.nutBat/.test(sv) && /else if \(ma === 'nut-ban' && nutBat\[x \+ ',' \+ y\]\) st\.bat = true;/.test(sv));
-  kiem('man-choi.js cauHinhSan + ảnh nhỏ từng sân, man-lap.js ảnh nhỏ: truyền nutBat', /nutBat: lm\.nutBat \|\| undefined/.test(mc) && /nutBat: ch\.nutBat/.test(mc) && /nutBat: lm\.nutBat \}/.test(ml));
+  kiem('man-choi.js cauHinhSan + ảnh nhỏ từng sân, man-lap.js ảnh nhỏ: truyền nutBat', /nutBat: lm\.nutBat \|\| undefined/.test(mc) && /nutBat: ch\.nutBat/.test(mc) && /nutBat: lm\.nutBat(, lua: lm\.lua)? \}/.test(ml));   // 30/10 gói lửa: cfg.lua đứng ngay sau
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' : 'ĐẠT ') + (dat + hong) + ' kiểm' + (LOI_GIA ? ' (đang cắm lỗi giả: phải đỏ)' : ''));
