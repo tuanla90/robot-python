@@ -28,7 +28,7 @@ export function catSan(m, i) {
   if (!Array.isArray(m.san[0])) return Object.assign({}, m);
   const lm = SanHoc.lopMauCuaSan(m, i);
   const con = Object.assign({}, m, { san: m.san[i], batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau });
-  for (const k of ['mau', 'vatMau', 'vatChat', 'cuaNhip', 'noi', 'nutBat', 'bongMo']) {
+  for (const k of ['mau', 'vatMau', 'vatChat', 'cuaNhip', 'noi', 'nutBat', 'lua', 'bongMo']) {
     const v = lm[k] || (Array.isArray(m[k]) ? null : m[k]);         // lớp song song với san thì cắt; một giá trị chung (bongMo một object) thì giữ
     if (v !== undefined && v !== null) con[k] = v; else delete con[k];
   }
