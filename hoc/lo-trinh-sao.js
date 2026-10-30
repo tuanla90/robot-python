@@ -17,6 +17,10 @@
     "o": 21,
     "nhip": 21
   },
+  "vong-lap.10": {
+    "o": 34,
+    "nhip": 35
+  },
   "khoang-cach.1": {
     "o": 6,
     "nhip": 3

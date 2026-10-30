@@ -84,7 +84,7 @@ kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến'
   assert.equal(get('khoang-cach.7'), null, 'khoang-cach.7 đã cất khỏi lộ trình');
   assert.equal(get('khoang-cach.4'), null, 'khoang-cach.4 đã cất (HD1)');
   assert.equal(get('khoang-cach.9'), null, 'khoang-cach.9 đã cất (HD1)');
-  for (const ma of ['khoang-cach.1', 'khoang-cach.2', 'vong-lap.1', 'nut-de.1', 'tay-xoay.1', 'cam-bien-ben.1', 'banh-lui.5', 'hai-robot.1']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
+  for (const ma of ['khoang-cach.1', 'khoang-cach.2', 'vong-lap.1', 'vong-lap.11', 'nut-de.1', 'tay-xoay.1', 'cam-bien-ben.1', 'banh-lui.5', 'hai-robot.1']) assert.ok(get(ma).chiChay && get(ma).chinhCoDinh, ma + ' là màn trình diễn (chiChay)');
   assert.ok(get('cam-bien-ben.1').deBai.includes('left_clear'));
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'bien-the');
@@ -129,7 +129,7 @@ const MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 // Gói 10 R1 xuất xưởng: robot-hoan-thien.11 thay robot-hoan-thien.10 (cất) + chương Trùm mùa (man-trum-mua-1.js). Mùa 1 đủ 10 gói × 20 màn.
 const BANG_MUA_1 = [
   ['xe', [['hai-banh', day('hai-banh', [1, 2, 3, 4, 5, 7, 8, 9, 10, 11])], ['xuong-ham', day('xuong-ham', MUOI)]]],     // SM1-B (30/10): hai-banh.6 cất, hai-banh.11 mới
-  ['tay-gap', [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9, 10]).concat('che-lap.5')]]],
+  ['tay-gap', [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 6, 8, 9, 10, 11]).concat('che-lap.5')]]],     // SM1-B: vong-lap.5 cất, vong-lap.11 mới
   ['cam-bien', [['khoang-cach', day('khoang-cach', [1, 2, 3, 5, 6, 8, 10, 11, 12, 13])], ['che-cam-bien', day('che-cam-bien', [1, 2, 3, 7, 11, 12, 13, 14, 15, 16])]]],
   ['kho-hang', [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-tay', [1, 2, 4, 6]).concat(day('che-xe', [1, 2]), day('kho-hang', [1, 2, 3, 4]))]]],     // SM1-A (30/10): chương 2 về nút đè
   ['banh-lui', [['banh-lui', day('che-xe', [4, 5, 6, 9]).concat(day('banh-lui', [1, 2, 3, 4, 5, 6]))], ['che-banh-lui', ['che-xe.10'].concat(day('che-tay', [5, 9]), ['che-lap.7'], day('che-banh-lui', [1, 2, 3, 4, 5, 6]))]]],     // SM1-A: trùm che-banh-lui.5, che-lap.9 cất; lượt 2 (A2): che-xe.7, che-tay.7 cất, banh-lui.6 / che-banh-lui.6 mới
@@ -142,7 +142,7 @@ const BANG_MUA_1 = [
 // HD3 (29/10): banh-lui.5 (màn trình diễn lệnh lùi) vào chương banh-lui, che-xe.8 cất.
 // SM1-A (30/10): che-xe.3, che-tay.3, che-tay.8, che-tay.10 (không tạo hàm) cất, chương kho-hang có 4 màn mới kho-hang.1–4.
 const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10', 'khoang-cach.4', 'khoang-cach.9', 'che-xe.8',
-  'che-xe.3', 'che-tay.3', 'che-tay.8', 'che-tay.10', 'che-lap.9', 'che-xe.7', 'che-tay.7', 'hai-banh.6'];
+  'che-xe.3', 'che-tay.3', 'che-tay.8', 'che-tay.10', 'che-lap.9', 'che-xe.7', 'che-tay.7', 'hai-banh.6', 'vong-lap.5'];
 const BIEN_MUA_2 = ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
 // Mùa 2 (27/10): che-xich 3, 4, 5, 7, 10 (bậc thang + hàm có tham số) rời mùa 2, sang chương che-xich ở mùa 3 (ẩn); không màn nào cất thêm.
 const XICH_CU = ['che-xich.3', 'che-xich.4', 'che-xich.5', 'che-xich.7', 'che-xich.10'];

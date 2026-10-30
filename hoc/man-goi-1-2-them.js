@@ -4,6 +4,9 @@
    - hai-banh.11 "Quay đầu, đi hai ô" (chương hai-banh): thay hai-banh.6 "Chữ L ngược" (trùng ý với hai-banh.5 "Chữ L", cất). Quay đầu (hai lần
      quay một bánh) rồi tiến hai ô: 4 nhịp, chương trình vừa đủ 10 ô (khung chính). Đứng sau hai-banh.7 "Quay đầu" (3 nhịp, 7 ô) để chương có một
      màn "lấp đầy khung" trước trùm hai-banh.10 (viết lại trong lo-trinh-hoc.js: 4 nhịp, 10 ô, rẽ phải rồi rẽ trái, dòng bị xáo).
+   - vong-lap.11 "Lặp trong lặp" (chương vong-lap): MÀN TRÌNH DIỄN vòng for lồng (chiChay, chương trình khoá, bấm Chạy là thấy), đứng ngay trước
+     vong-lap.9 "Vòng lặp lồng nhau" (trước đây for lồng xuất hiện lần đầu ở vong-lap.9 với mã mẫu rỗng, cùng lúc mang thùng). Không tay kẹp, không thùng:
+     một màn một điều mới. Hành lang chữ U úp ngược ba đoạn bốn ô (vong-lap.9 là năm ô và mang thùng). Chỗ trong chương: vong-lap.5 "Bậc thang" cất.
    Mã là mã MỚI (không trùng màn nào trong ngân hàng, kể cả màn đã cất).
    Tệp này KHÔNG tự thêm màn vào ManHoc: danh sách nằm ở ManHoc.manGoi12Them, lo-trinh-hoc.js thêm vào chương rồi xếp chỗ.
    Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên.
@@ -28,6 +31,17 @@
     return ManHoc.chuanHoa(m);
   }
 
+  /** Màn chương vong-lap: như man-vong-lap.js (bánh + 4 lệnh tay, Xưởng mở, được dùng hàm của em, khung 10 ô, cấu trúc for). */
+  function vl(m) {
+    m.chuong = 'vong-lap';
+    m.cauTruc = ['for'];
+    m.loaiRobot = 'banh'; m.hamGoc = ['left_move', 'right_move', 'wait', 'arm_down', 'arm_up', 'grab', 'release'];
+    m.moXuong = true; m.camHamCuaEm = false;
+    m.khung = { chinh: 10, moiHam: 10 };
+    return ManHoc.chuanHoa(m);
+  }
+  var LONG = ['for i in range(3):', '    turn_right()', '    for j in range(4):', '        move()'];      // lệnh nào cũng chạy, xe dừng đúng ở cờ (không dư lệnh rẽ cuối)
+
   var DS = [
     hb({
       so: 11, ten: 'Quay đầu, đi hai ô', hang: 'bien-the',
@@ -43,6 +57,18 @@
         { moTa: 'Thêm một dòng chú thích: quá 10 ô', baiLam: { chinh: nhieu(['# quay đầu'], QUAY_PHAI, QUAY_PHAI, TIEN, TIEN) }, phaiCoMa: ['tran-khung'] }
       ],
       goiY: ['Quay đầu là hai lần quay về cùng một phía.', 'Bài này vừa khít 10 ô: không còn chỗ cho dòng thừa nào.']
+    }),
+    vl({
+      so: 11, ten: 'Lặp trong lặp', hang: 'bien-the', chiChay: true, chinhCoDinh: true, canFor: 'tran-khung', hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Hành lang hình chữ U úp ngược có ba đoạn, đoạn nào cũng là "rẽ phải rồi đi bốn ô". Vòng for bên trong (for j) cho xe đi bốn ô; vòng for bên ngoài (for i) lặp cả cụm đó ba lần. Bấm Chạy xem xe tới cờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá: vòng for j nằm trong thân vòng for i, thụt vào thêm một bậc. Bấm Chạy.',
+      san: ['.....', '.###.', '.###.', '.###.', '.###F'],
+      batDau: { x: 0, y: 4, huong: 3 },
+      maMau: { chinh: LONG.slice() },
+      sao: { o: 9, nhip: 15 },
+      loiGiai: { chinh: LONG.slice() },
+      loiSai: [],
+      goiY: ['move() chỉ viết một lần mà chạy mười hai lần: bốn lần mỗi đoạn, ba đoạn.', 'Màn sau em tự viết hai vòng for lồng nhau, mang theo một thùng.']
     })
   ];
 

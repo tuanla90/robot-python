@@ -112,7 +112,7 @@
     goiY: ['n bắt đầu bằng 0. Mỗi lần move(), n cần tăng một đơn vị.', 'Dùng n = n + 1 trong thân while.']
   });
   // Gói 2 chương 2 Vòng lặp (KE-HOACH-MUA-1.md, Vướng 4): hai màn gần cuối chương thêm TAY KẸP để chương đúng "hàm cho tay" (che-lap.5 Dọn hàng đã có tay).
-  // Chỉ dùng thứ của gói 1–2 (for, pick / drop, move / rẽ). vong-lap.10 không đổi (nó tạo row / bend_left / bend_right cho màn khác).
+  // Chỉ dùng thứ của gói 1–2 (for, pick / drop, move / rẽ). vong-lap.10 viết lại ở khối SM1-B (mang thùng; vẫn tạo bend_left / bend_right cho bang-chuyen.8).
   // Cỡ sân / nhịp đặt giữa vong-lap.6 và che-lap.5 cho đường cong chương (luật đo: n ≤ max(1,5 × n−1, n−1 + bù)).
   (function () {
     var vl8 = ['pick()', 'for i in range(6):', '    move()', 'turn_left()', 'for i in range(4):', '    move()', 'drop()'];
@@ -344,6 +344,34 @@
     ],
     goiY: ['Bấm Nhịp để xem từng nhịp: nhịp nào xe làm sai việc?', 'Một nhịp gồm các lệnh bánh rồi wait(). Nhịp nào cũng phải đúng việc và đúng chỗ.']
   });
+  // SM1-B việc 2, 3 (gói 2 chương vong-lap): vong-lap.11 "Lặp trong lặp" (trình diễn for lồng, chiChay, không tay) đứng ngay trước vong-lap.9; vong-lap.5
+  // "Bậc thang" cất (trùng ý "lặp một cụm" với vong-lap.4, và là chỗ nhảy 8 → 19 nhịp). Trùm vong-lap.10 viết lại: MANG THÙNG qua hành lang ngoằn ngoèo
+  // (tay kẹp trong chương vòng lặp), chế HAI hàm (bend_left, bend_right: tên và thân như ngân hàng, bang-chuyen.8 mùa 2 dùng lại) thay vì ba (row bỏ:
+  // không màn nào khác dùng; mỗi hàng là một vòng for trong vòng for ngoài, nhắc lại for lồng của vong-lap.9), 35 nhịp (cũ 46) ≤ 2 × màn 9 (che-lap.5 21).
+  (function () {
+    var HANG = ['    for j in range(4):', '        move()'];
+    var L10 = ['pick()', 'for i in range(2):'].concat(HANG, ['    bend_left()'], HANG, ['    bend_right()', 'drop()']);
+    var BL = ham('bend_left', ['turn_left()', 'move()', 'move()', 'turn_left()']), BR = ham('bend_right', ['turn_right()', 'move()', 'move()', 'turn_right()']);
+    function voi(chinh, hs) { return { chinh: chinh, hamCuaMan: [], hamCuaEmMoi: hs || [BL, BR] }; }
+    sua('vong-lap.10', {
+      ten: 'Mang hàng đường ngoằn ngoèo', mucTieu: 'dua-vat', canFor: 'tran-khung', taoHam: ['bend_left', 'bend_right'],
+      hamCuaEmCan: ['pick', 'drop', 'move', 'turn_left', 'turn_right'],
+      deBai: 'Nhặt thùng ngay trước mặt rồi mang nó qua hành lang ngoằn ngoèo: bốn hàng, mỗi hàng bốn ô, nối nhau ở hai đầu bằng khúc quẹo; hết đường thì đặt thùng vào ô đích. Chế bend_left() và bend_right() cho hai kiểu khúc quẹo, rồi dùng vòng lặp.',
+      san: ['.D###', '.####', '.....', '####.', '.....', '.####', '.....', '####.', '.o...'],
+      batDau: { x: 0, y: 8, huong: 1 },
+      maMau: bai([]),
+      loiGiai: voi(L10),
+      sao: { o: 34, nhip: 35 },
+      loiSai: [
+        { moTa: 'Quên nhặt thùng: xe húc vào thùng ngay trước mặt', baiLam: voi(L10.slice(1)), hamCuaEmMoi: [BL, BR], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'bend_right() rẽ nhầm sang trái: xe đâm tường', baiLam: voi(L10), hamCuaEmMoi: [BL, ham('bend_right', ['turn_left()', 'move()', 'move()', 'turn_left()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Mỗi hàng đi năm ô: xe húc tường cuối hàng', baiLam: voi(L10.map(function (s) { return s.replace('range(4)', 'range(5)'); })), hamCuaEmMoi: [BL, BR], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Vòng ngoài chỉ lặp một lần: thùng bị đặt giữa đường', baiLam: voi(L10.map(function (s) { return s.replace('range(2)', 'range(1)'); })), hamCuaEmMoi: [BL, BR], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chưa chế bend_left() mà đã gọi', baiLam: voi(L10, [BR]), hamCuaEmMoi: [BR], phaiCoMa: ['ham-chua-co'] }
+      ],
+      goiY: ['Bốn hàng, hai kiểu khúc quẹo thay phiên nhau: mỗi kiểu một hàm. bend_left(): rẽ trái, đi hai ô, rẽ trái.', 'Mỗi hàng là một vòng for nằm trong vòng for ngoài, như màn Vòng lặp lồng nhau.']
+    }).loiGiaiKhac = { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: bai(['# nhặt, bốn hàng, đặt'].concat(L10)), hamCuaEmMoi: [BL, BR] };
+  })();
   // Gói 3: 7 màn mới (man-cam-bien-them.js, mã khoang-cach.11 và che-cam-bien.11–16, mã mới không trùng màn cất). Thêm vào hai chương có sẵn rồi
   // MUA_1 xếp chỗ; `nguon` giữ bản gốc như mọi màn khác.
   M.them(M.manCamBienThem || []);
@@ -470,7 +498,7 @@
       // SM1-B (30/10): hai-banh.6 "Chữ L ngược" cất; hai-banh.7 "Quay đầu" lên thứ 6, hai-banh.11 "Quay đầu, đi hai ô" (4 nhịp, 10 ô) thứ 7; trùm .10 viết lại (4 nhịp, 10 ô).
       chuong: [['hai-banh', day('hai-banh', [1, 2, 3, 4, 5, 7, 11, 8, 9, 10])], ['xuong-ham', day('xuong-ham', MUOI)]] },
     { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 30,
-      chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },
+      chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 6, 8, 11, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },     // SM1-B: vong-lap.5 cất, vong-lap.11 (trình diễn for lồng) trước vong-lap.9
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
       chuong: [['khoang-cach', day('khoang-cach', [1, 12, 2, 13, 3, 11, 8, 5, 6, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 12, 13, 3, 14, 15, 16])]] },
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 90, hinh: 'che-tay',
@@ -516,7 +544,9 @@
     // SM1-A lượt 2 (A2): che-xe.7 "Đường về", che-tay.7 "Đặt lại chỗ cũ" trùng ý "viết hàm làm ngược lại" với che-lap.7 (giữ); chỗ trống là banh-lui.6, che-banh-lui.6
     'che-xe.7', 'che-tay.7',
     // SM1-B (30/10, đề xuất 6): hai-banh.6 "Chữ L ngược" trùng ý hai-banh.5 "Chữ L" (đi, rẽ, đi); chỗ trống là hai-banh.11 "Quay đầu, đi hai ô"
-    'hai-banh.6'];
+    'hai-banh.6',
+    // SM1-B (đề xuất 4): vong-lap.5 "Bậc thang" trùng ý "lặp một cụm" với vong-lap.4 (8 → 19 nhịp); chỗ trống là vong-lap.11 "Lặp trong lặp" (trình diễn for lồng)
+    'vong-lap.5'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {

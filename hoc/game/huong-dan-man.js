@@ -267,6 +267,11 @@
     buocSoFor(2, 6),
     buocChay('Đoạn đầu lặp 5 lần, rẽ một lần, đoạn sau lặp 6 lần. Bấm Chạy.')
   ];
+  // SM1-B (30/10): vong-lap.11 trình diễn for lồng (chiChay), đứng ngay trước vong-lap.9.
+  H['vong-lap.11'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: vòng for ngoài lặp ba lần, mỗi lần vòng for trong cho xe đi bốn ô.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:3', chu: 'for j thụt vào thêm một bậc nên nằm trong thân for i. Màn sau em tự viết hai vòng for lồng nhau.', xong: 'bam', han: 9000, rong: 170 }
+  ];
   H['vong-lap.8'] = [
     { dich: '#pan-main .rows', chu: 'Chạm một dòng để chọn nó: hai nút thụt lề sẽ hiện ra.', xong: 'chon-dong', han: 25000, huong: 'tren', rong: 160 },
     { dich: ['nut:thut-ra', 'nut:thut-vao'], huong: 'tren', rong: 170, han: 30000, xong: 'doi-bac',
