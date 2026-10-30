@@ -57,29 +57,21 @@
     "o": 26,
     "nhip": 10
   },
+  "che-tay.2": {
+    "o": 19,
+    "nhip": 6
+  },
   "che-tay.1": {
     "o": 19,
     "nhip": 8
-  },
-  "che-tay.3": {
-    "o": 36,
-    "nhip": 21
-  },
-  "che-tay.4": {
-    "o": 13,
-    "nhip": 6
   },
   "che-tay.6": {
     "o": 31,
     "nhip": 22
   },
-  "che-tay.8": {
-    "o": 17,
-    "nhip": 6
-  },
-  "che-tay.10": {
-    "o": 38,
-    "nhip": 32
+  "che-tay.4": {
+    "o": 29,
+    "nhip": 15
   },
   "tay-xoay.1": {
     "o": 10,
@@ -321,6 +313,30 @@
     "o": 18,
     "nhip": 4
   },
+  "list.1": {
+    "o": 11,
+    "nhip": 11
+  },
+  "che-list.4": {
+    "o": 21,
+    "nhip": 10
+  },
+  "che-list.6": {
+    "o": 21,
+    "nhip": 14
+  },
+  "che-list.5": {
+    "o": 18,
+    "nhip": 11
+  },
+  "che-list.8": {
+    "o": 21,
+    "nhip": 14
+  },
+  "che-list.9": {
+    "o": 21,
+    "nhip": 18
+  },
   "ban-xoay.1": {
     "o": 5,
     "nhip": 5
@@ -400,26 +416,6 @@
   "che-ban-xoay.10": {
     "o": 23,
     "nhip": 48
-  },
-  "che-list.4": {
-    "o": 21,
-    "nhip": 10
-  },
-  "che-list.5": {
-    "o": 18,
-    "nhip": 11
-  },
-  "che-list.6": {
-    "o": 21,
-    "nhip": 14
-  },
-  "che-list.8": {
-    "o": 21,
-    "nhip": 14
-  },
-  "che-list.9": {
-    "o": 21,
-    "nhip": 18
   },
   "mau.4": {
     "o": 13,

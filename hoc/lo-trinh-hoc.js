@@ -18,7 +18,7 @@
       // 7 màn mới của gói 3 Cảm biến khoảng cách (chỉ khai, lộ trình thêm vào chương bên dưới)
       'cam-bien-them',
       // 8 màn mới của gói 5 Bánh lùi (chỉ khai, lộ trình thêm vào hai chương bên dưới)
-      'banh-lui-them',
+      'banh-lui-them', 'kho-hang-them',
       // 10 màn mới của gói 8 Đội hai robot, chương 2 "Đội phối hợp" (chỉ khai, lộ trình thêm chương bên dưới)
       'doi-mua-1',
       // 19 màn mới của gói 9 Combo (tay xoay + cảm biến bên), hai chương combo / che-combo (chỉ khai, lộ trình thêm chương bên dưới)
@@ -311,6 +311,11 @@
   TT.ten['nut-de'] = 'Nút đè';
   M.them(M.manNutDe || []);
   (M.manNutDe || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // SM1-A (30/10, nghiệm thu độc lập mùa 1, đề xuất 1): gói 4 chương 2 `kho-hang` về nút đè. 4 màn mới (man-kho-hang-them.js, mã kho-hang.1–4;
+  // kho-hang.1 tạo hàm cốt truyện set_box = go_wall + put_right, có mục Sổ lệnh). Chương chỉ có ở lộ trình nên chèn tạm vào cuối thuTu như nut-de.
+  TT.thuTu.push('kho-hang');
+  M.them(M.manKhoHangThem || []);
+  (M.manKhoHangThem || []).forEach(function (m) { nguon[m.ma] = copy(m); });
   // Gói 3: 7 màn mới (man-cam-bien-them.js, mã khoang-cach.11 và che-cam-bien.11–16, mã mới không trùng màn cất). Thêm vào hai chương có sẵn rồi
   // MUA_1 xếp chỗ; `nguon` giữ bản gốc như mọi màn khác.
   M.them(M.manCamBienThem || []);
@@ -440,7 +445,10 @@
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
       chuong: [['khoang-cach', day('khoang-cach', [1, 12, 2, 13, 3, 11, 8, 5, 6, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 12, 13, 3, 14, 15, 16])]] },
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 90, hinh: 'che-tay',
-      chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-xe', [1, 2, 3]).concat(day('che-tay', [1, 2, 3, 4, 6, 8, 10]))]] },
+      // SM1-A (30/10): chương 2 về nút đè. che-xe.1 / .2 (chế hàm lần đầu, 3 nhịp) mở chương; che-tay.2, .1, .6, .4 viết lại trong lộ trình cho dính nút đè
+      // (giữ mã, thân hàm; xem khối "SM1-A" dưới); kho-hang.1–4 mới (man-kho-hang-them.js), kho-hang.4 là trùm ba kho mang huy hiệu che-tay.
+      // che-xe.3, che-tay.3, che-tay.8, che-tay.10 (không tạo hàm) cất. Thứ tự theo đường cong dòng / nhịp / ô (kiem-kho-hang-them.mjs mục 4).
+      chuong: [['nut-de', day('nut-de', MUOI)], ['kho-hang', ['che-xe.1', 'che-xe.2', 'che-tay.2', 'che-tay.1', 'kho-hang.1', 'kho-hang.2', 'kho-hang.3', 'che-tay.6', 'che-tay.4', 'kho-hang.4']]] },
     { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 120, hinh: 'che-xe',
       // HD3 (29/10): banh-lui.5 (trình diễn lệnh lùi, chiChay) đứng đầu chương, trước che-xe.4 chế back(); che-xe.8 (sửa nhịp hai bánh, ý của gói 1) cất;
       // che-xe.9 (sân 21 ô) lên trước banh-lui.3 (10 ô) để cỡ sân không nhảy vọt (thứ tự màn cũ giữ nguyên: che-xe.7 rồi che-xe.9).
@@ -468,7 +476,9 @@
     // HD1 (29/10): kc.4 trùng ý kc.3, kc.9 là bản một sân của trùm kc.10; nhường chỗ cho hai màn ép khoang-cach.12 / .13
     'khoang-cach.4', 'khoang-cach.9',
     // HD3 (29/10): che-xe.8 "Hai bánh cùng nhịp" (sửa lệnh bánh ở hai nhịp: ý của gói 1, không dùng lệnh lùi) nhường chỗ cho màn trình diễn banh-lui.5
-    'che-xe.8'];
+    'che-xe.8',
+    // SM1-A (30/10): bốn màn không tạo hàm của chương kho-hang cũ nhường chỗ cho màn nút đè; che-tay.10 "Kho đồ" là trùm cũ (huy hiệu che-tay sang kho-hang.4)
+    'che-xe.3', 'che-tay.3', 'che-tay.8', 'che-tay.10'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
@@ -540,7 +550,81 @@
   });
   // Gói Kho hàng đứng trước gói Bánh lùi: u_turn() lúc đó còn là bản hai lần turn_right() (xuong-ham.7), chưa phải bản một nhịp có lùi (che-xe.5).
   // Lời giải không đổi nhưng số nhịp / ô đổi: đánh dấu nội dung bản 2 để tools/do-lo-trinh.mjs đo lại ngưỡng sao (nháp cũ của các màn này bị bỏ).
-  ['che-tay.1', 'che-tay.3', 'che-tay.4', 'che-tay.6', 'che-tay.10'].forEach(function (ma) { get(ma).phienBanNoiDung = 2; });
+  ['che-tay.1', 'che-tay.4', 'che-tay.6'].forEach(function (ma) { get(ma).phienBanNoiDung = 2; });      // che-tay.3 / .10 đã cất (SM1-A)
+  // SM1-A (30/10): bốn màn tạo hàm của chương kho-hang viết lại cho dính NÚT ĐÈ (giữ mã, tên hàm, thân hàm; ngân hàng man-che-tay.js giữ bản gốc
+  // cho kiem-che-tay.mjs). Chương trình chính vẫn khóa (chinhCoDinh) như mọi màn taoHam: lời giải lách viết thẳng không sửa được chương trình chính.
+  // Luật đường cong (kiem-kho-hang-them.mjs mục 4): nhịp 3 → 6 → 8 → 12 → 15 → 21 → 22 → 15, dòng 3 → 4 → 4 → 2 → 6 → 7 → 10 → 3, cỡ sân không nhảy quá 1,5 lần / +6.
+  (function () {
+    var SENSOR = { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] };
+    var GOC_TAY = ['left_move', 'right_move', 'wait', 'arm_down', 'arm_up', 'grab', 'release'];
+    function hamGoc(ma) { return copy(nguon[ma].loiGiai.hamCuaEmMoi); }
+    function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
+    // che-tay.2 put_right(): thùng trước mặt, nút M bên phải xe, cửa C mở khi thùng lên M (bóng mờ như cũ, cửa chỉ để thấy cơ chế)
+    var m2 = sua('che-tay.2', {
+      ten: 'Đặt lên nút',
+      deBai: 'Thùng gỗ trước mặt xe, nút đè M ngay bên phải xe, cửa C đang đóng. Chế lệnh put_right() để đặt thùng sang ô bên phải xe: thùng nằm trên M thì cửa C mở. Xe giữ nguyên chỗ và hướng, giống xe mờ.',
+      veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi put_right(). Mở Xưởng hàm, tạo put_right() rồi bấm Chạy; nhìn cửa C lúc thùng nằm lên M.',
+      san: ['#######', '#.oC..#', '#M#####', '#######'], batDau: { x: 1, y: 1, huong: 1 },
+      bongMo: { x: 1, y: 1, huong: 1, vat: [{ x: 1, y: 2 }] },
+      loiGiai: { chinh: ['put_right()'], hamCuaMan: [], hamCuaEmMoi: hamGoc('che-tay.2') },
+      loiSai: [
+        { moTa: 'Quay nhầm sang trái: bên trái là tường, không đặt được', baiLam: { chinh: ['put_right()'] }, hamCuaEmMoi: [H('put_right', ['pick()', 'turn_left()', 'drop()', 'turn_right()'])], phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'Đặt xong không quay lại: xe nhìn xuống nút', baiLam: { chinh: ['put_right()'] }, hamCuaEmMoi: [H('put_right', ['pick()', 'turn_right()', 'drop()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Nhặt rồi đặt lại chỗ cũ: thùng không lên M, cửa vẫn đóng', baiLam: { chinh: ['put_right()'] }, hamCuaEmMoi: [H('put_right', ['pick()', 'drop()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Gọi put_right() mà chưa chế hàm', baiLam: { chinh: ['put_right()'] }, phaiCoMa: ['ham-chua-co'] }
+      ],
+      goiY: ['Nhặt thùng, quay sang phải, đặt xuống rồi quay lại.', 'Xe đang nhìn sang phải thì ô bên phải xe là ô phía dưới: đúng ô M.']
+    });
+    m2.loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: ['put_right()'] }, hamCuaEmMoi: [H('put_right', ['# đặt thùng lên nút'].concat(nguon['che-tay.2'].loiGiai.hamCuaEmMoi[0].than))] };
+    // che-tay.1 pass_back(): thùng trước mặt, nút M sau lưng, cửa C phía trước mở khi thùng lên M
+    var m1 = sua('che-tay.1', {
+      ten: 'Chuyền ra sau lên nút',
+      deBai: 'Thùng gỗ trước mặt xe, nút đè M ngay sau lưng xe, cửa C phía trước đang đóng. Chế lệnh pass_back() để chuyền thùng ra ô sau lưng: thùng đè lên M thì cửa C mở. Xe đứng lại đúng chỗ cũ, mặt vẫn quay lên như xe mờ.',
+      veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi pass_back(). Mở Xưởng hàm, tạo pass_back() rồi bấm Chạy.',
+      san: ['#####', '##C##', '##o##', '##.##', '##M##', '#####'], batDau: { x: 2, y: 3, huong: 0 },
+      bongMo: { x: 2, y: 3, huong: 0, vat: [{ x: 2, y: 4 }] },
+      loiGiai: { chinh: ['pass_back()'], hamCuaMan: [], hamCuaEmMoi: hamGoc('che-tay.1') },
+      loiSai: [
+        { moTa: 'Quên quay lưng lại: đặt thùng xuống lại đúng chỗ cũ', baiLam: { chinh: ['pass_back()'] }, hamCuaEmMoi: [H('pass_back', ['pick()', 'drop()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Chuyền xong không quay về: xe nhìn xuống', baiLam: { chinh: ['pass_back()'] }, hamCuaEmMoi: [H('pass_back', ['pick()', 'u_turn()', 'drop()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Nhặt xong không đặt: xe còn cầm thùng, nút chưa bật', baiLam: { chinh: ['pass_back()'] }, hamCuaEmMoi: [H('pass_back', ['pick()', 'u_turn()', 'u_turn()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Gọi pass_back() mà chưa chế hàm', baiLam: { chinh: ['pass_back()'] }, phaiCoMa: ['ham-chua-co'] }
+      ],
+      goiY: ['Nhặt thùng lên, quay lưng lại, đặt xuống rồi quay về. Em đã chế sẵn pick(), drop() và u_turn().', 'Thùng nằm trên M thì cửa C mở: nhìn cửa để biết thùng đã đúng ô chưa.']
+    });
+    m1.loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: ['pass_back()'] }, hamCuaEmMoi: [H('pass_back', ['# chuyền thùng ra sau'].concat(nguon['che-tay.1'].loiGiai.hamCuaEmMoi[0].than))] };
+    // che-tay.6 swap(): sân thu thành ngách kho (4 ô) để cỡ sân không nhảy từ 10 ô (kho-hang.3) lên 25; lời giải, lời sai, cách khác giữ nguyên
+    var m6 = sua('che-tay.6', {
+      ten: 'Đổi chỗ trong ngách',      // 'Đổi chỗ' trùng tên một màn khác của lộ trình
+      deBai: 'Trong ngách kho có một thùng đỏ trước mặt xe và một thùng xanh dương bên phải xe; ô sau lưng xe còn trống. Chế lệnh swap() để hai thùng đổi chỗ cho nhau, xe vẫn đứng yên nhìn lên. Mỗi hàm chỉ có 10 ô, nên hãy dùng các lệnh em đã chế.',
+      san: ['#####', '##o##', '##.o#', '##.##', '#####'], vatMau: ['.....', '..r..', '...b.', '.....', '.....'],
+      loiSai: copy(nguon['che-tay.6'].loiSai)
+    });
+    // lời sai "viết từng bước: quá 10 ô" của ngân hàng dùng right_back (gói 4 chưa có lệnh lùi): thay bằng bản không lùi, vẫn quá 10 ô
+    m6.loiSai[2].hamCuaEmMoi = [H('swap', ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()', 'left_move()', 'wait()', 'left_move()', 'wait()', 'arm_down()', 'release()', 'wait()'])];
+    m6.loiGiaiKhac = copy(nguon['che-tay.6'].loiGiaiKhac);
+    // che-tay.4 grab_back(): thùng sau lưng, nút M bên phải xe, cửa C phía trước; chương trình chính khóa đặt thùng lên M rồi go_wall() qua cửa tới cờ
+    var C_4 = ['grab_back()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'];
+    var m4 = sua('che-tay.4', {
+      ten: 'Nhặt thùng sau lưng', mucTieu: undefined,
+      robot: copy(SENSOR), hamGoc: GOC_TAY.concat(['front_clear']),
+      hamCuaEmCan: ['pick', 'u_turn', 'turn_right', 'drop', 'turn_left', 'go_wall'],
+      deBai: 'Thùng gỗ nằm ngay sau lưng xe, nút đè M ở bên phải xe, cửa C phía trước đang đóng. Chế lệnh grab_back() để nhặt thùng sau lưng rồi quay về hướng cũ, tay vẫn cầm thùng. Chương trình chính sẽ quay phải, đặt thùng lên M, quay lại rồi đi qua cửa tới cờ.',
+      veMaMau: 'Chương trình chính bị khóa: grab_back(), rồi quay phải, drop(), quay trái, go_wall(). Mở Xưởng hàm, tạo grab_back() rồi bấm Chạy.',
+      san: ['#########', '#o.C...F#', '##M######', '#########'], batDau: { x: 2, y: 1, huong: 1 },
+      maMau: { chinh: C_4.slice(), hamCuaMan: [] },
+      loiGiai: { chinh: C_4.slice(), hamCuaMan: [], hamCuaEmMoi: hamGoc('che-tay.4') },
+      loiSai: [
+        { moTa: 'Quên quay lưng lại: tay kẹp vào không khí trước mặt', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('grab_back', ['pick()'])], phaiCoMa: ['kep-hut', 'chua-toi-co'] },
+        { moTa: 'Nhặt xong không quay về: xe quay mặt sang trái, đặt thùng vào tường', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('grab_back', ['u_turn()', 'pick()'])], phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'Nhặt rồi đặt xuống lại: tay không, không có gì để đặt lên M', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('grab_back', ['u_turn()', 'pick()', 'drop()', 'u_turn()'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gọi grab_back() mà chưa chế hàm', baiLam: { chinh: C_4.slice() }, phaiCoMa: ['ham-chua-co'] }
+      ],
+      goiY: ['Quay lưng lại, nhặt, rồi quay về chỗ cũ; tay vẫn cầm thùng.', 'Chương trình chính lo phần đặt lên M và đi qua cửa.']
+    });
+    delete m4.bongMo; delete m4.mucTieu;
+    m4.loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('grab_back', ['# nhặt thùng sau lưng'].concat(nguon['che-tay.4'].loiGiai.hamCuaEmMoi[0].than))] };
+  })();
   // Gói 10 chương 1 Tổng hợp: robot-hoan-thien.10 (bounce / fetch_back có biến đếm) đã cất, robot-hoan-thien.11 (man-trum-mua-1.js, không biến) là trùm.
   // cam-bien-ben.10 (trùm cũ của Cảm biến hai bên) đứng thứ 9 Tổng hợp, không còn là trùm: huy hiệu cam-bien-ben về trùm mới của chương đó, cam-bien-ben.9.
   get('cam-bien-ben.9').huyHieu = copy(get('cam-bien-ben.10').huyHieu);
@@ -592,7 +676,7 @@
   var DAM_LA_THUA = ['xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'xuong-ham.4', 'xuong-ham.5', 'xuong-ham.7', 'xuong-ham.9', 'xuong-ham.10',
     'tay-gap.5', 'tay-gap.6', 'tay-gap.10', 'vong-lap.2', 'vong-lap.3', 'vong-lap.4', 'vong-lap.6', 'che-lap.5', 'vong-lap.10',
     'khoang-cach.12', 'khoang-cach.13', 'khoang-cach.5', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.7', 'che-cam-bien.13', 'che-cam-bien.15',
-    'che-xe.1', 'che-xe.2', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6', 'che-xe.4', 'che-xe.6', 'che-tay.5', 'che-lap.7', 'che-lap.9',
+    'che-xe.1', 'che-xe.2', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6', 'kho-hang.1', 'che-xe.4', 'che-xe.6', 'che-tay.5', 'che-lap.7', 'che-lap.9',
     'tay-xoay.6', 'tay-xoay.10', 'che-tay-xoay.1', 'che-tay-xoay.2', 'che-tay-xoay.4', 'che-tay-xoay.5', 'che-tay-xoay.6',
     'che-cam-bien.4', 'cam-bien-ben.5', 'cam-bien-ben.7', 'me-cung.6', 'me-cung.9', 'combo.3', 'combo.7', 'combo.8', 'che-combo.3', 'che-combo.7', 'che-cam-bien.10', 'che-combo.9',
     'robot-hoan-thien.11', 'trum-mua-1.3', 'trum-mua-1.6', 'trum-mua-1.9', 'trum-mua-1.10'];
@@ -1390,7 +1474,7 @@
     loiGiai: bai(['go_one()', 'go_one()', 'go_one()'], [ham('go_one', ['left_move()', 'right_move()', 'wait()'])]),
     goiY: ['Một bánh quay một mình thì xe xoay, không tiến.', 'Hai lệnh bánh phải nằm trong cùng một nhịp: đặt chúng liền nhau, rồi mới wait().']
   });
-  thay('che-tay.8', {
+  if (get('che-tay.8')) thay('che-tay.8', {     // SM1-A: che-tay.8 đã cất (CAT); giữ bản viết lại cho lần đưa về
     ten: 'Thứ tự của tay', chinhCoDinh: true, hamCuaEmCan: ['move'],
     deBai: 'Hai hàm lift() và put() của màn viết sai thứ tự lệnh: tay kẹp vào không khí, còn vật bị thả từ trên cao. Sửa chúng để chương trình đưa vật lên hai ô như vật mờ.',
     veMaMau: 'Chương trình chính bị khóa: nhặt, tiến hai ô, đặt. Thử lift() và put() trong sân thử của Xưởng hàm để thấy tay làm gì.',
@@ -1658,7 +1742,7 @@
       'hai-banh': 'Lăn bánh', 'xuong-ham': 'Xưởng hàm',
       'tay-gap': 'Gắp thùng', 'vong-lap': 'Lặp cho gọn',
       'khoang-cach': 'Dừng trước tường', 'che-cam-bien': 'Chế lệnh: tự dừng',
-      'nut-de': 'Thùng giữ cửa', 'kho-hang': 'Chế lệnh: né thùng',
+      'nut-de': 'Thùng giữ cửa', 'kho-hang': 'Chế lệnh: mở kho',
       'banh-lui': 'Lùi khỏi ngõ cụt', 'che-banh-lui': 'Chế lệnh: lùi',
       'tay-xoay': 'Nhặt bên hông', 'che-tay-xoay': 'Chế lệnh: xoay tay',
       'cam-bien-ben': 'Nhìn hai bên', 'me-cung': 'Mê cung',
