@@ -245,7 +245,10 @@ for (const m of DS) {
     assert.equal(r1.robot.tay, 'hoi', m.ma + ' R1 phải gắn vòi phun');
     assert.equal(r1.lucBan, true, m.ma + ' R1 thiếu lucBan');
     assert.deepEqual(r1.robot.camBien.map((c) => c.ma), ['hong-ngoai'], m.ma + ' R1 phải gắn mắt hồng ngoại');
-    for (const h of ['distance', 'warm', 'spray', 'spray_back']) assert.ok(r1.hamGoc.includes(h), m.ma + ' khay R1 thiếu ' + h);
+    for (const h of ['distance', 'warm']) assert.ok(r1.hamGoc.includes(h), m.ma + ' khay R1 thiếu ' + h);
+    // màn R1 không phun (khongPhun ở man-doi-mua-2.js): khay R1 không có spray / spray_back, vì squirt_back("high") giật tới là một bước đi không húc (thân cố định né được cảm biến)
+    const coPhun = dongLoiGiai(m).some((l) => /\b(spray|spray_back|squirt|squirt_back|auto_spray|clear_squirt|cover|guard)\(/.test(l));
+    assert.equal(r1.hamGoc.includes('spray') && r1.hamGoc.includes('spray_back'), coPhun, m.ma + ' khay R1 có spray đúng khi lời giải có phun (' + coPhun + ')');
     assert.equal(r2.robot.tay, 'xoay', m.ma + ' R2 phải gắn tay xoay (xe chở hàng mùa 1)');
     assert.deepEqual(r2.robot.camBien.map((c) => c.ma), ['khoang-cach'], m.ma + ' R2 phải gắn cảm biến khoảng cách');
     for (const h of ['front_clear', 'left_clear', 'right_clear', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'left_back', 'right_back']) assert.ok(r2.hamGoc.includes(h), m.ma + ' khay R2 thiếu ' + h);

@@ -74,7 +74,8 @@ export function timThanCoDinhDoi(m, tenX, kho, chamThan, tuy = {}) {
   }
   function thuThan(x, than) {
     const r = chamThan(than);
-    if (r.thang && r.soNhip <= m.sao.nhip) thang.push({ day: x, than, soO: r.soO, soNhip: r.soNhip, sao: r.sao });
+    // PDM2c 31/10: lõi hai robot không có đâm-là-thua, nên thân chỉ move() húc bạn / thùng gỗ rồi vẫn tới cờ (1 sao, chẩn đoán dam-tuong): không coi là né được cảm biến
+    if (r.thang && r.soNhip <= m.sao.nhip && !r.chanDoan.some((c) => c.ma === 'dam-tuong')) thang.push({ day: x, than, soO: r.soO, soNhip: r.soNhip, sao: r.sao });
   }
   const du = Math.min(L, TRAN_L_DU);
   (function di(x) { thu(x); if (x.length < du) for (const k of chu) di(x + k); })('');

@@ -235,7 +235,7 @@
     m('scan_pads', 'hoi', 'n trạm: lên nút đè phun van bên trái rồi tiến một ô', 'che-kho-cu', 'che-kho-cu.6'),
     m('warm_pad', 'hong-ngoai', 'Lên nút đè, nhìn van qua cửa, chưa nóng thì phun nhẹ, rồi quay lại', 'che-kho-cu', 'che-kho-cu.7')
   ];
-  // chương che-doi-mua-2 · Đội phối hợp (gói 8 mùa 2, man-doi-mua-2.js; hàm của màn không có ở đây)
+  // chương che-doi-mua-2 · Chế lệnh: chờ bạn (GÓI 9 mùa 2 "R2 trở lại", PDM2c 31/10; man-doi-mua-2.js; hàm của em đều là của R1 xe cứu hỏa, hàm của màn không có ở đây)
   ds.push(
     m('wait_clear', 'hong-ngoai', 'Còn thấy đồng đội (vật nóng) trước mũi xe thì chờ', 'che-doi-mua-2', 'che-doi-mua-2.1'),
     m('yield_step', 'hong-ngoai', 'Chờ tới khi không còn thấy bạn trước mũi xe rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.2'),

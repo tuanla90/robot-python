@@ -78,15 +78,17 @@
     m.khung = { chinh: 10, moiHam: 10 };
     if (Array.isArray(m.san[0])) m.nhipTheo = 'tong';
     m.doi = [Object.assign({ batDau: bd[0] }, sao(CUU_HOA)), Object.assign({ batDau: bd[1] }, sao(CHO_HANG))];
+    // Màn R1 không phun (khongPhun): khay R1 không có spray / spray_back (vòi vẫn gắn): squirt_back("high") giật tới là một bước đi "không húc" nên thân cố định né được cảm biến.
+    if (m.khongPhun) m.doi[0].hamGoc = m.doi[0].hamGoc.filter(function (t) { return t !== 'spray' && t !== 'spray_back'; });
     m.doi.forEach(function (d, i) { d.coDinh = true; if (co && co[i]) d.co = sao(co[i]); });
     if (xichDay) m.doi[0].xichDay = true;
-    m.batDau = bd[0]; m.loaiRobot = CUU_HOA.loaiRobot; m.robot = sao(CUU_HOA.robot); m.hamGoc = CUU_HOA.hamGoc.slice(); m.lucBan = true;   // cấp ngoài = R1
+    m.batDau = bd[0]; m.loaiRobot = CUU_HOA.loaiRobot; m.robot = sao(CUU_HOA.robot); m.hamGoc = m.doi[0].hamGoc.slice(); m.lucBan = true;   // cấp ngoài = R1
     m.maMau = B(chinh, m.hamMau || []);
     m.loiGiai = B(chinh, m.ham || [], m.hamEm);
     if (m.loiGiaiKhac) m.loiGiaiKhac = { moTa: m.loiGiaiKhac.moTa, baiLam: cung(m.loiGiaiKhac) };
     if (m.congThucKhac) m.congThucKhac = m.congThucKhac.map(function (x) { return { moTa: x.moTa, baiLam: cung(x) }; });
     m.loiSai = (m.loiSai || []).map(function (x) { return { moTa: x.moTa, baiLam: cung(x), phaiCoMa: x.phaiCoMa }; });
-    ['bd', 'co', 'chinh', 'xichDay', 'hamMau', 'ham', 'hamEm'].forEach(function (k) { delete m[k]; });
+    ['bd', 'co', 'chinh', 'xichDay', 'hamMau', 'ham', 'hamEm', 'khongPhun'].forEach(function (k) { delete m[k]; });
     m.taoHam = m.taoHam || [];
     return ManHoc.chuanHoa(m);
   }
@@ -132,7 +134,7 @@
   var SAN_6 = ['####N##N###', '####.##.###', '#...o...F##', '####.##.###', '####.C..CF#'];
   var NOI_6 = [noi(4, 0, [[5, 4]]), noi(7, 0, [[8, 4]])];
   var R1_6 = ['clear_line()', 'squirt("high")', 'tr_right()', 'forward(3)', 'tr_left()', 'clear_line()', 'squirt("high")', 'tr_right()', 'forward(2)'];
-  var R2_6 = nhieu(['forward(2)', 'pick()'], CHO(4), ['forward(4)'], CHO(3), ['move()']);
+  var R2_6 = nhieu(['forward(2)', 'pick()'], CHO(3), ['forward(4)'], CHO(3), ['move()']);
 
   // doi-mua-2.7: hành lang ngang (hàng 3) của R1, cuối hành lang là đèn nóng (van bật sẵn (11,3), không nối gì). R2 đi dọc xuống, cắt ngang ở ngã tư (4,3) và dừng ở đó ba nhịp.
   //   R1 gọi pass_safe() trước mỗi bước (chín bước rồi quay xuống cờ (10,4)). Đèn nóng nên warm() luôn True: bản của Sola (while warm()) chờ mãi. Cờ R2 (4,5).
@@ -149,7 +151,7 @@
 
   // doi-mua-2.9: hành lang (hàng 1) của R1 có một THÙNG GỖ (4,1) chắn giữa đường. R2 đứng bên kia thùng (6,1), chờ hai nhịp, tới sát gắp thùng rồi quẹo trái xuống ngã (5,·) tới cờ (5,3).
   //   Thùng rồi tới R2 chắn trước mũi R1. R1 gọi cross_safe() 13 lượt, mỗi lượt làm một việc: đi một ô hay chờ một nhịp (if / else). Húc vào thùng hay vào R2 đều mất bước. Cờ R1 (11,1).
-  var SAN_9 = ['#############', '#...o......F#', '#####.#######', '#####F#######'];
+  var SAN_9 = ['##############', '#...o......F.#', '#####.########', '#####F########'];     // (12,1) sau cờ: đi dư là qua mất cờ
   var R1_9 = FOR(14, ['cross_safe()']);
   var R2_9 = nhieu(CHO(2), ['move()', 'pick()', 'turn_left()', 'forward(2)']);
 
@@ -186,9 +188,9 @@
   var R1_C4 = ['wait_mate()', 'squirt_back("low")', 'tr_right()', 'forward(3)', 'tr_left()', 'wait_mate()', 'squirt_back("low")', 'tr_right()', 'move()'];
   var R2_C4 = nhieu(CHO(5), FOR(2, nhieu(['go_wall()'], WHILE('not front_clear()', ['wait()']))), ['go_wall()']);
 
-  // che-doi-mua-2.5: sân của doi-mua-2.5 (hai khoang có cửa sổ), R2 đứng ở cửa sổ 1 năm nhịp, cửa sổ 2 ba nhịp. pass_mate() của em = wait_mate() rồi wait_clear().
+  // che-doi-mua-2.5: sân của doi-mua-2.5 (hai khoang có cửa sổ), R2 đứng ở cửa sổ 1 ba nhịp, cửa sổ 2 tám nhịp. pass_mate() của em = wait_mate() rồi wait_clear().
   var R1_C5 = ['pass_mate()', 'squirt("high")', 'tr_right()', 'forward(3)', 'tr_left()', 'pass_mate()', 'squirt("high")', 'tr_right()', 'forward(2)'];
-  var R2_C5 = nhieu(['forward(3)'], CHO(5), ['forward(3)'], CHO(8), ['forward(2)']);
+  var R2_C5 = nhieu(['forward(2)'], CHO(3), ['forward(3)'], CHO(8), ['forward(2)']);     // R2 xuất phát ngay trước cửa vào (2,1)
 
   // che-doi-mua-2.6: hai giếng của doi-mua-2.8 (van xa: phun mạnh; van gần, sau lưng là hốc: phun nhẹ). clear_squirt(p) của em = wait_clear() rồi squirt(p).
   var R1_C6 = ['move()', 'tr_left()', 'clear_squirt("high")', 'tr_right()', 'forward(2)', 'tr_left()', 'clear_squirt("low")', 'tr_right()', 'forward(2)'];
@@ -212,7 +214,7 @@
   var SAN_C10 = [SAN_5, ['###########', '####N##N###', '#..c..c..F#', '####.C..CF#', '####.##.###']];
   var NOI_C10 = [NOI_5, [noi(4, 1, [[3, 2], [5, 3]]), noi(7, 1, [[6, 2], [8, 3]])]];
   var R1_C10 = ['guard()', 'tr_right()', 'forward(3)', 'tr_left()', 'guard()', 'tr_right()', 'forward(2)'];
-  var R2_C10 = nhieu(['forward(3)'], CHO(4), ['forward(3)'], CHO(8), ['forward(2)']);
+  var R2_C10 = nhieu(['forward(2)'], CHO(3), ['forward(3)'], CHO(8), ['forward(2)']);
 
   /* ------------------------------------------------------------- thân hàm hay dùng */
   var CHO_DI = WHILE('warm()', ['wait()']);              // R1: còn thấy đồng đội (hay van nóng) trước mũi xe thì chờ
@@ -248,7 +250,7 @@
     }),
 
     man({
-      chuong: 'doi-mua-2', so: 2, ten: 'Theo sau xe cứu hỏa', yMoi: 'cảm biến khoảng cách của R2 thấy đồng đội: R1 ngay trước mũi thì front_clear() là False',
+      chuong: 'doi-mua-2', so: 2, ten: 'Theo sau xe cứu hỏa', khongPhun: true, yMoi: 'cảm biến khoảng cách của R2 thấy đồng đội: R1 ngay trước mũi thì front_clear() là False',
       hamCuaEmCan: ['move', 'tr_right', 'tr_left', 'forward', 'turn_right', 'turn_left'],
       deBai: 'Hành lang gấp khúc hẹp. R1 xe cứu hỏa đi trước, tới mỗi khúc quẹo phải quay mất hai nhịp. R2 xe chở hàng đi sau: mỗi bước gọi keep_gap() rồi tiến một ô. ' +
         'R2 húc vào R1 thì bước đó mất, R2 không tới được cờ. Cảm biến khoảng cách của R2 thấy đồng đội như thấy tường. Viết thân keep_gap(): ô trước mũi còn bị chắn thì chờ.',
@@ -268,7 +270,7 @@
     }),
 
     man({
-      chuong: 'doi-mua-2', so: 3, ten: 'Xích nhường ở ngã tư', yMoi: 'hàm do R1 gọi trước mỗi bước: thấy bạn ở ngã tư thì chờ, rồi mới tiến',
+      chuong: 'doi-mua-2', so: 3, ten: 'Xích nhường ở ngã tư', khongPhun: true, yMoi: 'hàm do R1 gọi trước mỗi bước: thấy bạn ở ngã tư thì chờ, rồi mới tiến',
       hamCuaEmCan: ['move', 'forward', 'turn_left', 'tr_right'],
       deBai: 'R1 đi dọc hành lang, trước mỗi bước gọi wait_cross() rồi tiến một ô. R2 đang đứng ngay trong ngã tư đầu, một lúc nữa mới đi vòng xuống rồi lên lại qua ngã tư thứ hai. ' +
         'R1 húc vào R2 thì mất bước đó, không tới được cờ. Viết thân wait_cross(): còn thấy bạn trước mũi xe thì chờ.',
@@ -341,7 +343,7 @@
       chinh: [R1_6, R2_6],
       hamMau: [H('clear_line', [], CHO_DI)],
       ham: [H('clear_line', [], CHO_GIENG)],
-      sao: { o: 37, nhip: 17 },
+      sao: { o: 37, nhip: 20 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', ham: [H('clear_line', [], ['# giếng trống thì đo được 3 ô'].concat(CHO_GIENG))] },
       loiSai: [
         { moTa: 'Để nguyên while warm(): thùng gỗ không nóng, tia nước trúng thùng', ham: [H('clear_line', [], CHO_DI)], phaiCoMa: ['ban-bi-chan', 'chua-toi-co'] },
@@ -353,7 +355,7 @@
 
     /* ------------------------------------------------ hàng 3: biến thể */
     man({
-      chuong: 'doi-mua-2', so: 7, ten: 'Đố: Sola chờ mãi', yMoi: 'tìm lỗi: đèn nóng cuối hành lang cũng làm warm() True, phải đo distance() tới bạn',
+      chuong: 'doi-mua-2', so: 7, ten: 'Đố: Sola chờ mãi', khongPhun: true, yMoi: 'tìm lỗi: đèn nóng cuối hành lang cũng làm warm() True, phải đo distance() tới bạn',
       hamCuaEmCan: ['forward', 'move', 'tr_right'], nutBat: [o(11, 3)],
       deBai: 'Sola viết pass_safe() cho R1: while warm(): wait(), để chờ R2 đi qua ngã tư. Chạy thử: R1 không nhúc nhích. Cuối hành lang có một đèn nóng (van đang mở). ' +
         'Mắt hồng ngoại chỉ đo xa gần và nóng lạnh: đèn nóng cũng nóng như đồng đội. Sửa pass_safe() để R1 chỉ chờ khi bạn đứng sát mũi xe.',
@@ -392,10 +394,10 @@
     }),
 
     man({
-      chuong: 'doi-mua-2', so: 9, ten: 'Thùng gỗ giữa hành lang', yMoi: 'mỗi lượt một việc với if / else: còn trống (distance() > 0) thì đi, không thì chờ; thùng gỗ hay bạn trước mũi đều làm distance() bằng 0',
-      hamCuaEmCan: ['move', 'pick', 'turn_left', 'forward'], damLaThua: true,     // mỗi lượt một việc: húc là thua ngay (thân chỉ move() không được nhờ số lượt dư)
+      chuong: 'doi-mua-2', so: 9, ten: 'Thùng gỗ giữa hành lang', khongPhun: true, yMoi: 'mỗi lượt một việc với if / else: còn trống (distance() > 0) thì đi, không thì chờ; thùng gỗ hay bạn trước mũi đều làm distance() bằng 0',
+      hamCuaEmCan: ['move', 'pick', 'turn_left', 'forward'],
       deBai: 'Một thùng gỗ chắn giữa hành lang của R1. R2 đứng bên kia thùng: chờ một lúc, tới sát gắp thùng rồi quẹo xuống ngã rẽ. Thùng rồi tới R2 chắn trước mũi R1. ' +
-        'R1 gọi cross_safe() mười bốn lượt, mỗi lượt làm một việc: đi một ô hay chờ một nhịp. Húc vào thùng hay vào R2 là thua ngay. Viết thân cross_safe() thấy được cả thùng lẫn bạn.',
+        'R1 gọi cross_safe() mười bốn lượt, mỗi lượt làm một việc: đi một ô hay chờ một nhịp. Húc vào thùng hay vào R2 đều mất bước và mất sao. Viết thân cross_safe() thấy được cả thùng lẫn bạn.',
       veMaMau: 'Hai chương trình bị khóa. cross_safe() hỏi warm(): chạy thử xem R1 húc vào gì.',
       san: SAN_9, bd: [{ x: 1, y: 1, huong: 1 }, { x: 6, y: 1, huong: 3 }], co: [[o(11, 1)], [o(5, 3)]],
       chinh: [R1_9, R2_9],
@@ -413,7 +415,7 @@
 
     /* ------------------------------------------------ trùm */
     man({
-      chuong: 'doi-mua-2', so: 10, ten: 'Trùm: Ba ngã tư', yMoi: 'một hàm cho ba sân: bạn dừng trong ngã tư, dừng trên ngã tư, hay đã đi qua trước',
+      chuong: 'doi-mua-2', so: 10, ten: 'Trùm: Ba ngã tư', khongPhun: true, yMoi: 'một hàm cho ba sân: bạn dừng trong ngã tư, dừng trên ngã tư, hay đã đi qua trước',
       hang: 'trum', hamCuaEmCan: ['move', 'forward', 'tr_right'],
       huyHieu: { ma: 'doi-mua-2', ten: 'Huy hiệu Đội' },
       deBai: 'Ba sân, cùng hai chương trình khóa. R2 đi dọc xuống, cắt ngang hành lang của R1 ở một ngã tư mỗi sân một chỗ: sân thứ nhất R2 dừng ngay trong ngã tư và cuối hành lang có đèn nóng, ' +
@@ -454,7 +456,7 @@
     }),
 
     man({
-      chuong: 'che-doi-mua-2', so: 2, ten: 'Hàm yield_step()', yMoi: 'hàm của em gọi hàm của em: yield_step() = wait_clear() rồi tiến một ô',
+      chuong: 'che-doi-mua-2', so: 2, ten: 'Hàm yield_step()', khongPhun: true, yMoi: 'hàm của em gọi hàm của em: yield_step() = wait_clear() rồi tiến một ô',
       hamCuaEmCan: ['wait_clear', 'move', 'tr_right', 'turn_left', 'forward'], taoHam: ['yield_step'],
       deBai: 'R1 đi từng bước bằng một hàm của em: yield_step() = wait_clear() rồi tiến một ô. R2 đứng trong ngã tư đầu một lúc rồi đi vòng, lên lại qua ngã tư thứ hai. ' +
         'Xe tới sau phải nhường. Chương trình hai xe đã khóa.',
@@ -473,7 +475,7 @@
     }),
 
     man({
-      chuong: 'che-doi-mua-2', so: 3, ten: 'Sửa hàm keep_close()', yMoi: 'sửa hàm lỗi của R2: if chỉ chờ một nhịp, bạn quay lâu hơn thì phải while',
+      chuong: 'che-doi-mua-2', so: 3, ten: 'Sửa hàm keep_close()', khongPhun: true, yMoi: 'sửa hàm lỗi của R2: if chỉ chờ một nhịp, bạn quay lâu hơn thì phải while',
       hamCuaEmCan: ['move', 'forward', 'tr_right', 'turn_right'],
       deBai: 'Sola chế keep_close() để R2 đi sát sau R1: if not front_clear(): wait(). Chương trình hai xe đã khóa. Ở góc, R1 dừng rồi quay, mất bốn nhịp: R2 chờ một nhịp rồi húc vào R1. ' +
         'Sửa một chữ trong keep_close().',
@@ -517,10 +519,10 @@
       deBai: 'Lại là hai khoang có cửa sổ: phun trước khi R2 qua cửa vào thì cửa đóng trước mặt R2, phun khi R2 còn đứng ở cửa sổ thì tia nước trúng R2. ' +
         'Em đã có wait_mate() và wait_clear(). Chế pass_mate(): gọi lần lượt hai hàm đó. Chương trình hai xe đã khóa.',
       veMaMau: 'Hai chương trình bị khóa. Tạo pass_mate() hai dòng, mỗi dòng gọi một hàm của em.',
-      san: SAN_5, noi: NOI_5, bd: [{ x: 4, y: 3, huong: 0 }, { x: 1, y: 1, huong: 1 }], co: [[o(9, 3)], [o(9, 1)]],
+      san: SAN_5, noi: NOI_5, bd: [{ x: 4, y: 3, huong: 0 }, { x: 2, y: 1, huong: 1 }], co: [[o(9, 3)], [o(9, 1)]],
       chinh: [R1_C5, R2_C5],
       hamEm: [H('pass_mate', [], ['wait_mate()', 'wait_clear()'])],
-      sao: { o: 35, nhip: 26 },
+      sao: { o: 35, nhip: 22 },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('pass_mate', [], ['# chờ bạn tới rồi chờ bạn đi', 'wait_mate()', 'wait_clear()'])] },
       congThucKhac: [{ moTa: 'Viết thẳng hai vòng while thay cho gọi hai hàm', hamEm: [H('pass_mate', [], CHO_QUA)] }],
       loiSai: [
@@ -550,7 +552,7 @@
 
     /* ------------------------------------------------ hàng 3: biến thể */
     man({
-      chuong: 'che-doi-mua-2', so: 7, ten: 'Hàm step_clear()', yMoi: 'hàm bước đi bằng distance(): đèn nóng làm warm() vô dụng, đo khoảng cách thì không nhầm',
+      chuong: 'che-doi-mua-2', so: 7, ten: 'Hàm step_clear()', khongPhun: true, yMoi: 'hàm bước đi bằng distance(): đèn nóng làm warm() vô dụng, đo khoảng cách thì không nhầm',
       hamCuaEmCan: ['move', 'tr_right', 'forward', 'yield_step', 'wait_clear'], taoHam: ['step_clear'], nutBat: [o(13, 3)],
       deBai: 'Cuối hành lang của R1 có đèn nóng: yield_step() của em dựa vào warm() nên R1 sẽ chờ mãi. R2 vẫn cắt ngang ở ngã tư và dừng ở đó một lúc. ' +
         'Em chế step_clear(): còn sát vật cản (bạn) thì chờ, rồi tiến một ô. Chương trình hai xe đã khóa.',
@@ -587,8 +589,8 @@
     }),
 
     man({
-      chuong: 'che-doi-mua-2', so: 9, ten: 'Sửa hàm cross_ok()', yMoi: 'sửa hàm lỗi: wait_clear() không thấy thùng gỗ, phải đo distance()',
-      hamCuaEmCan: ['wait_clear', 'wait_mate', 'move', 'pick', 'turn_left', 'forward'], damLaThua: true,     // húc thùng / bạn là thua ngay
+      chuong: 'che-doi-mua-2', so: 9, ten: 'Sửa hàm cross_ok()', khongPhun: true, yMoi: 'sửa hàm lỗi: wait_clear() không thấy thùng gỗ, phải đo distance()',
+      hamCuaEmCan: ['wait_clear', 'wait_mate', 'move', 'pick', 'turn_left', 'forward'],
       deBai: 'Thùng gỗ lại chắn giữa hành lang của R1; R2 tới gắp rồi quẹo xuống. Sola chế cross_ok() cho R1: gọi wait_clear() của em. Chạy thử: R1 húc vào thùng. ' +
         'Sửa cross_ok() để R1 chờ được cả thùng lẫn bạn.',
       veMaMau: 'Chạy thử. Thùng gỗ có nóng không?',
@@ -614,11 +616,11 @@
         'Sân thứ nhất van ở xa, sau lưng R1 là tường: phải phun mạnh. Sân thứ hai van ở gần, dưới chân R1 là hốc: phun mạnh thì xe giật xuống hốc. Em chế guard() cho cả hai sân.',
       veMaMau: 'Hai chương trình bị khóa. Tạo guard() hai dòng bằng các hàm của em và của gói Lực phun.',
       san: SAN_C10, noi: NOI_C10,
-      bd: [[{ x: 4, y: 3, huong: 0 }, { x: 4, y: 3, huong: 0 }], [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }]],
+      bd: [[{ x: 4, y: 3, huong: 0 }, { x: 4, y: 3, huong: 0 }], [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }]],
       co: [[[o(9, 3)], [o(9, 3)]], [[o(9, 1)], [o(9, 2)]]],
       chinh: [R1_C10, R2_C10],
       hamEm: [H('guard', [], ['pass_mate()', 'auto_spray()'])],
-      sao: { o: 39, nhip: 50 },
+      sao: { o: 39, nhip: 44 },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', hamEm: [H('guard', [], ['# bạn qua rồi mới đo và phun', 'pass_mate()', 'auto_spray()'])] },
       loiSai: [
         { moTa: 'Luôn phun mạnh (gọi cover()): sân thứ hai xe giật xuống hốc, lệch chỗ rồi chờ bạn mãi', hamEm: [H('guard', [], ['cover()'])], phaiCoMa: ['vong-vo-han'] },
