@@ -619,7 +619,13 @@
   H['che-day-thung.1'] = [
     { dich: 'dong:1', chu: 'Main đã khoá: nó gọi push(1), push(2), push(1), mà em chưa chế push(n).', xong: 'bam', han: 8000, rong: 160 },
     buocTaoHam('push', 'Bấm Hàm mới để chế push(n) với tham số n.', CHU_TAO),
-    buocThanHam('push', ['.p-pal .pal'], 'Ghép thân hàm: forward với số là distance() + n: tới sát thùng rồi đẩy thêm n ô.', 1, 'tren')
+    // 30/10 (nghiệm thu mùa 2: màn này dồn tham số với phép cộng cảm biến): hai bước, mỗi bước một ý. Bước 1: forward(distance()) tới sát thùng;
+    // bước 2: thêm + n cho thùng trượt n ô. Lời giải chuẩn vẫn một dòng forward(distance() + n) (kho hàm của các màn sau tính ngưỡng ô theo bản đó).
+    buocThanHam('push', ['.p-pal .pal'], 'Ghép thân hàm: forward với số là distance(), để xích đi đúng số ô trống tới sát thùng.', 1, 'tren'),
+    { xuong: true, dich: trongXuong(['.p-pal .pal']), huong: 'tren', rong: 170, han: 0,
+      chu: 'Sát thùng rồi thì đi thêm n ô nữa là thùng trượt n ô: sửa số thành distance() + n.',
+      xong: function () { return /distance[^+]*\+\s*n\b/.test(chuThan('push')); },
+      daLam: function () { return /distance[^+]*\+\s*n\b/.test(chuThan('push')); } }
   ].concat(buocThuVeChay('Ba thùng xa gần khác nhau, cùng một push(n). Bấm Chạy.'));
   // Gói 6 (30/10): phun mạnh (luc-ban.1 trình diễn spray("high"), luc-ban.2 đổi "low" thành "high", che-luc-ban.1 chế auto_spray())
   H['luc-ban.1'] = trinhDien('Chương trình đã khoá. Bấm Chạy: spray("high") phun mạnh, tia nước bay ba ô trúng van, xe giật lùi một ô tới hàng cửa.', 1,

@@ -148,22 +148,22 @@
         'Tên biến phải viết giống hệt nhau ở chỗ gán và chỗ dùng, kể cả dấu gạch dưới.']
     }),
     man({
-      chuong: 'hong-ngoai', so: 6, ten: 'Gần thì rẽ', yMoi: 'if distance() <= an_toan: rẽ, else: đi', buocVideo: 'Gần thì rẽ', hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Robot hút bụi làm một việc mỗi lượt: đo, nếu vật cản gần, tức distance() <= an_toan, thì rẽ phải; còn không thì đi một ô. Phép so sánh <= đọc là "nhỏ hơn hoặc bằng". while True: lặp mãi, tới cờ là robot dừng.',
-      veMaMau: 'Chương trình có sẵn đã có an_toan = 2 và vòng while True nhưng chỉ biết đi. Thêm điều kiện: gần thì rẽ phải, còn không thì đi.',
+      chuong: 'hong-ngoai', so: 6, ten: 'Gần thì rẽ', yMoi: 'if / else theo số đo: xa hơn an_toan thì đi, không thì rẽ (while True có sẵn trong mã mẫu)', buocVideo: 'Gần thì rẽ', hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Robot hút bụi làm một việc mỗi lượt: đo, nếu phía trước còn xa hơn mức an toàn, tức distance() > an_toan, thì đi một ô; còn không thì rẽ phải. Vòng while True có sẵn: lặp mãi, tới cờ là robot dừng.',
+      veMaMau: 'Chương trình có sẵn đã có an_toan = 2 và vòng while True nhưng chỉ biết đi. Thêm if / else: xa thì đi, gần thì rẽ phải.',
       san: ['#########', '#######.#', '####.##.#', '####.##.#', '####F##.#', '####.##.#', '####.##.#', '####.##.#', '##......#', '#######.#', '#######.#', '#########'],
       batDau: { x: 7, y: 1, huong: 2 },
       maMau: bai(nhieu(['an_toan = 2'], WHILE('True', ['move()']))),
       sao: { o: 11, nhip: 16 },
-      loiGiai: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan')))),
-      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', nhieu(DOC, HUT_BUI('d <= an_toan'))))) },
+      loiGiai: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() > an_toan', 'move()', 'turn_right()')))),
+      loiGiaiKhac: { moTa: 'Đo vào biến d trước rồi so sánh d', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', nhieu(DOC, HUT_BUI('d > an_toan', 'move()', 'turn_right()'))))) },
       loiSai: [
         { moTa: 'Không có điều kiện: robot đi thẳng, húc tường', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', ['move()']))), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Đổi chỗ hai nhánh: gần thì lại đi, xa thì rẽ', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() <= an_toan', 'move()', 'turn_right()')))), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Dùng < thay cho <=: còn đúng 2 ô robot vẫn đi, rẽ muộn', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() < an_toan')))), phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Đổi chỗ hai nhánh: xa thì lại rẽ, gần thì đi', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() > an_toan')))), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'So với 1 thay cho an_toan: còn đúng 2 ô robot vẫn đi, rẽ muộn', baiLam: bai(nhieu(['an_toan = 2'], WHILE('True', HUT_BUI('distance() > 1', 'move()', 'turn_right()')))), phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['Mỗi lượt robot chỉ làm một việc: hoặc rẽ, hoặc đi một ô. Hỏi distance() trước rồi mới chọn.',
-        'distance() <= an_toan đúng khi còn 2, 1 hay 0 ô trống: lúc đó phải rẽ.']
+        'distance() > an_toan đúng khi còn từ 3 ô trống trở lên: lúc đó đi, còn không thì rẽ.']
     }),
     man({
       chuong: 'hong-ngoai', so: 7, ten: 'Phanh không kịp', yMoi: 'xe đi 3 ô một lần: sửa số trong phép so sánh cho phanh kịp', buocVideo: 'So mức an toàn', hamCuaEmCan: ['move', 'turn_right', 'forward'],
