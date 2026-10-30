@@ -288,7 +288,7 @@
       robot: XE_CAM, hamGoc: KHAY_CAM,
       huyHieu: { ma: 'che-may-son', ten: 'Huy hiệu Chế lệnh máy sơn' },
       gioiHanHam: 3,
-      deBai: 'Ba bức tranh. Hàng trên cùng là viền hoa văn bốn màu: chép nó xuống hàng thứ ba. Dưới đó ba sọc đỏ, vàng, xanh dương, mỗi bức có vài ô hoa văn xanh lá sơn sẵn ở chỗ khác nhau. ' +
+      deBai: 'Ba bức tranh: hàng trên cùng là viền hoa văn bốn màu, chép nó xuống hàng thứ ba; dưới đó ba sọc đỏ, vàng, xanh dương có vài ô hoa văn xanh lá sơn sẵn ở chỗ khác nhau. ' +
         'Một chương trình phải làm đủ cả ba bức mà không đè lên hoa văn. Chỉ được gọi 3 hàm của em khác nhau.',
       veMaMau: 'Bấm Sân 1, 2, 3 để xem từng bức. copy_row(n) chép hàng trên, fill_gaps(c, n) chỉ chấm ô còn trống, next_row(n) xuống hàng.',
       san: [S10, S10, S10],
@@ -308,7 +308,7 @@
         { moTa: 'Sai thứ tự màu', baiLam: { chinh: ['copy_row(4)', 'next_row(5)', 'for c in ["red", "blue", "yellow"]:', '    fill_gaps(c, 4)', '    next_row(4)'] }, phaiCoMa: ['chua-to-hinh'] },
         { moTa: 'Quên chép viền', baiLam: { chinh: ['next_row(0)', 'next_row(0)', 'for c in ["red", "yellow", "blue"]:', '    fill_gaps(c, 4)', '    next_row(4)'] }, phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['copy_row(4) xong thì xe ở cuối hàng thứ ba: next_row(5) lùi về mép trái rồi xuống sọc đầu.', 'Lặp qua danh sách ba màu: mỗi màu một sọc.', 'Sau mỗi sọc, next_row(4) đưa xe về đầu sọc dưới.']
+      goiY: ['copy_row(4) xong thì xe ở cuối hàng thứ ba: next_row(5) lùi về mép trái rồi xuống sọc đầu.', 'Lặp qua danh sách ba màu: mỗi sọc fill_gaps rồi next_row(4).']
     })
   ];
 
