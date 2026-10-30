@@ -3,7 +3,7 @@
    chương hong-ngoai (làm quen distance()) và che-hong-ngoai "Hàm cho hồng ngoại"; màn 10 mỗi chương là trùm có huy hiệu.
    1. Vị trí: gói hong-ngoai (mùa 2) có hai chương, mỗi chương đúng 10 màn mới theo `so`, hạng lam-quen ×3 · luyen ×3 · bien-the ×3 · trum;
       trùm mang huy hiệu đúng mã chương (huy-hieu.js có hình), không màn nào khác của gói mang huy hiệu.
-   2. Từng màn: đủ trường (≥ 2 lời sai có phaiCoMa), robot xe hai bánh + hồng ngoại (tay kẹp được), khay có distance; NHIỀU SÂN + nhipTheo 'tong';
+   2. Từng màn: đủ trường (≥ 2 lời sai có phaiCoMa), robot xe xích + hồng ngoại (vòi phun được; PDM2a 31/10, trước: hai bánh + tay kẹp), khay có distance; NHIỀU SÂN + nhipTheo 'tong';
       lời giải thắng 3 sao, đúng sao.o / sao.nhip, KHÔNG chẩn đoán; mã mẫu chưa thắng; lời giải khác đúng 2 sao; lời sai thua và có đủ mã phaiCoMa.
    3. Hàm của em: mọi hàm màn cần đã được tạo ở màn đứng trước (theo thứ tự lộ trình) và lời gọi nào cũng khai trong hamCuaEmCan; hàm mới (taoHam) có mục Sổ lệnh.
    4. Không dùng thứ của gói sau: không warm(), không xichDay / beSung / lucBan, không spray("…"), không return (mùa 5); sân không S / u / n.
@@ -238,9 +238,10 @@ for (const m of DS) {
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
-    assert.equal(m.loaiRobot, 'banh');
-    assert.equal(m.robot.than, 'hai-banh');
-    assert.ok(m.robot.tay === null || m.robot.tay === 'kep', m.ma + ' tay ' + m.robot.tay);
+    // PDM2a 31/10 (part đúng mùa): R1 là xe cứu hỏa: thân xích + hồng ngoại, tay vòi phun khi màn cần (trước: xe hai bánh, tay kẹp được)
+    assert.equal(m.loaiRobot, 'xich');
+    assert.equal(m.robot.than, 'xich');
+    assert.ok(m.robot.tay === null || m.robot.tay === 'hoi', m.ma + ' tay ' + m.robot.tay);
     assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['hong-ngoai']);
     assert.ok(m.hamGoc.includes('distance'), m.ma + ' khay thiếu distance');
     if (m.hang === 'trum') assert.ok(soSan(m) <= 3, m.ma + ' trùm tối đa ba sân');

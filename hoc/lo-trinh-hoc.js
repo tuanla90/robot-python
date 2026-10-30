@@ -2072,6 +2072,93 @@
         { moTa: 'Không dùng hàm open_at: viết forward(), spray(), wait() từng đoạn thì quá 10 ô', baiLam: bai(['forward(3)', 'spray()', 'wait()', 'tr_right()', 'forward(2)', 'spray()', 'wait()', 'tr_left()', 'forward(3)', 'spray()', 'wait()', 'tr_left()', 'forward(2)']), phaiCoMa: [] }
       ]
     }, ['mucTieu', 'vatChat', 'vatThem', 'nhipTheoLoiGiai']);
+    // ---- Gói 3 (hong-ngoai, che-hong-ngoai): xích + hồng ngoại (+ vòi khi màn cần). Màn chỉ đo và đi: tay bớt (không vòi), khay = bánh xích + distance.
+    // Bốn màn tay kẹp (mang vật rồi về) viết lại trên vòi phun: tới van, phun, quay đầu (spin() của che-xich.1, thay u_turn hai bánh), về đúng d ô.
+    var HN = [{ ma: 'hong-ngoai', o: 'tren' }];
+    var DO = XICH.concat(['distance']), DO_VOI = VOI.concat(['distance']);
+    function hongNgoai(ma) { var m = xichHoa(ma, DO.slice(), copy(HN)); m.robot.tay = null; return m; }
+    ['hong-ngoai.1', 'hong-ngoai.2', 'hong-ngoai.3', 'hong-ngoai.4', 'hong-ngoai.5', 'hong-ngoai.6', 'hong-ngoai.7', 'hong-ngoai.8', 'hong-ngoai.10',
+      'che-hong-ngoai.1', 'che-hong-ngoai.2', 'che-hong-ngoai.3', 'che-hong-ngoai.5', 'che-hong-ngoai.6', 'che-hong-ngoai.8', 'che-hong-ngoai.10'].forEach(hongNgoai);
+    // hong-ngoai.6: hành lang đầu dài thêm một ô (18 → 19 nhịp) làm mốc cho hong-ngoai.7 (forward(3) và tr_right hai nhịp: 28).
+    get('hong-ngoai.6').san.splice(1, 0, '#######.#');
+    var BO_KEP = ['vatChat', 'vatThem', 'nhipTheoLoiGiai', 'bongMo'];
+    // hong-ngoai.9 "Nhớ số để quay về": ngã ba, mỗi ngả một van xa gần khác nhau. Mỗi chuyến đo d, tới van, phun, quay đầu, về đúng d ô, rẽ trái sang ngả kế;
+    // hai van mở hai cửa dưới ngã ba.
+    var VE9 = ['for i in range(2):', '    d = distance()', '    forward(d)', '    spray()', '    wait()', '    spin()', '    forward(d)', '    tr_left()', 'forward(3)'];
+    xeCuuHoa('hong-ngoai.9', { tay: 'hoi', camBien: copy(HN) }, {
+      mucTieu: 'toi-co',
+      hamGoc: DO_VOI.slice(), hamCuaEmCan: ['move', 'tr_left', 'spin', 'forward'],
+      san: ['#N###', '#.###', '#.###', '#.###', '#...N', '#C###', '#C###', '#F###'], batDau: { x: 1, y: 4, huong: 0 },
+      noi: [{ nut: { x: 1, y: 0 }, cua: [{ x: 1, y: 5 }], bang: [] }, { nut: { x: 4, y: 4 }, cua: [{ x: 1, y: 6 }], bang: [] }],
+      deBai: 'Xe đứng ở ngã ba. Mỗi ngả có một van ở cuối, xa gần khác nhau; hai van mở hai cửa ở ngả dưới. Mỗi chuyến: đo khoảng cách vào d, tiến tới sát van, phun, quay đầu, đi về đúng d ô rồi rẽ trái sang ngả kế. Xong hai chuyến thì đi xuống qua hai cửa tới cờ.',
+      veMaMau: 'Chương trình có sẵn đi về cố định hai ô nên chuyến đầu xe chưa về tới ngã ba. Biến d vẫn còn nhớ số đã đo: dùng lại nó.',
+      goiY: ['Biến d giữ số đã đo cho tới khi em gán số khác vào nó.', 'Đi tới mấy ô thì đi về bấy nhiêu ô: đường về cũng dài d ô.'],
+      maMau: bai(VE9.slice(0, 6).concat(['    forward(2)'], VE9.slice(7))), loiGiai: bai(VE9),
+      loiSai: [
+        { moTa: 'Đi về cố định hai ô: chuyến đầu xe chưa về tới ngã ba', baiLam: bai(VE9.slice(0, 6).concat(['    forward(2)'], VE9.slice(7))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đo lại sau khi quay đầu: d thành số ô tới cửa phía sau, xe đi sai chỗ', baiLam: bai(VE9.slice(0, 6).concat(['    d = distance()'], VE9.slice(6))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên phun: cửa không mở', baiLam: bai(VE9.slice(0, 3).concat(VE9.slice(5))), phaiCoMa: ['chua-toi-co'] }
+      ]
+    }, BO_KEP);
+    get('hong-ngoai.9').loiGiaiKhac = { moTa: 'Thêm một dòng chú thích trước vòng lặp', baiLam: bai(['# mỗi ngả: đo, tới van, phun, về'].concat(VE9)) };
+    // che-hong-ngoai.4 "Đi phun rồi lùi về: go_open()" (cũ go_get() tay kẹp): hàm đo d, tới van, phun, LÙI về đúng d ô bằng back() (xích lùi thẳng, khỏi quay đầu);
+    // main khoá. Hai van cách 3 và 1 ô trống (tia nước bay hai ô): không số cố định nào thay d mà đủ sao ở cả hai ngả (kiem-lach-mua-2 C / E).
+    var GO_OPEN = ['d = distance()', 'forward(d)', 'spray()', 'wait()', 'for i in range(d):', '    back()'];
+    var C4 = ['go_open()', 'tr_right()', 'go_open()', 'tr_right()', 'forward(3)'];
+    xeCuuHoa('che-hong-ngoai.4', { tay: 'hoi', camBien: copy(HN) }, {
+      mucTieu: 'toi-co',
+      ten: 'Đi phun rồi lùi về: go_open()', hamGoc: DO_VOI.slice(), hamCuaEmCan: ['move', 'tr_right', 'forward', 'back'], taoHam: ['go_open'], chinhCoDinh: true,
+      san: ['#N##', '#.##', '#.##', '#.##', '#..N', '#C##', '#C##', '#F##'], batDau: { x: 1, y: 4, huong: 0 },
+      noi: [{ nut: { x: 1, y: 0 }, cua: [{ x: 1, y: 5 }], bang: [] }, { nut: { x: 3, y: 4 }, cua: [{ x: 1, y: 6 }], bang: [] }],
+      deBai: 'Tạo hàm go_open(): đo khoảng cách vào d, tới sát van, phun, rồi lùi về đúng d ô bằng back(). Chương trình chính đã khóa: go_open(), rẽ phải, go_open(), rẽ phải, rồi đi qua hai cửa tới cờ. Hai van xa gần khác nhau.',
+      veMaMau: 'Hàm go_open() chưa có. Tạo nó giống màn "Nhớ số để quay về", nhưng xe không quay đầu mà lùi: for i in range(d) rồi back().',
+      goiY: ['Biến d trong hàm giữ số đo của lần gọi đó; lần gọi sau đo lại từ đầu.', 'Tiến d ô thì lùi cũng d ô: for i in range(d): back().'],
+      maMau: bai(C4), loiGiai: { chinh: C4.slice(), hamCuaMan: [], hamCuaEmMoi: [{ ten: 'go_open', thamSo: [], than: GO_OPEN.slice() }] },
+      loiSai: [
+        { moTa: 'Gọi go_open() mà chưa tạo hàm', baiLam: bai(C4), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Lùi cố định một ô: ngả đầu xe chưa về tới ngã ba', baiLam: bai(C4), hamCuaEmMoi: [{ ten: 'go_open', thamSo: [], than: GO_OPEN.slice(0, 4).concat(['back()']) }], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên phun: cửa không mở', baiLam: bai(C4), hamCuaEmMoi: [{ ten: 'go_open', thamSo: [], than: ['d = distance()', 'forward(d)', 'for i in range(d):', '    back()'] }], phaiCoMa: ['chua-toi-co'] }
+      ]
+    }, BO_KEP);
+    get('che-hong-ngoai.4').loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C4), hamCuaEmMoi: [{ ten: 'go_open', thamSo: [], than: ['# đo, tới van, phun, lùi về'].concat(GO_OPEN) }] };
+    // che-hong-ngoai.7 "Sửa hàm visit()" (cũ take() tay kẹp đo lại sau khi quay đầu): hàm của màn đo lại SAU KHI PHUN (van sát mũi nên d thành 0, xe không lùi về);
+    // xoá dòng đo thứ hai. Hai van cách 1 và 3 ô trống (ngược thứ tự với che-hong-ngoai.4).
+    var VISIT = GO_OPEN.slice();
+    var VISIT_SAI = VISIT.slice(0, 4).concat(['d = distance()'], VISIT.slice(4));
+    var C7 = ['visit()', 'tr_left()', 'visit()', 'tr_left()', 'forward(3)'];
+    xeCuuHoa('che-hong-ngoai.7', { tay: 'hoi', camBien: copy(HN) }, {
+      mucTieu: 'toi-co',
+      ten: 'Sửa hàm visit()', hamGoc: DO_VOI.slice(), hamCuaEmCan: ['move', 'tr_left', 'forward', 'back'], chinhCoDinh: true,
+      san: ['####N', '####.', 'N....', '####C', '####C', '####F'], batDau: { x: 4, y: 2, huong: 0 },
+      noi: [{ nut: { x: 4, y: 0 }, cua: [{ x: 4, y: 3 }], bang: [] }, { nut: { x: 0, y: 2 }, cua: [{ x: 4, y: 4 }], bang: [] }],
+      deBai: 'Hàm visit() của màn này tới van, phun rồi lùi về, nhưng nó đo lại sau khi phun: lúc đó van sát mũi xe nên d thành 0 và xe không lùi về. Chương trình chính đã khóa: visit(), rẽ trái, visit(), rẽ trái, rồi qua hai cửa tới cờ. Sửa hàm visit.',
+      veMaMau: 'Chạy thử: sau khi phun, d = distance() đo được bao nhiêu?',
+      goiY: ['Gán d = distance() lần hai thì số cũ mất. Đường về cần số cũ.', 'Chỉ cần xóa một dòng trong hàm visit.'],
+      maMau: bai(C7, [ham('visit', VISIT_SAI)]), loiGiai: bai(C7, [ham('visit', VISIT)]),
+      loiSai: [
+        { moTa: 'Để nguyên: đo lại sau khi phun, d bằng 0 nên xe không lùi về', baiLam: bai(C7, [ham('visit', VISIT_SAI)]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bỏ luôn dòng đo đầu hàm: Python chưa biết d', baiLam: bai(C7, [ham('visit', VISIT.slice(1))]), phaiCoMa: ['loi-chay'] }
+      ]
+    }, BO_KEP);
+    get('che-hong-ngoai.7').loiGiaiKhac = { moTa: 'Sửa xong, thêm một dòng chú thích trong hàm', baiLam: bai(C7, [ham('visit', ['# đường về dùng số đo cũ'].concat(VISIT))]) };
+    // che-hong-ngoai.9 "Ngõ hẹp có cửa" (cũ: nhặt vật, chở qua ba đoạn, đặt xuống): ba đoạn bằng go_safe(1), rồi phun van sau lưng mở cửa trước mặt, đi hai ô tới cờ.
+    var C9N = ['spray_back()', 'wait()', 'for i in range(3):', '    go_safe(1)', '    tr_right()'];
+    xeCuuHoa('che-hong-ngoai.9', { tay: 'hoi', camBien: copy(HN) }, {
+      mucTieu: 'toi-co',
+      ten: 'Ngõ hẹp có cửa', hamGoc: DO_VOI.slice(), hamCuaEmCan: ['go_safe', 'tr_right', 'move'],
+      san: ['#######', '#######', '#.#####', '#.....#', '#.##C##', '#.##F##', '#.##.##', '#.#####', '#N#####'], batDau: { x: 1, y: 7, huong: 0 },
+      noi: [{ nut: { x: 1, y: 8 }, cua: [{ x: 4, y: 4 }], bang: [] }],
+      deBai: 'Ba đoạn đường, mỗi chỗ rẽ cách tường 1 ô; cờ nằm giữa đoạn thứ ba, sau một cánh cửa. Van mở cửa ở ngay sau lưng xe: phun ra sau trước khi đi.',
+      veMaMau: 'Chương trình có sẵn đi bằng go_safe(2) nên rẽ sớm, và chưa mở cửa. Sửa mức an toàn, thêm phần phun ở đầu.',
+      goiY: ['Mỗi chỗ rẽ cách tường 1 ô: go_safe(1).', 'Van ở sau lưng: spray_back() rồi wait(), làm trước vòng lặp.'],
+      maMau: bai(['for i in range(3):', '    go_safe(2)', '    tr_right()']), loiGiai: bai(C9N),
+      loiSai: [
+        { moTa: 'go_safe(2): rẽ sớm một ô', baiLam: bai(['spray_back()', 'wait()', 'for i in range(3):', '    go_safe(2)', '    tr_right()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Phun ra trước bằng spray(): tia không trúng van sau lưng, cửa còn đóng', baiLam: bai(['spray()'].concat(C9N.slice(1))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên phun: cửa còn đóng, xe đứng trước cửa', baiLam: bai(C9N.slice(2)), phaiCoMa: ['chua-toi-co'] }
+      ]
+    }, BO_KEP);
+    get('che-hong-ngoai.9').loiGiaiKhac = { moTa: 'Thêm một dòng chú thích trước vòng lặp', baiLam: bai(['# ba đoạn, mỗi chỗ rẽ cách tường 1 ô'].concat(C9N)) };
     // Hàm của em mà bản cũ của một màn mùa 2 dạy (tay kẹp / cảm biến khoảng cách / băng đẩy xe) nay không màn nào dạy nữa (DAY_CU: [mã màn, tên hàm]).
     // Màn mùa ẩn còn gọi chúng (đội cũ, chế lệnh xích cũ…) nhận hàm đó thành HÀM CỦA MÀN (thân như bản cũ), bỏ khỏi hamCuaEmCan: vẫn chạy được
     // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.

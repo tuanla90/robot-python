@@ -1,6 +1,86 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "che-hong-ngoai.10": {
+    "o": 16,
+    "nhip": 32
+  },
+  "che-hong-ngoai.9": {
+    "o": 13,
+    "nhip": 14
+  },
+  "che-hong-ngoai.8": {
+    "o": 12,
+    "nhip": 13
+  },
+  "che-hong-ngoai.7": {
+    "o": 22,
+    "nhip": 17
+  },
+  "che-hong-ngoai.6": {
+    "o": 11,
+    "nhip": 13
+  },
+  "che-hong-ngoai.5": {
+    "o": 13,
+    "nhip": 13
+  },
+  "che-hong-ngoai.4": {
+    "o": 22,
+    "nhip": 17
+  },
+  "che-hong-ngoai.3": {
+    "o": 12,
+    "nhip": 13
+  },
+  "che-hong-ngoai.2": {
+    "o": 13,
+    "nhip": 13
+  },
+  "che-hong-ngoai.1": {
+    "o": 16,
+    "nhip": 13
+  },
+  "hong-ngoai.10": {
+    "o": 12,
+    "nhip": 38
+  },
+  "hong-ngoai.9": {
+    "o": 22,
+    "nhip": 27
+  },
+  "hong-ngoai.8": {
+    "o": 12,
+    "nhip": 21
+  },
+  "hong-ngoai.7": {
+    "o": 13,
+    "nhip": 28
+  },
+  "hong-ngoai.6": {
+    "o": 12,
+    "nhip": 19
+  },
+  "hong-ngoai.5": {
+    "o": 11,
+    "nhip": 13
+  },
+  "hong-ngoai.4": {
+    "o": 10,
+    "nhip": 12
+  },
+  "hong-ngoai.3": {
+    "o": 10,
+    "nhip": 13
+  },
+  "hong-ngoai.2": {
+    "o": 10,
+    "nhip": 18
+  },
+  "hong-ngoai.1": {
+    "o": 11,
+    "nhip": 13
+  },
   "tham-so.10": {
     "o": 21,
     "nhip": 19

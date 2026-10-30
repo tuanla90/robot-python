@@ -45,9 +45,9 @@ export const GOI_RECALL_2 = {
   1: 'xích + biến', 2: 'súng hơi + tham số', 3: 'hồng ngoại distance()', 4: 'nhà máy: nút bắn + cửa, băng chuyền', 5: 'đẩy thùng', 6: 'lực bắn', 7: 'đo nhiệt warm()'
 };
 const HAM_GOI = {
-  1: ['spin', 'sidestep', 'pick_behind'],
-  2: ['forward', 'right', 'deliver', 'step'],
-  3: ['go_to_wall', 'go_safe', 'clean_step', 'go_get'],
+  1: ['spin', 'sidestep', 'next_lane'],                  // PDM2a 31/10: next_lane thay pick_behind (tay kẹp)
+  2: ['forward', 'right', 'open_at', 'step'],           // PDM2a: open_at thay deliver
+  3: ['go_to_wall', 'go_safe', 'clean_step', 'go_open'],     // PDM2a: go_open thay go_get
   4: ['puff', 'puff_back', 'open_left', 'open_right', 'open_behind'],
   5: ['push', 'go_around', 'push_around', 'push_back'],
   6: ['squirt', 'squirt_back', 'smart_spray', 'auto_spray', 'auto_left', 'auto_right', 'squirt_left', 'close_spray', 'scan_left', 'auto_turn'],
