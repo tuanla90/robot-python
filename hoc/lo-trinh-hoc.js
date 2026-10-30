@@ -1080,21 +1080,21 @@
       chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 5, 6, 8, 9, 7, 10])]] },
     // gói 3, 5, 7 (user 30/10 chọn A): màn cũ dạy cảm biến bụng / camera trước / look() / sạc tự động trên P dời sang mùa 5 (gói mau, flycam cũ và MUA_4_CU
     // bên dưới), ba gói dựng bằng màn mới theo luật mới (camera bốn hướng, đáp đất sạc, camera nhìn "here").
-    { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'mau',
+    { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'cam-bon',
       chuong: [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', day('che-cam-bon', [2, 9, 1, 3, 4, 5, 6, 8, 7, 10])]] },
-    { ma: 'pho-mau', ten: 'Phố màu',
+    { ma: 'pho-mau', ten: 'Phố màu', hinh: 'pho-mau',
       chuong: [['pho-mau', []], ['che-pho-mau', []]] },
-    { ma: 'tram-sac', ten: 'Trạm sạc', loai: 'bo-phan', hinh: 'drone',
+    { ma: 'tram-sac', ten: 'Trạm sạc', loai: 'bo-phan', hinh: 'tram-sac',
       chuong: [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 11, 4, 13, 15, 12, 7, 16, 14])]] },
-    { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'may-son',
+    { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'net-lien',
       chuong: [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]] },
-    { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'flycam',
+    { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'nhin-duoi',
       chuong: [['nhin-duoi', []], ['che-nhin-duoi', day('che-nhin-duoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])]] },
-    { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach',
+    { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach', hinh: 'doi-nam-cham',
       chuong: [['doi-nam-cham', day('doi-nam-cham', MUOI)], ['che-doi-nam-cham', day('che-doi-nam-cham', MUOI)]] },
-    { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach',
+    { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach', hinh: 'son-tren-cao',
       chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
-    { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach',
+    { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
       chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7]).concat(day('che-may-son', [7, 8]), day('trum-mua-4', [10]))]] }
   ];
   // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống), cùng che-drone.3 / .6 (nhảy đường cong gói 5): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
@@ -1150,6 +1150,17 @@
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // Huy hiệu (30/10): mỗi chương mùa 4 trao huy hiệu MÃ CHƯƠNG ở màn trùm (cuối chương), như mùa 2; chương trum-mua-4 trao huy hiệu cỗ máy drone-ke-vach
+    // (trùm cuối mùa). Màn khác trong chương không trao (màn có sẵn mang huy hiệu cũ, vd may-son.10 ở chương net-lien, đổi theo chương mới).
+    MUA_4.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        c[1].forEach(function (ma, i) {
+          var m = get(ma);
+          if (i < c[1].length - 1) { delete m.huyHieu; return; }
+          m.huyHieu = c[0] === 'trum-mua-4' ? { ma: 'drone-ke-vach', ten: 'Huy hiệu Drone kẻ vạch R1' } : { ma: c[0], ten: 'Huy hiệu ' + TEN_MUA_4[c[0]] };
+        });
+      });
+    });
     // Gói 8 Đội chia hàng (30/10, phương án A): camera trước cũ (color() đọc ô trước mặt) thành camera bốn hướng mùa 4: mọi chữ trong màn đổi color() → color("front"),
     // hàm cốt truyện sort_color (che-mau.6, nay ở mùa 5) → sort_by_color (gói 3 che-cam-bon tạo, cùng việc); robot gắn camera-4 thay camera. Gói đội mùa 5 vẫn dùng sort_color cũ.
     function doiChu(x) {

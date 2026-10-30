@@ -110,10 +110,10 @@ nhà phố, mặt đường, sân bóng, thanh pin vẽ bằng div. Lời ở ch
 | 7 Nhìn dưới chân `nhin-duoi` | drone đứng trên hộp đỏ, camera bốn hướng không thấy, "?" | mắt nhìn xuống lắp thêm, CẠCH! | vòng đỏ quanh hộp dưới bụng, drone chở hộp về ô đích đỏ | code `c = color("here")` |
 | 8 Đội chia hàng `doi-nam-cham` | R1 xe nam châm chờ, R2 (kẹp + camera, sơn lam) lăn vào, "!" | R1 hút hộp qua rào (HÚT!), quay, đặt trước mũi R2 | R2 nhìn màu, quay lên, đặt hộp vào ô đích cùng màu | hai bảng code R1 `hand_off()` / R2 `hold_on(3)` `sort_by_color()` |
 | 9 Sơn từ trên cao `son-tren-cao` | xe máy sơn đụng hàng rào (CỘP!), vạch bên kia chưa kẻ | máy sơn gắn dưới bụng drone, CẠCH! | drone kẻ vạch vàng, ô rào bỏ trống | code `pen_up()` `go_right()` `pen_down()` |
-| 10 Drone kẻ vạch R1 xuất xưởng `drone-ke-vach` | drone đủ bộ, tám món của mùa bay quanh (cánh quạt, máy sơn, camera, ô sạc, pin, bút, nam châm, tay kẹp) | **tem XUẤT XƯỞNG**, tên **"Drone kẻ vạch R1"**, ba part: cánh quạt, máy sơn, camera | phố sáng đèn: drone bay ngang, vạch giữa đường sáng vàng từng đoạn, hai xe đi đúng làn (việc kẹt ở drone.1 được gỡ) | nhá mùa 5: xa xa sân bóng, hai đèn sân và quả bóng nhấp nháy, "?" |
+| 10 Drone kẻ vạch R1 xuất xưởng `drone-ke-vach` | drone đủ bộ, mười huy hiệu mùa 4 bay quanh | **tem XUẤT XƯỞNG**, tên **"Drone kẻ vạch R1"**, ba part: cánh quạt, máy sơn, camera | phố sáng đèn: drone bay ngang, vạch giữa đường sáng vàng từng đoạn, hai xe đi đúng làn (việc kẹt ở drone.1 được gỡ) | nhá mùa 5: xa xa sân bóng, hai đèn sân và quả bóng nhấp nháy, "?" |
 
 Ghi chú mùa 4:
-- Huy hiệu mùa 4 chưa có (chương mùa 4 chưa có bản vector); khung 1 gói 10 dùng icon bộ phận thay huy hiệu. Khi có huy hiệu mùa 4 thì đổi sang như phim gói 10 mùa 2.
+- Khung 1 gói 10: mười huy hiệu mùa 4 bay quanh (drone, may-son, cam-bon, pho-mau, tram-sac, net-lien, nhin-duoi, doi-nam-cham, son-tren-cao, drone-ke-vach), như phim gói 10 mùa 2.
 - Mùa 4 còn ẩn: phim chỉ chiếu khi mùa mở. Máy kiểm: kiem-phim-goi.mjs mục 1c, kiem-huy-hieu-phim-vector.mjs B2 (canvas vector).
 - Phim mùa 3 chưa có (phiên Mùa 3 sẽ đặt phim-mua-3.js giữa phim-mua-2.js và phim-mua-4.js trong choi.html).
 

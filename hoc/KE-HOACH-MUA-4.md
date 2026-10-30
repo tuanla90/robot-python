@@ -175,7 +175,12 @@ Ghi chú chia:
   - Chưa có: huy hiệu và phim gói 10 (phim mùa 4 là bước sau, mục 4 P2).
 - **30/10 Phim mùa 4 xong** (game/phim-mua-4.js, 10 phim 37 khung, lời ở chu.js `pg.<gói>.<n>`, tem `pg.tem.drone-ke-vach`; kịch bản KE-HOACH-PHIM-GOI.md mục 3e).
   kiem-phim-goi.mjs thêm mục 1c (mọi gói MUA_4 có phim, khung cuối phim bộ phận có code, tem gói 10, thẻ script); kiem-huy-hieu-phim-vector B2 đạt (ô vẽ VeVector, canvas laVector).
-  Đã chiếu thử cả 10 phim trên trình duyệt (gọi PhimGoi.mo vì mùa 4 còn ẩn): không lỗi console. Huy hiệu mùa 4 chưa có (mục 7 câu 20).
+  Đã chiếu thử cả 10 phim trên trình duyệt (gọi PhimGoi.mo vì mùa 4 còn ẩn): không lỗi console.
+- **30/10 Huy hiệu mùa 4 xong** (huy-hieu-vector.js): 13 hình mới cam-bon, che-cam-bon, pho-mau, che-pho-mau, tram-sac, net-lien, nhin-duoi, che-nhin-duoi,
+  son-tren-cao, che-son-tren-cao, tong-hop-4, drone-ke-vach (cỗ máy, hình gói 10), trum-mua-4. Mọi chương mùa 4 có huy hiệu (drone, list, may-son, che-list, che-drone,
+  che-may-son có từ trước; doi-* dùng bí danh hai-robot). Gói mùa 4 có hình riêng (MUA_4 hinh = chương 1, gói 10 = drone-ke-vach). Màn trùm (cuối) mỗi chương mùa 4
+  trao huy hiệu mã chương (trum-mua-4.10 trao drone-ke-vach); màn khác thôi trao (may-son.10 ở chương net-lien đổi sang net-lien). Phim gói 10 khung 1: huy hiệu bay quanh.
+  kiem-huy-hieu-phim-vector A7: 13 mã vào MOI_SAU_CHUP.
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -200,6 +205,6 @@ Ghi chú chia:
 16. ~~Gói 9, gói 10~~ xong 30/10 (mục 6). Mùa 4 đủ 200 màn; còn phim mùa 4, huy hiệu, soát 200 / 200 trên trình duyệt, mở mùa 4.
 17. Gói 9 không có màn nam châm (máy sơn và nam châm không gắn chung). Muốn có ý "chở trước hay sơn trước" thì cần màn hai drone (một sơn, một chở) kiểu gói đội: để gói 10?
 19. Mục 9 (che-may-son.7 / .8): tôi giữ, đặt ở trum-mua-4 vị trí 8, 9 (sau màn cầu nối street 25 nhịp). Muốn cắt thì thay bằng hai màn drone mới.
-20. Trùm cuối mùa chưa có huy hiệu (huyHieu cần hình vector + phim như mùa 2). Làm cùng phim mùa 4.
+20. ~~Huy hiệu mùa 4~~ xong 30/10 (mục 6).
 18. Ranh gói 5 / 6: may-son.3 (đầu gói 6, 18 ô) sau che-drone.16 (10 ô) nhảy số ô (như mục 8, nay màn đứng trước là che-drone.16). Chưa sửa.
 

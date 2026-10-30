@@ -130,6 +130,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return vach;
   }
+  // huy hiệu chương 1 các gói mùa 4 (+ cỗ máy gói 10) bay trong phim gói 10
+  var HUY = ['drone', 'may-son', 'cam-bon', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'doi-nam-cham', 'son-tren-cao', 'drone-ke-vach'];
+  /** Huy hiệu ma (trạng thái xong) cạnh 36 px (HuyHieu.mk vector); chưa có bản vector thì sao. */
+  function huyHieu(c, ma) {
+    var HH = goc.HuyHieu;
+    try { if (HH && HH.maVec && HH.maVec(ma) && HH.mk) { var v = HH.mk(ma, 'xong', 1); if (v && v.laVector) return v; } } catch (e) { /* rơi về sao */ }
+    return c.sao(2);
+  }
   /** Chữ qua t() của chu.js (Node không có t: trả khóa). */
   function t2(khoa) { return typeof t === 'function' ? t(khoa) : khoa; }
   /** Đặt nhãn tên robot lên đầu bảng code. */
@@ -476,15 +484,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     /* ---------------------------------------------------------------- 10 · Drone kẻ vạch R1 xuất xưởng (tổng hợp + trùm; khuôn mục 3c; nhá mùa 5 sân bóng) */
     'drone-ke-vach': [
-      // 1 · drone đủ bộ giữa xưởng, các bộ phận của mùa bay quanh
+      // 1 · drone đủ bộ giữa xưởng, các huy hiệu mùa 4 bay quanh (như phim gói 10 mùa 2)
       function (k, c) {
         c.nen(k, 'md-san');
         k.appendChild(c.xe(DRONE_SON, { camBien: { bat: true } }, 1, 3, 160, 110, 'md-nhun').mat('vui'));
-        var MON = [['denCanh', BM.lamSang], ['denSon', BM.vang], ['denCam', BM.do], ['sac', BM.vang], ['pin', BM.xanhLa], ['edit', BM.lamSang], ['denNamCham', BM.do], ['denKepMo', BM.vang]];
-        var cho = [[30, 30], [110, 10], [200, 10], [270, 36], [24, 120], [272, 120], [70, 168], [226, 168]];
-        MON.forEach(function (m, i) {
+        var cho = [[30, 30], [110, 14], [196, 14], [262, 40], [20, 100], [266, 104], [64, 60], [222, 72], [70, 128], [220, 132]];
+        HUY.forEach(function (m, i) {
           var o = c.dat(c.h('div', 'pg-bay'), cho[i][0], cho[i][1]); o.style.animationDelay = (-i * 0.3) + 's';
-          var p = c.dat(c.h('div', 'md-pop'), 0, 0); p.style.animationDelay = (0.2 + i * 0.15) + 's'; p.appendChild(c.ico(m[0], 2, m[1]));
+          var p = c.dat(c.h('div', 'md-pop'), 0, 0); p.style.animationDelay = (0.2 + i * 0.15) + 's'; p.appendChild(huyHieu(c, m));
           o.appendChild(p); k.appendChild(o);
         });
         c.sau(300, function () { c.keu('thang'); });
