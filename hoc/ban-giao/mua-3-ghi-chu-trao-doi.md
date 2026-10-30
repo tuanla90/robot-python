@@ -13,8 +13,10 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
 ## Câu hỏi cần user trả lời
 1. ĐÃ XỬ LÝ (user 30/10 "Viết lại cho phù hợp"): che-nhen.7 "Đường về" viết lại ngắn hơn: go_in() = crawl("D"), jump("R"); come_back() = jump("L"),
    crawl("U"); 16 nhịp (trước 24), đường cong che-nhen.3 12 → che-nhen.7 16 → che-nhen.6 24. kiem-che-nhen cập nhật theo.
-2. **Huy hiệu mùa 3**: chưa trùm nào của mùa 3 có huy hiệu mới (máy kiểm mùa 1–2 đòi mỗi huy hiệu có hình vector riêng, tức phải vẽ). Mỗi chương một
-   huy hiệu như mùa 1–2 (20 hình), mỗi gói một (10 hình), hay chỉ trùm mùa trum-mua-3.10? nhen.10 (trùm chương Nhảy) vẫn giữ huy hiệu cũ "Thân nhện".
+2. ĐÃ XỬ LÝ (user 30/10 "vẽ 20 huy hiệu"): mỗi chương một huy hiệu trên màn cuối (trùm), bảng HUY_HIEU_3 ở lo-trinh-hoc.js. 17 hình vector mới
+   (huy-hieu-vector.js) + 3 hình có sẵn giữ nguyên vì phanh A3-v (nhen, nam-cham, che-nhen). Màn có sẵn đổi huy hiệu theo chương mới: nhen.10 → nhay,
+   nam-cham.10 → doc-cuc, che-nam-cham.10 → che-doc-cuc. Hai chương đội dùng mã mới doi-xich-nhen / che-doi-xich-nhen (bí danh cũ y nguyên).
+   Trùm mùa trum-mua-3.10 = xe-tham-do. Máy kiểm: kiem-lo-trinh (i), có lỗi giả.
 3. **Luật đệm từ P1b** tôi tự chốt (đảo lại được), cần user chơi thử:
    - Công tắc: `demTu: [{ x, y, cuc, nut: { x, y }, khiDe: 'bat' | 'tat' }]`, nút là ô M. 'bat' (mặc định): đè thì đệm chạy; 'tat': đè thì đệm tắt.
      Đệm đổi từ NHỊP SAU khi nút đổi (nút đè cập nhật cuối nhịp, như cửa). Vật nằm trên nút cũng đè được.
@@ -51,4 +53,6 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
 - kiem-o-so (chỉ dò mùa đã mở) bắt trum-mua-3.7 dùng wait_n(14) mà bảng chọn số chỉ 0–12: lời giải đổi thành wait_n(7), wait_n(7), sao.o 55 → 56.
 
 ## Việc còn lại (chờ user)
-- Phim mùa 3, soát 200 / 200 trên trình duyệt (KE-HOACH-MUA-3 mục 3 bước P2). Huy hiệu mùa 3 (câu 2): ô trùm chương mùa 3 đang trống hình.
+- Phim mùa 3 ĐÃ LÀM (30/10): game/phim-mua-3.js, 10 phim 34 khung, kịch bản KE-HOACH-PHIM-GOI.md mục 3d, tem "Xe thăm dò R1"; kiem-phim-goi mục 1c.
+  Đã xem từng khung trên trình duyệt (không lỗi console); user xem lại giúp lời và cảnh.
+- Còn: soát 200 / 200 màn trên trình duyệt (KE-HOACH-MUA-3 mục 3 bước P2).

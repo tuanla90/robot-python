@@ -184,4 +184,33 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     });
   }
   root.PhimVector.xuatXuong = xuatXuong; root.PhimVector.nhaMay = nhaMay; root.PhimVector.voiPhun = voiPhun;
+
+  /* ---------------------------------------------------------------- PHIM MÙA 3 (30/10, phim-mua-3.js "Mỏ quặng"). Chỉ THÊM hàm.
+       PhimVector.oSan(ma, s, st)       ô VeVector.o(ma, st) vẽ trên sàn, cạnh 14·s: 'ho' (hố / khe nứt), 'gam' (gầm thấp), 'dem-tu' ({ cuc: 'N' | 'S' }; st.tat: phủ tối như đệm tắt)
+       PhimVector.vat(ma, s, st)        vật VeVector.vat(ma, st) đầy ô 14·s, không có sàn: 'khoi-sat' (quặng sắt), 'nam-cham' ({ cuc })
+       PhimVector.moQuang(w, h)         cửa hầm mỏ nhìn ngang: khung gỗ, lòng hầm tối, đường ray, xe goòng chở quặng */
+  function oSan(ma, s, st) {
+    if (!bat()) return null; var c = 14 * s;
+    return the(c, c, function (g) {
+      dan(g, V.o('san', px(c), {}), 0, 0, c); dan(g, V.o(ma, px(c), st || {}), 0, 0, c);
+      if (st && st.tat) { g.globalAlpha = 0.45; g.fillStyle = BM.vecVien; g.fillRect(c * 0.08, c * 0.08, c * 0.84, c * 0.84); g.globalAlpha = 1; }
+    });
+  }
+  function vat(ma, s, st) { if (!bat()) return null; var c = 14 * s; return the(c, c, function (g) { dan(g, V.vat(ma, px(c), st || {}), 0, 0, c); }); }
+  function moQuang(w, h) {
+    if (!bat()) return null;
+    w = w || 84; h = h || 56;
+    return the(w, h, function (g) {
+      var H = V.H, k = Math.min(w / 84, h / 56);
+      g.save(); g.scale(k, k);
+      H.duong(g, 'M2 54 C6 18 30 4 46 4 C64 4 82 22 82 54 Z'); g.fillStyle = H.gradDoc(g, 0, 4, 0, 54, [[0, BM.vecSatGiua], [1, BM.vecSatToi]]); g.fill(); H.vien(g, BM.vecVien, 2.2);   // sườn đồi đá
+      H.duong(g, 'M24 54 V26 C24 16 60 16 60 26 V54 Z'); H.to(g, BM.vecHoToi); H.vien(g, BM.vecVien, 2);                          // lòng hầm
+      H.duong(g, 'M20 54 V22 H64 V54'); H.vien(g, BM.vecVien, 6.5); H.vien(g, BM.vecBanhGach, 4);                               // khung gỗ chống hầm
+      H.duong(g, 'M28 54 L36 34 M56 54 L48 34'); H.vien(g, BM.vecThepToi, 1.6);                                                    // đường ray vào hầm
+      H.bo(g, 31, 42, 22, 9, 2); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 1.6);                                                  // xe goòng
+      [[36, 41], [42, 39], [48, 41]].forEach(function (q) { H.tron(g, q[0], q[1], 3); H.to(g, BM.vecSat); H.vien(g, BM.vecVien, 1.2); });   // quặng
+      g.restore();
+    });
+  }
+  root.PhimVector.oSan = oSan; root.PhimVector.vat = vat; root.PhimVector.moQuang = moQuang;
 })(typeof window !== 'undefined' ? window : globalThis);

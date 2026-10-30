@@ -9,6 +9,7 @@
         nút ▶ có cả aria-label lẫn title; cai-dat.js có "Xem lại phim các gói"; mo-dau.js không dùng khóa pg.*;
      4. chạy thử bộ máy trên DOM giả: gói không phim gọi khiXong ngay; mỗi phim chiếu đủ khung (chạy cả hẹn giờ), không hàm khung nào ném lỗi,
         lời từng khung đúng khóa, nút khung cuối "Vào gói" (hay nutCuoi), Bỏ qua ghi cờ 'phim-goi:<gói>' và gọi khiXong một lần.
+     MÙA 3 (30/10, phim-mua-3.js; mục 1c, đứng trước mục 3): gói theo M.mua3; mọi gói có phim ở phim-mua-3.js, gói bộ phận có code ở khung cuối, nạp ngay sau phim-mua-2.js.
      MÙA 2 (28/10, phim-mua-2.js; mục 1b): danh sách gói lấy từ mảng MUA_2 của lo-trinh-hoc.js (đọc nguồn: gói chưa có màn chưa vào ThuTuChuong.goi,
         vd gói 10 nha-may-chay đang viết, nên coi là gói khai sẵn); mọi gói mùa 2 có phim, nằm ở phim-mua-2.js, mỗi phim của tệp này mang mã một gói MUA_2;
         khung cuối phim gói bộ phận mùa 2 có bảng code; choi.html nạp phim-mua-2.js ngay sau phim-mua-1.js; mục 2 và 4 tự gồm phim mùa 2.
@@ -116,6 +117,26 @@ console.log('\n== 2. Chữ (chu.js) ==');
   const thieuNut = nut.filter((k) => typeof CHU[k] !== 'string' || !CHU[k].trim());
   kiem('đủ khóa nút / nhãn (' + nut.join(', ') + ')', !thieuNut.length, thieuNut.join(', '));
   kiem('nút khung cuối là "Vào gói"', CHU['pg.vaoGoi'] === 'Vào gói', CHU['pg.vaoGoi']);
+}
+
+console.log('\n== 1c. Phim mùa 3 "Mỏ quặng" (gói theo MUA_3 của lo-trinh-hoc.js, 30/10) ==');
+{
+  // Mùa 3 (phim-mua-3.js): mọi gói của M.mua3 có phim nằm ở phim-mua-3.js, tệp không có phim lạ, gói bộ phận có bảng code ở khung cuối,
+  // choi.html nạp phim-mua-3.js ngay sau phim-mua-2.js. Lỗi giả (--loi-gia): bỏ phim dao-cuc → mục "mọi gói mùa 3 có phim" đỏ.
+  const GOI_MUA_3 = require(path.join(day, 'lo-trinh-hoc.js')).mua3.map((g) => ({ ma: g.ma, loai: g.loai || '' }));
+  const P3 = Object.assign({}, PHIM); if (LOI_GIA) delete P3['dao-cuc'];
+  kiem('có tệp phim-mua-3.js', tepPhim.includes('phim-mua-3.js'));
+  kiem('MUA_3 có 10 gói', GOI_MUA_3.length === 10, GOI_MUA_3.map((g) => g.ma).join(', '));
+  const thieu = GOI_MUA_3.filter((g) => !P3[g.ma] || TEP_CUA[g.ma] !== 'phim-mua-3.js').map((g) => g.ma + '@' + (TEP_CUA[g.ma] || '-'));
+  kiem('mọi gói mùa 3 có phim, nằm ở phim-mua-3.js', !thieu.length, thieu.join(', '));
+  const ma3 = new Set(GOI_MUA_3.map((g) => g.ma));
+  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-3.js' && !ma3.has(m));
+  kiem('mỗi phim của phim-mua-3.js mang đúng mã một gói của MUA_3 và gói đó thuộc mùa 3 trong ThuTuChuong.goi', !la.length && GOI_MUA_3.every((g) => (TT.goi.find((x) => x.ma === g.ma) || {}).mua === 'mua-3'), la.join(', '));
+  const boPhan = GOI_MUA_3.filter((g) => g.loai === 'bo-phan' && P3[g.ma]);
+  const khongCode = boPhan.filter((g) => !/\bc\.code\(/.test(P3[g.ma][P3[g.ma].length - 1].toString())).map((g) => g.ma);
+  kiem('khung cuối phim gói bộ phận mùa 3 có bảng code lệnh mới (' + boPhan.map((g) => g.ma).join(', ') + ')', boPhan.length >= 5 && !khongCode.length, khongCode.join(', '));
+  const src = [...nguon('choi.html').matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+  kiem('choi.html nạp phim-mua-3.js ngay sau phim-mua-2.js', src.indexOf('phim-mua-3.js') === src.indexOf('phim-mua-2.js') + 1, src.indexOf('phim-mua-3.js'));
 }
 
 console.log('\n== 3. Nối luồng (đọc nguồn) ==');
