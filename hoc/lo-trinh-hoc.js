@@ -2185,6 +2185,99 @@
       m.san = ['##N#####', '##.#####', '#..C...#', '########']; m.bongMo = Object.assign({}, m.bongMo, { x: 6 });
       [m.maMau, m.loiGiai, m.loiGiaiKhac && m.loiGiaiKhac.baiLam].concat(m.loiSai.map(function (x) { return x.baiLam; })).forEach(function (b) { if (b) b.chinh.push('move()', 'move()'); });
     })();
+    // ---- Gói 4 chương 1 bang-chuyen (PDM2a2, 31/10): "Canh băng chở thùng". Băng chuyền không đẩy được xích, nên ý cũ "trôi theo băng" mất; nay băng chở THÙNG NẶNG
+    // (man.thungThem: thùng đặt sẵn trên ô băng) tới ô đích, mục tiêu 'day-thung'. Gói 4 chưa có xích đẩy thùng (gói 5) hay phun mạnh (gói 6): xe chỉ đứng chắn / tránh
+    // đường thùng (thùng không vào ô có xe), đi ngang băng mà không trôi, và phun van tắt / bật băng (noi) hay mở cửa. Thắng ngay khi mọi thùng nằm trên ô đích, nên
+    // chờ dư không tốn nhịp: ngưỡng nhịp đo việc xe nhường đường kịp. Thứ tự chương giữ MUA_2: bang-chuyen 1, 2, 6, 5, 7, 8, 3, 4, 9, 10 (màn 1..10 theo vị trí).
+    var CHO = function (n) { return lap(n, ['wait()']); };
+    function bangThung(ma, hang, ds) {
+      var m = xeCuuHoa(ma, { tay: 'hoi' }, Object.assign({
+        hang: hang, hamGoc: VOI.slice(), mucTieu: 'day-thung', taoHam: [], cauTruc: ['for'], khung: { chinh: 10, moiHam: 10, cauTruc: ['for'] }
+      }, ds), ['canFor', 'vatChat', 'vatThem', 'nhipTheoLoiGiai', 'bongMo', 'huyHieu'].concat(ds.chiChay ? [] : ['chiChay', 'chinhCoDinh']).concat(ds.noi ? [] : ['noi']));
+      if (ds.huyHieu) m.huyHieu = ds.huyHieu;
+      return m;
+    }
+    // Màn 1 (bang-chuyen.1, TRÌNH DIỄN): thùng trên băng tới ô đích sau tám nhịp; xe xích đứng trên băng bên dưới mà không trôi.
+    bangThung('bang-chuyen.1', 'lam-quen', {
+      ten: 'Băng chở thùng', chiChay: true, chinhCoDinh: true, hamCuaEmCan: [],
+      san: ['>>>>D', '.>>>.'], batDau: { x: 1, y: 1, huong: 1 }, thungThem: [{ x: 0, y: 0 }],
+      deBai: 'Thùng nặng nằm trên băng chuyền: cứ hai nhịp băng đẩy thùng đi một ô theo mũi tên. Thùng tới ô đích khung vàng là xong. Xe xích đứng trên băng bên dưới nhưng bám chắc nên không trôi. Bấm Chạy xem băng chở thùng.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: xe chỉ chờ, băng làm hết việc.',
+      maMau: bai(CHO(8)), loiGiai: bai(CHO(8)),
+      goiY: ['Thùng cách ô đích bốn ô, mỗi ô hai nhịp: tám nhịp.', 'Xe xích đứng trên băng không bị đẩy đi; xe hai bánh thì trôi.']
+    });
+    // Màn 2 (bang-chuyen.2, ÉP): xe đứng giữa đường băng, thùng không vào được ô có xe. Mã mẫu chỉ chờ nên thùng kẹt sau xe; thêm move() vào hốc phía trên.
+    bangThung('bang-chuyen.2', 'lam-quen', {
+      ten: 'Tránh đường thùng', hamCuaEmCan: ['move'],
+      san: ['###.###', '>>>>>>D', '#######'], batDau: { x: 3, y: 1, huong: 0 }, thungThem: [{ x: 0, y: 1 }],
+      deBai: 'Xe đang đứng trên băng, ngay đường thùng đi tới ô đích. Thùng không vào được ô có xe. Cho xe tránh vào hốc phía trên rồi chờ thùng qua.',
+      veMaMau: 'Chạy thử: xe đứng yên nên thùng kẹt lại sau xe. Thêm một dòng ở đầu chương trình.',
+      maMau: bai(CHO(12)), loiGiai: bai(['move()'].concat(CHO(12))),
+      loiSai: [
+        { moTa: 'Chỉ chờ: thùng kẹt sau xe', baiLam: bai(CHO(12)), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Lùi xuống: sau lưng là tường', baiLam: bai(['back()'].concat(CHO(12))), phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
+        { moTa: 'Chờ quá ít: thùng còn trên băng khi chương trình hết', baiLam: bai(['move()'].concat(CHO(6))), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['Hốc ở ngay trên đầu xe: một move() là ra khỏi băng.', 'Thùng cách ô đích sáu ô: chờ đủ mười hai nhịp.']
+    });
+    // Màn 3 (bang-chuyen.6): xe đứng ngay trên ô đích, mặt quay vào băng. Quay phải rồi đi lên hốc; đi thẳng là leo lên băng, lại chắn thùng.
+    bangThung('bang-chuyen.6', 'lam-quen', {
+      ten: 'Rời ô đích', hamCuaEmCan: ['move', 'tr_right', 'tr_left'],
+      san: ['######.', '>>>>>>D', '#######'], batDau: { x: 6, y: 1, huong: 3 }, thungThem: [{ x: 1, y: 1 }],
+      deBai: 'Xe đỗ ngay trên ô đích nên thùng không có chỗ vào. Rời ô đích lên hốc phía trên, rồi chờ băng chở thùng tới.',
+      veMaMau: 'Xe đang quay mặt vào băng. Đi thẳng thì xe lại đứng chắn trên băng.',
+      maMau: bai(CHO(10)), loiGiai: bai(['tr_right()', 'move()'].concat(CHO(10))),
+      loiSai: [
+        { moTa: 'Chỉ chờ: xe đỗ trên ô đích', baiLam: bai(CHO(10)), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Đi thẳng lên băng: xe chắn thùng', baiLam: bai(['move()'].concat(CHO(10))), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Quay trái: xe đâm tường, vẫn đỗ trên ô đích', baiLam: bai(['tr_left()', 'move()'].concat(CHO(10))), phaiCoMa: ['dam-tuong', 'chua-day-thung'] }
+      ],
+      goiY: ['Hốc ở phía trên ô đích. Xe đang quay mặt sang trái: quay phải là mặt hướng lên.', 'Xe xích quay bằng tr_right(), mất hai nhịp.']
+    });
+    // Màn 4 (bang-chuyen.5): hai băng song song, xe đứng chắn băng trên; hốc ở dưới băng dưới: xích đi ngang băng dưới mà không trôi. Dừng trên băng dưới là chắn thùng kia.
+    bangThung('bang-chuyen.5', 'luyen', {
+      ten: 'Đi ngang băng', hamCuaEmCan: ['move'],
+      san: ['>>>>>D', '>>>>>D', '###.##'], batDau: { x: 3, y: 0, huong: 2 }, thungThem: [{ x: 0, y: 0 }, { x: 0, y: 1 }],
+      deBai: 'Hai băng chở hai thùng tới hai ô đích. Xe đứng chắn trên băng thứ nhất; hốc trống nằm dưới băng thứ hai. Đi thẳng xuống, ngang qua băng thứ hai, vào hốc rồi chờ.',
+      veMaMau: 'Chương trình có sẵn chỉ chờ. Xe xích đi ngang băng không bị trôi, nhưng đứng lại trên băng nào là chắn thùng của băng đó.',
+      maMau: bai(CHO(10)), loiGiai: bai(['move()', 'move()'].concat(CHO(10))),
+      loiSai: [
+        { moTa: 'Chỉ chờ: xe chắn băng trên', baiLam: bai(CHO(10)), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Một move(): xe đứng trên băng dưới, chắn thùng thứ hai', baiLam: bai(['move()'].concat(CHO(10))), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['Từ chỗ xe tới hốc là hai ô thẳng xuống.', 'Hai thùng cách ô đích năm ô: mười nhịp.']
+    });
+    // Màn 5 (bang-chuyen.7): xe đỗ trên ô đích, lối ra là cửa đóng ngay dưới; van bên phải mở cửa (nhắc gói 2). Phun, quay xuống, vào cửa.
+    bangThung('bang-chuyen.7', 'luyen', {
+      ten: 'Mở cửa nhường đường', hamCuaEmCan: ['move', 'tr_right'],
+      san: ['>>>>DN', '####C#'], batDau: { x: 4, y: 0, huong: 1 }, thungThem: [{ x: 0, y: 0 }],
+      noi: [{ nut: { x: 5, y: 0 }, cua: [{ x: 4, y: 1 }], bang: [] }],
+      deBai: 'Xe đỗ trên ô đích, lối ra duy nhất là cánh cửa đóng ngay dưới xe. Van trước mũi xe mở cửa đó. Phun van, quay xuống, đi vào ô cửa rồi chờ thùng tới.',
+      veMaMau: 'Chạy thử: cửa còn đóng nên xe không ra được, thùng không có chỗ vào.',
+      maMau: bai(['tr_right()', 'move()'].concat(CHO(8))), loiGiai: bai(['spray()', 'wait()', 'tr_right()', 'move()'].concat(CHO(8))),
+      loiSai: [
+        { moTa: 'Quên phun: cửa còn đóng, xe húc cửa', baiLam: bai(['tr_right()', 'move()'].concat(CHO(8))), phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
+        { moTa: 'Quay trái lên trên: xe húc tường, vẫn đỗ trên ô đích', baiLam: bai(['spray()', 'wait()', 'tr_left()', 'move()'].concat(CHO(8))), phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
+        { moTa: 'Đi lùi ra băng: xe chắn thùng', baiLam: bai(['spray()', 'wait()', 'back()'].concat(CHO(8))), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['spray() rồi wait() là phun một lần.', 'Mở cửa xong thì tr_right() cho mũi xe hướng xuống cửa.']
+    });
+    // Màn 6 (bang-chuyen.8): hai thùng. Xe đỗ trên ô đích dưới, lối ra đi qua ô đích trên mà thùng trên chỉ cần hai nhịp là vào: phun van trên tắt băng trước,
+    // đi qua, rồi phun van cuối hành lang bật băng lại (open_at của gói 2). Không tắt thì thùng trên chặn đường, xe kẹt trên ô đích dưới.
+    bangThung('bang-chuyen.8', 'luyen', {
+      ten: 'Tắt băng cho xe qua', hamCuaEmCan: ['tr_right', 'open_at'],
+      san: ['#Nv##', '#DD.N', '#^###', '#^###'], batDau: { x: 1, y: 1, huong: 0 }, thungThem: [{ x: 2, y: 0 }, { x: 1, y: 3 }],
+      noi: [{ nut: { x: 1, y: 0 }, cua: [], bang: [{ x: 2, y: 0 }] }, { nut: { x: 4, y: 1 }, cua: [], bang: [{ x: 2, y: 0 }] }],
+      deBai: 'Xe đỗ trên một ô đích, chắn thùng từ dưới lên. Lối ra đi qua ô đích bên cạnh, mà thùng trên băng chỉ còn một ô là vào đó. Phun van trước mũi xe để tắt băng đó, đi qua, rồi phun van cuối hành lang để bật lại băng. Chờ thùng vào.',
+      veMaMau: 'Chạy thử: xe quay chưa xong thì thùng đã vào ô đích bên cạnh và chắn lối ra.',
+      maMau: bai(['tr_right()', 'open_at(2)', 'wait()', 'wait()']), loiGiai: bai(['spray()', 'wait()', 'tr_right()', 'open_at(2)', 'wait()', 'wait()']),
+      loiSai: [
+        { moTa: 'Không tắt băng: thùng chắn lối ra, xe kẹt', baiLam: bai(['tr_right()', 'open_at(2)', 'wait()', 'wait()']), phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
+        { moTa: 'Quên bật lại băng: thùng trên đứng yên', baiLam: bai(['spray()', 'wait()', 'tr_right()', 'forward(2)', 'wait()', 'wait()', 'wait()']), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Bật lại băng rồi thôi chờ: chương trình hết trước khi thùng vào', baiLam: bai(['spray()', 'wait()', 'tr_right()', 'open_at(2)']), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['Van trên tắt băng, van cuối hành lang bật lại cùng băng đó.', 'open_at(2) đi hai ô rồi phun van trước mũi; bật băng xong còn chờ hai nhịp.']
+    });
     // Hàm của em mà bản cũ của một màn mùa 2 dạy (tay kẹp / cảm biến khoảng cách / băng đẩy xe) nay không màn nào dạy nữa (DAY_CU: [mã màn, tên hàm]).
     // Màn mùa ẩn còn gọi chúng (đội cũ, chế lệnh xích cũ…) nhận hàm đó thành HÀM CỦA MÀN (thân như bản cũ), bỏ khỏi hamCuaEmCan: vẫn chạy được
     // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.

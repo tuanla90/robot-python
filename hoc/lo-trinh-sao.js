@@ -490,16 +490,28 @@
     "nhip": 23
   },
   "bang-chuyen.1": {
-    "o": 7,
-    "nhip": 7
+    "o": 2,
+    "nhip": 8
   },
   "bang-chuyen.2": {
-    "o": 5,
+    "o": 6,
+    "nhip": 12
+  },
+  "bang-chuyen.6": {
+    "o": 10,
+    "nhip": 10
+  },
+  "bang-chuyen.5": {
+    "o": 7,
+    "nhip": 10
+  },
+  "bang-chuyen.7": {
+    "o": 12,
     "nhip": 8
   },
   "bang-chuyen.8": {
-    "o": 23,
-    "nhip": 20
+    "o": 17,
+    "nhip": 7
   },
   "che-nhen.8": {
     "o": 14,
