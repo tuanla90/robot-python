@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
-const NEN_VEC = '584615c';                             // 30/10 vỏ Nông trại hoa: đầu sơn thành bộ gieo hạt (so với d3917d2 chỉ lệch huy hiệu may-son, che-may-son và phim mùa 4)
+const NEN_VEC = '817f81d';                             // 31/10 part đúng mùa: nhện gắn cảm biến từ vẽ quay theo hướng (so với 584615c chỉ lệch phim mùa 3 tong-hop-3.1, .2: R1 dáng cua nhện + nam châm + cảm biến từ)
 // trước:                             // 30/10 phun nhẹ: nền VECTOR = d3917d2 (phim gói 2 khung 3, 4 không còn giật; phim gói 4 khung 4 thùng nặng chắn lối; mã trong phim spray thay shoot). Trước đó 9a6d47c (van hơi). So với 4548dda (đổi tên, chưa sửa phim) chỉ lệch sung-hoi.3, sung-hoi.4
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');

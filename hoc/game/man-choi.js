@@ -321,6 +321,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       mau: lm.mau, vatMau: lm.vatMau,                   // lớp màu sàn / màu vật (chương cảm biến màu); null nếu màn không có
       vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem,   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
       roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau,           // máy ném: rổ có sẵn một vật lúc xuất phát
+      thung: lm.thungThem || undefined,                                            // 31/10: thùng nặng đặt sẵn ngoài ký hiệu H (vd nằm trên băng chuyền), man.thungThem
       cuaNhip: lm.cuaNhip || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, danToiDa: m.danToiDa, noi: lm.noi || undefined, demTu: lm.demTu || undefined,   // gói V7a: noi (nút ↔ cửa) cho dây nối vector   // súng bóng: chu kỳ cửa nhịp của sân này, nút bật sẵn (nóng từ đầu), số đạn tối đa (không khai = vô hạn)
       pin: Array.isArray(m.pin) ? m.pin[i] : m.pin,                                // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
       bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo,                    // mục tiêu 'bong-mo': xe mờ (+ vật mờ, ô ◆) của sân này; màn nhiều sân thì mảng song song với san
