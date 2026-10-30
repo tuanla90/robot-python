@@ -193,14 +193,14 @@
     }),
 
     man({
-      so: 6, ten: 'Nhanh để bấm, tụ để đẩy', hang: 'luyen', mucTieu: 'day-thung', hamCuaEmCan: ['squirt', 'turn_left', 'forward', 'move'],
+      so: 6, ten: 'Nhẹ để mở, mạnh để đẩy', hang: 'luyen', mucTieu: 'day-thung', hamCuaEmCan: ['squirt', 'turn_left', 'forward', 'move'],
       deBai: 'Một thùng đã nằm trên ô đích ngay sau lưng xe, thùng kia nằm dưới cạnh ô đích của nó. Mở cửa mà không làm xô thùng đã xếp, rồi dùng cú giật đẩy thùng kia vào đích. Dùng squirt(p) của em.',
       veMaMau: 'Tự viết chương trình. squirt(p) đã có trong kho.',
       san: SAN_6, batDau: { x: 3, y: 1, huong: 3 },
       maMau: { chinh: [] },
       sao: { o: 14, nhip: 6 },
       loiGiai: { chinh: L_6.slice() },
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# nhanh để bấm, tụ để đẩy'].concat(L_6) } },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# nhẹ để mở, mạnh để đẩy'].concat(L_6) } },
       loiSai: [
         { moTa: 'Phun mạnh để mở cửa: thùng đã xếp bị hất vào góc', baiLam: { chinh: ['squirt("high")', 'turn_left()', 'forward(2)', 'turn_left()', 'squirt("high")'] }, phaiCoMa: ['thung-ket'] },
         { moTa: 'Phun nhẹ để đẩy: không có cú giật nên thùng nằm yên', baiLam: { chinh: ['squirt("low")', 'turn_left()', 'forward(2)', 'turn_left()', 'squirt("low")'] }, phaiCoMa: ['chua-day-thung'] }
