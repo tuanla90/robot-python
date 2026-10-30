@@ -163,6 +163,16 @@ Ghi chú chia:
     (hàng dưới phải sang trái) · copy_down(a, n) (read_below + paint_list) · sửa line_dock (dock trong vòng lặp) · trùm tự viết bằng retrace, dock, stripe.
   - Đường cong trong gói không nhảy. Chỗ nhảy ở ranh gói 10 (che-may-son.7 sau che-son-tren-cao.9) chờ gói 10 dựng.
   - Không có màn nam châm: lõi N3 cấm máy sơn đi chung nam châm (một bụng một món), ý "chở trước hay sơn trước" ở mục 3 bỏ (mục 7 câu 17).
+- **30/10 Gói 10 Drone kẻ vạch R1 xong (18 màn mới + 2 màn xe cũ)**: man-trum-mua-4.js. Mỗi màn ôn ít nhất hai gói; gói 8 (đội) được nhắc ba lần ở gói 10
+  (gói 9 chưa nhắc lần nào), gói 3 (xe camera) ba lần.
+  - tong-hop-4 (Đủ bộ): 1 ghé trạm rồi phân loại (fly_dock + lift_by_color) · 2 xe máy sơn chấm theo đường xanh (green_step) · 3 giao hộp theo đơn (seek_here + deliver_up)
+    · 4 xe kẻ tới vạch đỏ (go_to + bút liền) · 5 đội drone nam châm chuyền hộp qua rào cho xe kẹp sort_by_color · 6 chép mật lệnh hàng trên (read_row + paint_list)
+    · 7 đội drone dọn lối cho xe máy sơn · 8 bay theo danh sách hướng · 9 sửa hàm của màn mark_step (arrow_step) · 10 trùm chương (trace_marks, dock, stripe, danh sách màu).
+  - trum-mua-4 (Phố mới kẻ vạch): chế charge_if(k) · mark_dash(n) · stairs(c, n) · sửa pond_frame · đội: lift_aside() · bar_len(c, a) (count_here) · street(c, n) (stripe)
+    · che-may-son.7 Lưới chấm · che-may-son.8 Khung lồng khung (màn xe cũ, mục 9: giữ, đặt sau street làm cầu nối) · trum-mua-4.10 TRÙM CUỐI MÙA "Drone kẻ vạch R1 xuất xưởng"
+    (trace_marks, charge_if, mark_dash, danh sách màu; pin 10, hai trạm).
+  - Màn đội chạy được mục tiêu to-hinh (xe sơn, drone dọn đường). Đường cong gói 9, 10 không nhảy (cong4.js).
+  - Chưa có: huy hiệu và phim gói 10 (phim mùa 4 là bước sau, mục 4 P2).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -184,7 +194,9 @@ Ghi chú chia:
     Bộ lắp ráp (màn lắp robot) chưa có camera-4 trong danh mục mua (giá, bảng kế hoạch): thêm khi dựng màn lắp ráp mùa 4.
 14. ~~Chặn gói 3, 5, 7~~: user 30/10 chọn A, đã làm (mục 6).
 15. Gói 8 Đội chia hàng còn nhảy đường cong ở nhiều chỗ (màn đội dài nhịp); cần thiết kế lại thứ tự / thêm màn cầu nối. Chưa làm.
-16. ~~Gói 9~~ xong 30/10 (mục 6). Gói 10 Drone kẻ vạch R1 chưa dựng.
+16. ~~Gói 9, gói 10~~ xong 30/10 (mục 6). Mùa 4 đủ 200 màn; còn phim mùa 4, huy hiệu, soát 200 / 200 trên trình duyệt, mở mùa 4.
 17. Gói 9 không có màn nam châm (máy sơn và nam châm không gắn chung). Muốn có ý "chở trước hay sơn trước" thì cần màn hai drone (một sơn, một chở) kiểu gói đội: để gói 10?
+19. Mục 9 (che-may-son.7 / .8): tôi giữ, đặt ở trum-mua-4 vị trí 8, 9 (sau màn cầu nối street 25 nhịp). Muốn cắt thì thay bằng hai màn drone mới.
+20. Trùm cuối mùa chưa có huy hiệu (huyHieu cần hình vector + phim như mùa 2). Làm cùng phim mùa 4.
 18. Ranh gói 5 / 6: may-son.3 (đầu gói 6, 18 ô) sau che-drone.16 (10 ô) nhảy số ô (như mục 8, nay màn đứng trước là che-drone.16). Chưa sửa.
 

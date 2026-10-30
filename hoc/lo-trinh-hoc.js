@@ -1095,7 +1095,7 @@
     { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach',
       chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
     { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach',
-      chuong: [['tong-hop-4', day('che-may-son', [7, 8])], ['trum-mua-4', []]] }
+      chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7]).concat(day('che-may-son', [7, 8]), day('trum-mua-4', [10]))]] }
   ];
   // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống), cùng che-drone.3 / .6 (nhảy đường cong gói 5): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
   // flycam.6, doi-drone.6, .10, che-doi-drone.10 còn dùng recharge() mà drone.5 tạo. Dựng lại khi tới mùa có đội drone.
