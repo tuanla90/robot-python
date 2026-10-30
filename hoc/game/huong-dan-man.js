@@ -468,7 +468,7 @@
   H['che-sung-hoi.1'] = [
     { khongAn: true, dich: '#field', chu: 'Xe mờ là chỗ xe phải tới. Cửa chỉ mở khi van bị phun trúng.', xong: 'bam', han: 7000, rong: 160, huong: 'duoi' },
     buocTaoHam('puff', 'Chế hàm puff() trong Xưởng: bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:spray'], 'Chạm spray() rồi wait(): phun một phát, chờ hết nhịp.', CHU_THE_SUNG,
+    khoiTheo(['khoi:spray'], 'Chạm spray() rồi wait(): phun một lần, chờ hết nhịp.', CHU_THE_SUNG,
       { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { return soDongThan('puff') >= 2; } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi hàm của em. Bấm Chạy.'));
   H['che-sung-hoi.2'] = [

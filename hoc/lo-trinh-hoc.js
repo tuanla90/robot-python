@@ -1422,7 +1422,7 @@
     // Gói 9 chương be-sung: cái mới là BỆ SÚNG XÍCH (xích + súng hơi: phun mạnh không giật). be-sung.1 trình diễn (phun nút rồi rẽ phải, không cần move() bù giật);
     // be-sung.2 ép: mã mẫu của Sola có back() bù giật thừa, người chơi bỏ dòng đó (H). che-be-sung.1 chế spray_left() (H).
     trinhDien('be-sung.1', null,
-      'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên phun mạnh không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe phun van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
+      'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên phun mạnh không giật, không như xe hai bánh lùi một ô sau mỗi lần phun mạnh. Bấm Chạy xem xe phun van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau spray("high") và wait(), xe vẫn đứng nguyên ô.',
       ['Xe hai bánh phun mạnh thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
   })();
@@ -1456,13 +1456,13 @@
       'xich': 'Quay hai nhịp', 'bien-xich': 'Đếm bước để về',
       'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy em',
       'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
-      'bang-chuyen': 'Lên băng chuyền', 'che-sung-hoi': 'Chế lệnh: mở van',
-      'day-thung': 'Đẩy thùng nặng', 'che-day-thung': 'Chế lệnh: đẩy n ô',
+      'bang-chuyen': 'Trôi theo băng', 'che-sung-hoi': 'Chế lệnh: mở van',
+      'day-thung': 'Đưa thùng vào đích', 'che-day-thung': 'Chế lệnh: đẩy n ô',
       'luc-ban': 'Phun mạnh, phun nhẹ', 'che-luc-ban': 'Chế lệnh: chọn lực',
-      'do-nhiet': 'Tìm van nóng', 'che-do-nhiet': 'Chế lệnh: mở van',
+      'do-nhiet': 'Tìm van nóng', 'che-do-nhiet': 'Chế lệnh: mở van nguội',
       'doi-mua-2': 'Nhường đường', 'che-doi-mua-2': 'Chế lệnh: chờ bạn',
       'be-sung': 'Phun không lùi', 'che-be-sung': 'Chế lệnh: phun ba hướng',
-      'tong-hop-2': 'Đủ bộ', 'trum-mua-2': 'Nhà máy chạy lại'
+      'tong-hop-2': 'Thử mọi món', 'trum-mua-2': 'Nhà máy chạy lại'
     };
     Object.keys(TEN_CHUONG_2).forEach(function (c) { TT.ten[c] = TEN_CHUONG_2[c]; });
     // Mùa 3: gói 3 đổi tên ngay trong MUA_3 ("Cảm biến từ", user 29/10); các tên khác của mùa 3 đặt theo quy tắc khi làm P2.

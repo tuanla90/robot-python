@@ -174,7 +174,7 @@ console.log('\n== 5. Chương che-sung-hoi (30/10 phun nhẹ): dữ liệu và l
 const BANG = [];
 {
   const vt = ThuTu.thuTu.indexOf('che-sung-hoi') + 1;
-  const TEN = ['Phun một phát', 'Phun ra sau', 'Van trước van sau', 'Van bên trái', 'Hai ngách một hàng', 'Van bên phải', 'Vòi phun lắp ngược', 'Đầu phun sau hỏng', 'Đường về', 'Ba van ba cửa'];
+  const TEN = ['Phun một lần', 'Phun ra sau', 'Van trước van sau', 'Van bên trái', 'Hai ngách một hàng', 'Van bên phải', 'Vòi phun lắp ngược', 'Đầu phun sau hỏng', 'Đường về', 'Ba van ba cửa'];
   kiem('đúng 10 màn, số 1..10, mã che-sung-hoi.1…, id theo vị trí trong thuTu (ngay sau sung-hoi), tên "Chế lệnh vòi phun"',
     che.length === 10 && che.every((m, i) => m.so === i + 1 && m.id === vt + '.' + (i + 1) && m.ma === 'che-sung-hoi.' + (i + 1)) && ThuTu.thuTu.indexOf('che-sung-hoi') === ThuTu.thuTu.indexOf('sung-hoi') + 1 && ThuTu.ten['che-sung-hoi'] === 'Chế lệnh vòi phun' && ThuTu.laDot2('che-sung-hoi'));
   kiem('tên các màn: ' + TEN.join(', ') + '; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-sung-hoi "Huy hiệu Chế lệnh vòi phun"',
