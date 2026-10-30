@@ -212,7 +212,53 @@
   ds[5].taoHam = ['follow_right'];
   ds[5].chinhCoDinh = true;
   ds[5].nhipTheo = 'tong';
-  [6, 7, 9].forEach(function (i) { ds[i].hamCuaEmCan.push('follow_right'); });
+  [6, 7, 9].forEach(function (i) { ds[i].hamCuaEmCan.push('follow_right'); });      // trùm .10 (SM1-C) không gọi follow_right() trong lời giải, nhưng mã mẫu gọi
+  // SM1-C (30/10, nghiệm thu độc lập mùa 1, đề xuất 5): chương me-cung không dạy lại right_clear / elif (đã học ở chương cam-bien-ben) và không lặp một
+  // lời giải ở cuối. me-cung.1, .2, .3 cất (CAT). Ba màn mới: me-cung.11 "Xe tự bám tường" (TRÌNH DIỄN quy tắc bám tường phải: chiChay, 16 nhịp, đầu chương
+  // không tụt sâu sau trùm 13.10 15 nhịp); me-cung.12 "Bám tường trái" (quy tắc gương; sân có đảo nên bám tường phải đi vòng mãi); me-cung.13 "Dừng ở ngõ cụt"
+  // (bỏ else: ba phía đều chặn thì đứng yên; xe mờ ở ngõ cụt cuối). Trùm me-cung.10 viết lại: ba mê cung, bám tường TRÁI và dừng ở ngõ cụt (gộp điều mới
+  // của .12 và .13), mỗi mê cung có một ngõ cụt mồi phía tay phải; nhịp theo mê cung dài nhất (22 nhịp), không cộng ba sân. Máy kiểm: hoc/kiem-goi-6-7-them.mjs.
+  (function () {
+    var FL = ['if left_clear():', '    turn_left()', '    move()', 'elif front_clear():', '    move()', 'else:', '    turn_right()'];
+    var FRS = FOLLOW.slice(0, 5).concat(['elif left_clear():', '    turn_left()']);
+    var FLS = FL.slice(0, 5).concat(['elif right_clear():', '    turn_right()']);
+    var td = maze(11, 'Xe tự bám tường', 'Quy tắc bám tường phải: mỗi bước, bên phải trống thì rẽ phải và tiến; không thì trước mặt trống thì tiến; hai phía đều chặn thì quay trái. Lặp quy tắc đó, xe tự tìm đường tới cờ mà không cần biết trước mê cung. Bấm Chạy xem xe đi.',
+      ['#######', '#...#F#', '#.#.#.#', '#.#...#', '#.#####', '#.#####', '#######'], { x: 1, y: 5, huong: 0 },
+      bai(lap(30, FOLLOW)), bai(lap(30, FOLLOW)), ['Chỗ nào bên phải trống, xe rẽ vào ngay.', 'Góc có tường bên phải và trước mặt: xe quay trái, lượt sau mới tiến.']);
+    Object.assign(td, { chiChay: true, chinhCoDinh: true, sao: { o: 15, nhip: 16 },
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy, đếm xem xe rẽ phải mấy lần, quay trái mấy lần.' });
+    var trai = maze(12, 'Bám tường trái', 'Giữa sân có một khối tường. Bám tường phải thì xe đi vòng quanh khối đó mãi, không tới cờ. Đổi sang quy tắc bám tường trái: hỏi bên trái trước, hai phía đều chặn thì quay phải.',
+      ['#######', '#.....#', '#.###.#', '#.###.#', '#.....#', '#.#####', '#F#####', '#######'], { x: 1, y: 2, huong: 0 },
+      bai(lap(40, FL)), bai(lap(40, FOLLOW)), ['Chạy thử mẫu: xe chạy vòng quanh khối tường giữa sân.', 'Đổi mọi chỗ phải thành trái, trái thành phải.']);
+    Object.assign(trai, { sao: { o: 15, nhip: 18 }, veMaMau: 'Chương trình mẫu là quy tắc bám tường phải. Chạy thử rồi sửa.',
+      loiSai: [{ moTa: 'Giữ quy tắc bám tường phải: xe đi vòng quanh khối tường', baiLam: bai(lap(40, FOLLOW)), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đổi bên trái nhưng quên đổi nhánh else: xe quay trái ở góc', baiLam: bai(lap(40, FL.slice(0, 6).concat(['    turn_left()']))), phaiCoMa: ['chua-toi-co'] }] });
+    var dung = maze(13, 'Dừng ở ngõ cụt', 'Không có cờ: xe phải dừng đúng chỗ xe mờ, ở ngõ cụt cuối đường. Quy tắc bám tường cũ gặp ngõ cụt thì quay đầu đi ra. Sửa nhánh cuối: chỉ quay trái khi bên trái trống; ba phía đều là tường thì không làm gì.',
+      ['#######', '#.....#', '#.###.#', '##..#.#', '###.#.#', '###...#', '#######'], { x: 2, y: 3, huong: 1 },
+      bai(lap(40, FRS)), bai(lap(40, FOLLOW)), ['Chạy thử mẫu: xe tới ngõ cụt rồi quay đầu đi mất.', 'Ba phía đều chặn thì không nhánh nào được chạy: nhánh cuối cũng phải hỏi cảm biến.']);
+    Object.assign(dung, { mucTieu: 'bong-mo', bongMo: { x: 1, y: 2, huong: 2 }, sao: { o: 15, nhip: 19 }, veMaMau: 'Chương trình mẫu là quy tắc bám tường phải. Chạy thử, xem xe làm gì ở ngõ cụt.',
+      loiSai: [{ moTa: 'Giữ nhánh else: xe quay đầu ra khỏi ngõ cụt', baiLam: bai(lap(40, FOLLOW)), phaiCoMa: ['lech-bong-mo'] }] });
+    var trum = ds[9];
+    Object.assign(trum, {
+      ten: 'Trùm: ba ngõ cụt', mucTieu: 'bong-mo',
+      deBai: 'Ba mê cung, mỗi mê cung có hai ngõ cụt. Xe phải dừng ở ngõ cụt có xe mờ, đúng hướng xe mờ; ngõ cụt còn lại nằm phía tay phải lối đi, là bẫy. Một chương trình chung cho cả ba mê cung: chọn quy tắc bám tường nào, và nhớ dừng khi ba phía đều là tường.',
+      veMaMau: 'Chương trình mẫu lặp follow_right(): chạy thử trên từng mê cung để xem nó sai ở đâu.',
+      san: [['########', '#......#', '#.####.#', '#.#..#.#', '#.#.##.#', '#...#..#', '###.####', '########'],
+        ['#########', '####.####', '##.....##', '######.##', '##...#.##', '##.#...##', '##.######', '#########'],
+        ['########', '#.....##', '#.######', '#.#...##', '#.#.####', '#.#....#', '#...##.#', '########']],
+      batDau: [{ x: 3, y: 6, huong: 0 }, { x: 4, y: 1, huong: 2 }, { x: 6, y: 6, huong: 0 }],
+      bongMo: [{ x: 5, y: 5, huong: 3 }, { x: 2, y: 6, huong: 2 }, { x: 5, y: 1, huong: 1 }],
+      maMau: bai(lap(60, ['follow_right()'])), loiGiai: bai(lap(60, FLS)), sao: { o: 15, nhip: 22 },
+      loiSai: [
+        { moTa: 'Bám tường phải và dừng ở ngõ cụt: xe dừng ở ngõ cụt mồi', baiLam: bai(lap(60, FRS)), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Bám tường trái nhưng không dừng: tới ngõ cụt rồi quay đầu đi mất', baiLam: bai(lap(60, FL)), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Chỉ lặp follow_right(): không dừng ở ngõ cụt nào', baiLam: bai(lap(60, ['follow_right()'])), phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['Ở mỗi mê cung, ngõ cụt mồi nằm phía tay phải lối đi.', 'Ghép hai điều vừa học: bám tường trái, và nhánh cuối chỉ quay khi bên đó trống.'],
+      phienBanNoiDung: 3 });
+    delete trum.nhipTheo;
+    ds.push(td, trai, dung);
+  })();
   M.them(ds);
   // Gói Cảm biến hai bên: left_clear() mới, chọn bên, rời cửa rồi mới hỏi, ngõ cụt; quy tắc bám tường để dành cho gói Mê cung.
   function ben(so, ten, deBai, veMaMau, san, bd, lg, mau, goiY) {
@@ -518,7 +564,7 @@
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
       // HD2 việc 4 (gói 7): cam-bien-ben.1 (trình diễn left_clear, chiChay) lên đầu chương, rồi che-cam-bien.4 chế to_gap() với right_clear (ép, ba sân).
-      chuong: [['cam-bien-ben', ['cam-bien-ben.1', 'che-cam-bien.4'].concat(day('cam-bien-ben', [2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', MUOI)]] },
+      chuong: [['cam-bien-ben', ['cam-bien-ben.1', 'che-cam-bien.4'].concat(day('cam-bien-ben', [2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', [11, 4, 5, 6, 7, 8, 9, 12, 13, 10])]] },     // SM1-C: me-cung.1–.3 cất, .11 trình diễn đầu chương, .12 / .13 trước trùm .10 viết lại
     { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 210,
       chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
     { ma: 'combo', ten: 'Combo', loai: 'thu-thach', sao: 240, hinh: 'combo',
@@ -546,7 +592,10 @@
     // SM1-B (30/10, đề xuất 6): hai-banh.6 "Chữ L ngược" trùng ý hai-banh.5 "Chữ L" (đi, rẽ, đi); chỗ trống là hai-banh.11 "Quay đầu, đi hai ô"
     'hai-banh.6',
     // SM1-B (đề xuất 4): vong-lap.5 "Bậc thang" trùng ý "lặp một cụm" với vong-lap.4 (8 → 19 nhịp); chỗ trống là vong-lap.11 "Lặp trong lặp" (trình diễn for lồng)
-    'vong-lap.5'];
+    'vong-lap.5',
+    // SM1-C (30/10, đề xuất 5): me-cung.1 "Bên phải của xe", .2 "Rẽ rồi đi", .3 "Không rẽ thì tiến" dạy lại right_clear / elif (đã học ở chương cam-bien-ben);
+    // chỗ trống là me-cung.11 (trình diễn bám tường), .12 (bám tường trái), .13 (dừng ở ngõ cụt)
+    'me-cung.1', 'me-cung.2', 'me-cung.3'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
