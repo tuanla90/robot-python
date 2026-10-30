@@ -7,6 +7,10 @@
      ghé ◆ ở cuối ngõ rồi lùi ra, trùm "ra khỏi ngõ cụt" (ngã rẽ luôn cách cuối ngõ hai ô, lúc bên phải lúc bên trái).
    - 4 màn cho chương `che-banh-lui` "Hàm có lùi" (mã che-banh-lui.1 … .4): kéo thùng khỏi ngõ cụt (viết thân hàm của màn), đặt thùng lên nút đè
      rồi lùi qua cửa, "đi tới tường rồi lùi một ô" (hàm của màn gọi ở hai khúc dài ngắn khác nhau), sửa hàm dọn thùng thiếu back().
+   - SM1-A (30/10, nghiệm thu độc lập, đề xuất 2): che-banh-lui.5 "Trùm: ba bãi đỗ" thay che-xe.10 làm trùm chương che-banh-lui (huy hiệu che-xe):
+     ba bãi đỗ nối thành vòng xoắn, mỗi bãi một hành lang dài ngắn khác nhau, chỗ đỗ là ngách bên phải ngay trước ô cuối; thân hàm dock() của màn
+     = go_wall() (while), back() (lùi), park() (hàm em chế ở che-xe.6); chương trình chính khóa gọi dock() ba lần. Đếm cứng đúng một bãi thì hụt bãi
+     khác; đếm dư (húc tường) vẫn tới nhưng vượt ngưỡng nhịp (nhịp theo bãi dài nhất). che-xe.10 lùi về hàng luyện (sau che-lap.7, đường cong dòng 8 → 9).
    Mã là mã MỚI (không trùng màn nào trong ngân hàng, kể cả màn đã cất); vị trí hiển thị (so, hang) do lo-trinh-hoc.js đặt bằng dungChuong.
 
    Các màn mới KHÔNG tạo hàm của em mới (không taoHam, không mục Sổ lệnh mới): người chơi viết / sửa thân HÀM CỦA MÀN (maMau.hamCuaMan)
@@ -44,13 +48,31 @@
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = { chinh: 10, moiHam: 10, chanBien: true };
     if (Array.isArray(m.san[0])) {
-      m.nhipTheo = 'tong';
+      if (!m.nhipTheo) m.nhipTheo = 'tong';                 // SM1-A: màn khai sẵn nhipTheo ('max' = theo sân dài nhất, mặc định của cham.js) thì giữ
       if (!Array.isArray(m.batDau)) m.batDau = m.san.map(function () { return Object.assign({}, m.batDau); });
     }
     return ManHoc.chuanHoa(m);
   }
 
   var LG_TRUM = ['go_wall()'].concat(FOR(2, ['back()']), ['turn_right()', 'if not front_clear():', '    u_turn()', 'go_wall()']);
+  // SM1-A: bãi đỗ xoắn (a, b, c) = số ô đi của ba hành lang: sang phải, lên, sang trái. Chỗ đỗ là ngách bên phải xe, ngay trước ô cuối mỗi hành lang.
+  // Xe xuất phát (1, y0) nhìn sang phải; sau dock() xe nằm trong ngách nhìn ra hành lang, move() đưa xe về hành lang, hành lang kế bắt đầu ngay đó.
+  function baiDo(a, b, c) {
+    var Wd = a + 3, Hd = b + 4, y0 = b + 1, g = [];
+    for (var y = 0; y < Hd; y++) { g.push([]); for (var x = 0; x < Wd; x++) g[y].push('#'); }
+    function san(x, y) { g[y][x] = '.'; }
+    for (var x1 = 1; x1 <= a + 1; x1++) san(x1, y0);           // hành lang 1 (a ô đi, ô cuối a + 1)
+    san(a, y0 + 1);                                             // ngách 1: bên phải xe (phía dưới) trước ô cuối
+    for (var y2 = y0 - b; y2 <= y0 - 1; y2++) san(a, y2);       // hành lang 2 đi lên từ (a, y0)
+    san(a + 1, y0 - b + 1);                                     // ngách 2: bên phải xe đang nhìn lên
+    for (var x3 = a - c; x3 <= a - 1; x3++) san(x3, y0 - b + 1); // hành lang 3 sang trái
+    san(a - c + 1, y0 - b);                                     // ngách 3: bên phải xe đang nhìn sang trái (phía trên)
+    return { san: g.map(function (r) { return r.join(''); }), batDau: { x: 1, y: y0, huong: 1 }, bongMo: { x: a - c + 1, y: y0 - b, huong: 2 } };
+  }
+  var BAI_DO = [baiDo(4, 3, 3), baiDo(5, 4, 3), baiDo(4, 6, 3)];      // 21 / 23 / 24 nhịp: ba bãi khác nhau, nhịp màn theo bãi dài nhất
+  var C_DOCK = ['dock()', 'move()', 'dock()', 'move()', 'dock()'];
+  var T_DOCK = ['go_wall()', 'back()', 'park()'];
+  function baiDock(than) { return { chinh: C_DOCK.slice(), hamCuaMan: [H('dock', than)] }; }
   // HD3 (29/10, user: "show don't tell", phương án 3a-A của HD2): màn TRÌNH DIỄN lệnh lùi, đứng ĐẦU chương banh-lui (trước che-xe.4 chế back()).
   // Chương trình khoá (chiChay), chỉ lệnh gốc: hai bánh cùng quay lùi trong một nhịp, hai lần. Không hàm của em, không cờ damLaThua.
   var LUI_HAI_O = ['left_back()', 'right_back()', 'wait()', 'left_back()', 'right_back()', 'wait()'];
@@ -238,6 +260,30 @@
         { moTa: 'Lùi trước rồi mới nhặt: tay kẹp vào chỗ trống', baiLam: { chinh: FOR(2, ['tidy()', 'turn_left()']), hamCuaMan: [H('tidy', ['go_wall()', 'back()', 'pick()', 'turn_right()', 'drop()'])] }, phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Ngách nằm thấp hơn chỗ xe nhặt thùng một ô.', 'Thêm back() ngay sau pick().']
+    }),
+
+    /* ================================================================ SM1-A: trùm mới của chương che-banh-lui (thay che-xe.10) */
+    man({
+      chuong: 'che-banh-lui', so: 5, ten: 'Trùm: ba bãi đỗ', chinhCoDinh: true, mucTieu: 'bong-mo', nhipTheoLoiGiai: true,
+      nhipTheo: 'max',                                      // nhịp theo bãi dài nhất (không cộng ba bãi): trùm ≤ 2 lần màn 9, đếm dư bước thì vượt ngưỡng
+      huyHieu: { ma: 'che-xe', ten: 'Huy hiệu Chế lệnh lùi' },
+      hamCuaEmCan: ['go_wall', 'back', 'park', 'move'],
+      deBai: 'Ba bãi đỗ nối nhau thành vòng xoắn, mỗi bãi một hành lang dài ngắn khác nhau; chỗ đỗ là ngách bên phải, ngay trước ô cuối hành lang. Viết thân hàm dock() của màn: đi tới tường, lùi một ô rồi đỗ lùi vào ngách. Chương trình chính gọi dock() ba lần, giữa hai lần xe tiến một ô ra khỏi ngách. Một hàm phải đúng ở cả ba kho.',
+      veMaMau: 'Chương trình chính bị khóa. Thân dock() mới đi tới tường: chạy thử, xem xe đứng ở đâu khi hàm xong. Đừng đếm bước, mỗi hành lang một khác.',
+      san: BAI_DO.map(function (b) { return b.san; }),
+      batDau: BAI_DO.map(function (b) { return b.batDau; }),
+      bongMo: BAI_DO.map(function (b) { return b.bongMo; }),
+      maMau: baiDock(['go_wall()']),
+      sao: { o: 20, nhip: 24 },
+      loiGiai: baiDock(T_DOCK),
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: baiDock(['go_wall()', '# lùi về trước ngách', 'back()', 'park()']) },
+      loiSai: [
+        { moTa: 'Chỉ đi tới tường: xe đứng ở ô cuối, không vào ngách', baiLam: baiDock(['go_wall()']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên lùi: đỗ ở ô cuối, bên phải là tường', baiLam: baiDock(['go_wall()', 'park()']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Lùi hai ô: lệch một ô so với ngách', baiLam: baiDock(['go_wall()', 'back()', 'back()', 'park()']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm cứng bốn bước theo bãi đầu: bãi dài hơn thì chưa tới cuối', baiLam: baiDock(FOR(4, ['move()']).concat(['back()', 'park()'])), phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['Ngách luôn nằm ngay trước ô cuối hành lang: tới tường rồi lùi một ô là đứng đúng chỗ.', 'park() em chế ở màn Đỗ lùi: quay trái rồi lùi vào ngách bên phải.']
     })
   ];
 

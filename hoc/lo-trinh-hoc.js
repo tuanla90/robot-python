@@ -301,7 +301,10 @@
   // che-cam-bien: 3 màn mới (.11–.13) làm mượt chỗ nhảy từ 1–2 nhịp lên 17 nhịp của che-cam-bien.3, rồi .14, .15 và trùm .16.
   // 27/10: gói 5 đủ 20 màn (banh-lui.1–4, che-banh-lui.1–4 của man-banh-lui-them.js) nên ngưỡng gói 6–9 tính lại (+15 ★): 150, 180, 210, 225.
   // banh-lui: màn mới chen giữa màn cũ (thứ tự cũ giữ nguyên) để dòng / nhịp / cỡ sân không nhảy vọt; trùm mới banh-lui.4 (huy hiệu banh-lui).
-  // che-banh-lui: che-banh-lui.1 đệm giữa che-tay.7 (8 nhịp) và che-tay.9 (14 nhịp); .2–.4 là biến thể trước trùm che-xe.10.
+  // che-banh-lui: che-banh-lui.1 đệm giữa che-tay.7 (8 nhịp) và che-tay.9 (14 nhịp); .2–.4 là biến thể trước trùm.
+  // SM1-A (30/10, nghiệm thu độc lập, đề xuất 2 + 3): trùm mới che-banh-lui.5 "Trùm: ba bãi đỗ" (lùi + while qua go_wall + park em chế, ba bãi dài ngắn
+  // khác nhau, huy hiệu che-xe); che-xe.10 "Bãi đỗ xe" (12 nhịp, dễ hơn màn 9, không for / while / cảm biến) về hàng luyện sau che-lap.7 (dòng 8 → 9);
+  // che-lap.9 (lời giải một dòng) cất. Ba màn đường về / ba màn kẹt số chưa gộp (xem hoc/ban-giao/bao-cao-SM1A.md).
   // 27/10: gói 8 đủ 20 màn (che-hai-robot.1–10 của man-doi-mua-1.js) nên ngưỡng gói 10 tính lại (+15 ★): 240.
   function day(chuong, so) { return so.map(function (n) { return chuong + '.' + n; }); }
   var MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -453,7 +456,7 @@
       // HD3 (29/10): banh-lui.5 (trình diễn lệnh lùi, chiChay) đứng đầu chương, trước che-xe.4 chế back(); che-xe.8 (sửa nhịp hai bánh, ý của gói 1) cất;
       // che-xe.9 (sân 21 ô) lên trước banh-lui.3 (10 ô) để cỡ sân không nhảy vọt (thứ tự màn cũ giữ nguyên: che-xe.7 rồi che-xe.9).
       chuong: [['banh-lui', ['banh-lui.5'].concat(day('che-xe', [4, 5, 6]), ['banh-lui.1', 'banh-lui.2', 'che-xe.7', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'])],
-        ['che-banh-lui', ['che-tay.5', 'che-tay.7', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-lap.9', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-xe.10']]] },
+        ['che-banh-lui', ['che-tay.5', 'che-tay.7', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-xe.10', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5']]] },
     { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 150,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
@@ -478,7 +481,9 @@
     // HD3 (29/10): che-xe.8 "Hai bánh cùng nhịp" (sửa lệnh bánh ở hai nhịp: ý của gói 1, không dùng lệnh lùi) nhường chỗ cho màn trình diễn banh-lui.5
     'che-xe.8',
     // SM1-A (30/10): bốn màn không tạo hàm của chương kho-hang cũ nhường chỗ cho màn nút đè; che-tay.10 "Kho đồ" là trùm cũ (huy hiệu che-tay sang kho-hang.4)
-    'che-xe.3', 'che-tay.3', 'che-tay.8', 'che-tay.10'];
+    'che-xe.3', 'che-tay.3', 'che-tay.8', 'che-tay.10',
+    // SM1-A: che-lap.9 "Số lùi đường dài" (lời giải một dòng, trùng ý kẹt số với che-xe.9 / che-tay.9) cất
+    'che-lap.9'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
@@ -629,6 +634,8 @@
   // cam-bien-ben.10 (trùm cũ của Cảm biến hai bên) đứng thứ 9 Tổng hợp, không còn là trùm: huy hiệu cam-bien-ben về trùm mới của chương đó, cam-bien-ben.9.
   get('cam-bien-ben.9').huyHieu = copy(get('cam-bien-ben.10').huyHieu);
   delete get('cam-bien-ben.10').huyHieu;
+  // SM1-A (30/10): che-xe.10 "Bãi đỗ xe" không còn là trùm chương che-banh-lui (về hàng luyện): huy hiệu che-xe sang trùm mới che-banh-lui.5 (khai ở ngân hàng).
+  delete get('che-xe.10').huyHieu;
   // Kiểu bài (máy kiểm gói 9 + 10, kiem-trum-mua-1.mjs: không hai màn liền nhau cùng kiểu) cho các màn có sẵn của chương Tổng hợp.
   var KIEU_TONG_HOP = { 'robot-hoan-thien.1': 'giao-hang', 'robot-hoan-thien.2': 'do-nhip', 'robot-hoan-thien.3': 'do-duong', 'robot-hoan-thien.4': 'giao-hang',
     'robot-hoan-thien.5': 'do-duong', 'robot-hoan-thien.6': 'do-nhip', 'robot-hoan-thien.7': 'giao-hang', 'robot-hoan-thien.8': 'do-nhip', 'cam-bien-ben.10': 'do-duong' };
@@ -676,7 +683,7 @@
   var DAM_LA_THUA = ['xuong-ham.1', 'xuong-ham.2', 'xuong-ham.3', 'xuong-ham.4', 'xuong-ham.5', 'xuong-ham.7', 'xuong-ham.9', 'xuong-ham.10',
     'tay-gap.5', 'tay-gap.6', 'tay-gap.10', 'vong-lap.2', 'vong-lap.3', 'vong-lap.4', 'vong-lap.6', 'che-lap.5', 'vong-lap.10',
     'khoang-cach.12', 'khoang-cach.13', 'khoang-cach.5', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.7', 'che-cam-bien.13', 'che-cam-bien.15',
-    'che-xe.1', 'che-xe.2', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6', 'kho-hang.1', 'che-xe.4', 'che-xe.6', 'che-tay.5', 'che-lap.7', 'che-lap.9',
+    'che-xe.1', 'che-xe.2', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6', 'kho-hang.1', 'che-xe.4', 'che-xe.6', 'che-tay.5', 'che-lap.7',
     'tay-xoay.6', 'tay-xoay.10', 'che-tay-xoay.1', 'che-tay-xoay.2', 'che-tay-xoay.4', 'che-tay-xoay.5', 'che-tay-xoay.6',
     'che-cam-bien.4', 'cam-bien-ben.5', 'cam-bien-ben.7', 'me-cung.6', 'me-cung.9', 'combo.3', 'combo.7', 'combo.8', 'che-combo.3', 'che-combo.7', 'che-cam-bien.10', 'che-combo.9',
     'robot-hoan-thien.11', 'trum-mua-1.3', 'trum-mua-1.6', 'trum-mua-1.9', 'trum-mua-1.10'];
