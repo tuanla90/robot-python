@@ -57,7 +57,11 @@ const loTrinhRieng = (() => {
     const LT = require(path.join(day, 'lo-trinh-hoc.js'));
     const tenChuong = require(path.join(day, 'thu-tu-chuong.js')).ten;
     const chuongMua2 = LT.mua2.flatMap((g) => g.chuong.map((c) => c[0]));
-    return { tenChuong, manMua2Moi: LT.danhSach.filter((m) => chuongMua2.includes(m.chuong) && !ManHoc.timMa(m.ma)) };
+    // SM1-A (30/10): màn mới chỉ có ở lộ trình của MÙA 1 có taoHam (kho-hang.1 tạo set_box, man-kho-hang-them.js) cũng phải có mục Sổ lệnh.
+    const TTlt = require(path.join(day, 'thu-tu-chuong.js'));
+    const chuongMua1 = TTlt.goi.filter((g) => g.mua === 'mua-1').flatMap((g) => g.chuong);
+    return { tenChuong, manMua1Moi: LT.danhSach.filter((m) => chuongMua1.includes(m.chuong) && !ManHoc.timMa(m.ma) && m.taoHam.length),
+      manMua2Moi: LT.danhSach.filter((m) => chuongMua2.includes(m.chuong) && !ManHoc.timMa(m.ma)) };
   } finally {
     for (const k of Object.keys(require.cache)) if (laHoc(k)) delete require.cache[k];
     Object.assign(require.cache, cu);
@@ -136,7 +140,8 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('nhóm của Sổ lệnh đủ loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, hoi (súng hơi), mau, son (máy sơn), nam-cham, tay-xoay, nem, drone, tham-so, bang-chuyen, hong-ngoai (mùa 2); mỗi nhóm có tên hiển thị',
     J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'cam-bien', 'drone', 'hoi', 'hong-ngoai', 'lap', 'list', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'son', 'tay', 'tay-xoay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
   const dau = {};                                                      // tên hàm → màn đầu tiên tạo nó (ngân hàng mùa 1, rồi màn mới mùa 2 theo lộ trình)
-  for (const m of tatCa.concat(loTrinhRieng.manMua2Moi)) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
+  for (const m of tatCa.concat(loTrinhRieng.manMua1Moi, loTrinhRieng.manMua2Moi)) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
+  kiem('lộ trình có màn mới mùa 1 có taoHam cho Sổ lệnh thấy: kho-hang.1 tạo set_box (SM1-A)', loTrinhRieng.manMua1Moi.some((m) => m.ma === 'kho-hang.1' && m.taoHam.includes('set_box')), J(loTrinhRieng.manMua1Moi.map((m) => m.ma)));
   kiem('lộ trình có màn mới mùa 2 (man-hong-ngoai…) cho Sổ lệnh thấy: có che-hong-ngoai.1 tạo go_to_wall', loTrinhRieng.manMua2Moi.some((m) => m.ma === 'che-hong-ngoai.1' && m.taoHam.includes('go_to_wall')), J(loTrinhRieng.manMua2Moi.map((m) => m.ma)));
   const thieu = Object.keys(dau).filter((t) => !SoLenh.tim(t));
   kiem('mọi tên trong taoHam của mọi màn (' + Object.keys(dau).length + ' hàm cốt truyện) đều có trong SoLenh.ds', thieu.length === 0, 'thiếu ' + thieu.join());
@@ -147,6 +152,7 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('chương của mọi mục có tên hiển thị trong ThuTuChuong', SoLenh.ds.every((h) => typeof (ThuTu.ten[h.chuong] || loTrinhRieng.tenChuong[h.chuong]) === 'string'));
   kiem('nhóm của hàm đợt 2 ứng với chương: drone → drone, sung-hoi + che-sung-hoi + luc-ban → hoi, may-nem → nem…; hàm đợt 1 thuộc xe / tay / lap / cam-bien',
     SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'che-nhen': 'nhen', 'list': 'list', 'che-list': 'list', 'xich': 'xich', 'che-xich': 'xich', 'omni': 'omni', 'che-omni': 'omni', 'sung-hoi': 'hoi', 'che-sung-hoi': 'hoi', 'luc-ban': 'hoi', 'mau': 'mau', 'nam-cham': 'nam-cham', 'che-nam-cham': 'nam-cham', 'tay-xoay': 'tay-xoay', 'che-tay-xoay': 'tay-xoay', 'may-nem': 'nem', 'che-may-nem': 'nem', 'drone': 'drone', 'che-drone': 'drone', 'flycam': 'drone', 'che-mau': 'mau', 'may-son': 'son', 'che-may-son': 'son',
+      'kho-hang': 'tay', 'cam-bien-ben': 'cam-bien',                                     // mùa 1 chương chỉ có ở lộ trình (SM1-A: set_box; to_left_gap)
       // mùa 2: mỗi chương chế hàm mới thêm một dòng
       'che-be-sung': 'hoi',                                                              // gói 9 Bệ súng xích
       'trum-mua-2': 'hoi',                                                               // gói 10 Nhà máy chạy lại

@@ -199,6 +199,10 @@
     m('obey', 'drone', 'Bay theo từng màu đã ghi: đỏ xuống, xanh dương sang phải, còn lại lên', 'flycam', 'flycam.4'),
     m('dispatch', 'drone', 'Xuống từng hộp rồi chở đi theo màu đã ghi: đỏ 2 ô, xanh dương 3 ô', 'flycam', 'flycam.5'),
     m('patrol', 'drone', 'Bay tới ô vàng và ghi màu từng ô, rồi bay về đúng chỗ cũ, ghé sạc dọc đường', 'flycam', 'flycam.6'),
+    // MÙA 1, gói 4 chương 2 kho-hang (man-kho-hang-them.js, chỉ lo-trinh-hoc.js đưa vào game; SM1-A 30/10)
+    m('set_box', 'tay', 'Đi tới trước thùng rồi đặt thùng sang ô bên phải xe', 'kho-hang', 'kho-hang.1'),
+    // MÙA 1, gói 7 chương cam-bien-ben (chương dựng trong lo-trinh-hoc.js; mục này lộ ra khi kiem-che-xe.mjs nhìn cả màn mới mùa 1, SM1-A)
+    m('to_left_gap', 'cam-bien', 'Đi thẳng cho tới khi bên trái xe có lối trống', 'cam-bien-ben', 'cam-bien-ben.5'),
     // MÙA 2 (màn ngân hàng mùa 2 chỉ lo-trinh-hoc.js đưa vào game; kiem-che-xe.mjs thấy chúng theo thứ tự lộ trình)
     // gói 3 · chương Hàm cho hồng ngoại (man-hong-ngoai.js)
     m('go_to_wall', 'hong-ngoai', 'Đi thẳng tới khi sát tường, dùng mắt hồng ngoại đo số ô trống', 'che-hong-ngoai', 'che-hong-ngoai.1'),
