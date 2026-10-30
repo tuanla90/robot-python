@@ -44,8 +44,9 @@
   /** Icon sân trong Ve.ico (ve.js HINH) dùng ở Xưởng hàm (xuong-ham.js, ngoài phạm vi V2): hình vector tương ứng để gói giao diện (V5) thay khi cần. */
   var ICON_SAN = { box: 'thung-go', mau: 'san-mau', rao: 'rao', wall: 'tuong', nutban: 'nut-ban', sac: 'sac', thung: 'thung-nang', bac: 'bac-thang', gam: 'gam', ho: 'ho', bang: 'bang', cua: 'cua' };
   /** Vật của lõi (o: { chat 'go' | 'sat' | 'nam-cham', mau, cuc }) → [mã vật, trạng thái]. Nam châm thiếu cực vẽ như thùng gỗ (như bộ pixel makeVatNho). */
-  function vatCua(o) {
+  function vatCua(o, vo) {
     o = o || {};
+    if (vo === 'nong-trai' && o.mau && o.chat !== 'nam-cham') return ['bao-hat', o.chat === 'sat' ? { mau: o.mau, sat: true } : { mau: o.mau }];   // mùa 4: vật có màu là bao hạt
     if (o.chat === 'nam-cham' && (o.cuc === 'N' || o.cuc === 'S')) return ['nam-cham', { cuc: o.cuc }];
     if (o.chat === 'sat') return ['khoi-sat', o.mau ? { mau: o.mau } : {}];
     return ['thung-go', o.mau ? { mau: o.mau } : {}];

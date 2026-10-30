@@ -1200,6 +1200,8 @@
     // Gói 8 (30/10, đường cong): doi-nam-cham.8 Bó tay cho sớm mở hai ô THỪA cạnh R2 (robot không đi tới, không nằm trên đường tránh của R1; 6 → 8 ô)
     // cho che-doi-nam-cham.11 (14 ô) đứng sau không nhảy.
     get('doi-nam-cham.8').san = ['#####', '##D##', '##..#', '##..#', '#..##', '##o##', '#####'];
+    // Vỏ hình mùa 4 (30/10, user: "Đổi sang nông nghiệp"): Nông trại hoa, luật giữ nguyên; san-ve.js đọc vo: cỏ, luống hoa, bụi cây, bao hạt (ve-vector-nong-trai.js).
+    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { get(ma).vo = 'nong-trai'; }); }); });
     // Huy hiệu (30/10): mỗi chương mùa 4 trao huy hiệu MÃ CHƯƠNG ở màn trùm (cuối chương), như mùa 2; chương trum-mua-4 trao huy hiệu cỗ máy drone-ke-vach
     // (trùm cuối mùa). Màn khác trong chương không trao (màn có sẵn mang huy hiệu cũ, vd may-son.10 ở chương net-lien, đổi theo chương mới).
     MUA_4.forEach(function (g) {
