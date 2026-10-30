@@ -371,6 +371,58 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     beSung(g, c, cx, cy, canh);
   });
   dk('nha-may-chay', function (g, c) { beSung(g, c, 36, 58, 48, [8, 18]); c.sao(22, 26, 7); c.sao(78, 26, 7); });
+  /* Mùa 4 "Thành phố" (30/10, phiên Mùa 4): huy hiệu các chương mới. Cỗ máy của mùa là Drone kẻ vạch R1 (drone + máy sơn dưới bụng + camera bốn hướng).
+     Nét sơn vẽ bằng màu luật sơn của bảng màu (vàng, xanh dương), cùng màu ô đã tô trên sân. */
+  var CAM4 = [{ ma: 'camera-4', o: 'tren' }], CAM4_DUOI = [{ ma: 'camera-4', o: 'tren', taiCho: true }];
+  var DRONE_KE = { than: 'drone', tay: 'son', camBien: CAM4_DUOI };
+  /** Nét sơn d (đường SVG hệ 100) màu m, dày w. */
+  function netSon(g, d, m, w) { H.duong(g, d); H.vien(g, BM.vecVien, (w || 6) + 2.4); H.vien(g, m, w || 6); }
+  function xeCam(g, c, cx, cy, canh) { c.robot({ than: 'hai-banh', camBien: CAM4 }, st(null, null, { bat: true }), 0, cx, cy, canh); }
+  dk('cam-bon', function (g, c) {
+    c.o('san-mau', { mau: 'green' }, 24, 52, 20); c.o('san-mau', { mau: 'red' }, 76, 52, 20);
+    xeCam(g, c, 50, 56, 50);
+  });
+  dk('che-cam-bon', che(function (g, c) { c.o('san-mau', { mau: 'green' }, 22, 64, 16); xeCam(g, c, 44, 64, 42); }));
+  function hopDich(g, c, cx, cy, canh, mau) { c.o('dich', { kieu: 'trong', mau: mau }, cx, cy, canh); c.vat('khoi-sat', { mau: mau }, cx, cy, canh * 0.56); }
+  dk('pho-mau', function (g, c) {
+    hopDich(g, c, 50, 68, 30, 'red');
+    c.robot({ than: 'drone', tay: 'nam-cham', camBien: CAM4 }, st({ quat: true }), 0, 50, 38, 44);
+  });
+  dk('che-pho-mau', che(function (g, c) { hopDich(g, c, 30, 64, 24, 'red'); hopDich(g, c, 56, 70, 22, 'blue'); }));
+  dk('tram-sac', function (g, c) {
+    c.o('sac', { pha: 0 }, 50, 62, 40);
+    c.robot({ than: 'drone' }, st({ quat: false }), 0, 50, 56, 48);
+  });
+  dk('net-lien', function (g, c) {
+    netSon(g, 'M24 70 H64 V46', BM.luatSonXanhDuong, 6);
+    c.robot({ than: 'hai-banh', tay: 'son' }, st(null, { tuThe: 'duoi', mauSon: 'blue' }), 0, 64, 44, 34);
+  });
+  function nhinDuoi(g, c, cx, cy, canh) {
+    c.vat('khoi-sat', { mau: 'blue' }, cx, cy + canh * 0.34, canh * 0.4);
+    c.robot({ than: 'drone', tay: 'nam-cham', camBien: CAM4_DUOI }, st({ quat: true }, null, { bat: true }), 0, cx, cy - canh * 0.08, canh);
+  }
+  dk('nhin-duoi', function (g, c) { nhinDuoi(g, c, 50, 52, 54); });
+  dk('che-nhin-duoi', che(function (g, c) { nhinDuoi(g, c, 40, 62, 42); }));
+  function sonCao(g, c, cx, cy, canh) {
+    c.o('rao', { mask: 0 }, cx, cy + canh * 0.42, canh * 0.36);
+    netSon(g, 'M' + (cx - canh * 0.62) + ' ' + (cy + canh * 0.42) + ' H' + (cx - canh * 0.22), BM.luatSonVang, 6);
+    netSon(g, 'M' + (cx + canh * 0.22) + ' ' + (cy + canh * 0.42) + ' H' + (cx + canh * 0.62), BM.luatSonVang, 6);
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'yellow' }), 0, cx, cy - canh * 0.1, canh);
+  }
+  dk('son-tren-cao', function (g, c) { sonCao(g, c, 50, 48, 50); });
+  dk('che-son-tren-cao', che(function (g, c) { sonCao(g, c, 42, 58, 40); }));
+  dk('tong-hop-4', function (g, c) {
+    c.o('sac', { pha: 0 }, 26, 66, 22); c.o('san-mau', { mau: 'yellow' }, 50, 70, 20); c.o('san-mau', { mau: 'red' }, 74, 66, 20);
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'yellow' }, { bat: true }), 0, 50, 40, 46);
+  });
+  /** Trùm cuối mùa 4 "Drone kẻ vạch R1 xuất xưởng": drone đủ bộ trên vạch đứt vàng, hai sao hai góc trên như xuat-xuong / nha-may-chay. */
+  function droneKeVach(g, c) {
+    ['M18 76 H32', 'M43 76 H57', 'M68 76 H82'].forEach(function (d) { netSon(g, d, BM.luatSonVang, 6); });
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'yellow' }, { bat: true }), 0, 50, 50, 54);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  }
+  dk('drone-ke-vach', droneKeVach);
+  dk('trum-mua-4', droneKeVach);
   dk('che-hai-robot', function (g, c) {
     c.o('nut-de', { de: true }, 30, 62, 32); c.robot({ than: 'hai-banh', son: '' }, st(), 0, 30, 62, 34);
     c.o('cua', { k: 1, doc: true }, 68, 34, 30);

@@ -684,6 +684,14 @@ body.ve-vector .go-sw{padding-top:0;border-radius:var(--r-full);font:700 calc(11
 body.ve-vector .go-sw.bat{color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:none}
 body.ve-vector .go-tin{font:500 calc(11px*var(--kp))/1.3 var(--px);color:var(--g-vecChuPhu)}
 body.ve-vector .go-tin.co{color:var(--g-vecHoPhachChu)}
+body.ve-vector .go-giai-td{font:800 calc(12px*var(--kp))/1.1 var(--px);color:var(--g-vecChu)}
+body.ve-vector .go-giai-c{border-radius:10px;color:var(--g-vecChu);background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
+body.ve-vector .go-giai-c.ba{box-shadow:inset 0 0 0 1.5px var(--g-vecLa),var(--elev-1)}
+body.ve-vector .go-giai-c .s{color:var(--g-vecChuPhu)}
+body.ve-vector .go-giai-c.ba .s{color:var(--g-vecLaDam)}
+body.ve-vector .go-giai-c.thua .s{color:var(--g-vecHoPhachChu)}
+body.ve-vector .go-giai-c.on{outline:none;background:var(--g-vecBrandNhat);box-shadow:inset 0 0 0 2px var(--g-vecBrand),var(--elev-1)}
+body.ve-vector .go-giai-mo{color:var(--g-vecChuPhu)}
 @media (hover:hover){
   body.ve-vector .go-man:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1.5px var(--g-vecBrand),var(--elev-2)}
 }

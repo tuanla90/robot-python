@@ -100,6 +100,10 @@
    - het-pin (lỗi): pin về 0 giữa chừng, drone hạ cánh khẩn, dừng; `cho` trỏ lệnh bay ở nhịp cuối cùng (null nếu là wait()).
    (sac-pin chỉ là sự kiện của vết nhịp, không phải chẩn đoán: lời giải đúng không được có chẩn đoán nào.)
    - drone-khong-bay (lỗi): chạy xong mà chưa có lệnh go_* nào chạy (thường do hàm đi nhận chữ không khớp nhánh nào).
+   ĐÁP ĐẤT ĐỂ SẠC (mùa 4 gói 5, nâng cấp drone, khay có land / take_off; luật ở san-hoc.js phần DRONE): ô P chỉ sạc khi drone ĐÁP trên đó (pin đầy ngay). Mã chẩn đoán mới:
+   - dang-dau (lỗi): go_*() lúc drone đang đậu, drone đứng yên mất nhịp; `cho` trỏ lệnh bay đó. Lời nhắc take_off().
+   - dap-bi-chan (lỗi): land() trên ô không đáp được (hàng rào, hố, băng chuyền, bậc thang, thùng nặng, vật), drone vẫn bay.
+   (dap, cat-canh, da-dau, dang-bay chỉ là sự kiện của vết nhịp.) het-pin của drone nâng cấp nói "đáp xuống ô sạc bằng land()" thay cho "ghé ô sạc".
    CAMERA NHÌN XUỐNG của drone (16/10, chương flycam; luật đầy đủ ở san-hoc.js, phần DRONE): robot.camBien có { ma:'camera-bay', o:'bung' } và hamGoc có `look` thì look() trả chuỗi màu "red" | "green" | "blue" | "yellow" | "none"
    của VẬT (nếu có vật nằm đất) hay SÀN ở ô NGAY DƯỚI drone; không tốn nhịp. Mục lệnh trong vết có `docCamBien` { cam:'camera-bay', ham:'look', tu, o (= ô drone), mau, nguon:'san'|'vat'|'chan', idVat, nhip }.
    chua-gan-cam-bien nói rõ "drone này chưa gắn camera nhìn xuống dưới bụng" khi gọi look() mà màn không cho; màn khai phanCung thiếu look (camera hỏng) → lenh-goc-hong;
@@ -176,6 +180,8 @@
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
   var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'van hơi', 'dem-tu': 'ô đệm từ (khối, không đáp lên được)' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
+  // lý do land() không đáp được (san-hoc.js 'dap-bi-chan', mùa 4)
+  var LY_DAP = { rao: 'hàng rào', ho: 'cái hố', bang: 'băng chuyền', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', vat: 'một vật nằm dưới đất' };
   // lý do magnet_off() không thả được vật (san-hoc.js 'tha-bi-chan')
   var LY_THA = { 'lua': 'đám cháy', 'dong-doi': 'chỗ robot đồng đội đang đứng', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn', 'rao': 'hàng rào thấp', 'cua': 'cửa đang đóng' };
   // lý do vật ném vỡ (san-hoc.js 'nem-vo')
@@ -950,14 +956,31 @@
           ' Xe xích cần 2 nhịp liên tiếp cùng một lệnh để quay đủ 90°.'
       });
     }
+    var droneDap = man.loaiRobot === 'drone' && (man.phanCung || hamGoc).indexOf('land') >= 0;      // drone nâng cấp đáp đất (mùa 4 gói 5)
     var hetPin = res.suKien.filter(function (e) { return e.ma === 'het-pin'; });
     if (hetPin.length) {
       var hp0 = hetPin[0], mhp = hp0.lenh ? (g.anhXa[hp0.lenh.dongPy] || null) : null;
       var soDungYen = res.vet.filter(function (e) { return e.loai === 'nhip' && e.suKien.some(function (k) { return k.ma === 'dung-yen'; }); }).length;
       them('het-pin', 'Ở nhịp ' + hp0.nhip + ', pin của drone về 0 khi đang ở ô (' + hp0.o.x + ', ' + hp0.o.y + ') mà chưa xong việc: drone hạ cánh khẩn nên chương trình dừng ở đó' +
         (mhp ? ' (nhịp cuối là lệnh ' + hp0.lenh.ten + '() ở ' + viTri(mhp) + ')' : '') + '. Mỗi nhịp bay tốn 1 pin' +
-        (soDungYen ? ', kể cả ' + soDungYen + ' nhịp chỉ lơ lửng đứng yên (wait())' : ', kể cả nhịp đứng yên hay đâm tường') + '; chỉ ô sạc (P) mới sạc đầy lại. Tìm đường ngắn hơn, bỏ nhịp thừa hoặc ghé ô sạc giữa đường.',
+        (soDungYen ? ', kể cả ' + soDungYen + ' nhịp chỉ lơ lửng đứng yên (wait())' : ', kể cả nhịp đứng yên hay đâm tường') +
+        (droneDap ? '; chỉ khi đáp xuống ô sạc (P) bằng land() thì pin mới đầy lại, bay ngang qua P không sạc. Tìm đường ngắn hơn, bỏ nhịp thừa hoặc đáp ô sạc giữa đường rồi take_off().'
+          : '; chỉ ô sạc (P) mới sạc đầy lại. Tìm đường ngắn hơn, bỏ nhịp thừa hoặc ghé ô sạc giữa đường.'),
         { nhip: hp0.nhip, o: hp0.o, cho: cho(mhp) });
+    }
+    var dangDau = res.suKien.filter(function (e) { return e.ma === 'dang-dau'; });
+    if (dangDau.length) {
+      var dd0 = dangDau[0], mdd = dd0.lenh ? (g.anhXa[dd0.lenh.dongPy] || null) : null;
+      them('dang-dau', 'Ở nhịp ' + dd0.nhip + ', drone đang đậu ở ô (' + dd0.o.x + ', ' + dd0.o.y + ') nên ' + (dd0.lenh ? dd0.lenh.ten + '()' : 'lệnh bay') + (mdd ? ' ở ' + viTri(mdd) : '') +
+        ' không bay được: drone đứng yên, mất một nhịp' + (dangDau.length > 1 ? ' (chuyện này xảy ra ' + dangDau.length + ' lần)' : '') + '. Gọi take_off() để cất cánh trước khi bay tiếp.',
+        { nhip: dd0.nhip, o: dd0.o, cho: cho(mdd) });
+    }
+    var dapChan = res.suKien.filter(function (e) { return e.ma === 'dap-bi-chan'; });
+    if (dapChan.length) {
+      var dc0 = dapChan[0], mdc = dc0.lenh ? (g.anhXa[dc0.lenh.dongPy] || null) : null;
+      them('dap-bi-chan', 'Ở nhịp ' + dc0.nhip + ', land()' + (mdc ? ' ở ' + viTri(mdc) : '') + ' không đáp được: ô (' + dc0.o.x + ', ' + dc0.o.y + ') là ' + (LY_DAP[dc0.vat] || dc0.vat) +
+        ', drone vẫn đang bay. Chỉ đáp được trên sàn trống, ô màu, ô đích hay ô sạc P.',
+        { nhip: dc0.nhip, o: dc0.o, cho: cho(mdc) });
     }
     var vatVo = res.suKien.filter(function (e) { return e.ma === 'vat-vo'; });
     if (vatVo.length) {

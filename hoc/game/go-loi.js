@@ -9,6 +9,12 @@
    Màn "tiết kiệm nhịp" (tietKiemNhip: tay-gap.9) sửa riêng hàm có sẵn, không ghi vào kho dùng chung (giống kiem-hoc.mjs). Hàm trong man.taoHam của X không nạp sẵn (người chơi tự chế ở màn).
    Ghi vào kho thật qua KhoHam (tao / sua) rồi Luu.ghiKho(): chỉ thêm / thay hàm cốt truyện, hàm tự đặt khác của người chơi giữ nguyên. Vào màn xong khay tự vẽ lại (Choi.vao).
    "Mở hết" đang bật mà vào màn từ lưới màn thường (App.vaoMan): napKhiMoHet(m) chỉ THÊM hàm cốt truyện còn thiếu (không thay hàm đã có), để nhảy cóc tới chương sau vẫn có move()…
+
+   NẠP LỜI GIẢI (30/10, khối "Lời giải màn N" trong bảng, chỉ khi đang ở màn chơi): cachGiai(m) gom các lời giải đã lưu của màn (loiGiai chuẩn, loiGiaiKhac, congThucKhac;
+   màn lắp ráp: lời giải của từng lapRap.cachLap), mỗi cái một nút kèm số sao chấm thử (chamCach, trên kho khoChoCach: kho tham chiếu + hàm mới của lời giải).
+   "Nạp lời giải" (napLoiGiai): ghi hàm của em vào kho thật, đưa bài vào khung code (Choi.napBai, ghi nháp). Bài đang viết khác mã mẫu và lời giải, hay hàm trong kho
+   sắp bị thay, thì hỏi trước. Địa chỉ `?debug=1&man=<mã>&loigiai=1` (hay loigiai=khac, ct2…) vào màn rồi nạp luôn (màn lắp ráp: dùng nút sau khi Lắp xong).
+   Kế hoạch "xem lời giải tham khảo" cho người chơi: hoc/KE-HOACH-LOI-GIAI.md.
    ========================================================================== */
 (function () {
   'use strict';
@@ -63,9 +69,12 @@
 
   /** Nạp kho tham chiếu vào kho thật của người chơi. Trả về { them, thay, giu, loi } (tên hàm đã thêm / đã thay / số hàm đã đúng sẵn / lỗi).
    *  chiThem: chỉ thêm hàm còn thiếu, hàm đã có (kể cả khác bản chuẩn) giữ nguyên. */
-  function napHamChuan(m, chiThem) {
-    var ref = khoThamChieu(m), kq = { them: [], thay: [], giu: 0, loi: [] };
-    ref.forEach(function (f) {
+  function napHamChuan(m, chiThem) { return ghiVaoKho(khoThamChieu(m), chiThem); }
+
+  /** Ghi danh sách hàm [{ ten, thamSo, than }] vào kho thật (KhoHam tao / sua, rồi Luu.ghiKho). Trả về { them, thay, giu, loi } như napHamChuan. */
+  function ghiVaoKho(ds, chiThem) {
+    var kq = { them: [], thay: [], giu: 0, loi: [] };
+    ds.forEach(function (f) {
       var co = KhoHam.tim(f.ten), viec;
       if (!co) {
         var r = KhoHam.tao(f.ten, f.thamSo, { taoHam: [f.ten] });
@@ -79,6 +88,117 @@
     });
     if (kq.them.length || kq.thay.length) { var g = Luu.ghiKho(); if (!g.ok) kq.loi.push(g.loi); }
     return kq;
+  }
+
+  /* ---------------------------------------------------------------- lời giải đã lưu của màn */
+  function chepHam(f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: (f.than || []).slice() }; }
+  /** Bản chép một bài làm: { chinh, hamCuaMan } hay { doi: [{ chinh }], hamCuaMan } (màn nhiều robot). */
+  function chepBai(b) {
+    b = b || {};
+    var kq = { hamCuaMan: (b.hamCuaMan || []).map(chepHam) };
+    if (Array.isArray(b.doi)) kq.doi = b.doi.map(function (x) { return { chinh: ((x && x.chinh) || []).slice() }; });
+    else kq.chinh = (b.chinh || []).slice();
+    return kq;
+  }
+  /** Hai bài giống nhau (bỏ dòng trống cuối mỗi chương trình, thứ tự hàm của màn giữ nguyên)? */
+  function giongBai(a, b) {
+    function cat(ds) { ds = (ds || []).slice(); while (ds.length && !String(ds[ds.length - 1]).trim()) ds.pop(); return ds; }
+    function gon(x) {
+      x = chepBai(x);
+      return JSON.stringify([x.doi ? x.doi.map(function (d) { return cat(d.chinh); }) : cat(x.chinh), x.hamCuaMan.map(function (f) { return [f.ten, f.thamSo, cat(f.than)]; })]);
+    }
+    return gon(a) === gon(b);
+  }
+
+  /** Các lời giải đã lưu của màn m: [{ ma, nhan, moTa, man, bai, moi, coMoi, cach }].
+   *  ma 'chuan' = loiGiai (máy kiểm ép 3 sao) · 'khac' / 'khacN' = loiGiaiKhac (thường 2 sao) · 'ctN' = congThucKhac[N-1] · 'lapN' = lapRap.cachLap[N-1] (màn lắp ráp, kèm cach).
+   *  man: bản màn để chấm (màn lắp ráp: đã gắn robot của cách đó). bai thiếu (công thức chỉ đổi hàm) thì lấy bài của lời giải chuẩn.
+   *  moi: hàm của em mới của cách đó (trên mục hay trong baiLam); coMoi: cách có tự khai hàm của em mới không (khoChoCach dùng). */
+  function cachGiai(m) {
+    var ds = [];
+    if (!m) return ds;
+    var goc = m.manGoc || m, lg = m.loiGiai, L = goc.lapRap;
+    if (L && Array.isArray(L.cachLap) && window.LapRap) {
+      L.cachLap.forEach(function (cl, i) {
+        if (!cl || !cl.loiGiai) return;
+        var mm; try { mm = LapRap.apDung(goc, cl); } catch (e) { return; }
+        ds.push({ ma: 'lap' + (i + 1), nhan: t('go.giaiLap', { n: i + 1 }), moTa: LapRap.moTa(cl) + (cl.ghiChu ? '. ' + cl.ghiChu : ''), man: mm,
+          bai: chepBai(cl.loiGiai), moi: (cl.loiGiai.hamCuaEmMoi || []).map(chepHam), coMoi: true, cach: LapRap.chuanCach(cl) });
+      });
+    } else if (lg) {
+      ds.push({ ma: 'chuan', nhan: t('go.giaiChuan'), moTa: t('go.giaiChuanMoTa'), man: m, bai: chepBai(lg), moi: (lg.hamCuaEmMoi || []).map(chepHam), coMoi: true });
+    }
+    if (!lg) return ds;
+    function them(ma, nhan, c) {
+      if (!c) return;
+      var moi = Array.isArray(c.hamCuaEmMoi) ? c.hamCuaEmMoi : c.baiLam && Array.isArray(c.baiLam.hamCuaEmMoi) ? c.baiLam.hamCuaEmMoi : null;
+      ds.push({ ma: ma, nhan: nhan, moTa: c.moTa || '', man: m, bai: chepBai(c.baiLam || lg), moi: (moi || []).map(chepHam), coMoi: !!moi });
+    }
+    var khac = [].concat(m.loiGiaiKhac || []);
+    khac.forEach(function (c, i) { them(khac.length > 1 ? 'khac' + (i + 1) : 'khac', khac.length > 1 ? t('go.giaiKhac') + ' ' + (i + 1) : t('go.giaiKhac'), c); });
+    (m.congThucKhac || []).forEach(function (c, i) { them('ct' + (i + 1), t('go.giaiCT', { n: i + 1 }), c); });
+    return ds;
+  }
+
+  /** Kho hàm của em để chạy cách c (một mục của cachGiai(m)): kho tham chiếu lúc tới màn (khoThamChieu), cộng hàm mới của lời giải chuẩn, rồi hàm mới
+   *  của chính cách c (cùng tên thì sau thay trước). Cách có tự khai hàm của em mới (coMoi) thì từ lời giải chuẩn chỉ lấy hàm màn này tạo mới (taoHam…),
+   *  không lấy bản sửa hàm cũ, như máy kiểm chấm loiGiaiKhac trên kho trước màn. */
+  function khoChoCach(m, c) {
+    var ds = khoThamChieu(m.manGoc || m).map(chepHam), chi = {};
+    ds.forEach(function (f, i) { chi[f.ten] = i; });
+    function tron(fs) {
+      fs.forEach(function (f) {
+        if (chi[f.ten] === undefined) { chi[f.ten] = ds.length; ds.push(chepHam(f)); }
+        else ds[chi[f.ten]] = chepHam(f);
+      });
+    }
+    var lg = m.loiGiai;
+    if (c && !c.cach && c.ma !== 'chuan' && lg) {
+      var chuanMoi = lg.hamCuaEmMoi || [];
+      tron(c.coMoi ? chuanMoi.filter(function (f) { return chi[f.ten] === undefined; }) : chuanMoi);
+    }
+    if (c) tron(c.moi);
+    return ds;
+  }
+
+  /** Chấm thử cách c ở màn của nó trên kho khoChoCach: { thang, sao, soNhip } (lỗi lõi: { thang: false, sao: 0, loi }). */
+  function chamCach(m, c) {
+    try {
+      var r = ChamHoc.cham(c.man, c.bai, khoChoCach(m, c));
+      return { thang: !!r.thang, sao: r.sao || 0, soNhip: r.soNhip };
+    } catch (e) { return { thang: false, sao: 0, loi: e.message }; }
+  }
+
+  /** Nạp lời giải `ma` (mã trong cachGiai) vào màn đang chơi: hàm của em vào kho thật (khoChoCach), bài vào khung code (Choi.napBai, ghi nháp).
+   *  hoi: bài đang viết khác cả mã mẫu lẫn lời giải, hay hàm trong kho sắp bị thay khác bản đang có, thì hỏi trước (không ghi đè bài của người chơi khi chưa hỏi).
+   *  Màn lắp ráp: cách lắp khác robot đang gắn thì lắp lại robot đó (Luu.ghiLap, Choi.vao) trước. Trả về Promise { ok, ten, them, thay, loi }. */
+  function napLoiGiai(ma, hoi) {
+    var tt = window.Choi && Choi.trangThai(), m = tt && tt.man;
+    if (!m) return Promise.resolve({ ok: false, loi: 'chua-vao-man' });
+    var ds = cachGiai(m), c = ds.filter(function (x) { return x.ma === ma; })[0] || ds[0];
+    if (!c) return Promise.resolve({ ok: false, loi: 'khong-co-loi-giai' });
+    var kho = khoChoCach(m, c), goc = m.manGoc || m;
+    var thay = kho.filter(function (f) { var co = KhoHam.tim(f.ten); return co && !giongHam(co, f); }).map(function (f) { return f.ten + '()'; });
+    var baiKhac = !giongBai(tt.bai, c.bai) && !(goc.maMau && giongBai(tt.bai, goc.maMau));
+    function lam() {
+      var kq = ghiVaoKho(kho);
+      if (c.cach) {
+        var dang = m.cachLapDaChon || {};
+        if (['than', 'tay', 'camBien'].some(function (k) { return (dang[k] || null) !== (c.cach[k] || null); })) {
+          Luu.ghiLap(goc.ma, c.cach);
+          Choi.vao(goc, goc.lapRap.cachLap[+c.ma.slice(3) - 1]);
+        }
+      }
+      if (kq.loi.length) Choi.napBai(c.bai, t('go.napGiaiLoi', { loi: kq.loi.join('; ') }), 'bad');              // kho đầy, tên hỏng…: bài vẫn nạp, báo đỏ để biết chạy sẽ thiếu hàm
+      else Choi.napBai(c.bai, t('go.daNapGiai', { ten: c.nhan }));
+      try { console.info('[GoLoi] ' + goc.ma + ': nạp lời giải ' + c.ma + ' — kho thêm ' + kq.them.length + ', thay ' + kq.thay.length + (kq.loi.length ? ', LỖI ' + kq.loi.join('; ') : '')); } catch (e) { /* bỏ qua */ }
+      return { ok: !kq.loi.length, ten: c.ma, them: kq.them, thay: kq.thay, loi: kq.loi };
+    }
+    if (!hoi || (!baiKhac && !thay.length)) return Promise.resolve(lam());
+    return TP.Hop.xacNhan({
+      tieuDe: t('go.napGiai'), noiDung: t('go.napGiaiHoi', { ten: c.nhan }), canhBao: thay.length ? t('go.napGiaiThayHam', { ds: thay.join(', ') }) : undefined,
+      co: t('go.napGiaiCo'), mau: 'g-gr'
+    }).then(function (ok) { return ok ? lam() : { ok: false, loi: 'huy' }; });
   }
 
   /** Vào màn m NGAY (bỏ qua khóa); công tắc "Nạp hàm chuẩn" bật thì nạp kho trước. */
@@ -107,7 +227,10 @@
       var k = /[?&]man=([^&]+)/.exec(q);
       if (!k) return;
       var ma = decodeURIComponent(k[1]), m = ManHoc.timMa(ma) || ManHoc.tim(ma);
-      if (m) { S.daMo = true; vaoNgay(m); }
+      if (!m) return;
+      S.daMo = true; vaoNgay(m);
+      var g = /[?&]loigiai=([^&]+)/.exec(q), tt = window.Choi && Choi.trangThai();       // `loigiai=1` (chuẩn) hay mã một cách (khac, ct2, lap1…): nạp luôn, không hỏi (địa chỉ đã nói rõ)
+      if (g && tt && tt.man && (tt.man.manGoc || tt.man).ma === m.ma) napLoiGiai(g[1] === '1' ? null : decodeURIComponent(g[1]), false);
     } catch (e) { /* bỏ qua */ }
   }
   if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('load', function () { setTimeout(vaoTuDiaChi, 50); });
@@ -223,8 +346,48 @@
     }, 'go-bo-mua'));
     hang.appendChild(TP.Hop.nut('g-wd', t('chung.dong'), function () { TP.Hop.dong(); }, 'go-dong'));
 
-    than.appendChild(nav); than.appendChild(luoi); than.appendChild(cong); than.appendChild(tin); than.appendChild(hang);
+    than.appendChild(nav); than.appendChild(luoi);
+    var giai = khoiLoiGiai();
+    if (giai) than.appendChild(giai);
+    than.appendChild(cong); than.appendChild(tin); than.appendChild(hang);
     veChuong();
+  }
+
+  /** Khối "Lời giải màn N" (chỉ khi đang ở màn chơi): mỗi lời giải đã lưu một nút (nhãn + sao chấm thử trên kho khoChoCach), dòng mô tả, nút "Nạp lời giải". */
+  function khoiLoiGiai() {
+    var sc = document.getElementById('sc-choi'), tt = window.Choi && Choi.trangThai(), m = tt && tt.man;
+    if (!m || !sc || sc.classList.contains('hidden')) return null;
+    var goc = m.manGoc || m, ds = cachGiai(m);
+    if (S.giaiMan !== goc.ma) { S.giaiMan = goc.ma; S.giai = ds[0] ? ds[0].ma : null; }
+    var k = h('div', 'go-giai'); k.setAttribute('data-man', goc.ma);
+    k.appendChild(h('div', 'go-giai-td', t('go.giaiTieuDe', { id: m.id })));
+    if (!ds.length) { k.appendChild(h('div', 'go-giai-mo', t('go.giaiKhongCo'))); return k; }
+    if (!ds.some(function (c) { return c.ma === S.giai; })) S.giai = ds[0].ma;
+    var hang = h('div', 'go-giai-ds'), dongMoTa = h('div', 'go-giai-mo'), nut = {};
+    function chon(ma) {
+      S.giai = ma;
+      ds.forEach(function (c) { nut[c.ma].classList.toggle('on', c.ma === ma); nut[c.ma].setAttribute('aria-pressed', c.ma === ma ? 'true' : 'false'); });
+      dongMoTa.textContent = ds.filter(function (c) { return c.ma === ma; })[0].moTa;
+    }
+    ds.forEach(function (c) {
+      var r = chamCach(m, c);
+      var b = h('button', 'bt go-giai-c ' + (r.sao === 3 ? 'ba' : r.thang ? 'thang' : 'thua'));
+      b.setAttribute('data-cach', c.ma); b.setAttribute('data-sao', r.sao);
+      b.appendChild(h('span', 'n', c.nhan));
+      b.appendChild(h('span', 's', r.thang ? t('go.giaiSao', { n: r.sao }) : t('go.giaiThua')));
+      b.addEventListener('click', function () { chon(c.ma); });
+      nut[c.ma] = b; hang.appendChild(b);
+    });
+    k.appendChild(hang); k.appendChild(dongMoTa);
+    var hn = h('div', 'hop-hang go-giai-hang');
+    hn.appendChild(TP.Hop.nut('g-gr', t('go.napGiai'), function () {
+      var ma = S.giai;
+      TP.Hop.dong();
+      napLoiGiai(ma, true).then(function (kq) { if (kq.loi === 'huy') mo(S.chuong, true); });     // hủy ở hộp hỏi: mở lại bảng
+    }, 'go-nap-giai'));
+    k.appendChild(hn);
+    chon(S.giai);
+    return k;
   }
 
   /** Nút 🐞 (màn khởi đầu, chọn gói, lưới màn: cạnh nút Sổ lệnh); chỉ có khi địa chỉ mang cờ debug. */
@@ -242,6 +405,7 @@
   window.GoLoi = {
     mo: mo, nutBug: nutBug, coCo: coCo, laBat: laBat,
     docMoHet: docMoHet, datMoHet: datMoHet, tatHuongDan: tatHuongDan,
-    khoThamChieu: khoThamChieu, napHamChuan: napHamChuan, napKhiMoHet: napKhiMoHet, vaoNgay: vaoNgay, xoaTienDo: xoaTienDo
+    khoThamChieu: khoThamChieu, napHamChuan: napHamChuan, napKhiMoHet: napKhiMoHet, vaoNgay: vaoNgay, xoaTienDo: xoaTienDo,
+    cachGiai: cachGiai, khoChoCach: khoChoCach, chamCach: chamCach, napLoiGiai: napLoiGiai, giongBai: giongBai
   };
 })();

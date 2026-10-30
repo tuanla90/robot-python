@@ -116,6 +116,31 @@ Phải sửa phim đã có (ĐÃ LÀM 29/10, nhánh claude/phim-xuat-xuong; tem 
   Khung 3 giữ ý "nhà máy chạy lại" làm việc được gỡ; khung 1 gói 1 mùa 2 (`xich`) thêm ý đơn việc: nhà máy cũ đứng im.
 - Mùa 3 trở đi: viết thẳng theo khuôn (mùa 3: "Xe thăm dò R1 xuất xưởng").
 
+## 3e. Kịch bản mùa 4 "Thành phố" (30/10, phiên Mùa 4; theo mảng MUA_4 của lo-trinh-hoc.js và KE-HOACH-MUA-4.md; dữ liệu `game/phim-mua-4.js`)
+
+Truyện: thành phố mới có vạch kẻ đường mờ hết, xe đi lộn xộn (đơn việc, khuôn mục 3c). Em lắp cánh quạt cho R1 thành drone, rồi máy sơn, camera bốn hướng;
+nâng cấp đáp sạc, bút liền, mắt nhìn dưới chân; R2 trở lại ở gói đội; gói 9 gắn máy sơn dưới bụng drone; gói 10 "Drone kẻ vạch R1 xuất xưởng", phim cuối nhá mùa 5 (sân bóng).
+Hình: ô của mùa 4 (sàn màu, hộp màu khoi-sat, ô sạc, hàng rào, hố, ô đích màu, ô đã sơn) vẽ bằng VeVector như trên sân chơi (`san4` trong phim-mua-4.js), canvas đánh dấu laVector;
+nhà phố, mặt đường, sân bóng, thanh pin vẽ bằng div. Lời ở chu.js khóa `pg.<mã gói>.<n>`, tên cỗ máy `pg.tem.drone-ke-vach`.
+
+| Gói | Khung 1 | Khung 2 | Khung 3 | Khung 4 |
+|---|---|---|---|---|
+| 1 Cất cánh `drone` | **đơn việc**: phố mới, vạch mờ, hai xe lắc lư lộn xộn, R1 hai bánh lăn tới, "?" | cánh quạt bay tới, R1 thành drone, CẠCH!, bay lên | sân mini: drone bay qua hàng rào, thanh pin mất một vạch mỗi ô | code `go_up()` `go_right()` `path = ["right", "down"]` |
+| 2 Chấm sơn `may-son` | hàng ô khung vàng cần tô, R1 xe chưa có gì, "?" | máy sơn bay lên mũi xe, CẠCH! | xe chấm đỏ, vàng, đỏ cách ô | code `for c in [...]: ink(c); dot(); move()` |
+| 3 Camera bốn hướng `cam-bon` | ngã tư, nhánh trái màu xanh, "?" | camera lên nóc xe, CẠCH! | bốn vòng nhìn bốn phía, vòng trái xanh; xe quay trái, đi theo | code `if color("left") == "green": turn_left()` |
+| 4 Phố màu `pho-mau` | drone chở hộp đỏ xuống ô đích xanh: "?!" | drone nhìn hai ô đích, vòng đỏ / xanh, "!" | hộp đỏ về ô đỏ, sao | |
+| 5 Trạm sạc `tram-sac` | pin cạn giữa phố, drone rơi xuống đường, "!?" | món ô sạc bay vào drone, CẠCH! (nâng cấp) | drone đáp trên P, pin đầy (ĐẦY!), cất cánh bay tiếp | code `land()` `take_off()` `if battery() < 3:` |
+| 6 Nét liền `net-lien` | xe chấm từng ô, chậm, "?" | bút (icon edit) bay vào máy sơn, CẠCH! | xe đi bốn ô, vạch xanh dương kéo theo | code `pen_down()` `forward(3)` `pen_up()` |
+| 7 Nhìn dưới chân `nhin-duoi` | drone đứng trên hộp đỏ, camera bốn hướng không thấy, "?" | mắt nhìn xuống lắp thêm, CẠCH! | vòng đỏ quanh hộp dưới bụng, drone chở hộp về ô đích đỏ | code `c = color("here")` |
+| 8 Đội chia hàng `doi-nam-cham` | R1 xe nam châm chờ, R2 (kẹp + camera, sơn lam) lăn vào, "!" | R1 hút hộp qua rào (HÚT!), quay, đặt trước mũi R2 | R2 nhìn màu, quay lên, đặt hộp vào ô đích cùng màu | hai bảng code R1 `hand_off()` / R2 `hold_on(3)` `sort_by_color()` |
+| 9 Sơn từ trên cao `son-tren-cao` | xe máy sơn đụng hàng rào (CỘP!), vạch bên kia chưa kẻ | máy sơn gắn dưới bụng drone, CẠCH! | drone kẻ vạch vàng, ô rào bỏ trống | code `pen_up()` `go_right()` `pen_down()` |
+| 10 Drone kẻ vạch R1 xuất xưởng `drone-ke-vach` | drone đủ bộ, mười huy hiệu mùa 4 bay quanh | **tem XUẤT XƯỞNG**, tên **"Drone kẻ vạch R1"**, ba part: cánh quạt, máy sơn, camera | phố sáng đèn: drone bay ngang, vạch giữa đường sáng vàng từng đoạn, hai xe đi đúng làn (việc kẹt ở drone.1 được gỡ) | nhá mùa 5: xa xa sân bóng, hai đèn sân và quả bóng nhấp nháy, "?" |
+
+Ghi chú mùa 4:
+- Khung 1 gói 10: mười huy hiệu mùa 4 bay quanh (drone, may-son, cam-bon, pho-mau, tram-sac, net-lien, nhin-duoi, doi-nam-cham, son-tren-cao, drone-ke-vach), như phim gói 10 mùa 2.
+- Mùa 4 còn ẩn: phim chỉ chiếu khi mùa mở. Máy kiểm: kiem-phim-goi.mjs mục 1d, kiem-huy-hieu-phim-vector.mjs B2 (canvas vector).
+- Phim mùa 3 chưa có (phiên Mùa 3 sẽ đặt phim-mua-3.js giữa phim-mua-2.js và phim-mua-4.js trong choi.html).
+
 ## 4. Kiểm
 - Máy kiểm `kiem-phim-goi.mjs` (Node): mọi gói mùa 1 trừ gói 1 có phim; mỗi phim 3–4 khung; mọi khóa chữ `pg.*` có trong chu.js; câu ≤ 14 từ; cờ đúng mã gói.
 - Trình duyệt: người giao bấm xem từng phim (vào gói lần đầu, xem lại bằng ▶), kiểm Bỏ qua, chạm khung, không lỗi console, đúng cỡ trên màn hình điện thoại.
