@@ -34,3 +34,9 @@ BỐI CẢNH:
 
 PHẠM VI: màn, lộ trình, lo-trinh-sao.js (đúng mục), máy kiểm mùa 4. KHÔNG sửa lõi (cần thì DỪNG báo), không sửa mùa 1–3.
 PHẢN BIỆN, CÁCH GIAO, KIỂM TRA, DỪNG VÀ HỎI, BÁO CÁO CUỐI: như brief PDM2a (`hoc/ban-giao/brief-PDM2a-mua-2-goi-1-4.md`).
+
+BÀI HỌC ĐỢT MÙA 2 (người giao ghi): đợt nào cũng để lại hồi quy ở máy kiểm KHÔNG nằm trong danh sách (sổ lệnh so-lenh.js, kiem-khay, kiem-hoc, kiem-phim-goi,
+kiem-huy-hieu-phim-vector, kiem-goi-doi, kiem-nut-bat-san…). Vì vậy: ĐƯỢC chạy `npm test` cả bộ (chạy nền, ghi ra tệp) sau mỗi gói và lần cuối trước báo cáo;
+báo cáo ghi dòng kết quả nguyên văn. Gói mới cần phim gói tạm (phim-mua-N.js + chu.js) và hình huy hiệu nếu máy kiểm đòi.
+
+LUẬT NHỊP GÓI 10 (PDM2c2 phát hiện): màn nhiều sân của gói 10 tính TỔNG nhịp mọi sân (nhipTheo "tong"), không theo sân dài nhất: theo sân dài nhất thì dãy viết cứng cho ngày khó nhất vẫn 3 sao mọi ngày. Bộ dò dayChung theo tổng phải không tìm ra dãy chung 3 sao.
