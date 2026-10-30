@@ -156,10 +156,10 @@
     m('color_line', 'son', 'Chọn màu c rồi vẽ nét n + 1 ô', 'che-may-son', 'che-may-son.2'),
     m('next_row', 'son', 'Lùi n ô về đầu hàng rồi xuống hàng dưới, giữ hướng', 'che-may-son', 'che-may-son.3'),
     m('stripes', 'son', 'Mỗi màu trong danh sách vẽ một sọc bốn ô, sọc nọ dưới sọc kia', 'che-may-son', 'che-may-son.5'),
-    m('copy_row', 'son', 'Đọc màu n ô bằng cảm biến, xuống hàng dưới rồi chép lại đúng các màu đó', 'che-may-son', 'che-may-son.6'),
+    m('copy_row', 'son', 'Ghi màu n ô bên trái xe bằng camera, xuống hàng dưới rồi chép lại', 'che-may-son', 'che-may-son.6'),
     m('grid', 'son', 'Lưới chấm r hàng, mỗi hàng k chấm, hàng cách hàng một ô', 'che-may-son', 'che-may-son.7'),
     m('border', 'son', 'Khung vuông mỗi cạnh đi n bước, về chỗ cũ', 'che-may-son', 'che-may-son.8'),
-    m('fill_gaps', 'son', 'Đi qua n ô, ô nào chưa có sơn thì chấm màu c', 'che-may-son', 'che-may-son.9'),
+    m('fill_gaps', 'son', 'Đi n ô, nhìn ô phía trước: ô chưa có sơn thì tới đó chấm màu c', 'che-may-son', 'che-may-son.9'),
     m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.5'),
     m('grip', 'nam-cham', 'Bật cực khác chữ trên vật nam châm trước mặt để kéo nó về', 'nam-cham', 'nam-cham.6'),
     // chương Chế lệnh nam châm (kick, reel, lane, sort, fling; fixed_grip, go_pull, put_back là hàm của màn nên không có ở đây)

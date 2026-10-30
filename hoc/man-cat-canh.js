@@ -109,23 +109,24 @@
     }),
 
     man({
-      so: 14, ten: 'Giao hàng qua phố', hang: 'trum', nam: true, pin: 14,
-      deBai: 'Hai thùng sắt nằm ở phố dưới, hai ô đích ở hai tầng thượng phía trên, giữa là dải phân cách. ' +
-        'Drone hút từng thùng bằng nam châm treo, bay qua dải phân cách, thả lên ô đích. Pin có 14 vạch; bật hay tắt nam châm cũng tốn một nhịp chờ.',
-      veMaMau: 'Chương trình có sẵn đưa được thùng thứ nhất. Viết tiếp cho thùng thứ hai.',
-      san: ['#D#D##', '.===..', '.o.o..'],
-      vatChat: ['......', '......', '.s.s..'],
-      batDau: { x: 0, y: 2, huong: 0 },
-      maMau: bai(nhieu(['go_right()', 'magnet_n()', 'wait()'], LAP(2, 'go_up()'), ['magnet_off()', 'wait()'])),
-      loiGiai: bai(nhieu(['go_right()'], LAP(2, ['magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()', W('DDRR')]))),
-      sao: { o: 19, nhip: 13 },
-      loiGiaiKhac: { moTa: 'Bay lên bằng walk("UU") thay cho hai lệnh go_up()', baiLam: bai(nhieu(['go_right()'], LAP(2, ['magnet_n()', 'wait()', W('UU'), 'magnet_off()', 'wait()', W('DDRR')]))) },
+      so: 14, ten: 'Giao hàng qua phố', hang: 'trum', nam: true, pin: 25,
+      deBai: 'Ba thùng sắt nằm ở phố dưới, ba ô đích ở ba tầng thượng phía trên, giữa là dải phân cách. ' +
+        'Drone hút từng thùng bằng nam châm treo, bay qua dải phân cách, thả lên ô đích. Pin vừa đủ cho ba chuyến: bay thừa một đoạn là hết pin giữa đường.',
+      veMaMau: 'Chương trình có sẵn đưa được thùng thứ nhất. Ba chuyến giống nhau nếu mỗi chuyến bắt đầu bằng bay tới thùng.',
+      san: ['..D#D#D', '.======', '..o.o.o'],
+      vatChat: ['.......', '.......', '..s.s.s'],
+      batDau: { x: 0, y: 0, huong: 0 },
+      maMau: bai([W('DDRR'), 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']),
+      loiGiai: bai(LAP(3, [W('DDRR'), 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'])),
+      sao: { o: 18, nhip: 24 },
+      loiGiaiKhac: { moTa: 'Bay lên bằng walk("UU") thay cho hai lệnh go_up()', baiLam: bai(LAP(3, [W('DDRR'), 'magnet_n()', 'wait()', W('UU'), 'magnet_off()', 'wait()'])) },
       loiSai: [
-        { moTa: 'Quên bật nam châm: drone bay lên mà thùng nằm lại', baiLam: bai(nhieu(['go_right()'], LAP(2, ['go_up()', 'go_up()', W('DDRR')]))), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Thả thùng ngay trên dải phân cách: thùng không nằm được trên rào', baiLam: bai(nhieu(['go_right()'], LAP(2, ['magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()', W('DRR')]))), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chỉ lặp hai lần: còn một thùng', baiLam: bai(LAP(2, [W('DDRR'), 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'])), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên bật nam châm: drone bay lên mà thùng nằm lại', baiLam: bai(LAP(3, [W('DDRR'), 'go_up()', 'go_up()'])), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Hạ xuống rồi lên lại sau mỗi chuyến: bay thừa, hết pin', baiLam: bai(LAP(3, [W('DDRR'), 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()', 'go_down()', 'go_up()'])), phaiCoMa: ['het-pin'] }
       ],
       hamCuaEmCan: ['go', 'walk'],
-      goiY: ['Mỗi chuyến: bật nam châm, chờ một nhịp, bay lên hai ô, tắt nam châm, chờ một nhịp.', 'Hai chuyến giống nhau: lặp hai lần, giữa hai lần bay về ô của thùng kế.']
+      goiY: ['Mỗi chuyến: bay tới thùng bằng walk("DDRR"), bật nam châm, chờ, bay lên hai ô, tắt nam châm, chờ.', 'Ba chuyến giống nhau: lặp ba lần.']
     }),
 
     /* ================================================= chương list "Lập danh sách" ================================================= */

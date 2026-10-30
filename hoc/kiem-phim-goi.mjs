@@ -142,7 +142,7 @@ console.log('\n== 2. Chữ (chu.js) ==');
   kiem('nút khung cuối là "Vào gói"', CHU['pg.vaoGoi'] === 'Vào gói', CHU['pg.vaoGoi']);
 }
 
-console.log('\n== 1c. Phim mùa 3 "Mỏ quặng" (gói theo MUA_3 của lo-trinh-hoc.js, 30/10) ==');
+console.log('\n== 1c. Phim mùa 3 "Bãi tái chế" (gói theo MUA_3 của lo-trinh-hoc.js, 30/10) ==');
 {
   // Mùa 3 (phim-mua-3.js): mọi gói của M.mua3 có phim nằm ở phim-mua-3.js, tệp không có phim lạ, gói bộ phận có bảng code ở khung cuối,
   // choi.html nạp phim-mua-3.js ngay sau phim-mua-2.js. Lỗi giả (--loi-gia): bỏ phim dao-cuc → mục "mọi gói mùa 3 có phim" đỏ.

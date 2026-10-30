@@ -316,18 +316,19 @@
     }),
 
     che({
-      so: 9, ten: 'Sửa đường chở', hang: 'bien-the', hamCuaEmCan: ['tote', 'trail', 'go'],
-      deBai: 'Hai đơn hàng như màn Hai đơn hàng, nhưng chương trình có sẵn viết sai một chuỗi nên vật thứ hai rơi lệch. Chạy thử rồi sửa chuỗi.',
-      veMaMau: 'Chạy thử: nhìn vật thứ hai rơi ở đâu.',
-      san: ['o.D', '...', 'o.D'], vatChat: ['s..', '...', 's..'],
+      // 30/10 nghiệm thu độc lập: thay màn Sửa đường chở (lời giải trùng hệt che-bung-nhen.6) bằng màn nối chuỗi làm dữ liệu của gói 1: duyệt chuỗi cực "NS".
+      so: 9, ten: 'Chuỗi cực hai đơn', hang: 'bien-the', hamCuaEmCan: ['hook_for', 'trail', 'unhook'],
+      deBai: 'Hai vật nam châm xếp dọc: trên là chữ N, dưới là chữ S. Việc của hai vật y hệt nhau, chỉ khác chữ: duyệt for p in "NS", mỗi lượt hook_for(p), trail("RR") sang ô đích, unhook(), rồi trail("DDLL") về đầu hàng dưới.',
+      veMaMau: 'Chương trình có sẵn chở xong vật chữ N. Gói lại thành một vòng for trên chuỗi "NS".',
+      san: ['o.D', '...', 'o.D', '...', '...'], vatChat: ['N..', '...', 'S..', '...', '...'],
       batDau: { x: 0, y: 0, huong: 0 },
-      maMau: bai(['tote(\"RR\")', 'trail(\"DDLL\")', 'tote(\"R\")']),
-      loiGiai: bai(['tote(\"RR\")', 'trail(\"DDLL\")', 'tote(\"RR\")']),
-      sao: { o: 20, nhip: 20 },
+      maMau: bai(['hook_for("N")', 'trail("RR")', 'unhook()']),
+      loiGiai: bai(['for p in "NS":', '    hook_for(p)', '    trail("RR")', '    unhook()', '    trail("DDLL")']),
+      sao: { o: 22, nhip: 20 },
       loiSai: [
-        { moTa: 'Sửa nhầm chuỗi đi tới vật: nhện không tới đúng vật thứ hai', baiLam: bai(['tote(\"RR\")', 'trail(\"DDL\")', 'tote(\"R\")']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chuỗi viết ngược "SN": vật chữ N gặp cực N, nằm yên', baiLam: bai(['for p in "SN":', '    hook_for(p)', '    trail("RR")', '    unhook()', '    trail("DDLL")']), phaiCoMa: ['cung-cuc'] }
       ],
-      goiY: ['Vật thứ hai cũng cần chở sang phải hai ô.', 'Chỉ sửa chuỗi trong tote cuối.']
+      goiY: ['for p in "NS" cho p lần lượt là "N" rồi "S".', 'Cuối mỗi lượt về đầu hàng dưới: xuống hai, sang trái hai.']
     }),
 
     che({

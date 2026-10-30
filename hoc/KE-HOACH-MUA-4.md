@@ -201,6 +201,20 @@ Ghi chú chia:
     1 · 2 · 3 · 4 · 6 · 5 · 8 · 9 · 7 · 10 (tự viết chương trình chính ở bãi chữ nhật trước, chế box cho bãi vuông sau). Ngưỡng nhịp lo-trinh-sao.js: che-list.4 14 → 10,
     che-list.6 16 → 14, che-list.5 15 → 11 (vuông cạnh 2 để lời sai "đi cố định 3 ô mỗi cạnh" thua; trước đây bản một sân là vuông cạnh 3 nên lời sai đó thắng). Bản ba sân trong man-che-list.js (máy kiểm kiem-che-list) giữ nguyên.
   - Ranh gói 5 / 6: may-son.3 bít hai góc trên (18 → 16 ô), may-son.4 bít góc dưới trái (25 → 24 ô): ô xe không đi tới.
+- **30/10 Sửa theo nghiệm thu độc lập** (hoc/ban-giao/nghiem-thu-30-10/nghiem-thu-mua-4.md, user: "Làm cả A, B, C"). Cả bộ 104 / 104, cong4.js 0 nhảy.
+  - C: chương che-list (gói 2) dựng lại trên xe máy sơn: che-list.11 … .20 (man-cham-son.js, append, duyệt, lọc, hàm nhận danh sách, đủ lời sai);
+    mười màn đo bãi bằng cảm biến khoảng cách cũ (gồm che-list.9 không lời sai) sang mùa 5 (che-list-cu).
+  - A1: trum-mua-4.8 Phố có trạm sạc (street_dock = street + charge_if, hai sân pin 20 / 40), .9 Hai phố theo dấu (two_dash = mark_dash + về đầu hàng):
+    hàm gọi hàm của em. che-may-son.7, .8 (xe, 37 / 44 nhịp, to hơn trùm) sang mùa 5 (che-may-son-cu). Trùm cuối mùa trum-mua-4.10 thêm trạm thứ ba và vạch xanh:
+    14 dòng tự viết, 4 hàm, ba lần sạc đều cần (bỏ lần nào cũng hết pin), 24 nhịp, 32 ô.
+  - A2: tram-sac.6, .9 thêm sân pin 7 chỉ một trạm ở ô 7: đáp cứng ô 5 và ô 9 hết pin (lời sai mới).
+  - A3: gói 8 lời sai mẫu vào dữ liệu 16 màn (man-doi-nam-cham.js; chép các lời sai thua từ bảng của kiem-doi-nam-cham, máy kiểm chạy lời sai trong dữ liệu).
+  - B1: che-may-son.6, .9, .10 bỏ cảm biến bụng, gắn camera bốn hướng của gói 3: copy_row đọc color("left") ở hàng giữa (hai sân hai hàng màu, ghi cứng thua;
+    lo-trinh-hoc.js giữ hai sân của màn này, GIU_NHIEU_SAN), fill_gaps nhìn color("front") trước khi tới ô; color() không hướng là lời sai. Trùm che-may-son.10
+    thêm chép viền bằng copy_row, 3 hàm, 50 nhịp, 42 ô (màn 6 đến 9: tối đa 23 nhịp, 30 ô).
+  - B2: trùm drone.14 ba thùng, pin vừa đủ (25 cho 24 nhịp), mỗi chuyến bắt đầu bằng walk("DDRR") tới thùng nên lặp ba lần không thừa (24 nhịp so với drone.8, .9: 12, 11).
+  - B3: mẹo đếm a.append(1) chỉ còn ở che-cam-bon.3; che-pho-mau.8 ghi "red", count_here (che-nhin-duoi.4, trum-mua-4.6) ghi màu col; append(1) là công thức khác.
+  - Chưa làm: cân lại che-doi-nam-cham.1 (đứng thứ hai chương, sân lớn) mà báo cáo nêu kèm; phim mùa 4 còn vẽ trùm drone.14 hai thùng và chương trùm-mua-4 cũ.
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -223,7 +237,7 @@ Ghi chú chia:
 15. ~~Gói 8 nhảy đường cong~~ làm lại 30/10 theo tính giáo dục (mục 6): bốn màn mới, bốn màn cũ sang mùa 5 (ẩn): doi-nam-cham.6, .9, che-doi-nam-cham.4, .9.
 16. ~~Gói 9, gói 10~~ xong 30/10 (mục 6). Mùa 4 đủ 200 màn; còn phim mùa 4, huy hiệu, soát 200 / 200 trên trình duyệt, mở mùa 4.
 17. Gói 9 không có màn nam châm (máy sơn và nam châm không gắn chung). Muốn có ý "chở trước hay sơn trước" thì cần màn hai drone (một sơn, một chở) kiểu gói đội: để gói 10?
-19. Mục 9 (che-may-son.7 / .8): tôi giữ, đặt ở trum-mua-4 vị trí 8, 9 (sau màn cầu nối street 25 nhịp). Muốn cắt thì thay bằng hai màn drone mới.
+19. ~~Mục 9 (che-may-son.7 / .8)~~ 30/10 theo nghiệm thu: thay bằng hai màn drone mới trum-mua-4.8, .9; hai màn xe sang mùa 5 (mục 6).
 20. ~~Huy hiệu mùa 4~~ xong 30/10 (mục 6).
 18. ~~Ranh gói 5 / 6 (may-son.3 sau che-drone.16)~~ sửa 30/10 (mục 6): bít góc thừa may-son.3, may-son.4.
 

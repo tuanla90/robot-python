@@ -87,3 +87,17 @@ Màn lạc đề / lạc giọng:
 6. **Trùm yếu**: luc-ban.10 thêm một van thứ hai cần lực khác (gọi smart_spray hai lần ở hai hướng) để khó hơn luc-ban.8; do-nhiet.10 thêm một đoạn `if not warm(): squirt` trước mê cung để không trùng do-nhiet.2; che-day-thung.10 thêm một bước push_back hoặc go_around ngược để khác che-day-thung.6.
 7. **hong-ngoai.6 tách đôi ý**: cho `while True` + `if/else` ở một màn với so sánh `>` quen thuộc, rồi màn sau mới đổi sang `<=` (hoặc đưa `<=` vào gợi ý mã mẫu viết sẵn). Gói 7: đổi 2 trong 7 màn `if not warm()` thành dạng mới (vd `while warm()` dập lửa hay `if warm(): ... else: ...`) để chương không chững.
 8. **Chữ và nhất quán**: xich.6 sửa "(gói Nhà máy sẽ gặp lại)" thành "(gói Băng chuyền ...)"; che-luc-ban.8 "Nhớ lại gói Nhà máy" thành "gói Lực phun"; luc-ban.8–.10 chuyển smart_spray sang `distance()` (robot đã có hồng ngoại từ gói 3) hoặc thêm một câu nối "front_clear chỉ biết sát hay không, distance cho biết bao xa". Sửa xem-goi.cjs để hàm của em mới cùng tên thay hàm cũ (che-xich.9 báo thua giả).
+
+## Đã xử lý (phiên Mùa 2, 30/10)
+
+- Mục 1 (gói 10, P3 gói lửa): chương trum-mua-2 "Chế lệnh: dập lửa" có lửa, trùm cuối mùa có đám cháy cỡ 1 / 3 chắn đầu đường; tong-hop-2.6, .8, .9 có lửa;
+  đề tong-hop-2.8, .9 không còn nói thẳng tên hàm đáp án. Trùm cuối giữ mục tiêu đẩy thùng (đám cháy chắn đúng đường đi nên phải dập hết).
+- Trùm yếu: luc-ban.10 ba sân hai van mỗi sân, lời giải dùng cú giật phun mạnh ra sau để đi tới (18 nhịp bằng BFS); do-nhiet.10 thêm if not warm(): squirt trước mê cung
+  (van đầu đóng mở cửa chắn hành lang đầu, hay đang nóng thì cửa mở sẵn); che-day-thung.10 thêm thùng sau lưng mỗi kho (push_back(1), spin(), rồi đường gấp khúc cũ).
+  Bộ dò dãy chung gói 5 (do-duong-day-thung.mjs) dùng hàng đợi chia ngăn: kiem-day-thung từ 1001 giây xuống khoảng 11 giây.
+- Dồn khái niệm: hong-ngoai.6 (while True có sẵn, điều kiện dùng >, <= để màn 7); che-day-thung.1 hướng dẫn hai bước (forward(distance()) rồi thêm + n;
+  lời giải chuẩn giữ một dòng vì ngưỡng ô các màn sau gọi push tính theo nó). doi-mua-2.1 (thiếu màn trình diễn) để cùng mục gói 8.
+- Chững: do-nhiet.6 thành if / else (van trên nóng thì phun ra sau vào van dưới, không thì phun van trên; bỏ lượt quay đầu); doi-mua-2.9 R2 mỗi lượt một việc
+  (if distance() > 0: move() else: wait()).
+- Chữ: xich.6 "gói Băng chuyền", che-luc-ban.8 "gói Lực phun".
+- Chưa làm: gói 8 (màn trình diễn đầu gói, chương 2 lặp chương 1, màn tự viết chương trình chính), ghép lại gói 2 / 3 / 4, che-xich.9 lạc chủ đề, luc-ban.8–.10 dùng distance().

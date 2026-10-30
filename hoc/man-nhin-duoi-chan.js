@@ -47,7 +47,7 @@
   var T_GHI_DUOI = ['for i in range(n):', '    go_right()', '    a.append(color("here"))'];
   var C_GHI_HAM = ['a = []', 'read_below(a, 3)', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
   var T_MUI_TEN = ['if color("here") == "blue":', '    go_down()', 'else:', '    go_right()'];
-  var T_DEM_MAU = ['for i in range(n):', '    go_right()', '    if color("here") == col:', '        a.append(1)'];
+  var T_DEM_MAU = ['for i in range(n):', '    go_right()', '    if color("here") == col:', '        a.append(col)'];      // ghi màu thật (nghiệm thu 30/10: mẹo append(1) chỉ dạy một lần ở che-cam-bon.3)
   var C_DEM_HAM = ['a = []', 'count_here(a, 4, "red")', 'for i in range(len(a)):', '    go_down()'];
   var T_NANG = ['magnet_n()', 'wait()', 'for i in range(n):', '    go_up()', 'magnet_off()', 'wait()'];
 
@@ -265,17 +265,17 @@
 
     manChe({
       so: 4, ten: 'Hàm đếm theo màu', hang: 'luyen', taoHam: ['count_here'], hamCuaEmCan: [],
-      deBai: 'Chế count_here(a, n, col): bay sang phải n ô, ô dưới chân có màu col thì thêm một phần tử vào a. Chương trình chính đã khóa: đếm ô đỏ trên bốn ô rồi bay xuống len(a) ô.',
+      deBai: 'Chế count_here(a, n, col): bay sang phải n ô, ô dưới chân có màu col thì ghi màu đó vào a. Chương trình chính đã khóa: đếm ô đỏ trên bốn ô rồi bay xuống len(a) ô.',
       veMaMau: 'Tạo count_here với ba đối số a, n và col.',
       san: [['.rgrr', '####.', '####.', '####F'], ['.grbg', '####F', '####.', '####.']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_DEM_HAM),
       loiGiai: bai(C_DEM_HAM, { hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], T_DEM_MAU)] }),
       sao: { o: 8, nhip: 7 },
-      congThucKhac: [{ moTa: 'Thêm luôn màu vào danh sách', hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    go_right()', '    if color("here") == col:', '        a.append(col)'])] }],
+      congThucKhac: [{ moTa: 'Thêm số 1 thay cho màu: len(a) vẫn đúng', hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    go_right()', '    if color("here") == col:', '        a.append(1)'])] }],
       loiSai: [
         { moTa: 'Gọi count_here mà chưa chế hàm', baiLam: bai(C_DEM_HAM), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên bay: đọc mãi một ô', baiLam: bai(C_DEM_HAM), hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    if color("here") == col:', '        a.append(1)'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Quên bay: đọc mãi một ô', baiLam: bai(C_DEM_HAM), hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    if color("here") == col:', '        a.append(col)'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Ba đối số: danh sách, số ô, màu cần đếm.', 'len(a) là số ô đếm được.']
     }),

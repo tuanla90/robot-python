@@ -6,7 +6,7 @@
        Cái mới của gói: NÂNG CẤP máy sơn thành bút liền: pen_down() hạ đầu sơn và giữ, xe đi tới đâu tô tới đó; pen_up() nhấc đầu sơn. Gói 2 chỉ có dot().
      - `che-may-son`: chương 2 "Chế lệnh: vẽ hoa văn": màn có sẵn che-may-son.1 … .6, .9, .10 + màn mới che-may-son.11, .12 (cầu nối nhịp).
        Thứ tự: 1 · 9 · 2 · 11 · 4 · 3 · 12 · 6 · 5 · 10 (trùm). che-may-son.7 Lưới chấm và .8 Khung lồng khung (37 / 44 nhịp, sân 49 ô, khó hơn cả trùm)
-       dời sang gói 10 chương tong-hop-4 "Đủ bộ" làm màn nhắc lại.
+       sang mùa 5 (ẩn, chương che-may-son-cu; nghiệm thu 30/10: lạc robot của gói 10, to hơn trùm cuối mùa).
    Luật máy sơn (san-hoc.js phần MÁY SƠN): mục tiêu 'to-hinh': tô đủ hình mờ đúng màu, tô ngoài hình là thua ngay ('to-thua'); ô cuối của hình được tô là thắng ngay.
    Máy kiểm: hoc/kiem-man-mua-4.mjs, hoc/kiem-lo-trinh.mjs mục mùa 4, hoc/kiem-may-son.mjs (chương net-lien).
    ========================================================================== */

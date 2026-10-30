@@ -117,8 +117,14 @@
     if (khoa !== undefined) m.doi[khoa].coDinh = true;
     if (co) { m.doi[0].co = co[0]; m.doi[1].co = co[1]; }
     m.batDau = bd[0]; m.loaiRobot = XE_NC.loaiRobot; m.robot = sao(XE_NC.robot); m.hamGoc = XE_NC.hamGoc.slice();
-    m.taoHam = m.taoHam || []; m.loiSai = [];
+    m.taoHam = m.taoHam || [];
     m.loiGiai.hamCuaEmMoi = m.loiGiai.hamCuaEmMoi || [];
+    // Lời sai mẫu (30/10, nghiệm thu độc lập: chuyển từ kiem-doi-nam-cham.mjs vào dữ liệu màn): doi [R1 | null, R2 | null], null = chương trình của lời giải;
+    // ham thay hàm của em, hamMan thay hàm của màn.
+    m.loiSai = (m.loiSai || []).map(function (l) {
+      return { moTa: l.moTa, baiLam: { doi: l.doi.map(function (c, i) { return { chinh: (c || m.loiGiai.doi[i].chinh).slice() }; }), hamCuaMan: sao(l.hamMan || m.loiGiai.hamCuaMan || []) },
+        hamCuaEmMoi: sao(l.ham || m.loiGiai.hamCuaEmMoi), phaiCoMa: l.phaiCoMa.slice() };
+    });
     m.sao = SAO[m.chuong + '.' + m.so] || { o: 1, nhip: 1 };
     return ManHoc.chuanHoa(m);
   }
@@ -126,6 +132,10 @@
   var DS = [
     man({
       so: 1, ten: 'Hai làn, hai tay',
+      loiSai: [
+        { moTa: 'R1 bật cùng cực S: vật bị đẩy đi', doi: [['magnet_s()', 'wait()', 'turn_left()', 'magnet_off()', 'wait()'], null], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R1 thả ngay, chưa rẽ vào đích', doi: [['grip()', 'magnet_off()', 'wait()'], null], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'Hai robot ở hai làn riêng. Robot màu (R2) đã có chương trình: nhìn màu hộp rồi đặt hộp đỏ sang phải. Viết chương trình cho robot nam châm (R1): kéo vật nam châm về rồi thả vào ô đích phía trên.',
       veMaMau: 'Chạy thử: R2 làm xong phần của nó, R1 đứng yên. Viết chương trình R1.',
       san: ['#######', '#D....#', '#...o.#', '#######', '#.o...#', '#D....#', '#######'],
@@ -139,6 +149,10 @@
     }),
     man({
       so: 2, ten: 'Nam châm tự động', khoa: 0,
+      loiSai: [
+        { moTa: 'R2 phân loại ngay, không chờ vật tới', doi: [null, ['sort_by_color()']], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 chờ sai điều kiện (while not front_clear)', doi: [null, ['while not front_clear():', '    wait()', 'sort_by_color()']], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'R1 là robot tự động, chương trình đã khóa: nó kéo vật nam châm bên kia cái hố về (grip), quay đầu rồi thả trước mũi R2. Hai ô đích nằm trong hốc hai bên R2, chỉ R2 với tới. Viết R2: chờ tới khi vật nằm trước mũi, rồi đặt vật vào đích đúng màu.',
       veMaMau: 'Chạy thử: R2 gắp hụt vì vật chưa tới. Đọc chương trình R1 rồi thêm vòng chờ cho R2.',
       san: ['#######', '###o###', '###u###', '###.###', '###.###', '##D.D##', '#######'],
@@ -151,6 +165,11 @@
     }),
     man({
       so: 3, ten: 'Kéo qua rào',
+      loiSai: [
+        { moTa: 'R1 kéo về rồi giữ mãi', doi: [['magnet_n()', 'wait()'], null], phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'R1 thả ngay vào hàng rào', doi: [['magnet_n()', 'wait()', 'magnet_off()', 'wait()'], null], phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'R1 chuyền sang trái, sai phía R2', doi: [['grip()', 'turn_left()', 'magnet_off()', 'wait()'], null], phaiCoMa: ['qua-nhieu-nhip'] }
+      ],
       deBai: 'Vật sắt nằm sau hàng rào thấp: robot màu không với tới, nhưng lực hút của nam châm đi qua rào. Hai ô đích nằm trong hốc trên và dưới R2, chỉ R2 với tới. R1 kéo vật về rồi đặt ngay trước mũi R2. R2 đã có chương trình chờ hàng rồi phân loại theo màu.',
       veMaMau: 'Chạy thử: R1 kéo được vật nhưng giữ mãi. Viết tiếp R1 để thả vật trước mũi R2.',
       san: ['######', '##o###', '##=#D#', '#....#', '####D#', '######'],
@@ -164,6 +183,11 @@
     }),
     man({
       so: 4, ten: 'Gỗ thì tự lấy', khoa: 0,
+      loiSai: [
+        { moTa: 'R2 chờ mãi vật gỗ (quá nhịp)', doi: [null, ['while front_clear():', '    wait()', 'sort_by_color()']], phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'R2 không chờ, lao lên lúc R1 còn giữa lối', doi: [null, ['fetch_back()', 'sort_by_color()']], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 chờ có hạn nhưng không có đường lui', doi: [null, ['for i in range(3):', '    if front_clear():', '        wait()', 'sort_by_color()']], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'R1 tự động: thấy sắt hay vật nam châm thì kéo về đặt trước mũi R2, gặp vật gỗ thì chịu, rẽ sang bên nhường đường. Lần này là vật gỗ. Viết R2: chờ R1 nhiều nhất 3 nhịp; hết 3 nhịp mà trước mũi vẫn trống thì tự đi lấy vật (fetch_back), rồi đặt vào đích đúng màu.',
       veMaMau: 'Chạy thử: R2 chờ mãi một vật không bao giờ tới. Đổi vòng chờ thành chờ có giới hạn và thêm đường lui.',
       san: ['#####', '##o##', '#...#', '#...#', '#D.D#', '#####'],
@@ -179,6 +203,10 @@
     }),
     man({
       so: 5, ten: 'Dọn gỗ cho nam châm',
+      loiSai: [
+        { moTa: 'R1 bật nam châm ngay vào khúc gỗ', doi: [['grip()', 'u_turn()', 'magnet_off()', 'wait()'], null], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 phân loại tại chỗ, chưa tới cạnh khúc gỗ', doi: [null, ['sort_by_color()']], phaiCoMa: ['vong-vo-han'] }
+      ],
       deBai: 'Vật nam châm nằm sau hàng rào, nhưng một khúc gỗ chắn ngay trước mũi R1: gỗ chắn cả lực hút. R2 gắp khúc gỗ, nhìn màu rồi đặt vào đích cùng màu. R1 chờ tới khi front_pole() thấy vật nam châm, rồi kéo nó về và thả vào ô đích sau lưng.',
       veMaMau: 'Chạy thử: R1 bật nam châm ngay nên chỉ gặp gỗ. Viết R2 dọn gỗ, và cho R1 chờ bằng cảm biến từ.',
       san: ['#######', '###o###', '###=###', '#..o..#', '#.D...#', '###D###', '#######'],
@@ -208,6 +236,11 @@
     }),
     man({
       so: 7, ten: 'Chờ quá ngắn',
+      loiSai: [
+        { moTa: 'R2 giới hạn chờ 2 nhịp: camera chưa thấy vật, đặt nhầm màu', doi: [null, ['for i in range(2):', '    if front_clear():', '        wait()', 'sort_by_color()']], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 không chờ', doi: [null, ['sort_by_color()']], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 tự lái đi lấy (R1 chắn lối)', doi: [null, ['fetch_back()', 'sort_by_color()']], phaiCoMa: ['tha-bi-chan'] }
+      ],
       deBai: 'R1 kéo vật sắt về rồi quay đầu thả trước mũi R2, mất 3 nhịp. R2 được dặn chờ nhiều nhất 2 nhịp rồi nhìn màu: hết giờ chờ quá sớm nên camera chưa thấy gì, vật đỏ bị đặt nhầm sang đích xanh. Sửa chương trình R2 cho giới hạn chờ đủ dài.',
       veMaMau: 'Chương trình R1 đã đúng. Chạy thử từng nhịp, xem R1 thả vật ở nhịp nào rồi sửa R2.',
       san: ['########', '##D#####', '#.....o#', '##D#####', '########'],
@@ -222,6 +255,11 @@
     }),
     man({
       so: 8, ten: 'Bó tay cho sớm', khoa: 1,
+      loiSai: [
+        { moTa: 'R1 thử nam châm rồi mới tránh (muộn)', doi: [['grip()', 'u_turn()', 'magnet_off()', 'wait()', 'turn_left()', 'move()'], null], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R1 tránh sai phía, vào tường', doi: [['if front_metal() or front_pole() != "none":', '    grip()', '    u_turn()', '    magnet_off()', '    wait()', 'else:', '    turn_left()', '    move()'], null], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'R1 không tránh', doi: [['grip()', 'u_turn()', 'magnet_off()', 'wait()'], null], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'R2 tự động, chương trình đã khóa: chờ R1 nhiều nhất 3 nhịp rồi tự đi lấy vật và chuyền ra sau lưng vào đích. Vật lần này là gỗ. R1 cứ bật nam châm thử rồi mới tránh đường, nên R2 lao lên đúng lúc R1 còn đứng giữa lối. Sửa R1: hỏi cảm biến từ trước, gặp gỗ thì tránh ngay (bên phải R1 là tường).',
       veMaMau: 'Chạy thử: R1 tránh đường quá muộn. Đọc chương trình R2 rồi sửa R1.',
       san: ['#####', '##D##', '##.##', '##.##', '#..##', '##o##', '#####'],
@@ -246,6 +284,12 @@
     }),
     man({
       so: 10, ten: 'Ca nam châm',
+      loiSai: [
+        { moTa: 'R2 chờ mãi (sân gỗ quá nhịp)', doi: [null, ['for i in range(2):', '    while front_clear():', '        wait()', '    sort_by_color()']], phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'R2 không chờ, chỉ có đường lui', doi: [null, ['for i in range(2):', '    if front_clear():', '        fetch_back()', '    sort_by_color()']], phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'R2 chờ cứng 3 rồi luôn fetch_back: thua hay mất sao', doi: [null, ['for i in range(2):', '    for j in range(3):', '        wait()', '    fetch_back()', '    sort_by_color()']], phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'R2 giới hạn chờ 2 nhịp: thua hay mất sao', doi: [null, ['for i in range(2):', '    for i in range(2):', '        if front_clear():', '            wait()', '    if front_clear():', '        fetch_back()', '    sort_by_color()']], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'Ba sân, mỗi sân hai vật xếp hàng trước mũi R1: sân này sắt rồi vật nam châm chữ N sau hàng rào (chỉ R1 kéo được), sân kia sắt rồi gỗ, sân nọ gỗ chắn ngay đầu rồi mới tới sắt. Cả hai lặp hai lượt. R1: kéo được thì kéo về thả trước mũi R2 rồi quay lại, không thì tránh sang trái. R2: chờ R1 có giới hạn, hết giờ mà chưa có hàng thì tự đi lấy, rồi đặt vật vào đích đúng màu.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: [
@@ -279,6 +323,11 @@
     /* ================================ chương 2: che-doi-nam-cham ================================ */
     man({
       so: 1, chuong: 'che-' + CHUONG, ten: 'Hàm chờ có hạn', taoHam: ['hold_on'],
+      loiSai: [
+        { moTa: 'hold_on viết bằng while: lần chờ thứ hai kéo dài mãi', doi: [null, null], ham: [H('hold_on', ['n'], ['while front_clear():', '    wait()'])], phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'hold_on không chờ (pass)', doi: [null, null], ham: [H('hold_on', ['n'], ['pass'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không dùng hold_on, viết vòng chờ ngay trong R2', doi: [null, ['for i in range(5):', '    if front_clear():', '        wait()', 'sort_by_color()', 'for i in range(5):', '    if front_clear():', '        wait()', 'fetch_back()', 'sort_by_color()']], ham: [], phaiCoMa: ['chua-tao-ham'] }
+      ],
       deBai: 'Tạo hàm hold_on(n): chờ nhiều nhất n nhịp, trước mũi có vật thì thôi chờ ngay (for i in range(n): if front_clear(): wait()). R2 chờ hai lần: lần đầu R1 đưa vật sắt tới, lần sau R1 gặp gỗ nên tránh đường, R2 hết giờ chờ thì tự đi lấy.',
       veMaMau: 'Chạy thử: lần chờ thứ hai của R2 kéo dài mãi. Tạo hàm hold_on(n) trong Xưởng rồi thay hai vòng while bằng hold_on(5).',
       san: ['#####', '##o##', '##o##', '#...#', '#...#', '#D.D#', '#####'],
@@ -293,6 +342,11 @@
     }),
     man({
       so: 2, chuong: 'che-' + CHUONG, ten: 'Hàm bàn giao', taoHam: ['hand_off'],
+      loiSai: [
+        { moTa: 'hand_off quên quay đầu: thả xuống hố', doi: [null, null], ham: [H('hand_off', [], ['grip()', 'magnet_off()', 'wait()'])], phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'hand_off luôn bật cực N: đẩy vật chữ N', doi: [null, null], ham: [H('hand_off', [], ['magnet_n()', 'wait()', 'u_turn()', 'magnet_off()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R1 gọi hand_off một lần', doi: [['hand_off()'], null], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'Hai vật nằm bên kia cái hố, chỉ lực hút của nam châm với qua được. Tạo hàm hand_off(): kéo vật trước mặt về bằng grip(), quay đầu rồi thả xuống ô sau lưng, đúng chỗ trước mũi R2. R1 gọi hand_off() hai lần; R2 đã có chương trình chờ và phân loại.',
       veMaMau: 'Chương trình có sẵn của R1 mới giao vật đầu. Gói bốn dòng đó thành hàm hand_off() rồi gọi nó cho cả hai vật.',
       san: ['########', '######D#', '#oou...#', '######D#', '########'],
@@ -307,6 +361,10 @@
     }),
     man({
       so: 3, chuong: 'che-' + CHUONG, ten: 'Phương án B', taoHam: ['plan_b'], khoa: 0,
+      loiSai: [
+        { moTa: 'plan_b không làm gì', doi: [null, null], ham: [H('plan_b', [], ['pass'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 bỏ plan_b', doi: [null, ['for i in range(2):', '    hold_on(3)', '    sort_by_color()']], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'Tạo hàm plan_b(): trước mũi vẫn trống thì tự đi lấy vật (fetch_back). R1 tự động giao vật nam châm rồi tránh xuống dưới, vì sau đó chỉ còn khúc gỗ. R2 lặp hai lần: hold_on(3), plan_b(), sort_color(). Lần đầu plan_b() không phải làm gì; lần sau nó cứu cả đội.',
       veMaMau: 'Chạy thử: lượt sau R2 gắp hụt vì không có hàng. Tạo hàm plan_b() rồi gọi nó sau hold_on(3).',
       san: ['########', '######D#', '#o.o...#', '####.#D#', '########'],
@@ -333,6 +391,11 @@
     }),
     man({
       so: 5, chuong: 'che-' + CHUONG, ten: 'Ba màu một hàng',
+      loiSai: [
+        { moTa: 'R2 không xét xanh lá: vật xanh lá vào đích xanh dương', doi: [null, ['for i in range(3):', '    hold_on(3)', '    sort_by_color()']], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R1 quên quay lại sau mỗi lần giao', doi: [['for i in range(3):', '    hand_off()'], null], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 không chờ', doi: [null, ['for i in range(3):', '    if color("front") == "green":', '        pass_back()', '    else:', '        sort_by_color()']], phaiCoMa: ['tha-bi-chan'] }
+      ],
       deBai: 'Ba vật xếp một hàng trước mũi R1: sắt đỏ, sắt xanh lá, rồi vật nam châm xanh dương ở xa nhất. R1 lặp ba lần: hand_off() rồi quay lại. R2 lặp ba lần: hold_on(3), rồi nhìn màu: xanh lá chuyền ra sau lưng (pass_back), màu khác thì sort_color().',
       veMaMau: 'Tự viết cả hai vòng lặp.',
       san: ['#####', '##o##', '##o##', '##o##', '#...#', '#...#', '#D.D#', '##D##', '#####'],
@@ -347,6 +410,10 @@
     }),
     man({
       so: 6, chuong: 'che-' + CHUONG, ten: 'Giao cho kịp', khoa: 1,
+      loiSai: [
+        { moTa: 'R1 quay rồi mới hút: giao chậm một nhịp', doi: [['turn_left()', 'magnet_n()', 'wait()', 'turn_left()', 'magnet_off()', 'wait()', 'turn_left()', 'move()'], null], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R1 giao kịp nhưng không tránh lối', doi: [['magnet_n()', 'turn_left()', 'turn_left()', 'magnet_off()', 'wait()'], null], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'R2 tự động: mỗi lượt hold_on(3) rồi plan_b(). Vật sắt nằm bên trái R1, sau hàng rào; R1 phải đưa nó tới trước mũi R2 trong 3 nhịp, chậm một nhịp là R2 bỏ đi lấy hàng. Lượt sau là khúc gỗ phía trên: R1 phải tránh khỏi lối. Mẹo: lệnh nam châm đi chung nhịp với lệnh quay (magnet_n() rồi turn_left() là một nhịp).',
       veMaMau: 'Chạy thử: R1 giao chậm một nhịp nên R2 lao lên. Sửa R1 cho kịp giờ.',
       san: ['######', '###o##', '###.##', '#o=..#', '###.##', '##D.D#', '###.##', '######'],
@@ -361,6 +428,10 @@
     }),
     man({
       so: 7, chuong: 'che-' + CHUONG, ten: 'Sửa thứ tự giao', khoa: 1,
+      loiSai: [
+        { moTa: 'Chưa sửa lane_left: thả vào hàng rào', doi: [null, null], hamMan: [H('lane_left', [], ['grip()', 'magnet_off()', 'wait()', 'turn_left()', 'turn_right()'])], phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'lane_left quay phải: thả vào tường', doi: [null, null], hamMan: [H('lane_left', [], ['grip()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()'])], phaiCoMa: ['tha-bi-chan'] }
+      ],
       deBai: 'R1 gọi hàm của màn lane_left() hai lần để chuyền hai vật qua rào sang ô bên trái nó, ngay trước mũi R2. Nhưng hàm thả vật trước rồi mới quay, nên vật vướng hàng rào. R2 tự động chờ có hạn rồi phân loại. Sửa hàm lane_left.',
       veMaMau: 'Chương trình chính của R1 đã đúng. Mở hàm lane_left trong Xưởng và sửa thứ tự.',
       san: ['#######', '#oo=..#', '####.##', '###D.D#', '#######'],
@@ -375,6 +446,10 @@
     }),
     man({
       so: 8, chuong: 'che-' + CHUONG, ten: 'Sửa hàm dò cực', khoa: 0,
+      loiSai: [
+        { moTa: 'Chưa sửa scan_wait: R1 không chờ', doi: [null, null], hamMan: [H('scan_wait', ['n'], ['for i in range(n):', '    if front_pole() != "none":', '        wait()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'scan_wait chờ quá ít (2 nhịp)', doi: [['scan_wait(2)', 'hand_off()'], null], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'R1 tự động gọi hàm của màn scan_wait(6): chờ nhiều nhất 6 nhịp cho tới khi front_pole() thấy vật nam châm sau khúc gỗ, rồi hand_off(). Nhưng điều kiện trong hàm bị viết ngược nên R1 không chờ chút nào. Sửa hàm, rồi viết R2: tới gắp khúc gỗ và đặt vào đích màu vàng.',
       veMaMau: 'Chạy thử: R1 bật nam châm ngay vào khúc gỗ. Sửa scan_wait rồi viết chương trình R2.',
       san: ['########', '###..D##', '##o=o.D#', '########'],
@@ -402,6 +477,12 @@
     }),
     man({
       so: 10, chuong: 'che-' + CHUONG, ten: 'Ca đêm nam châm',
+      loiSai: [
+        { moTa: 'hold_on viết bằng while (sân gỗ quá nhịp)', doi: [null, null], ham: [H('hold_on', ['n'], ['while front_clear():', '    wait()'])], phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'R2 bỏ plan_b', doi: [null, ['for i in range(2):', '    hold_on(3)', '    if color("front") == "green":', '        pass_back()', '    else:', '        sort_by_color()']], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'plan_b luôn fetch_back: thua hay mất sao', doi: [null, null], ham: [H('plan_b', [], ['fetch_back()'])], phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'R2 không xét xanh lá', doi: [null, ['for i in range(2):', '    hold_on(3)', '    plan_b()', '    sort_by_color()']], phaiCoMa: ['chua-dua-vat'] }
+      ],
       deBai: 'Ba sân, mỗi sân hai vật xếp hàng trước mũi R1: sân này sắt rồi gỗ, sân kia hai vật nam châm sau rào, sân nọ gỗ chắn ngay đầu. R1 lặp hai lượt: kéo được thì hand_off(), không thì tránh xuống dưới. R2 lặp hai lượt: hold_on(3), plan_b(), rồi phân loại ba màu: đỏ lên trên, xanh dương xuống dưới, xanh lá ra sau lưng.',
       veMaMau: 'Tự viết cả hai chương trình, dùng các hàm đã chế.',
       san: [

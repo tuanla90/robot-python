@@ -56,3 +56,34 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
 - Phim mùa 3 ĐÃ LÀM (30/10): game/phim-mua-3.js, 10 phim 34 khung, kịch bản KE-HOACH-PHIM-GOI.md mục 3d, tem "Xe thăm dò R1"; kiem-phim-goi mục 1c.
   Đã xem từng khung trên trình duyệt (không lỗi console); user xem lại giúp lời và cảnh.
 - Còn: soát 200 / 200 màn trên trình duyệt (KE-HOACH-MUA-3 mục 3 bước P2).
+
+## Nghiệm thu độc lập 30/10 (hoc/ban-giao/nghiem-thu-30-10/nghiem-thu-mua-3.md): đã sửa / còn lại
+User 30/10 "đồng ý. bạn lo phần câu hỏi thôi, phần video sẽ để phiên khác làm" (phim mùa 3 theo cốt truyện Sola / Luna do phiên khác làm).
+Đã sửa (nhánh claude/mua-3-man, mỗi phần một commit; đường cong (h) 0 chỗ nhảy, máy dò lách 0 lỗ mới):
+- Gói 10: trùm mùa trum-mua-3.10 làm lại ba sân (while front_pole() == "none" and not front_metal(), p = front_pole(), if / elif / else: đẩy N, đẩy S,
+  take_iron sắt); trùm đội cũ thành trum-mua-3.8 (màn Gọi một, lấy một bỏ); tong-hop-3.1 thành màn ôn chuỗi path + for c in path + elif nhảy / chui;
+  tong-hop-3.8 viết and thẳng trong while. Không đặt đệm từ ở trùm mùa: đệm kéo cả robot chưa bật nam châm nên xe rơi trước khi kịp đọc cực.
+- Gói 7: trùm mới doc-cuc.9 (ba hành lang dài khác nhau ép while, đọc p, ba nhánh); nam-cham.10 rời mùa 3 sang chương nam-cham-omni (ẩn).
+  Màn cũ có front_metal / front_pole được gắn part cảm biến từ ở lộ trình.
+- Gói 6: dao-cuc.7 lên màn 3 (màn 9 nay là nam-cham.2 dẫn vào trùm); che-dao-cuc.7 lên hàng luyện.
+- Gói 9: che-bung-nhen.9 thành màn for p in "NS": hook_for(p) (thay màn trùng .6), bắc cầu nhịp tới trùm.
+- Gói 2: logic-nam-cham.4 thành màn trình diễn or, logic-nam-cham.5 ép tự ghép or, trùm logic-nam-cham.8 làm lại (góc trái: or ba vế + elif).
+- Gói 5: đề nhen.6 nói rõ walk(path) là tên mới của trail(path).
+Còn lại, cần user quyết (đụng màn có sẵn hay phải thêm chương rời):
+1. Trùm Nhảy nhen.10 56 nhịp (màn 9: 27): màn 2–9 đều đang làm cầu đường cong, muốn thay trùm phải đưa nhen.10 ra chương rời mới (khung gói mùa 2 / 4).
+2. Trùm bai-tu.10 (17 dòng) và bung-nhen.10 (38 nhịp) vẫn gấp khoảng 2 màn 9; đổi thứ tự bai-tu làm nhảy ranh chương 2 nên giữ cũ. Cần thêm màn bậc trung gian (bỏ một màn khác).
+3. Gói 4 bai-tu.4, .5 mỗi màn hai luật: tách cần hai màn mới, bỏ hai màn khác.
+4. Gói 6 nam-cham.3 giới thiệu lại vật nam châm; gói 7 che-nam-cham.3, .9 lạc đề; che-nam-cham.8 nhắc cực S ở gói 2: đều là màn có sẵn,
+   thay thì phải đưa màn cũ ra chương rời như nam-cham.10.
+5. doi-xich.15 thêm cùng lúc chuyền hộp và đếm nhịp (số khối 22 → 40).
+6. Lời chẩn đoán cung-cuc của nhện bụng còn nói "ngay dưới drone" (cham.js dùng chung với drone), nên sửa chữ cho nhện.
+
+## Mùa 3 thành "Bãi tái chế" (user 30/10 "okie, đồng ý", qua phiên Video narrative; luật và 200 màn giữ)
+- Tên mùa hiển thị: Bãi tái chế. Trùm mùa: "Trùm mùa: robot phân loại phế liệu". Tên huy hiệu theo tên chương (không đổi).
+- Lời mọi màn mùa 3 đổi ở lộ trình (lo-trinh-hoc.js, loiBaiTaiChe / chuBaiTaiChe), ngân hàng màn giữ: đề mở bằng "Giúp Sola với!" (màn tên "Sửa…":
+  "Sola viết vội, sửa giúp nhé."; màn trình diễn: "Sola làm mẫu."), gợi ý mở bằng "Luna:", "Chương trình có sẵn" thành "Chương trình Sola viết sẵn",
+  "vật sắt" thành "mẩu sắt vụn", xưng "em" thành "bạn" (giữ nhãn giao diện "hàm của em").
+- Giữ từ của lõi: hố, gầm, đệm từ, vật nam châm (lời chẩn đoán cham.js dùng chung mùa 2, 4; đổi thì đổi cả các mùa đó).
+- Chưa làm, cần user quyết: (1) hình khối sắt thành sắt vụn: vật 'khoi-sat' dùng cả mùa 4 (44 màn), mùa 5 (37 màn) và hình huy hiệu, đổi hình là đổi cả
+  các mùa đó và dời nền phanh 13a-v / A3-v / B5-v; (2) lời phim mùa 3 trong game (pg.*) vẫn theo mỏ quặng, phiên Video narrative làm phim mới bằng
+  Remotion, không sửa chu.js; (3) nhãn giao diện "Hàm của em" và các chữ "em" ngoài mùa 3 chưa đổi sang "bạn".

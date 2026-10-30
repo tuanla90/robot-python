@@ -205,6 +205,17 @@ for (const m of tatCa) {
   }
 }
 kiem('màn nào cũng có ít nhất hai lời sai được thử', tatCa.every((m) => (LOI_SAI[m.ma] || []).length >= 2));
+// 30/10 (nghiệm thu độc lập): lời sai thua của bảng trên đã chép vào dữ liệu màn (m.loiSai, man-doi-nam-cham.js; bốn màn mới ở man-doi-chia-hang.js),
+// để Xưởng nạp lời sai và kiem-man-mua-4 thấy. Mỗi lời sai trong dữ liệu phải thua và có đủ mã phaiCoMa.
+console.log('\n— lời sai trong dữ liệu màn (phải thua, đủ mã)');
+for (const m of tatCa) {
+  m.loiSai.forEach((ls, i) => {
+    const r = cham(m, ls.baiLam.doi.map((d) => d.chinh), ls.baiLam.hamCuaMan, ls.hamCuaEmMoi && ls.hamCuaEmMoi.length ? ls.hamCuaEmMoi : undefined);
+    const co = r.chanDoan.map((c) => c.ma), thieu = ls.phaiCoMa.filter((x) => !co.includes(x));
+    kiem(m.ma + ' lời sai #' + (i + 1) + ' (' + ls.moTa + ') thua, đủ mã ' + ls.phaiCoMa.join('+'), !r.thang && !thieu.length, (r.thang ? 'thắng ' + r.sao + ' sao' : 'thua') + ' · có ' + co.join());
+  });
+}
+kiem('màn nào cũng có lời sai trong dữ liệu', tatCa.every((m) => m.loiSai.length >= 2), tatCa.filter((m) => m.loiSai.length < 2).map((m) => m.ma).join(', '));
 {
   const ma = (m) => J(m.loiGiai.doi.map((d) => d.chinh));
   const trung = tatCa.filter((m, i) => tatCa.some((n, k) => k !== i && n.chuong === m.chuong && ma(n) === ma(m))).map((m) => m.ma);

@@ -132,17 +132,19 @@
     }),
 
     man({
-      so: 6, ten: 'Đáp khi pin yếu', hang: 'luyen', pin: 6, hamCuaEmCan: [],
-      deBai: 'Mười ô tới cờ, ô sạc ở ô thứ 5 và thứ 9. Đáp ở mọi ô thì phí nhịp và hết pin; chỉ đáp khi pin yếu: mỗi lần bay hai ô, hỏi battery(), dưới 3 thì đáp sạc rồi cất cánh.',
+      so: 6, ten: 'Đáp khi pin yếu', hang: 'luyen', pin: [6, 7], hamCuaEmCan: [],
+      deBai: 'Mười ô tới cờ. Đáp ở mọi ô thì phí nhịp và hết pin; chỉ đáp khi pin yếu: mỗi lần bay hai ô, hỏi battery(), dưới 3 thì đáp sạc rồi cất cánh. ' +
+        'Hai sân: drone pin 6 có hai trạm sạc, drone pin 7 chỉ một trạm ở chỗ khác. Đáp cứng theo ô thì hỏng một sân.',
       veMaMau: 'Chương trình có sẵn đã bay từng đôi ô. Thêm câu hỏi pin: battery() < 3.',
-      san: ['....P...P.F'],
+      san: [['....P...P.F'], ['......P...F']],
       batDau: { x: 0, y: 0 },
       maMau: bai(LAP(5, ['go_right()', 'go_right()'])),
       loiGiai: bai(C_PIN_YEU),
       sao: { o: 6, nhip: 14 },
       loiSai: [
         { moTa: 'Lần nào cũng đáp: đáp nhầm ô thường, hết pin', baiLam: bai(LAP(5, ['go_right()', 'go_right()', 'land()', 'take_off()'])), phaiCoMa: ['het-pin'] },
-        { moTa: 'Không đáp: hết pin', baiLam: bai(LAP(5, ['go_right()', 'go_right()'])), phaiCoMa: ['het-pin'] }
+        { moTa: 'Không đáp: hết pin', baiLam: bai(LAP(5, ['go_right()', 'go_right()'])), phaiCoMa: ['het-pin'] },
+        { moTa: 'Đáp cứng ở ô 5 và ô 9: sân thứ hai trạm ở chỗ khác, hết pin', baiLam: bai(['for i in range(2):', '    for j in range(4):', '        go_right()', '    land()', '    take_off()', 'go_right()', 'go_right()']), phaiCoMa: ['het-pin'] }
       ],
       goiY: ['battery() không tốn nhịp.', 'Pin dưới 3 đúng lúc drone đứng trên ô sạc.']
     }),
@@ -180,10 +182,10 @@
     }),
 
     man({
-      so: 9, ten: 'Ngưỡng pin sai', hang: 'bien-the', pin: 6, hamCuaEmCan: [],
-      deBai: 'Chương trình có sẵn chỉ đáp khi battery() < 1: tới lúc hỏi thì pin đã cạn. Sửa ngưỡng để drone đáp đúng hai trạm sạc.',
+      so: 9, ten: 'Ngưỡng pin sai', hang: 'bien-the', pin: [6, 7], hamCuaEmCan: [],
+      deBai: 'Chương trình có sẵn chỉ đáp khi battery() < 1: tới lúc hỏi thì pin đã cạn. Sửa ngưỡng để drone đáp đúng trạm sạc ở cả hai sân: pin 6 hai trạm, pin 7 một trạm.',
       veMaMau: 'Chạy thử: drone hết pin. Đổi số trong battery() < 1.',
-      san: ['....P...P.F'],
+      san: [['....P...P.F'], ['......P...F']],
       batDau: { x: 0, y: 0 },
       maMau: bai(LAP(5, ['go_right()', 'go_right()', 'if battery() < 1:', '    land()', '    take_off()'])),
       loiGiai: bai(C_PIN_YEU),

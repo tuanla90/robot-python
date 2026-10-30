@@ -54,7 +54,7 @@
   var C_THEO = ['a = []', 'read_row(a, 3)', 'follow_code(a)'];
   var T_THA = ['magnet_n()', 'wait()', 'for i in range(n):', '    go_down()', 'magnet_off()', 'wait()'];
   var C_THA = ['n = 0', 'for i in range(3):', '    go_right()', '    if color("up") == "red":', '        n = n + 1', 'drop_down(n)'];
-  var T_DEM = ['for i in range(n):', '    go_right()', '    if color("up") == "red":', '        a.append(1)'];
+  var T_DEM = ['for i in range(n):', '    go_right()', '    if color("up") == "red":', '        a.append("red")'];      // ghi màu thật (nghiệm thu 30/10: mẹo append(1) chỉ dạy một lần ở che-cam-bon.3)
   var C_DEM = ['a = []', 'red_count(a, 3)', 'drop_down(len(a))'];
   var C_XEP = ['find_box()', 'place_box()'];
 
@@ -372,8 +372,8 @@
 
     manChe({
       so: 8, ten: 'Đếm bằng danh sách', hang: 'bien-the', nam: true, taoHam: ['red_count'], hamCuaEmCan: ['drop_down'],
-      deBai: 'Đếm nhà đỏ mà không cần biến đếm: chế red_count(a, n) bay qua n nhà, gặp nhà đỏ thì thêm một phần tử vào a. Số nhà đỏ là len(a). Chương trình chính đã khóa: red_count(a, 3) rồi drop_down(len(a)).',
-      veMaMau: 'Tạo red_count với hai đối số a và n. Thêm gì vào a cũng được, miễn mỗi nhà đỏ thêm đúng một lần.',
+      deBai: 'Đếm nhà đỏ mà không cần biến đếm: chế red_count(a, n) bay qua n nhà, gặp nhà đỏ thì ghi "red" vào a. Số nhà đỏ là len(a). Chương trình chính đã khóa: red_count(a, 3) rồi drop_down(len(a)).',
+      veMaMau: 'Tạo red_count với hai đối số a và n. Mỗi nhà đỏ ghi đúng một lần a.append("red").',
       san: [['.rrr', '...o', '###.', '###.', '###D'], ['.gbr', '...o', '###D', '###.', '###.']],
       vatChat: [['....', '...s', '....', '....', '....'], ['....', '...s', '....', '....', '....']],
       vatMau: [['....', '...g', '....', '....', '....'], ['....', '...g', '....', '....', '....']],
@@ -381,7 +381,7 @@
       maMau: bai(C_DEM),
       loiGiai: bai(C_DEM, { hamCuaEmMoi: [H('red_count', ['a', 'n'], T_DEM)] }),
       sao: { o: 13, nhip: 8 },
-      congThucKhac: [{ moTa: 'Ghi luôn màu đỏ vào danh sách', hamCuaEmMoi: [H('red_count', ['a', 'n'], ['for i in range(n):', '    go_right()', '    if color("up") == "red":', '        a.append("red")'])] }],
+      congThucKhac: [{ moTa: 'Thêm số 1 thay cho màu: len(a) vẫn đúng', hamCuaEmMoi: [H('red_count', ['a', 'n'], ['for i in range(n):', '    go_right()', '    if color("up") == "red":', '        a.append(1)'])] }],
       loiSai: [
         { moTa: 'Gọi red_count mà chưa chế hàm', baiLam: bai(C_DEM), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Thêm mọi nhà vào a: len(a) luôn là 3', baiLam: bai(C_DEM), hamCuaEmMoi: [H('red_count', ['a', 'n'], ['for i in range(n):', '    go_right()', '    a.append(color("up"))'])], phaiCoMa: [] }
