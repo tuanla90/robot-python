@@ -224,7 +224,7 @@ Ghi chú chia:
   - Lời 200 màn: bảng từ chuNongTrai + câu viết tay LOI_NONG_TRAI (lo-trinh-hoc.js), giọng CLB: "Sola nhờ bạn: …", gợi ý "Luna: …", gọi người chơi là "bạn".
   - Phim: sân mini cỏ (phim-goi.js c.san nhận vỏ), gói 1 mở từ bãi tái chế ra đồng quê luống trống, gói 10 đồng nở hoa + tem Drone nông nghiệp R1, nhá mùa 5 mỏ đá.
   - Nền so sánh vector dời: kiem-ve-vector 13a-v → 8921102, kiem-huy-hieu-phim-vector → 584615c (chỉ lệch máy sơn / phim mùa 4, soát bằng --chi-tiet-13a).
-  - Chưa làm: tên hàm cốt truyện tiếng Anh giữ nguyên (field_row, garden, plant_row, line_dock…: mục 7 câu 21); câu nhá mùa 4 trong phim mùa 3 (chu.js pg.tong-hop-3.4
+  - 31/10: 15 tên hàm cốt truyện đổi theo nông trại (mục 7 câu 21). Chưa làm: câu nhá mùa 4 trong phim mùa 3 (chu.js pg.tong-hop-3.4
     "Thành phố xa xa…") là phần của phiên Mùa 3, chưa báo được (phiên tắt); kiem-ve-vector 13a-v chưa phát lại màn có vỏ nông trại (harness không truyền vo).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
