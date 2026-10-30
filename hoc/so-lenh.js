@@ -155,7 +155,7 @@
     m('line', 'son', 'Hạ miệng gieo, đi n bước rồi nhấc lên: hàng n + 1 ô', 'che-may-son', 'che-may-son.1'),
     m('color_line', 'son', 'Chọn loại hạt c rồi gieo hàng n + 1 ô', 'che-may-son', 'che-may-son.2'),
     m('next_row', 'son', 'Lùi n ô về đầu hàng rồi xuống hàng dưới, giữ hướng', 'che-may-son', 'che-may-son.3'),
-    m('stripes', 'son', 'Mỗi màu trong danh sách gieo một hàng bốn ô, hàng nọ dưới hàng kia', 'che-may-son', 'che-may-son.5'),
+    m('sow_rows', 'son', 'Mỗi màu trong danh sách gieo một hàng bốn ô, hàng nọ dưới hàng kia', 'che-may-son', 'che-may-son.5'),
     m('copy_row', 'son', 'Ghi màu hoa n ô bên trái xe bằng camera, xuống hàng dưới rồi gieo lại', 'che-may-son', 'che-may-son.6'),
     m('grid', 'son', 'Lưới chấm r hàng, mỗi hàng k chấm, hàng cách hàng một ô', 'che-may-son', 'che-may-son.7'),
     m('border', 'son', 'Khung vuông mỗi cạnh đi n bước, về chỗ cũ', 'che-may-son', 'che-may-son.8'),

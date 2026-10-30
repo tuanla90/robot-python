@@ -1253,9 +1253,9 @@
       (m.congThucKhac || []).forEach(function (x) { if (x.moTa) x.moTa = chuNongTrai(x.moTa); });
     }
     var LOI_NONG_TRAI = {
-      // Bốn màn cuối chương trùm: "phố" ở đây là LUỐNG hoa drone gieo (street = gieo một luống rồi về đầu hàng dưới), không phải lối đi.
-      'trum-mua-4.7': { ten: 'Hàm gieo luống', deBai: 'Sola nhờ bạn: chế street(c, n): gieo luống màu c bằng stripe(c, n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: ba luống vàng, xanh dương, vàng.' },
-      'trum-mua-4.8': { ten: 'Luống có trạm sạc', deBai: 'Sola nhờ bạn: chế street_dock(c, n): gieo một luống bằng street(c, n), rồi gọi charge_if(9) ở đầu hàng mới. Chương trình chính đã khóa: luống vàng, luống xanh dương, rồi hàng vàng cuối. ' +
+      // Bốn màn cuối chương trùm: "phố" ở đây là LUỐNG hoa drone gieo (field_row = gieo một luống rồi về đầu hàng dưới), không phải lối đi.
+      'trum-mua-4.7': { ten: 'Hàm gieo luống', deBai: 'Sola nhờ bạn: chế field_row(c, n): gieo luống màu c bằng sow_line(c, n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: ba luống vàng, xanh dương, vàng.' },
+      'trum-mua-4.8': { ten: 'Luống có trạm sạc', deBai: 'Sola nhờ bạn: chế field_dock(c, n): gieo một luống bằng field_row(c, n), rồi gọi charge_if(9) ở đầu hàng mới. Chương trình chính đã khóa: luống vàng, luống xanh dương, rồi hàng vàng cuối. ' +
         'Hai sân cùng cánh đồng, drone pin 20 và pin 40: sân pin ít phải ghé trạm, sân pin nhiều thì bay luôn.' },
       'trum-mua-4.9': { ten: 'Hai luống theo dấu' },
       'trum-mua-4.10': { deBai: 'Sola nhờ bạn: trùm cuối mùa, Drone nông nghiệp R1 nhận ca đầu tiên ở nông trại mới. Chép bảng mẫu hàng trên xuống, sạc khi pin yếu ở trạm, gieo hoa vàng các dấu trên luống, sạc lần nữa, ' +
