@@ -53,10 +53,10 @@ export function ngoCanh(m, i = 0) {
 }
 export const HANH_DONG = ['M', 'B', 'R', 'L', 'W', 'c', 'h', 'f', 'g'];
 export const GIA = { M: 1, B: 1, R: 2, L: 2, W: 1, c: 1, h: 1, f: 1, g: 1 };
-/** Các hành động màn cho phép (bắn nhanh chỉ khi lucBan; bắn ra sau khi khay có shoot_back). */
+/** Các hành động màn cho phép (phun mạnh c / h chỉ khi lucBan, phun nhẹ f / g luôn có (29/10: mặc định); phun ra sau khi khay có spray_back). */
 export function hanhDong(m) {
   const hg = m.hamGoc || [];
-  return HANH_DONG.filter((a) => !((a === 'f' || a === 'g') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('shoot_back')) && !((a === 'c' || a === 'f') && !hg.includes('shoot')));
+  return HANH_DONG.filter((a) => !((a === 'c' || a === 'h') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('spray_back')) && !((a === 'c' || a === 'f') && !hg.includes('spray')));
 }
 
 function coThungKet(ctx, S) {
@@ -115,10 +115,9 @@ function motNhip(ctx, S, a, tuy) {
         const cell = ny * rong + nx;
         if (!ctx.chan[cell] && !cuaDong(cell)) {
           const i = N.p.indexOf(cell);
-          if (i >= 0) {
-            let cx = nx, cy = ny;
-            while (!thungChan(cx + vg[0], cy + vg[1])) { cx += vg[0]; cy += vg[1]; }
-            if (cx !== nx || cy !== ny) { N.p[i] = cy * rong + cx; N.e[i] = 0; }
+          if (i >= 0) {                                                   // luật 29/10: thùng nhích 1 ô, xe vào ô thùng vừa rời (như xích đẩy); ô sau thùng bị chặn thì cả hai đứng yên
+            const sx = nx + vg[0], sy = ny + vg[1];
+            if (!thungChan(sx, sy)) { N.p[i] = sy * rong + sx; N.e[i] = 0; N.x = nx; N.y = ny; }
           } else { N.x = nx; N.y = ny; }
         }
       }
@@ -263,11 +262,10 @@ export function dayChung(m, gioiHan, tuy = {}) {
 
 /* ------------------------------------------------------------------ 4. dãy → mã Python, so chéo với lõi */
 export function chuoiThanhMa(chuoi, m) {
-  const tu = m.lucBan ? '("charge")' : '()';
   const MA = {
     M: ['left_move()', 'right_move()', 'wait()'], B: ['left_back()', 'right_back()', 'wait()'],
     R: ['right_back()', 'wait()', 'right_back()', 'wait()'], L: ['right_move()', 'wait()', 'right_move()', 'wait()'], W: ['wait()'],
-    c: ['shoot' + tu, 'wait()'], h: ['shoot_back' + tu, 'wait()'], f: ['shoot("fast")', 'wait()'], g: ['shoot_back("fast")', 'wait()']
+    c: ['spray("high")', 'wait()'], h: ['spray_back("high")', 'wait()'], f: ['spray()', 'wait()'], g: ['spray_back()', 'wait()']
   };
   return [...chuoi].flatMap((a) => MA[a]).join('\n') + '\n';
 }
@@ -324,13 +322,13 @@ export function kiemCheo(m, soLan = 60, hat = 7) {
 function bangDong(m, kho) {
   const ten = new Set(kho.map((h) => h.ten)), hg = m.hamGoc || [];
   const ds = [['move()', 'M'], ['back()', 'B'], ['tr_right()', 'R'], ['tr_left()', 'L'], ['spin()', 'RR'], ['sidestep()', 'RML'], ['wait()', 'W'],
-    ['jet_back()', 'c'], ['jet_fwd()', 'h'], ['forward(2)', 'MM'], ['forward(3)', 'MMM']];
-  if (m.lucBan) ds.push(['fire("charge")', 'c'], ['fire("fast")', 'f'], ['fire_back("charge")', 'h'], ['fire_back("fast")', 'g']);
+    ['forward(2)', 'MM'], ['forward(3)', 'MMM']];
+  if (m.lucBan) ds.push(['squirt("high")', 'c'], ['squirt("low")', 'f'], ['squirt_back("high")', 'h'], ['squirt_back("low")', 'g']);
   return ds.filter(([l, a]) => {
     const t = l.match(/^(\w+)\(/)[1];
     if (!(hg.includes(t) || ten.has(t))) return false;
-    if (/[hg]/.test(a) && !hg.includes('shoot_back')) return false;
-    if (/[cf]/.test(a) && !hg.includes('shoot')) return false;
+    if (/[hg]/.test(a) && !hg.includes('spray_back')) return false;
+    if (/[cf]/.test(a) && !hg.includes('spray')) return false;
     return true;
   });
 }

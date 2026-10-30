@@ -174,8 +174,8 @@ const BANG = [];
 {
   kiem('đúng 10 màn, số 1..10, mã che-nam-cham.1…, id theo vị trí trong thuTu (ngay sau nam-cham), tên "Chế lệnh nam châm"',
     che.length === 10 && che.every((m, i) => m.so === i + 1 && m.id === (ThuTu.thuTu.indexOf('che-nam-cham') + 1) + '.' + (i + 1) && m.ma === 'che-nam-cham.' + (i + 1)) && ThuTu.thuTu.indexOf('che-nam-cham') === ThuTu.thuTu.indexOf('nam-cham') + 1 && ThuTu.ten['che-nam-cham'] === 'Chế lệnh nam châm' && ThuTu.laDot2('che-nam-cham'));
-  kiem('tên các màn: Đá vật, Kéo lại gần, Dọn đường, Chuyền sang làn, Phân loại, Bắn vật, Dây cực đấu ngược, Chỉ còn cực N, Đường về, Kho từ; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-nam-cham "Huy hiệu Chế lệnh nam châm"',
-    J(che.map((m) => m.ten)) === J(['Đá vật', 'Kéo lại gần', 'Dọn đường', 'Chuyền sang làn', 'Phân loại', 'Bắn vật', 'Dây cực đấu ngược', 'Chỉ còn cực N', 'Đường về', 'Kho từ']) &&
+  kiem('tên các màn: Đá vật, Kéo lại gần, Dọn đường, Chuyền sang làn, Phân loại, Hất vật, Dây cực đấu ngược, Chỉ còn cực N, Đường về, Kho từ; hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm; chỉ trùm có huy hiệu che-nam-cham "Huy hiệu Chế lệnh nam châm"',
+    J(che.map((m) => m.ten)) === J(['Đá vật', 'Kéo lại gần', 'Dọn đường', 'Chuyền sang làn', 'Phân loại', 'Hất vật', 'Dây cực đấu ngược', 'Chỉ còn cực N', 'Đường về', 'Kho từ']) &&
       J(che.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']) && che.every((m) => !!m.huyHieu === (m.so === 10)) && che[9].huyHieu.ma === 'che-nam-cham' && che[9].huyHieu.ten === 'Huy hiệu Chế lệnh nam châm');
   kiem('mọi màn: xe hai bánh gắn tay nam châm (robot { than: "hai-banh", tay: "nam-cham", camBien: [khoang-cach] }), chương trình 10 ô, mỗi hàm 10 ô, Xưởng mở, được dùng hàm của em, cauTruc for/if/while',
     che.every((m) => m.loaiRobot === 'banh' && J(m.robot) === J({ than: 'hai-banh', tay: 'nam-cham', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }) && m.khung.chinh === 10 && m.khung.moiHam === 10 && m.moXuong === true && m.camHamCuaEm === false && J(m.cauTruc) === '["for","if","while"]'));
@@ -267,7 +267,7 @@ const BANG = [];
   const m6 = man(6), k6 = khoTruoc(m6.id);
   const daThang = ChamHoc.cham(m6, m6.loiGiai, tron(k6, m6.loiGiai.hamCuaEmMoi));
   const daKick = ChamHoc.cham(m6, m6.loiGiai, tron(k6, [H('fling', ['magnet_n()', 'wait()'])]));
-  kiem('20.6 Bắn vật: bắn (hút rồi đổi cực) đưa vật tới (2,2); đá thẳng từ chỗ cũ thì vật trượt tới (2,1), xa hơn vật mờ một ô → chỉ bắn mới thắng; ev day-vat có tuMui true', daThang.thang && !daKick.thang && ev({ vet: daThang.vet }, 'day-vat').some((e) => e.tuMui === true) && daKick.vat[0].y === 1);
+  kiem('20.6 Hất vật: hất (hút rồi đổi cực) đưa vật tới (2,2); đá thẳng từ chỗ cũ thì vật trượt tới (2,1), xa hơn vật mờ một ô → chỉ bắn mới thắng; ev day-vat có tuMui true', daThang.thang && !daKick.thang && ev({ vet: daThang.vet }, 'day-vat').some((e) => e.tuMui === true) && daKick.vat[0].y === 1);
   const m7 = man(7), k7 = khoTruoc(m7.id);
   const cu = ChamHoc.cham(m7, m7.maMau, k7);
   kiem('20.7 Dây cực đấu ngược: hàm của màn fixed_grip() cũ (giống grip) chạy sai ở cả hai sân (vật bị đẩy, day-vat); sửa đổi chỗ hai cực thì thắng cả hai sân; grip() trong kho cũng sai ở màn này', !cu.thang && cu.theoSan.every((s) => !s.thang) && maCua(cu).includes('day-vat') && ChamHoc.cham(m7, m7.loiGiai, k7).theoSan.every((s) => s.thang) &&

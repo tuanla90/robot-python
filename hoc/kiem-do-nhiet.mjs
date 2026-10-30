@@ -130,11 +130,11 @@ function dacTrung(m) {
     else if (/^\s*[A-Za-z_]\w*\s*([-+]=|=\s*[A-Za-z_]\w*\s*[-+])/.test(l)) f.add('bien dem');
     else if (/^\s*[A-Za-z_]\w*\s*=\s*\w+\(\)/.test(l)) f.add('bien = cam bien');
     for (const x of l.matchAll(RE_SO_SANH)) if (!/^\s*for\b/.test(l)) f.add('so sanh ' + x[1] + (/^\d+$/.test(x[2]) ? ' so' : ' bien'));
-    if (/\b(shoot|shoot_back|fire|fire_back)\("(fast|charge)"\)/.test(l)) f.add('luc ban');
+    if (/\b(spray|spray_back|squirt|squirt_back)\("(low|high)"\)/.test(l)) f.add('luc ban');
   }
   for (const h of moi.concat(cuaMan)) {
-    if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(shoot|shoot_back|fire|fire_back)\(/.test(l))) f.add('tham so luc');
-    if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(shoot|fire)\w*\(/.test(l))) f.add('chon luc theo distance');
+    if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(spray|spray_back|squirt|squirt_back)\(/.test(l))) f.add('tham so luc');
+    if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(spray|squirt)\w*\(/.test(l))) f.add('chon luc theo distance');
     if (h.than.some((l) => /warm\(\)/.test(l))) f.add('ham doc warm');
   }
   for (const h of moi) {
@@ -214,7 +214,7 @@ for (const m of DS) {
     assert.equal(m.robot.than, 'hai-banh');
     assert.equal(m.robot.tay, 'hoi', m.ma + ' tay ' + m.robot.tay);
     assert.equal(m.lucBan, true, m.ma + ' thiếu lucBan: true');
-    for (const h of ['shoot', 'shoot_back', 'warm']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
+    for (const h of ['spray', 'spray_back', 'warm']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
     assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['hong-ngoai'], m.ma + ' phải gắn mắt hồng ngoại');
     assert.ok(['toi-co', 'bong-mo', 'day-thung'].includes(m.mucTieu), m.ma + ' mục tiêu ' + m.mucTieu);
     if (m.hang === 'trum') assert.ok(soSan(m) <= 3, m.ma + ' trùm tối đa ba sân');
@@ -350,21 +350,21 @@ if (!CHI) {
     }
   });
 }
-// Thứ của gói 1–6 mùa 2 hay mùa 1: hàm của em có trước gói Đo nhiệt (trừ move / turn_left / turn_right / u_turn / fire cơ bản), for, distance, lực "charge", băng chuyền, thùng nặng
+// Thứ của gói 1–6 mùa 2 hay mùa 1: hàm của em có trước gói Đo nhiệt (trừ move / turn_left / turn_right / u_turn / squirt cơ bản), for, distance, lực "high", băng chuyền, thùng nặng
 const HAM_CU = new Set(khoTruoc.get('do-nhiet.1').map((h) => h.ten));
 const recall = (m) => {
   const d = dongCua({ b: m.loiGiai, moi: m.loiGiai.hamCuaEmMoi });
-  const ds = [...loiGoi(d)].filter((t) => HAM_CU.has(t) && !['move', 'turn_left', 'turn_right', 'u_turn', 'fire'].includes(t));
+  const ds = [...loiGoi(d)].filter((t) => HAM_CU.has(t) && !['move', 'turn_left', 'turn_right', 'u_turn', 'squirt'].includes(t));
   if (d.some((l) => /^\s*for\b/.test(l))) ds.push('for');
   if (d.some((l) => /distance\(\)/.test(l))) ds.push('distance');
-  if (d.some((l) => /"charge"/.test(l))) ds.push('bắn tụ');
+  if (d.some((l) => /"high"/.test(l))) ds.push('bắn tụ');
   const chu = dsSan(m).map((s) => s.join('')).join('');
   if (/[<>^v]/.test(chu)) ds.push('băng chuyền');
   if (/[Hh]/.test(chu)) ds.push('thùng nặng');
   return [...new Set(ds)];
 };
 if (!CHI) {
-  kiem('recall: mỗi chương ít nhất 4 màn dùng thứ của gói 1–6 mùa 2 hay mùa 1 (hàm của em cũ như forward, go_to_wall, aim_fire; for; distance; bắn tụ; băng chuyền; thùng nặng)', () => {
+  kiem('recall: mỗi chương ít nhất 4 màn dùng thứ của gói 1–6 mùa 2 hay mùa 1 (hàm của em cũ như forward, go_to_wall, auto_spray; for; distance; bắn tụ; băng chuyền; thùng nặng)', () => {
     for (const c of CHUONG) { const co = DS_C[c].filter((m) => recall(m).length); assert.ok(co.length >= 4, c + ': chỉ ' + co.length + ' màn recall'); }
   });
   kiem('có màn đố ("Đố…") ở do-nhiet, màn sửa hàm lỗi ("Sửa…", hàm của màn) ở che-do-nhiet; che-do-nhiet có màn khóa đọc warm() qua hàm của em', () => {

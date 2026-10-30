@@ -8,7 +8,7 @@
    Chương trình KHÔNG đọc cảm biến chạy ra MỘT DÃY CỐ ĐỊNH. Bộ dò:
      1. dsDay: liệt kê MỌI dãy thắng sân (một sân) với tổng nhịp ≤ giới hạn (đồ thị trạng thái + khoảng cách còn lại tới đích để cắt nhánh).
      2. moRong: mở thân hàm của em / chương trình thành dãy chữ (for với số cố định, tham số số hay chuỗi; gặp if / while / cảm biến / biến thì không mở được).
-     3. nenDay: nén một dãy thành chương trình ít dòng nhất: hàm của em mở được (move, turn_left, forward(n), fire(p), fire_left(p)…), lệnh gốc viết thẳng, for, while True ở khúc cuối;
+     3. nenDay: nén một dãy thành chương trình ít dòng nhất: hàm của em mở được (move, turn_left, forward(n), squirt(p), squirt_left(p)…), lệnh gốc viết thẳng, for, while True ở khúc cuối;
         thêm được MỘT hàm phụ f() không tham số, hay MỘT hàm phụ g(p) có tham số lực (khối lặp lại chỉ khác lực của một phát bắn).
      4. timLoiNe: lời cố định rẻ nhất (theo ô, chấm thật bằng cham.js) thắng sân trong sao.nhip.
      5. timLoiNeKhoa: màn khóa chương trình chính: thân hàm X là một dãy cố định (mọi lời gọi X chạy cùng dãy); trả thân rẻ nhất thắng được hay null.
@@ -24,7 +24,7 @@ const SanHoc = require('./san-hoc.js');
 
 /** Chữ của một hành động BFS. */
 export function CHU(a) {
-  if (a.ban) return a.ban === 'truoc' ? (a.luc === 'fast' ? 'f' : 'c') : (a.luc === 'fast' ? 'g' : 'h');
+  if (a.ban) return a.ban === 'truoc' ? (a.luc === 'low' ? 'f' : 'c') : (a.luc === 'low' ? 'g' : 'h');
   return { cho: 'W', tien: 'M', lui: 'B', phai: 'R', trai: 'L', dau: 'U' }[a.banh];
 }
 
@@ -196,13 +196,13 @@ export function moRong(dong, kho, env = {}, tenX = null, sau = 0) {
       if (doi.some((x) => x === undefined)) return false;
       if (ten === tenX) { if (banh[0] || banh[1] || sung) return false; kq += 'X'; continue; }
       if (RAW_BANH[ten]) { const v = RAW_BANH[ten]; if (v[0]) banh[0] = v[0]; if (v[1]) banh[1] = v[1]; continue; }
-      if (ten === 'shoot' || ten === 'shoot_back') {
-        const luc = doi.length ? doi[0] : 'charge';
-        if (luc !== 'fast' && luc !== 'charge') return false;
-        sung = (ten === 'shoot' ? 'truoc' : 'sau') + ':' + luc; continue;
+      if (ten === 'spray' || ten === 'spray_back') {
+        const luc = doi.length ? doi[0] : 'low';                                   // không đối số = phun nhẹ (29/10)
+        if (luc !== 'low' && luc !== 'high') return false;
+        sung = (ten === 'spray' ? 'truoc' : 'sau') + ':' + luc; continue;
       }
       if (ten === 'wait') {
-        if (sung) { const [h, lc] = sung.split(':'); kq += h === 'truoc' ? (lc === 'fast' ? 'f' : 'c') : (lc === 'fast' ? 'g' : 'h'); }
+        if (sung) { const [h, lc] = sung.split(':'); kq += h === 'truoc' ? (lc === 'low' ? 'f' : 'c') : (lc === 'low' ? 'g' : 'h'); }
         else kq += hieuQua(banh[0], banh[1]);
         banh = [0, 0]; sung = null; continue;
       }
@@ -225,9 +225,9 @@ export function moRong(dong, kho, env = {}, tenX = null, sau = 0) {
 const RAW = {
   M: ['left_move()', 'right_move()', 'wait()'], B: ['left_back()', 'right_back()', 'wait()'], R: ['left_move()', 'wait()'], L: ['right_move()', 'wait()'],
   U: ['left_move()', 'right_back()', 'wait()'], W: ['wait()'],
-  f: ['shoot("fast")', 'wait()'], c: ['shoot("charge")', 'wait()'], g: ['shoot_back("fast")', 'wait()'], h: ['shoot_back("charge")', 'wait()']
+  f: ['spray("low")', 'wait()'], c: ['spray("high")', 'wait()'], g: ['spray_back("low")', 'wait()'], h: ['spray_back("high")', 'wait()']
 };
-const GIA_TRI_THU = [1, 2, 3, 4, 5, 6, 7, 8, 'fast', 'charge'];
+const GIA_TRI_THU = [1, 2, 3, 4, 5, 6, 7, 8, 'low', 'high'];
 /** Các "viên gạch" dùng được: [dòng gọi, dãy chữ, tên hàm của em dùng]. bo: tên hàm không được dùng. */
 function gach(kho, bo, them) {
   const kq = [];
@@ -327,10 +327,10 @@ function hamPhu(kho, khoi) {
     return { hamMoi: [{ ten: 'f', thamSo: [], than }], them: [[['f()'], khoi, 'f']] };
   }
   const q = khoi.indexOf('?');
-  const coFire = kho.some((h) => h.ten === 'fire');
+  const coFire = kho.some((h) => h.ten === 'squirt');
   const truoc = nenDay(khoi.slice(0, q), kho).dong, sau = nenDay(khoi.slice(q + 1), kho).dong;
-  const than = truoc.concat(coFire ? ['fire(p)'] : ['shoot(p)', 'wait()'], sau);
-  return { hamMoi: [{ ten: 'g', thamSo: ['p'], than }], them: [[['g("fast")'], khoi.replace('?', 'f'), 'g'], [['g("charge")'], khoi.replace('?', 'c'), 'g']] };
+  const than = truoc.concat(coFire ? ['squirt(p)'] : ['spray(p)', 'wait()'], sau);
+  return { hamMoi: [{ ten: 'g', thamSo: ['p'], than }], them: [[['g("low")'], khoi.replace('?', 'f'), 'g'], [['g("high")'], khoi.replace('?', 'c'), 'g']] };
 }
 /** cham(dong, hamMoi) → kết quả cham.js. Trả lời cố định rẻ nhất theo ô (thắng) hay null. */
 export function timLoiNe(m, kho, cham, tuy = {}) {

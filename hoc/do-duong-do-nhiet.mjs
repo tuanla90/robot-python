@@ -62,9 +62,9 @@ export function kiemDocLap(m) {
 const RAW = {
   M: ['left_move()', 'right_move()', 'wait()'], B: ['left_back()', 'right_back()', 'wait()'], R: ['left_move()', 'wait()'], L: ['right_move()', 'wait()'],
   U: ['left_move()', 'right_back()', 'wait()'], W: ['wait()'],
-  f: ['shoot("fast")', 'wait()'], c: ['shoot("charge")', 'wait()'], g: ['shoot_back("fast")', 'wait()'], h: ['shoot_back("charge")', 'wait()']
+  f: ['spray("low")', 'wait()'], c: ['spray("high")', 'wait()'], g: ['spray_back("low")', 'wait()'], h: ['spray_back("high")', 'wait()']
 };
-const GIA_TRI = [1, 2, 3, 4, 5, 6, 7, 8, 'fast', 'charge'];
+const GIA_TRI = [1, 2, 3, 4, 5, 6, 7, 8, 'low', 'high'];
 function taoGach(kho) {
   const kq = Object.entries(RAW).map(([a, dong]) => ({ dong, e: a, ten: null }));
   for (const h of kho) {

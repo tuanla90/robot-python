@@ -35,7 +35,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Lệnh gốc của tay → mã tay (tay nào mở ra lệnh nào). Màn có lệnh tay mà không khai man.robot.tay thì lấy theo bảng này. */
   var TAY_THEO_LENH = {
     arm_down: 'kep', arm_up: 'kep', grab: 'kep', release: 'kep', arm_left: 'xoay', arm_right: 'xoay',
-    magnet_n: 'nam-cham', magnet_s: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', shoot: 'hoi', shoot_back: 'hoi',
+    magnet_n: 'nam-cham', magnet_s: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', spray: 'hoi', spray_back: 'hoi',
     ink: 'son', dot: 'son', pen_down: 'son', pen_up: 'son'
   };
   function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }

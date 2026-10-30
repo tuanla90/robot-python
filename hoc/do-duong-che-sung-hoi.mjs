@@ -5,8 +5,8 @@
    Dựa trên BFS của do-duong-sung-hoi.mjs (luật y hệt san-hoc.js, phần THÙNG NẶNG + SÚNG HƠI): trạng thái = (ô xe, hướng, đếm băng, thùng, nút, cửa, băng tắt, nhịp mod chu kỳ cửa nhịp, ô ◆ đã qua).
    Khác chương sung-hoi ở chỗ chọn HÀNH ĐỘNG theo PHẦN CỨNG của màn:
      - hiệu quả bánh: toHopChoPhep của do-duong-che-xe.mjs (màn hỏng bánh có ít hơn);
-     - ban-truoc / ban-sau: cần nòng trước (shoot) / nòng sau (shoot_back) trong phần cứng. daoChieu 'sung' (súng lắp ngược) chỉ đổi TÊN lệnh người chơi gọi (shoot() bắn ra sau), không đổi tập
-       hiệu quả làm được, nên bộ dò tính theo hiệu quả THẬT; màn hỏng nòng sau khai phanCung thiếu shoot_back nên chỉ còn ban-truoc.
+     - ban-truoc / ban-sau: cần nòng trước (spray) / nòng sau (spray_back) trong phần cứng. daoChieu 'sung' (súng lắp ngược) chỉ đổi TÊN lệnh người chơi gọi (spray() bắn ra sau), không đổi tập
+       hiệu quả làm được, nên bộ dò tính theo hiệu quả THẬT; màn hỏng nòng sau khai phanCung thiếu spray_back nên chỉ còn ban-truoc.
    Mục tiêu 'bong-mo' có thể kèm thùng mờ (bongMo.thung) và ô ◆ (bongMo.diQua).
    Màn có đoạn chương trình CỐ ĐỊNH chạy trước phần người chơi chế (che-sung-hoi.9: go_out() của màn): nhipCheSungHoiTatCa chạy thật đoạn đó rồi BFS từ trạng thái sau nó.
    Màn nhiều sân: bongMo, batDau, san song song; nhịp = tổng các sân.

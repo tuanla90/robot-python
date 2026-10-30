@@ -38,8 +38,8 @@ function loiGoi(dong) { const s = new Set(); for (const l of dong || []) for (co
 
 /* ================================================================== RECALL gói 1–9 mùa 2 */
 export const GOI_RECALL_10 = Object.assign({}, GOI_RECALL_2, { 8: 'đội hai robot', 9: 'bệ súng xích' });
-const HAM_GOI_8 = ['wait_clear', 'yield_step', 'wait_mate', 'pass_mate', 'shot_clear', 'step_clear', 'cover', 'guard'];
-const HAM_GOI_9 = ['blast_left', 'blast_right', 'lock_on', 'lock_left', 'lock_row', 'go_fire', 'visit', 'push_blast'];
+const HAM_GOI_8 = ['wait_clear', 'yield_step', 'wait_mate', 'pass_mate', 'clear_squirt', 'step_clear', 'cover', 'guard'];
+const HAM_GOI_9 = ['spray_left', 'spray_right', 'valve_on', 'valve_left', 'valve_row', 'go_spray', 'visit', 'push_spray'];
 /** Gói 1–9 mà lời giải màn m dùng: { goi: Set<số>, lyDo }. chay = kết quả cham lời giải; canBeSung = lời giải chạy không bệ súng không 3 sao. */
 export function recallMan10(m, kho, chay, canBeSung) {
   const r = recallMan2(m, kho, chay);
@@ -148,12 +148,12 @@ async function main() {
       else if (/^\s*[A-Za-z_]\w*\s*([-+]=|=\s*[A-Za-z_]\w*\s*[-+])/.test(l)) f.add('bien dem');
       else if (/^\s*[A-Za-z_]\w*\s*=\s*\w+\(\)/.test(l)) f.add('bien = cam bien');
       for (const x of l.matchAll(RE_SO_SANH)) if (!/^\s*for\b/.test(l)) f.add('so sanh ' + x[1] + (/^\d+$/.test(x[2]) ? ' so' : ' bien'));
-      if (/\b(shoot|shoot_back|fire|fire_back)\("(fast|charge)"\)/.test(l)) f.add('luc ban');
-      if (/\b(shoot_back|fire_back|jet_fwd)\(/.test(l)) f.add('ban sau');
+      if (/\b(spray|spray_back|squirt|squirt_back)\("(low|high)"\)/.test(l)) f.add('luc ban');
+      if (/\b(spray_back|squirt_back|jet_fwd)\(/.test(l)) f.add('ban sau');
     }
     for (const h of moi.concat(cuaMan)) {
-      if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(shoot|shoot_back|fire|fire_back)\(/.test(l))) f.add('tham so luc');
-      if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(shoot|fire)\w*\(/.test(l))) f.add('chon luc theo distance');
+      if (h.thamSo.length && h.than.some((l) => new RegExp('\\((' + h.thamSo.join('|') + ')\\)').test(l) && /\b(spray|spray_back|squirt|squirt_back)\(/.test(l))) f.add('tham so luc');
+      if (h.than.some((l) => /distance\(\)/.test(l)) && h.than.some((l) => /\b(spray|squirt)\w*\(/.test(l))) f.add('chon luc theo distance');
       if (h.than.some((l) => /warm\(\)/.test(l))) f.add('ham doc warm');
     }
     for (const h of moi) {
@@ -230,13 +230,13 @@ async function main() {
       assert.equal(m.robot.than, 'xich');
       assert.equal(m.robot.tay, 'hoi', m.ma + ' tay ' + m.robot.tay);
       assert.equal(m.beSung, true, m.ma + ' thiếu beSung: true');
-      for (const h of ['shoot', 'shoot_back']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
+      for (const h of ['spray', 'spray_back']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
       if (m.doi) {
         assert.equal(m.doi.length, 2, m.ma + ' đội phải đúng hai robot');
         assert.ok(m.doi.every((d) => d.coDinh), m.ma + ' hai robot phải khóa cả hai chương trình');
         assert.ok(m.doi.every((d) => d.co && d.co.length), m.ma + ' mỗi robot cần cờ riêng');
-        assert.ok(m.doi[0].lucBan && m.doi[0].hamGoc.includes('shoot') && m.doi[0].hamGoc.includes('warm'), m.ma + ' R1 phải là xích + súng hơi + mắt, lucBan');
-        assert.ok(m.doi[1].xichDay && !m.doi[1].hamGoc.includes('shoot') && m.doi[1].hamGoc.includes('distance'), m.ma + ' R2 phải là xích + mắt, xichDay, không súng');
+        assert.ok(m.doi[0].lucBan && m.doi[0].hamGoc.includes('spray') && m.doi[0].hamGoc.includes('warm'), m.ma + ' R1 phải là xích + súng hơi + mắt, lucBan');
+        assert.ok(m.doi[1].xichDay && !m.doi[1].hamGoc.includes('spray') && m.doi[1].hamGoc.includes('distance'), m.ma + ' R2 phải là xích + mắt, xichDay, không súng');
         assert.ok(m.doi.every((d) => d.loaiRobot === 'xich' && d.robot.than === 'xich'), m.ma + ' cả hai phải là xích');
         assert.ok(!m.lucBan && !m.xichDay, m.ma + ' màn đội: lucBan / xichDay khai theo từng xe');
         assert.ok(m.loiGiai.doi && m.loiGiai.doi.length === 2 && m.maMau.doi, m.ma + ' bài làm đội phải có doi[2]');

@@ -117,7 +117,7 @@
 
   /** Lệnh robot → tiếng. Lệnh bánh / bay không có ở đây (nhịp đã kêu 'buoc'). */
   var LENH = [
-    [/^grab$/, 'kep'], [/^(release|magnet_off)$/, 'tha'], [/^shoot/, 'ban'], [/^throw$/, 'nem'],
+    [/^grab$/, 'kep'], [/^(release|magnet_off)$/, 'tha'], [/^spray/, 'ban'], [/^throw$/, 'nem'],
     [/^(aim|load)$/, 'nap'], [/^magnet_/, 'tu'], [/^arm_/, 'lat']
   ];
   function lenh(ten) {

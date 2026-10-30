@@ -6,7 +6,7 @@
    2. Từng màn: đủ trường (≥ 2 lời sai có phaiCoMa), robot xe hai bánh + hồng ngoại (tay kẹp được), khay có distance; NHIỀU SÂN + nhipTheo 'tong';
       lời giải thắng 3 sao, đúng sao.o / sao.nhip, KHÔNG chẩn đoán; mã mẫu chưa thắng; lời giải khác đúng 2 sao; lời sai thua và có đủ mã phaiCoMa.
    3. Hàm của em: mọi hàm màn cần đã được tạo ở màn đứng trước (theo thứ tự lộ trình) và lời gọi nào cũng khai trong hamCuaEmCan; hàm mới (taoHam) có mục Sổ lệnh.
-   4. Không dùng thứ của gói sau: không warm(), không xichDay / beSung / lucBan, không shoot("…"), không return (mùa 5); sân không S / u / n.
+   4. Không dùng thứ của gói sau: không warm(), không xichDay / beSung / lucBan, không spray("…"), không return (mùa 5); sân không S / u / n.
    5. Đường cong cả hai chương: dòng lời giải / nhịp / số ô không tường của màn n ≤ max(1,5 × màn n−1, màn n−1 + lề) (lề +3 dòng, +4 nhịp, +6 ô), trùm được miễn;
       mỗi màn thêm TỐI ĐA MỘT điều mới (bảng đặc trưng đọc từ lời giải: distance, phép so sánh, biến, while / if / else, hàm của em mới, hàm có tham số, vật…);
       màn 1 chương 1 dễ (≤ 5 dòng); recall: ≥ 4 màn dùng thứ của gói 1–2 mùa 2 hay mùa 1 (hàm của em cũ, for, tay kẹp, forward(n)…).
@@ -250,14 +250,14 @@ for (const m of DS) {
     for (const s of m.goiY.concat(m.loiSai.map((x) => x.moTa))) assert.ok(!/—|\p{Extended_Pictographic}/u.test(s), m.ma + ' chữ có gạch dài / emoji: ' + s);
     if (m.hang === 'trum') assert.ok(m.huyHieu, m.ma + ' trùm thiếu huy hiệu');
   });
-  kiem(m.ma + ': không dùng thứ của gói sau (warm, xichDay, beSung, lucBan, shoot("…"), return), sân không S / u / n', () => {
+  kiem(m.ma + ': không dùng thứ của gói sau (warm, xichDay, beSung, lucBan, spray("…"), return), sân không S / u / n', () => {
     for (const k of ['xichDay', 'beSung', 'lucBan']) assert.ok(!m[k], m.ma + ' có ' + k);
     for (const h of CAM_LENH) assert.ok(!m.hamGoc.includes(h), m.ma + ' khay có ' + h);
     for (const x of moiBai(m)) {
       const d = dongCua(x);
       for (const h of CAM_LENH) assert.ok(!loiGoi(d).has(h), m.ma + ' ' + x.ten + ' gọi ' + h);
       assert.ok(!d.some((l) => /^\s*return\b/.test(l)), m.ma + ' ' + x.ten + ' dùng return (mùa 5)');
-      assert.ok(!d.some((l) => /shoot(_back)?\(\s*"/.test(l)), m.ma + ' ' + x.ten + ' dùng lực bắn');
+      assert.ok(!d.some((l) => /spray(_back)?\(\s*"/.test(l)), m.ma + ' ' + x.ten + ' dùng lực bắn');
     }
     for (const rows of dsSan(m)) assert.ok(!/[Sun]/.test(rows.join('')), m.ma + ' sân có S / u / n');
   });

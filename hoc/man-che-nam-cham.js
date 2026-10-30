@@ -4,7 +4,7 @@
    Lệnh gốc (luật đầy đủ ở san-hoc.js, phần NAM CHÂM), đều chỉ RA LỆNH, wait() cho nhịp trôi, mỗi nhịp một lệnh nam châm:
        magnet_n() bật cực N · magnet_s() bật cực S · magnet_off() ngắt điện, thả vật dính xuống ô sát mũi xe        (cặp lệnh ngược: magnet_n ↔ magnet_s)
    Luật tóm tắt: vật SẮT bị hút bởi cực nào cũng được trong 2 ô và KHÔNG BAO GIỜ bị đẩy; vật NAM CHÂM (chữ N hay S là cực quay về phía xe) trong 3 ô: KHÁC cực thì hút, CÙNG cực thì ĐẨY ra xa
-   (trượt tối đa 3 ô, dừng trước vật cản); vật đang dính mà tay đổi sang cùng cực thì bị BẮN ra khỏi mũi xe. front_pole() cho biết chữ ("N", "S", "none") của vật nam châm đầu tiên trong 3 ô.
+   (trượt tối đa 3 ô, dừng trước vật cản); vật đang dính mà tay đổi sang cùng cực thì bị HẤT ra khỏi mũi xe. front_pole() cho biết chữ ("N", "S", "none") của vật nam châm đầu tiên trong 3 ô.
    Luật thiết kế như che-xe và che-tay: lệnh gốc chỉ đổi MỘT trạng thái; động tác hay (đá vật, kéo vật lại gần, chuyền sang làn, phân loại theo cực…) là thứ NGƯỜI CHƠI TỰ CHẾ.
    Mỗi lệnh chế được ít nhất hai cách và cả hai đều thắng: `congThucKhac: [{ moTa, hamCuaEmMoi }]` (hay `baiLam` cho hàm của màn).
 
@@ -20,10 +20,10 @@
      che-nam-cham.2 reel()  = grip(), magnet_off(), wait()                                      kéo vật nam châm trước mặt về, thả xuống ô sát mũi xe (2 nhịp)
      che-nam-cham.4 lane()  = grip(), turn_right(), magnet_off(), wait(), turn_left()          chuyền vật trước mặt sang ô bên PHẢI xe, xe giữ ô và hướng (4 nhịp)
      che-nam-cham.5 sort()  = if front_pole() == "N": lane() else: grip(), turn_left(), magnet_off(), wait(), turn_right()      vật N sang phải, vật S sang trái (đúng 8 dòng)
-     che-nam-cham.6 fling() = magnet_s(), wait(), magnet_n(), wait()                           hút vật N rồi đổi cực: vật bị BẮN ra khỏi mũi xe, trượt 3 ô (2 nhịp)
+     che-nam-cham.6 fling() = magnet_s(), wait(), magnet_n(), wait()                           hút vật N rồi đổi cực: vật bị HẤT ra khỏi mũi xe, trượt 3 ô (2 nhịp)
    HÀM CỦA MÀN (15/10: hàm chỉ đúng cho MỘT màn thì không vào kho, người chơi tự viết / sửa thân trong màn; `maMau.hamCuaMan`, không `taoHam`, không có trong Sổ lệnh):
      che-nam-cham.7 fixed_grip() thân ban đầu = grip() cũ (dây cực đấu ngược nên đẩy vật thay vì hút); lời giải đổi chỗ magnet_s ↔ magnet_n        (daoChieu ['cuc'])
-     che-nam-cham.9 go_pull() = move(), move(), grip() (khóa, xem được); put_back() thân ban đầu `pass`, lời giải magnet_n(), wait(), back(), back()   đi NGƯỢC lại go_pull(): kéo ↔ bắn (N ↔ S), tiến ↔ lùi
+     che-nam-cham.9 go_pull() = move(), move(), grip() (khóa, xem được); put_back() thân ban đầu `pass`, lời giải magnet_n(), wait(), back(), back()   đi NGƯỢC lại go_pull(): kéo ↔ hất (N ↔ S), tiến ↔ lùi
 
    Sao: sao.nhip = số nhịp của lời giải cách 1 chạy thật (nhipTheoLoiGiai: lệnh nam châm có wait() riêng nên đường ngắn nhất BFS — do-duong-che-nam-cham.mjs, lệnh nam châm gộp
    vào nhịp đi — luôn ngắn hơn hay bằng); sao.o = ô của lời giải cách 1. Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên.
@@ -119,7 +119,7 @@
     ['.....', '..S..', '.....', '.....', '.....'],
     ['.....', '.....', '.....', '..N..', '.....']
   ];
-  // 6: sân 5×7, xe (2,6); vật N cách 2 ô ở (2,4); bắn bằng hút rồi đổi cực: vật rơi ô sát mũi (2,5) rồi trượt 3 ô tới (2,2). (Đá thẳng thì vật trượt từ (2,4) tới (2,1).)
+  // 6: sân 5×7, xe (2,6); vật N cách 2 ô ở (2,4); hất bằng hút rồi đổi cực: vật rơi ô sát mũi (2,5) rồi trượt 3 ô tới (2,2). (Đá thẳng thì vật trượt từ (2,4) tới (2,1).)
   var SAN_6 = ['.....', '.....', '.....', '.....', '..o..', '.....', '.....'];
   var CHAT_6 = ['.....', '.....', '.....', '.....', '..N..', '.....', '.....'];
   var BD_6 = { x: 2, y: 6, huong: 0 };
@@ -131,7 +131,7 @@
   var SAN_8 = ['......', '.o..#.', '......', '......', '...#..'];
   var CHAT_8 = ['......', '.N....', '......', '......', '......'];
   var BD_8 = { x: 0, y: 1, huong: 1 };
-  // 9: vật N ở hàng trên cùng (2,0), cách xe (2,5) năm ô: go_pull() tiến hai ô rồi kéo vật (cách 3 ô). Bắn vật lại từ ô sát mũi (2,2) thì nó trượt 2 ô rồi dừng ở mép sân (2,0), đúng chỗ cũ
+  // 9: vật N ở hàng trên cùng (2,0), cách xe (2,5) năm ô: go_pull() tiến hai ô rồi kéo vật (cách 3 ô). Hất vật lại từ ô sát mũi (2,2) thì nó trượt 2 ô rồi dừng ở mép sân (2,0), đúng chỗ cũ
   var SAN_9 = ['..o..', '.....', '.....', '.....', '.....', '.....'];
   var CHAT_9 = ['..N..', '.....', '.....', '.....', '.....', '.....'];
   var BD_9 = { x: 2, y: 5, huong: 0 };
@@ -305,8 +305,8 @@
     }),
 
     man({
-      so: 6, ten: 'Bắn vật', hang: 'luyen', taoHam: ['fling'],
-      deBai: 'Vật nam châm chữ N cách xe 2 ô, mà vật mờ nằm xa hơn chỗ đá thẳng tới được. Chế lệnh fling(): hút vật vào xe rồi đổi cực để bắn nó ra. Xe giữ nguyên chỗ và hướng.',
+      so: 6, ten: 'Hất vật', hang: 'luyen', taoHam: ['fling'],
+      deBai: 'Vật nam châm chữ N cách xe 2 ô, mà vật mờ nằm xa hơn chỗ đá thẳng tới được. Chế lệnh fling(): hút vật vào xe rồi đổi cực để hất nó ra. Xe giữ nguyên chỗ và hướng.',
       veMaMau: 'Chương trình chính bị khóa, chỉ có một dòng gọi fling(). Mở Xưởng hàm, tạo fling() rồi bấm Chạy.',
       san: SAN_6, vatChat: CHAT_6,
       batDau: BD_6,
@@ -318,11 +318,11 @@
       loiGiaiKhac: {
         moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm',
         baiLam: { chinh: C_6.slice() },
-        hamCuaEmMoi: [H('fling', nhieu(['# hút rồi bắn'], T_FLING))]
+        hamCuaEmMoi: [H('fling', nhieu(['# hút rồi hất'], T_FLING))]
       },
       congThucKhac: [
         { moTa: 'Hút, thả xuống ô sát mũi, rồi đá từ đó (chậm hơn một nhịp)', hamCuaEmMoi: [H('fling', ['magnet_s()', 'wait()', 'magnet_off()', 'wait()', 'magnet_n()', 'wait()'])] },
-        { moTa: 'Dùng grip() để hút rồi đổi sang cực N để bắn', hamCuaEmMoi: [H('fling', ['grip()', 'magnet_n()', 'wait()'])] }
+        { moTa: 'Dùng grip() để hút rồi đổi sang cực N để hất', hamCuaEmMoi: [H('fling', ['grip()', 'magnet_n()', 'wait()'])] }
       ],
       loiSai: [
         { moTa: 'Đá thẳng không hút trước: vật trượt từ chỗ cũ, bay quá xa vật mờ một ô', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('fling', ['magnet_n()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
@@ -331,7 +331,7 @@
         { moTa: 'Hút rồi bật lại cực S: không đổi gì, vật vẫn dính', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('fling', ['magnet_s()', 'wait()', 'magnet_s()', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Gọi fling() mà chưa chế hàm', baiLam: { chinh: C_6.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Đổi cực khi vật đang dính: nếu cực mới cùng chữ với vật thì vật bị bắn ra khỏi mũi xe.', 'Vật bắn ra rơi xuống ô sát mũi rồi trượt thêm 3 ô.']
+      goiY: ['Đổi cực khi vật đang dính: nếu cực mới cùng chữ với vật thì vật bị hất ra khỏi mũi xe.', 'Vật hất ra rơi xuống ô sát mũi rồi trượt thêm 3 ô.']
     }),
 
     /* ------------------------------------------------------------ hàng 3: biến thể */
@@ -411,17 +411,17 @@
         baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', nhieu(['# làm ngược lại go_pull()'], T_PUT_BACK))] }
       },
       congThucKhac: [
-        { moTa: 'Bắn vật và lùi trong cùng một nhịp (nhanh hơn một nhịp)', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['magnet_n()', 'back()', 'back()'])] } },
-        { moTa: 'Bắn vật, quay đầu, đi lại đường cũ rồi quay đầu lần nữa (chậm hơn)', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['magnet_n()', 'wait()', 'u_turn()', 'move()', 'move()', 'u_turn()'])] } }
+        { moTa: 'Hất vật và lùi trong cùng một nhịp (nhanh hơn một nhịp)', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['magnet_n()', 'back()', 'back()'])] } },
+        { moTa: 'Hất vật, quay đầu, đi lại đường cũ rồi quay đầu lần nữa (chậm hơn)', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['magnet_n()', 'wait()', 'u_turn()', 'move()', 'move()', 'u_turn()'])] } }
       ],
       loiSai: [
         { moTa: 'Để nguyên thân pass: xe còn đứng ở chỗ go_pull() dừng, vật vẫn dính', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', T_PUT_BACK_TRONG)] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Ngắt điện rồi lùi: vật rơi xuống ô sát mũi, không phải chỗ cũ', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['magnet_off()', 'wait()', 'back()', 'back()'])] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Lùi trước rồi mới bắn: vật vẫn dính theo xe tới chỗ xuất phát', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['back()', 'back()', 'magnet_off()', 'wait()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Lùi trước rồi mới hất: vật vẫn dính theo xe tới chỗ xuất phát', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['back()', 'back()', 'magnet_off()', 'wait()'])] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Bật lại cực S như cũ: không đổi cực nên vật vẫn dính', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL), H('put_back', ['magnet_s()', 'wait()', 'back()', 'back()'])] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Xóa mất hàm put_back() của màn: lệnh gọi nó không còn hàm nào', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('go_pull', T_GO_PULL)] }, phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Làm ngược lại go_pull() từng bước, theo thứ tự ngược.', 'Mỗi lệnh có một lệnh ngược: tiến thì lùi, cực S thì cực N. Vật nằm sát mép sân nên bắn ra chỉ trượt tới đúng chỗ cũ.']
+      goiY: ['Làm ngược lại go_pull() từng bước, theo thứ tự ngược.', 'Mỗi lệnh có một lệnh ngược: tiến thì lùi, cực S thì cực N. Vật nằm sát mép sân nên hất ra chỉ trượt tới đúng chỗ cũ.']
     }),
 
     /* ------------------------------------------------------------ trùm */
