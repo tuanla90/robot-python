@@ -304,6 +304,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('day-thung', function (g, c) { dayThung(g, c, 36, 58, 42); c.muiTen(52, 30, 76, 30, BM.vecVang, 5); });
   dk('che-day-thung', che(function (g, c) { c.vat('thung-nang', {}, 40, 62, 30); c.muiTen(22, 36, 44, 36, BM.vecVang, 4.5); }));
+  // PDM2b 31/10: gói 8 mùa 2 "Góc kho cũ": xe cứu hỏa gặp nút đè + thùng gỗ + hàng rào của Kho hàng (mùa 1)
+  dk('kho-cu', function (g, c) { c.o('nut-de', { de: true }, 34, 62, 40); c.vat('thung-go', {}, 66, 58, 24); c.o('rao', { mask: 0 }, 50, 30, 36); });
+  dk('che-kho-cu', che(function (g, c) { c.o('nut-de', { de: true }, 36, 62, 40); c.vat('thung-go', {}, 36, 58, 20); }));
   function nutNong(g, c, cx, cy, canh) {
     c.o('nut-ban', { bat: true }, cx, cy, canh);                                     // 29/10: van hơi đang MỞ (bánh cam nóng), trước là nút bắn loé
     [-10, 0, 10].forEach(function (dx) { H.duong(g, 'M' + (cx + dx) + ' ' + (cy - canh * 0.36) + ' c-4 -5 4 -8 0 -14'); H.vien(g, BM.vecDo, 2.6); });

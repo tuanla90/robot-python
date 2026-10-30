@@ -54,21 +54,21 @@ export function hanhDongChoPhep(man, tuyChon = {}) {
 export function dungNguCanh(man, tuyChon = {}) {
   const loai = man.loaiRobot || 'banh';
   // PDM2b 31/10: thêm XÍCH (mùa 2 R1 là xe cứu hỏa): quay chậm (hai nhịp liên tiếp cùng tổ hợp mới quay 90°, trạng thái có phần quay dở `g`), băng chuyền không đẩy xích,
-  // không có quay đầu một nhịp. Giật y hệt xe hai bánh (không beSung). Chưa hỗ trợ xichDay (xích đẩy thùng khi tiến).
+  // không có quay đầu một nhịp. Giật y hệt xe hai bánh (không beSung). Xích đẩy thùng (man.xichDay): tiến vào thùng thì thùng trượt một ô nếu ô sau trống.
+  // Gói 8 "Góc kho cũ": vật nằm đất 'o' khi không có tay kẹp = vật cản tĩnh (chắn xe, chắn tia, chắn thùng); nút đè M giữ cửa mở khi xe / thùng nằm trên nó.
   if (loai !== 'banh' && loai !== 'xich') throw new Error('Bộ dò súng hơi chỉ biết xe hai bánh và xe xích.');
-  if (loai === 'xich' && man.xichDay) throw new Error('Bộ dò súng hơi chưa hỗ trợ xích đẩy thùng (xichDay).');
   const san = SanHoc.docSan(man.san, man.mau || null, null, null);
-  if (san.vat.length) throw new Error('Bộ dò súng hơi không hỗ trợ vật nhẹ (o, X).');
-  if (san.gam.length || san.ho.length) throw new Error('Bộ dò súng hơi không hỗ trợ gầm / hố.');
   if ((man.hamGoc || []).some((t) => SanHoc.TAY_LENH.includes(t))) throw new Error('Bộ dò súng hơi không hỗ trợ tay kẹp.');
+  if (san.vat.length && san.vat.some((v) => san.o[v.y][v.x] !== 'o')) throw new Error('Bộ dò súng hơi không hỗ trợ vật nhẹ trên ô đích (X).');
+  if (san.gam.length || san.ho.length) throw new Error('Bộ dò súng hơi không hỗ trợ gầm / hố.');
   const rong = san.rong, cao = san.cao, o = (x, y) => y * rong + x;
   const trongSan = (x, y) => x >= 0 && y >= 0 && x < rong && y < cao;
   const chan = new Uint8Array(rong * cao), banDung = new Uint8Array(rong * cao), thungChanTinh = new Uint8Array(rong * cao), mepGoc = new Uint8Array(rong * cao);
   for (let y = 0; y < cao; y++) for (let x = 0; x < rong; x++) {
     const c = san.o[y][x];
-    chan[o(x, y)] = SanHoc.lyDoChan(san, loai, x, y) ? 1 : 0;
-    banDung[o(x, y)] = c === '#' || c === 'N' || c === 'S' ? 1 : 0;
-    thungChanTinh[o(x, y)] = c === '#' || c === 'N' || c === '=' || c === 'S' ? 1 : 0;       // ô thùng không trượt vào được (cửa đóng và thùng khác xét riêng)
+    chan[o(x, y)] = SanHoc.lyDoChan(san, loai, x, y) || c === 'o' ? 1 : 0;
+    banDung[o(x, y)] = c === '#' || c === 'N' || c === 'S' || c === 'o' ? 1 : 0;
+    thungChanTinh[o(x, y)] = c === '#' || c === 'N' || c === '=' || c === 'S' || c === 'o' ? 1 : 0;       // ô thùng không trượt vào được (cửa đóng và thùng khác xét riêng)
     mepGoc[o(x, y)] = c === '#' || c === '=' ? 1 : 0;                                          // tường / hàng rào: tính là "tường" cho thùng kẹt góc
   }
   const bang = new Int8Array(rong * cao).fill(-1), bangIdx = new Int16Array(rong * cao).fill(-1), bangDs = [];
@@ -79,7 +79,9 @@ export function dungNguCanh(man, tuyChon = {}) {
   const nutIdx = new Int16Array(rong * cao).fill(-1);
   san.nut.forEach((n, i) => { nutIdx[o(n.x, n.y)] = i; });
   const cuaIdx = new Int16Array(rong * cao).fill(-1);
-  const cua = san.cua.map((d, i) => { cuaIdx[o(d.x, d.y)] = i; return { cell: o(d.x, d.y), mo0: d.mo, nhip: null }; });
+  const cua = san.cua.map((d, i) => { cuaIdx[o(d.x, d.y)] = i; return { cell: o(d.x, d.y), mo0: d.mo, nhip: null, nutDe: [], coNut: false }; });   // nutDe: ô nút đè M giữ cửa này
+  const nutDeIdx = new Int16Array(rong * cao).fill(-1);
+  (san.nutDe || []).forEach((n, i) => { nutDeIdx[o(n.x, n.y)] = i; });
   for (const cn of man.cuaNhip || []) {
     const d = cua[cuaIdx[o(cn.x, cn.y)]];
     if (!d) throw new Error('Cửa nhịp không ở ô cửa.');
@@ -91,13 +93,19 @@ export function dungNguCanh(man, tuyChon = {}) {
   const nutCua = san.nut.map(() => []), nutBang = san.nut.map(() => []);
   if (man.noi) {
     for (const g of man.noi) {
-      const i = nutIdx[o(g.nut.x, g.nut.y)];
-      if (i < 0) throw new Error('Nhóm nối: không phải nút.');
-      for (const c of g.cua || []) { const j = cuaIdx[o(c.x, c.y)]; if (j < 0 || cua[j].nhip) throw new Error('Nhóm nối: cửa sai.'); if (!nutCua[i].includes(j)) nutCua[i].push(j); }
+      const i = nutIdx[o(g.nut.x, g.nut.y)], iM = nutDeIdx[o(g.nut.x, g.nut.y)];
+      if (i < 0 && iM < 0) throw new Error('Nhóm nối: không phải nút.');
+      if (i < 0) {                                                        // nút đè M: chỉ giữ cửa (không điều khiển băng)
+        for (const c of g.cua || []) { const j = cuaIdx[o(c.x, c.y)]; if (j < 0 || cua[j].nhip) throw new Error('Nhóm nối: cửa sai.'); if (!cua[j].nutDe.includes(o(g.nut.x, g.nut.y))) cua[j].nutDe.push(o(g.nut.x, g.nut.y)); }
+        if ((g.bang || []).length) throw new Error('Nhóm nối: nút đè M không điều khiển băng chuyền.');
+        continue;
+      }
+      for (const c of g.cua || []) { const j = cuaIdx[o(c.x, c.y)]; if (j < 0 || cua[j].nhip) throw new Error('Nhóm nối: cửa sai.'); if (!nutCua[i].includes(j)) nutCua[i].push(j); cua[j].coNut = true; }
       for (const b of g.bang || []) { const j = bangIdx[o(b.x, b.y)]; if (j < 0) throw new Error('Nhóm nối: băng sai.'); if (!nutBang[i].includes(j)) nutBang[i].push(j); }
     }
   } else {
-    san.nut.forEach((_, i) => { cua.forEach((d, j) => { if (!d.nhip) nutCua[i].push(j); }); bangDs.forEach((_, j) => nutBang[i].push(j)); });
+    san.nut.forEach((_, i) => { cua.forEach((d, j) => { if (!d.nhip) { nutCua[i].push(j); d.coNut = true; } }); bangDs.forEach((_, j) => nutBang[i].push(j)); });
+    (san.nutDe || []).forEach((n) => { cua.forEach((d) => { if (!d.nhip) d.nutDe.push(o(n.x, n.y)); }); });
   }
   const dich = new Uint8Array(rong * cao);
   for (const d of san.dich) dich[o(d.x, d.y)] = 1;
@@ -106,7 +114,7 @@ export function dungNguCanh(man, tuyChon = {}) {
   const diQua = bm ? (bm.diQua || []).map((q) => o(q.x, q.y)) : [];
   const thungMo = bm && bm.thung ? bm.thung.map((q) => o(q.x, q.y)) : null;
   return { san, loai, rong, cao, o, trongSan, chan, banDung, thungChanTinh, mepGoc, bang, bangIdx, bangDs, nutIdx, cuaIdx, cua, nutCua, nutBang, L, dich, mucTieu, bm, diQua, thungMo,
-    thung0: san.thung.map((t) => o(t.x, t.y)), bd: tuyChon.batDau || man.batDau, nguong: 2 };
+    thung0: san.thung.map((t) => o(t.x, t.y)), bd: tuyChon.batDau || man.batDau, nguong: 2, xichDay: loai === 'xich' && !!man.xichDay };
 }
 
 const cuaMoNhip = (nh, t) => ((t + nh.pha) % (nh.mo + nh.dong)) < nh.mo;
@@ -193,7 +201,13 @@ export function buocMotNhip(ctx, S, a) {
       const v = VEC[huongDi], nx = N.x + v[0] * soBuoc, ny = N.y + v[1] * soBuoc;
       if (!ctx.trongSan(nx, ny)) return;
       const cell = ny * rong + nx;
-      if (!ctx.chan[cell] && !cuaDong(cell) && N.p.indexOf(cell) < 0) { N.x = nx; N.y = ny; }
+      if (!ctx.chan[cell] && !cuaDong(cell) && N.p.indexOf(cell) < 0) { N.x = nx; N.y = ny; return; }
+      // xích đẩy thùng (cfg.xichDay): tiến vào thùng thì thùng trượt một ô theo hướng tiến nếu ô sau nhận được, xe vào ô thùng vừa rời
+      const i = N.p.indexOf(cell);
+      if (ctx.xichDay && soBuoc === 1 && i >= 0 && !ctx.chan[cell] && !cuaDong(cell)) {
+        const sx = nx + v[0], sy = ny + v[1];
+        if (!thungChan(sx, sy)) { N.p[i] = sy * rong + sx; N.e[i] = 0; N.x = nx; N.y = ny; }
+      }
     };
     if (ctx.loai === 'xich' && (a.banh === 'phai' || a.banh === 'trai')) {
       // xích quay chậm: nhịp thứ hai liên tiếp cùng chiều mới quay 90°; nhịp đầu chỉ "quay dở" (g); hành động khác xoá phần quay dở
@@ -246,7 +260,11 @@ export function buocMotNhip(ctx, S, a) {
   const tMoi = S.t + 1;
   ctx.cua.forEach((d, j) => {
     const dangMo = (N.cm >> j) & 1;
-    const muon = d.nhip ? (cuaMoNhip(d.nhip, tMoi) ? 1 : 0) : ((doiCua >> j) & 1 ? 1 - dangMo : dangMo);
+    let muon = d.nhip ? (cuaMoNhip(d.nhip, tMoi) ? 1 : 0) : ((doiCua >> j) & 1 ? 1 - dangMo : dangMo);
+    if (d.nutDe.length) {                                                       // nút đè M: cửa mở khi có xe / thùng nằm trên một nút đè nối với nó (cửa chỉ có M: theo nút đè hoàn toàn)
+      const de = d.nutDe.some((c) => c === cellXe() || N.p.indexOf(c) >= 0) ? 1 : 0;
+      muon = d.coNut ? (muon || de) : de;
+    }
     if (muon === dangMo) return;
     if (!muon && (d.cell === cellXe() || N.p.indexOf(d.cell) >= 0)) return;     // xe hay thùng đang ở ô cửa: giữ mở
     if (muon) N.cm |= 1 << j; else N.cm &= ~(1 << j);

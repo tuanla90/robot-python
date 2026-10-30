@@ -125,7 +125,7 @@ async function main() {
   }
   const dongCua = (x) => [...(x.b.chinh || []), ...(x.b.doi || []).flatMap((d) => d.chinh || []), ...(x.b.hamCuaMan || []).concat(x.moi || []).flatMap((h) => h.than)];
   /** Số dòng người chơi viết / sửa: chương trình chính (trừ khi khóa; màn đội: các xe không khóa) + thân hàm mới + thân hàm của màn. */
-  const soDong = (m) => (m.doi ? m.loiGiai.doi.filter((d, i) => !m.doi[i].coDinh).reduce((s, d) => s + d.chinh.length, 0) : (m.chinhCoDinh ? 0 : m.loiGiai.chinh.length)) + (m.loiGiai.hamCuaMan || []).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
+  const soDong = (m) => (m.doi ? m.loiGiai.doi.filter((d, i) => !m.doi[i].coDinh).reduce((s, d) => s + d.chinh.length, 0) : (m.chinhCoDinh ? 0 : m.loiGiai.chinh.length)) + (m.loiGiai.hamCuaMan || []).filter((h) => !h.capCu).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
   const coSan = (m) => Math.max(...dsSan(m).map((rows) => rows.join('').replace(/#/g, '').length));
 
   /* ---------------------------------------------------------------- đặc trưng (điều mới) của một màn, đọc từ lời giải và sân (như kiem-be-sung.mjs, thêm hai robot) */
@@ -281,7 +281,8 @@ async function main() {
         const sl = SL.tim(t);
         assert.ok(sl && sl.man === m.ma && sl.chuong === m.chuong && sl.nhom === 'hoi', m.ma + ' hàm mới ' + t + ' chưa có mục Sổ lệnh đúng màn / chương / nhóm hoi: ' + JSON.stringify(sl));
       }
-      for (const x of m.loiGiai.hamCuaMan || []) assert.ok(!HAM_COT_TRUYEN.has(x.ten) && !kho.some((h) => h.ten === x.ten), m.ma + ' hàm của màn ' + x.ten + ' trùng hàm cốt truyện / hàm trong kho');
+      // PDM2b 31/10: hàm của màn capCu là bản cũ của hàm gói Đội (cất khỏi mùa 2, chờ PDM2c dựng gói 9) cấp lại cho gói 10: không tính trùng
+      for (const x of (m.loiGiai.hamCuaMan || []).filter((h) => !h.capCu)) assert.ok(!HAM_COT_TRUYEN.has(x.ten) && !kho.some((h) => h.ten === x.ten), m.ma + ' hàm của màn ' + x.ten + ' trùng hàm cốt truyện / hàm trong kho');
     });
     kiem(m.ma + ': lời giải 3 sao đúng ngưỡng, không chẩn đoán; mã mẫu chưa thắng; lời giải khác 2 sao; công thức khác thắng; lời sai thua đúng mã', () => {
       const r = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);

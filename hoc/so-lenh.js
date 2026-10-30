@@ -225,7 +225,15 @@
     m('auto_on', 'hong-ngoai', 'Van chưa nóng thì tự chọn lực phun theo xa gần', 'che-do-nhiet', 'che-do-nhiet.5'),
     m('scan_on', 'hong-ngoai', 'n lần: mở van bên trái nếu còn đóng rồi tiến một ô', 'che-do-nhiet', 'che-do-nhiet.6'),
     m('switch_right', 'hong-ngoai', 'Quay phải, mở van bên phải nếu nó còn đóng, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.7'),
-    m('auto_left_on', 'hong-ngoai', 'Quay trái, van chưa nóng thì tự chọn lực phun, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8')
+    m('auto_left_on', 'hong-ngoai', 'Quay trái, van chưa nóng thì tự chọn lực phun, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8'),
+    // chương che-kho-cu · Chế lệnh: dọn kho cũ (gói 8 mùa 2 "Góc kho cũ", man-kho-cu.js, PDM2b 31/10; hàm của màn peek_valve / fence_far / pad_shot không có ở đây)
+    m('pad_open', 'hoi', 'Tiến lên nút đè cho cửa mở, phun van bên trái qua cửa rồi quay lại', 'che-kho-cu', 'che-kho-cu.1'),
+    m('fence_shot', 'hoi', 'Phun mạnh qua hàng rào rồi tiến một ô bù cú giật', 'che-kho-cu', 'che-kho-cu.2'),
+    m('hold_shot', 'hoi', 'Đẩy thùng xuống nút đè, quay trái, phun nhẹ van qua cửa vừa mở', 'che-kho-cu', 'che-kho-cu.3'),
+    m('pass_crate', 'xich', 'Né sang làn bên, đi qua thùng gỗ rồi về làn cũ', 'che-kho-cu', 'che-kho-cu.4'),
+    m('fence_at', 'hoi', 'Tiến n ô tới sát rào, phun mạnh qua rào, bù cú giật', 'che-kho-cu', 'che-kho-cu.5'),
+    m('scan_pads', 'hoi', 'n trạm: lên nút đè phun van bên trái rồi tiến một ô', 'che-kho-cu', 'che-kho-cu.6'),
+    m('warm_pad', 'hong-ngoai', 'Lên nút đè, nhìn van qua cửa, chưa nóng thì phun nhẹ, rồi quay lại', 'che-kho-cu', 'che-kho-cu.7')
   ];
   // chương che-doi-mua-2 · Đội phối hợp (gói 8 mùa 2, man-doi-mua-2.js; hàm của màn không có ở đây)
   ds.push(

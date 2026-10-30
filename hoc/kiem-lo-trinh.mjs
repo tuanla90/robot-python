@@ -249,11 +249,11 @@ const BANG_MUA_2 = [
   ['day-thung', [['day-thung', []], ['che-day-thung', []]]],
   ['luc-ban', [['luc-ban', day('luc-ban', MUOI)], ['che-luc-ban', []]]],
   ['do-nhiet', [['do-nhiet', []], ['che-do-nhiet', []]]],
-  ['doi-mua-2', [['doi-mua-2', []], ['che-doi-mua-2', []]]],
+  ['kho-cu', [['kho-cu', []], ['che-kho-cu', []]]],      // PDM2b 31/10: gói 8 Góc kho cũ (yếu tố mùa 1); gói Đội cũ cất (CAT_MUA_2), PDM2c dời sang gói 9
   ['be-sung', [['be-sung', []], ['che-be-sung', []]]],
   ['nha-may-chay', [['tong-hop-2', []], ['trum-mua-2', []]]]
 ];
-const TEP_MUA_2 = ['manBienXich', 'manHongNgoai', 'manDayThung', 'manCheLucBan', 'manDoNhiet', 'manDoiMua2', 'manBeSung', 'manTrumMua2'];
+const TEP_MUA_2 = ['manBienXich', 'manHongNgoai', 'manDayThung', 'manCheLucBan', 'manDoNhiet', 'manKhoCu', 'manBeSung', 'manTrumMua2'];     // manDoiMua2: cất (xem CAT_MUA_2 ở lo-trinh-hoc.js)
 const moiMua2 = TEP_MUA_2.flatMap(k => M[k] || []);
 /** Màn của chương c theo bảng: có sẵn + màn mới (theo so). */
 const manBang2 = (c, coSan) => coSan.concat(moiMua2.filter(m => m.chuong === c).sort((a, b) => a.so - b.so).map(m => m.ma));
@@ -359,7 +359,7 @@ kiem2('(f) robot mùa 2 chỉ dùng part mùa 1 + xích + súng hơi (+ hồng n
 const LE_CONG = { dong: 3, nhip: 4, o: 6 };
 // Gói T (29/10): màn trình diễn chiChay (chương trình khoá, chỉ bấm Chạy: không có việc làm) MIỄN như trùm và KHÔNG làm mốc: màn ép kế tiếp so với màn thật đứng trước.
 const soDongCong = m => (m.doi ? m.loiGiai.doi.filter((d, i) => !m.doi[i].coDinh).reduce((s, d) => s + d.chinh.length, 0) : (m.chinhCoDinh ? 0 : m.loiGiai.chinh.length))
-  + (m.loiGiai.hamCuaMan || []).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);
+  + (m.loiGiai.hamCuaMan || []).filter(h => !h.capCu).concat(m.loiGiai.hamCuaEmMoi || []).reduce((s, h) => s + h.than.length, 0);     // capCu: hàm cũ cấp lại cho gói 10 (PDM2b), không phải dòng của bài
 const soOCong = m => Math.max(...dsSanCua(m).map(r => r.join('').replace(/#/g, '').length));
 const chiSoCong = m => ({ dong: soDongCong(m), nhip: m.sao.nhip, o: soOCong(m) });
 const chuongTheoGoi2 = () => goiMua('mua-2').flatMap(g => g.chuong.map(c => M.danhSach.filter(m => m.chuong === c).sort((a, b) => a.so - b.so)));

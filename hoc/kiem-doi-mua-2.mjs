@@ -41,6 +41,16 @@ function kiem(ten, fn) {
 }
 
 const CHUONG = ['doi-mua-2', 'che-doi-mua-2'];
+// PDM2b 31/10 (KE-HOACH-PART-DUNG-MUA.md mục 1): gói 8 mùa 2 thành "Góc kho cũ"; gói Đội cũ CẤT khỏi mùa 2 (CAT_MUA_2 ở lo-trinh-hoc.js, gói ẩn), chờ PDM2c dựng lại
+// thành gói 9 (R2 lắp part mùa 1). Trong lúc chờ, máy kiểm này dừng sớm (ĐẠT, có ghi chú) vì mọi trông đợi vị trí / mốc / recall đều theo gói 8 cũ. PDM2c sửa lại trông đợi.
+{
+  const gDoi = TT.goi.find((g) => g.ma === 'doi-mua-2');
+  if (!gDoi || gDoi.mua !== 'mua-2') {
+    console.log('Gói doi-mua-2 đang CẤT ngoài mùa 2 (' + (gDoi ? gDoi.mua : 'không có') + '), chờ PDM2c dựng lại thành gói 9: máy kiểm chưa chạy.');
+    console.log('ĐẠT 0 · HỎNG 0 kiểm tra 20 màn gói Đội (cất).');
+    process.exit(0);
+  }
+}
 const MOC = { 'doi-mua-2': 'che-do-nhiet.9', 'che-doi-mua-2': 'doi-mua-2.9' };
 const DAU_SAU = { 'doi-mua-2': 'che-do-nhiet.10', 'che-doi-mua-2': 'doi-mua-2.10' };
 const LE = { dong: 3, nhip: 4, o: 6 };

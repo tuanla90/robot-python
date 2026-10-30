@@ -21,7 +21,19 @@
    Màn ẩn (mùa sau) còn gọi hàm mùa 2 cũ (fetch_back, bounce, pick_behind, deliver…) được cấp bản cũ làm hàm của màn.
    Thứ tự chương sung-hoi đổi (.9 trước .7): mã giữ nên sao đã lưu không mất.
 
+8. **Mùa 2 gói 6–8 (PDM2b):** gói 6–7 sửa THẲNG ngân hàng (man-luc-ban / man-che-luc-ban / man-do-nhiet.js) sang xích + hồng ngoại (không qua sua() như gói 1–4), sao đo
+   lại trong ngân hàng; bản hai bánh của 9 hàm của em (smart_spray, squirt_left, switch_left…) khai cứng ở lo-trinh-hoc.js cho màn ẩn. Băng chuyền không đẩy xích nên
+   che-luc-ban.5 và do-nhiet.9 đổi băng thành cửa. Bộ dò do-duong-sung-hoi.mjs nay biết xích (quay hai nhịp), xích đẩy thùng, nút đè M, thùng gỗ o.
+   Gói 8 MỚI "Góc kho cũ" (kho-cu / che-kho-cu, man-kho-cu.js, 20 màn, sao 210): ý chính "xe đè nút đè thì cửa trước mũi mở cho TIA NƯỚC qua"; rào: tia qua, xe không;
+   thùng gỗ: chắn xe và chắn tia (thử lõi: băng chuyền KHÔNG chở vật o, brief ghi "chở được" là sai; ô đích D không dùng vì chỉ hợp thùng nặng).
+   Gói Đội cũ cất khỏi mùa 2 (CAT_MUA_2, gói ẩn mùa 5, sao 125 trong mùa ẩn), gói 9 vẫn là Bệ vòi xích tới khi PDM2c dựng gói 9–10: gói 10 còn gọi hàm gói Đội
+   (wait_clear, step_clear…) nên được cấp bản cũ làm hàm của màn gắn cờ `capCu` (kiem-lo-trinh (g) và kiem-trum-mua-2 không tính dòng / trùng tên của hàm capCu).
+   kiem-doi-mua-2 dừng sớm (ĐẠT, ghi chú) khi gói Đội không ở mùa 2.
+
 ## Câu hỏi chờ user
+- (PDM2b) Gói Đội cũ cất ở mùa ẩn và gói 9 còn là Bệ vòi xích: PDM2c dựng gói 9 Đội (R2 xe chở hàng) thì Bệ vòi xích đi đâu (cất hẳn, hay giữ vài màn cho gói 10)?
+  Gói 10 đang mượn hàm gói Đội qua `capCu`; PDM2c dựng lại gói 10 thì bỏ CAP_HAM_CU.
+- (PDM2b) luc-ban.8 smart_spray() so distance() > 0 còn che-luc-ban.1 auto_spray() so > 1 (giữ ý cũ của hai chương): hai hàm gần giống nhau, có muốn gộp?
 - Sổ lệnh (so-lenh.js) theo ngân hàng nên còn hiện tên hàm mùa 2 cũ (step, deliver, pick_behind, fetch_back, bounce) mà người chơi giờ không tạo; thiếu next_lane, open_at,
   stair_down. Agent đề xuất cho Sổ lệnh đọc theo lộ trình (một lượt riêng). Claude nghiêng về làm, sau khi xong mùa 2–4.
 - Chương băng chuyền màn 6–9 cùng một khung (đỗ trên ô đích, tắt / mở rồi đi qua, bật lại): có thể thấy lặp.
