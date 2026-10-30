@@ -380,7 +380,7 @@
       kieuBai: 'doi-ban', hamCuaEmCan: ['clear_squirt', 'wait_clear', 'wait_mate', 'squirt', 'tr_left', 'tr_right', 'forward', 'move'],
       deBai: 'Đội hai xe xích: R1 là bệ vòi, R2 là xe đẩy đi hành lang trên và đứng lại ở giếng đầu một lúc. R1 ở mỗi trạm quay lên phun mạnh van cuối giếng cho cửa mở; ' +
         'R2 còn đứng trong giếng thì tia nước trúng bạn. Đám cháy ở trạm đầu đã có lệnh dập sẵn. Hai chương trình đã khóa. ' +
-        'Viết cover_spray(): chờ bạn đi khỏi rồi phun mạnh. clear_squirt(p) của gói Đội làm đúng việc đó.',
+        'Viết cover_spray(): chờ tới khi bạn ra khỏi đường tia nước rồi mới phun mạnh. Gói Đội em đã chế một lệnh làm việc này.',
       veMaMau: 'Hai chương trình bị khóa. cover_spray() có sẵn phun ngay: tia nước trúng R2 ở trạm đầu.',
       san: SAN_T8, noi: [noi(2, 0, [[3, 3]]), noi(5, 0, [[6, 3]])], bd: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[o(8, 3)], [o(7, 1)]], lua: [lua(2, 3, 1)],
       chinh: [R1_T8, R2_T8],
@@ -401,7 +401,7 @@
       chuong: 'tong-hop-2', so: 9, ten: 'Thùng qua ngã tư', yMoi: 'ôn gói Đội + Đẩy thùng: R2 đẩy thùng qua ngã tư; thùng không nóng nên R1 phải đo distance() (step_clear của gói 8)',
       kieuBai: 'doi-thung', hamCuaEmCan: ['step_clear', 'yield_step', 'wait_clear', 'squirt', 'forward', 'move', 'tr_right'],
       deBai: 'R2 (xe đẩy) đẩy thùng nặng xuống qua ngã tư rồi dừng một lúc; R1 (bệ vòi) đi hành lang cắt ngang ngã tư đó, mỗi bước gọi box_step(). ' +
-        'Thùng không nóng nên warm() không thấy nó; phải đo distance(): có gì sát mũi xe thì chờ, không thì tiến. step_clear() của gói Đội làm đúng việc đó. ' +
+        'Thùng không nóng nên warm() không thấy nó; phải đo distance(): có gì sát mũi xe thì chờ, không thì tiến. Gói Đội em đã chế một lệnh làm việc này. ' +
         'Đám cháy giữa hành lang đã có lệnh dập sẵn ở đầu chương trình R1. Hai chương trình đã khóa.',
       veMaMau: 'Hai chương trình bị khóa. box_step() có sẵn chỉ tiến: R1 húc vào thùng.',
       san: SAN_T9, bd: [{ x: 1, y: 3, huong: 1 }, { x: 4, y: 1, huong: 2 }], co: [[o(7, 3)], [o(4, 4)]], lua: [lua(3, 3, 1)],

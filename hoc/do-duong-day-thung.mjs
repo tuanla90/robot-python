@@ -184,28 +184,34 @@ export function doDuongChung(m, gioiHan, tuy = {}) {
   const dau = Ps.map((P) => ({ st: P.dau, xong: false }));
   const khoa = (ds) => ds.map((d, i) => (d.xong ? 'X' : Ps[i].khoa(d.st))).join('#');
   const tot = new Map([[khoa(dau), 0]]);
-  let hang = [[0, dau, '']];
-  while (hang.length) {
-    hang.sort((a, b) => a[0] - b[0]);
-    const [c, ds, chuoi] = hang.shift();
-    if (tot.get(khoa(ds)) < c) continue;
-    if (ds.every((d) => d.xong)) return { nhip: c, chuoi };
-    for (const a of HD) {
-      let tang = 0, ok = true;
-      const moi = ds.map((d, i) => {
-        if (d.xong) return d;
-        const r = Ps[i].buoc(d.st, a);
-        if (!r) { ok = false; return d; }
-        tang += r.gia;
-        return { st: r.st, xong: r.xong };
-      });
-      if (!ok) continue;
-      const c2 = c + tang;
-      if (c2 > gioiHan) continue;
-      const k = khoa(moi);
-      if (tot.has(k) && tot.get(k) <= c2) continue;
-      tot.set(k, c2); hang.push([c2, moi, chuoi + a]);
+  // 30/10: hàng đợi chia ngăn theo nhịp (giá mỗi bước là số nguyên dương nhỏ): cùng kết quả với Dijkstra sắp xếp cả hàng mỗi lần lấy ra, nhưng nhanh hơn nhiều khi
+  // nhiều trạng thái (che-day-thung.10 hai thùng mỗi kho: từ khoảng 1000 giây xuống vài giây).
+  const ngan = [[[dau, '']]];
+  for (let c = 0; c <= gioiHan; c++) {
+    const hang = ngan[c];
+    if (!hang) continue;
+    for (let j = 0; j < hang.length; j++) {
+      const [ds, chuoi] = hang[j];
+      if (tot.get(khoa(ds)) < c) continue;
+      if (ds.every((d) => d.xong)) return { nhip: c, chuoi };
+      for (const a of HD) {
+        let tang = 0, ok = true;
+        const moi = ds.map((d, i) => {
+          if (d.xong) return d;
+          const r = Ps[i].buoc(d.st, a);
+          if (!r) { ok = false; return d; }
+          tang += r.gia;
+          return { st: r.st, xong: r.xong };
+        });
+        if (!ok) continue;
+        const c2 = c + tang;
+        if (c2 > gioiHan) continue;
+        const k = khoa(moi);
+        if (tot.has(k) && tot.get(k) <= c2) continue;
+        tot.set(k, c2); (ngan[c2] || (ngan[c2] = [])).push([moi, chuoi + a]);
+      }
     }
+    ngan[c] = null;
   }
   return null;
 }

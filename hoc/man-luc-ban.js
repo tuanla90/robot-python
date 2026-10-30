@@ -78,15 +78,22 @@
   // 9: lật dọc 8: xe (3,5) quay trái; nút (2,5) sát mũi, thùng (4,5) sau lưng; nút xa (3,8) cách 3 ô bên dưới; cửa 1 (3,4), cửa 2 (3,2), xe mờ (3,1)
   var SAN_9 = ['#######', '###.###', '###C###', '###.###', '###C###', '##N.H.#', '###.###', '###.###', '###N###'];
   var NOI_9 = [{ nut: { x: 2, y: 5 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 3, y: 8 }, cua: [{ x: 3, y: 2 }] }];
-  // 10: ba sân, xe quay trái ở hàng 1. A: nút SÁT mũi, thùng sau lưng có chỗ trượt. B: nút cách 3 ô, cửa dưới ô xe giật tới, thùng (4,3) nằm ngoài đường.
-  //     C: nút sát mũi, thùng sau lưng sát tường (phun mạnh cũng không xô được).
+  // 10 (30/10, nghiệm thu mùa 2: trùm cũ ba dòng dễ hơn màn 8): ba sân, mỗi sân HAI van ở hai hướng như màn 8, xa gần khác nhau; xe (3,3) quay phải.
+  //     A: van trước SÁT mũi, thùng sau lưng (phun mạnh thì hất thùng), van trên cách 3 ô (phun mạnh, giật xuống ô cửa 1 vừa mở) = sân màn 8.
+  //     B: van trước cách 3 ô (phun mạnh, giật lùi sang cột 2), van trên SÁT mũi ở cột 2 (phun nhẹ). C: cả hai van xa (phun mạnh hai lần, giật hai lần).
+  //     Mỗi van mở một cửa trên đường đi xuống; đường xuống dài ngắn theo chỗ xe sau hai cú giật: go_wall(). Sân B, C có thùng (1,3) sau ô xe giật lùi tới, nằm yên.
   var SAN_10 = [
-    ['#######', '#N.H..#', '##C####', '##.####', '##.####', '#######'],
-    ['#######', '#N....#', '#####C#', '####H.#', '#####.#', '#######'],
-    ['######', '##N.H#', '###C##', '###.##', '###.##', '###.##', '######']
+    ['###N###', '###.###', '###.###', '#.H.N##', '###C###', '###.###', '###C###', '###.###', '#######'],
+    ['#######', '#######', '##N####', '#H....N', '##C####', '##.####', '##C####', '##.####', '#######'],
+    ['##N####', '##.####', '##.####', '#H....N', '##C####', '##.####', '##C####', '##.####', '#######']
   ];
-  var BD_10 = [{ x: 2, y: 1, huong: 3 }, { x: 4, y: 1, huong: 3 }, { x: 3, y: 1, huong: 3 }];
-  var BM_10 = [{ x: 2, y: 4, huong: 2, thung: [{ x: 3, y: 1 }] }, { x: 5, y: 4, huong: 2, thung: [{ x: 4, y: 3 }] }, { x: 3, y: 5, huong: 2, thung: [{ x: 4, y: 1 }] }];
+  var BD_10 = [{ x: 3, y: 3, huong: 1 }, { x: 3, y: 3, huong: 1 }, { x: 3, y: 3, huong: 1 }];
+  var NOI_10 = [
+    [{ nut: { x: 4, y: 3 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 3, y: 0 }, cua: [{ x: 3, y: 6 }] }],
+    [{ nut: { x: 6, y: 3 }, cua: [{ x: 2, y: 4 }] }, { nut: { x: 2, y: 2 }, cua: [{ x: 2, y: 6 }] }],
+    [{ nut: { x: 6, y: 3 }, cua: [{ x: 2, y: 4 }] }, { nut: { x: 2, y: 0 }, cua: [{ x: 2, y: 6 }] }]
+  ];
+  var BM_10 = [{ x: 3, y: 7, huong: 2, thung: [{ x: 2, y: 3 }] }, { x: 2, y: 7, huong: 2, thung: [{ x: 1, y: 3 }] }, { x: 2, y: 7, huong: 2, thung: [{ x: 1, y: 3 }] }];
 
   /* ------------------------------------------------------------- chương trình */
 
@@ -99,7 +106,7 @@
   var C_7 = ['tap_left("low")', 'forward(3)'];
   var C_8 = ['smart_spray()', 'turn_left()', 'smart_spray()', 'u_turn()', 'forward(3)'];
   var C_9 = ['pick_spray()', 'turn_left()', 'pick_spray()', 'u_turn()', 'forward(3)'];
-  var L_10 = ['smart_spray()', 'turn_left()', 'go_wall()'];
+  var L_10 = ['smart_spray()', 'turn_right()', 'move()', 'squirt_back("high")', 'go_wall()'];   // van trên ở sau lưng khi quay xuống: phun mạnh ra sau, cú giật đưa xe đi tới
 
   var DS = [
     /* -------------------------------- hàng 1: làm quen */
@@ -265,21 +272,26 @@
 
     /* -------------------------------------------- trùm */
     man({
-      so: 10, ten: 'Trùm: Ba cửa ba lực', hang: 'trum', mucTieu: 'bong-mo', coCam: true, nhipTheo: 'tong', hamCuaEmCan: ['smart_spray', 'squirt', 'turn_left', 'go_wall', 'move'],
-      deBai: 'Ba sân, một chương trình. Sân nào cũng có van bên trái và cửa đi xuống, nhưng van lúc thì sát mũi, lúc thì cách 3 ô, và có sân có thùng sau lưng. Mở cửa, đi xuống tới chỗ xe mờ trên cả ba sân.',
-      veMaMau: 'Tự viết chương trình. Ở mỗi sân xe đứng chỗ khác sau khi phun: dùng go_wall() để đi tới hết đường.',
-      san: SAN_10, batDau: BD_10,
+      so: 10, ten: 'Trùm: Ba cửa ba lực', hang: 'trum', mucTieu: 'bong-mo', coCam: true, nhipTheo: 'tong', hamCuaEmCan: ['smart_spray', 'squirt', 'squirt_back', 'turn_left', 'turn_right', 'u_turn', 'go_wall', 'move'],
+      deBai: 'Ba sân, một chương trình: sân nào cũng có hai van, một trước mặt và một phía trên, mỗi van mở một cánh cửa trên đường đi xuống. ' +
+        'Van lúc sát mũi, lúc cách 3 ô, và có sân có thùng sau lưng. Mở cả hai cửa rồi đi xuống tới chỗ xe mờ, càng ít nhịp càng tốt vì cú giật cũng là một bước đi.',
+      veMaMau: 'Tự viết chương trình. Cú giật làm xe đứng chỗ khác nhau ở mỗi sân, nên đi xuống bằng go_wall().',
+      san: SAN_10, batDau: BD_10, noi: NOI_10,
       bongMo: BM_10,
       maMau: { chinh: [] },
-      sao: { o: 16, nhip: 16 },
+      sao: { o: 20, nhip: 18 },
       loiGiai: { chinh: L_10.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: { chinh: ['# để cảm biến chọn lực'].concat(L_10) } },
-      congThucKhac: [{ moTa: 'Viết thẳng if / else ở chương trình chính thay cho smart_spray()', baiLam: { chinh: ['if front_clear():', '    squirt("high")', 'else:', '    squirt("low")', 'turn_left()', 'go_wall()'] } }],
-      loiSai: [
-        { moTa: 'Luôn phun nhẹ: ở sân thứ hai van cách 3 ô, cửa không mở', baiLam: { chinh: ['squirt("low")', 'turn_left()', 'go_wall()'] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
-        { moTa: 'Luôn phun mạnh: ở sân thứ nhất thùng sau lưng bị hất', baiLam: { chinh: ['squirt("high")', 'turn_left()', 'go_wall()'] }, phaiCoMa: ['lech-bong-mo'] }
+      congThucKhac: [
+        { moTa: 'Quay trái phun van trên bằng smart_spray() rồi quay đầu như màn 8: vẫn qua nhưng thêm nhịp', baiLam: { chinh: ['smart_spray()', 'turn_left()', 'smart_spray()', 'u_turn()', 'go_wall()'] } },
+        { moTa: 'Viết thẳng if / else ở chương trình chính thay cho smart_spray()', baiLam: { chinh: ['if front_clear():', '    squirt("high")', 'else:', '    squirt("low")', 'turn_right()', 'move()', 'squirt_back("high")', 'go_wall()'] } }
       ],
-      goiY: ['Không sân nào đi cùng một lực: hãy để cảm biến chọn.', 'Sau lần phun, quay mặt xuống rồi go_wall().'],
+      loiSai: [
+        { moTa: 'Luôn phun nhẹ: van cách 3 ô không mở, cửa còn đóng', baiLam: { chinh: ['squirt("low")', 'turn_right()', 'move()', 'squirt_back("low")', 'go_wall()'] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
+        { moTa: 'Luôn phun mạnh: ở sân thứ nhất thùng sau lưng bị hất', baiLam: { chinh: ['squirt("high")', 'turn_right()', 'move()', 'squirt_back("high")', 'go_wall()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên phun van trên: cửa thứ hai còn đóng', baiLam: { chinh: ['smart_spray()', 'turn_right()', 'go_wall()'] }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['Van trước mặt: để cảm biến chọn lực. Quay xuống rồi van trên nằm sau lưng.', 'Phun mạnh ra sau thì xe giật tới: smart_spray(), turn_right(), move(), squirt_back("high"), go_wall().'],
       huyHieu: { ma: 'luc-ban', ten: 'Huy hiệu Lực phun' }
     })
   ];

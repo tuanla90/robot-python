@@ -280,7 +280,7 @@
     man({
       so: 8, ten: 'Hàm auto_turn()', yMoi: 'cú giật của lần phun mạnh đẩy thùng sau lưng vào chỗ thùng mờ; lần phun nhẹ giữ thùng kia nằm yên',
       mucTieu: 'bong-mo', hamCuaEmCan: ['auto_spray', 'squirt', 'turn_left', 'back', 'move'], taoHam: ['auto_turn'], chinhCoDinh: true,
-      deBai: 'Hai thùng nặng: thùng sau lưng phải nhích xuống chỗ thùng mờ (xe theo một ô), thùng kia phải nằm yên. Nhớ lại gói Nhà máy: phun mạnh thì cú giật đẩy thùng sau lưng nhích một ô, phun nhẹ thì không giật. ' +
+      deBai: 'Hai thùng nặng: thùng sau lưng phải nhích xuống chỗ thùng mờ (xe theo một ô), thùng kia phải nằm yên. Nhớ lại gói Lực phun: phun mạnh thì cú giật đẩy thùng sau lưng nhích một ô, phun nhẹ thì không giật. ' +
         'Em chế auto_turn(): auto_spray() rồi quay trái. Chương trình chính đã khóa: auto_turn() hai lần.',
       veMaMau: 'Chương trình chính bị khóa. Tạo auto_turn(): hai dòng.',
       san: SAN_8, batDau: { x: 3, y: 3, huong: 0 },

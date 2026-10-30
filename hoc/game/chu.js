@@ -586,7 +586,7 @@
       'pg.tong-hop-3.1': 'Xe em đủ bộ: chân nhện, nam châm, cảm biến từ. Huy hiệu rực!',
       'pg.tong-hop-3.2': 'Tem đóng cộp: Xe thăm dò R1 xuất xưởng!',
       'pg.tong-hop-3.3': 'Quặng bên kia khe nứt giờ đã về tới bãi.',
-      'pg.tong-hop-3.4': 'Thành phố xa xa gửi mật lệnh: cánh quạt, đầu sơn, mắt nhìn xuống.',
+      'pg.tong-hop-3.4': 'Nông trại hoa gửi mật lệnh: cánh quạt, hạt giống, mắt nhìn xuống.',      // 31/10 mùa 4 thành Nông trại (phiên Mùa 4 sửa, phiên Mùa 3 đã đóng)
       'pg.tenR1': 'R1',
       'pg.tenR2': 'R2',
       'caiDat.phimGoi': 'Xem lại phim các gói',

@@ -203,7 +203,7 @@
 
     man({
       so: 6, ten: 'Hàm walk(path)', hang: 'luyen', canHam: 'tran-khung', hamCuaEmCan: ['go'], taoHam: ['walk'], nhipTheoLoiGiai: true,
-      deBai: 'Hàng rào thấp chắn đường: nhện không bước qua được nhưng nhảy qua được. Tạo hàm walk(path): đi theo từng chữ của chuỗi path. Dùng nó để đưa nhện qua hàng rào và gầm tới cờ.',
+      deBai: 'Hàng rào thấp chắn đường: nhện không bước qua được nhưng nhảy qua được. Tạo hàm walk(path): đi theo từng chữ của chuỗi path, đúng việc trail(path) đã làm ở gói Nhện, nay đặt tên mới cho nhện đi trong hang. Dùng nó để đưa nhện qua hàng rào và gầm tới cờ.',      // 30/10 nghiệm thu: nói rõ walk là tên mới của trail
       veMaMau: 'Chương trình có sẵn co chân rồi gọi walk() cho đoạn đường đầu, nhưng em chưa có hàm walk. Tạo hàm walk với một đối số path.',
       san: ['.......', '######.', 'F.n.=..'],
       batDau: { x: 0, y: 0, huong: 0 },
