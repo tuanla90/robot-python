@@ -116,7 +116,9 @@
   var LUA_T5 = [lua(2, 1, 1)];
   // tong-hop-2.6: hành lang (1..6, 3), xe (1,3) quay phải. Trạm (3,3): một nút ở cuối giếng phía trên (3,0), một ở cuối giếng phía dưới (3,6), đều cách ba ô. Xe quay lên ở trạm:
   //   nút trên là trước mặt, nút dưới là sau lưng. Nút (3,0) mở cửa (4,3), nút (3,6) mở cửa (5,3); cờ (6,3). pair_spray() của Sola phun hai lần ra trước: nút trên bị phun hai lần thì tắt lại.
+  //   Gói lửa: đám cháy cỡ 1 ở (3,2) trong giếng trên, sát trạm: chắn tia nước tới van trên. pair_spray() của Sola viết lúc chưa có lửa.
   var SAN_T6 = ['###N####', '###.####', '###.####', '#...CCF#', '###.####', '###.####', '###N####', '########'];
+  var LUA_T6 = [lua(3, 2, 1)];
   // tong-hop-2.7: hành lang (1..6, 1), xe (1,1) quay phải; đám cháy cỡ 1 ở (3,1); ở góc (6,1) rẽ xuống, đám cháy cỡ 3 ở (6,3); cuối giếng là phòng nhỏ, cờ (6,5).
   //   Hai đám cháy không cùng một đường thẳng: dập xong đám đầu thì warm() nhìn thấy tường góc, không thấy đám sau (cùng hàng thì while warm() phun nhẹ mãi vào đám xa).
   //   Chương trình chính khóa gọi douse() trước mỗi đám: thân cố định (phun một số lần cố định) hoặc hụt ở đám to, hoặc phí nhịp ở đám nhỏ; while warm() phun tới khi hết nóng.
@@ -148,14 +150,14 @@
   var L_T4 = ['tr_right()', 'squirt("low")', 'move()', 'tr_left()', 'forward(5)'];
   var L_T5 = ['squirt("low")', 'squirt("high")', 'spin()', 'forward(4)'];
   var C_T6 = ['forward(2)', 'tr_left()', 'pair_spray()', 'tr_right()', 'forward(3)'];
-  var T_PAIR = ['squirt("high")', 'squirt_back("high")'];
+  var T_PAIR = ['squirt("low")', 'squirt("high")', 'squirt_back("high")'];      // dập lửa sát trạm, mở van trên, mở van dưới
   var T_PAIR_LOI = ['squirt("high")', 'squirt("high")'];
   var C_T7 = ['move()', 'douse()', 'forward(4)', 'tr_right()', 'douse()', 'forward(4)'];
   var T_DOUSE = WHILE('warm()', ['squirt("low")']);                         // douse(): còn nóng (còn lửa trước mũi) thì phun nhẹ
-  var R1_T8 = nhieu(['move()'], FOR(2, ['tr_left()', 'cover_spray()', 'tr_right()', 'forward(3)']));
+  var R1_T8 = nhieu(['squirt("low")', 'move()'], FOR(2, ['tr_left()', 'cover_spray()', 'tr_right()', 'forward(3)']));   // gói lửa: dập lửa ở trạm đầu trước khi đi
   var R2_T8 = nhieu(['move()'], CHO(4), ['forward(5)']);
   var T_COVER = ['clear_squirt("high")'];                                  // cover_spray(): chờ bạn đi khỏi đường bóng rồi phun mạnh (gói 8)
-  var R1_T9 = FOR(6, ['box_step()']);
+  var R1_T9 = ['squirt("low")'].concat(FOR(6, ['box_step()']));                  // gói lửa: dập lửa giữa hành lang trước khi đi (không dập thì box_step() chờ mãi)
   var R2_T9 = nhieu(['move()'], CHO(3), ['forward(2)']);
   var T_BOX = ['step_clear()'];                                            // box_step(): còn sát vật cản (thùng hay bạn) thì chờ, rồi tiến (gói 8)
   var L_T10 = WHILE('warm()', ['squirt("high")']).concat(['go_to_wall()', 'tr_right()', 'forward(2)']);
@@ -323,22 +325,24 @@
     }),
 
     man({
-      chuong: 'tong-hop-2', so: 6, ten: 'Sửa hàm pair_spray()', yMoi: 'sửa hàm lỗi: phun hai lần cùng một van là van đóng lại; lần phun thứ hai phải ra sau (gói 4 + gói 6)',
+      chuong: 'tong-hop-2', so: 6, ten: 'Sửa hàm pair_spray()', yMoi: 'sửa hàm lỗi: lửa chắn tia trước van trên; dập lửa, mở van trên, rồi phun ra sau mở van dưới (gói 4 + gói 6)',
       kieuBai: 'sua-ham', chinhCoDinh: true, hamCuaEmCan: ['squirt', 'squirt_back', 'tr_left', 'tr_right', 'forward', 'move'],
       deBai: 'Ở trạm có hai van: một ở cuối giếng phía trên, một ở cuối giếng phía dưới, đều cách ba ô; mỗi van mở một cánh cửa phía trước. Xe quay lên ở trạm: van trên trước mặt, van dưới sau lưng. ' +
-        'Sola chế pair_spray() để phun cả hai, nhưng chép nhầm: hai lần squirt("high"). Van hơi trúng hai lần thì đóng lại. Chương trình chính đã khóa. Chạy thử rồi sửa hàm.',
+        'Sola chế pair_spray() từ trước khi nhà máy cháy: hai lần squirt("high") ra trước. Nay giếng trên có một đám cháy sát trạm, chắn tia nước tới van trên. ' +
+        'Chương trình chính đã khóa. Chạy thử rồi sửa hàm cho cả hai cửa đều mở.',
       veMaMau: 'Chạy thử. Hai cánh cửa: cánh nào mở, cánh nào không?',
-      san: SAN_T6, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(3, 0, [[4, 3]]), noi(3, 6, [[5, 3]])],
+      san: SAN_T6, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(3, 0, [[4, 3]]), noi(3, 6, [[5, 3]])], lua: LUA_T6,
       maMau: bai(C_T6, [H('pair_spray', [], T_PAIR_LOI)]),
-      sao: { o: 22, nhip: 11 },
+      sao: { o: 23, nhip: 12 },
       loiGiai: bai(C_T6, [H('pair_spray', [], T_PAIR)]),
-      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: bai(C_T6, [H('pair_spray', [], ['# một phát ra trước, một phát ra sau'].concat(T_PAIR))]) },
-      congThucKhac: [{ moTa: 'Phun ra sau trước, ra trước sau', baiLam: bai(C_T6, [H('pair_spray', [], ['squirt_back("high")', 'squirt("high")'])]) }],
+      loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: bai(C_T6, [H('pair_spray', [], ['# dập lửa, van trên, van dưới'].concat(T_PAIR))]) },
+      congThucKhac: [{ moTa: 'Phun ra sau trước, rồi dập lửa và mở van trên', baiLam: bai(C_T6, [H('pair_spray', [], ['squirt_back("high")', 'squirt("low")', 'squirt("high")'])]) }],
       loiSai: [
-        { moTa: 'Để nguyên bản của Sola: van trên bị phun hai lần nên đóng lại, cửa đầu đóng', baiLam: bai(C_T6, [H('pair_spray', [], T_PAIR_LOI)]), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Phun nhẹ ra sau: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(C_T6, [H('pair_spray', [], ['squirt("high")', 'squirt_back("low")'])]), phaiCoMa: ['ban-ngan', 'dam-tuong'] }
+        { moTa: 'Để nguyên bản của Sola: lần đầu trúng lửa, lần sau mở van trên, van dưới không ai phun', baiLam: bai(C_T6, [H('pair_spray', [], T_PAIR_LOI)]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quên dập lửa: phun trên rồi phun ra sau, tia trên trúng lửa nên van trên chưa mở', baiLam: bai(C_T6, [H('pair_spray', [], ['squirt("high")', 'squirt_back("high")'])]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Phun nhẹ ra sau: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(C_T6, [H('pair_spray', [], ['squirt("low")', 'squirt("high")', 'squirt_back("low")'])]), phaiCoMa: ['ban-ngan', 'dam-tuong'] }
       ],
-      goiY: ['Van hơi đổi qua lại: trúng lần hai là đóng lại.', 'squirt("high") rồi squirt_back("high").']
+      goiY: ['Lửa chắn tia: lần phun đầu trúng lửa chứ không trúng van.', 'squirt("low"), squirt("high"), squirt_back("high").']
     }),
 
     man({
@@ -368,13 +372,14 @@
       chuong: 'tong-hop-2', so: 8, ten: 'Bệ vòi và xe đẩy', yMoi: 'ôn gói Đội: hai robot, bệ vòi chờ bạn đi khỏi đường tia nước rồi phun (clear_squirt của gói 8); cả hai chương trình khóa',
       kieuBai: 'doi-ban', hamCuaEmCan: ['clear_squirt', 'wait_clear', 'wait_mate', 'squirt', 'tr_left', 'tr_right', 'forward', 'move'],
       deBai: 'Đội hai xe xích: R1 là bệ vòi, R2 là xe đẩy đi hành lang trên và đứng lại ở giếng đầu một lúc. R1 ở mỗi trạm quay lên phun mạnh van cuối giếng cho cửa mở; ' +
-        'R2 còn đứng trong giếng thì tia nước trúng bạn. Hai chương trình đã khóa. Viết cover_spray(): chờ bạn đi khỏi rồi phun mạnh. clear_squirt(p) của gói Đội làm đúng việc đó.',
+        'R2 còn đứng trong giếng thì tia nước trúng bạn. Đám cháy ở trạm đầu đã có lệnh dập sẵn. Hai chương trình đã khóa. ' +
+        'Viết cover_spray(): chờ bạn đi khỏi rồi phun mạnh. clear_squirt(p) của gói Đội làm đúng việc đó.',
       veMaMau: 'Hai chương trình bị khóa. cover_spray() có sẵn phun ngay: tia nước trúng R2 ở trạm đầu.',
-      san: SAN_T8, noi: [noi(2, 0, [[3, 3]]), noi(5, 0, [[6, 3]])], bd: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[o(8, 3)], [o(7, 1)]],
+      san: SAN_T8, noi: [noi(2, 0, [[3, 3]]), noi(5, 0, [[6, 3]])], bd: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 1, huong: 1 }], co: [[o(8, 3)], [o(7, 1)]], lua: [lua(2, 3, 1)],
       chinh: [R1_T8, R2_T8],
       hamMau: [H('cover_spray', [], ['squirt("high")'])],
       ham: [H('cover_spray', [], T_COVER)],
-      sao: { o: 28, nhip: 20 },
+      sao: { o: 29, nhip: 20 },
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', ham: [H('cover_spray', [], ['# bạn đi khỏi rồi mới phun'].concat(T_COVER))] },
       congThucKhac: [{ moTa: 'Viết wait_clear() rồi squirt("high")', ham: [H('cover_spray', [], ['wait_clear()', 'squirt("high")'])] }],
       loiSai: [
@@ -387,15 +392,16 @@
 
     man({
       chuong: 'tong-hop-2', so: 9, ten: 'Thùng qua ngã tư', yMoi: 'ôn gói Đội + Đẩy thùng: R2 đẩy thùng qua ngã tư; thùng không nóng nên R1 phải đo distance() (step_clear của gói 8)',
-      kieuBai: 'doi-thung', hamCuaEmCan: ['step_clear', 'yield_step', 'wait_clear', 'forward', 'move', 'tr_right'],
+      kieuBai: 'doi-thung', hamCuaEmCan: ['step_clear', 'yield_step', 'wait_clear', 'squirt', 'forward', 'move', 'tr_right'],
       deBai: 'R2 (xe đẩy) đẩy thùng nặng xuống qua ngã tư rồi dừng một lúc; R1 (bệ vòi) đi hành lang cắt ngang ngã tư đó, mỗi bước gọi box_step(). ' +
-        'Thùng không nóng nên warm() không thấy nó; phải đo distance(): có gì sát mũi xe thì chờ, không thì tiến. step_clear() của gói Đội làm đúng việc đó. Hai chương trình đã khóa.',
+        'Thùng không nóng nên warm() không thấy nó; phải đo distance(): có gì sát mũi xe thì chờ, không thì tiến. step_clear() của gói Đội làm đúng việc đó. ' +
+        'Đám cháy giữa hành lang đã có lệnh dập sẵn ở đầu chương trình R1. Hai chương trình đã khóa.',
       veMaMau: 'Hai chương trình bị khóa. box_step() có sẵn chỉ tiến: R1 húc vào thùng.',
-      san: SAN_T9, bd: [{ x: 1, y: 3, huong: 1 }, { x: 4, y: 1, huong: 2 }], co: [[o(7, 3)], [o(4, 4)]],
+      san: SAN_T9, bd: [{ x: 1, y: 3, huong: 1 }, { x: 4, y: 1, huong: 2 }], co: [[o(7, 3)], [o(4, 4)]], lua: [lua(3, 3, 1)],
       chinh: [R1_T9, R2_T9],
       hamMau: [H('box_step', [], ['move()'])],
       ham: [H('box_step', [], T_BOX)],
-      sao: { o: 15, nhip: 10 },
+      sao: { o: 18, nhip: 10 },
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', ham: [H('box_step', [], ['# thùng hay bạn sát mũi thì chờ'].concat(T_BOX))] },
       congThucKhac: [{ moTa: 'Viết thẳng while distance() == 0: wait() rồi move()', ham: [H('box_step', [], WHILE('distance() == 0', ['wait()']).concat(['move()']))] }],
       loiSai: [
