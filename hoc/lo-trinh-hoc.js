@@ -78,7 +78,9 @@
     m.goiY = (m.goiY || []).map(vanBan);
   }
   // Luyện trên một tình huống đủ tiêu biểu; phần khái quát hóa dành cho trùm.
-  M.danhSach.forEach(function (m) { if (m.so < 10) motSan(m, 1); });
+  // Trừ che-may-son.6 (mùa 4 gói 6, nghiệm thu 30/10): hai hàng màu khác nhau để danh sách màu ghi cứng không thắng.
+  var GIU_NHIEU_SAN = { 'che-may-son.6': true };
+  M.danhSach.forEach(function (m) { if (m.so < 10 && !GIU_NHIEU_SAN[m.ma]) motSan(m, 1); });
 
   // Cảm biến: sửa while trước, quan sát cảm biến hông sau; chưa học tìm đường.
   sua('khoang-cach.7', {

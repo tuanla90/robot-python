@@ -116,9 +116,9 @@ console.log('\n== 3. Hai chương ==');
   // Màn mới mùa 4 (man-cham-son.js may-son.11–16, man-net-lien.js net-lien.N và che-may-son.11, .12) có thêm ở hoc/kiem-man-mua-4.mjs; ở đây đếm màn cũ.
   kiem('20 màn: may-son.1–10 và che-may-son.1–10', ds.filter((m) => /^(che-)?may-son\.([1-9]|10)$/.test(m.ma)).length === 20);
   const DOC = ['che-may-son.6', 'che-may-son.9', 'che-may-son.10'];
-  kiem('mọi màn: xe hai bánh gắn đầu sơn, khay 9 lệnh, gói Chấm sơn bớt pen_down / pen_up (che-may-son 6, 9, 10: thêm color() và cảm biến màu dưới bụng), mục tiêu to-hinh, có hình mờ', ds.every((m) => m.loaiRobot === 'banh' && m.robot.tay === 'son' && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh) &&
-    (DOC.includes(m.ma) ? J(m.hamGoc) === J(KHAY.concat(['color'])) && J(m.robot.camBien) === '[{"ma":"mau","o":"hong"}]' && !!m.sonBanDau : J(m.hamGoc) === J(m.chuong === 'may-son' ? KHAY.filter((t) => t !== 'pen_down' && t !== 'pen_up') : KHAY) && !m.robot.camBien.length)));
-  kiem('che-may-son 1–9 chương trình chính cố định; 10 gioiHanHam 2', ds.filter((m) => m.chuong === 'che-may-son').every((m) => (m.so < 10) === (m.chinhCoDinh === true)) && ManHoc.timMa('che-may-son.10').gioiHanHam === 2);
+  kiem('mọi màn: xe hai bánh gắn đầu sơn, khay 9 lệnh, gói Chấm sơn bớt pen_down / pen_up (che-may-son 6, 9, 10: thêm color() và camera bốn hướng, từ 30/10), mục tiêu to-hinh, có hình mờ', ds.every((m) => m.loaiRobot === 'banh' && m.robot.tay === 'son' && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh) &&
+    (DOC.includes(m.ma) ? J(m.hamGoc) === J(KHAY.concat(['color'])) && J(m.robot.camBien) === '[{"ma":"camera-4","o":"tren"}]' && !!m.sonBanDau : J(m.hamGoc) === J(m.chuong === 'may-son' ? KHAY.filter((t) => t !== 'pen_down' && t !== 'pen_up') : KHAY) && !m.robot.camBien.length)));
+  kiem('che-may-son 1–9 chương trình chính cố định; 10 gioiHanHam 3 (copy_row, next_row, fill_gaps)', ds.filter((m) => m.chuong === 'che-may-son').every((m) => (m.so < 10) === (m.chinhCoDinh === true)) && ManHoc.timMa('che-may-son.10').gioiHanHam === 3);
   // kho: hàm cốt truyện các màn trước theo lộ trình (như người chơi mua mùa 3)
   const kho = new Map();
   for (const m of LoTrinh.danhSach) { if (m.doi) continue; if (m.chuong === 'may-son') break; for (const h of m.loiGiai.hamCuaEmMoi || []) kho.set(h.ten, h); }

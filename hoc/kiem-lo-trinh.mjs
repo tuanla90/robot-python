@@ -61,9 +61,10 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'che-pho-mau.1', 'che-pho-mau.2', 'che-pho-mau.3', 'che-pho-mau.4', 'che-pho-mau.5', 'che-pho-mau.6', 'che-pho-mau.7', 'che-pho-mau.8', 'che-pho-mau.9',
   'cam-bon.2', 'cam-bon.3', 'cam-bon.4', 'cam-bon.5', 'cam-bon.6', 'cam-bon.7', 'cam-bon.8', 'cam-bon.9',
   'che-cam-bon.1', 'che-cam-bon.2', 'che-cam-bon.3', 'che-cam-bon.4', 'che-cam-bon.5', 'che-cam-bon.6', 'che-cam-bon.7', 'che-cam-bon.8', 'che-cam-bon.9',
-  'tram-sac.8', 'che-drone.12',      // gói 5: hai drone pin khác nhau trên cùng một phố
+  'tram-sac.6', 'tram-sac.8', 'tram-sac.9', 'che-drone.12',      // gói 5: hai drone pin khác nhau (tram-sac.6, .9: trạm khác chỗ, nghiệm thu 30/10)
   'nhin-duoi.2', 'nhin-duoi.3', 'nhin-duoi.4', 'nhin-duoi.5', 'nhin-duoi.6', 'nhin-duoi.7', 'nhin-duoi.8', 'nhin-duoi.9',
   'che-nhin-duoi.1', 'che-nhin-duoi.2', 'che-nhin-duoi.3', 'che-nhin-duoi.4', 'che-nhin-duoi.5', 'che-nhin-duoi.6', 'che-nhin-duoi.7', 'che-nhin-duoi.8', 'che-nhin-duoi.9',
+  'che-may-son.6',      // gói 6: chép hàng màu bằng camera, hai hàng màu khác nhau (nghiệm thu 30/10)
   'son-tren-cao.5', 'son-tren-cao.6', 'che-son-tren-cao.2', 'che-son-tren-cao.6', 'che-son-tren-cao.8');      // gói 9: đọc vạch mờ / bảng mẫu bằng camera
 NHIEU_SAN_KHONG_TRUM.push('tong-hop-4.1', 'tong-hop-4.2', 'tong-hop-4.3', 'tong-hop-4.4', 'tong-hop-4.6', 'tong-hop-4.9', 'trum-mua-4.1', 'trum-mua-4.2', 'trum-mua-4.6', 'trum-mua-4.8', 'trum-mua-4.9');      // gói 10: màn đọc camera / hai mức pin
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
