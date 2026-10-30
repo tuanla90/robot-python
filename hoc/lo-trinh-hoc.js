@@ -897,14 +897,11 @@
     'che-nhen': 'Chế lệnh nhện', 'dao-cuc': 'Đảo cực', 'che-dao-cuc': 'Hàm đảo cực', 'doc-cuc': 'Đọc cực', 'che-doc-cuc': 'Hàm đọc cực',
     'doi-xich': 'Đội xích và nhện', 'che-doi-xich': 'Đội xích và nhện phối hợp', 'bung-nhen': 'Nam châm bụng nhện', 'che-bung-nhen': 'Hàm cho bụng nhện',
     'tong-hop-3': 'Tổng hợp', 'trum-mua-3': 'Trùm mùa' };
-  // [mã huy hiệu, tên] của trùm mỗi chương mùa 3; hai chương đội dùng mã mới (doi-xich / che-doi-xich là bí danh hai-robot ở huy-hieu-vector.js).
-  var HUY_HIEU_3 = { nhen: ['nhen', 'Thân nhện'], 'chuoi-nhen': ['chuoi-nhen', 'Chuỗi cho nhện'], 'nam-cham': ['nam-cham', 'Nam châm'],
-    'logic-nam-cham': ['logic-nam-cham', 'Logic cho nam châm'], 'cam-ung-tu': ['cam-ung-tu', 'Dò sắt'], 'che-cam-ung-tu': ['che-cam-ung-tu', 'Chế lệnh dò sắt'],
-    'bai-tu': ['bai-tu', 'Bãi từ'], 'che-bai-tu': ['che-bai-tu', 'Hàm cho bãi từ'], nhay: ['nhay', 'Nhảy'], 'che-nhen': ['che-nhen', 'Chế lệnh nhện'],
-    'dao-cuc': ['dao-cuc', 'Đảo cực'], 'che-dao-cuc': ['che-dao-cuc', 'Hàm đảo cực'], 'doc-cuc': ['doc-cuc', 'Đọc cực'], 'che-doc-cuc': ['che-doc-cuc', 'Hàm đọc cực'],
-    'doi-xich': ['doi-xich-nhen', 'Đội xích và nhện'], 'che-doi-xich': ['che-doi-xich-nhen', 'Đội xích và nhện phối hợp'],
-    'bung-nhen': ['bung-nhen', 'Nam châm bụng nhện'], 'che-bung-nhen': ['che-bung-nhen', 'Hàm cho bụng nhện'], 'tong-hop-3': ['tong-hop-3', 'Tổng hợp mùa 3'],
-    'trum-mua-3': ['xe-tham-do', 'Xe thăm dò'] };
+  // Mã huy hiệu của trùm mỗi chương mùa 3 (tên huy hiệu = tên chương, như mùa 1, 2 từ 30/10); hai chương đội dùng mã mới (doi-xich / che-doi-xich là bí danh hai-robot ở huy-hieu-vector.js).
+  var HUY_HIEU_3 = { nhen: 'nhen', 'chuoi-nhen': 'chuoi-nhen', 'nam-cham': 'nam-cham', 'logic-nam-cham': 'logic-nam-cham', 'cam-ung-tu': 'cam-ung-tu',
+    'che-cam-ung-tu': 'che-cam-ung-tu', 'bai-tu': 'bai-tu', 'che-bai-tu': 'che-bai-tu', nhay: 'nhay', 'che-nhen': 'che-nhen', 'dao-cuc': 'dao-cuc',
+    'che-dao-cuc': 'che-dao-cuc', 'doc-cuc': 'doc-cuc', 'che-doc-cuc': 'che-doc-cuc', 'doi-xich': 'doi-xich-nhen', 'che-doi-xich': 'che-doi-xich-nhen',
+    'bung-nhen': 'bung-nhen', 'che-bung-nhen': 'che-bung-nhen', 'tong-hop-3': 'tong-hop-3', 'trum-mua-3': 'xe-tham-do' };
   // Rời mùa 3 (mùa 4, ẩn, giữ thứ tự cũ, vẫn chơi được bằng "Mở hết"): màn của chương mùa 3 dùng lại mã mà không thuộc MUA_3 thành chương riêng, đứng đúng
   // chỗ chương cũ trong thuTu (THAY_CU). nam-cham.9 (omni, mùa 5); doi-xich 8 màn bậc thang S; che-doi-xich cả 10 (bậc thang S, hay cần hàm của
   // che-doi-ho-bang). Gói cũ đổi mã khi mã cũ đã thuộc gói mùa 3 (cờ goi-mo:<mã> của gói mùa 3).
@@ -1005,10 +1002,10 @@
     // Màn có sẵn đổi huy hiệu theo chương mới: nhen.10 (trùm Nhảy) nhen → nhay, nam-cham.10 → doc-cuc, che-nam-cham.10 → che-doc-cuc; hình ở huy-hieu-vector.js.
     MUA_3.forEach(function (g) {
       g.chuong.forEach(function (c) {
-        var hh = HUY_HIEU_3[c[0]], ds = c[1];
+        var ds = c[1];
         if (!ds.length) return;
         ds.forEach(function (ma) { delete get(ma).huyHieu; });
-        get(ds[ds.length - 1]).huyHieu = { ma: hh[0], ten: 'Huy hiệu ' + hh[1] };
+        get(ds[ds.length - 1]).huyHieu = { ma: HUY_HIEU_3[c[0]], ten: 'Huy hiệu ' + TEN_MUA_3[c[0]].replace(': ', ' ').replace(/\?$/, '') };
       });
     });
     // Màn còn sót ở chương cũ (không thuộc MUA_3, không thuộc ROI_MUA_3) là lỗi dữ liệu.
