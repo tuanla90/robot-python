@@ -700,7 +700,7 @@
         'Băng chuyền không đẩy được xe xích; nhớ pick() trước khi đi và drop() khi tới ô đích.']
     });
     // xich.6 đứng trước gói 4 (Nhà máy, nơi học băng chuyền): đề bài tự giới thiệu băng chuyền thay vì nhắc chương đã học.
-    get('xich.6').deBai = 'Ô mũi tên là băng chuyền: nó đẩy xe hai bánh trôi theo chiều mũi tên (gói Nhà máy sẽ gặp lại). Xe xích bám chắc nên băng chuyền, xuôi hay ngược chiều, đều không đẩy được nó. Đi qua các băng chuyền tới cờ như đi trên sàn.';
+    get('xich.6').deBai = 'Ô mũi tên là băng chuyền: nó đẩy xe hai bánh trôi theo chiều mũi tên (gói Băng chuyền sẽ gặp lại). Xe xích bám chắc nên băng chuyền, xuôi hay ngược chiều, đều không đẩy được nó. Đi qua các băng chuyền tới cờ như đi trên sàn.';
     // tham-so.3: hố u (mùa 3) thành hàng rào = (chướng ngại chung); tham-so.7: gầm n (mùa 3) thành tường. Hai ô đó chỉ chắn lối tắt.
     sanThay('tham-so.3', 'u', '=');
     sanThay('tham-so.7', 'n', '#');
