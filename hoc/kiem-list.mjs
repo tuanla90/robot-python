@@ -612,8 +612,8 @@ console.log('\n== 5f. Hàm có đối số danh sách: kiểu "list", thẻ bi�
   kiem('đối số n của forward(n) vẫn là "so"; hàm còn trống nhưng tên đối số là seen → "list" (đoán theo tên)', kieu('forward', 0) === 'so' && kieu('ten', 0) === 'list');
   {
     const kieuSon = TP.taoKieu(() => ({ man: M_LIST, hamCuaMan: [], kho: [H('line', ['pen_down()', 'forward(n)', 'pen_up()', 'wait()'], ['n']), H('color_line', ['ink(c)', 'line(n)'], ['c', 'n']),
-      H('stripes', ['for c in colors:', '    color_line(c, 3)'], ['colors']), H('forward', ['for i in range(n):', '    move()'], ['n'])] }));
-    kiem('máy sơn: đối số đưa vào ink(c) → "mau", kể cả qua hàm khác; danh sách màu vẫn "list"', kieuSon('color_line', 0) === 'mau' && kieuSon('color_line', 1) === 'so' && kieuSon('stripes', 0) === 'list');
+      H('sow_rows', ['for c in colors:', '    color_line(c, 3)'], ['colors']), H('forward', ['for i in range(n):', '    move()'], ['n'])] }));
+    kiem('máy sơn: đối số đưa vào ink(c) → "mau", kể cả qua hàm khác; danh sách màu vẫn "list"', kieuSon('color_line', 0) === 'mau' && kieuSon('color_line', 1) === 'so' && kieuSon('sow_rows', 0) === 'list');
     kiem('máy sơn: ink("blue") và color_line("red", 2) vẽ ô màu chạm được (chuoi-mau)', /chuoi-mau mc-blue/.test(TP.mauDong('ink("blue")')) && /chuoi-mau mc-red/.test(TP.mauDong('color_line("red", 2)')));
   }
   TP.datCheList(false);

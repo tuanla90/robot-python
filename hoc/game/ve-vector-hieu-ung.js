@@ -378,6 +378,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.setLineDash([2, 1.6]); g.lineDashOffset = -((now / 160) % 3.6); boO(g, x, y, 1.5, 2.2); g.lineWidth = 0.9; g.strokeStyle = mau; g.stroke();
     g.restore();
   }
+  /** BỘ GIEO HẠT (30/10, vỏ nông trại; luật như máy sơn) — ô cần gieo: bông hoa mờ đúng loài giữa ô + viền nét đứt bo góc chạy chậm màu khung. ten: màu luật. */
+  function hoaCan(g, x, y, ten, mau, now) {
+    g.save(); g.globalAlpha = 0.38; g.translate(x * T, y * T); g.scale(T / 100, T / 100); V.hoa(g, H, 50, 50, 30, ten); g.restore();
+    g.save();
+    g.setLineDash([2, 1.6]); g.lineDashOffset = -((now / 160) % 3.6); boO(g, x, y, 1.5, 2.2); g.lineWidth = 0.9; g.strokeStyle = mau; g.stroke();
+    g.restore();
+  }
+  /** Ô đã gieo: mảng đất nhỏ, bông hoa đúng loài nở (kk 0..1: vừa gieo thì hoa lớn dần từ 0,6 và lóe trắng); sai: viền màu cần gieo (hay đỏ nếu ngoài hình) + gạch chéo. */
+  function hoaDa(g, x, y, ten, kk, vienSai, gachSai) {
+    var px = x * T, py = y * T, lon = kk >= 0 && kk < 1 ? 0.6 + 0.4 * kk : 1;
+    boO(g, x, y, 1.6, 2.4); g.fillStyle = BM.vecDatSang; g.globalAlpha = 0.55; g.fill(); g.globalAlpha = 1;
+    g.save(); g.translate(px, py); g.scale(T / 100, T / 100); V.hoa(g, H, 50, 50, 34 * lon, ten); g.restore();
+    if (kk >= 0 && kk < 1) { boO(g, x, y, 1, 2.2); g.fillStyle = rgba(BM.tiaTrangRgb, 0.55 * (1 - kk)); g.fill(); }
+    if (vienSai) { boO(g, x, y, 0.5, 2.4); g.lineWidth = 0.9; g.strokeStyle = vienSai; g.stroke(); }
+    if (gachSai) { g.beginPath(); g.moveTo(px + 3.5, py + 3.5); g.lineTo(px + T - 3.5, py + T - 3.5); g.lineCap = 'round'; g.lineWidth = 1.1; g.strokeStyle = gachSai; g.stroke(); }
+  }
   /** Ô đã tô: tấm sơn bo góc, gradient bóng nhẹ, viền mực mờ; kk (0..1): vừa tô thì lóe trắng; sai: viền màu cần tô (hay đỏ nếu ngoài hình) + gạch chéo màu cần tô. */
   function sonDa(g, x, y, mau, kk, vienSai, gachSai) {
     var px = x * T, py = y * T;
@@ -446,7 +462,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.HU = { giam: giam, rgba: rgba, hat: hat, chop: chop, dau: dau, choang: choang, bongMau: bongMau, oDo: oDo, vachMep: vachMep,
     tiaKc: tiaKc, tiaCamera: tiaCamera, tiaNhin: tiaNhin, tiaTu: tiaTu, tiaHongNgoai: tiaHongNgoai, nong: nong, hoiVan: hoiVan, ongHoi: ongHoi,
     bongVat: bongVat, toDo: toDo, bongElip: bongElip, vongHut: vongHut, vienLoi: vienLoi, ngam: ngam, vetCung: vetCung, sacLoe: sacLoe, thoSac: thoSac, bongDrone: bongDrone, thanhPin: thanhPin, theDan: theDan,
-    sonCan: sonCan, sonDa: sonDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach, dayNoi: dayNoi,
+    sonCan: sonCan, sonDa: sonDa, hoaCan: hoaCan, hoaDa: hoaDa, kimCuong: kimCuong, khungO: khungO, tamO: tamO, cham: cham, vach: vach, dayNoi: dayNoi,
     PHONG_CHU: PHONG_CHU, PHONG_SO: PHONG_SO };                                    // V7c3: san-ve.js đo bề ngang chữ bằng đúng phông vẽ chữ
   if (typeof module === 'object' && module.exports) module.exports = V.HU;
 })(typeof window !== 'undefined' ? window : globalThis);

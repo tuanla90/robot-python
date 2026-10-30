@@ -181,6 +181,22 @@
     vecSanChanToi: '#efedf7',          // sàn ô chẵn: góc tối gradient
     vecSanLe: '#f3f2f9',               // sàn ô lẻ: xám nhạt hơn một bậc
     vecSanLeToi: '#e7e5f0',            // sàn ô lẻ: góc tối gradient
+    // ---- VECTOR NÔNG TRẠI (mùa 4 "Nông trại hoa", 30/10; ve-vector-nong-trai.js): sân cỏ, luống đất, bông hoa, bao hạt, bộ gieo hạt
+    vecCo: '#d9efc2',                  // ô cỏ (x + y chẵn): xanh cỏ nhạt, đủ sáng để hoa / luống / robot nổi rõ
+    vecCoToi: '#c6e4aa',               // ô cỏ: góc tối gradient
+    vecCoLe: '#cde8b3',                // ô cỏ lẻ: đậm hơn một bậc (bàn cờ hai tông như sàn lab)
+    vecCoLeToi: '#b9dc9b',             // ô cỏ lẻ: góc tối gradient
+    vecCoVien: '#a6cf86',              // viền lưới giữa các ô cỏ, nét ngọn cỏ
+    vecDat: '#b9875a',                 // đất luống (nâu sáng)
+    vecDatToi: '#8f633c',              // đất luống: rãnh, mép tối
+    vecDatSang: '#d3a77b',             // đất luống: vệt sáng
+    vecLa: '#4caf50',                  // lá cây, thân hoa, cỏ ba lá
+    vecLaToi: '#2e7d32',               // lá cây: viền
+    vecNhuy: '#ffd54f',                // nhụy giữa bông hoa
+    vecNhuyToi: '#c99a12',             // nhụy: viền
+    vecBao: '#e8cf9c',                 // bao hạt giống (giấy kraft)
+    vecBaoToi: '#c4a56b',              // bao hạt: nếp gấp, đáy
+    vecBaoVien: '#7a5a2c',             // bao hạt: viền, dây buộc
     // ---- VECTOR (gói V5a, 28/10): GIAO DIỆN PHẲNG màn chơi theo diem10code (tin_hoc/public/css/tokens.css), chỉ áp ở body.ve-vector (choi-vector.css)
     vecNen: '#f5f4fc',                 // nền màn hình (lavender rất nhạt, cùng tông sàn sân)
     vecNenSau: '#e8e6f6',              // nền trang ngoài khung 360 × 640 (máy tính), nền điện thoại

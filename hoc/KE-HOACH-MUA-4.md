@@ -114,7 +114,7 @@ Ghi chú chia:
   6 Nét liền 16/4 · 7 Nhìn dưới chân 10/10 · 8 Đội chia hàng 20/0 · 9 Sơn từ trên cao 0/20 · 10 Drone kẻ vạch R1 0/20. Tổng 110 / 90.
 - **29/10 Gói 1 Cất cánh xong** (c37bc2a): man-cat-canh.js drone.11 (trình diễn) · .12 · .13 · .14 (trùm giao hàng qua phố), list.11; list.1 thành trình diễn,
   cắt list.2. Đường cong (lề dòng 3 / nhịp 4 / ô 6 so màn mốc trước) không nhảy.
-- **30/10 Gói 2 Chấm sơn xong**: man-cham-son.js may-son.11 (trình diễn ink / dot) · .12 · .13 · .14 · .15 · .16 (trùm, chế paint_row(colors)).
+- **30/10 Gói 2 Chấm sơn xong**: man-cham-son.js may-son.11 (trình diễn ink / dot) · .12 · .13 · .14 · .15 · .16 (trùm, chế plant_row(colors)).
   Thứ tự may-son 11 · 1 · 2 · 12 · 6 · 7 · 14 · 15 · 13 · 16; che-list 1 · 2 · 3 · 4 · 5 · 6 · 8 · 9 · 7 · 10 (Đường về 26 nhịp dời ra sau cho khỏi nhảy).
   kiem-man-mua-4 siết: lời giải không được kèm chẩn đoán (bắt được may-son.14 / .15 đâm tường cuối hàng, đã nới sân). 96 / 96 bộ đạt.
 - **30/10 Gói 6 Nét liền xong**: man-net-lien.js net-lien.1 (trình diễn pen_down / pen_up) · .2 Nét đứt · .3 Khung chữ nhật · .4 Dấu bằng hai màu;
@@ -136,8 +136,8 @@ Ghi chú chia:
   và ô đích màu (đích chỉ nhận hộp cùng màu), camera đọc ô bên cạnh để chọn đường.
   - pho-mau (Đi giữa phố màu): 1 trình diễn hộp về đúng màu · 2 ép đọc màu (hai sân khác màu hộp) · 3 phố đèn xanh · 4 theo vạch xanh (for + if) · 5 tìm hộp (while)
     · 6 tìm hộp rồi chọn đích · 7 đếm nhà đỏ (biến đếm) · 8 mật lệnh màu (danh sách, append, for c in a) · 9 sửa mật lệnh · 10 trùm giao hàng theo số nhà đỏ.
-  - che-pho-mau (Chế lệnh: qua phố): find_box() · fly_to(col) · read_row(a, n) · follow_code(a) · drop_down(n) · place_box() · sửa hàm của màn scan_street
-    · red_count(a, n) với len(a) · sửa hàm của màn walk_code · trùm tự viết chương trình chính bằng read_row / follow_code / place_box.
+  - che-pho-mau (Chế lệnh: qua phố): find_bag() · fly_to(col) · read_row(a, n) · follow_code(a) · drop_down(n) · place_bag() · sửa hàm của màn scan_path
+    · red_count(a, n) với len(a) · sửa hàm của màn walk_code · trùm tự viết chương trình chính bằng read_row / follow_code / place_bag.
   - Màn đọc camera dùng hai sân khác màu để chương trình viết cứng không qua (thêm vào ngoại lệ NHIEU_SAN_KHONG_TRUM của kiem-lo-trinh.mjs).
   - Đường cong trong gói không nhảy; còn một chỗ ở đầu gói (pho-mau.2 9 dòng sau che-mau.9 2 dòng): gói 3 dựng lại sẽ có màn đứng trước.
   - Giao diện: chạm chữ hướng trong c = color("up") mở bảng chọn hướng; bảng chọn vế trái của điều kiện có nút cho từng hướng (đã thử trên trình duyệt).
@@ -159,18 +159,18 @@ Ghi chú chia:
   - son-tren-cao (Kẻ vạch qua rào): 1 trình diễn kẻ vạch trên băng, nhấc bút qua rào · 2 nhấc bút qua rào (ép pen_up) · 3 vạch đứt qua rào và hố (for) · 4 lề đường đỏ vàng
     (for c in [...]) · 5 tô lại vạch mờ (ink(color("here")), hai sân) · 6 chép màu hàng trên (color("up"), bỏ ô trống, hai sân) · 7 sơn tốn pin (đáp trạm bằng dock())
     · 8 khung quanh ao · 9 sửa cột màu (dot trước ink) · 10 trùm kẻ vạch theo dấu (đọc dấu, ba chặng, hỏi pin ở trạm).
-  - che-son-tren-cao (Chế lệnh: tranh tường): stripe(c, n) · retrace(n) · paint_list(a) · dashes(c, n) (gọi stripe) · sửa hop_fence · trace_marks(n) · mural(a, b)
-    (hàng dưới phải sang trái) · copy_down(a, n) (read_below + paint_list) · sửa line_dock (dock trong vòng lặp) · trùm tự viết bằng retrace, dock, stripe.
+  - che-son-tren-cao (Chế lệnh: tranh tường): sow_line(c, n) · retrace(n) · plant_list(a) · patches(c, n) (gọi sow_line) · sửa hop_fence · trace_marks(n) · garden(a, b)
+    (hàng dưới phải sang trái) · copy_down(a, n) (read_below + plant_list) · sửa line_dock (dock trong vòng lặp) · trùm tự viết bằng retrace, dock, sow_line.
   - Đường cong trong gói không nhảy. Chỗ nhảy ở ranh gói 10 (che-may-son.7 sau che-son-tren-cao.9) chờ gói 10 dựng.
   - Không có màn nam châm: lõi N3 cấm máy sơn đi chung nam châm (một bụng một món), ý "chở trước hay sơn trước" ở mục 3 bỏ (mục 7 câu 17).
 - **30/10 Gói 10 Drone kẻ vạch R1 xong (18 màn mới + 2 màn xe cũ)**: man-trum-mua-4.js. Mỗi màn ôn ít nhất hai gói; gói 8 (đội) được nhắc ba lần ở gói 10
   (gói 9 chưa nhắc lần nào), gói 3 (xe camera) ba lần.
   - tong-hop-4 (Đủ bộ): 1 ghé trạm rồi phân loại (fly_dock + lift_by_color) · 2 xe máy sơn chấm theo đường xanh (green_step) · 3 giao hộp theo đơn (seek_here + deliver_up)
-    · 4 xe kẻ tới vạch đỏ (go_to + bút liền) · 5 đội drone nam châm chuyền hộp qua rào cho xe kẹp sort_by_color · 6 chép mật lệnh hàng trên (read_row + paint_list)
-    · 7 đội drone dọn lối cho xe máy sơn · 8 bay theo danh sách hướng · 9 sửa hàm của màn mark_step (arrow_step) · 10 trùm chương (trace_marks, dock, stripe, danh sách màu).
-  - trum-mua-4 (Phố mới kẻ vạch): chế charge_if(k) · mark_dash(n) · stair_line(c, n) (trước tên stairs, trùng hàm mùa 3 khi gộp main) · sửa pond_frame · đội: lift_aside() · bar_len(c, a) (count_here) · street(c, n) (stripe)
-    · che-may-son.7 Lưới chấm · che-may-son.8 Khung lồng khung (màn xe cũ, mục 9: giữ, đặt sau street làm cầu nối) · trum-mua-4.10 TRÙM CUỐI MÙA "Drone kẻ vạch R1 xuất xưởng"
-    (trace_marks, charge_if, mark_dash, danh sách màu; pin 10, hai trạm).
+    · 4 xe kẻ tới vạch đỏ (go_to + bút liền) · 5 đội drone nam châm chuyền hộp qua rào cho xe kẹp sort_by_color · 6 chép mật lệnh hàng trên (read_row + plant_list)
+    · 7 đội drone dọn lối cho xe máy sơn · 8 bay theo danh sách hướng · 9 sửa hàm của màn sow_step (arrow_step) · 10 trùm chương (trace_marks, dock, sow_line, danh sách màu).
+  - trum-mua-4 (Phố mới kẻ vạch): chế charge_if(k) · sow_marks(n) · stair_line(c, n) (trước tên stairs, trùng hàm mùa 3 khi gộp main) · sửa pond_frame · đội: lift_aside() · bar_len(c, a) (count_here) · field_row(c, n) (sow_line)
+    · che-may-son.7 Lưới chấm · che-may-son.8 Khung lồng khung (màn xe cũ, mục 9: giữ, đặt sau field_row làm cầu nối) · trum-mua-4.10 TRÙM CUỐI MÙA "Drone kẻ vạch R1 xuất xưởng"
+    (trace_marks, charge_if, sow_marks, danh sách màu; pin 10, hai trạm).
   - Màn đội chạy được mục tiêu to-hinh (xe sơn, drone dọn đường). Đường cong gói 9, 10 không nhảy (cong4.js).
   - Chưa có: huy hiệu và phim gói 10 (phim mùa 4 là bước sau, mục 4 P2).
 - **30/10 Phim mùa 4 xong** (game/phim-mua-4.js, 10 phim 37 khung, lời ở chu.js `pg.<gói>.<n>`, tem `pg.tem.drone-ke-vach`; kịch bản KE-HOACH-PHIM-GOI.md mục 3e).
@@ -204,7 +204,7 @@ Ghi chú chia:
 - **30/10 Sửa theo nghiệm thu độc lập** (hoc/ban-giao/nghiem-thu-30-10/nghiem-thu-mua-4.md, user: "Làm cả A, B, C"). Cả bộ 104 / 104, cong4.js 0 nhảy.
   - C: chương che-list (gói 2) dựng lại trên xe máy sơn: che-list.11 … .20 (man-cham-son.js, append, duyệt, lọc, hàm nhận danh sách, đủ lời sai);
     mười màn đo bãi bằng cảm biến khoảng cách cũ (gồm che-list.9 không lời sai) sang mùa 5 (che-list-cu).
-  - A1: trum-mua-4.8 Phố có trạm sạc (street_dock = street + charge_if, hai sân pin 20 / 40), .9 Hai phố theo dấu (two_dash = mark_dash + về đầu hàng):
+  - A1: trum-mua-4.8 Phố có trạm sạc (field_dock = field_row + charge_if, hai sân pin 20 / 40), .9 Hai phố theo dấu (two_marks = sow_marks + về đầu hàng):
     hàm gọi hàm của em. che-may-son.7, .8 (xe, 37 / 44 nhịp, to hơn trùm) sang mùa 5 (che-may-son-cu). Trùm cuối mùa trum-mua-4.10 thêm trạm thứ ba và vạch xanh:
     14 dòng tự viết, 4 hàm, ba lần sạc đều cần (bỏ lần nào cũng hết pin), 24 nhịp, 32 ô.
   - A2: tram-sac.6, .9 thêm sân pin 7 chỉ một trạm ở ô 7: đáp cứng ô 5 và ô 9 hết pin (lời sai mới).
@@ -215,6 +215,17 @@ Ghi chú chia:
   - B2: trùm drone.14 ba thùng, pin vừa đủ (25 cho 24 nhịp), mỗi chuyến bắt đầu bằng walk("DDRR") tới thùng nên lặp ba lần không thừa (24 nhịp so với drone.8, .9: 12, 11).
   - B3: mẹo đếm a.append(1) chỉ còn ở che-cam-bon.3; che-pho-mau.8 ghi "red", count_here (che-nhin-duoi.4, trum-mua-4.6) ghi màu col; append(1) là công thức khác.
   - Chưa làm: cân lại che-doi-nam-cham.1 (đứng thứ hai chương, sân lớn) mà báo cáo nêu kèm; phim mùa 4 còn vẽ trùm drone.14 hai thùng và chương trùm-mua-4 cũ.
+- **30/10 Đổi vỏ Nông trại hoa** (yêu cầu user qua phiên Video narrative: "Đổi sang nông nghiệp", "mỗi màu sơn là một loại hoa"; user ở phiên này: "Làm đổi vỏ").
+  LUẬT GIỮ NGUYÊN, mã màn / mã hàm / mã gói giữ nguyên; chỉ đổi hình, tên, lời.
+  - Hình: tay son vẽ thành bộ gieo hạt (ve-vector-tay-son.js), ô đã sơn nở hoa đúng loài (đỏ hoa hồng, vàng hoa cúc, xanh dương cẩm tú cầu, xanh lá cỏ ba lá),
+    màn mùa 4 mang vo 'nong-trai' (lo-trinh-hoc.js): sân cỏ, luống hoa thay sàn màu, bụi cây thay tường, bao hạt thay vật có màu (ve-vector-nong-trai.js; san-ve.js đọc cfg.vo).
+    Tay son chỉ có ở mùa 4 (và 2 màn mùa 5 ẩn) nên vẽ chung; sàn màu / vật màu mùa 1, 3, 5 giữ hình cũ.
+  - Tên: mùa 4 "Nông trại"; gói Gieo hạt, Luống màu, Gieo liền hàng, Gieo từ trên cao, Drone nông nghiệp R1; chương và huy hiệu theo; thẻ bộ phận Bộ gieo hạt.
+  - Lời 200 màn: bảng từ chuNongTrai + câu viết tay LOI_NONG_TRAI (lo-trinh-hoc.js), giọng CLB: "Sola nhờ bạn: …", gợi ý "Luna: …", gọi người chơi là "bạn".
+  - Phim: sân mini cỏ (phim-goi.js c.san nhận vỏ), gói 1 mở từ bãi tái chế ra đồng quê luống trống, gói 10 đồng nở hoa + tem Drone nông nghiệp R1, nhá mùa 5 mỏ đá.
+  - Nền so sánh vector dời: kiem-ve-vector 13a-v → 8921102, kiem-huy-hieu-phim-vector → 584615c (chỉ lệch máy sơn / phim mùa 4, soát bằng --chi-tiet-13a).
+  - 31/10: 15 tên hàm cốt truyện đổi theo nông trại (mục 7 câu 21). Chưa làm: câu nhá mùa 4 trong phim mùa 3 (chu.js pg.tong-hop-3.4
+    "Thành phố xa xa…") là phần của phiên Mùa 3, chưa báo được (phiên tắt); kiem-ve-vector 13a-v chưa phát lại màn có vỏ nông trại (harness không truyền vo).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -240,4 +251,4 @@ Ghi chú chia:
 19. ~~Mục 9 (che-may-son.7 / .8)~~ 30/10 theo nghiệm thu: thay bằng hai màn drone mới trum-mua-4.8, .9; hai màn xe sang mùa 5 (mục 6).
 20. ~~Huy hiệu mùa 4~~ xong 30/10 (mục 6).
 18. ~~Ranh gói 5 / 6 (may-son.3 sau che-drone.16)~~ sửa 30/10 (mục 6): bít góc thừa may-son.3, may-son.4.
-
+21. ~~Tên hàm cốt truyện theo cảnh phố~~ user 31/10 "Đổi tên hàm": 15 hàm đổi theo nông trại: paint_row → plant_row, paint_list → plant_list, stripe → sow_line, stripes → sow_rows, stripes_row → mix_row, mural → garden, street → field_row, street_dock → field_dock, scan_street → scan_path, dashes → patches, mark_dash → sow_marks, two_dash → two_marks, mark_step → sow_step, find_box → find_bag, place_box → place_bag. Tên trung tính (line, dots, frame, retrace, trace_marks…) giữ.

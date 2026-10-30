@@ -84,14 +84,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *   '.' cỏ · '#' tường · 'o' thùng gỗ · 'M' nút đè · 'C' cửa đóng · 'c' cửa mở · 'F' cờ · '*' ô đích khung vàng
    * Trả về { o(x, y) → tâm ô {x, y} (pixel khung), cua: { 'x,y': phần tử cửa } (cửa có hàm .dat(mo)), nut: { 'x,y': nút } (.dat(bat)), vat: { 'x,y': thùng } }.
    */
-  function san(k, rows, s, x0, y0) {
-    var c = 14 * s, kq = { cua: {}, nut: {}, vat: {} };
+  function san(k, rows, s, x0, y0, vo) {
+    var c = 14 * s, kq = { cua: {}, nut: {}, vat: {} }, nt = vo === 'nong-trai';      // vo 'nong-trai' (30/10, mùa 4): sàn cỏ, tường là bụi cây
     kq.o = function (x, y) { return { x: x0 + x * c + c / 2, y: y0 + y * c + c / 2 }; };
     rows.forEach(function (r, y) {
       for (var x = 0; x < r.length; x++) {
         var ch = r[x], px = x0 + x * c, py = y0 + y * c, khoa = x + ',' + y;
-        if (ch === '#') { k.appendChild(dat(o('wall', s), px, py)); continue; }
-        k.appendChild(dat(o('rug', s, x + y * 2), px, py));
+        if (ch === '#') { k.appendChild(dat(o(nt ? 'bui-cay' : 'wall', s), px, py)); continue; }
+        k.appendChild(dat(o(nt ? 'co-non' : 'rug', s, x + y * 2), px, py));
         if (ch === 'o') k.appendChild(kq.vat[khoa] = dat(o('crate', s), px, py));
         else if (ch === 'M') {
           var n = dat(h('div'), px, py); n.dat = (function (n) { return function (bat) { n.innerHTML = ''; n.appendChild(nutDe(bat, s)); }; })(n); n.dat(false);

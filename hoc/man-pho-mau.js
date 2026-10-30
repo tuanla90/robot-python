@@ -45,7 +45,7 @@
   /** Màn chương che-pho-mau: chương trình chính khóa, em chế hàm (như che-may-son). */
   function manChe(m) { m.chuong = 'che-pho-mau'; if (m.chinhCoDinh !== false) m.chinhCoDinh = true; else delete m.chinhCoDinh; return man(m); }
   var T_TIM = ['while color("right") == "none":', '    go_right()'];
-  var C_TIM = ['find_box()', 'go_right()', 'magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'];
+  var C_TIM = ['find_bag()', 'go_right()', 'magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'];
   var T_BAY = ['while color("right") != col:', '    go_right()'];
   var C_BAY = ['fly_to("yellow")', 'go_right()'];
   var T_GHI = ['for i in range(n):', '    go_right()', '    a.append(color("up"))'];
@@ -56,7 +56,7 @@
   var C_THA = ['n = 0', 'for i in range(3):', '    go_right()', '    if color("up") == "red":', '        n = n + 1', 'drop_down(n)'];
   var T_DEM = ['for i in range(n):', '    go_right()', '    if color("up") == "red":', '        a.append("red")'];      // ghi màu thật (nghiệm thu 30/10: mẹo append(1) chỉ dạy một lần ở che-cam-bon.3)
   var C_DEM = ['a = []', 'red_count(a, 3)', 'drop_down(len(a))'];
-  var C_XEP = ['find_box()', 'place_box()'];
+  var C_XEP = ['find_bag()', 'place_bag()'];
 
   var DS = [
     man({
@@ -240,20 +240,20 @@
 
     /* ================================================= chương che-pho-mau "Chế lệnh: qua phố" ================================================= */
     manChe({
-      so: 1, ten: 'Hàm tìm hộp', hang: 'lam-quen', nam: true, taoHam: ['find_box'], hamCuaEmCan: [],
-      deBai: 'Chương trình chính đã khóa: find_box() rồi chở hộp sang ô đích ngay sau. Chế find_box(): bay sang phải cho tới khi camera thấy hộp ở ô bên phải. Hai sân, hộp nằm xa gần khác nhau.',
-      veMaMau: 'Mở Xưởng hàm, tạo find_box() không có đối số. Thân hàm là vòng while như màn Tìm hộp trên phố.',
+      so: 1, ten: 'Hàm tìm hộp', hang: 'lam-quen', nam: true, taoHam: ['find_bag'], hamCuaEmCan: [],
+      deBai: 'Chương trình chính đã khóa: find_bag() rồi chở hộp sang ô đích ngay sau. Chế find_bag(): bay sang phải cho tới khi camera thấy hộp ở ô bên phải. Hai sân, hộp nằm xa gần khác nhau.',
+      veMaMau: 'Mở Xưởng hàm, tạo find_bag() không có đối số. Thân hàm là vòng while như màn Tìm hộp trên phố.',
       san: [['...oD.'], ['..oD..']],
       vatMau: [['...y..'], ['..g...']],
       vatChat: [['...s..'], ['..s...']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_TIM),
-      loiGiai: bai(C_TIM, { hamCuaEmMoi: [H('find_box', [], T_TIM)] }),
+      loiGiai: bai(C_TIM, { hamCuaEmMoi: [H('find_bag', [], T_TIM)] }),
       sao: { o: 9, nhip: 6 },
-      congThucKhac: [{ moTa: 'Điều kiện viết ngược lại bằng not', hamCuaEmMoi: [H('find_box', [], ['while not color("right") != "none":', '    go_right()'])] }],
+      congThucKhac: [{ moTa: 'Điều kiện viết ngược lại bằng not', hamCuaEmMoi: [H('find_bag', [], ['while not color("right") != "none":', '    go_right()'])] }],
       loiSai: [
-        { moTa: 'Gọi find_box() mà chưa chế hàm', baiLam: bai(C_TIM), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'find_box() bay cố định hai ô: sân thứ hai bay quá hộp', baiLam: bai(C_TIM), hamCuaEmMoi: [H('find_box', [], ['go_right()', 'go_right()'])], phaiCoMa: [] }
+        { moTa: 'Gọi find_bag() mà chưa chế hàm', baiLam: bai(C_TIM), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'find_bag() bay cố định hai ô: sân thứ hai bay quá hộp', baiLam: bai(C_TIM), hamCuaEmMoi: [H('find_bag', [], ['go_right()', 'go_right()'])], phaiCoMa: [] }
       ],
       goiY: ['Ô phố trống có màu "none"; hộp có màu.', 'Hàm dừng đúng lúc hộp nằm bên phải drone.']
     }),
@@ -333,39 +333,39 @@
     }),
 
     manChe({
-      so: 6, ten: 'Hàm xếp hộp', hang: 'luyen', nam: true, taoHam: ['place_box'], hamCuaEmCan: ['find_box'],
-      deBai: 'Chế place_box(): đọc màu hộp bên phải, bay tới hút hộp, rồi đưa về ô đích cùng màu (ô đích xanh dương ngay sau hộp, ô đích đỏ xa thêm một ô). Chương trình chính đã khóa: find_box() rồi place_box().',
-      veMaMau: 'Tạo place_box() không có đối số. Thân hàm giống chương trình của màn Hộp nào cũng đúng.',
+      so: 6, ten: 'Hàm xếp hộp', hang: 'luyen', nam: true, taoHam: ['place_bag'], hamCuaEmCan: ['find_bag'],
+      deBai: 'Chế place_bag(): đọc màu hộp bên phải, bay tới hút hộp, rồi đưa về ô đích cùng màu (ô đích xanh dương ngay sau hộp, ô đích đỏ xa thêm một ô). Chương trình chính đã khóa: find_bag() rồi place_bag().',
+      veMaMau: 'Tạo place_bag() không có đối số. Thân hàm giống chương trình của màn Hộp nào cũng đúng.',
       san: [['...oDD'], ['.oDD..']],
       mau: [['....br'], ['..br..']],
       vatMau: [['...r..'], ['.b....']],
       vatChat: [['...s..'], ['.s....']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_XEP),
-      loiGiai: bai(C_XEP, { hamCuaEmMoi: [H('place_box', [], CHO_1)] }),
+      loiGiai: bai(C_XEP, { hamCuaEmMoi: [H('place_bag', [], CHO_1)] }),
       sao: { o: 13, nhip: 7 },
-      congThucKhac: [{ moTa: 'Hỏi hộp khác xanh dương', hamCuaEmMoi: [H('place_box', [], ['c = color("right")', 'go_right()', 'magnet_n()', 'wait()', 'go_right()', 'if c != "blue":', '    go_right()', 'magnet_off()', 'wait()'])] }],
+      congThucKhac: [{ moTa: 'Hỏi hộp khác xanh dương', hamCuaEmMoi: [H('place_bag', [], ['c = color("right")', 'go_right()', 'magnet_n()', 'wait()', 'go_right()', 'if c != "blue":', '    go_right()', 'magnet_off()', 'wait()'])] }],
       loiSai: [
-        { moTa: 'Gọi place_box() mà chưa chế hàm', baiLam: bai(C_XEP), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Không đọc màu: hộp nào cũng tới ô xanh', baiLam: bai(C_XEP), hamCuaEmMoi: [H('place_box', [], ['go_right()', 'magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'])], phaiCoMa: [] }
+        { moTa: 'Gọi place_bag() mà chưa chế hàm', baiLam: bai(C_XEP), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Không đọc màu: hộp nào cũng tới ô xanh', baiLam: bai(C_XEP), hamCuaEmMoi: [H('place_bag', [], ['go_right()', 'magnet_n()', 'wait()', 'go_right()', 'magnet_off()', 'wait()'])], phaiCoMa: [] }
       ],
       goiY: ['Đọc màu hộp NGAY đầu hàm, khi hộp còn ở bên phải.', 'Hộp đỏ bay thêm một ô so với hộp xanh.']
     }),
 
     manChe({
-      so: 7, ten: 'Sửa hàm dò phố', hang: 'bien-the', nam: true, hamCuaEmCan: ['place_box'],
-      deBai: 'Hàm của màn scan_street() phải bay tới khi gặp hộp, nhưng điều kiện viết ngược nên drone không bay ô nào. Sửa scan_street(); chương trình chính đã khóa: scan_street() rồi place_box().',
-      veMaMau: 'Chạy thử: drone đứng yên và hút hụt. Mở scan_street() trong Xưởng hàm, đổi phép so sánh.',
+      so: 7, ten: 'Sửa hàm dò phố', hang: 'bien-the', nam: true, hamCuaEmCan: ['place_bag'],
+      deBai: 'Hàm của màn scan_path() phải bay tới khi gặp hộp, nhưng điều kiện viết ngược nên drone không bay ô nào. Sửa scan_path(); chương trình chính đã khóa: scan_path() rồi place_bag().',
+      veMaMau: 'Chạy thử: drone đứng yên và hút hụt. Mở scan_path() trong Xưởng hàm, đổi phép so sánh.',
       san: [['....oDD'], ['..oDD..']],
       mau: [['.....br'], ['...br..']],
       vatMau: [['....b..'], ['..r....']],
       vatChat: [['....s..'], ['..s....']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(['scan_street()', 'place_box()'], { hamCuaMan: [H('scan_street', [], ['while color("right") != "none":', '    go_right()'])] }),
-      loiGiai: bai(['scan_street()', 'place_box()'], { hamCuaMan: [H('scan_street', [], ['while color("right") == "none":', '    go_right()'])] }),
+      maMau: bai(['scan_path()', 'place_bag()'], { hamCuaMan: [H('scan_path', [], ['while color("right") != "none":', '    go_right()'])] }),
+      loiGiai: bai(['scan_path()', 'place_bag()'], { hamCuaMan: [H('scan_path', [], ['while color("right") == "none":', '    go_right()'])] }),
       sao: { o: 13, nhip: 7 },
       loiSai: [
-        { moTa: 'Không sửa: drone không bay, hút hụt', baiLam: bai(['scan_street()', 'place_box()'], { hamCuaMan: [H('scan_street', [], ['while color("right") != "none":', '    go_right()'])] }), phaiCoMa: [] }
+        { moTa: 'Không sửa: drone không bay, hút hụt', baiLam: bai(['scan_path()', 'place_bag()'], { hamCuaMan: [H('scan_path', [], ['while color("right") != "none":', '    go_right()'])] }), phaiCoMa: [] }
       ],
       goiY: ['Còn bay khi ô bên phải TRỐNG, tức là màu bằng "none".', 'Chỉ cần đổi != thành ==.']
     }),
@@ -406,20 +406,20 @@
     }),
 
     manChe({
-      so: 10, ten: 'Thành phố mật lệnh', hang: 'trum', nam: true, chinhCoDinh: false, hamCuaEmCan: ['read_row', 'follow_code', 'place_box'],
+      so: 10, ten: 'Thành phố mật lệnh', hang: 'trum', nam: true, chinhCoDinh: false, hamCuaEmCan: ['read_row', 'follow_code', 'place_bag'],
       deBai: 'Ba ngôi nhà đầu phố là mật lệnh dẫn tới chỗ hộp hàng. Ghi mật lệnh, đi theo nó, tới nơi thì hộp nằm ngay bên phải: xếp hộp về đúng ô đích màu. ' +
         'Tự viết chương trình chính, chỉ dùng các hàm em đã chế. Hai sân, mật lệnh và màu hộp khác nhau.',
-      veMaMau: 'Chương trình có sẵn mới ghi mật lệnh. Viết tiếp bằng follow_code và place_box.',
+      veMaMau: 'Chương trình có sẵn mới ghi mật lệnh. Viết tiếp bằng follow_code và place_bag.',
       san: [['.rgr#####', '.....####', '###..####', '####.oDD#'], ['.grg#####', '.....####', '####..oDD', '#########']],
       mau: [['.........', '.........', '.........', '......br.'], ['.........', '.........', '.......br', '.........']],
       vatMau: [['.........', '.........', '.........', '.....r...'], ['.........', '.........', '......b..', '.........']],
       vatChat: [['.........', '.........', '.........', '.....s...'], ['.........', '.........', '......s..', '.........']],
       batDau: { x: 0, y: 1 },
       maMau: bai(['a = []', 'read_row(a, 3)']),
-      loiGiai: bai(['a = []', 'read_row(a, 3)', 'follow_code(a)', 'place_box()']),
+      loiGiai: bai(['a = []', 'read_row(a, 3)', 'follow_code(a)', 'place_bag()']),
       sao: { o: 21, nhip: 11 },
       loiSai: [
-        { moTa: 'Quên đi theo mật lệnh: drone đứng đầu phố, hút hụt', baiLam: bai(['a = []', 'read_row(a, 3)', 'place_box()']), phaiCoMa: [] },
+        { moTa: 'Quên đi theo mật lệnh: drone đứng đầu phố, hút hụt', baiLam: bai(['a = []', 'read_row(a, 3)', 'place_bag()']), phaiCoMa: [] },
         { moTa: 'Đi theo mật lệnh mà không xếp hộp', baiLam: bai(['a = []', 'read_row(a, 3)', 'follow_code(a)']), phaiCoMa: [] }
       ],
       goiY: ['Ba hàm, đúng thứ tự: ghi mật lệnh, đi theo, xếp hộp.', 'follow_code(a) dừng đúng chỗ hộp nằm bên phải drone.']

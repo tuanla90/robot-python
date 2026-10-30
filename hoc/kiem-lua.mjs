@@ -124,7 +124,7 @@ console.log('== 7. Giao diện (theo mã nguồn) ==');
   kiem('san-ve.js: cfg.lua giữ trong this.cfg, datLaiCua dựng luaT, veOVec vẽ ô lua, tia trúng lửa cập nhật suc, dongBoSung theo vết, ảnh nhỏ vẽ lửa',
     /lua: Array\.isArray\(cfg\.lua\) \? cfg\.lua : null/.test(sv) && /this\.luaT = \{\}/.test(sv) && /ve\('lua', \{ suc: lu\.suc/.test(sv) && /kind === 'lua'/.test(sv) && /e\.lua && this\.luaT/.test(sv) && /lopMau && lopMau\.lua/.test(sv));
   kiem('man-choi.js truyền lua (cauHinhSan, ảnh nhỏ), tiêu đề thắng dap-lua; man-lap.js ảnh nhỏ truyền lua; chu.js có thang.tieuDe.dapLua',
-    /lua: lm\.lua \|\| undefined/.test(mc) && /lua: ch\.lua/.test(mc) && /'thang\.tieuDe\.dapLua'/.test(mc) && /lua: lm\.lua \}/.test(ml) && /'thang\.tieuDe\.dapLua': /.test(chu));
+    /lua: lm\.lua \|\| undefined/.test(mc) && /lua: ch\.lua/.test(mc) && /'thang\.tieuDe\.dapLua'/.test(mc) && /lua: lm\.lua(, vo: m\.vo)? \}/.test(ml) && /'thang\.tieuDe\.dapLua': /.test(chu));
   kiem('ve-vector-o2.js đăng ký ô lua (phu, trạng thái suc 0–3)', /ma: 'lua', ten: 'Đám cháy', phu: true/.test(vo2) && /\{ suc: 0 \}/.test(vo2));
   kiem('cham.js truyền lua cho lõi ở màn một robot và màn đội', (fs.readFileSync(path.join(day, 'cham.js'), 'utf8').match(/lua: lm\.lua \|\| undefined/g) || []).length === 2);
 }

@@ -356,7 +356,8 @@ const coHinh = (loai, ma) => !!V.lay(loai, ma);
   kiem('draw() của san-ve.js vẽ mọi ô bằng veOVec (V7c2: không còn rẽ this.vec); ảnh nhỏ thuSan dùng VeVector.KY_HIEU (thuOVec, không còn vecT)',
     /this\.veOVec\(g, x, y, c\.rows\[y\]\[x\]/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /\n    thuOVec\(g, rows, w, h, s, mauO/.test(svSrc) && !/this\.vec\b|\bvecT\b/.test(svSrc));
   const kySrc = fs.readFileSync(path.join(GAME, 've-vector-ky-hieu.js'), 'utf8');
-  const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'"));
+  const CHI_PHIM = ['o-hoa'];      // 30/10 vỏ nông trại: ô đã gieo hoa chỉ phim mùa 4 dùng (trên sân, hoaDa vẽ thẳng)
+  const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'") && !CHI_PHIM.includes(ma));
   kiem('mọi hình ô / vật trong kho đều được san-ve.js hay bảng nối dùng tới (không hình thừa)', khongDung.length === 0, J(khongDung));
 
   /* vật: mọi chất × màu của lõi */
@@ -424,7 +425,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   const THEM_DAP = (v) => (Array.isArray(v) && v.includes('go_up') && v.includes('battery') && !v.includes('land') ? (v.splice(v.indexOf('battery') + 1, 0, 'land', 'take_off'), v) : v);
   const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'), (k, v) => THEM_DAP(typeof v === 'string' && LENH_MOI[v] ? LENH_MOI[v] : v));
   /* 29/10 Xe cứu hỏa R1 (gói vòi phun hình): tên hiển thị part 'hoi' đổi 'Súng hơi hai nòng' → 'Vòi phun hai đầu'; dữ liệu chụp c0 giữ tên cũ, so sánh qua bảng đổi tên này (mã, ổ, hamGoc, luật ghép y nguyên) */
-  const DOI_TEN = { 'Súng hơi hai nòng': 'Vòi phun hai đầu' }, tenMoi = (x) => (x == null ? x : Object.keys(DOI_TEN).reduce((a, k) => a.split(k).join(DOI_TEN[k]), x));
+  const DOI_TEN = { 'Súng hơi hai nòng': 'Vòi phun hai đầu', 'Đầu sơn có chổi': 'Bộ gieo hạt' }, tenMoi = (x) => (x == null ? x : Object.keys(DOI_TEN).reduce((a, k) => a.split(k).join(DOI_TEN[k]), x));
   const BP = { than: CHUP.boPhan.filter((b) => b.loai === 'than'), tay: CHUP.boPhan.filter((b) => b.loai === 'tay'), 'cam-bien': CHUP.boPhan.filter((b) => b.loai === 'cam-bien') };
   /* a. danh sách bộ phận */
   const thieu = [], sai = [];
@@ -601,7 +602,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
-  const NEN_VEC = '4548dda';                                                           // 30/10 phun nhẹ: nền VECTOR = 4548dda (san-ve.js nhận phun nhẹ qua luc "low" thay "fast"; so với nền fe2ae3e chỉ lệch ở tia phun nhẹ của sung-hoi.3, luc-ban.8: nền cũ coi "low" là tia dài). Trước đó fe2ae3e (giật một ô)
+  const NEN_VEC = '8921102';                                                           // 30/10 vỏ Nông trại hoa mùa 4: đầu sơn thành bộ gieo hạt, ô đã sơn nở hoa (so với 4548dda chỉ lệch ở may-son.3, kiểm bằng --chi-tiet-13a)
+  // trước:                                                           // 30/10 phun nhẹ: nền VECTOR = 4548dda (san-ve.js nhận phun nhẹ qua luc "low" thay "fast"; so với nền fe2ae3e chỉ lệch ở tia phun nhẹ của sung-hoi.3, luc-ban.8: nền cũ coi "low" là tia dài). Trước đó fe2ae3e (giật một ô)
   const _nen = {};
   let coGit = true;
   const docTai = (sha) => (f) => { const k = sha + ':' + f; if (_nen[k] === undefined) { try { _nen[k] = execFileSync('git', ['-C', GOC, 'show', sha + ':hoc/game/' + f], { encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }); } catch (e) { _nen[k] = null; coGit = false; } } return _nen[k]; };

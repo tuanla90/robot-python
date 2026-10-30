@@ -153,7 +153,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, nutBat: Array.isArray(cfg.nutBat) ? cfg.nutBat : null, lua: Array.isArray(cfg.lua) ? cfg.lua : null, demTu: Array.isArray(cfg.demTu) ? cfg.demTu : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
         robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [], cacCo: [],
         bm: chuanBongMo(cfg.bongMo),                     // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
-        hinh: dungHinh(cfg.hinh), sonBanDau: dungHinh(cfg.sonBanDau), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red' };      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
+        hinh: dungHinh(cfg.hinh), sonBanDau: dungHinh(cfg.sonBanDau), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red',
+        vo: cfg.vo === 'nong-trai' ? 'nong-trai' : null };      // vỏ hình của mùa (30/10: 'nong-trai' mùa 4: cỏ, luống hoa, bụi cây, bao hạt; ve-vector-nong-trai.js)      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
       // nhiều robot (cfg.doi = [{ robot, batDau, loaiRobot, pin, danToiDa }]): mỗi xe một ngữ cảnh (xem chonXe); this.cfg mang phần của xe đang xét
       this.cfgXe = Array.isArray(cfg.doi) ? cfg.doi.map(function (r, i) {
         var l = r.loaiRobot || 'banh', rb = r.robot || { than: l === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] };
@@ -224,7 +225,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veOVec: function (g, x, y, ch, kO, now, cf, ff) {
       var self = this, c = this.cfg, px = x * T, py = y * T;
       function ve(ma, s) { g.drawImage(self.oV(ma, s), px, py, T, T); }
-      if (ch === '#') { ve('tuong'); return; }
+      var nt = c.vo === 'nong-trai';
+      if (ch === '#') { ve(nt ? 'bui-cay' : 'tuong'); return; }
       if (ch === 'N') {                                                               // van hơi (29/10): bánh van quay nửa vòng trong 450 ms sau khi đổi (nt.quay), lượng tử hoá 1/8
         var nt = this.nutT[kO], bat = !!(nt && nt.bat), sN = { bat: bat, loe: !!(nt && nt.loe > now) }, kq = nt && nt.quay ? (now - nt.quay) / 450 : 1;
         if (kq >= 0 && kq < 1) { kq = Math.round((1 - (1 - kq) * (1 - kq)) * 8) / 8; sN.goc = bat ? kq : 1 - kq; }
@@ -235,7 +237,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (ch === 'n') { ve('gam'); return; }
       if (ch === 'u') { ve('ho'); return; }
       var mn = (ch === '=' || ch === 'C' || ch === 'c') ? null : this.mauNen(x, y);   // như nhánh pixel: sàn màu ở mọi ô trừ tường, bậc, rào, nút bắn, cửa, gầm, hố, băng
-      ve(mn ? 'san-mau' : 'san', mn ? { mau: mn } : (x + y) & 1 ? { le: 1 } : undefined);      // gói V4: sàn bàn cờ hai tông theo (x + y)
+      ve(mn ? (nt ? 'luong-hoa' : 'san-mau') : nt ? 'co-non' : 'san', mn ? { mau: mn } : (x + y) & 1 ? { le: 1 } : undefined);      // gói V4: sàn bàn cờ hai tông theo (x + y)
       var lu = this.luaT && this.luaT[kO];
       if (lu) { ve('lua', { suc: lu.suc, pha: lu.suc ? Math.floor(now / 170) & 3 : 0 }); if (lu.suc) this.veNong(g, x, y, now); }   // gói lửa: đám cháy (nóng như van mở), tắt thì vết cháy
       var dt = this.demTuT && this.demTuT[kO];
@@ -652,10 +654,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /* ---- MÁY SƠN (gói V4): ô cần tô = chấm màu mờ + viền nét đứt bo góc; ô đã tô = tấm sơn bo góc có bóng, lóe trắng lúc vừa tô; tô sai / ngoài hình: viền + gạch chéo. */
     veSon: function (g, now) {
       var c = this.cfg, hinh = c.hinh, x, y, k, m;
-      if (hinh) for (y = 0; y < hinh.length; y++) for (x = 0; x < hinh[y].length; x++) { m = hinh[y][x]; if (m && this.daSon[x + ',' + y] !== m) HU().sonCan(g, x, y, MAU_VIEN[m], now); }
+      if (hinh) for (y = 0; y < hinh.length; y++) for (x = 0; x < hinh[y].length; x++) { m = hinh[y][x]; if (m && this.daSon[x + ',' + y] !== m) HU().hoaCan(g, x, y, m, MAU_VIEN[m], now); }   // 30/10: bộ gieo hạt, ô cần gieo là hoa mờ
       for (k in this.daSon) {
         var av = k.split(','), xv = +av[0], yv = +av[1], mv = this.daSon[k], lv = this.sonLoe[k], sai = hinh && hinh[yv] && hinh[yv][xv] !== mv;
-        HU().sonDa(g, xv, yv, MAU_VIEN[mv] || BM.sanLamV4, lv ? (now - lv) / 380 : 1, sai ? (hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : BM.vecDo) : null, sai && hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : null);
+        HU().hoaDa(g, xv, yv, mv, lv ? (now - lv) / 380 : 1, sai ? (hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : BM.vecDo) : null, sai && hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : null);
       }
     },
     /** Tô ô o màu mau (hoạt cảnh): ô lóe trắng rồi hiện màu. */
@@ -873,7 +875,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     },
     /** Hình của vật o: thùng gỗ / khối sắt / nam châm (ve-vector-ky-hieu.js vatCua), có dải màu nếu vật mang màu, canvas đệm đúng px pixel thiết bị. (n giữ cho chữ ký cũ, không dùng.) */
     hinhVat: function (o, n, px) {
-      var hv = VeVector.vatCua(o), v = VeVector.vat(hv[0], px, hv[1]);
+      var hv = VeVector.vatCua(o, this.cfg && this.cfg.vo), v = VeVector.vat(hv[0], px, hv[1]);
       return v || VeVector.vat('thung-go', px, {});                                     // chất lạ: thùng gỗ (V7c2: trước rơi về hình pixel Ve.makeVatNho)
     },
     /** Vẽ một vật (gói V4): hộp cạnh sz, tâm (x, y), không làm tròn px (trượt mượt); bóng khối bo góc mềm lệch (so / 2, so) về phía phải-dưới (ánh sáng từ trái trên):
@@ -2297,21 +2299,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   };
 
   /** Ảnh nhỏ, chế độ vector (gói V2): vật o = { chat, mau, cuc } (ve-vector-ky-hieu.js vatCua) thân nửa ô giữa ô như thuVat (thân vector chiếm 76% hộp). */
-  function thuVatVec(g, px, py, s, o) {
-    var hv = VeVector.vatCua(o), h = s * 0.5 / 0.76;
+  function thuVatVec(g, px, py, s, o, vo) {
+    var hv = VeVector.vatCua(o, vo), h = s * 0.5 / 0.76;
     g.drawImage(VeVector.vat(hv[0], Math.max(1, Math.round(h)), hv[1]), px + (s - h) / 2, py + (s - h) / 2, h, h);
   }
   /** Ảnh nhỏ, chế độ vector (gói V2): mọi ô vẽ theo bảng VeVector.KY_HIEU (lớp ô dưới trước, rồi vật nằm sẵn), trạng thái lúc đầu màn như thuSan pixel:
    *  sàn màu (lớp màu / ký hiệu r g b y) thay ô sàn, ô đích trên sàn màu mang màu, nút bắn bật sẵn, cửa nhịp theo pha, rào nối theo ô kề; vật o / X theo lớp màu / chất. */
-  function thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat) {
-    var x, y, ch, px, py, i, kh, lop, ma, st;
+  function thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat, vo) {
+    var x, y, ch, px, py, i, kh, lop, ma, st, nt = vo === 'nong-trai';
     for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
       ch = rows[y][x]; px = x * s; py = y * s; kh = VeVector.KY_HIEU[ch] || VeVector.KY_HIEU['.'];
       var mn = mauO && mauO[y][x] && '#S=NCcnu'.indexOf(ch) < 0 && BANG[ch] === undefined ? mauO[y][x] : null;
       for (i = 0; i < kh.o.length; i++) {
         lop = kh.o[i]; ma = lop[0]; st = lop[1] ? Object.assign({}, lop[1]) : undefined;
-        if (ma === 'san' && mn) { ma = 'san-mau'; st = { mau: mn }; }
+        if (ma === 'san' && mn) { ma = nt ? 'luong-hoa' : 'san-mau'; st = { mau: mn }; }
         else if (ma === 'san' && (x + y) & 1) st = { le: 1 };                    // gói V4: sàn bàn cờ hai tông
+        if (nt && ma === 'san') ma = 'co-non';                                    // 30/10 vỏ nông trại (mùa 4): sàn cỏ, tường là bụi cây
+        if (nt && ma === 'tuong') ma = 'bui-cay';
         else if (ma === 'dich' && mn) st.mau = mn;
         else if (ma === 'nut-ban' && nutBat[x + ',' + y]) st.bat = true;
         else if (ma === 'cua' && cuaNhip[x + ',' + y]) { var cn = cuaNhip[x + ',' + y], chu = cn.mo + cn.dong; st.k = (cn.pha % chu) < cn.mo ? 1 : 0; st.nhip = { n: Math.min(chu, 6), mo: cn.mo, p: cn.pha % chu }; }
@@ -2326,7 +2330,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       (kh.vat || []).forEach(function (v) {
         if (v[0] === 'thung-nang') { g.drawImage(VeVector.vat('thung-nang', s), px, py, s, s); return; }
         var cuc = vc && vc[y] && (vc[y][x] === 'N' || vc[y][x] === 'S') ? vc[y][x] : null;
-        thuVatVec(g, px, py, s, { chat: cuc ? 'nam-cham' : vc && vc[y] && vc[y][x] === 's' ? 'sat' : 'go', cuc: cuc, mau: vm && vm[y] ? MAU_KY[vm[y][x]] : null });
+        thuVatVec(g, px, py, s, { chat: cuc ? 'nam-cham' : vc && vc[y] && vc[y][x] === 's' ? 'sat' : 'go', cuc: cuc, mau: vm && vm[y] ? MAU_KY[vm[y][x]] : null }, vo);
       });
     }
   }
@@ -2353,7 +2357,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var them = (lopMau && lopMau.vatThem) || [], cuaNhip = {}, nutBat = {};
     ((lopMau && lopMau.nutBat) || []).forEach(function (o) { nutBat[o.x + ',' + o.y] = true; });                          // nút bật sẵn: ảnh nhỏ vẽ nút xanh + viền cam (nóng)
     ((lopMau && lopMau.cuaNhip) || []).forEach(function (cn) { cuaNhip[cn.x + ',' + cn.y] = cn; });                      // cửa nhịp: ảnh nhỏ vẽ trạng thái lúc đầu (theo pha), khung xanh lơ                                                                          // vật thêm ngoài ký hiệu (vd trên băng chuyền)
-    thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat);
+    thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat, lopMau && lopMau.vo);
     ((lopMau && lopMau.lua) || []).forEach(function (o) { g.drawImage(VeVector.o('lua', s, { suc: o.suc, pha: 0 }), o.x * s, o.y * s, s, s); });   // gói lửa: ảnh nhỏ vẽ đám cháy lúc đầu
     var hinhT = dungHinh(lopMau && lopMau.hinh), sonT = dungHinh(lopMau && lopMau.sonBanDau), vien = Math.max(1, s >> 3);       // máy sơn: ô hình mờ (khung màu) và ô sơn sẵn (sơn đặc)
     for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
@@ -2364,7 +2368,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     them.forEach(function (o) {
       var ox = Math.floor(o.x), oy = Math.floor(o.y);
       if (ox < 0 || oy < 0 || ox >= w || oy >= h || rows[oy][ox] === '#' || rows[oy][ox] === 'o' || rows[oy][ox] === 'X') return;
-      thuVatVec(g, ox * s, oy * s, s, { chat: o.chat, cuc: o.cuc, mau: chuanMau(o.mau) });
+      thuVatVec(g, ox * s, oy * s, s, { chat: o.chat, cuc: o.cuc, mau: chuanMau(o.mau) }, lopMau && lopMau.vo);
     });
     if (bd) {                                                                 // ô xuất phát: chấm tròn màu R1 viền chàm, chấm trắng chỉ hướng mặt
       var vx = bd.x * s + s / 2, vy = bd.y * s + s / 2, vr = s * 0.3;

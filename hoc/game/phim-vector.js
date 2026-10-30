@@ -33,6 +33,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var c = 14 * s;
     if (ten === 'rug' || ten === 'pad') return the(c, c, function (g) { dan(g, V.o('san', px(c), (i || 0) & 1 ? { le: 1 } : {}), 0, 0, c); });
     if (ten === 'wall') return the(c, c, function (g) { dan(g, V.o('tuong', px(c), {}), 0, 0, c); });
+    if (ten === 'co-non') return the(c, c, function (g) { dan(g, V.o('co-non', px(c), (i || 0) & 1 ? { le: 1 } : {}), 0, 0, c); });      // 30/10 vỏ nông trại (mùa 4)
+    if (ten === 'bui-cay') return the(c, c, function (g) { dan(g, V.o('bui-cay', px(c), {}), 0, 0, c); });
     if (ten === 'crate') return the(c, c, function (g) { dan(g, V.vat('thung-go', px(c), {}), 0, 0, c); });
     if (ten === 'thung') return the(c, c, function (g) { dan(g, V.vat('thung-nang', px(c), {}), 0, 0, c); });
     return null;
