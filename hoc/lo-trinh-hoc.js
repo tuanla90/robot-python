@@ -2359,14 +2359,10 @@
     // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.
     // Hàm vẫn dạy nhưng thân đổi sang hàm quay của xích (THAN_CU: right(k), step(a, b)…): màn ẩn hai bánh gọi chúng nhận bản cũ thành hàm của màn, che hàm của em.
     var HAM_CU = {}, DAY_CU = [['che-xich.6', 'pick_behind'], ['che-cam-bien.5', 'bounce'], ['che-cam-bien.9', 'fetch_back'], ['tham-so.6', 'deliver']];
-    // PDM2c 31/10: gói Đội về gói 9 mùa 2 (gói 10 gọi hàm nó dạy như hàm của em bình thường); gói Bệ vòi xích CẤT (CAT_MUA_2) nhưng gói 10 còn gọi hàm nó dạy
-    // (go_spray, spray_left, valve_left…): cấp bản cũ làm hàm của màn cho hai chương gói 10 (CAP_HAM_CU) tới khi dựng lại gói 10.
-    [['che-be-sung.1', 'spray_left'], ['che-be-sung.2', 'spray_right'], ['che-be-sung.4', 'valve_on'], ['che-be-sung.5', 'valve_left'], ['che-be-sung.6', 'valve_row'],
-      ['che-be-sung.7', 'go_spray'], ['che-be-sung.8', 'visit'], ['che-be-sung.9', 'push_spray']].forEach(function (x) { if (nguon[x[0]]) DAY_CU.push(x); });
-    var CAP_HAM_CU = { 'tong-hop-2': true, 'trum-mua-2': true };
+    // PDM2c 31/10: gói Đội về gói 9 mùa 2 (gói 10 gọi hàm nó dạy như hàm của em bình thường); gói Bệ vòi xích CẤT (CAT_MUA_2).
+    // PDM2c2 31/10: gói 10 dựng lại không gọi hàm Bệ vòi xích nữa: bỏ CAP_HAM_CU (cấp bản cũ cho gói 10) và các mục DAY_CU của che-be-sung.
     var chuongAn = {};
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
-    Object.keys(CAP_HAM_CU).forEach(function (c) { chuongAn[c] = true; });
     DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
     });

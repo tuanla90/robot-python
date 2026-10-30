@@ -250,9 +250,9 @@
     m('put_out', 'hoi', 'Còn lửa trước mũi (còn nóng) thì phun nhẹ, tới khi lửa tắt hẳn', 'trum-mua-2', 'trum-mua-2.1'),
     m('put_out_left', 'hoi', 'Quay trái, dập lửa bằng put_out(), quay lại', 'trum-mua-2', 'trum-mua-2.2'),
     m('clear_row', 'hoi', 'n giếng cháy cách đều hai ô: đi hai ô rồi dập lửa bên trái', 'trum-mua-2', 'trum-mua-2.4'),
-    m('box_spray', 'hoi', 'Thùng hay bạn còn trong giếng thì chờ, rồi phun mạnh', 'trum-mua-2', 'trum-mua-2.5'),
-    m('gate_push', 'hoi', 'Tới sát thùng, phun van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
-    m('fire_valve', 'hoi', 'Quay trái, dập lửa chắn trước van, phun mạnh mở van, quay lại', 'trum-mua-2', 'trum-mua-2.7'),
+    m('box_spray', 'hoi', 'Thùng trên băng còn chắn giếng (distance() < 2) thì chờ, rồi phun mạnh', 'trum-mua-2', 'trum-mua-2.5'),
+    m('gate_push', 'hoi', 'Tới sát thùng, phun mạnh van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
+    m('fire_valve', 'hoi', 'Quay trái, dập lửa trước van, fence_shot() mở van và bù giật, quay lại', 'trum-mua-2', 'trum-mua-2.7'),
     m('far_push', 'hoi', 'Thùng cách d ô thì đẩy nó đi đúng d ô', 'trum-mua-2', 'trum-mua-2.9')
   );
 

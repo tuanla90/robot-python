@@ -68,11 +68,12 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'son-tren-cao.5', 'son-tren-cao.6', 'che-son-tren-cao.2', 'che-son-tren-cao.6', 'che-son-tren-cao.8');      // gói 9: đọc vạch mờ / bảng mẫu bằng camera
 NHIEU_SAN_KHONG_TRUM.push('tong-hop-4.1', 'tong-hop-4.2', 'tong-hop-4.3', 'tong-hop-4.4', 'tong-hop-4.6', 'tong-hop-4.9', 'trum-mua-4.1', 'trum-mua-4.2', 'trum-mua-4.6', 'trum-mua-4.8', 'trum-mua-4.9');      // gói 10: màn đọc camera / hai mức pin
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
-const GOI_NHIEU_SAN = new Set((TT.goi.find(g => g.ma === 'robot') || { chuong: [] }).chuong);
+// PDM2c2 (31/10): gói 10 mùa 2 "Xe cứu hỏa R1 xuất xưởng" (gói nha-may-chay: tong-hop-2, trum-mua-2) cũng MỌI màn nhiều sân.
+const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
 kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
-    if (GOI_NHIEU_SAN.has(m.chuong)) assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ': gói 10 mùa 1 cần 2–3 sân, có ' + soSan(m));
+    if (GOI_NHIEU_SAN.has(m.chuong)) assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ': gói 10 chạy một mình cần 2–3 sân, có ' + soSan(m));
     else if (m.hang !== 'trum' && !NHIEU_SAN_KHONG_TRUM.includes(m.ma)) assert.equal(soSan(m), 1, m.ma);
     if (m.hang === 'trum') assert.equal(m.so, ds.length, m.ma + ' trùm không đứng cuối chương');
     if (ds.length === 10) assert.equal(m.hang === 'trum', m.so === 10, m.ma);
