@@ -215,23 +215,23 @@
   },
   "robot-hoan-thien.3": {
     "o": 21,
-    "nhip": 8
+    "nhip": 10
   },
   "robot-hoan-thien.4": {
     "o": 40,
-    "nhip": 24
+    "nhip": 26
   },
   "robot-hoan-thien.5": {
     "o": 28,
-    "nhip": 23
+    "nhip": 51
   },
   "robot-hoan-thien.6": {
     "o": 28,
-    "nhip": 12
+    "nhip": 13
   },
   "robot-hoan-thien.7": {
     "o": 27,
-    "nhip": 8
+    "nhip": 12
   },
   "robot-hoan-thien.8": {
     "o": 31,

@@ -1644,6 +1644,80 @@
   // Trùm nam châm phải cho đủ sao ô với chính kho người chơi đã học.
   get('nam-cham.10').sao.o = 23;
 
+  // ---------------------------------------------------------------- PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình"
+  // R1 xuất xưởng ở lại kho làm việc bằng mật lệnh đã viết: MỌI màn của gói nhiều sân, mỗi sân là một "ngày làm việc" (thùng / hốc / cửa ở chỗ khác),
+  // một chương trình đúng mọi ngày; lời đếm cứng của một ngày nằm trong loiSai (thua ở ngày khác). Nhịp sao theo ngày DÀI NHẤT (bỏ nhipTheo 'tong'
+  // của ngân hàng) để đường cong nhịp trong chương không nhảy gấp ba; hai trùm (robot-hoan-thien.11, trum-mua-1.10) giữ 'tong'.
+  // robot-hoan-thien.1–6: lấy lại ba sân của ngân hàng (cùng lời giải, đã dùng cảm biến); .7, .8 (bài viết lại ở thay() trên) thêm ngày.
+  (function () {
+    var NGAY = ' Mỗi ngày kho xếp khác: viết một chương trình chạy đúng mọi ngày.';
+    function nhieuNgay(ma, ds) {
+      var m = get(ma), g = nguon[ma];
+      ['san', 'batDau', 'bongMo', 'vatMau'].forEach(function (k) { if (g[k] !== undefined) m[k] = copy(g[k]); });
+      delete m.nhipTheo;
+      Object.assign(m, ds);
+      m.phienBanNoiDung = 2;
+    }
+    nhieuNgay('robot-hoan-thien.1', {
+      deBai: 'R1 ở lại kho làm một mình. Ba ngày làm việc: mỗi ngày thùng hàng nằm xa gần khác nhau, hành lang dài ngắn khác nhau. Đưa thùng tới ô cuối hành lang, sát tường, giống vật mờ.' + NGAY
+    });
+    nhieuNgay('robot-hoan-thien.2', {
+      deBai: 'Ba ngày làm việc, hành lang mỗi ngày dài ngắn khác nhau. Ngày nào cũng có người bỏ quên một thùng hàng ngay sau lưng xe. Đưa thùng tới ô cuối hành lang, sát tường, giống vật mờ.' + NGAY
+    });
+    get('robot-hoan-thien.2').loiSai.push({ moTa: 'Đếm cứng theo ngày đầu: đi hai ô rồi đặt, ngày khác hành lang dài hơn hay ngắn hơn', baiLam: bai(['grab_back()', 'move()', 'move()', 'drop()']), phaiCoMa: ['lech-bong-mo'] });
+    nhieuNgay('robot-hoan-thien.3', {
+      deBai: 'Ba ngày làm việc, mỗi ngày ngăn kệ trống ở một chỗ khác. Thùng hàng nằm ngay trước mặt xe: mang nó dọc hành lang tới ngăn kệ mở ra bên phải rồi đặt vào ngăn, giống vật mờ.' + NGAY
+    });
+    nhieuNgay('robot-hoan-thien.4', {
+      deBai: 'Ba ngày làm việc, mỗi ngày thùng đỏ chắn hành lang ở một chỗ khác; thùng xanh dương nằm bên phải chỗ xe dừng lại. Đổi chỗ hai thùng cho nhau, rồi cho xe về chỗ xuất phát, mặt quay xuống như xe mờ.' + NGAY
+    });
+    get('robot-hoan-thien.4').loiSai.push({ moTa: 'Đếm cứng theo ngày thứ ba: tiến một ô rồi đổi, ngày khác thùng đỏ còn xa hơn', baiLam: bai(['move()', 'swap()', 'u_turn()', 'go_wall()']), phaiCoMa: ['lech-bong-mo'] });
+    // .5: số thùng 2 / 3 / 1, vòng thừa lượt chỉ kẹp hụt (không hỏng gì): giữ nhịp TỔNG ba ngày của ngân hàng để vòng for đếm cứng ba lần mất sao.
+    nhieuNgay('robot-hoan-thien.5', {
+      nhipTheo: 'tong',
+      deBai: 'Ba ngày làm việc, mỗi ngày dãy thùng chắn hành lang dài ngắn khác nhau. Dời từng thùng sang ô bên phải xe, rồi đưa xe tới cuối hành lang, giống vật mờ và xe mờ.' + NGAY + ' Số nhịp tính tổng cả ba ngày.'
+    });
+    get('robot-hoan-thien.5').loiSai[3] = { moTa: 'Đếm cứng hai lần (vòng for): ngày có ba thùng còn một thùng chắn lối', baiLam: bai(['go_wall()'].concat(lap(2, ['put_right()', 'move()']), ['go_wall()'])), phaiCoMa: ['lech-bong-mo'] };
+    nhieuNgay('robot-hoan-thien.6', {
+      deBai: 'Ba ngày làm việc, mỗi ngày hành lang chữ L rẽ ở một chỗ khác. Thùng hàng nằm ngay trước mặt xe: mang nó đi hết hành lang, rẽ phải ở góc, đi tới cuối đoạn kia và đặt xuống sát tường, giống vật mờ. Chương trình chỉ được gọi 5 hàm của em khác nhau.' + NGAY
+    });
+    get('robot-hoan-thien.6').loiSai.push({ moTa: 'Đếm cứng theo ngày đầu: năm ô lên, một ô sang, ngày khác góc rẽ ở chỗ khác', baiLam: bai(['pick()'].concat(lap(5, ['move()']), ['turn_right()', 'move()', 'drop()'])), phaiCoMa: ['lech-bong-mo'] });
+    // .7 "Mang thùng về nhà": ba ngày, thùng cách xe 2 / 4 / 1 ô (hành lang dài ngắn khác); về tới tường đầu hành lang rồi lùi một ô, đặt.
+    (function () {
+      var m = get('robot-hoan-thien.7'), BM = { x: 2, y: 1, huong: 3, vat: [{ x: 1, y: 1 }] };
+      Object.assign(m, {
+        deBai: 'Ba ngày làm việc, mỗi ngày thùng hàng nằm ở một chỗ khác trong hành lang. Đi tới thùng, nhặt lên, mang về đặt sát tường ở đầu hành lang nơi xe xuất phát, giống vật mờ và xe mờ.' + NGAY,
+        san: [['#######', '#..o..#', '#######'], ['########', '#....o.#', '########'], ['######', '#.o..#', '######']],
+        batDau: [0, 1, 2].map(function () { return { x: 1, y: 1, huong: 1 }; }), bongMo: [0, 1, 2].map(function () { return copy(BM); }),
+        loiSai: [
+          { moTa: 'Đếm cứng theo ngày đầu: tiến một ô rồi nhặt, ngày khác thùng ở chỗ khác', baiLam: bai(['move()', 'pick()', 'u_turn()', 'drop()']), phaiCoMa: ['lech-bong-mo'] },
+          { moTa: 'Về tới tường thì thả ngay: ô trước mặt là tường nên không đặt được', baiLam: bai(['go_wall()', 'pick()', 'u_turn()', 'go_wall()', 'drop()']), phaiCoMa: ['tha-bi-chan', 'lech-bong-mo'] },
+          { moTa: 'Quên quay đầu: lùi mãi, thùng vẫn trên tay', baiLam: bai(['go_wall()', 'pick()', 'go_wall()', 'back()', 'drop()']), phaiCoMa: ['lech-bong-mo'] }
+        ]
+      });
+    })();
+    // .8 "Dọn sang trái rồi về": ba ngày, dãy 3 / 2 / 1 thùng; lời giải đổi vòng for (đếm cứng 3 thùng) thành while not front_clear() (hết thùng thì trước mặt trống).
+    (function () {
+      var m = get('robot-hoan-thien.8');
+      var DON = ['go_wall()', 'while not front_clear():', '    pick()', '    move()', '    turn_left()', '    drop()', '    turn_right()', 'u_turn()', 'go_wall()'];
+      function bm(ys) { return { x: 1, y: 6, huong: 2, vat: ys.map(function (y) { return { x: 0, y: y }; }) }; }
+      Object.assign(m, {
+        deBai: 'Ba ngày làm việc, mỗi ngày dãy thùng xếp dọc hành lang dài ngắn khác nhau. Dời từng thùng sang ô bên trái xe, rồi đưa xe về chỗ xuất phát, quay mặt xuống, giống vật mờ và xe mờ.' + NGAY,
+        veMaMau: 'Còn thùng chắn trước mặt thì dời tiếp: vòng while hỏi cảm biến, không đếm số thùng.',
+        san: [['####', '#.##', '.o##', '.o##', '.o##', '#.##', '#.##'], ['####', '#.##', '#.##', '.o##', '.o##', '#.##', '#.##'], ['####', '#.##', '.o##', '#.##', '#.##', '#.##', '#.##']],
+        batDau: [0, 1, 2].map(function () { return { x: 1, y: 6, huong: 0 }; }), bongMo: [bm([2, 3, 4]), bm([3, 4]), bm([2])],
+        loiGiai: bai(DON),
+        loiSai: [
+          { moTa: 'Đếm cứng hai thùng (vòng for): ngày có ba thùng còn một thùng nằm lại', baiLam: bai(['go_wall()'].concat(lap(2, ['pick()', 'move()', 'turn_left()', 'drop()', 'turn_right()']), ['u_turn()', 'go_wall()'])), phaiCoMa: ['lech-bong-mo'] },
+          { moTa: 'Quên move() trong vòng while: dời xong thùng đầu thì trước mặt đã trống, các thùng sau còn nguyên', baiLam: bai(['go_wall()', 'while not front_clear():', '    pick()', '    turn_left()', '    drop()', '    turn_right()', 'u_turn()', 'go_wall()']), phaiCoMa: ['lech-bong-mo'] },
+          { moTa: 'Dời xong quên về chỗ xuất phát', baiLam: bai(DON.slice(0, 7)), phaiCoMa: ['lech-bong-mo'] }
+        ],
+        goiY: ['Nhặt thùng trước mặt, tiến vào chỗ trống của nó, quay trái rồi thả, quay lại hướng cũ.', 'Hết thùng thì ô trước mặt trống: while not front_clear() tự dừng, ngày nào cũng đúng.']
+      });
+    })();
+    ['robot-hoan-thien.7', 'robot-hoan-thien.8'].forEach(function (ma) { delete get(ma).nhipTheo; get(ma).phienBanNoiDung = 2; });
+  })();
+
   // ---------------------------------------------------------------- GÓI T MÙA 2 (29/10, user "show don't tell", đúng việc HD1 / HD2 đã làm cho mùa 1)
   // Mỗi chương mùa 2 giới thiệu khối / part / cơ chế mới: màn ĐẦU là màn TRÌNH DIỄN (chiChay: chương trình khoá, bấm Chạy là 3 sao, đề chỉ nói "Bấm Chạy, xem…"),
   // màn KẾ ép dùng nó (nhiều sân của ngân hàng / mã mẫu sai một chỗ / giấu lệnh cũ có thể lách) + hướng dẫn từng bước (huong-dan-man.js khối "gói T mùa 2"), rồi thả.
