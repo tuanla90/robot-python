@@ -391,8 +391,8 @@
       // while có and (front_pole thấy vật nam châm trong 3 ô, front_metal thấy sắt trong 2 ô: thiếu một vế là xe đâm vào vật), biến chuỗi p = front_pole(),
       // if / elif / else ba việc khác nhau: vật nam châm thì bật CÙNG cực đẩy nó trượt vào ô đích cuối hành lang, sắt thì take_iron() mang về ô đích sau lưng.
       // Không đặt đệm từ: đệm kéo cả robot chưa bật nam châm (luật P1b), đặt trên đường đi tới là xe rơi trước khi kịp đọc cực.
-      so: 10, ten: 'Trùm mùa: xe thăm dò phân loại', hang: 'trum', kieu: 'xe', khung: { chinh: 18, moiHam: 10 }, hamCuaEmCan: ['move', 'take_iron'],
-      deBai: 'Trùm mùa. Ba sân, cuối hành lang là vật cực N, vật cực S hay quặng sắt, xa gần khác nhau. Tiến tới khi cảm biến thấy vật nam châm HOẶC thấy sắt. Rồi đọc p = front_pole(): vật N thì bật N, vật S thì bật S (cùng cực, vật trượt vào ô đích cuối hành lang); không phải nam châm thì take_iron() mang sắt về ô đích sau lưng. Bật nhầm cực là vật bị hút về mũi xe.',
+      so: 10, ten: 'Trùm mùa: robot phân loại phế liệu', hang: 'trum', kieu: 'xe', khung: { chinh: 18, moiHam: 10 }, hamCuaEmCan: ['move', 'take_iron'],
+      deBai: 'Trùm mùa: robot phân loại phế liệu. Ba sân, cuối hành lang là vật cực N, vật cực S hay sắt vụn, xa gần khác nhau. Tiến tới khi cảm biến thấy vật nam châm HOẶC thấy sắt. Rồi đọc p = front_pole(): vật N thì bật N, vật S thì bật S (cùng cực, vật trượt vào ô đích cuối hành lang); không phải nam châm thì take_iron() mang sắt về ô đích sau lưng. Bật nhầm cực là vật bị hút về mũi xe.',
       veMaMau: 'Chương trình có sẵn chỉ dừng khi thấy vật nam châm rồi luôn take_iron(). Chạy thử từng sân rồi sửa.',
       san: [
         ['#############', '#.......o..D#', '#############'],

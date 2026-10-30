@@ -77,3 +77,13 @@ Còn lại, cần user quyết (đụng màn có sẵn hay phải thêm chương
    thay thì phải đưa màn cũ ra chương rời như nam-cham.10.
 5. doi-xich.15 thêm cùng lúc chuyền hộp và đếm nhịp (số khối 22 → 40).
 6. Lời chẩn đoán cung-cuc của nhện bụng còn nói "ngay dưới drone" (cham.js dùng chung với drone), nên sửa chữ cho nhện.
+
+## Mùa 3 thành "Bãi tái chế" (user 30/10 "okie, đồng ý", qua phiên Video narrative; luật và 200 màn giữ)
+- Tên mùa hiển thị: Bãi tái chế. Trùm mùa: "Trùm mùa: robot phân loại phế liệu". Tên huy hiệu theo tên chương (không đổi).
+- Lời mọi màn mùa 3 đổi ở lộ trình (lo-trinh-hoc.js, loiBaiTaiChe / chuBaiTaiChe), ngân hàng màn giữ: đề mở bằng "Giúp Sola với!" (màn tên "Sửa…":
+  "Sola viết vội, sửa giúp nhé."; màn trình diễn: "Sola làm mẫu."), gợi ý mở bằng "Luna:", "Chương trình có sẵn" thành "Chương trình Sola viết sẵn",
+  "vật sắt" thành "mẩu sắt vụn", xưng "em" thành "bạn" (giữ nhãn giao diện "hàm của em").
+- Giữ từ của lõi: hố, gầm, đệm từ, vật nam châm (lời chẩn đoán cham.js dùng chung mùa 2, 4; đổi thì đổi cả các mùa đó).
+- Chưa làm, cần user quyết: (1) hình khối sắt thành sắt vụn: vật 'khoi-sat' dùng cả mùa 4 (44 màn), mùa 5 (37 màn) và hình huy hiệu, đổi hình là đổi cả
+  các mùa đó và dời nền phanh 13a-v / A3-v / B5-v; (2) lời phim mùa 3 trong game (pg.*) vẫn theo mỏ quặng, phiên Video narrative làm phim mới bằng
+  Remotion, không sửa chu.js; (3) nhãn giao diện "Hàm của em" và các chữ "em" ngoài mùa 3 chưa đổi sang "bạn".

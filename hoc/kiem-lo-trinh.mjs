@@ -486,7 +486,7 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   for (const m of moiMua3) assert.ok(BANG_MUA_3.some(([, , ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
   const mua3 = TT.mua.find(x => x.ma === 'mua-3');
   assert.ok(!mua3.an, 'mùa 3 còn ẩn');      // 30/10 đủ 10 gói × 20 màn: hiện ở màn chọn gói
-  assert.equal(mua3.ten, 'Mỏ quặng', 'tên mùa 3');
+  assert.equal(mua3.ten, 'Bãi tái chế', 'tên mùa 3');      // user 30/10 (trước: Mỏ quặng)
   assert.ok(mua3.ban && mua3.ban.gia, 'mùa 3 mất `ban`');
   for (const g of goi3()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 3 đang dựng: tự tính)');
   // Gói ngoài khuôn: đầu mùa 4, giữ thứ tự cũ, trước các gói mùa 4 cũ; chương rời của MUA_3 đúng màn.

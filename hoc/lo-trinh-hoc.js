@@ -899,6 +899,26 @@
     'che-nhen': 'Chế lệnh nhện', 'dao-cuc': 'Đảo cực', 'che-dao-cuc': 'Hàm đảo cực', 'doc-cuc': 'Đọc cực', 'che-doc-cuc': 'Hàm đọc cực',
     'doi-xich': 'Đội xích và nhện', 'che-doi-xich': 'Đội xích và nhện phối hợp', 'bung-nhen': 'Nam châm bụng nhện', 'che-bung-nhen': 'Hàm cho bụng nhện',
     'tong-hop-3': 'Tổng hợp', 'trum-mua-3': 'Trùm mùa' };
+  /** Đổi một chuỗi lời mùa 3 sang bãi tái chế + giọng CLB: sắt vụn, "em" → "bạn" (trừ nhãn "hàm của em"), chương trình Sola viết. */
+  function chuBaiTaiChe(s) {
+    if (typeof s !== 'string') return s;
+    return s.replace(/(V|v)ật sắt/g, function (a, v) { return v === 'V' ? 'Mẩu sắt vụn' : 'mẩu sắt vụn'; })
+      .replace(/quặng sắt/g, 'sắt vụn').replace(/quặng/g, 'sắt vụn')
+      .replace(/Chương trình có sẵn/g, 'Chương trình Sola viết sẵn').replace(/chương trình có sẵn/g, 'chương trình Sola viết sẵn')
+      .replace(/(^|[^\p{L}])(E|e)m(?=[^\p{L}]|$)/gu, function (a, truoc, e, vt, chuoi) {
+        return /hàm của $/i.test(chuoi.slice(0, vt + truoc.length)) ? a : truoc + (e === 'E' ? 'Bạn' : 'bạn');
+      });
+  }
+  /** Lời một màn mùa 3: đề (mở bằng lời Sola), lời mã mẫu, gợi ý (Luna nói), lời sai, tên. Chạy một lần mỗi màn. */
+  function loiBaiTaiChe(m) {
+    if (!m || m._loiBaiTaiChe) return;
+    m._loiBaiTaiChe = true;
+    ['ten', 'deBai', 'veMaMau'].forEach(function (k) { if (m[k]) m[k] = chuBaiTaiChe(m[k]); });
+    if (m.deBai) m.deBai = (m.chiChay ? 'Sola làm mẫu. ' : /^Sửa/.test(m.ten || '') ? 'Sola viết vội, sửa giúp nhé. ' : 'Giúp Sola với! ') + m.deBai;
+    if (m.goiY) m.goiY = m.goiY.map(function (s) { return 'Luna: ' + chuBaiTaiChe(s); });
+    (m.loiSai || []).forEach(function (x) { if (x.moTa) x.moTa = chuBaiTaiChe(x.moTa); });
+    if (m.loiGiaiKhac && m.loiGiaiKhac.moTa) m.loiGiaiKhac.moTa = chuBaiTaiChe(m.loiGiaiKhac.moTa);
+  }
   // Mã huy hiệu của trùm mỗi chương mùa 3 (tên huy hiệu = tên chương, như mùa 1, 2 từ 30/10); hai chương đội dùng mã mới (doi-xich / che-doi-xich là bí danh hai-robot ở huy-hieu-vector.js).
   var HUY_HIEU_3 = { nhen: 'nhen', 'chuoi-nhen': 'chuoi-nhen', 'nam-cham': 'nam-cham', 'logic-nam-cham': 'logic-nam-cham', 'cam-ung-tu': 'cam-ung-tu',
     'che-cam-ung-tu': 'che-cam-ung-tu', 'bai-tu': 'bai-tu', 'che-bai-tu': 'che-bai-tu', nhay: 'nhay', 'che-nhen': 'che-nhen', 'dao-cuc': 'dao-cuc',
@@ -1010,6 +1030,11 @@
         get(ds[ds.length - 1]).huyHieu = { ma: HUY_HIEU_3[c[0]], ten: 'Huy hiệu ' + TEN_MUA_3[c[0]].replace(': ', ' ').replace(/\?$/, '') };
       });
     });
+    // Lời mùa 3 "Bãi tái chế" (user 30/10: mùa 3 đổi từ mỏ quặng sang bãi tái chế phế liệu, luật giữ; giọng kể CLB, KE-HOACH-PHIM-CLB.md mục 1):
+    // đề do Sola giao ("Giúp Sola với!"; màn sửa lỗi "Sola viết vội, sửa giúp nhé."; màn trình diễn "Sola làm mẫu."), gợi ý do Luna nói, người chơi là "bạn".
+    // Làm ở lộ trình cho mọi màn mùa 3 (màn có sẵn lẫn màn mới) để ngân hàng và máy kiểm của ngân hàng giữ nguyên. Từ của lõi (hố, gầm, đệm từ, vật nam châm)
+    // giữ như lời chẩn đoán của cham.js (dùng chung mùa 2, 4); vật sắt của sân là sắt vụn. "Hàm của em" là nhãn giao diện nên giữ.
+    MUA_3.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiBaiTaiChe(get(ma)); }); }); });
     // Màn còn sót ở chương cũ (không thuộc MUA_3, không thuộc ROI_MUA_3) là lỗi dữ liệu.
     M.danhSach.forEach(function (m) {
       if (chuongMua3.indexOf(m.chuong) >= 0 && !da[m.ma]) throw new Error('Màn ' + m.ma + ' nằm ở chương mùa 3 ' + m.chuong + ' mà không có trong MUA_3 / ROI_MUA_3');
@@ -1656,7 +1681,8 @@
   // Mùa 2 đổi 29/10 sau khi vòi phun / van hơi gộp (phun → phun ở tên và phim; chữ trong màn đổi ở đợt riêng).
   (function () {
     var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
-                     'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
+                     'mua-2': 'Nhà máy', 'mua-3': 'Bãi tái chế',      // user 30/10: bãi tái chế phế liệu (trước: Mỏ quặng)
+                     'mua-4': 'Thành phố' };
     TT.mua.forEach(function (m) { if (TEN_MUA[m.ma]) m.ten = TEN_MUA[m.ma]; });
     var TEN_GOI_1 = { 'tay-gap': 'Tay kẹp', 'kho-hang': 'Nút đè', 'hai-robot': 'Gặp R2', 'combo': 'Nhìn bên, nhặt bên' };
     TT.goi.forEach(function (g) { if (g.mua === 'mua-1' && TEN_GOI_1[g.ma]) g.ten = TEN_GOI_1[g.ma]; });

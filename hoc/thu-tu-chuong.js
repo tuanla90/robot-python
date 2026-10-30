@@ -69,7 +69,7 @@
       // `an: true` (user 27/10): mùa chưa dựng lại theo khuôn 10 gói (KE-HOACH-7-MUA.md) thì ẩn khỏi màn chọn gói; bảng Gỡ lỗi "Mở hết" vẫn hiện để thử.
       // Mùa 2 "Ghi nhớ" đủ 10 gói × 20 màn (29/10): hiện ở màn chọn gói; ngưỡng sao gói khai cứng ở MUA_2 (lo-trinh-hoc.js).
       { ma: 'mua-2', ten: 'Ghi nhớ', ban: { gia: '49.000đ' } },
-      // Mùa 3 "Mỏ quặng" đủ 10 gói × 20 màn (30/10, user cho chơi thử): hiện ở màn chọn gói.
+      // Mùa 3 "Bãi tái chế" (trước: Mỏ quặng) đủ 10 gói × 20 màn (30/10, user cho chơi thử): hiện ở màn chọn gói.
       { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' } },
       { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' }, an: true },
       { ma: 'mua-5', ten: 'Sân bóng', ban: { gia: '49.000đ' }, an: true }      // 29/10: gói cũ chưa thuộc mùa 1–4 (omni, máy ném, lắp ráp, đua, đội…) chờ dựng mùa 5–7
