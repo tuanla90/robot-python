@@ -11,7 +11,7 @@ const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const VR = require('./game/ve-robot.js');
 
-const XONG = new Set([]);      // thêm 'mua-1', 'mua-2'… khi mùa đó dựng lại xong
+const XONG = new Set(['mua-1']);      // thêm 'mua-2'… khi mùa đó dựng lại xong (mua-1: PDM1 31/10)
 const CHI_TIET = process.argv.includes('--chi-tiet');
 const LOI_GIA = process.argv.includes('--loi-gia');
 
