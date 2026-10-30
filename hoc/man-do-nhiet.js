@@ -75,7 +75,9 @@
   // do-nhiet.5: như do-nhiet.4 nhưng nút xa gần khác nhau và dưới hành lang có hai hốc (2,4), (3,4). Nút (1,0) TẮT cách 2 ô: phun mạnh, xe giật xuống tường nên đứng yên;
   //   (2,0) ĐANG BẬT cách 2 ô, dưới là hốc: phun mạnh thì xe giật xuống hốc; (3,2) TẮT sát mũi, dưới là hốc: phải phun nhẹ; (4,2) TẮT sát mũi; (5,2) ĐANG BẬT. Cửa (2,3), (4,3), (5,3).
   var SAN_D5 = ['########', '#NN#####', '#..#####', '#..NNN##', '#.C.CCF#', '##..####', '########'];
-  // do-nhiet.6: hành lang (1..6, 2), nút ở CẢ HAI bên: trên (1..4, 1), dưới (1..4, 3). Nút TẮT (1,1) mở cửa (2,2), (2,3) mở cửa (3,2), (4,3) mở cửa (5,2); các nút khác ĐANG BẬT. Cờ (6,2).
+  // do-nhiet.6: hành lang (1..6, 2), nút ở CẢ HAI bên: trên (1..4, 1), dưới (1..4, 3). Nút TẮT (1,1) mở cửa (2,2), (2,3) mở cửa (3,2), (4,3) mở cửa (5,2); (3,3) TẮT không nối gì;
+  //   các nút khác ĐANG BẬT. 30/10 (nghiệm thu mùa 2: bảy màn liền cùng thân if not warm()): trạm nào cũng đúng MỘT van đóng, trên hay dưới, nên xe quay lên đọc van trên:
+  //   nóng thì van đóng là van dưới (sau lưng, phun ra sau), không thì phun van trên. if / else có việc thật ở cả hai nhánh, bỏ được lượt quay đầu. Cờ (6,2).
   var SAN_D6 = ['########', '#NNNN###', '#.CC.CF#', '#NNNN###', '########'];
   // do-nhiet.7: đi rồi về. Lượt đi (2..5, 1) sang phải, lượt về (5..1, 3) sang trái; ba nút (2..4, 2) nằm trên bức tường GIỮA, lượt nào cũng ở bên phải xe.
   //   (2,2) ĐANG BẬT; (3,2) TẮT mở cửa (2,3); (4,2) TẮT mở cửa (3,3). Lượt về, hai nút mình đã bật cũng nóng: phun lại thì cửa đóng.
@@ -123,7 +125,7 @@
   var L_D4 = FOR(5, nhieu(['turn_left()'], BAT, ['turn_right()', 'move()']));
   var C_D5 = FOR(5, ['turn_left()', 'check_hot()', 'turn_right()', 'move()']);
   var T_D5 = IF('not warm()', ['auto_spray()']);
-  var C_D6 = FOR(4, ['turn_left()', 'check_side()', 'u_turn()', 'check_side()', 'turn_left()', 'move()']).concat(['move()']);
+  var C_D6 = FOR(4, ['turn_left()', 'check_side()', 'turn_right()', 'move()']).concat(['move()']);   // 30/10: không còn quay đầu (check_side() là if / else)
   var C_D7 = nhieu(FOR(3, ['check_right()', 'move()']), ['turn_right()', 'forward(2)', 'turn_right()'], FOR(3, ['move()', 'check_right()']), ['move()']);
   var T_D7 = nhieu(['turn_right()'], BAT, ['turn_left()']);
   var C_D8 = FOR(4, ['turn_right()', 'scan_hot()', 'turn_left()', 'move()']);
@@ -246,23 +248,24 @@
 
     /* ------------------------------------------------ hàng 2 tiếp: luyện */
     man({
-      chuong: 'do-nhiet', so: 6, ten: 'Van hai bên đường', yMoi: 'đo cả hai bên: gọi cùng một thân hàm sau turn_left() và sau u_turn()',
-      hamCuaEmCan: ['squirt', 'turn_left', 'u_turn', 'move'], chinhCoDinh: true,
-      deBai: 'Hành lang có van ở cả hai bên. Ở mỗi ô, chỉ một van đóng (hay không van nào) mở cánh cửa phía trước; các van khác đang mở. Chương trình chính đã khóa: ' +
-        'quay trái, check_side(), quay đầu, check_side(), quay trái, tiến. Viết thân check_side(): van chưa nóng thì phun nhẹ.',
+      chuong: 'do-nhiet', so: 6, ten: 'Van hai bên đường', yMoi: 'if / else theo warm(): van trên nóng thì phun ra sau vào van dưới, không thì phun van trên; mỗi trạm đúng một van đóng',
+      hamCuaEmCan: ['squirt', 'squirt_back', 'turn_left', 'turn_right', 'move'], chinhCoDinh: true,
+      deBai: 'Hành lang có van ở cả hai bên. Ở mỗi trạm đúng một van đang đóng, lúc ở trên, lúc ở dưới. Chương trình chính đã khóa: quay trái (nhìn van trên), check_side(), ' +
+        'quay lại, tiến. Viết thân check_side(): van trên đang nóng thì van đóng là van dưới sau lưng, phun nhẹ ra sau; còn không thì phun nhẹ van trên.',
       veMaMau: 'Chương trình chính bị khóa. check_side() có sẵn chưa làm gì. Viết thân của nó.',
-      san: SAN_D6, batDau: { x: 1, y: 2, huong: 1 }, noi: [noi(1, 1, [[2, 2]]), noi(2, 3, [[3, 2]]), noi(4, 3, [[5, 2]])], nutBat: [o(2, 1), o(3, 1), o(4, 1), o(1, 3), o(3, 3)],
+      san: SAN_D6, batDau: { x: 1, y: 2, huong: 1 }, noi: [noi(1, 1, [[2, 2]]), noi(2, 3, [[3, 2]]), noi(4, 3, [[5, 2]])], nutBat: [o(2, 1), o(3, 1), o(4, 1), o(1, 3)],
       maMau: bai(C_D6, [H('check_side', [], ['pass'])]),
-      sao: { o: 20, nhip: 20 },
-      loiGiai: bai(C_D6, [H('check_side', [], BAT)]),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_D6, [H('check_side', [], ['# van chưa nóng thì phun cho mở'].concat(BAT))]) },
-      congThucKhac: [{ moTa: 'Phun mọi van không cần đo: vẫn tới cờ nhưng đóng năm van đang mở, phí năm nhịp', baiLam: bai(C_D6, [H('check_side', [], ['squirt("low")'])]) }],
+      sao: { o: 21, nhip: 17 },
+      loiGiai: bai(C_D6, [H('check_side', [], IF('warm()', ['squirt_back("low")'], ['squirt("low")']))]),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_D6, [H('check_side', [], ['# van trên nóng thì van đóng ở dưới'].concat(IF('warm()', ['squirt_back("low")'], ['squirt("low")'])))]) },
+      congThucKhac: [{ moTa: 'Viết if not warm() trước, else sau', baiLam: bai(C_D6, [H('check_side', [], IF('not warm()', ['squirt("low")'], ['squirt_back("low")']))]) }],
       loiSai: [
-        { moTa: 'Viết if warm(): chỉ đóng van đang mở, ba van đóng vẫn đóng', baiLam: bai(C_D6, [H('check_side', [], IF('warm()', ['squirt("low")']))]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chỉ if not warm() như màn trước: van đóng ở dưới không ai phun', baiLam: bai(C_D6, [H('check_side', [], BAT)]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đổi hai nhánh: van nóng bị đóng, van đóng không ai phun', baiLam: bai(C_D6, [H('check_side', [], IF('warm()', ['squirt("low")'], ['squirt_back("low")']))]), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Để thân trống: không van nào được mở, cửa đầu tiên vẫn đóng', baiLam: bai(C_D6, [H('check_side', [], ['pass'])]), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Cùng một thân hàm chạy tám lần, mỗi lần mắt hồng ngoại nhìn một van khác.',
-        'Thân check_side(): if not warm(): squirt("low").']
+      goiY: ['Mắt hồng ngoại chỉ nhìn van trên; van dưới nằm sau lưng, phun ra sau là tới.',
+        'Thân check_side(): if warm(): squirt_back("low"), else: squirt("low").']
     }),
 
     /* ------------------------------------------------ hàng 3: biến thể */
