@@ -49,13 +49,13 @@
     "o": 8,
     "nhip": 4
   },
+  "che-cam-bien.7": {
+    "o": 9,
+    "nhip": 3
+  },
   "che-cam-bien.2": {
     "o": 5,
     "nhip": 6
-  },
-  "che-cam-bien.7": {
-    "o": 8,
-    "nhip": 1
   },
   "che-cam-bien.3": {
     "o": 13,

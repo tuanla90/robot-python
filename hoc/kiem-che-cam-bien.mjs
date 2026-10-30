@@ -341,7 +341,8 @@ console.log('\n== 7. Sổ lệnh, game/choi.html ==');
   kiem('Sổ lệnh có sáu hàm của chương, nhóm cam-bien, chuong che-cam-bien, man khớp màn tạo hàm, lời lớp 5 (≤ 80 chữ, không dấu chấm cuối); theo thứ tự chế',
     moi.every((t, i) => { const h = SoLenh.tim(t); return h && h.nhom === 'cam-bien' && h.chuong === 'che-cam-bien' && h.man === che.find((m) => m.taoHam.includes(t)).ma && h.moTa.length <= 80 && !/[.]$/.test(h.moTa); }) &&
       J(SoLenh.theoChuong('che-cam-bien').map((h) => h.ten)) === J(moi) && SoLenh.tim('safe_move').moTa === 'Tiến một ô nếu trước mặt trống, không thì đứng yên');
-  kiem('nhóm cam-bien của Sổ lệnh: go_wall (khoang-cach) rồi sáu hàm của che-cam-bien', J(SoLenh.theoNhom('cam-bien').map((h) => h.ten)) === J(['go_wall'].concat(moi)));
+  // SM1-B (30/10): SM1-A thêm to_left_gap (cam-bien-ben.5, nhóm cam-bien) vào cuối Sổ lệnh mùa 1; ca này đỏ từ đó (SM1-A không chạy máy kiểm này).
+  kiem('nhóm cam-bien của Sổ lệnh: go_wall (khoang-cach) rồi sáu hàm của che-cam-bien, rồi to_left_gap (cam-bien-ben)', J(SoLenh.theoNhom('cam-bien').map((h) => h.ten)) === J(['go_wall'].concat(moi, ['to_left_gap'])));
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   const tags = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((x) => x[1]);
   const vtri = (f) => tags.indexOf('../' + f);

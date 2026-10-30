@@ -500,7 +500,7 @@
     { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 30,
       chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 6, 8, 11, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },     // SM1-B: vong-lap.5 cất, vong-lap.11 (trình diễn for lồng) trước vong-lap.9
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
-      chuong: [['khoang-cach', day('khoang-cach', [1, 12, 2, 13, 3, 11, 8, 5, 6, 10])], ['che-cam-bien', day('che-cam-bien', [1, 2, 7, 11, 12, 13, 3, 14, 15, 16])]] },
+      chuong: [['khoang-cach', day('khoang-cach', [1, 12, 2, 13, 3, 11, 8, 5, 6, 10])], ['che-cam-bien', day('che-cam-bien', [1, 7, 2, 11, 12, 13, 3, 14, 15, 16])]] },     // SM1-B việc 4: che-cam-bien.7 (not viết sẵn) trước che-cam-bien.2 (tự dùng while not)
     { ma: 'kho-hang', ten: 'Kho hàng', sao: 90, hinh: 'che-tay',
       // SM1-A (30/10): chương 2 về nút đè. che-xe.1 / .2 (chế hàm lần đầu, 3 nhịp) mở chương; che-tay.2, .1, .6, .4 viết lại trong lộ trình cho dính nút đè
       // (giữ mã, thân hàm; xem khối "SM1-A" dưới); kho-hang.1–4 mới (man-kho-hang-them.js), kho-hang.4 là trùm ba kho mang huy hiệu che-tay.
@@ -1552,12 +1552,17 @@
     loiGiai: bai(['lift()', 'move()', 'move()', 'put()'], [ham('lift', ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()']), ham('put', ['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'])]),
     goiY: ['Phải hạ tay xuống trước rồi mới kẹp được vật.', 'Thả vật khi tay còn đang hạ, rồi mới nâng tay lên.']
   });
+  // SM1-B việc 4 (đề xuất 8 phần 2): che-cam-bien.7 lên đứng thứ 2 chương che-cam-bien, NGAY TRƯỚC che-cam-bien.2 (chế face_open với while not): chữ not
+  // xuất hiện lần đầu ở đây, viết sẵn trong hàm của màn, bấm Chạy thấy xe đứng im, đề bài nói not đảo ngược câu trả lời; màn sau mới tự dùng not.
+  // Sân dài hơn (tường cách bốn ô, main gọi bốn lần: 3 nhịp, ba lần tiến và một lần đứng yên trước tường) để đường cong 4 → 3 → 6 nhịp không nhảy.
   thay('che-cam-bien.7', {
     ten: 'Thừa chữ not', chinhCoDinh: true, hamCuaEmCan: ['move'],
-    deBai: 'Hàm safe_move2() của màn phải tiến một ô khi trước mặt trống và đứng yên khi bị chắn, nhưng xe không nhúc nhích. Sửa điều kiện trong hàm.',
-    veMaMau: 'Chương trình chính bị khóa, gọi safe_move2() ba lần. Thử safe_move2() trong sân thử của Xưởng hàm.',
-    maMau: bai(['safe_move2()', 'safe_move2()', 'safe_move2()'], [ham('safe_move2', ['if not front_clear():', '    move()'])]),
-    loiGiai: bai(['safe_move2()', 'safe_move2()', 'safe_move2()'], [ham('safe_move2', ['if front_clear():', '    move()'])]),
+    deBai: 'Hàm safe_move2() của màn phải làm như safe_move() em vừa chế: trước mặt trống thì tiến một ô, bị chắn thì đứng yên. Nhưng điều kiện có thêm chữ not, mà not đảo ngược câu trả lời: True thành False, False thành True. Bấm Chạy xem xe làm gì, rồi sửa điều kiện để xe dừng đúng chỗ xe mờ.',
+    veMaMau: 'Chương trình chính bị khóa, gọi safe_move2() bốn lần. Thử safe_move2() trong sân thử của Xưởng hàm.',
+    san: ['......', '....#.', '......'], batDau: { x: 0, y: 1, huong: 1 }, mucTieu: 'bong-mo', bongMo: { x: 3, y: 1, huong: 1 },
+    maMau: bai(['safe_move2()', 'safe_move2()', 'safe_move2()', 'safe_move2()'], [ham('safe_move2', ['if not front_clear():', '    move()'])]),
+    loiGiai: bai(['safe_move2()', 'safe_move2()', 'safe_move2()', 'safe_move2()'], [ham('safe_move2', ['if front_clear():', '    move()'])]),
+    sao: { o: 9, nhip: 3 },
     goiY: ['not đảo ngược câu trả lời: trước mặt trống thì not front_clear() là False.', 'Bỏ chữ not để xe chỉ tiến khi trước mặt trống.']
   });
   thay('robot-hoan-thien.7', {

@@ -494,7 +494,9 @@ kiem('trùm cuối mùa (trum-mua-1.10) dùng gần như mọi thứ: tay xoay, 
 });
 // Hai màn vong-lap thêm tay kẹp (gói 2 chương 2): đổi qua lộ trình, giữ đường cong chương.
 const VL = ['vong-lap.8', 'vong-lap.9'];
-kiem('vong-lap.8, .9 có tay kẹp (pick / drop, mục tiêu đưa vật), lời giải dùng for, chỉ hàm của gói 1–2, không cảm biến / lùi; vong-lap.10 không đổi', () => {
+// SM1-B (30/10): vong-lap.5 cất, vong-lap.11 (trình diễn for lồng) chen giữa vong-lap.8 và .9 nên vong-lap.8 đứng thứ 6; vong-lap.10 viết lại (mang thùng,
+// vẫn tạo bend_left / bend_right cho bang-chuyen.8; máy kiểm kiem-goi-1-2-them.mjs mục B).
+kiem('vong-lap.8, .9 có tay kẹp (pick / drop, mục tiêu đưa vật), lời giải dùng for, chỉ hàm của gói 1–2, không cảm biến / lùi; vong-lap.10 vẫn tạo bend_left / bend_right', () => {
   const vl = chuongDS('vong-lap');
   const goi12 = new Set(mua1.slice(0, 2).flatMap((g) => g.chuong));
   for (const ma of VL) {
@@ -510,7 +512,7 @@ kiem('vong-lap.8, .9 có tay kẹp (pick / drop, mục tiêu đưa vật), lời
       const tao = M.danhSach.find((x) => (x.taoHam || []).concat((x.loiGiai.hamCuaEmMoi || []).map((f) => f.ten)).includes(h));
       assert.ok(tao && goi12.has(tao.chuong), ma + ' cần ' + h + ' không thuộc gói 1–2');
     }
-    assert.ok(vl.indexOf(m) >= 6 && vl.indexOf(m) <= 8, ma + ' không ở gần cuối chương');
+    assert.ok(vl.indexOf(m) >= 5 && vl.indexOf(m) <= 8, ma + ' không ở gần cuối chương');
     // trải for ra: tràn khung hay mất sao
     const trai = [];
     const lg = m.loiGiai.chinh;
@@ -525,7 +527,7 @@ kiem('vong-lap.8, .9 có tay kẹp (pick / drop, mục tiêu đưa vật), lời
     const r = cham(m, { chinh: trai });
     assert.ok(!r.thang || r.sao < 3, ma + ': trải for ra mà vẫn 3 sao');
   }
-  assert.equal(get('vong-lap.10').phienBanNoiDung, undefined, 'vong-lap.10 bị đổi');
+  assert.deepEqual(get('vong-lap.10').taoHam, ['bend_left', 'bend_right'], 'vong-lap.10 phải tạo bend_left / bend_right');
 });
 kiem('đường cong chương vong-lap quanh hai màn sửa (màn trước → 8 → 9 → màn sau): dòng / nhịp / cỡ sân trong luật đo', () => {
   const vl = chuongDS('vong-lap');
@@ -533,7 +535,8 @@ kiem('đường cong chương vong-lap quanh hai màn sửa (màn trước → 8
     const i = vl.indexOf(get(ma));
     for (const [m, t] of [[vl[i], vl[i - 1]], [vl[i + 1], vl[i]]]) {
       if (m.hang === 'trum') continue;
-      assert.ok(tran(soDong(m), soDong(t), BU.dong), m.ma + ' dòng ' + soDong(m) + ' so với ' + t.ma + ' ' + soDong(t));
+      const td = t.chiChay ? vl[vl.indexOf(t) - 1] : t;     // SM1-B: màn trình diễn (chương trình khoá, 0 dòng tự viết) thì so dòng với màn trước nó
+      assert.ok(tran(soDong(m), soDong(td), BU.dong), m.ma + ' dòng ' + soDong(m) + ' so với ' + td.ma + ' ' + soDong(td));
       assert.ok(tran(m.sao.nhip, t.sao.nhip, BU.nhip), m.ma + ' nhịp ' + m.sao.nhip + ' so với ' + t.ma + ' ' + t.sao.nhip);
       assert.ok(tran(coSan(m), coSan(t), BU.o), m.ma + ' cỡ sân ' + coSan(m) + ' so với ' + t.ma + ' ' + coSan(t));
     }

@@ -88,7 +88,7 @@ kiem('đổi vị trí vẫn giữ mã bài cũ, gói Mê cung sau cảm biến'
   assert.ok(get('cam-bien-ben.1').deBai.includes('left_clear'));
   assert.ok(!get('cam-bien-ben.1').deBai.includes('mê cung'));
   assert.equal(get('cam-bien-ben.10').hang, 'bien-the');
-  assert.equal(get('che-cam-bien.7').so, 3);
+  assert.equal(get('che-cam-bien.7').so, 2);     // SM1-B việc 4: che-cam-bien.7 (not viết sẵn) ngay trước che-cam-bien.2
   assert.equal(get('che-cam-bien.6').chuong, 'bien-xich');           // 27/10: chương tạm bien gộp vào gói 1 mùa 2, chương 2 "Biến cho xích"
   assert.equal(get('che-cam-bien.6').so, 5);
   assert.equal(TT.thuTu.indexOf('me-cung'), TT.thuTu.indexOf('cam-bien-ben') + 1);

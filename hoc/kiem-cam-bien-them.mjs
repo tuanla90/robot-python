@@ -41,7 +41,7 @@ const MOI = ['khoang-cach.11', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien
 const HAI_SAN = ['khoang-cach.12', 'khoang-cach.13'];
 const THU_TU = {
   'khoang-cach': [1, 12, 2, 13, 3, 11, 8, 5, 6, 10].map((n) => 'khoang-cach.' + n),
-  'che-cam-bien': [1, 2, 7, 11, 12, 13, 3, 14, 15, 16].map((n) => 'che-cam-bien.' + n)
+  'che-cam-bien': [1, 7, 2, 11, 12, 13, 3, 14, 15, 16].map((n) => 'che-cam-bien.' + n)     // SM1-B việc 4: che-cam-bien.7 trước che-cam-bien.2
 };
 /** Màn mà đường khối chuẩn ngắn hơn ngưỡng: lý do (kiểm thêm bằng đếm cứng ở mục 5). */
 const NHANH_HON = {

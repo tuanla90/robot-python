@@ -21,8 +21,11 @@
          ngân hàng man-vong-lap.js vì bang-chuyen.8 mùa 2 dùng lại, được tạo trước bang-chuyen.8); có for lồng; nhịp lớn nhất chương, ≤ 2 × màn 9.
       4. Bộ dò BFS (move / rẽ 1 nhịp, pick 2 nhịp, drop 2 nhịp hay 1 nhịp nếu đặt xong là thắng): đường ngắn nhất đúng sao.nhip (không đường tắt).
       5. Đường cong chương vong-lap ở cặp có màn mới / viết lại / đổi chỗ: nhịp như mục A5; dòng so với màn KHÔNG trình diễn đứng trước.
+   C. `not` (việc 4): che-cam-bien.7 "Thừa chữ not" (not viết sẵn trong hàm của màn, đề nói not đảo ngược câu trả lời) đứng ngay trước che-cam-bien.2;
+      theo thứ tự lộ trình not xuất hiện lần đầu ở mã mẫu che-cam-bien.7, lần đầu phải tự viết là che-cam-bien.2 (while not); mã mẫu .7 làm xe đứng im;
+      lời giải 3 sao; bỏ hẳn if thì đâm tường (thua); đường cong ba màn đầu.
    --loi-gia: cắm lỗi giả (sao.nhip trùm hai-banh lệch, mã mẫu trùm thêm một dòng, sân hai-banh.11 có lối tắt, trùm vong-lap chế ba hàm,
-     sân vong-lap.11 có lối tắt) rồi chạy: phải thấy HỎNG.
+     sân vong-lap.11 có lối tắt, che-cam-bien.7 mất chữ not trong mã mẫu) rồi chạy: phải thấy HỎNG.
    Chạy: node hoc/kiem-goi-1-2-them.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import assert from 'node:assert/strict';
@@ -48,6 +51,7 @@ if (LOI_GIA) {
   get('hai-banh.11').san[1] = '.#F#.'; get('hai-banh.11').san[2] = '.....';            // A4: cờ dời lên sát sau lưng: có đường 3 nhịp, ngưỡng 4 sai
   get('vong-lap.10').taoHam = ['row', 'bend_left', 'bend_right'];                       // B3: trùm chế ba hàm
   get('vong-lap.11').san[4] = '....F';                                                   // B4: mở lối tắt dọc hàng dưới
+  get('che-cam-bien.7').maMau.hamCuaMan[0].than[0] = 'if front_clear():';                // C1: mã mẫu không còn cho thấy not
 }
 
 /* ------------------------------------------------------------------ kho hàm của em theo thứ tự lộ trình */
@@ -297,6 +301,41 @@ kiem('B5 đường cong chương vong-lap ở cặp có màn mới / viết lạ
 });
 console.log('B. vong-lap: số | mã | tên | dòng | nhịp | ô | tay');
 for (const m of VL) console.log('  ' + [m.so, m.ma + (VL_MOI.includes(m.ma) ? ' (mới)' : VL_VIET_LAI.includes(m.ma) ? ' (viết lại)' : ''), m.ten, soDong(m), m.sao.nhip, m.sao.o, dongBai(m.loiGiai).some((l) => TAY.test(l)) ? 'tay' : ''].join(' | '));
+
+/* ================================================================== C. `not` ở chương che-cam-bien */
+const CB = M.danhSach.filter((m) => m.chuong === 'che-cam-bien');
+const coNot = (ds) => (ds || []).some((l) => !/^\s*#/.test(l) && /\bnot\b/.test(l));
+kiem('C1 che-cam-bien.7 (not viết sẵn) đứng thứ 2, NGAY TRƯỚC che-cam-bien.2 (chế face_open với while not); chương vẫn 10 màn, hàng đúng', () => {
+  assert.deepEqual(CB.map((m) => m.ma), [1, 7, 2, 11, 12, 13, 3, 14, 15, 16].map((n) => 'che-cam-bien.' + n));
+  assert.deepEqual(CB.map((m) => m.hang), CB.map((_, i) => hangTheo(i)));
+  assert.equal(get('che-cam-bien.7').so + 1, get('che-cam-bien.2').so);
+});
+kiem('C1 theo thứ tự lộ trình, lần đầu chữ not xuất hiện là ở MÃ MẪU của che-cam-bien.7 (người chơi thấy trước, đề bài nói not đảo ngược câu trả lời); lần đầu phải tự viết not là che-cam-bien.2', () => {
+  const dau = M.danhSach.find((x) => coNot(dongBai(x.maMau)) || coNot(dongBai(x.loiGiai)));
+  assert.equal(dau && dau.ma, 'che-cam-bien.7', 'not xuất hiện đầu tiên ở ' + (dau && dau.ma));
+  const m7 = get('che-cam-bien.7');
+  assert.ok(coNot(dongBai(m7.maMau)) && !coNot(dongBai(m7.loiGiai)), 'che-cam-bien.7: mã mẫu phải có not, lời giải bỏ not');
+  assert.ok(/\bnot\b/.test(m7.deBai) && /đảo ngược/.test(m7.deBai), 'đề che-cam-bien.7 phải nói not đảo ngược câu trả lời');
+  const tuViet = M.danhSach.find((x) => coNot(dongBai(x.loiGiai)) && !coNot(dongBai(x.maMau)));
+  assert.equal(tuViet && tuViet.ma, 'che-cam-bien.2');
+  assert.ok(/while not front_clear\(\)/.test(dongBai(get('che-cam-bien.2').loiGiai).join('\n')));
+});
+kiem('C2 che-cam-bien.7: lời giải 3 sao đúng ngưỡng, không chẩn đoán; mã mẫu thua và xe không nhúc nhích (thấy ngay not làm ngược); đâm tường là thua', () => {
+  const m = get('che-cam-bien.7');
+  const r = cham(m, m.loiGiai);
+  assert.ok(r.thang && r.sao === 3, JSON.stringify(maCua(r)));
+  assert.equal(r.soO, m.sao.o); assert.equal(r.soNhip, m.sao.nhip);
+  assert.deepEqual(maCua(r), []);
+  const rm = cham(m, m.maMau);
+  assert.ok(!rm.thang && rm.soNhip === 0, 'mã mẫu ' + rm.soNhip + ' nhịp, thắng=' + rm.thang);
+  assert.ok(m.damLaThua);
+  const bo = cham(m, { chinh: m.maMau.chinh, hamCuaMan: [{ ten: 'safe_move2', thamSo: [], than: ['move()'] }] });
+  assert.ok(!bo.thang && maCua(bo).includes('dam-tuong'), 'bỏ hẳn if (tiến bốn lần) phải đâm tường: ' + maCua(bo));
+});
+kiem('C3 đường cong ba màn đầu che-cam-bien (che-cam-bien.1 → .7 → .2 → .11): nhịp n ≤ max(1,5 × n−1, n−1 + 4)', () => {
+  for (let i = 1; i < 4; i++) assert.ok(tran(CB[i].sao.nhip, CB[i - 1].sao.nhip, BU.nhip), CB[i].ma + ' nhịp ' + CB[i].sao.nhip + ' so với ' + CB[i - 1].ma + ' ' + CB[i - 1].sao.nhip);
+});
+console.log('C. che-cam-bien (ba màn đầu): ' + CB.slice(0, 4).map((m) => m.so + ' ' + m.ma + ' ' + m.sao.nhip + ' nhịp' + (coNot(dongBai(m.maMau)) ? ' (not trong mã mẫu)' : coNot(dongBai(m.loiGiai)) ? ' (tự viết not)' : '')).join(' · '));
 
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong + ' kiểm tra brief SM1-B (gói 1, 2, 3 mùa 1)' + (LOI_GIA ? ' [lỗi giả: phải có HỎNG]' : '') + '.');
 if (LOI_GIA ? hong === 0 : hong) process.exitCode = 1;
