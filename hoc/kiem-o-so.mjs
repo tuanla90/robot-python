@@ -122,7 +122,7 @@ function chamO(E, i, k) {
 const CHAP_NHAN = {
   'khoang-cach.6 30': 'range(30) lặp đủ lâu: màn có while (có lẽ giải bằng while, chưa kiểm)',
   'me-cung.7 20': 'range(20) lặp đủ lâu: màn có while', 'me-cung.8 60': 'range(60): màn có while', 'me-cung.9 60': 'range(60): màn có while', 'me-cung.10 60': 'range(60): màn có while'
-  // 30/10: hong-ngoai.6 đổi sang while True (16 lượt, cần giữ nhịp cho đường cong), che-hong-ngoai.8 đổi range(12) (11 lượt là đủ): mùa 2 hết ô kẹt.
+  // 30/10: hong-ngoai.6 đổi sang while True (16 lượt, cần giữ nhịp cho đường cong), che-hong-ngoai.8 cũng while True: mùa 2 hết ô kẹt.
 };
 const loi = [], loiAn = [], daBiet = [];
 let soO = 0, soMan = 0;

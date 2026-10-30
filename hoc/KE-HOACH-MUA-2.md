@@ -187,5 +187,5 @@ Lõi CHƯA có: cảm biến hồng ngoại (`distance()`, `warm()`, nút nóng)
 
 30/10 HAI Ô SỐ MÙA 2 (user: "sửa 2 ô số đi"): hong-ngoai.6 "Gần thì rẽ" đổi vòng for 20 lượt thành while True (cần 16 lượt, bảng chọn số tới 12; không cắt sân
   được vì hong-ngoai.7 có 24 nhịp, .6 phải giữ 16 cho đường cong); while True đã học ở khoang-cach.8, hong-ngoai.7 giữ điều mới "sửa số so sánh khi xe đi 3 ô một lần".
-  Ba lời sai vẫn thua (chẩn đoán vong-vo-han). che-hong-ngoai.8 "Tìm mức an toàn" range(30) thành range(12) (11 lượt là đủ). Sao không đổi (16 nhịp / 11 ô; 11 / 11).
+  Ba lời sai vẫn thua (chẩn đoán vong-vo-han). che-hong-ngoai.8 "Tìm mức an toàn" range(30) thành while True (user hỏi lại; lời sai clean_step(2) / (0) chẩn đoán vong-vo-han). Sao không đổi (16 nhịp / 11 ô; 11 / 11).
   kiem-o-so: mùa 2 hết ô kẹt; còn 5 ô mùa 1 (khoang-cach.6, me-cung.7–10) chờ quyết.

@@ -373,18 +373,18 @@
     }, true),
     man({
       chuong: 'che-hong-ngoai', so: 8, ten: 'Tìm mức an toàn', yMoi: 'tự chọn số an_toan cho hàm clean_step', buocVideo: 'Gần thì rẽ', hamCuaEmCan: ['clean_step', 'turn_right'],
-      deBai: 'Chỗ rẽ ở phòng này chỉ cách vật cản 1 ô (10 cm). Viết chương trình chính: lặp 12 lần clean_step với mức an toàn đúng. Đếm trên sân để tìm số đó.',
+      deBai: 'Chỗ rẽ ở phòng này chỉ cách vật cản 1 ô (10 cm). Viết chương trình chính: while True lặp mãi clean_step với mức an toàn đúng. Đếm trên sân để tìm số đó.',
       veMaMau: 'Chương trình có sẵn gọi clean_step(2): robot rẽ sớm một ô, quay vào tường.',
       san: ['########', '#......o', '#####.##', '#.F...##', '#####.##', '########'],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(FOR(12, ['clean_step(2)'])),
+      maMau: bai(WHILE('True', ['clean_step(2)'])),
       sao: { o: 11, nhip: 11 },
-      loiGiai: bai(FOR(12, ['clean_step(1)'])),
-      loiGiaiKhac: { moTa: 'Gán an_toan = 1 rồi gọi clean_step(an_toan)', baiLam: bai(nhieu(['an_toan = 1'], FOR(12, ['clean_step(an_toan)']))) },
+      loiGiai: bai(WHILE('True', ['clean_step(1)'])),
+      loiGiaiKhac: { moTa: 'Gán an_toan = 1 rồi gọi clean_step(an_toan)', baiLam: bai(nhieu(['an_toan = 1'], WHILE('True', ['clean_step(an_toan)']))) },
       loiSai: [
-        { moTa: 'clean_step(2): rẽ sớm một ô', baiLam: bai(FOR(12, ['clean_step(2)'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'clean_step(0): robot đi tới sát vật cản mới rẽ, lạc vào ngõ cụt', baiLam: bai(FOR(12, ['clean_step(0)'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Lặp 5 lần thì ít quá: robot chưa tới cờ', baiLam: bai(FOR(5, ['clean_step(1)'])), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'clean_step(2): rẽ sớm một ô', baiLam: bai(WHILE('True', ['clean_step(2)'])), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'clean_step(0): robot đi tới sát vật cản mới rẽ, lạc vào ngõ cụt', baiLam: bai(WHILE('True', ['clean_step(0)'])), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Dùng for 5 lần thay cho while True: robot chưa tới cờ', baiLam: bai(FOR(5, ['clean_step(1)'])), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Đứng ở chỗ rẽ đầu tiên, phía trước còn mấy ô trống tới chân bàn?',
         'Mức an toàn là tham số: chỉ đổi số trong ngoặc.']
