@@ -144,7 +144,7 @@ console.log('\n— không va nhau giữa các gói (các gói làm song song ở
   const taoTrung = Object.entries(noiTao).filter(([, a]) => a.length > 1 && a.some((ma) => dsDoi.some((m) => m.ma === ma)));
   kiem('mỗi hàm cốt truyện chỉ một màn bắt chế', !taoTrung.length, taoTrung.map(([t, a]) => t + ': ' + a.join(', ')).join('; '));
   const tenKho = new Set(M.danhSach.flatMap((m) => (m.loiGiai.hamCuaEmMoi || []).map((h) => h.ten)));
-  const manVa = dsDoi.flatMap((m) => (m.loiGiai.hamCuaMan || []).filter((h) => tenKho.has(h.ten) || noiTao[h.ten]).map((h) => m.ma + ' ' + h.ten));
+  const manVa = dsDoi.flatMap((m) => (m.loiGiai.hamCuaMan || []).filter((h) => !h.capCu && (tenKho.has(h.ten) || noiTao[h.ten])).map((h) => m.ma + ' ' + h.ten));     // capCu (PDM2b): bản hai bánh của hàm của em (squirt_left…) cấp lại cho màn ẩn, cố ý cùng tên để che bản xích
   kiem('hàm của màn không trùng tên hàm của em ở chương nào', !manVa.length, manVa.join(', '));
 }
 

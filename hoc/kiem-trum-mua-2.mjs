@@ -195,8 +195,8 @@ async function main() {
       assert.deepEqual(ds.map((m) => m.hang), ds.map((_, i) => (i < 3 ? 'lam-quen' : i < 6 ? 'luyen' : i < 9 ? 'bien-the' : 'trum')), c + ' hạng');
     }
     assert.equal((M.manTrumMua2 || []).length, 20, 'ManHoc.manTrumMua2 phải có 20 màn');
-    const cuoi9 = get('che-be-sung.10');
-    assert.equal(viTri(DS_C['tong-hop-2'][0]), viTri(cuoi9) + 1, 'tong-hop-2.1 phải đứng ngay sau che-be-sung.10');
+    const cuoi9 = get('che-doi-mua-2.10');     // PDM2c 31/10: gói 9 là Đội (Bệ vòi xích cất)
+    assert.equal(viTri(DS_C['tong-hop-2'][0]), viTri(cuoi9) + 1, 'tong-hop-2.1 phải đứng ngay sau che-doi-mua-2.10');
     assert.equal(viTri(DS_C['trum-mua-2'][0]), viTri(get('tong-hop-2.10')) + 1, 'trum-mua-2.1 phải đứng ngay sau tong-hop-2.10');
     assert.equal(goiMua2[goiMua2.length - 1], goi, 'nha-may-chay phải là gói cuối mùa 2');
   });

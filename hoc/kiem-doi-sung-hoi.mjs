@@ -132,10 +132,12 @@ thang('che-doi-sung-hoi.5', 'catch_crate() đúng: omni chờ thùng báo tin r�
 thua('che-doi-sung-hoi.6', 'open_step() bắn nhầm phía (kick_left)', { doi: [null, null], hamEm: [H('open_step', ['squirt_right("high")', 'forward(2)'])] });
 thua('che-doi-sung-hoi.6', 'omni đi thẳng forward(6)', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
 thua('che-doi-sung-hoi.7', 'mẫu: open_gate() bắn hai phát, cửa đóng lại trước khi omni tới', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.7').maMau.hamCuaMan });
-thang('che-doi-sung-hoi.7', 'open_gate() sửa bằng squirt_left("high") (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_gate', ['squirt_left("high")'])] });
+const SQUIRT_LEFT_2B = { ten: 'squirt_left', thamSo: ['p'], than: ['turn_left()', 'squirt(p)', 'turn_right()'] };     // PDM2b: squirt_left trong kho là bản xích (che-luc-ban.5); màn ẩn hai bánh dùng bản hai bánh (lo-trinh-hoc.js THAN_CU)
+const capCu = () => [SQUIRT_LEFT_2B];
+thang('che-doi-sung-hoi.7', 'open_gate() sửa bằng squirt_left("high") (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_gate', ['squirt_left("high")'])].concat(capCu('che-doi-sung-hoi.7')) });
 thua('che-doi-sung-hoi.8', 'mẫu: open_back() bắn nòng trước, bóng vào tường', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.8').maMau.hamCuaMan });
 thua('che-doi-sung-hoi.8', 'sửa hàm nhưng omni không chờ cửa', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
-thang('che-doi-sung-hoi.8', 'open_back() = squirt_back("high") (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_back', ['squirt_back("high")'])] });
+thang('che-doi-sung-hoi.8', 'open_back() = squirt_back("high") (cùng động tác)', { doi: [null, null], hamCuaMan: [H('open_back', ['squirt_back("high")'])].concat(capCu('che-doi-sung-hoi.8')) });
 thua('che-doi-sung-hoi.9', 'mẫu: make_way() ra khỏi hốc quá sớm, hai robot chặn nhau', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.9').maMau.hamCuaMan });
 thua('che-doi-sung-hoi.9', 'make_way() không nép vào hốc (chỉ chờ)', { doi: [null, null], hamCuaMan: [H('make_way', ['while front_clear():', '    wait()'])] });
 thua('che-doi-sung-hoi.9', 'xe súng không mở cửa, đi thẳng', { doi: [['forward(6)'], null] });

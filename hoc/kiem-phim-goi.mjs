@@ -44,6 +44,7 @@ const khoiMua2 = (/var MUA_2 = \[([\s\S]*?)\n  \];/.exec(nguonLo) || [])[1] || '
 const khoiMua4 = (/var MUA_4 = \[([\s\S]*?)\n  \];/.exec(nguonLo) || [])[1] || '';
 const GOI_MUA_4 = [...khoiMua4.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai: '([^']+)')?/g)].map((m) => ({ ma: m[1], loai: m[2] || '' }));
 const GOI_MUA_2 = [...khoiMua2.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai: '([^']+)')?/g)].map((m) => ({ ma: m[1], loai: m[2] || '' }));
+const GOI_CAT_2 = [...nguonLo.matchAll(/var CAT_MUA_2 = \{ ma: '([^']+)'/g)].map((m) => m[1]);     // PDM2c 31/10: gói mùa 2 cất ra mùa ẩn (be-sung); phim của nó giữ lại chờ gói về
 const CHUA_CO_GOI = [];                       // phim khai sẵn cho gói chưa có màn (27/10: gói combo đã có, mọi phim mùa 1 đều khớp gói thật)
 const KHONG_PHIM = ['xe'];                     // gói dùng phim mở đầu (mo-dau.js)
 
@@ -97,8 +98,8 @@ console.log('\n== 1b. Phim mùa 2 (gói theo MUA_2 của lo-trinh-hoc.js) ==');
   const saiTep = GOI_MUA_2.filter((g) => PHIM[g.ma] && TEP_CUA[g.ma] !== 'phim-mua-2.js').map((g) => g.ma + '@' + TEP_CUA[g.ma]);
   kiem('phim gói mùa 2 nằm ở phim-mua-2.js', !saiTep.length, saiTep.join(', '));
   const maMua2 = new Set(GOI_MUA_2.map((g) => g.ma));
-  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-2.js' && !maMua2.has(m));
-  kiem('mỗi phim của phim-mua-2.js mang đúng mã một gói của MUA_2 (cờ phim-goi:<mã>)', !la.length, la.join(', '));
+  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-2.js' && !maMua2.has(m) && !GOI_CAT_2.includes(m));
+  kiem('mỗi phim của phim-mua-2.js mang đúng mã một gói của MUA_2 (cờ phim-goi:<mã>) hay gói cất (' + GOI_CAT_2.join(', ') + ')', !la.length, la.join(', '));
   const hien = GOI_MUA_2.filter((g) => maCo.has(g.ma));
   kiem('gói MUA_2 đã hiện (' + hien.length + ' / ' + GOI_MUA_2.length + ') đều thuộc mùa 2 trong ThuTuChuong.goi; gói chưa có màn là gói khai sẵn (' +
     GOI_MUA_2.filter((g) => !maCo.has(g.ma)).map((g) => g.ma).join(', ') + ')', hien.length >= 9 && hien.every((g) => TT.goi.find((x) => x.ma === g.ma).mua === 'mua-2'));

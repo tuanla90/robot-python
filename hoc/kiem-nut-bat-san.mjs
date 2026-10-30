@@ -133,6 +133,7 @@ console.log('\n== 5. Màn cũ y nguyên ==');
   // Gói 7 Đo nhiệt (man-do-nhiet.js, chương do-nhiet / che-do-nhiet) là nơi DÙNG nutBat: kiem-do-nhiet.mjs kiểm các màn đó. Mọi màn khác vẫn phải y nguyên.
   const GOI_DUNG = ['do-nhiet', 'che-do-nhiet'];
   const GOI_DUNG_SAU = ['doi-mua-2', 'che-doi-mua-2',   // gói 8 Đội (man-doi-mua-2.js): vài màn có đèn nóng (nutBat), kiem-doi-mua-2.mjs kiểm; không bắt buộc màn nào cũng khai
+    'kho-cu', 'che-kho-cu',                             // gói 8 Góc kho cũ (PDM2b, man-kho-cu.js): kho-cu.7, .8, che-kho-cu.7 có đèn nóng, kiem-kho-cu.mjs kiểm
     'be-sung', 'che-be-sung',                           // gói 9 Bệ súng xích (man-be-sung.js): màn đọc warm() ở trạm có nút bật sẵn, kiem-be-sung.mjs kiểm
     'tong-hop-2', 'trum-mua-2'];                        // gói 10 Nhà máy chạy lại (man-trum-mua-2.js): màn đọc warm() có nút bật sẵn, kiem-trum-mua-2.mjs kiểm
   const ds = M.danhSach.filter((m) => !GOI_DUNG.includes(m.chuong) && !GOI_DUNG_SAU.includes(m.chuong));

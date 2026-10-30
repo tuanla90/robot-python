@@ -124,6 +124,14 @@ async function main() {
   const get = (ma) => M.timMa(ma);
   const goiMua2 = TT.goi.filter((g) => g.mua === 'mua-2');
   const goi = goiMua2.find((g) => g.ma === 'be-sung');
+  // PDM2c 31/10 (phương án A của người giao): gói Bệ vòi xích CẤT ra mùa ẩn (CAT_MUA_2 ở lo-trinh-hoc.js), gói 9 mùa 2 là Đội. Ngân hàng man-be-sung.js giữ nguyên,
+  // nhưng mọi trông đợi vị trí / mốc / recall / Sổ lệnh ở đây theo gói 9 cũ: dừng sớm (ĐẠT, ghi chú); gói về mùa 2 thì máy kiểm chạy lại đầy đủ.
+  if (!goi) {
+    const gCat = TT.goi.find((g) => g.ma === 'be-sung');
+    console.log('Gói be-sung đang CẤT ngoài mùa 2 (' + (gCat ? gCat.mua + ', ' + M.danhSach.filter((m) => CHUONG.includes(m.chuong)).length + ' màn trong ngân hàng' : 'không có') + '): máy kiểm chưa chạy.');
+    console.log('ĐẠT 0 · HỎNG 0 kiểm tra 20 màn gói Bệ súng xích (cất).');
+    return;
+  }
   const DS_C = Object.fromEntries(CHUONG.map((c) => [c, M.danhSach.filter((m) => m.chuong === c)]));
   const DS = CHUONG.flatMap((c) => DS_C[c]);
   const viTri = (m) => M.danhSach.indexOf(m);

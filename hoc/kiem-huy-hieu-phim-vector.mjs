@@ -236,6 +236,7 @@ const conPixel = [];
   const tap = (a) => JSON.stringify([...a].sort());
   // Mã huy hiệu VẼ MỚI sau khi gỡ pixel (không có trong bản chụp): phải có hình vector riêng; mọi mã khác vẫn y hệt bản chụp.
   const MOI_SAU_CHUP = ['bien-xich',                      // mùa 2 xong (29/10): trùm bien-xich.10
+    'kho-cu', 'che-kho-cu',                               // PDM2b 31/10: gói 8 mùa 2 Góc kho cũ (hình vẽ mới ở huy-hieu-vector.js)
     // mùa 3 (30/10): 17 huy hiệu trùm chương mới (nhen, nam-cham, che-nhen có sẵn; hai chương đội dùng mã mới, bí danh doi-xich / che-doi-xich y nguyên)
     'chuoi-nhen', 'logic-nam-cham', 'cam-ung-tu', 'che-cam-ung-tu', 'bai-tu', 'che-bai-tu', 'nhay', 'dao-cuc', 'che-dao-cuc', 'doc-cuc', 'che-doc-cuc',
     'doi-xich-nhen', 'che-doi-xich-nhen', 'bung-nhen', 'che-bung-nhen', 'tong-hop-3', 'xe-tham-do',

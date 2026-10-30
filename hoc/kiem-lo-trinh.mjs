@@ -249,11 +249,11 @@ const BANG_MUA_2 = [
   ['day-thung', [['day-thung', []], ['che-day-thung', []]]],
   ['luc-ban', [['luc-ban', day('luc-ban', MUOI)], ['che-luc-ban', []]]],
   ['do-nhiet', [['do-nhiet', []], ['che-do-nhiet', []]]],
-  ['kho-cu', [['kho-cu', []], ['che-kho-cu', []]]],      // PDM2b 31/10: gói 8 Góc kho cũ (yếu tố mùa 1); gói Đội cũ cất (CAT_MUA_2), PDM2c dời sang gói 9
-  ['be-sung', [['be-sung', []], ['che-be-sung', []]]],
+  ['kho-cu', [['kho-cu', []], ['che-kho-cu', []]]],      // PDM2b 31/10: gói 8 Góc kho cũ (yếu tố mùa 1)
+  ['doi-mua-2', [['doi-mua-2', []], ['che-doi-mua-2', []]]],      // PDM2c 31/10: gói 9 Đội (R2 xe chở hàng mùa 1); Bệ vòi xích cất (CAT_MUA_2 ở lo-trinh-hoc.js)
   ['nha-may-chay', [['tong-hop-2', []], ['trum-mua-2', []]]]
 ];
-const TEP_MUA_2 = ['manBienXich', 'manHongNgoai', 'manDayThung', 'manCheLucBan', 'manDoNhiet', 'manKhoCu', 'manBeSung', 'manTrumMua2'];     // manDoiMua2: cất (xem CAT_MUA_2 ở lo-trinh-hoc.js)
+const TEP_MUA_2 = ['manBienXich', 'manHongNgoai', 'manDayThung', 'manCheLucBan', 'manDoNhiet', 'manKhoCu', 'manDoiMua2', 'manTrumMua2'];     // manBeSung: cất (xem CAT_MUA_2 ở lo-trinh-hoc.js)
 const moiMua2 = TEP_MUA_2.flatMap(k => M[k] || []);
 /** Màn của chương c theo bảng: có sẵn + màn mới (theo so). */
 const manBang2 = (c, coSan) => coSan.concat(moiMua2.filter(m => m.chuong === c).sort((a, b) => a.so - b.so).map(m => m.ma));

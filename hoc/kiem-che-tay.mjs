@@ -49,9 +49,12 @@ const tenCotTruyen = [...new Set(tatCa.flatMap((m) => m.taoHam))];
 const L = (...d) => d.join('\n') + '\n';
 
 /** Kho của học sinh LÚC TỚI màn `id` (đã chơi mọi màn trước, mỗi màn tạo / sửa hàm theo lời giải; màn tiết kiệm nhịp sửa riêng, không ghi vào kho). id 'het' = sau cả game. */
+// PDM2b 31/10: luc-ban (ngân hàng) gọi go_to_wall() mà che-hong-ngoai.1 (man-hong-ngoai.js, tệp lộ trình, không vào ngân hàng thô) dạy: cấp vào kho trước luc-ban.1 (như kiem-hoc.mjs).
+const GO_TO_WALL = require(path.join(day, 'man-hong-ngoai.js')).manHongNgoai.find((x) => x.chuong === 'che-hong-ngoai' && x.so === 1).loiGiai.hamCuaEmMoi.find((h) => h.ten === 'go_to_wall');
 function khoTruoc(id) {
   const kho = KhoHam.moi({ tenCoDinh: tenCotTruyen });
   for (const m of tatCa) {
+    if (m.chuong === 'luc-ban' && m.so === 1 && !kho.tim('go_to_wall')) { kho.tao('go_to_wall', GO_TO_WALL.thamSo, { taoHam: ['go_to_wall'] }); kho.sua('go_to_wall', GO_TO_WALL.than); }
     if (m.id === id) break;
     if (m.tietKiemNhip === true) continue;
     for (const h of m.loiGiai.hamCuaEmMoi) {

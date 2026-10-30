@@ -153,8 +153,8 @@ kiem('gói kho-cu (mùa 2, gói 8): hai chương kho-cu, che-kho-cu; mỗi chư�
     assert.equal(M.danhSach.indexOf(ds[0]), M.danhSach.indexOf(get(DAU_SAU[c])) + 1, c + '.1 phải đứng ngay sau ' + DAU_SAU[c]);
   }
   assert.equal((M.manKhoCu || []).length, 20, 'ManHoc.manKhoCu phải có 20 màn');
-  const gDoi = TT.goi.find((g) => g.ma === 'doi-mua-2');
-  assert.ok(!gDoi || gDoi.mua !== 'mua-2', 'gói Đội cũ vẫn còn ở mùa 2');
+  const gDoi = TT.goi.find((g) => g.ma === 'doi-mua-2');     // PDM2c 31/10: gói Đội là gói 9, ngay sau Góc kho cũ
+  assert.ok(gDoi && gDoi.mua === 'mua-2' && TT.goi.indexOf(gDoi) === TT.goi.indexOf(goi) + 1, 'gói 9 phải là Đội (doi-mua-2) ngay sau Góc kho cũ');
 });
 kiem('tên màn không trùng trong gói và không trùng màn khác của lộ trình', () => {
   const ten = DS.map((m) => m.ten);

@@ -680,11 +680,11 @@
     { ma: 'do-nhiet', ten: 'Đo nhiệt', sao: 180,
       chuong: [['do-nhiet', []], ['che-do-nhiet', []]] },
     // PDM2b 31/10 (khuôn mới KE-HOACH-PART-DUNG-MUA.md mục 1): gói 8 = cỗ máy mùa gặp yếu tố mùa trước ("Góc kho cũ": nút đè, hàng rào, thùng gỗ của Kho hàng).
-    // Gói Đội (doi-mua-2 / che-doi-mua-2) rời gói 8: cất tạm ngoài mùa 2 (CAT_MUA_2 bên dưới, không xoá khỏi ngân hàng); PDM2c dựng lại thành gói 9 (R2 part mùa 1).
+    // Gói Đội (doi-mua-2 / che-doi-mua-2) rời gói 8; PDM2c 31/10: thành GÓI 9 (R1 xe cứu hỏa đầy đủ, R2 xe chở hàng mùa 1). Bệ vòi xích (be-sung) cất ra mùa ẩn (CAT_MUA_2, giữ ngân hàng).
     { ma: 'kho-cu', ten: 'Góc kho cũ', loai: 'thu-thach', sao: 210,
       chuong: [['kho-cu', []], ['che-kho-cu', []]] },
-    { ma: 'be-sung', ten: 'Bệ vòi xích', loai: 'thu-thach', sao: 240,
-      chuong: [['be-sung', []], ['che-be-sung', []]] },
+    { ma: 'doi-mua-2', ten: 'Đội', loai: 'thu-thach', sao: 240,
+      chuong: [['doi-mua-2', []], ['che-doi-mua-2', []]] },
     { ma: 'nha-may-chay', ten: 'Xe cứu hỏa R1 xuất xưởng', loai: 'thu-thach', sao: 270,
       chuong: [['tong-hop-2', []], ['trum-mua-2', []]] }
   ];
@@ -825,14 +825,14 @@
   //   man-day-thung.js   manDayThung   gói 5 day-thung · che-day-thung
   //   man-che-luc-ban.js manCheLucBan  gói 6 chương 2 che-luc-ban
   //   man-do-nhiet.js    manDoNhiet    gói 7 do-nhiet · che-do-nhiet
-  //   man-doi-mua-2.js   manDoiMua2    gói 8 doi-mua-2 · che-doi-mua-2
-  //   man-be-sung.js     manBeSung     gói 9 be-sung · che-be-sung
+  //   man-doi-mua-2.js   manDoiMua2    gói 9 doi-mua-2 · che-doi-mua-2 (PDM2c 31/10, trước: gói 8)
+  //   man-be-sung.js     manBeSung     be-sung · che-be-sung (PDM2c: CẤT ra mùa ẩn, CAT_MUA_2)
   //   man-trum-mua-2.js  manTrumMua2   gói 10 tong-hop-2 · trum-mua-2
   //   man-kho-cu.js      manKhoCu      gói 8 kho-cu · che-kho-cu (PDM2b 31/10, thay gói Đội)
   var TEP_MUA_2 = ['manBienXich', 'manHongNgoai', 'manDayThung', 'manCheLucBan', 'manDoNhiet', 'manKhoCu', 'manDoiMua2', 'manBeSung', 'manTrumMua2'];
-  // Chương mùa 2 CẤT khỏi lộ trình mùa 2 (PDM2b 31/10): gói Đội cũ (gói 8) chờ PDM2c dựng lại thành gói 9. Màn vẫn vào ngân hàng và lộ trình (gói ẩn, chơi bằng "Mở hết");
-  // hàm của em nó dạy (wait_clear, step_clear…) mà gói 10 còn gọi được cấp thành hàm của màn (khối hàm cũ ở cuối tệp, CAP_HAM_CU).
-  var CAT_MUA_2 = { ma: 'doi-mua-2', ten: 'Đội (cất, chờ PDM2c)', loai: 'thu-thach', chuong: ['doi-mua-2', 'che-doi-mua-2'] };
+  // Chương mùa 2 CẤT khỏi lộ trình mùa 2 (PDM2c 31/10, phương án A của người giao): gói Bệ vòi xích (gói 9 cũ; luật cfg.beSung đã bỏ theo part đúng mùa, gói Đội về gói 9).
+  // Màn vẫn vào ngân hàng và lộ trình (gói ẩn đầu mùa 3, chơi bằng "Mở hết"), mã không đổi.
+  var CAT_MUA_2 = { ma: 'be-sung', ten: 'Bệ vòi xích (cất)', loai: 'thu-thach', chuong: ['be-sung', 'che-be-sung'] };
   (function () {
     Object.keys(TEN_MUA_2).forEach(function (c) { TT.ten[c] = TEN_MUA_2[c]; });
     var moi = [], chuong = [];
@@ -868,7 +868,7 @@
     var conLai = TT.goi.filter(function (g) { return g.mua !== 'mua-1' && !g.chuong.some(function (c) { return bo.indexOf(c) >= 0 || c === 'che-xich'; }); });
     // sao 95: ngưỡng cũ của gói Bánh xích (mùa 2 cũ) chứa che-xich, nằm giữa List (65) và Đội xích và nhện (125) nên thứ tự ngưỡng mùa 3 không lùi.
     conLai.push({ ma: 'che-xich', ten: 'Chế lệnh xích', loai: 'bo-phan', mua: 'mua-3', sao: 95, chuong: ['che-xich'] });
-    // PDM2b: gói Đội cũ của mùa 2 cất ra sau che-xich (gói đội: ngưỡng = gói trước + 30 khi dời sang mùa ẩn, khongTangNguong).
+    // PDM2b: gói cất của mùa 2 (PDM2c: Bệ vòi xích) ra sau che-xich (ngưỡng = gói trước + 30 khi dời sang mùa ẩn, khongTangNguong).
     conLai.push(Object.assign({ mua: 'mua-3', sao: 125, khongTangNguong: true }, CAT_MUA_2));
     conLai.forEach(function (g) { if (g.mua === 'mua-2') g.mua = 'mua-3'; });
     var sau = TT.thuTu.filter(function (c) { return c1.indexOf(c) < 0 && bo.indexOf(c) < 0; });
@@ -2359,10 +2359,10 @@
     // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.
     // Hàm vẫn dạy nhưng thân đổi sang hàm quay của xích (THAN_CU: right(k), step(a, b)…): màn ẩn hai bánh gọi chúng nhận bản cũ thành hàm của màn, che hàm của em.
     var HAM_CU = {}, DAY_CU = [['che-xich.6', 'pick_behind'], ['che-cam-bien.5', 'bounce'], ['che-cam-bien.9', 'fetch_back'], ['tham-so.6', 'deliver']];
-    // PDM2b 31/10: gói Đội cũ (che-doi-mua-2) cất khỏi mùa 2 (CAT_MUA_2), nhưng gói 10 mùa 2 (tong-hop-2, trum-mua-2) còn gọi hàm nó dạy: cấp bản cũ làm hàm của màn
-    // cho hai chương đó (CAP_HAM_CU) như màn ẩn, tới khi PDM2c dựng lại gói 9–10.
-    [['che-doi-mua-2.1', 'wait_clear'], ['che-doi-mua-2.2', 'yield_step'], ['che-doi-mua-2.4', 'wait_mate'], ['che-doi-mua-2.5', 'pass_mate'], ['che-doi-mua-2.6', 'clear_squirt'],
-      ['che-doi-mua-2.7', 'step_clear'], ['che-doi-mua-2.8', 'cover'], ['che-doi-mua-2.10', 'guard']].forEach(function (x) { if (nguon[x[0]]) DAY_CU.push(x); });
+    // PDM2c 31/10: gói Đội về gói 9 mùa 2 (gói 10 gọi hàm nó dạy như hàm của em bình thường); gói Bệ vòi xích CẤT (CAT_MUA_2) nhưng gói 10 còn gọi hàm nó dạy
+    // (go_spray, spray_left, valve_left…): cấp bản cũ làm hàm của màn cho hai chương gói 10 (CAP_HAM_CU) tới khi dựng lại gói 10.
+    [['che-be-sung.1', 'spray_left'], ['che-be-sung.2', 'spray_right'], ['che-be-sung.4', 'valve_on'], ['che-be-sung.5', 'valve_left'], ['che-be-sung.6', 'valve_row'],
+      ['che-be-sung.7', 'go_spray'], ['che-be-sung.8', 'visit'], ['che-be-sung.9', 'push_spray']].forEach(function (x) { if (nguon[x[0]]) DAY_CU.push(x); });
     var CAP_HAM_CU = { 'tong-hop-2': true, 'trum-mua-2': true };
     var chuongAn = {};
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });

@@ -245,15 +245,7 @@
     m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.7'),
     m('cover', 'hong-ngoai', 'Chờ bạn tới rồi đi khỏi (pass_mate) rồi phun mạnh', 'che-doi-mua-2', 'che-doi-mua-2.8'),
     m('guard', 'hong-ngoai', 'Chờ bạn qua (pass_mate) rồi tự chọn lực phun theo xa gần', 'che-doi-mua-2', 'che-doi-mua-2.10'),
-    // gói 9 · chương che-be-sung · Hàm bệ súng (man-be-sung.js): xích gắn súng hơi phun mạnh không giật, nhóm Súng hơi (side_spray là hàm của màn nên không có ở đây)
-    m('spray_left', 'hoi', 'Quay trái, phun mạnh van bên trái, rồi quay lại: bệ vòi không giật', 'che-be-sung', 'che-be-sung.1'),
-    m('spray_right', 'hoi', 'Quay phải, phun mạnh van bên phải, rồi quay lại', 'che-be-sung', 'che-be-sung.2'),
-    m('valve_on', 'hoi', 'Đo nhiệt van trước mũi xe: chưa nóng thì phun mạnh', 'che-be-sung', 'che-be-sung.4'),
-    m('valve_left', 'hoi', 'Quay trái, van bên trái chưa nóng thì phun mạnh, rồi quay lại', 'che-be-sung', 'che-be-sung.5'),
-    m('valve_row', 'hoi', 'n trạm: van xa bên trái còn đóng thì phun mạnh, rồi tiến một ô', 'che-be-sung', 'che-be-sung.6'),
-    m('go_spray', 'hoi', 'Đi thẳng tới sát cửa đóng rồi phun mạnh van bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
-    m('visit', 'hoi', 'Đo ngõ cụt sâu d ô, vào phun mạnh van bên trái, rồi lùi ra đúng d ô', 'che-be-sung', 'che-be-sung.8'),
-    m('push_spray', 'hoi', 'Đẩy thùng một ô rồi phun mạnh van bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9'),
+    // Gói Bệ vòi xích (che-be-sung, man-be-sung.js) CẤT khỏi mùa 2 (PDM2c 31/10, CAT_MUA_2 ở lo-trinh-hoc.js): 8 mục của nó bỏ khỏi Sổ lệnh (bản ở git trước PDM2c).
     // gói 10 · chương trum-mua-2 · Chế lệnh: dập lửa (man-trum-mua-2.js, 30/10 gói lửa): hàm dập lửa và dây chuyền, nhóm Vòi phun (put_far, pair_spray, douse… là hàm của màn nên không có ở đây)
     m('put_out', 'hoi', 'Còn lửa trước mũi (còn nóng) thì phun nhẹ, tới khi lửa tắt hẳn', 'trum-mua-2', 'trum-mua-2.1'),
     m('put_out_left', 'hoi', 'Quay trái, dập lửa bằng put_out(), quay lại', 'trum-mua-2', 'trum-mua-2.2'),
