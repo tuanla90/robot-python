@@ -12,6 +12,8 @@
      MÙA 2 (28/10, phim-mua-2.js; mục 1b): danh sách gói lấy từ mảng MUA_2 của lo-trinh-hoc.js (đọc nguồn: gói chưa có màn chưa vào ThuTuChuong.goi,
         vd gói 10 nha-may-chay đang viết, nên coi là gói khai sẵn); mọi gói mùa 2 có phim, nằm ở phim-mua-2.js, mỗi phim của tệp này mang mã một gói MUA_2;
         khung cuối phim gói bộ phận mùa 2 có bảng code; choi.html nạp phim-mua-2.js ngay sau phim-mua-1.js; mục 2 và 4 tự gồm phim mùa 2.
+     MÙA 4 (30/10, phim-mua-4.js; mục 1c): như mùa 2, gói theo mảng MUA_4 (đọc nguồn); mọi gói mùa 4 có phim ở phim-mua-4.js, khung cuối phim gói bộ phận có bảng code;
+        choi.html nạp phim-mua-4.js sau phim-mua-2.js (phim-mua-3.js nếu có thì đứng giữa); phim gói 10 có tem xuất xưởng với tên pg.tem.drone-ke-vach.
    Cờ --loi-gia: cắm sáu lỗi trong bộ nhớ (bỏ phim do-nhiet, phim xich 5 khung, lời pg.be-sung.2 16 từ, thiếu khóa pg.luc-ban.3, phim mã "goi-la"
         trong phim-mua-2.js, choi.html mất thẻ phim-mua-2.js) → các mục tương ứng phải ĐỎ.
    Chạy: node hoc/kiem-phim-goi.mjs [--loi-gia]        (trượt thì thoát mã 1)
@@ -38,6 +40,8 @@ const LOI_GIA = process.argv.includes('--loi-gia');
 // Gói mùa 2 theo mảng MUA_2 (lo-trinh-hoc.js, đọc nguồn): [{ ma, loai }]
 const nguonLo = fs.readFileSync(path.join(day, 'lo-trinh-hoc.js'), 'utf8');
 const khoiMua2 = (/var MUA_2 = \[([\s\S]*?)\n  \];/.exec(nguonLo) || [])[1] || '';
+const khoiMua4 = (/var MUA_4 = \[([\s\S]*?)\n  \];/.exec(nguonLo) || [])[1] || '';
+const GOI_MUA_4 = [...khoiMua4.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai: '([^']+)')?/g)].map((m) => ({ ma: m[1], loai: m[2] || '' }));
 const GOI_MUA_2 = [...khoiMua2.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai: '([^']+)')?/g)].map((m) => ({ ma: m[1], loai: m[2] || '' }));
 const CHUA_CO_GOI = [];                       // phim khai sẵn cho gói chưa có màn (27/10: gói combo đã có, mọi phim mùa 1 đều khớp gói thật)
 const KHONG_PHIM = ['xe'];                     // gói dùng phim mở đầu (mo-dau.js)
@@ -102,6 +106,25 @@ console.log('\n== 1b. Phim mùa 2 (gói theo MUA_2 của lo-trinh-hoc.js) ==');
   kiem('khung cuối phim gói bộ phận mùa 2 có bảng code lệnh mới (' + boPhan.map((g) => g.ma).join(', ') + ')', boPhan.length >= 3 && !khongCode.length, khongCode.join(', '));
 }
 
+console.log('\n== 1c. Phim mùa 4 (gói theo MUA_4 của lo-trinh-hoc.js) ==');
+{
+  kiem('có tệp phim-mua-4.js', tepPhim.includes('phim-mua-4.js'));
+  kiem('MUA_4 có 10 gói (đọc nguồn lo-trinh-hoc.js)', GOI_MUA_4.length === 10, GOI_MUA_4.map((g) => g.ma).join(', '));
+  const thieu = GOI_MUA_4.filter((g) => !PHIM[g.ma]).map((g) => g.ma);
+  kiem('mọi gói mùa 4 có phim (' + GOI_MUA_4.map((g) => g.ma).join(', ') + ')', !thieu.length, thieu.join(', '));
+  const saiTep = GOI_MUA_4.filter((g) => PHIM[g.ma] && TEP_CUA[g.ma] !== 'phim-mua-4.js').map((g) => g.ma + '@' + TEP_CUA[g.ma]);
+  kiem('phim gói mùa 4 nằm ở phim-mua-4.js', !saiTep.length, saiTep.join(', '));
+  const maMua4 = new Set(GOI_MUA_4.map((g) => g.ma));
+  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-4.js' && !maMua4.has(m));
+  kiem('mỗi phim của phim-mua-4.js mang đúng mã một gói của MUA_4', !la.length, la.join(', '));
+  kiem('gói MUA_4 đều thuộc mùa 4 trong ThuTuChuong.goi', GOI_MUA_4.every((g) => { const x = TT.goi.find((y) => y.ma === g.ma); return x && x.mua === 'mua-4'; }));
+  const boPhan = GOI_MUA_4.filter((g) => g.loai === 'bo-phan' && PHIM[g.ma]);
+  const khongCode = boPhan.filter((g) => !/\bc\.code\(/.test(PHIM[g.ma][PHIM[g.ma].length - 1].toString())).map((g) => g.ma);
+  kiem('khung cuối phim gói bộ phận mùa 4 có bảng code lệnh mới (' + boPhan.map((g) => g.ma).join(', ') + ')', boPhan.length >= 5 && !khongCode.length, khongCode.join(', '));
+  const cuoi = PHIM['drone-ke-vach'] ? PHIM['drone-ke-vach'].map((f) => f.toString()).join('\n') : '';
+  kiem('phim gói 10 mùa 4 có tem xuất xưởng tên Drone kẻ vạch R1 (pg.tem.drone-ke-vach)', /xuatXuong\(/.test(cuoi) && /pg\.tem\.drone-ke-vach/.test(cuoi) && typeof CHU['pg.tem.drone-ke-vach'] === 'string');
+}
+
 console.log('\n== 2. Chữ (chu.js) ==');
 {
   const can = [];
@@ -128,6 +151,7 @@ console.log('\n== 3. Nối luồng (đọc nguồn) ==');
     v('chu.js') >= 0 && v('phim-goi.js') > v('chu.js') && v('phim-mua-1.js') > v('phim-goi.js') && v('ung-dung.js') > v('phim-mua-1.js'),
     ['chu.js', 'phim-goi.js', 'phim-mua-1.js', 'ung-dung.js'].map((f) => f + '@' + v(f)).join(' '));
   kiem('choi.html nạp phim-mua-2.js ngay sau phim-mua-1.js', v('phim-mua-2.js') === v('phim-mua-1.js') + 1, 'phim-mua-1.js@' + v('phim-mua-1.js') + ' phim-mua-2.js@' + v('phim-mua-2.js'));
+  kiem('choi.html nạp phim-mua-4.js sau phim-mua-2.js, trước ung-dung.js', v('phim-mua-4.js') > v('phim-mua-2.js') && v('phim-mua-4.js') < v('ung-dung.js'), 'phim-mua-4.js@' + v('phim-mua-4.js'));
   const thieuMua = tepPhim.filter((f) => v(f) < 0);
   kiem('mọi tệp phim-mua-*.js có thẻ <script> trong choi.html', !thieuMua.length, thieuMua.join(', '));
   const mg = nguon('man-goi.js');
