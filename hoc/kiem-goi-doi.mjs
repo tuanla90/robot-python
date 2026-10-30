@@ -90,10 +90,12 @@ for (const c of goiDoi) {
     if (!ds.length) continue;
     if (!ds.every((m) => m.chuong === ch)) {
       // Chia lại ở khung mùa 3: đủ 10 màn gốc, mỗi màn ở chương MUA_3 hay chương rời; cỡ chương / hàng do kiem-lo-trinh.mjs kiểm.
-      kiem(ch + ': 10 màn gốc còn đủ, chia vào chương mùa 3 / chương rời (khung mùa 3)', ds.length === 10 &&
-        ds.every((m) => m.chuong === ch || Object.keys(M.roiMua3 || {}).includes(m.chuong)), ds.map((m) => m.chuong).join(','));
+      // Khung mùa 4 (30/10, gói 8 sửa đường cong): màn gốc nhường chỗ cho màn cầu nối thì sang chương chứa '<chương>-cu' ở mùa 5 (ẩn).
+      kiem(ch + ': 10 màn gốc còn đủ, chia vào chương mùa 3 / chương rời (khung mùa 3) / chương chứa mùa 5 (khung mùa 4)', ds.length === 10 &&
+        ds.every((m) => m.chuong === ch || Object.keys(M.roiMua3 || {}).includes(m.chuong) || m.chuong === ch + '-cu'), ds.map((m) => m.chuong).join(','));
     } else {
-    kiem(ch + ': 10 màn, hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', ds.length === 10 && J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
+    // hàng theo VỊ TRÍ trong chương (so); khung mùa 4 xếp lại thứ tự màn của chương đội (mã giữ nguyên) nên không theo số trong mã
+    kiem(ch + ': 10 màn, hàng 3 làm quen · 3 luyện · 3 biến thể · 1 trùm', ds.length === 10 && J(ds.slice().sort((a, b) => a.so - b.so).map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
     kiem(ch + ': 10 màn khác nhau và tên khác nhau', new Set(ds.map((m) => J([m.san, m.loiGiai]))).size === 10 && new Set(ds.map((m) => m.ten)).size === 10);
     kiem(ch + ': màn 1–9 một sân, trùm ba sân; chỉ trùm có huy hiệu', ds.every((m) => soSan(m) === (m.so === 10 ? 3 : 1) && !!m.huyHieu === (m.so === 10)), ds.map((m) => soSan(m)).join(''));
     }

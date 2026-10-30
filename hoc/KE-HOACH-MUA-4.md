@@ -181,6 +181,14 @@ Ghi chú chia:
   che-may-son có từ trước; doi-* dùng bí danh hai-robot). Gói mùa 4 có hình riêng (MUA_4 hinh = chương 1, gói 10 = drone-ke-vach). Màn trùm (cuối) mỗi chương mùa 4
   trao huy hiệu mã chương (trum-mua-4.10 trao drone-ke-vach); màn khác thôi trao (may-son.10 ở chương net-lien đổi sang net-lien). Phim gói 10 khung 1: huy hiệu bay quanh.
   kiem-huy-hieu-phim-vector A7: 13 mã vào MOI_SAU_CHUP.
+- **30/10 Gói 8 Đội chia hàng: đường cong không còn nhảy** (cong4.js; trước: 9 chỗ). Chỉ xếp lại thì không đủ (máy tìm hết các thứ tự: tối đa 5 màn liền mạch;
+  chương 1 không có màn 8–14 nhịp nối 7 → 15, doi-nam-cham.9 cần màn trước ≥ 8 dòng / 18 nhịp / 16 ô). Làm:
+  - hai màn cầu mới (man-doi-chia-hang.js): doi-nam-cham.11 "Lại gần mới hút được" (R1 tiến ba ô cho sắt vào tầm hút rồi lane(), R2 chờ + sort_by_color; 7 dòng / 10 nhịp)
+    và doi-nam-cham.12 "Hai trạm sát nhau" (R2 khoá, em viết R1 hai trạm với step(0, 1); 8 dòng / 19 nhịp / 15 ô);
+  - doi-nam-cham.5 Dọn gỗ cho nam châm và .7 Chờ quá ngắn sang mùa 5 (ẩn, gói chứa doi-nam-cham-cu), như màn drone cũ;
+  - thứ tự: doi-nam-cham 1 · 2 · 3 · 11 · 8 · 6 · 4 · 12 · 9 · 10; che-doi-nam-cham 1 · 2 · 5 · 3 · 6 · 4 · 7 · 9 · 8 · 10 (hàm hold_on / hand_off / plan_b vẫn tạo trước khi dùng);
+  - chỉnh ô thừa hai sân cũ (robot không đi qua): doi-nam-cham.9 bít hai ô hàng giữa (24 → 22 ô), che-doi-nam-cham.6 mở ô dưới đích phải (11 → 12 ô).
+  Máy kiểm theo: kiem-doi-nam-cham (bảng khoá + lời sai hai màn cầu), kiem-goi-doi (chương chứa -cu ở mùa 5; hàng theo vị trí), kiem-lo-trinh (rap-du mùa 5: 160 ★).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -201,7 +209,7 @@ Ghi chú chia:
 13. Giao diện color("hướng"): khay chèn sẵn color("front") / color("up"); chạm chữ hướng đổi được (đã thử trên trình duyệt, gói 4).
     Bộ lắp ráp (màn lắp robot) chưa có camera-4 trong danh mục mua (giá, bảng kế hoạch): thêm khi dựng màn lắp ráp mùa 4.
 14. ~~Chặn gói 3, 5, 7~~: user 30/10 chọn A, đã làm (mục 6).
-15. Gói 8 Đội chia hàng còn nhảy đường cong ở nhiều chỗ (màn đội dài nhịp); cần thiết kế lại thứ tự / thêm màn cầu nối. Chưa làm.
+15. ~~Gói 8 nhảy đường cong~~ sửa 30/10 (mục 6): hai màn cầu, bỏ doi-nam-cham.5 / .7 sang mùa 5 (ẩn). Muốn giữ hai màn đó thì cần thêm màn cầu khác (chương đã đủ 10).
 16. ~~Gói 9, gói 10~~ xong 30/10 (mục 6). Mùa 4 đủ 200 màn; còn phim mùa 4, huy hiệu, soát 200 / 200 trên trình duyệt, mở mùa 4.
 17. Gói 9 không có màn nam châm (máy sơn và nam châm không gắn chung). Muốn có ý "chở trước hay sơn trước" thì cần màn hai drone (một sơn, một chở) kiểu gói đội: để gói 10?
 19. Mục 9 (che-may-son.7 / .8): tôi giữ, đặt ở trum-mua-4 vị trí 8, 9 (sau màn cầu nối street 25 nhịp). Muốn cắt thì thay bằng hai màn drone mới.

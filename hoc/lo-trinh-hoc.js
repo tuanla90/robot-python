@@ -1091,7 +1091,7 @@
     { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'nhin-duoi',
       chuong: [['nhin-duoi', []], ['che-nhin-duoi', day('che-nhin-duoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])]] },
     { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach', hinh: 'doi-nam-cham',
-      chuong: [['doi-nam-cham', day('doi-nam-cham', MUOI)], ['che-doi-nam-cham', day('che-doi-nam-cham', MUOI)]] },
+      chuong: [['doi-nam-cham', day('doi-nam-cham', [1, 2, 3, 11, 8, 6, 4, 12, 9, 10])], ['che-doi-nam-cham', day('che-doi-nam-cham', [1, 2, 5, 3, 6, 4, 7, 9, 8, 10])]] },
     { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach', hinh: 'son-tren-cao',
       chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
     { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
@@ -1101,13 +1101,17 @@
   // flycam.6, doi-drone.6, .10, che-doi-drone.10 còn dùng recharge() mà drone.5 tạo. Dựng lại khi tới mùa có đội drone.
   var MUA_4_CU = [
     { ma: 'drone-sac-cu', ten: 'Drone sạc tự động',
-      chuong: [['drone-sac-cu', day('drone', [4, 5, 6, 10])], ['che-drone-sac-cu', day('che-drone', [3, 5, 6, 8, 9, 10])]] }
+      chuong: [['drone-sac-cu', day('drone', [4, 5, 6, 10])], ['che-drone-sac-cu', day('che-drone', [3, 5, 6, 8, 9, 10])]] },
+    // Gói 8 (30/10, sửa đường cong): doi-nam-cham.5 Dọn gỗ cho nam châm (8 dòng / 5 nhịp, 13 ô) và .7 Chờ quá ngắn không xếp được vào chuỗi đường cong
+    // nên nhường chỗ cho hai màn cầu nối doi-nam-cham.11, .12 (man-doi-chia-hang.js); hai màn cũ sang mùa 5 (ẩn) như màn drone cũ.
+    { ma: 'doi-nam-cham-cu', ten: 'Đội chia hàng: màn dư',
+      chuong: [['doi-nam-cham-cu', day('doi-nam-cham', [5, 7])]] }
   ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
   var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: đi theo danh sách',
     'cam-bon': 'Đọc màu bốn phía', 'che-cam-bon': 'Chế lệnh: dò màu', 'pho-mau': 'Đi giữa phố màu', 'che-pho-mau': 'Chế lệnh: qua phố',
     'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Kẻ nét liền', 'che-may-son': 'Chế lệnh: vẽ hoa văn',
-    'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
+    'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham-cu': 'Chia hàng: màn ôn', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
     'son-tren-cao': 'Kẻ vạch qua rào', 'che-son-tren-cao': 'Chế lệnh: tranh tường', 'tong-hop-4': 'Đủ bộ', 'trum-mua-4': 'Phố mới kẻ vạch' };
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 4 (như mùa 3): mỗi gói một tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai `chuong` và `so`.
   //   man-cat-canh.js manCatCanh (1) · man-cham-son.js manChamSon (2) · man-camera-bon-huong.js manCameraBonHuong (3) · man-pho-mau.js manPhoMau (4)
@@ -1150,6 +1154,10 @@
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // Gói 8 (30/10, sửa đường cong): chỉnh ô THỪA của hai sân cũ cho chỉ số "ô" (số ô không phải tường) khớp chuỗi; robot không đi qua các ô này, lời giải giữ nguyên.
+    // doi-nam-cham.9 Ba trạm: bít hai ô hàng giữa giữa các trạm (24 → 22 ô); che-doi-nam-cham.6 Giao cho kịp: mở ô dưới đích phải (11 → 12 ô).
+    get('doi-nam-cham.9').san = ['########', '#o#o#o##', '#=#=#=##', '#.....##', '#.#.#.##', '#.....##', '#D#D#D##', '########'];
+    get('che-doi-nam-cham.6').san = ['######', '###o##', '###.##', '#o=..#', '###.##', '##D.D#', '###..#', '######'];
     // Huy hiệu (30/10): mỗi chương mùa 4 trao huy hiệu MÃ CHƯƠNG ở màn trùm (cuối chương), như mùa 2; chương trum-mua-4 trao huy hiệu cỗ máy drone-ke-vach
     // (trùm cuối mùa). Màn khác trong chương không trao (màn có sẵn mang huy hiệu cũ, vd may-son.10 ở chương net-lien, đổi theo chương mới).
     MUA_4.forEach(function (g) {
