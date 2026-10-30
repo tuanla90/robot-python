@@ -1,10 +1,13 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
-   phim-mua-4.js — "Mật Lệnh Robot": DỮ LIỆU PHIM GÓI MÙA 4 "Thành phố" (bộ máy chiếu: phim-goi.js, cùng cách phim-mua-1.js, phim-mua-2.js; phiên "Mùa 4", 30/10).
+   phim-mua-4.js — "Mật Lệnh Robot": DỮ LIỆU PHIM GÓI MÙA 4 "Nông trại" (bộ máy chiếu: phim-goi.js, cùng cách phim-mua-1.js, phim-mua-2.js; phiên "Mùa 4", 30/10).
+   30/10 (user: "Đổi sang nông nghiệp"): vỏ Nông trại hoa, luật giữ nguyên: máy sơn là bộ gieo hạt, ô đã sơn nở hoa, sàn màu là luống hoa, hộp màu là bao hạt, sân cỏ;
+   phim gói 1 mở từ bãi tái chế ra đồng quê, phim cuối nhá mùa 5 (mỏ đá trên núi). Lời theo giọng CLB (Sola, Luna).
    Kịch bản: hoc/KE-HOACH-PHIM-GOI.md mục "Kịch bản mùa 4"; nội dung gói: hoc/KE-HOACH-MUA-4.md (mảng MUA_4 trong lo-trinh-hoc.js).
    Mỗi mã gói một mảng 3–4 hàm khung (k, c): k = khung tranh 320×220, c = bộ dựng hình của PhimGoi (c.xe, c.san, c.code…). Lời khung n ở chu.js khóa 'pg.<mã gói>.<n>' (≤ 14 từ).
-   Truyện (khuôn mục 3c): thành phố mới có vạch kẻ đường mờ hết, xe đi lộn xộn (đơn việc ở gói 1); em lắp cánh quạt cho R1 thành drone, rồi máy sơn, camera bốn hướng,
-   nâng cấp đáp sạc, bút liền, mắt nhìn dưới chân; R2 trở lại ở gói đội; gói 9 gắn máy sơn dưới bụng drone; gói 10 "Drone kẻ vạch R1 xuất xưởng", phim cuối nhá mùa 5 (sân bóng).
+   Truyện (khuôn mục 3c): rời bãi tái chế, R1 ra nông trại hoa, luống đất còn trống trơn (đơn việc ở gói 1); Sola lắp cánh quạt cho R1 thành drone, rồi bộ gieo hạt,
+   camera bốn hướng, nâng cấp đáp sạc, gieo liền, mắt nhìn dưới chân; R2 của Luna trở lại ở gói đội; gói 9 gắn bộ gieo hạt dưới bụng drone; gói 10 "Drone nông nghiệp R1
+   xuất xưởng", phim cuối nhá mùa 5 (mỏ đá trên núi).
    Hình: sân mini nhìn từ trên (c.san, ô 56 px, robot tỉ lệ 2) hay dải sàn (robot tỉ lệ 3). Ô của mùa 4 (sàn màu, hộp màu, ô sạc P, hàng rào, hố, ô đích màu, ô đã sơn)
    vẽ bằng VeVector (cùng hình trên sân chơi); không có VeVector (máy kiểm Node, DOM giả) thì là div tô màu.
    Node (máy kiểm kiem-phim-goi.mjs) require tệp này lấy bảng PHIM (không chạy hàm vẽ nào).
@@ -44,8 +47,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (!e) { e = c.h('div'); e.style.width = e.style.height = canh + 'px'; e.style.borderRadius = '4px'; e.style.background = mauDp || BM.xam; }
     return e;
   }
-  function oMau(c, m, s) { return veV(c, 'o', 'san-mau', s, { mau: m }, MAU_DU_PHONG[m]); }
-  function hop(c, m, s) { return veV(c, 'vat', 'khoi-sat', s, m ? { mau: m } : {}, MAU_DU_PHONG[m] || BM.xam); }
+  function oMau(c, m, s) { return veV(c, 'o', 'luong-hoa', s, { mau: m }, MAU_DU_PHONG[m]); }                // luống hoa (sàn màu của nông trại)
+  function hop(c, m, s) { return veV(c, 'vat', 'bao-hat', s, { mau: m || 'red', sat: true }, MAU_DU_PHONG[m] || BM.xam); }   // bao hạt có móc sắt (nam châm hút được)
+  function hoaO(c, m, s) { return veV(c, 'o', 'o-hoa', s, { mau: m }, MAU_DU_PHONG[m]); }                        // ô đã gieo: bông hoa đúng loài
 
   /**
    * Sân mini mùa 4: rows như c.san ('.' '#' 'o' 'F' '*') và thêm '=' rào · 'u' hố · 'P' ô sạc · 'D' ô đích; lop: { mau: sàn màu, dich: màu ô đích, hop: hộp màu } (mảng chuỗi r g b y .).
@@ -53,7 +57,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    */
   function san4(k, c, rows, lop, s, x0, y0) {
     s = s || 4; x0 = x0 === undefined ? X0 : x0; y0 = y0 === undefined ? Y0 : y0; lop = lop || {};
-    var kq = c.san(k, rows.map(function (r) { return r.replace(/[=uPD]/g, '.'); }), s, x0, y0), canh = 14 * s;
+    var kq = c.san(k, rows.map(function (r) { return r.replace(/[=uPD]/g, '.'); }), s, x0, y0, 'nong-trai'), canh = 14 * s;
     var lopSon = c.dat(c.h('div'), 0, 0); kq.hop = {};
     function ky(ds, x, y) { return ds && ds[y] ? ds[y][x] : '.'; }
     rows.forEach(function (r, y) {
@@ -71,7 +75,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (var x = 0; x < r.length; x++) { var mh = MAU[ky(lop.hop, x, y)]; if (mh) k.appendChild(kq.hop[x + ',' + y] = c.dat(hop(c, mh, s), x0 + x * canh, y0 + y * canh)); }
     });
     kq.to = function (x, y, m, t) {
-      var e = c.dat(oMau(c, m, s), x0 + x * canh, y0 + y * canh);
+      var e = c.dat(hoaO(c, m, s), x0 + x * canh, y0 + y * canh);
       lopSon.appendChild(c.tu(e, t));
       c.sau(t * 1000, function () { c.keu('kep'); });
       return e;
@@ -112,23 +116,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     b.dat = function (so) { vach.forEach(function (e, i) { e.style.background = i < so ? BM.vang : BM.xamToi; }); return b; };
     k.appendChild(b); return b.dat(v === undefined ? n : v);
   }
-  /** Nhà phố nhìn ngang: khối cao h, rộng w, đáy chạm y; cửa sổ sáng khi sang. */
-  function nha(k, c, x, y, w, h, sang) {
-    var e = c.dat(c.h('div'), x, y - h); e.style.width = w + 'px'; e.style.height = h + 'px'; e.style.background = sang ? BM.lamSangV1 || BM.lamSang : BM.xamToi; e.style.border = '2px solid ' + BM.vienDam; e.style.borderRadius = '3px 3px 0 0';
-    for (var yy = 8; yy < h - 10; yy += 16) for (var xx = 6; xx < w - 8; xx += 14) {
-      var cs = c.dat(c.h('div'), xx, yy); cs.style.width = '7px'; cs.style.height = '8px'; cs.style.background = sang ? BM.vang : BM.xam; e.appendChild(cs);
-    }
-    k.appendChild(e); return e;
+  /** Nhà kho nông trại nhìn ngang: thân đỏ cửa trắng chéo, mái tam giác; đáy chạm y. */
+  function kho(k, c, x, y, w, h) {
+    var mai = c.dat(c.h('div'), x - 4, y - h - 26); mai.style.width = (w + 8) + 'px'; mai.style.height = '28px'; mai.style.background = BM.vienDam;
+    mai.style.clipPath = 'polygon(50% 0, 100% 100%, 0 100%)'; k.appendChild(mai);
+    var e = c.dat(c.h('div'), x, y - h); e.style.width = w + 'px'; e.style.height = h + 'px'; e.style.background = BM.do; e.style.border = '2px solid ' + BM.vienDam; k.appendChild(e);
+    var cua = c.dat(c.h('div'), w / 2 - 10, h - 30); cua.style.width = '20px'; cua.style.height = '28px'; cua.style.border = '3px solid ' + BM.trang; cua.style.boxSizing = 'border-box'; e.appendChild(cua);
+    return e;
   }
-  /** Mặt đường nhìn ngang (dải tối) với vạch giữa đường: ro = true vạch vàng rõ, false vạch mờ đứt quãng. */
-  function duongPho(k, c, y, ro) {
-    var d = c.dat(c.h('div'), 0, y); d.style.width = '320px'; d.style.height = '46px'; d.style.background = BM.xamToi2; k.appendChild(d);
-    var vach = [];
-    for (var x = 8; x < 320; x += 44) {
-      var v = c.dat(c.h('div'), x, y + 20); v.style.width = '26px'; v.style.height = '6px'; v.style.borderRadius = '2px';
-      v.style.background = ro ? BM.vang : BM.trang; v.style.opacity = ro ? '1' : (x % 88 ? '0.15' : '0.35'); k.appendChild(v); vach.push(v);
+  /** Cánh đồng nhìn ngang (dải đất nâu, hai rãnh luống) từ y; trả về các chỗ gieo (div nhỏ). no = true: hoa đã nở sẵn. .no(i, mau) cho chỗ i nở bông màu mau. */
+  function dong(k, c, y, no) {
+    var d = c.dat(c.h('div'), 0, y); d.style.width = '320px'; d.style.height = '46px'; d.style.background = BM.vecDat; k.appendChild(d);
+    [14, 32].forEach(function (yy) { var r = c.dat(c.h('div'), 0, y + yy); r.style.width = '320px'; r.style.height = '3px'; r.style.background = BM.vecDatToi; k.appendChild(r); });
+    var cho = [], MAU4 = ['red', 'yellow', 'blue', 'red', 'yellow', 'green', 'blue'];
+    for (var x = 10, i = 0; x < 310; x += 44, i++) {
+      var o = c.dat(c.h('div'), x - 2, y + 7); o.style.width = o.style.height = '32px'; k.appendChild(o); cho.push(o);
+      var mam = c.dat(c.h('div'), 13, 14); mam.style.width = '6px'; mam.style.height = '6px'; mam.style.borderRadius = '50%'; mam.style.background = BM.vecDatToi; o.appendChild(mam);
+      if (no) o.appendChild(hoaO(c, MAU4[i % MAU4.length], 16 / 7));
     }
-    return vach;
+    cho.no = function (i, mau) { var o = cho[i]; if (!o) return; o.innerHTML = ''; o.appendChild(hoaO(c, mau || MAU4[i % MAU4.length], 16 / 7)); };
+    return cho;
   }
   // huy hiệu chương 1 các gói mùa 4 (+ cỗ máy gói 10) bay trong phim gói 10
   var HUY = ['drone', 'may-son', 'cam-bon', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'doi-nam-cham', 'son-tren-cao', 'drone-ke-vach'];
@@ -146,13 +153,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var PHIM = {
     /* ---------------------------------------------------------------- 1 · Cất cánh (thân drone) */
     'drone': [
-      // 1 · đơn việc (khuôn mục 3c): thành phố mới, vạch kẻ đường mờ hết, xe đi lộn xộn; R1 xe hai bánh lăn tới
+      // 1 · đơn việc (khuôn mục 3c): rời bãi tái chế ra đồng quê, nông trại hoa mà luống đất còn trống trơn; R1 xe hai bánh lăn tới
       function (k, c) {
         c.nen(k, 'pg-troi');
-        nha(k, c, 14, 128, 52, 92, false); nha(k, c, 76, 128, 40, 70, false); nha(k, c, 214, 128, 46, 84, false); nha(k, c, 268, 128, 44, 104, false);
-        duongPho(k, c, 128, false);
-        var x1 = c.dat(c.ico('car', 3, BM.do), 150, 132, 'md-lac'), x2 = c.dat(c.ico('car', 3, BM.lamSang), 200, 150, 'md-lac');
-        x2.style.animationDelay = '.3s'; k.appendChild(x1); k.appendChild(x2);
+        kho(k, c, 22, 128, 64, 60); kho(k, c, 232, 128, 52, 48);
+        dong(k, c, 128, false);
         c.nen(k, 'md-san pg-dat');
         var r = c.xe(XE, {}, 1, 3, -40, 196); k.appendChild(r);
         truot(c, r, 80, 70, 196, 1.2);
@@ -297,7 +302,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     'tram-sac': [
       // 1 · pin cạn giữa phố: drone hạ cánh khẩn
       function (k, c) {
-        c.nen(k, 'pg-troi'); duongPho(k, c, 150, false); c.nen(k, 'md-san pg-dat');
+        c.nen(k, 'pg-troi'); dong(k, c, 150, false); c.nen(k, 'md-san pg-dat');
         var pin = thanhPin(k, c, 214, 4, 5, 3);
         var r = c.xe(DRONE, {}, 1, 3, 40, 90); k.appendChild(r);
         truot(c, r, 100, 170, 90, 1.4);
@@ -496,7 +501,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         });
         c.sau(300, function () { c.keu('thang'); });
       },
-      // 2 · tem XUẤT XƯỞNG: "Drone kẻ vạch R1" + ba part: cánh quạt, máy sơn, camera
+      // 2 · tem XUẤT XƯỞNG: "Drone nông nghiệp R1" + ba part: cánh quạt, bộ gieo hạt, camera
       function (k, c) {
         c.nen(k, 'md-san');
         var r = c.xe(DRONE_SON, {}, 1, 3, 160, 150); k.appendChild(r);
@@ -508,31 +513,31 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(1000, function () { c.keu('dam'); });
         c.sau(1900, function () { c.keu('thang'); });
       },
-      // 3 · vạch đường sáng rõ, xe đi đúng làn (việc kẹt ở drone.1 được gỡ)
+      // 3 · drone bay dọc cánh đồng, luống nào cũng nở hoa (việc trống trơn ở drone.1 được gỡ)
       function (k, c) {
         c.nen(k, 'pg-troi');
-        nha(k, c, 14, 128, 52, 92, true); nha(k, c, 76, 128, 40, 70, true); nha(k, c, 214, 128, 46, 84, true); nha(k, c, 268, 128, 44, 104, true);
-        var vach = duongPho(k, c, 128, false);
-        var r = c.xe(DRONE_SON, {}, 1, 2, -30, 118); k.appendChild(r);
-        truot(c, r, 100, 340, 118, 2.6);
-        vach.forEach(function (v, i) { c.sau(300 + i * 330, function () { v.style.background = BM.vang; v.style.opacity = '1'; c.keu('kep'); }); });
-        var x1 = c.dat(c.ico('car', 3, BM.do), -50, 132), x2 = c.dat(c.ico('car', 3, BM.lamSang), 330, 152);
-        k.appendChild(x1); k.appendChild(x2);
-        truot(c, x1, 2900, 140, 132, 1.4); truot(c, x2, 2900, 150, 152, 1.4);
+        kho(k, c, 22, 128, 64, 60); kho(k, c, 232, 128, 52, 48);
+        var cho = dong(k, c, 128, false);
+        var r = c.xe(DRONE_SON, {}, 1, 2, -30, 112); k.appendChild(r);
+        truot(c, r, 100, 340, 112, 2.6);
+        cho.forEach(function (v, i) { c.sau(300 + i * 330, function () { cho.no(i); c.keu('kep'); }); });
         c.nen(k, 'md-san pg-dat');
         c.sau(3000, function () { r.mat('vui'); c.keu('thang'); });
       },
-      // 4 · nhá mùa 5: xa xa sân bóng sáng đèn, quả bóng nhấp nháy
+      // 4 · nhá mùa 5: xa xa núi đá, mỏ đá bậc thang, tảng đá lăn nhấp nháy
       function (k, c) {
-        c.nen(k, 'pg-troi'); c.nen(k, 'pg-doi');
-        var sanCo = c.dat(c.h('div'), 186, 92); sanCo.style.width = '120px'; sanCo.style.height = '52px'; sanCo.style.background = BM.xanhLa; sanCo.style.border = '3px solid ' + BM.trang; sanCo.style.borderRadius = '4px'; k.appendChild(sanCo);
-        var giua = c.dat(c.h('div'), 58, 0); giua.style.width = '3px'; giua.style.height = '52px'; giua.style.background = BM.trang; sanCo.appendChild(giua);
-        [[194, 54], [292, 54]].forEach(function (d, i) {
-          var den = c.dat(c.h('div', 'pg-nhay'), d[0], d[1]); den.style.width = '12px'; den.style.height = '12px'; den.style.borderRadius = '50%'; den.style.background = BM.vang;
-          den.style.animationDelay = (i * 0.3) + 's'; k.appendChild(c.tu(den, 1.2));
+        c.nen(k, 'pg-troi');
+        [[150, 30, 170, 116, BM.xamToi], [222, 10, 110, 136, BM.xam]].forEach(function (n) {
+          var nui = c.dat(c.h('div'), n[0], n[1]); nui.style.width = n[2] + 'px'; nui.style.height = n[3] + 'px'; nui.style.background = n[4];
+          nui.style.clipPath = 'polygon(50% 0, 100% 100%, 0 100%)'; k.appendChild(nui);
         });
-        var bong = c.dat(c.h('div', 'pg-nhay'), 240, 108); bong.style.width = bong.style.height = '16px'; bong.style.borderRadius = '50%'; bong.style.background = BM.trang; bong.style.border = '2px solid ' + BM.vienDam;
-        k.appendChild(c.tu(bong, 1.6));
+        [[206, 118, 104], [222, 102, 72], [238, 86, 40]].forEach(function (b) {
+          var bac = c.dat(c.h('div'), b[0], b[1]); bac.style.width = b[2] + 'px'; bac.style.height = '16px'; bac.style.background = BM.xamToi2; bac.style.border = '2px solid ' + BM.vienDam; k.appendChild(bac);
+        });
+        [[212, 128], [262, 112], [290, 128]].forEach(function (d, i) {
+          var da = c.dat(c.h('div', 'pg-nhay'), d[0], d[1]); da.style.width = '14px'; da.style.height = '12px'; da.style.borderRadius = '4px'; da.style.background = BM.xam; da.style.border = '2px solid ' + BM.vienDam;
+          da.style.animationDelay = (i * 0.3) + 's'; k.appendChild(c.tu(da, 1.2 + i * 0.2));
+        });
         c.nen(k, 'md-san pg-dat');
         var r = c.xe(DRONE_SON, {}, 1, 3, -40, 110); k.appendChild(r);
         truot(c, r, 100, 100, 110, 1.4);

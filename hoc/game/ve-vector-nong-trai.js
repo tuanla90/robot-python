@@ -57,6 +57,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [[28, 28], [62, 30], [44, 58], [60, 70], [74, 46]].forEach(function (q) { H.elip(g, q[0], q[1], 5, 2.6); H.to(g, BM.vecCo); });
   } });
 
+  /* Ô ĐÃ GIEO (phim gói mùa 4; trên sân chơi ve-vector-hieu-ung.js hoaDa vẽ thẳng): một bông hoa đúng loài giữa ô, nền trong suốt (đặt chồng lên ô sàn). */
+  V.dangKy({ loai: 'o', ma: 'o-hoa', ten: 'Ô đã gieo hoa', phu: true, cacTrangThai: MAU.map(function (m) { return { mau: m }; }), ve: function (g, s, H) {
+    hoa(g, H, 50, 50, 34, MAU.indexOf(s && s.mau) >= 0 ? s.mau : 'red');
+  } });
+
   /* BAO HẠT GIỐNG (vật có màu ở nông trại; luật như hộp màu): bao giấy kraft buộc dây ở cổ, in bông hoa đúng loài màu luật; s.sat: bao có móc sắt
      trên cổ (vật chất sắt, nam châm hút được). Thân trong hộp 12..88 như vật nhỏ khác. */
   V.dangKy({ loai: 'vat', ma: 'bao-hat', ten: 'Bao hạt giống', cacTrangThai: MAU.map(function (m) { return { mau: m }; }).concat([{ mau: 'red', sat: true }]), ve: function (g, s, H) {
