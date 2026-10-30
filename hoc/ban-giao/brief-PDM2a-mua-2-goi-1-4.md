@@ -40,8 +40,11 @@ PHẢN BIỆN: brief này là phán đoán từ bên ngoài, viết trong ít ph
 commit WIP, báo ngay. Bất đồng không chặn → làm theo rồi ghi vào CÂU HỎI CẦN LÀM RÕ. Quyết định của USER (không tự đi ngược): R1 chỉ part mùa 2; tự lắp tuỳ ý để mùa 7.
 Kiểm lại từng khẳng định trong brief bằng code, đừng tin.
 
-CÁCH GIAO: nhánh `claude/pdm-2a` trong worktree `D:\Users\tuanla2\game\doi-robot-chan-hung\.claude\worktrees\pdm-2a` (đã dựng sẵn); commit từng bước; KHÔNG push, KHÔNG merge.
-Mọi lệnh chạy với cwd = worktree đó.
+CÁCH GIAO: làm THẲNG trên nhánh `claude/part-dung-mua`, worktree `D:\Users\tuanla2\game\doi-robot-chan-hung\.claude\worktrees\part-dung-mua`
+(người giao không sửa tệp lúc bạn chạy); commit từng bước; KHÔNG push, KHÔNG merge, KHÔNG đổi nhánh, KHÔNG git checkout / reset / stash.
+Mọi lệnh chạy với cwd = worktree đó. Mùa 1 đã xong (PDM1, xem git log): học cách nó dựng nhiều sân và đo sao nếu cần.
+Nơi chốn mùa 2 là Nhà máy (cỗ máy Xe cứu hỏa); không dùng chữ mỏ quặng / thành phố / sân bóng / kẻ vạch.
+Ngưỡng sao lộ trình ở hoc/lo-trinh-sao.js: KHÔNG chạy `tools/do-lo-trinh.mjs --ghi-sao` (nó ghi lại cả các mục không liên quan); sửa tay đúng mục màn mình đổi.
 
 KIỂM TRA (sau mỗi nhóm commit; CẤM `npm test` cả bộ vì RAM; người giao chạy cả bộ):
   node hoc/kiem-lo-trinh.mjs   (ghi ra tệp trong scratchpad của bạn rồi đọc; dòng cuối "ĐẠT … kiểm tra lộ trình xuất bản.")

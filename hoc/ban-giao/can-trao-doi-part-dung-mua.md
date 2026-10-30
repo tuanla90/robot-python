@@ -11,5 +11,15 @@
 4. **Mùa 2 bỏ luật Bệ vòi xích** (cfg.beSung): xích gắn vòi phun mạnh thì giật như xe khác, nên gói 6 Lực phun giữ bài "lần đầu bị giật". Màn be-sung cất khỏi lộ trình.
 5. **Mùa 3 cảm biến từ trên nhện** đo theo cạnh trước cố định của nhện (hướng xuất phát, cùng cạnh tay kẹp nhện đang dùng).
 
+6. **Mùa 1 gói 10 (PDM1, đã xong):** 20 màn đều 3 "ngày làm việc", lời giải chung 3 sao, mỗi màn có lời đếm cứng thua. trum-mua-1.4 (trước là hai robot)
+   thành màn một robot "Một mình hai trạm". Bảng recall gói 9 + 10: gói 8 Đội chỉ còn nhắc 2 lần (trước 3) vì gói 10 không còn đội; hạ ngưỡng riêng gói 8 xuống 2.
+   Nhịp màn thường tính theo ngày dài nhất, trùm tính tổng mọi ngày (robot-hoan-thien.5 cũng tính tổng để for range(3) đếm cứng không được 3 sao).
+
 ## Câu hỏi chờ user
-(ghi dần)
+- robot-hoan-thien.8 sau khi nhiều ngày (dọn dãy thùng bằng while) gần giống robot-hoan-thien.5: có muốn đổi ý bài .8 không?
+- Màn không có cờ "đâm là thua" thì lời đếm cứng đi quá (húc tường) vẫn thắng với ít sao hơn (vd robot-hoan-thien.4: 1 sao). Có muốn bật "đâm là thua" cho cả gói 10?
+  (Cờ này hiện chỉ cho màn ép khối mới theo định nghĩa của kiem-lach-mua-1; bật cho gói 10 cần sửa máy dò đó.)
+
+## Việc kỹ thuật ghi lại
+- `tools/do-lo-trinh.mjs --ghi-sao` hiện ghi lại lo-trinh-sao.js khác bản đã commit kể cả trước đợt này (đổi thứ tự, thêm list.1, bớt che-list.8 / .9): chưa ai dọn.
+  Các agent đợt này sửa tay đúng mục màn mình đổi.
