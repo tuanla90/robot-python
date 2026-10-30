@@ -22,6 +22,9 @@ Mỗi mùa: **1 thân + 1 tay + 1 cảm biến**, mỗi part có **gốc → nâ
 
 ## Cỗ máy của mỗi mùa (29/10, user phác, hội đồng góp ý, ĐANG BÀN)
 
+**Thứ tự nơi = con đường từ CLB ra xa rồi quay về (user chốt 30/10):** kho hàng (trong thị trấn) → nhà máy (rìa, khu công nghiệp) → bãi tái chế (sau nhà máy) → nông trại hoa (đồng quê) → mỏ đá (chân núi) → núi tuyết (đỉnh, xa nhất) → về CLB (mùa 7). Bản đồ thế giới vẽ thành MỘT con đường uốn lượn qua sáu trạm; mỗi mùa xong trạm sáng lên. Ảnh nơi chốn mỗi nơi một tông màu riêng (không ép bảng "lab trắng").
+
+
 Ba part của một mùa ghép lại thành **một cỗ máy gần giống thiết bị ngoài đời** mà trẻ gọi được tên. Cỗ máy là câu chuyện, phim, hình vẽ và
 tên gọi; **không quyết định luật** (hội đồng 29/10, cả bốn thành viên đồng ý). Gói 10 mỗi mùa là cỗ máy đó **xuất xưởng** (xem KE-HOACH-PHIM-GOI.md mục Sợi dây chung).
 
@@ -29,11 +32,11 @@ tên gọi; **không quyết định luật** (hội đồng 29/10, cả bốn t
 |---|---|---|---|---|
 | 1 | Xe chở hàng | kho hàng | hai bánh chở, tay gắp bốc thùng, cảm biến tránh va | (không) |
 | 2 | Xe cứu hỏa (robot chữa cháy bánh xích) | nhà máy | xích leo đống đổ nát, ủi thùng; súng hơi như vòi phun (tia nhanh / tia mạnh); hồng ngoại đo nhiệt như camera nhiệt tìm điểm nóng | user 29/10 bỏ "xe tăng" (chủ đề chiến tranh); tên part "súng hơi" tạm giữ, chỉ lời phim gọi vòi phun |
-| 3 | Xe thăm dò quặng, dáng cua (user 29/10 chốt: **thân nhện**; "dáng cua" chỉ là chân nhện + tay nam châm trông giống cua) | mỏ quặng | nhện vượt khe nứt, cảm biến từ là máy dò kim loại, nam châm bụng cắp quặng (combo) | sắt là quặng, hố là khe nứt |
-| 4 | Drone kẻ vạch / vẽ | thành phố | drone bay theo lưới phố, máy sơn kẻ vạch đường / vẽ tranh tường, camera nhìn xuống đọc màu, về ô sạc khi hết pin | **giữ máy sơn** (user chốt 29/10: ô màu đã gần hoàn thiện, đổi sang nước là làm lại nhiều tính năng) |
-| 5 | Robot cầu thủ | sân bóng | omni chạy ngang, máy ném thành chân sút, radar tròn quét sân (như robot RoboCup) | máy ném → chân sút (ném qua rào = sút bổng); bàn xoay = xoay người trên sân tập |
+| 3 | **Robot phân loại phế liệu R1** (user 30/10, thay Xe thăm dò quặng; dáng cua: chân nhện + nam châm) | **bãi tái chế phế liệu** (thay mỏ quặng, để khỏi trùng mỏ đá mùa 5) | nhện leo đống phế liệu / chui gầm băng chuyền, nhảy qua khe giữa đống phế liệu; nam châm nhặt sắt vụn; cảm biến từ = **phân loại rác** (sắt / gỗ, nhựa); đệm từ = tấm nam châm điện dưới sàn bãi; đảo cực, đọc cực = vật có nam châm bên trong (loa, động cơ cũ) | **luật giữ nguyên, chỉ đổi hình / tên / lời** (mùa 3 đã đủ 200 màn); sắt = sắt vụn, hố = khe giữa đống phế liệu |
+| 4 | **Drone nông nghiệp** (user 30/10, thay Drone kẻ vạch) | **nông trại hoa** (thay thành phố) | drone bay trên luống; máy sơn thành **bộ gieo hạt / bình phun**: mỗi màu là một loại hạt hoa, `dot` gieo một ô (ô nở hoa đúng màu), bút liền phun / gieo cả hàng; camera nhìn luống: hoa màu gì, lá vàng (phun phân bón) hay có sâu (phun thuốc); hộp màu = bao hạt; ô sạc giữ (hạ cánh thay pin, nạp bình) | **luật giữ nguyên, chỉ đổi hình / tên** (như súng hơi → vòi phun); lý do: drone phun thuốc rất phổ biến ở Việt Nam, trẻ dễ nhận ra ứng dụng thật |
+| 5 | **Máy khai thác đá R1** (user 30/10, thay Robot cầu thủ: sân bóng không có hố, dốc) | **mỏ đá trên núi** (chân núi, đá vàng nâu ngoài trời) | omni bò ngang sườn dốc; bóng tròn = **tảng đá tròn** lăn theo dốc; lấp hố đã khai thác; radar tròn phân biệt **đá hộc (tròn) / đá xẻ (khối)**; bàn xoay = mâm xoay máy cắt đá; máy ném = tay hất / đẩy đá (đặt tên sau) | robot cần thật: đá lở, bụi, nổ mìn nguy hiểm cho người; ngoài đời có máy khai thác điều khiển từ xa |
 | 6 | Xe tuần tra núi tuyết | núi tuyết | bánh gai bám băng; **loa chủ động làm tuyết lăn** (lở có kiểm soát); cảm biến âm thanh nghe tín hiệu người cần cứu | cổng dịch chuyển → đường hầm (**user chốt 29/10**) |
-| 7 | Máy của em | xưởng của em | tự chọn part | |
+| 7 | Robot riêng của Sola, của Luna (30/10) | **về lại CLB** (trung tâm thị trấn) | sự kiện lớn cần năng lực của cả sáu cỗ máy; mỗi bạn tự lắp một robot từ part đã có | |
 
 Combo gói 9 gợi ý (hội đồng): mùa 5 **"Trượt và sút"**: omni có máy ném được ném khi đang trượt (lõi hiện bắt đứng yên: `nem-dung-yen`, `san-hoc.js` mục MÁY NÉM);
 cùng khuôn với Bệ súng xích (bỏ một điều bất lợi). Mùa 6: để lúc lập kế hoạch mùa 6 (ứng viên: phát đúng nốt thì mở đường hầm / làm khối tuyết lăn).
@@ -65,7 +68,7 @@ Mùa 6 âm thanh: bài hát, cộng hưởng, R1 và R2 nói chuyện (user 29/1
 ## Quy tắc đặt tên và giọng kể (user duyệt 29/10; hội đồng 20261029-1738)
 
 Game tên **Mật Lệnh Robot** (đổi 29/10). Chỉ đổi chữ hiển thị, mã gói / chương giữ nguyên (khoá lưu). Khối đặt tên ở cuối `hoc/lo-trinh-hoc.js`.
-1. **Tên mùa = nơi robot làm việc** (1–3 chữ): Kho hàng · Nhà máy · Mỏ quặng · Thành phố · Sân bóng · Núi tuyết · Xưởng của em (mùa 7: về lại xưởng của em).
+1. **Tên mùa = nơi robot làm việc** (1–3 chữ): Kho hàng · Nhà máy · Bãi tái chế (30/10, thay Mỏ quặng) · Nông trại (30/10, thay Thành phố) · Mỏ đá (30/10, thay Sân bóng) · Núi tuyết · CLB (mùa 7: về lại CLB).
    Mùa 1 "Xưởng R1" → **"Kho hàng"** (user 29/10: mùa 1 là xe bê vác).
    Khái niệm Python không làm tên mùa (nếu cần thì làm nhãn phụ cho phụ huynh, chưa quyết).
 2. **Tên gói = món mới hay tình huống mới**, gọi đúng như thẻ bộ phận (`hoc/gioi-thieu-part.js`); mỗi món một tên trong cả game. Không "Combo", không "Đội" trống.
@@ -73,7 +76,8 @@ Game tên **Mật Lệnh Robot** (đổi 29/10). Chỉ đổi chữ hiển thị
 4. **Phim gói 4 nhịp**: sự cố → lắp món mới ("CẠCH!") → dùng được → một lệnh mới. Mỗi khung một ý, câu đọc to nghe tự nhiên, không nhồi hai lệnh.
    Không chữ vũ khí: dùng phun, xịt, mở van thay cho bắn, súng (mùa 2 đổi cùng gói vòi phun / van hơi).
 5. "Mật lệnh" dùng có chừng mực: phim mở đầu và phim cuối mùa (móc sang nơi tiếp theo), không rải ở mọi chương.
-6. **Nhân vật chính là EM, người chế tạo robot** (user duyệt 29/10). Không vẽ nhân vật người: phim kể bằng "em" (em tìm, em lắp, em viết mật lệnh).
+6. **ĐÃ THAY 30/10** (KE-HOACH-PHIM-CLB.md): nhân vật chỉ Sola và Luna của CLB Robot; R1 robot của Sola (khoá xanh `#38BDF8`), R2 robot của Luna (hồng). Bản cũ bên dưới giữ để tra.
+   **Nhân vật chính là EM, người chế tạo robot** (user duyệt 29/10). Không vẽ nhân vật người: phim kể bằng "em" (em tìm, em lắp, em viết mật lệnh).
    **R1 là bộ não robot của em**, mùa nào cũng được lắp vào một thân máy mới (Xe chở hàng R1, Xe cứu hỏa R1, …); xưởng là xưởng của em; R2 là robot thứ hai em chế.
    Câu thoại có R1 làm việc vẫn giữ ("R1 hạ tay, kẹp thùng"), câu nhặt / lắp đồ thì chủ thể là em.
 
