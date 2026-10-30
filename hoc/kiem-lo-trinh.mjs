@@ -32,7 +32,8 @@ const chuongMua2 = new Set(TT.goi.filter(g => g.mua === 'mua-2').flatMap(g => g.
 const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.chuong));
 // Mùa 4 (29/10, KE-HOACH-MUA-4.md, đang dựng): chương chưa đủ 10 như mùa 3.
 const chuongMua4 = new Set(TT.goi.filter(g => g.mua === 'mua-4').flatMap(g => g.chuong));
-const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...Object.keys(M.roiMua3 || {}), 'che-xich']);
+// 30/10 (user chọn A): tám màn drone cũ sạc tự động / recharge() dời sang mùa 5 trong hai chương chứa 4 màn (lo-trinh-hoc.js MUA_4_CU).
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu']);
 
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
@@ -723,11 +724,11 @@ const LOI_GIA_4 = process.argv.includes('--loi-gia-mua-4');
 const BANG_MUA_4 = [
   ['drone', 'bo-phan', [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]]],
   ['may-son', 'bo-phan', [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 5, 6, 8, 9, 7, 10])]]],
-  ['mau', 'bo-phan', [['mau', day('mau', MUOI)], ['che-mau', day('che-mau', MUOI)]]],
+  ['cam-bon', 'bo-phan', [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', []]]],
   ['pho-mau', undefined, [['pho-mau', []], ['che-pho-mau', []]]],
-  ['tram-sac', 'bo-phan', [['tram-sac', day('drone', [4, 5, 6, 10])], ['che-drone', day('che-drone', MUOI)]]],
+  ['tram-sac', 'bo-phan', [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 3, 4, 6, 7])]]],
   ['net-lien', 'bo-phan', [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]]],
-  ['flycam', 'bo-phan', [['flycam', day('flycam', MUOI)], ['che-flycam', []]]],
+  ['nhin-duoi', 'bo-phan', [['nhin-duoi', []], ['che-nhin-duoi', []]]],
   ['doi-nam-cham', 'thu-thach', [['doi-nam-cham', day('doi-nam-cham', MUOI)], ['che-doi-nam-cham', day('che-doi-nam-cham', MUOI)]]],
   ['son-tren-cao', 'thu-thach', [['son-tren-cao', []], ['che-son-tren-cao', []]]],
   ['drone-ke-vach', 'thu-thach', [['tong-hop-4', day('che-may-son', [7, 8])], ['trum-mua-4', []]]]

@@ -1078,16 +1078,18 @@
       chuong: [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]] },
     { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
       chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 5, 6, 8, 9, 7, 10])]] },
-    { ma: 'mau', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'mau',
-      chuong: [['mau', day('mau', MUOI)], ['che-mau', day('che-mau', MUOI)]] },
+    // gói 3, 5, 7 (user 30/10 chọn A): màn cũ dạy cảm biến bụng / camera trước / look() / sạc tự động trên P dời sang mùa 5 (gói mau, flycam cũ và MUA_4_CU
+    // bên dưới), ba gói dựng bằng màn mới theo luật mới (camera bốn hướng, đáp đất sạc, camera nhìn "here").
+    { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'mau',
+      chuong: [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', []]] },
     { ma: 'pho-mau', ten: 'Phố màu',
       chuong: [['pho-mau', []], ['che-pho-mau', []]] },
     { ma: 'tram-sac', ten: 'Trạm sạc', loai: 'bo-phan', hinh: 'drone',
-      chuong: [['tram-sac', day('drone', [4, 5, 6, 10])], ['che-drone', day('che-drone', MUOI)]] },
+      chuong: [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 3, 4, 6, 7])]] },
     { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'may-son',
       chuong: [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]] },
-    { ma: 'flycam', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'flycam',
-      chuong: [['flycam', day('flycam', MUOI)], ['che-flycam', []]] },
+    { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'flycam',
+      chuong: [['nhin-duoi', []], ['che-nhin-duoi', []]] },
     { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach',
       chuong: [['doi-nam-cham', day('doi-nam-cham', MUOI)], ['che-doi-nam-cham', day('che-doi-nam-cham', MUOI)]] },
     { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach',
@@ -1095,11 +1097,17 @@
     { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach',
       chuong: [['tong-hop-4', day('che-may-son', [7, 8])], ['trum-mua-4', []]] }
   ];
+  // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
+  // flycam.6, doi-drone.6, .10, che-doi-drone.10 còn dùng recharge() mà drone.5 tạo. Dựng lại khi tới mùa có đội drone.
+  var MUA_4_CU = [
+    { ma: 'drone-sac-cu', ten: 'Drone sạc tự động',
+      chuong: [['drone-sac-cu', day('drone', [4, 5, 6, 10])], ['che-drone-sac-cu', day('che-drone', [5, 8, 9, 10])]] }
+  ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
   var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: đi theo danh sách',
-    mau: 'Đọc màu', 'che-mau': 'Chế lệnh: dò màu', 'pho-mau': 'Đi giữa phố màu', 'che-pho-mau': 'Chế lệnh: qua phố',
+    'cam-bon': 'Đọc màu bốn phía', 'che-cam-bon': 'Chế lệnh: dò màu', 'pho-mau': 'Đi giữa phố màu', 'che-pho-mau': 'Chế lệnh: qua phố',
     'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Kẻ nét liền', 'che-may-son': 'Chế lệnh: vẽ hoa văn',
-    flycam: 'Nhìn xuống đọc màu', 'che-flycam': 'Chế lệnh: đọc đơn hàng', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
+    'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
     'son-tren-cao': 'Kẻ vạch qua rào', 'che-son-tren-cao': 'Chế lệnh: tranh tường', 'tong-hop-4': 'Đủ bộ', 'trum-mua-4': 'Phố mới kẻ vạch' };
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 4 (như mùa 3): mỗi gói một tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai `chuong` và `so`.
   //   man-cat-canh.js manCatCanh (1) · man-cham-son.js manChamSon (2) · man-camera-bon-huong.js manCameraBonHuong (3) · man-pho-mau.js manPhoMau (4)
@@ -1135,13 +1143,22 @@
       });
     });
     var chuongMua4 = [], coMan = [], da = {}, chuongCu = {};
-    MUA_4.forEach(function (g) {
+    MUA_4.concat(MUA_4_CU).forEach(function (g) {
       g.chuong.forEach(function (c) {
-        chuongMua4.push(c[0]);
+        if (MUA_4.indexOf(g) >= 0) chuongMua4.push(c[0]);
         c[1].forEach(function (ma) { if (da[ma]) throw new Error('Màn xếp hai lần (mùa 4): ' + ma); da[ma] = true; chuongCu[get(ma).chuong] = true; });
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // Màn cũ dời sang mùa 5 (MUA_4_CU): chương chứa đứng trước gói cũ đầu tiên có flycam / mau (thứ tự lộ trình), gói vào TT.goi như gói mùa 4 cũ (vòng dưới dời sang mùa 5).
+    MUA_4_CU.forEach(function (g) {
+      var chCu = g.chuong.map(function (c) { dungChuong(c[0], c[1]); return c[0]; });
+      var mocC = TT.thuTu.indexOf('flycam') >= 0 ? TT.thuTu.indexOf('flycam') : TT.thuTu.length;
+      TT.thuTu.splice.apply(TT.thuTu, [mocC, 0].concat(chCu));
+      chCu.forEach(function (c) { if (TEN_MUA_4[c]) TT.ten[c] = TEN_MUA_4[c]; });
+      var mocG = TT.goi.findIndex(function (x) { return x.chuong.indexOf('flycam') >= 0; });
+      TT.goi.splice(mocG >= 0 ? mocG : TT.goi.length, 0, { ma: g.ma, ten: g.ten, mua: 'mua-4', chuong: chCu });
+    });
     // Chương cũ bị chia (drone → drone + tram-sac, may-son → may-son + net-lien) không được còn sót màn ngoài MUA_4.
     M.danhSach.forEach(function (m) {
       if ((chuongCu[m.chuong] || chuongMua4.indexOf(m.chuong) >= 0) && !da[m.ma]) throw new Error('Màn ' + m.ma + ' nằm ở chương mùa 4 ' + m.chuong + ' mà không có trong MUA_4');
