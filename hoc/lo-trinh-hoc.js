@@ -397,8 +397,8 @@
       vatMau: ['.....'].concat(MAU.map(function (c) { return '..' + c + '..'; }), ['.....', '.....', '.....', '.....', '.....', '.....']),
       batDau: { x: 2, y: 11, huong: 0 },
       bongMo: { x: 2, y: 1, huong: 0, vat: [{ x: 1, y: 7, mau: 'red' }, { x: 3, y: 6, mau: 'blue' }, { x: 1, y: 5, mau: 'red' }, { x: 3, y: 4, mau: 'blue' }, { x: 1, y: 3, mau: 'red' }, { x: 3, y: 2, mau: 'blue' }] },
-      maMau: { chinh: [] },
-      loiGiai: { chinh: L10.slice() },
+      maMau: { chinh: [], hamCuaMan: [] },
+      loiGiai: { chinh: L10.slice(), hamCuaMan: [], hamCuaEmMoi: [] },
       sao: { o: 33, nhip: 34 },
       loiSai: [
         { moTa: 'Quên đi tới hàng vật: tay kẹp vào ô trống', baiLam: { chinh: L10.slice(1) }, phaiCoMa: ['kep-hut', 'lech-bong-mo'] },
