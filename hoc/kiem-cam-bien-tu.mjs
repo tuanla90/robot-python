@@ -82,7 +82,8 @@ console.log('B. Lắp ráp, thẻ bộ phận, VeRobot, lõi');
   } else kiem('VeRobot.cauHinhCua nạp được ở Node', false, 'không nạp được ve-robot.js');
   const kq = SanHoc.chay({ loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'wait', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'], mucTieu: 'toi-co', san: ['..o.'], vatChat: ['..N.'], batDau: { x: 0, y: 0, huong: 1 }, camBien: [{ ma: 'tu', o: 'hong' }] }, 'if front_pole() == "N":\n    magnet_s()\nwait()\n');
   kiem('lõi: màn khai camBien tu (không khoang-cach) + front_pole() chạy, đọc "N" rồi bật S và hút vật nam châm N (khác cực)', kq.namCham && kq.namCham.cuc === 'S' && kq.vat[0].trangThai === 'cam', J({ nc: kq.namCham, vat: kq.vat }));
-  kiem('lõi: drone + front_metal vẫn lỗi cấu hình; nhện + front_pole vẫn lỗi', /không gắn cảm biến/.test(loi(() => SanHoc.chay({ loaiRobot: 'drone', hamGoc: ['go_up', 'wait', 'front_metal'], san: ['..'], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n')) || '') && /không gắn cảm biến/.test(loi(() => SanHoc.chay({ loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'front_pole'], san: ['..'], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n')) || ''));
+  // 31/10 (KE-HOACH-PART-DUNG-MUA.md): nhện gắn được cảm biến từ, đo theo cạnh trước cố định (hướng xuất phát); drone vẫn không.
+  kiem('lõi: drone + front_metal vẫn lỗi cấu hình; nhện + front_pole chạy, đọc theo hướng xuất phát', /không gắn cảm biến/.test(loi(() => SanHoc.chay({ loaiRobot: 'drone', hamGoc: ['go_up', 'wait', 'front_metal'], san: ['..'], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n')) || '') && !loi(() => SanHoc.chay({ loaiRobot: 'nhen', hamGoc: ['go_up', 'wait', 'front_pole'], san: ['..'], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n')));
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' + (dat + hong) : 'Đạt ' + dat + ' / ' + dat) + (LOI_GIA ? ' (--loi-gia: phải HỎNG)' : ''));
