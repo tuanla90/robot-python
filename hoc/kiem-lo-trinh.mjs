@@ -47,6 +47,12 @@ kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mù
 const NHIEU_SAN_KHONG_TRUM = ['cam-bien-ben.10', 'khoang-cach.12', 'khoang-cach.13', 'che-cam-bien.1', 'che-cam-bien.2', 'che-cam-bien.4', 'cam-bien-ben.7', 'me-cung.6',
   'che-cam-bien.10'];      // HD2: hai kho dài ngắn khác nhau (fetch_back đếm cứng không thắng cả hai)
 NHIEU_SAN_KHONG_TRUM.push('che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9');      // gói T mùa 2: ba màn ép biến đếm (chương bien-xich) lấy lại ba sân của ngân hàng
+// Mùa 3 (29/10, phiên Mùa 3): màn ÉP and / or của logic-nam-cham có hai, ba sân (đường khác nhau) để while viết sai một vế không qua cả các sân.
+NHIEU_SAN_KHONG_TRUM.push('logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'logic-nam-cham.6', 'logic-nam-cham.7',
+  'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.5', 'cam-ung-tu.6', 'cam-ung-tu.8', 'cam-ung-tu.9',
+  'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.8', 'che-cam-ung-tu.9', 'che-dao-cuc.8',
+  'doc-cuc.2', 'doc-cuc.3', 'doc-cuc.4', 'doc-cuc.5', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'che-doc-cuc.2', 'che-doc-cuc.3',
+  'tong-hop-3.2', 'tong-hop-3.5', 'tong-hop-3.8', 'trum-mua-3.1');      // gói 10: màn ôn dò sắt, đọc cực, and / or nhiều sân      // gói 7: màn ép đọc cực nhiều sân      // gói 3: màn ép dò sắt, hàm dò sắt nhiều sân
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -382,23 +388,23 @@ const LOI_GIA_3 = process.argv.includes('--loi-gia-mua-3');
 // (chen trước màn trùm có sẵn cuối chương). Khác bảng brief (đo 29/10, lý do ở lo-trinh-hoc.js khối mùa 3): che-nam-cham.2, .3, .4, .7, .9 ở che-doc-cuc;
 // che-doi-xich cả 10 màn rời mùa 3.
 const BANG_MUA_3 = [
-  ['nhen', 'bo-phan', [['nhen', ['nhen.1', 'nhen.8']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]]],
-  ['nam-cham', 'bo-phan', [['nam-cham', day('nam-cham', [1, 4, 7, 8, 5])], ['logic-nam-cham', day('che-nam-cham', [1, 8])]]],
-  ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', []], ['che-cam-ung-tu', []]]],
+  ['nhen', 'bo-phan', [['nhen', ['nhen.11', 'nhen.1', 'nhen.12', 'nhen.13', 'nhen.14', 'nhen.15', 'nhen.8', 'nhen.16', 'nhen.17', 'nhen.18']], ['chuoi-nhen', ['chuoi-nhen.1', 'chuoi-nhen.2', 'chuoi-nhen.3', 'nhen.4', 'nhen.7', 'chuoi-nhen.4', 'chuoi-nhen.5', 'chuoi-nhen.6', 'chuoi-nhen.7', 'chuoi-nhen.8']]]],      // 29/10 phiên Mùa 3: bảng khai đủ thứ tự (có sẵn xen màn mới), như dòng chương trong MUA_3
+  ['nam-cham', 'bo-phan', [['nam-cham', ['nam-cham.11', 'nam-cham.12'].concat(day('nam-cham', [1, 4, 7, 8, 14, 13, 5, 15]))], ['logic-nam-cham', ['logic-nam-cham.1', 'che-nam-cham.1', 'logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'che-nam-cham.8', 'logic-nam-cham.6', 'logic-nam-cham.7', 'logic-nam-cham.8']]]],
+  ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]]],
   ['bai-tu', undefined, [['bai-tu', []], ['che-bai-tu', []]]],
-  ['nhay', 'bo-phan', [['nhay', day('nhen', [3, 2, 9, 5, 6, 10])], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
-  ['dao-cuc', 'bo-phan', [['dao-cuc', day('nam-cham', [3, 2])], ['che-dao-cuc', ['che-nam-cham.6']]]],
-  ['doc-cuc', 'bo-phan', [['doc-cuc', day('nam-cham', [6, 10])], ['che-doc-cuc', day('che-nam-cham', [2, 7, 4, 5, 9, 3, 10])]]],
-  ['doi-xich', 'thu-thach', [['doi-xich', day('doi-xich', [3, 9])], ['che-doi-xich', []]]],
-  ['bung-nhen', 'thu-thach', [['bung-nhen', []], ['che-bung-nhen', []]]],
-  ['tong-hop-3', 'thu-thach', [['tong-hop-3', []], ['trum-mua-3', []]]]
+  ['nhay', 'bo-phan', [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
+  ['dao-cuc', 'bo-phan', [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'nam-cham.2', 'dao-cuc.6', 'dao-cuc.7', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.7', 'che-dao-cuc.9']]]],
+  ['doc-cuc', 'bo-phan', [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'nam-cham.10']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]]],
+  ['doi-xich', 'thu-thach', [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]]],
+  ['bung-nhen', 'thu-thach', [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', ['che-bung-nhen.1', 'che-bung-nhen.2', 'che-bung-nhen.3', 'che-bung-nhen.4', 'che-bung-nhen.8', 'che-bung-nhen.7', 'che-bung-nhen.5', 'che-bung-nhen.6', 'che-bung-nhen.9', 'che-bung-nhen.10']]]],
+  ['tong-hop-3', 'thu-thach', [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.1', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.10']], ['trum-mua-3', []]]]
 ];
 const TEP_MUA_3 = ['manThanNhen', 'manNamChamN', 'manCamUngTu', 'manBaiTu', 'manNhay', 'manDaoCuc', 'manDocCuc', 'manDoiXichNhen', 'manBungNhen', 'manTrumMua3'];
 const moiMua3 = TEP_MUA_3.flatMap(k => M[k] || []);
 const laTrum3 = ma => { const m = get(ma); return m && (m.hang === 'trum'); };
 /** Màn của chương c theo bảng: có sẵn + màn mới (theo so), màn mới chen trước trùm có sẵn cuối chương. */
 const manBang3 = (c, coSan) => {
-  const them = moiMua3.filter(m => m.chuong === c).sort((a, b) => a.so - b.so).map(m => m.ma);
+  const them = moiMua3.filter(m => m.chuong === c && !coSan.includes(m.ma)).sort((a, b) => a.so - b.so).map(m => m.ma);
   const cuoi = coSan[coSan.length - 1];
   return cuoi && laTrum3(cuoi) ? coSan.slice(0, -1).concat(them, [cuoi]) : coSan.concat(them);
 };
@@ -406,7 +412,7 @@ const goi3Bang = BANG_MUA_3.map(([ma, , ds]) => [ma, ds.map(([c, coSan]) => [c, 
 // Rời mùa 3 (brief: đầu mùa 4, giữ thứ tự): gói ngoài khuôn, chương rời (M.roiMua3).
 const ROI_3_GOI = ['ban-xoay', 'doi-ho-bang', 'list', 'che-xich', 'doi-xich-bac', 'omni', 'doi-omni', 'doi-sung-hoi', 'mau', 'doi-mau', 'may-son', 'rap-nao', 'nam-cham-omni', 'doi-nam-cham', 'doi-tay-xoay'];
 const LENH_MUA_3 = LENH_MUA_2.concat(['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole']);
-const PART_3 = { than: ['hai-banh', 'xich', 'nhen'], tay: ['kep', 'xoay', 'hoi', 'nam-cham'], camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu'], loaiRobot: ['banh', 'xich', 'nhen'] };
+const PART_3 = { than: ['hai-banh', 'xich', 'nhen'], tay: ['kep', 'xoay', 'hoi', 'nam-cham'], camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu', 'tu'], loaiRobot: ['banh', 'xich', 'nhen'] };
 // Lệnh của part ngoài mùa 3 (omni, drone, camera / màu, máy ném, pin): không được gọi, kể cả qua hàm của em.
 const CAM_3 = ['color', 'look', 'slide_left', 'slide_right', 'aim', 'throw', 'load', 'battery', 'recharge'];
 const goi3 = () => goiMua('mua-3');
@@ -532,11 +538,13 @@ kiem3('(g) mùa 3 và mùa ẩn sau nó: hàm của em mà màn cần hay lời 
   }
   assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 8).join(' · '));
 });
-kiem3('(h) ĐO đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nhịp 4 / ô 6, mốc = màn không trùm đứng trước qua ranh chương / gói, trùm miễn): chỉ in, chưa ép', () => {
+// (h) chỗ nhảy được để lại (mã màn nhảy → lý do), chỉ khi user đồng ý
+const CHO_NHAY_3 = {};      // 30/10 trống: che-nhen.7 viết lại còn 16 nhịp (user: "Viết lại cho phù hợp")
+kiem3('(h) đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nhịp 4 / ô 6, mốc = màn không trùm đứng trước qua ranh chương / gói, trùm miễn): ép, trừ CHO_NHAY_3', () => {
   const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le), nhay = [];
   let moc = null;
   for (const g of goi3()) for (const c of g.chuong) for (const m of M.danhSach.filter(x => x.chuong === c).sort((a, b) => a.so - b.so)) {
-    if (m.hang === 'trum') continue;
+    if (m.hang === 'trum' || m.chiChay) continue;      // trùm và màn trình diễn (chiChay, như mùa 2 (g)) miễn, không làm mốc
     if (moc) {
       const v = chiSoCong(m), t = chiSoCong(moc);
       for (const k of ['dong', 'nhip', 'o']) if (!tran(v[k], t[k], LE_CONG[k])) nhay.push([g.ma, m.chuong + '.' + m.so, m.ma, moc.ma, k, t[k], v[k]]);
@@ -547,6 +555,8 @@ kiem3('(h) ĐO đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nh
     console.log('Mùa 3 (h) đường cong: ' + nhay.length + ' chỗ nhảy (gói | màn | mốc | chỉ số mốc → màn)');
     for (const [g, id, ma, mc, k, a, b] of nhay) console.log('  ' + g + ' | ' + id + ' ' + ma + ' | ' + mc + ' | ' + k + ' ' + a + ' → ' + b);
   }
+  const la = nhay.filter((r) => !CHO_NHAY_3[r[2]]);
+  assert.deepEqual(la.map((r) => r[2] + ' ' + r[4] + ' ' + r[5] + ' → ' + r[6]), [], la.length + ' chỗ nhảy đường cong ngoài CHO_NHAY_3');
 });
 if (!LOI_GIA_3) {
   // (f) bảng ô hố u / gầm n theo gói mùa 3 (luật: hố là sàn mới mùa 3, đi cùng nhảy ở gói 5, bãi từ gói 4): chỉ in.

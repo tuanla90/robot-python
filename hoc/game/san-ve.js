@@ -194,7 +194,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       (cfg.thung || []).forEach(function (o) { this.themThung(Math.floor(o.x), Math.floor(o.y)); }, this);   // thùng nặng thêm ngoài sân (sân thử của Xưởng): cùng thứ tự với SanHoc.chay
       var cat = cfg.catMep === undefined ? this.catMep : !!cfg.catMep, vg = cat ? this.vungCat() : { ox: 0, oy: 0, vw: w, vh: h };
       this.cfg.ox = vg.ox; this.cfg.oy = vg.oy; this.cfg.vw = vg.vw; this.cfg.vh = vg.vh;      // cửa sổ VẼ (ô): mọi tọa độ vẫn là tọa độ ô của lõi, chỉ canvas / lớp phủ dịch gốc về (ox, oy)
-      this.dungDayNoi(rows, cfg.noi, cfg.cuaNhip, vg);                                 // gói V7a: dây nối nút ↔ cửa (chỉ nhánh vector vẽ), đi trong cửa sổ vẽ
+      this.dungDayNoi(rows, cfg.noi, cfg.cuaNhip, vg, cfg.demTu);                                 // gói V7a: dây nối nút ↔ cửa (chỉ nhánh vector vẽ), đi trong cửa sổ vẽ
       var canhO = this.canhO(vg.vw, vg.vh), xuongDay = this.nhanDeLenO(vg, canhO);    // sân tự co giãn theo số ô nhìn thấy: ô to nhất mà cả sân còn lọt khung (xem canhO)
       if (xuongDay) canhO = Math.min(canhO, Math.floor(xuongDay / vg.vh));              // nhãn ⚠ sẽ đè lên ô có gì đó: sân nhường chỗ phía trên cho nhãn (canvas dính đáy khung)
       this.cv.style.alignSelf = xuongDay ? 'flex-end' : '';
@@ -237,7 +237,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var mn = (ch === '=' || ch === 'C' || ch === 'c') ? null : this.mauNen(x, y);   // như nhánh pixel: sàn màu ở mọi ô trừ tường, bậc, rào, nút bắn, cửa, gầm, hố, băng
       ve(mn ? 'san-mau' : 'san', mn ? { mau: mn } : (x + y) & 1 ? { le: 1 } : undefined);      // gói V4: sàn bàn cờ hai tông theo (x + y)
       var dt = this.demTuT && this.demTuT[kO];
-      if (dt) { ve('dem-tu', { cuc: dt.cuc }); this.veDemTho(g, x, y, dt.cuc, now); return; }     // ĐỆM TỪ (mùa 3, cfg.demTu): ô '.' có đệm, vẽ đè lên sàn + quầng thở màu cực
+      if (dt) {
+        ve('dem-tu', { cuc: dt.cuc });
+        if (this.demTat(dt)) { g.save(); g.fillStyle = 'rgba(' + BM.vecVienRgb + ',0.55)'; g.fillRect(px + 1, py + 1, T - 2, T - 2); g.restore(); }   // P1b: đệm tắt (công tắc nút đè): phủ tối, không thở
+        else this.veDemTho(g, x, y, dt.cuc, now);
+        return;
+      }     // ĐỆM TỪ (mùa 3, cfg.demTu): ô '.' có đệm, vẽ đè lên sàn + quầng thở màu cực
       if (ch === 'P') { ve('sac', { pha: (now / 450 | 0) & 1 }); HU().thoSac(g, x, y, now); }        // gói V4: ô sạc thở
       else if (ch === 'M') ve('nut-de', { de: !!this.nutDeT[kO] });
       else if (BAN_XOAY[ch] !== undefined) ve('ban-xoay', { chieu: BAN_XOAY[ch], pha: Math.floor((now / 180) % 4 * 4) / 4 });   // gói V4: mâm quay liên tục
@@ -346,7 +351,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      *  Đường gấp khúc theo ô (đường rẻ nhất trên lưới ô): tránh đi ngang mặt nút / cửa khác (dễ hiểu nhầm là nối vào đó), ưu tiên ô tường (dây chìm trong tường,
      *  ít vắt ngang sàn), ít góc rẽ; mỗi dây lệch song song một khoảng riêng (dây chung một hàng / cột không chồng lên nhau).
      *  this.dayNoi = [{ nut: {x, y, ma: 'N' | 'M'}, cua: {x, y}, diem: [[x, y] … pixel sân], le }], le = sân chỉ một dây (nút → cửa hiển nhiên: vẽ mảnh hơn). */
-    dungDayNoi: function (rows, noi, cuaNhip, vg) {
+    dungDayNoi: function (rows, noi, cuaNhip, vg, demTu) {
       var w = rows[0].length, h = rows.length, nut = [], cua = [], nhip = {}, cap = [], x, y, ch;
       (cuaNhip || []).forEach(function (cn) { nhip[cn.x + ',' + cn.y] = true; });
       for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
@@ -355,6 +360,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         else if ((ch === 'C' || ch === 'c') && !nhip[x + ',' + y]) cua.push({ x: x, y: y });
       }
       function tim(ds, o) { for (var i = 0; i < ds.length; i++) if (o && ds[i].x === o.x && ds[i].y === o.y) return ds[i]; return null; }
+      (demTu || []).forEach(function (d) { var n = d && d.nut ? tim(nut, d.nut) : null; if (n) cap.push([n, { x: d.x, y: d.y }]); });   // P1b: dây nút đè ↔ đệm từ có công tắc
       if (Array.isArray(noi)) noi.forEach(function (g) { var n = tim(nut, g && g.nut); if (n) ((g && g.cua) || []).forEach(function (c) { var d = tim(cua, c); if (d) cap.push([n, d]); }); });
       else nut.forEach(function (n) { cua.forEach(function (d) { cap.push([n, d]); }); });
       vg = vg || { ox: 0, oy: 0, vw: w, vh: h };
@@ -1335,6 +1341,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       g.restore();
     },
     /** ĐỆM TỪ (mùa 3): quầng thở quanh ô đệm (x, y) theo màu cực (N đỏ, S xanh dương), nhịp 1,4 s; vẽ theo pixel sân, trên hình ô (ô đệm luôn "phát"). */
+    /** ĐỆM TỪ P1b: đệm có công tắc (cfg.demTu[i].nut) đang tắt không, theo trạng thái nút đè đang vẽ (nutDeT). */
+    demTat: function (dt) {
+      if (!dt.nut) return false;
+      var de = !!this.nutDeT[dt.nut.x + ',' + dt.nut.y];
+      return dt.khiDe === 'tat' ? de : !de;
+    },
     veDemTho: function (g, x, y, cuc, now) {
       var ph = (now / 1400) % 1, r = T * (0.55 + ph * 0.5), al = (1 - ph) * 0.45, rgb = cuc === 'S' ? BM.tiaLamRgb : BM.tiaDoRgb;
       g.save(); g.strokeStyle = 'rgba(' + rgb + ',' + al.toFixed(3) + ')'; g.lineWidth = 0.8;
@@ -1890,7 +1902,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (my !== this.rid) return;
         v.goc = 0; tgian = Math.max(ms * 0.3, tgian - tq);
       }
-      var TRONG = function (s) { return s.ma === 'bang-khong-day' ? 0.5 : s.ma === 'ban-xoay' ? 0.95 : s.ma === 'dich-chuyen' ? 1.15 : s.ma === 'hut-vat' ? 1.5 : s.ma === 'day-vat' ? 1.6 : s.ma === 'tha-vat' ? 0.8 : s.ma === 'nem-vat' ? 2.4 : s.ma === 'nem-roi' ? 0.8 : s.ma === 'nem-vo' ? 1.2 : s.ma === 'ban' ? 2.2 : s.ma === 'cua-batch' ? 1.2 : s.ma === 'sac-pin' ? 1.3 : s.ma === 'het-pin' ? 1.7 : s.ma === 'roi-ho' ? 2.5 : 1; };
+      var TRONG = function (s) { return s.ma === 'bang-khong-day' ? 0.5 : s.ma === 'ban-xoay' ? 0.95 : s.ma === 'dich-chuyen' ? 1.15 : s.ma === 'hut-vat' ? 1.5 : s.ma === 'day-vat' ? 1.6 : s.ma === 'dem-vat' ? 1.1 : s.ma === 'tha-vat' ? 0.8 : s.ma === 'nem-vat' ? 2.4 : s.ma === 'nem-roi' ? 0.8 : s.ma === 'nem-vo' ? 1.2 : s.ma === 'ban' ? 2.2 : s.ma === 'cua-batch' ? 1.2 : s.ma === 'sac-pin' ? 1.3 : s.ma === 'het-pin' ? 1.7 : s.ma === 'roi-ho' ? 2.5 : 1; };
       var tong = 0; list.forEach(function (s) { tong += TRONG(s); });
       if (!list.length) await ngu(tgian);
       for (var i = 0; i < list.length; i++) {
@@ -2015,7 +2027,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           await this.thaVat(s, per, my);
         } else if (s.ma === 'day-vat') {                             // vật nam châm CÙNG cực: bị đẩy (hay bị bắn khỏi mũi xe) trượt thẳng ra xa xe, bụi theo sau
           await this.dayVat(s, per, my);
-        } else if (s.ma === 'day-bi-chan' || s.ma === 'sat-khong-day' || s.ma === 'ngoai-tam' || s.ma === 'cung-cuc') {          // đẩy mà sát vật cản / đổi cực khi dính sắt / sắt ngoài tầm / drone cùng cực: vật rung nhẹ, dấu '!' hay '?'
+        } else if (s.ma === 'dem-vat') {                             // ĐỆM TỪ P1b: đệm kéo / đẩy vật nằm đất 1 ô (bụi màu cực đệm)
+          await this.dayVat({ id: s.id, tu: s.tu, den: s.den, cuc: s.dem.cuc }, per, my);
+        } else if (s.ma === 'day-bi-chan' || s.ma === 'sat-khong-day' || s.ma === 'ngoai-tam' || s.ma === 'cung-cuc' || s.ma === 'dem-giu-vat') {          // đẩy mà sát vật cản / đổi cực khi dính sắt / sắt ngoài tầm / drone cùng cực: vật rung nhẹ, dấu '!' hay '?'
           var ov = s.id ? this.objTheoId(s.id) : null, nho = s.ma === 'day-bi-chan';
           this.baoHieu(nho ? '!' : '?', 1400);
           if (nho && s.o) this.canhBao = { x: s.o.x, y: s.o.y, den: performance.now() + 900 };

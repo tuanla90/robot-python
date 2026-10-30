@@ -870,26 +870,27 @@
   // Thứ tự trong chương: dễ trước khó (luật đo đường cong của mục mùa 2 (g)), màn khó nhất có sẵn đứng cuối.
   var MUA_3 = [
     { ma: 'nhen', ten: 'Nhện', loai: 'bo-phan', hinh: 'nhen',
-      chuong: [['nhen', ['nhen.1', 'nhen.8']], ['chuoi-nhen', ['nhen.4', 'nhen.7']]] },
+      // 29/10 (phiên Mùa 3): khai đủ thứ tự, màn mới (man-than-nhen.js) xen giữa màn có sẵn; màn mới chưa khai ở đây thì nối cuối như cũ.
+      chuong: [['nhen', ['nhen.11', 'nhen.1', 'nhen.12', 'nhen.13', 'nhen.14', 'nhen.15', 'nhen.8', 'nhen.16', 'nhen.17', 'nhen.18']], ['chuoi-nhen', ['chuoi-nhen.1', 'chuoi-nhen.2', 'chuoi-nhen.3', 'nhen.4', 'nhen.7', 'chuoi-nhen.4', 'chuoi-nhen.5', 'chuoi-nhen.6', 'chuoi-nhen.7', 'chuoi-nhen.8']]] },
     { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', hinh: 'nam-cham',
-      chuong: [['nam-cham', ['nam-cham.1', 'nam-cham.4', 'nam-cham.7', 'nam-cham.8', 'nam-cham.5']], ['logic-nam-cham', ['che-nam-cham.1', 'che-nam-cham.8']]] },
+      chuong: [['nam-cham', ['nam-cham.11', 'nam-cham.12', 'nam-cham.1', 'nam-cham.4', 'nam-cham.7', 'nam-cham.8', 'nam-cham.14', 'nam-cham.13', 'nam-cham.5', 'nam-cham.15']], ['logic-nam-cham', ['logic-nam-cham.1', 'che-nam-cham.1', 'logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'che-nam-cham.8', 'logic-nam-cham.6', 'logic-nam-cham.7', 'logic-nam-cham.8']]] },
     { ma: 'cam-ung-tu', ten: 'Cảm biến từ', loai: 'bo-phan',      // user 29/10: theo tên thẻ part (gioi-thieu-part.js), trước: Cảm ứng từ
-      chuong: [['cam-ung-tu', []], ['che-cam-ung-tu', []]] },
+      chuong: [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]] },
     { ma: 'bai-tu', ten: 'Bãi từ',
       chuong: [['bai-tu', []], ['che-bai-tu', []]] },
     { ma: 'nhay', ten: 'Nhảy', loai: 'bo-phan', hinh: 'che-nhen',
       // che-nhen (đường cong): sửa cú nhảy (.8), bò rồi nhảy (.5), sửa bò (.9) lên trước Đá lót đường (.4) và Hang động (.3); Nhện giao hàng (.6) sau Đường về (.7).
-      chuong: [['nhay', ['nhen.3', 'nhen.2', 'nhen.9', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]] },
+      chuong: [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]] },
     { ma: 'dao-cuc', ten: 'Đảo cực', loai: 'bo-phan',
-      chuong: [['dao-cuc', ['nam-cham.3', 'nam-cham.2']], ['che-dao-cuc', ['che-nam-cham.6']]] },
+      chuong: [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'nam-cham.2', 'dao-cuc.6', 'dao-cuc.7', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.7', 'che-dao-cuc.9']]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',
-      chuong: [['doc-cuc', ['nam-cham.6', 'nam-cham.10']], ['che-doc-cuc', ['che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
+      chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'nam-cham.10']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
-      chuong: [['doi-xich', ['doi-xich.3', 'doi-xich.9']], ['che-doi-xich', []]] },
+      chuong: [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]] },
     { ma: 'bung-nhen', ten: 'Nam châm bụng nhện', loai: 'thu-thach',
-      chuong: [['bung-nhen', []], ['che-bung-nhen', []]] },
+      chuong: [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', ['che-bung-nhen.1', 'che-bung-nhen.2', 'che-bung-nhen.3', 'che-bung-nhen.4', 'che-bung-nhen.8', 'che-bung-nhen.7', 'che-bung-nhen.5', 'che-bung-nhen.6', 'che-bung-nhen.9', 'che-bung-nhen.10']]] },
     { ma: 'tong-hop-3', ten: 'Tổng hợp', loai: 'thu-thach',
-      chuong: [['tong-hop-3', []], ['trum-mua-3', []]] }
+      chuong: [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.1', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.10']], ['trum-mua-3', ['trum-mua-3.1', 'trum-mua-3.2', 'trum-mua-3.3', 'trum-mua-3.4', 'trum-mua-3.5', 'trum-mua-3.9', 'trum-mua-3.8', 'trum-mua-3.6', 'trum-mua-3.7', 'trum-mua-3.10']]] }
   ];
   var TEN_MUA_3 = { nhen: 'Thân nhện', 'chuoi-nhen': 'Chuỗi cho nhện', 'nam-cham': 'Nam châm', 'logic-nam-cham': 'Logic cho nam châm',
     'cam-ung-tu': 'Dò sắt', 'che-cam-ung-tu': 'Chế lệnh: dò sắt', 'bai-tu': 'Bãi từ', 'che-bai-tu': 'Hàm cho bãi từ', nhay: 'Nhảy',
@@ -975,7 +976,7 @@
     moi.forEach(function (m) { nguon[m.ma] = copy(m); });
     MUA_3.forEach(function (g) {
       g.chuong.forEach(function (c) {
-        var them = moi.filter(function (m) { return m.chuong === c[0]; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });   // màn mới đã khai thứ tự trong MUA_3 thì không nối thêm
         var cuoi = c[1][c[1].length - 1];
         c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
       });

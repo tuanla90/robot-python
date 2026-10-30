@@ -683,6 +683,107 @@
   H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xe đi tới tường, mỗi bước n tăng một, rồi lùi đúng n bước về xe mờ.', 1,
     'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
 
+  /* ============================================================ MÙA 3 gói 1 (29/10, phiên Mùa 3): thân nhện (nhen.11 trình diễn, step_down / stairs), chuỗi cho nhện
+     (chuoi-nhen.1 trình diễn, .2 sửa chuỗi, .3 thêm nhánh vào hàm của màn, .6 tạo trail). Màn trình diễn chỉ MỘT bước (nút Chạy): thắng thì chuỗi hướng dẫn dừng,
+     bước thứ hai chỉ kịp loé (báo cáo HD3 đề xuất 3a). */
+  function trinhDien1(chu) { return [{ khongAn: true, dich: 'nut:chay', chu: chu, xong: 'chay' }]; }
+  H['nhen.11'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện đi phải, xuống, trái, lên mà thân không xoay. Màn sau em tự viết.');
+  H['nhen.13'] = [
+    { dich: 'dong:2', chu: 'Dòng này gọi step_down(), mà em chưa có hàm đó. Tạo nó trong Xưởng.', xong: 'bam', han: 8000, rong: 160 },
+    buocTaoHam('step_down', 'Bấm Hàm mới để tạo step_down().', CHU_TAO),
+    khoiTheo(['khoi:go_right', 'khoi:goc:go_right'], 'Một bậc: chạm go_right() trước.', CHU_THE, { xuong: true, daLam: function () { return /go_right/.test(chuThan('step_down')); } }),
+    khoiTheo(['khoi:go_down', 'khoi:goc:go_down'], 'Rồi chạm go_down().', CHU_THE,
+      { xuong: true, daLam: function () { var c = chuThan('step_down'); return /go_right[\s\S]*go_down/.test(c); } })
+  ].concat(buocThuVeChay('Chương trình gọi step_down() bốn lần. Bấm Chạy.'));
+  H['nhen.14'] = [
+    { dich: 'dong:1', chu: 'stairs(3) leo 3 bậc, stairs(2) leo 2 bậc: số trong ngoặc là đối số n. Tạo hàm stairs có đối số n.', xong: 'bam', han: 9000, rong: 170 },
+    buocTaoHam('stairs', 'Bấm Hàm mới, đặt tên stairs và thêm đối số n.', CHU_TAO)
+  ].concat(buocThuVeChay('Trong hàm dùng for i in range(n). Bấm Chạy.'));
+  H['chuoi-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: mỗi chữ của chuỗi "RRDRD" là một bước, R sang phải, D xuống.');
+  H['chuoi-nhen.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: chuỗi "RR" mới đi hai bước.', xong: 'chay', daLam: daChay },
+    { dich: 'so:1', chu: 'Chạm vào chuỗi "RR" để thêm chữ R hoặc D cho đủ đường.', xong: 'bam', han: 12000, rong: 170 }
+  ];
+  H['chuoi-nhen.3'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tới chữ L thì nhện đứng im, vì step_to chưa biết chữ L.', xong: 'chay', daLam: daChay },
+    { dich: '[data-sua="step_to"]', chu: 'Chạm bút chì cạnh step_to để mở thân hàm trong Xưởng.', xong: 'mo-xuong', han: 0, rong: 170, daLam: xuongMo }
+  ].concat(buocThuVeChay('Thêm nhánh elif d == "L": go_left() rồi bấm Chạy.'));
+  H['chuoi-nhen.6'] = [
+    buocTaoHam('trail', 'Bấm Hàm mới, đặt tên trail và thêm đối số path.', CHU_TAO)
+  ].concat(buocThuVeChay('Thân hàm: for c in path: rồi go(c). Bấm Chạy.'));
+
+  // MÙA 3 gói 2: nam châm cực N (nam-cham.11 trình diễn), and / or (logic-nam-cham.1 trình diễn, .2 ghép and, .4 ghép or, .7 tạo to_turn)
+  H['nam-cham.11'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: magnet_n() hút vật sắt về mũi xe, magnet_off() thả nó xuống ô đích.');
+  H['logic-nam-cham.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: xe đi khi trước mặt trống VÀ bên phải chưa có lối, nên dừng đúng chỗ rẽ.');
+  function buocGhep(nx, chuVe, chuNut, daLam) {
+    return [
+      { dich: '.num.dkm.cam', chu: chuVe, xong: 'bam', han: 0, rong: 170, daLam: function () { return thay('nut:chon-ghep') || daLam(); } },
+      { phu: true, dich: '[data-ghep="' + nx + '"]', chu: chuNut, xong: 'bam', han: 0, rong: 170, daLam: daLam }
+    ];
+  }
+  H['logic-nam-cham.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: sân 1 xe đi quá chỗ rẽ vì chỉ hỏi front_clear().', xong: 'chay', daLam: daChay }
+  ].concat(buocGhep('and', 'Chạm front_clear() trên dòng while.', 'Chạm + and để ghép thêm một vế.', function () { return dongCo(/^\s*while .+ and /) >= 0; }),
+    [{ dich: function () { var c = document.querySelectorAll('.num.dkm.cam'); return c.length > 1 ? [c[1]] : []; }, chu: 'Chạm vế thứ hai, chọn not right_clear().', xong: 'bam', han: 0, rong: 170,
+      daLam: function () { return dongCo(/^\s*while front_clear\(\) and not right_clear\(\):/) >= 0; } },
+    buocChay('Xe đi khi trước mặt trống và bên phải chưa có lối. Bấm Chạy.')]);
+  H['logic-nam-cham.4'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tới góc đầu tiên trước mặt là tường nên xe dừng.', xong: 'chay', daLam: daChay }
+  ].concat(buocGhep('or', 'Chạm front_clear() trên dòng while.', 'Chạm + or: chỉ cần một vế đúng là đi tiếp.', function () { return dongCo(/^\s*while .+ or /) >= 0; }),
+    [{ dich: function () { var c = document.querySelectorAll('.num.dkm.cam'); return c.length > 1 ? [c[1]] : []; }, chu: 'Chạm vế thứ hai, chọn right_clear().', xong: 'bam', han: 0, rong: 170,
+      daLam: function () { return dongCo(/^\s*while front_clear\(\) or right_clear\(\):/) >= 0; } },
+    buocChay('Bấm Chạy.')]);
+  H['logic-nam-cham.7'] = [
+    buocTaoHam('to_turn', 'Bấm Hàm mới để tạo to_turn().', CHU_TAO)
+  ].concat(buocThuVeChay('Thân hàm: while front_clear() and not right_clear(): rồi move(). Bấm Chạy.'));
+
+  // MÙA 3 gói 3: cảm biến từ front_metal() (cam-ung-tu.1 trình diễn), hàm dò sắt (che-cam-ung-tu.1 trình diễn; .2 seek_iron, .3 take_iron, .6 seek_safe, .8 face_iron)
+  H['cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đầu dò chữ U thấy sắt nên front_metal() là True, xe hút vật về rồi thả.');
+  H['cam-ung-tu.2'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: sân 2 trước mặt là gỗ, nam châm không hút được.', xong: 'chay', daLam: daChay },
+    { dich: 'nut:pal-the-sau', chu: 'Thêm khối if ở thẻ Logic, điều kiện not front_metal(), bên trong là turn_right().', xong: 'bam', han: 12000, rong: 170 }
+  ];
+  H['che-cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: tới chỗ thấy sắt thì haul_iron() làm cả chuyến hút, quay đầu, thả.');
+  H['che-cam-ung-tu.2'] = [buocTaoHam('seek_iron', 'Bấm Hàm mới để tạo seek_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while not front_metal(): rồi move(). Bấm Chạy.'));
+  H['che-cam-ung-tu.3'] = [buocTaoHam('take_iron', 'Bấm Hàm mới để tạo take_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hút, wait(), quay đầu, thả, wait(). Bấm Chạy.'));
+  H['che-cam-ung-tu.6'] = [buocTaoHam('seek_safe', 'Bấm Hàm mới để tạo seek_safe().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while front_clear() and not front_metal(): rồi move(). Bấm Chạy.'));
+  H['che-cam-ung-tu.8'] = [buocTaoHam('face_iron', 'Bấm Hàm mới để tạo face_iron().', CHU_TAO)].concat(buocThuVeChay('Hai câu if lồng nhau quay xe về phía có sắt. Bấm Chạy.'));
+
+  // MÙA 3 gói 5: nhảy (nhay.1 trình diễn co chân chui gầm, duỗi chân bật qua hố)
+  H['nhay.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: crouch() co chân chui gầm, stand() ngay trước bước đi là bật qua hố.');
+
+  // MÙA 3 gói 6: đảo cực (dao-cuc.1 trình diễn magnet_s; che-dao-cuc.1 trình diễn hàm kéo; .2 pull_n, .3 pull_s, .5 haul_n(k))
+  H['dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: cực S hút vật chữ N (khác cực), rồi đẩy vật chữ S (cùng cực).');
+  H['che-dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm reel_n() bật cực S kéo vật chữ N về.');
+  H['che-dao-cuc.2'] = [buocTaoHam('pull_n', 'Bấm Hàm mới để tạo pull_n().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_s() rồi wait(). Bấm Chạy.'));
+  H['che-dao-cuc.3'] = [buocTaoHam('pull_s', 'Bấm Hàm mới để tạo pull_s().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi wait(). Bấm Chạy.'));
+  H['che-dao-cuc.5'] = [buocTaoHam('haul_n', 'Bấm Hàm mới, đặt tên haul_n và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Kéo bằng pull_n(), chở k ô, rồi thả. Bấm Chạy.'));
+
+  // MÙA 3 gói 7: đọc cực front_pole() (doc-cuc.1 trình diễn; che-doc-cuc.1 trình diễn hàm có if; .2 tạo sort_drop(p))
+  H['doc-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: front_pole() đọc được chữ "S" nên xe bật cực N để kéo vật về.');
+  H['che-doc-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm catch() tự đọc chữ trên vật rồi bật cực khác để kéo.');
+  H['che-doc-cuc.2'] = [buocTaoHam('sort_drop', 'Bấm Hàm mới, đặt tên sort_drop và thêm đối số p.', CHU_TAO)].concat(buocThuVeChay('p là "N" thì rẽ trái, không thì rẽ phải, rồi thả. Bấm Chạy.'));
+
+  // MÙA 3 gói 4: đệm từ (bai-tu.1 trình diễn), hàm cho bãi từ (che-bai-tu.1 trình diễn; .2 fetch_iron(n), .4 loop_right(k), .7 pull_iron)
+  H['bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đi ngang đệm S, xe bị kéo lên hàng trên đúng tới lá cờ.');
+  H['che-bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: get_iron(3) bật N, đi qua đệm, hút sắt rồi quay về.');
+  H['che-bai-tu.2'] = [buocTaoHam('fetch_iron', 'Bấm Hàm mới, đặt tên fetch_iron và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n(), đi n ô, u_turn(), đi n ô. Chương trình gọi nó hai lần, mỗi lần một số ô. Bấm Chạy.'));
+  H['che-bai-tu.4'] = [buocTaoHam('loop_right', 'Bấm Hàm mới, đặt tên loop_right và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Ba lần: rẽ phải, đi k ô. Bấm Chạy.'));
+  H['che-bai-tu.7'] = [buocTaoHam('pull_iron', 'Bấm Hàm mới để tạo pull_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait(), move(), magnet_n(), wait(). Bấm Chạy.'));
+  // MÙA 3 gói 8: đội xích và nhện (doi-xich.11 trình diễn; che-doi-xich.11 trình diễn hàm rest; .12 wait_n(n), .14 pass_box, .15 hop_drop(d))
+  H['doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hai robot chạy cùng nhịp, mỗi robot tới cờ của mình.');
+  H['che-doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện gọi rest(2) chờ xích qua ngã tư rồi mới đi.');
+  H['che-doi-xich.12'] = [buocTaoHam('wait_n', 'Bấm Hàm mới, đặt tên wait_n và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: for i in range(n): rồi wait(). Bấm Chạy.'));
+  H['che-doi-xich.14'] = [buocTaoHam('pass_box', 'Bấm Hàm mới để tạo pass_box().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pick(), tr_left(), drop(). Bấm Chạy.'));
+  H['che-doi-xich.15'] = [buocTaoHam('hop_drop', 'Bấm Hàm mới, đặt tên hop_drop và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pick(), jump(d), drop(). Bấm Chạy.'));
+  // MÙA 3 gói 9: nam châm bụng nhện (bung-nhen.1 trình diễn; che-bung-nhen.1 trình diễn hàm lift; .2 hook, .3 unhook, .5 tote(path), .7 hook_for(p))
+  H['bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện đứng trên vật sắt, magnet_n() hút nó lên dưới bụng, tới ô đích thì thả.');
+  H['che-bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm lift() bật nam châm bụng nhấc vật sắt.');
+  H['che-bung-nhen.2'] = [buocTaoHam('hook', 'Bấm Hàm mới để tạo hook().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi wait(). Bấm Chạy.'));
+  H['che-bung-nhen.3'] = [buocTaoHam('unhook', 'Bấm Hàm mới để tạo unhook().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_off() rồi wait(). Bấm Chạy.'));
+  H['che-bung-nhen.5'] = [buocTaoHam('tote', 'Bấm Hàm mới, đặt tên tote và thêm đối số path.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hook(), trail(path), unhook(). Bấm Chạy.'));
+  H['che-bung-nhen.7'] = [buocTaoHam('hook_for', 'Bấm Hàm mới, đặt tên hook_for và thêm đối số p.', CHU_TAO)].concat(buocThuVeChay('p là "N" thì bật cực S, không thì cực N, rồi wait(). Bấm Chạy.'));
+
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2 };       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ

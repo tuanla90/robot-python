@@ -84,3 +84,7 @@ Nên cái MỚI của mùa 3: Python B = `and` / `or` (elif là recall); Python 
 
 29/10 USER CHỐT (qua phiên vector): mùa 3 giữ **thân nhện**; "xe thăm dò dáng cua" chỉ là chân nhện + tay nam châm trông giống cua, không có thân cua riêng.
 Gói 3 đổi tên **"Cảm biến từ"** cho trùng thẻ part (mã gói / chương cam-ung-tu giữ nguyên); tên chương theo quy tắc đặt tên (KE-HOACH-7-MUA.md): "Dò sắt" / "Chế lệnh: dò sắt".
+- **30/10 P1b + P2 · đủ 200 màn** (phiên "Mùa 3" tự viết, không agent; nhánh claude/mua-3-man, CHƯA gộp main). P1b đệm từ: công tắc nút đè (nut, khiDe bat / tat),
+  đệm kéo / đẩy vật sắt và vật nam châm nằm đất, vật bị đệm hút thì không lấy được (kiem-dem-tu A2). Gói 1–10 mỗi gói một commit, 159 màn mới + 41 có sẵn;
+  kiem-man-mua-3.mjs (mọi màn mới), kiem-lo-trinh (h) đường cong thành phép kiểm thật (trừ CHO_NHAY_3: che-nhen.7), kiem-lach-mua-3.mjs (máy dò lách mùa 3).
+  Câu hỏi cho user và quyết định đã tự chốt: hoc/ban-giao/mua-3-ghi-chu-trao-doi.md. Còn: huy hiệu mùa 3, phim mùa 3, soát 200 / 200 trên trình duyệt, mở mùa 3.

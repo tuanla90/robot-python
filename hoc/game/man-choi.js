@@ -241,7 +241,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     E.lapLai.classList.remove('nhay');
     S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
     TP.datCheList(TP.coListCua(m));                    // màn có cauTruc 'list': dòng danh sách (a = [1, 2], for n in a:, a.append(1)) tách thành ô phần tử chạm được
-    TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m));      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
+    TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m), m.vaHoac === true);      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
     var k = KhungCode.khungDayDu(m.khung);
     S.khung = k;
     var dung = KhungCode.soODung(k);

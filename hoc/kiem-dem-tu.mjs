@@ -140,6 +140,57 @@ console.log('A. Lõi đệm từ');
   kiem('cham.js: xe bị đệm hút vào hố → lời nhắc dem-roi-ho nhắc "đệm từ" và cách bật cùng cực', !cham.thang && !!loiDem && /đệm từ/i.test(loiDem.loi) && /magnet_s/.test(loiDem.loi), J((cham.chanDoan || []).map((c) => c.ma + ': ' + c.loi)));
 }
 
+console.log('A2. Công tắc nút đè, đệm kéo vật nằm đất, vật bị đệm giữ (P1b, user 30/10)');
+{
+  const W2 = 'wait()\nwait()\n';
+  const evNhip = (kq, i, ma) => nhip(kq)[i - 1].suKien.filter((s) => s.ma === ma);
+  // 1 đệm không công tắc kéo sắt nằm đất: sắt (2,1) cách đệm (4,1) 2 ô → nhịp 1 dời về (3,1), nhịp 2 sát đệm thì nằm im
+  const k1 = chay({ san: ['.....', '..o..'], vatChat: ['.....', '..s..'], demTu: [{ x: 4, y: 1, cuc: 'N' }], batDau: { x: 0, y: 0, huong: 1 } }, W2);
+  const e1 = evNhip(k1, 1, 'dem-vat')[0];
+  kiem('vật: đệm kéo sắt nằm đất 1 ô về phía đệm (dem-vat (2,1) → (3,1)), sát đệm thì nằm im', !!e1 && J(e1.tu) === J({ x: 2, y: 1 }) && J(e1.den) === J({ x: 3, y: 1 }) && e1.kieu === 'hut' && !evNhip(k1, 2, 'dem-vat').length, J(maNhip(k1, 1)) + J(maNhip(k1, 2)));
+  // 2 gỗ: không gì
+  const k2 = chay({ san: ['.....', '..o..'], vatChat: ['.....', '..g..'], demTu: [{ x: 4, y: 1, cuc: 'N' }], batDau: { x: 0, y: 0, huong: 1 } }, W2);
+  kiem('vật: gỗ không bị đệm kéo', !nhip(k2).some((n) => n.suKien.some((s) => s.ma === 'dem-vat')));
+  // 3 vật nam châm cùng cực bị đẩy ra xa tới hết tầm, khác cực bị hút
+  const k3 = chay({ san: ['.....', '.o...'], vatChat: ['.....', '.N...'], demTu: [{ x: 0, y: 1, cuc: 'N' }], batDau: { x: 4, y: 0, huong: 3 } }, W2 + 'wait()\n');
+  const d3 = nhip(k3).flatMap((n) => n.suKien.filter((s) => s.ma === 'dem-vat'));
+  kiem('vật: nam châm N cạnh đệm N bị đẩy ra xa 1 ô mỗi nhịp, hết tầm (2 ô) thì dừng ở (3,1)', d3.length === 2 && d3.every((e) => e.kieu === 'day') && J(d3[1].den) === J({ x: 3, y: 1 }), J(d3));
+  const k3b = chay({ san: ['.....', '...o.'], vatChat: ['.....', '...S.'], demTu: [{ x: 1, y: 1, cuc: 'N' }], batDau: { x: 4, y: 0, huong: 3 } }, W2);
+  kiem('vật: nam châm S cách đệm N 2 ô bị hút về ô sát đệm (2,1)', evNhip(k3b, 1, 'dem-vat').length === 1 && J(evNhip(k3b, 1, 'dem-vat')[0].den) === J({ x: 2, y: 1 }));
+  // 4 robot đứng giữa chắn từ
+  const k4 = chay({ san: ['.....', '..o..'], vatChat: ['.....', '..s..'], demTu: [{ x: 4, y: 1, cuc: 'N' }], batDau: { x: 3, y: 1, huong: 0 } }, W2);
+  kiem('vật: robot đứng giữa vật và đệm thì chắn, vật nằm im', !nhip(k4).some((n) => n.suKien.some((s) => s.ma === 'dem-vat')));
+  // 5 công tắc khiDe bat: robot xuất phát trên M, nút bị đè từ cuối nhịp 1 → đệm chạy từ nhịp 2
+  const k5 = chay({ san: ['M....', '..o..'], vatChat: ['.....', '..s..'], demTu: [{ x: 4, y: 1, cuc: 'N', nut: { x: 0, y: 0 } }], batDau: { x: 0, y: 0, huong: 1 } }, W2);
+  kiem('công tắc: đè nút M ở nhịp 1 thì đệm chạy từ nhịp 2 (dem-vat ở nhịp 2, không ở nhịp 1)', !evNhip(k5, 1, 'dem-vat').length && evNhip(k5, 2, 'dem-vat').length === 1, J(maNhip(k5, 1)) + J(maNhip(k5, 2)));
+  const k5b = chay({ san: ['.M...', '..o..'], vatChat: ['.....', '..s..'], demTu: [{ x: 4, y: 1, cuc: 'N', nut: { x: 1, y: 0 } }], batDau: { x: 0, y: 0, huong: 0 } }, W2);
+  kiem('công tắc: không ai đè nút thì đệm tắt, không kéo gì', !nhip(k5b).some((n) => n.suKien.some((s) => s.ma === 'dem-vat')));
+  const k5c = chay({ san: ['M.....', '..o...'], vatChat: ['......', '..N...'], demTu: [{ x: 1, y: 1, cuc: 'N', nut: { x: 0, y: 0 }, khiDe: 'tat' }], batDau: { x: 0, y: 0, huong: 1 } }, W2 + 'wait()\n');   // còn chạy thì nhịp 2 đẩy tiếp
+  kiem('công tắc khiDe tat: chạy khi nút chưa bị đè (nhịp 1 kéo), robot đứng trên nút thì tắt từ nhịp 2', evNhip(k5c, 1, 'dem-vat').length === 1 && !evNhip(k5c, 2, 'dem-vat').length && !evNhip(k5c, 3, 'dem-vat').length, J(nhip(k5c).map((n) => n.suKien.map((s) => s.ma))));
+  // 6 đệm tắt không kéo robot (thân xe như sắt)
+  const k6 = chay({ san: ['.....', '.....', '.....', 'M....'], demTu: [{ x: 2, y: 0, cuc: 'S', nut: { x: 0, y: 3 } }], batDau: { x: 0, y: 2, huong: 1 } }, MV + MV + MV);
+  kiem('công tắc: đệm tắt không kéo robot đi ngang (cuối (3,2), không dem-hut)', vt(k6) === '3,2' && !nhip(k6).some((n) => n.suKien.some((s) => s.ma === 'dem-hut')), vt(k6));
+  // 7 vật bị đệm giữ: nam châm của robot không hút được; tắt đệm (khiDe tat, robot đứng trên nút) thì nhịp sau hút được
+  const k7 = chay({ san: ['.....', '...o.'], vatChat: ['.....', '...s.'], demTu: [{ x: 4, y: 1, cuc: 'N' }], batDau: { x: 1, y: 1, huong: 1 } }, 'magnet_n()\nwait()\n');
+  const giu7 = nhip(k7).some((n) => n.suKien.some((s) => s.ma === 'dem-giu-vat')), hut7 = nhip(k7).some((n) => n.suKien.some((s) => s.ma === 'hut-vat'));
+  kiem('giữ: sắt sát đệm đang chạy thì nam châm xe không hút được (dem-giu-vat, không hut-vat)', LOI_GIA ? hut7 : giu7 && !hut7, J(nhip(k7).map((n) => n.suKien.map((s) => s.ma))));
+  const k7b = chay({ san: ['.....', '.M.o.'], vatChat: ['.....', '...s.'], demTu: [{ x: 4, y: 1, cuc: 'N', nut: { x: 1, y: 1 }, khiDe: 'tat' }], batDau: { x: 1, y: 1, huong: 1 } }, 'magnet_n()\nwait()\nwait()\n');
+  const ev7b = nhip(k7b).map((n) => n.suKien.map((s) => s.ma));
+  kiem('giữ: đứng trên nút tắt đệm thì nhịp sau nam châm hút được sắt (dem-giu-vat nhịp 1, hut-vat sau đó)', ev7b[0].includes('dem-giu-vat') && ev7b.slice(1).some((a) => a.includes('hut-vat')), J(ev7b));
+  // 8 chấm: lời tiếng Việt cho dem-giu-vat
+  const mm = ManHoc.chuanHoa({ ma: 'thu-dem-giu', ten: 'thử', chuong: 'thu', so: 1, loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'nam-cham' }, hamGoc: HG, san: ['.....', '...o.', '....F'], vatChat: ['.....', '...s.', '.....'],
+    demTu: [{ x: 4, y: 1, cuc: 'N' }], batDau: { x: 1, y: 1, huong: 1 }, maMau: { chinh: ['magnet_n()', 'wait()'] }, loiGiai: { chinh: ['magnet_n()', 'wait()'] }, loiSai: [], sao: { o: 1, nhip: 1 } });
+  const kc8 = ChamHoc.cham(mm, { chinh: ['magnet_n()', 'wait()'] }, []);
+  const cd8 = (kc8.chanDoan || []).find((c) => c.ma === 'dem-giu-vat');
+  kiem('chấm: có lời dem-giu-vat nói tắt đệm trước', !!cd8 && /Tắt đệm/.test(cd8.loi), J((kc8.chanDoan || []).map((c) => c.ma)) + J(kc8.loi));
+  // 9 cấu hình sai
+  let nem = 0;
+  try { chay({ san: ['.....'], demTu: [{ x: 4, y: 0, cuc: 'N', nut: { x: 1, y: 0 } }], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n'); } catch (e) { nem++; }
+  try { chay({ san: ['.M...'], demTu: [{ x: 4, y: 0, cuc: 'N', nut: { x: 1, y: 0 }, khiDe: 'lat' }], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n'); } catch (e) { nem++; }
+  try { chay({ san: ['.....'], demTu: [{ x: 4, y: 0, cuc: 'N', khiDe: 'tat' }], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n'); } catch (e) { nem++; }
+  kiem('cấu hình: nut không phải M / khiDe lạ / khiDe không có nut → ném lỗi', nem === 3, nem);
+}
+
 console.log('B. Kho màn mẫu đệm từ (mau-dem-tu-thu.js, không đăng ký lộ trình; kho hàm = học sinh đã chơi hết chương tham-so mùa 2)');
 {
   const DS = require(path.join(day, 'mau-dem-tu-thu.js')).manDemTuThu || [];

@@ -254,8 +254,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* ---- chương CẢM BIẾN MÀU: điều kiện của while / if / elif gồm một hay hai vế nối bằng and / or.
      Vế là: lời gọi cảm biến (`front_clear()`, `not left_clear()`) hoặc phép so sánh màu `color() != "red"` / `c == "green"` / `color() != c`.
-     Chế độ này chỉ bật ở màn có color() (TP.datCheMau): các chương cũ giữ nguyên cách tách dòng. */
-  var CHE_MAU = false, CHE_PIN = false;                                                       // CHE_PIN: màn drone có pin: điều kiện `battery() < 3` cũng tách thành ô chạm được (số, phép so sánh)
+     Chế độ này chỉ bật ở màn có color() (TP.datCheMau): các chương cũ giữ nguyên cách tách dòng.
+     Mùa 3 (29/10): màn khai vaHoac: true (and / or với cảm biến, không cần màu) cũng bật (CHE_VH); vế ghép thêm là một lời gọi cảm biến. */
+  var CHE_MAU = false, CHE_PIN = false, CHE_VH = false;                                                      // CHE_PIN: màn drone có pin: điều kiện `battery() < 3` cũng tách thành ô chạm được (số, phép so sánh)
   var MAU_DS = ['red', 'green', 'blue', 'yellow', 'none'];                                   // các giá trị color() có thể trả về
   var MAU_LOP = { red: 'g-rd', green: 'g-gr', blue: 'g-bl', yellow: 'g-yl', none: 'g-gy' };
   var RE_DKM = /^(\s*(?:while|if|elif)\s+)([^:]+?)(\s*:.*)$/;
@@ -268,8 +269,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var RE_TANG_DEM = /^\s*([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*\+\s*(\d+)\s*$/;
   var RE_CL_PIN = /^battery\(\)\s*(<=|>=|<|>|==|!=)\s*(\d+)$/;                                  // battery() < 3: đo pin so với một số
   var PIN_SS = ['<', '<=', '>', '>='];                                                          // vòng đổi phép so sánh khi chạm
-  function datCheMau(b, pin) { CHE_MAU = !!b; CHE_PIN = !!pin; HAM_MAU = b === 'look' ? 'look' : 'color'; }       // b: coMauCua(man) = tên hàm đọc màu của màn ('color' | 'look') hay false
-  function cheDkm() { return CHE_MAU || CHE_PIN; }
+  function datCheMau(b, pin, vh) { CHE_MAU = !!b; CHE_PIN = !!pin; CHE_VH = !!vh; HAM_MAU = b === 'look' ? 'look' : 'color'; }      // vh: man.vaHoac (mùa 3)       // b: coMauCua(man) = tên hàm đọc màu của màn ('color' | 'look') hay false
+  function cheDkm() { return CHE_MAU || CHE_PIN || CHE_VH; }
   /** Màn có cảm biến màu (hamGoc có color). */
   /** Màn có điều kiện để viết while / if không: có cảm biến (front_clear, front_metal…) hay color(). Chương nam châm đầu (không cảm biến) thì không: ẩn khối while / if mẫu. */
   function coDieuKienCua(man) {
@@ -298,7 +299,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       else if (RE_CL_CAM.test(cl[i])) tok.push({ vt: 'cam', ci: i, t: cl[i] });
       else return null;
     }
-    if (!CHE_MAU && !coVePin) return null;                                 // chỉ màn drone có pin: chỉ điều kiện có battery() mới tách ô (các `if d == "U":` giữ cách cũ)
+    var chiCam = tok.every(function (x) { return x.vt === 'cam' || x.vt === 'noi'; });
+    if (!CHE_MAU && !coVePin && !(CHE_VH && chiCam)) return null;          // chỉ màn drone có pin: chỉ điều kiện có battery() mới tách ô (các `if d == "U":` giữ cách cũ); màn vaHoac (mùa 3): điều kiện toàn cảm biến cũng tách
     return { loai: 'dkm', ten: '', tien: m[1], ds: tok.map(function (x) { return x.t; }), noi: ' ', hau: m[3], laFor: false, tok: tok, cl: cl, nx: nx };
   }
   function ghepDKM(d, cl, nx) {
@@ -687,7 +689,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         neo: so, cam: cam, bien: bien, gia: cl, pin: CHE_PIN,
         ghep: cam.length ? { coThem: coDong < 2 && o.ci === coDong - 1, coBo: coDong > 1 } : null,
         khiChon: function (v) { ed.datVe(i, o.ci, v); },
-        khiGhep: function (nx) { ed.themVe(i, nx, /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== HAM_MAU + '()' ? HAM_MAU + '() != "red"' : (cam[0] + '()')); },
+        khiGhep: function (nx) { ed.themVe(i, nx, CHE_MAU && /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== HAM_MAU + '()' ? HAM_MAU + '() != "red"' : (cam[0] + '()')); },
         khiBo: function () { ed.boVe(i, o.ci); }
       });
     }
