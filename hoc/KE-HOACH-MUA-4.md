@@ -215,6 +215,17 @@ Ghi chú chia:
   - B2: trùm drone.14 ba thùng, pin vừa đủ (25 cho 24 nhịp), mỗi chuyến bắt đầu bằng walk("DDRR") tới thùng nên lặp ba lần không thừa (24 nhịp so với drone.8, .9: 12, 11).
   - B3: mẹo đếm a.append(1) chỉ còn ở che-cam-bon.3; che-pho-mau.8 ghi "red", count_here (che-nhin-duoi.4, trum-mua-4.6) ghi màu col; append(1) là công thức khác.
   - Chưa làm: cân lại che-doi-nam-cham.1 (đứng thứ hai chương, sân lớn) mà báo cáo nêu kèm; phim mùa 4 còn vẽ trùm drone.14 hai thùng và chương trùm-mua-4 cũ.
+- **30/10 Đổi vỏ Nông trại hoa** (yêu cầu user qua phiên Video narrative: "Đổi sang nông nghiệp", "mỗi màu sơn là một loại hoa"; user ở phiên này: "Làm đổi vỏ").
+  LUẬT GIỮ NGUYÊN, mã màn / mã hàm / mã gói giữ nguyên; chỉ đổi hình, tên, lời.
+  - Hình: tay son vẽ thành bộ gieo hạt (ve-vector-tay-son.js), ô đã sơn nở hoa đúng loài (đỏ hoa hồng, vàng hoa cúc, xanh dương cẩm tú cầu, xanh lá cỏ ba lá),
+    màn mùa 4 mang vo 'nong-trai' (lo-trinh-hoc.js): sân cỏ, luống hoa thay sàn màu, bụi cây thay tường, bao hạt thay vật có màu (ve-vector-nong-trai.js; san-ve.js đọc cfg.vo).
+    Tay son chỉ có ở mùa 4 (và 2 màn mùa 5 ẩn) nên vẽ chung; sàn màu / vật màu mùa 1, 3, 5 giữ hình cũ.
+  - Tên: mùa 4 "Nông trại"; gói Gieo hạt, Luống màu, Gieo liền hàng, Gieo từ trên cao, Drone nông nghiệp R1; chương và huy hiệu theo; thẻ bộ phận Bộ gieo hạt.
+  - Lời 200 màn: bảng từ chuNongTrai + câu viết tay LOI_NONG_TRAI (lo-trinh-hoc.js), giọng CLB: "Sola nhờ bạn: …", gợi ý "Luna: …", gọi người chơi là "bạn".
+  - Phim: sân mini cỏ (phim-goi.js c.san nhận vỏ), gói 1 mở từ bãi tái chế ra đồng quê luống trống, gói 10 đồng nở hoa + tem Drone nông nghiệp R1, nhá mùa 5 mỏ đá.
+  - Nền so sánh vector dời: kiem-ve-vector 13a-v → 8921102, kiem-huy-hieu-phim-vector → 584615c (chỉ lệch máy sơn / phim mùa 4, soát bằng --chi-tiet-13a).
+  - Chưa làm: tên hàm cốt truyện tiếng Anh giữ nguyên (street, mural, paint_row, line_dock…: mục 7 câu 21); câu nhá mùa 4 trong phim mùa 3 (chu.js pg.tong-hop-3.4
+    "Thành phố xa xa…") là phần của phiên Mùa 3, chưa báo được (phiên tắt); kiem-ve-vector 13a-v chưa phát lại màn có vỏ nông trại (harness không truyền vo).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -240,4 +251,4 @@ Ghi chú chia:
 19. ~~Mục 9 (che-may-son.7 / .8)~~ 30/10 theo nghiệm thu: thay bằng hai màn drone mới trum-mua-4.8, .9; hai màn xe sang mùa 5 (mục 6).
 20. ~~Huy hiệu mùa 4~~ xong 30/10 (mục 6).
 18. ~~Ranh gói 5 / 6 (may-son.3 sau che-drone.16)~~ sửa 30/10 (mục 6): bít góc thừa may-son.3, may-son.4.
-
+21. Vỏ Nông trại hoa (30/10): tên hàm cốt truyện mùa 4 vẫn tiếng Anh theo cảnh phố (street, street_dock, mural, paint_row, stripe, line_dock…). Đổi tên (vd street → bed_row) làm được vì mùa 4 chưa mở, nhưng đụng lời giải, kho hàm, máy kiểm: muốn đổi không?
