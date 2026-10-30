@@ -4,10 +4,9 @@
       chín màn đầu là chín màn có sẵn (che-xich.1, .2, .6, .8, che-cam-bien.6, .5, .9, robot-hoan-thien.9, che-xich.9) đúng thứ tự; thẻ <script> trong game/choi.html.
    2. Chấm (kho hàm của em lúc tới màn, mỗi màn trước tạo / sửa hàm theo lời giải): lời giải 3 sao, đúng sao.o / sao.nhip; mã mẫu thua; lời giải khác đúng 2 sao;
       công thức khác thắng; lời sai thua và có đủ mã phaiCoMa; lời giải dùng biến (n = …); hàm cần (hamCuaEmCan) đều có trong kho.
-   3. CẦN BIẾN:
-      - ba sân cùng MỘT phòng (sân y hệt nhau), chỉ hàng xuất phát / hàng xe mờ khác nhau; ô ◆ ở đầu làn trái;
-      - BFS chung ba sân (bộ dò do-duong-che-xich.mjs, nhịp xích thật): KHÔNG có dãy lệnh gốc cố định nào (dài bao nhiêu cũng vậy) thắng cả ba sân, nên phải đọc front_clear();
-      - các lời KHÔNG dùng biến tiêu biểu (không lên, không đếm, đếm cứng, phân nhánh if lồng viết cứng theo từng sân) không được 3 sao (thua hoặc thừa ô).
+   3. CẦN BIẾN (PDM2a 31/10: gói 1 R1 chỉ thân xích, chưa cảm biến; trùm "Xoắn ốc đôi" một sân, đoạn 1, 1, 2, 2, 3, 3):
+      - một sân, R1 không tay / cảm biến; xe mờ có ba góc ◆;
+      - các lời KHÔNG dùng biến tiêu biểu (viết cứng từng đoạn, từng cặp, hằng thay n) không được 3 sao (thua hoặc thừa ô).
    Chạy: node hoc/kiem-bien-xich.mjs   (trượt thì thoát mã 1)
    ========================================================================== */
 import fs from 'node:fs';
@@ -21,7 +20,6 @@ const require = createRequire(import.meta.url);
 const M = require(path.join(day, 'lo-trinh-hoc.js'));
 const Cham = require(path.join(day, 'cham.js'));
 const KhoHam = require(path.join(day, 'kho-ham.js'));
-const D = await import('./do-duong-che-xich.mjs');
 
 let dat = 0, hong = 0;
 function kiem(ten, ok, chiTiet) {
@@ -66,44 +64,19 @@ kiem('lời giải khác đúng 2 sao', lk.thang && lk.sao === 2, lk.sao);
 (trum.congThucKhac || []).forEach((c, i) => { const r = cham(c.baiLam); kiem('công thức khác ' + i + ' thắng', r.thang, ma(r).join(',')); });
 trum.loiSai.forEach((c, i) => { const r = cham(c.baiLam); kiem('lời sai ' + i + ' thua, có ' + c.phaiCoMa.join(','), !r.thang && c.phaiCoMa.every((x) => ma(r).includes(x)), ma(r).join(',')); });
 
-/* ---------------------------------------------------------------- 3. cần biến */
-kiem('ba sân y hệt nhau, chỉ hàng xuất phát / xe mờ khác nhau', trum.san.length === 3 && trum.san.every((s) => J(s) === J(trum.san[0]))
-  && new Set(trum.batDau.map((b) => b.y)).size === 3 && trum.batDau.every((b, i) => b.y === trum.bongMo[i].y));
-kiem('mỗi sân có ô ◆ ở đầu làn trái', trum.bongMo.every((b) => J(b.diQua) === J([{ x: 1, y: 0 }])));
-{
-  const ctxs = trum.san.map((s, i) => D.dungNguCanh(Object.assign({}, trum, { san: s, batDau: trum.batDau[i], bongMo: trum.bongMo[i] })));
-  const hd = ctxs[0].hanhDong;
-  const khoa = (T) => T.map((S) => S.x + ',' + S.y + ',' + S.h + ',' + S.q + ',' + S.mask).join('|');
-  let lop = [ctxs.map((c) => D.trangThaiDau(c))];
-  const thay = new Set([khoa(lop[0])]);
-  let thang = null, so = 1;
-  while (lop.length && !thang && so < 2000000) {
-    const sau = [];
-    for (const T of lop) for (const a of hd) {
-      const N = T.map((S, i) => D.buocMotNhip(ctxs[i], S, a));
-      const k = khoa(N);
-      if (thay.has(k)) continue;
-      thay.add(k); so++;
-      if (N.every((S, i) => D.laThang(ctxs[i], S))) { thang = N; break; }
-      sau.push(N);
-    }
-    lop = sau;
-  }
-  kiem('BFS chung ba sân: không dãy lệnh gốc cố định nào thắng cả ba sân (duyệt hết ' + so + ' trạng thái)', !thang && !lop.length, thang ? 'có dãy thắng' : 'chưa duyệt hết');
-}
+/* ---------------------------------------------------------------- 3. cần biến (PDM2a 31/10: gói 1 chưa có cảm biến, biến đếm ĐỘ DÀI ĐOẠN của xoắn ốc) */
+kiem('một sân, R1 chỉ thân xích (không tay, không cảm biến), khay chỉ lệnh bánh xích', !Array.isArray(trum.san[0]) && trum.robot.than === 'xich' && !trum.robot.tay
+  && !(trum.robot.camBien || []).length && trum.hamGoc.every((t) => ['left_move', 'right_move', 'left_back', 'right_back', 'wait'].includes(t)), J(trum.robot) + ' ' + trum.hamGoc.join(','));
+kiem('xe mờ có ba góc ◆ của xoắn ốc', trum.bongMo.diQua.length === 3, J(trum.bongMo));
 {
   const B = (chinh) => ({ chinh, hamCuaMan: [] });
-  const LEN = ['while front_clear():', '    move()'];
-  const VE = (n, t = '') => [t + 'sidestep()', t + 'spin()', t + 'for i in range(' + n + '):', t + '    move()'];
+  const doan = (n, t = '') => (n === 1 ? [t + 'move()'] : [t + 'for j in range(' + n + '):', t + '    move()']).concat([t + 'tr_right()']);
   const KHONG_BIEN = [
-    ['không lên, chỉ né rồi quay (bỏ ô ◆)', B(['sidestep()', 'spin()'])],
-    ['lên tới tường, né, quay, đi tới đáy', B(LEN.concat(['sidestep()', 'spin()'], LEN))],
-    ['lên tới tường, về cứng 2 ô', B(LEN.concat(VE(2)))],
-    ['lên tới tường, về cứng 3 ô', B(LEN.concat(VE(3)))],
-    ['lên tới tường, về cứng 4 ô', B(LEN.concat(VE(4)))],
-    ['đi tới đáy rồi lên cứng 1 ô', B(LEN.concat(['sidestep()', 'spin()'], LEN, ['spin()', 'move()', 'spin()']))],
-    ['phân nhánh if lồng, viết cứng theo từng sân', B(['move()', 'move()', 'if front_clear():', '    move()', '    if front_clear():', '        move()'].concat(VE(4, '        '),
-      ['    else:'], VE(3, '        '), ['else:'], VE(2, '    ')))]
+    ['viết cứng sáu đoạn 1, 1, 2, 2, 3, 3', B([1, 1, 2, 2, 3, 3].flatMap((n) => doan(n)))],
+    ['ba cặp, mỗi cặp một vòng range(2) viết cứng', B([1, 2, 3].flatMap((n) => ['for k in range(2):'].concat(doan(n, '    '))))],
+    ['đoạn đều 1 ô (hằng thay n)', B(['for i in range(3):', '    for k in range(2):'].concat(doan(1, '        ')))],
+    ['đoạn đều 2 ô (hằng thay n)', B(['for i in range(3):', '    for k in range(2):'].concat(doan(2, '        ')))],
+    ['đoạn đều 3 ô (hằng thay n)', B(['for i in range(3):', '    for k in range(2):'].concat(doan(3, '        ')))]
   ];
   for (const [ten, b] of KHONG_BIEN) {
     const r = cham(b);

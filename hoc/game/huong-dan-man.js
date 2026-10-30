@@ -374,12 +374,13 @@
     khoiTheo(['khoi:em:turn_right'], 'Rồi chạm turn_right(): quay phải cho tới khi thấy lối mở.', 'turn_right() nằm ở thẻ Xe. Bấm ◀ hoặc ▶ để về thẻ đó.',
       { xuong: true, xong: 'dong-xuong', daLam: function () { var c = chuThan('face_open'); return /not/.test(c) && /turn_right/.test(c); } })
   ].concat(buocThuVeChay('Xe quay cho tới khi nhìn thấy lối mở. Bấm Chạy.'));
+  // PDM2a (31/10): che-cam-bien.5 thành màn ép biến trên xích (xoắn ốc 1, 2, 3, 4 ô): mã mẫu thiếu n = n + 1, người chơi thêm khối tăng n vào vòng lặp ngoài.
   H['che-cam-bien.5'] = [
-    buocTaoHam('bounce', 'Chế hàm bounce() trong Xưởng: bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:dem:dem-gan', 'khoi:dem:dem-tang', 'khoi:dem:dem-lap'],
-      'Ba khối hồng để đếm: n = 0 lúc đầu, n = n + 1 mỗi ô xe đi thêm, for i in range(n) lặp đúng n lần.', CHU_THE,
-      { xuong: true, xong: 'dong-xuong', huong: 'tren', rong: 180, daLam: function () { var t = chuThan('bounce'); return /n = 0/.test(t) && /n = n \+ 1/.test(t) && /range\(n\)/.test(t); } })
-  ].concat(buocThuVeChay('Chương trình chính đã gọi bounce(). Bấm Chạy.'));
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: n cứ bằng 1 nên đoạn nào cũng một ô, xe đi hình vuông rồi đâm tường.', xong: 'chay', daLam: daChay },
+    khoiTheo(['khoi:dem:dem-tang'], 'Chạm khối n = n + 1 rồi đặt nó cuối vòng lặp ngoài, ngang hàng tr_right(): mỗi vòng đoạn đường dài thêm một ô.', CHU_THE,
+      { huong: 'tren', rong: 180, daLam: function () { return dongCo(/^    n = n \+ 1/) >= 0; } }),
+    buocChay('Bấm Chạy: đoạn 1, 2, 3, 4 ô tới cờ.')
+  ];
 
   /* ============================================================ Nam châm (cực N, cực S): wait() cho lệnh chạy, magnet_off() thả vật; hàm fetch() và grip() */
   H['nam-cham.1'] = [
@@ -686,8 +687,8 @@
     buocTaoHam('wait_clear', 'Chế hàm wait_clear() trong Xưởng: bấm Hàm mới.', CHU_TAO),
     buocThanHam('wait_clear', ['.p-pal .pal'], 'Ghép: while warm() rồi wait() ở trong: còn thấy đồng đội trước mũi thì chờ.', 2, 'tren')
   ].concat(buocThuVeChay('Hai chương trình đã gọi wait_clear(). Bấm Chạy.'));
-  H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: xe đi tới tường, mỗi bước n tăng một, rồi lùi đúng n bước về xe mờ.', 1,
-    'count_return() dùng biến n: n = 0 lúc đầu, n = n + 1 mỗi bước, for i in range(n) lùi n lần. Mở Xưởng để xem.');
+  H['che-cam-bien.6'] = trinhDien('Chương trình đã khoá. Bấm Chạy: mỗi vòng xe đi n ô rồi quẹo phải, sau đó n tăng một.', 1,
+    'n = 1 đặt biến n bằng 1; n = n + 1 ở cuối vòng làm đoạn sau dài hơn đoạn trước một ô.');
 
   /* ============================================================ MÙA 3 gói 1 (29/10, phiên Mùa 3): thân nhện (nhen.11 trình diễn, step_down / stairs), chuỗi cho nhện
      (chuoi-nhen.1 trình diễn, .2 sửa chuỗi, .3 thêm nhánh vào hàm của màn, .6 tạo trail). Màn trình diễn chỉ MỘT bước (nút Chạy): thắng thì chuỗi hướng dẫn dừng,
@@ -792,5 +793,6 @@
 
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
-    'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2 };       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
+    'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2,
+    'che-cam-bien.5': 2, 'che-cam-bien.6': 2 };       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
 })();

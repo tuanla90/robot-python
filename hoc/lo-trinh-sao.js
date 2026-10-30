@@ -1,6 +1,18 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "che-xich.6": {
+    "o": 14,
+    "nhip": 11
+  },
+  "xich.10": {
+    "o": 18,
+    "nhip": 23
+  },
+  "xich.7": {
+    "o": 14,
+    "nhip": 14
+  },
   "vong-lap.1": {
     "o": 5,
     "nhip": 6
@@ -262,20 +274,20 @@
     "nhip": 7
   },
   "che-cam-bien.6": {
-    "o": 13,
-    "nhip": 8
-  },
-  "che-cam-bien.5": {
-    "o": 13,
+    "o": 12,
     "nhip": 10
   },
+  "che-cam-bien.5": {
+    "o": 12,
+    "nhip": 16
+  },
   "che-cam-bien.9": {
-    "o": 25,
-    "nhip": 14
+    "o": 12,
+    "nhip": 16
   },
   "robot-hoan-thien.9": {
-    "o": 25,
-    "nhip": 11
+    "o": 17,
+    "nhip": 19
   },
   "sung-hoi.1": {
     "o": 10,

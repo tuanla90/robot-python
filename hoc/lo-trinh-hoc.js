@@ -1840,6 +1840,161 @@
       ['Xe hai bánh phun mạnh thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
   })();
 
+  // ---------------------------------------------------------------- PART ĐÚNG MÙA 2 (PDM2a, 31/10, KE-HOACH-PART-DUNG-MUA.md mục 3): R1 = xe cứu hỏa
+  // Gói 1 chỉ xích; gói 2 xích + vòi; gói 3–4 xích + vòi + hồng ngoại (bớt part chưa cần). Không tay kẹp, không cảm biến khoảng cách, không thân hai bánh.
+  // Xích quay hai nhịp nên hàm quay là tr_right / tr_left (tạo ở xich.3 / xich.4). Giữ `ma`; nội dung bản 2 (sua) nên ngưỡng sao đo lại ở lo-trinh-sao.js.
+  // Khối đặt SAU gói T mùa 2 (ghi đè màn trình diễn / màn ép cũ còn dùng hai bánh) và trước tên hiển thị, lucBan, ngưỡng sao.
+  var XICH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
+  /** Màn thành xe xích (tay / cảm biến theo `r`), bỏ các khoá cũ không còn hợp (bo: tên trường). */
+  function xeCuuHoa(ma, r, ds, bo) {
+    var m = sua(ma, Object.assign({ loaiRobot: 'xich', robot: Object.assign({ than: 'xich', tay: null }, r || {}) }, ds));
+    (bo || []).forEach(function (k) { delete m[k]; });
+    return m;
+  }
+  (function () {
+    var di = function (n) { return lap(n, ['move()']); };
+    // ---- Gói 1 chương xich: xich.7, xich.10 bỏ tay kẹp (mang vật) → đường vòng / bậc thềm tới cờ.
+    // xich.7 (biến thể sau xich.6 băng chuyền): vòng qua đầu vách sang làn dưới, hai lần quẹo CÙNG chiều (xich.5 khác chiều); làn dưới có băng ngược chiều (nhắc xich.6).
+    var VONG = di(4).concat(['tr_right()', 'move()', 'move()', 'tr_right()'], di(4));
+    xeCuuHoa('xich.7', null, {
+      ten: 'Vòng qua vách', hamGoc: XICH.slice(), hamCuaEmCan: ['move', 'tr_right', 'tr_left'],
+      san: ['.....', '####.', 'F>>>.'], batDau: { x: 0, y: 0, huong: 1 },
+      deBai: 'Vách ngăn chia hai làn. Đi hết làn trên, vòng qua đầu vách rồi chạy ngược về làn dưới tới cờ. Băng chuyền ở làn dưới chạy ngược chiều xe, nhưng xích bám chắc nên băng không đẩy được.',
+      veMaMau: 'Chương trình có sẵn đưa xe hết làn trên. Viết tiếp: quẹo hai lần cùng một phía để vòng qua đầu vách.',
+      goiY: ['Hai khúc quẹo đều quẹo phải: gọi tr_right() ở cả hai chỗ.', 'Giữa hai lần quẹo, xe đi hai ô xuống dưới.'],
+      maMau: bai(di(4)), loiGiai: bai(VONG),
+      loiSai: [
+        { moTa: 'Quẹo trái ở đầu vách: xe đâm mép sân', baiLam: bai(di(4).concat(['tr_left()', 'move()', 'move()', 'tr_left()'], di(4))), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Đi xuống một ô rồi quẹo: xe đâm vách', baiLam: bai(di(4).concat(['tr_right()', 'move()', 'tr_right()'], di(4))), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Làn dưới đi thiếu một ô: xe dừng trước cờ', baiLam: bai(di(4).concat(['tr_right()', 'move()', 'move()', 'tr_right()'], di(3))), phaiCoMa: ['chua-toi-co'] }
+      ]
+    }, ['mucTieu', 'vatChat', 'nhipTheoLoiGiai']);
+    // xich.10 (trùm): bậc thềm có băng chuyền tới cờ; xe xuất phát mặt quay lên nên quay phải trước (nhắc xich.1–3), rồi vòng lặp bậc thềm (tr_left / tr_right).
+    var BAC = ['for i in range(3):', '    tr_left()', '    move()', '    tr_right()', '    move()'];
+    xeCuuHoa('xich.10', null, {
+      hamGoc: XICH.slice(), hamCuaEmCan: ['move', 'tr_right', 'tr_left'],
+      san: ['####.>F', '###.^##', '##.<###', '...####'], batDau: { x: 0, y: 3, huong: 0 },
+      deBai: 'Con đường gấp khúc như bậc thềm, có băng chuyền, dẫn lên cờ. Xe xích đang quay mặt lên. Quay đúng hướng, đi tới chân bậc rồi dùng vòng lặp cùng các hàm quay của xe xích để leo hết bậc tới cờ.',
+      veMaMau: 'Chương trình có sẵn quay xe sang phải và đi tới chân bậc. Viết tiếp phần leo bậc.',
+      goiY: ['Mỗi bậc là: quẹo trái, đi một ô, quẹo phải, đi một ô. Đặt bốn dòng đó vào một vòng for.', 'Băng chuyền không đẩy được xe xích; hết bậc thì còn một ô nữa tới cờ.'],
+      maMau: bai(['tr_right()', 'move()', 'move()']), loiGiai: bai(['tr_right()', 'move()', 'move()'].concat(BAC, ['move()'])),
+      loiSai: [
+        { moTa: 'Dùng turn_left() và turn_right() cũ: xe chỉ quay nửa vòng, đâm tường', baiLam: bai(['tr_right()', 'move()', 'move()', 'for i in range(3):', '    turn_left()', '    move()', '    turn_right()', '    move()', 'move()']), phaiCoMa: ['xich-quay-do', 'dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Đổi thứ tự quay trong vòng lặp (phải rồi trái): xe đâm tường', baiLam: bai(['tr_right()', 'move()', 'move()', 'for i in range(3):', '    tr_right()', '    move()', '    tr_left()', '    move()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Quên ô cuối sau bậc thềm: xe dừng sát cờ', baiLam: bai(['tr_right()', 'move()', 'move()'].concat(BAC)), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không dùng vòng lặp cho bậc thềm: quá 10 ô', baiLam: bai(['tr_right()', 'move()', 'move()', 'tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()', 'move()', 'tr_left()', 'move()', 'tr_right()', 'move()', 'move()']), phaiCoMa: ['tran-khung'] }
+      ]
+    }, ['mucTieu', 'vatChat', 'nhipTheoLoiGiai']);
+    // ---- Gói 1 chương bien-xich ("Đi xoắn ốc"): chưa có cảm biến nên biến không đếm bước tới tường nữa mà ĐẾM ĐỘ DÀI ĐOẠN: n tăng (giảm) sau mỗi khúc quẹo,
+    // đường xoắn ốc / bậc thang lớn dần. Viết cứng từng đoạn thì dài (ô) nên không đủ sao; thay n bằng một số thì xe đi hình vuông, đâm tường.
+    // che-xich.6 (màn 4, chế lệnh): next_lane() sang làn bên quay đầu (thay pick_behind của tay kẹp).
+    var LAN = di(3).concat(['next_lane()'], di(3));
+    xeCuuHoa('che-xich.6', null, {
+      ten: 'Sang làn bên', hamGoc: XICH.slice(), hamCuaEmCan: ['tr_right', 'move'], taoHam: ['next_lane'], chinhCoDinh: true,
+      san: ['####', '#..#', '#..#', '#..#', '#..#', '####'], batDau: { x: 1, y: 4, huong: 0 },
+      mucTieu: 'bong-mo', bongMo: { x: 2, y: 4, huong: 2 },
+      deBai: 'Hai làn dọc. Chương trình chính đưa xe lên hết làn trái, gọi next_lane() để sang làn phải và quay đầu, rồi đi xuống tới chỗ xe mờ. Em tự chế lệnh next_lane() cho xe xích.',
+      veMaMau: 'Chương trình chính bị khóa và đã gọi next_lane(). Mở Xưởng hàm, tạo next_lane() rồi bấm Chạy.',
+      goiY: ['Quẹo phải, đi một ô, quẹo phải lần nữa là xe đứng ở làn bên, mặt quay ngược lại.', 'Xe xích quay bằng tr_right(), không dùng turn_right() của xe hai bánh.'],
+      maMau: bai(LAN),
+      loiGiai: { chinh: LAN.slice(), hamCuaMan: [], hamCuaEmMoi: [{ ten: 'next_lane', thamSo: [], than: ['tr_right()', 'move()', 'tr_right()'] }] },
+      loiSai: [
+        { moTa: 'Gọi next_lane() mà chưa chế hàm', baiLam: bai(LAN), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Chỉ quẹo một lần: xe sang làn bên nhưng mặt quay sang phải', baiLam: bai(LAN), hamCuaEmMoi: [{ ten: 'next_lane', thamSo: [], than: ['tr_right()', 'move()'] }], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quẹo trái: xe sang làn bên trái', baiLam: bai(LAN), hamCuaEmMoi: [{ ten: 'next_lane', thamSo: [], than: ['tr_left()', 'move()', 'tr_left()'] }], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quay bằng turn_right() của xe hai bánh: xích mới quay nửa góc', baiLam: bai(LAN), hamCuaEmMoi: [{ ten: 'next_lane', thamSo: [], than: ['turn_right()', 'move()', 'turn_right()'] }], phaiCoMa: ['lech-bong-mo'] }
+      ]
+    }, ['vatChat', 'nhipTheoLoiGiai']);
+    get('che-xich.6').loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(LAN), hamCuaEmMoi: [{ ten: 'next_lane', thamSo: [], than: ['# sang làn bên phải, quay đầu', 'tr_right()', 'move()', 'tr_right()'] }] };
+    var BIEN = { bienDem: true, hamGoc: XICH.slice(), taoHam: [] };
+    var BO_CU = ['mucTieu', 'bongMo', 'vatChat', 'vatThem', 'nhipTheo', 'nhipTheoLoiGiai', 'khoaHamMan', 'kieuBai'];
+    var XOAN = function (k, tang) { return ['n = ' + (tang ? 1 : k), 'for i in range(' + k + '):', '    for j in range(n):', '        move()', '    tr_right()', '    n = n ' + (tang ? '+' : '-') + ' 1']; };
+    // che-cam-bien.6 (màn 5, TRÌNH DIỄN biến): xoắn ốc 1, 2, 3 ô; main khoá, bấm Chạy thấy n lớn dần sau mỗi khúc quẹo.
+    xeCuuHoa('che-cam-bien.6', null, Object.assign({}, BIEN, {
+      ten: 'Biến lớn dần', chiChay: true, chinhCoDinh: true, hamCuaEmCan: ['move', 'tr_right'],
+      san: ['#####', '#...#', '#.#.#', '###.#', '###F#'], batDau: { x: 1, y: 2, huong: 0 },
+      deBai: 'Biến n là một ô nhớ: n = 1 đặt nó bằng 1, n = n + 1 tăng nó thêm một. Đường xoắn ốc có ba đoạn dài 1, 2, 3 ô: mỗi vòng xe đi n ô, quẹo phải rồi tăng n. Bấm Chạy xem đoạn sau dài hơn đoạn trước.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy: vòng thứ nhất n = 1, vòng thứ hai n = 2, vòng thứ ba n = 3.',
+      maMau: bai(XOAN(3, true)), loiGiai: bai(XOAN(3, true)),
+      goiY: ['Không có biến n thì mỗi đoạn phải viết một vòng for riêng.', 'Màn sau em tự thêm dòng tăng n.']
+    }), BO_CU);
+    // che-cam-bien.5 (màn 6, ÉP biến): xoắn ốc 1, 2, 3, 4 ô; mã mẫu thiếu n = n + 1 (xe đi hình vuông, đâm tường), người chơi thêm dòng tăng n (H).
+    var X4 = XOAN(4, true);
+    xeCuuHoa('che-cam-bien.5', null, Object.assign({}, BIEN, {
+      ten: 'Tăng n mỗi vòng', chinhCoDinh: false, hamCuaEmCan: ['move', 'tr_right'],
+      san: ['##...', '##.#.', '####.', 'F....'], batDau: { x: 2, y: 1, huong: 0 },
+      deBai: 'Đường xoắn ốc bốn đoạn dài 1, 2, 3, 4 ô tới cờ. Chương trình có sẵn lặp bốn vòng, mỗi vòng đi n ô rồi quẹo phải, nhưng quên tăng n: chạy thử xem xe đi hình gì.',
+      veMaMau: 'Chạy thử: n cứ bằng 1 nên xe đi hình vuông rồi đâm tường. Thêm n = n + 1 vào cuối thân vòng lặp ngoài.',
+      goiY: ['Mỗi vòng đoạn đường dài thêm một ô: sau khi quẹo, tăng n thêm 1.', 'Dòng n = n + 1 thụt vào cùng hàng với tr_right(), nằm trong vòng lặp ngoài.'],
+      maMau: bai(X4.slice(0, 5)), loiGiai: bai(X4),
+      loiSai: [
+        { moTa: 'Không tăng n: xe đi hình vuông rồi đâm tường', baiLam: bai(X4.slice(0, 5)), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Bắt đầu n = 0: vòng đầu xe không đi mà quẹo luôn, đâm tường', baiLam: bai(['n = 0'].concat(X4.slice(1))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Tăng n trong vòng lặp trong: đoạn đường dài ra quá nhanh, đâm tường', baiLam: bai(['n = 1', 'for i in range(4):', '    for j in range(n):', '        move()', '        n = n + 1', '    tr_right()']), phaiCoMa: ['dam-tuong'] }
+      ]
+    }), BO_CU);
+    // che-cam-bien.9 (màn 7, biến thể): xoắn ốc VÀO TRONG 4, 3, 2, 1 ô: n bắt đầu 4, giảm một mỗi vòng (n = n - 1). Mã mẫu là xoắn ốc ra của màn trước.
+    var X4G = XOAN(4, false);
+    xeCuuHoa('che-cam-bien.9', null, Object.assign({}, BIEN, {
+      ten: 'Xoắn ốc vào trong', chinhCoDinh: false, hamCuaEmCan: ['move', 'tr_right'],
+      san: ['.....', '####.', '##F#.', '##...'], batDau: { x: 0, y: 0, huong: 1 },
+      deBai: 'Lần này đường xoắn VÀO trong: các đoạn dài 4, 3, 2, 1 ô. Chương trình có sẵn là xoắn ốc ra của màn trước. Sửa để n bắt đầu từ 4 và mỗi vòng GIẢM một.',
+      veMaMau: 'Chạy thử: đoạn đầu chỉ một ô rồi xe quẹo, đâm tường. Đổi số đầu của n, và đổi + thành - ở dòng cuối.',
+      goiY: ['Đoạn đầu dài 4 ô nên n = 4.', 'n = n - 1 làm n nhỏ đi một sau mỗi khúc quẹo.'],
+      maMau: bai(X4.slice()), loiGiai: bai(X4G),
+      loiSai: [
+        { moTa: 'Giữ xoắn ốc ra: đoạn đầu một ô, xe đâm tường', baiLam: bai(X4.slice()), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'n = 4 nhưng vẫn tăng n: đoạn thứ hai năm ô, đâm tường', baiLam: bai(['n = 4'].concat(X4.slice(1))), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'n = 4 mà không đổi n: đoạn thứ hai bốn ô, đâm tường', baiLam: bai(X4G.slice(0, 5)), phaiCoMa: ['dam-tuong'] }
+      ]
+    }), BO_CU);
+    // robot-hoan-thien.9 (màn 8, biến thể): bậc thang lớn dần: mỗi bậc đi n ô, leo một ô, rồi n tăng (nhắc bậc thềm xich.10 với biến).
+    var BAC_N = ['n = 1', 'for i in range(3):', '    for j in range(n):', '        move()', '    tr_left()', '    move()', '    tr_right()', '    n = n + 1'];
+    xeCuuHoa('robot-hoan-thien.9', null, Object.assign({}, BIEN, {
+      ten: 'Bậc thang lớn dần', chinhCoDinh: false, hamCuaEmCan: ['move', 'tr_right', 'tr_left'],
+      san: ['######F', '###....', '#...###', '..#####'], batDau: { x: 0, y: 3, huong: 1 },
+      deBai: 'Cầu thang lên cờ có bậc rộng dần: bậc đầu một ô, bậc sau hai ô, bậc thứ ba ba ô. Mỗi bậc: đi hết mặt bậc, quẹo trái leo một ô, quẹo phải. Dùng biến n cho độ rộng mặt bậc.',
+      veMaMau: 'Chương trình có sẵn leo được một bậc. Đặt nó vào vòng lặp ba lần và dùng biến n cho số ô của mặt bậc.',
+      goiY: ['Mặt bậc rộng n ô: for j in range(n) rồi move().', 'Sau mỗi bậc, n = n + 1.'],
+      maMau: bai(['move()', 'tr_left()', 'move()', 'tr_right()']), loiGiai: bai(BAC_N),
+      loiSai: [
+        { moTa: 'Mọi bậc đều một ô: xe đâm tường ở bậc thứ hai', baiLam: bai(['for i in range(3):', '    move()', '    tr_left()', '    move()', '    tr_right()']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quên tăng n: các bậc đều một ô', baiLam: bai(BAC_N.slice(0, 7)), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quẹo phải trước khi leo: xe đâm tường', baiLam: bai(['n = 1', 'for i in range(3):', '    for j in range(n):', '        move()', '    tr_right()', '    move()', '    tr_left()', '    n = n + 1']), phaiCoMa: ['dam-tuong'] }
+      ]
+    }), BO_CU.concat(['phanCung', 'canhBao']));      // bản cũ "Kẹt số lùi": phần cứng thiếu right_back
+    // Ba hàm của em mà bản cũ của che-xich.6 / che-cam-bien.5 / che-cam-bien.9 dạy (pick_behind, bounce, fetch_back: tay kẹp / cảm biến khoảng cách) nay không màn
+    // nào dạy nữa. Màn mùa ẩn còn gọi chúng (đội cũ, chế lệnh xích cũ) nhận hàm đó thành HÀM CỦA MÀN (thân như bản cũ), bỏ khỏi hamCuaEmCan: vẫn chạy được
+    // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.
+    var HAM_CU = {};
+    [['che-xich.6', 'pick_behind'], ['che-cam-bien.5', 'bounce'], ['che-cam-bien.9', 'fetch_back']].forEach(function (x) {
+      HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
+    });
+    // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.
+    var khoEm = {};
+    M.danhSach.forEach(function (m) {
+      var lg = m.loiGiai || {}, tuCo = (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).map(function (h) { return h.ten; });
+      var dong = [].concat(lg.chinh || [], (m.maMau || {}).chinh || [], (lg.doi || []).reduce(function (a, d) { return a.concat(d.chinh || []); }, []),
+        (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).reduce(function (a, h) { return a.concat(h.than); }, []));
+      var da = {}, cho = (m.hamCuaEmCan || []).slice();
+      dong.forEach(function (l) { (l.match(/[A-Za-z_]\w*(?=\s*\()/g) || []).forEach(function (t) { cho.push(t); }); });
+      while (cho.length) {
+        var t = cho.pop();
+        if (da[t]) continue;
+        da[t] = true;
+        if (khoEm[t] && tuCo.indexOf(t) < 0) khoEm[t].forEach(function (l) { (l.match(/[A-Za-z_]\w*(?=\s*\()/g) || []).forEach(function (x) { cho.push(x); }); });
+      }
+      if (!m.tietKiemNhip) (lg.hamCuaEmMoi || []).forEach(function (h) { khoEm[h.ten] = h.than; });
+      var can = Object.keys(HAM_CU).filter(function (t) { return da[t] && tuCo.indexOf(t) < 0; });
+      if (!can.length || m === get('che-xich.6') || m === get('che-cam-bien.5') || m === get('che-cam-bien.9')) return;
+      m.hamCuaEmCan = m.hamCuaEmCan.filter(function (t) { return !HAM_CU[t]; });
+      [m.maMau, m.loiGiai, m.loiGiaiKhac && m.loiGiaiKhac.baiLam].concat((m.loiSai || []).concat(m.congThucKhac || []).map(function (s) { return s.baiLam; })).forEach(function (b) {
+        if (!b) return;
+        b.hamCuaMan = (b.hamCuaMan || []).concat(can.map(function (t) { return copy(HAM_CU[t]); }));
+      });
+    });
+  })();
+
   // ---------------------------------------------------------------- TÊN HIỂN THỊ THEO QUY TẮC ĐẶT TÊN (user duyệt 29/10, hội đồng 20261029-1738; KE-HOACH-7-MUA.md mục "Quy tắc đặt tên")
   // Tên mùa = nơi robot làm việc; tên gói = món mới hay tình huống mới (cùng tên với thẻ bộ phận); tên chương = việc em làm, không lặp tên gói,
   // không "Hàm cho…"; chương tạo hàm thì "Chế lệnh: …". Chỉ đổi CHỮ HIỂN THỊ: mã gói / chương (khoá lưu tiến độ) giữ nguyên.
@@ -1867,7 +2022,7 @@
     var TEN_GOI_2 = { 'nha-may': 'Băng chuyền', 'hong-ngoai': 'Cảm biến hồng ngoại', 'luc-ban': 'Lực phun', 'doi-mua-2': 'R2 trở lại', 'nha-may-chay': 'Xe cứu hỏa R1' };
     TT.goi.forEach(function (g) { if (g.mua === 'mua-2' && TEN_GOI_2[g.ma]) g.ten = TEN_GOI_2[g.ma]; });
     var TEN_CHUONG_2 = {
-      'xich': 'Quay hai nhịp', 'bien-xich': 'Đếm bước để về',
+      'xich': 'Quay hai nhịp', 'bien-xich': 'Đi xoắn ốc',       // PDM2a 31/10: gói 1 chưa cảm biến, biến đếm độ dài đoạn xoắn ốc (trước: Đếm bước để về)
       'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy em',
       'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
       'bang-chuyen': 'Trôi theo băng', 'che-sung-hoi': 'Chế lệnh: mở van',
