@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-loi-giai.mjs — máy kiểm NẠP LỜI GIẢI của bảng Gỡ lỗi (game/go-loi.js, 30/10; kế hoạch người chơi: KE-HOACH-LOI-GIAI.md).
+   kiem-loi-giai.mjs — máy kiểm NẠP LỜI GIẢI của bảng Gỡ lỗi (và luật trần kho hàm) (game/go-loi.js, 30/10; kế hoạch người chơi: KE-HOACH-LOI-GIAI.md).
    Kiểm:
    1. mã nguồn: GoLoi xuất cachGiai / khoChoCach / chamCach / napLoiGiai; nút trong bảng gọi napLoiGiai(ma, true) (có hỏi); Choi.napBai ghi nháp và vẽ lại;
       địa chỉ loigiai=…; mọi khóa chữ go.* có trong chu.js, không emoji, không gạch dài; lớp CSS có ở cả hai bộ giao diện;
@@ -90,9 +90,9 @@ const NGOAI_LE = {};
   kiem('lời giải đầu tiên của mọi màn thắng, 3 sao trừ ngoại lệ đã biết (' +(ds.length - truot.length) + '/' + ds.length + ')', truot.length === 0, truot.slice(0, 12).join(' · '));
   console.log('       (các cách khác: ' + dem.cach + ' cách, ' + dem.thang + ' thắng, ' + dem.ba + ' được 3 sao)');
   kiem('phần lớn cách khác (loiGiaiKhac, congThucKhac, cách lắp) chạy thắng trên kho này (≥ 90%)', dem.cach > 0 && dem.thang >= 0.9 * dem.cach, dem.thang + '/' + dem.cach);
-  // PHÁT HIỆN (chỉ báo, không trượt): kho tham chiếu vượt trần KhoHam (200 hàm) thì người chơi thật không tạo được hàm cốt truyện mới; đó là việc của lõi / lộ trình, không của bảng Gỡ lỗi.
-  const tran = KhoHam.SO_HAM_MAC_DINH, vuot = ds.filter((x) => GoLoi.khoChoCach(x, GoLoi.cachGiai(x)[0]).length > tran);
-  if (vuot.length) console.log('       PHÁT HIỆN: ' + vuot.length + ' màn có kho tham chiếu vượt trần ' + tran + ' hàm (' + ManHoc.hamCotTruyen().length + ' hàm cốt truyện), từ ' + vuot[0].ma + ' (' + vuot[0].id + '): nạp lời giải ở đó báo đỏ go.napGiaiLoi');
+  // Trần kho (30/10): hàm cốt truyện không chiếm trần KhoHam (chỉ hàm tự đặt tên bị trần), nên kho của người chơi đi đủ lộ trình chứa được mọi hàm của lời giải.
+  const vuot = ds.filter((x) => { const k = KhoHam.moi({ tenCoDinh: tenCotTruyen }); return GoLoi.khoChoCach(x, GoLoi.cachGiai(x)[0]).some((f) => !k.tao(f.ten, f.thamSo, { taoHam: [f.ten] }).ok); });
+  kiem('kho của người chơi (khóa tên cốt truyện) nhận đủ hàm của lời giải ở mọi màn, kể cả khi lộ trình có ' + tenCotTruyen.length + ' hàm cốt truyện > trần ' + KhoHam.SO_HAM_MAC_DINH, vuot.length === 0, vuot.slice(0, 8).map((x) => x.ma).join(', '));
   const m = ManHoc.danhSach.find((x) => x.loiGiaiKhac && !x.lapRap && x.congThucKhac && x.congThucKhac.length);
   const cs = GoLoi.cachGiai(m);
   kiem('cachGiai(' + m.ma + '): chuẩn, khác, rồi từng công thức khác theo thứ tự, mỗi cách có nhãn và mô tả',
@@ -138,9 +138,8 @@ const diem = (r) => J({ thang: r.thang, sao: r.sao, cd: r.chanDoan.map((c) => c.
     for (const m of chon.values()) {
       const t = await thuNap(m, null);
       const r = t.nap ? ChamHoc.cham(t.man(), t.nap, t.kho.ds()) : null;
-      const khoDay = !t.kq.ok && t.kq.loi.every((l) => /tối đa/.test(l));               // vượt trần kho (PHÁT HIỆN ở mục 2): lỗi phải là "kho đầy", bài vẫn nạp
-      kiem(mua + ' ' + m.ma + (m.doi ? ' (đội)' : m.lapRap ? ' (lắp ráp)' : '') + ': nạp lời giải không hỏi (bài = mã mẫu, kho rỗng), kho nhận hàm' + (khoDay ? ' tới trần 200 (báo kho đầy)' : '') + ', chấm lại bằng KhoHam.ds() được 3 sao',
-        (t.kq.ok || khoDay) && t.hoi === 0 && !!r && r.thang && r.sao === 3, J(t.kq.loi) + ' ' + (r ? diem(r) : 'không nạp'));
+      kiem(mua + ' ' + m.ma + (m.doi ? ' (đội)' : m.lapRap ? ' (lắp ráp)' : '') + ': nạp lời giải không hỏi (bài = mã mẫu, kho rỗng), kho nhận đủ hàm, chấm lại bằng KhoHam.ds() được 3 sao',
+        t.kq.ok && t.hoi === 0 && !!r && r.thang && r.sao === 3, J(t.kq.loi) + ' ' + (r ? diem(r) : 'không nạp'));
     }
   }
 }
@@ -166,6 +165,23 @@ const diem = (r) => J({ thang: r.thang, sao: r.sao, cd: r.chanDoan.map((c) => c.
     kiem(m.ma + ' (lắp ráp, đang gắn cách 2): nạp "Lắp 1" lắp lại robot cách 1 (Choi.vao) rồi nạp bài, thắng 3 sao',
       t.vaoLai === 1 && J(LapRap.chuanCach(t.man().cachLapDaChon)) === J(LapRap.chuanCach(m.lapRap.cachLap[0])) && !!r && r.sao === 3, r ? diem(r) : J(t.kq));
   }
+}
+
+console.log('\n== 4. Trần kho chỉ tính hàm tự đặt tên (kho-ham.js) ==');
+{
+  const k = KhoHam.moi({ soHamToiDa: 2, tenCoDinh: ['pick', 'drop', 'carry'] });
+  const ok1 = k.tao('a').ok && k.tao('b').ok, het = k.tao('c');
+  const cot = ['pick', 'drop', 'carry'].every((n) => k.tao(n, [], { taoHam: [n] }).ok);
+  kiem('trần 2: hai hàm tự đặt được, hàm tự đặt thứ ba báo het-cho; ba hàm cốt truyện vẫn tạo được (không chiếm trần)',
+    ok1 && het.ma === 'het-cho' && /tự đặt tên/.test(het.loi) && cot && k.soHam() === 5 && k.soHamTuDat() === 2, J(het));
+  kiem('xóa một hàm tự đặt thì tạo lại được', k.xoa('a').ok && k.tao('c').ok && k.soHamTuDat() === 2);
+  const luu = { d: null, getItem() { return this.d; }, setItem(_, v) { this.d = v; } };
+  k.ghiLuu(luu);
+  const k2 = KhoHam.moi({ soHamToiDa: 2, tenCoDinh: ['pick', 'drop', 'carry'] }), r2 = k2.docLuu(luu);
+  kiem('docLuu giữ đủ hàm cốt truyện vượt trần, giữ hàm tự đặt trong trần',
+    r2.ok && k2.soHam() === 5 && r2.boQua === 0 && J(k2.ds().map((f) => f.ten).sort()) === J(['b', 'c', 'carry', 'drop', 'pick']));
+  const k3 = KhoHam.moi({ soHamToiDa: 1, tenCoDinh: ['pick', 'drop', 'carry'] }), r3 = k3.docLuu(luu);
+  kiem('docLuu với trần nhỏ hơn: bỏ hàm tự đặt thừa, không bỏ hàm cốt truyện nào', r3.ok && r3.boQua === 1 && ['pick', 'drop', 'carry'].every((n) => k3.tim(n)) && k3.soHamTuDat() === 1);
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + '/' + (dat + hong) : 'ĐẠT ' + dat + '/' + dat));

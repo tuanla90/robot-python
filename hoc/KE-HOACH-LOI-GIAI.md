@@ -50,7 +50,7 @@ giaiThich: {
 
 ## Phát hiện khi kiểm (chờ quyết)
 
-- **Kho hàm vượt trần (mùa 5 ẩn).** Lộ trình hiện có 253 hàm cốt truyện, còn `KhoHam` chỉ chứa tối đa 200 hàm (`SO_HAM_MAC_DINH`). Bốn mùa đang mở chưa chạm trần. Từ `che-xich.5` (85.3, mùa 5) kho tham chiếu vượt 200: 286 màn. Đo bằng cách giữ 200 hàm đầu: 163 màn mùa 5 không còn thắng 3 sao bằng lời giải chuẩn. `kiem-hoc` chỉ kiểm trần trên ngân hàng bài, nên không bắt được. Phải xử lý trước khi mở mùa 5: nâng trần (vd 400), hoặc để lộ trình không bắt giữ mọi hàm cũ. Bảng Gỡ lỗi khi gặp kho đầy vẫn nạp bài và báo đỏ.
+- **Kho hàm vượt trần (đã sửa 30/10).** Lộ trình có 253 hàm cốt truyện, quá trần 200 của `KhoHam` từ `che-xich.5` (mùa 5). Lý do nhiều: mỗi màn chế lệnh bắt tạo một hàm tên riêng. 61 hàm không màn nào dùng lại, 75 hàm chỉ dùng trong chương / gói của nó, 64 hàm dùng trong cùng mùa, 53 hàm dùng sang mùa sau. Hàm cốt truyện bị khóa tên nên người chơi không xóa được, kho đầy là kẹt hẳn. Sửa: trần 200 nay chỉ tính hàm tự đặt tên (xóa được); hàm cốt truyện không chiếm trần (`kho-ham.js`, `soHamTuDat`). Dung lượng: 241 hàm cốt truyện là 23 KB localStorage, không cần đổi cách lưu. Máy kiểm `kiem-loi-giai.mjs` mục 2 và 4 giữ luật này.
 
 ## Câu hỏi cho user
 
