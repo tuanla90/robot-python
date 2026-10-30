@@ -106,7 +106,7 @@
     man({
       so: 1, ten: 'Phun mở van', hang: 'lam-quen', hamGoc: KHAY_1, hamCuaEmCan: ['turn_right', 'move'],
       deBai: 'Xe có vòi phun ở mũi. spray() phun một tia nước ra phía trước; tia trúng van thì van quay, cửa mở. Phun mở van rồi đưa xe qua cửa tới cờ.',
-      veMaMau: 'Chương trình có sẵn phun một phát. Chạy thử, xem cửa rồi viết tiếp.',
+      veMaMau: 'Chương trình có sẵn phun một lần. Chạy thử, xem cửa rồi viết tiếp.',
       san: SAN_1, batDau: BD_1,
       maMau: { chinh: PHUN.slice() },
       sao: { o: 10, nhip: 4 },
@@ -210,12 +210,12 @@
       maMau: { chinh: nhieu(PHUN, PHUN, ['turn_right()'], LAP(4, 'move()')) },
       sao: { o: 10, nhip: 6 },
       loiGiai: { chinh: CHINH_9.slice() },
-      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh phun', baiLam: { chinh: nhieu(['# một phát mở cả hai cửa'], PHUN, ['turn_right()'], LAP(4, 'move()')) } },
+      loiGiaiKhac: { moTa: 'Thêm một dòng chú thích trước lệnh phun', baiLam: { chinh: nhieu(['# một lần phun mở cả hai cửa'], PHUN, ['turn_right()'], LAP(4, 'move()')) } },
       loiSai: [
         { moTa: 'Phun hai lần: van quay lại, hai cửa đóng', baiLam: { chinh: nhieu(PHUN, PHUN, ['turn_right()'], LAP(4, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Không phun: xe đâm vào cửa thứ nhất', baiLam: { chinh: nhieu(['turn_right()'], LAP(4, 'move()')) }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Mỗi phát trúng làm van quay nửa vòng: mở rồi đóng.', 'Phun một lần, rồi quay phải tiến bốn ô.']
+      goiY: ['Mỗi lần trúng, van quay nửa vòng: mở rồi đóng.', 'Phun một lần, rồi quay phải tiến bốn ô.']
     }),
 
     man({

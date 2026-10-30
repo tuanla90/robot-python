@@ -167,8 +167,8 @@
       loiGiai: { chinh: C_4.slice(), hamCuaEmMoi: [FIRE()] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['# phun với lực p', 'spray(p)', 'wait()'])] },
       loiSai: [
-        { moTa: 'Quên dùng p: spray("high") luôn phun mạnh nên phát đầu hất thùng', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['spray("high")', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Viết cứng "low" trong hàm: phát thứ hai không tới van trên', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['spray("low")', 'wait()'])], phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
+        { moTa: 'Quên dùng p: spray("high") luôn phun mạnh nên lần phun đầu hất thùng', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['spray("high")', 'wait()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Viết cứng "low" trong hàm: lần phun thứ hai không tới van trên', baiLam: { chinh: C_4.slice() }, hamCuaEmMoi: [H('squirt', ['p'], ['spray("low")', 'wait()'])], phaiCoMa: ['ban-ngan', 'lech-bong-mo'] },
         { moTa: 'Gọi squirt() mà chưa chế hàm', baiLam: { chinh: C_4.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['p là tên tạm cho lực mà lời gọi đưa vào: squirt("low") thì p là "low".', 'Thân hàm: spray(p) rồi wait().']

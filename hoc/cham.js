@@ -678,7 +678,7 @@
     if (banLai.length) {
       var bl0 = banLai[0], mbl = g.anhXa[bl0.dongPy] || null, mblt = bl0.truoc ? (g.anhXa[bl0.truoc.dongPy] || null) : null;
       them('ban-goi-lai', 'Ở ' + viTri(mbl) + ': vòi phun đã nhận lệnh ' + bl0.truoc.ten + '() (ở ' + viTri(mblt) + ') trong nhịp này rồi, nên lệnh ' + bl0.ten + '() này bị bỏ qua. ' +
-        'Mỗi nhịp vòi phun chỉ phun một phát; wait() mới sang nhịp kế.', { cho: cho(mbl), choTruoc: cho(mblt), nhip: bl0.nhip });
+        'Mỗi nhịp vòi phun chỉ phun một lần; wait() mới sang nhịp kế.', { cho: cho(mbl), choTruoc: cho(mblt), nhip: bl0.nhip });
     }
     var hetDan = res.suKien.filter(function (e) { return e.ma === 'het-dan'; });
     if (hetDan.length) {
@@ -728,7 +728,7 @@
     if (nutLap && !res.thang) {
       var nl = nutDoi.filter(function (e) { return e.o.x + ',' + e.o.y === nutLap; })[0];
       cd.push({ ma: 'ban-nut-lai', muc: 'thong-tin', o: nl.o, soLan: demNut[nutLap], cho: cho(nl.lenh ? (g.anhXa[nl.lenh.dongPy] || null) : null),
-        loi: 'Van ở (' + nl.o.x + ', ' + nl.o.y + ') bị phun trúng ' + demNut[nutLap] + ' lần: mỗi phát trúng đổi van một lần (mở rồi đóng), nên phun số lần chẵn thì cửa và băng chuyền nối với van trở về như lúc đầu.' });
+        loi: 'Van ở (' + nl.o.x + ', ' + nl.o.y + ') bị phun trúng ' + demNut[nutLap] + ' lần: mỗi lần trúng là van đổi một lần (mở rồi đóng), nên phun số lần chẵn thì cửa và băng chuyền nối với van trở về như lúc đầu.' });
     }
     var cuaKet = res.suKien.filter(function (e) { return e.ma === 'cua-ket'; });
     if (cuaKet.length) {

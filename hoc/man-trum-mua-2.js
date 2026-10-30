@@ -303,7 +303,7 @@
     }),
 
     man({
-      chuong: 'tong-hop-2', so: 6, ten: 'Sửa hàm pair_spray()', yMoi: 'sửa hàm lỗi: phun hai lần cùng một van là van đóng lại; phát thứ hai phải phun ra sau (gói 4 + gói 6)',
+      chuong: 'tong-hop-2', so: 6, ten: 'Sửa hàm pair_spray()', yMoi: 'sửa hàm lỗi: phun hai lần cùng một van là van đóng lại; lần phun thứ hai phải ra sau (gói 4 + gói 6)',
       kieuBai: 'sua-ham', chinhCoDinh: true, hamCuaEmCan: ['squirt', 'squirt_back', 'tr_left', 'tr_right', 'forward', 'move'],
       deBai: 'Ở trạm có hai van: một ở cuối giếng phía trên, một ở cuối giếng phía dưới, đều cách ba ô; mỗi van mở một cánh cửa phía trước. Xe quay lên ở trạm: van trên trước mặt, van dưới sau lưng. ' +
         'Sola chế pair_spray() để phun cả hai, nhưng chép nhầm: hai lần squirt("high"). Van hơi trúng hai lần thì đóng lại. Chương trình chính đã khóa. Chạy thử rồi sửa hàm.',
@@ -431,8 +431,8 @@
       chuong: 'trum-mua-2', so: 2, ten: 'Hàm open_valve()', yMoi: 'chế hàm while not warm(): squirt("high"): phun mạnh tới khi van nóng; cửa nhịp chắn tia nước lâu chóng khác nhau',
       kieuBai: 'doc-nhiet', mat: true, chinhCoDinh: true, taoHam: ['open_valve'], hamCuaEmCan: ['side_push', 'valve_on', 'squirt', 'tr_left', 'tr_right', 'forward', 'move'],
       deBai: 'Van ở cuối giếng nằm sau một cánh cửa tự đóng mở theo nhịp. Cửa đóng thì tia nước trúng cửa, van không đổi. Em chế open_valve(): còn chưa thấy van nóng thì phun mạnh, rồi phun nữa. ' +
-        'Trạm đầu phải phun ba phát mới trúng, trạm sau trúng ngay. Chương trình chính đã khóa: ở mỗi trạm quay lên, open_valve(), quay lại, tiến.',
-      veMaMau: 'Chương trình chính bị khóa. open_valve() có sẵn chỉ phun một phát: ở trạm đầu tia nước trúng cửa đang đóng.',
+        'Trạm đầu phải phun ba lần mới trúng, trạm sau trúng ngay. Chương trình chính đã khóa: ở mỗi trạm quay lên, open_valve(), quay lại, tiến.',
+      veMaMau: 'Chương trình chính bị khóa. open_valve() có sẵn chỉ phun một lần: ở trạm đầu tia nước trúng cửa đang đóng.',
       san: SAN_U2, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(2, 0, [[3, 3]]), noi(5, 0, [[6, 3]])],
       cuaNhip: [{ x: 2, y: 1, mo: 3, dong: 4, pha: 2 }, { x: 5, y: 1, mo: 3, dong: 4, pha: 1 }],
       maMau: bai(C_U2),
@@ -440,11 +440,11 @@
       loiGiai: { chinh: C_U2.slice(), hamCuaEmMoi: [H('open_valve', [], T_FON)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_U2), hamCuaEmMoi: [H('open_valve', [], ['# phun tới khi van nóng'].concat(T_FON))] },
       loiSai: [
-        { moTa: 'Chỉ phun một phát (valve_on): ở trạm đầu tia nước trúng cửa đang đóng', baiLam: bai(C_U2), hamCuaEmMoi: [H('open_valve', [], ['valve_on()'])], phaiCoMa: ['ban-bi-chan', 'dam-tuong'] },
-        { moTa: 'Phun hai phát cứng: trạm đầu cả hai đều trúng cửa đang đóng', baiLam: bai(C_U2), hamCuaEmMoi: [H('open_valve', [], ['squirt("high")', 'squirt("high")'])], phaiCoMa: ['ban-bi-chan', 'dam-tuong'] },
+        { moTa: 'Chỉ phun một lần (valve_on): ở trạm đầu tia nước trúng cửa đang đóng', baiLam: bai(C_U2), hamCuaEmMoi: [H('open_valve', [], ['valve_on()'])], phaiCoMa: ['ban-bi-chan', 'dam-tuong'] },
+        { moTa: 'Phun hai lần cứng: trạm đầu cả hai đều trúng cửa đang đóng', baiLam: bai(C_U2), hamCuaEmMoi: [H('open_valve', [], ['squirt("high")', 'squirt("high")'])], phaiCoMa: ['ban-bi-chan', 'dam-tuong'] },
         { moTa: 'Phun nhẹ trong vòng lặp: van cách ba ô, không bao giờ nóng, lặp mãi', baiLam: bai(C_U2), hamCuaEmMoi: [H('open_valve', [], WHILE('not warm()', ['squirt("low")']))], phaiCoMa: ['vong-vo-han'] }
       ],
-      goiY: ['Cửa đóng thì warm() không thấy van: phun thêm phát nữa.', 'while not warm(): squirt("high").']
+      goiY: ['Cửa đóng thì warm() không thấy van: phun thêm lần nữa.', 'while not warm(): squirt("high").']
     }),
 
     man({

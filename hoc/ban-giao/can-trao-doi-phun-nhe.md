@@ -60,6 +60,10 @@ Nhánh: `claude/phun-nhe` (worktree `.claude/worktrees/phun-nhe`). Dưới đây
 `bang-chuyen` "Lên băng chuyền" → "Trôi theo băng" và `day-thung` "Đẩy thùng nặng" → "Đưa thùng vào đích" (chứa trọn tên gói);
 `che-do-nhiet` "Chế lệnh: mở van" → "Chế lệnh: mở van nguội" (trùng che-sung-hoi); `tong-hop-2` "Đủ bộ" → "Thử mọi món" (trùng mùa 1).
 Màn luc-ban.6 "Nhanh để bấm, tụ để đẩy" (sót chữ lực cũ) → "Nhẹ để mở, mạnh để đẩy".
+Quét chữ "phát" (user: "Quét chữ phát"): mọi chữ người chơi thấy có "phát" nghĩa một lần phun đổi thành "lần" / "lần phun" (cham.js, thẻ part,
+hướng dẫn, đề / gợi ý / lời sai ở sung-hoi, che-sung-hoi, luc-ban, che-luc-ban, be-sung, doi-sung-hoi, doi-thu-manh, trum-mua-2). Tên màn:
+"Phun một phát" → "Phun một lần" (che-sung-hoi.1), "Hai phát một chỗ" → "Hai lần phun một chỗ", "Ba phát quanh mình" → "Ba lần phun quanh mình".
+Giữ "xuất phát", "phát lại". Lời mô tả trong máy kiểm (.mjs, người chơi không thấy) chưa đổi.
 Chưa đổi: tên huy hiệu (mùa 1 cũng chưa đổi; vài cái còn "Huy hiệu Hàm …", "Huy hiệu Tổng hợp mùa 2").
 
 ## Cần user chốt

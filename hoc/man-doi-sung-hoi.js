@@ -166,13 +166,13 @@
     }),
     man({
       so: 5, ten: 'Chờ bạn qua rồi đẩy',
-      deBai: 'Cờ của xe vòi phun nằm ngay dưới thùng nặng: phải phun lên tường hai phát, mỗi phát thùng nhích xuống một ô và xe theo một ô. Phát thứ hai đẩy thùng xuống lối đi của omni, nên omni phải qua khỏi chỗ đó trước. Xe vòi phun không có cảm biến: xem omni cần mấy nhịp rồi chờ cho đủ.',
+      deBai: 'Cờ của xe vòi phun nằm ngay dưới thùng nặng: phải phun lên tường hai lần, mỗi lần thùng nhích xuống một ô và xe theo một ô. Lần phun thứ hai đẩy thùng xuống lối đi của omni, nên omni phải qua khỏi chỗ đó trước. Xe vòi phun không có cảm biến: xem omni cần mấy nhịp rồi chờ cho đủ.',
       veMaMau: 'Tự viết cả hai chương trình.',
       san: ['#########', '#...#####', '###H#####', '###F#####', '#F......#', '#########'],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 7, y: 4, huong: 0 }], co: [[{ x: 3, y: 3 }], [{ x: 1, y: 4 }]],
       maMau: B([], []), loiGiai: B(L5[0], L5[1]),
       hamCuaEmCan: ['forward', 'turn_left', 'slide_l'],
-      goiY: ['Thùng không nhích được vào ô đang có robot đồng đội: cả xe lẫn thùng đứng yên.', 'Omni cần 5 nhịp để qua khỏi ô dưới cột thùng; xe vòi phun tới chỗ phun sau 3 nhịp và phát thứ hai mới đẩy thùng xuống lối, nên chờ thêm một nhịp.']
+      goiY: ['Thùng không nhích được vào ô đang có robot đồng đội: cả xe lẫn thùng đứng yên.', 'Omni cần 5 nhịp để qua khỏi ô dưới cột thùng; xe vòi phun tới chỗ phun sau 3 nhịp và lần phun thứ hai mới đẩy thùng xuống lối, nên chờ thêm một nhịp.']
     }),
     man({
       so: 6, ten: 'Bạn tới thì phun', khoa: 0, r: [SUNG_CB, OMNI],
@@ -340,13 +340,13 @@
     }),
     man({
       so: 7, chuong: CHE, ten: 'Sửa hàm mở cửa', khoa: 0, r: [SUNG_CB, OMNI],
-      deBai: 'Xe vòi phun (bị khóa) gọi open_gate() để mở cửa cho omni. Nhưng hàm phun hai phát: cửa mở rồi đóng lại trước khi omni tới. Sửa thân open_gate().',
+      deBai: 'Xe vòi phun (bị khóa) gọi open_gate() để mở cửa cho omni. Nhưng hàm phun hai lần: cửa mở rồi đóng lại trước khi omni tới. Sửa thân open_gate().',
       veMaMau: 'Chương trình hai robot đã đúng. Chỉ sửa hàm của màn open_gate().',
       san: ['##########', '#.....C.F#', '##########', '#N......F#', '##########'],
       bd: [{ x: 2, y: 3, huong: 0 }, { x: 1, y: 1, huong: 1 }], co: [[{ x: 8, y: 3 }], [{ x: 8, y: 1 }]],
       maMau: B(C7[0], C7[1], [H('open_gate', T_OPEN_GATE_CU)]), loiGiai: B(C7[0], C7[1], [H('open_gate', T_OPEN_GATE)]),
       hamCuaEmCan: ['turn_right', 'go_wall', 'forward', 'pass_gate', 'move'],
-      goiY: ['Mỗi phát trúng van đổi cửa một lần: hai phát là về như cũ.', 'Bỏ lần phun thứ hai.']
+      goiY: ['Mỗi lần trúng van là cửa đổi một lần: phun hai lần là về như cũ.', 'Bỏ lần phun thứ hai.']
     }),
     man({
       so: 8, chuong: CHE, ten: 'Sửa đầu phun', khoa: 0, r: [SUNG_CB, OMNI],

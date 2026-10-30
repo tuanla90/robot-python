@@ -122,7 +122,7 @@
   var DS = [
     /* ------------------------------------------------------------ hàng 1: làm quen */
     man({
-      so: 1, ten: 'Phun một phát', hang: 'lam-quen', hamCuaEmCan: ['turn_right', 'move'], taoHam: ['puff'],
+      so: 1, ten: 'Phun một lần', hang: 'lam-quen', hamCuaEmCan: ['turn_right', 'move'], taoHam: ['puff'],
       deBai: 'Chương trình chính gọi puff() rồi đi qua cửa: em tự chế puff() để phun một phát ra trước, mở cửa cho xe tới chỗ xe mờ.',
       veMaMau: 'Chương trình chính bị khóa. Mở Xưởng hàm, tạo puff() rồi bấm Chạy.',
       san: SAN_1, batDau: BD_1,
@@ -131,7 +131,7 @@
       maMau: { chinh: C_1.slice() },
       sao: { o: 11, nhip: 4 },
       loiGiai: { chinh: C_1.slice(), hamCuaEmMoi: [H('puff', T_PUFF)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('puff', nhieu(['# phun nhẹ một phát'], T_PUFF))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('puff', nhieu(['# phun nhẹ một lần'], T_PUFF))] },
       congThucKhac: [
         { moTa: 'Phun xong chờ thêm một nhịp (chậm hơn một nhịp)', hamCuaEmMoi: [H('puff', ['spray()', 'wait()', 'wait()'])] },
         { moTa: 'Chờ một nhịp rồi mới phun (chậm hơn một nhịp)', hamCuaEmMoi: [H('puff', ['wait()', 'spray()', 'wait()'])] }
@@ -139,10 +139,10 @@
       loiSai: [
         { moTa: 'Dùng spray_back(): tia nước bay ra sau trúng tường, cửa vẫn đóng', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('puff', T_PUFF_BACK)], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
         { moTa: 'Quên wait(): lệnh phun nằm chung nhịp với lệnh quay', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('puff', ['spray()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Phun hai phát: van quay lại, cửa đóng', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('puff', nhieu(T_PUFF, T_PUFF))], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Phun hai lần: van quay lại, cửa đóng', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('puff', nhieu(T_PUFF, T_PUFF))], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
         { moTa: 'Gọi puff() mà chưa chế hàm', baiLam: { chinh: C_1.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Phun một phát là spray() rồi wait().', 'Phun hai phát thì van quay về như cũ.']
+      goiY: ['Phun một lần là spray() rồi wait().', 'Phun hai lần thì van quay về như cũ.']
     }),
 
     man({
@@ -162,7 +162,7 @@
       ],
       loiSai: [
         { moTa: 'Dùng spray(): tia nước bay lên trúng tường, cửa vẫn đóng', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('puff_back', T_PUFF)], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Phun hai phát: van quay lại, cửa đóng', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('puff_back', nhieu(T_PUFF_BACK, T_PUFF_BACK))], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Phun hai lần: van quay lại, cửa đóng', baiLam: { chinh: C_2.slice() }, hamCuaEmMoi: [H('puff_back', nhieu(T_PUFF_BACK, T_PUFF_BACK))], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
         { moTa: 'Gọi puff_back() mà chưa chế hàm', baiLam: { chinh: C_2.slice() }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['puff_back() chỉ khác puff() ở chữ _back.', 'Van cách đuôi xe hai ô, vừa tầm tia nước.']

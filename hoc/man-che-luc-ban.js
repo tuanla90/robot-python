@@ -173,7 +173,7 @@
       so: 3, ten: 'Sửa hàm quick_pick()', yMoi: 'sửa hàm lỗi: so với tầm phun nhẹ, distance() > 2 thành distance() > 1',
       mucTieu: 'bong-mo', hamCuaEmCan: ['auto_spray', 'squirt', 'turn_left', 'turn_right', 'u_turn', 'forward', 'move'], chinhCoDinh: true,
       deBai: 'Sola cũng viết một hàm tự chọn lực, quick_pick(), nhưng so distance() với 2. Chương trình chính đã khóa, gọi quick_pick() hai lần: van gần có thùng sau lưng, rồi van xa có distance() đúng bằng 2. ' +
-        'Chạy thử xem phát nào hỏng, rồi sửa một dòng trong quick_pick(). Thùng phải nằm yên.',
+        'Chạy thử xem lần phun nào hỏng, rồi sửa một dòng trong quick_pick(). Thùng phải nằm yên.',
       veMaMau: 'Chạy thử. Van xa có distance() bằng mấy? Phun nhẹ bay được mấy ô?',
       san: SAN_3, batDau: { x: 3, y: 5, huong: 3 }, noi: NOI_3,
       bongMo: { x: 3, y: 0, huong: 1, thung: [{ x: 4, y: 5 }] },
@@ -278,7 +278,7 @@
     }),
 
     man({
-      so: 8, ten: 'Hàm auto_turn()', yMoi: 'cú giật của phát phun mạnh đẩy thùng sau lưng vào chỗ thùng mờ; phát phun nhẹ giữ thùng kia nằm yên',
+      so: 8, ten: 'Hàm auto_turn()', yMoi: 'cú giật của lần phun mạnh đẩy thùng sau lưng vào chỗ thùng mờ; lần phun nhẹ giữ thùng kia nằm yên',
       mucTieu: 'bong-mo', hamCuaEmCan: ['auto_spray', 'squirt', 'turn_left', 'back', 'move'], taoHam: ['auto_turn'], chinhCoDinh: true,
       deBai: 'Hai thùng nặng: thùng sau lưng phải nhích xuống chỗ thùng mờ (xe theo một ô), thùng kia phải nằm yên. Nhớ lại gói Nhà máy: phun mạnh thì cú giật đẩy thùng sau lưng nhích một ô, phun nhẹ thì không giật. ' +
         'Em chế auto_turn(): auto_spray() rồi quay trái. Chương trình chính đã khóa: auto_turn() hai lần.',
@@ -290,11 +290,11 @@
       loiGiai: { chinh: C_8.slice(), hamCuaEmMoi: [H('auto_turn', [], ['auto_spray()', 'turn_left()'])] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_8), hamCuaEmMoi: [H('auto_turn', [], ['# đo, phun, rồi quay trái', 'auto_spray()', 'turn_left()'])] },
       loiSai: [
-        { moTa: 'Viết cứng squirt("high"): phát thứ hai đẩy luôn thùng bên phải', baiLam: bai(C_8), hamCuaEmMoi: [H('auto_turn', [], ['squirt("high")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Viết cứng squirt("high"): lần phun thứ hai đẩy luôn thùng bên phải', baiLam: bai(C_8), hamCuaEmMoi: [H('auto_turn', [], ['squirt("high")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Viết cứng squirt("low"): không có cú giật, thùng sau lưng nằm yên chắn đường', baiLam: bai(C_8), hamCuaEmMoi: [H('auto_turn', [], ['squirt("low")', 'turn_left()'])], phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Quay trước rồi mới phun: lần đầu mắt hồng ngoại nhìn về van gần', baiLam: bai(C_8), hamCuaEmMoi: [H('auto_turn', [], ['turn_left()', 'auto_spray()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Cú giật của phát phun mạnh đẩy thùng ngay sau lưng nhích một ô, xe theo một ô; phun nhẹ thì không giật.',
+      goiY: ['Cú giật của lần phun mạnh đẩy thùng ngay sau lưng nhích một ô, xe theo một ô; phun nhẹ thì không giật.',
         'Thân hàm: auto_spray() rồi turn_left().']
     }),
 

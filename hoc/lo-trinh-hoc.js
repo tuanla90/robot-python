@@ -1422,7 +1422,7 @@
     // Gói 9 chương be-sung: cái mới là BỆ SÚNG XÍCH (xích + súng hơi: phun mạnh không giật). be-sung.1 trình diễn (phun nút rồi rẽ phải, không cần move() bù giật);
     // be-sung.2 ép: mã mẫu của Sola có back() bù giật thừa, người chơi bỏ dòng đó (H). che-be-sung.1 chế spray_left() (H).
     trinhDien('be-sung.1', null,
-      'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên phun mạnh không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe phun van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
+      'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên phun mạnh không giật, không như xe hai bánh lùi một ô sau mỗi lần phun mạnh. Bấm Chạy xem xe phun van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau spray("high") và wait(), xe vẫn đứng nguyên ô.',
       ['Xe hai bánh phun mạnh thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
   })();
