@@ -87,7 +87,12 @@
   var SAN_D9 = ['#######', '#NNNN##', '#.<<CF#', '#######'];
   // do-nhiet.10: ba mê cung đèn nóng, mỗi sân bốn ngã: sân 1 của do-nhiet.2, sân 2 của do-nhiet.3 (có cửa, thùng, nút tắt làm mồi), sân 3 là đường xoắn của do-nhiet.1
   //   với cửa đã mở, bốn đèn nóng (4,2), (3,6), (0,5), (1,3) và nút TẮT (2,1) làm mồi.
-  var SAN_D10 = [SAN_D2, SAN_D3, ['######', '##N###', '##..N#', '#N#.##', '#F#.##', 'N...##', '###N##', '######']];
+  // 30/10 (nghiệm thu mùa 2: trùm cũ đúng chương trình do-nhiet.2): mỗi sân xe xuất phát nhìn thẳng vào một van ngay trên đầu. Sân 1 (mê cung của do-nhiet.2) van TẮT
+  //   mở cửa (3,1) chắn hành lang đầu: không mở thì warm() thấy cửa chứ không thấy đèn. Sân 2 cùng mê cung, van đầu ĐANG BẬT, cửa (3,1) mở sẵn (phun là phí một nhịp).
+  //   Sân 3 (đường xoắn) van mồi (2,1) TẮT nay mở cửa (3,2). Chương trình: if not warm(): squirt("low") rồi vòng tìm đèn nóng của do-nhiet.2.
+  var SAN_D10 = [['##N#####', '##.C.N##', '####.###', '####..N#', '####NF##', '#####N##', '########'],
+    ['##N#####', '##.c.N##', '####.###', '####..N#', '####NF##', '#####N##', '########'],
+    ['######', '##N###', '##.CN#', '#N#.##', '#F#.##', 'N...##', '###N##', '######']];
 
   // che-do-nhiet.1: hành lang (1..5, 2), bốn nút phía trên: (1,1), (3,1) TẮT mở cửa (2,2), (4,2); (2,1), (4,1) ĐANG BẬT. Cờ (5,2).
   var SAN_C1 = ['#######', '#NNNN##', '#.C.CF#', '#######'];
@@ -114,6 +119,7 @@
 
   var L_D1 = FOR(4, nhieu(BAT, ['turn_right()', 'go_to_wall()']));
   var L_D2 = FOR(4, nhieu(TIM, ['go_to_wall()']));
+  var L_D10 = nhieu(BAT, L_D2);                                             // van đầu chưa nóng thì phun mở cửa, rồi tìm đèn nóng ở bốn ngã
   var L_D4 = FOR(5, nhieu(['turn_left()'], BAT, ['turn_right()', 'move()']));
   var C_D5 = FOR(5, ['turn_left()', 'check_hot()', 'turn_right()', 'move()']);
   var T_D5 = IF('not warm()', ['auto_spray()']);
@@ -321,26 +327,28 @@
 
     /* ------------------------------------------------ trùm */
     man({
-      chuong: 'do-nhiet', so: 10, ten: 'Trùm: Ba mê cung đèn nóng', yMoi: 'một chương trình cho ba mê cung: quay tìm đèn nóng ở mỗi ngã',
-      hang: 'trum', hamCuaEmCan: ['turn_right', 'go_to_wall', 'move'],
+      chuong: 'do-nhiet', so: 10, ten: 'Trùm: Ba mê cung đèn nóng', yMoi: 'ghép hai ý của gói: hỏi van đầu có nóng không rồi mới phun, sau đó quay tìm đèn nóng ở mỗi ngã; ba mê cung',
+      hang: 'trum', hamCuaEmCan: ['squirt', 'turn_right', 'go_to_wall', 'move'],
       huyHieu: { ma: 'do-nhiet', ten: 'Huy hiệu Đo nhiệt' },
-      deBai: 'Ba mê cung, một chương trình. Mê cung nào cũng có bốn ngã, ở mỗi ngã đường đi tiếp là hướng có đèn nóng ở cuối, nhưng đèn nằm bên phải hay bên trái, xa hay gần thì mỗi sân một khác, ' +
-        'lại có cửa, thùng, van đóng đứng gần như đèn. Viết một chương trình tới cờ ở cả ba mê cung.',
+      deBai: 'Ba mê cung, một chương trình. Lúc xuất phát xe nhìn thẳng vào một van: van đóng thì phải phun cho mở cánh cửa đầu đường, van đang nóng thì cửa đã mở sẵn. ' +
+        'Rồi ở mỗi ngã, đường đi tiếp là hướng có đèn nóng ở cuối, bên phải hay bên trái thì mỗi mê cung một khác.',
       veMaMau: 'Chương trình có sẵn ngã nào cũng rẽ phải một lần: chỉ đúng ở mê cung thứ ba.',
-      san: SAN_D10, batDau: [{ x: 2, y: 1, huong: 0 }, { x: 1, y: 5, huong: 0 }, { x: 2, y: 2, huong: 0 }],
-      noi: [[], [], []],
-      nutBat: [[o(5, 1), o(4, 4), o(6, 3), o(5, 5)], [o(3, 5), o(2, 3), o(5, 4), o(4, 1)], [o(4, 2), o(3, 6), o(0, 5), o(1, 3)]],
-      maMau: bai(FOR(4, ['turn_right()', 'go_to_wall()'])),
-      sao: { o: 12, nhip: 37 },
-      loiGiai: bai(L_D2),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# ngã nào cũng tìm đèn nóng'].concat(L_D2)) },
+      san: SAN_D10, batDau: [{ x: 2, y: 1, huong: 0 }, { x: 2, y: 1, huong: 0 }, { x: 2, y: 2, huong: 0 }],
+      noi: [[noi(2, 0, [[3, 1]])], [], [noi(2, 1, [[3, 2]])]],
+      nutBat: [[o(5, 1), o(4, 4), o(6, 3), o(5, 5)], [o(5, 1), o(4, 4), o(6, 3), o(5, 5), o(2, 0)], [o(4, 2), o(3, 6), o(0, 5), o(1, 3)]],
+      maMau: bai(L_D2),
+      sao: { o: 16, nhip: 37 },
+      loiGiai: bai(L_D10),
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# van đầu chưa nóng thì mở, rồi tìm đèn'].concat(L_D10)) },
+      congThucKhac: [{ moTa: 'Phun van đầu không hỏi: vẫn tới cờ nhưng ở mê cung có van nóng phí một nhịp', baiLam: bai(nhieu(['squirt("low")'], L_D2)) }],
       loiSai: [
-        { moTa: 'Ngã nào cũng rẽ phải một lần: chỉ đúng ở mê cung thứ ba', baiLam: bai(FOR(4, ['turn_right()', 'go_to_wall()'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Tìm bằng distance() như Sola: cửa đóng cách 1 ô cũng bị chọn', baiLam: bai(FOR(4, nhieu(['turn_right()'], WHILE('distance() == 0', ['turn_right()']), ['go_to_wall()']))), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Bỏ dòng quay đầu tiên: xe đang nhìn đúng đèn vừa tới nên đứng yên', baiLam: bai(FOR(4, nhieu(WHILE('not warm()', ['turn_right()']), ['go_to_wall()']))), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chỉ tìm đèn như màn Đèn nóng chỉ đường: cửa đầu đường còn đóng, xe quay mãi', baiLam: bai(L_D2), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Viết if warm(): chỉ phun van đang nóng, van đóng vẫn đóng', baiLam: bai(nhieu(IF('warm()', ['squirt("low")']), L_D2)), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Tìm bằng distance() như Sola: cửa đóng cách 1 ô cũng bị chọn', baiLam: bai(nhieu(BAT, FOR(4, nhieu(['turn_right()'], WHILE('distance() == 0', ['turn_right()']), ['go_to_wall()'])))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bỏ dòng quay đầu tiên: xe đang nhìn đúng đèn vừa tới nên đứng yên', baiLam: bai(nhieu(BAT, FOR(4, nhieu(WHILE('not warm()', ['turn_right()']), ['go_to_wall()'])))), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Ở mỗi ngã: quay khỏi đèn vừa tới, quay tiếp cho tới khi warm() là True, rồi go_to_wall().',
-        'Chương trình của màn Đèn nóng chỉ đường chạy được ở cả ba mê cung.']
+      goiY: ['Trước mê cung: if not warm(): squirt("low"), như màn Van nào đang nóng.',
+        'Rồi ở mỗi ngã: quay khỏi đèn vừa tới, quay tiếp cho tới khi warm() là True, rồi go_to_wall().']
     }),
 
     /* ================================================================ chương che-do-nhiet: Hàm đo nhiệt */
