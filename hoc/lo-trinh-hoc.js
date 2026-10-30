@@ -1156,11 +1156,12 @@
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
     // Gói 2 (30/10, đường cong): màn đo bằng cảm biến ở che-list (bản một sân của lộ trình) đứng trên bãi trống 7 × 7 dù xe chỉ đi một vòng chữ nhật nhỏ,
     // nên số ô nhảy 12 → 47 ngay màn đầu. Bãi thu vừa khít (giữ luật của PHONG ở man-che-list.js: tường mốc cuối hai cạnh đầu, ô ngay sau chỗ dừng ở hai cạnh sau
-    // vẫn trống để cảm biến không dừng được xe, nên vẫn phải nhớ số đã đo) và lớn dần theo thứ tự 4 → 6 → 5 → 8 → 9: bãi 2×1, 4×1, vuông 3, 2×3, 4×3.
+    // vẫn trống để cảm biến không dừng được xe, nên vẫn phải nhớ số đã đo) và lớn dần theo thứ tự 4 → 6 → 5 → 8 → 9: bãi 2×1, 4×1, vuông 2, 2×3, 4×3.
+    // Vuông cạnh 2 (không phải 3): lời sai "đi cố định 3 ô mỗi cạnh" của che-list.5 phải thua (bản ba sân trong man-che-list.js có cạnh 2, 3, 4).
     var BAI_KHIT = {
       "che-list.4": {"san":[".....","....#",".....","...#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":3,"y":1},{"x":3,"y":2},{"x":1,"y":2}]}},
       "che-list.6": {"san":[".......","......#",".......",".....#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":5,"y":1},{"x":5,"y":2},{"x":1,"y":2}]}},
-      "che-list.5": {"san":["......",".....#","......","......","......"],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":0,"diQua":[{"x":4,"y":1},{"x":4,"y":4},{"x":1,"y":4}]}},
+      "che-list.5": {"san":[".....","....#",".....","....."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":0,"diQua":[{"x":3,"y":1},{"x":3,"y":3},{"x":1,"y":3}]}},
       "che-list.8": {"san":[".....","....#",".....",".....",".....","...#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":3,"y":1},{"x":3,"y":4},{"x":1,"y":4}]}},
       "che-list.9": {"san":[".......","......#",".......",".......",".......",".....#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":5,"y":1},{"x":5,"y":4},{"x":1,"y":4}]}}
     };

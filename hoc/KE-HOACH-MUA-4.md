@@ -197,9 +197,9 @@ Ghi chú chia:
 - **30/10 Hai chỗ nhảy cuối của mùa 4 xong: cả mùa 4 không còn nhảy** (cong4.js: 0).
   - Gói 2 che-list (màn đo bằng cảm biến, bản một sân của lộ trình): bãi trống 7 × 7 mà xe chỉ đi một vòng chữ nhật nhỏ (12 → 47 ô ngay màn đầu). Bãi thu vừa khít,
     giữ đúng luật bãi trống của PHONG (tường mốc cuối hai cạnh đầu; ô ngay sau chỗ dừng ở hai cạnh sau vẫn trống nên cảm biến không dừng được xe, phải nhớ số đã đo),
-    và LỚN DẦN: che-list.4 bãi 2×1 (18 ô) · che-list.6 bãi 4×1 (26) · che-list.5 vuông 3 (29) · che-list.8 bãi 2×3 (28) · che-list.9 bãi 4×3 (40); thứ tự chương
+    và LỚN DẦN: che-list.4 bãi 2×1 (18 ô) · che-list.6 bãi 4×1 (26) · che-list.5 vuông 2 (19) · che-list.8 bãi 2×3 (28) · che-list.9 bãi 4×3 (40); thứ tự chương
     1 · 2 · 3 · 4 · 6 · 5 · 8 · 9 · 7 · 10 (tự viết chương trình chính ở bãi chữ nhật trước, chế box cho bãi vuông sau). Ngưỡng nhịp lo-trinh-sao.js: che-list.4 14 → 10,
-    che-list.6 16 → 14. Bản ba sân trong man-che-list.js (máy kiểm kiem-che-list) giữ nguyên.
+    che-list.6 16 → 14, che-list.5 15 → 11 (vuông cạnh 2 để lời sai "đi cố định 3 ô mỗi cạnh" thua; trước đây bản một sân là vuông cạnh 3 nên lời sai đó thắng). Bản ba sân trong man-che-list.js (máy kiểm kiem-che-list) giữ nguyên.
   - Ranh gói 5 / 6: may-son.3 bít hai góc trên (18 → 16 ô), may-son.4 bít góc dưới trái (25 → 24 ô): ô xe không đi tới.
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
