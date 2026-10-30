@@ -600,6 +600,22 @@
     'robot-hoan-thien.11', 'trum-mua-1.3', 'trum-mua-1.6', 'trum-mua-1.9', 'trum-mua-1.10'];
   DAM_LA_THUA.forEach(function (ma) { get(ma).damLaThua = true; });
   M.manDamLaThua = DAM_LA_THUA.slice();
+  // 31/10 (KE-HOACH-PART-DUNG-MUA.md, user: "part là bản nâng cấp, sau khi nâng cấp thì luôn được dùng bản full"): từ gói 7 mùa 1 (sau gói 6 Tay xoay)
+  // R1 đang gắn tay kẹp thì gắn tay xoay (đủ bốn lệnh kẹp + arm_left / arm_right), lời giải giữ nguyên. Đội: chỉ R1 (doi[0]); R2 giữ cấu hình của màn.
+  function lenTayXoay(r, goc) {
+    if (r && r.tay === 'kep') r.tay = 'xoay';
+    if (goc.indexOf('arm_down') < 0 || goc.indexOf('arm_left') >= 0) return goc;
+    var i = goc.indexOf('arm_up') + 1;
+    return goc.slice(0, i).concat(['arm_left', 'arm_right'], goc.slice(i));
+  }
+  ['cam-bien-ben', 'me-cung', 'hai-robot', 'che-hai-robot', 'combo', 'che-combo', 'robot-hoan-thien', 'trum-mua-1'].forEach(function (c) {
+    M.danhSach.filter(function (m) { return m.chuong === c; }).forEach(function (m) {
+      if (m.robot && m.robot.tay && m.robot.tay !== 'kep') return;
+      if (m.hamGoc.indexOf('arm_down') < 0) return;
+      m.hamGoc = lenTayXoay(m.robot, m.hamGoc);
+      if (m.doi && m.doi[0] && m.doi[0].hamGoc) m.doi[0].hamGoc = lenTayXoay(m.doi[0].robot, m.doi[0].hamGoc);
+    });
+  });
   // Hàm của màn side_pick / side_drop gọi các hàm của em này mà ngân hàng chưa khai (khóa đúng màn khi kho thiếu, mo-goi.js luật 3 / 3b).
   get('che-tay-xoay.9').hamCuaEmCan = get('che-tay-xoay.9').hamCuaEmCan.concat(['turn_left', 'turn_right', 'pick', 'drop']);
   // Game bỏ bậc thang: xuong-ham.6 dùng ô S như tường (xe hai bánh không leo), đổi thành tường thường. Sửa thẳng sân (không qua sua()) để giữ lỗi mẫu của bài.

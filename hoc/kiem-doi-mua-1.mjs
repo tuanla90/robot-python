@@ -299,7 +299,7 @@ for (const m of DS) {
   if (!m) continue;
   const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
   bang[m.ma] = {};
-  kiem(m.ma + ': đủ trường, số sân, đội R1 tay kẹp (vàng) + R2 tay xoay (lam), cảm biến khoảng cách, chặn biến', () => {
+  kiem(m.ma + ': đủ trường, số sân, đội R1 tay xoay (vàng; 31/10 từ gói 7 R1 luôn tay xoay) + R2 tay xoay (lam), cảm biến khoảng cách, chặn biến', () => {
     for (const k of ['ten', 'deBai', 'san', 'batDau', 'mucTieu', 'hamGoc', 'sao', 'maMau', 'loiGiai', 'loiGiaiKhac', 'goiY', 'hamCuaEmCan']) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
@@ -308,10 +308,10 @@ for (const m of DS) {
     for (const rows of dsSan(m)) assert.ok(!/S/.test(rows.join('')), m.ma + ' sân có bậc thang');
     assert.equal(m.doi.length, 2);
     const [a, b] = m.doi;
-    assert.deepEqual([a.robot.than, a.robot.tay, a.robot.son, a.loaiRobot], ['hai-banh', 'kep', 'vang', 'banh'], m.ma + ' R1');
+    assert.deepEqual([a.robot.than, a.robot.tay, a.robot.son, a.loaiRobot], ['hai-banh', 'xoay', 'vang', 'banh'], m.ma + ' R1');
     assert.deepEqual([b.robot.than, b.robot.tay, b.robot.son, b.loaiRobot], ['hai-banh', 'xoay', 'lam', 'banh'], m.ma + ' R2');
     for (const d of m.doi) assert.deepEqual(d.robot.camBien.map((c) => c.ma), ['khoang-cach']);
-    assert.deepEqual(a.hamGoc.slice().sort(), KEP.slice().sort(), m.ma + ' khay R1');
+    assert.deepEqual(a.hamGoc.slice().sort(), XOAY.slice().sort(), m.ma + ' khay R1');
     assert.deepEqual(b.hamGoc.slice().sort(), XOAY.slice().sort(), m.ma + ' khay R2');
     assert.ok(m.khung.chanBien, m.ma + ' phải chặn biến (khung.chanBien)');
     assert.ok(!m.bienDem, m.ma + ' mở nhóm ĐẾM');

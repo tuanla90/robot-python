@@ -368,7 +368,7 @@ async function main() {
     if (!m) continue;
     const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
     bang[m.ma] = {};
-    kiem(m.ma + ': đủ trường, số sân, robot (tay xoay + cảm biến; đội: R1 kẹp vàng, R2 xoay lam), chặn biến, không bậc thang', () => {
+    kiem(m.ma + ': đủ trường, số sân, robot (tay xoay + cảm biến; đội: R1 xoay vàng (31/10: từ gói 7 R1 luôn tay xoay), R2 xoay lam), chặn biến, không bậc thang', () => {
       for (const k of ['ten', 'deBai', 'san', 'batDau', 'mucTieu', 'hamGoc', 'sao', 'maMau', 'loiGiai', 'loiGiaiKhac', 'goiY', 'hamCuaEmCan', 'kieuBai']) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
       assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
       for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
@@ -378,9 +378,9 @@ async function main() {
       if (m.doi) {
         assert.equal(m.doi.length, 2);
         const [a, b] = m.doi;
-        assert.deepEqual([a.robot.than, a.robot.tay, a.robot.son], ['hai-banh', 'kep', 'vang'], m.ma + ' R1');
+        assert.deepEqual([a.robot.than, a.robot.tay, a.robot.son], ['hai-banh', 'xoay', 'vang'], m.ma + ' R1');
         assert.deepEqual([b.robot.than, b.robot.tay, b.robot.son], ['hai-banh', 'xoay', 'lam'], m.ma + ' R2');
-        assert.deepEqual(a.hamGoc.slice().sort(), KHAY_KEP.slice().sort(), m.ma + ' khay R1');
+        assert.deepEqual(a.hamGoc.slice().sort(), KHAY_XOAY.slice().sort(), m.ma + ' khay R1');
         assert.deepEqual(b.hamGoc.slice().sort(), KHAY_XOAY.slice().sort(), m.ma + ' khay R2');
         for (const d of m.doi) assert.deepEqual(d.robot.camBien.map((c) => c.ma), ['khoang-cach']);
       } else {

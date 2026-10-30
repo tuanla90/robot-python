@@ -339,9 +339,9 @@ for (const m of DS) {
       assert.deepEqual(b.hamGoc.slice().sort(), KHAY_KEP.slice().sort(), m.ma + ' khay R2');
       for (const d of m.doi) assert.deepEqual(d.robot.camBien.map((c) => c.ma), ['khoang-cach']);
     } else {
-      assert.deepEqual([m.robot.than, m.robot.tay], ['hai-banh', c1 ? 'kep' : 'xoay'], m.ma + ' robot');
+      assert.deepEqual([m.robot.than, m.robot.tay], ['hai-banh', 'xoay'], m.ma + ' robot');
       assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['khoang-cach']);
-      assert.deepEqual(m.hamGoc.slice().sort(), (c1 ? KHAY_KEP : KHAY_XOAY).slice().sort(), m.ma + ' khay');
+      assert.deepEqual(m.hamGoc.slice().sort(), KHAY_XOAY.slice().sort(), m.ma + ' khay');
     }
     assert.ok(m.khung.chanBien, m.ma + ' phải chặn biến (khung.chanBien)');
     assert.ok(!m.bienDem, m.ma + ' mở nhóm ĐẾM');
