@@ -2102,15 +2102,16 @@
     }, BO_KEP);
     get('hong-ngoai.9').loiGiaiKhac = { moTa: 'Thêm một dòng chú thích trước vòng lặp', baiLam: bai(['# mỗi ngả: đo, tới van, phun, về'].concat(VE9)) };
     // che-hong-ngoai.4 "Đi phun rồi lùi về: go_open()" (cũ go_get() tay kẹp): hàm đo d, tới van, phun, LÙI về đúng d ô bằng back() (xích lùi thẳng, khỏi quay đầu);
-    // main khoá. Hai van cách 3 và 1 ô trống (tia nước bay hai ô): không số cố định nào thay d mà đủ sao ở cả hai ngả (kiem-lach-mua-2 C / E).
+    // main khoá. Hai van cách 3 và 0 ô trống (tia nước bay hai ô): số cố định thay d thì hoặc tia không tới van ngả xa, hoặc húc van ngả gần
+    // (mỗi cú húc mất một nhịp, hai chiều) nên không đủ sao (kiem-lach-mua-2 C / E).
     var GO_OPEN = ['d = distance()', 'forward(d)', 'spray()', 'wait()', 'for i in range(d):', '    back()'];
     var C4 = ['go_open()', 'tr_right()', 'go_open()', 'tr_right()', 'forward(3)'];
     xeCuuHoa('che-hong-ngoai.4', { tay: 'hoi', camBien: copy(HN) }, {
       mucTieu: 'toi-co',
       ten: 'Đi phun rồi lùi về: go_open()', hamGoc: DO_VOI.slice(), hamCuaEmCan: ['move', 'tr_right', 'forward', 'back'], taoHam: ['go_open'], chinhCoDinh: true,
-      san: ['#N##', '#.##', '#.##', '#.##', '#..N', '#C##', '#C##', '#F##'], batDau: { x: 1, y: 4, huong: 0 },
-      noi: [{ nut: { x: 1, y: 0 }, cua: [{ x: 1, y: 5 }], bang: [] }, { nut: { x: 3, y: 4 }, cua: [{ x: 1, y: 6 }], bang: [] }],
-      deBai: 'Tạo hàm go_open(): đo khoảng cách vào d, tới sát van, phun, rồi lùi về đúng d ô bằng back(). Chương trình chính đã khóa: go_open(), rẽ phải, go_open(), rẽ phải, rồi đi qua hai cửa tới cờ. Hai van xa gần khác nhau.',
+      san: ['#N##', '#.##', '#.##', '#.##', '#.N#', '#C##', '#C##', '#F##'], batDau: { x: 1, y: 4, huong: 0 },
+      noi: [{ nut: { x: 1, y: 0 }, cua: [{ x: 1, y: 5 }], bang: [] }, { nut: { x: 2, y: 4 }, cua: [{ x: 1, y: 6 }], bang: [] }],
+      deBai: 'Tạo hàm go_open(): đo khoảng cách vào d, tới sát van, phun, rồi lùi về đúng d ô bằng back(). Chương trình chính đã khóa: go_open(), rẽ phải, go_open(), rẽ phải, rồi đi qua hai cửa tới cờ. Một van ở xa, một van sát mũi xe (d bằng 0).',
       veMaMau: 'Hàm go_open() chưa có. Tạo nó giống màn "Nhớ số để quay về", nhưng xe không quay đầu mà lùi: for i in range(d) rồi back().',
       goiY: ['Biến d trong hàm giữ số đo của lần gọi đó; lần gọi sau đo lại từ đầu.', 'Tiến d ô thì lùi cũng d ô: for i in range(d): back().'],
       maMau: bai(C4), loiGiai: { chinh: C4.slice(), hamCuaMan: [], hamCuaEmMoi: [{ ten: 'go_open', thamSo: [], than: GO_OPEN.slice() }] },
@@ -2122,15 +2123,15 @@
     }, BO_KEP);
     get('che-hong-ngoai.4').loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C4), hamCuaEmMoi: [{ ten: 'go_open', thamSo: [], than: ['# đo, tới van, phun, lùi về'].concat(GO_OPEN) }] };
     // che-hong-ngoai.7 "Sửa hàm visit()" (cũ take() tay kẹp đo lại sau khi quay đầu): hàm của màn đo lại SAU KHI PHUN (van sát mũi nên d thành 0, xe không lùi về);
-    // xoá dòng đo thứ hai. Hai van cách 1 và 3 ô trống (ngược thứ tự với che-hong-ngoai.4).
+    // xoá dòng đo thứ hai. Hai van cách 0 và 3 ô trống (ngược thứ tự với che-hong-ngoai.4).
     var VISIT = GO_OPEN.slice();
     var VISIT_SAI = VISIT.slice(0, 4).concat(['d = distance()'], VISIT.slice(4));
     var C7 = ['visit()', 'tr_left()', 'visit()', 'tr_left()', 'forward(3)'];
     xeCuuHoa('che-hong-ngoai.7', { tay: 'hoi', camBien: copy(HN) }, {
       mucTieu: 'toi-co',
       ten: 'Sửa hàm visit()', hamGoc: DO_VOI.slice(), hamCuaEmCan: ['move', 'tr_left', 'forward', 'back'], chinhCoDinh: true,
-      san: ['####N', '####.', 'N....', '####C', '####C', '####F'], batDau: { x: 4, y: 2, huong: 0 },
-      noi: [{ nut: { x: 4, y: 0 }, cua: [{ x: 4, y: 3 }], bang: [] }, { nut: { x: 0, y: 2 }, cua: [{ x: 4, y: 4 }], bang: [] }],
+      san: ['##...', '####N', 'N....', '####C', '####C', '####F'], batDau: { x: 4, y: 2, huong: 0 },
+      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 4, y: 3 }], bang: [] }, { nut: { x: 0, y: 2 }, cua: [{ x: 4, y: 4 }], bang: [] }],
       deBai: 'Hàm visit() của màn này tới van, phun rồi lùi về, nhưng nó đo lại sau khi phun: lúc đó van sát mũi xe nên d thành 0 và xe không lùi về. Chương trình chính đã khóa: visit(), rẽ trái, visit(), rẽ trái, rồi qua hai cửa tới cờ. Sửa hàm visit.',
       veMaMau: 'Chạy thử: sau khi phun, d = distance() đo được bao nhiêu?',
       goiY: ['Gán d = distance() lần hai thì số cũ mất. Đường về cần số cũ.', 'Chỉ cần xóa một dòng trong hàm visit.'],

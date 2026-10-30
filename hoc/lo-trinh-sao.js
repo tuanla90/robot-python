@@ -15,7 +15,7 @@
   },
   "che-hong-ngoai.7": {
     "o": 22,
-    "nhip": 17
+    "nhip": 15
   },
   "che-hong-ngoai.6": {
     "o": 11,
@@ -27,7 +27,7 @@
   },
   "che-hong-ngoai.4": {
     "o": 22,
-    "nhip": 17
+    "nhip": 15
   },
   "che-hong-ngoai.3": {
     "o": 12,
