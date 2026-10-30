@@ -438,7 +438,7 @@ for (const c of goi.chuong) {
   }
 }
 for (const ma of MOI) if (bang[ma] && bang[ma].demCung) console.log('đếm cứng ' + ma + ': ' + bang[ma].demCung);
-kiem('trùm che-banh-lui.5: nhịp lớn nhất chương, không quá 2 lần màn 9; ba bãi khác số nhịp; thân dock() có go_wall (while), back (lùi), park (hàm em chế)', () => {
+kiem('trùm che-banh-lui.5: nhịp lớn nhất chương, không quá 2 lần màn 9; ba bãi khác số nhịp; thân park_in() có go_wall (while), back (lùi), park (hàm em chế)', () => {
   const ds = M.danhSach.filter((m) => m.chuong === 'che-banh-lui'), trum = ds[9], m9 = ds[8];
   for (const m of ds.slice(0, -1)) assert.ok(trum.sao.nhip > m.sao.nhip, 'trùm ' + trum.sao.nhip + ' nhịp không hơn ' + m.ma + ' ' + m.sao.nhip);
   assert.ok(trum.sao.nhip <= 2 * m9.sao.nhip, 'trùm gấp quá 2 lần màn 9');
@@ -447,6 +447,22 @@ kiem('trùm che-banh-lui.5: nhịp lớn nhất chương, không quá 2 lần m�
   const than = loiGoi(trum.loiGiai.hamCuaMan[0].than);
   assert.ok(than.has('go_wall') && than.has('back') && than.has('park'));
   assert.ok(!trum.damLaThua, 'trùm không phải màn ép, không cờ damLaThua');
+});
+/* ------------------------------------------------------------------ 7. SM1-A lượt 2: tên hàm của màn không trùng hàm cốt truyện */
+// Lỗi thật đã gặp: hàm của màn dock() ở che-banh-lui.5 trùng hàm cốt truyện dock của che-drone.11 (mùa 4): người chơi qua mùa 4 chơi lại thì máy chấm
+// báo "hàm dock() của em được thay bằng hàm của màn". Mọi màn gói A tạo / viết lại (MOI, kho-hang.1–4, bốn màn che-tay viết lại) phải sạch; bảy chỗ trùng
+// có từ trước (xuong-ham.1 move, che-tay.7 go_get, combo.3 / che-combo.7 cross, che-cam-bien.10 fetch_back, tham-so.1 / .2 forward) không thuộc gói này.
+const GOI_A = [...MOI, 'kho-hang.1', 'kho-hang.2', 'kho-hang.3', 'kho-hang.4', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6'];
+kiem('hàm của màn của mọi màn gói A tạo / viết lại (mã mẫu, lời giải, lời giải khác, lời sai) không trùng tên hàm cốt truyện nào (ManHoc.hamCotTruyen); tên hàm của màn trùm che-banh-lui.5 không là hàm của màn nào khác', () => {
+  const cot = new Set(M.hamCotTruyen());
+  const manTao = (t) => (M.danhSach.find((y) => (y.taoHam || []).includes(t)) || {}).ma;
+  for (const ma of GOI_A) {
+    const m = get(ma);
+    assert.ok(m, ma + ' không có trong lộ trình');
+    for (const x of moiBai(m)) for (const h of x.b.hamCuaMan || []) assert.ok(!cot.has(h.ten), ma + ' ' + x.ten + ': hàm của màn ' + h.ten + '() trùng tên hàm cốt truyện (chế ở ' + manTao(h.ten) + ')');
+  }
+  const trum = get('che-banh-lui.5'), ten = trum.loiGiai.hamCuaMan[0].ten;
+  for (const m of M.danhSach) if (m.ma !== trum.ma) for (const x of moiBai(m)) for (const h of x.b.hamCuaMan || []) assert.notEqual(h.ten, ten, ten + '() cũng là hàm của màn ' + m.ma);
 });
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong + ' kiểm tra 9 màn mới và màn trình diễn banh-lui.5 gói Bánh lùi.');
 if (hong) process.exitCode = 1;
