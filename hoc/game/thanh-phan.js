@@ -260,16 +260,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var MAU_DS = ['red', 'green', 'blue', 'yellow', 'none'];                                   // các giá trị color() có thể trả về
   var MAU_LOP = { red: 'g-rd', green: 'g-gr', blue: 'g-bl', yellow: 'g-yl', none: 'g-gy' };
   var RE_DKM = /^(\s*(?:while|if|elif)\s+)([^:]+?)(\s*:.*)$/;
-  var RE_CL_SS = /^((?:color|look)\(\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;
+  var RE_CL_SS = /^((?:color|look)\((?:"[a-z]+")?\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;      // color("front"): camera bốn hướng (mùa 4)
   var RE_CL_CAM = /^(?:not\s+)?[A-Za-z_]\w*\(\)$|^(?:True|False)$/;
-  var RE_GAN_MAU = /^\s*([A-Za-z_]\w*)\s*=\s*(color|look)\(\)\s*(#.*)?$/;                    // c = color() / c = look() (drone có camera nhìn xuống)
+  var RE_GAN_MAU = /^\s*([A-Za-z_]\w*)\s*=\s*(color|look)\(("[a-z]+")?\)\s*(#.*)?$/;      // nhóm 3: hướng của camera bốn hướng (c = color("right"), mùa 4)                    // c = color() / c = look() (drone có camera nhìn xuống)
   var HAM_MAU = 'color';                                                                      // hàm đọc màu của màn đang mở: 'color' (cảm biến màu, camera ở xe) hay 'look' (camera nhìn xuống của drone); khối mẫu và bảng chọn điều kiện dùng tên này
   /* ---- BIẾN ĐẾM (chương che-cam-bien, man.bienDem): `n = 0` đặt biến về một số, `n = n + 1` tăng biến; `for i in range(n):` lấy n làm số lần lặp (ô biến chạm đổi được) */
   var RE_GAN_DEM = /^\s*([A-Za-z_]\w*)\s*=\s*(\d+)\s*$/;
   var RE_TANG_DEM = /^\s*([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*\+\s*(\d+)\s*$/;
   var RE_CL_PIN = /^battery\(\)\s*(<=|>=|<|>|==|!=)\s*(\d+)$/;                                  // battery() < 3: đo pin so với một số
   var PIN_SS = ['<', '<=', '>', '>='];                                                          // vòng đổi phép so sánh khi chạm
-  function datCheMau(b, pin, vh) { CHE_MAU = !!b; CHE_PIN = !!pin; CHE_VH = !!vh; HAM_MAU = b === 'look' ? 'look' : 'color'; }      // vh: man.vaHoac (mùa 3)       // b: coMauCua(man) = tên hàm đọc màu của màn ('color' | 'look') hay false
+  var GOI_MAU = 'color()';                                                                    // lời gọi đọc màu dùng trong khối mẫu / bảng chọn: 'color()', 'look()', hay 'color("front")' / 'color("up")' (camera bốn hướng, mùa 4)
+  /** Các hướng của camera bốn hướng (mùa 4) theo lời gọi mẫu của màn: xe "front" / "left" / "right" / "back", drone / nhện "up" / "down" / "left" / "right". [] nếu không phải camera bốn hướng. */
+  function huongCam() { return /^color\("(front|back)"\)$/.test(GOI_MAU) || GOI_MAU === 'color("front")' ? ['front', 'left', 'right', 'back'] : /^color\("[a-z]+"\)$/.test(GOI_MAU) ? ['up', 'down', 'left', 'right'] : []; }
+  function datCheMau(b, pin, vh) { CHE_MAU = !!b; CHE_PIN = !!pin; CHE_VH = !!vh; HAM_MAU = b === 'look' ? 'look' : 'color'; GOI_MAU = typeof b === 'string' && b.indexOf('(') > 0 ? b : HAM_MAU + '()'; }      // vh: man.vaHoac (mùa 3)       // b: coMauCua(man) = tên hàm đọc màu của màn ('color' | 'look') hay false
   function cheDkm() { return CHE_MAU || CHE_PIN || CHE_VH; }
   /** Màn có cảm biến màu (hamGoc có color). */
   /** Màn có điều kiện để viết while / if không: có cảm biến (front_clear, front_metal…) hay color(). Chương nam châm đầu (không cảm biến) thì không: ẩn khối while / if mẫu. */
@@ -281,7 +284,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return camBienCua(man).length > 0 || goc.indexOf('color') >= 0;
   }
   /** Màn có hàm đọc màu không: trả TÊN hàm ('look' nếu có camera nhìn xuống của drone, không thì 'color') hay false. Truthy = màn có đọc màu (spec.mau, datCheMau). */
-  function coMauCua(man) { var g = (man && man.hamGoc) || []; return g.indexOf('look') >= 0 ? 'look' : g.indexOf('color') >= 0 ? 'color' : false; }
+  function coMauCua(man) {
+    var g = (man && man.hamGoc) || [], cb = (man && man.robot && man.robot.camBien) || [];
+    if (g.indexOf('look') >= 0) return 'look';
+    if (g.indexOf('color') < 0) return false;
+    if (cb.some(function (c) { return c && c.ma === 'camera-4'; })) return ['nhen', 'drone'].indexOf(man.loaiRobot) >= 0 ? 'color("up")' : 'color("front")';     // camera bốn hướng (mùa 4): lời gọi mẫu có hướng
+    return 'color';
+  }
   /** Màn có đo pin battery() (drone có pin): khối giá trị số dùng trong so sánh của while / if. */
   function coPinCua(man) { return ((man && man.hamGoc) || []).indexOf('battery') >= 0; }
   /** Tách điều kiện màu của một dòng while / if / elif: { loai: 'dkm', tien, hau, ds: [chữ từng ô], tok: [{ vt: 'cam' | 'lhs' | 'op' | 'rhs' | 'noi', ci: vế, t }], cl: [vế], nx: [and | or] } hoặc null. */
@@ -342,6 +351,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (m) return { loai: 'if', ten: '', tien: m[1], ds: [m[2], m[4]], noi: m[3], hau: m[5], laFor: false };
     m = RE_DK.exec(dong);
     if (m) return { loai: 'dk', ten: '', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
+    m = /^(\s*[A-Za-z_]\w*\s*=\s*color\()("[a-z]+")(\)\s*(?:#.*)?)$/.exec(dong);             // c = color("up"): hướng của camera bốn hướng chạm để đổi (mùa 4)
+    if (m) return { loai: 'goi', ten: 'color', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
     m = RE_GOI_DS.exec(dong);
     if (!m) return null;
     return { loai: 'goi', ten: m[2], tien: m[1], ds: m[3].trim() === '' ? [] : m[3].split(',').map(function (x) { return x.trim(); }), noi: ', ', hau: m[4], laFor: false };
@@ -419,7 +430,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         return ht + '<span class="pu">:</span>';
       }
       var gm = RE_GAN_MAU.exec(text);
-      if (gm) return '<span class="vr">' + esc(gm[1]) + '</span><span class="pu"> = </span><span class="fn">' + gm[2] + '</span><span class="pu">()</span>';
+      if (gm) return '<span class="vr">' + esc(gm[1]) + '</span><span class="pu"> = </span><span class="fn">' + gm[2] + '</span><span class="pu">(</span>' + (gm[3] ? oDoiSo(gm[3], 0) : '') + '<span class="pu">)</span>';
     }
     var f = /^for\s+([A-Za-z_]\w*)\s+in\s+range\(\s*(\d+|[A-Za-z_]\w*|len\([A-Za-z_]\w*\)|distance\(\)(?:\s*[-+]\s*(?:\d+|[A-Za-z_]\w*))?)\s*\):\s*$/.exec(text);
     if (f) {
@@ -515,6 +526,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (d.loai === 'dkm') return 'dkm';
       if (d.loai === 'if') return k === 0 ? 'bien' : 'dl';
       if (d.ten === 'ink') return 'mau';                                   // ink(c): bảng chọn bốn màu sơn
+      if (d.ten === 'color' && huongCam().length) return 'huong';          // c = color("up"): bảng chọn hướng camera (mùa 4)
       if (d.ten === 'spray' || d.ten === 'spray_back') return 'luc';       // spray(p): bảng chọn lực "low" / "high"
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
       return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' || kd === 'luc' ? kd : 'so';
@@ -628,6 +640,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }
+      if (kd === 'huong') { chonChuoi({ neo: so, kieu: 'huong', gia: String(d.ds[kk] || '').replace(/"/g, ''), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mau') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('mau', i), khongNone: true, khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mauls') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('bien', i), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
@@ -689,7 +702,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         neo: so, cam: cam, bien: bien, gia: cl, pin: CHE_PIN,
         ghep: cam.length ? { coThem: coDong < 2 && o.ci === coDong - 1, coBo: coDong > 1 } : null,
         khiChon: function (v) { ed.datVe(i, o.ci, v); },
-        khiGhep: function (nx) { ed.themVe(i, nx, CHE_MAU && /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== HAM_MAU + '()' ? HAM_MAU + '() != "red"' : (cam[0] + '()')); },
+        khiGhep: function (nx) { ed.themVe(i, nx, CHE_MAU && /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== GOI_MAU ? GOI_MAU + ' != "red"' : (cam[0] + '()')); },
         khiBo: function () { ed.boVe(i, o.ci); }
       });
     }
@@ -1297,8 +1310,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       el.appendChild(hang0);
     }
     if (o.kieu !== 'bien') {
-      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' ? ' cc-luc' : ''));
-      (o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
+      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' || o.kieu === 'huong' ? ' cc-luc' : ''));
+      (o.kieu === 'huong' ? huongCam() : o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {      // 'huong': hướng camera bốn hướng (mùa 4)           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
         var b = h('button', 'bt g-pu cs' + (o.kieu !== 'ghep' && c === o.gia ? ' on' : ''), c); b.setAttribute('data-chu', c);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
@@ -1467,11 +1480,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       el.appendChild(b);
     }
     (o.cam || []).forEach(function (ten) { nut(ten + '()'); nut('not ' + ten + '()'); });
-    nut(HAM_MAU + '() == ' + mauDang, 'g-pk'); nut(HAM_MAU + '() != ' + mauDang, 'g-pk');
+    var hcs = huongCam(), lhs = ss && /^color\(/.test(ss[1]) ? ss[1] : GOI_MAU;
+    if (hcs.length) hcs.forEach(function (x) { var g = 'color("' + x + '")'; nut(g + ' == ' + mauDang, g === lhs ? 'g-pk' : 'g-pu'); });      // camera bốn hướng: chọn hướng nhìn
+    else { nut(GOI_MAU + ' == ' + mauDang, 'g-pk'); }
+    nut(lhs + ' != ' + mauDang, 'g-pk');
     if (o.pin) { nut('battery() < 3', 'g-or'); nut('battery() > 2', 'g-or'); }                  // drone vừa có camera look() vừa có pin: vế trái cũng chọn được điều kiện pin (while battery() > 2:)
     (o.bien || []).forEach(function (v) {
       nut(v + ' == ' + mauDang, 'g-pu'); nut(v + ' != ' + mauDang, 'g-pu');
-      nut(HAM_MAU + '() == ' + v, 'g-pu'); nut(HAM_MAU + '() != ' + v, 'g-pu');
+      nut(GOI_MAU + ' == ' + v, 'g-pu'); nut(GOI_MAU + ' != ' + v, 'g-pu');
     });
     if (o.ghep) {
       var hg = h('div', 'cs-bien'); hg.setAttribute('data-nut', 'chon-ghep');
@@ -1501,7 +1517,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Hàm của em dùng được với robot của màn: hàm gọi (trực tiếp hay qua hàm khác của em) một lệnh gốc mà màn không có trong `hamGoc` thì ẩn khỏi kho
    *  (vd. nhện bỏ hàm dùng lệnh bánh; xích / omni bỏ go(d); xe không tay bỏ pick()). Màn không khai hamGoc: giữ nguyên. */
-  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look', 'distance', 'warm'];
+  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'land', 'take_off', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look', 'distance', 'warm'];
   /** Lệnh gốc mà THÂN HÀM CỦA EM được gọi ở màn này: các lệnh trên khay (hamGoc) cộng PHẦN CỨNG robot (SanHoc.phanCungCua(man) của lõi: man.phanCung nếu màn khai — màn hỏng —,
    *  không thì trọn bộ lệnh loại robot, vd. xe bánh luôn có bánh lùi dù khay chưa cho dùng). Lõi cũ chưa có SanHoc.phanCungCua thì dùng man.phanCung nếu có, không thì chỉ hamGoc như trước. */
   function lenhDuocGoi(man) {
@@ -2030,9 +2046,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
       /* ---- khối cấu trúc Python (15/10): thẻ LOGIC (khóa 'cam') gom `for`, `while`, `if` / `elif` / `else`, điều kiện cảm biến và biến đếm — việc của bộ não, robot nào cũng có một;
          thẻ Thân / Tay chỉ còn lệnh của bộ phận. Màn chưa có cấu trúc nào (chuỗi 1, 2) thì không có thẻ Logic. */
-      var dsDk = [], fm = typeof spec.mau === 'string' ? spec.mau : 'color';                  // fm: hàm đọc màu của màn ('look' ở drone có camera nhìn xuống)
+      var dsDk = [], fm = typeof spec.mau === 'string' ? spec.mau : 'color', gm = fm.indexOf('(') > 0 ? fm : fm + '()';      // gm: lời gọi đọc màu (camera bốn hướng: color("front"))                  // fm: hàm đọc màu của màn ('look' ở drone có camera nhìn xuống)
       if (gocChan.length ? (spec.dieuKien || coCam) : coCam) {
-        dsDk = spec.thamSoChuoi ? ['if d == "U":', 'elif d == "D":', 'else:'] : spec.pin && !spec.mau ? ['if battery() < 3:', 'else:'] : spec.mau ? (spec.pin ? ['if battery() < 3:'] : []).concat(cam.length ? ['if ' + camDau + '():'] : [], ['if ' + fm + '() == "red":', 'elif ' + fm + '() == "blue":', 'else:', 'c = ' + fm + '()'])          // cảm biến màu: so màu + gán biến (drone vừa có pin vừa có camera: thêm khối pin)
+        dsDk = spec.thamSoChuoi ? ['if d == "U":', 'elif d == "D":', 'else:'] : spec.pin && !spec.mau ? ['if battery() < 3:', 'else:'] : spec.mau ? (spec.pin ? ['if battery() < 3:'] : []).concat(cam.length ? ['if ' + camDau + '():'] : [], ['if ' + gm + ' == "red":', 'elif ' + gm + ' == "blue":', 'else:', 'c = ' + gm])          // cảm biến màu: so màu + gán biến (drone vừa có pin vừa có camera: thêm khối pin)
           : cam.length ? (cam.indexOf('right_clear') >= 0 ? ['if right_clear():', 'elif front_clear():', 'else:'] : ['if ' + camDau + '():', 'else:'])
           : ['if d == "U":', 'elif d == "D":', 'else:'];
       }
@@ -2047,7 +2063,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (dsDk.indexOf('else:') < 0) dsDk.push('else:');
       }
       var dkCam = dsDk.some(function (s) { return RE_DK_CAM.test(s); });
-      var chuWhile = spec.vong && spec.vongWhile ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + fm + '() != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camHN && !camKhac.length && !spec.mau ? 'while distance() > 0:' : camNong && !camKhac.length && !spec.mau ? 'while not warm():' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương (hồng ngoại: while distance() > 0: / while not warm():)
+      var chuWhile = spec.vong && spec.vongWhile ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + gm + ' != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camHN && !camKhac.length && !spec.mau ? 'while distance() > 0:' : camNong && !camKhac.length && !spec.mau ? 'while not warm():' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương (hồng ngoại: while distance() > 0: / while not warm():)
       var coLogic = coCam || !!spec.vong || dsDk.length > 0 || !!chuWhile || !!spec.bienDem || !!spec.list;
 
       /* ---- hàm của em chia vào thẻ theo lệnh gốc nó gọi (kể cả gián tiếp); thẻ không có thì rơi về THÂN */

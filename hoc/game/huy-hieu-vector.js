@@ -371,6 +371,58 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     beSung(g, c, cx, cy, canh);
   });
   dk('nha-may-chay', function (g, c) { beSung(g, c, 36, 58, 48, [8, 18]); c.sao(22, 26, 7); c.sao(78, 26, 7); });
+  /* Mùa 4 "Thành phố" (30/10, phiên Mùa 4): huy hiệu các chương mới. Cỗ máy của mùa là Drone kẻ vạch R1 (drone + máy sơn dưới bụng + camera bốn hướng).
+     Nét sơn vẽ bằng màu luật sơn của bảng màu (vàng, xanh dương), cùng màu ô đã tô trên sân. */
+  var CAM4 = [{ ma: 'camera-4', o: 'tren' }], CAM4_DUOI = [{ ma: 'camera-4', o: 'tren', taiCho: true }];
+  var DRONE_KE = { than: 'drone', tay: 'son', camBien: CAM4_DUOI };
+  /** Nét sơn d (đường SVG hệ 100) màu m, dày w. */
+  function netSon(g, d, m, w) { H.duong(g, d); H.vien(g, BM.vecVien, (w || 6) + 2.4); H.vien(g, m, w || 6); }
+  function xeCam(g, c, cx, cy, canh) { c.robot({ than: 'hai-banh', camBien: CAM4 }, st(null, null, { bat: true }), 0, cx, cy, canh); }
+  dk('cam-bon', function (g, c) {
+    c.o('san-mau', { mau: 'green' }, 24, 52, 20); c.o('san-mau', { mau: 'red' }, 76, 52, 20);
+    xeCam(g, c, 50, 56, 50);
+  });
+  dk('che-cam-bon', che(function (g, c) { c.o('san-mau', { mau: 'green' }, 22, 64, 16); xeCam(g, c, 44, 64, 42); }));
+  function hopDich(g, c, cx, cy, canh, mau) { c.o('dich', { kieu: 'trong', mau: mau }, cx, cy, canh); c.vat('khoi-sat', { mau: mau }, cx, cy, canh * 0.56); }
+  dk('pho-mau', function (g, c) {
+    hopDich(g, c, 50, 68, 30, 'red');
+    c.robot({ than: 'drone', tay: 'nam-cham', camBien: CAM4 }, st({ quat: true }), 0, 50, 38, 44);
+  });
+  dk('che-pho-mau', che(function (g, c) { hopDich(g, c, 30, 64, 24, 'red'); hopDich(g, c, 56, 70, 22, 'blue'); }));
+  dk('tram-sac', function (g, c) {
+    c.o('sac', { pha: 0 }, 50, 62, 40);
+    c.robot({ than: 'drone' }, st({ quat: false }), 0, 50, 56, 48);
+  });
+  dk('net-lien', function (g, c) {
+    netSon(g, 'M24 70 H64 V46', BM.luatSonXanhDuong, 6);
+    c.robot({ than: 'hai-banh', tay: 'son' }, st(null, { tuThe: 'duoi', mauSon: 'blue' }), 0, 64, 44, 34);
+  });
+  function nhinDuoi(g, c, cx, cy, canh) {
+    c.vat('khoi-sat', { mau: 'blue' }, cx, cy + canh * 0.34, canh * 0.4);
+    c.robot({ than: 'drone', tay: 'nam-cham', camBien: CAM4_DUOI }, st({ quat: true }, null, { bat: true }), 0, cx, cy - canh * 0.08, canh);
+  }
+  dk('nhin-duoi', function (g, c) { nhinDuoi(g, c, 50, 52, 54); });
+  dk('che-nhin-duoi', che(function (g, c) { nhinDuoi(g, c, 40, 62, 42); }));
+  function sonCao(g, c, cx, cy, canh) {
+    c.o('rao', { mask: 0 }, cx, cy + canh * 0.42, canh * 0.36);
+    netSon(g, 'M' + (cx - canh * 0.62) + ' ' + (cy + canh * 0.42) + ' H' + (cx - canh * 0.22), BM.luatSonVang, 6);
+    netSon(g, 'M' + (cx + canh * 0.22) + ' ' + (cy + canh * 0.42) + ' H' + (cx + canh * 0.62), BM.luatSonVang, 6);
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'yellow' }), 0, cx, cy - canh * 0.1, canh);
+  }
+  dk('son-tren-cao', function (g, c) { sonCao(g, c, 50, 48, 50); });
+  dk('che-son-tren-cao', che(function (g, c) { sonCao(g, c, 42, 58, 40); }));
+  dk('tong-hop-4', function (g, c) {
+    c.o('sac', { pha: 0 }, 26, 66, 22); c.o('san-mau', { mau: 'yellow' }, 50, 70, 20); c.o('san-mau', { mau: 'red' }, 74, 66, 20);
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'yellow' }, { bat: true }), 0, 50, 40, 46);
+  });
+  /** Trùm cuối mùa 4 "Drone kẻ vạch R1 xuất xưởng": drone đủ bộ trên vạch đứt vàng, hai sao hai góc trên như xuat-xuong / nha-may-chay. */
+  function droneKeVach(g, c) {
+    ['M18 76 H32', 'M43 76 H57', 'M68 76 H82'].forEach(function (d) { netSon(g, d, BM.luatSonVang, 6); });
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'yellow' }, { bat: true }), 0, 50, 50, 54);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  }
+  dk('drone-ke-vach', droneKeVach);
+  dk('trum-mua-4', droneKeVach);
   dk('che-hai-robot', function (g, c) {
     c.o('nut-de', { de: true }, 30, 62, 32); c.robot({ than: 'hai-banh', son: '' }, st(), 0, 30, 62, 34);
     c.o('cua', { k: 1, doc: true }, 68, 34, 30);
@@ -393,6 +445,45 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot({ than: 'xich', son: 'do' }, st(), 1, 36, 62, 40);
     c.robot({ than: 'hai-banh', son: '' }, st(), 1, 60, 44, 28);
   });
+
+  /* 30/10 mùa 3 "Mỏ quặng" (20 chương; nhen, nam-cham, che-nhen giữ hình cũ, 17 hình mới): nhện, nam châm, cảm biến từ ('tu', ổ hông), đệm từ, hố (khe nứt),
+     khối sắt (quặng), vật nam châm hai cực. Hai chương đội (doi-xich, che-doi-xich đang là bí danh hai-robot) dùng mã mới doi-xich-nhen / che-doi-xich-nhen
+     để bí danh cũ y nguyên. Trùm mùa (trum-mua-3) = xe-tham-do: cỗ máy mùa 3 xuất xưởng (nhện + nam châm bụng + cảm biến từ), hai sao như xuat-xuong. */
+  var TU = [{ ma: 'tu', o: 'hong' }], NHEN_BUNG = { than: 'nhen', tay: 'nam-cham' };
+  /** Thẻ chuỗi "…" (kiểu khối code) tâm (cx, cy) rộng w. */
+  function theChuoi(c, cx, cy, w, chu, nen) { c.khoi(cx, cy, w, 24, nen || BM.vecLaDam, [[chu, BM.vecVo, 14]]); }
+  /** Xe hai bánh có cảm biến từ quay lên, sóng dò bên phải tới vật `vat` (khoi-sat / nam-cham). */
+  function doTu(g, c, cx, cy, canh, vat, s) {
+    var x1 = cx + canh * 0.8;
+    c.vat(vat, s || {}, x1, cy, canh * 0.3);
+    c.song(cx + canh * 0.36, cy, 0, [canh * 0.12, canh * 0.22, canh * 0.32], BM.vecCyanDam);
+    c.robot({ than: 'hai-banh', camBien: TU }, st(null, null, { bat: true }), 0, cx, cy, canh);
+  }
+  /** Nhện nam châm bụng đang hút (cực N). */
+  function nhenBung(c, cx, cy, canh, cam) { c.robot(cam ? { than: 'nhen', tay: 'nam-cham', camBien: TU } : NHEN_BUNG, st(null, { bat: true, cuc: 'N' }, cam ? { bat: true } : null), 0, cx, cy, canh); }
+  /** Cung nhảy đứt nét qua hố. */
+  function cungNhay(g, d) { g.setLineDash([4, 3]); H.duong(g, d); H.vien(g, BM.vecVien, 2.6, 'butt'); g.setLineDash([]); }
+  dk('chuoi-nhen', function (g, c) { c.robot({ than: 'nhen' }, st(), 0, 38, 64, 48); theChuoi(c, 58, 32, 38, '"RU"'); });
+  dk('logic-nam-cham', function (g, c) { namCham(g, c, 34, 66, 40); c.khoi(58, 32, 38, 24, BM.vecTimDam, [['and', BM.vecVang, 14]]); });
+  dk('cam-ung-tu', function (g, c) { doTu(g, c, 34, 54, 46, 'khoi-sat'); });
+  dk('che-cam-ung-tu', che(function (g, c) { doTu(g, c, 28, 64, 38, 'khoi-sat'); }));
+  dk('bai-tu', function (g, c) { c.o('dem-tu', { cuc: 'S' }, 36, 58, 40); c.vat('khoi-sat', {}, 74, 58, 16); c.muiTen(76, 34, 50, 34, BM.vecVang, 4.5); });
+  dk('che-bai-tu', che(function (g, c) { c.o('dem-tu', { cuc: 'N' }, 30, 62, 28); c.o('dem-tu', { cuc: 'S' }, 54, 72, 24); }));
+  dk('nhay', function (g, c) { c.o('ho', {}, 46, 68, 30); cungNhay(g, 'M18 66 C24 22 62 18 70 44'); c.robot({ than: 'nhen' }, st(), 1, 72, 54, 36); });
+  dk('dao-cuc', function (g, c) { c.vong(50, 52, 25, BM.vecVang, 5); c.vat('nam-cham', { cuc: 'N' }, 34, 52, 20); c.vat('nam-cham', { cuc: 'S' }, 66, 52, 20); });
+  dk('che-dao-cuc', che(function (g, c) { c.vong(40, 62, 16, BM.vecVang, 4); c.vat('nam-cham', { cuc: 'S' }, 40, 62, 16); }));
+  dk('doc-cuc', function (g, c) { doTu(g, c, 34, 54, 46, 'nam-cham', { cuc: 'S' }); });
+  dk('che-doc-cuc', che(function (g, c) { doTu(g, c, 28, 64, 38, 'nam-cham', { cuc: 'N' }); }));
+  dk('doi-xich-nhen', function (g, c) {
+    c.vat('khoi-sat', {}, 50, 30, 14);
+    c.robot({ than: 'xich', son: '' }, st(), 0, 30, 60, 40);
+    c.robot({ than: 'nhen', son: 'lam' }, st(), 0, 70, 60, 40);
+  });
+  dk('che-doi-xich-nhen', che(function (g, c) { c.robot({ than: 'xich', son: '' }, st(), 0, 28, 62, 34); c.robot({ than: 'nhen', son: 'lam' }, st(), 0, 56, 70, 32); }));
+  dk('bung-nhen', function (g, c) { nhenBung(c, 44, 46, 56); c.vat('khoi-sat', {}, 72, 74, 14); c.song(72, 74, -Math.PI * 0.75, [10, 16], BM.vecDo); });
+  dk('che-bung-nhen', che(function (g, c) { nhenBung(c, 40, 62, 46); }));
+  dk('tong-hop-3', function (g, c) { c.o('ho', {}, 32, 70, 26); c.vat('khoi-sat', {}, 76, 66, 13); nhenBung(c, 54, 42, 48); });
+  dk('xe-tham-do', function (g, c) { nhenBung(c, 50, 56, 58, true); c.sao(22, 28, 7); c.sao(78, 28, 7); });
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

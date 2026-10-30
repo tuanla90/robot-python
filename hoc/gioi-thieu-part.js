@@ -89,13 +89,14 @@
     'drone': {
       khe: 'than', ten: 'Thân drone',
       moTa: 'Bay trên cao, đi lên, xuống, trái, phải theo màn hình.',
-      lenh: DI.concat(['wait', 'battery']),
+      lenh: DI.concat(['wait', 'battery', 'land', 'take_off']),
       moTaLenh: { go_up: 'Bay lên một ô, 1 nhịp', go_down: 'Bay xuống một ô, 1 nhịp', go_left: 'Bay sang trái một ô, 1 nhịp', go_right: 'Bay sang phải một ô, 1 nhịp',
-        wait: 'Lơ lửng một nhịp', battery: 'Hỏi: pin còn bao nhiêu' },
+        wait: 'Lơ lửng một nhịp', battery: 'Hỏi: pin còn bao nhiêu', land: 'Hạ cánh xuống ô đang ở, 1 nhịp', take_off: 'Cất cánh, 1 nhịp' },
       gioi: ['Nhanh: mỗi lệnh go_…() là 1 nhịp, 1 ô', 'Bay qua hàng rào thấp, băng chuyền, vật, bậc thang'],
       khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném, vòi phun',
-        { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }],
-      luuY: [{ chu: 'Dừng ở ô sạc P thì pin sạc đầy ở cuối nhịp.', can: ['battery'] }]
+        { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }, { chu: 'Đang đậu thì không bay được: take_off() trước đã', can: ['land'] }],
+      luuY: [{ chu: 'Dừng ở ô sạc P thì pin sạc đầy ở cuối nhịp.', can: ['battery'], khongCan: ['land'] },
+        { chu: 'Bản nâng cấp: chỉ khi land() xuống ô sạc P thì pin mới đầy, bay ngang qua P không sạc. Đậu không tốn pin.', can: ['land'] }]
     },
 
     /* ------------------------------------------------------------ TAY */
@@ -216,6 +217,15 @@
       khong: ['Tường, rào, thùng, cửa đóng, mép sân: color() trả "none"', 'Không gắn chung với cảm biến màu ở bụng'],
       luuY: ['Cùng tên color() với cảm biến màu, nhưng đọc chỗ khác. Kết quả của hàm tùy vào bộ phận gắn trên xe.']
     },
+    'camera-4': {
+      khe: 'camBien', ten: 'Camera bốn hướng',
+      moTa: 'Tháp camera trên nóc, bốn ống kính nhìn bốn ô quanh robot.',
+      lenh: ['color'],
+      moTaLenh: { color: 'Đọc màu ở ô theo hướng ghi trong lệnh' },
+      gioi: ['Xe nhìn "front", "left", "right", "back" theo mũi xe', 'Drone nhìn "up", "down", "left", "right" theo bản đồ', 'Đọc không tốn nhịp'],
+      khong: ['Tường, rào, thùng, cửa đóng, mép sân: trả "none"', 'Không gắn chung với cảm biến màu ở bụng hay camera trước'],
+      luuY: ['Phải ghi hướng: color() để trống là lỗi.', 'Bản nâng cấp nhìn thêm ô dưới chân: hướng "here".']
+    },
     'camera-bay': {
       khe: 'camBien', ten: 'Camera bụng drone',
       moTa: 'Ống kính dưới bụng drone, nhìn ô ngay bên dưới.',
@@ -225,7 +235,7 @@
       luuY: []
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-bay'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -241,7 +251,7 @@
     them('khoang-cach');
     them('tu');
     them('hong-ngoai');
-    if (co(goc, 'color')) them(co(cam, 'camera') ? 'camera' : 'mau');
+    if (co(goc, 'color')) them(co(cam, 'camera-4') ? 'camera-4' : co(cam, 'camera') ? 'camera' : 'mau');
     them('camera-bay');
     return kq;
   }
@@ -249,6 +259,7 @@
   function hienMuc(m, lenh, than) {
     if (typeof m === 'string') return true;
     if (m.can && !m.can.every(function (x) { return co(lenh, x); })) return false;
+    if (m.khongCan && m.khongCan.some(function (x) { return co(lenh, x); })) return false;      // câu chỉ đúng khi robot CHƯA có lệnh đó (vd sạc tự động trên P: drone nâng cấp land() thì không)
     if (m.than && m.than !== than) return false;
     return true;
   }

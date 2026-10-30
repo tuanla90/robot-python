@@ -24,7 +24,9 @@ const ChamHoc = require(path.join(day, 'cham.js'));
 const ManHoc = require(path.join(day, 'man-chuoi-1.js'));
 const VV = LapRap.veVector();
 const LENH_MOI = { shoot: 'spray', shoot_back: 'spray_back' };                                   // 30/10: vòi phun đổi tên lệnh (dữ liệu chụp còn tên cũ)
-const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'), (k, v) => (typeof v === 'string' && LENH_MOI[v] ? LENH_MOI[v] : v));     // V7c1 c0: dữ liệu logic chụp từ bộ pixel trước khi tách
+// 30/10 mùa 4 gói 5: thân drone có thêm land / take_off (nâng cấp đáp đất để sạc; lap-rap.js chỉ mở khi màn có land trên khay); dữ liệu chụp chưa có, chèn ngay sau battery
+const THEM_DAP = (v) => (Array.isArray(v) && v.includes('go_up') && v.includes('battery') && !v.includes('land') ? (v.splice(v.indexOf('battery') + 1, 0, 'land', 'take_off'), v) : v);
+const CHUP = JSON.parse(fs.readFileSync(path.join(day, 'du-lieu-chup-pixel.json'), 'utf8'), (k, v) => THEM_DAP(typeof v === 'string' && LENH_MOI[v] ? LENH_MOI[v] : v));     // V7c1 c0: dữ liệu logic chụp từ bộ pixel trước khi tách
 /* 29/10 Xe cứu hỏa R1 (gói vòi phun hình): tên hiển thị part 'hoi' đổi 'Súng hơi hai nòng' → 'Vòi phun hai đầu'; dữ liệu chụp c0 giữ tên cũ, so qua bảng đổi tên (mã, ổ, hamGoc, luật ghép y nguyên; như kiem-ve-vector.mjs mục 12) */
 const DOI_TEN = { 'Súng hơi hai nòng': 'Vòi phun hai đầu' }, tenMoi = (x) => (x == null ? x : Object.keys(DOI_TEN).reduce((a, k) => a.split(k).join(DOI_TEN[k]), x));
 

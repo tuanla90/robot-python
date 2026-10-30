@@ -299,6 +299,8 @@
     g('pen_down', 'pen_up', 'Máy sơn: hạ đầu sơn, xe đi tới đâu tô tới đó'),
     g('pen_up', 'pen_down', 'Máy sơn: nhấc đầu sơn, thôi tô'),
     g('battery', null, 'Hỏi: pin còn bao nhiêu'),
+    g('land', 'take_off', 'Drone hạ cánh xuống ô đang ở; đáp ô sạc P thì pin đầy ngay'),
+    g('take_off', 'land', 'Drone cất cánh, bay tiếp được'),
     g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì')
   ];
 

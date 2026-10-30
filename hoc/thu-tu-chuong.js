@@ -71,7 +71,8 @@
       { ma: 'mua-2', ten: 'Ghi nhớ', ban: { gia: '49.000đ' } },
       // Mùa 3 "Mỏ quặng" đủ 10 gói × 20 màn (30/10, user cho chơi thử): hiện ở màn chọn gói.
       { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' } },
-      { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' }, an: true }
+      { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-5', ten: 'Sân bóng', ban: { gia: '49.000đ' }, an: true }      // 29/10: gói cũ chưa thuộc mùa 1–4 (omni, máy ném, lắp ráp, đua, đội…) chờ dựng mùa 5–7
     ],
     goi: [
       { ma: 'xe', ten: 'Xe hai bánh', sao: 0, chuong: ['hai-banh'] },
