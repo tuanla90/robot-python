@@ -461,6 +461,7 @@ if (LOI_GIA_3) {
   get('nam-cham.7').hamGoc = get('nam-cham.7').hamGoc.concat(['magnet_s']);
   get('doi-xich.3').san = get('doi-xich.3').san.map((d, i) => i === 0 ? 'S' + d.slice(1) : d);
   get('che-nhen.4').hamCuaEmCan = get('che-nhen.4').hamCuaEmCan.concat(['fly_home']);
+  get('bung-nhen.10').huyHieu = { ma: 'khong-co-hinh', ten: 'Huy hiệu giả' };      // (i) huy hiệu không có hình vector
 }
 kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_3 khai đủ 10 gói × 2 chương, đúng loại; chương chưa có màn chưa hiện; mùa 3 ẩn; gói ngoài khuôn ở đầu mùa 4', () => {
   assert.deepEqual(M.mua3.map(g => [g.ma, g.loai, g.chuong.map(c => c[0])]), BANG_MUA_3.map(([ma, loai, ds]) => [ma, loai, ds.map(c => c[0])]), 'MUA_3 khác bảng');
@@ -562,6 +563,17 @@ kiem3('(h) đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nhịp
   const la = nhay.filter((r) => !CHO_NHAY_3[r[2]]);
   assert.deepEqual(la.map((r) => r[2] + ' ' + r[4] + ' ' + r[5] + ' → ' + r[6]), [], la.length + ' chỗ nhảy đường cong ngoài CHO_NHAY_3');
 });
+kiem3('(i) huy hiệu mùa 3 (user 30/10 "vẽ 20 huy hiệu"): màn cuối mỗi chương (dòng chương MUA_3) là trùm mang huy hiệu có hình vector riêng (coHinhRieng), 20 mã khác nhau; màn khác của chương không mang huy hiệu', () => {
+  const ma = [];
+  for (const g of M.mua3) for (const [c, ds] of g.chuong) {
+    const t = get(ds[ds.length - 1]);
+    assert.ok(t.hang === 'trum' && t.huyHieu && t.huyHieu.ma, c + ': màn cuối ' + t.ma + ' không phải trùm có huy hiệu');
+    assert.ok(coHinhRieng(t.huyHieu.ma), c + ': huy hiệu ' + t.huyHieu.ma + ' không có hình vector riêng');
+    for (const m of ds.slice(0, -1)) assert.ok(!get(m).huyHieu, m + ' (trước trùm chương ' + c + ') mang huy hiệu');
+    ma.push(t.huyHieu.ma);
+  }
+  assert.equal(new Set(ma).size, 20, 'huy hiệu mùa 3 trùng: ' + ma.join(','));
+});
 if (!LOI_GIA_3) {
   // (f) bảng ô hố u / gầm n theo gói mùa 3 (luật: hố là sàn mới mùa 3, đi cùng nhảy ở gói 5, bãi từ gói 4): chỉ in.
   const ho = goi3().map(g => [g.ma, g.chuong.flatMap(c => M.danhSach.filter(m => m.chuong === c)).filter(m => dsSanCua(m).some(s => /[un]/.test(s.join(''))))
@@ -569,8 +581,8 @@ if (!LOI_GIA_3) {
   console.log('Mùa 3 (f) hố u / gầm n theo gói: ' + ho.map(([g, ds]) => g + ': ' + (ds.join(' ') || 'không')).join(' · '));
 }
 if (LOI_GIA_3) {
-  console.log('Lỗi giả mùa 3: HỎNG ' + hong3 + ' / 7 mục (a)–(g).');
-  process.exit(hong3 === 7 ? 0 : 1);
+  console.log('Lỗi giả mùa 3: HỎNG ' + hong3 + ' / 8 mục (a)–(g), (i).');
+  process.exit(hong3 === 8 ? 0 : 1);
 }
 if (hong3) { console.log('Mùa 3: HỎNG ' + hong3 + ' mục.'); process.exit(1); }
 
