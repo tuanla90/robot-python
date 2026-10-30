@@ -447,6 +447,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     Luu.xoaNhap(m.ma);
     vao(m);                // nạp lại maMau, dựng lại kho khối, mở lại bong bóng đề bài
   }
+  /** Bảng Gỡ lỗi (GoLoi.napLoiGiai): thay bài đang viết bằng `bai` ({ chinh, hamCuaMan } hay { doi: [{ chinh }], hamCuaMan }), ghi nháp, vẽ lại khung code, khay, đếm hàm.
+   *  Kho hàm của em đã được GoLoi nạp trước. chu, kieu: lời báo nhanh (tùy chọn; kieu 'bad' là báo lỗi). Trả về false khi chưa vào màn. */
+  function napBai(bai, chu, kieu) {
+    var m = S.man; if (!m) return false;
+    var hm = (bai.hamCuaMan || []).map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: (f.than || []).slice() }; });
+    if (m.doi) {
+      var doi = m.doi.map(function (r, i) { return { chinh: ((bai.doi && bai.doi[i] && bai.doi[i].chinh) || []).slice() }; });
+      S.bai = { doi: doi, chinh: doi[S.xe].chinh, hamCuaMan: hm };
+    } else S.bai = { chinh: (bai.chinh || []).slice(), hamCuaMan: hm };
+    Luu.ghiNhap(m.ma, S.bai);
+    S.ed.nap(function () { return S.bai.chinh; }, S.dung.chinh);
+    datLaiChay();
+    veKho(true);
+    veHamDem();
+    if ((m.manGoc || m).lapRap) baoLenhMat();
+    if (chu) toast(chu, kieu || '', kieu === 'bad' ? 5000 : 2600);
+    return true;
+  }
   function goiY() {
     var ds = S.man.goiY || [];
     if (!ds.length) { bong({ kieu: 'goi', tieuDe: t('choi.goiY'), chu: t('choi.khongGoiY') }); return; }
@@ -784,7 +802,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   window.Choi = {
-    dung: dung, vao: vao, roi: roi,
+    dung: dung, vao: vao, roi: roi, napBai: napBai,
     trangThai: function () { return { man: S.man, bai: S.bai, ket: S.ket, busy: S.busy, xe: S.xe || 0 }; }          // xe: robot đang chọn ở khung code (màn nhiều robot)
   };
 })();
