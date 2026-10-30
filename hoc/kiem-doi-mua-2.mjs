@@ -223,14 +223,14 @@ for (const m of M.danhSach) for (const t of m.taoHam || []) if (!HAM_COT_TRUYEN.
 const bang = {};
 /** Lời giải có lần đọc hồng ngoại ra đồng đội (vat 'dong-doi') ở sân nào đó. */
 function docThayDongDoi(r) {
-  return r.theoSan.some((s) => (s.doi || []).some((d) => d.vet.some((e) => e.docCamBien && e.docCamBien.cam === 'hong-ngoai' && e.docCamBien.vat === 'dong-doi')));
+  return r.theoSan.some((s) => (s.doi || []).some((d) => d.vet.some((e) => e.docCamBien && e.docCamBien.vat === 'dong-doi')));     // PDM2c: hồng ngoại của R1 hay cảm biến khoảng cách của R2
 }
 for (const m of DS) {
   const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
   bang[m.ma] = {};
   try { thayDongDoi.set(m.ma, docThayDongDoi(cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi))); } catch (e) { thayDongDoi.set(m.ma, false); }
   if (CHI && !CHI.split(',').includes(m.ma)) continue;
-  kiem(m.ma + ': đủ trường, đội xích + xe súng có hồng ngoại, cả hai chương trình khóa, cờ riêng, một sân', () => {
+  kiem(m.ma + ': đủ trường, đội R1 xe cứu hỏa (xích + vòi + hồng ngoại) + R2 xe chở hàng mùa 1 (hai bánh + tay xoay + cảm biến khoảng cách), cả hai chương trình khóa, cờ riêng, một sân', () => {
     for (const k of ['ten', 'deBai', 'san', 'batDau', 'mucTieu', 'hamGoc', 'robot', 'sao', 'maMau', 'loiGiai', 'loiGiaiKhac', 'goiY', 'hamCuaEmCan', 'yMoi']) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
@@ -241,15 +241,19 @@ for (const m of DS) {
     assert.equal(r1.robot.than, 'xich');
     assert.equal(r2.loaiRobot, 'banh', m.ma + ' R2 phải là xe hai bánh');
     assert.equal(r2.robot.than, 'hai-banh');
-    assert.equal(r2.robot.tay, 'hoi', m.ma + ' R2 phải gắn súng hơi');
-    assert.equal(r2.lucBan, true, m.ma + ' R2 thiếu lucBan');
+    // PDM2c 31/10: R1 là xe cứu hỏa đầy đủ, R2 là xe chở hàng mùa 1 (không part mùa 2: kiem-part-mua.mjs)
+    assert.equal(r1.robot.tay, 'hoi', m.ma + ' R1 phải gắn vòi phun');
+    assert.equal(r1.lucBan, true, m.ma + ' R1 thiếu lucBan');
+    assert.deepEqual(r1.robot.camBien.map((c) => c.ma), ['hong-ngoai'], m.ma + ' R1 phải gắn mắt hồng ngoại');
+    for (const h of ['distance', 'warm', 'spray', 'spray_back']) assert.ok(r1.hamGoc.includes(h), m.ma + ' khay R1 thiếu ' + h);
+    assert.equal(r2.robot.tay, 'xoay', m.ma + ' R2 phải gắn tay xoay (xe chở hàng mùa 1)');
+    assert.deepEqual(r2.robot.camBien.map((c) => c.ma), ['khoang-cach'], m.ma + ' R2 phải gắn cảm biến khoảng cách');
+    for (const h of ['front_clear', 'left_clear', 'right_clear', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'left_back', 'right_back']) assert.ok(r2.hamGoc.includes(h), m.ma + ' khay R2 thiếu ' + h);
+    for (const h of ['distance', 'warm', 'spray', 'spray_back']) assert.ok(!r2.hamGoc.includes(h), m.ma + ' R2 không được mang part mùa 2 (' + h + ')');
     for (const r of m.doi) {
-      assert.deepEqual(r.robot.camBien.map((c) => c.ma), ['hong-ngoai'], m.ma + ' robot phải gắn mắt hồng ngoại');
-      for (const h of ['distance', 'warm']) assert.ok(r.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
       assert.equal(r.coDinh, true, m.ma + ' chương trình chính phải khóa');
       if (m.mucTieu === 'toi-co') assert.ok(r.co && r.co.length, m.ma + ' cờ riêng từng robot');
     }
-    for (const h of ['spray', 'spray_back']) assert.ok(r2.hamGoc.includes(h) && !r1.hamGoc.includes(h), m.ma + ' súng chỉ ở R2');
     assert.deepEqual(m.maMau.doi.map((d) => d.chinh), m.loiGiai.doi.map((d) => d.chinh), m.ma + ' chương trình khóa: mã mẫu phải trùng lời giải');
     assert.equal(m.loiGiai.chinh, undefined);
     assert.equal(hamViet(m).length, 1, m.ma + ' người chơi viết / sửa đúng một hàm');
@@ -258,8 +262,8 @@ for (const m of DS) {
     else assert.equal(soSan(m), 1, m.ma + ' nhiều sân chỉ ở trùm (luật lộ trình)');
     if (soSan(m) > 1) assert.equal(m.nhipTheo, 'tong', m.ma + ' nhiều sân phải tính tổng nhịp');
     const hv = hamViet(m)[0];
-    assert.ok(bacCau(m, hv.than, m.loiGiai.hamCuaEmMoi).dong.some((l) => /warm\(\)|distance\(\)/.test(l)), m.ma + ' thân ' + hv.ten + ' không đọc hồng ngoại');
-    assert.ok(thayDongDoi.get(m.ma), m.ma + ' chạy lời giải mà mắt hồng ngoại chưa lần nào thấy đồng đội');
+    assert.ok(bacCau(m, hv.than, m.loiGiai.hamCuaEmMoi).dong.some((l) => /warm\(\)|distance\(\)|front_clear\(\)|left_clear\(\)|right_clear\(\)/.test(l)), m.ma + ' thân ' + hv.ten + ' không đọc cảm biến (hồng ngoại của R1 hay khoảng cách của R2)');
+    assert.ok(thayDongDoi.get(m.ma), m.ma + ' chạy lời giải mà cảm biến chưa lần nào thấy đồng đội');
     if (m.chuong === 'doi-mua-2') assert.deepEqual(m.taoHam, [], m.ma + ' chương 1 không tạo hàm của em');
     for (const s of ['ten', 'deBai', 'veMaMau', 'yMoi']) if (m[s]) assert.ok(!/—|\p{Extended_Pictographic}/u.test(m[s]), m.ma + ' ' + s + ' có gạch dài / emoji');
     for (const s of m.goiY.concat(m.loiSai.map((x) => x.moTa), [m.loiGiaiKhac.moTa], (m.congThucKhac || []).map((x) => x.moTa))) assert.ok(!/—|\p{Extended_Pictographic}/u.test(s), m.ma + ' chữ có gạch dài / emoji: ' + s);
@@ -377,10 +381,11 @@ if (!CHI && DU) {
   kiem('recall: mỗi chương ít nhất 4 màn dùng thứ của gói 1–7 mùa 2 hay mùa 1 (hàm của em cũ như forward, go_to_wall, auto_spray, tr_right; for; distance; bắn tụ; băng chuyền; thùng nặng)', () => {
     for (const c of CHUONG) { const co = DS_C[c].filter((m) => recall(m).length); assert.ok(co.length >= 4, c + ': chỉ ' + co.length + ' màn recall'); }
   });
-  kiem('có màn đố ("Đố…") ở doi-mua-2, màn sửa hàm lỗi ("Sửa…", hàm của màn) ở che-doi-mua-2; che-doi-mua-2 có hàm của em mà CẢ HAI robot cùng gọi', () => {
+  // PDM2c: hai xe khác cảm biến (R1 hồng ngoại, R2 khoảng cách) nên không còn hàm của em CẢ HAI cùng gọi; thay bằng: mỗi chương có màn R2 chờ bạn bằng front_clear().
+  kiem('có màn đố ("Đố…") ở doi-mua-2, màn sửa hàm lỗi ("Sửa…", hàm của màn) ở che-doi-mua-2; mỗi chương có màn R2 (xe chở hàng) chờ bạn bằng front_clear()', () => {
     assert.ok(DS_C['doi-mua-2'].some((m) => /^Đố/.test(m.ten)), 'doi-mua-2 thiếu màn đố');
     assert.ok(DS_C['che-doi-mua-2'].some((m) => /^Sửa/.test(m.ten) && (m.loiGiai.hamCuaMan || []).length), 'che-doi-mua-2 thiếu màn sửa hàm');
-    assert.ok(DS_C['che-doi-mua-2'].some((m) => (m.loiGiai.hamCuaEmMoi || []).some((h) => robotGoi(m, h.ten).length === 2)), 'che-doi-mua-2 thiếu hàm của em cả đội cùng gọi');
+    for (const c of CHUONG) assert.ok(DS_C[c].some((m) => hamViet(m).some((h) => h.than.some((l) => /front_clear\(\)/.test(l)) && robotGoi(m, h.ten).includes(1))), c + ' thiếu màn R2 chờ bạn bằng front_clear()');
   });
 }
 
