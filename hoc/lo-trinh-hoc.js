@@ -1094,25 +1094,25 @@
       // drone: đủ thứ tự 10 màn (man-cat-canh.js): 11 trình diễn · 1 · 2 · 12 · 3 · 13 · 7 · 8 · 9 · 14 trùm
       // list: list.1 thành màn trình diễn (dưới), list.11 màn ép sửa một số (man-cat-canh.js), list.2 (xoắn ốc 28 ô, nhảy đường cong) cất khỏi lộ trình
       chuong: [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]] },
-    { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
+    { ma: 'may-son', ten: 'Gieo hạt', loai: 'bo-phan', hinh: 'may-son',
       chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]] },
     // gói 3, 5, 7 (user 30/10 chọn A): màn cũ dạy cảm biến bụng / camera trước / look() / sạc tự động trên P dời sang mùa 5 (gói mau, flycam cũ và MUA_4_CU
     // bên dưới), ba gói dựng bằng màn mới theo luật mới (camera bốn hướng, đáp đất sạc, camera nhìn "here").
     { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'cam-bon',
       chuong: [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', day('che-cam-bon', [2, 9, 1, 3, 4, 5, 6, 8, 7, 10])]] },
-    { ma: 'pho-mau', ten: 'Phố màu', hinh: 'pho-mau',
+    { ma: 'pho-mau', ten: 'Luống màu', hinh: 'pho-mau',
       chuong: [['pho-mau', []], ['che-pho-mau', []]] },
     { ma: 'tram-sac', ten: 'Trạm sạc', loai: 'bo-phan', hinh: 'tram-sac',
       chuong: [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 11, 4, 13, 15, 12, 7, 16, 14])]] },
-    { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'net-lien',
+    { ma: 'net-lien', ten: 'Gieo liền hàng', loai: 'bo-phan', hinh: 'net-lien',
       chuong: [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]] },
     { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'nhin-duoi',
       chuong: [['nhin-duoi', []], ['che-nhin-duoi', day('che-nhin-duoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])]] },
     { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach', hinh: 'doi-nam-cham',
       chuong: [['doi-nam-cham', day('doi-nam-cham', [1, 2, 3, 11, 4, 5, 7, 12, 8, 10])], ['che-doi-nam-cham', day('che-doi-nam-cham', [11, 1, 2, 5, 3, 6, 7, 12, 8, 10])]] },
-    { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach', hinh: 'son-tren-cao',
+    { ma: 'son-tren-cao', ten: 'Gieo từ trên cao', loai: 'thu-thach', hinh: 'son-tren-cao',
       chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
-    { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
+    { ma: 'drone-ke-vach', ten: 'Drone nông nghiệp R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
       chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
   ];
   // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống), cùng che-drone.3 / .6 (nhảy đường cong gói 5): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
@@ -1134,11 +1134,11 @@
       chuong: [['doi-nam-cham-cu', day('doi-nam-cham', [6, 9])], ['che-doi-nam-cham-cu', day('che-doi-nam-cham', [4, 9])]] }
   ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
-  var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: sơn theo danh sách', 'che-list-cu': 'Chế lệnh: đi theo danh sách', 'che-may-son-cu': 'Chế lệnh: hoa văn lớn',
-    'cam-bon': 'Đọc màu bốn phía', 'che-cam-bon': 'Chế lệnh: dò màu', 'pho-mau': 'Đi giữa phố màu', 'che-pho-mau': 'Chế lệnh: qua phố',
-    'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Kẻ nét liền', 'che-may-son': 'Chế lệnh: vẽ hoa văn',
+  var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Gieo từng ô', 'che-list': 'Chế lệnh: gieo theo danh sách', 'che-list-cu': 'Chế lệnh: đi theo danh sách', 'che-may-son-cu': 'Chế lệnh: hoa văn lớn',
+    'cam-bon': 'Đọc màu bốn phía', 'che-cam-bon': 'Chế lệnh: dò màu', 'pho-mau': 'Bay giữa luống màu', 'che-pho-mau': 'Chế lệnh: qua luống',
+    'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Gieo liền một hàng', 'che-may-son': 'Chế lệnh: bồn hoa',
     'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham-cu': 'Chia hàng: màn ôn', 'che-doi-nam-cham-cu': 'Chế lệnh: màn ôn', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
-    'son-tren-cao': 'Kẻ vạch qua rào', 'che-son-tren-cao': 'Chế lệnh: tranh tường', 'tong-hop-4': 'Đủ bộ', 'trum-mua-4': 'Phố mới kẻ vạch' };
+    'son-tren-cao': 'Gieo hàng qua rào', 'che-son-tren-cao': 'Chế lệnh: vườn hoa', 'tong-hop-4': 'Đủ bộ', 'trum-mua-4': 'Nông trại mới' };
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 4 (như mùa 3): mỗi gói một tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai `chuong` và `so`.
   //   man-cat-canh.js manCatCanh (1) · man-cham-son.js manChamSon (2) · man-camera-bon-huong.js manCameraBonHuong (3) · man-pho-mau.js manPhoMau (4)
   //   man-tram-sac.js manTramSac (5) · man-net-lien.js manNetLien (6) · man-nhin-duoi-chan.js manNhinDuoiChan (7) · man-doi-chia-hang.js manDoiChiaHang (8)
@@ -1202,6 +1202,67 @@
     get('doi-nam-cham.8').san = ['#####', '##D##', '##..#', '##..#', '#..##', '##o##', '#####'];
     // Vỏ hình mùa 4 (30/10, user: "Đổi sang nông nghiệp"): Nông trại hoa, luật giữ nguyên; san-ve.js đọc vo: cỏ, luống hoa, bụi cây, bao hạt (ve-vector-nong-trai.js).
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { get(ma).vo = 'nong-trai'; }); }); });
+    // Lời mùa 4 theo vỏ Nông trại hoa (30/10) + giọng CLB (Sola nhờ, Luna gợi ý, gọi người chơi là "bạn"; hoc/KE-HOACH-PHIM-CLB.md mục 1): bảng từ theo thứ tự
+    // (cụm dài trước), khớp trọn từ; chữ đầu viết hoa giữ hoa. LOI_NONG_TRAI (bên dưới) thay hẳn câu nào bảng từ làm vụng.
+    var TU_NONG_TRAI = [
+      ['gói Nét liền', 'gói Gieo liền hàng'], ['gói Phố màu', 'gói Luống màu'], ['gói Chấm sơn', 'gói Gieo hạt'], ['gói Sơn từ trên cao', 'gói Gieo từ trên cao'],
+      ['lá cờ trên tường nhà', 'bồn hoa hình lá cờ'], ['biển báo phố', 'bồn hoa cổng trại'], ['vạch sọc', 'luống xen màu'], ['chọn sơn', 'chọn hạt'], ['sang sơn', 'sang hạt'],
+      ['hộp hàng', 'bao hạt'], ['tầng hầm', 'hàng dưới'], ['tầng thượng', 'nóc kho'], ['ngôi nhà', 'luống hoa'], ['dãy nhà', 'dãy luống hoa'],
+      ['drone kẻ vạch R1', 'drone nông nghiệp R1'], ['bức tường', 'vườn hoa'], ['bức tranh hoa văn', 'bồn hoa'], ['hoa văn xanh lá', 'cỏ ba lá'], ['viền hoa văn', 'viền hoa'], ['hoa văn', 'cỏ ba lá'],
+      ['mái nhà', 'mái kho'], ['vạch kẻ đường', 'luống hoa'], ['có sơn', 'có hoa'], ['vẽ bậy', 'gieo nhầm'], ['thành phố', 'nông trại'], ['tranh tường', 'vườn hoa'], ['bức tranh', 'bồn hoa'], ['tranh', 'bồn hoa'], ['biển báo', 'bồn hoa'],
+      ['máy sơn', 'bộ gieo hạt'], ['đầu sơn', 'miệng gieo'], ['màu sơn', 'loại hạt'], ['chấm sơn', 'gieo hạt'], ['sơn sẵn', 'gieo sẵn'], ['ô đã sơn', 'ô đã gieo'],
+      ['kẻ vạch', 'gieo luống'], ['vạch kẻ', 'luống'], ['vạch đứt', 'luống đứt quãng'], ['vạch mờ', 'luống mờ'], ['lề đường', 'bờ luống'], ['con phố', 'lối đi'], ['dải phân cách', 'hàng rào'],
+      ['nét liền', 'hàng liền'], ['bút liền', 'gieo liền'], ['hạ bút', 'hạ miệng gieo'], ['nhấc bút', 'nhấc miệng gieo'], ['hình mờ', 'luống mờ'], ['khung vuông', 'viền vuông'],
+      ['khung chữ nhật', 'viền chữ nhật'], ['khung quanh', 'viền quanh'], ['tô lại', 'gieo lại'],
+      ['chấm đỏ', 'gieo hoa đỏ'], ['chấm vàng', 'gieo hoa vàng'], ['chấm xanh', 'gieo hoa xanh'], ['nhà cao', 'bụi cây cao'], ['ngoài hình', 'ngoài luống'],
+      ['sơn', 'gieo'], ['tô', 'gieo'], ['chấm', 'gieo'], ['kẻ', 'gieo'], ['vạch', 'luống'], ['phố', 'lối đi'], ['nhà', 'luống'], ['nét', 'hàng'], ['bút', 'miệng gieo'], ['sọc', 'hàng'],
+      ['hộp', 'bao hạt'], ['tường', 'bụi cây'], ['vẽ', 'gieo'], ['khung', 'viền'], ['bức', 'bồn'],
+      ['chương trình có sẵn', 'chương trình Sola viết sẵn']
+    ];
+    var CHU_CAI = '\\p{L}';      // biên từ tiếng Việt (cờ u)
+    function hoaDau(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    function chuNongTrai(s) {
+      if (typeof s !== 'string') return s;
+      // "chấm" là DANH TỪ (một chấm, chấm thứ hai…) thì thành "bông" (bông hoa), trước khi bảng từ đổi động từ "chấm" thành "gieo"
+      s = s.replace(/(^|[^\p{L}])(một|hai|ba|bốn|năm|sáu|bảy|tám|chín|mười|n|mỗi|các|những|từng|đủ|mấy|vài) chấm(?![\p{L}])/giu, '$1$2 bông')
+        .replace(/(^|[^\p{L}])(C|c)hấm (thứ|cuối|đầu|nọ|kia)(?![\p{L}])/gu, function (a, truoc, c, sau) { return truoc + (c === 'C' ? 'Bông ' : 'bông ') + sau; });
+      TU_NONG_TRAI.forEach(function (c) {
+        [[c[0], c[1]], [hoaDau(c[0]), hoaDau(c[1])]].forEach(function (d) {
+          s = s.replace(new RegExp('(^|[^' + CHU_CAI + '])' + d[0] + '(?![' + CHU_CAI + '])', 'gu'), function (a, truoc) { return truoc + d[1]; });
+        });
+      });
+      s = s.replace(/ — /g, ': ');      // không gạch dài trong chữ hiển thị
+      s = s.replace(/(H|h)ạ miệng gieo gieo/g, '$1ạ miệng gieo rồi gieo').replace(/Miệng gieo gieo/g, 'Miệng gieo hạ là gieo');
+      return s.replace(/(^|[^\p{L}])(E|e)m(?=[^\p{L}]|$)/gu, function (a, truoc, e, vt, chuoi) {
+        return /hàm của $/i.test(chuoi.slice(0, vt + truoc.length)) ? a : truoc + (e === 'E' ? 'Bạn' : 'bạn');
+      });
+    }
+    function loiNongTrai(m) {
+      if (!m || m._loiNongTrai) return;
+      m._loiNongTrai = true;
+      var rieng = LOI_NONG_TRAI[m.ma] || {};
+      ['ten', 'deBai', 'veMaMau'].forEach(function (k) { if (rieng[k]) m[k] = rieng[k]; else if (m[k]) m[k] = chuNongTrai(m[k]); });
+      if (m.deBai && !rieng.deBai) {
+        var d = m.deBai, mo = m.chiChay ? 'Sola làm mẫu: ' : /^Sửa/.test(m.ten || '') ? 'Sola viết vội, nhờ bạn sửa: ' : 'Sola nhờ bạn: ';
+        if (/^\p{Lu}/u.test(d) && !/^\p{Lu}[\p{Lu}\d]/u.test(d) && !/^(Sola|Luna)(?!\p{L})/u.test(d)) d = d.charAt(0).toLowerCase() + d.slice(1);
+        m.deBai = mo + d;
+      }
+      if (m.goiY) m.goiY = (rieng.goiY || m.goiY.map(chuNongTrai)).map(function (s) { return 'Luna: ' + s; });
+      (m.loiSai || []).forEach(function (x) { if (x.moTa) x.moTa = chuNongTrai(x.moTa); });
+      if (m.loiGiaiKhac && m.loiGiaiKhac.moTa) m.loiGiaiKhac.moTa = chuNongTrai(m.loiGiaiKhac.moTa);
+      (m.congThucKhac || []).forEach(function (x) { if (x.moTa) x.moTa = chuNongTrai(x.moTa); });
+    }
+    var LOI_NONG_TRAI = {
+      // Bốn màn cuối chương trùm: "phố" ở đây là LUỐNG hoa drone gieo (street = gieo một luống rồi về đầu hàng dưới), không phải lối đi.
+      'trum-mua-4.7': { ten: 'Hàm gieo luống', deBai: 'Sola nhờ bạn: chế street(c, n): gieo luống màu c bằng stripe(c, n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: ba luống vàng, xanh dương, vàng.' },
+      'trum-mua-4.8': { ten: 'Luống có trạm sạc', deBai: 'Sola nhờ bạn: chế street_dock(c, n): gieo một luống bằng street(c, n), rồi gọi charge_if(9) ở đầu hàng mới. Chương trình chính đã khóa: luống vàng, luống xanh dương, rồi hàng vàng cuối. ' +
+        'Hai sân cùng cánh đồng, drone pin 20 và pin 40: sân pin ít phải ghé trạm, sân pin nhiều thì bay luôn.' },
+      'trum-mua-4.9': { ten: 'Hai luống theo dấu' },
+      'trum-mua-4.10': { deBai: 'Sola nhờ bạn: trùm cuối mùa, Drone nông nghiệp R1 nhận ca đầu tiên ở nông trại mới. Chép bảng mẫu hàng trên xuống, sạc khi pin yếu ở trạm, gieo hoa vàng các dấu trên luống, sạc lần nữa, ' +
+        'gieo hoa đỏ, vàng, đỏ ở hàng dưới từ phải sang trái, bay trái thêm một ô tới trạm thứ ba, sạc, rồi gieo luống xanh dương năm ô ở hàng cuối. Tự viết chương trình chính bằng các hàm bạn đã chế. Hai sân, bảng mẫu và dấu khác nhau.' },
+      'che-may-son.10': { ten: 'Ba bồn hoa' }
+    };
+    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiNongTrai(get(ma)); }); }); });
     // Huy hiệu (30/10): mỗi chương mùa 4 trao huy hiệu MÃ CHƯƠNG ở màn trùm (cuối chương), như mùa 2; chương trum-mua-4 trao huy hiệu cỗ máy drone-ke-vach
     // (trùm cuối mùa). Màn khác trong chương không trao (màn có sẵn mang huy hiệu cũ, vd may-son.10 ở chương net-lien, đổi theo chương mới).
     MUA_4.forEach(function (g) {
@@ -1209,7 +1270,7 @@
         c[1].forEach(function (ma, i) {
           var m = get(ma);
           if (i < c[1].length - 1) { delete m.huyHieu; return; }
-          m.huyHieu = c[0] === 'trum-mua-4' ? { ma: 'drone-ke-vach', ten: 'Huy hiệu Drone kẻ vạch R1' } : { ma: c[0], ten: 'Huy hiệu ' + TEN_MUA_4[c[0]] };
+          m.huyHieu = c[0] === 'trum-mua-4' ? { ma: 'drone-ke-vach', ten: 'Huy hiệu Drone nông nghiệp R1' } : { ma: c[0], ten: 'Huy hiệu ' + TEN_MUA_4[c[0]] };
         });
       });
     });
@@ -1290,7 +1351,7 @@
       });
     });
     // may-son.6 ở gói 2 (Chấm sơn, chưa có bút liền): bỏ lời sai mẫu "hạ đầu sơn" (nó chỉ còn báo "hàm chưa có").
-    get('may-son.6').loiSai = (get('may-son.6').loiSai || []).filter(function (x) { return x.moTa.indexOf('Hạ đầu sơn') !== 0; });
+    get('may-son.6').loiSai = (get('may-son.6').loiSai || []).filter(function (x) { return !/^Hạ (đầu sơn|miệng gieo)/.test(x.moTa); });      // 30/10 vỏ nông trại: lời đã đổi sang miệng gieo
     M.mua4 = MUA_4;
     M.tinhLai();
   })();
@@ -1663,7 +1724,7 @@
   // Mùa 2 đổi 29/10 sau khi vòi phun / van hơi gộp (phun → phun ở tên và phim; chữ trong màn đổi ở đợt riêng).
   (function () {
     var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
-                     'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
+                     'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Nông trại' };      // 30/10: mùa 4 Thành phố → Nông trại (Nông trại hoa, vỏ nông nghiệp)
     TT.mua.forEach(function (m) { if (TEN_MUA[m.ma]) m.ten = TEN_MUA[m.ma]; });
     var TEN_GOI_1 = { 'tay-gap': 'Tay kẹp', 'kho-hang': 'Nút đè', 'hai-robot': 'Gặp R2', 'combo': 'Nhìn bên, nhặt bên' };
     TT.goi.forEach(function (g) { if (g.mua === 'mua-1' && TEN_GOI_1[g.ma]) g.ten = TEN_GOI_1[g.ma]; });

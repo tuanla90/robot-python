@@ -155,13 +155,13 @@
       luuY: ['aim(n) chọn tầm 1, 2 hoặc 3 ô, đổi ngay, không tốn nhịp.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
     },
     'son': {
-      khe: 'tay', ten: 'Máy sơn',
-      moTa: 'Đầu sơn có chổi dưới mũi xe, tô ô xe đang đứng.',
+      khe: 'tay', ten: 'Bộ gieo hạt',      // 30/10 vỏ Nông trại hoa (mùa 4): trước là Máy sơn, luật giữ nguyên
+      moTa: 'Phễu hạt có miệng gieo dưới robot, gieo vào ô robot đang đứng; mỗi màu là một loài hoa.',
       lenh: ['ink', 'dot', 'pen_down', 'pen_up'],
-      ghep: [{ lenh: ['ink', 'dot', 'wait'], ra: 'Chọn màu rồi chấm ô đang đứng' }, { lenh: ['pen_down', 'wait'], ra: 'Hạ đầu sơn: tô ô đang đứng, giữ sơn' }],
-      gioi: ['Chấm từng ô, hay giữ sơn để vẽ nét liền', 'Đầu sơn hạ thì xe rẽ góc vẫn liền nét', 'Tô lại một ô thì màu mới đè màu cũ'],
-      khong: ['Tô ra ngoài hình thì không xóa được', 'Mỗi nhịp đầu sơn chỉ làm một việc'],
-      luuY: ['Đầu sơn hạ thì xe đi tới đâu tô tới đó, kể cả lúc quay tại chỗ.', 'ink() chọn màu ngay, không tốn nhịp: "red", "green", "blue", "yellow".', 'dot(), pen_down(), pen_up() chỉ là ra lệnh, wait() mới làm.']
+      ghep: [{ lenh: ['ink', 'dot', 'wait'], ra: 'Chọn loại hạt rồi gieo ô đang đứng' }, { lenh: ['pen_down', 'wait'], ra: 'Hạ miệng gieo: gieo ô đang đứng, gieo liền' }],
+      gioi: ['Gieo từng ô, hay hạ miệng gieo để gieo liền một hàng', 'Miệng gieo hạ thì robot rẽ góc vẫn gieo liền', 'Gieo lại một ô thì hoa mới thay hoa cũ'],
+      khong: ['Gieo ra ngoài luống thì không nhổ lại được', 'Mỗi nhịp bộ gieo chỉ làm một việc'],
+      luuY: ['Miệng gieo hạ thì robot đi tới đâu gieo tới đó, kể cả lúc quay tại chỗ.', 'ink() chọn loại hạt ngay, không tốn nhịp: "red" hoa hồng, "yellow" hoa cúc, "blue" cẩm tú cầu, "green" cỏ ba lá.', 'dot(), pen_down(), pen_up() chỉ là ra lệnh, wait() mới làm.']
     },
     'hoi': {
       khe: 'tay', ten: 'Vòi phun',
@@ -206,7 +206,7 @@
       moTaLenh: { color: 'Đọc màu sàn dưới bụng xe' },
       gioi: ['color() trả "red", "green", "blue", "yellow" hoặc "none"', 'Đọc không tốn nhịp, kể cả lúc đang mang vật'],
       khong: ['Không thấy ô trước mặt', 'Không biết vật màu gì'],
-      luuY: ['Muốn biết màu của vật thì cần camera.', 'Ô đã có sơn thì color() đọc màu sơn, không đọc màu sàn bên dưới.']
+      luuY: ['Muốn biết màu của vật thì cần camera.', 'Ô đã gieo hoa thì color() đọc màu hoa, không đọc màu sàn bên dưới.']
     },
     'camera': {
       khe: 'camBien', ten: 'Camera trước',

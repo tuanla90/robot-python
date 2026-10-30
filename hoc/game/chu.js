@@ -74,13 +74,13 @@
       'choi.den.sung': 'Vòi phun',
       'choi.den.camBien': 'Cảm biến',
       'choi.den.chan': 'Chân nhện',
-      'choi.den.son': 'Đầu sơn',
+      'choi.den.son': 'Bộ gieo',
       'choi.den.canh': 'Cánh quạt',
       // mỗi bộ phận một lệnh mỗi nhịp (thanh-phan.js: lyDoCamNhip)
       'choi.motLenh': '{bp} đã có {lenh}() trong nhịp này. Mỗi bộ phận chỉ nhận một lệnh mỗi nhịp: thêm wait() để sang nhịp mới.',
       'choi.motKieuDi': 'Nhịp này đã có {lenh}(). Trong một nhịp xe chỉ chạy bánh, hoặc trượt, hoặc phun nước: thêm wait() để sang nhịp mới.',
       'choi.bp.banhT': 'Bánh trái', 'choi.bp.banhP': 'Bánh phải', 'choi.bp.truot': 'Bánh trượt', 'choi.bp.tay': 'Tay', 'choi.bp.xoay': 'Khớp xoay',
-      'choi.bp.kep': 'Kẹp', 'choi.bp.namCham': 'Nam châm', 'choi.bp.nem': 'Máy ném', 'choi.bp.sung': 'Vòi phun', 'choi.bp.chan': 'Chân nhện', 'choi.bp.son': 'Đầu sơn',
+      'choi.bp.kep': 'Kẹp', 'choi.bp.namCham': 'Nam châm', 'choi.bp.nem': 'Máy ném', 'choi.bp.sung': 'Vòi phun', 'choi.bp.chan': 'Chân nhện', 'choi.bp.son': 'Bộ gieo hạt',
       'choi.chuongTrinh': 'main',
       'choi.xeTab': 'Chương trình của robot {n}',
       'choi.chuongTrinhNgan': 'main',
@@ -146,7 +146,7 @@
       'choi.the.tayNamCham': 'Nam châm',
       'choi.the.tayNem': 'Máy ném',
       'choi.the.taySung': 'Vòi phun',
-      'choi.the.taySon': 'Máy sơn',
+      'choi.the.taySon': 'Bộ gieo hạt',
       'choi.the.cam': 'Logic',
       'choi.hamDem': 'Hàm {k}/{n}',
       'choi.hamDemNhan': 'Số hàm của em mà chương trình đang gọi, so với giới hạn của màn',
@@ -592,7 +592,7 @@
       'caiDat.phimGoi': 'Xem lại phim các gói',
       'caiDat.phimGoiRong': 'Mở gói mới để có thêm phim.',
       // Phim mùa 4 (phim-mua-4.js; kịch bản KE-HOACH-PHIM-GOI.md mục "Kịch bản mùa 4")
-      'pg.tem.drone-ke-vach': 'Drone kẻ vạch R1',         // cỗ máy mùa 4 (drone bay theo lưới phố, máy sơn kẻ vạch, camera nhìn xuống, đáp sạc)
+      'pg.tem.drone-ke-vach': 'Drone nông nghiệp R1',         // cỗ máy mùa 4 (drone bay theo lưới phố, máy sơn kẻ vạch, camera nhìn xuống, đáp sạc)
       'pg.drone.1': 'Thành phố mới: vạch kẻ đường mờ hết, xe đi lộn xộn.',
       'pg.drone.2': 'Em lắp cánh quạt: R1 thành drone, bay qua mọi hàng rào.',
       'pg.drone.3': 'Drone bay từng ô, mỗi ô tốn một vạch pin.',
