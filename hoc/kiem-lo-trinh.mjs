@@ -285,15 +285,16 @@ kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng
   assert.ok(!mua2.an, 'mùa 2 còn ẩn');
   assert.equal(mua2.ten, 'Nhà máy', 'tên mùa 2');      // 29/10 quy tắc đặt tên: tên mùa = nơi chốn (trước: Ghi nhớ)
   assert.ok(mua2.ban && mua2.ban.gia, 'mùa 2 mất `ban`');
-  for (const ma of ['mua-3', 'mua-4']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
+  assert.equal(TT.mua.find(x => x.ma === 'mua-4').an, true, 'mua-4 phải còn ẩn');      // mùa 3 hiện từ 30/10 (kiểm ở mục mùa 3)
   let tr = 0;
   for (const g of goiMua('mua-2')) {
     assert.equal(g.sao, Math.floor(0.5 * tr / 5) * 5, g.ma + ' ngưỡng ' + g.sao + ' khác công thức');
     tr += 3 * g.chuong.reduce((s, c) => s + M.danhSach.filter(m => m.chuong === c).length, 0);
   }
   assert.deepEqual(goiMua('mua-2').map(g => g.sao), [0, 30, 60, 90, 120, 150, 180, 210, 240, 270], 'ngưỡng sao mùa 2');
-  // Chương cũ của mùa 2 ngoài bảng ở mùa ẩn (29/10 P0 mùa 3: nhen, doi-xich vào MUA_3; các chương khác sang đầu mùa 4, cũng ẩn)
-  for (const c of ['ban-xoay', 'nhen', 'doi-ho-bang', 'list', 'doi-xich', 'omni', 'doi-omni', 'che-xich']) assert.ok(TT.mua.find(x => x.ma === goiCuaChuong(c).mua).an, c);
+  // Chương cũ của mùa 2 ngoài bảng đã rời mùa 2 (29/10 P0 mùa 3: nhen, doi-xich vào MUA_3, mùa 3 hiện từ 30/10; các chương khác sang đầu mùa 4, ẩn)
+  for (const c of ['nhen', 'doi-xich']) assert.equal(goiCuaChuong(c).mua, 'mua-3', c);
+  for (const c of ['ban-xoay', 'doi-ho-bang', 'list', 'omni', 'doi-omni', 'che-xich']) assert.ok(TT.mua.find(x => x.ma === goiCuaChuong(c).mua).an, c);
 });
 kiem2('(b) không màn nào trước gói 1 chương 2 mùa 2 (bien-xich) dùng biến (bắc cầu qua hàm của em) hay mở nhóm ĐẾM', () => {
   const moc = viTriMan(M.danhSach.find(m => m.chuong === 'bien-xich'));
@@ -469,7 +470,10 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   assert.deepEqual(TT.thuTu.slice(n12, n12 + ch3.length), ch3, 'chương mùa 3 đứng ngay sau mùa 2');
   for (const [, , ds] of BANG_MUA_3) for (const [c] of ds) if (!ch3.includes(c)) assert.ok(!TT.thuTu.includes(c), c + ' chưa có màn mà đã vào thuTu');
   for (const m of moiMua3) assert.ok(BANG_MUA_3.some(([, , ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
-  assert.equal(TT.mua.find(x => x.ma === 'mua-3').an, true, 'mùa 3 phải còn ẩn');
+  const mua3 = TT.mua.find(x => x.ma === 'mua-3');
+  assert.ok(!mua3.an, 'mùa 3 còn ẩn');      // 30/10 đủ 10 gói × 20 màn: hiện ở màn chọn gói
+  assert.equal(mua3.ten, 'Mỏ quặng', 'tên mùa 3');
+  assert.ok(mua3.ban && mua3.ban.gia, 'mùa 3 mất `ban`');
   for (const g of goi3()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 3 đang dựng: tự tính)');
   // Gói ngoài khuôn: đầu mùa 4, giữ thứ tự cũ, trước các gói mùa 4 cũ; chương rời của MUA_3 đúng màn.
   const g4 = goiMua('mua-4').map(g => g.ma);

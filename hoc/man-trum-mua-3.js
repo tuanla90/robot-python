@@ -341,13 +341,13 @@
       demTu: [{ x: 5, y: 0, cuc: 'S', nut: { x: 8, y: 2 }, khiDe: 'tat' }],
       bd: [{ x: 4, y: 2, huong: 3 }, { x: 1, y: 4, huong: 0 }],
       maMau: B(['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'], ['crawl("R")']),
-      loiGiai: B(['go_wall()', 'pick()', 'spin()', 'wait_n(14)', 'go_wall()', 'back()', 'drop()'], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("UU")']),
-      sao: { o: 55, nhip: 29 },
+      loiGiai: B(['go_wall()', 'pick()', 'spin()', 'wait_n(7)', 'wait_n(7)', 'go_wall()', 'back()', 'drop()'], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("UU")']),
+      sao: { o: 56, nhip: 29 },
       loiSai: [
         { moTa: 'Xích không chờ: đệm S còn chạy, hút xích xuống hố', baiLam: B(['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("UU")']), phaiCoMa: ['dem-roi-ho'] },
-        { moTa: 'Nhện dừng dưới nút: đệm không tắt', baiLam: B(['go_wall()', 'pick()', 'spin()', 'wait_n(14)', 'go_wall()', 'back()', 'drop()'], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("U")']), phaiCoMa: ['dem-roi-ho'] }
+        { moTa: 'Nhện dừng dưới nút: đệm không tắt', baiLam: B(['go_wall()', 'pick()', 'spin()', 'wait_n(7)', 'wait_n(7)', 'go_wall()', 'back()', 'drop()'], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("U")']), phaiCoMa: ['dem-roi-ho'] }
       ],
-      goiY: ['Đệm tắt từ nhịp ngay sau khi nhện lên nút.', 'Xích lấy hộp và quay đầu xong ở nhịp 7: còn chờ nhện khá lâu.']
+      goiY: ['Đệm tắt từ nhịp ngay sau khi nhện lên nút.', 'Xích lấy hộp và quay đầu xong ở nhịp 7: còn chờ nhện khá lâu, mà mỗi lần wait_n chỉ chờ tới 12 nhịp.']
     }),
 
     trum({
