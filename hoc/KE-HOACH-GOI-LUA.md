@@ -61,7 +61,9 @@ Chương tong-hop-2 "Dập lửa" (man-trum-mua-2.js), giữ khung các màn cũ
 5. Mở cửa cho thùng sau lưng (+ lửa chắn tia trước van: phun nhẹ dập lửa, phun mạnh mở van) · 6. Sửa hàm pair_spray() (giữ) ·
 7. Hai đám cháy (mới, thay Trạm xa trạm gần: khóa main, hàm của màn douse() = while warm(): squirt("low"); hai đám cỡ 1 và 3 ở hai đoạn vuông góc
    vì cùng hàng thì warm() thấy đám xa và phun nhẹ mãi) · 8, 9. hai màn đội (giữ) · 10. Trùm: Ba hành lang cháy (mới: while warm(): squirt("high"), go_to_wall(), tr_right(), forward(2)).
-Bỏ: Băng chuyền giúp một tay, Đố: squirt("high") không lùi, Trạm xa trạm gần, Trùm: Ba dây chuyền thùng. Màn 6, 8, 9 chưa có lửa.
+Bỏ: Băng chuyền giúp một tay, Đố: squirt("high") không lùi, Trạm xa trạm gần, Trùm: Ba dây chuyền thùng.
+Sau đó (user: "Thêm lửa 6, 8, 9 trước"): màn 6 lửa trong giếng trên chắn tia trước van (pair_spray() của Sola viết lúc chưa cháy: sửa thành dập lửa, van trên, van dưới);
+màn 8, 9 (hai robot, chương trình khóa) lửa trước mũi bệ vòi R1 lúc xuất phát, chương trình khóa của R1 dập trước (màn 9 không dập thì box_step() chờ mãi). Cả 10 màn chương 1 có lửa.
 Bộ dò do-duong-be-sung.mjs mô phỏng lửa (trạng thái f, cửa chống cháy, đích dap-lua, so chéo lõi theo lửa); do-duong-do-nhiet.mjs cắt lua theo sân.
 kiem-trum-mua-2.mjs: dap-lua, đặc trưng 'lua', màn trình diễn như kiem-be-sung. Recall gói 10 vẫn đủ (mỗi gói 1–9 ≥ 3 lần).
 Cần sửa ở P4: thẻ Cảm biến hồng ngoại còn ghi warm() nóng với "robot khác, van hơi đang mở" (thiếu đám cháy); hướng dẫn từng bước cho màn trình diễn.
