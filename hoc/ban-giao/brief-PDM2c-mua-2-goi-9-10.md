@@ -26,5 +26,14 @@ BỐI CẢNH:
   Máy kiểm "nhiều sân chỉ ở màn trùm" (kiem-lo-trinh.mjs NHIEU_SAN_KHONG_TRUM): mùa 1 gói 10 đã có luật "gói 10 được nhiều sân" (PDM1) — dùng lại.
 - Lời mùa 2: không chữ vũ khí (kiem-loi-mua-2.mjs). Luật học như brief PDM2a.
 
-PHẢN BIỆN, CÁCH GIAO, KIỂM TRA, DỪNG VÀ HỎI, BÁO CÁO CUỐI: y như brief PDM2a (làm thẳng trên nhánh claude/part-dung-mua; không npm test cả bộ).
+PHẦN A (LÀM TRƯỚC, commit riêng): `npm test` cả bộ sau PDM2b còn 9 bộ HỎNG (97/106), đầu ra đầy đủ ở `hoc/ban-giao/npm-test-sau-PDM2b.txt`:
+kiem-che-tay (1), kiem-che-xe (4: Sổ lệnh thừa hàm gói Đội đang cất: wait_clear, yield_step, wait_mate, pass_mate, clear_squirt, step_clear, cover, guard; nhóm hàm đợt 2),
+kiem-doi-sung-hoi (1: che-doi-sung-hoi.7 quá 200 nhịp ở go_wall), kiem-goi-doi (1: hàm của màn squirt_left trùng hàm của em ở doi-sung-hoi.9, che-doi-sung-hoi.6, .10),
+kiem-hoc (9), kiem-huy-hieu-phim-vector (1: A7 HuyHieu.DS khác dữ liệu chụp c830c12 — PDM2b thêm hình kho-cu / che-kho-cu), kiem-khay (2: 24.8 / 24.9 thiếu distance…),
+kiem-nut-bat-san (2: nutBat ngoài gói Đo nhiệt ở kho-cu.7, kho-cu.8, che-kho-cu.7), kiem-phim-goi (2: gói kho-cu chưa có phim; phim doi-mua-2 không còn gói trong MUA_2).
+Tại commit f4200fe (trước PDM2b) cả 105 bộ ĐẠT: đây là hồi quy của PDM2b. Sửa đúng nguyên nhân (một số tự hết khi gói Đội về gói 9); máy kiểm đổi trông đợi chỉ khi luật
+mới đúng là thế (ghi lý do ngay dòng sửa); phim gói 8 mới: thêm phim tạm theo khuôn phim-mua-2.js nếu máy kiểm bắt buộc (phim thật làm ở phiên Phim CLB).
+ĐƯỢC chạy `npm test` cả bộ (chỉ mình bạn đang chạy, người giao nghỉ): lần cuối của phần A và lần cuối trước báo cáo, chạy nền, ghi ra tệp trong scratchpad của bạn.
+
+PHẢN BIỆN, CÁCH GIAO, KIỂM TRA, DỪNG VÀ HỎI, BÁO CÁO CUỐI: y như brief PDM2a (làm thẳng trên nhánh claude/part-dung-mua), trừ `npm test` cả bộ được phép như trên.
 Máy kiểm riêng thêm: kiem-doi-mua-2, kiem-be-sung (gỡ hay chuyển sang kiểm ngân hàng nếu còn ý nghĩa), kiem-trum-mua-2, kiem-part-mua (commit cuối: 'mua-2' vào XONG).

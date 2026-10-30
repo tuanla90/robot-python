@@ -1,0 +1,195 @@
+
+> test
+> node tools/kiem-tat-ca.mjs
+
+✓ nhan/kiem-core-san-robot.mjs       ĐẠT 75 · HỎNG 0  (445 ms)
+✓ hoc/kiem-ban-xoay.mjs              ĐẠT 23 kiểm tra bàn xoay, nút đè, cổng dịch chuyển & 20 màn Sân cơ khí.  (1177 ms)
+✓ hoc/kiem-bang-chuyen.mjs           ĐẠT 87 · HỎNG 0  (380 ms)
+✓ hoc/kiem-bang-mau.mjs              ĐẠT 16 · HỎNG 0 kiểm  (14348 ms)
+✓ hoc/kiem-banh-lui-them.mjs         ĐẠT 52 · HỎNG 0 kiểm tra 8 màn mới và màn trình diễn banh-lui.5 gói Bánh lùi.  (3850 ms)
+✓ hoc/kiem-be-sung.mjs               ĐẠT 107 · HỎNG 0 kiểm tra 20 màn gói Bệ súng xích.  (5219 ms)
+✓ hoc/kiem-bien-xich.mjs             ĐẠT 22 · HỎNG 0 kiểm  (1195 ms)
+✓ hoc/kiem-bung-nhen.mjs               (259 ms)
+✓ hoc/kiem-cam-4.mjs                 ĐẠT 15 · HỎNG 0  (232 ms)
+✓ hoc/kiem-cam-bien-them.mjs         ĐẠT 59 · HỎNG 0 kiểm tra 7 màn mới gói Cảm biến khoảng cách.  (3167 ms)
+✓ hoc/kiem-cam-bien-tu.mjs             (298 ms)
+✓ hoc/kiem-camera-drone.mjs          --------------------------------------------- ĐẠT 62 · HỎNG 0  (702 ms)
+✓ hoc/kiem-che-cam-bien.mjs          ĐẠT 224 · HỎNG 0  (746 ms)
+✓ hoc/kiem-che-drone.mjs             ĐẠT 233 · HỎNG 0  (1716 ms)
+✓ hoc/kiem-che-lap.mjs               ĐẠT 198 · HỎNG 0  (1384 ms)
+✓ hoc/kiem-che-list.mjs              ĐẠT 205 · HỎNG 0  (857 ms)
+✓ hoc/kiem-che-luc-ban.mjs           ĐẠT 57 · HỎNG 0 kiểm tra 10 màn chương Hàm lực bắn.  (1533 ms)
+✓ hoc/kiem-che-mau.mjs               ĐẠT 244 · HỎNG 0  (1280 ms)
+✓ hoc/kiem-che-may-nem.mjs           ĐẠT 226 · HỎNG 0  (3163 ms)
+✓ hoc/kiem-che-nam-cham.mjs          ĐẠT 227 · HỎNG 0  (12078 ms)
+✓ hoc/kiem-che-nhen.mjs              ĐẠT 129 · HỎNG 0  (373 ms)
+✓ hoc/kiem-che-omni.mjs              ĐẠT 234 · HỎNG 0  (1290 ms)
+✓ hoc/kiem-che-sung-hoi.mjs          ĐẠT 211 · HỎNG 0  (533 ms)
+✓ hoc/kiem-che-tay-xoay.mjs          ĐẠT 159 · HỎNG 0  (2804 ms)
+✗ hoc/kiem-che-tay.mjs               ĐẠT 236 · HỎNG 1  (3137 ms)
+  ok   màu vật mờ lạ bị từ chối bằng lỗi tiếng Việt
+  ok   khay: đủ bánh (cả lùi) và bốn lệnh tay ở mọi màn trừ 5.9; 5.9 hỏng bánh phải: khay = phần cứng = trừ right_back
+  ok   5.1 công thức khác #1 (Quay đầu bằng hai lần quay trái (chậm hơn hai nhịp)): thắng, không lỗi — 1 sao, 19 ô, 8 nhịp
+  ok   5.1 công thức khác #2 (Viết thẳng lệnh tay và gộp việc nâng tay vào nhịp quay đầu (nhanh hơn)): thắng, không lỗi — 3 sao, 18 ô, 5 nhịp
+  ok   5.2 công thức khác #1 (Quay phải bằng ba lần quay trái (chậm hơn hai nhịp)): thắng, không lỗi — 2 sao, 19 ô, 8 nhịp
+  ok   5.2 công thức khác #2 (Viết thẳng lệnh tay và gộp việc nâng tay vào nhịp quay trái (nhanh hơn)): thắng, không lỗi — 3 sao, 16 ô, 5 nhịp
+  ok   5.3 công thức khác #1 (Hai hàm dẹp vật chế bằng cách quay trái (chậm hơn nhưng vẫn qua)): thắng, không lỗi — 1 sao, 38 ô, 23 nhịp
+  ok   5.3 công thức khác #2 (Không dẹp vật thứ hai, nhặt nó và mang theo tới cờ (nhặt xong vật không còn chiếm ô)): thắng, không lỗi — 3 sao, 31 ô, 15 nhịp
+  ok   5.4 công thức khác #1 (Quay đầu bằng hai lần quay trái (chậm hơn hai nhịp)): thắng, không lỗi — 1 sao, 13 ô, 6 nhịp
+  ok   5.4 công thức khác #2 (Viết thẳng lệnh tay và gộp việc nâng tay vào nhịp quay đầu (nhanh hơn)): thắng, không lỗi — 3 sao, 12 ô, 3 nhịp
+  ok   5.5 công thức khác #1 (Quay đầu, tiến hai ô, quay đầu lại rồi đặt (chậm hơn hai nhịp)): thắng, không lỗi — 1 sao, 23 ô, 8 nhịp
+  ok   5.5 công thức khác #2 (Đặt xong không nâng tay lên: bỏ drop(), viết thẳng lệnh thả (nhanh hơn một nhịp)): thắng, không lỗi — 3 sao, 15 ô, 5 nhịp
+  ok   5.6 công thức khác #1 (Dùng grab_back() để lấy vật cất tạm, ngắn hơn một dòng): thắng, không lỗi — 1 sao, 34 ô, 20 nhịp
+  ok   5.7 công thức khác #1 (Đặt vật, quay đầu, đi lại đường cũ rồi quay đầu lần nữa (chậm hơn hai nhịp)): thắng, không lỗi — 1 sao, 26 ô, 10 nhịp
+  ok   5.7 công thức khác #2 (Đặt vật rồi lùi bằng lệnh bánh viết thẳng, không gọi back()): thắng, không lỗi — 2 sao, 25 ô, 8 nhịp
+✗ hoc/kiem-che-xe.mjs                ĐẠT 267 · HỎNG 4  (1641 ms)
+  HỎNG SoLenh.ds không có hàm thừa: mọi mục là một hàm cốt truyện có thật (tổng 174 = 166) → thừa wait_clear,yield_step,wait_mate,pass_mate,clear_squirt,step_clear,cover,guard
+  HỎNG chuong và man của từng mục khớp màn đầu tiên tạo hàm đó; thứ tự mục = thứ tự chế trong game → ["wait_clear@che-doi-mua-2.1≠undefined","yield_step@che-doi-mua-2.2≠undefined","wait_mate@che-doi-mua-2.4≠undefined","pass_mate@che-doi-mua-2.5≠undefined","clear_squirt@che-doi-mua-2.6≠undefined","step_clear@che-doi-mua-2.7≠undefined","cover@che-doi-mua-2.8≠undefined","guard@che-doi-mua-2.10≠undefined"]
+  HỎNG nhóm của hàm đợt 2 ứng với chương: drone → drone, sung-hoi + che-sung-hoi + luc-ban → hoi, may-nem → nem…; hàm đợt 1 thuộc xe / tay / lap / cam-bien
+  ok   chương trình dừng vì lỗi chạy (loi) thì không thắng dù xe đứng đúng chỗ
+  ok   cấu hình sai bị từ chối bằng lỗi tiếng Việt: thiếu bongMo; bóng mờ trong tường; hướng sai; diQua trong tường; bongMo với mục tiêu khác
+  ok   SanHoc.chay gọi thẳng (không có phanCung / nguonDong) giữ hành vi cũ: left_back ngoài khay là "Chưa có biến hay hàm" (lỗi của nhân), không phải lenh-chua-mo
+  ok   cấu hình sai: khay có lệnh mà phần cứng không có → lỗi; lệnh phần cứng không thuộc loại robot → lỗi
+  ok   3.9: phần cứng KHÔNG gồm bánh tiến nên hàm cũ của em (move, turn_right) hỏng; hamGoc = phanCung = [left_back, right_back, wait]
+  ok   3.9: chương trình chính gõ thẳng left_move() (bánh tiến hỏng): lenh-goc-hong với cho cot chinh (không phải lenh-chua-mo)
+  ok   có lỗi chạy thì chỉ báo lỗi chạy, không thêm lech-bong-mo
+  ok   3.1 công thức khác #1 (Quay phải bằng ba lần quay trái): thắng, không lỗi — 2 sao, 11 ô, 5 nhịp
+  ok   3.1 công thức khác #2 (Viết thẳng lệnh bánh, không gọi hàm nào): thắng, không lỗi — 3 sao, 8 ô, 3 nhịp
+  ok   3.1 công thức khác #3 (Quay trái, lùi một ô, quay phải (dùng lệnh lùi ngay trong hàm của em, dù khay chưa có)): thắng, không lỗi — 3 sao, 10 ô, 3 nhịp
+  ok   3.2 công thức khác #1 (Quay trái bằng ba lần quay phải): thắng, không lỗi — 2 sao, 11 ô, 5 nhịp
+  ok   3.2 công thức khác #2 (Viết thẳng lệnh bánh, không gọi hàm nào): thắng, không lỗi — 3 sao, 8 ô, 3 nhịp
+✓ hoc/kiem-che-xich.mjs              ĐẠT 237 · HỎNG 0  (1845 ms)
+✓ hoc/kiem-chuoi.mjs                 ĐẠT 99 · HỎNG 0  (220 ms)
+✓ hoc/kiem-combo-mua-1.mjs           ĐẠT 128 · HỎNG 0 kiểm tra gói Combo.  (4720 ms)
+✓ hoc/kiem-dang-ky.mjs               ĐẠT 9 · HỎNG 0  (1075 ms)
+✓ hoc/kiem-dap-sac.mjs               ĐẠT 15 · HỎNG 0  (440 ms)
+✓ hoc/kiem-day-thung.mjs             ĐẠT 108 · HỎNG 0 kiểm tra 20 màn gói Đẩy thùng.  (8907 ms)
+✓ hoc/kiem-dem-tu.mjs                  (1124 ms)
+✓ hoc/kiem-do-nhiet.mjs              ĐẠT 107 · HỎNG 0 kiểm tra 20 màn gói Đo nhiệt.  (1705 ms)
+✓ hoc/kiem-doi-drone.mjs             ĐẠT 76 · HỎNG 0  (1231 ms)
+✓ hoc/kiem-doi-gap-nem.mjs           ĐẠT 59 · HỎNG 0  (1210 ms)
+✓ hoc/kiem-doi-ho-bang.mjs           ĐẠT 60 · HỎNG 0  (1611 ms)
+✓ hoc/kiem-doi-mau.mjs               ĐẠT 60 · HỎNG 0  (1739 ms)
+✓ hoc/kiem-doi-mua-1.mjs             ĐẠT 79 · HỎNG 0 kiểm tra 10 màn chương Đội phối hợp.  (13324 ms)
+✓ hoc/kiem-doi-mua-2.mjs             ĐẠT 0 · HỎNG 0 kiểm tra 20 màn gói Đội (cất).  (1007 ms)
+✓ hoc/kiem-doi-nam-cham.mjs          ĐẠT 147 · HỎNG 0  (1294 ms)
+✓ hoc/kiem-doi-omni.mjs              ĐẠT 80 · HỎNG 0  (1285 ms)
+✗ hoc/kiem-doi-sung-hoi.mjs          ĐẠT 66 · HỎNG 1  (1166 ms)
+  ok   hàm của màn (7, 8, 9 chương 2): mẫu là bản hỏng, lời giải là bản sửa cùng tên
+  HỎNG che-doi-sung-hoi.7: open_gate() sửa bằng squirt_left("high") (cùng động tác) → vẫn thắng → ["R1: Robot đã chạy quá 200 nhịp mà vòng while vẫn chưa dừng (ở hàm go_wall, dòng 1): điều kiện không bao giờ sai. Xem lại","R1: Ở nhịp 3, tia nước dừng ở ô (2, 4) vì đó là tường cao, nên không tới được van. Tia nước bay thẳng và dừng ở vật cản ","R1: Ở nhịp 3, xe định giật về phía lên nhưng ô (2, 2) là tường nên xe đứng yên. Phun mạnh ra trước thì xe giật lùi một ô","R2: Robot đã chạy quá 200 nhịp mà vòng while vẫn chưa dừng (ở hàm wait_gate, dòng 1): điều kiện không bao giờ sai. Xem l"]
+ĐẠT 66 · HỎNG 1
+✓ hoc/kiem-doi-tay-xoay.mjs          ĐẠT 92 · HỎNG 0  (1245 ms)
+✓ hoc/kiem-doi-ten-phun.mjs          ĐẠT 14 · HỎNG 0  (914 ms)
+✓ hoc/kiem-doi-thu-manh.mjs          ĐẠT 16 kiểm tra gói Đọ sức part mạnh.  (1180 ms)
+✓ hoc/kiem-doi-xich.mjs              ĐẠT 69 · HỎNG 0  (1245 ms)
+✓ hoc/kiem-dong-goi-artifact.mjs     ĐẠT 14 · HỎNG 0 kiểm  (1372 ms)
+✓ hoc/kiem-drone-son.mjs             ĐẠT 11 · HỎNG 0  (209 ms)
+✓ hoc/kiem-drone.mjs                 ĐẠT 196 · HỎNG 0  (733 ms)
+✓ hoc/kiem-dua-robot.mjs             ĐẠT 28 kiểm tra gói Đua đối kháng.  (1166 ms)
+✓ hoc/kiem-flycam.mjs                ĐẠT 245 · HỎNG 0  (3379 ms)
+✓ hoc/kiem-giao-dien-vector-b.mjs    ĐẠT 16 · HỎNG 0 kiểm  (253 ms)
+✓ hoc/kiem-gioi-thieu-part.mjs       ĐẠT 1288 · HỎNG 0  (571 ms)
+✗ hoc/kiem-goi-doi.mjs               ĐẠT 966 · HỎNG 1  (2363 ms)
+  HỎNG hàm của màn không trùng tên hàm của em ở chương nào → doi-sung-hoi.9 squirt_left, che-doi-sung-hoi.6 squirt_left, che-doi-sung-hoi.10 squirt_left
+ĐẠT 966 · HỎNG 1
+✓ hoc/kiem-goi.mjs                   ĐẠT 56 · HỎNG 0  (438 ms)
+✓ hoc/kiem-hai-robot-man.mjs         ĐẠT 105 · HỎNG 0  (7138 ms)
+✓ hoc/kiem-hai-robot.mjs             ĐẠT 362 · HỎNG 0  (774 ms)
+✗ hoc/kiem-hoc.mjs                   ĐẠT 6704 · HỎNG 9  (43398 ms)
+  ok   nhện không nhận lệnh bánh: gọi left_move → ham-chua-co qua lỗi core
+  ok   vừa khung: không lỗi (hàm của màn 10 ô + hàm của em 10 ô)
+  ok   hàm của màn trùng tên hàm của em KHÔNG phải lỗi (hàm của màn che; kiemTra chỉ nhận hàm của em còn lại)
+== 9. Máy chấm: sao, lỗi bọc từ core, mã chẩn đoán ==
+  ok   loi-cu-phap: hàm của em không có thân → đổ lỗi vào phần tên hàm (dòng 0)
+  ok   hàm trong kho hỏng nhưng bài không gọi tới thì không ảnh hưởng (kho dở dang không làm hỏng mọi màn)
+  ok   lỗi cú pháp trong hàm thử: loi-cu-phap ghi đúng hàm
+  ok   look() / camera-bay (16/10): màn có look trong hamGoc là màn drone gắn ĐÚNG MỘT camera nhìn xuống { ma "camera-bay", o "bung" }; camera-bay chỉ có ở màn drone có look; hamGoc có look thì robot.camBien phải có camera-bay (lõi ném lỗi cấu hình nếu thiếu)
+  ok   2.2: sửa move() trong kho thành bản lỗi (thiếu wait) → không thắng, chẩn đoán nhắc "hàm move"
+  ok   2.3: sửa move() trong kho thành bản lỗi (thiếu wait) → không thắng, chẩn đoán nhắc "hàm move"
+  ok   2.4: sửa move() trong kho thành bản lỗi (thiếu wait) → không thắng, chẩn đoán nhắc "hàm move"
+  ok   2.5: sửa move() trong kho thành bản lỗi (thiếu wait) → không thắng, chẩn đoán nhắc "hàm move"
+  ok   2.6: sửa move() trong kho thành bản lỗi (thiếu wait) → không thắng, chẩn đoán nhắc "hàm move"
+  ok   2.7: sửa move() trong kho thành bản lỗi (thiếu wait) → không thắng, chẩn đoán nhắc "hàm move"
+  ok   2.8 Sửa hàm lỗi: đủ trường, đề 1–3 câu, gợi ý 1–2 câu, ≥1 lời sai
+✓ hoc/kiem-hong-ngoai.mjs            ĐẠT 108 · HỎNG 0 kiểm tra 20 màn gói Hồng ngoại.  (1298 ms)
+✓ hoc/kiem-huong-dan.mjs             ĐẠT 40 · HỎNG 0  (1002 ms)
+✗ hoc/kiem-huy-hieu-phim-vector.mjs  ĐẠT 11 · HỎNG 1 kiểm  (6245 ms)
+  ✗ HỎNG (A7) V7c1: HuyHieu.DS (117 mã) + BI_DANH (20) là dữ liệu của huy-hieu-vector.js, y hệt dữ liệu chụp c830c12; mọi HINH pixel còn lại có trong DS; maVec(bí danh) = mã gốc
+  ✓ (B1) vector: mọi khung của 39 phim vẽ được (cả hẹn giờ), không lỗi / cảnh báo
+ĐẠT 11 · HỎNG 1 kiểm
+✗ hoc/kiem-khay.mjs                  ĐẠT 182 · HỎNG 2  (3773 ms)
+== 1. man.gioiHanHam: lỗi khung qua-gioi-han-ham ==
+  ok   không khai gioiHanHam: gọi 7 hàm của em khác nhau vẫn không báo lỗi giới hạn (không có giới hạn chung)
+  ok   gioiHanHam 3, chương trình dùng đúng 3 hàm khác nhau (gọi lại nhiều lần): không lỗi, máy vẫn chạy sân
+  ok   gioiHanHam 3, chương trình dùng 5 hàm: đúng MỘT lỗi qua-gioi-han-ham, mức lỗi, là lỗi khung (máy chưa chạy sân nào)
+  ok   lỗi trỏ vào dòng đầu tiên gọi hàm thứ n + 1 (dodge_right ở dòng 5 của chương trình), kèm gioiHan / dang / ham
+  ok   gioiHanHam 1: dodge_right() (gọi move, turn_right, turn_left bên trong) + lệnh gốc left_move / right_move / wait: chỉ tính 1 hàm, không lỗi
+  ok   hàm của màn (go_out, go_in) không tính: giới hạn 1, gọi 2 hàm của màn + 1 hàm của em: không lỗi
+  ok   gioiHanHam 0: gọi một hàm của em là lỗi ("chỉ mang được 0 hàm")
+  ok   gioiHanHam 0, chỉ lệnh gốc: không lỗi
+  ok   kho có nhiều hàm hơn giới hạn nhưng chương trình chỉ gọi 2 hàm (chưa kể hàm gọi bên trong): không lỗi
+  ok   lỗi khung có mã nằm trong chanDoan của kết quả cham() như tran-khung (mọi lỗi khung có muc "loi")
+  ok   màn thật không khai gioiHanHam nào thì không bị kiểm: lời giải 3 sao của mọi màn không có lỗi qua-gioi-han-ham
+  ok   datLoi: khối báo lỗi (em:go_wall) nằm ở thẻ khác thì tự sang thẻ Logic và tô đỏ khối đó
+  HỎNG mọi màn (400): lệnh gốc, hàm của màn và hàm của em (đã lọc theo robot) đều có mặt trong một thẻ nào đó; khối for có khi màn học for; thẻ đang chọn luôn hợp lệ → 24.8: thiếu distance | 24.9: thiếu distance | 24.10: thiếu distance
+  ok   App.hamSuaDuoc / App.hamEmKhoa có ở ung-dung.js và chỉ dựa vào ManHoc (bảng Gỡ lỗi "Mở hết" KHÔNG mở khóa này)
+✓ hoc/kiem-kho-cu.mjs                ĐẠT 107 · HỎNG 0 kiểm tra 20 màn gói Góc kho cũ.  (1243 ms)
+✓ hoc/kiem-khoang-cach.mjs           ĐẠT 87 · HỎNG 0  (354 ms)
+✓ hoc/kiem-lach-mua-1.mjs            ĐẠT 0 lỗ ngoài danh sách chấp nhận · 0 lỗ chấp nhận · 254 phép dò trên 200 màn mùa 1.  (1176 ms)
+✓ hoc/kiem-lach-mua-2.mjs            ĐẠT 0 lỗ ngoài danh sách chấp nhận · 0 lỗ chấp nhận · 342 phép dò trên 200 màn mùa 2.  (1483 ms)
+✓ hoc/kiem-lach-mua-3.mjs            ĐẠT 0 lỗ ngoài danh sách chấp nhận · 6 lỗ chấp nhận · 221 phép dò trên 200 màn mùa 3.  (1364 ms)
+✓ hoc/kiem-lap-rap-sao.mjs           ĐẠT 512 · HỎNG 0  (62346 ms)
+✓ hoc/kiem-lap-rap.mjs               ĐẠT 127 · HỎNG 0  (357 ms)
+✓ hoc/kiem-list-man.mjs              ĐẠT 168 · HỎNG 0  (1500 ms)
+✓ hoc/kiem-list.mjs                  ĐẠT 226 · HỎNG 0  (1451 ms)
+✓ hoc/kiem-lo-trinh.mjs              ĐẠT 1236 kiểm tra lộ trình xuất bản.  (9255 ms)
+✓ hoc/kiem-loi-giai.mjs              ĐẠT 46/46  (3028 ms)
+✓ hoc/kiem-loi-mua-2.mjs             ĐẠT 93 kiểm  (276 ms)
+✓ hoc/kiem-lua.mjs                   ĐẠT 31 kiểm  (1406 ms)
+✓ hoc/kiem-luc-ban.mjs               ĐẠT 105 · HỎNG 0  (1261 ms)
+✓ hoc/kiem-man-mua-3.mjs             ĐẠT 894 · HỎNG 0 kiểm (160 màn mới)  (1698 ms)
+✓ hoc/kiem-man-mua-4.mjs             ĐẠT 998 · HỎNG 0 kiểm (147 màn mới)  (1530 ms)
+✓ hoc/kiem-mau.mjs                   ĐẠT 148 · HỎNG 0  (473 ms)
+✓ hoc/kiem-may-nem.mjs               ĐẠT 156 · HỎNG 0  (919 ms)
+✓ hoc/kiem-may-son.mjs               ĐẠT 194 · HỎNG 0  (2181 ms)
+✓ hoc/kiem-moi-truong.mjs            ĐẠT 13 · HỎNG 0  (570 ms)
+✓ hoc/kiem-nam-cham.mjs              ĐẠT 246 · HỎNG 0  (29764 ms)
+✓ hoc/kiem-nhen.mjs                  ĐẠT 153 · HỎNG 0  (597 ms)
+✗ hoc/kiem-nut-bat-san.mjs           HỎNG 2 / 30 kiểm  (1155 ms)
+  ok   sân có cửa, không khai noi (mặc định nút điều khiển mọi cửa) → lỗi cấu hình "Nút bật sẵn (3, 1) đang điều khiển 1 cửa"
+  ok   sân có băng chuyền, không khai noi → lỗi "đang điều khiển 2 ô băng chuyền"
+  ok   noi ghi nút bật sẵn với cửa → lỗi cấu hình
+== 3. Lỗi cấu hình khác ==
+  ok   ô không phải nút N → lỗi "Nút bật sẵn: ô (2, 1) không phải van N"
+  ok   ô nút đè M → lỗi ghi rõ nút đè M không bật sẵn được
+  ok   nutBat không phải mảng → lỗi "nutBat phải là mảng"
+  HỎNG không màn nào ngoài gói Đo nhiệt khai nutBat; màn gói Đo nhiệt nào cũng khai → 1081 màn khác, 20 màn Đo nhiệt
+  HỎNG mọi màn có nút N (lời giải mẫu qua cham.js): nutBanDau đủ nút, tất cả tắt → 116 màn; sai: kho-cu.7, kho-cu.8, che-kho-cu.7
+HỎNG 2 / 30 kiểm
+✓ hoc/kiem-nut-de.mjs                ĐẠT 62 · HỎNG 0 kiểm tra chương Nút đè.  (1373 ms)
+✓ hoc/kiem-nut-mo-dau-phim-vector.mjs ĐẠT 12 · HỎNG 0 kiểm  (4700 ms)
+✓ hoc/kiem-o-so.mjs                  ĐẠT 0 ô số không ghép được bằng khối (+ 5 ô đã biết, chờ quyết) trong 387 ô số của 600 màn mùa đã mở.  (1382 ms)
+✓ hoc/kiem-omni.mjs                  ĐẠT 174 · HỎNG 0  (529 ms)
+✓ hoc/kiem-part-mua.mjs              ĐẠT: luật part đúng mùa (mùa đã dựng lại: mua-1)  (912 ms)
+✗ hoc/kiem-phim-goi.mjs              ĐẠT 54 · HỎNG 2  (1071 ms)
+  HỎNG mọi gói mùa 2 có phim (xich, sung-hoi, hong-ngoai, nha-may, day-thung, luc-ban, do-nhiet, kho-cu, be-sung, nha-may-chay) → kho-cu
+  HỎNG mỗi phim của phim-mua-2.js mang đúng mã một gói của MUA_2 (cờ phim-goi:<mã>) → doi-mua-2
+  ok   mọi khung của mọi phim vẽ được (cả hẹn giờ), không lỗi
+ĐẠT 54 · HỎNG 2
+✓ hoc/kiem-rap-du.mjs                ĐẠT 160 · HỎNG 0  (21143 ms)
+✓ hoc/kiem-rap-nao.mjs               ĐẠT 286 · HỎNG 0  (1946 ms)
+✓ hoc/kiem-rap-tay.mjs               ĐẠT 265 · HỎNG 0  (21743 ms)
+✓ hoc/kiem-robot-hoan-thien.mjs      ĐẠT 181 · HỎNG 0  (1468 ms)
+✓ hoc/kiem-sung-hoi.mjs              ĐẠT 210 · HỎNG 0  (1456 ms)
+✓ hoc/kiem-tay-gap.mjs               ĐẠT 250 · HỎNG 0  (620 ms)
+✓ hoc/kiem-tay-xoay.mjs              ĐẠT 183 · HỎNG 0  (7007 ms)
+✓ hoc/kiem-tham-so.mjs               ĐẠT 113 · HỎNG 0  (486 ms)
+✓ hoc/kiem-thu-ham.mjs               ĐẠT 78 · HỎNG 0  (272 ms)
+✓ hoc/kiem-trum-mua-1.mjs            ĐẠT 81 · HỎNG 0 kiểm tra gói R1 xuất xưởng.  (6362 ms)
+✓ hoc/kiem-trum-mua-2.mjs            ĐẠT 107 · HỎNG 0 kiểm tra 20 màn gói Nhà máy chạy lại.  (9682 ms)
+✓ hoc/kiem-ve-vector.mjs             ĐẠT 101 · HỎNG 0 kiểm  (19494 ms)
+✓ hoc/kiem-xe-roi-ho.mjs               (239 ms)
+✓ hoc/kiem-xich.mjs                  ĐẠT 137 · HỎNG 0  (559 ms)
+
+97/106 bộ đạt
+Hỏng: hoc/kiem-che-tay.mjs, hoc/kiem-che-xe.mjs, hoc/kiem-doi-sung-hoi.mjs, hoc/kiem-goi-doi.mjs, hoc/kiem-hoc.mjs, hoc/kiem-huy-hieu-phim-vector.mjs, hoc/kiem-khay.mjs, hoc/kiem-nut-bat-san.mjs, hoc/kiem-phim-goi.mjs
