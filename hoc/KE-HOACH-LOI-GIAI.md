@@ -13,7 +13,7 @@ Ngày 30/10. Trạng thái: **đề xuất, chờ user duyệt** (chưa làm gia
 - `GoLoi.chamCach(m, c)`: chấm thử, ra số sao và nhịp.
 - `GoLoi.napLoiGiai(ma, hoi)`: đưa hàm vào kho, đưa bài vào khung code (`Choi.napBai`). Nếu bài đang viết hay hàm trong kho sẽ bị thay thì hỏi trước.
 - Địa chỉ `choi.html?debug=1&man=<mã>&loigiai=1` (hoặc `loigiai=khac`, `ct2`…) vào màn rồi nạp luôn.
-- Máy kiểm `hoc/kiem-loi-giai.mjs` chạy trên lộ trình xuất bản (`lo-trinh-hoc.js`, như `choi.html`), đủ 994 màn của 4 mùa: lời giải đầu tiên của mọi màn đều thắng 3 sao. 979/980 cách khác cũng thắng.
+- Máy kiểm `hoc/kiem-loi-giai.mjs` chạy trên lộ trình xuất bản (`lo-trinh-hoc.js`, như `choi.html`), đủ 1128 màn (4 mùa đang mở, 40 gói, cùng mùa 5 ẩn): lời giải đầu tiên của mọi màn đều thắng 3 sao. 1011/1012 cách khác cũng thắng.
 
 Phần người chơi dùng lại đúng các hàm này. Không cần dữ liệu mới để chạy được.
 
@@ -50,7 +50,7 @@ giaiThich: {
 
 ## Phát hiện khi kiểm (chờ quyết)
 
-- **Kho hàm vượt trần.** Lộ trình xuất bản có 215 hàm cốt truyện, còn `KhoHam` chỉ chứa tối đa 200 hàm (`SO_HAM_MAC_DINH`). Từ `drone.10` (93.10) trở đi, kho tham chiếu vượt 200: 81 màn. Người chơi đi đủ lộ trình sẽ không tạo được hàm mới. Đo bằng cách giữ 200 hàm đầu: 37 màn (drone.10, che-drone.1 đến 7 và 10, flycam.1 trở đi…) không còn thắng 3 sao bằng lời giải chuẩn. `kiem-hoc` chỉ kiểm trần trên ngân hàng bài (122 hàm), nên không bắt được. Có hai cách: nâng trần (vd 400), hoặc để lộ trình không bắt giữ mọi hàm cũ. Bảng Gỡ lỗi khi gặp kho đầy vẫn nạp bài và báo đỏ.
+- **Kho hàm vượt trần (mùa 5 ẩn).** Lộ trình hiện có 253 hàm cốt truyện, còn `KhoHam` chỉ chứa tối đa 200 hàm (`SO_HAM_MAC_DINH`). Bốn mùa đang mở chưa chạm trần. Từ `che-xich.5` (85.3, mùa 5) kho tham chiếu vượt 200: 286 màn. Đo bằng cách giữ 200 hàm đầu: 163 màn mùa 5 không còn thắng 3 sao bằng lời giải chuẩn. `kiem-hoc` chỉ kiểm trần trên ngân hàng bài, nên không bắt được. Phải xử lý trước khi mở mùa 5: nâng trần (vd 400), hoặc để lộ trình không bắt giữ mọi hàm cũ. Bảng Gỡ lỗi khi gặp kho đầy vẫn nạp bài và báo đỏ.
 
 ## Câu hỏi cho user
 
