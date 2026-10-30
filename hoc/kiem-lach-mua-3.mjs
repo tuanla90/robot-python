@@ -23,8 +23,8 @@ const LOI_GIA = process.argv.includes('--loi-gia');
 
 /** Lỗ chấp nhận: mã màn → lý do (ghi ở báo cáo T). */
 const CHAP_NHAN = {
-  'che-bai-tu.4': 'tạo detour(k) chỉ gọi detour(3); k khác (detour(1)) gặp ở tong-hop-3.3 nên hàm cứng số sẽ lộ ra sau; tham số là khái niệm mùa 2, không phải cái mới của gói',
-  'che-bai-tu.9': 'màn sửa hàm của màn detour_left(k): bài học là đổi chiều rẽ, không phải tham số',
+  'che-bai-tu.4': 'tạo loop_right(k) chỉ gọi loop_right(3); k khác (loop_right(1)) gặp ở tong-hop-3.3 nên hàm cứng số sẽ lộ ra sau; tham số là khái niệm mùa 2, không phải cái mới của gói',
+  'che-bai-tu.9': 'màn sửa hàm của màn loop_left(k): bài học là đổi chiều rẽ, không phải tham số',
   'che-doc-cuc.2': 'D2 thay tham số p bằng chính biến p ở main (p = front_pole()): vẫn đọc cực và so chuỗi, không phải lách',
   'nam-cham.6': 'màn có sẵn (mùa 2 cũ) một sân, tạo grip(); doc-cuc.2 đứng trước đã ép front_pole() bằng hai sân',
   'che-nam-cham.7': 'màn có sẵn (mùa 2 cũ) một sân: sửa hàm của màn fixed_grip',

@@ -24,8 +24,8 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
      tắt đệm trước"). Vật đã dính mũi xe / bụng nhện thì đệm không giật ra.
    - Xích (không nam châm) bị đệm hút như sắt: trùm mùa trum-mua-3.10 và trum-mua-3.7 dùng chuyện này (nhện đứng lên nút tắt đệm cho xích qua).
    - Vẽ: đệm tắt phủ tối, không thở; dây nối nút ↔ đệm vẽ như dây nút ↔ cửa. Trên sân nhỏ dây khó thấy, user xem giúp.
-4. **Tên hàm của em mới ở mùa 3** (đổi được trước khi xuất bản): gói 4 `iron_run(n)`, `detour(k)`, `call_iron()`; gói 8 `idle(n)` (thay `pause` của mùa 2
-   vì pause rời mùa 3), `pass_box()`, `hop_drop(d)`. `fetch`, `ring`, `hold` đã có người dùng nên tránh. Hàm của màn trình diễn: `grab_run(n)`, `stay(n)`.
+4. **Tên hàm của em mới ở mùa 3** (đổi được trước khi xuất bản): gói 4 `fetch_iron(n)`, `loop_right(k)`, `pull_iron()`; gói 8 `wait_n(n)` (thay `pause` của mùa 2
+   vì pause rời mùa 3), `pass_box()`, `hop_drop(d)`. `fetch`, `ring`, `hold` đã có người dùng nên tránh. Hàm của màn trình diễn: `get_iron(n)`, `rest(n)`.
 5. **Máy dò lách**: 6 lỗ chấp nhận có lý do (che-bai-tu.4, che-bai-tu.9 tham số; che-doc-cuc.2 là lách giả; nam-cham.6, che-nam-cham.7, che-nam-cham.5
    là màn có sẵn một sân). Màn nhện (không gắn được cảm biến làm dấu) và màn hai robot máy dò bỏ qua. Muốn ép chặt hơn thì phải sửa màn có sẵn.
 6. **Giao diện and / or** (gói 2): cờ màn `vaHoac: true` mở nút "+ and" / "+ or" cho điều kiện toàn cảm biến. Cần user xem trên máy thật.
