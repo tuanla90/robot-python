@@ -156,10 +156,10 @@
     m('color_line', 'son', 'Chọn màu c rồi vẽ nét n + 1 ô', 'che-may-son', 'che-may-son.2'),
     m('next_row', 'son', 'Lùi n ô về đầu hàng rồi xuống hàng dưới, giữ hướng', 'che-may-son', 'che-may-son.3'),
     m('stripes', 'son', 'Mỗi màu trong danh sách vẽ một sọc bốn ô, sọc nọ dưới sọc kia', 'che-may-son', 'che-may-son.5'),
-    m('copy_row', 'son', 'Đọc màu n ô bằng cảm biến, xuống hàng dưới rồi chép lại đúng các màu đó', 'che-may-son', 'che-may-son.6'),
+    m('copy_row', 'son', 'Ghi màu n ô bên trái xe bằng camera, xuống hàng dưới rồi chép lại', 'che-may-son', 'che-may-son.6'),
     m('grid', 'son', 'Lưới chấm r hàng, mỗi hàng k chấm, hàng cách hàng một ô', 'che-may-son', 'che-may-son.7'),
     m('border', 'son', 'Khung vuông mỗi cạnh đi n bước, về chỗ cũ', 'che-may-son', 'che-may-son.8'),
-    m('fill_gaps', 'son', 'Đi qua n ô, ô nào chưa có sơn thì chấm màu c', 'che-may-son', 'che-may-son.9'),
+    m('fill_gaps', 'son', 'Đi n ô, nhìn ô phía trước: ô chưa có sơn thì tới đó chấm màu c', 'che-may-son', 'che-may-son.9'),
     m('fetch', 'nam-cham', 'Hút vật sắt trước mặt, quay đầu, tiến một ô rồi thả vật', 'nam-cham', 'nam-cham.5'),
     m('grip', 'nam-cham', 'Bật cực khác chữ trên vật nam châm trước mặt để kéo nó về', 'nam-cham', 'nam-cham.6'),
     // chương Chế lệnh nam châm (kick, reel, lane, sort, fling; fixed_grip, go_pull, put_back là hàm của màn nên không có ở đây)
@@ -246,13 +246,13 @@
     m('go_spray', 'hoi', 'Đi thẳng tới sát cửa đóng rồi phun mạnh van bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
     m('visit', 'hoi', 'Đo ngõ cụt sâu d ô, vào phun mạnh van bên trái, rồi lùi ra đúng d ô', 'che-be-sung', 'che-be-sung.8'),
     m('push_spray', 'hoi', 'Đẩy thùng một ô rồi phun mạnh van bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9'),
-    // gói 10 · chương trum-mua-2 · Trùm mùa (man-trum-mua-2.js): hàm cho dây chuyền nhà máy chạy lại, nhóm Súng hơi (nudge, pair_spray, peek… là hàm của màn nên không có ở đây)
-    m('side_push', 'hoi', 'Né xuống làn bên phải rồi đẩy thùng trước mặt một ô', 'trum-mua-2', 'trum-mua-2.1'),
-    m('open_valve', 'hoi', 'Phun mạnh tới khi van trước mặt nóng lên', 'trum-mua-2', 'trum-mua-2.2'),
-    m('lane_row', 'hoi', 'n làn: làn nào cũng né xuống rồi đẩy thùng một ô', 'trum-mua-2', 'trum-mua-2.4'),
+    // gói 10 · chương trum-mua-2 · Chế lệnh: dập lửa (man-trum-mua-2.js, 30/10 gói lửa): hàm dập lửa và dây chuyền, nhóm Vòi phun (put_far, pair_spray, douse… là hàm của màn nên không có ở đây)
+    m('put_out', 'hoi', 'Còn lửa trước mũi (còn nóng) thì phun nhẹ, tới khi lửa tắt hẳn', 'trum-mua-2', 'trum-mua-2.1'),
+    m('put_out_left', 'hoi', 'Quay trái, dập lửa bằng put_out(), quay lại', 'trum-mua-2', 'trum-mua-2.2'),
+    m('clear_row', 'hoi', 'n giếng cháy cách đều hai ô: đi hai ô rồi dập lửa bên trái', 'trum-mua-2', 'trum-mua-2.4'),
     m('box_spray', 'hoi', 'Thùng hay bạn còn trong giếng thì chờ, rồi phun mạnh', 'trum-mua-2', 'trum-mua-2.5'),
     m('gate_push', 'hoi', 'Tới sát thùng, phun van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
-    m('check_lane', 'hoi', 'Van trên đầu còn đóng thì phun mở cửa xuống làn, rồi né xuống đẩy thùng', 'trum-mua-2', 'trum-mua-2.7'),
+    m('fire_valve', 'hoi', 'Quay trái, dập lửa chắn trước van, phun mạnh mở van, quay lại', 'trum-mua-2', 'trum-mua-2.7'),
     m('far_push', 'hoi', 'Thùng cách d ô thì đẩy nó đi đúng d ô', 'trum-mua-2', 'trum-mua-2.9')
   );
 

@@ -78,7 +78,9 @@
     m.goiY = (m.goiY || []).map(vanBan);
   }
   // Luyện trên một tình huống đủ tiêu biểu; phần khái quát hóa dành cho trùm.
-  M.danhSach.forEach(function (m) { if (m.so < 10) motSan(m, 1); });
+  // Trừ che-may-son.6 (mùa 4 gói 6, nghiệm thu 30/10): hai hàng màu khác nhau để danh sách màu ghi cứng không thắng.
+  var GIU_NHIEU_SAN = { 'che-may-son.6': true };
+  M.danhSach.forEach(function (m) { if (m.so < 10 && !GIU_NHIEU_SAN[m.ma]) motSan(m, 1); });
 
   // Cảm biến: sửa while trước, quan sát cảm biến hông sau; chưa học tìm đường.
   sua('khoang-cach.7', {
@@ -1124,7 +1126,7 @@
       // list: list.1 thành màn trình diễn (dưới), list.11 màn ép sửa một số (man-cat-canh.js), list.2 (xoắn ốc 28 ô, nhảy đường cong) cất khỏi lộ trình
       chuong: [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]] },
     { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
-      chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 6, 5, 8, 9, 7, 10])]] },
+      chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]] },
     // gói 3, 5, 7 (user 30/10 chọn A): màn cũ dạy cảm biến bụng / camera trước / look() / sạc tự động trên P dời sang mùa 5 (gói mau, flycam cũ và MUA_4_CU
     // bên dưới), ba gói dựng bằng màn mới theo luật mới (camera bốn hướng, đáp đất sạc, camera nhìn "here").
     { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'cam-bon',
@@ -1142,7 +1144,7 @@
     { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach', hinh: 'son-tren-cao',
       chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
     { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
-      chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7]).concat(day('che-may-son', [7, 8]), day('trum-mua-4', [10]))]] }
+      chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
   ];
   // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống), cùng che-drone.3 / .6 (nhảy đường cong gói 5): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
   // flycam.6, doi-drone.6, .10, che-doi-drone.10 còn dùng recharge() mà drone.5 tạo. Dựng lại khi tới mùa có đội drone.
@@ -1151,11 +1153,19 @@
       chuong: [['drone-sac-cu', day('drone', [4, 5, 6, 10])], ['che-drone-sac-cu', day('che-drone', [3, 5, 6, 8, 9, 10])]] },
     // Gói 8 (30/10, user: "tối ưu cho hợp tính giáo dục nhất"): giữ thang kỹ năng gốc + bốn màn mới (man-doi-chia-hang.js); bốn màn cũ nhường chỗ sang mùa 5 (ẩn):
     // doi-nam-cham.6 Hai chuyến tự động, .9 Ba trạm (vòng lặp cả đội nay ở che-doi-nam-cham.11), che-doi-nam-cham.4 Ba trạm có hạn, .9 Hốc nhường đường.
+    // Gói 2 (30/10, nghiệm thu độc lập + user "làm cả A, B, C"): chương che-list dựng lại trên xe máy sơn (che-list.11 … .20, man-cham-son.js);
+    // mười màn đo bãi cũ bằng cảm biến khoảng cách (route, scan, box) sang mùa 5 (ẩn).
+    { ma: 'che-list-cu', ten: 'Đo bãi bằng cảm biến',
+      chuong: [['che-list-cu', day('che-list', [1, 2, 3, 4, 6, 5, 8, 9, 7, 10])]] },
+    // Gói 10 (30/10, nghiệm thu độc lập): hai màn xe cũ che-may-son.7 Lưới chấm, .8 Khung lồng khung (nhịp 37, 44, to hơn trùm cuối mùa, lạc robot của gói)
+    // nhường chỗ cho trum-mua-4.8, .9 (drone kẻ vạch: hàm gọi hàm của em) sang mùa 5 (ẩn).
+    { ma: 'che-may-son-cu', ten: 'Hoa văn lớn',
+      chuong: [['che-may-son-cu', day('che-may-son', [7, 8])]] },
     { ma: 'doi-nam-cham-cu', ten: 'Đội chia hàng: màn dư',
       chuong: [['doi-nam-cham-cu', day('doi-nam-cham', [6, 9])], ['che-doi-nam-cham-cu', day('che-doi-nam-cham', [4, 9])]] }
   ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
-  var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: đi theo danh sách',
+  var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: sơn theo danh sách', 'che-list-cu': 'Chế lệnh: đi theo danh sách', 'che-may-son-cu': 'Chế lệnh: hoa văn lớn',
     'cam-bon': 'Đọc màu bốn phía', 'che-cam-bon': 'Chế lệnh: dò màu', 'pho-mau': 'Đi giữa phố màu', 'che-pho-mau': 'Chế lệnh: qua phố',
     'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Kẻ nét liền', 'che-may-son': 'Chế lệnh: vẽ hoa văn',
     'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham-cu': 'Chia hàng: màn ôn', 'che-doi-nam-cham-cu': 'Chế lệnh: màn ôn', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
@@ -1201,6 +1211,7 @@
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // (Từ 30/10 tối các màn này nằm ở che-list-cu, mùa 5 ẩn; giữ bãi khít cho khớp ngưỡng sao trong lo-trinh-sao.js.)
     // Gói 2 (30/10, đường cong): màn đo bằng cảm biến ở che-list (bản một sân của lộ trình) đứng trên bãi trống 7 × 7 dù xe chỉ đi một vòng chữ nhật nhỏ,
     // nên số ô nhảy 12 → 47 ngay màn đầu. Bãi thu vừa khít (giữ luật của PHONG ở man-che-list.js: tường mốc cuối hai cạnh đầu, ô ngay sau chỗ dừng ở hai cạnh sau
     // vẫn trống để cảm biến không dừng được xe, nên vẫn phải nhớ số đã đo) và lớn dần theo thứ tự 4 → 6 → 5 → 8 → 9: bãi 2×1, 4×1, vuông 2, 2×3, 4×3.
