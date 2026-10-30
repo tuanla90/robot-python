@@ -2017,6 +2017,15 @@
     }, ['noi', 'vatThem', 'nhipTheoLoiGiai']);
     // tham-so: R1 xích + vòi (bỏ tay kẹp). .1–.5, .7, .8 giữ ý (right(k) của tham-so.4 thân lặp tr_right()).
     ['tham-so.1', 'tham-so.2', 'tham-so.3', 'tham-so.4', 'tham-so.5', 'tham-so.7', 'tham-so.8'].forEach(function (ma) { xichHoa(ma, VOI.slice()); });
+    // PDM2a2: hàm hai tham số của tham-so.8 đổi tên step → stair_down (một bậc thang đi xuống). Tên step còn là hàm của màn (bản hai bánh, THAN_CU) ở màn ẩn
+    // mùa sau (che-doi-nam-cham.11 / .12, che-may-son.8 cũ, doi-nam-cham.9 cũ): giữ tên step ở kho của em thì hàm của màn che hàm của em (ham-man-che-ham-em).
+    // Không lấy stair (hàm của em xuong-ham.10) hay stair_step (hàm của màn che-may-son.4).
+    (function () {
+      var m = get('tham-so.8');
+      ['maMau', 'loiGiai', 'loiSai', 'loiGiaiKhac', 'congThucKhac', 'deBai', 'veMaMau', 'goiY', 'taoHam', 'hamCuaEmCan'].forEach(function (k) {
+        if (m[k] !== undefined) m[k] = JSON.parse(JSON.stringify(m[k]).replace(/\bstep\b/g, 'stair_down'));
+      });
+    })();
     // Đường cong nhịp sau khi xích quay hai nhịp: tham-so.3 đoạn cuối dài thêm một ô (forward(1) → forward(2)): 13 → 14 nhịp làm mốc cho tham-so.4 (right(3) sáu nhịp, 21).
     (function () {
       var m = get('tham-so.3');
@@ -2189,13 +2198,11 @@
     THAN_CU.forEach(function (x) { HAM_CU[x[1].ten] = copy(x[1]); DAY_CU.push([x[0], x[1].ten]); });
     // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.
     var khoEm = {};
-    M.danhSach.forEach(function (m) {
-      var lg = m.loiGiai || {}, tuCo = (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).map(function (h) { return h.ten; });
-      var cachLap = ((m.lapRap || {}).cachLap || []).map(function (c) { return c.loiGiai; }).filter(Boolean);      // màn lắp ráp: mỗi cách lắp có lời giải riêng
-      var dong = [].concat(lg.chinh || [], (m.maMau || {}).chinh || [], (lg.doi || []).reduce(function (a, d) { return a.concat(d.chinh || []); }, []),
-        (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).reduce(function (a, h) { return a.concat(h.than); }, []),
-        cachLap.reduce(function (a, b) { return a.concat(b.chinh || [], (b.hamCuaMan || []).reduce(function (x, h) { return x.concat(h.than); }, [])); }, []));
-      var da = {}, cho = (m.hamCuaEmCan || []).slice();
+    var thanCua = function (ds) { return (ds || []).reduce(function (a, h) { return a.concat(h.than); }, []); };
+    var dongBai = function (b) { return b ? [].concat(b.chinh || [], (b.doi || []).reduce(function (a, d) { return a.concat(d.chinh || []); }, []), thanCua(b.hamCuaMan)) : []; };
+    /** Các hàm cũ (HAM_CU) mà các dòng `dong` (cùng tên `batDau`) chạy tới, bắc cầu qua kho; trừ tên `tuCo` (bài tự có, kể cả hàm của em mới). */
+    function hamCuToi(dong, batDau, tuCo) {
+      var da = {}, cho = batDau.slice();
       dong.forEach(function (l) { (l.match(/[A-Za-z_]\w*(?=\s*\()/g) || []).forEach(function (t) { cho.push(t); }); });
       while (cho.length) {
         var t = cho.pop();
@@ -2203,13 +2210,34 @@
         da[t] = true;
         if (khoEm[t] && tuCo.indexOf(t) < 0) khoEm[t].forEach(function (l) { (l.match(/[A-Za-z_]\w*(?=\s*\()/g) || []).forEach(function (x) { cho.push(x); }); });
       }
+      return Object.keys(HAM_CU).filter(function (t) { return da[t] && tuCo.indexOf(t) < 0; });
+    }
+    M.danhSach.forEach(function (m) {
+      var lg = m.loiGiai || {}, tuCo = (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).map(function (h) { return h.ten; });
+      var cachLap = ((m.lapRap || {}).cachLap || []).map(function (c) { return c.loiGiai; }).filter(Boolean);      // màn lắp ráp: mỗi cách lắp có lời giải riêng
+      var dong = [].concat(lg.chinh || [], (m.maMau || {}).chinh || [], (lg.doi || []).reduce(function (a, d) { return a.concat(d.chinh || []); }, []),
+        thanCua((lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || [])),
+        cachLap.reduce(function (a, b) { return a.concat(b.chinh || [], thanCua(b.hamCuaMan)); }, []));
+      var can = hamCuToi(dong, m.hamCuaEmCan || [], tuCo);
+      // PDM2a2: lời sai / công thức khác gọi hàm cũ mà lời giải không gọi (doi-nam-cham.7 #3 "R2 tự lái đi lấy": fetch_back) cũng tính: bản cũ người chơi có hàm đó
+      // trong kho ở mọi màn sau, nên màn ẩn cấp nó (hàm của màn) cho mọi bài, kể cả mã mẫu.
+      (m.loiSai || []).concat(m.congThucKhac || []).forEach(function (s) {
+        var b = s.baiLam || {}, tu = (b.hamCuaMan || []).concat(s.hamCuaEmMoi || []).map(function (h) { return h.ten; });
+        hamCuToi(dongBai(b).concat(thanCua(s.hamCuaEmMoi)), [], tu.concat(tuCo)).forEach(function (t) { if (can.indexOf(t) < 0) can.push(t); });
+      });
       if (!m.tietKiemNhip) (lg.hamCuaEmMoi || []).forEach(function (h) { khoEm[h.ten] = h.than; });
-      var can = Object.keys(HAM_CU).filter(function (t) { return da[t] && tuCo.indexOf(t) < 0; });
       if (!can.length || !chuongAn[m.chuong] || DAY_CU.some(function (x) { return x[0] === m.ma; })) return;
       m.hamCuaEmCan = m.hamCuaEmCan.filter(function (t) { return !HAM_CU[t]; });
+      var coWhile = can.some(function (t) { return HAM_CU[t].than.some(function (l) { return /^\s*while\b/.test(l); }); });
       [m.maMau, m.loiGiai, m.loiGiaiKhac && m.loiGiaiKhac.baiLam].concat((m.loiSai || []).concat(m.congThucKhac || []).map(function (s) { return s.baiLam; }), cachLap).forEach(function (b) {
         if (!b) return;
         b.hamCuaMan = (b.hamCuaMan || []).concat(can.map(function (t) { return copy(HAM_CU[t]); }));
+      });
+      // Hàm của màn có `while` (fetch_back, bounce…): chương trình có vòng while nên chạy quá nhịp là vong-vo-han (cham.js coWhile xét mọi dòng của chương trình
+      // + hàm của màn; hàm của em không tính). Bản cũ hàm đó là hàm của em nên lời sai "chờ mãi" ra qua-nhieu-nhip; nay người chơi thấy vong-vo-han (cùng ý: chạy mãi).
+      if (coWhile) (m.loiSai || []).forEach(function (s) {
+        var i = s.phaiCoMa ? s.phaiCoMa.indexOf('qua-nhieu-nhip') : -1;
+        if (i >= 0) s.phaiCoMa = s.phaiCoMa.slice(0, i).concat(s.phaiCoMa.indexOf('vong-vo-han') < 0 ? ['vong-vo-han'] : [], s.phaiCoMa.slice(i + 1));
       });
     });
   })();

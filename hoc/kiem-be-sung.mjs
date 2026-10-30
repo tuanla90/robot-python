@@ -46,7 +46,7 @@ export const GOI_RECALL_2 = {
 };
 const HAM_GOI = {
   1: ['spin', 'sidestep', 'next_lane'],                  // PDM2a 31/10: next_lane thay pick_behind (tay kẹp)
-  2: ['forward', 'right', 'open_at', 'step'],           // PDM2a: open_at thay deliver
+  2: ['forward', 'right', 'open_at', 'stair_down'],     // PDM2a: open_at thay deliver; PDM2a2: stair_down thay step
   3: ['go_to_wall', 'go_safe', 'clean_step', 'go_open'],     // PDM2a: go_open thay go_get
   4: ['puff', 'puff_back', 'open_left', 'open_right', 'open_behind'],
   5: ['push', 'go_around', 'push_around', 'push_back'],

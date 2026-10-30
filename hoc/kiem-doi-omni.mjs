@@ -34,7 +34,9 @@ const get = (ma) => M.danhSach.find((m) => m.ma === ma);
 function cham(m, doi, opt = {}) {
   const hs = new Map(khoTruoc.get(m.ma).map((h) => [h.ten, h]));
   for (const h of (opt.hamEm || m.loiGiai.hamCuaEmMoi || [])) hs.set(h.ten, clone(h));
-  return Cham.cham(m, { chinh: [], hamCuaMan: opt.hamCuaMan || m.loiGiai.hamCuaMan || [], doi: doi.map((c) => ({ chinh: c })) }, [...hs.values()]);
+  // hamCuaMan thay theo tên: hàm của màn khác của lời giải giữ nguyên (PDM2a: màn ẩn nhận hàm cũ mùa 2, vd bounce, thành hàm của màn)
+  const man = opt.hamCuaMan ? opt.hamCuaMan.concat((m.loiGiai.hamCuaMan || []).filter((h) => !opt.hamCuaMan.some((x) => x.ten === h.ten))) : (m.loiGiai.hamCuaMan || []);
+  return Cham.cham(m, { chinh: [], hamCuaMan: man, doi: doi.map((c) => ({ chinh: c })) }, [...hs.values()]);
 }
 const H = (ten, than, thamSo = []) => ({ ten, thamSo, than });
 const LAP = (n, ds) => ['for i in range(' + n + '):'].concat(ds.map((s) => '    ' + s));
