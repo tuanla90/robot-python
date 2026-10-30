@@ -6,14 +6,13 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
 ## Tình trạng (sáng 30/10)
 - Mùa 3 đủ **200 màn** (41 màn có sẵn + 159 màn mới), 10 gói × 2 chương × 10 màn, mỗi gói một commit.
 - `node hoc/kiem-man-mua-3.mjs`: mọi màn mới lời giải thắng 3 sao đúng ngưỡng, mã mẫu thua, lời sai thua đúng mã chẩn đoán (889 kiểm).
-- `node hoc/kiem-lo-trinh.mjs`: mục (h) đường cong mùa 3 nay là phép kiểm thật (lề dòng 3 / nhịp 4 / ô 6 như mùa 2); còn đúng một chỗ nhảy để lại,
-  ghi ở `CHO_NHAY_3` (che-nhen.7, câu hỏi 1 dưới).
+- `node hoc/kiem-lo-trinh.mjs`: mục (h) đường cong mùa 3 nay là phép kiểm thật (lề dòng 3 / nhịp 4 / ô 6 như mùa 2), 0 chỗ nhảy.
 - `node hoc/kiem-lach-mua-3.mjs` (mới): máy dò lời giải lách mùa 3, 0 lỗ ngoài danh sách chấp nhận; `--loi-gia` bắt được lỗi giả.
 - Lõi đệm từ P1b (công tắc nút đè, đệm kéo vật, vật bị đệm giữ) có máy kiểm `hoc/kiem-dem-tu.mjs` mục A2 (13 ca, `--loi-gia` đỏ).
 
 ## Câu hỏi cần user trả lời
-1. **Chỗ nhảy đường cong ở chương che-nhen** (10 màn CÓ SẴN): che-nhen.3 (12 nhịp) → che-nhen.7 (24 nhịp). Muốn mượt phải cất một màn có sẵn ra
-   chương ẩn và viết một màn mới chen giữa (khoảng 16–18 nhịp). Cho cất màn nào không (gợi ý: che-nhen.4 "Đá lót đường", 2 dòng)? Hiện để nguyên.
+1. ĐÃ XỬ LÝ (user 30/10 "Viết lại cho phù hợp"): che-nhen.7 "Đường về" viết lại ngắn hơn: go_in() = crawl("D"), jump("R"); come_back() = jump("L"),
+   crawl("U"); 16 nhịp (trước 24), đường cong che-nhen.3 12 → che-nhen.7 16 → che-nhen.6 24. kiem-che-nhen cập nhật theo.
 2. **Huy hiệu mùa 3**: chưa trùm nào của mùa 3 có huy hiệu mới (máy kiểm mùa 1–2 đòi mỗi huy hiệu có hình vector riêng, tức phải vẽ). Mỗi chương một
    huy hiệu như mùa 1–2 (20 hình), mỗi gói một (10 hình), hay chỉ trùm mùa trum-mua-3.10? nhen.10 (trùm chương Nhảy) vẫn giữ huy hiệu cũ "Thân nhện".
 3. **Luật đệm từ P1b** tôi tự chốt (đảo lại được), cần user chơi thử:
@@ -24,8 +23,8 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
      tắt đệm trước"). Vật đã dính mũi xe / bụng nhện thì đệm không giật ra.
    - Xích (không nam châm) bị đệm hút như sắt: trùm mùa trum-mua-3.10 và trum-mua-3.7 dùng chuyện này (nhện đứng lên nút tắt đệm cho xích qua).
    - Vẽ: đệm tắt phủ tối, không thở; dây nối nút ↔ đệm vẽ như dây nút ↔ cửa. Trên sân nhỏ dây khó thấy, user xem giúp.
-4. **Tên hàm của em mới ở mùa 3** (đổi được trước khi xuất bản): gói 4 `fetch_iron(n)`, `loop_right(k)`, `pull_iron()`; gói 8 `wait_n(n)` (thay `pause` của mùa 2
-   vì pause rời mùa 3), `pass_box()`, `hop_drop(d)`. `fetch`, `ring`, `hold` đã có người dùng nên tránh. Hàm của màn trình diễn: `get_iron(n)`, `rest(n)`.
+4. ĐÃ XỬ LÝ (user 30/10 "sửa lại tên cho phù hợp"): iron_run(n) → `fetch_iron(n)`, detour(k) → `loop_right(k)` (hàm của màn sửa: `loop_left(k)`),
+   call_iron() → `pull_iron()`, idle(n) → `wait_n(n)`; giữ `pass_box()`, `hop_drop(d)`. Hàm của màn trình diễn: `get_iron(n)`, `rest(n)`. Còn muốn đổi thì nói tên.
 5. **Máy dò lách**: 6 lỗ chấp nhận có lý do (che-bai-tu.4, che-bai-tu.9 tham số; che-doc-cuc.2 là lách giả; nam-cham.6, che-nam-cham.7, che-nam-cham.5
    là màn có sẵn một sân). Màn nhện (không gắn được cảm biến làm dấu) và màn hai robot máy dò bỏ qua. Muốn ép chặt hơn thì phải sửa màn có sẵn.
 6. **Giao diện and / or** (gói 2): cờ màn `vaHoac: true` mở nút "+ and" / "+ or" cho điều kiện toàn cảm biến. Cần user xem trên máy thật.

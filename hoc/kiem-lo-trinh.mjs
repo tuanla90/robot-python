@@ -538,8 +538,8 @@ kiem3('(g) mùa 3 và mùa ẩn sau nó: hàm của em mà màn cần hay lời 
   }
   assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 8).join(' · '));
 });
-// (h) chỗ nhảy được để lại, chờ user quyết (ghi ở hoc/ban-giao/mua-3-ghi-chu-trao-doi.md): mã màn nhảy → lý do
-const CHO_NHAY_3 = { 'che-nhen.7': 'chương che-nhen 10 màn có sẵn: che-nhen.3 12 nhịp → che-nhen.7 24 nhịp, không có màn nào chen vào được nếu không bỏ một màn có sẵn' };
+// (h) chỗ nhảy được để lại (mã màn nhảy → lý do), chỉ khi user đồng ý
+const CHO_NHAY_3 = {};      // 30/10 trống: che-nhen.7 viết lại còn 16 nhịp (user: "Viết lại cho phù hợp")
 kiem3('(h) đường cong mùa 3 (luật phanh (g) mùa 2: lề dòng 3 / nhịp 4 / ô 6, mốc = màn không trùm đứng trước qua ranh chương / gói, trùm miễn): ép, trừ CHO_NHAY_3', () => {
   const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le), nhay = [];
   let moc = null;
