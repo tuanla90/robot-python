@@ -294,7 +294,7 @@
     g('aim', null, 'Đặt tầm ném'),
     g('throw', null, 'Ném vật trong rổ'),
     g('load', null, 'Nạp vật ở ô trước mặt vào rổ'),
-    g('ink', null, 'Bộ gieo hạt: chọn loại hạt (màu hoa), đổi ngay'),
+    g('ink', null, 'Bộ gieo hạt: chọn loại hạt, mỗi màu một loài hoa, đổi ngay'),
     g('dot', null, 'Bộ gieo hạt: gieo vào ô robot đang đứng'),
     g('pen_down', 'pen_up', 'Bộ gieo hạt: hạ miệng gieo, đi tới đâu gieo tới đó'),
     g('pen_up', 'pen_down', 'Bộ gieo hạt: nhấc miệng gieo, thôi gieo'),
