@@ -19,6 +19,8 @@
       'cam-bien-them',
       // 8 màn mới của gói 5 Bánh lùi (chỉ khai, lộ trình thêm vào hai chương bên dưới)
       'banh-lui-them', 'kho-hang-them',
+      // SM1-B (30/10): màn mới gói 1, 2 (chỉ khai, lộ trình thêm vào chương có sẵn bên dưới)
+      'goi-1-2-them',
       // 10 màn mới của gói 8 Đội hai robot, chương 2 "Đội phối hợp" (chỉ khai, lộ trình thêm chương bên dưới)
       'doi-mua-1',
       // 19 màn mới của gói 9 Combo (tay xoay + cảm biến bên), hai chương combo / che-combo (chỉ khai, lộ trình thêm chương bên dưới)
@@ -319,6 +321,29 @@
   TT.thuTu.push('kho-hang');
   M.them(M.manKhoHangThem || []);
   (M.manKhoHangThem || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // SM1-B (30/10, nghiệm thu độc lập mùa 1, đề xuất 6, 4, 8): màn mới gói 1, 2 (man-goi-1-2-them.js) vào chương có sẵn; MUA_1 xếp chỗ, CAT cất màn trùng ý.
+  // Gói 1 chương hai-banh: hai-banh.11 "Quay đầu, đi hai ô" (4 nhịp, vừa khít 10 ô) thay hai-banh.6 "Chữ L ngược" (trùng ý hai-banh.5, cất).
+  M.them(M.manGoi12Them || []);
+  (M.manGoi12Them || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // SM1-B việc 1: trùm hai-banh.10 "Xếp lại cho đúng" bằng đúng độ khó màn 5 (3 nhịp, 8 ô). Bản lộ trình: 4 nhịp, 10 ô (đầy khung chính), hai lần rẽ
+  // ngược phía nhau (rẽ phải, đi, rẽ trái, đi), mã mẫu là đúng 10 dòng đó bị xáo (không thừa dòng: khung đã đầy), phải kéo đổi chỗ. Giữ mã, tên, huy hiệu,
+  // hướng dẫn kéo dòng (huong-dan-man.js). Ngân hàng man-chuoi-1.js giữ bản cũ cho kiem-hoc.mjs. Đường dò: kiem-goi-1-2-them.mjs.
+  sua('hai-banh.10', {
+    deBai: 'Xe đang quay mặt lên trên, ngay trước mũi xe là tường. Lá cờ ở chéo phía trên bên phải xe. Đưa xe tới cờ.',
+    veMaMau: 'Các dòng có sẵn đã đầy 10 ô và đủ cho đường đi, nhưng bị xáo trộn. Nhấn giữ một dòng rồi kéo lên hoặc xuống để đổi chỗ.',
+    san: ['.....', '.....', '.#F..', '.....', '.....'],
+    batDau: { x: 1, y: 3, huong: 0 },
+    // tiến (đâm tường), rẽ phải, tiến, rẽ trái: lần tiến đầu bị kéo lên trước lệnh rẽ phải, lệnh rẽ trái tụt xuống cuối
+    maMau: bai(['left_move()', 'right_move()', 'wait()', 'left_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'right_move()', 'wait()']),
+    loiGiai: bai(['left_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()']),
+    sao: { o: 10, nhip: 4 },
+    loiSai: [
+      { moTa: 'Không đổi gì: nhịp đầu xe đâm tường, cuối cùng đứng cạnh cờ', baiLam: { chinh: ['left_move()', 'right_move()', 'wait()', 'left_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'right_move()', 'wait()'] }, phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+      { moTa: 'Chỉ kéo lệnh rẽ phải lên đầu: xe đi quá chỗ rẽ', baiLam: { chinh: ['left_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'right_move()', 'wait()'] }, phaiCoMa: ['chua-toi-co'] },
+      { moTa: 'Đổi chỗ hai lệnh rẽ: xe rẽ sai phía', baiLam: { chinh: ['right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()', 'left_move()', 'wait()', 'left_move()', 'right_move()', 'wait()'] }, phaiCoMa: ['chua-toi-co'] }
+    ],
+    goiY: ['Bấm Nhịp để xem từng nhịp: nhịp nào xe làm sai việc?', 'Một nhịp gồm các lệnh bánh rồi wait(). Nhịp nào cũng phải đúng việc và đúng chỗ.']
+  });
   // Gói 3: 7 màn mới (man-cam-bien-them.js, mã khoang-cach.11 và che-cam-bien.11–16, mã mới không trùng màn cất). Thêm vào hai chương có sẵn rồi
   // MUA_1 xếp chỗ; `nguon` giữ bản gốc như mọi màn khác.
   M.them(M.manCamBienThem || []);
@@ -442,7 +467,8 @@
   var TRUM_2 = (M.manTrumMua1 || []).filter(function (m) { return m.chuong === 'trum-mua-1'; }).map(function (m) { return m.ma; });
   var MUA_1 = [
     { ma: 'xe', ten: 'Xe hai bánh', sao: 0, hinh: 'hai-banh',
-      chuong: [['hai-banh', day('hai-banh', MUOI)], ['xuong-ham', day('xuong-ham', MUOI)]] },
+      // SM1-B (30/10): hai-banh.6 "Chữ L ngược" cất; hai-banh.7 "Quay đầu" lên thứ 6, hai-banh.11 "Quay đầu, đi hai ô" (4 nhịp, 10 ô) thứ 7; trùm .10 viết lại (4 nhịp, 10 ô).
+      chuong: [['hai-banh', day('hai-banh', [1, 2, 3, 4, 5, 7, 11, 8, 9, 10])], ['xuong-ham', day('xuong-ham', MUOI)]] },
     { ma: 'tay-gap', ten: 'Tay gắp', loai: 'bo-phan', sao: 30,
       chuong: [['tay-gap', day('tay-gap', MUOI)], ['vong-lap', day('vong-lap', [1, 2, 3, 4, 5, 6, 8, 9]).concat(['che-lap.5', 'vong-lap.10'])]] },
     { ma: 'cam-bien', ten: 'Cảm biến khoảng cách', loai: 'bo-phan', sao: 60,
@@ -488,7 +514,9 @@
     // SM1-A: che-lap.9 "Số lùi đường dài" (lời giải một dòng, trùng ý kẹt số với che-xe.9 / che-tay.9) cất
     'che-lap.9',
     // SM1-A lượt 2 (A2): che-xe.7 "Đường về", che-tay.7 "Đặt lại chỗ cũ" trùng ý "viết hàm làm ngược lại" với che-lap.7 (giữ); chỗ trống là banh-lui.6, che-banh-lui.6
-    'che-xe.7', 'che-tay.7'];
+    'che-xe.7', 'che-tay.7',
+    // SM1-B (30/10, đề xuất 6): hai-banh.6 "Chữ L ngược" trùng ý hai-banh.5 "Chữ L" (đi, rẽ, đi); chỗ trống là hai-banh.11 "Quay đầu, đi hai ô"
+    'hai-banh.6'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {

@@ -1,6 +1,10 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "hai-banh.10": {
+    "o": 10,
+    "nhip": 4
+  },
   "vong-lap.1": {
     "o": 5,
     "nhip": 6
