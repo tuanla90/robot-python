@@ -1438,6 +1438,12 @@
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
   // Sổ lệnh: hàm được chế ở màn đã dời chương (che-xe.4 → banh-lui…) ghi theo chương mới của màn đó; màn đã cất thì giữ như ngân hàng.
   if (SL && SL.ds) SL.ds.forEach(function (h) { var m = h.man && get(h.man); if (m) h.chuong = m.chuong; });
+  // Sổ lệnh: màn của mục còn trong lộ trình mà không màn nào tạo hàm đó nữa (SM1-B: trùm vong-lap.10 viết lại chỉ chế bend_left / bend_right, row thôi là hàm cốt truyện)
+  // thì bỏ mục, để trang Sổ lệnh không hiện "???" mãi cho một hàm không chế được.
+  if (SL && SL.ds) for (var si = SL.ds.length - 1; si >= 0; si--) {
+    var hs = SL.ds[si], ms = hs.man && get(hs.man);
+    if (ms && M.danhSach.indexOf(ms) >= 0 && !M.danhSach.some(function (x) { return (x.taoHam || []).indexOf(hs.ten) >= 0; })) SL.ds.splice(si, 1);
+  }
 
   // Trùm máy ném: đọc màu TRƯỚC khi nạp; ba kho đổi thứ tự màu/tầm.
   var nem = get('may-nem.10');

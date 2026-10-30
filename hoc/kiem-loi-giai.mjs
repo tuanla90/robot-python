@@ -93,6 +93,9 @@ const NGOAI_LE = {};
   // Trần kho (30/10): hàm cốt truyện không chiếm trần KhoHam (chỉ hàm tự đặt tên bị trần), nên kho của người chơi đi đủ lộ trình chứa được mọi hàm của lời giải.
   const vuot = ds.filter((x) => { const k = KhoHam.moi({ tenCoDinh: tenCotTruyen }); return GoLoi.khoChoCach(x, GoLoi.cachGiai(x)[0]).some((f) => !k.tao(f.ten, f.thamSo, { taoHam: [f.ten] }).ok); });
   kiem('kho của người chơi (khóa tên cốt truyện) nhận đủ hàm của lời giải ở mọi màn, kể cả khi lộ trình có ' + tenCotTruyen.length + ' hàm cốt truyện > trần ' + KhoHam.SO_HAM_MAC_DINH, vuot.length === 0, vuot.slice(0, 8).map((x) => x.ma).join(', '));
+  const SoLenh = require(path.join(day, 'so-lenh.js'));                 // lộ trình đã lọc Sổ lệnh khi nạp
+  const moCo = SoLenh.ds.filter((h) => TT.thuTu.includes(h.chuong) && !ds.some((x) => (x.taoHam || []).includes(h.ten)));
+  kiem('Sổ lệnh: mọi mục của chương đang trong lộ trình có màn tạo ra hàm đó (không hiện "???" mãi)', moCo.length === 0, moCo.map((h) => h.ten + '@' + h.man).join(', '));
   const m = ManHoc.danhSach.find((x) => x.loiGiaiKhac && !x.lapRap && x.congThucKhac && x.congThucKhac.length);
   const cs = GoLoi.cachGiai(m);
   kiem('cachGiai(' + m.ma + '): chuẩn, khác, rồi từng công thức khác theo thứ tự, mỗi cách có nhãn và mô tả',
