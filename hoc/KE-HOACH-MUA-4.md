@@ -141,6 +141,19 @@ Ghi chú chia:
   - Màn đọc camera dùng hai sân khác màu để chương trình viết cứng không qua (thêm vào ngoại lệ NHIEU_SAN_KHONG_TRUM của kiem-lo-trinh.mjs).
   - Đường cong trong gói không nhảy; còn một chỗ ở đầu gói (pho-mau.2 9 dòng sau che-mau.9 2 dòng): gói 3 dựng lại sẽ có màn đứng trước.
   - Giao diện: chạm chữ hướng trong c = color("up") mở bảng chọn hướng; bảng chọn vế trái của điều kiện có nút cho từng hướng (đã thử trên trình duyệt).
+- **30/10 Phương án A (user chọn) xong cho gói 3, 5, 7**: màn cũ dạy cơ chế đã thay sang mùa 5 (ẩn): gói mau (mau, che-mau), gói flycam, gói chứa
+  drone-sac-cu (drone.4, .5, .6, .10 và che-drone.3, .5, .6, .8, .9, .10: sạc tự động / recharge()), đứng trước flycam và đội drone để recharge() vẫn được tạo trước.
+  - Gói 3 Camera bốn hướng (man-camera-bon-huong.js, 20 màn mới): xe hai bánh gắn camera-4. cam-bon: rẽ theo màu trái / phải, dừng trước vạch đỏ (front), nhìn sau
+    lưng (back), ngã tư ba sân, hai ngã rẽ, theo vạch xanh có rẽ, đếm ô vàng hai bên, sửa hướng camera, trùm đường xanh tới ô vàng (while). che-cam-bon: turn_green,
+    go_to(col), sửa go_until, yellow_sides(a) với len(a), green_step, cross4, sort_by_color (xe kẹp), chạy tới hộp rồi xếp, sửa walk_green, trùm đường xanh tới hộp.
+  - Gói 5 Trạm sạc (man-tram-sac.js): tram-sac 10 màn mới (trình diễn đáp sạc, ghé trạm, trạm trên mái, đậu chờ cửa nhịp không tốn pin, hai trạm, đáp khi pin yếu
+    bằng battery(), quên cất cánh, đáp ít nhất với hai mức pin, ngưỡng pin sai, trùm giao hàng qua trạm). che-drone: giữ che-drone.1, .2, .4, .7 (không ô sạc)
+    + 6 màn mới dock(), charge_stop (sửa), fly_dock(n), safe_go(n), cẩu hàng qua hai trạm, trùm kho hàng có trạm sạc.
+  - Gói 7 Nhìn dưới chân (man-nhin-duoi-chan.js, 20 màn mới): drone gắn camera-4 bản nâng cấp taiCho, color("here"). nhin-duoi: dừng trên ô đỏ, mũi tên màu,
+    đếm ô đỏ, ghi màu đường bay, đọc hộp dưới bụng, nhầm "down" với "here", tìm hộp đỏ, đếm ô vàng, trùm chở đúng hộp theo đơn. che-nhin-duoi: seek_here(col),
+    read_below(a, n), arrow_step, count_here(a, n, col), deliver_up(n), lift_by_color, sửa lift_n, sửa find_col, đơn hàng bằng hàm, trùm đếm rồi nâng.
+  - Gói 8 Đội chia hàng đổi camera trước thành camera-4: color() → color("front"), sort_color → sort_by_color (gói 3 tạo). Gói đội mùa 5 vẫn dùng sort_color cũ.
+  - Đường cong gói 1–7 không nhảy (cong4.js), trừ chỗ che-list.4 (bãi trống) đã ghi; gói 8 còn nhảy như cũ (mục 15).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -158,15 +171,9 @@ Ghi chú chia:
 10. Câu hỏi 2 (camera của drone theo bản đồ hay theo hướng bay): tôi đã làm THEO BẢN ĐỒ ("up" / "down" / "left" / "right", khớp go_up…). Đổi được nếu cần.
 11. Luật pin tự đặt (đơn giản, đổi được): nhịp land() / take_off() tốn 1 pin, đậu trọn nhịp không tốn; sơn từ drone tốn thêm 1 pin mỗi nhịp có tô.
 12. go_*() lúc drone đang đậu: tôi cho đứng yên mất nhịp + lỗi dang-dau (như đâm tường), KHÔNG dừng chương trình. Muốn dừng hẳn thì đổi một dòng.
-13. Giao diện color("hướng"): khay chèn sẵn color("front") / color("up"); chưa thử trên trình duyệt việc chạm chữ "front" để đổi hướng (cần màn gói 3).
+13. Giao diện color("hướng"): khay chèn sẵn color("front") / color("up"); chạm chữ hướng đổi được (đã thử trên trình duyệt, gói 4).
     Bộ lắp ráp (màn lắp robot) chưa có camera-4 trong danh mục mua (giá, bảng kế hoạch): thêm khi dựng màn lắp ráp mùa 4.
-14. **Chặn gói 3, 5, 7 (cần user chọn)**: màn cũ của ba gói dạy cơ chế mà user đã thay.
-    - Gói 5: drone.5 TẠO hàm cốt truyện recharge() = bay lên ô P rồi xuống (sạc tự động). recharge() còn được drone.6, drone.10, che-drone.5, .8, .9, .10, flycam.6
-      VÀ ba màn đội drone ẩn ở mùa 5 (doi-drone.6, .10, che-doi-drone.10) dùng. Luật mới "đáp mới sạc" làm recharge() cũ sai nghĩa.
-    - Gói 3: chương mau / che-mau dạy cảm biến màu Ở BỤNG (color() đọc ô dưới xe) và camera trước, không phải camera bốn hướng. Ô dưới chân lại chính là nâng cấp "here" của gói 7.
-    - Gói 7: flycam dùng look() (user bỏ look).
-    Phương án: (A) dời các màn cũ đó sang một chương chứa ở mùa 5 (ẩn, cạnh đội drone để recharge() vẫn được tạo trước khi đội drone dùng), dựng gói 3, 5, 7
-    bằng màn mới theo luật mới (khoảng 40 màn mới); (B) giữ màn cũ, viết lại lời giải từng màn theo luật mới (recharge() mới = đáp, sạc, cất cánh; đo lại sao, sửa cả
-    ba màn đội drone mùa 5); (C) giữ nguyên, chỉ thêm màn mới (mâu thuẫn luật user chốt). Tôi nghiêng về A: màn cũ thiết kế quanh "ghé P liên tục", đúng điều user
-    muốn tránh; viết lại theo B gần bằng làm mới mà vẫn kẹt bố cục cũ. Chưa làm, chờ user.
+14. ~~Chặn gói 3, 5, 7~~: user 30/10 chọn A, đã làm (mục 6).
+15. Gói 8 Đội chia hàng còn nhảy đường cong ở nhiều chỗ (màn đội dài nhịp); cần thiết kế lại thứ tự / thêm màn cầu nối. Chưa làm.
+16. Gói 9 Sơn từ trên cao và gói 10 Drone kẻ vạch R1 chưa dựng (lõi N3 đã có).
 

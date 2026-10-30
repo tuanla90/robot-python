@@ -1089,7 +1089,7 @@
     { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'may-son',
       chuong: [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]] },
     { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'flycam',
-      chuong: [['nhin-duoi', []], ['che-nhin-duoi', []]] },
+      chuong: [['nhin-duoi', []], ['che-nhin-duoi', day('che-nhin-duoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])]] },
     { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach',
       chuong: [['doi-nam-cham', day('doi-nam-cham', MUOI)], ['che-doi-nam-cham', day('che-doi-nam-cham', MUOI)]] },
     { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach',
