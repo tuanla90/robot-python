@@ -10,7 +10,9 @@
      (ô sau trống thì xe dời, có thùng thì thùng trượt tới vật cản, bị chặn thì đứng yên). Băng chuyền không đẩy xích, đẩy thùng sau 2 nhịp. Cửa không đóng đè lên xe / thùng.
    Nửa vòng quay dở bị mất nếu nhịp sau khác tổ hợp: không bao giờ có lợi hơn W (đứng yên), nên R / L là hai nhịp liền một khối, đúng luật.
    Nút bật sẵn (cfg.nutBat) không nối gì (lõi cấm), nên không đổi động học sân: bộ dò bỏ qua (như gói 7); kiemDocLap của do-duong-do-nhiet.mjs kiểm lại điều đó.
-   Bộ mô phỏng được SO CHÉO với lõi thật: kiemCheo() chạy các dãy ngẫu nhiên trên cả hai (SanHoc.chay) và so ô xe, hướng, thùng, nút, cửa, thắng (lệch là báo lỗi).
+   Bộ mô phỏng được SO CHÉO với lõi thật: kiemCheo() chạy các dãy ngẫu nhiên trên cả hai (SanHoc.chay) và so ô xe, hướng, thùng, nút, cửa, lửa, thắng (lệch là báo lỗi).
+   LỬA (30/10, gói 10 "Xe cứu hỏa R1"; cfg.lua): trạng thái thêm f = cỡ còn lại của từng đám cháy. Lửa đang cháy chặn xe, thùng, cú giật và tia (tia trúng thì f giảm 1;
+   về 0 thì cửa nối với lửa trong noi đổi ở cuối nhịp). Mục tiêu 'dap-lua': hết lửa (và đứng ở cờ nếu sân có cờ). Nhóm nối của lửa tách khỏi noi trước khi đưa bộ dò gói 2.
 
    Hàm xuất:
      ngoCanh(man, i)                         → ngữ cảnh sân thứ i (dùng dungNguCanh của bộ dò gói 2)
@@ -37,7 +39,7 @@ export function catSan(m, i) {
   if (!Array.isArray(m.san[0])) return Object.assign({}, m);
   const lm = SanHoc.lopMauCuaSan(m, i);
   const con = Object.assign({}, m, { san: m.san[i], batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau });
-  for (const k of ['mau', 'vatMau', 'vatChat', 'cuaNhip', 'noi', 'nutBat', 'bongMo']) {
+  for (const k of ['mau', 'vatMau', 'vatChat', 'cuaNhip', 'noi', 'nutBat', 'lua', 'bongMo']) {
     const v = lm[k] || (Array.isArray(m[k]) ? null : m[k]);
     if (v !== undefined && v !== null) con[k] = v; else delete con[k];
   }
@@ -46,10 +48,27 @@ export function catSan(m, i) {
 export function ngoCanh(m, i = 0) {
   const con = catSan(m, i);
   // bộ dò gói 2 dựng sân (ô chặn, nút, cửa, nhóm nối, băng, đích, bóng mờ); xích và xe hai bánh chỉ khác nhau ở bậc thang S (mùa 2 không có)
-  const ctx = Bo.dungNguCanh(Object.assign({}, con, { loaiRobot: 'banh', hamGoc: (con.hamGoc || []).filter((h) => !SanHoc.TAY_LENH.includes(h)) }));
+  const lua = con.lua || [], laLua = (q) => !!q && lua.some((l) => l.x === q.x && l.y === q.y);
+  const noi = con.noi ? con.noi.filter((g) => !laLua(g.nut)) : con.noi;                      // nhóm nối của lửa (cửa chống cháy) xử lý ở đây, không đưa bộ dò gói 2
+  const ctx = Bo.dungNguCanh(Object.assign({}, con, { noi, mucTieu: con.mucTieu === 'dap-lua' ? 'toi-co' : con.mucTieu, loaiRobot: 'banh', hamGoc: (con.hamGoc || []).filter((h) => !SanHoc.TAY_LENH.includes(h)) }));
   if (/[S]/.test(con.san.join(''))) throw new Error('Bộ dò bệ súng không hỗ trợ bậc thang S.');
   ctx.con = con;
+  ctx.mucTieu = con.mucTieu || 'toi-co';
+  ctx.luaIdx = new Int16Array(ctx.rong * ctx.cao).fill(-1);
+  ctx.lua0 = lua.map((l, i) => { ctx.luaIdx[ctx.o(l.x, l.y)] = i; return l.suc; });
+  ctx.luaCua = lua.map((l) => {
+    const g = (con.noi || []).find((q) => q.nut && q.nut.x === l.x && q.nut.y === l.y);
+    return g ? (g.cua || []).map((c) => ctx.cuaIdx[ctx.o(c.x, c.y)]) : [];
+  });
   return ctx;
+}
+/** Trạng thái đầu: của bộ dò gói 2 + cỡ lửa lúc đầu. */
+export function dauLua(ctx) { return Object.assign(Bo.trangThaiDau(ctx), { f: ctx.lua0.slice() }); }
+/** Đích: dap-lua = hết lửa (và ở cờ nếu có cờ); mục tiêu khác như bộ dò gói 2. */
+export function laDich(ctx, S) {
+  if (ctx.mucTieu !== 'dap-lua') return Bo.laDich(ctx, S);
+  const co = ctx.san.co;
+  return S.f.every((k) => k === 0) && (!co || (S.x === co.x && S.y === co.y));
 }
 export const HANH_DONG = ['M', 'B', 'R', 'L', 'W', 'c', 'h', 'f', 'g'];
 export const GIA = { M: 1, B: 1, R: 2, L: 2, W: 1, c: 1, h: 1, f: 1, g: 1 };
@@ -79,14 +98,15 @@ function coThungKet(ctx, S) {
 
 /** Một nhịp của xích (R / L gọi hai lần nửa vòng: nhịp đầu như W, nhịp sau đổi hướng). tuy.beSung, tuy.xichDay. */
 function motNhip(ctx, S, a, tuy) {
-  const N = { x: S.x, y: S.y, h: S.h, d: 0, p: S.p.slice(), e: S.e.slice(), nm: S.nm, cm: S.cm, bm: S.bm, t: S.t, q: S.q, chet: false };
+  const N = { x: S.x, y: S.y, h: S.h, d: 0, p: S.p.slice(), e: S.e.slice(), nm: S.nm, cm: S.cm, bm: S.bm, t: S.t, q: S.q, f: S.f.slice(), chet: false };
   const { rong } = ctx;
   const cuaDong = (cell) => { const j = ctx.cuaIdx[cell]; return j >= 0 && !((N.cm >> j) & 1); };
+  const luaChay = (cell) => { const li = ctx.luaIdx[cell]; return li >= 0 && N.f[li] > 0; };
   const cellXe = () => N.y * rong + N.x;
   const thungChan = (x, y) => {
     if (!ctx.trongSan(x, y)) return true;
     const c = y * rong + x;
-    if (ctx.thungChanTinh[c] || cuaDong(c) || N.p.indexOf(c) >= 0) return true;
+    if (ctx.thungChanTinh[c] || cuaDong(c) || luaChay(c) || N.p.indexOf(c) >= 0) return true;
     return N.x === x && N.y === y;
   };
   let doiCua = 0;
@@ -99,6 +119,12 @@ function motNhip(ctx, S, a, tuy) {
       if (nhanh && d > SanHoc.TAM_BAN_NHANH) break;
       if (!ctx.trongSan(x, y)) break;
       const cell = y * rong + x;
+      if (luaChay(cell)) {                                                 // tia trúng lửa: nhỏ đi một cỡ, tắt thì cửa chống cháy đổi
+        const li = ctx.luaIdx[cell];
+        N.f[li]--;
+        if (!N.f[li]) for (const j of ctx.luaCua[li]) doiCua ^= 1 << j;
+        break;
+      }
       if (ctx.banDung[cell] || cuaDong(cell) || N.p.indexOf(cell) >= 0) {
         const ni = ctx.nutIdx[cell];
         if (ni >= 0) {
@@ -113,7 +139,7 @@ function motNhip(ctx, S, a, tuy) {
       const hg = (hb + 2) % 4, vg = VEC[hg], nx = N.x + vg[0], ny = N.y + vg[1];
       if (ctx.trongSan(nx, ny)) {
         const cell = ny * rong + nx;
-        if (!ctx.chan[cell] && !cuaDong(cell)) {
+        if (!ctx.chan[cell] && !cuaDong(cell) && !luaChay(cell)) {
           const i = N.p.indexOf(cell);
           if (i >= 0) {                                                   // luật 29/10: thùng nhích 1 ô, xe vào ô thùng vừa rời (như xích đẩy); ô sau thùng bị chặn thì cả hai đứng yên
             const sx = nx + vg[0], sy = ny + vg[1];
@@ -131,7 +157,7 @@ function motNhip(ctx, S, a, tuy) {
           const sx = nx + v[0], sy = ny + v[1];
           if (!thungChan(sx, sy)) { N.p[i] = sy * rong + sx; N.e[i] = 0; N.x = nx; N.y = ny; }
         }
-      } else if (!ctx.chan[cell] && !cuaDong(cell)) { N.x = nx; N.y = ny; }
+      } else if (!ctx.chan[cell] && !cuaDong(cell) && !luaChay(cell)) { N.x = nx; N.y = ny; }
     }
   } else if (a === 'r') N.h = (N.h + 1) % 4;
   else if (a === 'l') N.h = (N.h + 3) % 4;
@@ -166,7 +192,7 @@ function motNhip(ctx, S, a, tuy) {
   N.t = tMoi % ctx.L;
   const k = ctx.diQua.indexOf(cellXe());
   if (k >= 0) N.q |= 1 << k;
-  if (ctx.mucTieu === 'day-thung' && !Bo.laDich(ctx, N) && coThungKet(ctx, N)) N.chet = true;
+  if (ctx.mucTieu === 'day-thung' && !laDich(ctx, N) && coThungKet(ctx, N)) N.chet = true;
   return N;
 }
 /** Một hành động (R / L = hai nhịp). Trả { S, nhip } với S.thang nếu chạm đích giữa chừng (toi-co / day-thung thắng ngay). */
@@ -178,15 +204,15 @@ export function buoc(ctx, S, a, tuy) {
   }
   return { S: motNhip(ctx, S, a, tuy), nhip: 1 };
 }
-const khoa = (S) => S.x + ',' + S.y + ',' + S.h + ',' + S.p.join('.') + ',' + S.e.join('.') + ',' + S.nm + ',' + S.cm + ',' + S.bm + ',' + S.t + ',' + S.q;
+const khoa = (S) => S.x + ',' + S.y + ',' + S.h + ',' + S.p.join('.') + ',' + S.e.join('.') + ',' + S.nm + ',' + S.cm + ',' + S.bm + ',' + S.t + ',' + S.q + ',' + S.f.join('.');
 const thangNgay = (ctx) => ctx.mucTieu !== 'bong-mo';
 function tuyCua(m, tuy) { return { beSung: tuy.beSung === undefined ? !!m.beSung : tuy.beSung, xichDay: tuy.xichDay === undefined ? !!m.xichDay : tuy.xichDay }; }
 
 /* ------------------------------------------------------------------ 2. BFS tự do (chi phí nhịp 1 hay 2: hàng đợi theo nhịp) */
 function bfsMotSan(m, i, tuy) {
   const ctx = ngoCanh(m, i), t = tuyCua(m, tuy), HD = tuy.hanhDong || hanhDong(m);
-  const dau = Bo.trangThaiDau(ctx);
-  if (Bo.laDich(ctx, dau)) return { nhip: 0, chuoi: '' };
+  const dau = dauLua(ctx);
+  if (laDich(ctx, dau)) return { nhip: 0, chuoi: '' };
   const toiDa = tuy.toiDa || 400;
   const lop = [[{ S: dau, c: '' }]], thay = new Map([[khoa(dau), 0]]);
   let soTT = 0;
@@ -196,7 +222,7 @@ function bfsMotSan(m, i, tuy) {
         const { S: N, nhip } = buoc(ctx, S, a, t);
         if (N.chet) continue;
         const nn = n + nhip, cc = c + a;
-        if (Bo.laDich(ctx, N)) return { nhip: nn, chuoi: cc, soTT };
+        if (laDich(ctx, N)) return { nhip: nn, chuoi: cc, soTT };
         const k = khoa(N);
         if (thay.has(k) && thay.get(k) <= nn) continue;
         thay.set(k, nn); soTT++;
@@ -229,7 +255,7 @@ export function nhipNganNhat(m, tuy = {}) {
 export function dayChung(m, gioiHan, tuy = {}) {
   const n = dsSan(m).length, ctxs = [], t = tuyCua(m, tuy), HD = tuy.hanhDong || hanhDong(m);
   for (let i = 0; i < n; i++) ctxs.push(ngoCanh(m, i));
-  const dau = ctxs.map((c) => ({ S: Bo.trangThaiDau(c), xong: false }));
+  const dau = ctxs.map((c) => ({ S: dauLua(c), xong: false }));
   const k = (ds) => ds.map((d) => (d.xong ? 'X' : khoa(d.S))).join('|');
   const lop = [[{ ds: dau, c: '' }]], thay = new Map([[k(dau), 0]]);
   let soTT = 0;
@@ -242,12 +268,12 @@ export function dayChung(m, gioiHan, tuy = {}) {
           const { S: N, nhip } = buoc(ctxs[i], d.S, a, t);
           gia += nhip;
           if (N.chet) chet = true;
-          return { S: N, xong: thangNgay(ctxs[i]) && Bo.laDich(ctxs[i], N) };
+          return { S: N, xong: thangNgay(ctxs[i]) && laDich(ctxs[i], N) };
         });
         if (chet) continue;
         const gg = g + gia;
         if (gg > gioiHan) continue;
-        const xongHet = moi.every((d, i) => d.xong || (!thangNgay(ctxs[i]) && Bo.laDich(ctxs[i], d.S)));
+        const xongHet = moi.every((d, i) => d.xong || (!thangNgay(ctxs[i]) && laDich(ctxs[i], d.S)));
         if (xongHet) return { nhip: gg, chuoi: c + a, soTT };
         const kk = k(moi);
         if (thay.has(kk) && thay.get(kk) <= gg) continue;
@@ -281,19 +307,19 @@ export function kiemCheo(m, soLan = 60, hat = 7) {
         const dai = 1 + Math.floor(r() * 14);
         let c = '';
         for (let j = 0; j < dai; j++) c += HD[Math.floor(r() * HD.length)];
-        let S = Bo.trangThaiDau(ctx), nhip = 0, thang = false, cat = c.length;
+        let S = dauLua(ctx), nhip = 0, thang = false, cat = c.length;
         for (let j = 0; j < c.length; j++) {
           const b = buoc(ctx, S, c[j], t);
           S = b.S; nhip += b.nhip;
           if (S.chet) { cat = j + 1; break; }
-          if (thangNgay(ctx) && Bo.laDich(ctx, S)) { thang = true; cat = j + 1; break; }
+          if (thangNgay(ctx) && laDich(ctx, S)) { thang = true; cat = j + 1; break; }
         }
         const cc = c.slice(0, cat);
         const cfg = Object.assign({}, con, { beSung, nhipToiDa: 200 });
         let kq;
         try { kq = SanHoc.chay(cfg, chuoiThanhMa(cc, m)); } catch (e) { return 'sân ' + (i + 1) + ' lõi báo lỗi: ' + e.message; }
         if (S.chet) continue;                                            // thùng kẹt góc: lõi dừng sớm, chỉ cần cùng dừng
-        if (!thangNgay(ctx)) thang = Bo.laDich(ctx, S);
+        if (!thangNgay(ctx)) thang = laDich(ctx, S);
         const { rong } = ctx;
         const lech = [];
         if (kq.robot.x !== S.x || kq.robot.y !== S.y || kq.robot.huong !== S.h) lech.push('xe ' + JSON.stringify(kq.robot) + ' / ' + S.x + ',' + S.y + ',' + S.h);
@@ -305,6 +331,8 @@ export function kiemCheo(m, soLan = 60, hat = 7) {
         if (nl !== ns2) lech.push('nút ' + nl + ' / ' + ns2);
         const cl = (kq.cua || []).map((q) => (q.mo ? 1 : 0)).join(''), cs = ctx.cua.map((_, j) => ((S.cm >> j) & 1)).join('');
         if (cl !== cs) lech.push('cửa ' + cl + ' / ' + cs);
+        const ll = (kq.lua || []).map((q) => q.suc).join('.'), ls = S.f.join('.');
+        if (ll !== ls) lech.push('lửa ' + ll + ' / ' + ls);
         if (!!kq.thang !== thang) lech.push('thắng ' + kq.thang + ' / ' + thang);
         if (kq.nhip !== nhip) lech.push('nhịp ' + kq.nhip + ' / ' + nhip);
         if (lech.length) return 'sân ' + (i + 1) + (beSung ? ' bệ súng' : ' không bệ súng') + ', dãy ' + cc + ': ' + lech.join('; ');
@@ -362,9 +390,10 @@ export function chayDay(m, day, tuy = {}) {
     const v = VEC[S.h], x = S.x + v[0], y = S.y + v[1];
     if (!ctx.trongSan(x, y)) return false;
     const c = y * rong + x, j = ctx.cuaIdx[c];
-    return !ctx.chan[c] && !(j >= 0 && !((S.cm >> j) & 1)) && S.p.indexOf(c) < 0;
+    const li = ctx.luaIdx[c];
+    return !ctx.chan[c] && !(j >= 0 && !((S.cm >> j) & 1)) && S.p.indexOf(c) < 0 && !(li >= 0 && S.f[li] > 0);
   };
-  let S = Bo.trangThaiDau(ctx), nhip = 0;
+  let S = dauLua(ctx), nhip = 0;
   const gioiHan = tuy.gioiHan === undefined ? m.sao.nhip : tuy.gioiHan;
   for (const a of day) {
     if (a === 'G') {
@@ -372,16 +401,16 @@ export function chayDay(m, day, tuy = {}) {
         const b = buoc(ctx, S, 'M', t);
         S = b.S; nhip += b.nhip;
         if (S.chet || nhip > gioiHan) return false;
-        if (thangNgay(ctx) && Bo.laDich(ctx, S)) return nhip;
+        if (thangNgay(ctx) && laDich(ctx, S)) return nhip;
       }
       continue;
     }
     const b = buoc(ctx, S, a, t);
     S = b.S; nhip += b.nhip;
     if (S.chet || nhip > gioiHan) return false;
-    if (thangNgay(ctx) && Bo.laDich(ctx, S)) return nhip;
+    if (thangNgay(ctx) && laDich(ctx, S)) return nhip;
   }
-  return !thangNgay(ctx) && Bo.laDich(ctx, S) ? nhip : false;
+  return !thangNgay(ctx) && laDich(ctx, S) ? nhip : false;
 }
 export function thanCoDinh(m, kho, tenX, chamThan, tuy = {}) {
   const bang = bangDong(m, kho), dai = tuy.dai || 4;
