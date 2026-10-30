@@ -40,7 +40,8 @@ PHẢN BIỆN: brief này là phán đoán từ bên ngoài, viết trong ít ph
 màn nào không thể nhiều sân mà vẫn giữ ý). Bất đồng chặn đường → dừng, commit WIP, báo ngay. Bất đồng không chặn → làm theo rồi ghi vào CÂU HỎI CẦN LÀM RÕ.
 Quyết định của USER (không tự đi ngược): gói 10 mọi màn nhiều sân, một robot; R1 tay xoay từ gói 7. Kiểm lại từng khẳng định trong brief bằng code, đừng tin.
 
-CÁCH GIAO: nhánh `claude/pdm-1` trong worktree `D:\Users\tuanla2\game\doi-robot-chan-hung\.claude\worktrees\pdm-1` (đã dựng sẵn); commit từng bước; KHÔNG push, KHÔNG merge.
+CÁCH GIAO: làm THẲNG trên nhánh `claude/part-dung-mua`, worktree `D:\Users\tuanla2\game\doi-robot-chan-hung\.claude\worktrees\part-dung-mua`
+(người giao không sửa tệp trong lúc bạn chạy); commit từng bước; KHÔNG push, KHÔNG merge, KHÔNG đổi nhánh, KHÔNG git checkout / reset / stash.
 Mọi lệnh chạy với cwd = worktree đó.
 
 KIỂM TRA (chạy sau mỗi nhóm commit; CẤM `npm test` cả bộ vì RAM, người giao chạy):
