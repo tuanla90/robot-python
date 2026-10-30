@@ -67,7 +67,7 @@ console.log('B. Lắp ráp, thẻ bộ phận, VeRobot, lõi');
 {
   const tu = LapRap.tim('camBien', 'tu');
   kiem('lap-rap: "tu" là part "tu", chỉ hai hàm, tên "Cảm biến từ", ổ hông, giá giữ 2', !!tu && tu.part === 'tu' && J(tu.ham) === J(['front_metal', 'front_pole']) && tu.ten === 'Cảm biến từ' && tu.o === 'hong' && tu.gia === 2, J(tu));
-  kiem('lap-rap kiemGhep: hai bánh + tu được; nhện + tu, drone + tu vẫn sai (không hướng mặt)', LapRap.kiemGhep({ than: 'hai-banh', tay: null, camBien: 'tu' }).ok && !LapRap.kiemGhep({ than: 'nhen', tay: null, camBien: 'tu' }).ok && !LapRap.kiemGhep({ than: 'drone', tay: null, camBien: 'tu' }).ok);
+  kiem('lap-rap kiemGhep: hai bánh + tu, nhện + tu được (31/10: nhện đo theo cạnh trước cố định); drone + tu vẫn sai (không hướng mặt)', LapRap.kiemGhep({ than: 'hai-banh', tay: null, camBien: 'tu' }).ok && LapRap.kiemGhep({ than: 'nhen', tay: null, camBien: 'tu' }).ok && !LapRap.kiemGhep({ than: 'drone', tay: null, camBien: 'tu' }).ok);
   const ad = LapRap.apDung({ ma: 'tam', ten: 'x', san: ['..'], lapRap: { than: ['hai-banh'], tay: ['nam-cham'], camBien: ['tu'], nganSach: 9, cachLap: [] } }, { than: 'hai-banh', tay: 'nam-cham', camBien: 'tu' });
   kiem('apDung hai bánh + nam châm + tu: robot.camBien [{ tu, hong }], hamGoc có front_metal / front_pole và KHÔNG có front_clear (từ không còn kèm khoảng cách)', J(ad.robot.camBien) === J([{ ma: 'tu', o: 'hong' }]) && ad.hamGoc.includes('front_pole') && !ad.hamGoc.includes('front_clear'), J(ad.robot) + ' ' + ad.hamGoc.join(','));
   const nd = GTP.noiDung('tu', ['front_metal', 'front_pole'], [], 'hai-banh');

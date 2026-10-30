@@ -15,7 +15,16 @@
    thành màn một robot "Một mình hai trạm". Bảng recall gói 9 + 10: gói 8 Đội chỉ còn nhắc 2 lần (trước 3) vì gói 10 không còn đội; hạ ngưỡng riêng gói 8 xuống 2.
    Nhịp màn thường tính theo ngày dài nhất, trùm tính tổng mọi ngày (robot-hoan-thien.5 cũng tính tổng để for range(3) đếm cứng không được 3 sao).
 
+7. **Mùa 2 gói 1–4 (PDM2a, PDM2a2, đã xong 80 màn):** R1 xích (+ vòi, + hồng ngoại). Gói 1 chưa có cảm biến nên chương biến đổi thành "Đi xoắn ốc"
+   (biến đếm độ dài đoạn, n = n + 1). Hàm của em tham-so.8 đổi tên `step` → `stair_down` (trùng hàm của màn mùa 4).
+   Chương băng chuyền thành "Canh băng chở thùng": lõi thêm `man.thungThem` (thùng nặng đặt sẵn trên băng); xích không trôi, van bật tắt băng.
+   Màn ẩn (mùa sau) còn gọi hàm mùa 2 cũ (fetch_back, bounce, pick_behind, deliver…) được cấp bản cũ làm hàm của màn.
+   Thứ tự chương sung-hoi đổi (.9 trước .7): mã giữ nên sao đã lưu không mất.
+
 ## Câu hỏi chờ user
+- Sổ lệnh (so-lenh.js) theo ngân hàng nên còn hiện tên hàm mùa 2 cũ (step, deliver, pick_behind, fetch_back, bounce) mà người chơi giờ không tạo; thiếu next_lane, open_at,
+  stair_down. Agent đề xuất cho Sổ lệnh đọc theo lộ trình (một lượt riêng). Claude nghiêng về làm, sau khi xong mùa 2–4.
+- Chương băng chuyền màn 6–9 cùng một khung (đỗ trên ô đích, tắt / mở rồi đi qua, bật lại): có thể thấy lặp.
 - robot-hoan-thien.8 sau khi nhiều ngày (dọn dãy thùng bằng while) gần giống robot-hoan-thien.5: có muốn đổi ý bài .8 không?
 - Màn không có cờ "đâm là thua" thì lời đếm cứng đi quá (húc tường) vẫn thắng với ít sao hơn (vd robot-hoan-thien.4: 1 sao). Có muốn bật "đâm là thua" cho cả gói 10?
   (Cờ này hiện chỉ cho màn ép khối mới theo định nghĩa của kiem-lach-mua-1; bật cho gói 10 cần sửa máy dò đó.)
