@@ -321,7 +321,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       mau: lm.mau, vatMau: lm.vatMau,                   // lớp màu sàn / màu vật (chương cảm biến màu); null nếu màn không có
       vatChat: lm.vatChat, vat: lm.vatThem || undefined, vatThem: lm.vatThem,   // chất vật sắt / gỗ và vật thêm ngoài ký hiệu (chương nam châm)
       roBanDau: Array.isArray(m.roBanDau) ? m.roBanDau[i] : m.roBanDau,           // máy ném: rổ có sẵn một vật lúc xuất phát
-      cuaNhip: lm.cuaNhip || undefined, nutBat: lm.nutBat || undefined, danToiDa: m.danToiDa, noi: lm.noi || undefined, demTu: lm.demTu || undefined,   // gói V7a: noi (nút ↔ cửa) cho dây nối vector   // súng bóng: chu kỳ cửa nhịp của sân này, nút bật sẵn (nóng từ đầu), số đạn tối đa (không khai = vô hạn)
+      cuaNhip: lm.cuaNhip || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, danToiDa: m.danToiDa, noi: lm.noi || undefined, demTu: lm.demTu || undefined,   // gói V7a: noi (nút ↔ cửa) cho dây nối vector   // súng bóng: chu kỳ cửa nhịp của sân này, nút bật sẵn (nóng từ đầu), số đạn tối đa (không khai = vô hạn)
       pin: Array.isArray(m.pin) ? m.pin[i] : m.pin,                                // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
       bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo,                    // mục tiêu 'bong-mo': xe mờ (+ vật mờ, ô ◆) của sân này; màn nhiều sân thì mảng song song với san
       hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: m.mucBanDau,                          // máy sơn: hình mờ cần tô của sân này, màu sơn lúc đầu
@@ -532,7 +532,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (!nhieuSan()) return;
     S.man.san.forEach(function (rows, i) {
       var b = h('button', 'sanbt'); b.setAttribute('data-nut', 'san-' + (i + 1)); b.setAttribute('data-san', i);
-      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau, vatChat: ch.vatChat, vatThem: ch.vatThem, cuaNhip: ch.cuaNhip, nutBat: ch.nutBat, hinh: ch.hinh, sonBanDau: ch.sonBanDau });
+      var ch = cauHinhSan(i), cv = h('canvas'); SanVe.thuSan(cv, rows, ch.batDau, undefined, undefined, { mau: ch.mau, vatMau: ch.vatMau, vatChat: ch.vatChat, vatThem: ch.vatThem, cuaNhip: ch.cuaNhip, nutBat: ch.nutBat, lua: ch.lua, hinh: ch.hinh, sonBanDau: ch.sonBanDau });
       b.appendChild(cv); b.appendChild(h('span', 'sn', String(i + 1))); b.appendChild(h('span', 'dau'));
       b.addEventListener('click', function () { xemSan(i); });
       E.bar.appendChild(b); S.nut.push(b);
@@ -709,7 +709,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var nguongO = k.nguongO !== undefined ? k.nguongO : ss.o;
     var okO = nguongO === undefined || k.soO <= nguongO, okN = ss.nhip === undefined || k.soNhip <= ss.nhip || !!(re && k.re);
     var duaVat = m.mucTieu === 'dua-vat' || m.mucTieu === 'day-thung';
-    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : m.mucTieu === 'to-hinh' ? 'thang.tieuDe.toHinh' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
+    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : m.mucTieu === 'to-hinh' ? 'thang.tieuDe.toHinh' : m.mucTieu === 'dap-lua' ? 'thang.tieuDe.dapLua' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
     hop.hop.setAttribute('data-sao', k.sao);
     var st = h('div', 'th-sao');
     for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }

@@ -150,7 +150,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   function canvasSan(rong, cao) {
     var m = S.m, nhieu = Array.isArray(m.san[0]), lm = SanHoc.lopMauCuaSan(m, 0), cv = h('canvas', 'tex');
-    SanVe.thuSan(cv, nhieu ? m.san[0] : m.san, Array.isArray(m.batDau) ? m.batDau[0] : m.batDau, rong, cao, { mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatThem: lm.vatThem, cuaNhip: lm.cuaNhip, nutBat: lm.nutBat });
+    SanVe.thuSan(cv, nhieu ? m.san[0] : m.san, Array.isArray(m.batDau) ? m.batDau[0] : m.batDau, rong, cao, { mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatThem: lm.vatThem, cuaNhip: lm.cuaNhip, nutBat: lm.nutBat, lua: lm.lua });
     return cv;
   }
   /** Hộp đề bài đầy đủ + sân. */

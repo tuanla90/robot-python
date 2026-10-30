@@ -1483,6 +1483,12 @@
       'tong-hop-2': 'Thử mọi món', 'trum-mua-2': 'Nhà máy chạy lại'
     };
     Object.keys(TEN_CHUONG_2).forEach(function (c) { TT.ten[c] = TEN_CHUONG_2[c]; });
+    // 30/10 (user: "Đổi huy hiệu"): huy hiệu mùa 1, 2 mang tên chương chứa màn trùm ("Chế lệnh: x" → "Chế lệnh x", bỏ dấu hỏi cuối). Chỉ đổi tên; mã huy hiệu (hình vẽ) giữ.
+    var chuong12 = {};
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-1' || g.mua === 'mua-2') g.chuong.forEach(function (c) { chuong12[c] = true; }); });
+    M.danhSach.forEach(function (m) {
+      if (m.huyHieu && chuong12[m.chuong] && TT.ten[m.chuong]) m.huyHieu.ten = 'Huy hiệu ' + TT.ten[m.chuong].replace(': ', ' ').replace(/\?$/, '');
+    });
     // Mùa 3: gói 3 đổi tên ngay trong MUA_3 ("Cảm biến từ", user 29/10); các tên khác của mùa 3 đặt theo quy tắc khi làm P2.
   })();
 

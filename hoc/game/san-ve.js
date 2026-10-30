@@ -150,7 +150,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     nap: function (cfg) {
       var rows = cfg.san, w = rows[0].length, h = rows.length;
       var loai = cfg.loaiRobot || 'banh';
-      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, nutBat: Array.isArray(cfg.nutBat) ? cfg.nutBat : null, demTu: Array.isArray(cfg.demTu) ? cfg.demTu : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
+      this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, nutBat: Array.isArray(cfg.nutBat) ? cfg.nutBat : null, lua: Array.isArray(cfg.lua) ? cfg.lua : null, demTu: Array.isArray(cfg.demTu) ? cfg.demTu : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
         robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [], cacCo: [],
         bm: chuanBongMo(cfg.bongMo),                     // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
         hinh: dungHinh(cfg.hinh), sonBanDau: dungHinh(cfg.sonBanDau), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red' };      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
@@ -236,6 +236,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (ch === 'u') { ve('ho'); return; }
       var mn = (ch === '=' || ch === 'C' || ch === 'c') ? null : this.mauNen(x, y);   // như nhánh pixel: sàn màu ở mọi ô trừ tường, bậc, rào, nút bắn, cửa, gầm, hố, băng
       ve(mn ? 'san-mau' : 'san', mn ? { mau: mn } : (x + y) & 1 ? { le: 1 } : undefined);      // gói V4: sàn bàn cờ hai tông theo (x + y)
+      var lu = this.luaT && this.luaT[kO];
+      if (lu) { ve('lua', { suc: lu.suc, pha: lu.suc ? Math.floor(now / 170) & 3 : 0 }); if (lu.suc) this.veNong(g, x, y, now); }   // gói lửa: đám cháy (nóng như van mở), tắt thì vết cháy
       var dt = this.demTuT && this.demTuT[kO];
       if (dt) {
         ve('dem-tu', { cuc: dt.cuc });
@@ -416,6 +418,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.nutT = {}; this.nutDeT = {}; this.cuaT = {}; this.bangTat = {}; this.bangLoe = {}; this.nhipDa = 0;
       var self = this;
       ((this.cfg && this.cfg.nutBat) || []).forEach(function (o) { self.nutO(o.x, o.y).bat = true; });
+      this.luaT = {};                                                                  // gói lửa: đám cháy lúc đầu (cfg.lua), suc giảm theo vết
+      ((this.cfg && this.cfg.lua) || []).forEach(function (o) { self.luaT[o.x + ',' + o.y] = { suc: o.suc }; });
       this.cuaDS.forEach(function (d) {
         var nh = self.cuaNhipBy[d.x + ',' + d.y], mo = nh ? (nh.pha % (nh.mo + nh.dong)) < nh.mo : d.mo0;
         self.cuaT[d.x + ',' + d.y] = { x: d.x, y: d.y, mo: mo, k: mo ? 1 : 0, doc: d.doc, nhip: nh || null, ket: 0, rung: 0 };
@@ -1652,6 +1656,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         await ngu(ms * 0.1); if (my !== this.rid) return;
         if (nutEv) { if (nt.bat !== !!nutEv.bat) nt.quay = performance.now(); nt.bat = !!nutEv.bat; }   // van hơi: bánh quay nửa vòng (veOVec)
         evs.filter(function (q) { return q.ma === 'bang-doi'; }).forEach(function (q) { var k2 = q.o.x + ',' + q.o.y; if (q.bat) delete self.bangTat[k2]; else self.bangTat[k2] = true; self.bangLoe[k2] = performance.now() + 300; });
+      } else if (kind === 'lua') {                                                       // gói lửa: tia trúng đám cháy, bụi nước + hơi trắng, lửa nhỏ đi (tắt hẳn thì vết cháy)
+        this.burst(tx + dx * 2, ty + dy * 2, 16, [BM.sanTrangV1, BM.sanKem, BM.sanXam], 1.2, 1, true);
+        this.bong.sq = 1;
+        await ngu(ms * 0.1); if (my !== this.rid) return;
+        evs.filter(function (q) { return q.ma === 'lua-nho'; }).forEach(function (q) { var l = self.luaT[q.o.x + ',' + q.o.y]; if (l) l.suc = q.suc; });
       } else if (kind === 'cua') {
         var cd = this.cuaT[s.den.x + ',' + s.den.y]; if (cd) cd.rung = tNay + 220;
         this.burst(tx + dx * 2, ty + dy * 2, 9, [BM.sanVangSang, BM.sanTrangV1, BM.sanVangV4], 1.0, 1, true);
@@ -1764,6 +1773,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var self = this, d;
       if (e.nut) e.nut.forEach(function (n) { self.nutO(n.x, n.y).bat = !!n.bat; });
       if (e.nutDe) e.nutDe.forEach(function (m) { self.nutDeT[m.x + ',' + m.y] = !!m.bat; });
+      if (e.lua && this.luaT) e.lua.forEach(function (q) { var l = self.luaT[q.x + ',' + q.y]; if (l) l.suc = q.suc; });
       if (e.bangTat) { this.bangTat = {}; e.bangTat.forEach(function (q) { self.bangTat[q.x + ',' + q.y] = true; }); }
       if (e.cua) e.cua.forEach(function (q) { d = self.cuaT[q.x + ',' + q.y]; if (d) { d.mo = !!q.mo; d.k = q.mo ? 1 : 0; d.ket = 0; d.rung = 0; } });
       if (typeof e.nhip === 'number') this.nhipDa = e.nhip;
@@ -2324,6 +2334,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     ((lopMau && lopMau.nutBat) || []).forEach(function (o) { nutBat[o.x + ',' + o.y] = true; });                          // nút bật sẵn: ảnh nhỏ vẽ nút xanh + viền cam (nóng)
     ((lopMau && lopMau.cuaNhip) || []).forEach(function (cn) { cuaNhip[cn.x + ',' + cn.y] = cn; });                      // cửa nhịp: ảnh nhỏ vẽ trạng thái lúc đầu (theo pha), khung xanh lơ                                                                          // vật thêm ngoài ký hiệu (vd trên băng chuyền)
     thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat);
+    ((lopMau && lopMau.lua) || []).forEach(function (o) { g.drawImage(VeVector.o('lua', s, { suc: o.suc, pha: 0 }), o.x * s, o.y * s, s, s); });   // gói lửa: ảnh nhỏ vẽ đám cháy lúc đầu
     var hinhT = dungHinh(lopMau && lopMau.hinh), sonT = dungHinh(lopMau && lopMau.sonBanDau), vien = Math.max(1, s >> 3);       // máy sơn: ô hình mờ (khung màu) và ô sơn sẵn (sơn đặc)
     for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
       var mh = hinhT && hinhT[y] ? hinhT[y][x] : null, ms = sonT && sonT[y] ? sonT[y][x] : null;

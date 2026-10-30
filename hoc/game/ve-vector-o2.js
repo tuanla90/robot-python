@@ -109,6 +109,40 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.duong(g, CHU_DEM[cuc]); H.vien(g, BM.vecVo, 7);
   } });
 
+  /* ĐÁM CHÁY (30/10, gói lửa mùa 2; cfg.lua, vẽ đè lên sàn): s.suc 1–3 ngọn lửa (số lần tia nước còn phải trúng), s.pha 0–3 lửa lay qua lại;
+     s.suc 0 = đã tắt: vết cháy xám và hai làn khói. Ngọn lửa ba lớp đỏ cam / cam / vàng, viền nâu đỏ mảnh. */
+  function ngonLua(g, H, x, day, cao, rong, lech) {
+    [[1, BM.vecLuaDo], [0.68, BM.vecLuaCam], [0.38, BM.vecLuaVang]].forEach(function (l, i) {
+      var k = l[0], w = rong * k, hh = cao * k, dinh = day - hh, dx = lech * k;
+      g.beginPath(); g.moveTo(x + dx, dinh);
+      g.bezierCurveTo(x + dx * 0.4 + w * 0.5, dinh + hh * 0.38, x + w * 0.62, day - hh * 0.2, x, day);
+      g.bezierCurveTo(x - w * 0.62, day - hh * 0.2, x + dx * 0.4 - w * 0.5, dinh + hh * 0.38, x + dx, dinh);
+      g.closePath(); H.to(g, l[1]);
+      if (i === 0) H.vien(g, BM.vecLuaVienToi, 2.5);
+    });
+  }
+  var CHO_LUA = { 1: [[50, 1]], 2: [[35, 0.85], [65, 0.95]], 3: [[27, 0.75], [50, 1], [73, 0.8]] };
+  V.dangKy({ loai: 'o', ma: 'lua', ten: 'Đám cháy', phu: true, cacTrangThai: [{ suc: 1, pha: 0 }, { suc: 2, pha: 1 }, { suc: 3, pha: 2 }, { suc: 3, pha: 3 }, { suc: 0 }], ve: function (g, s, H) {
+    var suc = Math.max(0, Math.min(3, s.suc | 0)), pha = (s.pha | 0) & 3;
+    if (!suc) {
+      H.elip(g, 50, 62, 34, 20); H.to(g, H.rgba(BM.vecVienRgb, 0.18));
+      H.elip(g, 50, 60, 28, 15); H.to(g, BM.vecTro);
+      g.save(); g.lineCap = 'round'; g.strokeStyle = H.rgba(BM.vecKhoiRgb, 0.7); g.lineWidth = 5;
+      g.beginPath(); g.moveTo(42, 52); g.bezierCurveTo(32, 40, 50, 32, 40, 18); g.stroke();
+      g.strokeStyle = H.rgba(BM.vecKhoiRgb, 0.45); g.lineWidth = 4;
+      g.beginPath(); g.moveTo(58, 54); g.bezierCurveTo(68, 44, 52, 36, 62, 24); g.stroke();
+      g.restore();
+      return;
+    }
+    H.elip(g, 50, 82, 36, 10); H.to(g, H.rgba(BM.vecVienRgb, 0.16));                    // bóng đổ
+    H.elip(g, 50, 80, 32, 8); H.to(g, BM.vecTro);                                          // than dưới chân lửa
+    var lay = [0, 4, 0, -4][pha];
+    CHO_LUA[suc].forEach(function (q, i) {
+      var cao = 66 * q[1] * (1 + ((pha + i) & 1 ? 0.06 : -0.04));
+      ngonLua(g, H, q[0], 82, cao, suc === 1 ? 46 : suc === 2 ? 34 : 28, (i & 1 ? -lay : lay));
+    });
+  } });
+
   /* Ô SẠC của drone (P, vẽ đè lên sàn): đế tối bo góc, vòng cyan, tia chớp vàng ở giữa, bốn đèn góc nháy luân phiên theo s.pha (0 / 1). */
   V.dangKy({ loai: 'o', ma: 'sac', ten: 'Ô sạc', ky: ['P'], phu: true, cacTrangThai: [{ pha: 0 }, { pha: 1 }], ve: function (g, s, H) {
     var f = (s.pha || 0) & 1;

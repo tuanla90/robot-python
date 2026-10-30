@@ -163,7 +163,14 @@
           Màn hỏng khai phanCung thiếu spray_back (nòng sau hỏng) hay thiếu spray (nòng trước hỏng): gọi lệnh đó → 'lenh-goc-hong'.
         - Mục tiêu 'day-thung': thắng NGAY khi MỌI thùng nặng nằm trên ô đích. Thùng nằm ở GÓC chết mà không phải ô đích (hai cạnh vuông góc là tường hoặc mép sân; ô băng dẫn ra khỏi góc thì không chết)
           thì dừng ngay cuối nhịp đó (dungSom = 'thung-ket'). Thùng nặng chỉ thiết kế để đi với mục tiêu 'day-thung', 'toi-co' hoặc 'bong-mo' (làm vật chắn); không đi chung vật nhẹ 'o' trong mục tiêu day-thung.
-        Kết quả chạy có `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}] (ô băng đang tắt) — trạng thái CUỐI; cuaBanDau / nutBanDau lúc xuất phát; sung { dan } (null nếu robot không có súng; dan = số viên
+        - LỬA (30/10, gói 10 mùa 2 "Xe cứu hỏa R1"; cfg.lua = [{ x, y, suc }], màn nhiều sân: mảng song song với san như nutBat): ô ghi '.' trên sân, suc là 1, 2 hay 3
+          (số lần tia nước trúng mới tắt). ĐANG CHÁY thì như cửa đóng: chặn xe (tiến vào: dam-tuong vat 'lua'), chặn thùng, chặn tia nước (trung 'lua'), front_clear() = False;
+          distance() đếm tới lửa (vat 'lua'), warm() thấy lửa là NÓNG. Mỗi lần tia trúng (phun nhẹ hay mạnh như nhau) suc giảm 1 ('lua-nho' { nhip, o, suc }); về 0 thì TẮT HẲN
+          ('lua-tat' { nhip, o }): ô thành sàn, đi qua được, không bao giờ cháy lại (khác van: van trúng là đổi qua lại). Lửa không lan, không hại xe.
+          CỬA CHỐNG CHÁY: cfg.noi với nut là ô lửa: lửa tắt thì các cửa của nhóm đổi MỘT LẦN ở cuối nhịp (C đóng → mở). Lửa không có trong noi thì không điều khiển gì
+          (kể cả khi sân không khai noi). Lửa không đặt trên ô robot xuất phát và chỉ đặt trên sàn '.'.
+          Mục tiêu 'dap-lua' (một robot): thắng khi MỌI đám cháy đã tắt và robot đứng ở cờ (sân không có cờ F thì chỉ cần dập hết). Tới cờ mà còn lửa thì chưa thắng, chạy tiếp.
+        Kết quả chạy có `cua` [{x,y,mo}], `nut` [{x,y,bat}], `bangTat` [{x,y}] (ô băng đang tắt), `lua` [{x,y,suc}] (suc 0 = đã tắt) — trạng thái CUỐI; luaBanDau lúc xuất phát; cuaBanDau / nutBanDau lúc xuất phát; sung { dan } (null nếu robot không có súng; dan = số viên
         còn lại hay null nếu vô hạn). Vết nhịp có `thung` (vị trí thùng cuối nhịp), `cua`, `nut`, `bangTat` (cuối nhịp, chỉ khi sân có cửa / nút) và robot.sung.
 
    CẢM BIẾN KHOẢNG CÁCH (chương `khoang-cach`; xe bánh, xích, omni; nhện thì không vì không có hướng mặt). Robot gắn cảm biến
@@ -492,7 +499,7 @@
   // mục tiêu: 'toi-co' | 'dua-vat' | 'day-thung' | 'bong-mo' (đến đúng tư thế của "xe mờ" khi chạy xong, xem phần BÓNG MỜ)
   var DAO_CHIEU_SUNG = 'sung';                  // súng hơi lắp ngược (chương che-sung-hoi): spray() bắn ra sau (xe giật tới), spray_back() bắn ra trước (xe giật lùi)
   var DAO_CHIEU_TAY = ['tay', 'kep', 'xoay'];   // tay kẹp lắp ngược (chương che-tay): 'tay' đổi chỗ arm_up ↔ arm_down, 'kep' đổi chỗ grab ↔ release; 'xoay' (chương che-tay-xoay) đổi chỗ arm_left ↔ arm_right (xem phần ĐẤU DÂY NGƯỢC)
-  var MUC_TIEU = ['toi-co', 'dua-vat', 'day-thung', 'bong-mo', 'to-hinh'];       // 'to-hinh': tô đúng hình mờ (xem phần MÁY SƠN)
+  var MUC_TIEU = ['toi-co', 'dua-vat', 'day-thung', 'bong-mo', 'to-hinh', 'dap-lua'];       // 'to-hinh': tô đúng hình mờ (xem phần MÁY SƠN)
 
   /** Phần cứng mặc định của loại robot: trọn bộ lệnh của loại đó (xe bánh có cả bánh lùi) cộng các lệnh khay đã gắn thêm (tay, cảm biến…). */
   function phanCungMacDinh(loai, hamGoc) {
@@ -636,7 +643,7 @@
   function lopMauCuaSan(m, i) {
     var nhieu = Array.isArray(m.san[0]);
     function lay(l) { return l ? (nhieu ? (l[i] || null) : l) : null; }
-    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), demTu: lay(m.demTu), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
+    return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatThem: lay(m.vatThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), lua: lay(m.lua), demTu: lay(m.demTu), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau) };
   }
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
   function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_NHIN_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0 || CAM_HONG_NGOAI_HAM.indexOf(t) >= 0; }
@@ -714,6 +721,7 @@
     var sacSet = {};
     san.sac.forEach(function (q) { sacSet[q.x + ',' + q.y] = true; });
     if (laDoi && mucTieu === 'bong-mo') throw new Error('Mục tiêu bong-mo chưa dùng cho nhiều robot.');
+    if (laDoi && mucTieu === 'dap-lua') throw new Error('Mục tiêu dap-lua chưa dùng cho nhiều robot (màn đội có lửa dùng toi-co: lửa chắn lối).');
 
     // biến RIÊNG của từng robot: nhiều robot thì đổi theo robot đang xét (catRobot / napRobot); biến của sân (vật, thùng, cửa, nút, nhịp…) dùng chung
     var
@@ -1038,7 +1046,7 @@
       if (c === '=') return 'rao';
       if (c === 'S') return 'bac-thang';
       if (san.demTu && san.demTu[x + ',' + y]) return 'dem-tu';           // ô đệm từ là khối
-      if (cuaDong(x, y)) return 'cua';                                    // cửa đang đóng chặn thùng như chặn xe
+      if (cuaDong(x, y)) return lyCua(x, y);                              // cửa đang đóng (hay lửa đang cháy) chặn thùng như chặn xe
       if (thungTai(x, y)) return 'thung-nang';
       if (rb.x === x && rb.y === y && !laDrone) return 'xe';              // drone lơ lửng trên thùng, không chiếm ô
       if (xeDatTai(x, y)) return 'dong-doi';
@@ -1101,11 +1109,39 @@
       d.nhip = { mo: cn.mo, dong: cn.dong, pha: ph };
       d.mo = cuaNhipMo(d.nhip, 0);
     });
+    // ---- LỬA (xem SÚNG BÓNG): cfg.lua = [{ x, y, suc }]; khai trước noi vì cửa chống cháy nối vào ô lửa.
+    var luas = [], luaTai = {};
+    if (cfg.lua !== undefined && cfg.lua !== null) {
+      if (!Array.isArray(cfg.lua)) throw new Error('lua phải là mảng ô [{ x, y, suc }] (đám cháy lúc đầu màn).');
+      cfg.lua.forEach(function (o) {
+        var k = o ? o.x + ',' + o.y : '?', c = o ? oTai(san, o.x, o.y) : null;
+        if (!o || c === null) throw new Error('Lửa: ô (' + (o ? o.x + ', ' + o.y : '?') + ') nằm ngoài sân.');
+        if (c !== '.') throw new Error('Lửa (' + o.x + ', ' + o.y + ') phải nằm trên ô sàn "." (không trên tường, nút, cửa, cờ, băng chuyền, ô đích).');
+        if (!laSoNguyen(o.suc) || o.suc < 1 || o.suc > 3) throw new Error('Lửa (' + o.x + ', ' + o.y + '): suc là số lần trúng mới tắt, từ 1 tới 3.');
+        if (luaTai[k]) throw new Error('Lửa (' + o.x + ', ' + o.y + ') khai hai lần.');
+        var l = { x: o.x, y: o.y, suc: o.suc, suc0: o.suc, cua: [] };
+        luaTai[k] = l; luas.push(l);
+      });
+    }
+    function luaChay(x, y) { var l = luaTai[x + ',' + y]; return !!l && l.suc > 0; }
+    function chupLua() { return luas.map(function (l) { return { x: l.x, y: l.y, suc: l.suc }; }); }
+    function luaXong() { return luas.every(function (l) { return l.suc === 0; }); }
     if (cfg.noi) {
       cfg.noi.forEach(function (g) {
+        var lN = g.nut ? luaTai[g.nut.x + ',' + g.nut.y] : null;
+        if (lN) {                                                            // cửa chống cháy: lửa tắt thì cửa đổi một lần
+          if (g.bang && g.bang.length) throw new Error('Nhóm nối: lửa (' + lN.x + ', ' + lN.y + ') không điều khiển băng chuyền.');
+          (g.cua || []).forEach(function (c) {
+            var d = cuaTai[c.x + ',' + c.y];
+            if (!d) throw new Error('Nhóm nối: ô (' + c.x + ', ' + c.y + ') không phải cửa.');
+            if (d.nhip) throw new Error('Nhóm nối: cửa nhịp (' + c.x + ', ' + c.y + ') không điều khiển bằng lửa.');
+            if (lN.cua.indexOf(d) < 0) lN.cua.push(d);
+          });
+          return;
+        }
         var n = g.nut ? nutTai[g.nut.x + ',' + g.nut.y] : null;
         var m = g.nut ? nutDeTai[g.nut.x + ',' + g.nut.y] : null;
-        if (!n && !m) throw new Error('Nhóm nối: ô nút (' + (g.nut ? g.nut.x + ', ' + g.nut.y : '?') + ') không phải nút N.');
+        if (!n && !m) throw new Error('Nhóm nối: ô nút (' + (g.nut ? g.nut.x + ', ' + g.nut.y : '?') + ') không phải nút N hay ô lửa.');
         (g.cua || []).forEach(function (c) {
           var d = cuaTai[c.x + ',' + c.y];
           if (!d) throw new Error('Nhóm nối: ô (' + c.x + ', ' + c.y + ') không phải cửa.');
@@ -1183,7 +1219,11 @@
       dsRc.forEach(function (rc) { if (rc.batDau && san.demTu[rc.batDau.x + ',' + rc.batDau.y]) throw new Error('Robot xuất phát trên ô đệm từ (' + rc.batDau.x + ', ' + rc.batDau.y + ').'); });
     }
     if (cuaTai[bd.x + ',' + bd.y] && !cuaTai[bd.x + ',' + bd.y].mo) throw new Error('Robot xuất phát trong ô cửa đang đóng.');
-    function cuaDong(x, y) { var d = cuaTai[x + ',' + y]; return !!d && !d.mo; }
+    if (luaTai[bd.x + ',' + bd.y]) throw new Error('Robot xuất phát trong ô lửa (' + bd.x + ', ' + bd.y + ').');
+    /** Ô (x, y) chặn như cửa đóng: cửa đang đóng, hay lửa đang cháy (xem LỬA). */
+    function cuaDong(x, y) { var d = cuaTai[x + ',' + y]; return (!!d && !d.mo) || luaChay(x, y); }
+    /** Lý do chặn của ô cuaDong: 'lua' | 'cua' | null. */
+    function lyCua(x, y) { return luaChay(x, y) ? 'lua' : cuaDong(x, y) ? 'cua' : null; }
     function chupCua() { return cuas.map(function (d) { return { x: d.x, y: d.y, mo: d.mo }; }); }
     function chupDiQua() { return diQua.map(function (q) { return { x: q.x, y: q.y, da: q.da }; }); }
     /** Bóng mờ: robot đang ở đúng tư thế đích, đã qua mọi ô diQua, vật (nếu khai) nằm đúng các ô đó (không thừa không thiếu). */
@@ -1212,7 +1252,7 @@
     function chupNut() { return nuts.map(function (n) { return { x: n.x, y: n.y, bat: n.bat }; }); }
     function chupNutDe() { return nutDes.map(function (m) { return { x: m.x, y: m.y, bat: m.bat }; }); }
     function chupBangTat() { return bangO.filter(function (q) { return bangTat[q.x + ',' + q.y]; }).map(function (q) { return { x: q.x, y: q.y }; }); }
-    var cuaBanDau = chupCua(), nutBanDau = chupNut(), nutDeBanDau = chupNutDe();
+    var cuaBanDau = chupCua(), nutBanDau = chupNut(), nutDeBanDau = chupNutDe(), luaBanDau = chupLua();
 
     function vatNamTai(x, y) {
       for (var i = 0; i < vats.length; i++) if (vats[i].trangThai === 'dat' && vats[i].x === x && vats[i].y === y) return vats[i];
@@ -1375,7 +1415,7 @@
       return null;
     }
     /** Ô (x, y) có cho một vật nam châm TRƯỢT vào được không: null nếu được, hay lý do (như oThaChan, thêm cửa đang đóng). */
-    function oTruotChan(x, y) { return oThaChan(x, y) || (cuaDong(x, y) ? 'cua' : null); }
+    function oTruotChan(x, y) { return oThaChan(x, y) || (lyCua(x, y)); }
     /** Nhìn theo hướng mặt ô 1, 2 rồi 3: vật đầu tiên gặp (tường, mép sân, thùng nặng chắn). Trả { vat, khoang, o } (vat null nếu không có gì).
      *  Sắt chỉ hút tới TAM_HUT (2) ô, vật nam châm tác dụng tới TAM_CUC (3) ô: bên gọi tự xét theo `khoang`. */
     function nhinTruoc() {
@@ -1446,7 +1486,7 @@
       function thuDi(huongDi, soBuoc, ma) {
         var v = VEC[huongDi], nx = rb.x + v[0] * soBuoc, ny = rb.y + v[1] * soBuoc;
         var ly = lyDoChan(san, loai, nx, ny);
-        if (!ly && cuaDong(nx, ny)) ly = 'cua';                           // cửa đang đóng chặn như tường
+        if (!ly) ly = lyCua(nx, ny);                           // cửa đang đóng chặn như tường
         if (!ly && dongDoiChanDi(nx, ny)) ly = 'dong-doi';                 // nhiều robot: đồng đội đứng đó hay định tới đó
         if (!ly && loai === 'nhen' && chan !== 'co' && oTai(san, nx, ny) === 'n') ly = 'gam-thap';       // gầm thấp: nhện phải đang co chân mới chui vào được
         var tn = (ly || laDrone) ? null : thungTai(nx, ny);               // drone bay qua thùng nặng
@@ -1501,12 +1541,12 @@
         var v = VEC[huongDi], mx = rb.x + v[0], my = rb.y + v[1], dx = rb.x + 2 * v[0], dy = rb.y + 2 * v[1];
         var lyG = lyDoChan(san, loai, mx, my);
         if (lyG === 'rao') lyG = null;                                                 // bay qua hàng rào thấp được
-        if (!lyG && cuaDong(mx, my)) lyG = 'cua';
+        if (!lyG) lyG = lyCua(mx, my);
         if (!lyG && oTai(san, mx, my) === 'n') lyG = 'gam-thap';
         if (!lyG && thungTai(mx, my)) lyG = 'thung-nang';
         if (!lyG && dongDoiTai(mx, my)) lyG = 'dong-doi';
         var lyD = lyDoChan(san, loai, dx, dy);
-        if (!lyD && cuaDong(dx, dy)) lyD = 'cua';
+        if (!lyD) lyD = lyCua(dx, dy);
         if (!lyD && oTai(san, dx, dy) === 'n') lyD = 'gam-thap';
         if (!lyD && thungTai(dx, dy)) lyD = 'thung-nang';
         if (!lyD && !ncBung() && vatNamTai(dx, dy)) lyD = 'vat';                        // nhện nam châm bụng đáp lên ô có vật được (mùa 3)
@@ -1698,7 +1738,7 @@
           if (c === '#') ly = 'tuong';
           else if (c === 'N') ly = 'nut';
           else if (c === 'S') ly = 'bac-thang';
-          else if (cuaDong(x, y)) ly = 'cua';
+          else if (cuaDong(x, y)) ly = lyCua(x, y);                         // 'lua': tia nước trúng lửa (dập)
           else if (thungTai(x, y)) ly = 'thung';
           else if (vatNamTai(x, y)) ly = 'vat';
           else if (xeDatTai(x, y)) ly = 'dong-doi';
@@ -1707,6 +1747,16 @@
         }
         sk.push({ ma: 'ban', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, den: oVC || cuoi, cuoi: cuoi, o: oVC, trung: trung, soO: d - 1, luc: l.luc || 'high', hetTam: hetTam });
         var kqBan = { trung: trung, o: oVC, cuoi: cuoi, soO: d - 1, hetTam: hetTam };
+        if (trung === 'lua') {                                                  // LỬA: mỗi lần trúng nhỏ đi một cỡ, về 0 thì tắt hẳn (cửa chống cháy đổi ở CUỐI nhịp)
+          var lb = luaTai[oVC.x + ',' + oVC.y];
+          lb.suc--;
+          sk.push({ ma: 'lua-nho', nhip: nhip, o: { x: lb.x, y: lb.y }, suc: lb.suc });
+          if (lb.suc === 0) {
+            sk.push({ ma: 'lua-tat', nhip: nhip, o: { x: lb.x, y: lb.y } });
+            lb.cua.forEach(function (dc) { dc.doi = !dc.doi; });
+          }
+          return kqBan;
+        }
         if (trung !== 'nut') return kqBan;
         var n = nutTai[oVC.x + ',' + oVC.y];
         n.bat = !n.bat;
@@ -1724,7 +1774,7 @@
       /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), phun nhẹ rơi vì hết tầm ('ban-ngan'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật
        *  của phát bắn đó chẳng dời được gì (xe và thùng đứng yên): phát bắn mà xe / thùng đi được một đoạn là phát bắn có ích, bóng đập vào tường là chuyện thường. */
       function thongTinBan(kb, l, hb, giatCoDoi) {
-        if (kb.trung === 'nut' || giatCoDoi) return;
+        if (kb.trung === 'nut' || kb.trung === 'lua' || giatCoDoi) return;
         var lenhGhi = l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null;
         if (kb.hetTam) {
           var en = { ma: 'ban-ngan', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, cuoi: kb.cuoi, lenh: lenhGhi };
@@ -1744,7 +1794,7 @@
       function giatXe(hb, lenhGhi) {
         var hg = (hb + 2) % 4, v = VEC[hg], tu = { x: rb.x, y: rb.y }, nx = rb.x + v[0], ny = rb.y + v[1];
         var ly = lyDoChan(san, loai, nx, ny);
-        if (!ly && cuaDong(nx, ny)) ly = 'cua';
+        if (!ly) ly = lyCua(nx, ny);
         if (!ly && dongDoiChanDi(nx, ny)) ly = 'dong-doi';
         var tn = ly ? null : thungTai(nx, ny);
         if (tn) {                                                              // thùng nặng ngay sau xe: nhận lực, nhích 1 ô; xe theo vào ô thùng vừa rời
@@ -1938,7 +1988,7 @@
         }
         if (u0.vx === 0 && u0.vy === 0) { sk.push({ ma: 'dem-giu', nhip: nhip, o: o, dem: u0.dem }); return; }
         var nx = rb.x + u0.vx, ny = rb.y + u0.vy;
-        var lyB = lyDoChan(san, loai, nx, ny) || (cuaDong(nx, ny) ? 'cua' : null) || (thungTai(nx, ny) ? 'thung-nang' : null) || (vatNamTai(nx, ny) ? 'vat' : null) || (dongDoiChanDi(nx, ny) ? 'dong-doi' : null) || (loai === 'nhen' && chan !== 'co' && oTai(san, nx, ny) === 'n' ? 'gam-thap' : null);
+        var lyB = lyDoChan(san, loai, nx, ny) || (lyCua(nx, ny)) || (thungTai(nx, ny) ? 'thung-nang' : null) || (vatNamTai(nx, ny) ? 'vat' : null) || (dongDoiChanDi(nx, ny) ? 'dong-doi' : null) || (loai === 'nhen' && chan !== 'co' && oTai(san, nx, ny) === 'n' ? 'gam-thap' : null);
         if (lyB) {
           var ecb = { ma: 'dem-chan', nhip: nhip, o: o, den: { x: nx, y: ny }, dem: u0.dem, kieu: u0.kieu, vat: lyB };
           sk.push(ecb); suKienChan.push(ecb);
@@ -2050,7 +2100,7 @@
           if (demBang >= 2 && loai === 'xich') { sk.push({ ma: 'bang-khong-day' }); demBang = 0; }     // xích bám chắc, băng không đẩy được
           else if (demBang >= (loai === 'omni' ? 1 : 2)) {                    // omni: bánh nhỏ trơn, 1 nhịp trên băng đã bị đẩy
             var hd = BANG[c], vb = VEC[hd], bx = rb.x + vb[0], by = rb.y + vb[1];
-            var lyB = lyDoChan(san, loai, bx, by) || (cuaDong(bx, by) ? 'cua' : null) || (thungTai(bx, by) ? 'thung-nang' : null) || (vatNamTai(bx, by) ? 'vat' : null) || (dongDoiChanDi(bx, by) ? 'dong-doi' : null) || (loai === 'nhen' && chan !== 'co' && oTai(san, bx, by) === 'n' ? 'gam-thap' : null);
+            var lyB = lyDoChan(san, loai, bx, by) || (lyCua(bx, by)) || (thungTai(bx, by) ? 'thung-nang' : null) || (vatNamTai(bx, by) ? 'vat' : null) || (dongDoiChanDi(bx, by) ? 'dong-doi' : null) || (loai === 'nhen' && chan !== 'co' && oTai(san, bx, by) === 'n' ? 'gam-thap' : null);
             if (lyB) sk.push({ ma: 'bang-chan', den: { x: bx, y: by }, vat: lyB });
             else { rb.x = bx; rb.y = by; sk.push({ ma: 'bang-day', den: { x: bx, y: by } }); }
             demBang = 0;
@@ -2131,6 +2181,8 @@
               sk.push(ek); suKienChan.push(ek);
             }
           }
+        } else if (mucTieu === 'dap-lua') {
+          if (luaXong() && (!san.co || (rb.x === san.co.x && rb.y === san.co.y))) { thang = true; sk.push({ ma: 'xong-dap-lua' }); }
         } else if (mucTieu === 'to-hinh') {
           if (hinhDat()) { thang = true; sk.push({ ma: 'xong-to-hinh' }); }
           else if (toThua) dungSom = 'to-thua';                                // tô ra ngoài hình: không xóa được, không thể thắng nữa
@@ -2165,6 +2217,7 @@
         if (cuas.length) mucVet.cua = chupCua();
         if (nuts.length) { mucVet.nut = chupNut(); mucVet.bangTat = chupBangTat(); }
         if (nutDes.length) mucVet.nutDe = chupNutDe();
+        if (luas.length) mucVet.lua = chupLua();
         vet.push(mucVet);
         return thang || !!dungSom;
       }
@@ -2184,7 +2237,7 @@
     function docCamBien(yc) {
       var h = (rb.huong + CAM_BIEN_HAM[yc.ten]) % 4, v = VEC[h], x = rb.x + v[0], y = rb.y + v[1];
       var ly = lyDoChan(san, loai, x, y);
-      if (!ly && cuaDong(x, y)) ly = 'cua';
+      if (!ly) ly = lyCua(x, y);
       if (!ly && thungTai(x, y)) ly = 'thung-nang';
       if (!ly && vatNamTai(x, y)) ly = 'vat';
       if (!ly && dongDoiTai(x, y)) ly = 'dong-doi';                   // nhiều robot: đồng đội đứng trước / bên cạnh
@@ -2244,7 +2297,7 @@
       for (;;) {
         x += v[0]; y += v[1];
         ly = lyDoChan(san, loai, x, y);
-        if (!ly && cuaDong(x, y)) ly = 'cua';
+        if (!ly) ly = lyCua(x, y);
         if (!ly && thungTai(x, y)) ly = 'thung-nang';
         if (!ly && vatNamTai(x, y)) ly = 'vat';
         if (!ly && xeDatTai(x, y)) ly = 'dong-doi';
@@ -2252,7 +2305,7 @@
         d++;
       }
       var nt = ly === 'nut' ? nutTai[x + ',' + y] : null;
-      var nong = ly === 'dong-doi' || !!(nt && nt.bat);
+      var nong = ly === 'dong-doi' || ly === 'lua' || !!(nt && nt.bat);
       return { ma: 'doc-cam-bien', cam: MA_CAM_HONG_NGOAI, ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: rb.huong, o: { x: x, y: y }, khoang: d, vat: ly, nong: nong, trong: false, nhip: nhip };
     }
 
@@ -2577,7 +2630,7 @@
       return Object.assign({}, dsKq[0], {
         thang: thang, nhip: nhip, loi: loiDoi, doi: dsKq,
         vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
-        cua: chupCua(), nut: chupNut(), nutDe: chupNutDe(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau, nutDeBanDau: nutDeBanDau,
+        cua: chupCua(), nut: chupNut(), nutDe: chupNutDe(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau, nutDeBanDau: nutDeBanDau, lua: chupLua(), luaBanDau: luaBanDau,
         thung: chupThung(), thungBanDau: thungBanDau, bongMo: null, diQua: [], mauO: san.mau, sac: san.sac.slice(), daSon: chupSon(), hinh: hinh, sonBanDau: sonBanDau
       });
     }
@@ -2617,7 +2670,7 @@
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
       tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coHoi ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
       son: coSon ? { ha: son.ha, mau: son.mau } : null, daSon: chupSon(), hinh: hinh, sonBanDau: sonBanDau,
-      cua: chupCua(), nut: chupNut(), nutDe: chupNutDe(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau, nutDeBanDau: nutDeBanDau,
+      cua: chupCua(), nut: chupNut(), nutDe: chupNutDe(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau, nutDeBanDau: nutDeBanDau, lua: chupLua(), luaBanDau: luaBanDau,
       thung: chupThung(), thungBanDau: thungBanDau,
       bongMo: bongMo, diQua: chupDiQua(),
       soLanDoc: soLanDoc, docConLai: docCho, mauO: san.mau,
