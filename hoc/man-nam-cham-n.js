@@ -156,7 +156,7 @@
       so: 2, ten: 'Lối rẽ có hay không', hang: 'lam-quen', mucTieu: 'bong-mo', hamCuaEmCan: ['move', 'turn_right'],
       deBai: 'Hai sân: sân 1 có lối rẽ phải giữa hành lang, sân 2 không có lối nào. Đi tới khi gặp lối rẽ hoặc gặp tường; nếu bên phải có lối thì rẽ vào một ô. Xe phải đứng đúng chỗ xe mờ ở cả hai sân.',
       veMaMau: 'Chương trình có sẵn chỉ hỏi front_clear(). Chạy thử: sân 1 xe đi quá chỗ rẽ. Chạm vào điều kiện của while để ghép thêm một vế bằng and.',
-      san: [['######', '......', '##.###', '######'], ['######', '......', '######', '######']],
+      san: [['......', '......', '##.###', '######'], ['......', '......', '######', '######']],      // 30/10: hàng trên mở thành sàn (bên trái xe; đường cong số ô)
       batDau: { x: 0, y: 1, huong: 1 },
       bongMo: [{ x: 2, y: 2, huong: 2 }, { x: 5, y: 1, huong: 1 }],
       maMau: bai(['while front_clear():', '    move()', 'if right_clear():', '    turn_right()', '    move()']),
@@ -173,7 +173,7 @@
       so: 3, ten: 'Vật trong hốc', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
       deBai: 'Hai sân, mỗi sân một hốc bên phải hành lang, trong hốc có một vật sắt cách miệng hốc 2 ô. Đi tới miệng hốc, quay vào hốc, hút vật sắt ra, rồi quay lại hướng cũ và thả vào ô đích ngay phía trước.',
       veMaMau: 'Chương trình có sẵn tới đúng miệng hốc. Viết tiếp phần hút và thả.',
-      san: [['#######', '...D...', '##.####', '##o####'], ['#######', '.....D.', '####.##', '####o##']],
+      san: [['.......', '...D...', '##.####', '##o####'], ['.......', '.....D.', '####.##', '####o##']],      // 30/10: hàng trên mở thành sàn (bên trái xe, không đổi đường đi; đường cong số ô)
       vatChat: [['.......', '.......', '.......', '..s....'], ['.......', '.......', '.......', '....s..']],
       batDau: { x: 0, y: 1, huong: 1 },
       maMau: bai([VA, '    move()']),
@@ -187,30 +187,27 @@
     }),
 
     logic({
-      so: 4, ten: 'Hoặc: bám tường phải', hang: 'luyen', mucTieu: 'bong-mo', hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Ghép bằng or thì chỉ cần MỘT vế đúng. Xe đi theo lối: còn trước mặt trống HOẶC bên phải có lối thì đi tiếp; bên phải có lối thì rẽ phải trước. Tới ngõ cụt (cả hai đều chặn) thì dừng. Hai sân, đường khác nhau.',
-      veMaMau: 'Chương trình có sẵn chỉ hỏi front_clear(): tới góc đầu tiên là xe dừng. Ghép thêm vế or right_clear().',
+      // 30/10 nghiệm thu độc lập: or mở ở đây nên thành màn trình diễn (như logic-nam-cham.1 cho and); màn ép dùng or là logic-nam-cham.5.
+      so: 4, ten: 'Hoặc: bám tường phải', hang: 'luyen', chiChay: true, chinhCoDinh: true, mucTieu: 'bong-mo', hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Ghép bằng or thì chỉ cần MỘT vế đúng. while front_clear() or right_clear(): xe còn đi khi trước mặt trống HOẶC bên phải có lối; bên phải có lối thì rẽ phải trước. Tới ngõ cụt (cả hai đều chặn) thì dừng. Bấm Chạy xem xe bám tường ở cả hai sân.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy.',
       san: [['.....#', '####..', '####..', '##....', '..####'], ['...###', '##.###', '...###', '######', '######']],
       batDau: { x: 0, y: 0, huong: 1 },
       bongMo: [{ x: 2, y: 3, huong: 3 }, { x: 0, y: 2, huong: 3 }],
-      maMau: bai(['while front_clear():', '    if right_clear():', '        turn_right()', '    move()']),
+      maMau: bai(BAM),
       loiGiai: bai(BAM),
       sao: { o: 9, nhip: 11 },
-      loiSai: [
-        { moTa: 'Ghép bằng and: tới góc thì trước mặt là tường nên xe dừng luôn', baiLam: bai(['while front_clear() and right_clear():', '    if right_clear():', '        turn_right()', '    move()']), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên rẽ: bên phải có lối mà xe cứ đi thẳng, húc tường', baiLam: bai(['while front_clear() or right_clear():', '    move()']), phaiCoMa: ['vong-vo-han'] }
-      ],
       goiY: ['or: một trong hai vế đúng là đủ để đi tiếp.', 'Trong vòng lặp: bên phải có lối thì rẽ phải, rồi tiến một ô.']
     }),
 
     logic({
       so: 5, ten: 'Đá vật ở ngõ cụt', hang: 'luyen', hamCuaEmCan: ['move', 'turn_right', 'kick'],
-      deBai: 'Xe bám tường phải đi tới ngõ cụt; ở đó một vật nam châm chữ N chắn trước mũi xe. Dùng hàm kick() của em để đá vật trượt vào ô đích. Hai sân, đường khác nhau.',
-      veMaMau: 'Chương trình có sẵn bám tường tới ngõ cụt. Viết tiếp một dòng.',
+      deBai: 'Xe bám tường phải đi tới ngõ cụt như màn Hoặc: bám tường phải; ở đó một vật nam châm chữ N chắn trước mũi xe. Dùng hàm kick() của em để đá vật trượt vào ô đích. Hai sân, đường khác nhau.',
+      veMaMau: 'Chương trình có sẵn chỉ hỏi front_clear(): tới góc đầu tiên là xe dừng. Chạm vào điều kiện của while để ghép thêm vế or, rồi đá vật.',
       san: [['.....#', '####..', '####..', 'Do....', '....##'], ['...###', '##.###', '##o###', '##.###', '##D###']],
       vatChat: [['......', '......', '......', '.N....', '......'], ['......', '......', '..N...', '......', '......']],
       batDau: { x: 0, y: 0, huong: 1 },
-      maMau: bai(BAM),
+      maMau: bai(['while front_clear():', '    if right_clear():', '        turn_right()', '    move()']),
       loiGiai: bai(BAM.concat(['kick()'])),
       sao: { o: 14, nhip: 12 },
       loiSai: [
@@ -253,20 +250,22 @@
     }),
 
     logic({
-      so: 8, ten: 'Kho mê cung', hang: 'trum', hamCuaEmCan: ['move', 'turn_right', 'kick'],
-      deBai: 'Ba kho, mỗi kho một mê cung khác nhau. Ở cuối đường mỗi kho có một vật nam châm chữ N chắn trước mũi xe; phía sau nó là ô đích. Một chương trình phải đưa vật vào đích ở cả ba kho.',
-      veMaMau: 'Chương trình có sẵn mới đi thẳng. Viết đường bám tường bằng or rồi đá vật.',
-      san: [['.....#', '####..', '####..', 'Do....', '....##'], ['...###', '##.###', '##o###', '##.###', '##D###'], ['......', '#####.', '#####.', '#####.', '#####o', '#####D']],
-      vatChat: [['......', '......', '......', '.N....', '......'], ['......', '......', '..N...', '......', '......'], ['......', '......', '......', '......', '.....N', '......']],
-      batDau: { x: 0, y: 0, huong: 1 },
-      maMau: bai(['while front_clear():', '    move()']),
-      loiGiai: bai(BAM.concat(['kick()'])),
-      sao: { o: 14, nhip: 12 },
+      // 30/10 nghiệm thu độc lập: trùm cũ trùng lời giải logic-nam-cham.5. Nay mê cung có góc chỉ rẽ TRÁI được: bám tường phải của màn 5 dừng sớm;
+      // điều kiện or ba vế và nhánh elif not front_clear(): turn_left().
+      so: 8, ten: 'Kho mê cung có góc trái', hang: 'trum', khung: { chinh: 12, moiHam: 10 }, hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'kick'],
+      deBai: 'Trùm. Ba kho, mê cung có cả góc phải lẫn góc trái. Xe còn đi khi trước mặt trống HOẶC bên phải có lối HOẶC bên trái có lối. Bên phải có lối thì rẽ phải; không thì, nếu trước mặt chặn, rẽ trái. Tới ngõ cụt (cả ba đều chặn) thì vật chữ N chắn trước mũi xe: đá nó vào ô đích.',
+      veMaMau: 'Chương trình có sẵn bám tường phải như màn Đá vật ở ngõ cụt: chạy thử, ở kho có góc trái xe dừng sớm.',
+      san: [['#######', '###..oD', '###.###', '###.###', '....###'], ['...####', '##.####', '##...oD', '#######'], ['......', '#####.', '#####.', '#####.', '#####o', '#####D']],
+      vatChat: [['.......', '.....N.', '.......', '.......', '.......'], ['.......', '.......', '.....N.', '.......'], ['......', '......', '......', '......', '.....N', '......']],
+      batDau: [{ x: 0, y: 4, huong: 1 }, { x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }],
+      maMau: bai(BAM.concat(['kick()'])),
+      loiGiai: bai(['while front_clear() or right_clear() or left_clear():', '    if right_clear():', '        turn_right()', '    elif not front_clear():', '        turn_left()', '    move()', 'kick()']),
+      sao: { o: 18, nhip: 10 },
       loiSai: [
-        { moTa: 'Bám tường bằng and: tới góc là xe dừng', baiLam: bai(['while front_clear() and right_clear():', '    if right_clear():', '        turn_right()', '    move()', 'kick()']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên đá vật: xe dừng đúng chỗ nhưng vật còn nằm ngoài đích', baiLam: bai(BAM), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Bám tường phải như màn 5: kho có góc trái xe dừng sớm', baiLam: bai(BAM.concat(['kick()'])), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Có vế left_clear() mà quên rẽ trái: xe húc tường ở góc', baiLam: bai(['while front_clear() or right_clear() or left_clear():', '    if right_clear():', '        turn_right()', '    move()', 'kick()']), phaiCoMa: ['vong-vo-han'] }
       ],
-      goiY: ['Mọi kho đều đi được bằng cách bám tường phải.', 'Ở ngõ cụt vật chắn trước mũi xe: kick() đá nó vào đích.']
+      goiY: ['or ba vế: chỉ dừng khi trước, phải, trái đều chặn.', 'Ưu tiên rẽ phải; trước mặt chặn mà bên phải cũng chặn thì rẽ trái.']
     })
   );
 

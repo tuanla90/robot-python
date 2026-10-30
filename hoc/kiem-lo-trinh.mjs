@@ -33,7 +33,7 @@ const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.
 // Mùa 4 (29/10, KE-HOACH-MUA-4.md, đang dựng): chương chưa đủ 10 như mùa 3.
 const chuongMua4 = new Set(TT.goi.filter(g => g.mua === 'mua-4').flatMap(g => g.chuong));
 // 30/10 (user chọn A): tám màn drone cũ sạc tự động / recharge() dời sang mùa 5 trong hai chương chứa 4 màn (lo-trinh-hoc.js MUA_4_CU).
-const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu']);
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu', 'che-list-cu', 'che-may-son-cu']);
 
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
@@ -61,11 +61,12 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'che-pho-mau.1', 'che-pho-mau.2', 'che-pho-mau.3', 'che-pho-mau.4', 'che-pho-mau.5', 'che-pho-mau.6', 'che-pho-mau.7', 'che-pho-mau.8', 'che-pho-mau.9',
   'cam-bon.2', 'cam-bon.3', 'cam-bon.4', 'cam-bon.5', 'cam-bon.6', 'cam-bon.7', 'cam-bon.8', 'cam-bon.9',
   'che-cam-bon.1', 'che-cam-bon.2', 'che-cam-bon.3', 'che-cam-bon.4', 'che-cam-bon.5', 'che-cam-bon.6', 'che-cam-bon.7', 'che-cam-bon.8', 'che-cam-bon.9',
-  'tram-sac.8', 'che-drone.12',      // gói 5: hai drone pin khác nhau trên cùng một phố
+  'tram-sac.6', 'tram-sac.8', 'tram-sac.9', 'che-drone.12',      // gói 5: hai drone pin khác nhau (tram-sac.6, .9: trạm khác chỗ, nghiệm thu 30/10)
   'nhin-duoi.2', 'nhin-duoi.3', 'nhin-duoi.4', 'nhin-duoi.5', 'nhin-duoi.6', 'nhin-duoi.7', 'nhin-duoi.8', 'nhin-duoi.9',
   'che-nhin-duoi.1', 'che-nhin-duoi.2', 'che-nhin-duoi.3', 'che-nhin-duoi.4', 'che-nhin-duoi.5', 'che-nhin-duoi.6', 'che-nhin-duoi.7', 'che-nhin-duoi.8', 'che-nhin-duoi.9',
+  'che-may-son.6',      // gói 6: chép hàng màu bằng camera, hai hàng màu khác nhau (nghiệm thu 30/10)
   'son-tren-cao.5', 'son-tren-cao.6', 'che-son-tren-cao.2', 'che-son-tren-cao.6', 'che-son-tren-cao.8');      // gói 9: đọc vạch mờ / bảng mẫu bằng camera
-NHIEU_SAN_KHONG_TRUM.push('tong-hop-4.1', 'tong-hop-4.2', 'tong-hop-4.3', 'tong-hop-4.4', 'tong-hop-4.6', 'tong-hop-4.9', 'trum-mua-4.1', 'trum-mua-4.2', 'trum-mua-4.6');      // gói 10: màn đọc camera / hai mức pin
+NHIEU_SAN_KHONG_TRUM.push('tong-hop-4.1', 'tong-hop-4.2', 'tong-hop-4.3', 'tong-hop-4.4', 'tong-hop-4.6', 'tong-hop-4.9', 'trum-mua-4.1', 'trum-mua-4.2', 'trum-mua-4.6', 'trum-mua-4.8', 'trum-mua-4.9');      // gói 10: màn đọc camera / hai mức pin
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -407,11 +408,11 @@ const BANG_MUA_3 = [
   ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]]],
   ['bai-tu', undefined, [['bai-tu', []], ['che-bai-tu', []]]],
   ['nhay', 'bo-phan', [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
-  ['dao-cuc', 'bo-phan', [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'nam-cham.2', 'dao-cuc.6', 'dao-cuc.7', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.7', 'che-dao-cuc.9']]]],
-  ['doc-cuc', 'bo-phan', [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'nam-cham.10']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]]],
+  ['dao-cuc', 'bo-phan', [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'dao-cuc.7', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'dao-cuc.6', 'nam-cham.2', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.7', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.9']]]],
+  ['doc-cuc', 'bo-phan', [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'doc-cuc.9']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]]],
   ['doi-xich', 'thu-thach', [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]]],
   ['bung-nhen', 'thu-thach', [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', ['che-bung-nhen.1', 'che-bung-nhen.2', 'che-bung-nhen.3', 'che-bung-nhen.4', 'che-bung-nhen.8', 'che-bung-nhen.7', 'che-bung-nhen.5', 'che-bung-nhen.6', 'che-bung-nhen.9', 'che-bung-nhen.10']]]],
-  ['tong-hop-3', 'thu-thach', [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.1', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.10']], ['trum-mua-3', []]]]
+  ['tong-hop-3', 'thu-thach', [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.1', 'tong-hop-3.10']], ['trum-mua-3', []]]]
 ];
 const TEP_MUA_3 = ['manThanNhen', 'manNamChamN', 'manCamUngTu', 'manBaiTu', 'manNhay', 'manDaoCuc', 'manDocCuc', 'manDoiXichNhen', 'manBungNhen', 'manTrumMua3'];
 const moiMua3 = TEP_MUA_3.flatMap(k => M[k] || []);
@@ -486,7 +487,7 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   for (const m of moiMua3) assert.ok(BANG_MUA_3.some(([, , ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
   const mua3 = TT.mua.find(x => x.ma === 'mua-3');
   assert.ok(!mua3.an, 'mùa 3 còn ẩn');      // 30/10 đủ 10 gói × 20 màn: hiện ở màn chọn gói
-  assert.equal(mua3.ten, 'Mỏ quặng', 'tên mùa 3');
+  assert.equal(mua3.ten, 'Bãi tái chế', 'tên mùa 3');      // user 30/10 (trước: Mỏ quặng)
   assert.ok(mua3.ban && mua3.ban.gia, 'mùa 3 mất `ban`');
   for (const g of goi3()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 3 đang dựng: tự tính)');
   // Gói ngoài khuôn: đầu mùa 4, giữ thứ tự cũ, trước các gói mùa 4 cũ; chương rời của MUA_3 đúng màn.
@@ -729,7 +730,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
   assert.equal(ds[6].man[0].ma, 'cam-bien-ben.1');      // HD2: màn trình diễn left_clear đứng đầu gói 7
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
-  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 165);     // P0 mùa 4 (29/10): gói cũ dời sang mùa 5 (ẩn), ngưỡng tính lại trong mùa 5; 30/10 mùa 5 thêm gói mau, drone-sac-cu, flycam cũ (95 → 155), doi-nam-cham-cu (bốn màn đội, → 165)
+  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 180);     // P0 mùa 4 (29/10): gói cũ dời sang mùa 5 (ẩn), ngưỡng tính lại trong mùa 5; 30/10 mùa 5 thêm gói mau, drone-sac-cu, flycam cũ (95 → 155), doi-nam-cham-cu (bốn màn đội, → 165), che-list-cu (→ 180)
 });
 
 kiem('bản lưu cũ giữ sao theo mã, bỏ nháp lỗi thời, nháp mới đọc lại được', () => {
@@ -756,7 +757,7 @@ const LOI_GIA_4 = process.argv.includes('--loi-gia-mua-4');
 // (chen trước màn trùm có sẵn cuối chương).
 const BANG_MUA_4 = [
   ['drone', 'bo-phan', [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]]],
-  ['may-son', 'bo-phan', [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 6, 5, 8, 9, 7, 10])]]],
+  ['may-son', 'bo-phan', [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]]],
   ['cam-bon', 'bo-phan', [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', day('che-cam-bon', [2, 9, 1, 3, 4, 5, 6, 8, 7, 10])]]],
   ['pho-mau', undefined, [['pho-mau', []], ['che-pho-mau', []]]],
   ['tram-sac', 'bo-phan', [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 11, 4, 13, 15, 12, 7, 16, 14])]]],
@@ -764,7 +765,7 @@ const BANG_MUA_4 = [
   ['nhin-duoi', 'bo-phan', [['nhin-duoi', []], ['che-nhin-duoi', day('che-nhin-duoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])]]],
   ['doi-nam-cham', 'thu-thach', [['doi-nam-cham', day('doi-nam-cham', [1, 2, 3, 11, 4, 5, 7, 12, 8, 10])], ['che-doi-nam-cham', day('che-doi-nam-cham', [11, 1, 2, 5, 3, 6, 7, 12, 8, 10])]]],
   ['son-tren-cao', 'thu-thach', [['son-tren-cao', []], ['che-son-tren-cao', []]]],
-  ['drone-ke-vach', 'thu-thach', [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7]).concat(day('che-may-son', [7, 8]), day('trum-mua-4', [10]))]]]
+  ['drone-ke-vach', 'thu-thach', [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]]]
 ];
 const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
 const moiMua4 = TEP_MUA_4.flatMap(k => M[k] || []);

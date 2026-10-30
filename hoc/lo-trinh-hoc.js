@@ -78,7 +78,9 @@
     m.goiY = (m.goiY || []).map(vanBan);
   }
   // Luyện trên một tình huống đủ tiêu biểu; phần khái quát hóa dành cho trùm.
-  M.danhSach.forEach(function (m) { if (m.so < 10) motSan(m, 1); });
+  // Trừ che-may-son.6 (mùa 4 gói 6, nghiệm thu 30/10): hai hàng màu khác nhau để danh sách màu ghi cứng không thắng.
+  var GIU_NHIEU_SAN = { 'che-may-son.6': true };
+  M.danhSach.forEach(function (m) { if (m.so < 10 && !GIU_NHIEU_SAN[m.ma]) motSan(m, 1); });
 
   // Cảm biến: sửa while trước, quan sát cảm biến hông sau; chưa học tìm đường.
   sua('khoang-cach.7', {
@@ -884,21 +886,41 @@
       // che-nhen (đường cong): sửa cú nhảy (.8), bò rồi nhảy (.5), sửa bò (.9) lên trước Đá lót đường (.4) và Hang động (.3); Nhện giao hàng (.6) sau Đường về (.7).
       chuong: [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]] },
     { ma: 'dao-cuc', ten: 'Đảo cực', loai: 'bo-phan',
-      chuong: [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'nam-cham.2', 'dao-cuc.6', 'dao-cuc.7', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.7', 'che-dao-cuc.9']]] },
+      chuong: [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'dao-cuc.7', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'dao-cuc.6', 'nam-cham.2', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.7', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.9']]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',
-      chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'nam-cham.10']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
+      chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'doc-cuc.9']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
       chuong: [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]] },
     { ma: 'bung-nhen', ten: 'Nam châm bụng nhện', loai: 'thu-thach',
       chuong: [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', ['che-bung-nhen.1', 'che-bung-nhen.2', 'che-bung-nhen.3', 'che-bung-nhen.4', 'che-bung-nhen.8', 'che-bung-nhen.7', 'che-bung-nhen.5', 'che-bung-nhen.6', 'che-bung-nhen.9', 'che-bung-nhen.10']]] },
     { ma: 'tong-hop-3', ten: 'Tổng hợp', loai: 'thu-thach',
-      chuong: [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.1', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.10']], ['trum-mua-3', ['trum-mua-3.1', 'trum-mua-3.2', 'trum-mua-3.3', 'trum-mua-3.4', 'trum-mua-3.5', 'trum-mua-3.9', 'trum-mua-3.8', 'trum-mua-3.6', 'trum-mua-3.7', 'trum-mua-3.10']]] }
+      chuong: [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.1', 'tong-hop-3.10']], ['trum-mua-3', ['trum-mua-3.1', 'trum-mua-3.2', 'trum-mua-3.3', 'trum-mua-3.5', 'trum-mua-3.9', 'trum-mua-3.4', 'trum-mua-3.6', 'trum-mua-3.7', 'trum-mua-3.8', 'trum-mua-3.10']]] }
   ];
   var TEN_MUA_3 = { nhen: 'Thân nhện', 'chuoi-nhen': 'Chuỗi cho nhện', 'nam-cham': 'Nam châm', 'logic-nam-cham': 'Logic cho nam châm',
     'cam-ung-tu': 'Dò sắt', 'che-cam-ung-tu': 'Chế lệnh: dò sắt', 'bai-tu': 'Bãi từ', 'che-bai-tu': 'Hàm cho bãi từ', nhay: 'Nhảy',
     'che-nhen': 'Chế lệnh nhện', 'dao-cuc': 'Đảo cực', 'che-dao-cuc': 'Hàm đảo cực', 'doc-cuc': 'Đọc cực', 'che-doc-cuc': 'Hàm đọc cực',
     'doi-xich': 'Đội xích và nhện', 'che-doi-xich': 'Đội xích và nhện phối hợp', 'bung-nhen': 'Nam châm bụng nhện', 'che-bung-nhen': 'Hàm cho bụng nhện',
     'tong-hop-3': 'Tổng hợp', 'trum-mua-3': 'Trùm mùa' };
+  /** Đổi một chuỗi lời mùa 3 sang bãi tái chế + giọng CLB: sắt vụn, "em" → "bạn" (trừ nhãn "hàm của em"), chương trình Sola viết. */
+  function chuBaiTaiChe(s) {
+    if (typeof s !== 'string') return s;
+    return s.replace(/(V|v)ật sắt/g, function (a, v) { return v === 'V' ? 'Mẩu sắt vụn' : 'mẩu sắt vụn'; })
+      .replace(/quặng sắt/g, 'sắt vụn').replace(/quặng/g, 'sắt vụn')
+      .replace(/Chương trình có sẵn/g, 'Chương trình Sola viết sẵn').replace(/chương trình có sẵn/g, 'chương trình Sola viết sẵn')
+      .replace(/(^|[^\p{L}])(E|e)m(?=[^\p{L}]|$)/gu, function (a, truoc, e, vt, chuoi) {
+        return /hàm của $/i.test(chuoi.slice(0, vt + truoc.length)) ? a : truoc + (e === 'E' ? 'Bạn' : 'bạn');
+      });
+  }
+  /** Lời một màn mùa 3: đề (mở bằng lời Sola), lời mã mẫu, gợi ý (Luna nói), lời sai, tên. Chạy một lần mỗi màn. */
+  function loiBaiTaiChe(m) {
+    if (!m || m._loiBaiTaiChe) return;
+    m._loiBaiTaiChe = true;
+    ['ten', 'deBai', 'veMaMau'].forEach(function (k) { if (m[k]) m[k] = chuBaiTaiChe(m[k]); });
+    if (m.deBai) m.deBai = (m.chiChay ? 'Sola làm mẫu. ' : /^Sửa/.test(m.ten || '') ? 'Sola viết vội, sửa giúp nhé. ' : 'Giúp Sola với! ') + m.deBai;
+    if (m.goiY) m.goiY = m.goiY.map(function (s) { return 'Luna: ' + chuBaiTaiChe(s); });
+    (m.loiSai || []).forEach(function (x) { if (x.moTa) x.moTa = chuBaiTaiChe(x.moTa); });
+    if (m.loiGiaiKhac && m.loiGiaiKhac.moTa) m.loiGiaiKhac.moTa = chuBaiTaiChe(m.loiGiaiKhac.moTa);
+  }
   // Mã huy hiệu của trùm mỗi chương mùa 3 (tên huy hiệu = tên chương, như mùa 1, 2 từ 30/10); hai chương đội dùng mã mới (doi-xich / che-doi-xich là bí danh hai-robot ở huy-hieu-vector.js).
   var HUY_HIEU_3 = { nhen: 'nhen', 'chuoi-nhen': 'chuoi-nhen', 'nam-cham': 'nam-cham', 'logic-nam-cham': 'logic-nam-cham', 'cam-ung-tu': 'cam-ung-tu',
     'che-cam-ung-tu': 'che-cam-ung-tu', 'bai-tu': 'bai-tu', 'che-bai-tu': 'che-bai-tu', nhay: 'nhay', 'che-nhen': 'che-nhen', 'dao-cuc': 'dao-cuc',
@@ -907,7 +929,7 @@
   // Rời mùa 3 (mùa 4, ẩn, giữ thứ tự cũ, vẫn chơi được bằng "Mở hết"): màn của chương mùa 3 dùng lại mã mà không thuộc MUA_3 thành chương riêng, đứng đúng
   // chỗ chương cũ trong thuTu (THAY_CU). nam-cham.9 (omni, mùa 5); doi-xich 8 màn bậc thang S; che-doi-xich cả 10 (bậc thang S, hay cần hàm của
   // che-doi-ho-bang). Gói cũ đổi mã khi mã cũ đã thuộc gói mùa 3 (cờ goi-mo:<mã> của gói mùa 3).
-  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9'] };
+  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'] };     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
   var TEN_ROI_3 = { 'doi-xich-bac': 'Đội xích leo bậc', 'che-doi-xich-bac': 'Hàm đội xích leo bậc', 'nam-cham-omni': 'Nam châm trên omni' };
   var THAY_CU = { 'doi-xich': ['doi-xich-bac'], 'che-doi-xich': ['che-doi-xich-bac'], 'nam-cham': ['nam-cham-omni'] };
   var GOI_DOI_MA = { 'doi-xich': { ma: 'doi-xich-bac', ten: 'Đội xích leo bậc' }, 'nam-cham': { ma: 'nam-cham-omni', ten: 'Nam châm trên omni' } };
@@ -1010,6 +1032,11 @@
         get(ds[ds.length - 1]).huyHieu = { ma: HUY_HIEU_3[c[0]], ten: 'Huy hiệu ' + TEN_MUA_3[c[0]].replace(': ', ' ').replace(/\?$/, '') };
       });
     });
+    // Lời mùa 3 "Bãi tái chế" (user 30/10: mùa 3 đổi từ mỏ quặng sang bãi tái chế phế liệu, luật giữ; giọng kể CLB, KE-HOACH-PHIM-CLB.md mục 1):
+    // đề do Sola giao ("Giúp Sola với!"; màn sửa lỗi "Sola viết vội, sửa giúp nhé."; màn trình diễn "Sola làm mẫu."), gợi ý do Luna nói, người chơi là "bạn".
+    // Làm ở lộ trình cho mọi màn mùa 3 (màn có sẵn lẫn màn mới) để ngân hàng và máy kiểm của ngân hàng giữ nguyên. Từ của lõi (hố, gầm, đệm từ, vật nam châm)
+    // giữ như lời chẩn đoán của cham.js (dùng chung mùa 2, 4); vật sắt của sân là sắt vụn. "Hàm của em" là nhãn giao diện nên giữ.
+    MUA_3.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiBaiTaiChe(get(ma)); }); }); });
     // Màn còn sót ở chương cũ (không thuộc MUA_3, không thuộc ROI_MUA_3) là lỗi dữ liệu.
     M.danhSach.forEach(function (m) {
       if (chuongMua3.indexOf(m.chuong) >= 0 && !da[m.ma]) throw new Error('Màn ' + m.ma + ' nằm ở chương mùa 3 ' + m.chuong + ' mà không có trong MUA_3 / ROI_MUA_3');
@@ -1074,6 +1101,12 @@
           var m = get(ma);
           if (m.hamGoc && m.hamGoc.some(function (h) { return bo.indexOf(h) >= 0; })) m.hamGoc = m.hamGoc.filter(function (h) { return bo.indexOf(h) < 0; });
           (m.doi || []).forEach(function (d) { if (d.hamGoc) d.hamGoc = d.hamGoc.filter(function (h) { return bo.indexOf(h) < 0; }); });
+          // 30/10 nghiệm thu: màn cũ có front_metal / front_pole trên khay mà robot chưa gắn part cảm biến từ ('tu', gói 3) thì gắn vào hông (lõi chỉ nhìn
+          // hamGoc nên luật y nguyên; hình robot nay khớp bài học). Nhện không gắn được cảm biến (không hướng mặt).
+          var cam = m.robot && m.robot.camBien;
+          if (m.loaiRobot !== 'nhen' && m.hamGoc && m.hamGoc.some(function (h) { return h === 'front_metal' || h === 'front_pole'; }) && Array.isArray(cam) && !cam.some(function (b) { return b.ma === 'tu'; })) {
+            m.robot = Object.assign({}, m.robot, { camBien: cam.concat([{ ma: 'tu', o: 'hong' }]) });
+          }
         });
       });
     });
@@ -1093,7 +1126,7 @@
       // list: list.1 thành màn trình diễn (dưới), list.11 màn ép sửa một số (man-cat-canh.js), list.2 (xoắn ốc 28 ô, nhảy đường cong) cất khỏi lộ trình
       chuong: [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]] },
     { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
-      chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 6, 5, 8, 9, 7, 10])]] },
+      chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]] },
     // gói 3, 5, 7 (user 30/10 chọn A): màn cũ dạy cảm biến bụng / camera trước / look() / sạc tự động trên P dời sang mùa 5 (gói mau, flycam cũ và MUA_4_CU
     // bên dưới), ba gói dựng bằng màn mới theo luật mới (camera bốn hướng, đáp đất sạc, camera nhìn "here").
     { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'cam-bon',
@@ -1111,7 +1144,7 @@
     { ma: 'son-tren-cao', ten: 'Sơn từ trên cao', loai: 'thu-thach', hinh: 'son-tren-cao',
       chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
     { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
-      chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7]).concat(day('che-may-son', [7, 8]), day('trum-mua-4', [10]))]] }
+      chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
   ];
   // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống), cùng che-drone.3 / .6 (nhảy đường cong gói 5): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
   // flycam.6, doi-drone.6, .10, che-doi-drone.10 còn dùng recharge() mà drone.5 tạo. Dựng lại khi tới mùa có đội drone.
@@ -1120,11 +1153,19 @@
       chuong: [['drone-sac-cu', day('drone', [4, 5, 6, 10])], ['che-drone-sac-cu', day('che-drone', [3, 5, 6, 8, 9, 10])]] },
     // Gói 8 (30/10, user: "tối ưu cho hợp tính giáo dục nhất"): giữ thang kỹ năng gốc + bốn màn mới (man-doi-chia-hang.js); bốn màn cũ nhường chỗ sang mùa 5 (ẩn):
     // doi-nam-cham.6 Hai chuyến tự động, .9 Ba trạm (vòng lặp cả đội nay ở che-doi-nam-cham.11), che-doi-nam-cham.4 Ba trạm có hạn, .9 Hốc nhường đường.
+    // Gói 2 (30/10, nghiệm thu độc lập + user "làm cả A, B, C"): chương che-list dựng lại trên xe máy sơn (che-list.11 … .20, man-cham-son.js);
+    // mười màn đo bãi cũ bằng cảm biến khoảng cách (route, scan, box) sang mùa 5 (ẩn).
+    { ma: 'che-list-cu', ten: 'Đo bãi bằng cảm biến',
+      chuong: [['che-list-cu', day('che-list', [1, 2, 3, 4, 6, 5, 8, 9, 7, 10])]] },
+    // Gói 10 (30/10, nghiệm thu độc lập): hai màn xe cũ che-may-son.7 Lưới chấm, .8 Khung lồng khung (nhịp 37, 44, to hơn trùm cuối mùa, lạc robot của gói)
+    // nhường chỗ cho trum-mua-4.8, .9 (drone kẻ vạch: hàm gọi hàm của em) sang mùa 5 (ẩn).
+    { ma: 'che-may-son-cu', ten: 'Hoa văn lớn',
+      chuong: [['che-may-son-cu', day('che-may-son', [7, 8])]] },
     { ma: 'doi-nam-cham-cu', ten: 'Đội chia hàng: màn dư',
       chuong: [['doi-nam-cham-cu', day('doi-nam-cham', [6, 9])], ['che-doi-nam-cham-cu', day('che-doi-nam-cham', [4, 9])]] }
   ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
-  var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: đi theo danh sách',
+  var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: sơn theo danh sách', 'che-list-cu': 'Chế lệnh: đi theo danh sách', 'che-may-son-cu': 'Chế lệnh: hoa văn lớn',
     'cam-bon': 'Đọc màu bốn phía', 'che-cam-bon': 'Chế lệnh: dò màu', 'pho-mau': 'Đi giữa phố màu', 'che-pho-mau': 'Chế lệnh: qua phố',
     'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Kẻ nét liền', 'che-may-son': 'Chế lệnh: vẽ hoa văn',
     'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham-cu': 'Chia hàng: màn ôn', 'che-doi-nam-cham-cu': 'Chế lệnh: màn ôn', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
@@ -1170,6 +1211,7 @@
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // (Từ 30/10 tối các màn này nằm ở che-list-cu, mùa 5 ẩn; giữ bãi khít cho khớp ngưỡng sao trong lo-trinh-sao.js.)
     // Gói 2 (30/10, đường cong): màn đo bằng cảm biến ở che-list (bản một sân của lộ trình) đứng trên bãi trống 7 × 7 dù xe chỉ đi một vòng chữ nhật nhỏ,
     // nên số ô nhảy 12 → 47 ngay màn đầu. Bãi thu vừa khít (giữ luật của PHONG ở man-che-list.js: tường mốc cuối hai cạnh đầu, ô ngay sau chỗ dừng ở hai cạnh sau
     // vẫn trống để cảm biến không dừng được xe, nên vẫn phải nhớ số đã đo) và lớn dần theo thứ tự 4 → 6 → 5 → 8 → 9: bãi 2×1, 4×1, vuông 2, 2×3, 4×3.
@@ -1650,7 +1692,8 @@
   // Mùa 2 đổi 29/10 sau khi vòi phun / van hơi gộp (phun → phun ở tên và phim; chữ trong màn đổi ở đợt riêng).
   (function () {
     var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
-                     'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
+                     'mua-2': 'Nhà máy', 'mua-3': 'Bãi tái chế',      // user 30/10: bãi tái chế phế liệu (trước: Mỏ quặng)
+                     'mua-4': 'Thành phố' };
     TT.mua.forEach(function (m) { if (TEN_MUA[m.ma]) m.ten = TEN_MUA[m.ma]; });
     var TEN_GOI_1 = { 'tay-gap': 'Tay kẹp', 'kho-hang': 'Nút đè', 'hai-robot': 'Gặp R2', 'combo': 'Nhìn bên, nhặt bên' };
     TT.goi.forEach(function (g) { if (g.mua === 'mua-1' && TEN_GOI_1[g.ma]) g.ten = TEN_GOI_1[g.ma]; });

@@ -27,4 +27,4 @@ Máy kiểm `hoc/kiem-loi-giai.mjs` cùng ngày: 1128 màn, lời giải chuẩn
 2. Mùa 3: làm lại trum-mua-3.10 thành bài ôn cả mùa, 3 sân.
 3. Mùa 1: thay 5 đến 6 màn chương kho-hang bằng bài chế lệnh có nút đè; đổi trùm che-xe.10.
 4. Mùa 4: viết lời sai cho gói 8; chuyển che-may-son.6, .9, .10 sang camera bốn hướng (cảm biến bụng chưa được dạy) và thêm sân; thay hai màn xe cũ trong trum-mua-4 bằng màn drone.
-5. Lõi, trước khi mở mùa 5: kho hàm vượt trần 200 từ che-xich.5 (xem `hoc/KE-HOACH-LOI-GIAI.md`).
+5. Lõi: kho hàm vượt trần 200 từ che-xich.5. Đã sửa 30/10: trần chỉ tính hàm tự đặt tên (xem `hoc/KE-HOACH-LOI-GIAI.md`).

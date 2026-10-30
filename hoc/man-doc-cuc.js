@@ -166,6 +166,38 @@
         { moTa: 'Quên đi tới ngã ba: xe phân loại khi vật còn xa', baiLam: bai(nhieu(CHIA, THA)), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Đi tới khi vật chắn trước mặt: while front_clear().', 'Tới ngã ba rồi mới đọc chữ vào p.']
+    }),
+
+    man({
+      // 30/10 nghiệm thu độc lập: trùm chương Đọc cực (trước: nam-cham.10, không đòi biến p hay elif, nay rời mùa 3). Bản nâng của doc-cuc.8:
+      // ba hành lang DÀI KHÁC NHAU (viết số bước cứng là sai sân), vật ở ngã ba khác nhau từng sân; đọc p, ba nhánh N trái / S phải / sắt ra sau.
+      so: 9, ten: 'Ba ngã ba, ba độ dài', hang: 'trum', khung: { chinh: 16, moiHam: 10 }, hamCuaEmCan: ['grip', 'move', 'turn_left', 'turn_right', 'u_turn'],
+      deBai: 'Trùm Đọc cực. Ba sân, hành lang dài ngắn khác nhau, cuối hành lang là ngã ba có vật chữ N, chữ S hoặc vật sắt. Đi tới khi vật chắn trước mũi, đọc chữ vào p, kéo vật, rồi phân loại: N sang ô đích đỏ bên trái, S sang ô đích xanh bên phải, sắt ra ô đích phía sau.',
+      veMaMau: 'Chương trình có sẵn đi đúng bốn ô rồi chỉ chia hai đường. Chạy thử từng sân rồi sửa.',
+      san: [
+        ['#######', '###o###', '##D.D##', '###D###', '###.###', '#######'],
+        ['#######', '###o###', '##D.D##', '###D###', '###.###', '###.###', '###.###', '###.###', '#######'],
+        ['#######', '###o###', '##D.D##', '###D###', '###.###', '###.###', '###.###', '#######']
+      ],
+      vatChat: [
+        ['.......', '...S...', '.......', '.......', '.......', '.......'],
+        ['.......', '...s...', '.......', '.......', '.......', '.......', '.......', '.......', '.......'],
+        ['.......', '...N...', '.......', '.......', '.......', '.......', '.......', '.......']
+      ],
+      mau: [
+        ['.......', '.......', '..r.b..', '.......', '.......', '.......'],
+        ['.......', '.......', '..r.b..', '.......', '.......', '.......', '.......', '.......', '.......'],
+        ['.......', '.......', '..r.b..', '.......', '.......', '.......', '.......', '.......']
+      ],
+      batDau: [{ x: 3, y: 4, huong: 0 }, { x: 3, y: 7, huong: 0 }, { x: 3, y: 6, huong: 0 }],
+      maMau: bai(nhieu(['for i in range(4):', '    move()', 'p = front_pole()', 'grip()', 'if p == "N":', '    turn_left()', 'else:', '    turn_right()'], THA)),
+      loiGiai: bai(nhieu(['while front_clear():', '    move()'], CHIA, THA)),
+      sao: { o: 27, nhip: 8 },
+      loiSai: [
+        { moTa: 'Đi đúng bốn ô: sân 1 đâm vào vật ở ngã ba', baiLam: bai(nhieu(['for i in range(4):', '    move()'], CHIA, THA)), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Chỉ hai nhánh: vật sắt bị đưa sang phải', baiLam: bai(nhieu(['while front_clear():', '    move()', 'p = front_pole()', 'grip()', 'if p == "N":', '    turn_left()', 'else:', '    turn_right()'], THA)), phaiCoMa: ['dat-sai-mau'] }
+      ],
+      goiY: ['Hành lang mỗi sân một độ dài: while front_clear() đi tới đúng ngã ba.', 'Ba khả năng thì ba nhánh: if, elif, else.']
     })
   ];
 
