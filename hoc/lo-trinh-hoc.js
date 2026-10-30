@@ -2278,6 +2278,70 @@
       ],
       goiY: ['Van trên tắt băng, van cuối hành lang bật lại cùng băng đó.', 'open_at(2) đi hai ô rồi phun van trước mũi; bật băng xong còn chờ hai nhịp.']
     });
+    // Màn 7 (bang-chuyen.3, biến thể): van mở cửa ở bên kia băng, thùng trên băng đang nằm ngay trước mũi xe nên tia nước trúng thùng. Chờ thùng đi qua rồi mới phun.
+    var CHO_QUA = CHO(2).concat(['spray()', 'wait()', 'tr_left()', 'move()']);
+    bangThung('bang-chuyen.3', 'bien-the', {
+      ten: 'Chờ thùng qua rồi phun', hamCuaEmCan: ['move', 'tr_left'],
+      san: ['##N##', '>>>>D', '#CD##', '##^##', '##^##'], batDau: { x: 2, y: 2, huong: 0 }, thungThem: [{ x: 2, y: 1 }, { x: 2, y: 4 }],
+      noi: [{ nut: { x: 2, y: 0 }, cua: [{ x: 1, y: 2 }], bang: [] }],
+      deBai: 'Xe đỗ trên ô đích, lối ra là cửa bên trái. Van mở cửa nằm bên kia băng, ngay trước mũi xe, nhưng một thùng trên băng đang chắn giữa: tia nước trúng thùng thì không tới van. Chờ thùng đi qua rồi phun, quay trái, vào ô cửa.',
+      veMaMau: 'Chạy thử: phun ngay thì tia nước trúng thùng, cửa vẫn đóng.',
+      maMau: bai(['spray()', 'wait()', 'tr_left()', 'move()'].concat(CHO(2))), loiGiai: bai(CHO_QUA),
+      loiSai: [
+        { moTa: 'Phun ngay: tia nước trúng thùng, cửa đóng', baiLam: bai(['spray()', 'wait()', 'tr_left()', 'move()'].concat(CHO(2))), phaiCoMa: ['ban-bi-chan', 'chua-day-thung'] },
+        { moTa: 'Chờ một nhịp: thùng vẫn còn trước mũi xe', baiLam: bai(['wait()', 'spray()', 'wait()', 'tr_left()', 'move()', 'wait()']), phaiCoMa: ['ban-bi-chan', 'chua-day-thung'] },
+        { moTa: 'Quay phải: lối ra ở bên trái', baiLam: bai(CHO(2).concat(['spray()', 'wait()', 'tr_right()', 'move()'])), phaiCoMa: ['dam-tuong', 'chua-day-thung'] }
+      ],
+      goiY: ['Băng đẩy thùng đi một ô mỗi hai nhịp: chờ hai nhịp là thùng qua khỏi trước mũi xe.', 'Tia nước bay qua ô băng trống, không bay qua thùng.']
+    });
+    // Màn 8 (bang-chuyen.4, biến thể): như "Tắt băng cho xe qua" nhưng lối ra đi qua HAI ô đích, mỗi ô một băng; một van tắt cả hai băng, van cuối hành lang bật lại cả hai.
+    bangThung('bang-chuyen.4', 'bien-the', {
+      ten: 'Một van hai băng', hamCuaEmCan: ['tr_right', 'open_at'],
+      san: ['#Nvv##', '#DDD.N', '#^####', '#^####'], batDau: { x: 1, y: 1, huong: 0 }, thungThem: [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 1, y: 3 }],
+      noi: [{ nut: { x: 1, y: 0 }, cua: [], bang: [{ x: 2, y: 0 }, { x: 3, y: 0 }] }, { nut: { x: 5, y: 1 }, cua: [], bang: [{ x: 2, y: 0 }, { x: 3, y: 0 }] }],
+      deBai: 'Ba thùng, ba ô đích. Xe đỗ trên ô đích bên trái; lối ra đi qua hai ô đích kia, mỗi ô có một thùng sắp rơi xuống. Van trước mũi xe tắt cùng lúc cả hai băng, van cuối hành lang bật lại cả hai.',
+      veMaMau: 'Chương trình của màn "Tắt băng cho xe qua" chỉ đi hai ô: lần này hành lang dài hơn.',
+      maMau: bai(['spray()', 'wait()', 'tr_right()', 'open_at(2)', 'wait()', 'wait()']), loiGiai: bai(['spray()', 'wait()', 'tr_right()', 'open_at(3)', 'wait()', 'wait()']),
+      loiSai: [
+        { moTa: 'Đi hai ô như màn trước: xe đứng trên ô đích thứ ba, tia nước không tới van', baiLam: bai(['spray()', 'wait()', 'tr_right()', 'open_at(2)', 'wait()', 'wait()']), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Không tắt băng: thùng chắn lối ra', baiLam: bai(['tr_right()', 'open_at(3)', 'wait()', 'wait()']), phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
+        { moTa: 'Quên bật lại: hai thùng đứng yên trên băng', baiLam: bai(['spray()', 'wait()', 'tr_right()', 'forward(3)'].concat(CHO(3))), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['Một van có thể điều khiển nhiều băng.', 'Từ ô đích bên trái tới ô sát van cuối là ba ô: open_at(3).']
+    });
+    // Màn 9 (bang-chuyen.9, biến thể): van SAU LƯNG (spray_back, gói 2) làm hai việc: mở cửa trước mũi xe và tắt băng dưới ô đích kế cửa. Xe không cần quay.
+    bangThung('bang-chuyen.9', 'bien-the', {
+      ten: 'Một lần phun hai việc', hamCuaEmCan: ['open_at'],
+      san: ['NDCD.N', '#^#^##', '#^####'], batDau: { x: 1, y: 0, huong: 1 }, thungThem: [{ x: 3, y: 1 }, { x: 1, y: 2 }],
+      noi: [{ nut: { x: 0, y: 0 }, cua: [{ x: 2, y: 0 }], bang: [{ x: 3, y: 1 }] }, { nut: { x: 5, y: 0 }, cua: [], bang: [{ x: 3, y: 1 }] }],
+      deBai: 'Xe đỗ trên ô đích, mũi quay vào cánh cửa đóng. Van sau lưng xe làm hai việc: mở cửa và tắt băng dưới ô đích ngay sau cửa. Phun ra sau, đi qua cửa và ô đích, phun van cuối hành lang bật lại băng rồi chờ.',
+      veMaMau: 'Chạy thử: phun ra trước thì tia nước trúng cánh cửa đóng.',
+      maMau: bai(['spray()', 'wait()', 'open_at(3)', 'wait()', 'wait()']), loiGiai: bai(['spray_back()', 'wait()', 'open_at(3)', 'wait()', 'wait()']),
+      loiSai: [
+        { moTa: 'Phun ra trước: tia nước trúng cửa đóng', baiLam: bai(['spray()', 'wait()', 'open_at(3)', 'wait()', 'wait()']), phaiCoMa: ['ban-bi-chan', 'chua-day-thung'] },
+        { moTa: 'Quên bật lại băng: thùng đứng yên', baiLam: bai(['spray_back()', 'wait()', 'forward(3)'].concat(CHO(3))), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Đi hai ô: xe đứng trên ô đích kế cửa, chắn thùng', baiLam: bai(['spray_back()', 'wait()', 'open_at(2)', 'wait()', 'wait()']), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['spray_back() phun ra sau đuôi xe.', 'Một lần phun van sau lưng vừa mở cửa vừa tắt băng.']
+    });
+    // Màn 10 (bang-chuyen.10, TRÙM): ba thùng. Chờ thùng trên băng đi qua tầm phun (màn 7), phun van làm hai việc: mở cửa bên trái và tắt băng của ô đích sau cửa
+    // (màn 9), quay trái, đi qua cửa và ô đích, phun van cuối bật lại băng (màn 6, 8), chờ. Phun ngay thì trúng thùng; chờ dư một nhịp thì mất sao nhịp.
+    var TRUM_BC = CHO(2).concat(['spray()', 'wait()', 'tr_left()', 'open_at(3)', 'wait()', 'wait()']);
+    bangThung('bang-chuyen.10', 'trum', {
+      ten: 'Trùm: Ba thùng ba đích', huyHieu: { ma: 'bang-chuyen', ten: 'Huy hiệu Canh băng chở thùng' }, hamCuaEmCan: ['tr_left', 'open_at'],
+      san: ['####N#', '#>>>>D', 'N.DCD#', '##^#^#', '##^###'], batDau: { x: 4, y: 2, huong: 0 }, thungThem: [{ x: 4, y: 1 }, { x: 2, y: 4 }, { x: 4, y: 3 }],
+      noi: [{ nut: { x: 4, y: 0 }, cua: [{ x: 3, y: 2 }], bang: [{ x: 2, y: 3 }, { x: 2, y: 4 }] }, { nut: { x: 0, y: 2 }, cua: [], bang: [{ x: 2, y: 3 }, { x: 2, y: 4 }] }],
+      deBai: 'Ba thùng, ba ô đích. Xe đỗ trên một ô đích. Van trước mũi xe, bên kia băng, làm hai việc: mở cửa bên trái và tắt băng dưới ô đích sau cửa. Một thùng trên băng đang chắn tầm phun. Mở đường ra, đi qua ô đích, bật lại băng ở van cuối rồi chờ cả ba thùng vào đích.',
+      veMaMau: 'Viết cả chương trình. Nhớ lại: chờ thùng qua rồi phun, van làm hai việc, đi qua ô đích rồi bật lại băng.',
+      maMau: bai([]), loiGiai: bai(TRUM_BC),
+      loiSai: [
+        { moTa: 'Phun ngay: tia nước trúng thùng, cửa đóng, băng vẫn chạy', baiLam: bai(TRUM_BC.slice(2)), phaiCoMa: ['ban-bi-chan', 'chua-day-thung'] },
+        { moTa: 'Dừng ở ô cửa, không bật lại băng: thùng dưới đứng yên', baiLam: bai(CHO(2).concat(['spray()', 'wait()', 'tr_left()', 'move()'], CHO(6))), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Quay phải: bên phải là tường', baiLam: bai(CHO(2).concat(['spray()', 'wait()', 'tr_right()', 'open_at(3)', 'wait()', 'wait()'])), phaiCoMa: ['dam-tuong', 'chua-day-thung'] },
+        { moTa: 'Đi qua cửa nhưng quên bật lại băng', baiLam: bai(CHO(2).concat(['spray()', 'wait()', 'tr_left()', 'forward(3)'], CHO(3))), phaiCoMa: ['chua-day-thung'] }
+      ],
+      goiY: ['Thùng trên băng cần hai nhịp để đi qua khỏi trước mũi xe.', 'Sau cửa là ô đích rồi một ô trống; đứng ở ô trống đó thì van cuối ngay trước mũi: open_at(3).']
+    });
     // Hàm của em mà bản cũ của một màn mùa 2 dạy (tay kẹp / cảm biến khoảng cách / băng đẩy xe) nay không màn nào dạy nữa (DAY_CU: [mã màn, tên hàm]).
     // Màn mùa ẩn còn gọi chúng (đội cũ, chế lệnh xích cũ…) nhận hàm đó thành HÀM CỦA MÀN (thân như bản cũ), bỏ khỏi hamCuaEmCan: vẫn chạy được
     // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.
@@ -2365,7 +2429,8 @@
       'xich': 'Quay hai nhịp', 'bien-xich': 'Đi xoắn ốc',       // PDM2a 31/10: gói 1 chưa cảm biến, biến đếm độ dài đoạn xoắn ốc (trước: Đếm bước để về)
       'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy em',
       'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
-      'bang-chuyen': 'Trôi theo băng', 'che-sung-hoi': 'Chế lệnh: mở van',
+      'bang-chuyen': 'Canh băng chở thùng',      // PDM2a2 31/10: băng chở thùng, xích không trôi (trước: Trôi theo băng)
+      'che-sung-hoi': 'Chế lệnh: mở van',
       'day-thung': 'Đưa thùng vào đích', 'che-day-thung': 'Chế lệnh: đẩy n ô',
       'luc-ban': 'Phun mạnh, phun nhẹ', 'che-luc-ban': 'Chế lệnh: chọn lực',
       'do-nhiet': 'Tìm van nóng', 'che-do-nhiet': 'Chế lệnh: mở van nguội',

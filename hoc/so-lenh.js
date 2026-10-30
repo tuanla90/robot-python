@@ -99,7 +99,7 @@
     m('forward', 'tham-so', 'Tiến n ô liền nhau', 'tham-so', 'tham-so.3'),
     m('right', 'tham-so', 'Quay phải k lần', 'tham-so', 'tham-so.4'),
     m('deliver', 'tham-so', 'Nhặt vật, tiến n ô rồi đặt vật xuống', 'tham-so', 'tham-so.6'),
-    m('stair_down', 'tham-so', 'Đi ngang a ô rồi đi xuống b ô, làm trọn một bậc thang', 'tham-so', 'tham-so.8'),       // PDM2a2 31/10 (trước: step, nay là hàm của màn ở màn ẩn mùa sau)
+    m('step', 'tham-so', 'Đi ngang a ô rồi đi xuống b ô, làm trọn một bậc thang', 'tham-so', 'tham-so.8'),       // PDM2a2: lộ trình mùa 2 đổi tên thành stair_down; Sổ lệnh còn theo ngân hàng (kiem-che-xe) như deliver, pick_behind
     // đợt 2: thân nhện
     m('go', 'nhen', 'Nhện đi một bước theo một chữ: U lên, D xuống, L trái, R phải', 'nhen', 'nhen.4'),
     m('walk', 'nhen', 'Nhện đi hết một chuỗi chỉ đường', 'nhen', 'nhen.6'),

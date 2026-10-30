@@ -513,6 +513,22 @@
     "o": 17,
     "nhip": 7
   },
+  "bang-chuyen.3": {
+    "o": 12,
+    "nhip": 6
+  },
+  "bang-chuyen.4": {
+    "o": 17,
+    "nhip": 8
+  },
+  "bang-chuyen.9": {
+    "o": 13,
+    "nhip": 6
+  },
+  "bang-chuyen.10": {
+    "o": 19,
+    "nhip": 10
+  },
   "che-nhen.8": {
     "o": 14,
     "nhip": 6
