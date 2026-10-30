@@ -1,6 +1,46 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "che-sung-hoi.10": {
+    "o": 27,
+    "nhip": 16
+  },
+  "che-sung-hoi.8": {
+    "o": 15,
+    "nhip": 11
+  },
+  "che-sung-hoi.9": {
+    "o": 23,
+    "nhip": 9
+  },
+  "che-sung-hoi.7": {
+    "o": 17,
+    "nhip": 8
+  },
+  "che-sung-hoi.6": {
+    "o": 17,
+    "nhip": 8
+  },
+  "che-sung-hoi.5": {
+    "o": 17,
+    "nhip": 14
+  },
+  "che-sung-hoi.4": {
+    "o": 19,
+    "nhip": 10
+  },
+  "che-sung-hoi.3": {
+    "o": 16,
+    "nhip": 7
+  },
+  "che-sung-hoi.2": {
+    "o": 12,
+    "nhip": 5
+  },
+  "che-sung-hoi.1": {
+    "o": 12,
+    "nhip": 5
+  },
   "che-hong-ngoai.10": {
     "o": 16,
     "nhip": 32

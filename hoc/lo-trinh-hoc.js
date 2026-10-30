@@ -2160,6 +2160,22 @@
       ]
     }, BO_KEP);
     get('che-hong-ngoai.9').loiGiaiKhac = { moTa: 'Thêm một dòng chú thích trước vòng lặp', baiLam: bai(['# ba đoạn, mỗi chỗ rẽ cách tường 1 ô'].concat(C9N)) };
+    // ---- Gói 4 chương 2 che-sung-hoi (chế lệnh vòi phun): xích + vòi, giữ ý cả mười màn (khay giữ nguyên: lệnh bánh của xích trùng xe hai bánh,
+    // che-sung-hoi.8 vẫn thiếu spray_back vì "đầu phun sau hỏng"). u_turn() hai bánh → spin() của xích (che-xich.1).
+    ['che-sung-hoi.1', 'che-sung-hoi.2', 'che-sung-hoi.3', 'che-sung-hoi.4', 'che-sung-hoi.5', 'che-sung-hoi.6', 'che-sung-hoi.7', 'che-sung-hoi.8', 'che-sung-hoi.9', 'che-sung-hoi.10'].forEach(function (ma) {
+      var pc = get(ma).phanCung;      // che-sung-hoi.8: phần cứng có spray_back (đầu phun sau hỏng: lenh-goc-hong), khay không có
+      var m = xichHoa(ma, get(ma).hamGoc.slice());
+      if (pc) m.phanCung = pc.slice();
+      ['maMau', 'loiGiai', 'loiSai', 'loiGiaiKhac', 'congThucKhac', 'deBai', 'veMaMau', 'goiY'].forEach(function (k) { if (m[k] !== undefined) m[k] = JSON.parse(JSON.stringify(m[k]).replace(/\bu_turn\(\)/g, 'spin()')); });
+      m.hamCuaEmCan = m.hamCuaEmCan.map(function (t) { return t === 'u_turn' ? 'spin' : t; });
+    });
+    // Đường cong nhịp: open_left() của xích tốn sáu nhịp, che-sung-hoi.5 (hai lần open_left) thành 14 nhịp; che-sung-hoi.4 hành lang sau cửa dài thêm hai ô
+    // (main khoá thêm hai move(), xe mờ dời theo): 8 → 10 nhịp làm mốc.
+    (function () {
+      var m = get('che-sung-hoi.4');
+      m.san = ['##N#####', '##.#####', '#..C...#', '########']; m.bongMo = Object.assign({}, m.bongMo, { x: 6 });
+      [m.maMau, m.loiGiai, m.loiGiaiKhac && m.loiGiaiKhac.baiLam].concat(m.loiSai.map(function (x) { return x.baiLam; })).forEach(function (b) { if (b) b.chinh.push('move()', 'move()'); });
+    })();
     // Hàm của em mà bản cũ của một màn mùa 2 dạy (tay kẹp / cảm biến khoảng cách / băng đẩy xe) nay không màn nào dạy nữa (DAY_CU: [mã màn, tên hàm]).
     // Màn mùa ẩn còn gọi chúng (đội cũ, chế lệnh xích cũ…) nhận hàm đó thành HÀM CỦA MÀN (thân như bản cũ), bỏ khỏi hamCuaEmCan: vẫn chạy được
     // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.
