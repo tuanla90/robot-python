@@ -886,7 +886,7 @@
     { ma: 'dao-cuc', ten: 'Đảo cực', loai: 'bo-phan',
       chuong: [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'nam-cham.2', 'dao-cuc.6', 'dao-cuc.7', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.7', 'che-dao-cuc.9']]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',
-      chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'nam-cham.10']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
+      chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'doc-cuc.9']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
       chuong: [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]] },
     { ma: 'bung-nhen', ten: 'Nam châm bụng nhện', loai: 'thu-thach',
@@ -907,7 +907,7 @@
   // Rời mùa 3 (mùa 4, ẩn, giữ thứ tự cũ, vẫn chơi được bằng "Mở hết"): màn của chương mùa 3 dùng lại mã mà không thuộc MUA_3 thành chương riêng, đứng đúng
   // chỗ chương cũ trong thuTu (THAY_CU). nam-cham.9 (omni, mùa 5); doi-xich 8 màn bậc thang S; che-doi-xich cả 10 (bậc thang S, hay cần hàm của
   // che-doi-ho-bang). Gói cũ đổi mã khi mã cũ đã thuộc gói mùa 3 (cờ goi-mo:<mã> của gói mùa 3).
-  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9'] };
+  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'] };     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
   var TEN_ROI_3 = { 'doi-xich-bac': 'Đội xích leo bậc', 'che-doi-xich-bac': 'Hàm đội xích leo bậc', 'nam-cham-omni': 'Nam châm trên omni' };
   var THAY_CU = { 'doi-xich': ['doi-xich-bac'], 'che-doi-xich': ['che-doi-xich-bac'], 'nam-cham': ['nam-cham-omni'] };
   var GOI_DOI_MA = { 'doi-xich': { ma: 'doi-xich-bac', ten: 'Đội xích leo bậc' }, 'nam-cham': { ma: 'nam-cham-omni', ten: 'Nam châm trên omni' } };
@@ -1074,6 +1074,12 @@
           var m = get(ma);
           if (m.hamGoc && m.hamGoc.some(function (h) { return bo.indexOf(h) >= 0; })) m.hamGoc = m.hamGoc.filter(function (h) { return bo.indexOf(h) < 0; });
           (m.doi || []).forEach(function (d) { if (d.hamGoc) d.hamGoc = d.hamGoc.filter(function (h) { return bo.indexOf(h) < 0; }); });
+          // 30/10 nghiệm thu: màn cũ có front_metal / front_pole trên khay mà robot chưa gắn part cảm biến từ ('tu', gói 3) thì gắn vào hông (lõi chỉ nhìn
+          // hamGoc nên luật y nguyên; hình robot nay khớp bài học). Nhện không gắn được cảm biến (không hướng mặt).
+          var cam = m.robot && m.robot.camBien;
+          if (m.loaiRobot !== 'nhen' && m.hamGoc && m.hamGoc.some(function (h) { return h === 'front_metal' || h === 'front_pole'; }) && Array.isArray(cam) && !cam.some(function (b) { return b.ma === 'tu'; })) {
+            m.robot = Object.assign({}, m.robot, { camBien: cam.concat([{ ma: 'tu', o: 'hong' }]) });
+          }
         });
       });
     });
