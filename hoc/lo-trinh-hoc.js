@@ -597,7 +597,8 @@
     'che-xe.1', 'che-xe.2', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6', 'che-xe.4', 'che-xe.6', 'che-tay.5', 'che-lap.7', 'che-lap.9',
     'tay-xoay.6', 'tay-xoay.10', 'che-tay-xoay.1', 'che-tay-xoay.2', 'che-tay-xoay.4', 'che-tay-xoay.5', 'che-tay-xoay.6',
     'che-cam-bien.4', 'cam-bien-ben.5', 'cam-bien-ben.7', 'me-cung.6', 'me-cung.9', 'combo.3', 'combo.7', 'combo.8', 'che-combo.3', 'che-combo.7', 'che-cam-bien.10', 'che-combo.9',
-    'robot-hoan-thien.11', 'trum-mua-1.3', 'trum-mua-1.6', 'trum-mua-1.9', 'trum-mua-1.10'];
+    'robot-hoan-thien.11', 'trum-mua-1.3', 'trum-mua-1.4', 'trum-mua-1.6', 'trum-mua-1.9', 'trum-mua-1.10'];
+  // PDM1 (31/10): trum-mua-1.4 thành màn MỘT robot viết thân deliver() (hàm của màn, có while): màn ép theo kiem-lach-mua-1.mjs nên có cờ.
   DAM_LA_THUA.forEach(function (ma) { get(ma).damLaThua = true; });
   M.manDamLaThua = DAM_LA_THUA.slice();
   // 31/10 (KE-HOACH-PART-DUNG-MUA.md, user: "part là bản nâng cấp, sau khi nâng cấp thì luôn được dùng bản full"): từ gói 7 mùa 1 (sau gói 6 Tay xoay)

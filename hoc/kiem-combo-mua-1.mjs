@@ -95,7 +95,7 @@ export function recallMan(m, kho, thang) {
  * Ba luật recall trên danh sách màn ds (theo thứ tự chơi). moi(m) = màn mới (luật a); toiThieu = số lần tối thiểu mỗi gói 1–8 (luật b).
  * recall(m) = kết quả recallMan. Trả { dem: { gói: số lần }, loi: [chuỗi] }.
  */
-export function kiemRecall(ds, recall, { moi = () => true, toiThieu = 2, yChinh = [6, 7], khac = [1, 2, 3, 4, 5, 8], toiThieuKhac = 2 } = {}) {
+export function kiemRecall(ds, recall, { moi = () => true, toiThieu = 2, yChinh = [6, 7], khac = [1, 2, 3, 4, 5, 8], toiThieuKhac = 2, toiThieuGoi = {} } = {}) {
   const loi = [], dem = {};
   for (let g = 1; g <= 8; g++) dem[g] = 0;
   ds.forEach((m, i) => {
@@ -109,7 +109,11 @@ export function kiemRecall(ds, recall, { moi = () => true, toiThieu = 2, yChinh 
     if (!m.kieuBai) loi.push(m.ma + ': thiếu kieuBai');
     if (i > 0 && m.kieuBai && m.kieuBai === ds[i - 1].kieuBai) loi.push(m.ma + ' cùng kiểu bài "' + m.kieuBai + '" với màn liền trước ' + ds[i - 1].ma);
   });
-  for (let g = 1; g <= 8; g++) if (dem[g] < toiThieu) loi.push('gói ' + g + ' (' + GOI_RECALL[g] + ') chỉ được nhắc ' + dem[g] + ' lần (cần ≥ ' + toiThieu + ')');
+  // toiThieuGoi: ngưỡng riêng từng gói (PDM1: gói 8 Đội ≥ 2 trên gói 9 + 10 vì gói 10 chạy một mình).
+  for (let g = 1; g <= 8; g++) {
+    const can = toiThieuGoi[g] !== undefined ? toiThieuGoi[g] : toiThieu;
+    if (dem[g] < can) loi.push('gói ' + g + ' (' + GOI_RECALL[g] + ') chỉ được nhắc ' + dem[g] + ' lần (cần ≥ ' + can + ')');
+  }
   return { dem, loi };
 }
 
