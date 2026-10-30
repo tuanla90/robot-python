@@ -374,22 +374,15 @@
   M.them(M.manGoi12Them || []);
   (M.manGoi12Them || []).forEach(function (m) { nguon[m.ma] = copy(m); });
   // SM1-C (30/10, nghiệm thu độc lập mùa 1, đề xuất 7): gói 6 Tay xoay. Màn mới (man-goi-6-7-them.js) vào hai chương có sẵn; MUA_1 xếp chỗ, CAT cất màn trùng ý.
-  // Chương tay-xoay: tay-xoay.11 (go_wall, 8 nhịp) và .12 (for, 12 nhịp) đệm chỗ nhảy 3 → 15 nhịp trước tay-xoay.6; tay-xoay.7 "Đố: quên hạ tay" (đố thứ ba cùng
-  // chương trình mười dòng như .2, .3) và .9 "Quay xe, tay đi theo" (cùng ý quay xe mang tay của .8) cất. tay-xoay.6 khóa chương trình chính (chinhCoDinh) như mọi
-  // màn chế hàm: sau .12 em viết được bản vòng for vừa 10 ô, không chế clear_left() mà vẫn 3 sao.
+  // Chương tay-xoay: tay-xoay.11 (go_wall, 9 nhịp) và .12 (for, 13 nhịp) đệm chỗ nhảy 3 → 15 nhịp trước tay-xoay.6; tay-xoay.7 "Đố: quên hạ tay" (đố thứ ba cùng
+  // chương trình mười dòng như .2, .3) và .9 "Quay xe, tay đi theo" (cùng ý quay xe mang tay của .8) cất. tay-xoay.6 giữ nguyên: bản vòng for không chế clear_left()
+  // bị máy chấm báo chua-tao-ham (máy kiểm kiem-goi-6-7-them.mjs đo).
   // Chương che-tay-xoay: che-tay-xoay.11 (bốn hàm vừa chế + go_wall, 38 ô) đệm ô 26 → 45 trước .5; che-tay-xoay.12 (for, 15 nhịp) đệm nhịp 12 → 20 trước .6;
   // che-tay-xoay.7 "Đường về" (ý "viết hàm đi ngược" đã gộp ở gói 5, SM1-A) và .8 "Tay chưa về giữa" (sửa hàm của màn quên xoay tay về, cùng lỗi với
   // lời sai của .1, .2) cất. Trùm che-tay-xoay.10 viết lại: go_wall() tới hàng vật rồi for ba lần sort_two() (33 ô, 34 nhịp; cũ 58 ô, swap_sides + hai sort_two).
   M.them(M.manGoi67Them || []);
   (M.manGoi67Them || []).forEach(function (m) { nguon[m.ma] = copy(m); });
   (function () {
-    var m6 = sua('tay-xoay.6', {
-      chinhCoDinh: true,
-      veMaMau: 'Chương trình chính bị khóa: dọn, tiến hai ô, dọn, tiến ba ô. Mở Xưởng hàm, tạo clear_left() rồi bấm Chạy.',
-      maMau: { chinh: nguon['tay-xoay.6'].loiGiai.chinh.slice(), hamCuaMan: [] },
-      loiSai: copy(nguon['tay-xoay.6'].loiSai.filter(function (ls) { return (ls.hamCuaEmMoi || []).length || ls.phaiCoMa.indexOf('ham-chua-co') >= 0; }))
-    });
-    m6.loiGiaiKhac = copy(nguon['tay-xoay.6'].loiGiaiKhac);
     var XOAY_CB = { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }] };
     var L10 = ['go_wall()', 'for i in range(3):', '    sort_two()'];
     var MAU = ['b', 'r', 'b', 'r', 'b', 'r'];

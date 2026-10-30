@@ -85,10 +85,6 @@
     "o": 10,
     "nhip": 3
   },
-  "tay-xoay.6": {
-    "o": 25,
-    "nhip": 15
-  },
   "che-tay-xoay.10": {
     "o": 33,
     "nhip": 34

@@ -32,12 +32,11 @@
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = { chinh: 10, moiHam: 10 };
     m.cauTruc = ['for', 'if', 'while'];
-    if (m.mucTieu === 'toi-co') delete m.mucTieu;
-    else m.mucTieu = 'dua-vat';
+    if (!m.mucTieu) m.mucTieu = 'dua-vat';
     return ManHoc.chuanHoa(m);
   }
 
-  var L_11 = ['pick()', 'arm_left()', 'drop()', 'go_wall()'];
+  var L_11 = ['pick()', 'arm_left()', 'drop()', 'arm_right()', 'go_wall()'];
   var THAN_12 = ['pick()', 'arm_right()', 'drop()', 'arm_left()', 'wait()', 'move()'];
   var L_12 = lap(2, THAN_12).concat(['move()']);
   var L_C11 = ['pick_left()', 'drop_right()', 'go_wall()', 'pick_right()', 'drop_left()'];
@@ -45,34 +44,38 @@
 
   var DS = [
     man('tay-xoay', {
-      so: 11, ten: 'Vật chắn trước mặt', hang: 'bien-the', mucTieu: 'toi-co', hamCuaEmCan: ['pick', 'drop', 'go_wall'],
-      deBai: 'Một vật chắn ngay trước mặt xe, cờ ở cuối hành lang. Bên trái xe có một hốc trống. Nhặt vật, xoay tay đặt nó vào hốc bên trái, rồi đi tới cờ.',
-      san: ['####', '##F#', '##.#', '##.#', '##.#', '##o#', '#..#', '####'],
+      so: 11, ten: 'Vật chắn trước mặt', hang: 'bien-the', mucTieu: 'bong-mo', hamCuaEmCan: ['pick', 'drop', 'go_wall'],
+      deBai: 'Một vật chắn ngay trước mặt xe. Bên trái xe có một hốc trống. Nhặt vật, xoay tay đặt nó vào hốc bên trái như vật mờ, rồi đi tới cuối hành lang, đúng chỗ xe mờ.',
+      san: ['####', '##.#', '##.#', '##.#', '##.#', '##o#', '#..#', '####'],
       batDau: { x: 2, y: 6, huong: 0 },
+      bongMo: { x: 2, y: 1, huong: 0, vat: [{ x: 1, y: 6 }] },
       maMau: { chinh: ['go_wall()'] },
-      sao: { o: 19, nhip: 9 },
+      sao: { o: 20, nhip: 9 },
       loiGiai: { chinh: L_11.slice() },
-      loiGiaiKhac: { moTa: 'Đếm từng ô thay cho go_wall()', baiLam: { chinh: ['pick()', 'arm_left()', 'drop()', 'move()', 'move()', 'move()', 'move()'] } },
+      loiGiaiKhac: { moTa: 'Đếm từng ô thay cho go_wall()', baiLam: { chinh: ['pick()', 'arm_left()', 'drop()', 'arm_right()', 'move()', 'move()', 'move()', 'move()', 'move()'] } },
       loiSai: [
-        { moTa: 'Chưa dọn vật: go_wall() không đi được ô nào', baiLam: { chinh: ['go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên xoay tay: vật đặt lại ngay trước mặt', baiLam: { chinh: ['pick()', 'drop()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Xoay tay sang phải: bên phải là tường, không đặt được', baiLam: { chinh: ['pick()', 'arm_right()', 'drop()', 'go_wall()'] }, phaiCoMa: ['tha-bi-chan', 'chua-toi-co'] }
+        { moTa: 'Chưa dọn vật: go_wall() không đi được ô nào', baiLam: { chinh: ['go_wall()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên xoay tay: vật đặt lại ngay trước mặt', baiLam: { chinh: ['pick()', 'drop()', 'go_wall()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Xoay tay sang phải: bên phải là tường, không đặt được', baiLam: { chinh: ['pick()', 'arm_right()', 'drop()', 'go_wall()'] }, phaiCoMa: ['tha-bi-chan', 'lech-bong-mo'] },
+        { moTa: 'Cầm vật đi luôn tới cuối hành lang: hốc bên trái vẫn trống', baiLam: { chinh: ['pick()', 'go_wall()'] }, phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Mã mẫu chưa chạy được: vật trước mặt làm front_clear() trả False.', 'pick(), arm_left(), drop(), rồi go_wall().']
+      goiY: ['Mã mẫu chưa chạy được: vật trước mặt làm front_clear() trả False.', 'pick(), arm_left(), drop(), xoay tay về trước, rồi go_wall().']
     }),
     man('tay-xoay', {
-      so: 12, ten: 'Dọn hai vật', hang: 'bien-the', mucTieu: 'toi-co', hamCuaEmCan: ['pick', 'drop', 'move'],
-      deBai: 'Hai vật nằm liền nhau chắn lối. Mỗi lần nhặt, ô bên phải xe là một hốc trống. Dọn cả hai vật vào hốc rồi tới cờ. Viết thẳng từng bước thì quá 10 ô: dùng vòng for.',
-      san: ['#####', '##F##', '##o##', '##o.#', '##..#', '#####'],
+      so: 12, ten: 'Dọn hai vật', hang: 'bien-the', mucTieu: 'bong-mo', hamCuaEmCan: ['pick', 'drop', 'move'],
+      deBai: 'Hai vật nằm liền nhau chắn lối. Mỗi lần nhặt, ô bên phải xe là một hốc trống. Dọn cả hai vật vào hốc như vật mờ rồi tới chỗ xe mờ. Viết thẳng từng bước thì quá 10 ô: dùng vòng for.',
+      san: ['#####', '##.##', '##o##', '##o.#', '##..#', '#####'],
       batDau: { x: 2, y: 4, huong: 0 },
+      bongMo: { x: 2, y: 1, huong: 0, vat: [{ x: 3, y: 4 }, { x: 3, y: 3 }] },
       maMau: { chinh: [] },
       sao: { o: 21, nhip: 13 },
       loiGiai: { chinh: L_12.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# dọn hai vật'].concat(L_12) } },
       loiSai: [
         { moTa: 'Viết thẳng hai lần: quá 10 ô', baiLam: { chinh: THAN_12.concat(THAN_12, ['move()']) }, phaiCoMa: ['tran-khung'] },
-        { moTa: 'Quên xoay tay về trước: lần sau tay kẹp vào hốc trống', baiLam: { chinh: lap(2, ['pick()', 'arm_right()', 'drop()', 'move()']).concat(['move()']) }, phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên bước cuối tới cờ', baiLam: { chinh: lap(2, THAN_12) }, phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Quên xoay tay về trước: lần sau tay kẹp vào hốc trống', baiLam: { chinh: lap(2, ['pick()', 'arm_right()', 'drop()', 'move()']).concat(['move()']) }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên bước cuối tới chỗ xe mờ', baiLam: { chinh: lap(2, THAN_12) }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Dọn vật đầu rồi cầm vật sau đi luôn: hốc thứ hai còn trống', baiLam: { chinh: THAN_12.concat(['pick()', 'move()', 'move()']) }, phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Hai lần dọn giống hệt nhau: nhặt, xoay phải, đặt, xoay về, tiến một ô.', 'Xoay tay về trước rồi wait() cho nhịp trôi, lần nhặt sau mới đúng ô trước mặt.']
     }),
@@ -86,7 +89,7 @@
       loiGiai: { chinh: L_C11.slice() },
       loiGiaiKhac: { moTa: 'Đếm từng ô thay cho go_wall()', baiLam: { chinh: ['pick_left()', 'drop_right()', 'move()', 'move()', 'move()', 'move()', 'pick_right()', 'drop_left()'] } },
       loiSai: [
-        { moTa: 'Quên đi tới cuối hành lang: tay kẹp vào ô trống bên phải', baiLam: { chinh: ['pick_left()', 'drop_right()', 'pick_right()', 'drop_left()'] }, phaiCoMa: ['kep-hut', 'chua-dua-vat'] },
+        { moTa: 'Quên đi tới cuối hành lang: tay nhặt lại vật vừa đặt bên phải', baiLam: { chinh: ['pick_left()', 'drop_right()', 'pick_right()', 'drop_left()'] }, phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Làm như nhau ở hai đầu: cuối hành lang tay kẹp vào ô đích trống bên trái', baiLam: { chinh: ['pick_left()', 'drop_right()', 'go_wall()', 'pick_left()', 'drop_right()'] }, phaiCoMa: ['kep-hut', 'chua-dua-vat'] }
       ],
       goiY: ['Lệnh nhặt và lệnh đặt nào cũng xoay tay về trước khi xong.', 'Giữa hai đầu: go_wall() dừng ngay trước tường cuối hành lang.']
