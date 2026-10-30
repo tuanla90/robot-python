@@ -304,7 +304,7 @@
   // che-banh-lui: che-banh-lui.1 đệm giữa che-tay.7 (8 nhịp) và che-tay.9 (14 nhịp); .2–.4 là biến thể trước trùm.
   // SM1-A (30/10, nghiệm thu độc lập, đề xuất 2 + 3): trùm mới che-banh-lui.5 "Trùm: ba bãi đỗ" (lùi + while qua go_wall + park em chế, ba bãi dài ngắn
   // khác nhau, huy hiệu che-xe); che-xe.10 "Bãi đỗ xe" (12 nhịp, dễ hơn màn 9, không for / while / cảm biến) về hàng luyện sau che-lap.7 (dòng 8 → 9);
-  // che-lap.9 (lời giải một dòng) cất. Ba màn đường về / ba màn kẹt số chưa gộp (xem hoc/ban-giao/bao-cao-SM1A.md).
+  // che-lap.9 (lời giải một dòng) cất. Lượt 2 (A2): che-xe.7, che-tay.7 cất, che-lap.7 giữ làm màn đường về duy nhất; banh-lui.6, che-banh-lui.6 mới (xem hoc/ban-giao/bao-cao-SM1A.md).
   // 27/10: gói 8 đủ 20 màn (che-hai-robot.1–10 của man-doi-mua-1.js) nên ngưỡng gói 10 tính lại (+15 ★): 240.
   function day(chuong, so) { return so.map(function (n) { return chuong + '.' + n; }); }
   var MUOI = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -455,8 +455,11 @@
     { ma: 'banh-lui', ten: 'Bánh lùi', loai: 'bo-phan', sao: 120, hinh: 'che-xe',
       // HD3 (29/10): banh-lui.5 (trình diễn lệnh lùi, chiChay) đứng đầu chương, trước che-xe.4 chế back(); che-xe.8 (sửa nhịp hai bánh, ý của gói 1) cất;
       // che-xe.9 (sân 21 ô) lên trước banh-lui.3 (10 ô) để cỡ sân không nhảy vọt (thứ tự màn cũ giữ nguyên: che-xe.7 rồi che-xe.9).
-      chuong: [['banh-lui', ['banh-lui.5'].concat(day('che-xe', [4, 5, 6]), ['banh-lui.1', 'banh-lui.2', 'che-xe.7', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'])],
-        ['che-banh-lui', ['che-tay.5', 'che-tay.7', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-xe.10', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5']]] },
+      // SM1-A lượt 2 (đề xuất A2, 30/10): ba màn "đường về" gộp còn một (che-lap.7, bản vòng for, cũng là màn đệm dòng 8 trước che-xe.10 9 dòng);
+      // che-xe.7 và che-tay.7 cất, chỗ trống là hai màn mới lùi + cảm biến + tay: banh-lui.6 "Lấy hàng mở cửa" (11 nhịp < trùm 13), che-banh-lui.6 "Kéo thùng lên nút"
+      // (go_wall + drag em vừa chế ở che-tay.5, 8 nhịp đệm giữa che-tay.5 6 và che-banh-lui.1 11). Hai màn kẹt số che-xe.9, che-tay.9 giữ.
+      chuong: [['banh-lui', ['banh-lui.5'].concat(day('che-xe', [4, 5, 6]), ['banh-lui.1', 'banh-lui.2', 'banh-lui.6', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'])],
+        ['che-banh-lui', ['che-tay.5', 'che-banh-lui.6', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-xe.10', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5']]] },
     { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 150,
       chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
@@ -483,7 +486,9 @@
     // SM1-A (30/10): bốn màn không tạo hàm của chương kho-hang cũ nhường chỗ cho màn nút đè; che-tay.10 "Kho đồ" là trùm cũ (huy hiệu che-tay sang kho-hang.4)
     'che-xe.3', 'che-tay.3', 'che-tay.8', 'che-tay.10',
     // SM1-A: che-lap.9 "Số lùi đường dài" (lời giải một dòng, trùng ý kẹt số với che-xe.9 / che-tay.9) cất
-    'che-lap.9'];
+    'che-lap.9',
+    // SM1-A lượt 2 (A2): che-xe.7 "Đường về", che-tay.7 "Đặt lại chỗ cũ" trùng ý "viết hàm làm ngược lại" với che-lap.7 (giữ); chỗ trống là banh-lui.6, che-banh-lui.6
+    'che-xe.7', 'che-tay.7'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {

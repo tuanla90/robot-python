@@ -183,6 +183,30 @@
       goiY: ['go_wall() tới ◆ ở mọi ngõ; từ ◆ lùi hai ô luôn tới ngã rẽ.', 'Quay phải rồi hỏi front_clear(): bị chắn thì u_turn() để nhìn sang trái.']
     }),
 
+    /* ================================================================ SM1-A lượt 2 (đề xuất A2): màn mới thay che-xe.7 "Đường về" (cất) ở hàng biến thể chương banh-lui:
+       lùi + cảm biến khoảng cách (go_wall) + tay kẹp + nút đè (nhắc gói 2, 3, 4). Tự viết chương trình chính. Lùi ra khỏi ngách rồi lùi tiếp qua cửa
+       (11 nhịp); quay đầu đi tới vẫn thắng nhưng 12 nhịp: 2 sao (bộ dò khối chuẩn của máy kiểm tìm ra đường lùi qua cửa trước khi người viết nghĩ tới).
+       11 nhịp < trùm banh-lui.4 (13, theo ngõ dài nhất). */
+    man({
+      chuong: 'banh-lui', so: 6, ten: 'Lấy hàng mở cửa', tay: true, mucTieu: 'toi-co',
+      hamCuaEmCan: ['go_wall', 'pick', 'back', 'turn_left', 'drop', 'u_turn', 'turn_right'],
+      deBai: 'Thùng gỗ nằm cuối ngách hẹp trước mặt xe. Cửa C sang chỗ cờ đang đóng; nút đè M nằm trên lối đi, phía đối diện cửa. Đưa thùng lên nút cho cửa mở rồi đi tới cờ.',
+      veMaMau: 'Chương trình có sẵn đưa xe tới sát thùng và nhặt. Viết tiếp: ra khỏi ngách sao cho ít nhịp nhất, đặt thùng đúng chỗ rồi qua cửa.',
+      san: ['##########', '##########', '#####o####', '#...#.####', '#...#.####', '#...M.CF##', '##########'],
+      batDau: { x: 5, y: 5, huong: 0 },
+      maMau: { chinh: ['go_wall()', 'pick()'] },
+      sao: { o: 28, nhip: 11 },
+      loiGiai: { chinh: ['go_wall()', 'pick()', 'back()', 'back()', 'turn_left()', 'drop()', 'back()', 'back()'] },
+      loiGiaiKhac: { moTa: 'Cùng đường đi, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', 'pick()', '# lùi ra khỏi ngách', 'back()', 'back()', 'turn_left()', 'drop()', 'back()', 'back()'] } },
+      loiSai: [
+        { moTa: 'Mang thùng đi luôn, không đặt lên nút: cửa vẫn đóng', baiLam: { chinh: ['go_wall()', 'pick()', 'back()', 'back()', 'u_turn()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đặt thùng về phía cửa: thùng không nằm trên nút, cửa vẫn đóng', baiLam: { chinh: ['go_wall()', 'pick()', 'back()', 'back()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lùi một ô rồi đặt: còn trong ngách, bên trái là tường', baiLam: { chinh: ['go_wall()', 'pick()', 'back()', 'turn_left()', 'drop()', 'u_turn()', 'go_wall()'] }, phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'Quên nhặt thùng: tay không, đặt không có gì', baiLam: { chinh: ['go_wall()', 'back()', 'back()', 'turn_left()', 'drop()', 'u_turn()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Lùi hai ô là ra tới lối đi, mặt xe vẫn quay lên: quay trái là nhìn thẳng vào nút M.', 'Đặt thùng xong, đuôi xe đang hướng về cửa: cứ lùi tiếp là tới cờ.']
+    }),
+
     /* ================================================================ chương che-banh-lui (4 màn) */
     man({
       chuong: 'che-banh-lui', so: 1, ten: 'Kéo thùng khỏi ngõ cụt', chinhCoDinh: true, tay: true, mucTieu: 'bong-mo',
@@ -262,6 +286,31 @@
         { moTa: 'Lùi trước rồi mới nhặt: tay kẹp vào chỗ trống', baiLam: { chinh: FOR(2, ['tidy()', 'turn_left()']), hamCuaMan: [H('tidy', ['go_wall()', 'back()', 'pick()', 'turn_right()', 'drop()'])] }, phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Ngách nằm thấp hơn chỗ xe nhặt thùng một ô.', 'Thêm back() ngay sau pick().']
+    }),
+
+    /* ================================================================ SM1-A lượt 2 (đề xuất A2): màn mới thay che-tay.7 "Đặt lại chỗ cũ" (cất) ở hàng làm quen chương che-banh-lui:
+       hàm của màn pull_box() = go_wall() (cảm biến) + drag() (hàm em vừa chế ở che-tay.5: nhặt, lùi hai ô, đặt), kéo thùng lùi lên nút đè M cho cửa kho mở.
+       Chương trình chính khóa gọi hàm một lần; không lùi (quay đầu, tiến hai ô, quay lại, đặt) vẫn thắng nhưng 10 nhịp so với 8: 2 sao.
+       Viết thẳng pick / back / back / drop thay cho drag() cùng ô (24 so với 25) nên vẫn 3 sao: mùa 1 không ép gọi hàm bằng sao ô (xem báo cáo lượt 1 câu 2). */
+    man({
+      chuong: 'che-banh-lui', so: 6, ten: 'Kéo thùng lên nút', chinhCoDinh: true, tay: true, mucTieu: 'bong-mo',
+      hamCuaEmCan: ['go_wall', 'drag', 'pick', 'back', 'drop', 'u_turn', 'move'],
+      deBai: 'Thùng gỗ nằm cuối lối đi, nút đè M ở giữa lối, cửa kho C bên cạnh đang đóng. Viết thân hàm pull_box() của màn: đi tới sát thùng rồi kéo nó về đặt lên nút. Thùng nằm trên M thì cửa mở; xe đứng như xe mờ.',
+      veMaMau: 'Chương trình chính bị khóa, chỉ gọi pull_box(). Thân hàm mới có go_wall(): chạy thử, xem xe dừng ở đâu so với thùng và nút.',
+      san: ['#######', '#######', '####o##', '#..#.##', '#..#M##', '#..C.##', '#..####', '#######'],
+      batDau: { x: 4, y: 5, huong: 0 },
+      bongMo: { x: 4, y: 5, huong: 0, vat: [{ x: 4, y: 4 }] },
+      maMau: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()'])] },
+      sao: { o: 25, nhip: 8 },
+      loiGiai: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'drag()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', '# kéo thùng lùi hai ô lên nút', 'drag()'])] } },
+      loiSai: [
+        { moTa: 'Chỉ nhặt, chưa kéo về: thùng còn trên tay', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'pick()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Lùi một ô rồi đặt: thùng chưa tới nút', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'pick()', 'back()', 'drop()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'drag() ngay tại chỗ: trước mặt chưa có thùng', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['drag()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Kéo xong lại đẩy thùng lên: nút trống, cửa đóng', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'drag()', 'pick()', 'move()', 'drop()'])] }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['Nút M cách thùng đúng hai ô. drag() em vừa chế: nhặt vật trước mặt, lùi hai ô, đặt xuống.', 'Thân hàm: go_wall() rồi drag().']
     }),
 
     /* ================================================================ SM1-A: trùm mới của chương che-banh-lui (thay che-xe.10) */
