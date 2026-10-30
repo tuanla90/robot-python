@@ -111,14 +111,22 @@ const LOI_SAI = {
     { moTa: 'R1 luôn bật cực N (đẩy vật chữ N)', doi: [LAP(2, ['if front_metal() or front_pole() != "none":', '    magnet_n()', '    wait()', '    u_turn()', '    magnet_off()', '    wait()', '    u_turn()', 'else:', '    turn_left()', '    move()']), null], ket: 'thua' },
     { moTa: 'R1 chỉ hỏi front_metal (bỏ sót vật nam châm)', doi: [LAP(2, ['if front_metal():'].concat(R1_TU_DONG.slice(1, 5), ['    u_turn()'], R1_TU_DONG.slice(5))), null], ket: 'thua' }
   ],
-  // gói 8 mùa 4 (30/10, man-doi-chia-hang.js): hai màn cầu nối đường cong
+  // gói 8 mùa 4 (30/10, man-doi-chia-hang.js): bốn màn mới chen đúng chỗ khái niệm
   'doi-nam-cham.11': [
     { moTa: 'R1 tiến hai ô: vật còn cách ba ô, ngoài tầm hút', doi: [['move()', 'move()', 'lane()'], null], ket: 'thua' },
     { moTa: 'R2 không chờ: gắp hụt', doi: [null, ['sort_by_color()']], ket: 'thua' }
   ],
   'doi-nam-cham.12': [
-    { moTa: 'R1 quên quay lại sau khi thả: trạm hai dịch sai hướng', doi: [LAP(2, ['step(0, 1)', 'magnet_n()', 'wait()', 'u_turn()', 'magnet_off()', 'wait()']), null], ket: 'thua' },
-    { moTa: 'R1 không dịch trạm: lần hai hút hụt', doi: [LAP(2, ['magnet_n()', 'wait()', 'u_turn()', 'magnet_off()', 'wait()', 'u_turn()']), null], ket: 'thua' }
+    { moTa: 'R2 đặt sang bên (sort_by_color): hai bên là tường', doi: [null, ['while front_clear():', '    wait()', 'sort_by_color()']], ket: 'thua' },
+    { moTa: 'R1 quên quay lên: lane() kéo hụt', doi: [['move()', 'move()', 'lane()'], null], ket: 'thua' }
+  ],
+  'che-doi-nam-cham.11': [
+    { moTa: 'Chỉ R1 lặp: R2 dừng sau trạm đầu', doi: [null, ['step(0, 1)', 'while front_clear():', '    wait()', 'pass_back()']], ket: 'thua' },
+    { moTa: 'R1 quên quay lại sau khi thả', doi: [LAP(2, ['step(0, 1)', 'grip()', 'u_turn()', 'magnet_off()', 'wait()']), null], ket: 'thua' }
+  ],
+  'che-doi-nam-cham.12': [
+    { moTa: 'R2 chờ quá ngắn: gắp khi vật chưa tới', doi: [null, LAP(2, ['step(0, 1)', 'hold_on(1)', 'pass_back()'])], ket: 'thua' },
+    { moTa: 'R1 quên quay lại sau hand_off()', doi: [LAP(2, ['step(0, 1)', 'hand_off()']), null], ket: 'thua' }
   ],
   'che-doi-nam-cham.1': [
     { moTa: 'hold_on viết bằng while: lần chờ thứ hai kéo dài mãi', doi: [null, null], ham: [HOLD_WHILE], ket: 'thua' },
@@ -177,7 +185,7 @@ console.log('— đội và cấu trúc');
 kiem('20 màn: 10 doi-nam-cham + 10 che-doi-nam-cham', ds1.length === 10 && ds2.length === 10);
 kiem('R1 là nam châm + cảm biến từ, không đọc màu', tatCa.every((m) => m.doi[0].robot.tay === 'nam-cham' && m.doi[0].hamGoc.includes('front_metal') && m.doi[0].hamGoc.includes('front_pole') && !m.doi[0].hamGoc.includes('color')));
 kiem('R2 là tay kẹp + camera bốn hướng (30/10: camera trước cũ đổi thành camera-4, color("front")), không có nam châm', tatCa.every((m) => m.doi[1].robot.tay === 'kep' && m.doi[1].robot.camBien.some((c) => c.ma === 'camera-4') && m.doi[1].hamGoc.includes('color') && !m.doi[1].hamGoc.some((h) => /^magnet/.test(h))));
-const KHOA = { 'doi-nam-cham.12': 1, 'doi-nam-cham.2': 0, 'doi-nam-cham.4': 0, 'doi-nam-cham.6': 0, 'doi-nam-cham.8': 1, 'che-doi-nam-cham.3': 0, 'che-doi-nam-cham.6': 1, 'che-doi-nam-cham.7': 1, 'che-doi-nam-cham.8': 0, 'che-doi-nam-cham.9': 1 };
+const KHOA = { 'doi-nam-cham.2': 0, 'doi-nam-cham.4': 0, 'doi-nam-cham.6': 0, 'doi-nam-cham.8': 1, 'che-doi-nam-cham.3': 0, 'che-doi-nam-cham.6': 1, 'che-doi-nam-cham.7': 1, 'che-doi-nam-cham.8': 0, 'che-doi-nam-cham.9': 1 };
 kiem('robot tự động khóa đúng các màn đã định', tatCa.every((m) => J(m.doi.map((d, i) => !!d.coDinh)) === J([KHOA[m.ma] === 0, KHOA[m.ma] === 1])),
   tatCa.filter((m) => m.doi.some((d) => d.coDinh)).map((m) => m.ma).join(', '));
 for (const ma of Object.keys(KHOA)) {
