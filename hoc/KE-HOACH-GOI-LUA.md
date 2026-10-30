@@ -68,6 +68,15 @@ Bộ dò do-duong-be-sung.mjs mô phỏng lửa (trạng thái f, cửa chống 
 kiem-trum-mua-2.mjs: dap-lua, đặc trưng 'lua', màn trình diễn như kiem-be-sung. Recall gói 10 vẫn đủ (mỗi gói 1–9 ≥ 3 lần).
 Cần sửa ở P4: thẻ Cảm biến hồng ngoại còn ghi warm() nóng với "robot khác, van hơi đang mở" (thiếu đám cháy); hướng dẫn từng bước cho màn trình diễn.
 
+## P3 đã làm (30/10)
+
+Chương trum-mua-2 "Chế lệnh: dập lửa": 1. Hàm put_out() (while warm(): squirt("low"), hai đám cỡ 3 và 1) · 2. Hàm put_out_left() (mục tiêu dap-lua, lửa trong giếng bên trái) ·
+3. Sửa hàm put_far() (Sola phun nhẹ vào lửa xa nên lặp mãi; sửa thành phun mạnh) · 4. Hàm clear_row(n) (ba giếng cháy, dap-lua) · 5. box_spray() cho đội (giữ, R1 put_out() trước) ·
+6. gate_push() (giữ, put_out() trước thùng) · 7. Hàm fire_valve() (dập lửa chắn van rồi phun mạnh mở van) · 8. Đố: phun thừa một lần (lần thừa trúng van, cửa đóng; dap-lua) ·
+9. far_push() (giữ, put_out() trước thùng đầu) · 10. Trùm cuối mùa (giữ hai dây chuyền, thêm đám cháy cỡ 1 / 3 sát mũi lúc xuất phát, put_out() trước).
+Bỏ: side_push, open_valve, Sửa hàm nudge(), lane_row, check_lane, Đố: băng không chở xích (không màn nào sau gói 10 dùng các hàm này). Sổ lệnh: put_out, put_out_left, clear_row, fire_valve.
+Recall gói 10: gói 1 còn đúng 3 lần (tối thiểu).
+
 ## 3. Thứ tự làm (commit theo phần, test đầy đủ trước khi gộp main)
 
 - **P1 lõi + hình:** cfg.lua, mục tiêu `dap-lua`, chẩn đoán `con-lua`, `warm()` / `distance()` thấy lửa, hoạt cảnh tia trúng lửa (lửa nhỏ dần, khói),
