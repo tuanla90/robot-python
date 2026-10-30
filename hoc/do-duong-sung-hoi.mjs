@@ -36,7 +36,8 @@ export const HIEU_QUA_BANH = ['cho', 'tien', 'phai', 'trai', 'lui', 'dau'];
 /** Các hành động cho phép theo phần cứng: bánh (6 hiệu quả) + ban-truoc / ban-sau. */
 export function hanhDongChoPhep(man, tuyChon = {}) {
   const pc = tuyChon.phanCung || SanHoc.phanCungCua(man);
-  const kq = toHopChoPhep(man, { phanCung: pc, daoChieu: (man.daoChieu || []).filter((x) => x === 'trai' || x === 'phai') }).map((b) => ({ banh: b }));
+  // xích: tổ hợp quay đầu (1,-1) cũng chỉ là quay phải chậm (XICH_QUAY của san-hoc.js), nên bỏ 'dau'; phai / trai là nửa vòng quay (hai nhịp liên tiếp mới quay 90°)
+  const kq = toHopChoPhep(man, { phanCung: pc, daoChieu: (man.daoChieu || []).filter((x) => x === 'trai' || x === 'phai') }).filter((b) => !(man.loaiRobot === 'xich' && b === 'dau')).map((b) => ({ banh: b }));
   // daoChieu 'sung' chỉ đổi TÊN lệnh (spray ↔ spray_back), không đổi tập hiệu quả làm được: ban-truoc cần nòng trước, ban-sau cần nòng sau (đã tính đảo)
   const dao = (man.daoChieu || []).includes('sung');
   const truoc = dao ? 'spray_back' : 'spray', sau = dao ? 'spray' : 'spray_back';
@@ -52,7 +53,10 @@ export function hanhDongChoPhep(man, tuyChon = {}) {
 /** Dựng ngữ cảnh từ một màn MỘT sân (san, batDau, mucTieu, bongMo, noi, cuaNhip). */
 export function dungNguCanh(man, tuyChon = {}) {
   const loai = man.loaiRobot || 'banh';
-  if (loai !== 'banh') throw new Error('Bộ dò súng hơi chỉ biết xe hai bánh.');
+  // PDM2b 31/10: thêm XÍCH (mùa 2 R1 là xe cứu hỏa): quay chậm (hai nhịp liên tiếp cùng tổ hợp mới quay 90°, trạng thái có phần quay dở `g`), băng chuyền không đẩy xích,
+  // không có quay đầu một nhịp. Giật y hệt xe hai bánh (không beSung). Chưa hỗ trợ xichDay (xích đẩy thùng khi tiến).
+  if (loai !== 'banh' && loai !== 'xich') throw new Error('Bộ dò súng hơi chỉ biết xe hai bánh và xe xích.');
+  if (loai === 'xich' && man.xichDay) throw new Error('Bộ dò súng hơi chưa hỗ trợ xích đẩy thùng (xichDay).');
   const san = SanHoc.docSan(man.san, man.mau || null, null, null);
   if (san.vat.length) throw new Error('Bộ dò súng hơi không hỗ trợ vật nhẹ (o, X).');
   if (san.gam.length || san.ho.length) throw new Error('Bộ dò súng hơi không hỗ trợ gầm / hố.');
@@ -114,7 +118,7 @@ export function trangThaiDau(ctx, tuyChon = {}) {
   ctx.cua.forEach((d, i) => { const mo = d.nhip ? cuaMoNhip(d.nhip, tt.t || 0) : d.mo0; if (mo) cm |= 1 << i; });
   if (tt.cm !== undefined) cm = tt.cm;
   const p = (tt.p || ctx.thung0).slice();
-  return { x: ctx.bd.x, y: ctx.bd.y, h: ctx.bd.huong || 0, d: 0, p, e: p.map(() => 0), nm: tt.nm || 0, cm, bm: tt.bm || 0, t: (tt.t || 0) % ctx.L, q: tt.q || 0 };
+  return { x: ctx.bd.x, y: ctx.bd.y, h: ctx.bd.huong || 0, d: 0, p, e: p.map(() => 0), nm: tt.nm || 0, cm, bm: tt.bm || 0, t: (tt.t || 0) % ctx.L, q: tt.q || 0, g: '' };
 }
 
 /** Thùng kẹt góc (không phải ô đích)? Giống thungKet() của san-hoc.js. */
@@ -138,7 +142,7 @@ function coThungKet(ctx, S) {
 
 /** Một nhịp. Trả về trạng thái mới (bản sao). */
 export function buocMotNhip(ctx, S, a) {
-  const N = { x: S.x, y: S.y, h: S.h, d: S.d, p: S.p.slice(), e: S.e.slice(), nm: S.nm, cm: S.cm, bm: S.bm, t: S.t, q: S.q, chet: false };
+  const N = { x: S.x, y: S.y, h: S.h, d: S.d, p: S.p.slice(), e: S.e.slice(), nm: S.nm, cm: S.cm, bm: S.bm, t: S.t, q: S.q, g: '', chet: false };   // g: xích đang quay dở ('phai' / 'trai')
   const { rong, VEC = SanHoc.VEC } = ctx;
   const cuaDong = (cell) => { const j = ctx.cuaIdx[cell]; return j >= 0 && !((N.cm >> j) & 1); };
   const cellXe = () => N.y * rong + N.x;
@@ -191,17 +195,23 @@ export function buocMotNhip(ctx, S, a) {
       const cell = ny * rong + nx;
       if (!ctx.chan[cell] && !cuaDong(cell) && N.p.indexOf(cell) < 0) { N.x = nx; N.y = ny; }
     };
-    switch (a.banh) {
-      case 'tien': tuDi(N.h, 1); break;
-      case 'lui': tuDi(N.h, -1); break;
-      case 'phai': N.h = (N.h + 1) % 4; break;
-      case 'trai': N.h = (N.h + 3) % 4; break;
-      case 'dau': N.h = (N.h + 2) % 4; break;
-      default: break;
+    if (ctx.loai === 'xich' && (a.banh === 'phai' || a.banh === 'trai')) {
+      // xích quay chậm: nhịp thứ hai liên tiếp cùng chiều mới quay 90°; nhịp đầu chỉ "quay dở" (g); hành động khác xoá phần quay dở
+      if (S.g === a.banh) N.h = (N.h + (a.banh === 'phai' ? 1 : 3)) % 4;
+      else N.g = a.banh;
+    } else {
+      switch (a.banh) {
+        case 'tien': tuDi(N.h, 1); break;
+        case 'lui': tuDi(N.h, -1); break;
+        case 'phai': N.h = (N.h + 1) % 4; break;
+        case 'trai': N.h = (N.h + 3) % 4; break;
+        case 'dau': N.h = (N.h + 2) % 4; break;
+        default: break;
+      }
     }
   }
-  // băng chuyền của xe
-  const hb = ctx.bang[cellXe()];
+  // băng chuyền của xe (xích bám chắc: băng không đẩy)
+  const hb = ctx.loai === 'xich' ? -1 : ctx.bang[cellXe()];
   if (hb >= 0 && !((N.bm >> ctx.bangIdx[cellXe()]) & 1)) {
     N.d++;
     if (N.d >= ctx.nguong) {
@@ -265,7 +275,7 @@ export function laDich(ctx, S) {
 }
 
 function khoa(S) {
-  return S.x + ',' + S.y + ',' + S.h + ',' + S.d + ',' + S.p.join('.') + ',' + S.e.join('.') + ',' + S.nm + ',' + S.cm + ',' + S.bm + ',' + S.t + ',' + S.q;
+  return S.x + ',' + S.y + ',' + S.h + ',' + S.d + ',' + S.p.join('.') + ',' + S.e.join('.') + ',' + S.nm + ',' + S.cm + ',' + S.bm + ',' + S.t + ',' + S.q + ',' + (S.g || '');
 }
 
 export function nhipSungHoiNganNhat(man, tuyChon = {}) {

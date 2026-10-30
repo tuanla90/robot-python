@@ -447,7 +447,15 @@ console.log('\n== 7. Bộ dò đường tắt (BFS theo nhịp, có giới hạn
   })());
   kiem('bộ dò: cờ bị cửa chặn mà không có nút → không tới được (null, không cắt ngang)', (() => { const k = nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['.C.F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: a.hamGoc }); return k.nhip === null && !k.catNgang; })());
   kiem('bộ dò có GIỚI HẠN: toiDaTrangThai nhỏ thì cắt ngang (catNgang true)', (() => { const k = nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['.......', '.......', '.......', '.......', '......F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: a.hamGoc }, { toiDaTrangThai: 5 }); return k.catNgang === true && k.nhip === null; })());
-  kiem('bộ dò: không hỗ trợ vật nhẹ / tay kẹp / xích: ném lỗi rõ', /không hỗ trợ vật nhẹ/.test(loi(() => nhipSungHoiNganNhat(Object.assign({}, a, { san: ['.o.F'], batDau: { x: 0, y: 0, huong: 1 } })))) && /chỉ biết xe hai bánh/.test(loi(() => nhipSungHoiNganNhat(Object.assign({}, a, { loaiRobot: 'xich' })))));
+  kiem('bộ dò: không hỗ trợ vật nhẹ / tay kẹp / omni: ném lỗi rõ (PDM2b 31/10: xích đã hỗ trợ)', /không hỗ trợ vật nhẹ/.test(loi(() => nhipSungHoiNganNhat(Object.assign({}, a, { san: ['.o.F'], batDau: { x: 0, y: 0, huong: 1 } })))) && /chỉ biết xe hai bánh/.test(loi(() => nhipSungHoiNganNhat(Object.assign({}, a, { loaiRobot: 'omni' })))));
+  // PDM2b 31/10: xích quay chậm (hai nhịp liên tiếp cùng chiều mới quay 90°, không quay đầu một nhịp), băng chuyền không đẩy xích. Cờ chéo góc: hai bánh 3 nhịp, xích 4 nhịp; chuỗi xích chạy thật bằng SanHoc cũng thắng đúng nhịp.
+  kiem('bộ dò xích: tiến, quay (hai nhịp), tiến = 4 nhịp (hai bánh 3); chuỗi chạy thật thắng đúng nhịp; băng chuyền không đẩy xích', (() => {
+    const g = { san: ['F.', '#.'], batDau: { x: 1, y: 1, huong: 0 }, hamGoc: a.hamGoc };
+    const bx = nhipSungHoiNganNhat(Object.assign({ loaiRobot: 'xich' }, g)), bb = nhipSungHoiNganNhat(Object.assign({ loaiRobot: 'banh' }, g));
+    const rx = SanHoc.chay(Object.assign({ loaiRobot: 'xich' }, g), chuoiThanhMa(bx.chuoi));
+    const bang = nhipSungHoiNganNhat({ loaiRobot: 'xich', san: ['<<<F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: a.hamGoc });
+    return bx.nhip === 4 && bb.nhip === 3 && rx.thang && rx.nhip === 4 && bang.nhip === 3;
+  })());
   kiem('bộ dò: thùng sau xe cách đích hai ô = 2 nhịp (hai phát spray("high"), mỗi phát nhích một ô); thùng kẹt góc là trạng thái chết (BFS bỏ); không lucBan thì phun nhẹ không đẩy được thùng (null)', nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['#######', '#D.H..#', '#######'], batDau: { x: 4, y: 1, huong: 1 }, mucTieu: 'day-thung', hamGoc: a.hamGoc, lucBan: true }).nhip === 2 &&
     nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['.....', '.....', '..H..'], batDau: { x: 2, y: 1, huong: 2 }, mucTieu: 'day-thung', hamGoc: a.hamGoc, lucBan: true }).nhip === null &&
     nhipSungHoiNganNhat({ loaiRobot: 'banh', san: ['#######', '#D.H..#', '#######'], batDau: { x: 4, y: 1, huong: 1 }, mucTieu: 'day-thung', hamGoc: a.hamGoc }).nhip === null);

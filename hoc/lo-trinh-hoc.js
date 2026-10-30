@@ -2352,6 +2352,18 @@
     DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
     });
+    // PDM2b 31/10: gói 6–7 (luc-ban, che-luc-ban, do-nhiet, che-do-nhiet) đổi thẳng ở NGÂN HÀNG sang xích (turn_* → tr_*, u_turn → spin, front_clear → distance),
+    // nên bản hai bánh của các hàm của em đó không còn trong `nguon`: khai cứng ở đây cho màn ẩn (doi-sung-hoi gọi squirt_left, be-sung gọi switch_left…).
+    [['luc-ban.8', { ten: 'smart_spray', thamSo: [], than: ['if front_clear():', '    squirt("high")', 'else:', '    squirt("low")'] }],
+      ['che-luc-ban.2', { ten: 'auto_left', thamSo: [], than: ['turn_left()', 'auto_spray()', 'turn_right()'] }],
+      ['che-luc-ban.4', { ten: 'auto_right', thamSo: [], than: ['turn_right()', 'auto_spray()', 'turn_left()'] }],
+      ['che-luc-ban.5', { ten: 'squirt_left', thamSo: ['p'], than: ['turn_left()', 'squirt(p)', 'turn_right()'] }],
+      ['che-luc-ban.8', { ten: 'auto_turn', thamSo: [], than: ['auto_spray()', 'turn_left()'] }],
+      ['che-do-nhiet.2', { ten: 'switch_left', thamSo: [], than: ['turn_left()', 'switch_on()', 'turn_right()'] }],
+      ['che-do-nhiet.4', { ten: 'find_warm', thamSo: [], than: ['turn_right()', 'while not warm():', '    turn_right()'] }],
+      ['che-do-nhiet.7', { ten: 'switch_right', thamSo: [], than: ['turn_right()', 'switch_on()', 'turn_left()'] }],
+      ['che-do-nhiet.8', { ten: 'auto_left_on', thamSo: [], than: ['turn_left()', 'auto_on()', 'turn_right()'] }]
+    ].forEach(function (x) { THAN_CU.push(x); });
     THAN_CU.forEach(function (x) { HAM_CU[x[1].ten] = copy(x[1]); DAY_CU.push([x[0], x[1].ten]); });
     // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.
     var khoEm = {};

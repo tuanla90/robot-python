@@ -205,13 +205,13 @@ for (const m of DS) {
   const kho = khoTruoc.get(m.ma), daTao = daTaoTruoc.get(m.ma);
   bang[m.ma] = {};
   if (CHI && !CHI.split(',').includes(m.ma)) continue;
-  kiem(m.ma + ': đủ trường, robot hai bánh súng hơi + hồng ngoại, warm, lực bắn, nút bật sẵn, một sân', () => {
+  kiem(m.ma + ': đủ trường, robot xe xích + vòi phun + hồng ngoại (PDM2b 31/10, trước: hai bánh), warm, lực bắn, nút bật sẵn, một sân', () => {
     for (const k of ['ten', 'deBai', 'san', 'batDau', 'mucTieu', 'hamGoc', 'robot', 'sao', 'maMau', 'loiGiai', 'loiGiaiKhac', 'goiY', 'hamCuaEmCan', 'yMoi']) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
-    assert.equal(m.loaiRobot, 'banh');
-    assert.equal(m.robot.than, 'hai-banh');
+    assert.equal(m.loaiRobot, 'xich');       // PDM2b 31/10: R1 xe cứu hỏa (thân xích)
+    assert.equal(m.robot.than, 'xich');
     assert.equal(m.robot.tay, 'hoi', m.ma + ' tay ' + m.robot.tay);
     assert.equal(m.lucBan, true, m.ma + ' thiếu lucBan: true');
     for (const h of ['spray', 'spray_back', 'warm']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h);
@@ -354,7 +354,7 @@ if (!CHI) {
 const HAM_CU = new Set(khoTruoc.get('do-nhiet.1').map((h) => h.ten));
 const recall = (m) => {
   const d = dongCua({ b: m.loiGiai, moi: m.loiGiai.hamCuaEmMoi });
-  const ds = [...loiGoi(d)].filter((t) => HAM_CU.has(t) && !['move', 'turn_left', 'turn_right', 'u_turn', 'squirt'].includes(t));
+  const ds = [...loiGoi(d)].filter((t) => HAM_CU.has(t) && !['move', 'turn_left', 'turn_right', 'u_turn', 'tr_left', 'tr_right', 'spin', 'squirt'].includes(t));
   if (d.some((l) => /^\s*for\b/.test(l))) ds.push('for');
   if (d.some((l) => /distance\(\)/.test(l))) ds.push('distance');
   if (d.some((l) => /"high"/.test(l))) ds.push('bắn tụ');
