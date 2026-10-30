@@ -155,6 +155,7 @@
 
     man({
       chuong: 'banh-lui', so: 4, ten: 'Ra khỏi ngõ cụt', mucTieu: 'bong-mo', nhipTheoLoiGiai: true,
+      nhipTheo: 'max',                                      // SM1-A lượt 2 (đề xuất B): nhịp theo ngõ dài nhất (13), không cộng ba ngõ (34 = 3 lần màn 9)
       huyHieu: { ma: 'banh-lui', ten: 'Huy hiệu Bánh lùi' },
       hamCuaEmCan: ['go_wall', 'back', 'turn_right', 'u_turn', 'move'],
       deBai: 'Ba ngõ cụt dài ngắn khác nhau, trạm ◆ ở cuối ngõ. Ngã rẽ luôn cách ◆ hai ô, lúc bên phải lúc bên trái. Một chương trình phải chạm ◆, lùi ra tới ngã rẽ rồi đi hết nhánh rẽ như xe mờ, ở cả ba sân.',
@@ -171,7 +172,7 @@
         { x: 1, y: 4, huong: 3, diQua: [{ x: 5, y: 2 }] }
       ],
       maMau: { chinh: ['go_wall()'] },
-      sao: { o: 20, nhip: 34 },
+      sao: { o: 20, nhip: 13 },
       loiGiai: { chinh: LG_TRUM },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', '# lùi ra ngã rẽ'].concat(LG_TRUM.slice(1)) } },
       loiSai: [

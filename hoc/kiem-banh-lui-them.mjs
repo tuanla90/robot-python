@@ -438,6 +438,14 @@ for (const c of goi.chuong) {
   }
 }
 for (const ma of MOI) if (bang[ma] && bang[ma].demCung) console.log('đếm cứng ' + ma + ': ' + bang[ma].demCung);
+kiem('trùm banh-lui.4: nhịp theo ngõ dài nhất (nhipTheo max, SM1-A lượt 2 đề xuất B), lớn nhất chương, không quá 2 lần màn 9', () => {
+  const ds = M.danhSach.filter((m) => m.chuong === 'banh-lui'), trum = ds[9], m9 = ds[8];
+  assert.equal(trum.ma, 'banh-lui.4'); assert.equal(trum.nhipTheo, 'max');
+  const r = cham(trum, trum.loiGiai);
+  assert.equal(r.soNhip, Math.max(...r.theoSan.map((s) => s.soNhip)), 'soNhip phải là nhịp ngõ dài nhất, không phải tổng');
+  for (const m of ds.slice(0, -1)) assert.ok(trum.sao.nhip > m.sao.nhip, 'trùm ' + trum.sao.nhip + ' nhịp không hơn ' + m.ma + ' ' + m.sao.nhip);
+  assert.ok(trum.sao.nhip <= 2 * m9.sao.nhip, 'trùm gấp quá 2 lần màn 9');
+});
 kiem('trùm che-banh-lui.5: nhịp lớn nhất chương, không quá 2 lần màn 9; ba bãi khác số nhịp; thân park_in() có go_wall (while), back (lùi), park (hàm em chế)', () => {
   const ds = M.danhSach.filter((m) => m.chuong === 'che-banh-lui'), trum = ds[9], m9 = ds[8];
   for (const m of ds.slice(0, -1)) assert.ok(trum.sao.nhip > m.sao.nhip, 'trùm ' + trum.sao.nhip + ' nhịp không hơn ' + m.ma + ' ' + m.sao.nhip);
