@@ -70,6 +70,30 @@ Ghi chú mùa 2:
 - Huy hiệu mùa 2 nào chưa có bản vector thì ở vector phim 10 vẽ icon bộ phận thay (không để canvas pixel trong phim vector); khi V7a có bản vector thì tự dùng.
 - Gói 8, 9 (thử thách) và 4, 5, 6, 7 (sân / nâng cấp) không bắt buộc khung code; 4 gói 5, 6, 7, 8 vẫn có code vì lệnh / hàm mới là ý chính của gói.
 
+## 3d. Kịch bản mùa 3 "Mỏ quặng" (30/10, phiên Mùa 3; theo mảng MUA_3 của lo-trinh-hoc.js; dữ liệu `game/phim-mua-3.js`)
+
+Truyện nối phim gói 10 mùa 2: xe cứu hỏa R1 tới mỏ quặng, quặng sắt nằm bên kia khe nứt (đơn việc). Em lắp chân nhện, nam châm, cảm biến từ;
+R2 (nhện, sơn lam) tới làm đội; phim cuối **Xe thăm dò R1 xuất xưởng** (nhện + nam châm bụng + cảm biến từ), nhá mùa 4 "Thành phố" (cánh quạt, đầu sơn, mắt nhìn xuống).
+Robot trong phim theo robot của màn: gói 2, 6 xe hai bánh có nam châm; gói 3, 7 thêm cảm biến từ ở hông; gói 8 R1 xe xích tay kẹp, R2 nhện.
+Hình: sân mini `san3` (c.san cộng 'u' hố, 'n' gầm, 'P' / 'Q' đệm từ N / S, 'p' / 'q' đệm tắt, 'i' quặng sắt, 'm' / 'w' vật nam châm N / S), dải sàn,
+nền mỏ (cửa hầm `PhimVector.moQuang`). Hình mới ở phim-vector.js: `PhimVector.oSan / vat / moQuang` (chỉ thêm hàm). Lời ở chu.js `pg.<mã gói>.<n>`, tem `pg.tem.xe-tham-do`.
+
+| Gói | Khung 1 | Khung 2 | Khung 3 | Khung 4 |
+|---|---|---|---|---|
+| 1 Nhện `nhen` | **đơn việc**: quặng sắt bên kia khe nứt, xe cứu hỏa R1 dừng ở mép, "?" | chân nhện bay tới, R1 thành nhện, CẠCH! (nền mỏ có cửa hầm) | nhện bước từng ô, co chân chui gầm, tới quặng | code `go_right()` `go_right()` `go_down()` |
+| 2 Nam châm `nam-cham` | quặng rải rác, xe hai bánh không có gì để nhặt | nam châm chữ U bay lên mũi, CẠCH! | `magnet_n`: quặng trước mũi bị hút dính | code `magnet_n()` `move()` `magnet_off()`, quặng rơi |
+| 3 Cảm biến từ `cam-ung-tu` | thùng gỗ lẫn quặng: cục nào là sắt? | cảm biến từ lăn ra, gắn hông | gặp sắt phía trước: sóng từ, TÍT TÍT! | code `if front_metal(): magnet_n()` |
+| 4 Bãi từ `bai-tu` | bãi đệm N / S khắp sàn | nam châm khác cực đệm: xe bị hút trượt tới, VÈO! | nhện đè nút, đệm tắt (phủ tối), quặng nhấc được | |
+| 5 Nhảy `nhay` | khe nứt một ô trước nhện, "?" | nhện co chân lấy đà, NHÚN! | nhện nhảy vòng cung qua hố, BẬT! | code `go_right()` `jump("R")` `go_right()` |
+| 6 Đảo cực `dao-cuc` | bật N trước vật cực N: bị đẩy ra, ĐẨY! | đổi sang S: vật bị hút về, HÚT! | code `magnet_s()` `back()` `magnet_n()`: kéo về rồi đẩy đi | |
+| 7 Đọc cực `doc-cuc` | hai khối giống hệt, mỗi khối một dấu "?" | cảm biến từ đọc: hiện chữ N | code `if front_pole() == "N": magnet_s() else: magnet_n()` | |
+| 8 Đội `doi-xich` | R2 nhện tới mỏ, R1 xe xích chờ | R2 nhảy khe đè nút, cửa mở, R1 chở hàng qua | hai bảng code R1 `wait_n(4)` / R2 `jump("R")` | |
+| 9 Bụng nhện `bung-nhen` | nhện chui gầm tới chỗ quặng dưới chân, "?" | nam châm bụng gắn, bật: quặng dính dưới bụng | nhện mang quặng nhảy khe, thả ở ô đích | |
+| 10 Xe thăm dò R1 xuất xưởng `tong-hop-3` | Xe thăm dò đủ bộ, 10 huy hiệu chương 1 mười gói bay quanh | **tem XUẤT XƯỞNG**, tên **"Xe thăm dò R1"**, ba part: chân nhện, nam châm, cảm biến từ | việc được gỡ: dò quặng bên kia khe, hút, nhảy về bãi | ngoài mỏ, thành phố xa xa (nhà sáng đèn) nhấp nháy cánh quạt, đầu sơn, mắt nhìn xuống, "?" (nhá mùa 4) |
+
+Máy kiểm: `kiem-phim-goi.mjs` mục 1c (mọi gói MUA_3 có phim ở phim-mua-3.js, gói bộ phận có code ở khung cuối, nạp ngay sau phim-mua-2.js; `--loi-gia` bỏ phim dao-cuc → đỏ);
+`kiem-huy-hieu-phim-vector.mjs` B1–B4 tự gồm phim mùa 3 (B5-v so nền chỉ phim cũ, y nguyên).
+
 ## 3c. Sợi dây chung 7 mùa (user 29/10: "end mùa nên kiểu giống mùa 1 xuất xưởng")
 
 Truyện khung: **mỗi mùa R1 lắp một cỗ máy cho một nơi đang cần**, gói 10 là **cỗ máy đó xuất xưởng** (như "R1 xuất xưởng" mùa 1).

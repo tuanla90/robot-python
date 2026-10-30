@@ -446,6 +446,45 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot({ than: 'hai-banh', son: '' }, st(), 1, 60, 44, 28);
   });
 
+  /* 30/10 mùa 3 "Mỏ quặng" (20 chương; nhen, nam-cham, che-nhen giữ hình cũ, 17 hình mới): nhện, nam châm, cảm biến từ ('tu', ổ hông), đệm từ, hố (khe nứt),
+     khối sắt (quặng), vật nam châm hai cực. Hai chương đội (doi-xich, che-doi-xich đang là bí danh hai-robot) dùng mã mới doi-xich-nhen / che-doi-xich-nhen
+     để bí danh cũ y nguyên. Trùm mùa (trum-mua-3) = xe-tham-do: cỗ máy mùa 3 xuất xưởng (nhện + nam châm bụng + cảm biến từ), hai sao như xuat-xuong. */
+  var TU = [{ ma: 'tu', o: 'hong' }], NHEN_BUNG = { than: 'nhen', tay: 'nam-cham' };
+  /** Thẻ chuỗi "…" (kiểu khối code) tâm (cx, cy) rộng w. */
+  function theChuoi(c, cx, cy, w, chu, nen) { c.khoi(cx, cy, w, 24, nen || BM.vecLaDam, [[chu, BM.vecVo, 14]]); }
+  /** Xe hai bánh có cảm biến từ quay lên, sóng dò bên phải tới vật `vat` (khoi-sat / nam-cham). */
+  function doTu(g, c, cx, cy, canh, vat, s) {
+    var x1 = cx + canh * 0.8;
+    c.vat(vat, s || {}, x1, cy, canh * 0.3);
+    c.song(cx + canh * 0.36, cy, 0, [canh * 0.12, canh * 0.22, canh * 0.32], BM.vecCyanDam);
+    c.robot({ than: 'hai-banh', camBien: TU }, st(null, null, { bat: true }), 0, cx, cy, canh);
+  }
+  /** Nhện nam châm bụng đang hút (cực N). */
+  function nhenBung(c, cx, cy, canh, cam) { c.robot(cam ? { than: 'nhen', tay: 'nam-cham', camBien: TU } : NHEN_BUNG, st(null, { bat: true, cuc: 'N' }, cam ? { bat: true } : null), 0, cx, cy, canh); }
+  /** Cung nhảy đứt nét qua hố. */
+  function cungNhay(g, d) { g.setLineDash([4, 3]); H.duong(g, d); H.vien(g, BM.vecVien, 2.6, 'butt'); g.setLineDash([]); }
+  dk('chuoi-nhen', function (g, c) { c.robot({ than: 'nhen' }, st(), 0, 38, 64, 48); theChuoi(c, 58, 32, 38, '"RU"'); });
+  dk('logic-nam-cham', function (g, c) { namCham(g, c, 34, 66, 40); c.khoi(58, 32, 38, 24, BM.vecTimDam, [['and', BM.vecVang, 14]]); });
+  dk('cam-ung-tu', function (g, c) { doTu(g, c, 34, 54, 46, 'khoi-sat'); });
+  dk('che-cam-ung-tu', che(function (g, c) { doTu(g, c, 28, 64, 38, 'khoi-sat'); }));
+  dk('bai-tu', function (g, c) { c.o('dem-tu', { cuc: 'S' }, 36, 58, 40); c.vat('khoi-sat', {}, 74, 58, 16); c.muiTen(76, 34, 50, 34, BM.vecVang, 4.5); });
+  dk('che-bai-tu', che(function (g, c) { c.o('dem-tu', { cuc: 'N' }, 30, 62, 28); c.o('dem-tu', { cuc: 'S' }, 54, 72, 24); }));
+  dk('nhay', function (g, c) { c.o('ho', {}, 46, 68, 30); cungNhay(g, 'M18 66 C24 22 62 18 70 44'); c.robot({ than: 'nhen' }, st(), 1, 72, 54, 36); });
+  dk('dao-cuc', function (g, c) { c.vong(50, 52, 25, BM.vecVang, 5); c.vat('nam-cham', { cuc: 'N' }, 34, 52, 20); c.vat('nam-cham', { cuc: 'S' }, 66, 52, 20); });
+  dk('che-dao-cuc', che(function (g, c) { c.vong(40, 62, 16, BM.vecVang, 4); c.vat('nam-cham', { cuc: 'S' }, 40, 62, 16); }));
+  dk('doc-cuc', function (g, c) { doTu(g, c, 34, 54, 46, 'nam-cham', { cuc: 'S' }); });
+  dk('che-doc-cuc', che(function (g, c) { doTu(g, c, 28, 64, 38, 'nam-cham', { cuc: 'N' }); }));
+  dk('doi-xich-nhen', function (g, c) {
+    c.vat('khoi-sat', {}, 50, 30, 14);
+    c.robot({ than: 'xich', son: '' }, st(), 0, 30, 60, 40);
+    c.robot({ than: 'nhen', son: 'lam' }, st(), 0, 70, 60, 40);
+  });
+  dk('che-doi-xich-nhen', che(function (g, c) { c.robot({ than: 'xich', son: '' }, st(), 0, 28, 62, 34); c.robot({ than: 'nhen', son: 'lam' }, st(), 0, 56, 70, 32); }));
+  dk('bung-nhen', function (g, c) { nhenBung(c, 44, 46, 56); c.vat('khoi-sat', {}, 72, 74, 14); c.song(72, 74, -Math.PI * 0.75, [10, 16], BM.vecDo); });
+  dk('che-bung-nhen', che(function (g, c) { nhenBung(c, 40, 62, 46); }));
+  dk('tong-hop-3', function (g, c) { c.o('ho', {}, 32, 70, 26); c.vat('khoi-sat', {}, 76, 66, 13); nhenBung(c, 54, 42, 48); });
+  dk('xe-tham-do', function (g, c) { nhenBung(c, 50, 56, 58, true); c.sao(22, 28, 7); c.sao(78, 28, 7); });
+
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
     ve: ve,
