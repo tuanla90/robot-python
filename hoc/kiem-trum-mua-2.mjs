@@ -18,6 +18,9 @@
       gói 1–7 như kiem-be-sung.mjs (recallMan2); gói 8 = màn hai robot hay gọi hàm của gói 8; gói 9 = gọi hàm của gói 9, hay lời giải bắn tụ trên bệ súng mà chạy không bệ súng thì
       không 3 sao (CẦN bệ súng). Luật: (a) mỗi màn ≥ 2 gói; (b) trong gói 10 mỗi gói 1–9 được nhắc ≥ 3 lần; (c) gộp gói 9 + 10 (40 màn) mỗi gói 1–8 ≥ 3 lần;
       (d) không hai màn liền nhau cùng kiểu bài (kieuBai). In bảng recall 20 màn + tổng gộp gói 9 + 10.
+   30/10 GÓI LỬA (hoc/KE-HOACH-GOI-LUA.md): chương tong-hop-2 thành "Dập lửa" (cfg.lua; bộ dò do-duong-be-sung.mjs mô phỏng lửa). Mục tiêu dap-lua được phép; đặc trưng
+   'lua' (sân có lửa) tính là điều mới; màn trình diễn (chiChay, tong-hop-2.1) như kiem-be-sung.mjs: mã mẫu khoá phải thắng 3 sao, lời giải khác / công thức khác / lời sai
+   chấm trên bản không khoá, miễn đường cong và không làm mốc.
    Chạy: node hoc/kiem-trum-mua-2.mjs              (trượt thì thoát mã 1)
          node hoc/kiem-trum-mua-2.mjs --loi-gia    (cắm lỗi giả: các mục bị cắm phải ĐỎ; thoát 0 khi đỏ đủ)
          node hoc/kiem-trum-mua-2.mjs --chi=tong-hop-2.3,tong-hop-2.4   (chỉ kiểm từng màn cho các mã này)
@@ -167,6 +170,7 @@ async function main() {
     if (m.chinhCoDinh) f.add('chuong trinh khoa');
     if (m.doi) f.add('hai robot');
     if (m.mucTieu) f.add('muc tieu ' + m.mucTieu);
+    if (m.lua && [].concat(m.lua).flat().length) f.add('lua');
     if (m.lucBan || (m.doi || []).some((d) => d.lucBan)) f.add('luc ban');
     if (m.beSung) f.add('be sung');
     if (m.xichDay || (m.doi || []).some((d) => d.xichDay)) f.add('xich day');
@@ -247,7 +251,7 @@ async function main() {
       const mat = (m.robot.camBien || []).map((c) => c.ma);
       if (mat.length) { assert.deepEqual(mat, ['hong-ngoai']); for (const h of ['distance', 'warm']) assert.ok(m.hamGoc.includes(h), m.ma + ' khay thiếu ' + h); }
       else assert.ok(!m.hamGoc.includes('distance') && !m.hamGoc.includes('warm'), m.ma + ' khay có cảm biến mà robot không gắn mắt');
-      assert.ok(['toi-co', 'bong-mo', 'day-thung'].includes(m.mucTieu), m.ma + ' mục tiêu ' + m.mucTieu);
+      assert.ok(['toi-co', 'bong-mo', 'day-thung', 'dap-lua'].includes(m.mucTieu), m.ma + ' mục tiêu ' + m.mucTieu);
       if (m.hang === 'trum') assert.ok(soSan(m) <= 3, m.ma + ' trùm tối đa ba sân');
       else assert.equal(soSan(m), 1, m.ma + ' nhiều sân chỉ ở trùm (luật lộ trình)');
       if (soSan(m) > 1) assert.equal(m.nhipTheo, 'tong', m.ma + ' nhiều sân phải tính tổng nhịp');
@@ -289,14 +293,16 @@ async function main() {
       assert.deepEqual(r.chanDoan.filter((c) => c.muc !== 'thong-tin').map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán (ngoài thông tin)');
       assert.ok(r.theoSan.length === soSan(m) && r.theoSan.every((s) => s.thang));
       const rm = cham(m, m.maMau);
-      assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
+      if (m.chiChay) assert.ok(rm.thang && rm.sao === 3 && m.chinhCoDinh, m.ma + ' màn trình diễn: mã mẫu khoá phải thắng 3 sao');    // gói lửa: tong-hop-2.1 trình diễn
+      else assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
+      const mMo = m.chiChay ? Object.assign({}, m, { chiChay: false, chinhCoDinh: false }) : m;      // màn trình diễn: lời khác / lời sai chấm trên bản không khoá
       const xs = moiBai(m);
-      const rk = cham(m, xs[2].b, xs[2].moi);
+      const rk = cham(mMo, xs[2].b, xs[2].moi);
       assert.ok(rk.thang, m.ma + ' lời giải khác thua: ' + JSON.stringify(rk.chanDoan.map((c) => c.ma)));
       assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');
-      for (const x of xs.filter((x) => x.ten.startsWith('congThucKhac'))) { const rc = cham(m, x.b, x.moi); assert.ok(rc.thang, m.ma + ' ' + x.ten + ' thua: ' + JSON.stringify(rc.chanDoan.map((y) => y.ma))); }
+      for (const x of xs.filter((x) => x.ten.startsWith('congThucKhac'))) { const rc = cham(mMo, x.b, x.moi); assert.ok(rc.thang, m.ma + ' ' + x.ten + ' thua: ' + JSON.stringify(rc.chanDoan.map((y) => y.ma))); }
       xs.filter((x) => x.ten.startsWith('loiSai')).forEach((x, i) => {
-        const rl = cham(m, x.b, x.moi), ls = m.loiSai[i];
+        const rl = cham(mMo, x.b, x.moi), ls = m.loiSai[i];
         assert.equal(rl.thang, false, m.ma + ' lời sai ' + i + ' "' + ls.moTa + '" lại thắng');
         const ma = rl.chanDoan.map((c) => c.ma);
         for (const y of ls.phaiCoMa) assert.ok(ma.includes(y), m.ma + ' lời sai ' + i + ' "' + ls.moTa + '" thiếu mã ' + y + ' (có: ' + ma.join(',') + ')');
@@ -318,7 +324,7 @@ async function main() {
         let t = MOC[c];
         assert.ok(t, c + ': không có màn mốc');
         for (const m of DS_C[c]) {
-          if (m.hang === 'trum') continue;
+          if (m.hang === 'trum' || m.chiChay) continue;                         // trùm và màn trình diễn miễn, không làm mốc
           const tran = (a, b, le) => a <= Math.max(1.5 * b, b + le);
           assert.ok(tran(soDong(m), soDong(t), LE.dong), m.ma + ' dòng ' + soDong(m) + ' so với ' + t.ma + ' ' + soDong(t));
           assert.ok(tran(m.sao.nhip, t.sao.nhip, LE.nhip), m.ma + ' nhịp ' + m.sao.nhip + ' so với ' + t.ma + ' ' + t.sao.nhip);

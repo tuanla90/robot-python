@@ -53,6 +53,19 @@ bụi nước + lửa nhỏ đi, đồng bộ theo vết, ảnh nhỏ), man-choi
 Khác kế hoạch: xe đâm lửa dùng chẩn đoán sẵn có dam-tuong (vat 'lua', lời riêng) thay cho mã mới vao-lua; bộ dò đường tắt (bản mô phỏng riêng) dạy lửa ở P2,
 cùng máy kiểm gói 10, khi biết bộ dò nào dùng. Đã xem trong trình duyệt: ô lửa 4 cỡ, tia trúng lửa, tắt thì vết cháy, xe đi qua.
 
+## P2 đã làm (30/10)
+
+Chương tong-hop-2 "Dập lửa" (man-trum-mua-2.js), giữ khung các màn cũ đã cân recall khi thêm được lửa:
+1. Đám cháy đầu tiên (mới, trình diễn chiChay: squirt("low"), forward(5)) · 2. Lửa to (mới: lửa hai ngọn sát mũi, phun hai lần) ·
+3. Giếng sau lưng (+ lửa giữa hành lang cách ba ô: phải phun mạnh) · 4. Thùng ở làn dưới (+ lửa đúng chỗ né xuống: quay xuống phun nhẹ rồi mới xuống) ·
+5. Mở cửa cho thùng sau lưng (+ lửa chắn tia trước van: phun nhẹ dập lửa, phun mạnh mở van) · 6. Sửa hàm pair_spray() (giữ) ·
+7. Hai đám cháy (mới, thay Trạm xa trạm gần: khóa main, hàm của màn douse() = while warm(): squirt("low"); hai đám cỡ 1 và 3 ở hai đoạn vuông góc
+   vì cùng hàng thì warm() thấy đám xa và phun nhẹ mãi) · 8, 9. hai màn đội (giữ) · 10. Trùm: Ba hành lang cháy (mới: while warm(): squirt("high"), go_to_wall(), tr_right(), forward(2)).
+Bỏ: Băng chuyền giúp một tay, Đố: squirt("high") không lùi, Trạm xa trạm gần, Trùm: Ba dây chuyền thùng. Màn 6, 8, 9 chưa có lửa.
+Bộ dò do-duong-be-sung.mjs mô phỏng lửa (trạng thái f, cửa chống cháy, đích dap-lua, so chéo lõi theo lửa); do-duong-do-nhiet.mjs cắt lua theo sân.
+kiem-trum-mua-2.mjs: dap-lua, đặc trưng 'lua', màn trình diễn như kiem-be-sung. Recall gói 10 vẫn đủ (mỗi gói 1–9 ≥ 3 lần).
+Cần sửa ở P4: thẻ Cảm biến hồng ngoại còn ghi warm() nóng với "robot khác, van hơi đang mở" (thiếu đám cháy); hướng dẫn từng bước cho màn trình diễn.
+
 ## 3. Thứ tự làm (commit theo phần, test đầy đủ trước khi gộp main)
 
 - **P1 lõi + hình:** cfg.lua, mục tiêu `dap-lua`, chẩn đoán `con-lua`, `warm()` / `distance()` thấy lửa, hoạt cảnh tia trúng lửa (lửa nhỏ dần, khói),
