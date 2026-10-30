@@ -169,7 +169,7 @@
     return null;
   }
 
-  var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước bắn trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)' };
+  var LOAI_VAT = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước phun trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)' };
   // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
   var TEN_CHAN_NGAN = { 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
     'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'gam-thap': 'gầm thấp', 'dem-tu': 'ô đệm từ' };
@@ -580,7 +580,7 @@
       } else if (e0.vat === 'cua') {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng cửa ở đó đang đóng nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          ' Cửa đóng chặn xe như tường: cửa mở khi tia nước bắn trúng van điều khiển nó, hoặc khi tới nhịp tự mở. front_clear() (nếu có) cho biết ô trước mặt đã trống chưa.';
+          ' Cửa đóng chặn xe như tường: cửa mở khi tia nước phun trúng van điều khiển nó, hoặc khi tới nhịp tự mở. front_clear() (nếu có) cho biết ô trước mặt đã trống chưa.';
       } else if (e0.vat === 'gam-thap') {
         s2 = 'Ở nhịp ' + e0.nhip + ', ' + (man.loaiRobot === 'nhen' ? 'nhện' : 'robot') + ' định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là gầm thấp' +
           (man.loaiRobot === 'nhen' ? ': chân đang duỗi nên đầu nhện đụng trần, nhện đứng yên (vẫn mất hai nhịp).' : ' (chỉ nhện đang co chân mới chui qua được) nên nó đứng yên (vẫn mất một nhịp).') +
@@ -678,12 +678,12 @@
     if (banLai.length) {
       var bl0 = banLai[0], mbl = g.anhXa[bl0.dongPy] || null, mblt = bl0.truoc ? (g.anhXa[bl0.truoc.dongPy] || null) : null;
       them('ban-goi-lai', 'Ở ' + viTri(mbl) + ': vòi phun đã nhận lệnh ' + bl0.truoc.ten + '() (ở ' + viTri(mblt) + ') trong nhịp này rồi, nên lệnh ' + bl0.ten + '() này bị bỏ qua. ' +
-        'Mỗi nhịp vòi phun chỉ bắn một phát; wait() mới sang nhịp kế.', { cho: cho(mbl), choTruoc: cho(mblt), nhip: bl0.nhip });
+        'Mỗi nhịp vòi phun chỉ phun một phát; wait() mới sang nhịp kế.', { cho: cho(mbl), choTruoc: cho(mblt), nhip: bl0.nhip });
     }
     var hetDan = res.suKien.filter(function (e) { return e.ma === 'het-dan'; });
     if (hetDan.length) {
       var hd0 = hetDan[0];
-      them('het-dan', 'Ở nhịp ' + hd0.nhip + ', vòi phun đã hết nước nên không bắn được gì (và xe cũng không giật).' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
+      them('het-dan', 'Ở nhịp ' + hd0.nhip + ', vòi phun đã hết nước nên không phun được gì (và xe cũng không giật).' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
         ' Màn này chỉ có ' + (man.danToiDa || 0) + ' lượt phun: dùng cho đúng chỗ.', { nhip: hd0.nhip, soLan: hetDan.length, cho: cho(hd0.lenh ? (g.anhXa[hd0.lenh.dongPy] || null) : null) });
     }
     var banHut = res.suKien.filter(function (e) { return e.ma === 'ban-hut'; });
@@ -691,7 +691,7 @@
       var bh0 = banHut[0];
       cd.push({ ma: 'ban-hut', muc: 'thong-tin', nhip: bh0.nhip, soLan: banHut.length, huong: bh0.huong, cho: cho(bh0.lenh ? (g.anhXa[bh0.lenh.dongPy] || null) : null),
         loi: 'Ở nhịp ' + bh0.nhip + ', tia nước bay thẳng về phía ' + SanHoc.TEN_HUONG[bh0.huong] + (bh0.sau ? ' (ra sau đuôi xe)' : '') + ' từ ô (' + bh0.tu.x + ', ' + bh0.tu.y + ') rồi ra khỏi sân mà không trúng gì.' +
-          (banHut.length > 1 ? ' Chuyện này xảy ra ' + banHut.length + ' lần.' : '') + ' Tia nước chỉ bay thẳng: spray() bắn ra trước mũi xe, spray_back() bắn ra sau đuôi xe. Xem xe đang quay mặt về đâu.' });
+          (banHut.length > 1 ? ' Chuyện này xảy ra ' + banHut.length + ' lần.' : '') + ' Tia nước chỉ bay thẳng: spray() phun ra trước mũi xe, spray_back() phun ra sau đuôi xe. Xem xe đang quay mặt về đâu.' });
     }
     var banNgan = res.suKien.filter(function (e) { return e.ma === 'ban-ngan'; });
     if (banNgan.length) {
@@ -720,7 +720,7 @@
       var bd0 = banDung[0], mbd = bd0.lenh ? (g.anhXa[bd0.lenh.dongPy] || null) : null, mbdn = bd0.ban ? (g.anhXa[bd0.ban.dongPy] || null) : null;
       cd.push({ ma: 'ban-dung-yen', muc: 'thong-tin', nhip: bd0.nhip, soLan: banDung.length, cho: cho(mbd), choBan: cho(mbdn),
         loi: 'Ở nhịp ' + bd0.nhip + ': lệnh ' + (bd0.ban ? bd0.ban.ten : 'spray') + '() (ở ' + viTri(mbdn) + ') và lệnh ' + (bd0.lenh ? bd0.lenh.ten + '() (ở ' + viTri(mbd) + ') ' : 'bánh ') + 'nằm chung một nhịp, nên xe không tự đi và lệnh kia bị bỏ.' +
-          (banDung.length > 1 ? ' Chuyện này xảy ra ' + banDung.length + ' lần.' : '') + ' Nhịp có lệnh bắn chỉ bắn (và giật), bánh nghỉ.' });
+          (banDung.length > 1 ? ' Chuyện này xảy ra ' + banDung.length + ' lần.' : '') + ' Nhịp có lệnh phun chỉ phun (và giật), bánh nghỉ.' });
     }
     var nutDoi = res.suKien.filter(function (e) { return e.ma === 'nut-doi'; }), demNut = {};
     nutDoi.forEach(function (e) { var k = e.o.x + ',' + e.o.y; demNut[k] = (demNut[k] || 0) + 1; });
@@ -728,7 +728,7 @@
     if (nutLap && !res.thang) {
       var nl = nutDoi.filter(function (e) { return e.o.x + ',' + e.o.y === nutLap; })[0];
       cd.push({ ma: 'ban-nut-lai', muc: 'thong-tin', o: nl.o, soLan: demNut[nutLap], cho: cho(nl.lenh ? (g.anhXa[nl.lenh.dongPy] || null) : null),
-        loi: 'Van ở (' + nl.o.x + ', ' + nl.o.y + ') bị bắn trúng ' + demNut[nutLap] + ' lần: mỗi phát trúng đổi van một lần (mở rồi đóng), nên bắn số lần chẵn thì cửa và băng chuyền nối với van trở về như lúc đầu.' });
+        loi: 'Van ở (' + nl.o.x + ', ' + nl.o.y + ') bị phun trúng ' + demNut[nutLap] + ' lần: mỗi phát trúng đổi van một lần (mở rồi đóng), nên phun số lần chẵn thì cửa và băng chuyền nối với van trở về như lúc đầu.' });
     }
     var cuaKet = res.suKien.filter(function (e) { return e.ma === 'cua-ket'; });
     if (cuaKet.length) {
@@ -788,7 +788,7 @@
       var db0 = dayBiChan[0];
       cd.push({ ma: 'day-bi-chan', muc: 'thong-tin', nhip: db0.nhip, soLan: dayBiChan.length, o: db0.o, lyDo: db0.lyDo, tuMui: !!db0.tuMui, cho: cho(db0.lenh ? (g.anhXa[db0.lenh.dongPy] || null) : null),
         loi: db0.tuMui
-          ? 'Ở nhịp ' + db0.nhip + ', vật nam châm đang dính ở mũi xe bị đẩy ra nhưng ô trước mũi xe, (' + db0.o.x + ', ' + db0.o.y + '), là ' + (LY_THA[db0.lyDo] || db0.lyDo) + ' nên nó không bắn ra được, vẫn dính.' + (dayBiChan.length > 1 ? ' Chuyện này xảy ra ' + dayBiChan.length + ' lần.' : '') + ' Quay xe về phía ô trống rồi đổi cực.'
+          ? 'Ở nhịp ' + db0.nhip + ', vật nam châm đang dính ở mũi xe bị đẩy ra nhưng ô trước mũi xe, (' + db0.o.x + ', ' + db0.o.y + '), là ' + (LY_THA[db0.lyDo] || db0.lyDo) + ' nên nó không hất ra được, vẫn dính.' + (dayBiChan.length > 1 ? ' Chuyện này xảy ra ' + dayBiChan.length + ' lần.' : '') + ' Quay xe về phía ô trống rồi đổi cực.'
           : 'Ở nhịp ' + db0.nhip + ', nam châm đẩy vật nam châm ở ô (' + db0.o.x + ', ' + db0.o.y + ') nhưng ô sát sau nó là ' + (LY_THA[db0.lyDo] || db0.lyDo) + ' nên vật không nhúc nhích được.' + (dayBiChan.length > 1 ? ' Chuyện này xảy ra ' + dayBiChan.length + ' lần.' : '') +
             ' Vật bị đẩy trượt thẳng ra xa xe và dừng trước vật cản.' });
     }
@@ -797,7 +797,7 @@
       var dv0 = dayVatSk[0];
       cd.push({ ma: 'day-vat', muc: 'thong-tin', nhip: dv0.nhip, soLan: dayVatSk.length, cuc: dv0.cuc, tuMui: !!dv0.tuMui, den: dv0.den, soO: dv0.soO, cho: cho(dv0.lenh ? (g.anhXa[dv0.lenh.dongPy] || null) : null),
         loi: dv0.tuMui
-          ? 'Ở nhịp ' + dv0.nhip + ', nam châm đổi sang cực ' + dv0.cuc + ', trùng chữ ' + dv0.cuc + ' trên vật đang dính, nên vật bị bắn ra khỏi mũi xe và trượt ' + dv0.soO + ' ô.'
+          ? 'Ở nhịp ' + dv0.nhip + ', nam châm đổi sang cực ' + dv0.cuc + ', trùng chữ ' + dv0.cuc + ' trên vật đang dính, nên vật bị hất ra khỏi mũi xe và trượt ' + dv0.soO + ' ô.'
           : 'Ở nhịp ' + dv0.nhip + ', nam châm cực ' + dv0.cuc + ' đẩy vật nam châm có chữ ' + dv0.cuc + ' ở ô (' + dv0.tu.x + ', ' + dv0.tu.y + ') đi ' + dv0.soO + ' ô: cực giống nhau thì đẩy nhau.' +
             (dayVatSk.length > 1 ? ' Chuyện này xảy ra ' + dayVatSk.length + ' lần.' : '') + ' Muốn kéo vật về thì bật cực KHÁC chữ trên vật.' });
     }

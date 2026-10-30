@@ -99,7 +99,7 @@ console.log('\n== 2. Nối cửa / băng chuyền: nút bật sẵn không đư�
 console.log('\n== 3. Lỗi cấu hình khác ==');
 {
   let e = loiCfg(goc({ nutBat: [{ x: 2, y: 1 }] }));
-  kiem('ô không phải nút N → lỗi "Nút bật sẵn: ô (2, 1) không phải nút bắn N"', /Nút bật sẵn: ô \(2, 1\) không phải nút bắn N\./.test(e), e);
+  kiem('ô không phải nút N → lỗi "Nút bật sẵn: ô (2, 1) không phải van N"', /Nút bật sẵn: ô \(2, 1\) không phải van N\./.test(e), e);
   e = loiCfg({ loaiRobot: 'banh', hamGoc: SUNG, san: ['#####', '#.M.#', '#...#', '#####'], batDau: { x: 1, y: 2, huong: 0 }, nutBat: [{ x: 2, y: 1 }] });
   kiem('ô nút đè M → lỗi ghi rõ nút đè M không bật sẵn được', /nút đè M không bật sẵn được/.test(e), e);
   e = loiCfg(goc({ nutBat: { x: 3, y: 1 } }));

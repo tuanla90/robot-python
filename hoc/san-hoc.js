@@ -127,7 +127,7 @@
             "high"  PHUN MẠNH: tia bay tới vật cản đầu tiên, xe GIẬT một ô: spray("high") giật LÙI (về phía đuôi), spray_back("high") giật TỚI (về phía mũi).
           p lạ (chữ khác, số, nhiều đối số) → lỗi chạy 'luc-ban-sai'. Màn không khai lucBan mà gọi có đối số → lỗi chạy 'luc-chua-mo'. Robot không vòi phun bỏ qua cờ lucBan. Sự kiện 'ban' có thêm luc và hetTam (bóng nhanh rơi vì hết tầm).
         - Nhịp có bắn thì xe không tự đi: lệnh bánh / trượt cùng nhịp bị bỏ ('ban-dung-yen', thông tin). Hai phát cùng nhịp: phát sau bị bỏ ('ban-goi-lai', lỗi). Quên wait() sau lệnh bắn →
-          'quen-wait'. Đạn vô hạn, trừ khi màn khai cfg.danToiDa = n: mỗi phát tốn 1 viên, hết đạn thì không bắn VÀ không giật ('het-dan', lỗi) nhưng vẫn mất nhịp.
+          'quen-wait'. Đạn vô hạn, trừ khi màn khai cfg.danToiDa = n: mỗi phát tốn 1 viên, hết đạn thì không phun VÀ không giật ('het-dan', lỗi) nhưng vẫn mất nhịp.
         - THỨ TỰ TRONG NHỊP: (a) bắn: bóng bay (nút đổi, băng chuyền nối nút đổi NGAY) → (b) GIẬT: xe (hay thùng) → (c) băng chuyền (theo trạng thái MỚI) → (d) cửa đổi ở CUỐI nhịp.
         - BÓNG bay THẲNG theo hướng bắn (spray: hướng mặt; spray_back: hướng ngược mặt, bay từ ô sát đuôi xe), ô tới ô TRONG CÙNG NHỊP, dừng ở vật cản đầu tiên: tường cao '#', nút 'N' (trung 'nut'),
           cửa đóng (trung 'cua'), thùng nặng (trung 'thung'), vật nằm đất (trung 'vat'), bậc thang S (trung 'bac-thang'). Bóng bay QUA hàng rào '=', băng chuyền, cửa mở, ô màu, ô đích, cờ.
@@ -240,7 +240,7 @@
             Nam châm vẫn bật thì MỖI NHỊP lại hút / đẩy tiếp theo đúng luật đó (vật còn trong tầm và cùng cực bị đá thêm một lần nữa); magnet_off() cho nó yên.
         - Mỗi lần chỉ dính một vật; đang dính thì không hút thêm. Vật dính LƠ LỬNG ở mũi xe, không chiếm ô, đi theo xe (kể cả khi xe quay hay bị băng chuyền đẩy; trangThai 'cam', x y = ô xe).
         - VẬT ĐANG DÍNH khi đổi cực: SẮT vẫn dính (cực nào cũng hút sắt; 'sat-khong-day', thông tin, khi đổi cực lúc đang dính sắt). VẬT NAM CHÂM: đổi sang CÙNG cực với chữ ghi trên vật thì bị BẮN RA: vật rời mũi xe,
-          rơi xuống ô sát mũi rồi trượt như bị đẩy ('day-vat' có tuMui: true); ô sát mũi bị chặn thì bắn không ra, vật vẫn dính ('day-bi-chan', tuMui: true). magnet_off thả vật xuống ô sát mũi, không trượt.
+          rơi xuống ô sát mũi rồi trượt như bị đẩy ('day-vat' có tuMui: true); ô sát mũi bị chặn thì hất không ra, vật vẫn dính ('day-bi-chan', tuMui: true). magnet_off thả vật xuống ô sát mũi, không trượt.
         - Vật nằm trên băng chuyền vẫn hút được; vật nằm dưới đất (kể cả đang trượt) không bị băng kéo (như mọi vật). Quên wait() sau lệnh nam châm → 'quen-wait'.
         - CẢM BIẾN TỪ (part riêng 'tu' từ P1 mùa 3 29/10: màn mùa 3 khai robot.camBien [{ ma:'tu', o:'hong' }] + hamGoc front_metal / front_pole; màn cũ khai khoang-cach + hai hàm
           vẫn chạy y nguyên vì lõi chỉ nhìn hamGoc, không đòi part; drone / nhện không gắn vì không có hướng mặt). Đọc KHÔNG tốn nhịp, ghi mục lệnh có `docCamBien` { cam:'tu', ham, tu, huong, o, khoang, chat, cuc, idVat, trong, nhip } và sự kiện
@@ -1133,10 +1133,10 @@
       });
     }
     if (cfg.nutBat !== undefined && cfg.nutBat !== null) {                    // NÚT BẬT SẴN (xem SÚNG BÓNG): nút N đang bật (nóng) từ đầu màn; không được nối cửa / băng chuyền
-      if (!Array.isArray(cfg.nutBat)) throw new Error('nutBat phải là mảng ô [{ x, y }] (nút bắn N đang bật lúc đầu màn).');
+      if (!Array.isArray(cfg.nutBat)) throw new Error('nutBat phải là mảng ô [{ x, y }] (van N đang bật lúc đầu màn).');
       cfg.nutBat.forEach(function (o) {
         var k = o ? o.x + ',' + o.y : '?', n = nutTai[k];
-        if (!n) throw new Error('Nút bật sẵn: ô (' + (o ? o.x + ', ' + o.y : '?') + ') không phải nút bắn N' + (nutDeTai[k] ? ' (nút đè M không bật sẵn được)' : '') + '.');
+        if (!n) throw new Error('Nút bật sẵn: ô (' + (o ? o.x + ', ' + o.y : '?') + ') không phải van N' + (nutDeTai[k] ? ' (nút đè M không bật sẵn được)' : '') + '.');
         if (n.cua.length || n.bang.length) throw new Error('Nút bật sẵn (' + n.x + ', ' + n.y + ') đang điều khiển ' + (n.cua.length ? n.cua.length + ' cửa' : '') + (n.cua.length && n.bang.length ? ' và ' : '') + (n.bang.length ? n.bang.length + ' ô băng chuyền' : '') +
           ': nút bật sẵn không được nối gì. Khai noi cho các nút khác (nút không có trong noi thì không điều khiển gì), hay ghi nút này với cua: [] và bang: [].');
         n.bat = true;
@@ -1668,7 +1668,7 @@
         return kqBan;
       }
 
-      /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), bắn nhanh rơi vì hết tầm ('ban-ngan'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật
+      /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), phun nhẹ rơi vì hết tầm ('ban-ngan'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật
        *  của phát bắn đó chẳng dời được gì (xe và thùng đứng yên): phát bắn mà xe / thùng đi được một đoạn là phát bắn có ích, bóng đập vào tường là chuyện thường. */
       function thongTinBan(kb, l, hb, giatCoDoi) {
         if (kb.trung === 'nut' || giatCoDoi) return;
@@ -2298,7 +2298,7 @@
           }
           if (LUC_BAN.indexOf(lb) < 0) {
             loi = { loai: 'runtime-error', ma: 'luc-ban-sai', dong: yc.dong, ten: yc.ten, lucDat: lb === undefined ? null : lb,
-              thongDiep: yc.thamSo.length !== 1 ? yc.ten + '() nhận nhiều nhất 1 đối số (lực bắn), đang có ' + yc.thamSo.length + '.'
+              thongDiep: yc.thamSo.length !== 1 ? yc.ten + '() nhận nhiều nhất 1 đối số (lực phun), đang có ' + yc.thamSo.length + '.'
                 : yc.ten + '(p) chỉ nhận p = "low" hoặc "high", mà em đưa vào ' + (typeof lb === 'string' ? '"' + lb + '"' : String(lb)) + '.' };
             return true;
           }

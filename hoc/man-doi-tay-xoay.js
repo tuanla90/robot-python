@@ -1,26 +1,26 @@
 /* ============================================================================
    man-doi-tay-xoay.js — "Robot Chấn Hưng": GÓI ĐỘI TAY XOAY VÀ NAM CHÂM (20 màn, hai chương, ngay sau che-tay-xoay). Kế hoạch: hoc/KE-HOACH-PHOI-HOP.md (§3, §3b, §4, §8).
-   Hai xe hai bánh, cùng cảm biến khoảng cách ở hông: R1 gắn NAM CHÂM CÓ CỰC (kéo vật sắt / vật nam châm từ xa, bắn vật nam châm ra xa; front_metal(), front_pole()),
+   Hai xe hai bánh, cùng cảm biến khoảng cách ở hông: R1 gắn NAM CHÂM CÓ CỰC (kéo vật sắt / vật nam châm từ xa, hất vật nam châm ra xa; front_metal(), front_pole()),
    R2 gắn TAY XOAY (gắp, đặt ở ô trước mặt, bên trái hay bên phải mà không quay xe). Mỗi robot một chương trình, chạy theo nhịp chung.
    Kỹ năng phối hợp của gói (K8): DÂY CHUYỀN NHIỀU VẬT. Ô bàn giao chỉ chứa được một vật: còn vật thì robot đứng trước phải chờ; nhiều vật thì cả hai lặp.
 
    Ba kiểu dây chuyền (luật lõi ở san-hoc.js, phần NAM CHÂM và TAY XOAY; robot đồng đội chặn vật đang trượt):
-     - BĂNG BẮN: nam châm kéo vật chữ N trong kho về mũi (grip(): bật cực S), quay đầu, kick() đổi sang cực N nên vật bị bắn ra, trượt tối đa 3 ô,
-       dừng trước vật cản (tường, vật khác, robot). Băng có tường ở cuối thì ô sát tường là ô bàn giao: còn vật mà bắn tiếp thì hai vật ùn lại,
+     - BĂNG HẤT: nam châm kéo vật chữ N trong kho về mũi (grip(): bật cực S), quay đầu, kick() đổi sang cực N nên vật bị hất ra, trượt tối đa 3 ô,
+       dừng trước vật cản (tường, vật khác, robot). Băng có tường ở cuối thì ô sát tường là ô bàn giao: còn vật mà hất tiếp thì hai vật ùn lại,
        nam châm chờ băng trống bằng front_pole() (thấy vật nam châm trong 3 ô).
      - ĐÓN ĐẦU BĂNG: tay xoay đứng giữa băng, vật trượt tới dừng ngay trước mũi; nhặt, đặt sang bên rồi tiến một ô đón vật sau.
-     - BĂNG XẾP HÀNG: tay xoay đặt vật vào ô bàn giao trước mũi nam châm (chờ ô trống bằng right_clear()); nam châm kéo vật về, quay đầu bắn vào hàng ô đích,
+     - BĂNG XẾP HÀNG: tay xoay đặt vật vào ô bàn giao trước mũi nam châm (chờ ô trống bằng right_clear()); nam châm kéo vật về, quay đầu hất vào hàng ô đích,
        vật sau dừng trước vật trước.
 
    Chương doi-tay-xoay (lời giải chuẩn):
      1  Hai làn: từ và tay        R1 đã có reel(); em viết tay xoay chuyền vật trái sang phải
      2  Nam châm giao hàng        R1 tự động (khóa): tiến một ô, hút vật sau rào về ô bàn giao; em viết R2 chờ bằng left_clear() rồi chuyền vào đích
      3  Nhấc gỗ chắn đường        R2 tới nhấc khúc gỗ khỏi đường hút; R1 chờ front_pole() rồi hút vật sau rào vào đích
-     4  Chờ băng trống            băng bắn, ô bàn giao cuối băng: R2 bận dọn gỗ, R1 chờ front_pole() == "none" mới bắn vật thứ hai
-     5  Băng xếp hàng             R2 đặt hai vật vào ô bàn giao sau rào, chờ right_clear(); R1 tới trễ, hút về rồi bắn vào hàng đích
-     6  Theo kịp nam châm         R1 tự động (khóa) bắn ba vật, vật cuối phải tiến lấy nên chậm hơn; R2 đón đầu băng, chờ bằng cảm biến (đếm nhịp tốn ô)
+     4  Chờ băng trống            băng hất, ô bàn giao cuối băng: R2 bận dọn gỗ, R1 chờ front_pole() == "none" mới hất vật thứ hai
+     5  Băng xếp hàng             R2 đặt hai vật vào ô bàn giao sau rào, chờ right_clear(); R1 tới trễ, hút về rồi hất vào hàng đích
+     6  Theo kịp nam châm         R1 tự động (khóa) hất ba vật, vật cuối phải tiến lấy nên chậm hơn; R2 đón đầu băng, chờ bằng cảm biến (đếm nhịp tốn ô)
      7  Tay xoay chờ cứng         R2 chờ cứng 2 nhịp rồi đặt vật thứ hai nhưng R1 tới trễ hơn: đổi sang chờ bằng right_clear()
-     8  Sửa thứ tự quay           R1 bắn trước khi quay đầu nên vật bay ngược về ô bàn giao: đổi chỗ hai dòng
+     8  Sửa thứ tự quay           R1 hất trước khi quay đầu nên vật bay ngược về ô bàn giao: đổi chỗ hai dòng
      9  Ba vật một băng           đón đầu băng, kho ở phía trên nam châm: viết thẳng tràn khung, cả hai phải lặp
      10 Ca dây chuyền             trùm ba sân: số vật, phía ô đích và độ dài băng khác nhau; R1 lặp theo front_pole(), R2 hỏi right_clear()
 
@@ -30,7 +30,7 @@
      3  Lệnh chờ băng             chế wait_belt() (hàm chờ ô bàn giao trống), chèn trước kick() của R1
      4  Cả đội vào ca             mỗi robot chỉnh chỗ đứng một lần rồi lặp hàm đã chế
      5  Tay xoay tự động          R2 khóa gọi catch_belt(); em viết R1, vật thứ ba nằm phía trên kho
-     6  Xếp hàng bằng nạp băng    đổi chiều: R2 giao vào ô bàn giao sau rào (chờ right_clear()), R1 tới trễ rồi load_belt() bắn vào hàng đích
+     6  Xếp hàng bằng nạp băng    đổi chiều: R2 giao vào ô bàn giao sau rào (chờ right_clear()), R1 tới trễ rồi load_belt() hất vào hàng đích
      7  Sửa hàm nạp               hàm của màn load_up() quên ngắt điện: cực N đẩy vật trong kho ra ngoài tầm
      8  Sửa hàm chờ               R1 khóa gọi hàm của màn wait_cargo() chờ ngược điều kiện
      9  Lùi vào hốc nhường đường  cờ riêng doi[i].co: R2 dời sắt bằng make_way() (của màn, quên quay xe) rồi lùi vào hốc, R1 hút sắt đi qua
@@ -131,13 +131,13 @@
   }
 
   // ---- đoạn chương trình dùng nhiều lần
-  var NAP = ['grip()', 'u_turn()', 'kick()', 'u_turn()'];                          // nam châm: kéo một vật trong kho về, quay đầu, bắn sang băng, quay lại kho
+  var NAP = ['grip()', 'u_turn()', 'kick()', 'u_turn()'];                          // nam châm: kéo một vật trong kho về, quay đầu, hất sang băng, quay lại kho
   var CHO_BANG = ['while front_pole() != "none":', '    wait()'];                // nam châm: chờ băng trống (không còn vật nam châm trong 3 ô trước mặt)
   var CHO_VAT = ['while front_clear():', '    wait()'];                          // chờ có vật trước mặt
   var DON = CHO_VAT.concat(['pick()', 'drop_right()', 'move()']);                  // tay xoay đón đầu băng: chờ vật, nhặt, đặt sang phải, tiến một ô
   // 1.4: tay xoay dọn khúc gỗ trên ô đích trước mặt vào hốc phía sau rồi mới chuyển hai vật từ ô bàn giao (bên trái) sang hai ô đích
   var DON_GO = ['pick()', 'turn_right()', 'move()', 'drop()', 'back()', 'turn_left()', 'pick_left()', 'drop_right()', 'pick_left()', 'drop()'];
-  // 1.7: nam châm đi đường vòng tới sát hàng rào rồi hút hai vật xuyên rào, bắn vào hàng ô đích
+  // 1.7: nam châm đi đường vòng tới sát hàng rào rồi hút hai vật xuyên rào, hất vào hàng ô đích
   var R1_VONG = ['forward(3)', 'turn_right()', 'forward(5)'].concat(lap('for i in range(2):', NAP));
 
   var DS = [
@@ -171,7 +171,7 @@
     }),
     man({
       so: 4, ten: 'Chờ băng trống',
-      deBai: 'Nam châm kéo từng vật chữ N trong kho về rồi quay đầu, kick() bắn vật trượt sang băng. Vật dừng ở ô sát tường, ngay bên trái tay xoay: đó là ô bàn giao. Tay xoay còn bận dọn khúc gỗ trên ô đích phía trước. Bắn vật thứ hai khi vật thứ nhất còn nằm đó thì hai vật ùn lại: nam châm phải chờ băng trống.',
+      deBai: 'Nam châm kéo từng vật chữ N trong kho về rồi quay đầu, kick() hất vật trượt sang băng. Vật dừng ở ô sát tường, ngay bên trái tay xoay: đó là ô bàn giao. Tay xoay còn bận dọn khúc gỗ trên ô đích phía trước. Hất vật thứ hai khi vật thứ nhất còn nằm đó thì hai vật ùn lại: nam châm phải chờ băng trống.',
       veMaMau: 'Chương trình tay xoay đã đúng. Chạy thử: vật thứ hai dừng giữa băng vì vật thứ nhất chưa được nhặt. Thêm vòng chờ cho nam châm.',
       so_do: ['#########', '#########', '#NN....##', '######.W#', '######D##', '######.##', '#########'], bd: [{ x: 3, y: 2, huong: 3 }, { x: 6, y: 3, huong: 1 }],
       maMau: B(lap('for i in range(2):', NAP), DON_GO),
@@ -181,7 +181,7 @@
     }),
     man({
       so: 5, ten: 'Băng xếp hàng',
-      deBai: 'Lần này tay xoay giao hàng: nhặt vật bên trái, đặt vào ô bàn giao bên phải, rồi nhặt vật trước mặt. Ô bàn giao nằm sau hàng rào: nam châm hút xuyên rào được nhưng còn đang chạy tới, nên ô bàn giao còn vật thì tay xoay phải chờ (right_clear()). Tới nơi, nam châm kéo từng vật về, quay đầu bắn vào hàng ô đích: vật sau dừng trước vật trước.',
+      deBai: 'Lần này tay xoay giao hàng: nhặt vật bên trái, đặt vào ô bàn giao bên phải, rồi nhặt vật trước mặt. Ô bàn giao nằm sau hàng rào: nam châm hút xuyên rào được nhưng còn đang chạy tới, nên ô bàn giao còn vật thì tay xoay phải chờ (right_clear()). Tới nơi, nam châm kéo từng vật về, quay đầu hất vào hàng ô đích: vật sau dừng trước vật trước.',
       veMaMau: 'Tay xoay đặt vật thứ hai khi ô bàn giao còn vật nên tay vẫn cầm. Thêm vòng chờ cho R2, viết tiếp vòng lặp cho R1.',
       so_do: ['###########', '#..DD...=.#', '########N.#', '#########N#', '###########'], bd: [{ x: 1, y: 1, huong: 1 }, { x: 9, y: 2, huong: 3 }],
       maMau: B(['forward(6)'], ['pick_left()', 'drop_right()', 'pick()', 'drop_right()']),
@@ -192,7 +192,7 @@
     }),
     man({
       so: 6, ten: 'Theo kịp nam châm', khoa: 0,
-      deBai: 'Nam châm tự động (khóa, xem được) bắn lần lượt ba vật sang băng. Vật cuối nằm xa trong kho nên nam châm phải tiến một ô lấy rồi lùi về, chậm hơn hai vật đầu. Tay xoay đứng giữa băng: mỗi vật trượt tới dừng ngay trước mũi. Viết chương trình cho tay xoay đón cả ba vật, đặt từng vật sang ô đích bên phải.',
+      deBai: 'Nam châm tự động (khóa, xem được) hất lần lượt ba vật sang băng. Vật cuối nằm xa trong kho nên nam châm phải tiến một ô lấy rồi lùi về, chậm hơn hai vật đầu. Tay xoay đứng giữa băng: mỗi vật trượt tới dừng ngay trước mũi. Viết chương trình cho tay xoay đón cả ba vật, đặt từng vật sang ô đích bên phải.',
       veMaMau: 'Chương trình nam châm bị khóa. Viết chương trình R2: chờ vật bằng cảm biến thì một vòng lặp dùng được cho cả ba vật.',
       so_do: ['#############', '#########DDD#', '#.N.NN......#', '#############'], bd: [{ x: 6, y: 2, huong: 3 }, { x: 11, y: 2, huong: 3 }],
       maMau: B(lap('for i in range(2):', NAP).concat(['move()', 'grip()', 'back()', 'u_turn()', 'kick()']), []),
@@ -202,7 +202,7 @@
     }),
     man({
       so: 7, ten: 'Tay xoay chờ cứng',
-      deBai: 'Tay xoay đặt hai vật vào ô bàn giao sau hàng rào; nam châm đi đường vòng tới, hút từng vật xuyên rào rồi bắn vào hàng ô đích. Tay xoay được dặn chờ cứng 2 nhịp rồi đặt vật thứ hai, nhưng nam châm tới trễ hơn thế nên ô bàn giao còn vật và tay vẫn cầm. Sửa chương trình tay xoay để chờ ô bàn giao trống, không đoán số nhịp.',
+      deBai: 'Tay xoay đặt hai vật vào ô bàn giao sau hàng rào; nam châm đi đường vòng tới, hút từng vật xuyên rào rồi hất vào hàng ô đích. Tay xoay được dặn chờ cứng 2 nhịp rồi đặt vật thứ hai, nhưng nam châm tới trễ hơn thế nên ô bàn giao còn vật và tay vẫn cầm. Sửa chương trình tay xoay để chờ ô bàn giao trống, không đoán số nhịp.',
       veMaMau: 'Chương trình nam châm đã đúng. Thay vòng chờ đếm nhịp của tay xoay.',
       so_do: ['##########', '##########', '#.DD...=.#', '#.#####N.#', '#.######N#', '#.########', '##########'], bd: [{ x: 1, y: 5, huong: 0 }, { x: 8, y: 3, huong: 3 }],
       maMau: B(R1_VONG, ['pick_left()', 'drop_right()', 'pick()', 'for i in range(2):', '    wait()', 'drop_right()']),
@@ -212,7 +212,7 @@
     }),
     man({
       so: 8, ten: 'Sửa thứ tự quay',
-      deBai: 'Tay xoay đặt từng vật vào ô bàn giao trước mũi nam châm. Nam châm kéo vật về rồi phải quay mũi lên hàng ô đích phía trên mới bắn, nhưng chương trình bắn trước khi quay nên vật bay ngược về ô bàn giao. Sửa thứ tự trong chương trình nam châm.',
+      deBai: 'Tay xoay đặt từng vật vào ô bàn giao trước mũi nam châm. Nam châm kéo vật về rồi phải quay mũi lên hàng ô đích phía trên mới hất, nhưng chương trình hất trước khi quay nên vật bay ngược về ô bàn giao. Sửa thứ tự trong chương trình nam châm.',
       veMaMau: 'Chương trình tay xoay đã đúng. Chạy thử, xem nhịp kick() mũi nam châm đang quay về đâu.',
       so_do: ['########', '#####D##', '#####D##', '#####.##', '#####..#', '#####N.#', '######N#', '########'], bd: [{ x: 5, y: 4, huong: 1 }, { x: 6, y: 5, huong: 3 }],
       maMau: B(lap('for i in range(2):', ['while front_pole() == "none":', '    wait()', 'grip()', 'kick()', 'turn_left()', 'turn_right()']),
@@ -220,11 +220,11 @@
       loiGiai: B(lap('for i in range(2):', ['while front_pole() == "none":', '    wait()', 'grip()', 'turn_left()', 'kick()', 'turn_right()']),
         ['pick_left()', 'drop_right()', 'pick()', 'while not right_clear():', '    wait()', 'drop_right()']),
       hamCuaEmCan: ['grip', 'kick', 'turn_left', 'turn_right', 'pick', 'pick_left', 'drop_right'],
-      goiY: ['kick() bắn vật theo hướng mũi xe đang quay.', 'Quay lên trước rồi mới kick(), bắn xong quay về.']
+      goiY: ['kick() hất vật theo hướng mũi xe đang quay.', 'Quay lên trước rồi mới kick(), hất xong quay về.']
     }),
     man({
       so: 9, ten: 'Ba vật một băng',
-      deBai: 'Ba vật chữ N xếp trong kho phía trên nam châm. Nam châm kéo từng vật, quay sang băng, bắn, quay về kho. Tay xoay đứng giữa băng đón từng vật, đặt sang ô đích bên trái rồi tiến một ô. Viết thẳng từng chuyến thì tràn khung 10 ô: cả hai robot phải lặp.',
+      deBai: 'Ba vật chữ N xếp trong kho phía trên nam châm. Nam châm kéo từng vật, quay sang băng, hất, quay về kho. Tay xoay đứng giữa băng đón từng vật, đặt sang ô đích bên trái rồi tiến một ô. Viết thẳng từng chuyến thì tràn khung 10 ô: cả hai robot phải lặp.',
       veMaMau: 'Mỗi robot mới có một chuyến. Lặp cho đủ ba vật.',
       so_do: ['##########', '###N######', '###N######', '###N######', '#.........', '######DDD#', '##########'], bd: [{ x: 3, y: 4, huong: 0 }, { x: 8, y: 4, huong: 3 }],
       maMau: B(['grip()', 'turn_right()', 'kick()', 'turn_left()'], CHO_VAT.concat(['pick()', 'drop_left()', 'move()'])),
@@ -265,13 +265,13 @@
   var DS2 = [
     man({
       chuong: C2, so: 1, ten: 'Nạp băng', taoHam: ['load_belt'],
-      deBai: 'Em tự chế lệnh load_belt() cho nam châm: kéo một vật chữ N trong kho về, quay đầu, bắn sang băng, rồi quay lại kho. Chương trình nam châm gọi load_belt() hai lần. Tay xoay đã có chương trình đón vật.',
+      deBai: 'Em tự chế lệnh load_belt() cho nam châm: kéo một vật chữ N trong kho về, quay đầu, hất sang băng, rồi quay lại kho. Chương trình nam châm gọi load_belt() hai lần. Tay xoay đã có chương trình đón vật.',
       veMaMau: 'Mở Xưởng hàm, tạo load_belt(), rồi viết chương trình R1 gọi nó hai lần.',
       so_do: ['##########', '#######DD#', '#.NN.....#', '##########'], bd: [{ x: 4, y: 2, huong: 3 }, { x: 8, y: 2, huong: 3 }],
       maMau: B([], lap('for i in range(2):', DON)),
       loiGiai: BM(lap('for i in range(2):', ['load_belt()']), lap('for i in range(2):', DON), [H_NAP]),
       hamCuaEmCan: ['grip', 'kick', 'u_turn', 'pick', 'drop_right', 'move'],
-      goiY: ['grip() kéo vật chữ N về mũi, kick() đổi cực nên vật bị bắn ra rồi ngắt điện.', 'Thân hàm: grip(), u_turn(), kick(), u_turn()']
+      goiY: ['grip() kéo vật chữ N về mũi, kick() đổi cực nên vật bị hất ra rồi ngắt điện.', 'Thân hàm: grip(), u_turn(), kick(), u_turn()']
     }),
     man({
       chuong: C2, so: 2, ten: 'Đón băng', taoHam: ['catch_belt'],
@@ -285,7 +285,7 @@
     }),
     man({
       chuong: C2, so: 3, ten: 'Lệnh chờ băng', taoHam: ['wait_belt'],
-      deBai: 'Kho nằm bên phải nam châm, băng chạy sang trái tới ô bàn giao sát tường, ngay bên phải tay xoay. Tay xoay còn bận dọn khúc gỗ trên ô đích trước mặt: bắn vật thứ hai sớm thì hai vật ùn lại. Em tự chế lệnh chờ wait_belt(): chờ tới khi không còn vật nam châm nào trong 3 ô trước mũi, rồi gọi nó ngay trước kick().',
+      deBai: 'Kho nằm bên phải nam châm, băng chạy sang trái tới ô bàn giao sát tường, ngay bên phải tay xoay. Tay xoay còn bận dọn khúc gỗ trên ô đích trước mặt: hất vật thứ hai sớm thì hai vật ùn lại. Em tự chế lệnh chờ wait_belt(): chờ tới khi không còn vật nam châm nào trong 3 ô trước mũi, rồi gọi nó ngay trước kick().',
       veMaMau: 'Chạy thử: vật thứ hai dừng giữa băng. Mở Xưởng hàm, tạo wait_belt(), rồi gọi nó trong chương trình R1.',
       so_do: ['#########', '#########', '##....NN#', '#W.######', '##D######', '##.######', '#########'], bd: [{ x: 5, y: 2, huong: 1 }, { x: 2, y: 3, huong: 3 }],
       maMau: B(lap('for i in range(2):', NAP), DON_GO_TRAI),
@@ -301,7 +301,7 @@
       maMau: B([], []),
       loiGiai: B(['u_turn()'].concat(lap('for i in range(3):', ['load_belt()'])), ['move()'].concat(lap('for i in range(3):', ['catch_belt()']))),
       hamCuaEmCan: ['load_belt', 'catch_belt', 'u_turn', 'move'],
-      goiY: ['Vật bắn ra trượt tối đa 3 ô: tay xoay phải đứng trong tầm đó.', 'Nam châm quay về kho trước khi lặp load_belt().']
+      goiY: ['Vật hất ra trượt tối đa 3 ô: tay xoay phải đứng trong tầm đó.', 'Nam châm quay về kho trước khi lặp load_belt().']
     }),
     man({
       chuong: C2, so: 5, ten: 'Tay xoay tự động', khoa: 1,
@@ -315,13 +315,13 @@
     }),
     man({
       chuong: C2, so: 6, ten: 'Xếp hàng bằng nạp băng',
-      deBai: 'Đổi chiều dây chuyền: tay xoay đặt hai vật vào ô bàn giao bên phải. Ô bàn giao nằm sau hàng rào, nam châm hút xuyên rào được. Nam châm tới trễ, rồi load_belt() kéo từng vật về, bắn sang hàng ô đích phía sau. Ô bàn giao còn vật thì tay xoay chờ.',
+      deBai: 'Đổi chiều dây chuyền: tay xoay đặt hai vật vào ô bàn giao bên phải. Ô bàn giao nằm sau hàng rào, nam châm hút xuyên rào được. Nam châm tới trễ, rồi load_belt() kéo từng vật về, hất sang hàng ô đích phía sau. Ô bàn giao còn vật thì tay xoay chờ.',
       veMaMau: 'Tự viết cả hai chương trình.',
       so_do: ['##############', '##############', '####.=...DD..#', '###N.#########', '####N#########', '##############'], bd: [{ x: 12, y: 2, huong: 3 }, { x: 4, y: 3, huong: 3 }],
       maMau: B([], []),
       loiGiai: B(['forward(6)'].concat(lap('for i in range(2):', ['load_belt()'])), GIAO_PHAI),
       hamCuaEmCan: ['load_belt', 'forward', 'move', 'pick', 'pick_left', 'drop_right'],
-      goiY: ['load_belt() kéo vật ở ô bàn giao về, quay đầu bắn ra phía sau rồi quay lại.', 'Tay xoay hỏi right_clear() trước khi đặt vật thứ hai.']
+      goiY: ['load_belt() kéo vật ở ô bàn giao về, quay đầu hất ra phía sau rồi quay lại.', 'Tay xoay hỏi right_clear() trước khi đặt vật thứ hai.']
     }),
     man({
       chuong: C2, so: 7, ten: 'Sửa hàm nạp',
@@ -331,7 +331,7 @@
       maMau: B(lap('for i in range(2):', ['load_up()']), DON_TRAI, [H('load_up', ['grip()', 'turn_right()', 'magnet_n()', 'wait()', 'turn_left()'])]),
       loiGiai: B(lap('for i in range(2):', ['load_up()']), DON_TRAI, [H('load_up', ['grip()', 'turn_right()', 'kick()', 'turn_left()'])]),
       hamCuaEmCan: ['catch_belt', 'grip', 'kick', 'turn_right', 'turn_left', 'pick', 'drop_left', 'move'],
-      goiY: ['Nam châm còn bật thì cuối mỗi nhịp lại hút hay đẩy vật trước mũi.', 'kick() bắn vật rồi ngắt điện luôn.']
+      goiY: ['Nam châm còn bật thì cuối mỗi nhịp lại hút hay đẩy vật trước mũi.', 'kick() hất vật rồi ngắt điện luôn.']
     }),
     man({
       chuong: C2, so: 8, ten: 'Sửa hàm chờ', khoa: 0,

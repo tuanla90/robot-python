@@ -82,7 +82,7 @@
     'doi-thu-manh.2': [S('Quay phải ngay đầu: trước mặt là tường', ['turn_right()', 'go_wall()'], ['doi-thu-thang']), S('Quay qua quay lại trên ô băng nên bị đẩy lùi', ['move()', 'move()', 'turn_right()', 'move()', 'move()', 'move()', 'turn_left()', 'turn_right()', 'move()'], ['doi-thu-thang'])],
     'doi-thu-manh.3': [S('Rẽ nhầm sang trái ở góc trên', ['go_wall()', 'turn_left()', 'move()', 'move()'], ['doi-thu-thang']), S('Thiếu một bước cuối', ['go_wall()', 'turn_right()', 'move()'], ['doi-thu-thang'])],
     'doi-thu-manh.4': [S('Bịt khe rồi quên quay đầu', ['pick()', 'u_turn()', 'drop()', 'go_wall()'], ['chua-toi-co']), S('Thả hộp lại chỗ cũ, khe vẫn hở', ['pick()', 'drop()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'go_wall()'], ['doi-thu-thang'])],
-    'doi-thu-manh.5': [S('Chờ chỉ một nhịp nên rời chỗ trước khi R2 bắn', ['move()', 'wait()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'], ['doi-thu-thang']),
+    'doi-thu-manh.5': [S('Chờ chỉ một nhịp nên rời chỗ trước khi R2 phun', ['move()', 'wait()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'], ['doi-thu-thang']),
       S('Đứng chờ ở ô xuất phát, không nằm trên đường tia nước', ['wait()', 'wait()', 'wait()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'], ['doi-thu-thang'])],
     'doi-thu-manh.6': [S('Ra khỏi cổng rồi rẽ nhầm', ['go_wall()', 'turn_right()', 'go_wall()'], ['doi-thu-thang']), S('Rẽ trái ngay đầu, không đi vào cổng', ['turn_left()', 'go_wall()'], ['doi-thu-thang'])],
     'doi-thu-manh.7': [S('Đi vòng sang phải trước rồi mới nhặt: R2 hút mất hộp', ['turn_right()', 'move()', 'turn_left()', 'move()', 'turn_left()', 'pick()'], ['doi-thu-thang']), S('Nhặt rồi thả ở ô chưa phải đích', ['pick()', 'turn_left()', 'move()', 'turn_right()', 'move()', 'drop()'], ['doi-thu-thang'])],
@@ -188,18 +188,18 @@
       goiY: ['Hộp đặt ở ô (5, 3), giữa hai bậc thang, là bịt kín đường leo của R2.', 'pick(), u_turn() quay sang phải rồi drop(): hộp nằm ở (5, 3) trước khi R2 tới.']
     }),
 
-    // 5. Súng hơi bắn nút N mở cửa cho mình: R1 đứng chắn đường đạn đúng nhịp R2 bắn.
+    // 5. Súng hơi phun nút N mở cửa cho mình: R1 đứng chắn đường đạn đúng nhịp R2 phun.
     taoMan({
       so: 5, ten: 'Chắn tia nước',
-      deBai: 'R2 có vòi phun: bắn trúng van N là cửa C mở, R2 chạy thẳng lên cờ F chỉ vài nhịp. Nhưng tia nước bay thẳng, gặp xe là dừng. Đọc code R2 xem nó bắn ở nhịp nào, cho R1 đứng chắn đường tia nước đúng lúc đó, rồi đi vòng tới cờ.',
-      veMaMau: 'R1 chạy luôn nên R2 bắn trúng van, mở cửa và tới cờ trước.',
+      deBai: 'R2 có vòi phun: phun trúng van N là cửa C mở, R2 chạy thẳng lên cờ F chỉ vài nhịp. Nhưng tia nước bay thẳng, gặp xe là dừng. Đọc code R2 xem nó phun ở nhịp nào, cho R1 đứng chắn đường tia nước đúng lúc đó, rồi đi vòng tới cờ.',
+      veMaMau: 'R1 chạy luôn nên R2 phun trúng van, mở cửa và tới cờ trước.',
       san: ['#######', '#.....#', '#.###F#', '#.###C#', 'N.....#', '#.#####', '#######'],
       bd: [{ x: 1, y: 5, huong: 0 }, { x: 5, y: 4, huong: 3 }],
       r2: R2.hoi(),
       c2: ['wait()', 'wait()', 'spray("high")', 'wait()', 'turn_right()'].concat(FOR(20, ['if front_clear():', '    move()', 'else:', '    wait()'])),
       c1Mau: ['go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
       c1Giai: ['move()', 'wait()', 'wait()', 'go_wall()', 'turn_right()', 'go_wall()', 'turn_right()', 'move()'],
-      doiThu: { part: 'hoi', manh: ['Bắn van N từ xa để mở cửa', 'Giật lùi đi một ô mỗi phát, không cần quay'], yeu: ['Tia nước bay thẳng, gặp xe là dừng: đứng chắn là van không bị bắn'] },
+      doiThu: { part: 'hoi', manh: ['Phun van N từ xa để mở cửa', 'Giật lùi đi một ô mỗi phát, không cần quay'], yeu: ['Tia nước bay thẳng, gặp xe là dừng: đứng chắn là van không bị phun'] },
       goiY: ['R2 chờ 2 nhịp rồi spray("high") ở nhịp 3, tia nước bay dọc hàng dưới tới van N.', 'R1 vào ô (1, 4) ở nhịp 1 rồi wait() hai lần: tia nước đập vào R1, cửa C vẫn đóng.']
     }),
 

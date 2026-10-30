@@ -42,12 +42,23 @@ Nhánh: `claude/phun-nhe` (worktree `.claude/worktrees/phun-nhe`). Dưới đây
 7. **sung-hoi.2** tên "Van phía sau" (tên "Van sau lưng" đã có ở be-sung.2).
 8. Thứ tự lộ trình: sung-hoi 1–6, 8, 7, 9, 10; che-sung-hoi 1–7, 9, 8, 10 (luật đường cong dòng / nhịp / ô).
 
+## Đợt 2 (30/10, user: "quét chữ và làm lại các màn cần thiết")
+
+1. **Quét chữ**: mọi chữ hiện cho người chơi ở mùa 2 (đề, gợi ý, lời sai, hướng dẫn, Sổ lệnh, chẩn đoán, tên gói) đổi "bắn" sang "phun":
+   bắn tụ → phun mạnh, bắn nhanh → phun nhẹ, lực bắn → lực phun, nút bắn → van. Gói 6 tên "Lực phun", chương 2 "Hàm lực phun".
+   Màn nam châm (che-nam-cham, doi-tay-xoay, chẩn đoán đổi cực) đổi "bắn vật" → "hất vật" (màn "Bắn vật" thành "Hất vật"). Giữ "ngắm" của máy ném.
+   Chú thích trong code các tệp màn cũng theo; chú thích lõi san-hoc.js giữ nguyên (lịch sử thiết kế).
+2. **che-doi-sung-hoi.5 thành "Thùng báo tin"**: mỗi van trên cao mở một cửa ở làn omni; hàng rào chắn nên xe vòi phun phải phun mạnh, cú giật đẩy thùng
+   sau lưng xuống ngách. Omni quay mặt lên, không thấy cửa, chỉ thấy thùng rơi xuống trước mặt: catch_crate() (while front_clear(): wait()) chờ tín hiệu đó
+   rồi slide_r(2) qua cửa. Không chờ hay viết nhầm như wait_gate() thì omni đâm cửa đóng; phun nhẹ thì tia không tới van (25 ô, 18 nhịp).
+3. **che-luc-ban.8** bỏ hai back(): chương trình chính chỉ còn auto_turn() hai lần (4 nhịp), xe mờ đứng ngay chỗ xe theo thùng xuống.
+   Để qua luật đường cong, che-luc-ban.9 bớt một nhịp: bỏ ô cuối hành lang, xe mờ đứng trên cửa thứ hai (forward(2) → move()).
+
 ## Cần user chốt
 
-1. **che-doi-sung-hoi.5 "Đỡ ba thùng"** (màn đội): từ luật giật một ô, thùng không còn trượt nên xe omni hết vai chốt chặn, một xe tự thắng. Cần một ý màn đội mới
-   cho omni (ví dụ omni chở / đón thứ gì đó, hay omni mở đường cho xe vòi phun). Chưa sửa.
+1. (đã làm ở đợt 2) che-doi-sung-hoi.5.
 2. (đã tự đổi, xem mục 6 ở trên) Tên chương gói 2 và gói 6: user xem lại có ưng không.
-3. **che-luc-ban.8** (từ đợt giật một ô): chương trình chính phải thêm hai back() chỉ để qua phanh đường cong, hơi gượng. Chưa sửa.
-4. **Chữ "bắn" trong đề bài các màn mùa 2 khác** (do-nhiet, doi-mua-2, be-sung, trum-mua-2, che-luc-ban...): chưa quét hàng loạt sang "phun".
-   Màn đã dựng lại (gói 2, gói 4, luc-ban.1–3) đã dùng "phun". Có quét hết không?
+3. (đã làm ở đợt 2) che-luc-ban.8.
+4. (đã làm ở đợt 2) quét chữ "bắn".
 5. Tầm phun nhẹ giữ 2 ô như "fast" cũ. Gói 2 dựng theo tầm này (màn "Hai ô là hết tầm").
+6. Đổi "bắn vật" của nam châm thành "hất vật": user xem có ưng không (đó không phải vòi phun, nhưng giữ luật không dùng chữ vũ khí).

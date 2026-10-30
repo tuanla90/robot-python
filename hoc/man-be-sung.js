@@ -2,7 +2,7 @@
    man-be-sung.js — "Robot Chấn Hưng": NGÂN HÀNG MÀN MỚI của mùa 2, gói 9 "Bệ súng xích" (combo) (KE-HOACH-MUA-2.md).
    Khung mùa 2 (lo-trinh-hoc.js, khối "MÙA 2 = 10 GÓI", mảng MUA_2) đã chừa chỗ: tệp đã có trong danh sách require của lo-trinh-hoc.js và
    thẻ <script> của game/choi.html. Gói sau CHỈ việc thêm màn vào mảng DS dưới đây; màn tự hiện đúng chương, đúng gói.
-     - `be-sung` (mã be-sung.1 … be-sung.10): chương 1: xích bắn tụ không giật
+     - `be-sung` (mã be-sung.1 … be-sung.10): chương 1: xích phun mạnh không giật
      - `che-be-sung` (mã che-be-sung.1 … che-be-sung.10): chương 2 "Hàm bệ súng"
    Mỗi màn khai `chuong` (một trong các mã trên) và `so` (1, 2, …: thứ tự trong phần màn mới của chương); mã `ma` = chuong + '.' + so là khóa lưu sao,
    KHÔNG đổi sau khi xuất bản. Gọi ManHoc.chuanHoa(m) như các tệp màn khác. Chương còn trống thì chưa hiện; gói chưa có chương nào có màn thì chưa hiện.
@@ -11,9 +11,9 @@
    Tệp này KHÔNG tự thêm màn vào ManHoc: danh sách nằm ở ManHoc.manBeSung, lo-trinh-hoc.js thêm vào chương rồi xếp chỗ (so, hang do dungChuong đặt).
 
    NỘI DUNG (28/10): COMBO của mùa 2 = XE BÁNH XÍCH (gói 1) gắn SÚNG HƠI (gói 2) thành BỆ SÚNG (cfg.beSung, luật ở san-hoc.js mục BỆ SÚNG XÍCH):
-   xích bắn TỤ (spray("high"), squirt("high")…) thì bóng bay tới vật cản như cũ nhưng xe KHÔNG GIẬT (thùng sau xe không bị hất);
-   bắn nhanh "low" như cũ (bay tối đa 2 ô, không giật). Xe hai bánh hay xích không khai cờ thì vẫn giật. Mọi màn còn khai xichDay (gói 5: xích tiến vào thùng nặng thì đẩy).
-   Ý gói: lúc nào cú giật có hại (sau lưng là hốc, thùng, chỗ rẽ; bắn tụ nhiều phát liền) và bệ súng giải được. MỖI MÀN CẦN BỆ SÚNG: bộ dò (do-duong-be-sung.mjs)
+   xích phun TỤ (spray("high"), squirt("high")…) thì bóng bay tới vật cản như cũ nhưng xe KHÔNG GIẬT (thùng sau xe không bị hất);
+   phun nhẹ "low" như cũ (bay tối đa 2 ô, không giật). Xe hai bánh hay xích không khai cờ thì vẫn giật. Mọi màn còn khai xichDay (gói 5: xích tiến vào thùng nặng thì đẩy).
+   Ý gói: lúc nào cú giật có hại (sau lưng là hốc, thùng, chỗ rẽ; phun mạnh nhiều phát liền) và bệ súng giải được. MỖI MÀN CẦN BỆ SÚNG: bộ dò (do-duong-be-sung.mjs)
    chứng minh cùng sân trên xích không bệ súng (giật) không có đường nào trong sao.nhip. Xích quay chậm: tr_right() / tr_left() hai nhịp; turn_right() / turn_left()
    của xe hai bánh chỉ quay nửa vòng trên xích (bẫy che-be-sung.3).
    Chương be-sung: chương trình mở, đếm cứng (không cảm biến) ở màn 1–5; từ màn 6, màn đọc cảm biến KHÓA chương trình chính và gọi hàm của màn ở nhiều chỗ.
@@ -62,7 +62,7 @@
 
   // be-sung.1: xe (1,3) quay lên, nút (1,0) cuối hành lang mở cửa (2,3) ngay bên phải xe; cờ (4,3). Dưới xe là ô trống (1,4): xích không bệ súng giật xuống đó, lệch khỏi cửa.
   var SAN_B1 = ['#N####', '#.####', '#.####', '#.C.F#', '#.####', '######'];
-  // be-sung.2: xe (4,1) quay phải, nút (0,1) ở đầu kia hành lang, SAU LƯNG xe; cửa (4,2) ngay dưới xe; cờ (4,3). Không bệ súng: bắn ra sau thì xe giật TỚI (5,1), lệch khỏi cửa.
+  // be-sung.2: xe (4,1) quay phải, nút (0,1) ở đầu kia hành lang, SAU LƯNG xe; cửa (4,2) ngay dưới xe; cờ (4,3). Không bệ súng: phun ra sau thì xe giật TỚI (5,1), lệch khỏi cửa.
   var SAN_B2 = ['########', 'N......#', '####C###', '####F###', '########'];
   // be-sung.3: xe (2,3) quay lên. Nút A (2,0) mở cửa (3,3) bên phải xe; nút B (5,3) cuối hành lang phải (bóng bay qua cửa (3,3) đã mở) mở cửa (2,4) dưới xe; cờ (2,5).
   //   Không bệ súng: phát thứ hai (quay phải) giật xe sang trái (1,3).
@@ -71,7 +71,7 @@
   //   Đường tới cờ đi vòng: (3,3) → (3,4) → (3,5) → (2,5). Không bệ súng: cú giật đẩy thùng nhích xuống nằm đè lên cờ.
   var SAN_B4 = ['##N###', '##.###', '##.###', '##.C##', '##H.##', '##F.##', '######'];
   // be-sung.5: hành lang (1..6, 3) đi sang phải; hai trạm (2,3), (4,3), mỗi trạm có nút xa phía trên ((2,0), (4,0), giếng hai ô) mở cửa ngay sau trạm ((3,3), (5,3)),
-  //   dưới mỗi trạm là một hốc ((2,4), (4,4)): xích không bệ súng bắn lên thì giật xuống hốc. Cờ (6,3).
+  //   dưới mỗi trạm là một hốc ((2,4), (4,4)): xích không bệ súng phun lên thì giật xuống hốc. Cờ (6,3).
   var SAN_B5 = ['##N#N###', '##.#.###', '##.#.###', '#..C.CF#', '##.#.###', '########'];
   // be-sung.6: hành lang (1..7, 3), ba trạm LIỀN NHAU (2,3), (3,3), (4,3), mỗi trạm một nút xa phía trên ((2,0), (3,0), (4,0)), dưới là hốc. Nút (2,0) ĐANG BẬT (nutBat);
   //   nút (3,0), (4,0) TẮT mở hai cửa nối tiếp ở cuối hành lang (5,3), (6,3). Cờ (7,3).
@@ -82,7 +82,7 @@
   //   dưới xe là hốc (1,4). Không bệ súng: cú giật hất thùng trượt quá ô đích vào góc (6,3).
   var SAN_B8 = ['#N######', '#.######', '#.######', '#.HC.D.#', '#.######', '########'];
   // be-sung.9: xe ở ngã tư (3,3) quay lên. Nút trên (3,0) mở cửa phải (4,3); nút phải (6,3) mở cửa dưới (3,4); nút dưới (3,6) mở cửa trái (2,3); cờ (1,3).
-  //   Không bệ súng: phát thứ ba (bắn xuống) giật xe lên (3,2).
+  //   Không bệ súng: phát thứ ba (phun xuống) giật xe lên (3,2).
   var SAN_B9 = ['###N###', '###.###', '###.###', '#FC.C.N', '###C###', '###.###', '###N###'];
   // be-sung.10: ba hành lang trạm như be-sung.6 (ba trạm liền nhau (2..4, 3), nút xa phía trên, hốc phía dưới, hai cửa nối tiếp (5,3), (6,3) ở cuối). Nút đang bật mỗi sân một chỗ:
   //   sân 1 trạm đầu, sân 2 trạm giữa, sân 3 trạm cuối; sau cửa, cờ xa dần (sân 1 sát cửa, sân 3 cách hai ô).
@@ -131,18 +131,18 @@
   var L_B5 = ['move()'].concat(FOR(2, ['tr_left()', 'squirt("high")', 'tr_right()', 'forward(2)']));
   var C_B6 = ['move()'].concat(FOR(3, ['check()', 'move()']), ['forward(2)']);
   var T_B6 = ['tr_left()'].concat(IF('not warm()', ['squirt("high")']), ['tr_right()']);
-  var BAT_TU = IF('not warm()', ['squirt("high")']);                      // nút chưa nóng thì bắn tụ cho bật (bệ súng: không giật)
+  var BAT_TU = IF('not warm()', ['squirt("high")']);                      // nút chưa nóng thì phun mạnh cho bật (bệ súng: không giật)
   var L_B7 = ['tr_left()', 'squirt("high")', 'tr_right()', 'forward(2)', 'sidestep()', 'forward(2)'];
   var M_B7 = ['turn_left()', 'squirt("high")', 'move()', 'turn_right()', 'forward(2)', 'sidestep()', 'forward(2)'];
   var L_B8 = ['tr_left()', 'squirt("high")', 'tr_right()', 'forward(3)'];
   var L_B9 = FOR(3, ['squirt("high")', 'tr_right()']).concat(['forward(2)']);
   var L_B10 = ['move()'].concat(FOR(3, T_B6.concat(['move()'])), ['go_to_wall()']);
-  var T_BL = ['tr_left()', 'squirt("high")', 'tr_right()'];               // spray_left(): quay trái, bắn tụ, quay lại
+  var T_BL = ['tr_left()', 'squirt("high")', 'tr_right()'];               // spray_left(): quay trái, phun mạnh, quay lại
   var T_BR = ['tr_right()', 'squirt("high")', 'tr_left()'];               // spray_right()
   var C_C1 = ['move()'].concat(FOR(2, ['spray_left()', 'forward(2)']));
   var C_C2 = FOR(2, ['spray_right()', 'forward(2)']);
   var C_C3 = FOR(3, ['side_spray()', 'forward(2)']);
-  var T_LO = IF('not warm()', ['squirt("high")']);                         // valve_on(): nút chưa nóng thì bắn tụ
+  var T_LO = IF('not warm()', ['squirt("high")']);                         // valve_on(): nút chưa nóng thì phun mạnh
   var T_LL = ['tr_left()', 'valve_on()', 'tr_right()'];                     // valve_left()
   var C_C4 = ['move()'].concat(FOR(3, ['tr_right()', 'valve_on()', 'tr_left()', 'move()']), ['forward(2)']);
   var C_C5 = ['move()'].concat(FOR(4, ['valve_left()', 'move()']), ['forward(3)']);
@@ -150,66 +150,66 @@
   var T_LR = FOR('n', ['valve_left()', 'move()']);                          // valve_row(n)
   var T_GF = ['go_to_wall()', 'spray_left()'];                             // go_spray()
   var C_C7 = FOR(3, ['go_spray()']).concat(['go_to_wall()']);
-  var T_VI = ['d = distance()', 'forward(d)', 'spray_left()'].concat(FOR('d', ['back()']));   // visit(): vào ngõ cụt, bắn, lùi ra đúng chừng ấy ô
+  var T_VI = ['d = distance()', 'forward(d)', 'spray_left()'].concat(FOR('d', ['back()']));   // visit(): vào ngõ cụt, phun, lùi ra đúng chừng ấy ô
   var C_C8 = ['tr_left()', 'visit()', 'tr_right()', 'forward(4)', 'tr_left()', 'visit()', 'tr_right()', 'forward(2)'];
   var T_PB = ['push(1)', 'spray_left()'];                                  // push_spray()
   var C_C9 = FOR(2, ['push_spray()']).concat(['push(2)']);
   var L_C10 = ['move()', 'valve_row(2)', 'go_spray()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()'];   // trùm che-be-sung.10: ba hàm của em nối nhau
 
   var DS = [
-    /* ================================================================ chương be-sung: xích bắn tụ không giật */
+    /* ================================================================ chương be-sung: xích phun mạnh không giật */
     man({
-      chuong: 'be-sung', so: 1, ten: 'Bệ vòi không giật', yMoi: 'beSung: xích gắn vòi phun bắn tụ thì xe đứng yên, không giật lùi',
+      chuong: 'be-sung', so: 1, ten: 'Bệ vòi không giật', yMoi: 'beSung: xích gắn vòi phun thì phun mạnh mà xe đứng yên, không giật lùi',
       kieuBai: 'sua-thua', hamCuaEmCan: ['tr_right', 'forward', 'move'],
-      deBai: 'Xe hai bánh bắn tụ thì giật lùi một ô, nên Sola quen thêm move() sau mỗi phát để quay về chỗ cũ. Xe xích của em đã gắn vòi phun thành BỆ VÒI: ' +
-        'xích bám chắc, bắn tụ không giật. Bắn van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ.',
-      veMaMau: 'Chương trình của Sola có thêm move() sau phát bắn. Chạy thử: xe xích có giật không? Bỏ dòng thừa.',
+      deBai: 'Xe hai bánh phun mạnh thì giật lùi một ô, nên Sola quen thêm move() sau mỗi phát để quay về chỗ cũ. Xe xích của em đã gắn vòi phun thành BỆ VÒI: ' +
+        'xích bám chắc, phun mạnh không giật. Phun van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ.',
+      veMaMau: 'Chương trình của Sola có thêm move() sau lần phun. Chạy thử: xe xích có giật không? Bỏ dòng thừa.',
       san: SAN_B1, batDau: { x: 1, y: 3, huong: 0 },
       maMau: bai(['spray("high")', 'wait()', 'move()', 'tr_right()', 'forward(3)']),
       sao: { o: 12, nhip: 6 },
       loiGiai: bai(L_B1),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# bệ vòi: bắn tụ không giật'].concat(L_B1)) },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# bệ vòi: phun mạnh không giật'].concat(L_B1)) },
       loiSai: [
         { moTa: 'Để nguyên move() của Sola: xe không giật nên tiến lên quá chỗ rẽ', baiLam: bai(['spray("high")', 'wait()', 'move()', 'tr_right()', 'forward(3)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Rẽ trước khi bắn: vòi phun chĩa vào cửa, van không đổi', baiLam: bai(['tr_right()', 'spray("high")', 'wait()', 'forward(3)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Rẽ trước khi phun: vòi phun chĩa vào cửa, van không đổi', baiLam: bai(['tr_right()', 'spray("high")', 'wait()', 'forward(3)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Bệ vòi xích: bắn tụ xong xe vẫn ở đúng chỗ cũ.', 'spray("high"), wait(), rồi rẽ phải và đi ba ô.']
+      goiY: ['Bệ vòi xích: phun mạnh xong xe vẫn ở đúng chỗ cũ.', 'spray("high"), wait(), rồi rẽ phải và đi ba ô.']
     }),
 
     man({
-      chuong: 'be-sung', so: 2, ten: 'Van sau lưng', yMoi: 'spray_back("high") trên bệ vòi: bắn ra sau, xe không giật tới',
+      chuong: 'be-sung', so: 2, ten: 'Van sau lưng', yMoi: 'spray_back("high") trên bệ vòi: phun ra sau, xe không giật tới',
       kieuBai: 'ban-sau', hamCuaEmCan: ['tr_right', 'forward', 'move', 'back'],
-      deBai: 'Van nằm ở đầu kia hành lang, ngay sau lưng xe; cánh cửa nó mở nằm ngay dưới xe. Bắn ra sau bằng spray_back("high"). Xe hai bánh bắn ra sau thì giật TỚI một ô, ' +
+      deBai: 'Van nằm ở đầu kia hành lang, ngay sau lưng xe; cánh cửa nó mở nằm ngay dưới xe. Phun ra sau bằng spray_back("high"). Xe hai bánh phun ra sau thì giật TỚI một ô, ' +
         'còn bệ vòi xích thì đứng yên. Mở cửa rồi rẽ phải đi xuống tới cờ.',
-      veMaMau: 'Sola viết cho xe hai bánh: bắn ra sau rồi back() để lùi về chỗ cũ. Trên bệ vòi, dòng back() làm xe lệch khỏi cửa.',
+      veMaMau: 'Sola viết cho xe hai bánh: phun ra sau rồi back() để lùi về chỗ cũ. Trên bệ vòi, dòng back() làm xe lệch khỏi cửa.',
       san: SAN_B2, batDau: { x: 4, y: 1, huong: 1 },
       maMau: bai(['spray_back("high")', 'wait()', 'back()', 'tr_right()', 'forward(2)']),
       sao: { o: 12, nhip: 5 },
       loiGiai: bai(L_B2),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# bắn ra sau, bệ vòi không trôi tới'].concat(L_B2)) },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# phun ra sau, bệ vòi không trôi tới'].concat(L_B2)) },
       loiSai: [
         { moTa: 'Để nguyên back() của Sola: xe lùi khỏi chỗ đứng trên cửa, đi xuống đâm tường', baiLam: bai(['spray_back("high")', 'wait()', 'back()', 'tr_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Bắn ra trước bằng spray("high"): tia nước trúng tường cuối hành lang, van không đổi', baiLam: bai(['spray("high")', 'wait()', 'tr_right()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Phun ra trước bằng spray("high"): tia nước trúng tường cuối hành lang, van không đổi', baiLam: bai(['spray("high")', 'wait()', 'tr_right()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['spray_back("high") bắn ra sau đuôi xe; bệ vòi giữ xe đứng yên.', 'Bắn, rồi rẽ phải và đi hai ô.']
+      goiY: ['spray_back("high") phun ra sau đuôi xe; bệ vòi giữ xe đứng yên.', 'Phun, rồi rẽ phải và đi hai ô.']
     }),
 
     man({
-      chuong: 'be-sung', so: 3, ten: 'Hai phát một chỗ', yMoi: 'bắn tụ hai phát liền từ cùng một ô: quay giữa hai phát, xe không xê dịch',
+      chuong: 'be-sung', so: 3, ten: 'Hai phát một chỗ', yMoi: 'phun mạnh hai phát liền từ cùng một ô: quay giữa hai phát, xe không xê dịch',
       kieuBai: 'mo-cua', hamCuaEmCan: ['tr_right', 'tr_left', 'spin', 'forward', 'move'],
-      deBai: 'Hai van ở xa: van trên mở cánh cửa bên phải xe, van bên phải (sau cánh cửa đó) mở cánh cửa dưới xe. Đứng yên một chỗ mà bắn cả hai: bắn, quay phải, bắn, quay phải, ' +
-        'rồi đi xuống tới cờ. Bệ vòi không giật nên phát sau vẫn bắn từ đúng chỗ phát trước.',
-      veMaMau: 'Chương trình có sẵn mới bắn một phát. Dùng vòng lặp cho hai lần "bắn rồi quay phải".',
+      deBai: 'Hai van ở xa: van trên mở cánh cửa bên phải xe, van bên phải (sau cánh cửa đó) mở cánh cửa dưới xe. Đứng yên một chỗ mà phun cả hai: phun, quay phải, phun, quay phải, ' +
+        'rồi đi xuống tới cờ. Bệ vòi không giật nên phát sau vẫn phun từ đúng chỗ phát trước.',
+      veMaMau: 'Chương trình có sẵn mới phun một phát. Dùng vòng lặp cho hai lần "phun rồi quay phải".',
       san: SAN_B3, batDau: { x: 2, y: 3, huong: 0 }, noi: [noi(2, 0, [[3, 3]]), noi(5, 3, [[2, 4]])],
       maMau: bai(['spray("high")', 'wait()', 'tr_right()', 'tr_right()', 'forward(2)']),
       sao: { o: 13, nhip: 8 },
       loiGiai: bai(L_B3),
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# hai phát, không xê dịch'].concat(L_B3)) },
       loiSai: [
-        { moTa: 'Bắn van bên phải trước: cửa bên phải còn đóng, tia nước dừng ở cửa', baiLam: bai(['tr_right()', 'spray("high")', 'wait()', 'tr_left()', 'spray("high")', 'wait()', 'spin()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Phun van bên phải trước: cửa bên phải còn đóng, tia nước dừng ở cửa', baiLam: bai(['tr_right()', 'spray("high")', 'wait()', 'tr_left()', 'spray("high")', 'wait()', 'spin()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Quên quay sau phát thứ hai: xe tiến vào hành lang bên phải', baiLam: bai(['spray("high")', 'wait()', 'tr_right()', 'spray("high")', 'wait()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Phát trên mở cửa bên phải, nên phát bên phải phải bắn sau.', 'for i in range(2): bắn, wait(), tr_right(); rồi forward(2).']
+      goiY: ['Phát trên mở cửa bên phải, nên phát bên phải phải phun sau.', 'for i in range(2): phun, wait(), tr_right(); rồi forward(2).']
     }),
 
     /* ------------------------------------------------ hàng 2: luyện */
@@ -218,7 +218,7 @@
       kieuBai: 'thung', hamCuaEmCan: ['tr_right', 'tr_left', 'spin', 'forward', 'move'],
       deBai: 'Ngay sau lưng xe là một thùng nặng, dưới thùng là lá cờ. Nhớ gói Lực phun: phun mạnh thì cú giật đẩy thùng sau lưng nhích đi một ô. ' +
         'Van phía trên cách ba ô, phun nhẹ không tới: phun mạnh cho cửa bên phải mở, rồi đi vòng qua cửa xuống tới cờ. Bệ vòi giữ thùng nằm yên nên cờ vẫn trống.',
-      veMaMau: 'Chương trình có sẵn bắn rồi mới đi được nửa đường. Viết tiếp đoạn vòng xuống cờ.',
+      veMaMau: 'Chương trình có sẵn phun rồi mới đi được nửa đường. Viết tiếp đoạn vòng xuống cờ.',
       san: SAN_B4, batDau: { x: 2, y: 3, huong: 0 },
       maMau: bai(['spray("high")', 'wait()', 'tr_right()', 'move()']),
       sao: { o: 16, nhip: 11 },
@@ -228,41 +228,41 @@
         { moTa: 'Quay lại đẩy thùng xuống cờ: thùng vướng cờ, ô sau cờ là tường', baiLam: bai(['spray("high")', 'wait()', 'spin()', 'move()', 'move()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Rẽ phải lần cuối thay vì rẽ phải: xe quay sai hướng, đâm tường', baiLam: bai(['spray("high")', 'wait()', 'tr_right()', 'move()', 'tr_right()', 'forward(2)', 'tr_left()', 'move()']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Thùng không cần dời: chỉ cần nó đừng nhích lên cờ.', 'Bắn, rẽ phải, đi một ô, rẽ phải, đi hai ô, rẽ phải, đi một ô.']
+      goiY: ['Thùng không cần dời: chỉ cần nó đừng nhích lên cờ.', 'Phun, rẽ phải, đi một ô, rẽ phải, đi hai ô, rẽ phải, đi một ô.']
     }),
 
     man({
-      chuong: 'be-sung', so: 5, ten: 'Hành lang có hốc', yMoi: 'bắn tụ squirt("high") ở nhiều trạm; dưới trạm là hốc mà bệ vòi không giật xuống',
+      chuong: 'be-sung', so: 5, ten: 'Hành lang có hốc', yMoi: 'phun mạnh squirt("high") ở nhiều trạm; dưới trạm là hốc mà bệ vòi không giật xuống',
       kieuBai: 'hanh-lang', hamCuaEmCan: ['tr_left', 'tr_right', 'squirt', 'forward', 'move'], lucBan: true,
-      deBai: 'Hành lang có hai trạm. Ở mỗi trạm, van ở cuối cái giếng phía trên, cách xa: bắn nhanh không tới, phải bắn tụ. Van mở cánh cửa ngay sau trạm. ' +
-        'Dưới mỗi trạm là một cái hốc: xe hai bánh bắn lên thì giật tụt xuống hốc. Bệ vòi xích thì không. Đi tới cờ.',
-      veMaMau: 'Chương trình có sẵn bắn nhanh squirt("low"): tia nước rơi giữa giếng. Đổi lực bắn.',
+      deBai: 'Hành lang có hai trạm. Ở mỗi trạm, van ở cuối cái giếng phía trên, cách xa: phun nhẹ không tới, phải phun mạnh. Van mở cánh cửa ngay sau trạm. ' +
+        'Dưới mỗi trạm là một cái hốc: xe hai bánh phun lên thì giật tụt xuống hốc. Bệ vòi xích thì không. Đi tới cờ.',
+      veMaMau: 'Chương trình có sẵn phun nhẹ squirt("low"): tia nước rơi giữa giếng. Đổi lực phun.',
       san: SAN_B5, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(2, 0, [[3, 3]]), noi(4, 0, [[5, 3]])],
       maMau: bai(['move()'].concat(FOR(2, ['tr_left()', 'squirt("low")', 'tr_right()', 'forward(2)']))),
       sao: { o: 19, nhip: 15 },
       loiGiai: bai(L_B5),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# bắn tụ, bệ vòi không tụt xuống hốc'].concat(L_B5)) },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# phun mạnh, bệ vòi không tụt xuống hốc'].concat(L_B5)) },
       loiSai: [
-        { moTa: 'Để nguyên bắn nhanh: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(['move()'].concat(FOR(2, ['tr_left()', 'squirt("low")', 'tr_right()', 'forward(2)']))), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
-        { moTa: 'Quên quay lại sau khi bắn: xe đi lên giếng', baiLam: bai(['move()'].concat(FOR(2, ['tr_left()', 'squirt("high")', 'forward(2)']))), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Để nguyên phun nhẹ: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(['move()'].concat(FOR(2, ['tr_left()', 'squirt("low")', 'tr_right()', 'forward(2)']))), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Quên quay lại sau khi phun: xe đi lên giếng', baiLam: bai(['move()'].concat(FOR(2, ['tr_left()', 'squirt("high")', 'forward(2)']))), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Van cách ba ô: bắn nhanh chỉ bay hai ô.', 'Thân vòng lặp: tr_left(), squirt("high"), tr_right(), forward(2).']
+      goiY: ['Van cách ba ô: phun nhẹ chỉ bay hai ô.', 'Thân vòng lặp: tr_left(), squirt("high"), tr_right(), forward(2).']
     }),
 
     man({
-      chuong: 'be-sung', so: 6, ten: 'Trạm nào còn tắt', yMoi: 'hàm của màn đọc warm(): van đang mở thì khỏi bắn; chương trình chính khóa',
+      chuong: 'be-sung', so: 6, ten: 'Trạm nào còn tắt', yMoi: 'hàm của màn đọc warm(): van đang mở thì khỏi phun; chương trình chính khóa',
       kieuBai: 'doc-nhiet', mat: true, chinhCoDinh: true, hamCuaEmCan: ['tr_left', 'tr_right', 'squirt', 'forward', 'move'], lucBan: true,
-      deBai: 'Ba trạm liền nhau, mỗi trạm một van xa phía trên. Mỗi van đóng mở một trong hai cánh cửa cuối hành lang; van đang mở (quầng đỏ) không nối cửa nào, bắn nó chỉ đóng nó và phí một nhịp. ' +
-        'Xe đã gắn mắt hồng ngoại đo nhiệt. Chương trình chính đã khóa, ở mỗi trạm gọi check(). Sửa thân check(): quay lên, van chưa nóng thì bắn tụ, quay lại.',
-      veMaMau: 'Chương trình chính bị khóa. check() có sẵn quay lên bắn nhanh: tia nước không tới van.',
+      deBai: 'Ba trạm liền nhau, mỗi trạm một van xa phía trên. Mỗi van đóng mở một trong hai cánh cửa cuối hành lang; van đang mở (quầng đỏ) không nối cửa nào, phun nó chỉ đóng nó và phí một nhịp. ' +
+        'Xe đã gắn mắt hồng ngoại đo nhiệt. Chương trình chính đã khóa, ở mỗi trạm gọi check(). Sửa thân check(): quay lên, van chưa nóng thì phun mạnh, quay lại.',
+      veMaMau: 'Chương trình chính bị khóa. check() có sẵn quay lên phun nhẹ: tia nước không tới van.',
       san: SAN_B6, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(3, 0, [[5, 3]]), noi(4, 0, [[6, 3]])], nutBat: [o(2, 0)],
       maMau: bai(C_B6, [H('check', [], ['tr_left()', 'squirt("low")', 'tr_right()'])]),
       sao: { o: 22, nhip: 20 },
       loiGiai: bai(C_B6, [H('check', [], T_B6)]),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_B6, [H('check', [], ['# van chưa nóng thì bắn tụ'].concat(T_B6))]) },
-      congThucKhac: [{ moTa: 'Bắn mọi van không đo: vẫn tới cờ nhưng đóng van đang mở, phí một nhịp', baiLam: bai(C_B6, [H('check', [], ['tr_left()', 'squirt("high")', 'tr_right()'])]) }],
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(C_B6, [H('check', [], ['# van chưa nóng thì phun mạnh'].concat(T_B6))]) },
+      congThucKhac: [{ moTa: 'Phun mọi van không đo: vẫn tới cờ nhưng đóng van đang mở, phí một nhịp', baiLam: bai(C_B6, [H('check', [], ['tr_left()', 'squirt("high")', 'tr_right()'])]) }],
       loiSai: [
-        { moTa: 'Để nguyên bắn nhanh: tia nước rơi giữa giếng', baiLam: bai(C_B6, [H('check', [], ['tr_left()', 'squirt("low")', 'tr_right()'])]), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Để nguyên phun nhẹ: tia nước rơi giữa giếng', baiLam: bai(C_B6, [H('check', [], ['tr_left()', 'squirt("low")', 'tr_right()'])]), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
         { moTa: 'Viết if warm(): chỉ đóng van đang mở, hai van đóng vẫn đóng', baiLam: bai(C_B6, [H('check', [], ['tr_left()'].concat(IF('warm()', ['squirt("high")']), ['tr_right()']))]), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đo trước khi quay lên: mắt hồng ngoại nhìn dọc hành lang', baiLam: bai(C_B6, [H('check', [], IF('not warm()', ['squirt("high")']).concat(['tr_left()', 'tr_right()']))]), phaiCoMa: ['chua-toi-co'] }
       ],
@@ -273,9 +273,9 @@
     man({
       chuong: 'be-sung', so: 7, ten: 'Đố: Sola quay nửa vòng', yMoi: 'tìm lỗi: turn_left() của xe hai bánh chỉ quay nửa vòng trên xích, move() bù giật là thừa',
       kieuBai: 'do', lucBan: true, hamCuaEmCan: ['tr_left', 'tr_right', 'turn_left', 'turn_right', 'squirt', 'forward', 'sidestep', 'move'],
-      deBai: 'Sola chép chương trình của xe hai bánh sang xe xích: turn_left() để quay lên bắn van xa, move() để về chỗ cũ sau cú giật. Chạy thử: tia nước bay vào cửa, xe đâm cửa. Vì sao? ' +
+      deBai: 'Sola chép chương trình của xe hai bánh sang xe xích: turn_left() để quay lên phun van xa, move() để về chỗ cũ sau cú giật. Chạy thử: tia nước bay vào cửa, xe đâm cửa. Vì sao? ' +
         'Xích quay chậm: turn_left() chỉ quay nửa vòng, nhịp sau làm việc khác là mất. Còn bệ vòi thì không giật. Sửa để xe qua cửa, dịch xuống làn dưới rồi tới cờ.',
-      veMaMau: 'Chạy thử chương trình của Sola. Phát bắn bay về hướng nào?',
+      veMaMau: 'Chạy thử chương trình của Sola. Lần phun bay về hướng nào?',
       san: SAN_B7, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(1, 0, [[2, 3]])],
       maMau: bai(M_B7),
       sao: { o: 22, nhip: 14 },
@@ -285,14 +285,14 @@
         { moTa: 'Để nguyên bản của Sola: nửa vòng quay bị mất, tia nước bay vào cửa', baiLam: bai(M_B7), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Chỉ sửa turn_left() thành tr_left(), còn giữ move() bù giật: xe tiến lên giếng', baiLam: bai(['tr_left()', 'squirt("high")', 'move()', 'tr_right()', 'forward(2)', 'sidestep()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Trên xích, quay đủ một góc vuông cần tr_left() hay tr_right(): hai nhịp liền.', 'Bệ vòi không giật nên bỏ move() sau phát bắn.']
+      goiY: ['Trên xích, quay đủ một góc vuông cần tr_left() hay tr_right(): hai nhịp liền.', 'Bệ vòi không giật nên bỏ move() sau lần phun.']
     }),
 
     man({
-      chuong: 'be-sung', so: 8, ten: 'Đẩy thùng qua cửa', yMoi: 'bắn mở cửa rồi xích đẩy thùng qua cửa vào ô đích',
+      chuong: 'be-sung', so: 8, ten: 'Đẩy thùng qua cửa', yMoi: 'phun mở cửa rồi xích đẩy thùng qua cửa vào ô đích',
       kieuBai: 'day-thung', mucTieu: 'day-thung', lucBan: true, hamCuaEmCan: ['tr_left', 'tr_right', 'squirt', 'forward', 'move'],
       deBai: 'Ngay trước mũi xe là thùng nặng, sau thùng là cánh cửa đóng, ô đích nằm sau cửa. Nhớ gói Đẩy thùng: xích tiến vào thùng thì đẩy thùng đi một ô, nhưng cửa đóng thì thùng không qua. ' +
-        'Van mở cửa ở xa phía trên, dưới xe là hốc. Bắn mở cửa trước, rồi đẩy thùng vào ô đích.',
+        'Van mở cửa ở xa phía trên, dưới xe là hốc. Phun mở cửa trước, rồi đẩy thùng vào ô đích.',
       veMaMau: 'Chương trình có sẵn đẩy ngay: thùng vướng cửa đóng.',
       san: SAN_B8, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(1, 0, [[3, 3]])],
       maMau: bai(['forward(3)']),
@@ -303,15 +303,15 @@
         { moTa: 'Đẩy ngay khi cửa còn đóng: thùng không qua được', baiLam: bai(['forward(3)']), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Đẩy thiếu một ô: thùng nằm trước ô đích', baiLam: bai(['tr_left()', 'squirt("high")', 'tr_right()', 'forward(2)']), phaiCoMa: ['chua-day-thung'] }
       ],
-      goiY: ['Cửa đóng chặn cả thùng: bắn mở cửa trước.', 'Thùng cách ô đích ba ô.']
+      goiY: ['Cửa đóng chặn cả thùng: phun mở cửa trước.', 'Thùng cách ô đích ba ô.']
     }),
 
     man({
       chuong: 'be-sung', so: 9, ten: 'Ba phát quanh mình', yMoi: 'ba phát tụ liền từ ngã tư: mỗi phát mở cửa cho phát sau',
       kieuBai: 'mo-cua', lucBan: true, hamCuaEmCan: ['tr_right', 'tr_left', 'squirt', 'forward', 'move'],
       deBai: 'Xe đứng giữa ngã tư, bốn phía là bốn hành lang. Van trên mở cửa bên phải, van bên phải mở cửa phía dưới, van dưới mở cửa bên trái, cờ ở bên trái. ' +
-        'Đứng yên giữa ngã tư mà bắn đủ ba van, rồi đi tới cờ. Nhớ: cửa đóng chặn cả tia nước.',
-      veMaMau: 'Chương trình có sẵn bắn một phát rồi đi. Lặp "bắn rồi quay phải" mấy lần?',
+        'Đứng yên giữa ngã tư mà phun đủ ba van, rồi đi tới cờ. Nhớ: cửa đóng chặn cả tia nước.',
+      veMaMau: 'Chương trình có sẵn phun một phát rồi đi. Lặp "phun rồi quay phải" mấy lần?',
       san: SAN_B9, batDau: { x: 3, y: 3, huong: 0 }, noi: [noi(3, 0, [[4, 3]]), noi(6, 3, [[3, 4]]), noi(3, 6, [[2, 3]])],
       maMau: bai(['squirt("high")', 'tr_left()', 'forward(2)']),
       sao: { o: 14, nhip: 11 },
@@ -319,76 +319,76 @@
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# ba phát, mỗi phát mở cửa cho phát sau'].concat(L_B9)) },
       loiSai: [
         { moTa: 'Quay trái thay vì quay phải: tia nước thứ hai dừng ở cửa trái còn đóng', baiLam: bai(FOR(3, ['squirt("high")', 'tr_left()']).concat(['forward(2)'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Chỉ bắn hai phát: cửa trái còn đóng', baiLam: bai(FOR(2, ['squirt("high")', 'tr_right()']).concat(['tr_right()', 'forward(2)'])), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Chỉ phun hai phát: cửa trái còn đóng', baiLam: bai(FOR(2, ['squirt("high")', 'tr_right()']).concat(['tr_right()', 'forward(2)'])), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Thứ tự: trên, phải, dưới; mỗi lần quay phải.', 'for i in range(3): squirt("high"), tr_right(); rồi forward(2).']
     }),
 
     /* ------------------------------------------------ trùm */
     man({
-      chuong: 'be-sung', so: 10, ten: 'Trùm: Ba hành lang trạm', yMoi: 'một chương trình cho ba hành lang: đo nhiệt từng trạm, bắn tụ van còn đóng, go_to_wall() tới cờ',
+      chuong: 'be-sung', so: 10, ten: 'Trùm: Ba hành lang trạm', yMoi: 'một chương trình cho ba hành lang: đo nhiệt từng trạm, phun mạnh van còn đóng, go_to_wall() tới cờ',
       hang: 'trum', kieuBai: 'trum', mat: true, lucBan: true, hamCuaEmCan: ['tr_left', 'tr_right', 'squirt', 'go_to_wall', 'forward', 'move'],
       huyHieu: { ma: 'be-sung', ten: 'Huy hiệu Bệ vòi xích' },
       deBai: 'Ba hành lang, một chương trình. Hành lang nào cũng có ba trạm liền nhau với van xa phía trên và hốc phía dưới, cuối hành lang là hai cánh cửa nối tiếp. ' +
-        'Van đang mở mỗi sân nằm một chỗ, cờ sau cửa cũng xa gần khác nhau. Ở mỗi trạm: quay lên, van chưa nóng thì bắn tụ, quay lại, tiến. Qua cửa thì đi tới sát tường.',
-      veMaMau: 'Chương trình có sẵn bắn mọi van rồi đi hai ô: đóng mất van đang mở, và sân 2, sân 3 chưa tới cờ.',
+        'Van đang mở mỗi sân nằm một chỗ, cờ sau cửa cũng xa gần khác nhau. Ở mỗi trạm: quay lên, van chưa nóng thì phun mạnh, quay lại, tiến. Qua cửa thì đi tới sát tường.',
+      veMaMau: 'Chương trình có sẵn phun mọi van rồi đi hai ô: đóng mất van đang mở, và sân 2, sân 3 chưa tới cờ.',
       san: SAN_B10, batDau: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 3, huong: 1 }, { x: 1, y: 3, huong: 1 }],
       noi: [[noi(3, 0, [[5, 3]]), noi(4, 0, [[6, 3]])], [noi(2, 0, [[5, 3]]), noi(4, 0, [[6, 3]])], [noi(2, 0, [[5, 3]]), noi(3, 0, [[6, 3]])]],
       nutBat: [[o(2, 0)], [o(3, 0)], [o(4, 0)]],
       maMau: bai(['move()'].concat(FOR(3, ['tr_left()', 'squirt("high")', 'tr_right()', 'move()']), ['forward(2)'])),
       sao: { o: 21, nhip: 63 },
       loiGiai: bai(L_B10),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# đo nhiệt từng trạm, bắn tụ van còn đóng'].concat(L_B10)) },
-      congThucKhac: [{ moTa: 'Bắn mọi van không đo: vẫn tới cờ nhưng mỗi sân đóng một van đang mở, phí ba nhịp', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()', 'squirt("high")', 'tr_right()', 'move()']), ['go_to_wall()'])) }],
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# đo nhiệt từng trạm, phun mạnh van còn đóng'].concat(L_B10)) },
+      congThucKhac: [{ moTa: 'Phun mọi van không đo: vẫn tới cờ nhưng mỗi sân đóng một van đang mở, phí ba nhịp', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()', 'squirt("high")', 'tr_right()', 'move()']), ['go_to_wall()'])) }],
       loiSai: [
         { moTa: 'Đi hai ô sau cửa như sân 1: sân 2, sân 3 chưa tới cờ', baiLam: bai(['move()'].concat(FOR(3, T_B6.concat(['move()'])), ['forward(2)'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Bắn nhanh: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()'].concat(IF('not warm()', ['squirt("low")']), ['tr_right()', 'move()'])), ['go_to_wall()'])), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
-        { moTa: 'Viết if warm(): bắn van đang mở, bỏ van đóng', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()'].concat(IF('warm()', ['squirt("high")']), ['tr_right()', 'move()'])), ['go_to_wall()'])), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Phun nhẹ: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()'].concat(IF('not warm()', ['squirt("low")']), ['tr_right()', 'move()'])), ['go_to_wall()'])), phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Viết if warm(): phun van đang mở, bỏ van đóng', baiLam: bai(['move()'].concat(FOR(3, ['tr_left()'].concat(IF('warm()', ['squirt("high")']), ['tr_right()', 'move()'])), ['go_to_wall()'])), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Thân vòng lặp như hàm check() của màn Trạm nào còn tắt, thêm move().', 'Sau vòng lặp, go_to_wall() đưa xe qua hai cửa đã mở tới cờ.']
     }),
 
     /* ================================================================ chương che-be-sung: Hàm bệ súng */
     man({
-      chuong: 'che-be-sung', so: 1, ten: 'Hàm spray_left()', yMoi: 'chế hàm cho bệ vòi: quay trái, bắn tụ, quay lại',
+      chuong: 'che-be-sung', so: 1, ten: 'Hàm spray_left()', yMoi: 'chế hàm cho bệ vòi: quay trái, phun mạnh, quay lại',
       kieuBai: 'hanh-lang', lucBan: true, chinhCoDinh: true, taoHam: ['spray_left'], hamCuaEmCan: ['tr_left', 'tr_right', 'squirt', 'forward', 'move'],
-      deBai: 'Em chế hàm spray_left() cho bệ vòi: quay trái, bắn tụ van bên trái, quay lại. Bệ vòi không giật nên quay lại là xe đúng chỗ cũ, đi tiếp được ngay. ' +
+      deBai: 'Em chế hàm spray_left() cho bệ vòi: quay trái, phun mạnh van bên trái, quay lại. Bệ vòi không giật nên quay lại là xe đúng chỗ cũ, đi tiếp được ngay. ' +
         'Hàm này sẽ theo em suốt chương. Chương trình chính đã khóa: tiến một ô, rồi hai lần spray_left() và forward(2), dọc hành lang có hốc của màn trước.',
       veMaMau: 'Chương trình chính bị khóa. Mở Xưởng hàm, tạo spray_left() ba dòng.',
       san: SAN_B5, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(2, 0, [[3, 3]]), noi(4, 0, [[5, 3]])],
       maMau: bai(C_C1),
       sao: { o: 20, nhip: 15 },
       loiGiai: { chinh: C_C1.slice(), hamCuaEmMoi: [H('spray_left', [], T_BL)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C1), hamCuaEmMoi: [H('spray_left', [], ['# quay trái, bắn tụ, quay lại'].concat(T_BL))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C1), hamCuaEmMoi: [H('spray_left', [], ['# quay trái, phun mạnh, quay lại'].concat(T_BL))] },
       loiSai: [
-        { moTa: 'Bắn nhanh trong hàm: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(C_C1), hamCuaEmMoi: [H('spray_left', [], ['tr_left()', 'squirt("low")', 'tr_right()'])], phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Phun nhẹ trong hàm: van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(C_C1), hamCuaEmMoi: [H('spray_left', [], ['tr_left()', 'squirt("low")', 'tr_right()'])], phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
         { moTa: 'Quên quay lại: xe đi lên giếng', baiLam: bai(C_C1), hamCuaEmMoi: [H('spray_left', [], ['tr_left()', 'squirt("high")'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Thân hàm ba dòng: tr_left(), squirt("high"), tr_right().', 'Bệ vòi không giật: không cần dòng nào bù cú giật.']
     }),
 
     man({
-      chuong: 'che-be-sung', so: 2, ten: 'Hàm spray_right()', yMoi: 'hàm đối xứng spray_right(); bắn mở cửa rồi đẩy thùng qua cửa',
+      chuong: 'che-be-sung', so: 2, ten: 'Hàm spray_right()', yMoi: 'hàm đối xứng spray_right(); phun mở cửa rồi đẩy thùng qua cửa',
       kieuBai: 'day-thung', mucTieu: 'day-thung', lucBan: true, chinhCoDinh: true, taoHam: ['spray_right'], hamCuaEmCan: ['spray_left', 'tr_left', 'tr_right', 'squirt', 'forward', 'move'],
       deBai: 'Thùng nặng nằm trước mũi xe, sau thùng là hai cánh cửa đóng rồi ô đích. Van của mỗi cửa ở xa phía dưới, bên phải xe; phía trên là hốc. ' +
-        'Em chế spray_right(): quay phải, bắn tụ, quay lại. Chương trình chính đã khóa: hai lần spray_right() rồi forward(2) đẩy thùng qua cửa vừa mở.',
+        'Em chế spray_right(): quay phải, phun mạnh, quay lại. Chương trình chính đã khóa: hai lần spray_right() rồi forward(2) đẩy thùng qua cửa vừa mở.',
       veMaMau: 'Chương trình chính bị khóa. Tạo spray_right() ba dòng.',
       san: SAN_C2, batDau: { x: 1, y: 2, huong: 1 }, noi: [noi(1, 5, [[3, 2]]), noi(3, 5, [[5, 2]])],
       maMau: bai(C_C2),
       sao: { o: 19, nhip: 14 },
       loiGiai: { chinh: C_C2.slice(), hamCuaEmMoi: [H('spray_right', [], T_BR)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C2), hamCuaEmMoi: [H('spray_right', [], ['# quay phải, bắn tụ, quay lại'].concat(T_BR))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C2), hamCuaEmMoi: [H('spray_right', [], ['# quay phải, phun mạnh, quay lại'].concat(T_BR))] },
       loiSai: [
-        { moTa: 'Gọi spray_left(): bắn vào hốc phía trên, cửa vẫn đóng', baiLam: bai(C_C2), hamCuaEmMoi: [H('spray_right', [], ['spray_left()'])], phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Gọi spray_left(): phun vào hốc phía trên, cửa vẫn đóng', baiLam: bai(C_C2), hamCuaEmMoi: [H('spray_right', [], ['spray_left()'])], phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Quay lại sai phía: tr_right() hai lần, xe quay ngược hành lang', baiLam: bai(C_C2), hamCuaEmMoi: [H('spray_right', [], ['tr_right()', 'squirt("high")', 'tr_right()'])], phaiCoMa: ['chua-day-thung'] }
       ],
-      goiY: ['spray_right() giống spray_left() nhưng quay về bên phải.', 'Cửa đóng chặn thùng: bắn trước, đẩy sau.']
+      goiY: ['spray_right() giống spray_left() nhưng quay về bên phải.', 'Cửa đóng chặn thùng: phun trước, đẩy sau.']
     }),
 
     man({
       chuong: 'che-be-sung', so: 3, ten: 'Sửa hàm side_spray()', yMoi: 'sửa hàm lỗi: turn_left() chỉ quay nửa vòng trên xích, đổi thành tr_left()',
       kieuBai: 'sua-ham', lucBan: true, chinhCoDinh: true, hamCuaEmCan: ['spray_left', 'tr_left', 'tr_right', 'turn_left', 'turn_right', 'squirt', 'forward', 'move'],
-      deBai: 'Sola chế side_spray() để bắn van bên trái ở mỗi trạm, nhưng chép thói quen xe hai bánh: turn_left() rồi turn_right(). Trên xích, mỗi lệnh đó chỉ quay nửa vòng, ' +
+      deBai: 'Sola chế side_spray() để phun van bên trái ở mỗi trạm, nhưng chép thói quen xe hai bánh: turn_left() rồi turn_right(). Trên xích, mỗi lệnh đó chỉ quay nửa vòng, ' +
         'nhịp sau làm việc khác là mất. Chương trình chính đã khóa: ba lần side_spray() rồi forward(2). Chạy thử rồi sửa hàm.',
       veMaMau: 'Chạy thử. Tia nước bay về hướng nào?',
       san: SAN_C3, batDau: { x: 1, y: 3, huong: 1 }, noi: [noi(1, 0, [[2, 3]]), noi(3, 0, [[4, 3]]), noi(5, 0, [[6, 3]])],
@@ -406,22 +406,22 @@
 
     /* ------------------------------------------------ hàng 2: luyện */
     man({
-      chuong: 'che-be-sung', so: 4, ten: 'Hàm valve_on()', yMoi: 'chế hàm đọc warm() cho bệ vòi: van chưa nóng thì bắn tụ',
+      chuong: 'che-be-sung', so: 4, ten: 'Hàm valve_on()', yMoi: 'chế hàm đọc warm() cho bệ vòi: van chưa nóng thì phun mạnh',
       kieuBai: 'doc-nhiet', mat: true, lucBan: true, chinhCoDinh: true, taoHam: ['valve_on'], hamCuaEmCan: ['switch_on', 'tr_left', 'tr_right', 'squirt', 'forward', 'move'],
       deBai: 'Ba trạm liền nhau, van ở xa phía dưới. Hai van đóng mở hai cánh cửa cuối hành lang, van còn lại đang mở. Em chế valve_on(): mắt hồng ngoại đo van trước mũi xe, ' +
-        'chưa nóng thì bắn TỤ. switch_on() của gói Đo nhiệt bắn nhanh, không tới van xa; bệ vòi bắn tụ không giật nên tụ là đủ. Chương trình chính đã khóa.',
+        'chưa nóng thì phun MẠNH. switch_on() của gói Đo nhiệt phun nhẹ, không tới van xa; bệ vòi phun mạnh không giật nên cứ phun mạnh. Chương trình chính đã khóa.',
       veMaMau: 'Chương trình chính bị khóa. Tạo valve_on() hai dòng.',
       san: SAN_C4, batDau: { x: 1, y: 2, huong: 1 }, noi: [noi(2, 5, [[5, 2]]), noi(3, 5, [[6, 2]])], nutBat: [o(4, 5)],
       maMau: bai(C_C4),
       sao: { o: 22, nhip: 20 },
       loiGiai: { chinh: C_C4.slice(), hamCuaEmMoi: [H('valve_on', [], T_LO)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C4), hamCuaEmMoi: [H('valve_on', [], ['# chưa nóng thì bắn tụ'].concat(T_LO))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C4), hamCuaEmMoi: [H('valve_on', [], ['# chưa nóng thì phun mạnh'].concat(T_LO))] },
       congThucKhac: [{ moTa: 'Viết if warm(): pass, else: squirt("high")', baiLam: bai(C_C4), hamCuaEmMoi: [H('valve_on', [], IF('warm()', ['pass'], ['squirt("high")']))] }],
       loiSai: [
-        { moTa: 'Gọi switch_on(): bắn nhanh, van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(C_C4), hamCuaEmMoi: [H('valve_on', [], ['switch_on()'])], phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Gọi switch_on(): phun nhẹ, van cách ba ô, tia nước rơi giữa giếng', baiLam: bai(C_C4), hamCuaEmMoi: [H('valve_on', [], ['switch_on()'])], phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
         { moTa: 'Viết if warm(): đóng van đang mở, hai van đóng vẫn đóng', baiLam: bai(C_C4), hamCuaEmMoi: [H('valve_on', [], IF('warm()', ['squirt("high")']))], phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Như switch_on() nhưng bắn tụ.', 'if not warm(): rồi thụt vào squirt("high").']
+      goiY: ['Như switch_on() nhưng phun mạnh.', 'if not warm(): rồi thụt vào squirt("high").']
     }),
 
     man({
@@ -440,7 +440,7 @@
         { moTa: 'Gọi spray_left(): vẫn tới cờ nhưng đóng van đang mở, phí một nhịp', baiLam: bai(C_C5), hamCuaEmMoi: [H('valve_left', [], ['spray_left()'])] }
       ],
       loiSai: [
-        { moTa: 'Gọi switch_on() thay cho valve_on(): bắn nhanh, tia nước rơi giữa giếng', baiLam: bai(C_C5), hamCuaEmMoi: [H('valve_left', [], ['tr_left()', 'switch_on()', 'tr_right()'])], phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
+        { moTa: 'Gọi switch_on() thay cho valve_on(): phun nhẹ, tia nước rơi giữa giếng', baiLam: bai(C_C5), hamCuaEmMoi: [H('valve_left', [], ['tr_left()', 'switch_on()', 'tr_right()'])], phaiCoMa: ['ban-ngan', 'chua-toi-co'] },
         { moTa: 'Quên quay lại: xe đi lên giếng', baiLam: bai(C_C5), hamCuaEmMoi: [H('valve_left', [], ['tr_left()', 'valve_on()'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Hàm của em gọi được hàm của em khác: valve_on() làm ở màn trước.', 'tr_left(), valve_on(), tr_right().']
@@ -457,7 +457,7 @@
       sao: { o: 26, nhip: 34 },
       loiGiai: { chinh: C_C6.slice(), hamCuaEmMoi: [H('valve_row', ['n'], T_LR)] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C6), hamCuaEmMoi: [H('valve_row', ['n'], ['# n trạm, trạm nào cũng đo bên trái'].concat(T_LR))] },
-      congThucKhac: [{ moTa: 'Bắn mọi van bằng spray_left(): vẫn tới cờ nhưng đóng hai van đang mở, phí hai nhịp', baiLam: bai(C_C6), hamCuaEmMoi: [H('valve_row', ['n'], FOR('n', ['spray_left()', 'move()']))] }],
+      congThucKhac: [{ moTa: 'Phun mọi van bằng spray_left(): vẫn tới cờ nhưng đóng hai van đang mở, phí hai nhịp', baiLam: bai(C_C6), hamCuaEmMoi: [H('valve_row', ['n'], FOR('n', ['spray_left()', 'move()']))] }],
       loiSai: [
         { moTa: 'Gọi switch_left() của xe hai bánh: turn_left() chỉ quay nửa vòng trên xích', baiLam: bai(C_C6), hamCuaEmMoi: [H('valve_row', ['n'], FOR('n', ['switch_left()', 'move()']))], phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Quên move() trong vòng lặp: xe đo n lần cùng một van', baiLam: bai(C_C6), hamCuaEmMoi: [H('valve_row', ['n'], FOR('n', ['valve_left()']))], phaiCoMa: ['chua-toi-co'] }
@@ -476,16 +476,16 @@
       maMau: bai(C_C7),
       sao: { o: 21, nhip: 25 },
       loiGiai: { chinh: C_C7.slice(), hamCuaEmMoi: [H('go_spray', [], T_GF)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C7), hamCuaEmMoi: [H('go_spray', [], ['# tới sát cửa, bắn van mở cửa'].concat(T_GF))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C7), hamCuaEmMoi: [H('go_spray', [], ['# tới sát cửa, phun van mở cửa'].concat(T_GF))] },
       loiSai: [
         { moTa: 'Đi cứng forward(3): trạm đầu chỉ cách một ô, trạm sau cách bốn ô', baiLam: bai(C_C7), hamCuaEmMoi: [H('go_spray', [], ['forward(3)', 'spray_left()'])], phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Bắn trước rồi mới đi: phát đầu bắn từ chỗ xuất phát, trúng tường', baiLam: bai(C_C7), hamCuaEmMoi: [H('go_spray', [], ['spray_left()', 'go_to_wall()'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Phun trước rồi mới đi: phát đầu phun từ chỗ xuất phát, trúng tường', baiLam: bai(C_C7), hamCuaEmMoi: [H('go_spray', [], ['spray_left()', 'go_to_wall()'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['go_to_wall() của gói Hồng ngoại dừng khi phía trước là vật cản, kể cả cửa đóng.', 'go_to_wall(), rồi spray_left().']
     }),
 
     man({
-      chuong: 'che-be-sung', so: 8, ten: 'Hàm visit()', yMoi: 'biến d = distance(): vào ngõ cụt d ô, bắn, lùi ra đúng d ô; bệ vòi giữ số đo đúng',
+      chuong: 'che-be-sung', so: 8, ten: 'Hàm visit()', yMoi: 'biến d = distance(): vào ngõ cụt d ô, phun, lùi ra đúng d ô; bệ vòi giữ số đo đúng',
       kieuBai: 'bien', mat: true, lucBan: true, chinhCoDinh: true, taoHam: ['visit'], hamCuaEmCan: ['spray_left', 'go_to_wall', 'tr_left', 'tr_right', 'squirt', 'forward', 'back', 'move'],
       deBai: 'Hai ngõ cụt đi lên từ hành lang, sâu nông khác nhau. Ở đáy mỗi ngõ, van xa bên trái mở một cánh cửa của hành lang. Em chế visit(): đo d = distance() tới đáy ngõ, ' +
         'đi vào d ô, spray_left(), rồi lùi ra đúng d ô. Bệ vòi không giật nên lùi d ô là về đúng cửa ngõ. Chương trình chính đã khóa.',
@@ -494,7 +494,7 @@
       maMau: bai(C_C8),
       sao: { o: 32, nhip: 34 },
       loiGiai: { chinh: C_C8.slice(), hamCuaEmMoi: [H('visit', [], T_VI)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C8), hamCuaEmMoi: [H('visit', [], ['# đo ngõ, vào, bắn, lùi ra đúng chừng ấy'].concat(T_VI))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C8), hamCuaEmMoi: [H('visit', [], ['# đo ngõ, vào, phun, lùi ra đúng chừng ấy'].concat(T_VI))] },
       loiSai: [
         { moTa: 'Lùi ra bằng go_to_wall() sau khi quay đầu: thiếu dòng quay, xe đâm đáy ngõ', baiLam: bai(C_C8), hamCuaEmMoi: [H('visit', [], ['go_to_wall()', 'spray_left()', 'go_to_wall()'])], phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đi vào và lùi ra cứng hai ô: ngõ thứ hai sâu ba ô', baiLam: bai(C_C8), hamCuaEmMoi: [H('visit', [], ['forward(2)', 'spray_left()', 'back()', 'back()'])], phaiCoMa: ['chua-toi-co'] }
@@ -503,7 +503,7 @@
     }),
 
     man({
-      chuong: 'che-be-sung', so: 9, ten: 'Hàm push_spray()', yMoi: 'đẩy thùng rồi bắn tại chỗ: push(1) rồi spray_left()',
+      chuong: 'che-be-sung', so: 9, ten: 'Hàm push_spray()', yMoi: 'đẩy thùng rồi phun tại chỗ: push(1) rồi spray_left()',
       kieuBai: 'day-thung', mucTieu: 'day-thung', mat: true, lucBan: true, chinhCoDinh: true, taoHam: ['push_spray'], hamCuaEmCan: ['push', 'spray_left', 'tr_left', 'tr_right', 'squirt', 'forward', 'move'],
       deBai: 'Thùng nặng trên hành lang, sau thùng là hai cánh cửa đóng rồi ô đích. Mỗi lần đẩy thùng tới sát một cửa, xe đứng đúng trạm có van mở cửa đó (xa phía trên, phía dưới là hốc). ' +
         'Em chế push_spray(): push(1) của gói Đẩy thùng (tới sát thùng rồi đẩy một ô), rồi spray_left(). Chương trình chính đã khóa: hai lần push_spray(), rồi push(2).',
@@ -512,9 +512,9 @@
       maMau: bai(C_C9),
       sao: { o: 22, nhip: 15 },
       loiGiai: { chinh: C_C9.slice(), hamCuaEmMoi: [H('push_spray', [], T_PB)] },
-      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_spray', [], ['# đẩy thùng một ô, bắn mở cửa trước thùng'].concat(T_PB))] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_spray', [], ['# đẩy thùng một ô, phun mở cửa trước thùng'].concat(T_PB))] },
       loiSai: [
-        { moTa: 'Bắn trước rồi mới đẩy: phát đầu bắn từ chỗ xuất phát, trúng tường', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_spray', [], ['spray_left()', 'push(1)'])], phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Phun trước rồi mới đẩy: phát đầu phun từ chỗ xuất phát, trúng tường', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_spray', [], ['spray_left()', 'push(1)'])], phaiCoMa: ['chua-day-thung'] },
         { moTa: 'Quên spray_left(): cửa không mở, thùng vướng cửa đóng, không tới ô đích', baiLam: bai(C_C9), hamCuaEmMoi: [H('push_spray', [], ['push(1)'])], phaiCoMa: ['chua-day-thung'] }
       ],
       goiY: ['push(1) đo distance() tới thùng, đi tới sát rồi đẩy một ô.', 'push(1), rồi spray_left().']
@@ -541,11 +541,11 @@
       loiGiai: bai(L_C10),
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# ba hàm của em nối nhau: trạm, cửa xa, ngõ cụt'].concat(L_C10)) },
       congThucKhac: [
-        { moTa: 'Bắn mọi van đoạn đầu bằng spray_left(): vẫn tới cờ nhưng đóng van đang mở, phí nhịp', baiLam: bai(['move()'].concat(FOR(2, ['spray_left()', 'move()']), ['go_spray()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()'])) },
+        { moTa: 'Phun mọi van đoạn đầu bằng spray_left(): vẫn tới cờ nhưng đóng van đang mở, phí nhịp', baiLam: bai(['move()'].concat(FOR(2, ['spray_left()', 'move()']), ['go_spray()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()'])) },
         { moTa: 'Viết thẳng go_to_wall() rồi spray_left() thay cho go_spray()', baiLam: bai(['move()', 'valve_row(2)', 'go_to_wall()', 'spray_left()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()']) }
       ],
       loiSai: [
-        { moTa: 'Đi cứng forward(1) tới trạm cửa giữa như sân 1: sân 2 trạm xa hơn, bắn trúng tường', baiLam: bai(['move()', 'valve_row(2)', 'forward(1)', 'spray_left()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đi cứng forward(1) tới trạm cửa giữa như sân 1: sân 2 trạm xa hơn, phun trúng tường', baiLam: bai(['move()', 'valve_row(2)', 'forward(1)', 'spray_left()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Quên tr_right() sau visit(): xe còn quay lên, go_to_wall() đi vào ngõ cụt', baiLam: bai(['move()', 'valve_row(2)', 'go_spray()', 'go_to_wall()', 'tr_left()', 'visit()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Thiếu move() đầu: valve_row(2) đo ngay chỗ xuất phát, trạm sau bị bỏ, cửa đầu không mở', baiLam: bai(['valve_row(2)', 'go_spray()', 'go_to_wall()', 'tr_left()', 'visit()', 'tr_right()', 'go_to_wall()']), phaiCoMa: ['chua-toi-co'] }
       ],

@@ -653,7 +653,7 @@
       chuong: [['bang-chuyen', day('bang-chuyen', [1, 2, 6, 5, 7, 8, 3, 4, 9, 10])], ['che-sung-hoi', day('che-sung-hoi', THU_TU_CHE_SUNG_HOI)]] },
     { ma: 'day-thung', ten: 'Đẩy thùng', sao: 120,
       chuong: [['day-thung', []], ['che-day-thung', []]] },
-    { ma: 'luc-ban', ten: 'Lực bắn', hinh: 'luc-ban', sao: 150,
+    { ma: 'luc-ban', ten: 'Lực phun', hinh: 'luc-ban', sao: 150,
       chuong: [['luc-ban', day('luc-ban', MUOI)], ['che-luc-ban', []]] },
     { ma: 'do-nhiet', ten: 'Đo nhiệt', sao: 180,
       chuong: [['do-nhiet', []], ['che-do-nhiet', []]] },
@@ -665,7 +665,7 @@
       chuong: [['tong-hop-2', []], ['trum-mua-2', []]] }
   ];
   var TEN_MUA_2 = { 'bien-xich': 'Biến cho xích', 'hong-ngoai': 'Hồng ngoại', 'che-hong-ngoai': 'Hàm cho hồng ngoại', 'day-thung': 'Đẩy thùng',
-    'che-day-thung': 'Hàm đẩy thùng', 'che-luc-ban': 'Hàm lực bắn', 'do-nhiet': 'Đo nhiệt', 'che-do-nhiet': 'Hàm đo nhiệt', 'doi-mua-2': 'Đội',
+    'che-day-thung': 'Hàm đẩy thùng', 'che-luc-ban': 'Hàm lực phun', 'do-nhiet': 'Đo nhiệt', 'che-do-nhiet': 'Hàm đo nhiệt', 'doi-mua-2': 'Đội',
     'che-doi-mua-2': 'Đội phối hợp', 'be-sung': 'Bệ vòi xích', 'che-be-sung': 'Hàm bệ vòi', 'tong-hop-2': 'Tổng hợp', 'trum-mua-2': 'Trùm mùa' };
   // Rời mùa 2: che-xich 3, 4, 5, 7, 10 dùng bậc thang (game đã bỏ) và hàm có tham số trước gói 2. KHÔNG cất hẳn: che-xich.4 tạo climb() mà
   // che-doi-xich.1, .2 và che-doi-omni.5 (mùa ẩn) cần; năm màn thành chương `che-xich` (5 màn) đứng trước gói Đội xích và nhện ở mùa 3 (ẩn).
@@ -1412,24 +1412,24 @@
       'Vòi phun giờ có lực mạnh: spray("high") phun tia nước bay xa tới vật cản đầu tiên, nhưng cú phun mạnh làm xe giật lùi một ô. Van cách xe ba ô, phun nhẹ không tới. Bấm Chạy xem phun mạnh mở cửa và cú giật đưa xe tới hàng cửa.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: chữ "high" trong ngoặc là lực phun mạnh.',
       ['Phun mạnh thì tia bay xa, xe giật lùi một ô.', 'Màn sau van ở xa: em tự chọn lực.']);
-    // Gói 7 chương do-nhiet: cái mới là ĐO NHIỆT warm() (nút bắn đang bật thì nóng). do-nhiet.1 trình diễn (if not warm(): squirt("low") ở mỗi khúc quanh);
+    // Gói 7 chương do-nhiet: cái mới là ĐO NHIỆT warm() (van đang bật thì nóng). do-nhiet.1 trình diễn (if not warm(): squirt("low") ở mỗi khúc quanh);
     // do-nhiet.2 ép while not warm(): turn_right() (H). che-do-nhiet.1 chế switch_on() (H).
     trinhDien('do-nhiet.1', null,
-      'Mắt hồng ngoại vừa được nâng cấp ĐO NHIỆT: warm() là True khi vật cản trước mũi xe đang nóng. Van hơi đang mở thì nóng (có quầng đỏ), van đóng thì không. Đường xoắn có ba khúc quanh, cuối mỗi khúc một van; van đóng nào cũng mở cửa của khúc sau. Bấm Chạy xem xe hỏi warm() ở mỗi khúc: van chưa nóng thì bắn nhanh cho mở, rồi rẽ phải đi tới tường.',
-      'Chương trình đã viết sẵn và khoá. Bấm Chạy: if not warm() chỉ bắn khi van trước mặt chưa nóng.',
-      ['Bắn van đang mở là đóng nó: phải hỏi warm() trước.', 'Màn sau bốn van nóng làm đèn chỉ đường: em quay cho tới khi warm() là True.']);
-    // Gói 9 chương be-sung: cái mới là BỆ SÚNG XÍCH (xích + súng hơi: bắn tụ không giật). be-sung.1 trình diễn (bắn nút rồi rẽ phải, không cần move() bù giật);
+      'Mắt hồng ngoại vừa được nâng cấp ĐO NHIỆT: warm() là True khi vật cản trước mũi xe đang nóng. Van hơi đang mở thì nóng (có quầng đỏ), van đóng thì không. Đường xoắn có ba khúc quanh, cuối mỗi khúc một van; van đóng nào cũng mở cửa của khúc sau. Bấm Chạy xem xe hỏi warm() ở mỗi khúc: van chưa nóng thì phun nhẹ cho mở, rồi rẽ phải đi tới tường.',
+      'Chương trình đã viết sẵn và khoá. Bấm Chạy: if not warm() chỉ phun khi van trước mặt chưa nóng.',
+      ['Phun van đang mở là đóng nó: phải hỏi warm() trước.', 'Màn sau bốn van nóng làm đèn chỉ đường: em quay cho tới khi warm() là True.']);
+    // Gói 9 chương be-sung: cái mới là BỆ SÚNG XÍCH (xích + súng hơi: phun mạnh không giật). be-sung.1 trình diễn (phun nút rồi rẽ phải, không cần move() bù giật);
     // be-sung.2 ép: mã mẫu của Sola có back() bù giật thừa, người chơi bỏ dòng đó (H). che-be-sung.1 chế spray_left() (H).
     trinhDien('be-sung.1', null,
-      'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên bắn tụ không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe bắn van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
+      'Xe xích của em đã gắn vòi phun thành BỆ VÒI: xích bám chắc nên phun mạnh không giật, không như xe hai bánh lùi một ô sau mỗi phát. Bấm Chạy xem xe phun van cuối hành lang cho cửa bên phải mở, rồi rẽ phải tới cờ mà không phải bù cú giật.',
       'Chương trình đã viết sẵn và khoá. Bấm Chạy: sau spray("high") và wait(), xe vẫn đứng nguyên ô.',
-      ['Xe hai bánh bắn tụ thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
+      ['Xe hai bánh phun mạnh thì giật lùi một ô; bệ vòi xích thì không.', 'Màn sau Sola viết cho xe hai bánh có dòng bù giật thừa: em bỏ nó.']);
   })();
 
   // ---------------------------------------------------------------- TÊN HIỂN THỊ THEO QUY TẮC ĐẶT TÊN (user duyệt 29/10, hội đồng 20261029-1738; KE-HOACH-7-MUA.md mục "Quy tắc đặt tên")
   // Tên mùa = nơi robot làm việc; tên gói = món mới hay tình huống mới (cùng tên với thẻ bộ phận); tên chương = việc em làm, không lặp tên gói,
   // không "Hàm cho…"; chương tạo hàm thì "Chế lệnh: …". Chỉ đổi CHỮ HIỂN THỊ: mã gói / chương (khoá lưu tiến độ) giữ nguyên.
-  // Mùa 2 đổi 29/10 sau khi vòi phun / van hơi gộp (bắn → phun ở tên và phim; chữ trong màn đổi ở đợt riêng).
+  // Mùa 2 đổi 29/10 sau khi vòi phun / van hơi gộp (phun → phun ở tên và phim; chữ trong màn đổi ở đợt riêng).
   (function () {
     var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
                      'mua-2': 'Nhà máy', 'mua-3': 'Mỏ quặng', 'mua-4': 'Thành phố' };
