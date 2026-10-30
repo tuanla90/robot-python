@@ -185,6 +185,7 @@
       'thang.tieuDe.dayThung': 'ĐÃ XẾP KHO!',
       'thang.tieuDe.bongMo': 'ĐÚNG CHỖ!',
       'thang.tieuDe.toHinh': 'TÔ XONG!',
+      'thang.tieuDe.dapLua': 'HẾT CHÁY!',
       'thang.o': 'Gọn: {x} ô (cần ≤ {y})',
       'thang.nhip': 'Nhanh: {x} nhịp (cần ≤ {y})',
       'thang.nhipTong': 'Nhanh: tổng {x} nhịp (cần ≤ {y})',

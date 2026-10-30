@@ -71,8 +71,8 @@ for (const c of goiDoi) {
   } else if (khung3) {
     const roi = Object.keys(M.roiMua3 || {}).filter((x) => M.roiMua3[x].some((ma) => c.chuong.some((y) => ma.startsWith(y.ma + '.'))));
     const gr = TT.goi.findIndex((g) => roi.length > 0 && g.chuong.includes(roi[0]));
-    kiem(c.goi.ma + ': gói đội vào khung mùa 3 (MUA_3): mùa 3 ẩn; chương rời ' + roi.join(', ') + ' đứng ngay sau ' + c.sau + ', gói rời ngay sau gói part, có ngưỡng sao',
-      TT.mua.find((x) => x.ma === 'mua-3').an === true && roi.length > 0 && J(TT.thuTu.slice(vt + 1, vt + 1 + roi.length)) === J(roi) &&
+    kiem(c.goi.ma + ': gói đội vào khung mùa 3 (MUA_3): mùa 3 hiện; chương rời ' + roi.join(', ') + ' đứng ngay sau ' + c.sau + ', gói rời ngay sau gói part, có ngưỡng sao',
+      !TT.mua.find((x) => x.ma === 'mua-3').an && roi.length > 0 && J(TT.thuTu.slice(vt + 1, vt + 1 + roi.length)) === J(roi) &&
       gr > 0 && TT.goi[gr - 1].chuong.includes(c.sau) && typeof TT.goi[gr].sao === 'number' && TT.goi[gr].sao >= TT.goi[gr - 1].sao && TT.goi[gr].khongTangNguong === true);
   } else if (roiMua2) {
     const g = TT.goi[gi], mua = TT.mua.find((x) => x.ma === g.mua);

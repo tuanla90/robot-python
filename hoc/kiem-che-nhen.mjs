@@ -145,13 +145,13 @@ console.log('\n== 3. Hàm chế: crawl, jump, leap, crawl_jump, bring ==');
   // Đường về
   const m7 = man('15.7'), kho7 = khoTruoc('15.7');
   const goIn = ChamHoc.cham(Object.assign({}, m7, { chinhCoDinh: false, mucTieu: undefined, bongMo: undefined }), { chinh: ['go_in()'], hamCuaMan: m7.maMau.hamCuaMan }, kho7);
-  kiem('màn 7: go_in() đưa nhện từ (0,0) vào hang tới (4,2) trong 12 nhịp (walk "RR", crawl "D", jump "R"); lời giải đi ngược lại từng đoạn: jump("L"), crawl("U"), walk("LL") (24 nhịp), chân duỗi', (() => {
-    const r = chamGiai(m7); return goIn.theoSan[0].soNhip === 12 && vt(goIn.theoSan[0].robot) === '4,2' && r.thang && r.soNhip === 24 && nhipVet(r.theoSan[0] ? { vet: r.theoSan[0].vet } : r).pop().robot.chan === 'dung'; })());
-  const doiGoIn = ChamHoc.cham(m7, { chinh: ['go_in()', 'come_back()'], hamCuaMan: [H('go_in', ['jump("L")'], []), H('come_back', ['jump("L")', 'crawl("U")', 'walk("LL")'], [])] }, kho7);
-  kiem('màn 7: người chơi sửa go_in() (hàm khóa) cũng vô ích: máy chấm luôn dùng bản của màn (khoaHamMan); sửa come_back() thì có tác dụng', doiGoIn.thang && doiGoIn.soNhip === 24 && ChamHoc.cham(m7, { chinh: ['go_in()', 'come_back()'], hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['pass'], [])] }, kho7).thang === false);
-  kiem('màn 7: đi ngược = đảo THỨ TỰ và HƯỚNG; đảo hướng mà giữ thứ tự → rơi hố; đảo thứ tự mà giữ hướng → nhảy hụt (nhay-hut); lệnh ngược trong LENH_NGUOC: go_right ↔ go_left, go_up ↔ go_down, crouch ↔ stand',
-    (() => { const a = ChamHoc.cham(m7, { chinh: C7, hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['walk("LL")', 'crawl("U")', 'jump("L")'], [])] }, kho7), b = ChamHoc.cham(m7, { chinh: C7, hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['jump("R")', 'crawl("D")', 'walk("RR")'], [])] }, kho7);
-      return maCua(a).includes('roi-ho') && maCua(b).includes('nhay-hut') && SanHoc.LENH_NGUOC.go_right === 'go_left' && SanHoc.LENH_NGUOC.go_up === 'go_down' && SanHoc.LENH_NGUOC.crouch === 'stand' && SanHoc.LENH_NGUOC.stand === 'crouch'; })());
+  kiem('màn 7: go_in() đưa nhện từ (0,0) vào hang tới (2,2) trong 8 nhịp (crawl "D", jump "R"); lời giải đi ngược lại từng đoạn: jump("L"), crawl("U") (16 nhịp, viết lại 30/10 cho đường cong mùa 3), chân duỗi', (() => {
+    const r = chamGiai(m7); return goIn.theoSan[0].soNhip === 8 && vt(goIn.theoSan[0].robot) === '2,2' && r.thang && r.soNhip === 16 && nhipVet(r.theoSan[0] ? { vet: r.theoSan[0].vet } : r).pop().robot.chan === 'dung'; })());
+  const doiGoIn = ChamHoc.cham(m7, { chinh: ['go_in()', 'come_back()'], hamCuaMan: [H('go_in', ['jump("L")'], []), H('come_back', ['jump("L")', 'crawl("U")'], [])] }, kho7);
+  kiem('màn 7: người chơi sửa go_in() (hàm khóa) cũng vô ích: máy chấm luôn dùng bản của màn (khoaHamMan); sửa come_back() thì có tác dụng', doiGoIn.thang && doiGoIn.soNhip === 16 && ChamHoc.cham(m7, { chinh: ['go_in()', 'come_back()'], hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['pass'], [])] }, kho7).thang === false);
+  kiem('màn 7: đi ngược = đảo THỨ TỰ và HƯỚNG; đảo hướng mà giữ thứ tự → đâm tường; đảo thứ tự mà giữ hướng → nhảy hụt (nhay-hut); lệnh ngược trong LENH_NGUOC: go_right ↔ go_left, go_up ↔ go_down, crouch ↔ stand',
+    (() => { const a = ChamHoc.cham(m7, { chinh: C7, hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['crawl("U")', 'jump("L")'], [])] }, kho7), b = ChamHoc.cham(m7, { chinh: C7, hamCuaMan: [m7.maMau.hamCuaMan[0], H('come_back', ['jump("R")', 'crawl("D")'], [])] }, kho7);
+      return maCua(a).includes('dam-tuong') && maCua(b).includes('nhay-hut') && SanHoc.LENH_NGUOC.go_right === 'go_left' && SanHoc.LENH_NGUOC.go_up === 'go_down' && SanHoc.LENH_NGUOC.crouch === 'stand' && SanHoc.LENH_NGUOC.stand === 'crouch'; })());
   // Chân lắp ngược
   const m8 = man('15.8'), kho8 = khoTruoc('15.8');
   kiem('màn 8: dây chân đấu ngược — thân cũ của fixed_jump (crouch, wait, stand, go) làm nhện bước thường vào hố (roi-ho); lời giải (stand, wait, crouch, go) nhảy qua cả hai hố trong 6 nhịp; hàm jump(d) của em ở màn này cũng bị ngược (roi-ho)', (() => {

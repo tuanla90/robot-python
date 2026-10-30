@@ -168,7 +168,7 @@ Ghi chú chia:
   - tong-hop-4 (Đủ bộ): 1 ghé trạm rồi phân loại (fly_dock + lift_by_color) · 2 xe máy sơn chấm theo đường xanh (green_step) · 3 giao hộp theo đơn (seek_here + deliver_up)
     · 4 xe kẻ tới vạch đỏ (go_to + bút liền) · 5 đội drone nam châm chuyền hộp qua rào cho xe kẹp sort_by_color · 6 chép mật lệnh hàng trên (read_row + paint_list)
     · 7 đội drone dọn lối cho xe máy sơn · 8 bay theo danh sách hướng · 9 sửa hàm của màn mark_step (arrow_step) · 10 trùm chương (trace_marks, dock, stripe, danh sách màu).
-  - trum-mua-4 (Phố mới kẻ vạch): chế charge_if(k) · mark_dash(n) · stairs(c, n) · sửa pond_frame · đội: lift_aside() · bar_len(c, a) (count_here) · street(c, n) (stripe)
+  - trum-mua-4 (Phố mới kẻ vạch): chế charge_if(k) · mark_dash(n) · stair_line(c, n) (trước tên stairs, trùng hàm mùa 3 khi gộp main) · sửa pond_frame · đội: lift_aside() · bar_len(c, a) (count_here) · street(c, n) (stripe)
     · che-may-son.7 Lưới chấm · che-may-son.8 Khung lồng khung (màn xe cũ, mục 9: giữ, đặt sau street làm cầu nối) · trum-mua-4.10 TRÙM CUỐI MÙA "Drone kẻ vạch R1 xuất xưởng"
     (trace_marks, charge_if, mark_dash, danh sách màu; pin 10, hai trạm).
   - Màn đội chạy được mục tiêu to-hinh (xe sơn, drone dọn đường). Đường cong gói 9, 10 không nhảy (cong4.js).

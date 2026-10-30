@@ -13,7 +13,7 @@
      Vật nam châm mang màu theo cực (N đỏ, S xanh dương). Vật nằm đất chiếm ô: xe không đi xuyên; front_clear() = False trước vật.
    - Nam châm có cực, chưa dính vật: ở CUỐI mỗi nhịp nhìn thẳng ra trước ô 1, 2 rồi 3: VẬT ĐẦU TIÊN gặp quyết định (gỗ, tường, thùng chắn). Mỗi lần dính một vật.
    - magnet_off() thả vật xuống ô ngay trước mũi xe nếu ô đó trống; bị chặn thì vật vẫn dính (tha-bi-chan). Vật dính lơ lửng ở mũi xe, không chiếm ô.
-     Sắt đang dính vẫn dính khi đổi cực; vật nam châm đang dính mà tay đổi sang CÙNG cực thì bị bắn ra.
+     Sắt đang dính vẫn dính khi đổi cực; vật nam châm đang dính mà tay đổi sang CÙNG cực thì bị hất ra.
    - color() (10) là CẢM BIẾN MÀU Ở BỤNG: luôn đọc màu SÀN ô dưới xe, kể cả khi xe đang dính vật.
    - Vật nằm dưới đất không bị băng chuyền kéo; vật nằm trên băng vẫn hút được. Vật đặt ở ô không viết được bằng ký hiệu o (vd trên băng) khai ở \`vatThem: [{ x, y, chat?, cuc? }]\`.
    - Mục tiêu 'dua-vat' + vatCan 'tu': vật sắt và vật nam châm phải nằm trên ô đích; vật gỗ để yên ở đâu cũng được (dùng ở cả 10 màn).

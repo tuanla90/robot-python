@@ -99,7 +99,7 @@ console.log('\n== 2. Nối cửa / băng chuyền: nút bật sẵn không đư�
 console.log('\n== 3. Lỗi cấu hình khác ==');
 {
   let e = loiCfg(goc({ nutBat: [{ x: 2, y: 1 }] }));
-  kiem('ô không phải nút N → lỗi "Nút bật sẵn: ô (2, 1) không phải nút bắn N"', /Nút bật sẵn: ô \(2, 1\) không phải nút bắn N\./.test(e), e);
+  kiem('ô không phải nút N → lỗi "Nút bật sẵn: ô (2, 1) không phải van N"', /Nút bật sẵn: ô \(2, 1\) không phải van N\./.test(e), e);
   e = loiCfg({ loaiRobot: 'banh', hamGoc: SUNG, san: ['#####', '#.M.#', '#...#', '#####'], batDau: { x: 1, y: 2, huong: 0 }, nutBat: [{ x: 2, y: 1 }] });
   kiem('ô nút đè M → lỗi ghi rõ nút đè M không bật sẵn được', /nút đè M không bật sẵn được/.test(e), e);
   e = loiCfg(goc({ nutBat: { x: 3, y: 1 } }));
@@ -157,7 +157,7 @@ console.log('\n== 6. Giao diện (theo mã nguồn) ==');
     /nutBat: Array\.isArray\(cfg\.nutBat\) \? cfg\.nutBat : null/.test(sv) && /\(\(this\.cfg && this\.cfg\.nutBat\) \|\| \[\]\)\.forEach\(function \(o\) \{ self\.nutO\(o\.x, o\.y\)\.bat = true; \}\)/.test(sv) && /sN = \{ bat: bat, loe: [^}]*\}[\s\S]{0,400}?ve\('nut-ban', sN\); if \(bat\) this\.veNong\(g, x, y, now\)/.test(sv));   // 29/10 van hơi: trạng thái gom vào sN (thêm góc quay goc khi đổi)
   // ảnh nhỏ: nút bật sẵn → hình vector 'nut-ban' {bat} (thuOVec, V7c2: hết bản pixel xanh / viền cam)
   kiem('san-ve.js thuSan (ảnh nhỏ): nút bật sẵn vẽ hình nut-ban trạng thái bat (thuOVec)', /lopMau && lopMau\.nutBat/.test(sv) && /else if \(ma === 'nut-ban' && nutBat\[x \+ ',' \+ y\]\) st\.bat = true;/.test(sv));
-  kiem('man-choi.js cauHinhSan + ảnh nhỏ từng sân, man-lap.js ảnh nhỏ: truyền nutBat', /nutBat: lm\.nutBat \|\| undefined/.test(mc) && /nutBat: ch\.nutBat/.test(mc) && /nutBat: lm\.nutBat \}/.test(ml));
+  kiem('man-choi.js cauHinhSan + ảnh nhỏ từng sân, man-lap.js ảnh nhỏ: truyền nutBat', /nutBat: lm\.nutBat \|\| undefined/.test(mc) && /nutBat: ch\.nutBat/.test(mc) && /nutBat: lm\.nutBat(, lua: lm\.lua)? \}/.test(ml));   // 30/10 gói lửa: cfg.lua đứng ngay sau
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' : 'ĐẠT ') + (dat + hong) + ' kiểm' + (LOI_GIA ? ' (đang cắm lỗi giả: phải đỏ)' : ''));

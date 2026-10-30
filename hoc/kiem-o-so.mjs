@@ -121,8 +121,8 @@ function chamO(E, i, k) {
  *  ô kẹt MỚI (khác danh sách) thì đỏ. Khoá: mã màn + giá trị. */
 const CHAP_NHAN = {
   'khoang-cach.6 30': 'range(30) lặp đủ lâu: màn có while (có lẽ giải bằng while, chưa kiểm)',
-  'me-cung.7 20': 'range(20) lặp đủ lâu: màn có while', 'me-cung.8 60': 'range(60): màn có while', 'me-cung.9 60': 'range(60): màn có while', 'me-cung.10 60': 'range(60): màn có while',
-  'hong-ngoai.6 20': 'range(20) có sẵn trong mã mẫu', 'che-hong-ngoai.8 30': 'range(30) lặp đủ lâu: màn có while'
+  'me-cung.7 20': 'range(20) lặp đủ lâu: màn có while', 'me-cung.8 60': 'range(60): màn có while', 'me-cung.9 60': 'range(60): màn có while', 'me-cung.10 60': 'range(60): màn có while'
+  // 30/10: hong-ngoai.6 đổi sang while True (16 lượt, cần giữ nhịp cho đường cong), che-hong-ngoai.8 cũng while True: mùa 2 hết ô kẹt.
 };
 const loi = [], loiAn = [], daBiet = [];
 let soO = 0, soMan = 0;

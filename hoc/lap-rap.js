@@ -67,7 +67,7 @@
     { ma: 'xoay', part: 'xoay', ten: 'Tay kẹp xoay', gia: 3, icon: 'denXoay', vuot: 'Kẹp vật ở trước, trái, phải', ham: ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'] },
     { ma: 'nam-cham', part: 'nam-cham', ten: 'Nam châm', gia: 3, icon: 'denNamCham', vuot: 'Hút vật sắt, vật nam châm từ xa', ham: ['magnet_n', 'magnet_s', 'magnet_off'] },
     { ma: 'nem', part: 'nem', ten: 'Máy ném', gia: 3, icon: 'denNem', vuot: 'Ném vật qua rào, xa 1 đến 3 ô', ham: ['aim', 'throw', 'load'] },
-    { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Bắn nước đẩy thùng nặng', ham: ['spray', 'spray_back'] }
+    { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Phun mạnh đẩy thùng nặng', ham: ['spray', 'spray_back'] }
   ];
   // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu'): PART RIÊNG (P1 mùa 3 29/10; hình ve-vector-cam.js 'tu'), chỉ hai hàm front_metal / front_pole; trước đó là
   // part khoang-cach + hai hàm. Giá giữ 2 (rap-du.9 cách mẫu 'tu' không dùng front_clear nên kết quả cũ y nguyên).

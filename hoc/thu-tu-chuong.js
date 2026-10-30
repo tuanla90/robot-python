@@ -28,7 +28,7 @@
    Chương 13 'nam-cham' (Nam châm) nằm ở man-nam-cham.js.
    Chương 14 'may-nem' (Máy ném) nằm ở man-may-nem.js.
    Chương 19 'sung-hoi' (Súng hơi) nằm ở man-sung-hoi.js; chương 20 'che-sung-hoi' (Chế lệnh súng hơi) nằm ở man-che-sung-hoi.js.
-   Chương 'luc-ban' (Lực bắn: spray("low") bắn nhanh / spray("high") bắn tụ, 26/10) nằm ở man-luc-ban.js, chương thứ ba của gói Súng hơi.
+   Chương 'luc-ban' (Lực phun: spray("low") phun nhẹ / spray("high") phun mạnh, 26/10) nằm ở man-luc-ban.js, chương thứ ba của gói Súng hơi.
    Chương 16 'drone' (Drone) nằm ở man-drone.js.
    Chương 15 'list' (Danh sách) nằm ở man-list.js; chương 16 'che-list' (Chế lệnh danh sách) nằm ở man-che-list.js (17/10, gói List sau gói Nhện).
    Chương 'flycam' (Flycam: drone gắn camera nhìn xuống, look() + danh sách; chương CUỐI, cuối gói Drone) nằm ở man-flycam.js.
@@ -42,7 +42,7 @@
 
   var API = {
     // 15/10 tối: mỗi bộ phận hai chương (làm quen + chế lệnh) — thêm che-xich, che-omni, che-mau, che-may-nem, che-drone; SÚNG HƠI (sung-hoi + che-sung-hoi:
-    // spray() bắn ra trước + giật lùi, spray_back() bắn ra sau + giật tới đẩy thùng) thay TẤM ĐẨY và SÚNG BÓNG (hai chương cũ tam-day / sung-bong đã xóa).
+    // spray() phun ra trước + giật lùi, spray_back() phun ra sau + giật tới đẩy thùng) thay TẤM ĐẨY và SÚNG BÓNG (hai chương cũ tam-day / sung-bong đã xóa).
     thuTu: ['hai-banh', 'xuong-ham', 'che-xe', 'tay-gap', 'che-tay', 'vong-lap', 'che-lap', 'khoang-cach', 'che-cam-bien', 'robot-hoan-thien', 'hai-robot',
       'bang-chuyen', 'tham-so', 'nhen', 'che-nhen', 'list', 'che-list', 'xich', 'che-xich', 'omni', 'che-omni', 'sung-hoi', 'che-sung-hoi', 'luc-ban', 'mau', 'che-mau', 'may-son', 'che-may-son', 'rap-nao',
       'nam-cham', 'che-nam-cham', 'tay-xoay', 'che-tay-xoay', 'may-nem', 'che-may-nem', 'rap-tay', 'drone', 'che-drone', 'flycam', 'rap-du'],
@@ -69,7 +69,8 @@
       // `an: true` (user 27/10): mùa chưa dựng lại theo khuôn 10 gói (KE-HOACH-7-MUA.md) thì ẩn khỏi màn chọn gói; bảng Gỡ lỗi "Mở hết" vẫn hiện để thử.
       // Mùa 2 "Ghi nhớ" đủ 10 gói × 20 màn (29/10): hiện ở màn chọn gói; ngưỡng sao gói khai cứng ở MUA_2 (lo-trinh-hoc.js).
       { ma: 'mua-2', ten: 'Ghi nhớ', ban: { gia: '49.000đ' } },
-      { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' }, an: true },
+      // Mùa 3 "Mỏ quặng" đủ 10 gói × 20 màn (30/10, user cho chơi thử): hiện ở màn chọn gói.
+      { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' } },
       { ma: 'mua-4', ten: 'Bầu trời', ban: { gia: '49.000đ' }, an: true },
       { ma: 'mua-5', ten: 'Sân bóng', ban: { gia: '49.000đ' }, an: true }      // 29/10: gói cũ chưa thuộc mùa 1–4 (omni, máy ném, lắp ráp, đua, đội…) chờ dựng mùa 5–7
     ],
@@ -86,7 +87,7 @@
       { ma: 'list', ten: 'Danh sách', mua: 'mua-2', sao: 75, chuong: ['list', 'che-list'] },                   // 17/10: list ngay sau chuỗi chữ của nhện (KE-HOACH-LIST-FLYCAM.md)
       { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', mua: 'mua-2', sao: 105, chuong: ['xich', 'che-xich'] },
       { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', mua: 'mua-2', sao: 135, chuong: ['omni', 'che-omni'] },
-      { ma: 'sung-hoi', ten: 'Vòi phun', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi', 'luc-ban'] },        // 26/10: thêm chương Lực bắn (spray("low") / spray("high"))
+      { ma: 'sung-hoi', ten: 'Vòi phun', loai: 'bo-phan', mua: 'mua-3', sao: 0, chuong: ['sung-hoi', 'che-sung-hoi', 'luc-ban'] },        // 26/10: thêm chương Lực phun (spray("low") / spray("high"))
       { ma: 'mau', ten: 'Cảm biến màu', loai: 'bo-phan', mua: 'mua-3', sao: 30, chuong: ['mau', 'che-mau'] },
       { ma: 'may-son', ten: 'Máy sơn', loai: 'bo-phan', mua: 'mua-3', sao: 60, chuong: ['may-son', 'che-may-son'] },       // 25/10 tô màu: chấm, nét liền qua góc, chọn màu (KE-HOACH-MAY-SON.md)
       { ma: 'rap-nao', ten: 'Lắp ráp: Thân + Não', loai: 'thu-thach', mua: 'mua-3', sao: 90, chuong: ['rap-nao'] },            // 17/10 chế độ lắp ráp (KE-HOACH-LAP-RAP.md): tự chọn part dưới ngân sách
@@ -127,7 +128,7 @@
       'che-omni': 'Chế lệnh omni',
       'sung-hoi': 'Vòi phun',
       'che-sung-hoi': 'Chế lệnh vòi phun',
-      'luc-ban': 'Lực bắn',
+      'luc-ban': 'Lực phun',
       'che-mau': 'Chế lệnh màu',
       'may-son': 'Máy sơn',
       'che-may-son': 'Chế lệnh máy sơn',

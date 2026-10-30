@@ -123,10 +123,12 @@ thua('che-doi-sung-hoi.3', 'omni không chờ cửa: tiến thẳng rồi thả 
 thua('che-doi-sung-hoi.3', 'pass_gate() quên chờ (chỉ forward(2))', { doi: [null, null], hamEm: [H('pass_gate', ['forward(2)'])] }, 'chua-dua-vat');
 thua('che-doi-sung-hoi.4', 'xe súng không chờ omni: húc đồng đội, bắn lệch nút', { doi: [['forward(2)', 'turn_left()', 'spray("high")', 'wait()', 'turn_right()', 'move()'], null] });
 thua('che-doi-sung-hoi.4', 'omni không chờ cửa', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
-// luật giật một ô (29/10): omni không còn là chốt chặn (thùng chỉ nhích một ô, không trượt quá đích); catch_crate() là hàm đón thùng, xe vòi phun tự đẩy đủ ba thùng
-thua('che-doi-sung-hoi.5', 'xe súng không quay lên mà giật tại làn: thùng không nhích, omni đón mãi (vòng vô hạn)', { doi: [['for i in range(3):', '    move()', '    squirt("high")', '    move()'], null] }, 'vong-vo-han');
-thua('che-doi-sung-hoi.5', 'xe súng đẩy xong không tiến lại làn: đâm tường cột', { doi: [['for i in range(3):', '    move()', '    turn_left()', '    squirt("high")', '    turn_right()', '    move()'], null] }, 'dam-tuong');
-thang('che-doi-sung-hoi.5', 'catch_crate() đúng: omni đón từng thùng rồi sang cột kế, không cản thùng', { doi: [null, null] });
+// 30/10 Thùng báo tin: xe vòi phun phun mạnh mở cửa làn dưới, cú giật đẩy thùng xuống ngách; omni quay mặt lên, thấy thùng mới biết cửa đã mở
+thua('che-doi-sung-hoi.5', 'xe vòi phun phun nhẹ: tia nước không qua nổi hai hàng rào tới van, thùng không rơi, omni chờ mãi', { doi: [['for i in range(3):', '    turn_left()', '    squirt("low")', '    move()', '    turn_right()', '    forward(2)'], null] }, 'ban-ngan');
+thua('che-doi-sung-hoi.5', 'xe vòi phun quên move() về làn sau cú giật: đâm tường', { doi: [['for i in range(3):', '    turn_left()', '    squirt("high")', '    turn_right()', '    forward(2)'], null] }, 'dam-tuong');
+thua('che-doi-sung-hoi.5', 'omni không chờ thùng: trượt vào cửa còn đóng', { doi: [null, ['for i in range(3):', '    slide_r(2)']] }, 'dam-tuong');
+thua('che-doi-sung-hoi.5', 'catch_crate() viết như wait_gate(): trước mặt trống nên omni đi luôn, đâm cửa', { doi: [null, null], hamEm: [H('catch_crate', W)] }, 'dam-tuong');
+thang('che-doi-sung-hoi.5', 'catch_crate() đúng: omni chờ thùng báo tin rồi qua từng cửa', { doi: [null, null] });
 thua('che-doi-sung-hoi.6', 'open_step() bắn nhầm phía (kick_left)', { doi: [null, null], hamEm: [H('open_step', ['squirt_right("high")', 'forward(2)'])] });
 thua('che-doi-sung-hoi.6', 'omni đi thẳng forward(6)', { doi: [null, ['forward(6)']] }, 'chua-toi-co');
 thua('che-doi-sung-hoi.7', 'mẫu: open_gate() bắn hai phát, cửa đóng lại trước khi omni tới', { doi: [null, null], hamCuaMan: man('che-doi-sung-hoi.7').maMau.hamCuaMan });

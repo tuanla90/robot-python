@@ -238,7 +238,14 @@
     vecVanNong: '#f97316',             // bánh van lúc MỞ: cam nóng (hơi nóng chảy qua, luật warm())
     vecVanNongSang: '#fdba74',         // quầng / vệt sáng của van mở
     vecOngHoiRgb: '120,134,160',       // ống hơi lúc van đóng: thép xám, ghép độ mờ
-    vecOngHoiNongRgb: '249,115,22'     // ống hơi lúc van mở: ấm cam như bánh van mở (vecVanNong)
+    vecOngHoiNongRgb: '249,115,22',    // ống hơi lúc van mở: ấm cam như bánh van mở (vecVanNong)
+    // ---- VECTOR (30/10, gói lửa): ĐÁM CHÁY trên sàn (ve-vector-o2.js lua): ngọn lửa ba lớp, vết cháy và khói khi đã tắt
+    vecLuaDo: '#e3342f',               // lớp ngoài ngọn lửa: đỏ cam
+    vecLuaCam: '#fb8c1e',              // lớp giữa ngọn lửa: cam
+    vecLuaVang: '#fde047',             // lõi ngọn lửa: vàng
+    vecLuaVienToi: '#9a2d12',          // viền ngọn lửa: nâu đỏ (lửa không viền chàm như vật cứng)
+    vecTro: '#6b6460',                 // vết cháy trên sàn khi lửa đã tắt
+    vecKhoiRgb: '120,128,140'          // làn khói xám của đám cháy vừa tắt, ghép độ mờ
   };
 
   // ======================================================================== ĐỘI / SƠN ROBOT (12 sau V7c3; sơn của bộ pixel part.js / cai-dat.js đã xoá): màu đối thủ (ve-vector.js SON_DOI), vạch đế R1..R4 (san-ve.js), màu đội vector. R1 vàng, R2 lam, đối thủ đỏ

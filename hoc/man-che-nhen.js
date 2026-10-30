@@ -78,9 +78,9 @@
   var L_10 = ['leap("RR")', 'walk("RRDDL")', 'crawl_jump("L")', 'walk("LDD")'];
 
   // hàm của màn
-  var T_GO_IN = ['walk("RR")', 'crawl("D")', 'jump("R")'];
+  var T_GO_IN = ['crawl("D")', 'jump("R")'];
   function hGoIn() { return H('go_in', [], T_GO_IN); }
-  var T_COME_BACK = ['jump("L")', 'crawl("U")', 'walk("LL")'];
+  var T_COME_BACK = ['jump("L")', 'crawl("U")'];
   function hComeBack(than) { return H('come_back', [], than || T_COME_BACK); }
   var T_FIXED_JUMP = ['stand()', 'wait()', 'crouch()', 'go(d)'];
   var T_FIXED_JUMP_CU = ['crouch()', 'wait()', 'stand()', 'go(d)'];                  // thân ban đầu của fixed_jump(d): jump cũ, chạy sai vì chân đấu ngược
@@ -282,26 +282,26 @@
       hamCuaEmCan: ['go', 'walk', 'crawl', 'jump'],
       deBai: 'Hàm go_in() của màn đưa nhện vào hang và đã bị khóa. Em chế come_back() để nhện đi ngược về đúng chỗ ban đầu, chân duỗi như bóng mờ.',
       veMaMau: 'Chương trình chính bị khóa: go_in() rồi come_back(). Hàm come_back() của màn còn trống: mở Xưởng hàm và viết thân hàm.',
-      san: ['...##', '##n##', '...u.'],
+      san: ['...', 'n##', '.u.'],
       batDau: { x: 0, y: 0, huong: 0 },
       bongMo: { x: 0, y: 0, huong: 0, chan: 'dung' },
       chinhCoDinh: true, khoaHamMan: ['go_in'],
       maMau: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), H('come_back', [], ['pass'])] },
-      sao: { o: 27, nhip: 24 }, nhipTheoLoiGiai: true,
+      sao: { o: 23, nhip: 16 }, nhipTheoLoiGiai: true,
       loiGiai: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack()] },
       loiGiaiKhac: {
         moTa: 'Cùng đường về, thêm một dòng chú thích',
         baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(nhieu(['# đi ngược go_in()'], T_COME_BACK))] }
       },
       congThucKhac: [
-        { moTa: 'Đoạn cuối đi bằng hai lần go("L")', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['jump("L")', 'crawl("U")', 'go("L")', 'go("L")'])] } },
-        { moTa: 'Về bằng lệnh gốc, không gọi crawl() và jump()', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['crouch()', 'wait()', 'stand()', 'go_left()', 'crouch()', 'go_up()', 'go_up()', 'stand()', 'go_left()'])] } }
+        { moTa: 'Đoạn chui lên viết bằng lệnh gốc', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['jump("L")', 'crouch()', 'go_up()', 'go_up()', 'stand()', 'wait()'])] } },
+        { moTa: 'Về bằng lệnh gốc, không gọi crawl() và jump()', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['crouch()', 'wait()', 'stand()', 'go_left()', 'crouch()', 'go_up()', 'go_up()', 'stand()', 'wait()'])] } }
       ],
       loiSai: [
         { moTa: 'Để nguyên thân pass: nhện đứng yên ở cuối go_in(), chưa về', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), H('come_back', [], ['pass'])] }, phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Đi lại đúng đường cũ thay vì đi ngược: nhện đâm vào tường', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(T_GO_IN)] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Đảo hướng nhưng giữ thứ tự cũ: nhện đi vào hố', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['walk("LL")', 'crawl("U")', 'jump("L")'])] }, phaiCoMa: ['roi-ho'] },
-        { moTa: 'Đảo thứ tự nhưng giữ hướng cũ: nhện nhảy sang phải ra ngoài sân', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['jump("R")', 'crawl("D")', 'walk("RR")'])] }, phaiCoMa: ['nhay-hut', 'lech-bong-mo'] },
+        { moTa: 'Đảo hướng nhưng giữ thứ tự cũ: nhện chui lên đâm tường', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['crawl("U")', 'jump("L")'])] }, phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
+        { moTa: 'Đảo thứ tự nhưng giữ hướng cũ: nhện nhảy sang phải ra ngoài sân', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn(), hComeBack(['jump("R")', 'crawl("D")'])] }, phaiCoMa: ['nhay-hut', 'lech-bong-mo'] },
         { moTa: 'Xóa mất hàm come_back() của màn: lệnh gọi nó không còn hàm nào', baiLam: { chinh: C_7.slice(), hamCuaMan: [hGoIn()] }, phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Đi ngược lại: đoạn cuối của go_in() phải làm đầu tiên, và mỗi hướng đổi sang hướng ngược lại.',

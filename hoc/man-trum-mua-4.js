@@ -4,7 +4,7 @@
      - `tong-hop-4`: chương 1 "Đủ bộ": ôn từng cặp, đủ các robot của mùa: drone nam châm + camera (gói 4, 7) ghé trạm sạc (gói 5), xe máy sơn + camera bốn hướng
        (gói 2, 3, 6), đội drone và xe (gói 8), drone sơn đọc mật lệnh (gói 4, 9), danh sách hướng bay (gói 1), sửa hàm chấm theo mũi tên (gói 7, 9);
        màn 10 trùm chương: chép bảng mẫu, đáp sạc, vạch qua rào, chấm theo danh sách.
-     - `trum-mua-4`: chương 2 "Phố mới kẻ vạch": chế lệnh cho Drone kẻ vạch R1 (mark_dash, charge_if, stairs, lift_aside cho đội, bar_len, street), sửa pond_frame;
+     - `trum-mua-4`: chương 2 "Phố mới kẻ vạch": chế lệnh cho Drone kẻ vạch R1 (mark_dash, charge_if, stair_line, lift_aside cho đội, bar_len, street), sửa pond_frame;
        hai màn xe cũ che-may-son.7 Lưới chấm, .8 Khung lồng khung (khai thứ tự trong MUA_4) đứng trước trùm; trum-mua-4.10 TRÙM CUỐI MÙA 4.
    Mã màn: tong-hop-4.1 … .10; trum-mua-4.1 … .7 và .10 (.8, .9 để trống: chỗ của hai màn xe cũ).
    Máy kiểm: hoc/kiem-man-mua-4.mjs, hoc/kiem-lo-trinh.mjs mục mùa 4.
@@ -87,7 +87,7 @@
   var T_SAC = ['if battery() < k:', '    land()', '    take_off()'];
   var C_SAC = ['ink("yellow")', 'pen_down()'].concat(LAP(3, ['go_right()', 'go_right()', 'charge_if(4)'], 'j'));
   var T_STAIRS = ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_right()', '    go_down()', 'pen_up()'];
-  var C_STAIRS = ['stairs("red", 2)', 'go_right()', 'stairs("blue", 1)'];
+  var C_STAIRS = ['stair_line("red", 2)', 'go_right()', 'stair_line("blue", 1)'];
   var T_FRAME = ['pen_down()'].concat(LAP('n', 'go_right()'), LAP('n', 'go_down()'), LAP('n', 'go_left()'), LAP('n', 'go_up()'));
   var T_FRAME_SAI = ['pen_down()'].concat(LAP('n', 'go_right()'), LAP('n', 'go_down()'), LAP('n', 'go_right()'), LAP('n', 'go_up()'));
   var T_LIFT = ['magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()'];
@@ -320,18 +320,18 @@
     }),
 
     manChe({
-      so: 3, ten: 'Hàm bậc thang', r: 'drone-son', taoHam: ['stairs'], hamCuaEmCan: [],
-      deBai: 'Chế stairs(c, n): chọn màu c, hạ bút, n lần bay phải một ô rồi xuống một ô, cuối cùng nhấc bút. Chương trình chính đã khóa: bậc thang đỏ hai bậc, bay sang phải, bậc thang xanh dương một bậc.',
-      veMaMau: 'Tạo stairs với hai đối số c và n.',
+      so: 3, ten: 'Hàm bậc thang', r: 'drone-son', taoHam: ['stair_line'], hamCuaEmCan: [],
+      deBai: 'Chế stair_line(c, n): chọn màu c, hạ bút, n lần bay phải một ô rồi xuống một ô, cuối cùng nhấc bút. Chương trình chính đã khóa: bậc thang đỏ hai bậc, bay sang phải, bậc thang xanh dương một bậc.',
+      veMaMau: 'Tạo stair_line với hai đối số c và n.',
       san: ['.....', '.....', '.....', '.....'],
       hinh: ['rr...', '.rr..', '..rbb', '....b'],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_STAIRS),
-      loiGiai: bai(C_STAIRS, { hamCuaEmMoi: [H('stairs', ['c', 'n'], T_STAIRS)] }),
+      loiGiai: bai(C_STAIRS, { hamCuaEmMoi: [H('stair_line', ['c', 'n'], T_STAIRS)] }),
       sao: { o: 9, nhip: 7 },
       loiSai: [
-        { moTa: 'Gọi stairs mà chưa chế hàm', baiLam: bai(C_STAIRS), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Xuống trước rồi mới sang phải', baiLam: bai(C_STAIRS), hamCuaEmMoi: [H('stairs', ['c', 'n'], ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_down()', '    go_right()', 'pen_up()'])], phaiCoMa: ['to-thua'] }
+        { moTa: 'Gọi stair_line mà chưa chế hàm', baiLam: bai(C_STAIRS), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Xuống trước rồi mới sang phải', baiLam: bai(C_STAIRS), hamCuaEmMoi: [H('stair_line', ['c', 'n'], ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_down()', '    go_right()', 'pen_up()'])], phaiCoMa: ['to-thua'] }
       ],
       goiY: ['Mỗi bậc: go_right() rồi go_down().', 'pen_up() cuối hàm làm ở nhịp bay kế tiếp.']
     }),

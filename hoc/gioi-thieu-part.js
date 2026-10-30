@@ -168,7 +168,7 @@
       moTa: 'Hai đầu phun: spray() phun ra trước, spray_back() phun ra sau.',
       lenh: ['spray', 'spray_back'],
       gioi: ['Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền chạy / dừng', 'Phun nhẹ bay xa nhất 2 ô, xe đứng yên', 'Tia nước bay qua hàng rào thấp và băng chuyền'],
-      khong: ['Một nhịp chỉ phun một phát', 'Nhịp phun thì bánh nghỉ', 'Tia nước không đẩy được thùng nặng'],
+      khong: ['Một nhịp chỉ phun một lần', 'Nhịp phun thì bánh nghỉ', 'Tia nước không đẩy được thùng nặng'],
       luuY: ['Lệnh phun cũng chỉ là ra lệnh, wait() mới phun.', 'Từ gói Lực phun, lệnh phun nhận một lực: "high" phun mạnh, bay xa nhưng xe giật một ô, giật vào thùng nặng thì thùng nhích một ô; "low" hay không viết gì là phun nhẹ.']
     },
 
