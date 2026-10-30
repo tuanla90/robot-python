@@ -62,19 +62,21 @@
   var DS = [
     /* ================================================= chương tong-hop-3 "Tổng hợp" ================================================= */
     man({
-      so: 1, ten: 'Nhện vượt chướng', hang: 'lam-quen', kieu: 'nhen', mucTieu: 'toi-co', hamCuaEmCan: ['go', 'jump', 'crawl'],
-      deBai: 'Ôn nhện và nhảy: hành lang có một hố và một gầm thấp. Bước một ô, nhảy qua hố, chui qua gầm, bước thêm một ô là tới cờ.',
-      veMaMau: 'Chương trình có sẵn đi thẳng: nhện rơi hố. Viết lại.',
-      san: ['#########', '#..u.n.F#', '#########'],
+      // 30/10 nghiệm thu độc lập: ôn chuỗi làm dữ liệu của gói 1 (biến chuỗi + for c in path) cùng elif và nhảy / chui của gói 5 (trước: Nhện vượt chướng, bốn lệnh tuần tự).
+      // Chuỗi chín bước (12 ô, ~19 nhịp, đứng sau tong-hop-3.9 cho đường cong): viết thẳng chín lệnh tốn khối hơn vòng for có if / elif / else.
+      so: 1, ten: 'Bản đồ chuỗi qua khe', hang: 'lam-quen', kieu: 'nhen', mucTieu: 'toi-co', hamCuaEmCan: ['go', 'jump', 'crawl'],
+      deBai: 'Ôn chuỗi: bản đồ đường đi lưu trong biến path = "RJRRCRJRR". Mỗi chữ là một việc: R bước sang phải, J nhảy qua hố, C chui qua gầm. Duyệt for c in path rồi dùng if / elif / else làm đúng việc của từng chữ.',
+      veMaMau: 'Chương trình có sẵn đã có path và vòng for, nhưng chữ nào cũng chỉ bước go("R"). Thêm if / elif.',
+      san: ['###############', '#..u...n..u..F#', '###############'],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['walk("RRRRRR")']),
-      loiGiai: bai(['go("R")', 'jump("R")', 'crawl("R")', 'go("R")']),
-      sao: { o: 21, nhip: 12 },
+      maMau: bai(['path = "RJRRCRJRR"', 'for c in path:', '    go("R")']),
+      loiGiai: bai(['path = "RJRRCRJRR"', 'for c in path:', '    if c == "J":', '        jump("R")', '    elif c == "C":', '        crawl("R")', '    else:', '        go("R")']),
+      sao: { o: 25, nhip: 23 },
       loiSai: [
-        { moTa: 'Đi thẳng: rơi xuống hố', baiLam: bai(['walk("RRRRRR")']), phaiCoMa: ['roi-ho'] },
-        { moTa: 'Nhảy xong đi đứng qua gầm: đụng gầm', baiLam: bai(['go("R")', 'jump("R")', 'walk("RRR")']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chữ nào cũng bước: rơi hố đầu tiên', baiLam: bai(['path = "RJRRCRJRR"', 'for c in path:', '    go("R")']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Đảo hai nhánh: nhảy ở chỗ gầm, chui ở chỗ hố', baiLam: bai(['path = "RJRRCRJRR"', 'for c in path:', '    if c == "C":', '        jump("R")', '    elif c == "J":', '        crawl("R")', '    else:', '        go("R")']), phaiCoMa: ['roi-ho'] }
       ],
-      goiY: ['jump("R") bật qua đúng một ô hố.', 'crawl("R") chui qua gầm rồi đứng dậy.']
+      goiY: ['for c in path lấy từng chữ của chuỗi, từ trái sang phải.', 'J thì jump("R"), C thì crawl("R"), còn lại go("R").']
     }),
 
     man({
@@ -177,20 +179,20 @@
     }),
 
     man({
-      so: 8, ten: 'Sắt thẳng hay sau góc', hang: 'bien-the', kieu: 'xe', vatCan: 'sat', hamCuaEmCan: ['seek_safe', 'take_iron', 'turn_right'],
-      deBai: 'Ôn and / or: hai sân. Đi tới khi trước mặt hết trống hoặc thấy sắt (seek_safe()). Nếu thấy sắt thì take_iron(). Không thì rẽ phải, đi tiếp như vậy rồi take_iron().',
-      veMaMau: 'Chương trình có sẵn chỉ đúng sân 1. Thêm if / else.',
+      so: 8, ten: 'Sắt thẳng hay sau góc', hang: 'bien-the', kieu: 'xe', vatCan: 'sat', hamCuaEmCan: ['move', 'take_iron', 'turn_right'],     // 30/10 nghiệm thu: and viết thẳng trong while (trước: giấu trong seek_safe())
+      deBai: 'Ôn and / or: hai sân. Tự viết vòng while front_clear() and not front_metal(): move(), đi tới khi trước mặt hết trống hoặc thấy sắt. Nếu thấy sắt thì take_iron(). Không thì rẽ phải, lại đi như vậy rồi take_iron().',
+      veMaMau: 'Chương trình có sẵn chỉ đi tới khi trước mặt hết trống. Thêm vế and, rồi if / else.',
       san: [['#######', '#.D..o#', '#######', '#######'], ['######', '#...D#', '####.#', '####.#', '####o#', '######']],
       vatChat: [['.......', '.....s.', '.......', '.......'], ['......', '......', '......', '......', '....s.', '......']],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['seek_safe()', 'take_iron()']),
-      loiGiai: bai(['seek_safe()', 'if front_metal():', '    take_iron()', 'else:', '    turn_right()', '    seek_safe()', '    take_iron()']),
+      maMau: bai(['while front_clear():', '    move()', 'take_iron()']),
+      loiGiai: bai(['while front_clear() and not front_metal():', '    move()', 'if front_metal():', '    take_iron()', 'else:', '    turn_right()', '    while front_clear() and not front_metal():', '        move()', '    take_iron()']),
       sao: { o: 22, nhip: 8 },
       loiSai: [
-        { moTa: 'Không hỏi: sân 2 xe hút vào tường', baiLam: bai(['seek_safe()', 'take_iron()']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Rẽ trái thay vì rẽ phải', baiLam: bai(['seek_safe()', 'if front_metal():', '    take_iron()', 'else:', '    turn_left()', '    seek_safe()', '    take_iron()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không hỏi: sân 2 xe hút vào tường', baiLam: bai(['while front_clear() and not front_metal():', '    move()', 'take_iron()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Rẽ trái thay vì rẽ phải', baiLam: bai(['while front_clear() and not front_metal():', '    move()', 'if front_metal():', '    take_iron()', 'else:', '    turn_left()', '    while front_clear() and not front_metal():', '        move()', '    take_iron()']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['seek_safe() dừng vì tường hoặc vì sắt: hỏi front_metal() để biết vì sao.', 'Sau khi rẽ, gọi lại seek_safe().']
+      goiY: ['Vòng while dừng vì tường hoặc vì sắt: hỏi front_metal() để biết vì sao.', 'Sau khi rẽ, viết lại vòng while đó.']
     }),
 
     man({
@@ -287,14 +289,14 @@
       so: 4, ten: 'Chui lên nhận hộp', hang: 'luyen', kieu: 'doi', hamCuaEmCan: ['go_wall', 'pass_box', 'crawl', 'wait_n', 'hop_drop'],
       deBai: 'Nhện ở dưới gầm thấp: chui lên tới chỗ nhận hộp, chờ xích pass_box(), rồi hop_drop("R") qua hố vào ô đích.',
       veMaMau: 'Chương trình có sẵn: nhện chưa chui lên. Viết tiếp cho nhện.',
-      san: ['########', '#o....##', '##.#D###', '##.u.###', '##n#####', '##.#####', '########'],
-      bd: [{ x: 5, y: 1, huong: 3 }, { x: 2, y: 5, huong: 0 }],
+      san: ['########', '#o.....#', '##.#D###', '##.u.###', '##n#####', '##.#####', '########'],
+      bd: [{ x: 6, y: 1, huong: 3 }, { x: 2, y: 5, huong: 0 }],      // 30/10: xích lùi xa một ô (đường cong trước màn Hai chuyến qua đệm N)
       maMau: B(['go_wall()', 'pass_box()'], ['hop_drop("R")']),
-      loiGiai: B(['go_wall()', 'pass_box()'], ['crawl("U")', 'wait_n(2)', 'hop_drop("R")']),
-      sao: { o: 48, nhip: 13 },
+      loiGiai: B(['go_wall()', 'pass_box()'], ['crawl("U")', 'wait_n(3)', 'hop_drop("R")']),
+      sao: { o: 48, nhip: 14 },
       loiSai: [
         { moTa: 'Chui lên rồi gắp ngay: hộp chưa tới', baiLam: B(['go_wall()', 'pass_box()'], ['crawl("U")', 'hop_drop("R")']), phaiCoMa: ['kep-hut'] },
-        { moTa: 'Đi đứng lên: đụng gầm', baiLam: B(['go_wall()', 'pass_box()'], ['walk("UU")', 'wait_n(2)', 'hop_drop("R")']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đi đứng lên: đụng gầm', baiLam: B(['go_wall()', 'pass_box()'], ['walk("UU")', 'wait_n(3)', 'hop_drop("R")']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['crawl("U") đưa nhện lên hai ô, qua gầm.', 'Đếm nhịp: chui lên xong rồi hộp mới tới.']
     }),
@@ -351,23 +353,6 @@
     }),
 
     trum({
-      so: 8, ten: 'Gọi một, lấy một', hang: 'bien-the', kieu: 'xe', vatCan: 'sat', hamCuaEmCan: ['pull_iron', 'fetch_iron', 'turn_right', 'turn_left'],
-      deBai: 'Hai vật sắt. Xe đứng trên nút: pull_iron() gọi vật trong hốc ra rồi hút, rẽ phải thả vào ô đích dưới. Rẽ trái, fetch_iron(4) qua đệm N lấy vật cuối hành lang, về rồi rẽ phải thả vào ô đích trên.',
-      veMaMau: 'Chương trình có sẵn làm xong vật thứ nhất. Viết tiếp.',
-      san: ['######.###', '##Do##u###', '#M......o#', '##D.######', '##########'], vatChat: ['..........', '...s......', '........s.', '..........', '..........'],
-      demTu: [{ x: 6, y: 0, cuc: 'N' }, { x: 3, y: 3, cuc: 'S', nut: { x: 1, y: 2 } }],
-      batDau: { x: 1, y: 2, huong: 1 },
-      maMau: bai(nhieu(['pull_iron()', 'turn_right()'], THA)),
-      loiGiai: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(4)', 'turn_right()'], THA)),
-      sao: { o: 29, nhip: 17 },
-      loiSai: [
-        { moTa: 'Về rồi rẽ trái: ô đích dưới đã có vật', baiLam: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(4)', 'turn_left()'], THA)), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên rẽ trái trước khi đi lấy: xe chạy xuống tường', baiLam: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['fetch_iron(4)', 'turn_right()'], THA)), phaiCoMa: ['chua-dua-vat'] }
-      ],
-      goiY: ['pull_iron() xong, xe đứng ngay cạnh nút, mặt quay sang phải.', 'fetch_iron xong xe quay mặt về bên trái: rẽ phải là chĩa lên trên.']
-    }),
-
-    trum({
       so: 9, ten: 'Bụng nhện đủ ngón', hang: 'bien-the', kieu: 'bung', hamCuaEmCan: ['hook_for', 'unhook', 'jump', 'trail', 'crawl'],
       deBai: 'Nhện đứng trùm trên vật chữ N. Hút bằng hook_for("N"), nhảy qua hố, thả vào ô đích đỏ. Xuống một ô, nhảy qua hố dưới tới vật chữ S, hút bằng hook_for("S"), chui qua gầm sang trái, thả vào ô đích xanh.',
       veMaMau: 'Chương trình có sẵn làm xong vật N. Viết tiếp cho vật S.',
@@ -385,9 +370,9 @@
     }),
 
     trum({
-      so: 10, ten: 'Trùm mùa: đội bãi từ', hang: 'trum', kieu: 'doi', khung: { chinh: 16, moiHam: 10 },
+      so: 8, ten: 'Đội bãi từ', hang: 'bien-the', kieu: 'doi', khung: { chinh: 16, moiHam: 10 },      // 30/10 nghiệm thu: trùm mùa cũ (gần bản sao che-doi-xich.19) lùi về vị trí 9
       hamCuaEmCan: ['go_wall', 'pass_box', 'tr_right', 'pick', 'spin', 'wait_n', 'back', 'drop', 'hop_drop', 'walk'],
-      deBai: 'Trùm mùa. Hai hộp, hai ô đích. Xích chuyền hộp gần cho nhện; nhện mang qua hố vào ô đích dưới, rồi đi lên đứng trên nút TẮT đệm S, cũng là mốc sau ô đích trên. Xích lấy hộp xa, chờ nhện lên nút, rồi chở hộp qua chỗ đệm (đã tắt) sang ô đích trên.',
+      deBai: 'Hai hộp, hai ô đích. Xích chuyền hộp gần cho nhện; nhện mang qua hố vào ô đích dưới, rồi đi lên đứng trên nút TẮT đệm S, cũng là mốc sau ô đích trên. Xích lấy hộp xa, chờ nhện lên nút, rồi chở hộp qua chỗ đệm (đã tắt) sang ô đích trên.',
       veMaMau: 'Chương trình có sẵn mới chuyền xong hộp gần. Viết tiếp cả hai.',
       san: ['#####.####', '#####u####', '#oo....DM#', '###.#D##.#', '###.u....#', '##########'],
       demTu: [{ x: 5, y: 0, cuc: 'S', nut: { x: 8, y: 2 }, khiDe: 'tat' }],
@@ -400,6 +385,39 @@
         { moTa: 'Nhện không lên nút: đệm không tắt', baiLam: B(['go_wall()', 'pass_box()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'wait_n(8)', 'go_wall()', 'back()', 'drop()'], ['wait_n(6)', 'hop_drop("R")', 'walk("RRR")']), phaiCoMa: ['dem-roi-ho'] }
       ],
       goiY: ['Nhện làm ba việc: nhận hộp, mang qua hố, lên nút làm mốc.', 'Xích chỉ đi qua chỗ đệm khi nhện đã đứng trên nút từ nhịp trước.']
+    }),
+    trum({
+      // 30/10 nghiệm thu độc lập: trùm mùa kiểm lõi mùa 3. Ba sân (không viết cứng được): vật cực N, vật cực S, quặng sắt ở xa gần khác nhau.
+      // while có and (front_pole thấy vật nam châm trong 3 ô, front_metal thấy sắt trong 2 ô: thiếu một vế là xe đâm vào vật), biến chuỗi p = front_pole(),
+      // if / elif / else ba việc khác nhau: vật nam châm thì bật CÙNG cực đẩy nó trượt vào ô đích cuối hành lang, sắt thì take_iron() mang về ô đích sau lưng.
+      // Không đặt đệm từ: đệm kéo cả robot chưa bật nam châm (luật P1b), đặt trên đường đi tới là xe rơi trước khi kịp đọc cực.
+      so: 10, ten: 'Trùm mùa: xe thăm dò phân loại', hang: 'trum', kieu: 'xe', khung: { chinh: 18, moiHam: 10 }, hamCuaEmCan: ['move', 'take_iron'],
+      deBai: 'Trùm mùa. Ba sân, cuối hành lang là vật cực N, vật cực S hay quặng sắt, xa gần khác nhau. Tiến tới khi cảm biến thấy vật nam châm HOẶC thấy sắt. Rồi đọc p = front_pole(): vật N thì bật N, vật S thì bật S (cùng cực, vật trượt vào ô đích cuối hành lang); không phải nam châm thì take_iron() mang sắt về ô đích sau lưng. Bật nhầm cực là vật bị hút về mũi xe.',
+      veMaMau: 'Chương trình có sẵn chỉ dừng khi thấy vật nam châm rồi luôn take_iron(). Chạy thử từng sân rồi sửa.',
+      san: [
+        ['#############', '#.......o..D#', '#############'],
+        ['#########', '#...o..D#', '#########'],
+        ['#########', '#..D..o.#', '#########']
+      ],
+      vatChat: [
+        ['.............', '........N....', '.............'],
+        ['.........', '....S....', '.........'],
+        ['.........', '......s..', '.........']
+      ],
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: bai(['while front_pole() == "none":', '    move()', 'take_iron()']),
+      loiGiai: bai(['while front_pole() == "none" and not front_metal():', '    move()', 'p = front_pole()', 'if p == "N":', '    magnet_n()', '    wait()',
+        'elif p == "S":', '    magnet_s()', '    wait()', 'else:', '    take_iron()']),
+      sao: { o: 22, nhip: 6 },
+      loiSai: [
+        { moTa: 'Chỉ dừng khi thấy nam châm: sân 3 xe đâm mãi vào quặng sắt', baiLam: bai(['while front_pole() == "none":', '    move()', 'p = front_pole()', 'if p == "N":', '    magnet_n()', '    wait()',
+          'elif p == "S":', '    magnet_s()', '    wait()', 'else:', '    take_iron()']), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Bật khác cực như grip(): vật nam châm bị hút về mũi xe, không vào ô đích', baiLam: bai(['while front_pole() == "none" and not front_metal():', '    move()', 'p = front_pole()', 'if p == "N":', '    magnet_s()', '    wait()',
+          'elif p == "S":', '    magnet_n()', '    wait()', 'else:', '    take_iron()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên nhánh sắt: else cũng bật N, sắt bị hút dính mà không về ô đích', baiLam: bai(['while front_pole() == "none" and not front_metal():', '    move()', 'p = front_pole()', 'if p == "S":', '    magnet_s()', '    wait()',
+          'else:', '    magnet_n()', '    wait()']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['front_pole() thấy vật nam châm cách 3 ô, front_metal() thấy sắt cách 2 ô: dừng khi một trong hai thấy.', 'Cùng cực thì đẩy, khác cực thì hút. Sắt thì cực nào cũng hút.']
     })
   );
 
