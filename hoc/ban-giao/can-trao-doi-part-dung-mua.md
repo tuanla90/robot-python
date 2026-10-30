@@ -30,9 +30,23 @@
    (wait_clear, step_clear…) nên được cấp bản cũ làm hàm của màn gắn cờ `capCu` (kiem-lo-trinh (g) và kiem-trum-mua-2 không tính dòng / trùng tên của hàm capCu).
    kiem-doi-mua-2 dừng sớm (ĐẠT, ghi chú) khi gói Đội không ở mùa 2.
 
+9. **Mùa 2 phần A + gói 9 (PDM2c, 31/10):** 9 bộ hồi quy sau PDM2b sửa đúng nguyên nhân (ngân hàng thô được cấp go_to_wall của che-hong-ngoai.1 trước luc-ban;
+   kiem-khay coi distance / warm là cảm biến; kiem-goi-doi bỏ qua hàm capCu; kiem-doi-sung-hoi dùng squirt_left bản hai bánh ở màn ẩn; phim TẠM gói kho-cu 3 khung).
+   Gói Đội về GÓI 9 mùa 2 (sao 240), Bệ vòi xích CẤT ra mùa ẩn (CAT_MUA_2, ngân hàng + phim giữ, 8 mục Sổ lệnh của nó bỏ; kiem-be-sung dừng sớm khi gói cất).
+   Gói 9 viết lại: R1 xe cứu hỏa đầy đủ, R2 xe chở hàng mùa 1 (hai bánh + tay xoay + cảm biến khoảng cách); ý đội: cảm biến THẤY ĐỒNG ĐỘI (warm / distance của R1,
+   front_clear của R2), R2 gắp thùng gỗ (chắn tia, chắn đường, không nóng). Vì hai xe khác cảm biến nên không còn "hàm của em cả đội cùng gọi"; thay bằng mỗi chương có
+   màn R2 chờ bạn bằng front_clear(). Màn R1 không phun thì khay R1 không có spray (squirt_back("high") giật tới là một bước đi "không húc" nên thân cố định né được
+   cảm biến). Bộ dò thân cố định: thân húc (dam-tuong) rồi vẫn tới cờ không tính là né (lõi hai robot không có đâm-là-thua). Gói 10 CHƯA dựng lại: còn 3 màn đội
+   (tong-hop-2.8, .9, trum-mua-2.5), beSung, một sân, gọi hàm Bệ vòi xích qua capCu (CAP_HAM_CU giữ tạm); kiem-trum-mua-2 đỏ 1 mục (điều mới); 'mua-2' CHƯA vào XONG.
+
 ## Câu hỏi chờ user
-- (PDM2b) Gói Đội cũ cất ở mùa ẩn và gói 9 còn là Bệ vòi xích: PDM2c dựng gói 9 Đội (R2 xe chở hàng) thì Bệ vòi xích đi đâu (cất hẳn, hay giữ vài màn cho gói 10)?
-  Gói 10 đang mượn hàm gói Đội qua `capCu`; PDM2c dựng lại gói 10 thì bỏ CAP_HAM_CU.
+- (PDM2b, đã làm ở PDM2c theo phương án A) Bệ vòi xích cất ra mùa ẩn; gói 10 nay mượn hàm Bệ vòi xích qua `capCu` (CAP_HAM_CU) tới khi dựng lại gói 10.
+- (PDM2c) Gói 10 dựng lại (một robot, nhiều sân): ba màn đội cũ (tong-hop-2.8, .9, trum-mua-2.5) bỏ hẳn hay chuyển ý sang gói 9 (gói 9 đã đủ 20 màn)? Chương tong-hop-2
+  "Dập lửa" (gói lửa 30/10) giữ ý lửa cho nhiều sân? Hàm Bệ vòi xích (go_spray, spray_left, valve_left, push_spray…) gói 10 đang gọi: dạy lại trong gói 10 hay bỏ?
+- (PDM2c) Lõi hai robot không có cờ đâm-là-thua (cfg.damLaThua chỉ dừng khi một robot; thử ở doi-mua-2.9: húc vẫn chạy tiếp): có muốn lõi áp cho màn đội không?
+  Hiện bộ dò gói Đội coi thân húc rồi vẫn tới (1 sao, chẩn đoán dam-tuong) là không né được cảm biến.
+- (PDM2c) Cửa đang đổi mà có xe đứng trên thì giữ mở (cua-ket, lõi): phun đúng nhịp R2 đứng trên cửa vào là "thoát" bài chờ bạn; các màn gói 9 đã dời chỗ xuất phát R2
+  để không thân cố định ngắn nào trúng nhịp đó, nhưng đây là kẽ hở chung của mọi màn van đổi cửa trên đường robot.
 - (PDM2b) luc-ban.8 smart_spray() so distance() > 0 còn che-luc-ban.1 auto_spray() so > 1 (giữ ý cũ của hai chương): hai hàm gần giống nhau, có muốn gộp?
 - Sổ lệnh (so-lenh.js) theo ngân hàng nên còn hiện tên hàm mùa 2 cũ (step, deliver, pick_behind, fetch_back, bounce) mà người chơi giờ không tạo; thiếu next_lane, open_at,
   stair_down. Agent đề xuất cho Sổ lệnh đọc theo lộ trình (một lượt riêng). Claude nghiêng về làm, sau khi xong mùa 2–4.

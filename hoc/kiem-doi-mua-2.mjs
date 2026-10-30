@@ -1,5 +1,6 @@
 /* ============================================================================
-   kiem-doi-mua-2.mjs — máy kiểm 20 màn mới của mùa 2, gói 8 "Đội" (man-doi-mua-2.js): chương `doi-mua-2` (hồng ngoại thấy robot) và `che-doi-mua-2` "Đội phối hợp".
+   kiem-doi-mua-2.mjs — máy kiểm 20 màn mới của mùa 2, GÓI 9 "R2 trở lại" (PDM2c 31/10; man-doi-mua-2.js): chương `doi-mua-2` (cảm biến thấy đồng đội) và `che-doi-mua-2` "Chế lệnh: chờ bạn".
+   PDM2c: R1 = xe cứu hỏa đầy đủ (xích + vòi phun + hồng ngoại), R2 = xe chở hàng mùa 1 (hai bánh + tay xoay + cảm biến khoảng cách); mục 1 nối sau che-kho-cu.10, mục 2 trông đợi cấu hình đó.
    Màn 10 mỗi chương là trùm có huy hiệu (doi-mua-2, che-doi-mua-2).
    1. Vị trí: gói doi-mua-2 (mùa 2) có hai chương doi-mua-2, che-doi-mua-2; mỗi chương đúng 10 màn mới theo `so`, hạng lam-quen ×3 · luyen ×3 · bien-the ×3 · trum;
       doi-mua-2.1 ngay sau che-do-nhiet.10, che-doi-mua-2.1 ngay sau doi-mua-2.10; trùm mang huy hiệu đúng mã chương (huy-hieu.js có hình), màn khác không mang.
