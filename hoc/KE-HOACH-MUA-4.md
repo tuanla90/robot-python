@@ -154,6 +154,15 @@ Ghi chú chia:
     read_below(a, n), arrow_step, count_here(a, n, col), deliver_up(n), lift_by_color, sửa lift_n, sửa find_col, đơn hàng bằng hàm, trùm đếm rồi nâng.
   - Gói 8 Đội chia hàng đổi camera trước thành camera-4: color() → color("front"), sort_color → sort_by_color (gói 3 tạo). Gói đội mùa 5 vẫn dùng sort_color cũ.
   - Đường cong gói 1–7 không nhảy (cong4.js), trừ chỗ che-list.4 (bãi trống) đã ghi; gói 8 còn nhảy như cũ (mục 15).
+- **30/10 Gói 9 Sơn từ trên cao xong (20 màn mới)**: man-son-tren-cao.js. Robot combo: drone nâng cấp đáp đất + máy sơn dưới bụng + camera bốn hướng nâng cấp "here";
+  mục tiêu to-hinh. Nhắc lại: danh sách (gói 1, 2), color("here") / "up" (gói 4, 7), dock() (gói 5), bút liền (gói 6), read_below (gói 7), băng chuyền / rào / hố (mùa 2, 3).
+  - son-tren-cao (Kẻ vạch qua rào): 1 trình diễn kẻ vạch trên băng, nhấc bút qua rào · 2 nhấc bút qua rào (ép pen_up) · 3 vạch đứt qua rào và hố (for) · 4 lề đường đỏ vàng
+    (for c in [...]) · 5 tô lại vạch mờ (ink(color("here")), hai sân) · 6 chép màu hàng trên (color("up"), bỏ ô trống, hai sân) · 7 sơn tốn pin (đáp trạm bằng dock())
+    · 8 khung quanh ao · 9 sửa cột màu (dot trước ink) · 10 trùm kẻ vạch theo dấu (đọc dấu, ba chặng, hỏi pin ở trạm).
+  - che-son-tren-cao (Chế lệnh: tranh tường): stripe(c, n) · retrace(n) · paint_list(a) · dashes(c, n) (gọi stripe) · sửa hop_fence · trace_marks(n) · mural(a, b)
+    (hàng dưới phải sang trái) · copy_down(a, n) (read_below + paint_list) · sửa line_dock (dock trong vòng lặp) · trùm tự viết bằng retrace, dock, stripe.
+  - Đường cong trong gói không nhảy. Chỗ nhảy ở ranh gói 10 (che-may-son.7 sau che-son-tren-cao.9) chờ gói 10 dựng.
+  - Không có màn nam châm: lõi N3 cấm máy sơn đi chung nam châm (một bụng một món), ý "chở trước hay sơn trước" ở mục 3 bỏ (mục 7 câu 17).
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -175,5 +184,7 @@ Ghi chú chia:
     Bộ lắp ráp (màn lắp robot) chưa có camera-4 trong danh mục mua (giá, bảng kế hoạch): thêm khi dựng màn lắp ráp mùa 4.
 14. ~~Chặn gói 3, 5, 7~~: user 30/10 chọn A, đã làm (mục 6).
 15. Gói 8 Đội chia hàng còn nhảy đường cong ở nhiều chỗ (màn đội dài nhịp); cần thiết kế lại thứ tự / thêm màn cầu nối. Chưa làm.
-16. Gói 9 Sơn từ trên cao và gói 10 Drone kẻ vạch R1 chưa dựng (lõi N3 đã có).
+16. ~~Gói 9~~ xong 30/10 (mục 6). Gói 10 Drone kẻ vạch R1 chưa dựng.
+17. Gói 9 không có màn nam châm (máy sơn và nam châm không gắn chung). Muốn có ý "chở trước hay sơn trước" thì cần màn hai drone (một sơn, một chở) kiểu gói đội: để gói 10?
+18. Ranh gói 5 / 6: may-son.3 (đầu gói 6, 18 ô) sau che-drone.16 (10 ô) nhảy số ô (như mục 8, nay màn đứng trước là che-drone.16). Chưa sửa.
 

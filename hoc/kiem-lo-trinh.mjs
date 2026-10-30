@@ -57,7 +57,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'che-cam-bon.1', 'che-cam-bon.2', 'che-cam-bon.3', 'che-cam-bon.4', 'che-cam-bon.5', 'che-cam-bon.6', 'che-cam-bon.7', 'che-cam-bon.8', 'che-cam-bon.9',
   'tram-sac.8', 'che-drone.12',      // gói 5: hai drone pin khác nhau trên cùng một phố
   'nhin-duoi.2', 'nhin-duoi.3', 'nhin-duoi.4', 'nhin-duoi.5', 'nhin-duoi.6', 'nhin-duoi.7', 'nhin-duoi.8', 'nhin-duoi.9',
-  'che-nhin-duoi.1', 'che-nhin-duoi.2', 'che-nhin-duoi.3', 'che-nhin-duoi.4', 'che-nhin-duoi.5', 'che-nhin-duoi.6', 'che-nhin-duoi.7', 'che-nhin-duoi.8', 'che-nhin-duoi.9');
+  'che-nhin-duoi.1', 'che-nhin-duoi.2', 'che-nhin-duoi.3', 'che-nhin-duoi.4', 'che-nhin-duoi.5', 'che-nhin-duoi.6', 'che-nhin-duoi.7', 'che-nhin-duoi.8', 'che-nhin-duoi.9',
+  'son-tren-cao.5', 'son-tren-cao.6', 'che-son-tren-cao.2', 'che-son-tren-cao.6', 'che-son-tren-cao.8');      // gói 9: đọc vạch mờ / bảng mẫu bằng camera
 kiem('nhiều sân chỉ ở màn trùm, trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);

@@ -53,6 +53,26 @@
   var BANG_MAU = 'a = ["blue", "yellow", "green", "red"]';
   var C_COT = [BANG_MAU, 'for c in a:', '    ink(c)', '    dot()', '    go_down()'];
   var C_DAU = ['for k in range(3):'].concat(thut(LAP(3, ['if color("here") == "yellow":', '    dot()', 'go_right()'], 'j')), thut(['if battery() < 4:', '    dock()']));
+  // chương 2
+  var T_STRIPE = ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_right()', 'pen_up()'];
+  var C_STRIPE = ['stripe("red", 2)', 'go_right()', 'go_right()', 'stripe("blue", 2)'];
+  var T_RETRACE = ['for i in range(n):', '    ink(color("here"))', '    dot()', '    go_right()'];
+  var C_RETRACE = ['retrace(3)', 'go_down()', 'retrace(2)'];
+  var T_LIST = ['for c in a:', '    ink(c)', '    dot()', '    go_right()'];
+  var C_LIST = ['a = ["green", "yellow", "green"]', 'b = ["blue", "blue"]', 'paint_list(a)', 'go_right()', 'paint_list(b)'];
+  var T_DASH = ['for j in range(n):', '    stripe(c, 2)', '    go_right()', '    go_right()'];
+  var T_HOP = ['pen_up()', 'go_right()', 'go_right()', 'pen_down()'];
+  var C_HOP = ['ink("blue")', 'pen_down()', 'go_right()', 'hop_fence()', 'go_right()', 'hop_fence()', 'go_right()'];
+  var T_MARK = ['for i in range(n):', '    c = color("up")', '    if c != "none":', '        ink(c)', '        dot()', '    go_right()'];
+  var C_MARK = ['trace_marks(5)'];
+  var T_COPY = ['read_below(a, n)', 'go_down()', 'go_down()', 'for i in range(n):', '    go_left()', 'paint_list(a)'];
+  var C_COPY = ['a = []', 'copy_down(a, 3)'];
+  var T_MURAL = ['paint_list(a)', 'go_down()', 'for c in b:', '    go_left()', '    ink(c)', '    dot()', 'wait()'];
+  var C_MURAL = ['a = ["red", "yellow", "red"]', 'b = ["green", "green", "blue"]', 'mural(a, b)'];
+  var T_LINE = ['pen_down()', 'for i in range(n):', '    go_right()', 'dock()'];
+  var T_LINE_SAI = ['pen_down()', 'for i in range(n):', '    go_right()', '    dock()'];
+  var C_LINE = ['ink("yellow")', 'line_dock(4)', 'line_dock(4)'];
+  var C_TRUM = ['retrace(4)', 'dock()', 'go_down()', 'stripe("blue", 1)', 'go_right()', 'go_right()', 'stripe("blue", 1)'];
 
   var DS = [
     man({
@@ -222,6 +242,186 @@
         { moTa: 'Chấm mọi ô: tô ra ngoài dấu', baiLam: bai(['ink("yellow")', 'for k in range(3):'].concat(thut(LAP(3, ['dot()', 'go_right()'], 'j')), thut(['if battery() < 4:', '    dock()']))), phaiCoMa: ['to-thua'] }
       ],
       goiY: ['Vòng ngoài ba chặng, vòng trong ba ô.', 'Hỏi pin ở cuối chặng, khi drone đứng trên trạm sạc.']
+    }),
+
+    /* ================================================= chương che-son-tren-cao "Chế lệnh: tranh tường" ================================================= */
+    manChe({
+      so: 1, ten: 'Hàm kẻ vạch', hang: 'lam-quen', taoHam: ['stripe'], hamCuaEmCan: [],
+      deBai: 'Chế stripe(c, n): chọn sơn màu c, hạ bút, bay sang phải n ô, rồi nhấc bút. Chương trình chính đã khóa: vạch đỏ, bay qua hàng rào, vạch xanh dương.',
+      veMaMau: 'Mở Xưởng hàm, tạo stripe với hai đối số c và n. Bút hạ thì ô xuất phát cũng được tô: n ô bay là n + 1 ô vạch.',
+      san: ['...=...'],
+      hinh: ['rrr.bbb'],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_STRIPE),
+      loiGiai: bai(C_STRIPE, { hamCuaEmMoi: [H('stripe', ['c', 'n'], T_STRIPE)] }),
+      sao: { o: 9, nhip: 6 },
+      loiSai: [
+        { moTa: 'Gọi stripe mà chưa chế hàm', baiLam: bai(C_STRIPE), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên nhấc bút cuối hàm: tô lên hàng rào', baiLam: bai(C_STRIPE), hamCuaEmMoi: [H('stripe', ['c', 'n'], T_STRIPE.slice(0, -1))], phaiCoMa: ['to-thua'] }
+      ],
+      goiY: ['ink(c) trước pen_down(): pen_down() tô ô đang ở bằng màu lúc gọi.', 'pen_up() cuối hàm làm ở nhịp bay kế tiếp, trước khi bay.']
+    }),
+
+    manChe({
+      so: 2, ten: 'Hàm tô lại vạch mờ', hang: 'lam-quen', taoHam: ['retrace'], hamCuaEmCan: [],
+      deBai: 'Chế retrace(n): bay qua n ô, mỗi ô chấm đúng màu vạch mờ dưới chân. Chương trình chính đã khóa: tô ba ô hàng trên, xuống một hàng, tô hai ô hàng dưới. Hai sân.',
+      veMaMau: 'Tạo retrace với một đối số n. Như màn Tô lại vạch mờ ở chương trước.',
+      san: [['......', '......'], ['......', '......']],
+      mau: [['rgb...', '...yg.'], ['bby...', '...rr.']],
+      hinh: [['rgb...', '...yg.'], ['bby...', '...rr.']],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_RETRACE),
+      loiGiai: bai(C_RETRACE, { hamCuaEmMoi: [H('retrace', ['n'], T_RETRACE)] }),
+      sao: { o: 7, nhip: 6 },
+      congThucKhac: [{ moTa: 'Đọc màu vào biến trước', hamCuaEmMoi: [H('retrace', ['n'], ['for i in range(n):', '    c = color("here")', '    ink(c)', '    dot()', '    go_right()'])] }],
+      loiSai: [
+        { moTa: 'Gọi retrace mà chưa chế hàm', baiLam: bai(C_RETRACE), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Một màu cố định: sai màu', baiLam: bai(C_RETRACE), hamCuaEmMoi: [H('retrace', ['n'], ['for i in range(n):', '    ink("red")', '    dot()', '    go_right()'])], phaiCoMa: ['chua-to-hinh'] }
+      ],
+      goiY: ['ink(color("here")) lấy màu ô dưới chân.', 'Mỗi ô: chọn màu, chấm, bay.']
+    }),
+
+    manChe({
+      so: 3, ten: 'Hàm sơn theo danh sách', hang: 'lam-quen', taoHam: ['paint_list'], hamCuaEmCan: [],
+      deBai: 'Chế paint_list(a): mỗi màu c trong danh sách a, chấm một ô màu c rồi bay sang phải. Chương trình chính đã khóa: sơn danh sách a, bay qua rào, sơn danh sách b.',
+      veMaMau: 'Tạo paint_list với một đối số a (danh sách màu).',
+      san: ['...=...'],
+      hinh: ['gyg.bb.'],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_LIST),
+      loiGiai: bai(C_LIST, { hamCuaEmMoi: [H('paint_list', ['a'], T_LIST)] }),
+      sao: { o: 9, nhip: 6 },
+      loiSai: [
+        { moTa: 'Gọi paint_list mà chưa chế hàm', baiLam: bai(C_LIST), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Chấm trước rồi mới đổi màu', baiLam: bai(C_LIST), hamCuaEmMoi: [H('paint_list', ['a'], ['for c in a:', '    dot()', '    ink(c)', '    go_right()'])], phaiCoMa: ['chua-to-hinh'] }
+      ],
+      goiY: ['for c in a: duyệt từng màu.', 'Hàm dừng ở ô ngay sau ô cuối đã chấm.']
+    }),
+
+    manChe({
+      so: 4, ten: 'Hàm vạch đứt', hang: 'luyen', taoHam: ['dashes'], hamCuaEmCan: ['stripe'],
+      deBai: 'Chế dashes(c, n): n đoạn vạch màu c, mỗi đoạn ba ô, giữa hai đoạn là một ô bỏ trống (hàng rào hay hố). Dùng stripe em vừa chế. Chương trình chính đã khóa: dashes("blue", 3).',
+      veMaMau: 'Tạo dashes với hai đối số c và n. Mỗi vòng: stripe(c, 2) rồi bay qua ô trống.',
+      san: ['...=...u...'],
+      hinh: ['bbb.bbb.bbb'],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(['dashes("blue", 3)']),
+      loiGiai: bai(['dashes("blue", 3)'], { hamCuaEmMoi: [H('dashes', ['c', 'n'], T_DASH)] }),
+      sao: { o: 10, nhip: 10 },
+      loiSai: [
+        { moTa: 'Gọi dashes mà chưa chế hàm', baiLam: bai(['dashes("blue", 3)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Bay một ô giữa hai đoạn: hạ bút trên hàng rào', baiLam: bai(['dashes("blue", 3)']), hamCuaEmMoi: [H('dashes', ['c', 'n'], ['for j in range(n):', '    stripe(c, 2)', '    go_right()'])], phaiCoMa: ['to-thua'] }
+      ],
+      goiY: ['stripe(c, 2) kẻ ba ô và dừng ở ô thứ ba.', 'Bay hai ô: qua ô trống rồi tới đầu đoạn sau.']
+    }),
+
+    manChe({
+      so: 5, ten: 'Sửa hàm nhảy rào', hang: 'luyen', hamCuaEmCan: [],
+      deBai: 'Hàm của màn hop_fence() phải đưa drone qua hàng rào mà không tô lên rào, nhưng nó quên nhấc bút. Sửa hop_fence; chương trình chính đã khóa.',
+      veMaMau: 'Chạy thử: vạch tô lên hàng rào. Nhấc bút trước khi bay, hạ bút lại sau rào.',
+      san: ['..=..=..'],
+      hinh: ['bb.bb.bb'],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_HOP, { hamCuaMan: [H('hop_fence', [], ['go_right()', 'go_right()'])] }),
+      loiGiai: bai(C_HOP, { hamCuaMan: [H('hop_fence', [], T_HOP)] }),
+      sao: { o: 11, nhip: 7 },
+      loiSai: [
+        { moTa: 'Không sửa: tô lên rào', baiLam: bai(C_HOP, { hamCuaMan: [H('hop_fence', [], ['go_right()', 'go_right()'])] }), phaiCoMa: ['to-thua'] },
+        { moTa: 'Nhấc bút mà quên hạ lại', baiLam: bai(C_HOP, { hamCuaMan: [H('hop_fence', [], ['pen_up()', 'go_right()', 'go_right()'])] }), phaiCoMa: [] }
+      ],
+      goiY: ['pen_up() đầu hàm, pen_down() cuối hàm.', 'pen_down() cuối hàm tô ô sau rào ở nhịp bay kế tiếp.']
+    }),
+
+    manChe({
+      so: 6, ten: 'Hàm chép dấu hàng trên', hang: 'luyen', taoHam: ['trace_marks'], hamCuaEmCan: [],
+      deBai: 'Chế trace_marks(n): bay qua n ô, mỗi ô nhìn lên ô mẫu phía trên: có màu thì chấm đúng màu đó, trống thì bỏ qua. Chương trình chính đã khóa: trace_marks(5). Hai sân, bảng mẫu khác nhau.',
+      veMaMau: 'Tạo trace_marks với một đối số n. Như màn Chép màu hàng trên ở chương trước.',
+      san: [['......', '......'], ['......', '......']],
+      mau: [['r.gg..', '......'], ['.b.yr.', '......']],
+      hinh: [['......', 'r.gg..'], ['......', '.b.yr.']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(C_MARK),
+      loiGiai: bai(C_MARK, { hamCuaEmMoi: [H('trace_marks', ['n'], T_MARK)] }),
+      sao: { o: 7, nhip: 5 },
+      congThucKhac: [{ moTa: 'Hỏi bằng ==', hamCuaEmMoi: [H('trace_marks', ['n'], ['for i in range(n):', '    c = color("up")', '    if c == "none":', '        wait()', '    else:', '        ink(c)', '        dot()', '    go_right()'])] }],
+      loiSai: [
+        { moTa: 'Gọi trace_marks mà chưa chế hàm', baiLam: bai(C_MARK), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Không hỏi ô trống: ink("none") lỗi', baiLam: bai(C_MARK), hamCuaEmMoi: [H('trace_marks', ['n'], ['for i in range(n):', '    ink(color("up"))', '    dot()', '    go_right()'])], phaiCoMa: ['mau-son-sai'] }
+      ],
+      goiY: ['c = color("up") trong vòng lặp, rồi if c != "none":.', 'go_right() nằm ngoài if: ô trống vẫn phải bay qua.']
+    }),
+
+    manChe({
+      so: 8, ten: 'Hàm chép bức tranh', hang: 'bien-the', taoHam: ['copy_down'], hamCuaEmCan: ['read_below', 'paint_list'],
+      deBai: 'Chế copy_down(a, n): ghi màu n ô của bức tranh mẫu bằng read_below (gói Nhìn dưới chân), bay xuống qua hàng rào, quay về đầu hàng rồi sơn lại bằng paint_list. ' +
+        'Chương trình chính đã khóa: a = [] rồi copy_down(a, 3). Hai sân, tranh mẫu khác nhau.',
+      veMaMau: 'Tạo copy_down với hai đối số a và n. Ghép hai hàm em đã chế: read_below rồi paint_list.',
+      san: [['....', '====', '....'], ['....', '====', '....']],
+      mau: [['.rgy', '....', '....'], ['.bbr', '....', '....']],
+      hinh: [['....', '....', 'rgy.'], ['....', '....', 'bbr.']],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_COPY),
+      loiGiai: bai(C_COPY, { hamCuaEmMoi: [H('copy_down', ['a', 'n'], T_COPY)] }),
+      sao: { o: 15, nhip: 11 },
+      loiSai: [
+        { moTa: 'Gọi copy_down mà chưa chế hàm', baiLam: bai(C_COPY), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên bay về đầu hàng: sơn ra ngoài tranh', baiLam: bai(C_COPY), hamCuaEmMoi: [H('copy_down', ['a', 'n'], ['read_below(a, n)', 'go_down()', 'go_down()', 'paint_list(a)'])], phaiCoMa: ['to-thua'] }
+      ],
+      goiY: ['read_below(a, n) bay n ô và ghi màu vào a.', 'Bay trái n ô về đầu hàng dưới rồi paint_list(a).']
+    }),
+
+    manChe({
+      so: 7, ten: 'Hàm tranh hai hàng', hang: 'bien-the', taoHam: ['mural'], hamCuaEmCan: ['paint_list'],
+      deBai: 'Chế mural(a, b): sơn hàng trên theo a từ trái sang phải bằng paint_list, xuống một hàng, rồi sơn hàng dưới theo b từ PHẢI sang TRÁI. Chương trình chính đã khóa.',
+      veMaMau: 'Tạo mural với hai đối số a và b. Hàng dưới: mỗi màu bay trái một ô rồi mới chấm; chấm cuối cần một nhịp wait().',
+      san: ['....', '....'],
+      hinh: ['ryr.', 'bgg.'],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_MURAL),
+      loiGiai: bai(C_MURAL, { hamCuaEmMoi: [H('mural', ['a', 'b'], T_MURAL)] }),
+      sao: { o: 14, nhip: 8 },
+      loiSai: [
+        { moTa: 'Gọi mural mà chưa chế hàm', baiLam: bai(C_MURAL), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Chấm trước rồi mới bay trái: lệch một ô', baiLam: bai(C_MURAL), hamCuaEmMoi: [H('mural', ['a', 'b'], ['paint_list(a)', 'go_down()', 'for c in b:', '    ink(c)', '    dot()', '    go_left()'])], phaiCoMa: ['to-thua'] },
+        { moTa: 'Quên wait(): chấm cuối không kịp tô', baiLam: bai(C_MURAL), hamCuaEmMoi: [H('mural', ['a', 'b'], T_MURAL.slice(0, -1))], phaiCoMa: [] }
+      ],
+      goiY: ['paint_list(a) dừng ở ô ngay sau hàng trên.', 'dot() làm ở nhịp kế: sau dot() cuối, wait() cho nó một nhịp.']
+    }),
+
+    manChe({
+      so: 9, ten: 'Sửa hàm kẻ rồi sạc', hang: 'bien-the', pin: 10, hamCuaEmCan: ['dock'],
+      deBai: 'Hàm của màn line_dock(n) phải kẻ vạch n ô rồi đáp sạc một lần ở trạm, nhưng dock() đặt nhầm chỗ: drone đáp ở mọi ô, hết pin. Sửa line_dock; chương trình chính đã khóa.',
+      veMaMau: 'Chạy thử: drone đáp xuống ngay ô thứ hai, không phải trạm sạc. Đưa dock() ra ngoài vòng lặp.',
+      san: ['....P...P'],
+      hinh: ['yyyyyyyyy'],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_LINE, { hamCuaMan: [H('line_dock', ['n'], T_LINE_SAI)] }),
+      loiGiai: bai(C_LINE, { hamCuaMan: [H('line_dock', ['n'], T_LINE)] }),
+      sao: { o: 9, nhip: 10 },
+      loiSai: [
+        { moTa: 'Không sửa: đáp ở mọi ô, hết pin', baiLam: bai(C_LINE, { hamCuaMan: [H('line_dock', ['n'], T_LINE_SAI)] }), phaiCoMa: ['het-pin'] },
+        { moTa: 'Bỏ hẳn dock(): hết pin', baiLam: bai(C_LINE, { hamCuaMan: [H('line_dock', ['n'], ['pen_down()', 'for i in range(n):', '    go_right()'])] }), phaiCoMa: ['het-pin'] }
+      ],
+      goiY: ['dock() thụt ra ngoài vòng lặp: kẻ đủ n ô rồi mới đáp.', 'Hai trạm cách nhau bốn ô.']
+    }),
+
+    manChe({
+      so: 10, ten: 'Tranh tường thành phố', hang: 'trum', pin: 10, chinhCoDinh: false, hamCuaEmCan: ['retrace', 'stripe', 'dock'], khung: { chinh: 12, moiHam: 10 },
+      deBai: 'Bức tường của thành phố: hàng trên là vạch mờ bốn ô cần tô lại đúng màu, tới cuối vạch là trạm sạc; hàng dưới là vạch xanh dương bị hàng rào cắt đôi. ' +
+        'Tự viết chương trình chính bằng các hàm em đã chế: retrace, dock, stripe. Hai sân, vạch mờ khác màu.',
+      veMaMau: 'Chương trình có sẵn đã tô lại vạch mờ. Viết tiếp: sạc, xuống hàng dưới, kẻ hai đoạn vạch hai bên rào.',
+      san: [['....P....', '......=..'], ['....P....', '......=..']],
+      mau: [['rgby.....', '.........'], ['yybr.....', '.........']],
+      hinh: [['rgby.....', '....bb.bb'], ['yybr.....', '....bb.bb']],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(['retrace(4)']),
+      loiGiai: bai(C_TRUM),
+      sao: { o: 18, nhip: 11 },
+      loiSai: [
+        { moTa: 'Không đáp sạc: hết pin', baiLam: bai(['retrace(4)', 'go_down()', 'stripe("blue", 1)', 'go_right()', 'go_right()', 'stripe("blue", 1)']), phaiCoMa: ['het-pin'] },
+        { moTa: 'Một vạch dài xuyên rào', baiLam: bai(['retrace(4)', 'dock()', 'go_down()', 'stripe("blue", 4)']), phaiCoMa: ['to-thua'] }
+      ],
+      goiY: ['retrace(4) dừng đúng trên trạm sạc.', 'stripe("blue", 1) kẻ hai ô; bay hai ô qua rào rồi kẻ đoạn sau.']
     })
   ];
 
