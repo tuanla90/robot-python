@@ -83,7 +83,8 @@ Mùa 3 (user 29/10): giữ thân nhện; gói 3 "Cảm ứng từ" → **"Cảm 
 Mùa 2 (29/10, sau khi vòi phun / van hơi gộp): gói Băng chuyền, Cảm biến hồng ngoại, Lực phun, R2 trở lại, Xe cứu hỏa R1; 20 chương theo quy tắc 3;
 10 phim mùa 2 giọng em, phun thay bắn (≤ 14 từ). Chữ "bắn" trong đề bài / gợi ý / lời báo lỗi của màn mùa 2: đợt riêng (agent), sau gói giật một ô.
 30/10: bốn chương mùa 2 đổi tiếp cho khỏi trùng / lặp tên gói (Trôi theo băng, Đưa thùng vào đích, Chế lệnh: mở van nguội, Thử mọi món); tầm phun nhẹ chốt 2 ô.
-Còn: tên huy hiệu (mùa 1, 2 chưa theo quy tắc), các tên khác của mùa 3 (đặt khi làm P2), nhãn Python cho phụ huynh.
+30/10: huy hiệu mùa 1, 2 mang tên chương chứa màn trùm ("Huy hiệu Lăn bánh", "Huy hiệu Chế lệnh chọn lực").
+Còn: các tên khác của mùa 3 (đặt khi làm P2), nhãn Python cho phụ huynh.
 
 ## Ô còn trống
 | Ô | Gợi ý của Claude |

@@ -64,7 +64,9 @@ Quét chữ "phát" (user: "Quét chữ phát"): mọi chữ người chơi th�
 hướng dẫn, đề / gợi ý / lời sai ở sung-hoi, che-sung-hoi, luc-ban, che-luc-ban, be-sung, doi-sung-hoi, doi-thu-manh, trum-mua-2). Tên màn:
 "Phun một phát" → "Phun một lần" (che-sung-hoi.1), "Hai phát một chỗ" → "Hai lần phun một chỗ", "Ba phát quanh mình" → "Ba lần phun quanh mình".
 Giữ "xuất phát", "phát lại". Lời mô tả trong máy kiểm (.mjs, người chơi không thấy) chưa đổi.
-Chưa đổi: tên huy hiệu (mùa 1 cũng chưa đổi; vài cái còn "Huy hiệu Hàm …", "Huy hiệu Tổng hợp mùa 2").
+Huy hiệu (user: "Đổi huy hiệu"): 40 huy hiệu mùa 1, 2 mang tên chương chứa màn trùm, "Chế lệnh: x" thành "Chế lệnh x", bỏ dấu hỏi cuối
+(Huy hiệu Lăn bánh, Huy hiệu Chế lệnh chọn lực, Huy hiệu Còn mấy ô, Huy hiệu Thử mọi món, ...). Đặt ở khối đặt tên cuối lo-trinh-hoc.js; mã huy hiệu (hình vẽ) giữ.
+Ngoài phạm vi: hai huy hiệu mùa 4 (ban-xoay.10, che-ban-xoay.10) khai bằng chuỗi thay vì { ma, ten } nên màn thắng hiện tên rỗng (việc của phiên mùa 4).
 
 ## Cần user chốt
 
