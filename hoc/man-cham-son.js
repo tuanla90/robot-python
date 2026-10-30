@@ -5,8 +5,9 @@
        Thứ tự: 11 (trình diễn) · 1 · 2 · 12 · 6 · 7 · 14 · 15 · 13 · 16 (trùm) (xếp theo đường cong nhịp).
        Cái mới của gói: em lắp MÁY SƠN cho R1 (xe hai bánh, như các màn may-son có sẵn): ink(c) chọn màu, dot() chấm ô đang đứng. CHƯA có bút liền
        pen_down / pen_up (gói 6 Nét liền). Python mùa 4: danh sách màu (for c in [...]).
-     - `che-list`: chương 2 "Chế lệnh: đi theo danh sách" (10 màn có sẵn che-list.1 … .10), thứ tự 1 · 2 · 3 · 4 · 5 · 6 · 8 · 9 · 7 · 10
-       (Đường về 26 nhịp dời sau hai màn sửa 18 nhịp cho khỏi nhảy).
+     - `che-list`: chương 2 "Chế lệnh: sơn theo danh sách" DỰNG LẠI 30/10 (nghiệm thu độc lập: chương cũ đo bãi bằng cảm biến khoảng cách không dính máy sơn):
+       che-list.11 … .20 trên xe máy sơn, Python B: append (trình diễn) · lặp để thêm · chế dot_row · chế stripes_row (append trong hàm) · nhân đôi màu · bỏ màu xanh
+       · sửa double_up · hai hàng đối xứng · sửa keep_warm · trùm biển báo hai tầng. Mười màn cũ sang mùa 5 (che-list-cu, ẩn).
    Luật máy sơn (san-hoc.js phần MÁY SƠN): mục tiêu 'to-hinh': tô đủ hình mờ (man.hinh, chữ r g b y) đúng màu, KHÔNG tô ra ngoài hình (tô ngoài là thua ngay,
    'to-thua'); dot() chỉ ra lệnh, có hiệu lực ở nhịp kế (move() hay wait()); ink(c) đổi màu ngay, không tốn nhịp.
    Máy kiểm: hoc/kiem-man-mua-4.mjs, hoc/kiem-lo-trinh.mjs mục mùa 4, hoc/kiem-may-son.mjs.
@@ -40,6 +41,31 @@
     m.loiSai = m.loiSai || [];
     return ManHoc.chuanHoa(m);
   }
+
+  /** Màn chương che-list (dựng lại 30/10): xe máy sơn của gói, Python B (for c in a, append, hàm nhận danh sách); chương trình chính khoá trừ khi khai chinhCoDinh: false. */
+  function manL(m) {
+    var mo = m.chinhCoDinh;
+    var r = man(m);
+    r.chuong = 'che-list';
+    if (mo === false) delete r.chinhCoDinh; else r.chinhCoDinh = true;
+    return r;
+  }
+  var T_DOT_ROW = ['for c in colors:', '    ink(c)', '    dot()', '    move()'];
+  var CHAM_A = ['for c in a:', '    ink(c)', '    dot()', '    move()'];
+  var C_L1 = ['a = []', 'a.append("red")', 'a.append("yellow")', 'a.append("red")'].concat(CHAM_A);
+  var C_L2 = ['a = []', 'for i in range(3):', '    a.append("red")', '    a.append("blue")'].concat(CHAM_A);
+  var C_L3 = ['dot_row(["red", "blue"])', 'move()', 'dot_row(["yellow", "yellow", "red"])'];
+  var T_STRIPES = ['a = []', 'for i in range(n):', '    a.append(c1)', '    a.append(c2)', 'dot_row(a)'];
+  var C_L4 = ['stripes_row("red", "yellow", 2)', 'stripes_row("blue", "blue", 1)'];
+  var C_L5 = ['a = ["red", "blue", "yellow"]', 'b = []', 'for c in a:', '    b.append(c)', '    b.append(c)', 'dot_row(b)'];
+  var C_L6 = ['a = ["red", "blue", "red", "yellow", "blue", "yellow", "red"]', 'b = []', 'for c in a:', '    if c != "blue":', '        b.append(c)', 'dot_row(b)'];
+  var T_DOUBLE = ['for c in a:', '    b.append(c)', '    b.append(c)'];
+  var C_L7 = ['a = ["yellow", "red", "blue", "red"]', 'b = []', 'double_up(a, b)', 'dot_row(b)'];
+  var C_L8 = ['a = ["red", "green", "blue", "yellow"]', 'dot_row(a)', 'turn_right()', 'move()', 'turn_right()', 'move()', 'dot_row(a)'];
+  var T_KEEP = ['for c in a:', '    if c != "blue":', '        b.append(c)'];
+  var C_L9 = ['a = ["red", "blue", "yellow", "yellow", "blue", "red"]', 'b = []', 'keep_warm(a, b)', 'dot_row(b)'];
+  var C_L10 = ['a = ["red", "blue", "red", "yellow"]', 'b = []', 'for c in a:', '    b.append(c)', '    b.append(c)', 'dot_row(b)', 'turn_right()', 'move()', 'turn_right()', 'move()',
+    'd = []', 'for c in a:', '    if c != "blue":', '        d.append(c)', 'dot_row(d)'];
 
   var DS = [
     man({
@@ -144,6 +170,174 @@
       ],
       goiY: ['Thân hàm giống vòng chấm màu ở màn Cờ ba màu, chỉ thay danh sách bằng tham số colors.',
         'Hết hàng trên xe đứng sau chấm cuối: quay phải, đi một ô, quay phải là xe quay ngược chiều ở hàng dưới.']
+    }),
+
+    /* ================================================= chương che-list "Chế lệnh: sơn theo danh sách" (dựng lại 30/10) =================================================
+       Nghiệm thu độc lập 30/10 + user "làm cả A, B, C": chương Python B (duyệt for c in a, append, hàm nhận danh sách) nay chạy trên XE MÁY SƠN của gói, không cảm biến.
+       Mười màn đo bãi cũ (che-list.1 … .10, cảm biến khoảng cách) sang mùa 5 (ẩn). Mã màn mới từ 11. */
+    manL({
+      so: 11, ten: 'Thêm vào cuối danh sách', hang: 'lam-quen', chiChay: true, hamCuaEmCan: ['move'],
+      deBai: 'Khối mới: a.append(x) thêm x vào CUỐI danh sách a. Bấm Chạy xem: a bắt đầu rỗng, thêm đỏ, vàng, đỏ, rồi xe chấm lần lượt từng màu trong a.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy, đếm xem a có mấy màu và theo thứ tự nào.',
+      san: ['....'],
+      hinh: ['ryr.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(C_L1),
+      loiGiai: bai(C_L1),
+      sao: { o: 11, nhip: 3 },
+      goiY: ['a = [] là danh sách rỗng.', 'append luôn thêm vào cuối: thứ tự thêm cũng là thứ tự chấm.']
+    }),
+
+    manL({
+      so: 12, ten: 'Danh sách sọc', hang: 'lam-quen', chinhCoDinh: false, hamCuaEmCan: ['move'],
+      deBai: 'Vạch sọc sáu ô: đỏ, xanh dương, đỏ, xanh dương, đỏ, xanh dương. Dùng vòng for ba lần, mỗi lần thêm "red" rồi "blue" vào a; sau đó xe chấm theo a.',
+      veMaMau: 'Chương trình có sẵn tạo a rỗng và đã có vòng chấm. Viết vòng for thêm màu vào a ở giữa.',
+      san: ['.......'],
+      hinh: ['rbrbrb.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(['a = []'].concat(CHAM_A)),
+      loiGiai: bai(C_L2),
+      sao: { o: 11, nhip: 6 },
+      congThucKhac: [{ moTa: 'Viết thẳng cả danh sách', baiLam: bai(['a = ["red", "blue", "red", "blue", "red", "blue"]'].concat(CHAM_A)) }],
+      loiSai: [
+        { moTa: 'Thêm blue trước red: sọc ngược màu', baiLam: bai(['a = []', 'for i in range(3):', '    a.append("blue")', '    a.append("red")'].concat(CHAM_A)), phaiCoMa: [] },
+        { moTa: 'append nằm ngoài vòng: a chỉ có hai màu', baiLam: bai(['a = []', 'for i in range(3):', '    pass', 'a.append("red")', 'a.append("blue")'].concat(CHAM_A)), phaiCoMa: [] }
+      ],
+      goiY: ['Mỗi vòng thêm hai màu: a.append("red") rồi a.append("blue").', 'Vòng chấm đặt SAU vòng thêm: a phải đủ màu trước khi chấm.']
+    }),
+
+    manL({
+      so: 13, ten: 'Hàm chấm một hàng', hang: 'lam-quen', taoHam: ['dot_row'], hamCuaEmCan: ['move'],
+      deBai: 'Chế dot_row(colors): với mỗi màu c trong colors, chọn màu c, chấm, đi một ô. Chương trình chính đã khóa: chấm đỏ xanh dương, bỏ một ô, rồi chấm vàng vàng đỏ.',
+      veMaMau: 'Mở Xưởng hàm, tạo dot_row với một đối số colors. Khác paint_row: dot_row đi MỘT ô sau mỗi chấm.',
+      san: ['.......'],
+      hinh: ['rb.yyr.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(C_L3),
+      loiGiai: bai(C_L3, { hamCuaEmMoi: [H('dot_row', ['colors'], T_DOT_ROW)] }),
+      sao: { o: 10, nhip: 6 },
+      loiSai: [
+        { moTa: 'Gọi dot_row mà chưa chế hàm', baiLam: bai(C_L3), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Đi hai ô sau mỗi chấm như paint_row', baiLam: bai(C_L3), hamCuaEmMoi: [H('dot_row', ['colors'], T_PAINT_ROW)], phaiCoMa: [] }
+      ],
+      goiY: ['Thân hàm là vòng for c in colors.', 'Hàm dừng ở ô ngay sau chấm cuối.']
+    }),
+
+    manL({
+      so: 14, ten: 'Hàm vạch sọc', hang: 'luyen', taoHam: ['stripes_row'], hamCuaEmCan: ['dot_row'],
+      deBai: 'Chế stripes_row(c1, c2, n): tạo danh sách a rỗng, lặp n lần thêm c1 rồi c2 vào cuối a, rồi dot_row(a). Chương trình chính đã khóa: hai cặp đỏ vàng, rồi một cặp xanh dương xanh dương nối tiếp.',
+      veMaMau: 'Tạo stripes_row với ba đối số c1, c2, n. Trong hàm gọi dot_row em vừa chế.',
+      san: ['.......'],
+      hinh: ['ryrybb.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(C_L4),
+      loiGiai: bai(C_L4, { hamCuaEmMoi: [H('stripes_row', ['c1', 'c2', 'n'], T_STRIPES)] }),
+      sao: { o: 14, nhip: 6 },
+      loiSai: [
+        { moTa: 'Gọi stripes_row mà chưa chế hàm', baiLam: bai(C_L4), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Chỉ thêm c1: thiếu màu thứ hai', baiLam: bai(C_L4), hamCuaEmMoi: [H('stripes_row', ['c1', 'c2', 'n'], ['a = []', 'for i in range(n):', '    a.append(c1)', 'dot_row(a)'])], phaiCoMa: [] }
+      ],
+      goiY: ['Mỗi vòng hai lệnh append: c1 rồi c2.', 'Dựng xong a mới gọi dot_row(a), ngoài vòng lặp.']
+    }),
+
+    manL({
+      so: 15, ten: 'Nhân đôi màu', hang: 'luyen', chinhCoDinh: false, hamCuaEmCan: ['dot_row'],
+      deBai: 'Mỗi màu trong a được chấm HAI ô liền nhau. Duyệt a, mỗi màu c thêm vào b hai lần, rồi dot_row(b).',
+      veMaMau: 'Chương trình có sẵn có a và b rỗng, gọi dot_row(b). Viết vòng for c in a ở giữa.',
+      san: ['.......'],
+      hinh: ['rrbbyy.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(['a = ["red", "blue", "yellow"]', 'b = []', 'dot_row(b)']),
+      loiGiai: bai(C_L5),
+      sao: { o: 13, nhip: 6 },
+      loiSai: [
+        { moTa: 'Chấm thẳng a: mỗi màu một ô', baiLam: bai(['a = ["red", "blue", "yellow"]', 'dot_row(a)']), phaiCoMa: [] },
+        { moTa: 'Thêm a vào b hai lần nối tiếp: đỏ xanh vàng đỏ xanh vàng', baiLam: bai(['a = ["red", "blue", "yellow"]', 'b = []', 'for c in a:', '    b.append(c)', 'for c in a:', '    b.append(c)', 'dot_row(b)']), phaiCoMa: [] }
+      ],
+      goiY: ['Trong vòng for c in a: hai dòng b.append(c).', 'Gọi dot_row(b) sau vòng lặp.']
+    }),
+
+    manL({
+      so: 16, ten: 'Bỏ màu xanh', hang: 'luyen', chinhCoDinh: false, hamCuaEmCan: ['dot_row'],
+      deBai: 'Danh sách a có lẫn màu xanh dương mà vạch này không dùng. Duyệt a, màu nào KHÁC "blue" thì thêm vào b, rồi dot_row(b).',
+      veMaMau: 'Chương trình có sẵn chấm thẳng a nên chấm cả màu xanh ra ngoài hình. Lọc qua b trước.',
+      san: ['......'],
+      hinh: ['rryyr.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(['a = ["red", "blue", "red", "yellow", "blue", "yellow", "red"]', 'dot_row(a)']),
+      loiGiai: bai(C_L6),
+      sao: { o: 13, nhip: 5 },
+      loiSai: [
+        { moTa: 'Chấm thẳng a', baiLam: bai(['a = ["red", "blue", "red", "yellow", "blue", "yellow", "red"]', 'dot_row(a)']), phaiCoMa: [] },
+        { moTa: 'Giữ lại màu xanh thay vì bỏ', baiLam: bai(['a = ["red", "blue", "red", "yellow", "blue", "yellow", "red"]', 'b = []', 'for c in a:', '    if c == "blue":', '        b.append(c)', 'dot_row(b)']), phaiCoMa: [] }
+      ],
+      goiY: ['if c != "blue": rồi mới b.append(c).', 'b chỉ có những màu được giữ, theo đúng thứ tự trong a.']
+    }),
+
+    manL({
+      so: 17, ten: 'Sửa hàm nhân đôi', hang: 'bien-the', chinhCoDinh: false, hamCuaEmCan: ['dot_row'],
+      deBai: 'Hàm của màn double_up(a, b) phải thêm mỗi màu của a vào b hai lần, nhưng một dòng append nằm ngoài vòng lặp nên chỉ màu cuối được đôi. Sửa double_up; chương trình chính đã đúng.',
+      veMaMau: 'Chạy thử: vạch thiếu ô. Thụt dòng append thứ hai vào trong vòng for.',
+      san: ['.........'],
+      hinh: ['yyrrbbrr.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(C_L7, { hamCuaMan: [H('double_up', ['a', 'b'], ['for c in a:', '    b.append(c)', 'b.append(c)'])] }),
+      loiGiai: bai(C_L7, { hamCuaMan: [H('double_up', ['a', 'b'], T_DOUBLE)] }),
+      sao: { o: 11, nhip: 8 },
+      loiSai: [
+        { moTa: 'Không sửa', baiLam: bai(C_L7, { hamCuaMan: [H('double_up', ['a', 'b'], ['for c in a:', '    b.append(c)', 'b.append(c)'])] }), phaiCoMa: [] }
+      ],
+      goiY: ['Dòng nằm ngoài vòng chỉ chạy một lần, sau khi vòng xong.', 'Hai dòng append cùng thụt vào trong for.']
+    }),
+
+    manL({
+      so: 18, ten: 'Hai hàng đối xứng', hang: 'bien-the', chinhCoDinh: false, hamCuaEmCan: ['dot_row', 'turn_right', 'move'],
+      deBai: 'Hai hàng đối xứng như soi gương. Chấm hàng trên theo a bằng dot_row(a), xuống hàng dưới quay ngược chiều, rồi dot_row(a) lần nữa: xe đi ngược nên hàng dưới thành ảnh gương.',
+      veMaMau: 'Chương trình có sẵn đã chấm hàng trên. Viết tiếp: quay xuống hàng dưới, đi thêm một ô cho đúng chỗ rồi chấm.',
+      san: ['......', '......'],
+      hinh: ['.rgby.', '.ybgr.'],
+      batDau: { x: 1, y: 0, huong: 1 },
+      maMau: bai(['a = ["red", "green", "blue", "yellow"]', 'dot_row(a)']),
+      loiGiai: bai(C_L8),
+      sao: { o: 16, nhip: 12 },
+      loiSai: [
+        { moTa: 'Quên đi thêm một ô: hàng dưới lệch ra ngoài hình', baiLam: bai(['a = ["red", "green", "blue", "yellow"]', 'dot_row(a)', 'turn_right()', 'move()', 'turn_right()', 'dot_row(a)']), phaiCoMa: [] }
+      ],
+      goiY: ['Hết hàng trên xe đứng sau chấm cuối: quay phải, đi một ô, quay phải.', 'Lúc đó xe ở ngoài hình một ô: đi thêm một ô rồi mới dot_row(a).']
+    }),
+
+    manL({
+      so: 19, ten: 'Sửa hàm lọc màu', hang: 'bien-the', hamCuaEmCan: ['dot_row'],
+      deBai: 'Hàm của màn keep_warm(a, b) phải giữ các màu ấm (khác "blue") nhưng lại so ngược. Sửa keep_warm; chương trình chính đã khóa: lọc a vào b rồi dot_row(b).',
+      veMaMau: 'Chạy thử: chỉ màu xanh được chấm. Đổi phép so trong if.',
+      san: ['.....'],
+      hinh: ['ryyr.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(C_L9, { hamCuaMan: [H('keep_warm', ['a', 'b'], ['for c in a:', '    if c == "blue":', '        b.append(c)'])] }),
+      loiGiai: bai(C_L9, { hamCuaMan: [H('keep_warm', ['a', 'b'], T_KEEP)] }),
+      sao: { o: 11, nhip: 4 },
+      loiSai: [
+        { moTa: 'Không sửa: giữ màu xanh', baiLam: bai(C_L9, { hamCuaMan: [H('keep_warm', ['a', 'b'], ['for c in a:', '    if c == "blue":', '        b.append(c)'])] }), phaiCoMa: [] }
+      ],
+      goiY: ['!= nghĩa là khác.', 'Màu ấm: đỏ, vàng.']
+    }),
+
+    manL({
+      so: 20, ten: 'Biển báo hai tầng', hang: 'trum', chinhCoDinh: false, hamCuaEmCan: ['dot_row', 'turn_right', 'move'], khung: { chinh: 16, moiHam: 10 },
+      deBai: 'Biển báo hai tầng theo cùng danh sách a. Tầng trên: mỗi màu của a chấm hai ô liền nhau. Tầng dưới (xe đi ngược lại): chỉ các màu khác "blue", mỗi màu một ô. ' +
+        'Tự viết: dựng danh sách cho từng tầng bằng for và append, rồi dot_row.',
+      veMaMau: 'Chương trình có sẵn chỉ có a. Viết cả hai tầng.',
+      san: ['.........', '.........'],
+      hinh: ['rrbbrryy.', '.....yrr.'],
+      batDau: { x: 0, y: 0, huong: 1 },
+      maMau: bai(['a = ["red", "blue", "red", "yellow"]']),
+      loiGiai: bai(C_L10),
+      sao: { o: 24, nhip: 15 },
+      loiSai: [
+        { moTa: 'Tầng dưới chấm cả màu xanh', baiLam: bai(['a = ["red", "blue", "red", "yellow"]', 'b = []', 'for c in a:', '    b.append(c)', '    b.append(c)', 'dot_row(b)', 'turn_right()', 'move()', 'turn_right()', 'move()', 'dot_row(a)']), phaiCoMa: [] },
+        { moTa: 'Tầng trên mỗi màu một ô', baiLam: bai(['a = ["red", "blue", "red", "yellow"]', 'dot_row(a)']), phaiCoMa: [] }
+      ],
+      goiY: ['Tầng trên: như màn Nhân đôi màu. Tầng dưới: như màn Bỏ màu xanh.', 'Giữa hai tầng: quay phải, đi một ô, quay phải, đi một ô.']
     })
   ];
 

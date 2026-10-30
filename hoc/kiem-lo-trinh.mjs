@@ -33,7 +33,7 @@ const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.
 // Mùa 4 (29/10, KE-HOACH-MUA-4.md, đang dựng): chương chưa đủ 10 như mùa 3.
 const chuongMua4 = new Set(TT.goi.filter(g => g.mua === 'mua-4').flatMap(g => g.chuong));
 // 30/10 (user chọn A): tám màn drone cũ sạc tự động / recharge() dời sang mùa 5 trong hai chương chứa 4 màn (lo-trinh-hoc.js MUA_4_CU).
-const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu']);
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu', 'che-list-cu']);
 
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
@@ -729,7 +729,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
   assert.equal(ds[6].man[0].ma, 'cam-bien-ben.1');      // HD2: màn trình diễn left_clear đứng đầu gói 7
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
-  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 165);     // P0 mùa 4 (29/10): gói cũ dời sang mùa 5 (ẩn), ngưỡng tính lại trong mùa 5; 30/10 mùa 5 thêm gói mau, drone-sac-cu, flycam cũ (95 → 155), doi-nam-cham-cu (bốn màn đội, → 165)
+  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 180);     // P0 mùa 4 (29/10): gói cũ dời sang mùa 5 (ẩn), ngưỡng tính lại trong mùa 5; 30/10 mùa 5 thêm gói mau, drone-sac-cu, flycam cũ (95 → 155), doi-nam-cham-cu (bốn màn đội, → 165), che-list-cu (→ 180)
 });
 
 kiem('bản lưu cũ giữ sao theo mã, bỏ nháp lỗi thời, nháp mới đọc lại được', () => {
@@ -756,7 +756,7 @@ const LOI_GIA_4 = process.argv.includes('--loi-gia-mua-4');
 // (chen trước màn trùm có sẵn cuối chương).
 const BANG_MUA_4 = [
   ['drone', 'bo-phan', [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]]],
-  ['may-son', 'bo-phan', [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 6, 5, 8, 9, 7, 10])]]],
+  ['may-son', 'bo-phan', [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]]],
   ['cam-bon', 'bo-phan', [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', day('che-cam-bon', [2, 9, 1, 3, 4, 5, 6, 8, 7, 10])]]],
   ['pho-mau', undefined, [['pho-mau', []], ['che-pho-mau', []]]],
   ['tram-sac', 'bo-phan', [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 11, 4, 13, 15, 12, 7, 16, 14])]]],
