@@ -284,7 +284,7 @@
 
     /* ------------------------------------------------------------ hàng 4: thử thách */
     man({
-      so: 10, ten: 'Ba bức tranh hoa văn', hang: 'trum', hamCuaEmCan: ['next_row', 'fill_gaps'],
+      so: 10, ten: 'Ba bức tranh hoa văn', hang: 'trum', hamCuaEmCan: ['copy_row', 'next_row', 'fill_gaps'],
       robot: XE_CAM, hamGoc: KHAY_CAM,
       huyHieu: { ma: 'che-may-son', ten: 'Huy hiệu Chế lệnh máy sơn' },
       gioiHanHam: 3,
