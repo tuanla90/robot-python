@@ -133,7 +133,7 @@ const BANG_MUA_1 = [
   ['cam-bien', [['khoang-cach', day('khoang-cach', [1, 2, 3, 5, 6, 8, 10, 11, 12, 13])], ['che-cam-bien', day('che-cam-bien', [1, 2, 3, 7, 11, 12, 13, 14, 15, 16])]]],
   ['kho-hang', [['nut-de', day('nut-de', MUOI)], ['kho-hang', day('che-tay', [1, 2, 4, 6]).concat(day('che-xe', [1, 2]), day('kho-hang', [1, 2, 3, 4]))]]],     // SM1-A (30/10): chương 2 về nút đè
   ['banh-lui', [['banh-lui', day('che-xe', [4, 5, 6, 9]).concat(day('banh-lui', [1, 2, 3, 4, 5, 6]))], ['che-banh-lui', ['che-xe.10'].concat(day('che-tay', [5, 9]), ['che-lap.7'], day('che-banh-lui', [1, 2, 3, 4, 5, 6]))]]],     // SM1-A: trùm che-banh-lui.5, che-lap.9 cất; lượt 2 (A2): che-xe.7, che-tay.7 cất, banh-lui.6 / che-banh-lui.6 mới
-  ['tay-xoay', [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]]],
+  ['tay-xoay', [['tay-xoay', day('tay-xoay', [1, 2, 3, 4, 5, 6, 8, 10, 11, 12])], ['che-tay-xoay', day('che-tay-xoay', [1, 2, 3, 4, 5, 6, 9, 10, 11, 12])]]],     // SM1-C (30/10): .7, .9 / .7, .8 cất, .11, .12 mới
   ['me-cung', [['cam-bien-ben', ['che-cam-bien.4'].concat(day('cam-bien-ben', [1, 2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', [4, 5, 6, 7, 8, 9, 10, 11, 12, 13])]]],     // SM1-C (30/10): me-cung.1–.3 cất, .11–.13 mới
   ['hai-robot', [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', day('che-hai-robot', MUOI)]]],
   ['combo', [['combo', day('combo', MUOI)], ['che-combo', day('che-combo', [1, 2, 3, 4, 5, 6, 7, 8, 9]).concat('che-cam-bien.10')]]],
@@ -143,7 +143,7 @@ const BANG_MUA_1 = [
 // SM1-A (30/10): che-xe.3, che-tay.3, che-tay.8, che-tay.10 (không tạo hàm) cất, chương kho-hang có 4 màn mới kho-hang.1–4.
 const CAT_MUA_1 = ['vong-lap.7', 'che-lap.1', 'che-lap.2', 'che-lap.3', 'che-lap.4', 'che-lap.6', 'che-lap.8', 'che-lap.10', 'khoang-cach.7', 'che-cam-bien.8', 'robot-hoan-thien.10', 'khoang-cach.4', 'khoang-cach.9', 'che-xe.8',
   'che-xe.3', 'che-tay.3', 'che-tay.8', 'che-tay.10', 'che-lap.9', 'che-xe.7', 'che-tay.7', 'hai-banh.6', 'vong-lap.5',
-  'me-cung.1', 'me-cung.2', 'me-cung.3'];     // SM1-C: ba màn đầu me-cung dạy lại right_clear / elif của chương cam-bien-ben
+  'me-cung.1', 'me-cung.2', 'me-cung.3', 'tay-xoay.7', 'tay-xoay.9', 'che-tay-xoay.7', 'che-tay-xoay.8'];     // SM1-C: ba màn đầu me-cung dạy lại right_clear / elif của chương cam-bien-ben
 const BIEN_MUA_2 = ['che-cam-bien.6', 'che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.9'];
 // Mùa 2 (27/10): che-xich 3, 4, 5, 7, 10 (bậc thang + hàm có tham số) rời mùa 2, sang chương che-xich ở mùa 3 (ẩn); không màn nào cất thêm.
 const XICH_CU = ['che-xich.3', 'che-xich.4', 'che-xich.5', 'che-xich.7', 'che-xich.10'];

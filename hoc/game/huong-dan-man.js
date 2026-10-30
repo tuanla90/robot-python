@@ -351,6 +351,11 @@
     { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: tới tường, xe hỏi bên trái rồi rẽ trái.', xong: 'chay' },
     { khongAn: true, dich: 'dong:2', chu: 'left_clear() hỏi ô bên trái xe: trống thì True. Màn sau em dùng right_clear().', xong: 'bam', han: 9000, rong: 170 }
   ];
+  // SM1-C (30/10): me-cung.11 trình diễn quy tắc bám tường phải (chiChay) mở chương Mê cung.
+  H['me-cung.11'] = [
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: mỗi lượt lặp, xe làm đúng một bước của quy tắc bám tường phải.', xong: 'chay' },
+    { khongAn: true, dich: 'dong:2', chu: 'Hỏi bên phải trước, rồi trước mặt; hai phía đều chặn thì quay trái. Xe tự tìm đường, không cần đếm ô.', xong: 'bam', han: 9000, rong: 170 }
+  ];
 
   /* ============================================================ Gói 4 · Nút đè (HD2: nut-de.1 trình diễn cơ chế thùng giữ cửa, chiChay) */
   H['nut-de.1'] = [

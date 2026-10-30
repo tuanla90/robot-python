@@ -21,6 +21,8 @@
       'banh-lui-them', 'kho-hang-them',
       // SM1-B (30/10): màn mới gói 1, 2 (chỉ khai, lộ trình thêm vào chương có sẵn bên dưới)
       'goi-1-2-them',
+      // SM1-C (30/10): màn mới gói 6 Tay xoay (chỉ khai, lộ trình thêm vào chương có sẵn bên dưới)
+      'goi-6-7-them',
       // 10 màn mới của gói 8 Đội hai robot, chương 2 "Đội phối hợp" (chỉ khai, lộ trình thêm chương bên dưới)
       'doi-mua-1',
       // 19 màn mới của gói 9 Combo (tay xoay + cảm biến bên), hai chương combo / che-combo (chỉ khai, lộ trình thêm chương bên dưới)
@@ -371,6 +373,47 @@
   // Gói 1 chương hai-banh: hai-banh.11 "Quay đầu, đi hai ô" (4 nhịp, vừa khít 10 ô) thay hai-banh.6 "Chữ L ngược" (trùng ý hai-banh.5, cất).
   M.them(M.manGoi12Them || []);
   (M.manGoi12Them || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  // SM1-C (30/10, nghiệm thu độc lập mùa 1, đề xuất 7): gói 6 Tay xoay. Màn mới (man-goi-6-7-them.js) vào hai chương có sẵn; MUA_1 xếp chỗ, CAT cất màn trùng ý.
+  // Chương tay-xoay: tay-xoay.11 (go_wall, 8 nhịp) và .12 (for, 12 nhịp) đệm chỗ nhảy 3 → 15 nhịp trước tay-xoay.6; tay-xoay.7 "Đố: quên hạ tay" (đố thứ ba cùng
+  // chương trình mười dòng như .2, .3) và .9 "Quay xe, tay đi theo" (cùng ý quay xe mang tay của .8) cất. tay-xoay.6 khóa chương trình chính (chinhCoDinh) như mọi
+  // màn chế hàm: sau .12 em viết được bản vòng for vừa 10 ô, không chế clear_left() mà vẫn 3 sao.
+  // Chương che-tay-xoay: che-tay-xoay.11 (bốn hàm vừa chế + go_wall, 38 ô) đệm ô 26 → 45 trước .5; che-tay-xoay.12 (for, 15 nhịp) đệm nhịp 12 → 20 trước .6;
+  // che-tay-xoay.7 "Đường về" (ý "viết hàm đi ngược" đã gộp ở gói 5, SM1-A) và .8 "Tay chưa về giữa" (sửa hàm của màn quên xoay tay về, cùng lỗi với
+  // lời sai của .1, .2) cất. Trùm che-tay-xoay.10 viết lại: go_wall() tới hàng vật rồi for ba lần sort_two() (33 ô, 34 nhịp; cũ 58 ô, swap_sides + hai sort_two).
+  M.them(M.manGoi67Them || []);
+  (M.manGoi67Them || []).forEach(function (m) { nguon[m.ma] = copy(m); });
+  (function () {
+    var m6 = sua('tay-xoay.6', {
+      chinhCoDinh: true,
+      veMaMau: 'Chương trình chính bị khóa: dọn, tiến hai ô, dọn, tiến ba ô. Mở Xưởng hàm, tạo clear_left() rồi bấm Chạy.',
+      maMau: { chinh: nguon['tay-xoay.6'].loiGiai.chinh.slice(), hamCuaMan: [] },
+      loiSai: copy(nguon['tay-xoay.6'].loiSai.filter(function (ls) { return (ls.hamCuaEmMoi || []).length || ls.phaiCoMa.indexOf('ham-chua-co') >= 0; }))
+    });
+    m6.loiGiaiKhac = copy(nguon['tay-xoay.6'].loiGiaiKhac);
+    var XOAY_CB = { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }] };
+    var L10 = ['go_wall()', 'for i in range(3):', '    sort_two()'];
+    var MAU = ['b', 'r', 'b', 'r', 'b', 'r'];
+    sua('che-tay-xoay.10', {
+      robot: XOAY_CB, hamGoc: nguon['che-tay-xoay.10'].hamGoc.concat(['front_clear']),
+      hamCuaEmCan: ['go_wall', 'sort_two', 'pick', 'move', 'drop_left', 'drop_right'], gioiHanHam: 2,
+      deBai: 'Cuối hành lang có sáu vật xếp thẳng hàng, đỏ và xanh dương xen kẽ, vật đỏ ở gần xe nhất. Đi tới hàng vật, rồi xếp vật đỏ sang trái, vật xanh dương sang phải như vật mờ. Chương trình chính chỉ được gọi 2 hàm của em khác nhau.',
+      veMaMau: 'go_wall() dừng ngay trước vật đầu tiên. Mỗi lần sort_two() xử lý hai vật.',
+      san: ['#####'].concat(MAU.map(function () { return '#.o.#'; }), ['#...#', '##.##', '##.##', '##.##', '##.##', '#####']),
+      vatMau: ['.....'].concat(MAU.map(function (c) { return '..' + c + '..'; }), ['.....', '.....', '.....', '.....', '.....', '.....']),
+      batDau: { x: 2, y: 11, huong: 0 },
+      bongMo: { x: 2, y: 1, huong: 0, vat: [{ x: 1, y: 7, mau: 'red' }, { x: 3, y: 6, mau: 'blue' }, { x: 1, y: 5, mau: 'red' }, { x: 3, y: 4, mau: 'blue' }, { x: 1, y: 3, mau: 'red' }, { x: 3, y: 2, mau: 'blue' }] },
+      maMau: { chinh: [] },
+      loiGiai: { chinh: L10.slice() },
+      sao: { o: 33, nhip: 34 },
+      loiSai: [
+        { moTa: 'Quên đi tới hàng vật: tay kẹp vào ô trống', baiLam: { chinh: L10.slice(1) }, phaiCoMa: ['kep-hut', 'lech-bong-mo'] },
+        { moTa: 'Chỉ lặp hai lần: hai vật cuối còn nằm giữa hành lang', baiLam: { chinh: ['go_wall()', 'for i in range(2):', '    sort_two()'] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đếm thiếu một ô: tay kẹp vào ô trống trước vật đầu', baiLam: { chinh: ['move()', 'move()', 'move()', 'for i in range(3):', '    sort_two()'] }, phaiCoMa: ['kep-hut', 'lech-bong-mo'] },
+        { moTa: 'Gọi thêm pick() trực tiếp: vượt giới hạn 2 hàm', baiLam: { chinh: ['go_wall()', 'pick()', 'for i in range(3):', '    sort_two()'] }, phaiCoMa: ['qua-gioi-han-ham'] }
+      ],
+      goiY: ['Vật đầu tiên chắn trước mặt thì front_clear() là False: go_wall() dừng đúng chỗ nhặt.', 'Sáu vật, mỗi lần sort_two() xếp hai vật: lặp ba lần.']
+    }).loiGiaiKhac = { moTa: 'Không dùng vòng for: gọi sort_two() ba dòng', baiLam: { chinh: ['go_wall()', 'sort_two()', 'sort_two()', 'sort_two()'] } };
+  })();
   // SM1-B việc 1: trùm hai-banh.10 "Xếp lại cho đúng" bằng đúng độ khó màn 5 (3 nhịp, 8 ô). Bản lộ trình: 4 nhịp, 10 ô (đầy khung chính), hai lần rẽ
   // ngược phía nhau (rẽ phải, đi, rẽ trái, đi), mã mẫu là đúng 10 dòng đó bị xáo (không thừa dòng: khung đã đầy), phải kéo đổi chỗ. Giữ mã, tên, huy hiệu,
   // hướng dẫn kéo dòng (huong-dan-man.js). Ngân hàng man-chuoi-1.js giữ bản cũ cho kiem-hoc.mjs. Đường dò: kiem-goi-1-2-them.mjs.
@@ -561,7 +604,9 @@
       chuong: [['banh-lui', ['banh-lui.5'].concat(day('che-xe', [4, 5, 6]), ['banh-lui.1', 'banh-lui.2', 'banh-lui.6', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'])],
         ['che-banh-lui', ['che-tay.5', 'che-banh-lui.6', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-xe.10', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5']]] },
     { ma: 'tay-xoay', ten: 'Tay xoay', loai: 'bo-phan', sao: 150,
-      chuong: [['tay-xoay', day('tay-xoay', MUOI)], ['che-tay-xoay', day('che-tay-xoay', MUOI)]] },
+      // SM1-C (30/10, đề xuất 7): tay-xoay.7, .9, che-tay-xoay.7, .8 cất; màn mới .11, .12 mỗi chương (man-goi-6-7-them.js). Thứ tự theo đường cong nhịp / ô:
+      // tay-xoay 3, 3, 3, 3, 4, 5, 8, 12, 15, 20 nhịp; che-tay-xoay ô 8, 14, 16, 22, 26, 38, 45, 21, 30, 33 (nhịp 2, 4, 4, 8, 9, 11, 12, 15, 20, 34).
+      chuong: [['tay-xoay', day('tay-xoay', [1, 2, 3, 5, 4, 8, 11, 12, 6, 10])], ['che-tay-xoay', day('che-tay-xoay', [1, 2, 4, 9, 3, 11, 5, 12, 6, 10])]] },
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
       // HD2 việc 4 (gói 7): cam-bien-ben.1 (trình diễn left_clear, chiChay) lên đầu chương, rồi che-cam-bien.4 chế to_gap() với right_clear (ép, ba sân).
       chuong: [['cam-bien-ben', ['cam-bien-ben.1', 'che-cam-bien.4'].concat(day('cam-bien-ben', [2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', [11, 4, 5, 6, 7, 8, 9, 12, 13, 10])]] },     // SM1-C: me-cung.1–.3 cất, .11 trình diễn đầu chương, .12 / .13 trước trùm .10 viết lại
@@ -595,7 +640,10 @@
     'vong-lap.5',
     // SM1-C (30/10, đề xuất 5): me-cung.1 "Bên phải của xe", .2 "Rẽ rồi đi", .3 "Không rẽ thì tiến" dạy lại right_clear / elif (đã học ở chương cam-bien-ben);
     // chỗ trống là me-cung.11 (trình diễn bám tường), .12 (bám tường trái), .13 (dừng ở ngõ cụt)
-    'me-cung.1', 'me-cung.2', 'me-cung.3'];
+    'me-cung.1', 'me-cung.2', 'me-cung.3',
+    // SM1-C (đề xuất 7): tay-xoay.7 (đố thứ ba cùng chương trình như .2, .3), tay-xoay.9 (quay xe mang tay, cùng ý .8), che-tay-xoay.7 (hàm đường về, đã gộp ở gói 5),
+    // che-tay-xoay.8 (sửa hàm quên xoay tay về); chỗ trống là tay-xoay.11, .12, che-tay-xoay.11, .12 (đệm đường cong, dùng lại for / go_wall)
+    'tay-xoay.7', 'tay-xoay.9', 'che-tay-xoay.7', 'che-tay-xoay.8'];
   /** Bỏ các màn `dsMa` khỏi M.danhSach (chỉ lộ trình; ngân hàng và bản lưu sao theo `ma` không đổi). */
   function cat(dsMa) {
     dsMa.forEach(function (ma) {
@@ -1671,7 +1719,7 @@
     loiGiai: bai(['fixed_grip()', 'turn_right()', 'magnet_off()', 'wait()'], [ham('fixed_grip', ['if front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()', 'wait()'])]),
     goiY: ['Hai cực giống nhau thì đẩy nhau, khác nhau thì hút nhau.', 'Vật cực N cần nam châm cực S, và ngược lại.']
   });
-  thay('tay-xoay.7', {
+  if (get('tay-xoay.7')) thay('tay-xoay.7', {     // SM1-C: tay-xoay.7 đã cất (CAT); giữ bản viết lại cho lần đưa về
     ten: 'Đố: quên hạ tay',
     deBai: 'Vật nằm ngay bên trái xe, ô đích nằm ngay trước mặt xe. Chương trình có sẵn kẹp vào không khí. Sửa lại để đưa vật tới ô đích.',
     veMaMau: 'Chạy thử, xem tay đang ở trên cao hay đã hạ xuống lúc kẹp.',
@@ -1679,7 +1727,7 @@
     loiGiai: bai(['arm_left()', 'arm_down()', 'grab()', 'wait()', 'arm_up()', 'arm_right()', 'wait()', 'arm_down()', 'release()', 'wait()']),
     goiY: ['Tay phải hạ xuống thì mới kẹp được vật nằm dưới đất.', 'Thêm arm_down() trước grab().']
   });
-  thay('che-tay-xoay.8', {
+  if (get('che-tay-xoay.8')) thay('che-tay-xoay.8', {     // SM1-C: che-tay-xoay.8 đã cất (CAT)
     ten: 'Tay chưa về giữa', chinhCoDinh: true,
     deBai: 'Hàm fixed_pick_left() của màn nhặt vật bên trái nhưng quên xoay tay về giữa, nên fixed_drop_right() đặt vật sai chỗ. Sửa để chuyển vật từ trái sang phải như vật mờ.',
     veMaMau: 'Chương trình chính bị khóa: nhặt bên trái rồi đặt sang phải. Thử từng hàm trong sân thử của Xưởng hàm để xem tay đang chỉ về đâu.',
