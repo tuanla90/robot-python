@@ -111,7 +111,7 @@ console.log('\n== 2. Chẩn đoán ==');
 
 console.log('\n== 3. Hai chương ==');
 {
-  // P0 mùa 4: may-son tách chấm ô (gói 2) / nét liền net-lien (gói 6); che-may-son.7, .8 dời sang gói 10 (tong-hop-4) nên lọc theo mã.
+  // P0 mùa 4: may-son tách chấm ô (gói 2) / nét liền net-lien (gói 6); che-may-son.7, .8 sang mùa 5 (che-may-son-cu) nên lọc theo mã.
   const ds = ManHoc.danhSach.filter((m) => m.chuong === 'may-son' || m.chuong === 'net-lien' || m.chuong === 'che-may-son' || /^che-may-son\./.test(m.ma));
   // Màn mới mùa 4 (man-cham-son.js may-son.11–16, man-net-lien.js net-lien.N và che-may-son.11, .12) có thêm ở hoc/kiem-man-mua-4.mjs; ở đây đếm màn cũ.
   kiem('20 màn: may-son.1–10 và che-may-son.1–10', ds.filter((m) => /^(che-)?may-son\.([1-9]|10)$/.test(m.ma)).length === 20);
