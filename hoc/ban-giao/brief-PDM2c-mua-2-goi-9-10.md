@@ -15,6 +15,10 @@ BỐI CẢNH:
   Cái hay của đội: mỗi xe làm việc xe kia không làm được (R2 gắp / mang vật 'o' mà xích không gắp được; R1 phun van, đẩy thùng nặng, đi băng không trôi mà R2 bị băng đẩy).
   Nguồn: màn đội có sẵn doi-mua-2 / che-doi-mua-2 (R1 xích không vòi, R2 hai bánh có vòi: luật đội, nhịp, chờ nhau đã có) — giữ ý phối hợp khi được, đổi vai cho đúng;
   không giữ được thì viết màn mới (mã mới, tệp hiện có man-doi-mua-2.js). Gói 9 hiện là "Bệ vòi xích" (be-sung): gỡ khỏi lộ trình (ngân hàng giữ nguyên, mã không đổi).
+  CẬP NHẬT sau PDM2b (đọc `hoc/ban-giao/can-trao-doi-part-dung-mua.md` mục 8): gói Đội cũ đang CẤT ở mùa ẩn (CAT_MUA_2 trong lo-trinh-hoc.js) và kiem-doi-mua-2.mjs
+  đang dừng sớm khi gói Đội không ở mùa 2: đưa gói Đội về làm GÓI 9 mùa 2 (sao 240) và cho kiem-doi-mua-2 chạy lại đầy đủ. Bệ vòi xích: CẤT ra mùa ẩn bằng cùng cơ chế
+  (người giao chọn phương án A), không xoá ngân hàng. Gói 10 đang mượn hàm gói Đội / Bệ vòi qua cờ `capCu` (CAP_HAM_CU): khi dựng lại gói 10 thì BỎ CAP_HAM_CU và phần
+  bỏ qua capCu trong kiem-lo-trinh (g) / kiem-trum-mua-2 nếu không còn cần.
   Tên gói / chương theo quy tắc đặt tên (gợi ý gói "R2 trở lại" giữ tên cũ vì đúng truyện: Luna mang xe chở hàng tới giúp).
 - Gói 10 "Xe cứu hỏa R1 xuất xưởng": mọi màn MỘT robot (xe cứu hỏa đầy đủ), 2–3 sân mỗi màn (mỗi sân một "ngày": van / lửa / thùng ở chỗ khác),
   một chương trình tổng quát (while / if với distance() / warm()) thắng mọi sân; một lời giải viết cứng thua ở ít nhất một sân (loiSai có phaiCoMa).
