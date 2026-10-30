@@ -194,6 +194,13 @@ Ghi chú chia:
     che-doi-nam-cham.4 Ba trạm có hạn, .9 Hốc nhường đường.
   - doi-nam-cham.8 mở hai ô thừa cạnh R2 (6 → 8 ô; robot không đi tới, lời sai "tránh sai phía" vẫn thua).
   Máy kiểm theo: kiem-doi-nam-cham (lời sai bốn màn mới), kiem-goi-doi (chương chứa -cu ở mùa 5; hàng theo vị trí), kiem-lo-trinh (rap-du mùa 5: 165 ★).
+- **30/10 Hai chỗ nhảy cuối của mùa 4 xong: cả mùa 4 không còn nhảy** (cong4.js: 0).
+  - Gói 2 che-list (màn đo bằng cảm biến, bản một sân của lộ trình): bãi trống 7 × 7 mà xe chỉ đi một vòng chữ nhật nhỏ (12 → 47 ô ngay màn đầu). Bãi thu vừa khít,
+    giữ đúng luật bãi trống của PHONG (tường mốc cuối hai cạnh đầu; ô ngay sau chỗ dừng ở hai cạnh sau vẫn trống nên cảm biến không dừng được xe, phải nhớ số đã đo),
+    và LỚN DẦN: che-list.4 bãi 2×1 (18 ô) · che-list.6 bãi 4×1 (26) · che-list.5 vuông 3 (29) · che-list.8 bãi 2×3 (28) · che-list.9 bãi 4×3 (40); thứ tự chương
+    1 · 2 · 3 · 4 · 6 · 5 · 8 · 9 · 7 · 10 (tự viết chương trình chính ở bãi chữ nhật trước, chế box cho bãi vuông sau). Ngưỡng nhịp lo-trinh-sao.js: che-list.4 14 → 10,
+    che-list.6 16 → 14. Bản ba sân trong man-che-list.js (máy kiểm kiem-che-list) giữ nguyên.
+  - Ranh gói 5 / 6: may-son.3 bít hai góc trên (18 → 16 ô), may-son.4 bít góc dưới trái (25 → 24 ô): ô xe không đi tới.
 
 ## 7. Cần trao đổi lại với user (ghi dần, user treo máy đêm 29/10)
 
@@ -202,8 +209,7 @@ Ghi chú chia:
 3. Gói 3 Camera bốn hướng và gói 7 Nhìn dưới chân đang chứa màn cũ dùng color() bụng / look(): dựng lại sau lõi N2 (P1), số màn mất / giữ báo sau.
 4. Mùa 5 "Sân bóng" chỉ là chỗ chứa tạm 18 gói cũ (vẫn ẩn), ngưỡng sao trong đó tính lại (vd rap-du 90 → 95 ★): dựng thật khi tới mùa 5.
 5. Lõi P1 (đáp đất sạc, camera color(huong), drone sơn ô dưới) đụng san-hoc.js / cham.js chung: chờ P1b mùa 3 và Phun nhẹ A / B gộp, hay làm luôn trên nhánh riêng rồi gộp sau (sẽ phải giải xung đột)?
-6. Đường cong gói 2: che-list.4 (Đo một cạnh) nhảy số ô 12 → 47 so với che-list.3. Ba sân của các màn đo là bãi trống 7 × 7, xe chỉ đi chu vi tối đa
-   4 × 4 nên tôi để nguyên (coi số ô của bãi trống là đo lệch). Muốn mượt hẳn thì thu bãi về 5 × 5 hoặc 6 × 6 (sửa PHONG trong man-che-list.js, đo lại sao).
+6. ~~Đường cong gói 2 che-list.4 (12 → 47 ô)~~ sửa 30/10 (mục 6): bãi đo thu vừa khít, lớn dần 4 → 6 → 5 → 8 → 9.
 7. Chương che-list (gói 2) không có màn trình diễn: không có khối mới (hàm nhận danh sách ghép hai thứ đã học), nên tôi không thêm.
 8. Hai chỗ nhảy ở ranh giới gói chưa dựng xong, để lại: may-son.3 (đầu gói 6, 18 ô) sau che-drone.9 (cuối gói 5, 9 ô): gói 5 dựng lại sau lõi P1;
    che-may-son.7 (đầu gói 10, 37 nhịp, 49 ô) sau che-doi-nam-cham.9 (gói 8): gói 9 còn trống, gói 10 sẽ có màn đứng trước.
@@ -219,5 +225,5 @@ Ghi chú chia:
 17. Gói 9 không có màn nam châm (máy sơn và nam châm không gắn chung). Muốn có ý "chở trước hay sơn trước" thì cần màn hai drone (một sơn, một chở) kiểu gói đội: để gói 10?
 19. Mục 9 (che-may-son.7 / .8): tôi giữ, đặt ở trum-mua-4 vị trí 8, 9 (sau màn cầu nối street 25 nhịp). Muốn cắt thì thay bằng hai màn drone mới.
 20. ~~Huy hiệu mùa 4~~ xong 30/10 (mục 6).
-18. Ranh gói 5 / 6: may-son.3 (đầu gói 6, 18 ô) sau che-drone.16 (10 ô) nhảy số ô (như mục 8, nay màn đứng trước là che-drone.16). Chưa sửa.
+18. ~~Ranh gói 5 / 6 (may-son.3 sau che-drone.16)~~ sửa 30/10 (mục 6): bít góc thừa may-son.3, may-son.4.
 

@@ -1077,7 +1077,7 @@
       // list: list.1 thành màn trình diễn (dưới), list.11 màn ép sửa một số (man-cat-canh.js), list.2 (xoắn ốc 28 ô, nhảy đường cong) cất khỏi lộ trình
       chuong: [['drone', day('drone', [11, 1, 2, 12, 3, 13, 7, 8, 9, 14])], ['list', day('list', [1, 11, 3, 6, 4, 7, 9, 5, 8, 10])]] },
     { ma: 'may-son', ten: 'Chấm sơn', loai: 'bo-phan', hinh: 'may-son',
-      chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 5, 6, 8, 9, 7, 10])]] },
+      chuong: [['may-son', day('may-son', [11, 1, 2, 12, 6, 7, 14, 15, 13, 16])], ['che-list', day('che-list', [1, 2, 3, 4, 6, 5, 8, 9, 7, 10])]] },
     // gói 3, 5, 7 (user 30/10 chọn A): màn cũ dạy cảm biến bụng / camera trước / look() / sạc tự động trên P dời sang mùa 5 (gói mau, flycam cũ và MUA_4_CU
     // bên dưới), ba gói dựng bằng màn mới theo luật mới (camera bốn hướng, đáp đất sạc, camera nhìn "here").
     { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'cam-bon',
@@ -1154,6 +1154,21 @@
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // Gói 2 (30/10, đường cong): màn đo bằng cảm biến ở che-list (bản một sân của lộ trình) đứng trên bãi trống 7 × 7 dù xe chỉ đi một vòng chữ nhật nhỏ,
+    // nên số ô nhảy 12 → 47 ngay màn đầu. Bãi thu vừa khít (giữ luật của PHONG ở man-che-list.js: tường mốc cuối hai cạnh đầu, ô ngay sau chỗ dừng ở hai cạnh sau
+    // vẫn trống để cảm biến không dừng được xe, nên vẫn phải nhớ số đã đo) và lớn dần theo thứ tự 4 → 6 → 5 → 8 → 9: bãi 2×1, 4×1, vuông 3, 2×3, 4×3.
+    var BAI_KHIT = {
+      "che-list.4": {"san":[".....","....#",".....","...#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":3,"y":1},{"x":3,"y":2},{"x":1,"y":2}]}},
+      "che-list.6": {"san":[".......","......#",".......",".....#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":5,"y":1},{"x":5,"y":2},{"x":1,"y":2}]}},
+      "che-list.5": {"san":["......",".....#","......","......","......"],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":0,"diQua":[{"x":4,"y":1},{"x":4,"y":4},{"x":1,"y":4}]}},
+      "che-list.8": {"san":[".....","....#",".....",".....",".....","...#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":3,"y":1},{"x":3,"y":4},{"x":1,"y":4}]}},
+      "che-list.9": {"san":[".......","......#",".......",".......",".......",".....#."],"batDau":{"x":1,"y":1,"huong":1},"bongMo":{"x":1,"y":1,"huong":1,"diQua":[{"x":5,"y":1},{"x":5,"y":4},{"x":1,"y":4}]}}
+    };
+    Object.keys(BAI_KHIT).forEach(function (ma) { Object.assign(get(ma), copy(BAI_KHIT[ma])); });
+    // Ranh gói 5 / 6 (30/10): đầu chương net-lien là sân trống rộng hơn bài cần (may-son.3 6 × 3 chỉ kẻ một nét hàng giữa; may-son.4 5 × 5 kẻ một góc vuông).
+    // Bít góc xe không đi tới: may-son.3 hai góc trên (18 → 16 ô, sau che-drone.16 10 ô), may-son.4 góc dưới trái (25 → 24 ô). Lời giải và lời sai giữ nguyên.
+    get('may-son.3').san = ['#....#', '......', '......'];
+    get('may-son.4').san = ['.....', '.....', '.....', '.....', '#....'];
     // Gói 8 (30/10, đường cong): doi-nam-cham.8 Bó tay cho sớm mở hai ô THỪA cạnh R2 (robot không đi tới, không nằm trên đường tránh của R1; 6 → 8 ô)
     // cho che-doi-nam-cham.11 (14 ô) đứng sau không nhảy.
     get('doi-nam-cham.8').san = ['#####', '##D##', '##..#', '##..#', '#..##', '##o##', '#####'];
