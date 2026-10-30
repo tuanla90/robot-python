@@ -12,7 +12,7 @@
      MÙA 2 (28/10, phim-mua-2.js; mục 1b): danh sách gói lấy từ mảng MUA_2 của lo-trinh-hoc.js (đọc nguồn: gói chưa có màn chưa vào ThuTuChuong.goi,
         vd gói 10 nha-may-chay đang viết, nên coi là gói khai sẵn); mọi gói mùa 2 có phim, nằm ở phim-mua-2.js, mỗi phim của tệp này mang mã một gói MUA_2;
         khung cuối phim gói bộ phận mùa 2 có bảng code; choi.html nạp phim-mua-2.js ngay sau phim-mua-1.js; mục 2 và 4 tự gồm phim mùa 2.
-     MÙA 4 (30/10, phim-mua-4.js; mục 1c): như mùa 2, gói theo mảng MUA_4 (đọc nguồn); mọi gói mùa 4 có phim ở phim-mua-4.js, khung cuối phim gói bộ phận có bảng code;
+     MÙA 4 (30/10, phim-mua-4.js; mục 1d): như mùa 2, gói theo mảng MUA_4 (đọc nguồn); mọi gói mùa 4 có phim ở phim-mua-4.js, khung cuối phim gói bộ phận có bảng code;
         choi.html nạp phim-mua-4.js sau phim-mua-2.js (phim-mua-3.js nếu có thì đứng giữa); phim gói 10 có tem xuất xưởng với tên pg.tem.drone-ke-vach.
    Cờ --loi-gia: cắm sáu lỗi trong bộ nhớ (bỏ phim do-nhiet, phim xich 5 khung, lời pg.be-sung.2 16 từ, thiếu khóa pg.luc-ban.3, phim mã "goi-la"
         trong phim-mua-2.js, choi.html mất thẻ phim-mua-2.js) → các mục tương ứng phải ĐỎ.
@@ -106,7 +106,7 @@ console.log('\n== 1b. Phim mùa 2 (gói theo MUA_2 của lo-trinh-hoc.js) ==');
   kiem('khung cuối phim gói bộ phận mùa 2 có bảng code lệnh mới (' + boPhan.map((g) => g.ma).join(', ') + ')', boPhan.length >= 3 && !khongCode.length, khongCode.join(', '));
 }
 
-console.log('\n== 1c. Phim mùa 4 (gói theo MUA_4 của lo-trinh-hoc.js) ==');
+console.log('\n== 1d. Phim mùa 4 (gói theo MUA_4 của lo-trinh-hoc.js) ==');
 {
   kiem('có tệp phim-mua-4.js', tepPhim.includes('phim-mua-4.js'));
   kiem('MUA_4 có 10 gói (đọc nguồn lo-trinh-hoc.js)', GOI_MUA_4.length === 10, GOI_MUA_4.map((g) => g.ma).join(', '));

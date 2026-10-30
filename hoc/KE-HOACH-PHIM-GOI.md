@@ -114,7 +114,7 @@ nhà phố, mặt đường, sân bóng, thanh pin vẽ bằng div. Lời ở ch
 
 Ghi chú mùa 4:
 - Khung 1 gói 10: mười huy hiệu mùa 4 bay quanh (drone, may-son, cam-bon, pho-mau, tram-sac, net-lien, nhin-duoi, doi-nam-cham, son-tren-cao, drone-ke-vach), như phim gói 10 mùa 2.
-- Mùa 4 còn ẩn: phim chỉ chiếu khi mùa mở. Máy kiểm: kiem-phim-goi.mjs mục 1c, kiem-huy-hieu-phim-vector.mjs B2 (canvas vector).
+- Mùa 4 còn ẩn: phim chỉ chiếu khi mùa mở. Máy kiểm: kiem-phim-goi.mjs mục 1d, kiem-huy-hieu-phim-vector.mjs B2 (canvas vector).
 - Phim mùa 3 chưa có (phiên Mùa 3 sẽ đặt phim-mua-3.js giữa phim-mua-2.js và phim-mua-4.js trong choi.html).
 
 ## 4. Kiểm

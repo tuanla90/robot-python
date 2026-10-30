@@ -496,7 +496,6 @@
       'pg.tem.xuat-xuong': 'XUẤT XƯỞNG',                 // chữ trên tem của phim gói 10 mọi mùa (PhimVector.xuatXuong)
       'pg.tem.xe-cho-hang': 'Xe chở hàng R1',             // cỗ máy mùa 1 (KE-HOACH-7-MUA.md "Cỗ máy của mỗi mùa")
       'pg.tem.xe-cuu-hoa': 'Xe cứu hỏa R1',               // cỗ máy mùa 2 (user 29/10: robot chữa cháy bánh xích, không chủ đề chiến tranh)
-      'pg.tem.drone-ke-vach': 'Drone kẻ vạch R1',         // cỗ máy mùa 4 (drone bay theo lưới phố, máy sơn kẻ vạch, camera nhìn xuống, đáp sạc)
       // Phim mùa 2 (phim-mua-2.js; kịch bản KE-HOACH-PHIM-GOI.md mục "Kịch bản mùa 2")
       'pg.xich.1': 'Nhà máy cũ đứng im, cần cỗ máy khỏe. Bánh xích chờ trên đồi!',
       'pg.xich.2': 'CẠCH! Em lắp bánh xích cho R1, bám chắc, leo qua đống đổ nát.',
@@ -535,7 +534,12 @@
       'pg.nha-may-chay.2': 'Tem đóng cộp: Xe cứu hỏa R1 xuất xưởng! Vòi phun, mắt hồng ngoại.',
       'pg.nha-may-chay.3': 'Mọi van mở, mọi băng chạy: nhà máy chạy lại rồi!',
       'pg.nha-may-chay.4': 'Mỏ quặng xa xa gửi mật lệnh lạ: chân nhện, nam châm, sóng từ.',
+      'pg.tenR1': 'R1',
+      'pg.tenR2': 'R2',
+      'caiDat.phimGoi': 'Xem lại phim các gói',
+      'caiDat.phimGoiRong': 'Mở gói mới để có thêm phim.',
       // Phim mùa 4 (phim-mua-4.js; kịch bản KE-HOACH-PHIM-GOI.md mục "Kịch bản mùa 4")
+      'pg.tem.drone-ke-vach': 'Drone kẻ vạch R1',         // cỗ máy mùa 4 (drone bay theo lưới phố, máy sơn kẻ vạch, camera nhìn xuống, đáp sạc)
       'pg.drone.1': 'Thành phố mới: vạch kẻ đường mờ hết, xe đi lộn xộn.',
       'pg.drone.2': 'Em lắp cánh quạt: R1 thành drone, bay qua mọi hàng rào.',
       'pg.drone.3': 'Drone bay từng ô, mỗi ô tốn một vạch pin.',
@@ -575,10 +579,6 @@
       'pg.drone-ke-vach.2': 'Tem đóng cộp: Drone kẻ vạch R1 xuất xưởng!',
       'pg.drone-ke-vach.3': 'Vạch đường sáng rõ, xe đi đúng làn: thành phố gọn gàng.',
       'pg.drone-ke-vach.4': 'Xa xa sân bóng sáng đèn: một trận đấu đang chờ.',
-      'pg.tenR1': 'R1',
-      'pg.tenR2': 'R2',
-      'caiDat.phimGoi': 'Xem lại phim các gói',
-      'caiDat.phimGoiRong': 'Mở gói mới để có thêm phim.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

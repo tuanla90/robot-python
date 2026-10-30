@@ -174,7 +174,7 @@ Ghi chú chia:
   - Màn đội chạy được mục tiêu to-hinh (xe sơn, drone dọn đường). Đường cong gói 9, 10 không nhảy (cong4.js).
   - Chưa có: huy hiệu và phim gói 10 (phim mùa 4 là bước sau, mục 4 P2).
 - **30/10 Phim mùa 4 xong** (game/phim-mua-4.js, 10 phim 37 khung, lời ở chu.js `pg.<gói>.<n>`, tem `pg.tem.drone-ke-vach`; kịch bản KE-HOACH-PHIM-GOI.md mục 3e).
-  kiem-phim-goi.mjs thêm mục 1c (mọi gói MUA_4 có phim, khung cuối phim bộ phận có code, tem gói 10, thẻ script); kiem-huy-hieu-phim-vector B2 đạt (ô vẽ VeVector, canvas laVector).
+  kiem-phim-goi.mjs thêm mục 1d (mọi gói MUA_4 có phim, khung cuối phim bộ phận có code, tem gói 10, thẻ script); kiem-huy-hieu-phim-vector B2 đạt (ô vẽ VeVector, canvas laVector).
   Đã chiếu thử cả 10 phim trên trình duyệt (gọi PhimGoi.mo vì mùa 4 còn ẩn): không lỗi console.
 - **30/10 Huy hiệu mùa 4 xong** (huy-hieu-vector.js): 13 hình mới cam-bon, che-cam-bon, pho-mau, che-pho-mau, tram-sac, net-lien, nhin-duoi, che-nhin-duoi,
   son-tren-cao, che-son-tren-cao, tong-hop-4, drone-ke-vach (cỗ máy, hình gói 10), trum-mua-4. Mọi chương mùa 4 có huy hiệu (drone, list, may-son, che-list, che-drone,
