@@ -19,7 +19,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.vien(g, quay ? BM.vecDen : BM.vecBacToi, 3.5);
     H.tron(g, cx, cy, 2.6); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 1.5);
   }
-  V.dangKy({ loai: 'than', ma: 'drone', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'battery'], ten: 'Thân drone', khongHuong: true, bongRieng: true, dinh: 14,
+  V.dangKy({ loai: 'than', ma: 'drone', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'battery',  'land',  'take_off'], ten: 'Thân drone', khongHuong: true, bongRieng: true, dinh: 14,
     oGan: { hongTrai: { x: 33, y: 46 }, hongPhai: { x: 67, y: 46 }, duoi: { x: 50, y: 70 }, tren: { x: 50, y: 44 }, bung: { x: 50, y: 37 } }, vo: { x: 31, y: 38, w: 38, h: 36 }, ve: function (g, s, M, H) {
     s = s || {};
     var quay = s.quat !== false, pha = s.buoc ? 1 : 0;

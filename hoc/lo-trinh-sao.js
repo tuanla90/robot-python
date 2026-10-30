@@ -403,15 +403,15 @@
   },
   "che-list.4": {
     "o": 21,
-    "nhip": 14
+    "nhip": 10
   },
   "che-list.5": {
     "o": 18,
-    "nhip": 15
+    "nhip": 11
   },
   "che-list.6": {
     "o": 21,
-    "nhip": 16
+    "nhip": 14
   },
   "che-list.8": {
     "o": 21,
