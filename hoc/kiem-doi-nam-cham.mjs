@@ -49,7 +49,7 @@ const tatCa = ds1.concat(ds2);
 const R1_TU_DONG = ['if front_metal() or front_pole() != "none":', '    grip()', '    u_turn()', '    magnet_off()', '    wait()', 'else:', '    turn_left()', '    move()'];
 const CHO_MAI = ['while front_clear():', '    wait()'];
 const CHO_HAN = (n) => LAP(n, ['if front_clear():', '    wait()']);
-const R2_BA_MAU = ['if color() == "green":', '    pass_back()', 'else:', '    sort_color()'];
+const R2_BA_MAU = ['if color("front") == "green":', '    pass_back()', 'else:', '    sort_by_color()'];
 const HOLD_WHILE = H('hold_on', ['n'], ['while front_clear():', '    wait()']);
 const HOLD_CUNG = H('hold_on', ['n'], ['for i in range(n):', '    wait()']);
 
@@ -60,8 +60,8 @@ const LOI_SAI = {
     { moTa: 'R1 thả ngay, chưa rẽ vào đích', doi: [['grip()', 'magnet_off()', 'wait()'], null], ket: 'thua' }
   ],
   'doi-nam-cham.2': [
-    { moTa: 'R2 phân loại ngay, không chờ vật tới', doi: [null, ['sort_color()']], ket: 'thua' },
-    { moTa: 'R2 chờ sai điều kiện (while not front_clear)', doi: [null, ['while not front_clear():', '    wait()', 'sort_color()']], ket: 'thua' }
+    { moTa: 'R2 phân loại ngay, không chờ vật tới', doi: [null, ['sort_by_color()']], ket: 'thua' },
+    { moTa: 'R2 chờ sai điều kiện (while not front_clear)', doi: [null, ['while not front_clear():', '    wait()', 'sort_by_color()']], ket: 'thua' }
   ],
   'doi-nam-cham.3': [
     { moTa: 'R1 kéo về rồi giữ mãi', doi: [['magnet_n()', 'wait()'], null], ket: 'thua' },
@@ -69,23 +69,23 @@ const LOI_SAI = {
     { moTa: 'R1 chuyền sang trái, sai phía R2', doi: [['grip()', 'turn_left()', 'magnet_off()', 'wait()'], null], ket: 'thua' }
   ],
   'doi-nam-cham.4': [
-    { moTa: 'R2 chờ mãi vật gỗ (quá nhịp)', doi: [null, CHO_MAI.concat(['sort_color()'])], ket: 'thua' },
-    { moTa: 'R2 không chờ, lao lên lúc R1 còn giữa lối', doi: [null, ['fetch_back()', 'sort_color()']], ket: 'thua' },
-    { moTa: 'R2 chờ có hạn nhưng không có đường lui', doi: [null, CHO_HAN(3).concat(['sort_color()'])], ket: 'thua' }
+    { moTa: 'R2 chờ mãi vật gỗ (quá nhịp)', doi: [null, CHO_MAI.concat(['sort_by_color()'])], ket: 'thua' },
+    { moTa: 'R2 không chờ, lao lên lúc R1 còn giữa lối', doi: [null, ['fetch_back()', 'sort_by_color()']], ket: 'thua' },
+    { moTa: 'R2 chờ có hạn nhưng không có đường lui', doi: [null, CHO_HAN(3).concat(['sort_by_color()'])], ket: 'thua' }
   ],
   'doi-nam-cham.5': [
     { moTa: 'R1 bật nam châm ngay vào khúc gỗ', doi: [['grip()', 'u_turn()', 'magnet_off()', 'wait()'], null], ket: 'thua' },
-    { moTa: 'R2 phân loại tại chỗ, chưa tới cạnh khúc gỗ', doi: [null, ['sort_color()']], ket: 'thua' }
+    { moTa: 'R2 phân loại tại chỗ, chưa tới cạnh khúc gỗ', doi: [null, ['sort_by_color()']], ket: 'thua' }
   ],
   'doi-nam-cham.6': [
-    { moTa: 'R2 đếm nhịp từng chuyến (viết thẳng): mất sao ô', doi: [null, ['for i in range(3):', '    wait()', 'sort_color()', 'for i in range(5):', '    wait()', 'sort_color()']], ket: 'matSao' },
-    { moTa: 'R2 vòng lặp đếm cứng 5 nhịp: mất sao nhịp', doi: [null, LAP(2, ['for j in range(5):', '    wait()', 'sort_color()'])], ket: 'matSao' },
-    { moTa: 'R2 đếm nhịp ít quá', doi: [null, LAP(2, ['for j in range(2):', '    wait()', 'sort_color()'])], ket: 'thua' }
+    { moTa: 'R2 đếm nhịp từng chuyến (viết thẳng): mất sao ô', doi: [null, ['for i in range(3):', '    wait()', 'sort_by_color()', 'for i in range(5):', '    wait()', 'sort_by_color()']], ket: 'matSao' },
+    { moTa: 'R2 vòng lặp đếm cứng 5 nhịp: mất sao nhịp', doi: [null, LAP(2, ['for j in range(5):', '    wait()', 'sort_by_color()'])], ket: 'matSao' },
+    { moTa: 'R2 đếm nhịp ít quá', doi: [null, LAP(2, ['for j in range(2):', '    wait()', 'sort_by_color()'])], ket: 'thua' }
   ],
   'doi-nam-cham.7': [
-    { moTa: 'R2 giới hạn chờ 2 nhịp: camera chưa thấy vật, đặt nhầm màu', doi: [null, CHO_HAN(2).concat(['sort_color()'])], ket: 'thua' },
-    { moTa: 'R2 không chờ', doi: [null, ['sort_color()']], ket: 'thua' },
-    { moTa: 'R2 tự lái đi lấy (R1 chắn lối)', doi: [null, ['fetch_back()', 'sort_color()']], ket: 'thua' }
+    { moTa: 'R2 giới hạn chờ 2 nhịp: camera chưa thấy vật, đặt nhầm màu', doi: [null, CHO_HAN(2).concat(['sort_by_color()'])], ket: 'thua' },
+    { moTa: 'R2 không chờ', doi: [null, ['sort_by_color()']], ket: 'thua' },
+    { moTa: 'R2 tự lái đi lấy (R1 chắn lối)', doi: [null, ['fetch_back()', 'sort_by_color()']], ket: 'thua' }
   ],
   'doi-nam-cham.8': [
     { moTa: 'R1 thử nam châm rồi mới tránh (muộn)', doi: [['grip()', 'u_turn()', 'magnet_off()', 'wait()', 'turn_left()', 'move()'], null], ket: 'thua' },
@@ -99,12 +99,12 @@ const LOI_SAI = {
     { moTa: 'R2 chờ cứng 3 nhịp mỗi trạm: mất sao nhịp', doi: [null, LAP(3, ['for j in range(3):', '    wait()', 'pass_back()', 'step(0, 2)'])], ket: 'matSao' }
   ],
   'doi-nam-cham.10': [
-    { moTa: 'R2 chờ mãi (sân gỗ quá nhịp)', doi: [null, LAP(2, CHO_MAI.concat(['sort_color()']))], ket: 'thua' },
-    { moTa: 'R2 không chờ, chỉ có đường lui', doi: [null, LAP(2, ['if front_clear():', '    fetch_back()', 'sort_color()'])], ket: 'thua' },
-    { moTa: 'R2 chờ cứng 3 rồi luôn fetch_back: thua hay mất sao', doi: [null, LAP(2, ['for j in range(3):', '    wait()', 'fetch_back()', 'sort_color()'])], ket: 'chan' },
-    { moTa: 'R2 giới hạn chờ 2 nhịp: thua hay mất sao', doi: [null, LAP(2, CHO_HAN(2).concat(['if front_clear():', '    fetch_back()', 'sort_color()']))], ket: 'chan' },
+    { moTa: 'R2 chờ mãi (sân gỗ quá nhịp)', doi: [null, LAP(2, CHO_MAI.concat(['sort_by_color()']))], ket: 'thua' },
+    { moTa: 'R2 không chờ, chỉ có đường lui', doi: [null, LAP(2, ['if front_clear():', '    fetch_back()', 'sort_by_color()'])], ket: 'thua' },
+    { moTa: 'R2 chờ cứng 3 rồi luôn fetch_back: thua hay mất sao', doi: [null, LAP(2, ['for j in range(3):', '    wait()', 'fetch_back()', 'sort_by_color()'])], ket: 'chan' },
+    { moTa: 'R2 giới hạn chờ 2 nhịp: thua hay mất sao', doi: [null, LAP(2, CHO_HAN(2).concat(['if front_clear():', '    fetch_back()', 'sort_by_color()']))], ket: 'chan' },
     { moTa: 'R2 đặt hết sang phải, không nhìn màu', doi: [null, LAP(2, CHO_HAN(3).concat(['if front_clear():', '    fetch_back()', 'put_right()']))], ket: 'thua' },
-    { moTa: 'R2 chỉ một lượt', doi: [null, CHO_HAN(3).concat(['if front_clear():', '    fetch_back()', 'sort_color()'])], ket: 'thua' },
+    { moTa: 'R2 chỉ một lượt', doi: [null, CHO_HAN(3).concat(['if front_clear():', '    fetch_back()', 'sort_by_color()'])], ket: 'thua' },
     { moTa: 'R1 không nhường đường khi gặp gỗ', doi: [LAP(2, ['grip()', 'u_turn()', 'magnet_off()', 'wait()', 'u_turn()']), null], ket: 'thua' },
     { moTa: 'R1 quên quay lại sau khi giao', doi: [LAP(2, R1_TU_DONG), null], ket: 'thua' },
     { moTa: 'R1 luôn tránh, R2 làm hết (vật sau rào)', doi: [['turn_left()', 'move()'], null], ket: 'thua' },
@@ -115,7 +115,7 @@ const LOI_SAI = {
     { moTa: 'hold_on viết bằng while: lần chờ thứ hai kéo dài mãi', doi: [null, null], ham: [HOLD_WHILE], ket: 'thua' },
     { moTa: 'hold_on chờ cứng đủ n nhịp: mất sao nhịp', doi: [null, null], ham: [HOLD_CUNG], ket: 'matSao' },
     { moTa: 'hold_on không chờ (pass)', doi: [null, null], ham: [H('hold_on', ['n'], ['pass'])], ket: 'thua' },
-    { moTa: 'Không dùng hold_on, viết vòng chờ ngay trong R2', doi: [null, CHO_HAN(5).concat(['sort_color()'], CHO_HAN(5), ['fetch_back()', 'sort_color()'])], ham: [], ket: 'thua' }
+    { moTa: 'Không dùng hold_on, viết vòng chờ ngay trong R2', doi: [null, CHO_HAN(5).concat(['sort_by_color()'], CHO_HAN(5), ['fetch_back()', 'sort_by_color()'])], ham: [], ket: 'thua' }
   ],
   'che-doi-nam-cham.2': [
     { moTa: 'hand_off quên quay đầu: thả xuống hố', doi: [null, null], ham: [H('hand_off', [], ['grip()', 'magnet_off()', 'wait()'])], ket: 'thua' },
@@ -125,7 +125,7 @@ const LOI_SAI = {
   'che-doi-nam-cham.3': [
     { moTa: 'plan_b luôn fetch_back: mất sao nhịp', doi: [null, null], ham: [H('plan_b', [], ['fetch_back()'])], ket: 'matSao' },
     { moTa: 'plan_b không làm gì', doi: [null, null], ham: [H('plan_b', [], ['pass'])], ket: 'thua' },
-    { moTa: 'R2 bỏ plan_b', doi: [null, LAP(2, ['hold_on(3)', 'sort_color()'])], ket: 'thua' }
+    { moTa: 'R2 bỏ plan_b', doi: [null, LAP(2, ['hold_on(3)', 'sort_by_color()'])], ket: 'thua' }
   ],
   'che-doi-nam-cham.4': [
     { moTa: 'R1 chỉ dịch trạm khi giao được (kẹt ở trạm gỗ)', doi: [LAP(3, ['if front_metal() or front_pole() != "none":', '    hand_off()', '    u_turn()', '    dodge_right()']), null], ket: 'thua' },
@@ -133,9 +133,9 @@ const LOI_SAI = {
     { moTa: 'hold_on viết bằng while', doi: [null, null], ham: [HOLD_WHILE], ket: 'thua' }
   ],
   'che-doi-nam-cham.5': [
-    { moTa: 'R2 không xét xanh lá: vật xanh lá vào đích xanh dương', doi: [null, LAP(3, ['hold_on(3)', 'sort_color()'])], ket: 'thua' },
+    { moTa: 'R2 không xét xanh lá: vật xanh lá vào đích xanh dương', doi: [null, LAP(3, ['hold_on(3)', 'sort_by_color()'])], ket: 'thua' },
     { moTa: 'R1 quên quay lại sau mỗi lần giao', doi: [LAP(3, ['hand_off()']), null], ket: 'thua' },
-    { moTa: 'R2 không chờ', doi: [null, LAP(3, ['if color() == "green":', '    pass_back()', 'else:', '    sort_color()'])], ket: 'thua' }
+    { moTa: 'R2 không chờ', doi: [null, LAP(3, ['if color("front") == "green":', '    pass_back()', 'else:', '    sort_by_color()'])], ket: 'thua' }
   ],
   'che-doi-nam-cham.6': [
     { moTa: 'R1 quay rồi mới hút: giao chậm một nhịp', doi: [['turn_left()', 'magnet_n()', 'wait()', 'turn_left()', 'magnet_off()', 'wait()', 'turn_left()', 'move()'], null], ket: 'thua' },
@@ -158,7 +158,7 @@ const LOI_SAI = {
     { moTa: 'hold_on viết bằng while (sân gỗ quá nhịp)', doi: [null, null], ham: [HOLD_WHILE], ket: 'thua' },
     { moTa: 'R2 bỏ plan_b', doi: [null, LAP(2, ['hold_on(3)'].concat(R2_BA_MAU))], ket: 'thua' },
     { moTa: 'plan_b luôn fetch_back: thua hay mất sao', doi: [null, null], ham: [H('plan_b', [], ['fetch_back()'])], ket: 'chan' },
-    { moTa: 'R2 không xét xanh lá', doi: [null, LAP(2, ['hold_on(3)', 'plan_b()', 'sort_color()'])], ket: 'thua' },
+    { moTa: 'R2 không xét xanh lá', doi: [null, LAP(2, ['hold_on(3)', 'plan_b()', 'sort_by_color()'])], ket: 'thua' },
     { moTa: 'R1 luôn tránh, R2 làm hết (vật sau rào)', doi: [['turn_left()', 'move()'], null], ket: 'thua' },
     { moTa: 'R1 không tránh khi gặp gỗ', doi: [LAP(2, ['hand_off()', 'u_turn()']), null], ket: 'thua' }
   ]
@@ -167,7 +167,7 @@ const LOI_SAI = {
 console.log('— đội và cấu trúc');
 kiem('20 màn: 10 doi-nam-cham + 10 che-doi-nam-cham', ds1.length === 10 && ds2.length === 10);
 kiem('R1 là nam châm + cảm biến từ, không đọc màu', tatCa.every((m) => m.doi[0].robot.tay === 'nam-cham' && m.doi[0].hamGoc.includes('front_metal') && m.doi[0].hamGoc.includes('front_pole') && !m.doi[0].hamGoc.includes('color')));
-kiem('R2 là tay kẹp + camera, không có nam châm', tatCa.every((m) => m.doi[1].robot.tay === 'kep' && m.doi[1].robot.camBien.some((c) => c.ma === 'camera') && m.doi[1].hamGoc.includes('color') && !m.doi[1].hamGoc.some((h) => /^magnet/.test(h))));
+kiem('R2 là tay kẹp + camera bốn hướng (30/10: camera trước cũ đổi thành camera-4, color("front")), không có nam châm', tatCa.every((m) => m.doi[1].robot.tay === 'kep' && m.doi[1].robot.camBien.some((c) => c.ma === 'camera-4') && m.doi[1].hamGoc.includes('color') && !m.doi[1].hamGoc.some((h) => /^magnet/.test(h))));
 const KHOA = { 'doi-nam-cham.2': 0, 'doi-nam-cham.4': 0, 'doi-nam-cham.6': 0, 'doi-nam-cham.8': 1, 'che-doi-nam-cham.3': 0, 'che-doi-nam-cham.6': 1, 'che-doi-nam-cham.7': 1, 'che-doi-nam-cham.8': 0, 'che-doi-nam-cham.9': 1 };
 kiem('robot tự động khóa đúng các màn đã định', tatCa.every((m) => J(m.doi.map((d, i) => !!d.coDinh)) === J([KHOA[m.ma] === 0, KHOA[m.ma] === 1])),
   tatCa.filter((m) => m.doi.some((d) => d.coDinh)).map((m) => m.ma).join(', '));
@@ -202,7 +202,7 @@ for (const m of [man('doi-nam-cham.10'), man('che-doi-nam-cham.10')]) {
 }
 {
   const m = man('doi-nam-cham.10');
-  const r = cham(m, [m.loiGiai.doi[0].chinh, LAP(2, CHO_MAI.concat(['sort_color()']))]);
+  const r = cham(m, [m.loiGiai.doi[0].chinh, LAP(2, CHO_MAI.concat(['sort_by_color()']))]);
   const coGo = m.vatChat.map((sc) => sc.join('').includes('g'));
   kiem('doi-nam-cham.10: chờ mãi thì sân có gỗ chạy quá nhịp, sân không gỗ vẫn thắng', !r.thang && r.theoSan.every((s, i) => s.thang === !coGo[i]) &&
     r.theoSan.filter((s, i) => coGo[i]).every((s) => s.chanDoan.some((c) => /qua-nhieu-nhip|vong-vo-han/.test(c.ma))));

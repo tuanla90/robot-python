@@ -1081,11 +1081,11 @@
     // gói 3, 5, 7 (user 30/10 chọn A): màn cũ dạy cảm biến bụng / camera trước / look() / sạc tự động trên P dời sang mùa 5 (gói mau, flycam cũ và MUA_4_CU
     // bên dưới), ba gói dựng bằng màn mới theo luật mới (camera bốn hướng, đáp đất sạc, camera nhìn "here").
     { ma: 'cam-bon', ten: 'Camera bốn hướng', loai: 'bo-phan', hinh: 'mau',
-      chuong: [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', []]] },
+      chuong: [['cam-bon', day('cam-bon', [1, 2, 3, 4, 5, 8, 6, 7, 9, 10])], ['che-cam-bon', day('che-cam-bon', [2, 9, 1, 3, 4, 5, 6, 8, 7, 10])]] },
     { ma: 'pho-mau', ten: 'Phố màu',
       chuong: [['pho-mau', []], ['che-pho-mau', []]] },
     { ma: 'tram-sac', ten: 'Trạm sạc', loai: 'bo-phan', hinh: 'drone',
-      chuong: [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 3, 4, 6, 7])]] },
+      chuong: [['tram-sac', []], ['che-drone', day('che-drone', [1, 2, 11, 4, 13, 15, 12, 7, 16, 14])]] },
     { ma: 'net-lien', ten: 'Nét liền', loai: 'bo-phan', hinh: 'may-son',
       chuong: [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]] },
     { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'flycam',
@@ -1097,11 +1097,11 @@
     { ma: 'drone-ke-vach', ten: 'Drone kẻ vạch R1', loai: 'thu-thach',
       chuong: [['tong-hop-4', day('che-may-son', [7, 8])], ['trum-mua-4', []]] }
   ];
-  // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
+  // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống), cùng che-drone.3 / .6 (nhảy đường cong gói 5): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
   // flycam.6, doi-drone.6, .10, che-doi-drone.10 còn dùng recharge() mà drone.5 tạo. Dựng lại khi tới mùa có đội drone.
   var MUA_4_CU = [
     { ma: 'drone-sac-cu', ten: 'Drone sạc tự động',
-      chuong: [['drone-sac-cu', day('drone', [4, 5, 6, 10])], ['che-drone-sac-cu', day('che-drone', [5, 8, 9, 10])]] }
+      chuong: [['drone-sac-cu', day('drone', [4, 5, 6, 10])], ['che-drone-sac-cu', day('che-drone', [3, 5, 6, 8, 9, 10])]] }
   ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
   var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Chấm từng ô', 'che-list': 'Chế lệnh: đi theo danh sách',
@@ -1150,6 +1150,22 @@
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    // Gói 8 Đội chia hàng (30/10, phương án A): camera trước cũ (color() đọc ô trước mặt) thành camera bốn hướng mùa 4: mọi chữ trong màn đổi color() → color("front"),
+    // hàm cốt truyện sort_color (che-mau.6, nay ở mùa 5) → sort_by_color (gói 3 che-cam-bon tạo, cùng việc); robot gắn camera-4 thay camera. Gói đội mùa 5 vẫn dùng sort_color cũ.
+    function doiChu(x) {
+      if (typeof x === 'string') return x.replace(/sort_color/g, 'sort_by_color').replace(/\bcolor\(\)/g, 'color("front")');
+      if (Array.isArray(x)) return x.map(doiChu);
+      if (x && typeof x === 'object') { Object.keys(x).forEach(function (k) { x[k] = doiChu(x[k]); }); return x; }
+      return x;
+    }
+    function doiCam(r) { if (r && r.camBien) r.camBien = r.camBien.map(function (c) { return c && c.ma === 'camera' ? { ma: 'camera-4', o: c.o } : c; }); }
+    M.danhSach.forEach(function (m) {
+      if (m.chuong !== 'doi-nam-cham' && m.chuong !== 'che-doi-nam-cham') return;
+      ['deBai', 'veMaMau', 'goiY', 'maMau', 'loiGiai', 'loiGiaiKhac', 'loiSai', 'congThucKhac', 'hamCuaEmCan', 'doi'].forEach(function (k) { if (m[k] !== undefined) m[k] = doiChu(m[k]); });
+      doiCam(m.robot);
+      (m.doi || []).forEach(function (d) { doiCam(d.robot); if (d.camBien) doiCam(d); });
+      if (m.camBien) doiCam(m);
+    });
     // Màn cũ dời sang mùa 5 (MUA_4_CU): chương chứa đứng trước gói cũ đầu tiên có flycam / mau (thứ tự lộ trình), gói vào TT.goi như gói mùa 4 cũ (vòng dưới dời sang mùa 5).
     MUA_4_CU.forEach(function (g) {
       var chCu = g.chuong.map(function (c) { dungChuong(c[0], c[1]); return c[0]; });

@@ -41,6 +41,10 @@
   // sân theo vạch xanh (chương 1 màn 6, 9): xe đi theo ô xanh lá, gặp góc thì rẽ; ô cờ tô xanh bằng lớp màu để camera thấy
   var SAN_THEO = [['#####', '##ggF', '##g##', '.gg##', '#####'], ['#####', '.gg##', '##g##', '##ggF', '#####']];
   var MAU_THEO = [['.....', '....g', '.....', '.....', '.....'], ['.....', '.....', '.....', '....g', '.....']];
+  // ba sân vạch xanh dài kết thúc ở ô cờ vàng (chương 1 trùm, chương 2 màn sửa walk_green)
+  var SAN_DAI = [['.gg##', '##g##', '##ggg', '####g', '####F'], ['#####', '.ggg#', '###g#', '#Fgg#', '#####'], ['.g###', '#gg##', '##g##', '##gg#', '###F#']];
+  var MAU_DAI = [['.....', '.....', '.....', '.....', '....y'], ['.....', '.....', '.....', '.y...', '.....'], ['.....', '.....', '.....', '.....', '...y.']];
+  var BD_DAI = [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 1, huong: 1 }, { x: 0, y: 0, huong: 1 }];
   var SAN_NGA_TU = [['##F##', '##g##', '.r.b.', '#####'], ['##.##', '##r##', 'Fg.b.', '#####'], ['##.##', '##b##', '.r.gF', '#####']];
   var SAN_VANG = [['####F', '#ryb.', '.....', '#gyb#'], ['####.', '#rgbF', '.....', '#byr#']];
   // thân hàm của chương che-cam-bon
@@ -51,6 +55,7 @@
   var T_BUOC_XANH = THEO_XANH.map(function (s) { return s.slice(4); });
   var WALK_SAI = ['if color("front") == "green":', '    move()', 'elif color("right") == "green":', '    turn_left()', 'else:', '    turn_right()'];
   var T_NGA_TU = ['if color("front") == "green":', '    forward(2)', 'elif color("left") == "green":', '    turn_left()', '    forward(2)', 'else:', '    turn_right()', '    forward(2)'];
+  var C_DAI = ['for i in range(8):', '    walk_green()'];
   var T_XEP = ['c = color("front")', 'pick()', 'if c == "red":', '    turn_right()', '    drop()', '    turn_left()', 'else:', '    turn_left()', '    drop()', '    turn_right()'];
 
   var DS = [
@@ -198,9 +203,8 @@
       so: 10, ten: 'Đường xanh tới ô vàng', hang: 'trum', hamCuaEmCan: ['move', 'turn_left', 'turn_right'],
       deBai: 'Vạch xanh lá dài, rẽ nhiều góc, kết thúc ở ô cờ vàng. Không biết trước bao nhiêu bước: dùng while, đi theo vạch xanh cho tới khi ô phía trước là ô vàng, rồi vào cờ. Ba sân.',
       veMaMau: 'Chương trình có sẵn mới đi theo vạch được tám bước. Đổi vòng for thành while dừng trước ô vàng.',
-      san: [['.gg##', '##g##', '##ggg', '####g', '####F'], ['#####', '.ggg#', '###g#', '#Fgg#', '#####'], ['.g###', '#gg##', '##g##', '##gg#', '###F#']],
-      mau: [['.....', '.....', '.....', '.....', '....y'], ['.....', '.....', '.....', '.y...', '.....'], ['.....', '.....', '.....', '.....', '...y.']],
-      batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 1, huong: 1 }, { x: 0, y: 0, huong: 1 }],
+      san: SAN_DAI, mau: MAU_DAI,
+      batDau: BD_DAI,
       maMau: bai(['for i in range(8):'].concat(THEO_XANH)),
       loiGiai: bai(['while color("front") != "yellow":'].concat(THEO_XANH, ['move()'])),
       sao: { o: 15, nhip: 12 },
@@ -219,7 +223,7 @@
       san: SAN_NGA_TU, batDau: { x: 2, y: 2, huong: 0 },
       maMau: bai(['turn_green()', 'forward(2)']),
       loiGiai: bai(['turn_green()', 'forward(2)'], { hamCuaEmMoi: [H('turn_green', [], T_RE_XANH)] }),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 15, nhip: 3 },
       congThucKhac: [{ moTa: 'Hỏi bên phải trước', hamCuaEmMoi: [H('turn_green', [], ['if color("right") == "green":', '    turn_right()', 'elif color("left") == "green":', '    turn_left()'])] }],
       loiSai: [
         { moTa: 'Gọi turn_green() mà chưa chế hàm', baiLam: bai(['turn_green()', 'forward(2)']), phaiCoMa: ['ham-chua-co'] },
@@ -237,11 +241,11 @@
       bongMo: [{ x: 3, y: 0, huong: 1 }, { x: 1, y: 0, huong: 1 }],
       maMau: bai(['go_to("red")']),
       loiGiai: bai(['go_to("red")'], { hamCuaEmMoi: [H('go_to', ['col'], T_TOI_MAU)] }),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 6, nhip: 3 },
       congThucKhac: [{ moTa: 'Viết bằng not và ==', hamCuaEmMoi: [H('go_to', ['col'], ['while not color("front") == col:', '    move()'])] }],
       loiSai: [
         { moTa: 'Gọi go_to mà chưa chế hàm', baiLam: bai(['go_to("red")']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'So với "red" viết sẵn: vẫn đúng ở màn này nhưng không dùng đối số', baiLam: bai(['go_to("red")']), hamCuaEmMoi: [H('go_to', ['col'], ['while color("front") != "red":', '    move()'])], phaiCoMa: [] }
+        { moTa: 'Điều kiện ngược (==): xe không chạy ô nào', baiLam: bai(['go_to("red")']), hamCuaEmMoi: [H('go_to', ['col'], ['while color("front") == col:', '    move()'])], phaiCoMa: [] }
       ],
       goiY: ['Còn chạy khi màu phía trước KHÁC col.', 'Chương trình chính đưa "red" vào col.']
     }),
@@ -253,7 +257,7 @@
       san: SAN_VANG, batDau: { x: 0, y: 2, huong: 1 },
       maMau: bai(C_VANG),
       loiGiai: bai(C_VANG, { hamCuaEmMoi: [H('yellow_sides', ['a'], T_VANG)] }),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 17, nhip: 7 },
       congThucKhac: [{ moTa: 'Ghi luôn chữ "yellow" vào danh sách', hamCuaEmMoi: [H('yellow_sides', ['a'], ['if color("left") == "yellow":', '    a.append("yellow")', 'if color("right") == "yellow":', '    a.append("yellow")'])] }],
       loiSai: [
         { moTa: 'Gọi yellow_sides mà chưa chế hàm', baiLam: bai(C_VANG), phaiCoMa: ['ham-chua-co'] },
@@ -270,7 +274,7 @@
       batDau: [{ x: 0, y: 3, huong: 1 }, { x: 0, y: 1, huong: 1 }],
       maMau: bai(['for i in range(8):', '    green_step()']),
       loiGiai: bai(['for i in range(8):', '    green_step()'], { hamCuaEmMoi: [H('green_step', [], T_BUOC_XANH)] }),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 15, nhip: 8 },
       congThucKhac: [{ moTa: 'Hỏi rẽ phải trước, rẽ trái là trường hợp còn lại', hamCuaEmMoi: [H('green_step', [], ['if color("front") == "green":', '    move()', 'elif color("right") == "green":', '    turn_right()', 'else:', '    turn_left()'])] }],
       loiSai: [
         { moTa: 'Gọi green_step() mà chưa chế hàm', baiLam: bai(['for i in range(8):', '    green_step()']), phaiCoMa: ['ham-chua-co'] },
@@ -286,7 +290,7 @@
       san: SAN_NGA_TU, batDau: { x: 2, y: 2, huong: 0 },
       maMau: bai(['cross4()']),
       loiGiai: bai(['cross4()'], { hamCuaEmMoi: [H('cross4', [], T_NGA_TU)] }),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 18, nhip: 3 },
       congThucKhac: [{ moTa: 'Dùng turn_green() em đã chế rồi tiến hai ô', hamCuaEmMoi: [H('cross4', [], ['turn_green()', 'forward(2)'])] }],
       loiSai: [
         { moTa: 'Gọi cross4() mà chưa chế hàm', baiLam: bai(['cross4()']), phaiCoMa: ['ham-chua-co'] },
@@ -300,13 +304,13 @@
       deBai: 'Xe gắn thêm tay kẹp. Chế sort_by_color(): đọc màu hộp trước mặt, gắp lên; hộp đỏ đặt sang ô bên phải xe, hộp khác đặt sang ô bên trái; xe quay về hướng cũ. ' +
         'Chương trình chính đã khóa. Hộp mờ chỉ chỗ đặt; hai sân, hộp hai màu.',
       veMaMau: 'Tạo sort_by_color() không có đối số. Đọc màu TRƯỚC khi gắp: gắp lên rồi thì ô trước mặt trống.',
-      san: [['.....', '..o..', '.....'], ['.....', '..o..', '.....']],
-      vatMau: [['.....', '..r..', '.....'], ['.....', '..b..', '.....']],
-      batDau: { x: 2, y: 2, huong: 0 },
-      bongMo: [{ x: 2, y: 2, huong: 0, vat: [{ x: 3, y: 2, mau: 'red' }] }, { x: 2, y: 2, huong: 0, vat: [{ x: 1, y: 2, mau: 'blue' }] }],
+      san: [['...', '.o.', '...'], ['...', '.o.', '...']],
+      vatMau: [['...', '.r.', '...'], ['...', '.b.', '...']],
+      batDau: { x: 1, y: 2, huong: 0 },
+      bongMo: [{ x: 1, y: 2, huong: 0, vat: [{ x: 2, y: 2, mau: 'red' }] }, { x: 1, y: 2, huong: 0, vat: [{ x: 0, y: 2, mau: 'blue' }] }],
       maMau: bai(['sort_by_color()']),
       loiGiai: bai(['sort_by_color()'], { hamCuaEmMoi: [H('sort_by_color', [], T_XEP)] }),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 25, nhip: 6 },
       congThucKhac: [{ moTa: 'Hỏi màu khác đỏ trước', hamCuaEmMoi: [H('sort_by_color', [], ['c = color("front")', 'pick()', 'if c != "red":', '    turn_left()', '    drop()', '    turn_right()', 'else:', '    turn_right()', '    drop()', '    turn_left()'])] }],
       loiSai: [
         { moTa: 'Gọi sort_by_color() mà chưa chế hàm', baiLam: bai(['sort_by_color()']), phaiCoMa: ['ham-chua-co'] },
@@ -321,31 +325,31 @@
       veMaMau: 'Chạy thử, xem xe rẽ sai ở góc nào. Mở walk_green() trong Xưởng hàm, đổi chữ hướng trong color(…).',
       san: SAN_THEO, mau: MAU_THEO,
       batDau: [{ x: 0, y: 3, huong: 1 }, { x: 0, y: 1, huong: 1 }],
-      maMau: bai(['for i in range(8):', '    walk_green()'], { hamCuaMan: [H('walk_green', [], WALK_SAI)] }),
-      loiGiai: bai(['for i in range(8):', '    walk_green()'], { hamCuaMan: [H('walk_green', [], T_BUOC_XANH)] }),
-      sao: { o: 99, nhip: 99 },
+      maMau: bai(C_DAI, { hamCuaMan: [H('walk_green', [], WALK_SAI)] }),
+      loiGiai: bai(C_DAI, { hamCuaMan: [H('walk_green', [], T_BUOC_XANH)] }),
+      sao: { o: 15, nhip: 8 },
       loiSai: [
-        { moTa: 'Không sửa: hỏi bên phải mà rẽ trái', baiLam: bai(['for i in range(8):', '    walk_green()'], { hamCuaMan: [H('walk_green', [], WALK_SAI)] }), phaiCoMa: [] }
+        { moTa: 'Không sửa: hỏi bên phải mà rẽ trái', baiLam: bai(C_DAI, { hamCuaMan: [H('walk_green', [], WALK_SAI)] }), phaiCoMa: [] }
       ],
       goiY: ['Câu hỏi và cú rẽ phải cùng một phía.', 'Chỉ cần đổi "right" thành "left".']
     }),
 
     manChe({
-      so: 8, ten: 'Xếp hai hộp', hang: 'bien-the', kep: true, mucTieu: 'bong-mo', chinhCoDinh: false, hamCuaEmCan: ['sort_by_color', 'move'],
-      deBai: 'Hai hộp xếp hàng dọc trước mũi xe. Xếp hộp gần trước, rồi tiến một ô, xếp hộp xa. Tự viết chương trình chính bằng sort_by_color() em đã chế. Hai sân, màu hộp khác nhau.',
-      veMaMau: 'Chương trình có sẵn mới xếp hộp gần. Viết tiếp cho hộp xa.',
-      san: [['.....', '..o..', '..o..', '.....'], ['.....', '..o..', '..o..', '.....']],
-      vatMau: [['.....', '..b..', '..r..', '.....'], ['.....', '..r..', '..r..', '.....']],
-      batDau: { x: 2, y: 3, huong: 0 },
-      bongMo: [{ x: 2, y: 2, huong: 0, vat: [{ x: 3, y: 3, mau: 'red' }, { x: 1, y: 2, mau: 'blue' }] }, { x: 2, y: 2, huong: 0, vat: [{ x: 3, y: 3, mau: 'red' }, { x: 3, y: 2, mau: 'red' }] }],
+      so: 8, ten: 'Chạy tới hộp rồi xếp', hang: 'bien-the', kep: true, mucTieu: 'bong-mo', chinhCoDinh: false, hamCuaEmCan: ['sort_by_color', 'move'],
+      deBai: 'Hộp nằm phía trước, xa gần mỗi sân một khác. Chạy thẳng cho tới khi hộp ở ngay trước mũi xe, rồi xếp hộp bằng sort_by_color(). Tự viết chương trình chính. Hai sân, màu hộp khác nhau.',
+      veMaMau: 'Chương trình có sẵn mới xếp hộp. Thêm phần chạy tới hộp: ô phố trống có màu "none", hộp có màu.',
+      san: [['....', '...o', '....'], ['....', '..o.', '....']],
+      vatMau: [['....', '...r', '....'], ['....', '..b.', '....']],
+      batDau: { x: 0, y: 1, huong: 1 },
+      bongMo: [{ x: 2, y: 1, huong: 1, vat: [{ x: 2, y: 2, mau: 'red' }] }, { x: 1, y: 1, huong: 1, vat: [{ x: 1, y: 0, mau: 'blue' }] }],
       maMau: bai(['sort_by_color()']),
-      loiGiai: bai(['sort_by_color()', 'move()', 'sort_by_color()']),
-      sao: { o: 99, nhip: 99 },
+      loiGiai: bai(['while color("front") == "none":', '    move()', 'sort_by_color()']),
+      sao: { o: 30, nhip: 8 },
       loiSai: [
-        { moTa: 'Chỉ xếp hộp gần', baiLam: bai(['sort_by_color()']), phaiCoMa: [] },
-        { moTa: 'Quên tiến một ô: hộp xa còn cách một ô, gắp hụt', baiLam: bai(['sort_by_color()', 'sort_by_color()']), phaiCoMa: [] }
+        { moTa: 'Xếp ngay: hộp còn xa, gắp hụt', baiLam: bai(['sort_by_color()']), phaiCoMa: [] },
+        { moTa: 'Chạy cố định một ô: sân thứ nhất hộp còn xa, gắp hụt', baiLam: bai(['move()', 'sort_by_color()']), phaiCoMa: [] }
       ],
-      goiY: ['Xếp xong hộp gần, ô trước mặt trống: tiến một ô là tới sát hộp xa.', 'Xe mờ đứng ở chỗ xếp hộp xa.']
+      goiY: ['Còn chạy khi ô phía trước trống: color("front") == "none".', 'Dừng rồi thì hộp nằm ngay trước mũi xe.']
     }),
 
     manChe({
@@ -357,7 +361,7 @@
       bongMo: [{ x: 4, y: 0, huong: 1 }, { x: 2, y: 0, huong: 1 }],
       maMau: bai(['go_until("yellow")'], { hamCuaMan: [H('go_until', ['col'], ['while color("front") == col:', '    move()'])] }),
       loiGiai: bai(['go_until("yellow")'], { hamCuaMan: [H('go_until', ['col'], T_TOI_MAU)] }),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 6, nhip: 4 },
       loiSai: [
         { moTa: 'Không sửa: xe đứng yên', baiLam: bai(['go_until("yellow")'], { hamCuaMan: [H('go_until', ['col'], ['while color("front") == col:', '    move()'])] }), phaiCoMa: [] }
       ],
@@ -374,7 +378,7 @@
       bongMo: [{ x: 3, y: 1, huong: 1, vat: [{ x: 3, y: 2, mau: 'red' }] }, { x: 3, y: 3, huong: 1, vat: [{ x: 3, y: 2, mau: 'blue' }] }],
       maMau: bai(['for i in range(7):', '    green_step()']),
       loiGiai: bai(['for i in range(7):', '    green_step()', 'sort_by_color()']),
-      sao: { o: 99, nhip: 99 },
+      sao: { o: 36, nhip: 13 },
       loiSai: [
         { moTa: 'Đi tám bước: bước cuối đâm vào hộp', baiLam: bai(['for i in range(8):', '    green_step()', 'sort_by_color()']), phaiCoMa: [] },
         { moTa: 'Không xếp hộp', baiLam: bai(['for i in range(7):', '    green_step()']), phaiCoMa: [] }
