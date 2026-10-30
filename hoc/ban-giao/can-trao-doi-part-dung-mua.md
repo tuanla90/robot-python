@@ -39,10 +39,25 @@
    cảm biến). Bộ dò thân cố định: thân húc (dam-tuong) rồi vẫn tới cờ không tính là né (lõi hai robot không có đâm-là-thua). Gói 10 CHƯA dựng lại: còn 3 màn đội
    (tong-hop-2.8, .9, trum-mua-2.5), beSung, một sân, gọi hàm Bệ vòi xích qua capCu (CAP_HAM_CU giữ tạm); kiem-trum-mua-2 đỏ 1 mục (điều mới); 'mua-2' CHƯA vào XONG.
 
+10. **Mùa 2 gói 10 (PDM2c2, 31/10, phương án B của người giao):** 20 màn viết lại, MỘT robot xe cứu hỏa đầy đủ (xích + vòi + hồng ngoại, xichDay, lucBan), không beSung:
+   phun mạnh thì xe giật như mọi xe, `fence_shot()` của Góc kho cũ bù cú giật (ôn gói 8). Mọi màn 2–3 "ngày làm việc" (lửa to nhỏ / xa gần, van, thùng, trạm đổi chỗ),
+   lời giải đọc cảm biến thắng 3 sao mọi ngày, mỗi màn ≥ 1 lời sai VIẾT CỨNG (`loiSai.cung`) thua ở ≥ 1 ngày. Ba màn đội cũ thành màn một robot giữ mã: tong-hop-2.8
+   "Thùng qua ngã tư" (băng chở thùng cắt ngang hành lang, `step_clear()`), tong-hop-2.9 "Van sau rào" (hàng rào gói 8, `go_safe(1)` tìm trạm), trum-mua-2.5 "Hàm box_spray()"
+   (thùng trên băng chắn tia: `while distance() < 2: wait()`). Hàm Bệ vòi xích bỏ hẳn (CAP_HAM_CU xoá); capCu vẫn còn cho màn ẩn. 'mua-2' vào XONG của kiem-part-mua (ĐẠT).
+   **Khác mùa 1 một điểm:** nhịp sao của màn thường tính TỔNG mọi ngày (không theo ngày dài nhất như PDM1): bộ dò dayChung chứng minh với ngưỡng theo ngày dài nhất thì
+   dãy cố định viết cho ngày khó nhất (phun thừa, đi thừa húc tường) vẫn 3 sao ở mọi ngày (tong-hop-2.2, .4, .6, .8, trum-mua-2.5, .8 đều có dãy như thế); tính tổng
+   thì nhịp phí ở ngày dễ làm mất sao. Recall gói 10: gói 8 = hàm Góc kho cũ hay sân có rào / thùng gỗ / nút đè; gói 9 Đội = hàm gói Đội hay "chờ bằng cảm biến"
+   (while distance()/warm(): wait()), ngưỡng 2 lần (như PDM1 hạ ngưỡng gói Đội mùa 1 vì gói 10 không còn đội). Bộ dò gói 9/10 (do-duong-be-sung) nay biết thùng đặt sẵn
+   `man.thungThem` (trước bỏ qua: thùng trên băng không có trong mô hình nên dãy cố định "thắng" giả).
+
 ## Câu hỏi chờ user
-- (PDM2b, đã làm ở PDM2c theo phương án A) Bệ vòi xích cất ra mùa ẩn; gói 10 nay mượn hàm Bệ vòi xích qua `capCu` (CAP_HAM_CU) tới khi dựng lại gói 10.
-- (PDM2c) Gói 10 dựng lại (một robot, nhiều sân): ba màn đội cũ (tong-hop-2.8, .9, trum-mua-2.5) bỏ hẳn hay chuyển ý sang gói 9 (gói 9 đã đủ 20 màn)? Chương tong-hop-2
-  "Dập lửa" (gói lửa 30/10) giữ ý lửa cho nhiều sân? Hàm Bệ vòi xích (go_spray, spray_left, valve_left, push_spray…) gói 10 đang gọi: dạy lại trong gói 10 hay bỏ?
+- (PDM2c2) Mùa 1 gói 10 (PDM1) tính nhịp màn thường theo ngày dài nhất; mùa 2 gói 10 tính tổng (lý do ở mục 10). Có muốn mùa 1 đổi theo cho nhất quán (và chạy lại
+  bộ dò dayChung theo tổng ở mùa 1 — có thể lòi dãy cố định ở vài màn mùa 1)?
+- (PDM2c2) Lời sai viết cứng chỉ cần thua ở ≥ 1 ngày: ở vài màn nó thua cả hai ngày (tong-hop-2.2, trum-mua-2.4…), vì ngày còn lại cũng "lệch" một ô / một ngọn.
+  Có cần luật chặt hơn "lời cứng thắng ngày đầu, thua ngày sau" (dạy rõ hơn "viết cho một ngày thì sai ngày khác") không? Máy kiểm hiện chỉ đòi cung: true + thua.
+- (PDM2c2) Gói 10 không còn đội nên gói 9 Đội chỉ được ôn 2 lần (tong-hop-2.8 step_clear, trum-mua-2.5 chờ bằng cảm biến). Chấp nhận như mùa 1, hay thêm một màn chờ nữa?
+- (PDM2b, đã làm ở PDM2c theo phương án A) Bệ vòi xích cất ra mùa ẩn; (PDM2c2) gói 10 không còn mượn hàm của nó: CAP_HAM_CU đã xoá, ngân hàng + phim be-sung giữ.
+- (PDM2c, đã quyết ở PDM2c2: phương án B) Gói 10 dựng lại một robot nhiều sân, giữ khung Dập lửa; ba màn đội cũ thành màn một robot giữ mã; hàm Bệ vòi xích bỏ.
 - (PDM2c) Lõi hai robot không có cờ đâm-là-thua (cfg.damLaThua chỉ dừng khi một robot; thử ở doi-mua-2.9: húc vẫn chạy tiếp): có muốn lõi áp cho màn đội không?
   Hiện bộ dò gói Đội coi thân húc rồi vẫn tới (1 sao, chẩn đoán dam-tuong) là không né được cảm biến.
 - (PDM2c) Cửa đang đổi mà có xe đứng trên thì giữ mở (cua-ket, lõi): phun đúng nhịp R2 đứng trên cửa vào là "thoát" bài chờ bạn; các màn gói 9 đã dời chỗ xuất phát R2
