@@ -223,7 +223,7 @@
     man({
       so: 10, ten: 'Trùm: kho nhiều cửa', huyHieu: { ma: 'nut-de', ten: 'Huy hiệu Nút đè' },
       hamCuaEmCan: ['go_wall', 'pick', 'turn_right', 'drop', 'turn_left', 'move'],
-      nhipTheo: 'tong',
+      nhipTheo: 'max',       // SM1-A lượt 2 (đề xuất B): nhịp theo kho dài nhất (27), không cộng ba kho (78 = 4 lần màn 9): trùm không quá 2 lần màn 9
       noi: [
         [{ nut: { x: 3, y: 2 }, cua: [{ x: 5, y: 1 }, { x: 2, y: 1 }] }, { nut: { x: 7, y: 2 }, cua: [{ x: 9, y: 1 }] }],
         [{ nut: { x: 4, y: 2 }, cua: [{ x: 6, y: 1 }, { x: 3, y: 1 }] }, { nut: { x: 7, y: 2 }, cua: [{ x: 9, y: 1 }] }],
@@ -238,7 +238,7 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: { chinh: ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()'] },
-      sao: { o: 28, nhip: 78 },
+      sao: { o: 28, nhip: 27 },
       loiGiai: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()', 'turn_right()', 'go_wall()']) },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: FOR(2, ['go_wall()', 'pick()', 'turn_right()', 'drop()', 'turn_left()']).concat(['go_wall()', '# rẽ xuống cờ', 'turn_right()', 'go_wall()']) } },
       loiSai: [

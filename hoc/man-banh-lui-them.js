@@ -8,8 +8,9 @@
    - 4 màn cho chương `che-banh-lui` "Hàm có lùi" (mã che-banh-lui.1 … .4): kéo thùng khỏi ngõ cụt (viết thân hàm của màn), đặt thùng lên nút đè
      rồi lùi qua cửa, "đi tới tường rồi lùi một ô" (hàm của màn gọi ở hai khúc dài ngắn khác nhau), sửa hàm dọn thùng thiếu back().
    - SM1-A (30/10, nghiệm thu độc lập, đề xuất 2): che-banh-lui.5 "Trùm: ba bãi đỗ" thay che-xe.10 làm trùm chương che-banh-lui (huy hiệu che-xe):
-     ba bãi đỗ nối thành vòng xoắn, mỗi bãi một hành lang dài ngắn khác nhau, chỗ đỗ là ngách bên phải ngay trước ô cuối; thân hàm dock() của màn
-     = go_wall() (while), back() (lùi), park() (hàm em chế ở che-xe.6); chương trình chính khóa gọi dock() ba lần. Đếm cứng đúng một bãi thì hụt bãi
+     ba bãi đỗ nối thành vòng xoắn, mỗi bãi một hành lang dài ngắn khác nhau, chỗ đỗ là ngách bên phải ngay trước ô cuối; thân hàm park_in() của màn
+     = go_wall() (while), back() (lùi), park() (hàm em chế ở che-xe.6); chương trình chính khóa gọi park_in() ba lần (SM1-A lượt 2: đổi tên từ dock(),
+     trùng hàm cốt truyện dock của che-drone.11 mùa 4: người chơi qua mùa 4 chơi lại thấy máy chấm báo hàm dock() của em bị thay). Đếm cứng đúng một bãi thì hụt bãi
      khác; đếm dư (húc tường) vẫn tới nhưng vượt ngưỡng nhịp (nhịp theo bãi dài nhất). che-xe.10 lùi về hàng luyện (sau che-lap.7, đường cong dòng 8 → 9).
    Mã là mã MỚI (không trùng màn nào trong ngân hàng, kể cả màn đã cất); vị trí hiển thị (so, hang) do lo-trinh-hoc.js đặt bằng dungChuong.
 
@@ -56,7 +57,7 @@
 
   var LG_TRUM = ['go_wall()'].concat(FOR(2, ['back()']), ['turn_right()', 'if not front_clear():', '    u_turn()', 'go_wall()']);
   // SM1-A: bãi đỗ xoắn (a, b, c) = số ô đi của ba hành lang: sang phải, lên, sang trái. Chỗ đỗ là ngách bên phải xe, ngay trước ô cuối mỗi hành lang.
-  // Xe xuất phát (1, y0) nhìn sang phải; sau dock() xe nằm trong ngách nhìn ra hành lang, move() đưa xe về hành lang, hành lang kế bắt đầu ngay đó.
+  // Xe xuất phát (1, y0) nhìn sang phải; sau park_in() xe nằm trong ngách nhìn ra hành lang, move() đưa xe về hành lang, hành lang kế bắt đầu ngay đó.
   function baiDo(a, b, c) {
     var Wd = a + 3, Hd = b + 4, y0 = b + 1, g = [];
     for (var y = 0; y < Hd; y++) { g.push([]); for (var x = 0; x < Wd; x++) g[y].push('#'); }
@@ -70,9 +71,9 @@
     return { san: g.map(function (r) { return r.join(''); }), batDau: { x: 1, y: y0, huong: 1 }, bongMo: { x: a - c + 1, y: y0 - b, huong: 2 } };
   }
   var BAI_DO = [baiDo(4, 3, 3), baiDo(5, 4, 3), baiDo(4, 6, 3)];      // 21 / 23 / 24 nhịp: ba bãi khác nhau, nhịp màn theo bãi dài nhất
-  var C_DOCK = ['dock()', 'move()', 'dock()', 'move()', 'dock()'];
+  var C_DOCK = ['park_in()', 'move()', 'park_in()', 'move()', 'park_in()'];
   var T_DOCK = ['go_wall()', 'back()', 'park()'];
-  function baiDock(than) { return { chinh: C_DOCK.slice(), hamCuaMan: [H('dock', than)] }; }
+  function baiDock(than) { return { chinh: C_DOCK.slice(), hamCuaMan: [H('park_in', than)] }; }
   // HD3 (29/10, user: "show don't tell", phương án 3a-A của HD2): màn TRÌNH DIỄN lệnh lùi, đứng ĐẦU chương banh-lui (trước che-xe.4 chế back()).
   // Chương trình khoá (chiChay), chỉ lệnh gốc: hai bánh cùng quay lùi trong một nhịp, hai lần. Không hàm của em, không cờ damLaThua.
   var LUI_HAI_O = ['left_back()', 'right_back()', 'wait()', 'left_back()', 'right_back()', 'wait()'];
@@ -154,6 +155,7 @@
 
     man({
       chuong: 'banh-lui', so: 4, ten: 'Ra khỏi ngõ cụt', mucTieu: 'bong-mo', nhipTheoLoiGiai: true,
+      nhipTheo: 'max',                                      // SM1-A lượt 2 (đề xuất B): nhịp theo ngõ dài nhất (13), không cộng ba ngõ (34 = 3 lần màn 9)
       huyHieu: { ma: 'banh-lui', ten: 'Huy hiệu Bánh lùi' },
       hamCuaEmCan: ['go_wall', 'back', 'turn_right', 'u_turn', 'move'],
       deBai: 'Ba ngõ cụt dài ngắn khác nhau, trạm ◆ ở cuối ngõ. Ngã rẽ luôn cách ◆ hai ô, lúc bên phải lúc bên trái. Một chương trình phải chạm ◆, lùi ra tới ngã rẽ rồi đi hết nhánh rẽ như xe mờ, ở cả ba sân.',
@@ -170,7 +172,7 @@
         { x: 1, y: 4, huong: 3, diQua: [{ x: 5, y: 2 }] }
       ],
       maMau: { chinh: ['go_wall()'] },
-      sao: { o: 20, nhip: 34 },
+      sao: { o: 20, nhip: 13 },
       loiGiai: { chinh: LG_TRUM },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', '# lùi ra ngã rẽ'].concat(LG_TRUM.slice(1)) } },
       loiSai: [
@@ -179,6 +181,30 @@
         { moTa: 'Đếm cứng đường của sân đầu: hai ngõ sau ngắn hơn', baiLam: { chinh: FOR(6, ['move()']).concat(FOR(2, ['back()']), ['turn_right()', 'go_wall()']) }, phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['go_wall() tới ◆ ở mọi ngõ; từ ◆ lùi hai ô luôn tới ngã rẽ.', 'Quay phải rồi hỏi front_clear(): bị chắn thì u_turn() để nhìn sang trái.']
+    }),
+
+    /* ================================================================ SM1-A lượt 2 (đề xuất A2): màn mới thay che-xe.7 "Đường về" (cất) ở hàng biến thể chương banh-lui:
+       lùi + cảm biến khoảng cách (go_wall) + tay kẹp + nút đè (nhắc gói 2, 3, 4). Tự viết chương trình chính. Lùi ra khỏi ngách rồi lùi tiếp qua cửa
+       (11 nhịp); quay đầu đi tới vẫn thắng nhưng 12 nhịp: 2 sao (bộ dò khối chuẩn của máy kiểm tìm ra đường lùi qua cửa trước khi người viết nghĩ tới).
+       11 nhịp < trùm banh-lui.4 (13, theo ngõ dài nhất). */
+    man({
+      chuong: 'banh-lui', so: 6, ten: 'Lấy hàng mở cửa', tay: true, mucTieu: 'toi-co',
+      hamCuaEmCan: ['go_wall', 'pick', 'back', 'turn_left', 'drop', 'u_turn', 'turn_right'],
+      deBai: 'Thùng gỗ nằm cuối ngách hẹp trước mặt xe. Cửa C sang chỗ cờ đang đóng; nút đè M nằm trên lối đi, phía đối diện cửa. Đưa thùng lên nút cho cửa mở rồi đi tới cờ.',
+      veMaMau: 'Chương trình có sẵn đưa xe tới sát thùng và nhặt. Viết tiếp: ra khỏi ngách sao cho ít nhịp nhất, đặt thùng đúng chỗ rồi qua cửa.',
+      san: ['##########', '##########', '#####o####', '#...#.####', '#...#.####', '#...M.CF##', '##########'],
+      batDau: { x: 5, y: 5, huong: 0 },
+      maMau: { chinh: ['go_wall()', 'pick()'] },
+      sao: { o: 28, nhip: 11 },
+      loiGiai: { chinh: ['go_wall()', 'pick()', 'back()', 'back()', 'turn_left()', 'drop()', 'back()', 'back()'] },
+      loiGiaiKhac: { moTa: 'Cùng đường đi, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', 'pick()', '# lùi ra khỏi ngách', 'back()', 'back()', 'turn_left()', 'drop()', 'back()', 'back()'] } },
+      loiSai: [
+        { moTa: 'Mang thùng đi luôn, không đặt lên nút: cửa vẫn đóng', baiLam: { chinh: ['go_wall()', 'pick()', 'back()', 'back()', 'u_turn()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đặt thùng về phía cửa: thùng không nằm trên nút, cửa vẫn đóng', baiLam: { chinh: ['go_wall()', 'pick()', 'back()', 'back()', 'turn_right()', 'drop()', 'turn_left()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lùi một ô rồi đặt: còn trong ngách, bên trái là tường', baiLam: { chinh: ['go_wall()', 'pick()', 'back()', 'turn_left()', 'drop()', 'u_turn()', 'go_wall()'] }, phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'Quên nhặt thùng: tay không, đặt không có gì', baiLam: { chinh: ['go_wall()', 'back()', 'back()', 'turn_left()', 'drop()', 'u_turn()', 'go_wall()'] }, phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Lùi hai ô là ra tới lối đi, mặt xe vẫn quay lên: quay trái là nhìn thẳng vào nút M.', 'Đặt thùng xong, đuôi xe đang hướng về cửa: cứ lùi tiếp là tới cờ.']
     }),
 
     /* ================================================================ chương che-banh-lui (4 màn) */
@@ -262,14 +288,39 @@
       goiY: ['Ngách nằm thấp hơn chỗ xe nhặt thùng một ô.', 'Thêm back() ngay sau pick().']
     }),
 
+    /* ================================================================ SM1-A lượt 2 (đề xuất A2): màn mới thay che-tay.7 "Đặt lại chỗ cũ" (cất) ở hàng làm quen chương che-banh-lui:
+       hàm của màn pull_box() = go_wall() (cảm biến) + drag() (hàm em vừa chế ở che-tay.5: nhặt, lùi hai ô, đặt), kéo thùng lùi lên nút đè M cho cửa kho mở.
+       Chương trình chính khóa gọi hàm một lần; không lùi (quay đầu, tiến hai ô, quay lại, đặt) vẫn thắng nhưng 10 nhịp so với 8: 2 sao.
+       Viết thẳng pick / back / back / drop thay cho drag() cùng ô (24 so với 25) nên vẫn 3 sao: mùa 1 không ép gọi hàm bằng sao ô (xem báo cáo lượt 1 câu 2). */
+    man({
+      chuong: 'che-banh-lui', so: 6, ten: 'Kéo thùng lên nút', chinhCoDinh: true, tay: true, mucTieu: 'bong-mo',
+      hamCuaEmCan: ['go_wall', 'drag', 'pick', 'back', 'drop', 'u_turn', 'move'],
+      deBai: 'Thùng gỗ nằm cuối lối đi, nút đè M ở giữa lối, cửa kho C bên cạnh đang đóng. Viết thân hàm pull_box() của màn: đi tới sát thùng rồi kéo nó về đặt lên nút. Thùng nằm trên M thì cửa mở; xe đứng như xe mờ.',
+      veMaMau: 'Chương trình chính bị khóa, chỉ gọi pull_box(). Thân hàm mới có go_wall(): chạy thử, xem xe dừng ở đâu so với thùng và nút.',
+      san: ['#######', '#######', '####o##', '#..#.##', '#..#M##', '#..C.##', '#..####', '#######'],
+      batDau: { x: 4, y: 5, huong: 0 },
+      bongMo: { x: 4, y: 5, huong: 0, vat: [{ x: 4, y: 4 }] },
+      maMau: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()'])] },
+      sao: { o: 25, nhip: 8 },
+      loiGiai: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'drag()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', '# kéo thùng lùi hai ô lên nút', 'drag()'])] } },
+      loiSai: [
+        { moTa: 'Chỉ nhặt, chưa kéo về: thùng còn trên tay', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'pick()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Lùi một ô rồi đặt: thùng chưa tới nút', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'pick()', 'back()', 'drop()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'drag() ngay tại chỗ: trước mặt chưa có thùng', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['drag()'])] }, phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Kéo xong lại đẩy thùng lên: nút trống, cửa đóng', baiLam: { chinh: ['pull_box()'], hamCuaMan: [H('pull_box', ['go_wall()', 'drag()', 'pick()', 'move()', 'drop()'])] }, phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['Nút M cách thùng đúng hai ô. drag() em vừa chế: nhặt vật trước mặt, lùi hai ô, đặt xuống.', 'Thân hàm: go_wall() rồi drag().']
+    }),
+
     /* ================================================================ SM1-A: trùm mới của chương che-banh-lui (thay che-xe.10) */
     man({
       chuong: 'che-banh-lui', so: 5, ten: 'Trùm: ba bãi đỗ', chinhCoDinh: true, mucTieu: 'bong-mo', nhipTheoLoiGiai: true,
       nhipTheo: 'max',                                      // nhịp theo bãi dài nhất (không cộng ba bãi): trùm ≤ 2 lần màn 9, đếm dư bước thì vượt ngưỡng
       huyHieu: { ma: 'che-xe', ten: 'Huy hiệu Chế lệnh lùi' },
       hamCuaEmCan: ['go_wall', 'back', 'park', 'move'],
-      deBai: 'Ba bãi đỗ nối nhau thành vòng xoắn, mỗi bãi một hành lang dài ngắn khác nhau; chỗ đỗ là ngách bên phải, ngay trước ô cuối hành lang. Viết thân hàm dock() của màn: đi tới tường, lùi một ô rồi đỗ lùi vào ngách. Chương trình chính gọi dock() ba lần, giữa hai lần xe tiến một ô ra khỏi ngách. Một hàm phải đúng ở cả ba kho.',
-      veMaMau: 'Chương trình chính bị khóa. Thân dock() mới đi tới tường: chạy thử, xem xe đứng ở đâu khi hàm xong. Đừng đếm bước, mỗi hành lang một khác.',
+      deBai: 'Ba bãi đỗ nối nhau thành vòng xoắn, mỗi bãi một hành lang dài ngắn khác nhau; chỗ đỗ là ngách bên phải, ngay trước ô cuối hành lang. Viết thân hàm park_in() của màn: đi tới tường, lùi một ô rồi đỗ lùi vào ngách. Chương trình chính gọi park_in() ba lần, giữa hai lần xe tiến một ô ra khỏi ngách. Một hàm phải đúng ở cả ba kho.',
+      veMaMau: 'Chương trình chính bị khóa. Thân park_in() mới đi tới tường: chạy thử, xem xe đứng ở đâu khi hàm xong. Đừng đếm bước, mỗi hành lang một khác.',
       san: BAI_DO.map(function (b) { return b.san; }),
       batDau: BAI_DO.map(function (b) { return b.batDau; }),
       bongMo: BAI_DO.map(function (b) { return b.bongMo; }),

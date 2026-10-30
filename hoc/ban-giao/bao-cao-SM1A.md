@@ -138,3 +138,126 @@ Gói 4 "Nút đè" trước đây có nửa sau lạc đề: mười bài không
 
 ### Kết quả kiem-hoc.mjs
 ĐẠT 6709 · HỎNG 0 (chạy sau commit fd95e95, trước commit báo cáo).
+
+
+---
+
+# Lượt 2 (brief `hoc/ban-giao/brief-SM1A-luot-2.md`, 30/10)
+
+Nhánh `claude/sua-mua-1-a`, từ 3f148c4 (brief lượt 2). Không push, không merge. Thứ tự làm: việc 1 → đề xuất B → đề xuất A2 (B trước A2 vì ngưỡng nhịp mới của trùm banh-lui.4 (13) quyết định trần nhịp của màn mới chương banh-lui); đề xuất C để nguyên.
+
+## 1. KẾT QUẢ
+
+### Commit
+| SHA | Nội dung |
+|---|---|
+| `65b398d` | Việc 1: hàm của màn dock() ở che-banh-lui.5 đổi tên park_in(); ca kiểm mới "hàm của màn gói A không trùng hàm cốt truyện" |
+| `36a66a4` | Đề xuất B: nut-de.10 (78 → 27) và banh-lui.4 (34 → 13) tính nhịp theo sân dài nhất (`nhipTheo: 'max'`) |
+| `bdae445` | Đề xuất A2: che-xe.7, che-tay.7 cất, che-lap.7 giữ; hai màn mới banh-lui.6, che-banh-lui.6 |
+| (commit sau) | Báo cáo này |
+
+### Tệp đổi
+- `hoc/man-banh-lui-them.js`: đổi tên dock → park_in (6 chỗ: hằng C_DOCK, H(), đề, mã mẫu, chú thích đầu tệp); banh-lui.4 thêm `nhipTheo: 'max'`, sao.nhip 34 → 13; hai màn mới banh-lui.6, che-banh-lui.6.
+- `hoc/man-nut-de.js`: nut-de.10 `nhipTheo: 'tong'` → `'max'`, sao.nhip 78 → 27.
+- `hoc/lo-trinh-hoc.js`: khối MÙA 1 (mảng gói banh-lui: banh-lui.6 thay che-xe.7, che-banh-lui.6 thay che-tay.7; CAT thêm che-xe.7, che-tay.7; ba dòng chú thích).
+- `hoc/kiem-banh-lui-them.mjs`: ca "hàm của màn gói A không trùng hàm cốt truyện"; ca trùm banh-lui.4 nhịp theo ngõ dài nhất; MOI / THU_TU / danh sách cất mới; thông báo lỗi bộ dò khối chuẩn in cả đường dò.
+- `hoc/kiem-nut-de.mjs`: bộ dò gộp nhịp ba kho theo max khi màn không phải `'tong'`; ca trùm nut-de.10.
+- `hoc/kiem-lo-trinh.mjs`: bảng gói 5 và CAT_MUA_1.
+- Không đổi: `hoc/lo-trinh-sao.js` (`--ghi-sao` không đổi gì: cả bốn màn đụng tới đều không nằm trong tệp này, sao đọc từ ngân hàng), `cham.js`, `san-hoc.js`, `so-lenh.js` (không hàm cốt truyện mới), ngân hàng `man-che-xe.js` / `man-che-tay.js` / `man-che-lap.js`, hình, phim, khối mùa 2 trở đi.
+
+### Việc 1: dock → park_in
+Hàm cốt truyện `dock` chế ở che-drone.11 (mùa 4, trạm sạc). Tên mới `park_in` không là hàm cốt truyện (254 tên), không là hàm của màn nào khác, không là lệnh gốc. Ca kiểm mới chạy với tên cũ: HỎNG 1 ("che-banh-lui.5 maMau: hàm của màn dock() trùng tên hàm cốt truyện (chế ở che-drone.11)"), đổi tên xong: ĐẠT. Bảy chỗ trùng có từ trước, đo lại bằng script, đúng như brief: xuong-ham.1 move, che-tay.7 go_get, combo.3 / che-combo.7 cross, che-cam-bien.10 fetch_back, tham-so.1 / .2 forward. Sau A2, che-tay.7 bị cất nên chỗ trùng go_get không còn trong lộ trình (ngân hàng vẫn có); còn sáu chỗ (5 tên) ngoài gói.
+
+### Đề xuất B: hai trùm cũ
+| Màn | Trước (tổng ba sân) | Sau (sân dài nhất) | Ba sân | Màn 9 | Lớn nhất chương? |
+|---|---|---|---|---|---|
+| nut-de.10 Trùm: kho nhiều cửa | 78 | 27 | 26 / 25 / 27 | nut-de.9: 19 (1,4 lần) | có (màn kế 21) |
+| banh-lui.4 Ra khỏi ngõ cụt | 34 | 13 | 11 / 10 / 13 | banh-lui.3: 11 (1,2 lần) | có (màn kế 11) |
+
+Chỉ ngưỡng sao nhịp đổi, bài không đổi, sao đã lưu giữ. Cắm lỗi giả (trả `'tong'`) ở từng màn: kiem-nut-de HỎNG 2 (ca lời giải lệch ngưỡng + ca trùm mới), kiem-banh-lui-them HỎNG 1; gỡ xong xanh.
+
+### Đề xuất A2: gói 5 chương 1 banh-lui, trước → sau
+
+| Số | Trước | Sau | Dòng | Nhịp | Ô | Cỡ sân |
+|---|---|---|---|---|---|---|
+| 1–6 | banh-lui.5, che-xe.4, che-xe.5, che-xe.6, banh-lui.1, banh-lui.2 | không đổi | 0, 3, 3, 2, 4, 5 | 2, 1, 3, 2, 6, 10 | | 20, 20, 25, 22, 11, 16 |
+| 7 | che-xe.7 Đường về (cất) | banh-lui.6 Lấy hàng mở cửa (MỚI, tay kẹp) | 8 | 11 | 28 | 16 |
+| 8 | che-xe.9 | che-xe.9 Chỉ còn số lùi | 4 | 7 | 14 | 21 |
+| 9 | banh-lui.3 | banh-lui.3 | 5 | 11 | 15 | 10 |
+| 10 | banh-lui.4 (34 nhịp tổng) | banh-lui.4 (13 nhịp, ngõ dài nhất) | 7 | 13 | 20 | 11 |
+
+banh-lui.6: thùng cuối ngách hẹp, nút M trên lối đi bên trái, cửa C bên phải, cờ sau cửa. Lời giải go_wall, pick, back, back, turn_left, drop, back, back: lùi ra khỏi ngách rồi lùi tiếp qua cửa (11 nhịp). Quay đầu đi tới thay vì lùi: 12 nhịp, 2 sao. Bốn lời sai: mang thùng đi luôn (cửa đóng), đặt thùng về phía cửa, lùi một ô rồi đặt (vào tường: tha-bi-chan), quên nhặt. Recall: cảm biến (go_wall), nút đè M, tay kẹp. Bộ dò khối chuẩn của máy kiểm tìm ra đường "lùi qua cửa" 11 nhịp khi lời giải viết tay còn là 12 (quay đầu): lời giải chuẩn đổi theo đường dò.
+
+### Đề xuất A2: gói 5 chương 2 che-banh-lui, trước → sau
+
+| Số | Trước | Sau | Dòng | Nhịp | Ô | Cỡ sân |
+|---|---|---|---|---|---|---|
+| 1 | che-tay.5 | che-tay.5 Lùi mang hàng (chế drag) | 4 | 6 | 18 | 25 |
+| 2 | che-tay.7 Đặt lại chỗ cũ (cất) | che-banh-lui.6 Kéo thùng lên nút (MỚI) | 2 | 8 | 25 | 13 |
+| 3 | che-banh-lui.1 | che-banh-lui.1 | 4 | 11 | 27 | 18 |
+| 4 | che-tay.9 | che-tay.9 Cần cẩu | 5 | 14 | 25 | 25 |
+| 5 | che-lap.7 | che-lap.7 Đường về vòng lặp (màn đường về duy nhất) | 8 | 20 | 20 | 9 |
+| 6–10 | che-xe.10, che-banh-lui.2, .3, .4, .5 | không đổi | 9, 3, 2, 5, 3 | 12, 10, 15, 19, 24 | | 10, 9, 12, 8, 17 |
+
+che-banh-lui.6: chương trình chính khóa gọi pull_box() một lần; thân = go_wall() (tới sát thùng, đi qua nút M) + drag() (hàm em vừa chế ở màn 1: nhặt, lùi hai ô, đặt) → thùng nằm đúng trên M, cửa kho C mở, xe về chỗ xe mờ. Không lùi (quay đầu, tiến hai ô, quay lại, đặt): 10 nhịp, 2 sao. Bốn lời sai: chỉ nhặt, lùi một ô rồi đặt, drag() ngay tại chỗ (kẹp hụt), kéo xong đẩy thùng lên lại.
+
+Đường cong (kiem-banh-lui-them mục 4, cả hai chương): mọi cặp liền nhau đạt. Chương banh-lui: nhịp 2, 1, 3, 2, 6, 10, 11, 7, 11, trùm 13; chương che-banh-lui: 6, 8, 11, 14, 20, 12, 10, 15, 19, trùm 24. Recall: 11 màn mới đều dùng thứ của gói trước (bảng in ở kiem-banh-lui-them).
+
+### Lệnh kiểm và kết quả (tuần tự trong worktree, mỗi lệnh `< /dev/null`)
+```
+node tools/do-lo-trinh.mjs --ghi-sao      PASS 1128 canonical solutions; 142 revised star thresholds.
+node hoc/kiem-lach-mua-1.mjs              ĐẠT 0 lỗ ngoài danh sách chấp nhận · 0 lỗ chấp nhận · 243 phép dò trên 200 màn mùa 1.
+    màn | lách | bỏ qua | đang ép | kết quả | LỖ
+node hoc/kiem-loi-giai.mjs                ĐẠT 46/46
+node hoc/kiem-kho-hang-them.mjs           ĐẠT 51 · HỎNG 0 kiểm tra chương kho-hang (4 màn mới + 4 màn viết lại).
+node hoc/kiem-che-xe.mjs                  ĐẠT 272 · HỎNG 0
+node hoc/kiem-che-tay.mjs                 ĐẠT 237 · HỎNG 0
+node hoc/kiem-che-lap.mjs                 ĐẠT 198 · HỎNG 0
+node hoc/kiem-trum-mua-1.mjs              ĐẠT 81 · HỎNG 0 kiểm tra gói R1 xuất xưởng.
+node hoc/kiem-combo-mua-1.mjs             ĐẠT 128 · HỎNG 0 kiểm tra gói Combo.
+node hoc/kiem-doi-mua-1.mjs               ĐẠT 79 · HỎNG 0 kiểm tra 10 màn chương Đội phối hợp.
+node hoc/kiem-huong-dan.mjs               ĐẠT 40 · HỎNG 0
+node hoc/kiem-goi.mjs                     ĐẠT 56 · HỎNG 0
+node hoc/kiem-khay.mjs                    ĐẠT 184 · HỎNG 0
+node hoc/kiem-huy-hieu-phim-vector.mjs    ĐẠT 12 · HỎNG 0 kiểm
+node hoc/kiem-hoc.mjs                     ĐẠT 6709 · HỎNG 0
+```
+
+### Việc dở
+- Không có việc dở trong bốn việc được giao. Chưa xem bằng mắt trong trình duyệt (như lượt 1).
+
+## 2. CÂU HỎI CẦN LÀM RÕ
+1. Brief A2 nói "giữ MỘT (chọn màn mà hàm cốt truyện của nó được dùng về sau; kiểm hamCuaEmCan)": cả ba màn đường về đều KHÔNG tạo hàm cốt truyện (come_back, put_back, come_home là hàm của màn, không màn nào sau dùng; grep hoc/*.js). Tiêu chí ấy không phân biệt được ba màn nên tôi chọn theo đường cong và recall: giữ **che-lap.7**, không phải che-tay.7 như cột A2 của báo cáo lượt 1. Lý do: (a) che-xe.10 (9 dòng, màn 6) cần màn 5 có ≥ 6 dòng (luật dòng ≤ max(1,5 lần, +3)); che-lap.7 (8 dòng) là màn đệm ấy, thay nó phải viết một hàm của màn ≥ 6 dòng và mọi phương án như vậy (go_wall, pick, back, turn, drop…) là bản sao của tidy() che-banh-lui.4; (b) che-lap.7 là bản giàu nhất của ý "đảo ngược" (for lồng nhau, 20 nhịp), che-tay.7 là bản dễ (8 nhịp); (c) chỗ trống số 2 (sau che-tay.5 vừa chế drag) hợp một màn ngắn dùng ngay drag(): đúng tinh thần "chế lệnh rồi dùng lại" mà brief muốn; (d) che-tay.7 cất thì chỗ trùng go_get (hàm của màn / hàm cốt truyện) biến mất khỏi lộ trình. Nếu người giao vẫn muốn giữ che-tay.7: cần đảo thứ tự chương (che-tay.7 → che-xe.10 → che-tay.9 → che-banh-lui.1 → màn mới…) và che-xe.10 lên hàng làm quen; khoảng 1 giờ.
+2. Bộ dò khối chuẩn (kiem-banh-lui-them.mjs) cấm drop lên ô cửa đóng (`laCua(front)` → null) nhưng lõi cham.js / san-hoc.js CHO đặt thùng lên ô cửa đang đóng (lời sai "Đặt thùng về phía cửa" của banh-lui.6: drop thành công, nhịp 13, không có mã tha-bi-chan). Bộ dò chặt hơn lõi nên không tạo lỗ ngưỡng (đường dò chỉ có thể dài hơn), nhưng là chỗ lệch giữa hai bên. Chưa sửa (cham.js / san-hoc.js ngoài phạm vi; sửa bộ dò thì phải kiểm lại ba máy kiểm dùng cùng luật). Hỏi: thùng đặt lên ô cửa đóng có phải cơ chế cố ý không?
+3. Thứ tự việc: làm B trước A2 (brief ghi A2 rồi B) vì trần nhịp màn mới chương banh-lui phụ thuộc trùm banh-lui.4 sau khi đổi cách tính (13): màn mới phải dưới trùm. Không ảnh hưởng kết quả.
+4. Brief gợi ý "lùi + cảm biến khoảng cách + tay"; tôi thêm nút đè M + cửa C cho cả hai màn mới (recall gói 4, và cửa là cách duy nhất cho thấy thùng đã lên đúng nút). Không mâu thuẫn với brief nhưng là thêm ngoài chữ.
+5. Màn một sân không ép được go_wall hay drag bằng sao: đếm cứng move() thay go_wall() ở banh-lui.6 vẫn 3 sao (cùng ô, cùng nhịp); viết thẳng pick / back / back / drop thay drag() ở che-banh-lui.6 ÍT ô hơn một ô (24 so với 25) nên vẫn 3 sao. Đúng như câu 2 lượt 1 (mùa 1 chỉ ép bằng chương trình chính khóa + taoHam); kiem-lach-mua-1 không coi là lỗ vì chương banh-lui không phải chương đầu dùng gọi hàm.
+
+## 3. ĐỀ XUẤT cần user quyết
+
+### D. Bộ dò khối chuẩn và lõi lệch nhau về "đặt thùng lên ô cửa đóng" (câu hỏi 2)
+Cơ chế: `hoc/kiem-banh-lui-them.mjs` hàm `buoc()` (drop: `laCua(front)` → null) so với `hoc/san-hoc.js` (drop lên ô cửa đóng được).
+
+| | Để nguyên | D1: bộ dò cho drop lên cửa đóng như lõi | D2: lõi cấm drop lên cửa đóng |
+|---|---|---|---|
+| Làm gì | Không | Bỏ `laCua(front)` ở buoc() của kiem-banh-lui-them (và kiem-nut-de / kiem-kho-hang-them nếu cùng luật), chạy lại ba máy kiểm | Sửa san-hoc.js (ngoài phạm vi gói này), kiểm lại mọi màn có cửa |
+| Mất bao lâu | 0 | 20 phút | 1 giờ + chạy kiem-hoc |
+| Ảnh hưởng | Bộ dò chặt hơn lõi: ngưỡng không bị lỏng | Bộ dò có thể tìm ra đường ngắn hơn ở màn có cửa (ngưỡng phải tăng hay sân phải sửa) | Lời sai / lời giải của màn có cửa ở mọi mùa có thể đổi kết quả |
+| Người chơi thấy khác gì | Thùng đặt được lên ô cửa đóng (hơi lạ) | Không | Thả thùng vào cửa đóng bị báo "tha-bi-chan" |
+| Lợi | Không đụng | Bộ dò đúng lõi | Cơ chế hợp lý hơn |
+| Rủi ro | Chỗ lệch âm thầm | Thấp | Cao, lan sang mùa 2–4 |
+
+Nghiêng về để nguyên hoặc D1 (khi có dịp); D2 chỉ nếu user thấy cơ chế hiện tại là lỗi.
+
+### E. Giữ che-lap.7 hay che-tay.7 (câu hỏi 1): đã quyết theo (1); nếu user muốn ngược lại thì 1 giờ như ghi trên.
+
+## 4. PHẦN CHO NGƯỜI KINH DOANH
+Lượt này sửa ba điểm nhỏ nhưng người chơi nhìn thấy. Một: bài cuối gói Bánh lùi dùng tên lệnh "dock" trùng với lệnh "dock" trẻ sẽ tự chế ở mùa 4, nên ai đã qua mùa 4 quay lại chơi thấy bảng thắng báo lệnh của mình bị thay; nay đổi tên thành "park_in" và có máy kiểm bắt mọi trùng tên kiểu này trong gói. Hai: hai bài trùm cũ (kho nhiều cửa, ra khỏi ngõ cụt) cộng nhịp của cả ba sân nên ngưỡng ba sao lên tới 78 và 34 nhịp, gấp ba bốn lần bài kế trước; nay tính theo sân dài nhất (27 và 13), độ khó tăng dần đúng luật, sao đã đạt vẫn giữ. Ba: gói Bánh lùi có ba bài "viết đường về" gần giống nhau; nay giữ một bài (bản vòng lặp), hai bài kia thay bằng hai bài mới dùng cảm biến, tay kẹp, lệnh lùi và nút đè: "Lấy hàng mở cửa" (lấy thùng trong ngách, lùi ra đặt lên nút cho cửa mở rồi lùi qua cửa tới cờ) và "Kéo thùng lên nút" (dùng ngay lệnh drag vừa chế để kéo thùng lùi lên nút). Mọi bài qua máy kiểm: lời giải ba sao, lời sai đúng chỗ, độ khó tăng dần, không có đường tắt. Chưa xem trên màn hình thật.
+
+## 5. RỦI RO CÒN LẠI và cách kiểm
+1. Chưa xem bằng mắt hai màn mới (banh-lui.6 sân 10 × 7 có bãi trống bên trái, che-banh-lui.6 sân 7 × 8 có kho bên trái cửa): đề bài có thể dài quá khung chữ. Kiểm: `PORT=4205 node server.mjs`, mở `choi.html?debug=1&man=banh-lui.6&loigiai=1` và `man=che-banh-lui.6&loigiai=1`, nạp lời giải, chạy; xem cửa C mở khi thùng lên M.
+2. Người chơi đã lưu sao ở che-xe.7, che-tay.7: sao giữ theo mã (M.manCat), không hiện trong lộ trình (kiem-lo-trinh mục "bản lưu cũ giữ sao theo mã" xanh). Người đã 3 sao nut-de.10 / banh-lui.4 với lời giải đếm dư: chơi lại có thể chỉ 2 sao theo ngưỡng mới (sao đã lưu không mất).
+3. Chỗ lệch bộ dò / lõi về drop lên cửa đóng (câu hỏi 2): không gây lỗ ngưỡng nhưng cần quyết (đề xuất D).
+4. `npm test` cả bộ chưa chạy (luật RAM); kiem-hoc.mjs chạy cuối (kết quả dưới). Máy kiểm mùa 2–4 không đụng dữ liệu đổi.
+5. Hàm của màn `pull_box` (che-banh-lui.6) và `park_in` (che-banh-lui.5): ca kiểm mới sẽ đỏ nếu mùa sau chế hàm cốt truyện trùng tên; mùa sau viết màn mới thì chạy `node hoc/kiem-banh-lui-them.mjs`.
+6. che-lap.7 là màn duy nhất còn dạy "viết hàm làm ngược lại hàm đi" ở mùa 1 (che-drone.7, che-list.7, che-mau.7 mùa sau cùng ý): nếu nghiệm thu sau thấy một bài là ít, có thể trả che-tay.7 về (ngân hàng còn, đổi một dòng CAT + một dòng mảng chương) nhưng khi đó phải xếp lại đường cong.

@@ -1,7 +1,8 @@
 /* ============================================================================
    kiem-banh-lui-them.mjs — máy kiểm 8 màn mới của mùa 1, gói 5 "Bánh lùi" (man-banh-lui-them.js):
    banh-lui.1 … .4 (chương banh-lui, .4 là trùm ba sân) và che-banh-lui.1 … .5 (chương che-banh-lui "Hàm có lùi"; SM1-A 30/10: .5 "Trùm: ba bãi đỗ"
-   là trùm mới thay che-xe.10, che-xe.10 về hàng luyện, che-lap.9 cất).
+   là trùm mới thay che-xe.10, che-xe.10 về hàng luyện, che-lap.9 cất; SM1-A lượt 2 (A2): banh-lui.6 "Lấy hàng mở cửa" thay che-xe.7, che-banh-lui.6 "Kéo thùng lên nút"
+   thay che-tay.7 (hai màn đường về cất, che-lap.7 giữ), cả hai lùi + cảm biến khoảng cách + tay kẹp + nút đè).
    1. Vị trí: gói banh-lui có hai chương banh-lui / che-banh-lui, mỗi chương đúng 10 màn theo THU_TU dưới đây (thứ tự màn cũ giữ nguyên);
       trùm banh-lui.4 mang huy hiệu 'banh-lui' (huy-hieu.js có hình), che-banh-lui.5 là trùm che-banh-lui mang huy hiệu che-xe (che-xe.10 không còn);
       mã mới không trùng màn có sẵn hay màn đã cất; tên màn không trùng.
@@ -41,12 +42,14 @@ function kiem(ten, fn) {
   try { fn(); dat++; } catch (e) { hong++; console.log('  HỎNG ' + ten + '\n       ' + (e && e.message ? e.message.split('\n')[0] : e)); }
 }
 
-const MOI = ['banh-lui.1', 'banh-lui.2', 'banh-lui.3', 'banh-lui.4', 'che-banh-lui.1', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5'];
+const MOI = ['banh-lui.1', 'banh-lui.2', 'banh-lui.3', 'banh-lui.4', 'banh-lui.6', 'che-banh-lui.1', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5', 'che-banh-lui.6'];
 const THU_TU = {
   // HD3 (29/10): banh-lui.5 (màn trình diễn lệnh lùi, chiChay) đứng đầu; che-xe.8 cất (CAT, ngân hàng giữ mã); che-xe.9 lên trước banh-lui.3 (cỡ sân 21 → 10, không nhảy 10 → 21).
-  'banh-lui': ['banh-lui.5', 'che-xe.4', 'che-xe.5', 'che-xe.6', 'banh-lui.1', 'banh-lui.2', 'che-xe.7', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'],
+  // SM1-A lượt 2 (A2): banh-lui.6 (11 nhịp, 16 ô) thay che-xe.7 (cất) giữa banh-lui.2 (10 nhịp) và che-xe.9 (7 nhịp, 21 ô); trùm banh-lui.4 13 nhịp theo ngõ dài nhất.
+  'banh-lui': ['banh-lui.5', 'che-xe.4', 'che-xe.5', 'che-xe.6', 'banh-lui.1', 'banh-lui.2', 'banh-lui.6', 'che-xe.9', 'banh-lui.3', 'banh-lui.4'],
   // SM1-A (30/10): che-banh-lui.5 trùm mới; che-xe.10 về hàng luyện sau che-lap.7 (dòng 8 → 9, nhịp 20 → 12); che-lap.9 cất.
-  'che-banh-lui': ['che-tay.5', 'che-tay.7', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-xe.10', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5']
+  // SM1-A lượt 2 (A2): che-banh-lui.6 (8 nhịp, go_wall + drag vừa chế ở che-tay.5) thay che-tay.7 (cất) làm màn đệm giữa che-tay.5 (6 nhịp) và che-banh-lui.1 (11 nhịp).
+  'che-banh-lui': ['che-tay.5', 'che-banh-lui.6', 'che-banh-lui.1', 'che-tay.9', 'che-lap.7', 'che-xe.10', 'che-banh-lui.2', 'che-banh-lui.3', 'che-banh-lui.4', 'che-banh-lui.5']
 };
 /** Màn mà đường khối chuẩn ngắn hơn ngưỡng: lý do (kiểm thêm bằng đếm cứng ở mục 5). */
 const NHANH_HON = {
@@ -56,7 +59,7 @@ const NHANH_HON = {
 };
 const BU = { dong: 3, nhip: 4, o: 6 };
 /** HD3: màn trình diễn (chiChay) của gói, kiểm riêng ở mục 6 (không có lời giải khác / lời sai, mã mẫu khoá thắng sẵn). */
-const TRINH_DIEN = 'banh-lui.5', CAT_HD3 = 'che-xe.8', CAT_SM1A = 'che-lap.9';
+const TRINH_DIEN = 'banh-lui.5', CAT_HD3 = 'che-xe.8', CAT_SM1A = 'che-lap.9', CAT_A2 = ['che-xe.7', 'che-tay.7'];
 const soSan = (m) => (Array.isArray(m.san[0]) ? m.san.length : 1);
 const dsSan = (m) => (Array.isArray(m.san[0]) ? m.san : [m.san]);
 const theoSan = (v, i) => (Array.isArray(v) ? v[i] : v);
@@ -319,7 +322,7 @@ for (const m of DS) {
       else { const g = nhipCheTayNganNhat(ms); assert.ok(g.nhip !== null); tongGop = gop(tongGop, g.nhip); }
     }
     if (NHANH_HON[m.ma]) assert.ok(tong < m.sao.nhip, m.ma + ': khai NHANH_HON mà đường khối chuẩn không nhanh hơn (' + tong + ' / ' + m.sao.nhip + ')');
-    else assert.ok(tong >= m.sao.nhip, m.ma + ': đường khối chuẩn ' + tong + ' nhịp nhanh hơn ngưỡng ' + m.sao.nhip);
+    else assert.ok(tong >= m.sao.nhip, m.ma + ': đường khối chuẩn ' + tong + ' nhịp nhanh hơn ngưỡng ' + m.sao.nhip + ': ' + duong.map((d) => d.join(' / ')).join(' | '));
     if (coGop) assert.ok(tongGop <= m.sao.nhip, m.ma + ': BFS gộp ' + tongGop + ' > ngưỡng ' + m.sao.nhip);
     if (soSan(m) > 1) {
       for (let i = 0; i < duong.length; i++) {
@@ -421,7 +424,11 @@ kiem(TRINH_DIEN + ': bấm Chạy (bài gửi lên bất kỳ) là thắng 3 sao
   assert.equal(cham(moKhoa, { chinh: ['move()'] }).thang, false, 'mở khoá mà move() vẫn thắng: sân không đòi lùi');
   assert.equal(cham(moKhoa, { chinh: ['left_back()', 'wait()', 'left_back()', 'wait()'] }).thang, false, 'một bánh lùi cũng tới xe mờ');
 });
-kiem(CAT_HD3 + ', ' + CAT_SM1A + ': cất khỏi lộ trình (M.manCat), ngân hàng còn mã để sao đã lưu không mất', () => {
+kiem(CAT_HD3 + ', ' + CAT_SM1A + ', ' + CAT_A2.join(', ') + ': cất khỏi lộ trình (M.manCat), ngân hàng còn mã để sao đã lưu không mất', () => {
+  for (const ma of CAT_A2) assert.ok((M.manCat || []).includes(ma) && !M.danhSach.some((m) => m.ma === ma), ma + ' phải cất (SM1-A lượt 2, A2)');
+  assert.ok(/so: 7, ten: 'Đường về'/.test(fs.readFileSync(new URL('./man-che-xe.js', import.meta.url), 'utf8')), 'ngân hàng man-che-xe.js mất màn số 7 (mã che-xe.7)');
+  assert.ok(/so: 7, ten: 'Đặt lại chỗ cũ'/.test(fs.readFileSync(new URL('./man-che-tay.js', import.meta.url), 'utf8')), 'ngân hàng man-che-tay.js mất màn số 7 (mã che-tay.7)');
+  assert.ok(get('che-lap.7') && get('che-lap.7').chuong === 'che-banh-lui', 'che-lap.7 là màn đường về duy nhất còn lại, phải ở chương che-banh-lui');
   assert.ok((M.manCat || []).includes(CAT_HD3), 'che-xe.8 không có trong manCat');
   assert.ok(!M.danhSach.some((m) => m.ma === CAT_HD3), 'che-xe.8 còn trong lộ trình');
   assert.ok((M.manCat || []).includes(CAT_SM1A) && !M.danhSach.some((m) => m.ma === CAT_SM1A), 'che-lap.9 phải cất (SM1-A)');
@@ -438,7 +445,15 @@ for (const c of goi.chuong) {
   }
 }
 for (const ma of MOI) if (bang[ma] && bang[ma].demCung) console.log('đếm cứng ' + ma + ': ' + bang[ma].demCung);
-kiem('trùm che-banh-lui.5: nhịp lớn nhất chương, không quá 2 lần màn 9; ba bãi khác số nhịp; thân dock() có go_wall (while), back (lùi), park (hàm em chế)', () => {
+kiem('trùm banh-lui.4: nhịp theo ngõ dài nhất (nhipTheo max, SM1-A lượt 2 đề xuất B), lớn nhất chương, không quá 2 lần màn 9', () => {
+  const ds = M.danhSach.filter((m) => m.chuong === 'banh-lui'), trum = ds[9], m9 = ds[8];
+  assert.equal(trum.ma, 'banh-lui.4'); assert.equal(trum.nhipTheo, 'max');
+  const r = cham(trum, trum.loiGiai);
+  assert.equal(r.soNhip, Math.max(...r.theoSan.map((s) => s.soNhip)), 'soNhip phải là nhịp ngõ dài nhất, không phải tổng');
+  for (const m of ds.slice(0, -1)) assert.ok(trum.sao.nhip > m.sao.nhip, 'trùm ' + trum.sao.nhip + ' nhịp không hơn ' + m.ma + ' ' + m.sao.nhip);
+  assert.ok(trum.sao.nhip <= 2 * m9.sao.nhip, 'trùm gấp quá 2 lần màn 9');
+});
+kiem('trùm che-banh-lui.5: nhịp lớn nhất chương, không quá 2 lần màn 9; ba bãi khác số nhịp; thân park_in() có go_wall (while), back (lùi), park (hàm em chế)', () => {
   const ds = M.danhSach.filter((m) => m.chuong === 'che-banh-lui'), trum = ds[9], m9 = ds[8];
   for (const m of ds.slice(0, -1)) assert.ok(trum.sao.nhip > m.sao.nhip, 'trùm ' + trum.sao.nhip + ' nhịp không hơn ' + m.ma + ' ' + m.sao.nhip);
   assert.ok(trum.sao.nhip <= 2 * m9.sao.nhip, 'trùm gấp quá 2 lần màn 9');
@@ -448,5 +463,21 @@ kiem('trùm che-banh-lui.5: nhịp lớn nhất chương, không quá 2 lần m�
   assert.ok(than.has('go_wall') && than.has('back') && than.has('park'));
   assert.ok(!trum.damLaThua, 'trùm không phải màn ép, không cờ damLaThua');
 });
-console.log('ĐẠT ' + dat + ' · HỎNG ' + hong + ' kiểm tra 9 màn mới và màn trình diễn banh-lui.5 gói Bánh lùi.');
+/* ------------------------------------------------------------------ 7. SM1-A lượt 2: tên hàm của màn không trùng hàm cốt truyện */
+// Lỗi thật đã gặp: hàm của màn dock() ở che-banh-lui.5 trùng hàm cốt truyện dock của che-drone.11 (mùa 4): người chơi qua mùa 4 chơi lại thì máy chấm
+// báo "hàm dock() của em được thay bằng hàm của màn". Mọi màn gói A tạo / viết lại (MOI, kho-hang.1–4, bốn màn che-tay viết lại) phải sạch; bảy chỗ trùng
+// có từ trước (xuong-ham.1 move, che-tay.7 go_get, combo.3 / che-combo.7 cross, che-cam-bien.10 fetch_back, tham-so.1 / .2 forward) không thuộc gói này.
+const GOI_A = [...MOI, 'kho-hang.1', 'kho-hang.2', 'kho-hang.3', 'kho-hang.4', 'che-tay.1', 'che-tay.2', 'che-tay.4', 'che-tay.6'];
+kiem('hàm của màn của mọi màn gói A tạo / viết lại (mã mẫu, lời giải, lời giải khác, lời sai) không trùng tên hàm cốt truyện nào (ManHoc.hamCotTruyen); tên hàm của màn trùm che-banh-lui.5 không là hàm của màn nào khác', () => {
+  const cot = new Set(M.hamCotTruyen());
+  const manTao = (t) => (M.danhSach.find((y) => (y.taoHam || []).includes(t)) || {}).ma;
+  for (const ma of GOI_A) {
+    const m = get(ma);
+    assert.ok(m, ma + ' không có trong lộ trình');
+    for (const x of moiBai(m)) for (const h of x.b.hamCuaMan || []) assert.ok(!cot.has(h.ten), ma + ' ' + x.ten + ': hàm của màn ' + h.ten + '() trùng tên hàm cốt truyện (chế ở ' + manTao(h.ten) + ')');
+  }
+  const trum = get('che-banh-lui.5'), ten = trum.loiGiai.hamCuaMan[0].ten;
+  for (const m of M.danhSach) if (m.ma !== trum.ma) for (const x of moiBai(m)) for (const h of x.b.hamCuaMan || []) assert.notEqual(h.ten, ten, ten + '() cũng là hàm của màn ' + m.ma);
+});
+console.log('ĐẠT ' + dat + ' · HỎNG ' + hong + ' kiểm tra 11 màn mới và màn trình diễn banh-lui.5 gói Bánh lùi.');
 if (hong) process.exitCode = 1;

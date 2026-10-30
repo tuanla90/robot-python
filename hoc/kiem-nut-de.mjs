@@ -297,18 +297,19 @@ for (const m of DS) {
   });
   kiem(m.ma + ': bộ dò đường: không có đường né nút đè nhanh hơn ngưỡng; ngưỡng không lỏng; đường dò được chạy thật đúng', () => {
     let tongNe = 0, coNe = true, tongKhoi = 0, tongBoQua = 0;
+    const gop = (t, n) => (m.nhipTheo === 'tong' ? t + n : Math.max(t, n));      // SM1-A lượt 2: trùm nut-de.10 tính nhịp theo kho dài nhất (nhipTheo 'max')
     for (let i = 0; i < soSan(m); i++) {
       const ctx = nguCanh(m, i);
       const ne = nganNhat(ctx, { khongDatLenM: true });
-      if (ne.nhip === null) coNe = false; else tongNe += ne.nhip;
+      if (ne.nhip === null) coNe = false; else tongNe = gop(tongNe, ne.nhip);
       const khoi = nganNhat(ctx, { gop: false });
       assert.ok(khoi.nhip !== null, m.ma + ' sân ' + i + ': bộ dò không tìm được đường khối chuẩn');
-      tongKhoi += khoi.nhip;
+      tongKhoi = gop(tongKhoi, khoi.nhip);
       const rr = chayThat(ctx, khoi.chuoi);
       assert.ok(rr.thang, m.ma + ' sân ' + i + ': đường bộ dò tìm được thua khi chạy thật');
       assert.equal(rr.nhip, khoi.nhip, m.ma + ' sân ' + i + ': bộ dò và lõi lệch nhịp');
       if (ne.nhip !== null) { const rn = chayThat(ctx, ne.chuoi); assert.ok(rn.thang && rn.nhip === ne.nhip, m.ma + ': đường né chạy thật lệch'); }
-      if (laCuaNguoc(m) && !dsSan(m)[i].join('').includes('C')) { const bq = nganNhat(ctx, { cuaDungYen: true, gop: false }); tongBoQua += bq.nhip; }
+      if (laCuaNguoc(m) && !dsSan(m)[i].join('').includes('C')) { const bq = nganNhat(ctx, { cuaDungYen: true, gop: false }); tongBoQua = gop(tongBoQua, bq.nhip); }
     }
     const nguong = m.sao.nhip;
     if (laCuaNguoc(m) && !dsSan(m).some((rows) => rows.join('').includes('C'))) {
@@ -320,6 +321,16 @@ for (const m of DS) {
     bang.push({ so: m.so, ten: m.ten, dong: soDong(m), nhip: m.sao.nhip, o: m.sao.o, khoi: tongKhoi, ne: coNe ? tongNe : '—' });
   });
   truoc = m;
+  if (m.hang === 'trum') {
+    kiem(m.ma + ': trùm tính nhịp theo kho dài nhất (nhipTheo max, SM1-A lượt 2), nhịp lớn nhất chương nhưng không quá 2 lần màn 9', () => {
+      assert.equal(m.nhipTheo, 'max');
+      assert.equal(soSan(m), 3);
+      const r = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);
+      assert.equal(r.soNhip, Math.max(...r.theoSan.map((s) => s.soNhip)), 'soNhip phải là nhịp kho dài nhất, không phải tổng');
+      for (const t of DS.filter((x) => x.hang !== 'trum')) assert.ok(m.sao.nhip > t.sao.nhip, 'trùm ' + m.sao.nhip + ' nhịp không hơn ' + t.ma + ' ' + t.sao.nhip);
+      assert.ok(m.sao.nhip <= 2 * DS[8].sao.nhip, 'trùm ' + m.sao.nhip + ' gấp quá 2 lần màn 9 (' + DS[8].sao.nhip + ')');
+    });
+  }
 }
 
 console.log('màn | tên | dòng | nhịp | ô | khối chuẩn | né M');
