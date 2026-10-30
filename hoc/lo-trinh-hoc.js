@@ -862,7 +862,7 @@
   // Dựng SAU khối mùa 2 (lúc đó mọi gói ngoài mùa 1, 2 đã nằm ở mùa 3 cũ). Đổi m.chuong / so / hang và vị trí; KHÔNG đổi `ma` (khóa lưu sao).
   // Mỗi gói { ma, ten, loai, hinh, chuong: [[chương 1, màn có sẵn], [chương 2, màn có sẵn]] }. Chương chưa có màn thì CHƯA hiện; gói không còn chương
   // nào có màn cũng chưa hiện. Ngưỡng sao gói mùa 3 KHÔNG khai cứng (mo-goi.js tính TI_LE_SAO trong mùa, gói đầu 0 ★), như P0 mùa 2; khai khi mở mùa.
-  // Mùa 3 vẫn ẩn (`an: true` ở thu-tu-chuong.js), hiện khi bật Gỡ lỗi "Mở hết".
+  // Mùa 3 hiện ở màn chọn gói từ 30/10 (bỏ `an: true` ở thu-tu-chuong.js).
   // Xếp màn có sẵn theo part mở dần (kiem-lo-trinh.mjs mục mùa 3 (e)): gốc → nâng cấp, nên vài màn rời chương brief đề xuất:
   //   - che-nam-cham.2, .3, .4, .9 gọi grip() (nam-cham.6, gói 7: front_pole + magnet_s) → chương che-doc-cuc (gói 7), không ở logic-nam-cham (gói 2).
   //   - che-nam-cham.7 có hàm của màn đọc front_pole() → che-doc-cuc (gói 7), không ở che-dao-cuc (gói 6).

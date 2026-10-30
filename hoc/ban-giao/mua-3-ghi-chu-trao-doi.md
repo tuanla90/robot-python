@@ -43,6 +43,12 @@ Nhánh làm: `claude/mua-3-man` (worktree `.claude/worktrees/mua-3-man`, tách t
 9. Gói 10: tong-hop-3 ôn từng cặp gói; trum-mua-3 trộn nhiều gói, trùm mùa là màn đội có đệm và nút tắt. Không tạo hàm mới ở gói 10.
 10. Thêm cấu hình `game-mua-3` (cổng 4197) vào `.claude/launch.json` của repo gốc để xem bản của nhánh này (4181 đang trỏ worktree khác).
 
+## Đã gộp main (30/10, user "đưa lên main cho tôi chơi thử")
+- Gộp main (phun nhẹ) vào nhánh, rồi main tua tới nhánh. Chưa push (origin/main vẫn ở f18b538).
+- Mở mùa 3: bỏ `an: true` của mua-3 ở thu-tu-chuong.js, tab "Mỏ quặng" hiện ở màn chọn gói. Mùa 3 vẫn là mùa bán riêng: chưa mua thì bấm "Mua thử"
+  (chỉ ghi cờ trên máy), hay bật Gỡ lỗi "Mở hết". Máy kiểm đổi theo: kiem-lo-trinh (mùa 3 hiện, tên Mỏ quặng, có `ban`; nhen, doi-xich thuộc mua-3),
+  kiem-goi-doi (gói đội vào khung mùa 3: mùa 3 hiện).
+- kiem-o-so (chỉ dò mùa đã mở) bắt trum-mua-3.7 dùng wait_n(14) mà bảng chọn số chỉ 0–12: lời giải đổi thành wait_n(7), wait_n(7), sao.o 55 → 56.
+
 ## Việc còn lại (chờ user)
-- Gộp main: sau khi Mùa 4 gộp P0 (claude/khung-mua-4). Nếu đụng kiem-lo-trinh mục (a) mùa 3 thì giữ mua-5 + ROI_3_CON của họ. Chưa gộp, chưa push.
-- Phim mùa 3, soát 200 / 200 trên trình duyệt và mở mùa 3 (KE-HOACH-MUA-3 mục 3 bước P2).
+- Phim mùa 3, soát 200 / 200 trên trình duyệt (KE-HOACH-MUA-3 mục 3 bước P2). Huy hiệu mùa 3 (câu 2): ô trùm chương mùa 3 đang trống hình.
