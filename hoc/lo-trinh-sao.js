@@ -1,6 +1,74 @@
 /* Đo bằng node tools/do-lo-trinh.mjs --ghi-sao; chạy lại sau khi đổi bài. */
 (function () {
   var ds = {
+  "tham-so.10": {
+    "o": 21,
+    "nhip": 19
+  },
+  "tham-so.9": {
+    "o": 17,
+    "nhip": 16
+  },
+  "tham-so.8": {
+    "o": 18,
+    "nhip": 22
+  },
+  "tham-so.7": {
+    "o": 14,
+    "nhip": 26
+  },
+  "tham-so.6": {
+    "o": 16,
+    "nhip": 19
+  },
+  "tham-so.4": {
+    "o": 16,
+    "nhip": 21
+  },
+  "tham-so.3": {
+    "o": 13,
+    "nhip": 14
+  },
+  "tham-so.2": {
+    "o": 13,
+    "nhip": 14
+  },
+  "sung-hoi.10": {
+    "o": 17,
+    "nhip": 10
+  },
+  "sung-hoi.9": {
+    "o": 16,
+    "nhip": 14
+  },
+  "sung-hoi.7": {
+    "o": 11,
+    "nhip": 10
+  },
+  "sung-hoi.8": {
+    "o": 18,
+    "nhip": 11
+  },
+  "sung-hoi.6": {
+    "o": 15,
+    "nhip": 11
+  },
+  "sung-hoi.5": {
+    "o": 16,
+    "nhip": 10
+  },
+  "sung-hoi.4": {
+    "o": 12,
+    "nhip": 8
+  },
+  "sung-hoi.3": {
+    "o": 13,
+    "nhip": 8
+  },
+  "sung-hoi.2": {
+    "o": 8,
+    "nhip": 4
+  },
   "che-xich.6": {
     "o": 14,
     "nhip": 11
@@ -290,16 +358,16 @@
     "nhip": 19
   },
   "sung-hoi.1": {
-    "o": 10,
-    "nhip": 4
+    "o": 11,
+    "nhip": 5
   },
   "tham-so.1": {
-    "o": 14,
-    "nhip": 11
+    "o": 16,
+    "nhip": 13
   },
   "tham-so.5": {
-    "o": 18,
-    "nhip": 19
+    "o": 20,
+    "nhip": 23
   },
   "bang-chuyen.1": {
     "o": 7,

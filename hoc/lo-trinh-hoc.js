@@ -655,7 +655,8 @@
   // = 0, 30, …, 270; thêm / bớt màn sau này không làm đổi ngưỡng đã công bố (kiem-lo-trinh.mjs mục mùa 2 (a) kiểm khớp công thức).
   // Chương đã có ở mùa 2 cũ mà không thuộc bảng (ban-xoay, nhen, doi-ho-bang, list, doi-xich, omni, doi-omni và chương 2 của chúng) dời ra đầu mùa 3 (ẩn),
   // giữ thứ tự cũ: vẫn chơi được bằng "Mở hết", hàm chúng cần vẫn được tạo ở màn đứng trước.
-  var THU_TU_SUNG_HOI = [1, 2, 3, 4, 5, 6, 8, 7, 9, 10];               // sung-hoi.8 (9 dòng) đứng sau .6 (6 dòng), .7 (5 dòng) làm mốc cho .9 (7 dòng)
+  // PDM2a 31/10 (xích quay hai nhịp): .9 lên ngay sau .8 (11 → 14 nhịp), .7 (một van hai cửa) thành màn 9 làm mốc cho trùm.
+  var THU_TU_SUNG_HOI = [1, 2, 3, 4, 5, 6, 8, 9, 7, 10];               // trước PDM2a: [1, 2, 3, 4, 5, 6, 8, 7, 9, 10] (sung-hoi.8 9 dòng sau .6 6 dòng)
   var THU_TU_CHE_SUNG_HOI = [1, 2, 3, 4, 5, 6, 7, 9, 8, 10];        // che-sung-hoi.9 (21 ô, có hàm của màn) đứng sau .7 (15 ô) cho đường cong ô
   var MUA_2 = [
     { ma: 'xich', ten: 'Bánh xích', loai: 'bo-phan', hinh: 'xich', sao: 0,
@@ -1963,19 +1964,133 @@
         { moTa: 'Quẹo phải trước khi leo: xe đâm tường', baiLam: bai(['n = 1', 'for i in range(3):', '    for j in range(n):', '        move()', '    tr_right()', '    move()', '    tr_left()', '    n = n + 1']), phaiCoMa: ['dam-tuong'] }
       ]
     }), BO_CU.concat(['phanCung', 'canhBao']));      // bản cũ "Kẹt số lùi": phần cứng thiếu right_back
-    // Ba hàm của em mà bản cũ của che-xich.6 / che-cam-bien.5 / che-cam-bien.9 dạy (pick_behind, bounce, fetch_back: tay kẹp / cảm biến khoảng cách) nay không màn
-    // nào dạy nữa. Màn mùa ẩn còn gọi chúng (đội cũ, chế lệnh xích cũ) nhận hàm đó thành HÀM CỦA MÀN (thân như bản cũ), bỏ khỏi hamCuaEmCan: vẫn chạy được
+    // ---- Gói 2 (sung-hoi, tham-so): xích + vòi phun. Màn giữ ý: đổi thân (xichHoa: turn_right / turn_left → tr_right / tr_left ở mọi bài và chữ, khay bỏ lệnh tay kẹp).
+    // Màn mất ý trên xích (băng chuyền không đẩy xích; tay kẹp mang vật) viết lại cùng vị trí trong đường cong.
+    var VOI = XICH.concat(['spray', 'spray_back']);
+    var THAN_CU = [];      // [mã màn, hàm của em bản cũ] mà xichHoa đổi thân (vd right(k), step(a, b): turn_right() → tr_right())
+    function doiQuay(x) {
+      if (typeof x === 'string') return x.replace(/\bturn_right\(\)/g, 'tr_right()').replace(/\bturn_left\(\)/g, 'tr_left()');
+      if (Array.isArray(x)) return x.map(doiQuay);
+      if (x && typeof x === 'object') { var o = {}; Object.keys(x).forEach(function (k) { o[k] = doiQuay(x[k]); }); return o; }
+      return x;
+    }
+    /** Giữ ý màn, đổi R1 sang xe cứu hỏa (xích + vòi): hàm quay hai bánh → hàm quay xích ở mọi bài (mẫu, giải, sai, khác) và chữ; khay = bánh xích + lệnh vòi đang có. */
+    function xichHoa(ma, khay, camBien) {
+      var m = get(ma);
+      ((m.loiGiai || {}).hamCuaEmMoi || []).forEach(function (h) { if (JSON.stringify(doiQuay(h)) !== JSON.stringify(h)) THAN_CU.push([ma, copy(h)]); });
+      ['maMau', 'loiGiai', 'loiSai', 'loiGiaiKhac', 'congThucKhac', 'deBai', 'veMaMau', 'goiY'].forEach(function (k) { if (m[k] !== undefined) m[k] = doiQuay(m[k]); });
+      var can = [];
+      (m.hamCuaEmCan || []).forEach(function (t) { t = t === 'turn_right' ? 'tr_right' : t === 'turn_left' ? 'tr_left' : t; if (can.indexOf(t) < 0) can.push(t); });
+      m.hamCuaEmCan = can;
+      m.loaiRobot = 'xich'; m.robot = { than: 'xich', tay: 'hoi' };
+      if (camBien) m.robot.camBien = camBien;
+      m.hamGoc = khay || ((m.hamGoc || []).indexOf('left_move') < 0 ? m.hamGoc.slice() : VOI.slice());
+      delete m.phanCung;
+      m.phienBanNoiDung = 2;
+      return m;
+    }
+    ['sung-hoi.1', 'sung-hoi.2', 'sung-hoi.3', 'sung-hoi.4', 'sung-hoi.5', 'sung-hoi.7', 'sung-hoi.8', 'sung-hoi.9', 'sung-hoi.10'].forEach(function (ma) { xichHoa(ma); });
+    // Đường cong nhịp (xích quay hai nhịp nên sung-hoi.3 thành 8 nhịp): sung-hoi.2 dài thêm một ô (cửa lùi xuống, xe đi ba ô), 3 → 4 nhịp làm mốc.
+    (function () {
+      var m = get('sung-hoi.2');
+      m.san = ['###', '#F#', '#.#', '#C#', '#.#', '#.#', '#N#', '###']; m.batDau = { x: 1, y: 4, huong: 0 };
+      [m.maMau, m.loiGiai, m.loiGiaiKhac && m.loiGiaiKhac.baiLam].concat(m.loiSai.map(function (x) { return x.baiLam; })).forEach(function (b) { if (b) b.chinh.push('move()'); });
+      // sung-hoi.7 (màn 9 của chương, mốc cho tham-so.2 qua ranh chương): hành lang sau hai cửa dài thêm ba ô (range(4) → range(7)), 7 → 10 nhịp.
+      m = get('sung-hoi.7');
+      m.san = ['#N########', '#.########', '#.C.C...F#', '##########'];
+      ['maMau', 'loiGiai', 'loiSai', 'loiGiaiKhac'].forEach(function (k) { m[k] = JSON.parse(JSON.stringify(m[k]).replace(/range\(4\)/g, 'range(7)')); });
+      m.goiY = m.goiY.map(function (g) { return g.replace('tiến bốn ô', 'tiến bảy ô'); });
+    })();
+    // sung-hoi.6 (cũ "Tắt băng": băng đẩy xe lùi, phun van tắt băng) mất ý vì băng không đẩy được xích: van bên phải mở cửa ở cuối hành lang dài.
+    xeCuuHoa('sung-hoi.6', { tay: 'hoi' }, {
+      ten: 'Cửa cuối hành lang', hamGoc: VOI.slice(), hamCuaEmCan: ['tr_right', 'tr_left', 'move'],
+      san: ['###', '#F#', '#C#', '#.#', '#.#', '#.#', '#.#', '#.N', '###'], batDau: { x: 1, y: 7, huong: 0 },
+      deBai: 'Hành lang dài, cửa ở tận cuối. Van mở cửa nằm ngay bên phải xe. Quay về phía van mà phun, quay lại rồi đi hết hành lang tới cờ.',
+      veMaMau: 'Chương trình có sẵn đi thẳng lên. Chạy thử: cửa còn đóng nên xe dừng trước cửa.',
+      goiY: ['Tia nước chỉ bay theo mũi xe: tr_right() cho mũi xe hướng vào van.', 'Phun xong thì tr_left() để quay mặt lên lại.'],
+      maMau: bai(lap(6, ['move()'])), loiGiai: bai(['tr_right()', 'spray()', 'wait()', 'tr_left()'].concat(lap(6, ['move()']))),
+      loiSai: [
+        { moTa: 'Không phun: cửa còn đóng, xe húc cửa', baiLam: bai(lap(6, ['move()'])), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Phun khi mũi xe còn hướng lên: tia nước không trúng van', baiLam: bai(['spray()', 'wait()'].concat(lap(6, ['move()']))), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên wait() sau spray(): lệnh phun dồn vào nhịp quay', baiLam: bai(['tr_right()', 'spray()', 'tr_left()'].concat(lap(6, ['move()']))), phaiCoMa: ['chua-toi-co'] }
+      ]
+    }, ['noi', 'vatThem', 'nhipTheoLoiGiai']);
+    // tham-so: R1 xích + vòi (bỏ tay kẹp). .1–.5, .7, .8 giữ ý (right(k) của tham-so.4 thân lặp tr_right()).
+    ['tham-so.1', 'tham-so.2', 'tham-so.3', 'tham-so.4', 'tham-so.5', 'tham-so.7', 'tham-so.8'].forEach(function (ma) { xichHoa(ma, VOI.slice()); });
+    // Đường cong nhịp sau khi xích quay hai nhịp: tham-so.3 đoạn cuối dài thêm một ô (forward(1) → forward(2)): 13 → 14 nhịp làm mốc cho tham-so.4 (right(3) sáu nhịp, 21).
+    (function () {
+      var m = get('tham-so.3');
+      m.san = ['###F..', '####=.', '####=.', '......'];
+      ['maMau', 'loiGiai', 'loiSai', 'loiGiaiKhac'].forEach(function (k) { m[k] = JSON.parse(JSON.stringify(m[k]).replace(/forward\(1\)/g, 'forward(2)')); });
+      m.loiSai.forEach(function (x) { if (x.phaiCoMa.indexOf('tran-khung') >= 0) x.baiLam.chinh.push('move()'); });
+    })();
+    // tham-so.6 (cũ deliver(n) bằng tay kẹp): tạo open_at(n): tiến n ô rồi phun van trước mũi. Hai van, mỗi van mở cửa của đoạn sau.
+    var OPEN = { ten: 'open_at', thamSo: ['n'], than: ['forward(n)', 'spray()', 'wait()'] };
+    var C6 = ['open_at(5)', 'tr_right()', 'open_at(3)', 'tr_right()', 'forward(5)'];
+    xeCuuHoa('tham-so.6', { tay: 'hoi' }, {
+      ten: 'Tới van rồi phun', hamGoc: VOI.slice(), hamCuaEmCan: ['move', 'forward', 'tr_right'], taoHam: ['open_at'],
+      san: ['......N', '#####C#', '#####.#', 'F...C.#', '#####N#'], batDau: { x: 0, y: 0, huong: 1 },
+      noi: [{ nut: { x: 6, y: 0 }, cua: [{ x: 5, y: 1 }], bang: [] }, { nut: { x: 5, y: 4 }, cua: [{ x: 4, y: 3 }], bang: [] }],
+      deBai: 'Mỗi đoạn đường kết thúc trước một van, van mở cửa của đoạn sau. Tạo hàm open_at(n): tiến n ô rồi phun van trước mũi xe. Dùng nó cho hai đoạn đầu, rồi đi tới cờ.',
+      veMaMau: 'Chương trình chính đã gọi open_at(5) và open_at(3), nhưng em chưa có hàm đó. Tạo hàm open_at có đối số n.',
+      goiY: ['Thân hàm: forward(n), rồi spray(), rồi wait().', 'open_at(5) đi năm ô rồi phun; open_at(3) đi ba ô rồi phun.'],
+      maMau: bai(C6), loiGiai: { chinh: C6.slice(), hamCuaMan: [], hamCuaEmMoi: [copy(OPEN)] },
+      loiSai: [
+        { moTa: 'Gọi open_at() mà chưa tạo hàm', baiLam: bai(C6), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm đi cứng năm ô (không dùng n): đoạn thứ hai xe húc van hai nhịp, mất sao', baiLam: bai(C6), hamCuaEmMoi: [{ ten: 'open_at', thamSo: ['n'], than: ['forward(5)', 'spray()', 'wait()'] }], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Thân hàm quên phun: cửa không mở', baiLam: bai(C6), hamCuaEmMoi: [{ ten: 'open_at', thamSo: ['n'], than: ['forward(n)', 'wait()'] }], phaiCoMa: ['chua-toi-co'] }
+      ]
+    }, ['mucTieu', 'vatChat', 'vatThem', 'nhipTheoLoiGiai']);
+    // tham-so.9 (cũ: băng chuyền làm số lần đi khác số ô; xích không bị băng đẩy nên mất ý): quay đầu bằng right(2) của tham-so.4 (xích quay đầu bốn nhịp).
+    var C9 = ['forward(4)', 'spray()', 'wait()', 'right(2)', 'forward(3)', 'tr_right()', 'forward(2)'];
+    xeCuuHoa('tham-so.9', { tay: 'hoi' }, {
+      ten: 'Quay đầu bằng right(2)', hamGoc: VOI.slice(), hamCuaEmCan: ['move', 'forward', 'tr_right', 'right'],
+      san: ['#F####', '#C####', '.....N'], batDau: { x: 0, y: 2, huong: 1 },
+      deBai: 'Van ở cuối ngõ cụt mở cửa phía trên, gần đầu hành lang. Đi tới van, phun, quay đầu rồi quay lại tìm cửa. Quay đầu là quay phải hai lần: dùng hàm right(k) em đã có.',
+      veMaMau: 'Chương trình có sẵn đi tới van và phun. Viết tiếp: quay đầu, đi về chỗ cửa, quẹo lên tới cờ.',
+      goiY: ['right(2) quay phải hai lần, tức là quay đầu.', 'Từ cuối ngõ đi ngược lại ba ô thì tới ngay dưới cửa.'],
+      maMau: bai(C9.slice(0, 3)), loiGiai: bai(C9),
+      loiSai: [
+        { moTa: 'Quay đầu bằng right(1): xe mới quay một góc vuông, đâm tường', baiLam: bai(C9.slice(0, 3).concat(['right(1)'], C9.slice(4))), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Đi ngược lại hai ô: quẹo lên trúng tường', baiLam: bai(C9.slice(0, 4).concat(['forward(2)'], C9.slice(5))), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Quên phun: cửa không mở', baiLam: bai(['forward(4)', 'right(2)', 'forward(3)', 'tr_right()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
+      ]
+    }, ['mucTieu', 'vatChat', 'vatThem', 'nhipTheoLoiGiai']);
+    // tham-so.10 (trùm; cũ: deliver(n) qua băng chuyền): nhà máy ba van ba cửa, mỗi van mở cửa đoạn sau; open_at(n) với n khác nhau, tr_right / tr_left, forward.
+    var C10 = ['open_at(3)', 'tr_right()', 'open_at(2)', 'tr_left()', 'open_at(3)', 'tr_left()', 'forward(2)'];
+    xeCuuHoa('tham-so.10', { tay: 'hoi' }, {
+      ten: 'Ba van ba cửa', hamGoc: VOI.slice(), hamCuaEmCan: ['move', 'forward', 'tr_right', 'tr_left', 'open_at'],
+      san: ['....N#F#', '###C##C#', '###.C..N', '###N####'], batDau: { x: 0, y: 0, huong: 1 },
+      noi: [{ nut: { x: 4, y: 0 }, cua: [{ x: 3, y: 1 }], bang: [] }, { nut: { x: 3, y: 3 }, cua: [{ x: 4, y: 2 }], bang: [] }, { nut: { x: 7, y: 2 }, cua: [{ x: 6, y: 1 }], bang: [] }],
+      deBai: 'Ba đoạn đường dài ngắn khác nhau, đoạn nào cũng kết thúc trước một van; van mở cửa của đoạn kế tiếp. Dùng open_at(n) cho mỗi đoạn có van, quẹo đúng phía, rồi đi tới cờ.',
+      veMaMau: 'Viết cả chương trình: open_at(n) với số ô của từng đoạn, xen giữa là hàm quay của xe xích.',
+      goiY: ['Đếm số ô của từng đoạn tới sát van: 3, 2, 3.', 'Sau van thứ nhất quẹo phải; sau van thứ hai và thứ ba quẹo trái.'],
+      maMau: bai([]), loiGiai: bai(C10),
+      loiSai: [
+        { moTa: 'Đoạn thứ hai gọi open_at(3): xe húc van một nhịp, mất sao', baiLam: bai(['open_at(3)', 'tr_right()', 'open_at(3)', 'tr_left()', 'open_at(3)', 'tr_left()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Sau van thứ hai quẹo phải: xe đâm tường', baiLam: bai(['open_at(3)', 'tr_right()', 'open_at(2)', 'tr_right()', 'open_at(3)', 'tr_left()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không dùng hàm open_at: viết forward(), spray(), wait() từng đoạn thì quá 10 ô', baiLam: bai(['forward(3)', 'spray()', 'wait()', 'tr_right()', 'forward(2)', 'spray()', 'wait()', 'tr_left()', 'forward(3)', 'spray()', 'wait()', 'tr_left()', 'forward(2)']), phaiCoMa: [] }
+      ]
+    }, ['mucTieu', 'vatChat', 'vatThem', 'nhipTheoLoiGiai']);
+    // Hàm của em mà bản cũ của một màn mùa 2 dạy (tay kẹp / cảm biến khoảng cách / băng đẩy xe) nay không màn nào dạy nữa (DAY_CU: [mã màn, tên hàm]).
+    // Màn mùa ẩn còn gọi chúng (đội cũ, chế lệnh xích cũ…) nhận hàm đó thành HÀM CỦA MÀN (thân như bản cũ), bỏ khỏi hamCuaEmCan: vẫn chạy được
     // bằng "Mở hết", lời giải / ngưỡng sao không đổi. Không sửa gì khác ở màn ẩn.
-    var HAM_CU = {};
-    [['che-xich.6', 'pick_behind'], ['che-cam-bien.5', 'bounce'], ['che-cam-bien.9', 'fetch_back']].forEach(function (x) {
+    // Hàm vẫn dạy nhưng thân đổi sang hàm quay của xích (THAN_CU: right(k), step(a, b)…): màn ẩn hai bánh gọi chúng nhận bản cũ thành hàm của màn, che hàm của em.
+    var HAM_CU = {}, DAY_CU = [['che-xich.6', 'pick_behind'], ['che-cam-bien.5', 'bounce'], ['che-cam-bien.9', 'fetch_back'], ['tham-so.6', 'deliver']];
+    var chuongAn = {};
+    TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
+    DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
     });
+    THAN_CU.forEach(function (x) { HAM_CU[x[1].ten] = copy(x[1]); DAY_CU.push([x[0], x[1].ten]); });
     // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.
     var khoEm = {};
     M.danhSach.forEach(function (m) {
       var lg = m.loiGiai || {}, tuCo = (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).map(function (h) { return h.ten; });
+      var cachLap = ((m.lapRap || {}).cachLap || []).map(function (c) { return c.loiGiai; }).filter(Boolean);      // màn lắp ráp: mỗi cách lắp có lời giải riêng
       var dong = [].concat(lg.chinh || [], (m.maMau || {}).chinh || [], (lg.doi || []).reduce(function (a, d) { return a.concat(d.chinh || []); }, []),
-        (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).reduce(function (a, h) { return a.concat(h.than); }, []));
+        (lg.hamCuaMan || []).concat(lg.hamCuaEmMoi || []).reduce(function (a, h) { return a.concat(h.than); }, []),
+        cachLap.reduce(function (a, b) { return a.concat(b.chinh || [], (b.hamCuaMan || []).reduce(function (x, h) { return x.concat(h.than); }, [])); }, []));
       var da = {}, cho = (m.hamCuaEmCan || []).slice();
       dong.forEach(function (l) { (l.match(/[A-Za-z_]\w*(?=\s*\()/g) || []).forEach(function (t) { cho.push(t); }); });
       while (cho.length) {
@@ -1986,9 +2101,9 @@
       }
       if (!m.tietKiemNhip) (lg.hamCuaEmMoi || []).forEach(function (h) { khoEm[h.ten] = h.than; });
       var can = Object.keys(HAM_CU).filter(function (t) { return da[t] && tuCo.indexOf(t) < 0; });
-      if (!can.length || m === get('che-xich.6') || m === get('che-cam-bien.5') || m === get('che-cam-bien.9')) return;
+      if (!can.length || !chuongAn[m.chuong] || DAY_CU.some(function (x) { return x[0] === m.ma; })) return;
       m.hamCuaEmCan = m.hamCuaEmCan.filter(function (t) { return !HAM_CU[t]; });
-      [m.maMau, m.loiGiai, m.loiGiaiKhac && m.loiGiaiKhac.baiLam].concat((m.loiSai || []).concat(m.congThucKhac || []).map(function (s) { return s.baiLam; })).forEach(function (b) {
+      [m.maMau, m.loiGiai, m.loiGiaiKhac && m.loiGiaiKhac.baiLam].concat((m.loiSai || []).concat(m.congThucKhac || []).map(function (s) { return s.baiLam; }), cachLap).forEach(function (b) {
         if (!b) return;
         b.hamCuaMan = (b.hamCuaMan || []).concat(can.map(function (t) { return copy(HAM_CU[t]); }));
       });
