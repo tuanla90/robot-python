@@ -30,7 +30,7 @@ function kiem(ten, ok, chiTiet) {
 }
 const J = (o) => JSON.stringify(o);
 const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
-const moi = new Set(TEP_MUA_4.flatMap((k) => M[k] || []).concat(Object.keys(M.suaCatCanh || {}).map((ma) => M.timMa(ma))));      // chính các đối tượng màn (dungChuong đổi so / chuong khi xếp chỗ)
+const moi = new Set(TEP_MUA_4.flatMap((k) => M[k] || []).concat(Object.keys(Object.assign({}, M.suaCatCanh || {}, M.suaChamSon || {})).map((ma) => M.timMa(ma))));      // chính các đối tượng màn (dungChuong đổi so / chuong khi xếp chỗ)
 const tatCa = M.danhSach;
 const tenCot = [...new Set(tatCa.flatMap((m) => m.taoHam || []))];
 const khoTruoc = (() => {
@@ -50,7 +50,7 @@ const ma = (r) => r.chanDoan.map((c) => c.ma);
 const GACH = /[—–]|[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
 
 const goi4 = M.mua4;
-const tenHamMan = new Set(tatCa.flatMap((m) => [m.loiGiai, m.maMau].filter(Boolean).flatMap((b) => (b.hamCuaMan || []).map((h) => h.ten))));
+const tenHamMan = new Set(tatCa.flatMap((m) => [m.loiGiai, m.maMau].filter(Boolean).flatMap((b) => (b.hamCuaMan || []).filter((h) => !h.capCu).map((h) => h.ten))));
 const bang = [];
 let daLoiGia = false;
 for (const g of goi4) for (const [c] of g.chuong) {

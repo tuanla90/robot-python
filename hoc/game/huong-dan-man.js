@@ -419,11 +419,11 @@
   /* ============================================================ Máy sơn (làm quen, 25/10): dot() chấm ô đang đứng, ink(c) chọn màu (bảng chọn bốn màu), chế dots(n) */
   var CHU_THE_SON = 'Khối sơn nằm ở thẻ Máy sơn. Bấm ◀ hoặc ▶ để sang thẻ đó.';
   H['may-son.1'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: dot() chấm sơn vào ô xe đang đứng.', xong: 'chay', daLam: daChay },
-    khoiTheo(['khoi:em:move'], 'Chấm thứ hai cách hai ô: chạm move() hai lần.', CHU_THE,
-      { daLam: function () { return dongCo(/^\s*move\(\)/, dongCo(/^\s*move\(\)/) + 1) >= 0; } }),
-    khoiTheo(['khoi:dot', 'khoi:wait'], 'Rồi chạm dot() và wait() để chấm chấm thứ hai.', CHU_THE_SON,
-      { daLam: function () { var i = dongCo(/^\s*move\(\)/); return i >= 0 && dongCo(/^\s*dot\(\)/, i) >= 0 && dongCo(/^\s*wait\(\)/, i) >= 0; } }),
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: dot() gieo hạt vào ô ngay dưới drone.', xong: 'chay', daLam: daChay },
+    khoiTheo(['khoi:go_right'], 'Bông thứ hai cách hai ô: chạm go_right() hai lần.', CHU_THE,
+      { daLam: function () { return dongCo(/^\s*go_right\(\)/, dongCo(/^\s*go_right\(\)/) + 1) >= 0; } }),
+    khoiTheo(['khoi:dot', 'khoi:wait'], 'Rồi chạm dot() và wait() để gieo bông thứ hai.', CHU_THE_SON,
+      { daLam: function () { var i = dongCo(/^\s*go_right\(\)/); return i >= 0 && dongCo(/^\s*dot\(\)/, i) >= 0 && dongCo(/^\s*wait\(\)/, i) >= 0; } }),
     buocChay('Bấm Chạy.')
   ];
   /** Dòng (từ 1) của lệnh ink(...) đầu tiên trong chương trình chính, 0 nếu chưa có. */
@@ -442,7 +442,7 @@
   ];
   H['may-son.6'] = [
     buocTaoHam('dots', 'Chế hàm dots(n) trong Xưởng: bấm Hàm mới.', CHU_TAO),
-    khoiTheo(['khoi:vong:for'], 'Chạm khối for, rồi trong vòng lặp thêm dot() và hai move().', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
+    khoiTheo(['khoi:vong:for'], 'Chạm khối for, rồi trong vòng lặp thêm dot() và hai go_right().', 'Khối for nằm ở thẻ Logic. Bấm ◀ hoặc ▶ để sang thẻ đó.',
       { xuong: true, xong: 'dong-xuong', huong: 'tren', daLam: function () { var t = chuThan('dots'); return /for/.test(t) && /dot\(\)/.test(t); } })
   ].concat(buocThuVeChay('Chương trình chính đã gọi dots(3). Bấm Chạy.'));
 

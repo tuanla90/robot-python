@@ -19,7 +19,10 @@ export function nhipMaySonNganNhat(cfg, gioiHan = 120) {
   cfg.hinh.forEach((hang, y) => [...hang].forEach((c, x) => { if (KY[c]) { chiSo.set(x + ',' + y, canMau.length); canMau.push(KY[c]); } }));
   const n = canMau.length; if (n > 16) return null;
   const DU = (1 << n) - 1, mauDung = [...new Set(canMau)];
-  const di = (x, y) => !SanHoc.lyDoChan(san, 'banh', x, y);
+  const laDrone = cfg.loaiRobot === 'drone';
+  const di = (x, y) => !SanHoc.lyDoChan(san, laDrone ? 'drone' : 'banh', x, y);
+  const dsLenh = cfg.chiDot ? ['', 'dot'] : ['', 'dot', 'down', 'up'];
+  const dsKieu = laDrone ? ['dung', 0, 1, 2, 3] : ['dung', 'tien', 'lui', 'phai', 'trai', 'dau'];
   function to(x, y, mau, mask) {                      // → mask mới, hay -1 nếu tô ra ngoài hình
     const i = chiSo.get(x + ',' + y);
     if (i === undefined) return -1;
@@ -33,13 +36,14 @@ export function nhipMaySonNganNhat(cfg, gioiHan = 120) {
   for (let nhip = 1; nhip <= gioiHan; nhip++) {
     const moi = [];
     for (const [x, y, h, p, m] of tang) {
-      for (const lenh of ['', 'dot', 'down', 'up']) for (const c1 of (lenh === 'dot' || lenh === 'down' ? mauDung : [null])) {
+      for (const lenh of dsLenh) for (const c1 of (lenh === 'dot' || lenh === 'down' ? mauDung : [null])) {
         let p1 = p, m1 = m;
         if (lenh === 'up') p1 = 0;
         if (lenh === 'dot' || lenh === 'down') { m1 = to(x, y, c1, m1); if (m1 < 0) continue; if (lenh === 'down') p1 = 1; }
-        for (const kieu of ['dung', 'tien', 'lui', 'phai', 'trai', 'dau']) {
+        for (const kieu of dsKieu) {
           let nx = x, ny = y, nh = h;
-          if (kieu === 'tien' || kieu === 'lui') { const v = VEC[kieu === 'tien' ? h : (h + 2) % 4]; if (di(x + v[0], y + v[1])) { nx = x + v[0]; ny = y + v[1]; } }
+          if (laDrone) { if (kieu !== 'dung') { const v = VEC[kieu]; if (di(x + v[0], y + v[1])) { nx = x + v[0]; ny = y + v[1]; } } }
+          else if (kieu === 'tien' || kieu === 'lui') { const v = VEC[kieu === 'tien' ? h : (h + 2) % 4]; if (di(x + v[0], y + v[1])) { nx = x + v[0]; ny = y + v[1]; } }
           else if (kieu === 'phai') nh = (h + 1) % 4; else if (kieu === 'trai') nh = (h + 3) % 4; else if (kieu === 'dau') nh = (h + 2) % 4;
           for (const c2 of (p1 ? mauDung : [null])) {
             const m2 = p1 ? to(nx, ny, c2, m1) : m1;
@@ -64,7 +68,7 @@ export function nhipMaySonTatCa(m) {
   if (m.khongDoBFS) return m.sao.nhip;
   const nhieu = Array.isArray(m.san[0]), dsSan = nhieu ? m.san : [m.san], kq = [];
   for (let i = 0; i < dsSan.length; i++) {
-    const r = nhipMaySonNganNhat({ san: dsSan[i], hinh: nhieu ? m.hinh[i] : m.hinh, sonBanDau: m.sonBanDau ? (nhieu ? m.sonBanDau[i] : m.sonBanDau) : null, batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau }, m.sao.nhip + 2);
+    const r = nhipMaySonNganNhat({ san: dsSan[i], hinh: nhieu ? m.hinh[i] : m.hinh, sonBanDau: m.sonBanDau ? (nhieu ? m.sonBanDau[i] : m.sonBanDau) : null, batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau, loaiRobot: m.loaiRobot, chiDot: !(m.hamGoc || []).includes('pen_down') }, m.sao.nhip + 2);
     if (r === null) return m.sao.nhip;
     kq.push(r);
   }
