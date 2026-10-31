@@ -357,7 +357,8 @@ const coHinh = (loai, ma) => !!V.lay(loai, ma);
     /this\.veOVec\(g, x, y, c\.rows\[y\]\[x\]/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /\n    thuOVec\(g, rows, w, h, s, mauO/.test(svSrc) && !/this\.vec\b|\bvecT\b/.test(svSrc));
   const kySrc = fs.readFileSync(path.join(GAME, 've-vector-ky-hieu.js'), 'utf8');
   const CHI_PHIM = ['o-hoa'];      // 30/10 vỏ nông trại: ô đã gieo hoa chỉ phim mùa 4 dùng (trên sân, hoaDa vẽ thẳng)
-  const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'") && !CHI_PHIM.includes(ma));
+  const CHO_NOI = ['nuoc', 'dong-nuoc', 'cong-thuy-loi', 'van-cong', 'phao-dich', 'ben-nhan', 'be-go', 'luc-binh', 'bai-cont', 'boong-tau', 'ray', 'container', 'chong-cont'];      // mùa Cảng / Bến sông 31/10: chờ gói nối san-ve.js, gói đó xoá danh sách
+  const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'") && !CHI_PHIM.includes(ma) && !CHO_NOI.includes(ma));
   kiem('mọi hình ô / vật trong kho đều được san-ve.js hay bảng nối dùng tới (không hình thừa)', khongDung.length === 0, J(khongDung));
 
   /* vật: mọi chất × màu của lõi */
@@ -432,7 +433,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   for (const loai of ['than', 'tay', 'cam-bien']) {
     const mp = BP[loai].map((d) => d.ma), mv = V.ds(loai);
     for (const ma of mp) if (!mv.includes(ma)) thieu.push(loai + '/' + ma);
-    const THEM_SAU_CHUP = { 'cam-bien': ['tu', 'camera-4'] };                                       // camera-4: camera bốn hướng color(huong), P1 mùa 4 (30/10)                                                   // P1 mùa 3 (29/10): cảm biến từ 'tu' thành part vector riêng (bộ pixel chưa từng có)
+    const THEM_SAU_CHUP = { 'cam-bien': ['tu', 'camera-4', 'dong-chay', 'quet-ma'], than: ['xuong', 'cau'], tay: ['day-keo', 'moc-cau'] };   // mùa Cảng / Bến sông 31/10
+                                    // camera-4: camera bốn hướng color(huong), P1 mùa 4 (30/10)                                                   // P1 mùa 3 (29/10): cảm biến từ 'tu' thành part vector riêng (bộ pixel chưa từng có)
     for (const ma of mv) if (!mp.includes(ma) && !(THEM_SAU_CHUP[loai] || []).includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
     for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;
