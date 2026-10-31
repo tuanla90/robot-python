@@ -9,6 +9,10 @@ import {PHIM_M1} from './doc/m1';
 import {PHIM_M2} from './doc/m2';
 import {PHIM_M3} from './doc/m3';
 import {PHIM_M4} from './doc/m4';
+import {PHIM_M5} from './doc/m5';
+import {PHIM_M6} from './doc/m6';
+import {PHIM_M7} from './doc/m7';
+import {PHIM_M8} from './doc/m8';
 
 // bản đồ hành trình: user 31/10 chốt bản A (mùa 2 bản A, xe trạm A); mùa 3 chốt bản B (bản A có phế liệu tràn xuống luống đất nông trại); mùa 4 bản sinh lại (đường vào đúng chỗ 3B ra, nền đất nâu sẫm suốt mùa); bản 4b vào lệch 84 px, uốn làm xiêu nhà kính nên chưa dùng. Xe đỗ ở gói 4 mùa 1.
 const MUA_1: Mua = {anh: 'mua-1.jpg', khoa: 'mua-1', ten: 'Kho hàng', icon: 'Warehouse', mau: '#F59E0B'};
@@ -20,5 +24,5 @@ const BAN_DO_4 = taoBanDo([MUA_1, MUA_2, MUA_3, mua4('a')], 'dai-4a.jpg', XE);
 const KHUNG_DOC = {fps: 30, width: 1080, height: 1920, durationInFrames: 600};
 
 registerRoot(() => React.createElement(React.Fragment, null,
-  React.createElement(CacPhim, {ds: [PHIM_MO_DAU, PHIM_XE, ...PHIM_M1, ...PHIM_M2, ...PHIM_M3, ...PHIM_M4]}),
+  React.createElement(CacPhim, {ds: [PHIM_MO_DAU, PHIM_XE, ...PHIM_M1, ...PHIM_M2, ...PHIM_M3, ...PHIM_M4, ...PHIM_M5, ...PHIM_M6, ...PHIM_M7, ...PHIM_M8]}),
   React.createElement(Composition, {id: 'BanDoMua-4', component: BAN_DO_4.BanDo, ...KHUNG_DOC})));

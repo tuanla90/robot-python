@@ -520,16 +520,16 @@ const NhaMua4: React.FC = () => {
   const f = useCurrentFrame();
   const xXe = ease(f, [0, 120], [80, 200]);
   return (
-    <AbsoluteFill style={{background: '#14532D', fontFamily: FONT, overflow: 'hidden'}}>
-      <Img src={staticFile('ban-do/mua-4a.jpg')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9}} />
-      <div style={{position: 'absolute', left: xXe, top: 820, padding: '22px 34px', borderRadius: 24, background: '#22C55E', border: `5px solid ${C.ink}`, boxShadow: `0 10px 0 ${C.ink}`,
+    <AbsoluteFill style={{background: '#0C4A6E', fontFamily: FONT, overflow: 'hidden'}}>
+      <Img src={staticFile('nen-doc/mua-song.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9}} />
+      <div style={{position: 'absolute', left: xXe, top: 820, padding: '22px 34px', borderRadius: 24, background: '#0284C7', border: `5px solid ${C.ink}`, boxShadow: `0 10px 0 ${C.ink}`,
         display: 'flex', alignItems: 'center', gap: 20, fontWeight: 900, fontSize: 36, color: '#fff'}}>
-        <Icon name="Truck" size={56} color="#fff" />Chở chậu nhựa tái chế & khung sắt
+        <Icon name="Waves" size={56} color="#fff" />Chở thùng phao sắt ra bến sông
       </div>
       <div style={{position: 'absolute', left: 90, right: 90, top: 1240, opacity: ease(f, [25, 45], [0, 1]),
-        background: '#FDF2F8', borderRadius: 30, border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, padding: '28px 34px', display: 'flex', gap: 24, alignItems: 'center'}}>
-        <Icon name="Flower2" size={80} color="#EC4899" stroke={2.5} />
-        <div style={{fontSize: 42, fontWeight: 900, color: C.ink, lineHeight: 1.3}}>Nông trại hoa chị Lan · Chuẩn bị vụ hoa Tết</div>
+        background: '#E0F2FE', borderRadius: 30, border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, padding: '28px 34px', display: 'flex', gap: 24, alignItems: 'center'}}>
+        <Icon name="Anchor" size={80} color="#0284C7" stroke={2.5} />
+        <div style={{fontSize: 42, fontWeight: 900, color: C.ink, lineHeight: 1.3}}>Bến sông bác Ba · Lục bình & bè hàng đang ùn tắc trước cống!</div>
       </div>
     </AbsoluteFill>
   );
