@@ -77,7 +77,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'di-cheo.7', 'di-cheo.8', 'che-di-cheo.6', 'che-di-cheo.7',      // gói 5 mùa 6: đi chéo kết hợp radar (2 sân)
   'chinh-luc.7', 'chinh-luc.8', 'che-chinh-luc.5', 'che-chinh-luc.7',      // gói 6 mùa 6: chỉnh lực hất kết hợp radar (2 sân)
   'nhan-dang.2', 'nhan-dang.3', 'nhan-dang.4', 'nhan-dang.5', 'nhan-dang.6', 'nhan-dang.7', 'nhan-dang.8', 'nhan-dang.9',
-  'che-nhan-dang.1', 'che-nhan-dang.2', 'che-nhan-dang.3', 'che-nhan-dang.4', 'che-nhan-dang.5', 'che-nhan-dang.6', 'che-nhan-dang.7', 'che-nhan-dang.9');      // gói 7 mùa 6: nhận dạng đá / quặng (2 sân)
+  'che-nhan-dang.1', 'che-nhan-dang.2', 'che-nhan-dang.3', 'che-nhan-dang.4', 'che-nhan-dang.5', 'che-nhan-dang.6', 'che-nhan-dang.7', 'che-nhan-dang.9',      // gói 7 mùa 6: nhận dạng đá / quặng (2 sân)
+  'mo-cu.6', 'mo-cu.8', 'mo-cu.9', 'che-mo-cu.4', 'che-mo-cu.7', 'che-mo-cu.8', 'che-mo-cu.9');      // gói 8 mùa 6: mỏ đá cũ (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3) và gói 10 mùa 4 (drone-ke-vach) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));

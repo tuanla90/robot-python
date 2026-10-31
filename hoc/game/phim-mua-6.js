@@ -272,6 +272,40 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         truot(c, r, 900, 230, Y, 0.6);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
       }
+    ],
+
+    /* ---------------------------------------------------------------- 8 · Mỏ đá cũ */
+    'mo-cu': [
+      // 1 · cổng sắt C đóng chặt và hố sâu trong khu mỏ đá cũ
+      function (k, c) {
+        var s = c.san(k, ['##M##', '##C.F', '##o.#'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        hoi(k, c, '?', 130, 60, 0.8);
+        c.sau(900, function () { r.mat('ngac'); c.keu('loi'); });
+      },
+      // 2 · R1 hất đá vọt qua cổng C rơi lên nút đè M giữ cổng mở
+      function (k, c) {
+        var s = c.san(k, ['##M##', '##C.F', '##o.#'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        var da = s.vat['2,2'];
+        if (da) truot(c, da, 400, s.o(2, 0).x - 28, s.o(2, 0).y - 28, 0.6);
+        c.sau(1100, function () { r.mat('vui'); c.keu('kep'); });
+      },
+      // 3 · cổng mở, R1 tiến qua cổng rồi trượt ngang tới cờ
+      function (k, c) {
+        var s = c.san(k, ['##M##', '##.>F', '##..#'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        diQua(c, s, r, [[2, 1], [4, 1]], 300, 600);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · code: lob_pad(3) và smart_pad() mở cổng mỏ cũ
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        c.code(k, ['def lob_pad(n):', '    aim_lob(n)', '    forward(2)'], 10, 14);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
+        truot(c, r, 900, 230, Y, 0.6);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      }
     ]
   };
 

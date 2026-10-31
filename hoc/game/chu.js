@@ -670,6 +670,10 @@
       'pg.nhan-dang.2': 'Sola gắn thấu kính nhận dạng đá và quặng vào vòm Radar tròn.',
       'pg.nhan-dang.3': 'R1 soi biết ngay đá tròn để lấp hố, quặng quý vào máng xa!',
       'pg.nhan-dang.4': 'shape(huong) trả về "round", "square", "ore" hoặc "none", không tốn nhịp.',
+      'pg.mo-cu.1': 'Khu mỏ đá cũ còn cổng sắt, nút đè và băng chuyền nhà máy.',
+      'pg.mo-cu.2': 'R1 hất đá bay vọt qua cổng rơi đè nút M giữ cổng mở!',
+      'pg.mo-cu.3': 'Cổng mở toang, R1 mượn đà băng chuyền lướt thẳng về cờ.',
+      'pg.mo-cu.4': 'Chế hàm lob_pad(n) và smart_pad() để tự lấp hố hoặc mở cổng.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',
