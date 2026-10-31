@@ -357,8 +357,7 @@ const coHinh = (loai, ma) => !!V.lay(loai, ma);
     /this\.veOVec\(g, x, y, c\.rows\[y\]\[x\]/.test(svSrc) && /function thuOVec[\s\S]*?VeVector\.KY_HIEU/.test(svSrc) && /\n    thuOVec\(g, rows, w, h, s, mauO/.test(svSrc) && !/this\.vec\b|\bvecT\b/.test(svSrc));
   const kySrc = fs.readFileSync(path.join(GAME, 've-vector-ky-hieu.js'), 'utf8');
   const CHI_PHIM = ['o-hoa'];      // 30/10 vỏ nông trại: ô đã gieo hoa chỉ phim mùa 4 dùng (trên sân, hoaDa vẽ thẳng)
-  const CHO_NOI = ['nuoc', 'dong-nuoc', 'cong-thuy-loi', 'van-cong', 'phao-dich', 'ben-nhan', 'be-go', 'luc-binh', 'bai-cont', 'boong-tau', 'ray', 'container', 'chong-cont'];      // mùa Cảng / Bến sông 31/10: chờ gói nối san-ve.js, gói đó xoá danh sách
-  const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'") && !CHI_PHIM.includes(ma) && !CHO_NOI.includes(ma));
+  const khongDung = [...V.ds('o'), ...V.ds('vat')].filter((ma) => !svSrc.includes("'" + ma + "'") && !kySrc.includes("'" + ma + "'") && !CHI_PHIM.includes(ma));
   kiem('mọi hình ô / vật trong kho đều được san-ve.js hay bảng nối dùng tới (không hình thừa)', khongDung.length === 0, J(khongDung));
 
   /* vật: mọi chất × màu của lõi */
