@@ -1262,6 +1262,12 @@
       if (s.loiGiaiKhac) m.loiGiaiKhac = s.loiGiaiKhac;
       M.chuanHoa(m);
     });
+    // PDM4b (31/10): các màn có sẵn của che-drone ở gói 5 gắn đủ thân drone + bộ gieo hạt bụng + camera-4.
+    ['che-drone.1', 'che-drone.2', 'che-drone.4', 'che-drone.7'].forEach(function (ma) {
+      var m = get(ma);
+      m.robot = { than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren' }] };
+      m.hamGoc = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot', 'land', 'take_off', 'battery', 'color'];
+    });
     M.danhSach.forEach(function (m) { if (!nguon[m.ma]) nguon[m.ma] = copy(m); });
     var moi = [], chuong = [];
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
@@ -2409,7 +2415,7 @@
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
     // PDM3a / PDM3b2 31/10 (mùa 3 part đúng mùa): mọi gói mùa 3 đã dựng lại trên nhện; màn xe cũ ở mùa ẩn (che-nam-cham-xe, doi-tay-xoay…) dùng DAY_CU bên dưới.
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
-    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau'].forEach(function (c) { delete chuongAn[c]; });
+    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone'].forEach(function (c) { delete chuongAn[c]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
