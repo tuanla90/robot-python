@@ -1,9 +1,10 @@
-# Bảng chuẩn 7 mùa (26/10/2026, BẢN NHÁP CỦA USER, CHƯA CHỐT)
+# Bảng chuẩn 8 mùa (cập nhật 31/10/2026: thêm Mùa 4 Bến sông, đổi Núi tuyết thành Hang động đá vôi)
 
-User 26/10 phác 7 mùa; Claude rà với màn hiện có và điền chỗ trống (ghi *nghiêng* = gợi ý của Claude, chưa duyệt).
-Thay [KE-HOACH-MUA-2-3.md](KE-HOACH-MUA-2-3.md) (cách B, 6 mùa). Tinh thần: được dựng lại một số bài cho khớp.
+User 26/10 phác 7 mùa; 31/10 user chốt:
+1. Thêm **Mùa 4 Bến sông (Sông nước)** vào giữa **Mùa 3 (Bãi tái chế)** và **Mùa 5 (Nông trại hoa)** để chuyển tiếp tự nhiên từ vùng đông dân cư (kho hàng, nhà máy, bãi tái chế) qua sông sang vùng đồng quê – núi rừng ít dân cư dần (nông trại, mỏ đá, hang động), đồng thời xếp `tuple` + `return` ngay trước `list` (Mùa 5) và `list lồng` (Mùa 6).
+2. Đổi mùa **Núi tuyết** thành **Hang động đá vôi** (Mùa 7) vì Việt Nam không có núi tuyết mà nổi tiếng thế giới về hang động đá vôi và đàn đá cộng hưởng.
 
-Mỗi mùa: **1 thân + 1 tay + 1 cảm biến**, mỗi part có **gốc → nâng cấp**, cộng **1 vật + 1 sàn + 1 cơ chế** mới.
+Mỗi mùa (Mùa 1–7): **1 thân + 1 tay + 1 cảm biến**, mỗi part có **gốc → nâng cấp**, cộng **1 vật + 1 sàn + 1 cơ chế** mới; **Mùa 8**: Về lại CLB (tổng hợp).
 
 ## Bảng
 
@@ -12,17 +13,18 @@ Mỗi mùa: **1 thân + 1 tay + 1 cảm biến**, mỗi part có **gốc → nâ
 | 1 | `def`, `for`, `if` / `while` | Hai bánh → đi lùi | Tay kẹp → tay xoay | Khoảng cách → cảm biến bên (bên cạnh có vật không) | Thùng gỗ | Ô đích | Nút đè |
 | 2 | *biến (gán, đếm, tham số)* | Xích → đẩy thùng nặng khi tiến | Súng hơi → lực bắn `"fast"` / `"charge"` | Hồng ngoại: cách bao nhiêu ô `distance()` → thêm đo nhiệt `warm()` (robot, nút đang bật) | Thùng nặng | Băng chuyền | Cửa + nút bắn |
 | 3 | *chuỗi và logic (`and` / `or`, `elif`)* | Nhện → nhảy | Nam châm (một cực) → đảo cực | Cảm ứng từ: sắt → đọc cực | Sắt + nam châm (nam châm điện) | Hố | Đệm từ (hút / đẩy thân xe) |
-| 4 | *danh sách* | Drone pin ít, bay ngắn → hạ cánh / cất cánh để sạc | Máy sơn chấm ô → bút liền | Camera màu phía trước → thêm camera dưới chân | Hộp màu | Sàn màu | Ô sạc |
-| 5 | *lưới, `return`* | Omni → đi chéo | Máy ném lực 2 → chỉnh lực | Radar tròn: khoảng cách 4 hướng → hình dạng (tròn / vuông) | Bóng tròn (xe nào cũng đẩy được) | Sàn dốc | Bàn xoay |
-| 6 | `dict`, `set` | Bánh gai → thu gai | Loa: phát theo nhịp `beat()` → phát theo nốt `note(n)` | Âm thanh: nghe nhịp → nghe nốt | Nguồn phát nhạc | Sàn băng đá | Đường hầm (hầm núi / hầm băng; luật của cổng dịch chuyển cũ) |
-| 7 | đọc code người khác, chiến thuật | tự chọn part · câu đố tổ hợp (hộp trên bàn xoay, bắn đạn qua cổng, ném vật, đẩy vật lấp hố) · lắp ráp, đua đối kháng, đọ sức part mạnh, gói đội | | | | | |
+| 4 | *số âm (`-1`, `+1`), `return`, bộ cố định `tuple` (`h, s = flow()`)* | Xuồng chân vịt (đi trên nước, trôi theo dòng) → thả neo `anchor()` (đứng vững giữa dòng xiết) | Dây phao kéo `tow()` (kéo vật nổi từ xa 2–3 ô về mũi) → buộc dắt theo đuôi `tether()` (kéo bè đi theo sau như sà lan) | Chong chóng đo dòng chảy: hướng dòng `flow_dir()` → cặp `(hướng, sức_nước)` `flow()` | Bè nổi / Lục bình (trôi theo dòng, ghép làm cầu phao) | Mặt nước & Dòng chảy (thuận/ngược/ngang) | Cống thủy lợi / Âu tàu (đóng/mở đổi dòng chảy & mực nước) |
+| 5 | *danh sách (`list`)* | Drone pin ít, bay ngắn → hạ cánh / cất cánh để sạc | Máy sơn chấm ô → bút liền | Camera màu phía trước → thêm camera dưới chân | Hộp màu | Sàn màu | Ô sạc |
+| 6 | *lưới 2 chiều (danh sách lồng `grid[r][c]`)* | Omni → đi chéo | Máy ném lực 2 → chỉnh lực | Radar tròn: khoảng cách 4 hướng → hình dạng (tròn / vuông) | Bóng tròn / Đá tròn (xe nào cũng đẩy được) | Sàn dốc | Bàn xoay |
+| 7 | `dict`, `set` | Bánh gai → thu gai | Loa: phát theo nhịp `beat()` → phát theo nốt `note(n)` | Âm thanh: nghe nhịp → nghe nốt | Nguồn phát nhạc (chuông đá định vị) | Sàn đá ướt (trơn như băng) | Đường hầm / Ngách hang (luật của cổng dịch chuyển cũ) |
+| 8 | đọc code người khác, chiến thuật | tự chọn part · câu đố tổ hợp (hộp trên bàn xoay, bắn đạn qua cổng, ném vật, đẩy vật lấp hố, kéo bè làm cầu phao) · lắp ráp, đua đối kháng, đọ sức part mạnh, gói đội | | | | | |
 
-Đủ 6 × 6: **thân** hai bánh, xích, nhện, drone, omni, bánh gai · **tay** kẹp, súng hơi, nam châm, máy sơn, máy ném, loa ·
-**cảm biến** khoảng cách, hồng ngoại, cảm ứng từ, camera, radar tròn, âm thanh · **vật / sàn / cơ chế** đủ 6 mỗi loại.
+Đủ 7 × 7: **thân** hai bánh, xích, nhện, xuồng, drone, omni, bánh gai · **tay** kẹp, súng hơi, nam châm, dây phao kéo, máy sơn, máy ném, loa ·
+**cảm biến** khoảng cách, hồng ngoại, cảm ứng từ, chong chóng dòng chảy, camera, radar tròn, âm thanh · **vật / sàn / cơ chế** đủ 7 mỗi loại.
 
-## Cỗ máy của mỗi mùa (29/10, user phác, hội đồng góp ý, ĐANG BÀN)
+## Cỗ máy của mỗi mùa (29/10–31/10, user phác & chốt)
 
-**Thứ tự nơi = con đường từ CLB ra xa rồi quay về (user chốt 30/10):** kho hàng (trong thị trấn) → nhà máy (rìa, khu công nghiệp) → bãi tái chế (sau nhà máy) → nông trại hoa (đồng quê) → mỏ đá (chân núi) → núi tuyết (đỉnh, xa nhất) → về CLB (mùa 7). Bản đồ thế giới vẽ thành MỘT con đường uốn lượn qua sáu trạm; mỗi mùa xong trạm sáng lên. Ảnh nơi chốn mỗi nơi một tông màu riêng (không ép bảng "lab trắng").
+**Thứ tự nơi = con đường từ CLB ra xa (đông dân cư → qua sông → đồng quê → núi rừng hoang sơ) rồi quay về (user chốt 31/10):** kho hàng (trong thị trấn) → nhà máy (rìa, khu công nghiệp) → bãi tái chế (cuối khu công nghiệp, sát bờ sông) → **bến sông / trạm thủy lợi (vượt sông)** → nông trại hoa (đồng quê bên kia sông) → mỏ đá (chân núi) → hang động đá vôi (lòng núi sâu, xa nhất) → về CLB (mùa 8). Bản đồ thế giới vẽ thành MỘT con đường uốn lượn qua bảy trạm; mỗi mùa xong trạm sáng lên. Ảnh nơi chốn mỗi nơi một tông màu riêng (không ép bảng "lab trắng").
 
 
 Ba part của một mùa ghép lại thành **một cỗ máy gần giống thiết bị ngoài đời** mà trẻ gọi được tên. Cỗ máy là câu chuyện, phim, hình vẽ và
@@ -32,11 +34,12 @@ tên gọi; **không quyết định luật** (hội đồng 29/10, cả bốn t
 |---|---|---|---|---|
 | 1 | Xe chở hàng | kho hàng | hai bánh chở, tay gắp bốc thùng, cảm biến tránh va | (không) |
 | 2 | Xe cứu hỏa (robot chữa cháy bánh xích) | nhà máy | xích leo đống đổ nát, ủi thùng; súng hơi như vòi phun (tia nhanh / tia mạnh); hồng ngoại đo nhiệt như camera nhiệt tìm điểm nóng | user 29/10 bỏ "xe tăng" (chủ đề chiến tranh); tên part "súng hơi" tạm giữ, chỉ lời phim gọi vòi phun |
-| 3 | **Robot phân loại phế liệu R1** (user 30/10, thay Xe thăm dò quặng; dáng cua: chân nhện + nam châm) | **bãi tái chế phế liệu** (thay mỏ quặng, để khỏi trùng mỏ đá mùa 5) | nhện leo đống phế liệu / chui gầm băng chuyền, nhảy qua khe giữa đống phế liệu; nam châm nhặt sắt vụn; cảm biến từ = **phân loại rác** (sắt / gỗ, nhựa); đệm từ = tấm nam châm điện dưới sàn bãi; đảo cực, đọc cực = vật có nam châm bên trong (loa, động cơ cũ) | **luật giữ nguyên, chỉ đổi hình / tên / lời** (mùa 3 đã đủ 200 màn); sắt = sắt vụn, hố = khe giữa đống phế liệu |
-| 4 | **Drone nông nghiệp** (user 30/10, thay Drone kẻ vạch) | **nông trại hoa** (thay thành phố) | drone bay trên luống; máy sơn thành **bộ gieo hạt / bình phun**: mỗi màu là một loại hạt hoa, `dot` gieo một ô (ô nở hoa đúng màu), bút liền phun / gieo cả hàng; camera nhìn luống: hoa màu gì, lá vàng (phun phân bón) hay có sâu (phun thuốc); hộp màu = bao hạt; ô sạc giữ (hạ cánh thay pin, nạp bình) | **luật giữ nguyên, chỉ đổi hình / tên** (như súng hơi → vòi phun); lý do: drone phun thuốc rất phổ biến ở Việt Nam, trẻ dễ nhận ra ứng dụng thật |
-| 5 | **Máy khai thác đá R1** (user 30/10, thay Robot cầu thủ: sân bóng không có hố, dốc) | **mỏ đá trên núi** (chân núi, đá vàng nâu ngoài trời) | omni bò ngang sườn dốc; bóng tròn = **tảng đá tròn** lăn theo dốc; lấp hố đã khai thác; radar tròn phân biệt **đá hộc (tròn) / đá xẻ (khối)**; bàn xoay = mâm xoay máy cắt đá; máy ném = tay hất / đẩy đá (đặt tên sau) | robot cần thật: đá lở, bụi, nổ mìn nguy hiểm cho người; ngoài đời có máy khai thác điều khiển từ xa |
-| 6 | Xe tuần tra núi tuyết | núi tuyết | bánh gai bám băng; **loa chủ động làm tuyết lăn** (lở có kiểm soát); cảm biến âm thanh nghe tín hiệu người cần cứu | cổng dịch chuyển → đường hầm (**user chốt 29/10**) |
-| 7 | Robot riêng của Sola, của Luna (30/10) | **về lại CLB** (trung tâm thị trấn) | sự kiện lớn cần năng lực của cả sáu cỗ máy; mỗi bạn tự lắp một robot từ part đã có | |
+| 3 | **Robot phân loại phế liệu R1** (user 30/10, thay Xe thăm dò quặng; dáng cua: chân nhện + nam châm) | **bãi tái chế phế liệu** (thay mỏ quặng, để khỏi trùng mỏ đá) | nhện leo đống phế liệu / chui gầm băng chuyền, nhảy qua khe giữa đống phế liệu; nam châm nhặt sắt vụn; cảm biến từ = **phân loại rác** (sắt / gỗ, nhựa); đệm từ = tấm nam châm điện dưới sàn bãi; đảo cực, đọc cực = vật có nam châm bên trong (loa, động cơ cũ) | **luật giữ nguyên, chỉ đổi hình / tên / lời** (mùa 3 đã đủ 200 màn); sắt = sắt vụn, hố = khe giữa đống phế liệu |
+| 4 | **Tàu thủy lợi & tuần tra sông nước R1** (user chốt 31/10: chèn vào giữa Mùa 3 và Nông trại hoa) | **bến sông / trạm thủy lợi** (con sông ngăn cách khu công nghiệp với vùng đồng quê) | thân xuồng chân vịt lướt trên mặt nước, thả neo `anchor()` giữ vị trí giữa dòng nước xiết; dây phao kéo `tow()` quăng từ xa kéo bè hàng / lục bình về mũi, nâng cấp buộc dắt theo đuôi `tether()` như tàu kéo sà lan; chong chóng đo dòng chảy đọc hướng chảy và sức nước `(hướng, sức)`; cống thủy lợi điều tiết dòng nước tưới sang nông trại | cơ chế dòng nước đẩy/kéo quen thuộc như băng chuyền nhưng có hướng và sức nước (`-1`, `+1`, `+2`); ngoài đời ở Việt Nam có tàu tự hành vớt lục bình trên sông và trạm cống thủy lợi miền Tây |
+| 5 | **Drone nông nghiệp** (user 30/10, thay Drone kẻ vạch) | **nông trại hoa** (đồng quê bên kia sông, dùng nước từ trạm thủy lợi mùa 4) | drone bay trên luống; máy sơn thành **bộ gieo hạt / bình phun**: mỗi màu là một loại hạt hoa, `dot` gieo một ô (ô nở hoa đúng màu), bút liền phun / gieo cả hàng; camera nhìn luống: hoa màu gì, lá vàng (phun phân bón) hay có sâu (phun thuốc); hộp màu = bao hạt; ô sạc giữ (hạ cánh thay pin, nạp bình) | **luật giữ nguyên, chỉ đổi hình / tên** (như súng hơi → vòi phun); lý do: drone phun thuốc rất phổ biến ở Việt Nam, trẻ dễ nhận ra ứng dụng thật |
+| 6 | **Máy khai thác đá R1** (user 30/10, thay Robot cầu thủ: sân bóng không có hố, dốc) | **mỏ đá trên núi** (chân núi, đá vàng nâu ngoài trời) | omni bò ngang sườn dốc; bóng tròn = **tảng đá tròn** lăn theo dốc; lấp hố đã khai thác; radar tròn phân biệt **đá hộc (tròn) / đá xẻ (khối)**; bàn xoay = mâm xoay máy cắt đá; máy ném = tay hất / đẩy đá (đặt tên sau) | robot cần thật: đá lở, bụi, nổ mìn nguy hiểm cho người; ngoài đời có máy khai thác điều khiển từ xa |
+| 7 | **Xe thám hiểm & cứu hộ hang động R1** (user chốt 31/10, thay Xe tuần tra núi tuyết vì Việt Nam không có núi tuyết) | **hang động đá vôi** (kiểu Phong Nha – Sơn Đoòng – Tràng An, ngay sau mỏ đá) | bánh gai bám sàn đá vôi phủ bùn nhũ / rêu ướt trơn bóng, thu gai trượt dốc máng đá ướt; **loa phát nhịp định vị tiếng vang (như dơi) và phát nốt cộng hưởng làm khối thạch nhũ rỗng (đá chuông / đàn đá) rung nứt**; cảm biến âm thanh nghe tiếng vang / đọc nốt đá chuông | cổng dịch chuyển → **ngách hang ngầm xuyên vách núi** (**user chốt 29/10 & 31/10**); sàn băng → sàn đá vôi ướt; khối băng → khối thạch nhũ rỗng (đá chuông) |
+| 8 | Robot riêng của Sola, của Luna (30/10) | **về lại CLB** (trung tâm thị trấn) | sự kiện lớn cần năng lực của cả bảy cỗ máy; mỗi bạn tự lắp một robot từ part đã có | |
 
 Combo gói 9 gợi ý (hội đồng): mùa 5 **"Trượt và sút"**: omni có máy ném được ném khi đang trượt (lõi hiện bắt đứng yên: `nem-dung-yen`, `san-hoc.js` mục MÁY NÉM);
 cùng khuôn với Bệ súng xích (bỏ một điều bất lợi). Mùa 6: để lúc lập kế hoạch mùa 6 (ứng viên: phát đúng nốt thì mở đường hầm / làm khối tuyết lăn).
@@ -68,7 +71,7 @@ Mùa 6 âm thanh: bài hát, cộng hưởng, R1 và R2 nói chuyện (user 29/1
 ## Quy tắc đặt tên và giọng kể (user duyệt 29/10; hội đồng 20261029-1738)
 
 Game tên **Mật Lệnh Robot** (đổi 29/10). Chỉ đổi chữ hiển thị, mã gói / chương giữ nguyên (khoá lưu). Khối đặt tên ở cuối `hoc/lo-trinh-hoc.js`.
-1. **Tên mùa = nơi robot làm việc** (1–3 chữ): Kho hàng · Nhà máy · Bãi tái chế (30/10, thay Mỏ quặng) · Nông trại (30/10, thay Thành phố) · Mỏ đá (30/10, thay Sân bóng) · Núi tuyết · CLB (mùa 7: về lại CLB).
+1. **Tên mùa = nơi robot làm việc** (1–3 chữ): Kho hàng · Nhà máy · Bãi tái chế (30/10, thay Mỏ quặng) · **Bến sông (31/10, thêm mới giữa Bãi tái chế và Nông trại)** · Nông trại (30/10, thay Thành phố) · Mỏ đá (30/10, thay Sân bóng) · Hang động (31/10, thay Núi tuyết) · CLB (mùa 8: về lại CLB).
    Mùa 1 "Xưởng R1" → **"Kho hàng"** (user 29/10: mùa 1 là xe bê vác).
    Khái niệm Python không làm tên mùa (nếu cần thì làm nhãn phụ cho phụ huynh, chưa quyết).
 2. **Tên gói = món mới hay tình huống mới**, gọi đúng như thẻ bộ phận (`hoc/gioi-thieu-part.js`); mỗi món một tên trong cả game. Không "Combo", không "Đội" trống.
@@ -177,35 +180,36 @@ Yếu tố sân cần một nâng cấp mới dùng được (ô sạc cần H�
 
 **Phim mở gói (user 27/10, mọi mùa):** mỗi gói có một phim ngắn 3–4 khung giới thiệu robot / part / cơ chế mới, chiếu lần đầu vào gói (bộ máy và kịch bản mùa 1: [KE-HOACH-PHIM-GOI.md](KE-HOACH-PHIM-GOI.md)). Kịch bản từng mùa viết cùng lúc lên danh sách màn của mùa đó.
 
-| Mùa | Python A (gói 1) | Python B (gói 2) | Cảm biến trả về (gói 3) | 1 Thân | 2 Tay | 3 Cảm biến | 4 Sân | 5–7 Nâng cấp | 8 Đội |
+| Mùa | Python A (gói 1) | Python B (gói 2) | Cảm biến trả về (gói 3 → 7) | 1 Thân | 2 Tay | 3 Cảm biến | 4 Sân | 5–7 Nâng cấp | 8 Đội |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 Xưởng R1 | `def` | `for` | bool, `if` / `while` | Hai bánh | Tay gắp | Khoảng cách | thùng gỗ, ô đích, nút đè | Bánh lùi · Tay xoay · Cảm biến bên | Hai robot (+10 mới) |
-| 2 Ghi nhớ | biến (đếm) | tham số | số `d = distance()` | Xích | Súng hơi | Hồng ngoại | thùng nặng, băng chuyền, cửa + nút bắn | Đẩy thùng · Lực bắn · Đo nhiệt | mới |
-| 3 Tín hiệu | chuỗi | logic `and` / `or` / `elif` | chuỗi `"N"` / `"S"` | Nhện | Nam châm | Cảm ứng từ | sắt + nam châm, hố, đệm từ | Nhảy · Đảo cực · Đọc cực | Đội xích và nhện |
-| 4 Bầu trời | danh sách | duyệt `for x in a`, `append` | chuỗi màu → danh sách màu | Drone | Máy sơn | Camera | hộp màu, sàn màu | Hạ cánh sạc · Bút liền · Camera dưới chân | Đội nam châm và màu |
-| 5 Lưới | lưới (danh sách lồng) | `return` | danh sách 4 hướng | Omni | Máy ném | Radar tròn | bóng tròn, sàn dốc, bàn xoay | Đi chéo · Chỉnh lực · Hình dạng | Đội omni và xích |
-| 6 Âm nhạc | `dict` | `set` | nốt nghe được | Bánh gai | Loa | Âm thanh | nguồn nhạc, băng đá, đường hầm | Thu gai · Phát nốt · Nghe nốt | mới |
+| 1 Kho hàng | `def` | `for` | bool, `if` / `while` | Hai bánh | Tay gắp | Khoảng cách | thùng gỗ, ô đích, nút đè | Bánh lùi · Tay xoay · Cảm biến bên | Hai robot (+10 mới) |
+| 2 Nhà máy | biến (đếm) | tham số | số `d = distance()` | Xích | Súng hơi | Hồng ngoại | thùng nặng, băng chuyền, cửa + nút bắn | Đẩy thùng · Lực bắn · Đo nhiệt | mới |
+| 3 Bãi tái chế | chuỗi | logic `and` / `or` / `elif` | chuỗi `"N"` / `"S"` | Nhện | Nam châm | Cảm ứng từ | sắt + nam châm, hố, đệm từ | Nhảy · Đảo cực · Đọc cực | Đội xích và nhện |
+| 4 Bến sông | số âm (`-1`, `+1` xuôi/ngược dòng), `return` | bộ cố định `tuple` (`h, s = flow()`) | hướng chảy → cặp `(hướng, sức_nước)` | Xuồng chân vịt | Dây phao kéo | Chong chóng dòng chảy | bè nổi, mặt nước & dòng chảy, cống thủy lợi | Thả neo · Buộc dắt theo đuôi · Đo sức nước | mới (Nhện + Xuồng) |
+| 5 Nông trại | danh sách (`list`) | duyệt `for x in a`, `append` | chuỗi màu → danh sách màu | Drone | Máy sơn | Camera | hộp màu, sàn màu, ô sạc | Hạ cánh sạc · Bút liền · Camera dưới chân | Đội nam châm/xuồng và màu |
+| 6 Mỏ đá | lưới 2 chiều (danh sách lồng) | duyệt lưới 2 vòng lặp / tọa độ `(r, c)` | danh sách 4 hướng → hình dạng | Omni | Máy ném | Radar tròn | bóng/đá tròn, sàn dốc, bàn xoay | Đi chéo · Chỉnh lực · Hình dạng | Đội omni và xích/drone |
+| 7 Hang động | `dict` | `set` | nốt nghe được `listen()` | Bánh gai | Loa | Âm thanh | chuông đá, sàn đá ướt, ngách hang | Thu gai · Phát nốt · Nghe nốt | mới (Omni + Bánh gai) |
 
-**Mùa 7 Kỹ sư (10 gói, 200):** Lắp ráp Thân + Não · Thân + Tay · Đủ bộ · Đua đối kháng · Đọ sức part mạnh · Phối hợp ×3 · Câu đố tổ hợp · Trùm cuối.
+**Mùa 8 Kỹ sư / Về CLB (10 gói, 200):** Lắp ráp Thân + Não · Thân + Tay · Đủ bộ · Đua đối kháng · Đọ sức part mạnh · Phối hợp ×3 · Câu đố tổ hợp · Trùm cuối.
 
 ### Gói đội hiện có xếp vào đâu
 Mỗi gói đội đứng ở mùa của part **mới nhất** mà nó dùng (đã rà robot của từng gói):
 
 | Gói đội | Part cần | Mùa | Vào |
 |---|---|---|---|
-| Đội vượt hố và băng chuyền | nhện, hố, băng chuyền | 3 | mùa 7 Phối hợp |
+| Đội vượt hố và băng chuyền | nhện, hố, băng chuyền | 3 | mùa 8 Phối hợp |
 | Đội xích và nhện | xích, nhện | 3 | **gói 8 mùa 3** |
-| Đội tay xoay và nam châm | nam châm, tay xoay | 3 | mùa 7 Phối hợp |
-| Đội màu và súng hơi | màu, súng hơi | 4 | mùa 7 Phối hợp |
-| Đội nam châm và màu | nam châm, màu | 4 | **gói 8 mùa 4** |
-| Đội omni và xích | omni, xích | 5 | **gói 8 mùa 5** |
-| Đội súng hơi và omni | súng hơi, omni | 5 | mùa 7 Phối hợp |
-| Đội tay gắp và máy ném | máy ném | 5 | mùa 7 Phối hợp |
-| Đội drone và máy ném | drone, máy ném | 5 | mùa 7 Phối hợp |
+| Đội tay xoay và nam châm | nam châm, tay xoay | 3 | mùa 8 Phối hợp |
+| Đội màu và súng hơi | màu, súng hơi | 5 | mùa 8 Phối hợp |
+| Đội nam châm và màu | nam châm, màu | 5 | **gói 8 mùa 5** |
+| Đội omni và xích | omni, xích | 6 | **gói 8 mùa 6** |
+| Đội súng hơi và omni | súng hơi, omni | 6 | mùa 8 Phối hợp |
+| Đội tay gắp và máy ném | máy ném | 6 | mùa 8 Phối hợp |
+| Đội drone và máy ném | drone, máy ném | 6 | mùa 8 Phối hợp |
 | Đội hai robot (10) | hai bánh | 1 | **gói 8 mùa 1** (+10 màn) |
 
-Sáu gói dư (120 màn) vào ba gói Phối hợp của mùa 7 (60 màn): giữ chương hay nhất của mỗi gói, phần còn lại cất khỏi lộ trình (vẫn trong ngân hàng, không mất).
-Mùa 2 và mùa 6 chưa có gói đội: phải viết mới.
+Sáu gói dư (120 màn) vào ba gói Phối hợp của mùa 8 (60 màn): giữ chương hay nhất của mỗi gói, phần còn lại cất khỏi lộ trình (vẫn trong ngân hàng, không mất).
+Mùa 2, mùa 4 (Bến sông) và mùa 7 (Hang động) viết gói đội mới.
 
 ### Tổng
-7 mùa × 200 = **1.400 màn** (hiện lộ trình có 650). Mùa nào cũng cùng cỡ, cùng khuôn; khác nhau chỉ ở part và ý Python.
+8 mùa × 200 = **1.600 màn** (hiện lộ trình có 650). Mùa nào cũng cùng cỡ, cùng khuôn; khác nhau chỉ ở part và ý Python.
