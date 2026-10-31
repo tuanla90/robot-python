@@ -621,6 +621,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.khoi(60, 64, 32, 20, BM.vecCamDam, [['4t', BM.vecVo, 11]]);
     c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 60, 34);
   }));
+  dk('cang-cu', function (g, c) {
+    c.o('rao', { mask: 0 }, 54, 48, 22);
+    c.vat('container', { so: 15, mau: 'cam' }, 72, 34, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 62, 38);
+  });
+  dk('che-cang-cu', che(function (g, c) {
+    c.o('rao', { mask: 0 }, 52, 50, 20);
+    c.vat('container', { so: 18, mau: 'cam' }, 66, 36, 14);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 32, 64, 34);
+  }));
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

@@ -1136,7 +1136,27 @@
   "che-can-tai.7": { "o": 25, "nhip": 32 },
   "che-can-tai.8": { "o": 33, "nhip": 44 },
   "che-can-tai.9": { "o": 27, "nhip": 60 },
-  "che-can-tai.10": { "o": 34, "nhip": 70 }
+  "che-can-tai.10": { "o": 34, "nhip": 70 },
+  "cang-cu.1": { "o": 11, "nhip": 8 },
+  "cang-cu.2": { "o": 11, "nhip": 8 },
+  "cang-cu.3": { "o": 12, "nhip": 9 },
+  "cang-cu.4": { "o": 11, "nhip": 9 },
+  "cang-cu.5": { "o": 15, "nhip": 14 },
+  "cang-cu.6": { "o": 16, "nhip": 9 },
+  "cang-cu.7": { "o": 14, "nhip": 39 },
+  "cang-cu.8": { "o": 26, "nhip": 24 },
+  "cang-cu.9": { "o": 19, "nhip": 21 },
+  "cang-cu.10": { "o": 18, "nhip": 78 },
+  "che-cang-cu.1": { "o": 18, "nhip": 8 },
+  "che-cang-cu.2": { "o": 12, "nhip": 8 },
+  "che-cang-cu.3": { "o": 12, "nhip": 8 },
+  "che-cang-cu.4": { "o": 21, "nhip": 22 },
+  "che-cang-cu.5": { "o": 17, "nhip": 36 },
+  "che-cang-cu.6": { "o": 25, "nhip": 38 },
+  "che-cang-cu.7": { "o": 28, "nhip": 52 },
+  "che-cang-cu.8": { "o": 15, "nhip": 39 },
+  "che-cang-cu.9": { "o": 29, "nhip": 38 },
+  "che-cang-cu.10": { "o": 31, "nhip": 126 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;

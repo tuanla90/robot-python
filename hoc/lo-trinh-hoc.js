@@ -33,8 +33,8 @@
       'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4',
       // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–10
       'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da', 'di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni-moi', 'trum-mua-6',
-      // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–7
-      'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray', 'nhac-doi', 'can-tai'].forEach(function (n) { require('./man-' + n + '.js'); });
+      // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–8
+      'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray', 'nhac-doi', 'can-tai', 'cang-cu'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1638,7 +1638,9 @@
     { ma: 'nhac-doi', ten: 'Móc cẩu đôi', loai: 'bo-phan', hinh: 'nhac-doi',
       chuong: [['nhac-doi', []], ['che-nhac-doi', []]] },
     { ma: 'can-tai', ten: 'Cảm biến tải trọng', loai: 'bo-phan', hinh: 'can-tai',
-      chuong: [['can-tai', []], ['che-can-tai', []]] }
+      chuong: [['can-tai', []], ['che-can-tai', []]] },
+    { ma: 'cang-cu', ten: 'Bãi cảng cũ', loai: 'thu-thach', hinh: 'cang-cu',
+      chuong: [['cang-cu', []], ['che-cang-cu', []]] }
   ];
   var TEN_MUA_CANG = {
     'can-cau': 'Quay cần vươn tầm', 'so-am': 'Số âm và khoảng cách',
@@ -1647,9 +1649,10 @@
     'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: giao đúng tàu',
     'duong-ray': 'Chạy dọc đường ray', 'che-duong-ray': 'Chế lệnh: dời bệ cẩu',
     'nhac-doi': 'Móc đôi hai tầng', 'che-nhac-doi': 'Chế lệnh: bốc nhanh',
-    'can-tai': 'Đo sức nặng', 'che-can-tai': 'Chế lệnh: giữ cần an toàn'
+    'can-tai': 'Đo sức nặng', 'che-can-tai': 'Chế lệnh: giữ cần an toàn',
+    'cang-cu': 'Bãi cảng cũ', 'che-cang-cu': 'Chế lệnh: vượt chướng ngại cũ'
   };
-  var TEP_MUA_CANG = ['manCanCau', 'manMocCau', 'manQuetMa', 'manBenTau', 'manDuongRay', 'manNhacDoi', 'manCanTai'];
+  var TEP_MUA_CANG = ['manCanCau', 'manMocCau', 'manQuetMa', 'manBenTau', 'manDuongRay', 'manNhacDoi', 'manCanTai', 'manCangCu'];
   (function () {
     Object.keys(TEN_MUA_CANG).forEach(function (c) { TT.ten[c] = TEN_MUA_CANG[c]; });
     var moi = [], chuong = [];

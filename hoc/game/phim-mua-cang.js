@@ -230,4 +230,29 @@
       }
     }
   ]);
+
+  /* ================================================================ 8. cang-cu — Bãi cảng cũ */
+  PG.dangKy('cang-cu', [
+    { Chu: ['Khu bãi cảng cũ còn sót lại tường đá, hàng rào sắt và hố sâu.', 'Cần cẩu vươn cao qua mọi chướng ngại để bốc container phía sau!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('rao', { mask: 0 }), 2, 2);
+        dat(s, veV('container', { so: 15, mau: 'cam' }, 1.5), 3, 2);
+        dat(s, may(CAU_QUET, { nac: 3, tam: 1, camBien: { bat: true } }, 0), 2, 1);
+      }
+    },
+    { Chu: ['Đầu cần không thể hạ container xuống tường, rào, hố hay cửa đóng.', 'Hãy vươn nhấc hàng, thu cần về tầm 1 rồi quay giao lên boong tàu!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('boong-tau', { co: true }), 2, 0);
+        dat(s, veV('container', { so: 15, mau: 'cam' }, 1.5), 2, 0);
+        dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
+        m.appendChild(code('extend()\npick_up()\nretract()\nswing_by(4)\nset_down()'));
+      }
+    }
+  ]);
 })();

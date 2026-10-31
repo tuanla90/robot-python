@@ -82,7 +82,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'doi-omni.16', 'doi-omni.17', 'che-doi-omni.15', 'che-doi-omni.16', 'che-doi-omni.18', 'che-doi-omni.19',      // gói 9 mùa 6: R2 ở mỏ đá (2 sân)
   'quet-ma.2', 'quet-ma.3', 'quet-ma.4', 'quet-ma.5', 'quet-ma.6', 'quet-ma.7', 'quet-ma.8', 'quet-ma.9',
   'che-quet-ma.1', 'che-quet-ma.2', 'che-quet-ma.3', 'che-quet-ma.4', 'che-quet-ma.5', 'che-quet-ma.6', 'che-quet-ma.7', 'che-quet-ma.8', 'che-quet-ma.9',
-  'ben-tau.7', 'che-ben-tau.9', 'che-duong-ray.9', 'che-nhac-doi.9', 'che-can-tai.9');      // gói 3–7 mùa cảng sông: đọc mã container, bến tàu, đường ray, móc đôi & cân tải (2 sân)
+  'ben-tau.7', 'che-ben-tau.9', 'che-duong-ray.9', 'che-nhac-doi.9', 'che-can-tai.9',
+  'cang-cu.6', 'cang-cu.8', 'che-cang-cu.4', 'che-cang-cu.7', 'che-cang-cu.9');      // gói 3–8 mùa cảng sông: đọc mã container, bến tàu, đường ray, móc đôi, cân tải & cảng cũ (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach) và gói 10 mùa 6 (may-mo-da) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
