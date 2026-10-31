@@ -1,13 +1,14 @@
 # Vá chỗ nối giữa hai mùa trên ảnh dài: TopView vẽ lại dải chuyển cảnh (ảnh sinh từ một khung cắt quanh vết nối),
 # đặt dải mới vào lại ảnh dài. Hai mép dải không hoà mờ cả vùng mà cắt theo ĐƯỜNG CẮT TỐI ƯU (như noi-mua.py) ở chỗ
 # ảnh mới giống ảnh cũ nhất, viền mềm vài px; trước đó chỉnh màu ảnh mới cho khớp ảnh cũ (trung bình / độ lệch từng kênh
-# đo ở hai mép giữ nguyên) và kéo ảnh mới cho trùng hình ảnh cũ ở hai mép (SIFT + affine, rồi luồng quang học trơn).
-# python tools/va-cho-noi.py <dài vào.jpg> <dài ra.jpg> <tâm y> <cao khung> <ảnh sinh.png>
+# đo ở hai mép giữ nguyên) và dịch / co ngang ảnh mới cho đường trùng ảnh cũ (không co giãn dọc, xem dưới).
+# python tools/va-cho-noi.py <dài vào.jpg> <dài ra.jpg> <tâm y> <cao khung> <ảnh sinh.png> [tren]
 import sys
 import numpy as np
 from PIL import Image, ImageFilter
 
 vao, ra, TAM, CAO, sinh = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), sys.argv[5]
+CHI_TREN = 'tren' in sys.argv[6:]                           # chỉ giữ mép trên (đoạn cuối bản đồ: phần dưới lấy hết ảnh sinh)
 dai = np.asarray(Image.open(vao).convert('RGB')).astype(np.float32)
 W = dai.shape[1]
 y0 = TAM - CAO // 2
@@ -15,49 +16,74 @@ cu = dai[y0:y0 + CAO].copy()
 moi = np.asarray(Image.open(sinh).convert('RGB').resize((W, CAO), Image.LANCZOS)).astype(np.float32)
 MEP = CAO * 22 // 100                                         # dải cắt tìm trong 0..MEP (trên) và CAO-MEP..CAO (dưới)
 
-# ảnh sinh thường lệch tỉ lệ vài phần trăm (đường lệch 10–100 px ở mép). Bước 2 đo luồng quang học từ ảnh cũ sang ảnh sinh CHỈ ở hai mép
-# giữ nguyên, khớp mỗi mép bằng một mặt bậc hai trơn (bỏ điểm lệch lạ), rồi kéo ảnh sinh theo mặt đó: trọng số 1 ở mép,
-# giảm dần về 0 giữa dải. Mặt trơn nên không kéo nhòe chi tiết (lau sậy, cây) như khi dùng luồng từng điểm.
+# TopView vẽ lại thường thu nhỏ hình theo chiều dọc 15–25% (vật ở hai mép nhỏ hơn bản gốc) và lệch ngang vài chục px.
+# KHÔNG co giãn dọc để bù (bản 31/10 làm vậy nên nhà, container ở dải chuyển bị kéo méo): mỗi mép chỉ khớp
+#   ngang x' = a·x + b (để đường liền) và dịch dọc d (đo ở nửa trong của mép, sát chỗ cắt), từ điểm SIFT khớp (RANSAC);
+# a, b, d nội suy trơn theo hàng giữa hai mép. Hình trong ảnh sinh giữ nguyên tỉ lệ TopView vẽ.
 import cv2
 xam = lambda a: cv2.cvtColor(np.clip(a, 0, 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
 gx, gy = np.meshgrid(np.arange(W, dtype=np.float32), np.arange(CAO, dtype=np.float32))
-
-# bước 1 (lệch lớn, tới 100 px): mỗi mép một phép affine từ điểm SIFT khớp (RANSAC), nội suy affine theo hàng giữa hai mép
 sift = cv2.SIFT_create(4000)
 kb, db = sift.detectAndCompute(xam(moi), None)
-def affine(y0, y1):
+def khop(y0, y1, trong):
     m = np.zeros((CAO, W), np.uint8); m[y0:y1] = 255
     ka, da = sift.detectAndCompute(xam(cu), m)
     cap = [p for p, q in cv2.BFMatcher().knnMatch(da, db, k=2) if p.distance < 0.75 * q.distance]
     A = np.float32([ka[p.queryIdx].pt for p in cap]); B = np.float32([kb[p.trainIdx].pt for p in cap])
-    M, ok = cv2.estimateAffine2D(A, B, ransacReprojThreshold=4, maxIters=5000)
-    print('affine', y0, y1, 'khớp', int(ok.sum()), '/', len(cap), np.round(M, 3).tolist(), file=sys.stderr)
-    return M
-Mt, Md = affine(0, MEP), affine(CAO - MEP, CAO)
-s = np.clip((gy - MEP / 2) / (CAO - MEP), 0, 1); s = s * s * (3 - 2 * s)
-M = Mt[None, None] * (1 - s)[..., None, None] + Md[None, None] * s[..., None, None]
-mx = M[..., 0, 0] * gx + M[..., 0, 1] * gy + M[..., 0, 2]; my = M[..., 1, 0] * gx + M[..., 1, 1] * gy + M[..., 1, 2]
-moi = cv2.remap(moi, mx.astype(np.float32), my.astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    M, ok = cv2.estimateAffine2D(A, B, ransacReprojThreshold=5, maxIters=5000)
+    ok = ok.ravel().astype(bool)
+    a, b = np.polyfit(A[ok, 0], B[ok, 0], 1)                     # ngang: x' = a·x + b
+    sat = ok & (A[:, 1] >= trong[0]) & (A[:, 1] < trong[1])
+    d = float(np.median((B[sat] if sat.sum() >= 5 else B[ok])[:, 1] - (A[sat] if sat.sum() >= 5 else A[ok])[:, 1]))
+    print('khớp', y0, y1, 'điểm', int(ok.sum()), 'a b d', round(a, 3), round(b, 1), round(d, 1), file=sys.stderr)
+    return a, b, d
+kt = khop(0, MEP, (MEP // 2, MEP))
+kd = khop(CAO - MEP, CAO, (CAO - MEP, CAO - MEP // 2)) if not CHI_TREN else kt
+s = np.clip((gy - MEP) / max(CAO - 2 * MEP, 1), 0, 1); s = s * s * (3 - 2 * s)
+a, b, d = [kt[i] * (1 - s) + kd[i] * s for i in range(3)]
+moi = cv2.remap(moi, (a * gx + b).astype(np.float32), (gy + d).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
-# bước 2 (lệch nhỏ còn lại)
-luong = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM).calc(xam(cu), xam(moi), None)
-bac2 = lambda x, y: np.stack([np.ones_like(x), x, y, x * x, x * y, y * y], -1)
-def mat_tron(y0, y1):
-    ys, xs = np.mgrid[y0:y1:8, 0:W:8]
-    f = luong[ys, xs].reshape(-1, 2); A = bac2(xs.ravel() / W, ys.ravel() / CAO)
-    ok = np.ones(len(f), bool)
-    for _ in range(3):                                         # bỏ điểm lệch xa mặt (luồng sai ở chỗ phẳng / khác hình)
-        hs = np.linalg.lstsq(A[ok], f[ok], rcond=None)[0]
-        r = np.abs(A @ hs - f).sum(1); ok = r < max(2.0, 2.5 * np.median(r[ok]))
-    return bac2(gx / W, gy / CAO) @ hs
-yy = np.arange(CAO, dtype=np.float32)[:, None]
-tt = lambda d: 1 - np.clip(d / (CAO * 0.18), 0, 1) ** 2 * (3 - 2 * np.clip(d / (CAO * 0.18), 0, 1))
-wt, wd = tt(np.clip(yy - MEP, 0, None)), tt(np.clip(CAO - MEP - yy, 0, None))   # 1 ở mép trên / dưới → 0 giữa
-keo = mat_tron(0, MEP) * wt[..., None] + mat_tron(CAO - MEP, CAO) * wd[..., None]
-print('kéo mép trên', np.round(keo[MEP // 2, ::W // 4].tolist(), 1).tolist(), 'mép dưới', np.round(keo[CAO - MEP // 2, ::W // 4].tolist(), 1).tolist(), file=sys.stderr)
-moi = cv2.remap(moi, gx + keo[..., 0].astype(np.float32), gy + keo[..., 1].astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+# khớp riêng MẶT ĐƯỜNG: điểm SIFT nằm chủ yếu trên nhà cửa nên đường vẫn có thể lệch ngang vài chục px ở chỗ cắt.
+def tam_duong(a, y):
+    mx, mn = a[y].max(-1), a[y].min(-1)
+    r, b = a[y, :, 0], a[y, :, 2]
+    xs = np.flatnonzero((mx - mn < 38) & (mx > 95) & (mx < 165) & (b >= r - 4))     # nhựa đường xám ngả xanh
+    if xs.size < 40: return None
+    runs = [r for r in np.split(xs, np.flatnonzero(np.diff(xs) > 14) + 1) if 60 <= r[-1] - r[0] <= 230 and r.size > 0.6 * (r[-1] - r[0])]
+    return min(((r[0] + r[-1]) / 2 for r in runs), key=lambda c: abs(c - W / 2)) if runs else None
+TIM0 = CAO * 38 // 100
+# lệch đường theo TỪNG HÀNG (đường cong nên lệch dọc thành lệch ngang khác nhau mỗi hàng): đo ở vùng tìm cắt hai mép,
+# lọc trung vị, hàng không thấy đường thì nội suy; ngoài hai vùng giảm mượt về 0 trong 160 hàng
+ys = np.arange(CAO); dx = np.full(CAO, np.nan)
+for y in np.r_[np.arange(0, TIM0), np.arange(CAO - TIM0, CAO)] if not CHI_TREN else np.arange(0, TIM0):
+    c, m = tam_duong(cu, y), tam_duong(moi, y)
+    if c is not None and m is not None and abs(c - m) < 80: dx[y] = c - m
+for v0, v1, mep in ((0, TIM0, TIM0), (CAO - TIM0, CAO, CAO - TIM0)):
+    k = ~np.isnan(dx[v0:v1])
+    if k.sum() < 10: dx[v0:v1] = 0; continue
+    seg = np.interp(ys[v0:v1], ys[v0:v1][k], dx[v0:v1][k])
+    from scipy.ndimage import median_filter, gaussian_filter1d
+    dx[v0:v1] = gaussian_filter1d(median_filter(seg, 31), 8)
+giua = np.isnan(dx)
+dx[giua] = 0
+xa_t = np.clip((ys - TIM0) / 160, 0, 1); xa_d = np.clip((CAO - TIM0 - ys) / 160, 0, 1)
+for y in ys[giua]:
+    dx[y] = dx[TIM0 - 1] * (1 - xa_t[y]) ** 2 * (y >= TIM0) + (0 if CHI_TREN else dx[CAO - TIM0] * (1 - xa_d[y]) ** 2 * (y < CAO - TIM0))
+print('lệch đường theo hàng: trên', round(float(np.abs(dx[:TIM0]).max()), 1), 'dưới', round(float(np.abs(dx[CAO - TIM0:]).max()), 1), file=sys.stderr)
+# chỉ nắn mặt đường và lề, chặn 40 px: nhà, luống hoa ở xa giữ nguyên hình
+dx = np.clip(dx, -40, 40)
+tam_m = np.full(CAO, np.nan)
+for y in range(0, CAO, 4):
+    c = tam_duong(moi, y)
+    if c is not None: tam_m[y] = c
+k = ~np.isnan(tam_m)
+tam_m = np.interp(ys, ys[k], tam_m[k]) if k.sum() > 10 else np.full(CAO, W / 2)
+from scipy.ndimage import gaussian_filter1d as _g
+tam_m = _g(tam_m, 12)
+w = np.clip(1.25 - np.abs(gx - tam_m[:, None]) / 110, 0, 1)            # mặt đường + lề (~90 px mỗi bên) dịch đủ, ra 140 px thì 0
+moi = cv2.remap(moi, (gx - dx[:, None] * w).astype(np.float32), gy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
-giu = np.r_[np.arange(MEP), np.arange(CAO - MEP, CAO)]
+giu = np.arange(MEP) if CHI_TREN else np.r_[np.arange(MEP), np.arange(CAO - MEP, CAO)]
 for c in range(3):                                            # khớp màu từng kênh theo hai mép giữ nguyên
     a, b = cu[giu, :, c], moi[giu, :, c]
     moi[..., c] = (moi[..., c] - b.mean()) * (a.std() / max(b.std(), 1)) + a.mean()
@@ -77,12 +103,15 @@ def duong_cat(sai):
     return hang
 
 sai = np.abs(cu - moi).sum(-1)
-tren = duong_cat(sai[:MEP])                                   # trên đường này giữ ảnh cũ
-duoi = CAO - MEP + duong_cat(sai[-MEP:])                      # dưới đường này giữ ảnh cũ
+# tìm đường cắt trong vùng rộng hơn mép khớp (tới 38% khung) để đường cắt lách qua đất trống, không cắt ngang nhà
+# (ảnh sinh không co giãn dọc nên nhà ở mép có thể lệch vài chục px so với bản gốc)
+TIM = CAO * 38 // 100
+tren = duong_cat(sai[:TIM])                                   # trên đường này giữ ảnh cũ
+duoi = np.full(W, CAO + 2 * 8) if CHI_TREN else CAO - TIM + duong_cat(sai[-TIM:])   # dưới đường này giữ ảnh cũ
 MEM = 8
 yy = np.arange(CAO)[:, None]
 t = np.clip((yy - tren[None] + MEM) / (2 * MEM), 0, 1) * np.clip((duoi[None] - yy + MEM) / (2 * MEM), 0, 1)
 dai[y0:y0 + CAO] = cu * (1 - t[..., None]) + moi * t[..., None]
 print('cắt trên', int(tren.min()), '..', int(tren.max()), 'dưới', int(duoi.min()), '..', int(duoi.max()),
-      'sai trung bình', round(float(sai[tren, np.arange(W)].mean()), 1), round(float(sai[duoi, np.arange(W)].mean()), 1), file=sys.stderr)
+      'sai trung bình', round(float(sai[tren, np.arange(W)].mean()), 1), round(float(sai[np.clip(duoi, 0, CAO - 1), np.arange(W)].mean()), 1), file=sys.stderr)
 Image.fromarray(np.clip(dai, 0, 255).astype(np.uint8)).save(ra, quality=90)

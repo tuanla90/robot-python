@@ -106,9 +106,22 @@ Ghép thô bằng `noi-mua.py` (chồng 200), rồi TopView vẽ lại cả 8 d�
 | 3 | vc11 | Hàng rào lưới, barie, chốt gác |
 | 4 | vc8 | Bờ sậy, dừa nước, ghe |
 | 5 | vc6 | Kênh có cống, cổng tre vào làng hoa |
-| 6 | vc4 | Đất khô, đá vôi lác đác, suối cạn |
+| 6 | vd3 (khung 1920, 9:16) | Luống hoa → ruộng rau, chòi tranh → bãi cỏ khô → đá vôi lác đác → mép moong (bản vc4 chuyển đột ngột, đã thay) |
 | 7 | vc3 | Đường lách giữa vách đá vôi |
 | 8 | vc16 | Hầm đá ra khỏi hang, rừng tre, cầu suối |
+| Cuối | vd1 (`tren`) | Đường CLB dừng ở cổng chào, bỏ đoạn đường cụt phía dưới |
+
+Lần sửa 31/10 khuya (user: nhà mùa 2, mùa 4 méo; hoa → mỏ đột ngột; đường mùa 9 gãy). `va-cho-noi.py` bây giờ:
+- không co giãn dọc ảnh sinh nữa (trước nội suy affine có y-scale ~0.8 nên nhà bị kéo); mỗi mép chỉ khớp ngang `x' = a·x + b` và dịch dọc `d`;
+- đường cắt tìm trong 38% mỗi mép để lách qua đất trống, không cắt ngang mái nhà;
+- nắn riêng mặt đường theo từng hàng cho liền, chỉ trong dải mặt đường + lề (~140 px mỗi bên tâm đường), chặn ±40 px, nên luống hoa, nhà ở xa không cong.
+
+Lệnh dựng lại (từ `phim-clb/`, `T=tam-anh`):
+```
+cp $T/vn/dai-tho.jpg cur.jpg
+for p in "1 vc14 1440" "2 vc13 1440" "3 vc11 1440" "4 vc8 1440" "5 vc6 1440" "6 vd3 1920" "7 vc3 1440" "8 vc16 1440"; do set -- $p; python tools/va-cho-noi.py cur.jpg nxt.jpg $(( $1*1724+100 )) $3 $T/$2.png; mv nxt.jpg cur.jpg; done
+python tools/va-cho-noi.py cur.jpg public/ban-do/dai-9.jpg 14996 1440 $T/vd1.png tren
+```
 
 Đặt vào bằng `va-cho-noi.py`. Bỏ: vc9 (khớp hình hỏng), vc1 (TopView vẽ khác hẳn phần dưới, ghép bị méo). Bản đồ cũ cất ở `tam-anh/dai-9-cu.jpg`; 9 đoạn `mua-*.jpg` cắt lại từ `dai-9.jpg`. Nền sân dọc (`nen-doc/`) CHƯA vẽ lại theo bản mới.
 **Vá chỗ nối (31/10 khuya):** ba vết nối Bãi tái chế→Cảng, Cảng→Bến sông, Bến sông→Nông trại là đường cắt thẳng, đổi nền đột ngột. TopView vẽ lại riêng dải chuyển cảnh: khung 1080×1440 cắt quanh vết nối (`tam-anh/noi-0..2.jpg`), tham chiếu là hai đoạn mùa đầy đủ, mô tả bắt giữ nguyên 25% trên / dưới. Kết quả chọn (bản còn lại ở `tam-anh/van*.png`): hàng rào lưới + barie + chốt gác (`van5`), cầu bê tông lan can qua sông (`van3`), kênh tưới + hàng rào + cổng vòm nông trại (`van1`). Đặt lại bằng `tools/va-cho-noi.py <vào> <ra> <tâm y> 1440 <ảnh sinh>` (tâm y = đỉnh mùa dưới + 100):
