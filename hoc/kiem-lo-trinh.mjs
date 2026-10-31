@@ -32,8 +32,9 @@ const chuongMua2 = new Set(TT.goi.filter(g => g.mua === 'mua-2').flatMap(g => g.
 const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.chuong));
 // Mùa 5 Nông trại (trước mã mua-4, 29/10 KE-HOACH-MUA-4.md, đang dựng): chương chưa đủ 10 như mùa 3.
 const chuongMua4 = new Set(TT.goi.filter(g => g.mua === 'mua-5').flatMap(g => g.chuong));
+const chuongMua6 = new Set(TT.goi.filter(g => g.mua === 'mua-6').flatMap(g => g.chuong));
 // 30/10 (user chọn A): tám màn drone cũ sạc tự động / recharge() dời sang mùa 5 trong hai chương chứa 4 màn (lo-trinh-hoc.js MUA_4_CU).
-const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu', 'che-list-cu', 'che-may-son-cu']);
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...chuongMua6, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu', 'che-list-cu', 'che-may-son-cu', 'omni-cu', 'may-nem-xe', 'che-may-nem-xe', 'ban-xoay-cu', 'che-ban-xoay-cu']);
 
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
@@ -504,7 +505,8 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   // Gói ngoài khuôn: đầu mùa 4, giữ thứ tự cũ, trước các gói mùa 4 cũ; chương rời của MUA_3 đúng màn.
   // P0 mùa 4 (29/10): gói ngoài khuôn của mùa 3 dời tiếp sang đầu mùa 5; gói đã vào MUA_4 (drone, may-son, mau, flycam, doi-nam-cham) và list (chương vào gói drone) không còn ở đây.
   const vaoMua4 = new Set((M.mua4 || []).map(g => g.ma).concat(['list']));
-  const ROI_3_CON = ROI_3_GOI.filter(ma => !vaoMua4.has(ma));
+  const vaoMua6 = new Set(goiMua('mua-6').map(g => g.ma));
+  const ROI_3_CON = ROI_3_GOI.filter(ma => !vaoMua4.has(ma)).map(ma => vaoMua6.has(ma) ? ma + '-cu' : ma);
   const g4 = goiMua('mua-7').map(g => g.ma);
   assert.deepEqual(g4.slice(0, ROI_3_CON.length), ROI_3_CON, 'đầu mùa 7');
   assert.equal(goiMua('mua-7')[0].sao, 0, 'gói đầu mùa 7 cần 0 sao');
@@ -761,7 +763,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
   assert.equal(ds[6].man[0].ma, 'cam-bien-ben.1');      // HD2: màn trình diễn left_clear đứng đầu gói 7
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
-  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 235);     // PDM4c 31/10: gói Đội nam châm cũ (doi-nam-cham-cu, mùa 5 ẩn) nhận đủ 20 màn doi-nam-cham.1..10 + che-doi-nam-cham.1..10 rời gói 9 mùa 4 (210 → 235). PDM3b1 31/10: gói Nam châm trên xe nhận đủ 18 màn (180 → 210)
+  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 220);     // PDM6a 31/10: gói omni sang mùa 6, omni-cu ở mùa 7 giữ 12 màn (235 → 220)
 });
 
 kiem('bản lưu cũ giữ sao theo mã, bỏ nháp lỗi thời, nháp mới đọc lại được', () => {
@@ -840,7 +842,8 @@ kiem4('(a) mùa 5 Nông trại (MUA_4) đúng các gói / chương đang có mà
   for (const m of moiMua4) assert.ok(BANG_MUA_4.some(([, , ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
   for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
   for (const g of goi4()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 4 đang dựng: tự tính)');
-  for (const ma of ['omni', 'may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.equal(TT.goi.find(g => g.ma === ma).mua, 'mua-7', ma + ' phải ở mùa 7');
+  assert.equal(TT.goi.find(g => g.ma === 'omni').mua, 'mua-6', 'omni phải ở mùa 6');
+  for (const ma of ['may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.ok(['mua-6', 'mua-7'].includes(TT.goi.find(g => g.ma === ma).mua), ma + ' phải ở mùa 6 hoặc 7');
   assert.equal(goiMua('mua-7')[0].sao, 0, 'gói đầu mùa 7 cần 0 sao');
 });
 kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải; cả 10 gói mùa 4 đúng R1 drone nông nghiệp', () => {

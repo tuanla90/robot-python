@@ -641,6 +641,11 @@
       'pg.drone-ke-vach.2': 'Tem đóng cộp: Drone nông nghiệp R1 xuất xưởng!',
       'pg.drone-ke-vach.3': 'Luống nào cũng nở hoa: nông trại rực rỡ.',
       'pg.drone-ke-vach.4': 'Xa xa trên núi có mỏ đá: Luna chỉ đường lên đó.',
+      // Phim mùa 6 "Mỏ đá" (phim-mua-6.js). Mỗi câu ≤ 14 từ.
+      'pg.omni.1': 'Lên tới mỏ đá: bậc đá hẹp, quay đầu xe rất tốn nhịp.',
+      'pg.omni.2': 'Sola lắp bánh omni cho R1: con lăn ngang bám đá cực nhạy!',
+      'pg.omni.3': 'Xe omni trượt ngang qua từng bậc đá mà không cần quay mặt.',
+      'pg.omni.4': 'Lưới hai chiều ghi cả bản đồ bậc đá trong một biến.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

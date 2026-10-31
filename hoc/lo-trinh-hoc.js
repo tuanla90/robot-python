@@ -30,7 +30,9 @@
       // MÙA 3 (KE-HOACH-MUA-3.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_3 bên dưới)
       'than-nhen', 'nam-cham-n', 'cam-ung-tu', 'bai-tu', 'nhay', 'dao-cuc', 'doc-cuc', 'bang-cu', 'doi-xich-nhen', 'bung-nhen', 'trum-mua-3',
       // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
-      'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4',
+      // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–4
+      'luoi-2d'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1478,6 +1480,134 @@
     M.mua4 = MUA_4;
     M.tinhLai();
   })();
+
+  // ================================================================ MÙA 6 "MỎ ĐÁ" = 10 GÓI (PDM6a 31/10: gói 1–4 dựng trên Máy mỏ đá R1 thân omni)
+  var MUA_6 = [
+    { ma: 'omni', ten: 'Bánh omni', loai: 'bo-phan', hinh: 'omni',
+      chuong: [['omni', day('omni', [11, 1, 2, 3, 4, 5, 7, 8, 9, 12])], ['luoi-2d', []]] },
+    { ma: 'may-nem', ten: 'Tay hất đá', loai: 'bo-phan', hinh: 'may-nem',
+      chuong: [['may-nem', []], ['che-may-nem', []]] },
+    { ma: 'radar-tron', ten: 'Radar tròn', loai: 'bo-phan', hinh: 'radar-tron',
+      chuong: [['radar-tron', []], ['che-radar-tron', []]] },
+    { ma: 'ban-xoay', ten: 'Bàn xoay & Sàn dốc', hinh: 'ban-xoay',
+      chuong: [['ban-xoay', []], ['che-ban-xoay', []]] },
+    { ma: 'toc-do-omni', ten: 'Tốc độ omni', loai: 'bo-phan',
+      chuong: [['toc-do-omni', []], ['che-omni', []]] },
+    { ma: 'tam-nem', ten: 'Tầm hất đá', loai: 'bo-phan',
+      chuong: [['tam-nem', []], ['che-tam-nem', []]] },
+    { ma: 'nhan-dang', ten: 'Nhận dạng mỏ', loai: 'bo-phan',
+      chuong: [['nhan-dang', []], ['che-nhan-dang', []]] },
+    { ma: 'mo-cu', ten: 'Mỏ đá cũ', loai: 'thu-thach',
+      chuong: [['mo-cu', []], ['che-mo-cu', []]] },
+    { ma: 'doi-mua-6', ten: 'R2 ở mỏ đá', loai: 'thu-thach',
+      chuong: [['doi-mua-6', []], ['che-doi-mua-6', []]] },
+    { ma: 'may-mo-da', ten: 'Máy mỏ đá R1', loai: 'thu-thach',
+      chuong: [['tong-hop-6', []], ['trum-mua-6', []]] }
+  ];
+  var MUA_6_CU = [
+    { ma: 'omni-cu', ten: 'Omni gắp cũ', moc: 'doi-omni',
+      chuong: [['omni-cu', day('omni', [6, 10])], ['che-omni', day('che-omni', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
+  ];
+  var TEN_MUA_6 = {
+    omni: 'Trượt ngang bậc đá', 'luoi-2d': 'Đọc bản đồ mỏ',
+    'may-nem': 'Hất đá qua rào', 'che-may-nem': 'Chế lệnh: hất đá',
+    'radar-tron': 'Quét quanh một vòng', 'che-radar-tron': 'Chế lệnh: quét mỏ',
+    'ban-xoay': 'Lấp hố, trượt dốc', 'che-ban-xoay': 'Chế lệnh: vượt mỏ đá',
+    'omni-cu': 'Omni gắp cũ', 'may-nem-xe': 'Máy ném xe cũ', 'che-may-nem-xe': 'Chế lệnh: máy ném xe cũ',
+    'ban-xoay-cu': 'Bàn xoay xe cũ', 'che-ban-xoay-cu': 'Chế lệnh: bàn xoay xe cũ'
+  };
+  var TEP_MUA_6 = ['manLuoi2D'];
+  (function () {
+    Object.keys(TEN_MUA_6).forEach(function (c) { TT.ten[c] = TEN_MUA_6[c]; });
+    var moi = [], chuong = [];
+    MUA_6.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
+    TEP_MUA_6.forEach(function (k) { moi = moi.concat(M[k] || []); });
+    moi.forEach(function (m) {
+      if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa 6 thuộc chương không có trong MUA_6: ' + m.chuong + '.' + m.so);
+      if (TT.thuTu.indexOf(m.chuong) < 0) TT.thuTu.push(m.chuong);
+    });
+    M.them(moi);
+    moi.forEach(function (m) { nguon[m.ma] = copy(m); });
+    MUA_6.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var cuoi = c[1][c[1].length - 1];
+        c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
+      });
+    });
+    // Chuẩn hóa robot của các màn omni có sẵn ở gói 1 (thân omni nguyên bản, không tay, không cảm biến).
+    day('omni', [1, 2, 3, 4, 5, 7, 8, 9]).forEach(function (ma) {
+      var m = get(ma);
+      if (m) m.robot = { than: 'omni', tay: null, camBien: [] };
+    });
+    var coMan6 = [];
+    MUA_6.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        if (!c[1].length) return;
+        if (TT.thuTu.indexOf(c[0]) < 0) TT.thuTu.push(c[0]);
+        dungChuong(c[0], c[1]);
+        coMan6.push(c[0]);
+        c[1].forEach(function (ma, i) {
+          var m = get(ma);
+          if (i < c[1].length - 1) delete m.huyHieu;
+          else m.huyHieu = { ma: c[0], ten: 'Huy hiệu ' + TEN_MUA_6[c[0]] };
+        });
+      });
+    });
+    MUA_6_CU.forEach(function (g) {
+      var chCu = g.chuong.map(function (c) {
+        if (TT.thuTu.indexOf(c[0]) < 0) TT.thuTu.push(c[0]);
+        dungChuong(c[0], c[1]);
+        return c[0];
+      });
+      chCu.forEach(function (c) {
+        var idx = TT.thuTu.indexOf(c);
+        if (idx >= 0) TT.thuTu.splice(idx, 1);
+      });
+      var mocC = TT.thuTu.indexOf(g.moc) >= 0 ? TT.thuTu.indexOf(g.moc) : TT.thuTu.length;
+      TT.thuTu.splice.apply(TT.thuTu, [mocC, 0].concat(chCu));
+      var mocG = TT.goi.findIndex(function (x) { return x.chuong.indexOf(g.moc) >= 0; });
+      TT.goi.splice(mocG >= 0 ? mocG : TT.goi.length, 0, { ma: g.ma, ten: g.ten, mua: 'mua-7', chuong: chCu });
+    });
+    var goiTruoc6 = TT.goi.filter(function (g) { return g.mua === 'mua-1' || g.mua === 'mua-2' || g.mua === 'mua-3' || g.mua === 'mua-5'; });
+    var cTruoc6 = [];
+    goiTruoc6.forEach(function (g) { cTruoc6 = cTruoc6.concat(g.chuong); });
+    var sau6 = TT.thuTu.filter(function (c) { return cTruoc6.indexOf(c) < 0 && coMan6.indexOf(c) < 0; });
+    TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(cTruoc6, coMan6, sau6));
+    var chCuAll = [];
+    MUA_6_CU.forEach(function (g) { g.chuong.forEach(function (c) { chCuAll.push(c[0]); }); });
+    var conLai6 = [];
+    TT.goi.forEach(function (g) {
+      if (goiTruoc6.indexOf(g) >= 0) return;
+      var laGoiCu = MUA_6_CU.some(function (x) { return x.ma === g.ma; });
+      var ch = g.chuong.filter(function (c) { return coMan6.indexOf(c) < 0 && (laGoiCu || chCuAll.indexOf(c) < 0); });
+      if (!ch.length) return;
+      g.chuong = ch;
+      conLai6.push(g);
+    });
+    conLai6.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
+    var tr7 = 0, truoc7 = null;
+    conLai6.forEach(function (g) {
+      g.sao = g.khongTangNguong && truoc7 ? truoc7.sao + 30 : Math.floor(0.5 * tr7 / 5) * 5;
+      if (!g.khongTangNguong) tr7 += 3 * g.chuong.reduce(function (s, c) { return s + M.danhSach.filter(function (m) { return m.chuong === c; }).length; }, 0);
+      truoc7 = g;
+    });
+    if (conLai6[0]) conLai6[0].sao = 0;
+    var goi6 = [];
+    MUA_6.forEach(function (g) {
+      var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coMan6.indexOf(c) >= 0; });
+      if (!ch.length) return;
+      var x = { ma: g.ma, ten: g.ten, mua: 'mua-6', chuong: ch };
+      if (g.loai) x.loai = g.loai;
+      if (g.hinh) x.hinh = g.hinh;
+      goi6.push(x);
+    });
+    TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goiTruoc6, goi6, conLai6));
+    var dau7 = TT.goi.filter(function (g) { return g.mua === 'mua-7'; })[0];
+    if (dau7) dau7.sao = 0;
+    M.mua6 = MUA_6;
+    M.tinhLai();
+  })();
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
   // Sổ lệnh: hàm được chế ở màn đã dời chương (che-xe.4 → banh-lui…) ghi theo chương mới của màn đó; màn đã cất thì giữ như ngân hàng.
   if (SL && SL.ds) SL.ds.forEach(function (h) { var m = h.man && get(h.man); if (m) h.chuong = m.chuong; });
@@ -2428,6 +2558,7 @@
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
     CAT_MUA_4.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
+    MUA_6.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) delete chuongAn[c[0]]; }); });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);

@@ -496,6 +496,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('che-bung-nhen', che(function (g, c) { nhenBung(c, 40, 62, 46); }));
   dk('tong-hop-3', function (g, c) { c.o('ho', {}, 32, 70, 26); c.vat('khoi-sat', {}, 76, 66, 13); nhenBung(c, 54, 42, 48); });
   dk('xe-tham-do', function (g, c) { nhenBung(c, 50, 56, 58, true); c.sao(22, 28, 7); c.sao(78, 28, 7); });
+  /* 31/10 mùa 6 "Mỏ đá": huy hiệu chương mới (omni, may-nem, che-may-nem, ban-xoay, che-ban-xoay giữ hình cũ). */
+  dk('luoi-2d', function (g, c) { c.robot({ than: 'omni' }, st(), 0, 36, 62, 44); c.khoi(60, 32, 42, 24, BM.vecLaDam, [['[[ ]]', BM.vecVo, 13]]); });
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

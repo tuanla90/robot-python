@@ -804,7 +804,19 @@
   "rap-du.10": {
     "o": 37,
     "nhip": 42
-  }
+  },
+  "omni.11": { "o": 11, "nhip": 5 },
+  "omni.12": { "o": 16, "nhip": 10 },
+  "luoi-2d.1": { "o": 12, "nhip": 8 },
+  "luoi-2d.2": { "o": 13, "nhip": 8 },
+  "luoi-2d.3": { "o": 12, "nhip": 11 },
+  "luoi-2d.4": { "o": 11, "nhip": 11 },
+  "luoi-2d.5": { "o": 14, "nhip": 12 },
+  "luoi-2d.6": { "o": 13, "nhip": 12 },
+  "luoi-2d.7": { "o": 14, "nhip": 12 },
+  "luoi-2d.8": { "o": 13, "nhip": 7 },
+  "luoi-2d.9": { "o": 14, "nhip": 11 },
+  "luoi-2d.10": { "o": 16, "nhip": 13 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;
