@@ -1253,20 +1253,23 @@
     Object.keys(TEN_MUA_4).forEach(function (c) { TT.ten[c] = TEN_MUA_4[c]; });
     // Cất khỏi lộ trình (ngân hàng giữ nguyên): list.2 xoắn ốc 28 ô ngay màn 2 (nhảy đường cong), trùng ý list.1.
     cat(['list.2']);
-    // PDM4a (31/10): nâng cấp drone.7, 8, 9, list.1..10 và may-son.1, 2, 6, 7 sang thân drone R1.
-    var SUA_MUA_4 = Object.assign({}, M.suaCatCanh || {}, M.suaChamSon || {});
+    // PDM4a / PDM4b (31/10): nâng cấp drone.7, 8, 9, list.1..10, may-son.1..10 và che-may-son.1..6, 9, 10 sang thân drone R1.
+    var SUA_MUA_4 = Object.assign({}, M.suaCatCanh || {}, M.suaChamSon || {}, M.suaNetLien || {});
     Object.keys(SUA_MUA_4).forEach(function (ma) {
       var m = get(ma), s = SUA_MUA_4[ma];
       delete m.vatChat; delete m.vatMau; delete m.vatCan; delete m.chinhCoDinh; delete m.chiChay; delete m.pin;
+      delete m.loiGiaiKhac; delete m.congThucKhac;
       sua(ma, s);
       if (s.loiGiaiKhac) m.loiGiaiKhac = s.loiGiaiKhac;
+      if (s.congThucKhac) m.congThucKhac = s.congThucKhac;
+      if (m.chuong === 'che-may-son' && m.so < 10) m.chinhCoDinh = true;
       M.chuanHoa(m);
     });
     // PDM4b (31/10): các màn có sẵn của che-drone ở gói 5 gắn đủ thân drone + bộ gieo hạt bụng + camera-4.
     ['che-drone.1', 'che-drone.2', 'che-drone.4', 'che-drone.7'].forEach(function (ma) {
       var m = get(ma);
       m.robot = { than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren' }] };
-      m.hamGoc = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot', 'land', 'take_off', 'battery', 'color'];
+      m.hamGoc = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot', 'land', 'take_off', 'color'];
     });
     M.danhSach.forEach(function (m) { if (!nguon[m.ma]) nguon[m.ma] = copy(m); });
     var moi = [], chuong = [];
@@ -2415,7 +2418,7 @@
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
     // PDM3a / PDM3b2 31/10 (mùa 3 part đúng mùa): mọi gói mùa 3 đã dựng lại trên nhện; màn xe cũ ở mùa ẩn (che-nam-cham-xe, doi-tay-xoay…) dùng DAY_CU bên dưới.
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
-    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone'].forEach(function (c) { delete chuongAn[c]; });
+    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone', 'net-lien', 'che-may-son'].forEach(function (c) { delete chuongAn[c]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
@@ -2440,7 +2443,14 @@
       ['may-son.6', { ten: 'dots', thamSo: ['n'], than: ['for i in range(n):', '    dot()', '    move()', '    move()'] }],
       ['che-cam-bon.2', { ten: 'go_to', thamSo: ['col'], than: ['while color("front") != col:', '    move()'] }],
       ['che-cam-bon.4', { ten: 'green_step', thamSo: [], than: ['if color("front") == "green":', '    move()', 'elif color("left") == "green":', '    turn_left()', 'else:', '    turn_right()'] }],
-      ['che-cam-bon.6', { ten: 'sort_by_color', thamSo: [], than: ['c = color("front")', 'pick()', 'if c == "red":', '    turn_right()', '    drop()', '    turn_left()', 'else:', '    turn_left()', '    drop()', '    turn_right()'] }]
+      ['che-cam-bon.6', { ten: 'sort_by_color', thamSo: [], than: ['c = color("front")', 'pick()', 'if c == "red":', '    turn_right()', '    drop()', '    turn_left()', 'else:', '    turn_left()', '    drop()', '    turn_right()'] }],
+      ['may-son.10', { ten: 'frame', thamSo: [], than: ['for i in range(4):', '    forward(2)', '    turn_right()'] }],
+      ['che-may-son.1', { ten: 'line', thamSo: ['n'], than: ['pen_down()', 'forward(n)', 'pen_up()', 'wait()'] }],
+      ['che-may-son.2', { ten: 'color_line', thamSo: ['c', 'n'], than: ['ink(c)', 'line(n)'] }],
+      ['che-may-son.3', { ten: 'next_row', thamSo: ['n'], than: ['for i in range(n):', '    back()', 'turn_right()', 'move()', 'turn_left()'] }],
+      ['che-may-son.5', { ten: 'sow_rows', thamSo: ['colors'], than: ['for c in colors:', '    color_line(c, 3)', '    next_row(3)'] }],
+      ['che-may-son.6', { ten: 'copy_row', thamSo: ['n'], than: ['seen = []', 'for i in range(n):', '    seen.append(color("left"))', '    move()', 'next_row(n)', 'for c in seen:', '    ink(c)', '    dot()', '    move()'] }],
+      ['che-may-son.9', { ten: 'fill_gaps', thamSo: ['c', 'n'], than: ['ink(c)', 'for i in range(n):', '    if color("front") == "none":', '        move()', '        dot()', '    else:', '        move()'] }]
     ].forEach(function (x) { THAN_CU.push(x); });
     THAN_CU.forEach(function (x) { HAM_CU[x[1].ten] = copy(x[1]); DAY_CU.push([x[0], x[1].ten]); });
     // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.

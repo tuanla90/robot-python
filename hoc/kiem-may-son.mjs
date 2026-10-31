@@ -117,9 +117,11 @@ console.log('\n== 3. Hai chương ==');
   kiem('20 màn: may-son.1–10 và che-may-son.1–10', ds.filter((m) => /^(che-)?may-son\.([1-9]|10)$/.test(m.ma)).length === 20);
   const DOC = ['che-may-son.6', 'che-may-son.9', 'che-may-son.10'];
   const KHAY_DRONE_CHAM = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot'];
-  kiem('mọi màn: gói Gieo hạt (may-son) trên drone + bộ gieo hạt dưới bụng (7 lệnh, không pen_down / pen_up); net-lien / che-may-son gắn đầu sơn, mục tiêu to-hinh, có hình mờ', ds.every((m) => m.robot.tay === 'son' && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh) &&
+  const KHAY_DRONE_NET = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot', 'pen_down', 'pen_up', 'color'];
+  kiem('mọi màn: gói Gieo hạt (may-son) và gói Nét liền (net-lien / che-may-son) trên drone + bộ gieo hạt dưới bụng; che-may-son-cu giữ xe hai bánh; mục tiêu to-hinh, có hình mờ', ds.every((m) => m.robot.tay === 'son' && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh) &&
     (m.chuong === 'may-son' ? m.loaiRobot === 'drone' && m.robot.than === 'drone' && J(m.hamGoc) === J(KHAY_DRONE_CHAM) && !m.robot.camBien.length :
-      m.loaiRobot === 'banh' && (DOC.includes(m.ma) ? J(m.hamGoc) === J(KHAY.concat(['color'])) && J(m.robot.camBien) === '[{"ma":"camera-4","o":"tren"}]' && !!m.sonBanDau : J(m.hamGoc) === J(KHAY) && !m.robot.camBien.length))));
+      (m.chuong === 'net-lien' || m.chuong === 'che-may-son') ? m.loaiRobot === 'drone' && m.robot.than === 'drone' && J(m.hamGoc) === J(KHAY_DRONE_NET) && J(m.robot.camBien) === '[{"ma":"camera-4","o":"tren"}]' && (DOC.includes(m.ma) ? !!m.sonBanDau : true) :
+        m.loaiRobot === 'banh' && J(m.hamGoc) === J(KHAY) && !m.robot.camBien.length)));
   kiem('che-may-son 1–9 chương trình chính cố định; 10 gioiHanHam 3 (copy_row, next_row, fill_gaps)', ds.filter((m) => m.chuong === 'che-may-son').every((m) => (m.so < 10) === (m.chinhCoDinh === true)) && ManHoc.timMa('che-may-son.10').gioiHanHam === 3);
   // kho: hàm cốt truyện các màn trước theo lộ trình (như người chơi mua mùa 3)
   const kho = new Map();

@@ -850,7 +850,7 @@ kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện
     const goi = [...loiGoi(dongBacCau(m).dong)].filter(t => CAM_4.includes(t));
     assert.deepEqual(goi, [], m.ma + ' gọi lệnh ngoài mùa 4');
   }
-  const GOI_SIET_4 = 5, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), mocSiet = mocGoi4(GOI_SIET_4 + 1);
+  const GOI_SIET_4 = 6, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), mocSiet = mocGoi4(GOI_SIET_4 + 1);
   for (let v = dau4; v < mocSiet; v++) {
     const m = M.danhSach[v], r = m.robot || {}, cb = r.camBien || [];
     assert.equal(m.loaiRobot, 'drone', m.ma + ' loaiRobot');

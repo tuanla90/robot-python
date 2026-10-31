@@ -30,7 +30,7 @@ function kiem(ten, ok, chiTiet) {
 }
 const J = (o) => JSON.stringify(o);
 const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
-const moi = new Set(TEP_MUA_4.flatMap((k) => M[k] || []).concat(Object.keys(Object.assign({}, M.suaCatCanh || {}, M.suaChamSon || {})).map((ma) => M.timMa(ma))));      // chính các đối tượng màn (dungChuong đổi so / chuong khi xếp chỗ)
+const moi = new Set(TEP_MUA_4.flatMap((k) => M[k] || []).concat(Object.keys(Object.assign({}, M.suaCatCanh || {}, M.suaChamSon || {}, M.suaNetLien || {})).map((ma) => M.timMa(ma))));      // chính các đối tượng màn (dungChuong đổi so / chuong khi xếp chỗ)
 const tatCa = M.danhSach;
 const tenCot = [...new Set(tatCa.flatMap((m) => m.taoHam || []))];
 const khoTruoc = (() => {
