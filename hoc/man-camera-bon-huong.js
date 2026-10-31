@@ -37,7 +37,7 @@
   var NGA_TU = ['if color("left") == "green":', '    go_left()', '    go_left()', 'elif color("right") == "green":', '    go_right()', '    go_right()', 'else:', '    go_up()', '    go_up()'];
   var THEO_XANH = ['    if color("right") == "green":', '        go_right()', '    elif color("down") == "green":', '        go_down()', '    else:', '        go_up()'];
   // sân theo vạch xanh (chương 1 màn 6, 9; chương 2 màn 4, 7): drone bay theo ô xanh lá (phải, xuống, hoặc lên 1 bước rồi phải); ô cờ tô xanh bằng lớp màu
-  var SAN_THEO = [['#####', '###gF', '#ggg#', '.g###', '#####'], ['#####', '.gg##', '##g##', '##ggF', '#####']];
+  var SAN_THEO = [['#####', '###gF', '#ggg#', '.g###', '#####'], ['#####', '.g###', '#gg##', '##ggF', '#####']];
   var MAU_THEO = [['.....', '....g', '.....', '.....', '.....'], ['.....', '.....', '.....', '....g', '.....']];
   // ba sân vạch xanh dài kết thúc ở ô cờ vàng bên phải (chương 1 trùm)
   var SAN_DAI = [['.gg##', '##g##', '##gg#', '###g#', '###gF'], ['#####', '###gF', '#ggg#', '.g###', '#####'], ['#####', '.gg##', '##g##', '##ggF', '#####']];
@@ -275,7 +275,7 @@
       maMau: bai(['for i in range(6):', '    green_step()']),
       loiGiai: bai(['for i in range(6):', '    green_step()'], { hamCuaEmMoi: [H('green_step', [], T_BUOC_XANH)] }),
       sao: { o: 8, nhip: 6 },
-      congThucKhac: [{ moTa: 'Hỏi phía dưới trước bên phải ở khúc chỉ có một hướng xanh', hamCuaEmMoi: [H('green_step', [], ['if color("down") == "green":', '    go_down()', 'elif color("right") == "green":', '    go_right()', 'else:', '    go_up()'])] }],
+      congThucKhac: [{ moTa: 'Hỏi phía trên trước phía dưới ở nhánh elif', hamCuaEmMoi: [H('green_step', [], ['if color("right") == "green":', '    go_right()', 'elif color("up") == "green":', '    go_up()', 'else:', '    go_down()'])] }],
       loiSai: [
         { moTa: 'Gọi green_step() mà chưa chế hàm', baiLam: bai(['for i in range(6):', '    green_step()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Không hỏi phía dưới: sân thứ hai bay nhầm lên trên', baiLam: bai(['for i in range(6):', '    green_step()']), hamCuaEmMoi: [H('green_step', [], ['if color("right") == "green":', '    go_right()', 'else:', '    go_up()'])], phaiCoMa: [] }

@@ -839,7 +839,7 @@ kiem4('(a) mùa 4 đúng các gói / chương đang có màn theo bảng, đúng
   for (const ma of ['omni', 'may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.equal(TT.goi.find(g => g.ma === ma).mua, 'mua-5', ma + ' phải ở mùa 5');
   assert.equal(goiMua('mua-5')[0].sao, 0, 'gói đầu mùa 5 cần 0 sao');
 });
-kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải', () => {
+kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải; gói 1–4 đã dựng lại đúng R1 drone nông nghiệp', () => {
   for (const m of manMua4()) {
     for (const r of [m.robot].concat((m.doi || []).map(d => d.robot)).filter(Boolean)) {
       if (r.than) assert.ok(PART_4.than.includes(r.than), m.ma + ' thân ' + r.than);
@@ -849,6 +849,17 @@ kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện
     for (const h of (m.hamGoc || []).concat((m.doi || []).flatMap(d => d.hamGoc || []))) assert.ok(!CAM_4.includes(h), m.ma + ' khay có ' + h);
     const goi = [...loiGoi(dongBacCau(m).dong)].filter(t => CAM_4.includes(t));
     assert.deepEqual(goi, [], m.ma + ' gọi lệnh ngoài mùa 4');
+  }
+  const GOI_SIET_4 = 4, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), mocSiet = mocGoi4(GOI_SIET_4 + 1);
+  for (let v = dau4; v < mocSiet; v++) {
+    const m = M.danhSach[v], r = m.robot || {}, cb = r.camBien || [];
+    assert.equal(m.loaiRobot, 'drone', m.ma + ' loaiRobot');
+    assert.equal(r.than, 'drone', m.ma + ' thân');
+    assert.ok(!m.doi, m.ma + ' không đội ở gói 1–4');
+    if (v < moc2) assert.ok(!r.tay, m.ma + ' gói 1 chưa có tay');
+    else assert.equal(r.tay, 'son', m.ma + ' tay phải là son');
+    if (v < moc3) assert.equal(cb.length, 0, m.ma + ' gói 1–2 chưa có cảm biến');
+    else assert.deepEqual(cb.map(c => c.ma), ['camera-4'], m.ma + ' gói 3–4 cảm biến camera-4');
   }
 });
 kiem4('(c) bút liền mở ở gói 6: không pen_down / pen_up trên khay hay trong lời giải (bắc cầu) của màn mùa 4 đứng trước gói 6', () => {
