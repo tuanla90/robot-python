@@ -654,6 +654,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ---- MÙA BẾN SÔNG (mua-5): Gói 1–4 ---- */
   var XUONG = { than: 'xuong', tay: null, camBien: [] };
   var XUONG_KEO = { than: 'xuong', tay: 'day-keo', camBien: [] };
+  var XUONG_DONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
   dk('xuong', function (g, c) {
     c.o('phao-dich', {}, 68, 34, 24);
     c.robot(XUONG, st({ chay: true }), 1, 36, 60, 40);
@@ -670,6 +671,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('bo-co-dinh', che(function (g, c) {
     c.khoi(62, 34, 38, 22, BM.vecLamDam, [['(2,1)', BM.vecCanhBao, 9]]);
     c.robot(XUONG_KEO, st({ chay: true }, { day: true }), 1, 34, 62, 36);
+  }));
+  dk('dong-chay', function (g, c) {
+    c.o('dong-nuoc', { huong: 1 }, 68, 34, 24);
+    c.robot(XUONG_DONG, st({ chay: true }, null, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-dong-chay', che(function (g, c) {
+    c.o('dong-nuoc', { huong: 1 }, 66, 34, 22);
+    c.robot(XUONG_DONG, st({ chay: true }, null, { bat: true }), 1, 34, 62, 36);
   }));
 
   V.HUY_HIEU = {

@@ -11,6 +11,7 @@
 
   var XUONG_CO_BAN = { than: 'xuong', tay: null, camBien: [] };
   var XUONG_KEO = { than: 'xuong', tay: 'day-keo', camBien: [] };
+  var XUONG_DONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
 
   function sanSong(m, r, c) {
     var s = san(r, c);
@@ -88,6 +89,43 @@
         dat(s, veV('be-go', { keo: false }), 4, 1);
         dat(s, may(XUONG_KEO, { chay: true }, 1), 3, 1);
         m.appendChild(code('p = (2, 1)\na, b = p\ntow_pair(p)'));
+      }
+    }
+  ]);
+
+  /* ================================================================ 3. dong-chay — Đo hướng nước chảy */
+  PG.dangKy('dong-chay', [
+    { Chu: ['Khúc sông phía trước có những luồng nước chảy xuôi và chảy ngược.', 'Gắn CHONG CHÓNG DÒNG CHẢY ở mũi xuồng để đo chiều nước trước khi tiến!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 1 }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        var rb = dat(s, may(XUONG_DONG, { chay: false }, 1), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 1, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Hàm flow_dir() đọc chiều nước ở ô trước mũi: "front", "back", "left", "right" hoặc "none".', 'Bước vào ô dòng xuôi "front" sức 1 giúp xuồng tiến 1 ô rồi trôi thêm 1 ô!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 1 }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 3, 1);
+        m.appendChild(code('if flow_dir() == "front":\n    move()\nelse:\n    forward(2)'));
+      }
+    },
+    { Chu: ['Chế các hàm is_calm_front(), flow_step(), scan_calm_side() để tự lựa luồng êm.', 'Dù dòng chảy đổi chỗ giữa các ngày, một chương trình vẫn về đích gọn gàng!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 1 }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 4, 1);
+        m.appendChild(code('def is_calm_front():\n    return flow_dir() == "none"'));
       }
     }
   ]);
