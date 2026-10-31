@@ -118,6 +118,7 @@ Ghép thô bằng `noi-mua.py` (chồng 200), rồi TopView vẽ lại cả 8 d�
 - Mùa 8: nền xám để lại vết ngang ở mép khung (vách đá vôi cắt cụt). Thử khung ghép thô (dải trên + cảnh hang cũ) vẫn bị. Cách đạt: đưa chính ảnh vừa sinh (`nt8-1`) cho Image Edit, bảo chỉ xoá vết ngang và nối đường (`nt8f-*`).
 - Mùa 9: sửa thêm một lượt trên `nt9-2`: rìa rừng tre tự nhiên, cổng chào dời lên chỗ đường vào sân CLB, đáy là hàng rào hoa (`nt9f-*`; bản 2 mất nhà CLB nên bỏ).
 - Ảnh dài cao 15719, cắt còn 15716 (bỏ 3 hàng hàng rào đáy). Vị trí mùa giữ y = k·1724 như `BanDoMua.tsx`.
+- Cảng → Bến sông (1/11, user: nước cảng xanh rêu, hai vùng nước như không liên quan): Image Edit cả khung y 5250..7174 (`tam-anh/ns-khung.jpg`), bảo cùng màu nước sông xanh của chợ nổi, dải đất chắn ngang thành cù lao để nước thông hai bên. Chọn `ns-1`; đặt lại bằng `noi-tiep.py va` (khớp mép trên và dưới, chỉ dịch, cắt tối ưu 300 hàng mỗi mép; `ns-2` bị co dọc 60 px nên máy báo và bỏ).
 - Còn lại: vài khúc đường vẫn cong chữ S nhẹ (mùa 4, 8, 9); vị trí nút trên đường trong `BanDoMua.tsx` (nutCua) chưa so với đường mới.
 
 Lần sửa 31/10 khuya (user: nhà mùa 2, mùa 4 méo; hoa → mỏ đột ngột; đường mùa 9 gãy). `va-cho-noi.py` bây giờ:
