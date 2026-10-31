@@ -28,7 +28,7 @@
       // MÙA 2 (KE-HOACH-MUA-2.md): mỗi gói có màn mới một tệp ngân hàng (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_2 bên dưới)
       'bien-xich', 'hong-ngoai', 'day-thung', 'che-luc-ban', 'do-nhiet', 'kho-cu', 'doi-mua-2', 'be-sung', 'trum-mua-2',
       // MÙA 3 (KE-HOACH-MUA-3.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_3 bên dưới)
-      'than-nhen', 'nam-cham-n', 'cam-ung-tu', 'bai-tu', 'nhay', 'dao-cuc', 'doc-cuc', 'doi-xich-nhen', 'bung-nhen', 'trum-mua-3',
+      'than-nhen', 'nam-cham-n', 'cam-ung-tu', 'bai-tu', 'nhay', 'dao-cuc', 'doc-cuc', 'bang-cu', 'doi-xich-nhen', 'bung-nhen', 'trum-mua-3',
       // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
       'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
@@ -922,16 +922,20 @@
       chuong: [['dao-cuc', []], ['che-dao-cuc', []]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',
       chuong: [['doc-cuc', []], ['che-doc-cuc', []]] },
+    { ma: 'bang-cu', ten: 'Băng chuyền cũ', loai: 'thu-thach',
+      chuong: [['bang-cu', []], ['che-bang-cu', []]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
       chuong: [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]] },
-    { ma: 'bung-nhen', ten: 'Nam châm bụng nhện', loai: 'thu-thach',
-      chuong: [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', ['che-bung-nhen.1', 'che-bung-nhen.2', 'che-bung-nhen.3', 'che-bung-nhen.4', 'che-bung-nhen.8', 'che-bung-nhen.7', 'che-bung-nhen.5', 'che-bung-nhen.6', 'che-bung-nhen.9', 'che-bung-nhen.10']]] },
     { ma: 'tong-hop-3', ten: 'Tổng hợp', loai: 'thu-thach',
       chuong: [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.1', 'tong-hop-3.10']], ['trum-mua-3', ['trum-mua-3.1', 'trum-mua-3.2', 'trum-mua-3.3', 'trum-mua-3.5', 'trum-mua-3.9', 'trum-mua-3.4', 'trum-mua-3.6', 'trum-mua-3.7', 'trum-mua-3.8', 'trum-mua-3.10']]] }
   ];
+  // PDM3b2 31/10: gói Nam châm bụng nhện (gói 9 cũ; nam châm bụng nhện đã dạy từ gói 2) CẤT ra mùa ẩn (như CAT_MUA_2 be-sung), gói Đội về gói 9, gói 8 là Băng chuyền cũ.
+  var CAT_MUA_3 = { ma: 'bung-nhen', ten: 'Nam châm bụng nhện (cất)', loai: 'thu-thach',
+    chuong: [['bung-nhen', ['bung-nhen.1', 'bung-nhen.2', 'bung-nhen.3', 'bung-nhen.4', 'bung-nhen.5', 'bung-nhen.6', 'bung-nhen.7', 'bung-nhen.9', 'bung-nhen.8', 'bung-nhen.10']], ['che-bung-nhen', ['che-bung-nhen.1', 'che-bung-nhen.2', 'che-bung-nhen.3', 'che-bung-nhen.4', 'che-bung-nhen.8', 'che-bung-nhen.7', 'che-bung-nhen.5', 'che-bung-nhen.6', 'che-bung-nhen.9', 'che-bung-nhen.10']]] };
   var TEN_MUA_3 = { nhen: 'Thân nhện', 'chuoi-nhen': 'Chuỗi cho nhện', 'nam-cham': 'Nam châm', 'logic-nam-cham': 'Logic cho nam châm',
     'cam-ung-tu': 'Dò sắt', 'che-cam-ung-tu': 'Chế lệnh: dò sắt', 'bai-tu': 'Bãi từ', 'che-bai-tu': 'Hàm cho bãi từ', nhay: 'Nhảy',
     'che-nhen': 'Chế lệnh nhện', 'dao-cuc': 'Đảo cực', 'che-dao-cuc': 'Hàm đảo cực', 'doc-cuc': 'Đọc cực', 'che-doc-cuc': 'Hàm đọc cực',
+    'bang-cu': 'Né băng, mở cổng', 'che-bang-cu': 'Chế lệnh: qua băng cũ',
     'doi-xich': 'Đội xích và nhện', 'che-doi-xich': 'Đội xích và nhện phối hợp', 'bung-nhen': 'Nam châm bụng nhện', 'che-bung-nhen': 'Hàm cho bụng nhện',
     'tong-hop-3': 'Tổng hợp', 'trum-mua-3': 'Trùm mùa' };
   /** Đổi một chuỗi lời mùa 3 sang bãi tái chế + giọng CLB: sắt vụn, "em" → "bạn" (trừ nhãn "hàm của em"), chương trình Sola viết. */
@@ -957,7 +961,8 @@
   // Mã huy hiệu của trùm mỗi chương mùa 3 (tên huy hiệu = tên chương, như mùa 1, 2 từ 30/10); hai chương đội dùng mã mới (doi-xich / che-doi-xich là bí danh hai-robot ở huy-hieu-vector.js).
   var HUY_HIEU_3 = { nhen: 'nhen', 'chuoi-nhen': 'chuoi-nhen', 'nam-cham': 'nam-cham', 'logic-nam-cham': 'logic-nam-cham', 'cam-ung-tu': 'cam-ung-tu',
     'che-cam-ung-tu': 'che-cam-ung-tu', 'bai-tu': 'bai-tu', 'che-bai-tu': 'che-bai-tu', nhay: 'nhay', 'che-nhen': 'che-nhen', 'dao-cuc': 'dao-cuc',
-    'che-dao-cuc': 'che-dao-cuc', 'doc-cuc': 'doc-cuc', 'che-doc-cuc': 'che-doc-cuc', 'doi-xich': 'doi-xich-nhen', 'che-doi-xich': 'che-doi-xich-nhen',
+    'che-dao-cuc': 'che-dao-cuc', 'doc-cuc': 'doc-cuc', 'che-doc-cuc': 'che-doc-cuc', 'bang-cu': 'bang-cu', 'che-bang-cu': 'che-bang-cu',
+    'doi-xich': 'doi-xich-nhen', 'che-doi-xich': 'che-doi-xich-nhen',
     'bung-nhen': 'bung-nhen', 'che-bung-nhen': 'che-bung-nhen', 'tong-hop-3': 'tong-hop-3', 'trum-mua-3': 'xe-tham-do' };
   // Rời mùa 3 (mùa 4, ẩn, giữ thứ tự cũ, vẫn chơi được bằng "Mở hết"): màn của chương mùa 3 dùng lại mã mà không thuộc MUA_3 thành chương riêng, đứng đúng
   // chỗ chương cũ trong thuTu (THAY_CU). nam-cham.9 (omni, mùa 5); doi-xich 8 màn bậc thang S; che-doi-xich cả 10 (bậc thang S, hay cần hàm của
@@ -1045,22 +1050,23 @@
   //   man-nhay.js           manNhay         gói 5  nhay (che-nhen đủ 10 màn có sẵn)
   //   man-dao-cuc.js        manDaoCuc       gói 6  dao-cuc · che-dao-cuc
   //   man-doc-cuc.js        manDocCuc       gói 7  doc-cuc · che-doc-cuc
-  //   man-doi-xich-nhen.js  manDoiXichNhen  gói 8  doi-xich · che-doi-xich
-  //   man-bung-nhen.js      manBungNhen     gói 9  bung-nhen · che-bung-nhen
+  //   man-bang-cu.js        manBangCu       gói 8  bang-cu · che-bang-cu (PDM3b2 31/10, thay gói Đội)
+  //   man-doi-xich-nhen.js  manDoiXichNhen  gói 9  doi-xich · che-doi-xich (PDM3b2 31/10, trước: gói 8)
+  //   man-bung-nhen.js      manBungNhen     bung-nhen · che-bung-nhen (PDM3b2: CẤT ra mùa ẩn, CAT_MUA_3)
   //   man-trum-mua-3.js     manTrumMua3     gói 10 tong-hop-3 · trum-mua-3
-  var TEP_MUA_3 = ['manThanNhen', 'manNamChamN', 'manCamUngTu', 'manBaiTu', 'manNhay', 'manDaoCuc', 'manDocCuc', 'manDoiXichNhen', 'manBungNhen', 'manTrumMua3'];
+  var TEP_MUA_3 = ['manThanNhen', 'manNamChamN', 'manCamUngTu', 'manBaiTu', 'manNhay', 'manDaoCuc', 'manDocCuc', 'manBangCu', 'manDoiXichNhen', 'manBungNhen', 'manTrumMua3'];
   (function () {
     Object.keys(TEN_MUA_3).forEach(function (c) { TT.ten[c] = TEN_MUA_3[c]; });
     Object.keys(TEN_ROI_3).forEach(function (c) { TT.ten[c] = TEN_ROI_3[c]; });
     // Màn gói đội (chenGoi, nạp sau `nguon`) chưa có bản gốc: dungChuong cần hạng gốc (trùm) của chúng.
     M.danhSach.forEach(function (m) { if (!nguon[m.ma]) nguon[m.ma] = copy(m); });
     var coTruoc = TT.thuTu.filter(function (c) { return M.danhSach.some(function (m) { return m.chuong === c; }); });
-    var moi = [], chuong = [];
+    var moi = [], chuong = [], chuongCat3 = CAT_MUA_3.chuong.map(function (c) { return c[0]; });
     MUA_3.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
     TEP_MUA_3.forEach(function (k) { moi = moi.concat(M[k] || []); });
-    moi.forEach(function (m) { if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa 3 thuộc chương không có trong MUA_3: ' + m.chuong + '.' + m.so); });
+    moi.forEach(function (m) { if (chuong.indexOf(m.chuong) < 0 && chuongCat3.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa 3 thuộc chương không có trong MUA_3: ' + m.chuong + '.' + m.so); });
     // Chương mới chưa có trong thuTu: chèn tạm vào cuối cho ManHoc.them nhận; thuTu được dựng lại ngay dưới.
-    chuong.concat(Object.keys(ROI_MUA_3)).forEach(function (c) { if (TT.thuTu.indexOf(c) < 0) TT.thuTu.push(c); });
+    chuong.concat(Object.keys(ROI_MUA_3), chuongCat3).forEach(function (c) { if (TT.thuTu.indexOf(c) < 0) TT.thuTu.push(c); });
     M.them(moi);
     moi.forEach(function (m) { nguon[m.ma] = copy(m); });
     MUA_3.forEach(function (g) {
@@ -1078,13 +1084,17 @@
         if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); }
       });
     });
+    CAT_MUA_3.chuong.forEach(function (c) {
+      c[1].forEach(function (ma) { if (da[ma]) throw new Error('Màn xếp hai lần (cất mùa 3): ' + ma); da[ma] = true; });
+      dungChuong(c[0], c[1]);
+    });
     Object.keys(ROI_MUA_3).forEach(function (c) {
       ROI_MUA_3[c].forEach(function (ma) { if (da[ma]) throw new Error('Màn vừa ở mùa 3 vừa rời mùa 3: ' + ma); });
       dungChuong(c, ROI_MUA_3[c]);
     });
     // Huy hiệu mùa 3 (user 30/10 "vẽ 20 huy hiệu"): màn cuối mỗi chương (trùm) mang huy hiệu của chương, như mùa 2; màn khác của chương bỏ huy hiệu.
     // Màn có sẵn đổi huy hiệu theo chương mới: nhen.10 (trùm Nhảy) nhen → nhay, nam-cham.10 → doc-cuc, che-nam-cham.10 → che-doc-cuc; hình ở huy-hieu-vector.js.
-    MUA_3.forEach(function (g) {
+    MUA_3.concat([CAT_MUA_3]).forEach(function (g) {
       g.chuong.forEach(function (c) {
         var ds = c[1];
         if (!ds.length) return;
@@ -1096,7 +1106,7 @@
     // đề do Sola giao ("Giúp Sola với!"; màn sửa lỗi "Sola viết vội, sửa giúp nhé."; màn trình diễn "Sola làm mẫu."), gợi ý do Luna nói, người chơi là "bạn".
     // Làm ở lộ trình cho mọi màn mùa 3 (màn có sẵn lẫn màn mới) để ngân hàng và máy kiểm của ngân hàng giữ nguyên. Từ của lõi (hố, gầm, đệm từ, vật nam châm)
     // giữ như lời chẩn đoán của cham.js (dùng chung mùa 2, 4); vật sắt của sân là sắt vụn. "Hàm của em" là nhãn giao diện nên giữ.
-    MUA_3.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiBaiTaiChe(get(ma)); }); }); });
+    MUA_3.concat([CAT_MUA_3]).forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiBaiTaiChe(get(ma)); }); }); });
     // Màn còn sót ở chương cũ (không thuộc MUA_3, không thuộc ROI_MUA_3) là lỗi dữ liệu.
     M.danhSach.forEach(function (m) {
       if (chuongMua3.indexOf(m.chuong) >= 0 && !da[m.ma]) throw new Error('Màn ' + m.ma + ' nằm ở chương mùa 3 ' + m.chuong + ' mà không có trong MUA_3 / ROI_MUA_3');
@@ -1129,6 +1139,10 @@
       }
       conLai.push(g);
     });
+    // PDM3b2: gói cất của mùa 3 (Nam châm bụng nhện) sang mùa ẩn như CAT_MUA_2 (khongTangNguong: ngưỡng = gói trước + 30).
+    var goiCat3 = { ma: CAT_MUA_3.ma, ten: CAT_MUA_3.ten, loai: CAT_MUA_3.loai, mua: 'mua-4', khongTangNguong: true, chuong: chuongCat3 };
+    conLai.push(goiCat3);
+    doi4.push(goiCat3);
     conLai.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
     // Ngưỡng gói dời sang mùa 4 (ẩn), tính một lần theo luật mo-goi.js trong mùa mới: gói thường 0,5 × tổng sao tối đa các gói thường dời đứng trước,
     // làm tròn xuống bội 5 (gói đầu 0 ★); gói đội (khongTangNguong) = gói đứng trước + 30, như chenGoi. Gói mùa 4 cũ giữ ngưỡng khai cứng.
@@ -2398,6 +2412,7 @@
     // trum-mua-3 gọi hàm gói 3–4) còn là màn xe: cấp bản cũ làm hàm của màn (capCu, như CAP_HAM_CU mùa 2 ở PDM2b) tới khi PDM3b / PDM3c dựng lại các gói đó.
     var CAP_HAM_CU_3 = { 'tong-hop-3': true, 'trum-mua-3': true };
     Object.keys(CAP_HAM_CU_3).forEach(function (c) { chuongAn[c] = true; });
+    CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
@@ -2405,6 +2420,10 @@
     if (nguon['che-nam-cham.5']) DAY_CU.push(['che-nam-cham.5', 'sort']);
     if (nguon['che-nam-cham.6']) DAY_CU.push(['che-nam-cham.6', 'fling']);
     if (nguon['che-nhen.6']) DAY_CU.push(['che-nhen.6', 'bring']);
+    if (nguon['che-bung-nhen.2']) DAY_CU.push(['che-bung-nhen.2', 'hook']);
+    if (nguon['che-bung-nhen.3']) DAY_CU.push(['che-bung-nhen.3', 'unhook']);
+    if (nguon['che-bung-nhen.5']) DAY_CU.push(['che-bung-nhen.5', 'tote']);
+    if (nguon['che-bung-nhen.7']) DAY_CU.push(['che-bung-nhen.7', 'hook_for']);
     // Bản xe hai bánh của hàm của em gói 3–4 mùa 3 (ngân hàng đã viết lại trên nhện nên không còn trong `nguon`): khai cứng như THAN_CU mùa 2.
     var THAN_CU_3 = [
       ['che-cam-ung-tu.2', { ten: 'seek_iron', thamSo: [], than: ['while not front_metal():', '    move()'] }],

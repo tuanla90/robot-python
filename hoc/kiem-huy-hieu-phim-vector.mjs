@@ -239,7 +239,7 @@ const conPixel = [];
     'kho-cu', 'che-kho-cu',                               // PDM2b 31/10: gói 8 mùa 2 Góc kho cũ (hình vẽ mới ở huy-hieu-vector.js)
     // mùa 3 (30/10): 17 huy hiệu trùm chương mới (nhen, nam-cham, che-nhen có sẵn; hai chương đội dùng mã mới, bí danh doi-xich / che-doi-xich y nguyên)
     'chuoi-nhen', 'logic-nam-cham', 'cam-ung-tu', 'che-cam-ung-tu', 'bai-tu', 'che-bai-tu', 'nhay', 'dao-cuc', 'che-dao-cuc', 'doc-cuc', 'che-doc-cuc',
-    'doi-xich-nhen', 'che-doi-xich-nhen', 'bung-nhen', 'che-bung-nhen', 'tong-hop-3', 'xe-tham-do',
+    'bang-cu', 'che-bang-cu', 'doi-xich-nhen', 'che-doi-xich-nhen', 'bung-nhen', 'che-bung-nhen', 'tong-hop-3', 'xe-tham-do',
     // mùa 4 (30/10): huy hiệu các chương mới + cỗ máy drone-ke-vach (trùm cuối mùa, cũng là hình gói 10)
     'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'che-nhin-duoi', 'son-tren-cao', 'che-son-tren-cao', 'tong-hop-4', 'drone-ke-vach', 'trum-mua-4'];
   for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));

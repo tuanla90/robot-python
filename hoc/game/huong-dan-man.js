@@ -762,7 +762,14 @@
   H['che-bai-tu.2'] = [buocTaoHam('detour', 'Bấm Hàm mới, đặt tên detour và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: go_down(), đi n ô sang phải, go_up(). Bấm Chạy.'));
   H['che-bai-tu.4'] = [buocTaoHam('call_out', 'Bấm Hàm mới để tạo call_out().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait(), go_right(), go_right(), magnet_n(), wait(). Bấm Chạy.'));
   H['che-bai-tu.7'] = [buocTaoHam('shield_run', 'Bấm Hàm mới, đặt tên shield_run và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi for i in range(n): go_right(). Bấm Chạy.'));
-  // MÙA 3 gói 8: đội xích và nhện (doi-xich.11 trình diễn; che-doi-xich.11 trình diễn hàm rest; .12 wait_n(n), .14 pass_box, .15 hop_drop(d))
+  // MÙA 3 gói 8 (PDM3b2 31/10: băng chuyền cũ): bang-cu.1 trình diễn; che-bang-cu.1 trình diễn hàm belt_step(d); .2 ride_belt(d), .4 hop_belt(d), .6 hold_gate(d), .9 take_metal_to(d)
+  H['bang-cu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện hút sắt đặt lên nút M giữ cửa C mở, rồi đứng trên băng hai nhịp trôi tới cờ.');
+  H['che-bang-cu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm belt_step("R") bước lên băng rồi chờ hai nhịp cho băng đẩy thêm một ô.');
+  H['che-bang-cu.2'] = [buocTaoHam('ride_belt', 'Bấm Hàm mới, đặt tên ride_belt và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: go(d), wait(), wait(). Bấm Chạy.'));
+  H['che-bang-cu.4'] = [buocTaoHam('hop_belt', 'Bấm Hàm mới, đặt tên hop_belt và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: go(d) rồi jump(d) để nhảy vọt qua dải băng ngược. Bấm Chạy.'));
+  H['che-bang-cu.6'] = [buocTaoHam('hold_gate', 'Bấm Hàm mới, đặt tên hold_gate và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pull_s(), go(d), magnet_off(), wait(). Bấm Chạy.'));
+  H['che-bang-cu.9'] = [buocTaoHam('take_metal_to', 'Bấm Hàm mới, đặt tên take_metal_to và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Nếu front_metal() là True thì sang phải lấy sắt đặt sang hướng d. Bấm Chạy.'));
+  // MÙA 3 gói 9: đội xích và nhện (doi-xich.11 trình diễn; che-doi-xich.11 trình diễn hàm rest; .12 wait_n(n), .14 pass_box, .15 hop_drop(d))
   H['doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hai robot chạy cùng nhịp, mỗi robot tới cờ của mình.');
   H['che-doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện gọi rest(2) chờ xích qua ngã tư rồi mới đi.');
   H['che-doi-xich.12'] = [buocTaoHam('wait_n', 'Bấm Hàm mới, đặt tên wait_n và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: for i in range(n): rồi wait(). Bấm Chạy.'));

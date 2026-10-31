@@ -45,6 +45,7 @@ const khoiMua4 = (/var MUA_4 = \[([\s\S]*?)\n  \];/.exec(nguonLo) || [])[1] || '
 const GOI_MUA_4 = [...khoiMua4.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai: '([^']+)')?/g)].map((m) => ({ ma: m[1], loai: m[2] || '' }));
 const GOI_MUA_2 = [...khoiMua2.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai: '([^']+)')?/g)].map((m) => ({ ma: m[1], loai: m[2] || '' }));
 const GOI_CAT_2 = [...nguonLo.matchAll(/var CAT_MUA_2 = \{ ma: '([^']+)'/g)].map((m) => m[1]);     // PDM2c 31/10: gói mùa 2 cất ra mùa ẩn (be-sung); phim của nó giữ lại chờ gói về
+const GOI_CAT_3 = [...nguonLo.matchAll(/var CAT_MUA_3 = \{ ma: '([^']+)'/g)].map((m) => m[1]);     // PDM3b2 31/10: gói mùa 3 cất ra mùa ẩn (bung-nhen); phim của nó giữ lại
 const CHUA_CO_GOI = [];                       // phim khai sẵn cho gói chưa có màn (27/10: gói combo đã có, mọi phim mùa 1 đều khớp gói thật)
 const KHONG_PHIM = ['xe'];                     // gói dùng phim mở đầu (mo-dau.js)
 
@@ -154,8 +155,8 @@ console.log('\n== 1c. Phim mùa 3 "Bãi tái chế" (gói theo MUA_3 của lo-tr
   const thieu = GOI_MUA_3.filter((g) => !P3[g.ma] || TEP_CUA[g.ma] !== 'phim-mua-3.js').map((g) => g.ma + '@' + (TEP_CUA[g.ma] || '-'));
   kiem('mọi gói mùa 3 có phim, nằm ở phim-mua-3.js', !thieu.length, thieu.join(', '));
   const ma3 = new Set(GOI_MUA_3.map((g) => g.ma));
-  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-3.js' && !ma3.has(m));
-  kiem('mỗi phim của phim-mua-3.js mang đúng mã một gói của MUA_3 và gói đó thuộc mùa 3 trong ThuTuChuong.goi', !la.length && GOI_MUA_3.every((g) => (TT.goi.find((x) => x.ma === g.ma) || {}).mua === 'mua-3'), la.join(', '));
+  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-3.js' && !ma3.has(m) && !GOI_CAT_3.includes(m));
+  kiem('mỗi phim của phim-mua-3.js mang đúng mã một gói của MUA_3 (hay gói cất ' + GOI_CAT_3.join(', ') + ') và gói đó thuộc mùa 3 trong ThuTuChuong.goi', !la.length && GOI_MUA_3.every((g) => (TT.goi.find((x) => x.ma === g.ma) || {}).mua === 'mua-3'), la.join(', '));
   const boPhan = GOI_MUA_3.filter((g) => g.loai === 'bo-phan' && P3[g.ma]);
   const khongCode = boPhan.filter((g) => !/\bc\.code\(/.test(P3[g.ma][P3[g.ma].length - 1].toString())).map((g) => g.ma);
   kiem('khung cuối phim gói bộ phận mùa 3 có bảng code lệnh mới (' + boPhan.map((g) => g.ma).join(', ') + ')', boPhan.length >= 5 && !khongCode.length, khongCode.join(', '));

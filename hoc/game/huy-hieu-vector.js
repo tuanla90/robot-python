@@ -477,6 +477,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('che-dao-cuc', che(function (g, c) { c.vong(40, 62, 16, BM.vecVang, 4); c.vat('nam-cham', { cuc: 'S' }, 40, 62, 16); }));
   dk('doc-cuc', function (g, c) { doTu(g, c, 34, 54, 46, 'nam-cham', { cuc: 'S' }); });
   dk('che-doc-cuc', che(function (g, c) { doTu(g, c, 28, 64, 38, 'nam-cham', { cuc: 'N' }); }));
+  dk('bang-cu', function (g, c) { c.o('bang', { huong: 1 }, 34, 62, 34); c.o('cua', { mo: true }, 74, 42, 30); nhenBung(c, 34, 46, 36, true); });
+  dk('che-bang-cu', che(function (g, c) { c.o('bang', { huong: 1 }, 34, 66, 32); nhenBung(c, 34, 54, 34, true); }));
   dk('doi-xich-nhen', function (g, c) {
     c.vat('khoi-sat', {}, 50, 30, 14);
     c.robot({ than: 'xich', son: '' }, st(), 0, 30, 60, 40);
