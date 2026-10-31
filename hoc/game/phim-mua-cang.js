@@ -143,4 +143,31 @@
       }
     }
   ]);
+
+  /* ================================================================ 5. duong-ray — Đường ray cảng */
+  PG.dangKy('duong-ray', [
+    { Chu: ['Bãi cảng trải dài nhiều cột, cần cẩu đứng yên không vươn tới hết.', 'Đội Chấn Hưng đặt bệ cẩu lên ĐƯỜNG RAY CẢNG chạy dọc cầu tàu!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        var rb = dat(s, may(CAU_QUET, { nac: 0, tam: 1, camBien: { bat: true } }, 0), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, may(CAU_QUET, { nac: 0, tam: 1, camBien: { bat: true } }, 0), 3, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['rail(n) trượt cả bệ cẩu và đầu cần đi n ô dọc theo đường ray.', 'n dương chạy sang phải hoặc xuống dưới; n âm lùi sang trái hoặc lên trên!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('boong-tau', { co: true }), 3, 0);
+        dat(s, veV('container', { so: 15, mau: 'cam' }, 1.5), 3, 0);
+        dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 3, 1);
+        m.appendChild(code('pick_up()\nrail(2)\nswing_by(4)\nset_down()'));
+      }
+    }
+  ]);
 })();

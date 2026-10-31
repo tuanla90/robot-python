@@ -33,8 +33,8 @@
       'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4',
       // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–10
       'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da', 'di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni-moi', 'trum-mua-6',
-      // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–4
-      'can-cau', 'moc-cau', 'quet-ma', 'ben-tau'].forEach(function (n) { require('./man-' + n + '.js'); });
+      // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–5
+      'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1632,15 +1632,18 @@
     { ma: 'quet-ma', ten: 'Đầu đọc mã container', loai: 'bo-phan', hinh: 'quet-ma',
       chuong: [['quet-ma', []], ['che-quet-ma', []]] },
     { ma: 'ben-tau', ten: 'Tàu cập bến', hinh: 'ben-tau',
-      chuong: [['ben-tau', []], ['che-ben-tau', []]] }
+      chuong: [['ben-tau', []], ['che-ben-tau', []]] },
+    { ma: 'duong-ray', ten: 'Đường ray cảng', loai: 'bo-phan', hinh: 'duong-ray',
+      chuong: [['duong-ray', []], ['che-duong-ray', []]] }
   ];
   var TEN_MUA_CANG = {
     'can-cau': 'Quay cần vươn tầm', 'so-am': 'Số âm và khoảng cách',
     'moc-cau': 'Nhấc container', 'chia-du': 'Chia lấy phần nguyên, phần dư',
     'quet-ma': 'Đọc mã số', 'che-quet-ma': 'Chế lệnh: phân loại theo mã',
-    'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: giao đúng tàu'
+    'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: giao đúng tàu',
+    'duong-ray': 'Chạy dọc đường ray', 'che-duong-ray': 'Chế lệnh: dời bệ cẩu'
   };
-  var TEP_MUA_CANG = ['manCanCau', 'manMocCau', 'manQuetMa', 'manBenTau'];
+  var TEP_MUA_CANG = ['manCanCau', 'manMocCau', 'manQuetMa', 'manBenTau', 'manDuongRay'];
   (function () {
     Object.keys(TEN_MUA_CANG).forEach(function (c) { TT.ten[c] = TEN_MUA_CANG[c]; });
     var moi = [], chuong = [];
