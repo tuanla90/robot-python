@@ -62,7 +62,7 @@ function khaiNiemBai(m, chinh, hamMoi, hamMan, khoEm) {
   const tenTS = hamThamSo(khoEm.concat(hamMoi), hamMan);
   const c = new Set(), h = new Set();
   if (!m.chinhCoDinh || m.chiChay) { for (const x of khaiNiem3(chinh)) c.add(x); if (goiCoDoi(chinh, tenTS)) c.add('tham-so'); }
-  for (const f of hamMoi.concat(hamMan || [])) {
+  for (const f of hamMoi.concat((hamMan || []).filter((x) => !x.capCu))) {      // capCu (PDM3a): bản xe cũ của hàm gói 3–4 cấp lại cho gói 10, không phải thân người chơi viết
     for (const x of khaiNiem3(f.than)) h.add(x);
     if ((f.thamSo || []).length || goiCoDoi(f.than, tenTS)) h.add('tham-so');
   }
@@ -128,7 +128,7 @@ for (const m of dsTruoc) if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEm
     for (const m of ds) {
       const kn = khaiNiemCua(m, [...k3.values()]);
       const ep = dangEp(m, kn);
-      if (!MAN_LOI_GIA && !m.chiChay && !Array.isArray(m.doi) && (ep.has('metal') || ep.has('pole'))) MAN_LOI_GIA = m.ma;
+      if (!MAN_LOI_GIA && !m.chiChay && !Array.isArray(m.doi) && m.loaiRobot !== 'nhen' && (ep.has('metal') || ep.has('pole'))) MAN_LOI_GIA = m.ma;      // PDM3a: gói 3 nay là nhện (không chèn dấu được), lỗi giả cắm vào màn xe ép front_pole (gói 7)
       if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEmMoi || []) k3.set(h.ten, clone(h));
     }
   }
@@ -232,7 +232,7 @@ for (const m of ds) {
       lach.push({ ten: 'D', bai: { chinh: L.duoiThamSo(lg.chinh, tenTS), hamCuaMan: lg.hamCuaMan || [] }, kho: hamCuaEm });
     }
     // D2: hàm có tham số NGƯỜI CHƠI VIẾT thành hàm không tham số, thân thay tham số bằng một đối số đã dùng (thử từng đối số); mọi lời gọi bỏ đối số
-    const viet = (lg.hamCuaEmMoi || []).map((h) => ({ h, loai: 'em' })).concat((lg.hamCuaMan || []).map((h) => ({ h, loai: 'man' }))).filter((x) => (x.h.thamSo || []).length);
+    const viet = (lg.hamCuaEmMoi || []).map((h) => ({ h, loai: 'em' })).concat((lg.hamCuaMan || []).filter((h) => !h.capCu).map((h) => ({ h, loai: 'man' }))).filter((x) => (x.h.thamSo || []).length);      // capCu: không phải hàm người chơi viết
     for (const x of viet) {
       const cacDoan = [lg.chinh].concat((lg.hamCuaEmMoi || []).concat(lg.hamCuaMan || []).map((h) => h.than));
       const doiSo = L.doiSoCua(x.h.ten, cacDoan);

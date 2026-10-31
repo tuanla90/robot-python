@@ -726,17 +726,17 @@
   H['logic-nam-cham.4'] = [buocTaoHam('carry_up', 'Bấm Hàm mới để tạo carry_up().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hút, wait(), go_up(), thả, wait(), go_down(). Bấm Chạy.'));
   H['logic-nam-cham.5'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: c khác "g" VÀ khác "N" mới hút, nên mẩu N nằm sẵn trên thùng được bỏ qua.');
 
-  // MÙA 3 gói 3: cảm biến từ front_metal() (cam-ung-tu.1 trình diễn), hàm dò sắt (che-cam-ung-tu.1 trình diễn; .2 seek_iron, .3 take_iron, .6 seek_safe, .8 face_iron)
-  H['cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đầu dò chữ U thấy sắt nên front_metal() là True, xe hút vật về rồi thả.');
+  // MÙA 3 gói 3 (PDM3a 31/10: cảm biến từ ở hông nhện, đầu dò nhìn sang phải): cam-ung-tu.1 trình diễn; che-cam-ung-tu.1 trình diễn hàm của màn; .2 pick_iron, .3 seek_row, .6 next_iron, .7 col_iron(n)
+  H['cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đầu dò chữ U thấy sắt bên phải nên front_metal() là True, nhện sang lấy rồi về thùng.');
   H['cam-ung-tu.2'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: sân 2 trước mặt là gỗ, nam châm không hút được.', xong: 'chay', daLam: daChay },
-    { dich: 'nut:pal-the-sau', chu: 'Thêm khối if ở thẻ Logic, điều kiện not front_metal(), bên trong là turn_right().', xong: 'bam', han: 12000, rong: 170 }
+    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: bãi 2 bên phải là gỗ, nam châm không hút được.', xong: 'chay', daLam: daChay },
+    { dich: 'nut:pal-the-sau', chu: 'Thêm khối if ở thẻ Logic, điều kiện not front_metal(), bên trong là go_down().', xong: 'bam', han: 12000, rong: 170 }
   ];
-  H['che-cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: tới chỗ thấy sắt thì haul_iron() làm cả chuyến hút, quay đầu, thả.');
-  H['che-cam-ung-tu.2'] = [buocTaoHam('seek_iron', 'Bấm Hàm mới để tạo seek_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while not front_metal(): rồi move(). Bấm Chạy.'));
-  H['che-cam-ung-tu.3'] = [buocTaoHam('take_iron', 'Bấm Hàm mới để tạo take_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hút, wait(), quay đầu, thả, wait(). Bấm Chạy.'));
-  H['che-cam-ung-tu.6'] = [buocTaoHam('seek_safe', 'Bấm Hàm mới để tạo seek_safe().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while front_clear() and not front_metal(): rồi move(). Bấm Chạy.'));
-  H['che-cam-ung-tu.8'] = [buocTaoHam('face_iron', 'Bấm Hàm mới để tạo face_iron().', CHU_TAO)].concat(buocThuVeChay('Hai câu if lồng nhau quay xe về phía có sắt. Bấm Chạy.'));
+  H['che-cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: tới hàng thấy sắt thì grab_row() làm cả chuyến sang lấy, về thả.');
+  H['che-cam-ung-tu.2'] = [buocTaoHam('pick_iron', 'Bấm Hàm mới để tạo pick_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: sang hai ô, hút, wait(), về một ô, thả, wait(), về một ô. Bấm Chạy.'));
+  H['che-cam-ung-tu.3'] = [buocTaoHam('seek_row', 'Bấm Hàm mới để tạo seek_row().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while not front_metal(): rồi go_down(). Bấm Chạy.'));
+  H['che-cam-ung-tu.6'] = [buocTaoHam('next_iron', 'Bấm Hàm mới để tạo next_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: seek_row(), pick_iron(), go_down(). Bấm Chạy.'));
+  H['che-cam-ung-tu.7'] = [buocTaoHam('col_iron', 'Bấm Hàm mới, đặt tên col_iron và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: for i in range(n): rồi next_iron(). Bấm Chạy.'));
 
   // MÙA 3 gói 5: nhảy (nhay.1 trình diễn co chân chui gầm, duỗi chân bật qua hố)
   H['nhay.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: crouch() co chân chui gầm, stand() ngay trước bước đi là bật qua hố.');
@@ -777,5 +777,5 @@
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2,
     'che-cam-bien.5': 2, 'che-cam-bien.6': 2,       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
-    'nam-cham.11': 2, 'logic-nam-cham.1': 2 };       // PDM3a 31/10: gói 2 mùa 3 trên nhện + nam châm bụng
+    'nam-cham.11': 2, 'logic-nam-cham.1': 2, 'cam-ung-tu.1': 2, 'cam-ung-tu.2': 2, 'che-cam-ung-tu.1': 2, 'che-cam-ung-tu.2': 2, 'che-cam-ung-tu.3': 2, 'che-cam-ung-tu.6': 2 };       // PDM3a 31/10: gói 2–3 mùa 3 trên nhện + nam châm bụng (+ cảm biến từ)
 })();

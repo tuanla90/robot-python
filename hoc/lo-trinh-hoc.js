@@ -911,7 +911,8 @@
     { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', hinh: 'nam-cham',
       chuong: [['nam-cham', day('nam-cham', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])], ['logic-nam-cham', day('logic-nam-cham', MUOI)]] },
     { ma: 'cam-ung-tu', ten: 'Cảm biến từ', loai: 'bo-phan',      // user 29/10: theo tên thẻ part (gioi-thieu-part.js), trước: Cảm ứng từ
-      chuong: [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]] },
+      // PDM3a 31/10: 20 màn viết lại thẳng ngân hàng (mã giữ) trên nhện + nam châm bụng + cảm biến từ hông, thứ tự 1 … 10.
+      chuong: [['cam-ung-tu', day('cam-ung-tu', MUOI)], ['che-cam-ung-tu', day('che-cam-ung-tu', MUOI)]] },
     { ma: 'bai-tu', ten: 'Bãi từ',
       chuong: [['bai-tu', []], ['che-bai-tu', []]] },
     { ma: 'nhay', ten: 'Nhảy', loai: 'bo-phan', hinh: 'che-nhen',
@@ -2373,6 +2374,16 @@
     var CAP_HAM_CU_3 = { 'che-doc-cuc': true, 'tong-hop-3': true, 'trum-mua-3': true };
     Object.keys(CAP_HAM_CU_3).forEach(function (c) { chuongAn[c] = true; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
+    // Bản xe hai bánh của hàm của em gói 3–4 mùa 3 (ngân hàng đã viết lại trên nhện nên không còn trong `nguon`): khai cứng như THAN_CU mùa 2.
+    var THAN_CU_3 = [
+      ['che-cam-ung-tu.2', { ten: 'seek_iron', thamSo: [], than: ['while not front_metal():', '    move()'] }],
+      ['che-cam-ung-tu.3', { ten: 'take_iron', thamSo: [], than: ['magnet_n()', 'wait()', 'u_turn()', 'magnet_off()', 'wait()'] }],
+      ['che-cam-ung-tu.6', { ten: 'seek_safe', thamSo: [], than: ['while front_clear() and not front_metal():', '    move()'] }],
+      ['che-cam-ung-tu.8', { ten: 'face_iron', thamSo: [], than: ['if not front_metal():', '    turn_right()', '    if not front_metal():', '        u_turn()'] }],
+      ['che-bai-tu.2', { ten: 'fetch_iron', thamSo: ['n'], than: ['magnet_n()', 'for i in range(n):', '    move()', 'u_turn()', 'for i in range(n):', '    move()'] }],
+      ['che-bai-tu.4', { ten: 'loop_right', thamSo: ['k'], than: ['for i in range(3):', '    turn_right()', '    for j in range(k):', '        move()'] }],
+      ['che-bai-tu.7', { ten: 'pull_iron', thamSo: [], than: ['wait()', 'move()', 'magnet_n()', 'wait()'] }]
+    ];
     DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
     });
@@ -2388,6 +2399,7 @@
       ['che-do-nhiet.7', { ten: 'switch_right', thamSo: [], than: ['turn_right()', 'switch_on()', 'turn_left()'] }],
       ['che-do-nhiet.8', { ten: 'auto_left_on', thamSo: [], than: ['turn_left()', 'auto_on()', 'turn_right()'] }]
     ].forEach(function (x) { THAN_CU.push(x); });
+    THAN_CU_3.forEach(function (x) { THAN_CU.push(x); });
     THAN_CU.forEach(function (x) { HAM_CU[x[1].ten] = copy(x[1]); DAY_CU.push([x[0], x[1].ten]); });
     // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.
     var khoEm = {};
