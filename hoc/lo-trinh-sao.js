@@ -1036,7 +1036,27 @@
   "chia-du.7": { "o": 19, "nhip": 20 },
   "chia-du.8": { "o": 22, "nhip": 16 },
   "chia-du.9": { "o": 32, "nhip": 26 },
-  "chia-du.10": { "o": 31, "nhip": 48 }
+  "chia-du.10": { "o": 31, "nhip": 48 },
+  "quet-ma.1": { "o": 13, "nhip": 3 },
+  "quet-ma.2": { "o": 15, "nhip": 6 },
+  "quet-ma.3": { "o": 10, "nhip": 7 },
+  "quet-ma.4": { "o": 12, "nhip": 7 },
+  "quet-ma.5": { "o": 19, "nhip": 10 },
+  "quet-ma.6": { "o": 14, "nhip": 20 },
+  "quet-ma.7": { "o": 18, "nhip": 24 },
+  "quet-ma.8": { "o": 14, "nhip": 12 },
+  "quet-ma.9": { "o": 22, "nhip": 18 },
+  "quet-ma.10": { "o": 15, "nhip": 28 },
+  "che-quet-ma.1": { "o": 19, "nhip": 16 },
+  "che-quet-ma.2": { "o": 21, "nhip": 48 },
+  "che-quet-ma.3": { "o": 22, "nhip": 48 },
+  "che-quet-ma.4": { "o": 17, "nhip": 48 },
+  "che-quet-ma.5": { "o": 16, "nhip": 22 },
+  "che-quet-ma.6": { "o": 21, "nhip": 50 },
+  "che-quet-ma.7": { "o": 23, "nhip": 28 },
+  "che-quet-ma.8": { "o": 19, "nhip": 58 },
+  "che-quet-ma.9": { "o": 29, "nhip": 80 },
+  "che-quet-ma.10": { "o": 32, "nhip": 94 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;
