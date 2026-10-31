@@ -741,12 +741,12 @@
   // MÙA 3 gói 5: nhảy (nhay.1 trình diễn co chân chui gầm, duỗi chân bật qua hố)
   H['nhay.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: crouch() co chân chui gầm, stand() ngay trước bước đi là bật qua hố.');
 
-  // MÙA 3 gói 6: đảo cực (dao-cuc.1 trình diễn magnet_s; che-dao-cuc.1 trình diễn hàm kéo; .2 pull_n, .3 pull_s, .5 haul_n(k))
-  H['dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: cực S hút vật chữ N (khác cực), rồi đẩy vật chữ S (cùng cực).');
-  H['che-dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm reel_n() bật cực S kéo vật chữ N về.');
+  // MÙA 3 gói 6 (PDM3b1 31/10: đảo cực nam châm bụng nhện): dao-cuc.1 trình diễn magnet_s; che-dao-cuc.1 trình diễn hàm nhấc; .2 pull_n, .3 pull_s, .5 haul_n(k)
+  H['dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: cực S dưới bụng hút mẩu chữ N (khác cực) đem sang thùng, cực N hút mẩu chữ S.');
+  H['che-dao-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm reel_n() bật cực S dưới bụng nhấc mẩu chữ N.');
   H['che-dao-cuc.2'] = [buocTaoHam('pull_n', 'Bấm Hàm mới để tạo pull_n().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_s() rồi wait(). Bấm Chạy.'));
   H['che-dao-cuc.3'] = [buocTaoHam('pull_s', 'Bấm Hàm mới để tạo pull_s().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi wait(). Bấm Chạy.'));
-  H['che-dao-cuc.5'] = [buocTaoHam('haul_n', 'Bấm Hàm mới, đặt tên haul_n và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Kéo bằng pull_n(), chở k ô, rồi thả. Bấm Chạy.'));
+  H['che-dao-cuc.5'] = [buocTaoHam('haul_n', 'Bấm Hàm mới, đặt tên haul_n và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Nhấc bằng pull_n(), đi sang phải k ô, rồi thả. Bấm Chạy.'));
 
   // MÙA 3 gói 7: đọc cực front_pole() (doc-cuc.1 trình diễn; che-doc-cuc.1 trình diễn hàm có if; .2 tạo sort_drop(p))
   H['doc-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: front_pole() đọc được chữ "S" nên xe bật cực N để kéo vật về.');
@@ -777,5 +777,6 @@
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2,
     'che-cam-bien.5': 2, 'che-cam-bien.6': 2,       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
-    'nam-cham.11': 2, 'logic-nam-cham.1': 2, 'cam-ung-tu.1': 2, 'cam-ung-tu.2': 2, 'che-cam-ung-tu.1': 2, 'che-cam-ung-tu.2': 2, 'che-cam-ung-tu.3': 2, 'che-cam-ung-tu.6': 2, 'bai-tu.1': 2, 'che-bai-tu.1': 2, 'che-bai-tu.2': 2, 'che-bai-tu.4': 2, 'che-bai-tu.7': 2 };       // PDM3a 31/10: gói 2–4 mùa 3 trên nhện + nam châm bụng (+ cảm biến từ, đệm từ)
+    'nam-cham.11': 2, 'logic-nam-cham.1': 2, 'cam-ung-tu.1': 2, 'cam-ung-tu.2': 2, 'che-cam-ung-tu.1': 2, 'che-cam-ung-tu.2': 2, 'che-cam-ung-tu.3': 2, 'che-cam-ung-tu.6': 2, 'bai-tu.1': 2, 'che-bai-tu.1': 2, 'che-bai-tu.2': 2, 'che-bai-tu.4': 2, 'che-bai-tu.7': 2,       // PDM3a 31/10: gói 2–4 mùa 3 trên nhện + nam châm bụng (+ cảm biến từ, đệm từ)
+    'dao-cuc.1': 2, 'che-dao-cuc.1': 2, 'che-dao-cuc.5': 2 };       // PDM3b1 31/10: gói 6 mùa 3 trên nhện + nam châm bụng
 })();

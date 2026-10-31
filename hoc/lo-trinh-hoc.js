@@ -919,7 +919,7 @@
       // che-nhen (đường cong): sửa cú nhảy (.8), bò rồi nhảy (.5), sửa bò (.9) lên trước Đá lót đường (.4) và Hang động (.3); Nhện giao hàng (.6) sau Đường về (.7).
       chuong: [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]] },
     { ma: 'dao-cuc', ten: 'Đảo cực', loai: 'bo-phan',
-      chuong: [['dao-cuc', ['dao-cuc.1', 'dao-cuc.2', 'dao-cuc.7', 'nam-cham.3', 'dao-cuc.3', 'dao-cuc.4', 'dao-cuc.5', 'dao-cuc.6', 'nam-cham.2', 'dao-cuc.8']], ['che-dao-cuc', ['che-dao-cuc.1', 'che-dao-cuc.2', 'che-nam-cham.6', 'che-dao-cuc.3', 'che-dao-cuc.7', 'che-dao-cuc.4', 'che-dao-cuc.5', 'che-dao-cuc.8', 'che-dao-cuc.6', 'che-dao-cuc.9']]] },
+      chuong: [['dao-cuc', []], ['che-dao-cuc', []]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',
       chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'doc-cuc.9']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
@@ -964,7 +964,7 @@
   // che-doi-ho-bang). Gói cũ đổi mã khi mã cũ đã thuộc gói mùa 3 (cờ goi-mo:<mã> của gói mùa 3).
   // PDM3a 31/10: nam-cham-xe (nam-cham.1 .4 .5 .7 .8) và che-nam-cham-xe (che-nam-cham.1 .8): màn nam châm mũi xe hai bánh rời gói 2 (gói 2 nay là nhện + nam châm bụng).
   var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'],     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
-    'nam-cham-xe': day('nam-cham', [1, 4, 5, 7, 8]), 'che-nam-cham-xe': ['che-nam-cham.1', 'che-nam-cham.8'] };
+    'nam-cham-xe': day('nam-cham', [1, 2, 3, 4, 5, 7, 8]), 'che-nam-cham-xe': ['che-nam-cham.1', 'che-nam-cham.6', 'che-nam-cham.8'] };
   var TEN_ROI_3 = { 'doi-xich-bac': 'Đội xích leo bậc', 'che-doi-xich-bac': 'Hàm đội xích leo bậc', 'nam-cham-omni': 'Nam châm trên omni', 'nam-cham-xe': 'Nam châm mũi xe', 'che-nam-cham-xe': 'Chế lệnh nam châm mũi xe' };
   var THAY_CU = { 'doi-xich': ['doi-xich-bac'], 'che-doi-xich': ['che-doi-xich-bac'], 'nam-cham': ['nam-cham-omni', 'nam-cham-xe'], 'che-nam-cham': ['che-nam-cham-xe'] };
   var GOI_DOI_MA = { 'doi-xich': { ma: 'doi-xich-bac', ten: 'Đội xích leo bậc' }, 'nam-cham': { ma: 'nam-cham-omni', ten: 'Nam châm trên xe' } };
