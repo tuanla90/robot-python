@@ -524,6 +524,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     cungNhay(g, 'M20 68 C24 26 56 26 62 58');
     c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 1, 28, 66, 36);
   }));
+  dk('nhan-dang', function (g, c) {
+    c.vong(68, 34, 16, BM.vecVang, 3);
+    c.vat('hop', {}, 68, 34, 14);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 38, 62, 44);
+  });
+  dk('che-nhan-dang', che(function (g, c) {
+    c.vong(56, 38, 13, BM.vecVang, 2.5);
+    c.vat('hop', {}, 56, 38, 12);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 32, 66, 38);
+  }));
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

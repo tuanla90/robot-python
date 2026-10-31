@@ -666,6 +666,10 @@
       'pg.chinh-luc.2': 'Sola lắp lò xo chỉnh lực ba nấc cho tay hất đá R1.',
       'pg.chinh-luc.3': 'Chỉnh nấc 3: R1 hất tảng đá bay vọt ba ô lấp phẳng hố!',
       'pg.chinh-luc.4': 'aim(n) đặt tầm hất 1, 2 hoặc 3 ô ngay, không tốn nhịp.',
+      'pg.nhan-dang.1': 'Đá tròn, đá vuông và quặng quý nằm lẫn lộn trên vách mỏ.',
+      'pg.nhan-dang.2': 'Sola gắn thấu kính nhận dạng đá và quặng vào vòm Radar tròn.',
+      'pg.nhan-dang.3': 'R1 soi biết ngay đá tròn để lấp hố, quặng quý vào máng xa!',
+      'pg.nhan-dang.4': 'shape(huong) trả về "round", "square", "ore" hoặc "none", không tốn nhịp.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

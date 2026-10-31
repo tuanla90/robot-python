@@ -239,6 +239,39 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         truot(c, r, 900, 230, Y, 0.6);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
       }
+    ],
+
+    /* ---------------------------------------------------------------- 7 · Nhận dạng mỏ */
+    'nhan-dang': [
+      // 1 · đá tròn, đá vuông và quặng quý lẫn lộn, chưa phân biệt được loại nào
+      function (k, c) {
+        var s = c.san(k, ['#u#D#', '#o#o#', '#...#'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        hoi(k, c, '?', 130, 60, 0.8);
+        c.sau(900, function () { r.mat('ngac'); c.keu('loi'); });
+      },
+      // 2 · Sola gắn thấu kính nhận dạng đá và quặng vào vòm Radar tròn
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        bayToi(k, c, c.ico('denCam', 3, BM.vang), 250, 40, 150, Y - 24, 0.1, 0.95);
+        lap(k, c, c.xe(OMNI_RADAR, { tay: { ngam: 3 } }, 1, 3, 150, Y), c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 150, Y), 0.95);
+      },
+      // 3 · R1 soi biết đá tròn để lấp hố và quặng quý để hất vào máng
+      function (k, c) {
+        var s = c.san(k, ['#u#D#', '#o#o#', '#...#'], 4, X0, Y0, 'mo-da'), p = s.o(1, 2);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        var da = s.vat['1,1'];
+        if (da) truot(c, da, 400, s.o(1, 0).x - 28, s.o(1, 0).y - 28, 0.6);
+        c.sau(1200, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · code: shape(huong) phân biệt "round", "square", "ore"
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        c.code(k, ['if shape("front") == "ore":', '    aim_lob(3)', 'else:', '    aim_lob(2)'], 10, 14);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
+        truot(c, r, 900, 230, Y, 0.6);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      }
     ]
   };
 

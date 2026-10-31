@@ -243,7 +243,7 @@ const conPixel = [];
     // mùa 4 (30/10): huy hiệu các chương mới + cỗ máy drone-ke-vach (trùm cuối mùa, cũng là hình gói 10)
     'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'che-nhin-duoi', 'vuon-cu', 'che-vuon-cu', 'son-tren-cao', 'che-son-tren-cao', 'tong-hop-4', 'drone-ke-vach', 'trum-mua-4',
     // mùa 6 (31/10): huy hiệu chương mới
-    'luoi-2d', 'radar-tron', 'che-radar-tron', 'di-cheo', 'che-di-cheo', 'chinh-luc', 'che-chinh-luc'];
+    'luoi-2d', 'radar-tron', 'che-radar-tron', 'di-cheo', 'che-di-cheo', 'chinh-luc', 'che-chinh-luc', 'nhan-dang', 'che-nhan-dang'];
   for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));
   const DS_CHUP = DS.filter((m) => !MOI_SAU_CHUP.includes(m));
   if (tap(DS_CHUP) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS_CHUP.includes(m)).join(',') + ' / thừa ' + DS_CHUP.filter((m) => !CHUP.DS.includes(m)).join(','));
