@@ -1,5 +1,5 @@
 // Xuất hình robot, ô sân, vật mùa 4 (Bến sông · Tàu thủy lợi R1) ra public/robot/m4/,
-// đồng thời xuất nền dọc public/nen-doc/mua-song.png và nhân vật public/nguoi/ba-a.png.
+// (nền dọc public/nen-doc/mua-song.png và bác Ba public/nguoi/ba-a.png nay là ảnh TopView, không xuất từ đây).
 // Chạy: node tools/xuat-m4.mjs
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -376,8 +376,8 @@ try {
     }, [ma, st, CANH_O]));
   }
 
-  // Xuất nền dọc Bến sông & Trạm thủy lợi (public/nen-doc/mua-song.png, 1080x1920)
-  await luu(resolve(goc, '../public/nen-doc/mua-song.png'), await trang.evaluate(() => {
+  // Nền dọc Bến sông vẽ tạm (public/nen-doc/mua-song.png, 1080x1920). 31/10 đã thay bằng ảnh TopView: chỉ vẽ lại khi NEN_TAM=1.
+  if (process.env.NEN_TAM) await luu(resolve(goc, '../public/nen-doc/mua-song.png'), await trang.evaluate(() => {
     const cv = document.createElement('canvas');
     cv.width = 1080; cv.height = 1920;
     const g = cv.getContext('2d');

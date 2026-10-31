@@ -50,11 +50,17 @@ Chỗ cần user duyệt đánh dấu **[DUYỆT]**.
 | 1 Kho hàng | **chú Tư** thủ kho (`tu`): mũ lưỡi trai xanh, áo phản quang cam, bảng kẹp | giao đủ đơn trước 17 giờ | lỡ hẹn xe tải, mất mối hàng | đồng hồ treo tường 13:00 → 17:00 |
 | 2 Nhà máy | **cô Hạnh** trưởng ca (`hanh`): mũ bảo hộ trắng, áo liền quần xanh, cờ lê | nhà máy hơi nước chạy lại | nhà máy bị đóng vì không an toàn | kim áp suất lò hơi chính bò về vạch đỏ |
 | 3 Bãi tái chế | **bác Sáu** chủ bãi (`sau`): tạp dề da, găng, nam châm cầm tay | bãi gọn, bán được vật liệu tái chế | bãi bừa bộn, bị yêu cầu đóng cửa | lịch: xe thu mua tái chế tới cuối tuần |
+| Cảng sông (mùa 4 bản 9 mùa) | **cô Mai** điều độ cảng (`mai`, Claude đề xuất 31/10, CHƯA CHỐT tên / vai): mũ bảo hộ trắng, áo phản quang xanh chanh, máy tính bảng | hàng lên tàu đúng chuyến | tàu rời bến khi container chưa xếp xong | đồng hồ + còi tàu sắp rời bến |
 | 4 Bến sông | **bác Ba** trưởng trạm thủy lợi & bến sông (`ba`): áo bà ba nâu, áo phao cam, nón tai bèo | luồng kênh thông thoáng, điều tiết nước kịp con nước | ghe hàng mắc kẹt, nước tràn làm trôi bè nông sản | thước đo mực nước triều dâng gần vạch đỏ |
 | 5 Nông trại hoa | **chị Lan** chủ vườn (`lan`): nón lá, áo bà ba xanh, ủng vàng, bó hoa bốn màu | hoa kịp chợ Tết | mất vụ Tết | tờ lịch đếm ngược tới Tết |
 | 6 Mỏ đá | **anh Dũng** đội trưởng mỏ (`dung`): mũ vàng có đèn, áo cam, bộ đàm | đường mỏ an toàn trước mùa mưa | thợ gặp nguy, mỏ phải đóng | mây mưa kéo gần dần |
 | 7 Hang động | **chú Phong** đội trưởng cứu hộ hang động (`phong`): áo khoác ấm chữ thập, kính bảo hộ, cuộn dây leo hang | đưa đoàn khảo sát địa chất ra khỏi hang sâu | đoàn kẹt trong vòm hang tối, nước ngầm dâng | pin bộ đàm/đèn của đoàn 80% → 15% |
 | 8 CLB | **thầy hiệu trưởng** (`thay`, lần đầu hiện hình; các mùa trước chỉ thấy thư) | ngày hội robot vẫn diễn ra | thị trấn kẹt sau bão | giờ khai mạc |
+
+**Biểu cảm theo nhịp mùa (31/10, TopView, đã tách nền, cao 1100 px):** `public/nguoi/<tên>-<dáng>.png`, dáng theo "Nhịp một mùa" ở trên:
+`nghi` (gói 1–2, khoanh tay nhướng mày) · `ngac-nhien` (gói 3–4) · `hoang` (gói 6 "Ấy chết!") · `tin` (gói 7, chỉ tay giao việc) · `sot-ruot` (gói 9, nhìn đồng hồ riêng của mùa: đồng hồ đeo tay, kim áp suất, lịch, thước nước, mây mưa, pin bộ đàm) · `mung` (gói 10, nhảy cẫng, nước mắt vui).
+Thầy hiệu trưởng nhịp khác: `giao-viec` (đưa thư) · `tu-hao` · `hoang` (bão) · `dong-vien` · `sot-ruot` · `mung` (giơ huy hiệu).
+Bác Ba: ảnh `ba-a.png` cũ thực ra là bản sao chú Tư; 31/10 vẽ mới đúng mô tả (`ba-a.png`, `ba-b.png`). Tấm gốc (mỗi người 2 bản) ở `phim-clb/tam-anh/bc-<tên>-1|2.png` (không commit); cắt lại bằng `python tools/cat-bieu-cam.py <tấm> public/nguoi <tên>`.
 
 ## 2. Mùa 1, Kho hàng: Xe chở hàng R1
 

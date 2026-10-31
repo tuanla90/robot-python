@@ -1,5 +1,5 @@
 // Xuất hình robot, ô sân, vật mùa 7 (Hang động đá vôi · Xe thám hiểm & cứu hộ hang động R1) ra public/robot/m7/,
-// đồng thời xuất nền dọc public/nen-doc/mua-hang.png.
+// (nền dọc public/nen-doc/mua-hang.png nay là ảnh TopView, chỉ vẽ tạm lại khi NEN_TAM=1).
 // Chạy: node tools/xuat-m7.mjs
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -290,8 +290,8 @@ try {
     }, [ma, st, CANH_O]));
   }
 
-  // Xuất nền dọc Hang động đá vôi (public/nen-doc/mua-hang.png, 1080x1920)
-  await luu(resolve(goc, '../public/nen-doc/mua-hang.png'), await trang.evaluate(() => {
+  // Nền dọc Hang động vẽ tạm (public/nen-doc/mua-hang.png, 1080x1920). 31/10 đã thay bằng ảnh TopView: chỉ vẽ lại khi NEN_TAM=1.
+  if (process.env.NEN_TAM) await luu(resolve(goc, '../public/nen-doc/mua-hang.png'), await trang.evaluate(() => {
     const cv = document.createElement('canvas');
     cv.width = 1080; cv.height = 1920;
     const g = cv.getContext('2d');
