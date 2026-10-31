@@ -181,22 +181,57 @@
     vecSanChanToi: '#efedf7',          // sàn ô chẵn: góc tối gradient
     vecSanLe: '#f3f2f9',               // sàn ô lẻ: xám nhạt hơn một bậc
     vecSanLeToi: '#e7e5f0',            // sàn ô lẻ: góc tối gradient
-    // ---- VECTOR NÔNG TRẠI (mùa 4 "Nông trại hoa", 30/10; ve-vector-nong-trai.js): sân cỏ, luống đất, bông hoa, bao hạt, bộ gieo hạt
-    vecCo: '#d9efc2',                  // ô cỏ (x + y chẵn): xanh cỏ nhạt, đủ sáng để hoa / luống / robot nổi rõ
-    vecCoToi: '#c6e4aa',               // ô cỏ: góc tối gradient
-    vecCoLe: '#cde8b3',                // ô cỏ lẻ: đậm hơn một bậc (bàn cờ hai tông như sàn lab)
-    vecCoLeToi: '#b9dc9b',             // ô cỏ lẻ: góc tối gradient
-    vecCoVien: '#a6cf86',              // viền lưới giữa các ô cỏ, nét ngọn cỏ
+    // ---- VECTOR NÔNG TRẠI & MÔI TRƯỜNG CỐT TRUYỆN (mùa 1–4, 30–31/10; ve-vector-nong-trai.js): đường vườn, bờ gỗ, luống hoa, kho hàng, nhà máy, bãi tái chế
+    vecCo: '#fcf7ec',                  // ô đường vườn nông trại (x + y chẵn): kem cát sáng ấm
+    vecCoToi: '#f1e6d2',               // ô đường vườn chẵn: góc tối gradient
+    vecCoLe: '#f4ecdc',                // ô đường vườn lẻ: đậm hơn một bậc (bàn cờ hai tông như sàn lab)
+    vecCoLeToi: '#e9dec8',             // ô đường vườn lẻ: góc tối gradient
+    vecCoVien: '#d1bfa5',              // nền mạch cát ấm giữa các ô nông trại
+    vecCoDe: '#dfd0b8',                // gờ đáy 3D ô đường vườn chẵn
+    vecCoDeLe: '#d7c5ab',              // gờ đáy 3D ô đường vườn lẻ
+    vecCoGach: '#b09978',              // viền gờ đá lát đường vườn
+    vecGo: '#c87636',                  // khối bờ gỗ nông trại: đỉnh thân gỗ 2.5D
+    vecGoGiua: '#9c521e',              // khối bờ gỗ: giữa thân gỗ
+    vecGoToi: '#783c12',               // khối bờ gỗ: chân thân gỗ, đinh tán
+    vecGoKhe: '#5c2d0c',               // khối bờ gỗ: khe ván mặt trước
+    vecGoMat: '#f6c488',               // khối bờ gỗ: đỉnh mặt trên sáng ấm
+    vecGoMatToi: '#df9c55',            // khối bờ gỗ: đáy mặt trên
+    vecGoVien: '#8c4819',              // khối bờ gỗ: viền mặt trên
+    vecGoRanh: '#a35822',              // khối bờ gỗ: rãnh ngang, thanh chốt
+    vecGoSang: '#fde4c3',              // khối bờ gỗ: vệt sáng thanh chốt
+    vecCoLaSang: '#4ade80',            // thảm cỏ ba lá: đỉnh sáng xanh ngọc
+    vecHoaLamSang: '#60a5fa',          // thảm hoa cẩm tú cầu: đỉnh sáng xanh lam
     vecDat: '#b9875a',                 // đất luống (nâu sáng)
     vecDatToi: '#8f633c',              // đất luống: rãnh, mép tối
     vecDatSang: '#d3a77b',             // đất luống: vệt sáng
-    vecLa: '#4caf50',                  // lá cây, thân hoa, cỏ ba lá
     vecLaToi: '#2e7d32',               // lá cây: viền
     vecNhuy: '#ffd54f',                // nhụy giữa bông hoa
     vecNhuyToi: '#c99a12',             // nhụy: viền
     vecBao: '#e8cf9c',                 // bao hạt giống (giấy kraft)
     vecBaoToi: '#c4a56b',              // bao hạt: nếp gấp, đáy
     vecBaoVien: '#7a5a2c',             // bao hạt: viền, dây buộc
+    vecKhoVien: '#c7c2b8',             // mùa 1 kho hàng: nền mạch bê tông
+    vecKhoSan: '#f2efe9',              // mùa 1: ô sàn kho chẵn (đỉnh sáng)
+    vecKhoSanToi: '#e6e2da',           // mùa 1: ô sàn kho chẵn (đáy) / ô lẻ (đỉnh)
+    vecKhoSanLeToi: '#dad5cb',         // mùa 1: ô sàn kho lẻ (đáy)
+    vecKhoGach: '#b8b2a6',             // mùa 1: viền tấm bê tông kho
+    vecKhoThep: '#64748b',             // mùa 1: thân thép tường kho, đinh tán
+    vecKhoMat: '#f1f5f9',              // mùa 1: đỉnh mặt trên tường thép kho
+    vecCarton: '#f0c993',              // mùa 1: thùng carton kraft (đỉnh thân)
+    vecCartonGiua: '#dfa45f',          // mùa 1: thùng carton (giữa thân)
+    vecCartonToi: '#b87d3b',           // mùa 1: thùng carton (đáy thân)
+    vecCartonMat: '#fae0b8',           // mùa 1: thùng carton (nắp trên sáng)
+    vecCartonVien: '#9c6328',          // mùa 1: thùng carton (viền nắp, băng keo mặc định)
+    vecNmVien: '#b8c4d4',              // mùa 2 nhà máy: nền mạch thép sàn
+    vecNmSan: '#eef2f7',               // mùa 2: ô sàn nhà máy chẵn (đỉnh sáng)
+    vecNmSanToi: '#e1e8f0',            // mùa 2: ô sàn nhà máy chẵn (đáy) / ô lẻ (đỉnh)
+    vecNmSanLeToi: '#d5deeb',          // mùa 2: ô sàn nhà máy lẻ (đáy)
+    vecNmGach: '#9fb0c7',              // mùa 2: viền tấm sàn nhà máy
+    vecBtcVien: '#c4b8a8',             // mùa 3 bãi tái chế: nền mạch sân
+    vecBtcSan: '#efeae2',              // mùa 3: ô sàn bãi tái chế chẵn (đỉnh sáng)
+    vecBtcSanToi: '#e4ddd2',           // mùa 3: ô sàn bãi tái chế chẵn (đáy) / ô lẻ (đỉnh)
+    vecBtcSanLeToi: '#d8cfc2',         // mùa 3: ô sàn bãi tái chế lẻ (đáy)
+    vecBtcGach: '#a89b8a',             // mùa 3: viền tấm sàn bãi tái chế
     // ---- VECTOR (gói V5a, 28/10): GIAO DIỆN PHẲNG màn chơi theo diem10code (tin_hoc/public/css/tokens.css), chỉ áp ở body.ve-vector (choi-vector.css)
     vecNen: '#f5f4fc',                 // nền màn hình (lavender rất nhạt, cùng tông sàn sân)
     vecNenSau: '#e8e6f6',              // nền trang ngoài khung 360 × 640 (máy tính), nền điện thoại

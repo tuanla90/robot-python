@@ -1475,8 +1475,12 @@
     // Gói 8 (30/10, đường cong): doi-nam-cham.8 Bó tay cho sớm mở hai ô THỪA cạnh R2 (robot không đi tới, không nằm trên đường tránh của R1; 6 → 8 ô)
     // cho che-doi-nam-cham.11 (14 ô) đứng sau không nhảy.
     get('doi-nam-cham.8').san = ['#####', '##D##', '##..#', '##..#', '#..##', '##o##', '#####'];
-    // Vỏ hình mùa 4 (30/10, user: "Đổi sang nông nghiệp"): Nông trại hoa, luật giữ nguyên; san-ve.js đọc vo: cỏ, luống hoa, bụi cây, bao hạt (ve-vector-nong-trai.js).
-    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { get(ma).vo = 'nong-trai'; }); }); });
+    // Vỏ hình theo gói (31/10, user: "10 màn đầu nền phòng lab, 10 màn sau nền lấy bối cảnh trong cốt truyện"):
+    // Chương 1 (10 màn đầu mỗi gói) giữ nền Sa bàn Phòng Lab (vo = null); Chương 2 (10 màn sau mỗi gói) dùng vỏ bối cảnh của mùa:
+    // Mùa 1 = 'kho-hang' · Mùa 2 = 'nha-may' · Mùa 3 = 'bai-tai-che' · Mùa 4 = 'nong-trai'.
+    [[MUA_1, 'kho-hang'], [MUA_2, 'nha-may'], [MUA_3, 'bai-tai-che'], [MUA_4, 'nong-trai']].forEach(function (cap) {
+      cap[0].forEach(function (g) { if (g.chuong[1]) g.chuong[1][1].forEach(function (ma) { get(ma).vo = cap[1]; }); });
+    });
     // Lời mùa 4 theo vỏ Nông trại hoa (30/10) + giọng CLB (Sola nhờ, Luna gợi ý, gọi người chơi là "bạn"; hoc/KE-HOACH-PHIM-CLB.md mục 1): bảng từ theo thứ tự
     // (cụm dài trước), khớp trọn từ; chữ đầu viết hoa giữ hoa. LOI_NONG_TRAI (bên dưới) thay hẳn câu nào bảng từ làm vụng.
     var TU_NONG_TRAI = [

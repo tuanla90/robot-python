@@ -46,9 +46,12 @@
   /** Vật của lõi (o: { chat 'go' | 'sat' | 'nam-cham', mau, cuc }) → [mã vật, trạng thái]. Nam châm thiếu cực vẽ như thùng gỗ (như bộ pixel makeVatNho). */
   function vatCua(o, vo) {
     o = o || {};
-    if (vo === 'nong-trai' && o.mau && o.chat !== 'nam-cham') return ['bao-hat', o.chat === 'sat' ? { mau: o.mau, sat: true } : { mau: o.mau }];   // mùa 4: vật có màu là bao hạt
+    if (vo === 'nong-trai' && o.chat !== 'nam-cham') return ['bao-hat', o.mau ? (o.chat === 'sat' ? { mau: o.mau, sat: true } : { mau: o.mau }) : (o.chat === 'sat' ? { mau: 'yellow', sat: true } : {})];
     if (o.chat === 'nam-cham' && (o.cuc === 'N' || o.cuc === 'S')) return ['nam-cham', { cuc: o.cuc }];
     if (o.chat === 'sat') return ['khoi-sat', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'kho-hang') return ['thung-carton', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'nha-may') return ['pin-nha-may', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'bai-tai-che') return ['hop-phe-lieu', o.mau ? { mau: o.mau } : {}];
     return ['thung-go', o.mau ? { mau: o.mau } : {}];
   }
   V.KY_HIEU = KY_HIEU; V.TILES = TILES; V.VE_TRUC_TIEP = VE_TRUC_TIEP; V.ICON_SAN = ICON_SAN; V.vatCua = vatCua;

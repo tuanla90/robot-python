@@ -65,6 +65,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var FIELDS = [];
   var MAU_KY = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
   var MAU_RA = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };
+  var VO_MAP = {
+    'kho-hang': { san: 'san-kho', tuong: 'ke-hang', mau: 'san-mau' },
+    'nha-may': { san: 'san-nha-may', tuong: 'tuong-nha-may', mau: 'san-mau' },
+    'bai-tai-che': { san: 'san-bai-tai-che', tuong: 'tuong-bai-tai-che', mau: 'san-mau' },
+    'nong-trai': { san: 'co-non', tuong: 'bui-cay', mau: 'luong-hoa' }
+  };
   var GOC_XOAY = { trai: -90, truoc: 0, phai: 90 };                       // tay xoay: nấc khớp → góc (độ, 0 = phía trước, âm = sang trái)
   function HU() { return VeVector.HU; }                                 // hiệu ứng vector (ve-vector-hieu-ung.js, gói V4)
   function laTayKep(t) { return t === 'kep' || t === 'xoay'; }            // tay kẹp thường và tay xoay đều kẹp vật ở ô tay chỉ
@@ -154,7 +160,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] }, dich: [], cacCo: [],
         bm: chuanBongMo(cfg.bongMo),                     // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
         hinh: dungHinh(cfg.hinh), sonBanDau: dungHinh(cfg.sonBanDau), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red',
-        vo: cfg.vo === 'nong-trai' ? 'nong-trai' : null };      // vỏ hình của mùa (30/10: 'nong-trai' mùa 4: cỏ, luống hoa, bụi cây, bao hạt; ve-vector-nong-trai.js)      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
+        vo: VO_MAP[cfg.vo] ? cfg.vo : null };      // vỏ môi trường cốt truyện theo mùa (10 màn đầu mỗi gói: null = Phòng Lab; 10 màn sau: 'kho-hang' / 'nha-may' / 'bai-tai-che' / 'nong-trai')      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
       // nhiều robot (cfg.doi = [{ robot, batDau, loaiRobot, pin, danToiDa }]): mỗi xe một ngữ cảnh (xem chonXe); this.cfg mang phần của xe đang xét
       this.cfgXe = Array.isArray(cfg.doi) ? cfg.doi.map(function (r, i) {
         var l = r.loaiRobot || 'banh', rb = r.robot || { than: l === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] };
@@ -225,8 +231,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veOVec: function (g, x, y, ch, kO, now, cf, ff) {
       var self = this, c = this.cfg, px = x * T, py = y * T;
       function ve(ma, s) { g.drawImage(self.oV(ma, s), px, py, T, T); }
-      var nt = c.vo === 'nong-trai';
-      if (ch === '#') { ve(nt ? 'bui-cay' : 'tuong'); return; }
+      var vm = VO_MAP[c.vo];
+      if (ch === '#') { ve(vm ? vm.tuong : 'tuong'); return; }
       if (ch === 'N') {                                                               // van hơi (29/10): bánh van quay nửa vòng trong 450 ms sau khi đổi (nt.quay), lượng tử hoá 1/8
         var nt = this.nutT[kO], bat = !!(nt && nt.bat), sN = { bat: bat, loe: !!(nt && nt.loe > now) }, kq = nt && nt.quay ? (now - nt.quay) / 450 : 1;
         if (kq >= 0 && kq < 1) { kq = Math.round((1 - (1 - kq) * (1 - kq)) * 8) / 8; sN.goc = bat ? kq : 1 - kq; }
@@ -237,7 +243,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (ch === 'n') { ve('gam'); return; }
       if (ch === 'u') { ve('ho'); return; }
       var mn = (ch === '=' || ch === 'C' || ch === 'c') ? null : this.mauNen(x, y);   // như nhánh pixel: sàn màu ở mọi ô trừ tường, bậc, rào, nút bắn, cửa, gầm, hố, băng
-      ve(mn ? (nt ? 'luong-hoa' : 'san-mau') : nt ? 'co-non' : 'san', mn ? { mau: mn } : (x + y) & 1 ? { le: 1 } : undefined);      // gói V4: sàn bàn cờ hai tông theo (x + y)
+      ve(mn ? (vm ? vm.mau : 'san-mau') : vm ? vm.san : 'san', mn ? { mau: mn } : (x + y) & 1 ? { le: 1 } : undefined);      // gói V4: sàn bàn cờ hai tông theo (x + y)
       var lu = this.luaT && this.luaT[kO];
       if (lu) { ve('lua', { suc: lu.suc, pha: lu.suc ? Math.floor(now / 170) & 3 : 0 }); if (lu.suc) this.veNong(g, x, y, now); }   // gói lửa: đám cháy (nóng như van mở), tắt thì vết cháy
       var dt = this.demTuT && this.demTuT[kO];
@@ -2306,16 +2312,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Ảnh nhỏ, chế độ vector (gói V2): mọi ô vẽ theo bảng VeVector.KY_HIEU (lớp ô dưới trước, rồi vật nằm sẵn), trạng thái lúc đầu màn như thuSan pixel:
    *  sàn màu (lớp màu / ký hiệu r g b y) thay ô sàn, ô đích trên sàn màu mang màu, nút bắn bật sẵn, cửa nhịp theo pha, rào nối theo ô kề; vật o / X theo lớp màu / chất. */
   function thuOVec(g, rows, w, h, s, mauO, vm, vc, cuaNhip, nutBat, vo) {
-    var x, y, ch, px, py, i, kh, lop, ma, st, nt = vo === 'nong-trai';
+    var x, y, ch, px, py, i, kh, lop, ma, st, vMap = VO_MAP[vo];
     for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
       ch = rows[y][x]; px = x * s; py = y * s; kh = VeVector.KY_HIEU[ch] || VeVector.KY_HIEU['.'];
       var mn = mauO && mauO[y][x] && '#S=NCcnu'.indexOf(ch) < 0 && BANG[ch] === undefined ? mauO[y][x] : null;
       for (i = 0; i < kh.o.length; i++) {
         lop = kh.o[i]; ma = lop[0]; st = lop[1] ? Object.assign({}, lop[1]) : undefined;
-        if (ma === 'san' && mn) { ma = nt ? 'luong-hoa' : 'san-mau'; st = { mau: mn }; }
+        if (ma === 'san' && mn) { ma = vMap ? vMap.mau : 'san-mau'; st = { mau: mn }; }
         else if (ma === 'san' && (x + y) & 1) st = { le: 1 };                    // gói V4: sàn bàn cờ hai tông
-        if (nt && ma === 'san') ma = 'co-non';                                    // 30/10 vỏ nông trại (mùa 4): sàn cỏ, tường là bụi cây
-        if (nt && ma === 'tuong') ma = 'bui-cay';
+        if (vMap && ma === 'san') ma = vMap.san;                                 // vỏ môi trường cốt truyện theo mùa
+        if (vMap && ma === 'tuong') ma = vMap.tuong;
         else if (ma === 'dich' && mn) st.mau = mn;
         else if (ma === 'nut-ban' && nutBat[x + ',' + y]) st.bat = true;
         else if (ma === 'cua' && cuaNhip[x + ',' + y]) { var cn = cuaNhip[x + ',' + y], chu = cn.mo + cn.dong; st.k = (cn.pha % chu) < cn.mo ? 1 : 0; st.nhip = { n: Math.min(chu, 6), mo: cn.mo, p: cn.pha % chu }; }

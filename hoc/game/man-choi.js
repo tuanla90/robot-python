@@ -247,6 +247,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var dung = KhungCode.soODung(k);
     S.dung = dung;
     E.n.textContent = m.id; E.t.textContent = m.ten;
+    E.ffr.setAttribute('data-vo', m.vo || 'lab');                                            // khung ôm sân đổi viền / nền theo môi trường (Phòng Lab vs Hiện trường cốt truyện)
     SanVe.datCanhBao(E.ffr, [m.canhBao, m.damLaThua ? t('choi.damLaThua') : null].filter(Boolean).join(' · ') || null);   // nhãn ⚠ trên sân ("Dây bánh trái đấu ngược", HD2 "Đâm tường là thua"); màn không có thì ẩn
     DenBoPhan.nap(manXe());                                                                  // đèn theo bộ phận cạnh đồng hồ NHỊP: chỉ các bộ phận robot của màn có (den-bo-phan.js)
     E.host.querySelector('.plaque .d').style.display = '';

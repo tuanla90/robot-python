@@ -1,3 +1,12 @@
+## 2026-10-31 — Nhánh `main` (Đổi Nền Môi Trường Theo Gói 4 Mùa: 10 Màn Lab → 10 Màn Hiện Trường Cốt Truyện)
+- `hoc/lo-trinh-hoc.js`: Chuyển quy tắc gán `man.vo` cho cả 4 mùa: Chương 1 của mỗi gói (10 màn đầu) giữ nền Phòng Lab (`vo = null`), Chương 2 của mỗi gói (10 màn sau) mang vỏ bối cảnh cốt truyện của mùa (`'kho-hang'` cho Mùa 1, `'nha-may'` cho Mùa 2, `'bai-tai-che'` cho Mùa 3, `'nong-trai'` cho Mùa 4).
+- `hoc/game/ve-vector-nong-trai.js`, `hoc/game/bang-mau.js`, `hoc/game/ve-vector-ky-hieu.js`: Thiết kế đồng bộ bộ ô sàn, khối tường 3D cao vuông bo góc tối giản màu/họa tiết, và vật cản tương ứng cho 4 mùa:
+  - **Mùa 1 (`kho-hang`)**: Sàn bê tông kho (`san-kho`), khối kiện gỗ thông 3D cao (`ke-hang`), thùng carton 1 dải băng keo (`thung-carton`).
+  - **Mùa 2 (`nha-may`)**: Sàn thép nhà máy (`san-nha-may`), khối bệ máy thép 3D cao (`tuong-nha-may`), hộp năng lượng đai cam (`pin-nha-may`).
+  - **Mùa 3 (`bai-tai-che`)**: Sàn bãi phế liệu (`san-bai-tai-che`), khối kiện tôn phế liệu ép 3D cao siết 2 đai thép (`tuong-bai-tai-che`), hộp phế liệu đai thép (`hop-phe-lieu`).
+  - **Mùa 4 (`nong-trai`)**: Đường lát vườn kem cát (`co-non`), luống hoa tràn ô (`luong-hoa`), kiện rơm vàng 3D cao buộc 2 dây thừng (`bui-cay`), bao hạt giống (`bao-hat`).
+- `hoc/game/san-ve.js`, `hoc/game/man-choi.js`, `hoc/game/choi-vector.css`: Bổ sung bảng ánh xạ `VO_MAP` cho cả sân chính (`veOVec`) lẫn ảnh thu nhỏ (`thuOVec`), đồng thời gắn `data-vo` lên `.ffr` để đổi viền khung sân theo môi trường.
+
 ## 2026-10-26 — Nhánh `huong-4-co-che-san` (Hướng 4: Cơ Chế Sân Tương Tác Mới & Gói 20 Màn Sân Cơ Khí)
 - `hoc/san-hoc.js`, `hoc/cham.js`: Thêm 3 cơ chế ô sàn tương tác mới vào lõi mô phỏng và bộ chẩn đoán:
   - **Bàn xoay (`@` xoay phải 90° chiều kim đồng hồ `+1`, `%` xoay trái 90° ngược chiều kim đồng hồ `-1`)**: Tự động xoay các robot có hướng (`banh`, `xich`, `omni`) khi vừa bước/trượt vào ô bàn xoay hoặc khi đứng chờ (`wait()`) trên bàn xoay, giữ nguyên hướng khi đang thao tác tay (`pick`/`drop`), kèm sự kiện `'ban-xoay'`.
