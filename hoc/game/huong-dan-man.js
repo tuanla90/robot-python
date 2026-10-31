@@ -499,24 +499,7 @@
   function dongDs() { return dongCo(/^\s*[A-Za-z_]\w*\s*=\s*\[/); }
   function soPtuDs() { var i = dongDs(); if (i < 0) return 0; var m = /\[(.*)\]/.exec(String(dsChinh()[i])); return m && m[1].trim() ? m[1].split(',').length : 0; }
   H['list.1'] = [
-    khoiTheo(['khoi:ls-gan'], 'Chạm khối này để tạo một danh sách. Mỗi số trong [ ] là độ dài một đoạn đường.', CHU_THE_LS,
-      { daLam: function () { return dongDs() >= 0; } }),
-    {
-      phu: true, huong: 'tren', rong: 170, han: 45000,
-      dich: function () { if (thay('nut:chon-ptu')) return 'nut:chon-ptu'; var i = dongDs(); return i < 0 ? [] : 'so:' + (i + 1) + ':2'; },                  // số thứ hai của dòng = phần tử đầu (số đầu là tên danh sách)
-      chu: function () { return thay('nut:chon-ptu') ? 'Chọn số mới: đoạn đầu dài 4 ô.' : 'Chạm một số trong danh sách để đổi nó.'; },
-      xong: 'doi-so',
-      daLam: function () { var i = dongDs(); return i >= 0 && /\[\s*4\b/.test(String(dsChinh()[i])); }
-    },
-    {
-      phu: true, huong: 'tren', rong: 170, han: 45000,
-      dich: function () { if (thay('nut:ptu-them')) return 'nut:ptu-them'; var i = dongDs(); return i < 0 ? [] : 'so:' + (i + 1) + ':' + (soPtuDs() + 1); },       // phần tử cuối: chạm nó rồi bấm thêm ô
-      chu: function () { return thay('nut:ptu-them') ? 'Bấm thêm ô: danh sách có thêm một số ngay sau số này.' : 'Đường có ba đoạn. Chạm một số, rồi bấm thêm ô.'; },
-      daLam: function () { return soPtuDs() >= 3; }
-    },
-    khoiTheo(['khoi:ls-for'], 'Chạm khối này: for n in a lấy lần lượt từng số trong danh sách ra làm n.', CHU_THE_LS,
-      { daLam: function () { return dongCo(/^\s*for\s+\w+\s+in\s+\w+\s*:/) >= 0; } }),
-    buocChay('Có forward(n) và rẽ phải trong vòng for rồi thì bấm Chạy.')
+    { khongAn: true, dich: 'nut:chay', chu: 'Chương trình đã khoá. Bấm Chạy: for n in a lấy từng số trong danh sách a làm số bước drone bay sang phải ở mỗi hàng.', xong: 'chay' }
   ];
   H['list.8'] = [
     buocCoDong('khoi:man:tour', 'Hàm tour(steps) của màn nằm ở đây. Chạm để gọi, rồi sửa các số trong ngoặc vuông.', /^\s*tour\(/, 'duoi'),

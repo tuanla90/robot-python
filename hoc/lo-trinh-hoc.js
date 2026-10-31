@@ -1253,14 +1253,12 @@
     Object.keys(TEN_MUA_4).forEach(function (c) { TT.ten[c] = TEN_MUA_4[c]; });
     // Cất khỏi lộ trình (ngân hàng giữ nguyên): list.2 xoắn ốc 28 ô ngay màn 2 (nhảy đường cong), trùng ý list.1.
     cat(['list.2']);
-    // Màn trình diễn danh sách (show don't tell): list.1 khoá chương trình, bấm Chạy là thấy xe đi theo từng số của a.
-    var l1 = get('list.1');
-    sua('list.1', {
-      chiChay: true, chinhCoDinh: true, maMau: { chinh: l1.loiGiai.chinh.slice(), hamCuaMan: [] },
-      deBai: 'Danh sách a = [4, 2, 3] giữ ba số trong một biến, theo thứ tự. for n in a: lấy lần lượt từng số ra làm n: lần đầu n là 4, rồi 2, rồi 3. ' +
-        'Bấm Chạy xem xe đi đúng ba đoạn dài 4, 2, 3 ô, hết mỗi đoạn rẽ phải.',
-      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy, đếm số ô của từng đoạn và so với các số trong a.',
-      goiY: ['Mỗi số trong danh sách là độ dài một đoạn đường.', 'Màn sau một số trong danh sách bị ghi sai: em sửa.']
+    // PDM4a (31/10): nâng cấp drone.7, 8, 9 và list.1, 3, 6, 4, 7, 9, 5, 8, 10 sang thân drone nguyên bản (không nam châm, không xe hai bánh).
+    Object.keys(M.suaCatCanh || {}).forEach(function (ma) {
+      var m = get(ma);
+      delete m.vatChat; delete m.vatMau; delete m.vatCan; delete m.chinhCoDinh; delete m.chiChay; delete m.pin;
+      sua(ma, M.suaCatCanh[ma]);
+      M.chuanHoa(m);
     });
     M.danhSach.forEach(function (m) { if (!nguon[m.ma]) nguon[m.ma] = copy(m); });
     var moi = [], chuong = [];
