@@ -120,6 +120,7 @@ Ghép thô bằng `noi-mua.py` (chồng 200), rồi TopView vẽ lại cả 8 d�
 - Ảnh dài cao 15719, cắt còn 15716 (bỏ 3 hàng hàng rào đáy). Vị trí mùa giữ y = k·1724 như `BanDoMua.tsx`.
 - Cảng → Bến sông (1/11, user: nước cảng xanh rêu, hai vùng nước như không liên quan): Image Edit cả khung y 5250..7174 (`tam-anh/ns-khung.jpg`), bảo cùng màu nước sông xanh của chợ nổi, dải đất chắn ngang thành cù lao để nước thông hai bên. Chọn `ns-1`; đặt lại bằng `noi-tiep.py va` (khớp mép trên và dưới, chỉ dịch, cắt tối ưu 300 hàng mỗi mép; `ns-2` bị co dọc 60 px nên máy báo và bỏ).
 - Cầu qua sông (1/11, user: cầu dở hơi, cầu gỗ thò xuống nước, màu nước chưa khớp): Image Edit khung y 6600..8524 (`tam-anh/cs-khung.jpg`): một cầu bê tông dài có lan can, trụ dưới nước qua hết sông, bỏ cầu ngắn ở bờ nam và cầu gỗ trên cù lao phải, mọi chỗ nước (sông, âu thuyền, ao cá, kênh) cùng màu nước cảng. Chọn `cs-2` (`cs-1` gãy mép đường ở đường cắt dưới).
+- Đường hết cầu (1/11, user: đường hơi gãy chỗ hết cầu): Image Edit khung y 7120..9044 (`tam-anh/hc-khung.jpg`): ra khỏi cầu giữ bề rộng, chạy thẳng rồi uốn nhẹ một lần tới cống. Chọn `hc-1`.
 - Còn lại: vài khúc đường vẫn cong chữ S nhẹ (mùa 4, 8, 9); vị trí nút trên đường trong `BanDoMua.tsx` (nutCua) chưa so với đường mới.
 
 Lần sửa 31/10 khuya (user: nhà mùa 2, mùa 4 méo; hoa → mỏ đột ngột; đường mùa 9 gãy). `va-cho-noi.py` bây giờ:
