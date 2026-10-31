@@ -543,6 +543,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.o('cua', { mo: true }, 56, 40, 24);
     c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 30, 64, 34);
   }));
+  dk('tong-hop-6', function (g, c) {
+    c.o('ho', {}, 28, 68, 24);
+    c.vat('hop', {}, 74, 68, 14);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 50, 44, 46);
+  });
+  function mayMoDa(g, c) {
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 50, 54, 54);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  }
+  dk('may-mo-da', mayMoDa);
+  dk('trum-mua-6', mayMoDa);
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

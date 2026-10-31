@@ -347,6 +347,49 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         k.appendChild(r1); k.appendChild(r2);
         c.sau(900, function () { r1.mat('vui'); r2.mat('vui'); c.keu('thang'); });
       }
+    ],
+
+    /* ---------------------------------------------------------------- 10 · Máy mỏ đá R1 xuất xưởng */
+    'may-mo-da': [
+      // 1 · Máy mỏ đá R1 đủ bộ: bánh omni, tay hất 3 nấc, Radar tròn có mắt soi
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 160, 118, 'md-nhun');
+        k.appendChild(r);
+        c.sau(300, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 2 · tem XUẤT XƯỞNG: "Máy mỏ đá R1"
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 160, 150); k.appendChild(r);
+        c.sau(300, function () { r.mat('ngac'); });
+        c.sau(2100, function () { r.mat('vui'); });
+        var t2 = function (ma) { return (goc && goc.t) ? goc.t(ma) : ma; };
+        var v = goc.PhimVector && goc.PhimVector.xuatXuong && goc.PhimVector.xuatXuong({
+          tem: t2('pg.tem.xuat-xuong'), ten: t2('pg.tem.may-mo-da'),
+          part: [['denBanh', BM.vang], ['denNem', BM.vang], ['denCam', BM.vang]], t: 1
+        });
+        if (v) k.appendChild(c.dat(v, 70, 10));
+        c.sau(1000, function () { c.keu('dam'); });
+        c.sau(1900, function () { c.keu('thang'); });
+      },
+      // 3 · R1 lấp hố, hất quặng vào máng và trượt qua bậc đá về đích
+      function (k, c) {
+        var s = c.san(k, ['D...F', 'u...#', '.o..#'], 4, X0, Y0, 'mo-da'), p = s.o(1, 2);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        var da = s.vat['1,2'];
+        if (da) truot(c, da, 300, s.o(0, 0).x - 28, s.o(0, 0).y - 28, 0.5);
+        diQua(c, s, r, [[2, 1], [3, 1], [4, 0]], 900, 450);
+        c.sau(2300, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · cả mỏ đá rực sáng, R1 và R2 sẵn sàng cho mùa mới
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        var r1 = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 115, Y);
+        var r2 = c.xe(DRONE_R2, {}, 3, 3, 235, Y - 30);
+        k.appendChild(r1); k.appendChild(r2);
+        c.sau(600, function () { r1.mat('vui'); r2.mat('vui'); c.keu('thang'); });
+      }
     ]
   };
 

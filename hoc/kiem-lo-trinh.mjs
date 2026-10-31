@@ -81,8 +81,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'mo-cu.6', 'mo-cu.8', 'mo-cu.9', 'che-mo-cu.4', 'che-mo-cu.7', 'che-mo-cu.8', 'che-mo-cu.9',      // gói 8 mùa 6: mỏ đá cũ (2 sân)
   'doi-omni.16', 'doi-omni.17', 'che-doi-omni.15', 'che-doi-omni.16', 'che-doi-omni.18', 'che-doi-omni.19');      // gói 9 mùa 6: R2 ở mỏ đá (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
-// PDM2c2 / PDM3b2 / PDM4c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3) và gói 10 mùa 4 (drone-ke-vach) cũng MỌI màn nhiều sân.
-const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
+// PDM2c2 / PDM3b2 / PDM4c / PDM6c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach) và gói 10 mùa 6 (may-mo-da) cũng MỌI màn nhiều sân.
+const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
 kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);

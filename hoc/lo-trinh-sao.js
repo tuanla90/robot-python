@@ -976,7 +976,27 @@
   "che-doi-omni.17": { "o": 31, "nhip": 12 },
   "che-doi-omni.18": { "o": 35, "nhip": 20 },
   "che-doi-omni.19": { "o": 43, "nhip": 26 },
-  "che-doi-omni.20": { "o": 45, "nhip": 42 }
+  "che-doi-omni.20": { "o": 45, "nhip": 42 },
+  "tong-hop-6.1": { "o": 23, "nhip": 10 },
+  "tong-hop-6.2": { "o": 13, "nhip": 12 },
+  "tong-hop-6.3": { "o": 18, "nhip": 16 },
+  "tong-hop-6.4": { "o": 14, "nhip": 8 },
+  "tong-hop-6.5": { "o": 20, "nhip": 22 },
+  "tong-hop-6.6": { "o": 28, "nhip": 22 },
+  "tong-hop-6.7": { "o": 27, "nhip": 18 },
+  "tong-hop-6.8": { "o": 23, "nhip": 22 },
+  "tong-hop-6.9": { "o": 17, "nhip": 12 },
+  "tong-hop-6.10": { "o": 32, "nhip": 57 },
+  "trum-mua-6.1": { "o": 24, "nhip": 12 },
+  "trum-mua-6.2": { "o": 20, "nhip": 22 },
+  "trum-mua-6.3": { "o": 29, "nhip": 22 },
+  "trum-mua-6.4": { "o": 25, "nhip": 20 },
+  "trum-mua-6.5": { "o": 25, "nhip": 30 },
+  "trum-mua-6.6": { "o": 26, "nhip": 24 },
+  "trum-mua-6.7": { "o": 29, "nhip": 22 },
+  "trum-mua-6.8": { "o": 31, "nhip": 32 },
+  "trum-mua-6.9": { "o": 35, "nhip": 32 },
+  "trum-mua-6.10": { "o": 40, "nhip": 63 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;

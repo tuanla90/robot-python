@@ -11,7 +11,7 @@ const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const VR = require('./game/ve-robot.js');
 
-const XONG = new Set(['mua-1', 'mua-2', 'mua-3', 'mua-5']);      // mùa 1–3, 5 đã dựng lại xong (mua-1: PDM1; mua-2: PDM2c2; mua-3: PDM3b2; mua-5 Nông trại: PDM4c 31/10)
+const XONG = new Set(['mua-1', 'mua-2', 'mua-3', 'mua-5', 'mua-6']);      // mùa 1–3, 5, 6 đã dựng lại xong (mua-1: PDM1; mua-2: PDM2c2; mua-3: PDM3b2; mua-5 Nông trại: PDM4c; mua-6 Mỏ đá: PDM6c)
 const CHI_TIET = process.argv.includes('--chi-tiet');
 const LOI_GIA = process.argv.includes('--loi-gia');
 

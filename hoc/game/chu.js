@@ -678,6 +678,11 @@
       'pg.doi-omni.2': 'R1 hất đá qua rào đè nút M, giữ cổng mở cho R2.',
       'pg.doi-omni.3': 'R2 bay qua cổng, gieo thảm hoa giữ đất trên vách đá.',
       'pg.doi-omni.4': 'open_dock(n) và mine_sow(c, n) giúp hai robot phối hợp nhịp nhàng.',
+      'pg.tem.may-mo-da': 'Máy mỏ đá R1',
+      'pg.may-mo-da.1': 'Máy mỏ đá R1 đủ bộ: bánh omni, tay hất đá, Radar tròn.',
+      'pg.may-mo-da.2': 'Tem đóng cộp: Máy mỏ đá R1 xuất xưởng!',
+      'pg.may-mo-da.3': 'R1 lấp hố, hất quặng vào máng và mở toang mọi tuyến mỏ.',
+      'pg.may-mo-da.4': 'Mỏ đá hoạt động trơn tru, R1 và R2 sẵn sàng lên đường!',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',
