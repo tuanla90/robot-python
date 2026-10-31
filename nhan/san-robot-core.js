@@ -819,7 +819,8 @@
               return Math.floor(x / y);
             case '%':
               if (y === 0) throw LoiRuntime(n.dong, 'Chia cho 0.');
-              return x % y;
+              var du = x % y;                                                  // phép mod của Python: kết quả cùng dấu với số chia (-5 % 8 = 3, 5 % -8 = -3), khớp với // (Math.floor); mùa Cảng sông dạy (b - a) % 8 với số âm (31/10)
+              return du !== 0 && (du < 0) !== (y < 0) ? du + y : du;
           }
           break;
         }
