@@ -448,6 +448,43 @@
           và vật không trôi. (Ca biên tự chọn: tay kẹp của xe cạn vẫn gắp được vật nổi trước mặt như vật thường — màn không nên dựng như vậy.)
           Mục tiêu 'dua-vat': thắng khi MỌI vật nổi (vật) nằm trên ô q (dichSet). 'toi-co': xuồng tới Q (F với xe cạn; sân có cả F và Q thì cờ là ký hiệu gặp trước khi đọc sân).
 
+   CẢNG SÔNG (mùa 4, 31/10, hoc/KE-HOACH-MUA-CANG-SONG.md mục 3; loaiRobot 'cau' "Cần cẩu container R1"). Mọi luật dưới đây chỉ bật khi màn có cần cẩu / ký hiệu T R / lớp cfg.chong, nên màn cũ không đổi.
+        - KÝ HIỆU: T ô BOONG TÀU (trên nước: laNuoc true; tàu có mặt thì hạ container được, tàu vắng là mặt nước), R ô RAY cẩu (sàn với xe khác; bệ cẩu chạy dọc ray). Bãi container là sàn '.' thường.
+          Lớp cfg.chong = [{ x, y, cont: [{ so, tan? }] }] (đáy → đỉnh; so 1–99, tan 1–4 mặc định 1; ô phải là '.' hay D — KHÔNG khai trên T / ray / nước / ô robot xuất phát; cao tối đa CHONG_TOI_DA = 4).
+          Lớp cfg.tau = [{ o: [{x,y}], co, vang, pha? }]: mọi ô T phải thuộc đúng một tàu; tàu có mặt sau t nhịp khi (t + pha) mod (co + vang) < co (như cửa nhịp; vang 0 = tàu luôn ở bến).
+          Màn nhiều sân: chong / tau / giao là mảng song song với san (lopMauCuaSan). cfg.taiToiDa (luật tải) và cfg.luatThap (luật tháp) là của màn; khai mà không có cẩu là lỗi cấu hình.
+        - CẦN CẨU: bệ đứng ở batDau (phải là '.', D, sàn màu hay R; không băng chuyền / bàn xoay / cổng / cửa nên bệ không bao giờ bị đẩy), chiếm ô như tường với robot khác (dongDoiTai). Không có hướng mặt (huong bỏ qua),
+          không có bánh, không gắn tay kẹp / nam châm / cảm biến khác (lỗi cấu hình). Cần có NẤC nac 0–7 (NAC_VEC: 0 lên, 1 lên-phải, 2 phải, 3 xuống-phải, 4 xuống, 5 xuống-trái, 6 trái, 7 lên-trái) và TẦM tam 1–3;
+          batDau.nac / batDau.tam (mặc định 0, 1); ĐẦU CẦN = bệ + tam × NAC_VEC[nac] (nấc chéo: (±tam, ±tam)), lúc xuất phát phải nằm trong sân.
+          MỌI LỆNH CẨU LÀ MỘT NHỊP NGAY (như go_* của drone): không có hàng chờ, không có quen-wait; wait() = một nhịp đứng yên ('dung-yen').
+          swing_left() / swing_right(): nấc −1 / +1 mod 8 ('quay-can' { tu, den, chieu, dau }); extend() / retract(): tầm ±1 ('vuon-can' / 'thu-can' { tu, den, dau }). Cặp ngược: swing_left ↔ swing_right, extend ↔ retract, pick_up ↔ set_down.
+          Cần CAO HƠN MỌI THỨ: quay / vươn qua tường, chồng, robot, nước không bị chặn. Vươn quá 3, thu dưới 1, hay đầu cần MỚI nằm ngoài sân (kể cả khi quay): không làm, mất nhịp, 'can-het-tam' { lenh, vat: 'tam' | 'ngoai-san', nac, tam, o } (lỗi).
+          Container đang treo đi theo đầu cần (treoTheo). Vết nhịp robot: nac, tam, dau {x,y}, treo [{so,tan}] (đáy → đỉnh), doi (đang móc đôi); kết quả cũng có nac / tam / dau / treo.
+        - MÓC CẨU (tay, TAY_MOC; pick_up đi cùng set_down; pick_up2 là nâng cấp, cần có pick_up). TÊN: đặc tả ghi hook / unhook / hook2 nhưng mùa 3 đã dạy trẻ TỰ TẠO hàm hook() / unhook() (man-bung-nhen, man-trum-mua-3)
+          nên tên gốc đổi thành pick_up / set_down / pick_up2 (31/10) để kho hàm của trẻ không vỡ.
+          pick_up(): nhấc container TRÊN CÙNG ở ô đầu cần ('moc-cont' { o, cont, doi, tau }); ô không có container: 'moc-hut' { o, vat: 'trong' | 'tau-vang' | 'ngoai-san' } (lỗi); đang treo: 'dang-treo' { o, cont } (lỗi).
+          pick_up2(): nhấc HAI container trên cùng một lần, giữ thứ tự (treo = [dưới, trên]); chồng chỉ có 1: 'moc-thieu' { o, co } (lỗi, không nhấc); chồng trống: moc-hut.
+          set_down(): hạ MỌI container đang treo lên ĐỈNH chồng ở ô đầu cần ('ha-cont' { o, cont, doi, tau }); không treo gì: 'khong-treo' (lỗi). Không hạ được → 'ha-bi-chan' { o, vat, cont } (lỗi), container vẫn treo; vat:
+            'ngoai-san' | 'tau-vang' (ô T lúc tàu vắng) | 'nuoc' | 'tuong' | 'rao' | 'ray' (không đặt lên ray) | 'bac-thang' | 'nut' | 'ho' | 'gam-thap' | 'cua' | 'bang' | 'vat-can' | 'robot' (ô bệ / robot khác dưới đất) | 'thung-nang' | 'vat' | 'chong-day' (chồng + số hạ > 4).
+            Hạ được xuống '.', D, F, sàn màu, hay T khi tàu có mặt. Móc container đang nằm trên boong T khi tàu có mặt: được.
+          LUẬT THÁP (cfg.luatThap = true, Tháp Hà Nội): hạ container số LỚN lên container số NHỎ hơn bị từ chối: 'thap-sai' { o, so, tren } (lỗi), vẫn treo.
+        - MÁY QUÉT MÃ (cảm biến, CAM_QUET_HAM; cần rc.camBien có { ma: 'quet-ma' }; weight là nâng cấp, cần read_code trên khay). Đọc ô ĐẦU CẦN, không tốn nhịp (chung bộ đếm 1000 lần đọc liên tiếp):
+          read_code() trả SỐ của container trên cùng, không có (hay ngoài sân) thì −1 (số âm dạy ở gói 3). weight() trả tổng tấn đang treo (cả hai nếu treo đôi); không treo thì tấn của container trên cùng ở đầu cần; không có gì thì 0.
+          Sự kiện 'doc-cam-bien' { cam: 'quet-ma', ham, tu: ô bệ, nac, tam, o: đầu cần, so, tan, treo: số container đang treo, trong }.
+          LUẬT TẢI (cfg.taiToiDa = M): tổng tấn đang treo × tầm phải ≤ M. pick_up / pick_up2 ở tầm làm vượt M: không nhấc; extend() khi đang treo mà làm vượt M: không vươn; cả hai 'qua-tai' { lenh, tan, tam, tai, taiToiDa, o, cont } (lỗi), mất nhịp.
+        - RAY (nâng cấp thân, THAN_RAY; khay / phần cứng có rail thì bệ phải xuất phát trên R). Mọi ô R của sân phải là MỘT dải thẳng liền nhau từ 2 ô (ngang hay dọc; kết quả `ray` { doc, o }); khác là lỗi cấu hình.
+          rail(n): n nguyên khác 0, abs(n) ≤ RAY_TOI_DA = 9, sai thì lỗi chạy 'ray-sai' (lời Việt; 'khong-ray' khi gọi mà không có bánh ray). Tốn ĐÚNG abs(n) nhịp: mỗi nhịp bệ chạy 1 ô ('chay-ray' { tu, den, huong, doc, dau }),
+          n > 0 sang phải (ray ngang) / xuống (ray dọc), n < 0 ngược lại. Ô kế không phải ray / ngoài sân / có robot / vật / thùng, hay chạy tới thì ĐẦU CẦN lòi ra ngoài sân ('can-ngoai-san'): dừng, 'het-ray' { o, den, vat, n, daDi, lenh } (lỗi),
+          CÁC NHỊP CÒN LẠI của lệnh vẫn trôi mà bệ đứng yên ('dung-yen'; quyết định 31/10: "phần còn lại bỏ" = bỏ quãng đường, không trả lại nhịp). Container treo đi theo bệ. Nhiều robot: duKienDi báo ô bệ định tới.
+        - TÀU (cfg.tau): cuối nhịp (pha d, capNhatTau) tàu đổi trạng thái theo chu kỳ: vắng → có mặt 'tau-cap' { tau, o }; có mặt → vắng 'tau-roi' { tau, o, cont: [so] }: MỌI container đang nằm trên boong của tàu đó được GIAO
+          (trangThai 'giao', rời sân, ghi vào daGiao[tau]), boong trống, lượt sau tàu về boong trống. Container đang TREO trên ô T không rơi (ở móc, không thuộc boong). Vết nhịp có mucVet.tau [{ coMat }] (cuối nhịp) và mucVet.chong khi sân có container.
+          MỤC TIÊU 'giao-tau' (MUC_TIEU): cfg.giao = [{ tau: i, so: [..] }] (mỗi tàu một mục; so phải có trên sân); thắng cuối nhịp mà mọi số yêu cầu đã theo đúng tàu ('xong-giao-tau'; trùng số thì đếm đủ số lần).
+          Tàu rời mang container KHÔNG có trong danh sách của tàu đó (hay tàu không có danh sách): thua ngay, dungSom = 'giao-nham', sự kiện 'giao-nham' { tau, so, o, can }. Kết quả: chong, chongBanDau, tau [{ o, co, vang, pha, coMat }], tauBanDau, daGiao [[so]], ray, taiToiDa, luatThap.
+        - BÓNG MỜ CHỒNG (mục tiêu bong-mo): cần cẩu không cần bongMo.huong; không khai x, y thì bệ ở nguyên chỗ xuất phát. bongMo.chong = [{ x, y, so: [đáy → đỉnh] }]: lúc chạy xong MỌI chồng trên sân phải đúng — ô khai phải đúng dãy số
+          (so: [] = trống), ô không khai phải trống, móc không còn treo gì; sai thì không thắng (cham.js: chua-xep-chong). Dùng cho bài sắp xếp / Tháp Hà Nội (cùng luatThap).
+        - NHIỀU ROBOT: bệ chiếm ô như tường với xe dưới đất (xe đâm 'dong-doi'); xe đi qua ô R như sàn; đầu cần KHÔNG chặn ai (xe đứng dưới đầu cần được, nhưng set_down xuống ô có xe → ha-bi-chan 'robot'); rail bị xe chặn ('robot').
+        - NHÂN (nhan/san-robot-core.js, 31/10): phép % đổi theo Python (kết quả cùng dấu số chia: -5 % 8 = 3) để bài "(b - a) % 8 lần swing_right()" chạy đúng; // vẫn Math.floor; abs / min / max có sẵn.
+
    KHAY VÀ PHẦN CỨNG (luật chế lệnh, 14/10): hai tập lệnh gốc khác nhau.
         - cfg.hamGoc = KHAY: lệnh hiện trên khay, dùng được trong CHƯƠNG TRÌNH CHÍNH và HÀM CỦA MÀN.
         - cfg.phanCung = PHẦN CỨNG: lệnh robot thật sự làm được; mặc định (cham.js, phanCungMacDinh) = trọn bộ lệnh của loại robot (xe bánh có cả left_back / right_back) + lệnh khay.
@@ -792,7 +829,7 @@
 
   /**
    * Chạy một chương trình Python trên một sân.
-   * cfg: { san: [chuỗi], batDau: {x,y,huong}, loaiRobot: 'banh'|'nhen'|'xich'|'omni'|'drone',
+   * cfg: { san: [chuỗi], batDau: {x,y,huong}, loaiRobot: 'banh'|'nhen'|'xich'|'omni'|'drone'|'xuong'|'cau' (xuồng: phần BẾN SÔNG; cần cẩu: phần CẢNG SÔNG, có batDau.nac / tam, cfg.chong / tau / giao / taiToiDa / luatThap),
    *        pin: số nguyên (chỉ drone; pin đầy lúc đầu, xem phần DRONE),
    *        hamGoc: [tên hàm gốc được phép] (mặc định: đủ bộ của loại robot, chưa có lệnh tay),
    *        nhipToiDa: 200,
