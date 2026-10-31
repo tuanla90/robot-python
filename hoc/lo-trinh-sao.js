@@ -1216,7 +1216,27 @@
   "ham-tra-ve.7": { "o": 21, "nhip": 11 },
   "ham-tra-ve.8": { "o": 17, "nhip": 10 },
   "ham-tra-ve.9": { "o": 16, "nhip": 10 },
-  "ham-tra-ve.10": { "o": 23, "nhip": 28 }
+  "ham-tra-ve.10": { "o": 23, "nhip": 28 },
+  "day-keo.1": { "o": 9, "nhip": 5 },
+  "day-keo.2": { "o": 8, "nhip": 5 },
+  "day-keo.3": { "o": 12, "nhip": 5 },
+  "day-keo.4": { "o": 11, "nhip": 5 },
+  "day-keo.5": { "o": 16, "nhip": 8 },
+  "day-keo.6": { "o": 20, "nhip": 9 },
+  "day-keo.7": { "o": 22, "nhip": 12 },
+  "day-keo.8": { "o": 19, "nhip": 8 },
+  "day-keo.9": { "o": 17, "nhip": 14 },
+  "day-keo.10": { "o": 17, "nhip": 18 },
+  "bo-co-dinh.1": { "o": 11, "nhip": 6 },
+  "bo-co-dinh.2": { "o": 21, "nhip": 9 },
+  "bo-co-dinh.3": { "o": 16, "nhip": 6 },
+  "bo-co-dinh.4": { "o": 27, "nhip": 15 },
+  "bo-co-dinh.5": { "o": 21, "nhip": 8 },
+  "bo-co-dinh.6": { "o": 24, "nhip": 11 },
+  "bo-co-dinh.7": { "o": 11, "nhip": 6 },
+  "bo-co-dinh.8": { "o": 23, "nhip": 11 },
+  "bo-co-dinh.9": { "o": 32, "nhip": 12 },
+  "bo-co-dinh.10": { "o": 29, "nhip": 26 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;
