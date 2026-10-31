@@ -856,7 +856,27 @@
   "che-radar-tron.7": { "o": 18, "nhip": 4 },
   "che-radar-tron.8": { "o": 33, "nhip": 10 },
   "che-radar-tron.9": { "o": 15, "nhip": 11 },
-  "che-radar-tron.10": { "o": 32, "nhip": 12 }
+  "che-radar-tron.10": { "o": 32, "nhip": 12 },
+  "ban-xoay.11": { "o": 11, "nhip": 5 },
+  "ban-xoay.12": { "o": 13, "nhip": 9 },
+  "ban-xoay.13": { "o": 5, "nhip": 3 },
+  "ban-xoay.14": { "o": 6, "nhip": 7 },
+  "ban-xoay.15": { "o": 8, "nhip": 3 },
+  "ban-xoay.16": { "o": 17, "nhip": 7 },
+  "ban-xoay.17": { "o": 12, "nhip": 10 },
+  "ban-xoay.18": { "o": 12, "nhip": 6 },
+  "ban-xoay.19": { "o": 12, "nhip": 7 },
+  "ban-xoay.20": { "o": 12, "nhip": 12 },
+  "che-ban-xoay.11": { "o": 14, "nhip": 9 },
+  "che-ban-xoay.12": { "o": 13, "nhip": 6 },
+  "che-ban-xoay.13": { "o": 15, "nhip": 10 },
+  "che-ban-xoay.14": { "o": 19, "nhip": 9 },
+  "che-ban-xoay.15": { "o": 21, "nhip": 14 },
+  "che-ban-xoay.16": { "o": 25, "nhip": 11 },
+  "che-ban-xoay.17": { "o": 24, "nhip": 12 },
+  "che-ban-xoay.18": { "o": 16, "nhip": 8 },
+  "che-ban-xoay.19": { "o": 25, "nhip": 15 },
+  "che-ban-xoay.20": { "o": 30, "nhip": 17 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;

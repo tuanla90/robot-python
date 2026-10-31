@@ -1,4 +1,4 @@
-var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});
+var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
    phim-mua-6.js — "Mật Lệnh Robot": DỮ LIỆU PHIM GÓI MÙA 6 "MỎ ĐÁ" (gói 1–4).
    Cỗ máy mùa 6: Máy mỏ đá R1 (thân omni + tay hất đá + radar tròn).
@@ -136,6 +136,40 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       function (k, c) {
         c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
         c.code(k, ['g = radar()', 'if g[0][1] == "V":', '    lob()'], 10, 14);
+        var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
+        truot(c, r, 900, 230, Y, 0.6);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      }
+    ],
+
+    /* ---------------------------------------------------------------- 4 · Bàn xoay & Sàn dốc */
+    'ban-xoay': [
+      // 1 · hố sâu chắn giữa lối đi tới cờ
+      function (k, c) {
+        var s = c.san(k, ['##F##', '##u##', '##o##'], 4, X0, Y0, 'mo-da'), p = s.o(1, 2);
+        var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        hoi(k, c, '?', 130, 60, 0.8);
+        c.sau(900, function () { r.mat('ngac'); c.keu('loi'); });
+      },
+      // 2 · hất đá tròn rơi xuống hố để lấp thành mặt sàn phẳng
+      function (k, c) {
+        var s = c.san(k, ['##F##', '##u##', '##o##'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        var da = s.vat['2,2'];
+        if (da) truot(c, da, 400, s.o(2, 1).x - 28, s.o(2, 1).y - 28, 0.6);
+        c.sau(1100, function () { r.mat('vui'); c.keu('kep'); });
+      },
+      // 3 · đi qua hố đã lấp và trượt theo dốc tới cờ
+      function (k, c) {
+        var s = c.san(k, ['##.F#', '##.##', '##.##'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        diQua(c, s, r, [[2, 0], [3, 0]], 300, 600);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · code: fill_pit() và auto_fill()
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        c.code(k, ['def fill_pit():', '    lob()', '    forward(2)'], 10, 14);
         var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
         truot(c, r, 900, 230, Y, 0.6);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });

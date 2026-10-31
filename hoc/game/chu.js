@@ -650,10 +650,14 @@
       'pg.may-nem.2': 'Sola lắp tay hất đá vào mũi xe omni của R1.',
       'pg.may-nem.3': 'Xúc đá vào máng rồi hất bay vọt hai ô qua hàng rào!',
       'pg.may-nem.4': 'load() xúc đá trước mũi, throw() hất đá bay xa hai ô.',
-      'pg.radar-tron.1': 'Đá và hố sâu đổi chỗ mỗi ca, chưa có radar không biết lối nào an toàn.',
+      'pg.radar-tron.1': 'Đá và hố sâu đổi chỗ: chưa có radar khó biết đường.',
       'pg.radar-tron.2': 'Sola lắp vòm Radar tròn lên nóc Máy mỏ đá R1.',
-      'pg.radar-tron.3': 'Radar quét một vòng 3x3 quanh xe, phát hiện ngay tảng đá và hố sâu!',
+      'pg.radar-tron.3': 'Radar quét một vòng 3x3 quanh xe, thấy ngay tảng đá và hố!',
       'pg.radar-tron.4': 'g = radar() trả về bảng 3x3 quanh xe, đọc g[r][c] không tốn nhịp.',
+      'pg.ban-xoay.1': 'Lối vào mỏ đá bị hố sâu chắn ngang, xe không qua được.',
+      'pg.ban-xoay.2': 'R1 xúc tảng đá tròn hất rơi xuống hố, lấp thành mặt sàn phẳng!',
+      'pg.ban-xoay.3': 'Đi qua hố vừa lấp, lướt theo sàn dốc và bàn xoay về cờ.',
+      'pg.ban-xoay.4': 'Chế hàm fill_pit() và auto_fill() để tự dọn đá lấp hố mở đường.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

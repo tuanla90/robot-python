@@ -32,7 +32,7 @@
       // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
       'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4',
       // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–4
-      'luoi-2d', 'hat-da', 'radar-tron'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1505,6 +1505,8 @@
       chuong: [['tong-hop-6', []], ['trum-mua-6', []]] }
   ];
   var MUA_6_CU = [
+    { ma: 'ban-xoay-cu', ten: 'Bàn xoay xe cũ', moc: 'doi-ho-bang', khongTangNguong: true,
+      chuong: [['ban-xoay-cu', day('ban-xoay', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])], ['che-ban-xoay-cu', day('che-ban-xoay', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] },
     { ma: 'omni-cu', ten: 'Omni gắp cũ', moc: 'doi-omni',
       chuong: [['omni-cu', day('omni', [6, 10])], ['che-omni', day('che-omni', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] },
     { ma: 'may-nem-xe', ten: 'Máy ném xe cũ', moc: 'doi-gap-nem',
@@ -1518,7 +1520,7 @@
     'omni-cu': 'Omni gắp cũ', 'may-nem-xe': 'Máy ném xe cũ', 'che-may-nem-xe': 'Chế lệnh: máy ném xe cũ',
     'ban-xoay-cu': 'Bàn xoay xe cũ', 'che-ban-xoay-cu': 'Chế lệnh: bàn xoay xe cũ'
   };
-  var TEP_MUA_6 = ['manLuoi2D', 'manHatDa', 'manRadarTron'];
+  var TEP_MUA_6 = ['manLuoi2D', 'manHatDa', 'manRadarTron', 'manSanMoDa'];
   (function () {
     Object.keys(TEN_MUA_6).forEach(function (c) { TT.ten[c] = TEN_MUA_6[c]; });
     var moi = [], chuong = [];
@@ -1569,7 +1571,7 @@
       var mocC = TT.thuTu.indexOf(g.moc) >= 0 ? TT.thuTu.indexOf(g.moc) : TT.thuTu.length;
       TT.thuTu.splice.apply(TT.thuTu, [mocC, 0].concat(chCu));
       var mocG = TT.goi.findIndex(function (x) { return x.chuong.indexOf(g.moc) >= 0; });
-      TT.goi.splice(mocG >= 0 ? mocG : TT.goi.length, 0, { ma: g.ma, ten: g.ten, mua: 'mua-7', chuong: chCu });
+      TT.goi.splice(mocG >= 0 ? mocG : TT.goi.length, 0, { ma: g.ma, ten: g.ten, mua: 'mua-7', chuong: chCu, khongTangNguong: g.khongTangNguong });
     });
     var goiTruoc6 = TT.goi.filter(function (g) { return g.mua === 'mua-1' || g.mua === 'mua-2' || g.mua === 'mua-3' || g.mua === 'mua-5'; });
     var cTruoc6 = [];

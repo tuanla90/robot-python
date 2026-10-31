@@ -56,10 +56,11 @@ for (const c of goiDoi) {
   const roiMua2 = TT.goi[gi] && (goiSau ? (goiSau.mua === 'mua-2' || goiSau.mua === 'mua-3') && TT.goi[gi].mua !== goiSau.mua : vt < 0);
   // Gói đội vào thẳng MUA_3 (doi-xich = gói 8): màn không bậc thang ở lại mùa 3, màn còn lại thành chương rời (M.roiMua3) đứng đúng chỗ cũ sau chương neo.
   const khung3 = TT.goi[gi] && TT.goi[gi].mua === 'mua-3' && (M.mua3 || []).some((g) => g.ma === c.goi.ma);
-  // Khung mùa 5 Nông trại (MUA_4, 29/10 KE-HOACH-MUA-4.md): gói đội vào thẳng MUA_4 (doi-nam-cham = gói 9), hay gói đội ở lại mùa 7 (ẩn) mà chương neo đã vào gói mùa 5.
+  // Khung mùa 5 Nông trại (MUA_4, 29/10 KE-HOACH-MUA-4.md) và mùa 6 Mỏ đá (MUA_6, 31/10): gói đội vào thẳng MUA_4 (doi-nam-cham = gói 9), hay gói đội ở lại mùa 7 (ẩn) mà chương neo đã vào gói mùa 5 / mùa 6.
   const chuongMua4 = new Set(TT.goi.filter((g) => g.mua === 'mua-5').flatMap((g) => g.chuong));
+  const chuongMua6 = new Set(TT.goi.filter((g) => g.mua === 'mua-6').flatMap((g) => g.chuong));
   const khung4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-5' && (M.mua4 || []).some((g) => g.ma === c.goi.ma);
-  const roiMua4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-7' && chuongMua4.has(c.sau);
+  const roiMua4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-7' && (chuongMua4.has(c.sau) || chuongMua6.has(c.sau));
   if (khung4) {
     const g4 = (M.mua4 || []).find((g) => g.ma === c.goi.ma);
     kiem(c.goi.ma + ': gói đội vào khung mùa 5 Nông trại (MUA_4): mùa 5 ẩn; chương đúng MUA_4 (chương có màn)',
