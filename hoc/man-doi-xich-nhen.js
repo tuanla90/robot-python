@@ -94,7 +94,7 @@
       hamCuaEmCan: ['jump', 'go', 'pull_s', 'walk', 'go_to_wall', 'squirt'],
       deBai: 'Mẩu sắt nằm trước cánh cửa C đang đóng. R2 ở làn dưới đi tới sát van hơi N bằng go_to_wall() rồi squirt("low") để mở cửa C. R1 ở làn trên nhảy qua hố, bước lên mẩu sắt, hút dưới bụng rồi mang qua cửa C tới ô đích D.',
       veMaMau: 'Chương trình có sẵn: R1 mới tới mẩu sắt, R2 chưa phun van. Viết tiếp cho cả hai robot.',
-      san: ['#########', '#.u.oCD.#', '#...#...#', '#....N..#', '#########'],
+      san: ['#########', '#.u.oCD##', '#########', '#....N###', '#########'],
       vatChat: ['.........', '....s....', '.........', '.........', '.........'],
       noi: [{ nut: { x: 5, y: 3 }, cua: [{ x: 5, y: 1 }], bang: [] }],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
@@ -113,7 +113,7 @@
       hamCuaEmCan: ['crawl', 'go', 'pull_s', 'walk', 'push'],
       deBai: 'Lần này không có van hơi, mà có thùng nặng H nằm trước nút đè M ở làn của R2. Xe xích của R2 đẩy được thùng nặng: gọi push(1) để đẩy thùng H lên nút M giữ cửa C mở. R1 chui qua gầm thấp, lấy mẩu sắt rồi mang qua cửa C về ô đích D.',
       veMaMau: 'Chương trình có sẵn: R2 chưa đẩy thùng, R1 mới chui qua gầm. Viết tiếp cả hai.',
-      san: ['#########', '#.n.oCD.#', '#...#...#', '#..HM...#', '#########'],
+      san: ['#########', '#.n.oCD.#', '##..#####', '#..HM...#', '#########'],
       vatChat: ['.........', '....s....', '.........', '.........', '.........'],
       noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 5, y: 1 }], bang: [] }],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
@@ -390,23 +390,23 @@
 
     che({
       so: 16, ten: 'Hai hướng nhảy sắt', hang: 'luyen', vatCan: 'sat',
-      hamCuaEmCan: ['hop_iron', 'walk', 'valve_go'],
-      deBai: 'Hai mẩu sắt, hai cái hố theo hai hướng khác nhau: mẩu sắt đầu nhảy sang phải vào D(4,1), mẩu sắt thứ hai nằm sau cửa C1 và cần nhảy xuống qua hố vào D(6,3). R2 gọi valve_go(2) mở cửa C1. R1 dùng hop_iron("R"), walk("RR") qua cửa rồi gọi hop_iron("D").',
+      hamCuaEmCan: ['go', 'hop_iron', 'valve_go'],
+      deBai: 'Hai mẩu sắt, hai cái hố theo hai hướng khác nhau: bước lên mẩu sắt đầu rồi nhảy sang phải vào D(4,1), mẩu sắt thứ hai nằm sau cửa C1 và cần nhảy xuống qua hố vào D(6,3). R2 gọi valve_go(2) mở cửa C1. R1 dùng go("R"), hop_iron("R"), bước hai lần go("R") qua cửa rồi gọi hop_iron("D").',
       veMaMau: 'Chương trình có sẵn mới làm xong mẩu sắt đầu. Viết tiếp cho R1.',
       san: ['##########', '#.ouDCo..#', '######u###', '######D###', '#...N....#', '##########'],
       vatChat: ['..........', '..s...s...', '..........', '..........', '..........', '..........'],
       noi: [
         { nut: { x: 4, y: 4 }, cua: [{ x: 5, y: 1 }], bang: [] }
       ],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 4, huong: 1 }],
-      maMau: B(['hop_iron("R")'], ['valve_go(2)']),
-      loiGiai: B(['hop_iron("R")', 'walk("RR")', 'hop_iron("D")'], ['valve_go(2)']),
-      sao: { o: 33, nhip: 14 },
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 4, huong: 1 }],
+      maMau: B(['go("R")', 'hop_iron("R")'], ['valve_go(2)']),
+      loiGiai: B(['go("R")', 'hop_iron("R")', 'go("R")', 'go("R")', 'hop_iron("D")'], ['valve_go(2)']),
+      sao: { o: 33, nhip: 16 },
       loiSai: [
-        { moTa: 'R2 không mở van: cửa C1 đóng, R1 không sang được mẩu sắt thứ hai', baiLam: B(['hop_iron("R")', 'walk("RR")', 'hop_iron("D")'], []), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Mẩu sắt thứ hai nhảy sang phải thay vì nhảy xuống: lệch đích', baiLam: B(['hop_iron("R")', 'walk("RR")', 'hop_iron("R")'], ['valve_go(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'R2 không mở van: cửa C1 đóng, R1 không sang được mẩu sắt thứ hai', baiLam: B(['go("R")', 'hop_iron("R")', 'go("R")', 'go("R")', 'hop_iron("D")'], []), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Mẩu sắt thứ hai nhảy sang phải thay vì nhảy xuống: lệch đích', baiLam: B(['go("R")', 'hop_iron("R")', 'go("R")', 'go("R")', 'hop_iron("R")'], ['valve_go(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['R1 đứng ở (2,1) gọi hop_iron("R") thả sắt đầu vào D(4,1), rồi walk("RR") qua cửa C1(5,1) sang sắt thứ hai ở (6,1), gọi hop_iron("D") qua hố (6,2) xuống D(6,3).', 'R2 gọi valve_go(2) phun van N(4,4) mở cửa C1(5,1).']
+      goiY: ['R1 bước sang (2,1) gọi hop_iron("R") thả sắt đầu vào D(4,1), rồi hai lần go("R") qua cửa C1(5,1) sang sắt thứ hai ở (6,1), gọi hop_iron("D") qua hố (6,2) xuống D(6,3).', 'R2 gọi valve_go(2) phun van N(4,4) mở cửa C1(5,1).']
     }),
 
     che({

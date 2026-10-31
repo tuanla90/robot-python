@@ -925,9 +925,9 @@
     { ma: 'bang-cu', ten: 'Băng chuyền cũ', loai: 'thu-thach',
       chuong: [['bang-cu', []], ['che-bang-cu', []]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
-      chuong: [['doi-xich', day('doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])], ['che-doi-xich', day('che-doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]] },
+      chuong: [['doi-xich', day('doi-xich', [11, 12, 13, 15, 14, 16, 18, 17, 19, 20])], ['che-doi-xich', day('che-doi-xich', [11, 12, 14, 15, 16, 13, 18, 17, 19, 20])]] },
     { ma: 'tong-hop-3', ten: 'Tổng hợp', loai: 'thu-thach',
-      chuong: [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.1', 'tong-hop-3.10']], ['trum-mua-3', ['trum-mua-3.1', 'trum-mua-3.2', 'trum-mua-3.3', 'trum-mua-3.5', 'trum-mua-3.9', 'trum-mua-3.4', 'trum-mua-3.6', 'trum-mua-3.7', 'trum-mua-3.8', 'trum-mua-3.10']]] }
+      chuong: [['tong-hop-3', day('tong-hop-3', [1, 2, 4, 6, 3, 8, 5, 7, 9, 10])], ['trum-mua-3', day('trum-mua-3', [8, 4, 7, 1, 3, 6, 2, 5, 9, 10])]] }
   ];
   // PDM3b2 31/10: gói Nam châm bụng nhện (gói 9 cũ; nam châm bụng nhện đã dạy từ gói 2) CẤT ra mùa ẩn (như CAT_MUA_2 be-sung), gói Đội về gói 9, gói 8 là Băng chuyền cũ.
   var CAT_MUA_3 = { ma: 'bung-nhen', ten: 'Nam châm bụng nhện (cất)', loai: 'thu-thach',
@@ -2407,11 +2407,7 @@
     // PDM2c2 31/10: gói 10 dựng lại không gọi hàm Bệ vòi xích nữa: bỏ CAP_HAM_CU (cấp bản cũ cho gói 10) và các mục DAY_CU của che-be-sung.
     var chuongAn = {};
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
-    // PDM3a 31/10 (mùa 3 part đúng mùa): gói 2–4 dựng lại trên nhện nên hàm của em xe hai bánh của chúng (kick của che-nam-cham.1; seek_iron, take_iron, seek_safe,
-    // face_iron của che-cam-ung-tu; fetch_iron, loop_right, pull_iron của che-bai-tu) không còn ai dạy. Gói 7 (che-nam-cham.3 gọi kick) và gói 10 (tong-hop-3 /
-    // trum-mua-3 gọi hàm gói 3–4) còn là màn xe: cấp bản cũ làm hàm của màn (capCu, như CAP_HAM_CU mùa 2 ở PDM2b) tới khi PDM3b / PDM3c dựng lại các gói đó.
-    var CAP_HAM_CU_3 = { 'tong-hop-3': true, 'trum-mua-3': true };
-    Object.keys(CAP_HAM_CU_3).forEach(function (c) { chuongAn[c] = true; });
+    // PDM3a / PDM3b2 31/10 (mùa 3 part đúng mùa): mọi gói mùa 3 đã dựng lại trên nhện; màn xe cũ ở mùa ẩn (che-nam-cham-xe, doi-tay-xoay…) dùng DAY_CU bên dưới.
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
@@ -2420,22 +2416,6 @@
     if (nguon['che-nam-cham.5']) DAY_CU.push(['che-nam-cham.5', 'sort']);
     if (nguon['che-nam-cham.6']) DAY_CU.push(['che-nam-cham.6', 'fling']);
     if (nguon['che-nhen.6']) DAY_CU.push(['che-nhen.6', 'bring']);
-    if (nguon['che-bung-nhen.2']) DAY_CU.push(['che-bung-nhen.2', 'hook']);
-    if (nguon['che-bung-nhen.3']) DAY_CU.push(['che-bung-nhen.3', 'unhook']);
-    if (nguon['che-bung-nhen.5']) DAY_CU.push(['che-bung-nhen.5', 'tote']);
-    if (nguon['che-bung-nhen.7']) DAY_CU.push(['che-bung-nhen.7', 'hook_for']);
-    // Bản xe hai bánh của hàm của em gói 3–4 mùa 3 (ngân hàng đã viết lại trên nhện nên không còn trong `nguon`): khai cứng như THAN_CU mùa 2.
-    var THAN_CU_3 = [
-      ['che-cam-ung-tu.2', { ten: 'seek_iron', thamSo: [], than: ['while not front_metal():', '    move()'] }],
-      ['che-cam-ung-tu.3', { ten: 'take_iron', thamSo: [], than: ['magnet_n()', 'wait()', 'u_turn()', 'magnet_off()', 'wait()'] }],
-      ['che-cam-ung-tu.6', { ten: 'seek_safe', thamSo: [], than: ['while front_clear() and not front_metal():', '    move()'] }],
-      ['che-cam-ung-tu.8', { ten: 'face_iron', thamSo: [], than: ['if not front_metal():', '    turn_right()', '    if not front_metal():', '        u_turn()'] }],
-      ['che-bai-tu.2', { ten: 'fetch_iron', thamSo: ['n'], than: ['magnet_n()', 'for i in range(n):', '    move()', 'u_turn()', 'for i in range(n):', '    move()'] }],
-      ['che-bai-tu.4', { ten: 'loop_right', thamSo: ['k'], than: ['for i in range(3):', '    turn_right()', '    for j in range(k):', '        move()'] }],
-      ['che-bai-tu.7', { ten: 'pull_iron', thamSo: [], than: ['wait()', 'move()', 'magnet_n()', 'wait()'] }],
-      ['che-doi-xich.14', { ten: 'pass_box', thamSo: [], than: ['pick()', 'tr_left()', 'drop()'] }],
-      ['che-doi-xich.15', { ten: 'hop_drop', thamSo: ['d'], than: ['pick()', 'jump(d)', 'drop()'] }]
-    ];
     DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
     });
@@ -2451,7 +2431,6 @@
       ['che-do-nhiet.7', { ten: 'switch_right', thamSo: [], than: ['turn_right()', 'switch_on()', 'turn_left()'] }],
       ['che-do-nhiet.8', { ten: 'auto_left_on', thamSo: [], than: ['turn_left()', 'auto_on()', 'turn_right()'] }]
     ].forEach(function (x) { THAN_CU.push(x); });
-    THAN_CU_3.forEach(function (x) { THAN_CU.push(x); });
     THAN_CU.forEach(function (x) { HAM_CU[x[1].ten] = copy(x[1]); DAY_CU.push([x[0], x[1].ten]); });
     // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.
     var khoEm = {};

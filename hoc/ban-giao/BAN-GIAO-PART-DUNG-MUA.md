@@ -19,19 +19,17 @@ R1 không bao giờ mang part mùa khác; tự lắp tuỳ ý để mùa 7. User
 - **Lõi:** nhện gắn được cảm biến từ, đo theo cạnh trước cố định (hướng xuất phát), hình nhện quay theo; `thungThem`; luật lắp ráp theo đó.
 - Soát trình duyệt: trum-mua-1.4, bang-chuyen.10, kho-cu.10 (3 sao, console sạch); agent soát tong-hop-2.8, trum-mua-2.10.
 
-## Đang dở
-- **PDM3a (mùa 3 gói 2–4, 60 màn sang nhện + nam châm bụng + cảm biến từ):** agent đã commit đủ ba gói (f036203 gói 2, f54ec9a gói 3, 9fc3685 gói 4,
-  54db835 siết kiem-lo-trinh). Agent báo `npm test` cả bộ 106/106 tại 54db835 (Claude CHƯA tự chạy lại). Claude soát trình duyệt logic-nam-cham.6 (điều kiện
-  `and` hai vế chuỗi): 3 sao. Sổ trao đổi mục 11 có câu hỏi của đợt này (damLaThua cho nhện, máy dò lách mùa 3 không dò màn nhện, phim gói 2–4 còn vẽ xe cũ).
-  Gói 7 và gói 10 mùa 3 đang chạy tạm bằng hàm xe cũ cấp `capCu` (CAP_HAM_CU_3, THAN_CU_3): PDM3b/3c phải gỡ, rồi 'mua-3' vào XONG và GOI_SIET_3 lên 10.
-  Phiên sau: tự chạy `npm test` cả bộ rồi giao PDM3b (gói 5–7).
+- **Mùa 3 (PDM3a + PDM3b1 + PDM3b2):** cả 10 gói mùa 3 đã dựng lại hoàn chỉnh trên robot phân loại (nhện + nam châm bụng + cảm biến từ ở hông):
+  - Gói 2–4 (PDM3a: `nam-cham`, `cam-ung-tu`, `bai-tu`), gói 5–7 (PDM3b1: `nhay`, `dao-cuc`, `doc-cuc`).
+  - Gói 8 MỚI "Băng chuyền cũ" (`bang-cu`, `che-bang-cu` trong `man-bang-cu.js`, 20 màn); gói `bung-nhen` cũ cất sang `CAT_MUA_3` (mùa 5 ẩn).
+  - Gói 9 "Đội xích và nhện" (`doi-xich.11..20`, `che-doi-xich.11..20` trong `man-doi-xich-nhen.js`): R1 = robot phân loại mùa 3 đầy đủ, R2 = xe cứu hỏa mùa 2 đầy đủ.
+  - Gói 10 "Tổng hợp + Trùm mùa" (`tong-hop-3.1..10`, `trum-mua-3.1..10` trong `man-trum-mua-3.js`): 20 màn 1 robot nhiều sân (`nhipTheo: 'tong'`), có lời sai `cung: true`.
+  - Xoá `CAP_HAM_CU_3` / `THAN_CU_3`, nâng `GOI_SIET_3 = 10`, thêm `'mua-3'` vào `XONG` trong `kiem-part-mua.mjs` (`0 màn sai luật part`), 0 chỗ nhảy đường cong mùa 3.
 
 ## Còn phải làm (lần lượt)
-1. Nghiệm thu PDM3a: `npm test` cả bộ, soát vài màn gói 2–4 trên trình duyệt.
-2. PDM3b mùa 3 gói 5–7 rồi gói 8–10 (brief `brief-PDM3b-mua-3-goi-5-10.md`, nên giao hai đợt: 5–7, 8–10), commit cuối 'mua-3' vào XONG.
-3. Mùa 4 (brief `brief-PDM4-mua-4.md`, ba đợt: gói 1–4, 5–7, 8–10), commit cuối 'mua-4' vào XONG.
-4. Mùa 1 gói 10 đổi sang tính TỔNG nhịp mọi sân (PDM2c2 phát hiện: tính theo sân dài nhất thì dãy viết cứng vẫn 3 sao) + chạy bộ dò dayChung.
-5. Sau cùng: gộp main (báo các phiên khác trước: phiên Phim CLB đang dựa danh sách gói mới), cập nhật KE-HOACH-7-MUA.md bảng bố cục gói 8–10.
+1. Mùa 4 (brief `brief-PDM4-mua-4.md`, ba đợt: gói 1–4, 5–7, 8–10), commit cuối 'mua-4' vào XONG.
+2. Mùa 1 gói 10 đổi sang tính TỔNG nhịp mọi sân (PDM2c2 phát hiện: tính theo sân dài nhất thì dãy viết cứng vẫn 3 sao) + chạy bộ dò dayChung.
+3. Sau cùng: gộp main (báo các phiên khác trước: phiên Phim CLB đang dựa danh sách gói mới), cập nhật KE-HOACH-7-MUA.md bảng bố cục gói 8–10.
 
 ## Bài học
 - Agent nào cũng để lại hồi quy ở máy kiểm ngoài danh sách (sổ lệnh, kiem-khay, kiem-hoc, kiem-phim-goi, kiem-huy-hieu-phim-vector, kiem-goi-doi…): cho agent chạy

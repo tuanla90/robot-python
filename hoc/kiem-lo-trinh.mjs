@@ -57,8 +57,7 @@ NHIEU_SAN_KHONG_TRUM.push('logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cha
   'bai-tu.9', 'che-bai-tu.2', 'che-bai-tu.7',      // PDM3a gói 4: màn sửa đường / tạo detour(n) / shield_run(n) hai bãi (đệm ở cột khác nhau)
   'doc-cuc.2', 'doc-cuc.3', 'doc-cuc.4', 'doc-cuc.5', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'doc-cuc.9',
   'che-doc-cuc.2', 'che-doc-cuc.3', 'che-doc-cuc.4', 'che-doc-cuc.5', 'che-doc-cuc.6', 'che-doc-cuc.7', 'che-doc-cuc.8', 'che-doc-cuc.9',
-  'bang-cu.4', 'bang-cu.7', 'che-bang-cu.7', 'che-bang-cu.8', 'che-bang-cu.9',
-  'tong-hop-3.2', 'tong-hop-3.5', 'tong-hop-3.8', 'trum-mua-3.1');      // gói 10: màn ôn dò sắt, đọc cực, and / or nhiều sân      // gói 7: màn ép đọc cực nhiều sân      // gói 3: màn ép dò sắt, hàm dò sắt nhiều sân
+  'bang-cu.4', 'bang-cu.7', 'che-bang-cu.7', 'che-bang-cu.8', 'che-bang-cu.9');      // gói 7: màn ép đọc cực nhiều sân      // gói 3: màn ép dò sắt, hàm dò sắt nhiều sân
 // mùa 4 gói 4 Phố màu (30/10): màn đọc camera bốn hướng có hai sân khác màu để chương trình viết cứng không qua (như HD1)
 NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'pho-mau.6', 'pho-mau.7', 'pho-mau.8', 'pho-mau.9',
   'che-pho-mau.1', 'che-pho-mau.2', 'che-pho-mau.3', 'che-pho-mau.4', 'che-pho-mau.5', 'che-pho-mau.6', 'che-pho-mau.7', 'che-pho-mau.8', 'che-pho-mau.9',
@@ -71,8 +70,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'son-tren-cao.5', 'son-tren-cao.6', 'che-son-tren-cao.2', 'che-son-tren-cao.6', 'che-son-tren-cao.8');      // gói 9: đọc vạch mờ / bảng mẫu bằng camera
 NHIEU_SAN_KHONG_TRUM.push('tong-hop-4.1', 'tong-hop-4.2', 'tong-hop-4.3', 'tong-hop-4.4', 'tong-hop-4.6', 'tong-hop-4.9', 'trum-mua-4.1', 'trum-mua-4.2', 'trum-mua-4.6', 'trum-mua-4.8', 'trum-mua-4.9');      // gói 10: màn đọc camera / hai mức pin
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
-// PDM2c2 (31/10): gói 10 mùa 2 "Xe cứu hỏa R1 xuất xưởng" (gói nha-may-chay: tong-hop-2, trum-mua-2) cũng MỌI màn nhiều sân.
-const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
+// PDM2c2 / PDM3b2 (31/10): gói 10 mùa 2 (nha-may-chay) và gói 10 mùa 3 (tong-hop-3: tong-hop-3, trum-mua-3) cũng MỌI màn nhiều sân.
+const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
 kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -419,8 +418,8 @@ const BANG_MUA_3 = [
   ['dao-cuc', 'bo-phan', [['dao-cuc', []], ['che-dao-cuc', []]]],
   ['doc-cuc', 'bo-phan', [['doc-cuc', []], ['che-doc-cuc', []]]],
   ['bang-cu', 'thu-thach', [['bang-cu', []], ['che-bang-cu', []]]],
-  ['doi-xich', 'thu-thach', [['doi-xich', day('doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])], ['che-doi-xich', day('che-doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]]],
-  ['tong-hop-3', 'thu-thach', [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.1', 'tong-hop-3.10']], ['trum-mua-3', []]]]
+  ['doi-xich', 'thu-thach', [['doi-xich', day('doi-xich', [11, 12, 13, 15, 14, 16, 18, 17, 19, 20])], ['che-doi-xich', day('che-doi-xich', [11, 12, 14, 15, 16, 13, 18, 17, 19, 20])]]],
+  ['tong-hop-3', 'thu-thach', [['tong-hop-3', day('tong-hop-3', [1, 2, 4, 6, 3, 8, 5, 7, 9, 10])], ['trum-mua-3', day('trum-mua-3', [8, 4, 7, 1, 3, 6, 2, 5, 9, 10])]]]
 ];
 const TEP_MUA_3 = ['manThanNhen', 'manNamChamN', 'manCamUngTu', 'manBaiTu', 'manNhay', 'manDaoCuc', 'manDocCuc', 'manBangCu', 'manDoiXichNhen', 'manTrumMua3'];
 const moiMua3 = TEP_MUA_3.flatMap(k => M[k] || []);
@@ -518,9 +517,9 @@ kiem3('(c) không màn nào trước gói 2 chương 2 mùa 3 (logic-nam-cham) d
   for (const m of M.danhSach.slice(0, moc)) for (const l of dongBacCau(m).dong) if (coLogic(l)) sai.push(m.ma + ': ' + l.trim());
   assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 6).join(' · '));
 });
-// PDM3a 31/10 (KE-HOACH-PART-DUNG-MUA.md): gói đã dựng lại theo luật "R1 là cỗ máy của mùa" SIẾT CHẶT: R1 chỉ nhện (+ nam châm bụng từ gói 2, + cảm biến từ từ gói 3),
-// khay chỉ lệnh nhện / nam châm / cảm biến từ. Gói 5–10 còn là màn xe cũ (PDM3b / PDM3c dựng lại) giữ phanh rộng bên dưới; thêm vào GOI_SIET_3 khi xong.
-const GOI_SIET_3 = 9;
+// PDM3a / PDM3b2 31/10 (KE-HOACH-PART-DUNG-MUA.md): cả 10 gói mùa 3 đã dựng lại theo luật "R1 là cỗ máy của mùa" SIẾT CHẶT: R1 chỉ nhện (+ nam châm bụng từ gói 2, + cảm biến từ từ gói 3),
+// khay chỉ lệnh nhện / nam châm / cảm biến từ.
+const GOI_SIET_3 = 10;
 const LENH_NHEN_3 = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
 kiem3('(d) robot mùa 3: thân hai bánh / xích / nhện; tay mùa 1–2 + nam châm; cảm biến mùa 1–2 + cảm ứng từ; khay chỉ lệnh của các part đó; không gọi lệnh omni / drone / màu / máy ném; gói 1–' + GOI_SIET_3 + ' siết: R1 chỉ nhện + nam châm bụng + cảm biến từ', () => {
   const goiCua = {};

@@ -78,6 +78,12 @@
    - **Máy kiểm:** `GOI_SIET_3` nâng từ 4 → 7 trong `kiem-lo-trinh.mjs`; sửa regex `\bfront_metal` / `\bfront_pole` (trước bị dính ký tự `0x08`) trong
      `kiem-lach-mua-3.mjs` để `--loi-gia` bắt lỗi giả lách G trên `doc-cuc.4`; gói 1–7 mùa 3 đạt 0 lỗi trong `kiem-part-mua.mjs` (mùa 3 chỉ còn 28 màn sai ở gói 8 `doi-xich` và gói 10 `tong-hop-3` chờ PDM3b2 / PDM3c).
 
+13. **Mùa 3 gói 8–10 + khoá `'mua-3'` (PDM3b2, 31/10):** hoàn tất toàn bộ 10 gói mùa 3 theo luật "R1 là cỗ máy của mùa":
+   - **Gói 8 Băng chuyền cũ (`bang-cu.1..10`, `che-bang-cu.1..10` trong `man-bang-cu.js`):** gói mới, 20 màn 1 robot trên cỗ máy phân loại đầy đủ (`than: 'nhen'`, `tay: 'nam-cham'`, `camBien: [{ ma: 'tu', o: 'hong' }]`) gặp yếu tố mùa 1–2 (băng chuyền `> < ^ v`, nút đè `M` + cửa `C`, cửa nhịp `cuaNhip`, thùng nặng `H`, thùng gỗ `g`). Hàm của em mới: `ride_belt(d)`, `hop_belt(d)`, `hold_gate(d)`, `take_metal_to(d)`. Gói 9 cũ `bung-nhen` (`bung-nhen`, `che-bung-nhen`) cất sang `CAT_MUA_3` ở mùa 5 ẩn (giữ tệp, phim, huy hiệu, Sổ lệnh).
+   - **Gói 9 Đội xích và nhện (`doi-xich.11..20`, `che-doi-xich.11..20` trong `man-doi-xich-nhen.js`):** dời về gói 9, viết mới 20 màn 2 robot với **R1 = robot phân loại mùa 3 đầy đủ** (`nhen` + `nam-cham` + `tu`) và **R2 = xe cứu hỏa mùa 2 đầy đủ** (`xich` + `hoi` + `hong-ngoai`, `xichDay: true`, `lucBan: true`). Hai màn cũ `doi-xich.3, .9` đưa về `doi-xich-bac` (đủ 10 màn `.1..10`). Hàm của em mới: `wait_n(n)`, `valve_go(n)`, `hop_iron(d)`; hàm của màn sửa lỗi: `go_mark()`.
+   - **Gói 10 Tổng hợp + Trùm mùa (`tong-hop-3.1..10`, `trum-mua-3.1..10` trong `man-trum-mua-3.js`):** viết lại toàn bộ 20 màn, MỘT robot phân loại đầy đủ, mỗi màn 2–3 sân ("ngày làm việc"), `nhipTheo: 'tong'`, mỗi màn có ≥ 1 lời sai viết cứng (`cung: true`) thua ở ít nhất một ngày. Bốn màn đội cũ (`tong-hop-3.7`, `trum-mua-3.4, .7, .8`) chuyển thành màn 1 robot nhiều sân giữ nguyên mã.
+   - **Khoá mùa 3:** xoá hẳn `CAP_HAM_CU_3` và `THAN_CU_3` trong `lo-trinh-hoc.js`, nâng `GOI_SIET_3 = 10` và thêm `'tong-hop-3'` vào `GOI_NHIEU_SAN` trong `kiem-lo-trinh.mjs`, đạt 0 chỗ nhảy đường cong mùa 3 (`kiem3('(h)')`), thêm `'mua-3'` vào `XONG` trong `kiem-part-mua.mjs` (`[chặt] mua-3: 0 màn sai luật part`).
+
 ## Câu hỏi chờ user
 
 - (PDM3a) Chương logic-nam-cham ghép điều kiện kiểu `c == "s" or c == "S"` / `c != "g" and c != "N"` (hai vế đều là so sánh chuỗi). Ô ghép CHE_VH của
