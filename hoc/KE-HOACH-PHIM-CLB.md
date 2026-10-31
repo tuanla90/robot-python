@@ -79,6 +79,38 @@ Phim bánh xích (mùa 2 gói 1) dùng lại cận cảnh 2: xích trái chạy,
 Kho `mua-1` → Nhà máy `mua-2a` → Bãi tái chế `mua-3b` → **Cảng sông `mua-cang`** (bản C/4: cẩu giàn, cẩu tháp, sà lan; đáy ra mép sông lau sậy) → **Bến sông `mua-song`** (bản B/2: đập cống, âu thuyền, bè, lục bình, ruộng lúa, đáy đất cày) → Nông trại `mua-4a` → **Mỏ đá `mua-mo`** (bản B/2: hố khai thác bậc thang, đá khối, mâm cắt đá, đáy đá vôi ướt) → **Hang động `mua-hang`** (bản A/2: hố sụt có rừng, thạch nhũ, ruộng bậc thang đá, sông ngầm, trại cứu hộ, đường chui vòm đá) → **Về CLB `mua-clb`** (bản B/2: lặp lại thị trấn mùa 1, đường KẾT ở quảng trường ngày hội trước toà CLB, 8 bục trưng bày cỗ máy). Bản còn lại cất ở `tam-anh/` (cang-a..d, song-a, mo-a, hang-b, clb-a).
 Chỗ nối còn khúc cua nhỏ ở Nông trại → Mỏ đá (lệch 60 px) và Bến sông → Nông trại; các chỗ khác khớp. Chưa dò đường / rải nút cho 5 đoạn mới (`tools/do-duong.py`, `BanDoMua.tsx`).
 Cách làm (31/10): tham chiếu đưa vào ô Import bằng `fetch('http://127.0.0.1:4215/tep/<tên>')` + DataTransfer (iframe bị chặn); ảnh gốc tải bằng `tools/tai-tv.sh` (curl đúng link `0.png?verify=` lấy từ ảnh lớn trong khung xem trước; link tự đổi từ `0_resized` bị 403).
+**BẢN ĐỒ 9 MÙA DẤU ẤN VIỆT (31/10 khuya, thay mọi đoạn bên dưới):** user thấy mùa 2 trùng nền cỏ mùa 1, làng hoa không ra Việt Nam, nên vẽ lại một lượt cả 9 cảnh đơn bằng TopView. Mỗi cảnh: tham chiếu là đoạn cũ, khung 9:16. Mô tả gồm:
+- dấu ấn Việt riêng của nơi đó;
+- mép trên / dưới 10% là địa hình của nơi liền kề, theo trình tự địa lý: thị trấn → khu công nghiệp ven thị trấn → bãi ve chai → cảng sông → miệt vườn đồng bằng → làng hoa phù sa → đất cao dần lên núi đá vôi → hang → ra thung lũng về thị trấn.
+
+Bản chọn (`tam-anh/vn<số>.png`, đủ 16 bản xem ở `tam-anh/vn*.png`):
+
+| Đoạn | Bản | Nội dung |
+|---|---|---|
+| Kho | 13 | Nhà ống mái ngói, cổng chùa, xe ba gác |
+| Nhà máy | 15 | KCN mái tôn xanh trên đất đỏ bazan, hết nền cỏ |
+| Bãi tái chế | 11 | Bao tải ve chai, xe ba gác, cẩu nam châm |
+| Cảng | 10 | Sà lan cát / container, ghe vẽ mắt |
+| Bến sông | 8 | Chợ nổi xuồng ba lá, cầu khỉ, nhà sàn, cống âu thuyền |
+| Làng hoa | 6 | Kiểu Sa Đéc: luống hoa trên giàn qua kênh, mai vàng, đào, nhà lưới; đáy ra đất đá |
+| Mỏ đá | 5 | Moong bậc thang, sân tạc sư tử đá, núi đá vôi |
+| Hang | 3 | Kiểu Phong Nha: hố sụt, sông ngầm ngọc bích, trại cứu hộ |
+| CLB | 1 | Nhà vàng mái đỏ, phượng vĩ, đèn lồng, 8 bục |
+
+Ghép thô bằng `noi-mua.py` (chồng 200), rồi TopView vẽ lại cả 8 dải chuyển. Khung 3:4 quanh mỗi vết nối (`tam-anh/vn-noi-1..8.jpg`), tham chiếu hai cảnh đầy đủ, mô tả chuyển tiếp hợp địa lý:
+
+| Nối | Bản | Chuyển tiếp |
+|---|---|---|
+| 1 | vc14 | Hàng cây, quán nước, cỏ ngả dần sang đất đỏ |
+| 2 | vc13 | Hàng rào sau KCN, mương bê tông có cống |
+| 3 | vc11 | Hàng rào lưới, barie, chốt gác |
+| 4 | vc8 | Bờ sậy, dừa nước, ghe |
+| 5 | vc6 | Kênh có cống, cổng tre vào làng hoa |
+| 6 | vc4 | Đất khô, đá vôi lác đác, suối cạn |
+| 7 | vc3 | Đường lách giữa vách đá vôi |
+| 8 | vc16 | Hầm đá ra khỏi hang, rừng tre, cầu suối |
+
+Đặt vào bằng `va-cho-noi.py`. Bỏ: vc9 (khớp hình hỏng), vc1 (TopView vẽ khác hẳn phần dưới, ghép bị méo). Bản đồ cũ cất ở `tam-anh/dai-9-cu.jpg`; 9 đoạn `mua-*.jpg` cắt lại từ `dai-9.jpg`. Nền sân dọc (`nen-doc/`) CHƯA vẽ lại theo bản mới.
 **Vá chỗ nối (31/10 khuya):** ba vết nối Bãi tái chế→Cảng, Cảng→Bến sông, Bến sông→Nông trại là đường cắt thẳng, đổi nền đột ngột. TopView vẽ lại riêng dải chuyển cảnh: khung 1080×1440 cắt quanh vết nối (`tam-anh/noi-0..2.jpg`), tham chiếu là hai đoạn mùa đầy đủ, mô tả bắt giữ nguyên 25% trên / dưới. Kết quả chọn (bản còn lại ở `tam-anh/van*.png`): hàng rào lưới + barie + chốt gác (`van5`), cầu bê tông lan can qua sông (`van3`), kênh tưới + hàng rào + cổng vòm nông trại (`van1`). Đặt lại bằng `tools/va-cho-noi.py <vào> <ra> <tâm y> 1440 <ảnh sinh>` (tâm y = đỉnh mùa dưới + 100):
 1. TopView nén hình theo chiều dọc (tỉ lệ 0,76–0,85) nên lệch tới 100 px. Mỗi mép một phép affine từ điểm SIFT khớp (RANSAC), nội suy theo hàng.
 2. Phần lệch nhỏ còn lại: luồng quang học DIS, khớp bằng mặt bậc hai trơn (luồng từng điểm làm nhòe lau sậy).
