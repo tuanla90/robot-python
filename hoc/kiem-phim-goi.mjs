@@ -121,7 +121,7 @@ console.log('\n== 1d. Phim mùa 4 (gói theo MUA_4 của lo-trinh-hoc.js) ==');
   const maMua4 = new Set(GOI_MUA_4.map((g) => g.ma));
   const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-4.js' && !maMua4.has(m) && !GOI_CAT_4.includes(m));
   kiem('mỗi phim của phim-mua-4.js mang đúng mã một gói của MUA_4 (hay gói cất ' + GOI_CAT_4.join(', ') + ')', !la.length, la.join(', '));
-  kiem('gói MUA_4 đều thuộc mùa 4 trong ThuTuChuong.goi', GOI_MUA_4.every((g) => { const x = TT.goi.find((y) => y.ma === g.ma); return x && x.mua === 'mua-4'; }));
+  kiem('gói MUA_4 đều thuộc mùa 5 (Nông trại) trong ThuTuChuong.goi', GOI_MUA_4.every((g) => { const x = TT.goi.find((y) => y.ma === g.ma); return x && x.mua === 'mua-5'; }));
   const boPhan = GOI_MUA_4.filter((g) => g.loai === 'bo-phan' && PHIM[g.ma]);
   const khongCode = boPhan.filter((g) => !/\bc\.code\(/.test(PHIM[g.ma][PHIM[g.ma].length - 1].toString())).map((g) => g.ma);
   kiem('khung cuối phim gói bộ phận mùa 4 có bảng code lệnh mới (' + boPhan.map((g) => g.ma).join(', ') + ')', boPhan.length >= 5 && !khongCode.length, khongCode.join(', '));

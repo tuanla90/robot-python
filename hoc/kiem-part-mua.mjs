@@ -11,7 +11,7 @@ const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const VR = require('./game/ve-robot.js');
 
-const XONG = new Set(['mua-1', 'mua-2', 'mua-3', 'mua-4']);      // mùa 1–4 đã dựng lại xong (mua-1: PDM1; mua-2: PDM2c2; mua-3: PDM3b2; mua-4: PDM4c 31/10)
+const XONG = new Set(['mua-1', 'mua-2', 'mua-3', 'mua-5']);      // mùa 1–3, 5 đã dựng lại xong (mua-1: PDM1; mua-2: PDM2c2; mua-3: PDM3b2; mua-5 Nông trại: PDM4c 31/10)
 const CHI_TIET = process.argv.includes('--chi-tiet');
 const LOI_GIA = process.argv.includes('--loi-gia');
 
@@ -20,7 +20,7 @@ const MUA = {
   'mua-1': { than: 'hai-banh', tay: g => g < 2 ? [] : g < 6 ? ['kep'] : ['xoay'], cam: g => g < 3 ? [] : ['khoang-cach'], goiDoi: [8, 9] },
   'mua-2': { than: 'xich', tay: g => g < 2 ? [] : ['hoi'], cam: g => g < 3 ? [] : ['hong-ngoai'], goiDoi: [9] },
   'mua-3': { than: 'nhen', tay: g => g < 2 ? [] : ['nam-cham'], cam: g => g < 3 ? [] : ['tu'], goiDoi: [9] },
-  'mua-4': { than: 'drone', tay: g => g < 2 ? [] : ['son'], cam: g => g < 3 ? [] : ['camera-4'], goiDoi: [9] }
+  'mua-5': { than: 'drone', tay: g => g < 2 ? [] : ['son'], cam: g => g < 3 ? [] : ['camera-4'], goiDoi: [9] }
 };
 const THU_MUA = Object.keys(MUA);
 const THAN_LOAI = { banh: 'hai-banh', nhen: 'nhen', xich: 'xich', omni: 'omni', drone: 'drone' };

@@ -1428,22 +1428,22 @@
     goi123.forEach(function (g) { c123 = c123.concat(g.chuong); });
     var sau = TT.thuTu.filter(function (c) { return c123.indexOf(c) < 0 && chuongMua4.indexOf(c) < 0; });
     TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(c123, coMan, sau));
-    // Gói: mùa 1–3, MUA_4, rồi gói còn lại (mùa 4 cũ → mùa 5, ẩn; gói cũ chỉ còn chương không thuộc mùa 4).
+    // Gói: mùa 1–3, MUA_4, rồi gói còn lại (mùa 4 cũ → mùa 7, ẩn; gói cũ chỉ còn chương không thuộc mùa 4).
     var conLai = [], doi5 = [];
     TT.goi.forEach(function (g) {
       if (goi123.indexOf(g) >= 0) return;
       var ch = g.chuong.filter(function (c) { return chuongMua4.indexOf(c) < 0; });
       if (!ch.length) return;
       g.chuong = ch;
-      if (g.mua === 'mua-4') { g.mua = 'mua-5'; doi5.push(g); }
+      if (g.mua === 'mua-4') { g.mua = 'mua-7'; doi5.push(g); }
       conLai.push(g);
     });
-    // PDM4c: gói cất của mùa 4 (Gieo từ trên cao) sang mùa 5 ẩn như CAT_MUA_2, CAT_MUA_3 (khongTangNguong: ngưỡng = gói trước + 30).
-    var goiCat4 = { ma: CAT_MUA_4.ma, ten: CAT_MUA_4.ten, loai: CAT_MUA_4.loai, hinh: CAT_MUA_4.hinh, mua: 'mua-5', khongTangNguong: true, chuong: chuongCat4 };
+    // PDM4c: gói cất của mùa 4 (Gieo từ trên cao) sang mùa 7 ẩn như CAT_MUA_2, CAT_MUA_3 (khongTangNguong: ngưỡng = gói trước + 30).
+    var goiCat4 = { ma: CAT_MUA_4.ma, ten: CAT_MUA_4.ten, loai: CAT_MUA_4.loai, hinh: CAT_MUA_4.hinh, mua: 'mua-7', khongTangNguong: true, chuong: chuongCat4 };
     conLai.push(goiCat4);
     doi5.push(goiCat4);
     conLai.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
-    // Ngưỡng gói dời sang mùa 5 (ẩn): như mùa 3 làm với gói dời sang mùa 4 (0,5 × tổng sao tối đa các gói thường đứng trước, bội 5; gói đội = trước + 30).
+    // Ngưỡng gói dời sang mùa 7 (ẩn): như mùa 3 làm với gói dời sang mùa 4 (0,5 × tổng sao tối đa các gói thường đứng trước, bội 5; gói đội = trước + 30).
     var tr5 = 0, truoc5 = null;
     doi5.forEach(function (g) {
       g.sao = g.khongTangNguong && truoc5 ? truoc5.sao + 30 : Math.floor(0.5 * tr5 / 5) * 5;
@@ -1454,13 +1454,13 @@
     MUA_4.forEach(function (g) {
       var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coMan.indexOf(c) >= 0; });
       if (!ch.length) return;
-      var x = { ma: g.ma, ten: g.ten, mua: 'mua-4', chuong: ch };
+      var x = { ma: g.ma, ten: g.ten, mua: 'mua-5', chuong: ch };
       if (g.loai) x.loai = g.loai;
       if (g.hinh) x.hinh = g.hinh;
       goi4.push(x);
     });
     TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goi123, goi4, conLai));
-    var dau5 = TT.goi.filter(function (g) { return g.mua === 'mua-5'; })[0];
+    var dau5 = TT.goi.filter(function (g) { return g.mua === 'mua-7'; })[0];
     if (dau5) dau5.sao = 0;
     // Khay theo gói (như mùa 3): bút liền (pen_down / pen_up) chỉ từ gói 6. Chỉ bớt lệnh trên khay (hamGoc), phần cứng vẫn đủ.
     MUA_4.forEach(function (g, i) {
@@ -2522,7 +2522,7 @@
   (function () {
     var TEN_MUA = { 'mua-1': 'Kho hàng',      // user 29/10: mùa 1 là xe bê vác làm ở kho (trước: Xưởng R1)
                      'mua-2': 'Nhà máy', 'mua-3': 'Bãi tái chế',      // user 30/10: bãi tái chế phế liệu (trước: Mỏ quặng)
-                     'mua-4': 'Nông trại' };      // 30/10: mùa 4 Thành phố → Nông trại (Nông trại hoa, vỏ nông nghiệp)
+                     'mua-4': 'Bến sông', 'mua-5': 'Nông trại', 'mua-6': 'Mỏ đá', 'mua-7': 'Hang động' };      // 31/10: đúng thứ tự 8 mùa (mùa 4 Bến sông, mùa 5 Nông trại, mùa 6 Mỏ đá, mùa 7 Hang động)
     TT.mua.forEach(function (m) { if (TEN_MUA[m.ma]) m.ten = TEN_MUA[m.ma]; });
     var TEN_GOI_1 = { 'tay-gap': 'Tay kẹp', 'kho-hang': 'Nút đè', 'hai-robot': 'Gặp R2', 'combo': 'Nhìn bên, nhặt bên' };
     TT.goi.forEach(function (g) { if (g.mua === 'mua-1' && TEN_GOI_1[g.ma]) g.ten = TEN_GOI_1[g.ma]; });
