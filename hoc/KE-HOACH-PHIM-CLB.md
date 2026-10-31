@@ -111,6 +111,15 @@ Ghép thô bằng `noi-mua.py` (chồng 200), rồi TopView vẽ lại cả 8 d�
 | 8 | vc16 | Hầm đá ra khỏi hang, rừng tre, cầu suối |
 | Cuối | vd1 (`tren`) | Đường CLB dừng ở cổng chào, bỏ đoạn đường cụt phía dưới |
 
+**VẼ NỐI ĐUÔI (1/11, thay cách vá + nắn ở dưới):** user thấy đường cong uốn éo trông giả, muốn TopView vẽ chứ không nắn bằng code. Inpaint của TopView (công cụ riêng, cho tải ảnh lên, tô vùng bằng cọ) thử ở vết nối 1 thì không dùng được: nó vẽ lại cả khung, nửa dưới đổi hẳn, phần ngoài vùng tô không giữ nguyên. Nên vẽ lại cả bản đồ theo kiểu nối đuôi, `tools/noi-tiep.py`:
+- Mùa 1 (Kho): Image Edit trên `vn-kho.jpg`, chỉ đổi đường thành cong nhẹ một lần (`tam-anh/nt1-2.png`).
+- Mùa k ≥ 2: khung 1080×1924 = 200 hàng đáy của ảnh dài + nền xám (`noi-tiep.py khung`); Image1 khung, Image2 mùa trước (`nt-mua-<k-1>.jpg`), Image3 cảnh cũ `vn-<tên>.jpg` làm nội dung. Mô tả: giữ nguyên dải trên, tô kín phần xám, đường đi tiếp đúng chỗ, chỉ một hai khúc cong rộng, trình tự địa lý vào → giữa → 10% đáy gợi nơi kế (prompt trong `PRT` / `taoPrt` ở phiên làm, nội dung ở bảng dưới). Ghép bằng `noi-tiep.py noi`: chỉ DỊCH nguyên ảnh (dx, dy từ matchTemplate dải chồng; thực tế dy 0–3, dx 0–2 px, riêng mùa 9 là 13 px, lấp mép bằng soi gương), đường cắt tối ưu trong 200 hàng chồng, khớp màu bằng dịch trung bình. Không co giãn, không nắn.
+- Bản chọn: 1 `nt1-2`, 2 `nt2-2`, 3 `nt3-2`, 4 `nt4-2`, 5 `nt5-1`, 6 `nt6-2`, 7 `nt7-2`, 8 `nt8f-2`, 9 `nt9f-1`.
+- Mùa 8: nền xám để lại vết ngang ở mép khung (vách đá vôi cắt cụt). Thử khung ghép thô (dải trên + cảnh hang cũ) vẫn bị. Cách đạt: đưa chính ảnh vừa sinh (`nt8-1`) cho Image Edit, bảo chỉ xoá vết ngang và nối đường (`nt8f-*`).
+- Mùa 9: sửa thêm một lượt trên `nt9-2`: rìa rừng tre tự nhiên, cổng chào dời lên chỗ đường vào sân CLB, đáy là hàng rào hoa (`nt9f-*`; bản 2 mất nhà CLB nên bỏ).
+- Ảnh dài cao 15719, cắt còn 15716 (bỏ 3 hàng hàng rào đáy). Vị trí mùa giữ y = k·1724 như `BanDoMua.tsx`.
+- Còn lại: vài khúc đường vẫn cong chữ S nhẹ (mùa 4, 8, 9); vị trí nút trên đường trong `BanDoMua.tsx` (nutCua) chưa so với đường mới.
+
 Lần sửa 31/10 khuya (user: nhà mùa 2, mùa 4 méo; hoa → mỏ đột ngột; đường mùa 9 gãy). `va-cho-noi.py` bây giờ:
 - không co giãn dọc ảnh sinh nữa (trước nội suy affine có y-scale ~0.8 nên nhà bị kéo); mỗi mép chỉ khớp ngang `x' = a·x + b` và dịch dọc `d`;
 - đường cắt tìm trong 38% mỗi mép để lách qua đất trống, không cắt ngang mái nhà;
