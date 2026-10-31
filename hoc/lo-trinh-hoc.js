@@ -977,7 +977,32 @@
       goiY: ['Băng chuyền đẩy theo mũi tên: nhện bước ngược mũi tên thì bị đẩy lùi đúng bằng quãng vừa bước.',
         'Thử đi vào băng một lần để thấy nó chặn thế nào, rồi tìm lối khác vòng phía trên.']
     });
-    sanThay('che-nhen.6', 'S', '.');
+    // PDM3b 31/10 (part đúng mùa): che-nhen.6 đổi từ tay kẹp (pick / drop) sang nam châm bụng nhện (magnet_n / magnet_off, hút / thả ở ô dưới bụng).
+    // Bản tay kẹp cũ của bring(path) cấp lại qua DAY_CU (capCu) cho che-doi-xich.6 (chương rời che-doi-xich-bac, mùa ẩn).
+    var T_BRING_3 = ['magnet_n()', 'wait()', 'walk(path)', 'magnet_off()', 'wait()'];
+    var C_N6 = ['walk("DRRDDDR")', 'bring("DLL")'];
+    sua('che-nhen.6', {
+      san: ['.###', '...#', '##.#', '##..', '#..o', '#...'], vatChat: ['....', '....', '....', '....', '...s', '....'],
+      robot: { than: 'nhen', tay: 'nam-cham' },
+      hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'wait', 'magnet_n', 'magnet_off'],
+      bongMo: { x: 1, y: 5, huong: 0, vat: [{ x: 1, y: 5 }], chan: 'dung' },
+      hamCuaEmCan: ['go', 'walk'],
+      deBai: 'Nhện gắn nam châm dưới bụng: hút và thả đều ở ô ngay dưới bụng. Chương trình chính đưa nhện tới đứng trên mẩu sắt vụn rồi gọi bring("DLL"). Chế bring(path): hút mẩu sắt, đi theo path rồi thả xuống đúng chỗ bóng mờ.',
+      veMaMau: 'Chương trình chính bị khóa: walk("DRRDDDR") rồi bring("DLL"). Mở Xưởng hàm, tạo bring(path) rồi bấm Chạy.',
+      maMau: { chinh: C_N6.slice(), hamCuaMan: [] },
+      loiGiai: { chinh: C_N6.slice(), hamCuaMan: [], hamCuaEmMoi: [{ ten: 'bring', thamSo: ['path'], than: T_BRING_3.slice() }] },
+      congThucKhac: [
+        { moTa: 'Đi bằng vòng for c in path: go(c) thay cho walk(path)', hamCuaEmMoi: [{ ten: 'bring', thamSo: ['path'], than: ['magnet_n()', 'wait()', 'for c in path:', '    go(c)', 'magnet_off()', 'wait()'] }] }
+      ],
+      loiSai: [
+        { moTa: 'Gọi bring("DLL") mà chưa chế hàm', baiLam: { chinh: C_N6.slice(), hamCuaMan: [] }, phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên magnet_off(): mẩu sắt còn dính dưới bụng', baiLam: { chinh: C_N6.slice(), hamCuaMan: [] }, hamCuaEmMoi: [{ ten: 'bring', thamSo: ['path'], than: ['magnet_n()', 'wait()', 'walk(path)'] }], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Quên magnet_n(): nhện đi một mình, mẩu sắt nằm lại', baiLam: { chinh: C_N6.slice(), hamCuaMan: [] }, hamCuaEmMoi: [{ ten: 'bring', thamSo: ['path'], than: ['walk(path)', 'magnet_off()', 'wait()'] }], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Đi trước rồi mới hút: nhện hút ở chỗ trống', baiLam: { chinh: C_N6.slice(), hamCuaMan: [] }, hamCuaEmMoi: [{ ten: 'bring', thamSo: ['path'], than: ['walk(path)', 'magnet_n()', 'wait()', 'magnet_off()', 'wait()'] }], phaiCoMa: ['lech-bong-mo'] }
+      ],
+      goiY: ['Việc của bring(): bật nam châm hút mẩu sắt dưới bụng, đi theo path bằng walk(path), rồi ngắt nam châm thả xuống.',
+        'Lệnh nam châm chỉ ra lệnh: nhớ wait() sau magnet_n() và magnet_off().']
+    }).loiGiaiKhac = { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_N6.slice(), hamCuaMan: [] }, hamCuaEmMoi: [{ ten: 'bring', thamSo: ['path'], than: ['# hút, mang, thả'].concat(T_BRING_3) }] };
     // Gói 1 chương 1 đứng trước chuoi-nhen (nhen.4 tạo go(d)): lời giải khác cũ đi theo chuỗi bằng go() thành đi thẳng từng bước (không chuỗi, không hàm).
     get('nhen.8').loiGiaiKhac = { moTa: 'Bước lên viết thẳng ba lần, rồi lặp sang phải và xuống', baiLam: bai(['go_up()', 'go_up()', 'go_up()', 'for i in range(6):', '    go_right()', 'for i in range(3):', '    go_down()']), hamCuaEmMoi: [] };
     // Gói 2 chỉ có cực N (magnet_s mở ở gói 6) và chưa có grip() (gói 7): bỏ các lời sai mẫu dựa vào cực S / grip() (chúng chỉ còn báo "hàm chưa có").
@@ -2374,6 +2399,7 @@
     var CAP_HAM_CU_3 = { 'che-doc-cuc': true, 'tong-hop-3': true, 'trum-mua-3': true };
     Object.keys(CAP_HAM_CU_3).forEach(function (c) { chuongAn[c] = true; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
+    if (nguon['che-nhen.6']) DAY_CU.push(['che-nhen.6', 'bring']);
     // Bản xe hai bánh của hàm của em gói 3–4 mùa 3 (ngân hàng đã viết lại trên nhện nên không còn trong `nguon`): khai cứng như THAN_CU mùa 2.
     var THAN_CU_3 = [
       ['che-cam-ung-tu.2', { ten: 'seek_iron', thamSo: [], than: ['while not front_metal():', '    move()'] }],
