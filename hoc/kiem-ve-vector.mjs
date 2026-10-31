@@ -432,7 +432,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   for (const loai of ['than', 'tay', 'cam-bien']) {
     const mp = BP[loai].map((d) => d.ma), mv = V.ds(loai);
     for (const ma of mp) if (!mv.includes(ma)) thieu.push(loai + '/' + ma);
-    const THEM_SAU_CHUP = { 'cam-bien': ['tu', 'camera-4', 'radar'] };                              // camera-4: P1 mùa 4; radar: PDM6a mùa 6; tu: P1 mùa 3
+    const THEM_SAU_CHUP = { 'cam-bien': ['tu', 'camera-4', 'radar', 'dong-chay', 'quet-ma'], than: ['xuong', 'cau'], tay: ['day-keo', 'moc-cau'] };   // camera-4: P1 mùa 4; radar: PDM6a mùa 6; tu: P1 mùa 3; mùa Cảng / Bến sông 31/10
     for (const ma of mv) if (!mp.includes(ma) && !(THEM_SAU_CHUP[loai] || []).includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
     for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;

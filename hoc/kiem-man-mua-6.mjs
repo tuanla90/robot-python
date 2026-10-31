@@ -21,7 +21,7 @@ function cham(m, lg, truoc = khoTruoc.get(m.ma) || []) {
   return Cham.cham(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [], doi: lg.doi }, [...hs.values()]);
 }
 
-const chuongMua6 = new Set(TT.goi.filter(g => g.mua === 'mua-6').flatMap(g => g.chuong));
+const chuongMua6 = new Set(TT.goi.filter(g => g.mua === 'mua-7').flatMap(g => g.chuong));
 const ds = M.danhSach.filter(m => chuongMua6.has(m.chuong));
 assert.ok(ds.length >= 20, 'chưa có đủ màn mùa 6');
 

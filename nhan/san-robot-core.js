@@ -114,6 +114,16 @@
        - KHÔNG làm, báo lỗi lời Việt "Game chưa dạy ...": cắt đoạn a[1:3], gán vào ô a[0] = x, danh sách lồng danh sách, lệnh khác
          (.pop .sort .insert …), list comprehension [x for ...], chỉ số âm, lấy chữ của chuỗi bằng s[i]; hàm của game (move, forward…) không nhận danh sách.
        - print / str() in danh sách như Python: [1, 2, 'red'].
+     TUPLE (bộ giá trị, mùa Bến sông), tập con đủ cho lớp 5–7:
+       - literal (a, b) · ("back", 2) · (1, 2, 3) · (a,) (phần tử là số hoặc chuỗi; ngoặc có dấu phẩy mới là tuple, (a) chỉ là nhóm;
+         () rỗng là lỗi lời Việt); vế phải của = và return không cần ngoặc: a, b = b, a · return "back", 2;
+       - gỡ cặp khi gán: h, s = flow() (số tên phải bằng số phần tử, không thì lỗi lời Việt nói rõ hai con số);
+       - t[0] t[1] · len(t) · x in t · for x in t: (như danh sách) · == != so từng phần tử; < <= > >= so lần lượt từng phần tử như Python
+         (tuple chỉ so thứ tự với tuple, phần tử cùng kiểu); tuple == danh sách luôn là False (như Python);
+       - print / str() in như Python: ('back', 2) · (1,) · hàm của game trả tuple (flow() trả (huong, suc)); hàm của game không nhận tuple;
+       - KHÔNG làm, báo lỗi lời Việt "Game chưa dạy ...": gán vào ô t[0] = x, + hai tuple, tuple lồng tuple / danh sách, cắt đoạn.
+     Hàm dựng sẵn thêm: min(a, b, ...) / max(a, b, ...) (từ 2 đối số, toàn số, toàn chuỗi hay toàn tuple; hay MỘT danh sách / tuple
+       làm đối số duy nhất — cho mùa Nông trại), abs(x) (số).
      Chưa hỗ trợ: class, import, try/except, f-string, nháy ba.
      ========================================================================== */
 
@@ -278,7 +288,7 @@
         if (t.v === 'return') {
           i++;
           if (xem().k === 'nl') return { loai: 'return', gt: null, dong: t.dong };
-          return heLenh({ loai: 'return', gt: bieuThuc(), dong: t.dong });
+          return heLenh({ loai: 'return', gt: bieuThucDay(), dong: t.dong });
         }
         if (t.v === 'break') { i++; return heLenh({ loai: 'break', dong: t.dong }); }
         if (t.v === 'continue') { i++; return heLenh({ loai: 'continue', dong: t.dong }); }
@@ -287,12 +297,25 @@
       // gán?
       if (t.k === 'ten' && toks[i + 1] && toks[i + 1].k === 'op' && ['=', '+=', '-=', '*=', '/='].indexOf(toks[i + 1].v) >= 0) {
         var ten2 = lay().v, op = lay().v;
-        return heLenh({ loai: 'gan', ten: ten2, op: op, gt: bieuThuc(), dong: t.dong });
+        return heLenh({ loai: 'gan', ten: ten2, op: op, gt: bieuThucDay(), dong: t.dong });
+      }
+      // gỡ cặp: h, s = flow() · a, b = b, a (mọi vế trái là tên; vế phải là tuple hay thứ trả về tuple)
+      if (t.k === 'ten' && toks[i + 1] && toks[i + 1].k === 'op' && toks[i + 1].v === ',') {
+        var j = i, tens = [];
+        while (toks[j] && toks[j].k === 'ten' && toks[j + 1] && toks[j + 1].k === 'op' && toks[j + 1].v === ',') { tens.push(toks[j].v); j += 2; }
+        if (toks[j] && toks[j].k === 'ten' && toks[j + 1] && toks[j + 1].k === 'op' && toks[j + 1].v === '=') {
+          tens.push(toks[j].v);
+          i = j + 2;
+          return heLenh({ loai: 'ganNhieu', tens: tens, gt: bieuThucDay(), dong: t.dong });
+        }
+        if (toks[j] && toks[j].k === 'ten' && toks[j + 1] && toks[j + 1].k === 'op' && ['+=', '-=', '*=', '/='].indexOf(toks[j + 1].v) >= 0) {
+          throw LoiCuPhap(t.dong, 'Gỡ cặp (h, s = ...) chỉ dùng được với dấu = thường, không dùng ' + toks[j + 1].v + ' được.');
+        }
       }
       var bt = bieuThuc();
       if (xem().k === 'op' && ['=', '+=', '-=', '*=', '/='].indexOf(xem().v) >= 0 && bt.loai === 'chiSo') {
-        throw LoiCuPhap(t.dong, 'Game chưa dạy gán vào một ô của danh sách (a[0] = x). Muốn thêm phần tử thì dùng a.append(x); ' +
-          'muốn làm lại cả danh sách thì gán lại: a = [1, 2].');
+        throw LoiCuPhap(t.dong, 'Game chưa dạy gán vào một ô của danh sách hay tuple (a[0] = x). Với danh sách, muốn thêm phần tử thì dùng a.append(x); ' +
+          'muốn làm lại cả danh sách thì gán lại: a = [1, 2]. Tuple thì không đổi được từng phần tử, hãy tạo tuple mới: t = (1, 2).');
       }
       return heLenh({ loai: 'bt', gt: bt, dong: t.dong });
     }
@@ -330,6 +353,14 @@
 
     // biểu thức — ưu tiên từ thấp lên cao
     function bieuThuc() { return hoac(); }
+    /** Biểu thức có thể là tuple không ngoặc (vế phải của = và return): a, b · "back", 2. Dấu phẩy thừa cuối cũng là tuple (a,). */
+    function bieuThucDay() {
+      var e = bieuThuc();
+      if (!laOp(',')) return e;
+      var ds = [e];
+      while (anOp(',')) { if (xem().k === 'nl' || xem().k === 'het') break; ds.push(bieuThuc()); }
+      return { loai: 'tupleLit', ds: ds, dong: e.dong };
+    }
     function hoac() {
       var n = va();
       while (xem().k === 'kw' && xem().v === 'or') { var d = lay().dong; n = { loai: 'or', trai: n, phai: va(), dong: d }; }
@@ -442,7 +473,16 @@
         }
         return { loai: 'ten', ten: t.v, dong: t.dong };
       }
-      if (laOp('(')) { i++; var e = bieuThuc(); mong(anOp(')'), 'Thiếu dấu ")".'); return e; }
+      if (laOp('(')) {                            // (a) là nhóm · (a, b) là tuple · (a,) cũng là tuple · () là lỗi
+        i++;
+        if (laOp(')')) throw LoiCuPhap(t.dong, 'Game chưa dạy tuple rỗng (). Tuple phải có ít nhất một giá trị, ví dụ ("back", 2).');
+        var e = bieuThuc();
+        if (!laOp(',')) { mong(anOp(')'), 'Thiếu dấu ")".'); return e; }
+        var dst = [e];
+        while (anOp(',')) { if (laOp(')')) break; dst.push(bieuThuc()); }
+        mong(anOp(')'), 'Thiếu dấu ")" đóng tuple.');
+        return { loai: 'tupleLit', ds: dst, dong: t.dong };
+      }
       throw LoiCuPhap(t.dong, 'Chỗ này không phải biểu thức hợp lệ.');
     }
 
@@ -460,17 +500,49 @@
   var PHUONG_THUC_LIST = ['pop', 'sort', 'insert', 'remove', 'extend', 'reverse', 'index', 'count', 'clear', 'copy'];
   var MSG_CAT = 'Game chưa dạy cắt một đoạn của danh sách (a[1:3]). Lấy từng phần tử bằng a[0], a[1]… hay đi qua cả danh sách bằng for x in a:.';
   var MSG_LONG = 'Game chưa dạy danh sách nằm trong danh sách: phần tử chỉ là một số hoặc một chuỗi.';
+  var MSG_LONG_TUPLE = 'Game chưa dạy tuple lồng tuple hay danh sách: phần tử của tuple chỉ là một số hoặc một chuỗi.';
   var LIST_TOI_DA = 10000;
   function laList(v) { return Array.isArray(v); }
-  /** Đúng / sai như Python: danh sách rỗng là sai. Số và chuỗi giữ cách cũ. */
-  function dung(v) { return laList(v) ? v.length > 0 : !!v; }
+  /** Tuple: bộ giá trị không đổi được. Giữ riêng một lớp (không phải Array) để mọi chỗ xử lý danh sách không nhận nhầm. */
+  function Tuple(ds) { this.ds = ds; }
+  function laTuple(v) { return v instanceof Tuple; }
+  function taoTuple(ds) { return new Tuple(ds.slice()); }
+  /** Danh sách hay tuple: thứ có nhiều phần tử. Trả mảng phần tử (của danh sách là chính nó). */
+  function laDay(v) { return laList(v) || laTuple(v); }
+  function phanTu(v) { return laTuple(v) ? v.ds : v; }
+  /** Đúng / sai như Python: danh sách / tuple rỗng là sai. Số và chuỗi giữ cách cũ. */
+  function dung(v) { return laDay(v) ? phanTu(v).length > 0 : !!v; }
   function bangNhau(a, b) {
-    if (laList(a) && laList(b)) {
-      if (a.length !== b.length) return false;
-      for (var k = 0; k < a.length; k++) if (!bangNhau(a[k], b[k])) return false;
+    if (laDay(a) && laDay(b)) {
+      if (laTuple(a) !== laTuple(b)) return false;                        // (1, 2) == [1, 2] là False như Python
+      var pa = phanTu(a), pb = phanTu(b);
+      if (pa.length !== pb.length) return false;
+      for (var k = 0; k < pa.length; k++) if (!bangNhau(pa[k], pb[k])) return false;
       return true;
     }
     return a === b;
+  }
+  /** So thứ tự hai giá trị cùng kiểu (số với số, chuỗi với chuỗi, tuple với tuple theo từng phần tử như Python).
+   *  Trả -1 / 0 / 1. Kiểu lệch thì ném lỗi lời Việt (op là dấu đang dùng, để ghi vào lời). */
+  function soThuTu(a, b, op, dong) {
+    if (laTuple(a) && laTuple(b)) {
+      var pa = a.ds, pb = b.ds, n = Math.min(pa.length, pb.length);
+      for (var k = 0; k < n; k++) {
+        var c = soThuTu(pa[k], pb[k], op, dong);
+        if (c !== 0) return c;
+      }
+      return pa.length < pb.length ? -1 : pa.length > pb.length ? 1 : 0;
+    }
+    if (laDay(a) || laDay(b)) {
+      throw LoiRuntime(dong, 'Không so sánh "' + op + '" được ' + tenKieu(a) + ' với ' + tenKieu(b) +
+        (laList(a) || laList(b) ? '. Danh sách chỉ so sánh bằng == hoặc !=; muốn so từng phần tử thì lấy ra bằng a[0], a[1]…'
+          : '. Tuple chỉ so thứ tự với tuple; muốn so một phần tử thì lấy ra bằng t[0], t[1].'));
+    }
+    if (laChuoi(a) !== laChuoi(b)) {
+      throw LoiRuntime(dong, 'Không so sánh "' + op + '" được ' + tenKieu(a) + ' với ' + tenKieu(b) +
+        ' (Python báo TypeError). Chuỗi chỉ so sánh với chuỗi; còn == và != thì so sánh kiểu nào cũng được.');
+    }
+    return a < b ? -1 : a > b ? 1 : 0;
   }
   function tenDs(goc) { return goc && goc.loai === 'ten' ? goc.ten : null; }
   /** a[i]: lấy phần tử thứ i (đếm từ 0). Chỉ số âm / ngoài tầm là lỗi lời Việt nói rõ chỉ số và độ dài. */
@@ -478,10 +550,11 @@
     if (laChuoi(goc)) {
       throw LoiRuntime(dong, 'Game chưa dạy lấy từng chữ của chuỗi bằng s[i]. Muốn đi qua từng chữ thì dùng for c in s:.');
     }
-    if (!laList(goc)) {
+    if (!laDay(goc)) {
       throw LoiRuntime(dong, 'Chỉ lấy được phần tử bằng [ ] từ một danh sách, mà ' + (ten ? '"' + ten + '"' : 'đây') + ' là một số.');
     }
-    var nhan = ten ? 'danh sách ' + ten : 'danh sách';
+    var nhan = (laTuple(goc) ? 'tuple' : 'danh sách') + (ten ? ' ' + ten : '');
+    goc = phanTu(goc);
     if (laList(chi)) throw LoiRuntime(dong, 'Chỉ số phải là một số nguyên, không phải danh sách.');
     if (laChuoi(chi)) throw LoiRuntime(dong, 'Chỉ số của danh sách phải là số nguyên (0, 1, 2…), không phải chuỗi.');
     if (chi !== Math.floor(chi)) throw LoiRuntime(dong, 'Chỉ số phải là số nguyên, mà đây là ' + dangChu(chi) + '.');
@@ -498,6 +571,11 @@
   }
   /** Phép số học có ít nhất một vế là danh sách: chỉ + giữa hai danh sách (nối) được; còn lại là lỗi như Python. */
   function soHocList(op, x, y, dong) {
+    if (laTuple(x) || laTuple(y)) {
+      throw LoiRuntime(dong, op === '+' && laTuple(x) && laTuple(y)
+        ? 'Game chưa dạy cộng hai tuple. Muốn tính với từng phần tử thì lấy ra bằng t[0], t[1].'
+        : 'Không dùng phép "' + op + '" giữa ' + tenKieu(x) + ' và ' + tenKieu(y) + ' được. Lấy từng phần tử của tuple bằng t[0], t[1] rồi mới tính.');
+    }
     if (op === '+') {
       if (laList(x) && laList(y)) {
         if (x.length + y.length > LIST_TOI_DA) throw LoiRuntime(dong, 'Danh sách dài quá (hơn ' + LIST_TOI_DA + ' phần tử).');
@@ -547,9 +625,13 @@
 
   /* --- chuỗi ký tự: kiểu, phép toán, hàm dựng sẵn --- */
   function laChuoi(v) { return typeof v === 'string'; }
-  function tenKieu(v) { return Array.isArray(v) ? 'danh sách' : laChuoi(v) ? 'chuỗi' : 'số'; }
+  function tenKieu(v) { return Array.isArray(v) ? 'danh sách' : laTuple(v) ? 'tuple' : laChuoi(v) ? 'chuỗi' : 'số'; }
   function dangChu(v) {
     if (Array.isArray(v)) return '[' + v.map(function (e) { return laChuoi(e) ? "'" + e + "'" : dangChu(e); }).join(', ') + ']';
+    if (laTuple(v)) {                                                     // như Python: ('back', 2) · (1,) · ()
+      var pt = v.ds.map(function (e) { return laChuoi(e) ? "'" + e + "'" : dangChu(e); });
+      return '(' + pt.join(', ') + (pt.length === 1 ? ',' : '') + ')';
+    }
     return typeof v === 'number' ? String(Math.round(v * 1e6) / 1e6) : String(v);
   }
 
@@ -574,8 +656,8 @@
   var HAM_DUNG_SAN = {
     len: function (dong, args) {
       if (args.length !== 1) throw LoiRuntime(dong, 'len() cần đúng 1 đối số, đang có ' + args.length + '.');
-      if (laList(args[0])) return args[0].length;
-      if (!laChuoi(args[0])) throw LoiRuntime(dong, 'len() chỉ đếm được chuỗi hoặc danh sách, mà đây là một số.');
+      if (laDay(args[0])) return phanTu(args[0]).length;
+      if (!laChuoi(args[0])) throw LoiRuntime(dong, 'len() chỉ đếm được chuỗi hoặc danh sách (hay tuple), mà đây là một số.');
       return Array.from(args[0]).length;
     },
     str: function (dong, args) {
@@ -586,11 +668,37 @@
       if (args.length !== 1) throw LoiRuntime(dong, 'int() cần đúng 1 đối số, đang có ' + args.length + '.');
       var a = args[0];
       if (laList(a)) throw LoiRuntime(dong, 'int() không đổi được danh sách thành số.');
+      if (laTuple(a)) throw LoiRuntime(dong, 'int() không đổi được tuple thành số. Lấy một phần tử ra bằng t[0], t[1] trước.');
       if (!laChuoi(a)) return Math.trunc(a);
       if (!/^\s*[+-]?\d+\s*$/.test(a)) throw LoiRuntime(dong, 'int() không đổi được "' + a + '" thành số nguyên.');
       return parseInt(a, 10);
+    },
+    min: function (dong, args) { return nhoLon('min', dong, args); },
+    max: function (dong, args) { return nhoLon('max', dong, args); },
+    abs: function (dong, args) {
+      if (args.length !== 1) throw LoiRuntime(dong, 'abs() cần đúng 1 đối số, đang có ' + args.length + '.');
+      if (typeof args[0] !== 'number') throw LoiRuntime(dong, 'abs() chỉ bỏ dấu được của một số, mà đây là ' + tenKieu(args[0]) + '.');
+      return Math.abs(args[0]);
     }
   };
+  /** min(a, b, ...) / max(a, b, ...): từ 2 đối số (toàn số, toàn chuỗi hay toàn tuple — tuple so từng phần tử như Python),
+   *  hay một danh sách / tuple làm đối số duy nhất (cho mùa Nông trại). Đối số lệch kiểu là lỗi lời Việt. */
+  function nhoLon(ten, dong, args) {
+    var ds = args;
+    if (args.length === 0) throw LoiRuntime(dong, ten + '() cần ít nhất 2 giá trị để so, ví dụ ' + ten + '(a, b).');
+    if (args.length === 1) {
+      if (!laDay(args[0])) throw LoiRuntime(dong, ten + '() cần ít nhất 2 giá trị để so, ví dụ ' + ten + '(a, b). Một đối số thì phải là danh sách hay tuple.');
+      ds = phanTu(args[0]);
+      if (!ds.length) throw LoiRuntime(dong, ten + '() không tìm được gì trong một ' + tenKieu(args[0]) + ' rỗng.');
+    }
+    var tot = ds[0];
+    for (var k = 1; k < ds.length; k++) {
+      if (laList(ds[k]) || laList(tot)) throw LoiRuntime(dong, ten + '() không so được với một danh sách nằm trong các đối số. Muốn tìm trong danh sách thì viết ' + ten + '(a).');
+      var c = soThuTu(ds[k], tot, ten === 'min' ? '<' : '>', dong);
+      if (ten === 'min' ? c < 0 : c > 0) tot = ds[k];
+    }
+    return tot;
+  }
 
   /** Nhân chạy code dạng GENERATOR.
    *  Mỗi lần chương trình gọi một hàm của game thì `yield` ra ngoài một yêu cầu
@@ -627,6 +735,7 @@
         case 'am': {
           var vam = yield* tinh(n.gt, mt);
           if (laList(vam)) throw LoiRuntime(n.dong, 'Dấu - không đặt trước danh sách được.');
+          if (laTuple(vam)) throw LoiRuntime(n.dong, 'Dấu - không đặt trước tuple được. Lấy phần tử ra bằng t[0], t[1] rồi mới đổi dấu.');
           if (laChuoi(vam)) throw LoiRuntime(n.dong, 'Dấu - không đặt trước chuỗi được.');
           return -vam;
         }
@@ -637,9 +746,19 @@
           for (var il = 0; il < n.ds.length; il++) {
             var pt = yield* tinh(n.ds[il], mt);
             if (laList(pt) && !choPhep2D) throw LoiRuntime(n.dong, MSG_LONG);
+            if (laTuple(pt)) throw LoiRuntime(n.dong, MSG_LONG_TUPLE);
             dsKq.push(pt);
           }
           return dsKq;
+        }
+        case 'tupleLit': {
+          var tKq = [];
+          for (var it = 0; it < n.ds.length; it++) {
+            var ptT = yield* tinh(n.ds[it], mt);
+            if (laDay(ptT)) throw LoiRuntime(n.dong, MSG_LONG_TUPLE);
+            tKq.push(ptT);
+          }
+          return new Tuple(tKq);
         }
         case 'chiSo': {
           var gocDs = yield* tinh(n.goc, mt), chiDs = yield* tinh(n.chi, mt);
@@ -653,6 +772,7 @@
           }
           if (tsPt.length !== 1) throw LoiRuntime(n.dong, 'append() cần đúng 1 đối số, đang có ' + tsPt.length + '.');
           if (laList(tsPt[0]) && !choPhep2D) throw LoiRuntime(n.dong, MSG_LONG);
+          if (laTuple(tsPt[0])) throw LoiRuntime(n.dong, MSG_LONG_TUPLE);
           if (dtPt.length >= LIST_TOI_DA) {
             throw LoiRuntime(n.dong, 'Danh sách dài quá (hơn ' + LIST_TOI_DA + ' phần tử) — có vòng lặp nào cứ thêm mãi không?');
           }
@@ -661,32 +781,26 @@
         }
         case 'soSanh': {
           var a = yield* tinh(n.trai, mt), b = yield* tinh(n.phai, mt);
-          if ((n.op !== '==' && n.op !== '!=') && (laList(a) || laList(b))) {
-            throw LoiRuntime(n.dong, 'Không so sánh "' + n.op + '" được ' + tenKieu(a) + ' với ' + tenKieu(b) +
-              '. Danh sách chỉ so sánh bằng == hoặc !=; muốn so từng phần tử thì lấy ra bằng a[0], a[1]…');
-          }
-          if ((n.op !== '==' && n.op !== '!=') && laChuoi(a) !== laChuoi(b)) {
-            throw LoiRuntime(n.dong, 'Không so sánh "' + n.op + '" được ' + tenKieu(a) + ' với ' + tenKieu(b) +
-              ' (Python báo TypeError). Chuỗi chỉ so sánh với chuỗi; còn == và != thì so sánh kiểu nào cũng được.');
-          }
+          if (n.op === '==') return bangNhau(a, b) ? 1 : 0;
+          if (n.op === '!=') return !bangNhau(a, b) ? 1 : 0;
+          var cmp = soThuTu(a, b, n.op, n.dong);                       // kiểu lệch / danh sách → lỗi lời Việt ở trong
           switch (n.op) {
-            case '==': return bangNhau(a, b) ? 1 : 0;
-            case '!=': return !bangNhau(a, b) ? 1 : 0;
-            case '<': return a < b ? 1 : 0;
-            case '<=': return a <= b ? 1 : 0;
-            case '>': return a > b ? 1 : 0;
-            case '>=': return a >= b ? 1 : 0;
+            case '<': return cmp < 0 ? 1 : 0;
+            case '<=': return cmp <= 0 ? 1 : 0;
+            case '>': return cmp > 0 ? 1 : 0;
+            case '>=': return cmp >= 0 ? 1 : 0;
           }
           break;
         }
         case 'trong': {
           var ta = yield* tinh(n.trai, mt), tb = yield* tinh(n.phai, mt);
-          if (laList(tb)) {                                                // x in a: so đúng giá trị (số khác chuỗi)
-            if (laList(ta)) {
+          if (laDay(tb)) {                                                 // x in a / x in t: so đúng giá trị (số khác chuỗi)
+            if (laList(ta) && laList(tb)) {
               if (!choPhep2D && !tb.some(laList)) throw LoiRuntime(n.dong, MSG_LONG);
               return tb.some(function (el) { return bangNhau(el, ta); }) !== n.phu ? 1 : 0;
             }
-            return (tb.indexOf(ta) >= 0) !== n.phu ? 1 : 0;
+            if (laDay(ta)) throw LoiRuntime(n.dong, laTuple(tb) ? MSG_LONG_TUPLE : MSG_LONG);
+            return (phanTu(tb).indexOf(ta) >= 0) !== n.phu ? 1 : 0;
           }
           if (!laChuoi(tb) || !laChuoi(ta)) {
             throw LoiRuntime(n.dong, '"' + (n.phu ? 'not in' : 'in') + '" ở đây chỉ kiểm tra được chuỗi nằm trong chuỗi (ví dụ "U" in "UD") ' +
@@ -696,7 +810,7 @@
         }
         case 'soHoc': {
           var x = yield* tinh(n.trai, mt), y = yield* tinh(n.phai, mt);
-          if (laList(x) || laList(y)) return soHocList(n.op, x, y, n.dong);
+          if (laDay(x) || laDay(y)) return soHocList(n.op, x, y, n.dong);
           if (laChuoi(x) || laChuoi(y)) return soHocChuoi(n.op, x, y, n.dong);
           switch (n.op) {
             case '+': return x + y;
@@ -710,7 +824,8 @@
               return Math.floor(x / y);
             case '%':
               if (y === 0) throw LoiRuntime(n.dong, 'Chia cho 0.');
-              return x % y;
+              var du = x % y;                                                  // phép mod của Python: kết quả cùng dấu với số chia (-5 % 8 = 3, 5 % -8 = -3), khớp với // (Math.floor); mùa Cảng sông dạy (b - a) % 8 với số âm (31/10)
+              return du !== 0 && (du < 0) !== (y < 0) ? du + y : du;
           }
           break;
         }
@@ -738,11 +853,14 @@
             } finally { ctx.doSau--; ctx.ngan.pop(); }
           }
           // hàm nội bộ (print) — không tốn một "lượt" của bên ngoài (danh sách in như Python: [1, 2])
-          if (HAM_NOI_BO[n.ten]) return f.goi.apply(null, args.map(function (v) { return laList(v) ? dangChu(v) : v; }));
-          // hàm của game nhận số hoặc chuỗi, không nhận cả danh sách
+          if (HAM_NOI_BO[n.ten]) return f.goi.apply(null, args.map(function (v) { return laDay(v) ? dangChu(v) : v; }));
+          // hàm của game nhận số hoặc chuỗi, không nhận cả danh sách / tuple
           for (var iq = 0; iq < args.length; iq++) {
             if (laList(args[iq])) {
               throw LoiRuntime(n.dong, 'Lệnh ' + n.ten + '() không nhận cả danh sách. Muốn dùng từng phần tử thì lấy ra bằng a[0], a[1]… hay vòng for x in a:.');
+            }
+            if (laTuple(args[iq])) {
+              throw LoiRuntime(n.dong, 'Lệnh ' + n.ten + '() không nhận cả tuple. Muốn dùng một phần tử thì lấy ra bằng t[0], t[1].');
             }
           }
           // hàm của game — nhường quyền ra ngoài để bên ngoài thực hiện
@@ -751,6 +869,10 @@
             // kết quả của hàm game: số hoặc chuỗi (đúng/sai là 1/0, không có gì là 0)
             if (typeof kq === 'boolean') return kq ? 1 : 0;
             if (kq === undefined || kq === null) return 0;
+            if (Array.isArray(kq)) {
+              if (kq.some(Array.isArray)) return kq;                    // mảng 2 chiều (radar() trả lưới 3x3) → giữ nguyên danh sách 2D
+              return new Tuple(kq.slice());                             // hàm game trả mảng 1 chiều JS = tuple cho trẻ (flow() → ("back", 2))
+            }
             return kq;
           } catch (e) {
             if (e && e.cuaGame) throw e;
@@ -773,7 +895,7 @@
           var gt = yield* tinh(n.gt, mt);
           if (n.op === '=') { mt.gan(n.ten, gt); return; }
           var cu = mt.lay(n.ten, n.dong, true);
-          if (laList(cu) || laList(gt)) {
+          if (laDay(cu) || laDay(gt)) {
             if (n.op === '+=' && laList(cu) && laList(gt)) {                 // a += b: nối thẳng vào danh sách a (như Python)
               if (cu.length + gt.length > LIST_TOI_DA) throw LoiRuntime(n.dong, 'Danh sách dài quá (hơn ' + LIST_TOI_DA + ' phần tử).');
               Array.prototype.push.apply(cu, gt.slice());
@@ -791,6 +913,20 @@
             if (gt === 0) throw LoiRuntime(n.dong, 'Chia cho 0.');
             mt.gan(n.ten, cu / gt);
           }
+          return;
+        }
+        case 'ganNhieu': {                                                // h, s = flow() · a, b = b, a
+          var gtN = yield* tinh(n.gt, mt);
+          if (!laDay(gtN)) {
+            throw LoiRuntime(n.dong, 'Cần ' + n.tens.length + ' giá trị để gán cho ' + n.tens.join(', ') + ', mà vế phải chỉ là một ' + tenKieu(gtN) +
+              '. Gỡ cặp chỉ dùng được với tuple (hay danh sách), ví dụ h, s = flow().');
+          }
+          var ptN = phanTu(gtN);
+          if (ptN.length !== n.tens.length) {
+            throw LoiRuntime(n.dong, 'Cần ' + n.tens.length + ' giá trị để gán cho ' + n.tens.join(', ') + ', mà vế phải có ' + ptN.length +
+              ' phần tử (' + dangChu(gtN) + '). Số tên bên trái phải bằng số phần tử bên phải.');
+          }
+          for (var ig = 0; ig < n.tens.length; ig++) mt.gan(n.tens[ig], ptN[ig]);
           return;
         }
         case 'pass': return;
@@ -819,6 +955,7 @@
         case 'for': {
           if (n.duyet) {   // for c in <chuỗi>: lặp từng ký tự · for x in <danh sách>: lặp từng phần tử
             var chuoiLap = yield* tinh(n.duyet, mt);
+            if (laTuple(chuoiLap)) chuoiLap = chuoiLap.ds;                 // for x in t: duyệt tuple như danh sách
             if (laList(chuoiLap)) {
               for (var idl = 0; idl < chuoiLap.length; idl++) {                 // theo vị trí, đọc độ dài mỗi vòng: phần tử thêm lúc đang duyệt cũng được duyệt (như Python)
                 mt.gan(n.bien, chuoiLap[idl]);
@@ -1225,6 +1362,7 @@
     VEC_TOA: VEC_TOA, TEN_HUONG: TEN_HUONG, TRAI: TRAI, PHAI: PHAI,
     docSan: docSan, dichSan: dichSan,
     chayCode: chayCode, chayCodeGen: chayCodeGen, chayTrenSan: chayTrenSan, chamBai: chamBai,
+    taoTuple: taoTuple, laTuple: laTuple, dangChu: dangChu,
     BAI: BAI
   };
 

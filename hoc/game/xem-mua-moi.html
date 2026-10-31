@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xem hình mùa mới</title>
+<!-- xem-mua-moi.html (31/10): trang xem thử MỌI hình vector của Mùa 4 Cảng sông và Mùa 5 Bến sông, MỌI trạng thái, hai cỡ (48 px và 160 px), cần cẩu 8 nấc × 3 tầm
+     trên lưới 7 × 7, dây phao nối vật kéo ở mũi / đuôi. Chưa nối lõi (gói sau nối vào san-ve.js). Đặc tả: hoc/KE-HOACH-MUA-CANG-SONG.md mục 4. -->
+<link rel="stylesheet" href="font/font.css">
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--g-vecSanToi);font-family:"Google Sans Flex",system-ui,sans-serif;color:var(--g-vecVien);padding:16px;overflow-x:hidden}
+  h1{font-size:20px;margin:0 0 4px}
+  h2{font-size:16px;font-weight:700;margin:22px 0 8px}
+  h3{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--g-vecChuPhu)}
+  p.ghi{font-size:13px;margin:0 0 8px;max-width:760px;color:var(--g-vecChuPhu)}
+  .hang{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+  .the{background:var(--g-vecVo);border:1px solid var(--g-vecVoToi);border-radius:10px;padding:8px;max-width:100%}
+  .the .hai{display:flex;gap:8px;align-items:flex-end}
+  .the p{margin:6px 0 0;font-size:12px;line-height:1.35;max-width:220px;overflow-wrap:anywhere}
+  .the p b{font-weight:700}
+  canvas{display:block;max-width:100%}
+  .luoi p{max-width:224px}
+  /* SÂN CHƠI THỬ (gói nối 31/10): vùng sân như .ffr của choi.css (khung gỗ .khung-san + lớp phủ robot .lop-robot do san-ve.js tạo) */
+  .thu{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;background:var(--g-vecVo);border:1px solid var(--g-vecVoToi);border-radius:12px;padding:10px;max-width:100%}
+  .thu .ffr{position:relative;flex:none;width:312px;height:312px;max-width:100%;padding:4px;display:flex;align-items:center;justify-content:center}
+  .thu .ffr canvas{display:block;flex:none;background:var(--g-bangV8)}
+  .thu .ffr canvas:not(.lop-robot){position:relative;z-index:1}
+  .thu .ffr .khung-san{position:absolute;z-index:0;display:none;pointer-events:none;background-color:var(--g-goSangV3);box-shadow:0 0 0 2px var(--g-vecVien),inset 0 2px 0 var(--g-moCam),inset 0 -3px 0 var(--g-moToiSang)}
+  .thu .ffr canvas.lop-robot{position:absolute;z-index:2;background:none;pointer-events:none}
+  .thu .ma{display:flex;flex-direction:column;gap:6px;flex:1 1 220px;min-width:0}
+  .thu textarea{width:100%;min-height:150px;font:12px/1.4 ui-monospace,Consolas,monospace;border:1px solid var(--g-vecVoToi);border-radius:8px;padding:6px;background:var(--g-vecSanToi);color:var(--g-vecVien);resize:vertical}
+  .thu .nut{display:flex;gap:6px;flex-wrap:wrap}
+  .thu button{font:600 13px "Google Sans Flex",system-ui,sans-serif;padding:6px 12px;border-radius:8px;border:1px solid var(--g-vecVien);background:var(--g-vecDoiR1);color:var(--g-vecVien);cursor:pointer}
+  .thu button.phu{background:var(--g-vecVo)}
+  .thu .tt{font-size:12px;color:var(--g-vecChuPhu);min-height:1.4em;overflow-wrap:anywhere}
+  .thu h3{margin:0}
+</style>
+</head>
+<body>
+<h1>Hình mùa mới: Cảng sông và Bến sông</h1>
+<p class="ghi">Mỗi hình vẽ ở hai cỡ ô: 48 px (như sân chơi trên điện thoại) và 160 px. Nhãn ghi mã hình và trạng thái. Hình đăng ký qua VeVector.dangKy (hệ 100), cần cẩu và dây phao vẽ bằng hàm riêng theo toạ độ sân.</p>
+<h2>SÂN CHƠI THỬ · lõi SanHoc.chay + trình vẽ sân thật SanVe.Field (gói nối 31/10)</h2>
+<p class="ghi">Mỗi sân là một màn dựng bằng cấu hình (chưa có trong lộ trình). Sửa code rồi bấm <b>Chạy</b>: lõi chạy ra vết, sân phát lại từng nhịp với hoạt cảnh (trôi, neo, dây phao, cống / van, cần cẩu quay / vươn, móc / hạ, ray, tàu cập / rời). <b>Đặt lại</b> đưa sân về đầu. Dòng trạng thái ghi thắng / thua / lỗi của lõi.</p>
+<div id="san-thu"></div>
+<div id="noi-dung"></div>
+
+<script src="bang-mau.js"></script>
+<script src="ve-vector.js"></script>
+<script src="ve-vector-o.js"></script>
+<script src="ve-vector-o2.js"></script>
+<script src="ve-vector-o-song.js"></script>
+<script src="ve-vector-vat-song.js"></script>
+<script src="ve-vector-than-xuong.js"></script>
+<script src="ve-vector-tay-day-keo.js"></script>
+<script src="ve-vector-cam-song.js"></script>
+<script src="ve-vector-o-cang.js"></script>
+<script src="ve-vector-vat-cang.js"></script>
+<script src="ve-vector-than-cau.js"></script>
+<script src="ve-vector-tay-moc-cau.js"></script>
+<script src="ve-vector-cam-cang.js"></script>
+<!-- sân chơi thử: lõi + trình vẽ sân thật (cùng thứ tự nạp như choi.html) -->
+<script src="../../nhan/san-robot-core.js"></script>
+<script src="../san-hoc.js"></script>
+<script src="chu.js"></script>
+<script src="ve.js"></script>
+<script src="ve-vector-vat.js"></script>
+<script src="ve-vector-nong-trai.js"></script>
+<script src="ve-vector-ky-hieu.js"></script>
+<script src="ve-vector-than-hai-banh.js"></script>
+<script src="ve-vector-cam.js"></script>
+<script src="ve-vector-hieu-ung.js"></script>
+<script src="ve-robot.js"></script>
+<script src="san-ve.js"></script>
+<script>
+/* ===================================================================== SÂN CHƠI THỬ */
+function sanChoiThu() {
+  'use strict';
+  var goc = document.getElementById('san-thu');
+  if (!window.SanVe || !window.SanHoc) { goc.textContent = 'Thiếu san-ve.js / san-hoc.js'; return; }
+  var XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
+  var CAU = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail'];
+  var RB_X = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] }, RB_C = { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] };
+  var MAU = [
+    { ten: 'Bến sông 1 · trôi theo dòng, thả neo, tới phao đích', ghi: 'Dòng ở hàng trên đẩy xuồng sang phải; anchor() giữ xuồng trên dòng (neo-giu); unanchor() rồi trôi tiếp; Q là cờ.',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~~~~~~Q#', '#~#V~~#~#', '#~~K~~~~#', '#~B~~~L~#', '#..~~~..#', '#########'], batDau: { x: 1, y: 1, huong: 1 },
+        dong: [{ x: 3, y: 1, huong: 1, suc: 1 }, { x: 4, y: 1, huong: 1, suc: 1 }, { x: 4, y: 3, huong: 2, suc: 2 }], noi: [{ nut: { x: 3, y: 2 }, cong: [{ x: 3, y: 3 }], dong: [{ x: 4, y: 3 }] }], nhipToiDa: 60 },
+      code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nanchor()\nwait()\nwait()\nunanchor()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\n' },
+    { ten: 'Bến sông 2 · dây phao kéo bè về bến nhận q', ghi: 'tow() quăng dây, bè bị kéo về ô trước mũi; tiến thì bè đi trước; drop_tow() thả bè trên q (mục tiêu dua-vat). Thử tether() sau tow() để buộc bè ra đuôi.',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], mucTieu: 'dua-vat', san: ['#########', '#~~~~~~~#', '#~B~~~~q#', '#~~~~~~~#', '#.......#', '#########'], batDau: { x: 1, y: 2, huong: 1 }, nhipToiDa: 60 },
+      code: 'tow()\nwait()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\ndrop_tow()\nwait()\n' },
+    { ten: 'Bến sông 3 · van cống, dây quăng hụt, đâm cống đóng', ghi: 'Đâm cống đóng = húc tường (choáng). Quay mũi lên, tow() trúng van V: cần gạt quay, cống K mở (cánh nâng), dòng (5,2) của nhóm tắt (mũi tên mờ). flow_dir() đọc ô trước mũi (tia + chong chóng sáng). Sửa tow() thành quăng về bờ để xem dây hụt (?).',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~V~~~~~#', '#~~K~~~Q#', '#~~~~~~~#', '#########'], batDau: { x: 1, y: 2, huong: 1 },
+        dong: [{ x: 5, y: 2, huong: 3, suc: 1 }, { x: 5, y: 3, huong: 3, suc: 2 }], noi: [{ nut: { x: 2, y: 1 }, cong: [{ x: 3, y: 2 }], dong: [{ x: 5, y: 2 }] }], nhipToiDa: 60 },
+      code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\ntow()\nwait()\nleft_move()\nwait()\nh = flow_dir()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\n' },
+    { ten: 'Cảng sông 1 · giao hai container lên hai tàu (giao-tau)', ghi: 'pick_up() nhấc container trên cùng, quay 3 nấc trái, vươn, set_down() lên boong tàu 1 (tàu rời mang hàng đi); rồi quay sang phải lấy container 21 cho tàu 2. read_code() quét số.',
+      cfg: { loaiRobot: 'cau', robot: RB_C, hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], mucTieu: 'giao-tau', san: ['#########', '#.......#', '#..RRR..#', '#.......#', '#TT~~~TT#', '#########'], batDau: { x: 4, y: 2 },
+        chong: [{ x: 4, y: 1, cont: [{ so: 12 }, { so: 7, tan: 2 }] }, { x: 6, y: 2, cont: [{ so: 3 }, { so: 8 }, { so: 21 }] }], tau: [{ o: [{ x: 1, y: 4 }, { x: 2, y: 4 }], co: 6, vang: 2, pha: 0 }, { o: [{ x: 6, y: 4 }, { x: 7, y: 4 }], co: 3, vang: 2, pha: 1 }], giao: [{ tau: 0, so: [7] }, { tau: 1, so: [21] }], nhipToiDa: 60 },
+      code: 'pick_up()\nswing_left()\nswing_left()\nswing_left()\nextend()\nset_down()\nretract()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nextend()\nso = read_code()\npick_up()\nswing_right()\nset_down()\nwait()\nwait()\n' },
+    { ten: 'Cảng sông 2 · ray, móc đôi, luật tải, hết tầm, hết ray', ghi: 'rail(4) chạy bệ 4 ô trên ray; pick_up2() nhấc hai container; extend() vượt tầm 3 và vươn ra ngoài sân báo lỗi; cfg.taiToiDa = 4 nên container in số tấn; rail(-9) chạy tới hết ray thì dừng (het-ray).',
+      cfg: { loaiRobot: 'cau', robot: RB_C, hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], taiToiDa: 4, san: ['#########', '#.......#', '#RRRRR..#', '#.......#', '#########'], batDau: { x: 1, y: 2 },
+        chong: [{ x: 1, y: 1, cont: [{ so: 5, tan: 1 }, { so: 9, tan: 1 }] }, { x: 5, y: 3, cont: [{ so: 40, tan: 3 }] }], nhipToiDa: 60 },
+      code: 'pick_up2()\nrail(4)\nextend()\nextend()\nextend()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nretract()\nretract()\nset_down()\nt = weight()\nrail(-9)\n' }
+  ];
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  MAU.forEach(function (m) {
+    var hop = el('div', 'thu'), ffr = el('div', 'ffr'), cv = document.createElement('canvas'), ma = el('div', 'ma'), ta = document.createElement('textarea'), nut = el('div', 'nut'), tt = el('div', 'tt');
+    var bChay = el('button', null, 'Chạy'), bLai = el('button', 'phu', 'Đặt lại');
+    ffr.appendChild(cv); hop.appendChild(ffr);
+    ma.appendChild(el('h3', null, m.ten)); ma.appendChild(el('p', 'ghi', m.ghi)); ta.value = m.code; ma.appendChild(ta);
+    nut.appendChild(bChay); nut.appendChild(bLai); ma.appendChild(nut); ma.appendChild(tt); hop.appendChild(ma); goc.appendChild(hop);
+    var field = new SanVe.Field(cv, { kich: 300, catMep: true }), rid = 0;
+    field.nap(m.cfg);
+    bLai.onclick = function () { rid++; field.datLai(); tt.textContent = ''; };
+    bChay.onclick = async function () {
+      var my = ++rid, kq;
+      field.datLai();
+      try { kq = SanHoc.chay(m.cfg, ta.value); } catch (e) { tt.textContent = 'Lỗi cấu hình: ' + e.message; return; }
+      tt.textContent = 'Đang chạy… (' + kq.nhip + ' nhịp)';
+      for (var i = 0; i < kq.vet.length; i++) {
+        var e = kq.vet[i];
+        if (my !== rid) return;
+        if (e.loai === 'lenh') { if (e.docCamBien) field.docCamBien(e.docCamBien, 380); await SanVe.ngu(110); }
+        else await field.phatNhip(e, 560);
+      }
+      if (my !== rid) return;
+      if (kq.thang) field.mungThang();
+      tt.textContent = (kq.thang ? 'THẮNG' : 'Chưa thắng') + ' · ' + kq.nhip + ' nhịp' + (kq.loi ? ' · lỗi dòng ' + kq.loi.dong + ': ' + kq.loi.thongDiep : '') + (kq.dungSom ? ' · dừng sớm: ' + kq.dungSom : '') +
+        ' · sự kiện: ' + kq.vet.filter(function (q) { return q.loai === 'nhip'; }).map(function (q) { return q.suKien.map(function (s) { return s.ma; }).join(' '); }).join(' | ');
+    };
+  });
+}
+function veTrang() {
+  'use strict';
+  var V = window.VeVector, BM = window.BangMau, DPR = window.devicePixelRatio || 1, goc = document.getElementById('noi-dung');
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function muc(tieuDe, ghi) { goc.appendChild(el('h2', null, tieuDe)); if (ghi) goc.appendChild(el('p', 'ghi', ghi)); var h = el('div', 'hang'); goc.appendChild(h); return h; }
+  function nhom(cha, tieuDe) { goc.appendChild(el('h3', null, tieuDe)); var h = el('div', 'hang'); goc.appendChild(h); return h; }
+  /** Canvas hiển thị cỡ css px, vẽ bằng ve(g, css) trong hệ px css. */
+  function canvas(css, ve, cao) {
+    cao = cao || css;
+    var c = document.createElement('canvas'); c.width = Math.round(css * DPR); c.height = Math.round(cao * DPR); c.style.width = css + 'px'; c.style.height = cao + 'px';
+    var g = c.getContext('2d'); g.scale(DPR, DPR); ve(g, css, cao); return c;
+  }
+  function anh(cv, css) { return function (g) { if (cv) g.drawImage(cv, 0, 0, css, css * cv.height / cv.width); }; }
+  function the(cha, ten, veTheoCo, nen) {
+    var t = el('div', 'the'), hai = el('div', 'hai');
+    [48, 160].forEach(function (n) { hai.appendChild(canvas(n, function (g) { if (nen) nen(g, n); veTheoCo(g, n); })); });
+    t.appendChild(hai); var p = el('p'); p.innerHTML = ten; t.appendChild(p); cha.appendChild(t);
+  }
+  function tt(s) { var j = JSON.stringify(s); return j === '{}' ? 'mặc định' : j.replace(/"/g, '').replace(/^\{|\}$/g, ''); }
+  function nenO(ma, s) { return function (g, n) { g.drawImage(V.o(ma, n * DPR, s || {}), 0, 0, n, n); }; }
+  function hinhO(cha, ma) { (V.lay('o', ma).cacTrangThai || [{}]).forEach(function (s) { the(cha, '<b>ô ' + ma + '</b> · ' + tt(s), function (g, n) { g.drawImage(V.o(ma, n * DPR, s), 0, 0, n, n); }); }); }
+  function hinhVat(cha, ma, nen) {
+    (V.lay('vat', ma).cacTrangThai || [{}]).forEach(function (s) {
+      the(cha, '<b>vật ' + ma + '</b> · ' + tt(s), function (g, n) { var k = n * 0.86; g.drawImage(V.vat(ma, k * DPR, s), (n - k) / 2, (n - k) / 2, k, k); }, nen);
+    });
+  }
+  function hinhRobot(cha, cfg, st, ten, nen) {
+    the(cha, ten, function (g, n) { var cv = V.robot(cfg, st, st.huong || 0, n * DPR); if (cv) g.drawImage(cv, 0, 0, n, n); }, nen);
+  }
+
+  /* ===================================================================== BẾN SÔNG */
+  goc.appendChild(el('h2', null, 'MÙA 5 · BẾN SÔNG (xuồng thủy lợi)'));
+  var h = nhom(goc, 'Ô sân: nước ~, dòng chảy (lớp cfg.dong), cống K / k, van cống V, phao đích Q, bến nhận bè q');
+  ['nuoc', 'dong-nuoc', 'cong-thuy-loi', 'van-cong', 'phao-dich', 'ben-nhan'].forEach(function (ma) { hinhO(h, ma); });
+  h = nhom(goc, 'Vật nổi: bè hàng B, lục bình L (trên nền nước)');
+  ['be-go', 'luc-binh'].forEach(function (ma) { hinhVat(h, ma, nenO('nuoc')); });
+  h = nhom(goc, 'Thân xuồng + tay dây phao + chong chóng dòng chảy (robot, trên nền nước)');
+  var X0 = { than: 'xuong' }, X1 = { than: 'xuong', tay: 'day-keo' }, X2 = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
+  [
+    [X0, {}, 'xuong · thường'], [X0, { than: { mat: 'vui' } }, 'xuong · mắt vui'], [X0, { than: { chay: true } }, 'xuong · chân vịt quay (chay)'],
+    [X0, { than: { neo: true } }, 'xuong · thả neo (neo)'], [X0, { than: { dat: true } }, 'xuong · móc buộc đuôi (dat)'], [X0, { than: { dat: true, dangDat: true } }, 'xuong · đang buộc đuôi (dat, dangDat)'],
+    [X1, {}, 'xuong + day-keo · dây cuộn'], [X1, { tay: { day: true } }, 'xuong + day-keo · đang quăng dây (day)'], [X1, { tay: { giu: true } }, 'xuong + day-keo · đang giữ vật (giu)'],
+    [X2, {}, '+ dong-chay · nghỉ'], [X2, { camBien: { bat: true } }, '+ dong-chay · đang đọc (bat)'], [X2, { camBien: { bat: true, nang: true } }, '+ dong-chay · nâng cấp flow() (nang)'],
+    [X2, { huong: 1, than: { neo: true } }, 'hướng phải · neo'], [X2, { huong: 2 }, 'hướng xuống'], [{ than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], son: 'lam' }, { huong: 3 }, 'R2 (sơn lam) · hướng trái']
+  ].forEach(function (r) { hinhRobot(h, r[0], r[1], r[2], nenO('nuoc')); });
+  hinhRobot(h, { than: 'xuong', tay: 'day-keo', son: 'lam' }, { tay: { day: true } }, 'R2 (sơn lam) · quăng dây', nenO('nuoc'));
+
+  /* sân nhỏ: dây phao */
+  h = nhom(goc, 'Dây phao trên sân (VeVector.veDayKeo): vật kéo ở mũi, buộc đuôi, dây quăng hụt, dòng chảy tắt / chạy');
+  function sanSong(n, ve) {
+    return canvas(5 * n, function (g) {
+      for (var y = 0; y < 3; y++) for (var x = 0; x < 5; x++) g.drawImage(V.o('nuoc', n * DPR, { le: (x + y) % 2 }), x * n, y * n, n, n);
+      ve(g, n);
+    }, 3 * n);
+  }
+  function robotTai(g, n, cfg, st, x, y, huong) { var cv = V.robot(cfg, st, huong, n * DPR); g.drawImage(cv, x * n, y * n, n, n); }
+  function vatTai(g, n, ma, s, x, y) { var k = n * 0.86; g.drawImage(V.vat(ma, k * DPR, s || {}), x * n + (n - k) / 2, y * n + (n - k) / 2, k, k); }
+  [48, 64].forEach(function (n) {
+    var t = el('div', 'the');
+    t.appendChild(sanSong(n, function (g) {
+      robotTai(g, n, X2, { tay: { giu: true } }, 1, 0, 1);                                   // kéo ở mũi: xuồng (1,0) hướng phải, bè ở (2,0)
+      vatTai(g, n, 'be-go', { keo: true }, 2, 0);
+      V.veDayKeo(g, { x1: 1.5 * n + n * 0.38, y1: 0.5 * n, x2: 2.5 * n - n * 0.36, y2: 0.5 * n, o: n, cang: true });
+      robotTai(g, n, { than: 'xuong', tay: 'day-keo' }, { than: { dat: true, dangDat: true } }, 3, 1, 1);   // buộc đuôi: xuồng (3,1) hướng phải, lục bình ở (2,1)
+      vatTai(g, n, 'luc-binh', { keo: true }, 2, 1);
+      V.veDayKeo(g, { x1: 3.5 * n - n * 0.4, y1: 1.5 * n, x2: 2.5 * n + n * 0.36, y2: 1.5 * n, o: n, cang: true });
+      robotTai(g, n, X1, { tay: { giu: true } }, 0, 2, 1);                                   // dây quăng ra (hụt): phao bay tới ô (2,2)
+      V.veDayKeo(g, { x1: 0.5 * n + n * 0.38, y1: 2.5 * n, x2: 2.6 * n, y2: 2.5 * n, o: n, phao: true });
+      g.drawImage(V.o('dong-nuoc', n * DPR, { huong: 1, xiet: true }), 4 * n, 2 * n, n, n);
+      g.drawImage(V.o('dong-nuoc', n * DPR, { huong: 0, tat: true }), 4 * n, 0, n, n);
+    }));
+    var p = el('p'); p.innerHTML = '<b>sân 5 × 3 · ô ' + n + ' px</b> · hàng 1: bè kéo ở mũi (dây căng); hàng 2: lục bình buộc đuôi; hàng 3: dây quăng hụt có phao; góc phải: dòng tắt / dòng xiết';
+    t.appendChild(p); h.appendChild(t);
+  });
+
+  /* ===================================================================== CẢNG SÔNG */
+  goc.appendChild(el('h2', null, 'MÙA 4 · CẢNG SÔNG (cần cẩu container)'));
+  h = nhom(goc, 'Ô sân: bãi container ., boong tàu T (có mặt / vắng), ray R');
+  ['bai-cont', 'boong-tau', 'ray'].forEach(function (ma) { hinhO(h, ma); });
+  h = nhom(goc, 'Container (số 1–99, màu theo so % 4) và chồng container 1–4 tầng (trên nền bãi)');
+  hinhVat(h, 'container', nenO('bai-cont'));
+  [1, 2, 3, 4, 10, 11, 58, 86].forEach(function (so) { the(h, '<b>container</b> · so ' + so + ' (so % 4 = ' + (so % 4) + ')', function (g, n) { var k = n * 0.86; g.drawImage(V.vat('container', k * DPR, { so: so }), (n - k) / 2, (n - k) / 2, k, k); }, nenO('bai-cont')); });
+  hinhVat(h, 'chong-cont', nenO('bai-cont'));
+  h = nhom(goc, 'Thân cần cẩu + móc cẩu + máy quét mã (robot trong ô bệ)');
+  var C0 = { than: 'cau' }, C1 = { than: 'cau', tay: 'moc-cau' }, C2 = { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] };
+  [
+    [C0, {}, 'cau · thường'], [C0, { than: { mat: 'vui' } }, 'cau · mắt vui'], [C0, { than: { ray: true } }, 'cau · chạy trên ray (ray)'], [C0, { than: { ray: 'ngang' } }, 'cau · ray ngang'],
+    [C1, {}, 'cau + moc-cau · móc đơn'], [C1, { tay: { doi: true } }, 'cau + moc-cau · móc đôi (doi)'],
+    [C2, {}, '+ quet-ma · nghỉ'], [C2, { camBien: { bat: true } }, '+ quet-ma · đang quét (bat)'], [C2, { camBien: { can: true } }, '+ quet-ma · nâng cấp cân tải (can)'],
+    [C2, { camBien: { bat: true, can: true }, tay: { doi: true } }, 'quét + cân + móc đôi'], [C2, { huong: 1 }, 'hướng phải'], [{ than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }], son: 'lam' }, { huong: 3 }, 'R2 (sơn lam) · hướng trái']
+  ].forEach(function (r) { hinhRobot(h, r[0], r[1], r[2], nenO('bai-cont')); });
+
+  /* lưới 7 × 7: 8 nấc × 3 tầm */
+  var NAC_TEN = ['lên', 'lên-phải', 'phải', 'xuống-phải', 'xuống', 'xuống-trái', 'trái', 'lên-trái'], DX = [0, 1, 1, 1, 0, -1, -1, -1], DY = [-1, -1, 0, 1, 1, 1, 0, -1];
+  function luoiCau(n, nac, tam, opt) {
+    opt = opt || {};
+    return canvas(7 * n, function (g) {
+      var x, y;
+      for (y = 0; y < 7; y++) for (x = 0; x < 7; x++) g.drawImage(V.o('bai-cont', n * DPR, { le: (x + y) % 2 }), x * n, y * n, n, n);
+      if (opt.chong) opt.chong.forEach(function (c) { var k = n * 0.86; g.drawImage(V.vat(c.cont.length > 1 ? 'chong-cont' : 'container', k * DPR, c.cont.length > 1 ? { cont: c.cont } : { so: c.cont[0].so }), c.x * n + (n - k) / 2, c.y * n + (n - k) / 2, k, k); });
+      var ex = 3 + DX[nac] * tam, ey = 3 + DY[nac] * tam;                                      // ô đích tính ĐỘC LẬP với VeVector.NAC_CAU: khung xanh để soát đầu cần đúng ô
+      g.strokeStyle = BM.vecXanhLa; g.lineWidth = 2; g.strokeRect(ex * n + 2, ey * n + 2, n - 4, n - 4);
+      var r = V.veCanCau(g, { bx: 3.5 * n, by: 3.5 * n, nac: nac, tam: tam, o: n, be: true, cfg: C2, st: { camBien: { bat: !!opt.quet } }, treo: opt.treo, doi: opt.doi, ray: opt.ray });
+      if (opt.quet) V.veTiaQuet(g, { x: r.tx, y: r.ty, o: n, pha: 0.5 });
+    }, 7 * n);
+  }
+  h = nhom(goc, 'Cần cẩu trên lưới 7 × 7 (ô 32 px), bệ ở giữa: đủ 8 nấc × 3 tầm. Khung xanh lá = ô đầu cần tính riêng theo đặc tả (bệ + tầm × hướng nấc).');
+  var TREO = [null, [{ so: 7 }], [{ so: 23 }, { so: 14 }]];
+  for (var tam = 1; tam <= 3; tam++) for (var nac = 0; nac < 8; nac++) {
+    var t = el('div', 'the luoi'), kieu = (nac + tam) % 3, op = { treo: TREO[kieu], doi: kieu === 2, quet: nac === 2 && tam === 2 };
+    t.appendChild(luoiCau(32, nac, tam, op));
+    var p = el('p'); p.innerHTML = '<b>nấc ' + nac + ' (' + NAC_TEN[nac] + ') · tầm ' + tam + '</b> · ' + (kieu === 0 ? 'móc trống' : kieu === 1 ? 'treo 1 container' : 'móc đôi treo 2') + (op.quet ? ' · tia quét' : '');
+    t.appendChild(p); h.appendChild(t);
+  }
+  h = nhom(goc, 'Cảnh cảng ô 48 px và 160 px: tàu cập (T có mặt) / tàu vắng, chồng container, ray, cần treo');
+  [48, 160].forEach(function (n) {
+    var t = el('div', 'the'), W = n === 160 ? 2 : 5, cot = n === 160 ? 2 : 5;
+    var cv = canvas(cot * n, function (g) {
+      var x, y;
+      for (y = 0; y < 4; y++) for (x = 0; x < cot; x++) {
+        var ma = 'bai-cont', s = { le: (x + y) % 2 };
+        if (y === 0) { ma = x < 2 || cot === 2 ? 'boong-tau' : 'nuoc'; s = ma === 'boong-tau' ? { co: true, vien: (x === 0 ? 'l' : '') + 'tb' + (x === 1 || cot === 2 && x === 1 ? 'r' : ''), so: x === 0 ? 1 : 0 } : {}; }
+        if (y === 2) { ma = 'ray'; s = {}; }
+        g.drawImage(V.o(ma, n * DPR, s), x * n, y * n, n, n);
+      }
+      if (cot === 5) { g.drawImage(V.o('boong-tau', n * DPR, {}), 3 * n, 0, n, n); g.drawImage(V.o('boong-tau', n * DPR, {}), 4 * n, 0, n, n); }
+      var k = n * 0.86;
+      g.drawImage(V.vat('chong-cont', k * DPR, { cont: [{ so: 12 }, { so: 35 }, { so: 9 }] }), (cot - 1) * n + (n - k) / 2, 1 * n + (n - k) / 2, k, k);
+      g.drawImage(V.vat('container', k * DPR, { so: 41 }), 0 * n + (n - k) / 2, 0 * n + (n - k) / 2, k, k);
+      if (cot === 5) g.drawImage(V.vat('container', k * DPR, { so: 66 }), 2 * n + (n - k) / 2, 3 * n + (n - k) / 2, k, k);
+      V.veCanCau(g, { bx: (cot === 5 ? 2.5 : 0.5) * n, by: 2.5 * n, nac: cot === 5 ? 7 : 1, tam: cot === 5 ? 2 : 1, o: n, be: true, cfg: C2, ray: 'ngang', treo: [{ so: 58 }] });
+    }, 4 * n);
+    t.appendChild(cv);
+    var p = el('p'); p.innerHTML = '<b>cảnh ô ' + n + ' px</b> · hàng 1: tàu cập (số tàu ở góc) / tàu vắng; giữa: chồng 3 tầng; hàng 3: ray, bệ có giá bánh ray; cần treo container 58';
+    t.appendChild(p); h.appendChild(t);
+  });
+  sanChoiThu();
+  document.body.setAttribute('data-xong', '1');
+}
+/* chữ số container vẽ bằng phông Google Sans Flex: chờ phông nạp xong rồi mới vẽ (không có document.fonts thì vẽ ngay) */
+if (document.fonts && document.fonts.load) document.fonts.load('800 20px "Google Sans Flex"').then(veTrang, veTrang); else veTrang();
+</script>
+</body>
+</html>

@@ -305,7 +305,27 @@
     g('take_off', 'land', 'Drone cất cánh, bay tiếp được'),
     g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì'),
     g('radar', null, 'Hỏi: radar tròn quét lưới 3x3 quanh robot, trả về danh sách 2 chiều'),
-    g('shape', null, 'Hỏi: radar nhận dạng hình khối của vật ở ô chỉ định')
+    g('shape', null, 'Hỏi: radar nhận dạng hình khối của vật ở ô chỉ định'),
+    // BẾN SÔNG (mùa 5): xuồng dùng bộ lệnh bánh (hai chân vịt); thêm neo, dây phao, chong chóng dòng chảy
+    g('anchor', 'unanchor', 'Xuồng thả neo: dòng nước không đẩy được, chân vịt nghỉ tới khi nhổ neo'),
+    g('unanchor', 'anchor', 'Xuồng nhổ neo, chạy tiếp được'),
+    g('tow', 'drop_tow', 'Dây phao: quăng dây thẳng theo mũi (3 ô), kéo bè về trước mũi; trúng van cống thì gạt van'),
+    g('drop_tow', 'tow', 'Dây phao: thả bè đang kéo tại chỗ'),
+    g('tether', 'untether', 'Buộc bè ra sau đuôi xuồng: bè nối đuôi như toa tàu, qua khúc cua không vướng'),
+    g('untether', 'tether', 'Cởi dây, bè ở lại chỗ nó đang nằm'),
+    g('flow_dir', null, 'Hỏi: nước ô trước mũi chảy về đâu so với mũi xuồng ("front", "back", "left", "right", "none")'),
+    g('flow', null, 'Hỏi: nước ô trước mũi chảy về đâu và mạnh bao nhiêu; trả về một cặp (hướng, sức), ví dụ ("back", 2)'),
+    // CẢNG SÔNG (mùa 4): cần cẩu container, mỗi lệnh một nhịp (không cần wait())
+    g('swing_left', 'swing_right', 'Cần cẩu quay cần sang trái một nấc (8 nấc một vòng, nấc 0 là hướng lên)'),
+    g('swing_right', 'swing_left', 'Cần cẩu quay cần sang phải một nấc (8 nấc một vòng)'),
+    g('extend', 'retract', 'Vươn cần xa thêm một ô (tầm 1 đến 3)'),
+    g('retract', 'extend', 'Thu cần về gần một ô (tầm 1 đến 3)'),
+    g('pick_up', 'set_down', 'Móc cẩu nhấc container trên cùng ở ô đầu cần'),
+    g('set_down', 'pick_up', 'Hạ container đang treo xuống đỉnh chồng ở ô đầu cần'),
+    g('pick_up2', null, 'Móc đôi: nhấc một lúc hai container trên cùng, giữ nguyên thứ tự; set_down() hạ cả hai'),
+    g('read_code', null, 'Hỏi: số in trên container trên cùng ở ô đầu cần; không có container thì -1'),
+    g('weight', null, 'Hỏi: cân tải, bao nhiêu tấn đang treo (cộng cả hai nếu treo đôi); không treo thì cân container trên cùng ở đầu cần; không có gì thì 0'),
+    g('rail', null, 'Bệ cẩu chạy dọc ray n ô: n dương chạy xuôi (sang phải / xuống), n âm chạy ngược; mỗi ô một nhịp')
   ];
 
   function tim(ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }

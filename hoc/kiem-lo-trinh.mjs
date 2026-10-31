@@ -30,9 +30,9 @@ const chuongMua2 = new Set(TT.goi.filter(g => g.mua === 'mua-2').flatMap(g => g.
 // che-xich (mùa 3, ẩn): năm màn bậc thang rời mùa 2 nhưng giữ vì che-xich.4 tạo climb() cho gói đội mùa ẩn.
 // Mùa 3 (29/10, KE-HOACH-MUA-3.md, đang dựng) cũng được có chương chưa đủ 10; chương rời mùa 3 (M.roiMua3: doi-xich-bac 8, nam-cham-omni 1) cũng vậy.
 const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.chuong));
-// Mùa 5 Nông trại (trước mã mua-4, 29/10 KE-HOACH-MUA-4.md, đang dựng): chương chưa đủ 10 như mùa 3.
-const chuongMua4 = new Set(TT.goi.filter(g => g.mua === 'mua-5').flatMap(g => g.chuong));
-const chuongMua6 = new Set(TT.goi.filter(g => g.mua === 'mua-6').flatMap(g => g.chuong));
+// Mùa 6 Nông trại (trước mã mua-4, 29/10 KE-HOACH-MUA-4.md, đang dựng): chương chưa đủ 10 như mùa 3.
+const chuongMua4 = new Set(TT.goi.filter(g => g.mua === 'mua-6').flatMap(g => g.chuong));
+const chuongMua6 = new Set(TT.goi.filter(g => g.mua === 'mua-7').flatMap(g => g.chuong));
 // 30/10 (user chọn A): tám màn drone cũ sạc tự động / recharge() dời sang mùa 5 trong hai chương chứa 4 màn (lo-trinh-hoc.js MUA_4_CU).
 const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...chuongMua6, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu', 'che-list-cu', 'che-may-son-cu', 'omni-cu', 'doi-omni-cu', 'che-doi-omni-cu', 'may-nem-xe', 'che-may-nem-xe', 'ban-xoay-cu', 'che-ban-xoay-cu']);
 
@@ -196,7 +196,7 @@ kiem('(a) mùa 1 đúng các gói của bảng, đúng thứ tự, đúng màn; 
   }
   assert.deepEqual(M.manCat, CAT_MUA_1);
   assert.deepEqual(M.danhSach.filter(m => m.chuong === 'che-xich').map(m => m.ma), XICH_CU);
-  assert.equal(goiCuaChuong('che-xich').mua, 'mua-7');     // 29/10 P0 mùa 3: che-xich (bậc thang) rời mùa 3 sang mùa ẩn; 31/10: mùa 7 Hang động (ẩn)
+  assert.equal(goiCuaChuong('che-xich').mua, 'mua-8');     // 29/10 P0 mùa 3: che-xich (bậc thang) rời mùa 3 sang mùa ẩn; 31/10: mùa 8 Hang động (ẩn)
   for (const ma of CAT_MUA_1) assert.equal(get(ma), null, ma + ' phải cất khỏi lộ trình');
   // Bốn màn dùng biến dời mùa 2: nay ở gói 1 chương 2 (bien-xich).
   for (const ma of BIEN_MUA_2) assert.equal(get(ma).chuong, 'bien-xich', ma);
@@ -319,7 +319,7 @@ kiem2('(a) mùa 2 đúng các gói / chương đang có màn theo bảng, đúng
   assert.ok(!mua2.an, 'mùa 2 còn ẩn');
   assert.equal(mua2.ten, 'Nhà máy', 'tên mùa 2');      // 29/10 quy tắc đặt tên: tên mùa = nơi chốn (trước: Ghi nhớ)
   assert.ok(mua2.ban && mua2.ban.gia, 'mùa 2 mất `ban`');
-  for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');      // mùa 3 hiện từ 30/10 (kiểm ở mục mùa 3)
+  for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7', 'mua-8', 'mua-9']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');      // mùa 3 hiện từ 30/10 (kiểm ở mục mùa 3)
   let tr = 0;
   for (const g of goiMua('mua-2')) {
     assert.equal(g.sao, Math.floor(0.5 * tr / 5) * 5, g.ma + ' ngưỡng ' + g.sao + ' khác công thức');
@@ -514,13 +514,13 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   // Gói ngoài khuôn: đầu mùa 4, giữ thứ tự cũ, trước các gói mùa 4 cũ; chương rời của MUA_3 đúng màn.
   // P0 mùa 4 (29/10): gói ngoài khuôn của mùa 3 dời tiếp sang đầu mùa 5; gói đã vào MUA_4 (drone, may-son, mau, flycam, doi-nam-cham) và list (chương vào gói drone) không còn ở đây.
   const vaoMua4 = new Set((M.mua4 || []).map(g => g.ma).concat(['list']));
-  const vaoMua6 = new Set(goiMua('mua-6').map(g => g.ma));
+  const vaoMua6 = new Set(goiMua('mua-7').map(g => g.ma));
   const ROI_3_CON = ROI_3_GOI.filter(ma => !vaoMua4.has(ma)).map(ma => vaoMua6.has(ma) ? ma + '-cu' : ma);
-  const g4 = goiMua('mua-7').map(g => g.ma);
-  assert.deepEqual(g4.slice(0, ROI_3_CON.length), ROI_3_CON, 'đầu mùa 7');
-  assert.equal(goiMua('mua-7')[0].sao, 0, 'gói đầu mùa 7 cần 0 sao');
+  const g4 = goiMua('mua-8').map(g => g.ma);
+  assert.deepEqual(g4.slice(0, ROI_3_CON.length), ROI_3_CON, 'đầu mùa 8');
+  assert.equal(goiMua('mua-8')[0].sao, 0, 'gói đầu mùa 8 cần 0 sao');
   assert.deepEqual(Object.keys(M.roiMua3).map(c => [c, M.danhSach.filter(m => m.chuong === c).map(m => m.ma)]), Object.entries(M.roiMua3), 'chương rời mùa 3');
-  for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-7', c);
+  for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-8', c);
 });
 kiem3('(b) không màn nào trước gói 1 chương 2 mùa 3 (chuoi-nhen) dùng chuỗi làm dữ liệu (bắc cầu qua hàm của em); spray("low") vẫn được', () => {
   const moc = mocChuong3('chuoi-nhen'), sai = [];
@@ -822,7 +822,7 @@ const PART_4 = { than: ['hai-banh', 'xich', 'nhen', 'drone'], tay: ['kep', 'xoay
   camBien: ['khoang-cach', 'hong-ngoai', 'cam-ung-tu', 'tu', 'mau', 'camera', 'camera-bay', 'camera-4', 'pin'] };      // camera-4: camera bốn hướng (P1 mùa 4)
 // Lệnh của part ngoài mùa 4 (omni, máy ném, bánh gai, loa, âm thanh): không được gọi, kể cả qua hàm của em; không có trên khay.
 const CAM_4 = ['slide_left', 'slide_right', 'aim', 'throw', 'load', 'beat', 'note', 'listen', 'spike', 'retract'];
-const goi4 = () => goiMua('mua-5');
+const goi4 = () => goiMua('mua-6');
 const chuongMua4Nay = () => new Set(goi4().flatMap(g => g.chuong));
 const manMua4 = () => M.danhSach.filter(m => chuongMua4Nay().has(m.chuong));
 /** Vị trí (trong danhSach) màn đầu của gói thứ k (1–10) của MUA_4, hay của gói có màn đầu tiên sau nó; hết mùa 4 thì màn đầu sau mùa 4. */
@@ -844,16 +844,16 @@ if (LOI_GIA_4) {
   get('may-son.1').hamGoc = (get('may-son.1').hamGoc || []).concat(['pen_down']);
   const d1 = get('drone.1'); d1.san = Array.isArray(d1.san[0]) ? d1.san.map(s => s.map((r, i) => i === 0 ? 'P' + r.slice(1) : r)) : d1.san.map((r, i) => i === 0 ? 'P' + r.slice(1) : r);
 }
-kiem4('(a) mùa 5 Nông trại (MUA_4) đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_4 khai đủ 10 gói × 2 chương, đúng loại; mùa 4–7 ẩn; gói cũ ngoài khuôn ở mùa 7', () => {
+kiem4('(a) mùa 6 Nông trại (MUA_4) đúng các gói / chương đang có màn theo bảng, đúng thứ tự màn; MUA_4 khai đủ 10 gói × 2 chương, đúng loại; mùa 4–9 ẩn; gói cũ ngoài khuôn ở mùa 8', () => {
   assert.deepEqual(M.mua4.map(g => [g.ma, g.loai, g.chuong.map(c => c[0])]), BANG_MUA_4.map(([ma, loai, ds]) => [ma, loai, ds.map(c => c[0])]), 'MUA_4 khác bảng');
   assert.deepEqual(goi4().map(g => [g.ma, g.chuong]), goi4Bang.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'gói / chương mùa 4');
   for (const [, ds] of goi4Bang) for (const [c, dsMa] of ds) assert.deepEqual(M.danhSach.filter(m => m.chuong === c).map(m => m.ma), dsMa, c);
   for (const m of moiMua4) assert.ok(BANG_MUA_4.some(([, , ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
-  for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
+  for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7', 'mua-8', 'mua-9']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
   for (const g of goi4()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 4 đang dựng: tự tính)');
-  assert.equal(TT.goi.find(g => g.ma === 'omni').mua, 'mua-6', 'omni phải ở mùa 6');
-  for (const ma of ['may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.ok(['mua-6', 'mua-7'].includes(TT.goi.find(g => g.ma === ma).mua), ma + ' phải ở mùa 6 hoặc 7');
-  assert.equal(goiMua('mua-7')[0].sao, 0, 'gói đầu mùa 7 cần 0 sao');
+  assert.equal(TT.goi.find(g => g.ma === 'omni').mua, 'mua-7', 'omni phải ở mùa 7');
+  for (const ma of ['may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.ok(['mua-7', 'mua-8'].includes(TT.goi.find(g => g.ma === ma).mua), ma + ' phải ở mùa 7 hoặc 8');
+  assert.equal(goiMua('mua-8')[0].sao, 0, 'gói đầu mùa 8 cần 0 sao');
 });
 kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải; cả 10 gói mùa 4 đúng R1 drone nông nghiệp', () => {
   for (const m of manMua4()) {

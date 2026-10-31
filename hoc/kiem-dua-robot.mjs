@@ -202,7 +202,7 @@ kiem('Gói Đua đối kháng ở mùa 4, ngay sau gói Lắp ráp: Đủ bộ, 
   const TT = require('./thu-tu-chuong.js');
   const i = TT.goi.findIndex((g) => g.ma === 'dua-robot');
   assert.ok(i > 0, 'không có gói dua-robot');
-  assert.equal(TT.goi[i].mua, 'mua-7');      // P0 mùa 4 (29/10) + 31/10: gói cũ ngoài khuôn dời sang mùa 7 (ẩn)
+  assert.equal(TT.goi[i].mua, 'mua-8');      // P0 mùa 4 (29/10) + 31/10: gói cũ ngoài khuôn dời sang mùa 8 (ẩn)
   assert.ok(TT.goi[i - 1].chuong.includes('rap-du'), 'gói trước là ' + TT.goi[i - 1].ma);
   const iCoChe = TT.goi.findIndex((g) => g.chuong.includes('ban-xoay'));
   assert.ok(iCoChe >= 0 && iCoChe < i, 'Sân cơ khí phải đứng trước');

@@ -11,7 +11,7 @@ const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const VR = require('./game/ve-robot.js');
 
-const XONG = new Set(['mua-1', 'mua-2', 'mua-3', 'mua-5', 'mua-6']);      // mùa 1–3, 5, 6 đã dựng lại xong (mua-1: PDM1; mua-2: PDM2c2; mua-3: PDM3b2; mua-5 Nông trại: PDM4c; mua-6 Mỏ đá: PDM6c)
+const XONG = new Set(['mua-1', 'mua-2', 'mua-3', 'mua-6', 'mua-7']);      // mùa 1–3, 6, 7 đã dựng lại xong (mua-1: PDM1; mua-2: PDM2c2; mua-3: PDM3b2; mua-6 Nông trại: PDM4c; mua-7 Mỏ đá: PDM6c)
 const CHI_TIET = process.argv.includes('--chi-tiet');
 const LOI_GIA = process.argv.includes('--loi-gia');
 
@@ -20,13 +20,15 @@ const MUA = {
   'mua-1': { than: 'hai-banh', tay: g => g < 2 ? [] : g < 6 ? ['kep'] : ['xoay'], cam: g => g < 3 ? [] : ['khoang-cach'], goiDoi: [8, 9] },
   'mua-2': { than: 'xich', tay: g => g < 2 ? [] : ['hoi'], cam: g => g < 3 ? [] : ['hong-ngoai'], goiDoi: [9] },
   'mua-3': { than: 'nhen', tay: g => g < 2 ? [] : ['nam-cham'], cam: g => g < 3 ? [] : ['tu'], goiDoi: [9] },
-  'mua-5': { than: 'drone', tay: g => g < 2 ? [] : ['son'], cam: g => g < 3 ? [] : ['camera-4'], goiDoi: [9] },
-  'mua-6': { than: 'omni', tay: g => g < 2 ? [] : ['nem'], cam: g => g < 3 ? [] : ['radar'], goiDoi: [9] }
+  'mua-4': { than: 'cau', tay: g => g < 2 ? [] : ['moc-cau'], cam: g => g < 3 ? [] : ['quet-ma'], goiDoi: [9] },
+  'mua-5': { than: 'xuong', tay: g => g < 2 ? [] : ['day-keo'], cam: g => g < 3 ? [] : ['dong-chay'], goiDoi: [9] },
+  'mua-6': { than: 'drone', tay: g => g < 2 ? [] : ['son'], cam: g => g < 3 ? [] : ['camera-4'], goiDoi: [9] },
+  'mua-7': { than: 'omni', tay: g => g < 2 ? [] : ['nem'], cam: g => g < 3 ? [] : ['radar'], goiDoi: [9] }
 };
 const THU_MUA = Object.keys(MUA);
-const THAN_LOAI = { banh: 'hai-banh', nhen: 'nhen', xich: 'xich', omni: 'omni', drone: 'drone' };
+const THAN_LOAI = { banh: 'hai-banh', nhen: 'nhen', xich: 'xich', omni: 'omni', drone: 'drone', cau: 'cau', xuong: 'xuong' };
 // Cảm biến suy từ khay lệnh (màn cũ không khai man.robot.camBien).
-const CAM_THEO_LENH = { front_clear: 'khoang-cach', left_clear: 'khoang-cach', right_clear: 'khoang-cach', distance: 'hong-ngoai', warm: 'hong-ngoai', front_metal: 'tu', front_pole: 'tu', radar: 'radar', shape: 'radar' };
+const CAM_THEO_LENH = { front_clear: 'khoang-cach', left_clear: 'khoang-cach', right_clear: 'khoang-cach', distance: 'hong-ngoai', warm: 'hong-ngoai', front_metal: 'tu', front_pole: 'tu', scan_weight: 'quet-ma', scan_tag: 'quet-ma', flow: 'dong-chay', gate_open: 'dong-chay', radar: 'radar', shape: 'radar' };
 
 /** { than, tay, cam: [mã] } của một robot (cấu hình màn hay một phần tử man.doi). */
 function partCua(man, r) {

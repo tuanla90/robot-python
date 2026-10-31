@@ -71,10 +71,12 @@
       { ma: 'mua-2', ten: 'Ghi nhớ', ban: { gia: '49.000đ' } },
       // Mùa 3 "Bãi tái chế" (trước: Mỏ quặng) đủ 10 gói × 20 màn (30/10, user cho chơi thử): hiện ở màn chọn gói.
       { ma: 'mua-3', ten: 'Công cụ', ban: { gia: '49.000đ' } },
-      { ma: 'mua-4', ten: 'Bến sông', ban: { gia: '49.000đ' }, an: true },
-      { ma: 'mua-5', ten: 'Nông trại', ban: { gia: '49.000đ' }, an: true },
-      { ma: 'mua-6', ten: 'Mỏ đá', ban: { gia: '49.000đ' }, an: true },
-      { ma: 'mua-7', ten: 'Hang động', ban: { gia: '49.000đ' }, an: true }      // 31/10: gói cũ chưa thuộc mùa 1–6 (omni, máy ném, lắp ráp, đua, đội…) chờ dựng mùa 6–8
+      { ma: 'mua-4', ten: 'Cảng sông', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-5', ten: 'Bến sông', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-6', ten: 'Nông trại', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-7', ten: 'Mỏ đá', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-8', ten: 'Hang động', ban: { gia: '49.000đ' }, an: true },      // 31/10: gói cũ chưa thuộc mùa 1–7 (lắp ráp, đua, đội…) chờ dựng mùa 8–9
+      { ma: 'mua-9', ten: 'CLB', ban: { gia: '49.000đ' }, an: true }
     ],
     goi: [
       { ma: 'xe', ten: 'Xe hai bánh', sao: 0, chuong: ['hai-banh'] },
