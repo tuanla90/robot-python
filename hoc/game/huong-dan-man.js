@@ -753,12 +753,12 @@
   H['che-doc-cuc.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm catch() tự đọc chữ trên vật rồi bật cực khác để kéo.');
   H['che-doc-cuc.2'] = [buocTaoHam('sort_drop', 'Bấm Hàm mới, đặt tên sort_drop và thêm đối số p.', CHU_TAO)].concat(buocThuVeChay('p là "N" thì rẽ trái, không thì rẽ phải, rồi thả. Bấm Chạy.'));
 
-  // MÙA 3 gói 4: đệm từ (bai-tu.1 trình diễn), hàm cho bãi từ (che-bai-tu.1 trình diễn; .2 fetch_iron(n), .4 loop_right(k), .7 pull_iron)
-  H['bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đi ngang đệm S, xe bị kéo lên hàng trên đúng tới lá cờ.');
-  H['che-bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: get_iron(3) bật N, đi qua đệm, hút sắt rồi quay về.');
-  H['che-bai-tu.2'] = [buocTaoHam('fetch_iron', 'Bấm Hàm mới, đặt tên fetch_iron và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n(), đi n ô, u_turn(), đi n ô. Chương trình gọi nó hai lần, mỗi lần một số ô. Bấm Chạy.'));
-  H['che-bai-tu.4'] = [buocTaoHam('loop_right', 'Bấm Hàm mới, đặt tên loop_right và thêm đối số k.', CHU_TAO)].concat(buocThuVeChay('Ba lần: rẽ phải, đi k ô. Bấm Chạy.'));
-  H['che-bai-tu.7'] = [buocTaoHam('pull_iron', 'Bấm Hàm mới để tạo pull_iron().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait(), move(), magnet_n(), wait(). Bấm Chạy.'));
+  // MÙA 3 gói 4 (PDM3a 31/10: đệm từ với nhện): bai-tu.1 trình diễn; che-bai-tu.1 trình diễn hàm của màn; .2 detour(n), .4 call_out, .7 shield_run(n)
+  H['bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đi ngang cột đệm S, nhện bị kéo lên hàng trên đúng tới lá cờ.');
+  H['che-bai-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: go_wide() xuống một hàng, đi bốn ô xa đệm rồi lên lại thùng.');
+  H['che-bai-tu.2'] = [buocTaoHam('detour', 'Bấm Hàm mới, đặt tên detour và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: go_down(), đi n ô sang phải, go_up(). Bấm Chạy.'));
+  H['che-bai-tu.4'] = [buocTaoHam('call_out', 'Bấm Hàm mới để tạo call_out().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait(), go_right(), go_right(), magnet_n(), wait(). Bấm Chạy.'));
+  H['che-bai-tu.7'] = [buocTaoHam('shield_run', 'Bấm Hàm mới, đặt tên shield_run và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi for i in range(n): go_right(). Bấm Chạy.'));
   // MÙA 3 gói 8: đội xích và nhện (doi-xich.11 trình diễn; che-doi-xich.11 trình diễn hàm rest; .12 wait_n(n), .14 pass_box, .15 hop_drop(d))
   H['doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hai robot chạy cùng nhịp, mỗi robot tới cờ của mình.');
   H['che-doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện gọi rest(2) chờ xích qua ngã tư rồi mới đi.');
@@ -777,5 +777,5 @@
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2,
     'che-cam-bien.5': 2, 'che-cam-bien.6': 2,       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
-    'nam-cham.11': 2, 'logic-nam-cham.1': 2, 'cam-ung-tu.1': 2, 'cam-ung-tu.2': 2, 'che-cam-ung-tu.1': 2, 'che-cam-ung-tu.2': 2, 'che-cam-ung-tu.3': 2, 'che-cam-ung-tu.6': 2 };       // PDM3a 31/10: gói 2–3 mùa 3 trên nhện + nam châm bụng (+ cảm biến từ)
+    'nam-cham.11': 2, 'logic-nam-cham.1': 2, 'cam-ung-tu.1': 2, 'cam-ung-tu.2': 2, 'che-cam-ung-tu.1': 2, 'che-cam-ung-tu.2': 2, 'che-cam-ung-tu.3': 2, 'che-cam-ung-tu.6': 2, 'bai-tu.1': 2, 'che-bai-tu.1': 2, 'che-bai-tu.2': 2, 'che-bai-tu.4': 2, 'che-bai-tu.7': 2 };       // PDM3a 31/10: gói 2–4 mùa 3 trên nhện + nam châm bụng (+ cảm biến từ, đệm từ)
 })();

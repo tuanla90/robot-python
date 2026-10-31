@@ -54,6 +54,7 @@ NHIEU_SAN_KHONG_TRUM.push('che-cam-bien.5', 'che-cam-bien.9', 'robot-hoan-thien.
 NHIEU_SAN_KHONG_TRUM.push('logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'logic-nam-cham.6', 'logic-nam-cham.7',
   'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.5', 'cam-ung-tu.6', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9',      // PDM3a: cam-ung-tu.7 (sửa vòng dò) hai bãi
   'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.8', 'che-cam-ung-tu.9', 'che-dao-cuc.8',
+  'bai-tu.9', 'che-bai-tu.2', 'che-bai-tu.7',      // PDM3a gói 4: màn sửa đường / tạo detour(n) / shield_run(n) hai bãi (đệm ở cột khác nhau)
   'doc-cuc.2', 'doc-cuc.3', 'doc-cuc.4', 'doc-cuc.5', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'che-doc-cuc.2', 'che-doc-cuc.3',
   'tong-hop-3.2', 'tong-hop-3.5', 'tong-hop-3.8', 'trum-mua-3.1');      // gói 10: màn ôn dò sắt, đọc cực, and / or nhiều sân      // gói 7: màn ép đọc cực nhiều sân      // gói 3: màn ép dò sắt, hàm dò sắt nhiều sân
 // mùa 4 gói 4 Phố màu (30/10): màn đọc camera bốn hướng có hai sân khác màu để chương trình viết cứng không qua (như HD1)
