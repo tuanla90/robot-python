@@ -255,4 +255,31 @@
       }
     }
   ]);
+
+  /* ================================================================ 9. doi-cang — Đội cẩu và nhện */
+  var NHEN_R2 = { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' };
+  PG.dangKy('doi-cang', [
+    { Chu: ['Trên đường ray và bãi cảng còn vương sắt vụn và nam châm từ tính.', 'Robot nhện nam châm bụng R2 của Luna ra sân phối hợp cùng cần cẩu R1!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veV('container', { so: 18, mau: 'cam' }, 1.5), 1, 2);
+        dat(s, may(CAU_QUET, { nac: 4, tam: 1, camBien: { bat: true } }, 0), 1, 1);
+        dat(s, may(NHEN_R2, { camBien: { bat: true } }, 1), 2, 1);
+      }
+    },
+    { Chu: ['R2 hút sắt và nam châm dưới bụng rồi bước khỏi đường ray.', 'Nhờ đó R1 trượt dọc ray thông suốt và giao container lên tàu đúng nhịp!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('boong-tau', { co: true }), 2, 0);
+        dat(s, veV('container', { so: 18, mau: 'cam' }, 1.5), 2, 0);
+        dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
+        dat(s, may(NHEN_R2, { camBien: { bat: true } }, 1), 3, 2);
+        m.appendChild(code('clear_rail("D")\nslide_load(1, 4)'));
+      }
+    }
+  ]);
 })();

@@ -631,6 +631,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.vat('container', { so: 18, mau: 'cam' }, 66, 36, 14);
     c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 32, 64, 34);
   }));
+  dk('doi-cang', function (g, c) {
+    c.robot(CAU_QUET, st({ nac: 1, tam: 1 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 48, 34);
+    c.robot({ than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' }, st({}, {}, { bat: true }), 1, 66, 62, 30);
+  });
+  dk('che-doi-cang', che(function (g, c) {
+    c.robot(CAU_QUET, st({ nac: 1, tam: 1 }, { kep: 'dong', cam: true }, { bat: true }), 0, 32, 48, 32);
+    c.robot({ than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' }, st({}, {}, { bat: true }), 1, 64, 62, 28);
+  }));
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
