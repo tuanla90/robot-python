@@ -13,7 +13,7 @@ R1 không bao giờ mang part mùa khác; tự lắp tuỳ ý để mùa 7. User
 - Xem game: `.claude/launch.json` của worktree, cấu hình `game-part-dung-mua` cổng 4199; vào thẳng màn: `choi.html?debug=1&man=<mã>&loigiai=1`.
 
 ## Đã xong (nghiệm thu: Claude tự chạy `npm test` cả bộ 106/106 đạt sau mùa 2, commit 17effe8)
-- **Mùa 1:** từ gói 7 R1 tay kẹp → tay xoay; gói 10 (20 màn) mỗi màn 3 ngày (PDM1). Mùa 1 giữ gói 8 Gặp R2, gói 9 Nhìn bên nhặt bên (không có mùa trước).
+- **Mùa 1:** từ gói 7 R1 tay kẹp → tay xoay; gói 10 (20 màn) mỗi màn 3 ngày (PDM1), cả 20 màn tính TỔNG nhịp mọi ngày (`nhipTheo: 'tong'`) và đã qua bộ dò `dayChung` (không dãy cố định không cảm biến nào thắng cả 3 ngày trong `sao.nhip`). Mùa 1 giữ gói 8 Gặp R2, gói 9 Nhìn bên nhặt bên (không có mùa trước).
 - **Mùa 2:** cả 10 gói trên xe cứu hỏa (xích + vòi + hồng ngoại). Gói 1 biến thành "Đi xoắn ốc"; băng chuyền thành "Canh băng chở thùng" (lõi mới `man.thungThem`);
   gói 8 MỚI "Góc kho cũ" (kho-cu); gói 9 "R2 trở lại" (R2 = xe chở hàng mùa 1); gói 10 "Dập lửa" một robot nhiều sân. Bệ vòi xích và gói Đội cũ cất ra mùa ẩn (không xoá).
 - **Lõi:** nhện gắn được cảm biến từ, đo theo cạnh trước cố định (hướng xuất phát), hình nhện quay theo; `thungThem`; luật lắp ráp theo đó.
@@ -34,7 +34,7 @@ R1 không bao giờ mang part mùa khác; tự lắp tuỳ ý để mùa 7. User
   - Xoá `CAP_HAM_CU_4`, nâng `GOI_SIET_4 = 10`, thêm `'drone-ke-vach'` vào `GOI_NHIEU_SAN`, khóa `'mua-4'` vào `XONG` trong `kiem-part-mua.mjs` (`0 màn sai luật part` cho cả mùa 1–4).
 
 ## Còn phải làm (lần lượt)
-1. Mùa 1 gói 10 đổi sang tính TỔNG nhịp mọi sân (PDM2c2 phát hiện: tính theo sân dài nhất thì dãy viết cứng vẫn 3 sao) + chạy bộ dò dayChung.
+1. ~~Mùa 1 gói 10 đổi sang tính TỔNG nhịp mọi sân (PDM2c2 phát hiện: tính theo sân dài nhất thì dãy viết cứng vẫn 3 sao) + chạy bộ dò dayChung.~~ **Đã xong:** cả 20 màn gói 10 mùa 1 (`robot-hoan-thien` + `trum-mua-1`) đã chuyển sang `nhipTheo: 'tong'`, cập nhật tay ngưỡng `sao.nhip` trong `lo-trinh-sao.js` và `man-trum-mua-1.js`, dời thùng đỏ ngày 1 của `robot-hoan-thien.4` lên `(1,1)` (`sao.nhip: 74`), khóa `GOI_NHIEU_SAN` bắt buộc `nhipTheo === 'tong'` trong `kiem-lo-trinh.mjs`, và chạy bộ dò `dayChung` đạt 100% (`dc === null` trên cả 20 màn gói 10 mùa 1 và 10 màn ngân hàng `man-robot-hoan-thien.js`).
 2. Sau cùng: gộp main (báo các phiên khác trước: phiên Phim CLB đang dựa danh sách gói mới), cập nhật KE-HOACH-7-MUA.md bảng bố cục gói 8–10.
 
 ## Bài học

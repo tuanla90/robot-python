@@ -1722,15 +1722,14 @@
 
   // ---------------------------------------------------------------- PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình"
   // R1 xuất xưởng ở lại kho làm việc bằng mật lệnh đã viết: MỌI màn của gói nhiều sân, mỗi sân là một "ngày làm việc" (thùng / hốc / cửa ở chỗ khác),
-  // một chương trình đúng mọi ngày; lời đếm cứng của một ngày nằm trong loiSai (thua ở ngày khác). Nhịp sao theo ngày DÀI NHẤT (bỏ nhipTheo 'tong'
-  // của ngân hàng) để đường cong nhịp trong chương không nhảy gấp ba; hai trùm (robot-hoan-thien.11, trum-mua-1.10) giữ 'tong'.
+  // một chương trình đúng mọi ngày; lời đếm cứng của một ngày nằm trong loiSai (thua ở ngày khác). Nhịp sao tính TỔNG mọi ngày (nhipTheo: 'tong') ở cả 20 màn.
   // robot-hoan-thien.1–6: lấy lại ba sân của ngân hàng (cùng lời giải, đã dùng cảm biến); .7, .8 (bài viết lại ở thay() trên) thêm ngày.
   (function () {
     var NGAY = ' Mỗi ngày kho xếp khác: viết một chương trình chạy đúng mọi ngày.';
     function nhieuNgay(ma, ds) {
       var m = get(ma), g = nguon[ma];
       ['san', 'batDau', 'bongMo', 'vatMau'].forEach(function (k) { if (g[k] !== undefined) m[k] = copy(g[k]); });
-      delete m.nhipTheo;
+      m.nhipTheo = 'tong';
       Object.assign(m, ds);
       m.phienBanNoiDung = 2;
     }
@@ -1791,7 +1790,7 @@
         goiY: ['Nhặt thùng trước mặt, tiến vào chỗ trống của nó, quay trái rồi thả, quay lại hướng cũ.', 'Hết thùng thì ô trước mặt trống: while not front_clear() tự dừng, ngày nào cũng đúng.']
       });
     })();
-    ['robot-hoan-thien.7', 'robot-hoan-thien.8'].forEach(function (ma) { delete get(ma).nhipTheo; get(ma).phienBanNoiDung = 2; });
+    ['robot-hoan-thien.7', 'robot-hoan-thien.8'].forEach(function (ma) { get(ma).nhipTheo = 'tong'; get(ma).phienBanNoiDung = 2; });
   })();
 
   // ---------------------------------------------------------------- GÓI T MÙA 2 (29/10, user "show don't tell", đúng việc HD1 / HD2 đã làm cho mùa 1)

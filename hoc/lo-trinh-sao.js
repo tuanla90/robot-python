@@ -407,19 +407,19 @@
   },
   "robot-hoan-thien.1": {
     "o": 23,
-    "nhip": 11
+    "nhip": 30
   },
   "robot-hoan-thien.2": {
     "o": 28,
-    "nhip": 11
+    "nhip": 30
   },
   "robot-hoan-thien.3": {
     "o": 21,
-    "nhip": 10
+    "nhip": 25
   },
   "robot-hoan-thien.4": {
     "o": 40,
-    "nhip": 26
+    "nhip": 74
   },
   "robot-hoan-thien.5": {
     "o": 28,
@@ -427,15 +427,15 @@
   },
   "robot-hoan-thien.6": {
     "o": 28,
-    "nhip": 13
+    "nhip": 33
   },
   "robot-hoan-thien.7": {
     "o": 27,
-    "nhip": 12
+    "nhip": 26
   },
   "robot-hoan-thien.8": {
     "o": 31,
-    "nhip": 27
+    "nhip": 61
   },
   "cam-bien-ben.10": {
     "o": 20,

@@ -68,9 +68,8 @@
       m.loaiRobot = R.loaiRobot; m.robot = sao(R.robot); m.hamGoc = R.hamGoc.slice();
     }
     if (Array.isArray(m.san[0])) {
-      // PDM1 (31/10): mọi màn gói 10 nhiều sân ("ngày làm việc"); nhịp sao theo ngày DÀI NHẤT (mặc định của cham.js) để đường cong nhịp chương không nhảy,
-      // riêng hai trùm (robot-hoan-thien.11, trum-mua-1.10) tính TỔNG mọi ngày như trước.
-      if (m.hang === 'trum') m.nhipTheo = 'tong';
+      // PDM1 + PDM2c2 (31/10): mọi màn gói 10 nhiều sân ("ngày làm việc"), tính TỔNG nhịp mọi ngày (nhipTheo: 'tong') để dãy cố định thừa nhịp mất sao.
+      m.nhipTheo = 'tong';
       if (!bd && !Array.isArray(m.batDau)) m.batDau = m.san.map(function () { return Object.assign({}, m.batDau); });
     }
     m.taoHam = [];
@@ -182,7 +181,7 @@
       san: [['#####', '##.D#', '#..##', '#..##', '#o.##', '#####'], ['#####', '##.D#', '#..##', '#o.##', '#..##', '#####'], ['#####', '##.D#', '#o.##', '#..##', '#..##', '#####']],
       batDau: { x: 2, y: 2, huong: 0 },
       maMau: { chinh: ['pick_left()', 'go_wall()', 'drop_right()'] },
-      sao: { o: 27, nhip: 8 },
+      sao: { o: 27, nhip: 18 },
       loiGiai: { chinh: L_1 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# lùi tới khi bên trái có thùng'].concat(L_1) } },
       loiSai: [
@@ -202,7 +201,7 @@
       san: [['#####', '##o##', '##.##', '##.##', '##.D#', '##.##', '#####'], ['#####', '##o##', '##.##', '##.D#', '##.##', '##.##', '#####'], ['#####', '##o##', '##.##', '##.##', '##.##', '##.D#', '#####']],
       batDau: { x: 2, y: 5, huong: 0 },
       maMau: { chinh: ['go_wall()', 'pick()'] },
-      sao: { o: 25, nhip: 9 },
+      sao: { o: 25, nhip: 24 },
       loiGiai: { chinh: L_2 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['go_wall()', 'pick()', '# lùi tới hốc đích'].concat(WHILE('not right_clear()', ['back()']), ['drop_right()']) } },
       loiSai: [
@@ -220,7 +219,7 @@
       san: [['#####', '##..#', '#D.o#', '##..#', '#D.o#', '#####'], ['#####', '##..#', '##..#', '#D.o#', '#D.o#', '#####'], ['#####', '#D.o#', '##..#', '#D.o#', '##..#', '#####']],
       batDau: { x: 2, y: 1, huong: 0 },
       maMau: { chinh: C_3, hamCuaMan: [H('seek', SEEK_LOI)] },
-      sao: { o: 23, nhip: 10 },
+      sao: { o: 23, nhip: 29 },
       loiGiai: { chinh: C_3, hamCuaMan: [H('seek', SEEK)] },
       loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_3, hamCuaMan: [H('seek', ['# lùi khi kệ phải còn trống'].concat(SEEK))] } },
       loiSai: [
@@ -238,7 +237,7 @@
       veMaMau: 'Chương trình chính bị khóa: deliver(), rồi go_wall() về đầu làn. Thân deliver() còn trống (pass): viết nó trong Xưởng hàm.',
       san: SAN_4, batDau: BD_4, bongMo: BM_4,
       maMau: { chinh: C_4, hamCuaMan: [H('deliver', ['pass'])] },
-      sao: { o: 31, nhip: 10 },
+      sao: { o: 31, nhip: 25 },
       loiGiai: { chinh: C_4, hamCuaMan: [H('deliver', RELAY)] },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_4, hamCuaMan: [H('deliver', ['# nhận bên trái, giao bên phải'].concat(RELAY))] } },
       loiSai: [
@@ -258,7 +257,7 @@
         ['#####', '##o##', '##.##', '##.##', '##.M#', '##C##', '##F##', '#####']],
       batDau: { x: 2, y: 2, huong: 0 },
       maMau: { chinh: ['pick()'] },
-      sao: { o: 29, nhip: 10 },
+      sao: { o: 29, nhip: 29 },
       loiGiai: { chinh: L_5 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['pick()', '# lùi tới nút đè'].concat(L_5.slice(1)) } },
       loiSai: [
@@ -277,7 +276,7 @@
       san: [['##o##', '##.##', '##o##', '#D.##', '#D.##', '#####'], ['##o##', '##.##', '##.##', '##o##', '#D.##', '#D.##', '#####'], ['##o##', '##o##', '##.##', '#D.##', '#D.##', '#####']],
       batDau: [{ x: 2, y: 3, huong: 0 }, { x: 2, y: 4, huong: 0 }, { x: 2, y: 2, huong: 0 }],
       maMau: { chinh: C_6, hamCuaMan: [H('stash', ['pass'])] },
-      sao: { o: 27, nhip: 14 },
+      sao: { o: 27, nhip: 39 },
       loiGiai: { chinh: C_6, hamCuaMan: [H('stash', STASH)] },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6, hamCuaMan: [H('stash', ['# lùi tới hốc trống'].concat(STASH))] } },
       loiSai: [
@@ -296,7 +295,7 @@
         ['##F##', '##.##', '##.##', '##C##', '#o.##', '##.##', '##.##', '##.M#', '#####']],
       batDau: [{ x: 2, y: 4, huong: 0 }, { x: 2, y: 3, huong: 0 }, { x: 2, y: 4, huong: 0 }],
       maMau: { chinh: ['pick_left()'] },
-      sao: { o: 27, nhip: 14 },
+      sao: { o: 27, nhip: 35 },
       loiGiai: { chinh: L_7 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['pick_left()', '# lùi tới nút đè'].concat(L_7.slice(1)) } },
       loiSai: [
@@ -316,7 +315,7 @@
         ['#####', '#####', '#####', '##D##', '##..o', '##.##', '#..##', '##.##', '#####']],
       batDau: [{ x: 2, y: 8, huong: 0 }, { x: 2, y: 8, huong: 0 }, { x: 2, y: 7, huong: 0 }],
       maMau: { chinh: ['to_gap()', 'turn_right()', 'go_wall()', 'pick()'] },
-      sao: { o: 31, nhip: 11 },
+      sao: { o: 31, nhip: 31 },
       loiGiai: { chinh: L_8 },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: ['# tìm cửa phải'].concat(L_8) } },
       loiSai: [
@@ -339,7 +338,7 @@
         [{ nut: { x: 1, y: 6 }, cua: [{ x: 2, y: 4 }] }, { nut: { x: 3, y: 3 }, cua: [{ x: 2, y: 1 }] }],
         [{ nut: { x: 1, y: 7 }, cua: [{ x: 2, y: 5 }] }, { nut: { x: 1, y: 3 }, cua: [{ x: 2, y: 1 }] }]],
       maMau: { chinh: C_9, hamCuaMan: [H('clear_way', CLEAR_LOI)] },
-      sao: { o: 33, nhip: 16 },
+      sao: { o: 33, nhip: 46 },
       loiGiai: { chinh: C_9, hamCuaMan: [H('clear_way', CLEAR)] },
       loiGiaiKhac: { moTa: 'Cùng cách sửa, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9, hamCuaMan: [H('clear_way', ['# đặt sang bên có nút'].concat(CLEAR))] } },
       loiSai: [

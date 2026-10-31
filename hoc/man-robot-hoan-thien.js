@@ -135,20 +135,20 @@
     { x: 1, y: 4, huong: 1, vat: [{ x: 2, y: 4 }] }
   ];
 
-  // 4: thùng đỏ A chắn hành lang ở (1,2) / (1,3) / (1,4), thùng xanh B ở bên phải chỗ xe dừng sát A; xe ở (1,6) quay lên. Sau khi đổi: B ở (1,ya), A ở (2,ya+1); xe về (1,6) quay xuống
+  // 4: thùng đỏ A chắn hành lang ở (1,1) / (1,3) / (1,4), thùng xanh B ở bên phải chỗ xe dừng sát A; xe ở (1,6) quay lên. Sau khi đổi: B ở (1,ya), A ở (2,ya+1); xe về (1,6) quay xuống
   var SAN_4 = [
-    ['####', '#.##', '#o##', '#.o#', '#.##', '#.##', '#.##'],
+    ['####', '#o##', '#.o#', '#.##', '#.##', '#.##', '#.##'],
     ['####', '####', '#.##', '#o##', '#.o#', '#.##', '#.##'],
     ['####', '####', '####', '####', '#o##', '#.o#', '#.##']
   ];
   var MAU_4 = [
-    ['....', '....', '.r..', '..b.', '....', '....', '....'],
+    ['....', '.r..', '..b.', '....', '....', '....', '....'],
     ['....', '....', '....', '.r..', '..b.', '....', '....'],
     ['....', '....', '....', '....', '.r..', '..b.', '....']
   ];
   var BD_4 = { x: 1, y: 6, huong: 0 };
   var BM_4 = [
-    { x: 1, y: 6, huong: 2, vat: [{ x: 1, y: 2, mau: 'blue' }, { x: 2, y: 3, mau: 'red' }] },
+    { x: 1, y: 6, huong: 2, vat: [{ x: 1, y: 1, mau: 'blue' }, { x: 2, y: 2, mau: 'red' }] },
     { x: 1, y: 6, huong: 2, vat: [{ x: 1, y: 3, mau: 'blue' }, { x: 2, y: 4, mau: 'red' }] },
     { x: 1, y: 6, huong: 2, vat: [{ x: 1, y: 4, mau: 'blue' }, { x: 2, y: 5, mau: 'red' }] }
   ];
@@ -295,7 +295,7 @@
       hamCuaEmCan: ['go_wall', 'swap', 'u_turn'],
       deBai: 'Cuối hành lang có thùng đỏ chắn lối, và thùng xanh dương nằm bên phải chỗ xe dừng lại. Đổi chỗ hai thùng cho nhau, rồi cho xe về chỗ xuất phát, mặt quay xuống như xe mờ.',
       san: SAN_4, batDau: BD_4, bongMo: BM_4, vatMau: MAU_4,
-      sao: { o: 40, nhip: 72 },
+      sao: { o: 40, nhip: 74 },
       loiGiai: { chinh: L_4.slice() },
       loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: { chinh: nhieu(['# đổi thùng rồi về'], L_4) } },
       congThucKhac: [

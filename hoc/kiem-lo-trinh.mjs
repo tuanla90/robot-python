@@ -76,7 +76,10 @@ const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-
 kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
-    if (GOI_NHIEU_SAN.has(m.chuong)) assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ': gói 10 chạy một mình cần 2–3 sân, có ' + soSan(m));
+    if (GOI_NHIEU_SAN.has(m.chuong)) {
+      assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ': gói 10 chạy một mình cần 2–3 sân, có ' + soSan(m));
+      assert.equal(m.nhipTheo, 'tong', m.ma + ': gói 10 chạy một mình cần nhipTheo === "tong"');
+    }
     else if (m.hang !== 'trum' && !NHIEU_SAN_KHONG_TRUM.includes(m.ma)) assert.equal(soSan(m), 1, m.ma);
     if (m.hang === 'trum') assert.equal(m.so, ds.length, m.ma + ' trùm không đứng cuối chương');
     if (ds.length === 10) assert.equal(m.hang === 'trum', m.so === 10, m.ma);

@@ -29,6 +29,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { GOI_RECALL, recallMan, kiemRecall, khoTheoLoTrinh } from './kiem-combo-mua-1.mjs';
 import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
+import { dayChungRobotHoanThien } from './do-duong-robot-hoan-thien.mjs';
 
 const require = createRequire(import.meta.url);
 const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -320,6 +321,74 @@ function baiDuong(m, khoi) {
   if (!m.doi) return { chinh: thanhMa(khoi[0]), hamCuaMan: [] };
   return { doi: khoi.map((k, i) => ({ chinh: m.doi[i].coDinh ? m.maMau.doi[i].chinh.slice() : thanhMa(k) })), hamCuaMan: [] };
 }
+function canDuoi(ctx, S) {
+  const R = S.r[0];
+  let h = 0;
+  if (ctx.mucTieu === 'bong-mo') {
+    const bm = ctx.bm;
+    for (const p of S.pos) if (p >= 0 && !ctx.dichVat.includes(p)) h += 4;
+    if (R.cam >= 0 && !bm.cam) h += 2;
+    let dx = Math.abs(R.x - bm.x) + Math.abs(R.y - bm.y);
+    ctx.diQua.forEach((o, k) => {
+      if (!(S.qua & (1 << k))) {
+        const qx = o % ctx.rong, qy = (o - qx) / ctx.rong;
+        const d = Math.abs(R.x - qx) + Math.abs(R.y - qy) + Math.abs(qx - bm.x) + Math.abs(qy - bm.y);
+        if (d > dx) dx = d;
+      }
+    });
+    h += dx + (R.h !== (bm.huong || 0) ? 1 : 0);
+  } else if (ctx.mucTieu === 'dua-vat') {
+    for (const p of S.pos) if (p >= 0 && !ctx.dich.has(p)) h += 4;
+    if (R.cam >= 0) h += 2;
+  }
+  return h;
+}
+function dayChung(m, gioiHan, toiDa = 1500000) {
+  const n = soSan(m);
+  const ctxs = [];
+  for (let si = 0; si < n; si++) ctxs.push(nguCanh(m, si));
+  const thangNgay = (ctx) => ctx.mucTieu !== 'bong-mo';
+  const dau = ctxs.map((ctx) => {
+    const S0 = { r: ctx.ds.map((d) => ({ x: d.x, y: d.y, h: d.h, cam: -1, k: null, b: 0, xong: false, q: 0 })), pos: ctx.vat0.slice(), cua: ctx.cua.map((d) => d.mo0), qua: 0 };
+    ctx.diQua.forEach((o, k) => { if (S0.r.some((R) => ctx.o(R.x, R.y) === o)) S0.qua |= 1 << k; });
+    return { S: S0, xong: thangNgay(ctx) && laDich(ctx, S0) };
+  });
+  const maS = (S) => S.r.map((R) => [R.x, R.y, R.h, R.cam, R.k, R.b, R.xong ? 1 : 0].join(',')).join('|') + '|' + S.pos.join('.') + '|' + S.cua.map(Number).join('') + '|' + S.qua;
+  const ma = (ds) => ds.map((d) => (d.xong ? 'X' : maS(d.S))).join('||');
+  const HD = (ctxs[0].ds[0].xoay ? KHOI_XOAY : KHOI_KEP).filter((x) => x !== 'wait');
+  const lop = [[{ ds: dau, c: [] }]], thay = new Map([[ma(dau), 0]]);
+  let soTT = 0;
+  for (let g = 0; g < lop.length && g <= gioiHan; g++) {
+    for (const { ds, c } of lop[g] || []) {
+      if (thay.get(ma(ds)) < g) continue;
+      for (const a of HD) {
+        const nhip = KHOI[a].length;
+        let gia = 0, uoc = 0;
+        const moi = ds.map((d, si) => {
+          if (d.xong) return d;
+          let S = d.S, xong = false;
+          for (let b = 0; b < nhip; b++) {
+            S = buoc(ctxs[si], S, [b === 0 ? a : null]);
+            gia += 1;
+            if (thangNgay(ctxs[si]) && laDich(ctxs[si], S)) { xong = true; break; }
+          }
+          if (!xong) uoc += canDuoi(ctxs[si], S);
+          return { S, xong };
+        });
+        const gg = g + gia;
+        if (gg + uoc > gioiHan) continue;
+        const xongHet = moi.every((d, si) => d.xong || (!thangNgay(ctxs[si]) && laDich(ctxs[si], d.S)));
+        if (xongHet) return { nhip: gg, chuoi: c.concat([a]), soTT };
+        const kk = ma(moi);
+        if (thay.has(kk) && thay.get(kk) <= gg) continue;
+        thay.set(kk, gg); soTT++;
+        (lop[gg] || (lop[gg] = [])).push({ ds: moi, c: c.concat([a]) });
+        if (soTT > toiDa) return { catNgang: true, soTT };
+      }
+    }
+  }
+  return null;
+}
 const bang = {};
 
 /* ------------------------------------------------------------------ 2–3, 5. từng màn mới */
@@ -334,6 +403,7 @@ for (const m of DS) {
     assert.ok(m.goiY.length >= 1);
     if (m.hang === 'trum') assert.equal(soSan(m), 3, m.ma + ' số sân');
     else assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ' số sân ' + soSan(m) + ' (gói 10: 2–3 ngày làm việc)');
+    assert.equal(m.nhipTheo, 'tong', m.ma + ' gói 10 phải tính tổng nhịp (nhipTheo === "tong")');
     assert.ok(!m.doi, m.ma + ': gói 10 chạy một mình, không màn hai robot');
     for (const rows of dsSan(m)) assert.ok(!/S/.test(rows.join('')), m.ma + ' sân có bậc thang');
     if (m.doi) {
@@ -450,6 +520,8 @@ for (const m of DS) {
         const r = cham(mr, duong[i]);
         assert.ok(!r.thang && r.theoSan[i].thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ba sân (hay thua chính sân đó)');
       }
+      const dc = dayChung(m, m.sao.nhip);
+      assert.equal(dc, null, m.ma + ': có dãy khối chuẩn cố định (không cảm biến) thắng mọi sân trong ngưỡng ' + m.sao.nhip + ' nhịp: ' + JSON.stringify(dc));
     }
   });
   const hm = (m.loiGiai.hamCuaMan || []).filter((h) => !(m.khoaHamMan || []).includes(h.ten));
@@ -487,9 +559,21 @@ kiem('đường cong chương Trùm mùa: dòng / nhịp / cỡ sân màn n ≤ 
     assert.ok(tran(coSan(m), coSan(t), BU.o), m.ma + ' cỡ sân ' + coSan(m) + ' so với ' + t.ma + ' ' + coSan(t));
   }
 });
-kiem('màn 1 Trùm mùa dễ hơn trùm chương Tổng hợp (robot-hoan-thien.11) rất nhiều: nhịp ≤ 1/4, dòng và cỡ sân không lớn hơn', () => {
+kiem('mọi màn gói 10 mùa 1 (cả chương robot-hoan-thien và trum-mua-1): nhipTheo === "tong", không có dãy cố định (dayChung) thắng mọi sân trong sao.nhip', () => {
+  for (const m of goi.chuong.flatMap(chuongDS)) {
+    assert.equal(m.nhipTheo, 'tong', m.ma + ': thiếu nhipTheo === "tong"');
+    const r = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);
+    assert.equal(r.soNhip, r.nhipTong, m.ma + ': soNhip khác nhipTong');
+    assert.equal(r.soNhip, m.sao.nhip, m.ma + ': soNhip khác sao.nhip');
+    if (!MOI.includes(m.ma)) {
+      const dc = dayChungRobotHoanThien(m, m.sao.nhip, { gop: false });
+      assert.equal(dc, null, m.ma + ': có dãy cố định (dayChung) thắng mọi sân trong ngưỡng ' + m.sao.nhip + ' nhịp: ' + JSON.stringify(dc));
+    }
+  }
+});
+kiem('màn 1 Trùm mùa dễ hơn trùm chương Tổng hợp (robot-hoan-thien.11) rất nhiều: nhịp ≤ 1/3, dòng và cỡ sân không lớn hơn', () => {
   const a = chuongDS(C2)[0], t = get('robot-hoan-thien.11');
-  assert.ok(a.sao.nhip * 4 <= t.sao.nhip, a.ma + ' nhịp ' + a.sao.nhip + ' / trùm ' + t.sao.nhip);
+  assert.ok(a.sao.nhip * 3 <= t.sao.nhip, a.ma + ' nhịp ' + a.sao.nhip + ' / trùm ' + t.sao.nhip);
   assert.ok(soDong(a) <= soDong(t) && coSan(a) <= coSan(t));
 });
 kiem('trùm cuối mùa (trum-mua-1.10) dùng gần như mọi thứ: tay xoay, cảm biến trước + bên, lùi, nút đè, hàm tự viết, vòng lặp, nhiều sân', () => {

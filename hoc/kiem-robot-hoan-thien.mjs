@@ -24,7 +24,7 @@ const ThuTu = require(path.join(day, 'thu-tu-chuong.js'));
 const SoLenh = require(path.join(day, 'so-lenh.js'));
 for (const f of ['man-chuoi-2', 'man-che-xe', 'man-tay-gap', 'man-che-tay', 'man-vong-lap', 'man-che-lap', 'man-bang-chuyen', 'man-tham-so', 'man-nhen', 'man-xich', 'man-omni', 'man-khoang-cach', 'man-che-cam-bien', 'man-robot-hoan-thien', 'man-mau', 'man-nam-cham', 'man-may-nem']) require(path.join(day, f + '.js'));
 const ManHoc = require(path.join(day, 'man-drone.js'));
-const { nhipRobotHoanThienSan, nhipRobotHoanThienTatCa, manCuaSan, soSan, chuoiThanhMa } = await import('./do-duong-robot-hoan-thien.mjs');
+const { nhipRobotHoanThienSan, nhipRobotHoanThienTatCa, dayChungRobotHoanThien, manCuaSan, soSan, chuoiThanhMa } = await import('./do-duong-robot-hoan-thien.mjs');
 
 let dat = 0, hong = 0;
 function kiem(ten, ok, chiTiet) {
@@ -147,6 +147,8 @@ const FAIL = new Set(['lech-bong-mo', 'chua-qua-diem', 'chua-toi-co', 'chua-dua-
       // chuỗi tối ưu của sân đầu quá dài để viết tay (tràn khung 10 ô); chạy nó ở sân khác thì hoặc không thắng, hoặc thắng nhưng thừa nhịp (xe húc thùng / tường): không còn là đường ngắn nhất của sân đó
       const kq = [1, 2].map((i) => { const lm = SanHoc.lopMauCuaSan(m, i); const k = SanHoc.chay({ san: m.san[i], batDau: m.batDau[i], loaiRobot: 'banh', hamGoc: m.hamGoc, phanCung: pc, mucTieu: 'bong-mo', bongMo: m.bongMo[i], vatMau: lm.vatMau || undefined, nhipToiDa: 300 }, code); return k.thang === true ? k.nhip : 'thua'; });
       kiem(m.id + ': CHỐNG VIẾT CỨNG — chuỗi lệnh tối ưu của sân 1 chạy ở sân 2 và 3 không còn tối ưu (' + kq.join(' / ') + ' so với BFS ' + [1, 2].map((i) => nhipRobotHoanThienSan(m, i).nhip).join(' / ') + ')', kq.every((x, j) => x === 'thua' || x > nhipRobotHoanThienSan(m, j + 1).nhip));
+      const dc = dayChungRobotHoanThien(m, m.sao.nhip, { gop: false });
+      kiem(m.id + ': CHỐNG DÃY CHUNG (dayChung) — không dãy khối chuẩn cố định (không cảm biến) nào thắng cả ba sân trong ngưỡng ' + m.sao.nhip + ' nhịp', dc === null, J(dc));
     }
     // công thức khác
     kiem(m.id + ': có ít nhất 1 công thức khác (congThucKhac), mỗi cái khác lời giải chuẩn', Array.isArray(m.congThucKhac) && m.congThucKhac.length >= 1 && m.congThucKhac.every((c) => c.moTa && c.baiLam && J(c.baiLam.chinh) !== J(m.loiGiai.chinh)));
