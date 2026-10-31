@@ -11,6 +11,10 @@ export const X0 = 165, Y0 = 330;           // góc trên trái lưới 5 × 7 ô
 export const COT = 5, HANG = 7;
 export const tamO = (c: number, r: number) => ({x: X0 + (c + 0.5) * O, y: Y0 + (r + 0.5) * O});
 
+/** Ngữ cảnh mùa hiện tại ('m1' | 'm2' | 'm3' | 'm4'), mặc định 'm1' để mùa 1 giữ nguyên. */
+export const MuaCtx = React.createContext<string>('m1');
+const duongRobot = (mua: string, ten: string) => `robot/${ten.includes('/') ? ten : `${mua}/${ten}`}.png`;
+
 /** Mốc chuyển động: [khung, cột, hàng, góc độ (0 = mũi sang phải, -90 = lên)]; giữa hai mốc nội suy mượt. */
 export type Moc = [number, number, number, number?];
 export function theoMoc(moc: Moc[], f: number) {
@@ -23,53 +27,55 @@ export function theoMoc(moc: Moc[], f: number) {
 }
 
 /** Nền hiện trường: ảnh nơi chốn dọc, lưới ô mờ trên khoảng sàn trống. */
-export const NenHienTruong: React.FC<{anh: string; luoi?: boolean; toi?: number; children?: React.ReactNode}> = ({anh, luoi = true, toi = 0, children}) => {
-  const f = useCurrentFrame();
+export const NenHienTruong: React.FC<{anh: string; mua?: string; luoi?: boolean; toi?: number; children?: React.ReactNode}> = ({anh, mua, luoi = true, toi = 0, children}) => {
+  const f = useCurrentFrame(), m = React.useContext(MuaCtx);
   return (
-    <AbsoluteFill style={{background: '#3B4252', overflow: 'hidden', fontFamily: FONT}}>
-      <Img src={staticFile(anh)} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
-        transform: `scale(${1.02 + 0.02 * Math.sin(f / 90)})`}} />
-      {luoi ? <div style={{position: 'absolute', left: X0, top: Y0, width: COT * O, height: HANG * O, borderRadius: 18,
-        backgroundImage: 'linear-gradient(rgba(255,255,255,.16) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.16) 2px, transparent 2px)',
-        backgroundSize: `${O}px ${O}px`, border: '2px solid rgba(255,255,255,.22)'}} /> : null}
-      {toi ? <AbsoluteFill style={{background: `rgba(20,18,45,${toi})`}} /> : null}
-      {children}
-    </AbsoluteFill>
+    <MuaCtx.Provider value={mua ?? m}>
+      <AbsoluteFill style={{background: '#3B4252', overflow: 'hidden', fontFamily: FONT}}>
+        <Img src={staticFile(anh)} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+          transform: `scale(${1.02 + 0.02 * Math.sin(f / 90)})`}} />
+        {luoi ? <div style={{position: 'absolute', left: X0, top: Y0, width: COT * O, height: HANG * O, borderRadius: 18,
+          backgroundImage: 'linear-gradient(rgba(255,255,255,.16) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.16) 2px, transparent 2px)',
+          backgroundSize: `${O}px ${O}px`, border: '2px solid rgba(255,255,255,.22)'}} /> : null}
+        {toi ? <AbsoluteFill style={{background: `rgba(20,18,45,${toi})`}} /> : null}
+        {children}
+      </AbsoluteFill>
+    </MuaCtx.Provider>
   );
 };
 
 /** Ô cố định trên sân (kệ, nút đè, cửa, ô đích, cờ): ảnh ô của game đặt đúng ô. */
-export const ODat: React.FC<{ten: string; c: number; r: number; mo?: number; style?: React.CSSProperties}> = ({ten, c, r, mo = 1, style}) => {
-  const p = tamO(c, r);
-  return <Img src={staticFile(`robot/m1/${ten}.png`)} style={{position: 'absolute', left: p.x - O / 2, top: p.y - O / 2, width: O, height: O, opacity: mo, ...style}} />;
+export const ODat: React.FC<{ten: string; c: number; r: number; mo?: number; mua?: string; style?: React.CSSProperties}> = ({ten, c, r, mo = 1, mua, style}) => {
+  const m = React.useContext(MuaCtx), p = tamO(c, r);
+  return <Img src={staticFile(duongRobot(mua ?? m, ten))} style={{position: 'absolute', left: p.x - O / 2, top: p.y - O / 2, width: O, height: O, opacity: mo, ...style}} />;
 };
 
 /** Vật di chuyển (thùng gỗ…): theo mốc, xoay / nghiêng / mờ tuỳ khung. */
 export type Bam = {moc: Moc[]; tu: number; den?: number; xa?: number};
 /** bam: từ khung `tu` tới `den` vật nằm ở mũi xe (cách tâm xe `xa` ô theo hướng xe), thay cho mốc riêng (xe đang kẹp mang vật). */
-export const Vat: React.FC<{ten?: string; moc: Moc[]; nghieng?: (f: number) => number; mo?: (f: number) => number; co?: number; bam?: Bam}> = ({ten = 'vat-thung-go', moc, nghieng, mo, co = 1, bam}) => {
-  const f = useCurrentFrame();
+export const Vat: React.FC<{ten?: string; moc: Moc[]; nghieng?: (f: number) => number; mo?: (f: number) => number; co?: number; bam?: Bam; mua?: string}> = ({ten = 'vat-thung-go', moc, nghieng, mo, co = 1, bam, mua}) => {
+  const f = useCurrentFrame(), m = React.useContext(MuaCtx);
   let p = theoMoc(moc, f);
   if (bam && f >= bam.tu && f <= (bam.den ?? 1e9)) {
     const x = theoMoc(bam.moc, f), a = (x.goc * Math.PI) / 180, d = (bam.xa ?? 0.62) * O;
     p = {x: x.x + Math.cos(a) * d, y: x.y + Math.sin(a) * d, goc: 0};
   }
   const s = O * co * (bam && f >= bam.tu && f <= (bam.den ?? 1e9) ? 0.82 : 1);
-  return <Img src={staticFile(`robot/m1/${ten}.png`)} style={{position: 'absolute', left: p.x - s / 2, top: p.y - s / 2, width: s, height: s,
+  return <Img src={staticFile(duongRobot(mua ?? m, ten))} style={{position: 'absolute', left: p.x - s / 2, top: p.y - s / 2, width: s, height: s,
     transform: `rotate(${(nghieng ? nghieng(f) : 0) + p.goc}deg)`, opacity: mo ? mo(f) : 1, filter: 'drop-shadow(0 8px 6px rgba(0,0,0,.35))'}} />;
 };
 
 /** Hình robot của game; ảnh tay xoay rộng hơn (922 thay 576) nhưng cùng tỉ lệ thân, nên phóng theo bề ngang ảnh. */
 const RONG: Record<string, number> = {xoay: 922, 'xoay-vui': 922, du: 922, 'du-vui': 922, 'du-ngac': 922};
-export const Xe: React.FC<{anh: string; moc: Moc[]; doi?: [number, string][]; sang?: (f: number) => boolean; mo?: (f: number) => number}> = ({anh, moc, doi = [], sang, mo}) => {
-  const f = useCurrentFrame();
+export const Xe: React.FC<{anh: string; moc: Moc[]; doi?: [number, string][]; sang?: (f: number) => boolean; mo?: (f: number) => number; mua?: string}> = ({anh, moc, doi = [], sang, mo, mua}) => {
+  const f = useCurrentFrame(), m = React.useContext(MuaCtx);
   const p = theoMoc(moc, f);
   const ten = [...doi].filter(([t]) => f >= t).pop()?.[1] ?? anh;
   const S = 1.2 * O * (RONG[ten] ?? 576) / 576;
   return (
     <div style={{position: 'absolute', left: p.x - S / 2, top: p.y - S / 2, width: S, height: S, transform: `rotate(${p.goc}deg)`, opacity: mo ? mo(f) : 1,
       filter: sang && sang(f) ? `drop-shadow(0 0 18px ${C.yellow})` : 'drop-shadow(0 10px 8px rgba(0,0,0,.35))'}}>
-      <Img src={staticFile(`robot/m1/${ten}.png`)} style={{width: S, height: S}} />
+      <Img src={staticFile(duongRobot(mua ?? m, ten))} style={{width: S, height: S}} />
     </div>
   );
 };
@@ -166,9 +172,9 @@ export const BangViec: React.FC<{tieuDe: string; dong: string[]; xong: number; m
 
 /* ------------------------------------------------------------------ trong xe trạm */
 /** Trong xe trạm: nền lab, Luna và Sola, part mới (hình robot có part) nảy lên sa bàn ở `cach` với CẠCH!. Lời thoại theo `luna`, `sola`. */
-export const TrongXe: React.FC<{anh: string; cach: number; luna: Say[]; sola: Say[]; lunaMat?: [number, string][]; solaMat?: [number, string][]; tenPart?: string}> =
-  ({anh, cach, luna, sola, lunaMat = [[0, 'thinking']], solaMat = [[0, 'thinking']], tenPart}) => {
-    const f = useCurrentFrame(), {fps} = useVideoConfig();
+export const TrongXe: React.FC<{anh: string; cach: number; luna: Say[]; sola: Say[]; lunaMat?: [number, string][]; solaMat?: [number, string][]; tenPart?: string; mua?: string}> =
+  ({anh, cach, luna, sola, lunaMat = [[0, 'thinking']], solaMat = [[0, 'thinking']], tenPart, mua}) => {
+    const f = useCurrentFrame(), {fps} = useVideoConfig(), m = React.useContext(MuaCtx);
     const p = pop(f, cach, fps, 9);
     const S = 520 * (RONG[anh] ?? 576) / 576;
     return (
@@ -177,7 +183,7 @@ export const TrongXe: React.FC<{anh: string; cach: number; luna: Say[]; sola: Sa
         {f >= cach - 30 ? (
           <div style={{position: 'absolute', left: 540 - S / 2, top: 1010 - S / 2, width: S, height: S, opacity: Math.min(1, p * 2),
             transform: `scale(${0.4 + 0.6 * p}) rotate(${(1 - p) * -30}deg)`, filter: `drop-shadow(0 0 ${f >= cach ? 30 : 0}px ${C.yellow})`}}>
-            <Img src={staticFile(`robot/m1/${anh}.png`)} style={{width: S, height: S}} />
+            <Img src={staticFile(duongRobot(mua ?? m, anh))} style={{width: S, height: S}} />
           </div>
         ) : null}
         <Burst at={cach} x={540} y={1010} color={C.yellow} r={260} />
@@ -194,8 +200,8 @@ export const TrongXe: React.FC<{anh: string; cach: number; luna: Say[]; sola: Sa
   };
 
 /** Câu treo cuối phim mở: sa bàn trong xe (phóng gần), R1 có part mới đứng giữa, Sola nói câu treo, nút "Vào gói". */
-export const CauTreo: React.FC<{anh: string; cau: string; so: number; ten: string}> = ({anh, cau, so, ten}) => {
-  const f = useCurrentFrame(), {fps} = useVideoConfig();
+export const CauTreo: React.FC<{anh: string; cau: string; so: number; ten: string; mua?: string; xoay?: number}> = ({anh, cau, so, ten, mua, xoay = -90}) => {
+  const f = useCurrentFrame(), {fps} = useVideoConfig(), m = React.useContext(MuaCtx);
   const z = ease(f, [0, 40], [1, 1.35]);
   const S = 420 * (RONG[anh] ?? 576) / 576;
   const nut = pop(f, 40, fps, 10);
@@ -203,8 +209,8 @@ export const CauTreo: React.FC<{anh: string; cau: string; so: number; ten: strin
     <AbsoluteFill style={{background: '#EEF2FF', fontFamily: FONT, overflow: 'hidden'}}>
       <AbsoluteFill style={{transform: `scale(${z})`, transformOrigin: '50% 58%'}}>
         <Img src={staticFile('nen-doc/trong-xe.jpg')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
-        <div style={{position: 'absolute', left: 540 - S / 2, top: 1050 - S / 2, width: S, height: S, transform: `rotate(${-90 + Math.sin(f / 12) * 4}deg)`}}>
-          <Img src={staticFile(`robot/m1/${anh}.png`)} style={{width: S, height: S}} />
+        <div style={{position: 'absolute', left: 540 - S / 2, top: 1050 - S / 2, width: S, height: S, transform: `rotate(${xoay + Math.sin(f / 12) * 4}deg)`}}>
+          <Img src={staticFile(duongRobot(mua ?? m, anh))} style={{width: S, height: S}} />
         </div>
       </AbsoluteFill>
       <Mascot who="sola" x={300} h={600} at={0} faces={[[0, 'confident']]} says={[{at: 6, out: 999, text: cau}]} bubbleW={560} bubbleTop={1240} />
