@@ -19,11 +19,28 @@
   .the p b{font-weight:700}
   canvas{display:block;max-width:100%}
   .luoi p{max-width:224px}
+  /* SÂN CHƠI THỬ (gói nối 31/10): vùng sân như .ffr của choi.css (khung gỗ .khung-san + lớp phủ robot .lop-robot do san-ve.js tạo) */
+  .thu{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;background:var(--g-vecVo);border:1px solid var(--g-vecVoToi);border-radius:12px;padding:10px;max-width:100%}
+  .thu .ffr{position:relative;flex:none;width:312px;height:312px;max-width:100%;padding:4px;display:flex;align-items:center;justify-content:center}
+  .thu .ffr canvas{display:block;flex:none;background:var(--g-bangV8)}
+  .thu .ffr canvas:not(.lop-robot){position:relative;z-index:1}
+  .thu .ffr .khung-san{position:absolute;z-index:0;display:none;pointer-events:none;background-color:var(--g-goSangV3);box-shadow:0 0 0 2px var(--g-vecVien),inset 0 2px 0 var(--g-moCam),inset 0 -3px 0 var(--g-moToiSang)}
+  .thu .ffr canvas.lop-robot{position:absolute;z-index:2;background:none;pointer-events:none}
+  .thu .ma{display:flex;flex-direction:column;gap:6px;flex:1 1 220px;min-width:0}
+  .thu textarea{width:100%;min-height:150px;font:12px/1.4 ui-monospace,Consolas,monospace;border:1px solid var(--g-vecVoToi);border-radius:8px;padding:6px;background:var(--g-vecSanToi);color:var(--g-vecVien);resize:vertical}
+  .thu .nut{display:flex;gap:6px;flex-wrap:wrap}
+  .thu button{font:600 13px "Google Sans Flex",system-ui,sans-serif;padding:6px 12px;border-radius:8px;border:1px solid var(--g-vecVien);background:var(--g-vecDoiR1);color:var(--g-vecVien);cursor:pointer}
+  .thu button.phu{background:var(--g-vecVo)}
+  .thu .tt{font-size:12px;color:var(--g-vecChuPhu);min-height:1.4em;overflow-wrap:anywhere}
+  .thu h3{margin:0}
 </style>
 </head>
 <body>
 <h1>Hình mùa mới: Cảng sông và Bến sông</h1>
 <p class="ghi">Mỗi hình vẽ ở hai cỡ ô: 48 px (như sân chơi trên điện thoại) và 160 px. Nhãn ghi mã hình và trạng thái. Hình đăng ký qua VeVector.dangKy (hệ 100), cần cẩu và dây phao vẽ bằng hàm riêng theo toạ độ sân.</p>
+<h2>SÂN CHƠI THỬ · lõi SanHoc.chay + trình vẽ sân thật SanVe.Field (gói nối 31/10)</h2>
+<p class="ghi">Mỗi sân là một màn dựng bằng cấu hình (chưa có trong lộ trình). Sửa code rồi bấm <b>Chạy</b>: lõi chạy ra vết, sân phát lại từng nhịp với hoạt cảnh (trôi, neo, dây phao, cống / van, cần cẩu quay / vươn, móc / hạ, ray, tàu cập / rời). <b>Đặt lại</b> đưa sân về đầu. Dòng trạng thái ghi thắng / thua / lỗi của lõi.</p>
+<div id="san-thu"></div>
 <div id="noi-dung"></div>
 
 <script src="bang-mau.js"></script>
@@ -40,7 +57,77 @@
 <script src="ve-vector-than-cau.js"></script>
 <script src="ve-vector-tay-moc-cau.js"></script>
 <script src="ve-vector-cam-cang.js"></script>
+<!-- sân chơi thử: lõi + trình vẽ sân thật (cùng thứ tự nạp như choi.html) -->
+<script src="../../nhan/san-robot-core.js"></script>
+<script src="../san-hoc.js"></script>
+<script src="chu.js"></script>
+<script src="ve.js"></script>
+<script src="ve-vector-vat.js"></script>
+<script src="ve-vector-nong-trai.js"></script>
+<script src="ve-vector-ky-hieu.js"></script>
+<script src="ve-vector-than-hai-banh.js"></script>
+<script src="ve-vector-cam.js"></script>
+<script src="ve-vector-hieu-ung.js"></script>
+<script src="ve-robot.js"></script>
+<script src="san-ve.js"></script>
 <script>
+/* ===================================================================== SÂN CHƠI THỬ */
+function sanChoiThu() {
+  'use strict';
+  var goc = document.getElementById('san-thu');
+  if (!window.SanVe || !window.SanHoc) { goc.textContent = 'Thiếu san-ve.js / san-hoc.js'; return; }
+  var XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
+  var CAU = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail'];
+  var RB_X = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] }, RB_C = { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] };
+  var MAU = [
+    { ten: 'Bến sông 1 · trôi theo dòng, thả neo, tới phao đích', ghi: 'Dòng ở hàng trên đẩy xuồng sang phải; anchor() giữ xuồng trên dòng (neo-giu); unanchor() rồi trôi tiếp; Q là cờ.',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~~~~~~Q#', '#~#V~~#~#', '#~~K~~~~#', '#~B~~~L~#', '#..~~~..#', '#########'], batDau: { x: 1, y: 1, huong: 1 },
+        dong: [{ x: 3, y: 1, huong: 1, suc: 1 }, { x: 4, y: 1, huong: 1, suc: 1 }, { x: 4, y: 3, huong: 2, suc: 2 }], noi: [{ nut: { x: 3, y: 2 }, cong: [{ x: 3, y: 3 }], dong: [{ x: 4, y: 3 }] }], nhipToiDa: 60 },
+      code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nanchor()\nwait()\nwait()\nunanchor()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\n' },
+    { ten: 'Bến sông 2 · dây phao kéo bè về bến nhận q', ghi: 'tow() quăng dây, bè bị kéo về ô trước mũi; tiến thì bè đi trước; drop_tow() thả bè trên q (mục tiêu dua-vat). Thử tether() sau tow() để buộc bè ra đuôi.',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], mucTieu: 'dua-vat', san: ['#########', '#~~~~~~~#', '#~B~~~~q#', '#~~~~~~~#', '#.......#', '#########'], batDau: { x: 1, y: 2, huong: 1 }, nhipToiDa: 60 },
+      code: 'tow()\nwait()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\ndrop_tow()\nwait()\n' },
+    { ten: 'Bến sông 3 · van cống, dây quăng hụt, đâm cống đóng', ghi: 'Đâm cống đóng = húc tường (choáng). Quay mũi lên, tow() trúng van V: cần gạt quay, cống K mở (cánh nâng), dòng (5,2) của nhóm tắt (mũi tên mờ). flow_dir() đọc ô trước mũi (tia + chong chóng sáng). Sửa tow() thành quăng về bờ để xem dây hụt (?).',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~V~~~~~#', '#~~K~~~Q#', '#~~~~~~~#', '#########'], batDau: { x: 1, y: 2, huong: 1 },
+        dong: [{ x: 5, y: 2, huong: 3, suc: 1 }, { x: 5, y: 3, huong: 3, suc: 2 }], noi: [{ nut: { x: 2, y: 1 }, cong: [{ x: 3, y: 2 }], dong: [{ x: 5, y: 2 }] }], nhipToiDa: 60 },
+      code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\ntow()\nwait()\nleft_move()\nwait()\nh = flow_dir()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\n' },
+    { ten: 'Cảng sông 1 · giao hai container lên hai tàu (giao-tau)', ghi: 'pick_up() nhấc container trên cùng, quay 3 nấc trái, vươn, set_down() lên boong tàu 1 (tàu rời mang hàng đi); rồi quay sang phải lấy container 21 cho tàu 2. read_code() quét số.',
+      cfg: { loaiRobot: 'cau', robot: RB_C, hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], mucTieu: 'giao-tau', san: ['#########', '#.......#', '#..RRR..#', '#.......#', '#TT~~~TT#', '#########'], batDau: { x: 4, y: 2 },
+        chong: [{ x: 4, y: 1, cont: [{ so: 12 }, { so: 7, tan: 2 }] }, { x: 6, y: 2, cont: [{ so: 3 }, { so: 8 }, { so: 21 }] }], tau: [{ o: [{ x: 1, y: 4 }, { x: 2, y: 4 }], co: 6, vang: 2, pha: 0 }, { o: [{ x: 6, y: 4 }, { x: 7, y: 4 }], co: 3, vang: 2, pha: 1 }], giao: [{ tau: 0, so: [7] }, { tau: 1, so: [21] }], nhipToiDa: 60 },
+      code: 'pick_up()\nswing_left()\nswing_left()\nswing_left()\nextend()\nset_down()\nretract()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nextend()\nso = read_code()\npick_up()\nswing_right()\nset_down()\nwait()\nwait()\n' },
+    { ten: 'Cảng sông 2 · ray, móc đôi, luật tải, hết tầm, hết ray', ghi: 'rail(4) chạy bệ 4 ô trên ray; pick_up2() nhấc hai container; extend() vượt tầm 3 và vươn ra ngoài sân báo lỗi; cfg.taiToiDa = 4 nên container in số tấn; rail(-9) chạy tới hết ray thì dừng (het-ray).',
+      cfg: { loaiRobot: 'cau', robot: RB_C, hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], taiToiDa: 4, san: ['#########', '#.......#', '#RRRRR..#', '#.......#', '#########'], batDau: { x: 1, y: 2 },
+        chong: [{ x: 1, y: 1, cont: [{ so: 5, tan: 1 }, { so: 9, tan: 1 }] }, { x: 5, y: 3, cont: [{ so: 40, tan: 3 }] }], nhipToiDa: 60 },
+      code: 'pick_up2()\nrail(4)\nextend()\nextend()\nextend()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nretract()\nretract()\nset_down()\nt = weight()\nrail(-9)\n' }
+  ];
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  MAU.forEach(function (m) {
+    var hop = el('div', 'thu'), ffr = el('div', 'ffr'), cv = document.createElement('canvas'), ma = el('div', 'ma'), ta = document.createElement('textarea'), nut = el('div', 'nut'), tt = el('div', 'tt');
+    var bChay = el('button', null, 'Chạy'), bLai = el('button', 'phu', 'Đặt lại');
+    ffr.appendChild(cv); hop.appendChild(ffr);
+    ma.appendChild(el('h3', null, m.ten)); ma.appendChild(el('p', 'ghi', m.ghi)); ta.value = m.code; ma.appendChild(ta);
+    nut.appendChild(bChay); nut.appendChild(bLai); ma.appendChild(nut); ma.appendChild(tt); hop.appendChild(ma); goc.appendChild(hop);
+    var field = new SanVe.Field(cv, { kich: 300, catMep: true }), rid = 0;
+    field.nap(m.cfg);
+    bLai.onclick = function () { rid++; field.datLai(); tt.textContent = ''; };
+    bChay.onclick = async function () {
+      var my = ++rid, kq;
+      field.datLai();
+      try { kq = SanHoc.chay(m.cfg, ta.value); } catch (e) { tt.textContent = 'Lỗi cấu hình: ' + e.message; return; }
+      tt.textContent = 'Đang chạy… (' + kq.nhip + ' nhịp)';
+      for (var i = 0; i < kq.vet.length; i++) {
+        var e = kq.vet[i];
+        if (my !== rid) return;
+        if (e.loai === 'lenh') { if (e.docCamBien) field.docCamBien(e.docCamBien, 380); await SanVe.ngu(110); }
+        else await field.phatNhip(e, 560);
+      }
+      if (my !== rid) return;
+      if (kq.thang) field.mungThang();
+      tt.textContent = (kq.thang ? 'THẮNG' : 'Chưa thắng') + ' · ' + kq.nhip + ' nhịp' + (kq.loi ? ' · lỗi dòng ' + kq.loi.dong + ': ' + kq.loi.thongDiep : '') + (kq.dungSom ? ' · dừng sớm: ' + kq.dungSom : '') +
+        ' · sự kiện: ' + kq.vet.filter(function (q) { return q.loai === 'nhip'; }).map(function (q) { return q.suKien.map(function (s) { return s.ma; }).join(' '); }).join(' | ');
+    };
+  });
+}
 function veTrang() {
   'use strict';
   var V = window.VeVector, BM = window.BangMau, DPR = window.devicePixelRatio || 1, goc = document.getElementById('noi-dung');
@@ -177,6 +264,7 @@ function veTrang() {
     var p = el('p'); p.innerHTML = '<b>cảnh ô ' + n + ' px</b> · hàng 1: tàu cập (số tàu ở góc) / tàu vắng; giữa: chồng 3 tầng; hàng 3: ray, bệ có giá bánh ray; cần treo container 58';
     t.appendChild(p); h.appendChild(t);
   });
+  sanChoiThu();
   document.body.setAttribute('data-xong', '1');
 }
 /* chữ số container vẽ bằng phông Google Sans Flex: chờ phông nạp xong rồi mới vẽ (không có document.fonts thì vẽ ngay) */

@@ -1,7 +1,7 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-tay-moc-cau.js — TAY MÓC CẨU 'moc-cau' (Cảng sông, mùa 4, 31/10; hoc/KE-HOACH-MUA-CANG-SONG.md mục 3.3) + hàm vẽ móc dùng chung.
    Tay (ổ 'tay' của thân cẩu = đầu đoạn cần ngắn): tời cáp + cáp + móc. s.doi = nâng cấp móc đôi (khung ngang hai móc). s.trenCan: veBeCau gọi (cần thật do veCanCau
-   vẽ, móc ở đầu cần) → chỉ vẽ tời. hamGoc: hook, unhook (gốc gói 2) + hook2 (nâng cấp gói 6).
+   vẽ, móc ở đầu cần) → chỉ vẽ tời. hamGoc: pick_up, set_down (gốc gói 2) + pick_up2 (nâng cấp gói 6) — đặc tả ghi hook / unhook nhưng mùa 3 đã dạy trẻ tự đặt hàm hook() (san-hoc.js phần CẢNG SÔNG, 31/10).
    HÀM: VeVector.veMocCau(g, x, y, r, doi)  móc tại (x, y) cỡ r (đơn vị của g hiện tại: px sân, hay hệ 100): móc đơn chữ J vàng dưới khối puli;
         doi: khung ngang + hai móc. veCanCau (ve-vector-than-cau.js) gọi ở đầu cần. */
 (function (root) {
@@ -20,7 +20,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.veMocCau = veMocCau;
 
   V.dangKy({
-    loai: 'tay', ma: 'moc-cau', hamGoc: ['hook', 'unhook', 'hook2'], ten: 'Móc cẩu', gan: 'tay', diemNeo: { x: 50, y: 82 },
+    loai: 'tay', ma: 'moc-cau', hamGoc: ['pick_up', 'set_down', 'pick_up2'], ten: 'Móc cẩu', gan: 'tay', diemNeo: { x: 50, y: 82 },
     ve: function (g, s, M, H) {
       s = s || {};
       H.bo(g, 41, 75, 18, 10, 3); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2.2);                                    // tời cáp

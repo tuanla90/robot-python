@@ -1504,6 +1504,8 @@
       hamTrongVet(vet, dung);
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
+        cong: res.cong, van: res.van, dongTat: res.dongTat, congBanDau: res.congBanDau, vanBanDau: res.vanBanDau, neo: res.neo, keo: res.keo,   // BẾN SÔNG (31/10)
+        chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
         pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua, son: res.son, daSon: res.daSon, hinh: res.hinh, sonBanDau: res.sonBanDau });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
@@ -1654,6 +1656,8 @@
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: doi[0].vet, doi: doi, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung,
         vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
+        cong: res.cong, van: res.van, dongTat: res.dongTat, congBanDau: res.congBanDau, vanBanDau: res.vanBanDau, neo: res.neo, keo: res.keo,   // BẾN SÔNG (31/10)
+        chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
         pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: null, diQua: [], daSon: res.daSon, hinh: res.hinh });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
