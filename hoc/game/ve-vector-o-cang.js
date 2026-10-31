@@ -5,7 +5,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
                       tàu; tàu nhiều ô thì gói nối truyền cạnh ngoài), vạch nắp hầm. Tàu VẮNG: mặt nước + khung nét đứt chỗ tàu đậu + hai cọc buộc.
                       s.so: số tàu (1–9) in nhỏ ở góc boong (tuỳ chọn, để trẻ biết tàu nào khi màn có nhiều tàu).
      'ray'       'R'  ray cẩu: bê tông + hai thanh ray thép + tà vẹt; s.doc: ray dọc (mặc định ngang).
-   kyDacTa = ký hiệu sân theo đặc tả (chưa là ký hiệu SanHoc). */
+   ky = ký hiệu sân của SanHoc (T, R nhận từ lõi Cảng sông 31/10; '.' của bãi container là sàn chung, san-ve.js chọn hình theo mùa). */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   if (typeof module === 'object' && !(root.VeVector && root.VeVector.nenNuoc)) require('./ve-vector-o-song.js');
@@ -15,7 +15,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 2, 2, 96, 96, 4); g.fillStyle = H.gradDoc(g, 0, 0, 100, 100, le ? [[0, BM.vecSatGiua], [1, BM.vecSatToi]] : [[0, BM.vecSat], [1, BM.vecSatGiua]]); g.fill();
   }
 
-  V.dangKy({ loai: 'o', ma: 'bai-cont', ten: 'Bãi container', kyDacTa: ['.'], cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'bai-cont', ten: 'Bãi container', ky: ['.'], cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
     var le = !!(s && s.le);
     nenBeTong(g, H, le);
     g.beginPath(); g.moveTo(10, 16); g.lineTo(10, 26); g.moveTo(10, 16); g.lineTo(22, 16); g.moveTo(90, 16); g.lineTo(78, 16); g.moveTo(90, 16); g.lineTo(90, 26);   // góc khung chỗ đặt
@@ -25,7 +25,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.beginPath(); g.moveTo(le ? 60 : 36, 30); g.lineTo(le ? 66 : 42, 36); H.vien(g, H.rgba(BM.vecVienRgb, 0.18), 2);                                    // vết nứt nhỏ
   } });
 
-  V.dangKy({ loai: 'o', ma: 'boong-tau', ten: 'Boong tàu', kyDacTa: ['T'], cacTrangThai: [{ co: true }, {}, { co: true, vien: 'tl' }, { co: true, vien: 'b', so: 2 }, { co: true, vien: '' }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'boong-tau', ten: 'Boong tàu', ky: ['T'], cacTrangThai: [{ co: true }, {}, { co: true, vien: 'tl' }, { co: true, vien: 'b', so: 2 }, { co: true, vien: '' }], ve: function (g, s, H) {
     s = s || {};
     if (!s.co) {
       V.nenNuoc(g, H, true);
@@ -56,7 +56,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
   } });
 
-  V.dangKy({ loai: 'o', ma: 'ray', ten: 'Ray cẩu', kyDacTa: ['R'], cacTrangThai: [{}, { doc: true }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'ray', ten: 'Ray cẩu', ky: ['R'], cacTrangThai: [{}, { doc: true }], ve: function (g, s, H) {
     var doc = !!(s && s.doc), i;
     nenBeTong(g, H, false);
     g.save();
