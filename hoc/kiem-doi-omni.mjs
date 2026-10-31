@@ -43,23 +43,23 @@ const LAP = (n, ds) => ['for i in range(' + n + '):'].concat(ds.map((s) => '    
 const CHO = (dk) => ['while ' + dk + ':', '    wait()'];
 const tom = (r) => (r.thang ? r.sao + ' sao, ô ' + r.soO + ', nhịp ' + r.soNhip : 'thua: ' + (r.chanDoan[0] || {}).ma);
 
-const ds = M.danhSach.filter((m) => m.chuong === 'doi-omni' || m.chuong === 'che-doi-omni');
+const ds = M.danhSach.filter((m) => /^(?:che-)?doi-omni\.([1-9]|10)$/.test(m.ma));
 console.log('— đội, robot khóa, hàm mới');
-kiem('gói có 20 màn (doi-omni 10, che-doi-omni 10)', ds.length === 20 && ds.filter((m) => m.chuong === 'doi-omni').length === 10);
+kiem('gói có 20 màn (doi-omni 10, che-doi-omni 10)', ds.length === 20 && ds.filter((m) => /^doi-omni\./.test(m.ma)).length === 10);
 kiem('mọi màn: R1 là xích, R2 là omni, cả hai có cảm biến khoảng cách', ds.every((m) => m.doi.length === 2 && m.doi[0].loaiRobot === 'xich' && m.doi[1].loaiRobot === 'omni' &&
   m.doi.every((d) => d.robot.camBien && d.robot.camBien[0].ma === 'khoang-cach' && ['front_clear', 'left_clear', 'right_clear'].every((t) => d.hamGoc.includes(t)))));
 kiem('robot tự động (coDinh) chỉ là xích; có ít nhất 3 màn mỗi chương', !ds.some((m) => m.doi[1].coDinh) &&
-  ['doi-omni', 'che-doi-omni'].every((c) => ds.filter((m) => m.chuong === c && m.doi[0].coDinh).length >= 3));
+  ['doi-omni', 'che-doi-omni'].every((c) => ds.filter((m) => m.ma.startsWith(c + '.') && m.doi[0].coDinh).length >= 3));
 kiem('màn tới cờ: hai xe đều có cờ riêng', ds.filter((m) => m.mucTieu === 'toi-co').every((m) => m.doi.every((d) => Array.isArray(d.co) && d.co.length)));
 const hamGoc = new Set(M.danhSach.flatMap((m) => (m.hamGoc || []).concat(...(m.doi || []).map((d) => d.hamGoc || []))));
 const HAM_MOI = { 'che-doi-omni.1': 'give_way', 'che-doi-omni.2': 'tail', 'che-doi-omni.3': 'let_pass' };
 for (const [ma, ten] of Object.entries(HAM_MOI)) {
   const m = get(ma);
   kiem(ma + ': tạo ' + ten + '() (taoHam), tên mới chưa có trong kho, không phải hàm gốc', J(m.taoHam) === J([ten]) && m.loiGiai.hamCuaEmMoi.length === 1 && m.loiGiai.hamCuaEmMoi[0].ten === ten &&
-    !khoTruoc.get(M.danhSach.find((x) => x.chuong === 'doi-omni').ma).some((h) => h.ten === ten) && !hamGoc.has(ten));
+    !khoTruoc.get(ds[0].ma).some((h) => h.ten === ten) && !hamGoc.has(ten));
 }
 kiem('chỉ ba màn tạo hàm có taoHam; màn sau dùng lại hàm (hamCuaEmCan)', ds.filter((m) => m.taoHam.length).map((m) => m.ma).join() === Object.keys(HAM_MOI).join() &&
-  ['give_way', 'tail', 'let_pass'].every((t) => ds.some((m) => m.chuong === 'che-doi-omni' && m.so > 3 && m.hamCuaEmCan.includes(t))));
+  ['give_way', 'tail', 'let_pass'].every((t) => ds.some((m) => m.ma.startsWith('che-doi-omni.') && m.so > 3 && m.hamCuaEmCan.includes(t))));
 kiem('một màn có robot tự động gọi hàm em chế (let_pass / tail)', ds.some((m) => m.doi[0].coDinh && m.so > 3 && /let_pass|tail/.test(m.maMau.doi[0].chinh.join())));
 
 /* ------------------------------------------------------------------ ý từng màn: lời sai thua hoặc mất sao */

@@ -674,6 +674,10 @@
       'pg.mo-cu.2': 'R1 hất đá bay vọt qua cổng rơi đè nút M giữ cổng mở!',
       'pg.mo-cu.3': 'Cổng mở toang, R1 mượn đà băng chuyền lướt thẳng về cờ.',
       'pg.mo-cu.4': 'Chế hàm lob_pad(n) và smart_pad() để tự lấp hố hoặc mở cổng.',
+      'pg.doi-omni.1': 'Drone nông nghiệp R2 của Luna bay lên mỏ đá hội quân cùng R1.',
+      'pg.doi-omni.2': 'R1 hất đá qua rào đè nút M, giữ cổng mở cho R2.',
+      'pg.doi-omni.3': 'R2 bay qua cổng, gieo thảm hoa giữ đất trên vách đá.',
+      'pg.doi-omni.4': 'open_dock(n) và mine_sow(c, n) giúp hai robot phối hợp nhịp nhàng.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

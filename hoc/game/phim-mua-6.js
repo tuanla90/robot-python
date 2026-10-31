@@ -10,6 +10,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var OMNI = { than: 'omni', tay: null, camBien: [] };
   var OMNI_NEM = { than: 'omni', tay: 'nem', camBien: [] };
   var OMNI_RADAR = { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }] };
+  var DRONE_R2 = { than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren', taiCho: true }], son: 'lam' };
   var Y = 158;
   var X0 = 20, Y0 = 26, C1 = 56;
 
@@ -305,6 +306,46 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
         truot(c, r, 900, 230, Y, 0.6);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      }
+    ],
+
+    /* ---------------------------------------------------------------- 9 · Đội mỏ đá (R2 trở lại) */
+    'doi-omni': [
+      // 1 · Drone nông nghiệp R2 của Luna bay lên mỏ đá hội quân cùng R1
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        var r1 = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 95, Y); k.appendChild(r1);
+        var r2 = c.xe(DRONE_R2, {}, 3, 3, 350, Y - 30); k.appendChild(r2);
+        truot(c, r2, 100, 225, Y - 30, 1.1);
+        c.sau(1200, function () { r1.mat('vui'); r2.mat('vui'); c.keu('moKhoa'); });
+      },
+      // 2 · R1 hất đá lên nút đè M giữ cổng mở cho R2
+      function (k, c) {
+        var s = c.san(k, ['#C..#', '#####', '#o=M#'], 4, X0, Y0, 'mo-da'), p1 = s.o(0, 2), p2 = s.o(0, 0);
+        var r1 = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 2, p1.x, p1.y);
+        var r2 = c.xe(DRONE_R2, {}, 1, 2, p2.x, p2.y);
+        k.appendChild(r1); k.appendChild(r2);
+        var da = s.vat['1,2'];
+        if (da) truot(c, da, 400, s.o(3, 2).x - 28, s.o(3, 2).y - 28, 0.6);
+        c.sau(1100, function () { r1.mat('vui'); r2.mat('vui'); c.keu('kep'); });
+      },
+      // 3 · R2 bay qua cổng gieo luống hoa giữ đất trên vách đá
+      function (k, c) {
+        var s = c.san(k, ['#...#', '#####', '#..M#'], 4, X0, Y0, 'mo-da'), p1 = s.o(0, 2), p2 = s.o(0, 0);
+        var r1 = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 2, p1.x, p1.y);
+        var r2 = c.xe(DRONE_R2, {}, 1, 2, p2.x, p2.y);
+        k.appendChild(r1); k.appendChild(r2);
+        diQua(c, s, r2, [[1, 0], [2, 0], [3, 0]], 300, 450);
+        c.sau(1700, function () { r1.mat('vui'); r2.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · code: open_dock(n) của R1 và mine_sow(c, n) của R2
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        c.code(k, ['open_dock(3)', 'mine_sow("red", 2)'], 10, 14);
+        var r1 = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 120, Y);
+        var r2 = c.xe(DRONE_R2, {}, 3, 3, 240, Y - 30);
+        k.appendChild(r1); k.appendChild(r2);
+        c.sau(900, function () { r1.mat('vui'); r2.mat('vui'); c.keu('thang'); });
       }
     ]
   };

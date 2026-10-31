@@ -34,7 +34,7 @@ const chuongMua3 = new Set(TT.goi.filter(g => g.mua === 'mua-3').flatMap(g => g.
 const chuongMua4 = new Set(TT.goi.filter(g => g.mua === 'mua-5').flatMap(g => g.chuong));
 const chuongMua6 = new Set(TT.goi.filter(g => g.mua === 'mua-6').flatMap(g => g.chuong));
 // 30/10 (user chọn A): tám màn drone cũ sạc tự động / recharge() dời sang mùa 5 trong hai chương chứa 4 màn (lo-trinh-hoc.js MUA_4_CU).
-const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...chuongMua6, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu', 'che-list-cu', 'che-may-son-cu', 'omni-cu', 'may-nem-xe', 'che-may-nem-xe', 'ban-xoay-cu', 'che-ban-xoay-cu']);
+const chuongTam = new Set([...chuongMua1, ...chuongMua2, ...chuongMua3, ...chuongMua4, ...chuongMua6, ...Object.keys(M.roiMua3 || {}), 'che-xich', 'drone-sac-cu', 'che-drone-sac-cu', 'doi-nam-cham-cu', 'che-doi-nam-cham-cu', 'che-list-cu', 'che-may-son-cu', 'omni-cu', 'doi-omni-cu', 'che-doi-omni-cu', 'may-nem-xe', 'che-may-nem-xe', 'ban-xoay-cu', 'che-ban-xoay-cu']);
 
 kiem('mã duy nhất, chương đánh số liền 1..n (mùa 1 tối đa 10, mùa sau đúng 10), ít nhất 380 màn gốc + các gói thêm', () => {
   assert.ok(M.danhSach.length >= 410);
@@ -78,7 +78,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'chinh-luc.7', 'chinh-luc.8', 'che-chinh-luc.5', 'che-chinh-luc.7',      // gói 6 mùa 6: chỉnh lực hất kết hợp radar (2 sân)
   'nhan-dang.2', 'nhan-dang.3', 'nhan-dang.4', 'nhan-dang.5', 'nhan-dang.6', 'nhan-dang.7', 'nhan-dang.8', 'nhan-dang.9',
   'che-nhan-dang.1', 'che-nhan-dang.2', 'che-nhan-dang.3', 'che-nhan-dang.4', 'che-nhan-dang.5', 'che-nhan-dang.6', 'che-nhan-dang.7', 'che-nhan-dang.9',      // gói 7 mùa 6: nhận dạng đá / quặng (2 sân)
-  'mo-cu.6', 'mo-cu.8', 'mo-cu.9', 'che-mo-cu.4', 'che-mo-cu.7', 'che-mo-cu.8', 'che-mo-cu.9');      // gói 8 mùa 6: mỏ đá cũ (2 sân)
+  'mo-cu.6', 'mo-cu.8', 'mo-cu.9', 'che-mo-cu.4', 'che-mo-cu.7', 'che-mo-cu.8', 'che-mo-cu.9',      // gói 8 mùa 6: mỏ đá cũ (2 sân)
+  'doi-omni.16', 'doi-omni.17', 'che-doi-omni.15', 'che-doi-omni.16', 'che-doi-omni.18', 'che-doi-omni.19');      // gói 9 mùa 6: R2 ở mỏ đá (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3) và gói 10 mùa 4 (drone-ke-vach) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
