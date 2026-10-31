@@ -64,7 +64,8 @@ for (const g of goi4) for (const [c] of g.chuong) {
     // kho lúc tới màn, cộng hàm của em mới / sửa của bài làm (như kiem-nhen.mjs `tron`): máy chấm đọc hàm của em từ kho, không từ baiLam.hamCuaEmMoi
     const kho = khoTruoc(m.id);
     const cham = (b) => {
-      const kq = kho.map((h) => ({ ten: h.ten, thamSo: h.thamSo.slice(), than: h.than.slice() }));
+      const capCu = new Set((b.hamCuaMan || []).filter((h) => h.capCu).map((h) => h.ten));
+      const kq = kho.filter((h) => !capCu.has(h.ten)).map((h) => ({ ten: h.ten, thamSo: h.thamSo.slice(), than: h.than.slice() }));
       for (const h of b.hamCuaEmMoi || []) { const i = kq.findIndex((x) => x.ten === h.ten), x = { ten: h.ten, thamSo: (h.thamSo || []).slice(), than: h.than.slice() }; if (i >= 0) kq[i] = x; else kq.push(x); }
       return Cham.cham(m, b, kq);
     };

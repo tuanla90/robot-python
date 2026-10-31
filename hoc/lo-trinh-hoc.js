@@ -2409,7 +2409,7 @@
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
     // PDM3a / PDM3b2 31/10 (mùa 3 part đúng mùa): mọi gói mùa 3 đã dựng lại trên nhện; màn xe cũ ở mùa ẩn (che-nam-cham-xe, doi-tay-xoay…) dùng DAY_CU bên dưới.
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
-    ['drone', 'list', 'may-son', 'che-list'].forEach(function (c) { delete chuongAn[c]; });
+    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon'].forEach(function (c) { delete chuongAn[c]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
@@ -2431,7 +2431,10 @@
       ['che-do-nhiet.4', { ten: 'find_warm', thamSo: [], than: ['turn_right()', 'while not warm():', '    turn_right()'] }],
       ['che-do-nhiet.7', { ten: 'switch_right', thamSo: [], than: ['turn_right()', 'switch_on()', 'turn_left()'] }],
       ['che-do-nhiet.8', { ten: 'auto_left_on', thamSo: [], than: ['turn_left()', 'auto_on()', 'turn_right()'] }],
-      ['may-son.6', { ten: 'dots', thamSo: ['n'], than: ['for i in range(n):', '    dot()', '    move()', '    move()'] }]
+      ['may-son.6', { ten: 'dots', thamSo: ['n'], than: ['for i in range(n):', '    dot()', '    move()', '    move()'] }],
+      ['che-cam-bon.2', { ten: 'go_to', thamSo: ['col'], than: ['while color("front") != col:', '    move()'] }],
+      ['che-cam-bon.4', { ten: 'green_step', thamSo: [], than: ['if color("front") == "green":', '    move()', 'elif color("left") == "green":', '    turn_left()', 'else:', '    turn_right()'] }],
+      ['che-cam-bon.6', { ten: 'sort_by_color', thamSo: [], than: ['c = color("front")', 'pick()', 'if c == "red":', '    turn_right()', '    drop()', '    turn_left()', 'else:', '    turn_left()', '    drop()', '    turn_right()'] }]
     ].forEach(function (x) { THAN_CU.push(x); });
     THAN_CU.forEach(function (x) { HAM_CU[x[1].ten] = copy(x[1]); DAY_CU.push([x[0], x[1].ten]); });
     // Dò bắc cầu: màn gọi thẳng, hay gọi hàm của em (kho cộng dồn theo lời giải các màn trước) mà thân nó gọi tới các hàm cũ.
