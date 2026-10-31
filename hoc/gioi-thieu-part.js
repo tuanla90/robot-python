@@ -293,11 +293,16 @@
     'quet-ma': {
       khe: 'camBien', ten: 'Đầu đọc mã container',
       moTa: 'Đầu quét quang học gắn ở đầu cần, đọc mã số in trên nóc container.',
-      lenh: ['read_code'],
+      lenh: ['read_code', 'weight'],
       moTaLenh: {
-        read_code: 'Đọc mã số container trên đỉnh chồng ở ô đầu cần, trống là -1'
+        read_code: 'Đọc mã số container trên đỉnh chồng ở ô đầu cần, trống là -1',
+        weight: 'Đo số tấn đang treo hoặc số tấn của container trên đỉnh chồng, trống là 0'
       },
-      gioi: ['read_code() trả về mã số nguyên của container trên cùng ở ô đầu cần', 'Đọc không tốn nhịp'],
+      gioi: [
+        'read_code() trả về mã số nguyên của container trên cùng ở ô đầu cần',
+        'Đọc không tốn nhịp',
+        { can: ['weight'], chu: 'weight() trả về số tấn đang treo hoặc số tấn của container trên đỉnh chồng, trống là 0' }
+      ],
       khong: ['Chỉ đọc được container trên đỉnh chồng ngay dưới đầu cần'],
       luuY: ['Khi ô dưới đầu cần không có container, read_code() trả về -1.']
     }

@@ -200,4 +200,34 @@
       }
     }
   ]);
+
+  /* ================================================================ 7. can-tai — Cân tải đầu cần */
+  PG.dangKy('can-tai', [
+    { Chu: ['Có những container chứa máy móc nặng tới 3 hoặc 4 tấn.', 'Đội Chấn Hưng lắp CÂN TẢI ĐẦU CẦN để đo khối lượng và giữ cần cẩu an toàn!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('bai-cang'), 2, 2);
+        dat(s, veV('container', { so: 28, mau: 'do' }, 1.5), 2, 2);
+        dat(s, may(CAU_QUET, { nac: 4, tam: 1, camBien: { bat: true } }, 0), 2, 1);
+        hen(function () {
+          var b = h('div', 'pg-buble');
+          b.appendChild(chu('weight() = 3', 'pg-nhan-nho'));
+          s.appendChild(b);
+        }, 380);
+      }
+    },
+    { Chu: ['weight() trả về số tấn của container trên đỉnh chồng, và ở tầm vươn 2 sức nặng nhân đôi.', 'Kiểm tra weight() trước khi nhấc đôi hay vươn xa để không vượt ngưỡng taiToiDa!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('boong-tau', { co: true }), 2, 0);
+        dat(s, veV('container', { so: 24, mau: 'lam' }, 1.5), 2, 0);
+        dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
+        m.appendChild(code('if weight() <= 2:\n    pick_up2()\nelse:\n    pick_up()'));
+      }
+    }
+  ]);
 })();

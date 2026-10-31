@@ -54,8 +54,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     else for (var i = 0; i < goc.length && !tay; i++) tay = TAY_THEO_LENH[goc[i]] || null;
     var cam = copyCam(r.camBien).filter(function (c) { return c.ma !== 'pin'; });
     if (than === 'drone' && goc.indexOf('look') >= 0 && !cam.some(function (c) { return c.ma === 'camera-bay'; })) cam.push({ ma: 'camera-bay', o: 'bung' });       // màn có look() mà chưa khai camera nhìn xuống: lắp camera-bay ở ổ bung (như tay suy từ lệnh tay)
-    if (than === 'cau' && goc.indexOf('read_code') >= 0 && !cam.some(function (c) { return c.ma === 'quet-ma'; })) cam.push({ ma: 'quet-ma', o: 'tren' });
-    if (than === 'cau' && goc.indexOf('weight') >= 0 && !cam.some(function (c) { return c.ma === 'can-nang'; })) cam.push({ ma: 'can-nang', o: 'bung' });
+    if (than === 'cau' && (goc.indexOf('read_code') >= 0 || goc.indexOf('weight') >= 0) && !cam.some(function (c) { return c.ma === 'quet-ma'; })) cam.push({ ma: 'quet-ma', o: 'tren' });
     if (than !== 'drone' && than !== 'nhen' && than !== 'cau' && (goc.indexOf('distance') >= 0 || goc.indexOf('warm') >= 0) && !cam.some(function (c) { return c.ma === 'hong-ngoai'; })) cam.push({ ma: 'hong-ngoai', o: 'tren' });
     // P1 mùa 3: cảm biến từ 'tu' là part riêng. Màn có front_metal / front_pole mà KHÔNG khai cảm biến nào ở hông (không khoang-cach, không tu) thì lắp 'tu' ở hông;
     // màn cũ mùa 1–2 đều khai khoang-cach (cảm biến từ ngày xưa ghép vào tai khoảng cách) nên hình cũ y nguyên; màn mùa 3 khai thẳng { ma: 'tu', o: 'hong' }.
