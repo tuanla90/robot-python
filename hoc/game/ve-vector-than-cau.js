@@ -7,7 +7,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    hamGoc: swing_left, swing_right, extend, retract, wait (gốc gói 1) + rail (nâng cấp gói 5).
 
    HÀM VẼ CHO san-ve.js (gói nối lõi), toạ độ PIXEL SÂN:
-     VeVector.veCanCau(g, { bx, by, nac, tam, o, treo, doi, be, cfg, st, ray, bong })  → { tx, ty } tâm ô đầu cần (px)
+     VeVector.veCanCau(g, { bx, by, nac, tam, o, treo, doi, be, cfg, st, ray, bong, nang, stCont })  → { tx, ty } tâm ô đầu cần (px)
        bx, by   tâm ô BỆ (px);  o  cạnh ô (px);  nac 0–7 (0 lên, 1 lên-phải, 2 phải, 3 xuống-phải, 4 xuống, 5 xuống-trái, 6 trái, 7 lên-trái; số lẻ / vượt 8 lấy mod 8;
                  nấc chéo đi chéo ô: đầu cần ở bệ + tam × (±1, ±1) ô);  tam 1–3 (cho phép số lẻ, vd 1,5, để hoạt cảnh vươn / thu mượt; nac cũng được lẻ khi quay mượt).
        treo     mảng container đang treo [{ so, tan? }] đáy → đỉnh (0, 1 hay 2 cái); trống = chỉ cáp + móc.
@@ -16,6 +16,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
        cfg, st  cấu hình robot { than: 'cau', tay, camBien, son } và trạng thái { than: { mat }, tay: {…}, camBien: { bat, can } } như VeVector.robot (chỉ dùng khi be).
        ray      'ngang' | 'doc' | false: giá bánh ray dưới chân đế (chỉ khi be).
        bong     false: không vẽ bóng đổ của container treo / móc (mặc định có).
+       nang     0..1 (mặc định 1): container treo đang được nhấc lên / hạ xuống (san-ve.js hoạt cảnh pick_up / set_down): 0 = cỡ nằm sàn, bóng sát; 1 = treo to hơn 12 %, bóng xa.  stCont: trạng thái thêm cho container treo ({ hienTan }).
        Thứ tự vẽ: [bệ] → cần (giàn vàng) → bóng đổ → container treo (to hơn 12%, gần camera hơn) / cáp + móc. Gọi SAU khi vẽ vật trên sân (cần cao hơn mọi thứ).
      VeVector.veBeCau(g, { bx, by, o, nac, cfg, st, ray })  bệ riêng (chân đế không quay, phần trên quay theo nac, cùng cỡ thu CO_THAN như robot).
      VeVector.NAC_CAU = [[dx, dy] × 8]  véc-tơ ô của từng nấc. */
@@ -122,8 +123,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.restore();
     H.tron(g, rx, ry, c * 0.06); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, Math.max(1, c * 0.02));
     if (treo.length) {
-      var s = c * 1.12, x0 = tx - s / 2, y0 = ty - s / 2;
-      if (o.bong !== false) { H.bo(g, x0 + s * 0.06 + c * 0.1, y0 + s * 0.21 + c * 0.13, s * 0.88, s * 0.58, c * 0.05); H.to(g, H.rgba(BM.vecBongRgb, 0.28)); }
+      var ng = typeof o.nang === 'number' ? Math.max(0, Math.min(1, o.nang)) : 1;                                                                   // gói nối 31/10: 0 = vừa chạm sàn (cỡ 86 % ô, bóng sát) … 1 = treo (112 %, bóng xa)
+      var s = c * (0.86 + 0.26 * ng), x0 = tx - s / 2, y0 = ty - s / 2;
+      if (o.bong !== false) { H.bo(g, x0 + s * 0.06 + c * (0.02 + 0.08 * ng), y0 + s * 0.21 + c * (0.03 + 0.1 * ng), s * 0.88, s * 0.58, c * 0.05); H.to(g, H.rgba(BM.vecBongRgb, 0.28)); }
       g.save(); g.translate(x0, y0); g.scale(s / 100, s / 100);
       if (treo.length > 1) V.veChongCont(g, H, treo, o.stCont); else V.veContainer(g, H, 6, 21, 88, 58, treo[0].so, Object.assign({ tan: treo[0].tan }, o.stCont || {}));
       g.restore();
