@@ -173,10 +173,12 @@ for (const [ma, ten] of Object.entries(TAO)) {
   kiem(ma + ': tạo ' + ten + '() lần đầu (tên mới, chưa có trong kho)', J(m.taoHam) === J([ten]) && !khoTruoc.get(ma).some((h) => h.ten === ten) && m.loiGiai.hamCuaEmMoi.some((h) => h.ten === ten));
 }
 kiem('chương 1 không tạo hàm', ds1.every((m) => !m.taoHam.length && !m.loiGiai.hamCuaEmMoi.length));
-for (const m of ds2.filter((x) => (x.maMau.hamCuaMan || []).length)) {
-  const ten = m.maMau.hamCuaMan.map((h) => h.ten);
+// PDM3a 31/10: kick của che-nam-cham.1 (gói 2 mùa 3 nay là nhện) được lộ trình cấp lại cho màn ẩn làm hàm của màn gắn cờ capCu: cố ý trùng tên, bỏ qua.
+const hamMan = (b) => (b.hamCuaMan || []).filter((h) => !h.capCu);
+for (const m of ds2.filter((x) => hamMan(x.maMau).length)) {
+  const ten = hamMan(m.maMau).map((h) => h.ten);
   kiem(m.ma + ': hàm của màn ' + ten.join(', ') + ' không trùng kho, mẫu hỏng còn lời giải sửa',
-    ten.every((t) => !khoTruoc.get(m.ma).some((h) => h.ten === t) && !kho.has(t)) && J(m.maMau.hamCuaMan) !== J(m.loiGiai.hamCuaMan));
+    ten.every((t) => !khoTruoc.get(m.ma).some((h) => h.ten === t) && !kho.has(t)) && J(hamMan(m.maMau)) !== J(hamMan(m.loiGiai)));
 }
 {
   const c9 = man('che-doi-tay-xoay.9');

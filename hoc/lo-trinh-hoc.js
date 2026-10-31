@@ -906,8 +906,10 @@
     { ma: 'nhen', ten: 'Nhện', loai: 'bo-phan', hinh: 'nhen',
       // 29/10 (phiên Mùa 3): khai đủ thứ tự, màn mới (man-than-nhen.js) xen giữa màn có sẵn; màn mới chưa khai ở đây thì nối cuối như cũ.
       chuong: [['nhen', ['nhen.11', 'nhen.1', 'nhen.12', 'nhen.13', 'nhen.14', 'nhen.15', 'nhen.8', 'nhen.16', 'nhen.17', 'nhen.18']], ['chuoi-nhen', ['chuoi-nhen.1', 'chuoi-nhen.2', 'chuoi-nhen.3', 'nhen.4', 'nhen.7', 'chuoi-nhen.4', 'chuoi-nhen.5', 'chuoi-nhen.6', 'chuoi-nhen.7', 'chuoi-nhen.8']]] },
+    // PDM3a 31/10 (part đúng mùa): gói 2 toàn màn mới trên nhện + nam châm bụng (man-nam-cham-n.js); màn xe cũ nam-cham.1 .4 .5 .7 .8 và che-nam-cham.1 .8
+    // cất ra chương rời nam-cham-xe / che-nam-cham-xe (ROI_MUA_3, mùa ẩn, mã giữ).
     { ma: 'nam-cham', ten: 'Nam châm', loai: 'bo-phan', hinh: 'nam-cham',
-      chuong: [['nam-cham', ['nam-cham.11', 'nam-cham.12', 'nam-cham.1', 'nam-cham.4', 'nam-cham.7', 'nam-cham.8', 'nam-cham.14', 'nam-cham.13', 'nam-cham.5', 'nam-cham.15']], ['logic-nam-cham', ['logic-nam-cham.1', 'che-nam-cham.1', 'logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'che-nam-cham.8', 'logic-nam-cham.6', 'logic-nam-cham.7', 'logic-nam-cham.8']]] },
+      chuong: [['nam-cham', day('nam-cham', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])], ['logic-nam-cham', day('logic-nam-cham', MUOI)]] },
     { ma: 'cam-ung-tu', ten: 'Cảm biến từ', loai: 'bo-phan',      // user 29/10: theo tên thẻ part (gioi-thieu-part.js), trước: Cảm ứng từ
       chuong: [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]] },
     { ma: 'bai-tu', ten: 'Bãi từ',
@@ -959,10 +961,12 @@
   // Rời mùa 3 (mùa 4, ẩn, giữ thứ tự cũ, vẫn chơi được bằng "Mở hết"): màn của chương mùa 3 dùng lại mã mà không thuộc MUA_3 thành chương riêng, đứng đúng
   // chỗ chương cũ trong thuTu (THAY_CU). nam-cham.9 (omni, mùa 5); doi-xich 8 màn bậc thang S; che-doi-xich cả 10 (bậc thang S, hay cần hàm của
   // che-doi-ho-bang). Gói cũ đổi mã khi mã cũ đã thuộc gói mùa 3 (cờ goi-mo:<mã> của gói mùa 3).
-  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'] };     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
-  var TEN_ROI_3 = { 'doi-xich-bac': 'Đội xích leo bậc', 'che-doi-xich-bac': 'Hàm đội xích leo bậc', 'nam-cham-omni': 'Nam châm trên omni' };
-  var THAY_CU = { 'doi-xich': ['doi-xich-bac'], 'che-doi-xich': ['che-doi-xich-bac'], 'nam-cham': ['nam-cham-omni'] };
-  var GOI_DOI_MA = { 'doi-xich': { ma: 'doi-xich-bac', ten: 'Đội xích leo bậc' }, 'nam-cham': { ma: 'nam-cham-omni', ten: 'Nam châm trên omni' } };
+  // PDM3a 31/10: nam-cham-xe (nam-cham.1 .4 .5 .7 .8) và che-nam-cham-xe (che-nam-cham.1 .8): màn nam châm mũi xe hai bánh rời gói 2 (gói 2 nay là nhện + nam châm bụng).
+  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'],     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
+    'nam-cham-xe': day('nam-cham', [1, 4, 5, 7, 8]), 'che-nam-cham-xe': ['che-nam-cham.1', 'che-nam-cham.8'] };
+  var TEN_ROI_3 = { 'doi-xich-bac': 'Đội xích leo bậc', 'che-doi-xich-bac': 'Hàm đội xích leo bậc', 'nam-cham-omni': 'Nam châm trên omni', 'nam-cham-xe': 'Nam châm mũi xe', 'che-nam-cham-xe': 'Chế lệnh nam châm mũi xe' };
+  var THAY_CU = { 'doi-xich': ['doi-xich-bac'], 'che-doi-xich': ['che-doi-xich-bac'], 'nam-cham': ['nam-cham-omni', 'nam-cham-xe'], 'che-nam-cham': ['che-nam-cham-xe'] };
+  var GOI_DOI_MA = { 'doi-xich': { ma: 'doi-xich-bac', ten: 'Đội xích leo bậc' }, 'nam-cham': { ma: 'nam-cham-omni', ten: 'Nam châm trên xe' } };
   // Sửa màn có sẵn (bảng P0): game bỏ bậc thang. nhen.8, che-nhen.6: ô S thành sàn; nhện bước lên S như sàn (2 nhịp mỗi bước) nên lời giải, nhịp, ô
   // không đổi: sửa thẳng sân (không qua sua()), không đo lại sao.
   (function () {
@@ -2363,6 +2367,12 @@
     // PDM2c2 31/10: gói 10 dựng lại không gọi hàm Bệ vòi xích nữa: bỏ CAP_HAM_CU (cấp bản cũ cho gói 10) và các mục DAY_CU của che-be-sung.
     var chuongAn = {};
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
+    // PDM3a 31/10 (mùa 3 part đúng mùa): gói 2–4 dựng lại trên nhện nên hàm của em xe hai bánh của chúng (kick của che-nam-cham.1; seek_iron, take_iron, seek_safe,
+    // face_iron của che-cam-ung-tu; fetch_iron, loop_right, pull_iron của che-bai-tu) không còn ai dạy. Gói 7 (che-nam-cham.3 gọi kick) và gói 10 (tong-hop-3 /
+    // trum-mua-3 gọi hàm gói 3–4) còn là màn xe: cấp bản cũ làm hàm của màn (capCu, như CAP_HAM_CU mùa 2 ở PDM2b) tới khi PDM3b / PDM3c dựng lại các gói đó.
+    var CAP_HAM_CU_3 = { 'che-doc-cuc': true, 'tong-hop-3': true, 'trum-mua-3': true };
+    Object.keys(CAP_HAM_CU_3).forEach(function (c) { chuongAn[c] = true; });
+    if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
     });

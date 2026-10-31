@@ -719,30 +719,12 @@
     buocTaoHam('trail', 'Bấm Hàm mới, đặt tên trail và thêm đối số path.', CHU_TAO)
   ].concat(buocThuVeChay('Thân hàm: for c in path: rồi go(c). Bấm Chạy.'));
 
-  // MÙA 3 gói 2: nam châm cực N (nam-cham.11 trình diễn), and / or (logic-nam-cham.1 trình diễn, .2 ghép and, .4 ghép or, .7 tạo to_turn)
-  H['nam-cham.11'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: magnet_n() hút vật sắt về mũi xe, magnet_off() thả nó xuống ô đích.');
-  H['logic-nam-cham.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: xe đi khi trước mặt trống VÀ bên phải chưa có lối, nên dừng đúng chỗ rẽ.');
-  function buocGhep(nx, chuVe, chuNut, daLam) {
-    return [
-      { dich: '.num.dkm.cam', chu: chuVe, xong: 'bam', han: 0, rong: 170, daLam: function () { return thay('nut:chon-ghep') || daLam(); } },
-      { phu: true, dich: '[data-ghep="' + nx + '"]', chu: chuNut, xong: 'bam', han: 0, rong: 170, daLam: daLam }
-    ];
-  }
-  H['logic-nam-cham.2'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: sân 1 xe đi quá chỗ rẽ vì chỉ hỏi front_clear().', xong: 'chay', daLam: daChay }
-  ].concat(buocGhep('and', 'Chạm front_clear() trên dòng while.', 'Chạm + and để ghép thêm một vế.', function () { return dongCo(/^\s*while .+ and /) >= 0; }),
-    [{ dich: function () { var c = document.querySelectorAll('.num.dkm.cam'); return c.length > 1 ? [c[1]] : []; }, chu: 'Chạm vế thứ hai, chọn not right_clear().', xong: 'bam', han: 0, rong: 170,
-      daLam: function () { return dongCo(/^\s*while front_clear\(\) and not right_clear\(\):/) >= 0; } },
-    buocChay('Xe đi khi trước mặt trống và bên phải chưa có lối. Bấm Chạy.')]);
-  H['logic-nam-cham.4'] = [
-    { khongAn: true, dich: 'nut:chay', chu: 'Chạy thử: tới góc đầu tiên trước mặt là tường nên xe dừng.', xong: 'chay', daLam: daChay }
-  ].concat(buocGhep('or', 'Chạm front_clear() trên dòng while.', 'Chạm + or: chỉ cần một vế đúng là đi tiếp.', function () { return dongCo(/^\s*while .+ or /) >= 0; }),
-    [{ dich: function () { var c = document.querySelectorAll('.num.dkm.cam'); return c.length > 1 ? [c[1]] : []; }, chu: 'Chạm vế thứ hai, chọn right_clear().', xong: 'bam', han: 0, rong: 170,
-      daLam: function () { return dongCo(/^\s*while front_clear\(\) or right_clear\(\):/) >= 0; } },
-    buocChay('Bấm Chạy.')]);
-  H['logic-nam-cham.7'] = [
-    buocTaoHam('to_turn', 'Bấm Hàm mới để tạo to_turn().', CHU_TAO)
-  ].concat(buocThuVeChay('Thân hàm: while front_clear() and not right_clear(): rồi move(). Bấm Chạy.'));
+  // MÙA 3 gói 2 (PDM3a 31/10: robot phân loại = nhện + nam châm bụng): nam-cham.11 trình diễn; logic-nam-cham.1 trình diễn or, .3 tạo carry_down, .4 tạo carry_up, .5 trình diễn and
+  H['nam-cham.11'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện đứng trên mẩu sắt, magnet_n() hút nó lên bụng, tới thùng thì magnet_off() thả.');
+  H['logic-nam-cham.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: chữ c là "s" HOẶC "S" thì nhện hút mẩu đó mang xuống thùng.');
+  H['logic-nam-cham.3'] = [buocTaoHam('carry_down', 'Bấm Hàm mới để tạo carry_down().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hút, wait(), go_down(), thả, wait(), go_up(). Bấm Chạy.'));
+  H['logic-nam-cham.4'] = [buocTaoHam('carry_up', 'Bấm Hàm mới để tạo carry_up().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hút, wait(), go_up(), thả, wait(), go_down(). Bấm Chạy.'));
+  H['logic-nam-cham.5'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: c khác "g" VÀ khác "N" mới hút, nên mẩu N nằm sẵn trên thùng được bỏ qua.');
 
   // MÙA 3 gói 3: cảm biến từ front_metal() (cam-ung-tu.1 trình diễn), hàm dò sắt (che-cam-ung-tu.1 trình diễn; .2 seek_iron, .3 take_iron, .6 seek_safe, .8 face_iron)
   H['cam-ung-tu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: đầu dò chữ U thấy sắt nên front_metal() là True, xe hút vật về rồi thả.');
@@ -794,5 +776,6 @@
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2,
-    'che-cam-bien.5': 2, 'che-cam-bien.6': 2 };       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
+    'che-cam-bien.5': 2, 'che-cam-bien.6': 2,       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
+    'nam-cham.11': 2, 'logic-nam-cham.1': 2 };       // PDM3a 31/10: gói 2 mùa 3 trên nhện + nam châm bụng
 })();

@@ -408,7 +408,8 @@ const LOI_GIA_3 = process.argv.includes('--loi-gia-mua-3');
 // che-doi-xich cả 10 màn rời mùa 3.
 const BANG_MUA_3 = [
   ['nhen', 'bo-phan', [['nhen', ['nhen.11', 'nhen.1', 'nhen.12', 'nhen.13', 'nhen.14', 'nhen.15', 'nhen.8', 'nhen.16', 'nhen.17', 'nhen.18']], ['chuoi-nhen', ['chuoi-nhen.1', 'chuoi-nhen.2', 'chuoi-nhen.3', 'nhen.4', 'nhen.7', 'chuoi-nhen.4', 'chuoi-nhen.5', 'chuoi-nhen.6', 'chuoi-nhen.7', 'chuoi-nhen.8']]]],      // 29/10 phiên Mùa 3: bảng khai đủ thứ tự (có sẵn xen màn mới), như dòng chương trong MUA_3
-  ['nam-cham', 'bo-phan', [['nam-cham', ['nam-cham.11', 'nam-cham.12'].concat(day('nam-cham', [1, 4, 7, 8, 14, 13, 5, 15]))], ['logic-nam-cham', ['logic-nam-cham.1', 'che-nam-cham.1', 'logic-nam-cham.2', 'logic-nam-cham.3', 'logic-nam-cham.4', 'logic-nam-cham.5', 'che-nam-cham.8', 'logic-nam-cham.6', 'logic-nam-cham.7', 'logic-nam-cham.8']]]],
+  // PDM3a 31/10: gói 2 toàn màn mới trên nhện + nam châm bụng; màn xe cũ (nam-cham.1 .4 .5 .7 .8, che-nam-cham.1 .8) rời sang chương nam-cham-xe / che-nam-cham-xe (M.roiMua3).
+  ['nam-cham', 'bo-phan', [['nam-cham', day('nam-cham', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])], ['logic-nam-cham', day('logic-nam-cham', MUOI)]]],
   ['cam-ung-tu', 'bo-phan', [['cam-ung-tu', ['cam-ung-tu.1', 'cam-ung-tu.2', 'cam-ung-tu.3', 'cam-ung-tu.4', 'cam-ung-tu.6', 'cam-ung-tu.5', 'cam-ung-tu.7', 'cam-ung-tu.8', 'cam-ung-tu.9', 'cam-ung-tu.10']], ['che-cam-ung-tu', ['che-cam-ung-tu.1', 'che-cam-ung-tu.2', 'che-cam-ung-tu.3', 'che-cam-ung-tu.4', 'che-cam-ung-tu.8', 'che-cam-ung-tu.5', 'che-cam-ung-tu.6', 'che-cam-ung-tu.7', 'che-cam-ung-tu.9', 'che-cam-ung-tu.10']]]],
   ['bai-tu', undefined, [['bai-tu', []], ['che-bai-tu', []]]],
   ['nhay', 'bo-phan', [['nhay', ['nhay.1', 'nhen.3', 'nhen.2', 'nhay.2', 'nhen.9', 'nhay.3', 'nhay.4', 'nhen.5', 'nhen.6', 'nhen.10']], ['che-nhen', day('che-nhen', [1, 2, 8, 5, 9, 4, 3, 7, 6, 10])]]],
@@ -474,9 +475,9 @@ if (LOI_GIA_3) {
   // (e) magnet_s trên khay nam-cham.7 (gói 2); (f) bậc thang ở doi-xich.3; (g) che-nhen.4 cần hàm chưa ai tạo.
   const a = get('nhen.1'), b = get('nhen.8'); [a.so, b.so] = [b.so, a.so]; M.tinhLai();
   get('nhen.1').loiGiai.chinh = ['path = "RRR"'].concat(get('nhen.1').loiGiai.chinh);
-  get('nam-cham.1').loiGiai.chinh = get('nam-cham.1').loiGiai.chinh.concat(['if front_clear() and front_clear():', '    wait()']);
+  get('nam-cham.11').loiGiai.chinh = get('nam-cham.11').loiGiai.chinh.concat(['if front_clear() and front_clear():', '    wait()']);      // PDM3a: nam-cham.1 rời mùa 3, cắm vào nam-cham.11
   get('nhen.2').robot = Object.assign({}, get('nhen.2').robot, { camBien: [{ ma: 'mau', o: 'bung' }] });
-  get('nam-cham.7').hamGoc = get('nam-cham.7').hamGoc.concat(['magnet_s']);
+  get('nam-cham.17').hamGoc = get('nam-cham.17').hamGoc.concat(['magnet_s']);      // PDM3a: nam-cham.7 rời mùa 3, cắm vào nam-cham.17
   get('doi-xich.3').san = get('doi-xich.3').san.map((d, i) => i === 0 ? 'S' + d.slice(1) : d);
   get('che-nhen.4').hamCuaEmCan = get('che-nhen.4').hamCuaEmCan.concat(['fly_home']);
   get('bung-nhen.10').huyHieu = { ma: 'khong-co-hinh', ten: 'Huy hiệu giả' };      // (i) huy hiệu không có hình vector
@@ -734,7 +735,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
   assert.equal(ds[6].man[0].ma, 'cam-bien-ben.1');      // HD2: màn trình diễn left_clear đứng đầu gói 7
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
-  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 180);     // P0 mùa 4 (29/10): gói cũ dời sang mùa 5 (ẩn), ngưỡng tính lại trong mùa 5; 30/10 mùa 5 thêm gói mau, drone-sac-cu, flycam cũ (95 → 155), doi-nam-cham-cu (bốn màn đội, → 165), che-list-cu (→ 180)
+  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 195);     // PDM3a 31/10: gói Nam châm trên xe (mùa 5 ẩn) thêm 7 màn xe rời gói 2 mùa 3 (180 → 195). P0 mùa 4 (29/10): gói cũ dời sang mùa 5 (ẩn), ngưỡng tính lại trong mùa 5; 30/10 mùa 5 thêm gói mau, drone-sac-cu, flycam cũ (95 → 155), doi-nam-cham-cu (bốn màn đội, → 165), che-list-cu (→ 180)
 });
 
 kiem('bản lưu cũ giữ sao theo mã, bỏ nháp lỗi thời, nháp mới đọc lại được', () => {
