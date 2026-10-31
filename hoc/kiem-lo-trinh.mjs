@@ -850,16 +850,19 @@ kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện
     const goi = [...loiGoi(dongBacCau(m).dong)].filter(t => CAM_4.includes(t));
     assert.deepEqual(goi, [], m.ma + ' gọi lệnh ngoài mùa 4');
   }
-  const GOI_SIET_4 = 6, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), mocSiet = mocGoi4(GOI_SIET_4 + 1);
+  const GOI_SIET_4 = 7, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), moc7 = mocGoi4(7), mocSiet = mocGoi4(GOI_SIET_4 + 1);
   for (let v = dau4; v < mocSiet; v++) {
     const m = M.danhSach[v], r = m.robot || {}, cb = r.camBien || [];
     assert.equal(m.loaiRobot, 'drone', m.ma + ' loaiRobot');
     assert.equal(r.than, 'drone', m.ma + ' thân');
-    assert.ok(!m.doi, m.ma + ' không đội ở gói 1–4');
+    assert.ok(!m.doi, m.ma + ' không đội ở gói 1–7');
     if (v < moc2) assert.ok(!r.tay, m.ma + ' gói 1 chưa có tay');
     else assert.equal(r.tay, 'son', m.ma + ' tay phải là son');
     if (v < moc3) assert.equal(cb.length, 0, m.ma + ' gói 1–2 chưa có cảm biến');
-    else assert.deepEqual(cb.map(c => c.ma), ['camera-4'], m.ma + ' gói 3–4 cảm biến camera-4');
+    else {
+      assert.deepEqual(cb.map(c => c.ma), ['camera-4'], m.ma + ' gói 3–7 cảm biến camera-4');
+      if (v >= moc7) assert.equal(cb[0].taiCho, true, m.ma + ' gói 7 camera-4 taiCho');
+    }
   }
 });
 kiem4('(c) bút liền mở ở gói 6: không pen_down / pen_up trên khay hay trong lời giải (bắc cầu) của màn mùa 4 đứng trước gói 6', () => {

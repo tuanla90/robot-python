@@ -1,8 +1,8 @@
 /* ============================================================================
-   man-nhin-duoi-chan.js — "Mật Lệnh Robot": NGÂN HÀNG MÀN MỚI của mùa 4, gói 7 "Nhìn dưới chân" (KE-HOACH-MUA-4.md; phiên "Mùa 4" tự viết, 30/10).
+   man-nhin-duoi-chan.js — "Mật Lệnh Robot": NGÂN HÀNG MÀN MỚI của mùa 4, gói 7 "Nhìn dưới chân" (KE-HOACH-MUA-4.md; PDM4b 31/10 dựng lại trên drone nông nghiệp).
    User 29/10: camera gốc đọc 4 hướng, NÂNG CẤP thêm "tại chỗ". User 30/10 chọn phương án A: chương flycam cũ (look()) sang mùa 5; gói 7 dựng màn mới.
-     - `nhin-duoi`: chương 1 "Nhìn xuống đọc màu": drone gắn camera bốn hướng bản nâng cấp ({ ma: 'camera-4', taiCho: true }): color("here") đọc ô ngay dưới bụng
-       (hộp nằm dưới thì đọc màu hộp). Bốn hướng "up" / "down" / "left" / "right" vẫn có: "down" là ô phía dưới trên bản đồ, KHÁC "here".
+     - `nhin-duoi`: chương 1 "Nhìn xuống đọc màu": drone nông nghiệp gắn bộ gieo hạt dưới bụng + camera bốn hướng bản nâng cấp ({ ma: 'camera-4', o: 'tren', taiCho: true }):
+       color("here") đọc ô ngay dưới bụng. Bốn hướng "up" / "down" / "left" / "right" vẫn có: "down" là ô phía dưới trên bản đồ, KHÁC "here".
      - `che-nhin-duoi`: chương 2 "Chế lệnh: đọc đơn hàng".
    Máy kiểm: hoc/kiem-man-mua-4.mjs, hoc/kiem-lo-trinh.mjs mục mùa 4, hoc/kiem-cam-4.mjs (lõi "here").
    ========================================================================== */
@@ -13,22 +13,22 @@
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
   var BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
-  var NC = ['magnet_n', 'magnet_s', 'magnet_off'];
+  var SON = ['ink', 'dot', 'pen_down', 'pen_up'];
   function bai(chinh, them) { return Object.assign({ chinh: chinh.slice() }, them || {}); }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
   function LAP(n, than) { return ['for i in range(' + n + '):'].concat((Array.isArray(than) ? than : [than]).map(function (s) { return '    ' + s; })); }
 
-  /** Drone gắn camera bốn hướng NÂNG CẤP (đọc được "here"); m.nam: true thì treo thêm nam châm. */
+  /** Drone nông nghiệp gắn bộ gieo hạt dưới bụng + camera bốn hướng NÂNG CẤP (đọc được "here"); m.nam: true thì mục tiêu to-hinh (gieo hạt). */
   function man(m) {
     var nam = m.nam;
     delete m.nam;
     m.chuong = m.chuong || 'nhin-duoi';
     m.cauTruc = ['for', 'if', 'while', 'list'];
     m.loaiRobot = 'drone';
-    m.robot = { than: 'drone', tay: nam ? 'nam-cham' : null, camBien: [{ ma: 'camera-4', o: 'tren', taiCho: true }] };
-    m.hamGoc = m.hamGoc || BAY.concat(nam ? NC : [], ['color']);
-    m.mucTieu = m.mucTieu || (nam ? 'dua-vat' : 'toi-co');
-    if (nam) { m.vatCan = 'sat'; m.nhipTheoLoiGiai = true; }
+    m.robot = { than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren', taiCho: true }] };
+    m.hamGoc = m.hamGoc || BAY.concat(SON, ['color']);
+    m.mucTieu = m.mucTieu || (nam ? 'to-hinh' : 'toi-co');
+    if (nam) m.nhipTheoLoiGiai = true;
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = m.khung || { chinh: 10, moiHam: 10 };
     m.loiSai = m.loiSai || [];
@@ -41,15 +41,15 @@
   var SAN_DUONG = [['ggb#', '##gb', '###F'], ['b###', 'gb##', '#ggF']];
   var C_DEM = ['n = 0', 'for i in range(4):', '    go_right()', '    if color("here") == "red":', '        n = n + 1', 'for i in range(n):', '    go_down()'];
   var C_GHI = ['a = []', 'for i in range(3):', '    go_right()', '    a.append(color("here"))', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
-  var C_HOP = ['go_right()', 'c = color("here")', 'magnet_n()', 'wait()', 'if c == "red":', '    go_up()', 'else:', '    go_down()', 'magnet_off()', 'wait()'];
-  var C_TIM_DO = ['while color("here") != "red":', '    go_right()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'];
+  var C_HOP = ['go_right()', 'c = color("here")', 'ink(c)', 'if c == "red":', '    go_up()', 'else:', '    go_down()', 'dot()', 'wait()'];
+  var C_TIM_DO = ['while color("here") != "red":', '    go_right()', 'go_up()', 'go_up()', 'dot()', 'wait()'];
   var T_SEEK = ['while color("here") != col:', '    go_right()'];
   var T_GHI_DUOI = ['for i in range(n):', '    go_right()', '    a.append(color("here"))'];
   var C_GHI_HAM = ['a = []', 'read_below(a, 3)', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
   var T_MUI_TEN = ['if color("here") == "blue":', '    go_down()', 'else:', '    go_right()'];
   var T_DEM_MAU = ['for i in range(n):', '    go_right()', '    if color("here") == col:', '        a.append(col)'];      // ghi màu thật (nghiệm thu 30/10: mẹo append(1) chỉ dạy một lần ở che-cam-bon.3)
   var C_DEM_HAM = ['a = []', 'count_here(a, 4, "red")', 'for i in range(len(a)):', '    go_down()'];
-  var T_NANG = ['magnet_n()', 'wait()', 'for i in range(n):', '    go_up()', 'magnet_off()', 'wait()'];
+  var T_NANG = ['for i in range(n):', '    go_up()', 'dot()', 'wait()'];
 
   var DS = [
     man({
@@ -127,22 +127,20 @@
     }),
 
     man({
-      so: 6, ten: 'Đọc hộp dưới bụng', hang: 'luyen', nam: true, hamCuaEmCan: [],
-      deBai: 'Camera nhìn xuống thấy cả hộp: bay lên trên hộp, đọc màu hộp bằng color("here"), hút hộp, rồi đưa hộp đỏ lên ô đích phía trên, hộp màu khác xuống ô đích phía dưới. Hai sân, hộp hai màu.',
-      veMaMau: 'Chương trình có sẵn bay tới hộp và hút. Thêm phần đọc màu và chọn ô đích.',
-      san: [['.D', '.o', '.D'], ['.D', '.o', '.D']],
-      mau: [['.r', '..', '.b'], ['.r', '..', '.b']],
-      vatMau: [['..', '.r', '..'], ['..', '.b', '..']],
-      vatChat: [['..', '.s', '..'], ['..', '.s', '..']],
+      so: 6, ten: 'Đọc dấu màu dưới bụng', hang: 'luyen', nam: true, hamCuaEmCan: [],
+      deBai: 'Bay sang phải lên ô dấu màu, đọc màu bằng color("here"), chọn màu đó bằng ink(c), rồi nếu là màu đỏ thì bay lên chấm, màu khác thì bay xuống chấm. Hai sân, hai màu khác nhau.',
+      veMaMau: 'Chương trình có sẵn luôn chấm màu đỏ ở ô phía trên. Thêm phần đọc màu, chọn màu và rẽ hướng.',
+      san: [['..', '.r', '..'], ['..', '.b', '..']],
+      hinh: [['.r', '..', '..'], ['..', '..', '.b']],
       batDau: { x: 0, y: 1 },
-      maMau: bai(['go_right()', 'magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()']),
+      maMau: bai(['go_right()', 'go_up()', 'dot()', 'wait()']),
       loiGiai: bai(C_HOP),
-      sao: { o: 10, nhip: 4 },
+      sao: { o: 9, nhip: 3 },
       loiSai: [
-        { moTa: 'Không đọc màu: hộp nào cũng lên trên', baiLam: bai(['go_right()', 'magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()']), phaiCoMa: [] },
-        { moTa: 'Đọc màu SAU khi hút: hộp treo dưới bụng không tính, ô dưới trống', baiLam: bai(['go_right()', 'magnet_n()', 'wait()', 'c = color("here")', 'if c == "red":', '    go_up()', 'else:', '    go_down()', 'magnet_off()', 'wait()']), phaiCoMa: [] }
+        { moTa: 'Không đọc màu: sân thứ hai chấm nhầm lên trên', baiLam: bai(['go_right()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] },
+        { moTa: 'Đọc màu SAU khi đã rời ô dấu: đọc phải ô không màu', baiLam: bai(['go_right()', 'go_up()', 'c = color("here")', 'ink(c)', 'dot()', 'wait()']), phaiCoMa: ['mau-son-sai'] }
       ],
-      goiY: ['Đọc màu khi hộp còn nằm dưới đất.', 'Hộp đang treo dưới nam châm thì camera không tính.']
+      goiY: ['Đọc màu khi drone đang đứng ngay trên ô dấu ở giữa.', 'Chọn màu bằng ink(c) rồi mới bay tới ô cần chấm.']
     }),
 
     man({
@@ -161,25 +159,24 @@
     }),
 
     man({
-      so: 8, ten: 'Tìm hộp đỏ', hang: 'bien-the', nam: true, hamCuaEmCan: [],
-      deBai: 'Dưới đường bay là dãy ô màu, trong đó có một hộp đỏ. Bay cho tới khi hộp dưới chân là hộp đỏ, hút nó, bay lên hai ô tới ô đích rồi thả. Hai sân, hộp đỏ ở hai chỗ.',
-      veMaMau: 'Chương trình có sẵn bay đúng hai ô. Dùng while với color("here").',
-      san: [['..D.', '....', 'gboy'], ['.D..', '....', 'yogb']],
-      vatMau: [['....', '....', '..r.'], ['....', '....', '.r..']],
-      vatChat: [['....', '....', '..s.'], ['....', '....', '.s..']],
+      so: 8, ten: 'Tìm ô đỏ rồi chấm', hang: 'bien-the', nam: true, hamCuaEmCan: [],
+      deBai: 'Dưới đường bay là dãy ô màu, trong đó có một ô đỏ. Bay sang phải cho tới khi ô dưới chân là ô đỏ, rồi bay lên hai ô và chấm màu đỏ vào hình mờ. Hai sân, ô đỏ ở hai chỗ.',
+      veMaMau: 'Chương trình có sẵn bay cố định hai ô. Dùng while với color("here").',
+      san: [['....', '....', 'gbry'], ['....', '....', 'yrgb']],
+      hinh: [['..r.', '....', '....'], ['.r..', '....', '....']],
       batDau: { x: 0, y: 2 },
-      maMau: bai(['go_right()', 'go_right()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']),
+      maMau: bai(['go_right()', 'go_right()', 'go_up()', 'go_up()', 'dot()', 'wait()']),
       loiGiai: bai(C_TIM_DO),
-      sao: { o: 8, nhip: 6 },
+      sao: { o: 6, nhip: 5 },
       loiSai: [
-        { moTa: 'Bay cố định hai ô: sân thứ hai hút nhầm hộp', baiLam: bai(['go_right()', 'go_right()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']), phaiCoMa: [] }
+        { moTa: 'Bay cố định hai ô: sân thứ hai chấm lệch ra ngoài hình', baiLam: bai(['go_right()', 'go_right()', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['Drone bay ngang trên các hộp được.', 'Hút hộp ngay dưới chân: magnet_n() rồi wait().']
+      goiY: ['while color("here") != "red": bay sang phải tới đúng ô đỏ.', 'Từ ô đỏ bay lên hai ô rồi dot() và wait().']
     }),
 
     man({
       so: 9, ten: 'Đếm ô vàng', hang: 'bien-the', bienDem: true, hamCuaEmCan: [],
-      deBai: 'Bay qua dãy năm ô màu, đếm ô VÀNG dưới chân. Hết dãy, bay lên đúng bằng số hộp vàng tới cờ. Hai sân.',
+      deBai: 'Bay qua dãy năm ô màu, đếm ô VÀNG dưới chân. Hết dãy, bay lên đúng bằng số ô vàng tới cờ. Hai sân.',
       veMaMau: 'Như màn Đếm ô đỏ, nhưng bay lên thay vì bay xuống.',
       san: [['.....F', '......', '.ygbyg'], ['......', '.....F', '.rybgb']],
       batDau: { x: 0, y: 2 },
@@ -193,22 +190,20 @@
     }),
 
     man({
-      so: 10, ten: 'Chở đúng hộp theo đơn', hang: 'trum', nam: true, hamCuaEmCan: [], khung: { chinh: 12, moiHam: 10 },
-      deBai: 'Ô đầu đường cho biết đơn hàng: màu của ô đó là màu hộp khách cần. Đọc đơn hàng, bay dọc dãy hộp tới hộp cùng màu đơn, hút, bay lên ô đích rồi thả. Hai sân, đơn và dãy hộp khác nhau.',
-      veMaMau: 'Chương trình có sẵn đọc đơn hàng vào biến c. Viết phần tìm hộp cùng màu và giao.',
-      san: [['...D..', '......', '.rgob.'], ['.D....', '......', '.obry.']],
-      mau: [['......', '......', 'y.....'], ['......', '......', 'g.....']],
-      vatMau: [['......', '......', '...y..'], ['......', '......', '.g....']],
-      vatChat: [['......', '......', '...s..'], ['......', '......', '.s....']],
+      so: 10, ten: 'Chấm đúng cột theo đơn', hang: 'trum', nam: true, hamCuaEmCan: [], khung: { chinh: 12, moiHam: 10 },
+      deBai: 'Ô đầu đường cho biết đơn hàng: màu của ô đó là màu cần tìm và chấm. Đọc đơn hàng vào c, rời ô đơn, bay dọc dãy màu tới ô cùng màu c, chọn màu c rồi bay lên hai ô chấm vào hình mờ. Hai sân, đơn và dãy màu khác nhau.',
+      veMaMau: 'Chương trình có sẵn đọc đơn hàng vào biến c. Viết phần tìm ô cùng màu, chọn màu và bay lên chấm.',
+      san: [['......', '......', 'yrgyb.'], ['......', '......', 'ggbry.']],
+      hinh: [['...y..', '......', '......'], ['.g....', '......', '......']],
       batDau: { x: 0, y: 2 },
       maMau: bai(['c = color("here")']),
-      loiGiai: bai(['c = color("here")', 'go_right()', 'while color("here") != c:', '    go_right()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']),
-      sao: { o: 10, nhip: 7 },
+      loiGiai: bai(['c = color("here")', 'go_right()', 'while color("here") != c:', '    go_right()', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']),
+      sao: { o: 9, nhip: 6 },
       loiSai: [
-        { moTa: 'Tìm hộp đỏ cố định', baiLam: bai(['c = color("here")', 'go_right()', 'while color("here") != "red":', '    go_right()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']), phaiCoMa: [] },
-        { moTa: 'Quên rời ô đơn hàng trước khi tìm: vòng while không chạy', baiLam: bai(['c = color("here")', 'while color("here") != c:', '    go_right()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']), phaiCoMa: [] }
+        { moTa: 'Tìm ô đỏ cố định: lệch cột', baiLam: bai(['c = color("here")', 'go_right()', 'while color("here") != "red":', '    go_right()', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] },
+        { moTa: 'Quên rời ô đơn hàng trước khi tìm: vòng while không chạy', baiLam: bai(['c = color("here")', 'while color("here") != c:', '    go_right()', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['Ô đơn hàng cũng có màu c: rời nó một ô rồi mới tìm.', 'while color("here") != c: bay tới hộp cùng màu đơn.']
+      goiY: ['Ô đơn hàng cũng có màu c: rời nó một ô rồi mới tìm.', 'while color("here") != c: bay tới ô cùng màu đơn, rồi ink(c) và bay lên chấm.']
     }),
 
     /* ================================================= chương che-nhin-duoi "Chế lệnh: đọc đơn hàng" ================================================= */
@@ -281,42 +276,39 @@
     }),
 
     manChe({
-      so: 5, ten: 'Hàm nâng hộp', hang: 'luyen', nam: true, taoHam: ['deliver_up'], hamCuaEmCan: ['seek_here'],
-      deBai: 'Chế deliver_up(n): hút hộp ngay dưới chân, bay lên n ô rồi thả. Chương trình chính đã khóa: seek_here("red") tới hộp đỏ rồi deliver_up(2). Hai sân.',
+      so: 5, ten: 'Hàm bay lên chấm', hang: 'luyen', nam: true, taoHam: ['deliver_up'], hamCuaEmCan: ['seek_here'],
+      deBai: 'Chế deliver_up(n): bay lên n ô rồi chấm vào hình mờ. Chương trình chính đã khóa: seek_here("red") tới ô đỏ rồi deliver_up(2). Hai sân.',
       veMaMau: 'Tạo deliver_up với một đối số n.',
-      san: [['..D.', '....', 'gboy'], ['.D..', '....', 'yogb']],
-      vatMau: [['....', '....', '..r.'], ['....', '....', '.r..']],
-      vatChat: [['....', '....', '..s.'], ['....', '....', '.s..']],
+      san: [['....', '....', 'gbry'], ['....', '....', 'yrgb']],
+      hinh: [['..r.', '....', '....'], ['.r..', '....', '....']],
       batDau: { x: 0, y: 2 },
       maMau: bai(['seek_here("red")', 'deliver_up(2)']),
       loiGiai: bai(['seek_here("red")', 'deliver_up(2)'], { hamCuaEmMoi: [H('deliver_up', ['n'], T_NANG)] }),
-      sao: { o: 10, nhip: 6 },
-      congThucKhac: [{ moTa: 'Bay lên bằng while đếm ngược', hamCuaEmMoi: [H('deliver_up', ['n'], ['magnet_n()', 'wait()', 'while n > 0:', '    go_up()', '    n = n - 1', 'magnet_off()', 'wait()'])] }],
+      sao: { o: 8, nhip: 5 },
+      congThucKhac: [{ moTa: 'Bay lên bằng while đếm ngược', hamCuaEmMoi: [H('deliver_up', ['n'], ['while n > 0:', '    go_up()', '    n = n - 1', 'dot()', 'wait()'])] }],
       loiSai: [
         { moTa: 'Gọi deliver_up mà chưa chế hàm', baiLam: bai(['seek_here("red")', 'deliver_up(2)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên bật nam châm', baiLam: bai(['seek_here("red")', 'deliver_up(2)']), hamCuaEmMoi: [H('deliver_up', ['n'], ['for i in range(n):', '    go_up()', 'magnet_off()', 'wait()'])], phaiCoMa: [] }
+        { moTa: 'Quên chấm ở cuối hàm', baiLam: bai(['seek_here("red")', 'deliver_up(2)']), hamCuaEmMoi: [H('deliver_up', ['n'], ['for i in range(n):', '    go_up()'])], phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['Hút: magnet_n() rồi wait().', 'Thả: magnet_off() rồi wait().']
+      goiY: ['Lặp n lần go_up() để bay tới ô cần chấm.', 'Cuối hàm gọi dot() rồi wait().']
     }),
 
     manChe({
-      so: 6, ten: 'Hàm nâng hạ theo màu', hang: 'luyen', nam: true, taoHam: ['lift_by_color'], hamCuaEmCan: [],
-      deBai: 'Chế lift_by_color(): đọc màu hộp dưới chân, hút hộp, hộp đỏ đưa lên ô đích phía trên, hộp màu khác đưa xuống ô đích phía dưới, rồi thả. Chương trình chính đã khóa.',
-      veMaMau: 'Tạo lift_by_color() không có đối số. Đọc màu TRƯỚC khi hút.',
-      san: [['.D', '.o', '.D'], ['.D', '.o', '.D']],
-      mau: [['.r', '..', '.b'], ['.r', '..', '.b']],
-      vatMau: [['..', '.r', '..'], ['..', '.b', '..']],
-      vatChat: [['..', '.s', '..'], ['..', '.s', '..']],
+      so: 6, ten: 'Hàm chấm theo dấu màu', hang: 'luyen', nam: true, taoHam: ['lift_by_color'], hamCuaEmCan: [],
+      deBai: 'Chế lift_by_color(): đọc màu ô dấu dưới chân, chọn màu đó, nếu là đỏ thì bay lên một ô, màu khác thì bay xuống một ô, rồi chấm. Chương trình chính đã khóa.',
+      veMaMau: 'Tạo lift_by_color() không có đối số. Đọc màu TRƯỚC khi bay.',
+      san: [['..', '.r', '..'], ['..', '.b', '..']],
+      hinh: [['.r', '..', '..'], ['..', '..', '.b']],
       batDau: { x: 0, y: 1 },
       maMau: bai(['go_right()', 'lift_by_color()']),
       loiGiai: bai(['go_right()', 'lift_by_color()'], { hamCuaEmMoi: [H('lift_by_color', [], C_HOP.slice(1))] }),
-      sao: { o: 11, nhip: 4 },
-      congThucKhac: [{ moTa: 'Hỏi khác đỏ trước', hamCuaEmMoi: [H('lift_by_color', [], ['c = color("here")', 'magnet_n()', 'wait()', 'if c != "red":', '    go_down()', 'else:', '    go_up()', 'magnet_off()', 'wait()'])] }],
+      sao: { o: 10, nhip: 3 },
+      congThucKhac: [{ moTa: 'Hỏi khác đỏ trước', hamCuaEmMoi: [H('lift_by_color', [], ['c = color("here")', 'ink(c)', 'if c != "red":', '    go_down()', 'else:', '    go_up()', 'dot()', 'wait()'])] }],
       loiSai: [
         { moTa: 'Gọi lift_by_color() mà chưa chế hàm', baiLam: bai(['go_right()', 'lift_by_color()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Đọc sau khi hút: hộp treo không tính', baiLam: bai(['go_right()', 'lift_by_color()']), hamCuaEmMoi: [H('lift_by_color', [], ['magnet_n()', 'wait()', 'c = color("here")', 'if c == "red":', '    go_up()', 'else:', '    go_down()', 'magnet_off()', 'wait()'])], phaiCoMa: [] }
+        { moTa: 'Đọc màu sau khi đã bay khỏi ô dấu', baiLam: bai(['go_right()', 'lift_by_color()']), hamCuaEmMoi: [H('lift_by_color', [], ['go_up()', 'c = color("here")', 'ink(c)', 'dot()', 'wait()'])], phaiCoMa: ['mau-son-sai'] }
       ],
-      goiY: ['c = color("here") đứng đầu hàm.', 'Hộp đang treo dưới nam châm thì camera không tính.']
+      goiY: ['c = color("here") đứng đầu hàm, tiếp theo là ink(c).', 'Bay lên hay xuống tùy màu c rồi dot() và wait().']
     }),
 
     manChe({
@@ -336,56 +328,52 @@
 
     manChe({
       so: 8, ten: 'Đơn hàng bằng hàm', hang: 'bien-the', nam: true, chinhCoDinh: false, hamCuaEmCan: ['seek_here', 'deliver_up'],
-      deBai: 'Như màn Chở đúng hộp theo đơn, giờ dùng hàm em đã chế. Tự viết chương trình chính: đọc đơn hàng ở ô đầu, rời ô đơn, seek_here tới hộp cùng màu, deliver_up(2).',
-      veMaMau: 'Chương trình có sẵn đọc đơn hàng vào c. Viết tiếp bằng seek_here và deliver_up.',
-      san: [['...D..', '......', '.rgob.'], ['.D....', '......', '.obry.']],
-      mau: [['......', '......', 'y.....'], ['......', '......', 'g.....']],
-      vatMau: [['......', '......', '...y..'], ['......', '......', '.g....']],
-      vatChat: [['......', '......', '...s..'], ['......', '......', '.s....']],
+      deBai: 'Như màn Chấm đúng cột theo đơn, giờ dùng hàm em đã chế. Tự viết chương trình chính: đọc đơn hàng ở ô đầu vào c, rời ô đơn, seek_here(c) tới ô cùng màu, chọn màu c rồi deliver_up(2).',
+      veMaMau: 'Chương trình có sẵn đọc đơn hàng vào c. Viết tiếp bằng seek_here, ink và deliver_up.',
+      san: [['......', '......', 'yrgyb.'], ['......', '......', 'ggbry.']],
+      hinh: [['...y..', '......', '......'], ['.g....', '......', '......']],
       batDau: { x: 0, y: 2 },
       maMau: bai(['c = color("here")']),
-      loiGiai: bai(['c = color("here")', 'go_right()', 'seek_here(c)', 'deliver_up(2)']),
-      sao: { o: 12, nhip: 7 },
+      loiGiai: bai(['c = color("here")', 'go_right()', 'seek_here(c)', 'ink(c)', 'deliver_up(2)']),
+      sao: { o: 11, nhip: 6 },
       loiSai: [
-        { moTa: 'Quên rời ô đơn hàng: seek_here không bay', baiLam: bai(['c = color("here")', 'seek_here(c)', 'deliver_up(2)']), phaiCoMa: [] },
-        { moTa: 'Tìm hộp đỏ cố định', baiLam: bai(['c = color("here")', 'go_right()', 'seek_here("red")', 'deliver_up(2)']), phaiCoMa: [] }
+        { moTa: 'Quên rời ô đơn hàng: seek_here không bay', baiLam: bai(['c = color("here")', 'seek_here(c)', 'ink(c)', 'deliver_up(2)']), phaiCoMa: ['to-thua'] },
+        { moTa: 'Tìm ô đỏ cố định', baiLam: bai(['c = color("here")', 'go_right()', 'seek_here("red")', 'ink(c)', 'deliver_up(2)']), phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['seek_here(c): tìm hộp cùng màu đơn hàng.', 'Ô đơn hàng cũng mang màu c.']
+      goiY: ['seek_here(c): tìm ô cùng màu đơn hàng.', 'Chọn màu bằng ink(c) trước khi gọi deliver_up(2).']
     }),
 
     manChe({
-      so: 9, ten: 'Sửa hàm nâng hộp', hang: 'bien-the', nam: true, hamCuaEmCan: ['seek_here'],
-      deBai: 'Hàm của màn lift_n(n) phải đưa hộp LÊN n ô nhưng lại bay xuống. Sửa lift_n; chương trình chính đã khóa: seek_here("blue") rồi lift_n(2).',
+      so: 9, ten: 'Sửa hàm bay lên chấm', hang: 'bien-the', nam: true, hamCuaEmCan: ['seek_here'],
+      deBai: 'Hàm của màn lift_n(n) phải bay LÊN n ô rồi chấm nhưng lại bay xuống. Sửa lift_n; chương trình chính đã khóa: seek_here("blue") rồi lift_n(2).',
       veMaMau: 'Chạy thử: drone bay xuống đâm tường. Đổi lệnh bay trong vòng lặp.',
-      san: [['.D..', '....', 'rogy'], ['...D', '....', 'gyro']],
-      vatMau: [['....', '....', '.b..'], ['....', '....', '...b']],
-      vatChat: [['....', '....', '.s..'], ['....', '....', '...s']],
+      san: [['....', '....', 'rbgy'], ['....', '....', 'gyrb']],
+      hinh: [['.r..', '....', '....'], ['...r', '....', '....']],
       batDau: { x: 0, y: 2 },
-      maMau: bai(['seek_here("blue")', 'lift_n(2)'], { hamCuaMan: [H('lift_n', ['n'], ['magnet_n()', 'wait()', 'for i in range(n):', '    go_down()', 'magnet_off()', 'wait()'])] }),
+      maMau: bai(['seek_here("blue")', 'lift_n(2)'], { hamCuaMan: [H('lift_n', ['n'], ['for i in range(n):', '    go_down()', 'dot()', 'wait()'])] }),
       loiGiai: bai(['seek_here("blue")', 'lift_n(2)'], { hamCuaMan: [H('lift_n', ['n'], T_NANG)] }),
-      sao: { o: 10, nhip: 7 },
+      sao: { o: 8, nhip: 6 },
       loiSai: [
-        { moTa: 'Không sửa: bay xuống', baiLam: bai(['seek_here("blue")', 'lift_n(2)'], { hamCuaMan: [H('lift_n', ['n'], ['magnet_n()', 'wait()', 'for i in range(n):', '    go_down()', 'magnet_off()', 'wait()'])] }), phaiCoMa: [] }
+        { moTa: 'Không sửa: bay xuống', baiLam: bai(['seek_here("blue")', 'lift_n(2)'], { hamCuaMan: [H('lift_n', ['n'], ['for i in range(n):', '    go_down()', 'dot()', 'wait()'])] }), phaiCoMa: [] }
       ],
-      goiY: ['Ô đích nằm phía trên dãy hộp.', 'go_up() thay cho go_down().']
+      goiY: ['Hình mờ nằm phía trên dãy màu.', 'go_up() thay cho go_down().']
     }),
 
     manChe({
-      so: 10, ten: 'Đếm rồi nâng', hang: 'trum', nam: true, chinhCoDinh: false, hamCuaEmCan: ['count_here', 'deliver_up'],
-      deBai: 'Bay qua bốn ô, đếm ô vàng (hộp cuối cũng tính). Tới hộp cuối, hút nó và nâng lên đúng bằng số hộp vàng đếm được tới ô đích. Tự viết chương trình chính bằng hàm em đã chế. Hai sân.',
+      so: 10, ten: 'Đếm rồi chấm', hang: 'trum', nam: true, chinhCoDinh: false, hamCuaEmCan: ['count_here', 'deliver_up'],
+      deBai: 'Bay qua bốn ô, đếm ô vàng dưới chân. Hết bốn ô, bay lên đúng bằng số ô vàng đếm được rồi chấm vào hình mờ. Tự viết chương trình chính bằng hàm em đã chế. Hai sân.',
       veMaMau: 'Chương trình có sẵn mới tạo danh sách a. Viết tiếp bằng count_here và deliver_up.',
-      san: [['.....', '....D', '.....', '.ygyo'], ['.....', '.....', '....D', '.rrgo']],
-      vatMau: [['.....', '.....', '.....', '....b'], ['.....', '.....', '.....', '....y']],
-      vatChat: [['.....', '.....', '.....', '....s'], ['.....', '.....', '.....', '....s']],
+      san: [['.....', '.....', '.....', '.ygyb'], ['.....', '.....', '.....', '.rrgy']],
+      hinh: [['.....', '....r', '.....', '.....'], ['.....', '.....', '....r', '.....']],
       batDau: { x: 0, y: 3 },
       maMau: bai(['a = []']),
       loiGiai: bai(['a = []', 'count_here(a, 4, "yellow")', 'deliver_up(len(a))']),
-      sao: { o: 13, nhip: 8 },
+      sao: { o: 11, nhip: 7 },
       loiSai: [
-        { moTa: 'Nâng cố định hai ô', baiLam: bai(['a = []', 'count_here(a, 4, "yellow")', 'deliver_up(2)']), phaiCoMa: [] },
-        { moTa: 'Đếm hộp đỏ', baiLam: bai(['a = []', 'count_here(a, 4, "red")', 'deliver_up(len(a))']), phaiCoMa: [] }
+        { moTa: 'Bay lên cố định hai ô', baiLam: bai(['a = []', 'count_here(a, 4, "yellow")', 'deliver_up(2)']), phaiCoMa: ['to-thua'] },
+        { moTa: 'Đếm ô đỏ thay vì ô vàng', baiLam: bai(['a = []', 'count_here(a, 4, "red")', 'deliver_up(len(a))']), phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['count_here(a, 4, "yellow") bay bốn ô và đếm.', 'Hết bốn ô, drone đứng trên hộp cuối.']
+      goiY: ['count_here(a, 4, "yellow") bay bốn ô và đếm.', 'deliver_up(len(a)) bay lên đúng bằng số ô vàng đếm được rồi chấm.']
     })
   ];
 
