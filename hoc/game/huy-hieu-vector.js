@@ -554,6 +554,43 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('may-mo-da', mayMoDa);
   dk('trum-mua-6', mayMoDa);
+  /* 01/11 mùa 4 "Cảng sông" (cần cẩu container): huy hiệu gói 1-4. */
+  var CAU_CO_BAN = { than: 'cau', tay: null, camBien: [] };
+  var CAU_MOC = { than: 'cau', tay: 'moc-cau', camBien: [] };
+  var CAU_QUET = { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] };
+  dk('can-cau', function (g, c) {
+    c.vong(50, 52, 26, BM.vecTroiDam, 3);
+    c.robot(CAU_CO_BAN, st({ nac: 1, tam: 2 }), 0, 44, 58, 42);
+  });
+  dk('so-am', che(function (g, c) {
+    c.robot(CAU_CO_BAN, st({ nac: 7, tam: 2 }), 0, 38, 62, 36);
+    c.khoi(64, 34, 34, 22, BM.vecTimDam, [['-3', BM.vecVo, 13]]);
+  }));
+  dk('moc-cau', function (g, c) {
+    c.vat('container', { so: 12, mau: 'cam' }, 68, 36, 18);
+    c.robot(CAU_MOC, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }), 0, 42, 60, 42);
+  });
+  dk('chia-du', che(function (g, c) {
+    c.robot(CAU_MOC, st({ nac: 2, tam: 2 }, { kep: 'dong', cam: true }), 0, 36, 62, 36);
+    c.khoi(64, 34, 36, 22, BM.vecCamDam, [['% //', BM.vecVo, 12]]);
+  }));
+  dk('quet-ma', function (g, c) {
+    c.vat('container', { so: 24, mau: 'lam' }, 68, 36, 18);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'mo' }, { bat: true }), 0, 42, 60, 42);
+  });
+  dk('che-quet-ma', che(function (g, c) {
+    c.vat('container', { so: 24, mau: 'lam' }, 62, 36, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'mo' }, { bat: true }), 0, 36, 64, 36);
+  }));
+  dk('ben-tau', function (g, c) {
+    c.o('boong-tau', { co: true }, 66, 38, 26);
+    c.vat('container', { so: 18, mau: 'vang' }, 66, 36, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 38, 62, 40);
+  });
+  dk('che-ben-tau', che(function (g, c) {
+    c.o('boong-tau', { co: true }, 58, 40, 22);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 64, 36);
+  }));
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

@@ -104,10 +104,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
 
   /** Bóng mờ của lõi (man.bongMo, một sân) → { x, y, d, diQua: [{x,y}], vat: [{x,y}] } hoặc null. Ô sai dạng bị bỏ; huong theo quy ước của lõi (0 lên, 1 phải, 2 xuống, 3 trái). */
-  function chuanBongMo(b) {
-    if (!b || typeof b !== 'object' || Array.isArray(b) || !isFinite(b.x) || !isFinite(b.y)) return null;
+  function chuanBongMo(b, bd) {
+    if (!b || typeof b !== 'object' || Array.isArray(b)) return null;
+    var bx = isFinite(b.x) ? Math.floor(b.x) : (bd && isFinite(bd.x) ? Math.floor(bd.x) : NaN);
+    var by = isFinite(b.y) ? Math.floor(b.y) : (bd && isFinite(bd.y) ? Math.floor(bd.y) : NaN);
+    if (!isFinite(bx) || !isFinite(by)) return null;
     function dsO(a) { return (Array.isArray(a) ? a : []).filter(function (o) { return o && isFinite(o.x) && isFinite(o.y); }).map(function (o) { var r = { x: Math.floor(o.x), y: Math.floor(o.y) }, m = chuanMau(o.mau); if (m) r.mau = m; return r; }); }   // vật mờ có thể mang màu (chấm theo màu)
-    return { x: Math.floor(b.x), y: Math.floor(b.y), d: (((b.huong || 0) % 4) + 4) % 4, diQua: dsO(b.diQua), vat: dsO(b.vat), thung: dsO(b.thung),
+    return { x: bx, y: by, d: (((b.huong || 0) % 4) + 4) % 4, diQua: dsO(b.diQua), vat: dsO(b.vat), thung: dsO(b.thung),
+      nac: typeof b.nac === 'number' ? b.nac : null, tam: typeof b.tam === 'number' ? b.tam : null,
+      chong: Array.isArray(b.chong) ? b.chong.filter(function (o) { return o && isFinite(o.x) && isFinite(o.y); }) : null,
       cam: !!b.cam, camMau: chuanMau(b.cam && typeof b.cam === 'object' ? b.cam.mau : b.camMau),
       xoay: b.xoay === 'trai' || b.xoay === 'phai' ? b.xoay : 'truoc',
       chan: b.chan === 'co' ? 'co' : 'dung' };                     // nhện: bóng mờ chân co hay duỗi            // cam: xe mờ đang cầm một vật (tay kẹp khép, vật mờ trong kẹp)
@@ -161,7 +166,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var laCang = cfg.vo === 'cang' || (cfg.vo === undefined && (loai === 'cau' || Array.isArray(cfg.chong) || Array.isArray(cfg.tau) || rows.some(function (r) { return /[TR]/.test(r); })));   // CẢNG SÔNG (31/10): sàn '.' là bãi container; màn cũ không có T / R / cẩu / chồng nên không đổi
       this.cfg = { rows: rows, w: w, h: h, bd: cfg.batDau, loai: loai, co: null, dd: cfg.danhDau || null, cat: cfg.cat || null, vat: cfg.vat || [], mauO: dungLopMau(rows, cfg.mau), vatMau: cfg.vatMau || null, vatChat: cfg.vatChat || null, roBanDau: cfg.roBanDau || null, danToiDa: typeof cfg.danToiDa === 'number' ? cfg.danToiDa : null, nutBat: Array.isArray(cfg.nutBat) ? cfg.nutBat : null, lua: Array.isArray(cfg.lua) ? cfg.lua : null, demTu: Array.isArray(cfg.demTu) ? cfg.demTu : null, pin: typeof cfg.pin === 'number' && cfg.pin > 0 ? cfg.pin : null, sac: [],
         robot: cfg.robot || { than: loai === 'nhen' ? 'nhen' : loai === 'xuong' ? 'xuong' : loai === 'cau' ? 'cau' : 'hai-banh', tay: null, camBien: [] }, dich: [], cacCo: [],
-        bm: chuanBongMo(cfg.bongMo),                     // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
+        bm: chuanBongMo(cfg.bongMo, cfg.batDau),         // mục tiêu 'bong-mo': xe mờ ở tư thế đích, vật mờ, ô ◆ phải đi qua
         hinh: dungHinh(cfg.hinh), sonBanDau: dungHinh(cfg.sonBanDau), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red',
         vo: cfg.vo === 'nong-trai' ? 'nong-trai' : laCang ? 'cang' : (cfg.vo === undefined && (loai === 'xuong' || Array.isArray(cfg.dong) || rows.some(function (r) { return /[~QqKkVBL]/.test(r); }))) ? 'song' : null,      // vỏ hình của mùa (30/10: 'nong-trai' mùa 4: cỏ, luống hoa, bụi cây, bao hạt; ve-vector-nong-trai.js; 31/10 'cang': bãi container)      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
         dong: Array.isArray(cfg.dong) ? cfg.dong : null, chong: Array.isArray(cfg.chong) ? cfg.chong : null, tau: Array.isArray(cfg.tau) ? cfg.tau : null,          // BẾN SÔNG: dòng chảy; CẢNG SÔNG: chồng container, tàu (xem dungMuaMoi)
@@ -800,6 +805,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         g.drawImage(VeVector.vat('thung-nang', Math.round(T * this.sv)), o.x * T, o.y * T, T, T);     // thùng thép mờ
         g.globalAlpha = 1;
       }
+      for (i = 0; i < (b.chong || []).length; i++) {                                                       // CẢNG SÔNG: chồng container mờ ở ô đích
+        o = b.chong[i];
+        if (o.so && o.so.length) HU().khungO(g, o.x, o.y, 1.5, 2.2, 0.9, BM.vecDich, [3, 2], -((now / 140) % 5));
+      }
       for (i = 0; i < b.diQua.length; i++) this.veDiQua(g, b.diQua[i], now, nhay);
     },
     /** Kiểu của một vật mờ: mặc định thùng gỗ (có dải màu nếu vật mờ mang màu). Sân của xe tay NAM CHÂM mà mọi vật thật đều cùng loại (cùng sắt, hay cùng vật nam châm cùng chữ N / S) thì vật mờ vẽ đúng loại đó. */
@@ -879,6 +888,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veBongMoXe: function (g, mx, my, ku, now) {
       var b = this.cfg.bm, c = this.cfg, p = this.p; if (!b || !p) return;
       var nhay = this.bmNhay > now && ((now / 150 | 0) & 1) === 0;
+      if (this.vis && this.vis.cau) {
+        if (b.nac === null || b.nac === undefined) return;
+        g.save(); g.setTransform(ku, 0, 0, ku, mx, my); g.globalAlpha = nhay ? 0.65 : 0.32;
+        VeVector.veCanCau(g, { bx: b.x * T + 7, by: b.y * T + 7, nac: b.nac, tam: b.tam || 1, o: T, be: false, cfg: this.cfgRobotSon() });
+        g.restore();
+        return;
+      }
       var X = Math.round(mx + (b.x * T + 7) * ku), Y = Math.round(my + (b.y * T + 7) * ku);
       var camVat = !!b.cam && laTayKep(c.robot.tay);                              // xe mờ đang CẦM vật: kẹp khép, vật mờ nằm giữa hai càng
       var spr = VeRobot.ve(c.robot, { co: c.robot.than === 'nhen' && b.chan === 'co', wl: 0, wr: 0, ph: 0, tay: c.robot.tay ? { tuThe: 'tren', kep: camVat, cam: camVat ? 1 : null, xoay: c.robot.tay === 'xoay' ? b.xoay : undefined } : null, camBien: null }, b.d, p);

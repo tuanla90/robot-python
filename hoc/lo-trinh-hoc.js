@@ -32,7 +32,9 @@
       // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
       'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4',
       // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–10
-      'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da', 'di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni-moi', 'trum-mua-6'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da', 'di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni-moi', 'trum-mua-6',
+      // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–4
+      'can-cau'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1619,6 +1621,75 @@
     var dau7 = TT.goi.filter(function (g) { return g.mua === 'mua-8'; })[0];
     if (dau7) dau7.sao = 0;
     M.mua6 = MUA_6;
+    M.tinhLai();
+  })();
+  // ========================================================================= MÙA CẢNG SÔNG (mua-4, Cần cẩu container R1)
+  var MUA_CANG = [
+    { ma: 'can-cau', ten: 'Cần cẩu cảng', loai: 'bo-phan', hinh: 'can-cau',
+      chuong: [['can-cau', []], ['so-am', []]] },
+    { ma: 'moc-cau', ten: 'Móc cẩu container', loai: 'bo-phan', hinh: 'moc-cau',
+      chuong: [['moc-cau', []], ['chia-du', []]] },
+    { ma: 'quet-ma', ten: 'Đầu đọc mã container', loai: 'bo-phan', hinh: 'quet-ma',
+      chuong: [['quet-ma', []], ['che-quet-ma', []]] },
+    { ma: 'ben-tau', ten: 'Tàu cập bến', hinh: 'ben-tau',
+      chuong: [['ben-tau', []], ['che-ben-tau', []]] }
+  ];
+  var TEN_MUA_CANG = {
+    'can-cau': 'Quay cần vươn tầm', 'so-am': 'Số âm và khoảng cách',
+    'moc-cau': 'Nhấc container', 'chia-du': 'Chia lấy phần nguyên, phần dư',
+    'quet-ma': 'Đọc mã số', 'che-quet-ma': 'Chế lệnh: phân loại theo mã',
+    'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: giao đúng tàu'
+  };
+  var TEP_MUA_CANG = ['manCanCau', 'manMocCau', 'manQuetMa', 'manBenTau'];
+  (function () {
+    Object.keys(TEN_MUA_CANG).forEach(function (c) { TT.ten[c] = TEN_MUA_CANG[c]; });
+    var moi = [], chuong = [];
+    MUA_CANG.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
+    TEP_MUA_CANG.forEach(function (k) { moi = moi.concat(M[k] || []); });
+    moi.forEach(function (m) {
+      if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa cảng thuộc chương không có trong MUA_CANG: ' + m.chuong + '.' + m.so);
+      if (TT.thuTu.indexOf(m.chuong) < 0) TT.thuTu.push(m.chuong);
+    });
+    M.them(moi);
+    moi.forEach(function (m) { nguon[m.ma] = copy(m); });
+    MUA_CANG.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var cuoi = c[1][c[1].length - 1];
+        c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
+      });
+    });
+    var coManCang = [];
+    MUA_CANG.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        if (!c[1].length) return;
+        if (TT.thuTu.indexOf(c[0]) < 0) TT.thuTu.push(c[0]);
+        dungChuong(c[0], c[1]);
+        coManCang.push(c[0]);
+        c[1].forEach(function (ma, i) {
+          var m = get(ma);
+          if (i < c[1].length - 1) delete m.huyHieu;
+          else m.huyHieu = { ma: c[0], ten: 'Huy hiệu ' + TEN_MUA_CANG[c[0]] };
+        });
+      });
+    });
+    var goiTruoc = TT.goi.filter(function (g) { return g.mua === 'mua-1' || g.mua === 'mua-2' || g.mua === 'mua-3' || g.mua === 'mua-6' || g.mua === 'mua-7'; });
+    var cTruoc = [];
+    goiTruoc.forEach(function (g) { cTruoc = cTruoc.concat(g.chuong); });
+    var sau = TT.thuTu.filter(function (c) { return cTruoc.indexOf(c) < 0 && coManCang.indexOf(c) < 0; });
+    TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(cTruoc, coManCang, sau));
+    var conLai = TT.goi.filter(function (g) { return goiTruoc.indexOf(g) < 0 && g.mua !== 'mua-4'; });
+    var goiCang = [];
+    MUA_CANG.forEach(function (g) {
+      var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coManCang.indexOf(c) >= 0; });
+      if (!ch.length) return;
+      var x = { ma: g.ma, ten: g.ten, mua: 'mua-4', chuong: ch };
+      if (g.loai) x.loai = g.loai;
+      if (g.hinh) x.hinh = g.hinh;
+      goiCang.push(x);
+    });
+    TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goiTruoc, goiCang, conLai));
+    M.muaCang = MUA_CANG;
     M.tinhLai();
   })();
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });

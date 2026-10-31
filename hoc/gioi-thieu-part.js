@@ -247,9 +247,62 @@
       gioi: ['radar() trả về lưới 3x3 quanh xe, ô giữa g[1][1] là chỗ xe đứng', 'Đọc không tốn nhịp'],
       khong: ['Chỉ thấy 8 ô xung quanh xe và ô xe đang đứng'],
       luuY: ['Hàng 0 là phía trên, hàng 2 là phía dưới; cột 0 là bên trái, cột 2 là bên phải.', 'Bản nâng cấp mở thêm shape(d) để phân biệt đá tròn, đá vuông và quặng.']
+    },
+    'cau': {
+      khe: 'than', ten: 'Cần cẩu cảng',
+      moTa: 'Mâm xoay cảng sông với cần vươn 3 tầm, xoay 8 nấc quanh trụ cẩu.',
+      lenh: ['swing_left', 'swing_right', 'extend', 'retract', 'rail', 'wait'],
+      moTaLenh: {
+        swing_left: 'Quay cần sang trái 1 nấc trong 8 nấc một vòng',
+        swing_right: 'Quay cần sang phải 1 nấc trong 8 nấc một vòng',
+        extend: 'Vươn cần ra thêm 1 tầm, tối đa tầm 3',
+        retract: 'Thu cần vào 1 tầm, tối thiểu tầm 1',
+        rail: 'Trượt chân cẩu trên ray 1 ô theo hướng d'
+      },
+      gioi: [
+        'Quay tròn 8 nấc quanh trụ, nấc 0 là phía trên và tăng dần theo chiều kim đồng hồ',
+        'Vươn cần từ tầm 1 tới tầm 3 để đưa đầu cần tới đúng ô mục tiêu',
+        { can: ['rail'], chu: 'rail(d) trượt chân cẩu dọc theo đường ray cảng' }
+      ],
+      khong: [
+        { khongCan: ['rail'], chu: 'Chân cẩu cố định tại trụ, không tự đi khắp sân' },
+        'Tầm vươn chỉ từ 1 tới 3, vươn quá tầm 3 hoặc thu dưới tầm 1 sẽ báo lỗi'
+      ],
+      luuY: ['Mỗi lệnh quay hoặc vươn thu tốn 1 nhịp.']
+    },
+    'moc-cau': {
+      khe: 'tay', ten: 'Móc cẩu container',
+      moTa: 'Khung cẩu gắn đầu cần để nhấc và hạ container trên bãi cảng.',
+      lenh: ['pick_up', 'set_down', 'pick_up2'],
+      moTaLenh: {
+        pick_up: 'Nhấc 1 container trên đỉnh chồng ở ô đầu cần',
+        set_down: 'Hạ container đang treo xuống ô đầu cần',
+        pick_up2: 'Nhấc 2 container trên cùng của chồng ở ô đầu cần'
+      },
+      ghep: [
+        { lenh: ['pick_up', 'set_down'], chu: 'Đưa đầu cần tới chồng hàng -> pick_up() -> quay sang bãi đích -> set_down()' }
+      ],
+      gioi: [
+        'pick_up() nhấc container trên cùng của chồng ở ô đầu cần đang trỏ tới',
+        'set_down() đặt container đang treo lên đỉnh chồng ở ô đầu cần',
+        { can: ['pick_up2'], chu: 'Móc nâng cấp nhấc liền 2 container trên cùng khi tổng khối lượng vừa sức nâng' }
+      ],
+      khong: ['Không nhấc thêm được khi móc đang treo hàng'],
+      luuY: ['Chỉ hạ container xuống bãi K, boong tàu T đang đỗ hoặc chồng hàng hợp lệ.']
+    },
+    'quet-ma': {
+      khe: 'camBien', ten: 'Đầu đọc mã container',
+      moTa: 'Đầu quét quang học gắn ở đầu cần, đọc mã số in trên nóc container.',
+      lenh: ['read_code'],
+      moTaLenh: {
+        read_code: 'Đọc mã số container trên đỉnh chồng ở ô đầu cần, trống là -1'
+      },
+      gioi: ['read_code() trả về mã số nguyên của container trên cùng ở ô đầu cần', 'Đọc không tốn nhịp'],
+      khong: ['Chỉ đọc được container trên đỉnh chồng ngay dưới đầu cần'],
+      luuY: ['Khi ô dưới đầu cần không có container, read_code() trả về -1.']
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -268,6 +321,7 @@
     if (co(goc, 'color')) them(co(cam, 'camera-4') ? 'camera-4' : co(cam, 'camera') ? 'camera' : 'mau');
     them('camera-bay');
     them('radar');
+    them('quet-ma');
     return kq;
   }
 

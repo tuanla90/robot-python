@@ -1290,6 +1290,17 @@
               ', đang là ' + (cs0.hien.length ? '[' + cs0.hien.join(', ') + ']' : 'trống') + (chongSai.length > 1 ? ' (còn ' + (chongSai.length - 1) + ' ô khác cũng lệch)' : '') + '. Số ghi từ đáy lên đỉnh: cái hạ sau nằm trên.',
               { sai: chongSai });
           }
+        } else if (bmo && man.loaiRobot === 'cau') {
+          var saiBe = rbm.x !== bmo.x || rbm.y !== bmo.y;
+          var saiNac = bmo.nac !== null && bmo.nac !== undefined && res.nac !== bmo.nac;
+          var saiTam = bmo.tam !== null && bmo.tam !== undefined && res.tam !== bmo.tam;
+          if (saiBe || saiNac || saiTam) {
+            var loiCau = saiBe ? 'Bệ cẩu dừng ở ô (' + rbm.x + ', ' + rbm.y + ') mà bóng mờ ở ô (' + bmo.x + ', ' + bmo.y + ').'
+              : 'Đầu cần dừng ở nấc ' + res.nac + ', tầm ' + res.tam + ' mà cần dừng ở' + (bmo.nac !== null && bmo.nac !== undefined ? ' nấc ' + bmo.nac : '') + (bmo.tam !== null && bmo.tam !== undefined ? (bmo.nac !== null && bmo.nac !== undefined ? ', tầm ' : ' tầm ') + bmo.tam : '') + '. Kiểm tra số nấc quay và tầm vươn thu của cần.';
+            them('lech-bong-mo', loiCau, { robot: { x: rbm.x, y: rbm.y, nac: res.nac, tam: res.tam }, bongMo: { x: bmo.x, y: bmo.y, nac: bmo.nac, tam: bmo.tam } });
+          }
+          var chuaQuaCau = (res.diQua || []).filter(function (q) { return !q.da; });
+          if (chuaQuaCau.length) them('chua-qua-diem', 'Đầu cần chưa quét qua điểm ◆' + (chuaQuaCau.length > 1 ? ' (còn thiếu ' + chuaQuaCau.length + ' điểm)' : '') + ' ở ô (' + chuaQuaCau[0].x + ', ' + chuaQuaCau[0].y + '). Quay và vươn cần cho đầu cần chạm mọi điểm ◆ rồi mới dừng ở đích.', { conLai: chuaQuaCau.length, o: { x: chuaQuaCau[0].x, y: chuaQuaCau[0].y } });
         } else if (bmo) {
           var dxy = lechBongMo(bmo, rbm, res);
           if (man.loaiRobot === 'drone') dxy.loi = dxy.loi.replace(/\bXe\b/g, 'Drone').replace(/\bxe\b/g, 'drone');       // drone: nói "Drone dừng lệch…", "drone mờ"

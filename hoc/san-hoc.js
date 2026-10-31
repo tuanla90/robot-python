@@ -1276,6 +1276,17 @@
         bongMo.chan = bm.chan;
       }
       if (oTai(san, bm.x, bm.y) === 'u' && loai !== 'drone') throw new Error('Bóng mờ nằm trên cái hố: (' + bm.x + ', ' + bm.y + ').');
+      bongMo.nac = null; bongMo.tam = null;                                                  // CẢNG SÔNG: nấc (0..7) và tầm (1..3) đích của cần cẩu lúc xong (tuỳ chọn, cho Gói 1 chưa có móc cẩu)
+      if (bm.nac !== undefined && bm.nac !== null) {
+        if (!laCau) throw new Error('bongMo.nac chỉ dùng cho cần cẩu (loaiRobot "cau").');
+        if (!laSoNguyen(bm.nac) || bm.nac < 0 || bm.nac >= SO_NAC) throw new Error('bongMo.nac phải là số nguyên 0..7.');
+        bongMo.nac = bm.nac;
+      }
+      if (bm.tam !== undefined && bm.tam !== null) {
+        if (!laCau) throw new Error('bongMo.tam chỉ dùng cho cần cẩu (loaiRobot "cau").');
+        if (!laSoNguyen(bm.tam) || bm.tam < 1 || bm.tam > TAM_CAU_TOI_DA) throw new Error('bongMo.tam phải là số nguyên 1..3.');
+        bongMo.tam = bm.tam;
+      }
       bongMo.chong = null;                                                                   // CẢNG SÔNG: chồng container lúc xong [{x,y,so:[đáy → đỉnh]}]; mọi chồng trên sân phải đúng (ô không khai phải trống), không còn treo
       if (bm.chong !== undefined && bm.chong !== null) {
         if (!laCau) throw new Error('bongMo.chong chỉ dùng cho cần cẩu (loaiRobot "cau").');
@@ -1740,6 +1751,8 @@
     function bongMoDat() {
       if (!bongMo || rb.x !== bongMo.x || rb.y !== bongMo.y) return false;
       if (bongMo.huong !== null && rb.huong !== bongMo.huong) return false;
+      if (bongMo.nac !== null && bongMo.nac !== undefined && nac !== bongMo.nac) return false;
+      if (bongMo.tam !== null && bongMo.tam !== undefined && tam !== bongMo.tam) return false;
       if (!diQua.every(function (q) { return q.da; })) return false;
       if (bongMo.thung) {                                                  // thùng mờ: thùng thật nằm đúng các ô đó, không thừa không thiếu
         if (thungs.length !== bongMo.thung.length) return false;
@@ -3050,9 +3063,10 @@
           }
         }
 
-        if (diQua.length) {                                                    // bóng mờ: cuối nhịp robot đứng ở ô diQua nào thì ô đó "đã đi qua"
-          var dq = diQuaTai[rb.x + ',' + rb.y];
-          if (dq && !dq.da) { dq.da = true; sk.push({ ma: 'qua-diem', nhip: nhip, o: { x: rb.x, y: rb.y } }); }
+        if (diQua.length) {                                                    // bóng mờ: cuối nhịp robot (hoặc đầu cần cẩu) đứng ở ô diQua nào thì ô đó "đã đi qua"
+          var oDq = laCau ? oDauCan() : rb;
+          var dq = diQuaTai[oDq.x + ',' + oDq.y] || (laCau ? diQuaTai[rb.x + ',' + rb.y] : null);
+          if (dq && !dq.da) { dq.da = true; sk.push({ ma: 'qua-diem', nhip: nhip, o: { x: dq.x, y: dq.y } }); }
         }
         if (laDoi && (mucTieu === 'toi-co' || (doiKhang && !laR1))) {       // nhiều robot: mỗi robot tới một cờ; tới rồi thì dừng chương trình, đứng yên (thắng: chayDoi). Đối kháng giao hàng: cờ F là đích của R2, R1 đi qua F không dừng
           if (!xeToiCo && oTai(san, rb.x, rb.y) === 'F' && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }))) { xeToiCo = true; sk.push({ ma: 'toi-co' }); }

@@ -996,7 +996,27 @@
   "trum-mua-6.7": { "o": 29, "nhip": 22 },
   "trum-mua-6.8": { "o": 31, "nhip": 32 },
   "trum-mua-6.9": { "o": 35, "nhip": 32 },
-  "trum-mua-6.10": { "o": 40, "nhip": 63 }
+  "trum-mua-6.10": { "o": 40, "nhip": 63 },
+  "can-cau.1": { "o": 3, "nhip": 3 },
+  "can-cau.2": { "o": 3, "nhip": 3 },
+  "can-cau.3": { "o": 3, "nhip": 3 },
+  "can-cau.4": { "o": 4, "nhip": 4 },
+  "can-cau.5": { "o": 4, "nhip": 4 },
+  "can-cau.6": { "o": 4, "nhip": 4 },
+  "can-cau.7": { "o": 4, "nhip": 7 },
+  "can-cau.8": { "o": 6, "nhip": 7 },
+  "can-cau.9": { "o": 7, "nhip": 10 },
+  "can-cau.10": { "o": 7, "nhip": 18 },
+  "so-am.1": { "o": 7, "nhip": 3 },
+  "so-am.2": { "o": 3, "nhip": 5 },
+  "so-am.3": { "o": 5, "nhip": 5 },
+  "so-am.4": { "o": 6, "nhip": 7 },
+  "so-am.5": { "o": 10, "nhip": 7 },
+  "so-am.6": { "o": 15, "nhip": 7 },
+  "so-am.7": { "o": 18, "nhip": 7 },
+  "so-am.8": { "o": 18, "nhip": 11 },
+  "so-am.9": { "o": 19, "nhip": 13 },
+  "so-am.10": { "o": 19, "nhip": 32 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;

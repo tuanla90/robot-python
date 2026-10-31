@@ -36,27 +36,30 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var TAY_THEO_LENH = {
     arm_down: 'kep', arm_up: 'kep', grab: 'kep', release: 'kep', arm_left: 'xoay', arm_right: 'xoay',
     magnet_n: 'nam-cham', magnet_s: 'nam-cham', magnet_off: 'nam-cham', aim: 'nem', throw: 'nem', load: 'nem', spray: 'hoi', spray_back: 'hoi',
-    ink: 'son', dot: 'son', pen_down: 'son', pen_up: 'son'
+    ink: 'son', dot: 'son', pen_down: 'son', pen_up: 'son',
+    pick_up: 'moc-cau', set_down: 'moc-cau', pick_up2: 'moc-cau'
   };
   function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }
   /**
    * Cấu hình robot của một màn — MỘT CHỖ DUY NHẤT. Chương sau (nhện, xích, omni, cảm biến…) chỉ cần thêm vào dữ liệu màn:
    *   man.robot = { than: 'xich', tay: 'hoi' | null, camBien: [{ ma: 'khoang-cach', o: 'hong' }] }   (trường nào thiếu thì suy từ màn)
-   * than: man.robot.than, hoặc 'nhen' nếu man.loaiRobot === 'nhen', hoặc 'hai-banh'.
+   * than: man.robot.than, hoặc 'nhen' nếu man.loaiRobot === 'nhen', hoặc 'cau' nếu man.loaiRobot === 'cau', hoặc 'hai-banh'.
    * tay : man.robot.tay (null = không tay), hoặc theo lệnh tay có trong man.hamGoc (kẹp: arm_down/arm_up/grab/release...).
    */
   function cauHinhCua(man) {
     var r = (man && man.robot) || {}, goc = (man && man.hamGoc) || [];
-    var than = r.than || (man && man.loaiRobot === 'nhen' ? 'nhen' : 'hai-banh'), tay = null;
+    var than = r.than || (man && man.loaiRobot === 'nhen' ? 'nhen' : (man && man.loaiRobot === 'cau' ? 'cau' : 'hai-banh')), tay = null;
     if (r.tay !== undefined) tay = r.tay || null;
     else if (goc.indexOf('arm_left') >= 0 || goc.indexOf('arm_right') >= 0) tay = 'xoay';                    // tay xoay có đủ bốn lệnh tay kẹp + hai lệnh xoay: ưu tiên mã 'xoay'
     else for (var i = 0; i < goc.length && !tay; i++) tay = TAY_THEO_LENH[goc[i]] || null;
     var cam = copyCam(r.camBien).filter(function (c) { return c.ma !== 'pin'; });
     if (than === 'drone' && goc.indexOf('look') >= 0 && !cam.some(function (c) { return c.ma === 'camera-bay'; })) cam.push({ ma: 'camera-bay', o: 'bung' });       // màn có look() mà chưa khai camera nhìn xuống: lắp camera-bay ở ổ bung (như tay suy từ lệnh tay)
-    if (than !== 'drone' && than !== 'nhen' && (goc.indexOf('distance') >= 0 || goc.indexOf('warm') >= 0) && !cam.some(function (c) { return c.ma === 'hong-ngoai'; })) cam.push({ ma: 'hong-ngoai', o: 'tren' });
+    if (than === 'cau' && goc.indexOf('read_code') >= 0 && !cam.some(function (c) { return c.ma === 'quet-ma'; })) cam.push({ ma: 'quet-ma', o: 'tren' });
+    if (than === 'cau' && goc.indexOf('weight') >= 0 && !cam.some(function (c) { return c.ma === 'can-nang'; })) cam.push({ ma: 'can-nang', o: 'bung' });
+    if (than !== 'drone' && than !== 'nhen' && than !== 'cau' && (goc.indexOf('distance') >= 0 || goc.indexOf('warm') >= 0) && !cam.some(function (c) { return c.ma === 'hong-ngoai'; })) cam.push({ ma: 'hong-ngoai', o: 'tren' });
     // P1 mùa 3: cảm biến từ 'tu' là part riêng. Màn có front_metal / front_pole mà KHÔNG khai cảm biến nào ở hông (không khoang-cach, không tu) thì lắp 'tu' ở hông;
     // màn cũ mùa 1–2 đều khai khoang-cach (cảm biến từ ngày xưa ghép vào tai khoảng cách) nên hình cũ y nguyên; màn mùa 3 khai thẳng { ma: 'tu', o: 'hong' }.
-    if (than !== 'drone' && than !== 'nhen' && (goc.indexOf('front_metal') >= 0 || goc.indexOf('front_pole') >= 0) && !cam.some(function (c) { return c.ma === 'tu' || c.ma === 'khoang-cach'; })) cam.push({ ma: 'tu', o: 'hong' });      // mùa 2: màn có distance() / warm() mà chưa khai: lắp cảm biến hồng ngoại ở mũi xe (ổ tren)
+    if (than !== 'drone' && than !== 'nhen' && than !== 'cau' && (goc.indexOf('front_metal') >= 0 || goc.indexOf('front_pole') >= 0) && !cam.some(function (c) { return c.ma === 'tu' || c.ma === 'khoang-cach'; })) cam.push({ ma: 'tu', o: 'hong' });      // mùa 2: màn có distance() / warm() mà chưa khai: lắp cảm biến hồng ngoại ở mũi xe (ổ tren)
     return { than: than, tay: tay, camBien: cam, pin: !!(r.camBien || []).some(function (c) { return c.ma === 'pin'; }) };       // pin: drone có pin (đo battery()); không phải bộ phận nên không đưa vào ghép hình
   }
 
@@ -110,6 +113,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (typeof tt.di === 'number') st.than.di = tt.di;
       if (typeof tt.nhac === 'number') st.than.nhac = tt.nhac;
     }
+    if (cfg.than === 'cau') {
+      if (typeof tt.nac === 'number') st.than.nac = tt.nac;
+      if (typeof tt.tam === 'number') st.than.tam = tt.tam;
+      if (typeof tt.ray === 'number') st.than.ray = tt.ray;
+    }
     if (!cfg.camBien.length) delete st.camBien;
     try { return VV().robot(cfg, st, h, Math.round(tiLe * 100)); }
     catch (e) {
@@ -129,7 +137,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var son = sonHieuLuc(cauHinh.son) || '';
     var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
       cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', son,
-      typeof tt.lan === 'number' ? tt.lan : '', typeof tt.di === 'number' ? 'd' + tt.di : '', typeof tt.nhac === 'number' ? 'n' + tt.nhac : '', tt.mat || '', tay.moK === null ? '' : tay.moK, tay.vung === null ? '' : tay.vung].join('|');
+      typeof tt.lan === 'number' ? tt.lan : '', typeof tt.di === 'number' ? 'd' + tt.di : '', typeof tt.nhac === 'number' ? 'n' + tt.nhac : '',
+      typeof tt.nac === 'number' ? 'nc' + tt.nac : '', typeof tt.tam === 'number' ? 'tm' + tt.tam : '', typeof tt.ray === 'number' ? 'ry' + tt.ray : '',
+      tt.mat || '', tay.moK === null ? '' : tay.moK, tay.vung === null ? '' : tay.vung].join('|');
     if (cache[khoa]) return cache[khoa];
     var cv = veVector(cauHinh) ? veVec(cauHinh, tt, tay, son, huong, tiLe) : null;      // VeVector tự đệm; tiLe = cạnh ô / 100 → canvas đúng một ô (tay xoay: tràn sang ô bên)
     if (!cv) cv = veVec({ than: 'hai-banh', tay: null, camBien: [] }, { wl: wl, wr: wr, ph: ph }, tay, son, huong, tiLe);     // hình TẠM (cấu hình cấm / mã lạ): xe hai bánh vector không tay (V7c2: trước là hình pixel Ve.makeRobot)
