@@ -50,7 +50,29 @@
    (while distance()/warm(): wait()), ngưỡng 2 lần (như PDM1 hạ ngưỡng gói Đội mùa 1 vì gói 10 không còn đội). Bộ dò gói 9/10 (do-duong-be-sung) nay biết thùng đặt sẵn
    `man.thungThem` (trước bỏ qua: thùng trên băng không có trong mô hình nên dãy cố định "thắng" giả).
 
+
+11. **Mùa 3 gói 2–4 (PDM3a, 31/10):** 60 màn dựng lại trên ROBOT PHÂN LOẠI (nhện + nam châm bụng + cảm biến từ hông), không màn nào còn thân xe.
+   Gói 2 toàn màn MỚI (man-nam-cham-n.js: nam-cham.11–20, logic-nam-cham.1–10); màn xe cũ nam-cham.1 .4 .5 .7 .8 và che-nam-cham.1 .8 cất ra chương rời
+   nam-cham-xe / che-nam-cham-xe (mùa ẩn, mã giữ; gói ẩn Nam châm trên omni đổi tên Nam châm trên xe, ngưỡng rap-du mùa 5 ẩn 180 → 195).
+   Chương logic: and / or / elif trên CHUỖI DỮ LIỆU (mỗi chữ là chất một mẩu: s sắt, g gỗ, S, N; mẩu N nằm sẵn trên thùng bằng ô X vì cực N không nhấc được);
+   hàm của em carry_down / carry_up. Nhện đâm tường KHÔNG thua, nên lời sai chứng minh bằng cách để nhánh sai làm nhện lạc hàng (thả, đi lên / xuống hàng khác)
+   rồi chuyến sau hút ô trống. Gói 3, 4 viết lại THẲNG ngân hàng, mã giữ (như PDM2b gói 6–7): cảm biến từ đo theo cạnh trước cố định (mọi màn nhện xuất
+   phát quay phải, đi xuống dọc cột, dãy phế liệu cách 2 ô); hàm của em pick_iron / seek_row / next_iron / col_iron(n); gói 4 đệm từ với nhện, KHÔNG hố
+   (hố đi cùng nhảy gói 5), hàm detour(n) / call_out / shield_run(n). Bản xe cũ của kick (gói 2) và seek_iron, take_iron, seek_safe, face_iron, fetch_iron,
+   loop_right, pull_iron (gói 3–4) khai cứng ở lo-trinh-hoc (THAN_CU_3) và cấp capCu cho che-doc-cuc (gói 7) và tong-hop-3 / trum-mua-3 (gói 10) tới khi
+   PDM3b / PDM3c dựng lại. kiem-lo-trinh (d) SIẾT gói 1–4 (GOI_SIET_3: R1 chỉ nhện + nam châm bụng + cảm biến từ); kiem-lach-mua-3 bỏ qua hàm capCu
+   (lách D2) và cắm lỗi giả vào màn xe ép front_pole (gói 7) vì máy dò không chèn dấu vào nhện. Phim gói 2–4 (phim-mua-3.js) CHƯA đổi: vẫn vẽ xe hai bánh.
+
 ## Câu hỏi chờ user
+
+- (PDM3a) Chương logic-nam-cham ghép điều kiện kiểu `c == "s" or c == "S"` / `c != "g" and c != "N"` (hai vế đều là so sánh chuỗi). Ô ghép CHE_VH của
+  thanh-phan.js (mùa 3) mới cho vế ghép thêm là lời gọi cảm biến: cần soát trên trình duyệt xem người chơi có bấm ra được hai vế so sánh chuỗi (và dấu !=)
+  không; nếu không thì mở rộng CHE_VH (giao diện) hay đổi lời giải sang `if c == "s": … elif c == "S": …`.
+- (PDM3a) Máy dò lách mùa 3 bỏ qua mọi màn nhện (không chèn dấu front_clear được): gói 2–4 nay toàn nhện nên chỉ còn kiểm "lời giải 3 sao, mã mẫu không 3 sao".
+  Có muốn một bộ dò riêng cho nhện (dấu bằng front_metal / vết nhịp) không?
+- (PDM3a) Phim gói 2, 3, 4 ở phim-mua-3.js vẫn vẽ xe hai bánh có nam châm mũi: cần đợt vẽ lại (nhện + nam châm bụng) sau khi PDM3b / 3c xong.
+- (PDM3a) Gói 4 không dùng hố (hố là sàn mới đi cùng nhảy gói 5), và không có màn "nút tắt đệm" (nhện không thể vừa đứng trên nút vừa đứng trên mẩu sắt): ý
+  "đệm giữ sắt, tắt đệm rồi mới lấy" để dành gói 9 Đội (R2 đè nút). Chấp nhận?
 - (PDM2c2) Mùa 1 gói 10 (PDM1) tính nhịp màn thường theo ngày dài nhất; mùa 2 gói 10 tính tổng (lý do ở mục 10). Có muốn mùa 1 đổi theo cho nhất quán (và chạy lại
   bộ dò dayChung theo tổng ở mùa 1 — có thể lòi dãy cố định ở vài màn mùa 1)?
 - (PDM2c2) Lời sai viết cứng chỉ cần thua ở ≥ 1 ngày: ở vài màn nó thua cả hai ngày (tong-hop-2.2, trum-mua-2.4…), vì ngày còn lại cũng "lệch" một ô / một ngọn.

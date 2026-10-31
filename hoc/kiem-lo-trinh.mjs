@@ -516,8 +516,23 @@ kiem3('(c) không màn nào trước gói 2 chương 2 mùa 3 (logic-nam-cham) d
   for (const m of M.danhSach.slice(0, moc)) for (const l of dongBacCau(m).dong) if (coLogic(l)) sai.push(m.ma + ': ' + l.trim());
   assert.deepEqual(sai, [], sai.length + ' chỗ: ' + sai.slice(0, 6).join(' · '));
 });
-kiem3('(d) robot mùa 3: thân hai bánh / xích / nhện; tay mùa 1–2 + nam châm; cảm biến mùa 1–2 + cảm ứng từ; khay chỉ lệnh của các part đó; không gọi lệnh omni / drone / màu / máy ném', () => {
+// PDM3a 31/10 (KE-HOACH-PART-DUNG-MUA.md): gói đã dựng lại theo luật "R1 là cỗ máy của mùa" SIẾT CHẶT: R1 chỉ nhện (+ nam châm bụng từ gói 2, + cảm biến từ từ gói 3),
+// khay chỉ lệnh nhện / nam châm / cảm biến từ. Gói 5–10 còn là màn xe cũ (PDM3b / PDM3c dựng lại) giữ phanh rộng bên dưới; thêm vào GOI_SIET_3 khi xong.
+const GOI_SIET_3 = 4;
+const LENH_NHEN_3 = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
+kiem3('(d) robot mùa 3: thân hai bánh / xích / nhện; tay mùa 1–2 + nam châm; cảm biến mùa 1–2 + cảm ứng từ; khay chỉ lệnh của các part đó; không gọi lệnh omni / drone / màu / máy ném; gói 1–' + GOI_SIET_3 + ' siết: R1 chỉ nhện + nam châm bụng + cảm biến từ', () => {
+  const goiCua = {};
+  goi3().forEach((g, i) => g.chuong.forEach(c => { goiCua[c] = i + 1; }));
   for (const m of manMua3()) {
+    if (goiCua[m.chuong] <= GOI_SIET_3) {
+      const so = goiCua[m.chuong], r = m.robot || {};
+      assert.equal(m.loaiRobot, 'nhen', m.ma + ' gói ' + so + ': R1 không phải nhện');
+      assert.equal(r.than, 'nhen', m.ma + ' gói ' + so + ': thân ' + r.than);
+      assert.ok(!r.tay || (so >= 2 && r.tay === 'nam-cham'), m.ma + ' gói ' + so + ': tay ' + r.tay);
+      for (const c of r.camBien || []) assert.ok(so >= 3 && c.ma === 'tu', m.ma + ' gói ' + so + ': cảm biến ' + c.ma);
+      for (const h of m.hamGoc || []) assert.ok(LENH_NHEN_3.includes(h), m.ma + ' gói ' + so + ': khay có lệnh xe ' + h);
+      assert.ok(!m.doi, m.ma + ' gói ' + so + ': có đội');
+    }
     if (m.loaiRobot) assert.ok(PART_3.loaiRobot.includes(m.loaiRobot), m.ma + ' loaiRobot ' + m.loaiRobot);
     for (const r of [m.robot].concat((m.doi || []).map(d => d.robot)).filter(Boolean)) {
       if (r.than) assert.ok(PART_3.than.includes(r.than), m.ma + ' thân ' + r.than);
