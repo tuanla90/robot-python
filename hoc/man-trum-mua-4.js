@@ -1,13 +1,11 @@
 /* ============================================================================
-   man-trum-mua-4.js — "Mật Lệnh Robot": NGÂN HÀNG MÀN MỚI của mùa 4, gói 10 "Drone kẻ vạch R1" (gói cuối mùa, KE-HOACH-MUA-4.md; phiên "Mùa 4" tự viết, 30/10).
-   Gói xuất xưởng: mỗi màn ghép lại hai, ba thứ của các gói trước (luật recall: gói 9 + 10 nhắc mỗi gói 1–8 ít nhất ba lần, màn mới dùng ít nhất hai gói).
-     - `tong-hop-4`: chương 1 "Đủ bộ": ôn từng cặp, đủ các robot của mùa: drone nam châm + camera (gói 4, 7) ghé trạm sạc (gói 5), xe máy sơn + camera bốn hướng
-       (gói 2, 3, 6), đội drone và xe (gói 8), drone sơn đọc mật lệnh (gói 4, 9), danh sách hướng bay (gói 1), sửa hàm chấm theo mũi tên (gói 7, 9);
-       màn 10 trùm chương: chép bảng mẫu, đáp sạc, vạch qua rào, chấm theo danh sách.
-     - `trum-mua-4`: chương 2 "Phố mới kẻ vạch": chế lệnh cho Drone kẻ vạch R1 (sow_marks, charge_if, stair_line, lift_aside cho đội, bar_len, field_row), sửa pond_frame,
-       hàm gọi hàm của em (field_dock, two_marks); trum-mua-4.10 TRÙM CUỐI MÙA 4. Hai màn xe cũ che-may-son.7, .8 từng đứng ở chỗ .8, .9: nay ở mùa 5 (che-may-son-cu).
+   man-trum-mua-4.js — "Mật Lệnh Robot": NGÂN HÀNG MÀN MỚI của mùa 4, gói 10 "Drone nông nghiệp R1" (gói cuối mùa, KE-HOACH-MUA-4.md; PDM4c 31/10 KE-HOACH-PART-DUNG-MUA.md).
+   PDM4c (31/10): gói 10 "R1 chạy một mình, nhiều sân" (như gói 10 mùa 1, 2, 3):
+     - MỌI màn MỘT robot: DRONE NÔNG NGHIỆP R1 ĐẦY ĐỦ = thân drone + bộ gieo hạt (tay: 'son') + camera bốn hướng có mắt bụng (camera-4, taiCho: true).
+     - MỌI màn 2-3 SÂN ("ngày làm việc"), sao.nhip = TỔNG nhịp mọi ngày (nhipTheo: 'tong').
+     - Một chương trình tổng quát thắng 3 sao mọi ngày; mỗi màn có ít nhất 1 lời sai viết cứng (cung: true) thua ở ít nhất một ngày.
    Mã màn: tong-hop-4.1 … .10; trum-mua-4.1 … .10.
-   Máy kiểm: hoc/kiem-man-mua-4.mjs, hoc/kiem-lo-trinh.mjs mục mùa 4.
+   Máy kiểm: hoc/kiem-man-mua-4.mjs, hoc/kiem-lo-trinh.mjs mục mùa 4, hoc/kiem-part-mua.mjs.
    ========================================================================== */
 (function () {
   'use strict';
@@ -16,279 +14,288 @@
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
   var BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
-  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   var SON = ['ink', 'dot', 'pen_down', 'pen_up'];
-  var NC = ['magnet_n', 'magnet_s', 'magnet_off'];
-  var TAY = ['arm_down', 'arm_up', 'grab', 'release'];
   var DAP = ['land', 'take_off', 'battery'];
   var CAM_DUOI = { ma: 'camera-4', o: 'tren', taiCho: true };
-  var CAM_XE = { ma: 'camera-4', o: 'tren' };
-  var KC = { ma: 'khoang-cach', o: 'hong' };
-  // Robot của mùa
-  var R = {
-    'drone-son': { loaiRobot: 'drone', robot: { than: 'drone', tay: 'son', camBien: [CAM_DUOI] }, hamGoc: BAY.concat(SON, ['color'], DAP) },
-    'drone-nc': { loaiRobot: 'drone', robot: { than: 'drone', tay: 'nam-cham', camBien: [CAM_DUOI] }, hamGoc: BAY.concat(NC, ['color'], DAP) },
-    'xe-son': { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'son', camBien: [CAM_XE] }, hamGoc: BANH.concat(SON, ['color']) },
-    'xe-son-kc': { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'son', camBien: [KC] }, hamGoc: BANH.concat(SON, ['front_clear']) },
-    'xe-kep': { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'kep', camBien: [CAM_XE, KC] }, hamGoc: BANH.concat(TAY, ['front_clear', 'color']) }
-  };
+
   function chep(x) { return JSON.parse(JSON.stringify(x)); }
-  function bai(chinh, them) { return Object.assign({ chinh: chinh.slice() }, them || {}); }
-  /** Bài làm hai robot (R1, R2). */
-  function B(c1, c2, them) { return Object.assign({ doi: [{ chinh: c1.slice() }, { chinh: c2.slice() }], hamCuaMan: [] }, them || {}); }
+  function bai(chinh, them) { return Object.assign({ chinh: chinh.slice(), hamCuaMan: [], hamCuaEmMoi: [] }, them || {}); }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
   function thut(ds) { return ds.map(function (s) { return '    ' + s; }); }
   function LAP(n, than, bien) { return ['for ' + (bien || 'i') + ' in range(' + n + '):'].concat(thut(Array.isArray(than) ? than : [than])); }
+  function cung(moTa, baiLam, phaiCoMa, them) { return Object.assign({ moTa: moTa, baiLam: baiLam, phaiCoMa: phaiCoMa, cung: true }, them || {}); }
 
-  /** m.r: mã robot trong R (m.r2 + m.bd: màn hai robot, R2 khoá chương trình khi m.khoa2). Mục tiêu mặc định: robot sơn thì to-hinh, nam châm thì dua-vat. */
+  /** Điền trường mặc định cho màn gói 10 mùa 4 trên Drone nông nghiệp R1 đầy đủ, nhiều sân, nhipTheo: 'tong'. */
   function man(m) {
-    var r = R[m.r], r2 = m.r2 ? R[m.r2] : null, bd = m.bd, khoa2 = m.khoa2;
-    delete m.r; delete m.r2; delete m.bd; delete m.khoa2;
+    delete m.r;
     m.chuong = m.chuong || 'tong-hop-4';
+    m.hang = m.hang || (m.so <= 3 ? 'lam-quen' : m.so <= 6 ? 'luyen' : m.so <= 9 ? 'bien-the' : 'trum');
     m.cauTruc = ['for', 'if', 'while', 'list'];
-    var boPin = function (ds) { return m.pin === undefined ? ds.filter(function (t) { return t !== 'battery'; }) : ds.slice(); };   // battery() cần màn khai pin
-    m.loaiRobot = r.loaiRobot; m.robot = chep(r.robot); m.hamGoc = boPin(r.hamGoc);
-    var coSon = r.robot.tay === 'son' || (r2 && r2.robot.tay === 'son');
-    m.mucTieu = m.mucTieu || (coSon ? 'to-hinh' : 'dua-vat');
-    if (m.mucTieu === 'dua-vat') m.vatCan = 'sat';
+    m.loaiRobot = 'drone';
+    m.robot = { than: 'drone', tay: 'son', camBien: [chep(CAM_DUOI)] };
+    m.hamGoc = BAY.concat(SON, ['color'], m.pin !== undefined ? DAP : []);
+    m.mucTieu = m.mucTieu || 'to-hinh';
     m.nhipTheoLoiGiai = true;
-    m.moXuong = true; m.camHamCuaEm = false;
-    m.khung = m.khung || { chinh: 10, moiHam: 10 };
+    m.moXuong = true;
+    m.camHamCuaEm = false;
+    m.khung = m.khung || { chinh: 12, moiHam: 10 };
     m.loiSai = m.loiSai || [];
-    if (r2) {
-      m.batDau = bd[0];
-      m.doi = [Object.assign({ batDau: bd[0] }, chep(r)), Object.assign({ batDau: bd[1] }, chep(r2))];
-      m.doi.forEach(function (d) { d.hamGoc = boPin(d.hamGoc); });
-      if (khoa2) m.doi[1].coDinh = true;
-      m.bienDem = true;
-      if (Array.isArray(m.san[0])) m.nhipTheo = 'tong';
-      m.loiGiai.hamCuaEmMoi = m.loiGiai.hamCuaEmMoi || [];
+    m.hamCuaEmCan = m.hamCuaEmCan || [];
+    m.taoHam = m.taoHam || [];
+    if (Array.isArray(m.san[0])) {
+      m.nhipTheo = 'tong';
+      if (!Array.isArray(m.batDau)) m.batDau = m.san.map(function () { return Object.assign({}, m.batDau); });
     }
     return ManHoc.chuanHoa(m);
   }
-  function manChe(m) { m.chuong = 'trum-mua-4'; if (m.chinhCoDinh !== false) m.chinhCoDinh = true; else delete m.chinhCoDinh; return man(m); }
+  function manChe(m) {
+    m.chuong = 'trum-mua-4';
+    if (m.chinhCoDinh !== false) m.chinhCoDinh = true; else delete m.chinhCoDinh;
+    return man(m);
+  }
 
   /* ---------------------------------------------------------------- chương tong-hop-4 */
-  var C_TRAM = ['fly_dock(3)', 'go_right()', 'lift_by_color()'];
-  var C_XANH = ['ink("yellow")'].concat(LAP(7, ['dot()', 'green_step()']));
-  var C_DON = ['c = color("here")', 'go_right()', 'seek_here(c)', 'deliver_up(2)'];
-  var C_DO = ['ink("blue")', 'pen_down()', 'go_to("red")', 'turn_right()', 'go_to("red")'];
-  var R2_CHO = ['while front_clear():', '    wait()', 'sort_by_color()'];
-  var R1_CHUYEN = ['magnet_n()', 'wait()', 'go_down()', 'go_down()', 'magnet_off()', 'wait()'];
-  var C_MAT = ['a = []', 'read_row(a, 4)'].concat(LAP(4, 'go_left()'), ['plant_list(a)']);
-  var R2_KE = ['ink("yellow")', 'pen_down()', 'while not front_clear():', '    wait()', 'forward(3)'];
-  var R1_DON = ['go_down()', 'magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()'];
-  var C_HUONG = ['path = ["right", "down", "right", "down"]', 'ink("blue")', 'for d in path:', '    dot()', '    if d == "right":', '        go_right()', '    else:', '        go_down()'];
+  var C_TRAM = ['fly_dock(3)', 'go_right()', 'sow_up(3)'];
+  var C_XANH = ['seek_here("yellow")', 'span_sow("yellow", 3)'];
+  var C_DON = ['c = color("here")', 'go_right()', 'seek_here(c)', 'span_sow(c, 2)'];
+  var C_DO = ['ink("blue")', 'pen_down()', 'while color("right") != "red":', '    go_right()', 'while color("down") != "red":', '    go_down()', 'pen_up()', 'wait()'];
+  var C_CONG = ['c = color("here")', 'wait()', 'gate_sow(c)', 'go_right()', 'span_sow(c, 2)'];
+  var C_MAT = ['a = []', 'read_row(a, 4)'].concat(LAP(4, 'go_left()'), ['dot_row(a)']);
+  var C_DUOI = ['a = []', 'read_below(a, 3)', 'go_down()'].concat(LAP(3, 'go_left()'), ['dot_row(a)']);
+  var C_HUONG = ['c = color("here")', 'ink(c)', 'path = ["right", "down", "right", "down"]', 'for d in path:', '    dot()', '    if d == "right":', '        go_right()', '    else:', '        go_down()'];
   var C_MUI = ['ink("red")'].concat(LAP(6, 'sow_step()'));
-  var C_CA = ['trace_marks(4)', 'dock()', 'go_right()', 'go_right()', 'sow_line("yellow", 1)', 'go_down()',
+  var C_CA = ['sow_up(4)', 'dock()', 'go_right()', 'go_right()', 'span_sow("yellow", 1)', 'go_down()',
     'for c in ["red", "blue", "red"]:', '    go_left()', '    ink(c)', '    dot()', 'wait()'];
+
   /* ---------------------------------------------------------------- chương trum-mua-4 */
-  var T_DASH = ['for i in range(n):', '    if color("here") == "yellow":', '        dot()', '    go_right()'];
   var T_SAC = ['if battery() < k:', '    land()', '    take_off()'];
   var C_SAC = ['ink("yellow")', 'pen_down()'].concat(LAP(3, ['go_right()', 'go_right()', 'charge_if(4)'], 'j'));
+  var T_DASH = ['for i in range(n):', '    if color("here") == "yellow":', '        dot()', '    go_right()'];
   var T_STAIRS = ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_right()', '    go_down()', 'pen_up()'];
-  var C_STAIRS = ['stair_line("red", 2)', 'go_right()', 'stair_line("blue", 1)'];
+  var C_STAIRS = ['c = color("here")', 'stair_line(c, 2)', 'go_right()', 'stair_line("blue", 1)'];
   var T_FRAME = ['pen_down()'].concat(LAP('n', 'go_right()'), LAP('n', 'go_down()'), LAP('n', 'go_left()'), LAP('n', 'go_up()'));
   var T_FRAME_SAI = ['pen_down()'].concat(LAP('n', 'go_right()'), LAP('n', 'go_down()'), LAP('n', 'go_right()'), LAP('n', 'go_up()'));
-  var T_LIFT = ['magnet_n()', 'wait()', 'go_up()', 'magnet_off()', 'wait()'];
-  var R1_LIFT = ['go_down()', 'lift_aside()', 'go_right()', 'go_right()', 'go_down()', 'lift_aside()'];
-  var R2_LIFT = ['ink("yellow")', 'pen_down()', 'for i in range(2):', '    while not front_clear():', '        wait()', '    forward(2)', 'forward(2)'];
+  var C_FRAME = ['c = color("here")', 'ink(c)', 'if c == "green":', '    pond_frame(3)', 'else:', '    pond_frame(2)'];
+  var T_UP_SOW = ['c = color("here")', 'ink(c)', 'go_up()', 'dot()', 'wait()', 'go_down()'];
+  var C_UP_SOW = ['go_right()', 'up_sow()', 'go_right()', 'go_right()', 'up_sow()'];
   var T_BAR = ['ink(c)', 'pen_down()', 'for x in a:', '    go_left()', 'pen_up()'];
   var C_BAR = ['a = []', 'count_here(a, 9, "red")', 'go_down()', 'go_down()', 'bar_len("blue", a)'];
-  var T_STREET = ['sow_line(c, n)', 'go_down()', 'go_down()', 'for i in range(n):', '    go_left()'];
-  var C_STREET = ['field_row("yellow", 5)', 'field_row("blue", 4)', 'sow_line("yellow", 3)'];
+  var T_STREET = ['span_sow(c, n)', 'go_down()', 'go_down()', 'for i in range(n):', '    go_left()'];
+  var C_STREET = ['c = color("here")', 'field_row(c, 5)', 'field_row("blue", 4)', 'span_sow(c, 3)'];
   var T_SDOCK = ['field_row(c, n)', 'charge_if(9)'];
-  var C_SDOCK = ['field_dock("yellow", 5)', 'field_dock("blue", 4)', 'sow_line("yellow", 3)'];
+  var C_SDOCK = ['field_dock("yellow", 5)', 'field_dock("blue", 4)', 'span_sow("yellow", 3)'];
   var T_TWO = ['sow_marks(n)', 'go_down()', 'go_down()', 'for i in range(n):', '    go_left()'];
   var C_TWO = ['ink("yellow")', 'two_marks(6)', 'sow_marks(6)'];
-  var C_R1 = ['trace_marks(4)', 'charge_if(5)', 'ink("yellow")', 'sow_marks(4)', 'charge_if(5)', 'go_down()',
-    'for c in ["red", "yellow", "red"]:', '    go_left()', '    ink(c)', '    dot()', 'go_left()', 'charge_if(5)', 'go_down()', 'sow_line("blue", 4)'];
+  var C_R1 = ['sow_up(4)', 'charge_if(5)', 'ink("yellow")', 'sow_marks(4)', 'charge_if(5)', 'go_down()',
+    'for c in ["red", "yellow", "red"]:', '    go_left()', '    ink(c)', '    dot()', 'go_left()', 'charge_if(5)', 'go_down()', 'span_sow("blue", 4)'];
 
   var DS = [
     /* ================================================= chương tong-hop-4 "Đủ bộ" ================================================= */
     man({
-      so: 1, ten: 'Ghé trạm rồi phân loại', r: 'drone-nc', pin: 6, hamCuaEmCan: ['fly_dock', 'lift_by_color'],
-      deBai: 'Ôn gói Trạm sạc và Nhìn dưới chân. Drone pin 6 phải ghé trạm sạc ở ô thứ tư, rồi bay tới hộp, đọc màu hộp dưới chân: hộp đỏ lên ô đích trên, hộp màu khác xuống ô đích dưới. ' +
-        'Hai sân, hộp hai màu. Dùng fly_dock và lift_by_color em đã chế.',
-      veMaMau: 'Chương trình có sẵn bay thẳng tới hộp nên hết pin. Ghé trạm bằng fly_dock(3).',
-      san: [['....D', '...Po', '....D'], ['....D', '...Po', '....D']],
-      mau: [['....r', '.....', '....b'], ['....r', '.....', '....b']],
-      vatMau: [['.....', '....r', '.....'], ['.....', '....b', '.....']],
-      vatChat: [['.....', '....s', '.....'], ['.....', '....s', '.....']],
+      so: 1, ten: 'Ghé trạm rồi gieo theo mẫu', pin: 7, hamCuaEmCan: ['fly_dock', 'sow_up'],
+      deBai: 'Hai ngày làm việc: drone pin 7 phải ghé trạm sạc P ở ô thứ tư bằng fly_dock(3), bay sang phải một ô rồi gọi sow_up(3) đọc ba ô mẫu hàng trên để gieo hoa. Hai ngày mẫu màu khác nhau.',
+      veMaMau: 'Chương trình có sẵn bay thẳng không ghé trạm nên hết pin. Dùng fly_dock(3) rồi sow_up(3).',
+      san: [['........', '...P....', '........'], ['........', '...P....', '........']],
+      mau: [['....ryb.', '........', '........'], ['....byr.', '........', '........']],
+      hinh: [['........', '....ryb.', '........'], ['........', '....byr.', '........']],
       batDau: { x: 0, y: 1 },
-      maMau: bai(LAP(4, 'go_right()').concat(['lift_by_color()'])),
+      maMau: bai(LAP(4, 'go_right()').concat(['sow_up(3)'])),
       loiGiai: bai(C_TRAM),
-      sao: { o: 17, nhip: 9 },
+      sao: { o: 14, nhip: 18 },
       loiSai: [
-        { moTa: 'Không ghé trạm: hết pin', baiLam: bai(LAP(4, 'go_right()').concat(['lift_by_color()'])), phaiCoMa: ['het-pin'] }
+        { moTa: 'Không ghé trạm: hết pin', baiLam: bai(LAP(4, 'go_right()').concat(['sow_up(3)'])), phaiCoMa: ['het-pin'] },
+        cung('Gieo cứng màu đỏ: sai mẫu hàng trên', bai(['fly_dock(3)', 'go_right()', 'span_sow("red", 2)']), ['chua-to-hinh'])
       ],
-      goiY: ['fly_dock(3) bay ba ô rồi đáp sạc.', 'lift_by_color() đọc màu hộp dưới chân, hút, đưa lên hay xuống rồi thả.']
+      goiY: ['fly_dock(3) bay ba ô tới trạm P rồi đáp sạc đầy pin.', 'Bay sang phải một ô rồi gọi sow_up(3) để đọc ba ô mẫu hàng trên và gieo hoa.']
     }),
 
     man({
-      so: 2, ten: 'Xe chấm theo đường xanh', r: 'xe-son', hamCuaEmCan: ['green_step'],
-      deBai: 'Ôn gói Chấm sơn và Camera bốn hướng. Xe máy sơn có camera bốn hướng. Đường xanh lá có một chỗ rẽ: mỗi bước, chấm vàng ô đang đứng rồi green_step() đi theo đường xanh. Hai sân, rẽ hai phía.',
-      veMaMau: 'Chương trình có sẵn chỉ đi thẳng nên chấm ra ngoài đường. Dùng green_step() em đã chế.',
-      san: [['.....', '.....', '.....'], ['.....', '.....', '.....']],
-      mau: [['.....', '..ggg', 'ggg..'], ['ggg..', '..ggg', '.....']],
-      hinh: [['.....', '..yy.', 'yyy..'], ['yyy..', '..yy.', '.....']],
-      batDau: [{ x: 0, y: 2, huong: 1 }, { x: 0, y: 0, huong: 1 }],
-      maMau: bai(['ink("yellow")'].concat(LAP(7, ['dot()', 'move()']))),
+      so: 2, ten: 'Dò mốc vàng rồi gieo ngang', hamCuaEmCan: ['seek_here', 'span_sow'],
+      deBai: 'Hai ngày làm việc: sau hàng rào =, mốc vàng đầu luống nằm xa gần khác nhau. Dùng seek_here("yellow") dò tới mốc vàng, rồi gọi span_sow("yellow", 3) để gieo luống hoa bốn ô.',
+      veMaMau: 'Chương trình có sẵn chỉ bay hai ô nên ngày 2 gieo lệch luống. Dùng seek_here("yellow").',
+      san: [['........', '.=......', '........'], ['........', '.=......', '........']],
+      mau: [['........', '..y.....', '........'], ['........', '...y....', '........']],
+      hinh: [['........', '..yyyy..', '........'], ['........', '...yyyy.', '........']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(['go_right()', 'go_right()', 'span_sow("yellow", 3)']),
       loiGiai: bai(C_XANH),
-      sao: { o: 17, nhip: 7 },
+      sao: { o: 9, nhip: 11 },
       loiSai: [
-        { moTa: 'Đi thẳng: chấm ra ngoài đường', baiLam: bai(['ink("yellow")'].concat(LAP(7, ['dot()', 'move()']))), phaiCoMa: ['to-thua'] },
-        { moTa: 'Quên chấm', baiLam: bai(['ink("yellow")'].concat(LAP(7, 'green_step()'))), phaiCoMa: [] }
+        cung('Bay cứng hai ô như ngày 1: ngày 2 gieo lệch luống', bai(['go_right()', 'go_right()', 'span_sow("yellow", 3)']), ['to-thua']),
+        { moTa: 'Gieo thiếu một ô', baiLam: bai(['seek_here("yellow")', 'span_sow("yellow", 2)']), phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['dot() làm ở nhịp kế: chấm ô đang đứng trước khi xe đi hay quay.', 'Lúc xe quay tại chỗ, chấm lại ô cũ không sao.']
+      goiY: ['seek_here("yellow") bay sang phải qua hàng rào tới khi ô dưới bụng có màu vàng.', 'span_sow("yellow", 3) gieo trọn bốn ô hoa vàng.']
     }),
 
     man({
-      so: 3, ten: 'Giao hộp theo đơn', r: 'drone-nc', hamCuaEmCan: ['seek_here', 'deliver_up'],
-      deBai: 'Ôn gói Phố màu và Nhìn dưới chân. Ô xuất phát là đơn hàng: màu ô đó là màu hộp khách cần. Đọc đơn, rời ô đơn, tìm hộp cùng màu bằng seek_here, rồi deliver_up(2) lên ô đích. Hai sân.',
-      veMaMau: 'Chương trình có sẵn đọc đơn rồi nâng luôn ô kế bên. Thêm seek_here(c).',
-      san: [['...D..', '......', '...o..'], ['.D....', '......', '.o....']],
-      mau: [['......', '......', 'yrg.b.'], ['......', '......', 'b.ryg.']],
-      vatMau: [['......', '......', '...y..'], ['......', '......', '.b....']],
-      vatChat: [['......', '......', '...s..'], ['......', '......', '.s....']],
-      batDau: { x: 0, y: 2 },
-      maMau: bai(['c = color("here")', 'go_right()', 'deliver_up(2)']),
+      so: 3, ten: 'Gieo luống theo đơn', hamCuaEmCan: ['seek_here', 'span_sow'],
+      deBai: 'Hai ngày làm việc: ô xuất phát là đơn đặt hoa (c = color("here")). Đọc đơn, bay sang phải một ô rời ô đơn, tìm mốc cùng màu bằng seek_here(c), rồi gọi span_sow(c, 2) để gieo ba ô hoa.',
+      veMaMau: 'Chương trình có sẵn tìm cứng màu đỏ nên ngày 2 sai đơn. Dùng biến c trong seek_here(c) và span_sow(c, 2).',
+      san: [['........', '.=......', '........'], ['........', '.=......', '........']],
+      mau: [['........', 'r.yb.r..', '........'], ['........', 'b.ryb...', '........']],
+      hinh: [['........', '.....rrr', '........'], ['........', '....bbb.', '........']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(['c = color("here")', 'go_right()', 'seek_here("red")', 'span_sow("red", 2)']),
       loiGiai: bai(C_DON),
-      sao: { o: 12, nhip: 7 },
+      sao: { o: 11, nhip: 13 },
       loiSai: [
-        { moTa: 'Không rời ô đơn: tìm thấy ngay chính ô đơn', baiLam: bai(['c = color("here")', 'seek_here(c)', 'deliver_up(2)']), phaiCoMa: [] },
-        { moTa: 'Tìm hộp vàng cố định', baiLam: bai(['c = color("here")', 'go_right()', 'seek_here("yellow")', 'deliver_up(2)']), phaiCoMa: [] }
+        cung('Tìm và gieo cứng màu đỏ theo ngày 1: ngày 2 sai màu và vị trí', bai(['c = color("here")', 'go_right()', 'seek_here("red")', 'span_sow("red", 2)']), ['to-thua']),
+        { moTa: 'Không rời ô đơn trước khi seek_here(c): dừng ngay tại ô xuất phát', baiLam: bai(['c = color("here")', 'seek_here(c)', 'span_sow(c, 2)']), phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['Ô đơn cũng có màu c: rời nó một ô rồi mới tìm.', 'seek_here(c) dừng trên hộp cùng màu đơn.']
+      goiY: ['Ô đơn cũng mang màu c: cần go_right() rời nó một ô rồi mới gọi seek_here(c).', 'Tìm thấy mốc c thì gọi span_sow(c, 2).']
     }),
 
     man({
-      so: 4, ten: 'Kẻ tới vạch đỏ', r: 'xe-son', hamCuaEmCan: ['go_to', 'turn_right'],
-      deBai: 'Ôn gói Nét liền và Camera bốn hướng. Xe hạ bút kẻ vạch xanh dương, đi tới khi trước mặt là ô đỏ, rẽ phải, lại đi tới ô đỏ thứ hai. Hai sân, ô đỏ ở chỗ khác nhau.',
-      veMaMau: 'Chương trình có sẵn đi đúng số ô của sân thứ nhất. Dùng go_to("red") em đã chế.',
+      so: 4, ten: 'Gieo tới mốc đỏ', hamCuaEmCan: [],
+      deBai: 'Hai ngày làm việc: mốc đỏ nằm ở cột và hàng khác nhau. Chọn hạt xanh dương, hạ miệng gieo, bay sang phải khi color("right") != "red", rồi bay xuống khi color("down") != "red", cuối cùng nhấc miệng gieo và wait().',
+      veMaMau: 'Chương trình có sẵn đếm cứng số ô của ngày 1. Thay bằng hai vòng while hỏi camera.',
       san: [['.....', '.....', '.....', '.....'], ['.....', '.....', '.....', '.....']],
       mau: [['....r', '.....', '.....', '...r.'], ['..r..', '.....', '.....', '.r...']],
       hinh: [['bbbb.', '...b.', '...b.', '.....'], ['bb...', '.b...', '.b...', '.....']],
-      batDau: { x: 0, y: 0, huong: 1 },
-      maMau: bai(['ink("blue")', 'pen_down()', 'forward(3)', 'turn_right()', 'forward(2)']),
+      batDau: { x: 0, y: 0 },
+      maMau: bai(['ink("blue")', 'pen_down()', 'for i in range(3):', '    go_right()', 'for i in range(2):', '    go_down()', 'pen_up()', 'wait()']),
       loiGiai: bai(C_DO),
-      sao: { o: 12, nhip: 6 },
+      sao: { o: 8, nhip: 8 },
       loiSai: [
-        { moTa: 'Đi theo số ô sân thứ nhất', baiLam: bai(['ink("blue")', 'pen_down()', 'forward(3)', 'turn_right()', 'forward(2)']), phaiCoMa: ['to-thua'] }
+        cung('Đếm cứng số ô theo ngày 1: ngày 2 gieo lố qua mốc đỏ', bai(['ink("blue")', 'pen_down()', 'for i in range(3):', '    go_right()', 'for i in range(2):', '    go_down()', 'pen_up()', 'wait()']), ['to-thua'])
       ],
-      goiY: ['go_to(col) đi tới khi ô trước mặt có màu col.', 'Bút hạ thì ô góc lúc xe quay cũng được tô.']
+      goiY: ['while color("right") != "red": go_right() dừng ngay ở ô trước mốc đỏ.', 'Đoạn dọc dùng while color("down") != "red": go_down(), rồi pen_up() và wait().']
     }),
 
     man({
-      so: 5, ten: 'Đội: chuyền hộp qua rào', r: 'drone-nc', r2: 'xe-kep', khoa2: true, bd: [{ x: 2, y: 0 }, { x: 2, y: 3, huong: 0 }],
-      hamCuaEmCan: ['sort_by_color'],
-      deBai: 'Ôn gói Đội chia hàng. Hộp sắt nằm sau hàng rào, xe kẹp không với tới. R1 là drone nam châm: hút hộp, bay qua rào, thả xuống ô ngay trước mũi xe. ' +
-        'R2 là xe kẹp tự động (đã khoá): chờ tới khi có hộp trước mũi rồi sort_by_color(). Viết R1.',
-      veMaMau: 'Chạy thử: xe chờ mãi. Viết chương trình R1.',
-      san: ['..o..', '..=..', '.....', '.D.D.'],
-      mau: ['.....', '.....', '.....', '.b.r.'],
-      vatMau: ['..r..', '.....', '.....', '.....'],
-      vatChat: ['..s..', '.....', '.....', '.....'],
-      maMau: B(['wait()'], R2_CHO),
-      loiGiai: B(R1_CHUYEN, R2_CHO),
-      sao: { o: 31, nhip: 8 },
+      so: 5, ten: 'Chờ thùng mở cổng rồi gieo', hamCuaEmCan: ['gate_sow', 'span_sow'],
+      deBai: 'Hai ngày làm việc: thùng trên băng chuyền > trượt vào đè nút M mở cổng C, màu đơn đặt ở ô xuất phát (c = color("here")). Đọc c, chờ thêm một nhịp wait() cho thùng tới nút, gọi gate_sow(c), rồi bay sang phải một ô và gọi span_sow(c, 2).',
+      veMaMau: 'Chương trình có sẵn gieo cứng màu đỏ nên ngày 2 sai đơn. Đọc c = color("here") rồi truyền c vào hai hàm.',
+      san: [['>M.....', '.C.....'], ['>M.....', '.C.....']],
+      thungThem: [[{ x: 0, y: 0 }], [{ x: 0, y: 0 }]],
+      noi: [[{ nut: { x: 1, y: 0 }, cua: [{ x: 1, y: 1 }] }], [{ nut: { x: 1, y: 0 }, cua: [{ x: 1, y: 1 }] }]],
+      mau: [['.......', 'r......'], ['.......', 'y......']],
+      hinh: [['.......', '..rrrr.'], ['.......', '..yyyy.']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(['wait()', 'gate_sow("red")', 'go_right()', 'span_sow("red", 2)']),
+      loiGiai: bai(C_CONG),
+      sao: { o: 16, nhip: 16 },
       loiSai: [
-        { moTa: 'Thả hộp xuống hàng rào', baiLam: B(['magnet_n()', 'wait()', 'go_down()', 'magnet_off()', 'wait()'], R2_CHO), phaiCoMa: [] }
+        cung('Gieo cứng màu đỏ theo ngày 1: ngày 2 sai màu hoa', bai(['wait()', 'gate_sow("red")', 'go_right()', 'span_sow("red", 2)']), ['chua-to-hinh']),
+        { moTa: 'Bay ngay không chờ thùng đè nút: đụng cổng C đang đóng', baiLam: bai(['c = color("here")', 'go_right()', 'go_right()', 'span_sow(c, 3)']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Drone đứng ngay trên hộp: hút luôn.', 'Ô trước mũi xe là ô thứ ba của cột giữa.']
+      goiY: ['Đọc c = color("here"), gọi wait() rồi gate_sow(c).', 'Sau gate_sow(c), bay sang phải một ô rồi gọi span_sow(c, 2).']
     }),
 
     man({
-      so: 6, ten: 'Chép mật lệnh hàng trên', r: 'drone-son', hamCuaEmCan: ['read_row', 'plant_list'],
-      deBai: 'Ôn gói Phố màu và Sơn từ trên cao. Ghi màu bốn ô hàng trên bằng read_row (drone nhìn lên), bay về đầu hàng rồi sơn lại đúng thứ tự bằng plant_list. Hai sân, mật lệnh khác nhau.',
-      veMaMau: 'Chương trình có sẵn đã ghi mật lệnh vào a. Viết tiếp: bay về đầu hàng, rồi sơn.',
+      so: 6, ten: 'Chép mật lệnh hàng trên', hamCuaEmCan: ['read_row', 'dot_row'],
+      deBai: 'Hai ngày làm việc: ghi bốn màu ở hàng trên vào danh sách a bằng read_row(a, 4), bay trái bốn ô về đầu hàng rồi gieo lại đúng thứ tự bằng dot_row(a).',
+      veMaMau: 'Chương trình có sẵn đã ghi mật lệnh vào a. Viết tiếp: bay về đầu hàng rồi gọi dot_row(a).',
       san: [['.....', '.....'], ['.....', '.....']],
       mau: [['.rgyb', '.....'], ['.bbry', '.....']],
       hinh: [['.....', 'rgyb.'], ['.....', 'bbry.']],
       batDau: { x: 0, y: 1 },
       maMau: bai(['a = []', 'read_row(a, 4)']),
       loiGiai: bai(C_MAT),
-      sao: { o: 12, nhip: 12 },
+      sao: { o: 12, nhip: 24 },
       loiSai: [
-        { moTa: 'Sơn luôn ở cuối hàng: ra ngoài hình', baiLam: bai(['a = []', 'read_row(a, 4)', 'plant_list(a)']), phaiCoMa: ['to-thua'] }
+        { moTa: 'Gieo luôn ở cuối hàng: ra ngoài luống', baiLam: bai(['a = []', 'read_row(a, 4)', 'dot_row(a)']), phaiCoMa: ['to-thua'] },
+        cung('Gieo cứng bốn màu của ngày 1: ngày 2 sai màu hoa', bai(['dot_row(["red", "green", "yellow", "blue"])']), ['chua-to-hinh'])
       ],
-      goiY: ['read_row(a, 4) bay bốn ô sang phải, ghi màu ô phía trên.', 'Bay trái bốn ô về đầu hàng rồi plant_list(a).']
+      goiY: ['read_row(a, 4) bay bốn ô sang phải, ghi màu ô phía trên vào a.', 'Bay trái bốn ô về đầu hàng rồi gọi dot_row(a).']
     }),
 
     man({
-      so: 7, ten: 'Đội: dọn lối cho xe kẻ vạch', r: 'drone-nc', r2: 'xe-son-kc', khoa2: true, bd: [{ x: 1, y: 0 }, { x: 0, y: 1, huong: 1 }],
-      hamCuaEmCan: ['forward'],
-      deBai: 'Ôn gói Đội chia hàng và Nét liền. R2 là xe máy sơn tự động (đã khoá): hạ bút, chờ lối trống rồi kẻ vạch vàng. Hộp sắt chắn ngay trước mũi xe. ' +
-        'R1 là drone nam châm đứng trên hộp: hút hộp nhấc lên khỏi đường. Viết R1.',
-      veMaMau: 'Chạy thử: xe chờ mãi vì hộp chắn. Viết chương trình R1.',
-      san: ['.....', '.o...', '.....'],
-      vatChat: ['.....', '.s...', '.....'],
-      hinh: ['.....', 'yyyy.', '.....'],
-      maMau: B(['wait()'], R2_KE),
-      loiGiai: B(R1_DON, R2_KE),
-      sao: { o: 16, nhip: 5 },
+      so: 7, ten: 'Đọc dấu dưới chân rồi gieo hàng dưới', hamCuaEmCan: ['read_below', 'dot_row'],
+      deBai: 'Hai ngày làm việc: đọc ba dấu màu dưới chân vào danh sách a bằng read_below(a, 3), bay xuống một hàng, bay trái ba ô về đầu hàng rồi gọi dot_row(a) để gieo luống hoa.',
+      veMaMau: 'Chương trình có sẵn chưa lùi về đầu hàng dưới. Thêm vòng lặp bay trái ba ô rồi gọi dot_row(a).',
+      san: [['.....', '.....', '.....'], ['.....', '.....', '.....']],
+      mau: [['.....', '.ryb.', '.....'], ['.....', '.byr.', '.....']],
+      hinh: [['.....', '.....', 'ryb..'], ['.....', '.....', 'byr..']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(['a = []', 'read_below(a, 3)', 'go_down()']),
+      loiGiai: bai(C_DUOI),
+      sao: { o: 13, nhip: 20 },
       loiSai: [
-        { moTa: 'Hút mà không bay đi: hộp vẫn chắn', baiLam: B(['go_down()', 'magnet_n()', 'wait()', 'magnet_off()', 'wait()'], R2_KE), phaiCoMa: [] }
+        { moTa: 'Quên bay trái về đầu hàng: gieo lệch sang phải', baiLam: bai(['a = []', 'read_below(a, 3)', 'go_down()', 'dot_row(a)']), phaiCoMa: ['to-thua'] },
+        cung('Gieo cứng ba màu của ngày 1: ngày 2 sai màu hoa', bai(['go_down()', 'dot_row(["red", "yellow", "blue"])']), ['chua-to-hinh'])
       ],
-      goiY: ['Drone bay xuống ô có hộp rồi hút.', 'Mang hộp lên hàng trên rồi thả: đường của xe trống.']
+      goiY: ['read_below(a, 3) dừng ở cột thứ ba sau khi ghi đủ ba màu.', 'Bay xuống một hàng, lặp ba lần go_left() về cột 0 rồi gọi dot_row(a).']
     }),
 
     man({
-      so: 8, ten: 'Bay theo danh sách hướng', r: 'drone-son', hamCuaEmCan: [],
-      deBai: 'Ôn gói Cất cánh và Chấm sơn. Danh sách path ghi đường bay. Mỗi bước: chấm xanh dương ô đang ở, rồi bay theo hướng trong danh sách.',
-      veMaMau: 'Chương trình có sẵn đã bay theo path nhưng chưa sơn. Thêm ink và dot.',
-      san: ['...', '...', '...'],
-      hinh: ['bb.', '.bb', '...'],
+      so: 8, ten: 'Bay theo danh sách hướng', hamCuaEmCan: [],
+      deBai: 'Hai ngày làm việc: đọc màu hạt ở ô xuất phát (c = color("here")), chọn hạt ink(c), rồi bay theo danh sách path = ["right", "down", "right", "down"]. Mỗi bước: dot() trước rồi bay theo hướng trong path.',
+      veMaMau: 'Chương trình có sẵn đã bay theo path nhưng chưa chọn hạt theo ô xuất phát và chưa dot().',
+      san: [['...', '...', '...'], ['...', '...', '...']],
+      mau: [['b..', '...', '...'], ['r..', '...', '...']],
+      hinh: [['bb.', '.bb', '...'], ['rr.', '.rr', '...']],
       batDau: { x: 0, y: 0 },
       maMau: bai(['path = ["right", "down", "right", "down"]', 'for d in path:', '    if d == "right":', '        go_right()', '    else:', '        go_down()']),
       loiGiai: bai(C_HUONG),
-      sao: { o: 8, nhip: 4 },
+      sao: { o: 9, nhip: 8 },
       loiSai: [
-        { moTa: 'Chấm sau khi bay: lệch một ô', baiLam: bai(['path = ["right", "down", "right", "down"]', 'ink("blue")', 'for d in path:', '    if d == "right":', '        go_right()', '    else:', '        go_down()', '    dot()']), phaiCoMa: [] }
+        cung('Chọn cứng màu xanh dương của ngày 1: ngày 2 sai màu hoa', bai(['ink("blue")', 'path = ["right", "down", "right", "down"]', 'for d in path:', '    dot()', '    if d == "right":', '        go_right()', '    else:', '        go_down()']), ['chua-to-hinh']),
+        { moTa: 'Gieo sau khi bay: lệch mất ô đầu', baiLam: bai(['c = color("here")', 'ink(c)', 'path = ["right", "down", "right", "down"]', 'for d in path:', '    if d == "right":', '        go_right()', '    else:', '        go_down()', '    dot()']), phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['dot() làm ở nhịp bay kế tiếp, trước khi bay.', 'Chấm trước, bay sau.']
+      goiY: ['Đọc c = color("here") rồi ink(c) trước vòng lặp.', 'Trong vòng lặp: gọi dot() trước khối if/else để gieo ô đang đứng lúc bay đi.']
     }),
 
     man({
-      so: 9, ten: 'Sửa hàm chấm mũi tên', r: 'drone-son', chinhCoDinh: true, hamCuaEmCan: ['arrow_step'],
-      deBai: 'Ôn gói Nhìn dưới chân. Hàm của màn sow_step() phải chấm ô đang ở rồi bay theo mũi tên màu (arrow_step của em), nhưng nó bay trước rồi mới chấm. Sửa sow_step; chương trình chính đã khóa. Hai sân.',
-      veMaMau: 'Chạy thử: ô xuất phát không được chấm. Đổi thứ tự hai lệnh.',
+      so: 9, ten: 'Sửa hàm gieo mũi tên', chinhCoDinh: true, hamCuaEmCan: ['arrow_step'],
+      deBai: 'Hai ngày làm việc: hàm của màn sow_step() phải gieo ô đang ở rồi bay theo mũi tên màu dưới chân (arrow_step()), nhưng nó lại bay trước rồi mới gieo. Sửa sow_step; chương trình chính đã khóa.',
+      veMaMau: 'Chạy thử: ô xuất phát bị bỏ trống. Đổi thứ tự hai lệnh trong sow_step().',
       san: [['.....', '.....', '.....'], ['.....', '.....', '.....']],
       mau: [['gb...', '.ggb.', '...g.'], ['b....', 'ggb..', '..gg.']],
       hinh: [['rr...', '.rrr.', '...r.'], ['r....', 'rrr..', '..rr.']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_MUI, { hamCuaMan: [H('sow_step', [], ['arrow_step()', 'dot()'])] }),
       loiGiai: bai(C_MUI, { hamCuaMan: [H('sow_step', [], ['dot()', 'arrow_step()'])] }),
-      sao: { o: 9, nhip: 6 },
+      sao: { o: 9, nhip: 12 },
       loiSai: [
-        { moTa: 'Không sửa: bay trước rồi mới chấm', baiLam: bai(C_MUI, { hamCuaMan: [H('sow_step', [], ['arrow_step()', 'dot()'])] }), phaiCoMa: [] }
+        { moTa: 'Không sửa: bay trước rồi mới gieo', baiLam: bai(C_MUI, { hamCuaMan: [H('sow_step', [], ['arrow_step()', 'dot()'])] }), phaiCoMa: ['chua-to-hinh'] },
+        cung('Luôn bay sang phải trong sow_step: lệch đường mũi tên', bai(C_MUI, { hamCuaMan: [H('sow_step', [], ['dot()', 'go_right()'])] }), ['to-thua'])
       ],
-      goiY: ['dot() chấm ô đang ở ở nhịp bay kế tiếp.', 'arrow_step() đọc mũi tên dưới chân rồi bay một ô.']
+      goiY: ['dot() gieo ô đang ở ở nhịp bay kế tiếp.', 'arrow_step() đọc mũi tên dưới chân rồi bay một ô.']
     }),
 
     man({
-      so: 10, ten: 'Ca kẻ vạch đầu tiên', hang: 'trum', r: 'drone-son', pin: 14, hamCuaEmCan: ['trace_marks', 'dock', 'sow_line'], khung: { chinh: 12, moiHam: 10 },
-      deBai: 'Trùm chương: chép bảng mẫu hàng trên xuống bằng trace_marks(4), tới trạm sạc thì dock(), bay qua hàng rào, kẻ hai ô vạch vàng, xuống hàng dưới rồi chấm đỏ, xanh dương, đỏ từ phải sang trái. ' +
-        'Hai sân, bảng mẫu khác nhau. Pin 14 không đủ làm một mạch.',
-      veMaMau: 'Chương trình có sẵn đã chép bảng mẫu. Viết tiếp phần còn lại.',
+      so: 10, ten: 'Ca gieo luống đầu tiên', hang: 'trum', pin: 14, hamCuaEmCan: ['sow_up', 'dock', 'span_sow'], khung: { chinh: 12, moiHam: 10 },
+      deBai: 'Trùm chương: hai ngày làm việc, chép bảng mẫu hàng trên xuống bằng sow_up(4), tới trạm sạc P thì dock(), bay hai ô qua hàng rào =, gieo hai ô hoa vàng bằng span_sow("yellow", 1), xuống hàng dưới rồi gieo đỏ, xanh dương, đỏ từ phải sang trái.',
+      veMaMau: 'Chương trình có sẵn đã chép bảng mẫu bằng sow_up(4). Viết tiếp phần còn lại.',
       san: [['........', '....P=..', '........'], ['........', '....P=..', '........']],
       mau: [['r.gy....', '........', '........'], ['bb.r....', '........', '........']],
       hinh: [['........', 'r.gy..yy', '....rbr.'], ['........', 'bb.r..yy', '....rbr.']],
       batDau: { x: 0, y: 1 },
-      maMau: bai(['trace_marks(4)']),
+      maMau: bai(['sow_up(4)']),
       loiGiai: bai(C_CA),
-      sao: { o: 24, nhip: 14 },
+      sao: { o: 24, nhip: 28 },
       loiSai: [
-        { moTa: 'Không đáp sạc: hết pin', baiLam: bai(C_CA.filter(function (s) { return s !== 'dock()'; })), phaiCoMa: ['het-pin'] },
-        { moTa: 'Quên wait(): chấm cuối không kịp tô', baiLam: bai(C_CA.slice(0, -1)), phaiCoMa: [] }
+        { moTa: 'Không đáp sạc: hết pin giữa chừng', baiLam: bai(C_CA.filter(function (s) { return s !== 'dock()'; })), phaiCoMa: ['het-pin'] },
+        { moTa: 'Quên wait() cuối: bông cuối chưa kịp gieo', baiLam: bai(C_CA.slice(0, -1)), phaiCoMa: ['chua-to-hinh'] },
+        cung('Gieo cứng vạch đỏ thay cho sow_up(4): sai mẫu hàng trên', bai(['span_sow("red", 3)', 'go_right()'].concat(C_CA.slice(1))), ['to-thua'])
       ],
-      goiY: ['trace_marks(4) dừng đúng trên trạm sạc.', 'Hàng dưới: mỗi màu bay trái một ô rồi mới chấm; chấm cuối cần wait().']
+      goiY: ['sow_up(4) dừng đúng trên trạm sạc P.', 'Hàng dưới: mỗi màu bay trái một ô rồi mới dot(); bông cuối cần wait().']
     }),
 
-    /* ================================================= chương trum-mua-4 "Phố mới kẻ vạch" ================================================= */
+    /* ================================================= chương trum-mua-4 "Drone nông nghiệp R1" ================================================= */
     manChe({
-      so: 2, ten: 'Hàm chấm theo dấu', r: 'drone-son', taoHam: ['sow_marks'], hamCuaEmCan: [],
-      deBai: 'Drone kẻ vạch R1 sắp xuất xưởng. Chế sow_marks(n): bay qua n ô, ô nào có dấu vàng nhạt thì chấm vàng. Chương trình chính đã khóa: sow_marks(6). Hai sân, dấu khác nhau.',
+      so: 1, ten: 'Hàm sạc khi yếu', pin: [6, 10], taoHam: ['charge_if'], hamCuaEmCan: [],
+      deBai: 'Hai ngày làm việc: chế charge_if(k) kiểm tra nếu battery() < k thì land() rồi take_off() (đáp trên trạm P là sạc đầy), không thì thôi. Chương trình chính đã khóa: gieo luống vàng ba chặng, cuối mỗi chặng gọi charge_if(4).',
+      veMaMau: 'Tạo charge_if với một đối số k. Thân hàm là một if; trong if gọi land() rồi take_off() (hay dock() bạn đã chế).',
+      san: [['..P.P..', '.......'], ['..P.P..', '.......']],
+      hinh: [['yyyyyyy', '.......'], ['yyyyyyy', '.......']],
+      batDau: { x: 0, y: 0 },
+      maMau: bai(C_SAC),
+      loiGiai: bai(C_SAC, { hamCuaEmMoi: [H('charge_if', ['k'], T_SAC)] }),
+      sao: { o: 9, nhip: 18 },
+      congThucKhac: [{ moTa: 'Gọi dock() đã chế', hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() < k:', '    dock()'])] }],
+      loiSai: [
+        { moTa: 'Gọi charge_if mà chưa chế hàm', baiLam: bai(C_SAC), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'So ngược: chỉ sạc khi pin còn nhiều', baiLam: bai(C_SAC), hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() > k:', '    dock()'])], phaiCoMa: ['het-pin'] },
+        cung('Chỉ sạc khi battery() == 6 theo ngày 2: ngày 1 hết pin', bai(C_SAC), ['het-pin'], { hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() == 6:', '    dock()'])] })
+      ],
+      goiY: ['battery() trả về số pin còn lại.', 'Hạ miệng gieo thì mỗi bước bay tốn 2 pin; dưới k thì đáp sạc.']
+    }),
+
+    manChe({
+      so: 2, ten: 'Hàm gieo theo dấu', taoHam: ['sow_marks'], hamCuaEmCan: [],
+      deBai: 'Hai ngày làm việc: chế sow_marks(n) bay qua n ô, ô nào dưới bụng có dấu vàng (color("here") == "yellow") thì dot(). Chương trình chính đã khóa: ink("yellow") rồi sow_marks(6).',
       veMaMau: 'Mở Xưởng hàm, tạo sow_marks với một đối số n.',
       san: [['.......', '.......'], ['.......', '.......']],
       mau: [['y.yy.y.', '.......'], ['.yy.y..', '.......']],
@@ -296,177 +303,164 @@
       batDau: { x: 0, y: 0 },
       maMau: bai(['ink("yellow")', 'sow_marks(6)']),
       loiGiai: bai(['ink("yellow")', 'sow_marks(6)'], { hamCuaEmMoi: [H('sow_marks', ['n'], T_DASH)] }),
-      sao: { o: 6, nhip: 6 },
+      sao: { o: 6, nhip: 11 },
       loiSai: [
         { moTa: 'Gọi sow_marks mà chưa chế hàm', baiLam: bai(['ink("yellow")', 'sow_marks(6)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Chấm mọi ô', baiLam: bai(['ink("yellow")', 'sow_marks(6)']), hamCuaEmMoi: [H('sow_marks', ['n'], ['for i in range(n):', '    dot()', '    go_right()'])], phaiCoMa: ['to-thua'] }
+        { moTa: 'Gieo mọi ô không nhìn dấu', baiLam: bai(['ink("yellow")', 'sow_marks(6)']), hamCuaEmMoi: [H('sow_marks', ['n'], ['for i in range(n):', '    dot()', '    go_right()'])], phaiCoMa: ['to-thua'] },
+        cung('Gieo cứng các ô của ngày 1: ngày 2 gieo thừa và thiếu', bai(['ink("yellow")', 'sow_marks(6)']), ['to-thua'], { hamCuaEmMoi: [H('sow_marks', ['n'], ['dot()', 'go_right()', 'go_right()', 'dot()', 'go_right()', 'dot()', 'go_right()', 'go_right()', 'dot()', 'go_right()'])] })
       ],
-      goiY: ['Hỏi color("here") == "yellow" trước khi chấm.', 'go_right() nằm ngoài if.']
+      goiY: ['Hỏi if color("here") == "yellow": trước khi dot().', 'go_right() đặt ngoài if để ô nào drone cũng bay qua.']
     }),
 
     manChe({
-      so: 1, ten: 'Hàm sạc khi yếu', r: 'drone-son', pin: [6, 10], taoHam: ['charge_if'], hamCuaEmCan: [],
-      deBai: 'Chế charge_if(k): pin dưới k thì đáp xuống rồi cất cánh (đáp trên trạm là sạc đầy), không thì thôi. Chương trình chính đã khóa: kẻ vạch vàng ba chặng, mỗi chặng hai ô, cuối chặng gọi charge_if(4). ' +
-        'Hai sân cùng con phố, drone pin 6 và pin 10.',
-      veMaMau: 'Tạo charge_if với một đối số k. Thân hàm là một if; trong if gọi land() rồi take_off() (hay dock() em đã chế).',
-      san: [['..P.P..', '.......'], ['..P.P..', '.......']],
-      hinh: [['yyyyyyy', '.......'], ['yyyyyyy', '.......']],
-      batDau: { x: 0, y: 0 },
-      maMau: bai(C_SAC),
-      loiGiai: bai(C_SAC, { hamCuaEmMoi: [H('charge_if', ['k'], T_SAC)] }),
-      sao: { o: 9, nhip: 10 },
-      congThucKhac: [{ moTa: 'Gọi dock() em đã chế', hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() < k:', '    dock()'])] }],
-      loiSai: [
-        { moTa: 'Gọi charge_if mà chưa chế hàm', baiLam: bai(C_SAC), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'So ngược: chỉ sạc khi pin còn nhiều', baiLam: bai(C_SAC), hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() > k:', '    dock()'])], phaiCoMa: ['het-pin'] }
-      ],
-      goiY: ['battery() là số pin còn lại.', 'Kẻ có bút hạ: mỗi nhịp bay tốn 2 pin.']
-    }),
-
-    manChe({
-      so: 3, ten: 'Hàm bậc thang', r: 'drone-son', taoHam: ['stair_line'], hamCuaEmCan: [],
-      deBai: 'Chế stair_line(c, n): chọn màu c, hạ bút, n lần bay phải một ô rồi xuống một ô, cuối cùng nhấc bút. Chương trình chính đã khóa: bậc thang đỏ hai bậc, bay sang phải, bậc thang xanh dương một bậc.',
+      so: 3, ten: 'Hàm bậc thang', taoHam: ['stair_line'], hamCuaEmCan: [],
+      deBai: 'Hai ngày làm việc: chế stair_line(c, n) chọn hạt c, hạ miệng gieo, lặp n lần bay phải một ô rồi xuống một ô, cuối cùng nhấc miệng gieo. Chương trình chính đã khóa: đọc màu c ở ô đầu, gieo bậc thang hai bậc màu c, bay sang phải rồi gieo bậc thang xanh dương một bậc.',
       veMaMau: 'Tạo stair_line với hai đối số c và n.',
-      san: ['.....', '.....', '.....', '.....'],
-      hinh: ['rr...', '.rr..', '..rbb', '....b'],
+      san: [['.....', '.....', '.....', '.....'], ['.....', '.....', '.....', '.....']],
+      mau: [['r....', '.....', '.....', '.....'], ['y....', '.....', '.....', '.....']],
+      hinh: [['rr...', '.rr..', '..rbb', '....b'], ['yy...', '.yy..', '..ybb', '....b']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_STAIRS),
       loiGiai: bai(C_STAIRS, { hamCuaEmMoi: [H('stair_line', ['c', 'n'], T_STAIRS)] }),
-      sao: { o: 9, nhip: 7 },
+      sao: { o: 10, nhip: 14 },
       loiSai: [
         { moTa: 'Gọi stair_line mà chưa chế hàm', baiLam: bai(C_STAIRS), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Xuống trước rồi mới sang phải', baiLam: bai(C_STAIRS), hamCuaEmMoi: [H('stair_line', ['c', 'n'], ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_down()', '    go_right()', 'pen_up()'])], phaiCoMa: ['to-thua'] }
+        { moTa: 'Xuống trước rồi mới sang phải', baiLam: bai(C_STAIRS), hamCuaEmMoi: [H('stair_line', ['c', 'n'], ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_down()', '    go_right()', 'pen_up()'])], phaiCoMa: ['to-thua'] },
+        cung('Chọn cứng màu đỏ trong stair_line: ngày 2 sai màu bậc thang đầu', bai(C_STAIRS), ['chua-to-hinh'], { hamCuaEmMoi: [H('stair_line', ['c', 'n'], ['ink("red")', 'pen_down()', 'for i in range(n):', '    go_right()', '    go_down()', 'pen_up()'])] })
       ],
-      goiY: ['Mỗi bậc: go_right() rồi go_down().', 'pen_up() cuối hàm làm ở nhịp bay kế tiếp.']
+      goiY: ['Mỗi bậc trong vòng lặp: go_right() rồi go_down().', 'Cuối hàm nhớ gọi pen_up().']
     }),
 
     manChe({
-      so: 4, ten: 'Sửa hàm khung', r: 'drone-son', hamCuaEmCan: [],
-      deBai: 'Hàm của màn pond_frame(n) phải kẻ khung vuông quanh ao: phải, xuống, trái, lên, mỗi cạnh n ô. Cạnh thứ ba lại bay sang phải. Sửa pond_frame; chương trình chính đã khóa: pond_frame(3).',
-      veMaMau: 'Chạy thử: drone bay ra mép sân. Sửa lệnh bay trong vòng lặp thứ ba.',
-      san: ['....', '.uu.', '.uu.', '....'],
-      hinh: ['gggg', 'g..g', 'g..g', 'gggg'],
+      so: 4, ten: 'Sửa hàm viền ao', hamCuaEmCan: [],
+      deBai: 'Hai ngày làm việc, hai ao rộng hẹp khác nhau: hàm của màn pond_frame(n) phải gieo viền vuông quanh ao (phải, xuống, trái, lên, mỗi cạnh n ô), nhưng cạnh thứ ba đang bay sang phải. Sửa pond_frame(n); chương trình chính đã khóa.',
+      veMaMau: 'Chạy thử: cạnh thứ ba drone bay ra mép sân. Sửa lệnh bay trong vòng lặp thứ ba thành go_left().',
+      san: [['....', '.uu.', '.uu.', '....'], ['....', '.u..', '....', '....']],
+      mau: [['g...', '....', '....', '....'], ['y...', '....', '....', '....']],
+      hinh: [['gggg', 'g..g', 'g..g', 'gggg'], ['yyy.', 'y.y.', 'yyy.', '....']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(['ink("green")', 'pond_frame(3)'], { hamCuaMan: [H('pond_frame', ['n'], T_FRAME_SAI)] }),
-      loiGiai: bai(['ink("green")', 'pond_frame(3)'], { hamCuaMan: [H('pond_frame', ['n'], T_FRAME)] }),
-      sao: { o: 11, nhip: 11 },
+      maMau: bai(C_FRAME, { hamCuaMan: [H('pond_frame', ['n'], T_FRAME_SAI)] }),
+      loiGiai: bai(C_FRAME, { hamCuaMan: [H('pond_frame', ['n'], T_FRAME)] }),
+      sao: { o: 15, nhip: 18 },
       loiSai: [
-        { moTa: 'Không sửa', baiLam: bai(['ink("green")', 'pond_frame(3)'], { hamCuaMan: [H('pond_frame', ['n'], T_FRAME_SAI)] }), phaiCoMa: [] }
+        { moTa: 'Không sửa: cạnh thứ ba bay sang phải', baiLam: bai(C_FRAME, { hamCuaMan: [H('pond_frame', ['n'], T_FRAME_SAI)] }), phaiCoMa: ['dam-tuong', 'chua-to-hinh'] },
+        cung('Đếm cứng mỗi cạnh 3 ô theo ngày 1: ngày 2 gieo thừa quanh ao nhỏ', bai(C_FRAME, { hamCuaMan: [H('pond_frame', ['n'], ['pen_down()'].concat(LAP(3, 'go_right()'), LAP(3, 'go_down()'), LAP(3, 'go_left()'), LAP(3, 'go_up()')))] }), ['to-thua'])
       ],
-      goiY: ['Bốn cạnh: phải, xuống, trái, lên.', 'Cạnh thứ ba đi về phía ô xuất phát.']
+      goiY: ['Bốn cạnh viền quanh ao: phải, xuống, trái, lên, mỗi cạnh lặp n lần.', 'Đổi go_right() ở vòng lặp thứ ba thành go_left().']
     }),
 
     manChe({
-      so: 5, ten: 'Đội: hàm nhấc hộp', r: 'drone-nc', r2: 'xe-son-kc', khoa2: true, chinhCoDinh: false, bd: [{ x: 1, y: 0 }, { x: 0, y: 1, huong: 1 }],
-      taoHam: ['lift_aside'], hamCuaEmCan: ['forward'],
-      deBai: 'Hai hộp sắt chắn đường kẻ vạch. R2 xe máy sơn tự động (đã khoá): hạ bút, chờ lối trống, kẻ hai ô, lặp hai lần, rồi kẻ hai ô cuối. R1 drone nam châm đã có chương trình gọi lift_aside() hai lần. ' +
-        'Chế lift_aside(): hút hộp dưới chân, bay lên một ô, thả.',
-      veMaMau: 'Mở Xưởng hàm, tạo lift_aside() không có đối số.',
-      san: ['.......', '.o.o...', '.......'],
-      vatChat: ['.......', '.s.s...', '.......'],
-      hinh: ['.......', 'yyyyyyy', '.......'],
-      maMau: B(R1_LIFT, R2_LIFT),
-      loiGiai: B(R1_LIFT, R2_LIFT, { hamCuaEmMoi: [H('lift_aside', [], T_LIFT)] }),
-      sao: { o: 23, nhip: 12 },
+      so: 5, ten: 'Hàm gieo bồn trên', taoHam: ['up_sow'], hamCuaEmCan: [],
+      deBai: 'Hai ngày làm việc: chế up_sow() đọc màu dấu dưới chân (c = color("here")), chọn hạt ink(c), bay lên một ô, dot(), wait() rồi bay xuống chỗ cũ. Chương trình chính đã khóa: gọi up_sow() ở hai cột có dấu màu.',
+      veMaMau: 'Mở Xưởng hàm, tạo up_sow() không có đối số.',
+      san: [['.....', '.....', '.=.=.'], ['.....', '.....', '.=.=.']],
+      mau: [['.....', '.r.b.', '.....'], ['.....', '.y.r.', '.....']],
+      hinh: [['.r.b.', '.....', '.....'], ['.y.r.', '.....', '.....']],
+      batDau: { x: 0, y: 1 },
+      maMau: bai(C_UP_SOW),
+      loiGiai: bai(C_UP_SOW, { hamCuaEmMoi: [H('up_sow', [], T_UP_SOW)] }),
+      sao: { o: 11, nhip: 16 },
       loiSai: [
-        { moTa: 'Gọi lift_aside mà chưa chế hàm', baiLam: B(R1_LIFT, R2_LIFT), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Thả ngay tại chỗ: hộp vẫn chắn', baiLam: B(R1_LIFT, R2_LIFT), hamCuaEmMoi: [H('lift_aside', [], ['magnet_n()', 'wait()', 'magnet_off()', 'wait()', 'go_up()'])], phaiCoMa: [] }
+        { moTa: 'Gọi up_sow mà chưa chế hàm', baiLam: bai(C_UP_SOW), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên bay xuống về hàng dưới: lần thứ hai bay ra ngoài sân', baiLam: bai(C_UP_SOW), hamCuaEmMoi: [H('up_sow', [], ['c = color("here")', 'ink(c)', 'go_up()', 'dot()', 'wait()'])], phaiCoMa: ['mau-son-sai'] },
+        cung('Chọn cứng hạt đỏ trong up_sow: sai màu ở cột khác và ngày 2', bai(C_UP_SOW), ['chua-to-hinh'], { hamCuaEmMoi: [H('up_sow', [], ['ink("red")', 'go_up()', 'dot()', 'wait()', 'go_down()'])] })
       ],
-      goiY: ['Hộp treo dưới nam châm thì không chắn xe nữa khi đã bay khỏi hàng.', 'magnet_n(), wait(), go_up(), magnet_off(), wait().']
+      goiY: ['Đọc c = color("here") rồi ink(c) trước khi bay lên.', 'go_up(), dot(), wait(), rồi go_down() về lại hàng dấu.']
     }),
 
     manChe({
-      so: 6, ten: 'Hàm vạch theo số đếm', r: 'drone-son', taoHam: ['bar_len'], hamCuaEmCan: ['count_here'],
-      deBai: 'Chế bar_len(c, a): chọn màu c, hạ bút, mỗi phần tử của a bay sang trái một ô, rồi nhấc bút. Chương trình chính đã khóa: đếm ô đỏ trên chín ô bằng count_here, bay qua hàng rào xuống hàng dưới, ' +
-        'kẻ vạch xanh dương bằng bar_len. Hai sân, số ô đỏ khác nhau.',
-      veMaMau: 'Tạo bar_len với hai đối số c và a. Vòng for x in a lặp đúng len(a) lần.',
+      so: 6, ten: 'Hàm luống theo số đếm', taoHam: ['bar_len'], hamCuaEmCan: ['count_here'],
+      deBai: 'Hai ngày làm việc: chế bar_len(c, a) chọn hạt c, hạ miệng gieo, mỗi phần tử của danh sách a bay sang trái một ô, rồi nhấc miệng gieo. Chương trình chính đã khóa: đếm dấu đỏ bằng count_here(a, 9, "red"), bay qua hàng rào xuống hàng dưới rồi gọi bar_len("blue", a).',
+      veMaMau: 'Tạo bar_len với hai đối số c và a. Vòng for x in a lặp đúng số dấu đã đếm.',
       san: [['..........', '==========', '..........'], ['..........', '==========', '..........']],
       mau: [['.rgr.ryb..', '..........', '..........'], ['.rrgrrybrr', '..........', '..........']],
       hinh: [['..........', '..........', '......bbbb'], ['..........', '..........', '...bbbbbbb']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_BAR),
       loiGiai: bai(C_BAR, { hamCuaEmMoi: [H('bar_len', ['c', 'a'], T_BAR)] }),
-      sao: { o: 14, nhip: 17 },
+      sao: { o: 14, nhip: 31 },
       congThucKhac: [{ moTa: 'Lặp theo len(a)', hamCuaEmMoi: [H('bar_len', ['c', 'a'], ['ink(c)', 'pen_down()', 'for i in range(len(a)):', '    go_left()', 'pen_up()'])] }],
       loiSai: [
         { moTa: 'Gọi bar_len mà chưa chế hàm', baiLam: bai(C_BAR), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Vạch dài cố định ba ô', baiLam: bai(C_BAR), hamCuaEmMoi: [H('bar_len', ['c', 'a'], ['ink(c)', 'pen_down()', 'for i in range(3):', '    go_left()', 'pen_up()'])], phaiCoMa: [] }
+        cung('Lặp cứng 3 ô theo ngày 1: ngày 2 gieo thiếu luống', bai(C_BAR), ['chua-to-hinh'], { hamCuaEmMoi: [H('bar_len', ['c', 'a'], ['ink(c)', 'pen_down()', 'for i in range(3):', '    go_left()', 'pen_up()'])] })
       ],
-      goiY: ['Bút hạ thì ô xuất phát cũng được tô: n ô bay là n + 1 ô vạch.', 'for x in a: chạy một lần cho mỗi phần tử.']
+      goiY: ['Hạ miệng gieo thì ô xuất phát cũng được gieo: n bước bay tạo luống n + 1 ô.', 'for x in a: tự lặp đúng số phần tử của danh sách a.']
     }),
 
     manChe({
-      so: 7, ten: 'Hàm kẻ phố', r: 'drone-son', taoHam: ['field_row'], hamCuaEmCan: ['sow_line'],
-      deBai: 'Chế field_row(c, n): kẻ vạch màu c bằng sow_line(c, n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: ba con phố vàng, xanh dương, vàng.',
-      veMaMau: 'Tạo field_row với hai đối số c và n. Gọi sow_line em đã chế ở gói Sơn từ trên cao.',
-      san: ['.......', '.......', '.......', '.......', '.......'],
-      hinh: ['yyyyyy.', '.......', 'bbbbb..', '.......', 'yyyy...'],
+      so: 7, ten: 'Hàm gieo luống', taoHam: ['field_row'], hamCuaEmCan: ['span_sow'],
+      deBai: 'Hai ngày làm việc: chế field_row(c, n) gieo luống màu c bằng span_sow(c, n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: đọc màu c ở ô đầu, gieo ba luống c, xanh dương, c.',
+      veMaMau: 'Tạo field_row với hai đối số c và n. Gọi span_sow(c, n) bạn đã chế ở gói Vườn cũ rào sắt.',
+      san: [['.......', '.......', '.......', '.......', '.......'], ['.......', '.......', '.......', '.......', '.......']],
+      mau: [['y......', '.......', '.......', '.......', '.......'], ['r......', '.......', '.......', '.......', '.......']],
+      hinh: [['yyyyyy.', '.......', 'bbbbb..', '.......', 'yyyy...'], ['rrrrrr.', '.......', 'bbbbb..', '.......', 'rrrr...']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_STREET),
       loiGiai: bai(C_STREET, { hamCuaEmMoi: [H('field_row', ['c', 'n'], T_STREET)] }),
-      sao: { o: 13, nhip: 25 },
+      sao: { o: 14, nhip: 50 },
       loiSai: [
         { moTa: 'Gọi field_row mà chưa chế hàm', baiLam: bai(C_STREET), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên bay về đầu hàng', baiLam: bai(C_STREET), hamCuaEmMoi: [H('field_row', ['c', 'n'], ['sow_line(c, n)', 'go_down()', 'go_down()'])], phaiCoMa: [] }
+        { moTa: 'Quên bay trái về đầu hàng', baiLam: bai(C_STREET), hamCuaEmMoi: [H('field_row', ['c', 'n'], ['span_sow(c, n)', 'go_down()', 'go_down()'])], phaiCoMa: ['to-thua'] },
+        cung('Gieo cứng màu vàng trong field_row: ngày 2 sai màu luống đầu và mất màu xanh dương', bai(C_STREET), ['chua-to-hinh'], { hamCuaEmMoi: [H('field_row', ['c', 'n'], ['span_sow("yellow", n)', 'go_down()', 'go_down()', 'for i in range(n):', '    go_left()'])] })
       ],
-      goiY: ['sow_line(c, n) dừng ở cuối vạch, bút đang chờ nhấc.', 'Về đầu hàng: bay trái đúng n ô.']
+      goiY: ['span_sow(c, n) dừng ở cuối luống, miệng gieo tự nhấc ở bước kế tiếp.', 'Bay xuống hai ô rồi lặp n lần go_left() về đầu hàng mới.']
     }),
 
     manChe({
-      so: 8, ten: 'Phố có trạm sạc', r: 'drone-son', pin: [20, 40], taoHam: ['field_dock'], hamCuaEmCan: ['field_row', 'charge_if'],
-      deBai: 'Chế field_dock(c, n): kẻ một con phố bằng field_row(c, n), rồi gọi charge_if(9) ở đầu hàng mới. Chương trình chính đã khóa: phố vàng, phố xanh dương, vạch vàng cuối. ' +
-        'Hai sân cùng con phố, drone pin 20 và pin 40: sân pin ít phải ghé trạm, sân pin nhiều thì bay luôn.',
-      veMaMau: 'Tạo field_dock với hai đối số c và n. Thân hàm chỉ hai dòng, gọi hai hàm em đã chế.',
+      so: 8, ten: 'Luống có trạm sạc', pin: [20, 40], taoHam: ['field_dock'], hamCuaEmCan: ['field_row', 'charge_if'],
+      deBai: 'Hai ngày làm việc: chế field_dock(c, n) gieo một luống bằng field_row(c, n), rồi gọi charge_if(9) ở đầu hàng mới. Chương trình chính đã khóa: luống vàng, luống xanh dương, luống vàng cuối. Hai ngày drone có pin 20 và pin 40.',
+      veMaMau: 'Tạo field_dock với hai đối số c và n. Thân hàm chỉ hai dòng, gọi hai hàm bạn đã chế.',
       san: [['.......', '.......', 'P......', '.......', 'P......'], ['.......', '.......', 'P......', '.......', 'P......']],
       hinh: [['yyyyyy.', '.......', 'bbbbb..', '.......', 'yyyy...'], ['yyyyyy.', '.......', 'bbbbb..', '.......', 'yyyy...']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_SDOCK),
       loiGiai: bai(C_SDOCK, { hamCuaEmMoi: [H('field_dock', ['c', 'n'], T_SDOCK)] }),
-      sao: { o: 18, nhip: 29 },
+      sao: { o: 18, nhip: 54 },
       loiSai: [
         { moTa: 'Gọi field_dock mà chưa chế hàm', baiLam: bai(C_SDOCK), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên ghé trạm: hết pin ở sân pin 20', baiLam: bai(C_SDOCK), hamCuaEmMoi: [H('field_dock', ['c', 'n'], ['field_row(c, n)'])], phaiCoMa: ['het-pin'] }
+        cung('Bỏ qua charge_if(9) theo ngày 2 (pin 40): ngày 1 (pin 20) hết pin giữa chừng', bai(C_SDOCK), ['het-pin'], { hamCuaEmMoi: [H('field_dock', ['c', 'n'], ['field_row(c, n)'])] })
       ],
-      goiY: ['Hàm của em gọi được hàm em đã chế: field_row rồi charge_if.', 'field_row kết thúc ở đầu hàng mới, đúng chỗ trạm sạc P.']
+      goiY: ['Hàm của bạn gọi được hàm bạn đã chế: field_row(c, n) rồi charge_if(9).', 'field_row kết thúc ngay trên trạm sạc P ở đầu hàng mới.']
     }),
 
     manChe({
-      so: 9, ten: 'Hai phố theo dấu', r: 'drone-son', taoHam: ['two_marks'], hamCuaEmCan: ['sow_marks'],
-      deBai: 'Chế two_marks(n): chấm theo dấu bằng sow_marks(n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: two_marks(6) rồi sow_marks(6). Hai sân, dấu vàng khác nhau.',
-      veMaMau: 'Tạo two_marks với một đối số n, giống field_row ở màn 7 nhưng thay sow_line bằng sow_marks.',
+      so: 9, ten: 'Hai luống theo dấu', taoHam: ['two_marks'], hamCuaEmCan: ['sow_marks'],
+      deBai: 'Hai ngày làm việc: chế two_marks(n) gieo theo dấu bằng sow_marks(n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: two_marks(6) rồi sow_marks(6). Hai ngày dấu vàng khác nhau.',
+      veMaMau: 'Tạo two_marks với một đối số n, giống field_row ở màn 7 nhưng thay span_sow bằng sow_marks.',
       san: [['.......', '.......', '.......'], ['.......', '.......', '.......']],
       mau: [['y.yy.y.', '.......', '.yy..y.'], ['.y.yy..', '.......', 'yy.y.y.']],
       hinh: [['y.yy.y.', '.......', '.yy..y.'], ['.y.yy..', '.......', 'yy.y.y.']],
       batDau: { x: 0, y: 0 },
       maMau: bai(C_TWO),
       loiGiai: bai(C_TWO, { hamCuaEmMoi: [H('two_marks', ['n'], T_TWO)] }),
-      sao: { o: 12, nhip: 20 },
+      sao: { o: 12, nhip: 40 },
       loiSai: [
         { moTa: 'Gọi two_marks mà chưa chế hàm', baiLam: bai(C_TWO), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên bay về đầu hàng', baiLam: bai(C_TWO), hamCuaEmMoi: [H('two_marks', ['n'], ['sow_marks(n)', 'go_down()', 'go_down()'])], phaiCoMa: [] }
+        { moTa: 'Quên bay về đầu hàng', baiLam: bai(C_TWO), hamCuaEmMoi: [H('two_marks', ['n'], ['sow_marks(n)', 'go_down()', 'go_down()'])], phaiCoMa: ['dam-tuong', 'chua-to-hinh'] },
+        cung('Lùi cứng 4 ô thay vì n ô: lệch đầu hàng', bai(C_TWO), ['chua-to-hinh'], { hamCuaEmMoi: [H('two_marks', ['n'], ['sow_marks(n)', 'go_down()', 'go_down()', 'for i in range(4):', '    go_left()'])] })
       ],
-      goiY: ['sow_marks(n) dừng ở ô thứ n + 1 của hàng.', 'Về đầu hàng: bay trái đúng n ô.']
+      goiY: ['sow_marks(n) dừng ở cột thứ n của hàng.', 'Về đầu hàng: lặp n lần go_left().']
     }),
 
     manChe({
-      so: 10, ten: 'Drone kẻ vạch R1 xuất xưởng', hang: 'trum', r: 'drone-son', pin: 10, chinhCoDinh: false, hamCuaEmCan: ['trace_marks', 'charge_if', 'sow_marks', 'sow_line'], khung: { chinh: 15, moiHam: 10 },
-      deBai: 'Trùm cuối mùa: Drone kẻ vạch R1 nhận ca đầu tiên ở phố mới. Chép bảng mẫu hàng trên xuống, sạc khi pin yếu ở trạm, chấm vàng các dấu trên đường, sạc lần nữa, ' +
-        'chấm đỏ, vàng, đỏ ở hàng dưới từ phải sang trái, bay trái thêm một ô tới trạm thứ ba, sạc, rồi kẻ vạch xanh dương năm ô ở hàng cuối. ' +
-        'Tự viết chương trình chính bằng các hàm em đã chế. Hai sân, bảng mẫu và dấu khác nhau.',
-      veMaMau: 'Chương trình có sẵn đã chép bảng mẫu. Viết tiếp: charge_if, sow_marks, hàng chấm ba màu, rồi vạch cuối bằng sow_line.',
+      so: 10, ten: 'Drone nông nghiệp R1 xuất xưởng', hang: 'trum', pin: 10, chinhCoDinh: false, hamCuaEmCan: ['sow_up', 'charge_if', 'sow_marks', 'span_sow'], khung: { chinh: 15, moiHam: 10 },
+      deBai: 'Trùm cuối mùa: hai ngày làm việc, Drone nông nghiệp R1 nhận ca đầu tiên ở cánh đồng mới. Chép bảng mẫu hàng trên xuống bằng sow_up(4), sạc khi pin yếu bằng charge_if(5), gieo vàng các dấu trên luống bằng sow_marks(4), sạc lần nữa, ' +
+        'gieo đỏ, vàng, đỏ ở hàng dưới từ phải sang trái, bay trái thêm một ô tới trạm thứ ba, sạc, rồi gieo luống xanh dương năm ô ở hàng cuối bằng span_sow("blue", 4).',
+      veMaMau: 'Chương trình có sẵn đã gọi sow_up(4). Viết tiếp: charge_if, sow_marks, hàng ba màu, rồi luống cuối bằng span_sow.',
       san: [['.........', '....P...P', '....P....', '.........'], ['.........', '....P...P', '....P....', '.........']],
       mau: [['r.gy.....', '.....yy..', '.........', '.........'], ['bb.r.....', '.....y.y.', '.........', '.........']],
       hinh: [['.........', 'r.gy.yy..', '.....ryr.', '....bbbbb'], ['.........', 'bb.r.y.y.', '.....ryr.', '....bbbbb']],
       batDau: { x: 0, y: 1 },
-      maMau: bai(['trace_marks(4)']),
+      maMau: bai(['sow_up(4)']),
       loiGiai: bai(C_R1),
-      sao: { o: 32, nhip: 24 },
+      sao: { o: 32, nhip: 48 },
       loiSai: [
-        { moTa: 'Không sạc: hết pin', baiLam: bai(C_R1.filter(function (s) { return s !== 'charge_if(5)'; })), phaiCoMa: ['het-pin'] },
-        { moTa: 'Quên đổi sang sơn vàng', baiLam: bai(C_R1.filter(function (s) { return s !== 'ink("yellow")'; })), phaiCoMa: [] }
+        { moTa: 'Không sạc: hết pin giữa ca', baiLam: bai(C_R1.filter(function (s) { return s !== 'charge_if(5)'; })), phaiCoMa: ['het-pin'] },
+        { moTa: 'Quên đổi sang hạt vàng trước sow_marks(4)', baiLam: bai(C_R1.filter(function (s) { return s !== 'ink("yellow")'; })), phaiCoMa: ['het-pin'] },
+        cung('Gieo vạch liền thay vì dùng sow_marks(4): gieo thừa trên luống', bai(['sow_up(4)', 'charge_if(5)', 'span_sow("yellow", 3)', 'go_right()'].concat(C_R1.slice(4))), ['to-thua'])
       ],
-      goiY: ['trace_marks để lại màu sơn cuối cùng của bảng mẫu: ink("yellow") trước sow_marks.', 'Ba trạm sạc: cuối hai chặng hàng trên, và ngay dưới trạm đầu.',
-        'Chấm xong ba màu, bay trái một ô tới trạm, sạc, xuống một ô rồi sow_line("blue", 4).']
+      goiY: ['sow_up(4) để lại màu hạt cuối cùng của bảng mẫu: nhớ gọi ink("yellow") trước sow_marks(4).', 'Ba trạm sạc nằm ở cuối hai chặng hàng trên và ngay dưới trạm đầu.',
+        'Gieo xong ba màu đỏ-vàng-đỏ, bay trái một ô tới trạm, gọi charge_if(5), xuống một ô rồi gọi span_sow("blue", 4).']
     })
   ];
 

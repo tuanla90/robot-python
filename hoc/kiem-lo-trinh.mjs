@@ -70,10 +70,9 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'son-tren-cao.5', 'son-tren-cao.6', 'che-son-tren-cao.2', 'che-son-tren-cao.6', 'che-son-tren-cao.8',      // gói cất mùa 4: đọc vạch mờ / bảng mẫu bằng camera
   'vuon-cu.5', 'vuon-cu.6', 'vuon-cu.7', 'vuon-cu.8', 'che-vuon-cu.3', 'che-vuon-cu.4', 'che-vuon-cu.6', 'che-vuon-cu.7', 'che-vuon-cu.9',      // gói 8: vườn cũ rào sắt (nhiều sân)
   'doi-nam-cham.16', 'doi-nam-cham.17', 'che-doi-nam-cham.15', 'che-doi-nam-cham.16', 'che-doi-nam-cham.18', 'che-doi-nam-cham.19');      // gói 9: đội drone nông nghiệp + nhện phân loại (nhiều sân)
-NHIEU_SAN_KHONG_TRUM.push('tong-hop-4.1', 'tong-hop-4.2', 'tong-hop-4.3', 'tong-hop-4.4', 'tong-hop-4.6', 'tong-hop-4.9', 'trum-mua-4.1', 'trum-mua-4.2', 'trum-mua-4.6', 'trum-mua-4.8', 'trum-mua-4.9');      // gói 10: màn đọc camera / hai mức pin
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
-// PDM2c2 / PDM3b2 (31/10): gói 10 mùa 2 (nha-may-chay) và gói 10 mùa 3 (tong-hop-3: tong-hop-3, trum-mua-3) cũng MỌI màn nhiều sân.
-const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
+// PDM2c2 / PDM3b2 / PDM4c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3) và gói 10 mùa 4 (drone-ke-vach) cũng MỌI màn nhiều sân.
+const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
 kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -841,7 +840,7 @@ kiem4('(a) mùa 4 đúng các gói / chương đang có màn theo bảng, đúng
   for (const ma of ['omni', 'may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.equal(TT.goi.find(g => g.ma === ma).mua, 'mua-5', ma + ' phải ở mùa 5');
   assert.equal(goiMua('mua-5')[0].sao, 0, 'gói đầu mùa 5 cần 0 sao');
 });
-kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải; gói 1–4 đã dựng lại đúng R1 drone nông nghiệp', () => {
+kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải; cả 10 gói mùa 4 đúng R1 drone nông nghiệp', () => {
   for (const m of manMua4()) {
     for (const r of [m.robot].concat((m.doi || []).map(d => d.robot)).filter(Boolean)) {
       if (r.than) assert.ok(PART_4.than.includes(r.than), m.ma + ' thân ' + r.than);
@@ -852,7 +851,7 @@ kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện
     const goi = [...loiGoi(dongBacCau(m).dong)].filter(t => CAM_4.includes(t));
     assert.deepEqual(goi, [], m.ma + ' gọi lệnh ngoài mùa 4');
   }
-  const GOI_SIET_4 = 9, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), moc7 = mocGoi4(7), moc9 = mocGoi4(9), mocSiet = mocGoi4(GOI_SIET_4 + 1);
+  const GOI_SIET_4 = 10, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), moc7 = mocGoi4(7), moc9 = mocGoi4(9), mocSiet = mocGoi4(GOI_SIET_4 + 1);
   for (let v = dau4; v < mocSiet; v++) {
     const m = M.danhSach[v];
     if (v >= moc9 && v < mocGoi4(10)) {
@@ -872,13 +871,13 @@ kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện
     const r = m.robot || {}, cb = r.camBien || [];
     assert.equal(m.loaiRobot, 'drone', m.ma + ' loaiRobot');
     assert.equal(r.than, 'drone', m.ma + ' thân');
-    assert.ok(!m.doi, m.ma + ' không đội ở gói 1–8');
+    assert.ok(!m.doi, m.ma + ' không đội ngoài gói 9');
     if (v < moc2) assert.ok(!r.tay, m.ma + ' gói 1 chưa có tay');
     else assert.equal(r.tay, 'son', m.ma + ' tay phải là son');
     if (v < moc3) assert.equal(cb.length, 0, m.ma + ' gói 1–2 chưa có cảm biến');
     else {
-      assert.deepEqual(cb.map(c => c.ma), ['camera-4'], m.ma + ' gói 3–8 cảm biến camera-4');
-      if (v >= moc7) assert.equal(cb[0].taiCho, true, m.ma + ' gói 7–8 camera-4 taiCho');
+      assert.deepEqual(cb.map(c => c.ma), ['camera-4'], m.ma + ' gói 3–10 cảm biến camera-4');
+      if (v >= moc7) assert.equal(cb[0].taiCho, true, m.ma + ' gói 7–10 camera-4 taiCho');
     }
   }
 });

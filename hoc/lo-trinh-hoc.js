@@ -1373,12 +1373,12 @@
     }
     var LOI_NONG_TRAI = {
       // Bốn màn cuối chương trùm: "phố" ở đây là LUỐNG hoa drone gieo (field_row = gieo một luống rồi về đầu hàng dưới), không phải lối đi.
-      'trum-mua-4.7': { ten: 'Hàm gieo luống', deBai: 'Sola nhờ bạn: chế field_row(c, n): gieo luống màu c bằng sow_line(c, n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: ba luống vàng, xanh dương, vàng.' },
-      'trum-mua-4.8': { ten: 'Luống có trạm sạc', deBai: 'Sola nhờ bạn: chế field_dock(c, n): gieo một luống bằng field_row(c, n), rồi gọi charge_if(9) ở đầu hàng mới. Chương trình chính đã khóa: luống vàng, luống xanh dương, rồi hàng vàng cuối. ' +
+      'trum-mua-4.7': { ten: 'Hàm gieo luống', deBai: 'Sola nhờ bạn: hai ngày làm việc, chế field_row(c, n): gieo luống màu c bằng span_sow(c, n), bay xuống hai ô, rồi bay trái n ô về đầu hàng. Chương trình chính đã khóa: đọc màu c ở ô đầu, gieo ba luống c, xanh dương, c.' },
+      'trum-mua-4.8': { ten: 'Luống có trạm sạc', deBai: 'Sola nhờ bạn: hai ngày làm việc, chế field_dock(c, n): gieo một luống bằng field_row(c, n), rồi gọi charge_if(9) ở đầu hàng mới. Chương trình chính đã khóa: luống vàng, luống xanh dương, rồi hàng vàng cuối. ' +
         'Hai sân cùng cánh đồng, drone pin 20 và pin 40: sân pin ít phải ghé trạm, sân pin nhiều thì bay luôn.' },
       'trum-mua-4.9': { ten: 'Hai luống theo dấu' },
-      'trum-mua-4.10': { deBai: 'Sola nhờ bạn: trùm cuối mùa, Drone nông nghiệp R1 nhận ca đầu tiên ở nông trại mới. Chép bảng mẫu hàng trên xuống, sạc khi pin yếu ở trạm, gieo hoa vàng các dấu trên luống, sạc lần nữa, ' +
-        'gieo hoa đỏ, vàng, đỏ ở hàng dưới từ phải sang trái, bay trái thêm một ô tới trạm thứ ba, sạc, rồi gieo luống xanh dương năm ô ở hàng cuối. Tự viết chương trình chính bằng các hàm bạn đã chế. Hai sân, bảng mẫu và dấu khác nhau.' },
+      'trum-mua-4.10': { deBai: 'Sola nhờ bạn: trùm cuối mùa, hai ngày làm việc, Drone nông nghiệp R1 nhận ca đầu tiên ở nông trại mới. Chép bảng mẫu hàng trên xuống bằng sow_up(4), sạc khi pin yếu ở trạm, gieo hoa vàng các dấu trên luống, sạc lần nữa, ' +
+        'gieo hoa đỏ, vàng, đỏ ở hàng dưới từ phải sang trái, bay trái thêm một ô tới trạm thứ ba, sạc, rồi gieo luống xanh dương năm ô ở hàng cuối bằng span_sow("blue", 4). Tự viết chương trình chính bằng các hàm bạn đã chế.' },
       'che-may-son.10': { ten: 'Ba bồn hoa' }
     };
     MUA_4.concat([CAT_MUA_4]).forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiNongTrai(get(ma)); }); }); });
@@ -2425,13 +2425,10 @@
     // PDM2c2 31/10: gói 10 dựng lại không gọi hàm Bệ vòi xích nữa: bỏ CAP_HAM_CU (cấp bản cũ cho gói 10) và các mục DAY_CU của che-be-sung.
     var chuongAn = {};
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
-    // PDM3a / PDM3b2 31/10 (mùa 3 part đúng mùa): mọi gói mùa 3 đã dựng lại trên nhện; màn xe cũ ở mùa ẩn (che-nam-cham-xe, doi-tay-xoay…) dùng DAY_CU bên dưới.
-    // PDM4c 31/10: gói son-tren-cao cất sang mùa 5 (CAT_MUA_4); tạm cấp hàm của che-son-tren-cao cho gói 10 (tong-hop-4, trum-mua-4) tới khi gói 10 dựng lại.
-    var CAP_HAM_CU_4 = { 'tong-hop-4': true, 'trum-mua-4': true };
-    Object.keys(CAP_HAM_CU_4).forEach(function (c) { chuongAn[c] = true; });
+    // PDM3a / PDM3b2 / PDM4c 31/10 (mùa 3, 4 part đúng mùa): mọi gói mùa 3, 4 đã dựng lại; màn xe cũ ở mùa ẩn dùng DAY_CU bên dưới.
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
     CAT_MUA_4.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
-    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone', 'net-lien', 'che-may-son', 'nhin-duoi', 'che-nhin-duoi', 'vuon-cu', 'che-vuon-cu', 'doi-nam-cham', 'che-doi-nam-cham'].forEach(function (c) { delete chuongAn[c]; });
+    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);

@@ -29,7 +29,7 @@ function kiem(ten, ok, chiTiet) {
   else { hong++; console.log('  HỎNG ' + ten + (chiTiet !== undefined ? ' → ' + chiTiet : '')); }
 }
 const J = (o) => JSON.stringify(o);
-const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manVuonCu', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
+const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manVuonCu', 'manDoiChiaHang', 'manTrumMua4'];
 const moi = new Set(TEP_MUA_4.flatMap((k) => M[k] || []).concat(Object.keys(Object.assign({}, M.suaCatCanh || {}, M.suaChamSon || {}, M.suaNetLien || {})).map((ma) => M.timMa(ma))));      // chính các đối tượng màn (dungChuong đổi so / chuong khi xếp chỗ)
 const tatCa = M.danhSach;
 const tenCot = [...new Set(tatCa.flatMap((m) => m.taoHam || []))];

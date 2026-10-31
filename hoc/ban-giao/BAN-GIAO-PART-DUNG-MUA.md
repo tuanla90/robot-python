@@ -26,10 +26,16 @@ R1 không bao giờ mang part mùa khác; tự lắp tuỳ ý để mùa 7. User
   - Gói 10 "Tổng hợp + Trùm mùa" (`tong-hop-3.1..10`, `trum-mua-3.1..10` trong `man-trum-mua-3.js`): 20 màn 1 robot nhiều sân (`nhipTheo: 'tong'`), có lời sai `cung: true`.
   - Xoá `CAP_HAM_CU_3` / `THAN_CU_3`, nâng `GOI_SIET_3 = 10`, thêm `'mua-3'` vào `XONG` trong `kiem-part-mua.mjs` (`0 màn sai luật part`), 0 chỗ nhảy đường cong mùa 3.
 
+- **Mùa 4 (PDM4a + PDM4b + PDM4c):** cả 10 gói mùa 4 đã dựng lại hoàn chỉnh trên drone nông nghiệp (drone + miệng gieo `son` + `camera-4` bốn hướng + nhìn dưới chân `taiCho: true` từ gói 7):
+  - Gói 1–4 (PDM4a: `drone`, `may-son`, `cam-bon`, `pho-mau`), gói 5–7 (PDM4b: `tram-sac`, `net-lien`, `nhin-duoi`).
+  - Gói 8 MỚI "Vườn cũ rào sắt" (`vuon-cu`, `che-vuon-cu` trong `man-vuon-cu.js`, 20 màn: drone nông nghiệp gặp yếu tố mùa 1–3, chế `span_sow(c, n)`, `mark_here(n)`, `gate_sow(c)`, `sow_up(n)`); gói 9 cũ `son-tren-cao` cất sang `CAT_MUA_4` (mùa 5 ẩn).
+  - Gói 9 "Đội drone và nhện" (`doi-nam-cham.11..20`, `che-doi-nam-cham.11..20` trong `man-doi-chia-hang.js`, 20 màn): R1 = drone nông nghiệp mùa 4 đầy đủ, R2 = nhện phân loại mùa 3 đầy đủ (chế `pad_hold(d)`, `wait_sow(c, n)`, `pole_gate()`); 20 màn cũ `doi-nam-cham.1..10`, `che-doi-nam-cham.1..10` dời sang gói ẩn `doi-nam-cham-cu` (mùa 5).
+  - Gói 10 "Tổng hợp + Trùm mùa" (`tong-hop-4.1..10`, `trum-mua-4.1..10` trong `man-trum-mua-4.js`): 20 màn 1 robot drone nông nghiệp, mỗi màn 2 sân ("ngày làm việc", `nhipTheo: 'tong'`), có lời sai `cung: true`, chế `charge_if(k)`, `sow_marks(n)`, `stair_line(c, n)`, `up_sow()`, `bar_len(c, a)`, `field_row(c, n)`, `field_dock(c, n)`, `two_marks(n)`.
+  - Xoá `CAP_HAM_CU_4`, nâng `GOI_SIET_4 = 10`, thêm `'drone-ke-vach'` vào `GOI_NHIEU_SAN`, khóa `'mua-4'` vào `XONG` trong `kiem-part-mua.mjs` (`0 màn sai luật part` cho cả mùa 1–4).
+
 ## Còn phải làm (lần lượt)
-1. Mùa 4 (brief `brief-PDM4-mua-4.md`, ba đợt: gói 1–4, 5–7, 8–10), commit cuối 'mua-4' vào XONG.
-2. Mùa 1 gói 10 đổi sang tính TỔNG nhịp mọi sân (PDM2c2 phát hiện: tính theo sân dài nhất thì dãy viết cứng vẫn 3 sao) + chạy bộ dò dayChung.
-3. Sau cùng: gộp main (báo các phiên khác trước: phiên Phim CLB đang dựa danh sách gói mới), cập nhật KE-HOACH-7-MUA.md bảng bố cục gói 8–10.
+1. Mùa 1 gói 10 đổi sang tính TỔNG nhịp mọi sân (PDM2c2 phát hiện: tính theo sân dài nhất thì dãy viết cứng vẫn 3 sao) + chạy bộ dò dayChung.
+2. Sau cùng: gộp main (báo các phiên khác trước: phiên Phim CLB đang dựa danh sách gói mới), cập nhật KE-HOACH-7-MUA.md bảng bố cục gói 8–10.
 
 ## Bài học
 - Agent nào cũng để lại hồi quy ở máy kiểm ngoài danh sách (sổ lệnh, kiem-khay, kiem-hoc, kiem-phim-goi, kiem-huy-hieu-phim-vector, kiem-goi-doi…): cho agent chạy

@@ -766,8 +766,8 @@
   H['che-vuon-cu.5'] = [buocTaoHam('gate_sow', 'Bấm Hàm mới, đặt tên gate_sow và thêm đối số c.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait() chờ thùng mở cổng, bay phải hai ô, ink(c), dot(), wait(). Bấm Chạy.'));
   H['che-vuon-cu.7'] = [buocTaoHam('sow_up', 'Bấm Hàm mới, đặt tên sow_up và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: đọc c = color("up"), nếu c != "none" thì ink(c) và dot(), rồi go_right(). Bấm Chạy.'));
   // MÙA 4 gói 9 (PDM4c 31/10: đội drone nông nghiệp R1 + nhện phân loại R2): doi-nam-cham.11 trình diễn; che-doi-nam-cham.11 trình diễn hàm crawl_pad(d); .12 pad_hold(d), .14 wait_sow(c, n), .15 pole_gate()
-  H['doi-nam-cham.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện Luna chui gầm qua xà thấp bước lên nút M mở cổng C cho drone R1 bay vào gieo hoa rồi về đậu.');
-  H['che-doi-nam-cham.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hàm crawl_pad("R") giúp nhện R2 chui gầm mang bao hạt đặt lên nút M giữ cổng cho drone R1.');
+  H['doi-nam-cham.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện Luna chui gầm bước lên nút M mở cổng C cho drone R1 bay vào gieo hoa.');
+  H['che-doi-nam-cham.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hàm crawl_pad("R") giúp nhện R2 chui gầm đặt bao hạt lên nút M giữ cổng.');
   H['che-doi-nam-cham.12'] = [buocTaoHam('pad_hold', 'Bấm Hàm mới, đặt tên pad_hold và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pull_s(), go_under(d), stand(), hold_gate(d). Bấm Chạy.'));
   H['che-doi-nam-cham.14'] = [buocTaoHam('wait_sow', 'Bấm Hàm mới, đặt tên wait_sow và thêm đối số c, n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while not front_clear(): wait(), rồi color_line(c, n). Bấm Chạy.'));
   H['che-doi-nam-cham.15'] = [buocTaoHam('pole_gate', 'Bấm Hàm mới để tạo pole_gate().', CHU_TAO)].concat(buocThuVeChay('Nếu front_pole() == "N" thì hold_gate("R"), không thì hold_gate("D"). Bấm Chạy.'));
