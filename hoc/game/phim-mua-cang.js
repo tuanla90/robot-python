@@ -282,4 +282,29 @@
       }
     }
   ]);
+
+  /* ================================================================ 10. tong-hop-cang — Cần cẩu container R1 */
+  PG.dangKy('tong-hop-cang', [
+    { Chu: ['Cần cẩu container R1 đã hoàn thiện với bệ trượt ray, móc cẩu đôi và cảm biến quét mã/cân tải.', 'Mỗi màn là 2-3 ngày làm việc liên tiếp với sơ đồ hàng hóa thay đổi!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veV('container', { so: 14, mau: 'cam' }, 1.5), 1, 2);
+        dat(s, veV('container', { so: 28, mau: 'do' }, 1.5), 2, 2);
+        dat(s, may(CAU_QUET, { nac: 4, tam: 1, camBien: { bat: true }, mat: 'vui' }, 0), 1, 1);
+      }
+    },
+    { Chu: ['Kết hợp quét mã, cân tải, nhấc đôi và trượt ray trong một chương trình tổng quát.', 'Bốc dỡ hết mọi chuyến tàu để hoàn thành Mùa 4 Cảng sông!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('boong-tau', { co: true }), 2, 0);
+        dat(s, veV('container', { so: 28, mau: 'do' }, 1.5), 2, 0);
+        dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true }, mat: 'vui' }, 0), 2, 1);
+        m.appendChild(code('port_sweep(2)\nvault_rail(1, 2)\nbelt_rail(2, 1)'));
+      }
+    }
+  ]);
 })();

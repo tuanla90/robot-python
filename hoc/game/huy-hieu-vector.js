@@ -639,6 +639,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot(CAU_QUET, st({ nac: 1, tam: 1 }, { kep: 'dong', cam: true }, { bat: true }), 0, 32, 48, 32);
     c.robot({ than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' }, st({}, {}, { bat: true }), 1, 64, 62, 28);
   }));
+  dk('tong-hop-cang', function (g, c) {
+    c.o('boong-tau', { co: true }, 68, 34, 24);
+    c.vat('container', { so: 18, mau: 'cam' }, 68, 32, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 36, 62, 40);
+  });
+  dk('trum-mua-cang', function (g, c) {
+    c.o('boong-tau', { co: true }, 68, 40, 22);
+    c.vat('container', { so: 18, mau: 'cam' }, 68, 38, 15);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 36, 62, 38);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  });
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
