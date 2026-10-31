@@ -364,6 +364,43 @@ console.log('\n== 10. Vết nhịp, kết quả, màn cũ không đổi ==');
     typeof SanHoc.laNuoc === 'function' && SanHoc.NUOC_KY['~'] && SanHoc.TAY_PHAO.length === 4 && SanHoc.THAN_NEO.length === 2 && SanHoc.CAM_DONG_HAM.length === 2 && SanHoc.TAM_KEO === 3 && SanHoc.HAM_GOC.xuong.length === 5);
 }
 
+console.log('\n== 11. Lời chẩn đoán (cham.js) và sổ lệnh (so-lenh.js) ==');
+{
+  const ChamHoc = require(path.join(day, 'cham.js'));
+  const SoLenh = require(path.join(day, 'so-lenh.js'));
+  const man = (t) => Object.assign({ ma: 'thu-song.1', loaiRobot: 'xuong', hamGoc: XUONG, robot: { camBien: [{ ma: 'dong-chay' }] }, san: SAN1, batDau: { x: 1, y: 3, huong: 1 }, mucTieu: 'toi-co', sao: { o: 99, nhip: 99 } }, t || {});
+  const cd = (r, ma) => (r.chanDoan || []).find((c) => c.ma === ma) || null;
+  const loiCua = (c) => (c && (c.loi || c.thongDiep)) || '';
+  let r = ChamHoc.cham(man({ batDau: { x: 1, y: 2, huong: 1 } }), { chinh: ['left_move()', 'right_move()', 'wait()'] }, []);
+  kiem('cham: xuồng húc bờ → dam-tuong nói "bờ" và "mặt nước"', !!cd(r, 'dam-tuong') && /bờ/.test(loiCua(cd(r, 'dam-tuong'))) && /mặt nước/.test(loiCua(cd(r, 'dam-tuong'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ loaiRobot: 'banh', hamGoc: XE, camBien: [], batDau: { x: 1, y: 4, huong: 0 } }), { chinh: ['left_move()', 'right_move()', 'wait()'] }, []);
+  kiem('cham: xe cạn đâm nước → dam-tuong nói "mặt nước" và cầu phao', /mặt nước/.test(loiCua(cd(r, 'dam-tuong'))) && /bè/.test(loiCua(cd(r, 'dam-tuong'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ dong: [{ x: 1, y: 3, huong: 3, suc: 2 }] }), { chinh: ['anchor()', 'wait()', 'left_move()', 'right_move()', 'wait()'] }, []);
+  kiem('cham: dang-neo nói đang thả neo và nhắc unanchor(), trỏ dòng lệnh bánh', !!cd(r, 'dang-neo') && /neo/.test(loiCua(cd(r, 'dang-neo'))) && /unanchor\(\)/.test(loiCua(cd(r, 'dang-neo'))) && cd(r, 'dang-neo').cho, J(r.chanDoan));
+  const SAN5b = ['##########', '#~~~~~~~~#', '#~~~~B~~~#', '#~~~~~~~~#', '#.~~~~~~.#', '##########'];
+  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 2, y: 2, huong: 1 } }), { chinh: ['tow()', 'wait()', 'for i in range(6):', '    left_move()', '    right_move()', '    wait()'] }, []);
+  kiem('cham: mui-vuong nói bè ở trước mũi, ô là bờ, gợi ý tether()', !!cd(r, 'mui-vuong') && /bờ/.test(loiCua(cd(r, 'mui-vuong'))) && /tether\(\)/.test(loiCua(cd(r, 'mui-vuong'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 2, y: 2, huong: 1 } }), { chinh: ['tow()', 'wait()', 'tow()', 'wait()'] }, []);
+  kiem('cham: dang-keo nói đang kéo một bè rồi, gợi ý drop_tow()', !!cd(r, 'dang-keo') && /drop_tow\(\)/.test(loiCua(cd(r, 'dang-keo'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 1, y: 2, huong: 1 } }), { chinh: ['tow()', 'wait()', 'drop_tow()', 'wait()'] }, []);
+  kiem('cham: keo-hut (thông tin) nói dây chỉ bay 3 ô; khong-keo nói không có gì để thả', !!cd(r, 'keo-hut') && cd(r, 'keo-hut').muc === 'thong-tin' && /3 ô/.test(loiCua(cd(r, 'keo-hut'))) && !!cd(r, 'khong-keo') && /tow\(\)/.test(loiCua(cd(r, 'khong-keo'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: ['#######', '#~~~~~#', '#~B~~~#', '#~~~~~#', '#~~~~~#', '#######'], batDau: { x: 2, y: 3, huong: 0 } }), { chinh: ['tow()', 'wait()', 'tether()', 'wait()', 'left_back()', 'right_back()', 'wait()'] }, []);
+  kiem('cham: duoi-vuong (lùi vào bè buộc đuôi) nói bè buộc đuôi và untether()', !!cd(r, 'duoi-vuong') && /buộc đuôi/.test(loiCua(cd(r, 'duoi-vuong'))) && /untether\(\)/.test(loiCua(cd(r, 'duoi-vuong'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: ['#######', '#~~~~~#', '#~~~~~#', '#~~~~~#', '#######'], batDau: { x: 3, y: 1, huong: 2 } }), { chinh: ['tether()', 'wait()'] }, []);
+  kiem('cham: buoc-hut nói ô sau đuôi là bờ', !!cd(r, 'buoc-hut') && /bờ/.test(loiCua(cd(r, 'buoc-hut'))), J(r.chanDoan));
+  r = ChamHoc.cham(man(), { chinh: ['anchor()', 'tow()'] }, []);
+  kiem('cham: quen-wait nói "lệnh dây phao" khi anchor() / tow() chưa có wait()', !!cd(r, 'quen-wait') && /dây phao/.test(loiCua(cd(r, 'quen-wait'))), J(r.chanDoan));
+  r = ChamHoc.cham(man(), { chinh: ['anchor()', 'unanchor()', 'wait()', 'tow()', 'drop_tow()', 'wait()'] }, []);
+  kiem('cham: neo-goi-lai và phao-goi-lai nói mỗi nhịp một lệnh', !!cd(r, 'neo-goi-lai') && !!cd(r, 'phao-goi-lai') && /một lệnh/.test(loiCua(cd(r, 'neo-goi-lai'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: ['##########', '#~~~~~~~~#', '#~~~~k~~Q#', '#~~~~V~~~#', '##########'], batDau: { x: 5, y: 2, huong: 2 } }), { chinh: ['tow()', 'wait()'] }, []);
+  kiem('cham: cong-ket (thông tin) nói xuồng nằm trong cống nên cống giữ mở', !!cd(r, 'cong-ket') && cd(r, 'cong-ket').muc === 'thong-tin' && /cống/.test(loiCua(cd(r, 'cong-ket'))), J(r.chanDoan));
+  r = ChamHoc.cham(man(), { chinh: ['for i in range(4):', '    left_move()', '    right_move()', '    wait()', 'right_move()', 'wait()', 'for i in range(2):', '    left_move()', '    right_move()', '    wait()'] }, []);
+  kiem('cham: lời giải tới Q thắng, không chẩn đoán lỗi', r.thang === true && !(r.chanDoan || []).some((c) => c.muc === 'loi'), J(r.chanDoan));
+  const ten = ['anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
+  kiem('so-lenh: 8 lệnh gốc mới có mô tả; cặp ngược khớp SanHoc.LENH_NGUOC', ten.every((t) => SoLenh.lenhGoc.some((l) => l.ten === t && l.moTa && (l.nguoc || null) === (SanHoc.LENH_NGUOC[t] || null))));
+  kiem('so-lenh: capNguoc() có anchor / tow / tether', ['anchor', 'tow', 'tether'].every((t) => SoLenh.capNguoc().some((c) => c[0] === t || c[1] === t)));
+}
+
 console.log('\n---------------------------------------------');
 console.log(`ĐẠT ${dat} · HỎNG ${hong}`);
 process.exit(hong ? 1 : 0);

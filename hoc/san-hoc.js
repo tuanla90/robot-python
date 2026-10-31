@@ -400,6 +400,54 @@
         - 'tay' / 'kep' (chương che-tay, cần robot có tay kẹp): TAY LẮP NGƯỢC. 'tay': arm_up() làm tay HẠ và arm_down() làm tay NÂNG. 'kep': grab() làm kẹp MỞ / thả và release() làm kẹp ĐÓNG / kẹp.
           Vết lệnh vẫn ghi tên lệnh người chơi gọi. Mọi luật tay khác (một nhịp một lệnh mỗi nhóm, tay hạ thì xe không đi, thả khi tay nâng thì vật vỡ…) áp dụng cho tư thế THẬT. Ghép được với bánh (['tay', 'trai']).
 
+   BẾN SÔNG (mùa 5, 31/10, hoc/KE-HOACH-MUA-CANG-SONG.md mục 2; loaiRobot 'xuong' "Tàu thủy lợi R1"). Mọi luật dưới đây chỉ bật khi màn có ký hiệu nước / lớp cfg.dong / xuồng, nên màn cũ không đổi.
+        Ký hiệu sân: ~ MẶT NƯỚC · Q PHAO ĐÍCH (cờ trên nước: san.co, xuồng tới là 'toi-co') · q BẾN NHẬN BÈ (ô đích trên nước, vào dich / dichSet) · B BÈ, L LỤC BÌNH (vật nổi, ô dưới là nước)
+        · K CỐNG ĐÓNG, k CỐNG MỞ (ô nước có cửa cống) · V VAN CỐNG (cần gạt trên bờ, chiếm ô như nút N: lyDoChan 'van'). docSan trả thêm vatNoi, congNuoc, van, nuoc ('x,y' → true cho ~ Q q K k B L).
+        Lớp cfg.dong = [{ x, y, huong, suc }] (màn nhiều sân: mảng song song với san như lua / noi): ô phải là mặt nước; huong 0–3 là chiều nước chảy; suc 1 (dòng thường) hay 2 (dòng xiết). Lỗi cấu hình tiếng Việt.
+        - XUỒNG: hamGoc gốc = xe hai bánh (left_move / right_move / left_back / right_back / wait: hai chân vịt = hai bánh), laBanh = true nên MỌI luật bánh (tổ hợp quay, đấu dây ngược, xe mờ, xích…) dùng lại.
+          Xuồng chỉ vào được ô mặt nước; mọi ô khác (sàn, tường, cờ cạn F, van V, mép sân…) là BỜ: 'dam-tuong' vat 'bo' (mép sân vẫn 'ngoai-san'). Cống đóng chặn như cửa ('cong'), vật nổi chặn ('vat', idVat), robot khác ('dong-doi').
+          Xuồng không gắn tay kẹp / nam châm / máy ném / vòi phun (lỗi cấu hình); xuất phát phải trên nước, không trong cống đóng, không trên vật nổi.
+          XE CẠN (bánh, xích, omni) và NHỆN đâm nước như tường: 'dam-tuong' vat 'nuoc', không chìm; front_clear() / distance() thấy nước là không trống (vat 'nuoc'). DRONE bay qua nước, nhưng land() không đáp xuống nước ('dap-bi-chan' vat 'nuoc', trừ cầu phao).
+        - THỨ TỰ TRONG NHỊP của xuồng (pha a, so với xe bánh): (a) NEO: anchor / unanchor → (b) DÂY PHAO: tow / drop_tow / tether / untether → (c) chân vịt (tiến / lùi / quay; đang neo thì bỏ) → (d) DÒNG CHẢY (chỗ băng chuyền:
+          vật nổi tự do trôi trước, rồi xuồng) → đệm từ, bàn xoay, cổng như cũ. Cuối nhịp (pha d) cống đổi theo van (sau cửa).
+        - DÒNG CHẢY: mỗi nhịp (nước chảy liên tục, KHÁC băng chuyền đếm 2 nhịp), xuồng KHÔNG neo đứng trên ô dòng ĐANG CHẠY (bat) sau hành động của nhịp bị đẩy `suc` ô theo `huong`, TỪNG Ô; ô kế không vào được
+          (bờ, cống đóng, vật nổi, robot) thì dừng ở ô cuối đi được. Chỉ xét ô xuồng đứng SAU khi chạy: trôi sang ô dòng khác trong cùng nhịp thì không xét tiếp. Hệ quả: xuôi dòng 1 + suc; ngược dòng sức 1 đứng im,
+          sức 2 lùi 1; đi ngang dòng thì trôi chéo. Muốn đứng vững: thả neo; muốn qua: vòng nhánh khác hay tắt dòng bằng van cống (không có "động cơ vượt dòng").
+          Vật nổi TỰ DO (không bị kéo, không có xe cạn đứng trên) trên ô dòng đang chạy cũng trôi cùng luật, TRƯỚC xuồng, theo thứ tự id, MỘT lần mỗi nhịp (nhiều robot: vatTroiNhip). Vật trôi bị chặn bởi bờ, cống đóng, vật khác, robot.
+          Sự kiện: 'troi' { nhip, ai: 'robot' | 'vat', id?, tu, den, huong, soO, chan: lý do dừng sớm | null }, 'troi-chan' { nhip, ai, id?, o, huong, vat } (đẩy 0 ô vì bị chặn; của xuồng là thông tin trong suKien), 'neo-giu' { o, huong, suc } (đang neo trên dòng).
+          Dòng chảy không đẩy drone; demBang về 0 sau khi trôi.
+        - NEO (nâng cấp thân, phần cứng có anchor + unanchor, đi cặp; LENH_NGUOC anchor ↔ unanchor): anchor() / unanchor() chỉ RA LỆNH, làm ở pha (a) của nhịp wait() kế (một lệnh neo mỗi nhịp: 'neo-goi-lai').
+          Đang neo: dòng không đẩy ('neo-giu'); lệnh bánh của nhịp bị bỏ, xuồng đứng yên, mất nhịp ('dang-neo' { o, lenh: lệnh bánh đầu tiên }, lỗi, như 'dang-dau' của drone); dây phao vẫn dùng được.
+          anchor() khi đã neo: 'da-neo' (thông tin); unanchor() khi chưa neo: 'chua-neo' (thông tin). Sự kiện 'tha-neo' / 'nho-neo' { o }. Vết nhịp robot.neo true / false.
+        - DÂY PHAO (tay gốc của xuồng; phần cứng có tow + drop_tow, đi cặp; LENH_NGUOC tow ↔ drop_tow): tow() / drop_tow() chỉ RA LỆNH, làm ở pha (b) của nhịp wait() kế, TRƯỚC chân vịt; mỗi nhịp một lệnh dây (tow / drop_tow / tether / untether
+          chung một hàng chờ: 'phao-goi-lai'). tow(): dây bay THẲNG theo mũi tối đa TAM_KEO = 3 ô, dừng ở thứ đầu tiên:
+            · vật nổi → kéo về Ô TRƯỚC MŨI (vật ngay trước mũi thì chỉ móc): 'keo-vat' { id, tu, den, soO }; keo = { id, cho: 'mui' }. Vật nổi đang có xe cạn đứng trên: 'keo-hut' vat 'co-xe'.
+            · van cống V → van ĐỔI (doiVan, xem CỐNG): 'keo-van' { tu, o, bat, soO }.
+            · bờ 'bo', cống đóng 'cong', vật thường 'vat', robot 'dong-doi', mép sân 'ngoai-san', hết tầm 'het-tam' → 'keo-hut' { tu, huong, o, vat, lenh } (thông tin).
+          tow() khi đang kéo: 'dang-keo' { id, cho } (lỗi). drop_tow() thả vật tại ô nó đang nằm ('tha-keo' { id, o, cho }); không kéo gì: 'khong-keo' (lỗi).
+          VẬT KÉO Ở MŨI CHIẾM Ô (user chốt 31/10): nó là vật nằm đất ở ô trước mũi (vatNamTai thấy, xuồng khác / dòng / dây coi như vật). Tiến: VẬT ĐI TRƯỚC, ô trước vật phải vào được (nước, không cống đóng, không vật, không robot),
+          không thì CẢ HAI ĐỨNG IM ('mui-vuong' { tu, o: ô trước vật, vat, id, kieu: 'tien', lenh }, lỗi). Lùi: xuồng lùi, vật theo vào ô xuồng vừa rời. Quay (quay-trai / quay-phai / quay-dau): vật chuyển sang ô trước mũi MỚI,
+          ô đó phải là nước trống, không thì LỆNH QUAY BỊ BỎ, hướng không đổi ('mui-vuong' kieu 'quay-…'). Dòng đẩy xuồng thì CẢ CỤM cùng đi từng ô (vật ở mũi đi trước theo chiều trôi; trôi ngược thì vật theo sau);
+          ô kế của xuồng hay của vật bị chặn thì cụm dừng. Vật đang kéo KHÔNG tự trôi. Sự kiện vật dời theo xuồng: 'keo-theo' { id, tu, den }; sự kiện tien / lui có thêm keo: id.
+        - BUỘC DẮT THEO ĐUÔI (nâng cấp tay: tether + untether; LENH_NGUOC tether ↔ untether): tether(): vật đang kéo ở mũi chuyển ra Ô SAU ĐUÔI ('buoc-duoi' { id, tu, den }; keo.cho = 'duoi'); ô đó không phải nước trống
+          → 'duoi-vuong' { tu, o, vat, id, kieu: 'tether' } (lỗi), vật vẫn ở mũi. Không kéo gì mà ô sau đuôi có vật nổi (không có xe trên) → móc luôn ('buoc-duoi' tu = den); không có → 'buoc-hut' { o, vat: 'khong-co-vat' | 'co-xe' } (lỗi).
+          Đã buộc đuôi rồi: 'da-buoc' (thông tin). untether() thả vật tại ô nó nằm ('coi-duoi'); không kéo gì: 'khong-keo'.
+          Luật nối đuôi (như toa tàu): xuồng dời 1 ô (tiến, lùi, trôi) thì vật vào ĐÚNG Ô XUỒNG VỪA RỜI, nên quay xong tiến qua khúc cua không bao giờ vướng. Xuồng dời VÀO CHÍNH Ô VẬT (lùi thẳng vào bè, trôi ngược vào bè)
+          → bị chặn ('duoi-vuong' kieu 'lui' / trôi: chan 'vat'). Quay tại chỗ thì vật đứng yên. Vết nhịp robot.keo = { id, cho: 'mui' | 'duoi' } | null.
+        - CHONG CHÓNG DÒNG CHẢY (cảm biến gốc: flow_dir; nâng cấp: flow; rc.camBien có { ma: 'dong-chay' }, thiếu thì lỗi cấu hình): đọc Ô TRƯỚC MŨI, không tốn nhịp, chung bộ đếm DOC_LIEN_TIEP_TOI_DA với mọi cảm biến.
+          flow_dir() trả chuỗi THEO MŨI XUỒNG (user chốt 31/10; HUONG_TUONG_DOI[(huongDong − huongMui) mod 4]): "front" (chảy cùng chiều mũi, ra xa xuồng), "back" (chảy về phía xuồng), "left", "right";
+          "none" khi nước êm, dòng tắt, bờ, ngoài sân. flow() trả TUPLE (huong, suc): san-hoc trả mảng JS [huong, suc], nhân san-robot-core đưa cho trẻ thành tuple ("back", 2) / ("none", 0).
+          Sự kiện 'doc-cam-bien' { cam: 'dong-chay', ham, tu, huong: hướng mũi, o: ô trước mũi, huongDong: 0–3 | null, suc: 0–2, tuongDoi }.
+        - CỐNG THỦY LỢI + VAN: van V nối nhóm như nút N với cửa và băng: cfg.noi = [{ nut: {x,y} (ô V), cong: [{x,y}] (hay cua: [...], ô K / k), dong: [{x,y}] (ô có dòng) }]; không khai noi thì MỖI van điều khiển MỌI cống và MỌI ô dòng.
+          Van không điều khiển băng chuyền (lỗi cấu hình); nhóm van rỗng (cong: [], dong: []) thì van đổi mà không điều khiển gì. Van đổi (dây phao trúng): 'van-doi' { o, bat }; ô dòng của nhóm bật ↔ tắt NGAY ('dong-doi' { o, bat },
+          dòng tắt thì không đẩy, chong chóng đọc "none"); cống của nhóm đổi đóng ↔ mở ở CUỐI nhịp ('cong-doi' { o, mo }), không đóng xuống ô có xuồng / robot / vật: giữ mở, 'cong-ket' { o, voi: 'xe' | 'vat' } (thông tin).
+          Gạt lần nữa thì về như cũ. Cống đóng chặn xuồng, vật nổi trôi, dây phao (như cửa C); cống mở như nước. Kết quả chạy: cong [{x,y,mo}], van [{x,y,bat}], dongTat [{x,y}] (ô dòng đang tắt), congBanDau, vanBanDau;
+          vết nhịp có cong / van / dongTat (chỉ khi sân có cống / van / dòng) và vat (khi sân có vật nổi).
+        - VẬT NỔI, CẦU PHAO, MỤC TIÊU: vật nổi là VẬT (vats, trangThai 'dat', chat 'go') có thêm noi: 'be' | 'luc-binh'; chiếm ô (xuồng không vào), chỉ nằm trên nước; chupVat ghi noi.
+          CẦU PHAO: xe cạn (bánh, xích, omni, nhện) đi vào ô nước có vật nổi KHI ô đó không có dòng đang chạy thì đi được như sàn (lyDoChan 'nuoc' được bỏ, vật không chặn); đang có xe đứng trên thì tow() không kéo vật đó ('keo-hut' vat 'co-xe')
+          và vật không trôi. (Ca biên tự chọn: tay kẹp của xe cạn vẫn gắp được vật nổi trước mặt như vật thường — màn không nên dựng như vậy.)
+          Mục tiêu 'dua-vat': thắng khi MỌI vật nổi (vật) nằm trên ô q (dichSet). 'toi-co': xuồng tới Q (F với xe cạn; sân có cả F và Q thì cờ là ký hiệu gặp trước khi đọc sân).
+
    KHAY VÀ PHẦN CỨNG (luật chế lệnh, 14/10): hai tập lệnh gốc khác nhau.
         - cfg.hamGoc = KHAY: lệnh hiện trên khay, dùng được trong CHƯƠNG TRÌNH CHÍNH và HÀM CỦA MÀN.
         - cfg.phanCung = PHẦN CỨNG: lệnh robot thật sự làm được; mặc định (cham.js, phanCungMacDinh) = trọn bộ lệnh của loại robot (xe bánh có cả left_back / right_back) + lệnh khay.
@@ -2288,8 +2336,8 @@
           vt.x = tx; vt.y = ty; keo.cho = 'duoi';
           return;
         }
-        var vs = laNuoc(san, tx, ty) ? vatNoiTai(tx, ty) : null;
-        if (!vs || xeDatTai(tx, ty)) { var ebh = { ma: 'buoc-hut', nhip: nhip, tu: tu, o: oT, vat: vs ? 'co-xe' : 'khong-co-vat', lenh: lg }; sk.push(ebh); suKienChan.push(ebh); return; }
+        var vs = laNuoc(san, tx, ty) ? vatNoiTai(tx, ty) : null, lyBo = lyDoChan(san, 'xuong', tx, ty);
+        if (!vs || xeDatTai(tx, ty)) { var ebh = { ma: 'buoc-hut', nhip: nhip, tu: tu, o: oT, vat: vs ? 'co-xe' : lyBo || (congDong(tx, ty) ? 'cong' : 'khong-co-vat'), lenh: lg }; sk.push(ebh); suKienChan.push(ebh); return; }
         keo = { id: vs.id, cho: 'duoi' };
         sk.push({ ma: 'buoc-duoi', nhip: nhip, id: vs.id, tu: oT, den: oT });
       }
