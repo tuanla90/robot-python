@@ -742,7 +742,7 @@
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
   function laHamCamBien(t) { return CAM_BIEN_HAM[t] !== undefined || CAM_MAU_HAM.indexOf(t) >= 0 || CAM_NHIN_HAM.indexOf(t) >= 0 || CAM_TU_HAM.indexOf(t) >= 0 || CAM_PIN_HAM.indexOf(t) >= 0 || CAM_HONG_NGOAI_HAM.indexOf(t) >= 0 || CAM_DONG_HAM.indexOf(t) >= 0; }
   /** Ô (x, y) là MẶT NƯỚC (~ Q q K k; cống đóng vẫn là nước nhưng chặn như cửa: chay() xét thêm). */
-  function laNuoc(san, x, y) { return !!san.nuoc[x + ',' + y]; }
+  function laNuoc(san, x, y) { return !!(san.nuoc && san.nuoc[x + ',' + y]); }   // sân dựng tay (máy kiểm gọi lyDoChan) có thể không có bảng nuoc
 
   function oTai(san, x, y) {
     if (x < 0 || y < 0 || x >= san.rong || y >= san.cao) return null;   // ngoài sân

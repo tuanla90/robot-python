@@ -1,7 +1,7 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-o-song.js — Ô SÂN BẾN SÔNG (mùa 5) + ô nước '~' dùng chung với Cảng sông (mùa 4). 31/10, đặc tả hoc/KE-HOACH-MUA-CANG-SONG.md mục 2.1, 2.3, 2.8, 4.
    Chép từ hình phim (nhánh claude/phim-clb, phim-clb/tools/xuat-m4.mjs) rồi sửa theo luật game: màu lấy từ BangMau, thêm dòng TẮT, bến nhận bè 'q', van cống 'V'.
-   Hệ 100 × 100 một ô như ve-vector-o*.js; mỗi hình khai cacTrangThai; kyDacTa = ký hiệu sân theo đặc tả (CHƯA là ký hiệu SanHoc: không dùng khoá 'ky', máy kiểm mục 10 đòi ky là ký hiệu sân thật; gói nối lõi đổi kyDacTa → ky) cho máy kiểm hoc/kiem-ve-vector.mjs.
+   Hệ 100 × 100 một ô như ve-vector-o*.js; mỗi hình khai cacTrangThai; ky = ký hiệu sân SanHoc (lõi Bến sông đã nhận từ 31/10; bảng ve-vector-ky-hieu.js) cho máy kiểm hoc/kiem-ve-vector.mjs.
      'nuoc'          '~'  mặt nước (s.le: gợn lệch, tránh lặp khi lát nhiều ô liền)
      'dong-nuoc'     lớp cfg.dong: s.huong 0 lên · 1 phải · 2 xuống · 3 trái (chiều nước chảy), s.xiet (sức 2: hai mũi tên vàng), s.tat (dòng tắt: mũi tên mờ nét đứt,
                      không bọt), s.pha 0..1 (hoạt cảnh gợn trôi theo dòng: mũi tên trượt theo chiều chảy, quay vòng)
@@ -23,7 +23,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   V.nenNuoc = nenNuoc;
 
-  V.dangKy({ loai: 'o', ma: 'nuoc', ten: 'Mặt nước sông', kyDacTa: ['~'], cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'nuoc', ten: 'Mặt nước sông', ky: ['~'], cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
     nenNuoc(g, H, !!(s && s.le));
   } });
 
@@ -57,7 +57,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   } });
 
   /* CỐNG THỦY LỢI: hai trụ bê tông, cánh thép trượt. Đóng: cánh chắn ngang, sọc vàng, đèn đỏ; mở: cánh kéo lên mép trên, đèn xanh, mũi tên luồng thông. */
-  V.dangKy({ loai: 'o', ma: 'cong-thuy-loi', ten: 'Cống thủy lợi', kyDacTa: ['K', 'k'], cacTrangThai: [{ mo: false }, { mo: true }, { k: 0.5 }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'cong-thuy-loi', ten: 'Cống thủy lợi', ky: ['K', 'k'], cacTrangThai: [{ mo: false }, { mo: true }, { k: 0.5 }], ve: function (g, s, H) {
     s = s || {};
     var k = typeof s.k === 'number' ? Math.max(0, Math.min(1, s.k)) : (s.mo ? 1 : 0), mo = k >= 1, y = 32 - 26 * k, cao = 36 - 24 * k;
     nenNuoc(g, H, false);
@@ -72,7 +72,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   } });
 
   /* VAN CỐNG 'V' (cần gạt trên bờ, chiếm ô như tường): bệ bê tông, rãnh gạt, cần thép, núm. Tắt: cần nghiêng trái, núm đỏ; bật: nghiêng phải, núm xanh lá + quầng. */
-  V.dangKy({ loai: 'o', ma: 'van-cong', ten: 'Van cống', kyDacTa: ['V'], cacTrangThai: [{}, { bat: true }, { goc: 0.5 }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'van-cong', ten: 'Van cống', ky: ['V'], cacTrangThai: [{}, { bat: true }, { goc: 0.5 }], ve: function (g, s, H) {
     s = s || {};
     var k = typeof s.goc === 'number' ? Math.max(0, Math.min(1, s.goc)) : (s.bat ? 1 : 0), bat = k >= 1, a = (-0.6 + 1.2 * k), dx = Math.sin(a) * 30, dy = -Math.cos(a) * 30;
     H.bo(g, 2, 2, 96, 96, 10); g.fillStyle = H.gradDoc(g, 0, 2, 0, 98, [[0, BM.vecTuong], [1, BM.vecTuongToi]]); g.fill(); H.vien(g, BM.vecTuongVien, 3);
@@ -88,7 +88,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   } });
 
   /* PHAO ĐÍCH 'Q': phao tròn cam - trắng nổi trên nước, cờ xanh lá cắm giữa. */
-  V.dangKy({ loai: 'o', ma: 'phao-dich', ten: 'Phao đích', kyDacTa: ['Q'], cacTrangThai: [{}], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'phao-dich', ten: 'Phao đích', ky: ['Q'], cacTrangThai: [{}], ve: function (g, s, H) {
     nenNuoc(g, H, false);
     H.tron(g, 50, 54, 36); H.vien(g, H.rgba(BM.vecMatSangRgb, 0.7), 2.5);
     H.tron(g, 50, 54, 26); H.to(g, BM.vecVanNong); H.vien(g, BM.vecVien, 3);
@@ -98,7 +98,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   } });
 
   /* BẾN NHẬN BÈ 'q': ô nước có cầu gỗ chữ U (ba phía), khung đích nét đứt màu đích; s.xong: đã có bè, khung xanh lá liền nét. */
-  V.dangKy({ loai: 'o', ma: 'ben-nhan', ten: 'Bến nhận bè', kyDacTa: ['q'], cacTrangThai: [{}, { xong: true }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'ben-nhan', ten: 'Bến nhận bè', ky: ['q'], cacTrangThai: [{}, { xong: true }], ve: function (g, s, H) {
     var xong = !!(s && s.xong), i;
     nenNuoc(g, H, true);
     H.bo(g, 2, 2, 96, 14, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5);

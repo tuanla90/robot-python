@@ -29,7 +29,11 @@
     'S': { o: [['bac-thang']] },
     '=': { o: [SAN, ['rao', { mask: 0 }]] },
     'r': { o: [['san-mau', { mau: 'red' }]] }, 'g': { o: [['san-mau', { mau: 'green' }]] }, 'b': { o: [['san-mau', { mau: 'blue' }]] }, 'y': { o: [['san-mau', { mau: 'yellow' }]] },
-    '^': { o: [['bang', { huong: 0, pha: 0 }]] }, '>': { o: [['bang', { huong: 1, pha: 0 }]] }, 'v': { o: [['bang', { huong: 2, pha: 0 }]] }, '<': { o: [['bang', { huong: 3, pha: 0 }]] }
+    '^': { o: [['bang', { huong: 0, pha: 0 }]] }, '>': { o: [['bang', { huong: 1, pha: 0 }]] }, 'v': { o: [['bang', { huong: 2, pha: 0 }]] }, '<': { o: [['bang', { huong: 3, pha: 0 }]] },
+    // Bến sông (mùa 5, 31/10): cống / phao / bến tự vẽ nền nước; van cống đứng trên bờ như nút N; vật nổi B / L nằm trên nước
+    '~': { o: [['nuoc']] }, 'Q': { o: [['phao-dich']] }, 'q': { o: [['ben-nhan']] },
+    'K': { o: [['cong-thuy-loi', { mo: false }]] }, 'k': { o: [['cong-thuy-loi', { mo: true }]] }, 'V': { o: [['van-cong', {}]] },
+    'B': { o: [['nuoc']], vat: [['be-go']] }, 'L': { o: [['nuoc']], vat: [['luc-binh']] }
   };
   /** Tên ô của bộ pixel cũ (Ve.tiles, đã xoá ở V7c2) → hình vector thay nó (phim-vector / máy kiểm còn gọi theo tên cũ). */
   var TILES = {
@@ -46,6 +50,7 @@
   /** Vật của lõi (o: { chat 'go' | 'sat' | 'nam-cham', mau, cuc }) → [mã vật, trạng thái]. Nam châm thiếu cực vẽ như thùng gỗ (như bộ pixel makeVatNho). */
   function vatCua(o, vo) {
     o = o || {};
+    if (o.noi === 'be' || o.noi === 'luc-binh') return [o.noi === 'be' ? 'be-go' : 'luc-binh', {}];   // vật nổi Bến sông (lõi ghi noi)
     if (vo === 'nong-trai' && o.mau && o.chat !== 'nam-cham') return ['bao-hat', o.chat === 'sat' ? { mau: o.mau, sat: true } : { mau: o.mau }];   // mùa 4: vật có màu là bao hạt
     if (o.chat === 'nam-cham' && (o.cuc === 'N' || o.cuc === 'S')) return ['nam-cham', { cuc: o.cuc }];
     if (o.chat === 'sat') return ['khoi-sat', o.mau ? { mau: o.mau } : {}];
