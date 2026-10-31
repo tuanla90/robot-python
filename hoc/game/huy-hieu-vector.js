@@ -651,6 +651,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.sao(22, 28, 7); c.sao(78, 28, 7);
   });
 
+  /* ---- MÙA BẾN SÔNG (mua-5): Gói 1–4 ---- */
+  var XUONG = { than: 'xuong', tay: null, camBien: [] };
+  dk('xuong', function (g, c) {
+    c.o('phao-dich', {}, 68, 34, 24);
+    c.robot(XUONG, st({ chay: true }), 1, 36, 60, 40);
+  });
+  dk('ham-tra-ve', che(function (g, c) {
+    c.khoi(62, 34, 38, 22, BM.vecLamDam, [['ret', BM.vecCanhBao, 10]]);
+    c.robot(XUONG, st({ chay: true }), 1, 34, 62, 36);
+  }));
+
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
     ve: ve,

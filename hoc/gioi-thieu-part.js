@@ -305,9 +305,81 @@
       ],
       khong: ['Chỉ đọc được container trên đỉnh chồng ngay dưới đầu cần'],
       luuY: ['Khi ô dưới đầu cần không có container, read_code() trả về -1.']
+    },
+    'xuong': {
+      khe: 'than', ten: 'Xuồng chân vịt',
+      moTa: 'Thân tàu thủy lợi với hai chân vịt trái phải và mỏ neo chống trôi trên sông.',
+      lenh: ['left_move', 'right_move', 'left_back', 'right_back', 'anchor', 'unanchor', 'wait'],
+      moTaLenh: {
+        left_move: 'Chân vịt trái quay tiến trong nhịp này',
+        right_move: 'Chân vịt phải quay tiến trong nhịp này',
+        left_back: 'Chân vịt trái quay lùi trong nhịp này',
+        right_back: 'Chân vịt phải quay lùi trong nhịp này',
+        anchor: 'Thả neo giữ xuồng đứng yên trước dòng nước chảy',
+        unanchor: 'Kéo neo lên để xuồng lại chạy được trên sông'
+      },
+      ghep: [
+        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô nước' },
+        { lenh: ['left_move', 'wait'], ra: 'Quay phải 90°' },
+        { lenh: ['left_back', 'wait'], ra: 'Quay trái 90°' },
+        { lenh: ['left_back', 'right_move', 'wait'], ra: 'Quay đầu 180°' },
+        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô nước' }
+      ],
+      gioi: [
+        'Hai chân vịt nhận lệnh y hệt xe hai bánh nên các hàm move(), turn_left(), turn_right(), u_turn(), back() đều dùng lại ngay',
+        'Lướt trên các ô nước ~, bến phao Q, bến hàng q và cống mở k',
+        { can: ['anchor'], chu: 'anchor() thả neo giữ xuồng không bị dòng nước cuốn trôi khi đứng chờ' }
+      ],
+      khong: [
+        'Không lên được bờ đất . hay bờ kè # và không đi xuyên qua cống đóng K',
+        { can: ['anchor'], chu: 'Đang thả neo thì không tiến, lùi hay quay được cho tới khi gọi unanchor()' }
+      ],
+      luuY: ['Trên ô có dòng nước chảy, cuối mỗi nhịp xuồng không thả neo sẽ trôi theo chiều dòng.']
+    },
+    'day-keo': {
+      khe: 'tay', ten: 'Dây phao kéo',
+      moTa: 'Cuộn dây phao gắn mũi xuồng để quăng bắt bè nổi, giật van cống hoặc buộc bè bên hông.',
+      lenh: ['tow', 'drop_tow', 'tether', 'untether'],
+      moTaLenh: {
+        tow: 'Quăng dây phao thẳng theo mũi xuồng tối đa 3 ô để kéo vật nổi hoặc giật van V',
+        drop_tow: 'Tháo dây thả vật đang kéo ở mũi xuống ô hiện tại của nó',
+        tether: 'Buộc vật nổi ở ô bên hông trái hoặc phải vào mạn xuồng',
+        untether: 'Tháo dây cho vật đang buộc bên hông'
+      },
+      ghep: [
+        { lenh: ['tow', 'wait'], ra: 'Quăng dây kéo vật nổi về sát mũi hoặc giật van V trên bờ' },
+        { lenh: ['drop_tow', 'wait'], ra: 'Thả vật đang kéo ở mũi xuống bến hàng q' }
+      ],
+      gioi: [
+        'tow() phóng dây thẳng theo mũi xuồng tối đa 3 ô, trúng bè nổi B hoặc L thì kéo về sát ngay trước mũi xuồng',
+        'Khi đang kéo vật ở mũi: xuồng tiến thì đẩy vật đi trước, xuồng lùi thì kéo vật theo sau',
+        'tow() trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van',
+        { can: ['tether'], chu: 'tether() buộc bè nổi ở ô bên hông để chở qua luồng hẹp hoặc cập bến ngang' }
+      ],
+      khong: [
+        'Không gọi tow() thêm được khi mũi xuồng đang kéo một vật nổi',
+        'Khi đang kéo vật ở mũi, chỉ quay 90° được nếu ô mới trước mũi là mặt nước trống'
+      ],
+      luuY: ['Gọi drop_tow() rồi wait() khi vật đang nằm ngay trên ô bến hàng q để giao hàng.']
+    },
+    'dong-chay': {
+      khe: 'camBien', ten: 'Chong chóng dòng chảy',
+      moTa: 'Chong chóng đo nước gắn trước mũi xuồng, đọc hướng và sức chảy của ô phía trước.',
+      lenh: ['flow_dir', 'flow'],
+      moTaLenh: {
+        flow_dir: 'Đọc hướng chảy của ô trước mũi xuồng: "front", "back", "left", "right" hoặc "none"',
+        flow: 'Đọc bộ đôi hướng và sức chảy của ô trước mũi xuồng'
+      },
+      gioi: [
+        'flow_dir() trả về hướng chảy của ô ngay trước mũi tính theo hướng xuồng đang quay',
+        'Đọc cảm biến không tốn nhịp',
+        { can: ['flow'], chu: 'flow() trả về bộ cố định gồm hướng chảy và sức đẩy 0, 1 hoặc 2 của ô trước mũi' }
+      ],
+      khong: ['Chỉ đo được một ô ngay trước mũi xuồng, không đo xuyên qua nhiều ô'],
+      luuY: ['Khi ô trước mũi là nước lặng hoặc bờ đất, flow_dir() trả về "none".']
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'xuong', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'day-keo', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma', 'dong-chay'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -327,6 +399,7 @@
     them('camera-bay');
     them('radar');
     them('quet-ma');
+    them('dong-chay');
     return kq;
   }
 

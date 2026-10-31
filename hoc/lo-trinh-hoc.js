@@ -34,7 +34,9 @@
       // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–10
       'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da', 'di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni-moi', 'trum-mua-6',
       // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–10
-      'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray', 'nhac-doi', 'can-tai', 'cang-cu', 'doi-cang', 'trum-mua-cang'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray', 'nhac-doi', 'can-tai', 'cang-cu', 'doi-cang', 'trum-mua-cang',
+      // MÙA BẾN SÔNG (mua-5): ngân hàng màn mới
+      'xuong'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1710,6 +1712,75 @@
     M.muaCang = MUA_CANG;
     M.tinhLai();
   })();
+  // ========================================================================= MÙA BẾN SÔNG (mua-5, Tàu thủy lợi R1)
+  var MUA_SONG = [
+    { ma: 'xuong', ten: 'Xuồng chân vịt', loai: 'bo-phan', hinh: 'xuong',
+      chuong: [['xuong', []], ['ham-tra-ve', []]] },
+    { ma: 'day-keo', ten: 'Dây phao kéo', loai: 'bo-phan', hinh: 'day-keo',
+      chuong: [['day-keo', []], ['bo-co-dinh', []]] },
+    { ma: 'dong-chay', ten: 'Chong chóng dòng chảy', loai: 'bo-phan', hinh: 'dong-chay',
+      chuong: [['dong-chay', []], ['che-dong-chay', []]] },
+    { ma: 'cong-thuy-loi', ten: 'Cống thủy lợi', hinh: 'cong-thuy-loi',
+      chuong: [['cong-thuy-loi', []], ['che-cong', []]] }
+  ];
+  var TEN_MUA_SONG = {
+    'xuong': 'Lướt sóng ra khơi', 'ham-tra-ve': 'Hàm trả kết quả',
+    'day-keo': 'Quăng dây kéo bè', 'bo-co-dinh': 'Bộ cố định hai phần',
+    'dong-chay': 'Đo hướng nước chảy', 'che-dong-chay': 'Chế lệnh: lựa chiều nước',
+    'cong-thuy-loi': 'Mở cống dẫn nước', 'che-cong': 'Chế lệnh: điều tiết dòng'
+  };
+  var TEP_MUA_SONG = ['manXuong'];
+  (function () {
+    Object.keys(TEN_MUA_SONG).forEach(function (c) { TT.ten[c] = TEN_MUA_SONG[c]; });
+    var moi = [], chuong = [];
+    MUA_SONG.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
+    TEP_MUA_SONG.forEach(function (k) { moi = moi.concat(M[k] || []); });
+    moi.forEach(function (m) {
+      if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa sông thuộc chương không có trong MUA_SONG: ' + m.chuong + '.' + m.so);
+      if (TT.thuTu.indexOf(m.chuong) < 0) TT.thuTu.push(m.chuong);
+    });
+    M.them(moi);
+    moi.forEach(function (m) { nguon[m.ma] = copy(m); });
+    MUA_SONG.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var cuoi = c[1][c[1].length - 1];
+        c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
+      });
+    });
+    var coManSong = [];
+    MUA_SONG.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        if (!c[1].length) return;
+        if (TT.thuTu.indexOf(c[0]) < 0) TT.thuTu.push(c[0]);
+        dungChuong(c[0], c[1]);
+        coManSong.push(c[0]);
+        c[1].forEach(function (ma, i) {
+          var m = get(ma);
+          if (i < c[1].length - 1) delete m.huyHieu;
+          else m.huyHieu = { ma: c[0], ten: 'Huy hiệu ' + TEN_MUA_SONG[c[0]] };
+        });
+      });
+    });
+    var goiTruoc = TT.goi.filter(function (g) { return g.mua === 'mua-1' || g.mua === 'mua-2' || g.mua === 'mua-3' || g.mua === 'mua-6' || g.mua === 'mua-7' || g.mua === 'mua-4'; });
+    var cTruoc = [];
+    goiTruoc.forEach(function (g) { cTruoc = cTruoc.concat(g.chuong); });
+    var sau = TT.thuTu.filter(function (c) { return cTruoc.indexOf(c) < 0 && coManSong.indexOf(c) < 0; });
+    TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(cTruoc, coManSong, sau));
+    var conLai = TT.goi.filter(function (g) { return goiTruoc.indexOf(g) < 0 && g.mua !== 'mua-5'; });
+    var goiSong = [];
+    MUA_SONG.forEach(function (g) {
+      var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coManSong.indexOf(c) >= 0; });
+      if (!ch.length) return;
+      var x = { ma: g.ma, ten: g.ten, mua: 'mua-5', chuong: ch };
+      if (g.loai) x.loai = g.loai;
+      if (g.hinh) x.hinh = g.hinh;
+      goiSong.push(x);
+    });
+    TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goiTruoc, goiSong, conLai));
+    M.muaSong = MUA_SONG;
+    M.tinhLai();
+  })();
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
   // Sổ lệnh: hàm được chế ở màn đã dời chương (che-xe.4 → banh-lui…) ghi theo chương mới của màn đó; màn đã cất thì giữ như ngân hàng.
   if (SL && SL.ds) SL.ds.forEach(function (h) { var m = h.man && get(h.man); if (m) h.chuong = m.chuong; });
@@ -2661,6 +2732,8 @@
     CAT_MUA_4.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     MUA_6.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
+    MUA_CANG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
+    MUA_SONG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
