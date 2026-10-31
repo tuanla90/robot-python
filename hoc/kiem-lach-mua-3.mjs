@@ -23,11 +23,7 @@ const LOI_GIA = process.argv.includes('--loi-gia');
 
 /** Lỗ chấp nhận: mã màn → lý do (ghi ở báo cáo T). */
 const CHAP_NHAN = {
-  // PDM3a 31/10: gói 3–4 viết lại trên nhện (máy dò không chèn dấu vào nhện), bỏ hai mục che-bai-tu.4 / .9 (loop_right / loop_left cũ).
-  'che-doc-cuc.2': 'D2 thay tham số p bằng chính biến p ở main (p = front_pole()): vẫn đọc cực và so chuỗi, không phải lách',
-  'nam-cham.6': 'màn có sẵn (mùa 2 cũ) một sân, tạo grip(); doc-cuc.2 đứng trước đã ép front_pole() bằng hai sân',
-  'che-nam-cham.7': 'màn có sẵn (mùa 2 cũ) một sân: sửa hàm của màn fixed_grip',
-  'che-nam-cham.5': 'màn có sẵn (mùa 2 cũ) một sân: dùng hàm sort() của em'
+  // PDM3a / PDM3b1 31/10: gói 1–7 viết lại trên nhện, màn nam-cham / che-nam-cham xe cũ đã dời sang mùa 5 ẩn.
 };
 
 const chuongMua3 = new Set(M.mua3.flatMap((g) => g.chuong.map((c) => c[0])));
@@ -127,7 +123,7 @@ for (const m of dsTruoc) if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEm
     for (const m of ds) {
       const kn = khaiNiemCua(m, [...k3.values()]);
       const ep = dangEp(m, kn);
-      if (!MAN_LOI_GIA && !m.chiChay && !Array.isArray(m.doi) && m.loaiRobot !== 'nhen' && (ep.has('metal') || ep.has('pole'))) MAN_LOI_GIA = m.ma;      // PDM3a: gói 3 nay là nhện (không chèn dấu được), lỗi giả cắm vào màn xe ép front_pole (gói 7)
+      if (!MAN_LOI_GIA && !m.chiChay && !Array.isArray(m.doi) && ep.has('pole') && (m.loiGiai.chinh || []).some((d) => /=\s*front_pole\(\)/.test(d))) MAN_LOI_GIA = m.ma;      // PDM3a / PDM3b1: lỗi giả cắm vào màn ép front_pole gán biến đầu tiên (doc-cuc.4) để lách G thay hằng chuỗi
       if (!m.tietKiemNhip) for (const h of m.loiGiai.hamCuaEmMoi || []) k3.set(h.ten, clone(h));
     }
   }
@@ -169,22 +165,26 @@ for (const m of ds) {
     continue;
   }
 
-  // 1. chạy có dấu (nhện không gắn được cảm biến khoảng cách để làm dấu front_clear: bỏ qua, ghi lại; ở mùa 3 nhện cũng không có cảm biến nào để lách)
-  if (m.loaiRobot === 'nhen') { bang.push({ ma: m.ma, ghi: 'nhện: không chèn được dấu, bỏ qua' }); continue; }
-  const cd = L.chenDau(lg.chinh);
-  const hamMoi = (lg.hamCuaEmMoi || []).map((h) => ({ h, cd: L.chenDau(h.than) }));
-  const hamMan = (lg.hamCuaMan || []).map((h) => ({ h, cd: L.chenDau(h.than) }));
-  const khoDau = [...hamEm.values()].map((h) => { const x = hamMoi.find((y) => y.h.ten === h.ten); return x ? { ten: h.ten, thamSo: h.thamSo, than: x.cd.dong } : h; });
-  const rv = L.chayVet(Cham, m, { chinh: cd.dong, hamCuaMan: hamMan.map((x) => ({ ten: x.h.ten, thamSo: x.h.thamSo, than: x.cd.dong })) }, khoDau);
-  if (!rv.thang) { bang.push({ ma: m.ma, ghi: 'chạy có dấu không thắng: ' + rv.chanDoan.map((c) => c.ma).join(',') }); continue; }
-  const vet = L.lenhCua(rv, 0);
-  const soSan = rv.theoSan.length;
-  const vets = rv.theoSan.map((_, s) => L.lenhCua(rv, s));
+  // 1. chạy có dấu (nhện không gắn được cảm biến khoảng cách để làm dấu front_clear: bỏ qua, ghi lại; khi --loi-gia vẫn thử lách G trên MAN_LOI_GIA)
+  if (m.loaiRobot === 'nhen' && !(LOI_GIA && m.ma === MAN_LOI_GIA)) { bang.push({ ma: m.ma, ghi: 'nhện: không chèn được dấu, bỏ qua' }); continue; }
+  const laNhen = m.loaiRobot === 'nhen';
+  const cd = laNhen ? null : L.chenDau(lg.chinh);
+  const hamMoi = (lg.hamCuaEmMoi || []).map((h) => ({ h, cd: laNhen ? null : L.chenDau(h.than) }));
+  const hamMan = (lg.hamCuaMan || []).map((h) => ({ h, cd: laNhen ? null : L.chenDau(h.than) }));
+  let vet = null, soSan = 1, vets = null;
+  if (!laNhen) {
+    const khoDau = [...hamEm.values()].map((h) => { const x = hamMoi.find((y) => y.h.ten === h.ten); return x ? { ten: h.ten, thamSo: h.thamSo, than: x.cd.dong } : h; });
+    const rv = L.chayVet(Cham, m, { chinh: cd.dong, hamCuaMan: hamMan.map((x) => ({ ten: x.h.ten, thamSo: x.h.thamSo, than: x.cd.dong })) }, khoDau);
+    if (!rv.thang) { bang.push({ ma: m.ma, ghi: 'chạy có dấu không thắng: ' + rv.chanDoan.map((c) => c.ma).join(',') }); continue; }
+    vet = L.lenhCua(rv, 0);
+    soSan = rv.theoSan.length;
+    vets = rv.theoSan.map((_, s) => L.lenhCua(rv, s));
+  }
 
   // 2. các lời giải lách: { ten, bai: { chinh, hamCuaMan }, kho, boQua? }
   const lach = [];
   const khoVoi = (doi) => [...hamEm.values()].map((h) => { const x = doi.get(h.ten); return x ? { ten: h.ten, thamSo: x.thamSo === undefined ? h.thamSo : x.thamSo, than: x.than } : h; });
-  if (!m.chinhCoDinh) {
+  if (!laNhen && !m.chinhCoDinh) {
     lach.push({ ten: 'A1', bai: { chinh: L.duoiGoc(vet, !!m.lucBan), hamCuaMan: lg.hamCuaMan || [] }, kho: hamCuaEm });
     lach.push({ ten: 'A2', bai: { chinh: L.duoiGoi(vet, cd.ban, lg.chinh), hamCuaMan: lg.hamCuaMan || [] }, kho: hamCuaEm });
   }
@@ -197,14 +197,18 @@ for (const m of ds) {
     return { truoc, than };
   }
   const banB = {};
-  for (const [tenLach, dem] of [['B', (cot, ten, ban) => L.demDau(vet, cot, ten, ban)], ['B2', demMax]]) {
-    if (tenLach === 'B2' && soSan === 1) continue;
-    const chinhB = m.chinhCoDinh ? lg.chinh : L.doDieuKien(lg.chinh, dem('chinh', null, cd.ban));
-    const hamManB = hamMan.map((x) => ({ ten: x.h.ten, thamSo: x.h.thamSo, than: L.doDieuKien(x.h.than, dem('hamMan', x.h.ten, x.cd.ban)) }));
-    const doiB = new Map(hamMoi.map((x) => [x.h.ten, { than: L.doDieuKien(x.h.than, dem('hamEm', x.h.ten, x.cd.ban)) }]));
-    const b = { ten: tenLach, bai: { chinh: chinhB, hamCuaMan: hamManB }, kho: khoVoi(doiB) };
-    lach.push(b);
-    banB[tenLach] = b;
+  if (!laNhen) {
+    for (const [tenLach, dem] of [['B', (cot, ten, ban) => L.demDau(vet, cot, ten, ban)], ['B2', demMax]]) {
+      if (tenLach === 'B2' && soSan === 1) continue;
+      const chinhB = m.chinhCoDinh ? lg.chinh : L.doDieuKien(lg.chinh, dem('chinh', null, cd.ban));
+      const hamManB = hamMan.map((x) => ({ ten: x.h.ten, thamSo: x.h.thamSo, than: L.doDieuKien(x.h.than, dem('hamMan', x.h.ten, x.cd.ban)) }));
+      const doiB = new Map(hamMoi.map((x) => [x.h.ten, { than: L.doDieuKien(x.h.than, dem('hamEm', x.h.ten, x.cd.ban)) }]));
+      const b = { ten: tenLach, bai: { chinh: chinhB, hamCuaMan: hamManB }, kho: khoVoi(doiB) };
+      lach.push(b);
+      banB[tenLach] = b;
+    }
+  } else {
+    banB.B = { ten: 'B', bai: { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [] }, kho: hamCuaEm };
   }
   const B = banB.B;
   // C: hằng thay biến (trên bản B): biến ở main và ở thân hàm người chơi viết; thử mọi tổ hợp 0..8 (tối đa hai biến mỗi đoạn)
@@ -276,10 +280,10 @@ for (const m of ds) {
   {
     const doanCua = (b) => [b.bai.chinh].concat(b.bai.hamCuaMan.map((h) => h.than), b.kho.filter((h) => hamMoi.some((x) => x.h.ten === h.ten)).map((h) => h.than));
     const co = (b, re) => doanCua(b).some((dong) => dong.some((d) => re.test(d)));
-    const coMetal = co(B, /front_metal\(\)/), coPole = co(B, /front_pole\(\)/);
+    const coMetal = co(B, /\bfront_metal\(\)/), coPole = co(B, /\bfront_pole\(\)/);
     if (coMetal || coPole) {
       const ung = (coMetal ? ['True', 'False'] : [null]).flatMap((a) => (coPole ? ['"N"', '"S"', '"none"'] : [null]).map((p) => ({ metal: a, pole: p })));
-      const thay = (dong, g) => dong.map((d) => { let x = d; if (g.metal) x = x.replace(/front_metal\(\)/g, g.metal); if (g.pole) x = x.replace(/front_pole\(\)/g, g.pole); return x; });
+      const thay = (dong, g) => dong.map((d) => { let x = d; if (g.metal) x = x.replace(/\bfront_metal\(\)/g, g.metal); if (g.pole) x = x.replace(/\bfront_pole\(\)/g, g.pole); return x; });
       lach.push({ ten: 'G', nhieu: ung.map((g) => ({
         nhan: (g.metal ? 'metal=' + g.metal + ' ' : '') + (g.pole ? 'pole=' + g.pole : ''),
         bai: { chinh: thay(B.bai.chinh, g), hamCuaMan: B.bai.hamCuaMan.map((h) => ({ ten: h.ten, thamSo: h.thamSo, than: thay(h.than, g) })) },

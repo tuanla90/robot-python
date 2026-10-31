@@ -63,6 +63,21 @@
    PDM3b / PDM3c dựng lại. kiem-lo-trinh (d) SIẾT gói 1–4 (GOI_SIET_3: R1 chỉ nhện + nam châm bụng + cảm biến từ); kiem-lach-mua-3 bỏ qua hàm capCu
    (lách D2) và cắm lỗi giả vào màn xe ép front_pole (gói 7) vì máy dò không chèn dấu vào nhện. Phim gói 2–4 (phim-mua-3.js) CHƯA đổi: vẫn vẽ xe hai bánh.
 
+12. **Mùa 3 gói 5–7 (PDM3b1, 31/10):** 60 màn của ba gói Nhảy, Đảo cực, Đọc cực hoàn tất trên ROBOT PHÂN LOẠI (nhện + nam châm bụng + cảm biến từ ở hông).
+   - **Gói 5 Nhảy (`nhay`, `che-nhen`):** đổi màn duy nhất còn tay kẹp (`che-nhen.6` "Nhảy qua mang thùng") sang nam châm bụng hút mẩu sắt (`vatChat: ['.s..']`),
+     lời giải giữ cấu trúc `jump("R")` hai chiều kèm `magnet_n()`, `magnet_off()`, `wait()`; sửa tay `lo-trinh-sao.js` (`o: 28, nhip: 14`).
+   - **Gói 6 Đảo cực (`dao-cuc.1..10`, `che-dao-cuc.1..10`):** viết lại toàn bộ 20 màn trong `man-dao-cuc.js` trên nhện + nam châm bụng + cảm biến từ hông
+     (`batDau.huong = 1`); màn xe cũ `nam-cham.2, .3` và `che-nam-cham.6` cất sang chương rời `nam-cham-xe` / `che-nam-cham-xe` (mùa 5 ẩn). Hàm của em mới:
+     `pull_n()` (`magnet_off()`, `magnet_s()`, `wait()`), `pull_s()` (`magnet_off()`, `magnet_n()`, `wait()`), `haul_n(k)` (`pull_n()`, `for i in range(k): go_right()`, `magnet_off()`, `wait()`).
+     Phối hợp chuỗi ký tự (`for c in ...`), cảm biến sắt (`front_metal()`), đệm từ (`detour(n)`), nhảy qua hố / chui gầm (`jump("R")`, `crawl("R")`).
+   - **Gói 7 Đọc cực (`doc-cuc.1..10`, `che-doc-cuc.1..10`):** viết lại toàn bộ 20 màn trong `man-doc-cuc.js` trên nhện + nam châm bụng + cảm biến từ hông
+     (`front_pole()` đọc chuỗi `"N"`, `"S"`, `"none"` trong 3 ô bên phải); màn xe cũ `nam-cham.6` và `che-nam-cham.2, .3, .4, .5, .7, .9, .10` cất sang
+     `nam-cham-xe` / `che-nam-cham-xe` (đủ 18 màn `nam-cham.1..8` + `che-nam-cham.1..10`, ngưỡng `rap-du` mùa 5 ẩn 195 → 210). Bản xe cũ của `grip`, `reel`,
+     `lane`, `sort`, `fling` thêm vào `DAY_CU` (`lo-trinh-hoc.js`) để cấp `capCu` cho màn mùa 4/5 và gói 10 mùa 3 (tới khi PDM3c dựng lại); bỏ `'che-doc-cuc'`
+     khỏi `CAP_HAM_CU_3`. Hàm của em mới trên nhện: `sort_drop(p)`, `grab_pole()`, `sort_row()`, `sort_back()`.
+   - **Máy kiểm:** `GOI_SIET_3` nâng từ 4 → 7 trong `kiem-lo-trinh.mjs`; sửa regex `\bfront_metal` / `\bfront_pole` (trước bị dính ký tự `0x08`) trong
+     `kiem-lach-mua-3.mjs` để `--loi-gia` bắt lỗi giả lách G trên `doc-cuc.4`; gói 1–7 mùa 3 đạt 0 lỗi trong `kiem-part-mua.mjs` (mùa 3 chỉ còn 28 màn sai ở gói 8 `doi-xich` và gói 10 `tong-hop-3` chờ PDM3b2 / PDM3c).
+
 ## Câu hỏi chờ user
 
 - (PDM3a) Chương logic-nam-cham ghép điều kiện kiểu `c == "s" or c == "S"` / `c != "g" and c != "N"` (hai vế đều là so sánh chuỗi). Ô ghép CHE_VH của

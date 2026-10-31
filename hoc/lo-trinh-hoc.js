@@ -921,7 +921,7 @@
     { ma: 'dao-cuc', ten: 'Đảo cực', loai: 'bo-phan',
       chuong: [['dao-cuc', []], ['che-dao-cuc', []]] },
     { ma: 'doc-cuc', ten: 'Đọc cực', loai: 'bo-phan', hinh: 'che-nam-cham',
-      chuong: [['doc-cuc', ['doc-cuc.1', 'doc-cuc.3', 'doc-cuc.2', 'nam-cham.6', 'doc-cuc.5', 'doc-cuc.4', 'doc-cuc.6', 'doc-cuc.7', 'doc-cuc.8', 'doc-cuc.9']], ['che-doc-cuc', ['che-doc-cuc.1', 'che-doc-cuc.2', 'che-doc-cuc.3', 'che-nam-cham.2', 'che-nam-cham.7', 'che-nam-cham.4', 'che-nam-cham.5', 'che-nam-cham.9', 'che-nam-cham.3', 'che-nam-cham.10']]] },
+      chuong: [['doc-cuc', []], ['che-doc-cuc', []]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
       chuong: [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]] },
     { ma: 'bung-nhen', ten: 'Nam châm bụng nhện', loai: 'thu-thach',
@@ -964,7 +964,7 @@
   // che-doi-ho-bang). Gói cũ đổi mã khi mã cũ đã thuộc gói mùa 3 (cờ goi-mo:<mã> của gói mùa 3).
   // PDM3a 31/10: nam-cham-xe (nam-cham.1 .4 .5 .7 .8) và che-nam-cham-xe (che-nam-cham.1 .8): màn nam châm mũi xe hai bánh rời gói 2 (gói 2 nay là nhện + nam châm bụng).
   var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'],     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
-    'nam-cham-xe': day('nam-cham', [1, 2, 3, 4, 5, 7, 8]), 'che-nam-cham-xe': ['che-nam-cham.1', 'che-nam-cham.6', 'che-nam-cham.8'] };
+    'nam-cham-xe': day('nam-cham', [1, 2, 3, 4, 5, 6, 7, 8]), 'che-nam-cham-xe': day('che-nam-cham', MUOI) };
   var TEN_ROI_3 = { 'doi-xich-bac': 'Đội xích leo bậc', 'che-doi-xich-bac': 'Hàm đội xích leo bậc', 'nam-cham-omni': 'Nam châm trên omni', 'nam-cham-xe': 'Nam châm mũi xe', 'che-nam-cham-xe': 'Chế lệnh nam châm mũi xe' };
   var THAY_CU = { 'doi-xich': ['doi-xich-bac'], 'che-doi-xich': ['che-doi-xich-bac'], 'nam-cham': ['nam-cham-omni', 'nam-cham-xe'], 'che-nam-cham': ['che-nam-cham-xe'] };
   var GOI_DOI_MA = { 'doi-xich': { ma: 'doi-xich-bac', ten: 'Đội xích leo bậc' }, 'nam-cham': { ma: 'nam-cham-omni', ten: 'Nam châm trên xe' } };
@@ -2396,9 +2396,14 @@
     // PDM3a 31/10 (mùa 3 part đúng mùa): gói 2–4 dựng lại trên nhện nên hàm của em xe hai bánh của chúng (kick của che-nam-cham.1; seek_iron, take_iron, seek_safe,
     // face_iron của che-cam-ung-tu; fetch_iron, loop_right, pull_iron của che-bai-tu) không còn ai dạy. Gói 7 (che-nam-cham.3 gọi kick) và gói 10 (tong-hop-3 /
     // trum-mua-3 gọi hàm gói 3–4) còn là màn xe: cấp bản cũ làm hàm của màn (capCu, như CAP_HAM_CU mùa 2 ở PDM2b) tới khi PDM3b / PDM3c dựng lại các gói đó.
-    var CAP_HAM_CU_3 = { 'che-doc-cuc': true, 'tong-hop-3': true, 'trum-mua-3': true };
+    var CAP_HAM_CU_3 = { 'tong-hop-3': true, 'trum-mua-3': true };
     Object.keys(CAP_HAM_CU_3).forEach(function (c) { chuongAn[c] = true; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
+    if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
+    if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
+    if (nguon['che-nam-cham.4']) DAY_CU.push(['che-nam-cham.4', 'lane']);
+    if (nguon['che-nam-cham.5']) DAY_CU.push(['che-nam-cham.5', 'sort']);
+    if (nguon['che-nam-cham.6']) DAY_CU.push(['che-nam-cham.6', 'fling']);
     if (nguon['che-nhen.6']) DAY_CU.push(['che-nhen.6', 'bring']);
     // Bản xe hai bánh của hàm của em gói 3–4 mùa 3 (ngân hàng đã viết lại trên nhện nên không còn trong `nguon`): khai cứng như THAN_CU mùa 2.
     var THAN_CU_3 = [
@@ -2439,7 +2444,8 @@
         var t = cho.pop();
         if (da[t]) continue;
         da[t] = true;
-        if (khoEm[t] && tuCo.indexOf(t) < 0) khoEm[t].forEach(function (l) { (l.match(/[A-Za-z_]\w*(?=\s*\()/g) || []).forEach(function (x) { cho.push(x); }); });
+        var th = khoEm[t] || (HAM_CU[t] && HAM_CU[t].than);
+        if (th && tuCo.indexOf(t) < 0) th.forEach(function (l) { (l.match(/[A-Za-z_]\w*(?=\s*\()/g) || []).forEach(function (x) { cho.push(x); }); });
       }
       return Object.keys(HAM_CU).filter(function (t) { return da[t] && tuCo.indexOf(t) < 0; });
     }
