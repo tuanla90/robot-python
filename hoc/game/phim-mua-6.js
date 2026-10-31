@@ -9,6 +9,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var XE = { than: 'hai-banh', tay: null, camBien: [] };
   var OMNI = { than: 'omni', tay: null, camBien: [] };
   var OMNI_NEM = { than: 'omni', tay: 'nem', camBien: [] };
+  var OMNI_RADAR = { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }] };
   var Y = 158;
   var X0 = 20, Y0 = 26, C1 = 56;
 
@@ -102,6 +103,40 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
         c.code(k, ['load()', 'wait()', 'throw()', 'wait()'], 10, 14);
         var r = c.xe(OMNI_NEM, {}, 1, 3, 180, Y); k.appendChild(r);
+        truot(c, r, 900, 230, Y, 0.6);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      }
+    ],
+
+    /* ---------------------------------------------------------------- 3 · Radar tròn */
+    'radar-tron': [
+      // 1 · đá và hố đổi chỗ mỗi ca, chưa có radar không biết bên nào có đá
+      function (k, c) {
+        var s = c.san(k, ['#*#*#', '#o#u#', '#...#'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_NEM, {}, 0, 2, p.x, p.y); k.appendChild(r);
+        hoi(k, c, '?', 130, 80, 0.8);
+        c.sau(900, function () { r.mat('ngac'); c.keu('loi'); });
+      },
+      // 2 · lắp vòm Radar tròn lên nóc R1
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        bayToi(k, c, c.ico('denCam', 3, BM.vang), 250, 40, 150, Y - 24, 0.1, 0.95);
+        lap(k, c, c.xe(OMNI_NEM, {}, 1, 3, 150, Y), c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 1, 3, 150, Y), 0.95);
+      },
+      // 3 · radar quét vòng 3x3, R1 trượt sang đúng cột có đá rồi hất vào đích
+      function (k, c) {
+        var s = c.san(k, ['#*#*#', '#o#u#', '#...#'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 0, 2, p.x, p.y); k.appendChild(r);
+        diQua(c, s, r, [[1, 2]], 400, 600);
+        var da = s.vat['1,1'];
+        if (da) truot(c, da, 1100, s.o(1, 0).x - 28, s.o(1, 0).y - 28, 0.6);
+        c.sau(1800, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · code: g = radar(), kiểm tra g[r][c]
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        c.code(k, ['g = radar()', 'if g[0][1] == "V":', '    lob()'], 10, 14);
+        var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
         truot(c, r, 900, 230, Y, 0.6);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
       }

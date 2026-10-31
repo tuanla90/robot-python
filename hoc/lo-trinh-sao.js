@@ -836,7 +836,27 @@
   "che-may-nem.17": { "o": 23, "nhip": 20 },
   "che-may-nem.18": { "o": 9, "nhip": 4 },
   "che-may-nem.19": { "o": 14, "nhip": 9 },
-  "che-may-nem.20": { "o": 27, "nhip": 13 }
+  "che-may-nem.20": { "o": 27, "nhip": 13 },
+  "radar-tron.1": { "o": 10, "nhip": 2 },
+  "radar-tron.2": { "o": 11, "nhip": 1 },
+  "radar-tron.3": { "o": 16, "nhip": 3 },
+  "radar-tron.4": { "o": 16, "nhip": 3 },
+  "radar-tron.5": { "o": 12, "nhip": 6 },
+  "radar-tron.6": { "o": 18, "nhip": 9 },
+  "radar-tron.7": { "o": 14, "nhip": 7 },
+  "radar-tron.8": { "o": 11, "nhip": 4 },
+  "radar-tron.9": { "o": 23, "nhip": 8 },
+  "radar-tron.10": { "o": 22, "nhip": 16 },
+  "che-radar-tron.1": { "o": 13, "nhip": 6 },
+  "che-radar-tron.2": { "o": 19, "nhip": 9 },
+  "che-radar-tron.3": { "o": 12, "nhip": 4 },
+  "che-radar-tron.4": { "o": 15, "nhip": 7 },
+  "che-radar-tron.5": { "o": 14, "nhip": 10 },
+  "che-radar-tron.6": { "o": 25, "nhip": 20 },
+  "che-radar-tron.7": { "o": 18, "nhip": 4 },
+  "che-radar-tron.8": { "o": 33, "nhip": 10 },
+  "che-radar-tron.9": { "o": 15, "nhip": 11 },
+  "che-radar-tron.10": { "o": 32, "nhip": 12 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;

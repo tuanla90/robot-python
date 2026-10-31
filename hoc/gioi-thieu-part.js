@@ -233,9 +233,21 @@
       gioi: ['look() cho màu của vật bên dưới; không có vật thì màu sàn', 'Đọc không tốn nhịp'],
       khong: ['Chỉ thấy ô ngay dưới drone', 'Chỉ gắn được trên drone'],
       luuY: []
+    },
+    'radar': {
+      khe: 'camBien', ten: 'Radar tròn',
+      moTa: 'Vòm radar trên nóc xe, quét lưới 3x3 quanh robot để biết tường, đá, hố, đích hay cờ.',
+      lenh: ['radar', 'shape'],
+      moTaLenh: {
+        radar: 'Quét lưới 3x3 quanh robot, trả về danh sách 2 chiều',
+        shape: 'Nhận dạng hình khối của vật ở ô theo hướng d'
+      },
+      gioi: ['radar() trả về lưới 3x3 quanh xe, ô giữa g[1][1] là chỗ xe đứng', 'Đọc không tốn nhịp'],
+      khong: ['Chỉ thấy 8 ô xung quanh xe và ô xe đang đứng'],
+      luuY: ['Hàng 0 là phía trên, hàng 2 là phía dưới; cột 0 là bên trái, cột 2 là bên phải.', 'Bản nâng cấp mở thêm shape(d) để phân biệt đá tròn, đá vuông và quặng.']
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -253,6 +265,7 @@
     them('hong-ngoai');
     if (co(goc, 'color')) them(co(cam, 'camera-4') ? 'camera-4' : co(cam, 'camera') ? 'camera' : 'mau');
     them('camera-bay');
+    them('radar');
     return kq;
   }
 
