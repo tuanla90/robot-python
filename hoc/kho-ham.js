@@ -45,7 +45,9 @@
   var HAM_GOC_MAC_DINH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right',
     'slide_left', 'slide_right', 'front_clear', 'left_clear', 'right_clear', 'color', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'battery', 'look', 'ink', 'dot', 'pen_down', 'pen_up', 'distance', 'warm',
-    'go_up', 'land', 'take_off', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'print', 'range', 'len', 'str', 'int'];
+    'go_up', 'land', 'take_off', 'go_down', 'go_left', 'go_right', 'crouch', 'stand',
+    'anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow',      // Bến sông (mùa 5): neo, dây phao, chong chóng dòng chảy của xuồng
+    'print', 'range', 'len', 'str', 'int'];                                                  // (min / max / abs của nhân chưa đưa vào đây: kiem-che-xe đòi mọi tên trong danh sách này, trừ 5 hàm nội bộ, phải có trong Sổ lệnh)
   // từ khóa Python (nhân chạy code chỉ hiểu một phần, nhưng cấm cả bộ cho khỏi nhầm)
   var TU_KHOA = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',
     'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if',

@@ -305,7 +305,16 @@
     g('battery', null, 'Hỏi: pin còn bao nhiêu'),
     g('land', 'take_off', 'Drone hạ cánh xuống ô đang ở; đáp ô sạc P thì pin đầy ngay'),
     g('take_off', 'land', 'Drone cất cánh, bay tiếp được'),
-    g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì')
+    g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì'),
+    // BẾN SÔNG (mùa 5): xuồng dùng bộ lệnh bánh (hai chân vịt); thêm neo, dây phao, chong chóng dòng chảy
+    g('anchor', 'unanchor', 'Xuồng thả neo: dòng nước không đẩy được, chân vịt nghỉ tới khi nhổ neo'),
+    g('unanchor', 'anchor', 'Xuồng nhổ neo, chạy tiếp được'),
+    g('tow', 'drop_tow', 'Dây phao: quăng dây thẳng theo mũi (3 ô), kéo bè về trước mũi; trúng van cống thì gạt van'),
+    g('drop_tow', 'tow', 'Dây phao: thả bè đang kéo tại chỗ'),
+    g('tether', 'untether', 'Buộc bè ra sau đuôi xuồng: bè nối đuôi như toa tàu, qua khúc cua không vướng'),
+    g('untether', 'tether', 'Cởi dây, bè ở lại chỗ nó đang nằm'),
+    g('flow_dir', null, 'Hỏi: nước ô trước mũi chảy về đâu so với mũi xuồng ("front", "back", "left", "right", "none")'),
+    g('flow', null, 'Hỏi: nước ô trước mũi chảy về đâu và mạnh bao nhiêu; trả về một cặp (hướng, sức), ví dụ ("back", 2)')
   ];
 
   function tim(ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }
