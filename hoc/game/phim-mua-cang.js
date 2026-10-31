@@ -170,4 +170,34 @@
       }
     }
   ]);
+
+  /* ================================================================ 6. nhac-doi — Móc cẩu đôi */
+  PG.dangKy('nhac-doi', [
+    { Chu: ['Chồng container cao 4 tầng mà tàu sắp rời bến.', 'Đội Chấn Hưng nâng cấp MÓC CẨU ĐÔI kẹp 2 tầng cùng lúc!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('bai-cang'), 2, 2);
+        var ct = dat(s, veV('container', { so: 24, mau: 'cam' }, 1.5), 2, 2);
+        var rb = dat(s, may(CAU_QUET, { nac: 4, tam: 1, tay: { kep: false, cam: false }, camBien: { bat: true } }, 0), 2, 1);
+        hen(function () {
+          ct.remove();
+          rb.remove();
+          dat(s, may(CAU_QUET, { nac: 4, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['pick_up2() nhấc 2 container trên đỉnh chồng và giữ nguyên thứ tự [dưới, trên].', 'Kết hợp n // 2 chuyến nhấc đôi và n % 2 chuyến nhấc đơn để bốc siêu tốc!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanCang(m, 3, 5);
+        for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
+        dat(s, veO('boong-tau', { co: true }), 2, 0);
+        dat(s, veV('container', { so: 12, mau: 'lam' }, 1.5), 2, 0);
+        dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
+        m.appendChild(code('pick_up2()\nswing_by(4)\nset_down()'));
+      }
+    }
+  ]);
 })();
