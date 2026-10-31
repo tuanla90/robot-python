@@ -51,13 +51,13 @@ export const ODat: React.FC<{ten: string; c: number; r: number; mo?: number; mua
 };
 
 /** Vật di chuyển (thùng gỗ…): theo mốc, xoay / nghiêng / mờ tuỳ khung. */
-export type Bam = {moc: Moc[]; tu: number; den?: number; xa?: number};
+export type Bam = {moc: Moc[]; tu: number; den?: number; xa?: number; goc?: number};
 /** bam: từ khung `tu` tới `den` vật nằm ở mũi xe (cách tâm xe `xa` ô theo hướng xe), thay cho mốc riêng (xe đang kẹp mang vật). */
 export const Vat: React.FC<{ten?: string; moc: Moc[]; nghieng?: (f: number) => number; mo?: (f: number) => number; co?: number; bam?: Bam; mua?: string}> = ({ten = 'vat-thung-go', moc, nghieng, mo, co = 1, bam, mua}) => {
   const f = useCurrentFrame(), m = React.useContext(MuaCtx);
   let p = theoMoc(moc, f);
   if (bam && f >= bam.tu && f <= (bam.den ?? 1e9)) {
-    const x = theoMoc(bam.moc, f), a = (x.goc * Math.PI) / 180, d = (bam.xa ?? 0.62) * O;
+    const x = theoMoc(bam.moc, f), a = ((bam.goc ?? x.goc) * Math.PI) / 180, d = (bam.xa ?? 0.62) * O;
     p = {x: x.x + Math.cos(a) * d, y: x.y + Math.sin(a) * d, goc: 0};
   }
   const s = O * co * (bam && f >= bam.tu && f <= (bam.den ?? 1e9) ? 0.82 : 1);
