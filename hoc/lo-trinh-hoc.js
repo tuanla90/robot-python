@@ -2409,7 +2409,7 @@
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
     // PDM3a / PDM3b2 31/10 (mùa 3 part đúng mùa): mọi gói mùa 3 đã dựng lại trên nhện; màn xe cũ ở mùa ẩn (che-nam-cham-xe, doi-tay-xoay…) dùng DAY_CU bên dưới.
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
-    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon'].forEach(function (c) { delete chuongAn[c]; });
+    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau'].forEach(function (c) { delete chuongAn[c]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
