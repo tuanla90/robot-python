@@ -46,6 +46,7 @@ const GOI_MUA_4 = [...khoiMua4.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai
 const GOI_MUA_2 = [...khoiMua2.matchAll(/\{ ma: '([^']+)', ten: '[^']*'(?:, loai: '([^']+)')?/g)].map((m) => ({ ma: m[1], loai: m[2] || '' }));
 const GOI_CAT_2 = [...nguonLo.matchAll(/var CAT_MUA_2 = \{ ma: '([^']+)'/g)].map((m) => m[1]);     // PDM2c 31/10: gói mùa 2 cất ra mùa ẩn (be-sung); phim của nó giữ lại chờ gói về
 const GOI_CAT_3 = [...nguonLo.matchAll(/var CAT_MUA_3 = \{ ma: '([^']+)'/g)].map((m) => m[1]);     // PDM3b2 31/10: gói mùa 3 cất ra mùa ẩn (bung-nhen); phim của nó giữ lại
+const GOI_CAT_4 = [...nguonLo.matchAll(/var CAT_MUA_4 = \{ ma: '([^']+)'/g)].map((m) => m[1]);     // PDM4c 31/10: gói mùa 4 cất ra mùa ẩn (son-tren-cao); phim của nó giữ lại
 const CHUA_CO_GOI = [];                       // phim khai sẵn cho gói chưa có màn (27/10: gói combo đã có, mọi phim mùa 1 đều khớp gói thật)
 const KHONG_PHIM = ['xe'];                     // gói dùng phim mở đầu (mo-dau.js)
 
@@ -118,8 +119,8 @@ console.log('\n== 1d. Phim mùa 4 (gói theo MUA_4 của lo-trinh-hoc.js) ==');
   const saiTep = GOI_MUA_4.filter((g) => PHIM[g.ma] && TEP_CUA[g.ma] !== 'phim-mua-4.js').map((g) => g.ma + '@' + TEP_CUA[g.ma]);
   kiem('phim gói mùa 4 nằm ở phim-mua-4.js', !saiTep.length, saiTep.join(', '));
   const maMua4 = new Set(GOI_MUA_4.map((g) => g.ma));
-  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-4.js' && !maMua4.has(m));
-  kiem('mỗi phim của phim-mua-4.js mang đúng mã một gói của MUA_4', !la.length, la.join(', '));
+  const la = Object.keys(PHIM).filter((m) => TEP_CUA[m] === 'phim-mua-4.js' && !maMua4.has(m) && !GOI_CAT_4.includes(m));
+  kiem('mỗi phim của phim-mua-4.js mang đúng mã một gói của MUA_4 (hay gói cất ' + GOI_CAT_4.join(', ') + ')', !la.length, la.join(', '));
   kiem('gói MUA_4 đều thuộc mùa 4 trong ThuTuChuong.goi', GOI_MUA_4.every((g) => { const x = TT.goi.find((y) => y.ma === g.ma); return x && x.mua === 'mua-4'; }));
   const boPhan = GOI_MUA_4.filter((g) => g.loai === 'bo-phan' && PHIM[g.ma]);
   const khongCode = boPhan.filter((g) => !/\bc\.code\(/.test(PHIM[g.ma][PHIM[g.ma].length - 1].toString())).map((g) => g.ma);

@@ -453,6 +453,34 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     ],
 
+    /* ---------------------------------------------------------------- 8 · Vườn cũ rào sắt (vuon-cu, PDM4c: drone nông nghiệp gặp rào =, băng >, hố u, cổng C) */
+    'vuon-cu': [
+      // 1 · vườn cũ còn sót hàng rào sắt và hố sâu
+      function (k, c) {
+        var s = san4(k, c, ['.....', '.=.u.', '.....']), p = s.o(0, 1);
+        var r = c.xe(DRONE_SON, {}, 1, 2, p.x, p.y); k.appendChild(r);
+        hoi(k, c, '?', 108, 12, 0.5);
+        c.sau(600, function () { r.mat('ngac'); c.keu('quet'); });
+      },
+      // 2 · drone bay vọt qua rào và hố, gieo hoa đúng dấu màu
+      function (k, c) {
+        var s = san4(k, c, ['.....', '.=.u.', '.....'], { mau: ['..r.y', '.....', '.....'] }), p = s.o(0, 1);
+        var r = c.xe(DRONE_SON, {}, 1, 2, p.x, p.y); k.appendChild(r);
+        diQua(c, s, r, [[1, 1], [2, 1], [3, 1], [4, 1]], 300, 480);
+        s.to(2, 1, 'red', 1.3); s.to(4, 1, 'yellow', 2.3);
+        c.sau(2400, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 3 · nhấc miệng gieo qua rào rồi hạ xuống gieo tiếp luống hoa
+      function (k, c) {
+        var s = san4(k, c, ['.....', '..=..', '.....']), p = s.o(0, 1);
+        var r = c.xe(DRONE_SON, {}, 1, 2, p.x, p.y); k.appendChild(r);
+        s.to(0, 1, 'blue', 0.2);
+        diQua(c, s, r, [[1, 1], [2, 1], [3, 1], [4, 1]], 400, 480);
+        s.to(1, 1, 'blue', 0.8); s.to(3, 1, 'blue', 1.8); s.to(4, 1, 'blue', 2.3);
+        c.sau(2600, function () { r.mat('vui'); c.keu('thang'); });
+      }
+    ],
+
     /* ---------------------------------------------------------------- 9 · Sơn từ trên cao (combo: drone + máy sơn + camera) */
     'son-tren-cao': [
       // 1 · bên kia hàng rào, xe máy sơn không qua được

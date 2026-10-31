@@ -758,6 +758,13 @@
   H['che-doi-xich.12'] = [buocTaoHam('wait_n', 'Bấm Hàm mới, đặt tên wait_n và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: for i in range(n): rồi wait(). Bấm Chạy.'));
   H['che-doi-xich.14'] = [buocTaoHam('valve_go', 'Bấm Hàm mới, đặt tên valve_go và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: forward(n) rồi squirt("low"). Bấm Chạy.'));
   H['che-doi-xich.15'] = [buocTaoHam('hop_iron', 'Bấm Hàm mới, đặt tên hop_iron và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pull_s(), jump(d), magnet_off(), wait(). Bấm Chạy.'));
+  // MÙA 4 gói 8 (PDM4c 31/10: vườn cũ rào sắt): vuon-cu.1 trình diễn; che-vuon-cu.1 trình diễn hàm leap_dot(c); .2 span_sow(c, n), .3 mark_here(n), .5 gate_sow(c), .7 sow_up(n)
+  H['vuon-cu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: drone bay trên cao vượt qua hàng rào =, băng chuyền > và hố u để gieo bốn ô hoa đỏ.');
+  H['che-vuon-cu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm leap_dot(c) gieo một ô rồi bay hai ô vượt qua chướng ngại.');
+  H['che-vuon-cu.2'] = [buocTaoHam('span_sow', 'Bấm Hàm mới, đặt tên span_sow và thêm đối số c, n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: ink(c), pen_down(), lặp n lần go_right(), rồi pen_up(). Bấm Chạy.'));
+  H['che-vuon-cu.3'] = [buocTaoHam('mark_here', 'Bấm Hàm mới, đặt tên mark_here và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: nếu color("here") != "none" thì chọn hạt đó và dot(), rồi go_right(). Bấm Chạy.'));
+  H['che-vuon-cu.5'] = [buocTaoHam('gate_sow', 'Bấm Hàm mới, đặt tên gate_sow và thêm đối số c.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait() chờ thùng mở cổng, bay phải hai ô, ink(c), dot(), wait(). Bấm Chạy.'));
+  H['che-vuon-cu.7'] = [buocTaoHam('sow_up', 'Bấm Hàm mới, đặt tên sow_up và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: đọc c = color("up"), nếu c != "none" thì ink(c) và dot(), rồi go_right(). Bấm Chạy.'));
 
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,

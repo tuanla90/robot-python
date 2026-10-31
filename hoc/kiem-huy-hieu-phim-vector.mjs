@@ -241,7 +241,7 @@ const conPixel = [];
     'chuoi-nhen', 'logic-nam-cham', 'cam-ung-tu', 'che-cam-ung-tu', 'bai-tu', 'che-bai-tu', 'nhay', 'dao-cuc', 'che-dao-cuc', 'doc-cuc', 'che-doc-cuc',
     'bang-cu', 'che-bang-cu', 'doi-xich-nhen', 'che-doi-xich-nhen', 'bung-nhen', 'che-bung-nhen', 'tong-hop-3', 'xe-tham-do',
     // mùa 4 (30/10): huy hiệu các chương mới + cỗ máy drone-ke-vach (trùm cuối mùa, cũng là hình gói 10)
-    'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'che-nhin-duoi', 'son-tren-cao', 'che-son-tren-cao', 'tong-hop-4', 'drone-ke-vach', 'trum-mua-4'];
+    'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'che-nhin-duoi', 'vuon-cu', 'che-vuon-cu', 'son-tren-cao', 'che-son-tren-cao', 'tong-hop-4', 'drone-ke-vach', 'trum-mua-4'];
   for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));
   const DS_CHUP = DS.filter((m) => !MOI_SAU_CHUP.includes(m));
   if (tap(DS_CHUP) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS_CHUP.includes(m)).join(',') + ' / thừa ' + DS_CHUP.filter((m) => !CHUP.DS.includes(m)).join(','));

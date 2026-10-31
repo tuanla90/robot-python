@@ -406,6 +406,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('nhin-duoi', function (g, c) { nhinDuoi(g, c, 50, 52, 54); });
   dk('che-nhin-duoi', che(function (g, c) { nhinDuoi(g, c, 40, 62, 42); }));
+  function vuonCu(g, c, cx, cy, canh) {
+    c.o('bang', { huong: 1 }, cx - canh * 0.34, cy + canh * 0.36, canh * 0.36);
+    c.o('rao', { mask: 0 }, cx + canh * 0.34, cy + canh * 0.36, canh * 0.36);
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'blue' }, { bat: true }), 0, cx, cy - canh * 0.1, canh);
+  }
+  dk('vuon-cu', function (g, c) { vuonCu(g, c, 50, 48, 50); });
+  dk('che-vuon-cu', che(function (g, c) { vuonCu(g, c, 42, 58, 40); }));
   function sonCao(g, c, cx, cy, canh) {
     c.o('rao', { mask: 0 }, cx, cy + canh * 0.42, canh * 0.36);
     netSon(g, 'M' + (cx - canh * 0.62) + ' ' + (cy + canh * 0.42) + ' H' + (cx - canh * 0.22), BM.luatSonVang, 6);

@@ -30,7 +30,7 @@
       // MÙA 3 (KE-HOACH-MUA-3.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_3 bên dưới)
       'than-nhen', 'nam-cham-n', 'cam-ung-tu', 'bai-tu', 'nhay', 'dao-cuc', 'doc-cuc', 'bang-cu', 'doi-xich-nhen', 'bung-nhen', 'trum-mua-3',
       // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
-      'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1213,13 +1213,16 @@
       chuong: [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]] },
     { ma: 'nhin-duoi', ten: 'Nhìn dưới chân', loai: 'bo-phan', hinh: 'nhin-duoi',
       chuong: [['nhin-duoi', []], ['che-nhin-duoi', day('che-nhin-duoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])]] },
+    { ma: 'vuon-cu', ten: 'Vườn cũ rào sắt', loai: 'thu-thach', hinh: 'vuon-cu',
+      chuong: [['vuon-cu', []], ['che-vuon-cu', []]] },
     { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach', hinh: 'doi-nam-cham',
       chuong: [['doi-nam-cham', day('doi-nam-cham', [1, 2, 3, 11, 4, 5, 7, 12, 8, 10])], ['che-doi-nam-cham', day('che-doi-nam-cham', [11, 1, 2, 5, 3, 6, 7, 12, 8, 10])]] },
-    { ma: 'son-tren-cao', ten: 'Gieo từ trên cao', loai: 'thu-thach', hinh: 'son-tren-cao',
-      chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] },
     { ma: 'drone-ke-vach', ten: 'Drone nông nghiệp R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
       chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
   ];
+  // PDM4c 31/10: gói Gieo từ trên cao (gói 9 cũ; bộ gieo hạt đã gắn dưới bụng drone từ gói 2) CẤT ra mùa ẩn (như CAT_MUA_2 be-sung, CAT_MUA_3 bung-nhen), gói Đội về gói 9, gói 8 là Vườn cũ rào sắt.
+  var CAT_MUA_4 = { ma: 'son-tren-cao', ten: 'Gieo từ trên cao (cất)', loai: 'thu-thach', hinh: 'son-tren-cao',
+    chuong: [['son-tren-cao', []], ['che-son-tren-cao', []]] };
   // Màn drone cũ dựng quanh sạc tự động trên P và hàm cốt truyện recharge() (bay lên P rồi xuống), cùng che-drone.3 / .6 (nhảy đường cong gói 5): sang mùa 5 (ẩn), đứng TRƯỚC flycam và đội drone vì
   // flycam.6, doi-drone.6, .10, che-doi-drone.10 còn dùng recharge() mà drone.5 tạo. Dựng lại khi tới mùa có đội drone.
   var MUA_4_CU = [
@@ -1242,13 +1245,14 @@
   var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Gieo từng ô', 'che-list': 'Chế lệnh: gieo theo danh sách', 'che-list-cu': 'Chế lệnh: đi theo danh sách', 'che-may-son-cu': 'Chế lệnh: hoa văn lớn',
     'cam-bon': 'Đọc màu bốn phía', 'che-cam-bon': 'Chế lệnh: dò màu', 'pho-mau': 'Bay giữa luống màu', 'che-pho-mau': 'Chế lệnh: qua luống',
     'tram-sac': 'Đáp đất sạc pin', 'che-drone': 'Chế lệnh: bay xa', 'net-lien': 'Gieo liền một hàng', 'che-may-son': 'Chế lệnh: bồn hoa',
-    'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham-cu': 'Chia hàng: màn ôn', 'che-doi-nam-cham-cu': 'Chế lệnh: màn ôn', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
+    'nhin-duoi': 'Nhìn xuống đọc màu', 'che-nhin-duoi': 'Chế lệnh: đọc đơn hàng', 'vuon-cu': 'Bay qua vườn cũ', 'che-vuon-cu': 'Chế lệnh: qua vườn cũ',
+    'drone-sac-cu': 'Ghé ô sạc', 'che-drone-sac-cu': 'Chế lệnh: sạc dọc đường', 'doi-nam-cham-cu': 'Chia hàng: màn ôn', 'che-doi-nam-cham-cu': 'Chế lệnh: màn ôn', 'doi-nam-cham': 'Chia hàng theo màu', 'che-doi-nam-cham': 'Chế lệnh: giao cho kịp',
     'son-tren-cao': 'Gieo hàng qua rào', 'che-son-tren-cao': 'Chế lệnh: vườn hoa', 'tong-hop-4': 'Đủ bộ', 'trum-mua-4': 'Nông trại mới' };
   // TỆP NGÂN HÀNG MÀN MỚI MÙA 4 (như mùa 3): mỗi gói một tệp hoc/man-<tệp>.js khai ManHoc.<biến> = [màn…], mỗi màn khai `chuong` và `so`.
   //   man-cat-canh.js manCatCanh (1) · man-cham-son.js manChamSon (2) · man-camera-bon-huong.js manCameraBonHuong (3) · man-pho-mau.js manPhoMau (4)
-  //   man-tram-sac.js manTramSac (5) · man-net-lien.js manNetLien (6) · man-nhin-duoi-chan.js manNhinDuoiChan (7) · man-doi-chia-hang.js manDoiChiaHang (8)
-  //   man-son-tren-cao.js manSonTrenCao (9) · man-trum-mua-4.js manTrumMua4 (10)
-  var TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
+  //   man-tram-sac.js manTramSac (5) · man-net-lien.js manNetLien (6) · man-nhin-duoi-chan.js manNhinDuoiChan (7) · man-vuon-cu.js manVuonCu (8)
+  //   man-doi-chia-hang.js manDoiChiaHang (9) · man-son-tren-cao.js manSonTrenCao (cất) · man-trum-mua-4.js manTrumMua4 (10)
+  var TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manVuonCu', 'manDoiChiaHang', 'manSonTrenCao', 'manTrumMua4'];
   (function () {
     Object.keys(TEN_MUA_4).forEach(function (c) { TT.ten[c] = TEN_MUA_4[c]; });
     // Cất khỏi lộ trình (ngân hàng giữ nguyên): list.2 xoắn ốc 28 ô ngay màn 2 (nhảy đường cong), trùng ý list.1.
@@ -1272,14 +1276,14 @@
       m.hamGoc = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot', 'land', 'take_off', 'color'];
     });
     M.danhSach.forEach(function (m) { if (!nguon[m.ma]) nguon[m.ma] = copy(m); });
-    var moi = [], chuong = [];
-    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
+    var moi = [], chuong = [], chuongCat4 = CAT_MUA_4.chuong.map(function (c) { return c[0]; });
+    MUA_4.concat([CAT_MUA_4]).forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
     TEP_MUA_4.forEach(function (k) { moi = moi.concat(M[k] || []); });
     moi.forEach(function (m) { if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa 4 thuộc chương không có trong MUA_4: ' + m.chuong + '.' + m.so); });
     chuong.forEach(function (c) { if (TT.thuTu.indexOf(c) < 0) TT.thuTu.push(c); });
     M.them(moi);
     moi.forEach(function (m) { nguon[m.ma] = copy(m); });
-    MUA_4.forEach(function (g) {
+    MUA_4.concat([CAT_MUA_4]).forEach(function (g) {
       g.chuong.forEach(function (c) {
         var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
         var cuoi = c[1][c[1].length - 1];
@@ -1287,13 +1291,14 @@
       });
     });
     var chuongMua4 = [], coMan = [], da = {}, chuongCu = {};
-    MUA_4.concat(MUA_4_CU).forEach(function (g) {
+    MUA_4.concat(MUA_4_CU, [CAT_MUA_4]).forEach(function (g) {
       g.chuong.forEach(function (c) {
         if (MUA_4.indexOf(g) >= 0) chuongMua4.push(c[0]);
         c[1].forEach(function (ma) { if (da[ma]) throw new Error('Màn xếp hai lần (mùa 4): ' + ma); da[ma] = true; chuongCu[get(ma).chuong] = true; });
       });
     });
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { if (c[1].length) { dungChuong(c[0], c[1]); coMan.push(c[0]); } }); });
+    CAT_MUA_4.chuong.forEach(function (c) { dungChuong(c[0], c[1]); });
     // (Từ 30/10 tối các màn này nằm ở che-list-cu, mùa 5 ẩn; giữ bãi khít cho khớp ngưỡng sao trong lo-trinh-sao.js.)
     // Gói 2 (30/10, đường cong): màn đo bằng cảm biến ở che-list (bản một sân của lộ trình) đứng trên bãi trống 7 × 7 dù xe chỉ đi một vòng chữ nhật nhỏ,
     // nên số ô nhảy 12 → 47 ngay màn đầu. Bãi thu vừa khít (giữ luật của PHONG ở man-che-list.js: tường mốc cuối hai cạnh đầu, ô ngay sau chỗ dừng ở hai cạnh sau
@@ -1315,7 +1320,7 @@
     // cho che-doi-nam-cham.11 (14 ô) đứng sau không nhảy.
     get('doi-nam-cham.8').san = ['#####', '##D##', '##..#', '##..#', '#..##', '##o##', '#####'];
     // Vỏ hình mùa 4 (30/10, user: "Đổi sang nông nghiệp"): Nông trại hoa, luật giữ nguyên; san-ve.js đọc vo: cỏ, luống hoa, bụi cây, bao hạt (ve-vector-nong-trai.js).
-    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { get(ma).vo = 'nong-trai'; }); }); });
+    MUA_4.concat([CAT_MUA_4]).forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { get(ma).vo = 'nong-trai'; }); }); });
     // Lời mùa 4 theo vỏ Nông trại hoa (30/10) + giọng CLB (Sola nhờ, Luna gợi ý, gọi người chơi là "bạn"; hoc/KE-HOACH-PHIM-CLB.md mục 1): bảng từ theo thứ tự
     // (cụm dài trước), khớp trọn từ; chữ đầu viết hoa giữ hoa. LOI_NONG_TRAI (bên dưới) thay hẳn câu nào bảng từ làm vụng.
     var TU_NONG_TRAI = [
@@ -1376,10 +1381,10 @@
         'gieo hoa đỏ, vàng, đỏ ở hàng dưới từ phải sang trái, bay trái thêm một ô tới trạm thứ ba, sạc, rồi gieo luống xanh dương năm ô ở hàng cuối. Tự viết chương trình chính bằng các hàm bạn đã chế. Hai sân, bảng mẫu và dấu khác nhau.' },
       'che-may-son.10': { ten: 'Ba bồn hoa' }
     };
-    MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiNongTrai(get(ma)); }); }); });
+    MUA_4.concat([CAT_MUA_4]).forEach(function (g) { g.chuong.forEach(function (c) { c[1].forEach(function (ma) { loiNongTrai(get(ma)); }); }); });
     // Huy hiệu (30/10): mỗi chương mùa 4 trao huy hiệu MÃ CHƯƠNG ở màn trùm (cuối chương), như mùa 2; chương trum-mua-4 trao huy hiệu cỗ máy drone-ke-vach
     // (trùm cuối mùa). Màn khác trong chương không trao (màn có sẵn mang huy hiệu cũ, vd may-son.10 ở chương net-lien, đổi theo chương mới).
-    MUA_4.forEach(function (g) {
+    MUA_4.concat([CAT_MUA_4]).forEach(function (g) {
       g.chuong.forEach(function (c) {
         c[1].forEach(function (ma, i) {
           var m = get(ma);
@@ -1433,6 +1438,10 @@
       if (g.mua === 'mua-4') { g.mua = 'mua-5'; doi5.push(g); }
       conLai.push(g);
     });
+    // PDM4c: gói cất của mùa 4 (Gieo từ trên cao) sang mùa 5 ẩn như CAT_MUA_2, CAT_MUA_3 (khongTangNguong: ngưỡng = gói trước + 30).
+    var goiCat4 = { ma: CAT_MUA_4.ma, ten: CAT_MUA_4.ten, loai: CAT_MUA_4.loai, hinh: CAT_MUA_4.hinh, mua: 'mua-5', khongTangNguong: true, chuong: chuongCat4 };
+    conLai.push(goiCat4);
+    doi5.push(goiCat4);
     conLai.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
     // Ngưỡng gói dời sang mùa 5 (ẩn): như mùa 3 làm với gói dời sang mùa 4 (0,5 × tổng sao tối đa các gói thường đứng trước, bội 5; gói đội = trước + 30).
     var tr5 = 0, truoc5 = null;
@@ -2417,8 +2426,12 @@
     var chuongAn = {};
     TT.goi.forEach(function (g) { if (TT.mua.some(function (x) { return x.ma === g.mua && x.an; })) g.chuong.forEach(function (c) { chuongAn[c] = true; }); });
     // PDM3a / PDM3b2 31/10 (mùa 3 part đúng mùa): mọi gói mùa 3 đã dựng lại trên nhện; màn xe cũ ở mùa ẩn (che-nam-cham-xe, doi-tay-xoay…) dùng DAY_CU bên dưới.
+    // PDM4c 31/10: gói son-tren-cao cất sang mùa 5 (CAT_MUA_4); tạm cấp hàm của che-son-tren-cao cho gói 10 (tong-hop-4, trum-mua-4) tới khi gói 10 dựng lại.
+    var CAP_HAM_CU_4 = { 'tong-hop-4': true, 'trum-mua-4': true };
+    Object.keys(CAP_HAM_CU_4).forEach(function (c) { chuongAn[c] = true; });
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
-    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone', 'net-lien', 'che-may-son', 'nhin-duoi', 'che-nhin-duoi'].forEach(function (c) { delete chuongAn[c]; });
+    CAT_MUA_4.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
+    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone', 'net-lien', 'che-may-son', 'nhin-duoi', 'che-nhin-duoi', 'vuon-cu', 'che-vuon-cu'].forEach(function (c) { delete chuongAn[c]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);
@@ -2426,6 +2439,10 @@
     if (nguon['che-nam-cham.5']) DAY_CU.push(['che-nam-cham.5', 'sort']);
     if (nguon['che-nam-cham.6']) DAY_CU.push(['che-nam-cham.6', 'fling']);
     if (nguon['che-nhen.6']) DAY_CU.push(['che-nhen.6', 'bring']);
+    if (nguon['che-son-tren-cao.1']) DAY_CU.push(['che-son-tren-cao.1', 'sow_line']);
+    if (nguon['che-son-tren-cao.2']) DAY_CU.push(['che-son-tren-cao.2', 'retrace']);
+    if (nguon['che-son-tren-cao.3']) DAY_CU.push(['che-son-tren-cao.3', 'plant_list']);
+    if (nguon['che-son-tren-cao.6']) DAY_CU.push(['che-son-tren-cao.6', 'trace_marks']);
     DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
     });
