@@ -507,6 +507,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.vong(40, 62, 20, BM.vecCyanDam, 2.5);
     c.robot(OMNI_RADAR, st(null, { ngam: 2 }, { bat: true, mat: true }), 0, 40, 64, 40);
   }));
+  dk('di-cheo', function (g, c) {
+    c.muiTen(26, 72, 72, 26, BM.vecVang, 4.5);
+    c.robot(OMNI_RADAR, st(null, { ngam: 2 }, { bat: true, mat: true }), 0, 44, 58, 44);
+  });
+  dk('che-di-cheo', che(function (g, c) {
+    c.muiTen(20, 74, 58, 36, BM.vecVang, 4);
+    c.robot(OMNI_RADAR, st(null, { ngam: 2 }, { bat: true, mat: true }), 0, 38, 64, 38);
+  }));
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

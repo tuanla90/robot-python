@@ -658,6 +658,10 @@
       'pg.ban-xoay.2': 'R1 xúc tảng đá tròn hất rơi xuống hố, lấp thành mặt sàn phẳng!',
       'pg.ban-xoay.3': 'Đi qua hố vừa lấp, lướt theo sàn dốc và bàn xoay về cờ.',
       'pg.ban-xoay.4': 'Chế hàm fill_pit() và auto_fill() để tự dọn đá lấp hố mở đường.',
+      'pg.di-cheo.1': 'Khe đá chéo quá hẹp, trượt ngang rồi tiến sẽ vướng vách đá.',
+      'pg.di-cheo.2': 'Sola nâng cấp con lăn chéo cho bánh omni của Máy mỏ đá R1.',
+      'pg.di-cheo.3': 'R1 lách chéo một ô chỉ trong một nhịp, mũi xe giữ nguyên hướng!',
+      'pg.di-cheo.4': 'diag_right() và diag_left() lách chéo gọn gàng qua trụ đá và hố sâu.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

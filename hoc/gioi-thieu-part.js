@@ -61,16 +61,18 @@
     'omni': {
       khe: 'than', ten: 'Thân bánh omni',
       moTa: 'Có đủ lệnh của xe hai bánh, thêm hai lệnh trượt ngang.',
-      lenh: BANH.concat(['slide_left', 'slide_right', 'wait']),
+      lenh: BANH.concat(['slide_left', 'slide_right', 'diag_left', 'diag_right', 'wait']),
       ghep: [
         { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
         { lenh: ['left_move', 'wait'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
         { lenh: ['slide_right', 'wait'], ra: 'Trượt sang phải 1 ô, mặt giữ nguyên', ket: { x: 3, y: 2, huong: 0 } },
         { lenh: ['slide_left', 'wait'], ra: 'Trượt sang trái 1 ô, mặt giữ nguyên', ket: { x: 1, y: 2, huong: 0 } }
       ],
-      gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh'],
-      khong: ['Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
-      luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.']
+      gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh',
+        { chu: 'Bản nâng cấp đi chéo: diag_left() và diag_right() lách chéo 1 ô trong 1 nhịp', can: ['diag_left', 'diag_right'] }],
+      khong: [{ chu: 'Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', khongCan: ['diag_left'] }, 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
+      luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.',
+        { chu: 'Mỗi lệnh diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
     },
     'nhen': {
       khe: 'than', ten: 'Thân nhện',

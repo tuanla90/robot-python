@@ -31,8 +31,8 @@
       'than-nhen', 'nam-cham-n', 'cam-ung-tu', 'bai-tu', 'nhay', 'dao-cuc', 'doc-cuc', 'bang-cu', 'doi-xich-nhen', 'bung-nhen', 'trum-mua-3',
       // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
       'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4',
-      // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–4
-      'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da'].forEach(function (n) { require('./man-' + n + '.js'); });
+      // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–5
+      'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da', 'di-cheo'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1491,8 +1491,8 @@
       chuong: [['radar-tron', []], ['che-radar-tron', []]] },
     { ma: 'ban-xoay', ten: 'Bàn xoay & Sàn dốc', hinh: 'ban-xoay',
       chuong: [['ban-xoay', []], ['che-ban-xoay', []]] },
-    { ma: 'toc-do-omni', ten: 'Tốc độ omni', loai: 'bo-phan',
-      chuong: [['toc-do-omni', []], ['che-omni', []]] },
+    { ma: 'di-cheo', ten: 'Đi chéo', loai: 'bo-phan', hinh: 'di-cheo',
+      chuong: [['di-cheo', []], ['che-di-cheo', []]] },
     { ma: 'tam-nem', ten: 'Tầm hất đá', loai: 'bo-phan',
       chuong: [['tam-nem', []], ['che-tam-nem', []]] },
     { ma: 'nhan-dang', ten: 'Nhận dạng mỏ', loai: 'bo-phan',
@@ -1517,10 +1517,11 @@
     'may-nem': 'Hất đá qua rào', 'che-may-nem': 'Chế lệnh: hất đá',
     'radar-tron': 'Quét quanh một vòng', 'che-radar-tron': 'Chế lệnh: quét mỏ',
     'ban-xoay': 'Lấp hố, trượt dốc', 'che-ban-xoay': 'Chế lệnh: vượt mỏ đá',
+    'di-cheo': 'Lách chéo vách đá', 'che-di-cheo': 'Chế lệnh: đi chéo',
     'omni-cu': 'Omni gắp cũ', 'may-nem-xe': 'Máy ném xe cũ', 'che-may-nem-xe': 'Chế lệnh: máy ném xe cũ',
     'ban-xoay-cu': 'Bàn xoay xe cũ', 'che-ban-xoay-cu': 'Chế lệnh: bàn xoay xe cũ'
   };
-  var TEP_MUA_6 = ['manLuoi2D', 'manHatDa', 'manRadarTron', 'manSanMoDa'];
+  var TEP_MUA_6 = ['manLuoi2D', 'manHatDa', 'manRadarTron', 'manSanMoDa', 'manDiCheo'];
   (function () {
     Object.keys(TEN_MUA_6).forEach(function (c) { TT.ten[c] = TEN_MUA_6[c]; });
     var moi = [], chuong = [];
