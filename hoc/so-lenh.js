@@ -278,6 +278,8 @@
     g('stand', 'crouch', 'Nhện duỗi chân ra; duỗi ngay trước một bước đi lúc đang co là nhảy'),
     g('slide_left', 'slide_right', 'Xe omni trượt sang trái một ô'),
     g('slide_right', 'slide_left', 'Xe omni trượt sang phải một ô'),
+    g('diag_left', 'diag_right', 'Xe omni trượt chéo tiến-trái một ô, giữ nguyên hướng mặt'),
+    g('diag_right', 'diag_left', 'Xe omni trượt chéo tiến-phải một ô, giữ nguyên hướng mặt'),
     g('spray', 'spray_back', 'Vòi phun: phun tia nước ra trước, bay 2 ô, xe đứng yên. Từ gói Lực phun, lực "high" bay xa, xe giật lùi một ô'),
     g('spray_back', 'spray', 'Vòi phun: phun tia nước ra sau, bay 2 ô, xe đứng yên. Từ gói Lực phun, lực "high" bay xa, xe giật tới một ô'),
     g('front_clear', null, 'Hỏi: ô trước mặt có trống không'),
@@ -301,7 +303,9 @@
     g('battery', null, 'Hỏi: pin còn bao nhiêu'),
     g('land', 'take_off', 'Drone hạ cánh xuống ô đang ở; đáp ô sạc P thì pin đầy ngay'),
     g('take_off', 'land', 'Drone cất cánh, bay tiếp được'),
-    g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì')
+    g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì'),
+    g('radar', null, 'Hỏi: radar tròn quét lưới 3x3 quanh robot, trả về danh sách 2 chiều'),
+    g('shape', null, 'Hỏi: radar nhận dạng hình khối của vật ở ô chỉ định')
   ];
 
   function tim(ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }

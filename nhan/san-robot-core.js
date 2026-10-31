@@ -467,7 +467,7 @@
   function bangNhau(a, b) {
     if (laList(a) && laList(b)) {
       if (a.length !== b.length) return false;
-      for (var k = 0; k < a.length; k++) if (a[k] !== b[k]) return false;
+      for (var k = 0; k < a.length; k++) if (!bangNhau(a[k], b[k])) return false;
       return true;
     }
     return a === b;
@@ -600,6 +600,7 @@
   function* chayCodeGen(code, api, tuyChon) {
     tuyChon = tuyChon || {};
     var nganSach = tuyChon.nganSachLenh || 200000;
+    var choPhep2D = !!(tuyChon.choPhep2D || tuyChon.luoi2D || (api && api.radar));
     var toks = tachToken(code);
     var cay = phanTich(toks);
 
@@ -635,7 +636,7 @@
           var dsKq = [];
           for (var il = 0; il < n.ds.length; il++) {
             var pt = yield* tinh(n.ds[il], mt);
-            if (laList(pt)) throw LoiRuntime(n.dong, MSG_LONG);
+            if (laList(pt) && !choPhep2D) throw LoiRuntime(n.dong, MSG_LONG);
             dsKq.push(pt);
           }
           return dsKq;
@@ -651,7 +652,7 @@
             throw LoiRuntime(n.dong, '.append() chỉ dùng được với danh sách, mà ' + (tenDs(n.doiTuong) ? '"' + tenDs(n.doiTuong) + '"' : 'đây') + ' là ' + tenKieu(dtPt) + '.');
           }
           if (tsPt.length !== 1) throw LoiRuntime(n.dong, 'append() cần đúng 1 đối số, đang có ' + tsPt.length + '.');
-          if (laList(tsPt[0])) throw LoiRuntime(n.dong, MSG_LONG);
+          if (laList(tsPt[0]) && !choPhep2D) throw LoiRuntime(n.dong, MSG_LONG);
           if (dtPt.length >= LIST_TOI_DA) {
             throw LoiRuntime(n.dong, 'Danh sách dài quá (hơn ' + LIST_TOI_DA + ' phần tử) — có vòng lặp nào cứ thêm mãi không?');
           }
@@ -681,7 +682,10 @@
         case 'trong': {
           var ta = yield* tinh(n.trai, mt), tb = yield* tinh(n.phai, mt);
           if (laList(tb)) {                                                // x in a: so đúng giá trị (số khác chuỗi)
-            if (laList(ta)) throw LoiRuntime(n.dong, MSG_LONG);
+            if (laList(ta)) {
+              if (!choPhep2D && !tb.some(laList)) throw LoiRuntime(n.dong, MSG_LONG);
+              return tb.some(function (el) { return bangNhau(el, ta); }) !== n.phu ? 1 : 0;
+            }
             return (tb.indexOf(ta) >= 0) !== n.phu ? 1 : 0;
           }
           if (!laChuoi(tb) || !laChuoi(ta)) {
