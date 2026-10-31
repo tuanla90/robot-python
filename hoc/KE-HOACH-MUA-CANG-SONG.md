@@ -121,16 +121,17 @@ Lớp mới `cfg.dong = [{ x, y, huong, suc }]` (màn nhiều sân: mảng song 
 - Vết nhịp: `robot.nac`, `robot.tam`, `robot.dau` (ô đầu cần), `robot.treo` (mảng container đang treo, đáy → đỉnh).
 
 ### 3.3 Móc cẩu (tay gốc gói 2, nâng cấp gói 6)
-- `hook()` (1 nhịp): nhấc container **trên cùng** ở ô đầu cần (`'moc-cont'`). Không có container: `'moc-hut'`; đang treo: `'dang-treo'` (lỗi).
-- `unhook()` (1 nhịp): hạ container đang treo lên **đỉnh chồng** ở ô đầu cần (`'ha-cont'`). Không hạ được (tường, nước, ô tàu khi tàu vắng, chồng đầy, ô bệ / robot): `'ha-bi-chan'` `{ vat }`, container vẫn treo.
-- **Nhấc đôi** (gói 6): `hook2()` nhấc **hai** container trên cùng một lần, giữ thứ tự; `unhook()` hạ cả hai. Chồng chỉ có 1: `'moc-thieu'` (lỗi, không nhấc).
+- Tên lệnh (chốt khi làm lõi 31/10): `pick_up()` / `set_down()` / `pick_up2()`, không dùng `hook()` / `unhook()` vì mùa 3 (gói Bụng nhện, màn 2–3) dạy em tự đặt hàm tên `hook()` / `unhook()`: lệnh gốc trùng tên thì kho hàm của em bị cấm.
+- `pick_up()` (1 nhịp): nhấc container **trên cùng** ở ô đầu cần (`'moc-cont'`). Không có container: `'moc-hut'`; đang treo: `'dang-treo'` (lỗi).
+- `set_down()` (1 nhịp): hạ container đang treo lên **đỉnh chồng** ở ô đầu cần (`'ha-cont'`). Không hạ được (tường, nước, ô tàu khi tàu vắng, chồng đầy, ô bệ / robot): `'ha-bi-chan'` `{ vat }`, container vẫn treo.
+- **Nhấc đôi** (gói 6): `pick_up2()` nhấc **hai** container trên cùng một lần, giữ thứ tự; `set_down()` hạ cả hai. Chồng chỉ có 1: `'moc-thieu'` (lỗi, không nhấc).
 - Container treo đi theo đầu cần.
 
 ### 3.4 Máy quét mã (cảm biến gốc gói 3, nâng cấp gói 7)
 - Part `{ ma: 'quet-ma', o: 'tren' }`, đọc không tốn nhịp.
 - `read_code()` trả **số** của container trên cùng ở ô đầu cần; không có container thì **`-1`** (số âm: dạy ngay ở gói 3).
 - **Cân tải** (nâng cấp): `weight()` trả số tấn: của container đang treo (tổng nếu treo đôi), không treo thì của container trên cùng ở đầu cần; không có gì thì `0`.
-- **Luật tải** (màn khai `cfg.taiToiDa = M`, từ gói 7): tổng tấn đang treo × tầm phải ≤ M. `hook()` / `hook2()` ở tầm làm vượt M: không nhấc (`'qua-tai'`, lỗi); `extend()` khi đang treo mà làm vượt M: không vươn (`'qua-tai'`). Đúng biểu đồ tải của cẩu thật, và dạy nhân: `if weight() * tam <= 12`.
+- **Luật tải** (màn khai `cfg.taiToiDa = M`, từ gói 7): tổng tấn đang treo × tầm phải ≤ M. `pick_up()` / `pick_up2()` ở tầm làm vượt M: không nhấc (`'qua-tai'`, lỗi); `extend()` khi đang treo mà làm vượt M: không vươn (`'qua-tai'`). Đúng biểu đồ tải của cẩu thật, và dạy nhân: `if weight() * tam <= 12`.
 
 ### 3.5 Chạy trên ray (nâng cấp thân, gói 5)
 - `rail(n)`: `n` số nguyên khác 0, `abs(n) ≤ 9`; bệ chạy `abs(n)` ô dọc ray, **tốn `abs(n)` nhịp** (mỗi nhịp 1 ô); `n > 0` chạy về phía phải (ray ngang) / xuống (ray dọc), `n < 0` ngược lại. Ô kế không phải ray hay có robot: dừng (`'het-ray'`, lỗi), phần còn lại bỏ. Container treo đi theo. `n` sai: lỗi chạy lời Việt.
@@ -143,7 +144,7 @@ Lớp mới `cfg.dong = [{ x, y, huong, suc }]` (màn nhiều sân: mảng song 
 - Mục tiêu xếp chồng (`'bong-mo'` mở rộng): `bongMo.chong = [{ x, y, so: [..] }]` lúc xong mọi chồng phải đúng (bài sắp xếp, Tháp Hà Nội). Màn Tháp Hà Nội khai `cfg.luatThap = true`: hạ container số lớn lên container số nhỏ hơn bị từ chối (`'thap-sai'`).
 
 ### 3.7 Python Cảng sông
-- Python A **số âm, `abs()`**, Python B **`%`, `//`**. Nhân đã có số âm (trừ một ngôi), `%`, `//`; phải thêm hàm dựng sẵn **`abs`**.
+- Python A **số âm, `abs()`**, Python B **`%`, `//`**. Nhân có số âm, `//`, `abs` (31/10); `%` đã sửa theo Python (`-5 % 8 = 3`, cùng dấu số chia) để `(b - a) % 8` đúng với số âm.
 - Bài số học gợi ý: quay từ nấc `a` tới nấc `b` hết `(b - a) % 8` lần `swing_right()`; mã container `so // 10` là tàu, `so % 10` là vị trí; `rail(dich - x)` với số âm; `abs(dich - x)` là số nhịp; luật tải `tan * tam <= M`.
 
 ---
