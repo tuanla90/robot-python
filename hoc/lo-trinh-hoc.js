@@ -34,7 +34,7 @@
       // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–10
       'luoi-2d', 'hat-da', 'radar-tron', 'san-mo-da', 'di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni-moi', 'trum-mua-6',
       // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–4
-      'can-cau'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'can-cau', 'moc-cau'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
