@@ -61,15 +61,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 31, 24, 38, 13, 4); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 2.5);                                                                      // đối trọng
     g.beginPath(); g.moveTo(38, 35); g.lineTo(44, 26); g.moveTo(48, 35); g.lineTo(54, 26); g.moveTo(58, 35); g.lineTo(64, 26); H.vien(g, BM.vecCanhBao, 3, 'butt');
     H.bo(g, 32, 38, 36, 36, 10); g.fillStyle = H.gradVo(g, 32, 38, 36, 36); g.fill(); H.vien(g, BM.vecVien, 3);                                      // cabin giữa mâm
-    H.duong(g, 'M39 43 C37 47 37 51 38 54 M61 43 C63 47 63 51 62 54'); H.vien(g, BM.vecVoGhep, 2);
-    H.kinh(g, M, 35, 55, 30, 11, s);
+    H.duong(g, 'M39 43 C38 45 38 47 38 48 M61 43 C62 45 62 47 62 48 M40 66 H60'); H.vien(g, BM.vecVoGhep, 2);
+    H.kinh(g, M, 35, 50, 30, 11, s);
     H.angTen(g, M, 50, 39, 31, 3.8);
     if (!s.coCan) { g.save(); g.translate(50, 80); g.rotate(Math.PI / 2); gianCan(g, H, 14, 13); g.restore(); }                                    // đoạn cần ngắn trước mặt
     H.tron(g, 50, 80, 5.5); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2);                                                                        // chốt chân cần
   }
   V.dangKy({
     loai: 'than', ma: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'rail'], ten: 'Thân cần cẩu container',
-    oGan: { tay: { x: 50, y: 90 }, hongTrai: { x: 68, y: 56 }, hongPhai: { x: 32, y: 56 }, tren: { x: 63, y: 71 }, sau: { x: 50, y: 26 } },
+    oGan: { tay: { x: 50, y: 90 }, hongTrai: { x: 68, y: 56 }, hongPhai: { x: 32, y: 56 }, tren: { x: 63, y: 72 }, sau: { x: 50, y: 26 } },
     oCam: { x: 58, y: 39 }, vo: { x: 32, y: 38, w: 36, h: 36 },
     ve: function (g, s, M, H) { veDe(g, s, H); veTren(g, s, M, H); }
   });

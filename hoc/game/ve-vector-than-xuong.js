@@ -1,6 +1,6 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-than-xuong.js — THÂN XUỒNG CHÂN VỊT 'xuong' (Bến sông, mùa 5, 31/10; hoc/KE-HOACH-MUA-CANG-SONG.md mục 2.2, 2.4, 2.6). Chép từ hình phim
-   (claude/phim-clb xuat-m4.mjs), màu đổi sang BangMau: phao đệm khí xanh nước bao quanh, dải phản quang cam, hai chân vịt ở đuôi (−y), vỏ trắng gia đình thân A,
+   (claude/phim-clb xuat-m4.mjs), màu đổi sang BangMau: phao đệm khí CAM cứu hộ bao quanh (bản phim xanh nước: chìm vào ô nước ở cỡ 48 px), dải phản quang trắng, hai chân vịt ở đuôi (−y), vỏ trắng gia đình thân A,
    kính + mắt màu đội, ăng-ten. Quay mặt XUỐNG, tâm (50, 56) như mọi thân.
    Trạng thái s: neo (đã thả neo: hai mỏ neo vàng hai hông + xích), dat (nâng cấp buộc đuôi: móc kéo cam ở đuôi), dangDat (đang có vật buộc đuôi: dây cam ra khỏi móc),
    chay (chân vịt đang quay: cánh xoay 45°, gợn sau đuôi), mat (mắt biểu cảm của H.kinh).
@@ -31,9 +31,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (s.dangDat) { g.beginPath(); g.moveTo(50, 9); g.lineTo(50, 3); H.vien(g, BM.vecVien, 6); H.vien(g, BM.vecVanNong, 3.5); }
       }
       g.beginPath(); g.moveTo(22, 27); g.lineTo(78, 27); g.quadraticCurveTo(84, 55, 74, 81); g.quadraticCurveTo(50, 93, 26, 81); g.quadraticCurveTo(16, 55, 22, 27); g.closePath();   // phao đệm khí
-      g.fillStyle = H.gradDoc(g, 0, 22, 0, 92, [[0, BM.vecNuoc], [1, BM.vecNuocToi]]); g.fill(); H.vien(g, BM.vecVien, 3.6);
-      H.bo(g, 18, 45, 6, 18, 3); H.to(g, BM.vecVanNong); H.vien(g, BM.vecVien, 1.8);                                           // dải phản quang cam hai mạn
-      H.bo(g, 76, 45, 6, 18, 3); H.to(g, BM.vecVanNong); H.vien(g, BM.vecVien, 1.8);
+      g.fillStyle = H.gradDoc(g, 0, 22, 0, 92, [[0, BM.vecVanNongSang], [1, BM.vecVanNong]]); g.fill(); H.vien(g, BM.vecVien, 3.6);   // phao cam cứu hộ: nổi rõ trên nước xanh
+      H.bo(g, 18, 45, 6, 18, 3); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 1.8);                                               // dải phản quang trắng hai mạn
+      H.bo(g, 76, 45, 6, 18, 3); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 1.8);
       if (s.neo) {                                                                                                           // mỏ neo hai hông + xích
         [[11, -1], [89, 1]].forEach(function (p) {
           var ax = p[0], d = p[1];

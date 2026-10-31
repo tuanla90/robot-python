@@ -4,7 +4,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    0 đỏ · 1 xanh dương · 2 vàng · 3 xanh lá (VeVector.MAU_CONT; người gọi có thể ép s.mau 0..3, vd màu theo tàu).
      'container'   s: { so 1–99, tan 1–4, mau?, hienTan? }  — một container. hienTan: vẽ vạch tấn (1–4 vạch) ở đầu phải nóc (mặc định ẨN: chưa có luật cho trẻ thấy tấn).
      'chong-cont'  s: { cont: [{ so, tan? }] đáy → đỉnh (1–4 tầng) } — các tầng dưới lệch dần xuống-phải 4 đơn vị (thấy mép = vạch tầng), CHỈ thấy số của container
-                   trên cùng; huy hiệu số tầng tròn ở góc dưới-trái. Một tầng thì không có huy hiệu (y như 'container').
+                   trên cùng; huy hiệu số tầng tròn (chữ trắng nền chàm) ở góc dưới-trái. Một tầng thì không có huy hiệu (y như 'container').
    HÀM DÙNG LẠI (hệ 100 hay bất kỳ hệ nào đã scale):
      VeVector.veContainer(g, H, x, y, w, h, so, s)  vẽ một container hộp (x, y, w, h); s: { mau?, hienTan?, tan? }.
      VeVector.veChongCont(g, H, cont, s)            vẽ chồng trong ô 100 × 100 (dùng cho 'chong-cont' và container treo của VeVector.veCanCau). */
@@ -57,8 +57,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     if (n > 1) {
       g.lineWidth = 2;
-      H.tron(g, 11, 88, 10); H.to(g, BM.vecVien); H.vien(g, BM.vecVo, 2);
-      g.font = '800 14px ' + PHONG; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = BM.vecVo; g.fillText(String(n), 11, 88.5);
+      H.tron(g, 13, 86, 12); H.to(g, BM.vecVien); H.vien(g, BM.vecVo, 2);
+      g.font = '800 18px ' + PHONG; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = BM.vecVo; g.fillText(String(n), 13, 87);
     }
   }
   V.veChongCont = veChongCont;

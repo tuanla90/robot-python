@@ -11,7 +11,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      'ben-nhan'      'q'  bến nhận bè: cầu gỗ chữ U ôm ô nước + khung đích; s.xong (đã có bè: khung xanh lá) */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
-  var NUOC_RGB = BM.vecNuocRgb;
 
   /** Nền nước tràn ô (không viền bo: nhiều ô nước liền thành một mặt sông). */
   function nenNuoc(g, H, le) {
@@ -44,10 +43,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (i = 0; i < 2; i++) { y = 10 + ((i * 44 + (1 - pha) * 44) % 88); g.moveTo(18, y); g.lineTo(18, Math.min(92, y + 18)); g.moveTo(82, Math.max(8, 100 - y - 18)); g.lineTo(82, 100 - y); }
       H.vien(g, H.rgba(BM.vecMatSangRgb, 0.6), 2.6);
     }
-    var ys = xiet ? [30, 66] : [48], buoc = xiet ? 36 : 48;
+    var ys = xiet ? [30, 62] : [48], P = xiet ? 64 : 60;
     ys.forEach(function (y0) {
-      var yc = y0 - pha * buoc; if (yc < 24) yc += xiet ? 72 : 48;                                 // trượt theo chiều chảy (−y), quay vòng trong ô
-      if (yc > 82) yc = 82;
+      var yc = 18 + (((y0 - 18 - pha * P) % P) + P) % P;                                          // trượt theo chiều chảy (−y), quay vòng trong dải 18..18+P của ô
       g.beginPath(); g.moveTo(30, yc + 13); g.lineTo(50, yc - 7); g.lineTo(70, yc + 13);
       if (tat) {
         g.setLineDash([5, 5]); H.vien(g, H.rgba(BM.vecMatSangRgb, 0.55), 4); g.setLineDash([]);
@@ -56,7 +54,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     });
     g.restore();
-    if (tat) { H.tron(g, 50, 50, 8); H.to(g, H.rgba(NUOC_RGB, 0.9)); H.vien(g, H.rgba(BM.vecMatSangRgb, 0.7), 2); g.beginPath(); g.moveTo(45, 50); g.lineTo(55, 50); H.vien(g, BM.vecTroiNhat, 2.5); }   // dấu "−" giữa ô: dòng đang tắt
   } });
 
   /* CỐNG THỦY LỢI: hai trụ bê tông, cánh thép trượt. Đóng: cánh chắn ngang, sọc vàng, đèn đỏ; mở: cánh kéo lên mép trên, đèn xanh, mũi tên luồng thông. */
