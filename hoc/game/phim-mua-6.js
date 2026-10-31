@@ -206,6 +206,39 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         truot(c, r, 900, 230, Y, 0.6);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
       }
+    ],
+
+    /* ---------------------------------------------------------------- 6 · Chỉnh lực hất */
+    'chinh-luc': [
+      // 1 · hố sâu cách xe tới 3 ô, lực hất mặc định 2 ô không tới
+      function (k, c) {
+        var s = c.san(k, ['F...#', 'u...#', '.o..#'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 3, 2, p.x, p.y); k.appendChild(r);
+        hoi(k, c, '?', 130, 60, 0.8);
+        c.sau(900, function () { r.mat('ngac'); c.keu('loi'); });
+      },
+      // 2 · Sola lắp lò xo chỉnh lực 3 nấc cho tay hất đá của R1
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        bayToi(k, c, c.ico('denNem', 3, BM.vang), 250, 40, 150, Y - 14, 0.1, 0.95);
+        lap(k, c, c.xe(OMNI_RADAR, {}, 1, 3, 150, Y), c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 150, Y), 0.95);
+      },
+      // 3 · R1 chỉnh lực aim(3) hất đá vọt xa 3 ô lấp phẳng hố sâu
+      function (k, c) {
+        var s = c.san(k, ['F...#', 'u...#', '.o..#'], 4, X0, Y0, 'mo-da'), p = s.o(3, 1);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 3, 2, p.x, p.y); k.appendChild(r);
+        var da = s.vat['1,2'];
+        if (da) truot(c, da, 400, s.o(0, 1).x - 28, s.o(0, 1).y - 28, 0.6);
+        c.sau(1100, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · code: aim(n) chỉnh tầm hất 1, 2 hoặc 3 ô
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        c.code(k, ['aim(3)', 'load()', 'throw()'], 10, 14);
+        var r = c.xe(OMNI_RADAR, { tay: { ngam: 3 }, camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
+        truot(c, r, 900, 230, Y, 0.6);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
+      }
     ]
   };
 

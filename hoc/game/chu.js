@@ -662,6 +662,10 @@
       'pg.di-cheo.2': 'Sola nâng cấp con lăn chéo cho bánh omni của Máy mỏ đá R1.',
       'pg.di-cheo.3': 'R1 lách chéo một ô chỉ trong một nhịp, mũi xe giữ nguyên hướng!',
       'pg.di-cheo.4': 'diag_right() và diag_left() lách chéo gọn gàng qua trụ đá và hố sâu.',
+      'pg.chinh-luc.1': 'Hố sâu nằm cách xe tới ba ô, lực hất mặc định không tới.',
+      'pg.chinh-luc.2': 'Sola lắp lò xo chỉnh lực ba nấc cho tay hất đá R1.',
+      'pg.chinh-luc.3': 'Chỉnh nấc 3: R1 hất tảng đá bay vọt ba ô lấp phẳng hố!',
+      'pg.chinh-luc.4': 'aim(n) đặt tầm hất 1, 2 hoặc 3 ô ngay, không tốn nhịp.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

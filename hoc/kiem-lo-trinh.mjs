@@ -74,7 +74,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'radar-tron.2', 'radar-tron.3', 'radar-tron.4', 'radar-tron.5', 'radar-tron.6', 'radar-tron.7', 'radar-tron.8', 'radar-tron.9',
   'che-radar-tron.1', 'che-radar-tron.2', 'che-radar-tron.3', 'che-radar-tron.4', 'che-radar-tron.5', 'che-radar-tron.6', 'che-radar-tron.7', 'che-radar-tron.8', 'che-radar-tron.9',      // gói 3 mùa 6: radar tròn (2 sân)
   'ban-xoay.18', 'che-ban-xoay.12', 'che-ban-xoay.17', 'che-ban-xoay.18',      // gói 4 mùa 6: dò đá lấp hố bằng radar (2 sân)
-  'di-cheo.7', 'di-cheo.8', 'che-di-cheo.6', 'che-di-cheo.7');      // gói 5 mùa 6: đi chéo kết hợp radar (2 sân)
+  'di-cheo.7', 'di-cheo.8', 'che-di-cheo.6', 'che-di-cheo.7',      // gói 5 mùa 6: đi chéo kết hợp radar (2 sân)
+  'chinh-luc.7', 'chinh-luc.8', 'che-chinh-luc.5', 'che-chinh-luc.7');      // gói 6 mùa 6: chỉnh lực hất kết hợp radar (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3) và gói 10 mùa 4 (drone-ke-vach) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
