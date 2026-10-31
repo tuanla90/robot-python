@@ -419,7 +419,7 @@ const BANG_MUA_3 = [
   ['dao-cuc', 'bo-phan', [['dao-cuc', []], ['che-dao-cuc', []]]],
   ['doc-cuc', 'bo-phan', [['doc-cuc', []], ['che-doc-cuc', []]]],
   ['bang-cu', 'thu-thach', [['bang-cu', []], ['che-bang-cu', []]]],
-  ['doi-xich', 'thu-thach', [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]]],
+  ['doi-xich', 'thu-thach', [['doi-xich', day('doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])], ['che-doi-xich', day('che-doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]]],
   ['tong-hop-3', 'thu-thach', [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.1', 'tong-hop-3.10']], ['trum-mua-3', []]]]
 ];
 const TEP_MUA_3 = ['manThanNhen', 'manNamChamN', 'manCamUngTu', 'manBaiTu', 'manNhay', 'manDaoCuc', 'manDocCuc', 'manBangCu', 'manDoiXichNhen', 'manTrumMua3'];
@@ -481,7 +481,7 @@ if (LOI_GIA_3) {
   get('nam-cham.11').loiGiai.chinh = get('nam-cham.11').loiGiai.chinh.concat(['if front_clear() and front_clear():', '    wait()']);      // PDM3a: nam-cham.1 rời mùa 3, cắm vào nam-cham.11
   get('nhen.2').robot = Object.assign({}, get('nhen.2').robot, { camBien: [{ ma: 'mau', o: 'bung' }] });
   get('nam-cham.17').hamGoc = get('nam-cham.17').hamGoc.concat(['magnet_s']);      // PDM3a: nam-cham.7 rời mùa 3, cắm vào nam-cham.17
-  get('doi-xich.3').san = get('doi-xich.3').san.map((d, i) => i === 0 ? 'S' + d.slice(1) : d);
+  get('doi-xich.11').san = get('doi-xich.11').san.map((d, i) => i === 0 ? 'S' + d.slice(1) : d);
   get('che-nhen.4').hamCuaEmCan = get('che-nhen.4').hamCuaEmCan.concat(['fly_home']);
   get('bang-cu.10').huyHieu = { ma: 'khong-co-hinh', ten: 'Huy hiệu giả' };      // (i) huy hiệu không có hình vector
 }
@@ -520,7 +520,7 @@ kiem3('(c) không màn nào trước gói 2 chương 2 mùa 3 (logic-nam-cham) d
 });
 // PDM3a 31/10 (KE-HOACH-PART-DUNG-MUA.md): gói đã dựng lại theo luật "R1 là cỗ máy của mùa" SIẾT CHẶT: R1 chỉ nhện (+ nam châm bụng từ gói 2, + cảm biến từ từ gói 3),
 // khay chỉ lệnh nhện / nam châm / cảm biến từ. Gói 5–10 còn là màn xe cũ (PDM3b / PDM3c dựng lại) giữ phanh rộng bên dưới; thêm vào GOI_SIET_3 khi xong.
-const GOI_SIET_3 = 8;
+const GOI_SIET_3 = 9;
 const LENH_NHEN_3 = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
 kiem3('(d) robot mùa 3: thân hai bánh / xích / nhện; tay mùa 1–2 + nam châm; cảm biến mùa 1–2 + cảm ứng từ; khay chỉ lệnh của các part đó; không gọi lệnh omni / drone / màu / máy ném; gói 1–' + GOI_SIET_3 + ' siết: R1 chỉ nhện + nam châm bụng + cảm biến từ', () => {
   const goiCua = {};
@@ -533,7 +533,12 @@ kiem3('(d) robot mùa 3: thân hai bánh / xích / nhện; tay mùa 1–2 + nam 
       assert.ok(!r.tay || (so >= 2 && r.tay === 'nam-cham'), m.ma + ' gói ' + so + ': tay ' + r.tay);
       for (const c of r.camBien || []) assert.ok(so >= 3 && c.ma === 'tu', m.ma + ' gói ' + so + ': cảm biến ' + c.ma);
       for (const h of m.hamGoc || []) assert.ok(LENH_NHEN_3.includes(h), m.ma + ' gói ' + so + ': khay có lệnh xe ' + h);
-      assert.ok(!m.doi, m.ma + ' gói ' + so + ': có đội');
+      if (so === 9) {
+        assert.ok(Array.isArray(m.doi) && m.doi.length === 2, m.ma + ' gói 9: phải là màn đội 2 robot');
+        assert.equal(m.doi[1].loaiRobot, 'xich', m.ma + ' gói 9: R2 không phải xe cứu hỏa xích');
+      } else {
+        assert.ok(!m.doi, m.ma + ' gói ' + so + ': có đội');
+      }
     }
     if (m.loaiRobot) assert.ok(PART_3.loaiRobot.includes(m.loaiRobot), m.ma + ' loaiRobot ' + m.loaiRobot);
     for (const r of [m.robot].concat((m.doi || []).map(d => d.robot)).filter(Boolean)) {

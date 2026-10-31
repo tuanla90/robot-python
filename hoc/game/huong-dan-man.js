@@ -769,24 +769,18 @@
   H['che-bang-cu.4'] = [buocTaoHam('hop_belt', 'Bấm Hàm mới, đặt tên hop_belt và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: go(d) rồi jump(d) để nhảy vọt qua dải băng ngược. Bấm Chạy.'));
   H['che-bang-cu.6'] = [buocTaoHam('hold_gate', 'Bấm Hàm mới, đặt tên hold_gate và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pull_s(), go(d), magnet_off(), wait(). Bấm Chạy.'));
   H['che-bang-cu.9'] = [buocTaoHam('take_metal_to', 'Bấm Hàm mới, đặt tên take_metal_to và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Nếu front_metal() là True thì sang phải lấy sắt đặt sang hướng d. Bấm Chạy.'));
-  // MÙA 3 gói 9: đội xích và nhện (doi-xich.11 trình diễn; che-doi-xich.11 trình diễn hàm rest; .12 wait_n(n), .14 pass_box, .15 hop_drop(d))
-  H['doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hai robot chạy cùng nhịp, mỗi robot tới cờ của mình.');
-  H['che-doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện gọi rest(2) chờ xích qua ngã tư rồi mới đi.');
+  // MÙA 3 gói 9 (PDM3b2 31/10: đội nhện phân loại + xe chữa cháy mùa 2): doi-xich.11 trình diễn; che-doi-xich.11 trình diễn hàm rest; .12 wait_n(n), .14 valve_go(n), .15 hop_iron(d)
+  H['doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: xe chữa cháy R2 phun van hơi mở cửa C cho nhện R1 chui gầm qua lấy cờ.');
+  H['che-doi-xich.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện R1 gọi rest(2) chờ xe chữa cháy R2 phun van mở cửa rồi mới bước qua.');
   H['che-doi-xich.12'] = [buocTaoHam('wait_n', 'Bấm Hàm mới, đặt tên wait_n và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: for i in range(n): rồi wait(). Bấm Chạy.'));
-  H['che-doi-xich.14'] = [buocTaoHam('pass_box', 'Bấm Hàm mới để tạo pass_box().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pick(), tr_left(), drop(). Bấm Chạy.'));
-  H['che-doi-xich.15'] = [buocTaoHam('hop_drop', 'Bấm Hàm mới, đặt tên hop_drop và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pick(), jump(d), drop(). Bấm Chạy.'));
-  // MÙA 3 gói 9: nam châm bụng nhện (bung-nhen.1 trình diễn; che-bung-nhen.1 trình diễn hàm lift; .2 hook, .3 unhook, .5 tote(path), .7 hook_for(p))
-  H['bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: nhện đứng trên vật sắt, magnet_n() hút nó lên dưới bụng, tới ô đích thì thả.');
-  H['che-bung-nhen.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm lift() bật nam châm bụng nhấc vật sắt.');
-  H['che-bung-nhen.2'] = [buocTaoHam('hook', 'Bấm Hàm mới để tạo hook().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_n() rồi wait(). Bấm Chạy.'));
-  H['che-bung-nhen.3'] = [buocTaoHam('unhook', 'Bấm Hàm mới để tạo unhook().', CHU_TAO)].concat(buocThuVeChay('Thân hàm: magnet_off() rồi wait(). Bấm Chạy.'));
-  H['che-bung-nhen.5'] = [buocTaoHam('tote', 'Bấm Hàm mới, đặt tên tote và thêm đối số path.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: hook(), trail(path), unhook(). Bấm Chạy.'));
-  H['che-bung-nhen.7'] = [buocTaoHam('hook_for', 'Bấm Hàm mới, đặt tên hook_for và thêm đối số p.', CHU_TAO)].concat(buocThuVeChay('p là "N" thì bật cực S, không thì cực N, rồi wait(). Bấm Chạy.'));
+  H['che-doi-xich.14'] = [buocTaoHam('valve_go', 'Bấm Hàm mới, đặt tên valve_go và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: forward(n) rồi squirt("low"). Bấm Chạy.'));
+  H['che-doi-xich.15'] = [buocTaoHam('hop_iron', 'Bấm Hàm mới, đặt tên hop_iron và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pull_s(), jump(d), magnet_off(), wait(). Bấm Chạy.'));
 
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
     'sung-hoi.1': 3, 'sung-hoi.2': 2, 'sung-hoi.3': 2, 'che-sung-hoi.1': 2, 'che-sung-hoi.2': 2, 'luc-ban.1': 2,
     'che-cam-bien.5': 2, 'che-cam-bien.6': 2,       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
     'nam-cham.11': 2, 'logic-nam-cham.1': 2, 'cam-ung-tu.1': 2, 'cam-ung-tu.2': 2, 'che-cam-ung-tu.1': 2, 'che-cam-ung-tu.2': 2, 'che-cam-ung-tu.3': 2, 'che-cam-ung-tu.6': 2, 'bai-tu.1': 2, 'che-bai-tu.1': 2, 'che-bai-tu.2': 2, 'che-bai-tu.4': 2, 'che-bai-tu.7': 2,       // PDM3a 31/10: gói 2–4 mùa 3 trên nhện + nam châm bụng (+ cảm biến từ, đệm từ)
-    'dao-cuc.1': 2, 'che-dao-cuc.1': 2, 'che-dao-cuc.5': 2, 'doc-cuc.1': 2, 'che-doc-cuc.1': 2, 'che-doc-cuc.2': 2 };       // PDM3b1 31/10: gói 6–7 mùa 3 trên nhện + nam châm bụng + cảm biến từ
+    'dao-cuc.1': 2, 'che-dao-cuc.1': 2, 'che-dao-cuc.5': 2, 'doc-cuc.1': 2, 'che-doc-cuc.1': 2, 'che-doc-cuc.2': 2,       // PDM3b1 31/10: gói 6–7 mùa 3 trên nhện + nam châm bụng + cảm biến từ
+    'doi-xich.11': 2, 'che-doi-xich.11': 2, 'che-doi-xich.14': 2, 'che-doi-xich.15': 2 };       // PDM3b2 31/10: gói 9 mùa 3 đội nhện + xe chữa cháy mùa 2
 })();

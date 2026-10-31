@@ -925,7 +925,7 @@
     { ma: 'bang-cu', ten: 'Băng chuyền cũ', loai: 'thu-thach',
       chuong: [['bang-cu', []], ['che-bang-cu', []]] },
     { ma: 'doi-xich', ten: 'Đội xích và nhện', loai: 'thu-thach',
-      chuong: [['doi-xich', ['doi-xich.11', 'doi-xich.12', 'doi-xich.13', 'doi-xich.14', 'doi-xich.15', 'doi-xich.3', 'doi-xich.16', 'doi-xich.17', 'doi-xich.9', 'doi-xich.18']], ['che-doi-xich', ['che-doi-xich.11', 'che-doi-xich.12', 'che-doi-xich.13', 'che-doi-xich.14', 'che-doi-xich.15', 'che-doi-xich.16', 'che-doi-xich.17', 'che-doi-xich.19', 'che-doi-xich.18', 'che-doi-xich.20']]] },
+      chuong: [['doi-xich', day('doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])], ['che-doi-xich', day('che-doi-xich', [11, 12, 13, 14, 15, 16, 17, 18, 19, 20])]] },
     { ma: 'tong-hop-3', ten: 'Tổng hợp', loai: 'thu-thach',
       chuong: [['tong-hop-3', ['tong-hop-3.2', 'tong-hop-3.6', 'tong-hop-3.4', 'tong-hop-3.8', 'tong-hop-3.3', 'tong-hop-3.5', 'tong-hop-3.7', 'tong-hop-3.9', 'tong-hop-3.1', 'tong-hop-3.10']], ['trum-mua-3', ['trum-mua-3.1', 'trum-mua-3.2', 'trum-mua-3.3', 'trum-mua-3.5', 'trum-mua-3.9', 'trum-mua-3.4', 'trum-mua-3.6', 'trum-mua-3.7', 'trum-mua-3.8', 'trum-mua-3.10']]] }
   ];
@@ -968,7 +968,7 @@
   // chỗ chương cũ trong thuTu (THAY_CU). nam-cham.9 (omni, mùa 5); doi-xich 8 màn bậc thang S; che-doi-xich cả 10 (bậc thang S, hay cần hàm của
   // che-doi-ho-bang). Gói cũ đổi mã khi mã cũ đã thuộc gói mùa 3 (cờ goi-mo:<mã> của gói mùa 3).
   // PDM3a 31/10: nam-cham-xe (nam-cham.1 .4 .5 .7 .8) và che-nam-cham-xe (che-nam-cham.1 .8): màn nam châm mũi xe hai bánh rời gói 2 (gói 2 nay là nhện + nam châm bụng).
-  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', [1, 2, 4, 5, 6, 7, 8, 10]), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'],     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
+  var ROI_MUA_3 = { 'doi-xich-bac': day('doi-xich', MUOI), 'che-doi-xich-bac': day('che-doi-xich', MUOI), 'nam-cham-omni': ['nam-cham.9', 'nam-cham.10'],     // 30/10 nghiệm thu: nam-cham.10 thôi làm trùm Đọc cực (thay bằng doc-cuc.9)
     'nam-cham-xe': day('nam-cham', [1, 2, 3, 4, 5, 6, 7, 8]), 'che-nam-cham-xe': day('che-nam-cham', MUOI) };
   var TEN_ROI_3 = { 'doi-xich-bac': 'Đội xích leo bậc', 'che-doi-xich-bac': 'Hàm đội xích leo bậc', 'nam-cham-omni': 'Nam châm trên omni', 'nam-cham-xe': 'Nam châm mũi xe', 'che-nam-cham-xe': 'Chế lệnh nam châm mũi xe' };
   var THAY_CU = { 'doi-xich': ['doi-xich-bac'], 'che-doi-xich': ['che-doi-xich-bac'], 'nam-cham': ['nam-cham-omni', 'nam-cham-xe'], 'che-nam-cham': ['che-nam-cham-xe'] };
@@ -2432,7 +2432,9 @@
       ['che-cam-ung-tu.8', { ten: 'face_iron', thamSo: [], than: ['if not front_metal():', '    turn_right()', '    if not front_metal():', '        u_turn()'] }],
       ['che-bai-tu.2', { ten: 'fetch_iron', thamSo: ['n'], than: ['magnet_n()', 'for i in range(n):', '    move()', 'u_turn()', 'for i in range(n):', '    move()'] }],
       ['che-bai-tu.4', { ten: 'loop_right', thamSo: ['k'], than: ['for i in range(3):', '    turn_right()', '    for j in range(k):', '        move()'] }],
-      ['che-bai-tu.7', { ten: 'pull_iron', thamSo: [], than: ['wait()', 'move()', 'magnet_n()', 'wait()'] }]
+      ['che-bai-tu.7', { ten: 'pull_iron', thamSo: [], than: ['wait()', 'move()', 'magnet_n()', 'wait()'] }],
+      ['che-doi-xich.14', { ten: 'pass_box', thamSo: [], than: ['pick()', 'tr_left()', 'drop()'] }],
+      ['che-doi-xich.15', { ten: 'hop_drop', thamSo: ['d'], than: ['pick()', 'jump(d)', 'drop()'] }]
     ];
     DAY_CU.forEach(function (x) {
       HAM_CU[x[1]] = copy(nguon[x[0]].loiGiai.hamCuaEmMoi.filter(function (h) { return h.ten === x[1]; })[0]);
