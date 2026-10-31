@@ -32,7 +32,7 @@
       // MÙA 4 (KE-HOACH-MUA-4.md): mỗi gói một tệp ngân hàng màn mới (chỉ khai ManHoc.man…, lộ trình thêm vào chương của MUA_4 bên dưới)
       'cat-canh', 'cham-son', 'camera-bon-huong', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi-chan', 'vuon-cu', 'doi-chia-hang', 'son-tren-cao', 'trum-mua-4',
       // MÙA 6 (Mỏ đá): ngân hàng màn mới gói 1–4
-      'luoi-2d'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'luoi-2d', 'hat-da'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1506,7 +1506,9 @@
   ];
   var MUA_6_CU = [
     { ma: 'omni-cu', ten: 'Omni gắp cũ', moc: 'doi-omni',
-      chuong: [['omni-cu', day('omni', [6, 10])], ['che-omni', day('che-omni', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
+      chuong: [['omni-cu', day('omni', [6, 10])], ['che-omni', day('che-omni', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] },
+    { ma: 'may-nem-xe', ten: 'Máy ném xe cũ', moc: 'doi-gap-nem',
+      chuong: [['may-nem-xe', day('may-nem', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])], ['che-may-nem-xe', day('che-may-nem', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
   ];
   var TEN_MUA_6 = {
     omni: 'Trượt ngang bậc đá', 'luoi-2d': 'Đọc bản đồ mỏ',
@@ -1516,7 +1518,7 @@
     'omni-cu': 'Omni gắp cũ', 'may-nem-xe': 'Máy ném xe cũ', 'che-may-nem-xe': 'Chế lệnh: máy ném xe cũ',
     'ban-xoay-cu': 'Bàn xoay xe cũ', 'che-ban-xoay-cu': 'Chế lệnh: bàn xoay xe cũ'
   };
-  var TEP_MUA_6 = ['manLuoi2D'];
+  var TEP_MUA_6 = ['manLuoi2D', 'manHatDa'];
   (function () {
     Object.keys(TEN_MUA_6).forEach(function (c) { TT.ten[c] = TEN_MUA_6[c]; });
     var moi = [], chuong = [];

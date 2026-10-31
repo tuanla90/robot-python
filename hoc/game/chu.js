@@ -646,6 +646,10 @@
       'pg.omni.2': 'Sola lắp bánh omni cho R1: con lăn ngang bám đá cực nhạy!',
       'pg.omni.3': 'Xe omni trượt ngang qua từng bậc đá mà không cần quay mặt.',
       'pg.omni.4': 'Lưới hai chiều ghi cả bản đồ bậc đá trong một biến.',
+      'pg.may-nem.1': 'Tảng đá nằm chắn trước rào, R1 chưa có tay hất qua.',
+      'pg.may-nem.2': 'Sola lắp tay hất đá vào mũi xe omni của R1.',
+      'pg.may-nem.3': 'Xúc đá vào máng rồi hất bay vọt hai ô qua hàng rào!',
+      'pg.may-nem.4': 'load() xúc đá trước mũi, throw() hất đá bay xa hai ô.',
 
       /* ---- mẹo chơi sau phim mở đầu (gioi-thieu.js) */
       'gt.boQua': 'Bỏ qua',

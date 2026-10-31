@@ -816,7 +816,27 @@
   "luoi-2d.7": { "o": 14, "nhip": 12 },
   "luoi-2d.8": { "o": 13, "nhip": 7 },
   "luoi-2d.9": { "o": 14, "nhip": 11 },
-  "luoi-2d.10": { "o": 16, "nhip": 13 }
+  "luoi-2d.10": { "o": 16, "nhip": 13 },
+  "may-nem.11": { "o": 4, "nhip": 2 },
+  "may-nem.12": { "o": 4, "nhip": 2 },
+  "may-nem.13": { "o": 8, "nhip": 4 },
+  "may-nem.14": { "o": 12, "nhip": 10 },
+  "may-nem.15": { "o": 8, "nhip": 5 },
+  "may-nem.16": { "o": 17, "nhip": 9 },
+  "may-nem.17": { "o": 11, "nhip": 11 },
+  "may-nem.18": { "o": 17, "nhip": 8 },
+  "may-nem.19": { "o": 17, "nhip": 11 },
+  "may-nem.20": { "o": 17, "nhip": 15 },
+  "che-may-nem.11": { "o": 12, "nhip": 10 },
+  "che-may-nem.12": { "o": 14, "nhip": 9 },
+  "che-may-nem.13": { "o": 14, "nhip": 6 },
+  "che-may-nem.14": { "o": 17, "nhip": 9 },
+  "che-may-nem.15": { "o": 16, "nhip": 13 },
+  "che-may-nem.16": { "o": 11, "nhip": 11 },
+  "che-may-nem.17": { "o": 23, "nhip": 20 },
+  "che-may-nem.18": { "o": 9, "nhip": 4 },
+  "che-may-nem.19": { "o": 14, "nhip": 9 },
+  "che-may-nem.20": { "o": 27, "nhip": 13 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;

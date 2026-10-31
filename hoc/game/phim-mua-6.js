@@ -8,6 +8,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   var XE = { than: 'hai-banh', tay: null, camBien: [] };
   var OMNI = { than: 'omni', tay: null, camBien: [] };
+  var OMNI_NEM = { than: 'omni', tay: 'nem', camBien: [] };
   var Y = 158;
   var X0 = 20, Y0 = 26, C1 = 56;
 
@@ -68,6 +69,41 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var r = c.xe(OMNI, {}, 0, 3, 180, Y); k.appendChild(r);
         truot(c, r, 1000, 250, Y, 0.7);
         c.sau(1800, function () { r.mat('vui'); c.keu('thang'); });
+      }
+    ],
+
+    /* ---------------------------------------------------------------- 2 · Tay hất đá */
+    'may-nem': [
+      // 1 · tảng đá nằm trước hàng rào, xe omni chưa có tay hất
+      function (k, c) {
+        var s = c.san(k, ['##D##', '##=##', '##o.#'], 4, X0, Y0, 'mo-da'), p = s.o(3, 2);
+        var r = c.xe(OMNI, {}, 0, 2, p.x, p.y); k.appendChild(r);
+        diQua(c, s, r, [[2, 2]], 300, 500);
+        hoi(k, c, '?', 130, 80, 1.0);
+        c.sau(1100, function () { r.mat('ngac'); c.keu('loi'); });
+      },
+      // 2 · lắp tay hất đá vào mũi R1
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        bayToi(k, c, c.ico('denNem', 3, BM.vang), 250, 40, 160, Y - 20, 0.1, 0.95);
+        lap(k, c, c.xe(OMNI, {}, 1, 3, 150, Y), c.xe(OMNI_NEM, {}, 1, 3, 150, Y), 0.95);
+      },
+      // 3 · xúc đá rồi hất qua rào vào ô đích
+      function (k, c) {
+        var s = c.san(k, ['##*##', '##o##', '##.##'], 4, X0, Y0, 'mo-da'), p = s.o(2, 2);
+        var r = c.xe(OMNI_NEM, {}, 0, 2, p.x, p.y); k.appendChild(r);
+        var da = s.vat['2,1'];
+        if (da) truot(c, da, 400, s.o(2, 0).x - 28, s.o(2, 0).y - 28, 0.7);
+        c.sau(400, function () { c.keu('kep'); });
+        c.sau(1300, function () { r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · code: load() và throw()
+      function (k, c) {
+        c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
+        c.code(k, ['load()', 'wait()', 'throw()', 'wait()'], 10, 14);
+        var r = c.xe(OMNI_NEM, {}, 1, 3, 180, Y); k.appendChild(r);
+        truot(c, r, 900, 230, Y, 0.6);
+        c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
       }
     ]
   };

@@ -657,7 +657,7 @@ kiem('chương mới không đổi id của ngân hàng bài gốc trong thu-tu-
   for (const c of ['cam-bien-ben', 'me-cung', 'doi-ho-bang', 'doi-gap-nem']) assert.ok(!goc.includes("'" + c + "'"), c);
   // 29/10 P0 mùa 3: che-nhen ở gói 5 mùa 3, doi-ho-bang (ngoài khuôn) sang đầu mùa 4: vẫn đứng sau che-nhen, không còn liền kề.
   assert.ok(TT.thuTu.indexOf('doi-ho-bang') > TT.thuTu.indexOf('che-nhen'));
-  assert.equal(TT.thuTu.indexOf('doi-gap-nem'), TT.thuTu.indexOf('che-may-nem') + 1);
+  assert.ok(TT.thuTu.indexOf('doi-gap-nem') > TT.thuTu.indexOf('che-may-nem'));
   assert.ok(TT.dot2.includes('doi-ho-bang') && TT.dot2.includes('doi-gap-nem'));
 });
 
