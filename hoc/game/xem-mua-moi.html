@@ -84,7 +84,7 @@ function veTrang() {
     [X0, { than: { neo: true } }, 'xuong · thả neo (neo)'], [X0, { than: { dat: true } }, 'xuong · móc buộc đuôi (dat)'], [X0, { than: { dat: true, dangDat: true } }, 'xuong · đang buộc đuôi (dat, dangDat)'],
     [X1, {}, 'xuong + day-keo · dây cuộn'], [X1, { tay: { day: true } }, 'xuong + day-keo · đang quăng dây (day)'], [X1, { tay: { giu: true } }, 'xuong + day-keo · đang giữ vật (giu)'],
     [X2, {}, '+ dong-chay · nghỉ'], [X2, { camBien: { bat: true } }, '+ dong-chay · đang đọc (bat)'], [X2, { camBien: { bat: true, nang: true } }, '+ dong-chay · nâng cấp flow() (nang)'],
-    [X2, { huong: 1, than: { neo: true } }, 'hướng phải · neo'], [X2, { huong: 2 }, 'hướng xuống'], [X2, { huong: 3, son: 'lam' }, 'hướng trái']
+    [X2, { huong: 1, than: { neo: true } }, 'hướng phải · neo'], [X2, { huong: 2 }, 'hướng xuống'], [{ than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], son: 'lam' }, { huong: 3 }, 'R2 (sơn lam) · hướng trái']
   ].forEach(function (r) { hinhRobot(h, r[0], r[1], r[2], nenO('nuoc')); });
   hinhRobot(h, { than: 'xuong', tay: 'day-keo', son: 'lam' }, { tay: { day: true } }, 'R2 (sơn lam) · quăng dây', nenO('nuoc'));
 
@@ -130,7 +130,7 @@ function veTrang() {
     [C0, {}, 'cau · thường'], [C0, { than: { mat: 'vui' } }, 'cau · mắt vui'], [C0, { than: { ray: true } }, 'cau · chạy trên ray (ray)'], [C0, { than: { ray: 'ngang' } }, 'cau · ray ngang'],
     [C1, {}, 'cau + moc-cau · móc đơn'], [C1, { tay: { doi: true } }, 'cau + moc-cau · móc đôi (doi)'],
     [C2, {}, '+ quet-ma · nghỉ'], [C2, { camBien: { bat: true } }, '+ quet-ma · đang quét (bat)'], [C2, { camBien: { can: true } }, '+ quet-ma · nâng cấp cân tải (can)'],
-    [C2, { camBien: { bat: true, can: true }, tay: { doi: true } }, 'quét + cân + móc đôi'], [C2, { huong: 1 }, 'hướng phải'], [C2, { huong: 3, son: 'lam' }, 'R2 · hướng trái']
+    [C2, { camBien: { bat: true, can: true }, tay: { doi: true } }, 'quét + cân + móc đôi'], [C2, { huong: 1 }, 'hướng phải'], [{ than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }], son: 'lam' }, { huong: 3 }, 'R2 (sơn lam) · hướng trái']
   ].forEach(function (r) { hinhRobot(h, r[0], r[1], r[2], nenO('bai-cont')); });
 
   /* lưới 7 × 7: 8 nấc × 3 tầm */
