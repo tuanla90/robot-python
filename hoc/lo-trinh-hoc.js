@@ -1216,7 +1216,7 @@
     { ma: 'vuon-cu', ten: 'Vườn cũ rào sắt', loai: 'thu-thach', hinh: 'vuon-cu',
       chuong: [['vuon-cu', []], ['che-vuon-cu', []]] },
     { ma: 'doi-nam-cham', ten: 'Đội chia hàng', loai: 'thu-thach', hinh: 'doi-nam-cham',
-      chuong: [['doi-nam-cham', day('doi-nam-cham', [1, 2, 3, 11, 4, 5, 7, 12, 8, 10])], ['che-doi-nam-cham', day('che-doi-nam-cham', [11, 1, 2, 5, 3, 6, 7, 12, 8, 10])]] },
+      chuong: [['doi-nam-cham', []], ['che-doi-nam-cham', []]] },
     { ma: 'drone-ke-vach', ten: 'Drone nông nghiệp R1', loai: 'thu-thach', hinh: 'drone-ke-vach',
       chuong: [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
   ];
@@ -1239,7 +1239,7 @@
     { ma: 'che-may-son-cu', ten: 'Hoa văn lớn',
       chuong: [['che-may-son-cu', day('che-may-son', [7, 8])]] },
     { ma: 'doi-nam-cham-cu', ten: 'Đội chia hàng: màn dư',
-      chuong: [['doi-nam-cham-cu', day('doi-nam-cham', [6, 9])], ['che-doi-nam-cham-cu', day('che-doi-nam-cham', [4, 9])]] }
+      chuong: [['doi-nam-cham-cu', day('doi-nam-cham', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])], ['che-doi-nam-cham-cu', day('che-doi-nam-cham', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]] }
   ];
   // Tên chương: việc em làm (KE-HOACH-7-MUA.md "Quy tắc đặt tên và giọng kể").
   var TEN_MUA_4 = { drone: 'Bay lần đầu', list: 'Lập danh sách', 'may-son': 'Gieo từng ô', 'che-list': 'Chế lệnh: gieo theo danh sách', 'che-list-cu': 'Chế lệnh: đi theo danh sách', 'che-may-son-cu': 'Chế lệnh: hoa văn lớn',
@@ -1403,7 +1403,7 @@
     }
     function doiCam(r) { if (r && r.camBien) r.camBien = r.camBien.map(function (c) { return c && c.ma === 'camera' ? { ma: 'camera-4', o: c.o } : c; }); }
     M.danhSach.forEach(function (m) {
-      if (m.chuong !== 'doi-nam-cham' && m.chuong !== 'che-doi-nam-cham') return;
+      if (!/^(?:che-)?doi-nam-cham\.(?:[1-9]|10)$/.test(m.ma)) return;
       ['deBai', 'veMaMau', 'goiY', 'maMau', 'loiGiai', 'loiGiaiKhac', 'loiSai', 'congThucKhac', 'hamCuaEmCan', 'doi'].forEach(function (k) { if (m[k] !== undefined) m[k] = doiChu(m[k]); });
       doiCam(m.robot);
       (m.doi || []).forEach(function (d) { doiCam(d.robot); if (d.camBien) doiCam(d); });
@@ -2431,7 +2431,7 @@
     Object.keys(CAP_HAM_CU_4).forEach(function (c) { chuongAn[c] = true; });
     CAT_MUA_3.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
     CAT_MUA_4.chuong.forEach(function (c) { delete chuongAn[c[0]]; });
-    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone', 'net-lien', 'che-may-son', 'nhin-duoi', 'che-nhin-duoi', 'vuon-cu', 'che-vuon-cu'].forEach(function (c) { delete chuongAn[c]; });
+    ['drone', 'list', 'may-son', 'che-list', 'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'che-drone', 'net-lien', 'che-may-son', 'nhin-duoi', 'che-nhin-duoi', 'vuon-cu', 'che-vuon-cu', 'doi-nam-cham', 'che-doi-nam-cham'].forEach(function (c) { delete chuongAn[c]; });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);

@@ -41,8 +41,8 @@ function cham(m, doi, hamCuaMan, dsHam) {
   return Cham.cham(m, { chinh: [], hamCuaMan: hamCuaMan || m.loiGiai.hamCuaMan || [], doi: doi.map((c) => ({ chinh: c })) }, [...hs.values()]);
 }
 const man = (ma) => M.danhSach.find((m) => m.ma === ma);
-const ds1 = M.danhSach.filter((m) => m.chuong === 'doi-nam-cham');
-const ds2 = M.danhSach.filter((m) => m.chuong === 'che-doi-nam-cham');
+const ds1 = M.danhSach.filter((m) => /^doi-nam-cham\.([1-9]|10)$/.test(m.ma));
+const ds2 = M.danhSach.filter((m) => /^che-doi-nam-cham\.([1-9]|10)$/.test(m.ma));
 const tatCa = ds1.concat(ds2);
 
 // chương trình hay dùng trong lời sai
@@ -110,23 +110,6 @@ const LOI_SAI = {
     { moTa: 'R1 luôn tránh, R2 làm hết (vật sau rào)', doi: [['turn_left()', 'move()'], null], ket: 'thua' },
     { moTa: 'R1 luôn bật cực N (đẩy vật chữ N)', doi: [LAP(2, ['if front_metal() or front_pole() != "none":', '    magnet_n()', '    wait()', '    u_turn()', '    magnet_off()', '    wait()', '    u_turn()', 'else:', '    turn_left()', '    move()']), null], ket: 'thua' },
     { moTa: 'R1 chỉ hỏi front_metal (bỏ sót vật nam châm)', doi: [LAP(2, ['if front_metal():'].concat(R1_TU_DONG.slice(1, 5), ['    u_turn()'], R1_TU_DONG.slice(5))), null], ket: 'thua' }
-  ],
-  // gói 8 mùa 4 (30/10, man-doi-chia-hang.js): bốn màn mới chen đúng chỗ khái niệm
-  'doi-nam-cham.11': [
-    { moTa: 'R1 tiến hai ô: vật còn cách ba ô, ngoài tầm hút', doi: [['move()', 'move()', 'lane()'], null], ket: 'thua' },
-    { moTa: 'R2 không chờ: gắp hụt', doi: [null, ['sort_by_color()']], ket: 'thua' }
-  ],
-  'doi-nam-cham.12': [
-    { moTa: 'R2 đặt sang bên (sort_by_color): hai bên là tường', doi: [null, ['while front_clear():', '    wait()', 'sort_by_color()']], ket: 'thua' },
-    { moTa: 'R1 quên quay lên: lane() kéo hụt', doi: [['move()', 'move()', 'lane()'], null], ket: 'thua' }
-  ],
-  'che-doi-nam-cham.11': [
-    { moTa: 'Chỉ R1 lặp: R2 dừng sau trạm đầu', doi: [null, ['step(0, 1)', 'while front_clear():', '    wait()', 'pass_back()']], ket: 'thua' },
-    { moTa: 'R1 quên quay lại sau khi thả', doi: [LAP(2, ['step(0, 1)', 'grip()', 'u_turn()', 'magnet_off()', 'wait()']), null], ket: 'thua' }
-  ],
-  'che-doi-nam-cham.12': [
-    { moTa: 'R2 chờ quá ngắn: gắp khi vật chưa tới', doi: [null, LAP(2, ['step(0, 1)', 'hold_on(1)', 'pass_back()'])], ket: 'thua' },
-    { moTa: 'R1 quên quay lại sau hand_off()', doi: [LAP(2, ['step(0, 1)', 'hand_off()']), null], ket: 'thua' }
   ],
   'che-doi-nam-cham.1': [
     { moTa: 'hold_on viết bằng while: lần chờ thứ hai kéo dài mãi', doi: [null, null], ham: [HOLD_WHILE], ket: 'thua' },

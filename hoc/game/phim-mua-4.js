@@ -138,7 +138,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return cho;
   }
   // huy hiệu chương 1 các gói mùa 4 (+ cỗ máy gói 10) bay trong phim gói 10
-  var HUY = ['drone', 'may-son', 'cam-bon', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'doi-nam-cham', 'son-tren-cao', 'drone-ke-vach'];
+  var HUY = ['drone', 'may-son', 'cam-bon', 'pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'vuon-cu', 'doi-nam-cham', 'drone-ke-vach'];
   /** Huy hiệu ma (trạng thái xong) cạnh 36 px (HuyHieu.mk vector); chưa có bản vector thì sao. */
   function huyHieu(c, ma) {
     var HH = goc.HuyHieu;

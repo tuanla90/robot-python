@@ -68,7 +68,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'che-nhin-duoi.1', 'che-nhin-duoi.2', 'che-nhin-duoi.3', 'che-nhin-duoi.4', 'che-nhin-duoi.5', 'che-nhin-duoi.6', 'che-nhin-duoi.7', 'che-nhin-duoi.8', 'che-nhin-duoi.9',
   'che-may-son.6',      // gói 6: chép hàng màu bằng camera, hai hàng màu khác nhau (nghiệm thu 30/10)
   'son-tren-cao.5', 'son-tren-cao.6', 'che-son-tren-cao.2', 'che-son-tren-cao.6', 'che-son-tren-cao.8',      // gói cất mùa 4: đọc vạch mờ / bảng mẫu bằng camera
-  'vuon-cu.5', 'vuon-cu.6', 'vuon-cu.7', 'vuon-cu.8', 'che-vuon-cu.3', 'che-vuon-cu.4', 'che-vuon-cu.6', 'che-vuon-cu.7', 'che-vuon-cu.9');      // gói 8: vườn cũ rào sắt (nhiều sân)
+  'vuon-cu.5', 'vuon-cu.6', 'vuon-cu.7', 'vuon-cu.8', 'che-vuon-cu.3', 'che-vuon-cu.4', 'che-vuon-cu.6', 'che-vuon-cu.7', 'che-vuon-cu.9',      // gói 8: vườn cũ rào sắt (nhiều sân)
+  'doi-nam-cham.16', 'doi-nam-cham.17', 'che-doi-nam-cham.15', 'che-doi-nam-cham.16', 'che-doi-nam-cham.18', 'che-doi-nam-cham.19');      // gói 9: đội drone nông nghiệp + nhện phân loại (nhiều sân)
 NHIEU_SAN_KHONG_TRUM.push('tong-hop-4.1', 'tong-hop-4.2', 'tong-hop-4.3', 'tong-hop-4.4', 'tong-hop-4.6', 'tong-hop-4.9', 'trum-mua-4.1', 'trum-mua-4.2', 'trum-mua-4.6', 'trum-mua-4.8', 'trum-mua-4.9');      // gói 10: màn đọc camera / hai mức pin
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 (31/10): gói 10 mùa 2 (nha-may-chay) và gói 10 mùa 3 (tong-hop-3: tong-hop-3, trum-mua-3) cũng MỌI màn nhiều sân.
@@ -758,7 +759,7 @@ kiem('ngưỡng sao: gói đầu mỗi mùa 0 ★, không gói nào cần nhiề
   assert.deepEqual(Array.from(ds, g => g.man.length), [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
   assert.equal(ds[6].man[0].ma, 'cam-bien-ben.1');      // HD2: màn trình diễn left_clear đứng đầu gói 7
   assert.equal(ds[6].man[19].ma, 'me-cung.10');
-  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 210);     // PDM3b1 31/10: gói Nam châm trên xe (mùa 5 ẩn) nhận đủ 18 màn nam-cham.1..8 + che-nam-cham.1..10 rời gói 2, 6, 7 mùa 3 (180 → 210). P0 mùa 4 (29/10): gói cũ dời sang mùa 5 (ẩn), ngưỡng tính lại trong mùa 5; 30/10 mùa 5 thêm gói mau, drone-sac-cu, flycam cũ (95 → 155), doi-nam-cham-cu (bốn màn đội, → 165), che-list-cu (→ 180)
+  assert.equal(browser.MoGoi.goiTheoMa('rap-du').saoCan, 235);     // PDM4c 31/10: gói Đội nam châm cũ (doi-nam-cham-cu, mùa 5 ẩn) nhận đủ 20 màn doi-nam-cham.1..10 + che-doi-nam-cham.1..10 rời gói 9 mùa 4 (210 → 235). PDM3b1 31/10: gói Nam châm trên xe nhận đủ 18 màn (180 → 210)
 });
 
 kiem('bản lưu cũ giữ sao theo mã, bỏ nháp lỗi thời, nháp mới đọc lại được', () => {
@@ -792,7 +793,7 @@ const BANG_MUA_4 = [
   ['net-lien', 'bo-phan', [['net-lien', day('net-lien', [1]).concat(day('may-son', [3, 4]), day('net-lien', [2]), day('may-son', [5, 8, 9]), day('net-lien', [3, 4]), day('may-son', [10]))], ['che-may-son', day('che-may-son', [1, 9, 2, 11, 4, 3, 12, 6, 5, 10])]]],
   ['nhin-duoi', 'bo-phan', [['nhin-duoi', []], ['che-nhin-duoi', day('che-nhin-duoi', [1, 2, 3, 4, 5, 6, 9, 7, 8, 10])]]],
   ['vuon-cu', 'thu-thach', [['vuon-cu', []], ['che-vuon-cu', []]]],
-  ['doi-nam-cham', 'thu-thach', [['doi-nam-cham', day('doi-nam-cham', [1, 2, 3, 11, 4, 5, 7, 12, 8, 10])], ['che-doi-nam-cham', day('che-doi-nam-cham', [11, 1, 2, 5, 3, 6, 7, 12, 8, 10])]]],
+  ['doi-nam-cham', 'thu-thach', [['doi-nam-cham', []], ['che-doi-nam-cham', []]]],
   ['drone-ke-vach', 'thu-thach', [['tong-hop-4', []], ['trum-mua-4', day('trum-mua-4', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])]]]
 ];
 const TEP_MUA_4 = ['manCatCanh', 'manChamSon', 'manCameraBonHuong', 'manPhoMau', 'manTramSac', 'manNetLien', 'manNhinDuoiChan', 'manVuonCu', 'manDoiChiaHang', 'manTrumMua4'];
@@ -851,9 +852,24 @@ kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện
     const goi = [...loiGoi(dongBacCau(m).dong)].filter(t => CAM_4.includes(t));
     assert.deepEqual(goi, [], m.ma + ' gọi lệnh ngoài mùa 4');
   }
-  const GOI_SIET_4 = 8, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), moc7 = mocGoi4(7), mocSiet = mocGoi4(GOI_SIET_4 + 1);
+  const GOI_SIET_4 = 9, dau4 = mocGoi4(1), moc2 = mocGoi4(2), moc3 = mocGoi4(3), moc7 = mocGoi4(7), moc9 = mocGoi4(9), mocSiet = mocGoi4(GOI_SIET_4 + 1);
   for (let v = dau4; v < mocSiet; v++) {
-    const m = M.danhSach[v], r = m.robot || {}, cb = r.camBien || [];
+    const m = M.danhSach[v];
+    if (v >= moc9 && v < mocGoi4(10)) {
+      assert.equal((m.doi || []).length, 2, m.ma + ' gói 9 phải là đội 2 robot');
+      const r1 = m.doi[0], r2 = m.doi[1];
+      assert.equal(r1.loaiRobot, 'drone', m.ma + ' R1 loaiRobot');
+      assert.equal(r1.robot.than, 'drone', m.ma + ' R1 thân');
+      assert.equal(r1.robot.tay, 'son', m.ma + ' R1 tay');
+      assert.deepEqual((r1.robot.camBien || []).map(c => c.ma), ['camera-4'], m.ma + ' R1 camera-4');
+      assert.equal(r1.robot.camBien[0].taiCho, true, m.ma + ' R1 camera-4 taiCho');
+      assert.equal(r2.loaiRobot, 'nhen', m.ma + ' R2 loaiRobot');
+      assert.equal(r2.robot.than, 'nhen', m.ma + ' R2 thân');
+      assert.equal(r2.robot.tay, 'nam-cham', m.ma + ' R2 tay');
+      assert.deepEqual((r2.robot.camBien || []).map(c => c.ma), ['tu'], m.ma + ' R2 cảm biến từ');
+      continue;
+    }
+    const r = m.robot || {}, cb = r.camBien || [];
     assert.equal(m.loaiRobot, 'drone', m.ma + ' loaiRobot');
     assert.equal(r.than, 'drone', m.ma + ' thân');
     assert.ok(!m.doi, m.ma + ' không đội ở gói 1–8');

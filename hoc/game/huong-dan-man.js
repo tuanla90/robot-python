@@ -765,6 +765,12 @@
   H['che-vuon-cu.3'] = [buocTaoHam('mark_here', 'Bấm Hàm mới, đặt tên mark_here và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: nếu color("here") != "none" thì chọn hạt đó và dot(), rồi go_right(). Bấm Chạy.'));
   H['che-vuon-cu.5'] = [buocTaoHam('gate_sow', 'Bấm Hàm mới, đặt tên gate_sow và thêm đối số c.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait() chờ thùng mở cổng, bay phải hai ô, ink(c), dot(), wait(). Bấm Chạy.'));
   H['che-vuon-cu.7'] = [buocTaoHam('sow_up', 'Bấm Hàm mới, đặt tên sow_up và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: đọc c = color("up"), nếu c != "none" thì ink(c) và dot(), rồi go_right(). Bấm Chạy.'));
+  // MÙA 4 gói 9 (PDM4c 31/10: đội drone nông nghiệp R1 + nhện phân loại R2): doi-nam-cham.11 trình diễn; che-doi-nam-cham.11 trình diễn hàm crawl_pad(d); .12 pad_hold(d), .14 wait_sow(c, n), .15 pole_gate()
+  H['doi-nam-cham.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: nhện Luna chui gầm qua xà thấp bước lên nút M mở cổng C cho drone R1 bay vào gieo hoa rồi về đậu.');
+  H['che-doi-nam-cham.11'] = trinhDien1('Hai chương trình đã khoá. Bấm Chạy: hàm crawl_pad("R") giúp nhện R2 chui gầm mang bao hạt đặt lên nút M giữ cổng cho drone R1.');
+  H['che-doi-nam-cham.12'] = [buocTaoHam('pad_hold', 'Bấm Hàm mới, đặt tên pad_hold và thêm đối số d.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: pull_s(), go_under(d), stand(), hold_gate(d). Bấm Chạy.'));
+  H['che-doi-nam-cham.14'] = [buocTaoHam('wait_sow', 'Bấm Hàm mới, đặt tên wait_sow và thêm đối số c, n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: while not front_clear(): wait(), rồi color_line(c, n). Bấm Chạy.'));
+  H['che-doi-nam-cham.15'] = [buocTaoHam('pole_gate', 'Bấm Hàm mới để tạo pole_gate().', CHU_TAO)].concat(buocThuVeChay('Nếu front_pole() == "N" thì hold_gate("R"), không thì hold_gate("D"). Bấm Chạy.'));
 
   window.HuongDanMan = H;
   window.HuongDanManPhienBan = { 'xuong-ham.3': 2, 'che-xe.4': 2, 'tay-gap.1': 2, 'tay-gap.5': 2, 'vong-lap.1': 2, 'vong-lap.3': 2, 'khoang-cach.1': 2, 'khoang-cach.2': 2, 'tay-xoay.1': 2, 'hai-robot.1': 2,
@@ -772,5 +778,6 @@
     'che-cam-bien.5': 2, 'che-cam-bien.6': 2,       // PDM2a 31/10: biến trên xích (xoắn ốc)       // gói T mùa 2: màn trình diễn; 30/10 gói 2 dựng lại theo phun nhẹ
     'nam-cham.11': 2, 'logic-nam-cham.1': 2, 'cam-ung-tu.1': 2, 'cam-ung-tu.2': 2, 'che-cam-ung-tu.1': 2, 'che-cam-ung-tu.2': 2, 'che-cam-ung-tu.3': 2, 'che-cam-ung-tu.6': 2, 'bai-tu.1': 2, 'che-bai-tu.1': 2, 'che-bai-tu.2': 2, 'che-bai-tu.4': 2, 'che-bai-tu.7': 2,       // PDM3a 31/10: gói 2–4 mùa 3 trên nhện + nam châm bụng (+ cảm biến từ, đệm từ)
     'dao-cuc.1': 2, 'che-dao-cuc.1': 2, 'che-dao-cuc.5': 2, 'doc-cuc.1': 2, 'che-doc-cuc.1': 2, 'che-doc-cuc.2': 2,       // PDM3b1 31/10: gói 6–7 mùa 3 trên nhện + nam châm bụng + cảm biến từ
-    'doi-xich.11': 2, 'che-doi-xich.11': 2, 'che-doi-xich.14': 2, 'che-doi-xich.15': 2 };       // PDM3b2 31/10: gói 9 mùa 3 đội nhện + xe chữa cháy mùa 2
+    'doi-xich.11': 2, 'che-doi-xich.11': 2, 'che-doi-xich.14': 2, 'che-doi-xich.15': 2,       // PDM3b2 31/10: gói 9 mùa 3 đội nhện + xe chữa cháy mùa 2
+    'doi-nam-cham.11': 2, 'che-doi-nam-cham.11': 2, 'che-doi-nam-cham.12': 2 };       // PDM4c 31/10: gói 9 mùa 4 đội drone nông nghiệp + nhện phân loại
 })();
