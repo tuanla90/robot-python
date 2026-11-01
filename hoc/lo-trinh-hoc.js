@@ -38,7 +38,7 @@
       // MÙA BẾN SÔNG (mua-5): ngân hàng màn mới
       'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo', 'buoc-duoi', 'suc-nuoc', 'ben-cu', 'doi-xuong', 'trum-mua-song',
       // MÙA HANG ĐỘNG (mua-8): ngân hàng màn mới
-      'banh-gai', 'loa', 'am-thanh', 'san-hang-dong', 'thu-gai', 'phat-not', 'nghe-not'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'banh-gai', 'loa', 'am-thanh', 'san-hang-dong', 'thu-gai', 'phat-not', 'nghe-not', 'hang-cu', 'doi-hang-dong', 'trum-mua-hang'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1836,7 +1836,7 @@
     'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang-dong': 'Chế lệnh: phối hợp trong hang',
     'tong-hop-hang': 'Tổng hợp hang động', 'trum-mua-hang': 'Trùm mùa hang động'
   };
-  var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong', 'manThuGai', 'manPhatNot', 'manNgheNot'];
+  var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong', 'manThuGai', 'manPhatNot', 'manNgheNot', 'manHangCu', 'manDoiHangDong', 'manTrumMuaHang'];
   (function () {
     Object.keys(TEN_MUA_HANG).forEach(function (c) { TT.ten[c] = TEN_MUA_HANG[c]; });
     var moi = [], chuong = [];
