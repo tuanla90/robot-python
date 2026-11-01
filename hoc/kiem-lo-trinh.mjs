@@ -94,7 +94,11 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'che-suc-nuoc.1', 'che-suc-nuoc.2', 'che-suc-nuoc.3', 'che-suc-nuoc.4', 'che-suc-nuoc.5', 'che-suc-nuoc.6', 'che-suc-nuoc.7', 'che-suc-nuoc.8', 'che-suc-nuoc.9',
   'ben-cu.3', 'ben-cu.5', 'ben-cu.6', 'ben-cu.7', 'ben-cu.8', 'ben-cu.9',
   'che-ben-cu.1', 'che-ben-cu.3', 'che-ben-cu.5', 'che-ben-cu.6', 'che-ben-cu.7', 'che-ben-cu.8', 'che-ben-cu.9',
-  'doi-xuong.6', 'doi-xuong.8', 'che-doi-xuong.2', 'che-doi-xuong.5', 'che-doi-xuong.7', 'che-doi-xuong.9');      // gói 3–9 mùa bến sông: đo dòng chảy, cống thủy lợi, thả neo, buộc đuôi, đo sức nước, bến cũ & đội xuồng (2 sân)
+  'doi-xuong.6', 'doi-xuong.8', 'che-doi-xuong.2', 'che-doi-xuong.5', 'che-doi-xuong.7', 'che-doi-xuong.9',      // gói 3–9 mùa bến sông: đo dòng chảy, cống thủy lợi, thả neo, buộc đuôi, đo sức nước, bến cũ & đội xuồng (2 sân)
+  'am-thanh.2', 'am-thanh.3', 'am-thanh.4', 'am-thanh.5', 'am-thanh.6', 'am-thanh.7', 'am-thanh.8', 'am-thanh.9',
+  'che-am-thanh.1', 'che-am-thanh.2', 'che-am-thanh.3', 'che-am-thanh.4', 'che-am-thanh.5', 'che-am-thanh.6', 'che-am-thanh.7', 'che-am-thanh.8', 'che-am-thanh.9',
+  'san-hang-dong.6', 'san-hang-dong.7', 'san-hang-dong.8', 'san-hang-dong.9',
+  'che-hang-dong.1', 'che-hang-dong.2', 'che-hang-dong.3', 'che-hang-dong.4', 'che-hang-dong.5', 'che-hang-dong.6', 'che-hang-dong.7', 'che-hang-dong.8', 'che-hang-dong.9');      // gói 3–4 mùa hang động: cảm biến âm thanh & sân hang động (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach) và gói 10 mùa 6 (may-mo-da) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
@@ -211,7 +215,7 @@ kiem('(a) mùa 1 đúng các gói của bảng, đúng thứ tự, đúng màn; 
   }
   assert.deepEqual(M.manCat, CAT_MUA_1);
   assert.deepEqual(M.danhSach.filter(m => m.chuong === 'che-xich').map(m => m.ma), XICH_CU);
-  assert.equal(goiCuaChuong('che-xich').mua, 'mua-8');     // 29/10 P0 mùa 3: che-xich (bậc thang) rời mùa 3 sang mùa ẩn; 31/10: mùa 8 Hang động (ẩn)
+  assert.equal(goiCuaChuong('che-xich').mua, 'mua-9');     // 29/10 P0 mùa 3: che-xich (bậc thang) rời mùa 3 sang mùa ẩn; 01/11: mùa 9 Đấu trường (ẩn)
   for (const ma of CAT_MUA_1) assert.equal(get(ma), null, ma + ' phải cất khỏi lộ trình');
   // Bốn màn dùng biến dời mùa 2: nay ở gói 1 chương 2 (bien-xich).
   for (const ma of BIEN_MUA_2) assert.equal(get(ma).chuong, 'bien-xich', ma);
@@ -531,11 +535,11 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   const vaoMua4 = new Set((M.mua4 || []).map(g => g.ma).concat(['list']));
   const vaoMua6 = new Set(goiMua('mua-7').map(g => g.ma));
   const ROI_3_CON = ROI_3_GOI.filter(ma => !vaoMua4.has(ma)).map(ma => vaoMua6.has(ma) ? ma + '-cu' : ma);
-  const g4 = goiMua('mua-8').map(g => g.ma);
-  assert.deepEqual(g4.slice(0, ROI_3_CON.length), ROI_3_CON, 'đầu mùa 8');
-  assert.equal(goiMua('mua-8')[0].sao, 0, 'gói đầu mùa 8 cần 0 sao');
+  const g4 = goiMua('mua-9').map(g => g.ma);
+  assert.deepEqual(g4.slice(0, ROI_3_CON.length), ROI_3_CON, 'đầu mùa 9');
+  assert.equal(goiMua('mua-9')[0].sao, 0, 'gói đầu mùa 9 cần 0 sao');
   assert.deepEqual(Object.keys(M.roiMua3).map(c => [c, M.danhSach.filter(m => m.chuong === c).map(m => m.ma)]), Object.entries(M.roiMua3), 'chương rời mùa 3');
-  for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-8', c);
+  for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-9', c);
 });
 kiem3('(b) không màn nào trước gói 1 chương 2 mùa 3 (chuoi-nhen) dùng chuỗi làm dữ liệu (bắc cầu qua hàm của em); spray("low") vẫn được', () => {
   const moc = mocChuong3('chuoi-nhen'), sai = [];
@@ -601,8 +605,8 @@ kiem3('(e) part mở dần: không front_metal trước gói 3, crouch / stand /
 kiem3('(f) không sân mùa 3 nào có bậc thang S', () => {
   for (const m of manMua3()) for (const s of dsSanCua(m)) assert.ok(!/S/.test(s.join('')), m.ma + ' có bậc thang S');
 });
-// Hàm có sẵn của Python / danh sách (không phải hàm của em) khi dò lời gọi.
-const PY_SAN = ['range', 'len', 'append', 'pop', 'int', 'str', 'abs', 'min', 'max', 'print'];
+// Hàm có sẵn của Python / danh sách / tập hợp (không phải hàm của em) khi dò lời gọi.
+const PY_SAN = ['range', 'len', 'append', 'pop', 'int', 'str', 'abs', 'min', 'max', 'print', 'set', 'add'];
 kiem3('(g) mùa 3 và mùa ẩn sau nó: hàm của em mà màn cần hay lời giải gọi thẳng đều được tạo ở màn đứng trước', () => {
   const daTao = new Set(), c3 = chuongMua3Nay(), sau = new Set(TT.goi.filter(g => g.mua !== 'mua-1' && g.mua !== 'mua-2' && g.mua !== 'mua-3').flatMap(g => g.chuong)), sai = [];
   for (const m of M.danhSach) {
@@ -867,8 +871,8 @@ kiem4('(a) mùa 6 Nông trại (MUA_4) đúng các gói / chương đang có mà
   for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7', 'mua-8', 'mua-9']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
   for (const g of goi4()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 4 đang dựng: tự tính)');
   assert.equal(TT.goi.find(g => g.ma === 'omni').mua, 'mua-7', 'omni phải ở mùa 7');
-  for (const ma of ['may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.ok(['mua-7', 'mua-8'].includes(TT.goi.find(g => g.ma === ma).mua), ma + ' phải ở mùa 7 hoặc 8');
-  assert.equal(goiMua('mua-8')[0].sao, 0, 'gói đầu mùa 8 cần 0 sao');
+  for (const ma of ['may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.ok(['mua-7', 'mua-9'].includes(TT.goi.find(g => g.ma === ma).mua), ma + ' phải ở mùa 7 hoặc 9');
+  assert.equal(goiMua('mua-9')[0].sao, 0, 'gói đầu mùa 9 cần 0 sao');
 });
 kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải; cả 10 gói mùa 4 đúng R1 drone nông nghiệp', () => {
   for (const m of manMua4()) {

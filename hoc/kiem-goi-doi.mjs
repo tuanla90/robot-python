@@ -61,7 +61,7 @@ for (const c of goiDoi) {
   const chuongMua6 = new Set(TT.goi.filter((g) => g.mua === 'mua-7').flatMap((g) => g.chuong));
   const khung4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-6' && (M.mua4 || []).some((g) => g.ma === c.goi.ma);
   const khung6 = TT.goi[gi] && TT.goi[gi].mua === 'mua-7' && (M.mua6 || []).some((g) => g.ma === c.goi.ma);
-  const roiMua4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-8' && (chuongMua4.has(c.sau) || chuongMua6.has(c.sau));
+  const roiMua4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-9' && (chuongMua4.has(c.sau) || chuongMua6.has(c.sau));
   if (khung4) {
     const g4 = (M.mua4 || []).find((g) => g.ma === c.goi.ma);
     kiem(c.goi.ma + ': gói đội vào khung mùa 6 Nông trại (MUA_4): mùa 6 ẩn; chương đúng MUA_4 (chương có màn)',
@@ -72,8 +72,8 @@ for (const c of goiDoi) {
       TT.mua.find((x) => x.ma === 'mua-7').an === true && J(TT.goi[gi].chuong) === J(g6.chuong.map((x) => x[0]).filter((x) => M.danhSach.some((m) => m.chuong === x))));
   } else if (roiMua4) {
     const g = TT.goi[gi];
-    kiem(c.goi.ma + ': gói đội ở mùa 8 (ẩn), chương neo ' + c.sau + ' đã vào mùa 6: chương đứng sau ' + c.sau + ', có ngưỡng sao',
-      TT.mua.find((x) => x.ma === 'mua-8').an === true && c.coMan.every((x) => TT.thuTu.indexOf(x) > vt) && typeof g.sao === 'number' && g.khongTangNguong === true, g.mua + ' ' + g.sao);
+    kiem(c.goi.ma + ': gói đội ở mùa 9 (ẩn), chương neo ' + c.sau + ' đã vào mùa 6: chương đứng sau ' + c.sau + ', có ngưỡng sao',
+      TT.mua.find((x) => x.ma === 'mua-9').an === true && c.coMan.every((x) => TT.thuTu.indexOf(x) > vt) && typeof g.sao === 'number' && g.khongTangNguong === true, g.mua + ' ' + g.sao);
   } else if (khung3) {
     const roi = Object.keys(M.roiMua3 || {}).filter((x) => M.roiMua3[x].some((ma) => c.chuong.some((y) => ma.startsWith(y.ma + '.'))));
     const gr = TT.goi.findIndex((g) => roi.length > 0 && g.chuong.includes(roi[0]));

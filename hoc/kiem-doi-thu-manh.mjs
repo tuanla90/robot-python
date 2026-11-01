@@ -35,7 +35,7 @@ kiem('Đủ 10 màn trong chương doi-thu-manh', () => assert.equal(dsMan.lengt
 kiem('Gói ở mùa 4, ngay sau gói Chiến thuật đua (che-dua-robot)', () => {
   const i = TT.goi.findIndex((g) => g.ma === 'doi-thu-manh');
   assert.ok(i > 0, 'không có gói doi-thu-manh');
-  assert.equal(TT.goi[i].mua, 'mua-8');      // P0 mùa 4 (29/10) + 31/10: gói cũ ngoài khuôn dời sang mùa 8 (ẩn)
+  assert.equal(TT.goi[i].mua, 'mua-9');      // P0 mùa 4 (29/10) + 01/11: gói cũ ngoài khuôn dời sang mùa 9 (ẩn)
   assert.ok(TT.goi[i - 1].chuong.includes('che-dua-robot'), 'gói trước là ' + TT.goi[i - 1].ma);
   assert.ok(TT.thuTu.indexOf('doi-thu-manh') > TT.thuTu.indexOf('che-dua-robot'));
 });

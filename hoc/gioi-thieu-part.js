@@ -380,9 +380,75 @@
       ],
       khong: ['Chỉ đo được một ô ngay trước mũi xuồng, không đo xuyên qua nhiều ô'],
       luuY: ['Khi ô trước mũi là nước lặng hoặc bờ đất, flow_dir() trả về "none".']
+    },
+    'gai': {
+      khe: 'than', ten: 'Bánh gai đá vôi',
+      moTa: 'Thân xe thám hiểm hang động với bốn bánh gai bám chắc trên nền đá vôi ướt.',
+      lenh: ['left_move', 'right_move', 'left_back', 'right_back', 'retract_spikes', 'extend_spikes', 'wait'],
+      moTaLenh: {
+        left_move: 'Hai bánh gai bên trái quay tiến trong nhịp này',
+        right_move: 'Hai bánh gai bên phải quay tiến trong nhịp này',
+        left_back: 'Hai bánh gai bên trái quay lùi trong nhịp này',
+        right_back: 'Hai bánh gai bên phải quay lùi trong nhịp này',
+        retract_spikes: 'Thu gai vào trong bánh để lướt trên dải đá vôi ướt I',
+        extend_spikes: 'Bật gai ra ngoài bánh để bám chắc không trượt trên đá vôi ướt I'
+      },
+      ghep: [
+        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô' },
+        { lenh: ['left_move', 'wait'], ra: 'Quay phải 90°' },
+        { lenh: ['left_back', 'wait'], ra: 'Quay trái 90°' },
+        { lenh: ['left_back', 'right_move', 'wait'], ra: 'Quay đầu 180°' },
+        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô' }
+      ],
+      gioi: [
+        'Bánh gai nhận lệnh y hệt xe hai bánh nên các hàm move(), turn_left(), turn_right(), u_turn(), back() đều dùng lại ngay',
+        'Khi đang bật gai mặc định, xe đi trên nền đá vôi ướt I dừng đúng ô không bị trượt lố',
+        { can: ['retract_spikes'], chu: 'retract_spikes() thu gai để bước vào dải đá vôi ướt I là lướt liền một mạch trong 1 nhịp cho tới hết dải' }
+      ],
+      khong: [
+        'Không đi qua được vách đá # hay vực sâu u trong hang',
+        { can: ['retract_spikes'], chu: 'Đang thu gai mà lướt trên đá vôi ướt I lao thẳng vào vực sâu u hay hố hở thì rơi ngay' }
+      ],
+      luuY: ['Gọi retract_spikes() hoặc extend_spikes() để đổi chế độ gai ngay lập tức mà không tốn nhịp.']
+    },
+    'loa': {
+      khe: 'tay', ten: 'Loa cộng hưởng',
+      moTa: 'Loa âm thanh gắn trên lưng xe để gõ nhịp vang hang và phát nốt nhạc mở khóa đá chuông.',
+      lenh: ['beat', 'note'],
+      moTaLenh: {
+        beat: 'Gõ một tiếng trống vào đúng nhịp wait() kế tiếp',
+        note: 'Phát nốt nhạc từ 1 đến 8 kéo dài theo số nhịp'
+      },
+      ghep: [
+        { lenh: ['beat', 'wait'], ra: 'Gõ một tiếng trống ở nhịp này' },
+        { lenh: ['note', 'wait'], ra: 'Ngân một nốt nhạc ở nhịp này' }
+      ],
+      gioi: [
+        'beat() gõ tiếng trống vào nhịp wait() kế tiếp, có thể vừa di chuyển vừa gõ nhịp cùng lúc',
+        'Khi đứng cạnh khối đá chuông có ký hiệu trống x, gõ beat() đúng nhịp làm đá chuông cộng hưởng rụt xuống sàn',
+        { can: ['note'], chu: 'note(n) phát cao độ từ 1 đến 8 để khớp bản nhạc hoặc mở đá chuông mang số nốt tương ứng' }
+      ],
+      khong: ['Gõ sai nhịp hoặc phát sai cao độ sẽ làm đá chuông đã mở bật trồi lên chắn lối trở lại'],
+      luuY: ['Nhịp không gọi beat() hay note(n) mà chỉ gọi wait() sẽ ghi nhận là một nhịp nghỉ lặng.']
+    },
+    'am-thanh': {
+      khe: 'camBien', ten: 'Mic thu thanh',
+      moTa: 'Cảm biến âm thanh gắn trên đỉnh xe, lắng nghe tiếng vọng và cao độ từ chuông đá trong hang.',
+      lenh: ['hear', 'listen'],
+      moTaLenh: {
+        hear: 'Đo khoảng cách theo số ô tới chuông đá gần nhất trước mặt trong tầm 6 ô',
+        listen: 'Nghe cao độ nốt nhạc từ 1 đến 8 của chuông đá gần nhất trong tầm 6 ô'
+      },
+      gioi: [
+        'hear() trả về số ô từ 1 đến 6 tới chuông đá trước mặt để biết quãng đường cần tiến mà không đếm tay',
+        'Đọc cảm biến không tốn nhịp',
+        { can: ['listen'], chu: 'listen() đọc cao độ nốt 1 đến 8 của chuông đá gần nhất để phát lại đúng nốt đó bằng note(n)' }
+      ],
+      khong: ['Vách đá # chắn ngang đường nhìn trước mặt sẽ cản tiếng vọng của hear()'],
+      luuY: ['Khi không có chuông đá nào trong tầm 6 ô, hear() và listen() đều trả về 0.']
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'xuong', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'day-keo', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma', 'dong-chay'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'xuong', 'gai', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'day-keo', 'loa', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma', 'dong-chay', 'am-thanh'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -403,6 +469,7 @@
     them('radar');
     them('quet-ma');
     them('dong-chay');
+    them('am-thanh');
     return kq;
   }
 

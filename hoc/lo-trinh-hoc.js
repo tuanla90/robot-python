@@ -36,7 +36,9 @@
       // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–10
       'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray', 'nhac-doi', 'can-tai', 'cang-cu', 'doi-cang', 'trum-mua-cang',
       // MÙA BẾN SÔNG (mua-5): ngân hàng màn mới
-      'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo', 'buoc-duoi', 'suc-nuoc', 'ben-cu', 'doi-xuong', 'trum-mua-song'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo', 'buoc-duoi', 'suc-nuoc', 'ben-cu', 'doi-xuong', 'trum-mua-song',
+      // MÙA HANG ĐỘNG (mua-8): ngân hàng màn mới
+      'banh-gai', 'loa', 'am-thanh', 'san-hang-dong'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1441,15 +1443,15 @@
       var ch = g.chuong.filter(function (c) { return chuongMua4.indexOf(c) < 0; });
       if (!ch.length) return;
       g.chuong = ch;
-      if (g.mua === 'mua-4') { g.mua = 'mua-8'; doi5.push(g); }
+      if (g.mua === 'mua-4') { g.mua = 'mua-9'; doi5.push(g); }
       conLai.push(g);
     });
-    // PDM4c: gói cất của mùa 4 (Gieo từ trên cao) sang mùa 8 ẩn như CAT_MUA_2, CAT_MUA_3 (khongTangNguong: ngưỡng = gói trước + 30).
-    var goiCat4 = { ma: CAT_MUA_4.ma, ten: CAT_MUA_4.ten, loai: CAT_MUA_4.loai, hinh: CAT_MUA_4.hinh, mua: 'mua-8', khongTangNguong: true, chuong: chuongCat4 };
+    // PDM4c: gói cất của mùa 4 (Gieo từ trên cao) sang mùa 9 ẩn như CAT_MUA_2, CAT_MUA_3 (khongTangNguong: ngưỡng = gói trước + 30).
+    var goiCat4 = { ma: CAT_MUA_4.ma, ten: CAT_MUA_4.ten, loai: CAT_MUA_4.loai, hinh: CAT_MUA_4.hinh, mua: 'mua-9', khongTangNguong: true, chuong: chuongCat4 };
     conLai.push(goiCat4);
     doi5.push(goiCat4);
     conLai.sort(function (a, b) { return TT.thuTu.indexOf(a.chuong[0]) - TT.thuTu.indexOf(b.chuong[0]); });
-    // Ngưỡng gói dời sang mùa 8 (ẩn): như mùa 3 làm với gói dời sang mùa 4 (0,5 × tổng sao tối đa các gói thường đứng trước, bội 5; gói đội = trước + 30).
+    // Ngưỡng gói dời sang mùa 9 (ẩn): như mùa 3 làm với gói dời sang mùa 4 (0,5 × tổng sao tối đa các gói thường đứng trước, bội 5; gói đội = trước + 30).
     var tr5 = 0, truoc5 = null;
     doi5.forEach(function (g) {
       g.sao = g.khongTangNguong && truoc5 ? truoc5.sao + 30 : Math.floor(0.5 * tr5 / 5) * 5;
@@ -1466,7 +1468,7 @@
       goi4.push(x);
     });
     TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goi123, goi4, conLai));
-    var dau5 = TT.goi.filter(function (g) { return g.mua === 'mua-8'; })[0];
+    var dau5 = TT.goi.filter(function (g) { return g.mua === 'mua-9'; })[0];
     if (dau5) dau5.sao = 0;
     // Khay theo gói (như mùa 3): bút liền (pen_down / pen_up) chỉ từ gói 6. Chỉ bớt lệnh trên khay (hamGoc), phần cứng vẫn đủ.
     MUA_4.forEach(function (g, i) {
@@ -1584,7 +1586,7 @@
       var mocC = TT.thuTu.indexOf(g.moc) >= 0 ? TT.thuTu.indexOf(g.moc) : TT.thuTu.length;
       TT.thuTu.splice.apply(TT.thuTu, [mocC, 0].concat(chCu));
       var mocG = TT.goi.findIndex(function (x) { return x.chuong.indexOf(g.moc) >= 0; });
-      TT.goi.splice(mocG >= 0 ? mocG : TT.goi.length, 0, { ma: g.ma, ten: g.ten, mua: 'mua-8', chuong: chCu, khongTangNguong: g.khongTangNguong });
+      TT.goi.splice(mocG >= 0 ? mocG : TT.goi.length, 0, { ma: g.ma, ten: g.ten, mua: 'mua-9', chuong: chCu, khongTangNguong: g.khongTangNguong });
     });
     var goiTruoc6 = TT.goi.filter(function (g) { return g.mua === 'mua-1' || g.mua === 'mua-2' || g.mua === 'mua-3' || g.mua === 'mua-6'; });
     var cTruoc6 = [];
@@ -1620,7 +1622,7 @@
       goi6.push(x);
     });
     TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goiTruoc6, goi6, conLai6));
-    var dau7 = TT.goi.filter(function (g) { return g.mua === 'mua-8'; })[0];
+    var dau7 = TT.goi.filter(function (g) { return g.mua === 'mua-9'; })[0];
     if (dau7) dau7.sao = 0;
     M.mua6 = MUA_6;
     M.tinhLai();
@@ -1797,6 +1799,93 @@
     });
     TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goiTruoc, goiSong, conLai));
     M.muaSong = MUA_SONG;
+    M.tinhLai();
+  })();
+  // ========================================================================= MÙA HANG ĐỘNG (mua-8, Robot thám hiểm hang động R1)
+  var MUA_HANG = [
+    { ma: 'banh-gai', ten: 'Bánh gai leo vách', loai: 'bo-phan', hinh: 'banh-gai',
+      chuong: [['banh-gai', []], ['tu-dien', []]] },
+    { ma: 'loa', ten: 'Loa cộng hưởng', loai: 'bo-phan', hinh: 'loa',
+      chuong: [['loa', []], ['tap-hop', []]] },
+    { ma: 'am-thanh', ten: 'Cảm biến âm thanh', loai: 'bo-phan', hinh: 'am-thanh',
+      chuong: [['am-thanh', []], ['che-am-thanh', []]] },
+    { ma: 'san-hang-dong', ten: 'Ngách hang đá vôi', hinh: 'san-hang-dong',
+      chuong: [['san-hang-dong', []], ['che-hang-dong', []]] },
+    { ma: 'pha-da', ten: 'Cộng hưởng phá đá', loai: 'bo-phan', hinh: 'pha-da',
+      chuong: [['pha-da', []], ['che-pha-da', []]] },
+    { ma: 'den-pha', ten: 'Đèn pha soi hang', loai: 'bo-phan', hinh: 'den-pha',
+      chuong: [['den-pha', []], ['che-den-pha', []]] },
+    { ma: 'do-do-am', ten: 'Cảm biến độ ẩm', loai: 'bo-phan', hinh: 'do-do-am',
+      chuong: [['do-do-am', []], ['che-do-am', []]] },
+    { ma: 'hang-cu', ten: 'Hang đá cổ', loai: 'thu-thach', hinh: 'hang-cu',
+      chuong: [['hang-cu', []], ['che-hang-cu', []]] },
+    { ma: 'doi-hang-dong', ten: 'Đội thám hiểm hang', loai: 'doi', hinh: 'doi-hang-dong',
+      chuong: [['doi-hang-dong', []], ['che-doi-hang', []]] },
+    { ma: 'tong-hop-hang', ten: 'Robot hang động R1', loai: 'thu-thach', hinh: 'tong-hop-hang',
+      chuong: [['tong-hop-hang', []], ['trum-mua-hang', []]] }
+  ];
+  var TEN_MUA_HANG = {
+    'banh-gai': 'Bánh gai bám đá', 'tu-dien': 'Từ điển tra cứu',
+    'loa': 'Gõ nhịp cộng hưởng', 'tap-hop': 'Tập hợp không trùng',
+    'am-thanh': 'Lắng nghe tiếng vang', 'che-am-thanh': 'Chế lệnh: dò sóng âm',
+    'san-hang-dong': 'Ngách hang đá vôi', 'che-hang-dong': 'Chế lệnh: vượt ngách hang',
+    'pha-da': 'Phá nhũ đá chắn', 'che-pha-da': 'Chế lệnh: mở lối đá vôi',
+    'den-pha': 'Đèn pha soi tối', 'che-den-pha': 'Chế lệnh: thắp sáng lòng hang',
+    'do-do-am': 'Đo mạch nước ngầm', 'che-do-am': 'Chế lệnh: tránh hố sụt ẩm',
+    'hang-cu': 'Khám phá hang cổ', 'che-hang-cu': 'Chế lệnh: giải cứu hang sâu',
+    'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang': 'Chế lệnh: phối hợp trong hang',
+    'tong-hop-hang': 'Tổng hợp hang động', 'trum-mua-hang': 'Trùm mùa hang động'
+  };
+  var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong'];
+  (function () {
+    Object.keys(TEN_MUA_HANG).forEach(function (c) { TT.ten[c] = TEN_MUA_HANG[c]; });
+    var moi = [], chuong = [];
+    MUA_HANG.forEach(function (g) { g.chuong.forEach(function (c) { chuong.push(c[0]); }); });
+    TEP_MUA_HANG.forEach(function (k) { moi = moi.concat(M[k] || []); });
+    moi.forEach(function (m) {
+      if (chuong.indexOf(m.chuong) < 0) throw new Error('Màn mới mùa hang thuộc chương không có trong MUA_HANG: ' + m.chuong + '.' + m.so);
+      if (TT.thuTu.indexOf(m.chuong) < 0) TT.thuTu.push(m.chuong);
+    });
+    M.them(moi);
+    moi.forEach(function (m) { nguon[m.ma] = copy(m); });
+    MUA_HANG.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        var them = moi.filter(function (m) { return m.chuong === c[0] && c[1].indexOf(m.ma) < 0; }).sort(function (a, b) { return a.so - b.so; }).map(function (m) { return m.ma; });
+        var cuoi = c[1][c[1].length - 1];
+        c[1] = cuoi && (nguon[cuoi] || get(cuoi)).hang === 'trum' ? c[1].slice(0, -1).concat(them, [cuoi]) : c[1].concat(them);
+      });
+    });
+    var coManHang = [];
+    MUA_HANG.forEach(function (g) {
+      g.chuong.forEach(function (c) {
+        if (!c[1].length) return;
+        if (TT.thuTu.indexOf(c[0]) < 0) TT.thuTu.push(c[0]);
+        dungChuong(c[0], c[1]);
+        coManHang.push(c[0]);
+        c[1].forEach(function (ma, i) {
+          var m = get(ma);
+          if (i < c[1].length - 1) delete m.huyHieu;
+          else m.huyHieu = { ma: c[0], ten: 'Huy hiệu ' + TEN_MUA_HANG[c[0]] };
+        });
+      });
+    });
+    var goiTruoc = TT.goi.filter(function (g) { return g.mua === 'mua-1' || g.mua === 'mua-2' || g.mua === 'mua-3' || g.mua === 'mua-6' || g.mua === 'mua-7' || g.mua === 'mua-4' || g.mua === 'mua-5'; });
+    var cTruoc = [];
+    goiTruoc.forEach(function (g) { cTruoc = cTruoc.concat(g.chuong); });
+    var sau = TT.thuTu.filter(function (c) { return cTruoc.indexOf(c) < 0 && coManHang.indexOf(c) < 0; });
+    TT.thuTu.splice.apply(TT.thuTu, [0, TT.thuTu.length].concat(cTruoc, coManHang, sau));
+    var conLai = TT.goi.filter(function (g) { return goiTruoc.indexOf(g) < 0 && g.mua !== 'mua-8'; });
+    var goiHang = [];
+    MUA_HANG.forEach(function (g) {
+      var ch = g.chuong.map(function (c) { return c[0]; }).filter(function (c) { return coManHang.indexOf(c) >= 0; });
+      if (!ch.length) return;
+      var x = { ma: g.ma, ten: g.ten, mua: 'mua-8', chuong: ch };
+      if (g.loai) x.loai = g.loai;
+      if (g.hinh) x.hinh = g.hinh;
+      goiHang.push(x);
+    });
+    TT.goi.splice.apply(TT.goi, [0, TT.goi.length].concat(goiTruoc, goiHang, conLai));
+    M.muaHang = MUA_HANG;
     M.tinhLai();
   })();
   if (SL && SL.ds) SL.ds.forEach(function (h) { if (h.ten === 'follow_right') { h.chuong = 'me-cung'; h.man = 'me-cung.6'; } });
@@ -2752,7 +2841,7 @@
     MUA_6.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     MUA_CANG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     MUA_SONG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
-    MUA_SONG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
+    MUA_HANG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);
     if (nguon['che-nam-cham.2']) DAY_CU.push(['che-nam-cham.2', 'reel']);

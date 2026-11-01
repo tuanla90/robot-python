@@ -743,6 +743,100 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.sao(22, 28, 7); c.sao(78, 28, 7);
   });
 
+  /* ---- MÙA 8: HANG ĐỘNG ĐÁ VÔI (mua-8): Gói 1–10 ---- */
+  var GAI = { than: 'gai', tay: null, camBien: [] };
+  var GAI_LOA = { than: 'gai', tay: 'loa', camBien: [] };
+  var GAI_AM = { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] };
+  dk('banh-gai', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.robot(GAI, st({ chay: true }), 1, 36, 60, 40);
+  });
+  dk('tu-dien', che(function (g, c) {
+    c.khoi(62, 34, 38, 22, BM.vecLamDam, [['{ }', BM.vecCanhBao, 10]]);
+    c.robot(GAI, st({ chay: true }), 1, 34, 62, 36);
+  }));
+  dk('loa', function (g, c) {
+    c.song(62, 42, -0.3, [7, 12, 17], BM.vecCanhBao);
+    c.robot(GAI_LOA, st({ chay: true }, { day: true }), 1, 36, 60, 40);
+  });
+  dk('tap-hop', che(function (g, c) {
+    c.khoi(62, 34, 38, 22, BM.vecTimDam, [['set', BM.vecCanhBao, 10]]);
+    c.robot(GAI_LOA, st({ chay: true }, { day: true }), 1, 34, 62, 36);
+  }));
+  dk('am-thanh', function (g, c) {
+    c.song(56, 38, 0, [8, 14, 20], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-am-thanh', che(function (g, c) {
+    c.song(56, 38, 0, [7, 12, 17], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('san-hang-dong', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.song(58, 56, 0, [6, 11], BM.vecCanhBao);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-hang-dong', che(function (g, c) {
+    c.o('bang', {}, 66, 34, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('thu-gai', function (g, c) {
+    c.o('bang', {}, 56, 60, 24);
+    c.o('bang', {}, 74, 60, 24);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 32, 58, 40);
+  });
+  dk('che-thu-gai', che(function (g, c) {
+    c.o('bang', {}, 64, 58, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('phat-not', function (g, c) {
+    c.khoi(66, 34, 32, 22, BM.vecVang, [['♪ 5', BM.vecVien, 10]]);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-phat-not', che(function (g, c) {
+    c.khoi(64, 34, 32, 20, BM.vecVang, [['♪ n', BM.vecVien, 10]]);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('nghe-not', function (g, c) {
+    c.song(60, 36, 0, [7, 13, 19], BM.vecDen);
+    c.khoi(68, 60, 26, 18, BM.vecLamDam, [['1..8', BM.vecCanhBao, 8]]);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-nghe-not', che(function (g, c) {
+    c.song(58, 38, 0, [7, 12, 17], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('hang-cu', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.o('ho', {}, 68, 62, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-hang-cu', che(function (g, c) {
+    c.o('bang', {}, 66, 34, 22);
+    c.o('ho', {}, 66, 62, 20);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('doi-hang-dong', function (g, c) {
+    c.o('bang', {}, 50, 34, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 30, 62, 36);
+    c.robot({ than: 'gai', tay: 'loa', son: 'lam' }, st({ chay: true }), 0, 70, 62, 34);
+  });
+  dk('che-doi-hang-dong', che(function (g, c) {
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 28, 62, 32);
+    c.robot({ than: 'gai', tay: 'loa', son: 'lam' }, st({ chay: true }), 0, 56, 70, 30);
+  }));
+  dk('tong-hop-hang', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.song(58, 56, 0, [6, 11], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 42);
+  });
+  dk('trum-mua-hang', function (g, c) {
+    c.o('bang', {}, 68, 40, 22);
+    c.song(58, 60, 0, [6, 11], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 36, 62, 38);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  });
+
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
     ve: ve,
