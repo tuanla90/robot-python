@@ -38,7 +38,7 @@
       // MÙA BẾN SÔNG (mua-5): ngân hàng màn mới
       'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo', 'buoc-duoi', 'suc-nuoc', 'ben-cu', 'doi-xuong', 'trum-mua-song',
       // MÙA HANG ĐỘNG (mua-8): ngân hàng màn mới
-      'banh-gai', 'loa', 'am-thanh', 'san-hang-dong'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'banh-gai', 'loa', 'am-thanh', 'san-hang-dong', 'thu-gai', 'phat-not', 'nghe-not'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1811,16 +1811,16 @@
       chuong: [['am-thanh', []], ['che-am-thanh', []]] },
     { ma: 'san-hang-dong', ten: 'Ngách hang đá vôi', hinh: 'san-hang-dong',
       chuong: [['san-hang-dong', []], ['che-hang-dong', []]] },
-    { ma: 'pha-da', ten: 'Cộng hưởng phá đá', loai: 'bo-phan', hinh: 'pha-da',
-      chuong: [['pha-da', []], ['che-pha-da', []]] },
-    { ma: 'den-pha', ten: 'Đèn pha soi hang', loai: 'bo-phan', hinh: 'den-pha',
-      chuong: [['den-pha', []], ['che-den-pha', []]] },
-    { ma: 'do-do-am', ten: 'Cảm biến độ ẩm', loai: 'bo-phan', hinh: 'do-do-am',
-      chuong: [['do-do-am', []], ['che-do-am', []]] },
+    { ma: 'thu-gai', ten: 'Thu gai trượt đá', loai: 'bo-phan', hinh: 'thu-gai',
+      chuong: [['thu-gai', []], ['che-thu-gai', []]] },
+    { ma: 'phat-not', ten: 'Phát nốt cộng hưởng', loai: 'bo-phan', hinh: 'phat-not',
+      chuong: [['phat-not', []], ['che-phat-not', []]] },
+    { ma: 'nghe-not', ten: 'Thẩm âm chuông đá', loai: 'bo-phan', hinh: 'nghe-not',
+      chuong: [['nghe-not', []], ['che-nghe-not', []]] },
     { ma: 'hang-cu', ten: 'Hang đá cổ', loai: 'thu-thach', hinh: 'hang-cu',
       chuong: [['hang-cu', []], ['che-hang-cu', []]] },
     { ma: 'doi-hang-dong', ten: 'Đội thám hiểm hang', loai: 'doi', hinh: 'doi-hang-dong',
-      chuong: [['doi-hang-dong', []], ['che-doi-hang', []]] },
+      chuong: [['doi-hang-dong', []], ['che-doi-hang-dong', []]] },
     { ma: 'tong-hop-hang', ten: 'Robot hang động R1', loai: 'thu-thach', hinh: 'tong-hop-hang',
       chuong: [['tong-hop-hang', []], ['trum-mua-hang', []]] }
   ];
@@ -1829,14 +1829,14 @@
     'loa': 'Gõ nhịp cộng hưởng', 'tap-hop': 'Tập hợp không trùng',
     'am-thanh': 'Lắng nghe tiếng vang', 'che-am-thanh': 'Chế lệnh: dò sóng âm',
     'san-hang-dong': 'Ngách hang đá vôi', 'che-hang-dong': 'Chế lệnh: vượt ngách hang',
-    'pha-da': 'Phá nhũ đá chắn', 'che-pha-da': 'Chế lệnh: mở lối đá vôi',
-    'den-pha': 'Đèn pha soi tối', 'che-den-pha': 'Chế lệnh: thắp sáng lòng hang',
-    'do-do-am': 'Đo mạch nước ngầm', 'che-do-am': 'Chế lệnh: tránh hố sụt ẩm',
+    'thu-gai': 'Thu gai trượt băng', 'che-thu-gai': 'Chế lệnh: lướt đá ướt',
+    'phat-not': 'Cộng hưởng thạch nhũ', 'che-phat-not': 'Chế lệnh: tấu khúc phá đá',
+    'nghe-not': 'Thẩm âm chuông đá', 'che-nghe-not': 'Chế lệnh: giải mã giai điệu',
     'hang-cu': 'Khám phá hang cổ', 'che-hang-cu': 'Chế lệnh: giải cứu hang sâu',
-    'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang': 'Chế lệnh: phối hợp trong hang',
+    'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang-dong': 'Chế lệnh: phối hợp trong hang',
     'tong-hop-hang': 'Tổng hợp hang động', 'trum-mua-hang': 'Trùm mùa hang động'
   };
-  var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong'];
+  var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong', 'manThuGai', 'manPhatNot', 'manNgheNot'];
   (function () {
     Object.keys(TEN_MUA_HANG).forEach(function (c) { TT.ten[c] = TEN_MUA_HANG[c]; });
     var moi = [], chuong = [];

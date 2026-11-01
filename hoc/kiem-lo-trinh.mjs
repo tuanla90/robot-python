@@ -98,7 +98,10 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'am-thanh.2', 'am-thanh.3', 'am-thanh.4', 'am-thanh.5', 'am-thanh.6', 'am-thanh.7', 'am-thanh.8', 'am-thanh.9',
   'che-am-thanh.1', 'che-am-thanh.2', 'che-am-thanh.3', 'che-am-thanh.4', 'che-am-thanh.5', 'che-am-thanh.6', 'che-am-thanh.7', 'che-am-thanh.8', 'che-am-thanh.9',
   'san-hang-dong.6', 'san-hang-dong.7', 'san-hang-dong.8', 'san-hang-dong.9',
-  'che-hang-dong.1', 'che-hang-dong.2', 'che-hang-dong.3', 'che-hang-dong.4', 'che-hang-dong.5', 'che-hang-dong.6', 'che-hang-dong.7', 'che-hang-dong.8', 'che-hang-dong.9');      // gói 3–4 mùa hang động: cảm biến âm thanh & sân hang động (2 sân)
+  'che-hang-dong.1', 'che-hang-dong.2', 'che-hang-dong.3', 'che-hang-dong.4', 'che-hang-dong.5', 'che-hang-dong.6', 'che-hang-dong.7', 'che-hang-dong.8', 'che-hang-dong.9',
+  'thu-gai.4', 'che-thu-gai.5', 'phat-not.8', 'che-phat-not.7',
+  'nghe-not.2', 'nghe-not.4', 'nghe-not.5', 'nghe-not.6', 'nghe-not.8', 'nghe-not.9',
+  'che-nghe-not.1', 'che-nghe-not.2', 'che-nghe-not.3', 'che-nghe-not.4', 'che-nghe-not.5', 'che-nghe-not.6', 'che-nghe-not.9');      // gói 3–7 mùa hang động: cảm biến âm thanh, sân hang động, thu gai, phát nốt, nghe nốt (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach) và gói 10 mùa 6 (may-mo-da) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
