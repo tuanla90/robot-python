@@ -15,52 +15,45 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  // Xe xích (không tay) gắn mắt khoảng cách ở mũi: chỉ hỏi được front_clear() (như doi-xich ở mùa ẩn). Lệnh gốc: bánh xích + front_clear.
-  var HAM_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'front_clear'];
-  function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
+  // PDM2a (31/10, part đúng mùa): gói 1 R1 chỉ có thân xích, CHƯA có cảm biến (bản cũ gắn mắt khoảng cách, front_clear). Lệnh gốc: bánh xích.
+  var HAM_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   function bai(chinh) { return { chinh: chinh.slice(), hamCuaMan: [] }; }
 
-  /* TRÙM bien-xich.1 (thành màn 10 của chương): "Đếm để về đúng hàng". Ba sân CÙNG MỘT phòng hai làn × 5 hàng; chỉ hàng xuất phát khác nhau
-     (xe ở hàng 2, 4, 3 tính từ trên, tức phía trên còn 2, 4, 3 ô; phía dưới còn 2, 0, 1 ô). Xe đi lên sát tường (đếm bằng biến n), né sang làn phải
-     bằng sidestep(), spin() quay mặt xuống rồi đi đúng n ô về hàng xuất phát như xe mờ. Ô ◆ ở đầu làn trái buộc xe lên tới tường (không có nó thì sidestep(); spin() thắng luôn ba sân). Không đếm thì không biết dừng ở đâu: hàng đích không có dấu hiệu gì mà
-     front_clear() thấy được (đi tới đáy thì quá chỗ ở hai sân, chiều sâu dưới chân khác nhau nên "tới đáy rồi lên c ô" cũng không đúng cả ba sân).
-     kiem-bien-xich.mjs chứng minh: không dãy lệnh cố định nào thắng cả ba sân, các lời không biến tiêu biểu không được 3 sao. */
-  var PHONG = ['#..#', '#..#', '#..#', '#..#', '#..#'];
-  var HANG = [2, 4, 3];
-  var DEM = ['n = 0', 'while front_clear():', '    move()', '    n = n + 1'];
-  var LG = DEM.concat(['sidestep()', 'spin()', 'for i in range(n):', '    move()']);
+  /* TRÙM bien-xich.1 (thành màn 10 của chương "Đi xoắn ốc"; mã giữ, nội dung PDM2a): "Xoắn ốc đôi". Đường xoắn ốc dày quanh chỗ xe đứng: các đoạn dài
+     1, 1, 2, 2, 3, 3 ô, mỗi đoạn xong quẹo phải; mỗi độ dài dùng HAI lần rồi mới tăng. Xe phải đi qua ba góc ◆ của xoắn ốc rồi đứng như xe mờ.
+     Lời giải: n = 1, ba vòng ngoài, mỗi vòng hai đoạn n ô (vòng lặp giữa range(2)), n = n + 1. Các đoạn nằm sát nhau nên không có vách ngăn: chỉ ô ◆ và xe mờ
+     buộc đúng đường. kiem-bien-xich.mjs chứng minh: viết cứng từng đoạn (không biến) không được 3 sao; thay n bằng một số thì không thắng. */
+  var DAI = ['for i in range(3):', '    for k in range(2):', '        for j in range(n):', '            move()', '        tr_right()', '    n = n + 1'];
+  var LG = ['n = 1'].concat(DAI);
 
   var DS = [
     ManHoc.chuanHoa({
-      chuong: 'bien-xich', so: 1, ten: 'Trùm: Đếm để về đúng hàng', hang: 'trum',
+      chuong: 'bien-xich', so: 1, ten: 'Trùm: Xoắn ốc đôi', hang: 'trum',
       huyHieu: { ma: 'bien-xich', ten: 'Huy hiệu Biến cho xích' },
-      kieuBai: 'nhieu-san',
-      loaiRobot: 'xich', robot: { than: 'xich', tay: null, camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+      loaiRobot: 'xich', robot: { than: 'xich', tay: null },
       hamGoc: HAM_GOC, cauTruc: ['for', 'if', 'while'], bienDem: true,
       moXuong: true, camHamCuaEm: false, khung: { chinh: 10, moiHam: 10 },
-      hamCuaEmCan: ['move', 'back', 'sidestep', 'spin'],
-      deBai: 'Ba sân cùng một phòng hai làn, chỉ khác hàng xe xích xuất phát. Một chương trình cho cả ba sân: xe đi lên tới sát tường (qua ô ◆ ở đầu làn trái), né sang làn bên phải rồi về đúng hàng đã xuất phát, mặt quay xuống như xe mờ. Dùng biến n đếm số ô đã đi lên.',
-      veMaMau: 'Chương trình có sẵn đi lên rồi né sang phải, nhưng chưa biết phải về bao nhiêu ô. Đếm bằng biến n rồi đi về đúng n ô.',
-      san: [PHONG, PHONG, PHONG].map(function (s) { return s.slice(); }),
-      batDau: HANG.map(function (y) { return { x: 1, y: y, huong: 0 }; }),
+      hamCuaEmCan: ['move', 'tr_right'],
+      deBai: 'Đường xoắn ốc quấn sát quanh chỗ xe đứng: các đoạn dài 1, 1, 2, 2, 3, 3 ô, hết mỗi đoạn quẹo phải. Mỗi độ dài đi HAI đoạn rồi mới dài thêm một ô. Đi qua ba góc ◆ rồi dừng như xe mờ. Dùng biến n cho độ dài đoạn.',
+      veMaMau: 'Chương trình có sẵn là xoắn ốc 1, 2, 3 ô: mỗi độ dài chỉ đi một đoạn. Sửa để mỗi vòng ngoài đi hai đoạn n ô rồi mới tăng n.',
+      san: ['#....', '#...#', '#...#', '#...#'],
+      batDau: { x: 2, y: 2, huong: 0 },
       mucTieu: 'bong-mo',
-      bongMo: HANG.map(function (y) { return { x: 2, y: y, huong: 2, diQua: [{ x: 1, y: 0 }] }; }),
-      nhipTheo: 'tong',
-      maMau: bai(['while front_clear():', '    move()', 'sidestep()']),
-      sao: { o: 22, nhip: 45 },
+      bongMo: { x: 4, y: 0, huong: 2, diQua: [{ x: 3, y: 3 }, { x: 1, y: 3 }, { x: 1, y: 0 }] },
+      maMau: bai(['n = 1', 'for i in range(3):', '    for j in range(n):', '        move()', '    tr_right()', '    n = n + 1']),
+      sao: { o: 13, nhip: 24 },
       loiGiai: bai(LG),
-      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: bai(['# đếm số ô đi lên, lùi lại đúng chừng ấy'].concat(LG)) },
+      loiGiaiKhac: { moTa: 'Cùng cách làm, thêm một dòng chú thích', baiLam: bai(['# mỗi độ dài đi hai đoạn'].concat(LG)) },
       congThucKhac: [
-        { moTa: 'Né sang phải, lùi n ô bằng back() rồi mới quay mặt xuống (đúng nhưng back() dài hơn move() nên tốn ô hơn)', baiLam: bai(DEM.concat(['sidestep()', 'for i in range(n):', '    back()', 'spin()'])) }
+        { moTa: 'Viết hai đoạn n ô liền nhau thay cho vòng lặp range(2) (đúng nhưng tốn ô hơn)', baiLam: bai(['n = 1', 'for i in range(3):', '    for j in range(n):', '        move()', '    tr_right()', '    for j in range(n):', '        move()', '    tr_right()', '    n = n + 1']) }
       ],
       loiSai: [
-        { moTa: 'Không đếm, quay mặt xuống rồi đi tới đáy: hai sân xe đi quá hàng xuất phát', baiLam: bai(['while front_clear():', '    move()', 'sidestep()', 'spin()', 'while front_clear():', '    move()']), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Đi về cứng hai ô theo sân đầu: hai sân sau xe dừng quá sớm', baiLam: bai(DEM.concat(['sidestep()', 'spin()', 'for i in range(2):', '    move()'])), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên tăng n trong vòng while: n luôn bằng 0 nên xe đứng ở hàng trên cùng', baiLam: bai(['n = 0', 'while front_clear():', '    move()', 'sidestep()', 'spin()', 'for i in range(n):', '    move()']), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Quên né sang phải: xe về đúng chỗ cũ nhưng ở làn trái', baiLam: bai(DEM.concat(['spin()', 'for i in range(n):', '    move()'])), phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Mỗi độ dài chỉ đi một đoạn (xoắn ốc 1, 2, 3): xe đâm tường', baiLam: bai(['n = 1', 'for i in range(3):', '    for j in range(n):', '        move()', '    tr_right()', '    n = n + 1']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quẹo trái thay quẹo phải: xoắn ốc ngược chiều, không qua các góc ◆', baiLam: bai(['n = 1', 'for i in range(3):', '    for k in range(2):', '        for j in range(n):', '            move()', '        tr_left()', '    n = n + 1']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Vòng ngoài chỉ hai lần: xe dừng giữa xoắn ốc', baiLam: bai(['n = 1', 'for i in range(2):'].concat(DAI.slice(1))), phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Phòng nào cũng năm hàng nhưng xe đứng ở hàng khác nhau, nên số ô phải lùi cũng khác: đếm, đừng đoán.',
-        'n = 0 trước vòng while, n = n + 1 mỗi lần tiến; né, quay mặt xuống rồi lặp move() đúng n lần.']
+      goiY: ['Đoạn 1 và 2 dài 1 ô, đoạn 3 và 4 dài 2 ô, đoạn 5 và 6 dài 3 ô.',
+        'Trong vòng lặp ngoài: một vòng range(2) đi n ô rồi quẹo phải; sau vòng đó mới n = n + 1.']
     })
   ];
 

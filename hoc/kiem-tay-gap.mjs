@@ -357,7 +357,7 @@ console.log('\n== 11. Ký hiệu sân: o vật · D ô đích · X đích có v�
   kiem('docSan: vat = o và X (đọc từng hàng), dich = D và X', J(s.vat) === J([{ x: 0, y: 0 }, { x: 0, y: 1 }]) && J(s.dich) === J([{ x: 2, y: 0 }, { x: 0, y: 1 }]), J([s.vat, s.dich]));
   kiem('docSan giữ nguyên các ký tự của sân; sân cũ (chỉ . # F S băng) có vat và dich rỗng', s.o[0] === 'o.D' && SanHoc.docSan(['.#F', 'S>.']).vat.length === 0 && SanHoc.docSan(['.#F', 'S>.']).dich.length === 0);
   kiem('lyDoChan: ô o, D, X đều là sàn (vật chiếm ô được xử lý lúc chạy, không ở lyDoChan)', ['o', 'D', 'X'].every((c) => SanHoc.lyDoChan(SanHoc.docSan([c]), 'banh', 0, 0) === null));
-  kiem('ký hiệu lạ vẫn bị từ chối', (() => { try { SanHoc.docSan(['.q.']); return false; } catch (err) { return /Ký hiệu lạ/.test(err.message); } })());
+  kiem('ký hiệu lạ vẫn bị từ chối', (() => { try { SanHoc.docSan(['.?.']); return false; } catch (err) { return /Ký hiệu lạ/.test(err.message); } })());   // (31/10: 'q' thành bến nhận bè của Bến sông nên đổi ví dụ ký hiệu lạ)
   const a = chay(['.o.', '...', '...'], { x: 1, y: 2, huong: 0 }, L('left_move()', 'right_move()', 'wait()', 'left_move()', 'right_move()', 'wait()'));
   kiem('xe KHÔNG đi xuyên ô vật: nhịp 1 tiến tới (1,1), nhịp 2 vướng vật nên đứng yên (dam-tuong, vat "vat", idVat 1), vẫn mất nhịp', vt(a.robot) === '1,1' && maSK(a, 'dam-tuong').length === 1 && maSK(a, 'dam-tuong')[0].vat === 'vat' && maSK(a, 'dam-tuong')[0].idVat === 1 && a.nhip === 2 && vt(maSK(a, 'dam-tuong')[0].den) === '1,0', J(a.suKien));
   const b = chay(['.....'], { x: 0, y: 0, huong: 1 }, 'wait()', { vat: [{ x: 3, y: 0 }, { x: 9, y: 0 }, { x: -1, y: 0 }], dich: [{ x: 4, y: 0 }] });

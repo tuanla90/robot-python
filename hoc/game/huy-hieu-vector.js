@@ -304,6 +304,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('day-thung', function (g, c) { dayThung(g, c, 36, 58, 42); c.muiTen(52, 30, 76, 30, BM.vecVang, 5); });
   dk('che-day-thung', che(function (g, c) { c.vat('thung-nang', {}, 40, 62, 30); c.muiTen(22, 36, 44, 36, BM.vecVang, 4.5); }));
+  // PDM2b 31/10: gói 8 mùa 2 "Góc kho cũ": xe cứu hỏa gặp nút đè + thùng gỗ + hàng rào của Kho hàng (mùa 1)
+  dk('kho-cu', function (g, c) { c.o('nut-de', { de: true }, 34, 62, 40); c.vat('thung-go', {}, 66, 58, 24); c.o('rao', { mask: 0 }, 50, 30, 36); });
+  dk('che-kho-cu', che(function (g, c) { c.o('nut-de', { de: true }, 36, 62, 40); c.vat('thung-go', {}, 36, 58, 20); }));
   function nutNong(g, c, cx, cy, canh) {
     c.o('nut-ban', { bat: true }, cx, cy, canh);                                     // 29/10: van hơi đang MỞ (bánh cam nóng), trước là nút bắn loé
     [-10, 0, 10].forEach(function (dx) { H.duong(g, 'M' + (cx + dx) + ' ' + (cy - canh * 0.36) + ' c-4 -5 4 -8 0 -14'); H.vien(g, BM.vecDo, 2.6); });
@@ -403,6 +406,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   dk('nhin-duoi', function (g, c) { nhinDuoi(g, c, 50, 52, 54); });
   dk('che-nhin-duoi', che(function (g, c) { nhinDuoi(g, c, 40, 62, 42); }));
+  function vuonCu(g, c, cx, cy, canh) {
+    c.o('bang', { huong: 1 }, cx - canh * 0.34, cy + canh * 0.36, canh * 0.36);
+    c.o('rao', { mask: 0 }, cx + canh * 0.34, cy + canh * 0.36, canh * 0.36);
+    c.robot(DRONE_KE, st({ quat: true }, { tuThe: 'duoi', mauSon: 'blue' }, { bat: true }), 0, cx, cy - canh * 0.1, canh);
+  }
+  dk('vuon-cu', function (g, c) { vuonCu(g, c, 50, 48, 50); });
+  dk('che-vuon-cu', che(function (g, c) { vuonCu(g, c, 42, 58, 40); }));
   function sonCao(g, c, cx, cy, canh) {
     c.o('rao', { mask: 0 }, cx, cy + canh * 0.42, canh * 0.36);
     netSon(g, 'M' + (cx - canh * 0.62) + ' ' + (cy + canh * 0.42) + ' H' + (cx - canh * 0.22), BM.luatSonVang, 6);
@@ -474,6 +484,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('che-dao-cuc', che(function (g, c) { c.vong(40, 62, 16, BM.vecVang, 4); c.vat('nam-cham', { cuc: 'S' }, 40, 62, 16); }));
   dk('doc-cuc', function (g, c) { doTu(g, c, 34, 54, 46, 'nam-cham', { cuc: 'S' }); });
   dk('che-doc-cuc', che(function (g, c) { doTu(g, c, 28, 64, 38, 'nam-cham', { cuc: 'N' }); }));
+  dk('bang-cu', function (g, c) { c.o('bang', { huong: 1 }, 34, 62, 34); c.o('cua', { mo: true }, 74, 42, 30); nhenBung(c, 34, 46, 36, true); });
+  dk('che-bang-cu', che(function (g, c) { c.o('bang', { huong: 1 }, 34, 66, 32); nhenBung(c, 34, 54, 34, true); }));
   dk('doi-xich-nhen', function (g, c) {
     c.vat('khoi-sat', {}, 50, 30, 14);
     c.robot({ than: 'xich', son: '' }, st(), 0, 30, 60, 40);
@@ -484,6 +496,346 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   dk('che-bung-nhen', che(function (g, c) { nhenBung(c, 40, 62, 46); }));
   dk('tong-hop-3', function (g, c) { c.o('ho', {}, 32, 70, 26); c.vat('khoi-sat', {}, 76, 66, 13); nhenBung(c, 54, 42, 48); });
   dk('xe-tham-do', function (g, c) { nhenBung(c, 50, 56, 58, true); c.sao(22, 28, 7); c.sao(78, 28, 7); });
+  /* 31/10 mùa 6 "Mỏ đá": huy hiệu chương mới (omni, may-nem, che-may-nem, ban-xoay, che-ban-xoay giữ hình cũ). */
+  var OMNI_RADAR = { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }] };
+  dk('luoi-2d', function (g, c) { c.robot({ than: 'omni' }, st(), 0, 36, 62, 44); c.khoi(60, 32, 42, 24, BM.vecLaDam, [['[[ ]]', BM.vecVo, 13]]); });
+  dk('radar-tron', function (g, c) {
+    c.vong(50, 52, 26, BM.vecCyanDam, 3);
+    c.robot(OMNI_RADAR, st(null, { ngam: 2 }, { bat: true, mat: true }), 0, 50, 56, 48);
+  });
+  dk('che-radar-tron', che(function (g, c) {
+    c.vong(40, 62, 20, BM.vecCyanDam, 2.5);
+    c.robot(OMNI_RADAR, st(null, { ngam: 2 }, { bat: true, mat: true }), 0, 40, 64, 40);
+  }));
+  dk('di-cheo', function (g, c) {
+    c.muiTen(26, 72, 72, 26, BM.vecVang, 4.5);
+    c.robot(OMNI_RADAR, st(null, { ngam: 2 }, { bat: true, mat: true }), 0, 44, 58, 44);
+  });
+  dk('che-di-cheo', che(function (g, c) {
+    c.muiTen(20, 74, 58, 36, BM.vecVang, 4);
+    c.robot(OMNI_RADAR, st(null, { ngam: 2 }, { bat: true, mat: true }), 0, 38, 64, 38);
+  }));
+  dk('chinh-luc', function (g, c) {
+    cungNhay(g, 'M24 64 C28 18 68 18 76 56');
+    c.vat('hop', {}, 76, 62, 14);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 1, 32, 62, 42);
+  });
+  dk('che-chinh-luc', che(function (g, c) {
+    cungNhay(g, 'M20 68 C24 26 56 26 62 58');
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 1, 28, 66, 36);
+  }));
+  dk('nhan-dang', function (g, c) {
+    c.vong(68, 34, 16, BM.vecVang, 3);
+    c.vat('hop', {}, 68, 34, 14);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 38, 62, 44);
+  });
+  dk('che-nhan-dang', che(function (g, c) {
+    c.vong(56, 38, 13, BM.vecVang, 2.5);
+    c.vat('hop', {}, 56, 38, 12);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 32, 66, 38);
+  }));
+  dk('mo-cu', function (g, c) {
+    c.o('cua', { mo: true }, 72, 36, 28);
+    c.o('bang', { huong: 1 }, 34, 66, 32);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 34, 50, 38);
+  });
+  dk('che-mo-cu', che(function (g, c) {
+    c.o('cua', { mo: true }, 56, 40, 24);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 30, 64, 34);
+  }));
+  dk('tong-hop-6', function (g, c) {
+    c.o('ho', {}, 28, 68, 24);
+    c.vat('hop', {}, 74, 68, 14);
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 50, 44, 46);
+  });
+  function mayMoDa(g, c) {
+    c.robot(OMNI_RADAR, st(null, { ngam: 3 }, { bat: true, mat: true }), 0, 50, 54, 54);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  }
+  dk('may-mo-da', mayMoDa);
+  dk('trum-mua-6', mayMoDa);
+  /* 01/11 mùa 4 "Cảng sông" (cần cẩu container): huy hiệu gói 1-4. */
+  var CAU_CO_BAN = { than: 'cau', tay: null, camBien: [] };
+  var CAU_MOC = { than: 'cau', tay: 'moc-cau', camBien: [] };
+  var CAU_QUET = { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] };
+  dk('can-cau', function (g, c) {
+    c.vong(50, 52, 26, BM.vecTroiDam, 3);
+    c.robot(CAU_CO_BAN, st({ nac: 1, tam: 2 }), 0, 44, 58, 42);
+  });
+  dk('so-am', che(function (g, c) {
+    c.robot(CAU_CO_BAN, st({ nac: 7, tam: 2 }), 0, 38, 62, 36);
+    c.khoi(64, 34, 34, 22, BM.vecTimDam, [['-3', BM.vecVo, 13]]);
+  }));
+  dk('moc-cau', function (g, c) {
+    c.vat('container', { so: 12, mau: 'cam' }, 68, 36, 18);
+    c.robot(CAU_MOC, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }), 0, 42, 60, 42);
+  });
+  dk('chia-du', che(function (g, c) {
+    c.robot(CAU_MOC, st({ nac: 2, tam: 2 }, { kep: 'dong', cam: true }), 0, 36, 62, 36);
+    c.khoi(64, 34, 36, 22, BM.vecCamDam, [['% //', BM.vecVo, 12]]);
+  }));
+  dk('quet-ma', function (g, c) {
+    c.vat('container', { so: 24, mau: 'lam' }, 68, 36, 18);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'mo' }, { bat: true }), 0, 42, 60, 42);
+  });
+  dk('che-quet-ma', che(function (g, c) {
+    c.vat('container', { so: 24, mau: 'lam' }, 62, 36, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'mo' }, { bat: true }), 0, 36, 64, 36);
+  }));
+  dk('ben-tau', function (g, c) {
+    c.o('boong-tau', { co: true }, 66, 38, 26);
+    c.vat('container', { so: 18, mau: 'vang' }, 66, 36, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 38, 62, 40);
+  });
+  dk('che-ben-tau', che(function (g, c) {
+    c.o('boong-tau', { co: true }, 58, 40, 22);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 64, 36);
+  }));
+  dk('duong-ray', function (g, c) {
+    c.o('ray', {}, 32, 62, 28);
+    c.o('ray', {}, 62, 62, 28);
+    c.robot(CAU_QUET, st({ nac: 0, tam: 1 }, { kep: 'dong', cam: true }, { bat: true }), 0, 48, 56, 40);
+  });
+  dk('che-duong-ray', che(function (g, c) {
+    c.o('ray', {}, 30, 64, 24);
+    c.o('ray', {}, 56, 64, 24);
+    c.robot(CAU_QUET, st({ nac: 0, tam: 1 }, { kep: 'dong', cam: true }, { bat: true }), 0, 38, 58, 36);
+  }));
+  dk('nhac-doi', function (g, c) {
+    c.vat('container', { so: 24, mau: 'cam' }, 68, 44, 16);
+    c.vat('container', { so: 12, mau: 'lam' }, 68, 28, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true, doi: true }, { bat: true }), 0, 38, 62, 40);
+  });
+  dk('che-nhac-doi', che(function (g, c) {
+    c.vat('container', { so: 24, mau: 'cam' }, 60, 44, 14);
+    c.vat('container', { so: 12, mau: 'lam' }, 60, 30, 14);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true, doi: true }, { bat: true }), 0, 34, 64, 36);
+  }));
+  dk('can-tai', function (g, c) {
+    c.vat('container', { so: 28, mau: 'do' }, 68, 40, 18);
+    c.khoi(66, 68, 34, 22, BM.vecCamDam, [['4t', BM.vecVo, 12]]);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 36, 58, 38);
+  });
+  dk('che-can-tai', che(function (g, c) {
+    c.vat('container', { so: 28, mau: 'do' }, 60, 38, 16);
+    c.khoi(60, 64, 32, 20, BM.vecCamDam, [['4t', BM.vecVo, 11]]);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 60, 34);
+  }));
+  dk('cang-cu', function (g, c) {
+    c.o('rao', { mask: 0 }, 54, 48, 22);
+    c.vat('container', { so: 15, mau: 'cam' }, 72, 34, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 62, 38);
+  });
+  dk('che-cang-cu', che(function (g, c) {
+    c.o('rao', { mask: 0 }, 52, 50, 20);
+    c.vat('container', { so: 18, mau: 'cam' }, 66, 36, 14);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 32, 64, 34);
+  }));
+  dk('doi-cang', function (g, c) {
+    c.robot(CAU_QUET, st({ nac: 1, tam: 1 }, { kep: 'dong', cam: true }, { bat: true }), 0, 34, 48, 34);
+    c.robot({ than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' }, st({}, {}, { bat: true }), 1, 66, 62, 30);
+  });
+  dk('che-doi-cang', che(function (g, c) {
+    c.robot(CAU_QUET, st({ nac: 1, tam: 1 }, { kep: 'dong', cam: true }, { bat: true }), 0, 32, 48, 32);
+    c.robot({ than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' }, st({}, {}, { bat: true }), 1, 64, 62, 28);
+  }));
+  dk('tong-hop-cang', function (g, c) {
+    c.o('boong-tau', { co: true }, 68, 34, 24);
+    c.vat('container', { so: 18, mau: 'cam' }, 68, 32, 16);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 36, 62, 40);
+  });
+  dk('trum-mua-cang', function (g, c) {
+    c.o('boong-tau', { co: true }, 68, 40, 22);
+    c.vat('container', { so: 18, mau: 'cam' }, 68, 38, 15);
+    c.robot(CAU_QUET, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }, { bat: true }), 0, 36, 62, 38);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  });
+
+  /* ---- MÙA BẾN SÔNG (mua-5): Gói 1–4 ---- */
+  var XUONG = { than: 'xuong', tay: null, camBien: [] };
+  var XUONG_KEO = { than: 'xuong', tay: 'day-keo', camBien: [] };
+  var XUONG_DONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
+  dk('xuong', function (g, c) {
+    c.o('phao-dich', {}, 68, 34, 24);
+    c.robot(XUONG, st({ chay: true }), 1, 36, 60, 40);
+  });
+  dk('ham-tra-ve', che(function (g, c) {
+    c.khoi(62, 34, 38, 22, BM.vecLamDam, [['ret', BM.vecCanhBao, 10]]);
+    c.robot(XUONG, st({ chay: true }), 1, 34, 62, 36);
+  }));
+  dk('day-keo', function (g, c) {
+    c.o('ben-nhan', {}, 70, 34, 24);
+    c.vat('be-go', { keo: true }, 70, 34, 16);
+    c.robot(XUONG_KEO, st({ chay: true }, { day: true }), 1, 34, 60, 40);
+  });
+  dk('bo-co-dinh', che(function (g, c) {
+    c.khoi(62, 34, 38, 22, BM.vecLamDam, [['(2,1)', BM.vecCanhBao, 9]]);
+    c.robot(XUONG_KEO, st({ chay: true }, { day: true }), 1, 34, 62, 36);
+  }));
+  dk('dong-chay', function (g, c) {
+    c.o('dong-nuoc', { huong: 1 }, 68, 34, 24);
+    c.robot(XUONG_DONG, st({ chay: true }, null, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-dong-chay', che(function (g, c) {
+    c.o('dong-nuoc', { huong: 1 }, 66, 34, 22);
+    c.robot(XUONG_DONG, st({ chay: true }, null, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('cong-thuy-loi', function (g, c) {
+    c.o('cong-thuy-loi', { mo: true }, 68, 34, 24);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-cong', che(function (g, c) {
+    c.o('van-cong', { bat: true }, 66, 34, 22);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('tha-neo', function (g, c) {
+    c.o('dong-nuoc', { huong: 3 }, 68, 34, 24);
+    c.robot(XUONG_DONG, st({ neo: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-tha-neo', che(function (g, c) {
+    c.o('dong-nuoc', { huong: 3 }, 66, 34, 22);
+    c.robot(XUONG_DONG, st({ neo: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('buoc-duoi', function (g, c) {
+    c.vat('be-go', { keo: true }, 26, 62, 16);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 56, 60, 40);
+  });
+  dk('che-buoc-duoi', che(function (g, c) {
+    c.vat('be-go', { keo: true }, 26, 62, 14);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 56, 62, 36);
+  }));
+  dk('suc-nuoc', function (g, c) {
+    c.o('dong-nuoc', { huong: 1, suc: 2 }, 68, 34, 24);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-suc-nuoc', che(function (g, c) {
+    c.o('dong-nuoc', { huong: 1, suc: 2 }, 66, 34, 22);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('ben-cu', function (g, c) {
+    c.o('cong-thuy-loi', { mo: true }, 68, 34, 24);
+    c.vat('be-go', { keo: true }, 68, 62, 16);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-ben-cu', che(function (g, c) {
+    c.o('cong-thuy-loi', { mo: true }, 66, 34, 22);
+    c.vat('be-go', { keo: true }, 66, 62, 14);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('doi-xuong', function (g, c) {
+    c.vat('be-go', { keo: true }, 50, 34, 16);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 30, 62, 36);
+    c.robot({ than: 'hai-banh', tay: 'kep', son: 'lam' }, st(), 0, 70, 62, 34);
+  });
+  dk('che-doi-xuong', che(function (g, c) {
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 28, 62, 32);
+    c.robot({ than: 'hai-banh', tay: 'kep', son: 'lam' }, st(), 0, 56, 70, 30);
+  }));
+  dk('tong-hop-song', function (g, c) {
+    c.o('cong-thuy-loi', { mo: true }, 68, 34, 24);
+    c.vat('be-go', { keo: true }, 68, 62, 16);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 42);
+  });
+  dk('trum-mua-song', function (g, c) {
+    c.o('cong-thuy-loi', { mo: true }, 68, 40, 22);
+    c.vat('be-go', { keo: true }, 68, 64, 14);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 36, 62, 38);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  });
+
+  /* ---- MÙA 8: HANG ĐỘNG ĐÁ VÔI (mua-8): Gói 1–10 ---- */
+  var GAI = { than: 'gai', tay: null, camBien: [] };
+  var GAI_LOA = { than: 'gai', tay: 'loa', camBien: [] };
+  var GAI_AM = { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] };
+  dk('banh-gai', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.robot(GAI, st({ chay: true }), 1, 36, 60, 40);
+  });
+  dk('tu-dien', che(function (g, c) {
+    c.khoi(62, 34, 38, 22, BM.vecLamDam, [['{ }', BM.vecCanhBao, 10]]);
+    c.robot(GAI, st({ chay: true }), 1, 34, 62, 36);
+  }));
+  dk('loa', function (g, c) {
+    c.song(62, 42, -0.3, [7, 12, 17], BM.vecCanhBao);
+    c.robot(GAI_LOA, st({ chay: true }, { day: true }), 1, 36, 60, 40);
+  });
+  dk('tap-hop', che(function (g, c) {
+    c.khoi(62, 34, 38, 22, BM.vecTimDam, [['set', BM.vecCanhBao, 10]]);
+    c.robot(GAI_LOA, st({ chay: true }, { day: true }), 1, 34, 62, 36);
+  }));
+  dk('am-thanh', function (g, c) {
+    c.song(56, 38, 0, [8, 14, 20], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-am-thanh', che(function (g, c) {
+    c.song(56, 38, 0, [7, 12, 17], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('san-hang-dong', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.song(58, 56, 0, [6, 11], BM.vecCanhBao);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-hang-dong', che(function (g, c) {
+    c.o('bang', {}, 66, 34, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('thu-gai', function (g, c) {
+    c.o('bang', {}, 56, 60, 24);
+    c.o('bang', {}, 74, 60, 24);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 32, 58, 40);
+  });
+  dk('che-thu-gai', che(function (g, c) {
+    c.o('bang', {}, 64, 58, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('phat-not', function (g, c) {
+    c.khoi(66, 34, 32, 22, BM.vecVang, [['♪ 5', BM.vecVien, 10]]);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-phat-not', che(function (g, c) {
+    c.khoi(64, 34, 32, 20, BM.vecVang, [['♪ n', BM.vecVien, 10]]);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('nghe-not', function (g, c) {
+    c.song(60, 36, 0, [7, 13, 19], BM.vecDen);
+    c.khoi(68, 60, 26, 18, BM.vecLamDam, [['1..8', BM.vecCanhBao, 8]]);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-nghe-not', che(function (g, c) {
+    c.song(58, 38, 0, [7, 12, 17], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('hang-cu', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.o('ho', {}, 68, 62, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-hang-cu', che(function (g, c) {
+    c.o('bang', {}, 66, 34, 22);
+    c.o('ho', {}, 66, 62, 20);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
+  dk('doi-hang-dong', function (g, c) {
+    c.o('bang', {}, 50, 34, 22);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 30, 62, 36);
+    c.robot({ than: 'gai', tay: 'loa', son: 'lam' }, st({ chay: true }), 0, 70, 62, 34);
+  });
+  dk('che-doi-hang-dong', che(function (g, c) {
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 28, 62, 32);
+    c.robot({ than: 'gai', tay: 'loa', son: 'lam' }, st({ chay: true }), 0, 56, 70, 30);
+  }));
+  dk('tong-hop-hang', function (g, c) {
+    c.o('bang', {}, 68, 34, 24);
+    c.song(58, 56, 0, [6, 11], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 42);
+  });
+  dk('trum-mua-hang', function (g, c) {
+    c.o('bang', {}, 68, 40, 22);
+    c.song(58, 60, 0, [6, 11], BM.vecDen);
+    c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 36, 62, 38);
+    c.sao(22, 28, 7); c.sao(78, 28, 7);
+  });
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

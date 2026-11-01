@@ -116,22 +116,26 @@ console.log('\n== 3. Hai chương ==');
   // Màn mới mùa 4 (man-cham-son.js may-son.11–16, man-net-lien.js net-lien.N và che-may-son.11, .12) có thêm ở hoc/kiem-man-mua-4.mjs; ở đây đếm màn cũ.
   kiem('20 màn: may-son.1–10 và che-may-son.1–10', ds.filter((m) => /^(che-)?may-son\.([1-9]|10)$/.test(m.ma)).length === 20);
   const DOC = ['che-may-son.6', 'che-may-son.9', 'che-may-son.10'];
-  kiem('mọi màn: xe hai bánh gắn đầu sơn, khay 9 lệnh, gói Chấm sơn bớt pen_down / pen_up (che-may-son 6, 9, 10: thêm color() và camera bốn hướng, từ 30/10), mục tiêu to-hinh, có hình mờ', ds.every((m) => m.loaiRobot === 'banh' && m.robot.tay === 'son' && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh) &&
-    (DOC.includes(m.ma) ? J(m.hamGoc) === J(KHAY.concat(['color'])) && J(m.robot.camBien) === '[{"ma":"camera-4","o":"tren"}]' && !!m.sonBanDau : J(m.hamGoc) === J(m.chuong === 'may-son' ? KHAY.filter((t) => t !== 'pen_down' && t !== 'pen_up') : KHAY) && !m.robot.camBien.length)));
+  const KHAY_DRONE_CHAM = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot'];
+  const KHAY_DRONE_NET = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot', 'pen_down', 'pen_up', 'color'];
+  kiem('mọi màn: gói Gieo hạt (may-son) và gói Nét liền (net-lien / che-may-son) trên drone + bộ gieo hạt dưới bụng; che-may-son-cu giữ xe hai bánh; mục tiêu to-hinh, có hình mờ', ds.every((m) => m.robot.tay === 'son' && m.mucTieu === 'to-hinh' && Array.isArray(m.hinh) &&
+    (m.chuong === 'may-son' ? m.loaiRobot === 'drone' && m.robot.than === 'drone' && J(m.hamGoc) === J(KHAY_DRONE_CHAM) && !m.robot.camBien.length :
+      (m.chuong === 'net-lien' || m.chuong === 'che-may-son') ? m.loaiRobot === 'drone' && m.robot.than === 'drone' && J(m.hamGoc) === J(KHAY_DRONE_NET) && J(m.robot.camBien) === '[{"ma":"camera-4","o":"tren"}]' && (DOC.includes(m.ma) ? !!m.sonBanDau : true) :
+        m.loaiRobot === 'banh' && J(m.hamGoc) === J(KHAY) && !m.robot.camBien.length)));
   kiem('che-may-son 1–9 chương trình chính cố định; 10 gioiHanHam 3 (copy_row, next_row, fill_gaps)', ds.filter((m) => m.chuong === 'che-may-son').every((m) => (m.so < 10) === (m.chinhCoDinh === true)) && ManHoc.timMa('che-may-son.10').gioiHanHam === 3);
   // kho: hàm cốt truyện các màn trước theo lộ trình (như người chơi mua mùa 3)
   const kho = new Map();
   for (const m of LoTrinh.danhSach) { if (m.doi) continue; if (m.chuong === 'may-son') break; for (const h of m.loiGiai.hamCuaEmMoi || []) kho.set(h.ten, h); }
-  const tron = (b) => { const k = new Map(kho); (b || []).forEach((h) => k.set(h.ten, h)); return [...k.values()]; };
+  const tron = (m, b) => { const k = new Map(kho); for (const h of m.loiGiai.hamCuaMan || []) if (h.capCu) k.delete(h.ten); (b || []).forEach((h) => k.set(h.ten, h)); return [...k.values()]; };
   for (const m of ds) {
-    const r = ChamHoc.cham(m, m.loiGiai, tron(m.loiGiai.hamCuaEmMoi));
+    const r = ChamHoc.cham(m, m.loiGiai, tron(m, m.loiGiai.hamCuaEmMoi));
     kiem(m.ma + ': lời giải 3 sao, ' + m.sao.o + ' ô, ' + m.sao.nhip + ' nhịp, không chẩn đoán', r.thang && r.sao === 3 && r.soO === m.sao.o && r.soNhip === m.sao.nhip && !r.chanDoan.length, J({ sao: r.sao, o: r.soO, n: r.soNhip, cd: r.chanDoan.map((c) => c.ma) }));
     (m.congThucKhac || []).forEach((ct) => {
-      const q = ChamHoc.cham(m, ct.baiLam || m.loiGiai, tron(ct.hamCuaEmMoi));
+      const q = ChamHoc.cham(m, ct.baiLam || m.loiGiai, tron(m, ct.hamCuaEmMoi));
       kiem(m.ma + ': cách khác "' + ct.moTa + '" thắng', q.thang, J(q.chanDoan.map((c) => c.ma)));
     });
     m.loiSai.forEach((ls) => {
-      const q = ChamHoc.cham(m, ls.baiLam, tron(ls.hamCuaEmMoi)), co = q.chanDoan.map((c) => c.ma);
+      const q = ChamHoc.cham(m, ls.baiLam, tron(m, ls.hamCuaEmMoi)), co = q.chanDoan.map((c) => c.ma);
       kiem(m.ma + ': lời sai "' + ls.moTa + '" đủ mã ' + ls.phaiCoMa.join('+'), q.sao < 3 && ls.phaiCoMa.every((x) => co.includes(x)), co.join());
     });
     const b = nhipMaySonTatCa(m);
@@ -146,7 +150,7 @@ console.log('\n== 4. Đăng ký ==');
   // lo-trinh-hoc.js đã chèn gói đội vào chính mảng ThuTu.goi: gói đội Cảm biến màu (nếu có) đứng giữa gói mau và gói may-son
   const truoc = ThuTu.goi.slice(0, i).filter((x) => x.ma !== 'doi-mau').pop();
   // 29/10 khung mùa 3 (KE-HOACH-MUA-3.md): may-son ngoài khuôn mùa 3, sang đầu mùa 4 (ẩn) cùng gói Cảm biến màu, giữ thứ tự.
-  kiem('P0 mùa 4: gói may-son (Chấm sơn) bộ phận mùa 4 chương may-son + che-list; gói net-lien (Nét liền) chương net-lien + che-may-son, đứng sau', g && g.loai === 'bo-phan' && g.mua === 'mua-4' && J(g.chuong) === '["may-son","che-list"]' && J((ThuTu.goi.find((x) => x.ma === 'net-lien') || {}).chuong) === '["net-lien","che-may-son"]' && ThuTu.goi.findIndex((x) => x.ma === 'net-lien') > i);
+  kiem('P0 mùa 6 (Nông trại): gói may-son (Chấm sơn) bộ phận mùa 6 chương may-son + che-list; gói net-lien (Nét liền) chương net-lien + che-may-son, đứng sau', g && g.loai === 'bo-phan' && g.mua === 'mua-6' && J(g.chuong) === '["may-son","che-list"]' && J((ThuTu.goi.find((x) => x.ma === 'net-lien') || {}).chuong) === '["net-lien","che-may-son"]' && ThuTu.goi.findIndex((x) => x.ma === 'net-lien') > i);
   kiem('thuTu (P0 mùa 4): may-son trước net-lien, che-may-son ngay sau net-lien', ThuTu.thuTu.indexOf('may-son') >= 0 && ThuTu.thuTu.indexOf('net-lien') > ThuTu.thuTu.indexOf('may-son') && ThuTu.thuTu.indexOf('che-may-son') === ThuTu.thuTu.indexOf('net-lien') + 1);
   const html = fs.readFileSync(path.join(day, 'game', 'choi.html'), 'utf8');
   kiem('choi.html nạp man-may-son.js, man-che-may-son.js (sau man-che-mau.js) và ve-vector-tay-son.js (V7c2: bộ pixel part/ đã xoá)', html.indexOf('../man-may-son.js') > html.indexOf('../man-che-mau.js') && html.indexOf('../man-che-may-son.js') > html.indexOf('../man-may-son.js') && html.includes('ve-vector-tay-son.js'));

@@ -3,7 +3,7 @@
    chương hong-ngoai (làm quen distance()) và che-hong-ngoai "Hàm cho hồng ngoại"; màn 10 mỗi chương là trùm có huy hiệu.
    1. Vị trí: gói hong-ngoai (mùa 2) có hai chương, mỗi chương đúng 10 màn mới theo `so`, hạng lam-quen ×3 · luyen ×3 · bien-the ×3 · trum;
       trùm mang huy hiệu đúng mã chương (huy-hieu.js có hình), không màn nào khác của gói mang huy hiệu.
-   2. Từng màn: đủ trường (≥ 2 lời sai có phaiCoMa), robot xe hai bánh + hồng ngoại (tay kẹp được), khay có distance; NHIỀU SÂN + nhipTheo 'tong';
+   2. Từng màn: đủ trường (≥ 2 lời sai có phaiCoMa), robot xe xích + hồng ngoại (vòi phun được; PDM2a 31/10, trước: hai bánh + tay kẹp), khay có distance; NHIỀU SÂN + nhipTheo 'tong';
       lời giải thắng 3 sao, đúng sao.o / sao.nhip, KHÔNG chẩn đoán; mã mẫu chưa thắng; lời giải khác đúng 2 sao; lời sai thua và có đủ mã phaiCoMa.
    3. Hàm của em: mọi hàm màn cần đã được tạo ở màn đứng trước (theo thứ tự lộ trình) và lời gọi nào cũng khai trong hamCuaEmCan; hàm mới (taoHam) có mục Sổ lệnh.
    4. Không dùng thứ của gói sau: không warm(), không xichDay / beSung / lucBan, không spray("…"), không return (mùa 5); sân không S / u / n.
@@ -11,7 +11,7 @@
       mỗi màn thêm TỐI ĐA MỘT điều mới (bảng đặc trưng đọc từ lời giải: distance, phép so sánh, biến, while / if / else, hàm của em mới, hàm có tham số, vật…);
       màn 1 chương 1 dễ (≤ 5 dòng); recall: ≥ 4 màn dùng thứ của gói 1–2 mùa 2 hay mùa 1 (hàm của em cũ, for, tay kẹp, forward(n)…).
    6. Phép so số (>, <=, == … với số): in ra màn đầu tiên dùng nó TRƯỚC gói 3; nếu chưa có thì màn đầu của gói dùng phép so phải tự giới thiệu (đề + gợi ý).
-   7. Bộ dò đường tắt: BFS CHUNG mọi sân (một dãy lệnh cố định chạy trên mọi sân, khối chuẩn move / back / turn_right / turn_left / u_turn 1 nhịp, pick / drop 2 nhịp)
+   7. Bộ dò đường tắt (màn xe hai bánh; PDM2a 31/10 R1 thành xích thì kiem-lach-mua-2.mjs dò thay): BFS CHUNG mọi sân (một dãy lệnh cố định chạy trên mọi sân, khối chuẩn move / back / turn_right / turn_left / u_turn 1 nhịp, pick / drop 2 nhịp)
       không tìm được lời nào KHÔNG đọc distance() mà thắng mọi sân với tổng nhịp ≤ sao.nhip (màn hồng ngoại giải được không cần distance là màn hỏng ý).
       Đường tắt tìm được (nếu có) chạy thật bằng cham.js để chắc bộ dò đúng luật.
    Chạy: node hoc/kiem-hong-ngoai.mjs              (trượt thì thoát mã 1)
@@ -55,9 +55,10 @@ if (LOI_GIA) {
   b.hamCuaEmCan = b.hamCuaEmCan.concat(['fly_home']); LOI_GIA_DS.push('hong-ngoai.2: hàm của em');       // hàm chưa ai tạo
   a.loiGiai.chinh = a.loiGiai.chinh.concat(['w = warm()']); LOI_GIA_DS.push('hong-ngoai.1: không dùng thứ'); // warm() là gói 7
   const c = get('hong-ngoai.3'), e = get('hong-ngoai.4'), k = get('che-hong-ngoai.2'), t = get('hong-ngoai.10');
-  c.sao = Object.assign({}, c.sao, { o: c.sao.o + 2 }); LOI_GIA_DS.push('hong-ngoai.3: bộ dò');                   // ngưỡng ô rộng: đếm cứng cũng 3 sao
-  k.san = ['#####', '#...#', '#.#.#', '#.#F#', '#####']; k.batDau = { x: 1, y: 3, huong: 0 };                       // ba đoạn dài bằng nhau…
-  k.loiGiai = Object.assign({}, k.loiGiai, { chinh: ['go_safe(0)', 'turn_right()', 'go_safe(0)', 'turn_right()', 'go_safe(0)'] }); LOI_GIA_DS.push('che-hong-ngoai.2: bộ dò');  // …thân cố định move(); move() cũng 3 sao
+  // PDM2a 31/10: mục 7 (bộ dò dãy cố định hai bánh) không chạy với xích nữa; lỗi giả "bộ dò" của nó chuyển sang lách hằng ở kiem-lach-mua-2.mjs --loi-gia.
+  // Thay bằng hai lỗi giả luật part (R1 xe cứu hỏa): thân hai bánh, tay kẹp.
+  c.robot = Object.assign({}, c.robot, { than: 'hai-banh' }); LOI_GIA_DS.push('hong-ngoai.3: đủ trường');            // R1 không phải xích
+  k.robot = Object.assign({}, k.robot, { tay: 'kep' }); LOI_GIA_DS.push('che-hong-ngoai.2: đủ trường');               // R1 mang tay kẹp
   e.san = [e.san, e.san]; e.batDau = [e.batDau, e.batDau]; LOI_GIA_DS.push('hong-ngoai.4: đủ trường');            // nhiều sân ở màn không phải trùm
   t.huyHieu = null; LOI_GIA_DS.push('huy hiệu');                                                                      // trùm mất huy hiệu
 }
@@ -238,9 +239,10 @@ for (const m of DS) {
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
-    assert.equal(m.loaiRobot, 'banh');
-    assert.equal(m.robot.than, 'hai-banh');
-    assert.ok(m.robot.tay === null || m.robot.tay === 'kep', m.ma + ' tay ' + m.robot.tay);
+    // PDM2a 31/10 (part đúng mùa): R1 là xe cứu hỏa: thân xích + hồng ngoại, tay vòi phun khi màn cần (trước: xe hai bánh, tay kẹp được)
+    assert.equal(m.loaiRobot, 'xich');
+    assert.equal(m.robot.than, 'xich');
+    assert.ok(m.robot.tay === null || m.robot.tay === 'hoi', m.ma + ' tay ' + m.robot.tay);
     assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['hong-ngoai']);
     assert.ok(m.hamGoc.includes('distance'), m.ma + ' khay thiếu distance');
     if (m.hang === 'trum') assert.ok(soSan(m) <= 3, m.ma + ' trùm tối đa ba sân');
@@ -304,6 +306,9 @@ for (const m of DS) {
   });
   kiem(m.ma + ': bộ dò đường tắt: không có chương trình né distance() được 3 sao', () => {
     if (m.chiChay) { bang[m.ma].ne = '-'; bang[m.ma].tat = 'màn trình diễn (khoá, chỉ bấm Chạy)'; return; }     // gói T mùa 2
+    // PDM2a 31/10: R1 thành xe xích (quay hai nhịp, hàm quay tr_right / tr_left, van / cửa). Bộ dò dãy cố định (do-duong-che-luc-ban.mjs) mô phỏng xe hai bánh,
+    // không mở được hàm quay xích và chưa hỗ trợ nút / cửa: với xích, lời né distance() do kiem-lach-mua-2.mjs dò (A1 / A2 / B duỗi thẳng, C / E hằng thay d / distance()).
+    if (m.robot.than === 'xich') { bang[m.ma].ne = '-'; bang[m.ma].tat = 'xích: kiem-lach-mua-2 dò (A, B, C, E)'; return; }
     if (soSan(m) === 1 && m.chinhCoDinh) {
       // chương trình chính khóa: người chơi chỉ sửa thân MỘT hàm (hàm mới tạo, hay hàm của màn); thân né distance() là dãy cố định
       const hm = (m.loiGiai.hamCuaEmMoi || [])[0] || (m.loiGiai.hamCuaMan || [])[0];

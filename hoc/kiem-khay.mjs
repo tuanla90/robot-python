@@ -340,7 +340,7 @@ console.log('\n== 5. Mọi màn: khay không mất khối nào so với kho cũ 
     for (const ds of Object.values(q)) for (const t of ds) tat.add(t);
     for (const t of ghimCo(k)) tat.add(t);
     const can = [];
-    for (const n of (m.hamGoc || [])) { if (['front_clear', 'left_clear', 'right_clear', 'color', 'look', 'front_metal', 'front_pole', 'battery'].includes(n)) continue; can.push(n); }
+    for (const n of (m.hamGoc || [])) { if (['front_clear', 'left_clear', 'right_clear', 'color', 'look', 'front_metal', 'front_pole', 'battery', 'distance', 'warm'].includes(n)) continue; can.push(n); }     // distance / warm (hồng ngoại, PDM2b: luc-ban.8–10 ngân hàng) là số đo / điều kiện, không phải khối lệnh
     for (const f of hm(m)) can.push(f.ten);
     if (spec.em) for (const f of spec.em) can.push(f.ten);
     const thieu = can.filter((n) => !tat.has(n));
@@ -652,6 +652,7 @@ console.log('\n== 11. Hàm của em: bắt tạo hàm, hàm sửa hỏng, nhóm 
   kiem('mọi màn thường: phá một hàm khóa mà lời giải màn gọi (lời giải hết thắng) thì hamHong chỉ ra đúng hàm đó; phá mà lời giải vẫn thắng thì không báo; kho tham chiếu nguyên vẹn thì không báo gì',
     (() => { const sai = []; let soPha = 0; ManHoc.danhSach.forEach((m) => { const ref = ManHoc.khoThamChieu(m), kh = khoa(m);
       if (ChamHoc.hamHong(m, ref, ref, kh).length) sai.push(m.ma + ' kho đúng');
+      if ((m.hamCuaEmCan || []).some((t) => !ref.some((f) => f.ten === t))) return;     // PDM2b: luc-ban.10 cần go_to_wall của che-hong-ngoai.1 (tệp lộ trình, ngoài ngân hàng thô) nên lời giải không thắng ở đây
       const dung = ChamHoc.cham(m, m.loiGiai, tron(ref, m.loiGiai.hamCuaEmMoi)).hamDaDung || [];
       (m.hamCuaEmCan || []).filter((t) => kh.includes(t) && dung.includes(t) && ref.some((f) => f.ten === t)).forEach((t) => {
         const pha = ref.map((f) => (f.ten === t ? H(t, ['wait()'], f.thamSo) : f)), conThang = ChamHoc.cham(m, m.loiGiai, tron(pha, m.loiGiai.hamCuaEmMoi)).thang;

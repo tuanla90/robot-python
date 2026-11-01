@@ -61,16 +61,18 @@
     'omni': {
       khe: 'than', ten: 'Thân bánh omni',
       moTa: 'Có đủ lệnh của xe hai bánh, thêm hai lệnh trượt ngang.',
-      lenh: BANH.concat(['slide_left', 'slide_right', 'wait']),
+      lenh: BANH.concat(['slide_left', 'slide_right', 'diag_left', 'diag_right', 'wait']),
       ghep: [
         { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
         { lenh: ['left_move', 'wait'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
         { lenh: ['slide_right', 'wait'], ra: 'Trượt sang phải 1 ô, mặt giữ nguyên', ket: { x: 3, y: 2, huong: 0 } },
         { lenh: ['slide_left', 'wait'], ra: 'Trượt sang trái 1 ô, mặt giữ nguyên', ket: { x: 1, y: 2, huong: 0 } }
       ],
-      gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh'],
-      khong: ['Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
-      luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.']
+      gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh',
+        { chu: 'Bản nâng cấp đi chéo: diag_left() và diag_right() lách chéo 1 ô trong 1 nhịp', can: ['diag_left', 'diag_right'] }],
+      khong: [{ chu: 'Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', khongCan: ['diag_left'] }, 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
+      luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.',
+        { chu: 'Mỗi lệnh diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
     },
     'nhen': {
       khe: 'than', ten: 'Thân nhện',
@@ -233,9 +235,220 @@
       gioi: ['look() cho màu của vật bên dưới; không có vật thì màu sàn', 'Đọc không tốn nhịp'],
       khong: ['Chỉ thấy ô ngay dưới drone', 'Chỉ gắn được trên drone'],
       luuY: []
+    },
+    'radar': {
+      khe: 'camBien', ten: 'Radar tròn',
+      moTa: 'Vòm radar trên nóc xe, quét lưới 3x3 quanh robot để biết tường, đá, hố, đích hay cờ.',
+      lenh: ['radar', 'shape'],
+      moTaLenh: {
+        radar: 'Quét lưới 3x3 quanh robot, trả về danh sách 2 chiều',
+        shape: 'Nhận dạng hình khối của vật ở ô theo hướng d'
+      },
+      gioi: ['radar() trả về lưới 3x3 quanh xe, ô giữa g[1][1] là chỗ xe đứng', 'Đọc không tốn nhịp'],
+      khong: ['Chỉ thấy 8 ô xung quanh xe và ô xe đang đứng'],
+      luuY: ['Hàng 0 là phía trên, hàng 2 là phía dưới; cột 0 là bên trái, cột 2 là bên phải.', 'Bản nâng cấp mở thêm shape(d) để phân biệt đá tròn, đá vuông và quặng.']
+    },
+    'cau': {
+      khe: 'than', ten: 'Cần cẩu cảng',
+      moTa: 'Mâm xoay cảng sông với cần vươn 3 tầm, xoay 8 nấc quanh trụ cẩu.',
+      lenh: ['swing_left', 'swing_right', 'extend', 'retract', 'rail', 'wait'],
+      moTaLenh: {
+        swing_left: 'Quay cần sang trái 1 nấc trong 8 nấc một vòng',
+        swing_right: 'Quay cần sang phải 1 nấc trong 8 nấc một vòng',
+        extend: 'Vươn cần ra thêm 1 tầm, tối đa tầm 3',
+        retract: 'Thu cần vào 1 tầm, tối thiểu tầm 1',
+        rail: 'Trượt chân cẩu trên ray 1 ô theo hướng d'
+      },
+      gioi: [
+        'Quay tròn 8 nấc quanh trụ, nấc 0 là phía trên và tăng dần theo chiều kim đồng hồ',
+        'Vươn cần từ tầm 1 tới tầm 3 để đưa đầu cần tới đúng ô mục tiêu',
+        { can: ['rail'], chu: 'rail(d) trượt chân cẩu dọc theo đường ray cảng' }
+      ],
+      khong: [
+        { khongCan: ['rail'], chu: 'Chân cẩu cố định tại trụ, không tự đi khắp sân' },
+        'Tầm vươn chỉ từ 1 tới 3, vươn quá tầm 3 hoặc thu dưới tầm 1 sẽ báo lỗi'
+      ],
+      luuY: ['Mỗi lệnh quay hoặc vươn thu tốn 1 nhịp.']
+    },
+    'moc-cau': {
+      khe: 'tay', ten: 'Móc cẩu container',
+      moTa: 'Khung cẩu gắn đầu cần để nhấc và hạ container trên bãi cảng.',
+      lenh: ['pick_up', 'set_down', 'pick_up2'],
+      moTaLenh: {
+        pick_up: 'Nhấc 1 container trên đỉnh chồng ở ô đầu cần',
+        set_down: 'Hạ container đang treo xuống ô đầu cần',
+        pick_up2: 'Nhấc 2 container trên cùng của chồng ở ô đầu cần'
+      },
+      ghep: [
+        { lenh: ['pick_up', 'set_down'], chu: 'Đưa đầu cần tới chồng hàng -> pick_up() -> quay sang bãi đích -> set_down()' }
+      ],
+      gioi: [
+        'pick_up() nhấc container trên cùng của chồng ở ô đầu cần đang trỏ tới',
+        'set_down() đặt container đang treo lên đỉnh chồng ở ô đầu cần',
+        { can: ['pick_up2'], chu: 'Móc nâng cấp nhấc liền 2 container trên cùng khi tổng khối lượng vừa sức nâng' }
+      ],
+      khong: ['Không nhấc thêm được khi móc đang treo hàng'],
+      luuY: ['Chỉ hạ container xuống bãi K, boong tàu T đang đỗ hoặc chồng hàng hợp lệ.']
+    },
+    'quet-ma': {
+      khe: 'camBien', ten: 'Đầu đọc mã container',
+      moTa: 'Đầu quét quang học gắn ở đầu cần, đọc mã số in trên nóc container.',
+      lenh: ['read_code', 'weight'],
+      moTaLenh: {
+        read_code: 'Đọc mã số container trên đỉnh chồng ở ô đầu cần, trống là -1',
+        weight: 'Đo số tấn đang treo hoặc số tấn của container trên đỉnh chồng, trống là 0'
+      },
+      gioi: [
+        'read_code() trả về mã số nguyên của container trên cùng ở ô đầu cần',
+        'Đọc không tốn nhịp',
+        { can: ['weight'], chu: 'weight() trả về số tấn đang treo hoặc số tấn của container trên đỉnh chồng, trống là 0' }
+      ],
+      khong: ['Chỉ đọc được container trên đỉnh chồng ngay dưới đầu cần'],
+      luuY: ['Khi ô dưới đầu cần không có container, read_code() trả về -1.']
+    },
+    'xuong': {
+      khe: 'than', ten: 'Xuồng chân vịt',
+      moTa: 'Thân tàu thủy lợi với hai chân vịt trái phải và mỏ neo chống trôi trên sông.',
+      lenh: ['left_move', 'right_move', 'left_back', 'right_back', 'anchor', 'unanchor', 'wait'],
+      moTaLenh: {
+        left_move: 'Chân vịt trái quay tiến trong nhịp này',
+        right_move: 'Chân vịt phải quay tiến trong nhịp này',
+        left_back: 'Chân vịt trái quay lùi trong nhịp này',
+        right_back: 'Chân vịt phải quay lùi trong nhịp này',
+        anchor: 'Thả neo giữ xuồng đứng yên trước dòng nước chảy',
+        unanchor: 'Kéo neo lên để xuồng lại chạy được trên sông'
+      },
+      ghep: [
+        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô nước' },
+        { lenh: ['left_move', 'wait'], ra: 'Quay phải 90°' },
+        { lenh: ['left_back', 'wait'], ra: 'Quay trái 90°' },
+        { lenh: ['left_back', 'right_move', 'wait'], ra: 'Quay đầu 180°' },
+        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô nước' }
+      ],
+      gioi: [
+        'Hai chân vịt nhận lệnh y hệt xe hai bánh nên các hàm move(), turn_left(), turn_right(), u_turn(), back() đều dùng lại ngay',
+        'Lướt trên các ô nước ~, bến phao Q, bến hàng q và cống mở k',
+        { can: ['anchor'], chu: 'anchor() thả neo giữ xuồng không bị dòng nước cuốn trôi khi đứng chờ' }
+      ],
+      khong: [
+        'Không lên được bờ đất . hay bờ kè # và không đi xuyên qua cống đóng K',
+        { can: ['anchor'], chu: 'Đang thả neo thì không tiến, lùi hay quay được cho tới khi gọi unanchor()' }
+      ],
+      luuY: ['Trên ô có dòng nước chảy, cuối mỗi nhịp xuồng không thả neo sẽ trôi theo chiều dòng.']
+    },
+    'day-keo': {
+      khe: 'tay', ten: 'Dây phao kéo',
+      moTa: 'Cuộn dây phao gắn mũi xuồng để quăng bắt bè nổi, giật van cống hoặc buộc bè theo đuôi.',
+      lenh: ['tow', 'drop_tow', 'tether', 'untether'],
+      moTaLenh: {
+        tow: 'Quăng dây phao thẳng theo mũi xuồng tối đa 3 ô để kéo vật nổi hoặc giật van V',
+        drop_tow: 'Tháo dây thả vật đang kéo ở mũi xuống ô hiện tại của nó',
+        tether: 'Chuyển vật đang kéo ở mũi ra ô sau đuôi hoặc buộc vật nổi ngay sau đuôi',
+        untether: 'Tháo dây cho vật đang buộc ở đuôi'
+      },
+      ghep: [
+        { lenh: ['tow', 'wait'], ra: 'Quăng dây kéo vật nổi về sát mũi hoặc giật van V trên bờ' },
+        { lenh: ['drop_tow', 'wait'], ra: 'Thả vật đang kéo ở mũi xuống bến hàng q' },
+        { lenh: ['tether', 'wait'], ra: 'Chuyển bè từ mũi ra sau đuôi hoặc buộc bè ngay sau đuôi' },
+        { lenh: ['untether', 'wait'], ra: 'Tháo dây thả bè đang buộc ở đuôi' }
+      ],
+      gioi: [
+        'tow() phóng dây thẳng theo mũi xuồng tối đa 3 ô, trúng bè nổi B hoặc L thì kéo về sát ngay trước mũi xuồng',
+        'Khi đang kéo vật ở mũi: xuồng tiến thì đẩy vật đi trước, xuồng lùi thì kéo vật theo sau',
+        'tow() trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van',
+        { can: ['tether'], chu: 'tether() buộc bè nổi ra ô sau đuôi để kéo theo như toa tàu qua khúc cua hẹp mà không vướng mũi' }
+      ],
+      khong: [
+        'Không gọi tow() thêm được khi mũi xuồng đang kéo một vật nổi',
+        'Khi đang kéo vật ở mũi, chỉ quay 90° được nếu ô mới trước mũi là mặt nước trống',
+        { can: ['tether'], chu: 'Đang buộc bè ở đuôi thì không lùi thẳng vào chính ô của bè được' }
+      ],
+      luuY: ['Gọi drop_tow() rồi wait() khi vật đang nằm ngay trên ô bến hàng q để giao hàng.']
+    },
+    'dong-chay': {
+      khe: 'camBien', ten: 'Chong chóng dòng chảy',
+      moTa: 'Chong chóng đo nước gắn trước mũi xuồng, đọc hướng và sức chảy của ô phía trước.',
+      lenh: ['flow_dir', 'flow'],
+      moTaLenh: {
+        flow_dir: 'Đọc hướng chảy của ô trước mũi xuồng: "front", "back", "left", "right" hoặc "none"',
+        flow: 'Đọc bộ đôi hướng và sức chảy của ô trước mũi xuồng'
+      },
+      gioi: [
+        'flow_dir() trả về hướng chảy của ô ngay trước mũi tính theo hướng xuồng đang quay',
+        'Đọc cảm biến không tốn nhịp',
+        { can: ['flow'], chu: 'flow() trả về bộ cố định gồm hướng chảy và sức đẩy 0, 1 hoặc 2 của ô trước mũi' }
+      ],
+      khong: ['Chỉ đo được một ô ngay trước mũi xuồng, không đo xuyên qua nhiều ô'],
+      luuY: ['Khi ô trước mũi là nước lặng hoặc bờ đất, flow_dir() trả về "none".']
+    },
+    'gai': {
+      khe: 'than', ten: 'Bánh gai đá vôi',
+      moTa: 'Thân xe thám hiểm hang động với bốn bánh gai bám chắc trên nền đá vôi ướt.',
+      lenh: ['left_move', 'right_move', 'left_back', 'right_back', 'retract_spikes', 'extend_spikes', 'wait'],
+      moTaLenh: {
+        left_move: 'Hai bánh gai bên trái quay tiến trong nhịp này',
+        right_move: 'Hai bánh gai bên phải quay tiến trong nhịp này',
+        left_back: 'Hai bánh gai bên trái quay lùi trong nhịp này',
+        right_back: 'Hai bánh gai bên phải quay lùi trong nhịp này',
+        retract_spikes: 'Thu gai vào trong bánh để lướt trên dải đá vôi ướt I',
+        extend_spikes: 'Bật gai ra ngoài bánh để bám chắc không trượt trên đá vôi ướt I'
+      },
+      ghep: [
+        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô' },
+        { lenh: ['left_move', 'wait'], ra: 'Quay phải 90°' },
+        { lenh: ['left_back', 'wait'], ra: 'Quay trái 90°' },
+        { lenh: ['left_back', 'right_move', 'wait'], ra: 'Quay đầu 180°' },
+        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô' }
+      ],
+      gioi: [
+        'Bánh gai nhận lệnh y hệt xe hai bánh nên các hàm move(), turn_left(), turn_right(), u_turn(), back() đều dùng lại ngay',
+        'Khi đang bật gai mặc định, xe đi trên nền đá vôi ướt I dừng đúng ô không bị trượt lố',
+        { can: ['retract_spikes'], chu: 'retract_spikes() thu gai để bước vào dải đá vôi ướt I là lướt liền một mạch trong 1 nhịp cho tới hết dải' }
+      ],
+      khong: [
+        'Không đi qua được vách đá # hay vực sâu u trong hang',
+        { can: ['retract_spikes'], chu: 'Đang thu gai mà lướt trên đá vôi ướt I lao thẳng vào vực sâu u hay hố hở thì rơi ngay' }
+      ],
+      luuY: ['Gọi retract_spikes() hoặc extend_spikes() để đổi chế độ gai ngay lập tức mà không tốn nhịp.']
+    },
+    'loa': {
+      khe: 'tay', ten: 'Loa cộng hưởng',
+      moTa: 'Loa âm thanh gắn trên lưng xe để gõ nhịp vang hang và phát nốt nhạc mở khóa đá chuông.',
+      lenh: ['beat', 'note'],
+      moTaLenh: {
+        beat: 'Gõ một tiếng trống vào đúng nhịp wait() kế tiếp',
+        note: 'Phát nốt nhạc từ 1 đến 8 kéo dài theo số nhịp'
+      },
+      ghep: [
+        { lenh: ['beat', 'wait'], ra: 'Gõ một tiếng trống ở nhịp này' },
+        { lenh: ['note', 'wait'], ra: 'Ngân một nốt nhạc ở nhịp này' }
+      ],
+      gioi: [
+        'beat() gõ tiếng trống vào nhịp wait() kế tiếp, có thể vừa di chuyển vừa gõ nhịp cùng lúc',
+        'Khi đứng cạnh khối đá chuông có ký hiệu trống x, gõ beat() đúng nhịp làm đá chuông cộng hưởng rụt xuống sàn',
+        { can: ['note'], chu: 'note(n) phát cao độ từ 1 đến 8 để khớp bản nhạc hoặc mở đá chuông mang số nốt tương ứng' }
+      ],
+      khong: ['Gõ sai nhịp hoặc phát sai cao độ sẽ làm đá chuông đã mở bật trồi lên chắn lối trở lại'],
+      luuY: ['Nhịp không gọi beat() hay note(n) mà chỉ gọi wait() sẽ ghi nhận là một nhịp nghỉ lặng.']
+    },
+    'am-thanh': {
+      khe: 'camBien', ten: 'Mic thu thanh',
+      moTa: 'Cảm biến âm thanh gắn trên đỉnh xe, lắng nghe tiếng vọng và cao độ từ chuông đá trong hang.',
+      lenh: ['hear', 'listen'],
+      moTaLenh: {
+        hear: 'Đo khoảng cách theo số ô tới chuông đá gần nhất trước mặt trong tầm 6 ô',
+        listen: 'Nghe cao độ nốt nhạc từ 1 đến 8 của chuông đá gần nhất trong tầm 6 ô'
+      },
+      gioi: [
+        'hear() trả về số ô từ 1 đến 6 tới chuông đá trước mặt để biết quãng đường cần tiến mà không đếm tay',
+        'Đọc cảm biến không tốn nhịp',
+        { can: ['listen'], chu: 'listen() đọc cao độ nốt 1 đến 8 của chuông đá gần nhất để phát lại đúng nốt đó bằng note(n)' }
+      ],
+      khong: ['Vách đá # chắn ngang đường nhìn trước mặt sẽ cản tiếng vọng của hear()'],
+      luuY: ['Khi không có chuông đá nào trong tầm 6 ô, hear() và listen() đều trả về 0.']
     }
   };
-  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay'];
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'xuong', 'gai', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'day-keo', 'loa', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma', 'dong-chay', 'am-thanh'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
 
   function co(ds, x) { return ds.indexOf(x) >= 0; }
@@ -253,6 +466,10 @@
     them('hong-ngoai');
     if (co(goc, 'color')) them(co(cam, 'camera-4') ? 'camera-4' : co(cam, 'camera') ? 'camera' : 'mau');
     them('camera-bay');
+    them('radar');
+    them('quet-ma');
+    them('dong-chay');
+    them('am-thanh');
     return kq;
   }
 

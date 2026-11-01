@@ -44,7 +44,8 @@ console.log('A. Lõi nam châm bụng nhện');
   // 1 cấu hình
   kiem('nhện + magnet_n / magnet_s / magnet_off: chạy không lỗi cấu hình (trước P1 mùa 3 là "Nhện không gắn nam châm")', loi(() => nhen(['...', '...'], null, { x: 0, y: 0, huong: 1 }, ['wait()'])) === null);
   kiem('nhện + nam châm + tay kẹp (grab): lỗi "một tay"', /chỉ có một tay/.test(loi(() => SanHoc.chay({ loaiRobot: 'nhen', hamGoc: HG.concat(['grab', 'release']), mucTieu: 'toi-co', san: ['...'], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n')) || ''));
-  kiem('nhện + nam châm + front_metal: vẫn lỗi (nhện không có hướng mặt, không cảm biến từ)', /không gắn cảm biến/.test(loi(() => SanHoc.chay({ loaiRobot: 'nhen', hamGoc: HG.concat(['front_metal']), mucTieu: 'toi-co', san: ['...'], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()\n')) || ''));
+  // 31/10 (KE-HOACH-PART-DUNG-MUA.md): nhện gắn được cảm biến từ (đo theo cạnh trước cố định, hướng xuất phát).
+  kiem('nhện + nam châm + front_metal: chạy được (31/10: cảm biến từ đo theo cạnh trước cố định)', !loi(() => SanHoc.chay({ loaiRobot: 'nhen', hamGoc: HG.concat(['front_metal']), mucTieu: 'toi-co', san: ['...'], batDau: { x: 0, y: 0, huong: 1 } }, 'wait()')));
   // 2 hút sắt ở ô ngay dưới: magnet_n(); go_right() → nhịp 1 chuẩn bị (bật), nhịp 2 bước lên ô sắt rồi hút ở cuối nhịp
   const k2 = nhen(['.o..'], ['.s..'], { x: 0, y: 0, huong: 1 }, ['magnet_n()', 'go_right()']);
   const hv2 = nhip(k2)[1].suKien.find((s) => s.ma === 'hut-vat');
@@ -123,7 +124,7 @@ console.log('B. Lời cham.js, luật ghép, thẻ bộ phận');
   const qw = (cQ.chanDoan || []).find((c) => c.ma === 'quen-wait');
   kiem('cham.js quen-wait cho nhện với lệnh nam châm: lời nhện ("bước go_*()")', !!qw && /bước go_\*\(\)/.test(qw.loi), J((cQ.chanDoan || []).map((c) => c.ma + ': ' + c.loi)));
   const gh = (than, tay, camBien) => LapRap.kiemGhep({ than, tay, camBien });
-  kiem('lap-rap.js: nhện + nam châm ghép được; nhện + máy ném / vòi phun / tay xoay vẫn sai; nhện + cảm biến từ vẫn sai', gh('nhen', 'nam-cham', null).ok && !gh('nhen', 'nem', null).ok && !gh('nhen', 'hoi', null).ok && !gh('nhen', 'xoay', null).ok && !gh('nhen', null, 'tu').ok, J([gh('nhen', 'nam-cham', null), gh('nhen', 'nem', null)]));
+  kiem('lap-rap.js: nhện + nam châm ghép được; nhện + máy ném / vòi phun / tay xoay vẫn sai; nhện + cảm biến từ ghép được (31/10)', gh('nhen', 'nam-cham', null).ok && !gh('nhen', 'nem', null).ok && !gh('nhen', 'hoi', null).ok && !gh('nhen', 'xoay', null).ok && gh('nhen', null, 'tu').ok, J([gh('nhen', 'nam-cham', null), gh('nhen', 'nem', null)]));
   const nd = GTP.noiDung('nam-cham', HG, [], 'nhen');
   kiem('thẻ bộ phận Nam châm trên thân nhện: có lưu ý "treo dưới bụng", "mang theo khi đi và khi nhảy"; trên hai bánh không có', (nd.luuY || []).some((s) => /nhện, nam châm treo dưới bụng/.test(s) && /nhảy/.test(s)) && !(GTP.noiDung('nam-cham', HG, [], 'hai-banh').luuY || []).some((s) => /nhện/.test(s)), J(nd.luuY));
 }

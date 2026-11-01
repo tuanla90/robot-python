@@ -384,7 +384,29 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     ],
 
-    /* ---------------------------------------------------------------- 9 · Nam châm bụng nhện */
+    /* ---------------------------------------------------------------- 8 · Băng chuyền cũ (PDM3b2: gói 8 mùa 3, phim tạm 3 khung) */
+    'bang-cu': [
+      function (k, c) {
+        var s = san3(k, c, ['#####', '.>>C*', '#####'], 4, X0, Y0), r = c.xe(XTD, DO, 1, 2, s.o(0, 1).x, s.o(0, 1).y); k.appendChild(r);
+        truot(c, r, 200, s.o(1, 1).x, s.o(1, 1).y, 0.7);
+        hoi(k, c, '?', s.o(1, 1).x - 6, 4, 1.1);
+        c.sau(1100, function () { r.mat('ngac'); c.keu('loi'); });
+      },
+      function (k, c) {
+        var s = san3(k, c, ['#####', '.iMC*', '#####'], 4, X0, Y0), r = c.xe(XTD, DO, 1, 2, s.o(0, 1).x, s.o(0, 1).y); k.appendChild(r);
+        truot(c, r, 200, s.o(1, 1).x, s.o(1, 1).y, 0.5);
+        c.sau(800, function () { r.ve(Object.assign({}, HUT_N, DO)); c.keu('kep'); });
+        truot(c, r, 1200, s.o(2, 1).x, s.o(2, 1).y, 0.5);
+        c.sau(1800, function () { r.ve(DO); r.mat('vui'); c.keu('moKhoa'); });
+      },
+      function (k, c) {
+        var s = san3(k, c, ['#####', '..MC*', '#####'], 4, X0, Y0), r = c.xe(XTD, DO, 1, 2, s.o(2, 1).x, s.o(2, 1).y); k.appendChild(r);
+        truot(c, r, 300, s.o(4, 1).x, s.o(4, 1).y, 0.9);
+        c.sau(1300, function () { r.mat('vui'); c.keu('thang'); });
+      }
+    ],
+
+    /* ---------------------------------------------------------------- 9 · Nam châm bụng nhện (cất, giữ phim) */
     'bung-nhen': [
       // 1 · đường hầm hẹp: quặng nằm dưới chỗ nhện đứng, tay không với tới
       function (k, c) {

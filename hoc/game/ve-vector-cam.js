@@ -101,4 +101,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, 50, 50, 3.3); H.to(g, sang ? BM.vecDen : s.bat ? BM.vecDenToi : BM.vecBanh);
     H.tron(g, 48.8, 48.8, 1.2); H.to(g, sang ? BM.vecMatSang : BM.vecDenSang);
   } });
+
+  /* RADAR TRÒN (mùa 6 gói 3, radar(d) / shape(d)): vòm radar tròn trên nóc, vành đồng tâm và vạch quét bốn hướng; đang đọc (s.bat / s.mat): quầng sáng rực.
+     Ổ logic 'tren' (xe, nhện, drone đều có). */
+  V.dangKy({ loai: 'cam-bien', ma: 'radar', hamGoc: ['radar', 'shape'], ten: 'Radar tròn', gan: 'tren', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+    var sang = !!(s.bat || s.mat);
+    if (sang) { H.tron(g, 50, 50, 10.5); H.to(g, H.rgba(BM.vecMatSangRgb, 0.35)); }
+    H.tron(g, 50, 50, 8.2); g.fillStyle = H.gradVo(g, 41.8, 41.8, 16.4, 16.4); g.fill(); H.vien(g, BM.vecVien, 2.2);
+    H.tron(g, 50, 50, 5.2); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 1);
+    H.duong(g, 'M50 45.2 V54.8 M45.2 50 H54.8'); H.vien(g, sang ? BM.vecDenSang : BM.vecDen, 1.2);
+    H.tron(g, 50, 50, 2.2); H.to(g, sang ? BM.vecMatSang : BM.vecDen); H.vien(g, BM.vecVien, 1);
+  } });
 })(typeof window !== 'undefined' ? window : globalThis);

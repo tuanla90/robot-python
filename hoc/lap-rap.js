@@ -141,7 +141,7 @@
       if (c.camBien === 'camera-bay') sai = { lyDo: 'Camera bụng chỉ gắn được lên drone.', xung: ['than', 'camBien'] };
       else if (c.than === 'nhen') {
         if (c.tay && c.tay !== 'kep' && c.tay !== 'nam-cham') sai = { lyDo: 'Nhện không có hướng mặt, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };     // nam châm: treo dưới bụng (mùa 3)
-        else if (c.camBien === 'khoang-cach' || c.camBien === 'tu') sai = { lyDo: 'Nhện không có hướng mặt, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };
+        else if (c.camBien === 'khoang-cach') sai = { lyDo: 'Nhện không có hướng mặt, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };     // 31/10: cảm biến từ gắn được lên nhện (đo theo cạnh trước cố định)
       }
     }
     if (sai) return { ok: false, ma: 'ghep-sai', lyDo: sai.lyDo, xung: sai.xung };

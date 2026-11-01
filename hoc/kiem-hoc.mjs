@@ -867,8 +867,12 @@ let khoCuoi = null;
   // khác khai sao.o / sao.nhip theo hàm cũ; kho thật làm chúng nhanh hơn ("sao là ngưỡng", kế hoạch Chế lệnh 3.3b) nên đo đúng-bằng trên kho cổ điển,
   // và thêm một phép kiểm "vẫn thắng, không chậm hơn" trên kho thật.
   const khoCo = KhoHam.moi({ tenCoDinh: tenCotTruyen });
+  // PDM2b 31/10: chương luc-ban (ngân hàng) gọi go_to_wall() mà che-hong-ngoai.1 (man-hong-ngoai.js, tệp lộ trình mùa 2, không vào ngân hàng thô) dạy:
+  // cấp hàm đó vào kho ngay trước luc-ban.1 (trong lộ trình gói Hồng ngoại đứng trước gói Lực phun).
+  const GO_TO_WALL = require(path.join(THU_MUC, 'man-hong-ngoai.js')).manHongNgoai.find((x) => x.chuong === 'che-hong-ngoai' && x.so === 1).loiGiai.hamCuaEmMoi.find((h) => h.ten === 'go_to_wall');
   let soManDungMove = 0;
   for (const m of ds) {
+    if (m.chuong === 'luc-ban' && m.so === 1) for (const k of [kho, khoCo]) if (!k.tim('go_to_wall')) { k.tao('go_to_wall', GO_TO_WALL.thamSo, { taoHam: ['go_to_wall'] }); k.sua('go_to_wall', GO_TO_WALL.than); }
     const khoThat = kho.ds();
     const khoTruoc = (m.chuong === 'che-xe' || m.chuong === 'che-tay' || m.chuong === 'robot-hoan-thien' || m.chuong === 'hai-robot' || m.chuong === 'che-nam-cham' || m.chuong === 'che-sung-hoi' || m.chuong === 'luc-ban' || m.chuong === 'che-may-nem' || m.chuong === 'rap-tay' || m.chuong === 'rap-du') ? khoThat : khoCo.ds();      // che-xe, che-tay (5.1–5.8 dùng u_turn một nhịp của 3.5) và robot-hoan-thien (dùng pass_back, swap, grab_back, u_turn…) tính sao theo kho THẬT
     KHO_TRUOC[m.id] = khoTruoc;
@@ -985,7 +989,7 @@ let khoCuoi = null;
   // ---- chơi lại với kho đầy đủ
   const day = kho.ds();
   kiem('kho cuối game: đúng các hàm cốt truyện (taoHam), theo thứ tự lần đầu chế trong game (chương trước, màn trước)',
-    J(day.map((h) => h.ten)) === J(tenCotTruyen) && day.length <= KhoHam.SO_HAM_MAC_DINH, J(day.map((h) => h.ten)));
+    J(day.map((h) => h.ten).filter((t) => t !== 'go_to_wall')) === J(tenCotTruyen) && day.length <= KhoHam.SO_HAM_MAC_DINH, J(day.map((h) => h.ten)));     // go_to_wall: cấp từ man-hong-ngoai.js (lộ trình) trước luc-ban, không thuộc taoHam ngân hàng thô
   kiem('mọi hàm trong kho cuối đều là hàm cốt truyện (khóa tên): ' + tenCotTruyen.length + ' tên taoHam, và kho mặc định chứa được hết lẫn nhiều hàm tự đặt', tenCotTruyen.length >= 39 && KhoHam.SO_HAM_MAC_DINH >= tenCotTruyen.length + 20, String(tenCotTruyen.length));
   kiem('kho cuối game mang các bản SỬA của che-xe và che-tay.9 (bánh phải kẹt số lùi): u_turn quay đầu một nhịp bằng trái lùi + phải tiến (left_back, right_move, wait), turn_right = left_move + wait, turn_left = left_back + wait (đều MỘT nhịp như bản che-xe)',
     bang(day.find((h) => h.ten === 'u_turn').than, ['left_back()', 'right_move()', 'wait()']) && bang(day.find((h) => h.ten === 'turn_right').than, ['left_move()', 'wait()']) && bang(day.find((h) => h.ten === 'turn_left').than, ['left_back()', 'wait()']));

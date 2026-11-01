@@ -1,16 +1,15 @@
 /* ============================================================================
-   man-bai-tu.js — "Robot Chấn Hưng": NGÂN HÀNG MÀN MỚI của mùa 3, gói 4 "Bãi từ" (KE-HOACH-MUA-3.md). HIỆN CHƯA CÓ MÀN.
-   Khung mùa 3 (lo-trinh-hoc.js, khối "MÙA 3 = 10 GÓI", mảng MUA_3) đã chừa chỗ: tệp đã có trong danh sách require của lo-trinh-hoc.js và
-   thẻ <script> của game/choi.html. Gói sau CHỈ việc thêm màn vào mảng DS dưới đây; màn tự hiện đúng chương, đúng gói.
-     - `bai-tu`: chương 1 "Bãi từ": sắt, nam châm điện, hố, đệm từ (chưa có màn)
-     - `che-bai-tu`: chương 2 "Hàm cho bãi từ" (chưa có màn)
-   Mỗi màn khai `chuong` (một trong các mã trên) và `so` (thứ tự trong phần màn mới của chương); mã `ma` = chuong + '.' + so là khóa lưu sao,
-   KHÔNG đổi sau khi xuất bản, KHÔNG trùng mã đã có. Gọi ManHoc.chuanHoa(m) như các tệp màn khác. Màn mới nối SAU các màn có sẵn của chương (chen trước
-   màn trùm có sẵn nếu màn cuối có sẵn là trùm); muốn xen giữa thì sửa đúng dòng chương đó trong MUA_3. Chương còn trống thì chưa hiện.
-   Ràng buộc mùa 3 (hoc/kiem-lo-trinh.mjs mục mùa 3): thân hai bánh / xích / nhện; tay mùa 1–2 + nam châm; cảm biến mùa 1–2 + cảm ứng từ;
-   không omni, drone, camera, máy sơn, máy ném, color(); không bậc thang S. Chuỗi làm dữ liệu chỉ từ gói 1 chương 2, and / or chỉ từ gói 2 chương 2;
-   magnet_s từ gói 6, front_metal từ gói 3, front_pole từ gói 7, crouch / stand / jump / leap từ gói 5; hàm của em cần phải được tạo ở màn đứng trước.
-   Tệp này KHÔNG tự thêm màn vào ManHoc: danh sách nằm ở ManHoc.manBaiTu, lo-trinh-hoc.js thêm vào chương rồi xếp chỗ (so, hang do dungChuong đặt).
+   man-bai-tu.js — "Robot Chấn Hưng": NGÂN HÀNG MÀN MỚI của mùa 3, gói 4 "Bãi từ" (KE-HOACH-MUA-3.md; phiên "Mùa 3" tự viết 30/10;
+   PDM3a 31/10 viết lại trên ROBOT PHÂN LOẠI: nhện + nam châm bụng + cảm biến từ, luật part đúng mùa KE-HOACH-PART-DUNG-MUA.md).
+   Khung mùa 3 (lo-trinh-hoc.js, khối "MÙA 3 = 10 GÓI", mảng MUA_3) xếp màn theo `so` (1 … 10, mã giữ nguyên).
+     - `bai-tu`: chương 1 "Bãi từ": đệm từ hút / đẩy nhện, nút bật đệm, đệm kéo và giữ mẩu sắt.
+     - `che-bai-tu`: chương 2 "Hàm cho bãi từ": hàm của em detour(n), call_out(), shield_run(n); ôn trail (gói 1).
+   Cái mới của gói: ĐỆM TỪ (san-hoc.js phần ĐỆM TỪ): ô đệm cực N (đỏ) / S (xanh dương) là khối; thân đứng CÙNG HÀNG / CỘT trong 2 ô (ô giữa không có
+   khối chặn: tường chắn từ) bị dời 1 ô mỗi nhịp ('dem-keo'): nhện không bật nam châm hay bật KHÁC cực đệm thì bị HÚT về phía đệm (dừng sát đệm), bật
+   CÙNG cực thì bị ĐẨY ra xa (tường phía sau thì đứng im 'dem-chan'). Đệm cũng kéo mẩu sắt nằm đất và GIỮ mẩu sát nó (nam châm bụng không nhấc được:
+   'dem-giu-vat'). Đệm có CÔNG TẮC nút đè M (đè thì chạy, đổi từ nhịp sau; nhện bước đi mất 2 nhịp nên nhịp đầu của bước rời nút vẫn là đè).
+   Gói này chỉ có cực N (magnet_s mở ở gói 6); không hố (hố đi cùng nhảy ở gói 5). Nhện xuất phát quay phải (đầu dò nhìn phải) như gói 3.
+   Máy kiểm: hoc/kiem-man-mua-3.mjs, hoc/kiem-lo-trinh.mjs mục mùa 3, hoc/kiem-dem-tu.mjs.
    ========================================================================== */
 (function () {
   'use strict';
@@ -18,374 +17,371 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  // 30/10 phiên Mùa 3: 20 màn của gói 4. Cái mới của gói: ĐỆM TỪ (luật ở san-hoc.js phần ĐỆM TỪ): ô đệm cực N (đỏ) / S (xanh dương) kéo thân xe đứng cùng hàng / cột
-  // trong 2 ô 1 ô mỗi nhịp (xe không bật nam châm, hay bật N mà đệm S: hút; bật N mà đệm N: đẩy), tường / vật chắn từ; đệm kéo cả vật sắt nằm đất; đệm có CÔNG TẮC
-  // nút đè M (đè thì chạy, hay đè thì tắt), đổi từ nhịp sau; vật đang bị đệm hút thì không lấy được (user 30/10). Gói này chỉ có magnet_n (magnet_s từ gói 6).
-  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var GOC = BANH.concat(['magnet_n', 'magnet_off', 'front_clear', 'left_clear', 'right_clear', 'front_metal']);
-  var HUT = ['magnet_n()', 'wait()'], THA = ['magnet_off()', 'wait()'];
+  var HG = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'magnet_n', 'magnet_off', 'front_metal'];
+  var NHAT = ['magnet_n()', 'wait()'], DAT = ['magnet_off()', 'wait()'];
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
   function bai(chinh, them) { return Object.assign({ chinh: chinh.slice() }, them || {}); }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
   function thut(ds, n) { var p = new Array((n || 1) * 4 + 1).join(' '); return ds.map(function (s) { return p + s; }); }
   function LAP(n, than) { return ['for i in range(' + n + '):'].concat(thut(Array.isArray(than) ? than : [than])); }
+  function lap(n, s) { var kq = []; for (var i = 0; i < n; i++) kq.push(s); return kq; }
 
   function man(m) {
     m.chuong = m.chuong || 'bai-tu';
     m.cauTruc = ['for', 'if', 'while'];
     m.vaHoac = true;
-    m.loaiRobot = 'banh';
-    m.robot = { than: 'hai-banh', tay: 'nam-cham', camBien: [{ ma: 'khoang-cach', o: 'hong' }, { ma: 'tu', o: 'hong' }] };
-    m.hamGoc = m.hamGoc || GOC;
+    m.loaiRobot = 'nhen';
+    m.robot = { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] };
+    m.hamGoc = HG;
     m.mucTieu = m.mucTieu || 'dua-vat'; if (m.mucTieu === 'dua-vat') m.vatCan = m.vatCan || 'sat';
     m.nhipTheoLoiGiai = true;
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = m.khung || { chinh: 12, moiHam: 10 };
     m.loiSai = m.loiSai || [];
-    m.hamCuaEmCan = m.hamCuaEmCan || ['move', 'turn_right', 'turn_left', 'u_turn'];
+    m.hamCuaEmCan = m.hamCuaEmCan || [];
     if (Array.isArray(m.san[0]) && !Array.isArray(m.batDau)) m.batDau = m.san.map(function () { return Object.assign({}, m.batDau); });
     return ManHoc.chuanHoa(m);
   }
+  var P = function (x, y) { return { x: x, y: y, huong: 1 }; };
+  var KEO = ['dem-keo', 'chua-toi-co'], KEO_VAT = ['dem-keo', 'chua-dua-vat'];
 
   var DS = [
     /* ================================================= chương bai-tu "Bãi từ" ================================================= */
     man({
-      so: 1, ten: 'Đệm từ hút xe', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, mucTieu: 'toi-co',
-      deBai: 'Ô vuông xanh có chữ S là một ĐỆM TỪ. Đệm hút thân xe đứng cùng hàng hay cùng cột với nó, cách tới 2 ô: mỗi nhịp kéo xe 1 ô về phía đệm. Bấm Chạy: xe đi thẳng nhưng bị đệm kéo lên hàng trên, tới đúng lá cờ.',
-      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy, nhìn sóng từ kéo xe.',
+      so: 1, ten: 'Đệm từ hút nhện', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, mucTieu: 'toi-co',
+      deBai: 'Ô vuông xanh có chữ S là một ĐỆM TỪ. Đệm hút thân nhện đứng cùng hàng hay cùng cột với nó, cách tới 2 ô: mỗi nhịp kéo nhện 1 ô về phía đệm. Bấm Chạy: nhện đi thẳng hàng dưới nhưng tới cột đệm thì bị kéo lên hàng trên, rồi đi tiếp tới đúng lá cờ.',
+      veMaMau: 'Chương trình đã viết sẵn và khoá. Bấm Chạy, nhìn sóng từ kéo nhện.',
       san: ['##.##', '....F', '.....'], demTu: [{ x: 2, y: 0, cuc: 'S' }],
-      batDau: { x: 0, y: 2, huong: 1 },
-      maMau: bai(LAP(4, 'move()')),
-      loiGiai: bai(LAP(4, 'move()')),
-      sao: { o: 5, nhip: 4 },
-      goiY: ['Đệm chỉ kéo khi xe đứng cùng hàng hay cùng cột với nó, cách 1 hay 2 ô.', 'Mỗi nhịp đệm kéo 1 ô.']
+      batDau: P(0, 2),
+      maMau: bai(LAP(4, 'go_right()')),
+      loiGiai: bai(LAP(4, 'go_right()')),
+      sao: { o: 2, nhip: 8 },
+      goiY: ['Đệm chỉ kéo khi nhện đứng cùng hàng hay cùng cột với nó, cách 1 hay 2 ô.', 'Mỗi nhịp đệm kéo 1 ô.']
     }),
 
     man({
       so: 2, ten: 'Tránh xa đệm', hang: 'lam-quen', mucTieu: 'toi-co',
-      deBai: 'Giữa đệm S và hàng xe đang đứng là một cái hố. Đi thẳng thì xe bị đệm kéo xuống hố. Đi bằng hàng dưới: cách đệm 3 ô thì đệm không với tới.',
-      veMaMau: 'Chương trình có sẵn đi thẳng hàng trên rồi mới xuống. Chạy thử rồi sửa.',
-      san: ['##.##', '##u##', '.....', '....F'], demTu: [{ x: 2, y: 0, cuc: 'S' }],
-      batDau: { x: 0, y: 2, huong: 1 },
-      maMau: bai(nhieu(LAP(4, 'move()'), ['turn_right()', 'move()'])),
-      loiGiai: bai(nhieu(['turn_right()', 'move()', 'turn_left()'], LAP(4, 'move()'))),
-      sao: { o: 12, nhip: 7 },
+      deBai: 'Lá cờ ở hàng dưới cùng. Đi thẳng hàng giữa thì tới cột đệm nhện bị kéo lên hàng trên, lạc đường. Xuống hàng dưới cùng trước: cách đệm 3 ô thì đệm không với tới.',
+      veMaMau: 'Chương trình có sẵn đi thẳng hàng giữa. Chạy thử rồi sửa.',
+      san: ['##.##', '.....', '.....', '....F'], demTu: [{ x: 2, y: 0, cuc: 'S' }],
+      batDau: P(0, 2),
+      maMau: bai(LAP(4, 'go_right()')),
+      loiGiai: bai(nhieu(['go_down()'], LAP(4, 'go_right()'))),
+      sao: { o: 3, nhip: 10 },
       loiSai: [
-        { moTa: 'Đi thẳng hàng trên: đệm kéo xe xuống hố', baiLam: bai(nhieu(LAP(4, 'move()'), ['turn_right()', 'move()'])), phaiCoMa: ['dem-roi-ho'] }
+        { moTa: 'Đi thẳng hàng giữa: tới cột đệm nhện bị kéo lên', baiLam: bai(LAP(4, 'go_right()')), phaiCoMa: KEO }
       ],
-      goiY: ['Đệm kéo tới 2 ô. Hàng dưới cách đệm 3 ô.', 'Xuống hàng dưới ngay từ đầu rồi mới đi thẳng.']
+      goiY: ['Đệm với tới 2 ô. Hàng dưới cùng cách đệm 3 ô.', 'Xuống trước rồi mới đi thẳng.']
     }),
 
     man({
       so: 3, ten: 'Cùng cực thì đẩy', hang: 'lam-quen', mucTieu: 'toi-co',
-      deBai: 'Đệm này là cực N (đỏ). Xe không bật nam châm thì bị hút như sắt, rơi xuống hố. Bật magnet_n(): nam châm của xe cùng cực với đệm nên bị ĐẨY ra xa, mà phía dưới là tường nên xe cứ đi thẳng được.',
+      deBai: 'Đệm này là cực N (đỏ). Nhện không bật nam châm thì bị hút như sắt, kéo lên hàng trên. Bật magnet_n(): nam châm bụng cùng cực với đệm nên bị ĐẨY ra xa, mà phía dưới là tường nên nhện cứ đi thẳng được tới cờ.',
       veMaMau: 'Chương trình có sẵn đi thẳng, không bật nam châm. Chạy thử rồi sửa.',
-      san: ['##.##', '##u##', '....F', '#####'], demTu: [{ x: 2, y: 0, cuc: 'N' }],
-      batDau: { x: 0, y: 2, huong: 1 },
-      maMau: bai(LAP(4, 'move()')),
-      loiGiai: bai(nhieu(['magnet_n()'], LAP(4, 'move()'))),
-      sao: { o: 6, nhip: 4 },
+      san: ['##.##', '.....', '....F', '#####'], demTu: [{ x: 2, y: 0, cuc: 'N' }],
+      batDau: P(0, 2),
+      maMau: bai(LAP(4, 'go_right()')),
+      loiGiai: bai(nhieu(['magnet_n()'], LAP(4, 'go_right()'))),
+      sao: { o: 3, nhip: 8 },
       loiSai: [
-        { moTa: 'Không bật nam châm: đệm N hút xe xuống hố', baiLam: bai(LAP(4, 'move()')), phaiCoMa: ['dem-roi-ho'] },
-        { moTa: 'Bật nam châm quá muộn, sau hai bước', baiLam: bai(nhieu(LAP(2, 'move()'), ['magnet_n()'], LAP(2, 'move()'))), phaiCoMa: ['dem-roi-ho'] }
+        { moTa: 'Không bật nam châm: đệm N hút nhện lên hàng trên', baiLam: bai(LAP(4, 'go_right()')), phaiCoMa: KEO }
       ],
-      goiY: ['Cùng cực thì đẩy, khác cực thì hút.', 'magnet_n() ở dòng đầu, trước khi tới gần đệm.']
+      goiY: ['Cùng cực thì đẩy, khác cực thì hút.', 'magnet_n() ở dòng đầu, trước khi tới cột đệm.']
     }),
 
     man({
-      so: 4, ten: 'Nút bật đệm', hang: 'lam-quen',
-      deBai: 'Đệm này có CÔNG TẮC: nút đè vàng dưới sàn, dây nối từ nút tới đệm. Xe đứng lên nút thì đệm chạy, nhưng đổi từ nhịp SAU. Đệm chạy sẽ kéo vật sắt sang ô đích ngay cạnh nó. Lái xe lên nút rồi chờ một nhịp.',
-      veMaMau: 'Chương trình có sẵn dừng trước nút một ô. Chạy thử rồi sửa.',
-      san: ['#oD.#', '#####', '...M.'], vatChat: ['.s...', '.....', '.....'],
-      demTu: [{ x: 3, y: 0, cuc: 'N', nut: { x: 3, y: 2 } }],
-      batDau: { x: 0, y: 2, huong: 1 },
-      maMau: bai(nhieu(LAP(2, 'move()'), ['wait()'])),
-      loiGiai: bai(nhieu(LAP(3, 'move()'), ['wait()'])),
-      sao: { o: 6, nhip: 4 },
+      so: 4, ten: 'Khác cực vẫn hút', hang: 'luyen', mucTieu: 'toi-co',
+      deBai: 'Đệm này là cực S, nằm dưới hành lang. Bật N thì KHÁC cực, đệm vẫn hút nhện xuống. Đi vòng bằng hàng trên cùng (cách đệm 3 ô) rồi xuống lại chỗ lá cờ.',
+      veMaMau: 'Chương trình có sẵn bật nam châm rồi đi thẳng như màn trước. Chạy thử: đệm S vẫn kéo. Sửa đường.',
+      san: ['.....', '....F', '.....', '##.##'], demTu: [{ x: 2, y: 3, cuc: 'S' }],
+      batDau: P(0, 1),
+      maMau: bai(nhieu(['magnet_n()'], LAP(4, 'go_right()'))),
+      loiGiai: bai(nhieu(['go_up()'], LAP(4, 'go_right()'), ['go_down()'])),
+      sao: { o: 4, nhip: 12 },
       loiSai: [
-        { moTa: 'Lên nút rồi hết chương trình: đệm chưa kịp chạy', baiLam: bai(LAP(3, 'move()')), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Bật N đi thẳng: khác cực, đệm S vẫn kéo nhện xuống', baiLam: bai(nhieu(['magnet_n()'], LAP(4, 'go_right()'))), phaiCoMa: KEO },
+        { moTa: 'Đi hàng trên nhưng quên xuống: lá cờ ở hàng giữa', baiLam: bai(nhieu(['go_up()'], LAP(4, 'go_right()'))), phaiCoMa: ['chua-toi-co'] }
+      ],
+      goiY: ['Đẩy chỉ khi CÙNG cực: đệm S thì cực N của nhện bị hút.', 'Hàng trên cùng cách đệm 3 ô: đi ở đó rồi xuống ở cột cờ.']
+    }),
+
+    man({
+      so: 5, ten: 'Nút bật đệm', hang: 'luyen',
+      deBai: 'Đệm này có CÔNG TẮC: nút đè vàng dưới sàn, dây nối từ nút tới đệm. Nhện đứng lên nút thì đệm chạy, nhưng đổi từ nhịp SAU. Đệm chạy sẽ kéo mẩu sắt vụn ở hàng trên sang thùng ngay cạnh nó. Đi lên nút rồi chờ một nhịp.',
+      veMaMau: 'Chương trình có sẵn lên tới nút rồi hết. Chạy thử: đệm chưa kịp chạy. Thêm wait().',
+      san: ['#oD.#', '...#.', '...M.'], vatChat: ['.s...', '.....', '.....'],
+      demTu: [{ x: 3, y: 0, cuc: 'N', nut: { x: 3, y: 2 } }],
+      batDau: P(0, 2),
+      maMau: bai(LAP(3, 'go_right()')),
+      loiGiai: bai(nhieu(lap(3, 'go_right()'), ['wait()'])),
+      sao: { o: 4, nhip: 7 },
+      loiSai: [
+        { moTa: 'Lên nút rồi hết chương trình: đệm chưa kịp chạy', baiLam: bai(LAP(3, 'go_right()')), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Dừng trước nút một ô rồi chờ: nút chưa bị đè', baiLam: bai(nhieu(LAP(2, 'go_right()'), ['wait()', 'wait()'])), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Nút đè đổi đệm từ nhịp sau: lên nút rồi wait() một nhịp.', 'Đệm kéo sắt 1 ô mỗi nhịp, tới sát đệm thì thôi.']
     }),
 
     man({
-      so: 5, ten: 'Đứng trên nút tắt đệm', hang: 'luyen',
-      deBai: 'Vật sắt nằm sát đệm S: đệm đang HÚT GIỮ nó, nam châm của xe không lấy được. Nút đè này là nút TẮT: xe đứng trên nút thì đệm tắt từ nhịp sau. Đứng trên nút mà hút sắt về, rồi quay sang thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn tiến sát vật sắt rồi hút. Chạy thử: đệm giữ chặt vật sắt.',
-      san: ['#####', '.M.o.', '#D###'], vatChat: ['.....', '...s.', '.....'],
-      demTu: [{ x: 4, y: 1, cuc: 'S', nut: { x: 1, y: 1 }, khiDe: 'tat' }],
-      batDau: { x: 0, y: 1, huong: 1 },
-      maMau: bai(nhieu(LAP(2, 'move()'), HUT, ['turn_right()'], THA)),
-      loiGiai: bai(nhieu(['move()'], HUT, ['turn_right()'], THA)),
-      sao: { o: 11, nhip: 4 },
+      so: 6, ten: 'Đệm giữ sắt', hang: 'luyen',
+      deBai: 'Hai mẩu sắt vụn. Mẩu ở hàng trên nằm sát đệm S đang chạy: đệm GIỮ nó, nam châm bụng không nhấc nổi, nhưng nó đã nằm ngay trên thùng rồi. Chỉ cần mang mẩu ngay dưới nhện xuống thùng ở cuối cột trái.',
+      veMaMau: 'Chương trình có sẵn đi nhấc mẩu sát đệm. Chạy thử: đệm giữ chặt. Đổi sang mẩu gần.',
+      san: ['...X.', 'o####', '.####', '.####', 'D####'], vatChat: ['...s.', 's....', '.....', '.....', '.....'],
+      demTu: [{ x: 4, y: 0, cuc: 'S' }],
+      batDau: P(0, 0),
+      maMau: bai(nhieu(LAP(3, 'go_right()'), NHAT, LAP(3, 'go_left()'), ['go_down()'], DAT)),
+      loiGiai: bai(nhieu(['go_down()'], NHAT, LAP(3, 'go_down()'), DAT)),
+      sao: { o: 7, nhip: 10 },
       loiSai: [
-        { moTa: 'Tiến sát vật sắt, rời khỏi nút: đệm bật lại và giữ vật', baiLam: bai(nhieu(LAP(2, 'move()'), HUT, ['turn_right()'], THA)), phaiCoMa: ['dem-giu-vat'] },
-        { moTa: 'Hút ngay ở chỗ xuất phát: vật sắt cách 3 ô, ngoài tầm', baiLam: bai(nhieu(HUT, ['move()', 'turn_right()'], THA)), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Nhấc mẩu sát đệm: đệm đang chạy giữ chặt, nhện về tay không', baiLam: bai(nhieu(LAP(3, 'go_right()'), NHAT, LAP(3, 'go_left()'), ['go_down()'], DAT)), phaiCoMa: ['dem-giu-vat', 'chua-dua-vat'] }
       ],
-      goiY: ['Nam châm hút sắt cách tới 2 ô: đứng trên nút cũng hút tới.', 'Xe rời nút thì đệm chạy lại, nhưng vật đã dính ở mũi xe thì đệm không giật ra.']
+      goiY: ['Mẩu sắt sát đệm đang chạy thì bị giữ: đừng mất công.', 'Mẩu dưới nhện cách đệm xa, nhấc bình thường.']
     }),
 
     man({
-      so: 6, ten: 'Chở sắt qua đệm N', hang: 'luyen',
-      deBai: 'Vật sắt ở cuối hành lang, ô đích ở đầu kia. Giữa đường có đệm N trên một cái hố. Bật magnet_n() từ đầu: đi qua đệm N thì được đẩy vào tường, an toàn, và tới gần là hút được sắt. Hút về rồi chở qua đệm lần nữa, thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn thiếu dòng bật nam châm ở đầu. Chạy thử rồi sửa.',
-      san: ['###.###', '###u###', 'D.....o', '#######'], vatChat: ['.......', '.......', '......s', '.......'],
-      demTu: [{ x: 3, y: 0, cuc: 'N' }],
-      batDau: { x: 1, y: 2, huong: 1 },
-      maMau: bai(nhieu(LAP(3, 'move()'), ['wait()', 'u_turn()'], LAP(3, 'move()'), THA)),
-      loiGiai: bai(nhieu(['magnet_n()'], LAP(3, 'move()'), ['u_turn()'], LAP(3, 'move()'), THA)),
-      sao: { o: 14, nhip: 8 },
+      so: 7, ten: 'Mang sắt qua đệm N', hang: 'bien-the',
+      deBai: 'Mang mẩu sắt từ trái sang thùng bên phải. Trên đường có đệm N ở hàng trên: nhện đang bật nam châm (để giữ mẩu sắt) nên tới cột đệm bị ĐẨY xuống hàng dưới, lạc đường. Chở bằng hàng dưới cùng (cách đệm 3 ô) rồi lên lại chỗ thùng.',
+      veMaMau: 'Chương trình có sẵn chở thẳng hàng giữa. Chạy thử: đệm N đẩy nhện xuống. Sửa đường.',
+      san: ['##.##', '##.##', 'o...D', '.....'], vatChat: ['.....', '.....', 's....', '.....'],
+      demTu: [{ x: 2, y: 0, cuc: 'N' }],
+      batDau: P(0, 2),
+      maMau: bai(nhieu(NHAT, LAP(4, 'go_right()'), DAT)),
+      loiGiai: bai(nhieu(NHAT, ['go_down()'], LAP(4, 'go_right()'), ['go_up()'], DAT)),
+      sao: { o: 8, nhip: 14 },
       loiSai: [
-        { moTa: 'Không bật nam châm khi đi: đệm N hút xe xuống hố', baiLam: bai(nhieu(LAP(3, 'move()'), ['magnet_n()', 'wait()', 'u_turn()'], LAP(3, 'move()'), THA)), phaiCoMa: ['dem-roi-ho'] }
+        { moTa: 'Chở thẳng hàng giữa: đang bật N nên đệm N đẩy nhện xuống, thả lệch thùng', baiLam: bai(nhieu(NHAT, LAP(4, 'go_right()'), DAT)), phaiCoMa: KEO_VAT },
+        { moTa: 'Đi hàng dưới nhưng quên lên lại: thả dưới thùng một ô', baiLam: bai(nhieu(NHAT, ['go_down()'], LAP(4, 'go_right()'), DAT)), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Nam châm bật thì đệm N đẩy xe ra, tường giữ xe lại trong hành lang.', 'Đang bật nam châm mà tới cách sắt 2 ô là sắt bay về dính mũi xe.']
-    }),
-
-    man({
-      so: 7, ten: 'Đệm S thì đi vòng', hang: 'luyen',
-      deBai: 'Đệm này là cực S. Bật N thì khác cực, đệm vẫn HÚT. Hút vật sắt bên phải xe rồi chở về ô đích. Đường thẳng đi ngang đệm S có hố. Đi vòng xuống hàng dưới: ba lần rẽ phải, mỗi lần đi hai ô.',
-      veMaMau: 'Chương trình có sẵn chở sắt đi thẳng ngang đệm. Chạy thử rồi sửa.',
-      san: ['##.##', '#Du##', '#...o', '#.#.#', '#...#'], vatChat: ['.....', '.....', '....s', '.....', '.....'],
-      demTu: [{ x: 2, y: 0, cuc: 'S' }],
-      batDau: { x: 3, y: 2, huong: 1 },
-      maMau: bai(nhieu(HUT, ['u_turn()'], LAP(2, 'move()'), ['turn_right()'], THA)),
-      loiGiai: bai(nhieu(HUT, LAP(3, ['turn_right()', 'move()', 'move()']), THA)),
-      sao: { o: 13, nhip: 11 },
-      loiSai: [
-        { moTa: 'Chở thẳng ngang đệm S: bật N vẫn bị hút xuống hố', baiLam: bai(nhieu(HUT, ['u_turn()'], LAP(2, 'move()'), ['turn_right()'], THA)), phaiCoMa: ['dem-roi-ho'] },
-        { moTa: 'Vòng hai lần rồi thả: chưa tới ô đích', baiLam: bai(nhieu(HUT, LAP(2, ['turn_right()', 'move()', 'move()']), THA)), phaiCoMa: ['chua-dua-vat'] }
-      ],
-      goiY: ['Khác cực thì hút: bật N mà đệm S thì vẫn bị kéo.', 'Ba đoạn giống nhau: rẽ phải, đi hai ô. Dùng vòng lặp.']
+      goiY: ['Đang mang hàng là đang bật N: gặp đệm N thì bị đẩy.', 'Cách đệm 3 ô thì không sao: xuống, đi, lên.']
     }),
 
     man({
       so: 8, ten: 'Gọi sắt ra', hang: 'bien-the',
-      deBai: 'Vật sắt nằm trong hốc tường. Lái vào tận hốc mà lấy thì phải đi vòng, tốn nhịp. Đệm S dưới hành lang có nút đè BẬT ở chỗ xe đứng: đè nút thì đệm kéo sắt ra hành lang, nhưng sắt sát đệm thì bị giữ. Đè nút một nhịp, rời nút để đệm tắt, rồi hút sắt và thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn rời nút ngay nhịp đầu: đệm không bao giờ chạy.',
+      deBai: 'Mẩu sắt nằm trong hốc trên. Đệm S dưới hành lang có nút đè BẬT ở đầu trái: đè nút thì đệm kéo mẩu sắt ra hành lang. Đi tới nút, chờ một nhịp, rồi quay lại đứng trên mẩu sắt, hút, mang về thùng bên trái.',
+      veMaMau: 'Chương trình có sẵn tới nút và chờ. Viết tiếp phần lấy sắt.',
       san: ['##o##', 'M....', '#D.##'], vatChat: ['..s..', '.....', '.....'],
       demTu: [{ x: 2, y: 2, cuc: 'S', nut: { x: 0, y: 1 } }],
-      batDau: { x: 0, y: 1, huong: 1 },
-      maMau: bai(nhieu(['move()'], HUT, ['turn_right()'], THA)),
-      loiGiai: bai(nhieu(['wait()', 'move()'], HUT, ['turn_right()'], THA)),
-      sao: { o: 12, nhip: 5 },
+      batDau: P(4, 1),
+      maMau: bai(nhieu(LAP(4, 'go_left()'), ['wait()'])),
+      loiGiai: bai(nhieu(LAP(4, 'go_left()'), ['wait()'], LAP(2, 'go_right()'), NHAT, ['go_left()', 'go_down()'], DAT)),
+      sao: { o: 11, nhip: 19 },
       loiSai: [
-        { moTa: 'Rời nút ngay: đệm chưa chạy nhịp nào, sắt vẫn trong hốc', baiLam: bai(nhieu(['move()'], HUT, ['turn_right()'], THA)), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đứng lì trên nút mà hút: sắt ra tới hành lang nhưng đệm giữ chặt', baiLam: bai(nhieu(['wait()', 'wait()'], HUT, ['turn_right()'], THA)), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không tới nút, chờ ở giữa hành lang: đệm không chạy, sắt vẫn trong hốc', baiLam: bai(nhieu(LAP(3, 'go_left()'), ['wait()', 'go_right()'], NHAT, ['go_left()', 'go_down()'], DAT)), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Lấy xong thả ngay ở hành lang: chưa xuống thùng', baiLam: bai(nhieu(LAP(4, 'go_left()'), ['wait()'], LAP(2, 'go_right()'), NHAT, ['go_left()'], DAT)), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Nút đổi đệm từ nhịp sau: đè một nhịp thì đệm chạy đúng một nhịp sau đó.', 'Sắt ra hành lang rồi, đệm tắt thì mới hút được.']
+      goiY: ['Đè nút một nhịp: mẩu sắt rơi ra hành lang, sát đệm.', 'Nhện rời nút thì đệm tắt, mẩu sắt mới nhấc được.']
     }),
 
     man({
-      so: 9, ten: 'Qua đệm N, tắt đệm S', hang: 'bien-the',
-      deBai: 'Ô đích ở sau lưng xe. Đi qua đệm N trên hố (nhớ bật nam châm), tới nút đè thì dừng: nút này TẮT đệm S đang giữ vật sắt ở cuối hành lang. Đứng trên nút chờ đệm tắt là nam châm hút được sắt. Chở về ô đích.',
-      veMaMau: 'Chương trình có sẵn đi quá nút một ô. Chạy thử: rời nút thì đệm S giữ chặt vật sắt.',
-      san: ['###.####', '###u####', 'D...M.o.', '########'], vatChat: ['........', '........', '......s.', '........'],
-      demTu: [{ x: 3, y: 0, cuc: 'N' }, { x: 7, y: 2, cuc: 'S', nut: { x: 4, y: 2 }, khiDe: 'tat' }],
-      batDau: { x: 1, y: 2, huong: 1 },
-      maMau: bai(nhieu(['magnet_n()'], LAP(4, 'move()'), ['wait()', 'u_turn()'], LAP(4, 'move()'), THA)),
-      loiGiai: bai(nhieu(['magnet_n()'], LAP(3, 'move()'), ['wait()', 'u_turn()'], LAP(3, 'move()'), THA)),
-      sao: { o: 15, nhip: 9 },
+      so: 9, ten: 'Sửa đường chở', hang: 'bien-the',
+      deBai: 'Sola viết chương trình chở sắt sang thùng nhưng chọn nhầm hàng: hàng giữa đi ngang đệm S nên nhện bị kéo lên. Hai bãi, đệm ở hai cột khác nhau. Sửa cho nhện chở bằng hàng dưới cùng rồi lên thùng.',
+      veMaMau: 'Chạy thử: tới cột đệm nhện bị kéo lên. Sửa đường đi.',
+      san: [['##.###', '##.###', 'o....D', '......'], ['####.#', '####.#', 'o....D', '......']], vatChat: [['......', '......', 's.....', '......'], ['......', '......', 's.....', '......']],
+      demTu: [[{ x: 2, y: 0, cuc: 'S' }], [{ x: 4, y: 0, cuc: 'S' }]],
+      batDau: P(0, 2),
+      maMau: bai(nhieu(NHAT, LAP(5, 'go_right()'), DAT)),
+      loiGiai: bai(nhieu(NHAT, ['go_down()'], LAP(5, 'go_right()'), ['go_up()'], DAT)),
+      sao: { o: 8, nhip: 16 },
       loiSai: [
-        { moTa: 'Đi quá nút: đệm S bật lại, giữ vật sắt', baiLam: bai(nhieu(['magnet_n()'], LAP(4, 'move()'), ['wait()', 'u_turn()'], LAP(4, 'move()'), THA)), phaiCoMa: ['dem-giu-vat'] },
-        { moTa: 'Quên bật nam châm lúc đi: đệm N hút xe xuống hố', baiLam: bai(nhieu(LAP(3, 'move()'), HUT, ['u_turn()'], LAP(3, 'move()'), THA)), phaiCoMa: ['dem-roi-ho'] }
+        { moTa: 'Giữ hàng giữa: đệm S kéo nhện lên, thả lệch', baiLam: bai(nhieu(NHAT, LAP(5, 'go_right()'), DAT)), phaiCoMa: KEO_VAT },
+        { moTa: 'Đi hàng dưới nhưng quên lên lại: thả dưới thùng một ô', baiLam: bai(nhieu(NHAT, ['go_down()'], LAP(5, 'go_right()'), DAT)), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Đứng trên nút thì vật sắt cách mũi xe đúng 2 ô: vừa tầm nam châm.', 'Lên nút ở nhịp nào thì đệm tắt từ nhịp sau: chờ một nhịp.']
+      goiY: ['Hàng dưới cùng cách đệm 3 ô ở cả hai bãi.', 'Chỉ cần thêm go_down() đầu và go_up() cuối.']
     }),
 
     man({
-      so: 10, ten: 'Bãi từ hai vật', hang: 'trum', khung: { chinh: 18, moiHam: 10 },
-      deBai: 'Hai vật sắt, hai ô đích. Vật thứ nhất trong hốc trên: đè nút dưới chân xe một nhịp để đệm S kéo nó ra, rời nút rồi hút, thả vào ô đích ngay dưới. Vật thứ hai ở cuối hành lang, phải đi qua đệm N trên hố. Hút về, thả vào ô đích thứ hai.',
-      veMaMau: 'Chương trình có sẵn làm xong vật thứ nhất. Viết tiếp cho vật thứ hai.',
-      san: ['#####.###', '##o##u###', 'M.......o', '#D.#D####'], vatChat: ['.........', '..s......', '........s', '.........'],
-      demTu: [{ x: 5, y: 0, cuc: 'N' }, { x: 2, y: 3, cuc: 'S', nut: { x: 0, y: 2 } }],
-      batDau: { x: 0, y: 2, huong: 1 },
-      maMau: bai(nhieu(['wait()', 'move()'], HUT, ['turn_right()'], THA)),
-      loiGiai: bai(nhieu(['wait()', 'move()'], HUT, ['turn_right()'], THA, ['turn_left()', 'magnet_n()'], LAP(5, 'move()'), ['u_turn()'], LAP(2, 'move()'), ['turn_left()'], THA)),
-      sao: { o: 27, nhip: 16 },
+      so: 10, ten: 'Bãi từ hai mẩu', hang: 'trum', khung: { chinh: 18, moiHam: 10 }, hamCuaEmCan: ['trail'],
+      deBai: 'Trùm. Hai hành lang, hai mẩu sắt, hai thùng. Hành lang trên có đệm N ở hàng trên, hành lang dưới có đệm S ở hàng dưới cùng: hàng giữa (cách cả hai đệm 3 ô) là đường an toàn. Mẩu trên: xuống hàng giữa, sang phải, lên thùng. Rồi trail về mẩu dưới, lên hàng giữa, sang phải, xuống thùng.',
+      veMaMau: 'Chương trình có sẵn chở xong mẩu trên. Viết tiếp mẩu dưới.',
+      san: ['##.##', '.....', 'o...D', '.....', 'o...D', '.....', '##.##'], vatChat: ['.....', '.....', 's....', '.....', 's....', '.....', '.....'],
+      demTu: [{ x: 2, y: 0, cuc: 'N' }, { x: 2, y: 6, cuc: 'S' }],
+      batDau: P(0, 2),
+      maMau: bai(nhieu(NHAT, ['go_down()'], LAP(4, 'go_right()'), ['go_up()'], DAT)),
+      loiGiai: bai(nhieu(NHAT, ['go_down()'], LAP(4, 'go_right()'), ['go_up()'], DAT, ['trail("DLLLLD")'], NHAT, ['go_up()'], LAP(4, 'go_right()'), ['go_down()'], DAT)),
+      sao: { o: 27, nhip: 40 },
       loiSai: [
-        { moTa: 'Quên bật nam châm trước khi đi qua đệm N', baiLam: bai(nhieu(['wait()', 'move()'], HUT, ['turn_right()'], THA, ['turn_left()'], LAP(5, 'move()'), HUT, ['u_turn()'], LAP(2, 'move()'), ['turn_left()'], THA)), phaiCoMa: ['dem-roi-ho'] },
-        { moTa: 'Không chờ trên nút: đệm S không chạy, vật thứ nhất vẫn trong hốc', baiLam: bai(nhieu(['move()'], HUT, ['turn_right()'], THA, ['turn_left()', 'magnet_n()'], LAP(5, 'move()'), ['u_turn()'], LAP(2, 'move()'), ['turn_left()'], THA)), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Mẩu dưới chở thẳng hàng của nó: cột đệm S kéo nhện xuống, thả lệch', baiLam: bai(nhieu(NHAT, ['go_down()'], LAP(4, 'go_right()'), ['go_up()'], DAT, ['trail("DLLLLD")'], NHAT, LAP(4, 'go_right()'), DAT)), phaiCoMa: KEO_VAT },
+        { moTa: 'Mẩu trên chở thẳng: đang bật N, cột đệm N đẩy nhện xuống', baiLam: bai(nhieu(NHAT, LAP(4, 'go_right()'), DAT)), phaiCoMa: KEO_VAT }
       ],
-      goiY: ['Vật thứ hai: đang bật nam châm thì cách sắt 2 ô là hút được, khỏi đi sát.', 'Về tới ô trên ô đích thứ hai thì rẽ trái cho mũi xe chĩa xuống rồi thả.']
+      goiY: ['Hàng giữa cách cả hai đệm 3 ô: mọi chuyến đều đi ở đó.', 'Sau khi thả mẩu trên: xuống, trái bốn, xuống là tới mẩu dưới.']
     })
   ];
 
   /* ================================================= chương che-bai-tu "Hàm cho bãi từ" =================================================
-     Hai hàm của em: fetch_iron(n) bật N, đi n ô (qua đệm N an toàn, tới gần là hút sắt), quay đầu, đi n ô về; loop_right(k) ba lần rẽ phải đi k ô (đi vòng tránh đệm S). */
+     Hàm của em mới: detour(n) (xuống, đi n ô sang phải, lên: chở hàng vòng dưới đệm), call_out() (đè nút một nhịp, sang hai ô, hút: gọi sắt ra rồi lấy),
+     shield_run(n) (bật N rồi đi n ô: qua cột đệm N có tường chắn phía dưới). Ôn trail (gói 1). */
   function che(m) { m.chuong = 'che-bai-tu'; return man(m); }
-  var T_FETCH = nhieu(['magnet_n()'], LAP('n', 'move()'), ['u_turn()'], LAP('n', 'move()'));
-  var T_RING = ['for i in range(3):', '    turn_right()', '    for j in range(k):', '        move()'];
-  function hFetch(than) { return H('fetch_iron', ['n'], than || T_FETCH); }
-  function hRing(than) { return H('loop_right', ['k'], than || T_RING); }
-  var SAN_CHO = ['###.###', '###u###', 'D.....o', '#######'], CHAT_CHO = ['.......', '.......', '......s', '.......'];
-  var SAN_VONG = ['##.####.##', '#Du####u##', '#........o', '#.##.#####', '#.##.#####', '#....#####'];
-  var CHAT_VONG = ['..........', '..........', '.........s', '..........', '..........', '..........'];
-  function lat(h) { return h.split('').reverse().join(''); }
-  var SAN_DAI = ['###.##.##', '###u##u##', 'D.......o', '#########'], CHAT_DAI = ['.........', '.........', '........s', '.........'];
+  var T_DETOUR = ['go_down()', 'for i in range(n):', '    go_right()', 'go_up()'];
+  var T_CALL = ['wait()', 'go_right()', 'go_right()', 'magnet_n()', 'wait()'];
+  var T_SHIELD = ['magnet_n()', 'for i in range(n):', '    go_right()'];
+  function hDetour(than) { return H('detour', ['n'], than || T_DETOUR); }
+  function hCall(than) { return H('call_out', [], than || T_CALL); }
+  function hShield(than) { return H('shield_run', ['n'], than || T_SHIELD); }
+  var SAN_VONG = ['##.##', '.....', 'o...D', '.....'], CHAT_VONG = ['.....', '.....', 's....', '.....'];
+  var SAN_HOC = ['##o##', 'M....', '#D.##'], CHAT_HOC = ['..s..', '.....', '.....'], DEM_HOC = [{ x: 2, y: 2, cuc: 'S', nut: { x: 0, y: 1 } }];
+  var LAY_HOC = ['call_out()', 'go_left()', 'go_down()'];
 
   DS.push(
     che({
-      so: 1, ten: 'Hàm đi lấy sắt', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoaHamMan: ['get_iron'],
-      deBai: 'Hàm get_iron(n) của màn gói cả chuyến đi lấy sắt: bật N, đi n ô, quay đầu, đi n ô về. Đi qua đệm N vẫn an toàn vì nam châm đang bật. Chương trình chỉ cần gọi get_iron(3) rồi thả. Bấm Chạy.',
-      veMaMau: 'Chương trình và hàm của màn đã viết sẵn, khoá. Mở Xưởng xem get_iron, rồi bấm Chạy.',
-      san: SAN_CHO, vatChat: CHAT_CHO, demTu: [{ x: 3, y: 0, cuc: 'N' }],
-      batDau: { x: 1, y: 2, huong: 1 },
-      maMau: bai(nhieu(['get_iron(3)'], THA), { hamCuaMan: [H('get_iron', ['n'], T_FETCH)] }),
-      loiGiai: bai(nhieu(['get_iron(3)'], THA), { hamCuaMan: [H('get_iron', ['n'], T_FETCH)] }),
-      sao: { o: 15, nhip: 8 },
-      goiY: ['n là số ô đi mỗi chiều.', 'Màn sau em tự tạo hàm fetch_iron giống vậy.']
+      so: 1, ten: 'Hàm đi vòng', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoaHamMan: ['go_wide'],
+      deBai: 'Hàm go_wide() của màn gói cả đoạn đi vòng dưới đệm: xuống một hàng, đi bốn ô, lên lại. Chương trình chỉ cần hút, gọi go_wide(), thả. Bấm Chạy.',
+      veMaMau: 'Chương trình và hàm của màn đã viết sẵn, khoá. Mở Xưởng xem go_wide, rồi bấm Chạy.',
+      san: SAN_VONG, vatChat: CHAT_VONG, demTu: [{ x: 2, y: 0, cuc: 'S' }],
+      batDau: P(0, 2),
+      maMau: bai(nhieu(NHAT, ['go_wide()'], DAT), { hamCuaMan: [H('go_wide', [], ['go_down()', 'for i in range(4):', '    go_right()', 'go_up()'])] }),
+      loiGiai: bai(nhieu(NHAT, ['go_wide()'], DAT), { hamCuaMan: [H('go_wide', [], ['go_down()', 'for i in range(4):', '    go_right()', 'go_up()'])] }),
+      sao: { o: 9, nhip: 14 },
+      goiY: ['Đi vòng xa đệm 3 ô thì không bị kéo.', 'Màn sau bạn tự tạo hàm detour có tham số.']
     }),
 
     che({
-      so: 2, ten: 'Hàm fetch_iron(n)', hang: 'lam-quen', taoHam: ['fetch_iron'], hamCuaEmCan: ['move', 'u_turn', 'turn_right'],
-      deBai: 'Tạo hàm fetch_iron(n) có tham số n: magnet_n(), đi n ô, u_turn(), đi n ô về. Xe đứng giữa ngã tư: vật sắt bên phải ở xa, vật sắt phía trên ở gần. Một hàm, hai lần gọi với số ô khác nhau: fetch_iron(3) rồi thả, rẽ phải, fetch_iron(1) rồi thả.',
-      veMaMau: 'Chương trình có sẵn gọi fetch_iron(3) và fetch_iron(1) nhưng em chưa có hàm đó. Bấm Hàm mới.',
-      san: ['###o#####', '###.#.###', '###.#u###', '##D.....o', '###D#####'], vatChat: ['...s.....', '.........', '.........', '........s', '.........'],
-      demTu: [{ x: 5, y: 1, cuc: 'N' }],
-      batDau: { x: 3, y: 3, huong: 1 },
-      maMau: bai(nhieu(['fetch_iron(3)'], THA, ['turn_right()', 'fetch_iron(1)'], THA)),
-      loiGiai: bai(nhieu(['fetch_iron(3)'], THA, ['turn_right()', 'fetch_iron(1)'], THA), { hamCuaEmMoi: [hFetch()] }),
-      sao: { o: 21, nhip: 13 },
+      so: 2, ten: 'Hàm detour(n)', hang: 'lam-quen', taoHam: ['detour'],
+      deBai: 'Tạo hàm detour(n) có tham số n: go_down(), đi n ô sang phải, go_up(). Hai bãi, đệm ở hai cột khác nhau: hút mẩu sắt, detour(6) vòng dưới đệm tới thùng, thả.',
+      veMaMau: 'Chương trình có sẵn gọi detour(6) nhưng bạn chưa có hàm đó. Bấm Hàm mới.',
+      san: [['##.####', '##.####', 'o.....D', '.......'], ['####.##', '####.##', 'o.....D', '.......']], vatChat: [['.......', '.......', 's......', '.......'], ['.......', '.......', 's......', '.......']],
+      demTu: [[{ x: 2, y: 0, cuc: 'S' }], [{ x: 4, y: 0, cuc: 'N' }]],
+      batDau: P(0, 2),
+      maMau: bai(nhieu(NHAT, ['detour(6)'], DAT)),
+      loiGiai: bai(nhieu(NHAT, ['detour(6)'], DAT), { hamCuaEmMoi: [hDetour()] }),
+      sao: { o: 9, nhip: 18 },
       loiSai: [
-        { moTa: 'Chưa tạo hàm fetch_iron mà đã gọi nó', baiLam: bai(nhieu(['fetch_iron(3)'], THA, ['turn_right()', 'fetch_iron(1)'], THA)), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong hàm đi cứng 1 ô: vật bên phải còn xa, ngoài tầm', baiLam: bai(nhieu(['fetch_iron(3)'], THA, ['turn_right()', 'fetch_iron(1)'], THA)), hamCuaEmMoi: [hFetch(nhieu(['magnet_n()'], LAP(1, 'move()'), ['u_turn()'], LAP(1, 'move()')))], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Trong hàm quên magnet_n(): đệm N hút xe xuống hố', baiLam: bai(nhieu(['fetch_iron(3)'], THA, ['turn_right()', 'fetch_iron(1)'], THA)), hamCuaEmMoi: [hFetch(nhieu(LAP('n', 'move()'), ['u_turn()'], LAP('n', 'move()')))], phaiCoMa: ['dem-roi-ho'] }
+        { moTa: 'Chưa tạo hàm detour mà đã gọi nó', baiLam: bai(nhieu(NHAT, ['detour(6)'], DAT)), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm đi cứng 4 ô thay cho n: dừng trước thùng hai ô', baiLam: bai(nhieu(NHAT, ['detour(6)'], DAT)), hamCuaEmMoi: [hDetour(['go_down()', 'for i in range(4):', '    go_right()', 'go_up()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Trong hàm quên go_up(): thả dưới thùng một ô', baiLam: bai(nhieu(NHAT, ['detour(6)'], DAT)), hamCuaEmMoi: [hDetour(['go_down()', 'for i in range(n):', '    go_right()'])], phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Viết for i in range(n): thì vòng lặp chạy đúng n lần.', 'Đang bật nam châm thì cách sắt 2 ô là hút: phía trên chỉ cần đi 1 ô.']
+      goiY: ['Thân hàm: go_down(), for i in range(n): go_right(), go_up().', 'n là số ô đi ở hàng dưới.']
     }),
 
     che({
-      so: 3, ten: 'Hành lang hai đệm', hang: 'lam-quen', hamCuaEmCan: ['fetch_iron', 'move', 'turn_right', 'turn_left'],
-      deBai: 'Hành lang dài, có hai đệm N trên hai cái hố, vật sắt ở cuối. Xe đứng dưới đầu hành lang, trên ô đích. Tiến lên một ô, rẽ phải, gọi fetch_iron với số ô vừa đủ tới cách vật sắt 2 ô. Về rồi rẽ trái thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn gọi fetch_iron(3): chưa tới gần vật sắt. Sửa số ô và viết tiếp.',
-      san: ['###.##.##', '###u##u##', '#.......o', '#D#######'], vatChat: CHAT_DAI, demTu: [{ x: 3, y: 0, cuc: 'N' }, { x: 6, y: 0, cuc: 'N' }],
-      batDau: { x: 1, y: 3, huong: 0 },
-      maMau: bai(['move()', 'turn_right()', 'fetch_iron(3)']),
-      loiGiai: bai(nhieu(['move()', 'turn_right()', 'fetch_iron(5)', 'turn_left()'], THA)),
-      sao: { o: 22, nhip: 15 },
+      so: 3, ten: 'Hai chuyến, hai độ dài', hang: 'lam-quen', hamCuaEmCan: ['detour'],
+      deBai: 'Hai mẩu sắt, hai thùng, hai đệm S ở hàng trên. Chuyến một ngắn: detour(2). Thả xong sang phải một ô là đứng trên mẩu thứ hai, chuyến hai dài: detour(4). Một hàm, hai lần gọi với số khác nhau.',
+      veMaMau: 'Chương trình có sẵn làm chuyến một. Viết tiếp chuyến hai.',
+      san: ['#.###.##', '#.###.##', 'o.Do...D', '........'], vatChat: ['........', '........', 's..s....', '........'],
+      demTu: [{ x: 1, y: 0, cuc: 'S' }, { x: 5, y: 0, cuc: 'S' }],
+      batDau: P(0, 2),
+      maMau: bai(nhieu(NHAT, ['detour(2)'], DAT)),
+      loiGiai: bai(nhieu(NHAT, ['detour(2)'], DAT, ['go_right()'], NHAT, ['detour(4)'], DAT)),
+      sao: { o: 15, nhip: 26 },
       loiSai: [
-        { moTa: 'fetch_iron(3): dừng cách vật sắt 4 ô, ngoài tầm', baiLam: bai(nhieu(['move()', 'turn_right()', 'fetch_iron(3)', 'turn_left()'], THA)), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Về rồi thả luôn: vật rơi vào tường bên trái', baiLam: bai(nhieu(['move()', 'turn_right()', 'fetch_iron(5)'], THA)), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chuyến hai cũng detour(2): thả giữa đường, ngay cột đệm', baiLam: bai(nhieu(NHAT, ['detour(2)'], DAT, ['go_right()'], NHAT, ['detour(2)'], DAT)), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chuyến hai đi thẳng không vòng: qua cột đệm thứ hai bị kéo lên', baiLam: bai(nhieu(NHAT, ['detour(2)'], DAT, ['go_right()'], NHAT, LAP(4, 'go_right()'), DAT)), phaiCoMa: KEO_VAT }
       ],
-      goiY: ['Đếm ô từ đầu hành lang tới ô cách vật sắt 2 ô.', 'fetch_iron xong xe quay mặt về bên trái: rẽ trái là chĩa xuống ô đích.']
+      goiY: ['Sau khi thả, sang phải một ô là đứng trên mẩu thứ hai.', 'Đếm ô từ mẩu thứ hai tới thùng thứ hai: đó là n của chuyến hai.']
     }),
 
     che({
-      so: 4, ten: 'Hàm loop_right(k)', hang: 'luyen', taoHam: ['loop_right'], hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Tạo hàm loop_right(k): ba lần rẽ phải, mỗi lần đi k ô. Hút vật sắt bên phải, rồi loop_right(3) đi vòng tránh đệm S, thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn gọi loop_right(3) nhưng em chưa có hàm đó. Bấm Hàm mới.',
-      san: ['##.###', '#Du###', '#....o', '#.##.#', '#.##.#', '#....#'], vatChat: ['......', '......', '.....s', '......', '......', '......'],
+      so: 4, ten: 'Hàm call_out()', hang: 'luyen', taoHam: ['call_out'],
+      deBai: 'Tạo hàm call_out(): đè nút một nhịp (wait()), sang hai ô, hút (magnet_n(), wait()). Nhện đứng sẵn trên nút; mẩu sắt trong hốc trên bị đệm S kéo ra hành lang, nhện tới đứng trên nó mà hút. Rồi về trái một ô, xuống thùng, thả.',
+      veMaMau: 'Chương trình có sẵn gọi call_out() nhưng bạn chưa có hàm đó. Bấm Hàm mới.',
+      san: SAN_HOC, vatChat: CHAT_HOC, demTu: DEM_HOC,
+      batDau: P(0, 1),
+      maMau: bai(nhieu(LAY_HOC, DAT)),
+      loiGiai: bai(nhieu(LAY_HOC, DAT), { hamCuaEmMoi: [hCall()] }),
+      sao: { o: 10, nhip: 11 },
+      loiSai: [
+        { moTa: 'Chưa tạo hàm call_out mà đã gọi nó', baiLam: bai(nhieu(LAY_HOC, DAT)), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm chỉ sang một ô: mẩu sắt ở ô kế, nhện hút ô trống', baiLam: bai(nhieu(LAY_HOC, DAT)), hamCuaEmMoi: [hCall(['wait()', 'go_right()', 'magnet_n()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Thân hàm năm dòng: wait(), go_right(), go_right(), magnet_n(), wait().', 'Đè nút lúc nào thì nhịp sau đệm chạy, mẩu sắt rơi ra hành lang.']
+    }),
+
+    che({
+      so: 9, ten: 'Hai hốc bằng hàm', hang: 'bien-the', hamCuaEmCan: ['call_out', 'trail'],
+      deBai: 'Hai hốc giống nhau, mỗi hốc một nút và một đệm, nút sau cách thùng trước hai ô. Lặp hai lần: call_out(), về trái một ô, xuống thùng, thả, rồi trail("URR") lên hàng nút và sang nút sau.',
+      veMaMau: 'Chương trình có sẵn làm một hốc. Đặt vào vòng for và thêm trail sang nút sau.',
+      san: ['##o##o##', 'M..M....', '#D.#D.##'], vatChat: ['..s..s..', '........', '........'],
+      demTu: [{ x: 2, y: 2, cuc: 'S', nut: { x: 0, y: 1 } }, { x: 5, y: 2, cuc: 'S', nut: { x: 3, y: 1 } }],
+      batDau: P(0, 1),
+      maMau: bai(nhieu(LAY_HOC, DAT)),
+      loiGiai: bai(LAP(2, nhieu(LAY_HOC, DAT, ['trail("URR")']))),
+      sao: { o: 22, nhip: 28 },
+      loiSai: [
+        { moTa: 'trail("UR"): chưa tới nút sau, hốc hai không mở', baiLam: bai(LAP(2, nhieu(LAY_HOC, DAT, ['trail("UR")']))), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'trail("RR") quên lên: nhện đi ở hàng thùng, đâm tường', baiLam: bai(LAP(2, nhieu(LAY_HOC, DAT, ['trail("RR")']))), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Thả xong nhện ở thùng, ngay dưới ô cạnh nút: lên một, sang phải hai là nút sau.', 'Hai hốc y hệt: for i in range(2).']
+    }),
+
+    che({
+      so: 5, ten: 'Sửa call_far()', hang: 'luyen',
+      deBai: 'Hàm call_far() của màn phải đè nút một nhịp rồi sang hai ô tới mẩu sắt vừa rơi ra, nhưng Sola viết chỉ sang một ô nên nhện hút ở ô trống. Sửa thân hàm, rồi về trái, xuống thùng, thả.',
+      veMaMau: 'Chạy thử: nhện dừng cách mẩu sắt một ô mà hút. Mở Xưởng sửa call_far.',
+      san: SAN_HOC, vatChat: CHAT_HOC, demTu: DEM_HOC,
+      batDau: P(0, 1),
+      maMau: bai(nhieu(['call_far()', 'go_left()', 'go_down()'], DAT), { hamCuaMan: [H('call_far', [], ['wait()', 'go_right()', 'magnet_n()', 'wait()'])] }),
+      loiGiai: bai(nhieu(['call_far()', 'go_left()', 'go_down()'], DAT), { hamCuaMan: [H('call_far', [], T_CALL)] }),
+      sao: { o: 10, nhip: 11 },
+      loiSai: [
+        { moTa: 'Sửa thành sang ba ô: đi quá mẩu sắt', baiLam: bai(nhieu(['call_far()', 'go_left()', 'go_down()'], DAT), { hamCuaMan: [H('call_far', [], ['wait()', 'go_right()', 'go_right()', 'go_right()', 'magnet_n()', 'wait()'])] }), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Mẩu sắt rơi ra ngay dưới hốc, cách nút hai ô.', 'Thêm một go_right() trong thân hàm.']
+    }),
+
+    che({
+      so: 7, ten: 'Hàm shield_run(n)', hang: 'bien-the', taoHam: ['shield_run'], mucTieu: 'toi-co',
+      deBai: 'Tạo hàm shield_run(n): bật magnet_n() rồi đi n ô sang phải. Hành lang có đệm N ở hàng trên và tường ở hàng dưới: nam châm bật thì đệm đẩy nhện vào tường, đi thẳng được. Hai bãi, đệm ở hai cột khác nhau: shield_run(8).',
+      veMaMau: 'Chương trình có sẵn gọi shield_run(8) nhưng bạn chưa có hàm đó. Bấm Hàm mới.',
+      san: [['##.######', '##.######', '........F', '#########'], ['#####.###', '#####.###', '........F', '#########']],
+      demTu: [[{ x: 2, y: 0, cuc: 'N' }], [{ x: 5, y: 0, cuc: 'N' }]],
+      batDau: P(0, 2),
+      maMau: bai(['shield_run(8)']),
+      loiGiai: bai(['shield_run(8)'], { hamCuaEmMoi: [hShield()] }),
+      sao: { o: 4, nhip: 16 },
+      loiSai: [
+        { moTa: 'Chưa tạo hàm shield_run mà đã gọi nó', baiLam: bai(['shield_run(8)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm quên magnet_n(): đệm N hút nhện lên', baiLam: bai(['shield_run(8)']), hamCuaEmMoi: [hShield(['for i in range(n):', '    go_right()'])], phaiCoMa: KEO }
+      ],
+      goiY: ['Thân hàm: magnet_n() rồi for i in range(n): go_right().', 'Nam châm bật thì cùng cực với đệm N, bị đẩy vào tường, đứng vững.']
+    }),
+
+    che({
+      so: 8, ten: 'Khiên rồi vòng', hang: 'bien-the', hamCuaEmCan: ['shield_run', 'detour'],
+      deBai: 'Mẩu sắt ở giữa hành lang, sau cột đệm N (dưới cột đó là tường): shield_run(4) đi qua, tới đứng trên mẩu sắt là nam châm đang bật hút luôn. Tiếp theo là cột đệm S, dưới có sàn: detour(3) vòng xuống tới thùng rồi thả.',
+      veMaMau: 'Chương trình có sẵn mới qua đệm N và hút. Viết tiếp.',
+      san: ['##.##.##', '##.##.##', '....o..D', '###.....'], vatChat: ['........', '........', '....s...', '........'],
+      demTu: [{ x: 2, y: 0, cuc: 'N' }, { x: 5, y: 0, cuc: 'S' }],
+      batDau: P(0, 2),
+      maMau: bai(['shield_run(4)']),
+      loiGiai: bai(nhieu(['shield_run(4)', 'detour(3)'], DAT)),
+      sao: { o: 11, nhip: 19 },
+      loiSai: [
+        { moTa: 'Đi thẳng tiếp bằng shield_run(3): đệm S khác cực, kéo nhện lên', baiLam: bai(nhieu(['shield_run(4)', 'shield_run(3)'], DAT)), phaiCoMa: KEO_VAT },
+        { moTa: 'Vòng ngay từ đầu bằng detour(7): dưới cột đệm N là tường, nhện đâm tường', baiLam: bai(nhieu(['detour(7)'], DAT)), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['Đệm N có tường chắn phía dưới: dùng khiên. Đệm S có sàn phía dưới: đi vòng.', 'Tới đứng trên mẩu sắt khi nam châm đang bật là hút ngay.']
+    }),
+
+    che({
+      so: 6, ten: 'Sửa detour_left(n)', hang: 'luyen', hamCuaEmCan: ['detour'],
+      deBai: 'Bãi này lật gương: mẩu sắt bên phải, thùng bên trái, đệm S ở giữa hàng trên. Hàm detour_left(n) của màn chép từ detour nên vẫn đi sang phải. Sửa thân hàm, rồi hút, detour_left(4), thả.',
+      veMaMau: 'Chạy thử: nhện đi nhầm sang phải, đâm tường. Mở Xưởng sửa detour_left.',
+      san: ['##.##', '##.##', 'D...o', '.....'], vatChat: ['.....', '.....', '....s', '.....'],
       demTu: [{ x: 2, y: 0, cuc: 'S' }],
-      batDau: { x: 4, y: 2, huong: 1 },
-      maMau: bai(nhieu(HUT, ['loop_right(3)'], THA)),
-      loiGiai: bai(nhieu(HUT, ['loop_right(3)'], THA), { hamCuaEmMoi: [hRing()] }),
-      sao: { o: 14, nhip: 14 },
+      batDau: P(4, 2),
+      maMau: bai(nhieu(NHAT, ['detour_left(4)'], DAT), { hamCuaMan: [H('detour_left', ['n'], T_DETOUR)] }),
+      loiGiai: bai(nhieu(NHAT, ['detour_left(4)'], DAT), { hamCuaMan: [H('detour_left', ['n'], ['go_down()', 'for i in range(n):', '    go_left()', 'go_up()'])] }),
+      sao: { o: 9, nhip: 14 },
       loiSai: [
-        { moTa: 'Chưa tạo hàm loop_right mà đã gọi nó', baiLam: bai(nhieu(HUT, ['loop_right(3)'], THA)), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong hàm vòng trong đi cứng 2 ô: chưa về tới ô đích', baiLam: bai(nhieu(HUT, ['loop_right(3)'], THA)), hamCuaEmMoi: [hRing(['for i in range(3):', '    turn_right()', '    for j in range(2):', '        move()'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không sửa hàm, gọi detour(4) của bạn: vẫn đi sang phải', baiLam: bai(nhieu(NHAT, ['detour(4)'], DAT), { hamCuaMan: [H('detour_left', ['n'], T_DETOUR)] }), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Hai vòng lặp lồng nhau: vòng ngoài 3 lần, vòng trong k lần.', 'Vòng trong đặt tên biến khác (j) cho dễ đọc.']
+      goiY: ['Đi vòng về bên trái thì trong hàm go_left() thay cho go_right().', 'Chỉ cần đổi một dòng trong thân hàm.']
     }),
 
     che({
-      so: 5, ten: 'Lấy xa, về vòng', hang: 'luyen', hamCuaEmCan: ['fetch_iron', 'u_turn', 'loop_right'],
-      deBai: 'Vật sắt ở cuối hành lang bên phải, sau một đệm N. Ô đích ở góc trên bên trái, cạnh đệm S trên hố. Lấy sắt bằng fetch_iron(2), lùi về thêm một ô tới chỗ rẽ xuống, quay đầu, rồi loop_right(3) đi vòng tránh đệm S, thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn lấy được sắt rồi thả ngay chỗ xe đứng. Viết tiếp đoạn đi vòng.',
-      san: SAN_VONG, vatChat: CHAT_VONG, demTu: [{ x: 2, y: 0, cuc: 'S' }, { x: 7, y: 0, cuc: 'N' }],
-      batDau: { x: 5, y: 2, huong: 1 },
-      maMau: bai(nhieu(['fetch_iron(2)'], THA)),
-      loiGiai: bai(nhieu(['fetch_iron(2)', 'move()', 'u_turn()', 'loop_right(3)'], THA)),
-      sao: { o: 24, nhip: 20 },
+      so: 10, ten: 'Bãi từ ba hàm', hang: 'trum', khung: { chinh: 14, moiHam: 10 }, hamCuaEmCan: ['call_out', 'shield_run', 'detour'],
+      deBai: 'Trùm. Nhện đứng trên nút: call_out() gọi mẩu sắt trong hốc ra rồi hút, về trái một ô, xuống thùng, thả. Lên lại, shield_run(4) qua cột đệm N (tường phía dưới) tới đứng trên mẩu sắt thứ hai (hút luôn), rồi detour(5) vòng dưới cột đệm S tới thùng thứ hai, thả.',
+      veMaMau: 'Chương trình có sẵn làm xong mẩu thứ nhất. Viết tiếp.',
+      san: ['##o#.##.###', 'M....o.#..D', '#D.##......', '###########'], vatChat: ['..s........', '.....s.....', '...........', '...........'],
+      demTu: [{ x: 2, y: 2, cuc: 'S', nut: { x: 0, y: 1 } }, { x: 4, y: 0, cuc: 'N' }, { x: 7, y: 0, cuc: 'S' }],
+      batDau: P(0, 1),
+      maMau: bai(nhieu(LAY_HOC, DAT)),
+      loiGiai: bai(nhieu(LAY_HOC, DAT, ['go_up()', 'shield_run(4)', 'detour(5)'], DAT)),
+      sao: { o: 22, nhip: 36 },
       loiSai: [
-        { moTa: 'Quên quay đầu: loop_right bắt đầu bằng rẽ phải nên xe rẽ lên tường', baiLam: bai(nhieu(['fetch_iron(2)', 'move()', 'loop_right(3)'], THA)), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên lùi một ô: chỗ xe đứng không rẽ xuống được', baiLam: bai(nhieu(['fetch_iron(2)', 'u_turn()', 'loop_right(3)'], THA)), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Chở thẳng về ô đích ngang đệm S', baiLam: bai(nhieu(['fetch_iron(2)'], LAP(4, 'move()'), ['turn_right()'], THA)), phaiCoMa: ['dem-roi-ho'] }
+        { moTa: 'Mẩu thứ hai đi thẳng hàng trên: đâm tường chắn cột đệm S', baiLam: bai(nhieu(LAY_HOC, DAT, ['go_up()', 'shield_run(4)', 'shield_run(5)'], DAT)), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Quên lên lại sau khi thả: shield_run chạy ở hàng thùng, đâm tường', baiLam: bai(nhieu(LAY_HOC, DAT, ['shield_run(4)', 'detour(5)'], DAT)), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['fetch_iron xong xe quay mặt về bên trái. loop_right bắt đầu bằng rẽ phải: quay đầu trước để rẽ xuống.', 'Hai hàm của em, mỗi hàm một việc: lấy xa, đi vòng.']
-    }),
-
-    che({
-      so: 6, ten: 'Sửa tap_pad()', hang: 'luyen',
-      deBai: 'Hàm tap_pad() của màn phải đè nút một nhịp rồi bước khỏi nút, để đệm S kéo vật sắt ra hành lang rồi tắt. Nó viết ngược thứ tự nên đệm không chạy. Sửa thân hàm, rồi hút sắt, chở dọc hành lang tới ô đích ở đầu kia.',
-      veMaMau: 'Chạy thử: xe rời nút ngay, đệm không chạy nhịp nào. Mở Xưởng sửa tap_pad.',
-      san: ['######o##', 'D.......M', '######.##'], vatChat: ['......s..', '.........', '.........'],
-      demTu: [{ x: 6, y: 2, cuc: 'S', nut: { x: 8, y: 1 } }],
-      batDau: { x: 8, y: 1, huong: 3 },
-      maMau: bai(nhieu(['tap_pad()'], HUT, LAP(6, 'move()'), THA), { hamCuaMan: [H('tap_pad', [], ['move()', 'wait()'])] }),
-      loiGiai: bai(nhieu(['tap_pad()'], HUT, LAP(6, 'move()'), THA), { hamCuaMan: [H('tap_pad', [], ['wait()', 'move()'])] }),
-      sao: { o: 12, nhip: 10 },
-      loiSai: [
-        { moTa: 'Bỏ wait(): chỉ bước khỏi nút, đệm không chạy nhịp nào', baiLam: bai(nhieu(['tap_pad()'], HUT, LAP(6, 'move()'), THA), { hamCuaMan: [H('tap_pad', [], ['move()'])] }), phaiCoMa: ['chua-dua-vat'] }
-      ],
-      goiY: ['Đè nút trước: wait() khi xe còn đứng trên nút.', 'Rồi mới move() ra khỏi nút: đệm chạy thêm đúng một nhịp rồi tắt.']
-    }),
-
-    che({
-      so: 7, ten: 'Hàm pull_iron()', hang: 'bien-the', taoHam: ['pull_iron'], hamCuaEmCan: ['move', 'turn_right', 'turn_left'],
-      deBai: 'Tạo hàm pull_iron(): đè nút một nhịp, bước khỏi nút, rồi hút sắt về (wait(), move(), magnet_n(), wait()). Hai hốc sắt giống nhau, mỗi hốc một nút: lặp hai lần gọi hàm, thả, rồi đi ba ô tới nút sau.',
-      veMaMau: 'Chương trình có sẵn gọi pull_iron() nhưng em chưa có hàm đó. Bấm Hàm mới.',
-      san: ['##o###o##', 'M...M....', '#D.##D.##'], vatChat: ['..s...s..', '.........', '.........'],
-      demTu: [{ x: 2, y: 2, cuc: 'S', nut: { x: 0, y: 1 } }, { x: 6, y: 2, cuc: 'S', nut: { x: 4, y: 1 } }],
-      batDau: { x: 0, y: 1, huong: 1 },
-      maMau: bai(LAP(2, ['pull_iron()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()', 'for j in range(3):', '    move()'])),
-      loiGiai: bai(LAP(2, ['pull_iron()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()', 'for j in range(3):', '    move()']), { hamCuaEmMoi: [H('pull_iron', [], nhieu(['wait()', 'move()'], HUT))] }),
-      sao: { o: 19, nhip: 14 },
-      loiSai: [
-        { moTa: 'Chưa tạo hàm pull_iron mà đã gọi nó', baiLam: bai(LAP(2, ['pull_iron()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()', 'for j in range(3):', '    move()'])), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong hàm bước trước rồi mới chờ: đệm không chạy', baiLam: bai(LAP(2, ['pull_iron()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()', 'for j in range(3):', '    move()'])), hamCuaEmMoi: [H('pull_iron', [], nhieu(['move()', 'wait()'], HUT))], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đi hai ô: xe chưa tới nút sau', baiLam: bai(LAP(2, ['pull_iron()', 'turn_right()', 'magnet_off()', 'wait()', 'turn_left()', 'for j in range(2):', '    move()'])), hamCuaEmMoi: [H('pull_iron', [], nhieu(['wait()', 'move()'], HUT))], phaiCoMa: ['chua-dua-vat'] }
-      ],
-      goiY: ['Thân hàm bốn dòng: wait(), move(), magnet_n(), wait().', 'Thả xong xe ở ngay cạnh nút cũ: rẽ trái, đi ba ô là tới nút sau.']
-    }),
-
-    che({
-      so: 8, ten: 'Gọi ra rồi đi lấy', hang: 'bien-the', hamCuaEmCan: ['pull_iron', 'fetch_iron', 'turn_right', 'turn_left'],
-      deBai: 'Hai vật sắt. Vật thứ nhất trong hốc: pull_iron() rồi thả vào ô đích dưới. Vật thứ hai ở cuối hành lang sau đệm N: fetch_iron(5) mang về, rồi rẽ phải thả vào ô đích phía trên.',
-      veMaMau: 'Chương trình có sẵn làm xong vật thứ nhất. Viết tiếp.',
-      san: ['#####.###', '#Do##u###', 'M.......o', '#D.######'], vatChat: ['.........', '..s......', '........s', '.........'],
-      demTu: [{ x: 5, y: 0, cuc: 'N' }, { x: 2, y: 3, cuc: 'S', nut: { x: 0, y: 2 } }],
-      batDau: { x: 0, y: 2, huong: 1 },
-      maMau: bai(nhieu(['pull_iron()', 'turn_right()'], THA)),
-      loiGiai: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(5)', 'turn_right()'], THA)),
-      sao: { o: 29, nhip: 19 },
-      loiSai: [
-        { moTa: 'fetch_iron(4): xe dừng cách vật sắt 3 ô, chưa hút được', baiLam: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(3)', 'turn_right()'], THA)), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Về tới nơi rẽ trái: ô đích dưới đã có vật thứ nhất', baiLam: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(5)', 'turn_left()'], THA)), phaiCoMa: ['chua-dua-vat'] }
-      ],
-      goiY: ['Đếm ô từ chỗ xe đứng tới chỗ cách vật sắt 2 ô.', 'fetch_iron xong xe quay mặt về bên trái: rẽ phải là chĩa lên trên.']
-    }),
-
-    che({
-      so: 9, ten: 'Sửa loop_left(k)', hang: 'bien-the', hamCuaEmCan: ['fetch_iron', 'u_turn'],
-      deBai: 'Sân này là sân màn trước lật gương: đường vòng phải đi về bên trái. Hàm loop_left(k) của màn chép từ loop_right nên vẫn rẽ phải. Sửa thân hàm, rồi lấy sắt bằng fetch_iron(3), quay đầu, loop_left(3), thả.',
-      veMaMau: 'Chạy thử: xe rẽ nhầm sang phải. Mở Xưởng sửa loop_left.',
-      san: SAN_VONG.map(lat), vatChat: CHAT_VONG.map(lat), demTu: [{ x: 7, y: 0, cuc: 'S' }, { x: 2, y: 0, cuc: 'N' }],
-      batDau: { x: 5, y: 2, huong: 3 },
-      maMau: bai(nhieu(['fetch_iron(3)', 'u_turn()', 'loop_left(3)'], THA), { hamCuaMan: [H('loop_left', ['k'], T_RING)] }),
-      loiGiai: bai(nhieu(['fetch_iron(3)', 'u_turn()', 'loop_left(3)'], THA), { hamCuaMan: [H('loop_left', ['k'], T_RING.map(function (d) { return d.replace('turn_right', 'turn_left'); }))] }),
-      sao: { o: 23, nhip: 21 },
-      loiSai: [
-        { moTa: 'Đổi chỗ khác: gọi loop_right(3) của em, vẫn rẽ phải', baiLam: bai(nhieu(['fetch_iron(3)', 'u_turn()', 'loop_right(3)'], THA), { hamCuaMan: [H('loop_left', ['k'], T_RING)] }), phaiCoMa: ['dem-roi-ho'] }
-      ],
-      goiY: ['Đi vòng bên trái thì mỗi góc rẽ trái.', 'Chỉ cần đổi một dòng trong thân hàm.']
-    }),
-
-    che({
-      so: 10, ten: 'Bãi từ ba hàm', hang: 'trum', khung: { chinh: 14, moiHam: 10 }, hamCuaEmCan: ['pull_iron', 'fetch_iron', 'loop_right', 'move', 'u_turn', 'turn_right', 'turn_left'],
-      deBai: 'Hai vật sắt, hai ô đích, ba hàm của em. Xe đứng trên nút: pull_iron() gọi vật trong hốc ra, thả vào ô đích ngay dưới. Rồi fetch_iron(2) lấy vật sau đệm N, lùi về một ô lên nút, quay đầu, loop_right(3) đi vòng tránh đệm S tới ô đích góc trên.',
-      veMaMau: 'Chương trình có sẵn làm xong vật thứ nhất. Viết tiếp.',
-      san: ['##.####.##', '#Du###ou##', '#...M....o', '#.##.D.###', '#.##.#####', '#....#####'],
-      vatChat: ['..........', '......s...', '.........s', '..........', '..........', '..........'],
-      demTu: [{ x: 2, y: 0, cuc: 'S' }, { x: 7, y: 0, cuc: 'N' }, { x: 6, y: 3, cuc: 'S', nut: { x: 4, y: 2 } }],
-      batDau: { x: 4, y: 2, huong: 1 },
-      maMau: bai(nhieu(['pull_iron()', 'turn_right()'], THA)),
-      loiGiai: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(2)', 'move()', 'u_turn()', 'loop_right(3)'], THA)),
-      sao: { o: 35, nhip: 26 },
-      loiSai: [
-        { moTa: 'Quên lùi về một ô: loop_right rẽ xuống ô đích đã có vật', baiLam: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(2)', 'u_turn()', 'loop_right(3)'], THA)), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Chở thẳng về ngang đệm S', baiLam: bai(nhieu(['pull_iron()', 'turn_right()'], THA, ['turn_left()', 'fetch_iron(2)'], LAP(4, 'move()'), ['turn_right()'], THA)), phaiCoMa: ['dem-roi-ho'] }
-      ],
-      goiY: ['Mỗi hàm một đoạn: gọi vật ra, lấy xa, đi vòng.', 'loop_right(3) bắt đầu ở ô nút, mặt quay sang phải.']
+      goiY: ['Ba hàm, ba đoạn: gọi sắt ra, qua đệm N bằng khiên, vòng dưới đệm S.', 'Đếm ô từ mẩu thứ hai tới thùng để biết n của detour.']
     })
   );
 

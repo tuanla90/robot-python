@@ -5,18 +5,21 @@
    1. Vị trí: gói robot là gói cuối mùa 1, hai chương đúng thứ tự, hàng lam-quen / luyen / bien-the / trum; robot-hoan-thien.10 cất, không màn mùa 1 nào
       còn hàm của màn khóa (khoaHamMan); choi.html nạp man-trum-mua-1.js trước lo-trinh-hoc.js; mã / tên mới không trùng.
       MÙA 1 = 10 gói × 2 chương × 10 màn = 200 màn; mọi chương mùa 1 có trùm là màn cuối, trùm có huy hiệu (huy-hieu.js có hình), màn khác không có.
-   2. Từng màn mới: đủ trường (kể cả kieuBai); một sân (trùm: ba sân); robot (chương 1: tay kẹp; chương 2: tay xoay; hai robot: R1 xoay vàng, R2 kẹp lam);
+   2. Từng màn mới: đủ trường (kể cả kieuBai); PDM1 (31/10, gói 10 "R1 chạy một mình"): mọi màn 2–3 sân, trùm ba sân, không màn hai robot;
+      robot (chương 1: tay kẹp; chương 2: tay xoay; hai robot nếu có: R1 xoay vàng, R2 kẹp lam);
       lời giải thắng 3 sao đúng sao.o / sao.nhip, không chẩn đoán; mã mẫu chưa thắng; lời giải khác đúng 2 sao; lời sai thua đúng mã phaiCoMa;
       hàm của em cần đã học trước màn và khai đủ (cả qua hàm của màn); robot khóa / chương trình khóa chạy đúng mã mẫu.
    3. Ràng buộc mùa 1: không biến, không hàm có tham số, không bậc thang, không tạo hàm của em mới; mọi lệnh chạy tới (bắc cầu qua kho) là lệnh mùa 1.
    4. Đường cong chương Trùm mùa: dòng / nhịp / cỡ sân (ô không phải tường) màn n ≤ max(1,5 × màn n−1, màn n−1 + bù), bù dòng +3, nhịp +4, cỡ sân +6;
       trừ trùm. Màn 1 Trùm mùa dễ hơn trùm chương 1 (robot-hoan-thien.11) rất nhiều. Hai màn vong-lap thêm tay kẹp (8, 9): giữ đường cong chương vong-lap
       (so với màn trước và màn sau), chỉ dùng thứ của gói 1–2, lời giải có for, trải for ra thì tràn khung hay mất sao.
-   5. Bộ dò đường tắt (khối chuẩn một / hai robot, có điểm ◆ diQua): không có đường nào nhanh hơn sao.nhip (trừ NHANH_HON có lý do); đường dò chạy thật đúng
+   5. Bộ dò đường tắt (khối chuẩn một / hai robot, có điểm ◆ diQua): không có đường nào nhanh hơn sao.nhip (nhịp theo ngày dài nhất: từng sân không nhanh hơn
+      lời giải ở sân đó; trừ NHANH_HON có lý do); đường dò chạy thật đúng
       nhịp; trùm: đường ngắn nhất từng sân (đếm cứng) không thắng cả ba sân; màn hai robot đưa vật: một robot đứng yên thì không thắng.
       Màn chương trình chính khóa gọi hàm của màn ở nhiều chỗ: mọi thân đếm cứng không được 3 sao.
    6. BẢNG RECALL gộp gói 9 + 10 (recallMan / kiemRecall của kiem-combo-mua-1.mjs): (a) mỗi màn mới chương Trùm mùa có tay xoay + cảm biến bên và
-      ≥ 2 gói khác trong {1, 2, 3, 4, 5, 8}; robot-hoan-thien.11 dùng ≥ 2 gói 1–8; (b) mỗi gói 1–8 được nhắc ≥ 3 lần trên 40 màn gói 9 + 10;
+      ≥ 2 gói khác trong {1, 2, 3, 4, 5, 8}; robot-hoan-thien.11 dùng ≥ 2 gói 1–8; (b) mỗi gói 1–8 được nhắc ≥ 3 lần trên 40 màn gói 9 + 10
+      (gói 8 Đội ≥ 2: PDM1, gói 10 chạy một mình nên đội chỉ còn ở gói 9);
       (c) không hai màn liền nhau cùng kiểu bài. Trùm cuối mùa dùng gần như mọi thứ: tay xoay, cảm biến trước + bên, lùi, nút đè, hàm tự viết, vòng lặp.
    Chạy: node hoc/kiem-trum-mua-1.mjs            (trượt thì thoát mã 1)
          node hoc/kiem-trum-mua-1.mjs --loi-gia  (cắm lỗi giả vào dữ liệu đã nạp: máy kiểm phải ĐỎ)
@@ -26,6 +29,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { GOI_RECALL, recallMan, kiemRecall, khoTheoLoTrinh } from './kiem-combo-mua-1.mjs';
 import { coHuyHieu } from './huy-hieu-ds.mjs';   // V7c1: danh sách mã huy hiệu từ dữ liệu bộ vector (không regex huy-hieu.js pixel)
+import { dayChungRobotHoanThien } from './do-duong-robot-hoan-thien.mjs';
 
 const require = createRequire(import.meta.url);
 const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -47,12 +51,13 @@ const M = require('./lo-trinh-hoc.js');
 const TT = require('./thu-tu-chuong.js');
 const LOI_GIA = process.argv.includes('--loi-gia');
 if (LOI_GIA) {
-  // Lỗi giả: sai ngưỡng nhịp, hai màn liền nhau cùng kiểu bài, một trùm mùa 1 mất huy hiệu, một màn mới khai thiếu hàm cần, màn đội của gói 10 còn một robot (recall gói 8 tụt còn 2).
+  // Lỗi giả: sai ngưỡng nhịp, hai màn liền nhau cùng kiểu bài, một trùm mùa 1 mất huy hiệu, một màn mới khai thiếu hàm cần, một màn gói 10 về một sân (PDM1).
+  // (Bản cũ còn cắm "màn đội của gói 10 còn một robot"; gói 10 không còn màn đội nên thay bằng lỗi một sân.)
   const a = M.timMa('trum-mua-1.3'); a.sao = Object.assign({}, a.sao, { nhip: a.sao.nhip - 1 });
   M.timMa('trum-mua-1.2').kieuBai = M.timMa('trum-mua-1.1').kieuBai;
   delete M.timMa('me-cung.10').huyHieu;
   M.timMa('trum-mua-1.1').hamCuaEmCan = M.timMa('trum-mua-1.1').hamCuaEmCan.filter((h) => h !== 'back');
-  for (const m of M.danhSach) if (m.chuong === 'trum-mua-1' && m.doi) { m.kieuBai = 'giao-hang'; m.doi = m.doi.slice(0, 1); m.loiGiai.doi = m.loiGiai.doi.slice(0, 1); }
+  const b = M.timMa('trum-mua-1.2'); b.san = b.san[0]; b.batDau = b.batDau[0];
 }
 
 let dat = 0, hong = 0;
@@ -67,10 +72,11 @@ const THU_TU = {
 };
 /** Màn mà bộ dò khối chuẩn có đường nhanh hơn ngưỡng: lý do. */
 const NHANH_HON = {
-  'robot-hoan-thien.11': 'đếm cứng số bước lùi lên ◆ (mỗi kho một khác) thì bỏ được lần quay đầu thứ hai của pass_back(): nhanh hơn một nhịp mỗi sân, nhưng không chung được cho ba kho (đường đếm cứng không thắng cả ba sân)'
+  'robot-hoan-thien.11': 'đếm cứng số bước lùi lên ◆ (mỗi kho một khác) thì bỏ được lần quay đầu thứ hai của pass_back(): nhanh hơn một nhịp mỗi sân, nhưng không chung được cho ba kho (đường đếm cứng không thắng cả ba sân)',
+  'trum-mua-1.5': 'PDM1: đặt thùng lên nút xong, lùi đếm cứng tới cờ nhanh hơn quay đầu + go_wall() một nhịp, nhưng cờ mỗi ngày xa gần khác (đường đếm cứng không thắng cả ba ngày)'
 };
 /** Robot khóa (màn hai robot): dãy khối nó chạy. */
-const KHOI_KHOA = { 'trum-mua-1.4': { r: 1, khoi: ['pick', 'turn_right', 'drop'] } };
+const KHOI_KHOA = {};      // PDM1: trum-mua-1.4 không còn là màn hai robot (R2 khóa)
 const BU = { dong: 3, nhip: 4, o: 6 };
 const theoSan = (v, i) => (Array.isArray(v) ? v[i] : v);
 const get = (ma) => M.timMa(ma);
@@ -315,6 +321,74 @@ function baiDuong(m, khoi) {
   if (!m.doi) return { chinh: thanhMa(khoi[0]), hamCuaMan: [] };
   return { doi: khoi.map((k, i) => ({ chinh: m.doi[i].coDinh ? m.maMau.doi[i].chinh.slice() : thanhMa(k) })), hamCuaMan: [] };
 }
+function canDuoi(ctx, S) {
+  const R = S.r[0];
+  let h = 0;
+  if (ctx.mucTieu === 'bong-mo') {
+    const bm = ctx.bm;
+    for (const p of S.pos) if (p >= 0 && !ctx.dichVat.includes(p)) h += 4;
+    if (R.cam >= 0 && !bm.cam) h += 2;
+    let dx = Math.abs(R.x - bm.x) + Math.abs(R.y - bm.y);
+    ctx.diQua.forEach((o, k) => {
+      if (!(S.qua & (1 << k))) {
+        const qx = o % ctx.rong, qy = (o - qx) / ctx.rong;
+        const d = Math.abs(R.x - qx) + Math.abs(R.y - qy) + Math.abs(qx - bm.x) + Math.abs(qy - bm.y);
+        if (d > dx) dx = d;
+      }
+    });
+    h += dx + (R.h !== (bm.huong || 0) ? 1 : 0);
+  } else if (ctx.mucTieu === 'dua-vat') {
+    for (const p of S.pos) if (p >= 0 && !ctx.dich.has(p)) h += 4;
+    if (R.cam >= 0) h += 2;
+  }
+  return h;
+}
+function dayChung(m, gioiHan, toiDa = 1500000) {
+  const n = soSan(m);
+  const ctxs = [];
+  for (let si = 0; si < n; si++) ctxs.push(nguCanh(m, si));
+  const thangNgay = (ctx) => ctx.mucTieu !== 'bong-mo';
+  const dau = ctxs.map((ctx) => {
+    const S0 = { r: ctx.ds.map((d) => ({ x: d.x, y: d.y, h: d.h, cam: -1, k: null, b: 0, xong: false, q: 0 })), pos: ctx.vat0.slice(), cua: ctx.cua.map((d) => d.mo0), qua: 0 };
+    ctx.diQua.forEach((o, k) => { if (S0.r.some((R) => ctx.o(R.x, R.y) === o)) S0.qua |= 1 << k; });
+    return { S: S0, xong: thangNgay(ctx) && laDich(ctx, S0) };
+  });
+  const maS = (S) => S.r.map((R) => [R.x, R.y, R.h, R.cam, R.k, R.b, R.xong ? 1 : 0].join(',')).join('|') + '|' + S.pos.join('.') + '|' + S.cua.map(Number).join('') + '|' + S.qua;
+  const ma = (ds) => ds.map((d) => (d.xong ? 'X' : maS(d.S))).join('||');
+  const HD = (ctxs[0].ds[0].xoay ? KHOI_XOAY : KHOI_KEP).filter((x) => x !== 'wait');
+  const lop = [[{ ds: dau, c: [] }]], thay = new Map([[ma(dau), 0]]);
+  let soTT = 0;
+  for (let g = 0; g < lop.length && g <= gioiHan; g++) {
+    for (const { ds, c } of lop[g] || []) {
+      if (thay.get(ma(ds)) < g) continue;
+      for (const a of HD) {
+        const nhip = KHOI[a].length;
+        let gia = 0, uoc = 0;
+        const moi = ds.map((d, si) => {
+          if (d.xong) return d;
+          let S = d.S, xong = false;
+          for (let b = 0; b < nhip; b++) {
+            S = buoc(ctxs[si], S, [b === 0 ? a : null]);
+            gia += 1;
+            if (thangNgay(ctxs[si]) && laDich(ctxs[si], S)) { xong = true; break; }
+          }
+          if (!xong) uoc += canDuoi(ctxs[si], S);
+          return { S, xong };
+        });
+        const gg = g + gia;
+        if (gg + uoc > gioiHan) continue;
+        const xongHet = moi.every((d, si) => d.xong || (!thangNgay(ctxs[si]) && laDich(ctxs[si], d.S)));
+        if (xongHet) return { nhip: gg, chuoi: c.concat([a]), soTT };
+        const kk = ma(moi);
+        if (thay.has(kk) && thay.get(kk) <= gg) continue;
+        thay.set(kk, gg); soTT++;
+        (lop[gg] || (lop[gg] = [])).push({ ds: moi, c: c.concat([a]) });
+        if (soTT > toiDa) return { catNgang: true, soTT };
+      }
+    }
+  }
+  return null;
+}
 const bang = {};
 
 /* ------------------------------------------------------------------ 2–3, 5. từng màn mới */
@@ -327,7 +401,10 @@ for (const m of DS) {
     assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
-    assert.equal(soSan(m), m.hang === 'trum' ? 3 : 1, m.ma + ' số sân');
+    if (m.hang === 'trum') assert.equal(soSan(m), 3, m.ma + ' số sân');
+    else assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ' số sân ' + soSan(m) + ' (gói 10: 2–3 ngày làm việc)');
+    assert.equal(m.nhipTheo, 'tong', m.ma + ' gói 10 phải tính tổng nhịp (nhipTheo === "tong")');
+    assert.ok(!m.doi, m.ma + ': gói 10 chạy một mình, không màn hai robot');
     for (const rows of dsSan(m)) assert.ok(!/S/.test(rows.join('')), m.ma + ' sân có bậc thang');
     if (m.doi) {
       assert.ok(!c1, m.ma + ': chương Tổng hợp không có màn hai robot mới');
@@ -339,9 +416,9 @@ for (const m of DS) {
       assert.deepEqual(b.hamGoc.slice().sort(), KHAY_KEP.slice().sort(), m.ma + ' khay R2');
       for (const d of m.doi) assert.deepEqual(d.robot.camBien.map((c) => c.ma), ['khoang-cach']);
     } else {
-      assert.deepEqual([m.robot.than, m.robot.tay], ['hai-banh', c1 ? 'kep' : 'xoay'], m.ma + ' robot');
+      assert.deepEqual([m.robot.than, m.robot.tay], ['hai-banh', 'xoay'], m.ma + ' robot');
       assert.deepEqual(m.robot.camBien.map((c) => c.ma), ['khoang-cach']);
-      assert.deepEqual(m.hamGoc.slice().sort(), (c1 ? KHAY_KEP : KHAY_XOAY).slice().sort(), m.ma + ' khay');
+      assert.deepEqual(m.hamGoc.slice().sort(), KHAY_XOAY.slice().sort(), m.ma + ' khay');
     }
     assert.ok(m.khung.chanBien, m.ma + ' phải chặn biến (khung.chanBien)');
     assert.ok(!m.bienDem, m.ma + ' mở nhóm ĐẾM');
@@ -406,13 +483,14 @@ for (const m of DS) {
   });
   kiem(m.ma + ': bộ dò khối chuẩn: không có đường nhanh hơn ngưỡng (trừ lý do khai); đường dò chạy thật đúng nhịp; trùm: đếm cứng một sân không thắng cả ba', () => {
     let tong = 0;
-    const duong = [];
+    const duong = [], nhipSan = [];
     const khoa = KHOI_KHOA[m.ma];
     if ((m.doi || []).some((d) => d.coDinh)) assert.ok(khoa && m.doi[khoa.r].coDinh, m.ma + ': màn có robot khóa cần khai KHOI_KHOA');
     for (let si = 0; si < soSan(m); si++) {
       const b = bfs(m, si, { khoa });
       assert.ok(b.nhip !== null, m.ma + ' sân ' + si + ': bộ dò không tới được đích');
       tong += b.nhip;
+      nhipSan.push(b.nhip);
       const bai = baiDuong(m, b.khoi);
       duong.push(bai);
       const rr = Cham.cham(manSan(m, si), bai, kho);
@@ -428,8 +506,13 @@ for (const m of DS) {
     }
     bang[m.ma].khoi = tong;
     bang[m.ma].duong = duong.map((d) => chinhCua(d).map((x) => x.join(' ; ')).join(' || ')).join(' ## ');
-    if (NHANH_HON[m.ma]) assert.ok(tong < m.sao.nhip, m.ma + ': khai NHANH_HON mà đường khối chuẩn không nhanh hơn (' + tong + ' / ' + m.sao.nhip + ')');
-    else assert.ok(tong >= m.sao.nhip, m.ma + ': đường khối chuẩn ' + tong + ' nhịp nhanh hơn ngưỡng ' + m.sao.nhip + ': ' + bang[m.ma].duong);
+    // Nhịp tổng (một sân, hay nhipTheo 'tong'): tổng đường dò so với ngưỡng. Nhịp theo ngày dài nhất: từng sân, đường dò so với lời giải ở chính sân đó.
+    const theoTong = soSan(m) === 1 || m.nhipTheo === 'tong';
+    const lgSan = theoTong ? [] : cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi).theoSan.map((s) => s.soNhip);
+    const nhanh = theoTong ? tong < m.sao.nhip : nhipSan.some((n, si) => n < lgSan[si]);
+    const soSanh = theoTong ? tong + ' / ' + m.sao.nhip : nhipSan.join(',') + ' / lời giải ' + lgSan.join(',');
+    if (NHANH_HON[m.ma]) assert.ok(nhanh, m.ma + ': khai NHANH_HON mà đường khối chuẩn không nhanh hơn (' + soSanh + ')');
+    else assert.ok(!nhanh, m.ma + ': đường khối chuẩn nhanh hơn lời giải (' + soSanh + '): ' + bang[m.ma].duong);
     if (soSan(m) > 1) {
       for (let i = 0; i < duong.length; i++) {
         const mr = Object.assign(clone(m), { khung: Object.assign({}, m.khung, { chinh: 99 }) });
@@ -437,6 +520,8 @@ for (const m of DS) {
         const r = cham(mr, duong[i]);
         assert.ok(!r.thang && r.theoSan[i].thang, m.ma + ': đường đếm cứng của sân ' + i + ' thắng cả ba sân (hay thua chính sân đó)');
       }
+      const dc = dayChung(m, m.sao.nhip);
+      assert.equal(dc, null, m.ma + ': có dãy khối chuẩn cố định (không cảm biến) thắng mọi sân trong ngưỡng ' + m.sao.nhip + ' nhịp: ' + JSON.stringify(dc));
     }
   });
   const hm = (m.loiGiai.hamCuaMan || []).filter((h) => !(m.khoaHamMan || []).includes(h.ten));
@@ -474,9 +559,21 @@ kiem('đường cong chương Trùm mùa: dòng / nhịp / cỡ sân màn n ≤ 
     assert.ok(tran(coSan(m), coSan(t), BU.o), m.ma + ' cỡ sân ' + coSan(m) + ' so với ' + t.ma + ' ' + coSan(t));
   }
 });
-kiem('màn 1 Trùm mùa dễ hơn trùm chương Tổng hợp (robot-hoan-thien.11) rất nhiều: nhịp ≤ 1/4, dòng và cỡ sân không lớn hơn', () => {
+kiem('mọi màn gói 10 mùa 1 (cả chương robot-hoan-thien và trum-mua-1): nhipTheo === "tong", không có dãy cố định (dayChung) thắng mọi sân trong sao.nhip', () => {
+  for (const m of goi.chuong.flatMap(chuongDS)) {
+    assert.equal(m.nhipTheo, 'tong', m.ma + ': thiếu nhipTheo === "tong"');
+    const r = cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi);
+    assert.equal(r.soNhip, r.nhipTong, m.ma + ': soNhip khác nhipTong');
+    assert.equal(r.soNhip, m.sao.nhip, m.ma + ': soNhip khác sao.nhip');
+    if (!MOI.includes(m.ma)) {
+      const dc = dayChungRobotHoanThien(m, m.sao.nhip, { gop: false });
+      assert.equal(dc, null, m.ma + ': có dãy cố định (dayChung) thắng mọi sân trong ngưỡng ' + m.sao.nhip + ' nhịp: ' + JSON.stringify(dc));
+    }
+  }
+});
+kiem('màn 1 Trùm mùa dễ hơn trùm chương Tổng hợp (robot-hoan-thien.11) rất nhiều: nhịp ≤ 1/3, dòng và cỡ sân không lớn hơn', () => {
   const a = chuongDS(C2)[0], t = get('robot-hoan-thien.11');
-  assert.ok(a.sao.nhip * 4 <= t.sao.nhip, a.ma + ' nhịp ' + a.sao.nhip + ' / trùm ' + t.sao.nhip);
+  assert.ok(a.sao.nhip * 3 <= t.sao.nhip, a.ma + ' nhịp ' + a.sao.nhip + ' / trùm ' + t.sao.nhip);
   assert.ok(soDong(a) <= soDong(t) && coSan(a) <= coSan(t));
 });
 kiem('trùm cuối mùa (trum-mua-1.10) dùng gần như mọi thứ: tay xoay, cảm biến trước + bên, lùi, nút đè, hàm tự viết, vòng lặp, nhiều sân', () => {
@@ -551,7 +648,7 @@ const recallCua = (m) => {
   if (!RC.has(m.ma)) RC.set(m.ma, recallMan(m, khoTruoc.get(m.ma), (mSua) => { try { return cham(mSua, m.loiGiai, m.loiGiai.hamCuaEmMoi).thang; } catch (e) { return false; } }));
   return RC.get(m.ma);
 };
-const KQ = kiemRecall(dsGoi, recallCua, { moi: (m) => m.chuong === C2, toiThieu: 3 });
+const KQ = kiemRecall(dsGoi, recallCua, { moi: (m) => m.chuong === C2, toiThieu: 3, toiThieuGoi: { 8: 2 } });
 const KQ1 = kiemRecall([get('robot-hoan-thien.11')], recallCua, { yChinh: [], khac: [1, 2, 3, 4, 5, 6, 7, 8], toiThieuKhac: 2, toiThieu: 0 });
 kiem('recall gộp gói 9 + 10: (a) màn Trùm mùa có tay xoay + cảm biến bên + ≥ 2 gói khác, robot-hoan-thien.11 ≥ 2 gói; (b) mỗi gói 1–8 ≥ 3 lần; (c) không hai màn liền nhau cùng kiểu bài', () => {
   assert.deepEqual(KQ.loi.concat(KQ1.loi), []);

@@ -432,7 +432,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   for (const loai of ['than', 'tay', 'cam-bien']) {
     const mp = BP[loai].map((d) => d.ma), mv = V.ds(loai);
     for (const ma of mp) if (!mv.includes(ma)) thieu.push(loai + '/' + ma);
-    const THEM_SAU_CHUP = { 'cam-bien': ['tu', 'camera-4'] };                                       // camera-4: camera bốn hướng color(huong), P1 mùa 4 (30/10)                                                   // P1 mùa 3 (29/10): cảm biến từ 'tu' thành part vector riêng (bộ pixel chưa từng có)
+    const THEM_SAU_CHUP = { 'cam-bien': ['tu', 'camera-4', 'radar', 'dong-chay', 'quet-ma'], than: ['xuong', 'cau'], tay: ['day-keo', 'moc-cau', 'loa'] };   // camera-4: P1 mùa 4; radar: PDM6a mùa 6; tu: P1 mùa 3; mùa Cảng / Bến sông 31/10; loa: mùa 8
     for (const ma of mv) if (!mp.includes(ma) && !(THEM_SAU_CHUP[loai] || []).includes(ma)) sai.push(loai + '/' + ma + ' (vector có, dữ liệu chụp không)');
     for (const d of BP[loai]) {
       const v = V.lay(loai, d.ma); if (!v) continue;
@@ -468,7 +468,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   /* c. mọi tổ hợp hợp lệ × 4 hướng × 2 cỡ: vẽ được, màu từ bảng, nằm trong ô (canvas = một ô; tay xoay có lề tràn), drone không xoay, không bóng đổ trong hình drone */
   const khongVe = [], mauLa = [], ngoai = [], droneXoay = [], bongDrone = [];
   const trongVung = (cv, canh) => { const pad = (cv.width - canh) / 2; return diemThietBi(cv.lenh).filter((p) => p.x - p.le < pad - 0.5 || p.y - p.le < pad - 0.5 || p.x + p.le > pad + canh + 0.5 || p.y + p.le > pad + canh + 0.5); };
-  const ST = { kep: { kep: 'mo', tuThe: 'tren' }, xoay: { kep: 'mo', tuThe: 'tren', goc: 0 }, 'nam-cham': { bat: true }, nem: { ngam: 3 }, hoi: { dangBanTruoc: true, dangBanSau: true }, son: { tuThe: 'duoi', mauSon: 'yellow' } };
+  const ST = { kep: { kep: 'mo', tuThe: 'tren' }, xoay: { kep: 'mo', tuThe: 'tren', goc: 0 }, 'nam-cham': { bat: true }, nem: { ngam: 3 }, hoi: { dangBanTruoc: true, dangBanSau: true }, son: { tuThe: 'duoi', mauSon: 'yellow' }, loa: { bat: true, notLoa: 5 } };
   for (const cfg of hopLe) for (const n of [37, 84]) {
     const anh = [];
     for (const h of [0, 1, 2, 3]) {
@@ -541,6 +541,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     ['hai-banh', 'nem', [{ tay: { ngam: 1 } }, { tay: { ngam: 2 } }, { tay: { ngam: 3 } }, { tay: { ngam: 1, dangNem: true } }, { tay: { ngam: 1, cam: true } }]],
     ['hai-banh', 'xoay', [{ tay: { goc: 0 } }, { tay: { goc: -45 } }, { tay: { xoay: 'trai' } }, { tay: { xoay: 'phai' } }, { tay: { goc: 0, kep: 'dong' } }, { tay: { goc: 0, tuThe: 'duoi' } }]],
     ['hai-banh', 'son', [{ tay: { mauSon: 'red' } }, { tay: { mauSon: 'green' } }, { tay: { mauSon: 'blue' } }, { tay: { mauSon: 'yellow' } }, { tay: { mauSon: 'red', tuThe: 'duoi' } }]],
+    ['hai-banh', 'loa', [{ tay: {} }, { tay: { bat: true, notLoa: 1 } }, { tay: { bat: true, notLoa: 5 } }, { tay: { bat: true, notLoa: 'x' } }]],
     ['nhen', null, [{}, { than: { co: true } }, { than: { buoc: 1 } }]],
     ['xich', null, [{ than: { banh: { trai: 1, phai: 1 }, buoc: 0 } }, { than: { banh: { trai: 1, phai: 1 }, buoc: 1 } }]],
     ['omni', null, [{ than: { banh: { trai: 1, phai: 1 }, buoc: 0 } }, { than: { banh: { trai: 1, phai: 1 }, buoc: 1 } }]]

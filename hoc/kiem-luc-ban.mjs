@@ -126,8 +126,9 @@ console.log('\n== 3. Mười màn ==');
     M.danhSach.filter((m) => m.chuong === ch).sort((a, b) => a.so - b.so).forEach((m) => (m.loiGiai.hamCuaEmMoi || []).forEach(them));
   }
   kiem('đúng 10 màn, so 1..10, hàng 3 · 3 · 3 · 1', ds.length === 10 && ds.every((m, i) => m.so === i + 1) && J(ds.map((m) => m.hang)) === J(['lam-quen', 'lam-quen', 'lam-quen', 'luyen', 'luyen', 'luyen', 'bien-the', 'bien-the', 'bien-the', 'trum']));
-  kiem('mọi màn: súng hơi, lucBan, cauTruc for/if/while; 8–10 thêm cảm biến khoảng cách và front_clear', ds.every((m) => m.robot.tay === 'hoi' && m.lucBan === true && J(m.cauTruc) === '["for","if","while"]' &&
-    (m.so >= 8) === (m.robot.camBien.some((c) => c.ma === 'khoang-cach') && m.hamGoc.includes('front_clear'))));
+  // PDM2b 31/10 (part đúng mùa): R1 là xe cứu hỏa (thân xích + vòi phun); 8–10 thêm mắt hồng ngoại distance() (trước: xe hai bánh + cảm biến khoảng cách front_clear)
+  kiem('mọi màn: xe xích gắn vòi phun, lucBan, cauTruc for/if/while; 8–10 thêm mắt hồng ngoại và distance', ds.every((m) => m.loaiRobot === 'xich' && m.robot.than === 'xich' && m.robot.tay === 'hoi' && m.lucBan === true && J(m.cauTruc) === '["for","if","while"]' &&
+    !m.hamGoc.includes('front_clear') && (m.so >= 8) === (m.robot.camBien.some((c) => c.ma === 'hong-ngoai') && m.hamGoc.includes('distance'))));
   kiem('sân tối đa 7 cột × 9 hàng (cả ba sân của trùm)', ds.every((m) => (Array.isArray(m.san[0]) ? m.san : [m.san]).every((s) => s.length <= 9 && s.every((h) => h.length <= 7))));
   for (const m of ds) {
     const kq = ChamHoc.cham(m, m.loiGiai, (m.loiGiai.hamCuaEmMoi || []).concat(kho));
@@ -148,8 +149,8 @@ console.log('\n== 3. Mười màn ==');
     (m.loiGiai.hamCuaEmMoi || []).forEach(them);
   }
   kiem('màn 1: bắn tụ thì lệch bóng mờ, bắn nhanh thì thắng (lý do chọn lực); gói T: màn 1 là màn trình diễn (chiChay), chấm trên bản không khoá',
-    (() => { const m = Object.assign({}, ds[0], { chiChay: false, chinhCoDinh: false }); return ds[0].chiChay === true && !ChamHoc.cham(m, { chinh: ['spray()', 'wait()', 'turn_left()', 'forward(3)'], hamCuaMan: [] }, kho).thang; })());
-  kiem('màn 2: bắn nhanh thì bóng rơi (ban-ngan), cửa không mở', (() => { const m = ds[1]; return maCua(ChamHoc.cham(m, { chinh: ['spray("low")', 'wait()', 'turn_left()', 'forward(2)'], hamCuaMan: [] }, kho)).includes('ban-ngan'); })());
+    (() => { const m = Object.assign({}, ds[0], { chiChay: false, chinhCoDinh: false }); return ds[0].chiChay === true && !ChamHoc.cham(m, { chinh: ['spray()', 'wait()', 'tr_left()', 'forward(3)'], hamCuaMan: [] }, kho).thang; })());
+  kiem('màn 2: bắn nhanh thì bóng rơi (ban-ngan), cửa không mở', (() => { const m = ds[1]; return maCua(ChamHoc.cham(m, { chinh: ['spray("low")', 'wait()', 'tr_left()', 'forward(2)'], hamCuaMan: [] }, kho)).includes('ban-ngan'); })());
   kiem('trùm: luôn một lực thì không qua được cả ba sân (mỗi lực trượt ít nhất một sân)', ds[9].loiSai.length >= 2 && ds[9].loiSai.every((ls) => !ChamHoc.cham(ds[9], ls.baiLam, kho).thang));
   kiem('trùm có huy hiệu luc-ban, nhịp tính tổng ba sân', ds[9].huyHieu && ds[9].huyHieu.ma === 'luc-ban' && ds[9].nhipTheo === 'tong' && ds[9].san.length === 3);
   kiem('hàm cốt truyện tạo ở chương: squirt (4), squirt_back (5), smart_spray (8); có mục Sổ lệnh nhóm hoi, chương luc-ban, đúng màn',

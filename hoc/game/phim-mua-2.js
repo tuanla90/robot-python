@@ -20,7 +20,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var XH = { than: 'xich', tay: 'hoi', camBien: [] };                     // xích + súng hơi (từ gói 2)
   var XHN = { than: 'xich', tay: 'hoi', camBien: HN };                    // xích + súng hơi + hồng ngoại (từ gói 3)
   var R2 = { than: 'hai-banh', tay: 'hoi', camBien: HN, son: 'lam' };     // R2 gói 8: hai bánh + súng hơi + hồng ngoại
-  var HUY = ['xich', 'sung-hoi', 'hong-ngoai', 'bang-chuyen', 'day-thung', 'luc-ban', 'do-nhiet', 'be-sung', 'tong-hop-2', 'nha-may-chay'];   // huy hiệu chương 1 các gói mùa 2 (+ gói 10 và trùm, V7b) bay trong phim gói 10
+  var HUY = ['xich', 'sung-hoi', 'hong-ngoai', 'bang-chuyen', 'day-thung', 'luc-ban', 'do-nhiet', 'be-sung', 'tong-hop-2', 'nha-may-chay'];   // huy hiệu chương 1 các gói mùa 2 (+ gói 10 và trùm, V7b) bay trong phim gói 10 (PDM2c: gói 8 kho-cu, gói 9 doi-mua-2, be-sung cất — hình phim giữ theo nền vector 817f81d, đổi ở phiên Phim CLB)
   var Y = 158;                                    // tâm thân R1 khi đứng trên dải sàn (tỉ lệ 3)
   var BAN = { tay: { tuThe: 'tren', dangBanTruoc: true } }, BAN_SAU = { tay: { tuThe: 'tren', dangBanSau: true } }, YEN = { tay: { tuThe: 'tren' } };
   var DO = { camBien: { bat: true } };
@@ -422,7 +422,39 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     ],
 
-    /* ---------------------------------------------------------------- 8 · Đội (R1 xích + R2 hai bánh; warm() thấy bạn) */
+    /* ---------------------------------------------------------------- 8 · Góc kho cũ (mã kho-cu; PDM2c 31/10 phim TẠM theo khuôn, phim thật ở phiên Phim CLB) */
+    'kho-cu': [
+      // 1 · góc kho cũ: thùng gỗ chắn lối, xe cứu hỏa dừng lại
+      function (k, c) {
+        var s = san2(k, c, ['#####', '..o.C', '#####'], 4, X0, Y0), a = s.o(0, 1), p = s.o(1, 1);
+        var r = c.xe(XHN, DO, 1, 2, a.x, a.y); k.appendChild(r);
+        truot(c, r, 300, p.x, p.y, 0.5);
+        c.sau(900, function () { r.mat('ngac'); c.keu('dam'); });
+        hoi(k, c, '?!', p.x + 34, p.y - 20, 1.2);
+      },
+      // 2 · xích đẩy thùng nặng lên nút đè: thùng giữ nút, cửa mở
+      function (k, c) {
+        var s = san2(k, c, ['#####', '.HM.C', '#####'], 4, X0, Y0), a = s.o(0, 1), p = s.o(1, 1), q = s.o(2, 1), tg = s.nang['1,1'];
+        var r = c.xe(XHN, DO, 1, 2, a.x, a.y); k.appendChild(r);
+        truot(c, r, 400, p.x, p.y, 0.6);
+        truot(c, tg, 400, q.x - C1 / 2, q.y - C1 / 2, 0.6);
+        c.sau(1100, function () { s.nut['2,1'].dat(true); s.cua['4,1'].dat(true); c.keu('moKhoa'); r.mat('vui'); });
+        tieng(k, c, 'MỞ!', q.x + 40, q.y - 30, 1.1);
+      },
+      // 3 · xe đè nút đè: cửa trước mũi mở cho tia nước bay qua
+      function (k, c) {
+        var s = san2(k, c, ['#####', '.M.CN', '#####'], 4, X0, Y0), a = s.o(0, 1), p = s.o(1, 1), n = s.o(4, 1);
+        var r = c.xe(XHN, DO, 1, 2, a.x, a.y); k.appendChild(r);
+        truot(c, r, 300, p.x, p.y, 0.5);
+        c.sau(900, function () { s.nut['1,1'].dat(true); s.cua['3,1'].dat(true); c.keu('moKhoa'); });
+        c.sau(1400, function () { r.ve(BAN); });
+        banBong(k, c, 2, p.x + 30, p.y, n.x, n.y, 1420, 0.5);
+        c.sau(1950, function () { s.nb['4,1'].dat(true); r.ve(DO); c.keu('thang'); r.mat('vui'); });
+        tieng(k, c, 'QUA CỬA!', p.x + 50, p.y - 34, 1.9);
+      }
+    ],
+
+    /* ---------------------------------------------------------------- 9 · Đội (R1 xích + R2 hai bánh; warm() thấy bạn) */
     'doi-mua-2': [
       // 1 · R2 trở lại với vòi phun và mắt hồng ngoại
       function (k, c) {

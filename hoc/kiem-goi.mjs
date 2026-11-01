@@ -135,7 +135,7 @@ console.log('\n== 3b. Mùa bán riêng (25/10) và gói không bao giờ khóa l
 {
   const dsM = MoGoi.dsMua();
   const muaCua = (ma) => MoGoi.goiTheoMa(ma).mua;
-  kiem('năm mùa (29/10 thêm mùa 5 ẩn chứa gói cũ chờ dựng): mùa 1 miễn phí, các mùa sau có `ban` (giá)', dsM.map((x) => x.ma).join() === 'mua-1,mua-2,mua-3,mua-4,mua-5' && !dsM[0].ban && dsM.slice(1).every((x) => x.ban && x.ban.gia));
+  kiem('chín mùa (31/10 đúng thứ tự mùa 1–9, mùa 8 ẩn chứa gói cũ chờ dựng): mùa 1 miễn phí, các mùa sau có `ban` (giá)', dsM.map((x) => x.ma).join() === 'mua-1,mua-2,mua-3,mua-4,mua-5,mua-6,mua-7,mua-8,mua-9' && !dsM[0].ban && dsM.slice(1).every((x) => x.ban && x.ban.gia));
   kiem('mùa 1 dừng ở Robot hoàn thiện; mùa 2 mở đầu bằng Đội hai robot, mùa 3 Súng hơi, mùa 4 Tay xoay',
     muaCua('robot') === 'mua-1' && muaCua('hai-robot') === 'mua-2' && muaCua('omni') === 'mua-2' && muaCua('sung-hoi') === 'mua-3' && muaCua('nam-cham') === 'mua-3' &&
       muaCua('tay-xoay') === 'mua-4' && muaCua('rap-du') === 'mua-4');
@@ -167,7 +167,7 @@ console.log('\n== 3b. Mùa bán riêng (25/10) và gói không bao giờ khóa l
     kiem('thêm mùa không đổi ngưỡng mùa khác (Flycam vẫn cần 105 ★ ở mùa 4)', MoGoi.goiTheoMa('flycam').saoCan === 105 && MoGoi.goiTheoMa('flycam').mua === 'mua-4');
     kiem('cờ mua-mo:<mã> giữ mùa mở', MoGoi.muaMo(mt, { saoTot: () => 0, daXem: (c) => c === 'mua-mo:mua-thu' }));
   } finally { TT.mua.pop(); rd.mua = cuMua; rd.sao = cuSao; }
-  kiem('trả lại như cũ sau khi thử', MoGoi.dsMua().length === 5 && MoGoi.goiTheoMa('rap-du').mua === 'mua-4' && MoGoi.goiTheoMa('rap-du').saoCan === cuSao);
+  kiem('trả lại như cũ sau khi thử', MoGoi.dsMua().length === 9 && MoGoi.goiTheoMa('rap-du').mua === 'mua-4' && MoGoi.goiTheoMa('rap-du').saoCan === cuSao);
 }
 
 console.log('\n== 4. Ba màn hình (khởi đầu → chọn gói → lưới màn) ==');

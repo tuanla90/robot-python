@@ -56,18 +56,24 @@ for (const c of goiDoi) {
   const roiMua2 = TT.goi[gi] && (goiSau ? (goiSau.mua === 'mua-2' || goiSau.mua === 'mua-3') && TT.goi[gi].mua !== goiSau.mua : vt < 0);
   // Gói đội vào thẳng MUA_3 (doi-xich = gói 8): màn không bậc thang ở lại mùa 3, màn còn lại thành chương rời (M.roiMua3) đứng đúng chỗ cũ sau chương neo.
   const khung3 = TT.goi[gi] && TT.goi[gi].mua === 'mua-3' && (M.mua3 || []).some((g) => g.ma === c.goi.ma);
-  // Khung mùa 4 (29/10, KE-HOACH-MUA-4.md): gói đội vào thẳng MUA_4 (doi-nam-cham = gói 8), hay gói đội ở lại mùa 5 (ẩn) mà chương neo đã vào gói mùa 4.
-  const chuongMua4 = new Set(TT.goi.filter((g) => g.mua === 'mua-4').flatMap((g) => g.chuong));
-  const khung4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-4' && (M.mua4 || []).some((g) => g.ma === c.goi.ma);
-  const roiMua4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-5' && chuongMua4.has(c.sau);
+  // Khung mùa 6 Nông trại (MUA_4, 29/10 KE-HOACH-MUA-4.md) và mùa 7 Mỏ đá (MUA_6, 31/10): gói đội vào thẳng MUA_4 (doi-nam-cham = gói 9), hay gói đội ở lại mùa 8 (ẩn) mà chương neo đã vào gói mùa 6 / mùa 7.
+  const chuongMua4 = new Set(TT.goi.filter((g) => g.mua === 'mua-6').flatMap((g) => g.chuong));
+  const chuongMua6 = new Set(TT.goi.filter((g) => g.mua === 'mua-7').flatMap((g) => g.chuong));
+  const khung4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-6' && (M.mua4 || []).some((g) => g.ma === c.goi.ma);
+  const khung6 = TT.goi[gi] && TT.goi[gi].mua === 'mua-7' && (M.mua6 || []).some((g) => g.ma === c.goi.ma);
+  const roiMua4 = TT.goi[gi] && TT.goi[gi].mua === 'mua-9' && (chuongMua4.has(c.sau) || chuongMua6.has(c.sau));
   if (khung4) {
     const g4 = (M.mua4 || []).find((g) => g.ma === c.goi.ma);
-    kiem(c.goi.ma + ': gói đội vào khung mùa 4 (MUA_4): mùa 4 ẩn; chương đúng MUA_4 (chương có màn)',
-      TT.mua.find((x) => x.ma === 'mua-4').an === true && J(TT.goi[gi].chuong) === J(g4.chuong.map((x) => x[0]).filter((x) => M.danhSach.some((m) => m.chuong === x))));
+    kiem(c.goi.ma + ': gói đội vào khung mùa 6 Nông trại (MUA_4): mùa 6 ẩn; chương đúng MUA_4 (chương có màn)',
+      TT.mua.find((x) => x.ma === 'mua-6').an === true && J(TT.goi[gi].chuong) === J(g4.chuong.map((x) => x[0]).filter((x) => M.danhSach.some((m) => m.chuong === x))));
+  } else if (khung6) {
+    const g6 = (M.mua6 || []).find((g) => g.ma === c.goi.ma);
+    kiem(c.goi.ma + ': gói đội vào khung mùa 7 Mỏ đá (MUA_6): mùa 7 ẩn; chương đúng MUA_6 (chương có màn)',
+      TT.mua.find((x) => x.ma === 'mua-7').an === true && J(TT.goi[gi].chuong) === J(g6.chuong.map((x) => x[0]).filter((x) => M.danhSach.some((m) => m.chuong === x))));
   } else if (roiMua4) {
     const g = TT.goi[gi];
-    kiem(c.goi.ma + ': gói đội ở mùa 5 (ẩn), chương neo ' + c.sau + ' đã vào mùa 4: chương đứng sau ' + c.sau + ', có ngưỡng sao',
-      TT.mua.find((x) => x.ma === 'mua-5').an === true && c.coMan.every((x) => TT.thuTu.indexOf(x) > vt) && typeof g.sao === 'number' && g.khongTangNguong === true, g.mua + ' ' + g.sao);
+    kiem(c.goi.ma + ': gói đội ở mùa 9 (ẩn), chương neo ' + c.sau + ' đã vào mùa 6: chương đứng sau ' + c.sau + ', có ngưỡng sao',
+      TT.mua.find((x) => x.ma === 'mua-9').an === true && c.coMan.every((x) => TT.thuTu.indexOf(x) > vt) && typeof g.sao === 'number' && g.khongTangNguong === true, g.mua + ' ' + g.sao);
   } else if (khung3) {
     const roi = Object.keys(M.roiMua3 || {}).filter((x) => M.roiMua3[x].some((ma) => c.chuong.some((y) => ma.startsWith(y.ma + '.'))));
     const gr = TT.goi.findIndex((g) => roi.length > 0 && g.chuong.includes(roi[0]));
@@ -144,7 +150,7 @@ console.log('\n— không va nhau giữa các gói (các gói làm song song ở
   const taoTrung = Object.entries(noiTao).filter(([, a]) => a.length > 1 && a.some((ma) => dsDoi.some((m) => m.ma === ma)));
   kiem('mỗi hàm cốt truyện chỉ một màn bắt chế', !taoTrung.length, taoTrung.map(([t, a]) => t + ': ' + a.join(', ')).join('; '));
   const tenKho = new Set(M.danhSach.flatMap((m) => (m.loiGiai.hamCuaEmMoi || []).map((h) => h.ten)));
-  const manVa = dsDoi.flatMap((m) => (m.loiGiai.hamCuaMan || []).filter((h) => tenKho.has(h.ten) || noiTao[h.ten]).map((h) => m.ma + ' ' + h.ten));
+  const manVa = dsDoi.flatMap((m) => (m.loiGiai.hamCuaMan || []).filter((h) => !h.capCu && (tenKho.has(h.ten) || noiTao[h.ten])).map((h) => m.ma + ' ' + h.ten));     // capCu (PDM2b): bản hai bánh của hàm của em (squirt_left…) cấp lại cho màn ẩn, cố ý cùng tên để che bản xích
   kiem('hàm của màn không trùng tên hàm của em ở chương nào', !manVa.length, manVa.join(', '));
 }
 

@@ -69,9 +69,12 @@ const loTrinhRieng = (() => {
 })();
 
 /** Kho của học sinh LÚC TỚI màn `id` (đã chơi mọi màn trước, mỗi màn tạo / sửa hàm theo lời giải; màn tiết kiệm nhịp sửa riêng, không ghi vào kho). id 'het' = sau cả game. */
+// PDM2b 31/10: luc-ban (ngân hàng) gọi go_to_wall() mà che-hong-ngoai.1 (man-hong-ngoai.js, tệp lộ trình, không vào ngân hàng thô) dạy: cấp vào kho trước luc-ban.1 (như kiem-hoc.mjs).
+const GO_TO_WALL = require(path.join(day, 'man-hong-ngoai.js')).manHongNgoai.find((x) => x.chuong === 'che-hong-ngoai' && x.so === 1).loiGiai.hamCuaEmMoi.find((h) => h.ten === 'go_to_wall');
 function khoTruoc(id) {
   const kho = KhoHam.moi({ tenCoDinh: tenCotTruyen });
   for (const m of tatCa) {
+    if (m.chuong === 'luc-ban' && m.so === 1 && !kho.tim('go_to_wall')) { kho.tao('go_to_wall', GO_TO_WALL.thamSo, { taoHam: ['go_to_wall'] }); kho.sua('go_to_wall', GO_TO_WALL.than); }
     if (m.id === id) break;
     if (m.tietKiemNhip === true) continue;
     for (const h of m.loiGiai.hamCuaEmMoi) {
@@ -137,8 +140,8 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
   kiem('SoLenh.ds: mỗi mục { ten, nhom, moTa, chuong, man }; nhóm có trong tenNhom và thuTuNhom; moTa là MỘT câu ngắn (≤ 80 chữ cái, không xuống dòng, không dấu chấm cuối); tên không trùng',
     SoLenh.ds.every((h) => typeof h.ten === 'string' && /^[a-z_][a-z_0-9]*$/.test(h.ten) && SoLenh.tenNhom[h.nhom] && SoLenh.thuTuNhom.includes(h.nhom) && typeof h.moTa === 'string' && h.moTa.length >= 8 && h.moTa.length <= 80 && !/[\n]/.test(h.moTa) && !/[.]$/.test(h.moTa) && typeof h.chuong === 'string' && typeof h.man === 'string') &&
       new Set(SoLenh.ds.map((h) => h.ten)).size === SoLenh.ds.length);
-  kiem('nhóm của Sổ lệnh đủ loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, hoi (súng hơi), mau, son (máy sơn), nam-cham, tay-xoay, nem, drone, tham-so, bang-chuyen, hong-ngoai (mùa 2); mỗi nhóm có tên hiển thị',
-    J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'cam-bien', 'drone', 'hoi', 'hong-ngoai', 'lap', 'list', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'son', 'tay', 'tay-xoay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
+  kiem('nhóm của Sổ lệnh đủ loại như kế hoạch: xe, tay, lap, cam-bien, nhen, xich, omni, hoi (súng hơi), mau, son (máy sơn), nam-cham, tay-xoay, nem, drone, tham-so, bang-chuyen, hong-ngoai (mùa 2), loa; mỗi nhóm có tên hiển thị',
+    J(Object.keys(SoLenh.tenNhom).sort()) === J(['bang-chuyen', 'cam-bien', 'drone', 'hoi', 'hong-ngoai', 'lap', 'list', 'loa', 'mau', 'nam-cham', 'nem', 'nhen', 'omni', 'son', 'tay', 'tay-xoay', 'tham-so', 'xe', 'xich']) && J(SoLenh.thuTuNhom.slice().sort()) === J(Object.keys(SoLenh.tenNhom).sort()));
   const dau = {};                                                      // tên hàm → màn đầu tiên tạo nó (ngân hàng mùa 1, rồi màn mới mùa 2 theo lộ trình)
   for (const m of tatCa.concat(loTrinhRieng.manMua1Moi, loTrinhRieng.manMua2Moi)) for (const t of m.taoHam) if (!dau[t]) dau[t] = m;
   kiem('lộ trình có màn mới mùa 1 có taoHam cho Sổ lệnh thấy: kho-hang.1 tạo set_box (SM1-A)', loTrinhRieng.manMua1Moi.some((m) => m.ma === 'kho-hang.1' && m.taoHam.includes('set_box')), J(loTrinhRieng.manMua1Moi.map((m) => m.ma)));
@@ -151,13 +154,14 @@ console.log('\n== 2. LENH_NGUOC, Sổ lệnh (so-lenh.js) ==');
     SoLenh.ds.every((h) => dau[h.ten] && dau[h.ten].chuong === h.chuong && dau[h.ten].ma === h.man) && J(SoLenh.ds.map((h) => h.ten)) === J(Object.keys(dau)), J(SoLenh.ds.filter((h) => !(dau[h.ten] && dau[h.ten].ma === h.man)).map((h) => h.ten + '@' + h.man + '≠' + (dau[h.ten] && dau[h.ten].ma))));
   kiem('chương của mọi mục có tên hiển thị trong ThuTuChuong', SoLenh.ds.every((h) => typeof (ThuTu.ten[h.chuong] || loTrinhRieng.tenChuong[h.chuong]) === 'string'));
   kiem('nhóm của hàm đợt 2 ứng với chương: drone → drone, sung-hoi + che-sung-hoi + luc-ban → hoi, may-nem → nem…; hàm đợt 1 thuộc xe / tay / lap / cam-bien',
-    SoLenh.ds.every((h) => ({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'che-nhen': 'nhen', 'list': 'list', 'che-list': 'list', 'xich': 'xich', 'che-xich': 'xich', 'omni': 'omni', 'che-omni': 'omni', 'sung-hoi': 'hoi', 'che-sung-hoi': 'hoi', 'luc-ban': 'hoi', 'mau': 'mau', 'nam-cham': 'nam-cham', 'che-nam-cham': 'nam-cham', 'tay-xoay': 'tay-xoay', 'che-tay-xoay': 'tay-xoay', 'may-nem': 'nem', 'che-may-nem': 'nem', 'drone': 'drone', 'che-drone': 'drone', 'flycam': 'drone', 'che-mau': 'mau', 'may-son': 'son', 'che-may-son': 'son',
+    SoLenh.ds.every((h) => [({ 'xuong-ham': 'xe', 'che-xe': 'xe', 'tay-gap': 'tay', 'che-tay': 'tay', 'vong-lap': 'lap', 'che-lap': 'lap', 'khoang-cach': 'cam-bien', 'che-cam-bien': 'cam-bien', 'tham-so': 'tham-so', 'nhen': 'nhen', 'che-nhen': 'nhen', 'list': 'list', 'che-list': 'list', 'xich': 'xich', 'che-xich': 'xich', 'omni': 'omni', 'che-omni': 'omni', 'sung-hoi': 'hoi', 'che-sung-hoi': 'hoi', 'luc-ban': 'hoi', 'mau': 'mau', 'nam-cham': 'nam-cham', 'che-nam-cham': 'nam-cham', 'tay-xoay': 'tay-xoay', 'che-tay-xoay': 'tay-xoay', 'may-nem': 'nem', 'che-may-nem': 'nem', 'drone': 'drone', 'che-drone': 'drone', 'flycam': 'drone', 'che-mau': 'mau', 'may-son': 'son', 'che-may-son': 'son',
       'kho-hang': 'tay', 'cam-bien-ben': 'cam-bien',                                     // mùa 1 chương chỉ có ở lộ trình (SM1-A: set_box; to_left_gap)
       // mùa 2: mỗi chương chế hàm mới thêm một dòng
-      'che-be-sung': 'hoi',                                                              // gói 9 Bệ súng xích
+      'che-kho-cu': ['hoi', 'xich', 'hong-ngoai'],                                       // gói 8 Góc kho cũ (PDM2b): xe cứu hỏa đầy đủ, hàm theo part nó dùng (phun / đẩy thùng / đo)
+      'che-be-sung': 'hoi',                                                              // gói Bệ vòi xích (PDM2c: cất, không còn mục)
       'trum-mua-2': 'hoi',                                                               // gói 10 Nhà máy chạy lại
       'che-hong-ngoai': 'hong-ngoai', 'che-day-thung': 'xich', 'che-luc-ban': 'hoi', 'che-do-nhiet': 'hong-ngoai',
-      'che-doi-mua-2': 'hong-ngoai' })[h.chuong] === h.nhom));
+      'che-doi-mua-2': 'hong-ngoai' })[h.chuong]].flat().includes(h.nhom)));     // chương của cỗ máy đầy đủ (gói 8 trở đi) được nhiều nhóm
   kiem('hàm chế ở che-xe có trong Sổ lệnh với lời lớp 5 (vd dodge_right: "Né sang phải một ô, giữ hướng")',
     ['dodge_right', 'dodge_left', 'back', 'park'].every((t) => SoLenh.tim(t) && SoLenh.tim(t).chuong === 'che-xe') && SoLenh.tim('dodge_right').moTa === 'Né sang phải một ô, giữ hướng');
   kiem('hàm CỦA MÀN (come_back, fixed_move: chỉ đúng cho một màn, 15/10) không còn là hàm cốt truyện: không trong taoHam của màn nào, không trong Sổ lệnh, không là tên khóa của kho', ['come_back', 'fixed_move'].every((t) => !tenCotTruyen.includes(t) && SoLenh.tim(t) === null));

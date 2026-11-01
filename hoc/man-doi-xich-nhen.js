@@ -1,16 +1,12 @@
 /* ============================================================================
-   man-doi-xich-nhen.js — "Robot Chấn Hưng": NGÂN HÀNG MÀN MỚI của mùa 3, gói 8 "Đội xích và nhện" (KE-HOACH-MUA-3.md). HIỆN CHƯA CÓ MÀN.
-   Khung mùa 3 (lo-trinh-hoc.js, khối "MÙA 3 = 10 GÓI", mảng MUA_3) đã chừa chỗ: tệp đã có trong danh sách require của lo-trinh-hoc.js và
-   thẻ <script> của game/choi.html. Gói sau CHỈ việc thêm màn vào mảng DS dưới đây; màn tự hiện đúng chương, đúng gói.
-     - `doi-xich`: chương 1 "Đội xích và nhện" (2 màn có sẵn không bậc thang: doi-xich.3, .9); màn mới khai so từ 11
-     - `che-doi-xich`: chương 2 "Đội xích và nhện phối hợp" (chưa có màn); màn mới khai so từ 11 (mã che-doi-xich.1 … .10 đã có, ở mùa 4)
-   Mỗi màn khai `chuong` (một trong các mã trên) và `so` (thứ tự trong phần màn mới của chương); mã `ma` = chuong + '.' + so là khóa lưu sao,
-   KHÔNG đổi sau khi xuất bản, KHÔNG trùng mã đã có. Gọi ManHoc.chuanHoa(m) như các tệp màn khác. Màn mới nối SAU các màn có sẵn của chương (chen trước
-   màn trùm có sẵn nếu màn cuối có sẵn là trùm); muốn xen giữa thì sửa đúng dòng chương đó trong MUA_3. Chương còn trống thì chưa hiện.
-   Ràng buộc mùa 3 (hoc/kiem-lo-trinh.mjs mục mùa 3): thân hai bánh / xích / nhện; tay mùa 1–2 + nam châm; cảm biến mùa 1–2 + cảm ứng từ;
-   không omni, drone, camera, máy sơn, máy ném, color(); không bậc thang S. Chuỗi làm dữ liệu chỉ từ gói 1 chương 2, and / or chỉ từ gói 2 chương 2;
-   magnet_s từ gói 6, front_metal từ gói 3, front_pole từ gói 7, crouch / stand / jump / leap từ gói 5; hàm của em cần phải được tạo ở màn đứng trước.
-   Tệp này KHÔNG tự thêm màn vào ManHoc: danh sách nằm ở ManHoc.manDoiXichNhen, lo-trinh-hoc.js thêm vào chương rồi xếp chỗ (so, hang do dungChuong đặt).
+   man-doi-xich-nhen.js — "Robot Chấn Hưng": NGÂN HÀNG MÀN MỚI của mùa 3, gói 9 "Đội xích và nhện" (PDM3b2 31/10, KE-HOACH-PART-DUNG-MUA.md).
+   Hai chương doi-xich (so 11..20) và che-doi-xich (so 11..20), 20 màn phối hợp hai robot:
+     - R1 (vàng, của Sola): Robot phân loại đầy đủ mùa 3 (thân nhện + nam châm bụng N/S + cảm biến từ ở hông + nhảy crouch/stand).
+     - R2 (hồng, của Luna): Xe cứu hỏa mùa 2 (thân xích đẩy thùng nặng xichDay + vòi phun hai lực lucBan + cảm biến hồng ngoại distance/warm).
+   Mỗi robot làm việc robot kia không làm được:
+     - R2 phun van hơi N mở cửa C / tắt băng chuyền, đẩy thùng nặng H đè nút M, đi trên băng chuyền không bị trôi, đo khoảng cách / nhiệt (warm thấy đồng đội).
+     - R1 nhảy qua hố u, chui qua gầm thấp n, đọc cảm biến từ front_metal() / front_pole(), hút sắt vụn và vật nam châm N/S dưới bụng mang về đích D.
+   Hàm của em chương 2: wait_n(n) chờ n nhịp; valve_go(n) cho R2 tiến n ô tới van hơi rồi phun; hop_iron(d) cho R1 hút sắt dưới bụng, nhảy về hướng d rồi thả.
    ========================================================================== */
 (function () {
   'use strict';
@@ -18,38 +14,60 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  // 30/10 phiên Mùa 3: 18 màn mới của gói 8 (doi-xich.11–.18 xen với doi-xich.3, .9 có sẵn; che-doi-xich.11–.20). Đội hai robot: R1 xe xích (tay kẹp, cảm biến
-  // khoảng cách), R2 nhện (có / không tay kẹp). Hai chương trình chạy cùng nhịp; đồng đội là vật cản; nhện bước một ô mất hai nhịp, xích quay 90 độ mất hai nhịp.
-  // Hàm có sẵn trong kho lúc tới gói: xích go_wall, pick, drop, back, tr_left, tr_right, spin, forward(n), move; nhện go(d), jump(d), walk(path), crawl(d), leap(path).
-  // pause(n) của mùa 2 không còn ở mùa 3: chương 2 cho em tự chế hold(n).
-  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var TAY = ['arm_down', 'arm_up', 'grab', 'release'];
-  var BA_HUONG = ['front_clear', 'left_clear', 'right_clear'];
-  var CHAN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'];
-  function XICH(tay) { return { loaiRobot: 'xich', robot: { than: 'xich', tay: tay === false ? null : 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] }, hamGoc: BANH.concat(tay === false ? [] : TAY, BA_HUONG) }; }
-  function NHEN(tay) { return { loaiRobot: 'nhen', robot: { than: 'nhen', tay: tay ? 'kep' : null }, hamGoc: CHAN.concat(tay ? TAY : []) }; }
-  function B(c1, c2, them) { return Object.assign({ doi: [{ chinh: c1.slice() }, { chinh: c2.slice() }], hamCuaMan: [] }, them || {}); }
-  function LAP(n, lenh) { return ['for i in range(' + n + '):'].concat((Array.isArray(lenh) ? lenh : [lenh]).map(function (s) { return '    ' + s; })); }
+  var NHEN_HAM = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
+  var XICH_HAM = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'spray', 'spray_back', 'distance', 'warm'];
+
+  function R1_NHEN() {
+    return {
+      loaiRobot: 'nhen',
+      robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
+      hamGoc: NHEN_HAM.slice()
+    };
+  }
+  function R2_XICH() {
+    return {
+      loaiRobot: 'xich',
+      xichDay: true,
+      lucBan: true,
+      robot: { than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }], son: 'lam' },
+      hamGoc: XICH_HAM.slice()
+    };
+  }
+  function B(c1, c2, them) {
+    return Object.assign({ doi: [{ chinh: c1.slice() }, { chinh: c2.slice() }], hamCuaMan: [] }, them || {});
+  }
+  function LAP(n, lenh) {
+    return ['for i in range(' + n + '):'].concat((Array.isArray(lenh) ? lenh : [lenh]).map(function (s) { return '    ' + s; }));
+  }
   function CHO(n) { return LAP(n, 'wait()'); }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
 
-  /** m.bd: [batDau xích, batDau nhện]; m.tayXich (mặc định có tay kẹp), m.tayNhen; m.khoa: chỉ số robot chạy chương trình khoá; m.co: [cờ xích, cờ nhện]. */
+  /** m.bd: [batDau R1 nhện, batDau R2 xích]; m.khoa: chỉ số robot khoá; m.co: [cờ R1, cờ R2]. */
   function man(m) {
-    var bd = m.bd, xich = XICH(m.tayXich), nhen = NHEN(!!m.tayNhen), khoa = m.khoa, co = m.co;
-    delete m.bd; delete m.tayXich; delete m.tayNhen; delete m.khoa; delete m.co;
+    var bd = m.bd, r1 = R1_NHEN(), r2 = R2_XICH(), khoa = m.khoa, co = m.co;
+    delete m.bd; delete m.khoa; delete m.co;
     m.chuong = m.chuong || 'doi-xich';
     m.cauTruc = ['for', 'if', 'while'];
+    m.vaHoac = true;
     m.mucTieu = m.mucTieu || 'dua-vat';
+    if (m.mucTieu === 'dua-vat' && !m.vatCan) m.vatCan = 'tu';
     m.moXuong = true; m.camHamCuaEm = false;
-    m.khung = m.khung || { chinh: 10, moiHam: 10 };
+    m.khung = m.khung || { chinh: 12, moiHam: 10 };
     m.bienDem = true;
+    m.xichDay = true;
+    m.lucBan = true;
     m.nhipTheoLoiGiai = true;
-    m.doi = [Object.assign({ batDau: bd[0] }, xich), Object.assign({ batDau: bd[1] }, nhen)];
+    m.doi = [Object.assign({ batDau: bd[0] }, r1), Object.assign({ batDau: bd[1] }, r2)];
     if (khoa !== undefined) [].concat(khoa).forEach(function (k) { m.doi[k].coDinh = true; });
     if (co) m.doi.forEach(function (d, i) { if (co[i]) d.co = co[i]; });
-    m.batDau = bd[0]; m.loaiRobot = xich.loaiRobot; m.robot = JSON.parse(JSON.stringify(xich.robot)); m.hamGoc = xich.hamGoc.slice();   // cấp ngoài là của R1
-    m.taoHam = m.taoHam || []; m.loiSai = m.loiSai || [];
+    m.batDau = bd[0];
+    m.loaiRobot = r1.loaiRobot;
+    m.robot = JSON.parse(JSON.stringify(r1.robot));
+    m.hamGoc = r1.hamGoc.slice();
+    m.taoHam = m.taoHam || [];
+    m.loiSai = m.loiSai || [];
+    m.hamCuaEmCan = m.hamCuaEmCan || [];
     m.loiGiai.hamCuaEmMoi = m.loiGiai.hamCuaEmMoi || [];
     return ManHoc.chuanHoa(m);
   }
@@ -57,301 +75,434 @@
   var DS = [
     /* ================================================= chương doi-xich "Đội xích và nhện" ================================================= */
     man({
-      so: 11, ten: 'Hai robot, một nhịp', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoa: [0, 1], mucTieu: 'toi-co',
-      deBai: 'Màn này có hai robot, mỗi robot một chương trình, chạy CÙNG LÚC theo nhịp. Xe xích đi một ô mỗi nhịp. Nhện bước một ô mất hai nhịp, nhảy qua hố mất ba. Bấm Chạy, xem hai robot tới cờ của mình.',
-      veMaMau: 'Hai chương trình đã viết sẵn và khoá. Bấm mũi tên ở cột chương trình để xem chương trình của từng robot, rồi bấm Chạy.',
-      san: ['########', '#...F###', '########', '#.u.F###', '########'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }], co: [[{ x: 4, y: 1 }], [{ x: 4, y: 3 }]],
-      maMau: B(['forward(3)'], ['jump("R")', 'go("R")']),
-      loiGiai: B(['forward(3)'], ['jump("R")', 'go("R")']),
-      sao: { o: 20, nhip: 5 },
-      goiY: ['Mỗi robot chạy chương trình của nó, cùng một đồng hồ nhịp.', 'Robot tới cờ trước thì đứng chờ robot kia.']
+      so: 11, ten: 'Van hơi mở lối nhện', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoa: [0, 1], mucTieu: 'toi-co',
+      hamCuaEmCan: ['jump', 'walk', 'squirt', 'back'],
+      deBai: 'Màn này có hai robot chạy cùng lúc theo nhịp: R1 là robot phân loại của Sola, R2 là xe cứu hỏa của Luna. R2 phun tia nước vào van hơi N để mở cánh cửa C trên làn của R1, rồi lùi về cờ của mình. R1 nhảy qua hố rồi bước qua cửa tới cờ. Bấm Chạy để xem hai robot phối hợp.',
+      veMaMau: 'Hai chương trình đã viết sẵn và khoá. Bấm mũi tên ở cột chương trình để xem từng robot, rồi bấm Chạy.',
+      san: ['########', '#.u.CF.#', '#..##..#', '#.F.N..#', '########'],
+      noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 4, y: 1 }], bang: [] }],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 3, huong: 1 }],
+      co: [[{ x: 5, y: 1 }], [{ x: 2, y: 3 }]],
+      maMau: B(['jump("R")', 'walk("RR")'], ['squirt("low")', 'back()']),
+      loiGiai: B(['jump("R")', 'walk("RR")'], ['squirt("low")', 'back()']),
+      sao: { o: 23, nhip: 7 },
+      goiY: ['R2 phun van N ở nhịp đầu nên cửa C mở kịp trước khi R1 bước tới.', 'Mỗi robot có lá cờ riêng mang màu của mình.']
     }),
 
     man({
-      so: 12, ten: 'Mỗi robot một việc', hang: 'lam-quen', mucTieu: 'toi-co',
-      deBai: 'Xe xích đi tới tường, rẽ phải, đi tiếp hai ô tới cờ của nó. Nhện phải chui qua gầm thấp tới cờ của nhện. Viết cả hai chương trình.',
-      veMaMau: 'Chương trình có sẵn: xích mới tới tường, nhện đi thẳng thì đụng gầm. Viết tiếp cả hai.',
-      san: ['#######', '#....##', '####.##', '#.nFF##', '#######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }], co: [[{ x: 4, y: 3 }], [{ x: 3, y: 3 }]],
-      maMau: B(['go_wall()'], ['walk("RR")']),
-      loiGiai: B(['go_wall()', 'tr_right()', 'forward(2)'], ['crawl("R")']),
-      sao: { o: 27, nhip: 7 },
+      so: 12, ten: 'Mở cửa lấy sắt', hang: 'lam-quen', vatCan: 'sat',
+      hamCuaEmCan: ['jump', 'go', 'pull_s', 'walk', 'go_to_wall', 'squirt'],
+      deBai: 'Mẩu sắt nằm trước cánh cửa C đang đóng. R2 ở làn dưới đi tới sát van hơi N bằng go_to_wall() rồi squirt("low") để mở cửa C. R1 ở làn trên nhảy qua hố, bước lên mẩu sắt, hút dưới bụng rồi mang qua cửa C tới ô đích D.',
+      veMaMau: 'Chương trình có sẵn: R1 mới tới mẩu sắt, R2 chưa phun van. Viết tiếp cho cả hai robot.',
+      san: ['#########', '#.u.oCD##', '#########', '#....N###', '#########'],
+      vatChat: ['.........', '....s....', '.........', '.........', '.........'],
+      noi: [{ nut: { x: 5, y: 3 }, cua: [{ x: 5, y: 1 }], bang: [] }],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['jump("R")', 'go("R")', 'pull_s()'], ['go_to_wall()']),
+      loiGiai: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['go_to_wall()', 'squirt("low")']),
+      sao: { o: 31, nhip: 11 },
       loiSai: [
-        { moTa: 'Nhện đi đứng: đụng gầm', baiLam: B(['go_wall()', 'tr_right()', 'forward(2)'], ['walk("RR")']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Xích rẽ trái: đi vào tường', baiLam: B(['go_wall()', 'tr_left()', 'forward(2)'], ['crawl("R")']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'R2 quên squirt("low"): cửa C vẫn đóng, R1 húc cửa không tới được ô đích', baiLam: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['go_to_wall()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 đi bộ qua hố thay vì nhảy: R1 rơi xuống hố', baiLam: B(['walk("RRR")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['go_to_wall()', 'squirt("low")']), phaiCoMa: ['roi-ho'] }
       ],
-      goiY: ['crawl("R") co chân, chui qua hai ô, rồi đứng dậy.', 'Xích quay 90 độ bằng tr_right() hay tr_left().']
+      goiY: ['R2 đi tới sát van N mất 3 nhịp rồi squirt("low") ở nhịp 4: cửa C mở trước khi R1 hút xong sắt.', 'R1 hút sắt bằng pull_s(), đi hai bước sang phải qua cửa rồi magnet_off(), wait().']
     }),
 
     man({
-      so: 13, ten: 'Xích qua trước', hang: 'luyen', mucTieu: 'toi-co',
-      deBai: 'Đường của xích và đường của nhện cắt nhau ở một ô. Đi ngay thì nhện đụng xích ngay ô đó. Cho xích đi trước: nhện chờ hai nhịp rồi mới đi. Xích đi tới tường, rẽ phải, đi tới tường lần nữa.',
-      veMaMau: 'Chương trình có sẵn: nhện đi ngay, đụng xích ở ngã tư. Viết lại cả hai.',
-      san: ['###.###', '###.###', '##....F', '###.###', '###.###', '#F...##', '#######'],
-      bd: [{ x: 3, y: 0, huong: 2 }, { x: 2, y: 2, huong: 1 }], co: [[{ x: 1, y: 5 }], [{ x: 6, y: 2 }]],
-      maMau: B(['go_wall()', 'tr_right()', 'go_wall()'], ['walk("RRRR")']),
-      loiGiai: B(['go_wall()', 'tr_right()', 'go_wall()'], nhieu(CHO(2), ['walk("RRRR")'])),
-      sao: { o: 24, nhip: 10 },
+      so: 13, ten: 'Xích đẩy thùng đè nút', hang: 'lam-quen', vatCan: 'sat',
+      hamCuaEmCan: ['crawl', 'go', 'pull_s', 'walk', 'push'],
+      deBai: 'Lần này không có van hơi, mà có thùng nặng H nằm trước nút đè M ở làn của R2. Xe xích của R2 đẩy được thùng nặng: gọi push(1) để đẩy thùng H lên nút M giữ cửa C mở. R1 chui qua gầm thấp, lấy mẩu sắt rồi mang qua cửa C về ô đích D.',
+      veMaMau: 'Chương trình có sẵn: R2 chưa đẩy thùng, R1 mới chui qua gầm. Viết tiếp cả hai.',
+      san: ['#########', '#.n.oCD.#', '##..#####', '#..HM...#', '#########'],
+      vatChat: ['.........', '....s....', '.........', '.........', '.........'],
+      noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 5, y: 1 }], bang: [] }],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['crawl("R")'], []),
+      loiGiai: B(['crawl("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['push(1)']),
+      sao: { o: 30, nhip: 13 },
       loiSai: [
-        { moTa: 'Nhện đi ngay: tới ngã tư đúng lúc xích đi qua', baiLam: B(['go_wall()', 'tr_right()', 'go_wall()'], ['walk("RRRR")']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'R2 chỉ go_to_wall() mà không đẩy thùng lên nút M: cửa C vẫn đóng', baiLam: B(['crawl("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['go_to_wall()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R2 chỉ tiến 1 ô rồi dừng trước thùng H: thùng chưa đè nút M', baiLam: B(['crawl("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['move()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Xích qua ngã tư ở nhịp 2 rồi đi tiếp.', 'Nhện bước vào ngã tư ở cuối nhịp thứ hai của bước: chờ hai nhịp là đủ.']
+      goiY: ['push(1) đưa R2 tới sát thùng H rồi đẩy thùng tiến 1 ô lên nút M.', 'Thùng H nằm yên trên nút M nên cửa C mở suốt cho R1 đi qua.']
     }),
 
     man({
-      so: 14, ten: 'Tránh vào hốc', hang: 'luyen', mucTieu: 'toi-co',
-      deBai: 'Xích và nhện đi ngược chiều trên cùng một hành lang. Hành lang có một hốc nhỏ phía trên. Nhện bước sang trái một ô, lên hốc, chờ xích đi qua, rồi xuống đi tiếp tới cờ. Xích phải chờ nhện vào hốc rồi mới chạy.',
-      veMaMau: 'Chương trình có sẵn: cả hai đi ngay, chạm nhau giữa hành lang. Viết lại.',
-      san: ['####.###', '#.F....F', '########'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 5, y: 1, huong: 0 }], co: [[{ x: 7, y: 1 }], [{ x: 2, y: 1 }]],
-      maMau: B(['forward(6)'], ['walk("LLL")']),
-      loiGiai: B(nhieu(CHO(2), ['forward(6)']), nhieu(['walk("LU")'], CHO(2), ['walk("DLL")'])),
-      sao: { o: 22, nhip: 12 },
+      so: 14, ten: 'Tắt băng ngược cho nhện', hang: 'luyen', vatCan: 'sat',
+      hamCuaEmCan: ['crawl', 'go', 'pull_s', 'walk', 'forward', 'tr_left', 'squirt'],
+      deBai: 'Giữa mẩu sắt và ô đích D của R1 là ô băng chuyền chạy ngược: nhện bước lên lúc băng còn chạy sẽ bị đẩy lùi. R2 đi trên băng ở làn dưới mà không bị trôi, tiến 4 ô, quay trái hướng lên van N rồi squirt("low") tắt băng cho R1.',
+      veMaMau: 'Chương trình có sẵn: R2 chưa quay lên phun van, nên R1 bị băng đẩy lùi. Viết tiếp cho cả hai.',
+      san: ['#########', '#.n.o<D.#', '#...#N###', '#.>>>...#', '#########'],
+      vatChat: ['.........', '....s....', '.........', '.........', '.........'],
+      noi: [{ nut: { x: 5, y: 2 }, cua: [], bang: [{ x: 5, y: 1 }] }],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['crawl("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(4)']),
+      loiGiai: B(['crawl("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(4)', 'tr_left()', 'squirt("low")']),
+      sao: { o: 36, nhip: 13 },
       loiSai: [
-        { moTa: 'Xích chạy ngay: tới ô dưới hốc khi nhện còn đứng đó', baiLam: B(['forward(6)'], nhieu(['walk("LU")'], CHO(2), ['walk("DLL")'])), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Xích chỉ chờ một nhịp: tới ô dưới hốc khi nhện chưa kịp lên', baiLam: B(nhieu(CHO(1), ['forward(6)']), nhieu(['walk("LU")'], CHO(2), ['walk("DLL")'])), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'R2 quên squirt("low"): băng chuyền còn chạy, đẩy R1 lùi về ô cũ', baiLam: B(['crawl("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(4)', 'tr_left()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'R2 quay phải thay vì quay trái: phun vào tường dưới', baiLam: B(['crawl("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(4)', 'tr_right()', 'squirt("low")']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Nhện vào tới hốc ở nhịp 4. Xích tới ô dưới hốc ở nhịp thứ ba nó đi.', 'Xích rời ô dưới hốc rồi nhện mới xuống.']
+      goiY: ['Trong lúc R1 chui gầm và bước tới mẩu sắt (8 nhịp), R2 đi 4 ô, quay trái (2 nhịp) rồi phun van ở nhịp 7.', 'Khi R1 bước lên ô băng ở nhịp 11 thì băng đã tắt hẳn.']
     }),
 
     man({
-      so: 15, ten: 'Chuyền hộp', hang: 'luyen', tayNhen: true,
-      deBai: 'Hộp ở đầu hành lang của xích. Xích tới lấy hộp, rẽ trái, thả hộp xuống ô ngay trước mặt nhện. Nhện chờ hộp, gắp lên, nhảy qua hố sang phải, bước thêm một ô rồi thả vào ô đích. Đếm nhịp của xích để nhện gắp đúng lúc.',
-      veMaMau: 'Chương trình có sẵn: xích mới lấy được hộp, nhện gắp ngay khi hộp chưa tới. Viết tiếp.',
-      san: ['#######', '#o...##', '##.##D#', '##.u..#', '#######'],
-      bd: [{ x: 4, y: 1, huong: 3 }, { x: 2, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pick()'], ['pick()', 'jump("R")', 'go("R")', 'drop()']),
-      loiGiai: B(['go_wall()', 'pick()', 'tr_left()', 'drop()'], nhieu(CHO(6), ['pick()', 'jump("R")', 'go("R")', 'drop()'])),
-      sao: { o: 40, nhip: 14 },
+      so: 15, ten: 'Chờ bạn rời đường ngắm', hang: 'luyen', vatCan: 'sat',
+      hamCuaEmCan: ['jump', 'pull_s', 'walk', 'wait_clear', 'squirt'],
+      deBai: 'R1 xuất phát ngay giữa mũi vòi phun của R2 và van hơi N phía trên, đang chuẩn bị nhảy qua cái hố bên phải để lấy sắt. Nếu R2 phun ngay thì tia nước trúng R1, van N không mở. Cho R2 gọi wait_clear() chờ tới khi cảm biến nhiệt hết thấy R1 trước mũi rồi mới squirt("high") mở cửa C cho R1.',
+      veMaMau: 'Chương trình có sẵn: R2 phun ngay lúc R1 còn đứng trước mũi. Sửa R2 và viết tiếp R1.',
+      san: ['##########', '####N#####', '#....uoCD#', '####.#####', '#........#', '##########'],
+      vatChat: ['..........', '..........', '......s...', '..........', '..........', '..........'],
+      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 7, y: 2 }], bang: [] }],
+      bd: [{ x: 4, y: 2, huong: 1 }, { x: 4, y: 3, huong: 0 }],
+      maMau: B(['jump("R")'], ['squirt("high")']),
+      loiGiai: B(['jump("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['wait_clear()', 'squirt("high")']),
+      sao: { o: 27, nhip: 9 },
       loiSai: [
-        { moTa: 'Nhện gắp ngay: hộp chưa tới', baiLam: B(['go_wall()', 'pick()', 'tr_left()', 'drop()'], ['pick()', 'jump("R")', 'go("R")', 'drop()']), phaiCoMa: ['kep-hut'] },
-        { moTa: 'Nhện chờ 4 nhịp: gắp hụt', baiLam: B(['go_wall()', 'pick()', 'tr_left()', 'drop()'], nhieu(CHO(4), ['pick()', 'jump("R")', 'go("R")', 'drop()'])), phaiCoMa: ['kep-hut'] },
-        { moTa: 'Xích rẽ phải: thả hộp vào tường', baiLam: B(['go_wall()', 'pick()', 'tr_right()', 'drop()'], nhieu(CHO(6), ['pick()', 'jump("R")', 'go("R")', 'drop()'])), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'R2 phun ngay không chờ: tia nước trúng R1, cửa C không mở', baiLam: B(['jump("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['squirt("high")']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 quên thả sắt ở ô đích', baiLam: B(['jump("R")', 'pull_s()', 'walk("RR")'], ['wait_clear()', 'squirt("high")']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Xích: tới hộp 2 nhịp, nhặt 1, rẽ 2, hộp nằm xuống ở nhịp 6.', 'Nhện gắp ở nhịp đầu của pick(): chờ 6 nhịp thì hộp đã nằm sẵn.']
+      goiY: ['wait_clear() lặp while warm(): wait(), chờ tới khi R1 nhảy khỏi ô trước mũi R2.', 'Ngay khi R1 nhảy qua hố sang ô sắt, R2 gọi squirt("high") phun xa 2 ô tới van N, mở cửa C trước khi R1 bước vào cửa.']
     }),
 
     man({
-      so: 16, ten: 'Mốc đi đường xa', hang: 'bien-the',
-      deBai: 'Xích lấy hộp ở đầu hành lang rồi chở sang ô đích. Hành lang thông tới tận ô sau ô đích, nên xích cần một cái mốc: nhện chui gầm, nhảy hố, đi vòng lên đứng ở ô ngay sau ô đích. Đường nhện xa: xích chờ nhện tới rồi mới chở hộp sang.',
-      veMaMau: 'Chương trình có sẵn: xích chở hộp sang ngay, nhện chưa tới, hộp nằm lệch. Thêm vòng chờ cho xích và viết đường của nhện.',
-      san: ['##########', '#o.....D.#', '########.#', '#.n.u....#', '##########'],
-      bd: [{ x: 5, y: 1, huong: 3 }, { x: 1, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'], ['crawl("R")']),
-      loiGiai: B(nhieu(['go_wall()', 'pick()', 'spin()'], CHO(12), ['go_wall()', 'back()', 'drop()']), ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("UU")']),
-      sao: { o: 54, nhip: 28 },
+      so: 16, ten: 'Phun mạnh qua rào, dò sắt', hang: 'luyen', vatCan: 'sat',
+      hamCuaEmCan: ['jump', 'go', 'pull_s', 'walk', 'fence_shot'],
+      deBai: 'Van hơi N ở làn dưới nằm cách R2 một hàng rào = (cách 3 ô). Tia phun nhẹ chỉ bay 2 ô không tới, nên R2 dùng fence_shot() để phun mạnh qua rào mở cửa C. Ở làn trên, R1 nhảy qua hố, lặp while not front_metal(): go("R") tới khi đầu dò thấy mẩu sắt, đi tiếp lên sắt hút vào bụng rồi mang qua cửa C về ô đích D.',
+      veMaMau: 'Chương trình có sẵn: R2 phun nhẹ không tới van, R1 chưa đi tới mẩu sắt. Sửa cả hai.',
+      san: ['##########', '#.u...oCD#', '#...##...#', '#..=.N...#', '##########'],
+      vatChat: ['..........', '......s...', '..........', '..........', '..........'],
+      noi: [{ nut: { x: 5, y: 3 }, cua: [{ x: 7, y: 1 }], bang: [] }],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 1 }],
+      maMau: B(['jump("R")'], ['squirt("low")']),
+      loiGiai: B(['jump("R")', 'while not front_metal():', '    go("R")', 'walk("RR")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['fence_shot()']),
+      sao: { o: 32, nhip: 15 },
       loiSai: [
-        { moTa: 'Xích không chờ: chạy tới tường, hộp nằm quá ô đích', baiLam: B(['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("UU")']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Nhện đi đứng qua gầm: đụng gầm, không tới mốc', baiLam: B(nhieu(['go_wall()', 'pick()', 'spin()'], CHO(12), ['go_wall()', 'back()', 'drop()']), ['walk("RR")', 'jump("R")', 'walk("RRR")', 'walk("UU")']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'R2 dùng squirt("low") phun nhẹ: tia nước rơi ở ô (4,3) trước van N, cửa C không mở', baiLam: B(['jump("R")', 'while not front_metal():', '    go("R")', 'walk("RR")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['squirt("low")']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 chỉ bước 1 ô sau vòng while: đầu dò thấy sắt từ cách 2 ô nên còn đứng bên trái mẩu sắt', baiLam: B(['jump("R")', 'while not front_metal():', '    go("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['fence_shot()']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Nhện tới ô mốc ở khoảng nhịp 20. Xích lấy hộp và quay đầu xong ở nhịp 8.', 'Xích đi go_wall() khi mốc đã đứng sẵn: nó dừng ngay trước nhện, lùi một ô, thả hộp vào ô đích.']
+      goiY: ['fence_shot() phun mạnh qua hàng rào tới van N cách 3 ô rồi tiến 1 ô bù cú giật.', 'front_metal() thấy sắt từ khoảng cách 2 ô bên phải, nên dừng vòng lặp thì gọi walk("RR") để bước lên đúng ô có sắt.']
     }),
 
     man({
-      so: 17, ten: 'Hai hộp, một mốc', hang: 'bien-the',
-      deBai: 'Hai hộp ở đầu dãy, hai ô đích ở cuối dãy. Nhện nhảy qua hố, leo lên đứng làm mốc sau hai ô đích. Xích làm hai chuyến giống nhau: tới hộp, nhặt, quay đầu, chạy tới khi gặp vật cản, lùi một ô, thả, quay đầu. Dùng vòng lặp.',
-      veMaMau: 'Chương trình có sẵn: xích mới làm một chuyến. Viết bằng vòng lặp cho cả hai chuyến.',
-      san: ['############', '#oo.....DD.#', '##########.#', '########.u.#', '############'],
-      bd: [{ x: 6, y: 1, huong: 3 }, { x: 8, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()', 'spin()'], ['jump("R")', 'walk("UU")']),
-      loiGiai: B(LAP(2, ['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()', 'spin()']), ['jump("R")', 'walk("UU")']),
-      sao: { o: 47, nhip: 42 },
-      loiSai: [
-        { moTa: 'Thả mà không lùi: hộp rơi đè lên ô của mốc', baiLam: B(LAP(2, ['go_wall()', 'pick()', 'spin()', 'go_wall()', 'drop()', 'spin()']), ['jump("R")', 'walk("UU")']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Nhện không lên làm mốc: hộp đầu nằm quá ô đích', baiLam: B(LAP(2, ['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()', 'spin()']), ['jump("R")']), phaiCoMa: ['chua-dua-vat'] }
+      so: 17, ten: 'Đọc cực sau cánh cửa', hang: 'bien-the',
+      hamCuaEmCan: ['go', 'sort_row', 'open_left', 'push'],
+      deBai: 'Hai vật nam châm N và S nằm sau hai cánh cửa C1, C2 trên hành lang của R1; phía trên mỗi vật là ô đích đỏ (nhận N), phía dưới là ô đích xanh (nhận S). R2 gọi open_left() phun van N mở cửa C1, rồi push(1) đẩy thùng H lên nút M mở cửa C2. R1 bước qua từng cửa, dùng sort_row() đọc cực và thả vào đúng ô đích.',
+      veMaMau: 'Chương trình có sẵn mới mở cửa đầu và phân loại vật thứ nhất. Viết tiếp cho cả hai robot.',
+      san: ['#########', '###D##D##', '#.Co.Co.#', '###D##D##', '#.N#....#', '#...HM..#', '#########'],
+      vatChat: ['.........', '.........', '...N..S..', '.........', '.........', '.........', '.........'],
+      mau: ['.........', '...r..r..', '.........', '...b..b..', '.........', '.........', '.........'],
+      noi: [
+        { nut: { x: 2, y: 4 }, cua: [{ x: 2, y: 2 }], bang: [] },
+        { nut: { x: 5, y: 5 }, cua: [{ x: 5, y: 2 }], bang: [] }
       ],
-      goiY: ['Chuyến thứ hai xích dừng trước hộp vừa thả: go_wall() tự tìm chỗ dừng.', 'Bảy lệnh của một chuyến đặt vào for i in range(2):.']
+      bd: [{ x: 1, y: 2, huong: 1 }, { x: 2, y: 5, huong: 1 }],
+      maMau: B([' wait()', ' wait()', ' wait()', 'go("R")', 'sort_row()'], ['open_left()']),
+      loiGiai: B(
+        nhieu(CHO(3), ['go("R")', 'sort_row()', 'go("D")', 'go("R")', 'go("R")', 'sort_row()']),
+        ['open_left()', 'push(1)']
+      ),
+      sao: { o: 48, nhip: 21 },
+      loiSai: [
+        { moTa: 'R2 quên push(1): cửa C2 vẫn đóng, R1 húc vào cửa C2', baiLam: B(nhieu(CHO(3), ['go("R")', 'sort_row()', 'go("D")', 'go("R")', 'go("R")', 'sort_row()']), ['open_left()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 đi ngay không chờ R2 quay trái phun van N: R1 húc cửa C1 lúc cửa chưa mở', baiLam: B(['go("R")', 'sort_row()', 'go("D")', 'go("R")', 'go("R")', 'sort_row()'], ['open_left()', 'push(1)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['open_left() của R2 quay trái (2 nhịp) rồi phun van ở nhịp 3, nên R1 chờ 3 nhịp rồi bước vào C1(2,2) ở nhịp 4.', 'Sau sort_row() thứ nhất, vật N được thả ở D đỏ(3,1), nên R1 đang ở (3,1): gọi go("D") về (3,2), đi hai bước sang C2(5,2) rồi sort_row() lần hai.']
     }),
 
     man({
-      so: 18, ten: 'Đội chuyền và làm mốc', hang: 'trum', tayNhen: true, khung: { chinh: 16, moiHam: 10 },
-      deBai: 'Hai hộp, hai ô đích. Hộp thứ nhất: xích thả xuống ô trước mặt nhện, nhện gắp, nhảy qua hố, thả vào ô đích dưới. Rồi nhện đi tiếp, leo lên làm mốc ở cuối hành lang. Hộp thứ hai: xích chờ mốc đứng sẵn rồi chở sang ô đích trên.',
-      veMaMau: 'Chương trình có sẵn: xích chuyền xong hộp thứ nhất, nhện mới gắp và nhảy. Viết tiếp cả hai.',
-      san: ['###########', '#oo.....D.#', '###.#D###.#', '###.u.....#', '###########'],
-      bd: [{ x: 4, y: 1, huong: 3 }, { x: 3, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pick()', 'tr_left()', 'drop()'], nhieu(CHO(5), ['pick()', 'jump("R")'])),
-      loiGiai: B(nhieu(['go_wall()', 'pick()', 'tr_left()', 'drop()', 'tr_right()', 'go_wall()', 'pick()', 'spin()'], CHO(6), ['go_wall()', 'back()', 'drop()']),
-        nhieu(CHO(5), ['pick()', 'jump("R")', 'drop()', 'walk("RRRR")', 'walk("UU")'])),
-      sao: { o: 60, nhip: 30 },
-      loiSai: [
-        { moTa: 'Xích không chờ mốc: hộp thứ hai nằm quá ô đích', baiLam: B(['go_wall()', 'pick()', 'tr_left()', 'drop()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'],
-          nhieu(CHO(5), ['pick()', 'jump("R")', 'drop()', 'walk("RRRR")', 'walk("UU")'])), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Nhện gắp ngay: hộp thứ nhất chưa tới', baiLam: B(nhieu(['go_wall()', 'pick()', 'tr_left()', 'drop()', 'tr_right()', 'go_wall()', 'pick()', 'spin()'], CHO(6), ['go_wall()', 'back()', 'drop()']),
-          ['pick()', 'jump("R")', 'drop()', 'walk("RRRR")', 'walk("UU")']), phaiCoMa: ['kep-hut'] }
+      so: 18, ten: 'Nhện đè nút, xích qua cửa', hang: 'bien-the', vatCan: 'sat',
+      hamCuaEmCan: ['jump', 'go', 'pull_s', 'walk', 'forward', 'squirt'],
+      deBai: 'Hai robot mở đường cho nhau: R1 nhảy qua hố lên đứng trên nút M để mở cửa C1 ở làn dưới cho R2. R1 chờ trên nút M cho R2 đi dọc hành lang qua hẳn cửa C1 tới phun van hơi N mở cửa C2 ở làn trên. Sau đó R1 bước sang hút mẩu sắt rồi mang qua cửa C2 tới ô đích D.',
+      veMaMau: 'Chương trình có sẵn: R1 rời nút M ngay nên cửa C1 đóng lại trước khi R2 đi tới. Thêm nhịp chờ cho R1 trên nút M.',
+      san: ['###########', '#.uMo..CD.#', '#...###...#', '#......C.N#', '###########'],
+      vatChat: ['...........', '....s......', '...........', '...........', '...........'],
+      noi: [
+        { nut: { x: 3, y: 1 }, cua: [{ x: 7, y: 3 }], bang: [] },
+        { nut: { x: 9, y: 3 }, cua: [{ x: 7, y: 1 }], bang: [] }
       ],
-      goiY: ['Nhện: chờ hộp, gắp, nhảy, thả, rồi mới đi làm mốc.', 'Xích lấy xong hộp thứ hai thì chờ: nhện tới mốc muộn hơn nhiều.']
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()'], ['forward(7)', 'squirt("low")']),
+      loiGiai: B(nhieu(['jump("R")'], CHO(2), ['go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()']), ['forward(7)', 'squirt("low")']),
+      sao: { o: 33, nhip: 17 },
+      loiSai: [
+        { moTa: 'R1 không chờ trên nút M: R1 rời nút M ở nhịp 5 nên cửa C1 đóng lại trước khi R2 tới ở nhịp 6', baiLam: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()'], ['forward(7)', 'squirt("low")']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R2 chỉ tiến 4 ô rồi phun: dừng trước cửa C1, không tới được van N', baiLam: B(nhieu(['jump("R")'], CHO(2), ['go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()']), ['forward(4)', 'squirt("low")']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['R1 nhảy lên nút M ở cuối nhịp 3; R2 đi 7 bước từ (1,3) nên bước qua cửa C1(7,3) ở nhịp 6 và ra khỏi cửa ở nhịp 7.', 'R1 chờ 2 nhịp trên nút M rồi mới gọi go("R") để cửa C1 mở đủ lâu cho R2 đi qua.']
+    }),
+
+    man({
+      so: 19, ten: 'Hai trạm van hơi', hang: 'bien-the', vatCan: 'sat',
+      hamCuaEmCan: ['go', 'pull_s', 'walk', 'forward', 'open_left'],
+      deBai: 'Hai mẩu sắt, hai cánh cửa C và hai ô đích D xếp đều nhau trên hành lang của R1 (cách nhau 4 ô). Ở làn dưới, hai van hơi N cũng cách nhau 4 ô. Dùng vòng lặp for i in range(2): cho cả hai robot để R2 lần lượt mở từng van và R1 lần lượt đưa từng mẩu sắt về đích.',
+      veMaMau: 'Chương trình có sẵn mới làm trạm đầu. Dùng vòng lặp for i in range(2): cho cả hai robot.',
+      san: ['############', '#.oCD.oCD..#', '#....N#..N.#', '#..........#', '############'],
+      vatChat: ['............', '..s...s.....', '............', '............', '............'],
+      noi: [
+        { nut: { x: 5, y: 2 }, cua: [{ x: 3, y: 1 }], bang: [] },
+        { nut: { x: 9, y: 2 }, cua: [{ x: 7, y: 1 }], bang: [] }
+      ],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(4)', 'open_left()']),
+      loiGiai: B(
+        LAP(2, nhieu(CHO(4), ['go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()', 'go("R")'])),
+        LAP(2, ['forward(4)', 'open_left()'])
+      ),
+      sao: { o: 39, nhip: 26 },
+      loiSai: [
+        { moTa: 'R2 chỉ mở trạm đầu: cửa thứ hai vẫn đóng, R1 húc cửa', baiLam: B(LAP(2, nhieu(CHO(4), ['go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()', 'go("R")'])), ['forward(4)', 'open_left()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 quên bước go("R") cuối mỗi vòng: vòng hai đứng lại ở ô đích đầu', baiLam: B(LAP(2, nhieu(CHO(4), ['go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'])), LAP(2, ['forward(4)', 'open_left()'])), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['Mỗi trạm cách nhau 4 ô: R2 lặp 2 lần forward(4) rồi open_left().', 'Mỗi vòng R1 chờ van mở, bước lên sắt, hút, đi 2 bước qua cửa tới D, thả sắt rồi go("R") sang đứng trước mẩu sắt tiếp theo.']
+    }),
+
+    man({
+      so: 20, ten: 'Trùm đội: phân loại qua cửa van', hang: 'trum', khung: { chinh: 16, moiHam: 10 },
+      hamCuaEmCan: ['leap', 'sort_row', 'go', 'walk', 'push', 'open_left', 'forward'],
+      deBai: 'Trùm chương 1. R1 nhảy qua hai cái hố bằng leap("RR"), rồi đi dọc hành lang qua hai cánh cửa C1, C2 để phân loại hai vật nam châm N và S bằng sort_row(). Ở làn dưới, R2 tiến 2 ô gọi open_left() phun van N mở cửa C1, rồi push(1) đẩy thùng H lên nút M mở cửa C2.',
+      veMaMau: 'Chương trình có sẵn mới mở cửa đầu và xử lý vật thứ nhất. Viết tiếp cho cả hai robot.',
+      san: ['#############', '#######D##D##', '#.u.u.Co.Co.#', '#######D##D##', '#..N###.....#', '#.....HM....#', '#############'],
+      vatChat: ['.............', '.............', '.......N..S..', '.............', '.............', '.............', '.............'],
+      mau: ['.............', '.......r..r..', '.............', '.......b..b..', '.............', '.............', '.............'],
+      noi: [
+        { nut: { x: 3, y: 4 }, cua: [{ x: 6, y: 2 }], bang: [] },
+        { nut: { x: 7, y: 5 }, cua: [{ x: 9, y: 2 }], bang: [] }
+      ],
+      bd: [{ x: 1, y: 2, huong: 1 }, { x: 1, y: 5, huong: 1 }],
+      maMau: B(['leap("RR")', 'go("R")', 'sort_row()'], ['forward(2)', 'open_left()']),
+      loiGiai: B(
+        ['leap("RR")', 'go("R")', 'sort_row()', 'go("D")', 'walk("RR")', 'sort_row()'],
+        ['forward(2)', 'open_left()', 'push(1)']
+      ),
+      sao: { o: 55, nhip: 24 },
+      loiSai: [
+        { moTa: 'R2 chỉ mở van đầu mà quên push(1): cửa C2 vẫn đóng', baiLam: B(['leap("RR")', 'go("R")', 'sort_row()', 'go("D")', 'walk("RR")', 'sort_row()'], ['forward(2)', 'open_left()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 quên go("D") sau khi thả vật N lên ô đích đỏ trên', baiLam: B(['leap("RR")', 'go("R")', 'sort_row()', 'walk("RR")', 'sort_row()'], ['forward(2)', 'open_left()', 'push(1)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['Trong lúc R1 nhảy qua hai hố (6 nhịp), R2 tiến 2 ô tới (3,5) và open_left() mở cửa C1 ở nhịp 5.', 'Sau đó R2 gọi push(1) đẩy thùng H lên nút M(7,5) mở cửa C2 trước khi R1 phân loại xong vật đầu và đi tới C2.']
     })
   ];
 
-  /* ================================================= chương che-doi-xich "Đội xích và nhện phối hợp" =================================================
-     Hàm của em: wait_n(n) chờ n nhịp (thay pause của mùa 2), pass_box() xích nhặt, rẽ trái, thả cho nhện; hop_drop(d) nhện gắp, nhảy về phía d, thả.
-     Mã che-doi-xich.1 … .10 đã dùng ở mùa 4: màn mới khai so từ 11. */
+  /* ================================================= chương che-doi-xich "Đội xích và nhện phối hợp" ================================================= */
   function che(m) { m.chuong = 'che-doi-xich'; return man(m); }
-  var T_IDLE = LAP('n', 'wait()'), T_PASS = ['pick()', 'tr_left()', 'drop()'], T_HOP = ['pick()', 'jump(d)', 'drop()'];
+  var T_IDLE = LAP('n', 'wait()');
+  var T_VALVE = ['forward(n)', 'squirt("low")'];
+  var T_HOP = ['pull_s()', 'jump(d)', 'magnet_off()', 'wait()'];
   function hIdle(than) { return H('wait_n', ['n'], than || T_IDLE); }
-  function hPass(than) { return H('pass_box', [], than || T_PASS); }
-  function hHop(than) { return H('hop_drop', ['d'], than || T_HOP); }
-  var SAN_NGA_TU = ['###.###', '###.###', '##....F', '###.###', '###.###', '#F...##', '#######'];
+  function hValve(than) { return H('valve_go', ['n'], than || T_VALVE); }
+  function hHop(than) { return H('hop_iron', ['d'], than || T_HOP); }
 
   DS.push(
     che({
       so: 11, ten: 'Hàm chờ của màn', hang: 'lam-quen', chiChay: true, chinhCoDinh: true, khoa: [0, 1], khoaHamMan: ['rest'], mucTieu: 'toi-co',
-      deBai: 'Màn Xích qua trước, viết gọn hơn: hàm rest(n) của màn chờ n nhịp. Nhện gọi rest(2) thay cho vòng lặp chờ. Bấm Chạy.',
-      veMaMau: 'Hai chương trình và hàm của màn đã viết sẵn, khoá. Mở Xưởng xem rest, rồi bấm Chạy.',
-      san: SAN_NGA_TU,
-      bd: [{ x: 3, y: 0, huong: 2 }, { x: 2, y: 2, huong: 1 }], co: [[{ x: 1, y: 5 }], [{ x: 6, y: 2 }]],
-      maMau: B(['go_wall()', 'tr_right()', 'go_wall()'], ['rest(2)', 'walk("RRRR")'], { hamCuaMan: [H('rest', ['n'], T_IDLE)] }),
-      loiGiai: B(['go_wall()', 'tr_right()', 'go_wall()'], ['rest(2)', 'walk("RRRR")'], { hamCuaMan: [H('rest', ['n'], T_IDLE)] }),
-      sao: { o: 25, nhip: 10 },
-      goiY: ['n là số nhịp chờ.', 'Màn sau em tự tạo hàm wait_n giống vậy.']
+      hamCuaEmCan: ['walk', 'move', 'squirt', 'back'],
+      deBai: 'Cánh cửa C trước mặt R1 chỉ mở sau khi R2 tiến lên phun van hơi N rồi lùi về cờ. Hàm rest(n) của màn giúp R1 chờ đúng n nhịp trước khi bước qua cửa. Mở Xưởng xem rest(n) rồi bấm Chạy.',
+      veMaMau: 'Hai chương trình và hàm của màn đã viết sẵn, khoá. Bấm Chạy.',
+      san: ['########', '#..CF..#', '#..#...#', '#.F..N.#', '########'],
+      noi: [{ nut: { x: 5, y: 3 }, cua: [{ x: 3, y: 1 }], bang: [] }],
+      bd: [{ x: 2, y: 1, huong: 1 }, { x: 3, y: 3, huong: 1 }],
+      co: [[{ x: 4, y: 1 }], [{ x: 2, y: 3 }]],
+      maMau: B(['rest(2)', 'walk("RR")'], ['move()', 'squirt("low")', 'back()', 'back()'], { hamCuaMan: [H('rest', ['n'], T_IDLE)] }),
+      loiGiai: B(['rest(2)', 'walk("RR")'], ['move()', 'squirt("low")', 'back()', 'back()'], { hamCuaMan: [H('rest', ['n'], T_IDLE)] }),
+      sao: { o: 26, nhip: 6 },
+      goiY: ['rest(n) lặp wait() đúng n lần.', 'Màn sau em sẽ tự tạo hàm wait_n(n) giống vậy để dùng suốt gói.']
     }),
 
     che({
-      so: 12, ten: 'Hàm wait_n(n)', hang: 'lam-quen', taoHam: ['wait_n'], mucTieu: 'toi-co', hamCuaEmCan: ['forward', 'walk'],
-      deBai: 'Tạo hàm wait_n(n): for i in range(n): wait(). Xích chạy thẳng xuống năm ô. Nhện đi ngang, cắt đường xích ở ô thứ ba: cho nhện wait_n(2) rồi mới đi.',
-      veMaMau: 'Chương trình có sẵn gọi wait_n(2) nhưng em chưa có hàm đó. Bấm Hàm mới.',
-      san: ['###.###', '###.###', '###.###', '###.###', '#.....F', '###F###', '#######'],
-      bd: [{ x: 3, y: 0, huong: 2 }, { x: 1, y: 4, huong: 1 }], co: [[{ x: 3, y: 5 }], [{ x: 6, y: 4 }]],
-      maMau: B(['forward(5)'], ['wait_n(2)', 'walk("RRRRR")']),
-      loiGiai: B(['forward(5)'], ['wait_n(2)', 'walk("RRRRR")'], { hamCuaEmMoi: [hIdle()] }),
-      sao: { o: 20, nhip: 12 },
+      so: 12, ten: 'Hàm wait_n(n)', hang: 'lam-quen', taoHam: ['wait_n'], vatCan: 'sat',
+      hamCuaEmCan: ['pull_s', 'walk', 'forward', 'squirt'],
+      deBai: 'Tạo hàm wait_n(n): for i in range(n): wait(). R1 đứng sẵn trên mẩu sắt ngay trước cánh cửa C đang đóng. R2 cần 4 nhịp để tiến 3 ô tới van N và squirt("low") mở cửa. Cho R1 hút sắt, gọi wait_n(3) chờ cửa mở rồi mới bước qua cửa tới ô đích D.',
+      veMaMau: 'Chương trình có sẵn gọi wait_n(3) nhưng em chưa có hàm đó. Bấm Hàm mới để tạo wait_n(n).',
+      san: ['#########', '#..oCD..#', '#...#...#', '#....N..#', '#########'],
+      vatChat: ['.........', '...s.....', '.........', '.........', '.........'],
+      noi: [{ nut: { x: 5, y: 3 }, cua: [{ x: 4, y: 1 }], bang: [] }],
+      bd: [{ x: 3, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['pull_s()', 'wait_n(3)', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(3)', 'squirt("low")']),
+      loiGiai: B(['pull_s()', 'wait_n(3)', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(3)', 'squirt("low")'], { hamCuaEmMoi: [hIdle()] }),
+      sao: { o: 28, nhip: 9 },
       loiSai: [
-        { moTa: 'Chưa tạo hàm wait_n mà đã gọi nó', baiLam: B(['forward(5)'], ['wait_n(2)', 'walk("RRRRR")']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Nhện không chờ: tới ngã tư đúng lúc xích đi qua', baiLam: B(['forward(5)'], ['walk("RRRRR")']), hamCuaEmMoi: [hIdle()], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa tạo hàm wait_n mà đã gọi nó', baiLam: B(['pull_s()', 'wait_n(3)', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(3)', 'squirt("low")']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'R1 không chờ: húc vào cửa C khi R2 chưa kịp phun van', baiLam: B(['pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['forward(3)', 'squirt("low")']), hamCuaEmMoi: [hIdle()], phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Thân hàm hai dòng: for i in range(n): rồi wait().', 'Gọi wait_n(2) thì chờ đúng hai nhịp.']
+      goiY: ['Thân hàm wait_n(n) có hai dòng: for i in range(n): rồi wait().', 'R1 hút sắt ở nhịp 1..2, chờ 3 nhịp (nhịp 3..5) khi R2 phun van ở nhịp 4.']
     }),
 
     che({
-      so: 13, ten: 'Hốc bằng hàm', hang: 'luyen', mucTieu: 'toi-co', hamCuaEmCan: ['wait_n', 'forward', 'walk'],
-      deBai: 'Hai robot đi ngược chiều trên một hành lang có hốc phía trên. Nhện bước phải một ô, lên hốc, wait_n chờ xích qua, rồi xuống đi tiếp. Xích wait_n chờ nhện vào hốc rồi mới chạy.',
-      veMaMau: 'Chương trình có sẵn: cả hai đi ngay. Thêm wait_n cho cả hai.',
-      san: ['###.####', 'F.....F.', '########'],
-      bd: [{ x: 7, y: 1, huong: 3 }, { x: 2, y: 1, huong: 0 }], co: [[{ x: 0, y: 1 }], [{ x: 6, y: 1 }]],
-      maMau: B(['forward(7)'], ['walk("RU")', 'walk("DRRR")']),
-      loiGiai: B(['wait_n(3)', 'forward(7)'], ['walk("RU")', 'wait_n(2)', 'walk("DRRR")']),
-      sao: { o: 22, nhip: 14 },
-      loiSai: [
-        { moTa: 'Xích không chờ: tới ô dưới hốc khi nhện còn ở đó', baiLam: B(['forward(7)'], ['walk("RU")', 'wait_n(2)', 'walk("DRRR")']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Nhện không chờ trong hốc: xuống đụng xích', baiLam: B(['wait_n(3)', 'forward(7)'], ['walk("RU")', 'walk("DRRR")']), phaiCoMa: ['chua-toi-co'] }
+      so: 13, ten: 'Nhện giữ nút bằng wait_n', hang: 'lam-quen', vatCan: 'sat',
+      hamCuaEmCan: ['jump', 'wait_n', 'go', 'pull_s', 'walk', 'forward', 'squirt'],
+      deBai: 'Màn Nhện đè nút, xích qua cửa viết gọn lại bằng wait_n(n): R1 nhảy qua hố lên nút M, gọi wait_n(2) giữ cửa C1 cho R2 đi qua tới phun van N, rồi R1 bước sang lấy sắt mang qua cửa C2 tới ô đích D.',
+      veMaMau: 'Chương trình có sẵn thiếu wait_n(2) ở R1. Thêm wait_n(2) cho R1 và hoàn thiện R2.',
+      san: ['###########', '#.uMo..CD.#', '#...###...#', '#......C.N#', '###########'],
+      vatChat: ['...........', '....s......', '...........', '...........', '...........'],
+      noi: [
+        { nut: { x: 3, y: 1 }, cua: [{ x: 7, y: 3 }], bang: [] },
+        { nut: { x: 9, y: 3 }, cua: [{ x: 7, y: 1 }], bang: [] }
       ],
-      goiY: ['Nhện vào hốc ở nhịp 4.', 'Xích chờ 3 nhịp thì qua ô dưới hốc ở nhịp 6: nhện xuống sau đó.']
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()'], ['forward(7)']),
+      loiGiai: B(['jump("R")', 'wait_n(2)', 'go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()'], ['forward(7)', 'squirt("low")']),
+      sao: { o: 34, nhip: 17 },
+      loiSai: [
+        { moTa: 'R1 quên wait_n(2) trên nút M: cửa C1 đóng trước mặt R2', baiLam: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()'], ['forward(7)', 'squirt("low")']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R2 quên squirt("low") ở cuối: cửa C2 vẫn đóng', baiLam: B(['jump("R")', 'wait_n(2)', 'go("R")', 'pull_s()', 'walk("RRRR")', 'magnet_off()', 'wait()'], ['forward(7)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['R1 gọi wait_n(2) ngay sau jump("R") để đứng yên trên nút M hai nhịp cho R2 đi qua C1(7,3).', 'R2 gọi forward(7) rồi squirt("low") để mở cửa C2(7,1).']
     }),
 
     che({
-      so: 14, ten: 'Hàm pass_box()', hang: 'luyen', taoHam: ['pass_box'], tayNhen: true, hamCuaEmCan: ['pick', 'tr_left', 'drop', 'wait_n', 'jump'],
-      deBai: 'Tạo hàm pass_box() cho xích: nhặt hộp trước mặt, rẽ trái, thả xuống. Xích đứng sẵn trước hộp, gọi pass_box(): hộp nằm ngay trước mặt nhện. Nhện wait_n chờ hộp, gắp, nhảy qua hố, thả vào ô đích.',
-      veMaMau: 'Chương trình có sẵn gọi pass_box() nhưng em chưa có hàm đó. Bấm Hàm mới.',
-      san: ['######', '#o..##', '##.#D#', '##.u.#', '######'],
-      bd: [{ x: 2, y: 1, huong: 3 }, { x: 2, y: 3, huong: 0 }],
-      maMau: B(['pass_box()'], ['wait_n(4)', 'pick()', 'jump("R")', 'drop()']),
-      loiGiai: B(['pass_box()'], ['wait_n(4)', 'pick()', 'jump("R")', 'drop()'], { hamCuaEmMoi: [hPass()] }),
-      sao: { o: 35, nhip: 10 },
+      so: 14, ten: 'Hàm valve_go(n)', hang: 'luyen', taoHam: ['valve_go'], vatCan: 'sat',
+      hamCuaEmCan: ['forward', 'squirt', 'jump', 'pull_s', 'wait_n', 'walk', 'go'],
+      deBai: 'Tạo hàm valve_go(n) cho R2: tiến n ô bằng forward(n) rồi squirt("low") phun van hơi trước mặt. R2 gọi valve_go(4) để mở cửa C cho R1. R1 nhảy qua hố lên mẩu sắt, hút lên rồi bước qua cửa về ô đích D.',
+      veMaMau: 'Chương trình có sẵn gọi valve_go(4) nhưng em chưa tạo hàm đó. Bấm Hàm mới.',
+      san: ['##########', '#.u.oCD..#', '#...#....#', '#.....N..#', '##########'],
+      vatChat: ['..........', '....s.....', '..........', '..........', '..........'],
+      noi: [{ nut: { x: 6, y: 3 }, cua: [{ x: 5, y: 1 }], bang: [] }],
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['valve_go(4)']),
+      loiGiai: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['valve_go(4)'], { hamCuaEmMoi: [hValve()] }),
+      sao: { o: 32, nhip: 11 },
       loiSai: [
-        { moTa: 'Chưa tạo hàm pass_box mà đã gọi nó', baiLam: B(['pass_box()'], ['wait_n(4)', 'pick()', 'jump("R")', 'drop()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong hàm rẽ phải: hộp thả vào tường', baiLam: B(['pass_box()'], ['wait_n(4)', 'pick()', 'jump("R")', 'drop()']), hamCuaEmMoi: [hPass(['pick()', 'tr_right()', 'drop()'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chưa tạo hàm valve_go mà đã gọi nó', baiLam: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['valve_go(4)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm viết cứng forward(1) thay vì forward(n): R2 dừng quá xa van N', baiLam: B(['jump("R")', 'go("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['valve_go(4)']), hamCuaEmMoi: [hValve(['forward(1)', 'squirt("low")'])], phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Thân hàm ba dòng: pick(), tr_left(), drop().', 'Đếm nhịp của pass_box(): nhặt, rẽ hai nhịp, thả. Nhện wait_n cho tới lúc hộp nằm xuống.']
+      goiY: ['Thân hàm valve_go(n) gồm hai dòng: forward(n) và squirt("low").', 'Nhớ dùng tham số n trong forward(n).']
     }),
 
     che({
-      so: 15, ten: 'Hàm hop_drop(d)', hang: 'luyen', taoHam: ['hop_drop'], tayNhen: true, hamCuaEmCan: ['go_wall', 'pass_box', 'wait_n', 'pick', 'jump', 'drop'],
-      deBai: 'Tạo hàm hop_drop(d) cho nhện: gắp hộp trước mặt, nhảy về phía d, thả. Lần này ô đích ở bên TRÁI hố: xích pass_box(), nhện wait_n chờ rồi hop_drop("L").',
-      veMaMau: 'Chương trình có sẵn gọi hop_drop("L") nhưng em chưa có hàm đó. Bấm Hàm mới.',
-      san: ['##########', '##o......#', '#D#.######', '#.u.######', '##########'],
-      bd: [{ x: 8, y: 1, huong: 3 }, { x: 3, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pass_box()'], ['wait_n(9)', 'hop_drop("L")']),
-      loiGiai: B(['go_wall()', 'pass_box()'], ['wait_n(9)', 'hop_drop("L")'], { hamCuaEmMoi: [hHop()] }),
-      sao: { o: 42, nhip: 15 },
+      so: 15, ten: 'Hàm hop_iron(d)', hang: 'luyen', taoHam: ['hop_iron'], vatCan: 'sat',
+      hamCuaEmCan: ['pull_s', 'jump', 'valve_go', 'wait_n', 'walk'],
+      deBai: 'Tạo hàm hop_iron(d) cho R1: hút sắt dưới bụng bằng pull_s(), nhảy qua hố về phía d bằng jump(d), rồi magnet_off(), wait() thả xuống. Ô đích D và mẩu sắt nằm bên trái cánh cửa C; R2 gọi valve_go(3) mở cửa C, R1 chờ bằng wait_n(4), đi qua cửa tới mẩu sắt rồi hop_iron("L") qua hố vào D.',
+      veMaMau: 'Chương trình có sẵn gọi hop_iron("L") nhưng em chưa tạo hàm đó. Bấm Hàm mới.',
+      san: ['##########', '##DuoC...#', '###.#....#', '#....N...#', '##########'],
+      vatChat: ['..........', '....s.....', '..........', '..........', '..........'],
+      noi: [{ nut: { x: 5, y: 3 }, cua: [{ x: 5, y: 1 }], bang: [] }],
+      bd: [{ x: 6, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['wait_n(4)', 'walk("LL")', 'hop_iron("L")'], ['valve_go(3)']),
+      loiGiai: B(['wait_n(4)', 'walk("LL")', 'hop_iron("L")'], ['valve_go(3)'], { hamCuaEmMoi: [hHop()] }),
+      sao: { o: 35, nhip: 13 },
       loiSai: [
-        { moTa: 'Chưa tạo hàm hop_drop mà đã gọi nó', baiLam: B(['go_wall()', 'pass_box()'], ['wait_n(9)', 'hop_drop("L")']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong hàm nhảy cứng sang phải: không dùng d', baiLam: B(['go_wall()', 'pass_box()'], ['wait_n(9)', 'hop_drop("L")']), hamCuaEmMoi: [hHop(['pick()', 'jump("R")', 'drop()'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chưa tạo hàm hop_iron mà đã gọi nó', baiLam: B(['wait_n(4)', 'walk("LL")', 'hop_iron("L")'], ['valve_go(3)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong hàm viết cứng jump("R") thay vì jump(d): R1 nhảy ngược sang phải', baiLam: B(['wait_n(4)', 'walk("LL")', 'hop_iron("L")'], ['valve_go(3)']), hamCuaEmMoi: [hHop(['pull_s()', 'jump("R")', 'magnet_off()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Thân hàm: pick(), jump(d), drop(). Viết d, không viết "L".', 'Xích đi năm ô rồi mới tới hộp: đếm nhịp tới lúc hộp nằm xuống.']
+      goiY: ['Thân hàm hop_iron(d): pull_s(), jump(d), magnet_off(), wait().', 'Nhớ truyền d vào jump(d) để nhảy được mọi hướng.']
     }),
 
     che({
-      so: 16, ten: 'Hai hộp, hai phía', hang: 'bien-the', tayNhen: true, hamCuaEmCan: ['pass_box', 'spin', 'pick', 'drop', 'wait_n', 'hop_drop', 'jump'],
-      deBai: 'Xích đứng sẵn trước hộp thứ nhất; hộp thứ hai nằm trong hốc phía sau lưng xích. Xích pass_box() hộp thứ nhất, quay đầu nhặt hộp thứ hai, quay đầu thả xuống cùng chỗ. Nhện mang hộp thứ nhất sang ô đích phải, nhảy về, chờ, mang hộp thứ hai sang ô đích trái.',
-      veMaMau: 'Chương trình có sẵn: hai robot mới làm xong hộp thứ nhất. Viết tiếp.',
-      san: ['###o###', '##o.###', '#D#.#D#', '#.u.u.#', '#######'],
-      bd: [{ x: 3, y: 1, huong: 3 }, { x: 3, y: 3, huong: 0 }],
-      maMau: B(['pass_box()'], ['wait_n(4)', 'hop_drop("R")']),
-      loiGiai: B(['pass_box()', 'spin()', 'pick()', 'spin()', 'drop()'], ['wait_n(4)', 'hop_drop("R")', 'jump("L")', 'wait_n(2)', 'hop_drop("L")']),
-      sao: { o: 48, nhip: 22 },
-      loiSai: [
-        { moTa: 'Nhện mang cả hai hộp sang phải: ô đích phải đã có hộp', baiLam: B(['pass_box()', 'spin()', 'pick()', 'spin()', 'drop()'], ['wait_n(4)', 'hop_drop("R")', 'jump("L")', 'wait_n(2)', 'hop_drop("R")']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Nhện không chờ hộp thứ hai: gắp hụt', baiLam: B(['pass_box()', 'spin()', 'pick()', 'spin()', 'drop()'], ['wait_n(4)', 'hop_drop("R")', 'jump("L")', 'hop_drop("L")']), phaiCoMa: ['kep-hut'] }
+      so: 16, ten: 'Hai hướng nhảy sắt', hang: 'luyen', vatCan: 'sat',
+      hamCuaEmCan: ['go', 'hop_iron', 'valve_go'],
+      deBai: 'Hai mẩu sắt, hai cái hố theo hai hướng khác nhau: bước lên mẩu sắt đầu rồi nhảy sang phải vào D(4,1), mẩu sắt thứ hai nằm sau cửa C1 và cần nhảy xuống qua hố vào D(6,3). R2 gọi valve_go(2) mở cửa C1. R1 dùng go("R"), hop_iron("R"), bước hai lần go("R") qua cửa rồi gọi hop_iron("D").',
+      veMaMau: 'Chương trình có sẵn mới làm xong mẩu sắt đầu. Viết tiếp cho R1.',
+      san: ['##########', '#.ouDCo..#', '######u###', '######D###', '#...N....#', '##########'],
+      vatChat: ['..........', '..s...s...', '..........', '..........', '..........', '..........'],
+      noi: [
+        { nut: { x: 4, y: 4 }, cua: [{ x: 5, y: 1 }], bang: [] }
       ],
-      goiY: ['Xích thả hộp thứ hai ở nhịp 14.', 'hop_drop với "R" rồi với "L": một hàm, hai chỗ.']
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 4, huong: 1 }],
+      maMau: B(['go("R")', 'hop_iron("R")'], ['valve_go(2)']),
+      loiGiai: B(['go("R")', 'hop_iron("R")', 'go("R")', 'go("R")', 'hop_iron("D")'], ['valve_go(2)']),
+      sao: { o: 33, nhip: 16 },
+      loiSai: [
+        { moTa: 'R2 không mở van: cửa C1 đóng, R1 không sang được mẩu sắt thứ hai', baiLam: B(['go("R")', 'hop_iron("R")', 'go("R")', 'go("R")', 'hop_iron("D")'], []), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Mẩu sắt thứ hai nhảy sang phải thay vì nhảy xuống: lệch đích', baiLam: B(['go("R")', 'hop_iron("R")', 'go("R")', 'go("R")', 'hop_iron("R")'], ['valve_go(2)']), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      goiY: ['R1 bước sang (2,1) gọi hop_iron("R") thả sắt đầu vào D(4,1), rồi hai lần go("R") qua cửa C1(5,1) sang sắt thứ hai ở (6,1), gọi hop_iron("D") qua hố (6,2) xuống D(6,3).', 'R2 gọi valve_go(2) phun van N(4,4) mở cửa C1(5,1).']
     }),
 
     che({
-      so: 17, ten: 'Sửa go_mark()', hang: 'bien-the', hamCuaEmCan: ['go_wall', 'pick', 'spin', 'wait_n', 'back', 'drop', 'crawl', 'jump', 'walk'],
-      deBai: 'Màn Mốc đi đường xa, nay đường của nhện gói trong hàm go_mark() của màn. Hàm viết sai nên nhện rơi xuống hố. Sửa hàm, rồi cho xích wait_n chờ mốc trước khi chở hộp sang.',
-      veMaMau: 'Chạy thử: nhện bước thẳng vào hố. Mở Xưởng sửa go_mark, và thêm wait_n cho xích.',
-      san: ['##########', '#o.....D.#', '########.#', '#.n.u....#', '##########'],
-      bd: [{ x: 5, y: 1, huong: 3 }, { x: 1, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'], ['go_mark()'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'go("R")', 'walk("RRR")', 'walk("UU")'])] }),
-      loiGiai: B(['go_wall()', 'pick()', 'spin()', 'wait_n(10)', 'go_wall()', 'back()', 'drop()'], ['go_mark()'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("UU")'])] }),
-      sao: { o: 56, nhip: 26 },
-      loiSai: [
-        { moTa: 'Sửa hàm mà xích không chờ: hộp nằm quá ô đích', baiLam: B(['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'], ['go_mark()'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'jump("R")', 'walk("RRR")', 'walk("UU")'])] }), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Giữ hàm sai: nhện rơi hố', baiLam: B(['go_wall()', 'pick()', 'spin()', 'wait_n(10)', 'go_wall()', 'back()', 'drop()'], ['go_mark()'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'go("R")', 'walk("RRR")', 'walk("UU")'])] }), phaiCoMa: ['roi-ho'] }
+      so: 17, ten: 'Sửa hàm go_mark()', hang: 'bien-the', vatCan: 'sat',
+      hamCuaEmCan: ['crawl', 'jump', 'walk', 'wait_n', 'go', 'pull_s', 'valve_go'],
+      deBai: 'Đường của R1 qua gầm và hố tới nút M được gói trong hàm go_mark() của màn, nhưng hàm viết nhầm go("R") ở chỗ hố nên R1 rơi xuống hố. Sửa go_mark(), cho R1 đứng trên nút M bằng wait_n(2) để R2 qua cửa C1 gọi valve_go(4) mở cửa C2, rồi R1 mang sắt về D.',
+      veMaMau: 'Chạy thử: R1 rơi xuống hố. Mở Xưởng sửa go_mark() và viết tiếp.',
+      san: ['###########', '#.n.uMo.CD#', '#....##...#', '#..C...N..#', '###########'],
+      vatChat: ['...........', '......s....', '...........', '...........', '...........'],
+      noi: [
+        { nut: { x: 5, y: 1 }, cua: [{ x: 3, y: 3 }], bang: [] },
+        { nut: { x: 7, y: 3 }, cua: [{ x: 8, y: 1 }], bang: [] }
       ],
-      goiY: ['Qua hố phải nhảy: jump("R"), không phải go("R").', 'Nhện tới mốc khoảng nhịp 20: xích quay đầu xong ở nhịp 8 rồi wait_n(12).']
+      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
+      maMau: B(['go_mark()', 'go("R")', 'pull_s()', 'walk("RRR")', 'magnet_off()', 'wait()'], ['wait_n(9)', 'valve_go(4)'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'go("R")'])] }),
+      loiGiai: B(['go_mark()', 'wait_n(2)', 'go("R")', 'pull_s()', 'walk("RRR")', 'magnet_off()', 'wait()'], ['wait_n(9)', 'valve_go(4)'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'jump("R")'])] }),
+      sao: { o: 43, nhip: 20 },
+      loiSai: [
+        { moTa: 'Giữ hàm go_mark() sai: R1 bước vào hố', baiLam: B(['go_mark()', 'wait_n(2)', 'go("R")', 'pull_s()', 'walk("RRR")', 'magnet_off()', 'wait()'], ['wait_n(9)', 'valve_go(4)'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'go("R")'])] }), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Sửa hàm nhưng R1 không wait_n(2) trên nút M: cửa C1 đóng trước mặt R2', baiLam: B(['go_mark()', 'go("R")', 'pull_s()', 'walk("RRR")', 'magnet_off()', 'wait()'], ['wait_n(9)', 'valve_go(4)'], { hamCuaMan: [H('go_mark', [], ['crawl("R")', 'jump("R")'])] }), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['Trong go_mark(), đổi go("R") thành jump("R") để bật qua hố u tới nút M(5,1).', 'R1 tới nút M ở cuối nhịp 9; R2 wait_n(9) rồi valve_go(4) đi qua cửa C1(3,3) tới phun van N(7,3).']
     }),
 
     che({
-      so: 18, ten: 'Hai hộp chờ mốc', hang: 'bien-the', hamCuaEmCan: ['go_wall', 'pick', 'spin', 'back', 'drop', 'wait_n', 'jump', 'walk'],
-      deBai: 'Như màn Hai hộp, một mốc, nhưng nhện ở xa hơn: phải chui gầm rồi mới tới mốc. Xích wait_n chờ ở đầu, rồi lặp hai chuyến như cũ.',
-      veMaMau: 'Chương trình có sẵn: xích chạy ngay, mốc chưa tới. Thêm wait_n cho xích và viết đường nhện.',
-      san: ['############', '#oo.....DD.#', '##########.#', '####..n.u..#', '############'],
-      bd: [{ x: 6, y: 1, huong: 3 }, { x: 4, y: 3, huong: 0 }],
-      maMau: B(LAP(2, ['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()', 'spin()']), ['crawl("R")']),
-      loiGiai: B(nhieu(['wait_n(2)'], LAP(2, ['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()', 'spin()'])), ['go("R")', 'crawl("R")', 'jump("R")', 'go("R")', 'walk("UU")']),
-      sao: { o: 58, nhip: 44 },
-      loiSai: [
-        { moTa: 'Xích không chờ: chuyến đầu chạy quá ô đích', baiLam: B(LAP(2, ['go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()', 'spin()']), ['go("R")', 'crawl("R")', 'jump("R")', 'go("R")', 'walk("UU")']), phaiCoMa: ['chua-dua-vat'] }
+      so: 18, ten: 'Chờ bạn rồi phun mạnh', hang: 'bien-the', vatCan: 'sat',
+      hamCuaEmCan: ['go', 'walk', 'wait_n', 'hop_iron', 'wait_clear', 'fence_shot', 'push', 'tr_right'],
+      deBai: 'R1 xuất phát ngay trước mũi vòi phun của R2. R2 gọi wait_clear() chờ R1 bước sang phải, rồi fence_shot() phun mạnh tới van N mở cửa C1, quay phải và push(1) đẩy thùng H lên nút M mở cửa C2. R1 bước sang phải nhường tia, wait_n(6) chờ cả hai cửa mở rồi walk("RRR") qua hai cửa tới mẩu sắt và hop_iron("R") vào D.',
+      veMaMau: 'Chương trình có sẵn: R2 chưa chờ R1, R1 chưa chờ hai cửa mở. Viết tiếp cho cả hai.',
+      san: ['############', '####N#######', '#.....CCouD#', '####.#######', '#.....HM...#', '#..........#', '############'],
+      vatChat: ['............', '............', '........s...', '............', '............', '............', '............'],
+      noi: [
+        { nut: { x: 4, y: 1 }, cua: [{ x: 6, y: 2 }], bang: [] },
+        { nut: { x: 7, y: 4 }, cua: [{ x: 7, y: 2 }], bang: [] }
       ],
-      goiY: ['Nhện tới mốc muộn hơn màn trước: đếm nhịp đường nhện.', 'wait_n ở đầu chương trình xích, trước vòng lặp.']
+      bd: [{ x: 4, y: 2, huong: 1 }, { x: 4, y: 4, huong: 0 }],
+      maMau: B(['go("R")', 'walk("RRR")', 'hop_iron("R")'], ['fence_shot()']),
+      loiGiai: B(['go("R")', 'wait_n(6)', 'walk("RRR")', 'hop_iron("R")'], ['wait_clear()', 'fence_shot()', 'tr_right()', 'push(1)']),
+      sao: { o: 45, nhip: 19 },
+      loiSai: [
+        { moTa: 'R2 dùng squirt("low") thay vì fence_shot(): tia nước chỉ bay 2 ô, không tới van N', baiLam: B(['go("R")', 'wait_n(6)', 'walk("RRR")', 'hop_iron("R")'], ['wait_clear()', 'squirt("low")', 'tr_right()', 'push(1)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R2 quên push(1): cửa C2 vẫn đóng', baiLam: B(['go("R")', 'wait_n(6)', 'walk("RRR")', 'hop_iron("R")'], ['wait_clear()', 'fence_shot()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['R2 gọi wait_clear() chờ R1 rời (4,2), rồi fence_shot() phun mạnh 3 ô tới van N(4,1) mở cửa C1(6,2), tiếp theo tr_right() và push(1) đẩy thùng H(6,4) lên nút M(7,4) mở cửa C2(7,2).', 'R1 go("R") sang (5,2), wait_n(6) chờ cả hai cửa mở, rồi walk("RRR") tới sắt(8,2) và hop_iron("R") vào D(10,2).']
     }),
 
     che({
-      so: 19, ten: 'Chuyền rồi làm mốc', hang: 'bien-the', tayNhen: true, hamCuaEmCan: ['go_wall', 'pass_box', 'tr_right', 'pick', 'spin', 'wait_n', 'back', 'drop', 'hop_drop', 'walk'],
-      deBai: 'Màn Đội chuyền và làm mốc, viết bằng hàm: xích pass_box() hộp thứ nhất, nhện hop_drop("R") rồi đi làm mốc. Xích lấy hộp thứ hai, wait_n chờ mốc, rồi chở sang.',
-      veMaMau: 'Chương trình có sẵn mới làm xong hộp thứ nhất. Viết tiếp.',
-      san: ['###########', '#oo.....D.#', '###.#D###.#', '###.u.....#', '###########'],
-      bd: [{ x: 4, y: 1, huong: 3 }, { x: 3, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pass_box()'], ['wait_n(5)', 'hop_drop("R")']),
-      loiGiai: B(['go_wall()', 'pass_box()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'wait_n(6)', 'go_wall()', 'back()', 'drop()'], ['wait_n(5)', 'hop_drop("R")', 'walk("RRRR")', 'walk("UU")']),
-      sao: { o: 62, nhip: 30 },
-      loiSai: [
-        { moTa: 'Xích không chờ mốc: hộp thứ hai nằm quá ô đích', baiLam: B(['go_wall()', 'pass_box()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'], ['wait_n(5)', 'hop_drop("R")', 'walk("RRRR")', 'walk("UU")']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Nhện quên đi làm mốc', baiLam: B(['go_wall()', 'pass_box()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'wait_n(6)', 'go_wall()', 'back()', 'drop()'], ['wait_n(5)', 'hop_drop("R")']), phaiCoMa: ['chua-dua-vat'] }
+      so: 19, ten: 'Đội phân loại hai cực', hang: 'bien-the',
+      hamCuaEmCan: ['wait_n', 'sort_row', 'go', 'walk', 'valve_go', 'tr_right', 'tr_left'],
+      deBai: 'Hai vật nam châm N và S nằm sau hai cánh cửa C1, C2 trên hành lang của R1; phía trên mỗi vật là ô đích đỏ, phía dưới là ô đích xanh. R2 gọi valve_go(2) mở cửa C1, rồi lách xuống một hàng gọi valve_go(2) mở cửa C2. R1 chờ cửa mở rồi dùng sort_row() phân loại từng vật.',
+      veMaMau: 'Chương trình có sẵn mới phân loại vật đầu. Viết tiếp cho cả hai robot.',
+      san: ['##########', '####D##D##', '#..Co.Co.#', '####D##D##', '#...N#...#', '#......N.#', '##########'],
+      vatChat: ['..........', '..........', '....N..S..', '..........', '..........', '..........', '..........'],
+      mau: ['..........', '....r..r..', '..........', '....b..b..', '..........', '..........', '..........'],
+      noi: [
+        { nut: { x: 4, y: 4 }, cua: [{ x: 3, y: 2 }], bang: [] },
+        { nut: { x: 7, y: 5 }, cua: [{ x: 6, y: 2 }], bang: [] }
       ],
-      goiY: ['Mỗi hàm thay một đoạn ba bốn lệnh: chương trình ngắn lại.', 'Xích thả hộp thứ nhất xong thì rẽ phải để quay về phía hộp thứ hai.']
+      bd: [{ x: 2, y: 2, huong: 1 }, { x: 1, y: 4, huong: 1 }],
+      maMau: B(['wait_n(3)', 'go("R")', 'sort_row()'], ['valve_go(2)']),
+      loiGiai: B(
+        ['wait_n(3)', 'go("R")', 'sort_row()', 'go("D")', 'walk("RR")', 'sort_row()'],
+        ['valve_go(2)', 'tr_right()', 'move()', 'tr_left()', 'valve_go(2)']
+      ),
+      sao: { o: 52, nhip: 21 },
+      loiSai: [
+        { moTa: 'R2 chỉ mở cửa đầu: cửa thứ hai vẫn đóng, R1 húc cửa', baiLam: B(['wait_n(3)', 'go("R")', 'sort_row()', 'go("D")', 'walk("RR")', 'sort_row()'], ['valve_go(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 không chờ cửa C1 mở mà bước ngay: húc vào cửa C1', baiLam: B(['go("R")', 'sort_row()', 'go("D")', 'walk("RR")', 'sort_row()'], ['valve_go(2)', 'tr_right()', 'move()', 'tr_left()', 'valve_go(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+      ],
+      goiY: ['R2 mở van đầu bằng valve_go(2), lách xuống một hàng rồi gọi valve_go(2) mở van thứ hai.', 'Sau sort_row() đầu tiên thả vật N ở D đỏ(4,1), R1 gọi go("D") về (4,2), walk("RR") sang C2(6,2) rồi sort_row().']
     }),
 
     che({
-      so: 20, ten: 'Ba hộp, ba chỗ', hang: 'trum', tayNhen: true, khung: { chinh: 16, moiHam: 10 },
-      hamCuaEmCan: ['go_wall', 'pass_box', 'spin', 'pick', 'drop', 'tr_right', 'wait_n', 'back', 'hop_drop', 'jump', 'leap', 'walk'],
-      deBai: 'Ba hộp, ba ô đích. Xích chuyền hộp trước mặt cho nhện, quay đầu nhặt hộp trong hốc, quay đầu chuyền tiếp. Nhện mang hộp thứ nhất sang phải, nhảy về, mang hộp thứ hai sang trái, rồi nhảy qua hai hố đi làm mốc. Xích lấy hộp cuối ở đầu dãy, chờ mốc rồi chở sang.',
-      veMaMau: 'Chương trình có sẵn mới chuyền xong hộp thứ nhất. Viết tiếp cả hai.',
-      san: ['###o#######', '#oo.....D.#', '#D#.#D###.#', '#.u.u.....#', '###########'],
-      bd: [{ x: 4, y: 1, huong: 3 }, { x: 3, y: 3, huong: 0 }],
-      maMau: B(['go_wall()', 'pass_box()'], ['wait_n(6)', 'hop_drop("R")']),
-      loiGiai: B(['go_wall()', 'pass_box()', 'spin()', 'pick()', 'spin()', 'drop()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'wait_n(10)', 'go_wall()', 'back()', 'drop()'],
-        ['wait_n(6)', 'hop_drop("R")', 'jump("L")', 'wait_n(2)', 'hop_drop("L")', 'leap("RR")', 'walk("RRRR")', 'walk("UU")']),
-      sao: { o: 72, nhip: 46 },
-      loiSai: [
-        { moTa: 'Xích không chờ mốc: hộp cuối nằm quá ô đích', baiLam: B(['go_wall()', 'pass_box()', 'spin()', 'pick()', 'spin()', 'drop()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'go_wall()', 'back()', 'drop()'],
-          ['wait_n(6)', 'hop_drop("R")', 'jump("L")', 'wait_n(2)', 'hop_drop("L")', 'leap("RR")', 'walk("RRRR")', 'walk("UU")']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Nhện mang hộp thứ hai sang phải: ô đích phải đã có hộp', baiLam: B(['go_wall()', 'pass_box()', 'spin()', 'pick()', 'spin()', 'drop()', 'tr_right()', 'go_wall()', 'pick()', 'spin()', 'wait_n(10)', 'go_wall()', 'back()', 'drop()'],
-          ['wait_n(6)', 'hop_drop("R")', 'jump("L")', 'wait_n(2)', 'hop_drop("R")', 'walk("RRRR")', 'walk("UU")']), phaiCoMa: ['chua-dua-vat'] }
+      so: 20, ten: 'Trùm phối hợp: dây chuyền hai robot', hang: 'trum', khung: { chinh: 16, moiHam: 10 },
+      hamCuaEmCan: ['crawl', 'go', 'hop_iron', 'walk', 'sort_row', 'valve_go', 'push', 'tr_right'],
+      deBai: 'Trùm gói Đội: một mẩu sắt và một vật nam châm N trên dây chuyền. R2 gọi valve_go(1) mở cửa C1 cho R1 nhảy mang sắt qua hố vào ô đích đầu, rồi R2 quay phải gọi push(1) đẩy thùng H lên nút M mở cửa C2 cho R1 phân loại vật nam châm bằng sort_row().',
+      veMaMau: 'Chương trình có sẵn mới làm xong mẩu sắt đầu. Viết tiếp cho cả hai robot.',
+      san: ['############', '#########D##', '#.n.CouDCo.#', '####N####D##', '#.....HM...#', '#..........#', '############'],
+      vatChat: ['............', '............', '.....s...N..', '............', '............', '............', '............'],
+      mau: ['............', '.........r..', '............', '.........b..', '............', '............', '............'],
+      noi: [
+        { nut: { x: 4, y: 3 }, cua: [{ x: 4, y: 2 }], bang: [] },
+        { nut: { x: 7, y: 4 }, cua: [{ x: 8, y: 2 }], bang: [] }
       ],
-      goiY: ['Hai lần chuyền giống màn Hai hộp, hai phía; phần cuối giống màn Chuyền rồi làm mốc.', 'Đếm nhịp nhện tới mốc rồi mới chọn wait_n cho xích.']
+      bd: [{ x: 1, y: 2, huong: 1 }, { x: 4, y: 5, huong: 0 }],
+      maMau: B(['crawl("R")', 'walk("RR")', 'hop_iron("R")'], ['valve_go(1)']),
+      loiGiai: B(
+        ['crawl("R")', 'walk("RR")', 'hop_iron("R")', 'go("R")', 'sort_row()'],
+        ['valve_go(1)', 'tr_right()', 'push(1)']
+      ),
+      sao: { o: 60, nhip: 21 },
+      loiSai: [
+        { moTa: 'R2 chỉ mở cửa đầu mà không đẩy thùng: cửa C2 vẫn đóng', baiLam: B(['crawl("R")', 'walk("RR")', 'hop_iron("R")', 'go("R")', 'sort_row()'], ['valve_go(1)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 quên hop_iron("R") cho mẩu sắt đầu: bước thẳng vào hố', baiLam: B(['crawl("R")', 'walk("RRRR")', 'go("R")', 'sort_row()'], ['valve_go(1)', 'tr_right()', 'push(1)']), phaiCoMa: ['roi-ho'] }
+      ],
+      goiY: ['R1 chui gầm bằng crawl("R"), đi tới sắt đầu bằng walk("RR"), gọi hop_iron("R") thả sắt vào D(7,2), rồi go("R") qua cửa C2(8,2) và sort_row() phân loại vật N ở (9,2).', 'R2 xuất phát ở (4,5) hướng lên: gọi valve_go(1) tiến tới (4,4) và phun van N(4,3) mở cửa C1(4,2), sau đó tr_right() rồi push(1) đẩy thùng H(6,4) lên nút M(7,4) mở cửa C2(8,2).']
     })
   );
 

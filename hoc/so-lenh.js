@@ -42,11 +42,12 @@
     'nam-cham': 'Nam châm',
     'tay-xoay': 'Tay xoay',
     'son': 'Bộ gieo hạt',
+    'loa': 'Loa',
     'nem': 'Máy ném',
     'drone': 'Drone',
     'hong-ngoai': 'Hồng ngoại'
   };
-  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'son', 'nam-cham', 'tay-xoay', 'nem', 'drone', 'hong-ngoai'];
+  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'son', 'loa', 'nam-cham', 'tay-xoay', 'nem', 'drone', 'hong-ngoai'];
 
   function m(ten, nhom, moTa, chuong, man) { return { ten: ten, nhom: nhom, moTa: moTa, chuong: chuong, man: man }; }
 
@@ -99,7 +100,7 @@
     m('forward', 'tham-so', 'Tiến n ô liền nhau', 'tham-so', 'tham-so.3'),
     m('right', 'tham-so', 'Quay phải k lần', 'tham-so', 'tham-so.4'),
     m('deliver', 'tham-so', 'Nhặt vật, tiến n ô rồi đặt vật xuống', 'tham-so', 'tham-so.6'),
-    m('step', 'tham-so', 'Đi ngang a ô rồi đi xuống b ô, làm trọn một bậc thang', 'tham-so', 'tham-so.8'),
+    m('step', 'tham-so', 'Đi ngang a ô rồi đi xuống b ô, làm trọn một bậc thang', 'tham-so', 'tham-so.8'),       // PDM2a2: lộ trình mùa 2 đổi tên thành stair_down; Sổ lệnh còn theo ngân hàng (kiem-che-xe) như deliver, pick_behind
     // đợt 2: thân nhện
     m('go', 'nhen', 'Nhện đi một bước theo một chữ: U lên, D xuống, L trái, R phải', 'nhen', 'nhen.4'),
     m('walk', 'nhen', 'Nhện đi hết một chuỗi chỉ đường', 'nhen', 'nhen.6'),
@@ -208,7 +209,7 @@
     m('go_to_wall', 'hong-ngoai', 'Đi thẳng tới khi sát tường, dùng mắt hồng ngoại đo số ô trống', 'che-hong-ngoai', 'che-hong-ngoai.1'),
     m('go_safe', 'hong-ngoai', 'Đi thẳng tới khi phía trước chỉ còn an_toan ô trống', 'che-hong-ngoai', 'che-hong-ngoai.2'),
     m('clean_step', 'hong-ngoai', 'Một bước hút bụi: còn an_toan ô trống trở xuống thì rẽ phải, không thì đi một ô', 'che-hong-ngoai', 'che-hong-ngoai.3'),
-    m('go_get', 'hong-ngoai', 'Đo khoảng cách, tới nhặt vật, quay đầu đi về đúng chừng ấy ô rồi đặt vật', 'che-hong-ngoai', 'che-hong-ngoai.4'),
+    m('go_open', 'hong-ngoai', 'Đo khoảng cách, tới sát van phun rồi lùi về đúng chừng ấy ô', 'che-hong-ngoai', 'che-hong-ngoai.4'),       // PDM2a 31/10 (trước: go_get tay kẹp)
     // gói 5 · chương Hàm đẩy thùng (man-day-thung.js): xích đẩy thùng nặng, nhóm Bánh xích
     m('push', 'xich', 'Tới sát thùng trước mặt rồi đẩy nó n ô: xích tiến là thùng trượt', 'che-day-thung', 'che-day-thung.1'),
     m('go_around', 'xich', 'Đi vòng sang bên phải thùng rồi quay mũi xích vào thùng', 'che-day-thung', 'che-day-thung.3'),
@@ -229,9 +230,17 @@
     m('auto_on', 'hong-ngoai', 'Van chưa nóng thì tự chọn lực phun theo xa gần', 'che-do-nhiet', 'che-do-nhiet.5'),
     m('scan_on', 'hong-ngoai', 'n lần: mở van bên trái nếu còn đóng rồi tiến một ô', 'che-do-nhiet', 'che-do-nhiet.6'),
     m('switch_right', 'hong-ngoai', 'Quay phải, mở van bên phải nếu nó còn đóng, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.7'),
-    m('auto_left_on', 'hong-ngoai', 'Quay trái, van chưa nóng thì tự chọn lực phun, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8')
+    m('auto_left_on', 'hong-ngoai', 'Quay trái, van chưa nóng thì tự chọn lực phun, rồi quay lại', 'che-do-nhiet', 'che-do-nhiet.8'),
+    // chương che-kho-cu · Chế lệnh: dọn kho cũ (gói 8 mùa 2 "Góc kho cũ", man-kho-cu.js, PDM2b 31/10; hàm của màn peek_valve / fence_far / pad_shot không có ở đây)
+    m('pad_open', 'hoi', 'Tiến lên nút đè cho cửa mở, phun van bên trái qua cửa rồi quay lại', 'che-kho-cu', 'che-kho-cu.1'),
+    m('fence_shot', 'hoi', 'Phun mạnh qua hàng rào rồi tiến một ô bù cú giật', 'che-kho-cu', 'che-kho-cu.2'),
+    m('hold_shot', 'hoi', 'Đẩy thùng xuống nút đè, quay trái, phun nhẹ van qua cửa vừa mở', 'che-kho-cu', 'che-kho-cu.3'),
+    m('pass_crate', 'xich', 'Né sang làn bên, đi qua thùng gỗ rồi về làn cũ', 'che-kho-cu', 'che-kho-cu.4'),
+    m('fence_at', 'hoi', 'Tiến n ô tới sát rào, phun mạnh qua rào, bù cú giật', 'che-kho-cu', 'che-kho-cu.5'),
+    m('scan_pads', 'hoi', 'n trạm: lên nút đè phun van bên trái rồi tiến một ô', 'che-kho-cu', 'che-kho-cu.6'),
+    m('warm_pad', 'hong-ngoai', 'Lên nút đè, nhìn van qua cửa, chưa nóng thì phun nhẹ, rồi quay lại', 'che-kho-cu', 'che-kho-cu.7')
   ];
-  // chương che-doi-mua-2 · Đội phối hợp (gói 8 mùa 2, man-doi-mua-2.js; hàm của màn không có ở đây)
+  // chương che-doi-mua-2 · Chế lệnh: chờ bạn (GÓI 9 mùa 2 "R2 trở lại", PDM2c 31/10; man-doi-mua-2.js; hàm của em đều là của R1 xe cứu hỏa, hàm của màn không có ở đây)
   ds.push(
     m('wait_clear', 'hong-ngoai', 'Còn thấy đồng đội (vật nóng) trước mũi xe thì chờ', 'che-doi-mua-2', 'che-doi-mua-2.1'),
     m('yield_step', 'hong-ngoai', 'Chờ tới khi không còn thấy bạn trước mũi xe rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.2'),
@@ -241,22 +250,14 @@
     m('step_clear', 'hong-ngoai', 'Còn sát vật cản (bạn) trước mũi xe thì chờ, rồi tiến một ô', 'che-doi-mua-2', 'che-doi-mua-2.7'),
     m('cover', 'hong-ngoai', 'Chờ bạn tới rồi đi khỏi (pass_mate) rồi phun mạnh', 'che-doi-mua-2', 'che-doi-mua-2.8'),
     m('guard', 'hong-ngoai', 'Chờ bạn qua (pass_mate) rồi tự chọn lực phun theo xa gần', 'che-doi-mua-2', 'che-doi-mua-2.10'),
-    // gói 9 · chương che-be-sung · Hàm bệ súng (man-be-sung.js): xích gắn súng hơi phun mạnh không giật, nhóm Súng hơi (side_spray là hàm của màn nên không có ở đây)
-    m('spray_left', 'hoi', 'Quay trái, phun mạnh van bên trái, rồi quay lại: bệ vòi không giật', 'che-be-sung', 'che-be-sung.1'),
-    m('spray_right', 'hoi', 'Quay phải, phun mạnh van bên phải, rồi quay lại', 'che-be-sung', 'che-be-sung.2'),
-    m('valve_on', 'hoi', 'Đo nhiệt van trước mũi xe: chưa nóng thì phun mạnh', 'che-be-sung', 'che-be-sung.4'),
-    m('valve_left', 'hoi', 'Quay trái, van bên trái chưa nóng thì phun mạnh, rồi quay lại', 'che-be-sung', 'che-be-sung.5'),
-    m('valve_row', 'hoi', 'n trạm: van xa bên trái còn đóng thì phun mạnh, rồi tiến một ô', 'che-be-sung', 'che-be-sung.6'),
-    m('go_spray', 'hoi', 'Đi thẳng tới sát cửa đóng rồi phun mạnh van bên trái cho cửa mở', 'che-be-sung', 'che-be-sung.7'),
-    m('visit', 'hoi', 'Đo ngõ cụt sâu d ô, vào phun mạnh van bên trái, rồi lùi ra đúng d ô', 'che-be-sung', 'che-be-sung.8'),
-    m('push_spray', 'hoi', 'Đẩy thùng một ô rồi phun mạnh van bên trái mở cửa trước thùng', 'che-be-sung', 'che-be-sung.9'),
+    // Gói Bệ vòi xích (che-be-sung, man-be-sung.js) CẤT khỏi mùa 2 (PDM2c 31/10, CAT_MUA_2 ở lo-trinh-hoc.js): 8 mục của nó bỏ khỏi Sổ lệnh (bản ở git trước PDM2c).
     // gói 10 · chương trum-mua-2 · Chế lệnh: dập lửa (man-trum-mua-2.js, 30/10 gói lửa): hàm dập lửa và dây chuyền, nhóm Vòi phun (put_far, pair_spray, douse… là hàm của màn nên không có ở đây)
     m('put_out', 'hoi', 'Còn lửa trước mũi (còn nóng) thì phun nhẹ, tới khi lửa tắt hẳn', 'trum-mua-2', 'trum-mua-2.1'),
     m('put_out_left', 'hoi', 'Quay trái, dập lửa bằng put_out(), quay lại', 'trum-mua-2', 'trum-mua-2.2'),
     m('clear_row', 'hoi', 'n giếng cháy cách đều hai ô: đi hai ô rồi dập lửa bên trái', 'trum-mua-2', 'trum-mua-2.4'),
-    m('box_spray', 'hoi', 'Thùng hay bạn còn trong giếng thì chờ, rồi phun mạnh', 'trum-mua-2', 'trum-mua-2.5'),
-    m('gate_push', 'hoi', 'Tới sát thùng, phun van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
-    m('fire_valve', 'hoi', 'Quay trái, dập lửa chắn trước van, phun mạnh mở van, quay lại', 'trum-mua-2', 'trum-mua-2.7'),
+    m('box_spray', 'hoi', 'Thùng trên băng còn chắn giếng (distance() < 2) thì chờ, rồi phun mạnh', 'trum-mua-2', 'trum-mua-2.5'),
+    m('gate_push', 'hoi', 'Tới sát thùng, phun mạnh van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
+    m('fire_valve', 'hoi', 'Quay trái, dập lửa trước van, fence_shot() mở van và bù giật, quay lại', 'trum-mua-2', 'trum-mua-2.7'),
     m('far_push', 'hoi', 'Thùng cách d ô thì đẩy nó đi đúng d ô', 'trum-mua-2', 'trum-mua-2.9')
   );
 
@@ -282,6 +283,8 @@
     g('stand', 'crouch', 'Nhện duỗi chân ra; duỗi ngay trước một bước đi lúc đang co là nhảy'),
     g('slide_left', 'slide_right', 'Xe omni trượt sang trái một ô'),
     g('slide_right', 'slide_left', 'Xe omni trượt sang phải một ô'),
+    g('diag_left', 'diag_right', 'Xe omni trượt chéo tiến-trái một ô, giữ nguyên hướng mặt'),
+    g('diag_right', 'diag_left', 'Xe omni trượt chéo tiến-phải một ô, giữ nguyên hướng mặt'),
     g('spray', 'spray_back', 'Vòi phun: phun tia nước ra trước, bay 2 ô, xe đứng yên. Từ gói Lực phun, lực "high" bay xa, xe giật lùi một ô'),
     g('spray_back', 'spray', 'Vòi phun: phun tia nước ra sau, bay 2 ô, xe đứng yên. Từ gói Lực phun, lực "high" bay xa, xe giật tới một ô'),
     g('front_clear', null, 'Hỏi: ô trước mặt có trống không'),
@@ -305,7 +308,36 @@
     g('battery', null, 'Hỏi: pin còn bao nhiêu'),
     g('land', 'take_off', 'Drone hạ cánh xuống ô đang ở; đáp ô sạc P thì pin đầy ngay'),
     g('take_off', 'land', 'Drone cất cánh, bay tiếp được'),
-    g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì')
+    g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì'),
+    g('radar', null, 'Hỏi: radar tròn quét lưới 3x3 quanh robot, trả về danh sách 2 chiều'),
+    g('shape', null, 'Hỏi: radar nhận dạng hình khối của vật ở ô chỉ định'),
+    // BẾN SÔNG (mùa 5): xuồng dùng bộ lệnh bánh (hai chân vịt); thêm neo, dây phao, chong chóng dòng chảy
+    g('anchor', 'unanchor', 'Xuồng thả neo: dòng nước không đẩy được, chân vịt nghỉ tới khi nhổ neo'),
+    g('unanchor', 'anchor', 'Xuồng nhổ neo, chạy tiếp được'),
+    g('tow', 'drop_tow', 'Dây phao: quăng dây thẳng theo mũi (3 ô), kéo bè về trước mũi; trúng van cống thì gạt van'),
+    g('drop_tow', 'tow', 'Dây phao: thả bè đang kéo tại chỗ'),
+    g('tether', 'untether', 'Buộc bè ra sau đuôi xuồng: bè nối đuôi như toa tàu, qua khúc cua không vướng'),
+    g('untether', 'tether', 'Cởi dây, bè ở lại chỗ nó đang nằm'),
+    g('flow_dir', null, 'Hỏi: nước ô trước mũi chảy về đâu so với mũi xuồng ("front", "back", "left", "right", "none")'),
+    g('flow', null, 'Hỏi: nước ô trước mũi chảy về đâu và mạnh bao nhiêu; trả về một cặp (hướng, sức), ví dụ ("back", 2)'),
+    // CẢNG SÔNG (mùa 4): cần cẩu container, mỗi lệnh một nhịp (không cần wait())
+    g('swing_left', 'swing_right', 'Cần cẩu quay cần sang trái một nấc (8 nấc một vòng, nấc 0 là hướng lên)'),
+    g('swing_right', 'swing_left', 'Cần cẩu quay cần sang phải một nấc (8 nấc một vòng)'),
+    g('extend', 'retract', 'Vươn cần xa thêm một ô (tầm 1 đến 3)'),
+    g('retract', 'extend', 'Thu cần về gần một ô (tầm 1 đến 3)'),
+    g('pick_up', 'set_down', 'Móc cẩu nhấc container trên cùng ở ô đầu cần'),
+    g('set_down', 'pick_up', 'Hạ container đang treo xuống đỉnh chồng ở ô đầu cần'),
+    g('pick_up2', null, 'Móc đôi: nhấc một lúc hai container trên cùng, giữ nguyên thứ tự; set_down() hạ cả hai'),
+    g('read_code', null, 'Hỏi: số in trên container trên cùng ở ô đầu cần; không có container thì -1'),
+    g('weight', null, 'Hỏi: cân tải, bao nhiêu tấn đang treo (cộng cả hai nếu treo đôi); không treo thì cân container trên cùng ở đầu cần; không có gì thì 0'),
+    g('rail', null, 'Bệ cẩu chạy dọc ray n ô: n dương chạy xuôi (sang phải / xuống), n âm chạy ngược; mỗi ô một nhịp'),
+    // HANG ĐỘNG ĐÁ VÔI (mùa 8): bánh gai, loa phát nhạc, cảm biến âm thanh
+    g('note', null, 'Loa: chọn nốt nhạc ("C", "D", "E", "F", "G", "A", "B", "C5" hoặc "-" để nghỉ), sẽ ngân ở nhịp kế tiếp'),
+    g('beat', null, 'Loa: đặt độ dài nốt là k nhịp (1, 2, 3 hoặc 4); nốt chỉ tính là trọn khi loa ngân đủ k nhịp'),
+    g('retract_spikes', 'extend_spikes', 'Bánh gai thu gai vào: không bám đá ướt nhưng đi trên đá khô như bánh thường'),
+    g('extend_spikes', 'retract_spikes', 'Bánh gai bật gai ra: bám chắc trên nền đá vôi ướt không bị trượt'),
+    g('hear', null, 'Hỏi: cảm biến âm thanh có nghe thấy tiếng vang của chuông đá trong phạm vi không (True / False)'),
+    g('listen', null, 'Hỏi: cảm biến âm thanh nghe được nốt nhạc nào ("C".."C5"), không có tiếng thì trả về "none"')
   ];
 
   function tim(ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }

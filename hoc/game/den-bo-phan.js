@@ -18,7 +18,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 (function () {
   'use strict';
 
-  var CAM_BIEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole', 'color', 'look', 'battery', 'distance', 'warm'];     // distance / warm: cảm biến hồng ngoại (mùa 2)
+  var CAM_BIEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole', 'color', 'look', 'battery', 'distance', 'warm', 'radar', 'shape', 'hear', 'listen'];     // distance / warm: cảm biến hồng ngoại (mùa 2); radar / shape: mùa 7; hear / listen: mùa 8
   var TAY_LEN = ['arm_up', 'arm_down'], KEP_LEN = ['grab', 'release'], NC_LEN = ['magnet_n', 'magnet_s', 'magnet_off'], NEM_LEN = ['load', 'throw'];
   // khóa → { hinh: [tên hình khi trạng thái A, B], mau: màu khi sáng, nhan: khóa chữ }
   var BP = {
@@ -32,11 +32,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     nem: { hinh: ['denNem'], mau: BM.cam, nhan: 'choi.den.nem' },
     sung: { hinh: ['denSung'], mau: BM.cam, nhan: 'choi.den.sung' },
     son: { hinh: ['denSon'], mau: BM.hongV2, nhan: 'choi.den.son' },
+    loa: { hinh: ['denLoa'], mau: BM.vang, nhan: 'choi.den.loa' },
     camBien: { hinh: ['denCam'], mau: BM.ngoc, nhan: 'choi.den.camBien' },
     chan: { hinh: ['denChan'], mau: BM.lamSangV10, nhan: 'choi.den.chan' },
     canh: { hinh: ['denCanh'], mau: BM.lamSangV10, nhan: 'choi.den.canh' }
   };
-  var THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'son', 'camBien', 'chan', 'canh'];
+  var THU_TU = ['banhT', 'banhP', 'truot', 'tay', 'xoay', 'kep', 'namCham', 'nem', 'sung', 'son', 'loa', 'camBien', 'chan', 'canh'];
 
   function coTrong(ds, tenLenh) { return (ds || []).some(function (e) { return tenLenh.indexOf(e && e.ten) >= 0; }); }
 
@@ -54,6 +55,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (co(['aim', 'load', 'throw'])) kq.push('nem');
     if (co(['spray', 'spray_back'])) kq.push('sung');
     if (co(['dot', 'pen_down', 'pen_up'])) kq.push('son');         // máy sơn: đèn sáng khi chấm / hạ / nhấc, và cả nhịp đầu sơn đang hạ (đang tô nét)
+    if (co(['note', 'beat'])) kq.push('loa');                      // loa: đèn sáng khi đặt nốt / nhịp hoặc khi đang ngân nốt
     if (co(CAM_BIEN)) kq.push('camBien');
     return THU_TU.filter(function (k) { return kq.indexOf(k) >= 0; });
   }
@@ -73,6 +75,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     kq.nem = coTrong(lenhTruoc, NEM_LEN);
     kq.sung = coTrong(lenhTruoc, ['spray', 'spray_back']);
     kq.son = coTrong(lenhTruoc, ['dot', 'pen_down', 'pen_up']) || !!(rb.son && rb.son.ha);
+    kq.loa = coTrong(lenhTruoc, ['note', 'beat']) || !!(rb.loa && rb.loa.dangHat) || coSk('choi-not');
     kq.camBien = (lenhTruoc || []).some(function (x) { return x && (x.docCamBien || CAM_BIEN.indexOf(x.ten) >= 0); }) || coSk('doc-cam-bien') || !!rb.camBien;
     kq.chan = coSk('chuan-bi') || coSk('di') || coSk('doi-chan') || coSk('nhay');
     kq.canh = coSk('di') || coSk('dung-yen');

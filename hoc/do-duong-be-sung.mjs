@@ -39,10 +39,12 @@ export function catSan(m, i) {
   if (!Array.isArray(m.san[0])) return Object.assign({}, m);
   const lm = SanHoc.lopMauCuaSan(m, i);
   const con = Object.assign({}, m, { san: m.san[i], batDau: Array.isArray(m.batDau) ? m.batDau[i] : m.batDau });
-  for (const k of ['mau', 'vatMau', 'vatChat', 'cuaNhip', 'noi', 'nutBat', 'lua', 'bongMo']) {
+  for (const k of ['mau', 'vatMau', 'vatChat', 'cuaNhip', 'noi', 'nutBat', 'lua', 'bongMo', 'thungThem']) {
     const v = lm[k] || (Array.isArray(m[k]) ? null : m[k]);
     if (v !== undefined && v !== null) con[k] = v; else delete con[k];
   }
+  // PDM2c2 (31/10): thùng nặng đặt sẵn ngoài ký hiệu H (man.thungThem, vd trên băng chuyền): lõi nhận qua cfg.thung (như cham.js), bộ dò thêm vào thung0 ở ngoCanh.
+  if (con.thungThem) con.thung = con.thungThem;
   return con;
 }
 export function ngoCanh(m, i = 0) {
@@ -52,6 +54,7 @@ export function ngoCanh(m, i = 0) {
   const noi = con.noi ? con.noi.filter((g) => !laLua(g.nut)) : con.noi;                      // nhóm nối của lửa (cửa chống cháy) xử lý ở đây, không đưa bộ dò gói 2
   const ctx = Bo.dungNguCanh(Object.assign({}, con, { noi, mucTieu: con.mucTieu === 'dap-lua' ? 'toi-co' : con.mucTieu, loaiRobot: 'banh', hamGoc: (con.hamGoc || []).filter((h) => !SanHoc.TAY_LENH.includes(h)) }));
   if (/[S]/.test(con.san.join(''))) throw new Error('Bộ dò bệ súng không hỗ trợ bậc thang S.');
+  for (const q of con.thung || []) { const c = ctx.o(q.x, q.y); if (!ctx.thung0.includes(c)) ctx.thung0.push(c); }   // thùng đặt sẵn (thungThem) vào trạng thái đầu
   ctx.con = con;
   ctx.mucTieu = con.mucTieu || 'toi-co';
   ctx.luaIdx = new Int16Array(ctx.rong * ctx.cao).fill(-1);
@@ -251,30 +254,34 @@ export function nhipNganNhat(m, tuy = {}) {
   return { nhip: tong, chuoi };
 }
 
-/* ------------------------------------------------------------------ 3. dãy CHUNG cho mọi sân (màn nhiều sân, nhipTheo 'tong': mỗi nhịp tốn bằng số sân chưa xong) */
+/* ------------------------------------------------------------------ 3. dãy CHUNG cho mọi sân (màn nhiều sân, nhipTheo 'tong': mỗi nhịp tốn bằng số sân chưa xong)
+   PDM2c2 (31/10, gói 10 mùa 2 nhiều sân ở mọi màn): tuy.moiSan = true thì ngưỡng gioiHan áp cho TỪNG SÂN (nhipTheo mặc định của cham.js: sân dài nhất),
+   kết quả nhip = nhịp của sân dài nhất; thứ tự duyệt vẫn theo tổng nhịp. */
 export function dayChung(m, gioiHan, tuy = {}) {
   const n = dsSan(m).length, ctxs = [], t = tuyCua(m, tuy), HD = tuy.hanhDong || hanhDong(m);
   for (let i = 0; i < n; i++) ctxs.push(ngoCanh(m, i));
-  const dau = ctxs.map((c) => ({ S: dauLua(c), xong: false }));
+  const dau = ctxs.map((c) => ({ S: dauLua(c), xong: false, n: 0 }));
   const k = (ds) => ds.map((d) => (d.xong ? 'X' : khoa(d.S))).join('|');
   const lop = [[{ ds: dau, c: '' }]], thay = new Map([[k(dau), 0]]);
+  const tranTong = tuy.moiSan ? gioiHan * n : gioiHan;
   let soTT = 0;
-  for (let g = 0; g < lop.length && g <= gioiHan; g++) {
+  for (let g = 0; g < lop.length && g <= tranTong; g++) {
     for (const { ds, c } of lop[g] || []) {
       for (const a of HD) {
-        let gia = 0, chet = false;
+        let gia = 0, chet = false, quaSan = false;
         const moi = ds.map((d, i) => {
           if (d.xong) return d;
           const { S: N, nhip } = buoc(ctxs[i], d.S, a, t);
           gia += nhip;
           if (N.chet) chet = true;
-          return { S: N, xong: thangNgay(ctxs[i]) && laDich(ctxs[i], N) };
+          if (tuy.moiSan && d.n + nhip > gioiHan) quaSan = true;
+          return { S: N, xong: thangNgay(ctxs[i]) && laDich(ctxs[i], N), n: d.n + nhip };
         });
-        if (chet) continue;
+        if (chet || quaSan) continue;
         const gg = g + gia;
-        if (gg > gioiHan) continue;
+        if (gg > tranTong) continue;
         const xongHet = moi.every((d, i) => d.xong || (!thangNgay(ctxs[i]) && laDich(ctxs[i], d.S)));
-        if (xongHet) return { nhip: gg, chuoi: c + a, soTT };
+        if (xongHet) return { nhip: tuy.moiSan ? Math.max(...moi.map((d) => d.n)) : gg, chuoi: c + a, soTT };
         const kk = k(moi);
         if (thay.has(kk) && thay.get(kk) <= gg) continue;
         thay.set(kk, gg); soTT++;

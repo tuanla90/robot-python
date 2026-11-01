@@ -16,22 +16,22 @@
 
   var BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
   var DAP = ['land', 'take_off', 'battery'];
-  var NC = ['magnet_n', 'magnet_s', 'magnet_off'];
+  var SON = ['ink', 'dot'];
   function bai(chinh, them) { return Object.assign({ chinh: chinh.slice() }, them || {}); }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
   function LAP(n, than) { return ['for i in range(' + n + '):'].concat((Array.isArray(than) ? than : [than]).map(function (s) { return '    ' + s; })); }
 
-  /** Drone nâng cấp đáp đất (land / take_off), có pin; m.nam: true thì treo thêm nam châm (chở hộp). */
+  /** Drone nâng cấp đáp đất (land / take_off), có pin, gắn bộ gieo hạt bụng + camera-4; m.nam: true thì mục tiêu to-hinh (gieo hạt). */
   function man(m) {
     var nam = m.nam;
     delete m.nam;
     m.chuong = m.chuong || 'tram-sac';
     m.cauTruc = ['for', 'if', 'while', 'list'];
     m.loaiRobot = 'drone';
-    m.robot = { than: 'drone', tay: nam ? 'nam-cham' : null, camBien: [] };
-    m.hamGoc = m.hamGoc || BAY.concat(nam ? NC : [], DAP);
-    m.mucTieu = m.mucTieu || (nam ? 'dua-vat' : 'toi-co');
-    if (nam) { m.vatCan = 'sat'; m.nhipTheoLoiGiai = true; }
+    m.robot = { than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren' }] };
+    m.hamGoc = m.hamGoc || BAY.concat(SON, DAP, ['color']);
+    m.mucTieu = m.mucTieu || (nam ? 'to-hinh' : 'toi-co');
+    if (nam) m.nhipTheoLoiGiai = true;
     m.moXuong = true; m.camHamCuaEm = false;
     m.khung = m.khung || { chinh: 10, moiHam: 10 };
     m.loiSai = m.loiSai || [];
@@ -49,7 +49,7 @@
   var C_STOP = ['for j in range(3):', '    go_right()', 'charge_stop()', 'for j in range(4):', '    go_right()'];
   var C_BAY_SAC = ['fly_dock(3)', 'fly_dock(3)', 'for j in range(3):', '    go_right()'];
   var T_BAY_SAC = ['for i in range(n):', '    go_right()', 'dock()'];
-  var C_CAU = ['go_right()', 'magnet_n()', 'wait()', 'fly_dock(2)', 'fly_dock(3)', 'for j in range(3):', '    go_right()', 'magnet_off()', 'wait()'];
+  var C_CAU = ['ink("yellow")', 'dot()', 'wait()', 'fly_dock(2)', 'fly_dock(3)', 'for j in range(3):', '    go_right()', 'dot()', 'wait()'];
   var T_SAFE = ['for i in range(n):', '    go_right()', '    if battery() < 2:', '        dock()'];
 
   var DS = [
@@ -197,20 +197,20 @@
     }),
 
     man({
-      so: 10, ten: 'Giao hàng qua trạm sạc', hang: 'trum', nam: true, pin: [7, 6], hamCuaEmCan: [],
-      deBai: 'Hút thùng hàng ở ô thứ hai rồi chở tới ô đích cuối phố. Hai drone pin 7 và 6, trạm sạc đặt ở chỗ khác nhau. Bay từng ô, pin dưới 2 thì đáp sạc (thùng vẫn treo dưới bụng), tới nơi thả thùng.',
-      veMaMau: 'Chương trình có sẵn đã hút thùng. Viết phần bay có sạc và thả thùng.',
-      san: [['.o...P...D'], ['.o..P...PD']],
-      vatChat: [['.s........'], ['.s........']],
+      so: 10, ten: 'Gieo hạt qua trạm sạc', hang: 'trum', nam: true, pin: [7, 6], hamCuaEmCan: [],
+      deBai: 'Gieo hoa vàng ở ô đầu luống rồi bay tới ô cuối luống gieo thêm một bông. Hai drone pin 7 và 6, trạm sạc đặt ở chỗ khác nhau. Bay từng ô, pin dưới 2 thì đáp sạc, tới cuối luống gieo hạt.',
+      veMaMau: 'Chương trình có sẵn đã gieo bông đầu tiên. Viết phần bay có sạc và gieo bông cuối luống.',
+      san: [['....P....'], ['...P...P.']],
+      hinh: [['y.......y'], ['y.......y']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(['go_right()', 'magnet_n()', 'wait()']),
-      loiGiai: bai(['go_right()', 'magnet_n()', 'wait()'].concat(C_IT_NHAT, ['magnet_off()', 'wait()'])),
-      sao: { o: 10, nhip: 15 },
+      maMau: bai(['ink("yellow")', 'dot()', 'wait()']),
+      loiGiai: bai(['ink("yellow")', 'dot()', 'wait()'].concat(C_IT_NHAT, ['dot()', 'wait()'])),
+      sao: { o: 10, nhip: 14 },
       loiSai: [
-        { moTa: 'Không đáp sạc: hết pin giữa phố', baiLam: bai(['go_right()', 'magnet_n()', 'wait()'].concat(LAP(8, 'go_right()'), ['magnet_off()', 'wait()'])), phaiCoMa: ['het-pin'] },
-        { moTa: 'Quên thả thùng', baiLam: bai(['go_right()', 'magnet_n()', 'wait()'].concat(C_IT_NHAT)), phaiCoMa: [] }
+        { moTa: 'Không đáp sạc: hết pin giữa luống', baiLam: bai(['ink("yellow")', 'dot()', 'wait()'].concat(LAP(8, 'go_right()'), ['dot()', 'wait()'])), phaiCoMa: ['het-pin'] },
+        { moTa: 'Quên gieo bông cuối luống', baiLam: bai(['ink("yellow")', 'dot()', 'wait()'].concat(C_IT_NHAT)), phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['Bật, tắt nam châm cũng tốn nhịp và pin.', 'Vòng lặp bay có sạc giống màn Đáp ít nhất.']
+      goiY: ['Mỗi nhịp có gieo hạt tốn thêm 1 pin.', 'Vòng lặp bay có sạc giống màn Đáp ít nhất.']
     }),
 
     /* ================================================= chương che-drone "Chế lệnh: bay xa" (màn mới từ 11) ================================================= */
@@ -280,36 +280,36 @@
     }),
 
     manChe({
-      so: 16, ten: 'Cẩu hàng qua hai trạm', hang: 'bien-the', nam: true, pin: 5, chinhCoDinh: false, hamCuaEmCan: ['fly_dock'],
-      deBai: 'Hút thùng ở ô thứ hai, chở qua hai trạm sạc tới ô đích cuối phố. Tự viết chương trình chính bằng fly_dock(n): trạm đầu cách thùng hai ô, trạm sau cách ba ô.',
-      veMaMau: 'Chương trình có sẵn đã hút thùng. Viết phần bay qua hai trạm và thả thùng.',
-      san: ['.o.P..P..D'],
-      vatChat: ['.s........'],
+      so: 16, ten: 'Gieo hạt qua hai trạm', hang: 'bien-the', nam: true, pin: 5, chinhCoDinh: false, hamCuaEmCan: ['fly_dock'],
+      deBai: 'Gieo hoa vàng ở đầu luống, bay qua hai trạm sạc tới cuối luống gieo thêm một bông. Tự viết chương trình chính bằng fly_dock(n): trạm đầu cách đầu luống hai ô, trạm sau cách ba ô.',
+      veMaMau: 'Chương trình có sẵn đã gieo bông đầu tiên. Viết phần bay qua hai trạm và gieo bông cuối.',
+      san: ['..P..P...'],
+      hinh: ['y.......y'],
       batDau: { x: 0, y: 0 },
-      maMau: bai(['go_right()', 'magnet_n()', 'wait()']),
+      maMau: bai(['ink("yellow")', 'dot()', 'wait()']),
       loiGiai: bai(C_CAU),
-      sao: { o: 14, nhip: 15 },
+      sao: { o: 14, nhip: 14 },
       loiSai: [
-        { moTa: 'Bỏ qua trạm sau: hết pin trước ô đích', baiLam: bai(['go_right()', 'magnet_n()', 'wait()', 'fly_dock(2)', 'for j in range(6):', '    go_right()', 'magnet_off()', 'wait()']), phaiCoMa: ['het-pin'] },
-        { moTa: 'Quên thả thùng', baiLam: bai(C_CAU.slice(0, -2)), phaiCoMa: [] }
+        { moTa: 'Bỏ qua trạm sau: hết pin trước cuối luống', baiLam: bai(['ink("yellow")', 'dot()', 'wait()', 'fly_dock(2)', 'for j in range(6):', '    go_right()', 'dot()', 'wait()']), phaiCoMa: ['het-pin'] },
+        { moTa: 'Quên gieo bông cuối', baiLam: bai(C_CAU.slice(0, -2)), phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['fly_dock(2) rồi fly_dock(3).', 'Tới ô đích: tắt nam châm, chờ một nhịp.']
+      goiY: ['fly_dock(2) rồi fly_dock(3).', 'Tới ô cuối luống: dot() rồi wait() để gieo hạt.']
     }),
 
     manChe({
-      so: 14, ten: 'Kho hàng có trạm sạc', hang: 'trum', nam: true, pin: [7, 6], chinhCoDinh: false, hamCuaEmCan: ['safe_go'],
-      deBai: 'Như màn Giao hàng qua trạm sạc, nhưng giờ em đã có safe_go(n). Tự viết chương trình chính: hút thùng, bay có sạc tới ô đích, thả thùng. Hai drone, hai cách đặt trạm.',
-      veMaMau: 'Chương trình có sẵn đã hút thùng. Viết tiếp bằng safe_go().',
-      san: [['.o...P...D'], ['.o..P...PD']],
-      vatChat: [['.s........'], ['.s........']],
+      so: 14, ten: 'Luống dài có trạm sạc', hang: 'trum', nam: true, pin: [7, 6], chinhCoDinh: false, hamCuaEmCan: ['safe_go'],
+      deBai: 'Như màn Gieo hạt qua trạm sạc, nhưng giờ em đã có safe_go(n). Tự viết chương trình chính: gieo hoa vàng ở đầu luống, bay có sạc tới cuối luống, gieo thêm một bông. Hai drone, hai cách đặt trạm.',
+      veMaMau: 'Chương trình có sẵn đã gieo bông đầu tiên. Viết tiếp bằng safe_go().',
+      san: [['....P....'], ['...P...P.']],
+      hinh: [['y.......y'], ['y.......y']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(['go_right()', 'magnet_n()', 'wait()']),
-      loiGiai: bai(['go_right()', 'magnet_n()', 'wait()', 'safe_go(8)', 'magnet_off()', 'wait()']),
-      sao: { o: 12, nhip: 15 },
+      maMau: bai(['ink("yellow")', 'dot()', 'wait()']),
+      loiGiai: bai(['ink("yellow")', 'dot()', 'wait()', 'safe_go(8)', 'dot()', 'wait()']),
+      sao: { o: 12, nhip: 14 },
       loiSai: [
-        { moTa: 'Bay thẳng không sạc', baiLam: bai(['go_right()', 'magnet_n()', 'wait()'].concat(LAP(8, 'go_right()'), ['magnet_off()', 'wait()'])), phaiCoMa: ['het-pin'] }
+        { moTa: 'Bay thẳng không sạc', baiLam: bai(['ink("yellow")', 'dot()', 'wait()'].concat(LAP(8, 'go_right()'), ['dot()', 'wait()'])), phaiCoMa: ['het-pin'] }
       ],
-      goiY: ['safe_go(8) bay tám ô có sạc.', 'Tắt nam châm rồi wait() để thả.']
+      goiY: ['safe_go(8) bay tám ô có sạc.', 'Cuối luống gọi dot() rồi wait() để gieo hạt.']
     })
   ];
 

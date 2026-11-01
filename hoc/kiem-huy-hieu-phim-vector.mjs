@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
-const NEN_VEC = '584615c';                             // 30/10 vỏ Nông trại hoa: đầu sơn thành bộ gieo hạt (so với d3917d2 chỉ lệch huy hiệu may-son, che-may-son và phim mùa 4)
+const NEN_VEC = '817f81d';                             // 31/10 part đúng mùa: nhện gắn cảm biến từ vẽ quay theo hướng (so với 584615c chỉ lệch phim mùa 3 tong-hop-3.1, .2: R1 dáng cua nhện + nam châm + cảm biến từ)
 // trước:                             // 30/10 phun nhẹ: nền VECTOR = d3917d2 (phim gói 2 khung 3, 4 không còn giật; phim gói 4 khung 4 thùng nặng chắn lối; mã trong phim spray thay shoot). Trước đó 9a6d47c (van hơi). So với 4548dda (đổi tên, chưa sửa phim) chỉ lệch sung-hoi.3, sung-hoi.4
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
@@ -119,7 +119,7 @@ function taoDom() {
 
 /* ---------------------------------------------------------------- nạp game vào một ngữ cảnh */
 const dsTep = (html) => [...html.matchAll(/<script src="([\w./-]+\.js)"/g)].map((m) => m[1])
-  .filter((f) => /^(bang-mau|chu|ve|ve-vector[\w-]*|huy-hieu-vector|ve-robot|huy-hieu|phim-vector|phim-goi|phim-mua-\d+|part\/[\w-]+)\.js$/.test(f));
+  .filter((f) => /^(bang-mau|chu|ve|ve-vector[\w-]*|huy-hieu-vector|ve-robot|huy-hieu|phim-vector|phim-goi|phim-mua-[\w-]+|part\/[\w-]+)\.js$/.test(f));
 const DS_TEP = dsTep(doc('choi.html'));
 /** nen: undefined = bản mới; 'vec' = MỌI tệp của NEN_VEC (nền vector, V7c1). cheDo chỉ còn 'vector' (V7c1: game luôn vector; ?ve= không còn tác dụng). */
 function napGame(cheDo, nen) {
@@ -236,11 +236,20 @@ const conPixel = [];
   const tap = (a) => JSON.stringify([...a].sort());
   // Mã huy hiệu VẼ MỚI sau khi gỡ pixel (không có trong bản chụp): phải có hình vector riêng; mọi mã khác vẫn y hệt bản chụp.
   const MOI_SAU_CHUP = ['bien-xich',                      // mùa 2 xong (29/10): trùm bien-xich.10
+    'kho-cu', 'che-kho-cu',                               // PDM2b 31/10: gói 8 mùa 2 Góc kho cũ (hình vẽ mới ở huy-hieu-vector.js)
     // mùa 3 (30/10): 17 huy hiệu trùm chương mới (nhen, nam-cham, che-nhen có sẵn; hai chương đội dùng mã mới, bí danh doi-xich / che-doi-xich y nguyên)
     'chuoi-nhen', 'logic-nam-cham', 'cam-ung-tu', 'che-cam-ung-tu', 'bai-tu', 'che-bai-tu', 'nhay', 'dao-cuc', 'che-dao-cuc', 'doc-cuc', 'che-doc-cuc',
-    'doi-xich-nhen', 'che-doi-xich-nhen', 'bung-nhen', 'che-bung-nhen', 'tong-hop-3', 'xe-tham-do',
+    'bang-cu', 'che-bang-cu', 'doi-xich-nhen', 'che-doi-xich-nhen', 'bung-nhen', 'che-bung-nhen', 'tong-hop-3', 'xe-tham-do',
     // mùa 4 (30/10): huy hiệu các chương mới + cỗ máy drone-ke-vach (trùm cuối mùa, cũng là hình gói 10)
-    'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'che-nhin-duoi', 'son-tren-cao', 'che-son-tren-cao', 'tong-hop-4', 'drone-ke-vach', 'trum-mua-4'];
+    'cam-bon', 'che-cam-bon', 'pho-mau', 'che-pho-mau', 'tram-sac', 'net-lien', 'nhin-duoi', 'che-nhin-duoi', 'vuon-cu', 'che-vuon-cu', 'son-tren-cao', 'che-son-tren-cao', 'tong-hop-4', 'drone-ke-vach', 'trum-mua-4',
+    // mùa 6 (31/10): huy hiệu chương mới
+    'luoi-2d', 'radar-tron', 'che-radar-tron', 'di-cheo', 'che-di-cheo', 'chinh-luc', 'che-chinh-luc', 'nhan-dang', 'che-nhan-dang', 'mo-cu', 'che-mo-cu', 'tong-hop-6', 'may-mo-da', 'trum-mua-6',
+    // mùa cảng sông (01/11): huy hiệu gói 1-10
+    'can-cau', 'so-am', 'moc-cau', 'chia-du', 'quet-ma', 'che-quet-ma', 'ben-tau', 'che-ben-tau', 'duong-ray', 'che-duong-ray', 'nhac-doi', 'che-nhac-doi', 'can-tai', 'che-can-tai', 'cang-cu', 'che-cang-cu', 'doi-cang', 'che-doi-cang', 'tong-hop-cang', 'trum-mua-cang',
+    // mùa bến sông (01/11): huy hiệu gói 1-9
+    'xuong', 'ham-tra-ve', 'day-keo', 'bo-co-dinh', 'dong-chay', 'che-dong-chay', 'cong-thuy-loi', 'che-cong', 'tha-neo', 'che-tha-neo', 'buoc-duoi', 'che-buoc-duoi', 'suc-nuoc', 'che-suc-nuoc', 'ben-cu', 'che-ben-cu', 'doi-xuong', 'che-doi-xuong', 'tong-hop-song', 'trum-mua-song',
+    // mùa 8 hang động đá vôi (01/11): huy hiệu gói 1-10
+    'banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not', 'nghe-not', 'che-nghe-not', 'hang-cu', 'che-hang-cu', 'doi-hang-dong', 'che-doi-hang-dong', 'tong-hop-hang', 'trum-mua-hang'];
   for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));
   const DS_CHUP = DS.filter((m) => !MOI_SAU_CHUP.includes(m));
   if (tap(DS_CHUP) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS_CHUP.includes(m)).join(',') + ' / thừa ' + DS_CHUP.filter((m) => !CHUP.DS.includes(m)).join(','));

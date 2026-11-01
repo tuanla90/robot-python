@@ -124,7 +124,7 @@ const ca = [
   ['nhện + súng hơi: sai', gh('nhen', 'hoi', null), false],
   ['nhện + tay kẹp: được', gh('nhen', 'kep', null), true],
   ['nhện + khoảng cách: sai', gh('nhen', null, 'khoang-cach'), false],
-  ['nhện + cảm biến từ: sai', gh('nhen', null, 'tu'), false],
+  ['nhện + cảm biến từ: được (31/10, đo theo cạnh trước cố định)', gh('nhen', null, 'tu'), true],
   ['nhện + màu bụng: được', gh('nhen', null, 'mau'), true],
   ['nhện + camera trước: được', gh('nhen', null, 'camera'), true],
   ['omni + súng hơi + cảm biến từ: được', gh('omni', 'hoi', 'tu'), true],
@@ -133,7 +133,7 @@ const ca = [
   ['mã thân lạ: sai', gh('xe-ba-gac', null, null), false]
 ];
 for (const [ten, r, ok, re] of ca) kiem(ten, r.ok === ok && (!re || re.test(r.lyDo)), J(r));
-kiem('ghép sai báo khe nào xung đột (xung)', J(gh('drone', 'kep', null).xung) === J(['than', 'tay']) && J(gh('nhen', null, 'tu').xung) === J(['than', 'camBien']));
+kiem('ghép sai báo khe nào xung đột (xung)', J(gh('drone', 'kep', null).xung) === J(['than', 'tay']) && J(gh('nhen', null, 'khoang-cach').xung) === J(['than', 'camBien']));
 
 /* --------------------------------------------------------- màn tạm 1: bậc thang */
 const TIEN = ['left_move()', 'right_move()', 'wait()'];
@@ -200,10 +200,10 @@ kiem('dsCachLap màn bậc thang (ngân sách 3): đúng 3 cách = hai bánh (2)
 kiem('dsCachLap xếp theo giá tăng dần, mỗi mục có than / tay / camBien / gia', ds.every((x, i) => ('than' in x) && ('tay' in x) && ('camBien' in x) && (i === 0 || ds[i - 1].gia <= x.gia)));
 const manLon = { ma: 'tam.lon', lapRap: { than: ['hai-banh', 'nhen', 'drone'], tay: ['kep', 'nam-cham', 'xoay', 'nem'], camBien: ['mau', 'camera', 'camera-bay', 'tu', 'khoang-cach'], nganSach: 99, cachLap: [] } };
 // đếm tay: hai bánh 5 tay × 5 não (bỏ camera-bay) = 25 · nhện {không, kẹp, nam châm bụng (mùa 3)} × {không, màu, camera} = 9 · drone {không, nam châm} × {không, màu, camera bụng} = 6
-kiem('dsCachLap màn lớn (3 thân, 4 tay, 5 não, ngân sách thừa): đúng 40 cách', LapRap.dsCachLap(manLon).length === 40, String(LapRap.dsCachLap(manLon).length));
+kiem('dsCachLap màn lớn (3 thân, 4 tay, 5 não, ngân sách thừa): đúng 43 cách (31/10: +3 nhện có cảm biến từ)', LapRap.dsCachLap(manLon).length === 43, String(LapRap.dsCachLap(manLon).length));
 function demTay(nganSach) {                                                            // đếm lại độc lập bằng luật viết tay và bảng giá của kế hoạch
   let n = 0;
-  const camOk = { 'hai-banh': [null, 'mau', 'camera', 'tu', 'khoang-cach'], nhen: [null, 'mau', 'camera'], drone: [null, 'mau', 'camera-bay'] };
+  const camOk = { 'hai-banh': [null, 'mau', 'camera', 'tu', 'khoang-cach'], nhen: [null, 'mau', 'camera', 'tu'], drone: [null, 'mau', 'camera-bay'] };     // 31/10: nhện gắn cảm biến từ
   const tayOk = { 'hai-banh': [null, 'kep', 'nam-cham', 'xoay', 'nem'], nhen: [null, 'kep', 'nam-cham'], drone: [null, 'nam-cham'] };     // nhện + nam châm bụng (mùa 3)
   for (const th of Object.keys(camOk)) for (const ta of tayOk[th]) for (const cb of camOk[th])
     if (GIA.than[th] + (ta ? GIA.tay[ta] : 0) + (cb ? GIA.camBien[cb] : 0) <= nganSach) n++;

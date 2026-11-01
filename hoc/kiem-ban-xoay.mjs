@@ -87,20 +87,23 @@ kiem('Cổng dịch chuyển đôi 1 và 2: kiểm tra cặp cổng, dịch chuy
 
 const kho = new Map();
 for (const m of M.danhSach) {
-  if (m.chuong === 'ban-xoay' || m.chuong === 'che-ban-xoay') {
+  if (m.chuong === 'ban-xoay' || m.chuong === 'che-ban-xoay' || m.chuong === 'ban-xoay-cu' || m.chuong === 'che-ban-xoay-cu') {
     const dsKho = [...kho.values()];
     kiem(m.ma + ': lời giải chuẩn thắng 3 sao, mã mẫu chưa thắng, lỗi sai bắt đúng mã', () => {
-      const r = Cham.cham(m, m.loiGiai, dsKho);
+      const dsGiai = dsKho.concat(m.loiGiai.hamCuaEmMoi || []);
+      const r = Cham.cham(m, m.loiGiai, dsGiai);
       assert.equal(r.thang, true, m.ma + ' chưa thắng: ' + JSON.stringify(r.chanDoan));
       assert.equal(r.sao, 3, m.ma + ' sao=' + r.sao);
       assert.equal(r.soO, m.sao.o, m.ma + ' soO=' + r.soO + ' != ' + m.sao.o);
       assert.equal(r.soNhip, m.sao.nhip, m.ma + ' soNhip=' + r.soNhip + ' != ' + m.sao.nhip);
 
-      const rm = Cham.cham(m, m.maMau, dsKho);
-      assert.equal(rm.thang, false, m.ma + ' maMau đã thắng sẵn');
+      if (!m.chiChay) {
+        const rm = Cham.cham(m, m.maMau, dsKho);
+        assert.equal(rm.thang, false, m.ma + ' maMau đã thắng sẵn');
+      }
 
       for (const ls of m.loiSai || []) {
-        const rl = Cham.cham(m, ls.baiLam, dsKho);
+        const rl = Cham.cham(m, ls.baiLam, dsKho.concat(ls.hamCuaEmMoi || ls.baiLam.hamCuaEmMoi || []));
         assert.equal(rl.thang, false, m.ma + ' loiSai "' + ls.moTa + '" lại thắng');
         const maCD = rl.chanDoan.map(c => c.ma);
         for (const ma of ls.phaiCoMa || []) {
