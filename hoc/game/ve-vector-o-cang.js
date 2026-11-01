@@ -68,4 +68,29 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     });
     g.restore();
   } });
+
+  // Tường cảng sông (#): KHỐI BỜ KÈ BÊ TÔNG & TRỤ NEO TÀU 3D CAO (mặt trên bê tông sáng y = 8..60 gắn trụ bích neo tàu thép đen, vách đứng trước bê tông sẫm y = 60..94 gắn đệm cao su/vàng cảnh báo)
+  V.dangKy({ loai: 'o', ma: 'tuong-cang', ten: 'Khối kè bê tông trụ neo cảng 3D', cacTrangThai: [{}], ve: function (g, s, H) {
+    g.fillStyle = BM.vecSatVien; g.fillRect(0, 0, 100, 100);
+    // Thân khối kè bê tông cảng 3D cao (vách đứng phía trước sẫm màu y = 60..94)
+    H.bo(g, 5, 6, 90, 88, 10);
+    g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, [[0, BM.vecSatToi], [0.58, BM.vecKhoThep], [1, BM.vecThepToi]]);
+    g.fill(); H.vien(g, BM.vecVien, 3);
+    // Mặt trên khối bê tông cảng sáng (y = 8..60)
+    H.bo(g, 8, 8, 84, 52, 8);
+    g.fillStyle = H.gradDoc(g, 0, 8, 0, 60, [[0, BM.vecKhoMat], [0.6, BM.vecSat], [1, BM.vecSatGiua]]);
+    g.fill(); H.vien(g, BM.vecSatVien, 2);
+    H.bo(g, 15, 12, 70, 5, 2.5); H.to(g, BM.vecVo);
+    // Bệ thép và trụ bích neo tàu đôi (mooring bollard) trên mặt đỉnh
+    H.bo(g, 24, 24, 52, 22, 6); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 2);
+    [36, 64].forEach(function (cx) {
+      H.tron(g, cx, 35, 7); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 2);
+      H.tron(g, cx - 1.5, 33.5, 2.5); H.to(g, BM.vecThepSang);
+    });
+    // Vách đứng trước (y = 60..94): dải đệm chống va tàu vàng-cam cảnh báo
+    H.bo(g, 18, 70, 64, 13, 5);
+    g.fillStyle = H.gradDoc(g, 0, 70, 0, 83, [[0, BM.vecCanhBao], [1, BM.vecVangToi]]);
+    g.fill(); H.vien(g, BM.vecVien, 2);
+    H.bo(g, 24, 72, 52, 3.5, 1.5); H.to(g, BM.vecVangSang);
+  } });
 })(typeof window !== 'undefined' ? window : globalThis);

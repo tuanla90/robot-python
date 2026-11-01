@@ -24,22 +24,35 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     s = s || {};
     so = soHop(so);
     var m = MAU[typeof s.mau === 'number' ? ((s.mau % 4) + 4) % 4 : ((so % 4) + 4) % 4], i, n, gx;
-    H.bo(g, x, y, w, h, 3); g.fillStyle = H.gradDoc(g, 0, y, 0, y + h, [[0, m.sang], [0.35, m.chinh], [1, m.chinh]]); g.fill(); H.vien(g, BM.vecVien, Math.max(1.6, h * 0.05));
+    var hTop = h * 0.68;
+    // Thân container 3D: vách đứng phía trước sẫm màu (y + hTop .. y + h)
+    H.bo(g, x, y, w, h, 4);
+    g.fillStyle = H.gradDoc(g, 0, y, 0, y + h, [[0, m.chinh], [0.68, m.toi], [1, m.toi]]);
+    g.fill(); H.vien(g, BM.vecVien, Math.max(1.8, h * 0.05));
+    // Mặt nóc trên container sáng (y .. y + hTop)
+    H.bo(g, x + 1.5, y + 1.5, w - 3, hTop, 3);
+    g.fillStyle = H.gradDoc(g, 0, y + 1.5, 0, y + hTop, [[0, m.sang], [1, m.chinh]]);
+    g.fill(); H.vien(g, m.toi, Math.max(1.2, h * 0.03));
+    // Gân sóng dọc trên mặt nóc và vách đứng trước
     g.beginPath(); n = 7;
-    for (i = 1; i < n; i++) { gx = x + w * i / n; g.moveTo(gx, y + h * 0.12); g.lineTo(gx, y + h * 0.88); }
+    for (i = 1; i < n; i++) {
+      gx = x + w * i / n;
+      g.moveTo(gx, y + h * 0.08); g.lineTo(gx, y + hTop - 1);
+      g.moveTo(gx, y + hTop + 2); g.lineTo(gx, y + h - 2);
+    }
     H.vien(g, m.toi, Math.max(0.8, w * 0.018));
-    [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].forEach(function (p, k) {               // góc khoá
-      var cw = w * 0.09, ch = h * 0.13; g.beginPath(); g.rect(k % 2 ? p[0] - cw : p[0], k < 2 ? p[1] : p[1] - ch, cw, ch); H.to(g, m.toi);
+    [[x, y], [x + w, y], [x, y + hTop], [x + w, y + hTop]].forEach(function (p, k) {               // góc khoá mặt trên
+      var cw = w * 0.09, ch = h * 0.11; g.beginPath(); g.rect(k % 2 ? p[0] - cw : p[0], k < 2 ? p[1] : p[1] - ch, cw, ch); H.to(g, m.toi);
     });
     if (s.hienTan) {
       var t = Math.max(1, Math.min(4, Math.round(+s.tan) || 1));
-      g.beginPath(); for (i = 0; i < t; i++) { g.moveTo(x + w * 0.9, y + h * (0.24 + i * 0.16)); g.lineTo(x + w * 0.97, y + h * (0.24 + i * 0.16)); }
-      H.vien(g, BM.vecVien, Math.max(1.2, h * 0.07));
+      g.beginPath(); for (i = 0; i < t; i++) { g.moveTo(x + w * 0.9, y + hTop * (0.24 + i * 0.18)); g.lineTo(x + w * 0.97, y + hTop * (0.24 + i * 0.18)); }
+      H.vien(g, BM.vecVien, Math.max(1.2, h * 0.06));
     }
-    var chu = String(so), co = Math.min(h * 0.74, w * (chu.length > 1 ? 0.5 : 0.62));
+    var chu = String(so), co = Math.min(hTop * 0.82, w * (chu.length > 1 ? 0.46 : 0.56));
     g.font = '800 ' + co.toFixed(2) + 'px ' + PHONG; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.lineJoin = 'round'; g.lineWidth = co * 0.2; g.strokeStyle = BM.vecVien; g.strokeText(chu, x + w / 2, y + h * 0.54);
-    g.fillStyle = BM.vecVo; g.fillText(chu, x + w / 2, y + h * 0.54);
+    g.lineJoin = 'round'; g.lineWidth = co * 0.2; g.strokeStyle = BM.vecVien; g.strokeText(chu, x + w / 2, y + hTop * 0.54);
+    g.fillStyle = BM.vecVo; g.fillText(chu, x + w / 2, y + hTop * 0.54);
   }
   V.veContainer = veContainer;
 
@@ -73,4 +86,28 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   ], ve: function (g, s, H) {
     veChongCont(g, H, s && s.cont, s);
   } });
+
+  var MAU_TEN = ['red', 'green', 'blue', 'yellow'];
+  var MAU_DAI = { red: 'luatSanDo', green: 'luatSanXanhLa', blue: 'luatSanXanhDuong', yellow: 'luatSanVang' };
+  // Vật cảng sông (o): KIỆN HÀNG CẢNG SÔNG 3D CAO (mặt trên tôn gân sóng sáng y = 16..54 + vách đứng trước thép sẫm y = 54..86 gắn đai màu cảng)
+  V.dangKy({ loai: 'vat', ma: 'kien-cang', ten: 'Kiện hàng cảng sông 3D',
+    cacTrangThai: [{}].concat(MAU_TEN.map(function (m) { return { mau: m }; })),
+    ve: function (g, s, H) {
+      var coMau = s && MAU_TEN.indexOf(s.mau) >= 0, m = coMau ? s.mau : null;
+      var dai = m ? BM[MAU_DAI[m]] : BM.vecCanhBao;
+      H.bo(g, 12, 14, 76, 72, 13);
+      g.fillStyle = H.gradDoc(g, 0, 14, 0, 86, [[0, BM.vecThepSang], [0.55, BM.vecThep], [1, BM.vecThepToi]]);
+      g.fill(); H.vien(g, BM.vecVien, 3);
+      // Mặt nắp trên tôn gân sóng sáng (y = 16..54)
+      H.bo(g, 15, 16, 70, 38, 9);
+      g.fillStyle = H.gradDoc(g, 0, 16, 0, 54, [[0, BM.vecKhoMat], [1, BM.vecThepSang]]);
+      g.fill(); H.vien(g, BM.vecThep, 1.8);
+      H.duong(g, 'M32 20 V50 M50 20 V50 M68 20 V50'); H.vien(g, BM.vecSatToi, 2);
+      // Đai kiện hàng ở vách đứng phía trước (y = 60..77)
+      H.bo(g, 18, 61, 64, 15, 4);
+      H.to(g, dai); H.vien(g, BM.vecVien, 2);
+      H.bo(g, 36, 65, 28, 7, 3); H.to(g, m ? BM.vecThe : BM.vecVangSang);
+      if (m) V.dauHinhMau(g, H, m, 50, 35, 14);
+    }
+  });
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -50,7 +50,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.dangKy({ loai: 'o', ma: 'nut-ban', ten: 'Van hơi', ky: ['N'], cacTrangThai: [{}, { bat: true }, { loe: true }, { bat: true, loe: true }, { goc: 0.5 }, { bat: true, goc: 0.25 }], ve: function (g, s, H) {
     var mo = !!s.bat, k = typeof s.goc === 'number' ? Math.max(0, Math.min(1, s.goc)) : (mo ? 1 : 0), a0 = -Math.PI / 2 + k * Math.PI, i, a;
     var vanh = mo ? BM.vecVanNong : BM.vecVanNguoi, cx = 50, cy = 50;
-    V.lay('o', 'tuong').ve(g, {}, H);
+    var maTuong = (s && s.tuong && V.lay('o', s.tuong)) ? s.tuong : 'tuong';
+    V.lay('o', maTuong).ve(g, {}, H);
     H.bo(g, 2, 41, 96, 18, 3); g.fillStyle = H.gradDoc(g, 0, 41, 0, 59, [[0, BM.vecThepSang], [1, BM.vecThep]]); g.fill(); H.vien(g, BM.vecVien, 2.5);   // ống hơi ngang trong tường
     [10, 90].forEach(function (x) { H.bo(g, x - 3.5, 38, 7, 24, 2); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2); });                                // khớp nối ống hai bên
     if (mo) { H.tron(g, cx, cy, 37); H.vien(g, BM.vecVanNongSang, 5); }
@@ -80,7 +81,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [[17, 17], [83, 17], [17, 83], [83, 83]].forEach(function (q) { H.tron(g, q[0], q[1], 3); H.to(g, c1); });
   } });
 
-  /* CỬA (C đóng / c mở, vẽ đè lên sàn): hai cột khung (hổ phách; cửa nhịp: cyan) và hai cánh trắng bạc trượt vào hai cột theo s.k (0 đóng .. 1 mở, san-ve.js
+  /* CỬA (C đóng / c mở, vẽ đè lên sàn): hai cột khung (hổ phách; cửa nhịp: cyan) và hai cánh trượt vào hai cột theo s.k (0 đóng .. 1 mở, san-ve.js
      lượng tử hoá 1/10). Đóng hẳn: đèn đỏ giữa khe; mở hẳn: đèn xanh trên hai cột. Vẽ cho xe đi DỌC (cánh trượt ngang), s.doc = false thì xoay 90°.
      s.nhip = { n, mo, p, tat }: cửa nhịp — hàng n đèn ở mép trên (KHÔNG xoay): xanh = nhịp mở, đỏ = nhịp đóng, đèn nhịp hiện tại sáng có viền trắng, tat = đang nháy (sắp đổi). */
   var TT_CUA = [];
@@ -88,12 +89,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   TT_CUA.push({ k: 0, doc: true, nhip: { n: 3, mo: 1, p: 0 } }, { k: 1, doc: false, nhip: { n: 5, mo: 2, p: 1, tat: true } }, { k: 0.5, doc: true, nhip: { n: 6, mo: 3, p: 4 } });
   V.dangKy({ loai: 'o', ma: 'cua', ten: 'Cửa', ky: ['C', 'c'], phu: true, cacTrangThai: TT_CUA, ve: function (g, s, H) {
     var k = Math.max(0, Math.min(1, +s.k || 0)), w = 34 * (1 - k), nh = s.nhip, kh = nh ? [BM.vecDen, BM.vecDenToi] : [BM.vecVang, BM.vecVangToi];
+    var vo = s && s.vo, go = vo === 'nong-trai' || vo === 'song' || vo === 'mo-da';
+    var canhGrad = !vo ? [[0, BM.vecTuong], [1, BM.vecTuongToi]] : go ? [[0, BM.vecGoMat], [1, BM.vecGo]] : [[0, BM.vecThepSang], [1, BM.vecThep]];
+    var canhGach = !vo ? BM.vecTuongVien : go ? BM.vecGoVien : BM.vecThepToi;
     g.save(); if (s.doc === false) xoayQuanh(g, Math.PI / 2);
     if (k < 1) { g.fillStyle = H.rgba(BM.vecVienRgb, 0.22 * (1 - k)); g.fillRect(16 + w, 6, 68 - 2 * w, 88); }       // khe đang mở: tối dần về sàn
     [16, 84 - w].forEach(function (x) {
       if (w < 2) return;
-      H.bo(g, x, 6, w, 88, Math.min(3, w / 2)); g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, [[0, BM.vecTuong], [1, BM.vecTuongToi]]); g.fill(); H.vien(g, BM.vecVien, 2.5);
-      if (w > 9) { g.beginPath(); [26, 44, 62, 80].forEach(function (y) { g.moveTo(x + 3.5, y); g.lineTo(x + w - 3.5, y); }); H.vien(g, BM.vecTuongVien, 1.5, 'butt'); }
+      H.bo(g, x, 6, w, 88, Math.min(3, w / 2)); g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, canhGrad); g.fill(); H.vien(g, BM.vecVien, 2.5);
+      if (w > 9) { g.beginPath(); [26, 44, 62, 80].forEach(function (y) { g.moveTo(x + 3.5, y); g.lineTo(x + w - 3.5, y); }); H.vien(g, canhGach, 1.5, 'butt'); }
     });
     [2, 84].forEach(function (x) { H.bo(g, x, 3, 14, 94, 4); g.fillStyle = H.gradDoc(g, x, 0, x + 14, 0, [[0, kh[0]], [1, kh[1]]]); g.fill(); H.vien(g, BM.vecVien, 2.5); });
     if (k === 0) { H.bo(g, 43, 43, 14, 14, 4); H.to(g, BM.vecVien); H.tron(g, 50, 50, 4.5); H.to(g, BM.vecDo); }

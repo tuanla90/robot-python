@@ -63,7 +63,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     // P1 mùa 3: cảm biến từ 'tu' là part riêng. Màn có front_metal / front_pole mà KHÔNG khai cảm biến nào ở hông (không khoang-cach, không tu) thì lắp 'tu' ở hông;
     // màn cũ mùa 1–2 đều khai khoang-cach (cảm biến từ ngày xưa ghép vào tai khoảng cách) nên hình cũ y nguyên; màn mùa 3 khai thẳng { ma: 'tu', o: 'hong' }.
     if (than !== 'drone' && than !== 'nhen' && than !== 'cau' && than !== 'xuong' && (goc.indexOf('front_metal') >= 0 || goc.indexOf('front_pole') >= 0) && !cam.some(function (c) { return c.ma === 'tu' || c.ma === 'khoang-cach'; })) cam.push({ ma: 'tu', o: 'hong' });      // mùa 2: màn có distance() / warm() mà chưa khai: lắp cảm biến hồng ngoại ở mũi xe (ổ tren)
-    return { than: than, tay: tay, camBien: cam, pin: !!(r.camBien || []).some(function (c) { return c.ma === 'pin'; }) };       // pin: drone có pin (đo battery()); không phải bộ phận nên không đưa vào ghép hình
+    var xichDay = !!(man && than === 'xich' && (man.xichDay || r.xichDay || goc.indexOf('warm') >= 0 || man.lucBan));
+    return { than: than, tay: tay, camBien: cam, pin: !!(r.camBien || []).some(function (c) { return c.ma === 'pin'; }), xichDay: xichDay };       // xichDay: lưỡi ủi thép trước xích (ve-vector-than-xich.js)       // pin: drone có pin (đo battery()); không phải bộ phận nên không đưa vào ghép hình
   }
 
   function chuanTay(t) {
@@ -74,7 +75,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       notNhac: typeof t.notNhac === 'string' ? t.notNhac : null, nhipCon: typeof t.nhipCon === 'number' ? t.nhipCon : 0, dangHat: !!t.dangHat,   // loa: nốt đang chọn / ngân
       xoay: t.xoay === 'trai' || t.xoay === 'phai' ? t.xoay : 'truoc', goc: typeof t.goc === 'number' ? Math.round(t.goc / 5) * 5 : null,       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
       cuc: t.cuc === 'N' || t.cuc === 'S' ? t.cuc : null,                                                                                      // nam châm: cực đang bật (màu cực)
-      moK: typeof t.moK === 'number' ? Math.round(Math.max(0, Math.min(1, t.moK)) * 4) / 4 : null, vung: typeof t.vung === 'number' ? Math.round(Math.max(0, Math.min(1, t.vung)) * 4) / 4 : null };   // gói V4: kẹp mở dần, gáo ném vung dần
+      doi: !!t.doi, day: !!t.day, giu: !!t.giu,
+      moK: typeof t.moK === 'number' ? Math.round(Math.max(0, Math.min(1, t.moK)) * 4) / 4 : null, vung: typeof t.vung === 'number' ? Math.round(Math.max(0, Math.min(1, t.vung)) * 4) / 4 : null,
+      pha: typeof t.pha === 'number' ? Math.round(Math.max(0, Math.min(1, t.pha)) * 8) / 8 : null };   // gói V4: kẹp mở dần, gáo ném vung dần, pha sóng âm loa / gieo hạt
   }
 
   /* ------------------------------------------------------------ bộ vẽ vector */
@@ -110,13 +113,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (typeof tt.lan === 'number') st.than.lan = tt.lan;                                       // gói V4: pha bánh / xích / con lăn theo quãng đi (0..1)
     if (typeof tt.gai === 'boolean') st.than.gai = tt.gai;                                      // bánh gai: gai đang bật (true) hay thu (false)
     if (tt.mat) st.than.mat = tt.mat;                                                           // gói V4: biểu cảm mắt ('thuong' | 'chop1' | 'chop2' | 'dam' | 'vui' | 'ngac' | 'buon' | 'lim' …, kèm ':' + liếc)
+    if (cfg.than === 'xich' && (cauHinh.xichDay || tt.xichDay)) st.than.xichDay = true;         // lưỡi ủi thép phía trước thân xích (gói 5–10 mùa 2)
+    if (tt.ray) st.than.ray = tt.ray;
+    if (tt.neo) st.than.neo = true;
+    if (tt.dat) st.than.dat = true;
+    if (tt.dangDat) st.than.dangDat = true;
+    if (tt.chay) st.than.chay = true;
+    if (tt.thu) st.than.thu = true;
     if (st.tay && tay.moK !== null) st.tay.moK = tay.moK;
     if (st.tay && tay.vung !== null) st.tay.vung = tay.vung;
+    if (st.tay && tay.pha !== null) st.tay.pha = tay.pha;
     if (cfg.than !== 'drone') { delete st.than.quat; delete st.than.doc; }
     if (cfg.than !== 'nhen') delete st.than.co;
-    else {                                                                                      // V8a: dáng bò của nhện (san-ve.js dangBo): hướng đi trong hệ thân, nhịp chuẩn bị nhấc chân
+    else {                                                                                      // V8a: dáng bò của nhện (san-ve.js dangBo): hướng đi trong hệ thân, nhịp chuẩn bị nhấc chân, bật nhảy duỗi chân
       if (typeof tt.di === 'number') st.than.di = tt.di;
       if (typeof tt.nhac === 'number') st.than.nhac = tt.nhac;
+      if (typeof tt.nhay === 'number') st.than.nhay = tt.nhay;
     }
     if (cfg.than === 'cau') {
       if (typeof tt.nac === 'number') st.than.nac = tt.nac;
@@ -140,7 +152,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     huong = ((huong || 0) % 4 + 4) % 4;
     var tay = chuanTay(tt.tay);
     var son = sonHieuLuc(cauHinh.son) || '';
-    var khoa = [cauHinh.than, cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
+    var khoa = [cauHinh.than + (cauHinh.xichDay ? ':xd' : ''), cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
       cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'loa' ? 'l' + (tay.notNhac || '') + (tay.dangHat ? 'H' : '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', son,
       typeof tt.lan === 'number' ? tt.lan : '', typeof tt.gai === 'boolean' ? (tt.gai ? 'g1' : 'g0') : '', typeof tt.di === 'number' ? 'd' + tt.di : '', typeof tt.nhac === 'number' ? 'n' + tt.nhac : '',
       typeof tt.nac === 'number' ? 'nc' + tt.nac : '', typeof tt.tam === 'number' ? 'tm' + tt.tam : '', typeof tt.ray === 'number' ? 'ry' + tt.ray : '',

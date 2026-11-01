@@ -280,20 +280,29 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 28, 72, 44, 3.5, 1.5); H.to(g, BM.vecVangSang);
   }});
 
-  // Vật nhà máy (o): HỘP NĂNG LƯỢNG VUÔNG BO GÓC 3D (cùng cấu trúc tối giản với thung-go của Phòng Lab: khối vuông bo góc 3D vỏ thép sáng + 1 đai năng lượng cam-vàng ngang thân)
-  dk({ loai: 'vat', ma: 'pin-nha-may', ten: 'Hộp năng lượng nhà máy',
+  // Vật nhà máy (o): HỘP NĂNG LƯỢNG VUÔNG BO GÓC 3D CAO (nắp trên sáng y = 16..54 + vách đứng trước thép sẫm y = 54..86 gắn lõi năng lượng)
+  dk({ loai: 'vat', ma: 'pin-nha-may', ten: 'Hộp năng lượng nhà máy 3D',
     cacTrangThai: [{}].concat(MAU.map(function (m) { return { mau: m }; })),
     ve: function (g, s, H) {
       var coMau = s && MAU.indexOf(s.mau) >= 0, m = coMau ? s.mau : null;
       var dai = m ? BM[MAU_DAI[m]] : BM.vecVanNong;
-      H.bo(g, 12, 14, 76, 72, 14);
-      g.fillStyle = H.gradDoc(g, 0, 14, 0, 86, [[0, BM.vecKhoMat], [0.55, BM.vecThepSang], [1, BM.vecThep]]);
+      // Thân hộp năng lượng 3D cao (vách trước y = 54..86 sẫm màu tạo chiều cao khối thực)
+      H.bo(g, 12, 14, 76, 72, 13);
+      g.fillStyle = H.gradDoc(g, 0, 14, 0, 86, [[0, BM.vecThepSang], [0.55, BM.vecThep], [1, BM.vecThepToi]]);
       g.fill(); H.vien(g, BM.vecVien, 3);
-      g.beginPath(); g.rect(12, 46, 76, 15); g.closePath();
-      H.to(g, dai); H.vien(g, BM.vecVien, 2, 'butt');
-      H.bo(g, 38, 49.5, 24, 8, 3); H.to(g, m ? BM.vecThe : BM.vecVangSang);
-      H.duong(g, 'M26 24 h48'); H.vien(g, BM.vecThe, 4);
-      if (m) V.dauHinhMau(g, H, m, 50, 32, 14);
+      // Mặt nắp trên thép sáng (y = 16..54)
+      H.bo(g, 15, 16, 70, 38, 9);
+      g.fillStyle = H.gradDoc(g, 0, 16, 0, 54, [[0, BM.vecKhoMat], [1, BM.vecThepSang]]);
+      g.fill(); H.vien(g, BM.vecKhoThep, 1.8);
+      H.duong(g, 'M26 22 H74'); H.vien(g, BM.vecThe, 3);
+      // Đai / ô năng lượng ở vách đứng phía trước (y = 60..78)
+      H.bo(g, 20, 61, 60, 16, 5);
+      H.to(g, dai); H.vien(g, BM.vecVien, 2);
+      H.bo(g, 36, 65, 28, 8, 3); H.to(g, m ? BM.vecThe : BM.vecVangSang);
+      if (m) V.dauHinhMau(g, H, m, 50, 35, 14);
+      else {
+        H.bo(g, 36, 31, 28, 8, 4); H.to(g, BM.vecThep);
+      }
     }
   });
 
@@ -336,20 +345,161 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     });
   }});
 
-  // Vật mùa 3 (o): HỘP TÔN TÁI CHẾ VUÔNG BO GÓC 3D (khối vuông bo góc 3D màu đồng-cát ấm + 1 đai thép ngang thân, tách biệt rõ với khối sắt bạc khoi-sat)
-  dk({ loai: 'vat', ma: 'hop-phe-lieu', ten: 'Hộp tôn tái chế 3D',
+  // Vật mùa 3 (o): KIỆN PHẾ LIỆU ÉP VUÔNG BO GÓC 3D CAO (mặt trên tôn đồng sáng y = 16..54 + vách đứng trước đồng nâu sẫm y = 54..86 siết đai thép)
+  dk({ loai: 'vat', ma: 'hop-phe-lieu', ten: 'Kiện tôn tái chế 3D',
     cacTrangThai: [{}].concat(MAU.map(function (m) { return { mau: m }; })),
     ve: function (g, s, H) {
       var coMau = s && MAU.indexOf(s.mau) >= 0, m = coMau ? s.mau : null;
       var dai = m ? BM[MAU_DAI[m]] : BM.vecThep;
-      H.bo(g, 12, 14, 76, 72, 14);
-      g.fillStyle = H.gradDoc(g, 0, 14, 0, 86, [[0, BM.vecGoMat], [0.55, BM.vecCartonGiua], [1, BM.vecGoGiua]]);
+      // Thân kiện tôn ép 3D cao (vách trước y = 54..86 sẫm màu)
+      H.bo(g, 12, 14, 76, 72, 13);
+      g.fillStyle = H.gradDoc(g, 0, 14, 0, 86, [[0, BM.vecCartonGiua], [0.55, BM.vecGo], [1, BM.vecGoGiua]]);
       g.fill(); H.vien(g, BM.vecVien, 3);
-      g.beginPath(); g.rect(12, 46, 76, 15); g.closePath();
-      H.to(g, dai); H.vien(g, BM.vecVien, 2, 'butt');
-      H.bo(g, 38, 49.5, 24, 8, 3); H.to(g, m ? BM.vecThe : BM.vecSat);
-      H.duong(g, 'M26 24 h48'); H.vien(g, BM.vecGoSang, 4);
-      if (m) V.dauHinhMau(g, H, m, 50, 32, 14);
+      // Mặt trên kiện tôn sáng ấm (y = 16..54)
+      H.bo(g, 15, 16, 70, 38, 9);
+      g.fillStyle = H.gradDoc(g, 0, 16, 0, 54, [[0, BM.vecGoMat], [1, BM.vecCartonGiua]]);
+      g.fill(); H.vien(g, BM.vecGoVien, 1.8);
+      H.duong(g, 'M24 23 H76'); H.vien(g, BM.vecGoSang, 3);
+      // Đai thép / đai màu ở vách đứng phía trước (y = 60..77)
+      H.bo(g, 16, 61, 68, 15, 4);
+      H.to(g, dai); H.vien(g, BM.vecVien, 2);
+      H.bo(g, 38, 64.5, 24, 8, 3); H.to(g, m ? BM.vecThe : BM.vecSat);
+      if (m) V.dauHinhMau(g, H, m, 50, 35, 14);
+      else {
+        H.duong(g, 'M26 36 H74'); H.vien(g, BM.vecGoVien, 2.2);
+      }
+    }
+  });
+
+  /* ---- 5. MÙA 7 (MỎ ĐÁ, vo = 'mo-da'): SÀN ĐÁ CÁT · VÁCH ĐÁ TẦNG 3D CAO · KHỐI ĐÁ / QUẶNG 3D ---- */
+
+  // Sàn mỏ đá (.): phiến đá sa thạch vàng đất ấm
+  dk({ loai: 'o', ma: 'san-mo-da', ten: 'Sàn đá mỏ lộ thiên', cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
+    var le = !!(s && s.le);
+    g.fillStyle = BM.vecDatToi; g.fillRect(0, 0, 100, 100);
+    H.bo(g, 2.5, 2.5, 95, 95, 7);
+    g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, le ? [[0, BM.vecBao], [1, BM.vecDatSang]] : [[0, BM.vecCartonMat], [1, BM.vecBao]]);
+    g.fill(); H.vien(g, BM.vecBaoVien, 1.8);
+    // Vết thớ đá cắt tự nhiên tối giản ở hai góc
+    H.duong(g, 'M14 20 L26 20 M74 82 L86 82');
+    g.globalAlpha = 0.45; H.vien(g, BM.vecDatToi, 2); g.globalAlpha = 1;
+  }});
+
+  // Tường mỏ đá (#): KHỐI VÁCH ĐÁ TẦNG 3D CAO (mặt đỉnh đá sa thạch sáng y = 8..60 + vách đứng trước phân tầng đá nâu-vàng sẫm y = 60..94)
+  dk({ loai: 'o', ma: 'tuong-mo-da', ten: 'Khối vách đá mỏ 3D', cacTrangThai: [{}], ve: function (g, s, H) {
+    g.fillStyle = BM.vecDatToi; g.fillRect(0, 0, 100, 100);
+    // Thân vách đá 3D cao (vách đứng trước y = 60..94 phân tầng sẫm)
+    H.bo(g, 5, 6, 90, 88, 10);
+    g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, [[0, BM.vecDat], [0.58, BM.vecDatToi], [1, BM.vecGoToi]]);
+    g.fill(); H.vien(g, BM.vecVien, 3);
+    // Mặt đỉnh đá phẳng cắt vuông (y = 8..60)
+    H.bo(g, 8, 8, 84, 52, 8);
+    g.fillStyle = H.gradDoc(g, 0, 8, 0, 60, [[0, BM.vecCartonMat], [0.6, BM.vecCarton], [1, BM.vecDatSang]]);
+    g.fill(); H.vien(g, BM.vecBaoVien, 2);
+    // Vệt sáng cạnh đỉnh + 2 đường thớ đá ngang trên mặt đỉnh
+    H.bo(g, 15, 12, 70, 5, 2.5); H.to(g, BM.vecGoSang);
+    H.duong(g, 'M18 30 H64 M36 44 H82'); H.vien(g, BM.vecDatToi, 2.2);
+    // Hai tầng địa chất ngang trên vách đứng 3D phía trước (y = 60..94)
+    H.bo(g, 10, 64, 80, 11, 4); H.to(g, BM.vecGoGiua);
+    H.duong(g, 'M10 76 H90'); H.vien(g, BM.vecGoKhe, 2.6);
+    H.bo(g, 24, 81, 52, 6, 3); H.to(g, BM.vecGoToi);
+  }});
+
+  // Vật mỏ đá (o): KHỐI ĐÁ / QUẶNG CẮT VUÔNG BO GÓC 3D CAO (mặt trên đá sáng y = 16..54 + vách đứng trước đá sẫm y = 54..86 kèm mạch khoáng sản)
+  dk({ loai: 'vat', ma: 'da-mo', ten: 'Khối đá quặng mỏ 3D',
+    cacTrangThai: [{}].concat(MAU.map(function (m) { return { mau: m }; })),
+    ve: function (g, s, H) {
+      var coMau = s && MAU.indexOf(s.mau) >= 0, m = coMau ? s.mau : null;
+      var dai = m ? BM[MAU_DAI[m]] : BM.vecVang;
+      // Thân khối đá 3D cao
+      H.bo(g, 12, 14, 76, 72, 13);
+      g.fillStyle = H.gradDoc(g, 0, 14, 0, 86, [[0, BM.vecDatSang], [0.55, BM.vecDat], [1, BM.vecDatToi]]);
+      g.fill(); H.vien(g, BM.vecVien, 3);
+      // Mặt trên khối đá cắt sáng (y = 16..54)
+      H.bo(g, 15, 16, 70, 38, 9);
+      g.fillStyle = H.gradDoc(g, 0, 16, 0, 54, [[0, BM.vecCartonMat], [1, BM.vecBao]]);
+      g.fill(); H.vien(g, BM.vecBaoVien, 1.8);
+      H.duong(g, 'M24 22 H76'); H.vien(g, BM.vecGoSang, 3);
+      // Đai / mạch quặng ở vách đứng phía trước (y = 60..77)
+      H.bo(g, 18, 61, 64, 15, 5);
+      H.to(g, dai); H.vien(g, BM.vecVien, 2);
+      H.bo(g, 36, 65, 28, 7, 3); H.to(g, m ? BM.vecThe : BM.vecVangSang);
+      if (m) V.dauHinhMau(g, H, m, 50, 35, 14);
+      else {
+        H.bo(g, 38, 30, 24, 10, 4); H.to(g, BM.vecVang); H.vien(g, BM.vecBaoVien, 1.8);
+      }
+    }
+  });
+
+  /* ---- 6. MÙA 8 (HANG ĐỘNG ĐÁ VÔI, vo = 'hang'): SÀN ĐÁ VÔI · ĐÁ ƯỚT TRƠN (I) · KHỐI VÁCH ĐÁ VÔI 3D CAO · ĐÁ VANG 3D ---- */
+
+  // Sàn hang động (.): phiến đá vôi xám lam trầm trong lòng hang
+  dk({ loai: 'o', ma: 'san-hang-dong', ten: 'Sàn đá vôi hang động', cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
+    var le = !!(s && s.le);
+    g.fillStyle = BM.vecThepToi; g.fillRect(0, 0, 100, 100);
+    H.bo(g, 2.5, 2.5, 95, 95, 7);
+    g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, le ? [[0, BM.vecSatToi], [1, BM.vecKhoThep]] : [[0, BM.vecThepSang], [1, BM.vecSatToi]]);
+    g.fill(); H.vien(g, BM.vecThep, 1.8);
+    H.duong(g, 'M16 18 L28 18 M72 82 L84 82');
+    g.globalAlpha = 0.45; H.vien(g, BM.vecThepToi, 2); g.globalAlpha = 1;
+  }});
+
+  // Đá ướt trơn trong hang (I): phiến đá vôi phủ lớp nước ngầm xanh ngọc bóng loáng
+  dk({ loai: 'o', ma: 'da-uot', ten: 'Phiến đá ướt trơn trong hang', cacTrangThai: [{}], ve: function (g, s, H) {
+    g.fillStyle = BM.vecThepToi; g.fillRect(0, 0, 100, 100);
+    H.bo(g, 2.5, 2.5, 95, 95, 7);
+    g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, [[0, BM.vecQuat], [0.55, BM.vecDen], [1, BM.vecDenToi]]);
+    g.fill(); H.vien(g, BM.vecCyanDam, 2);
+    // Vệt nước bóng loáng chéo trên mặt đá ướt
+    H.duong(g, 'M18 30 L38 16 M30 58 L70 30 M56 80 L82 62');
+    H.vien(g, BM.vecDenSang, 3.5);
+  }});
+
+  // Tường hang động (#): KHỐI ĐÁ VÔI / THẠCH NHŨ 3D CAO (mặt đỉnh đá vôi xám lam sáng y = 8..60 + vách đứng trước sẫm y = 60..94 có rãnh thạch nhũ và mạch tinh thể cyan)
+  dk({ loai: 'o', ma: 'tuong-hang-dong', ten: 'Khối vách đá vôi hang động 3D', cacTrangThai: [{}], ve: function (g, s, H) {
+    g.fillStyle = BM.vecThepToi; g.fillRect(0, 0, 100, 100);
+    // Thân khối đá vôi 3D cao (vách đứng phía trước sẫm màu y = 60..94)
+    H.bo(g, 5, 6, 90, 88, 10);
+    g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, [[0, BM.vecThep], [0.58, BM.vecThepToi], [1, BM.vecDe]]);
+    g.fill(); H.vien(g, BM.vecVien, 3);
+    // Mặt đỉnh đá vôi sáng (y = 8..60)
+    H.bo(g, 8, 8, 84, 52, 8);
+    g.fillStyle = H.gradDoc(g, 0, 8, 0, 60, [[0, BM.vecBac], [0.6, BM.vecThepSang], [1, BM.vecThep]]);
+    g.fill(); H.vien(g, BM.vecThepToi, 2);
+    H.bo(g, 15, 12, 70, 5, 2.5); H.to(g, BM.vecBacSang);
+    // Hai vết rãnh đá vôi trên mặt đỉnh
+    H.duong(g, 'M20 30 H62 M38 44 H80'); H.vien(g, BM.vecThepToi, 2.2);
+    // Vách đứng trước (y = 60..94): dải tinh thể khoáng thạch phát sáng xanh ngọc trong lòng hang
+    H.bo(g, 22, 70, 56, 12, 5);
+    g.fillStyle = H.gradDoc(g, 0, 70, 0, 82, [[0, BM.vecQuat], [0.6, BM.vecDen], [1, BM.vecDenToi]]);
+    g.fill(); H.vien(g, BM.vecVien, 2);
+    H.bo(g, 28, 72, 44, 3.5, 1.5); H.to(g, BM.vecDenSang);
+  }});
+
+  // Vật hang động (o): KHỐI ĐÁ VANG RỖNG 3D CAO (mặt trên đá vôi sáng y = 16..54 + vách đứng trước sẫm y = 54..86 gắn hốc tinh thể cộng hưởng âm thanh)
+  dk({ loai: 'vat', ma: 'da-hang', ten: 'Khối đá vang hang động 3D',
+    cacTrangThai: [{}].concat(MAU.map(function (m) { return { mau: m }; })),
+    ve: function (g, s, H) {
+      var coMau = s && MAU.indexOf(s.mau) >= 0, m = coMau ? s.mau : null;
+      var dai = m ? BM[MAU_DAI[m]] : BM.vecDen;
+      // Thân khối đá vang 3D cao
+      H.bo(g, 12, 14, 76, 72, 13);
+      g.fillStyle = H.gradDoc(g, 0, 14, 0, 86, [[0, BM.vecThepSang], [0.55, BM.vecThep], [1, BM.vecThepToi]]);
+      g.fill(); H.vien(g, BM.vecVien, 3);
+      // Mặt trên khối đá vôi sáng (y = 16..54)
+      H.bo(g, 15, 16, 70, 38, 9);
+      g.fillStyle = H.gradDoc(g, 0, 16, 0, 54, [[0, BM.vecBacSang], [1, BM.vecThepSang]]);
+      g.fill(); H.vien(g, BM.vecThep, 1.8);
+      H.duong(g, 'M24 22 H76'); H.vien(g, BM.vecThe, 3);
+      // Hốc cộng hưởng / đai màu ở vách đứng phía trước (y = 60..77)
+      H.bo(g, 18, 61, 64, 15, 5);
+      H.to(g, dai); H.vien(g, BM.vecVien, 2);
+      H.bo(g, 36, 65, 28, 7, 3); H.to(g, m ? BM.vecThe : BM.vecDenSang);
+      if (m) V.dauHinhMau(g, H, m, 50, 35, 14);
+      else {
+        H.tron(g, 50, 35, 8); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 2);
+        H.tron(g, 48, 33, 3); H.to(g, BM.vecDenSang);
+      }
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);
