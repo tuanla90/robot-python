@@ -61,6 +61,9 @@ Chỗ cần user duyệt đánh dấu **[DUYỆT]**.
 `nghi` (gói 1–2, khoanh tay nhướng mày) · `ngac-nhien` (gói 3–4) · `hoang` (gói 6 "Ấy chết!") · `tin` (gói 7, chỉ tay giao việc) · `sot-ruot` (gói 9, nhìn đồng hồ riêng của mùa: đồng hồ đeo tay, kim áp suất, lịch, thước nước, mây mưa, pin bộ đàm) · `mung` (gói 10, nhảy cẫng, nước mắt vui).
 Thầy hiệu trưởng nhịp khác: `giao-viec` (đưa thư) · `tu-hao` · `hoang` (bão) · `dong-vien` · `sot-ruot` · `mung` (giơ huy hiệu).
 Bác Ba: ảnh `ba-a.png` cũ thực ra là bản sao chú Tư; 31/10 vẽ mới đúng mô tả (`ba-a.png`, `ba-b.png`). Tấm gốc (mỗi người 2 bản) ở `phim-clb/tam-anh/bc-<tên>-1|2.png` (không commit); cắt lại bằng `python tools/cat-bieu-cam.py <tấm> public/nguoi <tên>`.
+Tấm đang dùng (1/11): `tu` 1, `hanh` 2, `sau` 2, `mai` 1, `ba` 1, `lan` 1, `dung` 2, `phong` = `bc2-phong-1`, `thay` = `bc2-thay-2` (dáng của thầy truyền tên dáng). 1/11 cắt lại cả 54 ảnh bằng công cụ sửa:
+loang nền qua trắng tinh (găng trắng anh Dũng không còn bị thủng), túi trắng bị dáng bên cạnh bao kín bỏ đi, dáng chạm nhau (tấm Ba, Lan) tách bằng watershed ở cổ thắt
+(phao bác Ba, bó hoa chị Lan về đúng người). `dung-a.png` không còn tấm gốc: lòng găng lấp lại trong ảnh.
 
 ## 2. Mùa 1, Kho hàng: Xe chở hàng R1
 
