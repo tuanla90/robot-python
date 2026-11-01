@@ -8,14 +8,32 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var MAU = { red: ['luatSonDo', 'luatSonDoSang', 'luatSonDoToi'], green: ['luatSonXanhLa', 'luatSonXanhLaSang', 'luatSonXanhLaToi'], blue: ['luatSonXanhDuong', 'luatSonXanhDuongSang', 'luatSonXanhDuongToi'], yellow: ['luatSonVang', 'luatSonVangSang', 'luatSonVangToi'] };
   V.dangKy({ loai: 'tay', ma: 'son', hamGoc: ['ink',  'dot',  'pen_down',  'pen_up'], ten: 'Bộ gieo hạt', gan: 'tay', diemNeo: { x: 50, y: 80 }, MAU_SON: MAU, ve: function (g, s, M, H) {
     s = s || {};
-    var k = MAU[s.mauSon] || MAU.red, c = [BM[k[0]], BM[k[1]], BM[k[2]]], ha = s.tuThe === 'duoi', dau = ha ? 101 : 96;
-    H.bo(g, 37, 76, 26, 10, 5); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.5);
-    if (ha) { [[46, 104], [50, 107], [54, 104], [48, 109.5], [52, 109.5]].forEach(function (q) { H.tron(g, q[0], q[1], 1.6); H.to(g, c[0]); }); }
-    H.duong(g, 'M50 90 V' + dau); H.vien(g, BM.vecVien, 6.5); H.duong(g, 'M50 90 V' + dau); H.vien(g, BM.vecTim, 3);
-    H.duong(g, 'M37 75 H63 L55 93 H45 Z'); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 2);
-    H.duong(g, 'M42 78.5 H58 L55 86 H45 Z'); g.fillStyle = H.gradDoc(g, 0, 78.5, 0, 86, [[0, c[1]], [1, c[2]]]); g.fill();
-    H.tron(g, 47, 81.5, 1.2); H.to(g, c[0]); H.tron(g, 51, 83.5, 1.2); H.to(g, c[0]); H.tron(g, 54, 80.8, 1.2); H.to(g, c[0]);
-    H.duong(g, 'M45 ' + (dau - 1) + ' H55 L53 ' + (dau + 4) + ' H47 Z'); H.to(g, c[0]); H.vien(g, BM.vecVien, 2.2);
+    var k = MAU[s.mauSon] || MAU.red, c = [BM[k[0]], BM[k[1]], BM[k[2]]], ha = s.tuThe === 'duoi';
+    var pha = typeof s.pha === 'number' ? s.pha : 0, nhun = ha ? Math.sin(pha * Math.PI * 2) * 0.8 : 0, dau = (ha ? 99.5 : 95.5) + nhun * 0.4;
+    /* khi hạ đầu gieo (pen_down / dot): quạt hạt giống văng tỏa tròn từ đĩa chia hạt xuống luống */
+    if (ha) {
+      H.duong(g, 'M41 104.5 Q50 ' + (108.8 + nhun * 0.6) + ' 59 104.5'); H.vien(g, c[1], 1.5);
+      [[-6.5, 104.2], [-2.5, 106.8], [2.5, 106.8], [6.5, 104.2], [-4.2, 108.8], [4.2, 108.8]].forEach(function (q, idx) {
+        var dy = ((pha + idx * 0.17) % 1) * 1.6, sx = 50 + q[0] * (0.92 + dy * 0.08), sy = q[1] + dy;
+        H.tron(g, sx, sy, 1.7); H.to(g, c[0]); H.vien(g, BM.vecVien, 0.9);
+      });
+    }
+    /* đế khớp gắn mũi xe + cổ ống dẫn hạt hạ cấp */
+    H.bo(g, 36.5, 75.5, 27, 8.5, 4.2); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.4);
+    H.duong(g, 'M50 88.5 V' + dau); H.vien(g, BM.vecVien, 7);
+    H.duong(g, 'M50 88.5 V' + dau); H.vien(g, BM.vecTim, 3.4);
+    /* bầu chứa hạt bo tròn 3D + vành nắp thép + ô kính bầu dục nhìn rõ hạt giống bên trong */
+    H.bo(g, 36.5, 77.5, 27, 14.2, 7); g.fillStyle = H.gradVo(g, 36.5, 77.5, 27, 14.2); g.fill(); H.vien(g, BM.vecVien, 2.3);
+    H.bo(g, 40, 76.2, 20, 3.2, 1.6); H.to(g, BM.vecThepSang); H.vien(g, BM.vecVien, 1.6);
+    H.bo(g, 40.5, 80.4, 19, 8.6, 4.3); g.fillStyle = H.gradDoc(g, 0, 80.4, 0, 89, [[0, c[2]], [1, c[1]]]); g.fill(); H.vien(g, BM.vecVien, 1.6);
+    [[44.8, 84.2], [48.2, 86.1], [51.8, 83.8], [55.2, 85.8]].forEach(function (p, i) {
+      var py = p[1] + (ha ? Math.sin(pha * Math.PI * 2 + i) * 0.5 : 0);
+      H.tron(g, p[0], py, 1.45); H.to(g, c[0]);
+    });
+    H.duong(g, 'M43 82 H51'); H.vien(g, BM.vecVo, 1.2);
+    /* chụp miệng gieo bo tròn + đĩa chia hạt xoay ở đầu vòi */
+    H.bo(g, 43.5, dau - 2, 13, 5, 2.5); H.to(g, c[0]); H.vien(g, BM.vecVien, 2.2);
+    H.elip(g, 50, dau + 2.6, 4.6, 1.8); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 1.5);
   } });
   /* LOA KÈN vector (mã 'loa'; note / beat; mùa Hang động & Mùa cuối Về CLB): đế khớp ở mũi xe, bầu cộng hưởng tròn, cổ kèn uốn cong và miệng loa bầu tròn 3D loe về phía trước (+y).
      Khi s.bat = true (đang phát âm): thân loa & vành miệng loa phồng tròn căng hơn theo pha s.pha, lòng loa + côn loa ở tâm sáng rực màu nốt s.notLoa (1..8 hoặc 'x' = trống),

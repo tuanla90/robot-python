@@ -157,7 +157,7 @@ console.log('\n== 6. Giao diện (theo mã nguồn) ==');
   kiem('san-ve.js nap(): cfg.nutBat giữ trong this.cfg; datLaiCua bật nút đó ngay khung đầu (veOVec vẽ nút bật + veNong quầng nóng vì nutT bat; V7c2: hết nhánh pixel)',
     /nutBat: Array\.isArray\(cfg\.nutBat\) \? cfg\.nutBat : null/.test(sv) && /\(\(this\.cfg && this\.cfg\.nutBat\) \|\| \[\]\)\.forEach\(function \(o\) \{ self\.nutO\(o\.x, o\.y\)\.bat = true; \}\)/.test(sv) && /sN = \{ bat: bat, loe: [^}]*\}[\s\S]{0,400}?ve\('nut-ban', sN\); if \(bat\) this\.veNong\(g, x, y, now\)/.test(sv));   // 29/10 van hơi: trạng thái gom vào sN (thêm góc quay goc khi đổi)
   // ảnh nhỏ: nút bật sẵn → hình vector 'nut-ban' {bat} (thuOVec, V7c2: hết bản pixel xanh / viền cam)
-  kiem('san-ve.js thuSan (ảnh nhỏ): nút bật sẵn vẽ hình nut-ban trạng thái bat (thuOVec)', /lopMau && lopMau\.nutBat/.test(sv) && /else if \(ma === 'nut-ban' && nutBat\[x \+ ',' \+ y\]\) st\.bat = true;/.test(sv));
+  kiem('san-ve.js thuSan (ảnh nhỏ): nút bật sẵn vẽ hình nut-ban trạng thái bat (thuOVec)', /lopMau && lopMau\.nutBat/.test(sv) && /else if \(ma === 'nut-ban'\) \{ if \(nutBat\[x \+ ',' \+ y\]\) st\.bat = true;/.test(sv));
   kiem('man-choi.js cauHinhSan + ảnh nhỏ từng sân, man-lap.js ảnh nhỏ: truyền nutBat', /nutBat: lm\.nutBat \|\| undefined/.test(mc) && /nutBat: ch\.nutBat/.test(mc) && /nutBat: lm\.nutBat(, lua: lm\.lua)?(, vo: m\.vo)? \}/.test(ml));   // 30/10 gói lửa: cfg.lua đứng ngay sau
 }
 

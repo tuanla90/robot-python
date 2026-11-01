@@ -237,10 +237,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return out;
   }
   /** Ổ tay mà tay gắn vào thân: drone (khongHuong) treo ở ổ 'duoi'; thân khai tayDuoi [mã tay] + oTayDuoi {x, y} (nhện: nam châm bụng, mùa 3; KHÔNG phải ổ trong oGan, để
-   *  cảm biến không gắn được "ổ duoi" và luật ghép cũ y nguyên) treo tay đó ở 'duoi'; còn lại ổ 'tay' (nếu tay gắn được ổ đó). */
-  function oTay(than, tay) {
+   *  cảm biến không gắn được "ổ duoi" và luật ghép cũ y nguyên) treo tay đó ở 'duoi' (trừ khi cfg.oTay === 'tay' gắn nam châm chữ U ở đầu như robot thường); còn lại ổ 'tay'. */
+  function oTay(than, tay, cfg) {
     if (than.khongHuong) return ['duoi'];
-    if (than.tayDuoi && than.tayDuoi.indexOf(tay.ma) >= 0 && than.oTayDuoi && ganCua(tay).indexOf('duoi') >= 0) return ['duoi'];
+    if ((!cfg || cfg.oTay !== 'tay') && than.tayDuoi && than.tayDuoi.indexOf(tay.ma) >= 0 && than.oTayDuoi && ganCua(tay).indexOf('duoi') >= 0) return ['duoi'];
     return ganCua(tay).filter(function (o) { return o === 'tay' && than.oGan[o]; });
   }
   /** Kiểm cấu hình như Part.ghep: ném Error với ĐÚNG câu báo của bộ pixel khi ghép cấm (drone + camera, drone + tay khác nam châm, camera-bay trên thân thường,
@@ -260,7 +260,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (!drone && co('camera-bay')) throw new Error('Camera nhìn xuống (camera-bay) chỉ gắn được lên drone.');
     if (co('camera') && co('mau')) throw new Error('Robot không gắn được cả cảm biến màu lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
     if (co('camera-4') && (co('mau') || co('camera'))) throw new Error('Camera bốn hướng không gắn chung với cảm biến màu ở bụng hay camera trước: color() sẽ không biết đọc kiểu nào.');
-    if (tay && !oTay(than, tay).length) throw new Error((drone ? 'Drone' : 'Tay ' + tay.ma) + ' không gắn được vào ổ này.');
+    if (tay && !oTay(than, tay, cfg).length) throw new Error((drone ? 'Drone' : 'Tay ' + tay.ma) + ' không gắn được vào ổ này.');
     for (i = 0; i < cams.length; i++) {
       d = lay('cam-bien', cams[i].ma);
       if (!than.oGan[cams[i].o]) throw new Error('Thân ' + than.ma + ' không có ổ "' + cams[i].o + '".');
@@ -319,8 +319,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return [k.x + k.w * 0.2174 + ew / 2, k.x + k.w * 0.6304 + ew / 2].map(function (ex) { return diemTrenO({ x: ex, y: ey }, huong, canh, t); });
   }
   /** Dịch của tay trong hệ thân (ổ − điểm neo) và ổ đã dùng; null nếu không gắn được. */
-  function dichTay(than, tay) {
-    var os = oTay(than, tay)[0]; if (!os) return null;
+  function dichTay(than, tay, cfg) {
+    var os = oTay(than, tay, cfg)[0]; if (!os) return null;
     var oG = than.oGan[os] || (os === 'duoi' ? than.oTayDuoi : null), neo = os === 'duoi' && tay.diemNeoDuoi ? tay.diemNeoDuoi : tay.diemNeo;     // oTayDuoi: nam châm bụng nhện (mùa 3)
     return { o: os, x: oG.x - neo.x, y: oG.y - neo.y };
   }
@@ -383,7 +383,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var canh = Math.max(1, Math.round(canhPx)), tran = tranCua(cfg), canhCv = canh + 2 * Math.round(canh * tran), M = mauDoi(cfg.son);
     var sCb = st.camBien || {}, coCam = cams.some(function (c) { return c.ma === 'camera'; });
     var sT = Object.assign({}, st.than || {}), sTay = st.tay || {};                          // gói V4: camera không đổi mắt (khối ống kính ở đuôi), coCam chỉ còn cho khoá đệm
-    var khoa = ['robot', than.ma, tay ? tay.ma : '-', JSON.stringify(cams), huong, '#' + canh, M.ma, JSON.stringify(sT), tay ? JSON.stringify(sTay) : '', cams.length ? JSON.stringify(sCb) : ''].join('|');
+    var khoa = ['robot', than.ma, tay ? tay.ma + (cfg.oTay ? ':' + cfg.oTay : '') : '-', JSON.stringify(cams), huong, '#' + canh, M.ma, JSON.stringify(sT), tay ? JSON.stringify(sTay) : '', cams.length ? JSON.stringify(sCb) : ''].join('|');
     return nho(khoa, function () {
       var cv = taoCanvas(canhCv, canhCv), g = cv.getContext('2d'), k = (canh / HE) * CO_THAN;
       g.save(); g.translate(canhCv / 2, canhCv / 2); g.scale(k, k);
@@ -391,7 +391,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       g.rotate(gocCua(than, huong)); g.translate(-TAM_THAN.x, -TAM_THAN.y);
       than.ve(g, sT, M, H);
       if (tay) {
-        var d = dichTay(than, tay), sau = than.oGan.sau ? { x: than.oGan.sau.x - d.x, y: than.oGan.sau.y - d.y } : null;
+        var d = dichTay(than, tay, cfg), sau = than.oGan.sau ? { x: than.oGan.sau.x - d.x, y: than.oGan.sau.y - d.y } : null;
         g.save(); g.translate(d.x, d.y); tay.ve(g, Object.assign({}, sTay, { than: than.ma, duoi: d.o === 'duoi', sau: sau }), M, H); g.restore();
       }
       cams.forEach(function (c) {                                                       // cảm biến: vẽ ở ổ (điểm neo trùng ổ), trên thân và tay; ra = phía ngoài (dấu x) của ổ

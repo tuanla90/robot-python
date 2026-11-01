@@ -71,11 +71,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     else { g.beginPath(); g.moveTo(24, y + cao / 2); g.lineTo(76, y + cao / 2); H.vien(g, BM.vecCanhBao, 3); }
   } });
 
-  /* VAN CỐNG 'V' (cần gạt trên bờ, chiếm ô như tường): bệ bê tông, rãnh gạt, cần thép, núm. Tắt: cần nghiêng trái, núm đỏ; bật: nghiêng phải, núm xanh lá + quầng. */
+  /* VAN CỐNG 'V' (cần gạt trên bờ kè 3D, chiếm ô như tường): khối bờ kè đá-gỗ 3D, bệ thép, rãnh gạt, cần thép, núm. Tắt: cần nghiêng trái, núm đỏ; bật: nghiêng phải, núm xanh lá + quầng. */
   V.dangKy({ loai: 'o', ma: 'van-cong', ten: 'Van cống', ky: ['V'], cacTrangThai: [{}, { bat: true }, { goc: 0.5 }], ve: function (g, s, H) {
     s = s || {};
     var k = typeof s.goc === 'number' ? Math.max(0, Math.min(1, s.goc)) : (s.bat ? 1 : 0), bat = k >= 1, a = (-0.6 + 1.2 * k), dx = Math.sin(a) * 30, dy = -Math.cos(a) * 30;
-    H.bo(g, 2, 2, 96, 96, 10); g.fillStyle = H.gradDoc(g, 0, 2, 0, 98, [[0, BM.vecTuong], [1, BM.vecTuongToi]]); g.fill(); H.vien(g, BM.vecTuongVien, 3);
+    g.fillStyle = BM.vecCoVien; g.fillRect(0, 0, 100, 100);
+    // Thân khối bờ kè 3D dưới chân van cống
+    H.bo(g, 4, 5, 92, 90, 10); g.fillStyle = H.gradDoc(g, 0, 5, 0, 95, [[0, BM.vecGo], [0.65, BM.vecGoGiua], [1, BM.vecGoToi]]); g.fill(); H.vien(g, BM.vecVien, 3);
+    H.bo(g, 7, 7, 86, 62, 8); g.fillStyle = H.gradDoc(g, 0, 7, 0, 69, [[0, BM.vecGoMat], [1, BM.vecDatSang]]); g.fill(); H.vien(g, BM.vecGoVien, 2);
     H.bo(g, 14, 58, 72, 28, 6); g.fillStyle = H.gradDoc(g, 0, 58, 0, 86, [[0, BM.vecBac], [1, BM.vecBacToi]]); g.fill(); H.vien(g, BM.vecVien, 2.5);   // bệ
     H.bo(g, 24, 66, 52, 10, 5); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 1.5);                                                                          // rãnh gạt
     g.beginPath(); g.moveTo(26, 30); g.lineTo(34, 24); g.moveTo(74, 30); g.lineTo(66, 24); H.vien(g, BM.vecVien, 2.5);                                    // vạch hai đầu: tắt / bật
@@ -109,5 +112,38 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [[9, 9], [91, 9], [9, 91], [91, 91]].forEach(function (p) { H.tron(g, p[0], p[1], 4.5); H.to(g, BM.vecDatSang); H.vien(g, BM.vecVien, 1.8); });   // cọc buộc
     H.bo(g, 22, 22, 56, 70, 8);
     if (xong) { H.vien(g, BM.vecXanhLa, 4); } else { g.setLineDash([7, 6]); H.vien(g, BM.vecDich, 4); g.setLineDash([]); }
+  } });
+
+  /* SÀN BẾN SÔNG '.' (san-ben-song): sàn đá lát bến sông ghép ván gỗ ấm áp. */
+  V.dangKy({ loai: 'o', ma: 'san-ben-song', ten: 'Sàn đá lát bến sông', cacTrangThai: [{}, { le: 1 }], ve: function (g, s, H) {
+    var le = !!(s && s.le);
+    g.fillStyle = BM.vecCoVien; g.fillRect(0, 0, 100, 100);
+    H.bo(g, 2.5, 2.5, 95, 95, 7);
+    g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, le ? [[0, BM.vecCoLe], [1, BM.vecCoDe]] : [[0, BM.vecCo], [1, BM.vecCoToi]]);
+    g.fill(); H.vien(g, BM.vecCoGach, 1.8);
+    // Hai mạch ván / phiến đá bến sông ngang nhẹ
+    H.duong(g, 'M10 34 H90 M10 68 H90');
+    g.globalAlpha = 0.35; H.vien(g, BM.vecCoGach, 1.6); g.globalAlpha = 1;
+  } });
+
+  /* KHỐI BỜ KÈ BẾN SÔNG '#' (bo-ke-song): khối kè đá kết cọc gỗ bến sông 3D cao (mặt trên ván gỗ/đá sáng y = 8..60 + vách đứng trước cọc gỗ và kè đá sẫm y = 60..94). */
+  V.dangKy({ loai: 'o', ma: 'bo-ke-song', ten: 'Khối bờ kè gỗ đá bến sông 3D', cacTrangThai: [{}], ve: function (g, s, H) {
+    g.fillStyle = BM.vecCoVien; g.fillRect(0, 0, 100, 100);
+    // Thân khối bờ kè 3D cao (vách đứng phía trước sẫm màu y = 60..94)
+    H.bo(g, 5, 6, 90, 88, 10);
+    g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, [[0, BM.vecGo], [0.58, BM.vecGoGiua], [1, BM.vecGoToi]]);
+    g.fill(); H.vien(g, BM.vecVien, 3);
+    // Mặt trên khối kè gỗ-đá sáng ấm (y = 8..60)
+    H.bo(g, 8, 8, 84, 52, 8);
+    g.fillStyle = H.gradDoc(g, 0, 8, 0, 60, [[0, BM.vecGoMat], [0.58, BM.vecGoMatToi], [1, BM.vecGo]]);
+    g.fill(); H.vien(g, BM.vecGoVien, 2);
+    H.bo(g, 15, 12, 70, 5, 2.5); H.to(g, BM.vecGoSang);
+    H.duong(g, 'M12 34 H88'); H.vien(g, BM.vecGoVien, 2.2);
+    // Hai đầu cọc gỗ tròn đóng dọc bờ kè trên mặt đỉnh + vách cọc phía trước
+    [26, 74].forEach(function (cx) {
+      H.bo(g, cx - 7, 60, 14, 33, 3); H.to(g, BM.vecGoToi); H.vien(g, BM.vecVien, 2);
+      H.tron(g, cx, 34, 8); H.to(g, BM.vecGoSang); H.vien(g, BM.vecGoVien, 2.2);
+      H.tron(g, cx, 34, 3); H.to(g, BM.vecGo);
+    });
   } });
 })(typeof window !== 'undefined' ? window : globalThis);

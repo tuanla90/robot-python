@@ -58,9 +58,13 @@
     if (vo === 'nong-trai' && o.chat !== 'nam-cham') return ['bao-hat', o.mau ? (o.chat === 'sat' ? { mau: o.mau, sat: true } : { mau: o.mau }) : (o.chat === 'sat' ? { mau: 'yellow', sat: true } : {})];
     if (o.chat === 'nam-cham' && (o.cuc === 'N' || o.cuc === 'S')) return ['nam-cham', { cuc: o.cuc }];
     if (o.chat === 'sat') return ['khoi-sat', o.mau ? { mau: o.mau } : {}];
-    if (vo === 'kho-hang') return ['thung-carton', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'kho-hang' || vo === 'kho') return ['thung-carton', o.mau ? { mau: o.mau } : {}];
     if (vo === 'nha-may') return ['pin-nha-may', o.mau ? { mau: o.mau } : {}];
     if (vo === 'bai-tai-che') return ['hop-phe-lieu', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'cang') return ['kien-cang', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'song') return ['kien-hang-song', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'mo-da') return ['da-mo', o.mau ? { mau: o.mau } : {}];
+    if (vo === 'hang') return ['da-hang', o.mau ? { mau: o.mau } : {}];
     return ['thung-go', o.mau ? { mau: o.mau } : {}];
   }
   V.KY_HIEU = KY_HIEU; V.TILES = TILES; V.VE_TRUC_TIEP = VE_TRUC_TIEP; V.ICON_SAN = ICON_SAN; V.vatCua = vatCua;
