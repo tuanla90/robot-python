@@ -187,10 +187,10 @@
     return null;
   }
 
-  var LOAI_VAT = { 'lua': 'đám cháy (còn cháy thì chặn như tường, dập tắt rồi mới đi qua)', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước phun trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)' };
+  var LOAI_VAT = { 'lua': 'đám cháy (còn cháy thì chặn như tường, dập tắt rồi mới đi qua)', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước phun trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)', 'da-chuong': 'khối đá chuông (phát đúng nốt cộng hưởng bằng loa thì đá nứt vỡ mở đường)' };
   // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
   var TEN_CHAN_NGAN = { 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
-    'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'gam-thap': 'gầm thấp', 'dem-tu': 'ô đệm từ', 'lua': 'đám cháy', 'bo': 'bờ', 'nuoc': 'mặt nước', 'cong': 'cống đang đóng', 'van': 'van cống' };
+    'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'gam-thap': 'gầm thấp', 'dem-tu': 'ô đệm từ', 'lua': 'đám cháy', 'bo': 'bờ', 'nuoc': 'mặt nước', 'cong': 'cống đang đóng', 'van': 'van cống', 'da-chuong': 'khối đá chuông' };
   // BẾN SÔNG (san-hoc.js phần BẾN SÔNG): thứ chặn vật nổi / dây phao / xuồng
   LOAI_VAT['bo'] = 'bờ (xuồng chỉ đi được trên mặt nước)'; LOAI_VAT['nuoc'] = 'mặt nước (xe cạn không xuống nước được; chỉ đi lên bè đang nằm yên trên nước êm)';
   LOAI_VAT['cong'] = 'cống đang đóng (gạt van cống bằng dây phao thì cống mở)'; LOAI_VAT['van'] = 'van cống (gắn trên bờ, xe không đi vào được; dây phao của xuồng quăng trúng mới đổi van)';
@@ -440,13 +440,14 @@
   }
 
   // tên bộ phận cho lời lenh-goc-hong khi màn không khai canhBao
-  var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải', diag_left: 'Bánh omni đi chéo', diag_right: 'Bánh omni đi chéo', arm_left: 'Khớp xoay', arm_right: 'Khớp xoay', magnet_n: 'Cực N của nam châm', magnet_s: 'Cực S của nam châm', spray: 'Đầu phun trước của vòi phun', spray_back: 'Đầu phun sau của vòi phun', look: 'Camera dưới bụng drone', radar: 'Radar trên đỉnh xe', shape: 'Radar trên đỉnh xe' };
+  var TEN_BANH_HONG = { left_move: 'Bánh trái', left_back: 'Bánh trái', right_move: 'Bánh phải', right_back: 'Bánh phải', diag_left: 'Bánh omni đi chéo', diag_right: 'Bánh omni đi chéo', arm_left: 'Khớp xoay', arm_right: 'Khớp xoay', magnet_n: 'Cực N của nam châm', magnet_s: 'Cực S của nam châm', spray: 'Đầu phun trước của vòi phun', spray_back: 'Đầu phun sau của vòi phun', note: 'Loa', beat: 'Loa', retract_spikes: 'Bộ thu gai của bánh gai', extend_spikes: 'Bộ thu gai của bánh gai', look: 'Camera dưới bụng drone', radar: 'Radar trên đỉnh xe', shape: 'Radar trên đỉnh xe', hear: 'Cảm biến âm thanh', listen: 'Cảm biến âm thanh' };
   /** Lệnh `ten` là lệnh gốc của loại robot nhưng phần cứng màn (man.phanCung) không có: bộ phận đó hỏng. */
   function lenhHong(man, ten) {
     var camMau = SanHoc.CAM_MAU_HAM.indexOf(ten) >= 0 && ((man.robot && man.robot.camBien) || []).some(function (c) { return c && (c.ma === 'mau' || c.ma === 'camera'); });     // cảm biến màu có gắn mà phần cứng thiếu color(): cảm biến hỏng (che-mau.9)
     var camNhin = SanHoc.CAM_NHIN_HAM.indexOf(ten) >= 0 && ((man.robot && man.robot.camBien) || []).some(function (c) { return c && c.ma === SanHoc.MA_CAM_BAY; });     // camera nhìn xuống của drone có gắn mà phần cứng thiếu look(): camera hỏng
     var camRadar = SanHoc.CAM_RADAR_HAM && SanHoc.CAM_RADAR_HAM.indexOf(ten) >= 0 && ((man.robot && man.robot.camBien) || []).some(function (c) { return c && c.ma === SanHoc.MA_CAM_RADAR; }) && (ten !== 'shape' || !!(man.nhanDang || (man.robot && man.robot.nhanDang)));
-    return !!man.phanCung && man.phanCung.indexOf(ten) < 0 && (camMau || camNhin || camRadar || (SanHoc.HAM_GOC[man.loaiRobot || 'banh'] || []).indexOf(ten) >= 0 || (SanHoc.OMNI_CHEO && SanHoc.OMNI_CHEO.indexOf(ten) >= 0 && !!(man.omniCheo || (man.robot && man.robot.omniCheo))) || SanHoc.TAY_XOAY.indexOf(ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(ten) >= 0 || SanHoc.TAY_HOI.indexOf(ten) >= 0);       // tay xoay: khớp kẹt một phía (thiếu arm_left / arm_right trong phần cứng) cũng là bộ phận hỏng
+    var camAmThanh = SanHoc.CAM_AM_THANH_HAM && SanHoc.CAM_AM_THANH_HAM.indexOf(ten) >= 0 && ((man.robot && man.robot.camBien) || []).some(function (c) { return c && c.ma === SanHoc.MA_CAM_AM_THANH; }) && (ten !== 'listen' || !!(man.phanAm || (man.robot && man.robot.phanAm)));
+    return !!man.phanCung && man.phanCung.indexOf(ten) < 0 && (camMau || camNhin || camRadar || camAmThanh || (SanHoc.HAM_GOC[man.loaiRobot || 'banh'] || []).indexOf(ten) >= 0 || (SanHoc.OMNI_CHEO && SanHoc.OMNI_CHEO.indexOf(ten) >= 0 && !!(man.omniCheo || (man.robot && man.robot.omniCheo))) || (SanHoc.THAN_GAI && SanHoc.THAN_GAI.indexOf(ten) >= 0 && !!(man.thuGai || (man.robot && man.robot.thuGai))) || (SanHoc.TAY_LOA && SanHoc.TAY_LOA.indexOf(ten) >= 0) || SanHoc.TAY_XOAY.indexOf(ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(ten) >= 0 || SanHoc.TAY_HOI.indexOf(ten) >= 0);       // tay xoay: khớp kẹt một phía (thiếu arm_left / arm_right trong phần cứng) cũng là bộ phận hỏng
   }
   var SO_CHU = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy'];
   function soO(n) { return (n < SO_CHU.length ? SO_CHU[n] : String(n)) + ' ô'; }
@@ -499,6 +500,9 @@
     return { lech: lech, loi: loi, dx: dx, dy: dy, saiHuong: saiHuong, soVatLech: lv.soVatLech, camLech: lv.camLech };
   }
 
+  var TEN_NOT_NHAC = ['', 'nốt Đô (1)', 'nốt Rê (2)', 'nốt Mi (3)', 'nốt Fa (4)', 'nốt Sol (5)', 'nốt La (6)', 'nốt Si (7)', 'nốt Đô cao (8)'];
+  function tenAm(a) { return a === 'x' ? 'tiếng trống (beat)' : (TEN_NOT_NHAC[a] || ('nốt ' + a)); }
+
   /**
    * Chẩn đoán từ kết quả chạy MỘT sân. sanThu = true: sân thử, không có cờ để "chưa tới".
    * bc (bối cảnh): { hamMan: [tên], hamEm: [tên], biCam: [tên hàm của em bị cấm mà bài đang gọi] }.
@@ -515,6 +519,8 @@
       var tn = /tên "([^"]+)"/.exec(l.thongDiep || '');
       if (l.ma === 'mau-son-sai') {
         them('mau-son-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Tên màu viết chữ thường, đặt trong dấu nháy, ví dụ ink("red").', { cho: cho(m), mau: l.mauDat });
+      } else if (l.ma === 'not-sai') {
+        them('not-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Nốt từ 1 đến 8: 1 Đô, 2 Rê, 3 Mi, 4 Fa, 5 Sol, 6 La, 7 Si, 8 Đô cao; ví dụ note(1) hoặc note(1, 2) để ngân 2 nhịp; beat() không có đối số.', { cho: cho(m), not: l.notDat });
       } else if (l.ma === 'ray-sai') {
         them('ray-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' rail(n) chạy bệ cẩu n ô dọc ray: n dương chạy xuôi, n âm chạy ngược, mỗi ô một nhịp; tính n bằng hiệu hai vị trí, ví dụ rail(dich - x).', { cho: cho(m), n: l.nDat });
       } else if (l.ma === 'khong-ray') {
@@ -535,7 +541,7 @@
           : laNhin ? 'màn này chưa mở lệnh ' + tn[1] + '() trên khay (camera dưới bụng drone chưa dùng được ở đây).'          // camera có gắn mà khay chưa mở lệnh
           : dsCam.length
           ? 'màn này mới dùng được ' + dsCam.map(function (t) { return t + '()'; }).join(', ') + ', chưa có ' + tn[1] + '().'
-          : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu ở bụng hay camera (để đọc màu)' : SanHoc.CAM_TU_HAM.indexOf(tn[1]) >= 0 ? 'từ (kim loại)' : SanHoc.CAM_HONG_NGOAI_HAM && SanHoc.CAM_HONG_NGOAI_HAM.indexOf(tn[1]) >= 0 ? 'hồng ngoại ở mũi xe (đo số ô trống phía trước' + (tn[1] === 'warm' ? ', bản nâng cấp mới đo được nóng' : '') + ')' : SanHoc.CAM_RADAR_HAM && SanHoc.CAM_RADAR_HAM.indexOf(tn[1]) >= 0 ? 'radar trên đỉnh xe (để quét xung quanh' + (tn[1] === 'shape' ? ', bản nâng cấp mới nhận dạng được hình dạng' : '') + ')' : SanHoc.CAM_PIN_HAM.indexOf(tn[1]) >= 0 ? 'đo pin (màn này drone chưa có pin để đo)' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
+          : 'robot này chưa gắn cảm biến ' + (SanHoc.CAM_MAU_HAM.indexOf(tn[1]) >= 0 ? 'màu ở bụng hay camera (để đọc màu)' : SanHoc.CAM_TU_HAM.indexOf(tn[1]) >= 0 ? 'từ (kim loại)' : SanHoc.CAM_HONG_NGOAI_HAM && SanHoc.CAM_HONG_NGOAI_HAM.indexOf(tn[1]) >= 0 ? 'hồng ngoại ở mũi xe (đo số ô trống phía trước' + (tn[1] === 'warm' ? ', bản nâng cấp mới đo được nóng' : '') + ')' : SanHoc.CAM_RADAR_HAM && SanHoc.CAM_RADAR_HAM.indexOf(tn[1]) >= 0 ? 'radar trên đỉnh xe (để quét xung quanh' + (tn[1] === 'shape' ? ', bản nâng cấp mới nhận dạng được hình dạng' : '') + ')' : SanHoc.CAM_AM_THANH_HAM && SanHoc.CAM_AM_THANH_HAM.indexOf(tn[1]) >= 0 ? 'âm thanh trên đỉnh xe (để đo tiếng vang' + (tn[1] === 'listen' ? ', bản nâng cấp mới phân biệt được cao độ nốt' : '') + ')' : SanHoc.CAM_PIN_HAM.indexOf(tn[1]) >= 0 ? 'đo pin (màn này drone chưa có pin để đo)' : 'khoảng cách') + ' nên chưa có hàm ' + tn[1] + '().') +
           ' Hàm gốc dùng được ở màn này: ' + (hamGoc.length ? hamGoc.join(', ') : '(không có)') + '.', { ten: tn[1], cho: cho(m) });
       } else if (l.loai === 'runtime-error' && tn && /^Chưa có biến( hay hàm)? tên/.test(l.thongDiep) && SanHoc.MAU_TEN.concat(['none']).indexOf(tn[1]) >= 0 && (hamGoc.indexOf('color') >= 0 || hamGoc.indexOf('look') >= 0)) {
         them('mau-thieu-nhay', 'Ở ' + viTri(m) + ': ' + tn[1] + ' đang viết không có dấu nháy nên Python tưởng đó là tên một biến hay một hàm và không tìm thấy. ' +
@@ -703,6 +709,43 @@
       var sl0 = sonLai[0], msl = g.anhXa[sl0.dongPy] || null, mslt = sl0.truoc ? (g.anhXa[sl0.truoc.dongPy] || null) : null;
       them('son-goi-lai', 'Ở ' + viTri(msl) + ': đầu sơn đã nhận lệnh ' + sl0.truoc.ten + '() (ở ' + viTri(mslt) + ') trong nhịp này rồi, nên lệnh ' + sl0.ten + '() này bị bỏ qua. ' +
         'Mỗi nhịp đầu sơn chỉ làm một việc (chấm, hạ hay nhấc); wait() mới sang nhịp kế.', { cho: cho(msl), choTruoc: cho(mslt), nhip: sl0.nhip });
+    }
+    var loaLai = res.suKien.filter(function (e) { return e.ma === 'loa-goi-lai'; });
+    if (loaLai.length) {
+      var ll0 = loaLai[0], mll = g.anhXa[ll0.dongPy] || null, mllt = ll0.truoc ? (g.anhXa[ll0.truoc.dongPy] || null) : null;
+      them('loa-goi-lai', 'Ở ' + viTri(mll) + ': loa đã nhận lệnh ' + ll0.truoc.ten + '() (ở ' + viTri(mllt) + ') trong nhịp này rồi, nên lệnh ' + ll0.ten + '() này bị bỏ qua. ' +
+        'Mỗi nhịp loa chỉ phát một tiếng (một nốt nhạc hoặc một tiếng trống); wait() mới sang nhịp kế.', { cho: cho(mll), choTruoc: cho(mllt), nhip: ll0.nhip });
+    }
+    var gaiLai = res.suKien.filter(function (e) { return e.ma === 'gai-goi-lai'; });
+    if (gaiLai.length) {
+      var gl0 = gaiLai[0], mgl = g.anhXa[gl0.dongPy] || null, mglt = gl0.truoc ? (g.anhXa[gl0.truoc.dongPy] || null) : null;
+      them('gai-goi-lai', 'Ở ' + viTri(mgl) + ': bánh gai đã nhận lệnh ' + gl0.truoc.ten + '() (ở ' + viTri(mglt) + ') trong nhịp này rồi, nên lệnh ' + gl0.ten + '() này bị bỏ qua. ' +
+        'Mỗi nhịp bánh gai chỉ thu hoặc bung gai một lần; wait() mới sang nhịp kế.', { cho: cho(mgl), choTruoc: cho(mglt), nhip: gl0.nhip });
+    }
+    var ngachChan = res.suKien.filter(function (e) { return e.ma === 'ngach-chan'; });
+    if (ngachChan.length) {
+      var nc0 = ngachChan[0], mnc = g.anhXa[nc0.dongPy] || null;
+      them('ngach-chan', 'Ở nhịp ' + nc0.nhip + ': xe bước vào miệng ngách hang ngầm nhưng đầu bên kia (' + nc0.den.x + ', ' + nc0.den.y + ') đang bị chặn, nên xe chưa chui sang được.', { nhip: nc0.nhip, cho: cho(mnc) });
+    }
+    var saiNot = res.suKien.filter(function (e) { return e.ma === 'sai-not'; });
+    if (saiNot.length) {
+      var sn0 = saiNot[0], msn = sn0.lenh ? (g.anhXa[sn0.lenh.dongPy] || null) : null;
+      var daoLoa = man.daoChieu && man.daoChieu.indexOf('loa') >= 0;
+      them('sai-not', 'Ở nhịp ' + sn0.nhip + ', loa phát ' + tenAm(sn0.choi) + (sn0.thua ? ' khi giai điệu đã hết' : ', nhưng phách thứ ' + (sn0.viTri + 1) + ' của giai điệu cần ' + tenAm(sn0.can)) + '.' +
+        (daoLoa && typeof sn0.choi === 'number' ? ' Dây loa ở màn này đang đấu ngược: gọi note(n) thì loa phát nốt 9 - n (trầm ↔ bổng).' : ' Nốt từ 1 đến 8 là Đô Rê Mi Fa Sol La Si Đô cao; beat() là tiếng trống.'),
+        { nhip: sn0.nhip, viTri: sn0.viTri, can: sn0.can, choi: sn0.choi, cho: cho(msn) });
+    }
+    var lechNhip = res.suKien.filter(function (e) { return e.ma === 'lech-nhip'; });
+    if (lechNhip.length) {
+      var ln0 = lechNhip[0], mln = ln0.lenh ? (g.anhXa[ln0.lenh.dongPy] || null) : null;
+      them('lech-nhip', 'Ở nhịp ' + ln0.nhip + ', phách thứ ' + (ln0.viTri + 1) + ' của giai điệu là nhịp lặng (không phát âm), nhưng loa lại phát ' + tenAm(ln0.choi) + '. Ở nhịp lặng, chỉ gọi wait() (và đi nếu cần) mà không gọi note() hay beat().',
+        { nhip: ln0.nhip, viTri: ln0.viTri, choi: ln0.choi, cho: cho(mln) });
+    }
+    var loNhip = res.suKien.filter(function (e) { return e.ma === 'lo-nhip'; });
+    if (loNhip.length) {
+      var lo0 = loNhip[0], mlo = lo0.lenh ? (g.anhXa[lo0.lenh.dongPy] || null) : null;
+      them('lo-nhip', 'Ở nhịp ' + lo0.nhip + ', phách thứ ' + (lo0.viTri + 1) + ' của giai điệu cần ' + tenAm(lo0.can) + ', nhưng nhịp này loa im lặng (bị trễ nhịp). Khi đã bắt đầu giai điệu, mỗi nhịp phải khớp một phách: chỉ để nhịp trống ở chỗ giai điệu ghi dấu lặng (.).',
+        { nhip: lo0.nhip, viTri: lo0.viTri, can: lo0.can, cho: cho(mlo) });
     }
     var toThua = res.suKien.filter(function (e) { return e.ma === 'to-thua'; });
     if (toThua.length) {
@@ -972,7 +1015,7 @@
     if (roiHo.length) {
       var rh0 = roiHo[0], mrh = rh0.lenh ? (g.anhXa[rh0.lenh.dongPy] || null) : null;
       // Xe (hai bánh, xích, omni) cũng rơi hố (lõi: mọi thân trừ drone; P1 mùa 3 29/10 nói rõ lời cho xe): xe không nhảy được, phải đi đường khác.
-      var laNhenRh = man.loaiRobot === 'nhen', laXeRh = man.loaiRobot === 'banh' || man.loaiRobot === 'xich' || man.loaiRobot === 'omni';
+      var laNhenRh = man.loaiRobot === 'nhen', laXeRh = man.loaiRobot === 'banh' || man.loaiRobot === 'xich' || man.loaiRobot === 'omni' || man.loaiRobot === 'gai';
       var bangRh = (res.vet || []).some(function (v) { return v.loai === 'nhip' && v.nhip === rh0.nhip && (v.suKien || []).some(function (e) { return e.ma === 'bang-day' && e.den && e.den.x === rh0.o.x && e.den.y === rh0.o.y; }); });
       them('roi-ho', 'Ở nhịp ' + rh0.nhip + ', ' + (laNhenRh ? 'nhện' : laXeRh ? 'xe' : 'robot') + ' rơi xuống hố ở ô (' + rh0.o.x + ', ' + rh0.o.y + ')' + (rh0.lenh ? ' (lệnh ' + rh0.lenh.ten + '() ở ' + viTri(mrh) + ')' : '') +
         (bangRh ? ' (băng chuyền đẩy xe vào ô hố)' : '') + (sanThu ? '.' : ' nên chương trình dừng ở đó.') +
@@ -1212,8 +1255,10 @@
     var quen = res.suKien.filter(function (e) { return e.ma === 'quen-wait'; });
     if (quen.length) {
       var q = quen[0], mq = g.anhXa[q.lenh[0].dongPy] || null;
-      var soTay = q.lenh.filter(function (x) { return SanHoc.TAY_LENH.indexOf(x.ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(x.ten) >= 0 || SanHoc.TAY_NEM.indexOf(x.ten) >= 0 || SanHoc.TAY_HOI.indexOf(x.ten) >= 0 || SanHoc.TAY_SON.indexOf(x.ten) >= 0 || SanHoc.TAY_PHAO.indexOf(x.ten) >= 0 || SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }).length;
+      var soTay = q.lenh.filter(function (x) { return SanHoc.TAY_LENH.indexOf(x.ten) >= 0 || SanHoc.TAY_NAM_CHAM.indexOf(x.ten) >= 0 || SanHoc.TAY_NEM.indexOf(x.ten) >= 0 || SanHoc.TAY_HOI.indexOf(x.ten) >= 0 || SanHoc.TAY_SON.indexOf(x.ten) >= 0 || (SanHoc.TAY_LOA && SanHoc.TAY_LOA.indexOf(x.ten) >= 0) || (SanHoc.THAN_GAI && SanHoc.THAN_GAI.indexOf(x.ten) >= 0) || SanHoc.TAY_PHAO.indexOf(x.ten) >= 0 || SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }).length;
       var tenTay = q.lenh.some(function (x) { return SanHoc.TAY_SON.indexOf(x.ten) >= 0; }) ? 'sơn'                   // máy sơn: "lệnh sơn"
+        : q.lenh.some(function (x) { return SanHoc.TAY_LOA && SanHoc.TAY_LOA.indexOf(x.ten) >= 0; }) ? 'loa'          // loa: "lệnh loa"
+        : q.lenh.every(function (x) { return SanHoc.THAN_GAI && SanHoc.THAN_GAI.indexOf(x.ten) >= 0; }) ? 'bánh gai'
         : q.lenh.every(function (x) { return SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }) ? 'neo'                          // Bến sông: "lệnh neo" / "lệnh dây phao"
         : q.lenh.some(function (x) { return SanHoc.TAY_PHAO.indexOf(x.ten) >= 0 || SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }) ? 'dây phao' : 'tay';
       var loaiLenh = soTay === 0 ? 'bánh' : soTay === q.lenh.length ? tenTay : 'bánh và ' + tenTay;
@@ -1329,6 +1374,19 @@
           ((res.treo || []).length ? '. Móc vẫn đang treo container: hạ xuống boong bằng set_down()' : '') + '. Tàu cập rồi rời bến theo chu kỳ: hạ container lên boong lúc tàu có mặt rồi chờ tàu đi.',
           { thieu: thieuGiao, trenBoong: trenBoong, treo: (res.treo || []).length });
       }
+    } else if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'choi-dieu') {
+      if (!res.dungSom && res.dieu) {
+        if ((res.dieuDung || 0) < res.dieu.length) {
+          var tiep = res.dieu[res.dieuDung || 0];
+          them('chua-du-dieu', 'Chương trình chạy xong mà giai điệu mới chơi được ' + (res.dieuDung || 0) + '/' + res.dieu.length + ' phách' +
+            (tiep !== null && tiep !== undefined ? ', phách kế tiếp cần ' + tenAm(tiep) : '') + '. Mỗi nốt note(n) hay tiếng trống beat() đều cần wait() để phát ra thành một nhịp.',
+            { daDung: res.dieuDung || 0, tong: res.dieu.length, canTiep: tiep });
+        } else {
+          var rc = res.robot;
+          them('chua-toi-co', 'Giai điệu đã chơi đủ ' + res.dieu.length + ' phách rồi nhưng xe chưa tới cờ: xe đang ở ô (' + rc.x + ', ' + rc.y + '). Đi tiếp tới ô cờ F.',
+            { robot: { x: rc.x, y: rc.y, huong: rc.huong } });
+        }
+      }
     } else if (!sanThu && !res.thang && !res.loi && res.dungSom !== 'doi-thu-thang' && res.dungSom !== 'dam-tuong') {
       var r = res.robot;
       them('chua-toi-co', 'Chương trình chạy xong mà robot chưa tới cờ: robot đang ở ô (' + r.x + ', ' + r.y + ')' +
@@ -1421,6 +1479,8 @@
         if (e.aimTam !== undefined) mucLenh.aimTam = e.aimTam;
         if (e.lucBan !== undefined) mucLenh.lucBan = e.lucBan;           // spray(p): lực bắn "low" / "high"
         if (e.inkMau !== undefined) mucLenh.inkMau = e.inkMau;           // ink(c): giao diện đổi màu đầu sơn ngay           // aim(n): giao diện đổi số ngắm trên xe
+        if (e.notSo !== undefined) mucLenh.notSo = e.notSo;              // note(n): giao diện biết nốt đã chọn
+        if (e.soNhipLoa !== undefined) mucLenh.soNhipLoa = e.soNhipLoa;  // note(n, so_nhip): số nhịp ngân
         if (e.docCamBien) mucLenh.docCamBien = e.docCamBien;             // đọc cảm biến: giao diện nháy cảm biến
         return mucLenh;
       }
@@ -1508,6 +1568,9 @@
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatDang: lm.vatDang || undefined, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung,
         omniCheo: man.omniCheo || (man.robot && man.robot.omniCheo), chinhLuc: man.chinhLuc || (man.robot && man.robot.chinhLuc), nhanDang: man.nhanDang || (man.robot && man.robot.nhanDang), tamNemMacDinh: man.tamNemMacDinh,
+        thuGai: man.thuGai || (man.robot && man.robot.thuGai), phanAm: man.phanAm || (man.robot && man.robot.phanAm),
+        dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
+        ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         dong: lm.dong || undefined,                                         // BẾN SÔNG: lớp dòng chảy (san-hoc.js phần BẾN SÔNG)
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
@@ -1522,7 +1585,9 @@
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
         cong: res.cong, van: res.van, dongTat: res.dongTat, congBanDau: res.congBanDau, vanBanDau: res.vanBanDau, neo: res.neo, keo: res.keo,   // BẾN SÔNG (31/10)
         chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
-        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua, son: res.son, daSon: res.daSon, hinh: res.hinh, sonBanDau: res.sonBanDau });
+        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua, son: res.son, daSon: res.daSon, hinh: res.hinh, sonBanDau: res.sonBanDau,
+        loa: res.loa, daChoi: res.daChoi, dieu: res.dieu, dieuDung: res.dieuDung, dieuBatDau: res.dieuBatDau,
+        gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
@@ -1544,6 +1609,8 @@
     ketQua.pin = viec.pin; ketQua.pinToiDa = viec.pinToiDa; ketQua.sac = viec.sac;
     ketQua.bongMo = viec.bongMo; ketQua.diQua = viec.diQua;
     ketQua.son = viec.son; ketQua.daSon = viec.daSon; ketQua.hinh = viec.hinh; ketQua.sonBanDau = viec.sonBanDau;
+    ketQua.loa = viec.loa; ketQua.daChoi = viec.daChoi; ketQua.dieu = viec.dieu; ketQua.dieuDung = viec.dieuDung; ketQua.dieuBatDau = viec.dieuBatDau;
+    ketQua.gai = viec.gai; ketQua.ngachHang = viec.ngachHang; ketQua.chuongDa = viec.chuongDa; ketQua.daChuong = viec.daChuong; ketQua.daChuongBanDau = viec.daChuongBanDau;
     ketQua.sung = viec.sung; ketQua.cua = viec.cua; ketQua.nut = viec.nut; ketQua.bangTat = viec.bangTat; ketQua.cuaBanDau = viec.cuaBanDau; ketQua.nutBanDau = viec.nutBanDau;
 
     // hàm thực sự được gọi (hợp mọi sân) → số ô
@@ -1648,11 +1715,14 @@
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         dong: lm.dong || undefined,                                         // BẾN SÔNG
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
+        dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
+        ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,
             camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, xichDay: mi.xichDay, beSung: mi.beSung, mucBanDau: mi.mucBanDau,
             omniCheo: mi.omniCheo || (mi.robot && mi.robot.omniCheo), chinhLuc: mi.chinhLuc || (mi.robot && mi.robot.chinhLuc), nhanDang: mi.nhanDang || (mi.robot && mi.robot.nhanDang), tamNemMacDinh: mi.tamNemMacDinh,
+            thuGai: mi.thuGai || (mi.robot && mi.robot.thuGai), phanAm: mi.phanAm || (mi.robot && mi.robot.phanAm),
             co: SanHoc.coCuaSan(mi.co, si, nhieu),
             daoChieu: mi.daoChieu, phanCung: SanHoc.phanCungCua(mi), nguonDong: nguonDongCua(gs[i])
           };
@@ -1668,14 +1738,16 @@
       var doi = res.doi.map(function (d, i) {
         var vet = chuyenVet(d.vet, gs[i]);
         hamTrongVet(vet, dung);
-        return { ten: d.ten, loaiRobot: d.loaiRobot, vet: vet, robot: d.robot, batDau: d.batDau, tay: d.tay, namCham: d.namCham, nem: d.nem, sung: d.sung, pin: d.pin, pinToiDa: d.pinToiDa, toiCo: d.toiCo };
+        return { ten: d.ten, loaiRobot: d.loaiRobot, vet: vet, robot: d.robot, batDau: d.batDau, tay: d.tay, namCham: d.namCham, nem: d.nem, sung: d.sung, loa: d.loa, daChoi: d.daChoi, gai: d.gai, pin: d.pin, pinToiDa: d.pinToiDa, toiCo: d.toiCo };
       });
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: doi[0].vet, doi: doi, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung,
         vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
         cong: res.cong, van: res.van, dongTat: res.dongTat, congBanDau: res.congBanDau, vanBanDau: res.vanBanDau, neo: res.neo, keo: res.keo,   // BẾN SÔNG (31/10)
         chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
-        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: null, diQua: [], daSon: res.daSon, hinh: res.hinh });
+        pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: null, diQua: [], daSon: res.daSon, hinh: res.hinh,
+        loa: res.loa, daChoi: res.daChoi, dieu: res.dieu, dieuDung: res.dieuDung, dieuBatDau: res.dieuBatDau,
+        gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau });
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
@@ -1692,7 +1764,7 @@
     ketQua.chanDoan = gom;
     ketQua.batDau = mans.map(function (mi) { return Array.isArray(mi.batDau) && nhieu ? mi.batDau[0] : mi.batDau; });
     var viec = ketQua.theoSan.filter(function (s) { return !s.thang; })[0] || ketQua.theoSan[0];
-    ['vet', 'doi', 'vatBanDau', 'dich', 'tay', 'namCham', 'nem', 'vat', 'thungBanDau', 'thung', 'mauO', 'pin', 'pinToiDa', 'sac', 'sung', 'cua', 'nut', 'bangTat', 'cuaBanDau', 'nutBanDau', 'daSon', 'hinh']
+    ['vet', 'doi', 'vatBanDau', 'dich', 'tay', 'namCham', 'nem', 'vat', 'thungBanDau', 'thung', 'mauO', 'pin', 'pinToiDa', 'sac', 'sung', 'cua', 'nut', 'bangTat', 'cuaBanDau', 'nutBanDau', 'daSon', 'hinh', 'loa', 'daChoi', 'dieu', 'dieuDung', 'dieuBatDau', 'gai', 'ngachHang', 'chuongDa', 'daChuong', 'daChuongBanDau']
       .forEach(function (k) { ketQua[k] = viec[k]; });
 
     // hàm thực sự được gọi (hợp mọi robot, mọi sân) → số ô
@@ -1790,6 +1862,7 @@
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st), roBanDau: st.ro === true ? true : undefined,
       danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
       omniCheo: man.omniCheo || (man.robot && man.robot.omniCheo), chinhLuc: man.chinhLuc || (man.robot && man.robot.chinhLuc), nhanDang: man.nhanDang || (man.robot && man.robot.nhanDang), tamNemMacDinh: man.tamNemMacDinh, daLapHo: man.daLapHo,
+      thuGai: man.thuGai || (man.robot && man.robot.thuGai), phanAm: man.phanAm || (man.robot && man.robot.phanAm),
       daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g),
       pin: man.loaiRobot === 'drone' ? (st.pin !== undefined ? st.pin : (Array.isArray(man.pin) ? man.pin[0] : man.pin)) : undefined
     }, g.ma);
@@ -1802,6 +1875,7 @@
     ketQua.cua = res.cua; ketQua.nut = res.nut; ketQua.bangTat = res.bangTat;
     ketQua.pin = res.pin; ketQua.pinToiDa = res.pinToiDa; ketQua.sac = res.sac;
     ketQua.son = res.son; ketQua.daSon = res.daSon;
+    ketQua.loa = res.loa; ketQua.daChoi = res.daChoi; ketQua.gai = res.gai;
     return xong();
   }
 

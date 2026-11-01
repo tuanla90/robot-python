@@ -35,7 +35,9 @@
     'K': { o: [['cong-thuy-loi', { mo: false }]] }, 'k': { o: [['cong-thuy-loi', { mo: true }]] }, 'V': { o: [['van-cong', {}]] },
     'B': { o: [['nuoc']], vat: [['be-go']] }, 'L': { o: [['nuoc']], vat: [['luc-binh']] },
     // Cảng sông (mùa 4, 31/10): boong tàu T (vẽ tàu có mặt; gói nối đổi theo vết tau), ray cẩu R (ngang; gói nối truyền doc theo kết quả ray)
-    'T': { o: [['boong-tau', { co: true }]] }, 'R': { o: [['ray']] }
+    'T': { o: [['boong-tau', { co: true }]] }, 'R': { o: [['ray']] },
+    // Hang động đá vôi (mùa 8): nền đá ướt trơn trượt I
+    'I': { o: [SAN] }
   };
   /** Tên ô của bộ pixel cũ (Ve.tiles, đã xoá ở V7c2) → hình vector thay nó (phim-vector / máy kiểm còn gọi theo tên cũ). */
   var TILES = {

@@ -48,6 +48,7 @@
     'go_up', 'land', 'take_off', 'go_down', 'go_left', 'go_right', 'crouch', 'stand',
     'anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow',      // Bến sông (mùa 5): neo, dây phao, chong chóng dòng chảy của xuồng
     'swing_left', 'swing_right', 'extend', 'retract', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail',   // Cảng sông (mùa 4): cần cẩu quay / vươn, móc cẩu, máy quét mã, ray
+    'note', 'beat', 'retract_spikes', 'extend_spikes', 'hear', 'listen',                    // Hang động đá vôi (mùa 8): loa phát nhạc, thu/bật gai bánh gai, cảm biến âm thanh
     'print', 'range', 'len', 'str', 'int'];                                                  // (min / max / abs của nhân chưa đưa vào đây: kiem-che-xe đòi mọi tên trong HAM_GOC_MAC_DINH phải có khối kéo-thả; khi thêm khối vào the-lenh.js ở SM3-D sẽ đưa vào)
   // từ khóa Python (nhân chạy code chỉ hiểu một phần, nhưng cấm cả bộ cho khỏi nhầm)
   var TU_KHOA = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',

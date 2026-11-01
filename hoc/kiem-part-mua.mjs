@@ -23,12 +23,13 @@ const MUA = {
   'mua-4': { than: 'cau', tay: g => g < 2 ? [] : ['moc-cau'], cam: g => g < 3 ? [] : ['quet-ma'], goiDoi: [9] },
   'mua-5': { than: 'xuong', tay: g => g < 2 ? [] : ['day-keo'], cam: g => g < 3 ? [] : ['dong-chay'], goiDoi: [9] },
   'mua-6': { than: 'drone', tay: g => g < 2 ? [] : ['son'], cam: g => g < 3 ? [] : ['camera-4'], goiDoi: [9] },
-  'mua-7': { than: 'omni', tay: g => g < 2 ? [] : ['nem'], cam: g => g < 3 ? [] : ['radar'], goiDoi: [9] }
+  'mua-7': { than: 'omni', tay: g => g < 2 ? [] : ['nem'], cam: g => g < 3 ? [] : ['radar'], goiDoi: [9] },
+  'mua-8': { than: 'gai', tay: g => g < 2 ? [] : ['loa'], cam: g => g < 3 ? [] : ['am-thanh'], goiDoi: [9] }
 };
 const THU_MUA = Object.keys(MUA);
-const THAN_LOAI = { banh: 'hai-banh', nhen: 'nhen', xich: 'xich', omni: 'omni', drone: 'drone', cau: 'cau', xuong: 'xuong' };
+const THAN_LOAI = { banh: 'hai-banh', nhen: 'nhen', xich: 'xich', omni: 'omni', drone: 'drone', cau: 'cau', xuong: 'xuong', gai: 'gai' };
 // Cảm biến suy từ khay lệnh (màn cũ không khai man.robot.camBien).
-const CAM_THEO_LENH = { front_clear: 'khoang-cach', left_clear: 'khoang-cach', right_clear: 'khoang-cach', distance: 'hong-ngoai', warm: 'hong-ngoai', front_metal: 'tu', front_pole: 'tu', scan_weight: 'quet-ma', scan_tag: 'quet-ma', flow: 'dong-chay', gate_open: 'dong-chay', radar: 'radar', shape: 'radar' };
+const CAM_THEO_LENH = { front_clear: 'khoang-cach', left_clear: 'khoang-cach', right_clear: 'khoang-cach', distance: 'hong-ngoai', warm: 'hong-ngoai', front_metal: 'tu', front_pole: 'tu', scan_weight: 'quet-ma', scan_tag: 'quet-ma', flow: 'dong-chay', gate_open: 'dong-chay', radar: 'radar', shape: 'radar', hear: 'am-thanh', listen: 'am-thanh' };
 
 /** { than, tay, cam: [mã] } của một robot (cấu hình màn hay một phần tử man.doi). */
 function partCua(man, r) {

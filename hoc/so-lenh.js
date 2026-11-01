@@ -42,11 +42,12 @@
     'nam-cham': 'Nam châm',
     'tay-xoay': 'Tay xoay',
     'son': 'Bộ gieo hạt',
+    'loa': 'Loa',
     'nem': 'Máy ném',
     'drone': 'Drone',
     'hong-ngoai': 'Hồng ngoại'
   };
-  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'son', 'nam-cham', 'tay-xoay', 'nem', 'drone', 'hong-ngoai'];
+  var thuTuNhom = ['xe', 'tay', 'lap', 'cam-bien', 'tham-so', 'bang-chuyen', 'nhen', 'list', 'xich', 'omni', 'hoi', 'mau', 'son', 'loa', 'nam-cham', 'tay-xoay', 'nem', 'drone', 'hong-ngoai'];
 
   function m(ten, nhom, moTa, chuong, man) { return { ten: ten, nhom: nhom, moTa: moTa, chuong: chuong, man: man }; }
 
@@ -325,7 +326,14 @@
     g('pick_up2', null, 'Móc đôi: nhấc một lúc hai container trên cùng, giữ nguyên thứ tự; set_down() hạ cả hai'),
     g('read_code', null, 'Hỏi: số in trên container trên cùng ở ô đầu cần; không có container thì -1'),
     g('weight', null, 'Hỏi: cân tải, bao nhiêu tấn đang treo (cộng cả hai nếu treo đôi); không treo thì cân container trên cùng ở đầu cần; không có gì thì 0'),
-    g('rail', null, 'Bệ cẩu chạy dọc ray n ô: n dương chạy xuôi (sang phải / xuống), n âm chạy ngược; mỗi ô một nhịp')
+    g('rail', null, 'Bệ cẩu chạy dọc ray n ô: n dương chạy xuôi (sang phải / xuống), n âm chạy ngược; mỗi ô một nhịp'),
+    // HANG ĐỘNG ĐÁ VÔI (mùa 8): bánh gai, loa phát nhạc, cảm biến âm thanh
+    g('note', null, 'Loa: chọn nốt nhạc ("C", "D", "E", "F", "G", "A", "B", "C5" hoặc "-" để nghỉ), sẽ ngân ở nhịp kế tiếp'),
+    g('beat', null, 'Loa: đặt độ dài nốt là k nhịp (1, 2, 3 hoặc 4); nốt chỉ tính là trọn khi loa ngân đủ k nhịp'),
+    g('retract_spikes', 'extend_spikes', 'Bánh gai thu gai vào: không bám đá ướt nhưng đi trên đá khô như bánh thường'),
+    g('extend_spikes', 'retract_spikes', 'Bánh gai bật gai ra: bám chắc trên nền đá vôi ướt không bị trượt'),
+    g('hear', null, 'Hỏi: cảm biến âm thanh có nghe thấy tiếng vang của chuông đá trong phạm vi không (True / False)'),
+    g('listen', null, 'Hỏi: cảm biến âm thanh nghe được nốt nhạc nào ("C".."C5"), không có tiếng thì trả về "none"')
   ];
 
   function tim(ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }
