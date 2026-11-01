@@ -176,7 +176,13 @@ User 30/10: **phần nào làm được bằng ảnh + hoạt cảnh Remotion th
 - **TopView chỉ gen ẢNH** cho thứ chưa có: nền phòng CLB, bản đồ thị trấn, nơi chốn từng mùa, cảnh "Ngoài đời", biểu cảm / dáng mascot còn thiếu. Cảnh đang dùng nền tạm có nhãn vàng "chờ ảnh TopView".
   Không dùng ảnh AI cho bánh, góc xoay, đi từng ô, chữ code.
 - Sau này thêm giọng ElevenLabs của Sola / Luna (giọng đã chọn ở `diem10code-video`) và nhạc.
-- **Video dựng bằng Remotion** từ ảnh nền + code, kể cả phim ra mắt và phim xuất xưởng (user 30/10). Cách đưa vào game (mp4 hay chạy trực tiếp) chưa chốt.
+- **Video dựng bằng Remotion** từ ảnh nền + code, kể cả phim ra mắt và phim xuất xưởng (user 30/10).
+- **Đưa vào game: chiếu thẳng trên web, không xuất mp4** (user chốt 1/11). `@remotion/player` chiếu chính component phim trong `#stage` 360×640 (khổ dọc 1080×1920 thu 1/3).
+  Đóng gói: `npm run web` trong `phim-clb/` (`tools/web/dong-goi.mjs`) → `hoc/game/phim-clb/phim-clb.js` (React + Player + phim, ~1,3 MB, chỉ tải khi mở phim lần đầu),
+  `hoc/game/phim-clb/ds.js` (gói nào có phim), ảnh WebP 2/3 cỡ gốc ở `hoc/game/phim-clb/a/` (mùa 1–3: ~14 MB thay 171 MB PNG).
+  `phim-goi.js`: gói có trong `PhimCLBDs` chiếu phim CLB thay phim khung cũ (cùng cờ đã xem, cùng nút Bỏ qua / Vào gói); tải lỗi thì về phim khung. Gói thứ n mùa m chiếu `M<m>G<n>-Mo`
+  (đã ghép đoạn kết gói trước, như Studio). Đang bật mùa 1–3 (`MUA` trong `dong-goi.mjs`); thêm mùa thì thêm vào `MUA`, `CHON` trong `nen-anh.py` và import trong `src/web/entry.tsx`.
+  Phim `M<m>G10-Ket` (kết mùa) chưa có chỗ chiếu trong game. mp4 chỉ xuất khi cần đăng ra ngoài.
 
 ## 5. Việc tiếp theo
 

@@ -109,7 +109,8 @@ const TEP = [];
 (function di(d) {
   for (const f of fs.readdirSync(d)) {
     const p = path.join(d, f);
-    if (fs.statSync(p).isDirectory()) { if (!/^(font|icon)$/.test(f)) di(p); }
+    // phim-clb/: phim CLB đóng gói sẵn (phim-clb/tools/web/dong-goi.mjs), màu theo bảng của phim (phim-clb/src/d10.tsx), không theo bảng màu game
+    if (fs.statSync(p).isDirectory()) { if (!/^(font|icon|phim-clb)$/.test(f)) di(p); }
     else if (/\.(js|css|html)$/.test(f) && f !== 'bang-mau.js') TEP.push(path.relative(GAME, p).split(path.sep).join('/'));
   }
 })(GAME);

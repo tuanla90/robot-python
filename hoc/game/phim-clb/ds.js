@@ -1,0 +1,2 @@
+// Sinh bởi phim-clb/tools/web/dong-goi.mjs: gói có phim CLB (phim-goi.js tải phim-clb.js khi cần).
+window.PhimCLBDs = ["xe","tay-gap","cam-bien","kho-hang","banh-lui","tay-xoay","me-cung","hai-robot","combo","robot","xich","sung-hoi","hong-ngoai","nha-may","day-thung","luc-ban","do-nhiet","kho-cu","doi-mua-2","nha-may-chay","nhen","nam-cham","cam-ung-tu","bai-tu","nhay","dao-cuc","doc-cuc","bang-cu","doi-xich","tong-hop-3"];

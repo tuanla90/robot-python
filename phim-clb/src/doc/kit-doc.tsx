@@ -509,6 +509,10 @@ const TRUOC_THEO_ANH: Record<string, string> = {
   'xich-manh': 'xich-ui',
   'xich-du': 'xich-manh',
 };
+/** Đè TRUOC_THEO_ANH theo mùa: mùa 2 'du' (lưỡi ủi, gói 5) đứng sau xe hồng ngoại, robot/m2 không có 'xoay' (1/11). */
+const TRUOC_THEO_MUA: Record<string, Record<string, string>> = {m2: {du: 'xich-hn'}};
+/** R1 đủ bộ của mùa (cảnh đưa R2 lên bàn, gói 9): robot/m3 không có 'du' mà là nhện từ (1/11). */
+const R1_DU: Record<string, string> = {m3: 'nhen-tu'};
 
 export type LoaiNangCap = 'banh-lui' | 'tay-xoay' | 'cam-ben' | 'nang-cap';
 
@@ -542,7 +546,7 @@ export const TrongXe: React.FC<{
   const uLap = ease(f, [Math.max(15, cach - 70), cach], [0, 1]);
   const dangLap = f >= Math.max(15, cach - 70) && f < cach;
 
-  const maTruoc = truoc ?? TRUOC_THEO_ANH[anh];
+  const maTruoc = truoc ?? TRUOC_THEO_MUA[m]?.[anh] ?? TRUOC_THEO_ANH[anh];
   const anhTruoc = maTruoc ? duongRobot(m, maTruoc) : 'robot/lab/dau-r1.png';
   const S_TRUOC = 580 * (maTruoc ? (RONG[maTruoc] ?? 576) / 576 : 1);
   const laLapHaiBanh = !nangCap && anh === 'r1';
@@ -759,7 +763,7 @@ export const TrongXe: React.FC<{
           {/* R1 đứng sẵn bên trái sa bàn */}
           <div style={{position: 'absolute', left: 340 - 200, top: 890 - 200, width: 400, height: 400,
             transform: 'rotate(-90deg)', filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))'}}>
-            <Img src={staticFile(duongRobot(m, 'du'))} style={{width: 400, height: 400}} />
+            <Img src={staticFile(duongRobot(m, R1_DU[m] ?? 'du'))} style={{width: 400, height: 400}} />
           </div>
           {/* R2 của Luna trượt từ bên phải vào đứng cạnh R1 */}
           <div style={{position: 'absolute', left: 740 - 200 + (f < cach ? (1 - uLap) * 220 : 0), top: 890 - 200, width: 400, height: 400,

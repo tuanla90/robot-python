@@ -21,7 +21,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var PHIM = {};                                  // mã gói → mảng hàm khung
 
   function CO(ma) { return 'phim-goi:' + ma; }
-  function co(ma) { return !!(PHIM[ma] && PHIM[ma].length); }
+  /* Phim CLB (Remotion chiếu thẳng, phim-clb/phim-clb.js, 1/11): gói có trong window.PhimCLBDs (phim-clb/ds.js) chiếu phim CLB thay phim khung;
+     gói lớn tải lần đầu cần, lỗi tải thì quay về phim khung cũ. */
+  function coCLB(ma) { return !!(window.PhimCLBDs && window.PhimCLBDs.indexOf(ma) >= 0); }
+  var choCLB = null;
+  function taiCLB(xong) {
+    if (window.PhimCLB) { xong(true); return; }
+    if (choCLB) { choCLB.push(xong); return; }
+    choCLB = [xong];
+    var s = document.createElement('script');
+    s.src = 'phim-clb/phim-clb.js';
+    function bao(ok) { var ds = choCLB; choCLB = null; ds.forEach(function (f) { f(ok && !!window.PhimCLB); }); }
+    s.onload = function () { bao(true); };
+    s.onerror = function () { s.remove(); bao(false); };
+    document.head.appendChild(s);
+  }
+  function co(ma) { return coCLB(ma) || !!(PHIM[ma] && PHIM[ma].length); }
   function daXem(ma) { return !!(window.Luu && Luu.daXem(CO(ma))); }
   function soKhung(ma) { return co(ma) ? PHIM[ma].length : 0; }
   function them(bang) { Object.keys(bang || {}).forEach(function (ma) { PHIM[ma] = bang[ma]; }); }
@@ -131,8 +146,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ------------------------------------------------------------- chiếu phim */
   function mo(ma, khiXong, tuyChon) {
     tuyChon = tuyChon || {};
-    var KHUNG = PHIM[ma], stage = document.getElementById('stage');
-    if (!co(ma) || !stage) { if (khiXong) khiXong(); return; }
+    var stage = document.getElementById('stage');
+    if (coCLB(ma) && stage && !tuyChon.khung) {
+      taiCLB(function (ok) {
+        if (!ok || !PhimCLB.co(ma)) { mo(ma, khiXong, Object.assign({}, tuyChon, { khung: true })); return; }
+        var cu = stage.querySelector('.md'); if (cu) cu.remove();
+        PhimCLB.mo(ma, stage, { boQua: t('pg.boQua'), cuoi: t(tuyChon.nutCuoi || 'pg.vaoGoi') }, function () {
+          if (window.Luu) Luu.datDaXem(CO(ma));
+          if (khiXong) khiXong();
+        });
+      });
+      return;
+    }
+    var KHUNG = PHIM[ma];
+    if (!(KHUNG && KHUNG.length) || !stage) { if (khiXong) khiXong(); return; }
     var SO = KHUNG.length;
     var cu = stage.querySelector('.md'); if (cu) cu.remove();
     huyHen();
