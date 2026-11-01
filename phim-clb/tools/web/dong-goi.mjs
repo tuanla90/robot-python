@@ -21,7 +21,7 @@ const dsGoi = Object.fromEntries(MUA.map((m) => [m, TT.goi.filter((g) => g.mua =
 for (const [m, ds] of Object.entries(dsGoi)) if (ds.length !== 10) throw new Error(`mùa ${m} có ${ds.length} gói, phim cần 10`);
 fs.writeFileSync('src/web/ds-goi.ts', `// Sinh bởi tools/web/dong-goi.mjs từ hoc/thu-tu-chuong.js, đừng sửa tay.\nexport const DS_GOI: Record<string, string[]> = ${JSON.stringify(dsGoi, null, 2)};\n`);
 fs.mkdirSync(RA, {recursive: true});
-fs.writeFileSync(path.join(RA, 'ds.js'), `// Sinh bởi phim-clb/tools/web/dong-goi.mjs: gói có phim CLB (phim-goi.js tải phim-clb.js khi cần).\nwindow.PhimCLBDs = ${JSON.stringify(Object.values(dsGoi).flat())};\n`);
+fs.writeFileSync(path.join(RA, 'ds.js'), `// Sinh bởi phim-clb/tools/web/dong-goi.mjs: gói có phim CLB (phim-goi.js / mo-dau.js tải phim-clb.js khi cần).\nwindow.PhimCLBDs = ${JSON.stringify(['mo-dau', ...Object.values(dsGoi).flat()])};\n`);
 
 const SHIM = path.resolve('tools/web/remotion-shim.ts');
 const quaShim = {

@@ -164,9 +164,34 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   ];
 
   /* ------------------------------------------------------------- chiếu phim */
-  /** Chiếu phim từ khung 1; xong (nút cuối / Bỏ qua) thì ghi cờ, gỡ lớp phim, gọi khiXong. */
-  function mo(khiXong) {
+  function coCLB() { return !!(window.PhimCLBDs && window.PhimCLBDs.indexOf(CO) >= 0); }
+  var choCLB = null;
+  function taiCLB(xong) {
+    if (window.PhimCLB) { xong(true); return; }
+    if (choCLB) { choCLB.push(xong); return; }
+    choCLB = [xong];
+    var s = document.createElement('script');
+    s.src = 'phim-clb/phim-clb.js';
+    function bao(ok) { var ds = choCLB; choCLB = null; ds.forEach(function (f) { f(ok && !!window.PhimCLB); }); }
+    s.onload = function () { bao(true); };
+    s.onerror = function () { s.remove(); bao(false); };
+    document.head.appendChild(s);
+  }
+  /** Chiếu phim từ khung 1 (hoặc phim CLB Remotion nếu có trong PhimCLBDs); xong (nút cuối / Bỏ qua) thì ghi cờ, gỡ lớp phim, gọi khiXong. */
+  function mo(khiXong, tuyChon) {
+    tuyChon = tuyChon || {};
     var san = document.getElementById('stage'); if (!san) return;
+    if (coCLB() && !tuyChon.khung && document.head) {
+      taiCLB(function (ok) {
+        if (!ok || !PhimCLB.co(CO)) { mo(khiXong, { khung: true }); return; }
+        var cu = san.querySelector('.md'); if (cu) cu.remove();
+        PhimCLB.mo(CO, san, { boQua: t('md.boQua'), cuoi: t('md.batDau') }, function () {
+          if (window.Luu) Luu.datDaXem(CO);
+          if (khiXong) khiXong();
+        });
+      });
+      return;
+    }
     var cu = san.querySelector('.md'); if (cu) cu.remove();
     var lop = h('div', 'md'); lop.setAttribute('data-hop', 'mo-dau');
     var boQua = h('button', 'bt g-wd md-bo-qua', t('md.boQua')); boQua.setAttribute('data-nut', 'md-bo-qua');

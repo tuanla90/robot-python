@@ -8,7 +8,7 @@
    ========================================================================== */
 'use strict';
 
-var BAN = 'duong-hoc-v2';      // V7c3 (29/10): v1 → v2 bỏ bộ đệm cũ (part/*.js, ve.js / huy-hieu.js pixel, woff2 Handjet / VT323); activate dưới xoá mọi bộ đệm khác tên
+var BAN = 'duong-hoc-v3';      // 01/11: v2 → v3 bỏ bộ đệm cũ, nạp hình part/ô/vật 3D vector bản mới + 10 mùa + phim CLB
 var HEN_MS = 4000;
 var THEM = ['choi.html', 'manifest.webmanifest', 'font/font.css', 'icon/icon-192.png', 'icon/icon-512.png', 'icon/icon-maskable-512.png'];
 
@@ -49,7 +49,7 @@ self.addEventListener('fetch', function (ev) {
 
 async function mangTruoc(rq) {
   var c = await caches.open(BAN);
-  var mang = fetch(rq).then(function (r) {
+  var mang = fetch(rq, { cache: 'no-cache' }).then(function (r) {
     if (r && r.ok) c.put(rq, r.clone());
     return r;
   });
