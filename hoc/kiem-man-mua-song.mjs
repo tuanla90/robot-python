@@ -23,7 +23,7 @@ function cham(m, lg, truoc = khoTruoc.get(m.ma) || []) {
 
 const chuongMuaSong = new Set(TT.goi.filter(g => g.mua === 'mua-5').flatMap(g => g.chuong));
 const ds = M.danhSach.filter(m => chuongMuaSong.has(m.chuong));
-assert.ok(ds.length >= 100, 'chưa có đủ màn mùa bến sông');
+assert.ok(ds.length >= 120, 'chưa có đủ màn mùa bến sông');
 
 if (process.argv.includes('--in-sao')) {
   for (const m of ds) {

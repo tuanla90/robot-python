@@ -209,4 +209,41 @@
       }
     }
   ]);
+
+  /* ================================================================ 6. buoc-duoi — Dây dắt theo đuôi */
+  PG.dangKy('buoc-duoi', [
+    { Chu: ['Ở những khúc kênh cua hẹp chữ L, đẩy bè ở mũi sẽ bị vướng bờ kè.', 'Nâng cấp DÂY DẮT THEO ĐUÔI để chuyển bè ra sau lái như toa tàu!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veV('be-go', { keo: true }), 2, 1);
+        var rb = dat(s, may(XUONG_DONG, { chay: true, tay: { day: true }, camBien: { bat: true } }, 1), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, veV('be-go', { keo: true }), 0, 1);
+          dat(s, may(XUONG_DONG, { chay: true, tay: { giu: true }, camBien: { bat: true } }, 1), 1, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Gọi tether() kèm wait() để chuyển bè đang kéo ở mũi ra sau đuôi (hoặc buộc bè ngay sau đuôi).', 'Khi bè đã ở đúng bến hoặc nhánh dòng chảy, gọi untether() kèm wait() để tháo dây!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('ben-nhan', { xong: true }), 2, 1);
+        dat(s, veV('be-go', { keo: true }), 2, 1);
+        dat(s, may(XUONG_DONG, { chay: true, tay: { giu: true }, camBien: { bat: true } }, 1), 3, 1);
+        m.appendChild(code('tether()\nwait()\nforward(2)\nuntether()\nwait()'));
+      }
+    },
+    { Chu: ['Chế các hàm tether_grab(), tether_drop(), tow_to_tail(), tug_corner() và deliver_tail().', 'Kéo bè mượt mà qua mọi khúc cua gấp trên bến sông!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('ben-nhan', { xong: true }), 3, 1);
+        dat(s, veV('be-go', { keo: false }), 3, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 4, 1);
+        m.appendChild(code('def tug_corner(d, n):\n    tow_to_tail()\n    pair_step(d, n)'));
+      }
+    }
+  ]);
 })();

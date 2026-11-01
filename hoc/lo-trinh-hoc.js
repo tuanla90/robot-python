@@ -36,7 +36,7 @@
       // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–10
       'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray', 'nhac-doi', 'can-tai', 'cang-cu', 'doi-cang', 'trum-mua-cang',
       // MÙA BẾN SÔNG (mua-5): ngân hàng màn mới
-      'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo', 'buoc-duoi'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1723,16 +1723,19 @@
     { ma: 'cong-thuy-loi', ten: 'Cống thủy lợi', hinh: 'cong-thuy-loi',
       chuong: [['cong-thuy-loi', []], ['che-cong', []]] },
     { ma: 'tha-neo', ten: 'Mỏ neo chống trôi', loai: 'bo-phan', hinh: 'tha-neo',
-      chuong: [['tha-neo', []], ['che-tha-neo', []]] }
+      chuong: [['tha-neo', []], ['che-tha-neo', []]] },
+    { ma: 'buoc-duoi', ten: 'Dây dắt theo đuôi', loai: 'bo-phan', hinh: 'buoc-duoi',
+      chuong: [['buoc-duoi', []], ['che-buoc-duoi', []]] }
   ];
   var TEN_MUA_SONG = {
     'xuong': 'Lướt sóng ra khơi', 'ham-tra-ve': 'Hàm trả kết quả',
     'day-keo': 'Quăng dây kéo bè', 'bo-co-dinh': 'Bộ cố định hai phần',
     'dong-chay': 'Đo hướng nước chảy', 'che-dong-chay': 'Chế lệnh: lựa chiều nước',
     'cong-thuy-loi': 'Mở cống dẫn nước', 'che-cong': 'Chế lệnh: điều tiết dòng',
-    'tha-neo': 'Thả neo giữ nhịp', 'che-tha-neo': 'Chế lệnh: neo giữa dòng xiết'
+    'tha-neo': 'Thả neo giữ nhịp', 'che-tha-neo': 'Chế lệnh: neo giữa dòng xiết',
+    'buoc-duoi': 'Lai dắt theo đuôi', 'che-buoc-duoi': 'Chế lệnh: kéo bè qua khúc cua'
   };
-  var TEP_MUA_SONG = ['manXuong', 'manDayKeo', 'manDongChay', 'manCongThuyLoi', 'manThaNeo'];
+  var TEP_MUA_SONG = ['manXuong', 'manDayKeo', 'manDongChay', 'manCongThuyLoi', 'manThaNeo', 'manBuocDuoi'];
   (function () {
     Object.keys(TEN_MUA_SONG).forEach(function (c) { TT.ten[c] = TEN_MUA_SONG[c]; });
     var moi = [], chuong = [];
