@@ -603,7 +603,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   const GOC = path.resolve(day, '..');
   const docMoi = (f) => { let t = fs.readFileSync(path.join(GAME, f), 'utf8'); if (LOI_GIA && f === 'san-ve.js') t = t.replace(/\n\s*if \(!coMatDong\(\)\) \{ ttR\.mat = [^\n]*\n/, '\n'); return t; };   // lỗi giả V7b: bieuCam bỏ qua Cài đặt mắt (13d phải đỏ)
   const CHI_TIET_13A = process.argv.includes('--chi-tiet-13a');
-  const NEN_VEC = '8921102';                                                           // 30/10 vỏ Nông trại hoa mùa 4: đầu sơn thành bộ gieo hạt, ô đã sơn nở hoa (so với 4548dda chỉ lệch ở may-son.3, kiểm bằng --chi-tiet-13a)
+  const NEN_VEC = '8a09db2';                                                           // 01/11 gộp hình các part, ô sân và vật bản mới (3D vector) từ claude/ve-moi-tu-ban-chup (trước: 8921102)
   // trước:                                                           // 30/10 phun nhẹ: nền VECTOR = 4548dda (san-ve.js nhận phun nhẹ qua luc "low" thay "fast"; so với nền fe2ae3e chỉ lệch ở tia phun nhẹ của sung-hoi.3, luc-ban.8: nền cũ coi "low" là tia dài). Trước đó fe2ae3e (giật một ô)
   const _nen = {};
   let coGit = true;

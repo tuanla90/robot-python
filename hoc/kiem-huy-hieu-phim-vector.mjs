@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
-const NEN_VEC = '79a04d3';                             // 01/11 gộp part-dung-mua vào main: vỏ Nông trại vẽ lại (1d7e80d) đổi màu cỏ phim drone.3, may-son.1 (so với 817f81d chỉ lệch hai phim này). Trước:                             // 31/10 part đúng mùa: nhện gắn cảm biến từ vẽ quay theo hướng (so với 584615c chỉ lệch phim mùa 3 tong-hop-3.1, .2: R1 dáng cua nhện + nam châm + cảm biến từ)
+const NEN_VEC = '8a09db2';                             // 01/11 gộp hình các part, ô sân và vật bản mới (3D vector) từ claude/ve-moi-tu-ban-chup (trước: 79a04d3)
 // trước:                             // 30/10 phun nhẹ: nền VECTOR = d3917d2 (phim gói 2 khung 3, 4 không còn giật; phim gói 4 khung 4 thùng nặng chắn lối; mã trong phim spray thay shoot). Trước đó 9a6d47c (van hơi). So với 4548dda (đổi tên, chưa sửa phim) chỉ lệch sung-hoi.3, sung-hoi.4
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');

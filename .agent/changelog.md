@@ -1,3 +1,8 @@
+## 2026-11-01 — Nhánh `main` (Gộp đủ 10 Mùa 1.800 màn, Phim CLB Remotion & Hình Part / Vật / Sân 3D Vector Bản Mới)
+- `hoc/man-clb-*.js`, `hoc/lo-trinh-hoc.js`, `hoc/lo-trinh-sao.js`, `hoc/game/choi.html`: Gộp `claude/part-dung-mua` (`3a6b6f7`), bổ sung trọn vẹn Mùa 9 CLB (*Mùa Giải CLB*, 10 gói × 20 màn = 200 màn) và mùa ẩn `mua-an` (*Kho lưu trữ*), nâng tổng số mùa trên `main` lên 10 mùa (`mua-1`..`mua-9` + `mua-an`, 1.800 màn chính).
+- `hoc/game/ve-vector*.js`, `hoc/game/ve-robot.js`, `hoc/game/san-ve.js`: Gộp 28 tệp đồ họa vector 3D bản mới từ `claude/ve-moi-tu-ban-chup` cho toàn bộ 5 thân robot (`hai-banh`, `xich`, `nhen`, `omni`, `drone`), các tay công cụ (`tay-gap`, `nam-cham`, `ui`, `sung-hoi`, `may-son`, `bua`, `cua`, `bom-nuoc`, `sung-laser`, `can-cau`), cảm biến (`cb-truoc`, `cb-mau`, `cb-tu`, `cb-khoang`, `cb-nhiet`, `cb-am`), vật thể và ô sân.
+- `hoc/kiem-ve-vector.mjs`, `hoc/kiem-huy-hieu-phim-vector.mjs`: Cập nhật mốc `NEN_VEC` sang `8a09db2` tương ứng với bộ hình part/vật/sân 3D vector bản mới.
+
 ## 2026-10-31 — Nhánh `main` (Đổi Nền Môi Trường Theo Gói 4 Mùa: 10 Màn Lab → 10 Màn Hiện Trường Cốt Truyện)
 - `hoc/lo-trinh-hoc.js`: Chuyển quy tắc gán `man.vo` cho cả 4 mùa: Chương 1 của mỗi gói (10 màn đầu) giữ nền Phòng Lab (`vo = null`), Chương 2 của mỗi gói (10 màn sau) mang vỏ bối cảnh cốt truyện của mùa (`'kho-hang'` cho Mùa 1, `'nha-may'` cho Mùa 2, `'bai-tai-che'` cho Mùa 3, `'nong-trai'` cho Mùa 4).
 - `hoc/game/ve-vector-nong-trai.js`, `hoc/game/bang-mau.js`, `hoc/game/ve-vector-ky-hieu.js`: Thiết kế đồng bộ bộ ô sàn, khối tường 3D cao vuông bo góc tối giản màu/họa tiết, và vật cản tương ứng cho 4 mùa:
