@@ -76,7 +76,8 @@
       { ma: 'mua-6', ten: 'Nông trại', ban: { gia: '49.000đ' }, an: true },
       { ma: 'mua-7', ten: 'Mỏ đá', ban: { gia: '49.000đ' }, an: true },
       { ma: 'mua-8', ten: 'Hang động', ban: { gia: '49.000đ' }, an: true },      // 31/10: gói cũ chưa thuộc mùa 1–7 (lắp ráp, đua, đội…) chờ dựng mùa 8–9
-      { ma: 'mua-9', ten: 'CLB', ban: { gia: '49.000đ' }, an: true }
+      { ma: 'mua-9', ten: 'CLB', ban: { gia: '49.000đ' }, an: true },
+      { ma: 'mua-an', ten: 'Kho lưu trữ', ban: { gia: '49.000đ' }, an: true }
     ],
     goi: [
       { ma: 'xe', ten: 'Xe hai bánh', sao: 0, chuong: ['hai-banh'] },

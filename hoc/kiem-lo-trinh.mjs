@@ -108,7 +108,7 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'che-doi-hang-dong.2', 'che-doi-hang-dong.4', 'che-doi-hang-dong.6', 'che-doi-hang-dong.8');      // gói 3–9 mùa hang động: cảm biến âm thanh, sân hang động, thu gai, phát nốt, nghe nốt, hang cổ & đội hang động (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c / PDM8c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach), gói 10 mùa 6 (may-mo-da), gói 10 mùa cảng, gói 10 mùa sông và gói 10 mùa hang (tong-hop-hang) cũng MỌI màn nhiều sân.
-const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song', 'tong-hop-hang'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
+const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song', 'tong-hop-hang', 'ngay-hoi-clb'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
 kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
@@ -225,7 +225,7 @@ kiem('(a) mùa 1 đúng các gói của bảng, đúng thứ tự, đúng màn; 
   }
   assert.deepEqual(M.manCat, CAT_MUA_1);
   assert.deepEqual(M.danhSach.filter(m => m.chuong === 'che-xich').map(m => m.ma), XICH_CU);
-  assert.equal(goiCuaChuong('che-xich').mua, 'mua-9');     // 29/10 P0 mùa 3: che-xich (bậc thang) rời mùa 3 sang mùa ẩn; 01/11: mùa 9 Đấu trường (ẩn)
+  assert.equal(goiCuaChuong('che-xich').mua, 'mua-an');     // 29/10 P0 mùa 3: che-xich (bậc thang) rời mùa 3 sang mùa ẩn; 01/11: mùa ẩn (mua-an)
   for (const ma of CAT_MUA_1) assert.equal(get(ma), null, ma + ' phải cất khỏi lộ trình');
   // Bốn màn dùng biến dời mùa 2: nay ở gói 1 chương 2 (bien-xich).
   for (const ma of BIEN_MUA_2) assert.equal(get(ma).chuong, 'bien-xich', ma);
@@ -545,11 +545,11 @@ kiem3('(a) mùa 3 đúng các gói / chương đang có màn theo bảng, đúng
   const vaoMua4 = new Set((M.mua4 || []).map(g => g.ma).concat(['list']));
   const vaoMua6 = new Set(goiMua('mua-7').map(g => g.ma));
   const ROI_3_CON = ROI_3_GOI.filter(ma => !vaoMua4.has(ma)).map(ma => vaoMua6.has(ma) ? ma + '-cu' : ma);
-  const g4 = goiMua('mua-9').map(g => g.ma);
-  assert.deepEqual(g4.slice(0, ROI_3_CON.length), ROI_3_CON, 'đầu mùa 9');
-  assert.equal(goiMua('mua-9')[0].sao, 0, 'gói đầu mùa 9 cần 0 sao');
+  const g4 = goiMua('mua-an').map(g => g.ma);
+  assert.deepEqual(g4.slice(0, ROI_3_CON.length), ROI_3_CON, 'đầu mùa ẩn');
+  assert.equal(goiMua('mua-an')[0].sao, 0, 'gói đầu mùa ẩn cần 0 sao');
   assert.deepEqual(Object.keys(M.roiMua3).map(c => [c, M.danhSach.filter(m => m.chuong === c).map(m => m.ma)]), Object.entries(M.roiMua3), 'chương rời mùa 3');
-  for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-9', c);
+  for (const c of Object.keys(M.roiMua3)) assert.equal(goiCuaChuong(c).mua, 'mua-an', c);
 });
 kiem3('(b) không màn nào trước gói 1 chương 2 mùa 3 (chuoi-nhen) dùng chuỗi làm dữ liệu (bắc cầu qua hàm của em); spray("low") vẫn được', () => {
   const moc = mocChuong3('chuoi-nhen'), sai = [];
@@ -878,11 +878,11 @@ kiem4('(a) mùa 6 Nông trại (MUA_4) đúng các gói / chương đang có mà
   assert.deepEqual(goi4().map(g => [g.ma, g.chuong]), goi4Bang.map(([ma, ds]) => [ma, ds.map(c => c[0])]), 'gói / chương mùa 4');
   for (const [, ds] of goi4Bang) for (const [c, dsMa] of ds) assert.deepEqual(M.danhSach.filter(m => m.chuong === c).map(m => m.ma), dsMa, c);
   for (const m of moiMua4) assert.ok(BANG_MUA_4.some(([, , ds]) => ds.some(c => c[0] === m.chuong)), m.ma + ' thuộc chương ngoài bảng');
-  for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7', 'mua-8', 'mua-9']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
+  for (const ma of ['mua-4', 'mua-5', 'mua-6', 'mua-7', 'mua-8', 'mua-9', 'mua-an']) assert.equal(TT.mua.find(x => x.ma === ma).an, true, ma + ' phải còn ẩn');
   for (const g of goi4()) assert.equal(g.sao, undefined, g.ma + ' khai cứng ngưỡng sao (mùa 4 đang dựng: tự tính)');
   assert.equal(TT.goi.find(g => g.ma === 'omni').mua, 'mua-7', 'omni phải ở mùa 7');
-  for (const ma of ['may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.ok(['mua-7', 'mua-9'].includes(TT.goi.find(g => g.ma === ma).mua), ma + ' phải ở mùa 7 hoặc 9');
-  assert.equal(goiMua('mua-9')[0].sao, 0, 'gói đầu mùa 9 cần 0 sao');
+  for (const ma of ['may-nem', 'ban-xoay', 'rap-du', 'dua-robot']) assert.ok(['mua-7', 'mua-an'].includes(TT.goi.find(g => g.ma === ma).mua), ma + ' phải ở mùa 7 hoặc mùa ẩn');
+  assert.equal(goiMua('mua-an')[0].sao, 0, 'gói đầu mùa ẩn cần 0 sao');
 });
 kiem4('(b) robot mùa 4: chỉ part mùa 1–4 (thân hai bánh / xích / nhện / drone; tay + máy sơn; cảm biến + màu / camera / pin); không omni, máy ném, loa, bánh gai trên khay hay trong lời giải; cả 10 gói mùa 4 đúng R1 drone nông nghiệp', () => {
   for (const m of manMua4()) {
