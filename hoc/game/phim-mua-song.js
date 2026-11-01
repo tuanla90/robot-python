@@ -171,4 +171,42 @@
       }
     }
   ]);
+
+  /* ================================================================ 5. tha-neo — Mỏ neo chống trôi */
+  PG.dangKy('tha-neo', [
+    { Chu: ['Giữa dòng nước xiết, xuồng cần đứng yên chờ bè gỗ trôi vào tầm dây kéo.', 'Nâng cấp thân xuồng với MỎ NEO CHỐNG TRÔI để bám chặt đáy sông!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 3 }), 1, 1);
+        dat(s, veO('dong-nuoc', { huong: 3 }), 3, 1);
+        dat(s, veV('be-go', { keo: false }), 3, 1);
+        var rb = dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, may(XUONG_DONG, { neo: true, camBien: { bat: true } }, 1), 1, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Gọi anchor() kèm wait() để thả neo giữ xuồng đứng yên trên dòng chảy.', 'Khi đã móc được bè, nhớ gọi unanchor() kèm wait() để nhổ neo trước khi chạy chân vịt!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 3 }), 1, 1);
+        dat(s, veV('be-go', { keo: true }), 2, 1);
+        dat(s, may(XUONG_DONG, { neo: true, tay: { day: true }, camBien: { bat: true } }, 1), 1, 1);
+        m.appendChild(code('anchor()\nwait()\ntow_grab()\nunanchor()\nwait()'));
+      }
+    },
+    { Chu: ['Chế các hàm drop_anchor(), lift_anchor(), anchor_tow() và hold_and_valve(n).', 'Giữ nhịp chuẩn xác giữa dòng xiết để giải cứu mọi bè hàng!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('ben-nhan', { xong: true }), 4, 1);
+        dat(s, veV('be-go', { keo: false }), 4, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 3, 1);
+        m.appendChild(code('def anchor_tow():\n    drop_anchor()\n    tow_grab()\n    lift_anchor()'));
+      }
+    }
+  ]);
 })();
