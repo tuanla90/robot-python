@@ -673,5 +673,5 @@
   ];
 
   if (M && M.them) M.manXuong = DS;
-  if (typeof module !== 'undefined' && module.exports) module.exports = DS;
+  if (typeof module !== 'undefined' && module.exports) module.exports = M;
 })();

@@ -247,7 +247,7 @@ const conPixel = [];
     // mùa cảng sông (01/11): huy hiệu gói 1-10
     'can-cau', 'so-am', 'moc-cau', 'chia-du', 'quet-ma', 'che-quet-ma', 'ben-tau', 'che-ben-tau', 'duong-ray', 'che-duong-ray', 'nhac-doi', 'che-nhac-doi', 'can-tai', 'che-can-tai', 'cang-cu', 'che-cang-cu', 'doi-cang', 'che-doi-cang', 'tong-hop-cang', 'trum-mua-cang',
     // mùa bến sông (01/11): huy hiệu gói 1-4
-    'xuong', 'ham-tra-ve', 'day-keo', 'bo-co-dinh', 'dong-chay', 'che-dong-chay'];
+    'xuong', 'ham-tra-ve', 'day-keo', 'bo-co-dinh', 'dong-chay', 'che-dong-chay', 'cong-thuy-loi', 'che-cong'];
   for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));
   const DS_CHUP = DS.filter((m) => !MOI_SAU_CHUP.includes(m));
   if (tap(DS_CHUP) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS_CHUP.includes(m)).join(',') + ' / thừa ' + DS_CHUP.filter((m) => !CHUP.DS.includes(m)).join(','));

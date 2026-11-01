@@ -129,4 +129,46 @@
       }
     }
   ]);
+
+  /* ================================================================ 4. cong-thuy-loi — Mở cống dẫn nước */
+  PG.dangKy('cong-thuy-loi', [
+    { Chu: ['Trên kênh dẫn có những cánh CỐNG THỦY LỢI đóng kín chắn ngang luồng nước.', 'Quay mũi xuồng về phía VAN CỐNG trên bờ rồi quăng dây kéo để gạt van!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('van-cong', { bat: false }), 1, 0);
+        dat(s, veO('cong-thuy-loi', { mo: false }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        var rb = dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 0), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, veO('van-cong', { bat: true }), 1, 0);
+          dat(s, veO('cong-thuy-loi', { mo: true }), 2, 1);
+          dat(s, may(XUONG_DONG, { chay: true, tay: { day: true }, camBien: { bat: true } }, 0), 1, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Mỗi lần gạt van bằng tow_grab() sẽ đảo trạng thái cống và dòng chảy nối cùng dây.', 'Cống mở thông luồng hoặc tắt dòng chảy xiết để xuồng và bè đi qua an toàn!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('van-cong', { bat: true }), 1, 0);
+        dat(s, veO('cong-thuy-loi', { mo: true }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 3, 1);
+        m.appendChild(code('turn_left()\ntow_grab()\nturn_right()\nforward(3)'));
+      }
+    },
+    { Chu: ['Chế các hàm flip_valve(), open_gate_pass(), shut_stream_tow() để điều tiết dòng nước.', 'Phối hợp mở cống, tắt dòng xiết và kéo bè về bến gọn gàng!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('van-cong', { bat: true }), 1, 0);
+        dat(s, veO('cong-thuy-loi', { mo: true }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 4, 1);
+        m.appendChild(code('def open_gate_pass(n):\n    flip_valve()\n    forward(n)'));
+      }
+    }
+  ]);
 })();
