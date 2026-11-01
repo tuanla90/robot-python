@@ -345,4 +345,36 @@
       }
     }
   ]);
+
+  /* ================================================================ 10. tong-hop-song — Xuồng thủy lợi R1 */
+  PG.dangKy('tong-hop-song', [
+    { Chu: ['Xuồng thủy lợi R1 hoàn thiện hội tụ đủ chân vịt, dây phao kéo mũi, dây dắt đuôi, mỏ neo và chong chóng đo dòng chảy.', 'Trên nhiều sân liên tiếp, R1 tự đọc flow() để mở cống, lựa dòng êm và cứu hộ bè hàng!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veV('van-cong', { bat: false }), 1, 0);
+        dat(s, veO('cong-thuy-loi', { mo: false }), 2, 1);
+        dat(s, veO('ben-nhan', { xong: false }), 3, 1);
+        dat(s, veV('be-go', { keo: false }), 4, 1);
+        var rb = dat(s, may(XUONG_DONG, { chay: true, tay: { day: true }, camBien: { bat: true } }, 0), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, veV('van-cong', { bat: true }), 1, 0);
+          dat(s, veO('cong-thuy-loi', { mo: true }), 2, 1);
+          dat(s, may(XUONG_DONG, { chay: true, tay: { day: true }, camBien: { bat: true } }, 1), 3, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Chế các hàm tổng lực river_span_pass(a, b), calm_tug_run(d, n), anchor_gate_tow(t, n) và master_river_dock(a, b, n).', 'Hoàn thành cả hai chương cuối trên nhiều sân liên tiếp để giành Huy hiệu Trùm mùa Bến sông!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('cong-thuy-loi', { mo: true }), 2, 1);
+        dat(s, veO('ben-nhan', { xong: true }), 3, 1);
+        dat(s, veV('be-go', { keo: true }), 3, 1);
+        dat(s, may(XUONG_DONG, { chay: true, tay: { giu: true }, camBien: { bat: true } }, 1), 2, 1);
+        m.appendChild(code('def master_river_dock(a, b, n):\n    river_span_pass(a, b)\n    bridge_lay(n)'));
+      }
+    }
+  ]);
 })();

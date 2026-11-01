@@ -36,7 +36,7 @@
       // MÙA CẢNG SÔNG (mua-4): ngân hàng màn mới gói 1–10
       'can-cau', 'moc-cau', 'quet-ma', 'ben-tau', 'duong-ray', 'nhac-doi', 'can-tai', 'cang-cu', 'doi-cang', 'trum-mua-cang',
       // MÙA BẾN SÔNG (mua-5): ngân hàng màn mới
-      'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo', 'buoc-duoi', 'suc-nuoc', 'ben-cu', 'doi-xuong'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'xuong', 'day-keo', 'dong-chay', 'cong-thuy-loi', 'tha-neo', 'buoc-duoi', 'suc-nuoc', 'ben-cu', 'doi-xuong', 'trum-mua-song'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
@@ -1731,7 +1731,9 @@
     { ma: 'ben-cu', ten: 'Bến sông cũ', loai: 'thu-thach', hinh: 'ben-cu',
       chuong: [['ben-cu', []], ['che-ben-cu', []]] },
     { ma: 'doi-xuong', ten: 'Đội xuồng và xe', loai: 'doi', hinh: 'doi-xuong',
-      chuong: [['doi-xuong', []], ['che-doi-xuong', []]] }
+      chuong: [['doi-xuong', []], ['che-doi-xuong', []]] },
+    { ma: 'tong-hop-song', ten: 'Xuồng thủy lợi R1', loai: 'thu-thach', hinh: 'tong-hop-song',
+      chuong: [['tong-hop-song', []], ['trum-mua-song', []]] }
   ];
   var TEN_MUA_SONG = {
     'xuong': 'Lướt sóng ra khơi', 'ham-tra-ve': 'Hàm trả kết quả',
@@ -1742,9 +1744,10 @@
     'buoc-duoi': 'Lai dắt theo đuôi', 'che-buoc-duoi': 'Chế lệnh: kéo bè qua khúc cua',
     'suc-nuoc': 'Đo sức nước chảy', 'che-suc-nuoc': 'Chế lệnh: chọn nhánh êm nhất',
     'ben-cu': 'Dọn luồng bến cũ', 'che-ben-cu': 'Chế lệnh: cứu hộ bến cũ',
-    'doi-xuong': 'Đội xuồng bắc cầu phao', 'che-doi-xuong': 'Chế lệnh: đội xuồng phối hợp'
+    'doi-xuong': 'Đội xuồng bắc cầu phao', 'che-doi-xuong': 'Chế lệnh: đội xuồng phối hợp',
+    'tong-hop-song': 'Tổng hợp bến sông', 'trum-mua-song': 'Trùm mùa bến sông'
   };
-  var TEP_MUA_SONG = ['manXuong', 'manDayKeo', 'manDongChay', 'manCongThuyLoi', 'manThaNeo', 'manBuocDuoi', 'manSucNuoc', 'manBenCu', 'manDoiXuong'];
+  var TEP_MUA_SONG = ['manXuong', 'manDayKeo', 'manDongChay', 'manCongThuyLoi', 'manThaNeo', 'manBuocDuoi', 'manSucNuoc', 'manBenCu', 'manDoiXuong', 'manTrumMuaSong'];
   (function () {
     Object.keys(TEN_MUA_SONG).forEach(function (c) { TT.ten[c] = TEN_MUA_SONG[c]; });
     var moi = [], chuong = [];
@@ -2748,6 +2751,7 @@
     MUA_4.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     MUA_6.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     MUA_CANG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
+    MUA_SONG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     MUA_SONG.forEach(function (g) { g.chuong.forEach(function (c) { delete chuongAn[c[0]]; }); });
     if (nguon['che-nam-cham.1']) DAY_CU.push(['che-nam-cham.1', 'kick']);
     if (nguon['nam-cham.6']) DAY_CU.push(['nam-cham.6', 'grip']);

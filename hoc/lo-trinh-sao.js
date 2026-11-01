@@ -1376,7 +1376,27 @@
   "che-doi-xuong.7": { "o": 51, "nhip": 28 },
   "che-doi-xuong.8": { "o": 56, "nhip": 16 },
   "che-doi-xuong.9": { "o": 60, "nhip": 38 },
-  "che-doi-xuong.10": { "o": 64, "nhip": 48 }
+  "che-doi-xuong.10": { "o": 64, "nhip": 48 },
+  "tong-hop-song.1": { "o": 30, "nhip": 11 },
+  "tong-hop-song.2": { "o": 31, "nhip": 16 },
+  "tong-hop-song.3": { "o": 33, "nhip": 16 },
+  "tong-hop-song.4": { "o": 42, "nhip": 19 },
+  "tong-hop-song.5": { "o": 42, "nhip": 23 },
+  "tong-hop-song.6": { "o": 41, "nhip": 27 },
+  "tong-hop-song.7": { "o": 30, "nhip": 18 },
+  "tong-hop-song.8": { "o": 34, "nhip": 15 },
+  "tong-hop-song.9": { "o": 51, "nhip": 38 },
+  "tong-hop-song.10": { "o": 51, "nhip": 60 },
+  "trum-mua-song.1": { "o": 22, "nhip": 9 },
+  "trum-mua-song.2": { "o": 31, "nhip": 13 },
+  "trum-mua-song.3": { "o": 35, "nhip": 16 },
+  "trum-mua-song.4": { "o": 42, "nhip": 23 },
+  "trum-mua-song.5": { "o": 41, "nhip": 19 },
+  "trum-mua-song.6": { "o": 59, "nhip": 43 },
+  "trum-mua-song.7": { "o": 32, "nhip": 13 },
+  "trum-mua-song.8": { "o": 43, "nhip": 36 },
+  "trum-mua-song.9": { "o": 53, "nhip": 38 },
+  "trum-mua-song.10": { "o": 54, "nhip": 63 }
 };
   if (typeof module !== "undefined" && module.exports) module.exports = ds;
   if (typeof window !== "undefined") window.NguongSaoLoTrinh = ds;
