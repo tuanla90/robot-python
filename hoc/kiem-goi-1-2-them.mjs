@@ -254,7 +254,8 @@ kiem('B3 bend_left / bend_right: thân đúng như ngân hàng man-vong-lap.js; 
   }
   assert.deepEqual(t.taoHam, ['bend_left', 'bend_right']);
   const bc = get('bang-chuyen.8');
-  assert.ok(bc && bc.hamCuaEmCan.includes('bend_left') && khoTaoTruoc.get('bang-chuyen.8').has('bend_left') && khoTaoTruoc.get('bang-chuyen.8').has('bend_right'));
+  // bang-chuyen.8 (PDM2a2, 31/10) viết lại trên xe cứu hỏa, không còn dùng bend_*: chỉ chặt khi màn còn gọi chúng
+  assert.ok(bc && (!bc.hamCuaEmCan.includes('bend_left') || (khoTaoTruoc.get('bang-chuyen.8').has('bend_left') && khoTaoTruoc.get('bang-chuyen.8').has('bend_right'))));
 });
 /** BFS khối chuẩn cho xe bánh có tay (một vật): move / turn_left / turn_right 1 nhịp, pick 2 nhịp, drop 2 nhịp (1 nếu đặt xong là thắng). */
 function bfsTay(m) {

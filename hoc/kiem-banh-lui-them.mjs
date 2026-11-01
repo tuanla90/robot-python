@@ -87,8 +87,8 @@ const PY = new Set(['range', 'print', 'len']);
 function moiBai(m) {
   const ds = [{ ten: 'maMau', b: m.maMau, moi: [] }, { ten: 'loiGiai', b: m.loiGiai, moi: m.loiGiai.hamCuaEmMoi }];
   if (m.loiGiaiKhac) ds.push({ ten: 'loiGiaiKhac', b: m.loiGiaiKhac.baiLam, moi: m.loiGiaiKhac.hamCuaEmMoi });
-  m.loiSai.forEach((ls, i) => ds.push({ ten: 'loiSai[' + i + ']', b: ls.baiLam, moi: ls.hamCuaEmMoi }));
-  return ds;
+  (m.loiSai || []).forEach((ls, i) => ds.push({ ten: 'loiSai[' + i + ']', b: ls.baiLam, moi: ls.hamCuaEmMoi }));      // màn mùa dựng lại (PDM) có thể không khai loiSai / maMau
+  return ds.filter((x) => x.b);
 }
 function dongCua(x) { return [...(x.b.chinh || []), ...(x.b.hamCuaMan || []).concat(x.moi || []).flatMap((h) => h.than)]; }
 /** Số dòng lời giải người chơi viết / sửa: chương trình chính (trừ khi khóa: chinhCoDinh) + thân hàm mới + thân hàm của màn. */
