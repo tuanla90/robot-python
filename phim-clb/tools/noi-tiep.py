@@ -3,6 +3,8 @@
 # (dx, dy) cho dải chồng khớp nhất rồi cắt theo đường cắt tối ưu trong dải chồng, viền mềm vài px.
 #   python tools/noi-tiep.py khung <dài.jpg> <khung ra.jpg>           khung 1080×1924: 200 hàng đáy của dài + nền xám để TopView vẽ tiếp
 #   python tools/noi-tiep.py noi <dài vào.jpg|-> <ảnh sinh.png> <dài ra.jpg>   đặt ảnh sinh vào đáy (dài vào '-' = mùa đầu)
+#   python tools/noi-tiep.py khung-tren <dài.jpg> <khung ra.jpg>      như khung nhưng vẽ LÊN TRÊN: 200 hàng đáy khung = 200 hàng đầu của dài
+#   python tools/noi-tiep.py tren <dài vào.jpg> <ảnh sinh.png> <dài ra.jpg>      đặt ảnh sinh lên đỉnh (lật dọc rồi nối như noi)
 import sys
 import numpy as np
 import cv2
@@ -16,6 +18,11 @@ if sys.argv[1] == 'khung':
     dai = doc(sys.argv[2])
     k = np.full((H_ANH, W, 3), 128, np.uint8)
     k[:CHONG] = dai[-CHONG:]
+    ghi(k, sys.argv[3]); sys.exit()
+if sys.argv[1] == 'khung-tren':
+    dai = doc(sys.argv[2])
+    k = np.full((H_ANH, W, 3), 128, np.uint8)
+    k[-CHONG:] = dai[:CHONG]
     ghi(k, sys.argv[3]); sys.exit()
 
 def duong_cat(sai):
@@ -32,11 +39,13 @@ def duong_cat(sai):
         hang[x] = lo + int(np.argmin(tong[lo:hi, x]))
     return hang
 
-#   python tools/noi-tiep.py va <dài vào.jpg> <ảnh sửa.png> <y0> <dài ra.jpg>
+#   python tools/noi-tiep.py va <dài vào.jpg> <ảnh sửa.png> <y0> <dài ra.jpg> [chi-tren|chi-duoi]
 # đặt lại một đoạn 1080×1924 cắt từ hàng y0 mà TopView đã sửa (Image Edit cả khung): dịch theo khớp mép trên và mép dưới
 # (hai mép phải lệch như nhau, không co giãn), cắt tối ưu trong 300 hàng đầu và 300 hàng cuối.
+# Đoạn đầu / cuối ảnh dài không có hàng xóm phía trên / dưới: chi-duoi chỉ khớp và cắt ở mép dưới (phía trên lấy hết ảnh sửa),
+# chi-tren chỉ ở mép trên.
 if sys.argv[1] == 'va':
-    dai = doc(sys.argv[2]).astype(np.float32); y0 = int(sys.argv[4])
+    dai = doc(sys.argv[2]).astype(np.float32); y0 = int(sys.argv[4]); chi = sys.argv[6] if len(sys.argv) > 6 else ''
     g = np.asarray(Image.open(sys.argv[3]).convert('RGB').resize((W, H_ANH), Image.LANCZOS)).astype(np.float32)
     xam = lambda a: cv2.cvtColor(np.clip(a, 0, 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
     lech = []
@@ -44,14 +53,17 @@ if sys.argv[1] == 'va':
         kq = cv2.matchTemplate(xam(g[g0:g0 + 424]), xam(dai[yd:yd + 140, 60:W - 60]), cv2.TM_CCOEFF_NORMED)
         _, diem, _, (mx, my) = cv2.minMaxLoc(kq)
         lech.append((yd - g0 - my, 60 - mx)); print('khớp', round(diem, 3), 'đặt ở', yd - g0 - my, 'dx', 60 - mx, file=sys.stderr)
+    if chi == 'chi-duoi': lech[0] = lech[1]
+    if chi == 'chi-tren': lech[1] = lech[0]
     (yt, xt), (yb, xb) = lech
     if abs(yt - yb) > 4 or abs(xt - xb) > 4: print('CẢNH BÁO: hai mép lệch khác nhau, ảnh sửa bị co giãn', file=sys.stderr)
     Y, dx = round((yt + yb) / 2), round((xt + xb) / 2)
     if dx: g = cv2.warpAffine(g, np.float32([[1, 0, dx], [0, 1, 0]]), (W, H_ANH), borderMode=cv2.BORDER_REFLECT_101)
     cu = dai[Y:Y + H_ANH]
     sai = np.abs(cu - g).sum(-1)
-    tren = duong_cat(sai[:300].copy()); duoi = H_ANH - 300 + duong_cat(sai[-300:].copy())
     MEM, yy = 8, np.arange(H_ANH)[:, None]
+    tren = np.full(W, -2 * MEM) if chi == 'chi-duoi' else duong_cat(sai[:300].copy())
+    duoi = np.full(W, H_ANH + 2 * MEM) if chi == 'chi-tren' else H_ANH - 300 + duong_cat(sai[-300:].copy())
     t = (np.clip((yy - tren[None] + MEM) / (2 * MEM), 0, 1) * np.clip((duoi[None] - yy + MEM) / (2 * MEM), 0, 1))[..., None]
     dai[Y:Y + H_ANH] = cu * (1 - t) + g * t
     print('cắt trên', int(tren.min()), '..', int(tren.max()), 'dưới', int(duoi.min()), '..', int(duoi.max()), file=sys.stderr)
@@ -62,6 +74,7 @@ g = np.asarray(Image.open(sinh).convert('RGB').resize((W, H_ANH), Image.LANCZOS)
 if vao == '-':
     ghi(g, ra); sys.exit()
 dai = doc(vao).astype(np.float32)
+if sys.argv[1] == 'tren': dai, g = dai[::-1].copy(), g[::-1].copy()      # vẽ lên trên = lật dọc, nối xuống đáy, lật lại
 H = dai.shape[0]
 
 # dải mẫu: 140 hàng giữa dải chồng của ảnh dài, bỏ 60 cột mỗi mép; tìm trong 400 hàng đầu ảnh sinh
@@ -97,4 +110,4 @@ moi[:y0] = dai[:y0]
 moi[y0:H] = dai[y0:H] * (1 - t) + g[:chong] * t
 moi[H:] = g[chong:]
 print('cắt', int(hang.min()), '..', int(hang.max()), 'sai', round(float(sai[hang, np.arange(W)].mean()), 1), 'cao', moi.shape[0], file=sys.stderr)
-ghi(moi, ra)
+ghi(moi[::-1] if sys.argv[1] == 'tren' else moi, ra)
