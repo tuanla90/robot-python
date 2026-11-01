@@ -108,7 +108,7 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'che-doi-hang-dong.2', 'che-doi-hang-dong.4', 'che-doi-hang-dong.6', 'che-doi-hang-dong.8');      // gói 3–9 mùa hang động: cảm biến âm thanh, sân hang động, thu gai, phát nốt, nghe nốt, hang cổ & đội hang động (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c / PDM8c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach), gói 10 mùa 6 (may-mo-da), gói 10 mùa cảng, gói 10 mùa sông và gói 10 mùa hang (tong-hop-hang) cũng MỌI màn nhiều sân.
-const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song', 'tong-hop-hang'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
+const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song', 'tong-hop-hang', 'ngay-hoi-clb'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
 kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), trùm là màn cuối chương, chương đủ 10 có trùm', () => {
   for (const m of M.danhSach) {
     const ds = M.danhSach.filter(x => x.chuong === m.chuong);
