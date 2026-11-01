@@ -93,7 +93,8 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'suc-nuoc.2', 'suc-nuoc.3', 'suc-nuoc.4', 'suc-nuoc.5', 'suc-nuoc.6', 'suc-nuoc.7', 'suc-nuoc.8', 'suc-nuoc.9',
   'che-suc-nuoc.1', 'che-suc-nuoc.2', 'che-suc-nuoc.3', 'che-suc-nuoc.4', 'che-suc-nuoc.5', 'che-suc-nuoc.6', 'che-suc-nuoc.7', 'che-suc-nuoc.8', 'che-suc-nuoc.9',
   'ben-cu.3', 'ben-cu.5', 'ben-cu.6', 'ben-cu.7', 'ben-cu.8', 'ben-cu.9',
-  'che-ben-cu.1', 'che-ben-cu.3', 'che-ben-cu.5', 'che-ben-cu.6', 'che-ben-cu.7', 'che-ben-cu.8', 'che-ben-cu.9');      // gói 3–8 mùa bến sông: đo dòng chảy, cống thủy lợi, thả neo, buộc đuôi, đo sức nước & bến cũ (2 sân)
+  'che-ben-cu.1', 'che-ben-cu.3', 'che-ben-cu.5', 'che-ben-cu.6', 'che-ben-cu.7', 'che-ben-cu.8', 'che-ben-cu.9',
+  'doi-xuong.6', 'doi-xuong.8', 'che-doi-xuong.2', 'che-doi-xuong.5', 'che-doi-xuong.7', 'che-doi-xuong.9');      // gói 3–9 mùa bến sông: đo dòng chảy, cống thủy lợi, thả neo, buộc đuôi, đo sức nước, bến cũ & đội xuồng (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach) và gói 10 mùa 6 (may-mo-da) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));

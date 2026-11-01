@@ -314,4 +314,35 @@
       }
     }
   ]);
+
+  /* ================================================================ 9. doi-xuong — Đội xuồng và xe */
+  PG.dangKy('doi-xuong', [
+    { Chu: ['Xuồng thủy lợi R1 của Sola dưới lòng kênh phối hợp với xe hai bánh R2 của Luna trên bờ.', 'Khi R1 kéo bè gỗ về nằm yên trên mặt nước êm q, chiếc bè trở thành CẦU PHAO nối liền hai bờ!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('ben-nhan', { xong: false }), 2, 1);
+        dat(s, veV('be-go', { keo: false }), 4, 1);
+        var rb1 = dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 2, 1);
+        dat(s, may({ than: 'hai-banh', tay: 'kep', son: 'lam' }, { chay: false }, 2), 2, 0);
+        hen(function () {
+          rb1.remove();
+          dat(s, veO('ben-nhan', { xong: true }), 2, 1);
+          dat(s, veV('be-go', { keo: true }), 2, 1);
+          dat(s, may(XUONG_DONG, { chay: false, camBien: { bat: true } }, 1), 1, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Chế hàm bridge_lay(n), cross_and_pick(n), ferry_drop(n) và sync_dock_pass(t, n) để đồng bộ nhịp cầu.', 'R1 bắc cầu phao đúng nhịp, R2 lăn bánh qua sông lấy kiện hàng về đích!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('ben-nhan', { xong: true }), 2, 1);
+        dat(s, veV('be-go', { keo: false }), 2, 1);
+        dat(s, may(XUONG_DONG, { chay: false, camBien: { bat: true } }, 1), 1, 1);
+        dat(s, may({ than: 'hai-banh', tay: 'kep', son: 'lam' }, { chay: true }, 2), 2, 1);
+        m.appendChild(code('def bridge_lay(n):\n    pull_back(n)\n    tow_drop()'));
+      }
+    }
+  ]);
 })();
