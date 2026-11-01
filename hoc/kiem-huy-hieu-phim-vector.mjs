@@ -249,7 +249,9 @@ const conPixel = [];
     // mùa bến sông (01/11): huy hiệu gói 1-9
     'xuong', 'ham-tra-ve', 'day-keo', 'bo-co-dinh', 'dong-chay', 'che-dong-chay', 'cong-thuy-loi', 'che-cong', 'tha-neo', 'che-tha-neo', 'buoc-duoi', 'che-buoc-duoi', 'suc-nuoc', 'che-suc-nuoc', 'ben-cu', 'che-ben-cu', 'doi-xuong', 'che-doi-xuong', 'tong-hop-song', 'trum-mua-song',
     // mùa 8 hang động đá vôi (01/11): huy hiệu gói 1-10
-    'banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not', 'nghe-not', 'che-nghe-not', 'hang-cu', 'che-hang-cu', 'doi-hang-dong', 'che-doi-hang-dong', 'tong-hop-hang', 'trum-mua-hang'];
+    'banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not', 'nghe-not', 'che-nghe-not', 'hang-cu', 'che-hang-cu', 'doi-hang-dong', 'che-doi-hang-dong', 'tong-hop-hang', 'trum-mua-hang',
+    // mùa 9 CLB (01/11): huy hiệu gói 1-10
+    'cuu-kho-hang', 'lap-kho-hang', 'cuu-nha-may', 'lap-nha-may', 'cuu-bai-tai-che', 'lap-bai-tai-che', 'cuu-cang-song', 'lap-cang-song', 'cuu-ben-song', 'lap-ben-song', 'cuu-nong-trai', 'lap-nong-trai', 'cuu-mo-da', 'lap-mo-da', 'cuu-hang-dong', 'lap-hang-dong', 'cuu-clb', 'lap-clb', 'tong-hop-clb', 'trum-mua-clb', 'ngay-hoi-clb'];
   for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));
   const DS_CHUP = DS.filter((m) => !MOI_SAU_CHUP.includes(m));
   if (tap(DS_CHUP) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS_CHUP.includes(m)).join(',') + ' / thừa ' + DS_CHUP.filter((m) => !CHUP.DS.includes(m)).join(','));

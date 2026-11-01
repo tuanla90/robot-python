@@ -878,7 +878,7 @@
     var dieuSan = !m.dieu ? null : (nhieu && Array.isArray(m.dieu) && (Array.isArray(m.dieu[0]) || (typeof m.dieu[0] === 'string' && m.dieu[0].length > 1)) ? (m.dieu[i] || null) : m.dieu);
     return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatDang: lay(m.vatDang), vatThem: lay(m.vatThem), thungThem: lay(m.thungThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), lua: lay(m.lua), demTu: lay(m.demTu), sanDoc: lay(m.sanDoc), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau), dong: lay(m.dong),
       chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao),
-      dieu: dieuSan, ngachHang: layMang(m.ngachHang), chuongDa: layMang(m.chuongDa), daChuong: layMang(m.daChuong) };
+      dieu: dieuSan, ngachHang: layMang(m.ngachHang), chuongDa: layMang(m.chuongDa || m.danDoi), daChuong: layMang(m.daChuong) };
   }
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
   function laLenhLoa(t) { return TAY_LOA.indexOf(t) >= 0; }
@@ -1461,15 +1461,16 @@
       });
     }
     var chuongDas = [];
-    if (cfg.chuongDa !== undefined && cfg.chuongDa !== null) {
-      if (!Array.isArray(cfg.chuongDa)) throw new Error('chuongDa phải là mảng [{ x, y, not, phamVi? }].');
-      cfg.chuongDa.forEach(function (cd, i) {
+    var nguonChuongDa = cfg.chuongDa !== undefined && cfg.chuongDa !== null ? cfg.chuongDa : cfg.danDoi;
+    if (nguonChuongDa !== undefined && nguonChuongDa !== null) {
+      if (!Array.isArray(nguonChuongDa)) throw new Error('chuongDa / danDoi phải là mảng [{ x, y, not, phamVi? }].');
+      nguonChuongDa.forEach(function (cd, i) {
         if (!cd || !laSoNguyen(cd.x) || !laSoNguyen(cd.y) || !laSoNguyen(cd.not) || cd.not < 1 || cd.not > NOT_TOI_DA) {
-          throw new Error('Chuông đá ' + (i + 1) + ' phải có x, y và not (1..' + NOT_TOI_DA + ').');
+          throw new Error('Chuông đá / Đàn dơi ' + (i + 1) + ' phải có x, y và not (1..' + NOT_TOI_DA + ').');
         }
-        if (oTai(san, cd.x, cd.y) === null) throw new Error('Chuông đá (' + cd.x + ', ' + cd.y + ') nằm ngoài sân.');
+        if (oTai(san, cd.x, cd.y) === null) throw new Error('Chuông đá / Đàn dơi (' + cd.x + ', ' + cd.y + ') nằm ngoài sân.');
         var pv = cd.phamVi !== undefined && cd.phamVi !== null ? cd.phamVi : 9;
-        if (!laSoNguyen(pv) || pv < 1 || pv > 9) throw new Error('Chuông đá (' + cd.x + ', ' + cd.y + '): phamVi phải là 1..9.');
+        if (!laSoNguyen(pv) || pv < 1 || pv > 9) throw new Error('Chuông đá / Đàn dơi (' + cd.x + ', ' + cd.y + '): phamVi phải là 1..9.');
         chuongDas.push({ id: i + 1, x: cd.x, y: cd.y, not: cd.not, phamVi: pv });
       });
     }
