@@ -7,8 +7,11 @@ from PIL import Image
 
 NGUON, DICH = 'public', os.path.join('..', 'hoc', 'game', 'phim-clb', 'a')
 TI_LE, CHAT = 2 / 3, 80
-CHON = ['robot/m1', 'robot/m2', 'robot/m3', 'robot/m5/drone-cam-vui.png', 'robot/lab', 'robot/*', 'nguoi', 'mascot', 'sfx',
-        'nen-doc/mua-1.png', 'nen-doc/mua-2.png', 'nen-doc/mua-3.png', 'nen-doc/mua-7.png', 'nen-doc/mua-song.png', 'nen-doc/the-gioi.png', 'nen-doc/trong-xe.jpg',
+CHON = ['robot/m1', 'robot/m2', 'robot/m3', 'robot/cang', 'robot/m4', 'robot/m5', 'robot/m6', 'robot/m7', 'robot/m8',
+        'robot/lab', 'robot/*', 'nguoi', 'mascot', 'sfx',
+        'nen-doc/mua-1.png', 'nen-doc/mua-2.png', 'nen-doc/mua-3.png', 'nen-doc/mua-4.png', 'nen-doc/mua-5.png',
+        'nen-doc/mua-6.png', 'nen-doc/mua-7.png', 'nen-doc/mua-8.png', 'nen-doc/mua-cang.png', 'nen-doc/mua-hang.png',
+        'nen-doc/mua-song.png', 'nen-doc/the-gioi.png', 'nen-doc/trong-xe.jpg',
         'ban-do/mua-3b.jpg', 'ban-do/dai-9.jpg']
 
 def tep_cua(muc):

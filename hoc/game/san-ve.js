@@ -99,11 +99,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'nut-de': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1, 'phat-am': 1, 'sai-not': 1, 'lech-nhip': 1, 'lo-nhip': 1, 'xong-dieu': 1, 'loa-goi-lai': 1, 'doi-thu-thang': 1, 'be-sung': 1, 'dem-giu': 1, 'dem-can': 1 };   // dem-giu / dem-can: đệm từ giữ xe tại chỗ (không chiếm thời gian) · sự kiện tức thì của tay (không chiếm thời gian của nhịp); be-sung: bệ súng xích giữ xe (rung trong bước 'ban')
 
   /* BẾN SÔNG / CẢNG SÔNG (31/10): sự kiện mới có bước hoạt cảnh riêng (Field.nhipMuaMoi) và trọng số thời gian trong nhịp (TRONG) */
-  var NHIP_MOI = { 'troi': 1, 'troi-chan': 1, 'neo-giu': 1, 'tha-neo': 1, 'nho-neo': 1, 'keo-vat': 1, 'keo-hut': 1, 'keo-van': 1, 'tha-keo': 1, 'coi-duoi': 1, 'buoc-duoi': 1, 'cong-batch': 1,
-    'dang-neo': 1, 'mui-vuong': 1, 'duoi-vuong': 1, 'buoc-hut': 1, 'khong-keo': 1, 'dang-keo': 1, 'da-neo': 1, 'chua-neo': 1, 'da-buoc': 1, 'phao-goi-lai': 1, 'neo-goi-lai': 1,
+  var NHIP_MOI = { 'troi': 1, 'troi-chan': 1, 'neo-giu': 1, 'tha-neo': 1, 'nho-neo': 1, 'keo-vat': 1, 'keo-hut': 1, 'keo-van': 1, 'tha-keo': 1, 'coi-duoi': 1, 'buoc-duoi': 1, 'doi-dai-luoi': 1, 'cong-batch': 1,
+    'dang-neo': 1, 'mui-vuong': 1, 'duoi-vuong': 1, 'luoi-vuong': 1, 'buoc-hut': 1, 'khong-keo': 1, 'dang-keo': 1, 'trong-khoang': 1, 'da-neo': 1, 'chua-neo': 1, 'da-buoc': 1, 'phao-goi-lai': 1, 'neo-goi-lai': 1,
     'quay-can': 1, 'vuon-can': 1, 'thu-can': 1, 'moc-cont': 1, 'ha-cont': 1, 'chay-ray': 1, 'tau-cap': 1, 'tau-roi': 1, 'can-het-tam': 1, 'qua-tai': 1, 'het-ray': 1, 'giao-nham': 1,
     'dang-treo': 1, 'moc-hut': 1, 'moc-thieu': 1, 'khong-treo': 1, 'ha-bi-chan': 1, 'thap-sai': 1 };
-  var TRONG_MOI = { 'troi': 1.3, 'keo-vat': 1.8, 'keo-hut': 1.4, 'keo-van': 1.6, 'buoc-duoi': 1.3, 'tha-keo': 0.8, 'coi-duoi': 0.8, 'cong-batch': 1.1, 'tha-neo': 0.9, 'nho-neo': 0.9,
+  var TRONG_MOI = { 'troi': 1.3, 'keo-vat': 1.8, 'keo-hut': 1.4, 'keo-van': 1.6, 'buoc-duoi': 1.3, 'doi-dai-luoi': 1.3, 'tha-keo': 0.8, 'coi-duoi': 0.8, 'cong-batch': 1.1, 'tha-neo': 0.9, 'nho-neo': 0.9,
     'moc-cont': 1.4, 'ha-cont': 1.4, 'tau-roi': 1.6, 'tau-cap': 1.1, 'quay-can': 1.1, 'can-het-tam': 1.2, 'qua-tai': 1.2, 'het-ray': 1.2 };
 
   /** Hình mờ của máy sơn (man.hinh, một sân: mảng chuỗi r g b y '.') → mảng hàng tên màu / null; null nếu không có. */
@@ -184,7 +184,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         taiToiDa: typeof cfg.taiToiDa === 'number' ? cfg.taiToiDa : null, luatThap: !!cfg.luatThap };
       this.dungMuaMoi(rows, cfg);                        // BẾN SÔNG / CẢNG SÔNG (31/10): bảng dòng chảy, cống, van, nước; ray, tàu, chồng lúc đầu
       var hg = Array.isArray(cfg.hamGoc) ? cfg.hamGoc : [];
-      this.nc_ = { dat: hg.indexOf('tether') >= 0, nang: hg.indexOf('flow') >= 0, doi: hg.indexOf('pick_up2') >= 0, can: hg.indexOf('weight') >= 0, ray: hg.indexOf('rail') >= 0 };   // nâng cấp hiện trên hình (nangCap): theo khay lệnh nếu màn đưa xuống, không thì bật dần theo vết
+      this.nc_ = { dat: hg.indexOf('tether') >= 0 || hg.indexOf('set_length') >= 0, nang: hg.indexOf('flow') >= 0, doi: hg.indexOf('pick_up2') >= 0, can: hg.indexOf('weight') >= 0, ray: hg.indexOf('rail') >= 0 };   // nâng cấp hiện trên hình (nangCap): theo khay lệnh nếu màn đưa xuống, không thì bật dần theo vết
       // nhiều robot (cfg.doi = [{ robot, batDau, loaiRobot, pin, danToiDa }]): mỗi xe một ngữ cảnh (xem chonXe); this.cfg mang phần của xe đang xét
       this.cfgXe = Array.isArray(cfg.doi) ? cfg.doi.map(function (r, i) {
         var l = r.loaiRobot || 'banh', rb = r.robot || { than: l === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] };
@@ -1037,8 +1037,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var v = VeVector.vat(hv[0], px, hv[1]);
       return v || VeVector.vat('thung-go', px, {});                                     // chất lạ: thùng gỗ (V7c2: trước rơi về hình pixel Ve.makeVatNho)
     },
-    /** BẾN SÔNG: vật nổi (bè / lục bình) ở ô (o.x, o.y): hộp 12 / 14 ô (86 %), dập dềnh nhẹ theo thời gian (lệch pha theo id), không bóng đổ. */
+    /** BẾN SÔNG: vật nổi (bè / lục bình) ở ô (o.x, o.y): hộp 12 / 14 ô (86 %), dập dềnh nhẹ theo thời gian (lệch pha theo id), không bóng đổ. Khi đã thu vào khoang xuồng (L = 0) thì vẽ trên tay xuồng, không vẽ dưới nước. */
     veVatNoi: function (g, o, now, rg) {
+      var xu = this.vis && this.vis.xu;
+      if (xu && xu.keo && xu.keo.id === o.id && (xu.keo.cho === 'khoang' || xu.keo.doDai === 0)) return;
       var sz = 12, nhap = HU().giam() ? 0 : Math.sin(now / 700 + o.id * 1.7) * 0.3, x = o.x * T + 7 + (o.dx || 0) + (rg || 0), y = o.y * T + 7 + (o.dy || 0) + nhap;
       g.drawImage(this.hinhVat(o, 8, Math.max(2, Math.round(sz * this.tiLeCua(g)))), x - sz / 2, y - sz / 2, sz, sz);
     },
@@ -1253,8 +1255,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Sprite xuồng: VeVector.robot thẳng (không qua VeRobot.ve, để truyền trạng thái riêng của thân xuồng / tời dây / chong chóng); lỗi thì rơi về VeRobot.ve. */
     spriteXuong: function (ttR, now, p) {
       var v = this.vis, xu = v.xu, cb = ttR.camBien || {}, nc = this.nangCap(), cfg = this.cfgRobotSon();
+      var ok = xu.keo ? this.objTheoId(xu.keo.id) : null, trKh = !!(xu.keo && (xu.keo.cho === 'khoang' || xu.keo.doDai === 0));
       var st = { than: { banh: { trai: ttR.wl > 0 ? 1 : 0, phai: ttR.wr > 0 ? 1 : 0 }, chay: !!(ttR.wl || ttR.wr || xu.troi), neo: !!xu.neo, dat: !!nc.dat, dangDat: !!(xu.keo && xu.keo.cho === 'duoi') },
-        tay: cfg.tay ? { day: xu.day > now, giu: !!(xu.keo && xu.keo.cho === 'mui') || !!this.dayKeo } : null,
+        tay: cfg.tay ? { day: xu.day > now, giu: !!(xu.keo && !trKh && (xu.keo.cho === 'mui' || xu.keo.cho === 'luoi')) || !!this.dayKeo, khoang: trKh && ok ? (ok.noi || 'be') : null } : null,
         camBien: { bat: !!cb.bat, nang: !!nc.nang } };
       if (typeof ttR.lan === 'number') st.than.lan = ttR.lan;
       if (ttR.mat) st.than.mat = ttR.mat;
@@ -1267,14 +1270,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var a = this.gocMui(), f = cho === 'duoi' ? -T * 0.4 : T * 0.38;
       return { x: cx + Math.sin(a) * f, y: cy - Math.cos(a) * f };
     },
-    /** Dây phao trên sân (VeVector.veDayKeo): đang kéo (vật ở mũi / buộc đuôi: dây căng từ xuồng tới tâm vật) hay hoạt cảnh this.dayKeo (phao bay ra / thu về, dây tới vật đang được kéo về). */
+    /** Dây phao / lưới trên sân (VeVector.veDayKeo): đang kéo (vật ở dưới nước: dây căng từ xuồng qua chuỗi mắt dây tới tâm vật) hay hoạt cảnh this.dayKeo (lưới bay ra / thu về). */
     veDayPhao: function (g, cx, cy, now) {
       var v = this.vis, xu = v.xu, dk = this.dayKeo, o;
       if (dk) { var p1 = this.diemXuong(cx, cy, dk.cho || 'mui'); VeVector.veDayKeo(g, { x1: p1.x, y1: p1.y, x2: dk.x2, y2: dk.y2, o: T, cang: !!dk.cang, phao: !!dk.phao, a: typeof dk.a === 'number' ? dk.a : 1 }); return; }
-      if (!xu.keo) return;
+      if (!xu.keo || xu.keo.cho === 'khoang' || xu.keo.doDai === 0) return;
       o = this.objTheoId(xu.keo.id); if (!o) return;
-      var p0 = this.diemXuong(cx, cy, xu.keo.cho);
-      VeVector.veDayKeo(g, { x1: p0.x, y1: p0.y, x2: o.x * T + 7 + (o.dx || 0), y2: o.y * T + 7 + (o.dy || 0), o: T, cang: true });
+      var p0 = this.diemXuong(cx, cy, xu.keo.cho), mat = null;
+      if (Array.isArray(xu.keo.day) && xu.keo.day.length > 1) {
+        mat = [];
+        for (var i = 0; i < xu.keo.day.length - 1; i++) mat.push({ x: xu.keo.day[i].x * T + 7, y: xu.keo.day[i].y * T + 7 });
+      }
+      VeVector.veDayKeo(g, { x1: p0.x, y1: p0.y, x2: o.x * T + 7 + (o.dx || 0), y2: o.y * T + 7 + (o.dy || 0), o: T, cang: true, mat: mat });
     },
     /** Cần cẩu trên sân (pixel sân, lớp phủ): bệ ở (cx, cy) (chân đế đứng yên, mâm quay theo nac), cần nội suy nac / tam lẻ, container treo (nang 0..1: đang nhấc lên / hạ xuống), móc đơn / đôi, tia quét khi đang đọc mã. */
     veCauTrenSan: function (g, cx, cy, now, ttR) {
@@ -2632,8 +2639,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         await this.tween(per, my, function (k) { if (k > 0.4 && xu) xu.neo = neo; v.hop = Math.sin(k * Math.PI) * (neo ? -0.8 : 0.8); });
         if (xu) xu.neo = neo; v.hop = 0; this.burst(cx, cy + 3, 5, BOT, 0.5); return;
       }
-      if (m === 'keo-vat') {                                                                 // dây phao bay tới vật, rồi kéo vật về ô trước mũi (dây căng)
-        var ok = this.objTheoId(s.id), pt = tam(s.tu), p1 = this.diemXuong(cx, cy, 'mui');
+      if (m === 'keo-vat') {                                                                 // dây phao / lưới bay tới vật, rồi giữ ở tầm lưới hoặc kéo vật về ô đích
+        var ok = this.objTheoId(s.id), pt = tam(s.tu), p1 = this.diemXuong(cx, cy, 'mui'), giuCho = s.den && s.tu && s.den.x === s.tu.x && s.den.y === s.tu.y;
         this.dayKeo = { x2: p1.x, y2: p1.y, phao: true, cang: false, a: 1, cho: 'mui' };
         if (xu) xu.day = now + per * 0.45;
         await this.tween(per * 0.45, my, function (k) { var k2 = ease(k); self.dayKeo.x2 = p1.x + (pt.x - p1.x) * k2; self.dayKeo.y2 = p1.y + (pt.y - p1.y) * k2; });
@@ -2643,10 +2650,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           await this.tween(per * 0.55, my, function (k) { var k2 = ease(k); ok.x = kx0 + (s.den.x - kx0) * k2; ok.y = ky0 + (s.den.y - ky0) * k2; self.dayKeo.x2 = ok.x * T + 7; self.dayKeo.y2 = ok.y * T + 7; });
           ok.x = s.den.x; ok.y = s.den.y;
         } else await ngu(per * 0.55);
-        if (xu) xu.keo = { id: s.id, cho: 'mui' };
+        if (xu) xu.keo = { id: s.id, cho: giuCho ? 'luoi' : 'mui', doDai: s.doDai, day: s.day };
         this.dayKeo = null; return;
       }
-      if (m === 'keo-hut' || m === 'keo-van') {                                              // dây bay ra: hụt (chạm chỗ chắn / hết tầm, thu về, '?') hay trúng van (van gạt, dòng / cống của nhóm đổi)
+      if (m === 'keo-hut' || m === 'keo-van') {                                              // dây / lưới bay ra: hụt (chạm chỗ chắn / hết tầm, thu về, '?') hay trúng van (van gạt, dòng / cống của nhóm đổi)
         var o2 = s.o ? tam(s.o) : null, h = s.huong, p2 = this.diemXuong(cx, cy, 'mui'), dai = s.soO > 0 ? s.soO : 3;
         var dx2 = o2 ? o2.x : p2.x + (DX[h] || 0) * T * dai, dy2 = o2 ? o2.y : p2.y + (DY[h] || 0) * T * dai;
         if (m === 'keo-hut' && o2 && s.vat !== 'het-tam') { dx2 = o2.x - (DX[h] || 0) * T * 0.3; dy2 = o2.y - (DY[h] || 0) * T * 0.3; }
@@ -2662,24 +2669,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (m === 'tha-keo' || m === 'coi-duoi') {                                             // thả vật tại chỗ: dây chùng, mờ dần
         var ot = this.objTheoId(s.id), cho = s.cho || (m === 'coi-duoi' ? 'duoi' : 'mui');
-        if (ot) { ot.keo = false; this.dayKeo = { x2: ot.x * T + 7, y2: ot.y * T + 7, phao: false, cang: false, a: 1, cho: cho }; }
+        if (ot) { ot.keo = false; this.dayKeo = { x2: ot.x * T + 7, y2: ot.y * T + 7, phao: false, cang: false, a: 1, cho: cho === 'luoi' ? 'mui' : cho }; }
         if (xu) xu.keo = null;
         await this.tween(per, my, function (k) { if (self.dayKeo) self.dayKeo.a = 1 - k; });
         this.dayKeo = null; return;
       }
-      if (m === 'buoc-duoi') {                                                               // buộc dắt: vật vòng từ mũi ra sau đuôi, dây chuyển sang móc đuôi
-        var ob = this.objTheoId(s.id); this.nangCap().dat = true;
+      if (m === 'buoc-duoi' || m === 'doi-dai-luoi') {                                       // buộc dắt hoặc đổi độ dài dây lưới (cuộn vào khoang / thu gần / thả ra xa)
+        var ob = this.objTheoId(s.id), laLuoi = m === 'doi-dai-luoi' || typeof s.denDai === 'number';
+        this.nangCap().dat = true;
         if (ob) {
           ob.keo = true; var bx0 = ob.x, by0 = ob.y; if (xu) xu.keo = null;
           this.dayKeo = { x2: ob.x * T + 7, y2: ob.y * T + 7, phao: false, cang: true, a: 1, cho: 'mui' };
-          await this.tween(per, my, function (k) { var k2 = ease(k); ob.x = bx0 + (s.den.x - bx0) * k2; ob.y = by0 + (s.den.y - by0) * k2; self.dayKeo.x2 = ob.x * T + 7; self.dayKeo.y2 = ob.y * T + 7; if (k > 0.5) self.dayKeo.cho = 'duoi'; });
+          await this.tween(per, my, function (k) { var k2 = ease(k); ob.x = bx0 + (s.den.x - bx0) * k2; ob.y = by0 + (s.den.y - by0) * k2; self.dayKeo.x2 = ob.x * T + 7; self.dayKeo.y2 = ob.y * T + 7; if (!laLuoi && k > 0.5) self.dayKeo.cho = 'duoi'; });
           ob.x = s.den.x; ob.y = s.den.y;
+          this.burst(s.den.x * T + 7, s.den.y * T + 7, 4, BOT, 0.4);
         } else await ngu(per);
-        if (xu) xu.keo = { id: s.id, cho: 'duoi' };
+        if (xu) xu.keo = laLuoi ? { id: s.id, cho: s.denDai === 0 ? 'khoang' : 'luoi', doDai: s.denDai, day: s.day } : { id: s.id, cho: 'duoi' };
         this.dayKeo = null; return;
       }
       if (m === 'cong-batch') { await this.congBatch(evs.filter(function (q) { return q.ma === 'cong-doi' || q.ma === 'cong-ket'; }), per, my); return; }
-      if (m === 'dang-neo' || m === 'mui-vuong' || m === 'duoi-vuong' || m === 'buoc-hut' || m === 'khong-keo' || m === 'dang-keo') {      // lỗi xuồng: rung, choáng, ô vướng nháy đỏ, dấu '!'
+      if (m === 'dang-neo' || m === 'mui-vuong' || m === 'duoi-vuong' || m === 'luoi-vuong' || m === 'buoc-hut' || m === 'khong-keo' || m === 'dang-keo' || m === 'trong-khoang') {      // lỗi xuồng: rung, choáng, ô vướng nháy đỏ, dấu '!'
         this.baoHieu('!', 1400); v.choang = now + per + 900; this.matSuKien('dam', 700);
         if (s.o) this.canhBao = { x: s.o.x, y: s.o.y, den: now + 1100 };
         await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 1.6; });

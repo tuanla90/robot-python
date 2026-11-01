@@ -8,7 +8,7 @@
    ========================================================================== */
 'use strict';
 
-var BAN = 'duong-hoc-v4';      // 01/11: v3 → v4 bỏ bộ đệm cũ, thêm thân bánh gai + cảm biến âm thanh mùa 8 & sửa Player phim mở đầu
+var BAN = 'duong-hoc-v5';      // 01/11: v4 → v5 đóng gói đủ 90 phim gói CLB cho cả 9 mùa (mua-1..mua-9) & hiện nút ▶ khi bật Mở hết
 var HEN_MS = 4000;
 var THEM = ['choi.html', 'manifest.webmanifest', 'font/font.css', 'icon/icon-192.png', 'icon/icon-512.png', 'icon/icon-maskable-512.png'];
 

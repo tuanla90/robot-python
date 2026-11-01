@@ -11,6 +11,12 @@ import {PHIM_MO_DAU} from '../PhimMoDau';
 import {PHIM_M1} from '../doc/m1';
 import {PHIM_M2} from '../doc/m2';
 import {PHIM_M3} from '../doc/m3';
+import {PHIM_CANG} from '../doc/cang';
+import {PHIM_M4} from '../doc/m4';
+import {PHIM_M5} from '../doc/m5';
+import {PHIM_M6} from '../doc/m6';
+import {PHIM_M7} from '../doc/m7';
+import {PHIM_M8} from '../doc/m8';
 import {DS_GOI} from './ds-goi';
 
 // cùng nhịp với may-phim.tsx (ChieuPhim không export nên chép phần xếp cảnh)
@@ -26,8 +32,8 @@ const gopKetVaoMoSau = (ds: Phim[]): Phim[] => {
   const kq: Phim[] = [];
   let ketCho: Phim | null = null;
   for (const p of ds) {
-    if (/^M\d+G([1-9])-Ket$/.test(p.id)) { ketCho = p; continue; }
-    if (ketCho && /^M\d+G\d+-Mo$/.test(p.id)) {
+    if (/^M[0-9C]+G([1-9])-Ket$/.test(p.id)) { ketCho = p; continue; }
+    if (ketCho && /^M[0-9C]+G\d+-Mo$/.test(p.id)) {
       kq.push({...p, canh: [...ketCho.canh.map((c, i) => ({...c, id: `ket-truoc-${i}-${c.id}`})), ...p.canh]});
       ketCho = null;
     } else {
@@ -42,7 +48,9 @@ const gopKetVaoMoSau = (ds: Phim[]): Phim[] => {
 const PHIM = new Map<string, Phim>();
 PHIM.set('mo-dau', PHIM_MO_DAU);
 PHIM.set(PHIM_MO_DAU.id, PHIM_MO_DAU);
-[PHIM_M1, PHIM_M2, PHIM_M3].forEach((ds) => gopKetVaoMoSau(ds).forEach((p) => PHIM.set(p.id, p)));
+[PHIM_M1, PHIM_M2, PHIM_M3, PHIM_CANG, PHIM_M4, PHIM_M5, PHIM_M6, PHIM_M7, PHIM_M8].forEach((ds) =>
+  gopKetVaoMoSau(ds).forEach((p) => PHIM.set(p.id, p))
+);
 
 const phimCuaGoi = (ma: string): Phim | undefined => {
   if (ma === 'mo-dau' || ma === PHIM_MO_DAU.id) return PHIM_MO_DAU;

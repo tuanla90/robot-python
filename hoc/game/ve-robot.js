@@ -39,7 +39,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     ink: 'son', dot: 'son', pen_down: 'son', pen_up: 'son',
     note: 'loa', beat: 'loa',
     pick_up: 'moc-cau', set_down: 'moc-cau', pick_up2: 'moc-cau',
-    tow: 'day-keo', drop_tow: 'day-keo', tether: 'day-keo', untether: 'day-keo'
+    cast_net: 'day-keo', drop_net: 'day-keo', set_length: 'day-keo', tow: 'day-keo', drop_tow: 'day-keo', tether: 'day-keo', untether: 'day-keo'
   };
   function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }
   /**

@@ -10,14 +10,25 @@ import {createRequire} from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const MUA = [1, 2, 3];
+// Ánh xạ mùa trong game (mua-1..mua-9) sang tiền tố mã phim trong phim-clb (M1..M3, MC cho Cảng sông, M4..M8 cho Bến sông..CLB).
+const MUA_PHIM = [
+  ['1', 'mua-1'],
+  ['2', 'mua-2'],
+  ['3', 'mua-3'],
+  ['C', 'mua-4'],
+  ['4', 'mua-5'],
+  ['5', 'mua-6'],
+  ['6', 'mua-7'],
+  ['7', 'mua-8'],
+  ['8', 'mua-9'],
+];
 const require = createRequire(import.meta.url);
 const GAME = path.resolve('..', 'hoc', 'game');
 const RA = path.join(GAME, 'phim-clb');
 
 const TT = require('../../../hoc/thu-tu-chuong.js');
 require('../../../hoc/lo-trinh-hoc.js');
-const dsGoi = Object.fromEntries(MUA.map((m) => [m, TT.goi.filter((g) => g.mua === `mua-${m}`).map((g) => g.ma)]));
+const dsGoi = Object.fromEntries(MUA_PHIM.map(([k, mua]) => [k, TT.goi.filter((g) => g.mua === mua).map((g) => g.ma)]));
 for (const [m, ds] of Object.entries(dsGoi)) if (ds.length !== 10) throw new Error(`mùa ${m} có ${ds.length} gói, phim cần 10`);
 fs.writeFileSync('src/web/ds-goi.ts', `// Sinh bởi tools/web/dong-goi.mjs từ hoc/thu-tu-chuong.js, đừng sửa tay.\nexport const DS_GOI: Record<string, string[]> = ${JSON.stringify(dsGoi, null, 2)};\n`);
 fs.mkdirSync(RA, {recursive: true});

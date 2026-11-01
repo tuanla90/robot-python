@@ -364,6 +364,7 @@ const HO_SO_MUA: Record<string, {chuSo: string; avatar: string; icon: string; ma
   m1: {chuSo: 'CHÚ TƯ · THỦ KHO', avatar: 'nguoi/tu-tin.png', icon: 'Warehouse', mau: '#B45309', nen: '#FEF3C7', donVi: 'ĐƠN KHO'},
   m2: {chuSo: 'CÔ HẠNH · KỸ SƯ TRƯỞNG', avatar: 'nguoi/hanh-tin.png', icon: 'Factory', mau: '#0284C7', nen: '#E0F2FE', donVi: 'CA CỨU HỘ'},
   m3: {chuSo: 'BÁC SÁU · BÃI TÁI CHẾ', avatar: 'nguoi/sau-tin.png', icon: 'Recycle', mau: '#15803D', nen: '#DCFCE7', donVi: 'MẺ TÁI CHẾ'},
+  cang: {chuSo: 'CÔ MAI · ĐIỀU ĐỘ CẢNG', avatar: 'nguoi/mai-tin.png', icon: 'Anchor', mau: '#CA8A04', nen: '#FEF3C7', donVi: 'CHUYẾN TÀU'},
   m4: {chuSo: 'BÁC BA · TRẠM THỦY LỢI', avatar: 'nguoi/ba-tin.png', icon: 'Waves', mau: '#0369A1', nen: '#E0F2FE', donVi: 'TUYẾN KÊNH'},
   m5: {chuSo: 'CHỊ LAN · NÔNG TRẠI HOA', avatar: 'nguoi/lan-tin.png', icon: 'Flower2', mau: '#BE185D', nen: '#FCE7F3', donVi: 'LUỐNG HOA'},
   m6: {chuSo: 'ANH DŨNG · KỸ SƯ MỎ ĐÁ', avatar: 'nguoi/dung-tin.png', icon: 'Mountain', mau: '#C2410C', nen: '#FFEDD5', donVi: 'CHẶNG MỎ'},
@@ -508,11 +509,60 @@ const TRUOC_THEO_ANH: Record<string, string> = {
   'xich-ui': 'xich-cam',
   'xich-manh': 'xich-ui',
   'xich-du': 'xich-manh',
+  // Mùa 3 (Bãi tái chế)
+  'nhen-nc': 'nhen',
+  'nhen-tu': 'nhen-nc',
+  'nhen-co': 'nhen-tu',
+  'nhen-tu-s': 'nhen-tu',
+  // Mùa 4 (Cảng sông)
+  'cau-moc': 'cau',
+  'cau-quet-bat': 'cau-moc',
+  'cau-ray': 'cau-quet',
+  'cau-doi': 'cau-ray',
+  'cau-du': 'cau-doi',
+  // Mùa 5 (Bến sông)
+  'xuong-keo': 'xuong',
+  'xuong-do-bat': 'xuong-keo',
+  'xuong-neo': 'xuong-do',
+  'xuong-dat': 'xuong-neo',
+  'xuong-du': 'xuong-dat',
+  // Mùa 6 (Nông trại)
+  'drone-son': 'drone',
+  'drone-cam': 'drone-son',
+  'drone-cam-red': 'drone-cam',
+  'drone-cam-do': 'drone-cam-red',
+  // Mùa 7 (Mỏ đá)
+  'omni-nem-cam': 'omni',
+  'omni-radar-quet': 'omni-nem-cam',
+  'omni-radar-vui': 'omni-radar',
+  'omni-du': 'omni-radar',
+  'omni-du-vui': 'omni-du',
+  // Mùa 8 (Hang động)
+  'gai-loa-phat': 'gai',
+  'gai-am-nghe': 'gai-loa',
+  'gai-du-thu': 'gai-am',
+  'gai-du-vui': 'gai-du',
+  // Mùa 9 (CLB)
+  'lai-xich-nem': 'lai-nhen-kep',
+  'lai-gai-cam': 'lai-xich-nem',
+  'lai-xuong-tu': 'lai-gai-cam',
+  'lai-omni-keo': 'lai-xuong-tu',
+  'lai-drone-tu': 'lai-omni-keo',
+  'lai-omni-loa': 'lai-drone-tu',
+  'luna-bot': 'sola-bot',
 };
 /** Đè TRUOC_THEO_ANH theo mùa: mùa 2 'du' (lưỡi ủi, gói 5) đứng sau xe hồng ngoại, robot/m2 không có 'xoay' (1/11). */
 const TRUOC_THEO_MUA: Record<string, Record<string, string>> = {m2: {du: 'xich-hn'}};
-/** R1 đủ bộ của mùa (cảnh đưa R2 lên bàn, gói 9): robot/m3 không có 'du' mà là nhện từ (1/11). */
-const R1_DU: Record<string, string> = {m3: 'nhen-tu'};
+/** R1 đủ bộ của mùa (cảnh đưa R2 lên bàn, gói 9). */
+const R1_DU: Record<string, string> = {
+  m3: 'nhen-tu',
+  cang: 'cau-du',
+  m4: 'xuong-du',
+  m5: 'drone-cam',
+  m6: 'omni-du',
+  m7: 'gai-du',
+  m8: 'sola-bot',
+};
 
 export type LoaiNangCap = 'banh-lui' | 'tay-xoay' | 'cam-ben' | 'nang-cap';
 
@@ -552,7 +602,7 @@ export const TrongXe: React.FC<{
   const laLapHaiBanh = !nangCap && anh === 'r1';
   const laLapTayKep = !nangCap && anh === 'kep';
   const laLapCamBien = !nangCap && anh === 'kep-cam';
-  const laLapR2 = !nangCap && anh === 'r2';
+  const laLapR2 = !nangCap && (anh === 'r2' || anh === 'luna-bot');
 
   // Hiệu ứng biểu diễn sau khi mở khóa tính năng (f >= cach)
   const uSau = f >= cach ? ease(f, [cach + 8, cach + 68], [0, 1]) : 0;
@@ -770,7 +820,7 @@ export const TrongXe: React.FC<{
             opacity: f < cach ? (dangLap ? uLap : 0.25) : 1,
             transform: `scale(${f >= cach ? 0.88 + 0.12 * p : 1}) rotate(-90deg)`,
             filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))'}}>
-            <Img src={staticFile(duongRobot(m, f >= cach ? 'r2-vui' : 'r2'))} style={{width: 400, height: 400}} />
+            <Img src={staticFile(duongRobot(m, f >= cach ? `${anh}-vui` : anh))} style={{width: 400, height: 400}} />
           </div>
         </>
       ) : f < cach ? (
