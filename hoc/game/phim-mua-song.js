@@ -246,4 +246,41 @@
       }
     }
   ]);
+
+  /* ================================================================ 7. suc-nuoc — Đo sức nước chảy */
+  PG.dangKy('suc-nuoc', [
+    { Chu: ['Trên sông có những luồng nước chảy êm sức 1 và những thác ghềnh chảy xiết sức 2.', 'Nâng cấp CHONG CHÓNG ĐO SỨC NƯỚC để biết chính xác dòng đẩy mạnh bao nhiêu!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 1, suc: 2 }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        var rb = dat(s, may(XUONG_DONG, { chay: false }, 1), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 1, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Lệnh flow() trả về bộ đôi (huong, suc) gồm hướng chảy và sức đẩy 0, 1 hoặc 2.', 'Kết hợp hàm min(a, b) và max(a, b) để so sánh hai nhánh sông và chọn luồng êm nhất!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 1, suc: 2 }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 3, 1);
+        m.appendChild(code('h, s = flow()\nforward(6 - s)'));
+      }
+    },
+    { Chu: ['Chế các hàm flow_power(), calmer_power(), faster_power(), turn_to_calmer() và best_branch(n).', 'Lựa nhánh sông an toàn nhất để lai dắt bè hàng về bến!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('dong-nuoc', { huong: 1, suc: 1 }), 2, 1);
+        dat(s, veO('phao-dich'), 4, 1);
+        dat(s, may(XUONG_DONG, { chay: true, camBien: { bat: true } }, 1), 4, 1);
+        m.appendChild(code('def flow_power():\n    h, s = flow()\n    return s'));
+      }
+    }
+  ]);
 })();

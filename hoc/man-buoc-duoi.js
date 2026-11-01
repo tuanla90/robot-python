@@ -48,16 +48,20 @@
   function manBuocDuoi(c) {
     return Object.assign({
       chuong: 'buoc-duoi', tenChuong: 'Lai dắt theo đuôi',
-      loaiRobot: 'xuong', robot: ROBOT_DUOI, mucTieu: 'dua-vat',
-      hamGoc: GOC_DUOI, hamCuaEmCan: KHO_TRUOC, cauTruc: CAU_TRUC
+      loaiRobot: 'xuong', robot: ROBOT_DUOI, vo: 'song', mucTieu: 'dua-vat',
+      hamGoc: GOC_DUOI, bienDem: true, cauTruc: CAU_TRUC,
+      khung: { chinh: 10, moiHam: 10, cauTruc: CAU_TRUC },
+      hamCuaEmCan: KHO_TRUOC, taoHam: []
     }, c, { ma: 'buoc-duoi.' + c.so });
   }
 
   function manCheBuocDuoi(c) {
     return Object.assign({
       chuong: 'che-buoc-duoi', tenChuong: 'Chế lệnh: kéo bè qua khúc cua',
-      loaiRobot: 'xuong', robot: ROBOT_DUOI, mucTieu: 'dua-vat',
-      hamGoc: GOC_DUOI, hamCuaEmCan: KHO_TRUOC, cauTruc: CAU_TRUC
+      loaiRobot: 'xuong', robot: ROBOT_DUOI, vo: 'song', mucTieu: 'dua-vat',
+      hamGoc: GOC_DUOI, bienDem: true, cauTruc: CAU_TRUC,
+      khung: { chinh: 10, moiHam: 10, cauTruc: CAU_TRUC },
+      hamCuaEmCan: KHO_TRUOC, taoHam: []
     }, c, { ma: 'che-buoc-duoi.' + c.so });
   }
 
