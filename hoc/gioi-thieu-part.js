@@ -433,19 +433,19 @@
     },
     'am-thanh': {
       khe: 'camBien', ten: 'Mic thu thanh',
-      moTa: 'Cảm biến âm thanh gắn trên đỉnh xe, lắng nghe tiếng vọng và cao độ từ chuông đá trong hang.',
+      moTa: 'Cảm biến âm thanh gắn trên đỉnh xe, lắng nghe tiếng vọng và cao độ từ chuông đá hoặc đàn dơi phát sóng âm trong hang.',
       lenh: ['hear', 'listen'],
       moTaLenh: {
-        hear: 'Đo khoảng cách theo số ô tới chuông đá gần nhất trước mặt trong tầm 6 ô',
-        listen: 'Nghe cao độ nốt nhạc từ 1 đến 8 của chuông đá gần nhất trong tầm 6 ô'
+        hear: 'Đo khoảng cách theo số ô tới chuông đá hoặc đàn dơi gần nhất trước mặt trong tầm 6 ô',
+        listen: 'Nghe cao độ nốt nhạc từ 1 đến 8 của chuông đá hoặc đàn dơi gần nhất trong tầm 6 ô'
       },
       gioi: [
-        'hear() trả về số ô từ 1 đến 6 tới chuông đá trước mặt để biết quãng đường cần tiến mà không đếm tay',
+        'hear() trả về số ô từ 1 đến 6 tới chuông đá hoặc đàn dơi trước mặt để biết quãng đường cần tiến mà không đếm tay',
         'Đọc cảm biến không tốn nhịp',
-        { can: ['listen'], chu: 'listen() đọc cao độ nốt 1 đến 8 của chuông đá gần nhất để phát lại đúng nốt đó bằng note(n)' }
+        { can: ['listen'], chu: 'listen() đọc cao độ nốt 1 đến 8 của chuông đá hoặc đàn dơi gần nhất để phát lại đúng nốt đó bằng note(n)' }
       ],
       khong: ['Vách đá # chắn ngang đường nhìn trước mặt sẽ cản tiếng vọng của hear()'],
-      luuY: ['Khi không có chuông đá nào trong tầm 6 ô, hear() và listen() đều trả về 0.']
+      luuY: ['Khi không có chuông đá hay đàn dơi nào trong tầm 6 ô, hear() và listen() đều trả về 0.']
     }
   };
   var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'xuong', 'gai', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'day-keo', 'loa', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma', 'dong-chay', 'am-thanh'];

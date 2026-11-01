@@ -48,4 +48,44 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.kinh(g, M, 29, 57, 42, 15.5, s);
     H.angTen(g, M, 50, 27, 13, 5);
   } });
+
+  /* THÂN BÁNH GAI BÁM ĐÁ 'gai' (mùa 8 Hang động đá vôi & mùa 9 Về CLB): 4 bánh lốp địa hình 3D có cổ trục motor, vành thép và đinh gai vàng cảnh báo
+     (khi s.thu = true hoặc s.gai === false: thu đinh gai vào trong vành lốp để trượt nhanh trên dải đá vôi ướt 'I'). */
+  V.dangKy({ loai: 'than', ma: 'gai', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'retract_spikes', 'extend_spikes'], ten: 'Thân bánh gai bám đá', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 71, y: 47 }, hongPhai: { x: 29, y: 47 }, tren: { x: 71, y: 78 }, sau: { x: 37, y: 27 } }, oCam: { x: 63, y: 29 }, vo: { x: 23, y: 24, w: 54, h: 59 }, ve: function (g, s, M, H) {
+    s = s || {};
+    var thu = !!(s.thu || s.gai === false);
+    var lan = typeof s.lan === 'number' ? s.lan : (s.banh && (s.banh.trai || s.banh.phai) && s.buoc ? 0.5 : 0);
+    var lech = ((lan % 1) - 0.5) * 3.6;
+    [[14.5, 36.5], [85.5, 36.5], [14.5, 70.5], [85.5, 70.5]].forEach(function (b) {
+      var bx = b[0], by = b[1], dir = bx < 50 ? -1 : 1;
+      var ax = dir < 0 ? bx + 3.0 : bx - 11.5, fx = dir < 0 ? bx + 4.8 : bx - 7.6;
+      H.bo(g, ax, by - 4.4, 8.5, 8.8, 1.8); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 2.2);
+      H.bo(g, fx, by - 6.0, 2.8, 12.0, 1.0); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 1.6);
+      if (!thu) {
+        [-8.5, 0, 8.5].forEach(function (dy0) {
+          var dy = dy0 + lech * 0.35;
+          g.beginPath();
+          g.moveTo(bx + dir * 4.5, by + dy - 3.6);
+          g.lineTo(bx + dir * 13.0, by + dy);
+          g.lineTo(bx + dir * 4.5, by + dy + 3.6);
+          g.closePath();
+          H.to(g, BM.vecCanhBao); H.vien(g, BM.vecVien, 2.1);
+        });
+      }
+      H.bo(g, bx - 6.6, by - 13.5, 13.2, 27, 4.8);
+      H.to(g, thu ? BM.vecDen : BM.vecBanh);
+      H.vien(g, BM.vecVien, 2.8);
+      [-7.5, 0, 7.5].forEach(function (dy0) {
+        var dy = dy0 + lech * 0.45;
+        H.bo(g, bx - 4.8, by + dy - 2, 9.6, 4, 1.4);
+        H.to(g, thu ? BM.vecDenSang : BM.vecBanhGach);
+        H.vien(g, BM.vecVien, 1.2);
+      });
+    });
+    H.bo(g, 23, 26, 54, 54, 18); g.fillStyle = H.gradVo(g, 23, 26, 54, 54); g.fill(); H.vien(g, BM.vecVien, 3.5);
+    H.duong(g, 'M35 34 C33 44 33 53 35 62 M65 34 C67 44 67 53 65 62 M50 26 v11'); H.vien(g, BM.vecVoGhep, 2.5);
+    H.duong(g, 'M31 36 C34 31 39 30 45 30'); H.vien(g, BM.vecVo, 4);
+    H.kinh(g, M, 29, 57, 42, 15.5, s);
+    H.angTen(g, M, 50, 27, 13, 5);
+  } });
 })(typeof window !== 'undefined' ? window : globalThis);

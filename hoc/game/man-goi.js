@@ -209,7 +209,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (xong) b.appendChild(h('div', 'g-xong', t('goi.xong')));
       var moDauGoi = g.ma === 'xe' && window.MoDau && window.Luu && Luu.daXem(MoDau.CO)     // gói 1 dùng phim mở đầu (mo-dau.js) làm phim của gói,
         && !(window.PhimGoi && PhimGoi.co(g.ma));                                           // trừ khi đã có phim CLB của gói (phim-clb/ds.js)
-      if (mo && (moDauGoi || (window.PhimGoi && PhimGoi.co(g.ma) && PhimGoi.daXem(g.ma)))) {        // đã xem phim gói: nút nhỏ ▶ xem lại (phim xong thì vào gói)
+      if (mo && (moDauGoi || (window.PhimGoi && PhimGoi.co(g.ma) && (App.moHet || PhimGoi.daXem(g.ma))))) {        // đã xem phim gói (hoặc đang bật Mở hết): nút nhỏ ▶ xem lại (phim xong thì vào gói)
         var xl = h('button', 'bt g-cy g-phim'); xl.setAttribute('data-nut', 'xem-phim'); xl.setAttribute('aria-label', t('pg.xemLai')); xl.setAttribute('title', t('pg.xemLai'));
         var ip = h('span'); ip.setAttribute('data-i', 'play'); ip.setAttribute('data-s', '1'); ip.setAttribute('data-l', BM.xanhLo); ip.setAttribute('data-f', BM.trangV2); xl.appendChild(ip); Ve.hydrate(xl);
         xl.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });          // không tính là bắt đầu vuốt dải hộp

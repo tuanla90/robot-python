@@ -7,9 +7,16 @@ import {Player, PlayerRef} from '@remotion/player';
 import {AbsoluteFill, Audio, Sequence, staticFile} from 'remotion';
 import {C, FONT, Stage, Whip} from '../d10';
 import {FPS, Phim} from '../may-phim';
+import {PHIM_MO_DAU} from '../PhimMoDau';
 import {PHIM_M1} from '../doc/m1';
 import {PHIM_M2} from '../doc/m2';
 import {PHIM_M3} from '../doc/m3';
+import {PHIM_CANG} from '../doc/cang';
+import {PHIM_M4} from '../doc/m4';
+import {PHIM_M5} from '../doc/m5';
+import {PHIM_M6} from '../doc/m6';
+import {PHIM_M7} from '../doc/m7';
+import {PHIM_M8} from '../doc/m8';
 import {DS_GOI} from './ds-goi';
 
 // cùng nhịp với may-phim.tsx (ChieuPhim không export nên chép phần xếp cảnh)
@@ -25,8 +32,8 @@ const gopKetVaoMoSau = (ds: Phim[]): Phim[] => {
   const kq: Phim[] = [];
   let ketCho: Phim | null = null;
   for (const p of ds) {
-    if (/^M\d+G([1-9])-Ket$/.test(p.id)) { ketCho = p; continue; }
-    if (ketCho && /^M\d+G\d+-Mo$/.test(p.id)) {
+    if (/^M[0-9C]+G([1-9])-Ket$/.test(p.id)) { ketCho = p; continue; }
+    if (ketCho && /^M[0-9C]+G\d+-Mo$/.test(p.id)) {
       kq.push({...p, canh: [...ketCho.canh.map((c, i) => ({...c, id: `ket-truoc-${i}-${c.id}`})), ...p.canh]});
       ketCho = null;
     } else {
@@ -39,9 +46,14 @@ const gopKetVaoMoSau = (ds: Phim[]): Phim[] => {
 };
 
 const PHIM = new Map<string, Phim>();
-[PHIM_M1, PHIM_M2, PHIM_M3].forEach((ds) => gopKetVaoMoSau(ds).forEach((p) => PHIM.set(p.id, p)));
+PHIM.set('mo-dau', PHIM_MO_DAU);
+PHIM.set(PHIM_MO_DAU.id, PHIM_MO_DAU);
+[PHIM_M1, PHIM_M2, PHIM_M3, PHIM_CANG, PHIM_M4, PHIM_M5, PHIM_M6, PHIM_M7, PHIM_M8].forEach((ds) =>
+  gopKetVaoMoSau(ds).forEach((p) => PHIM.set(p.id, p))
+);
 
 const phimCuaGoi = (ma: string): Phim | undefined => {
+  if (ma === 'mo-dau' || ma === PHIM_MO_DAU.id) return PHIM_MO_DAU;
   for (const [m, ds] of Object.entries(DS_GOI)) {
     const n = ds.indexOf(ma);
     if (n >= 0) return PHIM.get(`M${m}G${n + 1}-Mo`);
@@ -84,13 +96,14 @@ const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu,
     return () => p.removeEventListener('ended', khiHet);
   }, []);
   const Comp = React.useMemo(() => () => <ChieuPhim phim={phim} />, [phim]);
+  const laMoDau = phim.id === PHIM_MO_DAU.id;
   return (
     <div style={{position: 'absolute', inset: 0, zIndex: 30, background: '#0F172A'}} data-hop="phim-clb" data-phim={phim.id}>
       <Player ref={ref} component={Comp} durationInFrames={xep(phim).total} fps={FPS} compositionWidth={1080} compositionHeight={1920}
-        style={{width: '100%', height: '100%'}} controls clickToPlay showVolumeControls={false} allowFullscreen={false} acknowledgeRemotionLicense />
-      <button className="bt g-wd md-bo-qua" data-nut="pg-bo-qua" onClick={xong} style={{zIndex: 2, top: 'auto', bottom: 52}}>{chu.boQua}</button>
+        style={{width: '100%', height: '100%'}} controls clickToPlay showVolumeControls={false} allowFullscreen={false} numberOfSharedAudioTags={24} acknowledgeRemotionLicense />
+      <button className="bt g-wd md-bo-qua" data-nut={laMoDau ? 'md-bo-qua' : 'pg-bo-qua'} onClick={xong} style={{zIndex: 2, top: 'auto', bottom: 52}}>{chu.boQua}</button>
       {het && (
-        <button className="bt g-gr md-tiep" data-nut="pg-tiep" onClick={xong}
+        <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep' : 'pg-tiep'} onClick={xong}
           style={{position: 'absolute', left: '50%', bottom: 70, transform: 'translateX(-50%)', zIndex: 2}}>{chu.cuoi}</button>
       )}
     </div>
@@ -114,4 +127,4 @@ const mo = (ma: string, stage: HTMLElement, chu: Chu, khiXong?: () => void) => {
   goc.render(<LopPhim phim={phim} chu={chu} xong={() => { if (daXong) return; daXong = true; dong(); khiXong?.(); }} />);
 };
 
-(window as any).PhimCLB = {mo, co: (ma: string) => !!phimCuaGoi(ma), dong, player: () => dangChieu, soKhung: (ma: string) => { const p = phimCuaGoi(ma); return p ? xep(p).total : 0; }, ds: () => Object.values(DS_GOI).flat().filter((m) => phimCuaGoi(m))};
+(window as any).PhimCLB = {mo, co: (ma: string) => !!phimCuaGoi(ma), dong, player: () => dangChieu, soKhung: (ma: string) => { const p = phimCuaGoi(ma); return p ? xep(p).total : 0; }, ds: () => ['mo-dau', ...Object.values(DS_GOI).flat()].filter((m) => phimCuaGoi(m))};

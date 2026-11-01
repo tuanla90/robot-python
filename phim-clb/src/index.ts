@@ -7,6 +7,7 @@ import {Mua, taoBanDo} from './BanDoMua';
 import {PHIM_M1} from './doc/m1';
 import {PHIM_M2} from './doc/m2';
 import {PHIM_M3} from './doc/m3';
+import {PHIM_CANG} from './doc/cang';
 import {PHIM_M4} from './doc/m4';
 import {PHIM_M5} from './doc/m5';
 import {PHIM_M6} from './doc/m6';
@@ -21,11 +22,11 @@ const gopKetVaoMoSau = (ds: Phim[]): Phim[] => {
   const kq: Phim[] = [];
   let ketCho: Phim | null = null;
   for (const p of ds) {
-    if (/^M\d+G([1-9])-Ket$/.test(p.id)) {
+    if (/^M[0-9C]+G([1-9])-Ket$/.test(p.id)) {
       ketCho = p;
       continue;
     }
-    if (ketCho && /^M\d+G\d+-Mo$/.test(p.id)) {
+    if (ketCho && /^M[0-9C]+G\d+-Mo$/.test(p.id)) {
       const canhKet = ketCho.canh.map((c, idx) => ({...c, id: `ket-truoc-${idx}-${c.id}`}));
       kq.push({...p, canh: [...canhKet, ...p.canh]});
       ketCho = null;
@@ -60,6 +61,7 @@ const DS_PHIM = [
   ...gopKetVaoMoSau(PHIM_M1),
   ...gopKetVaoMoSau(PHIM_M2),
   ...gopKetVaoMoSau(PHIM_M3),
+  ...gopKetVaoMoSau(PHIM_CANG),
   ...gopKetVaoMoSau(PHIM_M4),
   ...gopKetVaoMoSau(PHIM_M5),
   ...gopKetVaoMoSau(PHIM_M6),

@@ -76,7 +76,7 @@ function sanChoiThu() {
   'use strict';
   var goc = document.getElementById('san-thu');
   if (!window.SanVe || !window.SanHoc) { goc.textContent = 'Thiếu san-ve.js / san-hoc.js'; return; }
-  var XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
+  var XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
   var CAU = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail'];
   var RB_X = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] }, RB_C = { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] };
   var MAU = [
@@ -84,13 +84,13 @@ function sanChoiThu() {
       cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~~~~~~Q#', '#~#V~~#~#', '#~~K~~~~#', '#~B~~~L~#', '#..~~~..#', '#########'], batDau: { x: 1, y: 1, huong: 1 },
         dong: [{ x: 3, y: 1, huong: 1, suc: 1 }, { x: 4, y: 1, huong: 1, suc: 1 }, { x: 4, y: 3, huong: 2, suc: 2 }], noi: [{ nut: { x: 3, y: 2 }, cong: [{ x: 3, y: 3 }], dong: [{ x: 4, y: 3 }] }], nhipToiDa: 60 },
       code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nanchor()\nwait()\nwait()\nunanchor()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\n' },
-    { ten: 'Bến sông 2 · dây phao kéo bè về bến nhận q', ghi: 'tow() quăng dây, bè bị kéo về ô trước mũi; tiến thì bè đi trước; drop_tow() thả bè trên q (mục tiêu dua-vat). Thử tether() sau tow() để buộc bè ra đuôi.',
-      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], mucTieu: 'dua-vat', san: ['#########', '#~~~~~~~#', '#~B~~~~q#', '#~~~~~~~#', '#.......#', '#########'], batDau: { x: 1, y: 2, huong: 1 }, nhipToiDa: 60 },
-      code: 'tow()\nwait()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\ndrop_tow()\nwait()\n' },
-    { ten: 'Bến sông 3 · van cống, dây quăng hụt, đâm cống đóng', ghi: 'Đâm cống đóng = húc tường (choáng). Quay mũi lên, tow() trúng van V: cần gạt quay, cống K mở (cánh nâng), dòng (5,2) của nhóm tắt (mũi tên mờ). flow_dir() đọc ô trước mũi (tia + chong chóng sáng). Sửa tow() thành quăng về bờ để xem dây hụt (?).',
-      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~V~~~~~#', '#~~K~~~Q#', '#~~~~~~~#', '#########'], batDau: { x: 1, y: 2, huong: 1 },
-        dong: [{ x: 5, y: 2, huong: 3, suc: 1 }, { x: 5, y: 3, huong: 3, suc: 2 }], noi: [{ nut: { x: 2, y: 1 }, cong: [{ x: 3, y: 2 }], dong: [{ x: 5, y: 2 }] }], nhipToiDa: 60 },
-      code: 'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\ntow()\nwait()\nleft_move()\nwait()\nh = flow_dir()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\n' },
+    { ten: 'Bến sông 2 · tung lưới cast_net(d), cuộn lưới set_length(n), thả drop_net()', ghi: 'cast_net("back") tung lưới cách 2 ô sau đuôi chụp bè B; tiến 4 ô kéo bè theo chuỗi dây về bến nhận q; drop_net() thả bè trên q (mục tiêu dua-vat). Thử set_length(0) để thu bè vào khoang xuồng.',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], mucTieu: 'dua-vat', san: ['#########', '#~~~~~~~#', '#~B~~~~q#', '#~~~~~~~#', '#.......#', '#########'], batDau: { x: 3, y: 2, huong: 1 }, nhipToiDa: 60 },
+      code: 'cast_net("back")\nwait()\nfor i in range(4):\n    left_move()\n    right_move()\n    wait()\nset_length(1)\nwait()\ndrop_net()\nwait()\n' },
+    { ten: 'Bến sông 3 · van cống, tung lưới sang trái gạt van, chong chóng dòng chảy', ghi: 'Tiến 1 ô đến (2,2), cast_net("left") tung lưới sang trái trúng van V ở (2,0): cần gạt quay, cống K mở (cánh nâng), dòng (5,2) của nhóm tắt (mũi tên mờ). flow_dir() đọc ô trước mũi (tia + chong chóng sáng).',
+      cfg: { loaiRobot: 'xuong', robot: RB_X, hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~V~~~~~#', '#~~~~~~~#', '#~~K~~~Q#', '#~~~~~~~#', '#########'], batDau: { x: 1, y: 3, huong: 1 },
+        dong: [{ x: 5, y: 3, huong: 3, suc: 1 }, { x: 5, y: 4, huong: 3, suc: 2 }], noi: [{ nut: { x: 2, y: 1 }, cong: [{ x: 3, y: 3 }], dong: [{ x: 5, y: 3 }] }], nhipToiDa: 60 },
+      code: 'left_move()\nright_move()\nwait()\ncast_net("left")\nwait()\nh = flow_dir()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\n' },
     { ten: 'Cảng sông 1 · giao hai container lên hai tàu (giao-tau)', ghi: 'pick_up() nhấc container trên cùng, quay 3 nấc trái, vươn, set_down() lên boong tàu 1 (tàu rời mang hàng đi); rồi quay sang phải lấy container 21 cho tàu 2. read_code() quét số.',
       cfg: { loaiRobot: 'cau', robot: RB_C, hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], mucTieu: 'giao-tau', san: ['#########', '#.......#', '#..RRR..#', '#.......#', '#TT~~~TT#', '#########'], batDau: { x: 4, y: 2 },
         chong: [{ x: 4, y: 1, cont: [{ so: 12 }, { so: 7, tan: 2 }] }, { x: 6, y: 2, cont: [{ so: 3 }, { so: 8 }, { so: 21 }] }], tau: [{ o: [{ x: 1, y: 4 }, { x: 2, y: 4 }], co: 6, vang: 2, pha: 0 }, { o: [{ x: 6, y: 4 }, { x: 7, y: 4 }], co: 3, vang: 2, pha: 1 }], giao: [{ tau: 0, so: [7] }, { tau: 1, so: [21] }], nhipToiDa: 60 },
@@ -164,16 +164,17 @@ function veTrang() {
   ['nuoc', 'dong-nuoc', 'cong-thuy-loi', 'van-cong', 'phao-dich', 'ben-nhan'].forEach(function (ma) { hinhO(h, ma); });
   h = nhom(goc, 'Vật nổi: bè hàng B, lục bình L (trên nền nước)');
   ['be-go', 'luc-binh'].forEach(function (ma) { hinhVat(h, ma, nenO('nuoc')); });
-  h = nhom(goc, 'Thân xuồng + tay dây phao + chong chóng dòng chảy (robot, trên nền nước)');
+  h = nhom(goc, 'Thân xuồng + tay lưới thủy lợi + chong chóng dòng chảy (robot, trên nền nước)');
   var X0 = { than: 'xuong' }, X1 = { than: 'xuong', tay: 'day-keo' }, X2 = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
   [
     [X0, {}, 'xuong · thường'], [X0, { than: { mat: 'vui' } }, 'xuong · mắt vui'], [X0, { than: { chay: true } }, 'xuong · chân vịt quay (chay)'],
-    [X0, { than: { neo: true } }, 'xuong · thả neo (neo)'], [X0, { than: { dat: true } }, 'xuong · móc buộc đuôi (dat)'], [X0, { than: { dat: true, dangDat: true } }, 'xuong · đang buộc đuôi (dat, dangDat)'],
-    [X1, {}, 'xuong + day-keo · dây cuộn'], [X1, { tay: { day: true } }, 'xuong + day-keo · đang quăng dây (day)'], [X1, { tay: { giu: true } }, 'xuong + day-keo · đang giữ vật (giu)'],
+    [X0, { than: { neo: true } }, 'xuong · thả neo (neo)'], [X0, { than: { dat: true } }, 'xuong · nâng cấp cuộn lưới (dat)'], [X0, { than: { dat: true, dangDat: true } }, 'xuong · đang buộc đuôi (dat, dangDat)'],
+    [X1, {}, 'xuong + day-keo · lưới gấp gọn'], [X1, { tay: { day: true } }, 'xuong + day-keo · đang tung lưới (day)'], [X1, { tay: { giu: true } }, 'xuong + day-keo · đang kéo lưới (giu)'],
+    [X1, { tay: { khoang: 'be' } }, 'xuong + day-keo · bè trong khoang (L=0)'], [X1, { tay: { khoang: 'luc-binh' } }, 'xuong + day-keo · lục bình trong khoang (L=0)'],
     [X2, {}, '+ dong-chay · nghỉ'], [X2, { camBien: { bat: true } }, '+ dong-chay · đang đọc (bat)'], [X2, { camBien: { bat: true, nang: true } }, '+ dong-chay · nâng cấp flow() (nang)'],
     [X2, { huong: 1, than: { neo: true } }, 'hướng phải · neo'], [X2, { huong: 2 }, 'hướng xuống'], [{ than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], son: 'lam' }, { huong: 3 }, 'R2 (sơn lam) · hướng trái']
   ].forEach(function (r) { hinhRobot(h, r[0], r[1], r[2], nenO('nuoc')); });
-  hinhRobot(h, { than: 'xuong', tay: 'day-keo', son: 'lam' }, { tay: { day: true } }, 'R2 (sơn lam) · quăng dây', nenO('nuoc'));
+  hinhRobot(h, { than: 'xuong', tay: 'day-keo', son: 'lam' }, { tay: { day: true } }, 'R2 (sơn lam) · tung lưới', nenO('nuoc'));
 
   /* sân nhỏ: dây phao */
   h = nhom(goc, 'Dây phao trên sân (VeVector.veDayKeo): vật kéo ở mũi, buộc đuôi, dây quăng hụt, dòng chảy tắt / chạy');

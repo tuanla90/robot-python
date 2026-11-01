@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
-const NEN_VEC = 'da2d602';   // 02/11 ghép hình vẽ lại (bản chụp fb585c7): thân / tay / cảm biến / ô / vật vẽ lại, Lab / môi trường mùa sau. Trước: nền 79a04d3.                             // 01/11 gộp part-dung-mua vào main: vỏ Nông trại vẽ lại (1d7e80d) đổi màu cỏ phim drone.3, may-son.1 (so với 817f81d chỉ lệch hai phim này). Trước:                             // 31/10 part đúng mùa: nhện gắn cảm biến từ vẽ quay theo hướng (so với 584615c chỉ lệch phim mùa 3 tong-hop-3.1, .2: R1 dáng cua nhện + nam châm + cảm biến từ)
+const NEN_VEC = '7868b3b';   // 02/11 4f1a91f vẽ thêm thân bánh gai, tay dây kéo, thân omni mà chưa dời nền huy hiệu (main đỏ A3-v). Trước: nền 8a09db2. // 01/11 gộp hình các part, ô sân và vật bản mới (3D vector) từ claude/ve-moi-tu-ban-chup (trước: 79a04d3)
 // trước:                             // 30/10 phun nhẹ: nền VECTOR = d3917d2 (phim gói 2 khung 3, 4 không còn giật; phim gói 4 khung 4 thùng nặng chắn lối; mã trong phim spray thay shoot). Trước đó 9a6d47c (van hơi). So với 4548dda (đổi tên, chưa sửa phim) chỉ lệch sung-hoi.3, sung-hoi.4
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
@@ -249,7 +249,9 @@ const conPixel = [];
     // mùa bến sông (01/11): huy hiệu gói 1-9
     'xuong', 'ham-tra-ve', 'day-keo', 'bo-co-dinh', 'dong-chay', 'che-dong-chay', 'cong-thuy-loi', 'che-cong', 'tha-neo', 'che-tha-neo', 'buoc-duoi', 'che-buoc-duoi', 'suc-nuoc', 'che-suc-nuoc', 'ben-cu', 'che-ben-cu', 'doi-xuong', 'che-doi-xuong', 'tong-hop-song', 'trum-mua-song',
     // mùa 8 hang động đá vôi (01/11): huy hiệu gói 1-10
-    'banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not', 'nghe-not', 'che-nghe-not', 'hang-cu', 'che-hang-cu', 'doi-hang-dong', 'che-doi-hang-dong', 'tong-hop-hang', 'trum-mua-hang'];
+    'banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not', 'nghe-not', 'che-nghe-not', 'hang-cu', 'che-hang-cu', 'doi-hang-dong', 'che-doi-hang-dong', 'tong-hop-hang', 'trum-mua-hang',
+    // mùa 9 CLB (01/11): huy hiệu gói 1-10
+    'cuu-kho-hang', 'lap-kho-hang', 'cuu-nha-may', 'lap-nha-may', 'cuu-bai-tai-che', 'lap-bai-tai-che', 'cuu-cang-song', 'lap-cang-song', 'cuu-ben-song', 'lap-ben-song', 'cuu-nong-trai', 'lap-nong-trai', 'cuu-mo-da', 'lap-mo-da', 'cuu-hang-dong', 'lap-hang-dong', 'cuu-clb', 'lap-clb', 'tong-hop-clb', 'trum-mua-clb', 'ngay-hoi-clb'];
   for (const m of MOI_SAU_CHUP) if (!HH.co(m) || CHUP.DS.includes(m)) sai.push('mã mới sau chụp ' + m + ': ' + (HH.co(m) ? 'đã có trong bản chụp, bỏ khỏi MOI_SAU_CHUP' : 'chưa có hình vector riêng'));
   const DS_CHUP = DS.filter((m) => !MOI_SAU_CHUP.includes(m));
   if (tap(DS_CHUP) !== tap(CHUP.DS)) sai.push('DS ≠ chụp: thiếu ' + CHUP.DS.filter((m) => !DS_CHUP.includes(m)).join(',') + ' / thừa ' + DS_CHUP.filter((m) => !CHUP.DS.includes(m)).join(','));

@@ -39,7 +39,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     ink: 'son', dot: 'son', pen_down: 'son', pen_up: 'son',
     note: 'loa', beat: 'loa',
     pick_up: 'moc-cau', set_down: 'moc-cau', pick_up2: 'moc-cau',
-    tow: 'day-keo', drop_tow: 'day-keo', tether: 'day-keo', untether: 'day-keo'
+    cast_net: 'day-keo', drop_net: 'day-keo', set_length: 'day-keo', tow: 'day-keo', drop_tow: 'day-keo', tether: 'day-keo', untether: 'day-keo'
   };
   function copyCam(ds) { return (ds || []).map(function (c) { return { ma: c.ma, o: c.o }; }); }
   /**
@@ -72,7 +72,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return { tuThe: t.tuThe === 'duoi' ? 'duoi' : t.tuThe === 'giua' ? 'giua' : 'tren', kep: t.kep === true || t.kep === 'dong', cam: t.cam !== null && t.cam !== undefined && t.cam !== false,
       bat: !!t.bat, ngam: t.ngam || 1, dangNem: !!t.dangNem, dangBanTruoc: !!t.dangBanTruoc, dangBanSau: !!t.dangBanSau,
       mauSon: typeof t.mauSon === 'string' ? t.mauSon : null,                                     // máy sơn: màu đang chọn (ruột lon sơn); tuThe 'duoi' = đầu sơn đang hạ
-      notNhac: typeof t.notNhac === 'string' ? t.notNhac : null, nhipCon: typeof t.nhipCon === 'number' ? t.nhipCon : 0, dangHat: !!t.dangHat,   // loa: nốt đang chọn / ngân
+      notNhac: typeof t.notNhac === 'string' ? t.notNhac : null, notLoa: t.notLoa !== undefined && t.notLoa !== null ? t.notLoa : null, nhipCon: typeof t.nhipCon === 'number' ? t.nhipCon : 0, dangHat: !!t.dangHat,   // loa: nốt đang chọn / ngân
       xoay: t.xoay === 'trai' || t.xoay === 'phai' ? t.xoay : 'truoc', goc: typeof t.goc === 'number' ? Math.round(t.goc / 5) * 5 : null,       // tay xoay: nấc khớp, và góc (độ, 0 = trước, âm = trái) khi đang xoay giữa chừng
       cuc: t.cuc === 'N' || t.cuc === 'S' ? t.cuc : null,                                                                                      // nam châm: cực đang bật (màu cực)
       doi: !!t.doi, day: !!t.day, giu: !!t.giu,
@@ -107,7 +107,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var st = {
       than: { banh: { trai: tt.wl > 0 ? 1 : 0, phai: tt.wr > 0 ? 1 : 0 }, buoc: chay && tt.ph ? 1 : 0, quat: chay, doc: !!cb.bat, co: !!tt.co },
       tay: cfg.tay ? { tuThe: tay.tuThe === 'duoi' ? 'duoi' : 'tren', kep: tay.kep ? 'dong' : 'mo', cam: !!tay.cam, bat: tay.bat, ngam: tay.ngam, dangNem: tay.dangNem, dangBanTruoc: tay.dangBanTruoc, dangBanSau: tay.dangBanSau,
-        mauSon: tay.mauSon, notNhac: tay.notNhac, nhipCon: tay.nhipCon, dangHat: tay.dangHat, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc, cuc: tay.cuc || undefined } : null,
+        mauSon: tay.mauSon, notNhac: tay.notNhac, notLoa: tay.notLoa !== null ? tay.notLoa : undefined, nhipCon: tay.nhipCon, dangHat: tay.dangHat, xoay: tay.xoay, goc: tay.goc === null ? undefined : tay.goc, cuc: tay.cuc || undefined } : null,
       camBien: { bat: !!cb.bat, mat: !!cb.mat }
     };
     if (typeof tt.lan === 'number') st.than.lan = tt.lan;                                       // gói V4: pha bánh / xích / con lăn theo quãng đi (0..1)
@@ -153,8 +153,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var tay = chuanTay(tt.tay);
     var son = sonHieuLuc(cauHinh.son) || '';
     var khoa = [cauHinh.than + (cauHinh.xichDay ? ':xd' : ''), cauHinh.tay || '-', JSON.stringify(cauHinh.camBien || []), huong, wl, wr, ph, tiLe, tt.camBien && tt.camBien.bat ? 'b' : '-', tt.camBien && tt.camBien.mat ? 'm' : '-', tt.co ? 'co' : '-',
-      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'loa' ? 'l' + (tay.notNhac || '') + (tay.dangHat ? 'H' : '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', son,
-      typeof tt.lan === 'number' ? tt.lan : '', typeof tt.gai === 'boolean' ? (tt.gai ? 'g1' : 'g0') : '', typeof tt.di === 'number' ? 'd' + tt.di : '', typeof tt.nhac === 'number' ? 'n' + tt.nhac : '',
+      cauHinh.tay ? tay.tuThe + (tay.kep ? 'K' : 'm') + (tay.cam ? 'C' : '-') + (tay.bat ? 'B' : '') + tay.ngam + (tay.dangNem ? 'N' : '') + (tay.dangBanTruoc ? 'T' : '') + (tay.dangBanSau ? 'S' : '') + (cauHinh.tay === 'xoay' ? 'x' + (tay.goc === null ? tay.xoay : tay.goc) : '') + (cauHinh.tay === 'son' ? 's' + (tay.mauSon || '') : '') + (cauHinh.tay === 'loa' ? 'l' + (tay.notLoa !== null ? tay.notLoa : (tay.notNhac || '')) + (tay.bat || tay.dangHat ? 'H' : '') + (tay.pha !== null ? 'p' + tay.pha : '') : '') + (cauHinh.tay === 'nam-cham' && tay.cuc ? 'c' + tay.cuc : '') : '', tt.loi || '', son,
+      typeof tt.lan === 'number' ? tt.lan : '', typeof tt.gai === 'boolean' ? (tt.gai ? 'g1' : 'g0') : '', tt.thu ? 'th' : '', typeof tt.di === 'number' ? 'd' + tt.di : '', typeof tt.nhac === 'number' ? 'n' + tt.nhac : '',
       typeof tt.nac === 'number' ? 'nc' + tt.nac : '', typeof tt.tam === 'number' ? 'tm' + tt.tam : '', typeof tt.ray === 'number' ? 'ry' + tt.ray : '',
       tt.mat || '', tay.moK === null ? '' : tay.moK, tay.vung === null ? '' : tay.vung].join('|');
     if (cache[khoa]) return cache[khoa];

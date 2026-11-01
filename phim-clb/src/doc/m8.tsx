@@ -588,7 +588,7 @@ const DaiKetCuc8Mua: React.FC = () => {
     {ten: 'M1 · Xe Kho Hàng', anh: 'robot/m1/du-vui.png', mau: '#D97706', xoay: -90, zoom: 1.48},
     {ten: 'M2 · Xe Cứu Hỏa', anh: 'robot/m2/du-vui.png', mau: '#EA580C', xoay: -90, zoom: 1.08},
     {ten: 'M3 · Nhện Phân Loại', anh: 'robot/m3/nhen-tu-vui.png', mau: '#16A34A', xoay: 0, zoom: 1.08},
-    {ten: 'M4 · Cần Cẩu Cảng', anh: 'robot/m4/cau-du-vui.png', mau: '#CA8A04', xoay: -90, zoom: 1.08},
+    {ten: 'M4 · Cần Cẩu Cảng', anh: 'robot/cang/cau-du-vui.png', mau: '#CA8A04', xoay: -90, zoom: 1.08},
     {ten: 'M5 · Tàu Thủy Lợi', anh: 'robot/m4/xuong-du-vui.png', mau: '#0284C7', xoay: -90, zoom: 1.08},
     {ten: 'M6 · Drone Gieo Hoa', anh: 'robot/m5/drone-cam-vui.png', mau: '#EC4899', xoay: 0, zoom: 1.08},
     {ten: 'M7 · Máy Khai Thác Đá', anh: 'robot/m6/omni-du-vui.png', mau: '#D97706', xoay: -90, zoom: 1.08},

@@ -836,6 +836,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot(GAI_AM, st({ chay: true }, { day: true }, { bat: true }), 1, 36, 62, 38);
     c.sao(22, 28, 7); c.sao(78, 28, 7);
   });
+  /* 01/11 mùa 9 CLB (giải cứu & ngày hội): 20 mã chương + ngay-hoi-clb */
+  [
+    ['cuu-kho-hang', 'hai-robot'], ['lap-kho-hang', 'rap-nao'],
+    ['cuu-nha-may', 'doi-sung-hoi'], ['lap-nha-may', 'rap-tay'],
+    ['cuu-bai-tai-che', 'doi-xich-nhen'], ['lap-bai-tai-che', 'che-doi-xich-nhen'],
+    ['cuu-cang-song', 'doi-cang'], ['lap-cang-song', 'che-doi-cang'],
+    ['cuu-ben-song', 'doi-xuong'], ['lap-ben-song', 'che-doi-xuong'],
+    ['cuu-nong-trai', 'doi-nam-cham'], ['lap-nong-trai', 'che-doi-nam-cham'],
+    ['cuu-mo-da', 'doi-omni'], ['lap-mo-da', 'che-doi-omni'],
+    ['cuu-hang-dong', 'doi-hang-dong'], ['lap-hang-dong', 'che-doi-hang-dong'],
+    ['cuu-clb', 'dua-robot'], ['lap-clb', 'rap-du'],
+    ['tong-hop-clb', 'robot-hoan-thien'], ['trum-mua-clb', 'xuat-xuong'], ['ngay-hoi-clb', 'xuat-xuong']
+  ].forEach(function (cap) { dk(cap[0], HINH[HINH[cap[1]] ? cap[1] : BI_DANH[cap[1]]]); });
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
