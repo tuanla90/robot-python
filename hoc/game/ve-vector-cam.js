@@ -168,4 +168,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
   } });
 
+  /* 8. CẢM BIẾN ÂM THANH SONAR ('am-thanh'): đôi phễu thu tiếng vang 3D gắn ổ 'tren' (mùa 8 Hang động đá vôi & mùa 9 Về CLB; hear / listen). */
+  V.dangKy({ loai: 'cam-bien', ma: 'am-thanh', hamGoc: ['hear', 'listen'], ten: 'Cảm biến âm thanh Sonar', gan: 'tren', diemNeo: { x: 50, y: 50 }, ve: function (g, s, M, H) {
+    s = s || {};
+    if (s.bat) {
+      H.tron(g, 50, 50, 12.5); H.to(g, H.rgba(BM.vecMatSangRgb, 0.35));
+      g.beginPath(); g.arc(50, 54, 10.5, 0.16 * Math.PI, 0.84 * Math.PI); H.vien(g, BM.vecNgoc, 2.0);
+      g.beginPath(); g.arc(50, 54, 13.0, 0.22 * Math.PI, 0.78 * Math.PI); H.vien(g, BM.vecDenSang, 1.5);
+    }
+    H.tron(g, 50, 50, 8.2);
+    g.fillStyle = H.gradVo(g, 41.8, 41.8, 16.4, 16.4);
+    g.fill();
+    H.vien(g, BM.vecVien, 2.2);
+    [-4.4, 4.4].forEach(function (dx) {
+      H.elip(g, 50 + dx, 52.5, 3.6, 5.2); H.to(g, BM.vecNgoc); H.vien(g, BM.vecVien, 1.5);
+      H.tron(g, 50 + dx, 53.5, 1.8); H.to(g, s.bat ? BM.vecXanhLaSang : BM.vecDenSang);
+    });
+    H.tron(g, 50, 46.5, 1.8); H.to(g, s.bat ? BM.vecCanhBao : BM.vecDen); H.vien(g, BM.vecVien, 1);
+  } });
+
 })(typeof window !== 'undefined' ? window : globalThis);

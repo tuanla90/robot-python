@@ -92,7 +92,7 @@ const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu,
   return (
     <div style={{position: 'absolute', inset: 0, zIndex: 30, background: '#0F172A'}} data-hop="phim-clb" data-phim={phim.id}>
       <Player ref={ref} component={Comp} durationInFrames={xep(phim).total} fps={FPS} compositionWidth={1080} compositionHeight={1920}
-        style={{width: '100%', height: '100%'}} controls clickToPlay showVolumeControls={false} allowFullscreen={false} acknowledgeRemotionLicense />
+        style={{width: '100%', height: '100%'}} controls clickToPlay showVolumeControls={false} allowFullscreen={false} numberOfSharedAudioTags={24} acknowledgeRemotionLicense />
       <button className="bt g-wd md-bo-qua" data-nut={laMoDau ? 'md-bo-qua' : 'pg-bo-qua'} onClick={xong} style={{zIndex: 2, top: 'auto', bottom: 52}}>{chu.boQua}</button>
       {het && (
         <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep' : 'pg-tiep'} onClick={xong}

@@ -8,7 +8,7 @@
    ========================================================================== */
 'use strict';
 
-var BAN = 'duong-hoc-v3';      // 01/11: v2 → v3 bỏ bộ đệm cũ, nạp hình part/ô/vật 3D vector bản mới + 10 mùa + phim CLB
+var BAN = 'duong-hoc-v4';      // 01/11: v3 → v4 bỏ bộ đệm cũ, thêm thân bánh gai + cảm biến âm thanh mùa 8 & sửa Player phim mở đầu
 var HEN_MS = 4000;
 var THEM = ['choi.html', 'manifest.webmanifest', 'font/font.css', 'icon/icon-192.png', 'icon/icon-512.png', 'icon/icon-maskable-512.png'];
 
