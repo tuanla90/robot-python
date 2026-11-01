@@ -40,7 +40,7 @@
       // MÙA HANG ĐỘNG (mua-8): ngân hàng màn mới
       'banh-gai', 'loa', 'am-thanh', 'san-hang-dong', 'thu-gai', 'phat-not', 'nghe-not', 'hang-cu', 'doi-hang-dong', 'trum-mua-hang',
       // MÙA CLB (mua-9): ngân hàng màn mới
-      'cuu-kho-hang', 'cuu-nha-may', 'cuu-bai-tai-che', 'cuu-cang-song'].forEach(function (n) { require('./man-' + n + '.js'); });
+      'cuu-kho-hang', 'cuu-nha-may', 'cuu-bai-tai-che', 'cuu-cang-song', 'cuu-ben-song', 'cuu-nong-trai', 'cuu-mo-da'].forEach(function (n) { require('./man-' + n + '.js'); });
     M = require('./man-chuoi-1.js'); TT = require('./thu-tu-chuong.js'); SL = require('./so-lenh.js');
   } else { M = window.ManHoc; TT = window.ThuTuChuong; SL = window.SoLenh; }
   if (M.phienBanLoTrinh === 2) { if (node) module.exports = M; return; }
