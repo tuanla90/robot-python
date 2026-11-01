@@ -712,6 +712,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.o('dong-nuoc', { huong: 1, suc: 2 }, 66, 34, 22);
     c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
   }));
+  dk('ben-cu', function (g, c) {
+    c.o('cong-thuy-loi', { mo: true }, 68, 34, 24);
+    c.vat('be-go', { keo: true }, 68, 62, 16);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 60, 40);
+  });
+  dk('che-ben-cu', che(function (g, c) {
+    c.o('cong-thuy-loi', { mo: true }, 66, 34, 22);
+    c.vat('be-go', { keo: true }, 66, 62, 14);
+    c.robot(XUONG_DONG, st({ chay: true }, { day: true }, { bat: true }), 1, 34, 62, 36);
+  }));
 
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },

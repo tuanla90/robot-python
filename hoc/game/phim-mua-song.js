@@ -283,4 +283,35 @@
       }
     }
   ]);
+
+  /* ================================================================ 8. ben-cu — Bến sông cũ */
+  PG.dangKy('ben-cu', [
+    { Chu: ['Khu bến sông cũ còn sót lại hàng rào =, hố cạn u và thùng nặng H dọc hai bờ.', 'Xuồng R1 đã đủ trọn bộ đồ nghề: dây phao mũi, dây đuôi, mỏ neo và chong chóng đo sức nước!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('van-cong', { bat: false }), 1, 0);
+        dat(s, veO('cong-thuy-loi', { mo: false }), 2, 1);
+        dat(s, veV('be-go', { keo: false }), 4, 1);
+        var rb = dat(s, may(XUONG_DONG, { chay: false, camBien: { bat: true } }, 1), 1, 1);
+        hen(function () {
+          rb.remove();
+          dat(s, veO('van-cong', { bat: true }), 1, 0);
+          dat(s, veO('cong-thuy-loi', { mo: true }), 2, 1);
+          dat(s, may(XUONG_DONG, { chay: true, tay: { day: true }, camBien: { bat: true } }, 1), 1, 1);
+        }, 420);
+      }
+    },
+    { Chu: ['Kiểm tra flow_power() > 0 trước khi gạt van để không làm đóng sập cống đang mở sẵn.', 'Kết hợp mỏ neo, dây đuôi và đọc sức nước để cứu hộ bè hàng qua mọi khúc kênh cổ!'],
+      ve: function (m) {
+        nen(m);
+        var s = sanSong(m, 3, 5);
+        dat(s, veO('ben-nhan', { xong: true }), 1, 1);
+        dat(s, veO('cong-thuy-loi', { mo: true }), 2, 1);
+        dat(s, veV('be-go', { keo: true }), 1, 1);
+        dat(s, may(XUONG_DONG, { chay: true, tay: { giu: true }, camBien: { bat: true } }, 1), 2, 1);
+        m.appendChild(code('def calm_gate_pass(n):\n    if flow_power() > 0:\n        flip_valve()\n    forward(n)'));
+      }
+    }
+  ]);
 })();
