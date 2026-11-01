@@ -1,11 +1,11 @@
-// Máy chiếu phim CLB: một phim = danh sách cảnh; tự xếp mốc (hai cảnh chồng XF khung để chuyển cảnh trượt "whip"), tiếng nhấn.
+// Máy chiếu phim CLB: một phim = danh sách cảnh; tự xếp mốc (hai cảnh chồng XF khung để chuyển cảnh mượt), tiếng nhấn.
 // Chép cách làm của engine video giới thiệu diem10code (diem10code-video/src/promo/Promo.tsx), bỏ nhạc / giọng (chưa có).
 import React from 'react';
 import {AbsoluteFill, Audio, Composition, Sequence, staticFile} from 'remotion';
 import {C, FONT, Stage, Whip} from './d10';
 
 export const FPS = 30;
-const XF = 10;          // khung chồng giữa hai cảnh
+const XF = 16;          // khung chồng giữa hai cảnh (crossfade mượt 0.53s)
 const LEAD = 8;         // màn chờ ngắn trước cảnh đầu
 const SFX_GAIN = 0.55;
 const SFX_TRIM: Record<string, number> = {'wrong.wav': 0.35, 'type.wav': 0.55, 'riser.wav': 0.6, 'ding.wav': 0.8};

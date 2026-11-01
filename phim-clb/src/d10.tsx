@@ -33,8 +33,7 @@ export const accel = (n: number, first: number, min: number) => {
 };
 
 export const ACCENT_TEXT: React.CSSProperties = {
-  backgroundImage: "linear-gradient(90deg, #6D5DF6 0%, #B45FD8 30%, #E86FC6 50%, #B45FD8 70%, #6D5DF6 100%)",
-  backgroundSize: "200% 100%", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent",
+  color: "#FDE047",
 };
 
 /** Khổ hình: V = dọc 9:16. Mọi cảnh đọc từ đây để tự xếp theo khổ. */
@@ -87,7 +86,7 @@ export const fitSize = (text: string, W: number, V: boolean, max = V ? 96 : 104)
  * Từ bọc trong `backtick` hiện kiểu code.
  */
 export const Headline: React.FC<{text: string; at: number; out?: number; accent?: string[]; size?: number; top?: number;
-  color?: string; weight?: number}> = ({text, at, out, accent = [], size: sizeProp, top: topProp, color = C.ink, weight = 800}) => {
+  color?: string; weight?: number}> = ({text, at, out, accent = [], size: sizeProp, top: topProp, color = C.ink, weight = 900}) => {
   const f = useCurrentFrame();
   const {W, V, fps, headTop} = useFmt();
   if (f < at - 1 || (out !== undefined && f > out + 10)) return null;
@@ -96,23 +95,25 @@ export const Headline: React.FC<{text: string; at: number; out?: number; accent?
   const words = text.split(" ");
   const leave = out === undefined ? 0 : ease(f, [out, out + 8], [0, 1], Easing.in(Easing.cubic));
   const bare = (s: string) => s.replace(/[.,?!:`]/g, "");
+  const isLightText = color.toUpperCase() === "#FFFFFF" || color.toUpperCase() === "#FFF" || color.toUpperCase() === "#F8FAFC";
+  const accentColor = isLightText ? "#FDE047" : "#2563EB";
   return (
-    <div style={{position: "absolute", top, left: 0, width: W, textAlign: "center", textWrap: "balance" as any,
-      wordSpacing: size * 0.02, padding: `0 ${V ? 50 : 110}px`, boxSizing: "border-box",
-      fontFamily: FONT, fontSize: size, fontWeight: weight, lineHeight: 1.14, letterSpacing: "-0.02em", color,
-      opacity: 1 - leave, transform: `translateY(${-leave * 50}px)`, filter: leave > 0.02 ? `blur(${leave * 12}px)` : undefined}}>
+    <div style={{position: "absolute", top, left: 0, width: W, zIndex: 16, textAlign: "center", textWrap: "balance" as any,
+      wordSpacing: size * 0.02, padding: `0 ${V ? 46 : 110}px`, boxSizing: "border-box",
+      fontFamily: FONT, fontSize: size, fontWeight: weight, lineHeight: 1.15, letterSpacing: "-0.02em", color,
+      textShadow: isLightText ? "0 6px 0 #0F172A, 0 10px 22px rgba(0,0,0,0.45)" : "0 4px 0 rgba(30,27,75,0.16)",
+      opacity: 1 - leave, transform: `translateY(${-leave * 50}px)`}}>
       {words.map((w, i) => {
         const p = pop(f, at + i * 2, fps, 11);
         const isCode = w.startsWith("`");
         const isAccent = accent.some((a) => a.split(" ").map(bare).includes(bare(w)));
-        const shine = isAccent ? interpolate(f - at - i * 2, [8, 40], [100, -100], CLAMP) : 0;
         return (
-          <React.Fragment key={i}>{i > 0 ? " " : null}<span style={{display: "inline-block", opacity: Math.min(1, p * 2.2),
-            transform: `translateY(${(1 - p) * size * 0.3}px) scale(${1 + (1 - p) * 0.55})`,
-            filter: p < 0.98 ? `blur(${Math.max(0, 1 - p) * 14}px)` : undefined, paddingBottom: size * 0.08,
-            ...(isAccent ? {...ACCENT_TEXT, backgroundPosition: `${shine}% 0`} : {}),
-            ...(isCode ? {fontFamily: MONO, color: C.bad, background: C.badBg, borderRadius: size * 0.16,
-              padding: `0 ${size * 0.16}px`, fontSize: size * 0.86, lineHeight: 1.3} : {})}}>
+          <React.Fragment key={i}>{i > 0 ? " " : null}<span style={{display: "inline-block", opacity: Math.min(1, p * 2.5),
+            transform: `translateY(${(1 - p) * size * 0.25}px) scale(${0.85 + 0.15 * p})`, paddingBottom: size * 0.06,
+            ...(isAccent ? {color: accentColor} : {}),
+            ...(isCode ? {fontFamily: MONO, color: accentColor, background: isLightText ? "#1E293B" : "#E2E8F0", borderRadius: size * 0.18,
+              border: `3px solid ${C.ink}`, boxShadow: `0 4px 0 ${C.ink}`,
+              padding: `0 ${size * 0.16}px`, fontSize: size * 0.84, lineHeight: 1.3} : {})}}>
             {w.replace(/`/g, "")}
           </span></React.Fragment>
         );
@@ -123,7 +124,7 @@ export const Headline: React.FC<{text: string; at: number; out?: number; accent?
 
 /** Dòng phụ dưới tiêu đề: trượt nhẹ lên, không đập từng từ. */
 export const Sub: React.FC<{text: string; at: number; out?: number; top?: number; size?: number; color?: string}> =
-  ({text, at, out, top: topProp, size: sizeProp, color = C.soft}) => {
+  ({text, at, out, top: topProp, size: sizeProp, color = "#E2E8F0"}) => {
     const f = useCurrentFrame();
     const {W, V, headTop} = useFmt();
     if (f < at || (out !== undefined && f > out + 10)) return null;
@@ -132,9 +133,9 @@ export const Sub: React.FC<{text: string; at: number; out?: number; top?: number
     const inP = ease(f - at, [0, 12], [0, 1]);
     const leave = out === undefined ? 0 : ease(f, [out, out + 8], [0, 1], Easing.in(Easing.cubic));
     return (
-      <div style={{position: "absolute", top, left: 0, width: W, textAlign: "center", textWrap: "balance" as any, padding: `0 ${V ? 60 : 120}px`, boxSizing: "border-box",
-        fontFamily: FONT, fontSize: size, fontWeight: 600, color, lineHeight: 1.3, whiteSpace: "pre-line",
-        opacity: inP * (1 - leave), transform: `translateY(${(1 - inP) * 24 - leave * 30}px)`}}>
+      <div style={{position: "absolute", top, left: 0, width: W, zIndex: 16, textAlign: "center", textWrap: "balance" as any, padding: `0 ${V ? 60 : 120}px`, boxSizing: "border-box",
+        fontFamily: FONT, fontSize: size, fontWeight: 600, color, lineHeight: 1.34, whiteSpace: "pre-line",
+        opacity: inP * (1 - leave), transform: `translateY(${(1 - inP) * 20 - leave * 24}px)`}}>
         {text}
       </div>
     );
@@ -154,15 +155,16 @@ export const Shake: React.FC<{hits: number[]; amp?: number; len?: number; childr
   return <AbsoluteFill style={{transform: `translate(${x}px, ${y}px)`}}>{children}</AbsoluteFill>;
 };
 
-export const Burst: React.FC<{at: number; x: number; y: number; color?: string; rays?: number; r?: number}> =
-  ({at, x, y, color = "#B45FD8", rays = 12, r = 170}) => {
+export const Burst: React.FC<{at: number; x: number; y: number; color?: string; rays?: number; r?: number; n?: number}> =
+  ({at, x, y, color = "#B45FD8", rays, r = 170, n}) => {
     const f = useCurrentFrame();
     const p = ease(f, [at, at + 16], [0, 1]);
     if (f < at || f > at + 18) return null;
+    const count = rays ?? n ?? 12;
     return (
-      <svg style={{position: "absolute", left: x - r * 1.4, top: y - r * 1.4, width: r * 2.8, height: r * 2.8, overflow: "visible", pointerEvents: "none"}}>
-        {Array.from({length: rays}, (_, i) => {
-          const a = (i / rays) * Math.PI * 2 + 0.2;
+      <svg style={{position: "absolute", left: x - r * 1.4, top: y - r * 1.4, width: r * 2.8, height: r * 2.8, overflow: "visible", pointerEvents: "none", zIndex: 25}}>
+        {Array.from({length: count}, (_, i) => {
+          const a = (i / count) * Math.PI * 2 + 0.2;
           const r0 = r * (0.35 + 0.65 * p), r1 = r * (0.55 + 0.85 * p), c = r * 1.4;
           return <line key={i} x1={c + Math.cos(a) * r0} y1={c + Math.sin(a) * r0} x2={c + Math.cos(a) * r1} y2={c + Math.sin(a) * r1}
             stroke={color} strokeWidth={10 * (1 - p) + 1} strokeLinecap="round" opacity={1 - p} />;
@@ -172,19 +174,13 @@ export const Burst: React.FC<{at: number; x: number; y: number; color?: string; 
     );
   };
 
-/** Chuyển cảnh "whip": vào từ phải có mờ chuyển động, ra sang trái. */
+/** Chuyển cảnh mượt (cross-dissolve): cảnh sau hiện dần êm lên trên cảnh trước, giữ nguyên nền khi hai cảnh cùng sân. */
 export const Whip: React.FC<{dur: number; len: number; first?: boolean; last?: boolean; children: React.ReactNode}> =
-  ({dur, len, first, last, children}) => {
+  ({dur, len, first, children}) => {
     const f = useCurrentFrame();
-    const {W} = useFmt();
-    const k = W / 1920;
-    const inP = first ? 1 : ease(f, [0, len], [0, 1], Easing.out(Easing.exp));
-    const outP = last ? 0 : ease(f, [dur - len, dur], [0, 1], Easing.in(Easing.exp));
-    const x = ((1 - inP) * 260 - outP * 260) * k;
-    const blur = (1 - inP) * 22 + outP * 22;
+    const inP = first ? 1 : ease(f, [0, len], [0, 1], Easing.inOut(Easing.cubic));
     return (
-      <AbsoluteFill style={{transform: `translateX(${x}px) scale(${1 + (1 - inP) * 0.05})`,
-        filter: blur > 0.3 ? `blur(${blur}px)` : undefined, opacity: first ? 1 : Math.min(1, inP * 1.6)}}>
+      <AbsoluteFill style={{opacity: inP}}>
         {children}
       </AbsoluteFill>
     );
@@ -213,8 +209,16 @@ export const panel: React.CSSProperties = {
 };
 
 /** Icon Lucide theo tên ("BookOpen", "Code"…), không dùng emoji. */
+const ICON_ALIAS: Record<string, string> = {
+  Home: "School",
+  Waves: "Ship",
+  AlertTriangle: "TriangleAlert",
+  CheckCircle: "CircleCheck",
+};
+
 export const Icon: React.FC<{name: string; size?: number; color?: string; stroke?: number}> = ({name, size = 32, color = C.violet, stroke = 2.2}) => {
-  const Ico = (icons as Record<string, React.FC<any>>)[name] ?? icons.Circle;
+  const key = ICON_ALIAS[name] ?? name;
+  const Ico = (icons as Record<string, React.FC<any>>)[key] ?? icons.Circle;
   return <Ico size={size} color={color} strokeWidth={stroke} />;
 };
 
@@ -244,7 +248,7 @@ export const codeLine = (line: string, lang = "python"): React.ReactNode[] => {
   while ((m = re.exec(line))) {
     if (m.index > last) out.push(line.slice(last, m.index));
     const [t, cm, str, num, word, op] = m;
-    const color = cm ? "#8B87B3" : str ? "#86EFAC" : num ? "#FDBA74" : op ? "#F9A8D4" : word && KW.test(word) ? "#C4B5FD" : "#F4F3FF";
+    const color = cm ? "#94A3B8" : str ? "#7DD3FC" : num ? "#38BDF8" : op ? "#E2E8F0" : word && KW.test(word) ? "#38BDF8" : "#FFFFFF";
     out.push(<span key={k++} style={{color}}>{t}</span>);
     last = re.lastIndex;
   }
@@ -295,17 +299,27 @@ function dongCss(line: string): React.ReactNode[] {
 /** Khung soạn code nền tối, gõ dần từ khung `typeAt` (`cps` ký tự/khung). `mark` = chuỗi cần khoanh đỏ từ khung `markAt`. */
 export const CodeBox: React.FC<{lines: string[]; x: number; y: number; w: number; size?: number; typeAt?: number; cps?: number;
   title?: string; mark?: string; markAt?: number; hl?: number; hlAt?: number}> =
-  ({lines, x, y, w, size = 34, typeAt, cps = 1.2, title = "main.py", mark, markAt = 0, hl, hlAt = 0}) => {
+  ({lines, x, y, w, size: sizeProp = 34, typeAt, cps = 1.2, title = "main.py", mark, markAt = 0, hl, hlAt = 0}) => {
     const f = useCurrentFrame();
+    const {V} = useFmt();
+    const boxX = V && x === 110 && w === 860 ? 54 : x;
+    const boxW = V && x === 110 && w === 860 ? 972 : w;
+    const maxLen = Math.max(1, ...lines.map((l) => l.length));
+    const size = Math.min(sizeProp, Math.floor((boxW - 90) / (maxLen * 0.61)));
     let budget = typeAt === undefined ? Infinity : Math.max(0, (f - typeAt) * cps);
     const shown = lines.map((l) => { const s = l.slice(0, Math.max(0, budget)); budget -= l.length + 1; return s; });
     const typing = typeAt !== undefined && budget < 0;
     const lh = size * 1.55;
     return (
-      <div style={{...panel, left: x, top: y, width: w, background: C.codeBg, border: "2px solid #2F2A5E", padding: `${size * 1.9}px ${size * 0.8}px ${size * 0.8}px`}}>
-        <div style={{position: "absolute", top: size * 0.55, left: size * 0.8, display: "flex", gap: 10, alignItems: "center"}}>
-          {["#FF5F57", "#FEBC2E", "#28C840"].map((c) => <div key={c} style={{width: 14, height: 14, borderRadius: 7, background: c}} />)}
-          <span style={{marginLeft: 12, fontFamily: MONO, fontSize: size * 0.55, color: "#8B87B3"}}>{title}</span>
+      <div style={{...panel, left: boxX, top: y, width: boxW, background: "#0F172A", borderRadius: 24,
+        border: `5px solid ${C.ink}`, boxShadow: `0 10px 0 ${C.ink}, 0 18px 34px rgba(0,0,0,0.42)`,
+        padding: `${size * 1.95}px ${size * 0.8}px ${size * 0.8}px`, zIndex: 12}}>
+        <div style={{position: "absolute", top: size * 0.5, left: size * 0.75, right: size * 0.75, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div style={{display: "flex", gap: 10, alignItems: "center"}}>
+            {["#EF4444", "#FACC15", "#22C55E"].map((c) => <div key={c} style={{width: 15, height: 15, borderRadius: 8, background: c, border: "2px solid #0F172A"}} />)}
+            <span style={{marginLeft: 8, fontFamily: MONO, fontSize: size * 0.62, fontWeight: 800, color: "#38BDF8", whiteSpace: "nowrap"}}>{title}</span>
+          </div>
+          <span style={{padding: "2px 10px", borderRadius: 8, background: "#1E293B", border: "1.5px solid #38BDF8", fontFamily: MONO, fontSize: size * 0.46, fontWeight: 800, color: "#FDE047"}}>PYTHON</span>
         </div>
         {shown.map((l, i) => {
           const full = lines[i];
@@ -313,16 +327,17 @@ export const CodeBox: React.FC<{lines: string[]; x: number; y: number; w: number
           const markP = mi >= 0 && f >= markAt ? ease(f, [markAt, markAt + 8], [0, 1]) : 0;
           const hlOn = hl === i && f >= hlAt;
           return (
-            <div key={i} style={{fontFamily: MONO, fontSize: size, lineHeight: `${lh}px`, height: lh, color: "#F4F3FF", whiteSpace: "pre", position: "relative",
-              background: hlOn ? "rgba(109,93,246,0.28)" : undefined, margin: `0 -${size * 0.3}px`, padding: `0 ${size * 0.3}px`, borderRadius: 8}}>
-              <span style={{color: "#5B5690", marginRight: size * 0.8}}>{i + 1}</span>
+            <div key={i} style={{fontFamily: MONO, fontSize: size, fontWeight: 700, lineHeight: `${lh}px`, height: lh, color: "#FFFFFF", whiteSpace: "pre", position: "relative",
+              background: hlOn ? "rgba(56,189,248,0.22)" : undefined, borderLeft: hlOn ? "4px solid #38BDF8" : "4px solid transparent",
+              margin: `0 -${size * 0.3}px`, padding: `0 ${size * 0.3}px`, borderRadius: 8}}>
+              <span style={{color: "#94A3B8", marginRight: size * 0.8}}>{i + 1}</span>
               {codeLine(l)}
-              {typing && l.length < full.length && shown[i + 1] === "" ? <span style={{background: "#C4B5FD", marginLeft: 2}}>&nbsp;</span> : null}
+              {typing && l.length < full.length && shown[i + 1] === "" ? <span style={{background: "#38BDF8", marginLeft: 2}}>&nbsp;</span> : null}
               {markP > 0 && (
-                <span style={{position: "absolute", top: 2, height: lh - 4, borderRadius: 10, border: `4px solid ${C.bad}`,
-                  left: size * 0.3 + size * 0.6 * (String(i + 1).length + 0) + size * 0.8 + mi * size * 0.6 - 8,
-                  width: mark!.length * size * 0.6 + 16, opacity: markP, transform: `scale(${1.4 - 0.4 * markP})`,
-                  boxShadow: `0 0 24px ${C.bad}`}} />
+                <span style={{position: "absolute", top: 2, height: lh - 4, borderRadius: 8, border: `3px solid #F87171`,
+                  left: size * 0.3 + size * 0.6 * (String(i + 1).length + 0) + size * 0.8 + mi * size * 0.6 - 6,
+                  width: mark!.length * size * 0.6 + 12, opacity: markP, transform: `scale(${1.2 - 0.2 * markP})`,
+                  background: "rgba(239,68,68,0.18)"}} />
               )}
             </div>
           );
@@ -360,7 +375,6 @@ export type Who = "sola" | "luna";
 const FACES: Record<Who, string[]> = {
   sola: ["adore", "angry", "calm", "celebrate-jump", "celebrate", "cheer", "confident", "confused", "crying", "facepalm", "grateful", "great-job",
     "happy", "hope", "love-heart", "love", "neutral", "sad", "serious", "shocked", "shy", "sleeping", "standing", "thinking", "thumbs-up", "tired", "upset", "wave", "worried",
-    // 12/10/2026: mặt vẽ thêm cho bài giảng (Topview, cùng nét); "-sach" = bản không nước mắt của mặt cùng tên
     "explaining", "wink", "reading", "thinking-sach", "confused-sach"],
   luna: ["adore", "angry", "calm", "celebrate", "cheer", "confident", "confused", "crying", "explaining", "facepalm", "grateful", "great-job", "happy",
     "love-heart", "love", "magnifier", "reading", "sad", "shocked", "shy", "sleeping", "surprised", "thinking", "thumbs-up", "upset", "wave", "wink", "worried",
@@ -371,6 +385,53 @@ const ALIAS: Record<string, string> = {wink: "confident", explaining: "wave", re
 export const faceSrc = (who: Who, face: string) => {
   const name = FACES[who].includes(face) ? face : FACES[who].includes(ALIAS[face]) ? ALIAS[face] : "happy";
   return staticFile(`mascot/${who}/${name}.png`);
+};
+
+/** Huy hiệu cảm xúc SVG nảy bên đầu nhân vật theo biểu cảm mặt hiện tại. */
+const BieuCamSvg: React.FC<{face: string; since: number; ben: "trai" | "phai"}> = ({face, since, ben}) => {
+  const s = Math.min(1, since / 6) * (1 + Math.sin(since / 5) * 0.08);
+  const pos: React.CSSProperties = {position: "absolute", top: 18, [ben === "trai" ? "left" : "right"]: 6, width: 64, height: 64,
+    transform: `scale(${s}) rotate(${(ben === "trai" ? -12 : 12) + Math.sin(since / 4) * 6}deg)`, pointerEvents: "none"};
+  if (["shocked", "surprised", "surprised-sach", "angry"].includes(face)) {
+    return (
+      <svg viewBox="0 0 64 64" style={pos}>
+        <circle cx="32" cy="32" r="26" fill={C.bad} stroke="#fff" strokeWidth="4" />
+        <path d="M32 16v18M32 44v2" stroke="#fff" strokeWidth="6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (["worried", "sad", "crying", "facepalm", "tired", "upset"].includes(face)) {
+    return (
+      <svg viewBox="0 0 64 64" style={{...pos, transform: `translateY(${(since % 24) * 0.6}px) scale(${s})`}}>
+        <path d="M32 10 C42 26 48 34 48 42 A16 16 0 1 1 16 42 C16 34 22 26 32 10 Z" fill="#38BDF8" stroke="#fff" strokeWidth="4" />
+        <path d="M26 38 A6 6 0 0 0 30 46" fill="none" stroke="#E0F2FE" strokeWidth="3" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (["thinking", "thinking-sach", "confused", "confused-sach", "magnifier", "reading"].includes(face)) {
+    return (
+      <svg viewBox="0 0 64 64" style={pos}>
+        <circle cx="32" cy="32" r="26" fill={C.yellow} stroke="#fff" strokeWidth="4" />
+        <path d="M25 24a7 7 0 1 1 10 6.3c-2 1-3 2.2-3 4.7M32 44v1" fill="none" stroke={C.ink} strokeWidth="5.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (["celebrate", "celebrate-jump", "cheer", "great-job", "thumbs-up", "love", "love-heart", "adore", "grateful", "hope"].includes(face)) {
+    return (
+      <svg viewBox="0 0 64 64" style={pos}>
+        <path d="M32 6 L39 23 L57 25 L43 37 L47 55 L32 45 L17 55 L21 37 L7 25 L25 23 Z" fill={C.yellow} stroke="#fff" strokeWidth="4" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (["explaining", "confident", "confident-sach", "wink"].includes(face)) {
+    return (
+      <svg viewBox="0 0 64 64" style={pos}>
+        <circle cx="32" cy="32" r="24" fill={C.good} stroke="#fff" strokeWidth="4" />
+        <path d="M22 33l7 7 14-15" fill="none" stroke="#fff" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  return null;
 };
 
 export type Say = {at: number; out: number; text: string};
@@ -389,33 +450,50 @@ export const Mascot: React.FC<{who: Who; x: number; h: number; at: number; faces
     const p = pop(f, at, fps, 10);
     const cur = [...faces].filter(([t]) => f >= t).pop() ?? faces[0];
     const since = f - cur[0];
-    const squash = since < 10 ? 1 + Math.sin((since / 10) * Math.PI) * 0.06 : 1;
-    const bob = (bobPha === undefined ? Math.sin((f + (who === "luna" ? 20 : 0)) / 9) : Math.sin(2 * Math.PI * bobPha + (who === "luna" ? 20 : 0) / 9)) * 6;
+    const squash = since < 10 ? 1 + Math.sin((since / 10) * Math.PI) * 0.09 : 1;
+    const bob = (bobPha === undefined ? Math.sin((f + (who === "luna" ? 20 : 0)) / 8) : Math.sin(2 * Math.PI * bobPha + (who === "luna" ? 20 : 0) / 8)) * 7;
     const leave = out === undefined ? 0 : ease(f, [out, out + 10], [0, 1], Easing.in(Easing.cubic));
     const deep = who === "sola" ? C.solaDeep : C.lunaDeep;
     const say = says.find((s) => f >= s.at && f < s.out + 6);
     const sp = say ? ease(f, [say.at, say.at + 8], [0, 1], Easing.out(Easing.back(1.6))) * (1 - ease(f, [say.out, say.out + 6], [0, 1])) : 0;
-    const bw = bubbleW ?? (V ? 560 : 440);
+    const bw = bubbleW ?? (V ? 590 : 470);
     const sd = side ?? (who === "sola" ? "right" : "left");
     const top = H - bottom - h;
+    const badgeBg = who === "sola" ? "linear-gradient(135deg, #38BDF8 0%, #0284C7 100%)" : "linear-gradient(135deg, #F472B6 0%, #9333EA 100%)";
+    const borderCol = "#1B1838";
     return (
       <>
         <div style={{position: "absolute", left: x - h * 0.45, top: top + (1 - p) * h * 0.7 + leave * h + bob, width: h * 0.9, height: h,
           transform: `scale(${(2 - squash) * (0.7 + 0.3 * p)}, ${squash * (0.7 + 0.3 * p)})`, transformOrigin: "50% 100%", opacity: Math.min(1, p * 2)}}>
           <Img src={faceSrc(who, cur[1])} style={{width: "100%", height: "100%", objectFit: "contain", objectPosition: "50% 100%",
-            filter: "drop-shadow(0 12px 20px rgba(34,26,102,0.28))", transform: lat ? "scaleX(-1)" : undefined}} />
+            filter: "drop-shadow(0 14px 18px rgba(27,24,56,0.36))", transform: lat ? "scaleX(-1)" : undefined}} />
+          <BieuCamSvg face={cur[1]} since={since} ben={lat ? "trai" : "phai"} />
         </div>
         {say && sp > 0.01 && (
-          <div style={{position: "absolute", top: (bubbleTop ?? top - (V ? 40 : 20)) - 30 * (1 - sp), width: bw,
-            left: sd === "right" ? x + h * 0.08 : x - h * 0.08 - bw, opacity: sp, transform: `scale(${0.8 + 0.2 * sp})`,
-            transformOrigin: sd === "right" ? "0% 100%" : "100% 100%"}}>
-            <div style={{position: "absolute", bottom: "100%", [sd === "right" ? "left" : "right"]: 18, transform: "translateY(50%)",
-              background: deep, color: "#fff", fontWeight: 800, fontSize: V ? 26 : 22, padding: "4px 14px", borderRadius: 12, zIndex: 2,
-              fontFamily: FONT, letterSpacing: "0.04em"}}>{who === "sola" ? "SOLA" : "LUNA"}</div>
-            <div style={{background: "#fff", border: `3px solid ${deep}`, borderRadius: 26, padding: V ? "26px 28px 20px" : "22px 24px 16px",
-              fontFamily: FONT, fontWeight: 700, fontSize: V ? 38 : 32, color: C.ink, lineHeight: 1.3,
-              boxShadow: "0 18px 40px rgba(34,26,102,0.16)"}}>
+          <div style={{position: "absolute", top: (bubbleTop ?? top - (V ? 44 : 22)) - 30 * (1 - sp), width: bw,
+            left: sd === "right" ? x + h * 0.06 : x - h * 0.06 - bw, opacity: sp, transform: `scale(${0.82 + 0.18 * sp})`,
+            transformOrigin: sd === "right" ? "0% 100%" : "100% 100%", zIndex: 15}}>
+            {/* Nhãn tên nhân vật phong cách Game / Comic */}
+            <div style={{position: "absolute", bottom: "100%", [sd === "right" ? "left" : "right"]: 22,
+              transform: `translateY(48%) rotate(${sd === "right" ? -2 : 2}deg)`,
+              background: badgeBg, color: "#FFFFFF", border: `4px solid ${borderCol}`, fontWeight: 900, fontSize: V ? 23 : 20,
+              padding: "5px 18px", borderRadius: 14, zIndex: 3, fontFamily: FONT, letterSpacing: "0.04em", whiteSpace: "nowrap",
+              boxShadow: `0 5px 0 ${borderCol}`, display: "inline-flex", alignItems: "center", gap: 8}}>
+              <span style={{width: 10, height: 10, borderRadius: "50%", background: "#FDE047", border: `2px solid ${borderCol}`}} />
+              <span>{who === "sola" ? "SOLA · TEAM CODE" : "LUNA · TEAM ĐỘ BOT"}</span>
+            </div>
+            {/* Hộp thoại hoạt hình 3D viền đậm + bóng cứng */}
+            <div style={{position: "relative", background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)",
+              border: `5px solid ${borderCol}`, borderRadius: 28, padding: V ? "28px 26px 20px" : "22px 24px 16px",
+              fontFamily: FONT, fontWeight: 800, fontSize: V ? 34 : 30, color: borderCol, lineHeight: 1.32, textWrap: "balance" as any,
+              boxShadow: `0 10px 0 ${borderCol}, 0 18px 32px rgba(15,23,42,0.32), inset 0 4px 0 ${who === "sola" ? "#E0F2FE" : "#FCE7F3"}`}}>
               {say.text}
+              {/* Đuôi bóng thoại comic trỏ về phía nhân vật */}
+              <svg width="34" height="24" viewBox="0 0 34 24" style={{position: "absolute", bottom: -21,
+                [sd === "right" ? "left" : "right"]: 32, transform: sd === "right" ? undefined : "scaleX(-1)", overflow: "visible"}}>
+                <path d="M 4 0 L 28 0 L 6 20 Z" fill="#F8FAFC" stroke={borderCol} strokeWidth="5" strokeLinejoin="round" />
+                <path d="M 6 -2 L 26 -2" stroke="#F8FAFC" strokeWidth="6" />
+              </svg>
             </div>
           </div>
         )}

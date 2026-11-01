@@ -2,13 +2,14 @@
 // Robot nhìn từ trên, mũi quay sang PHẢI, ô vuông 576 px (CANH 480 + lề tràn của bộ vẽ, cùng cỡ r1.png mà kit.tsx đo bánh).
 // Chạy: node tools/xuat-m1.mjs
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const goc = dirname(fileURLToPath(import.meta.url));
-const repo = resolve(goc, '../..');
+const repo = existsSync(resolve(goc, '../../server.mjs')) ? resolve(goc, '../..') : 'd:/Users/tuanla2/game/doi-robot-chan-hung';
 const ra = resolve(goc, '../public/robot/m1');
 const PORT = 4208, CANH = 480, CANH_O = 320;
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -36,8 +37,8 @@ const HINH = {
   'r2': [{ than: 'hai-banh', tay: 'kep', camBien: [], son: 'lam' }, { tay: { tuThe: 'tren', kep: false } }],
   'r2-vui': [{ than: 'hai-banh', tay: 'kep', camBien: [], son: 'lam' }, { mat: 'vui', tay: { tuThe: 'tren', kep: true } }],
 };
-const O = ['tuong', 'san', 'cua', 'nut-de', 'dich', 'co'];
-const VAT = ['thung-go'];
+const O = ['tuong', 'san', 'cua', 'nut-de', 'dich', 'co', 'ke-hang', 'san-kho'];
+const VAT = ['thung-go', 'thung-carton'];
 
 const may = spawn(process.execPath, ['server.mjs'], { cwd: repo, env: { ...process.env, PORT: String(PORT) }, stdio: 'ignore' });
 try {
@@ -54,12 +55,22 @@ try {
   for (const [loai, ds] of [['vat', VAT], ['o', O]]) {
     for (const ma of ds) {
       await luu(loai + '-' + ma, await trang.evaluate(([loai, ma, canh]) => {
+        const orig = CanvasRenderingContext2D.prototype.fillRect;
+        if (loai === 'o' && (ma === 'tuong' || ma === 'ke-hang')) {
+          CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
+            if (x === 0 && y === 0 && w === 100 && h === 100) return;
+            return orig.call(this, x, y, w, h);
+          };
+          VeVector.xoaDem();
+        }
         try {
           const v = VeVector[loai](ma, canh, {}); const cv = v && (v.toDataURL ? v : v.querySelector && v.querySelector('canvas'));
           if (cv) return cv.toDataURL('image/png');
           const c = document.createElement('canvas'); c.width = c.height = canh; const g = c.getContext('2d');
           const d = VeVector.lay(loai, ma); g.scale(canh / 100, canh / 100); d.ve(g, {}, VeVector.mauDoi(''), VeVector.H); return c.toDataURL('image/png');
-        } catch (e) { return null; }
+        } catch (e) { return null; } finally {
+          CanvasRenderingContext2D.prototype.fillRect = orig;
+        }
       }, [loai, ma, CANH_O]));
     }
   }

@@ -2,13 +2,14 @@
 // Robot nhìn từ trên, mũi quay sang PHẢI (huong = 1), ô vuông 576 px (CANH 480 + lề tràn).
 // Chạy: node tools/xuat-m2.mjs
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const goc = dirname(fileURLToPath(import.meta.url));
-const repo = resolve(goc, '../..');
+const repo = existsSync(resolve(goc, '../../server.mjs')) ? resolve(goc, '../..') : 'd:/Users/tuanla2/game/doi-robot-chan-hung';
 const ra = resolve(goc, '../public/robot/m2');
 const PORT = 4209, CANH = 480, CANH_O = 320;
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -34,7 +35,7 @@ const HINH = {
   'xich-hn-do': [cfg('hoi', HN), { tay: { tuThe: 'tren' }, camBien: { bat: true } }, false],
   'xich-hn-phun': [cfg('hoi', HN), { mat: 'vui', tay: { tuThe: 'tren', dangBanTruoc: true }, camBien: { bat: true } }, false],
   'du': [cfg('hoi', HN), { tay: { tuThe: 'tren' } }, true],
-  'du-vui': [cfg('hoi', HN), { mat: 'vui', tay: { tuThe: 'tren' } }, true],
+  'du-vui': [cfg('hoi', HN), { mat: 'vui', tay: { tuThe: 'tren', dangBanTruoc: true }, camBien: { bat: true } }, true],
   'du-ngac': [cfg('hoi', HN), { mat: 'ngac', tay: { tuThe: 'tren' } }, true],
   'du-do': [cfg('hoi', HN), { tay: { tuThe: 'tren' }, camBien: { bat: true } }, true],
   'du-phun': [cfg('hoi', HN), { mat: 'vui', tay: { tuThe: 'tren', dangBanTruoc: true }, camBien: { bat: true } }, true],
@@ -54,6 +55,7 @@ const O_SAN = {
   'o-nut-de': ['nut-de', {}],
   'o-dich': ['dich', {}],
   'o-rao': ['rao', {}],
+  'o-tuong-nha-may': ['tuong-nha-may', {}],
 };
 const VAT = ['thung-nang', 'thung-go', 'bong'];
 
@@ -74,48 +76,27 @@ try {
   for (const [ten, [c, tt, luoiUi]] of Object.entries(HINH)) {
     await luu(ten, await trang.evaluate(([c, tt, luoiUi, canh]) => {
       try {
-        const goc = VeRobot.veCo(c, tt, 1, canh);
-        const cv = document.createElement('canvas');
-        cv.width = goc.width; cv.height = goc.height;
-        const g = cv.getContext('2d');
-        if (luoiUi) {
-          // Vẽ lưỡi ủi thép vàng-cam ở mũi xe (bên phải, +x) trước khi vẽ thân để gắn liền vào đầu khung xích
-          const cx = cv.width / 2, cy = cv.height / 2, k = canh / 100;
-          g.save();
-          g.translate(cx, cy);
-          g.lineJoin = 'round'; g.lineCap = 'round';
-          // Hai thanh chống nối khung vào lưỡi ủi
-          g.fillStyle = '#475569'; g.strokeStyle = '#1E293B'; g.lineWidth = 2.2 * k;
-          for (const s of [-1, 1]) {
-            g.beginPath(); g.rect(30 * k, (s * 18 - 3.5) * k, 12 * k, 7 * k); g.fill(); g.stroke();
-          }
-          // Bản lưỡi ủi cong ở mũi trước
-          g.fillStyle = '#F59E0B'; g.strokeStyle = '#1E293B'; g.lineWidth = 2.6 * k;
-          g.beginPath();
-          g.moveTo(40 * k, -34 * k);
-          g.lineTo(48 * k, -28 * k);
-          g.lineTo(48 * k, 28 * k);
-          g.lineTo(40 * k, 34 * k);
-          g.closePath();
-          g.fill(); g.stroke();
-          // Vạch cảnh báo trên lưỡi ủi
-          g.fillStyle = '#1E293B';
-          for (const y of [-20, -6, 8, 22]) {
-            g.fillRect(42 * k, y * k, 4.5 * k, 5 * k);
-          }
-          g.restore();
-        }
-        g.drawImage(goc, 0, 0);
-        return { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height };
+        const cv = VeRobot.veCo(c, luoiUi ? { ...tt, xichDay: true } : tt, 1, canh);
+        return cv ? { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height } : null;
       } catch (e) { return null; }
     }, [c, tt, luoiUi, CANH]));
   }
   for (const [ten, [ma, st]] of Object.entries(O_SAN)) {
     await luu(ten, await trang.evaluate(([ma, st, canh]) => {
+      const orig = CanvasRenderingContext2D.prototype.fillRect;
+      if (ma === 'tuong-nha-may') {
+        CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
+          if (x === 0 && y === 0 && w === 100 && h === 100) return;
+          return orig.call(this, x, y, w, h);
+        };
+        VeVector.xoaDem();
+      }
       try {
         const cv = VeVector.o(ma, canh, st);
         return cv ? { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height } : null;
-      } catch (e) { return null; }
+      } catch (e) { return null; } finally {
+        CanvasRenderingContext2D.prototype.fillRect = orig;
+      }
     }, [ma, st, CANH_O]));
   }
   for (const ma of VAT) {

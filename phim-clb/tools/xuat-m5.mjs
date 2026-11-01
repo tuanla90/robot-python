@@ -2,13 +2,14 @@
 // Drone có lồng bảo vệ cánh quạt quanh 4 mô-tơ; chỉ dùng 4 màu hoa (red, yellow, blue, green).
 // Chạy: node tools/xuat-m5.mjs
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const goc = dirname(fileURLToPath(import.meta.url));
-const repo = resolve(goc, '../..');
+const repo = existsSync(resolve(goc, '../../server.mjs')) ? resolve(goc, '../..') : 'd:/Users/tuanla2/game/doi-robot-chan-hung';
 const ra = resolve(goc, '../public/robot/m5');
 const PORT = 4212, CANH = 480, CANH_O = 320;
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -32,7 +33,7 @@ const HINH = {
   'drone-son-blue': [cfg('son'), { wl: 1, tay: { tuThe: 'duoi', mauSon: 'blue' } }],
   'drone-son-green': [cfg('son'), { wl: 1, tay: { tuThe: 'duoi', mauSon: 'green' } }],
   'drone-cam': [cfg('son', CAM), { wl: 1, tay: { tuThe: 'tren', mauSon: 'red' } }],
-  'drone-cam-vui': [cfg('son', CAM), { wl: 1, mat: 'vui', tay: { tuThe: 'tren', mauSon: 'yellow' } }],
+  'drone-cam-vui': [cfg('son', CAM), { wl: 1, mat: 'vui', tay: { tuThe: 'duoi', mauSon: 'yellow', pha: 0.25 }, camBien: { bat: true, mat: true } }],
   'drone-cam-ngac': [cfg('son', CAM), { wl: 1, mat: 'ngac', tay: { tuThe: 'tren', mauSon: 'red' } }],
   'drone-cam-do': [cfg('son', CAM), { wl: 1, tay: { tuThe: 'tren', mauSon: 'red' }, camBien: { bat: true } }],
   'drone-cam-dau': [cfg('son', CAM), { wl: 0, wr: 0, tay: { tuThe: 'tren', mauSon: 'green' }, camBien: { bat: true } }],
@@ -77,43 +78,27 @@ try {
   for (const [ten, [c, tt]] of Object.entries(HINH)) {
     await luu(ten, await trang.evaluate(([c, tt, canh]) => {
       try {
-        const goc = VeRobot.veCo(c, tt, 1, canh);
-        const cv = document.createElement('canvas');
-        cv.width = goc.width; cv.height = goc.height;
-        const g = cv.getContext('2d');
-        g.drawImage(goc, 0, 0);
-        if (c.than === 'drone') {
-          const k = (cv.width / VeVector.HE) * VeVector.CO_THAN;
-          g.save();
-          g.translate(cv.width / 2, cv.height / 2);
-          g.scale(k, k);
-          g.translate(-VeVector.TAM_THAN.x, -VeVector.TAM_THAN.y);
-          for (const [cx, cy] of [[22, 29], [78, 29], [22, 83], [78, 83]]) {
-            const rOut = 14.2;
-            g.strokeStyle = 'rgba(30, 41, 59, 0.55)';
-            g.lineWidth = 1.4;
-            for (const a of [0, Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4]) {
-              g.beginPath();
-              g.moveTo(cx - Math.cos(a) * rOut, cy - Math.sin(a) * rOut);
-              g.lineTo(cx + Math.cos(a) * rOut, cy + Math.sin(a) * rOut);
-              g.stroke();
-            }
-            g.beginPath(); g.arc(cx, cy, rOut, 0, Math.PI * 2);
-            g.strokeStyle = '#1E293B'; g.lineWidth = 3.6; g.stroke();
-            g.strokeStyle = '#38BDF8'; g.lineWidth = 1.8; g.stroke();
-          }
-          g.restore();
-        }
-        return { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height };
+        const cv = VeRobot.veCo(c, tt, c.than === 'nhen' ? 2 : 1, canh);
+        return cv ? { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height } : null;
       } catch (e) { return null; }
     }, [c, tt, CANH]));
   }
   for (const [ten, [ma, st]] of Object.entries(O_SAN)) {
     await luu(ten, await trang.evaluate(([ma, st, canh]) => {
+      const orig = CanvasRenderingContext2D.prototype.fillRect;
+      if (ma === 'bui-cay') {
+        CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
+          if (x === 0 && y === 0 && w === 100 && h === 100) return;
+          return orig.call(this, x, y, w, h);
+        };
+        VeVector.xoaDem();
+      }
       try {
         const cv = VeVector.o(ma, canh, st);
         return cv ? { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height } : null;
-      } catch (e) { return null; }
+      } catch (e) { return null; } finally {
+        CanvasRenderingContext2D.prototype.fillRect = orig;
+      }
     }, [ma, st, CANH_O]));
   }
   for (const [ten, [ma, st]] of Object.entries(VAT)) {

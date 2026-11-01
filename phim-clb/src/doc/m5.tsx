@@ -4,7 +4,7 @@ import React from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Burst, C, CodeBox, FONT, Icon, Mascot, MONO, Say, Shake, ease, pop} from '../d10';
 import {Phim, W_IN} from '../may-phim';
-import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, tamO} from './kit-doc';
+import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, chonDangNguoi, tamO} from './kit-doc';
 
 const NEN = 'nen-doc/mua-4.png';
 const DON = [
@@ -13,8 +13,8 @@ const DON = [
 ];
 
 /** Chị Lan chủ nông trại hoa (ảnh TopView tách nền). */
-const Lan: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'}> = ({says, at = 0, x = 820, side = 'left'}) => (
-  <Nguoi anh="lan-a" ten="CHỊ LAN" mau="#EC4899" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
+const Lan: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'; dang?: string}> = ({says, at = 0, x = 820, side = 'left', dang = 'lan-nghi'}) => (
+  <Nguoi anh={dang} ten="CHỊ LAN" mau="#EC4899" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
 );
 const Sola: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: number}> = ({says, mat, at = 0, x = 240}) => (
   <Mascot who="sola" x={x} h={540} at={at} faces={mat} says={says} bubbleW={520} bubbleTop={1240} />
@@ -69,7 +69,7 @@ const ThanhTuu: React.FC<{moi: number; loi: string; con: string; so: number; ten
       <BangViec tieuDe="Nhật ký gieo hoa đón Tết của chị Lan" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
       <DongHoTet con={con} gap={xoa !== undefined} />
       <NhanGoi so={so} ten={ten} />
-      <Lan says={[{at: 48, out: 200, text: loi}]} at={28} />
+      <Lan dang={chonDangNguoi('lan', so, xoa)} says={[{at: 48, out: 200, text: loi}]} at={28} />
     </NenHienTruong>
   );
 
@@ -111,7 +111,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="DẬP MẦM!" at={66} den={138} x={tamO(2, 3).x + 150} y={tamO(2, 3).y - 30} />
       <DongHoTet con="Tết còn 10 ngày" />
       <NhanGoi so={1} ten="Cánh quạt bay" />
-      <Lan says={[{at: 72, out: 175, text: 'Đất luống mới tưới nước mềm lắm, đi trên đất là giẫm nát hết mầm non!'}]} at={58} />
+      <Lan dang="lan-hoang" says={[{at: 72, out: 175, text: 'Đất luống mới tưới nước mềm lắm, đi trên đất là giẫm nát hết mầm non!'}]} at={58} />
     </NenHienTruong>
   </Shake>
 );
@@ -143,7 +143,7 @@ const G2Thu: React.FC = () => {
       <DongHoTet con="Tết còn 8 ngày" />
       <NhanGoi so={2} ten="Bộ gieo hạt" />
       <Sola says={[{at: 8, out: 68, text: 'Bay tới nơi rồi mà chưa có phễu thả hạt giống xuống!'}]} mat={[[0, 'worried'], [72, 'confused']]} />
-      {f >= 90 ? <Lan says={[{at: 98, out: 230, text: 'Phải rải đúng hạt hoa hồng đỏ và hoa cúc vàng vào từng ô nhé!'}]} at={90} /> : null}
+      {f >= 90 ? <Lan dang="lan-tin" says={[{at: 98, out: 230, text: 'Phải rải đúng hạt hoa hồng đỏ và hoa cúc vàng vào từng ô nhé!'}]} at={90} /> : null}
     </NenHienTruong>
   );
 };
@@ -227,7 +227,7 @@ const G4Thu: React.FC = () => {
       <CodeBox lines={['c = color("up")', 'ink(c); dot()', 'go_right()']} x={270} y={145} w={460} size={30} title="Viết rời từng ô" />
       <DongHoTet con="Tết còn 6 ngày" />
       <NhanGoi so={4} ten="Sao chép luống" />
-      {f >= 102 ? <Lan says={[{at: 110, out: 245, text: 'Cả dãy dài giống nhau mà viết lẻ từng ô thế kia dễ bỏ sót lắm!'}]} at={102} /> : null}
+      {f >= 102 ? <Lan dang="lan-sot-ruot" says={[{at: 110, out: 245, text: 'Cả dãy dài giống nhau mà viết lẻ từng ô thế kia dễ bỏ sót lắm!'}]} at={102} /> : null}
     </NenHienTruong>
   );
 };
@@ -272,7 +272,7 @@ const G5Thu: React.FC = () => {
       <CodeBox lines={['for i in range(6):', '    go_up()']} x={280} y={145} w={440} size={30} title="Bay một mạch quên sạc" />
       <DongHoTet con="Tết còn 5 ngày" />
       <NhanGoi so={5} ten="Trạm sạc pin" />
-      {f >= 92 ? <Lan says={[{at: 100, out: 235, text: 'Bay đường xa tốn pin lắm, thấy trạm sạc giữa đồng mà không ghé vào!'}]} at={92} /> : null}
+      {f >= 92 ? <Lan dang="lan-sot-ruot" says={[{at: 100, out: 235, text: 'Bay đường xa tốn pin lắm, thấy trạm sạc giữa đồng mà không ghé vào!'}]} at={92} /> : null}
     </NenHienTruong>
   );
 };
@@ -319,7 +319,7 @@ const G6Thu: React.FC = () => {
       <CodeBox lines={['dot(); go_right()', 'dot(); go_right()']} x={270} y={145} w={460} size={30} title="Chấm lẻ từng ô" />
       <DongHoTet con="Tết còn 4 ngày" />
       <NhanGoi so={6} ten="Rải theo hàng" />
-      {f >= 92 ? <Lan says={[{at: 100, out: 245, text: 'Gió làm hỏng cả dải dài, chấm lẻ từng ô thế kia bao giờ mới kịp!'}]} at={92} /> : null}
+      {f >= 92 ? <Lan dang="lan-hoang" says={[{at: 100, out: 245, text: 'Gió làm hỏng cả dải dài, chấm lẻ từng ô thế kia bao giờ mới kịp!'}]} at={92} /> : null}
     </NenHienTruong>
   );
 };
@@ -353,7 +353,7 @@ const G7Thu: React.FC = () => {
       <CodeBox lines={['c = color("up")', 'ink(c)']} x={280} y={145} w={440} size={30} title="Nhìn ngang thay vì nhìn bụng" />
       <DongHoTet con="Tết còn 3 ngày" gap />
       <NhanGoi so={7} ten="Mắt nhìn xuống" />
-      {f >= 82 ? <Lan says={[{at: 90, out: 235, text: 'Thẻ màu nằm ngay dưới bụng drone kìa, nhìn đi đâu thế!'}]} at={82} /> : null}
+      {f >= 82 ? <Lan dang="lan-ngac-nhien" says={[{at: 90, out: 235, text: 'Thẻ màu nằm ngay dưới bụng drone kìa, nhìn đi đâu thế!'}]} at={82} /> : null}
     </NenHienTruong>
   );
 };
@@ -392,7 +392,7 @@ const G8Thu: React.FC = () => {
       </div>
       <DongHoTet con="Tết còn 2 ngày" />
       <NhanGoi so={8} ten="Dãy màu hoa" />
-      {f >= 92 ? <Lan says={[{at: 100, out: 235, text: 'Chậu dọc bờ kênh xếp theo dãy màu sẵn rồi, gieo nhầm thứ tự là lệch cả giàn!'}]} at={92} /> : null}
+      {f >= 92 ? <Lan dang="lan-tin" says={[{at: 100, out: 235, text: 'Chậu dọc bờ kênh xếp theo dãy màu sẵn rồi, gieo nhầm thứ tự là lệch cả giàn!'}]} at={92} /> : null}
     </NenHienTruong>
   );
 };
@@ -466,17 +466,27 @@ const G10Mo: React.FC = () => (
     <Xe anh="drone-cam" moc={[[0, 0, 4.5, 0]]} />
     <DongHoTet con="Chợ hoa Tết: hôm nay!" gap />
     <NhanGoi so={10} ten="Xuất xưởng" />
-    <Lan says={[{at: 10, out: 145, text: 'Khách sắp vào xem hội hoa Tết rồi, còn thảm hoa lớn giữa sân nữa thôi!'}]} />
+    <Lan dang="lan-sot-ruot" says={[{at: 10, out: 145, text: 'Khách sắp vào xem hội hoa Tết rồi, còn thảm hoa lớn giữa sân nữa thôi!'}]} />
   </NenHienTruong>
 );
-const ThaTayM5: React.FC = () => (
-  <AbsoluteFill style={{background: '#EEF2FF', fontFamily: FONT}}>
-    <Img src={staticFile('nen-doc/trong-xe.jpg')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
-    <CodeBox lines={['c = color("here")', 'if battery() < 3: land()', 'sow_line(c, 4)']} x={240} y={240} w={600} size={34} hl={2} title="Tự động gieo thảm hoa Tết" />
-    <Sola says={[{at: 10, out: 72, text: 'R1 tự bay dệt trọn thảm hoa Tết cho chị Lan nhé!'}]} mat={[[0, 'confident'], [65, 'proud']]} x={260} />
-    <Luna says={[{at: 78, out: 155, text: 'Bay lên nào R1!'}]} mat={[[0, 'surprised'], [78, 'excited']]} x={820} />
-  </AbsoluteFill>
-);
+const ThaTayM5: React.FC = () => {
+  const f = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{background: '#EEF2FF', fontFamily: FONT}}>
+      <Img src={staticFile('nen-doc/trong-xe.jpg')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
+      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.25) 45%, rgba(15,23,42,0.85) 100%)'}} />
+      <CodeBox lines={['c = color("here")', 'if battery() < 3: land()', 'sow_line(c, 4)']} x={150} y={80} w={780} size={36} hl={2} title="drone_gieo_hoa.py" />
+      <div style={{position: 'absolute', left: 540 - 310, top: 820 - 310, width: 620, height: 620, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(236,72,153,0.36) 0%, rgba(56,189,248,0.18) 55%, transparent 72%)',
+        border: '5px dashed #FDE047', transform: `rotate(${f * 0.7}deg)`}} />
+      <div style={{position: 'absolute', left: 540 - 280, top: 820 - 280, width: 560, height: 560}}>
+        <Img src={staticFile('robot/m5/drone-cam-vui.png')} style={{width: '100%', height: '100%', filter: 'drop-shadow(0 18px 28px rgba(0,0,0,0.5))'}} />
+      </div>
+      <Sola says={[{at: 10, out: 72, text: 'Code xong! Để Drone R1 tự bay dệt trọn thảm hoa Tết cho chị Lan nhé!'}]} mat={[[0, 'confident'], [65, 'proud']]} x={260} />
+      <Luna says={[{at: 78, out: 155, text: 'Cất cánh thôi Drone R1 ơi!'}]} mat={[[0, 'surprised'], [78, 'excited']]} x={820} />
+    </AbsoluteFill>
+  );
+};
 const R_G10A: Moc[] = [[0, 0, 2, 0], [35, 1, 2, 0], [70, 2, 2, 0], [115, 3, 2, 0], [140, 3, 2, 0]];
 const G10DocMau: React.FC = () => {
   const f = useCurrentFrame();
@@ -540,37 +550,99 @@ const XuatXuongM5: React.FC = () => {
   );
 };
 const NgoaiDoiM5: React.FC = () => {
-  const f = useCurrentFrame();
+  const f = useCurrentFrame(), {fps} = useVideoConfig();
+  const THE = [
+    {icon: 'Plane' as const, ten: 'Drone Nông Nghiệp Thông Minh (Agri-Drone)', mo: 'Bay tự động theo bản đồ tọa độ, rải hạt giống đều tăm tắp mà không dẫm nát luống cây.'},
+    {icon: 'Camera' as const, ten: 'Camera Đa Quang Phổ & Trạm Sạc Tự Động', mo: 'Quét màu lá cây từ trên cao để phát hiện chỗ thiếu nước và tự về trạm sạc khi pin yếu.'},
+  ];
   return (
-    <AbsoluteFill style={{background: '#0F172A', fontFamily: FONT, alignItems: 'center'}}>
-      <div style={{position: 'absolute', top: 200, padding: '12px 32px', borderRadius: 999, background: C.yellow, color: C.ink, fontWeight: 900, fontSize: 44}}>NGOÀI ĐỜI</div>
-      <div style={{position: 'absolute', top: 420, width: 860, height: 860, borderRadius: 40, background: '#1E293B', border: '4px dashed #475569', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center', gap: 30, color: '#94A3B8', fontSize: 34, fontWeight: 700, textAlign: 'center'}}>
-        <div style={{display: 'flex', gap: 40, transform: `translateY(${Math.sin(f / 18) * 20}px)`}}>
-          <Icon name="Plane" size={150} color="#38BDF8" /><Icon name="Sprout" size={150} color="#22C55E" />
+    <NenHienTruong anh={NEN} mua="m5" luoi={false} toi={0.58}>
+      <div style={{position: 'absolute', left: 40, top: 120, right: 40, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 48, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+        CÔNG NGHỆ NGOÀI ĐỜI THỰC · M5
+      </div>
+
+      {/* Hero Showcase: Robot R1 của mùa -> Công nghệ thực tế (top: 210 .. 490) */}
+      <div style={{position: 'absolute', left: 50, right: 50, top: 210, height: 275, borderRadius: 32,
+        background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', border: `6px solid ${C.ink}`,
+        boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px',
+        transform: `scale(${pop(f, 6, fps)})`, boxSizing: 'border-box'}}>
+        <div style={{width: 225, height: 225, borderRadius: 28, background: 'rgba(255,255,255,0.08)', border: `4px solid ${C.yellow}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+          <Img src={staticFile('robot/m5/drone-cam-vui.png')} style={{width: 200, height: 200, objectFit: 'contain'}} />
         </div>
-        (chờ ảnh minh hoạ TopView)
+        <div style={{flex: 1, marginLeft: 28, fontFamily: FONT, color: '#fff'}}>
+          <div style={{display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 99, background: '#EC4899',
+            border: '3px solid #fff', fontSize: 22, fontWeight: 900, marginBottom: 10}}>
+            TỪ SA BÀN CLB RA THỰC TẾ
+          </div>
+          <div style={{fontSize: 38, fontWeight: 900, color: '#FDE047', marginBottom: 6}}>Drone Nông Nghiệp R1</div>
+          <div style={{fontSize: 26, fontWeight: 700, color: '#E2E8F0', lineHeight: 1.3}}>Bay lơ lửng không dẫm luống hoa, đọc thẻ màu 5 hướng và rải hạt theo hàng.</div>
+        </div>
       </div>
-      <div style={{position: 'absolute', top: 1340, left: 90, right: 90, textAlign: 'center', color: '#fff', fontWeight: 800, fontSize: 46, lineHeight: 1.32, opacity: ease(f, [10, 30], [0, 1])}}>
-        Drone nông nghiệp bay trên cánh đồng để gieo hạt giống và chụp ảnh theo dõi cây trồng.
-      </div>
-    </AbsoluteFill>
+
+      {THE.map((t, i) => (
+        <div key={t.ten} style={{position: 'absolute', left: 50, right: 50, top: 515 + i * 325, height: 295, padding: '28px 34px', borderRadius: 30, background: '#fff',
+          border: `6px solid ${C.ink}`, boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', gap: 28, alignItems: 'center',
+          transform: `scale(${pop(f, 12 + i * 16, fps)})`, boxSizing: 'border-box'}}>
+          <div style={{width: 150, height: 150, borderRadius: 28, background: '#EC4899', border: `5px solid ${C.ink}`,
+            boxShadow: `0 8px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+            <Icon name={t.icon} size={84} color="#fff" />
+          </div>
+          <div style={{fontFamily: FONT, color: C.ink, flex: 1}}>
+            <div style={{fontWeight: 900, fontSize: 38, marginBottom: 10, lineHeight: 1.2}}>{t.ten}</div>
+            <div style={{fontWeight: 800, fontSize: 28, color: '#334155', lineHeight: 1.34}}>{t.mo}</div>
+          </div>
+        </div>
+      ))}
+      <Sola mat={[[0, 'happy']]} says={[{at: 14, out: 142, text: 'Dùng danh sách (list) lưu chuỗi màu và điều khiển Drone bay rải hạt đúng chuẩn nông nghiệp công nghệ cao!'}]} />
+    </NenHienTruong>
   );
 };
 const NhaMua6: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{background: '#1E293B', fontFamily: FONT, overflow: 'hidden'}}>
-      <Img src={staticFile('nen-doc/mua-5.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.45}} />
-      <div style={{position: 'absolute', left: 120, right: 120, top: 480, padding: '36px 40px', borderRadius: 32, background: '#334155', border: `6px solid ${C.ink}`,
-        boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, color: '#fff', textAlign: 'center'}}>
-        <Icon name="Mountain" size={120} color="#F59E0B" />
-        <div style={{fontSize: 42, fontWeight: 900}}>Chị Lan: "Đá lát lối vườn mua ở mỏ đá trên núi đấy!"</div>
+      <Img src={staticFile('nen-doc/mua-4.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.65}} />
+      <AbsoluteFill style={{background: 'rgba(15,23,42,0.35)'}} />
+
+      <div style={{position: 'absolute', left: 45, right: 45, top: 80, padding: '20px 28px', borderRadius: 26,
+        background: 'linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%)', border: `5px solid #FDE047`,
+        boxShadow: `0 10px 0 ${C.ink}`, textAlign: 'center', color: '#FDE047', fontWeight: 900, fontSize: 38}}>
+        CHUYỂN TRẠM CHIẾN DỊCH · LÊN MỎ ĐÁ NÚI CAO MÙA 6!
       </div>
-      <div style={{position: 'absolute', left: 90, right: 90, top: 1180, opacity: ease(f, [25, 45], [0, 1]),
-        background: '#FEF3C7', borderRadius: 30, border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, padding: '28px 34px', display: 'flex', gap: 24, alignItems: 'center'}}>
-        <Icon name="AlertTriangle" size={80} color="#D97706" stroke={2.5} />
-        <div style={{fontSize: 42, fontWeight: 900, color: C.ink, lineHeight: 1.3}}>Mỏ đá anh Dũng · Đường lên mỏ cần dọn an toàn trước mùa mưa!</div>
+
+      <div style={{position: 'absolute', left: 45, right: 45, top: 230, height: 590, borderRadius: 36,
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.92) 0%, rgba(124,45,18,0.92) 100%)',
+        border: `6px solid ${C.ink}`, boxShadow: `0 16px 0 ${C.ink}`,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-around', padding: '28px 34px', boxSizing: 'border-box'}}>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-around', width: '100%'}}>
+          <div style={{width: 260, height: 260, borderRadius: 32, background: '#FCE7F3', border: `6px solid #EC4899`,
+            boxShadow: `0 10px 0 ${C.ink}`, overflow: 'hidden'}}>
+            <Img src={staticFile('nguoi/lan-mung.png')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
+          </div>
+          <Icon name="ArrowRight" size={64} color="#FDE047" stroke={3.5} />
+          <div style={{width: 260, height: 260, borderRadius: 32, background: '#FFEDD5', border: `6px solid #EA580C`,
+            boxShadow: `0 10px 0 ${C.ink}`, overflow: 'hidden'}}>
+            <Img src={staticFile('nguoi/dung-hoang.png')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
+          </div>
+        </div>
+        <div style={{fontSize: 34, fontWeight: 900, color: '#fff', textAlign: 'center', lineHeight: 1.3}}>
+          Chị Lan: "Đá lát lối vườn hoa chị đặt mua từ mỏ đá của anh Dũng trên núi đấy!"
+        </div>
+      </div>
+
+      <div style={{position: 'absolute', left: 45, right: 45, top: 870, opacity: ease(f, [15, 35], [0, 1]),
+        background: '#FEF3C7', borderRadius: 34, border: `6px solid ${C.ink}`, boxShadow: `0 16px 0 ${C.ink}`, padding: '32px 36px', display: 'flex', gap: 26, alignItems: 'center'}}>
+        <div style={{width: 120, height: 120, borderRadius: 26, background: '#EA580C', border: `4px solid ${C.ink}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+          <Icon name="Mountain" size={72} color="#fff" />
+        </div>
+        <div>
+          <div style={{fontSize: 24, fontWeight: 900, color: '#C2410C', marginBottom: 6}}>ĐIỂM ĐẾN TIẾP THEO · MÙA 6</div>
+          <div style={{fontSize: 38, fontWeight: 900, color: C.ink, lineHeight: 1.28}}>
+            Mỏ đá anh Dũng · Độ bánh đa hướng Omni & Radar 360° dọn đá trước cơn mưa lớn!
+          </div>
+        </div>
       </div>
     </AbsoluteFill>
   );

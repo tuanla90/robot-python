@@ -2,9 +2,9 @@
 // mỗi gói hai phim: M7G<n>-Mo (phim mở) và M7G<n>-Ket (đoạn kết sau màn trùm).
 import React from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
-import {Burst, C, CodeBox, FONT, Icon, Mascot, MONO, Say, Shake, pop} from '../d10';
+import {Burst, C, CodeBox, FONT, Icon, Mascot, MONO, Say, Shake, ease, pop} from '../d10';
 import {Phim, W_IN} from '../may-phim';
-import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, tamO} from './kit-doc';
+import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, chonDangNguoi, tamO} from './kit-doc';
 
 const NEN = 'nen-doc/mua-hang.png';
 const DON = [
@@ -13,8 +13,8 @@ const DON = [
 ];
 
 /** Chú Phong đội trưởng cứu hộ & khảo sát hang động (ảnh TopView tách nền). */
-const Phong: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'}> = ({says, at = 0, x = 820, side = 'left'}) => (
-  <Nguoi anh="phong-a" ten="CHÚ PHONG" mau="#0D9488" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
+const Phong: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'; dang?: string}> = ({says, at = 0, x = 820, side = 'left', dang = 'phong-nghi'}) => (
+  <Nguoi anh={dang} ten="CHÚ PHONG" mau="#0D9488" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
 );
 const Sola: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: number}> = ({says, mat, at = 0, x = 240}) => (
   <Mascot who="sola" x={x} h={540} at={at} faces={mat} says={says} bubbleW={520} bubbleTop={1240} />
@@ -69,7 +69,7 @@ const ThanhTuu: React.FC<{moi: number; loi: string; con: string; so: number; ten
       <BangViec tieuDe="Bản đồ cứu hộ & mở luồng hang động của chú Phong" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
       <PinBoDamBar con={con} gap={xoa !== undefined} />
       <NhanGoi so={so} ten={ten} />
-      <Phong says={[{at: 48, out: 200, text: loi}]} at={28} />
+      <Phong dang={chonDangNguoi('phong', so, xoa)} says={[{at: 48, out: 200, text: loi}]} at={28} />
     </NenHienTruong>
   );
 
@@ -142,7 +142,7 @@ const G2Mo: React.FC = () => (
       <ChuNay chu="SƯƠNG TỐI ĐẶC!" at={65} den={140} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <PinBoDamBar con="Pin đàm: 75%" />
       <NhanGoi so={2} ten="Loa phát xung còi" />
-      <Phong says={[{at: 68, out: 175, text: 'Vòm hang sâu tối đen lại nhiều vách khuất, chỉ bật đèn thôi thì đoàn khảo sát trong hốc đá không biết có xe cứu hộ tới!'}]} at={54} />
+      <Phong dang="phong-sot-ruot" says={[{at: 68, out: 175, text: 'Vòm hang sâu tối đen lại nhiều vách khuất, chỉ bật đèn thôi thì đoàn khảo sát trong hốc đá không biết có xe cứu hộ tới!'}]} at={54} />
     </NenHienTruong>
   </Shake>
 );
@@ -203,7 +203,7 @@ const G4Mo: React.FC = () => (
       <ChuNay chu="KHE VỰC CHẮN NGANG!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 45} />
       <PinBoDamBar con="Pin đàm: 60%" />
       <NhanGoi so={4} ten="Ngách hang xuyên núi" />
-      <Phong says={[{at: 64, out: 175, text: 'Khe vực ngầm chia đôi lòng hang rồi, nhưng ở vách bên có cặp cửa ngách hang ngầm thông sang nhau đấy!'}]} at={50} />
+      <Phong dang="phong-tin" says={[{at: 64, out: 175, text: 'Khe vực ngầm chia đôi lòng hang rồi, nhưng ở vách bên có cặp cửa ngách hang ngầm thông sang nhau đấy!'}]} at={50} />
     </NenHienTruong>
   </Shake>
 );
@@ -277,7 +277,7 @@ const G6Mo: React.FC = () => (
       <ChuNay chu="CÒI THƯỜNG VÔ HIỆU!" at={68} den={145} x={tamO(2, 3).x + 60} y={tamO(2, 3).y - 45} />
       <PinBoDamBar con="DƯ CHẤN SẬP NGÁCH!" gap />
       <NhanGoi so={6} ten="Phát nốt cộng hưởng" />
-      <Phong says={[{at: 52, out: 175, text: 'Khối thạch nhũ rỗng sập chắn ngách hang rồi! Đá chuông chỉ cộng hưởng khi phát đúng nốt nhạc trong sổ địa chất thôi!'}]} at={40} />
+      <Phong dang="phong-hoang" says={[{at: 52, out: 175, text: 'Khối thạch nhũ rỗng sập chắn ngách hang rồi! Đá chuông chỉ cộng hưởng khi phát đúng nốt nhạc trong sổ địa chất thôi!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -349,7 +349,7 @@ const G8Mo: React.FC = () => (
       <ChuNay chu="KHE VỰC SÂU!" at={60} den={140} x={tamO(3, 3).x + 60} y={tamO(3, 3).y - 40} />
       <PinBoDamBar con="Pin đàm: 28%" />
       <NhanGoi so={8} ten="Lăn ngọc động lấp vực" />
-      <Phong says={[{at: 64, out: 175, text: 'Anh Dũng mỏ đá nhắn qua bộ đàm: tảng ngọc động tròn trên dốc kia đẩy nhẹ là lăn xuống lấp khe vực ngầm ngay!'}]} at={50} />
+      <Phong dang="phong-tin" says={[{at: 64, out: 175, text: 'Anh Dũng mỏ đá nhắn qua bộ đàm: tảng ngọc động tròn trên dốc kia đẩy nhẹ là lăn xuống lấp khe vực ngầm ngay!'}]} at={50} />
     </NenHienTruong>
   </Shake>
 );
@@ -452,7 +452,7 @@ const Canh1: React.FC = () => {
       <Burst x={tamO(2, 3).x} y={tamO(2, 3).y} at={78} />
       <Burst x={tamO(3, 3).x} y={tamO(3, 3).y} at={112} />
       <PinBoDamBar con="Chặng 1/2 · Phá đá chuông mở ngách" />
-      <Phong says={[{at: 12, out: 112, text: 'Thu gai trượt xuống dốc đá, nghe giọng ngân rồi phát đúng nốt mở thông cửa ngách hang!'}]} at={6} />
+      <Phong dang="phong-tin" says={[{at: 12, out: 112, text: 'Thu gai trượt xuống dốc đá, nghe giọng ngân rồi phát đúng nốt mở thông cửa ngách hang!'}]} at={6} />
     </NenHienTruong>
   );
 };
@@ -479,16 +479,24 @@ const Canh2: React.FC = () => {
 
 const XuatXuongM7: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
+  const PART = ['Bánh gai bám đá · Thu gai trượt dốc', 'Loa phát xung còi · Cộng hưởng nốt nhạc', 'Tai dơi Sonar · Giải mã từ điển dict'];
   return (
-    <NenHienTruong anh={NEN} mua="m7" luoi={false} toi={0.38}>
-      <div style={{position: 'absolute', left: 50, top: 150, right: 50, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 50, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+    <NenHienTruong anh={NEN} mua="m7" luoi={false} toi={0.42}>
+      <div style={{position: 'absolute', left: 40, top: 120, right: 40, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 50, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
         XUẤT XƯỞNG: XE THÁM HIỂM HANG ĐỘNG R1
       </div>
-      <div style={{position: 'absolute', left: 540 - 240, top: 380, width: 480, height: 480, transform: `scale(${pop(f, 10, fps)})`}}>
+      <div style={{position: 'absolute', left: 540 - 300, top: 210, width: 600, height: 600, transform: `scale(${pop(f, 8, fps)})`}}>
         <Img src={staticFile('robot/m7/gai-du-vui.png')} style={{width: '100%', height: '100%', transform: 'rotate(-90deg)'}} />
       </div>
-      <Burst x={540} y={620} at={18} />
-      <Phong x={820} says={[{at: 12, out: 76, text: 'Cảm ơn Sola và Luna! Cả 4 vòm hang đá vôi đã có đèn tiêu dẫn đường và bản đồ âm học chi tiết!'}]} at={6} />
+      {PART.map((p, i) => (
+        <div key={p} style={{position: 'absolute', left: 80, right: 80, top: 830 + i * 105, opacity: ease(f, [10 + i * 10, 22 + i * 10], [0, 1]),
+          padding: '16px 26px', borderRadius: 22, background: 'rgba(15,23,42,0.85)', border: `4px solid ${C.yellow}`,
+          color: '#fff', fontFamily: FONT, fontWeight: 800, fontSize: 34, display: 'flex', gap: 16, alignItems: 'center'}}>
+          <Icon name="CircleCheck" size={40} color={C.yellow} />{p}
+        </div>
+      ))}
+      <Burst x={540} y={520} at={18} />
+      <Phong dang="phong-mung" x={820} says={[{at: 12, out: 76, text: 'Cảm ơn Sola và Luna! Cả 4 vòm hang đá vôi đã có đèn tiêu dẫn đường và bản đồ âm học chi tiết!'}]} at={6} />
       <Sola x={230} mat={[[0, 'happy']]} says={[{at: 82, out: 145, text: 'Xe thám hiểm R1 xin ở lại đồng hành cùng trạm cứu hộ hang động của chú Phong ạ!'}]} />
     </NenHienTruong>
   );
@@ -497,27 +505,49 @@ const XuatXuongM7: React.FC = () => {
 const NgoaiDoiM7: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const THE = [
-    {icon: 'Radar' as const, ten: 'Sonar Định Vị Tiếng Vang', mo: 'Robot thám hiểm lòng đất & tàu ngầm dùng sóng âm Sonar lập bản đồ trong không gian tối đặc.'},
-    {icon: 'Volume2' as const, ten: 'Cộng Hưởng Địa Chất & Đàn Đá', mo: 'Đo tần số ngân của đá vôi giúp phát hiện hốc rỗng ngầm và bảo tồn di sản đàn đá tự nhiên Việt Nam.'},
+    {icon: 'Radar' as const, ten: 'Sonar Định Vị Tiếng Vang Lòng Đất', mo: 'Robot thám hiểm hang sâu & tàu ngầm dùng sóng âm Sonar lập bản đồ trong không gian tối đặc.'},
+    {icon: 'Volume2' as const, ten: 'Cộng Hưởng Địa Chất & Đàn Đá Tự Nhiên', mo: 'Đo tần số ngân của đá vôi giúp phát hiện hốc rỗng ngầm và bảo tồn di sản đàn đá Việt Nam.'},
   ];
   return (
-    <NenHienTruong anh={NEN} mua="m7" luoi={false} toi={0.55}>
-      <div style={{position: 'absolute', left: 60, top: 160, right: 60, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 48, color: '#fff', textShadow: `0 6px 0 ${C.ink}`}}>
-        ROBOT THÁM HIỂM HANG ĐỘNG NGOÀI ĐỜI
+    <NenHienTruong anh={NEN} mua="m7" luoi={false} toi={0.58}>
+      <div style={{position: 'absolute', left: 40, top: 120, right: 40, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 48, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+        CÔNG NGHỆ NGOÀI ĐỜI THỰC · M7
       </div>
-      {THE.map((t, i) => (
-        <div key={t.ten} style={{position: 'absolute', left: 80, right: 80, top: 320 + i * 340, padding: '32px 36px', borderRadius: 28, background: '#fff',
-          border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, display: 'flex', gap: 28, alignItems: 'center', transform: `scale(${pop(f, 12 + i * 18, fps)})`}}>
-          <div style={{width: 120, height: 120, borderRadius: 24, background: '#0D9488', border: `4px solid ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
-            <Icon name={t.icon} size={68} color="#fff" />
+
+      {/* Hero Showcase: Robot R1 của mùa -> Công nghệ thực tế (top: 210 .. 490) */}
+      <div style={{position: 'absolute', left: 50, right: 50, top: 210, height: 275, borderRadius: 32,
+        background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', border: `6px solid ${C.ink}`,
+        boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px',
+        transform: `scale(${pop(f, 6, fps)})`, boxSizing: 'border-box'}}>
+        <div style={{width: 225, height: 225, borderRadius: 28, background: 'rgba(255,255,255,0.08)', border: `4px solid ${C.yellow}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+          <Img src={staticFile('robot/m7/gai-du-vui.png')} style={{width: 205, height: 205, objectFit: 'contain', transform: 'rotate(-90deg)'}} />
+        </div>
+        <div style={{flex: 1, marginLeft: 28, fontFamily: FONT, color: '#fff'}}>
+          <div style={{display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 99, background: '#0D9488',
+            border: '3px solid #fff', fontSize: 22, fontWeight: 900, marginBottom: 10}}>
+            TỪ SA BÀN CLB RA THỰC TẾ
           </div>
-          <div style={{fontFamily: FONT, color: C.ink}}>
-            <div style={{fontWeight: 900, fontSize: 38, marginBottom: 8}}>{t.ten}</div>
-            <div style={{fontWeight: 700, fontSize: 28, color: '#334155', lineHeight: 1.32}}>{t.mo}</div>
+          <div style={{fontSize: 38, fontWeight: 900, color: '#FDE047', marginBottom: 6}}>Xe Thám Hiểm Sóng Âm R1</div>
+          <div style={{fontSize: 26, fontWeight: 700, color: '#E2E8F0', lineHeight: 1.3}}>Định vị tiếng vang Sonar trong bóng tối và kích hoạt tần số cộng hưởng.</div>
+        </div>
+      </div>
+
+      {THE.map((t, i) => (
+        <div key={t.ten} style={{position: 'absolute', left: 50, right: 50, top: 515 + i * 325, height: 295, padding: '28px 34px', borderRadius: 30, background: '#fff',
+          border: `6px solid ${C.ink}`, boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', gap: 28, alignItems: 'center',
+          transform: `scale(${pop(f, 12 + i * 16, fps)})`, boxSizing: 'border-box'}}>
+          <div style={{width: 150, height: 150, borderRadius: 28, background: '#0D9488', border: `5px solid ${C.ink}`,
+            boxShadow: `0 8px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+            <Icon name={t.icon} size={84} color="#fff" />
+          </div>
+          <div style={{fontFamily: FONT, color: C.ink, flex: 1}}>
+            <div style={{fontWeight: 900, fontSize: 38, marginBottom: 10, lineHeight: 1.2}}>{t.ten}</div>
+            <div style={{fontWeight: 800, fontSize: 28, color: '#334155', lineHeight: 1.34}}>{t.mo}</div>
           </div>
         </div>
       ))}
-      <Luna mat={[[0, 'happy']]} says={[{at: 18, out: 140, text: 'Kiểu từ điển dict và tập hợp set giúp robot tra cứu tức thì hàng nghìn tín hiệu cảm biến ngoài đời!'}]} />
+      <Luna mat={[[0, 'happy']]} says={[{at: 14, out: 142, text: 'Kiểu từ điển dict và tập hợp set giúp robot tra cứu tức thì hàng nghìn tín hiệu cảm biến ngoài đời!'}]} />
     </NenHienTruong>
   );
 };
@@ -533,7 +563,7 @@ const NhaMua8: React.FC = () => {
         border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 44, color: '#fff'}}>
         MÙA 8 CUỐI CÙNG · VỀ CLB GIẢI CỨU THỊ TRẤN
       </div>
-      <Nguoi anh="thay-a" ten="THẦY HIỆU TRƯỞNG" mau="#2563EB" x={820} h={600} at={8} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="thay-hoang" ten="THẦY HIỆU TRƯỞNG" mau="#2563EB" x={820} h={600} at={8} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 12, out: 76, text: 'Sola, Luna ơi! Cơn bão lớn vừa quét qua làm kẹt cả 7 cửa ngõ thị trấn ngay trước giờ khai mạc Ngày hội Robot!'}]} />
       <Sola x={230} mat={[[0, 'surprised'], [78, 'proud']]} says={[{at: 82, out: 145, text: 'Về CLB thôi! Mùa 8 mình sẽ lắp ráp Robot Lai từ toàn bộ kho linh kiện 7 mùa để giải cứu thị trấn!'}]} />
     </AbsoluteFill>

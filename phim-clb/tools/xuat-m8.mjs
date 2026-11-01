@@ -1,13 +1,14 @@
 // Xuất hình các Robot Lai (kết hợp linh kiện 7 mùa), ô sân và vật mùa 8 (Về CLB · Giải cứu thị trấn) ra public/robot/m8/.
 // Chạy: node tools/xuat-m8.mjs
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const goc = dirname(fileURLToPath(import.meta.url));
-const repo = resolve(goc, '../..');
+const repo = existsSync(resolve(goc, '../../server.mjs')) ? resolve(goc, '../..') : 'd:/Users/tuanla2/game/doi-robot-chan-hung';
 const ra = resolve(goc, '../public/robot/m8');
 const PORT = 4218, CANH = 480, CANH_O = 320;
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -28,95 +29,52 @@ try {
     } else console.log('KHÔNG', duongDan);
   };
 
-  // Đăng ký các part mùa 4, 6, 7 để ghép Robot Lai tự do với part mùa 1, 2, 3, 5 có sẵn
+  // Các part xuong, day-keo, loa, radar đã nạp sẵn trong choi.html; chỉ đăng ký thêm banh-gai, am-thanh, và các ô/vật mùa 8.
   await trang.evaluate(() => {
     const V = window.VeVector, BM = window.BangMau;
 
-    // Thân xuồng mùa 4
-    V.dangKy({
-      loai: 'than', ma: 'xuong', ten: 'Thân xuồng',
-      oGan: { tay: { x: 50, y: 84 }, hongTrai: { x: 78, y: 50 }, hongPhai: { x: 22, y: 50 }, tren: { x: 72, y: 78 }, sau: { x: 50, y: 20 } },
-      oCam: { x: 50, y: 28 }, vo: { x: 20, y: 20, w: 60, h: 66 },
-      ve: function (g, s, M, H) {
-        for (const cx of [35, 65]) {
-          H.bo(g, cx - 5, 13, 10, 9, 3); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2);
-          H.elip(g, cx - 4, 12, 4.5, 2.2); H.to(g, '#38BDF8'); H.vien(g, BM.vecVien, 1.5);
-          H.elip(g, cx + 4, 12, 4.5, 2.2); H.to(g, '#38BDF8'); H.vien(g, BM.vecVien, 1.5);
-        }
-        g.beginPath();
-        g.moveTo(22, 26); g.lineTo(78, 26); g.quadraticCurveTo(84, 54, 74, 80);
-        g.quadraticCurveTo(50, 92, 26, 80); g.quadraticCurveTo(16, 54, 22, 26); g.closePath();
-        g.fillStyle = H.gradDoc(g, 0, 22, 0, 90, [[0, '#0284C7'], [1, '#0369A1']]); g.fill();
-        H.vien(g, BM.vecVien, 3.8);
-        H.bo(g, 18, 44, 6, 18, 3); H.to(g, '#F97316'); H.vien(g, BM.vecVien, 1.8);
-        H.bo(g, 76, 44, 6, 18, 3); H.to(g, '#F97316'); H.vien(g, BM.vecVien, 1.8);
-        H.bo(g, 26, 26, 48, 54, 16); g.fillStyle = H.gradVo(g, 26, 26, 48, 54); g.fill(); H.vien(g, BM.vecVien, 3.4);
-        H.kinh(g, M, 30, 56, 40, 15, s);
-        H.angTen(g, M, 50, 27, 12, 4.8);
-      }
-    });
-
-    // Thân bánh gai mùa 7
+    // Thân bánh gai mùa 7 (bản 3D đồng bộ)
     V.dangKy({
       loai: 'than', ma: 'banh-gai', ten: 'Thân bánh gai',
-      oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 74, y: 50 }, hongPhai: { x: 26, y: 50 }, tren: { x: 71, y: 78 }, sau: { x: 50, y: 24 } },
-      oCam: { x: 63, y: 29 }, vo: { x: 23, y: 24, w: 54, h: 59 },
+      oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 71, y: 47 }, hongPhai: { x: 29, y: 47 }, tren: { x: 71, y: 78 }, sau: { x: 37, y: 27 } },
+      oCam: { x: 63, y: 29 }, vo: { x: 23, y: 26, w: 54, h: 54 },
       ve: function (g, s, M, H) {
-        for (const [bx, by] of [[15, 36], [85, 36], [15, 72], [85, 72]]) {
+        for (const [bx, by] of [[14.5, 36.5], [85.5, 36.5], [14.5, 70.5], [85.5, 70.5]]) {
           const dir = bx < 50 ? -1 : 1;
-          for (const dy of [-9, 0, 9]) {
-            g.beginPath(); g.moveTo(bx + dir * 4, by + dy - 3.5); g.lineTo(bx + dir * 13, by + dy); g.lineTo(bx + dir * 4, by + dy + 3.5); g.closePath();
-            H.to(g, '#FACC15'); H.vien(g, BM.vecVien, 2);
+          const ax = dir < 0 ? bx + 3.0 : bx - 11.5, fx = dir < 0 ? bx + 4.8 : bx - 7.6;
+          H.bo(g, ax, by - 4.4, 8.5, 8.8, 1.8); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 2.2);
+          H.bo(g, fx, by - 6.0, 2.8, 12.0, 1.0); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 1.6);
+          for (const dy of [-8.5, 0, 8.5]) {
+            g.beginPath(); g.moveTo(bx + dir * 4.5, by + dy - 3.6); g.lineTo(bx + dir * 13.5, by + dy); g.lineTo(bx + dir * 4.5, by + dy + 3.6); g.closePath();
+            H.to(g, '#FACC15'); H.vien(g, BM.vecVien, 2.1);
           }
-          H.bo(g, bx - 7, by - 14, 14, 28, 5); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 3);
+          H.bo(g, bx - 6.6, by - 13.5, 13.2, 27, 4.8); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 2.8);
+          for (const dy of [-7.5, 0, 7.5]) {
+            H.bo(g, bx - 4.8, by + dy - 2, 9.6, 4, 1.4); H.to(g, BM.vecBanhGach); H.vien(g, BM.vecVien, 1.2);
+          }
         }
-        H.bo(g, 23, 24, 54, 59, 18); g.fillStyle = H.gradVo(g, 23, 24, 54, 59); g.fill(); H.vien(g, BM.vecVien, 3.5);
-        H.kinh(g, M, 29, 58, 42, 16, s);
-        H.angTen(g, M, 50, 25, 13, 5);
-      }
-    });
-
-    // Tay dây phao kéo mùa 4
-    V.dangKy({
-      loai: 'tay', ma: 'day-keo', ten: 'Dây phao kéo', gan: 'tay', diemNeo: { x: 50, y: 82 },
-      ve: function (g, s, M, H) {
-        H.bo(g, 38, 77, 24, 11, 4); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.5);
-        H.duong(g, 'M50 86 V96'); H.vien(g, BM.vecVien, 5.5); H.duong(g, 'M50 86 V96'); H.vien(g, '#F97316', 3);
-        H.tron(g, 50, 96, 7.5); H.to(g, '#F97316'); H.vien(g, BM.vecVien, 2.4);
-        H.tron(g, 50, 96, 3.2); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 1.5);
-      }
-    });
-
-    // Tay loa cộng hưởng mùa 7
-    V.dangKy({
-      loai: 'tay', ma: 'loa', ten: 'Loa cộng hưởng', gan: 'tay', diemNeo: { x: 50, y: 80 },
-      ve: function (g, s, M, H) {
-        H.bo(g, 38, 76, 24, 9, 4); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.4);
-        g.beginPath(); g.moveTo(41, 83); g.lineTo(59, 83); g.lineTo(66, 96); g.lineTo(34, 96); g.closePath();
-        g.fillStyle = H.gradDoc(g, 0, 83, 0, 96, [[0, '#F59E0B'], [1, '#D97706']]); g.fill(); H.vien(g, BM.vecVien, 2.8);
-        H.elip(g, 50, 96, 15, 4.5); H.to(g, '#1E293B'); H.vien(g, BM.vecVien, 2.2);
-        H.tron(g, 50, 95, 4); H.to(g, '#38BDF8');
-      }
-    });
-
-    // Radar mùa 6 & Sonar mùa 7
-    V.dangKy({
-      loai: 'cam-bien', ma: 'radar', ten: 'Radar', gan: 'tren', diemNeo: { x: 50, y: 50 },
-      ve: function (g, s, M, H) {
-        H.tron(g, 50, 50, 9.5); g.fillStyle = H.gradVo(g, 40.5, 40.5, 19, 19); g.fill(); H.vien(g, BM.vecVien, 2.3);
-        H.tron(g, 50, 50, 6.8); H.to(g, '#064E3B'); H.vien(g, BM.vecVien, 1.4);
-        H.duong(g, 'M50 50 L55 45'); H.vien(g, '#4ADE80', 2.2);
+        H.bo(g, 23, 26, 54, 54, 18); g.fillStyle = H.gradVo(g, 23, 26, 54, 54); g.fill(); H.vien(g, BM.vecVien, 3.5);
+        H.duong(g, 'M35 34 C33 44 33 53 35 62 M65 34 C67 44 67 53 65 62 M50 26 v11'); H.vien(g, BM.vecVoGhep, 2.5);
+        H.duong(g, 'M31 36 C34 31 39 30 45 30'); H.vien(g, BM.vecVo, 4);
+        H.kinh(g, M, 29, 57, 42, 15.5, s);
+        H.angTen(g, M, 50, 27, 13, 5);
       }
     });
 
     V.dangKy({
       loai: 'cam-bien', ma: 'am-thanh', ten: 'Sonar', gan: 'tren', diemNeo: { x: 50, y: 50 },
       ve: function (g, s, M, H) {
-        H.tron(g, 50, 50, 9); g.fillStyle = H.gradVo(g, 41, 41, 18, 18); g.fill(); H.vien(g, BM.vecVien, 2.2);
-        for (const dx of [-5, 5]) {
-          H.elip(g, 50 + dx, 53, 3.8, 5.5); H.to(g, '#0D9488'); H.vien(g, BM.vecVien, 1.5);
-          H.tron(g, 50 + dx, 54, 1.8); H.to(g, '#5EEAD4');
+        s = s || {};
+        if (s.bat) {
+          H.tron(g, 50, 50, 12.5); H.to(g, 'rgba(45, 212, 191, 0.35)');
+          g.beginPath(); g.arc(50, 54, 10.5, 0.16 * Math.PI, 0.84 * Math.PI); H.vien(g, '#2DD4BF', 2.0);
         }
+        H.tron(g, 50, 50, 8.2); g.fillStyle = H.gradVo(g, 41.8, 41.8, 16.4, 16.4); g.fill(); H.vien(g, BM.vecVien, 2.2);
+        for (const dx of [-4.4, 4.4]) {
+          H.elip(g, 50 + dx, 52.5, 3.6, 5.2); H.to(g, '#0D9488'); H.vien(g, BM.vecVien, 1.5);
+          H.tron(g, 50 + dx, 53.5, 1.8); H.to(g, '#5EEAD4');
+        }
+        H.tron(g, 50, 46.5, 1.8); H.to(g, '#FACC15'); H.vien(g, BM.vecVien, 1);
       }
     });
 
@@ -176,10 +134,10 @@ try {
     // G6: Drone + Nam châm + Camera bụng
     'lai-drone-tu': [{ than: 'drone', tay: 'nam-cham', camBien: [{ ma: 'camera-bay', o: 'bung' }] }, { mat: 'vui', tay: { bat: true, cuc: 'N' } }],
     // G7: Omni + Loa cộng hưởng + Tai Sonar
-    'lai-omni-loa': [{ than: 'omni', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] }, { mat: 'vui' }],
+    'lai-omni-loa': [{ than: 'omni', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] }, { mat: 'vui', tay: { bat: true, notLoa: 5, pha: 0.35 }, camBien: { bat: true } }],
     // G8–G10: Cặp Robot Lai tối thượng của Sola (Bánh gai + Loa + Radar) & Luna (Drone + Máy sơn + Camera 4 hướng, sơn lam)
-    'sola-bot': [{ than: 'banh-gai', tay: 'loa', camBien: [{ ma: 'radar', o: 'tren' }, { ma: 'tu', o: 'hongTrai' }] }, { mat: 'vui' }],
-    'luna-bot': [{ than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren' }, { ma: 'camera-bay', o: 'bung' }], son: 'lam' }, { mat: 'vui', camBien: { mat: true } }],
+    'sola-bot': [{ than: 'banh-gai', tay: 'loa', camBien: [{ ma: 'radar', o: 'tren' }, { ma: 'tu', o: 'hongTrai' }] }, { mat: 'vui', tay: { bat: true, notLoa: 5, pha: 0.35 }, camBien: { bat: true, mat: true } }],
+    'luna-bot': [{ than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren' }, { ma: 'camera-bay', o: 'bung' }], son: 'lam' }, { wl: 1, mat: 'vui', tay: { tuThe: 'duoi', mauSon: 'yellow', pha: 0.25 }, camBien: { bat: true, mat: true } }],
   };
 
   const O_SAN = {

@@ -80,12 +80,15 @@ export const Robot: React.FC<{t: TuThe; S: number; anh?: string; chay?: BanhSang
           </>
         ) : null}
         {(nhan > 0 || dung) ? (() => {
-          const ra = tamBanh(banh, S), xa = {x: ra.x, y: ra.y * 1.62};
-          const g = xoayVec(xa, 0);
+          const ra = tamBanh(banh, S);
+          const lech = xoayVec({x: 0, y: (banh === 'phai' ? -1 : 1) * S * 0.56}, -t.goc);
           return (
-            <div style={{position: 'absolute', left: S / 2 + g.x, top: S / 2 + g.y, transform: `translate(-50%, -50%) rotate(${-t.goc}deg)`,
-              opacity: dung && !nhan ? 1 : nhan, whiteSpace: 'nowrap', fontFamily: FONT, fontWeight: 800, fontSize: Math.max(18, S * 0.07),
-              color: sang ? M.muc : M.mucNhat, background: sang ? M.sang : '#fff', border: `3px solid ${M.muc}`, borderRadius: 12, padding: '4px 12px'}}>
+            <div style={{position: 'absolute', left: S / 2 + ra.x + lech.x, top: S / 2 + ra.y + lech.y,
+              transform: `translate(-50%, -50%) rotate(${-t.goc}deg)`,
+              opacity: dung && !nhan ? 1 : nhan, whiteSpace: 'nowrap', fontFamily: FONT, fontWeight: 800,
+              fontSize: Math.max(28, Math.round(S * 0.115)),
+              color: M.muc, background: sang ? M.sang : '#FFFFFF', border: `3.5px solid ${M.muc}`,
+              boxShadow: '0 8px 20px rgba(30,27,75,.22)', borderRadius: 16, padding: '8px 18px', zIndex: 25}}>
               {chu}{dung ? ' · đứng yên' : sang ? ' · lăn' : ''}
             </div>
           );

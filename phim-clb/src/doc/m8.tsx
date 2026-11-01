@@ -4,7 +4,7 @@ import React from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Burst, C, CodeBox, FONT, Icon, Mascot, MONO, Say, Shake, pop} from '../d10';
 import {Phim, W_IN} from '../may-phim';
-import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, tamO} from './kit-doc';
+import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, chonDangNguoi, tamO} from './kit-doc';
 
 const NEN = 'nen-doc/mua-7.png';
 const DON = [
@@ -13,8 +13,8 @@ const DON = [
 ];
 
 /** Thầy hiệu trưởng chủ nhiệm CLB Robot (ảnh TopView tách nền). */
-const Thay: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'}> = ({says, at = 0, x = 820, side = 'left'}) => (
-  <Nguoi anh="thay-a" ten="THẦY HIỆU TRƯỞNG" mau="#2563EB" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
+const Thay: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'; dang?: string}> = ({says, at = 0, x = 820, side = 'left', dang = 'thay-tu-hao'}) => (
+  <Nguoi anh={dang} ten="THẦY HIỆU TRƯỞNG" mau="#2563EB" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
 );
 const Sola: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: number}> = ({says, mat, at = 0, x = 240}) => (
   <Mascot who="sola" x={x} h={540} at={at} faces={mat} says={says} bubbleW={520} bubbleTop={1240} />
@@ -69,7 +69,7 @@ const ThanhTuu: React.FC<{moi: number; loi: string; con: string; so: number; ten
       <BangViec tieuDe="Bản đồ giải cứu 7 cửa ngõ & Ngày hội Robot CLB" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
       <GioKhaiMacBar con={con} gap={xoa !== undefined} />
       <NhanGoi so={so} ten={ten} />
-      <Thay says={[{at: 48, out: 200, text: loi}]} at={28} />
+      <Thay dang={chonDangNguoi('thay', so, xoa)} says={[{at: 48, out: 200, text: loi}]} at={28} />
     </NenHienTruong>
   );
 
@@ -99,7 +99,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="CẦU GÃY HỐ SÂU!" at={58} den={140} x={tamO(2, 3).x + 80} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 10 giờ" />
       <NhanGoi so={1} ten="Thân lai: Nhện + Tay gắp" />
-      <Nguoi anh="tu-a" ten="CHÚ TƯ" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="tu-hoang" ten="CHÚ TƯ" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 58, out: 175, text: 'Cầu gỗ ở cửa ngõ Kho hàng gãy thành hố sâu rồi, xe hai bánh không qua lấy kiện hàng dự hội được!'}]} />
     </NenHienTruong>
   </Shake>
@@ -134,7 +134,7 @@ const G2Mo: React.FC = () => (
       <ChuNay chu="ĐÁ CHẮN TRƯỚC RÀO!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 9 giờ" />
       <NhanGoi so={2} ten="Tay lai: Xích + Máy ném" />
-      <Nguoi anh="hanh-a" ten="CÔ HẠNH" mau="#DC2626" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="hanh-hoang" ten="CÔ HẠNH" mau="#DC2626" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 58, out: 175, text: 'Bão làm đá lăn chắn trước hàng rào cổng Nhà máy, phải dùng bánh xích và tay máy ném mới hất qua rào được!'}]} />
     </NenHienTruong>
   </Shake>
@@ -168,7 +168,7 @@ const G3Mo: React.FC = () => (
       <ChuNay chu="ĐƯỜNG TRƠN & LẠC MÀU!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 8 giờ" />
       <NhanGoi so={3} ten="Cảm biến lai: Gai + Camera" />
-      <Nguoi anh="lan-a" ten="CHỊ LAN" mau="#EC4899" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="lan-sot-ruot" ten="CHỊ LAN" mau="#EC4899" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 58, out: 175, text: 'Mưa bão làm hầm chui vừa trơn trượt vừa ngập bùn che vạch màu, xe chở hoa Tết của chị chưa dám qua!'}]} />
     </NenHienTruong>
   </Shake>
@@ -201,7 +201,7 @@ const G4Mo: React.FC = () => (
       <ChuNay chu="NƯỚC TRÀN & KẸT SẮT!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 7 giờ" />
       <NhanGoi so={4} ten="Xuồng + Nam châm điện" />
-      <Nguoi anh="ba-a" ten="BÁC BA" mau="#0284C7" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="ba-hoang" ten="BÁC BA" mau="#0284C7" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 58, out: 175, text: 'Nước lũ tràn qua phố cuốn khối sắt của bác Sáu chắn miệng cống thoát nước rồi, cần xuồng có nam châm hút ngay!'}]} />
     </NenHienTruong>
   </Shake>
@@ -235,7 +235,7 @@ const G5Mo: React.FC = () => (
       <ChuNay chu="MƯA LỚN ĐÁ LĂN!" at={60} den={140} x={tamO(2, 3).x + 80} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 6 giờ" />
       <NhanGoi so={5} ten="Omni + Dây kéo vượt mưa" />
-      <Nguoi anh="dung-a" ten="ANH DŨNG" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="dung-sot-ruot" ten="ANH DŨNG" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 58, out: 175, text: 'Mưa lớn làm đá tròn lăn chắn dốc, cần bánh Omni đi chéo né đá kết hợp dây phao kéo kiện đá mẫu về!'}]} />
     </NenHienTruong>
   </Shake>
@@ -270,7 +270,7 @@ const G6Mo: React.FC = () => (
       <ChuNay chu="RÀO ĐỔ CHẮN LỐI!" at={60} den={145} x={tamO(2, 3).x + 60} y={tamO(2, 3).y - 45} />
       <GioKhaiMacBar con="GIÓ GIẬT SÂN TRƯỜNG!" gap />
       <NhanGoi so={6} ten="Drone + Nam châm dựng cổng" />
-      <Thay says={[{at: 52, out: 175, text: 'Gió giật làm nghiêng cổng chào lễ hội và đổ rào chắn lối rồi! Phải bay qua rào hút thanh dầm sắt gia cố lại ngay!'}]} at={40} />
+      <Thay dang="thay-hoang" says={[{at: 52, out: 175, text: 'Gió giật làm nghiêng cổng chào lễ hội và đổ rào chắn lối rồi! Phải bay qua rào hút thanh dầm sắt gia cố lại ngay!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -301,7 +301,7 @@ const G7Mo: React.FC = () => (
       <ChuNay chu="MẤT ĐIỆN & ĐÁ CHẮN!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 4 giờ" />
       <NhanGoi so={7} ten="Omni + Loa Sonar phá đá" />
-      <Nguoi anh="phong-a" ten="CHÚ PHONG" mau="#0D9488" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="phong-sot-ruot" ten="CHÚ PHONG" mau="#0D9488" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 58, out: 175, text: 'Cửa hầm dẫn về thị trấn bị mất điện tối đen lại vướng khối đá chuông, phải dùng tai Sonar và loa cộng hưởng!'}]} />
     </NenHienTruong>
   </Shake>
@@ -336,7 +336,7 @@ const G8Mo: React.FC = () => (
       <ChuNay chu="TỔ HỢP 7 MÙA!" at={58} den={140} x={tamO(2, 3).x + 80} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 3 giờ" />
       <NhanGoi so={8} ten="Sa bàn liên hoàn 7 mùa" />
-      <Thay says={[{at: 60, out: 175, text: 'Sa bàn thi đấu giữa sân trường hội tụ đủ băng chuyền, bàn xoay, đường ngầm và vạch màu của cả 7 mùa đấy!'}]} at={48} />
+      <Thay dang="thay-dong-vien" says={[{at: 60, out: 175, text: 'Sa bàn thi đấu giữa sân trường hội tụ đủ băng chuyền, bàn xoay, đường ngầm và vạch màu của cả 7 mùa đấy!'}]} at={48} />
     </NenHienTruong>
   </Shake>
 );
@@ -393,16 +393,41 @@ const G9Lam: React.FC = () => (
 /* ================================================================== GÓI 10 · Giải cứu thị trấn & Đại lễ hội CLB 8 Mùa */
 const ThaTayM8: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
+  const STATS = [
+    {nhan: 'Kho Linh Kiện 7 Mùa', kq: 'MỞ KHÓA 100%', mau: '#2563EB'},
+    {nhan: 'Đội Hình Tác Chiến', kq: 'SOLA-BOT & LUNA-BOT', mau: '#EC4899'},
+    {nhan: 'Thuật Toán Python', kq: 'TUPLE · LIST · DICT · SET', mau: '#16A34A'},
+    {nhan: 'Mục Tiêu Chiến Dịch', kq: 'KHƠI THÔNG 7 CỬA NGÕ', mau: '#D97706'},
+  ];
   return (
-    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.45}>
-      <div style={{position: 'absolute', left: 50, top: 190, right: 50, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 50, color: '#fff', textShadow: `0 6px 0 ${C.ink}`}}>
+    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.52}>
+      <div style={{position: 'absolute', left: 40, top: 125, right: 40, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 50, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
         BỘ ĐÔI ROBOT LAI TỐI THƯỢNG · SOLA & LUNA
       </div>
-      <div style={{position: 'absolute', left: 110, top: 430, width: 400, height: 400, transform: `scale(${pop(f, 6, fps)})`}}>
-        <Img src={staticFile('robot/m8/sola-bot.png')} style={{width: '100%', height: '100%', transform: 'rotate(-90deg)'}} />
+      <div style={{position: 'absolute', left: 60, top: 240, width: 450, height: 450, borderRadius: 36, background: 'rgba(15,23,42,0.8)',
+        border: `6px solid #38BDF8`, boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        transform: `scale(${pop(f, 6, fps)})`}}>
+        <Img src={staticFile('robot/m8/sola-bot.png')} style={{width: 360, height: 360, transform: 'rotate(-90deg)'}} />
+        <span style={{padding: '6px 22px', borderRadius: 14, background: '#38BDF8', color: C.ink, fontWeight: 900, fontSize: 26, border: `3px solid ${C.ink}`}}>
+          SOLA-BOT · ĐỊA HÌNH
+        </span>
       </div>
-      <div style={{position: 'absolute', left: 570, top: 430, width: 400, height: 400, transform: `scale(${pop(f, 14, fps)})`}}>
-        <Img src={staticFile('robot/m8/luna-bot.png')} style={{width: '100%', height: '100%'}} />
+      <div style={{position: 'absolute', right: 60, top: 240, width: 450, height: 450, borderRadius: 36, background: 'rgba(15,23,42,0.8)',
+        border: `6px solid #F472B6`, boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        transform: `scale(${pop(f, 12, fps)})`}}>
+        <Img src={staticFile('robot/m8/luna-bot.png')} style={{width: 360, height: 360}} />
+        <span style={{padding: '6px 22px', borderRadius: 14, background: '#F472B6', color: C.ink, fontWeight: 900, fontSize: 26, border: `3px solid ${C.ink}`}}>
+          LUNA-BOT · KHÔNG GIAN
+        </span>
+      </div>
+      <div style={{position: 'absolute', left: 60, right: 60, top: 730, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18}}>
+        {STATS.map((s, i) => (
+          <div key={s.nhan} style={{padding: '22px 24px', borderRadius: 24, background: '#FFFFFF', border: `5px solid ${C.ink}`,
+            boxShadow: `0 10px 0 ${C.ink}`, transform: `scale(${pop(f, 18 + i * 6, fps)})`}}>
+            <div style={{fontSize: 22, fontWeight: 800, color: '#64748B', marginBottom: 6}}>{s.nhan}</div>
+            <div style={{fontSize: 28, fontWeight: 900, color: s.mau}}>{s.kq}</div>
+          </div>
+        ))}
       </div>
       <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 110, text: 'Toàn bộ linh kiện và kiến thức Python của 8 mùa đã hội tụ, thả tay chạy màn trình diễn lớn nhất nào!'}]} />
     </NenHienTruong>
@@ -427,18 +452,19 @@ const Canh1: React.FC = () => (
 const Canh2: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const KHACH = [
-    {anh: 'tu-a', ten: 'Chú Tư', mau: '#D97706', x: 160, y: 420},
-    {anh: 'hanh-a', ten: 'Cô Hạnh', mau: '#DC2626', x: 420, y: 420},
-    {anh: 'sau-a', ten: 'Bác Sáu', mau: '#0D9488', x: 680, y: 420},
-    {anh: 'ba-a', ten: 'Bác Ba', mau: '#0284C7', x: 920, y: 420},
-    {anh: 'lan-a', ten: 'Chị Lan', mau: '#EC4899', x: 260, y: 780},
-    {anh: 'dung-a', ten: 'Anh Dũng', mau: '#EA580C', x: 540, y: 780},
-    {anh: 'phong-a', ten: 'Chú Phong', mau: '#0F766E', x: 820, y: 780},
+    {anh: 'tu-mung', ten: 'Chú Tư', mau: '#D97706', x: 160, y: 420},
+    {anh: 'hanh-mung', ten: 'Cô Hạnh', mau: '#DC2626', x: 413, y: 420},
+    {anh: 'sau-mung', ten: 'Bác Sáu', mau: '#16A34A', x: 667, y: 420},
+    {anh: 'mai-mung', ten: 'Cô Mai', mau: '#0891B2', x: 920, y: 420},
+    {anh: 'ba-mung', ten: 'Bác Ba', mau: '#0284C7', x: 160, y: 780},
+    {anh: 'lan-mung', ten: 'Chị Lan', mau: '#EC4899', x: 413, y: 780},
+    {anh: 'dung-mung', ten: 'Anh Dũng', mau: '#EA580C', x: 667, y: 780},
+    {anh: 'phong-mung', ten: 'Chú Phong', mau: '#0F766E', x: 920, y: 780},
   ];
   return (
     <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.35}>
-      <div style={{position: 'absolute', left: 50, top: 150, right: 50, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 48, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
-        7 NGƯỜI BẠN LỚN HỘI TỤ VỀ NGÀY HỘI ROBOT!
+      <div style={{position: 'absolute', left: 40, top: 150, right: 40, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 46, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+        8 NGƯỜI BẠN LỚN HỘI TỤ VỀ NGÀY HỘI ROBOT!
       </div>
       {KHACH.map((k, i) => (
         <div key={k.ten} style={{position: 'absolute', left: k.x - 110, top: k.y - 160, width: 220, textAlign: 'center', transform: `scale(${pop(f, 6 + i * 6, fps)})`}}>
@@ -457,17 +483,51 @@ const Canh2: React.FC = () => {
 const TraoHuyHieuCLB: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   return (
-    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.38}>
-      <div style={{position: 'absolute', left: 50, top: 150, right: 50, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 52, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.48}>
+      <div style={{position: 'absolute', left: 30, top: 92, right: 30, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 47, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`, whiteSpace: 'nowrap'}}>
         HUY HIỆU KỸ SƯ TRƯỞNG CLB ROBOT
       </div>
-      <div style={{position: 'absolute', left: 540 - 190, top: 380, width: 380, height: 380, borderRadius: '50%', background: 'linear-gradient(135deg, #FACC15, #EA580C)',
-        border: `8px solid ${C.ink}`, boxShadow: `0 16px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${pop(f, 10, fps)})`}}>
-        <Icon name="Award" size={210} color="#fff" stroke={2.4} />
+
+      {/* Sân khấu Huy Hiệu cỡ lớn + Bộ đôi Robot Lai hộ tống hai bên (top: 220 .. 680) */}
+      <div style={{position: 'absolute', left: 45, top: 300, width: 260, height: 260, borderRadius: 32, background: 'rgba(15,23,42,0.82)',
+        border: `5px solid #38BDF8`, boxShadow: `0 10px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transform: `scale(${pop(f, 14, fps)})`}}>
+        <Img src={staticFile('robot/m8/sola-bot.png')} style={{width: 225, height: 225, transform: 'rotate(-90deg)'}} />
       </div>
-      <Burst x={540} y={570} at={18} />
-      <Thay x={820} says={[{at: 12, out: 76, text: 'Thầy trao tặng Sola, Luna và em Huy hiệu Kỹ sư Trưởng CLB vì đã dùng công nghệ giúp đỡ khắp thị trấn!'}]} at={6} />
-      <Sola x={230} mat={[[0, 'happy']]} says={[{at: 82, out: 145, text: 'Tụi con cảm ơn Thầy và cảm ơn bạn nhỏ đã viết từng dòng code suốt 8 mùa qua!'}]} />
+
+      <div style={{position: 'absolute', right: 45, top: 300, width: 260, height: 260, borderRadius: 32, background: 'rgba(15,23,42,0.82)',
+        border: `5px solid #F472B6`, boxShadow: `0 10px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transform: `scale(${pop(f, 18, fps)})`}}>
+        <Img src={staticFile('robot/m8/luna-bot.png')} style={{width: 225, height: 225}} />
+      </div>
+
+      <div style={{position: 'absolute', left: 540 - 200, top: 230, width: 400, height: 400, borderRadius: '50%',
+        background: 'linear-gradient(135deg, #FACC15, #EA580C)',
+        border: `9px solid ${C.ink}`, boxShadow: `0 18px 0 ${C.ink}, 0 0 60px rgba(250,204,21,0.6)`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${pop(f, 8, fps)})`, zIndex: 5}}>
+        <Icon name="Award" size={240} color="#fff" stroke={2.4} />
+      </div>
+
+      {/* Bảng Chứng Nhận Kỹ Sư Trưởng cỡ lớn lấp đầy vùng y = 690 .. 1150 */}
+      <div style={{position: 'absolute', left: 55, right: 55, top: 690, padding: '30px 36px', borderRadius: 34,
+        background: 'linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 100%)', border: `6px solid ${C.ink}`,
+        boxShadow: `0 16px 0 ${C.ink}`, textAlign: 'center', transform: `scale(${pop(f, 22, fps)})`}}>
+        <div style={{display: 'inline-flex', alignItems: 'center', gap: 12, padding: '8px 26px', borderRadius: 99,
+          background: '#1E1B4B', color: '#FDE047', fontWeight: 900, fontSize: 25, marginBottom: 14, border: `3px solid ${C.ink}`}}>
+          <Icon name="Trophy" size={28} color="#FDE047" />
+          <span>DANH HIỆU TỐI THƯỢNG · 8/8 MÙA CHIẾN DỊCH</span>
+        </div>
+        <div style={{fontSize: 40, fontWeight: 900, color: C.ink, marginBottom: 10}}>
+          ĐỘI TRƯỞNG KỸ THUẬT CLB ROBOT CHẤN HƯNG
+        </div>
+        <div style={{fontSize: 27, fontWeight: 800, color: '#334155', lineHeight: 1.35}}>
+          Đã chế tạo thành công 8 thế hệ Robot R1 &amp; R2, ứng dụng Python giải cứu trọn vẹn 8 điểm nóng toàn thị trấn!
+        </div>
+      </div>
+
+      <Burst x={540} y={430} at={18} />
+      <Thay dang="thay-mung" x={820} says={[{at: 12, out: 76, text: 'Thầy trao tặng Sola, Luna và em Huy hiệu Kỹ sư Trưởng CLB vì đã dùng công nghệ giúp đỡ khắp thị trấn!'}]} at={6} />
+      <Sola x={230} mat={[[0, 'happy']]} says={[{at: 82, out: 145, text: 'Tụi em cảm ơn Thầy và cảm ơn cậu — chiến thần code đã đồng hành cùng CLB suốt 8 mùa qua!'}]} />
     </NenHienTruong>
   );
 };
@@ -475,27 +535,49 @@ const TraoHuyHieuCLB: React.FC = () => {
 const NgoaiDoiM8: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const THE = [
-    {icon: 'Bot' as const, ten: 'Đội Robot Cứu Hộ Đa Địa Hình', mo: 'Kết hợp Drone bay, tàu mặt nước USV và robot bánh xích/chân nhện ứng cứu sau bão lũ ngoài đời.'},
-    {icon: 'Sparkles' as const, ten: 'Từ CLB Trường Tới Kỹ Sư Tương Lai', mo: 'Nền tảng Python (hàm, biến, tuple, list, lưới 2D, dict, set) là chìa khóa mở cánh cửa AI & Robotics.'},
+    {icon: 'Bot' as const, ten: 'Đội Robot Cứu Hộ Đa Địa Hình Thực Chiến', mo: 'Kết hợp Drone bay, tàu mặt nước USV và robot bánh xích/chân nhện ứng cứu sau bão lũ ngoài đời.'},
+    {icon: 'Sparkles' as const, ten: 'Từ CLB Trường Cấp 3 Tới Kỹ Sư AI & Robotics', mo: 'Nền tảng Python (hàm, biến, tuple, list, lưới 2D, dict, set) là chìa khóa mở cánh cửa công nghệ tương lai.'},
   ];
   return (
-    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.55}>
-      <div style={{position: 'absolute', left: 60, top: 160, right: 60, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 48, color: '#fff', textShadow: `0 6px 0 ${C.ink}`}}>
-        HÀNH TRÌNH KỸ SƯ ROBOT NGOÀI ĐỜI THỰC
+    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.58}>
+      <div style={{position: 'absolute', left: 40, top: 120, right: 40, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 48, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+        CÔNG NGHỆ NGOÀI ĐỜI THỰC · M8
       </div>
-      {THE.map((t, i) => (
-        <div key={t.ten} style={{position: 'absolute', left: 80, right: 80, top: 320 + i * 340, padding: '32px 36px', borderRadius: 28, background: '#fff',
-          border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, display: 'flex', gap: 28, alignItems: 'center', transform: `scale(${pop(f, 12 + i * 18, fps)})`}}>
-          <div style={{width: 120, height: 120, borderRadius: 24, background: '#2563EB', border: `4px solid ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
-            <Icon name={t.icon} size={68} color="#fff" />
+
+      {/* Hero Showcase: Robot R1 của mùa -> Công nghệ thực tế (top: 210 .. 490) */}
+      <div style={{position: 'absolute', left: 50, right: 50, top: 210, height: 275, borderRadius: 32,
+        background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', border: `6px solid ${C.ink}`,
+        boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px',
+        transform: `scale(${pop(f, 6, fps)})`, boxSizing: 'border-box'}}>
+        <div style={{width: 225, height: 225, borderRadius: 28, background: 'rgba(255,255,255,0.08)', border: `4px solid ${C.yellow}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+          <Img src={staticFile('robot/m8/sola-bot.png')} style={{width: 205, height: 205, objectFit: 'contain', transform: 'rotate(-90deg)'}} />
+        </div>
+        <div style={{flex: 1, marginLeft: 28, fontFamily: FONT, color: '#fff'}}>
+          <div style={{display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 99, background: '#2563EB',
+            border: '3px solid #fff', fontSize: 22, fontWeight: 900, marginBottom: 10}}>
+            TỪ SA BÀN CLB RA THỰC TẾ
           </div>
-          <div style={{fontFamily: FONT, color: C.ink}}>
-            <div style={{fontWeight: 900, fontSize: 38, marginBottom: 8}}>{t.ten}</div>
-            <div style={{fontWeight: 700, fontSize: 28, color: '#334155', lineHeight: 1.32}}>{t.mo}</div>
+          <div style={{fontSize: 38, fontWeight: 900, color: '#FDE047', marginBottom: 6}}>Đội Hình Robot Lai Đa Địa Hình</div>
+          <div style={{fontSize: 26, fontWeight: 700, color: '#E2E8F0', lineHeight: 1.3}}>Kết hợp linh hoạt mô-đun cơ khí và cấu trúc dữ liệu Python cho mọi nhiệm vụ.</div>
+        </div>
+      </div>
+
+      {THE.map((t, i) => (
+        <div key={t.ten} style={{position: 'absolute', left: 50, right: 50, top: 515 + i * 325, height: 295, padding: '28px 34px', borderRadius: 30, background: '#fff',
+          border: `6px solid ${C.ink}`, boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', gap: 28, alignItems: 'center',
+          transform: `scale(${pop(f, 12 + i * 16, fps)})`, boxSizing: 'border-box'}}>
+          <div style={{width: 150, height: 150, borderRadius: 28, background: '#2563EB', border: `5px solid ${C.ink}`,
+            boxShadow: `0 8px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+            <Icon name={t.icon} size={84} color="#fff" />
+          </div>
+          <div style={{fontFamily: FONT, color: C.ink, flex: 1}}>
+            <div style={{fontWeight: 900, fontSize: 38, marginBottom: 10, lineHeight: 1.2}}>{t.ten}</div>
+            <div style={{fontWeight: 800, fontSize: 28, color: '#334155', lineHeight: 1.34}}>{t.mo}</div>
           </div>
         </div>
       ))}
-      <Luna mat={[[0, 'happy']]} says={[{at: 18, out: 140, text: 'Từ 1 chiếc xe hai bánh nhỏ ở Kho hàng, bạn đã làm chủ cả một hạm đội robot thông minh!'}]} />
+      <Luna mat={[[0, 'happy']]} says={[{at: 14, out: 142, text: 'Từ chiếc xe 2 bánh đầu tiên ở Kho chú Tư, giờ cậu đã làm chủ cả một hạm đội Robot Lai siêu đỉnh!'}]} />
     </NenHienTruong>
   );
 };
@@ -503,33 +585,44 @@ const NgoaiDoiM8: React.FC = () => {
 const DaiKetCuc8Mua: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const BOT = [
-    {ten: 'M1 · Xe Kho Hàng', anh: 'robot/m1/du-vui.png'},
-    {ten: 'M2 · Xe Cứu Hỏa', anh: 'robot/m2/du-vui.png'},
-    {ten: 'M3 · Nhện Phân Loại', anh: 'robot/m3/nhen-tu-vui.png'},
-    {ten: 'M4 · Tàu Thủy Lợi', anh: 'robot/m4/xuong-du-vui.png'},
-    {ten: 'M5 · Drone Gieo Hoa', anh: 'robot/m5/drone-cam-vui.png'},
-    {ten: 'M6 · Máy Khai Thác Đá', anh: 'robot/m6/omni-du-vui.png'},
-    {ten: 'M7 · Xe Hang Động', anh: 'robot/m7/gai-du-vui.png'},
-    {ten: 'M8 · Robot Lai CLB', anh: 'robot/m8/sola-bot.png'},
+    {ten: 'M1 · Xe Kho Hàng', anh: 'robot/m1/du-vui.png', mau: '#D97706', xoay: -90, zoom: 1.48},
+    {ten: 'M2 · Xe Cứu Hỏa', anh: 'robot/m2/du-vui.png', mau: '#EA580C', xoay: -90, zoom: 1.08},
+    {ten: 'M3 · Nhện Phân Loại', anh: 'robot/m3/nhen-tu-vui.png', mau: '#16A34A', xoay: 0, zoom: 1.08},
+    {ten: 'M4 · Cần Cẩu Cảng', anh: 'robot/m4/cau-du-vui.png', mau: '#CA8A04', xoay: -90, zoom: 1.08},
+    {ten: 'M5 · Tàu Thủy Lợi', anh: 'robot/m4/xuong-du-vui.png', mau: '#0284C7', xoay: -90, zoom: 1.08},
+    {ten: 'M6 · Drone Gieo Hoa', anh: 'robot/m5/drone-cam-vui.png', mau: '#EC4899', xoay: 0, zoom: 1.08},
+    {ten: 'M7 · Máy Khai Thác Đá', anh: 'robot/m6/omni-du-vui.png', mau: '#D97706', xoay: -90, zoom: 1.08},
+    {ten: 'M8 · Xe Hang Động', anh: 'robot/m7/gai-du-vui.png', mau: '#0D9488', xoay: -90, zoom: 1.08},
   ];
   return (
-    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.48}>
-      <div style={{position: 'absolute', left: 50, right: 50, top: 120, padding: '22px 32px', borderRadius: 28, background: '#2563EB',
-        border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 44, color: '#fff'}}>
-        CHÚC MỪNG HOÀN THÀNH TRỌN VẸN 8 MÙA!
+    <NenHienTruong anh={NEN} mua="m8" luoi={false} toi={0.52}>
+      <div style={{position: 'absolute', left: 40, right: 40, top: 95, padding: '22px 32px', borderRadius: 28,
+        background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+        border: `6px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 44, color: '#fff'}}>
+        CHÚC MỪNG PHÁ ĐẢO TRỌN VẸN 8 MÙA!
       </div>
-      <div style={{position: 'absolute', left: 70, right: 70, top: 280, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20}}>
+      {/* Lưới 4x2 Thẻ Robot cỡ lớn (cao 210px/thẻ, ảnh Robot 160x160) lấp đầy y = 225 .. 1155 */}
+      <div style={{position: 'absolute', left: 40, right: 40, top: 225, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20}}>
         {BOT.map((b, i) => (
-          <div key={b.ten} style={{padding: '14px 18px', borderRadius: 22, background: '#fff', border: `4px solid ${C.ink}`, boxShadow: `0 8px 0 ${C.ink}`,
-            display: 'flex', alignItems: 'center', gap: 14, transform: `scale(${pop(f, 6 + i * 5, fps)})`}}>
-            <Img src={staticFile(b.anh)} style={{width: 96, height: 96}} />
-            <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 26, color: C.ink}}>{b.ten}</div>
+          <div key={b.ten} style={{height: 210, padding: '16px 22px', borderRadius: 28, background: '#fff',
+            border: `5px solid ${C.ink}`, boxShadow: `0 10px 0 ${C.ink}`, boxSizing: 'border-box',
+            display: 'flex', alignItems: 'center', gap: 18, transform: `scale(${pop(f, 6 + i * 5, fps)})`}}>
+            <div style={{width: 168, height: 168, borderRadius: 24, background: '#F8FAFC', border: `4px solid ${b.mau}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden'}}>
+              <Img src={staticFile(b.anh)} style={{width: 156, height: 156, objectFit: 'contain',
+                transform: `${b.xoay ? `rotate(${b.xoay}deg) ` : ''}scale(${b.zoom ?? 1})`}} />
+            </div>
+            <div style={{fontFamily: FONT, color: C.ink, flex: 1}}>
+              <span style={{display: 'inline-block', padding: '4px 12px', borderRadius: 10, background: b.mau, color: '#fff',
+                fontWeight: 900, fontSize: 19, marginBottom: 8}}>HOÀN THÀNH</span>
+              <div style={{fontWeight: 900, fontSize: 30, lineHeight: 1.2}}>{b.ten}</div>
+            </div>
           </div>
         ))}
       </div>
       <Burst x={540} y={620} at={55} />
-      <Sola x={240} mat={[[0, 'happy']]} says={[{at: 12, out: 76, text: 'Cảm ơn bạn đã đồng hành cùng CLB Robot Chấn Hưng suốt 8 mùa rực rỡ!'}]} />
-      <Luna x={840} mat={[[0, 'happy']]} says={[{at: 82, out: 145, text: 'Hẹn gặp lại Kỹ sư Trưởng ở những sáng chế tiếp theo nhé!'}]} />
+      <Sola x={240} mat={[[0, 'happy']]} says={[{at: 12, out: 76, text: 'Cảm ơn cậu đã sát cánh cùng team CLB Robot Chấn Hưng phá đảo trọn vẹn 8 mùa rực rỡ!'}]} />
+      <Luna x={840} mat={[[0, 'happy']]} says={[{at: 82, out: 145, text: 'Hẹn gặp lại Kỹ sư Trưởng ở những dự án độ bot và giải đấu tiếp theo nha!'}]} />
     </NenHienTruong>
   );
 };

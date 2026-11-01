@@ -41,15 +41,16 @@ const LopMua: React.FC<{mua: Mua; y: number; sau: boolean; trangThai: (i: number
         return (
           <React.Fragment key={i}>
             <div style={{position: 'absolute', left: nx * W - r, top: ny * H_ANH - r, width: 2 * r, height: 2 * r, borderRadius: cuoi ? 36 : '50%', background: nen,
-              border: `7px solid ${C.ink}`, boxShadow: `0 ${tt === 'khoa' ? 6 : 12}px 0 ${C.ink}`, transform: `scale(${nhip})`,
+              border: `7px solid ${C.ink}`, boxShadow: `0 ${tt === 'khoa' ? 7 : 13}px 0 ${C.ink}, inset 0 6px 0 rgba(255,255,255,0.45)`, transform: `scale(${nhip})`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 46, color: mauChu}}>
-              {cuoi ? <Icon name={mua.icon} size={86} color={mauChu} stroke={2.4} />
-                : tt === 'khoa' ? <Icon name="Lock" size={42} color={mauChu} stroke={2.6} />
-                : tt === 'xong' ? <Icon name="Check" size={50} color={C.ink} stroke={3.4} /> : i + 1}
+              {cuoi ? <Icon name={mua.icon} size={86} color={mauChu} stroke={2.6} />
+                : tt === 'khoa' ? <Icon name="Lock" size={42} color={mauChu} stroke={2.8} />
+                : tt === 'xong' ? <Icon name="Check" size={52} color={C.ink} stroke={3.6} /> : i + 1}
             </div>
             {cuoi ? (
-              <div style={{position: 'absolute', left: nx * W, top: ny * H_ANH + r + 18, transform: 'translateX(-50%)', whiteSpace: 'nowrap', padding: '8px 22px',
-                borderRadius: 18, background: '#fff', border: `5px solid ${C.ink}`, fontFamily: FONT, fontSize: 34, fontWeight: 900, color: C.ink}}>{mua.ten}</div>
+              <div style={{position: 'absolute', left: nx * W, top: ny * H_ANH + r + 18, transform: 'translateX(-50%)', whiteSpace: 'nowrap', padding: '10px 26px',
+                borderRadius: 20, background: 'linear-gradient(180deg, #FFFFFF 0%, #FEF3C7 100%)', border: `5px solid ${C.ink}`,
+                boxShadow: `0 8px 0 ${C.ink}`, fontFamily: FONT, fontSize: 34, fontWeight: 900, color: C.ink}}>{mua.ten}</div>
             ) : null}
           </React.Fragment>
         );
@@ -73,8 +74,21 @@ export const taoBanDo = (MUA: Mua[], anhDai: string, xe: {anh: string; mua: numb
           <Img src={staticFile(`ban-do/${anhDai}`)} style={{position: 'absolute', left: 0, top: 0, width: W, height: cao}} />
           {MUA.map((m, k) => <LopMua key={k} mua={m} y={yMua(k)} sau={k > 0} trangThai={tt(k)} f={f} />)}
           {/* xe trạm đỗ cạnh nút gói đang mở */}
-          <Img src={staticFile(`robot/${xe.anh}`)} style={{position: 'absolute', width: 170, left: nx[0] * W + (nx[0] > 0.72 ? -260 : 90), top: yMua(xe.mua) + nx[1] * H_ANH - 120,
-            transform: nx[0] > 0.72 ? 'scaleX(-1)' : undefined, filter: 'drop-shadow(0 10px 8px rgba(30,27,75,.35))'}} />
+          <Img src={staticFile(`robot/${xe.anh}`)} style={{position: 'absolute', width: 175, left: nx[0] * W + (nx[0] > 0.72 ? -260 : 90), top: yMua(xe.mua) + nx[1] * H_ANH - 120,
+            transform: nx[0] > 0.72 ? 'scaleX(-1)' : undefined, filter: 'drop-shadow(0 0 18px #FDE047) drop-shadow(0 12px 10px rgba(30,27,75,.45))'}} />
+        </div>
+        {/* Thanh HUD Chiến Dịch cố định trên đỉnh màn hình bản đồ */}
+        <div style={{position: 'absolute', left: 36, right: 36, top: 28, padding: '14px 26px', borderRadius: 24,
+          background: 'linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%)', border: `5px solid ${C.ink}`,
+          boxShadow: `0 9px 0 ${C.ink}, 0 16px 28px rgba(0,0,0,0.4)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: FONT, zIndex: 30}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+            <Icon name="Compass" size={34} color="#FDE047" stroke={2.8} />
+            <span style={{fontSize: 28, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.02em'}}>BẢN ĐỒ CHIẾN DỊCH · CLB ROBOT</span>
+          </div>
+          <span style={{padding: '6px 16px', borderRadius: 14, background: '#FDE047', color: C.ink, fontSize: 22, fontWeight: 900, border: `3px solid ${C.ink}`}}>
+            9 CHẶNG · 80 MÀN
+          </span>
         </div>
       </AbsoluteFill>
     );

@@ -4,7 +4,7 @@ import React from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Burst, C, CodeBox, FONT, Icon, Mascot, MONO, Say, Shake, ease, pop} from '../d10';
 import {Phim, W_IN} from '../may-phim';
-import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, tamO} from './kit-doc';
+import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, TrongXe, Vat, Xe, chonDangNguoi, tamO} from './kit-doc';
 
 const NEN = 'nen-doc/mua-song.png';
 const DON = [
@@ -13,8 +13,8 @@ const DON = [
 ];
 
 /** Bác Ba quản lý trạm thủy lợi & bến sông (ảnh TopView tách nền). */
-const Ba: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'}> = ({says, at = 0, x = 820, side = 'left'}) => (
-  <Nguoi anh="ba-a" ten="BÁC BA" mau="#0284C7" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
+const Ba: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'; dang?: string}> = ({says, at = 0, x = 820, side = 'left', dang = 'ba-nghi'}) => (
+  <Nguoi anh={dang} ten="BÁC BA" mau="#0284C7" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
 );
 const Sola: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: number}> = ({says, mat, at = 0, x = 240}) => (
   <Mascot who="sola" x={x} h={540} at={at} faces={mat} says={says} bubbleW={520} bubbleTop={1240} />
@@ -69,7 +69,7 @@ const ThanhTuu: React.FC<{moi: number; loi: string; con: string; so: number; ten
       <BangViec tieuDe="Sổ trực thông luồng bến sông của bác Ba" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
       <ThuyTrieuBar con={con} gap={xoa !== undefined} />
       <NhanGoi so={so} ten={ten} />
-      <Ba says={[{at: 48, out: 200, text: loi}]} at={28} />
+      <Ba dang={chonDangNguoi('ba', so, xoa)} says={[{at: 48, out: 200, text: loi}]} at={28} />
     </NenHienTruong>
   );
 
@@ -110,7 +110,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="CHÌM NGHỈM!" at={66} den={138} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <ThuyTrieuBar con="Triều lên: 10 giờ" />
       <NhanGoi so={1} ten="Thân xuồng chân vịt" />
-      <Ba says={[{at: 72, out: 175, text: 'Chân nhện chỉ đi trên cạn thôi, bước xuống lòng kênh sâu là chìm nghỉm ngay!'}]} at={58} />
+      <Ba dang="ba-hoang" says={[{at: 72, out: 175, text: 'Chân nhện chỉ đi trên cạn thôi, bước xuống lòng kênh sâu là chìm nghỉm ngay!'}]} at={58} />
     </NenHienTruong>
   </Shake>
 );
@@ -211,7 +211,7 @@ const G4Thu: React.FC = () => (
       <ChuNay chu="CUỐN TRÔI!" at={58} den={140} x={tamO(3, 4).x + 60} y={tamO(3, 4).y - 45} />
       <ThuyTrieuBar con="Triều lên: 7 giờ" />
       <NhanGoi so={4} ten="Cống thủy lợi" />
-      <Ba says={[{at: 64, out: 230, text: 'Cửa cống đang mở xả nước xiết, chạm vào van cống trên bờ kênh để đóng cửa cống trước nhé!'}]} at={50} />
+      <Ba dang="ba-sot-ruot" says={[{at: 64, out: 230, text: 'Cửa cống đang mở xả nước xiết, chạm vào van cống trên bờ kênh để đóng cửa cống trước nhé!'}]} at={50} />
     </NenHienTruong>
   </Shake>
 );
@@ -289,7 +289,7 @@ const G6Thu: React.FC = () => (
       <ChuNay chu="KẸT KHÚC CUA!" at={68} den={145} x={tamO(2, 2).x + 60} y={tamO(2, 2).y - 45} />
       <ThuyTrieuBar con="TRIỀU CƯỜNG DÂNG!" gap />
       <NhanGoi so={6} ten="Buộc dắt theo đuôi" />
-      <Ba says={[{at: 52, out: 230, text: 'Triều cường giật bung cọc đo nước rồi! Luồng âu thuyền gấp khúc thế này kéo thẳng sao qua!'}]} at={40} />
+      <Ba dang="ba-hoang" says={[{at: 52, out: 230, text: 'Triều cường giật bung cọc đo nước rồi! Luồng âu thuyền gấp khúc thế này kéo thẳng sao qua!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -357,7 +357,7 @@ const G8Thu: React.FC = () => (
       <ChuNay chu="TRÔI LỆCH NHỊP!" at={65} den={140} x={tamO(3, 4).x + 70} y={tamO(3, 4).y - 40} />
       <ThuyTrieuBar con="Triều lên: 3 giờ" />
       <NhanGoi so={8} ten="Ghép cầu phao bác Sáu" />
-      <Ba says={[{at: 66, out: 230, text: 'Băng chuyền trên bờ đẩy thùng phao sắt của bác Sáu xuống sông, không thả neo đón kịp là nước cuốn lệch nhịp cầu!'}]} at={52} />
+      <Ba dang="ba-tin" says={[{at: 66, out: 230, text: 'Băng chuyền trên bờ đẩy thùng phao sắt của bác Sáu xuống sông, không thả neo đón kịp là nước cuốn lệch nhịp cầu!'}]} at={52} />
     </NenHienTruong>
   </Shake>
 );
@@ -483,16 +483,24 @@ const G10Canh2: React.FC = () => (
 
 const XuatXuongM4: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
+  const PART = ['Thân xuồng chân vịt · Nổi & bù dòng', 'Tời dây phao kéo · Mỏ neo giữ vị trí', 'Chong chóng đo dòng chảy · Tuple (h, s)'];
   return (
-    <NenHienTruong anh={NEN} mua="m4" luoi={false} toi={0.38}>
-      <div style={{position: 'absolute', left: 60, top: 150, right: 60, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 54, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+    <NenHienTruong anh={NEN} mua="m4" luoi={false} toi={0.42}>
+      <div style={{position: 'absolute', left: 50, top: 120, right: 50, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 54, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
         XUẤT XƯỞNG: TÀU THỦY LỢI R1
       </div>
-      <div style={{position: 'absolute', left: 540 - 240, top: 380, width: 480, height: 480, transform: `scale(${pop(f, 10, fps)})`}}>
+      <div style={{position: 'absolute', left: 540 - 300, top: 210, width: 600, height: 600, transform: `scale(${pop(f, 8, fps)})`}}>
         <Img src={staticFile('robot/m4/xuong-du-vui.png')} style={{width: '100%', height: '100%', transform: 'rotate(-90deg)'}} />
       </div>
-      <Burst x={540} y={620} at={18} />
-      <Ba x={820} says={[{at: 12, out: 88, text: 'Cảm ơn hai cháu! Bến sông và kênh thủy lợi thông suốt, nước ngọt đã chảy về khắp cánh đồng!'}]} at={6} />
+      {PART.map((p, i) => (
+        <div key={p} style={{position: 'absolute', left: 80, right: 80, top: 830 + i * 105, opacity: ease(f, [10 + i * 10, 22 + i * 10], [0, 1]),
+          padding: '16px 26px', borderRadius: 22, background: 'rgba(15,23,42,0.85)', border: `4px solid ${C.yellow}`,
+          color: '#fff', fontFamily: FONT, fontWeight: 800, fontSize: 34, display: 'flex', gap: 16, alignItems: 'center'}}>
+          <Icon name="CircleCheck" size={40} color={C.yellow} />{p}
+        </div>
+      ))}
+      <Burst x={540} y={520} at={18} />
+      <Ba dang="ba-mung" x={820} says={[{at: 12, out: 88, text: 'Cảm ơn hai cháu! Bến sông và kênh thủy lợi thông suốt, nước ngọt đã chảy về khắp cánh đồng!'}]} at={6} />
       <Sola x={230} mat={[[0, 'happy']]} says={[{at: 94, out: 172, text: 'Tàu thủy lợi R1 xin ở lại trực bến sông cùng bác Ba ạ!'}]} />
     </NenHienTruong>
   );
@@ -501,26 +509,49 @@ const XuatXuongM4: React.FC = () => {
 const NgoaiDoiM4: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const THE = [
-    {icon: 'Waves', ten: 'USV Đo Thủy Văn', mo: 'Tàu mặt nước tự hành đo lưu tốc dòng chảy, độ sâu và cảnh báo lũ sớm trên sông.'},
-    {icon: 'Anchor', ten: 'Vớt Lục Bình & Rác Sông', mo: 'Xuồng tự động gom lục bình, rác nổi và kéo sà lan nông sản qua âu thuyền.'},
+    {icon: 'Waves' as const, ten: 'Tàu Mặt Nước Tự Hành Đo Thủy Văn (USV)', mo: 'Tự động đo lưu tốc dòng chảy, độ sâu lòng sông và truyền dữ liệu cảnh báo lũ sớm.'},
+    {icon: 'Anchor' as const, ten: 'Xuồng Tự Động Vớt Lục Bình & Rác Sông', mo: 'Gom lục bình ùn tắc trước cửa cống và lai dắt sà lan nông sản qua âu thuyền an toàn.'},
   ];
   return (
-    <NenHienTruong anh={NEN} mua="m4" luoi={false} toi={0.55}>
-      <div style={{position: 'absolute', left: 60, top: 160, right: 60, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 50, color: '#fff', textShadow: `0 6px 0 ${C.ink}`}}>
-        TÀU TỰ HÀNH SÔNG NƯỚC NGOÀI ĐỜI THỰC
+    <NenHienTruong anh={NEN} mua="m4" luoi={false} toi={0.58}>
+      <div style={{position: 'absolute', left: 40, top: 120, right: 40, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 48, color: C.yellow, textShadow: `0 6px 0 ${C.ink}`}}>
+        CÔNG NGHỆ NGOÀI ĐỜI THỰC · M4
       </div>
-      {THE.map((t, i) => (
-        <div key={t.ten} style={{position: 'absolute', left: 80, right: 80, top: 320 + i * 340, padding: '32px 36px', borderRadius: 28, background: '#fff',
-          border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, display: 'flex', gap: 28, alignItems: 'center', transform: `scale(${pop(f, 12 + i * 18, fps)})`}}>
-          <div style={{width: 120, height: 120, borderRadius: 24, background: '#0284C7', border: `4px solid ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
-            <Icon name={t.icon} size={68} color="#fff" />
+
+      {/* Hero Showcase: Robot R1 của mùa -> Công nghệ thực tế (top: 210 .. 490) */}
+      <div style={{position: 'absolute', left: 50, right: 50, top: 210, height: 275, borderRadius: 32,
+        background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', border: `6px solid ${C.ink}`,
+        boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px',
+        transform: `scale(${pop(f, 6, fps)})`, boxSizing: 'border-box'}}>
+        <div style={{width: 225, height: 225, borderRadius: 28, background: 'rgba(255,255,255,0.08)', border: `4px solid ${C.yellow}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+          <Img src={staticFile('robot/m4/xuong-du-vui.png')} style={{width: 205, height: 205, objectFit: 'contain', transform: 'rotate(-90deg)'}} />
+        </div>
+        <div style={{flex: 1, marginLeft: 28, fontFamily: FONT, color: '#fff'}}>
+          <div style={{display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 99, background: '#0284C7',
+            border: '3px solid #fff', fontSize: 22, fontWeight: 900, marginBottom: 10}}>
+            TỪ SA BÀN CLB RA THỰC TẾ
           </div>
-          <div style={{fontFamily: FONT, color: C.ink}}>
-            <div style={{fontWeight: 900, fontSize: 38, marginBottom: 8}}>{t.ten}</div>
-            <div style={{fontWeight: 700, fontSize: 28, color: '#334155', lineHeight: 1.32}}>{t.mo}</div>
+          <div style={{fontSize: 38, fontWeight: 900, color: '#FDE047', marginBottom: 6}}>Tàu Tự Hành Đường Thủy R1</div>
+          <div style={{fontSize: 26, fontWeight: 700, color: '#E2E8F0', lineHeight: 1.3}}>Đo hướng dòng chảy bằng cảm biến thủy văn, thả neo và kéo phao cứu hộ.</div>
+        </div>
+      </div>
+
+      {THE.map((t, i) => (
+        <div key={t.ten} style={{position: 'absolute', left: 50, right: 50, top: 515 + i * 325, height: 295, padding: '28px 34px', borderRadius: 30, background: '#fff',
+          border: `6px solid ${C.ink}`, boxShadow: `0 14px 0 ${C.ink}`, display: 'flex', gap: 28, alignItems: 'center',
+          transform: `scale(${pop(f, 12 + i * 16, fps)})`, boxSizing: 'border-box'}}>
+          <div style={{width: 150, height: 150, borderRadius: 28, background: '#0284C7', border: `5px solid ${C.ink}`,
+            boxShadow: `0 8px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+            <Icon name={t.icon} size={84} color="#fff" />
+          </div>
+          <div style={{fontFamily: FONT, color: C.ink, flex: 1}}>
+            <div style={{fontWeight: 900, fontSize: 38, marginBottom: 10, lineHeight: 1.2}}>{t.ten}</div>
+            <div style={{fontWeight: 800, fontSize: 28, color: '#334155', lineHeight: 1.34}}>{t.mo}</div>
           </div>
         </div>
       ))}
+      <Sola mat={[[0, 'happy']]} says={[{at: 14, out: 142, text: 'Từ cảm biến đo dòng chảy trên sa bàn, ngoài đời các kỹ sư cũng lập trình tàu tự hành USV giữ an toàn đường sông!'}]} />
     </NenHienTruong>
   );
 };
@@ -536,7 +567,7 @@ const NhaMua5: React.FC = () => {
         border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 46, color: '#fff'}}>
         MÙA 5 TIẾP THEO · NÔNG TRẠI HOA CHỊ LAN
       </div>
-      <Nguoi anh="lan-a" ten="CHỊ LAN" mau="#EC4899" x={820} h={600} at={8} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="lan-tin" ten="CHỊ LAN" mau="#EC4899" x={820} h={600} at={8} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 12, out: 76, text: 'Nước kênh bác Ba đã dẫn về tới nông trại hoa rồi! Hai em chế tạo Drone bay gieo hạt giúp chị kịp hội hoa Xuân nhé!'}]} />
       <Sola x={230} mat={[[0, 'surprised'], [78, 'happy']]} says={[{at: 82, out: 145, text: 'Mùa 5 mình cất cánh lên bầu trời: chế tạo Drone nông nghiệp và học danh sách list!'}]} />
     </AbsoluteFill>

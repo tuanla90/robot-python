@@ -2,13 +2,14 @@
 // (nền dọc public/nen-doc/mua-hang.png nay là ảnh TopView, chỉ vẽ tạm lại khi NEN_TAM=1).
 // Chạy: node tools/xuat-m7.mjs
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const goc = dirname(fileURLToPath(import.meta.url));
-const repo = resolve(goc, '../..');
+const repo = existsSync(resolve(goc, '../../server.mjs')) ? resolve(goc, '../..') : 'd:/Users/tuanla2/game/doi-robot-chan-hung';
 const ra = resolve(goc, '../public/robot/m7');
 const PORT = 4217, CANH = 480, CANH_O = 320;
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -32,87 +33,71 @@ try {
   await trang.evaluate(() => {
     const V = window.VeVector, BM = window.BangMau;
 
-    // 1. THÂN BÁNH GAI BÁM ĐÁ ('banh-gai'): 4 bánh lốp dày có đinh gai thép (s.thu = thu gai trượt nhanh)
+    // 1. THÂN BÁNH GAI BÁM ĐÁ ('banh-gai'): 4 bánh lốp địa hình 3D có cổ trục motor, vành thép và đinh gai thép (s.thu = thu gai trượt nhanh)
     V.dangKy({
       loai: 'than', ma: 'banh-gai', hamGoc: ['left_move', 'right_move', 'retract_spikes', 'extend_spikes'], ten: 'Thân bánh gai bám đá',
-      oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 74, y: 50 }, hongPhai: { x: 26, y: 50 }, tren: { x: 71, y: 78 }, sau: { x: 50, y: 24 } },
-      oCam: { x: 63, y: 29 }, vo: { x: 23, y: 24, w: 54, h: 59 },
+      oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 71, y: 47 }, hongPhai: { x: 29, y: 47 }, tren: { x: 71, y: 78 }, sau: { x: 37, y: 27 } },
+      oCam: { x: 63, y: 29 }, vo: { x: 23, y: 26, w: 54, h: 54 },
       ve: function (g, s, M, H) {
         s = s || {};
         const thu = !!s.thu;
-        for (const [bx, by] of [[15, 36], [85, 36], [15, 72], [85, 72]]) {
+        for (const [bx, by] of [[14.5, 36.5], [85.5, 36.5], [14.5, 70.5], [85.5, 70.5]]) {
+          const dir = bx < 50 ? -1 : 1;
+          const ax = dir < 0 ? bx + 3.0 : bx - 11.5, fx = dir < 0 ? bx + 4.8 : bx - 7.6;
+          H.bo(g, ax, by - 4.4, 8.5, 8.8, 1.8); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 2.2);
+          H.bo(g, fx, by - 6.0, 2.8, 12.0, 1.0); H.to(g, BM.vecDen); H.vien(g, BM.vecVien, 1.6);
           if (!thu) {
-            // Đinh gai thép nhô ra hai bên lốp
-            const dir = bx < 50 ? -1 : 1;
-            for (const dy of [-9, 0, 9]) {
+            for (const dy of [-8.5, 0, 8.5]) {
               g.beginPath();
-              g.moveTo(bx + dir * 4, by + dy - 3.5);
-              g.lineTo(bx + dir * 13, by + dy);
-              g.lineTo(bx + dir * 4, by + dy + 3.5);
+              g.moveTo(bx + dir * 4.5, by + dy - 3.6);
+              g.lineTo(bx + dir * 13.5, by + dy);
+              g.lineTo(bx + dir * 4.5, by + dy + 3.6);
               g.closePath();
-              H.to(g, '#FACC15'); H.vien(g, BM.vecVien, 2);
+              H.to(g, '#FACC15'); H.vien(g, BM.vecVien, 2.1);
             }
           }
-          H.bo(g, bx - 7, by - 14, 14, 28, 5);
+          H.bo(g, bx - 6.6, by - 13.5, 13.2, 27, 4.8);
           H.to(g, thu ? '#38BDF8' : BM.vecBanh);
-          H.vien(g, BM.vecVien, 3);
-          H.duong(g, `M${bx - 5} ${by - 6} H${bx + 5} M${bx - 5} ${by + 6} H${bx + 5}`);
-          H.vien(g, thu ? '#E0F2FE' : '#94A3B8', 2.2);
-        }
-        // Vỏ trắng gia đình thân A + đèn pha hang động trên nóc
-        H.bo(g, 23, 24, 54, 59, 18);
-        g.fillStyle = H.gradVo(g, 23, 24, 54, 59);
-        g.fill();
-        H.vien(g, BM.vecVien, 3.5);
-        H.duong(g, 'M35 32 C33 42 33 51 35 60 M65 32 C67 42 67 51 65 60 M50 24 v12');
-        H.vien(g, BM.vecVoGhep, 2.5);
-        H.kinh(g, M, 29, 58, 42, 16, s);
-        H.angTen(g, M, 50, 25, 13, 5);
-      }
-    });
-
-    // 2. TAY LOA CỘNG HƯỞNG ('loa'): loa phát xung âm & nốt nhạc ở mũi xe
-    V.dangKy({
-      loai: 'tay', ma: 'loa', hamGoc: ['beat', 'note'], ten: 'Loa phát xung cộng hưởng', gan: 'tay', diemNeo: { x: 50, y: 80 },
-      ve: function (g, s, M, H) {
-        s = s || {};
-        H.bo(g, 38, 76, 24, 9, 4); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.4);
-        // Vành loa hình phễu hướng về +y
-        g.beginPath();
-        g.moveTo(41, 83); g.lineTo(59, 83); g.lineTo(66, 96); g.lineTo(34, 96); g.closePath();
-        g.fillStyle = H.gradDoc(g, 0, 83, 0, 96, [[0, '#F59E0B'], [1, '#D97706']]);
-        g.fill();
-        H.vien(g, BM.vecVien, 2.8);
-        H.elip(g, 50, 96, 15, 4.5); H.to(g, '#1E293B'); H.vien(g, BM.vecVien, 2.2);
-        H.tron(g, 50, 95, 4); H.to(g, s.phat ? '#38BDF8' : '#94A3B8');
-        if (s.phat) {
-          for (const [r, mau] of [[11, '#38BDF8'], [18, '#FACC15'], [25, '#2DD4BF']]) {
-            g.beginPath(); g.arc(50, 96, r, 0.18 * Math.PI, 0.82 * Math.PI);
-            H.vien(g, mau, 3);
+          H.vien(g, BM.vecVien, 2.8);
+          for (const dy of [-7.5, 0, 7.5]) {
+            H.bo(g, bx - 4.8, by + dy - 2, 9.6, 4, 1.4);
+            H.to(g, thu ? '#E0F2FE' : BM.vecBanhGach);
+            H.vien(g, BM.vecVien, 1.2);
           }
         }
+        // Vỏ chuẩn R1 (54 × 54, r = 18) như thân omni / xích
+        H.bo(g, 23, 26, 54, 54, 18);
+        g.fillStyle = H.gradVo(g, 23, 26, 54, 54);
+        g.fill();
+        H.vien(g, BM.vecVien, 3.5);
+        H.duong(g, 'M35 34 C33 44 33 53 35 62 M65 34 C67 44 67 53 65 62 M50 26 v11');
+        H.vien(g, BM.vecVoGhep, 2.5);
+        H.duong(g, 'M31 36 C34 31 39 30 45 30');
+        H.vien(g, BM.vecVo, 4);
+        H.kinh(g, M, 29, 57, 42, 15.5, s);
+        H.angTen(g, M, 50, 27, 13, 5);
       }
     });
 
-    // 3. CẢM BIẾN ÂM THANH SONAR ('am-thanh'): đôi tai dơi thu tiếng vang gắn ổ 'tren'
+    // 3. CẢM BIẾN ÂM THANH SONAR ('am-thanh'): đôi phễu thu tiếng vang 3D gắn ổ 'tren'
     V.dangKy({
       loai: 'cam-bien', ma: 'am-thanh', hamGoc: ['listen'], ten: 'Cảm biến âm thanh Sonar', gan: 'tren', diemNeo: { x: 50, y: 50 },
       ve: function (g, s, M, H) {
         s = s || {};
         if (s.bat) {
-          H.tron(g, 50, 50, 15); H.to(g, 'rgba(45, 212, 191, 0.28)');
-          g.beginPath(); g.arc(50, 56, 13, 0.15 * Math.PI, 0.85 * Math.PI);
-          H.vien(g, '#2DD4BF', 2.4);
+          H.tron(g, 50, 50, 12.5); H.to(g, 'rgba(45, 212, 191, 0.35)');
+          g.beginPath(); g.arc(50, 54, 10.5, 0.16 * Math.PI, 0.84 * Math.PI); H.vien(g, '#2DD4BF', 2.0);
+          g.beginPath(); g.arc(50, 54, 13.0, 0.22 * Math.PI, 0.78 * Math.PI); H.vien(g, '#5EEAD4', 1.5);
         }
-        H.tron(g, 50, 50, 9);
-        g.fillStyle = H.gradVo(g, 41, 41, 18, 18);
+        H.tron(g, 50, 50, 8.2);
+        g.fillStyle = H.gradVo(g, 41.8, 41.8, 16.4, 16.4);
         g.fill();
         H.vien(g, BM.vecVien, 2.2);
-        // Hai vành tai thu âm hướng chéo trước
-        for (const dx of [-5, 5]) {
-          H.elip(g, 50 + dx, 53, 3.8, 5.5); H.to(g, '#0D9488'); H.vien(g, BM.vecVien, 1.5);
-          H.tron(g, 50 + dx, 54, 1.8); H.to(g, s.bat ? '#5EEAD4' : '#CCFBF1');
+        for (const dx of [-4.4, 4.4]) {
+          H.elip(g, 50 + dx, 52.5, 3.6, 5.2); H.to(g, '#0D9488'); H.vien(g, BM.vecVien, 1.5);
+          H.tron(g, 50 + dx, 53.5, 1.8); H.to(g, s.bat ? '#5EEAD4' : '#CCFBF1');
         }
+        H.tron(g, 50, 46.5, 1.8); H.to(g, s.bat ? '#FACC15' : '#38BDF8'); H.vien(g, BM.vecVien, 1);
       }
     });
 
@@ -210,14 +195,6 @@ try {
         H.tron(g, 36, 34, 7); H.to(g, '#F0FDFA');
       }
     });
-
-    V.dangKy({
-      loai: 'cam-bien', ma: 'radar', ten: 'Radar', gan: 'tren', diemNeo: { x: 50, y: 50 },
-      ve: function (g, s, M, H) {
-        H.tron(g, 50, 50, 9); H.to(g, '#064E3B'); H.vien(g, BM.vecVien, 2);
-        H.duong(g, 'M50 50 L55 45'); H.vien(g, '#4ADE80', 2);
-      }
-    });
   });
 
   const AM = [{ ma: 'am-thanh', o: 'tren' }];
@@ -233,17 +210,17 @@ try {
     'gai-loa': [cfg('loa'), {}],
     'gai-loa-vui': [cfg('loa'), { mat: 'vui' }],
     'gai-loa-ngac': [cfg('loa'), { mat: 'ngac' }],
-    'gai-loa-phat': [cfg('loa'), { mat: 'vui', tay: { phat: true } }],
+    'gai-loa-phat': [cfg('loa'), { mat: 'vui', tay: { bat: true, notLoa: 5, pha: 0.35 } }],
     'gai-am': [cfg('loa', AM), {}],
     'gai-am-vui': [cfg('loa', AM), { mat: 'vui', camBien: { bat: true } }],
     'gai-am-ngac': [cfg('loa', AM), { mat: 'ngac' }],
     'gai-am-nghe': [cfg('loa', AM), { camBien: { bat: true } }],
-    'gai-am-phat': [cfg('loa', AM), { mat: 'vui', tay: { phat: true }, camBien: { bat: true } }],
+    'gai-am-phat': [cfg('loa', AM), { mat: 'vui', tay: { bat: true, notLoa: 5, pha: 0.35 }, camBien: { bat: true } }],
     'gai-du': [cfg('loa', AM), { camBien: { bat: true } }],
-    'gai-du-vui': [cfg('loa', AM), { mat: 'vui', tay: { phat: true }, camBien: { bat: true } }],
+    'gai-du-vui': [cfg('loa', AM), { mat: 'vui', tay: { bat: true, notLoa: 5, pha: 0.35 }, camBien: { bat: true } }],
     'gai-du-thu': [cfg('loa', AM), { thu: true, mat: 'vui', camBien: { bat: true } }],
     'r2': [{ than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }], son: 'lam' }, {}],
-    'r2-vui': [{ than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }], son: 'lam' }, { mat: 'vui' }],
+    'r2-vui': [{ than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }], son: 'lam' }, { mat: 'vui', camBien: { bat: true, mat: true } }],
   };
 
   const O_SAN = {

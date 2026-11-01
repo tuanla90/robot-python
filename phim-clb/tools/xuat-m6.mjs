@@ -1,13 +1,14 @@
 // Xuất hình robot, ô sân, vật mùa 6 (Mỏ đá · Máy khai thác đá R1) ra public/robot/m6/.
 // Chạy: node tools/xuat-m6.mjs
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const goc = dirname(fileURLToPath(import.meta.url));
-const repo = resolve(goc, '../..');
+const repo = existsSync(resolve(goc, '../../server.mjs')) ? resolve(goc, '../..') : 'd:/Users/tuanla2/game/doi-robot-chan-hung';
 const ra = resolve(goc, '../public/robot/m6');
 const PORT = 4216, CANH = 480, CANH_O = 320;
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -30,32 +31,6 @@ try {
 
   await trang.evaluate(() => {
     const V = window.VeVector, BM = window.BangMau;
-
-    // 1. CẢM BIẾN RADAR TRÒN ('radar') gắn ổ 'tren'
-    V.dangKy({
-      loai: 'cam-bien', ma: 'radar', hamGoc: ['radar', 'radar_shape'], ten: 'Radar tròn quét 4 hướng', gan: 'tren', diemNeo: { x: 50, y: 50 },
-      ve: function (g, s, M, H) {
-        s = s || {};
-        if (s.bat) {
-          H.tron(g, 50, 50, 15); H.to(g, 'rgba(34, 197, 94, 0.25)');
-          H.tron(g, 50, 50, 12); H.vien(g, '#22C55E', 1.8);
-        }
-        // Đế tháp radar tròn
-        H.tron(g, 50, 50, 9.5);
-        g.fillStyle = H.gradVo(g, 40.5, 40.5, 19, 19);
-        g.fill();
-        H.vien(g, BM.vecVien, 2.3);
-        // Mặt màn hình radar xanh lá đậm
-        H.tron(g, 50, 50, 6.8); H.to(g, '#064E3B'); H.vien(g, BM.vecVien, 1.4);
-        // Kim quét radar + chấm mục tiêu
-        H.duong(g, 'M50 50 L55 45'); H.vien(g, '#4ADE80', 2.2);
-        H.tron(g, 50, 50, 2); H.to(g, '#FACC15');
-        if (s.dang) {
-          // Chế độ nhận diện hình dạng (tròn/vuông): thêm vành vàng cam
-          H.tron(g, 50, 50, 10.5); H.vien(g, '#F59E0B', 2);
-        }
-      }
-    });
 
     // 2. Ô SÀN DỐC ĐÁ ('san-doc'): s.huong = 0(lên), 1(phải), 2(xuống), 3(trái)
     V.dangKy({
@@ -134,9 +109,9 @@ try {
     'omni-radar-vui': [cfg('nem', RAD), { mat: 'vui', tay: { ngam: 2 }, camBien: { bat: true } }],
     'omni-radar-ngac': [cfg('nem', RAD), { mat: 'ngac', tay: { ngam: 2 } }],
     'omni-radar-quet': [cfg('nem', RAD), { tay: { ngam: 2, cam: true }, camBien: { bat: true } }],
-    'omni-du': [cfg('nem', RAD), { tay: { ngam: 3 }, camBien: { bat: true, dang: true } }],
-    'omni-du-vui': [cfg('nem', RAD), { mat: 'vui', tay: { ngam: 3 }, camBien: { bat: true, dang: true } }],
-    'omni-du-vung': [cfg('nem', RAD), { mat: 'vui', tay: { ngam: 3, dangNem: true }, camBien: { bat: true, dang: true } }],
+    'omni-du': [cfg('nem', RAD), { tay: { ngam: 3, cam: true }, camBien: { bat: true, mat: true } }],
+    'omni-du-vui': [cfg('nem', RAD), { mat: 'vui', tay: { ngam: 3, cam: true }, camBien: { bat: true, mat: true } }],
+    'omni-du-vung': [cfg('nem', RAD), { mat: 'vui', tay: { ngam: 3, dangNem: true }, camBien: { bat: true, mat: true } }],
     'r2': [{ than: 'drone', tay: null, camBien: [{ ma: 'camera-4', o: 'tren' }, { ma: 'camera-bay', o: 'bung' }], son: 'lam' }, {}],
     'r2-quet': [{ than: 'drone', tay: null, camBien: [{ ma: 'camera-4', o: 'tren' }, { ma: 'camera-bay', o: 'bung' }], son: 'lam' }, { camBien: { mat: true, bat: true } }],
     'r2-vui': [{ than: 'drone', tay: null, camBien: [{ ma: 'camera-4', o: 'tren' }, { ma: 'camera-bay', o: 'bung' }], son: 'lam' }, { mat: 'vui', camBien: { mat: true, bat: true } }],
