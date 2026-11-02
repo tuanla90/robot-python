@@ -27,7 +27,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   } });
 
   /* CỜ ĐÍCH (vẽ ĐÈ lên ô sàn): đế trắng trên vệt bóng, cột bạc, đỉnh tròn, cờ hồng bay sang phải.
-     Gói V4 (user 27/10): CỜ BAY — lá cờ gợn sóng 2 nếp theo s.pha (0..1, một chu kỳ), biên độ tăng dần từ cán ra mép; s.manh (robot vừa tới cờ): phất mạnh hơn. Cán đứng yên. */
+     Gói V4 (user 27/10): CỜ BAY — lá cờ gợn sóng 2 nếp theo s.pha (0..1, một chu kỳ), biên độ tăng dần từ cán ra mép; s.manh (robot vừa tới cờ): phất mạnh hơn. Cán đứng yên. s.mau: màu lá cờ (cờ riêng của một robot), mặc định hồng. */
   function laCo(pha, manh) {
     var A = manh ? 6 : 3, L = 43, n = 12, i, x, t, d = '', dy = function (x) { var u = (x - 41) / L; return A * u * Math.sin(2 * Math.PI * (pha - u * 1.6)); };
     for (i = 0; i <= n; i++) { x = 41 + L * i / n; t = 22 + dy(x) - (i === n ? 0 : 0); d += (i ? ' L' : 'M') + x.toFixed(2) + ' ' + t.toFixed(2); }
@@ -39,8 +39,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 26, 76, 24, 10, 4); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 2.5);
     H.bo(g, 35, 16, 6, 64, 3); H.to(g, BM.vecBac); H.vien(g, BM.vecVien, 2);
     H.tron(g, 38, 15, 6); H.to(g, BM.vecBacSang); H.vien(g, BM.vecVien, 2);
-    if (s && (typeof s.pha === 'number' || s.manh)) { H.duong(g, laCo(+s.pha || 0, !!s.manh)); H.to(g, BM.vecDoiR2); H.vien(g, BM.vecVien, 2.5); return; }
-    H.duong(g, 'M41 22 C58 18 66 28 84 22 L84 50 C66 56 58 46 41 50 Z'); H.to(g, BM.vecDoiR2); H.vien(g, BM.vecVien, 2.5);
+    var la = (s && s.mau) || BM.vecDoiR2;                              // 2/11 cờ riêng của một robot: lá cờ tô màu robot chủ (thay vạch màu dưới chân cờ)
+    if (s && (typeof s.pha === 'number' || s.manh)) { H.duong(g, laCo(+s.pha || 0, !!s.manh)); H.to(g, la); H.vien(g, BM.vecVien, 2.5); return; }
+    H.duong(g, 'M41 22 C58 18 66 28 84 22 L84 50 C66 56 58 46 41 50 Z'); H.to(g, la); H.vien(g, BM.vecVien, 2.5);
   } });
 
   /* THÙNG GỖ (vật 'o' của luật, chat 'go'): hộp trắng toả sáng, đai xanh có khoá sáng, vệt bóng trên nắp. s.mau ('red'…): đai đổi theo màu vật. Vẽ đầy ô 100 (12..88): người gọi thu về cỡ vật. */
