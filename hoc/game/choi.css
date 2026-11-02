@@ -873,6 +873,10 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .brick.ls .tx{padding-right:4px}
 .pal .brick.ls .tx{font-size:.84em}
 .gl.g-ls{color:var(--g-xanhLaSangV5)}.gl.g-ls::after{background:var(--g-xanhLaToiV5)}
+.brick.td,.brick.th,.brick.am{--c:var(--g-xanhLaToiV17);--hi:var(--g-xanhLaSangV14);--lo:var(--g-bangSang2V6)}
+.brick.td .tx,.brick.th .tx,.brick.am .tx{padding-right:4px}
+.pal .brick.td .tx,.pal .brick.th .tx,.pal .brick.am .tx{font-size:.84em}
+.strip .num.td-op,.strip .num.td-khoa{flex:none}
 .num.lsten{background:var(--g-bangSang2V7);padding:0 4px;box-shadow:0 0 0 1px var(--g-bangV10),inset 0 2px 0 var(--g-xanhLaSangV15),inset 0 -2px 0 var(--g-bangSang2V1)}
 .strip .num.lsten{flex:none}
 .strip .num.ptu{flex:none;min-width:.8em;padding:0 2px;margin:0 1px}
@@ -1201,3 +1205,9 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .g-mua-nut.nope{animation:shake .25s 2}
 .g-ban{flex:none;display:flex;justify-content:center;margin-top:6px}
 .g-ban-nut{height:36px;display:flex;align-items:center;padding:2px 16px 0;font:700 calc(16px*var(--kp))/1 var(--px);color:var(--g-trang);text-shadow:0 2px 0 var(--g-moToi)}
+/* mùa 8: nhãn nhóm ÂM THANH / TỪ ĐIỂN / TẬP HỢP */
+.gl.g-amt{color:var(--g-ngoc)}.gl.g-amt::after{background:var(--g-ngocToi2V3)}
+.gl.g-tdn{color:var(--g-xanhLaSangV5)}.gl.g-tdn::after{background:var(--g-xanhLaToiV5)}
+.gl.g-thn{color:var(--g-camSangV3)}.gl.g-thn::after{background:var(--g-goSangV4)}
+/* mùa 8: chip khoá "ngang" / "doc" và tên từ điển dài hơn một chữ: chip rộng theo chữ, xuống dòng khi chật */
+.chon-chuoi .cs.bien{flex:1 1 auto;white-space:nowrap}
