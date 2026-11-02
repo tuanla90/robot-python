@@ -2199,7 +2199,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var fy = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 3) : 0;
         var phaCo = HU().giam() ? 0 : Math.floor(((now / 1400 + co.x * 0.37 + co.y * 0.61) % 1) * 16) / 16, manh = !HU().giam() && (this.coManh > now || this.mung > now);
         var stCo = HU().giam() ? {} : { pha: manh ? Math.floor(((now / 700 + co.x * 0.37) % 1) * 16) / 16 : phaCo, manh: manh ? 1 : 0 };
-        if (co.chu !== null) stCo.mau = (this.cfgXe && this.cfgXe[co.chu] && this.cfgXe[co.chu].mauXe) || MAU_XE[co.chu % MAU_XE.length];   // cờ riêng: lá cờ màu robot chủ (2/11, thay vạch màu dưới chân cờ)
+        if (co.chu !== null) stCo.mau = VeVector.mauDoi(this.cfgXe && this.cfgXe[co.chu] ? this.cfgXe[co.chu].robot.son : SON_XE[co.chu % SON_XE.length]).chinh;   // cờ riêng: lá cờ màu đội của robot chủ (R1 xanh, R2 hồng — mauDoi như thân robot; 2/11, thay vạch màu dưới chân cờ)
         g.drawImage(VeVector.o('co', this.pxO, stCo.pha !== undefined || stCo.mau ? stCo : undefined), co.x * T, co.y * T + fy, T, T);
       }
       g.restore();
