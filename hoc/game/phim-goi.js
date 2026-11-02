@@ -151,7 +151,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       taiCLB(function (ok) {
         if (!ok || !PhimCLB.co(ma)) { mo(ma, khiXong, Object.assign({}, tuyChon, { khung: true })); return; }
         var cu = stage.querySelector('.md'); if (cu) cu.remove();
-        PhimCLB.mo(ma, stage, { boQua: t('pg.boQua'), cuoi: t(tuyChon.nutCuoi || 'pg.vaoGoi') }, function () {
+        PhimCLB.mo(ma, stage, { boQua: t('pg.boQua'), cuoi: t(tuyChon.nutCuoi || 'pg.vaoGoi'), tiep: t('pg.tiep') }, function () {
           if (window.Luu) Luu.datDaXem(CO(ma));
           if (khiXong) khiXong();
         });
