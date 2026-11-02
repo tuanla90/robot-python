@@ -27,7 +27,7 @@ Bài học thành luật cho lần này (mục 6): **mọi dòng của mọi l�
 | **Chuông đá** `chuongDa {x, y, not}` | nhũ đá treo tự ngân nốt riêng; là nguồn để `hear()` / `listen()` đo | **thiếu**: nhũ đá treo + vòng sóng + số nốt |
 | **Ngách hang ngầm** `ngachHang [{a, b}]` | bước vào cửa a thì chui ra b trong cùng nhịp (hai chiều) | **thiếu**: hai cửa hang cùng màu, mỗi cặp một màu |
 | Nâng cấp **Thu gai** | `retract_spikes()` thu gai: lướt hết dải `I` trong 1 nhịp (tiết kiệm nhịp), cuối dải là hố thì rơi; `extend_spikes()` bung lại để bám | hình gai thu / bung |
-| Nâng cấp **Ngân dài** (bảng cũ: "Phát nốt") | `beat(n)` cho nốt đang phát ngân thêm n nhịp, bánh vẫn đi được: vừa tiến vừa làm đá rung | sóng ngân kéo dài |
+| Nâng cấp **Ngân dài** (bảng cũ: "Phát nốt") | `note(n, k)` ngân nốt n trong k nhịp liền, bánh vẫn đi được: vừa tiến vừa làm đá rung (lõi đã có; mùa 9 `crack_glide` dùng đúng dạng này). `beat()` của loa gốc là một tiếng trống, không đối số (sửa 2/11 khi làm P0: bản trước ghi nhầm `beat(n)`) | sóng ngân kéo dài |
 | Nâng cấp **Nghe nốt** | `listen()` = nốt của chuông đá gần nhất (trong 6 ô) | mic nâng cấp |
 
 Đề xuất đổi tên gói 6 "Phát nốt" → **"Ngân dài"**: loa gốc ở gói 2 đã phát nốt, nên "Phát nốt" không phải điều mới (câu hỏi 1).
@@ -63,7 +63,7 @@ Mã gói / chương giữ như PDM8 (mùa 9 và lưu tiến độ trỏ vào). T
 | 3 Âm thanh `am-thanh` | `am-thanh` **Nghe tiếng vang**: chuông đá, `hear()` làm số, `while hear() > 0` | `che-am-thanh` **Chế lệnh: dò tiếng vang** (`go_echo` …) | cảm biến, chuông đá | + mic |
 | 4 Ngách hang `san-hang-dong` | `san-hang-dong` **Chui ngách ngầm**: một cặp → nhiều cặp màu; ngách + hố + đá chuông | `che-hang-dong` **Chế lệnh: vượt ngách** | ngách hang ngầm | cỗ máy mùa |
 | 5 Thu gai `thu-gai` | `thu-gai` **Lướt đá ướt**: thu / bung gai, lướt tiết kiệm nhịp, dừng kịp trước hố | `che-thu-gai` **Chế lệnh: lướt rồi bám** (`slide_stop`, `glide_step`, `glide_tunnel`, `echo_glide`) | nâng cấp thân | |
-| 6 Ngân dài `phat-not` | `phat-not` **Vừa đi vừa ngân**: `beat(n)`, đá ben lớn, nhiều khối khác nốt | `che-phat-not` **Chế lệnh: tấu phá đá** (`play_note`, `crack_glide` …) | nâng cấp loa | |
+| 6 Ngân dài `phat-not` | `phat-not` **Vừa đi vừa ngân**: `note(n, k)`, đá ben lớn, nhiều khối khác nốt | `che-phat-not` **Chế lệnh: tấu phá đá** (`play_note`, `crack_glide` …) | nâng cấp loa | |
 | 7 Nghe nốt `nghe-not` | `nghe-not` **Bắt nốt chuông đá**: `listen()`; đá chuông cùng nốt với chuông cạnh nó, mỗi sân một nốt (không viết cứng được) | `che-nghe-not` **Chế lệnh: giải mã giai điệu** (dict nốt → hướng, set nốt đã nghe; `crack_tunnel`, `decode_glide`, `listen_unique_step`) | nâng cấp cảm biến | |
 | 8 Hang có dấu cũ `hang-cu` | `hang-cu` xe hang động gặp yếu tố mùa 1–7 trong hang (thùng gỗ, nút đè + cửa, băng chuyền, đệm từ, dòng nước, sàn màu, tảng đá tròn / sàn dốc / bàn xoay: chọn loại lõi chạy được với bánh gai, đo ở P0) | `che-hang-cu` chế lệnh cho các cảnh đó | yếu tố cũ | |
 | 9 Đội thám hiểm `doi-hang-dong` | `doi-hang-dong` R2 của Luna = **máy khai thác đá mùa 7** (omni, máy ném, radar): R2 ném đá lấp hố sụt cho R1, R1 phá đá chuông mở lối cho R2 | `che-doi-hang-dong` chế lệnh phối hợp (`fill_for_mate`, `crack_for_mate`) | đội | R2 mùa 7 |

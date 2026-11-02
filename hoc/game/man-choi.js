@@ -331,6 +331,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       vo: m.vo,                                                                                  // vỏ hình của mùa (30/10: 'nong-trai' ở mùa 4)
       dong: lm.dong || undefined,                                                                // BẾN SÔNG (31/10): lớp dòng chảy của sân này
       chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: m.taiToiDa, luatThap: m.luatThap, hamGoc: m.hamGoc,   // CẢNG SÔNG: chồng container, tàu, danh sách giao, luật tải / tháp; khay lệnh để hình biết nâng cấp (móc đôi, cân, ray, buộc đuôi, flow)
+      chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined, ngachHang: lm.ngachHang || undefined,     // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm của sân này
       doiKhang: !!m.doiKhang,
       doi: m.doi ? m.doi.map(function (r, k) {                                       // nhiều robot: hình xe, chỗ xuất phát của từng robot (san-ve.js vẽ đủ, R1 xanh lơ, R2 cam)
         var mk = manCuaXe(m, k);
@@ -351,7 +352,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       the: lamMoi ? TP.theMacDinh({ man: m, kho: KhoHam.ds(), hamMan: S.bai.hamCuaMan, dangSua: null }) : undefined,
       vong: TP.coCauTruc(m, 'for'),
       bienDem: !!m.bienDem,                                                                     // chương che-cam-bien từ màn dạy biến đếm: nhóm ĐẾM (n = 0, n = n + 1, for i in range(n):)
-      dict: TP.coCauTruc(m, 'dict'), set: TP.coCauTruc(m, 'set'), am: TP.nguonAmCua(m),        // mùa 8: nhóm TỪ ĐIỂN / TẬP HỢP / ÂM THANH ở thẻ Logic
+      dict: TP.coCauTruc(m, 'dict'), set: TP.coCauTruc(m, 'set'), am: TP.nguonAmCua(m), nganDai: !!m.nganDai,        // mùa 8: nhóm TỪ ĐIỂN / TẬP HỢP / ÂM THANH ở thẻ Logic
       list: TP.coListCua(m),                                                                  // gói List: nhóm DANH SÁCH (a = [1, 2], for n in a:, for n in [1, 2]:, a.append(1)) ở thẻ Logic
       vongWhile: TP.coCauTruc(m, 'while') && TP.coDieuKienCua(m),
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC

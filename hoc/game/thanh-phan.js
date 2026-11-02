@@ -39,7 +39,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var NEM_TEN = ['aim', 'throw', 'load'];                      // lệnh máy ném: nhóm MÁY NÉM (cùng màu cam với tay); aim(n) mang một số 1–3
   var SUNG_TEN = ['spray', 'spray_back'];                      // lệnh SÚNG HƠI (bắn ra trước + giật lùi / bắn ra sau + giật tới): nhóm SÚNG HƠI (cùng màu cam với tay)
   var SON_TEN = ['ink', 'dot', 'pen_down', 'pen_up'];           // lệnh MÁY SƠN: nhóm MÁY SƠN (cùng màu cam với tay); ink(c) mang một màu, đổi ngay như aim(n)
-  var LOA_TEN = ['note', 'beat'];                               // lệnh LOA (mùa 8): note(n) phát nốt 1–8, beat(n) ngân thêm n nhịp; nhóm LOA (cùng màu cam với tay)
+  var LOA_TEN = ['note', 'beat'];                               // lệnh LOA (mùa 8): note(n) phát nốt 1–8, beat() gõ một tiếng trống; nhóm LOA (cùng màu cam với tay)
+  var NOTE_NGAN = 'note_ngan';                                  // khối giả của gói Ngân dài (spec.nganDai): chèn note(1, 2), nốt n ngân k nhịp
   var AM_TEN = ['hear', 'listen'];                              // cảm biến âm thanh (mùa 8): trả SỐ, chỉ dùng làm ô số / khối nhóm ÂM THANH, không phải lệnh
   function lopMau(ten) {
     if (ten === 'left_move' || ten === 'right_move' || ten === 'left_back' || ten === 'right_back') return 'cy';
@@ -2246,11 +2247,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (loai === 'goc' && ten === 'aim') goi = 'aim(1)';                       // aim(n): thẻ chèn sẵn tầm 1, chạm số để chọn 1 / 2 / 3
       if (loai === 'goc' && (ten === 'spray' || ten === 'spray_back') && cb.kieuDoiSo && cb.kieuDoiSo(ten, 0) === 'luc') goi = ten + '("high")';   // màn Lực bắn: chạm "high" để đổi sang "low"
       if (loai === 'goc' && ten === 'ink') goi = 'ink("red")';                   // ink(c): thẻ chèn sẵn màu đỏ, chạm màu để chọn màu khác
-      if (loai === 'goc' && LOA_TEN.indexOf(ten) >= 0) goi = ten + '(1)';        // note(n) / beat(n) (mùa 8): chèn sẵn 1, chạm số để chọn nốt / số nhịp
+      if (loai === 'goc' && ten === 'note') goi = 'note(1)';                     // note(n) (mùa 8): chèn sẵn nốt 1, chạm số để chọn nốt 1–8; beat() gõ một tiếng trống, không đối số
+      if (loai === 'goc' && ten === NOTE_NGAN) goi = 'note(1, 2)';               // gói Ngân dài: note(n, k) ngân nốt n trong k nhịp
       var hien = '(' + (hamTS || []).join(', ') + ')';
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', loai); d.setAttribute('data-goi', goi);
       var sp = h('span', 'tx');
-      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : LOA_TEN.indexOf(ten) >= 0 ? ten + '(n)' : ten;
+      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : ten === 'note' ? 'note(n)' : ten === NOTE_NGAN ? 'note(n, k)' : ten;
       else { sp.appendChild(document.createTextNode(ten)); sp.appendChild(h('span', 'pn' + (hamTS && hamTS.length ? ' co' : ''), hien)); }
       d.appendChild(sp);
       if (loai !== 'goc') {
@@ -2540,7 +2542,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           nhomLenhTay(gocNem, 'choi.nhom.mayNem', nTay > 1);
           nhomLenhTay(gocSung, 'choi.nhom.sungHoi', nTay > 1);
           nhomLenhTay(gocSon, 'choi.nhom.maySon', nTay > 1, gocSon.length > 2);
-          nhomLenhTay(gocLoa, 'choi.nhom.loa', nTay > 1);
+          nhomLenhTay(spec.nganDai && gocLoa.indexOf('note') >= 0 ? gocLoa.concat([NOTE_NGAN]) : gocLoa, 'choi.nhom.loa', nTay > 1);
           nhomMan(manThe.tay);
           nhomEm(emThe.tay, khacThe.tay);
         } });

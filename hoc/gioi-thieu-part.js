@@ -407,43 +407,44 @@
         'Không đi qua được vách đá # hay vực sâu u trong hang',
         { can: ['retract_spikes'], chu: 'Đang thu gai mà lướt trên đá vôi ướt I lao thẳng vào vực sâu u hay hố hở thì rơi ngay' }
       ],
-      luuY: ['Gọi retract_spikes() hoặc extend_spikes() để đổi chế độ gai ngay lập tức mà không tốn nhịp.']
+      luuY: ['retract_spikes() / extend_spikes() đổi gai ở đầu nhịp kế, đi chung nhịp với lệnh bánh, không tốn nhịp riêng.']
     },
     'loa': {
       khe: 'tay', ten: 'Loa cộng hưởng',
-      moTa: 'Loa âm thanh gắn trên lưng xe để gõ nhịp vang hang và phát nốt nhạc mở khóa đá chuông.',
-      lenh: ['beat', 'note'],
+      moTa: 'Loa gắn trên xe phát nốt nhạc. Phát đúng nốt của đá chuông đủ số nhịp thì đá vỡ, mở đường.',
+      lenh: ['note', 'beat'],
       moTaLenh: {
-        beat: 'Gõ một tiếng trống vào đúng nhịp wait() kế tiếp',
-        note: 'Phát nốt nhạc từ 1 đến 8 kéo dài theo số nhịp'
+        note: 'note(n) phát nốt n, từ 1 đến 8, trong nhịp này',
+        beat: 'beat() gõ một tiếng trống trong nhịp này'
       },
       ghep: [
-        { lenh: ['beat', 'wait'], ra: 'Gõ một tiếng trống ở nhịp này' },
-        { lenh: ['note', 'wait'], ra: 'Ngân một nốt nhạc ở nhịp này' }
+        { lenh: ['note', 'wait'], ra: 'Đứng yên, phát một nốt' },
+        { lenh: ['beat', 'wait'], ra: 'Đứng yên, gõ một tiếng trống' }
       ],
       gioi: [
-        'beat() gõ tiếng trống vào nhịp wait() kế tiếp, có thể vừa di chuyển vừa gõ nhịp cùng lúc',
-        'Khi đứng cạnh khối đá chuông có ký hiệu trống x, gõ beat() đúng nhịp làm đá chuông cộng hưởng rụt xuống sàn',
-        { can: ['note'], chu: 'note(n) phát cao độ từ 1 đến 8 để khớp bản nhạc hoặc mở đá chuông mang số nốt tương ứng' }
+        'Loa phát ở đầu nhịp nên vừa đi vừa phát được',
+        'Đá chuông ghi số nốt và số vạch: phát đúng nốt đó, mỗi nhịp sáng thêm một vạch, đủ vạch thì đá vỡ',
+        'Đá chuông nghe được loa trong vòng 3 ô, hay ở thẳng trước mũi xe'
       ],
-      khong: ['Gõ sai nhịp hoặc phát sai cao độ sẽ làm đá chuông đã mở bật trồi lên chắn lối trở lại'],
-      luuY: ['Nhịp không gọi beat() hay note(n) mà chỉ gọi wait() sẽ ghi nhận là một nhịp nghỉ lặng.']
+      khong: ['Phát nốt khác hay nghỉ một nhịp thì các vạch tắt hết, phải phát lại từ đầu', 'Mỗi nhịp chỉ phát một nốt'],
+      luuY: ['Đá đã vỡ thì nằm im thành đá vụn, xe đi qua được.']
     },
     'am-thanh': {
       khe: 'camBien', ten: 'Mic thu thanh',
-      moTa: 'Cảm biến âm thanh gắn trên đỉnh xe, lắng nghe tiếng vọng và cao độ từ chuông đá hoặc đàn dơi phát sóng âm trong hang.',
+      moTa: 'Mic nghe tiếng ngân của chuông đá gần nhất trong hang, kể cả đá chuông chưa vỡ.',
       lenh: ['hear', 'listen'],
       moTaLenh: {
-        hear: 'Đo khoảng cách theo số ô tới chuông đá hoặc đàn dơi gần nhất trước mặt trong tầm 6 ô',
-        listen: 'Nghe cao độ nốt nhạc từ 1 đến 8 của chuông đá hoặc đàn dơi gần nhất trong tầm 6 ô'
+        hear: 'hear() trả số ô tới chuông đá gần nhất, đếm ô đi ngang cộng ô đi dọc; không nghe thấy thì trả 0',
+        listen: 'listen() trả nốt của chuông đá gần nhất, từ 1 đến 8; không nghe thấy thì trả 0'
       },
       gioi: [
-        'hear() trả về số ô từ 1 đến 6 tới chuông đá hoặc đàn dơi trước mặt để biết quãng đường cần tiến mà không đếm tay',
-        'Đọc cảm biến không tốn nhịp',
-        { can: ['listen'], chu: 'listen() đọc cao độ nốt 1 đến 8 của chuông đá hoặc đàn dơi gần nhất để phát lại đúng nốt đó bằng note(n)' }
+        'Hỏi không tốn nhịp',
+        'Nghe mọi hướng, vách đá không cản tiếng',
+        'hear() là một số: đặt được vào forward() hay so sánh trong while',
+        { can: ['listen'], chu: 'listen() cho biết nốt, rồi note() phát lại đúng nốt đó' }
       ],
-      khong: ['Vách đá # chắn ngang đường nhìn trước mặt sẽ cản tiếng vọng của hear()'],
-      luuY: ['Khi không có chuông đá hay đàn dơi nào trong tầm 6 ô, hear() và listen() đều trả về 0.']
+      khong: ['Đứng ngay ô chuông đá thì hear() không tính chuông đó', 'Xa quá 9 ô thì không nghe thấy'],
+      luuY: ['Đá chuông chưa vỡ cũng ngân nên mic nghe được; vỡ rồi thì im.']
     }
   };
   var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'xuong', 'gai', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'day-keo', 'loa', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma', 'dong-chay', 'am-thanh'];
