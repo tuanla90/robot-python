@@ -5,3 +5,4 @@ dist-artifact/
 .DS_Store
 .env
 .env.*
+review-man/
