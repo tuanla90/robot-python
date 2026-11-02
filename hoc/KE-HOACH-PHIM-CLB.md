@@ -4,6 +4,8 @@ User 30/10: phim hiện có chưa kể được cốt truyện xuyên suốt, v�
 Hướng mới: **cốt truyện là ứng dụng của CLB robot, hành trình đưa robot vào đời sống**; phim nhìn **từ trên xuống**; dựng bằng **TopView** (như ảnh mascot) ghép với lõi game.
 Thay phần giọng kể của KE-HOACH-PHIM-GOI.md (mục 3c giữ khuôn gói 1 / gói 10) và quy tắc 6 của KE-HOACH-7-MUA.md.
 
+**Sửa / làm phim mới: theo [LUAT-SUA-PHIM-CLB.md](LUAT-SUA-PHIM-CLB.md)** (2/11: chữ ít, phim dừng cuối cảnh chờ Tiếp, không che, bản đồ cuộn + xe bám đường, tên không kiểu thứ miền Nam).
+
 ## 1. Đã chốt (user 30/10)
 
 - **CLB Mật Lệnh Robot** (trùng tên game).
