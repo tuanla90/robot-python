@@ -176,11 +176,13 @@ export const Burst: React.FC<{at: number; x: number; y: number; color?: string; 
 
 /** Chuyển cảnh mượt (cross-dissolve): cảnh sau hiện dần êm lên trên cảnh trước, giữ nguyên nền khi hai cảnh cùng sân. */
 export const Whip: React.FC<{dur: number; len: number; first?: boolean; last?: boolean; children: React.ReactNode}> =
-  ({dur, len, first, children}) => {
+  ({dur, len, first, last, children}) => {
     const f = useCurrentFrame();
-    const inP = first ? 1 : ease(f, [0, len], [0, 1], Easing.inOut(Easing.cubic));
+    // 2/11 (user: chuyển cảnh thấy hai xe đè nhau): cảnh cũ TẮT ngay khi đoạn chồng bắt đầu, cảnh mới hiện dần nhanh (10 khung) trên nền
+    const inP = first ? 1 : ease(f, [0, Math.min(10, len)], [0, 1], Easing.out(Easing.cubic));
+    const outP = last || f < dur - len ? 1 : 0;
     return (
-      <AbsoluteFill style={{opacity: inP}}>
+      <AbsoluteFill style={{opacity: inP * outP}}>
         {children}
       </AbsoluteFill>
     );

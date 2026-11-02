@@ -8,6 +8,7 @@ import {Burst, C, CodeBox, FONT, Icon, Mascot, Say, Shake, ease, pop} from '../d
 import {Phim, W_IN} from '../may-phim';
 import {BangViec, CauTreo, ChuNay, DongHo, LoaiNangCap, NenHienTruong, NhanGoi, Nguoi, TrongXe, chonDangNguoi} from './kit-doc';
 import {KhungSaBan, N, Nhip, SaBan, nhipTai, tamKhung} from './sa-ban';
+import {SanNgang} from '../PhimTayKep';
 
 const NEN = 'nen-doc/mua-1.png';
 const DON = ['Dạy xe chạy', 'Dọn lối', 'Thùng chạy chỗ', 'Kho lạnh', 'Ngõ cụt', 'Lối hẹp hai bên', 'Mê cung kệ', 'Tổng duyệt bến', 'Đơn kho lạnh cuối', 'Xe tải lên đường'];
@@ -159,38 +160,66 @@ const G2Thu: React.FC = () => {
     </Shake>
   );
 };
-const MAN_2_1 = {san: ['.....', '.....', '..D..', '..o..', '.....'], bd: {x: 2, y: 4, huong: 0 as const}};
-const NHIP_HUT = [N.grab(0), N.wait(1), N.move(2)];        // tay còn giơ cao: kẹp hụt; rồi đâm thùng
+// Cơ chế tay kẹp đổi độ cao (hạ / nâng) → GÓC MÁY NGANG (user 2/11): robot là ẢNH 3D nhìn ngang (robot/ngang/, gốc r1_ngang_opt3_v2 của Antigravity 1/11),
+// tách lớp: thân + bánh (r1-than), tay kẹp cầm thùng (tay-kep-thung), tay kẹp mở (tay-kep-mo), thùng (thung). Khung ảnh gốc 1024, vẽ ở tỉ lệ K.
+// TẠM: lớp tay cắt từ chính ảnh; khi user sinh ảnh part riêng (thân không tay, tay mở, tay cầm thùng) thì thay tệp cùng tên, mã không đổi.
+const K3 = 0.5, SAN_Y = 880;                                   // 1024 px ảnh → 512 px; bánh chạm sàn ở y ảnh 897
+const TAY_GOC = {x: 630, y: 548, w: 335, h: 242}, THUNG_GOC = {x: 832, y: 618, w: 120, h: 117};
+/** R1 nhìn ngang 3D: `x` = mép trái ảnh thân (px màn hình); `uHa` 0 = tay giơ cao, 1 = tay sát sàn (dịch lớp tay); `tay` lớp tay đang hiện. */
+const R1Ngang3D: React.FC<{x: number; uHa: number; tay: 'thung' | 'mo'}> = ({x, uHa, tay}) => {
+  const y0 = SAN_Y - 897 * K3;                                 // mép trên ảnh thân
+  const dyTay = -(1 - uHa) * 150 * K3;                         // giơ cao: lớp tay lên 150 px ảnh
+  return (
+    <>
+      <Img src={staticFile('robot/ngang/r1-than.png')} style={{position: 'absolute', left: x, top: y0, width: 1024 * K3, height: 1024 * K3, zIndex: 10}} />
+      <Img src={staticFile(`robot/ngang/tay-kep-${tay}.png`)} style={{position: 'absolute', left: x + TAY_GOC.x * K3, top: y0 + TAY_GOC.y * K3 + dyTay, width: TAY_GOC.w * K3, height: TAY_GOC.h * K3, zIndex: 11}} />
+    </>
+  );
+};
+/** Thùng nằm trên sàn, tâm ngang tại `cx` (px màn hình). */
+const ThungSan: React.FC<{cx: number}> = ({cx}) => (
+  <Img src={staticFile('robot/ngang/thung.png')} style={{position: 'absolute', left: cx - THUNG_GOC.w * K3 / 2, top: SAN_Y - THUNG_GOC.h * K3, width: THUNG_GOC.w * K3, height: THUNG_GOC.h * K3, zIndex: 9}} />
+);
+const cxThungCua = (x: number) => x + (THUNG_GOC.x + THUNG_GOC.w / 2) * K3;   // tâm thùng trong kẹp khi tay sát sàn
+// Cảnh 1: tay đang giơ cao mà grab() → khép gọng giữa không, kẹp hụt.
 const G2Hut: React.FC = () => {
   const f = useCurrentFrame();
-  const tHut = khungNhip(1) + 8, tDam = khungNhip(3) + 8;
+  const x = 200, hut = f >= 48 && f < 150;
   return (
-    <Shake hits={[tDam]} amp={10}>
-      <Lab>
-        <SaBan san={MAN_2_1.san} batDau={MAN_2_1.bd} nhip={NHIP_HUT} anhXe="kep" anhNgac="kep-ngac">
-          {(k) => <>
-            {f >= tHut ? <ChuO k={k} x={2} y={3} chu="HỤT!" at={tHut} den={tHut + 40} mau={C.warn} /> : null}
-            {f >= tDam ? <ChuO k={k} x={2} y={3} chu="CỘP!" at={tDam} den={tDam + 60} /> : null}
-          </>}
-        </SaBan>
-        <BangLenh lines={['grab()', 'wait()', 'move()']} nhip={NHIP_HUT} />
+    <Shake hits={[48]} amp={8}>
+      <SanNgang dangCao>
+        <ThungSan cx={cxThungCua(x)} />
+        <R1Ngang3D x={x} uHa={0} tay="mo" />
+        {hut ? <ChuNay chu="HỤT!" at={48} den={150} x={cxThungCua(x)} y={SAN_Y - 230} mau={C.warn} co={80} /> : null}
+        <BangLenh lines={['grab()', 'wait()']} nhip={[N.grab(0), N.wait(1)]} tu={40} moiNhip={40} y={40} />
         <Luna says={S1('Tay đang giơ cao kìa?')} mat={[[0, 'thinking']]} />
-        <Sola says={S2('Phải hạ tay xuống trước!')} mat={[[0, 'confused'], [126, 'thinking']]} />
-      </Lab>
+        <Sola says={S2('Phải hạ tay xuống sàn trước!')} mat={[[0, 'confident'], [48, 'shocked'], [126, 'thinking']]} />
+      </SanNgang>
     </Shake>
   );
 };
-const NHIP_2_1 = [N.armDownGrab(0), N.armUp(1), N.move(2), N.armDownRelease(3)];   // lời giải màn tay-gap.1
-const G2Dung: React.FC = () => (
-  <Lab>
-    <SaBan san={MAN_2_1.san} batDau={MAN_2_1.bd} nhip={NHIP_2_1} anhXe="kep" anhVui="kep-vui">
-      {(k) => <Burst at={khungNhip(4) + 14} x={tamKhung(k, 2, 2).x} y={tamKhung(k, 2, 2).y} color={C.yellow} />}
-    </SaBan>
-    <BangLenh lines={['arm_down(); grab(); wait()', 'arm_up(); wait()', 'move()', 'arm_down(); release(); wait()']} nhip={NHIP_2_1} size={30} />
-    <Sola says={S1('Hạ, kẹp, nâng, đi, thả!')} mat={[[0, 'confident'], [120, 'cheer']]} />
-    <Luna says={S2('Thùng vào đúng ô đích!')} mat={[[0, 'calm'], [126, 'great-job']]} />
-  </Lab>
-);
+// Cảnh 2: lời giải màn tay-gap.1: hạ, kẹp, nâng, đi một ô, hạ, thả vào ô đích.
+const G2Dung: React.FC = () => {
+  const f = useCurrentFrame();
+  const x0 = 120, O_NGANG = 200;
+  const uHa1 = ease(f, [36, 58], [0, 1]), kep = f >= 62, uNang = ease(f, [72, 96], [0, 1]);
+  const uDi = ease(f, [104, 160], [0, 1]), uHa2 = ease(f, [168, 190], [0, 1]), tha = f >= 196;
+  const uHa = f < 72 ? uHa1 : f < 168 ? 1 - uNang : uHa2;
+  const x = x0 + uDi * O_NGANG;
+  const hl = f < 36 ? undefined : f < 72 ? 0 : f < 104 ? 1 : f < 168 ? 2 : 3;
+  return (
+    <SanNgang dangCao={uHa < 0.5}>
+      <div style={{position: 'absolute', left: cxThungCua(x0 + O_NGANG) - 110, top: SAN_Y - 18, width: 220, height: 22, borderRadius: 8, background: '#FACC15', border: '4px solid #2E2A5A', zIndex: 7}} />
+      {!kep ? <ThungSan cx={cxThungCua(x0)} /> : null}
+      {tha ? <ThungSan cx={cxThungCua(x0 + O_NGANG)} /> : null}
+      <R1Ngang3D x={x} uHa={uHa} tay={kep && !tha ? 'thung' : 'mo'} />
+      <Burst at={198} x={cxThungCua(x0 + O_NGANG)} y={SAN_Y - 60} color={C.yellow} />
+      <CodeBox lines={['arm_down(); grab(); wait()', 'arm_up(); wait()', 'move()', 'arm_down(); release(); wait()']} x={70} y={40} w={620} size={30} title="mat_lenh.py" hl={hl} />
+      <Sola says={S1('Hạ, kẹp, nâng, đi, thả!')} mat={[[0, 'confident'], [198, 'cheer']]} />
+      <Luna says={S2('Nâng lên rồi mới chạy nhé!')} mat={[[0, 'calm'], [198, 'great-job']]} />
+    </SanNgang>
+  );
+};
 
 /* ================================================================== GÓI 3 · Cảm biến khoảng cách (khoang-cach.1 "Hỏi trước khi đi") */
 const SAN_KHO_3 = ['.....', '.....', '.....', '..o..', '.....', '.....', '.....'];
@@ -621,8 +650,8 @@ export const PHIM_M1: Phim[] = [
     tt(1, GIO(13, 10), 'Ờ, biết chạy rồi đấy. Dọn thùng kia xem!'),
     canh('thu', DUR, <G2Thu />, DAM(khungNhip(3) + 8)),
     xe('kep', 'Có quai thì làm gì?', 'Nhấc lên! Lắp tay kẹp!', 'Tay kẹp'),
-    canh('hut', DUR, <G2Hut />, [[22, 'click.wav', 0.8], [khungNhip(1) + 8, 'wrong.wav', 0.4], ...DAM(khungNhip(3) + 8)!]),
-    canh('dung', DUR, <G2Dung />, [[22, 'click.wav', 0.8], [khungNhip(4) + 14, 'ding.wav', 0.5]]),
+    canh('hut', DUR, <G2Hut />, [[34, 'click.wav', 0.8], [48, 'wrong.wav', 0.5]]),
+    canh('dung', DUR, <G2Dung />, [[30, 'click.wav', 0.8], [62, 'click.wav', 0.5], [198, 'ding.wav', 0.5]]),
     treo('kep', 'Hạ tay, kẹp, nhấc!', 2, 'Tay gắp'),
   ]),
   mo(3, [

@@ -317,10 +317,12 @@ export const Nguoi: React.FC<{anh: string; doiAnh?: [number, string][]; camXuc?:
               color: C.ink, lineHeight: 1.32, textWrap: 'balance',
               boxShadow: `0 10px 0 ${C.ink}, 0 18px 34px rgba(15,23,42,0.34), inset 0 4px 0 #FEF3C7`}}>
               {say.text}
-              <svg width="34" height="24" viewBox="0 0 34 24" style={{position: 'absolute', bottom: -21,
-                [side === 'right' ? 'left' : 'right']: 32, transform: side === 'right' ? undefined : 'scaleX(-1)', overflow: 'visible'}}>
-                <path d="M 4 0 L 28 0 L 6 20 Z" fill="#FFFBEB" stroke={C.ink} strokeWidth="5" strokeLinejoin="round" />
-                <path d="M 6 -2 L 26 -2" stroke="#FFFBEB" strokeWidth="6" />
+              {/* 2/11: đuôi cùng kiểu Mascot (d10.tsx): to, vượt dải bóng cứng 10px, nền phủ viền hộp chỗ nối */}
+              <svg width="48" height="50" viewBox="0 0 48 50" style={{position: 'absolute', bottom: -48,
+                [side === 'right' ? 'left' : 'right']: 34, transform: side === 'right' ? undefined : 'scaleX(-1)', overflow: 'visible'}}>
+                <path d="M 6 0 L 10 48 L 44 0 Z" transform="translate(0 10)" fill={C.ink} />
+                <path d="M 6 0 L 10 48 L 44 0 Z" fill="#FFFBEB" />
+                <path d="M 6 4 L 10 48 L 44 4" fill="none" stroke={C.ink} strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
               </svg>
             </div>
           </div>
@@ -802,31 +804,28 @@ export const TrongXe: React.FC<{
         /* ============================================================ CHẾ ĐỘ LẮP PART MỚI (GÓI 1, 2, 3...) */
         <>
           {laLapHaiBanh && dangLap ? (
+            /* Gói 1: hai bánh xe là ẢNH PART RIÊNG (robot/part/banh-*.png, cùng khung 576 với thân) trượt từ hai bên vào đầu R1 */
             <>
-              {/* Bánh trái trượt từ bên trái vào */}
-              <div style={{position: 'absolute', left: 540 - S_DAU / 2 - (1 - uLap) * 190, top: 890 - S_DAU / 2, width: S_DAU, height: S_DAU,
-                opacity: uLap, transform: 'rotate(-90deg)'}}>
-                <Img src={staticFile('robot/lab/banh-r1.png')} style={{width: S_DAU, height: S_DAU, clipPath: 'inset(0 0 65% 0)'}} />
-              </div>
-              {/* Bánh phải trượt từ bên phải vào */}
-              <div style={{position: 'absolute', left: 540 - S_DAU / 2 + (1 - uLap) * 190, top: 890 - S_DAU / 2, width: S_DAU, height: S_DAU,
-                opacity: uLap, transform: 'rotate(-90deg)'}}>
-                <Img src={staticFile('robot/lab/banh-r1.png')} style={{width: S_DAU, height: S_DAU, clipPath: 'inset(65% 0 0 0)'}} />
-              </div>
+              {[['banh-trai', -1], ['banh-phai', 1]].map(([ten, ben]) => (
+                <div key={ten as string} style={{position: 'absolute', left: 540 - S_DAU / 2 + (ben as number) * (1 - uLap) * 190, top: 890 - S_DAU / 2, width: S_DAU, height: S_DAU,
+                  opacity: uLap, transform: 'rotate(-90deg)', zIndex: 12, filter: 'drop-shadow(0 10px 16px rgba(15,23,42,0.35))'}}>
+                  <Img src={staticFile(`robot/part/${ten}.png`)} style={{width: S_DAU, height: S_DAU}} />
+                </div>
+              ))}
             </>
           ) : laLapTayKep && dangLap ? (
-            /* Gói 2: phần càng của chính ảnh kep.png (mũi bên phải ảnh → phía trên khi xoay -90°) trượt từ trên xuống khớp thân */
+            /* Gói 2: tay kẹp là ẢNH PART RIÊNG (robot/part/kep.png) trượt từ trên xuống khớp mũi thân */
             <div style={{position: 'absolute', left: 540 - S / 2, top: 890 - S / 2 - (1 - uLap) * 170, width: S, height: S, opacity: uLap,
               transform: 'rotate(-90deg)', zIndex: 12, filter: 'drop-shadow(0 12px 18px rgba(15,23,42,0.35))'}}>
-              <Img src={staticFile(duongRobot(m, anh))} style={{width: S, height: S, clipPath: 'inset(0 0 0 70%)'}} />
+              <Img src={staticFile('robot/part/kep.png')} style={{width: S, height: S}} />
             </div>
           ) : laLapCamBien && dangLap ? (
-            /* Gói 3: hai viên cảm biến cắt từ chính ảnh kep-cam.png (mép trên / dưới ảnh = trái / phải màn hình khi xoay -90°) trượt từ hai bên vào vai */
+            /* Gói 3: hai mắt khoảng cách là ẢNH PART RIÊNG (robot/part/cam-kc-*.png) trượt từ hai bên vào vai */
             <>
-              {[['inset(20% 46% 64% 34%)', -1], ['inset(64% 46% 20% 34%)', 1]].map(([clip, ben]) => (
-                <div key={String(ben)} style={{position: 'absolute', left: 540 - S / 2 + (ben as number) * (1 - uLap) * 170, top: 890 - S / 2, width: S, height: S, opacity: uLap,
+              {[['cam-kc-trai', -1], ['cam-kc-phai', 1]].map(([ten, ben]) => (
+                <div key={ten as string} style={{position: 'absolute', left: 540 - S / 2 + (ben as number) * (1 - uLap) * 170, top: 890 - S / 2, width: S, height: S, opacity: uLap,
                   transform: 'rotate(-90deg)', zIndex: 12, filter: 'drop-shadow(0 10px 16px rgba(15,23,42,0.38))'}}>
-                  <Img src={staticFile(duongRobot(m, anh))} style={{width: S, height: S, clipPath: clip as string}} />
+                  <Img src={staticFile(`robot/part/${ten}.png`)} style={{width: S, height: S}} />
                 </div>
               ))}
             </>

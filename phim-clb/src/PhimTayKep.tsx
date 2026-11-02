@@ -89,7 +89,7 @@ const SanThu: React.FC<{children: React.ReactNode}> = ({children}) => (
  * Khung GÓC NHÌN NGANG (Side-View Cross-Section):
  * Mặt sàn kho ở y = 880, có 2 đường chuẩn độ cao: TRÊN CAO (arm_up) và SÁT SÀN (arm_down).
  */
-const SanNgang: React.FC<{children: React.ReactNode; dangCao: boolean}> = ({children, dangCao}) => (
+export const SanNgang: React.FC<{children: React.ReactNode; dangCao: boolean}> = ({children, dangCao}) => (
   <AbsoluteFill style={{fontFamily: FONT}}>
     <Img src={staticFile('nen-doc/mua-1.png')} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
     <AbsoluteFill style={{background: 'rgba(15, 23, 42, 0.35)'}} />
@@ -142,10 +142,10 @@ const SanNgang: React.FC<{children: React.ReactNode; dangCao: boolean}> = ({chil
  * Thùng hàng vector chuẩn của game (bo góc trắng-tím nhạt, đai xanh #38BDF8 ở giữa, viền chàm #2E2A5A).
  * Khi `mop = true` (rơi từ trên cao): thùng bị móp méo, nghiêng lệch và có vết nứt đỏ.
  */
-const ThungNgang: React.FC<{x: number; y: number; size?: number; mop?: boolean}> = ({x, y, size = 136, mop = false}) => (
+export const ThungNgang: React.FC<{x: number; y: number; size?: number; mop?: boolean}> = ({x, y, size = 136, mop = false}) => (
   <div style={{position: 'absolute', left: x, top: y, width: size, height: size, pointerEvents: 'none', zIndex: 9,
     transform: mop ? 'translateY(10px) rotate(11deg) scaleX(1.12) scaleY(0.84)' : 'none', transformOrigin: '50% 100%'}}>
-    <Img src={staticFile('robot/thung-go.png')} style={{width: '100%', height: '100%', display: 'block'}} />
+    <Img src={staticFile('robot/m1/vat-thung-go.png')} style={{width: '100%', height: '100%', display: 'block'}} />
     {mop ? (
       <svg width={size} height={size} viewBox="0 0 100 100" style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
         {/* Vết nứt vỡ đỏ trên thùng khi rơi từ trên cao */}
@@ -166,7 +166,7 @@ const ThungNgang: React.FC<{x: number; y: number; size?: number; mop?: boolean}>
  *    - Thanh trượt dọc trước mũi + khối trượt trắng + khớp tròn bạc có đèn báo tư thế (cyan khi `arm_up`, cam khi `arm_down`).
  *    - Ngàm kẹp Mẫu A gồm ngàm sau/dưới (vẽ ở lớp dưới thùng `zIndex: 8`) và ngàm ngang chính chạy ngang qua mặt bên thùng (vẽ ở lớp trên thùng `zIndex: 12`).
  */
-const R1Ngang: React.FC<{
+export const R1Ngang: React.FC<{
   x: number;
   uHa: number;       // 0 = TRÊN CAO (arm_up), 1 = SÁT SÀN (arm_down)
   dong: boolean;     // true = grab() khép gọng ôm hông thùng, false = release() mở gọng
