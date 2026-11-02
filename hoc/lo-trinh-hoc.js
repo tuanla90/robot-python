@@ -3350,6 +3350,19 @@
     var hs = SL.ds[si], ms = hs.man && get(hs.man);
     if (ms && M.danhSach.indexOf(ms) >= 0 && !M.danhSach.some(function (x) { return (x.taoHam || []).indexOf(hs.ten) >= 0; })) SL.ds.splice(si, 1);
   }
+  // Vỏ hình mùa dựng lại sau (1/11, user: "không phân biệt được sa bàn với màn môi trường"): cùng luật như mùa 1–3 và Nông trại (đoạn "Vỏ hình theo gói" ở trên):
+  // chương 1 mỗi gói là Sa bàn Phòng Lab (vo = null, kể cả khi tệp màn tự khai vỏ), chương 2 là bối cảnh mùa. Trước đó Cảng sông / Bến sông dùng bối cảnh cả 20 màn,
+  // Mỏ đá cả 200 màn là Lab, Hang động gói 1–4 toàn hang, gói 5–10 toàn Lab. Chạy cuối để đè vỏ do tệp màn hay san-ve.js đoán theo ký hiệu (null ≠ undefined).
+  var VO_MUA_SAU = { 'mua-4': 'cang', 'mua-5': 'song', 'mua-7': 'mo-da', 'mua-8': 'hang' };
+  (TT.goi || []).forEach(function (g) {
+    var vo = VO_MUA_SAU[g.mua]; if (!vo) return;
+    (g.chuong || []).forEach(function (c, i) {
+      M.danhSach.forEach(function (m) { if (m.chuong === c) m.vo = i === 0 ? null : vo; });
+    });
+  });
+  // Tên vỏ khác của mùa 9 CLB (man-cuu-*.js) → tên VO_MAP của san-ve.js; tên lạ thì sân vẽ thành Lab (2/11)
+  var VO_TEN = { kho: 'kho-hang', 'tai-che': 'bai-tai-che', vuon: 'nong-trai', 'hang-dong': 'hang', 'cang-song': 'cang' };
+  M.danhSach.forEach(function (m) { if (VO_TEN[m.vo]) m.vo = VO_TEN[m.vo]; });
   M.phienBanLoTrinh = 2;
   M.tinhLai();
   if (node) module.exports = M;

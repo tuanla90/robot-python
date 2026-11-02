@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
-const NEN_VEC = '8a09db2';                             // 01/11 gộp hình các part, ô sân và vật bản mới (3D vector) từ claude/ve-moi-tu-ban-chup (trước: 79a04d3)
+const NEN_VEC = '7868b3b';   // 02/11 4f1a91f vẽ thêm thân bánh gai, tay dây kéo, thân omni mà chưa dời nền huy hiệu (main đỏ A3-v). Trước: nền 8a09db2. // 01/11 gộp hình các part, ô sân và vật bản mới (3D vector) từ claude/ve-moi-tu-ban-chup (trước: 79a04d3)
 // trước:                             // 30/10 phun nhẹ: nền VECTOR = d3917d2 (phim gói 2 khung 3, 4 không còn giật; phim gói 4 khung 4 thùng nặng chắn lối; mã trong phim spray thay shoot). Trước đó 9a6d47c (van hơi). So với 4548dda (đổi tên, chưa sửa phim) chỉ lệch sung-hoi.3, sung-hoi.4
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');

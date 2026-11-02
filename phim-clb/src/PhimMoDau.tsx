@@ -4,23 +4,17 @@
 // và hành trình xe trạm lăn bánh dọc bản đồ chiến dịch 8 mùa.
 import React from 'react';
 import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
-import {Burst, C, CLAMP, FONT, Headline, Icon, Mascot, MONO, PopIn, Sub, ease, pop} from './d10';
+import {Burst, C, CLAMP, FONT, Headline, Icon, Mascot, MONO, PopIn, ease, pop} from './d10';
 import {FPS, Phim, W_IN, pops} from './may-phim';
 import {Nguoi} from './doc/kit-doc';
+import {CAU_S, diemTren} from './duong-ban-do';
 
-/** Cảnh 1 (6s = 180f): Tại phòng CLB (nen-doc/mua-7.png), Bảng Ủy Nhiệm từ Thầy Hiệu Trưởng gửi tới CLB Robot. */
+/** Cảnh 1 (8s = 240f; mỗi cảnh dừng cuối chờ Tiếp, mỗi nhịp một câu ngắn — 2/11 theo skill remotion-motion-graphics): Tại phòng CLB (nen-doc/mua-7.png), Bảng Ủy Nhiệm từ Thầy Hiệu Trưởng gửi tới CLB Robot. */
 const YEU_CAU_THI_TRAN = [
-  {ma: 'QUEST #1', noi: 'Kho hàng Chú Tư', viec: 'Kẹt 10 đơn sát giờ xe tải chạy', mau: '#F59E0B', nen: '#FEF3C7', anh: 'tu-sot-ruot', bot: 'robot/m1/du-vui.png', xoay: -90, zoom: 1.48},
+  {ma: 'QUEST #1', noi: 'Kho hàng Chú Tùng', viec: 'Kẹt 10 đơn sát giờ xe tải chạy', mau: '#F59E0B', nen: '#FEF3C7', anh: 'tu-sot-ruot', bot: 'robot/m1/du-vui.png', xoay: -90, zoom: 1.48},
   {ma: 'QUEST #2', noi: 'Nhà máy Cô Hạnh', viec: 'Lò hơi quá áp, kẹt van tầng cao', mau: '#EF4444', nen: '#FEE2E2', anh: 'hanh-hoang', bot: 'robot/m2/du-vui.png', xoay: -90},
-  {ma: 'QUEST #3', noi: 'Bãi tái chế Bác Sáu', viec: 'Núi sắt nhựa lẫn lộn chờ phân loại', mau: '#10B981', nen: '#D1FAE5', anh: 'sau-sot-ruot', bot: 'robot/m3/nhen-tu-vui.png', xoay: 0},
+  {ma: 'QUEST #3', noi: 'Bãi tái chế Bác Sơn', viec: 'Núi sắt nhựa lẫn lộn chờ phân loại', mau: '#10B981', nen: '#D1FAE5', anh: 'sau-sot-ruot', bot: 'robot/m3/nhen-tu-vui.png', xoay: 0},
   {ma: 'QUEST #4', noi: 'Nông trại Chị Lan', viec: 'Cánh đồng hoa Tết chờ gieo hạt', mau: '#EC4899', nen: '#FCE7F3', anh: 'lan-sot-ruot', bot: 'robot/m5/drone-cam-vui.png', xoay: 0},
-];
-
-const CHIEN_DICH_TIEP = [
-  {ten: 'Bến sông Bác Ba', anh: 'ba-hoang', mau: '#0284C7'},
-  {ten: 'Mỏ đá Anh Dũng', anh: 'dung-hoang', mau: '#D97706'},
-  {ten: 'Hang động Chú Phong', anh: 'phong-hoang', mau: '#0D9488'},
-  {ten: 'Đại hội CLB Trường', anh: 'thay-tu-hao', mau: '#4F46E5'},
 ];
 
 const CanhPhongClb: React.FC = () => {
@@ -32,10 +26,9 @@ const CanhPhongClb: React.FC = () => {
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.45) 45%, rgba(15,23,42,0.9) 100%)'}} />
 
       <Headline text="CLB ROBOT NHẬN KÈO GIẢI CỨU!" at={4} top={34} size={52} color="#FFFFFF" accent={['NHẬN KÈO']} />
-      <Sub text="Độ robot · Code Python · Cân đẹp 8 điểm nóng khắp thị trấn" at={12} top={106} size={28} color="#FDE047" />
 
-      {/* Bảng Ủy Nhiệm Chiến Dịch kiểu Game Quest Board khổ lớn (lấp đầy y = 162 .. 1190) */}
-      <PopIn at={14} style={{position: 'absolute', left: 36, top: 162, width: 1008, padding: '22px 24px 24px',
+      {/* Bảng Ủy Nhiệm: lời Thầy + 4 người nhờ (ảnh + tên nơi), không chữ phụ (y = 130 .. ~1010) */}
+      <PopIn at={14} style={{position: 'absolute', left: 36, top: 130, width: 1008, padding: '22px 24px 24px',
         borderRadius: 34, border: `6px solid ${C.ink}`,
         background: 'linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 100%)',
         boxShadow: `0 16px 0 ${C.ink}, 0 28px 48px rgba(0,0,0,0.5)`, boxSizing: 'border-box'}}>
@@ -65,54 +58,18 @@ const CanhPhongClb: React.FC = () => {
           </span>
         </div>
 
-        {/* Lưới 2x2 Thẻ Quest Hero cỡ lớn (cao 335px/thẻ, ảnh NPC 160x160 + ảnh Robot 125x125) */}
+        {/* Lưới 2x2 người nhờ: ảnh lớn + tên nơi (2/11: bỏ mã quest, KHẨN CẤP, mẫu robot, mô tả — chữ nhiều quá) */}
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18}}>
           {YEU_CAU_THI_TRAN.map((item, i) => (
-            <PopIn key={item.ma} at={22 + i * 10} style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-              padding: '18px 20px', borderRadius: 26, background: '#FFFFFF', height: 335,
+            <PopIn key={item.ma} at={22 + i * 10} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
+              padding: '20px 20px 22px', borderRadius: 26, background: '#FFFFFF',
               border: `5px solid ${C.ink}`, boxShadow: `0 10px 0 ${C.ink}`, boxSizing: 'border-box'}}>
-              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12}}>
-                <div style={{position: 'relative', width: 168, height: 168, borderRadius: 24, background: item.nen,
-                  border: `4px solid ${C.ink}`, boxShadow: `0 6px 0 ${C.ink}`, overflow: 'hidden', flexShrink: 0}}>
-                  <Img src={staticFile(`nguoi/${item.anh}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
-                </div>
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1,
-                  height: 168, borderRadius: 22, background: '#F8FAFC', border: '3px dashed #94A3B8', padding: 8, boxSizing: 'border-box'}}>
-                  <Img src={staticFile(item.bot)} style={{width: 138, height: 138, objectFit: 'contain', transform: `${item.xoay ? `rotate(${item.xoay}deg) ` : ''}scale(${'zoom' in item && item.zoom ? item.zoom : 1})`}} />
-                  <span style={{fontFamily: MONO, fontSize: 16, fontWeight: 900, color: '#334155', marginTop: 2}}>MẪU ĐỘ R1</span>
-                </div>
+              <div style={{width: 230, height: 230, borderRadius: 28, background: item.nen,
+                border: `5px solid ${item.mau}`, boxShadow: `0 6px 0 ${C.ink}`, overflow: 'hidden'}}>
+                <Img src={staticFile(`nguoi/${item.anh}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
               </div>
-              <div>
-                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6}}>
-                  <span style={{fontFamily: MONO, fontSize: 21, fontWeight: 900, color: '#FFFFFF', background: item.mau,
-                    border: `3px solid ${C.ink}`, padding: '4px 14px', borderRadius: 12, whiteSpace: 'nowrap', boxShadow: `0 3px 0 ${C.ink}`}}>
-                    {item.ma}
-                  </span>
-                  <span style={{fontSize: 19, fontWeight: 900, color: '#DC2626', background: '#FEE2E2', padding: '4px 12px',
-                    borderRadius: 10, border: '2px solid #DC2626'}}>KHẨN CẤP</span>
-                </div>
-                <div style={{fontSize: 31, fontWeight: 900, color: C.ink, lineHeight: 1.2, marginBottom: 4}}>
-                  {item.noi}
-                </div>
-                <div style={{fontSize: 23, fontWeight: 800, color: '#475569', lineHeight: 1.25}}>
-                  {item.viec}
-                </div>
-              </div>
+              <div style={{fontSize: 36, fontWeight: 900, color: C.ink, lineHeight: 1.15, textAlign: 'center'}}>{item.noi}</div>
             </PopIn>
-          ))}
-        </div>
-
-        {/* Dải 4 Chiến Dịch Tiếp Theo ở đáy bảng để lấp đầy bố cục và giới thiệu trọn 8 mùa */}
-        <div style={{marginTop: 18, padding: '14px 18px', borderRadius: 22, background: '#1E293B', border: `4px solid ${C.ink}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12}}>
-          {CHIEN_DICH_TIEP.map((cd) => (
-            <div key={cd.ten} style={{display: 'flex', alignItems: 'center', gap: 10, background: '#0F172A', padding: '8px 12px',
-              borderRadius: 16, border: `2.5px solid ${cd.mau}`, flex: 1, minWidth: 0}}>
-              <div style={{width: 54, height: 54, borderRadius: 14, background: '#fff', border: `2.5px solid ${cd.mau}`, overflow: 'hidden', flexShrink: 0}}>
-                <Img src={staticFile(`nguoi/${cd.anh}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 12%'}} />
-              </div>
-              <div style={{fontSize: 19, fontWeight: 900, color: '#F8FAFC', lineHeight: 1.2}}>{cd.ten}</div>
-            </div>
           ))}
         </div>
       </PopIn>
@@ -121,17 +78,17 @@ const CanhPhongClb: React.FC = () => {
 
       <Mascot who="sola" x={230} h={520} at={8}
         faces={[[8, 'surprised-sach'], [50, 'cheer'], [110, 'celebrate-jump']]}
-        says={[{at: 14, out: 98, text: 'Cả thị trấn gửi yêu cầu cứu hộ dồn dập luôn! CLB Robot mình nhận kèo lớn rồi Luna ơi!'}]}
-        bubbleW={580} bubbleTop={1280} />
+        says={[{at: 14, out: 120, text: 'Cả thị trấn nhờ CLB mình giải cứu!'}]}
+        bubbleW={560} bubbleTop={1180} />
       <Mascot who="luna" x={850} h={520} at={16} side="left" lat
         faces={[[16, 'happy'], [75, 'explaining'], [125, 'thumbs-up']]}
-        says={[{at: 102, out: 174, text: 'Thầy còn cấp luôn Xe Trạm Lab để team mình vừa đi vừa độ robot ngay tại hiện trường đó!'}]}
-        bubbleW={580} bubbleTop={1280} />
+        says={[{at: 126, out: 240, text: 'Thầy cấp luôn Xe Trạm Lab cho tụi mình!'}]}
+        bubbleW={560} bubbleTop={1180} />
     </AbsoluteFill>
   );
 };
 
-/** Cảnh 2 (7s = 210f): Khám phá Xe Trạm Lab Di Động (nen-doc/trong-xe.jpg) & Core R1. */
+/** Cảnh 2 (8s = 240f): Khám phá Xe Trạm Lab Di Động (nen-doc/trong-xe.jpg) & Core R1. */
 const HANG_MUC_XE_TRAM = [
   {ma: 'GARAGE', ten: 'Xưởng Độ Tại Chỗ', moTa: 'Thiếu tay kẹp hay cảm biến, Luna chế lắp ngay trên xe', anh: 'robot/m1/kep-cam-vui.png', trangThai: 'FULL ĐỒ', mau: '#EC4899', nen: '#FCE7F3'},
   {ma: 'SIMULATOR', ten: 'Sa Bàn Giả Lập', moTa: 'Test thử thuật toán an toàn trước khi thả bot ra sân', anh: 'robot/thung-go.png', trangThai: 'ONLINE', mau: '#6366F1', nen: '#E0E7FF'},
@@ -152,8 +109,8 @@ const CanhXeTramLab: React.FC = () => {
       {/* Sân khấu trưng bày Xe Trạm + Core R1 cỡ lớn (top: 122 .. 495) */}
       <div style={{position: 'absolute', left: 36, top: 122, width: 1008, height: 365, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', boxSizing: 'border-box'}}>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `scale(${r1Pop})`}}>
-          <div style={{width: 390, height: 295, borderRadius: 34, background: 'rgba(15,23,42,0.82)',
-            border: `6px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}, inset 0 0 32px rgba(56,189,248,0.4)`,
+          <div style={{width: 390, height: 295, borderRadius: 34, background: 'radial-gradient(circle, #FFFFFF 0%, #E0F2FE 75%)',   // nền trắng như ô Core R1 (2/11)
+            border: `6px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <Img src={staticFile('robot/xe-tram-a.png')} style={{width: 350, height: 265, objectFit: 'contain',
               transform: `translateY(${Math.sin(f / 8) * 6}px)`}} />
@@ -167,7 +124,7 @@ const CanhXeTramLab: React.FC = () => {
         </div>
 
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `scale(${r1Pop})`}}>
-          <div style={{width: 330, height: 295, borderRadius: 34, background: 'rgba(15,23,42,0.82)',
+          <div style={{width: 330, height: 295, borderRadius: 34, background: 'radial-gradient(circle, #FFFFFF 0%, #E0F2FE 75%)',   // nền sáng: bánh xe sẫm màu của R1 mới hiện (2/11)
             border: `6px solid #FDE047`, boxShadow: `0 12px 0 ${C.ink}, 0 0 36px rgba(250,204,21,0.4)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <Img src={staticFile('robot/m1/r1-vui.png')} style={{width: 260, height: 260, transform: `rotate(${-90 + Math.sin(f / 10) * 6}deg)`}} />
@@ -177,46 +134,34 @@ const CanhXeTramLab: React.FC = () => {
         </div>
       </div>
 
-      {/* Lưới 2x2 Trang bị Xe Trạm cỡ lớn (top: 520 .. 1190, cao 325px/thẻ, có hình minh họa 140x140) */}
+      {/* Lưới 2x2 trang bị Xe Trạm: hình + tên (top: 520 .. ~1010; 2/11 bỏ mô tả, nhãn trạng thái) */}
       <div style={{position: 'absolute', left: 36, right: 36, top: 520, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18}}>
         {HANG_MUC_XE_TRAM.map((h, i) => (
-          <PopIn key={h.ma} at={20 + i * 12} style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-            padding: '20px 22px', borderRadius: 28, background: '#FFFFFF',
-            border: `5px solid ${C.ink}`, boxShadow: `0 11px 0 ${C.ink}`, boxSizing: 'border-box', height: 325}}>
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14}}>
-              <div style={{width: 145, height: 145, borderRadius: 24, background: h.nen, border: `4px solid ${C.ink}`,
-                boxShadow: `0 6px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
-                <Img src={staticFile(h.anh)} style={{width: 132, height: 132, objectFit: 'contain', transform: h.anh.includes('robot/m') || h.anh.includes('dau-r1') ? 'rotate(-90deg)' : undefined}} />
-              </div>
-              <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10}}>
-                <span style={{fontFamily: MONO, fontSize: 22, fontWeight: 900, padding: '8px 16px', borderRadius: 14,
-                  background: h.mau, color: '#FFFFFF', border: `3px solid ${C.ink}`, boxShadow: `0 4px 0 ${C.ink}`}}>
-                  {h.trangThai}
-                </span>
-                <span style={{fontFamily: MONO, fontSize: 18, fontWeight: 900, color: '#64748B'}}>#{h.ma}</span>
-              </div>
+          <PopIn key={h.ma} at={20 + i * 12} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+            padding: '20px 22px 22px', borderRadius: 28, background: '#FFFFFF',
+            border: `5px solid ${C.ink}`, boxShadow: `0 11px 0 ${C.ink}`, boxSizing: 'border-box'}}>
+            <div style={{width: 170, height: 170, borderRadius: 26, background: h.nen, border: `5px solid ${h.mau}`,
+              boxShadow: `0 6px 0 ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Img src={staticFile(h.anh)} style={{width: 150, height: 150, objectFit: 'contain', transform: h.anh.includes('robot/m') || h.anh.includes('dau-r1') ? 'rotate(-90deg)' : undefined}} />
             </div>
-            <div>
-              <div style={{fontSize: 32, fontWeight: 900, color: C.ink, marginBottom: 6}}>{h.ten}</div>
-              <div style={{fontSize: 23, fontWeight: 800, color: '#334155', lineHeight: 1.28}}>{h.moTa}</div>
-            </div>
+            <div style={{fontSize: 34, fontWeight: 900, color: C.ink, textAlign: 'center', lineHeight: 1.15}}>{h.ten}</div>
           </PopIn>
         ))}
       </div>
 
       <Mascot who="sola" x={230} h={500} at={10}
         faces={[[10, 'shocked'], [65, 'thinking'], [120, 'confident']]}
-        says={[{at: 16, out: 108, text: 'Đầu game R1 mới có 2 bánh cơ bản, nhưng thiếu đồ chơi gì là cậu chế ngay trên xe luôn nhỉ!'}]}
-        bubbleW={580} bubbleTop={1300} />
+        says={[{at: 16, out: 120, text: 'R1 mới có 2 bánh thôi hả Luna?'}]}
+        bubbleW={560} bubbleTop={1180} />
       <Mascot who="luna" x={850} h={500} at={18} side="left" lat
         faces={[[18, 'explaining'], [95, 'wink'], [145, 'thumbs-up']]}
-        says={[{at: 112, out: 202, text: 'Chuẩn! Độ full đồ xử lý xong việc là tặng khung máy lại đó, còn não R1 theo xe đi phá đảo trạm tiếp!'}]}
-        bubbleW={580} bubbleTop={1300} />
+        says={[{at: 126, out: 240, text: 'Thiếu đồ gì, mình độ ngay trên xe!'}]}
+        bubbleW={560} bubbleTop={1180} />
     </AbsoluteFill>
   );
 };
 
-/** Cảnh 3 (8s = 240f): Bản đồ dọc (nen-doc/the-gioi.png) — Chiếc xe trạm chạy dọc con đường đi giúp các nơi! */
+/** Cảnh 3 (~10.7s = 320f; xe bám đường nhựa khung 30 → 290, camera cuộn lúc qua sông): Bản đồ dọc (nen-doc/the-gioi.png) — zoom vào, camera theo xe trạm chạy dọc con đường đi giúp các nơi. */
 const TRAM_DOC = [
   {ten: 'CLB Robot', x: 750, y: 131, xeX: 495, xeY: 165, icon: 'Home', mau: C.indigo, nguoi: 'thay-giao-viec'},
   {ten: '1. Kho hàng', x: 750, y: 330, xeX: 350, xeY: 335, icon: 'Warehouse', mau: '#D97706', nguoi: 'tu-nghi'},
@@ -226,86 +171,69 @@ const TRAM_DOC = [
   {ten: '5. Bến sông', x: 842, y: 1133, xeX: 480, xeY: 1130, icon: 'Waves', mau: '#0D9488', nguoi: 'ba-nghi'},
   {ten: '6. Nông trại', x: 798, y: 1336, xeX: 360, xeY: 1335, icon: 'Flower2', mau: '#DB2777', nguoi: 'lan-nghi'},
   {ten: '7. Mỏ đá', x: 802, y: 1558, xeX: 470, xeY: 1555, icon: 'Mountain', mau: '#7C3AED', nguoi: 'dung-nghi'},
-  {ten: '8. Hang động', x: 802, y: 1765, xeX: 455, xeY: 1760, icon: 'Compass', mau: '#0284C7', nguoi: 'phong-nghi'},
+  {ten: '8. Hang động', x: 802, y: 1722, xeX: 455, xeY: 1760, icon: 'Compass', mau: '#0284C7', nguoi: 'phong-nghi'},
 ];
+
+// Camera bản đồ: 24 khung đầu zoom 1 → ZOOM_BD ở đỉnh bản đồ; cy theo k (0 = khung trên cùng, 1 = khung dưới cùng), k chạy lúc xe qua sông.
+// Nhịp (2/11, user): xe chạy BÁM ĐƯỜNG NHỰA (duong-ban-do.ts) liền một mạch; camera đứng khung nửa trên, rồi CUỘN mượt xuống nửa dưới
+// trong lúc xe qua sông ở cảng (CAU_S, nới thêm CUON_NOI mỗi bên), xong đứng ở nửa dưới. Không vệt đường vàng.
+const XE_TU = 30, XE_DEN = 290, CUON_NOI = 0.05;
+const ZOOM_BD = 1.45, CAM_X = 625;                      // 1.45: nhãn trạm 5 (x 842) còn trong khung, xe (x ≥ 350) không lẹm mép trái
+const kep = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 const CanhHanhTrinh: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
-  const u = interpolate(f, [20, 195], [0, TRAM_DOC.length - 1], {...CLAMP, easing: Easing.inOut(Easing.cubic)});
-  const idx = Math.min(TRAM_DOC.length - 2, Math.floor(u));
-  const frac = u - idx;
-  const a = TRAM_DOC[idx], b = TRAM_DOC[idx + 1];
-  const xeX = a.xeX + (b.xeX - a.xeX) * frac;
-  const xeY = a.xeY + (b.xeY - a.xeY) * frac;
-  const latXe = b.xeX < a.xeX;
+  const sXe = interpolate(f, [XE_TU, XE_DEN], [0, 1], {...CLAMP, easing: Easing.inOut(Easing.quad)});
+  const xe = diemTren(sXe);
+  const xeX = xe.x, xeY = xe.y, latXe = xe.dx < -0.5;
+
+  const z = interpolate(f, [0, 24], [1, ZOOM_BD], {...CLAMP, easing: Easing.inOut(Easing.cubic)});
+  const cx = kep(CAM_X, 540 / z, 1080 - 540 / z);
+  const k = Easing.inOut(Easing.sin)(kep((sXe - CAU_S[0] + CUON_NOI) / (CAU_S[1] - CAU_S[0] + 2 * CUON_NOI), 0, 1));
+  const cy = 960 / z + (1920 - 1920 / z) * k;                     // k = 0: khung trên cùng, k = 1: khung dưới cùng (cuộn đều suốt k)
+  const ra = (x: number, y: number) => ({x: (x - cx) * z + 540, y: (y - cy) * z + 960});   // toạ độ bản đồ → khung hình
 
   return (
     <AbsoluteFill style={{background: '#0F172A', fontFamily: FONT, overflow: 'hidden'}}>
-      <Img src={staticFile('nen-doc/the-gioi.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
-
-      {/* Đường kẻ sáng nối các trạm xe đã đi qua */}
-      <svg style={{position: 'absolute', inset: 0, pointerEvents: 'none'}} width={1080} height={1920}>
-        <polyline
-          points={TRAM_DOC.slice(0, idx + 1).map((t) => `${t.xeX},${t.xeY}`).concat([`${xeX.toFixed(1)},${xeY.toFixed(1)}`]).join(' ')}
-          fill="none" stroke={C.ink} strokeWidth={22} strokeLinecap="round" strokeLinejoin="round" />
-        <polyline
-          points={TRAM_DOC.slice(0, idx + 1).map((t) => `${t.xeX},${t.xeY}`).concat([`${xeX.toFixed(1)},${xeY.toFixed(1)}`]).join(' ')}
-          fill="none" stroke={C.yellow} strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="22 14" />
-      </svg>
-
-      {/* Nhãn gắn đúng vào các ô trên bản đồ dọc + avatar người nhờ cỡ lớn (96x96) */}
-      {TRAM_DOC.map((t, i) => {
-        const at = 6 + i * 14;
-        if (f < at) return null;
-        const s = pop(f, at, fps, 10);
-        const daQua = u >= i - 0.15;
-        return (
-          <React.Fragment key={t.ten}>
-            <div style={{position: 'absolute', left: t.x, top: t.y, transform: `translate(-50%, -50%) scale(${s})`,
-              display: 'flex', alignItems: 'center', gap: 12, padding: '11px 24px', borderRadius: 999,
-              background: daQua ? 'linear-gradient(180deg, #FDE047 0%, #FACC15 100%)' : '#FFFFFF',
-              color: C.ink, border: `5px solid ${C.ink}`, boxShadow: `0 8px 0 ${C.ink}`, whiteSpace: 'nowrap', zIndex: 8}}>
-              <Icon name={t.icon} size={28} color={daQua ? C.ink : t.mau} stroke={3} />
-              <span style={{fontSize: 28, fontWeight: 900}}>{t.ten}</span>
-            </div>
-            <div style={{position: 'absolute', left: t.x - 195, top: t.y - 48, width: 96, height: 96, borderRadius: '50%',
-              background: '#fff', border: `5px solid ${daQua ? '#FDE047' : C.ink}`, overflow: 'hidden', transform: `scale(${s})`,
-              boxShadow: `0 8px 0 ${C.ink}`, zIndex: 9}}>
-              <Img src={staticFile(`nguoi/${t.nguoi}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
-            </div>
-          </React.Fragment>
-        );
-      })}
-
-      {/* Chiếc xe trạm cỡ lớn chạy dọc theo con đường */}
-      <div style={{position: 'absolute', left: xeX - 115, top: xeY - 100, width: 230, height: 200, zIndex: 14,
-        transform: `translateY(${Math.sin(f * 0.8) * 5}px)`}}>
-        <Img src={staticFile('robot/xe-tram-a.png')} style={{width: '100%', height: '100%', objectFit: 'contain',
-          transform: latXe ? 'scaleX(-1)' : undefined, filter: `drop-shadow(0 0 22px ${C.yellow}) drop-shadow(0 12px 18px rgba(0,0,0,0.45))`}} />
-      </div>
-
-      {/* Băng-rôn tiêu đề trên đỉnh kiểu Game Banner */}
-      <div style={{position: 'absolute', left: 36, right: 36, top: 16, padding: '12px 26px', borderRadius: 24,
-        background: 'linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%)', border: `5px solid #FDE047`,
-        boxShadow: `0 8px 0 ${C.ink}`, textAlign: 'center', zIndex: 16}}>
-        <div style={{fontSize: 36, fontWeight: 900, color: '#FDE047', letterSpacing: '0.03em', whiteSpace: 'nowrap'}}>
-          BẢN ĐỒ CHIẾN DỊCH · 8 MÙA PHÁ ĐẢO
+      {/* Lớp bản đồ (ảnh + vệt đường + xe) phóng theo camera */}
+      <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0',
+        transform: `translate(${540 - cx * z}px, ${960 - cy * z}px) scale(${z})`}}>
+        <Img src={staticFile('nen-doc/the-gioi.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
+        <div style={{position: 'absolute', left: xeX - 95, top: xeY - 82, width: 190, height: 164,
+          transform: `translateY(${Math.sin(f * 0.8) * 4}px)`}}>
+          <Img src={staticFile('robot/xe-tram-a.png')} style={{width: '100%', height: '100%', objectFit: 'contain',
+            transform: latXe ? 'scaleX(-1)' : undefined, filter: `drop-shadow(0 0 18px ${C.yellow}) drop-shadow(0 10px 14px rgba(0,0,0,0.45))`}} />
         </div>
       </div>
 
-      <Mascot who="sola" x={210} h={460} at={12}
-        faces={[[12, 'cheer'], [100, 'surprised-sach'], [175, 'celebrate-jump']]}
-        says={[{at: 18, out: 120, text: 'Lăn bánh thôi! Từ trường mình xuyên qua kho hàng, nhà máy, bến sông, lên thẳng mỏ đá và hang sâu!'}]}
-        bubbleW={590} bubbleTop={1340} />
-      <Mascot who="luna" x={870} h={460} at={20} side="left" lat
-        faces={[[20, 'happy'], [120, 'explaining'], [185, 'thumbs-up']]}
-        says={[{at: 126, out: 232, text: 'Mở màn ở Kho hàng chú Tư ngay sát trường trước. Tới nơi chốt gọn 10 đơn trước 5 giờ chiều nay nhé!'}]}
-        bubbleW={590} bubbleTop={1340} />
+      {/* Nhãn trạm ở khung hình (cỡ chữ không phóng theo bản đồ): người nhờ nằm TRONG nhãn, trước icon (2/11: trước đó ảnh tròn đè lên icon).
+          Nhãn đè đúng ô nhãn trống in sẵn trên ảnh bản đồ; trạng thái: trắng = chưa tới, vàng = xe đã qua. */}
+      {TRAM_DOC.map((t, i) => {
+        const vao = (xe.yMax - (t.y - 60)) / 120;                 // xe xuống ngang nhãn trạm: 0 → 1 trong 120px độ sâu
+        const nay = i > 0 && vao > 0 && vao < 1 ? Math.sin(vao * Math.PI) * 0.12 : 0;   // nảy nhẹ khi xe tới trạm
+        const s = pop(f, 4 + i * 6, fps, 10) * (1 + nay);
+        const daQua = i === 0 || vao > 0.3;
+        const p = ra(t.x, t.y);
+        if (p.y < -80 || p.y > 2000) return null;
+        return (
+          <div key={t.ten} style={{position: 'absolute', left: p.x, top: p.y, transform: `translate(-50%, -50%) scale(${s})`,
+            display: 'flex', alignItems: 'center', gap: 10, padding: '8px 22px 8px 8px', borderRadius: 999,
+            background: daQua ? 'linear-gradient(180deg, #FDE047 0%, #FACC15 100%)' : '#FFFFFF',
+            color: C.ink, border: `5px solid ${C.ink}`, boxShadow: `0 8px 0 ${C.ink}`, whiteSpace: 'nowrap'}}>
+            <div style={{width: 72, height: 72, borderRadius: '50%', background: '#fff', border: `4px solid ${t.mau}`, overflow: 'hidden', flexShrink: 0}}>
+              <Img src={staticFile(`nguoi/${t.nguoi}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
+            </div>
+            <Icon name={t.icon} size={30} color={daQua ? C.ink : t.mau} stroke={3} />
+            <span style={{fontSize: 32, fontWeight: 900}}>{t.ten}</span>
+          </div>
+        );
+      })}
+      {/* 2/11: bỏ băng-rôn vàng trên đầu và Sola / Luna — bản đồ tự kể */}
     </AbsoluteFill>
   );
 };
 
-/** Cảnh 4 (6s = 180f): Dừng tại Trạm 1 · Kho hàng Chú Tư (nen-doc/mua-1.png), chuẩn bị vào Phòng Lab học lái R1. */
+/** Cảnh 4 (8s = 240f): Dừng tại Trạm 1 · Kho hàng Chú Tùng (nen-doc/mua-1.png), chuẩn bị vào Phòng Lab học lái R1. */
 const CanhDiemDau: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const nut = pop(f, 35, fps, 10);
@@ -314,7 +242,7 @@ const CanhDiemDau: React.FC = () => {
       <Img src={staticFile('nen-doc/mua-1.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
       <AbsoluteFill style={{background: 'rgba(15,23,42,0.48)'}} />
 
-      <Headline text="MÙA 1: KHO HÀNG CHÚ TƯ!" at={4} top={48} size={58} color="#fff" accent={['KHO HÀNG']} />
+      <Headline text="MÙA 1: KHO HÀNG CHÚ TÙNG!" at={4} top={48} size={58} color="#fff" accent={['KHO HÀNG']} />
 
       {/* Thẻ Chọn Màn Chơi Mùa 1 cỡ lớn (top: 155 .. 1185) */}
       <PopIn at={14} style={{position: 'absolute', left: 40, top: 155, width: 1000, padding: '28px 32px 34px',
@@ -343,7 +271,7 @@ const CanhDiemDau: React.FC = () => {
           </div>
 
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8}}>
-            <div style={{width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,204,21,0.35) 0%, transparent 70%)',
+            <div style={{width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, #FFFFFF 0%, #FEF9C3 80%)',
               border: '4px dashed #FDE047', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               <Img src={staticFile('robot/m1/du-vui.png')} style={{width: 215, height: 215, transform: 'rotate(-90deg)'}} />
             </div>
@@ -360,26 +288,9 @@ const CanhDiemDau: React.FC = () => {
           </div>
         </div>
 
-        <div style={{marginTop: 22}}>
-          <div style={{fontSize: 42, fontWeight: 900, color: C.ink, marginBottom: 8}}>Chiến dịch: Xe Kho Tự Hành</div>
-          <div style={{fontSize: 27, fontWeight: 800, color: '#334155', lineHeight: 1.34}}>
-            Vào xưởng Lab trên xe để Luna hướng dẫn code lái 2 bánh xe trước khi ra kho dọn 10 đơn giúp chú Tư!
-          </div>
-        </div>
-
-        {/* 3 Huy hiệu mục tiêu */}
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginTop: 20}}>
-          {[
-            {icon: 'Wrench', nhan: 'Độ Bánh Xe & Tay Kẹp', mau: '#0284C7'},
-            {icon: 'Radar', nhan: 'Cảm Biến Khoảng Cách', mau: '#7C3AED'},
-            {icon: 'Cpu', nhan: '1 Code Giải 3 Ca Kho', mau: '#16A34A'},
-          ].map((m) => (
-            <div key={m.nhan} style={{padding: '12px 14px', borderRadius: 18, background: '#FFFBEB', border: `3.5px solid ${C.ink}`,
-              boxShadow: `0 5px 0 ${C.ink}`, display: 'flex', alignItems: 'center', gap: 10, fontWeight: 900, fontSize: 21, color: C.ink}}>
-              <Icon name={m.icon} size={28} color={m.mau} stroke={2.8} />
-              <span>{m.nhan}</span>
-            </div>
-          ))}
+        <div style={{marginTop: 26, textAlign: 'center'}}>
+          <div style={{fontSize: 46, fontWeight: 900, color: C.ink, marginBottom: 6}}>Xe Kho Tự Hành</div>
+          <div style={{fontSize: 32, fontWeight: 800, color: '#334155'}}>Dọn 10 đơn trước 5 giờ chiều</div>
         </div>
 
         <div style={{marginTop: 26, textAlign: 'center', transform: `scale(${(0.85 + 0.15 * nut) * (1 + 0.025 * Math.sin(f / 6))})`}}>
@@ -394,13 +305,13 @@ const CanhDiemDau: React.FC = () => {
 
       <Burst at={38} x={540} y={660} color={C.yellow} r={240} />
 
-      <Nguoi anh="tu-sot-ruot" doiAnh={[[90, 'tu-mung']]} camXuc={[[0, 'hoang'], [90, 'vui']]} ten="CHÚ TƯ · THỦ KHO" mau="#B45309" x={180} h={540} at={6}
-        says={[{at: 12, out: 98, text: 'May quá mấy đứa CLB Robot tới rồi! Kho chú còn kẹt 10 đơn phải bốc lên xe tải trước 5 giờ chiều!'}]}
-        bubbleW={610} bubbleTop={1290} />
+      <Nguoi anh="tu-sot-ruot" doiAnh={[[90, 'tu-mung']]} camXuc={[[0, 'hoang'], [90, 'vui']]} ten="CHÚ TÙNG · THỦ KHO" mau="#B45309" x={180} h={540} at={6}
+        says={[{at: 12, out: 120, text: 'Kho chú kẹt 10 đơn, 5 giờ xe tải chạy rồi!'}]}
+        bubbleW={560} bubbleTop={1180} />
       <Mascot who="sola" x={850} h={500} at={16} side="left" lat
         faces={[[16, 'confident'], [95, 'celebrate-jump']]}
-        says={[{at: 102, out: 174, text: 'Chú Tư cứ yên tâm! Tụi cháu vào Lab ráp đôi bánh xe với Luna rồi ra dọn sạch kho ngay!'}]}
-        bubbleW={590} bubbleTop={1290} />
+        says={[{at: 126, out: 999, text: 'Tụi cháu vào Lab ráp bánh xe rồi ra liền!'}]}
+        bubbleW={560} bubbleTop={1180} />
     </AbsoluteFill>
   );
 };
@@ -409,9 +320,9 @@ export const PHIM_MO_DAU: Phim = {
   id: 'PhimMoDau',
   doc: true,
   canh: [
-    {id: 'phong-clb', dur: 180, el: <CanhPhongClb />, sfx: [W_IN, ...pops([14, 28, 40, 52, 64], 0.3)]},
-    {id: 'xe-tram-lab', dur: 210, el: <CanhXeTramLab />, sfx: [W_IN, ...pops([22, 36, 50, 64], 0.3), [18, 'ding.wav', 0.5]]},
-    {id: 'hanh-trinh', dur: 240, el: <CanhHanhTrinh />, sfx: [W_IN, ...pops([6, 20, 34, 48, 62, 76, 90], 0.28), [160, 'riser.wav', 0.5]]},
-    {id: 'diem-dau', dur: 180, el: <CanhDiemDau />, sfx: [W_IN, [35, 'ding.wav', 0.8]]},
+    {id: 'phong-clb', dur: 240, el: <CanhPhongClb />, sfx: [W_IN, ...pops([14, 28, 40, 52, 64], 0.3)]},
+    {id: 'xe-tram-lab', dur: 240, el: <CanhXeTramLab />, sfx: [W_IN, ...pops([22, 36, 50, 64], 0.3), [18, 'ding.wav', 0.5]]},
+    {id: 'hanh-trinh', dur: 320, el: <CanhHanhTrinh />, sfx: [W_IN, ...pops([6, 20, 34, 48, 62, 76, 90], 0.28), [160, 'riser.wav', 0.5]]},
+    {id: 'diem-dau', dur: 240, el: <CanhDiemDau />, sfx: [W_IN, [35, 'ding.wav', 0.8]]},
   ],
 };

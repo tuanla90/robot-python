@@ -185,7 +185,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       taiCLB(function (ok) {
         if (!ok || !PhimCLB.co(CO)) { mo(khiXong, { khung: true }); return; }
         var cu = san.querySelector('.md'); if (cu) cu.remove();
-        PhimCLB.mo(CO, san, { boQua: t('md.boQua'), cuoi: t('md.batDau') }, function () {
+        PhimCLB.mo(CO, san, { boQua: t('md.boQua'), cuoi: t('md.batDau'), tiep: t('md.tiep') }, function () {
           if (window.Luu) Luu.datDaXem(CO);
           if (khiXong) khiXong();
         });

@@ -9,7 +9,7 @@ import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, 
 const NEN = 'nen-doc/mua-4.png';
 const DON = [
   'Bay qua luống mầm non', 'Gieo hạt hoa hồng & hoa cúc', 'Nhìn luống mẫu 4 hướng', 'Sao chép dãy hoa dài', 'Canh pin ghé trạm sạc P',
-  'Rải hạt liền mạch theo hàng', 'Đọc thẻ màu ngay dưới bụng', 'Bay qua kênh nước & chậu bác Sáu', 'Phối hợp R2 đưa hạt ra bờ', 'Dệt thảm hoa Xuân kịp Tết',
+  'Rải hạt liền mạch theo hàng', 'Đọc thẻ màu ngay dưới bụng', 'Bay qua kênh nước & chậu bác Sơn', 'Phối hợp R2 đưa hạt ra bờ', 'Dệt thảm hoa Xuân kịp Tết',
 ];
 
 /** Chị Lan chủ nông trại hoa (ảnh TopView tách nền). */
@@ -375,7 +375,7 @@ const G7Lam: React.FC = () => {
   );
 };
 
-/* ================================================================== GÓI 8 · Kênh nước bác Ba & dãy chậu bác Sáu */
+/* ================================================================== GÓI 8 · Kênh nước bác Bình & dãy chậu bác Sơn */
 const R_G8M: Moc[] = [[0, 0, 3, 0], [35, 1, 3, 0], [75, 2, 3, 0], [135, 2, 3, 0]];
 const G8Thu: React.FC = () => {
   const f = useCurrentFrame();
@@ -388,7 +388,7 @@ const G8Thu: React.FC = () => {
       <ChuNay chu="LỘN THỨ TỰ!" at={78} den={148} x={tamO(2, 3).x + 120} y={tamO(2, 3).y - 50} />
       <div style={{position: 'absolute', left: 140, top: 150, padding: '12px 24px', borderRadius: 18, background: '#E0F2FE', border: `4px solid ${C.ink}`,
         display: 'flex', alignItems: 'center', gap: 14, fontFamily: FONT, fontWeight: 800, fontSize: 30, color: C.ink}}>
-        <Icon name="Waves" size={38} color="#0284C7" />Bác Ba & bác Sáu: "Nước ngọt và chậu 4 màu tới vườn rồi nhé!"
+        <Icon name="Waves" size={38} color="#0284C7" />Bác Bình & bác Sơn: "Nước ngọt và chậu 4 màu tới vườn rồi nhé!"
       </div>
       <DongHoTet con="Tết còn 2 ngày" />
       <NhanGoi so={8} ten="Dãy màu hoa" />
@@ -713,7 +713,7 @@ export const PHIM_M5: Phim[] = [
     {id: 'nghi', dur: 180, el: <G8Nghi />, sfx: [[20, 'pop.wav', 0.3], [88, 'pop.wav', 0.3]]},
     treo('drone-cam', 'Gieo lần lượt theo đúng dãy màu nào!', 8, 'Dãy màu hoa'),
   ]),
-  ket(8, [{id: 'lam', dur: 165, el: <G8Lam />, sfx: [[120, 'ding.wav', 0.5]]}, tt(8, 'Dãy màu hoa', 'Tết còn 2 ngày', 'Nước ngọt từ trạm bác Ba và chậu bác Sáu giúp hoa lên đẹp quá!', [90, 90, 88, 88])]),
+  ket(8, [{id: 'lam', dur: 165, el: <G8Lam />, sfx: [[120, 'ding.wav', 0.5]]}, tt(8, 'Dãy màu hoa', 'Tết còn 2 ngày', 'Nước ngọt từ trạm bác Bình và chậu bác Sơn giúp hoa lên đẹp quá!', [90, 90, 88, 88])]),
   mo(9, [
     {id: 'thu', dur: 230, el: <G9Thu />, sfx: [[42, 'wrong.wav', 0.5]]},
     xe('r2', 'Ai dọn tấm sắt nặng dưới đất để mở luống cho R1 bay gieo?', 'Gọi R2 kéo sắt dưới đất, R1 drone bay gieo trên cao!', 'R2 dọn dưới đất', 120),

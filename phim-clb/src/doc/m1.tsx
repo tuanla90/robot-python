@@ -14,9 +14,9 @@ const NEN = 'nen-doc/mua-1.png';
 const DON = ['Dạy xe chạy', 'Dọn lối', 'Thùng chạy chỗ', 'Kho lạnh', 'Ngõ cụt', 'Lối hẹp hai bên', 'Mê cung kệ', 'Bến xuất', 'Đơn kho lạnh cuối', 'Xe tải lên đường'];
 const GIO = (h: number, m = 0) => h * 60 + m;
 
-/** Chú Tư thủ kho. */
+/** Chú Tùng thủ kho. */
 const Tu: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'; dang?: string; doiAnh?: [number, string][]}> = ({says, at = 0, x = 820, side = 'left', dang = 'tu-nghi', doiAnh}) => (
-  <Nguoi anh={dang} doiAnh={doiAnh} ten="CHÚ TƯ" mau="#EA580C" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
+  <Nguoi anh={dang} doiAnh={doiAnh} ten="CHÚ TÙNG" mau="#EA580C" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
 );
 const Sola: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: number}> = ({says, mat, at = 0, x = 240}) => (
   <Mascot who="sola" x={x} h={540} at={at} faces={mat} says={says} bubbleW={520} bubbleTop={1240} />
@@ -25,7 +25,7 @@ const Luna: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: num
   <Mascot who="luna" x={x} h={540} at={at} faces={mat} says={says} side="left" bubbleW={520} bubbleTop={1240} lat />
 );
 
-/** Thanh trạng thái 3 phân khu Kho hàng Chú Tư trên bảng thành tựu. */
+/** Thanh trạng thái 3 phân khu Kho hàng Chú Tùng trên bảng thành tựu. */
 const KhuKhoBar: React.FC<{sang: [boolean, boolean, boolean]}> = ({sang}) => (
   <div style={{position: 'absolute', left: 90, top: 155, width: 900, display: 'flex', gap: 18}}>
     {['Khu lối vào', 'Khu kho lạnh', 'Khu bến xuất'].map((t, i) => (
@@ -38,12 +38,12 @@ const KhuKhoBar: React.FC<{sang: [boolean, boolean, boolean]}> = ({sang}) => (
   </div>
 );
 
-/** Đoạn kết chung: nền kho tối, bảng đơn hàng gạch thêm một dòng, chú Tư nói một câu. */
+/** Đoạn kết chung: nền kho tối, bảng đơn hàng gạch thêm một dòng, chú Tùng nói một câu. */
 const ThanhTuu: React.FC<{moi: number; loi: string; gio: number; so: number; ten: string; khu: [boolean, boolean, boolean]; xoa?: number}> =
   ({moi, loi, gio, so, ten, khu, xoa}) => (
     <NenHienTruong anh={NEN} mua="m1" luoi={false} toi={0.52}>
       <KhuKhoBar sang={khu} />
-      <BangViec tieuDe="Đơn hàng chiều nay của chú Tư" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={265} />
+      <BangViec tieuDe="Đơn hàng chiều nay của chú Tùng" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={265} />
       <DongHo tu={gio} />
       <NhanGoi so={so} ten={ten} />
       <Tu dang={chonDangNguoi('tu', so, xoa)} says={[{at: 50, out: 200, text: loi}]} at={30} />
@@ -91,7 +91,7 @@ const G1Mo: React.FC = () => (
     <DongHo tu={GIO(13)} />
     <NhanGoi so={1} ten="Hai bánh xe" />
     <Tu dang="tu-sot-ruot" says={[{at: 10, out: 135, text: 'Năm giờ xe tải tới mà hàng còn chất đầy lối!'}]} />
-    <Sola says={[{at: 140, out: 255, text: 'Chú Tư cần dọn kho gấp trước 5 giờ chiều mà R1 chưa có bánh xe để lăn bánh luôn!'}]}
+    <Sola says={[{at: 140, out: 255, text: 'Chú Tùng cần dọn kho gấp trước 5 giờ chiều mà R1 chưa có bánh xe để lăn bánh luôn!'}]}
       mat={[[0, 'surprised-sach'], [140, 'worried']]} />
   </NenHienTruong>
 );
@@ -172,7 +172,7 @@ const G3Thu: React.FC = () => {
         <ChuNay chu="CỘP!" at={223} den={270} x={790} y={tamO(2, 3).y} />
         <CodeBox lines={['for i in range(3):', '    move()']} x={300} y={150} w={480} size={30} title="Sola viết vội" />
         <DongHo tu={GIO(13, 40)} />
-        <Sola says={[{at: 4, out: 34, text: 'Code cứng 3 bước là tới chuẩn đét!'}, {at: 230, out: 300, text: 'Ủa alo… chú Tư dời thùng là lệch nhịp ngay!'}]} mat={[[0, 'confident'], [84, 'confused'], [224, 'facepalm']]} />
+        <Sola says={[{at: 4, out: 34, text: 'Code cứng 3 bước là tới chuẩn đét!'}, {at: 230, out: 300, text: 'Ủa alo… chú Tùng dời thùng là lệch nhịp ngay!'}]} mat={[[0, 'confident'], [84, 'confused'], [224, 'facepalm']]} />
         {f >= 135 ? <Tu says={[{at: 140, out: 210, text: 'Để thùng đây cho gần nè.'}]} at={135} /> : null}
       </NenHienTruong>
     </Shake>

@@ -8,7 +8,7 @@ import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, 
 
 const NEN = 'nen-doc/mua-7.png';
 const DON = [
-  'Thân lai Nhện+Kẹp mở cửa ngõ chú Tư', 'Tay lai Xích+Máy ném đón xe cô Hạnh', 'Cảm biến lai dẫn xe hoa chị Lan', 'Xuồng+Nam châm khơi dòng lũ qua phố', 'Omni+Dây kéo vượt mưa đón anh Dũng',
+  'Thân lai Nhện+Kẹp mở cửa ngõ chú Tùng', 'Tay lai Xích+Máy ném đón xe cô Hạnh', 'Cảm biến lai dẫn xe hoa chị Lan', 'Xuồng+Nam châm khơi dòng lũ qua phố', 'Omni+Dây kéo vượt mưa đón anh Dũng',
   'Drone+Nam châm dựng lại cổng chào CLB', 'Omni+Loa Sonar mở cửa hầm chú Phong', 'Tổng dọn sân trường CLB trước lễ', 'Song kiếm hợp bích Sola-Bot & Luna-Bot', 'Khai mạc Ngày hội Robot toàn thị trấn',
 ];
 
@@ -86,7 +86,7 @@ const CongChaoGoc: React.FC<{nghieng?: boolean}> = ({nghieng}) => {
   );
 };
 
-/* ================================================================== GÓI 1 · Thân lai: Nhện (M3) + Tay gắp (M1) đón chú Tư */
+/* ================================================================== GÓI 1 · Thân lai: Nhện (M3) + Tay gắp (M1) đón chú Tùng */
 const R_G1M: Moc[] = [[0, 0, 3, 0], [55, 1.5, 3, 0], [95, 1.5, 3, 25]];
 const G1Mo: React.FC = () => (
   <Shake hits={[58]} amp={10}>
@@ -99,7 +99,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="CẦU GÃY HỐ SÂU!" at={58} den={140} x={tamO(2, 3).x + 80} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 10 giờ" />
       <NhanGoi so={1} ten="Thân lai: Nhện + Tay gắp" />
-      <Nguoi anh="tu-hoang" ten="CHÚ TƯ" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="tu-hoang" ten="CHÚ TÙNG" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 58, out: 175, text: 'Cầu gỗ ở cửa ngõ Kho hàng gãy thành hố sâu rồi, xe hai bánh không qua lấy kiện hàng dự hội được!'}]} />
     </NenHienTruong>
   </Shake>
@@ -114,10 +114,10 @@ const G1Lam: React.FC = () => (
     <Vat ten="vat-thung-go" moc={T_G1K} />
     <Xe anh="lai-nhen-kep" moc={R_G1K} />
     <Burst x={tamO(4, 3).x} y={tamO(4, 3).y} at={138} />
-    <CodeBox lines={['# Ghép Thân nhện (M3) + Tay gắp (M1)', 'jump()      # nhảy vọt qua hố cầu gãy', 'grab()      # gắp thùng hàng chú Tư', 'move(); drop()']}
+    <CodeBox lines={['# Ghép Thân nhện (M3) + Tay gắp (M1)', 'jump()      # nhảy vọt qua hố cầu gãy', 'grab()      # gắp thùng hàng chú Tùng', 'move(); drop()']}
       typeAt={35} x={44} y={260} w={580} title="lai_nhen_kep.py" />
     <NhanGoi so={1} ten="Thân lai: Nhện + Tay gắp" />
-    <Sola mat={[[0, 'proud'], [135, 'happy']]} says={[{at: 18, out: 118, text: 'Lấy Thân nhện mùa 3 ghép với Tay gắp mùa 1: nhảy qua hố cầu gãy rồi gắp gọn kiện hàng!'}, {at: 135, out: 205, text: 'Đón chú Tư vào hội!'}]} />
+    <Sola mat={[[0, 'proud'], [135, 'happy']]} says={[{at: 18, out: 118, text: 'Lấy Thân nhện mùa 3 ghép với Tay gắp mùa 1: nhảy qua hố cầu gãy rồi gắp gọn kiện hàng!'}, {at: 135, out: 205, text: 'Đón chú Tùng vào hội!'}]} />
   </NenHienTruong>
 );
 
@@ -189,7 +189,7 @@ const G3Lam: React.FC = () => (
   </NenHienTruong>
 );
 
-/* ================================================================== GÓI 4 · Xuồng (M4) + Nam châm (M3) đón bác Ba & bác Sáu */
+/* ================================================================== GÓI 4 · Xuồng (M4) + Nam châm (M3) đón bác Bình & bác Sơn */
 const R_G4M: Moc[] = [[0, 1, 3, 0], [55, 2, 4, 25], [95, 2, 4.5, 40]];
 const G4Mo: React.FC = () => (
   <Shake hits={[58]} amp={10}>
@@ -201,8 +201,8 @@ const G4Mo: React.FC = () => (
       <ChuNay chu="NƯỚC TRÀN & KẸT SẮT!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 7 giờ" />
       <NhanGoi so={4} ten="Xuồng + Nam châm điện" />
-      <Nguoi anh="ba-hoang" ten="BÁC BA" mau="#0284C7" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 58, out: 175, text: 'Nước lũ tràn qua phố cuốn khối sắt của bác Sáu chắn miệng cống thoát nước rồi, cần xuồng có nam châm hút ngay!'}]} />
+      <Nguoi anh="ba-hoang" ten="BÁC BÌNH" mau="#0284C7" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
+        says={[{at: 58, out: 175, text: 'Nước lũ tràn qua phố cuốn khối sắt của bác Sơn chắn miệng cống thoát nước rồi, cần xuồng có nam châm hút ngay!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -219,7 +219,7 @@ const G4Lam: React.FC = () => (
     <CodeBox lines={['# Thân xuồng (M4) + Nam châm (M3)', 'h, s = flow()', 'move(1 - s)', 'pull("N")  # hút khối sắt giữa dòng nước']}
       typeAt={45} x={44} y={260} w={590} title="lai_xuong_nam_cham.py" />
     <NhanGoi so={4} ten="Xuồng + Nam châm điện" />
-    <Luna mat={[[0, 'wink'], [108, 'happy']]} says={[{at: 18, out: 112, text: 'Thân xuồng mùa 4 lướt trên dòng nước ngập, bật Nam châm mùa 3 hút gọn khối sắt mở thông cống phố!'}, {at: 115, out: 205, text: 'Đón bác Ba và bác Sáu!'}]} />
+    <Luna mat={[[0, 'wink'], [108, 'happy']]} says={[{at: 18, out: 112, text: 'Thân xuồng mùa 4 lướt trên dòng nước ngập, bật Nam châm mùa 3 hút gọn khối sắt mở thông cống phố!'}, {at: 115, out: 205, text: 'Đón bác Bình và bác Sơn!'}]} />
   </NenHienTruong>
 );
 
@@ -452,11 +452,11 @@ const Canh1: React.FC = () => (
 const Canh2: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const KHACH = [
-    {anh: 'tu-mung', ten: 'Chú Tư', mau: '#D97706', x: 160, y: 420},
+    {anh: 'tu-mung', ten: 'Chú Tùng', mau: '#D97706', x: 160, y: 420},
     {anh: 'hanh-mung', ten: 'Cô Hạnh', mau: '#DC2626', x: 413, y: 420},
-    {anh: 'sau-mung', ten: 'Bác Sáu', mau: '#16A34A', x: 667, y: 420},
+    {anh: 'sau-mung', ten: 'Bác Sơn', mau: '#16A34A', x: 667, y: 420},
     {anh: 'mai-mung', ten: 'Cô Mai', mau: '#0891B2', x: 920, y: 420},
-    {anh: 'ba-mung', ten: 'Bác Ba', mau: '#0284C7', x: 160, y: 780},
+    {anh: 'ba-mung', ten: 'Bác Bình', mau: '#0284C7', x: 160, y: 780},
     {anh: 'lan-mung', ten: 'Chị Lan', mau: '#EC4899', x: 413, y: 780},
     {anh: 'dung-mung', ten: 'Anh Dũng', mau: '#EA580C', x: 667, y: 780},
     {anh: 'phong-mung', ten: 'Chú Phong', mau: '#0F766E', x: 920, y: 780},
@@ -475,7 +475,7 @@ const Canh2: React.FC = () => {
         </div>
       ))}
       <Burst x={540} y={560} at={45} />
-      <Luna mat={[[0, 'happy']]} says={[{at: 12, out: 112, text: 'Chú Tư, cô Hạnh, bác Sáu, bác Ba, chị Lan, anh Dũng và chú Phong đều đã mang sản phẩm về dự hội!'}]} />
+      <Luna mat={[[0, 'happy']]} says={[{at: 12, out: 112, text: 'Chú Tùng, cô Hạnh, bác Sơn, bác Bình, chị Lan, anh Dũng và chú Phong đều đã mang sản phẩm về dự hội!'}]} />
     </NenHienTruong>
   );
 };
@@ -577,7 +577,7 @@ const NgoaiDoiM8: React.FC = () => {
           </div>
         </div>
       ))}
-      <Luna mat={[[0, 'happy']]} says={[{at: 14, out: 142, text: 'Từ chiếc xe 2 bánh đầu tiên ở Kho chú Tư, giờ cậu đã làm chủ cả một hạm đội Robot Lai siêu đỉnh!'}]} />
+      <Luna mat={[[0, 'happy']]} says={[{at: 14, out: 142, text: 'Từ chiếc xe 2 bánh đầu tiên ở Kho chú Tùng, giờ cậu đã làm chủ cả một hạm đội Robot Lai siêu đỉnh!'}]} />
     </NenHienTruong>
   );
 };
@@ -647,10 +647,10 @@ const treo = (anh: string, cau: string, so: number, ten: string, xoay = -90) => 
 export const PHIM_M8: Phim[] = [
   mo(1, [
     {id: 'hien-truong', dur: 185, el: <G1Mo />, sfx: [W_IN, [58, 'wrong.wav', 0.5]]},
-    xe('lai-nhen-kep', 'Cầu gỗ gãy thành hố sâu mà kiện hàng chú Tư ở bên kia, ghép sao đây?', 'Kho linh kiện 7 mùa mở tự do! Ghép Thân nhện mùa 3 nhảy hố với Tay gắp mùa 1!', 'Robot Lai: Nhện + Tay gắp', 120),
-    treo('lai-nhen-kep', 'Nhảy qua cầu gãy rồi gắp kiện hàng đón chú Tư vào hội!', 1, 'Thân lai: Nhện + Tay gắp', 0),
+    xe('lai-nhen-kep', 'Cầu gỗ gãy thành hố sâu mà kiện hàng chú Tùng ở bên kia, ghép sao đây?', 'Kho linh kiện 7 mùa mở tự do! Ghép Thân nhện mùa 3 nhảy hố với Tay gắp mùa 1!', 'Robot Lai: Nhện + Tay gắp', 120),
+    treo('lai-nhen-kep', 'Nhảy qua cầu gãy rồi gắp kiện hàng đón chú Tùng vào hội!', 1, 'Thân lai: Nhện + Tay gắp', 0),
   ]),
-  ket(1, [{id: 'lam', dur: 210, el: <G1Lam />, sfx: [[138, 'ding.wav', 0.5]]}, tt(1, 'Thân lai: Nhện + Tay gắp', 'Khai mạc: 9 giờ', 'Chú Tư đã qua cửa ngõ Kho hàng! Giờ sang cửa ngõ Nhà máy giải cứu xe của cô Hạnh nhé!', [25, 0, 0, 0])]),
+  ket(1, [{id: 'lam', dur: 210, el: <G1Lam />, sfx: [[138, 'ding.wav', 0.5]]}, tt(1, 'Thân lai: Nhện + Tay gắp', 'Khai mạc: 9 giờ', 'Chú Tùng đã qua cửa ngõ Kho hàng! Giờ sang cửa ngõ Nhà máy giải cứu xe của cô Hạnh nhé!', [25, 0, 0, 0])]),
   mo(2, [
     {id: 'thu', dur: 185, el: <G2Mo />, sfx: [[58, 'wrong.wav', 0.5]]},
     xe('lai-xich-nem', 'Đá lăn chắn trước hàng rào cổng Nhà máy cô Hạnh, kết hợp gì bây giờ?', 'Ghép Thân xích mùa 2 lì đòn với Tay máy ném mùa 6 — ủi sát rào rồi hất đá vọt qua!', 'Robot Lai: Xích + Máy ném', 125),
@@ -662,13 +662,13 @@ export const PHIM_M8: Phim[] = [
     xe('lai-gai-cam', 'Hầm chui vừa trơn trượt vừa ngập bùn che vạch màu, dẫn xe hoa chị Lan sao đây?', 'Ghép Bánh gai mùa 7 chống trượt với Camera 4 hướng & Máy sơn mùa 5 đọc màu!', 'Robot Lai: Bánh gai + Camera', 125),
     treo('lai-gai-cam', 'Bám đường trơn và đọc màu dẫn xe hoa chị Lan vào hội!', 3, 'Cảm biến lai: Gai + Camera'),
   ]),
-  ket(3, [{id: 'lam', dur: 210, el: <G3Lam />, sfx: [[145, 'ding.wav', 0.5]]}, tt(3, 'Cảm biến lai: Gai + Camera', 'Khai mạc: 7 giờ', 'Xe hoa của chị Lan đã tới cổng trường rực rỡ! Nhưng ngoài phố nước mưa đang chảy tràn qua ngã tư bác Ba và bác Sáu!', [75, 45, 15, 0])]),
+  ket(3, [{id: 'lam', dur: 210, el: <G3Lam />, sfx: [[145, 'ding.wav', 0.5]]}, tt(3, 'Cảm biến lai: Gai + Camera', 'Khai mạc: 7 giờ', 'Xe hoa của chị Lan đã tới cổng trường rực rỡ! Nhưng ngoài phố nước mưa đang chảy tràn qua ngã tư bác Bình và bác Sơn!', [75, 45, 15, 0])]),
   mo(4, [
     {id: 'thu', dur: 185, el: <G4Mo />, sfx: [[58, 'wrong.wav', 0.5]]},
-    xe('lai-xuong-tu', 'Nước tràn cuốn khối sắt của bác Sáu kẹt miệng cống, xe thường không bơi ra được!', 'Ghép Thân xuồng mùa 4 lướt dòng nước với Nam châm điện mùa 3 hút gọn khối sắt!', 'Tàu Lai: Xuồng + Nam châm', 125),
+    xe('lai-xuong-tu', 'Nước tràn cuốn khối sắt của bác Sơn kẹt miệng cống, xe thường không bơi ra được!', 'Ghép Thân xuồng mùa 4 lướt dòng nước với Nam châm điện mùa 3 hút gọn khối sắt!', 'Tàu Lai: Xuồng + Nam châm', 125),
     treo('lai-xuong-tu', 'Lướt dòng nước ngập hút khối sắt mở thông cống phố!', 4, 'Xuồng + Nam châm điện'),
   ]),
-  ket(4, [{id: 'lam', dur: 210, el: <G4Lam />, sfx: [[108, 'ding.wav', 0.5]]}, tt(4, 'Xuồng + Nam châm điện', 'Khai mạc: 6 giờ', 'Bác Ba và bác Sáu đã về tới trường! Tiếp theo là các đợt thời tiết mưa, gió giật và mất điện ở 3 cửa ngõ núi!', [85, 65, 35, 15])]),
+  ket(4, [{id: 'lam', dur: 210, el: <G4Lam />, sfx: [[108, 'ding.wav', 0.5]]}, tt(4, 'Xuồng + Nam châm điện', 'Khai mạc: 6 giờ', 'Bác Bình và bác Sơn đã về tới trường! Tiếp theo là các đợt thời tiết mưa, gió giật và mất điện ở 3 cửa ngõ núi!', [85, 65, 35, 15])]),
   mo(5, [
     {id: 'thu', dur: 185, el: <G5Mo />, sfx: [[60, 'wrong.wav', 0.5]]},
     xe('lai-omni-keo', 'Mưa lớn làm đá tròn lăn trên dốc anh Dũng, vừa phải né đá vừa phải kéo kiện hàng!', 'Ghép Bánh Omni mùa 6 đi chéo 1 nhịp né đá với Dây phao kéo mùa 4 thu kiện hàng từ xa!', 'Robot Lai: Omni + Dây kéo', 125),

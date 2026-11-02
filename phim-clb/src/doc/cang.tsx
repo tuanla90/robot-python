@@ -355,7 +355,7 @@ const G8Thu: React.FC = () => (
       <ChuNay chu="TRÔI QUA CẦU TÀU!" at={65} den={140} x={tamO(3, 3).x + 70} y={tamO(3, 3).y - 40} />
       <CoiTauBar con="Tàu rời bến: 3 giờ" />
       <NhanGoi so={8} ten="Băng chuyền cầu cảng" />
-      <Mai dang="mai-tin" says={[{at: 66, out: 230, text: 'Băng chuyền từ kho chú Tư và nhà máy cô Hạnh đưa hàng thẳng ra cảng, phải bấm nút chặn và đón đúng nhịp nhé!'}]} at={52} />
+      <Mai dang="mai-tin" says={[{at: 66, out: 230, text: 'Băng chuyền từ kho chú Tùng và nhà máy cô Hạnh đưa hàng thẳng ra cảng, phải bấm nút chặn và đón đúng nhịp nhé!'}]} at={52} />
     </NenHienTruong>
   </Shake>
 );
@@ -391,7 +391,7 @@ const G9Thu: React.FC = () => (
       <ChuNay chu="KẸT CHỐT ĐƯỜNG RAY!" at={60} den={140} x={tamO(3, 4).x + 70} y={tamO(3, 4).y - 35} />
       <CoiTauBar con="Tàu rời bến: 2 giờ" />
       <NhanGoi so={9} ten="Phối hợp R2 ở cảng" />
-      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 14, out: 58, text: 'Khối chốt sắt từ bãi bác Sáu kẹt cứng ngay trên đường ray cần cẩu!'}, {at: 64, out: 220, text: 'Móc cẩu container không hút được khối sắt đặc, phải gọi R2 nam châm thôi!'}]} />
+      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 14, out: 58, text: 'Khối chốt sắt từ bãi bác Sơn kẹt cứng ngay trên đường ray cần cẩu!'}, {at: 64, out: 220, text: 'Móc cẩu container không hút được khối sắt đặc, phải gọi R2 nam châm thôi!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -494,7 +494,7 @@ const XuatXuongCang: React.FC = () => {
       ))}
       <Burst x={540} y={520} at={18} />
       <Mai dang="mai-mung" x={820} says={[{at: 12, out: 88, text: 'Cảm ơn hai em! Cả 4 chuyến tàu container đều đã xuất bến đúng giờ, cảng sông thông suốt rồi!'}]} at={6} />
-      <Sola x={230} mat={[[0, 'happy']]} says={[{at: 94, out: 172, text: 'Cần cẩu R1 ở lại trực cảng cùng cô Mai, tụi em xuôi dòng sang Trạm thủy lợi bác Ba đây ạ!'}]} />
+      <Sola x={230} mat={[[0, 'happy']]} says={[{at: 94, out: 172, text: 'Cần cẩu R1 ở lại trực cảng cùng cô Mai, tụi em xuôi dòng sang Trạm thủy lợi bác Bình đây ạ!'}]} />
     </NenHienTruong>
   );
 };
@@ -557,9 +557,9 @@ const NhaMuaBenSong: React.FC = () => {
       <div style={{position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.42)'}} />
       <div style={{position: 'absolute', left: 60, right: 60, top: 200, padding: '28px 36px', borderRadius: 28, background: '#0284C7',
         border: `5px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 46, color: '#fff'}}>
-        CHẶNG TIẾP THEO · BẾN SÔNG & TRẠM THỦY LỢI BÁC BA
+        CHẶNG TIẾP THEO · BẾN SÔNG & TRẠM THỦY LỢI BÁC BÌNH
       </div>
-      <Nguoi anh="ba-tin" ten="BÁC BA" mau="#0284C7" x={820} h={600} at={8} side="left" bubbleW={560} bubbleTop={1230}
+      <Nguoi anh="ba-tin" ten="BÁC BÌNH" mau="#0284C7" x={820} h={600} at={8} side="left" bubbleW={560} bubbleTop={1230}
         says={[{at: 12, out: 76, text: 'Tàu hàng ở cảng cô Mai đã rời bến, hai cháu xuôi sông xuống giúp bác khơi thông 4 tuyến kênh trước giờ triều cường nhé!'}]} />
       <Sola x={230} mat={[[0, 'surprised'], [78, 'happy']]} says={[{at: 82, out: 145, text: 'Mùa tiếp theo mình xuống nước chế tạo Tàu thủy lợi R1 và đo dòng chảy nào!'}]} />
     </AbsoluteFill>

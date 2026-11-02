@@ -1,5 +1,5 @@
 // Phim gói 1 mùa 1 "Xe hai bánh" khổ dọc 1080×1920 (doc: true):
-// Bố cục: Vấn đề ở kho chú Tư (R1 chưa có bánh xe) -> Luna lắp hai bánh vào cái đầu R1 -> 6 cảnh "Show, Don't Tell":
+// Bố cục: Vấn đề ở kho chú Tùng (R1 chưa có bánh xe) -> Luna lắp hai bánh vào cái đầu R1 -> 6 cảnh "Show, Don't Tell":
 // Thùng nằm bên TRÁI; Sola nghĩ "qua trái thì gọi bánh trái" -> R1 rẽ PHẢI, Sola bấm Chạy lại vẫn rẽ phải, R1 chóng mặt.
 // Luna chỉ HỎI DẪN (vết bánh vòng quanh đâu? bánh nào lăn?), Sola tự nhận ra quy luật ("như chân compa").
 // Tua lại vị trí đầu, Luna hỏi muốn rẽ trái về phía thùng thì gọi bánh nào -> Sola gọi right_move() -> R1 rẽ trái nhìn thẳng vào thùng;
@@ -64,17 +64,17 @@ const Hoi: React.FC<{at: number; t: TuThe; chu?: string}> = ({at, t, chu = '?!'}
 /** Mốc dòng sáng: [khung bắt đầu, chỉ số dòng]; trước mốc đầu không sáng. */
 const dongSang = (f: number, moc: [number, number][]) => moc.filter(([t]) => f >= t).pop()?.[1] ?? -1;
 
-/* ------------------------------------------------------------------ Mở đầu: Vấn đề của chú Tư & Luna lắp Hai bánh xe */
+/* ------------------------------------------------------------------ Mở đầu: Vấn đề của chú Tùng & Luna lắp Hai bánh xe */
 export const CanhXeVanDe: React.FC = () => (
   <NenHienTruong anh="nen-doc/mua-1.png">
     {[[1, 1], [3, 2], [2, 3], [0, 4], [4, 4], [1, 5]].map(([c, r], i) => <Vat key={i} moc={[[0, c, r]]} />)}
     <DongHo tu={13 * 60} />
     <NhanGoi so={1} ten="Hai bánh xe" />
-    <Nguoi anh="tu-sot-ruot" ten="CHÚ TƯ" mau="#EA580C" x={820} h={600} at={0} side="left" bubbleW={560} bubbleTop={1230}
+    <Nguoi anh="tu-sot-ruot" ten="CHÚ TÙNG" mau="#EA580C" x={820} h={600} at={0} side="left" bubbleW={560} bubbleTop={1230}
       says={[{at: 10, out: 135, text: 'Năm giờ xe tải tới mà hàng còn chất đầy lối!'}]} />
     <Mascot who="sola" x={240} h={540} at={0} bubbleW={520} bubbleTop={1240}
       faces={[[0, 'surprised-sach'], [140, 'worried']]}
-      says={[{at: 140, out: 255, text: 'Chú Tư cần dọn kho gấp mà R1 chưa có bánh xe để đi luôn!'}]} />
+      says={[{at: 140, out: 255, text: 'Chú Tùng cần dọn kho gấp mà R1 chưa có bánh xe để đi luôn!'}]} />
   </NenHienTruong>
 );
 

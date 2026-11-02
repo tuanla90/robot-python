@@ -30,7 +30,7 @@ export const CanhOmniVanDe: React.FC = () => (
       faces={[[0, 'worried'], [65, 'shocked']]}
       says={[{at: 8, out: 92, text: 'Bãi tái chế nhiều đống sắt sát nhau quá, cứ phải quay mũi xe sang ngang mới đi được thì kẹt suốt!'}]}
       bubbleW={550} bubbleTop={1230} />
-    <Nguoi anh="sau-nghi" ten="BÁC SÁU" mau="#D97706" x={820} h={600} at={90} side="left" bubbleW={560} bubbleTop={1230}
+    <Nguoi anh="sau-nghi" ten="BÁC SƠN" mau="#D97706" x={820} h={600} at={90} side="left" bubbleW={560} bubbleTop={1230}
       says={[{at: 96, out: 185, text: 'Khu phân loại hẹp lắm, xe phải lách ngang sang hai bên mà giữ nguyên hướng mũi mới kịp!'}]} />
   </NenHienTruong>
 );
@@ -144,7 +144,7 @@ export const CanhNamChamVanDe: React.FC = () => (
       faces={[[0, 'thinking'], [50, 'shocked']]}
       says={[{at: 8, out: 92, text: 'Khối phế liệu sắt nằm cách 2 ô bên kia rào, tay kẹp chỉ với được 1 ô sát cạnh nên chịu thua rồi!'}]}
       bubbleW={550} bubbleTop={1230} />
-    <Nguoi anh="sau-tin" ten="BÁC SÁU" mau="#D97706" x={820} h={600} at={90} side="left" bubbleW={560} bubbleTop={1230}
+    <Nguoi anh="sau-tin" ten="BÁC SƠN" mau="#D97706" x={820} h={600} at={90} side="left" bubbleW={560} bubbleTop={1230}
       says={[{at: 96, out: 185, text: 'Trong bãi còn trộn lẫn sắt với gỗ và cả thỏi nam châm nữa, phải phân biệt và hút từ xa mới được!'}]} />
   </NenHienTruong>
 );

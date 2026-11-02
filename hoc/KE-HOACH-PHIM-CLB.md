@@ -4,6 +4,8 @@ User 30/10: phim hiện có chưa kể được cốt truyện xuyên suốt, v�
 Hướng mới: **cốt truyện là ứng dụng của CLB robot, hành trình đưa robot vào đời sống**; phim nhìn **từ trên xuống**; dựng bằng **TopView** (như ảnh mascot) ghép với lõi game.
 Thay phần giọng kể của KE-HOACH-PHIM-GOI.md (mục 3c giữ khuôn gói 1 / gói 10) và quy tắc 6 của KE-HOACH-7-MUA.md.
 
+**Sửa / làm phim mới: theo [LUAT-SUA-PHIM-CLB.md](LUAT-SUA-PHIM-CLB.md)** (2/11: chữ ít, phim dừng cuối cảnh chờ Tiếp, không che, bản đồ cuộn + xe bám đường, tên không kiểu thứ miền Nam).
+
 ## 1. Đã chốt (user 30/10)
 
 - **CLB Mật Lệnh Robot** (trùng tên game).
@@ -189,7 +191,7 @@ User 30/10: **phần nào làm được bằng ảnh + hoạt cảnh Remotion th
 1. **Phim mở đầu + phim gói 1** (mục 3): bản thử 30/10 trong `phim-clb/`. Còn: 8 ảnh nền (mục 3b), giọng, duyệt nhịp.
 2. Viết lại kịch bản 10 phim mỗi mùa theo khuôn mục 2 (mùa 1–4 đã có phim cũ: giữ ý cơ chế, đổi sự cố và giọng).
    **Đêm 31/10:** kịch bản 70 phim theo cấu trúc 10 gói mới ở [KICH-BAN-PHIM-GOI-CLB.md](KICH-BAN-PHIM-GOI-CLB.md) (bản 2, sau hội đồng 20261031-0120; chờ user duyệt các mục [DUYỆT]);
-   7 người nhờ đã sinh (`phim-clb/public/nguoi/`, mỗi người bản a / b); 10 phim mùa 1 khổ dọc đã dựng (`phim-clb/src/doc/m1.tsx`, Studio `M1G<n>-Mo` / `M1G<n>-Ket`, đang dùng bản a của chú Tư).
+   7 người nhờ đã sinh (`phim-clb/public/nguoi/`, mỗi người bản a / b); 10 phim mùa 1 khổ dọc đã dựng (`phim-clb/src/doc/m1.tsx`, Studio `M1G<n>-Mo` / `M1G<n>-Ket`, đang dùng bản a của chú Tùng).
 3. Đổi mã: R1 khoá xanh (`part.js`, bảng sơn, Cài đặt); lời phim / màn đang nói "R1 của em", "em lắp".
 4. Đợt chữ trong màn: đề bài "Giúp Sola…", gợi ý của Luna, màn sửa lỗi "Sola viết vội" (kế hoạch gộp diem10code mục 1 đã phác cách làm).
 5. Giao diện: bản đồ thị trấn làm màn chọn mùa, bản vẽ cỗ máy ở màn chọn gói.

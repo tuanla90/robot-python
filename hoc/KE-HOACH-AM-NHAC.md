@@ -75,11 +75,11 @@ Tất cả các đoạn được sáng tác riêng cho game (không vướng b�
 
 | Đoạn | Nơi giải cứu | Âm hưởng | Giai điệu R1 (Sola) | Bè hòa âm R2 (Luna) | Nhịp trống |
 |---|---|---|---|---|---|
-| **1** | **Kho hàng** (`kho-hang` — Chú Tư) | Khởi hành vững chãi (I – IV – I) | `1 3 5 5 · 6 5 3 1` | `1 1 3 3 · 4 3 1 1` | `x . x . x . x x` |
+| **1** | **Kho hàng** (`kho-hang` — Chú Tùng) | Khởi hành vững chãi (I – IV – I) | `1 3 5 5 · 6 5 3 1` | `1 1 3 3 · 4 3 1 1` | `x . x . x . x x` |
 | **2** | **Nhà máy** (`nha-may` — Cô Hạnh) | Guồng hơi nước rộn ràng (ii – V) | `2 4 5 6 · 5 4 3 2` | `1 2 3 4 · 3 2 1 5` | `x . x x x . x .` |
-| **3** | **Bãi tái chế** (`bai-tai-che` — Bác Sáu) | Bước nhảy đệm từ (iii – vi – ii – I) | `3 5 8 6 · 5 3 2 3` | `1 3 5 4 · 3 1 5 1` | `x x . x x . x .` |
-| **4** | **Cảng sông** (`cang-song` — Bác Ba) | Còi tàu rẽ sóng ra khơi (I – IV – V) | `1 4 6 6 · 5 4 2 5` | `1 2 4 4 · 3 2 5 3` | `x . x x . x x .` |
-| **5** | **Bến sông** (`ben-song` — Bác Ba) | Lướt sóng vượt sông (IV – I – V) | `4 6 8 7 · 6 5 3 5` | `2 4 6 5 · 4 3 1 3` | `x . . x x . x .` |
+| **3** | **Bãi tái chế** (`bai-tai-che` — Bác Sơn) | Bước nhảy đệm từ (iii – vi – ii – I) | `3 5 8 6 · 5 3 2 3` | `1 3 5 4 · 3 1 5 1` | `x x . x x . x .` |
+| **4** | **Cảng sông** (`cang-song` — Bác Bình) | Còi tàu rẽ sóng ra khơi (I – IV – V) | `1 4 6 6 · 5 4 2 5` | `1 2 4 4 · 3 2 5 3` | `x . x x . x x .` |
+| **5** | **Bến sông** (`ben-song` — Bác Bình) | Lướt sóng vượt sông (IV – I – V) | `4 6 8 7 · 6 5 3 5` | `2 4 6 5 · 4 3 1 3` | `x . . x x . x .` |
 | **6** | **Nông trại hoa** (`nong-trai` — Chị Lan) | Trăm hoa đua nở (I – IV – I) | `5 6 5 3 · 4 5 3 1` | `3 4 3 1 · 2 3 1 6` | `x . x . x x . x` |
 | **7** | **Mỏ đá** (`mo-da` — Anh Dũng) | Vượt dốc núi cao (ii – V7) | `2 3 4 6 · 5 6 7 5` | `5 1 2 4 · 3 4 5 3` | `x x x . x x x .` |
 | **8** | **Hang động** (`hang-dong` — Chú Phong) | Chuông đá ngân vang (I cao trào) | `8 7 6 5 · 6 7 8 5` | `5 5 4 3 · 4 5 6 3` | `x . . . x . x .` |
