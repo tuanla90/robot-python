@@ -91,7 +91,7 @@ const canhTai = (starts: number[], f: number) => {
 };
 
 // Mỗi cảnh tự chạy tới cuối rồi DỪNG chờ (user 2/11: nhiều chữ, phim đi nhanh quá): bấm Tiếp (hay chạm phim) thì chạy đoạn chuyển sang cảnh sau.
-// Hàng dưới đáy: Bỏ qua | chấm cảnh | Tiếp (giữa cảnh: nhảy sang đầu cảnh sau; cảnh cuối: nút cuối, gọi xong). Chạm phim lúc đang chạy: dừng / chạy tiếp. Hết phim: nút cuối to. Không thanh tua.
+// Hàng dưới đáy: Bỏ qua | chấm cảnh | Tiếp (giữa cảnh: nhảy sang đầu cảnh sau; cảnh cuối: nút cuối, gọi xong). Chạm phim lúc đang chạy: dừng / chạy tiếp. Hết phim: nút cuối ở hàng đáy nhịp nhẹ (không nút to giữa — che mặt nhân vật). Không thanh tua.
 const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu, xong}) => {
   const ref = useRef<PlayerRef>(null);
   const {starts, total} = React.useMemo(() => xep(phim), [phim]);
@@ -138,7 +138,7 @@ const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu,
   };
   return (
     <div style={{position: 'absolute', inset: 0, zIndex: 30, background: '#0F172A'}} data-hop="phim-clb" data-phim={phim.id}>
-      <style>{'@keyframes pclb-nhip{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}@keyframes pclb-nhip-giua{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}'}</style>
+      <style>{'@keyframes pclb-nhip{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}'}</style>
       <Player ref={ref} component={Comp} durationInFrames={total} fps={FPS} compositionWidth={1080} compositionHeight={1920}
         style={{width: '100%', height: '100%'}} controls={false} clickToPlay={false} moveToBeginningWhenEnded={false} showVolumeControls={false} allowFullscreen={false} numberOfSharedAudioTags={24} acknowledgeRemotionLicense />
       <div onClick={chamPhim} style={{position: 'absolute', inset: 0, zIndex: 1, cursor: 'pointer'}} />
@@ -150,13 +150,9 @@ const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu,
         <button className="bt g-wd md-bo-qua" data-nut={laMoDau ? 'md-bo-qua' : 'pg-bo-qua'} onClick={xong} style={{position: 'static'}}>{chu.boQua}</button>
         <div className="md-cham">{starts.map((_, i) => <i key={i} className={i === canh ? 'on' : undefined} />)}</div>
         <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep' : 'pg-tiep'} onClick={tiep}
-          style={{width: 'auto', height: 36, padding: '0 16px', fontSize: 15, letterSpacing: 0, borderRadius: 18, visibility: het ? 'hidden' : 'visible',
-            animation: cho ? 'pclb-nhip 1.1s ease-in-out infinite' : 'none'}}>{cuoi ? chu.cuoi : (chu.tiep || 'Tiếp') + ' ›'}</button>
+          style={{width: 'auto', height: 36, padding: '0 16px', fontSize: 15, letterSpacing: 0, borderRadius: 18,
+            animation: cho || het ? 'pclb-nhip 1.1s ease-in-out infinite' : 'none'}}>{cuoi ? chu.cuoi : (chu.tiep || 'Tiếp') + ' ›'}</button>
       </div>
-      {het && (
-        <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep-cuoi' : 'pg-tiep-cuoi'} onClick={xong}
-          style={{position: 'absolute', left: '50%', bottom: 70, transform: 'translateX(-50%)', zIndex: 2, animation: 'pclb-nhip-giua 1.1s ease-in-out infinite'}}>{chu.cuoi}</button>
-      )}
     </div>
   );
 };
