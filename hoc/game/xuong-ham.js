@@ -171,7 +171,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (window.HuongDan) HuongDan.bao('mo-xuong', { loai: loai, ten: ten });
     S.loai = loai; S.ten = ten; S.theMo = the || null;
     TP.datCheList(TP.coListCua(A.man()));                     // gói List: ô phần tử danh sách trong khung thân hàm
-    TP.datCheTD(TP.coTDCua(A.man()), TP.khoaTDCua(A.man()), TP.nguonAmCua(A.man()));     // mùa 8: ô từ điển / tập hợp / hear() listen() trong khung thân hàm
+    TP.datCheTD(TP.coTDCua(A.man()), TP.khoaTDCua(A.man()), TP.nguonAmCua(A.man()));
+    TP.datCheBT(TP.coBTCua(A.man()), TP.nguonBTCua(A.man(), KhoHam.ds().concat(A.bai().hamCuaMan || [], (A.man().loiGiai && A.man().loiGiai.hamCuaEmMoi) || [])));     // mùa 4–7: ô biểu thức trong khung thân hàm     // mùa 8: ô từ điển / tập hợp / hear() listen() trong khung thân hàm
     var f = hamHienTai();
     if (!f) return;
     S.than = loai === 'em' ? f.than.slice() : f.than;        // hàm của màn: sửa thẳng vào bản nháp
@@ -257,6 +258,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       pin: TP.coPinCua(man),
       chuoi: TP.coCauTruc(man, 'for') && TP.coMauCua(man) !== 'look' && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
       dieuKien: (TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man)) || chuoiDr,
+      bt: TP.khayBTCua(man),                             // mùa 4–7: nhóm BIỂU THỨC
       thamSoChuoi: chuoiDr,                              // khối mẫu `if d == "U":` thay cho khối battery()
       em: em ? em.chinh : null,
       emKhac: em ? em.khac : [],                         // hàm màn này không dùng tới: nhóm "Hàm khác" thu gọn

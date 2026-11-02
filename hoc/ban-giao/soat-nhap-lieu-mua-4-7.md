@@ -2,6 +2,12 @@
 
 2/11, đo trên main `8ef2188`. Chỉ đọc và đo, không sửa code. Ảnh chụp thử tay ở [soat-nhap-lieu-anh/](soat-nhap-lieu-anh/) (tên ảnh ghi trong bài, vd. `m4-chia-du-2-ma-mau` = `soat-nhap-lieu-anh/m4-chia-du-2-ma-mau.jpg`).
 
+## Đã sửa (2/11, sau báo cáo)
+
+Màn thuộc mùa 4–7 bật **chế độ BIỂU THỨC** trong `hoc/game/thanh-phan.js` (`datCheBT`, `coBTCua`, `khayBTCua`, `nguonBTCua`): dòng gán, so sánh, `return`, `for x in tên`, lời gọi có biểu thức đều tách thành cây, mỗi ô (lá, hàm nguồn, toán tử, phần tử danh sách) chạm đổi được; bảng chọn có số 0–12, biến / nguồn (`read_code()`, `flow()`, `radar()`, `color("…")`, hàm em có trả về), chuỗi, toán tử, và phép bọc (+1, −1, ×2, //2, %2, đổi dấu, `abs`, `min`, `max`, `x[0]`, `[x]`, `== 1`, `not`). Tab khay BIỂU THỨC có `n = 1`, `a, b = …`, `return`, `if/elif/else`, `while`, `for n in …`. Thêm `rail(1)` / `set_length(1)` mặc định, khối thứ hai `cast_net("left")`, `cauTruc` cho gói Vườn cũ.
+
+Máy kiểm `hoc/kiem-nhap-mua-4-7.mjs` chạm lắp lời giải mẫu từng màn trong khay thật (theo từng robot ở màn đội): **0 màn kẹt** ở cả bốn mùa (trước: 88 / 60 / 28 / 41). Thử tay `duong-ray.7` trên trình duyệt: lắp được `while read_code() != -1:`, `rail(-1)`, tới cờ.
+
 ## Kết luận
 
 Cả bốn mùa đều có màn mà **lời giải mẫu chứa dòng học sinh không lắp được** bằng khay khối + chạm ô:

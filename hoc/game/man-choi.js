@@ -242,7 +242,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
     TP.datCheList(TP.coListCua(m));                    // màn có cauTruc 'list': dòng danh sách (a = [1, 2], for n in a:, a.append(1)) tách thành ô phần tử chạm được
     TP.datCheTD(TP.coTDCua(m), TP.khoaTDCua(m), TP.nguonAmCua(m));      // mùa 8: dòng từ điển / tập hợp / hear() listen() tách thành ô chạm được (tên, khoá chữ, số, in / not in)
-    TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m), m.vaHoac === true);      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
+    TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m), m.vaHoac === true);
+    TP.datCheBT(TP.coBTCua(m), TP.nguonBTCua(m, KhoHam.ds().concat(S.bai.hamCuaMan || [], (m.loiGiai && m.loiGiai.hamCuaEmMoi) || [])));      // mùa 4–7: dòng có phép tính / số âm / return / so sánh cảm biến mới tách thành cây biểu thức chạm được (sau datCheList / datCheMau)      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
     var k = KhungCode.khungDayDu(m.khung);
     S.khung = k;
     var dung = KhungCode.soODung(k);
@@ -359,6 +360,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       pin: TP.coPinCua(m),                                                                      // drone đo pin: khối so sánh battery() < 3
       chuoi: TP.coCauTruc(m, 'for') && TP.coMauCua(m) !== 'look' && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R": (flycam dùng danh sách màu, không dùng chuỗi chữ)
       dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
+      bt: TP.khayBTCua(m),                                                                     // mùa 4–7: nhóm BIỂU THỨC (n = 1, return n, if n == 1:, while n > 0:…) ở thẻ Logic
       em: em ? em.chinh : null,                                                                 // nhện: bỏ hàm dùng lệnh bánh; hàm màn không dùng tới → emKhac
       emKhac: em ? em.khac : [],                                                                // nhóm "Hàm khác" thu gọn (TP.tachHamKhac)
       theRong: theRong,

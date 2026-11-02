@@ -31,6 +31,7 @@
       hamGoc: coPin ? KHAY_PIN.slice() : KHAY.slice(),
       robot: JSON.parse(JSON.stringify(ROBOT)),
       mucTieu: 'to-hinh',
+      cauTruc: ['for', 'if', 'while', 'list'],                     // như các gói khác của mùa (nhìn dưới chân, nét liền, trạm sạc): lời giải có for / if (soát nhập liệu 2/11)
       nhipTheo: nhieuSan ? 'tong' : undefined,
       taoHam: [],
       hamCuaEmCan: []
