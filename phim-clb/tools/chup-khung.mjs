@@ -41,10 +41,14 @@ try {
     await page.evaluate(() => window.PhimCLB.player().pause());
     const stage = page.locator('#stage');
     const n = moc.starts.length;
+    // CANH=<id cảnh> KHUNG=30,55,80 → chỉ chụp cảnh ấy ở các khung (tính từ đầu cảnh) để soát hoạt cảnh
+    const chiCanh = process.env.CANH, khungRieng = (process.env.KHUNG || '').split(',').filter(Boolean).map(Number);
     for (let i = 0; i < n; i++) {
+      if (chiCanh && moc.ids[i] !== chiCanh) continue;
       const giua = moc.starts[i] + 70;
       const dung = i + 1 < n ? moc.starts[i + 1] - 1 : moc.total - 2;
-      for (const [nhan, f] of [['giua', giua], ['dung', dung]]) {
+      const ds = khungRieng.length ? khungRieng.map((k) => [`k${String(k).padStart(3, '0')}`, moc.starts[i] + k]) : [['giua', giua], ['dung', dung]];
+      for (const [nhan, f] of ds) {
         await page.evaluate((k) => { const p = window.PhimCLB.player(); p.pause(); p.seekTo(k); }, f);
         await page.waitForTimeout(1500);
         const tep = resolve(ra, `${String(i + 1).padStart(2, '0')}-${moc.ids[i]}-${nhan}.png`);

@@ -581,6 +581,7 @@ export const TrongXe: React.FC<{
   const p = pop(f, cach, fps, 9);
   const S = 580 * (RONG[anh] ?? 576) / 576;
   const S_DAU = 580;
+  const S9 = 580 * 922 / 576;                                   // ảnh 922 px (tay xoay, du): thân cùng cỡ ảnh 576 ở 580
   const uLap = ease(f, [Math.max(15, cach - 70), cach], [0, 1]);
   const dangLap = f >= Math.max(15, cach - 70) && f < cach;
 
@@ -721,7 +722,7 @@ export const TrongXe: React.FC<{
           )}
 
           {/* R1 đứng yên trên sa bàn, sau mốc cach cổ tay xoay sang TRÁI rồi sang PHẢI */}
-          <div style={{position: 'absolute', left: 540 - 240, top: 890 - 240, width: 480, height: 480,
+          <div style={{position: 'absolute', left: 540 - S9 / 2, top: 890 - S9 / 2, width: S9, height: S9,
             transform: 'rotate(-90deg)', filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))', zIndex: 11}}>
             <Img
               src={staticFile(
@@ -731,15 +732,15 @@ export const TrongXe: React.FC<{
                     ? 'robot/lab/xoay-trai.png'
                     : 'robot/lab/xoay-phai.png'
               )}
-              style={{width: 480, height: 480}} />
+              style={{width: S9, height: S9}} />
           </div>
         </>
       ) : nangCap === 'cam-ben' ? (
         <>
           {/* Trước cach: 2 vòng sáng nhấp nháy quanh 2 tai cảm biến bên hông R1 */}
           {f < cach ? (
-            [-95, 95].map((dx, i) => (
-              <div key={i} style={{position: 'absolute', left: 540 + dx - 44, top: 860 - 44, width: 88, height: 88,
+            [-116, 116].map((dx, i) => (
+              <div key={i} style={{position: 'absolute', left: 540 + dx - 44, top: 930 - 44, width: 88, height: 88,
                 borderRadius: 999, border: '5px dashed #22D3EE', background: 'rgba(34,211,238,0.22)',
                 boxShadow: '0 0 28px #22D3EE', transform: `scale(${1 + 0.08 * Math.sin(f / 3)})`, zIndex: 14}} />
             ))
@@ -747,7 +748,7 @@ export const TrongXe: React.FC<{
             /* Sau cach: Phát chùm sóng siêu âm sang 2 bên TRÁI và PHẢI */
             <>
               {[-1, 1].map((dir) => (
-                <div key={dir} style={{position: 'absolute', left: 540 + dir * 95, top: 870, width: 0, height: 0,
+                <div key={dir} style={{position: 'absolute', left: 540 + dir * 116, top: 930, width: 0, height: 0,
                   transform: `rotate(${dir < 0 ? 180 : 0}deg)`, zIndex: 13}}>
                   {[0, 1, 2].map((k) => {
                     const pha = ((f - cach + k * 9) % 27) / 27;
@@ -776,9 +777,9 @@ export const TrongXe: React.FC<{
             </>
           )}
 
-          <div style={{position: 'absolute', left: 540 - 240, top: 890 - 240, width: 480, height: 480,
+          <div style={{position: 'absolute', left: 540 - S9 / 2, top: 890 - S9 / 2, width: S9, height: S9,
             transform: 'rotate(-90deg)', filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))', zIndex: 11}}>
-            <Img src={staticFile(f >= cach ? 'robot/lab/cb-kc-du.png' : 'robot/m1/kep-cam.png')} style={{width: 480, height: 480}} />
+            <Img src={staticFile(duongRobot(m, f >= cach ? 'du' : 'xoay'))} style={{width: S9, height: S9}} />
           </div>
         </>
       ) : laLapR2 ? (
@@ -814,47 +815,19 @@ export const TrongXe: React.FC<{
               </div>
             </>
           ) : laLapTayKep && dangLap ? (
-            /* Gói 2: Vẽ riêng cụm Tay kẹp vector nguyên bản (2 càng cong + cụm đế trắng + khớp tròn đèn cyan) nền trong suốt 100%, không cắt dính thân R1 */
-            <svg viewBox="0 0 100 120" style={{position: 'absolute', left: 540 - (S_DAU * (480 / 576) * 0.86) / 2,
-              top: 890 - (S_DAU * (480 / 576) * 0.86) * 0.64 - (1 - uLap) * 155,
-              width: S_DAU * (480 / 576) * 0.86, height: S_DAU * (480 / 576) * 0.86 * 1.2,
-              opacity: uLap, overflow: 'visible', zIndex: 12, filter: 'drop-shadow(0 12px 18px rgba(15,23,42,0.35))'}}>
-              {/* Hai càng cong đối xứng hướng lên trên (y từ 40 lên 18) */}
-              <path d="M 38 40 C 9 34 9 26 14 18 M 62 40 C 91 34 91 26 86 18" fill="none" stroke="#2D2654" strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M 38 40 C 9 34 9 26 14 18 M 62 40 C 91 34 91 26 86 18" fill="none" stroke="#CBD5E1" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" />
-              {/* Cụm đế trắng bo tròn */}
-              <rect x={34} y={34} width={32} height={12} rx={6} fill="#FFFFFF" stroke="#2D2654" strokeWidth={3} />
-              {/* Khớp tròn bạc + chấm đèn cyan */}
-              <circle cx={50} cy={40} r={7} fill="#CBD5E1" stroke="#2D2654" strokeWidth={2.5} />
-              <circle cx={50} cy={40} r={3} fill="#22D3EE" />
-            </svg>
+            /* Gói 2: phần càng của chính ảnh kep.png (mũi bên phải ảnh → phía trên khi xoay -90°) trượt từ trên xuống khớp thân */
+            <div style={{position: 'absolute', left: 540 - S / 2, top: 890 - S / 2 - (1 - uLap) * 170, width: S, height: S, opacity: uLap,
+              transform: 'rotate(-90deg)', zIndex: 12, filter: 'drop-shadow(0 12px 18px rgba(15,23,42,0.35))'}}>
+              <Img src={staticFile(duongRobot(m, anh))} style={{width: S, height: S, clipPath: 'inset(0 0 0 70%)'}} />
+            </div>
           ) : laLapCamBien && dangLap ? (
-            /* Gói 3: Vẽ riêng 2 viên con nhộng Cảm biến khoảng cách nền trong suốt 100% (không bị dính nền chữ nhật trắng của thân R1) trượt từ 2 bên vào vai kep.png */
+            /* Gói 3: hai viên cảm biến cắt từ chính ảnh kep-cam.png (mép trên / dưới ảnh = trái / phải màn hình khi xoay -90°) trượt từ hai bên vào vai */
             <>
-              {[-1, 1].map((ben) => (
-                <svg key={ben} viewBox="0 0 40 68" style={{
-                  position: 'absolute',
-                  left: 540 + ben * (100 + (1 - uLap) * 145) - 26,
-                  top: 890 - 16,
-                  width: 52,
-                  height: 88,
-                  opacity: uLap,
-                  overflow: 'visible',
-                  zIndex: 12,
-                  filter: 'drop-shadow(0 10px 16px rgba(15,23,42,0.38))',
-                }}>
-                  <defs>
-                    <radialGradient id={`vo-cam-${ben}`} cx="42%" cy="35%" r="70%">
-                      <stop offset="0%" stopColor="#FFFFFF" />
-                      <stop offset="70%" stopColor="#F1EFFB" />
-                      <stop offset="100%" stopColor="#D8D4F2" />
-                    </radialGradient>
-                  </defs>
-                  {/* Vỏ con nhộng dọc chuẩn ve-vector-cam.js (10x17 bo 5 phóng x3.2) */}
-                  <rect x={4} y={6} width={32} height={54} rx={16} fill={`url(#vo-cam-${ben})`} stroke="#2D2654" strokeWidth={7} />
-                  {/* Thấu kính cyan ở đầu trước (hướng lên trên theo mũi R1) */}
-                  <rect x={9} y={9} width={22} height={19} rx={9.5} fill="#22D3EE" stroke="#2D2654" strokeWidth={3.8} />
-                </svg>
+              {[['inset(20% 46% 64% 34%)', -1], ['inset(64% 46% 20% 34%)', 1]].map(([clip, ben]) => (
+                <div key={String(ben)} style={{position: 'absolute', left: 540 - S / 2 + (ben as number) * (1 - uLap) * 170, top: 890 - S / 2, width: S, height: S, opacity: uLap,
+                  transform: 'rotate(-90deg)', zIndex: 12, filter: 'drop-shadow(0 10px 16px rgba(15,23,42,0.38))'}}>
+                  <Img src={staticFile(duongRobot(m, anh))} style={{width: S, height: S, clipPath: clip as string}} />
+                </div>
               ))}
             </>
           ) : dangLap ? (
