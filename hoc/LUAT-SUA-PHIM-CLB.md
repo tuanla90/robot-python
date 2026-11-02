@@ -12,6 +12,7 @@ Khổ dọc 1080×1920, 30 khung/giây; trên game phim thu 1/3 (360×640).
 
 ## 2. Nhịp
 
+- *(2/11 tối, user: phim đã ngắn, nút Tiếp che nội dung → `TU_PHAT = true` trong `entry.tsx`: tạm tự phát liền mạch, ẩn nút Tiếp giữa phim, hết phim mới hiện nút cuối; chữ vẫn phải đọc kịp trong 8s mỗi cảnh.)*
 - **Phim dừng cuối mỗi cảnh, chờ bấm Tiếp** (trình chiếu chung `phim-clb/src/web/entry.tsx`, đã có; không làm riêng từng phim). Khung dừng của cảnh = `dur − XF − 1` (XF = 16) tính trong cảnh.
 - Cảnh có thoại dài **8s (240 khung)**. Câu 1: `at ≈ 14`, `out ≈ 120` (giữ ~3.5s). Câu 2: `at ≈ 126`, `out = dur` (còn hiện ở khung dừng). Cảnh cuối phim: câu cuối `out: 999` (giữ tới hết).
 - Không nút to giữa màn lúc hết phim (che mặt nhân vật); nút cuối nằm ở hàng đáy và nhịp nhẹ (đã làm trong entry.tsx).
