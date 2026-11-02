@@ -23,7 +23,7 @@ import {DS_GOI} from './ds-goi';
 const XF = 16, LEAD = 8, SFX_GAIN = 0.55;
 // 2/11 (user): phim đã ngắn, nút Tiếp che nội dung → TẠM tự phát liền mạch, không dừng cuối cảnh, ẩn nút Tiếp giữa phim; hết phim mới hiện nút cuối. Đặt false để quay lại kiểu dừng chờ Tiếp.
 const TU_PHAT = true;
-const SFX_TRIM: Record<string, number> = {'wrong.wav': 0.35, 'type.wav': 0.55, 'riser.wav': 0.6, 'ding.wav': 0.8};
+const SFX_TRIM: Record<string, number> = {'wrong.wav': 0.12, 'type.wav': 0.55, 'riser.wav': 0.6, 'ding.wav': 0.8};
 const xep = (p: Phim) => {
   const starts: number[] = [];
   const end = p.canh.reduce((at, s) => { starts.push(at); return at + s.dur - XF; }, LEAD) + XF;
