@@ -949,8 +949,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Ô đích còn trống: hình 'dich' {trong} (nền hổ phách mờ + bốn góc khung) + viền nét đứt chạy, bo góc, ở trong (lệnh trực tiếp theo pixel sân). Đích có màu: khung nét đứt tô màu đích. */
     veDichTrong: function (g, now) {
       var ds = this.cfg.dich; if (!ds.length) return;
+      // CẢNG SÔNG (2/11, user: ô tầm rối mắt, che ô mục tiêu): với cần cẩu, D chỉ đánh dấu ô trong tầm cần (lõi coi như sàn, thắng theo bóng mờ / giao tàu),
+      // nên vẽ chấm vàng nhỏ mờ đứng yên thay cho khung đích; bỏ chấm ở ô đầu cần của bóng mờ để ô mục tiêu sạch
+      var cau = this.vis && this.vis.cau, bm = this.cfg.bm, dauBm = null;
+      if (cau && bm && typeof bm.nac === 'number') { var hn = VeVector.NAC_CAU[((bm.nac % 8) + 8) % 8]; dauBm = (bm.x + hn[0] * (bm.tam || 1)) + ',' + (bm.y + hn[1] * (bm.tam || 1)); }
       for (var j = 0; j < ds.length; j++) {
         var e = ds[j], ex = e.x * T, ey = e.y * T, vo2 = this.vatTaiO(e.x, e.y);
+        if (cau) {
+          if (e.x + ',' + e.y === dauBm) continue;
+          g.save(); g.globalAlpha = 0.55; g.fillStyle = BM.vecCanhBao; g.strokeStyle = BM.vecVien; g.lineWidth = 0.4;
+          g.beginPath(); g.arc(ex + T / 2, ey + T / 2, T * 0.08, 0, Math.PI * 2); g.fill(); g.stroke(); g.restore();
+          continue;
+        }
         if ((vo2 && this.vatDungMau(vo2, e)) || this.thungTaiO(e.x, e.y)) continue;
         g.drawImage(this.oV('dich', e.mau ? { kieu: 'trong', mau: e.mau } : { kieu: 'trong' }), ex, ey, T, T);
         g.save(); g.setLineDash([2, 1.5]); g.lineDashOffset = -((now / 140) % 3.5);
