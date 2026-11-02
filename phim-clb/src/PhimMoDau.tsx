@@ -123,7 +123,7 @@ const CanhXeTramLab: React.FC = () => {
         </div>
 
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `scale(${r1Pop})`}}>
-          <div style={{width: 330, height: 295, borderRadius: 34, background: 'rgba(15,23,42,0.82)',
+          <div style={{width: 330, height: 295, borderRadius: 34, background: 'radial-gradient(circle, #FFFFFF 0%, #E0F2FE 75%)',   // nền sáng: bánh xe sẫm màu của R1 mới hiện (2/11)
             border: `6px solid #FDE047`, boxShadow: `0 12px 0 ${C.ink}, 0 0 36px rgba(250,204,21,0.4)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <Img src={staticFile('robot/m1/r1-vui.png')} style={{width: 260, height: 260, transform: `rotate(${-90 + Math.sin(f / 10) * 6}deg)`}} />
@@ -160,7 +160,7 @@ const CanhXeTramLab: React.FC = () => {
   );
 };
 
-/** Cảnh 3 (8s = 240f): Bản đồ dọc (nen-doc/the-gioi.png) — Chiếc xe trạm chạy dọc con đường đi giúp các nơi! */
+/** Cảnh 3 (8s = 240f): Bản đồ dọc (nen-doc/the-gioi.png) — zoom vào, camera theo xe trạm chạy dọc con đường đi giúp các nơi. */
 const TRAM_DOC = [
   {ten: 'CLB Robot', x: 750, y: 131, xeX: 495, xeY: 165, icon: 'Home', mau: C.indigo, nguoi: 'thay-giao-viec'},
   {ten: '1. Kho hàng', x: 750, y: 330, xeX: 350, xeY: 335, icon: 'Warehouse', mau: '#D97706', nguoi: 'tu-nghi'},
@@ -173,9 +173,13 @@ const TRAM_DOC = [
   {ten: '8. Hang động', x: 802, y: 1722, xeX: 455, xeY: 1760, icon: 'Compass', mau: '#0284C7', nguoi: 'phong-nghi'},
 ];
 
+// Camera bản đồ (2/11, user: zoom to ra rồi cho hoạt cảnh chạy dần): 24 khung đầu zoom 1 → ZOOM_BD ở đỉnh bản đồ, sau đó bám theo xe theo trục dọc.
+const ZOOM_BD = 1.45, CAM_X = 625;                      // 1.45: nhãn trạm 5 (x 842) còn trong khung, xe (x ≥ 350) không lẹm mép trái
+const kep = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+
 const CanhHanhTrinh: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
-  const u = interpolate(f, [20, 195], [0, TRAM_DOC.length - 1], {...CLAMP, easing: Easing.inOut(Easing.cubic)});
+  const u = interpolate(f, [28, 205], [0, TRAM_DOC.length - 1], {...CLAMP, easing: Easing.inOut(Easing.cubic)});
   const idx = Math.min(TRAM_DOC.length - 2, Math.floor(u));
   const frac = u - idx;
   const a = TRAM_DOC[idx], b = TRAM_DOC[idx + 1];
@@ -183,61 +187,50 @@ const CanhHanhTrinh: React.FC = () => {
   const xeY = a.xeY + (b.xeY - a.xeY) * frac;
   const latXe = b.xeX < a.xeX;
 
+  const z = interpolate(f, [0, 24], [1, ZOOM_BD], {...CLAMP, easing: Easing.inOut(Easing.cubic)});
+  const cx = kep(CAM_X, 540 / z, 1080 - 540 / z);
+  const cy = kep(xeY + 120, 960 / z, 1920 - 960 / z);           // xe hơi trên tâm khung: thấy trạm sắp tới
+  const ra = (x: number, y: number) => ({x: (x - cx) * z + 540, y: (y - cy) * z + 960});   // toạ độ bản đồ → khung hình
+  const duong = TRAM_DOC.slice(0, idx + 1).map((t) => `${t.xeX},${t.xeY}`).concat([`${xeX.toFixed(1)},${xeY.toFixed(1)}`]).join(' ');
+
   return (
     <AbsoluteFill style={{background: '#0F172A', fontFamily: FONT, overflow: 'hidden'}}>
-      <Img src={staticFile('nen-doc/the-gioi.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
-
-      {/* Đường kẻ sáng nối các trạm xe đã đi qua */}
-      <svg style={{position: 'absolute', inset: 0, pointerEvents: 'none'}} width={1080} height={1920}>
-        <polyline
-          points={TRAM_DOC.slice(0, idx + 1).map((t) => `${t.xeX},${t.xeY}`).concat([`${xeX.toFixed(1)},${xeY.toFixed(1)}`]).join(' ')}
-          fill="none" stroke={C.ink} strokeWidth={22} strokeLinecap="round" strokeLinejoin="round" />
-        <polyline
-          points={TRAM_DOC.slice(0, idx + 1).map((t) => `${t.xeX},${t.xeY}`).concat([`${xeX.toFixed(1)},${xeY.toFixed(1)}`]).join(' ')}
-          fill="none" stroke={C.yellow} strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="22 14" />
-      </svg>
-
-      {/* Nhãn gắn đúng vào các ô trên bản đồ dọc + avatar người nhờ cỡ lớn (96x96) */}
-      {TRAM_DOC.map((t, i) => {
-        const at = 6 + i * 14;
-        if (f < at) return null;
-        const s = pop(f, at, fps, 10);
-        const daQua = u >= i - 0.15;
-        return (
-          <React.Fragment key={t.ten}>
-            <div style={{position: 'absolute', left: t.x, top: t.y, transform: `translate(-50%, -50%) scale(${s})`,
-              display: 'flex', alignItems: 'center', gap: 12, padding: '11px 24px', borderRadius: 999,
-              background: daQua ? 'linear-gradient(180deg, #FDE047 0%, #FACC15 100%)' : '#FFFFFF',
-              color: C.ink, border: `5px solid ${C.ink}`, boxShadow: `0 8px 0 ${C.ink}`, whiteSpace: 'nowrap', zIndex: 8}}>
-              <Icon name={t.icon} size={28} color={daQua ? C.ink : t.mau} stroke={3} />
-              <span style={{fontSize: 28, fontWeight: 900}}>{t.ten}</span>
-            </div>
-            <div style={{position: 'absolute', left: t.x - 195, top: t.y - 48, width: 96, height: 96, borderRadius: '50%',
-              background: '#fff', border: `5px solid ${daQua ? '#FDE047' : C.ink}`, overflow: 'hidden', transform: `scale(${s})`,
-              boxShadow: `0 8px 0 ${C.ink}`, zIndex: 9}}>
-              <Img src={staticFile(`nguoi/${t.nguoi}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
-            </div>
-          </React.Fragment>
-        );
-      })}
-
-      {/* Chiếc xe trạm cỡ lớn chạy dọc theo con đường */}
-      <div style={{position: 'absolute', left: xeX - 115, top: xeY - 100, width: 230, height: 200, zIndex: 14,
-        transform: `translateY(${Math.sin(f * 0.8) * 5}px)`}}>
-        <Img src={staticFile('robot/xe-tram-a.png')} style={{width: '100%', height: '100%', objectFit: 'contain',
-          transform: latXe ? 'scaleX(-1)' : undefined, filter: `drop-shadow(0 0 22px ${C.yellow}) drop-shadow(0 12px 18px rgba(0,0,0,0.45))`}} />
-      </div>
-
-      {/* Băng-rôn tiêu đề trên đỉnh kiểu Game Banner */}
-      <div style={{position: 'absolute', left: 36, right: 36, top: 16, padding: '12px 26px', borderRadius: 24,
-        background: 'linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%)', border: `5px solid #FDE047`,
-        boxShadow: `0 8px 0 ${C.ink}`, textAlign: 'center', zIndex: 16}}>
-        <div style={{fontSize: 36, fontWeight: 900, color: '#FDE047', letterSpacing: '0.03em', whiteSpace: 'nowrap'}}>
-          BẢN ĐỒ CHIẾN DỊCH · 8 MÙA PHÁ ĐẢO
+      {/* Lớp bản đồ (ảnh + vệt đường + xe) phóng theo camera */}
+      <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0',
+        transform: `translate(${540 - cx * z}px, ${960 - cy * z}px) scale(${z})`}}>
+        <Img src={staticFile('nen-doc/the-gioi.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
+        <svg style={{position: 'absolute', inset: 0, pointerEvents: 'none'}} width={1080} height={1920}>
+          <polyline points={duong} fill="none" stroke={C.ink} strokeWidth={16} strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={duong} fill="none" stroke={C.yellow} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="16 10" />
+        </svg>
+        <div style={{position: 'absolute', left: xeX - 95, top: xeY - 82, width: 190, height: 164,
+          transform: `translateY(${Math.sin(f * 0.8) * 4}px)`}}>
+          <Img src={staticFile('robot/xe-tram-a.png')} style={{width: '100%', height: '100%', objectFit: 'contain',
+            transform: latXe ? 'scaleX(-1)' : undefined, filter: `drop-shadow(0 0 18px ${C.yellow}) drop-shadow(0 10px 14px rgba(0,0,0,0.45))`}} />
         </div>
       </div>
 
-      {/* 2/11: bỏ Sola / Luna và bóng thoại ở cảnh này — đè lên trạm 6–8; bản đồ + băng-rôn tự kể */}
+      {/* Nhãn trạm ở khung hình (cỡ chữ không phóng theo bản đồ): người nhờ nằm TRONG nhãn, trước icon (2/11: trước đó ảnh tròn đè lên icon).
+          Nhãn đè đúng ô nhãn trống in sẵn trên ảnh bản đồ; trạng thái: trắng = chưa tới, vàng = xe đã qua. */}
+      {TRAM_DOC.map((t, i) => {
+        const s = pop(f, 4 + i * 6, fps, 10);
+        const daQua = u >= i - 0.15;
+        const p = ra(t.x, t.y);
+        if (p.y < -80 || p.y > 2000) return null;
+        return (
+          <div key={t.ten} style={{position: 'absolute', left: p.x, top: p.y, transform: `translate(-50%, -50%) scale(${s})`,
+            display: 'flex', alignItems: 'center', gap: 10, padding: '8px 22px 8px 8px', borderRadius: 999,
+            background: daQua ? 'linear-gradient(180deg, #FDE047 0%, #FACC15 100%)' : '#FFFFFF',
+            color: C.ink, border: `5px solid ${C.ink}`, boxShadow: `0 8px 0 ${C.ink}`, whiteSpace: 'nowrap'}}>
+            <div style={{width: 72, height: 72, borderRadius: '50%', background: '#fff', border: `4px solid ${t.mau}`, overflow: 'hidden', flexShrink: 0}}>
+              <Img src={staticFile(`nguoi/${t.nguoi}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
+            </div>
+            <Icon name={t.icon} size={30} color={daQua ? C.ink : t.mau} stroke={3} />
+            <span style={{fontSize: 32, fontWeight: 900}}>{t.ten}</span>
+          </div>
+        );
+      })}
+      {/* 2/11: bỏ băng-rôn vàng trên đầu và Sola / Luna — bản đồ tự kể */}
     </AbsoluteFill>
   );
 };
@@ -280,7 +273,7 @@ const CanhDiemDau: React.FC = () => {
           </div>
 
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8}}>
-            <div style={{width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,204,21,0.35) 0%, transparent 70%)',
+            <div style={{width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, #FFFFFF 0%, #FEF9C3 80%)',
               border: '4px dashed #FDE047', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               <Img src={staticFile('robot/m1/du-vui.png')} style={{width: 215, height: 215, transform: 'rotate(-90deg)'}} />
             </div>
