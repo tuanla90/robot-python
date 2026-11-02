@@ -436,7 +436,7 @@
           mong(pt.k === 'ten', 'Sau dấu "." phải là tên lệnh, ví dụ a.append(1) hay s.add(1).');
           if (pt.v !== 'append' && pt.v !== 'add') {
             throw LoiCuPhap(d2, PHUONG_THUC_LIST.indexOf(pt.v) >= 0
-              ? 'Game chưa dạy lệnh .' + pt.v + '() cho danh sách. Ở đây chỉ có .append(x) để thêm một phần tử vào cuối.'
+              ? 'Game chưa dạy lệnh .' + pt.v + '(). Danh sách chỉ có .append(x) để thêm vào cuối; tập hợp (set) chỉ có .add(x).'
               : 'Game chưa dạy cách viết ".' + pt.v + '". Với danh sách, game chỉ dạy .append(x); với tập hợp (set), chỉ dạy .add(x).');
           }
           mong(anOp('('), 'Thiếu cặp ngoặc: muốn thêm phần tử thì viết a.' + pt.v + '(x).');
@@ -593,7 +593,7 @@
     var idx = dictTimViTri(d, k);
     if (idx < 0) {
       throw LoiRuntime(dong, 'Khóa ' + dangChu(k) + ' không có trong từ điển' + (ten ? ' ' + ten : '') +
-        ' (Python báo KeyError). Kiểm tra bằng ' + dangChu(k) + ' in ' + (ten || 'd') + ' trước khi đọc.');
+        ' (Python báo KeyError). Kiểm tra bằng ' + (laChuoi(k) ? '"' + k + '"' : dangChu(k)) + ' in ' + (ten || 'd') + ' trước khi đọc.');
     }
     return d.cap[idx].v;
   }

@@ -241,6 +241,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     E.lapLai.classList.remove('nhay');
     S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
     TP.datCheList(TP.coListCua(m));                    // màn có cauTruc 'list': dòng danh sách (a = [1, 2], for n in a:, a.append(1)) tách thành ô phần tử chạm được
+    TP.datCheTD(TP.coTDCua(m), TP.khoaTDCua(m), TP.nguonAmCua(m));      // mùa 8: dòng từ điển / tập hợp / hear() listen() tách thành ô chạm được (tên, khoá chữ, số, in / not in)
     TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m), m.vaHoac === true);      // màn có color(): điều kiện while / if / elif tách thành ô chạm được (so màu, and / or); màn drone có battery(): so pin với một số
     var k = KhungCode.khungDayDu(m.khung);
     S.khung = k;
@@ -350,7 +351,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       the: lamMoi ? TP.theMacDinh({ man: m, kho: KhoHam.ds(), hamMan: S.bai.hamCuaMan, dangSua: null }) : undefined,
       vong: TP.coCauTruc(m, 'for'),
       bienDem: !!m.bienDem,                                                                     // chương che-cam-bien từ màn dạy biến đếm: nhóm ĐẾM (n = 0, n = n + 1, for i in range(n):)
-      list: TP.coListCua(m),                                                                    // gói List: nhóm DANH SÁCH (a = [1, 2], for n in a:, for n in [1, 2]:, a.append(1)) ở thẻ Logic
+      dict: TP.coCauTruc(m, 'dict'), set: TP.coCauTruc(m, 'set'), am: TP.nguonAmCua(m),        // mùa 8: nhóm TỪ ĐIỂN / TẬP HỢP / ÂM THANH ở thẻ Logic
+      list: TP.coListCua(m),                                                                  // gói List: nhóm DANH SÁCH (a = [1, 2], for n in a:, for n in [1, 2]:, a.append(1)) ở thẻ Logic
       vongWhile: TP.coCauTruc(m, 'while') && TP.coDieuKienCua(m),
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC
       mau: TP.coMauCua(m),                                                                      // cảm biến màu: khối so màu + gán c = color()

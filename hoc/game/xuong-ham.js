@@ -171,6 +171,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (window.HuongDan) HuongDan.bao('mo-xuong', { loai: loai, ten: ten });
     S.loai = loai; S.ten = ten; S.theMo = the || null;
     TP.datCheList(TP.coListCua(A.man()));                     // gói List: ô phần tử danh sách trong khung thân hàm
+    TP.datCheTD(TP.coTDCua(A.man()), TP.khoaTDCua(A.man()), TP.nguonAmCua(A.man()));     // mùa 8: ô từ điển / tập hợp / hear() listen() trong khung thân hàm
     var f = hamHienTai();
     if (!f) return;
     S.than = loai === 'em' ? f.than.slice() : f.than;        // hàm của màn: sửa thẳng vào bản nháp
@@ -248,7 +249,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       the: lamMoi ? (S.theMo || TP.theMacDinh({ man: man, kho: KhoHam.ds(), hamMan: A.bai().hamCuaMan, dangSua: hamHienTai() })) : undefined,
       vong: TP.coCauTruc(man, 'for'),
       bienDem: !!man.bienDem,
-      list: TP.coListCua(man),                           // gói List: nhóm DANH SÁCH ở thẻ Logic
+      dict: TP.coCauTruc(man, 'dict'), set: TP.coCauTruc(man, 'set'), am: TP.nguonAmCua(man),   // mùa 8
+      list: TP.coListCua(man),                          // gói List: nhóm DANH SÁCH ở thẻ Logic
       vongWhile: TP.coCauTruc(man, 'while') && TP.coDieuKienCua(man),
       cam: TP.camBienCua(man),
       mau: TP.coMauCua(man),
