@@ -361,11 +361,11 @@ export const NhanGoi: React.FC<{so: number; ten: string}> = ({so, ten}) => (
 );
 
 const HO_SO_MUA: Record<string, {chuSo: string; avatar: string; icon: string; mau: string; nen: string; donVi: string}> = {
-  m1: {chuSo: 'CHÚ TƯ · THỦ KHO', avatar: 'nguoi/tu-tin.png', icon: 'Warehouse', mau: '#B45309', nen: '#FEF3C7', donVi: 'ĐƠN KHO'},
+  m1: {chuSo: 'CHÚ TÙNG · THỦ KHO', avatar: 'nguoi/tu-tin.png', icon: 'Warehouse', mau: '#B45309', nen: '#FEF3C7', donVi: 'ĐƠN KHO'},
   m2: {chuSo: 'CÔ HẠNH · KỸ SƯ TRƯỞNG', avatar: 'nguoi/hanh-tin.png', icon: 'Factory', mau: '#0284C7', nen: '#E0F2FE', donVi: 'CA CỨU HỘ'},
-  m3: {chuSo: 'BÁC SÁU · BÃI TÁI CHẾ', avatar: 'nguoi/sau-tin.png', icon: 'Recycle', mau: '#15803D', nen: '#DCFCE7', donVi: 'MẺ TÁI CHẾ'},
+  m3: {chuSo: 'BÁC SƠN · BÃI TÁI CHẾ', avatar: 'nguoi/sau-tin.png', icon: 'Recycle', mau: '#15803D', nen: '#DCFCE7', donVi: 'MẺ TÁI CHẾ'},
   cang: {chuSo: 'CÔ MAI · ĐIỀU ĐỘ CẢNG', avatar: 'nguoi/mai-tin.png', icon: 'Anchor', mau: '#CA8A04', nen: '#FEF3C7', donVi: 'CHUYẾN TÀU'},
-  m4: {chuSo: 'BÁC BA · TRẠM THỦY LỢI', avatar: 'nguoi/ba-tin.png', icon: 'Waves', mau: '#0369A1', nen: '#E0F2FE', donVi: 'TUYẾN KÊNH'},
+  m4: {chuSo: 'BÁC BÌNH · TRẠM THỦY LỢI', avatar: 'nguoi/ba-tin.png', icon: 'Waves', mau: '#0369A1', nen: '#E0F2FE', donVi: 'TUYẾN KÊNH'},
   m5: {chuSo: 'CHỊ LAN · NÔNG TRẠI HOA', avatar: 'nguoi/lan-tin.png', icon: 'Flower2', mau: '#BE185D', nen: '#FCE7F3', donVi: 'LUỐNG HOA'},
   m6: {chuSo: 'ANH DŨNG · KỸ SƯ MỎ ĐÁ', avatar: 'nguoi/dung-tin.png', icon: 'Mountain', mau: '#C2410C', nen: '#FFEDD5', donVi: 'CHẶNG MỎ'},
   m7: {chuSo: 'CHÚ PHONG · ĐỘI CỨU HỘ', avatar: 'nguoi/phong-tin.png', icon: 'Compass', mau: '#0F766E', nen: '#CCFBF1', donVi: 'VÒM HANG'},
@@ -373,7 +373,7 @@ const HO_SO_MUA: Record<string, {chuSo: string; avatar: string; icon: string; ma
 };
 
 /**
- * Sổ nghiệm thu hiện trường của người nhờ từng mùa (Chú Tư, Cô Hạnh, Bác Sáu...):
+ * Sổ nghiệm thu hiện trường của người nhờ từng mùa (Chú Tùng, Cô Hạnh, Bác Sơn...):
  * - Header mang dấu xác nhận & avatar riêng của chủ sổ từng mùa (không dùng chung kiểu của Sola/Luna).
  * - Dải 10 ô số (#01..#10) trên đỉnh cho thấy toàn cảnh tiến độ 10 gói.
  * - Khung 5 dòng trọng tâm quanh gói hiện tại với cỡ chữ lớn (33-35px), cao thoáng (98px/dòng), cực kỳ dễ đọc.

@@ -1,6 +1,6 @@
 // Phim gói 2 mùa 1 "Tay kẹp" & gói 6 "Tay xoay" khổ dọc 1080×1920 (doc: true), theo đúng tinh thần Show, Don't Tell:
 // - Mở đầu Gói 2: R1 đã biết chạy từ Gói 1, lao thẳng tới chỗ các thùng hàng nhưng va phải làm thùng bắn văng ra xa.
-//   Chú Tư xuất hiện bảo phải cầm thùng lên mang ra đặt đúng vị trí -> Luna lắp thêm Tay kẹp.
+//   Chú Tùng xuất hiện bảo phải cầm thùng lên mang ra đặt đúng vị trí -> Luna lắp thêm Tay kẹp.
 // - Giải thích cơ chế nâng/hạ bằng GÓC NHÌN NGANG (Side-View 3/4 đúng thiết kế vector của R1):
 //   1. Tay đang ở TRÊN CAO mà gọi grab() -> khép gọng giữa không trung, kẹp hụt! Phải arm_down() hạ sát sàn rồi mới grab().
 //   2. Tay đang ở DƯỚI THẤP (sát sàn) mà cho xe chạy -> đáy gọng kẹp & thùng cạ sát mặt sàn làm kẹt cứng! Phải arm_up() nâng lên cao mới đi được.
@@ -329,7 +329,7 @@ const NutChay: React.FC<{bam: number[]; y?: number}> = ({bam, y = 115}) => {
 
 const dongSang = (f: number, moc: [number, number][]) => moc.filter(([t]) => f >= t).pop()?.[1] ?? -1;
 
-/* Mở đầu Gói 2: R1 lao tới chỗ các thùng, va phải làm các thùng bắn ra xa -> Chú Tư bảo phải cầm lên đặt đúng vị trí */
+/* Mở đầu Gói 2: R1 lao tới chỗ các thùng, va phải làm các thùng bắn ra xa -> Chú Tùng bảo phải cầm lên đặt đúng vị trí */
 const R_KEP_VAN_DE: Moc[] = [
   [0, 1, 5, -90],
   [22, 1, 3.5, -90],
@@ -359,7 +359,7 @@ export const CanhTayKepVanDe: React.FC = () => {
         <Mascot who="sola" x={240} h={540} at={0} faces={[[0, 'confident'], [94, 'shocked']]}
           says={[{at: 8, out: 84, text: 'R1 biết lái rồi, lao tới đống thùng luôn!'}]} bubbleW={520} bubbleTop={1240} />
         {f >= 100 ? (
-          <Nguoi anh="tu-hoang" ten="CHÚ TƯ" mau="#EA580C" x={820} h={600} at={100} side="left" bubbleW={560} bubbleTop={1230}
+          <Nguoi anh="tu-hoang" ten="CHÚ TÙNG" mau="#EA580C" x={820} h={600} at={100} side="left" bubbleW={560} bubbleTop={1230}
             says={[{at: 108, out: 270, text: 'Ấy chết, đâm thế bắn hết thùng ra xa rồi! Phải cầm lên mang ra đặt đúng vị trí chứ!'}]} />
         ) : null}
       </NenHienTruong>

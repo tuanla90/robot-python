@@ -12,9 +12,9 @@ const DON = [
   'Đảo cực đẩy/hút nam châm loa', 'Đọc cực mô-tơ sạt lở', 'Tháo sắt băng chuyền cô Hạnh', 'R2 ủi bê-tông mở cổng cuối', 'Phân loại trọn bãi kịp xe',
 ];
 
-/** Bác Sáu chủ bãi tái chế (ảnh TopView tách nền). */
+/** Bác Sơn chủ bãi tái chế (ảnh TopView tách nền). */
 const Sau: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'; dang?: string}> = ({says, at = 0, x = 820, side = 'left', dang = 'sau-nghi'}) => (
-  <Nguoi anh={dang} ten="BÁC SÁU" mau="#16A34A" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
+  <Nguoi anh={dang} ten="BÁC SƠN" mau="#16A34A" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
 );
 const Sola: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: number}> = ({says, mat, at = 0, x = 240}) => (
   <Mascot who="sola" x={x} h={540} at={at} faces={mat} says={says} bubbleW={520} bubbleTop={1240} />
@@ -60,12 +60,12 @@ const BaThung: React.FC<{muc: [number, number, number]; loiNhua?: boolean}> = ({
   );
 };
 
-/** Đoạn kết chung mùa 3: 3 thùng Sắt-Gỗ-Nhựa + bảng tiến độ + lịch đếm ngược + bác Sáu. */
+/** Đoạn kết chung mùa 3: 3 thùng Sắt-Gỗ-Nhựa + bảng tiến độ + lịch đếm ngược + bác Sơn. */
 const ThanhTuu: React.FC<{moi: number; loi: string; con: string; so: number; ten: string; muc: [number, number, number]; xoa?: number}> =
   ({moi, loi, con, so, ten, muc, xoa}) => (
     <NenHienTruong anh={NEN} mua="m3" luoi={false} toi={0.52}>
       <BaThung muc={muc} loiNhua={xoa !== undefined} />
-      <BangViec tieuDe="Tiến độ phân loại bãi tái chế bác Sáu" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
+      <BangViec tieuDe="Tiến độ phân loại bãi tái chế bác Sơn" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
       <DongHoBai con={con} gap={xoa !== undefined} />
       <NhanGoi so={so} ten={ten} />
       <Sau dang={chonDangNguoi('sau', so, xoa)} says={[{at: 48, out: 200, text: loi}]} at={28} />
@@ -444,7 +444,7 @@ const ThaTayM3: React.FC = () => {
       <div style={{position: 'absolute', left: 540 - 280, top: 820 - 280, width: 560, height: 560}}>
         <Img src={staticFile('robot/m3/nhen-tu-vui.png')} style={{width: '100%', height: '100%', filter: 'drop-shadow(0 18px 28px rgba(0,0,0,0.5))'}} />
       </div>
-      <Sola says={[{at: 10, out: 72, text: 'Code tự động đọc cực từ xong rồi! R1 tự dọn sạch cả bãi cho bác Sáu xem!'}]} mat={[[0, 'confident'], [65, 'proud']]} x={260} />
+      <Sola says={[{at: 10, out: 72, text: 'Code tự động đọc cực từ xong rồi! R1 tự dọn sạch cả bãi cho bác Sơn xem!'}]} mat={[[0, 'confident'], [65, 'proud']]} x={260} />
       <Luna says={[{at: 78, out: 155, text: 'Chiến thần 6 chân nhện xuất kích!'}]} mat={[[0, 'surprised'], [78, 'excited']]} x={820} />
     </AbsoluteFill>
   );
@@ -496,7 +496,7 @@ const XuatXuongM3: React.FC = () => {
             padding: '18px 44px', border: `12px solid ${C.yellow}`, borderRadius: 24, color: C.yellow, fontWeight: 900, fontSize: 110, letterSpacing: '0.06em', background: 'rgba(27,24,56,.92)', whiteSpace: 'nowrap'}}>XUẤT XƯỞNG</div>
         ) : null}
         <div style={{position: 'absolute', left: 80, right: 80, top: 1520, textAlign: 'center', color: '#DCFCE7', fontWeight: 700, fontSize: 40, lineHeight: 1.35, opacity: ease(f, [100, 120], [0, 1])}}>
-          Thân nhện nam châm ở lại bãi tái chế giúp bác Sáu.<br />Bộ não R1 về xe trạm, lên đường tiếp.
+          Thân nhện nam châm ở lại bãi tái chế giúp bác Sơn.<br />Bộ não R1 về xe trạm, lên đường tiếp.
         </div>
       </AbsoluteFill>
     </Shake>
@@ -584,7 +584,7 @@ const NhaMua4: React.FC = () => {
         <div style={{padding: '14px 28px', borderRadius: 20, background: '#0284C7', color: '#fff', fontWeight: 900, fontSize: 30,
           border: '3.5px solid #fff', display: 'flex', alignItems: 'center', gap: 14}}>
           <Icon name="Waves" size={36} color="#FDE047" />
-          <span>TRẠM THỦY LỢI BÁC BA ĐANG BỊ LỤC BÌNH CHẶN CỐNG!</span>
+          <span>TRẠM THỦY LỢI BÁC BÌNH ĐANG BỊ LỤC BÌNH CHẶN CỐNG!</span>
         </div>
       </div>
 
@@ -597,7 +597,7 @@ const NhaMua4: React.FC = () => {
         <div>
           <div style={{fontSize: 24, fontWeight: 900, color: '#0369A1', marginBottom: 6}}>ĐIỂM ĐẾN TIẾP THEO · MÙA 4</div>
           <div style={{fontSize: 38, fontWeight: 900, color: C.ink, lineHeight: 1.28}}>
-            Bến sông bác Ba · Độ Tàu thủy lợi R1 khơi thông dòng chảy trước giờ triều cường!
+            Bến sông bác Bình · Độ Tàu thủy lợi R1 khơi thông dòng chảy trước giờ triều cường!
           </div>
         </div>
       </div>

@@ -9,12 +9,12 @@ import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, 
 const NEN = 'nen-doc/mua-song.png';
 const DON = [
   'Vượt lòng kênh nước chảy', 'Kéo lục bình & bè gỗ về bến', 'Đo hướng dòng chảy ngầm', 'Đóng van cống chặn dòng xoáy', 'Thả neo giữ vững giữa dòng xiết',
-  'Buộc dắt bè hàng qua luồng hẹp', 'Đo tuple (hướng, sức nước)', 'Ghép thùng phao sắt bác Sáu', 'Phối hợp R2 mở chốt bờ kè', 'Thông luồng 4 tuyến kênh thủy lợi',
+  'Buộc dắt bè hàng qua luồng hẹp', 'Đo tuple (hướng, sức nước)', 'Ghép thùng phao sắt bác Sơn', 'Phối hợp R2 mở chốt bờ kè', 'Thông luồng 4 tuyến kênh thủy lợi',
 ];
 
-/** Bác Ba quản lý trạm thủy lợi & bến sông (ảnh TopView tách nền). */
+/** Bác Bình quản lý trạm thủy lợi & bến sông (ảnh TopView tách nền). */
 const Ba: React.FC<{says: Say[]; at?: number; x?: number; side?: 'left' | 'right'; dang?: string}> = ({says, at = 0, x = 820, side = 'left', dang = 'ba-nghi'}) => (
-  <Nguoi anh={dang} ten="BÁC BA" mau="#0284C7" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
+  <Nguoi anh={dang} ten="BÁC BÌNH" mau="#0284C7" x={x} h={600} at={at} says={says} side={side} bubbleW={560} bubbleTop={1230} />
 );
 const Sola: React.FC<{says: Say[]; mat: [number, string][]; at?: number; x?: number}> = ({says, mat, at = 0, x = 240}) => (
   <Mascot who="sola" x={x} h={540} at={at} faces={mat} says={says} bubbleW={520} bubbleTop={1240} />
@@ -61,12 +61,12 @@ const TuyenKenhBar: React.FC<{luong: [number, number, number, number]; lut?: boo
   );
 };
 
-/** Đoạn kết chung mùa 4: 4 tuyến kênh + bảng tiến độ + đồng hồ triều cường + bác Ba. */
+/** Đoạn kết chung mùa 4: 4 tuyến kênh + bảng tiến độ + đồng hồ triều cường + bác Bình. */
 const ThanhTuu: React.FC<{moi: number; loi: string; con: string; so: number; ten: string; luong: [number, number, number, number]; xoa?: number}> =
   ({moi, loi, con, so, ten, luong, xoa}) => (
     <NenHienTruong anh={NEN} mua="m4" luoi={false} toi={0.52}>
       <TuyenKenhBar luong={luong} lut={xoa !== undefined} />
-      <BangViec tieuDe="Sổ trực thông luồng bến sông của bác Ba" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
+      <BangViec tieuDe="Sổ trực thông luồng bến sông của bác Bình" dong={DON} xong={moi} moi={moi} xoa={xoa} at={22} y={270} />
       <ThuyTrieuBar con={con} gap={xoa !== undefined} />
       <NhanGoi so={so} ten={ten} />
       <Ba dang={chonDangNguoi('ba', so, xoa)} says={[{at: 48, out: 200, text: loi}]} at={28} />
@@ -342,7 +342,7 @@ const G7Lam: React.FC = () => (
   </NenHienTruong>
 );
 
-/* ================================================================== GÓI 8 · Yếu tố cũ: Thùng phao sắt bác Sáu & Băng chuyền */
+/* ================================================================== GÓI 8 · Yếu tố cũ: Thùng phao sắt bác Sơn & Băng chuyền */
 const R_G8M: Moc[] = [[0, 1, 2, 0], [35, 1, 4, 90], [80, 1, 4, 90]];
 const P_G8M: Moc[] = [[0, 1, 3, 0], [35, 3, 3, 0], [75, 3, 5, 20]];
 const G8Thu: React.FC = () => (
@@ -356,8 +356,8 @@ const G8Thu: React.FC = () => (
       <Xe anh="xuong-du" moc={R_G8M} doi={[[65, 'xuong-do-ngac']]} />
       <ChuNay chu="TRÔI LỆCH NHỊP!" at={65} den={140} x={tamO(3, 4).x + 70} y={tamO(3, 4).y - 40} />
       <ThuyTrieuBar con="Triều lên: 3 giờ" />
-      <NhanGoi so={8} ten="Ghép cầu phao bác Sáu" />
-      <Ba dang="ba-tin" says={[{at: 66, out: 230, text: 'Băng chuyền trên bờ đẩy thùng phao sắt của bác Sáu xuống sông, không thả neo đón kịp là nước cuốn lệch nhịp cầu!'}]} at={52} />
+      <NhanGoi so={8} ten="Ghép cầu phao bác Sơn" />
+      <Ba dang="ba-tin" says={[{at: 66, out: 230, text: 'Băng chuyền trên bờ đẩy thùng phao sắt của bác Sơn xuống sông, không thả neo đón kịp là nước cuốn lệch nhịp cầu!'}]} at={52} />
     </NenHienTruong>
   </Shake>
 );
@@ -377,7 +377,7 @@ const G8Lam: React.FC = () => (
     <Xe anh="xuong-neo" moc={R_G8K} doi={[[130, 'xuong-neo-vui']]} />
     <Burst x={tamO(2, 3).x} y={tamO(2, 3).y} at={132} />
     <ThuyTrieuBar con="Triều lên: 2 giờ 30" />
-    <NhanGoi so={8} ten="Ghép cầu phao bác Sáu" />
+    <NhanGoi so={8} ten="Ghép cầu phao bác Sơn" />
   </NenHienTruong>
 );
 
@@ -501,7 +501,7 @@ const XuatXuongM4: React.FC = () => {
       ))}
       <Burst x={540} y={520} at={18} />
       <Ba dang="ba-mung" x={820} says={[{at: 12, out: 88, text: 'Cảm ơn hai cháu! Bến sông và kênh thủy lợi thông suốt, nước ngọt đã chảy về khắp cánh đồng!'}]} at={6} />
-      <Sola x={230} mat={[[0, 'happy']]} says={[{at: 94, out: 172, text: 'Tàu thủy lợi R1 xin ở lại trực bến sông cùng bác Ba ạ!'}]} />
+      <Sola x={230} mat={[[0, 'happy']]} says={[{at: 94, out: 172, text: 'Tàu thủy lợi R1 xin ở lại trực bến sông cùng bác Bình ạ!'}]} />
     </NenHienTruong>
   );
 };
@@ -568,7 +568,7 @@ const NhaMua5: React.FC = () => {
         MÙA 5 TIẾP THEO · NÔNG TRẠI HOA CHỊ LAN
       </div>
       <Nguoi anh="lan-tin" ten="CHỊ LAN" mau="#EC4899" x={820} h={600} at={8} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 12, out: 76, text: 'Nước kênh bác Ba đã dẫn về tới nông trại hoa rồi! Hai em chế tạo Drone bay gieo hạt giúp chị kịp hội hoa Xuân nhé!'}]} />
+        says={[{at: 12, out: 76, text: 'Nước kênh bác Bình đã dẫn về tới nông trại hoa rồi! Hai em chế tạo Drone bay gieo hạt giúp chị kịp hội hoa Xuân nhé!'}]} />
       <Sola x={230} mat={[[0, 'surprised'], [78, 'happy']]} says={[{at: 82, out: 145, text: 'Mùa 5 mình cất cánh lên bầu trời: chế tạo Drone nông nghiệp và học danh sách list!'}]} />
     </AbsoluteFill>
   );
@@ -632,12 +632,12 @@ export const PHIM_M4: Phim[] = [
     xe('xuong-du', 'Chỉ biết hướng nước thôi đã đủ chưa, còn mạnh 1 ô hay 2 ô thì sao?', 'Nâng cấp chong chóng đo kép — trả về cặp tuple (hướng, sức_nước)!', 'Cảm biến tuple (hướng, sức)', 125),
     treo('xuong-du', 'Đọc một lần ra cả hướng lẫn sức nước bằng tuple nhé!', 7, 'Đo sức nước'),
   ]),
-  ket(7, [{id: 'lam', dur: 165, el: <G7Lam />, sfx: [[148, 'ding.wav', 0.5]]}, tt(7, 'Đo sức nước', 'Triều lên: 3 giờ', 'Mở gói tuple gọn quá! Bác Sáu vừa gửi sang mấy thùng phao sắt làm cầu phao đấy!', [95, 85, 75, 50])]),
+  ket(7, [{id: 'lam', dur: 165, el: <G7Lam />, sfx: [[148, 'ding.wav', 0.5]]}, tt(7, 'Đo sức nước', 'Triều lên: 3 giờ', 'Mở gói tuple gọn quá! Bác Sơn vừa gửi sang mấy thùng phao sắt làm cầu phao đấy!', [95, 85, 75, 50])]),
   mo(8, [
     {id: 'thu', dur: 240, el: <G8Thu />, sfx: [[65, 'wrong.wav', 0.5]]},
-    treo('xuong-neo', 'Đón thùng phao sắt từ băng chuyền ghép thành cầu phao nào!', 8, 'Cầu phao bác Sáu'),
+    treo('xuong-neo', 'Đón thùng phao sắt từ băng chuyền ghép thành cầu phao nào!', 8, 'Cầu phao bác Sơn'),
   ]),
-  ket(8, [{id: 'lam', dur: 165, el: <G8Lam />, sfx: [[132, 'ding.wav', 0.5]]}, tt(8, 'Cầu phao bác Sáu', 'Triều lên: 2 giờ', 'Cầu phao ghép từ thùng sắt bác Sáu chắc chắn quá! Giờ còn chốt sắt trên bờ kè cao thôi!', [100, 90, 85, 70])]),
+  ket(8, [{id: 'lam', dur: 165, el: <G8Lam />, sfx: [[132, 'ding.wav', 0.5]]}, tt(8, 'Cầu phao bác Sơn', 'Triều lên: 2 giờ', 'Cầu phao ghép từ thùng sắt bác Sơn chắc chắn quá! Giờ còn chốt sắt trên bờ kè cao thôi!', [100, 90, 85, 70])]),
   mo(9, [
     {id: 'thu', dur: 235, el: <G9Thu />, sfx: [[60, 'wrong.wav', 0.5]]},
     xe('r2', 'Ai leo được bờ kè đá cao và hút được chốt khóa sắt ở mùa trước?', 'Lắp R2 chân nhện + nam châm trên bờ kè, R1 xuồng kéo bè dưới sông!', 'R2 nhện nam châm', 120),

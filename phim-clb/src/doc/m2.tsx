@@ -10,7 +10,7 @@ import {BangViec, CauTreo, ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O, ODat, 
 const NEN = 'nen-doc/mua-2.png';
 const DON = [
   'Vượt băng chuyền vào xưởng', 'Đóng van qua rãnh nóng', 'Dò ống quá nhiệt', 'Canh nhịp băng chuyền', 'Ủi kiện sắt mở buồng van',
-  'Mở van kẹt phòng vật tư', 'Dập ổ nhiệt trong khói', 'Tiếp nhận van kho chú Tư', 'R2 giữ băng chuyền', 'Hạ áp toàn nhà máy',
+  'Mở van kẹt phòng vật tư', 'Dập ổ nhiệt trong khói', 'Tiếp nhận van kho chú Tùng', 'R2 giữ băng chuyền', 'Hạ áp toàn nhà máy',
 ];
 
 /** Cô Hạnh kỹ sư trưởng nhà máy hơi nước (ảnh TopView tách nền). */
@@ -394,7 +394,7 @@ const G7Lam: React.FC = () => {
   );
 };
 
-/* ================================================================== GÓI 8 · Tiếp vận từ kho chú Tư */
+/* ================================================================== GÓI 8 · Tiếp vận từ kho chú Tùng */
 const R_G8M: Moc[] = [[0, 1, 5.2, -90], [20, 1, 5.2, -90], [75, 1, 3.65, -90], [95, 1, 3.8, -90]];
 const G8Thu: React.FC = () => {
   const f = useCurrentFrame();
@@ -411,7 +411,7 @@ const G8Thu: React.FC = () => {
         <ChuNay chu="VƯỚNG CỬA!" at={76} den={145} x={tamO(1, 2).x + 150} y={tamO(1, 2).y} />
         <div style={{position: 'absolute', left: 170, top: 150, padding: '12px 24px', borderRadius: 18, background: '#FFF7ED', border: `4px solid ${C.ink}`,
           display: 'flex', alignItems: 'center', gap: 14, fontFamily: FONT, fontWeight: 800, fontSize: 30, color: C.ink}}>
-          <Icon name="Radio" size={38} color="#EA580C" />Kho chú Tư: "Gửi thùng van sang cho cô Hạnh đây!"
+          <Icon name="Radio" size={38} color="#EA580C" />Kho chú Tùng: "Gửi thùng van sang cho cô Hạnh đây!"
         </div>
         <DongHoApSuat tu={74} den={78} />
         <NhanGoi so={8} ten="Tiếp vận" />
@@ -648,7 +648,7 @@ const NhaMua3: React.FC = () => {
         CHUYỂN TRẠM CHIẾN DỊCH · TIẾN VỀ BÃI TÁI CHẾ MÙA 3!
       </div>
 
-      {/* Khung Hero trung tâm: Xe Trạm + Chân dung Bác Sáu cỡ lớn (top: 230 .. 830) */}
+      {/* Khung Hero trung tâm: Xe Trạm + Chân dung Bác Sơn cỡ lớn (top: 230 .. 830) */}
       <div style={{position: 'absolute', left: 45, right: 45, top: 230, height: 590, borderRadius: 36,
         background: 'linear-gradient(180deg, rgba(15,23,42,0.92) 0%, rgba(20,83,45,0.92) 100%)',
         border: `6px solid ${C.ink}`, boxShadow: `0 16px 0 ${C.ink}`,
@@ -668,7 +668,7 @@ const NhaMua3: React.FC = () => {
         <div style={{padding: '14px 28px', borderRadius: 20, background: '#16A34A', color: '#fff', fontWeight: 900, fontSize: 30,
           border: '3.5px solid #fff', display: 'flex', alignItems: 'center', gap: 14}}>
           <Icon name="Recycle" size={36} color="#FDE047" />
-          <span>BÁC SÁU ĐANG CẦN ROBOT PHÂN LOẠI KIM LOẠI!</span>
+          <span>BÁC SƠN ĐANG CẦN ROBOT PHÂN LOẠI KIM LOẠI!</span>
         </div>
       </div>
 
@@ -681,7 +681,7 @@ const NhaMua3: React.FC = () => {
         <div>
           <div style={{fontSize: 24, fontWeight: 900, color: '#15803D', marginBottom: 6}}>ĐIỂM ĐẾN TIẾP THEO · MÙA 3</div>
           <div style={{fontSize: 38, fontWeight: 900, color: C.ink, lineHeight: 1.28}}>
-            Bãi tái chế bác Sáu · Độ chân nhện & nam châm điện lọc sạch núi sắt vụn!
+            Bãi tái chế bác Sơn · Độ chân nhện & nam châm điện lọc sạch núi sắt vụn!
           </div>
         </div>
       </div>
@@ -757,13 +757,13 @@ export const PHIM_M2: Phim[] = [
     {id: 'nghi', dur: 180, el: <G8Nghi />, sfx: [[20, 'pop.wav', 0.3], [88, 'pop.wav', 0.3]]},
     treo('du', 'Sắp lại thứ tự từng việc cho R1 nào!', 8, 'Tiếp vận'),
   ]),
-  ket(8, [{id: 'lam', dur: 175, el: <G8Lam />, sfx: [[30, 'click.wav', 0.5], [158, 'ding.wav', 0.5]]}, tt(8, 'Tiếp vận', 64, 'Nhờ hàng chú Tư gửi sang mà kịp thay van mới!', [true, true, false])]),
+  ket(8, [{id: 'lam', dur: 175, el: <G8Lam />, sfx: [[30, 'click.wav', 0.5], [158, 'ding.wav', 0.5]]}, tt(8, 'Tiếp vận', 64, 'Nhờ hàng chú Tùng gửi sang mà kịp thay van mới!', [true, true, false])]),
   mo(9, [
     {id: 'thu', dur: 235, el: <G9Thu />, sfx: [[105, 'wrong.wav', 0.5]]},
     xe('r2', 'Bộ hai bánh và tay kẹp của mùa trước vẫn còn đây?', 'Lắp thành R2 giữ băng chuyền, R1 phun van tổng!', 'R2 của Luna', 120),
     treo('r2', 'Hai robot phối hợp hai đầu sàn nhé!', 9, 'R2 tiếp viện'),
   ]),
-  ket(9, [{id: 'lam', dur: 165, el: <G9Lam />, sfx: [[48, 'click.wav', 0.5], [135, 'ding.wav', 0.5]]}, tt(9, 'R2 tiếp viện', 68, 'Con robot nhỏ ở kho chú Tư sang giúp ăn ý quá!', [true, true, false])]),
+  ket(9, [{id: 'lam', dur: 165, el: <G9Lam />, sfx: [[48, 'click.wav', 0.5], [135, 'ding.wav', 0.5]]}, tt(9, 'R2 tiếp viện', 68, 'Con robot nhỏ ở kho chú Tùng sang giúp ăn ý quá!', [true, true, false])]),
   mo(10, [
     {id: 'hien-truong', dur: 155, el: <G10Mo />, sfx: [W_IN]},
     {id: 'tha-tay', dur: 160, el: <ThaTay />, sfx: [[70, 'riser.wav', 0.4]]},

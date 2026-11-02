@@ -189,7 +189,7 @@ User 30/10: **phần nào làm được bằng ảnh + hoạt cảnh Remotion th
 1. **Phim mở đầu + phim gói 1** (mục 3): bản thử 30/10 trong `phim-clb/`. Còn: 8 ảnh nền (mục 3b), giọng, duyệt nhịp.
 2. Viết lại kịch bản 10 phim mỗi mùa theo khuôn mục 2 (mùa 1–4 đã có phim cũ: giữ ý cơ chế, đổi sự cố và giọng).
    **Đêm 31/10:** kịch bản 70 phim theo cấu trúc 10 gói mới ở [KICH-BAN-PHIM-GOI-CLB.md](KICH-BAN-PHIM-GOI-CLB.md) (bản 2, sau hội đồng 20261031-0120; chờ user duyệt các mục [DUYỆT]);
-   7 người nhờ đã sinh (`phim-clb/public/nguoi/`, mỗi người bản a / b); 10 phim mùa 1 khổ dọc đã dựng (`phim-clb/src/doc/m1.tsx`, Studio `M1G<n>-Mo` / `M1G<n>-Ket`, đang dùng bản a của chú Tư).
+   7 người nhờ đã sinh (`phim-clb/public/nguoi/`, mỗi người bản a / b); 10 phim mùa 1 khổ dọc đã dựng (`phim-clb/src/doc/m1.tsx`, Studio `M1G<n>-Mo` / `M1G<n>-Ket`, đang dùng bản a của chú Tùng).
 3. Đổi mã: R1 khoá xanh (`part.js`, bảng sơn, Cài đặt); lời phim / màn đang nói "R1 của em", "em lắp".
 4. Đợt chữ trong màn: đề bài "Giúp Sola…", gợi ý của Luna, màn sửa lỗi "Sola viết vội" (kế hoạch gộp diem10code mục 1 đã phác cách làm).
 5. Giao diện: bản đồ thị trấn làm màn chọn mùa, bản vẽ cỗ máy ở màn chọn gói.

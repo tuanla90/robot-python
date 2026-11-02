@@ -11,9 +11,9 @@ import {CAU_S, diemTren} from './duong-ban-do';
 
 /** Cảnh 1 (8s = 240f; mỗi cảnh dừng cuối chờ Tiếp, mỗi nhịp một câu ngắn — 2/11 theo skill remotion-motion-graphics): Tại phòng CLB (nen-doc/mua-7.png), Bảng Ủy Nhiệm từ Thầy Hiệu Trưởng gửi tới CLB Robot. */
 const YEU_CAU_THI_TRAN = [
-  {ma: 'QUEST #1', noi: 'Kho hàng Chú Tư', viec: 'Kẹt 10 đơn sát giờ xe tải chạy', mau: '#F59E0B', nen: '#FEF3C7', anh: 'tu-sot-ruot', bot: 'robot/m1/du-vui.png', xoay: -90, zoom: 1.48},
+  {ma: 'QUEST #1', noi: 'Kho hàng Chú Tùng', viec: 'Kẹt 10 đơn sát giờ xe tải chạy', mau: '#F59E0B', nen: '#FEF3C7', anh: 'tu-sot-ruot', bot: 'robot/m1/du-vui.png', xoay: -90, zoom: 1.48},
   {ma: 'QUEST #2', noi: 'Nhà máy Cô Hạnh', viec: 'Lò hơi quá áp, kẹt van tầng cao', mau: '#EF4444', nen: '#FEE2E2', anh: 'hanh-hoang', bot: 'robot/m2/du-vui.png', xoay: -90},
-  {ma: 'QUEST #3', noi: 'Bãi tái chế Bác Sáu', viec: 'Núi sắt nhựa lẫn lộn chờ phân loại', mau: '#10B981', nen: '#D1FAE5', anh: 'sau-sot-ruot', bot: 'robot/m3/nhen-tu-vui.png', xoay: 0},
+  {ma: 'QUEST #3', noi: 'Bãi tái chế Bác Sơn', viec: 'Núi sắt nhựa lẫn lộn chờ phân loại', mau: '#10B981', nen: '#D1FAE5', anh: 'sau-sot-ruot', bot: 'robot/m3/nhen-tu-vui.png', xoay: 0},
   {ma: 'QUEST #4', noi: 'Nông trại Chị Lan', viec: 'Cánh đồng hoa Tết chờ gieo hạt', mau: '#EC4899', nen: '#FCE7F3', anh: 'lan-sot-ruot', bot: 'robot/m5/drone-cam-vui.png', xoay: 0},
 ];
 
@@ -109,8 +109,8 @@ const CanhXeTramLab: React.FC = () => {
       {/* Sân khấu trưng bày Xe Trạm + Core R1 cỡ lớn (top: 122 .. 495) */}
       <div style={{position: 'absolute', left: 36, top: 122, width: 1008, height: 365, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', boxSizing: 'border-box'}}>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `scale(${r1Pop})`}}>
-          <div style={{width: 390, height: 295, borderRadius: 34, background: 'rgba(15,23,42,0.82)',
-            border: `6px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}, inset 0 0 32px rgba(56,189,248,0.4)`,
+          <div style={{width: 390, height: 295, borderRadius: 34, background: 'radial-gradient(circle, #FFFFFF 0%, #E0F2FE 75%)',   // nền trắng như ô Core R1 (2/11)
+            border: `6px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <Img src={staticFile('robot/xe-tram-a.png')} style={{width: 350, height: 265, objectFit: 'contain',
               transform: `translateY(${Math.sin(f / 8) * 6}px)`}} />
@@ -233,7 +233,7 @@ const CanhHanhTrinh: React.FC = () => {
   );
 };
 
-/** Cảnh 4 (8s = 240f): Dừng tại Trạm 1 · Kho hàng Chú Tư (nen-doc/mua-1.png), chuẩn bị vào Phòng Lab học lái R1. */
+/** Cảnh 4 (8s = 240f): Dừng tại Trạm 1 · Kho hàng Chú Tùng (nen-doc/mua-1.png), chuẩn bị vào Phòng Lab học lái R1. */
 const CanhDiemDau: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
   const nut = pop(f, 35, fps, 10);
@@ -242,7 +242,7 @@ const CanhDiemDau: React.FC = () => {
       <Img src={staticFile('nen-doc/mua-1.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
       <AbsoluteFill style={{background: 'rgba(15,23,42,0.48)'}} />
 
-      <Headline text="MÙA 1: KHO HÀNG CHÚ TƯ!" at={4} top={48} size={58} color="#fff" accent={['KHO HÀNG']} />
+      <Headline text="MÙA 1: KHO HÀNG CHÚ TÙNG!" at={4} top={48} size={58} color="#fff" accent={['KHO HÀNG']} />
 
       {/* Thẻ Chọn Màn Chơi Mùa 1 cỡ lớn (top: 155 .. 1185) */}
       <PopIn at={14} style={{position: 'absolute', left: 40, top: 155, width: 1000, padding: '28px 32px 34px',
@@ -305,7 +305,7 @@ const CanhDiemDau: React.FC = () => {
 
       <Burst at={38} x={540} y={660} color={C.yellow} r={240} />
 
-      <Nguoi anh="tu-sot-ruot" doiAnh={[[90, 'tu-mung']]} camXuc={[[0, 'hoang'], [90, 'vui']]} ten="CHÚ TƯ · THỦ KHO" mau="#B45309" x={180} h={540} at={6}
+      <Nguoi anh="tu-sot-ruot" doiAnh={[[90, 'tu-mung']]} camXuc={[[0, 'hoang'], [90, 'vui']]} ten="CHÚ TÙNG · THỦ KHO" mau="#B45309" x={180} h={540} at={6}
         says={[{at: 12, out: 120, text: 'Kho chú kẹt 10 đơn, 5 giờ xe tải chạy rồi!'}]}
         bubbleW={560} bubbleTop={1180} />
       <Mascot who="sola" x={850} h={500} at={16} side="left" lat

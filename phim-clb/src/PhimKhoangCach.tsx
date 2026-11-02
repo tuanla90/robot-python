@@ -63,7 +63,7 @@ export const CanhKhoangCachVanDe: React.FC = () => {
           ]}
           bubbleW={520} bubbleTop={1240} />
         {f >= 135 ? (
-          <Nguoi anh="tu-nghi" ten="CHÚ TƯ" mau="#EA580C" x={820} h={600} at={135} side="left" bubbleW={560} bubbleTop={1230}
+          <Nguoi anh="tu-nghi" ten="CHÚ TÙNG" mau="#EA580C" x={820} h={600} at={135} side="left" bubbleW={560} bubbleTop={1230}
             says={[{at: 140, out: 210, text: 'Để thùng đây cho gần nè.'}]} />
         ) : null}
       </NenHienTruong>
@@ -152,7 +152,7 @@ const CanhLenhKhoangCach: React.FC = () => (
       </PopIn>
     ))}
     <Mascot who="sola" x={260} h={550} at={60} faces={[[60, 'thumbs-up']]}
-      says={[{at: 78, out: 202, text: 'Giờ chú Tư để thùng ở đâu R1 cũng tự tìm tới được!'}]} bubbleTop={1220} bubbleW={520} />
+      says={[{at: 78, out: 202, text: 'Giờ chú Tùng để thùng ở đâu R1 cũng tự tìm tới được!'}]} bubbleTop={1220} bubbleW={520} />
   </Stage>
 );
 
