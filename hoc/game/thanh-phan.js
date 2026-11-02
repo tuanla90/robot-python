@@ -31,6 +31,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   function hv(tag, cls, noi) { return vanBan(h(tag, cls), noi); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function escA(s) { return esc(s).replace(/"/g, '&quot;'); }                  // trong thuộc tính data-…="…": d["a"] có dấu nháy kép
 
   var TAY_TEN = ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'];     // lệnh tay gắp: nhóm TAY (màu cam) trong kho khối
   var CHAN_TEN = ['crouch', 'stand'];                          // lệnh chân của nhện: co / duỗi chân (cùng nhóm CHÂN với go_*)
@@ -38,6 +39,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var NEM_TEN = ['aim', 'throw', 'load'];                      // lệnh máy ném: nhóm MÁY NÉM (cùng màu cam với tay); aim(n) mang một số 1–3
   var SUNG_TEN = ['spray', 'spray_back'];                      // lệnh SÚNG HƠI (bắn ra trước + giật lùi / bắn ra sau + giật tới): nhóm SÚNG HƠI (cùng màu cam với tay)
   var SON_TEN = ['ink', 'dot', 'pen_down', 'pen_up'];           // lệnh MÁY SƠN: nhóm MÁY SƠN (cùng màu cam với tay); ink(c) mang một màu, đổi ngay như aim(n)
+  var LOA_TEN = ['note', 'beat'];                               // lệnh LOA (mùa 8): note(n) phát nốt 1–8, beat(n) ngân thêm n nhịp; nhóm LOA (cùng màu cam với tay)
+  var AM_TEN = ['hear', 'listen'];                              // cảm biến âm thanh (mùa 8): trả SỐ, chỉ dùng làm ô số / khối nhóm ÂM THANH, không phải lệnh
   function lopMau(ten) {
     if (ten === 'left_move' || ten === 'right_move' || ten === 'left_back' || ten === 'right_back') return 'cy';
     if (ten === 'wait') return 'yl';
@@ -252,6 +255,159 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return d.ghep(d.ds, d.cau);
   }
 
+  /* ---- TỪ ĐIỂN · TẬP HỢP · SỐ ÂM THANH (mùa 8 Hang động, KE-HOACH-MUA-8.md mục 3; TP.datCheTD): bật ở màn có cauTruc 'dict' / 'set' hay cảm biến âm thanh (hear / listen).
+         Dòng tách thành { loai: 'td', kieu, ds: [chữ từng ô], vt: [vai từng ô], ghep(ds) }. Vai: 'ten' (tên từ điển / tập hợp), 'khoa' (khoá "a" của từ điển),
+         'so' (số: số, biến, d["a"], d[k], len(s), hear(), listen()), 'gt' (giá trị đặt thẳng trong { }: chạm có thêm / bỏ), 'op' (in / not in, == / != / > / <: chạm đổi),
+         'bm' (biến được gán: n = listen()), 'them' (dấu + của từ điển / tập hợp rỗng). Các dạng (mỗi dạng một khối trên khay, nhóm TỪ ĐIỂN / TẬP HỢP / ÂM THANH):
+         d = {"a": 1} · d["a"] = 1 · for k in d: · if k in d: · s = set() · s = {1, 2} · s.add(1) · if n in s: / if n not in s: · n = listen() · while hear() > 0: · if listen() == 3:
+         Chỉ có ở mùa 8 trở đi: các chương cũ giữ nguyên cách tách dòng. */
+  var CHE_TD = false, TD_KHOA = ['a', 'b', 'c'], TD_NGUON = [];                                             // TD_KHOA: khoá chọn được của màn · TD_NGUON: 'hear' / 'listen' có trên robot
+  var TD_TOI_DA = 5, TD_TEN = { dict: ['d', 'buoc', 'not_da'], set: ['s', 'da_nghe', 'da_go'] };            // số cặp / phần tử tối đa vẽ trên khung · tên gợi ý
+  function datCheTD(b, khoa, nguon) { CHE_TD = !!b; TD_KHOA = (khoa && khoa.length) ? khoa.slice() : ['a', 'b', 'c']; TD_NGUON = (nguon || []).slice(); }
+  function coTDCua(man) { return coCauTruc(man, 'dict') || coCauTruc(man, 'set') || nguonAmCua(man).length > 0; }
+  /** Cảm biến âm thanh của màn: 'hear' (tiếng vang: số ô tới chuông đá gần nhất), 'listen' (nốt của chuông đá gần nhất). */
+  function nguonAmCua(man) { return ((man && man.hamGoc) || []).filter(function (n) { return n === 'hear' || n === 'listen'; }); }
+  /** Khoá chọn được ở màn: man.khoaTD, không có thì mọi khoá "…" xuất hiện trong lời giải / mã mẫu, thêm a b c cho đủ ba. */
+  function khoaTDCua(man) {
+    if (man && Array.isArray(man.khoaTD) && man.khoaTD.length) return man.khoaTD.slice();
+    var kq = [], re = /\[\s*"([A-Za-z_]\w*)"\s*\]|"([A-Za-z_]\w*)"\s*:/g, m;
+    function quet(b) {
+      if (!b) return;
+      [].concat(b.chinh || [], [].concat(b.hamCuaMan || [], b.hamCuaEmMoi || []).reduce(function (a, f) { return a.concat(f.than || []); }, [])).forEach(function (s) {
+        re.lastIndex = 0; while ((m = re.exec(String(s)))) { var k = m[1] || m[2]; if (kq.indexOf(k) < 0) kq.push(k); }
+      });
+    }
+    quet(man && man.loiGiai); quet(man && man.maMau);
+    ['a', 'b', 'c'].forEach(function (k) { if (kq.length < 3 && kq.indexOf(k) < 0) kq.push(k); });
+    return kq;
+  }
+  var RE_TD_GAN_D = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)\{(\s*(?:"[^"]*"\s*:[^,}]*(?:,\s*"[^"]*"\s*:[^,}]*)*)?\s*)\}\s*$/;      // d = {"a": 1, "b": 2} (từ điển rỗng `{}` là từ điển)
+  var RE_TD_GAN_S = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)(?:set\(\)|\{([^{}:"]+)\})\s*$/;                                     // s = set() · s = {1, 2}
+  var RE_TD_KHOA = /^(\s*)([A-Za-z_]\w*)\[("[^"]*")\](\s*=\s*)(.+?)\s*$/;                                              // d["a"] = 1
+  var RE_TD_ADD = /^(\s*)([A-Za-z_]\w*)\.add\((.*)\)\s*$/;                                                            // s.add(1)
+  var RE_TD_FOR = /^(\s*for\s+)([A-Za-z_]\w*)(\s+in\s+)([A-Za-z_]\w*)(\s*:.*)$/;                                       // for k in d:
+  var RE_TD_IN = /^(\s*(?:if|elif|while)\s+)(.+?)(\s+)(not in|in)(\s+)([A-Za-z_]\w*)(\s*:.*)$/;                        // if k in d: · if n not in s:
+  var RE_TD_SS = /^(\s*(?:if|elif|while)\s+)(.+?)(\s*)(==|!=|<=|>=|<|>)(\s*)(.+?)(\s*:.*)$/;                            // while hear() > 0: · if listen() == 3:
+  var RE_TD_GAN_N = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)((?:hear|listen)\(\)|len\([A-Za-z_]\w*\)|[A-Za-z_]\w*\[(?:"[^"]*"|[A-Za-z_]\w*)\])\s*$/;      // n = listen() · n = len(s) · n = d["a"]
+  var RE_TD_NGUON = /^(?:hear\(\)|listen\(\)|len\([A-Za-z_]\w*\)|[A-Za-z_]\w*\[(?:"[^"]*"|[A-Za-z_]\w*)\])$/;          // số lấy từ cảm biến âm thanh / từ điển / tập hợp
+  var TD_SS = ['==', '!=', '>', '<'];
+  /** Một vế số của điều kiện: số, tên biến hay nguồn số. */
+  function laSoTD(v) { return RE_SO.test(v) || RE_BIEN.test(v) || RE_TD_NGUON.test(v); }
+  /** Tách một dòng từ điển / tập hợp / số âm thanh (xem trên), null nếu không phải. */
+  function tachTD(dong) {
+    var m, ds, vt;
+    if ((m = RE_TD_GAN_D.exec(dong))) {
+      ds = [m[2]]; vt = ['ten'];
+      catTop(m[4] || '').forEach(function (cap) { var k = cap.indexOf(':'); ds.push(cap.slice(0, k).trim(), cap.slice(k + 1).trim()); vt.push('khoa', 'gt'); });
+      if (ds.length === 1) { ds.push('+'); vt.push('them'); }
+      return { loai: 'td', kieu: 'ganDict', ds: ds, vt: vt, ghep: function (x) { var cap = []; for (var i = 1; i + 1 < x.length; i += 2) cap.push(x[i] + ': ' + x[i + 1]); return m[1] + x[0] + m[3] + '{' + cap.join(', ') + '}'; } };
+    }
+    if ((m = RE_TD_GAN_S.exec(dong))) {
+      ds = [m[2]]; vt = ['ten'];
+      if (m[4] !== undefined) catTop(m[4]).forEach(function (e) { ds.push(e); vt.push('gt'); });
+      if (ds.length === 1) { ds.push('+'); vt.push('them'); }
+      return { loai: 'td', kieu: 'ganSet', ds: ds, vt: vt, ghep: function (x) { var e = x.slice(1).filter(function (v) { return v !== '+'; }); return m[1] + x[0] + m[3] + (e.length ? '{' + e.join(', ') + '}' : 'set()'); } };
+    }
+    if ((m = RE_TD_KHOA.exec(dong))) {
+      return { loai: 'td', kieu: 'ganKhoa', ds: [m[2], m[3], m[5]], vt: ['ten', 'khoa', 'so'], ghep: function (x) { return m[1] + x[0] + '[' + x[1] + ']' + m[4] + x[2]; } };
+    }
+    if ((m = RE_TD_ADD.exec(dong))) {
+      return { loai: 'td', kieu: 'add', ds: [m[2], m[3].trim()], vt: ['ten', 'so'], ghep: function (x) { return m[1] + x[0] + '.add(' + x[1] + ')'; } };
+    }
+    if ((m = RE_TD_FOR.exec(dong)) && !/^range$/.test(m[4])) {
+      return { loai: 'td', kieu: 'for', laFor: true, ds: [m[4]], vt: ['ten'], bienVong: m[2], ghep: function (x) { return m[1] + m[2] + m[3] + x[0] + m[5]; } };
+    }
+    if ((m = RE_TD_IN.exec(dong)) && (laSoTD(m[2].trim()) || /^"[^"]*"$/.test(m[2].trim()))) {
+      return { loai: 'td', kieu: 'in', tien: m[1], ds: [m[2].trim(), m[4], m[6]], vt: ['so', 'op', 'ten'], ghep: function (x) { return m[1] + x[0] + m[3] + x[1] + m[5] + x[2] + m[7]; } };
+    }
+    if ((m = RE_TD_SS.exec(dong)) && laSoTD(m[2].trim()) && laSoTD(m[6].trim()) && !(RE_SO.test(m[2].trim()) && RE_SO.test(m[6].trim()))) {      // while hear() > 0: · if n == 3: (n = listen() ở trên)
+      return { loai: 'td', kieu: 'ss', tien: m[1], ds: [m[2].trim(), m[4], m[6].trim()], vt: ['so', 'op', 'so'], ghep: function (x) { return m[1] + x[0] + ' ' + x[1] + ' ' + x[2] + m[7]; } };
+    }
+    if ((m = RE_TD_GAN_N.exec(dong))) {
+      return { loai: 'td', kieu: 'ganN', ds: [m[2], m[4]], vt: ['bm', 'so'], ghep: function (x) { return m[1] + x[0] + m[3] + x[1]; } };
+    }
+    return null;
+  }
+  /** Thêm một cặp (từ điển) / phần tử (tập hợp) ngay sau ô k của dòng gán; bỏ ô k (cùng khoá / giá trị đi kèm). */
+  function themTDDong(dong, k) {
+    var d = tachTD(chuoi(dong)); if (!d || (d.kieu !== 'ganDict' && d.kieu !== 'ganSet')) return dong;
+    var ds = d.ds.filter(function (v, i) { return d.vt[i] !== 'them'; }), dict = d.kieu === 'ganDict';
+    if ((ds.length - 1) / (dict ? 2 : 1) >= TD_TOI_DA) return dong;
+    var pos = Math.max(1, Math.min(k + 1, ds.length));
+    if (dict) {
+      if (pos % 2 === 0) pos++;                                                    // chèn sau trọn một cặp
+      var dung = ds.filter(function (v, i) { return i % 2 === 1; }).map(function (v) { return v.slice(1, -1); });
+      var khoa = TD_KHOA.filter(function (x) { return dung.indexOf(x) < 0; })[0] || TD_KHOA[0];
+      ds.splice(pos, 0, '"' + khoa + '"', '1');
+    } else {
+      var co = ds.slice(1);
+      var so = 1; while (co.indexOf(String(so)) >= 0 && so < 9) so++;
+      ds.splice(pos, 0, String(so));
+    }
+    return d.ghep(ds);
+  }
+  function boTDDong(dong, k) {
+    var d = tachTD(chuoi(dong)); if (!d || (d.kieu !== 'ganDict' && d.kieu !== 'ganSet') || d.vt[k] === 'them' || k < 1) return dong;
+    var ds = d.ds.slice();
+    if (d.kieu === 'ganDict') ds.splice(k % 2 === 1 ? k : k - 1, 2); else ds.splice(k, 1);
+    return d.ghep(ds);
+  }
+  /** Tên các từ điển (kieu 'dict') / tập hợp ('set') gán ở các dòng phía trên dòng i của mảng arr; khoá đã biết của mỗi từ điển. */
+  function tenTDTai(arr, i, kieu) {
+    var kq = [], j, d;
+    for (j = 0; j < i && j < arr.length; j++) {
+      d = tachTD(chuoi(arr[j])); if (!d) continue;
+      if (kieu === 'dict' && d.kieu === 'ganDict' && kq.indexOf(d.ds[0]) < 0) kq.push(d.ds[0]);
+      if (kieu === 'set' && d.kieu === 'ganSet' && kq.indexOf(d.ds[0]) < 0) kq.push(d.ds[0]);
+    }
+    return kq;
+  }
+  function khoaCuaTD(arr, i, ten) {
+    var kq = [], j, d;
+    for (j = 0; j < i && j < arr.length; j++) {
+      d = tachTD(chuoi(arr[j])); if (!d || d.ds[0] !== ten) continue;
+      if (d.kieu === 'ganDict') d.ds.forEach(function (v, x) { if (d.vt[x] === 'khoa' && kq.indexOf(v) < 0) kq.push(v); });
+      if (d.kieu === 'ganKhoa' && kq.indexOf(d.ds[1]) < 0) kq.push(d.ds[1]);
+    }
+    return kq;
+  }
+  /** Tô một dòng đã tách bằng tachTD. */
+  function veTD(d) {
+    var ds = d.ds;
+    function o(k, lopThem) {
+      var v = ds[k], vai = d.vt[k], at = ' data-k="' + k + '" data-td="' + vai + '"';
+      if (vai === 'them') return '<span class="num ptu them"' + at + ' data-so="0">+</span>';
+      if (vai === 'op') return '<span class="num td-op"' + at + ' data-so="0">' + esc(v) + '</span>';
+      if (vai === 'ten') return '<span class="num lsten td-ten"' + at + ' data-so="0" data-bien="' + escA(v) + '">' + esc(v) + '</span>';
+      if (vai === 'bm') return '<span class="vr">' + esc(v) + '</span>';
+      if (vai === 'khoa' || /^"[^"]*"$/.test(v)) return '<span class="num chuoi td-khoa' + (lopThem || '') + '"' + at + ' data-so="0" data-chuoi="' + escA(v.slice(1, -1)) + '">' + esc(v) + '</span>';
+      if (RE_SO.test(v)) return '<span class="num' + (vai === 'gt' ? ' ptu' : '') + '"' + at + ' data-so="' + v + '">' + v + '</span>';
+      return '<span class="num bien bth"' + at + ' data-so="0" data-bien="' + escA(v) + '">' + esc(v) + '</span>';
+    }
+    var P = function (s) { return '<span class="pu">' + s + '</span>'; }, i, ht;
+    if (d.kieu === 'ganDict') {
+      ht = o(0) + P(' = ') + '<span class="pg">' + P('{');
+      if (d.vt[1] === 'them') return ht + o(1) + P('}') + '</span>';
+      for (i = 1; i + 1 < ds.length; i += 2) ht += (i > 1 ? '<span class="pg">' : '') + o(i) + P(': ') + o(i + 1) + (i + 2 < ds.length ? P(',') + '</span>' : P('}') + '</span>');
+      return ht;
+    }
+    if (d.kieu === 'ganSet') {
+      ht = o(0) + P(' = ');
+      if (d.vt[1] === 'them') return ht + '<span class="fn">set</span>' + P('(') + o(1) + P(')');
+      ht += '<span class="pg">' + P('{');
+      for (i = 1; i < ds.length; i++) ht += (i > 1 ? '<span class="pg">' : '') + o(i) + (i + 1 < ds.length ? P(',') + '</span>' : P('}') + '</span>');
+      return ht;
+    }
+    if (d.kieu === 'ganKhoa') return o(0) + P('[') + o(1) + P(']') + P(' = ') + o(2);
+    if (d.kieu === 'add') return o(0) + P('.') + '<span class="fn">add</span>' + P('(') + o(1) + P(')');
+    if (d.kieu === 'for') return '<span class="kw">for </span><span class="vr">' + esc(d.bienVong) + ' </span><span class="kw">in </span>' + o(0) + P(':');
+    var kw = '';
+    if (d.kieu === 'in' || d.kieu === 'ss') { var mk = /^\s*(\w+)/.exec(d.tien || '') || null; kw = mk ? mk[1] : ''; }
+    if (d.kieu === 'in' || d.kieu === 'ss') return '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span>' + o(0) + ' ' + o(1) + ' ' + o(2) + P(':');
+    if (d.kieu === 'ganN') return o(0) + P(' = ') + o(1);
+    return esc(d.ghep(ds));
+  }
+
   /* ---- chương CẢM BIẾN MÀU: điều kiện của while / if / elif gồm một hay hai vế nối bằng and / or.
      Vế là: lời gọi cảm biến (`front_clear()`, `not left_clear()`) hoặc phép so sánh màu `color() != "red"` / `c == "green"` / `color() != c`.
      Chế độ này chỉ bật ở màn có color() (TP.datCheMau): các chương cũ giữ nguyên cách tách dòng.
@@ -341,6 +497,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** { loai: 'range' | 'forChuoi' | 'if' | 'dk' (điều kiện cảm biến của while / if / elif) | 'goi', ten (tên hàm được gọi), tien, ds: [chuỗi đối số], noi (chuỗi nối các đối số), hau, laFor } hoặc null nếu dòng không có ngoặc đối số. */
   function tachDoiSo(dong) {
     dong = chuoi(dong);
+    if (CHE_TD) { var dt = tachTD(dong); if (dt) return dt; }              // dòng từ điển / tập hợp / số âm thanh (mùa 8): d = {"a": 1}, s.add(n), if n not in s:, while hear() > 0:
     if (CHE_LIST) { var dl = tachList(dong); if (dl) return dl; }          // dòng danh sách (a = [1, 2], for n in a:, a.append(1), weave([1, 2]), forward(len(a)), range(len(a)))
     if (cheDkm()) { var dm = tachDKM(dong); if (dm) return dm; }
     var m = RE_FOR_DS.exec(dong);
@@ -367,9 +524,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Ô chạm được của đối số: số (data-so), chuỗi có nháy (data-chuoi) hoặc tên biến (data-bien); k = thứ tự trong dòng. */
   function oDoiSo(v, k) {
     if (RE_SO.test(v)) return '<span class="num" data-k="' + k + '" data-so="' + v + '">' + v + '</span>';
-    if (RE_CHUOI.test(v)) return '<span class="num chuoi' + (MAU_DS.indexOf(v.slice(1, -1)) >= 0 ? ' chuoi-mau mc-' + v.slice(1, -1) : '') + '" data-k="' + k + '" data-so="0" data-chuoi="' + esc(v.slice(1, -1)) + '">' + esc(v) + '</span>';       // tên màu (ink("red"), stop_on("blue")): ô màu
-    if (RE_BTH.test(v) || RE_PTU_CHI.test(v) || RE_LEN_DS.test(v) || RE_DO.test(v)) return '<span class="num bien bth" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';        // 3 - i · a[0] · a[i] · len(a)
-    if (RE_BIEN.test(v)) return '<span class="num bien" data-k="' + k + '" data-so="0" data-bien="' + esc(v) + '">' + esc(v) + '</span>';
+    if (RE_CHUOI.test(v)) return '<span class="num chuoi' + (MAU_DS.indexOf(v.slice(1, -1)) >= 0 ? ' chuoi-mau mc-' + v.slice(1, -1) : '') + '" data-k="' + k + '" data-so="0" data-chuoi="' + escA(v.slice(1, -1)) + '">' + esc(v) + '</span>';       // tên màu (ink("red"), stop_on("blue")): ô màu
+    if (RE_BTH.test(v) || RE_PTU_CHI.test(v) || RE_LEN_DS.test(v) || RE_DO.test(v) || (CHE_TD && RE_TD_NGUON.test(v))) return '<span class="num bien bth" data-k="' + k + '" data-so="0" data-bien="' + escA(v) + '">' + esc(v) + '</span>';        // 3 - i · a[0] · a[i] · len(a)
+    if (RE_BIEN.test(v)) return '<span class="num bien" data-k="' + k + '" data-so="0" data-bien="' + escA(v) + '">' + esc(v) + '</span>';
     return '<span class="ar">' + esc(v) + '</span>';
   }
 
@@ -380,7 +537,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (o.vt === 'rhs' && RE_SO.test(t)) return '<span class="num dkm rhs pinso" data-k="' + k + '" data-so="' + esc(t) + '" data-vt="rhs" data-dkm="' + esc(t) + '">' + esc(t) + '</span>';          // số của phép so sánh pin: ô số tím như range(n)
     if (o.vt === 'rhs') {
       var chu = RE_CHUOI.exec(t) ? t.slice(1, -1) : null;
-      if (chu !== null) return base + ' chuoi-mau ' + (MAU_DS.indexOf(chu) >= 0 ? 'mc-' + chu : 'mc-sai') + at.replace('data-so="0"', 'data-so="0" data-chuoi="' + esc(chu) + '"');
+      if (chu !== null) return base + ' chuoi-mau ' + (MAU_DS.indexOf(chu) >= 0 ? 'mc-' + chu : 'mc-sai') + at.replace('data-so="0"', 'data-so="0" data-chuoi="' + escA(chu) + '"');
       return base + ' bien' + at;
     }
     return base + at;
@@ -393,14 +550,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (RE_SO.test(v)) return '<span class="num ptu"' + at + ' data-so="' + v + '">' + v + '</span>';
     if (RE_CHUOI.test(v)) {
       var chu = v.slice(1, -1);
-      return '<span class="num ptu chuoi chuoi-mau ' + (MAU_DS.indexOf(chu) >= 0 ? 'mc-' + chu : 'mc-sai') + '"' + at + ' data-so="0" data-chuoi="' + esc(chu) + '">' + esc(v) + '</span>';
+      return '<span class="num ptu chuoi chuoi-mau ' + (MAU_DS.indexOf(chu) >= 0 ? 'mc-' + chu : 'mc-sai') + '"' + at + ' data-so="0" data-chuoi="' + escA(chu) + '">' + esc(v) + '</span>';
     }
     return '<span class="ar">' + esc(v) + '</span>';
   }
   /** Tô một dòng danh sách đã tách bằng tachList. */
   function veList(d) {
     var ds = d.ds, cau = d.cau || [];
-    function ten(k) { return '<span class="num lsten" data-k="' + k + '" data-so="0" data-bien="' + esc(ds[k]) + '">' + esc(ds[k]) + '</span>'; }
+    function ten(k) { return '<span class="num lsten" data-k="' + k + '" data-so="0" data-bien="' + escA(ds[k]) + '">' + esc(ds[k]) + '</span>'; }
     function kwFor() { var mf = /^\s*for\s+([A-Za-z_]\w*)\s+in\s+$/.exec(d.tien); return '<span class="kw">for </span><span class="vr">' + esc(mf ? mf[1] : 'n') + ' </span><span class="kw">in </span>'; }
     function doan(c, ci) {
       if (!c.lit) return oDoiSo(ds[c.tu], c.tu);
@@ -421,6 +578,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function mauDong(text) {
     text = boThut(text);
     if (/^#/.test(text)) return '<span class="cm">' + esc(text) + '</span>';
+    if (CHE_TD) { var dt = tachTD(text); if (dt) return veTD(dt); }
     if (CHE_LIST) { var dl = tachList(text); if (dl && dl.cau) return veList(dl); }
     if (cheDkm()) {
       var dkm = tachDKM(text);
@@ -455,7 +613,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = m[1] === 'left_move' || m[1] === 'right_move' || m[1] === 'left_back' || m[1] === 'right_back' ? 'mv'
-      : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 || NC_TEN.indexOf(m[1]) >= 0 || NEM_TEN.indexOf(m[1]) >= 0 || SUNG_TEN.indexOf(m[1]) >= 0 || SON_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : /^slide_/.test(m[1]) ? 'sl' : 'fn';
+      : m[1] === 'wait' ? 'wt' : TAY_TEN.indexOf(m[1]) >= 0 || NC_TEN.indexOf(m[1]) >= 0 || LOA_TEN.indexOf(m[1]) >= 0 || NEM_TEN.indexOf(m[1]) >= 0 || SUNG_TEN.indexOf(m[1]) >= 0 || SON_TEN.indexOf(m[1]) >= 0 ? 'ty' : /^go_/.test(m[1]) ? 'mv' : /^slide_/.test(m[1]) ? 'sl' : 'fn';
     var args = m[2].trim() === '' ? '' : m[2].split(',').map(function (x, k) { return oDoiSo(x.trim(), k); }).join('<span class="pu">, </span>');
     return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' + args + '<span class="pu">)</span>';
   }
@@ -512,6 +670,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function kieuBienCua(ten) { return (tuyChon.kieuBien && tuyChon.kieuBien(ten)) || 'so'; }   // 'so' | 'don' (một chữ) | 'ghep' (chuỗi chữ) của một đối số của hàm đang sửa
     /** Kiểu ô của đối số k trong dòng đã tách d: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi ghép) | 'bien' (ô biến của if) | 'dl' (chữ so sánh của if). */
     function kieuArg(d, k) {
+      if (d && d.loai === 'td') return 'td';
       if (d && d.cau) {                                                    // dòng danh sách: tên danh sách · phần tử · đối số của lời gọi hàm
         if (d.loai === 'forList' || ((d.loai === 'ganList' || d.loai === 'themList') && k === 0)) return 'tenls';
         var sg = segCua(d, k);
@@ -534,6 +693,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Biến kiểu kb có đặt được vào ô kiểu slot không (một chữ đặt được vào chuỗi ghép, ngược lại thì không). */
     function hopKieu(slot, kb) {
       if (slot === 'list' || slot === 'tenls') return kb === 'list';
+      if (slot === 'td') return kb === 'td';
       if (slot === 'so') return kb === 'so';
       if (slot === 'don') return kb === 'don';
       if (slot === 'luc') return kb === 'luc';                                                // ô lực bắn (spray(p), squirt(p)): biến lực
@@ -543,12 +703,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     /** Tên biến dùng được cho ô kiểu slot của dòng i (hoặc dòng sẽ chèn ở bậc bac): biến vòng for c in "…" bao quanh (trong cùng trước), rồi đối số của hàm đang sửa. */
     function bienTam(slot, i, bac, tenHam) {
-      var arr = lay(), kq = [], j, cap = bac === undefined || bac === null ? bacCua(arr[i]) : bac, coBth = slot === 'so' && tenHam && soToiDa(tenHam, 0) === 3, vongSo = [];
+      var arr = lay(), kq = [], j, cap = bac === undefined || bac === null ? bacCua(arr[i]) : bac, coBth = slot === 'so' && tenHam && soToiDa(tenHam, 0) === 3, vongSo = [], vongTD = [];
       for (j = i - 1; j >= 0; j--) {
         if (!coY(arr[j])) continue;
         var b = bacCua(arr[j]);
         if (b >= cap) continue;
         cap = b;
+        var ft = CHE_TD && slot === 'so' ? RE_TD_FOR.exec(chuoi(arr[j])) : null;      // for k in d: → số d[k] dùng được trong thân vòng
+        if (ft && ft[4] !== 'range') vongTD.push(ft[4] + '[' + ft[2] + ']');
         var fc = /^\s*for\s+([A-Za-z_]\w*)\s+in\s+("[^"]*"|[A-Za-z_]\w*)\s*:/.exec(chuoi(arr[j]));
         var kieuVong = 'don';                                                            // biến vòng for c in "…" là một chữ; for n in a: theo kiểu phần tử của danh sách (số hay chữ)
         if (CHE_LIST && fc && RE_BIEN.test(fc[2]) && !KIEU_TEN_GHEP.test(fc[2])) kieuVong = kieuPtuTai(fc[2], j) === 'chu' ? 'don' : 'so';
@@ -570,6 +732,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           vongSo.forEach(function (v) { kq.push(ds + '[' + v + ']'); });
           kq.push(ds + '[0]', 'len(' + ds + ')');
         });
+      }
+      if (CHE_TD && slot === 'so') {                                                      // mùa 8: số lấy từ biến gán n = listen(), cảm biến âm thanh, từ điển (d["a"], d[k]), độ dài len(s)
+        var them = function (x) { if (kq.indexOf(x) < 0) kq.push(x); };
+        for (j = 0; j < i && j < arr.length; j++) { var gn = tachTD(chuoi(arr[j])); if (gn && gn.kieu === 'ganN') them(gn.ds[0]); }
+        TD_NGUON.forEach(function (n) { them(n + '()'); });
+        vongTD.forEach(them);
+        var dsD = tenTDTai(arr, i, 'dict'), dsS = tenTDTai(arr, i, 'set'), pTD = bienDuoc().filter(function (p) { return kieuBienCua(p) === 'td'; });
+        dsD.forEach(function (dn) { khoaCuaTD(arr, i, dn).forEach(function (k) { them(dn + '[' + k + ']'); }); });
+        pTD.forEach(function (p) { TD_KHOA.forEach(function (k) { them(p + '["' + k + '"]'); }); });          // đối số từ điển của hàm đang sửa: khoá theo màn
+        dsD.concat(dsS, pTD).forEach(function (n) { them('len(' + n + ')'); });
       }
       return kq;
     }
@@ -596,10 +768,42 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     /** Khối `if d == "U":` mặc định của kho: đổi `d` thành biến có thật ở chỗ chèn (biến vòng for, rồi đối số của hàm đang sửa). */
     function thichNghi(txt, at, bac) {
+      if (CHE_TD) { var tn = thichNghiTD(txt, at, bac); if (tn !== null) return tn; }
       var m = /^(\s*(?:if|elif)\s+)d(\s*==.*)$/.exec(txt);
       if (!m) return CHE_LIST ? thichNghiList(txt, at) : txt;
       var vs = bienTam('bien', at, bac);
       return vs.length && vs.indexOf('d') < 0 ? m[1] + vs[0] + m[2] : txt;
+    }
+    /** Khối mùa 8 mặc định của kho (`d = {"a": 1}`, `d["a"] = 1`, `s = set()`, `s.add(1)`, `for k in d:`, `if 1 not in s:`): tên mới lấy tên gợi ý chưa dùng; dòng dùng từ điển / tập hợp
+     *  lấy tên đã gán gần nhất phía trên (hay đối số từ điển của hàm đang sửa); khoá lấy khoá đầu của màn / của từ điển đó; vế trái của `in` lấy biến vòng / biến gán gần nhất. null: không phải khối mùa 8. */
+    function thichNghiTD(txt, at, bac) {
+      var d = tachTD(txt); if (!d) return null;
+      var arr = lay(), ds = d.ds.slice(), kieu = d.kieu === 'ganDict' || d.kieu === 'ganKhoa' || d.kieu === 'for' ? 'dict' : d.kieu === 'ganSet' || d.kieu === 'add' ? 'set' : null;
+      var pTD = bienDuoc().filter(function (p) { return kieuBienCua(p) === 'td'; });
+      if (d.kieu === 'ganDict' || d.kieu === 'ganSet') {
+        var dung = {};
+        arr.forEach(function (x) { var g = tachTD(chuoi(x)); if (g && (g.kieu === 'ganDict' || g.kieu === 'ganSet')) dung[g.ds[0]] = true; });
+        pTD.forEach(function (p) { dung[p] = true; });
+        ds[0] = TD_TEN[kieu].filter(function (n) { return !dung[n]; })[0] || ds[0];
+        if (d.kieu === 'ganDict' && d.vt[1] === 'khoa') ds[1] = '"' + TD_KHOA[0] + '"';
+        return d.ghep(ds);
+      }
+      if (d.kieu === 'ganKhoa' || d.kieu === 'add' || d.kieu === 'for') {
+        var co = tenTDTai(arr, at, kieu).concat(pTD);
+        if (co.length) ds[0] = co[co.length - 1];
+        if (d.kieu === 'ganKhoa') { var kh = khoaCuaTD(arr, at, ds[0]); ds[1] = kh.length ? kh[0] : '"' + TD_KHOA[0] + '"'; }
+        return d.ghep(ds);
+      }
+      if (d.kieu === 'in') {
+        var tap = tenTDTai(arr, at, 'set').concat(tenTDTai(arr, at, 'dict'), pTD);
+        if (tap.length) ds[2] = tap[tap.length - 1];
+        var bv = bienTam('so', at, bac).filter(function (v) { return RE_BIEN.test(v); });
+        var fk = null;                                                                     // for k in d: bao quanh → if k in d:
+        for (var j = at - 1; j >= 0 && !fk; j--) { var ft = RE_TD_FOR.exec(chuoi(arr[j])); if (ft && bacCua(arr[j]) < (bac === undefined || bac === null ? 99 : bac)) fk = ft[2]; }
+        ds[0] = fk || (bv.length ? bv[bv.length - 1] : ds[0]);
+        return d.ghep(ds);
+      }
+      return null;
     }
     /** Khối danh sách mặc định của kho (`a = [1, 2]`, `for n in a:`, `a.append(1)`): danh sách mới lấy tên chưa dùng (a, b, c…); for / append dùng tên danh sách vừa gán ở trên nếu `a` chưa có. */
     function thichNghiList(txt, at) {
@@ -637,6 +841,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Mở bộ chọn cho ô .num đang chạm (số 1–9 / chữ U D L R / bộ ghép chuỗi). */
     function moBoChon(so, i, kk) {
       var arr = lay(), d = tachDoiSo(arr[i]), kd = so.getAttribute('data-them') && d && d.cau ? 'ptu' : kieuArg(d, kk);      // dấu + của danh sách rỗng luôn là ô 'ptu'
+      if (kd === 'td') { moTD(so, i, d, kk); return; }
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }
@@ -656,6 +861,47 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var bien = kd === 'dl' ? [] : bienTam(kd, i);
       if (kd === 'bien' && !bien.length) return;
       chonChuoi({ neo: so, kieu: kd, gia: laChu ? gia.slice(1, -1) : '', hien: laChu ? null : gia, bien: bien, khiChon: function (v) { ed.datSo(i, v, kk); } });
+    }
+    /** Chạm một ô của dòng mùa 8 (tachTD): + thêm cặp / phần tử; in ↔ not in, == != > < đổi ngay; tên chọn trong từ điển / tập hợp đã có (dòng gán thì đổi tên);
+     *  khoá chọn trong khoá của màn / của từ điển; giá trị đặt thẳng có thêm / bỏ; ô số mở bảng số kèm chip (n, hear(), listen(), d["a"], d[k], len(s)). */
+    function moTD(so, i, d, kk) {
+      var arr = lay(), vai = d.vt[kk], v = d.ds[kk], ds;
+      if (vai === 'them') { ed.themTD(i, 0, true); return; }
+      if (vai === 'op') { var ops = d.kieu === 'in' ? ['in', 'not in'] : TD_SS; ed.datSo(i, ops[(ops.indexOf(v) + 1) % ops.length], kk); return; }
+      if (vai === 'ten') {
+        var kieu = d.kieu === 'ganDict' || d.kieu === 'ganKhoa' || d.kieu === 'for' ? 'dict' : d.kieu === 'ganSet' || d.kieu === 'add' ? 'set' : null;
+        var pTD = bienDuoc().filter(function (p) { return kieuBienCua(p) === 'td'; });
+        if (d.kieu === 'ganDict' || d.kieu === 'ganSet') {
+          var dung = {};
+          arr.forEach(function (x, j) { var g = tachTD(chuoi(x)); if (g && j !== i && (g.kieu === 'ganDict' || g.kieu === 'ganSet')) dung[g.ds[0]] = true; });
+          ds = TD_TEN[kieu].filter(function (n) { return !dung[n]; });
+        } else ds = (kieu ? tenTDTai(arr, i, kieu) : tenTDTai(arr, i, 'set').concat(tenTDTai(arr, i, 'dict'))).concat(pTD);
+        if (ds.indexOf(v) < 0) ds.unshift(v);
+        if (ds.length < 2) return;
+        chonChuoi({ neo: so, kieu: 'bien', gia: '', hien: v, bien: ds, khiChon: function (x) { if (d.kieu === 'ganDict' || d.kieu === 'ganSet') ed.doiTenTD(i, x); else ed.datSo(i, x, kk); } });
+        return;
+      }
+      if (vai === 'khoa') {
+        ds = d.kieu === 'ganDict' ? [] : khoaCuaTD(arr, i, d.ds[0]);
+        TD_KHOA.forEach(function (k) { if (ds.indexOf('"' + k + '"') < 0) ds.push('"' + k + '"'); });
+        if (ds.indexOf(v) < 0) ds.unshift(v);
+        chonChuoi({ neo: so, kieu: 'bien', gia: '', hien: v, bien: ds, khiChon: function (x) { ed.datSo(i, x, kk); } });
+        return;
+      }
+      if (vai === 'gt') {
+        var n = d.kieu === 'ganDict' ? (d.ds.length - 1) / 2 : d.ds.length - 1;
+        chonPtu({ neo: so, v: v, chu: false, coThem: n < TD_TOI_DA, coBo: true,
+          khiChon: function (x) { ed.datSo(i, x, kk); }, khiThem: function () { ed.themTD(i, kk, true); }, khiBo: function () { ed.boTD(i, kk); } });
+        return;
+      }
+      var bien = bienTam('so', i, null, null);
+      if (d.kieu === 'in' && kk === 0) {                                                   // `if "a" in d:` / `if k in d:`: vế trái còn là khoá hay biến vòng
+        var dn = d.ds[2];
+        khoaCuaTD(arr, i, dn).concat(TD_KHOA.map(function (k) { return '"' + k + '"'; })).forEach(function (k) { if (bien.indexOf(k) < 0) bien.push(k); });
+        for (var j = i - 1; j >= 0; j--) { var ft = RE_TD_FOR.exec(chuoi(arr[j])); if (ft && bien.indexOf(ft[2]) < 0) bien.unshift(ft[2]); }
+      }
+      if (d.kieu === 'ganN') bien = bien.filter(function (x) { return RE_TD_NGUON.test(x); });     // n = …: chỉ nguồn số (listen(), len(s), d["a"])
+      chonSo({ neo: so, so: RE_SO.test(v) ? +v : -1, hien: RE_SO.test(v) ? null : v, toiDa: SO_TOI_DA, coKhong: true, bien: bien, khiChon: function (x) { ed.datSo(i, x, kk); } });
     }
     /** Chạm một phần tử của danh sách: bảng chọn số / màu + "thêm ô" (chèn ngay sau ô này) + "bỏ ô". Chạm dấu + của danh sách rỗng thì thêm phần tử đầu rồi mở bảng chọn. */
     function moPtu(so, i, d, kk) {
@@ -1023,6 +1269,46 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.anHoan(); arr[i] = s;
       this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
       baoHd('bo-ptu', { dong: i, k: k });
+      return true;
+    };
+    /** Mùa 8: thêm một cặp (từ điển) / phần tử (tập hợp) vào dòng gán i, ngay sau ô k; bỏ ô k; đổi tên từ điển / tập hợp ở dòng gán (các dòng dưới đổi theo). */
+    this.themTD = function (i, k, moLai) {
+      var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return false;
+      var s = themTDDong(arr[i], k);
+      if (s === arr[i]) return false;
+      this.anHoan(); arr[i] = s;
+      this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
+      baoHd('them-ptu', { dong: i, k: k });
+      if (moLai) {
+        var d = tachTD(chuoi(s)), pos = Math.min(d.ds.length - 1, d.kieu === 'ganDict' ? (k % 2 === 0 ? k + 2 : k + 3) : k + 1);
+        if (d.kieu === 'ganDict' && k === 0) pos = 2;
+        var ct = strips[i] && strips[i].querySelector ? strips[i].querySelector('.num[data-k="' + pos + '"]') : null; if (ct) moBoChon(ct, i, pos);
+      }
+      return true;
+    };
+    this.boTD = function (i, k) {
+      var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return false;
+      var s = boTDDong(arr[i], k);
+      if (s === arr[i]) return false;
+      this.anHoan(); arr[i] = s;
+      this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
+      baoHd('bo-ptu', { dong: i, k: k });
+      return true;
+    };
+    this.doiTenTD = function (i, moi) {
+      var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return false;
+      var d = tachTD(chuoi(arr[i]));
+      if (!d || (d.kieu !== 'ganDict' && d.kieu !== 'ganSet') || d.ds[0] === moi || !RE_BIEN.test(moi)) return false;
+      var cu = d.ds[0], re = new RegExp('(^|[^\\w"])' + escRe(cu) + '(?![\\w"])', 'g'), reGan = new RegExp('^\\s*' + escRe(cu) + '\\s*=[^=]');
+      this.anHoan();
+      arr[i] = thayDoiSo(arr[i], 0, moi);
+      for (var j = i + 1; j < arr.length; j++) {
+        var x = chuoi(arr[j]);
+        if (reGan.test(x)) break;
+        arr[j] = x.replace(re, function (_, a1) { return a1 + moi; });
+      }
+      this.render(); tuyChon.khiDoi && tuyChon.khiDoi();
+      baoHd('doi-ten-list', { dong: i, ten: moi });
       return true;
     };
     /** Đổi tên danh sách ở dòng gán `a = [...]` (dòng i) thành `moi`; các dòng phía dưới dùng tên cũ đổi theo, tới dòng gán lại tên cũ. Trả về có đổi được không. */
@@ -1614,6 +1900,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function suyKieu(f, k, tim, sau) {
     var p = (f.thamSo || [])[k]; if (!p) return null;
     var src = (f.than || []).map(boChuThich).join('\n'), P = escRe(p);
+    if (CHE_TD && (new RegExp('(^|[^\\w"])' + P + '\\s*\\[').test(src) || new RegExp('(^|[^\\w"])' + P + '\\.add\\(').test(src) || (!CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) || (!CHE_LIST && new RegExp('\\blen\\(\\s*' + P + '\\s*\\)').test(src)))) return 'td';     // mùa 8: d["a"] · d[k] · s.add(x) · k in d · len(s): từ điển / tập hợp
     if (CHE_LIST && (new RegExp('(^|[^\\w"])' + P + '\\s*\\[').test(src) || new RegExp('\\blen\\(\\s*' + P + '\\s*\\)').test(src) || new RegExp('(^|[^\\w"])' + P + '\\.append\\(').test(src))) return 'list';     // p[i] · len(p) · p.append(x): danh sách
     if (new RegExp('(^|[^\\w"])' + P + '\\s*[=!]=').test(src) || new RegExp('[=!]=\\s*' + P + '(?![\\w"])').test(src)) return 'don';
     if (new RegExp('\\bin\\s+' + P + '\\s*:').test(src)) return CHE_LIST && !KIEU_TEN_GHEP.test(p) ? 'list' : 'ghep';                      // for c in path: (chuỗi chữ) · for n in steps: (danh sách, ở màn có list)
@@ -1959,10 +2246,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (loai === 'goc' && ten === 'aim') goi = 'aim(1)';                       // aim(n): thẻ chèn sẵn tầm 1, chạm số để chọn 1 / 2 / 3
       if (loai === 'goc' && (ten === 'spray' || ten === 'spray_back') && cb.kieuDoiSo && cb.kieuDoiSo(ten, 0) === 'luc') goi = ten + '("high")';   // màn Lực bắn: chạm "high" để đổi sang "low"
       if (loai === 'goc' && ten === 'ink') goi = 'ink("red")';                   // ink(c): thẻ chèn sẵn màu đỏ, chạm màu để chọn màu khác
+      if (loai === 'goc' && LOA_TEN.indexOf(ten) >= 0) goi = ten + '(1)';        // note(n) / beat(n) (mùa 8): chèn sẵn 1, chạm số để chọn nốt / số nhịp
       var hien = '(' + (hamTS || []).join(', ') + ')';
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', loai); d.setAttribute('data-goi', goi);
       var sp = h('span', 'tx');
-      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : ten;
+      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : LOA_TEN.indexOf(ten) >= 0 ? ten + '(n)' : ten;
       else { sp.appendChild(document.createTextNode(ten)); sp.appendChild(h('span', 'pn' + (hamTS && hamTS.length ? ' co' : ''), hien)); }
       d.appendChild(sp);
       if (loai !== 'goc') {
@@ -2031,16 +2319,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var gocSung = goc.filter(function (n) { return SUNG_TEN.indexOf(n) >= 0; });              // súng hơi: spray / spray_back
       var gocSon = goc.filter(function (n) { return SON_TEN.indexOf(n) >= 0; });                // máy sơn: ink / dot / pen_down / pen_up
       var gocNC = goc.filter(function (n) { return NC_TEN.indexOf(n) >= 0; });                  // nam châm: magnet_n / magnet_s / magnet_off
+      var gocLoa = goc.filter(function (n) { return LOA_TEN.indexOf(n) >= 0; });                // loa (mùa 8): note / beat
       var camHN = cam.indexOf('distance') >= 0, camNong = cam.indexOf('warm') >= 0;             // hồng ngoại (mùa 2): distance() trả số nên không dùng làm `if distance():`; warm() là True / False
       var camKhac = cam.filter(function (n) { return n !== 'distance' && n !== 'warm'; });
       var camDau = cam.indexOf('front_metal') >= 0 ? 'front_metal' : camKhac.length ? camKhac[0] : camNong ? 'warm' : cam[0];      // màn có cảm biến từ: khối mẫu của while / if dùng front_metal()
       var camCuc = cam.indexOf('front_pole') >= 0;                                              // front_pole() trả chuỗi "N" / "S" / "none": khối mẫu so sánh chuỗi, không phải if front_pole():
       var gocChan = goc.filter(function (n) { return /^go_/.test(n) || CHAN_TEN.indexOf(n) >= 0; });      // nhện / drone: go_up / go_down / go_left / go_right (kèm wait); nhện còn có crouch / stand (co / duỗi chân)
       var gocTruot = goc.filter(function (n) { return /^slide_/.test(n); });                    // omni: slide_left / slide_right
-      var gocThuong = goc.filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && SON_TEN.indexOf(n) < 0 && !/^go_/.test(n) && CHAN_TEN.indexOf(n) < 0 && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && n !== 'color' && n !== 'look' && n !== 'wait'; });   // lệnh bánh; hàm cảm biến là ĐIỀU KIỆN, không phải lệnh; wait() ở hàng ghim
+      var gocThuong = goc.filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && SON_TEN.indexOf(n) < 0 && !/^go_/.test(n) && CHAN_TEN.indexOf(n) < 0 && !/^slide_/.test(n) && CAM_BIEN_TEN.indexOf(n) < 0 && LOA_TEN.indexOf(n) < 0 && AM_TEN.indexOf(n) < 0 && n !== 'color' && n !== 'look' && n !== 'wait'; });   // lệnh bánh; hàm cảm biến là ĐIỀU KIỆN, không phải lệnh; wait() ở hàng ghim
       ghimWait = goc.indexOf('wait') >= 0;
-      var coTay = gocTay.length + gocNem.length + gocSung.length + gocNC.length + gocSon.length > 0;
-      var coCam = cam.length > 0 || !!spec.mau || !!spec.pin;
+      var coTay = gocTay.length + gocNem.length + gocSung.length + gocNC.length + gocSon.length + gocLoa.length > 0;
+      var amSpec = spec.am || [];                                                                // cảm biến âm thanh (mùa 8): 'hear' / 'listen'
+      var coCam = cam.length > 0 || !!spec.mau || !!spec.pin || amSpec.length > 0;
       var coBien = !!(spec.bien && spec.bien.length);
       var coTS = coBien || [spec.em, spec.man].some(function (l) { return (l || []).some(function (f) { return f.thamSo && f.thamSo.length; }); });
 
@@ -2062,9 +2352,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         dsDk = ['if front_pole() == "N":', 'elif front_pole() == "S":'].concat(dsDk.filter(function (s) { return s !== 'if front_pole():'; }));
         if (dsDk.indexOf('else:') < 0) dsDk.push('else:');
       }
+      var chiAm = amSpec.length > 0 && !cam.length && !spec.mau && !spec.pin;                   // mùa 8 chỉ có cảm biến âm thanh: khối điều kiện ở nhóm ÂM THANH (nhomTD), không dùng khối mẫu cũ
+      if (chiAm) dsDk = [];
       var dkCam = dsDk.some(function (s) { return RE_DK_CAM.test(s); });
-      var chuWhile = spec.vong && spec.vongWhile ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + gm + ' != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camHN && !camKhac.length && !spec.mau ? 'while distance() > 0:' : camNong && !camKhac.length && !spec.mau ? 'while not warm():' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương (hồng ngoại: while distance() > 0: / while not warm():)
-      var coLogic = coCam || !!spec.vong || dsDk.length > 0 || !!chuWhile || !!spec.bienDem || !!spec.list;
+      var chuWhile = spec.vong && spec.vongWhile && !chiAm ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + gm + ' != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camHN && !camKhac.length && !spec.mau ? 'while distance() > 0:' : camNong && !camKhac.length && !spec.mau ? 'while not warm():' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương (hồng ngoại: while distance() > 0: / while not warm():)
+      var coLogic = coCam || !!spec.vong || dsDk.length > 0 || !!chuWhile || !!spec.bienDem || !!spec.list || !!spec.dict || !!spec.set;
 
       /* ---- hàm của em chia vào thẻ theo lệnh gốc nó gọi (kể cả gián tiếp); thẻ không có thì rơi về THÂN */
       var hamMan = spec.man || [], emTat = spec.em || [], emKhac = spec.em ? (spec.emKhac || []) : [];
@@ -2171,6 +2463,43 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         gachLs('a = [1, 2]', 'gan'); gachLs(nhin ? 'for c in a:' : 'for n in a:', 'for'); gachLs(nhin ? 'for c in ["red", "blue"]:' : 'for n in [1, 2]:', 'forlit'); gachLs('a.append(1)', 'them');
         if (nhin) gachLs('a.append(look())', 'them-look');                                         // ghi màu camera thấy: seen.append(look())
       }
+      /** Mùa 8 (thẻ LOGIC, dưới nhóm DANH SÁCH): nhóm ÂM THANH (spec.am: while hear() > 0:, if hear() == 0:, n = hear(), n = listen(), if listen() == 1:),
+       *  nhóm TỪ ĐIỂN (spec.dict: d = {"a": 1}, d["a"] = 1, for k in d:, if k in d:), nhóm TẬP HỢP (spec.set: s = set(), s.add(1), if 1 not in s:), và else: cho các if đó. */
+      function nhomTD() {
+        var coIf = false;
+        if (amSpec.length) {
+          nhan(t('choi.nhom.am'), lop('g-amt'));
+          if (amSpec.indexOf('hear') >= 0) {
+            if (spec.vong && spec.vongWhile) gachTD('while hear() > 0:', 'am-while', 'am wh');
+            if (spec.dieuKien) { gachTD('if hear() == 0:', 'am-if', 'am'); coIf = true; }
+            gachTD('n = hear()', 'am-gan', 'am');
+          }
+          if (amSpec.indexOf('listen') >= 0) {
+            gachTD('n = listen()', 'nghe-gan', 'am');
+            if (spec.dieuKien) { gachTD('if listen() == 1:', 'nghe-if', 'am'); coIf = true; }
+          }
+        }
+        if (spec.dict) {
+          nhan(t('choi.nhom.dict'), lop('g-tdn'));
+          gachTD('d = {"a": 1}', 'd-gan', 'td'); gachTD('d["a"] = 1', 'd-khoa', 'td');
+          if (spec.vong) gachTD('for k in d:', 'd-for', 'td');
+          if (spec.dieuKien) { gachTD('if k in d:', 'd-in', 'td'); coIf = true; }
+        }
+        if (spec.set) {
+          nhan(t('choi.nhom.set'), lop('g-thn'));
+          gachTD('s = set()', 's-gan', 'th'); gachTD('s.add(1)', 's-add', 'th');
+          if (spec.dieuKien) { gachTD('if 1 not in s:', 's-in', 'th'); coIf = true; }
+        }
+        if (coIf && !dsDk.length) gachDk('else:');
+      }
+      /** Khối mùa 8 (từ điển xanh ngọc, tập hợp vàng cam, âm thanh tím): chạm hay kéo vào khung là chèn một dòng (thichNghiTD đổi tên / khoá cho khớp chỗ chèn). */
+      function gachTD(goi, khoa, lopThem) {
+        var d = h('div', 'brick ' + lopThem); d.setAttribute('role', 'button');
+        d.setAttribute('data-ten', khoa); d.setAttribute('data-loai', 'td'); d.setAttribute('data-goi', goi);
+        d.appendChild(h('span', 'tx', goi));
+        d.addEventListener('click', function () { cb.khiChen(goi); });
+        host.appendChild(d); bricks['td:' + khoa] = d;
+      }
 
       /* ---- các thẻ, theo thứ tự: Thân · Tay · Cảm biến (hàm của màn nằm trong thẻ bộ phận của nó) */
       var loaiTay = [];                                                                       // tên thẻ TAY theo bộ phận thật; nhiều loại dụng cụ cùng lúc thì tên chung "Tay"
@@ -2179,19 +2508,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (gocNem.length) loaiTay.push('Nem');
       if (gocSung.length) loaiTay.push('Sung');                                               // thẻ tên "Súng hơi"
       if (gocSon.length) loaiTay.push('Son');                                                 // thẻ tên "Máy sơn"
+      if (gocLoa.length) loaiTay.push('Loa');                                                 // thẻ tên "Loa" (mùa 8)
       var tenThe = {
-        than: t(spec.loai === 'nhen' ? 'choi.the.nhen' : spec.loai === 'drone' ? 'choi.the.drone' : 'choi.the.xe'),
+        than: t(spec.loai === 'nhen' ? 'choi.the.nhen' : spec.loai === 'drone' ? 'choi.the.drone' : spec.loai === 'gai' ? 'choi.the.gai' : 'choi.the.xe'),
         tay: t('choi.the.tay' + (loaiTay.length === 1 ? loaiTay[0] : '')),
         cam: t('choi.the.cam')
       };
       var icThe = {                                                                           // icon tiêu đề thẻ (ve.js ICON BỘ PHẬN), dùng chung với đèn nhịp; chỉ dùng khi không vẽ được hình bộ phận
         than: ({ nhen: 'denChan', drone: 'denCanh', xich: 'denXich', omni: 'denTruot' })[spec.loai] || 'denBanh',
-        tay: loaiTay.length === 1 ? ({ Kep: 'denKepMo', Xoay: 'denXoay', NamCham: 'denNamCham', Nem: 'denNem', Sung: 'denSung', Son: 'denSon' })[loaiTay[0]] : 'denTayLen',
+        tay: loaiTay.length === 1 ? ({ Kep: 'denKepMo', Xoay: 'denXoay', NamCham: 'denNamCham', Nem: 'denNem', Sung: 'denSung', Son: 'denSon', Loa: 'denTayLen' })[loaiTay[0]] : 'denTayLen',
         cam: 'denLogic'
       };
       var partThe = {                                                                         // 22/10: tiêu đề thẻ vẽ bằng HÌNH BỘ PHẬN THẬT (bộ PART) thay icon đèn: điều khiển xe thì thấy thân xe, không thấy bánh tròn
         than: { loai: 'than', ma: ({ nhen: 'nhen', drone: 'drone', xich: 'xich', omni: 'omni' })[spec.loai] || 'hai-banh' },
-        tay: loaiTay.length === 1 ? { loai: 'tay', ma: ({ Kep: 'kep', Xoay: 'xoay', NamCham: 'nam-cham', Nem: 'nem', Sung: 'hoi', Son: 'son' })[loaiTay[0]] } : null,
+        tay: loaiTay.length === 1 && loaiTay[0] !== 'Loa' ? { loai: 'tay', ma: ({ Kep: 'kep', Xoay: 'xoay', NamCham: 'nam-cham', Nem: 'nem', Sung: 'hoi', Son: 'son' })[loaiTay[0]] } : null,      // loa: hình bộ phận vẽ ở P2 (KE-HOACH-MUA-8.md), tới đó dùng icon
         cam: null                                                                              // thẻ Logic (for / if / while / biến) không phải phần cứng: giữ icon
       };
       the = [];
@@ -2202,7 +2532,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         nhomEm(emThe.than, khacThe.than);
       } });
       if (coTay) {
-        var nTay = [gocTay, gocNC, gocNem, gocSung, gocSon].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
+        var nTay = [gocTay, gocNC, gocNem, gocSung, gocSon, gocLoa].filter(function (l) { return l.length; }).length + (coBien ? 1 : 0);
         the.push({ khoa: 'tay', ten: tenThe.tay, icon: icThe.tay, part: partThe.tay, ve: function () {
           nhomBien();
           nhomLenhTay(gocTay, 'choi.nhom.tay', nTay > 1, !!gocChan.length || gocTay.length > 4);          // tay xoay có sáu lệnh: xếp hai cột (nâng / hạ, trái / phải, kẹp / thả)
@@ -2210,6 +2540,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           nhomLenhTay(gocNem, 'choi.nhom.mayNem', nTay > 1);
           nhomLenhTay(gocSung, 'choi.nhom.sungHoi', nTay > 1);
           nhomLenhTay(gocSon, 'choi.nhom.maySon', nTay > 1, gocSon.length > 2);
+          nhomLenhTay(gocLoa, 'choi.nhom.loa', nTay > 1);
           nhomMan(manThe.tay);
           nhomEm(emThe.tay, khacThe.tay);
         } });
@@ -2223,6 +2554,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           dsDk.forEach(gachDk);
           nhomDem();
           nhomList();
+          nhomTD();
           nhomMan(manThe.cam);
           nhomEm(emThe.cam, khacThe.cam);
         } });
@@ -2673,6 +3005,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return null;
   }
 
-  window.TP = { h: h, esc: esc, choBoSung: choBoSung, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonMuc: chonMuc, chonDkm: chonDkm, datCheMau: datCheMau, datCheList: datCheList, coListCua: coListCua, chonPtu: chonPtu, tachList: tachList, themPtuDong: themPtuDong, boPtuDong: boPtuDong, litThanhTen: litThanhTen, catTop: catTop, LIST_TOI_DA: LIST_TOI_DA, LIST_TEN_GOI_Y: LIST_TEN_GOI_Y, coMauCua: coMauCua, coPinCua: coPinCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, tachHamKhac: tachHamKhac, theHamRong: theHamRong, theCuaHam: theCuaHam, theMacDinh: theMacDinh, khoaKhay: khoaKhay, daXemMeo: daXemMeo, datXemMeo: datXemMeo, nhomNhip: nhomNhip, lenhCungNhip: lenhCungNhip, lyDoCamNhip: lyDoCamNhip, BO_PHAN_LENH: BO_PHAN_LENH, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
+  window.TP = { h: h, esc: esc, choBoSung: choBoSung, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonMuc: chonMuc, chonDkm: chonDkm, datCheMau: datCheMau, datCheList: datCheList, coListCua: coListCua, datCheTD: datCheTD, coTDCua: coTDCua, khoaTDCua: khoaTDCua, nguonAmCua: nguonAmCua, tachTD: tachTD, themTDDong: themTDDong, boTDDong: boTDDong, chonPtu: chonPtu, tachList: tachList, themPtuDong: themPtuDong, boPtuDong: boPtuDong, litThanhTen: litThanhTen, catTop: catTop, LIST_TOI_DA: LIST_TOI_DA, LIST_TEN_GOI_Y: LIST_TEN_GOI_Y, coMauCua: coMauCua, coPinCua: coPinCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, tachHamKhac: tachHamKhac, theHamRong: theHamRong, theCuaHam: theCuaHam, theMacDinh: theMacDinh, khoaKhay: khoaKhay, daXemMeo: daXemMeo, datXemMeo: datXemMeo, nhomNhip: nhomNhip, lenhCungNhip: lenhCungNhip, lyDoCamNhip: lyDoCamNhip, BO_PHAN_LENH: BO_PHAN_LENH, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

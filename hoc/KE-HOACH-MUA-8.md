@@ -1,4 +1,4 @@
-# Kế hoạch viết lại mùa 8 Hang động (2/11/2026, CHỜ USER DUYỆT)
+# Kế hoạch viết lại mùa 8 Hang động (2/11/2026, ĐÃ DUYỆT: user "Duyệt cả 4, làm đi", đồng ý cả 4 câu hỏi mục 7)
 
 Nhánh `claude/mua-8-hang-dong` (worktree `.claude/worktrees/mua-8-hang-dong`), tách từ main 8ef2188.
 User 2/11: "viết lại cả mùa"; phiên này tự làm (không agent); phạm vi **giao diện nhập liệu + vẽ sân / thẻ part + 200 màn**. Phim gói mùa 8 không thuộc phạm vi (để phiên phim CLB).

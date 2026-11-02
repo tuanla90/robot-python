@@ -252,6 +252,11 @@ body.ve-vector .brick.truot{--bc:var(--g-vecChanhDam);--bn:var(--g-vecLaNhat)}
 body.ve-vector .brick.dk{--bc:var(--g-vecNgocDam);--bn:var(--g-vecNgocNhat)}
 body.ve-vector .brick.wh{--bc:var(--g-vecTroiDam);--bn:var(--g-vecTroiNhat)}
 body.ve-vector .brick.ls{--bc:var(--g-vecChanhDam);--bn:var(--g-vecChanhNhat)}
+body.ve-vector .brick.td{--bc:var(--g-vecCyanDam);--bn:var(--g-vecCyanNhat)}          /* mùa 8: từ điển */
+body.ve-vector .brick.th{--bc:var(--g-vecHoPhachDam);--bn:var(--g-vecHoPhachNhat)}    /* mùa 8: tập hợp */
+body.ve-vector .brick.am{--bc:var(--g-vecTimDam);--bn:var(--g-vecTimNhat)}            /* mùa 8: âm thanh (hear / listen) */
+body.ve-vector .num.td-op{background:var(--g-vecTimNhat);color:var(--g-vecTimDam);box-shadow:inset 0 0 0 1px var(--g-vecTim);padding:0 4px;flex:none}
+body.ve-vector .num.td-khoa{flex:none}
 @media (hover:hover){
   body.ve-vector .brick:hover{transform:translateY(-1px);box-shadow:inset 4px 0 0 var(--bc),inset 0 0 0 1px var(--g-vecKeDam),var(--elev-2)}
 }
@@ -336,6 +341,9 @@ body.ve-vector .gl::after{height:1px;background:var(--g-vecKe)}
 body.ve-vector .gl.g-em{color:var(--g-vecLaDam)}
 body.ve-vector .gl.g-ma{color:var(--g-vecCamDam)}
 body.ve-vector .gl.g-tay{color:var(--g-vecCamDam)}
+body.ve-vector .gl.g-amt{color:var(--g-vecTimDam)}
+body.ve-vector .gl.g-tdn{color:var(--g-vecCyanDam)}
+body.ve-vector .gl.g-thn{color:var(--g-vecHoPhachDam)}
 body.ve-vector .gl .tg{font:700 9px/1 var(--px);padding:2px 5px;border-radius:var(--r-full);color:var(--g-vecThe);background:var(--g-vecCamDam);box-shadow:none;text-transform:none}
 body.ve-vector .gl .nb{height:18px;padding:0 6px 0 4px;border-radius:var(--r-full);font:600 10px/1 var(--px);color:var(--g-vecBrandDam);background:var(--g-vecBrandNhat);border:1px dashed var(--g-vecBrand);text-transform:none;letter-spacing:0;transition:background-color .18s ease}
 body.ve-vector .gl .nb:active{background:var(--g-vecThe)}
