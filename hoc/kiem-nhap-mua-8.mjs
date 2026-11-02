@@ -139,6 +139,11 @@ const spec = (them) => Object.assign({ goc: GOC, loai: 'gai', vong: true, vongWh
   const goi = (x) => { const b = K.khoi(k, x); return b && b.getAttribute('data-goi'); };
   kiem('nội dung chèn của khối', goi('d-gan') === 'd = {"a": 1}' && goi('d-khoa') === 'd["a"] = 1' && goi('d-for') === 'for k in d:' && goi('d-in') === 'if k in d:' && goi('s-gan') === 's = set()' && goi('s-add') === 's.add(1)' && goi('s-in') === 'if 1 not in s:' && goi('am-while') === 'while hear() > 0:' && goi('nghe-gan') === 'n = listen()',
     J(['d-gan', 'd-khoa', 'd-for', 'd-in', 's-gan', 's-add', 's-in', 'am-while', 'nghe-gan'].map(goi)));
+  const kTay = K.khayMoi(); kTay.pal.dung(spec()); kTay.pal.chonThe('tay');
+  const kNgan = K.khayMoi(); kNgan.pal.dung(spec({ nganDai: true })); kNgan.pal.chonThe('tay');
+  const goiT = (kk, x) => { const b = K.khoi(kk, x); return b && b.getAttribute('data-goi'); };
+  kiem('thẻ Loa: note chèn `note(1)`, beat chèn `beat()` (lõi: beat không nhận đối số); chưa có khối ngân', goiT(kTay, 'note') === 'note(1)' && goiT(kTay, 'beat') === 'beat()' && !K.khoi(kTay, 'note_ngan'), J([goiT(kTay, 'note'), goiT(kTay, 'beat')]));
+  kiem('gói Ngân dài (spec.nganDai): thêm khối `note(n, k)` chèn `note(1, 2)`', goiT(kNgan, 'note_ngan') === 'note(1, 2)');
   kiem('khối mới có lớp màu riêng: td (từ điển), th (tập hợp), am (âm thanh)', K.khoi(k, 'd-gan')._cls.has('td') && K.khoi(k, 's-gan')._cls.has('th') && K.khoi(k, 'nghe-gan')._cls.has('am'));
   const chiNghe = K.khayMoi(); chiNghe.pal.dung(spec({ dict: false, set: false, am: ['listen'], vongWhile: false, dieuKien: false }));
   const q2 = K.quetThe(chiNghe);

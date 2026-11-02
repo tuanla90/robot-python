@@ -96,7 +96,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return co ? kq : null;
   }
-  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'nut-de': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1, 'phat-am': 1, 'sai-not': 1, 'lech-nhip': 1, 'lo-nhip': 1, 'xong-dieu': 1, 'loa-goi-lai': 1, 'doi-thu-thang': 1, 'be-sung': 1, 'dem-giu': 1, 'dem-can': 1 };   // dem-giu / dem-can: đệm từ giữ xe tại chỗ (không chiếm thời gian) · sự kiện tức thì của tay (không chiếm thời gian của nhịp); be-sung: bệ súng xích giữ xe (rung trong bước 'ban')
+  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'nut-de': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1, 'phat-am': 1, 'sai-not': 1, 'lech-nhip': 1, 'lo-nhip': 1, 'xong-dieu': 1, 'loa-goi-lai': 1, 'doi-thu-thang': 1, 'be-sung': 1, 'dem-giu': 1, 'dem-can': 1, 'rung-da-chuong': 1, 'vo-da-chuong': 1, 'doi-gai': 1 };   // dem-giu / dem-can: đệm từ giữ xe tại chỗ (không chiếm thời gian) · sự kiện tức thì của tay (không chiếm thời gian của nhịp); be-sung: bệ súng xích giữ xe (rung trong bước 'ban')
 
   /* BẾN SÔNG / CẢNG SÔNG (31/10): sự kiện mới có bước hoạt cảnh riêng (Field.nhipMuaMoi) và trọng số thời gian trong nhịp (TRONG) */
   var NHIP_MOI = { 'troi': 1, 'troi-chan': 1, 'neo-giu': 1, 'tha-neo': 1, 'nho-neo': 1, 'keo-vat': 1, 'keo-hut': 1, 'keo-van': 1, 'tha-keo': 1, 'coi-duoi': 1, 'buoc-duoi': 1, 'doi-dai-luoi': 1, 'cong-batch': 1,
@@ -104,7 +104,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     'quay-can': 1, 'vuon-can': 1, 'thu-can': 1, 'moc-cont': 1, 'ha-cont': 1, 'chay-ray': 1, 'tau-cap': 1, 'tau-roi': 1, 'can-het-tam': 1, 'qua-tai': 1, 'het-ray': 1, 'giao-nham': 1,
     'dang-treo': 1, 'moc-hut': 1, 'moc-thieu': 1, 'khong-treo': 1, 'ha-bi-chan': 1, 'thap-sai': 1 };
   var TRONG_MOI = { 'troi': 1.3, 'keo-vat': 1.8, 'keo-hut': 1.4, 'keo-van': 1.6, 'buoc-duoi': 1.3, 'doi-dai-luoi': 1.3, 'tha-keo': 0.8, 'coi-duoi': 0.8, 'cong-batch': 1.1, 'tha-neo': 0.9, 'nho-neo': 0.9,
-    'moc-cont': 1.4, 'ha-cont': 1.4, 'tau-roi': 1.6, 'tau-cap': 1.1, 'quay-can': 1.1, 'can-het-tam': 1.2, 'qua-tai': 1.2, 'het-ray': 1.2 };
+    'moc-cont': 1.4, 'ha-cont': 1.4, 'tau-roi': 1.6, 'tau-cap': 1.1, 'quay-can': 1.1, 'can-het-tam': 1.2, 'qua-tai': 1.2, 'het-ray': 1.2, 'qua-ngach': 1.15 };
 
   /** Hình mờ của máy sơn (man.hinh, một sân: mảng chuỗi r g b y '.') → mảng hàng tên màu / null; null nếu không có. */
   function dungHinh(lop) {
@@ -181,7 +181,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         hinh: dungHinh(cfg.hinh), sonBanDau: dungHinh(cfg.sonBanDau), mucBanDau: typeof cfg.mucBanDau === 'string' ? cfg.mucBanDau : 'red',
         vo: VO_MAP[cfg.vo] ? cfg.vo : laCang ? 'cang' : (cfg.vo === undefined && (loai === 'xuong' || Array.isArray(cfg.dong) || rows.some(function (r) { return /[~QqKkVBL]/.test(r); }))) ? 'song' : null,      // vỏ môi trường cốt truyện theo mùa (10 màn đầu mỗi gói: null = Phòng Lab; 10 màn sau: 'kho-hang' / 'nha-may' / 'bai-tai-che' / 'nong-trai'); Cảng sông / Bến sông nhận theo ký hiệu sân      // máy sơn: hình mờ cần tô, màu sơn lúc đầu
         dong: Array.isArray(cfg.dong) ? cfg.dong : null, chong: Array.isArray(cfg.chong) ? cfg.chong : null, tau: Array.isArray(cfg.tau) ? cfg.tau : null,          // BẾN SÔNG: dòng chảy; CẢNG SÔNG: chồng container, tàu (xem dungMuaMoi)
-        taiToiDa: typeof cfg.taiToiDa === 'number' ? cfg.taiToiDa : null, luatThap: !!cfg.luatThap };
+        taiToiDa: typeof cfg.taiToiDa === 'number' ? cfg.taiToiDa : null, luatThap: !!cfg.luatThap,
+        chuongDa: Array.isArray(cfg.chuongDa) ? cfg.chuongDa : Array.isArray(cfg.danDoi) ? cfg.danDoi : null, daChuong: Array.isArray(cfg.daChuong) ? cfg.daChuong : null, ngachHang: Array.isArray(cfg.ngachHang) ? cfg.ngachHang : null };   // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm (xem dungMuaMoi)
       this.dungMuaMoi(rows, cfg);                        // BẾN SÔNG / CẢNG SÔNG (31/10): bảng dòng chảy, cống, van, nước; ray, tàu, chồng lúc đầu
       var hg = Array.isArray(cfg.hamGoc) ? cfg.hamGoc : [];
       this.nc_ = { dat: hg.indexOf('tether') >= 0 || hg.indexOf('set_length') >= 0, nang: hg.indexOf('flow') >= 0, doi: hg.indexOf('pick_up2') >= 0, can: hg.indexOf('weight') >= 0, ray: hg.indexOf('rail') >= 0 };   // nâng cấp hiện trên hình (nangCap): theo khay lệnh nếu màn đưa xuống, không thì bật dần theo vết
@@ -259,7 +260,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       function ve(ma, s) { g.drawImage(self.oV(ma, s), px, py, T, T); }
       var vm = VO_MAP[c.vo], sLe = (x + y) & 1 ? { le: 1 } : undefined;
       if (ch === '#') { ve(vm ? vm.tuong : 'tuong'); return; }
-      if (ch === 'I') { ve('da-uot'); return; }
+      if (ch === 'I') { ve('da-uot'); this.veOHang(g, x, y, kO, now); return; }
       if (ch === 'N') {                                                               // van hơi (29/10): bánh van quay nửa vòng trong 450 ms sau khi đổi (nt.quay), lượng tử hoá 1/8
         var nt = this.nutT[kO], bat = !!(nt && nt.bat), sN = { bat: bat, loe: !!(nt && nt.loe > now) }, kq = nt && nt.quay ? (now - nt.quay) / 450 : 1;
         if (vm) sN.tuong = vm.tuong;
@@ -273,6 +274,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (this.veOMuaMoi(g, x, y, ch, kO, now)) return;                               // BẾN SÔNG / CẢNG SÔNG (31/10): nước, dòng, cống, van, phao, bến, boong tàu, ray
       var mn = (ch === '=' || ch === 'C' || ch === 'c') ? null : this.mauNen(x, y);   // như nhánh pixel: sàn màu ở mọi ô trừ tường, bậc, rào, nút bắn, cửa, gầm, hố, băng
       ve(mn ? (vm ? vm.mau : 'san-mau') : vm ? vm.san : 'san', mn ? (vm && vm.mau === 'san-mau' ? { mau: mn, vo: c.vo } : { mau: mn }) : sLe);      // gói V4: sàn bàn cờ hai tông theo (x + y)
+      if (this.veOHang(g, x, y, kO, now)) return;                                     // HANG ĐỘNG (mùa 8): ngách, đá chuông, chuông đá đè lên sàn
       var lu = this.luaT && this.luaT[kO];
       if (lu) { ve('lua', { suc: lu.suc, pha: lu.suc ? Math.floor(now / 170) & 3 : 0 }); if (lu.suc) this.veNong(g, x, y, now); }   // gói lửa: đám cháy (nóng như van mở), tắt thì vết cháy
       var dt = this.demTuT && this.demTuT[kO];
@@ -448,6 +450,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       });
       this.tauCua = {};                                                                               // 'x,y' ô T → chỉ số tàu
       this.tau0.forEach(function (t, i) { t.o.forEach(function (p) { this.tauCua[p.x + ',' + p.y] = i; }, this); }, this);
+      this.chuongT = {}; this.daChuong0 = {}; this.ngachT = {};                                      // HANG ĐỘNG (mùa 8): chuông đá, đá chuông (trạng thái đầu), hai đầu mỗi ngách (màu theo cặp)
+      (c.chuongDa || []).forEach(function (q) { if (q && typeof q.x === 'number') this.chuongT[q.x + ',' + q.y] = { not: q.not | 0 }; }, this);
+      (c.daChuong || []).forEach(function (q, i) { if (q && typeof q.x === 'number') this.daChuong0[q.x + ',' + q.y] = { id: i + 1, not: q.not | 0, ben: Math.max(1, q.ben | 0 || 1) }; }, this);
+      (c.ngachHang || []).forEach(function (q, i) {
+        if (!q || !q.a || !q.b) return;
+        this.ngachT[q.a.x + ',' + q.a.y] = { mau: i, dau: 'a' }; this.ngachT[q.b.x + ',' + q.b.y] = { mau: i, dau: 'b' };
+      }, this);
     },
     /** Trạng thái lúc đầu của Bến sông / Cảng sông (datLai): cống (k 0 đóng … 1 mở), van (bat, goc), dòng (tat), chồng, tàu có mặt, container đang mờ dần (tàu rời). */
     datLaiMuaMoi: function () {
@@ -459,6 +468,37 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.tauT = (this.tau0 || []).map(function (t) { return { coMat: t.coMat, doi: 0 }; });
       this.giaoMo = [];                                                                                // container vừa theo tàu rời bến: mờ dần trên boong [{ x, y, cont, t0, ms }]
       this.dayKeo = null;                                                                              // dây phao đang bay / thu (hoạt cảnh): { x2, y2, phao, cang, a }
+      this.daChuongT = {}; Object.keys(this.daChuong0 || {}).forEach(function (k) { var d = self.daChuong0[k]; self.daChuongT[k] = { id: d.id, not: d.not, ben: d.ben, ngan: 0, vo: false, rung: 0 }; });   // HANG ĐỘNG: đá chuông chưa rung, chưa vỡ
+    },
+    /** HANG ĐỘNG (mùa 8): vẽ đè lên sàn ô (x, y): miệng ngách (màu cặp), đá chuông (số nốt, vạch ben sáng theo nhịp đã ngân, rung khi vừa cộng hưởng, vỡ thành đá vụn),
+     *  chuông đá (vòng sóng lan liên tục, lượng tử 1/8). Trả true nếu ô có một trong ba thứ (sàn vẫn do veOVec vẽ trước). */
+    veOHang: function (g, x, y, kO, now) {
+      var self = this, px = x * T, py = y * T, coVe = false;
+      function ve(ma, s) { g.drawImage(self.oV(ma, s), px, py, T, T); coVe = true; }
+      var ng = this.ngachT && this.ngachT[kO];
+      if (ng) ve('cua-ngach', { mau: ng.mau, dau: ng.dau });
+      var dc = this.daChuongT && this.daChuongT[kO];
+      if (dc) {
+        var rg = !dc.vo && dc.rung > now && !HU().giam() ? Math.sin(now / 22) * 1.1 : 0;
+        if (rg) { g.save(); g.translate(rg, 0); }
+        ve('da-chuong', dc.vo ? { not: dc.not, ben: dc.ben, vo: true } : { not: dc.not, ben: dc.ben, ngan: dc.ngan });
+        if (rg) g.restore();
+      }
+      var cd = this.chuongT && this.chuongT[kO];
+      if (cd) ve('chuong-da', { not: cd.not, pha: HU().giam() ? 0 : Math.floor(((now / 1600 + (x * 0.29 + y * 0.53)) % 1) * 8) / 8 });
+      return coVe;
+    },
+    /** HANG ĐỘNG: đá chuông theo vết e.daChuong (mảng { x, y, daNgan, daVo }): vạch ben, vỡ; vừa đổi thì rung / bụi đá. */
+    dongBoHang: function (ds) {
+      if (!ds || !this.daChuongT) return;
+      var now = performance.now(), self = this;
+      ds.forEach(function (q) {
+        var d = self.daChuongT[q.x + ',' + q.y]; if (!d) return;
+        var ngan = q.daNgan | 0, vo = !!q.daVo;
+        if (vo && !d.vo) self.burst(q.x * T + T / 2, q.y * T + T / 2, 14, [VeVector.mauNot(d.not), BM.vecThepSang, BM.vecBacSang], 1.1, 1, true);
+        else if (ngan > d.ngan) d.rung = now + 420;
+        d.ngan = ngan; d.vo = vo;
+      });
     },
     /** Thêm một thùng nặng ban đầu (mỗi ô tối đa một, không nằm trong tường / ngoài sân), id = thứ tự thêm. */
     themThung: function (x, y) {
@@ -2251,6 +2291,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           v.loa.am = s.am; v.loa.t0 = t0L; v.loa.ms = durL; v.loa.den = t0L + durL;
         }
       });
+      if (e.daChuong) this.dongBoHang(e.daChuong);                          // HANG ĐỘNG: loa phát ở đầu nhịp nên đá chuông rung / vỡ trước khi xe đi (xe đi vào ô đá vừa vỡ trong cùng nhịp)
       var list = evs.filter(function (s) { return s.ma !== 'toi-co' && !HIEU_UNG[s.ma]; });
       var thungBang = evs.filter(function (s) { return s.ma === 'thung-di' && s.nguon === 'bang'; });      // thùng nằm trên băng: băng đưa đi 1 ô
       var coBan = evs.some(function (s) { return s.ma === 'ban'; });                                      // súng hơi: phát bắn = bóng bay + xe giật (+ thùng trượt) CÙNG LÚC, gom làm một bước 'ban'
@@ -2402,6 +2443,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           await this.tween(per * 0.55, my, function (k) { v.hop = (1 - ease(k)) * 5; });
           if (my !== this.rid) return;
           v.hop = 0;
+        } else if (s.ma === 'qua-ngach') {                            // HANG ĐỘNG: chui xuống miệng ngách (xe thu nhỏ, bụi màu cặp) rồi trồi lên ở đầu kia
+          var mNg = BM[VeVector.MAU_NGACH[(s.id - 1) % VeVector.MAU_NGACH.length]] || BM.vecCyanDam;
+          v.x = s.tu.x; v.y = s.tu.y;
+          this.burst(s.tu.x * T + T / 2, s.tu.y * T + T / 2, 10, [mNg, BM.vecThepSang, BM.vecVien], 0.9, 1, true);
+          await this.tween(per * 0.45, my, function (k) { v.hop = -Math.sin(k * Math.PI * 0.5) * 6; });
+          if (my !== this.rid) return;
+          v.x = s.den.x; v.y = s.den.y;
+          this.burst(s.den.x * T + T / 2, s.den.y * T + T / 2, 12, [mNg, BM.vecThepSang, BM.vecVien], 1.0, 1, true);
+          await this.tween(per * 0.55, my, function (k) { v.hop = -(1 - ease(k)) * 6; });
+          if (my !== this.rid) return;
+          v.hop = 0;
+        } else if (s.ma === 'ngach-chan') {                           // đầu kia của ngách bị chặn: xe rung ở miệng ngách, ô bị chặn nháy đỏ
+          if (s.den) this.canhBao = { x: s.den.x, y: s.den.y, den: performance.now() + 900 };
+          await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 7) * (1 - k) * 2.5; });
+          v.dx = 0;
         } else if (s.ma === 'dem-chan') {                             // ĐỆM TỪ: bị kéo / đẩy mà ô tới bị chặn: xe rung tại chỗ, ô bị chặn nháy đỏ, vệt sóng ngắn
           this.demSong = { dem: s.dem, vao: s.kieu === 'hut', den: performance.now() + per };
           if (s.den) this.canhBao = { x: s.den.x, y: s.den.y, den: performance.now() + 900 };
@@ -2780,6 +2836,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (e.chong) this.chong = e.chong.map(function (q) { return { x: q.x, y: q.y, cont: (q.cont || []).map(function (c) { return { so: c.so, tan: c.tan }; }), rung: 0 }; });
       if (e.tau && this.tauT) e.tau.forEach(function (t, i) { if (self.tauT[i]) self.tauT[i].coMat = !!t.coMat; });
+      if (e.daChuong) this.dongBoHang(e.daChuong);                                                   // HANG ĐỘNG: đá chuông đúng vết
     },
 
     /** Xích: chương trình dừng khi còn quay dở thì phần quay dở mất: xoay ngược về thẳng kèm dấu '?'. */

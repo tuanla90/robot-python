@@ -250,7 +250,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       the: lamMoi ? (S.theMo || TP.theMacDinh({ man: man, kho: KhoHam.ds(), hamMan: A.bai().hamCuaMan, dangSua: hamHienTai() })) : undefined,
       vong: TP.coCauTruc(man, 'for'),
       bienDem: !!man.bienDem,
-      dict: TP.coCauTruc(man, 'dict'), set: TP.coCauTruc(man, 'set'), am: TP.nguonAmCua(man),   // mùa 8
+      dict: TP.coCauTruc(man, 'dict'), set: TP.coCauTruc(man, 'set'), am: TP.nguonAmCua(man), nganDai: !!man.nganDai,   // mùa 8
       list: TP.coListCua(man),                          // gói List: nhóm DANH SÁCH ở thẻ Logic
       vongWhile: TP.coCauTruc(man, 'while') && TP.coDieuKienCua(man),
       cam: TP.camBienCua(man),
