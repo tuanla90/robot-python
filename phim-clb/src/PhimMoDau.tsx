@@ -160,7 +160,7 @@ const CanhXeTramLab: React.FC = () => {
   );
 };
 
-/** Cảnh 3 (8s = 240f): Bản đồ dọc (nen-doc/the-gioi.png) — zoom vào, camera theo xe trạm chạy dọc con đường đi giúp các nơi. */
+/** Cảnh 3 (11s = 330f; 8 chặng × (22 chạy + 14 đỗ) từ khung 30): Bản đồ dọc (nen-doc/the-gioi.png) — zoom vào, camera theo xe trạm chạy dọc con đường đi giúp các nơi. */
 const TRAM_DOC = [
   {ten: 'CLB Robot', x: 750, y: 131, xeX: 495, xeY: 165, icon: 'Home', mau: C.indigo, nguoi: 'thay-giao-viec'},
   {ten: '1. Kho hàng', x: 750, y: 330, xeX: 350, xeY: 335, icon: 'Warehouse', mau: '#D97706', nguoi: 'tu-nghi'},
@@ -174,12 +174,18 @@ const TRAM_DOC = [
 ];
 
 // Camera bản đồ (2/11, user: zoom to ra rồi cho hoạt cảnh chạy dần): 24 khung đầu zoom 1 → ZOOM_BD ở đỉnh bản đồ, sau đó bám theo xe theo trục dọc.
+// Nhịp (2/11, user: mắt theo tên trạm thì chóng mặt): xe đi TỪNG TRẠM — chạy CHAY_TRAM khung rồi đỗ DUNG_TRAM khung cho đọc tên, camera đứng yên lúc đỗ.
+const CHAY_TRAM = 22, DUNG_TRAM = 14, BAT_DAU_XE = 30;
+const viTriXe = (f: number) => {
+  const t = Math.max(0, f - BAT_DAU_XE), k = Math.floor(t / (CHAY_TRAM + DUNG_TRAM)), r = t - k * (CHAY_TRAM + DUNG_TRAM);
+  return Math.min(TRAM_DOC.length - 1, k + (r < CHAY_TRAM ? Easing.inOut(Easing.cubic)(r / CHAY_TRAM) : 1));
+};
 const ZOOM_BD = 1.45, CAM_X = 625;                      // 1.45: nhãn trạm 5 (x 842) còn trong khung, xe (x ≥ 350) không lẹm mép trái
 const kep = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 const CanhHanhTrinh: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
-  const u = interpolate(f, [28, 205], [0, TRAM_DOC.length - 1], {...CLAMP, easing: Easing.inOut(Easing.cubic)});
+  const u = viTriXe(f);
   const idx = Math.min(TRAM_DOC.length - 2, Math.floor(u));
   const frac = u - idx;
   const a = TRAM_DOC[idx], b = TRAM_DOC[idx + 1];
@@ -213,7 +219,9 @@ const CanhHanhTrinh: React.FC = () => {
       {/* Nhãn trạm ở khung hình (cỡ chữ không phóng theo bản đồ): người nhờ nằm TRONG nhãn, trước icon (2/11: trước đó ảnh tròn đè lên icon).
           Nhãn đè đúng ô nhãn trống in sẵn trên ảnh bản đồ; trạng thái: trắng = chưa tới, vàng = xe đã qua. */}
       {TRAM_DOC.map((t, i) => {
-        const s = pop(f, 4 + i * 6, fps, 10);
+        const toi = i === 0 ? -1 : BAT_DAU_XE + (i - 1) * (CHAY_TRAM + DUNG_TRAM) + CHAY_TRAM;   // khung xe đỗ ở trạm i
+        const nay = i > 0 && f >= toi ? Math.sin(Math.min(1, (f - toi) / 10) * Math.PI) * 0.14 : 0;
+        const s = pop(f, 4 + i * 6, fps, 10) * (1 + nay);
         const daQua = u >= i - 0.15;
         const p = ra(t.x, t.y);
         if (p.y < -80 || p.y > 2000) return null;
@@ -324,7 +332,7 @@ export const PHIM_MO_DAU: Phim = {
   canh: [
     {id: 'phong-clb', dur: 240, el: <CanhPhongClb />, sfx: [W_IN, ...pops([14, 28, 40, 52, 64], 0.3)]},
     {id: 'xe-tram-lab', dur: 240, el: <CanhXeTramLab />, sfx: [W_IN, ...pops([22, 36, 50, 64], 0.3), [18, 'ding.wav', 0.5]]},
-    {id: 'hanh-trinh', dur: 240, el: <CanhHanhTrinh />, sfx: [W_IN, ...pops([6, 20, 34, 48, 62, 76, 90], 0.28), [160, 'riser.wav', 0.5]]},
+    {id: 'hanh-trinh', dur: 330, el: <CanhHanhTrinh />, sfx: [W_IN, ...pops([6, 20, 34, 48, 62, 76, 90], 0.28), [160, 'riser.wav', 0.5]]},
     {id: 'diem-dau', dur: 240, el: <CanhDiemDau />, sfx: [W_IN, [35, 'ding.wav', 0.8]]},
   ],
 };

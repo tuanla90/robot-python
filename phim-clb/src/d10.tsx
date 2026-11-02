@@ -489,10 +489,12 @@ export const Mascot: React.FC<{who: Who; x: number; h: number; at: number; faces
               boxShadow: `0 10px 0 ${borderCol}, 0 18px 32px rgba(15,23,42,0.32), inset 0 4px 0 ${who === "sola" ? "#E0F2FE" : "#FCE7F3"}`}}>
               {say.text}
               {/* Đuôi bóng thoại comic trỏ về phía nhân vật */}
-              <svg width="34" height="24" viewBox="0 0 34 24" style={{position: "absolute", bottom: -21,
-                [sd === "right" ? "left" : "right"]: 32, transform: sd === "right" ? undefined : "scaleX(-1)", overflow: "visible"}}>
-                <path d="M 4 0 L 28 0 L 6 20 Z" fill="#F8FAFC" stroke={borderCol} strokeWidth="5" strokeLinejoin="round" />
-                <path d="M 6 -2 L 26 -2" stroke="#F8FAFC" strokeWidth="6" />
+              {/* 2/11: đuôi to hơn, vượt qua dải bóng cứng 10px; lớp bóng lệch 10px như hộp, phần nền trắng phủ viền hộp chỗ nối */}
+              <svg width="48" height="50" viewBox="0 0 48 50" style={{position: "absolute", bottom: -48,
+                [sd === "right" ? "left" : "right"]: 34, transform: sd === "right" ? undefined : "scaleX(-1)", overflow: "visible"}}>
+                <path d="M 6 0 L 10 48 L 44 0 Z" transform="translate(0 10)" fill={borderCol} />
+                <path d="M 6 0 L 10 48 L 44 0 Z" fill="#F8FAFC" />
+                <path d="M 6 4 L 10 48 L 44 4" fill="none" stroke={borderCol} strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
               </svg>
             </div>
           </div>
