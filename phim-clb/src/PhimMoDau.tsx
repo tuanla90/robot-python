@@ -7,6 +7,7 @@ import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, use
 import {Burst, C, CLAMP, FONT, Headline, Icon, Mascot, MONO, PopIn, ease, pop} from './d10';
 import {FPS, Phim, W_IN, pops} from './may-phim';
 import {Nguoi} from './doc/kit-doc';
+import {CAU_S, diemTren} from './duong-ban-do';
 
 /** Cảnh 1 (8s = 240f; mỗi cảnh dừng cuối chờ Tiếp, mỗi nhịp một câu ngắn — 2/11 theo skill remotion-motion-graphics): Tại phòng CLB (nen-doc/mua-7.png), Bảng Ủy Nhiệm từ Thầy Hiệu Trưởng gửi tới CLB Robot. */
 const YEU_CAU_THI_TRAN = [
@@ -160,7 +161,7 @@ const CanhXeTramLab: React.FC = () => {
   );
 };
 
-/** Cảnh 3 (10s = 300f; xe chạy khung 30 → 270, camera 2 khung): Bản đồ dọc (nen-doc/the-gioi.png) — zoom vào, camera theo xe trạm chạy dọc con đường đi giúp các nơi. */
+/** Cảnh 3 (~10.7s = 320f; xe bám đường nhựa khung 30 → 290, camera cuộn lúc qua sông): Bản đồ dọc (nen-doc/the-gioi.png) — zoom vào, camera theo xe trạm chạy dọc con đường đi giúp các nơi. */
 const TRAM_DOC = [
   {ten: 'CLB Robot', x: 750, y: 131, xeX: 495, xeY: 165, icon: 'Home', mau: C.indigo, nguoi: 'thay-giao-viec'},
   {ten: '1. Kho hàng', x: 750, y: 330, xeX: 350, xeY: 335, icon: 'Warehouse', mau: '#D97706', nguoi: 'tu-nghi'},
@@ -173,29 +174,24 @@ const TRAM_DOC = [
   {ten: '8. Hang động', x: 802, y: 1722, xeX: 455, xeY: 1760, icon: 'Compass', mau: '#0284C7', nguoi: 'phong-nghi'},
 ];
 
-// Camera bản đồ (2/11, user: zoom to ra rồi cho hoạt cảnh chạy dần): 24 khung đầu zoom 1 → ZOOM_BD ở đỉnh bản đồ, sau đó bám theo xe theo trục dọc.
-// Nhịp (2/11, user): xe chạy liền một mạch, chậm (~1s một trạm); camera KHÔNG bám xe mà đứng ở 2 khung — nửa trên (CLB → trạm 4), nửa dưới (trạm 3 → 8) —
-// chuyển nhanh một lần khi xe qua trạm 4 (u 4 → 4.6, ~18 khung). Lúc camera đứng, nhãn trạm đứng yên để đọc.
-const XE_TU = 30, XE_DEN = 270, CHUYEN_TU = 4, CHUYEN_DAI = 0.6;
+// Camera bản đồ: 24 khung đầu zoom 1 → ZOOM_BD ở đỉnh bản đồ; cy theo k (0 = khung trên cùng, 1 = khung dưới cùng), k chạy lúc xe qua sông.
+// Nhịp (2/11, user): xe chạy BÁM ĐƯỜNG NHỰA (duong-ban-do.ts) liền một mạch; camera đứng khung nửa trên, rồi CUỘN mượt xuống nửa dưới
+// trong lúc xe qua sông ở cảng (CAU_S, nới thêm CUON_NOI mỗi bên), xong đứng ở nửa dưới. Không vệt đường vàng.
+const XE_TU = 30, XE_DEN = 290, CUON_NOI = 0.05;
 const ZOOM_BD = 1.45, CAM_X = 625;                      // 1.45: nhãn trạm 5 (x 842) còn trong khung, xe (x ≥ 350) không lẹm mép trái
 const kep = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 const CanhHanhTrinh: React.FC = () => {
   const f = useCurrentFrame(), {fps} = useVideoConfig();
-  const u = interpolate(f, [XE_TU, XE_DEN], [0, TRAM_DOC.length - 1], {...CLAMP, easing: Easing.inOut(Easing.quad)});
-  const idx = Math.min(TRAM_DOC.length - 2, Math.floor(u));
-  const frac = u - idx;
-  const a = TRAM_DOC[idx], b = TRAM_DOC[idx + 1];
-  const xeX = a.xeX + (b.xeX - a.xeX) * frac;
-  const xeY = a.xeY + (b.xeY - a.xeY) * frac;
-  const latXe = b.xeX < a.xeX;
+  const sXe = interpolate(f, [XE_TU, XE_DEN], [0, 1], {...CLAMP, easing: Easing.inOut(Easing.quad)});
+  const xe = diemTren(sXe);
+  const xeX = xe.x, xeY = xe.y, latXe = xe.dx < -0.5;
 
   const z = interpolate(f, [0, 24], [1, ZOOM_BD], {...CLAMP, easing: Easing.inOut(Easing.cubic)});
   const cx = kep(CAM_X, 540 / z, 1080 - 540 / z);
-  const k = Easing.inOut(Easing.cubic)(kep((u - CHUYEN_TU) / CHUYEN_DAI, 0, 1));
-  const cy = kep(k * 1920, 960 / z, 1920 - 960 / z);             // k = 0: kẹp về khung trên cùng, k = 1: khung dưới cùng
+  const k = Easing.inOut(Easing.sin)(kep((sXe - CAU_S[0] + CUON_NOI) / (CAU_S[1] - CAU_S[0] + 2 * CUON_NOI), 0, 1));
+  const cy = 960 / z + (1920 - 1920 / z) * k;                     // k = 0: khung trên cùng, k = 1: khung dưới cùng (cuộn đều suốt k)
   const ra = (x: number, y: number) => ({x: (x - cx) * z + 540, y: (y - cy) * z + 960});   // toạ độ bản đồ → khung hình
-  const duong = TRAM_DOC.slice(0, idx + 1).map((t) => `${t.xeX},${t.xeY}`).concat([`${xeX.toFixed(1)},${xeY.toFixed(1)}`]).join(' ');
 
   return (
     <AbsoluteFill style={{background: '#0F172A', fontFamily: FONT, overflow: 'hidden'}}>
@@ -203,10 +199,6 @@ const CanhHanhTrinh: React.FC = () => {
       <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0',
         transform: `translate(${540 - cx * z}px, ${960 - cy * z}px) scale(${z})`}}>
         <Img src={staticFile('nen-doc/the-gioi.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} />
-        <svg style={{position: 'absolute', inset: 0, pointerEvents: 'none'}} width={1080} height={1920}>
-          <polyline points={duong} fill="none" stroke={C.ink} strokeWidth={16} strokeLinecap="round" strokeLinejoin="round" />
-          <polyline points={duong} fill="none" stroke={C.yellow} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="16 10" />
-        </svg>
         <div style={{position: 'absolute', left: xeX - 95, top: xeY - 82, width: 190, height: 164,
           transform: `translateY(${Math.sin(f * 0.8) * 4}px)`}}>
           <Img src={staticFile('robot/xe-tram-a.png')} style={{width: '100%', height: '100%', objectFit: 'contain',
@@ -217,9 +209,10 @@ const CanhHanhTrinh: React.FC = () => {
       {/* Nhãn trạm ở khung hình (cỡ chữ không phóng theo bản đồ): người nhờ nằm TRONG nhãn, trước icon (2/11: trước đó ảnh tròn đè lên icon).
           Nhãn đè đúng ô nhãn trống in sẵn trên ảnh bản đồ; trạng thái: trắng = chưa tới, vàng = xe đã qua. */}
       {TRAM_DOC.map((t, i) => {
-        const nay = i > 0 && u >= i - 0.15 && u < i + 0.2 ? Math.sin(((u - i + 0.15) / 0.35) * Math.PI) * 0.12 : 0;   // nảy nhẹ khi xe tới trạm
+        const vao = (xe.yMax - (t.y - 60)) / 120;                 // xe xuống ngang nhãn trạm: 0 → 1 trong 120px độ sâu
+        const nay = i > 0 && vao > 0 && vao < 1 ? Math.sin(vao * Math.PI) * 0.12 : 0;   // nảy nhẹ khi xe tới trạm
         const s = pop(f, 4 + i * 6, fps, 10) * (1 + nay);
-        const daQua = u >= i - 0.15;
+        const daQua = i === 0 || vao > 0.3;
         const p = ra(t.x, t.y);
         if (p.y < -80 || p.y > 2000) return null;
         return (
@@ -329,7 +322,7 @@ export const PHIM_MO_DAU: Phim = {
   canh: [
     {id: 'phong-clb', dur: 240, el: <CanhPhongClb />, sfx: [W_IN, ...pops([14, 28, 40, 52, 64], 0.3)]},
     {id: 'xe-tram-lab', dur: 240, el: <CanhXeTramLab />, sfx: [W_IN, ...pops([22, 36, 50, 64], 0.3), [18, 'ding.wav', 0.5]]},
-    {id: 'hanh-trinh', dur: 300, el: <CanhHanhTrinh />, sfx: [W_IN, ...pops([6, 20, 34, 48, 62, 76, 90], 0.28), [160, 'riser.wav', 0.5]]},
+    {id: 'hanh-trinh', dur: 320, el: <CanhHanhTrinh />, sfx: [W_IN, ...pops([6, 20, 34, 48, 62, 76, 90], 0.28), [160, 'riser.wav', 0.5]]},
     {id: 'diem-dau', dur: 240, el: <CanhDiemDau />, sfx: [W_IN, [35, 'ding.wav', 0.8]]},
   ],
 };
