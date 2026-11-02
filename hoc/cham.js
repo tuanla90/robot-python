@@ -191,11 +191,11 @@
   // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
   var TEN_CHAN_NGAN = { 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
     'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'gam-thap': 'gầm thấp', 'dem-tu': 'ô đệm từ', 'lua': 'đám cháy', 'bo': 'bờ', 'nuoc': 'mặt nước', 'cong': 'cống đang đóng', 'van': 'van cống', 'da-chuong': 'khối đá chuông' };
-  // BẾN SÔNG (san-hoc.js phần BẾN SÔNG): thứ chặn vật nổi / dây phao / xuồng
+  // BẾN SÔNG (san-hoc.js phần BẾN SÔNG): thứ chặn vật nổi / dây lưới / xuồng
   LOAI_VAT['bo'] = 'bờ (xuồng chỉ đi được trên mặt nước)'; LOAI_VAT['nuoc'] = 'mặt nước (xe cạn không xuống nước được; chỉ đi lên bè đang nằm yên trên nước êm)';
-  LOAI_VAT['cong'] = 'cống đang đóng (gạt van cống bằng dây phao thì cống mở)'; LOAI_VAT['van'] = 'van cống (gắn trên bờ, xe không đi vào được; dây phao của xuồng quăng trúng mới đổi van)';
+  LOAI_VAT['cong'] = 'cống đang đóng (gạt van cống bằng tay lưới thì cống mở)'; LOAI_VAT['van'] = 'van cống (gắn trên bờ, xe không đi vào được; tay lưới của xuồng tung trúng mới đổi van)';
   var LY_SONG = { 'bo': 'bờ', 'nuoc': 'mặt nước', 'cong': 'cống đang đóng', 'vat': 'một vật khác đang nằm đó', 'robot': 'chỗ một robot đang đứng', 'dong-doi': 'chỗ robot đồng đội đang đứng', 'ngoai-san': 'mép sân',
-    'het-tam': 'quá xa (dây chỉ bay được 3 ô)', 'co-xe': 'bè đang có xe đứng trên', 'khong-co-vat': 'ô không có bè nào' };
+    'het-tam': 'ô rơi của lưới là mặt nước trống', 'vat-can': 'vướng vật nổi ở ô giữa', 'day-luoi': 'dây lưới đang căng dưới nước', 'co-xe': 'bè đang có xe đứng trên', 'khong-co-vat': 'ô không có bè nào' };
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
   var LY_NHAY = { 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'rao': 'hàng rào thấp (nhảy qua được nhưng không đáp lên được)', 'cua': 'cửa đang đóng', 'gam-thap': 'gầm thấp (trần thấp, nhện đứng thẳng không lọt)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, không đáp lên được)', 'nut': 'van hơi', 'dem-tu': 'ô đệm từ (khối, không đáp lên được)' };
   // lý do một thùng nặng không đẩy được (san-hoc.js 'thung-chan')
@@ -1064,7 +1064,7 @@
         ' không bay được: drone đứng yên, mất một nhịp' + (dangDau.length > 1 ? ' (chuyện này xảy ra ' + dangDau.length + ' lần)' : '') + '. Gọi take_off() để cất cánh trước khi bay tiếp.',
         { nhip: dd0.nhip, o: dd0.o, cho: cho(mdd) });
     }
-    // --- BẾN SÔNG (san-hoc.js phần BẾN SÔNG): xuồng, neo, dây phao, cống
+    // --- BẾN SÔNG (san-hoc.js phần BẾN SÔNG): xuồng, neo, tay lưới, cống
     var dangNeo = res.suKien.filter(function (e) { return e.ma === 'dang-neo'; });
     if (dangNeo.length) {
       var dn0 = dangNeo[0], mdn = dn0.lenh ? (g.anhXa[dn0.lenh.dongPy] || null) : null;
@@ -1072,52 +1072,45 @@
         ' không chạy được: xuồng đứng yên, mất một nhịp' + (dangNeo.length > 1 ? ' (chuyện này xảy ra ' + dangNeo.length + ' lần)' : '') + '. Gọi unanchor() rồi wait() để nhổ neo trước khi chạy tiếp.',
         { nhip: dn0.nhip, o: dn0.o, cho: cho(mdn) });
     }
-    var muiVuong = res.suKien.filter(function (e) { return e.ma === 'mui-vuong'; });
-    if (muiVuong.length) {
-      var mv0 = muiVuong[0], mmv = mv0.lenh ? (g.anhXa[mv0.lenh.dongPy] || null) : null, quayMV = /^quay/.test(mv0.kieu || '');
-      them('mui-vuong', 'Ở nhịp ' + mv0.nhip + ', xuồng đang kéo bè ở trước mũi' + (quayMV ? ' nên khi quay, bè phải chuyển sang ô trước mũi mới (' : ' nên khi tiến, bè phải đi trước vào ô (') + mv0.o.x + ', ' + mv0.o.y + '), nhưng ô đó là ' +
-        (LY_SONG[mv0.vat] || mv0.vat) + ': ' + (quayMV ? 'lệnh quay bị bỏ, xuồng giữ nguyên hướng' : 'cả xuồng lẫn bè đứng yên') + ' (vẫn mất một nhịp)' + (muiVuong.length > 1 ? '; chuyện này xảy ra ' + muiVuong.length + ' lần' : '') +
-        '. Bè kéo ở mũi chiếm một ô phía trước: chừa chỗ cho nó, hay buộc bè ra sau đuôi bằng tether() rồi mới quay / đi qua chỗ hẹp.',
-        { nhip: mv0.nhip, o: mv0.o, vat: mv0.vat, kieu: mv0.kieu, cho: cho(mmv) });
+    var luoiVuong = res.suKien.filter(function (e) { return e.ma === 'luoi-vuong'; });
+    if (luoiVuong.length) {
+      var lv0 = luoiVuong[0], mlv = lv0.lenh ? (g.anhXa[lv0.lenh.dongPy] || null) : null;
+      var laDoiDai = lv0.kieu === 'set_length' || lv0.kieu === 'tha-khoang';
+      them('luoi-vuong', 'Ở nhịp ' + lv0.nhip + ', ' + (laDoiDai
+        ? 'set_length()' + (mlv ? ' ở ' + viTri(mlv) : '') + ' không thả được dây lưới ra ô (' + lv0.o.x + ', ' + lv0.o.y + ') vì ô đó là ' + (LY_SONG[lv0.vat] || lv0.vat) + ': lưới giữ nguyên độ dài cũ.'
+        : 'xuồng định đi vào ô (' + lv0.o.x + ', ' + lv0.o.y + ') nhưng vướng ' + (LY_SONG[lv0.vat] || lv0.vat) + ' nên cả xuồng lẫn lưới đứng yên (vẫn mất một nhịp).') +
+        (luoiVuong.length > 1 ? ' Chuyện này xảy ra ' + luoiVuong.length + ' lần.' : '') +
+        (laDoiDai ? ' Quay xuồng hướng về luồng nước trống rồi hãy set_length().' : ' Xuồng không đi đè lên chính dây lưới hay túi lưới đang căng dưới nước; hãy đi hướng khác hoặc kéo về khoang bằng set_length(0) trước.'),
+        { nhip: lv0.nhip, o: lv0.o, vat: lv0.vat, kieu: lv0.kieu, cho: cho(mlv) });
     }
-    var duoiVuong = res.suKien.filter(function (e) { return e.ma === 'duoi-vuong'; });
-    if (duoiVuong.length) {
-      var dv0 = duoiVuong[0], mdv = dv0.lenh ? (g.anhXa[dv0.lenh.dongPy] || null) : null;
-      them('duoi-vuong', 'Ở nhịp ' + dv0.nhip + ', ' + (dv0.kieu === 'tether'
-        ? 'tether()' + (mdv ? ' ở ' + viTri(mdv) : '') + ' không buộc được bè ra sau đuôi: ô sau đuôi (' + dv0.o.x + ', ' + dv0.o.y + ') là ' + (LY_SONG[dv0.vat] || dv0.vat) + ', bè vẫn ở trước mũi.'
-        : 'xuồng định lùi vào ô (' + dv0.o.x + ', ' + dv0.o.y + ') nhưng bè buộc đuôi đang nằm đúng ô đó nên xuồng đứng yên (vẫn mất một nhịp).') +
-        (duoiVuong.length > 1 ? ' Chuyện này xảy ra ' + duoiVuong.length + ' lần.' : '') +
-        (dv0.kieu === 'tether' ? ' Chạy tới chỗ sau đuôi là nước trống rồi tether() lại.' : ' Bè buộc đuôi chỉ theo sau khi xuồng tiến hay trôi; muốn lùi thì cởi dây (untether()) trước.'),
-        { nhip: dv0.nhip, o: dv0.o, vat: dv0.vat, kieu: dv0.kieu, cho: cho(mdv) });
+    var trongKhoang = res.suKien.filter(function (e) { return e.ma === 'trong-khoang'; });
+    if (trongKhoang.length) {
+      var tk0 = trongKhoang[0], mtk = tk0.lenh ? (g.anhXa[tk0.lenh.dongPy] || null) : null;
+      them('trong-khoang', 'Ở nhịp ' + tk0.nhip + ', drop_net()' + (mtk ? ' ở ' + viTri(mtk) : '') + ' không mở được lưới: bè đang nằm trong khoang tàu (độ dài dây = 0).' +
+        (trongKhoang.length > 1 ? ' Chuyện này xảy ra ' + trongKhoang.length + ' lần.' : '') + ' Gọi set_length(1) (hoặc 2, 3) kèm wait() để thả lưới đưa bè ra ô mặt nước trước khi gọi drop_net().',
+        { nhip: tk0.nhip, id: tk0.id, cho: cho(mtk) });
     }
     var dangKeo = res.suKien.filter(function (e) { return e.ma === 'dang-keo'; });
     if (dangKeo.length) {
       var dk0 = dangKeo[0], mdk = dk0.lenh ? (g.anhXa[dk0.lenh.dongPy] || null) : null;
-      them('dang-keo', 'Ở nhịp ' + dk0.nhip + ', tow()' + (mdk ? ' ở ' + viTri(mdk) : '') + ' bị bỏ qua: xuồng đang kéo một bè rồi (ở ' + (dk0.cho === 'duoi' ? 'sau đuôi' : 'trước mũi') + '), dây phao chỉ kéo được một bè một lúc.' +
-        (dangKeo.length > 1 ? ' Chuyện này xảy ra ' + dangKeo.length + ' lần.' : '') + ' Thả bè đang kéo (drop_tow()) trước, rồi mới quăng dây kéo bè khác.',
+      them('dang-keo', 'Ở nhịp ' + dk0.nhip + ', cast_net()' + (mdk ? ' ở ' + viTri(mdk) : '') + ' bị bỏ qua: xuồng đang giữ một bè trong lưới rồi (' + (dk0.cho === 'khoang' ? 'ở trong khoang' : 'ở dưới nước') + '), tay lưới chỉ giữ được một vật một lúc.' +
+        (dangKeo.length > 1 ? ' Chuyện này xảy ra ' + dangKeo.length + ' lần.' : '') + ' Thả bè đang giữ bằng drop_net() trước, rồi mới tung lưới bắt bè khác.',
         { nhip: dk0.nhip, id: dk0.id, cho: cho(mdk) });
     }
     var khongKeo = res.suKien.filter(function (e) { return e.ma === 'khong-keo'; });
     if (khongKeo.length) {
       var kk0 = khongKeo[0], mkk = kk0.lenh ? (g.anhXa[kk0.lenh.dongPy] || null) : null;
-      them('khong-keo', 'Ở nhịp ' + kk0.nhip + ', ' + (kk0.lenh ? kk0.lenh.ten + '()' : 'lệnh thả dây') + (mkk ? ' ở ' + viTri(mkk) : '') + ' không có gì để thả: xuồng đang không kéo bè nào.' +
-        (khongKeo.length > 1 ? ' Chuyện này xảy ra ' + khongKeo.length + ' lần.' : '') + ' Quăng dây kéo bè bằng tow() trước (bè phải nằm trong 3 ô trước mũi).',
+      them('khong-keo', 'Ở nhịp ' + kk0.nhip + ', ' + (kk0.lenh ? kk0.lenh.ten + '()' : 'lệnh thả lưới') + (mkk ? ' ở ' + viTri(mkk) : '') + ' không thực hiện được: trong lưới đang không giữ bè nào.' +
+        (khongKeo.length > 1 ? ' Chuyện này xảy ra ' + khongKeo.length + ' lần.' : '') + ' Tung lưới bắt bè bằng cast_net() trước.',
         { nhip: kk0.nhip, cho: cho(mkk) });
-    }
-    var buocHut = res.suKien.filter(function (e) { return e.ma === 'buoc-hut'; });
-    if (buocHut.length) {
-      var bh0 = buocHut[0], mbh = bh0.lenh ? (g.anhXa[bh0.lenh.dongPy] || null) : null;
-      them('buoc-hut', 'Ở nhịp ' + bh0.nhip + ', tether()' + (mbh ? ' ở ' + viTri(mbh) : '') + ' không buộc được gì: xuồng đang không kéo bè, mà ô sau đuôi (' + bh0.o.x + ', ' + bh0.o.y + ') là ' + (LY_SONG[bh0.vat] || bh0.vat) + '.' +
-        (buocHut.length > 1 ? ' Chuyện này xảy ra ' + buocHut.length + ' lần.' : '') + ' Kéo bè về mũi bằng tow() rồi mới tether(), hay lùi cho đuôi xuồng sát bè.',
-        { nhip: bh0.nhip, o: bh0.o, vat: bh0.vat, cho: cho(mbh) });
     }
     var keoHut = res.suKien.filter(function (e) { return e.ma === 'keo-hut'; });
     if (keoHut.length) {
       var kh0 = keoHut[0], mkh = kh0.lenh ? (g.anhXa[kh0.lenh.dongPy] || null) : null;
       cd.push({ ma: 'keo-hut', muc: 'thong-tin', nhip: kh0.nhip, soLan: keoHut.length, o: kh0.o, vat: kh0.vat, cho: cho(mkh),
-        loi: 'Ở nhịp ' + kh0.nhip + ', tow()' + (mkh ? ' ở ' + viTri(mkh) : '') + ' quăng dây theo mũi nhưng không trúng bè nào: ' +
-          (kh0.vat === 'het-tam' ? 'trong 3 ô trước mũi không có bè (dây chỉ bay được 3 ô).' : 'dây dừng ở ô (' + kh0.o.x + ', ' + kh0.o.y + '), là ' + (LY_SONG[kh0.vat] || kh0.vat) + '.') +
-          (keoHut.length > 1 ? ' Chuyện này xảy ra ' + keoHut.length + ' lần.' : '') + ' Dây phao bay thẳng theo mũi xuồng: quay mũi về phía bè và tới gần trong 3 ô rồi mới quăng.' });
+        loi: 'Ở nhịp ' + kh0.nhip + ', cast_net()' + (mkh ? ' ở ' + viTri(mkh) : '') + ' tung lưới nhưng không bắt được bè nào: ' +
+          (kh0.vat === 'het-tam' ? 'ô rơi của lưới (' + kh0.o.x + ', ' + kh0.o.y + ') là mặt nước trống.' : 'lưới bị chặn ở ô (' + kh0.o.x + ', ' + kh0.o.y + '), là ' + (LY_SONG[kh0.vat] || kh0.vat) + '.') +
+          (keoHut.length > 1 ? ' Chuyện này xảy ra ' + keoHut.length + ' lần.' : '') + ' Canh khoảng cách từ xuồng tới bè đúng bằng độ dài dây lưới rồi mới gọi cast_net().' });
     }
     var congKet = res.suKien.filter(function (e) { return e.ma === 'cong-ket'; });
     if (congKet.length) {
@@ -1130,8 +1123,8 @@
       var ds = res.suKien.filter(function (e) { return e.ma === maLai; });
       if (!ds.length) return;
       var l0 = ds[0], ml = g.anhXa[l0.dongPy] || null, mlt = l0.truoc ? (g.anhXa[l0.truoc.dongPy] || null) : null;
-      them(maLai, 'Ở ' + viTri(ml) + ': ' + (maLai === 'neo-goi-lai' ? 'neo' : 'dây phao') + ' đã nhận lệnh ' + l0.truoc.ten + '() (ở ' + viTri(mlt) + ') trong nhịp này rồi, nên lệnh ' + l0.ten + '() này bị bỏ qua. ' +
-        'Mỗi nhịp ' + (maLai === 'neo-goi-lai' ? 'neo chỉ nhận một lệnh (thả hay nhổ)' : 'dây phao chỉ làm một việc (quăng, thả, buộc đuôi hay cởi)') + '; wait() mới sang nhịp kế.', { cho: cho(ml), choTruoc: cho(mlt), nhip: l0.nhip });
+      them(maLai, 'Ở ' + viTri(ml) + ': ' + (maLai === 'neo-goi-lai' ? 'neo' : 'tay lưới') + ' đã nhận lệnh ' + l0.truoc.ten + '() (ở ' + viTri(mlt) + ') trong nhịp này rồi, nên lệnh ' + l0.ten + '() này bị bỏ qua. ' +
+        'Mỗi nhịp ' + (maLai === 'neo-goi-lai' ? 'neo chỉ nhận một lệnh (thả hay nhổ)' : 'tay lưới chỉ làm một việc (tung lưới, thả lưới hay chỉnh độ dài dây)') + '; wait() mới sang nhịp kế.', { cho: cho(ml), choTruoc: cho(mlt), nhip: l0.nhip });
     });
     var dapChan = res.suKien.filter(function (e) { return e.ma === 'dap-bi-chan'; });
     if (dapChan.length) {
@@ -1259,8 +1252,8 @@
       var tenTay = q.lenh.some(function (x) { return SanHoc.TAY_SON.indexOf(x.ten) >= 0; }) ? 'sơn'                   // máy sơn: "lệnh sơn"
         : q.lenh.some(function (x) { return SanHoc.TAY_LOA && SanHoc.TAY_LOA.indexOf(x.ten) >= 0; }) ? 'loa'          // loa: "lệnh loa"
         : q.lenh.every(function (x) { return SanHoc.THAN_GAI && SanHoc.THAN_GAI.indexOf(x.ten) >= 0; }) ? 'bánh gai'
-        : q.lenh.every(function (x) { return SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }) ? 'neo'                          // Bến sông: "lệnh neo" / "lệnh dây phao"
-        : q.lenh.some(function (x) { return SanHoc.TAY_PHAO.indexOf(x.ten) >= 0 || SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }) ? 'dây phao' : 'tay';
+        : q.lenh.every(function (x) { return SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }) ? 'neo'                          // Bến sông: "lệnh neo" / "lệnh tay lưới"
+        : q.lenh.some(function (x) { return SanHoc.TAY_PHAO.indexOf(x.ten) >= 0 || SanHoc.THAN_NEO.indexOf(x.ten) >= 0; }) ? 'tay lưới' : 'tay';
       var loaiLenh = soTay === 0 ? 'bánh' : soTay === q.lenh.length ? tenTay : 'bánh và ' + tenTay;
       if (man.loaiRobot === 'drone') {
         // drone: lệnh nam châm làm ở nhịp kế tiếp, là một lệnh bay go_*() hay wait()

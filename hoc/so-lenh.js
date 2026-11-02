@@ -311,13 +311,12 @@
     g('look', null, 'Hỏi: camera dưới bụng drone thấy màu gì'),
     g('radar', null, 'Hỏi: radar tròn quét lưới 3x3 quanh robot, trả về danh sách 2 chiều'),
     g('shape', null, 'Hỏi: radar nhận dạng hình khối của vật ở ô chỉ định'),
-    // BẾN SÔNG (mùa 5): xuồng dùng bộ lệnh bánh (hai chân vịt); thêm neo, dây phao, chong chóng dòng chảy
+    // BẾN SÔNG (mùa 5): xuồng dùng bộ lệnh bánh (hai chân vịt); thêm neo, tay lưới, chong chóng dòng chảy
     g('anchor', 'unanchor', 'Xuồng thả neo: dòng nước không đẩy được, chân vịt nghỉ tới khi nhổ neo'),
     g('unanchor', 'anchor', 'Xuồng nhổ neo, chạy tiếp được'),
-    g('tow', 'drop_tow', 'Dây phao: quăng dây thẳng theo mũi (3 ô), kéo bè về trước mũi; trúng van cống thì gạt van'),
-    g('drop_tow', 'tow', 'Dây phao: thả bè đang kéo tại chỗ'),
-    g('tether', 'untether', 'Buộc bè ra sau đuôi xuồng: bè nối đuôi như toa tàu, qua khúc cua không vướng'),
-    g('untether', 'tether', 'Cởi dây, bè ở lại chỗ nó đang nằm'),
+    g('cast_net', 'drop_net', 'Tay lưới: tung lưới theo hướng "front", "back", "left", "right" cách 2 ô để bắt bè hoặc gạt van cống'),
+    g('drop_net', 'cast_net', 'Tay lưới: mở lưới thả bè đang giữ tại ô nước hiện tại'),
+    g('set_length', null, 'Cuộn dây lưới: đặt độ dài dây từ 0 đến 3, với 0 là kéo bè về khoang tàu và 1 đến 3 là số ô dây dưới nước'),
     g('flow_dir', null, 'Hỏi: nước ô trước mũi chảy về đâu so với mũi xuồng ("front", "back", "left", "right", "none")'),
     g('flow', null, 'Hỏi: nước ô trước mũi chảy về đâu và mạnh bao nhiêu; trả về một cặp (hướng, sức), ví dụ ("back", 2)'),
     // CẢNG SÔNG (mùa 4): cần cẩu container, mỗi lệnh một nhịp (không cần wait())

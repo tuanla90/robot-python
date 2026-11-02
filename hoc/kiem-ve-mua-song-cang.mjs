@@ -30,18 +30,18 @@ const co = (src, re) => (re instanceof RegExp ? re : new RegExp(re.replace(/[.*+
 
 /* ---------- 1. sự kiện lõi ↔ san-ve.js */
 console.log('\n== 1. Sự kiện lõi phát ra đều có chỗ trong san-ve.js ==');
-const XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
+const XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'flow_dir', 'flow'];
 const CAU = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail'];
 const SAN_MAU = [
-  ['Bến sông: trôi, neo', { loaiRobot: 'xuong', hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~~~~~~Q#', '#~#V~~#~#', '#~~K~~~~#', '#~B~~~L~#', '#..~~~..#', '#########'], batDau: { x: 1, y: 1, huong: 1 },
+  ['Bến sông: trôi, neo', { loaiRobot: 'xuong', hamGoc: XUONG, chinhLuoi: true, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~~~~~~Q#', '#~#V~~#~#', '#~~K~~~~#', '#~B~~~L~#', '#..~~~..#', '#########'], batDau: { x: 1, y: 1, huong: 1 },
     dong: [{ x: 3, y: 1, huong: 1, suc: 1 }, { x: 4, y: 1, huong: 1, suc: 1 }, { x: 4, y: 3, huong: 2, suc: 2 }], noi: [{ nut: { x: 3, y: 2 }, cong: [{ x: 3, y: 3 }], dong: [{ x: 4, y: 3 }] }], nhipToiDa: 60 },
     'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nanchor()\nwait()\nwait()\nanchor()\nwait()\nunanchor()\nwait()\nunanchor()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nleft_move()\nwait()\nleft_move()\nright_move()\nwait()\n'],
-  ['Bến sông: dây phao, buộc đuôi, thả, vật trôi', { loaiRobot: 'xuong', hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], mucTieu: 'dua-vat', san: ['#########', '#~~~~~~~#', '#~B~~~~q#', '#~~~~L~~#', '#.......#', '#########'], batDau: { x: 1, y: 2, huong: 1 },
+  ['Bến sông: tung lưới, thu thả dây, mở lưới, vật trôi', { loaiRobot: 'xuong', hamGoc: XUONG, chinhLuoi: true, camBien: [{ ma: 'dong-chay' }], mucTieu: 'dua-vat', san: ['#########', '#~~~~~~~#', '#~~~B~~q#', '#~~~~L~~#', '#.......#', '#########'], batDau: { x: 2, y: 2, huong: 1 },
     dong: [{ x: 5, y: 3, huong: 1, suc: 1 }], nhipToiDa: 60 },
-    'tow()\nwait()\ntow()\nwait()\nleft_move()\nright_move()\nwait()\ntether()\nwait()\ntether()\nwait()\nleft_move()\nright_move()\nwait()\nuntether()\nwait()\nuntether()\nwait()\nleft_back()\nright_back()\nwait()\n'],
-  ['Bến sông: van cống, hụt, đâm cống, chong chóng', { loaiRobot: 'xuong', hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~V~~~~~#', '#~~K~~~Q#', '#~~~~~~~#', '#########'], batDau: { x: 1, y: 2, huong: 1 },
+    'cast_net()\nwait()\ncast_net()\nwait()\nset_length(1)\nwait()\nset_length(0)\nwait()\ndrop_net()\nwait()\nset_length(2)\nwait()\ndrop_net()\nwait()\ndrop_net()\nwait()\nleft_back()\nright_back()\nwait()\n'],
+  ['Bến sông: van cống, hụt, đâm cống, chong chóng', { loaiRobot: 'xuong', hamGoc: XUONG, chinhLuoi: true, camBien: [{ ma: 'dong-chay' }], san: ['#########', '#~V~~~~~#', '#~~K~~~Q#', '#~~~~~~~#', '#########'], batDau: { x: 1, y: 2, huong: 1 },
     dong: [{ x: 5, y: 2, huong: 3, suc: 1 }, { x: 5, y: 3, huong: 3, suc: 2 }], noi: [{ nut: { x: 2, y: 1 }, cong: [{ x: 3, y: 2 }], dong: [{ x: 5, y: 2 }] }], nhipToiDa: 60 },
-    'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\ntow()\nwait()\nleft_move()\nwait()\nh = flow_dir()\nx = flow()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\nright_move()\nwait()\ntow()\nwait()\n'],
+    'left_move()\nright_move()\nwait()\nleft_move()\nright_move()\nwait()\nright_move()\nwait()\ncast_net()\nwait()\nleft_move()\nwait()\nh = flow_dir()\nx = flow()\nfor i in range(5):\n    left_move()\n    right_move()\n    wait()\nright_move()\nwait()\ncast_net()\nwait()\n'],
   ['Cảng sông: giao tàu', { loaiRobot: 'cau', hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], mucTieu: 'giao-tau', san: ['#########', '#.......#', '#..RRR..#', '#.......#', '#TT~~~TT#', '#########'], batDau: { x: 4, y: 2 },
     chong: [{ x: 4, y: 1, cont: [{ so: 12 }, { so: 7, tan: 2 }] }, { x: 6, y: 2, cont: [{ so: 3 }, { so: 8 }, { so: 21 }] }], tau: [{ o: [{ x: 1, y: 4 }, { x: 2, y: 4 }], co: 6, vang: 2, pha: 0 }, { o: [{ x: 6, y: 4 }, { x: 7, y: 4 }], co: 3, vang: 2, pha: 1 }], giao: [{ tau: 0, so: [7] }, { tau: 1, so: [21] }], nhipToiDa: 60 },
     'pick_up()\npick_up()\nswing_left()\nswing_left()\nswing_left()\nextend()\nset_down()\nset_down()\nretract()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nswing_right()\nextend()\nso = read_code()\npick_up()\nswing_right()\nset_down()\nwait()\nwait()\n'],

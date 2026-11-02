@@ -37,7 +37,7 @@ const vi = (r) => r.robot.x + ',' + r.robot.y + ',' + r.robot.huong;
 const vatO = (r, id) => { const v = r.vat.find((q) => q.id === id); return v ? v.x + ',' + v.y : null; };
 const loiCfg = (cfg, code) => { try { SanHoc.chay(cfg, code || 'wait()\n'); return ''; } catch (e) { return e.message; } };
 
-const XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
+const XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'flow_dir', 'flow'];
 const XE = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'front_clear'];
 const TIEN = 'left_move()\nright_move()\nwait()\n', LUI = 'left_back()\nright_back()\nwait()\n', PHAI = 'left_move()\nwait()\n', TRAI = 'right_move()\nwait()\n', CHO = 'wait()\n';
 const lap = (s, n) => s.repeat(n);
@@ -48,7 +48,7 @@ const SAN1 = ['#######',
               '#~~~~~#',    // y3
               '#.....#',    // y4: bờ
               '#######'];
-const xuong = (them) => Object.assign({ loaiRobot: 'xuong', hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], san: SAN1, batDau: { x: 1, y: 3, huong: 1 }, nhipToiDa: 60 }, them || {});
+const xuong = (them) => Object.assign({ loaiRobot: 'xuong', hamGoc: XUONG, camBien: [{ ma: 'dong-chay' }], chinhLuoi: true, san: SAN1, batDau: { x: 1, y: 3, huong: 1 }, nhipToiDa: 60 }, them || {});
 const chay = (cfg, code) => SanHoc.chay(cfg, code);
 
 console.log('\n== 1. Ký hiệu sân và cấu hình ==');
@@ -61,10 +61,10 @@ console.log('\n== 1. Ký hiệu sân và cấu hình ==');
   kiem('xuồng xuất phát trên bờ: lỗi cấu hình nói rõ', /mặt nước/.test(loiCfg(xuong({ batDau: { x: 1, y: 4, huong: 1 } }))));
   kiem('xe cạn xuất phát trên nước: lỗi cấu hình', /không xuất phát trên mặt nước/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE, san: SAN1, batDau: { x: 1, y: 3, huong: 1 } })));
   kiem('xuồng xuất phát trong cống đóng / trên vật nổi: lỗi', /cống/.test(loiCfg(xuong({ san: ['#K~#'], batDau: { x: 1, y: 0, huong: 1 } }))) && /vật nổi/.test(loiCfg(xuong({ san: ['#B~#'], batDau: { x: 1, y: 0, huong: 1 } }))));
-  kiem('xuồng không gắn tay kẹp', /dây phao/.test(loiCfg(xuong({ hamGoc: XUONG.concat(['grab']) }))));
-  kiem('xe bánh không có anchor / tow / flow_dir', /không thuộc loại robot banh/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE.concat(['tow']), san: SAN1, batDau: { x: 1, y: 4, huong: 1 } })));
+  kiem('xuồng không gắn tay kẹp', /tay lưới/.test(loiCfg(xuong({ hamGoc: XUONG.concat(['grab']) }))));
+  kiem('xe bánh không có anchor / cast_net / flow_dir', /không thuộc loại robot banh/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE.concat(['cast_net']), san: SAN1, batDau: { x: 1, y: 4, huong: 1 } })));
   kiem('flow_dir() cần camBien dong-chay', /chong chóng/.test(loiCfg(xuong({ camBien: [] }))) && loiCfg(xuong()) === '');
-  kiem('tow đi cùng drop_tow, anchor đi cùng unanchor', /drop_tow/.test(loiCfg(xuong({ hamGoc: ['left_move', 'right_move', 'wait', 'tow'] }))) && /unanchor/.test(loiCfg(xuong({ hamGoc: ['left_move', 'right_move', 'wait', 'anchor'] }))));
+  kiem('cast_net đi cùng drop_net, anchor đi cùng unanchor', /drop_net/.test(loiCfg(xuong({ hamGoc: ['left_move', 'right_move', 'wait', 'cast_net'] }))) && /unanchor/.test(loiCfg(xuong({ hamGoc: ['left_move', 'right_move', 'wait', 'anchor'] }))));
   kiem('cfg.dong: ô phải là nước, huong 0–3, suc 1 hay 2, không khai hai lần',
     /mặt nước/.test(loiCfg(xuong({ dong: [{ x: 2, y: 4, huong: 1, suc: 1 }] }))) && /huong/.test(loiCfg(xuong({ dong: [{ x: 2, y: 3, huong: 4, suc: 1 }] }))) &&
     /suc/.test(loiCfg(xuong({ dong: [{ x: 2, y: 3, huong: 1, suc: 3 }] }))) && /hai lần/.test(loiCfg(xuong({ dong: [{ x: 2, y: 3, huong: 1, suc: 1 }, { x: 2, y: 3, huong: 1, suc: 1 }] }))) &&
@@ -159,10 +159,10 @@ console.log('\n== 4. Neo ==');
   kiem('unanchor() khi chưa neo: chua-neo', co(r, 'chua-neo'));
   r = chay(x4({ dong: null }), 'wait()');
   kiem('không neo, không dòng: xuồng đứng yên bình thường, robot.neo false', vi(r) === '2,2,3' && nhipVet(r)[0].robot.neo === false);
-  kiem('LENH_NGUOC có cặp anchor ↔ unanchor, tow ↔ drop_tow, tether ↔ untether', SanHoc.LENH_NGUOC.anchor === 'unanchor' && SanHoc.LENH_NGUOC.drop_tow === 'tow' && SanHoc.LENH_NGUOC.tether === 'untether');
+  kiem('LENH_NGUOC có cặp anchor ↔ unanchor, cast_net ↔ drop_net', SanHoc.LENH_NGUOC.anchor === 'unanchor' && SanHoc.LENH_NGUOC.drop_net === 'cast_net' && SanHoc.LENH_NGUOC.cast_net === 'drop_net');
 }
 
-console.log('\n== 5. Dây phao kéo (tow / drop_tow) ==');
+console.log('\n== 5. Tay lưới thủy lợi (cast_net / drop_net) ==');
 {
   //        x: 0123456789
   const SAN5 = ['##########',
@@ -171,75 +171,83 @@ console.log('\n== 5. Dây phao kéo (tow / drop_tow) ==');
                 '#~~~~~~~~#',   // y3
                 '#.~~~~~~.#',   // y4: bờ hai góc
                 '##########'];
-  const x5 = (them) => xuong(Object.assign({ san: SAN5, batDau: { x: 2, y: 2, huong: 1 } }, them));
-  let r = chay(x5(), 'tow()\nwait()');
-  kiem('tow(): bè cách 3 ô (trong tầm) bị kéo về ô trước mũi (3,2); keo-vat soO 2; robot.keo { id 1, cho mui }', vatO(r, 1) === '3,2' && sk1(r, 'keo-vat') && sk1(r, 'keo-vat').soO === 2 && J(nhipVet(r)[0].robot.keo) === J({ id: 1, cho: 'mui' }) && J(r.keo) === J({ id: 1, cho: 'mui' }), vatO(r, 1) + ' ' + J(sk1(r, 'keo-vat')));
-  r = chay(x5({ batDau: { x: 4, y: 2, huong: 1 } }), 'tow()\nwait()');
-  kiem('bè ngay trước mũi: chỉ móc (soO 0, vật không dời)', vatO(r, 1) === '5,2' && sk1(r, 'keo-vat').soO === 0 && r.keo && r.keo.id === 1);
-  r = chay(x5({ batDau: { x: 1, y: 2, huong: 1 } }), 'tow()\nwait()');
-  kiem('bè cách 4 ô: hết tầm (keo-hut vat het-tam), không kéo', !r.keo && sk1(r, 'keo-hut') && sk1(r, 'keo-hut').vat === 'het-tam', J(sk1(r, 'keo-hut')));
-  r = chay(x5({ batDau: { x: 2, y: 2, huong: 0 } }), 'tow()\nwait()');
-  kiem('dây gặp bờ: keo-hut vat bo', sk1(r, 'keo-hut') && sk1(r, 'keo-hut').vat === 'bo');
-  r = chay(x5({ san: ['#########', '#~~K~B~~#', '#########'], batDau: { x: 1, y: 1, huong: 1 } }), 'tow()\nwait()');
-  kiem('dây gặp cống đóng: keo-hut vat cong', sk1(r, 'keo-hut') && sk1(r, 'keo-hut').vat === 'cong');
-  r = chay(x5(), 'tow()\nwait()\ntow()\nwait()');
-  kiem('tow() khi đang kéo: dang-keo (lỗi)', sk1(r, 'dang-keo') && sk1(r, 'dang-keo').id === 1 && r.suKien.some((e) => e.ma === 'dang-keo'));
-  r = chay(x5(), 'tow()\nwait()\n' + lap(TIEN, 2));
-  kiem('tiến khi kéo ở mũi: vật đi trước, xuồng theo sau (keo-theo)', vi(r) === '4,2,1' && vatO(r, 1) === '5,2' && dem(r, 'keo-theo') === 2, vi(r) + ' ' + vatO(r, 1));
-  r = chay(x5(), 'tow()\nwait()\n' + lap(TIEN, 6));
-  kiem('ô trước vật là bờ: cả hai đứng im (mui-vuong vat bo, lỗi)', vi(r) === '7,2,1' && vatO(r, 1) === '8,2' && sk1(r, 'mui-vuong') && sk1(r, 'mui-vuong').vat === 'bo' && r.suKien.some((e) => e.ma === 'mui-vuong'), vi(r) + ' ' + vatO(r, 1));
-  r = chay(x5(), 'tow()\nwait()\n' + LUI);
-  kiem('lùi khi kéo ở mũi: xuồng lùi, vật theo vào ô xuồng vừa rời', vi(r) === '1,2,1' && vatO(r, 1) === '2,2');
-  r = chay(x5(), 'tow()\nwait()\n' + PHAI);
-  kiem('quay phải khi kéo ở mũi: vật chuyển sang ô trước mũi mới (2,3)', vi(r) === '2,2,2' && vatO(r, 1) === '2,3' && co(r, 'quay-phai'), vi(r) + ' ' + vatO(r, 1));
-  r = chay(x5({ batDau: { x: 1, y: 3, huong: 1 }, san: ['##########', '#~~~~~~~~#', '##~~~~~~~#', '#~~B~~~~~#', '#~~~~~~~.#', '##########'] }), 'tow()\nwait()\n' + TRAI + PHAI);
-  kiem('quay trái mà ô trước mũi mới (1,2) là bờ: lệnh quay bị bỏ (mui-vuong), hướng không đổi; quay phải (1,4) là nước thì được', vi(r) === '1,3,2' && vatO(r, 1) === '1,4' && dem(r, 'mui-vuong') === 1 && !co(r, 'quay-trai') && co(r, 'quay-phai'), vi(r) + ' ' + vatO(r, 1));
-  r = chay(x5(), 'tow()\nwait()\ndrop_tow()\nwait()\n' + TIEN);
-  kiem('drop_tow() thả vật tại chỗ (tha-keo), keo null; tiến tiếp thì vướng vật', co(r, 'tha-keo') && nhipVet(r)[1].robot.keo === null && sk1(r, 'dam-tuong') && sk1(r, 'dam-tuong').vat === 'vat');
-  r = chay(x5(), 'drop_tow()\nwait()');
-  kiem('drop_tow() khi không kéo gì: khong-keo (lỗi)', co(r, 'khong-keo') && r.suKien.some((e) => e.ma === 'khong-keo'));
-  r = chay(x5(), 'tow()\ndrop_tow()\nwait()');
-  kiem('hai lệnh dây cùng nhịp: phao-goi-lai', r.suKien.some((e) => e.ma === 'phao-goi-lai'));
-  const dongPhai = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => ({ x, y: 2, huong: 1, suc: 1 }));
-  r = chay(x5({ dong: dongPhai }), 'tow()\nwait()\nwait()');
-  kiem('dòng đẩy xuồng thì cả cụm cùng đi (vật ở mũi đi trước)', vi(r) === '4,2,1' && vatO(r, 1) === '5,2' && dem(r, 'troi') === 2, vi(r) + ' ' + vatO(r, 1));
-  r = chay(x5({ dong: dongPhai, batDau: { x: 5, y: 2, huong: 1 }, san: ['##########', '#~~~~~~~~#', '#~~~~~~B~#', '#~~~~~~~~#', '#.~~~~~~.#', '##########'] }), 'tow()\nwait()\nwait()\nwait()');
-  kiem('vật đang kéo không tự trôi (không có troi ai vat); cụm trôi tới sát bờ thì dừng (troi-chan vat bo)', !sks(r).some((e) => e.ma === 'troi' && e.ai === 'vat') && vatO(r, 1) === '8,2' && vi(r) === '7,2,1' && sk1(r, 'troi-chan') && sk1(r, 'troi-chan').vat === 'bo', vatO(r, 1) + ' ' + vi(r));
-  r = chay(x5({ dong: dongPhai.map((d) => Object.assign({}, d, { huong: 3 })) }), 'tow()\nwait()');
-  kiem('dòng ngược mũi đẩy cụm lùi: xuồng lùi, vật theo vào ô xuồng rời', vi(r) === '1,2,1' && vatO(r, 1) === '2,2', vi(r) + ' ' + vatO(r, 1));
+  const x5 = (them) => xuong(Object.assign({ san: SAN5, batDau: { x: 3, y: 2, huong: 1 } }, them));
+  let r = chay(x5(), 'cast_net()\nwait()');
+  kiem('cast_net() mặc định "front" cách 2 ô: bắt bè ở (5,2); keo-vat doDai 2, day [(4,2),(5,2)]; robot.keo { id 1, cho luoi, doDai 2 }',
+    vatO(r, 1) === '5,2' && sk1(r, 'keo-vat') && sk1(r, 'keo-vat').doDai === 2 && r.keo && r.keo.id === 1 && r.keo.cho === 'luoi' && r.keo.doDai === 2 && J(r.keo.day) === J([{ x: 4, y: 2 }, { x: 5, y: 2 }]),
+    vatO(r, 1) + ' ' + J(sk1(r, 'keo-vat')) + ' ' + J(r.keo));
+  r = chay(x5({ batDau: { x: 7, y: 2, huong: 1 } }), 'cast_net("back")\nwait()');
+  kiem('cast_net("back"): tung về phía sau đuôi bắt bè ở (5,2)', vatO(r, 1) === '5,2' && r.keo && r.keo.doDai === 2 && J(r.keo.day) === J([{ x: 6, y: 2 }, { x: 5, y: 2 }]));
+  r = chay(x5({ batDau: { x: 5, y: 4, huong: 1 } }), 'cast_net("left")\nwait()');
+  kiem('cast_net("left"): tung sang مạn trái bắt bè ở (5,2)', vatO(r, 1) === '5,2' && r.keo && r.keo.doDai === 2 && J(r.keo.day) === J([{ x: 5, y: 3 }, { x: 5, y: 2 }]));
+  r = chay(x5({ batDau: { x: 5, y: 4, huong: 3 } }), 'cast_net("right")\nwait()');
+  kiem('cast_net("right"): tung sang mạn phải bắt bè ở (5,2)', vatO(r, 1) === '5,2' && r.keo && r.keo.doDai === 2);
+  r = chay(x5({ batDau: { x: 1, y: 2, huong: 1 } }), 'cast_net()\nwait()');
+  kiem('bè cách 4 ô (ô rơi (3,2) là nước trống): keo-hut vat het-tam, không bắt', !r.keo && sk1(r, 'keo-hut') && sk1(r, 'keo-hut').vat === 'het-tam', J(sk1(r, 'keo-hut')));
+  r = chay(x5({ batDau: { x: 3, y: 2, huong: 0 } }), 'cast_net()\nwait()');
+  kiem('dây gặp bờ ở (3,0): keo-hut vat bo', sk1(r, 'keo-hut') && sk1(r, 'keo-hut').vat === 'bo');
+  r = chay(x5({ san: ['#########', '#~~K~B~~#', '#########'], batDau: { x: 2, y: 1, huong: 1 } }), 'cast_net()\nwait()');
+  kiem('dây gặp cống đóng ở ô giữa (3,1): keo-hut vat cong', sk1(r, 'keo-hut') && sk1(r, 'keo-hut').vat === 'cong');
+  r = chay(x5(), 'cast_net()\nwait()\ncast_net()\nwait()');
+  kiem('cast_net() khi đang giữ bè: dang-keo (lỗi)', sk1(r, 'dang-keo') && sk1(r, 'dang-keo').id === 1 && r.suKien.some((e) => e.ma === 'dang-keo'));
+  r = chay(x5({ batDau: { x: 7, y: 2, huong: 3 } }), 'cast_net()\nwait()\n' + lap(LUI, 2));
+  kiem('lùi 2 bước khi giữ bè ở (5,2): xuồng (7,2)→(8,2)→(9,2? bờ!), dừng; thử từ (5,2) bắt bè (3,2) rồi tiến phải 2 ô: bè trượt theo dây (3,2)→(4,2)→(5,2)', (() => {
+    const rr = chay(x5({ batDau: { x: 7, y: 2, huong: 1 } }), 'cast_net("back")\nwait()\n' + TIEN);
+    return vi(rr) === '8,2,1' && vatO(rr, 1) === '6,2' && co(rr, 'keo-theo');
+  })());
+  r = chay(x5(), 'cast_net()\nwait()\n' + TIEN);
+  kiem('đi đè lên chính dây lưới đang căng ở (4,2): luoi-vuong vat day-luoi, đứng yên', vi(r) === '3,2,1' && vatO(r, 1) === '5,2' && sk1(r, 'luoi-vuong') && sk1(r, 'luoi-vuong').vat === 'day-luoi', J(sk1(r, 'luoi-vuong')));
+  r = chay(x5(), 'cast_net()\nwait()\n' + LUI + LUI);
+  kiem('lùi 2 bước từ (3,2) về (1,2): dây dịch theo xuồng, bè từ (5,2) về (3,2)', vi(r) === '1,2,1' && vatO(r, 1) === '3,2' && dem(r, 'keo-theo') === 2, vi(r) + ' ' + vatO(r, 1));
+  r = chay(x5(), 'cast_net()\nwait()\n' + PHAI + TRAI);
+  kiem('quay tại chỗ khi giữ lưới dưới nước: chỉ xuồng xoay, lưới và bè đứng yên ở (5,2)', vi(r) === '3,2,1' && vatO(r, 1) === '5,2' && co(r, 'quay-phai') && co(r, 'quay-trai'));
+  r = chay(x5(), 'cast_net()\nwait()\n' + PHAI + TIEN + TIEN);
+  kiem('quay xuống rồi tiến 2 bước xuống (3,4): dây lưới uốn khúc qua góc cua, bè trượt (5,2)→(4,2)→(3,2)', vi(r) === '3,4,2' && vatO(r, 1) === '3,2' && J(r.keo.day) === J([{ x: 3, y: 3 }, { x: 3, y: 2 }]), vi(r) + ' ' + vatO(r, 1) + ' ' + J(r.keo.day));
+  r = chay(x5(), 'cast_net()\nwait()\ndrop_net()\nwait()');
+  kiem('drop_net() mở lưới thả vật tại chỗ (tha-keo), keo null', co(r, 'tha-keo') && nhipVet(r)[1].robot.keo === null && vatO(r, 1) === '5,2');
+  r = chay(x5(), 'drop_net()\nwait()');
+  kiem('drop_net() khi không giữ gì: khong-keo (lỗi)', co(r, 'khong-keo') && r.suKien.some((e) => e.ma === 'khong-keo'));
+  r = chay(x5(), 'cast_net()\ndrop_net()\nwait()');
+  kiem('hai lệnh lưới cùng nhịp: phao-goi-lai', r.suKien.some((e) => e.ma === 'phao-goi-lai'));
+  const dongTrai = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => ({ x, y: 2, huong: 3, suc: 1 }));
+  r = chay(x5({ dong: dongTrai }), 'cast_net()\nwait()\nwait()');
+  kiem('dòng đẩy xuồng lùi sang trái thì dây và bè lướt theo (xuồng (3,2)→(1,2), bè (5,2)→(3,2))', vi(r) === '1,2,1' && vatO(r, 1) === '3,2' && dem(r, 'troi') === 2 && !sks(r).some((e) => e.ma === 'troi' && e.ai === 'vat'), vi(r) + ' ' + vatO(r, 1));
+  r = chay(x5(), 'cast_net("up")\nwait()');
+  kiem('cast_net() sai hướng: runtime-error', r.loi && r.loi.loai === 'runtime-error' && /front/.test(r.loi.thongDiep));
 }
 
-console.log('\n== 6. Buộc dắt theo đuôi (tether / untether) ==');
+console.log('\n== 6. Cuộn dây chỉnh độ dài lưới (set_length) ==');
 {
-  //        x: 0123456
-  const SAN6 = ['#######',
-                '#~~~~~#',   // y1
-                '#~B~~~#',   // y2: bè (2,2)
-                '#~~~~~#',   // y3
-                '#~~~~~#',   // y4
-                '#######'];
-  const x6 = (them) => xuong(Object.assign({ san: SAN6, batDau: { x: 1, y: 2, huong: 1 } }, them));
-  let r = chay(x6(), 'tow()\nwait()\ntether()\nwait()');
-  kiem('tether(): vật ở mũi (2,2) chuyển ra ô sau đuôi… nhưng (0,2) là bờ → duoi-vuong, vẫn kéo ở mũi', sk1(r, 'duoi-vuong') && sk1(r, 'duoi-vuong').vat === 'bo' && r.keo.cho === 'mui' && vatO(r, 1) === '2,2', J(sk1(r, 'duoi-vuong')));
-  r = chay(x6({ batDau: { x: 2, y: 3, huong: 0 } }), 'tow()\nwait()\ntether()\nwait()');
-  kiem('tether() thành công: buoc-duoi, vật ra ô sau đuôi (2,4), robot.keo cho duoi', co(r, 'buoc-duoi') && vatO(r, 1) === '2,4' && J(r.keo) === J({ id: 1, cho: 'duoi' }), vatO(r, 1));
-  r = chay(x6({ batDau: { x: 2, y: 3, huong: 0 } }), 'tow()\nwait()\ntether()\nwait()\n' + TIEN + PHAI + TIEN + TIEN);
-  kiem('nối đuôi như toa tàu: tiến, quay phải, tiến 2 qua khúc cua không vướng; vật luôn vào ô xuồng vừa rời', vi(r) === '4,2,1' && vatO(r, 1) === '3,2' && !co(r, 'mui-vuong') && !co(r, 'duoi-vuong'), vi(r) + ' ' + vatO(r, 1));
-  r = chay(x6({ batDau: { x: 2, y: 3, huong: 0 } }), 'tow()\nwait()\ntether()\nwait()\n' + PHAI);
-  kiem('quay tại chỗ: vật buộc đuôi đứng yên', vi(r) === '2,3,1' && vatO(r, 1) === '2,4');
-  r = chay(x6({ batDau: { x: 2, y: 3, huong: 0 } }), 'tow()\nwait()\ntether()\nwait()\n' + LUI);
-  kiem('lùi thẳng vào vật buộc đuôi: duoi-vuong (lỗi), đứng yên', vi(r) === '2,3,0' && sk1(r, 'duoi-vuong') && sk1(r, 'duoi-vuong').kieu === 'lui' && r.suKien.some((e) => e.ma === 'duoi-vuong'));
-  r = chay(x6({ batDau: { x: 3, y: 2, huong: 1 } }), 'tether()\nwait()\n' + TIEN);
-  kiem('không kéo gì mà ô sau đuôi có bè: tether() móc luôn (buoc-duoi); tiến thì bè theo vào ô xuồng rời', co(r, 'buoc-duoi') && vatO(r, 1) === '3,2' && vi(r) === '4,2,1' && J(r.keo) === J({ id: 1, cho: 'duoi' }), vatO(r, 1) + ' ' + vi(r));
-  r = chay(x6({ batDau: { x: 3, y: 1, huong: 2 } }), 'tether()\nwait()');
-  kiem('ô sau đuôi là bờ, không có vật: buoc-hut', sk1(r, 'buoc-hut') && !r.keo);
-  r = chay(x6({ batDau: { x: 2, y: 3, huong: 0 } }), 'tow()\nwait()\ntether()\nwait()\ntether()\nwait()\nuntether()\nwait()\n' + LUI);
-  kiem('tether() khi đã buộc: da-buoc (thông tin); untether() thả tại chỗ (coi-duoi); lùi sau đó vướng vật thường', co(r, 'da-buoc') && co(r, 'coi-duoi') && r.keo === null && sk1(r, 'dam-tuong') && sk1(r, 'dam-tuong').vat === 'vat');
-  r = chay(x6(), 'untether()\nwait()');
-  kiem('untether() khi không kéo: khong-keo', co(r, 'khong-keo'));
-  const dongLen = [1, 2].map((y) => ({ x: 2, y, huong: 0, suc: 1 }));
-  r = chay(x6({ batDau: { x: 2, y: 3, huong: 0 }, dong: dongLen }), 'tow()\nwait()\ntether()\nwait()\n' + TIEN);
-  kiem('trôi khi buộc đuôi: tiến lên ô dòng (2,2) rồi trôi lên (2,1), vật theo vào ô xuồng rời (2,2)', vi(r) === '2,1,0' && vatO(r, 1) === '2,2' && co(r, 'troi'), vi(r) + ' ' + vatO(r, 1));
+  //        x: 01234567
+  const SAN6 = ['########',
+                '#~~~~~~#',   // y1
+                '#~~~B~~#',   // y2: bè (4,2)
+                '#~~~~~~#',   // y3
+                '#~~~~~~#',   // y4
+                '########'];
+  const x6 = (them) => xuong(Object.assign({ san: SAN6, batDau: { x: 2, y: 2, huong: 1 } }, them));
+  let r = chay(x6({ batDau: { x: 1, y: 2, huong: 1 } }), 'set_length(3)\ncast_net()\nwait()');
+  kiem('set_length(3) trước khi tung: cast_net() vươn 3 ô bắt bè ở (4,2), doDai 3', vatO(r, 1) === '4,2' && r.keo && r.keo.doDai === 3 && r.keo.day.length === 3, J(r.keo));
+  r = chay(x6({ batDau: { x: 3, y: 2, huong: 1 } }), 'set_length(1)\ncast_net()\nwait()');
+  kiem('set_length(1) trước khi tung: cast_net() bắt bè sát cạnh (4,2), doDai 1', vatO(r, 1) === '4,2' && r.keo && r.keo.doDai === 1 && J(r.keo.day) === J([{ x: 4, y: 2 }]), J(r.keo));
+  r = chay(x6(), 'cast_net()\nwait()\nset_length(1)\nwait()');
+  kiem('đang giữ bè ở độ dài 2 (4,2), gọi set_length(1) + wait(): thu dây kéo bè về (3,2), doi-dai-luoi doDai 1', vatO(r, 1) === '3,2' && co(r, 'doi-dai-luoi') && r.keo.doDai === 1, vatO(r, 1) + ' ' + J(r.keo));
+  r = chay(x6(), 'cast_net()\nwait()\nset_length(3)\nwait()');
+  kiem('đang giữ bè ở độ dài 2 (4,2), gọi set_length(3) + wait(): thả dây đẩy bè ra (5,2), doi-dai-luoi doDai 3', vatO(r, 1) === '5,2' && co(r, 'doi-dai-luoi') && r.keo.doDai === 3, vatO(r, 1) + ' ' + J(r.keo));
+  r = chay(x6({ batDau: { x: 4, y: 2, huong: 1 }, san: ['########', '#~~~~~~#', '#~~~~~B#', '#~~~~~~#', '########'] }), 'cast_net()\nwait()\nset_length(3)\nwait()');
+  kiem('thả dây ra 3 ô mà đụng bờ (7,2): luoi-vuong vat bo, giữ nguyên độ dài 2', vatO(r, 1) === '6,2' && r.keo.doDai === 2 && sk1(r, 'luoi-vuong') && sk1(r, 'luoi-vuong').vat === 'bo', J(sk1(r, 'luoi-vuong')));
+  r = chay(x6(), 'cast_net()\nwait()\nset_length(0)\nwait()\n' + TIEN + TIEN);
+  kiem('set_length(0) kéo bè về khoang tàu (doi-dai-luoi, cho khoang, doDai 0, trangThai khoang); xuồng tiến qua chính ô cũ mà không vướng dây',
+    co(r, 'doi-dai-luoi') && r.keo.cho === 'khoang' && r.keo.doDai === 0 && r.vat[0].trangThai === 'khoang' && vi(r) === '4,2,1' && vatO(r, 1) === '4,2' && !co(r, 'luoi-vuong'),
+    vi(r) + ' ' + J(r.keo) + ' ' + J(r.vat[0]));
+  r = chay(x6(), 'cast_net()\nwait()\nset_length(0)\nwait()\ndrop_net()\nwait()');
+  kiem('đang ở trong khoang (doDai 0) mà gọi drop_net(): báo lỗi trong-khoang, bè vẫn trong khoang', co(r, 'trong-khoang') && r.suKien.some((e) => e.ma === 'trong-khoang') && r.keo.cho === 'khoang');
+  r = chay(x6(), 'cast_net()\nwait()\nset_length(0)\nwait()\n' + TIEN + 'set_length(2, "back")\nwait()\ndrop_net()\nwait()');
+  kiem('từ khoang (xuồng ở (3,2)) gọi set_length(2, "back") thả bè ra (1,2) rồi drop_net() thành công', vatO(r, 1) === '1,2' && r.vat[0].trangThai === 'dat' && r.keo === null && co(r, 'tha-keo'), vatO(r, 1) + ' ' + J(r.vat[0]));
+  r = chay(x6(), 'set_length(0)\nwait()');
+  kiem('không giữ bè mà gọi set_length(0): khong-keo', co(r, 'khong-keo'));
+  r = chay(x6(), 'set_length(4)\nwait()');
+  kiem('set_length(4) ngoài khoảng 0..3: runtime-error', r.loi && r.loi.loai === 'runtime-error');
 }
 
 console.log('\n== 7. Chong chóng dòng chảy (flow_dir / flow) ==');
@@ -278,32 +286,32 @@ console.log('\n== 8. Cống thủy lợi + van ==');
                 '##########'];
   const dong8 = [1, 2, 3, 4].map((x) => ({ x, y: 1, huong: 1, suc: 1 }));
   const x8 = (them) => xuong(Object.assign({ san: SAN8, batDau: { x: 3, y: 2, huong: 2 }, dong: dong8 }, them));
-  let r = chay(x8(), 'tow()\nwait()');
+  let r = chay(x8(), 'cast_net()\nwait()');
   const n0 = nhipVet(r)[0];
-  kiem('dây phao trúng V: van-doi bat true, keo-van; dòng tắt NGAY (dong-doi bat false, dongTat 4 ô); cống mở ở CUỐI nhịp (cong-doi mo true)',
+  kiem('tay lưới trúng V: van-doi bat true, keo-van; dòng tắt NGAY (dong-doi bat false, dongTat 4 ô); cống mở ở CUỐI nhịp (cong-doi mo true)',
     co(r, 'van-doi') && sk1(r, 'van-doi').bat === true && co(r, 'keo-van') && dem(r, 'dong-doi') === 4 && n0.dongTat.length === 4 && sk1(r, 'cong-doi') && sk1(r, 'cong-doi').mo === true && n0.cong[0].mo === true && n0.van[0].bat === true,
     J(sks(r).map((e) => e.ma)));
   kiem('kết quả: van / cong / dongTat / congBanDau / vanBanDau', r.van[0].bat === true && r.cong[0].mo === true && r.dongTat.length === 4 && r.congBanDau[0].mo === false && r.vanBanDau[0].bat === false);
-  r = chay(x8(), 'tow()\nwait()\n' + TRAI + lap(TIEN, 5));
+  r = chay(x8(), 'cast_net()\nwait()\n' + TRAI + lap(TIEN, 5));
   kiem('cống đã mở: xuồng đi qua tới Q, thắng', r.thang && vi(r) === '8,2,1', vi(r));
   r = chay(x8(), TRAI + lap(TIEN, 5));
   kiem('không gạt van: cống đóng chặn (dam-tuong cong), không thắng', !r.thang && sk1(r, 'dam-tuong') && sk1(r, 'dam-tuong').vat === 'cong');
-  r = chay(x8(), 'tow()\nwait()\ntow()\nwait()');
+  r = chay(x8(), 'cast_net()\nwait()\ncast_net()\nwait()');
   kiem('gạt lần hai: van về như cũ, dòng chạy lại, cống đóng lại', sks(r).filter((e) => e.ma === 'van-doi')[1].bat === false && r.dongTat.length === 0 && r.cong[0].mo === false);
   r = chay(x8({ batDau: { x: 1, y: 1, huong: 1 } }), 'wait()\nwait()\nwait()');
   kiem('dòng đang chạy (chưa gạt): xuồng trôi', vi(r) === '4,1,1' && dem(r, 'troi') === 3, vi(r));
-  r = chay(x8({ dong: dong8.concat([{ x: 2, y: 2, huong: 1, suc: 1 }]) }), 'tow()\nwait()\n' + TRAI + TRAI + TIEN + CHO);
+  r = chay(x8({ dong: dong8.concat([{ x: 2, y: 2, huong: 1, suc: 1 }]) }), 'cast_net()\nwait()\n' + TRAI + TRAI + TIEN + CHO);
   kiem('dòng tắt: đứng trên ô dòng không trôi; chong chóng đọc "none"', !co(r, 'troi'));
-  r = chay(x8({ san: ['##########', '#~~~~~~~~#', '#~~~~k~~Q#', '#~~~~V~~~#', '##########'], batDau: { x: 5, y: 2, huong: 2 } }), 'tow()\nwait()');
+  r = chay(x8({ san: ['##########', '#~~~~~~~~#', '#~~~~k~~Q#', '#~~~~V~~~#', '##########'], batDau: { x: 5, y: 2, huong: 2 } }), 'cast_net()\nwait()');
   kiem('xuồng đứng trong cống mở, gạt van ngay dưới: cống không đóng xuống ô có xuồng (cong-ket), vẫn mở', co(r, 'van-doi') && co(r, 'cong-ket') && !co(r, 'cong-doi') && r.cong[0].mo === true, J(sks(r).map((e) => e.ma)));
-  r = chay(x8({ san: ['##########', '#~~~~~~~~#', '#~~~~B~~Q#', '#~~V~~~~~#', '##########'].map((s, i) => i === 2 ? '#~~~~k~~Q#' : s), vat: [], noi: [{ nut: { x: 3, y: 3 }, cong: [{ x: 5, y: 2 }], dong: [{ x: 1, y: 1 }] }] }), 'tow()\nwait()');
+  r = chay(x8({ san: ['##########', '#~~~~~~~~#', '#~~~~B~~Q#', '#~~V~~~~~#', '##########'].map((s, i) => i === 2 ? '#~~~~k~~Q#' : s), vat: [], noi: [{ nut: { x: 3, y: 3 }, cong: [{ x: 5, y: 2 }], dong: [{ x: 1, y: 1 }] }] }), 'cast_net()\nwait()');
   kiem('cfg.noi nhóm riêng: van chỉ tắt ô dòng (1,1) và đóng cống (5,2)', r.dongTat.length === 1 && r.dongTat[0].x === 1 && r.cong[0].mo === false && dem(r, 'dong-doi') === 1);
   kiem('noi: ô cống không phải K / k → lỗi; ô dong không có dòng → lỗi; van không điều khiển băng',
     /không phải cống/.test(loiCfg(x8({ noi: [{ nut: { x: 3, y: 3 }, cong: [{ x: 4, y: 2 }] }] }))) && /không có dòng chảy/.test(loiCfg(x8({ noi: [{ nut: { x: 3, y: 3 }, dong: [{ x: 7, y: 1 }] }] }))) &&
     /băng chuyền/.test(loiCfg(x8({ noi: [{ nut: { x: 3, y: 3 }, bang: [{ x: 1, y: 1 }] }] }))));
-  r = chay(x8({ noi: [{ nut: { x: 3, y: 3 }, cong: [], dong: [] }] }), 'tow()\nwait()');
+  r = chay(x8({ noi: [{ nut: { x: 3, y: 3 }, cong: [], dong: [] }] }), 'cast_net()\nwait()');
   kiem('van nối rỗng: đổi trạng thái nhưng không điều khiển gì', co(r, 'van-doi') && r.cong[0].mo === false && r.dongTat.length === 0);
-  r = chay(x8({ batDau: { x: 1, y: 2, huong: 1 } }), 'tow()\nwait()');
+  r = chay(x8({ batDau: { x: 1, y: 2, huong: 1 } }), 'cast_net()\nwait()');
   kiem('dây không trúng van khi van không nằm trên đường dây (hết tầm / bờ)', !co(r, 'van-doi'));
   kiem('cống đóng chặn vật nổi trôi: xem mục 3 (oNoiChan "cong")', (() => { const rr = chay(xuong({ san: ['#######', '#~B~K~#', '#######'], batDau: { x: 1, y: 1, huong: 1 }, dong: [{ x: 2, y: 1, huong: 1, suc: 2 }, { x: 3, y: 1, huong: 1, suc: 2 }] }), 'wait()'); return vatO(rr, 1) === '3,1' && sk1(rr, 'troi').chan === 'cong'; })());
 }
@@ -332,26 +340,26 @@ console.log('\n== 9. Vật nổi, cầu phao, mục tiêu ==');
   kiem('bè trên dòng không có xe: trôi', vatO(r, 1) === '3,2', vatO(r, 1));
   r = chay({ loaiRobot: 'banh', hamGoc: XE, san: ['#######', '#~~~~~#', '#.B~~~#', '#~~~~~#', '#######'], batDau: { x: 1, y: 2, huong: 1 }, dong: [{ x: 3, y: 2, huong: 1, suc: 1 }] }, TIEN + 'wait()');
   kiem('xe đứng trên bè (nước êm) thì bè không trôi kể cả có dòng kế bên', vatO(r, 1) === '2,2' && vi(r) === '2,2,1');
-  r = chay(Object.assign(xuong({ san: ['#######', '#~~~~~#', '#.B~~~#', '#~~~~~#', '#######'], batDau: { x: 4, y: 2, huong: 3 } }), { doi: [{ loaiRobot: 'xuong', batDau: { x: 4, y: 2, huong: 3 } }, { loaiRobot: 'banh', hamGoc: XE, batDau: { x: 1, y: 2, huong: 1 }, camBien: [] }] }), ['wait()\ntow()\nwait()', TIEN + 'wait()']);
-  kiem('hai robot: xe cạn đang đứng trên bè thì tow() không kéo được (keo-hut co-xe), bè không dời', r.doi[0].suKien.some((e) => e.ma === 'keo-hut' && e.vat === 'co-xe') && vatO(r, 1) === '2,2' && !r.doi[0].keo, J(r.doi[0].suKien.map((e) => e.ma + ':' + e.vat)));
+  r = chay(Object.assign(xuong({ san: ['#######', '#~~~~~#', '#.B~~~#', '#~~~~~#', '#######'], batDau: { x: 4, y: 2, huong: 3 } }), { doi: [{ loaiRobot: 'xuong', batDau: { x: 4, y: 2, huong: 3 } }, { loaiRobot: 'banh', hamGoc: XE, batDau: { x: 1, y: 2, huong: 1 }, camBien: [] }] }), ['wait()\ncast_net()\nwait()', TIEN + 'wait()']);
+  kiem('hai robot: xe cạn đang đứng trên bè thì cast_net() không bắt được (keo-hut co-xe), bè không dời', r.doi[0].suKien.some((e) => e.ma === 'keo-hut' && e.vat === 'co-xe') && vatO(r, 1) === '2,2' && !r.doi[0].keo, J(r.doi[0].suKien.map((e) => e.ma + ':' + e.vat)));
   //        x: 0123456
   const SAN9c = ['#######', '#~~B~q#', '#~~~~~#', '#######'];
-  r = chay(xuong({ san: SAN9c, batDau: { x: 1, y: 1, huong: 1 }, mucTieu: 'dua-vat' }), 'tow()\nwait()\n' + lap(TIEN, 3));
-  kiem('mục tiêu dua-vat: kéo bè (3,1) về mũi (2,1) rồi tiến 3 tới bến q (5,1) thì thắng ngay (xong-dua-vat)', r.thang && vatO(r, 1) === '5,1' && co(r, 'xong-dua-vat'), vi(r) + ' ' + vatO(r, 1));
-  r = chay(xuong({ san: SAN9c, batDau: { x: 1, y: 1, huong: 1 }, mucTieu: 'dua-vat' }), 'tow()\nwait()\n' + lap(TIEN, 2));
+  r = chay(xuong({ san: SAN9c, batDau: { x: 1, y: 1, huong: 1 }, mucTieu: 'dua-vat' }), 'cast_net()\nwait()\nset_length(3)\nwait()\nset_length(0)\nwait()\n' + lap(TIEN, 2) + 'set_length(2)\nwait()');
+  kiem('mục tiêu dua-vat: đưa bè (3,1) tới bến q (5,1) thì thắng ngay (xong-dua-vat)', r.thang && vatO(r, 1) === '5,1' && co(r, 'xong-dua-vat'), vi(r) + ' ' + vatO(r, 1));
+  r = chay(xuong({ san: SAN9c, batDau: { x: 1, y: 1, huong: 1 }, mucTieu: 'dua-vat' }), 'cast_net()\nwait()\nset_length(3)\nwait()');
   kiem('bè chưa tới q: chưa thắng', !r.thang && vatO(r, 1) === '4,1', vatO(r, 1));
   r = chay(xuong({ san: SAN9c, batDau: { x: 1, y: 2, huong: 1 }, mucTieu: 'dua-vat', dong: [{ x: 3, y: 1, huong: 1, suc: 2 }, { x: 4, y: 1, huong: 1, suc: 2 }] }), 'wait()');
   kiem('bè tự trôi vào q cũng thắng (dua-vat)', r.thang && vatO(r, 1) === '5,1');
-  r = chay(xuong({ san: ['#######', '#~~B~q#', '#~~L~~#', '#######'], batDau: { x: 1, y: 1, huong: 1 }, mucTieu: 'dua-vat' }), 'tow()\nwait()\n' + TIEN + TIEN);
+  r = chay(xuong({ san: ['#######', '#~~B~q#', '#~~L~~#', '#######'], batDau: { x: 1, y: 1, huong: 1 }, mucTieu: 'dua-vat' }), 'cast_net()\nwait()\nset_length(3)\nwait()');
   kiem('hai vật nổi (bè + lục bình): một vật tới q chưa thắng', !r.thang && r.vat.length === 2 && r.vat[1].noi === 'luc-binh');
   kiem('toi-co: xuồng tới Q (mục 2); vật nổi không chặn drone', (() => { const rr = chay({ loaiRobot: 'drone', san: SAN9c, batDau: { x: 1, y: 1 } }, 'go_right()\ngo_right()'); return vi(rr) === '3,1,0' && co(rr, 'bay-qua'); })());
 }
 
 console.log('\n== 10. Vết nhịp, kết quả, màn cũ không đổi ==');
 {
-  const r = chay(xuong({ san: ['#######', '#~~B~~#', '#~~K~~#', '#~~V~~#', '#######'].map((s, i) => i === 3 ? '#..V..#' : s), batDau: { x: 1, y: 1, huong: 1 }, dong: [{ x: 1, y: 1, huong: 1, suc: 1 }] }), 'tow()\nwait()');
+  const r = chay(xuong({ san: ['#######', '#~~B~~#', '#~~K~~#', '#~~V~~#', '#######'].map((s, i) => i === 3 ? '#..V..#' : s), batDau: { x: 1, y: 1, huong: 1 }, dong: [{ x: 1, y: 1, huong: 1, suc: 1 }] }), 'cast_net()\nwait()');
   const n = nhipVet(r)[0];
-  kiem('vết nhịp của xuồng: robot.neo, robot.keo, vat (có noi), cong, van, dongTat', n.robot.neo === false && J(n.robot.keo) === J({ id: 1, cho: 'mui' }) && n.vat[0].noi === 'be' && Array.isArray(n.cong) && Array.isArray(n.van) && Array.isArray(n.dongTat), J(n));
+  kiem('vết nhịp của xuồng: robot.neo, robot.keo, vat (có noi), cong, van, dongTat', n.robot.neo === false && n.robot.keo && n.robot.keo.id === 1 && n.robot.keo.cho === 'luoi' && n.vat[0].noi === 'be' && Array.isArray(n.cong) && Array.isArray(n.van) && Array.isArray(n.dongTat), J(n));
   kiem('kết quả cuối có vat với noi, keo, neo', r.vat[0].noi === 'be' && r.keo.id === 1 && r.neo === false);
   const cu = chay({ loaiRobot: 'banh', hamGoc: XE, san: ['#####', '#..F#', '#####'], batDau: { x: 1, y: 1, huong: 1 } }, TIEN + TIEN);
   const n2 = nhipVet(cu)[0];
@@ -361,14 +369,14 @@ console.log('\n== 10. Vết nhịp, kết quả, màn cũ không đổi ==');
   const cu2 = chay({ loaiRobot: 'banh', hamGoc: XE, san: ['#####', '#.o.#', '#####'], batDau: { x: 1, y: 1, huong: 1 } }, TIEN);
   kiem('màn cũ có vật thường: vật không có trường noi', cu2.vat.length === 1 && cu2.vat[0].noi === undefined && sk1(cu2, 'dam-tuong').vat === 'vat');
   kiem('API xuất laNuoc / NUOC_KY / TAY_PHAO / THAN_NEO / CAM_DONG_HAM / TAM_KEO cho gói vẽ và sổ lệnh',
-    typeof SanHoc.laNuoc === 'function' && SanHoc.NUOC_KY['~'] && SanHoc.TAY_PHAO.length === 4 && SanHoc.THAN_NEO.length === 2 && SanHoc.CAM_DONG_HAM.length === 2 && SanHoc.TAM_KEO === 3 && SanHoc.HAM_GOC.xuong.length === 5);
+    typeof SanHoc.laNuoc === 'function' && SanHoc.NUOC_KY['~'] && SanHoc.TAY_PHAO.length === 3 && SanHoc.THAN_NEO.length === 2 && SanHoc.CAM_DONG_HAM.length === 2 && SanHoc.TAM_KEO === 3 && SanHoc.HAM_GOC.xuong.length === 5);
 }
 
 console.log('\n== 11. Lời chẩn đoán (cham.js) và sổ lệnh (so-lenh.js) ==');
 {
   const ChamHoc = require(path.join(day, 'cham.js'));
   const SoLenh = require(path.join(day, 'so-lenh.js'));
-  const man = (t) => Object.assign({ ma: 'thu-song.1', loaiRobot: 'xuong', hamGoc: XUONG, robot: { camBien: [{ ma: 'dong-chay' }] }, san: SAN1, batDau: { x: 1, y: 3, huong: 1 }, mucTieu: 'toi-co', sao: { o: 99, nhip: 99 } }, t || {});
+  const man = (t) => Object.assign({ ma: 'thu-song.1', loaiRobot: 'xuong', hamGoc: XUONG, chinhLuoi: true, robot: { camBien: [{ ma: 'dong-chay' }] }, san: SAN1, batDau: { x: 1, y: 3, huong: 1 }, mucTieu: 'toi-co', sao: { o: 99, nhip: 99 } }, t || {});
   const cd = (r, ma) => (r.chanDoan || []).find((c) => c.ma === ma) || null;
   const loiCua = (c) => (c && (c.loi || c.thongDiep)) || '';
   let r = ChamHoc.cham(man({ batDau: { x: 1, y: 2, huong: 1 } }), { chinh: ['left_move()', 'right_move()', 'wait()'] }, []);
@@ -378,27 +386,25 @@ console.log('\n== 11. Lời chẩn đoán (cham.js) và sổ lệnh (so-lenh.js)
   r = ChamHoc.cham(man({ dong: [{ x: 1, y: 3, huong: 3, suc: 2 }] }), { chinh: ['anchor()', 'wait()', 'left_move()', 'right_move()', 'wait()'] }, []);
   kiem('cham: dang-neo nói đang thả neo và nhắc unanchor(), trỏ dòng lệnh bánh', !!cd(r, 'dang-neo') && /neo/.test(loiCua(cd(r, 'dang-neo'))) && /unanchor\(\)/.test(loiCua(cd(r, 'dang-neo'))) && cd(r, 'dang-neo').cho, J(r.chanDoan));
   const SAN5b = ['##########', '#~~~~~~~~#', '#~~~~B~~~#', '#~~~~~~~~#', '#.~~~~~~.#', '##########'];
-  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 2, y: 2, huong: 1 } }), { chinh: ['tow()', 'wait()', 'for i in range(6):', '    left_move()', '    right_move()', '    wait()'] }, []);
-  kiem('cham: mui-vuong nói bè ở trước mũi, ô là bờ, gợi ý tether()', !!cd(r, 'mui-vuong') && /bờ/.test(loiCua(cd(r, 'mui-vuong'))) && /tether\(\)/.test(loiCua(cd(r, 'mui-vuong'))), J(r.chanDoan));
-  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 2, y: 2, huong: 1 } }), { chinh: ['tow()', 'wait()', 'tow()', 'wait()'] }, []);
-  kiem('cham: dang-keo nói đang kéo một bè rồi, gợi ý drop_tow()', !!cd(r, 'dang-keo') && /drop_tow\(\)/.test(loiCua(cd(r, 'dang-keo'))), J(r.chanDoan));
-  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 1, y: 2, huong: 1 } }), { chinh: ['tow()', 'wait()', 'drop_tow()', 'wait()'] }, []);
-  kiem('cham: keo-hut (thông tin) nói dây chỉ bay 3 ô; khong-keo nói không có gì để thả', !!cd(r, 'keo-hut') && cd(r, 'keo-hut').muc === 'thong-tin' && /3 ô/.test(loiCua(cd(r, 'keo-hut'))) && !!cd(r, 'khong-keo') && /tow\(\)/.test(loiCua(cd(r, 'khong-keo'))), J(r.chanDoan));
-  r = ChamHoc.cham(man({ san: ['#######', '#~~~~~#', '#~B~~~#', '#~~~~~#', '#~~~~~#', '#######'], batDau: { x: 2, y: 3, huong: 0 } }), { chinh: ['tow()', 'wait()', 'tether()', 'wait()', 'left_back()', 'right_back()', 'wait()'] }, []);
-  kiem('cham: duoi-vuong (lùi vào bè buộc đuôi) nói bè buộc đuôi và untether()', !!cd(r, 'duoi-vuong') && /buộc đuôi/.test(loiCua(cd(r, 'duoi-vuong'))) && /untether\(\)/.test(loiCua(cd(r, 'duoi-vuong'))), J(r.chanDoan));
-  r = ChamHoc.cham(man({ san: ['#######', '#~~~~~#', '#~~~~~#', '#~~~~~#', '#######'], batDau: { x: 3, y: 1, huong: 2 } }), { chinh: ['tether()', 'wait()'] }, []);
-  kiem('cham: buoc-hut nói ô sau đuôi là bờ', !!cd(r, 'buoc-hut') && /bờ/.test(loiCua(cd(r, 'buoc-hut'))), J(r.chanDoan));
-  r = ChamHoc.cham(man(), { chinh: ['anchor()', 'tow()'] }, []);
-  kiem('cham: quen-wait nói "lệnh dây phao" khi anchor() / tow() chưa có wait()', !!cd(r, 'quen-wait') && /dây phao/.test(loiCua(cd(r, 'quen-wait'))), J(r.chanDoan));
-  r = ChamHoc.cham(man(), { chinh: ['anchor()', 'unanchor()', 'wait()', 'tow()', 'drop_tow()', 'wait()'] }, []);
+  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 3, y: 2, huong: 1 } }), { chinh: ['cast_net()', 'wait()', 'left_move()', 'right_move()', 'wait()'] }, []);
+  kiem('cham: luoi-vuong nói vướng dây lưới và gợi ý set_length(0)', !!cd(r, 'luoi-vuong') && /dây lưới/.test(loiCua(cd(r, 'luoi-vuong'))) && /set_length\(0\)/.test(loiCua(cd(r, 'luoi-vuong'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 3, y: 2, huong: 1 } }), { chinh: ['cast_net()', 'wait()', 'cast_net()', 'wait()'] }, []);
+  kiem('cham: dang-keo nói đang giữ một bè trong lưới rồi, gợi ý drop_net()', !!cd(r, 'dang-keo') && /drop_net\(\)/.test(loiCua(cd(r, 'dang-keo'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 1, y: 2, huong: 1 } }), { chinh: ['cast_net()', 'wait()', 'drop_net()', 'wait()'] }, []);
+  kiem('cham: keo-hut (thông tin) nói ô rơi của lưới; khong-keo nói không giữ bè nào', !!cd(r, 'keo-hut') && cd(r, 'keo-hut').muc === 'thong-tin' && /lưới/.test(loiCua(cd(r, 'keo-hut'))) && !!cd(r, 'khong-keo') && /cast_net\(\)/.test(loiCua(cd(r, 'khong-keo'))), J(r.chanDoan));
+  r = ChamHoc.cham(man({ san: SAN5b, batDau: { x: 3, y: 2, huong: 1 } }), { chinh: ['cast_net()', 'wait()', 'set_length(0)', 'wait()', 'drop_net()', 'wait()'] }, []);
+  kiem('cham: trong-khoang nói bè đang trong khoang và gợi ý set_length(1)', !!cd(r, 'trong-khoang') && /khoang/.test(loiCua(cd(r, 'trong-khoang'))) && /set_length\(1\)/.test(loiCua(cd(r, 'trong-khoang'))), J(r.chanDoan));
+  r = ChamHoc.cham(man(), { chinh: ['anchor()', 'cast_net()'] }, []);
+  kiem('cham: quen-wait nói "lệnh tay lưới" khi anchor() / cast_net() chưa có wait()', !!cd(r, 'quen-wait') && /tay lưới/.test(loiCua(cd(r, 'quen-wait'))), J(r.chanDoan));
+  r = ChamHoc.cham(man(), { chinh: ['anchor()', 'unanchor()', 'wait()', 'cast_net()', 'drop_net()', 'wait()'] }, []);
   kiem('cham: neo-goi-lai và phao-goi-lai nói mỗi nhịp một lệnh', !!cd(r, 'neo-goi-lai') && !!cd(r, 'phao-goi-lai') && /một lệnh/.test(loiCua(cd(r, 'neo-goi-lai'))), J(r.chanDoan));
-  r = ChamHoc.cham(man({ san: ['##########', '#~~~~~~~~#', '#~~~~k~~Q#', '#~~~~V~~~#', '##########'], batDau: { x: 5, y: 2, huong: 2 } }), { chinh: ['tow()', 'wait()'] }, []);
+  r = ChamHoc.cham(man({ san: ['##########', '#~~~~~~~~#', '#~~~~k~~Q#', '#~~~~V~~~#', '##########'], batDau: { x: 5, y: 2, huong: 2 } }), { chinh: ['cast_net()', 'wait()'] }, []);
   kiem('cham: cong-ket (thông tin) nói xuồng nằm trong cống nên cống giữ mở', !!cd(r, 'cong-ket') && cd(r, 'cong-ket').muc === 'thong-tin' && /cống/.test(loiCua(cd(r, 'cong-ket'))), J(r.chanDoan));
   r = ChamHoc.cham(man(), { chinh: ['for i in range(4):', '    left_move()', '    right_move()', '    wait()', 'right_move()', 'wait()', 'for i in range(2):', '    left_move()', '    right_move()', '    wait()'] }, []);
   kiem('cham: lời giải tới Q thắng, không chẩn đoán lỗi', r.thang === true && !(r.chanDoan || []).some((c) => c.muc === 'loi'), J(r.chanDoan));
-  const ten = ['anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow_dir', 'flow'];
-  kiem('so-lenh: 8 lệnh gốc mới có mô tả; cặp ngược khớp SanHoc.LENH_NGUOC', ten.every((t) => SoLenh.lenhGoc.some((l) => l.ten === t && l.moTa && (l.nguoc || null) === (SanHoc.LENH_NGUOC[t] || null))));
-  kiem('so-lenh: capNguoc() có anchor / tow / tether', ['anchor', 'tow', 'tether'].every((t) => SoLenh.capNguoc().some((c) => c[0] === t || c[1] === t)));
+  const ten = ['anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'flow_dir', 'flow'];
+  kiem('so-lenh: 7 lệnh gốc mùa sông có mô tả; cặp ngược khớp SanHoc.LENH_NGUOC', ten.every((t) => SoLenh.lenhGoc.some((l) => l.ten === t && l.moTa && (l.nguoc || null) === (SanHoc.LENH_NGUOC[t] || null))));
+  kiem('so-lenh: capNguoc() có anchor / cast_net', ['anchor', 'cast_net'].every((t) => SoLenh.capNguoc().some((c) => c[0] === t || c[1] === t)));
 }
 
 console.log('\n---------------------------------------------');

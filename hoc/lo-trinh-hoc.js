@@ -1968,7 +1968,7 @@
   var MUA_SONG = [
     { ma: 'xuong', ten: 'Xuồng chân vịt', loai: 'bo-phan', hinh: 'xuong',
       chuong: [['xuong', []], ['ham-tra-ve', []]] },
-    { ma: 'day-keo', ten: 'Dây phao kéo', loai: 'bo-phan', hinh: 'day-keo',
+    { ma: 'day-keo', ten: 'Tay lưới thủy lợi', loai: 'bo-phan', hinh: 'day-keo',
       chuong: [['day-keo', []], ['bo-co-dinh', []]] },
     { ma: 'dong-chay', ten: 'Chong chóng dòng chảy', loai: 'bo-phan', hinh: 'dong-chay',
       chuong: [['dong-chay', []], ['che-dong-chay', []]] },
@@ -1976,7 +1976,7 @@
       chuong: [['cong-thuy-loi', []], ['che-cong', []]] },
     { ma: 'tha-neo', ten: 'Mỏ neo chống trôi', loai: 'bo-phan', hinh: 'tha-neo',
       chuong: [['tha-neo', []], ['che-tha-neo', []]] },
-    { ma: 'buoc-duoi', ten: 'Dây dắt theo đuôi', loai: 'bo-phan', hinh: 'buoc-duoi',
+    { ma: 'buoc-duoi', ten: 'Cuộn dây chỉnh lưới', loai: 'bo-phan', hinh: 'buoc-duoi',
       chuong: [['buoc-duoi', []], ['che-buoc-duoi', []]] },
     { ma: 'suc-nuoc', ten: 'Đo sức nước chảy', loai: 'bo-phan', hinh: 'suc-nuoc',
       chuong: [['suc-nuoc', []], ['che-suc-nuoc', []]] },
@@ -1989,11 +1989,11 @@
   ];
   var TEN_MUA_SONG = {
     'xuong': 'Lướt sóng ra khơi', 'ham-tra-ve': 'Hàm trả kết quả',
-    'day-keo': 'Quăng dây kéo bè', 'bo-co-dinh': 'Bộ cố định hai phần',
+    'day-keo': 'Tung lưới bắt bè', 'bo-co-dinh': 'Bộ cố định hai phần',
     'dong-chay': 'Đo hướng nước chảy', 'che-dong-chay': 'Chế lệnh: lựa chiều nước',
     'cong-thuy-loi': 'Mở cống dẫn nước', 'che-cong': 'Chế lệnh: điều tiết dòng',
     'tha-neo': 'Thả neo giữ nhịp', 'che-tha-neo': 'Chế lệnh: neo giữa dòng xiết',
-    'buoc-duoi': 'Lai dắt theo đuôi', 'che-buoc-duoi': 'Chế lệnh: kéo bè qua khúc cua',
+    'buoc-duoi': 'Thu thả dây lưới', 'che-buoc-duoi': 'Chế lệnh: thu lưới qua khúc cua',
     'suc-nuoc': 'Đo sức nước chảy', 'che-suc-nuoc': 'Chế lệnh: chọn nhánh êm nhất',
     'ben-cu': 'Dọn luồng bến cũ', 'che-ben-cu': 'Chế lệnh: cứu hộ bến cũ',
     'doi-xuong': 'Đội xuồng bắc cầu phao', 'che-doi-xuong': 'Chế lệnh: đội xuồng phối hợp',
@@ -3330,6 +3330,12 @@
       if (i < i0) return;
       if (m.doi) m.doi.forEach(function (r) { if (r && r.lucBan === undefined) r.lucBan = true; });      // màn đội: cờ khai theo từng xe
       else if (m.lucBan === undefined) m.lucBan = true;
+    });
+    var iLuoi = M.danhSach.indexOf(get('buoc-duoi.1'));
+    if (iLuoi >= 0) M.danhSach.forEach(function (m, i) {
+      if (i < iLuoi) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.chinhLuoi === undefined) r.chinhLuoi = true; });
+      else if (m.chinhLuoi === undefined) m.chinhLuoi = true;
     });
   })();
 

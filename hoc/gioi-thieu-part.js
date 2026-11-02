@@ -337,33 +337,31 @@
       luuY: ['Trên ô có dòng nước chảy, cuối mỗi nhịp xuồng không thả neo sẽ trôi theo chiều dòng.']
     },
     'day-keo': {
-      khe: 'tay', ten: 'Dây phao kéo',
-      moTa: 'Cuộn dây phao gắn mũi xuồng để quăng bắt bè nổi, giật van cống hoặc buộc bè theo đuôi.',
-      lenh: ['tow', 'drop_tow', 'tether', 'untether'],
+      khe: 'tay', ten: 'Tay lưới thủy lợi',
+      moTa: 'Vòng lưới phao gắn trên xuồng để tung lưới ra 4 phía bắt bè nổi, giật van cống hoặc cuộn dây chỉnh độ dài lưới.',
+      lenh: ['cast_net', 'drop_net', 'set_length'],
       moTaLenh: {
-        tow: 'Quăng dây phao thẳng theo mũi xuồng tối đa 3 ô để kéo vật nổi hoặc giật van V',
-        drop_tow: 'Tháo dây thả vật đang kéo ở mũi xuống ô hiện tại của nó',
-        tether: 'Chuyển vật đang kéo ở mũi ra ô sau đuôi hoặc buộc vật nổi ngay sau đuôi',
-        untether: 'Tháo dây cho vật đang buộc ở đuôi'
+        cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van V',
+        drop_net: 'Mở lưới thả vật đang giữ xuống đúng ô nước hiện tại của nó',
+        set_length: 'Đặt độ dài dây lưới từ 0 đến 3, với 0 là kéo vật về khoang tàu và 1 đến 3 là số ô dây dưới nước'
       },
       ghep: [
-        { lenh: ['tow', 'wait'], ra: 'Quăng dây kéo vật nổi về sát mũi hoặc giật van V trên bờ' },
-        { lenh: ['drop_tow', 'wait'], ra: 'Thả vật đang kéo ở mũi xuống bến hàng q' },
-        { lenh: ['tether', 'wait'], ra: 'Chuyển bè từ mũi ra sau đuôi hoặc buộc bè ngay sau đuôi' },
-        { lenh: ['untether', 'wait'], ra: 'Tháo dây thả bè đang buộc ở đuôi' }
+        { lenh: ['cast_net', 'wait'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van V trên bờ' },
+        { lenh: ['drop_net', 'wait'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng q' },
+        { lenh: ['set_length', 'wait'], ra: 'Thu dây kéo vật về khoang tàu hoặc thả dây ra độ dài mới' }
       ],
       gioi: [
-        'tow() phóng dây thẳng theo mũi xuồng tối đa 3 ô, trúng bè nổi B hoặc L thì kéo về sát ngay trước mũi xuồng',
-        'Khi đang kéo vật ở mũi: xuồng tiến thì đẩy vật đi trước, xuồng lùi thì kéo vật theo sau',
-        'tow() trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van',
-        { can: ['tether'], chu: 'tether() buộc bè nổi ra ô sau đuôi để kéo theo như toa tàu qua khúc cua hẹp mà không vướng mũi' }
+        'cast_net(d) tung lưới theo bốn hướng quanh xuồng là front, back, left, right, mặc định là front cách xuồng 2 ô',
+        'Khi xuồng di chuyển, dây lưới và vật nổi trong lưới lướt theo sau đúng quỹ đạo của xuồng; khi xuồng xoay tại chỗ thì lưới dưới nước đứng yên',
+        'cast_net(d) trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van',
+        { can: ['set_length'], chu: 'set_length(n) chỉnh độ dài dây lưới từ 0 đến 3: gọi 0 để kéo vật gọn vào khoang tàu, gọi 1 đến 3 để thu ngắn hay thả dài dây dưới nước' }
       ],
       khong: [
-        'Không gọi tow() thêm được khi mũi xuồng đang kéo một vật nổi',
-        'Khi đang kéo vật ở mũi, chỉ quay 90° được nếu ô mới trước mũi là mặt nước trống',
-        { can: ['tether'], chu: 'Đang buộc bè ở đuôi thì không lùi thẳng vào chính ô của bè được' }
+        'Không gọi cast_net(d) bắt thêm được khi trong lưới đang giữ một vật nổi',
+        'Xuồng không đi đè lên chính ô dây lưới hay túi lưới đang căng dưới nước',
+        { can: ['set_length'], chu: 'Khi vật đang nằm trong khoang tàu ở độ dài 0 thì phải gọi set_length(n) thả ra mặt nước trước khi gọi drop_net()' }
       ],
-      luuY: ['Gọi drop_tow() rồi wait() khi vật đang nằm ngay trên ô bến hàng q để giao hàng.']
+      luuY: ['Gọi drop_net() rồi wait() khi vật trong lưới đang nằm ngay trên ô bến hàng q để giao hàng.']
     },
     'dong-chay': {
       khe: 'camBien', ten: 'Chong chóng dòng chảy',

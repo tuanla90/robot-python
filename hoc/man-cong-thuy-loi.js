@@ -9,7 +9,7 @@
   var M = (typeof window !== 'undefined' && window.ManHoc) ||
     (typeof require === 'function' ? require('./man-chuoi-1.js') : null);
 
-  var GOC_CONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'tow', 'drop_tow', 'flow_dir'];
+  var GOC_CONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net', 'flow_dir'];
   var ROBOT_CONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
   var CAU_TRUC = ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'];
 
@@ -394,12 +394,12 @@
 
     manCongThuyLoi({
       so: 8, ten: 'Mở cống rồi kéo bè qua cống', hang: 'bien-the', mucTieu: 'dua-vat',
-      deBai: 'Sola nhờ bạn: bè gỗ B nằm bên kia cửa cống đóng K ở (3, 1). Từ (1, 1) hướng sang phải, hãy quay trái (turn_left()), gạt van V ở (1, 0) bằng tow_grab(), quay phải trở lại (turn_right()), rồi gọi tow_pair(2, 2) để tiến 2 ô vào cống mở, kéo bè ở (4, 1) và đẩy 2 ô tới bến q ở (6, 1).',
-      veMaMau: 'Quay trái gạt van, quay phải rồi gọi tow_pair(2, 2).',
+      deBai: 'Sola nhờ bạn: bè gỗ B nằm bên kia cửa cống đóng K ở (3, 1). Từ (1, 1) hướng sang phải, hãy quay trái (turn_left()), gạt van V ở (1, 0) bằng tow_grab(), quay phải trở lại (turn_right()), rồi gọi tow_pair(2, 1) để tiến 2 ô vào cống mở, tung lưới bắt bè ở (5, 1) và kéo lùi 1 ô tới bến q ở (4, 1).',
+      veMaMau: 'Quay trái gạt van, quay phải rồi gọi tow_pair(2, 1).',
       san: [
-        '#V######',
-        '#~~KB~q#',
-        '########'
+        '#V#####',
+        '#~~KqB#',
+        '#######'
       ],
       noi: [{ nut: { x: 1, y: 0 }, cong: [{ x: 3, y: 1 }], dong: [] }],
       batDau: { x: 1, y: 1, huong: 1 },
@@ -412,35 +412,35 @@
         'turn_left()',
         'tow_grab()',
         'turn_right()',
-        'tow_pair(2, 2)'
+        'tow_pair(2, 1)'
       ]),
-      sao: { o: 20, nhip: 8 },
+      sao: { o: 20, nhip: 7 },
       loiGiaiKhac: {
-        moTa: 'Dùng pair_step("R", 2) rồi tow_pair(0, 2)',
+        moTa: 'Dùng pair_step("R", 2) rồi tow_pair(0, 1)',
         baiLam: bai([
           'turn_left()',
           'tow_grab()',
           'pair_step("R", 2)',
-          'tow_pair(0, 2)'
+          'tow_pair(0, 1)'
         ])
       },
       loiSai: [
-        { moTa: 'Mới mở cống, chưa gọi tow_pair(2, 2) để đưa bè về bến', baiLam: bai(['turn_left()', 'tow_grab()', 'turn_right()']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Gọi tow_pair(1, 2) nên mới tới (2, 1), khi đẩy bè 2 ô vẫn thiếu 1 ô tới q', baiLam: bai(['turn_left()', 'tow_grab()', 'turn_right()', 'tow_pair(1, 2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Mới mở cống, chưa gọi tow_pair(2, 1) để đưa bè về bến', baiLam: bai(['turn_left()', 'tow_grab()', 'turn_right()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Gọi tow_pair(1, 1) nên mới tới (2, 1), tung lưới hụt bè ở (5, 1)', baiLam: bai(['turn_left()', 'tow_grab()', 'turn_right()', 'tow_pair(1, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau turn_right(), xuồng ở (1, 1) hướng sang phải và cống (3, 1) đã mở.', 'Luna: Gọi tow_pair(2, 2) để tiến 2 ô tới (3, 1), móc bè ở (4, 1) và đẩy 2 ô tới (6, 1).']
+      goiY: ['Luna: Sau turn_right(), xuồng ở (1, 1) hướng sang phải và cống (3, 1) đã mở.', 'Luna: Gọi tow_pair(2, 1) để tiến 2 ô tới (3, 1), bắt bè ở (5, 1) và kéo lùi 1 ô về (4, 1).']
     }),
 
     manCongThuyLoi({
       so: 9, ten: 'Kéo lùi bè qua cống về bến', hang: 'bien-the', mucTieu: 'dua-vat',
-      deBai: 'Sola nhờ bạn: bến nhận q nằm ở (2, 1) ngay dưới xuồng, còn bè gỗ B bị nhốt ở (5, 1) sau cống đóng K (3, 1). Hãy quay trái gạt van V ở (2, 0) (turn_left(), tow_grab()), rẽ phải tiến 1 ô vào cống mở bằng pair_step("R", 1), rồi gọi pull_back(2) để kéo bè ở (5, 1) lùi qua cống về đúng bến (2, 1)!',
+      deBai: 'Sola nhờ bạn: bến nhận q nằm ở (3, 1), còn bè gỗ B bị nhốt ở (5, 1) sau cống đóng K (4, 1). Hãy quay trái gạt van V ở (2, 0) (turn_left(), tow_grab()), rẽ phải tiến 1 ô tới (3, 1) bằng pair_step("R", 1), rồi gọi pull_back(2) để tung lưới qua cống bắt bè ở (5, 1) và kéo lùi 2 ô về đúng bến (3, 1)!',
       veMaMau: 'Quay trái gạt van, gọi pair_step("R", 1) rồi gọi pull_back(2).',
       san: [
         '##V####',
-        '#~qK~B#',
+        '#~~qKB#',
         '#######'
       ],
-      noi: [{ nut: { x: 2, y: 0 }, cong: [{ x: 3, y: 1 }], dong: [] }],
+      noi: [{ nut: { x: 2, y: 0 }, cong: [{ x: 4, y: 1 }], dong: [] }],
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'turn_left()',
@@ -465,10 +465,10 @@
         ])
       },
       loiSai: [
-        { moTa: 'Chưa gọi pull_back(2) sau khi tiến vào cống (3, 1)', baiLam: bai(['turn_left()', 'tow_grab()', 'pair_step("R", 1)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chỉ gọi pull_back(1) nên bè mới lùi tới (3, 1), chưa về tới (2, 1)', baiLam: bai(['turn_left()', 'tow_grab()', 'pair_step("R", 1)', 'pull_back(1)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chưa gọi pull_back(2) sau khi tiến tới (3, 1)', baiLam: bai(['turn_left()', 'tow_grab()', 'pair_step("R", 1)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chỉ gọi pull_back(1) nên bè mới lùi tới (4, 1), chưa về tới (3, 1)', baiLam: bai(['turn_left()', 'tow_grab()', 'pair_step("R", 1)', 'pull_back(1)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau pair_step("R", 1), xuồng đứng ở (3, 1) cách bè (5, 1) đúng 2 ô.', 'Luna: Gọi pull_back(2) để thu bè về (4, 1) và lùi 2 ô đưa bè về (2, 1).']
+      goiY: ['Luna: Sau pair_step("R", 1), xuồng đứng ở (3, 1) cách bè (5, 1) đúng 2 ô qua cống mở (4, 1).', 'Luna: Gọi pull_back(2) để bắt bè ở (5, 1) và lùi 2 ô kéo bè về (3, 1).']
     }),
 
     manCongThuyLoi({
@@ -478,35 +478,35 @@
       veMaMau: 'Viết vòng lặp 2 lượt: gạt van bên trái, gọi tow_pair(1, 1), rồi chuyển luồng.',
       san: [
         [
-          '##V####',
-          '#~~KBq#',
-          '#~~~~~#',
-          '#qLK~~#',
-          '####V##'
+          '####V####',
+          '#~~~~KqB#',
+          '#~~~~~~~#',
+          '#LqK~~~~#',
+          '####V####'
         ],
         [
-          '##V####',
-          '#~~KLq#',
-          '#~~~~~#',
-          '#qBK~~#',
-          '####V##'
+          '####V####',
+          '#~~~~KqL#',
+          '#~~~~~~~#',
+          '#BqK~~~~#',
+          '####V####'
         ]
       ],
       dong: [
-        [{ x: 3, y: 1, huong: 3, suc: 1 }],
+        [{ x: 5, y: 1, huong: 3, suc: 1 }],
         [{ x: 3, y: 3, huong: 1, suc: 1 }]
       ],
       noi: [
         [
-          { nut: { x: 2, y: 0 }, cong: [{ x: 3, y: 1 }], dong: [{ x: 3, y: 1 }] },
+          { nut: { x: 4, y: 0 }, cong: [{ x: 5, y: 1 }], dong: [{ x: 5, y: 1 }] },
           { nut: { x: 4, y: 4 }, cong: [{ x: 3, y: 3 }], dong: [] }
         ],
         [
-          { nut: { x: 2, y: 0 }, cong: [{ x: 3, y: 1 }], dong: [] },
+          { nut: { x: 4, y: 0 }, cong: [{ x: 5, y: 1 }], dong: [] },
           { nut: { x: 4, y: 4 }, cong: [{ x: 3, y: 3 }], dong: [{ x: 3, y: 3 }] }
         ]
       ],
-      batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
+      batDau: [{ x: 4, y: 1, huong: 1 }, { x: 4, y: 1, huong: 1 }],
       maMau: bai([
         'for i in range(2):',
         '    turn_left()',
@@ -524,13 +524,15 @@
       ]),
       sao: { o: 31, nhip: 34 },
       loiGiaiKhac: {
-        moTa: 'Dùng pair_step("R", 1) và tow_pair(0, 1) sau khi gạt van',
+        moTa: 'Dùng move(), pull_back(1), tow_drop() sau khi gạt van',
         baiLam: bai([
           'for i in range(2):',
           '    turn_left()',
           '    tow_grab()',
-          '    pair_step("R", 1)',
-          '    tow_pair(0, 1)',
+          '    turn_right()',
+          '    move()',
+          '    pull_back(1)',
+          '    tow_drop()',
           '    pair_step("R", 2)',
           '    turn_right()'
         ])
@@ -539,7 +541,7 @@
         { moTa: 'Mới gạt van mà chưa kéo vật nổi và chuyển luồng', baiLam: bai(['for i in range(2):', '    turn_left()', '    tow_grab()', '    turn_right()']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên gạt van mở cống nên đâm vào cống đóng K', baiLam: bai(['for i in range(2):', '    tow_pair(1, 1)', '    pair_step("R", 2)', '    turn_right()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau turn_right(), gọi tow_pair(1, 1) để tiến vào ô cống mở, móc vật nổi và đẩy 1 ô vào bến.', 'Luna: Cuối mỗi lượt, gọi pair_step("R", 2) và turn_right() để sang luồng đối diện.']
+      goiY: ['Luna: Sau turn_right(), gọi tow_pair(1, 1) để tiến vào ô cống mở, bắt vật nổi và kéo lùi 1 ô vào bến.', 'Luna: Cuối mỗi lượt, gọi pair_step("R", 2) và turn_right() để sang luồng đối diện.']
     }),
 
     /* ========================================================================
@@ -673,17 +675,17 @@
       so: 4, ten: 'Chế hàm tắt dòng ngược rồi kéo bè shut_stream_tow(n)', hang: 'luyen', mucTieu: 'dua-vat', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['flip_valve', 'open_gate_pass']),
       taoHam: ['shut_stream_tow'],
-      deBai: 'Sola hướng dẫn: trước khi tiến vào ô (3, 1) để kéo bè, nếu thấy dòng chảy ngược (if flow_dir() == "back":) thì cần gọi flip_valve() tắt dòng, sau đó gọi tow_pair(1, n) để tiến 1 ô, móc bè và đẩy n ô vào bến. Hãy chế hàm shut_stream_tow(n) và gọi shut_stream_tow(2).',
+      deBai: 'Sola hướng dẫn: trước khi tiến vào ô (3, 1) để kéo bè, nếu thấy dòng chảy ngược (if flow_dir() == "back":) thì cần gọi flip_valve() tắt dòng, sau đó gọi tow_pair(1, n) để tiến 1 ô, tung lưới bắt bè và kéo lùi n ô vào bến. Hãy chế hàm shut_stream_tow(n) và gọi shut_stream_tow(2).',
       veMaMau: 'Trong shut_stream_tow(n), kiểm tra if flow_dir() == "back": flip_valve(), rồi gọi tow_pair(1, n).',
       san: [
         [
           '##V#####',
-          '#~~~B~q#',
+          '#~~q~B~#',
           '########'
         ],
         [
           '##V#####',
-          '#~~~B~q#',
+          '#~~q~B~#',
           '########'
         ]
       ],
@@ -759,14 +761,14 @@
     manCheCong({
       so: 6, ten: 'Kết hợp valve_and_back(2) và tow_pair()', hang: 'luyen', mucTieu: 'dua-vat',
       hamCuaEmCan: KHO_TRUOC.concat(['flip_valve', 'open_gate_pass', 'shut_stream_tow', 'valve_and_back']),
-      deBai: 'Sola nhờ bạn: xuồng đang ở ngã ba (2, 3) hướng lên ngách Bắc dài 2 ô dẫn tới van V ở (2, 0). Van này vừa mở cống K ở (3, 3) vừa tắt dòng chảy ngược ở (4, 3). Hãy gọi valve_and_back(2) để lên gạt van rồi lùi về (2, 3), quay phải (turn_right()), rồi gọi tow_pair(1, 2) đưa bè B ở (4, 3) vào bến q ở (6, 3)!',
-      veMaMau: 'Gọi valve_and_back(2), turn_right() rồi tow_pair(1, 2).',
+      deBai: 'Sola nhờ bạn: xuồng đang ở ngã ba (2, 3) hướng lên ngách Bắc dài 2 ô dẫn tới van V ở (2, 0). Van này vừa mở cống K ở (3, 3) vừa tắt dòng chảy ngược ở (3, 3). Hãy gọi valve_and_back(2) để lên gạt van rồi lùi về (2, 3), quay phải (turn_right()), rồi gọi tow_pair(1, 1) đưa bè B ở (5, 3) vào bến q ở (4, 3)!',
+      veMaMau: 'Gọi valve_and_back(2), turn_right() rồi tow_pair(1, 1).',
       san: [
-        '##V#####',
-        '##~#####',
-        '##~#####',
-        '#~~KB~q#',
-        '########'
+        '##V####',
+        '##~####',
+        '##~####',
+        '#~~KqB#',
+        '#######'
       ],
       dong: [{ x: 3, y: 3, huong: 3, suc: 1 }],
       noi: [{ nut: { x: 2, y: 0 }, cong: [{ x: 3, y: 3 }], dong: [{ x: 3, y: 3 }] }],
@@ -777,49 +779,49 @@
       loiGiai: bai([
         'valve_and_back(2)',
         'turn_right()',
-        'tow_pair(1, 2)'
+        'tow_pair(1, 1)'
       ]),
-      sao: { o: 24, nhip: 10 },
+      sao: { o: 24, nhip: 9 },
       loiGiaiKhac: {
-        moTa: 'Dùng pair_step("R", 1) và tow_pair(0, 2) sau valve_and_back(2)',
+        moTa: 'Dùng pair_step("R", 1) và tow_pair(0, 1) sau valve_and_back(2)',
         baiLam: bai([
           'valve_and_back(2)',
           'pair_step("R", 1)',
-          'tow_pair(0, 2)'
+          'tow_pair(0, 1)'
         ])
       },
       loiSai: [
         { moTa: 'Mới gạt van lùi về mà chưa kéo bè tới bến', baiLam: bai(['valve_and_back(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi turn_right() sau valve_and_back(2) nên xuồng lại đi lên ngách Bắc', baiLam: bai(['valve_and_back(2)', 'tow_pair(1, 2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên gọi turn_right() sau valve_and_back(2) nên xuồng lại đi lên ngách Bắc', baiLam: bai(['valve_and_back(2)', 'tow_pair(1, 1)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau valve_and_back(2), xuồng ở (2, 3) vẫn đang hướng lên Bắc.', 'Luna: Gọi turn_right() để hướng sang phải rồi gọi tow_pair(1, 2).']
+      goiY: ['Luna: Sau valve_and_back(2), xuồng ở (2, 3) vẫn đang hướng lên Bắc.', 'Luna: Gọi turn_right() để hướng sang phải rồi gọi tow_pair(1, 1).']
     }),
 
     manCheCong({
       so: 7, ten: 'Sửa hàm gạt van quay nhầm hướng fix_gate_tow()', hang: 'bien-the',
       chinhCoDinh: true, mucTieu: 'dua-vat',
       hamCuaEmCan: KHO_TRUOC.concat(['flip_valve', 'open_gate_pass', 'shut_stream_tow', 'valve_and_back']),
-      deBai: 'Sola phát hiện lỗi: chương trình chính gọi fix_gate_tow() để mở cống (3, 1) rồi gọi tow_pair(1, 2) đưa bè B vào bến q. Nhưng cuối hàm fix_gate_tow() lại gọi turn_left() thay vì turn_right(), làm xuồng quay ngược về bên trái! Hãy sửa lại dòng cuối của fix_gate_tow().',
+      deBai: 'Sola phát hiện lỗi: chương trình chính gọi fix_gate_tow() để mở cống (3, 1) rồi gọi tow_pair(1, 1) đưa bè B vào bến q. Nhưng cuối hàm fix_gate_tow() lại gọi turn_left() thay vì turn_right(), làm xuồng quay ngược về bên trái! Hãy sửa lại dòng cuối của fix_gate_tow().',
       veMaMau: 'Chương trình chính đã khóa. Hãy đổi dòng cuối của fix_gate_tow() thành turn_right().',
       san: [
-        '##V#####',
-        '#~~KB~q#',
-        '########'
+        '##V####',
+        '#~~KqB#',
+        '#######'
       ],
       noi: [{ nut: { x: 2, y: 0 }, cong: [{ x: 3, y: 1 }], dong: [] }],
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'fix_gate_tow()',
-        'tow_pair(1, 2)'
+        'tow_pair(1, 1)'
       ], { hamCuaMan: [hFixGateTow(T_FIX_GATE_SAI)] }),
       loiGiai: bai([
         'fix_gate_tow()',
-        'tow_pair(1, 2)'
+        'tow_pair(1, 1)'
       ], { hamCuaMan: [hFixGateTow(T_FIX_GATE_DUNG)] }),
-      sao: { o: 21, nhip: 7 },
+      sao: { o: 21, nhip: 6 },
       loiSai: [
-        { moTa: 'Chưa sửa turn_left() cuối hàm nên xuồng đi ngược sang trái', baiLam: bai(['fix_gate_tow()', 'tow_pair(1, 2)'], { hamCuaMan: [hFixGateTow(T_FIX_GATE_SAI)] }), phaiCoMa: ['khong-keo', 'chua-dua-vat'] },
-        { moTa: 'Xóa mất tow_grab() nên cửa cống K không mở', baiLam: bai(['fix_gate_tow()', 'tow_pair(1, 2)'], { hamCuaMan: [hFixGateTow(['turn_left()', 'turn_right()'])] }), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Chưa sửa turn_left() cuối hàm nên xuồng đi ngược sang trái', baiLam: bai(['fix_gate_tow()', 'tow_pair(1, 1)'], { hamCuaMan: [hFixGateTow(T_FIX_GATE_SAI)] }), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
+        { moTa: 'Xóa mất tow_grab() nên cửa cống K không mở', baiLam: bai(['fix_gate_tow()', 'tow_pair(1, 1)'], { hamCuaMan: [hFixGateTow(['turn_left()', 'turn_right()'])] }), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau khi turn_left() để nhìn lên van Bắc, cần turn_right() để quay lại hướng Đông.', 'Luna: Đổi dòng thứ ba của fix_gate_tow() từ turn_left() thành turn_right().']
     }),
@@ -828,14 +830,14 @@
       so: 8, ten: 'Chế hàm mở cống kéo lùi bè lock_rescue(n)', hang: 'bien-the', mucTieu: 'dua-vat',
       hamCuaEmCan: KHO_TRUOC.concat(['flip_valve', 'open_gate_pass', 'shut_stream_tow', 'valve_and_back']),
       taoHam: ['lock_rescue'],
-      deBai: 'Sola hướng dẫn: để giải cứu chiếc bè bị kẹt trong âu cống và kéo lùi về bến sau lưng, hãy chế hàm lock_rescue(n) gồm 2 dòng: gọi open_gate_pass(1) để mở cống và tiến 1 ô vào cống, rồi gọi pull_back(n) để kéo bè lùi n ô về bến! Gọi lock_rescue(2).',
+      deBai: 'Sola hướng dẫn: để giải cứu chiếc bè bị kẹt sau cửa cống và kéo lùi về bến, hãy chế hàm lock_rescue(n) gồm 2 dòng: gọi open_gate_pass(1) để mở cống và tiến 1 ô tới bến (3, 1), rồi gọi pull_back(n) để tung lưới qua cống bắt bè và kéo lùi n ô về bến! Gọi lock_rescue(2).',
       veMaMau: 'Viết hàm lock_rescue(n) gồm open_gate_pass(1) và pull_back(n).',
       san: [
         '##V####',
-        '#~qK~B#',
+        '#~~qKB#',
         '#######'
       ],
-      noi: [{ nut: { x: 2, y: 0 }, cong: [{ x: 3, y: 1 }], dong: [] }],
+      noi: [{ nut: { x: 2, y: 0 }, cong: [{ x: 4, y: 1 }], dong: [] }],
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'lock_rescue(2)'
@@ -855,23 +857,23 @@
         { moTa: 'Chưa tạo hàm lock_rescue(n)', baiLam: bai(['lock_rescue(2)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Truyền pull_back(1) thay vì pull_back(n) nên bè chưa lùi tới bến q', baiLam: bai(['lock_rescue(2)']), hamCuaEmMoi: [hLockRescue(['open_gate_pass(1)', 'pull_back(1)'])], phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: open_gate_pass(1) giúp mở cống (3, 1) và đưa xuồng tiến vào (3, 1).', 'Luna: Dòng thứ hai của lock_rescue(n) là pull_back(n).']
+      goiY: ['Luna: open_gate_pass(1) giúp mở cống (4, 1) và đưa xuồng tiến vào (3, 1).', 'Luna: Dòng thứ hai của lock_rescue(n) là pull_back(n).']
     }),
 
     manCheCong({
       so: 9, ten: 'Phối hợp open_gate_pass, flow_step và shut_stream_tow', hang: 'bien-the', mucTieu: 'dua-vat', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['flip_valve', 'open_gate_pass', 'shut_stream_tow', 'valve_and_back', 'lock_rescue']),
-      deBai: 'Sola nhờ bạn: từ (1, 1), hãy gọi open_gate_pass(1) để mở cống (2, 1) và tiến vào (2, 1); tiếp theo gọi flow_step() để vượt 2 ô tới (4, 1); cuối cùng gọi shut_stream_tow(1) để kiểm tra tắt dòng ngược ở (5, 1) (nếu có) và đưa lục bình L ở (6, 1) vào bến q ở (7, 1)!',
+      deBai: 'Sola nhờ bạn: từ (1, 1), hãy gọi open_gate_pass(1) để mở cống (2, 1) và tiến vào (2, 1); tiếp theo gọi flow_step() để vượt 2 ô tới (4, 1); cuối cùng gọi shut_stream_tow(1) để kiểm tra tắt dòng ngược ở (5, 1) (nếu có) và đưa lục bình L ở (7, 1) vào bến q ở (6, 1)!',
       veMaMau: 'Ghép 3 hàm open_gate_pass(1), flow_step() và shut_stream_tow(1).',
       san: [
         [
           '#V##V####',
-          '#~K~~~Lq#',
+          '#~K~~~qL#',
           '#########'
         ],
         [
           '#V##V####',
-          '#~K~~~Lq#',
+          '#~K~~~qL#',
           '#########'
         ]
       ],
@@ -919,38 +921,38 @@
       so: 10, ten: 'Trùm: Vận hành âu thuyền kép', hang: 'trum', mucTieu: 'dua-vat', nhipTheo: 'tong',
       huyHieu: { ma: 'che-cong', ten: 'Huy hiệu Chế lệnh: điều tiết dòng' },
       hamCuaEmCan: KHO_TRUOC.concat(['flip_valve', 'open_gate_pass', 'shut_stream_tow', 'valve_and_back', 'lock_rescue']),
-      deBai: 'Sola giao thử thách khép lại Gói 4: trên mỗi sân có 2 bè gỗ ở hai luồng kênh. Từ (1, 1), hãy gọi open_gate_pass(1), flow_step() và shut_stream_tow(1) để đưa bè 1 vào bến (7, 1). Sau đó chuyển xuống luồng kênh dưới bằng pair_step("R", 2) và turn_right(), rồi gọi tiếp shut_stream_tow(1) để đưa bè 2 vào bến (3, 3)!',
+      deBai: 'Sola giao thử thách khép lại Gói 4: trên mỗi sân có 2 bè gỗ ở hai luồng kênh. Từ (1, 1), hãy gọi open_gate_pass(1), flow_step() và shut_stream_tow(1) để đưa bè 1 vào bến (6, 1) (xuồng lùi về (4, 1)). Sau đó chuyển xuống luồng kênh dưới bằng pair_step("R", 2) và turn_right(), rồi gọi tiếp shut_stream_tow(1) để đưa bè 2 vào bến (2, 3)!',
       veMaMau: 'Kết hợp open_gate_pass(1), flow_step(), shut_stream_tow(1), pair_step("R", 2), turn_right() và shut_stream_tow(1).',
       san: [
         [
           '#V##V####',
-          '#~K~~~Bq#',
+          '#~K~~~qB#',
           '#~~~~~~~#',
-          '#~~qB~~~#',
-          '######V##'
+          '#Bq~~~~~#',
+          '####V####'
         ],
         [
           '#V##V####',
-          '#~K~~~Bq#',
+          '#~K~~~qB#',
           '#~~~~~~~#',
-          '#~~qB~~~#',
-          '######V##'
+          '#Bq~~~~~#',
+          '####V####'
         ]
       ],
       dong: [
-        [{ x: 3, y: 1, huong: 1, suc: 1 }, { x: 5, y: 3, huong: 1, suc: 1 }],
+        [{ x: 3, y: 1, huong: 1, suc: 1 }, { x: 3, y: 3, huong: 1, suc: 1 }],
         [{ x: 5, y: 1, huong: 3, suc: 1 }]
       ],
       noi: [
         [
           { nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 1 }], dong: [] },
           { nut: { x: 4, y: 0 }, cong: [], dong: [] },
-          { nut: { x: 6, y: 4 }, cong: [], dong: [{ x: 5, y: 3 }] }
+          { nut: { x: 4, y: 4 }, cong: [], dong: [{ x: 3, y: 3 }] }
         ],
         [
           { nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 1 }], dong: [] },
           { nut: { x: 4, y: 0 }, cong: [], dong: [{ x: 5, y: 1 }] },
-          { nut: { x: 6, y: 4 }, cong: [], dong: [] }
+          { nut: { x: 4, y: 4 }, cong: [], dong: [] }
         ]
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
@@ -984,7 +986,7 @@
         { moTa: 'Mới giải cứu bè 1 ở hàng 1, chưa xuống hàng 3 giải cứu bè 2', baiLam: bai(['open_gate_pass(1)', 'flow_step()', 'shut_stream_tow(1)']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Ở hàng 3 quên gọi turn_right() trước shut_stream_tow(1)', baiLam: bai(['open_gate_pass(1)', 'flow_step()', 'shut_stream_tow(1)', 'pair_step("R", 2)', 'shut_stream_tow(1)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau shut_stream_tow(1) đầu tiên, xuồng đang ở (6, 1) hướng sang phải.', 'Luna: Gọi pair_step("R", 2), turn_right() để xuống (6, 3) hướng sang Tây, rồi gọi shut_stream_tow(1).']
+      goiY: ['Luna: Sau shut_stream_tow(1) đầu tiên, xuồng đang ở (4, 1) hướng sang phải.', 'Luna: Gọi pair_step("R", 2), turn_right() để xuống (4, 3) hướng sang Tây, rồi gọi shut_stream_tow(1).']
     })
   ];
 

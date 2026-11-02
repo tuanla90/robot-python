@@ -56,29 +56,29 @@
     }
   ]);
 
-  /* ================================================================ 2. day-keo — Quăng dây kéo bè */
+  /* ================================================================ 2. day-keo — Tung lưới bắt bè */
   PG.dangKy('day-keo', [
-    { Chu: ['Trên mặt sông có những chiếc bè hàng và đám lục bình nổi.', 'Lắp DÂY PHAO KÉO ở mũi xuồng để quăng dây móc vật nổi!'],
+    { Chu: ['Trên mặt sông có những chiếc bè hàng và đám lục bình nổi.', 'Lắp TAY LƯỚI THỦY LỢI ở mũi xuồng để tung lưới bắt vật nổi cách 2 ô!'],
       ve: function (m) {
         nen(m);
         var s = sanSong(m, 3, 5);
         dat(s, veO('ben-nhan'), 4, 1);
         dat(s, veV('be-go', { keo: false }), 2, 1);
-        var rb = dat(s, may(XUONG_KEO, { chay: false }, 1), 1, 1);
+        var rb = dat(s, may(XUONG_KEO, { chay: false }, 1), 0, 1);
         hen(function () {
           rb.remove();
-          dat(s, may(XUONG_KEO, { chay: true, tay: { day: true } }, 1), 1, 1);
+          dat(s, may(XUONG_KEO, { chay: true, tay: { day: true } }, 1), 0, 1);
         }, 420);
       }
     },
-    { Chu: ['Gọi tow() kèm wait() để buộc vật trước mũi; tiến tới là đẩy vật đi trước, lùi là kéo vật theo.', 'Đưa bè vào bến nhận hàng rồi gọi drop_tow() kèm wait() để cởi dây!'],
+    { Chu: ['Gọi cast_net(d) kèm wait() để tung lưới ra 4 phía ("front", "back", "left", "right"); khi xuồng chạy, dây lưới kéo vật lướt theo sau.', 'Đưa bè vào đúng ô bến nhận hàng rồi gọi drop_net() kèm wait() để mở lưới!'],
       ve: function (m) {
         nen(m);
         var s = sanSong(m, 3, 5);
-        dat(s, veO('ben-nhan', { xong: true }), 4, 1);
-        dat(s, veV('be-go', { keo: true }), 4, 1);
-        dat(s, may(XUONG_KEO, { chay: true, tay: { giu: true } }, 1), 3, 1);
-        m.appendChild(code('tow()\nwait()\nforward(2)\ndrop_tow()\nwait()'));
+        dat(s, veO('ben-nhan', { xong: true }), 2, 1);
+        dat(s, veV('be-go', { keo: true }), 2, 1);
+        dat(s, may(XUONG_KEO, { chay: true, tay: { giu: true } }, 1), 4, 1);
+        m.appendChild(code('cast_net("back")\nwait()\nforward(2)\ndrop_net()\nwait()'));
       }
     },
     { Chu: ['Bộ cố định (tuple) gói hai số trong ngoặc tròn như p = (2, 1).', 'Đọc p[0], p[1] hoặc tách a, b = p để điều khiển hai chặng gọn gàng!'],
@@ -210,32 +210,32 @@
     }
   ]);
 
-  /* ================================================================ 6. buoc-duoi — Dây dắt theo đuôi */
+  /* ================================================================ 6. buoc-duoi — Cuộn dây chỉnh lưới */
   PG.dangKy('buoc-duoi', [
-    { Chu: ['Ở những khúc kênh cua hẹp chữ L, đẩy bè ở mũi sẽ bị vướng bờ kè.', 'Nâng cấp DÂY DẮT THEO ĐUÔI để chuyển bè ra sau lái như toa tàu!'],
+    { Chu: ['Ở những khúc kênh hẹp hay bến sát góc bờ, dây lưới cố định 2 ô chưa đủ linh hoạt.', 'Nâng cấp CUỘN DÂY CHỈNH LƯỚI để thu ngắn, thả dài dây từ 1..3 ô hoặc kéo bè gọn vào khoang (0)!'],
       ve: function (m) {
         nen(m);
         var s = sanSong(m, 3, 5);
-        dat(s, veV('be-go', { keo: true }), 2, 1);
+        dat(s, veV('be-go', { keo: true }), 3, 1);
         var rb = dat(s, may(XUONG_DONG, { chay: true, tay: { day: true }, camBien: { bat: true } }, 1), 1, 1);
         hen(function () {
           rb.remove();
-          dat(s, veV('be-go', { keo: true }), 0, 1);
+          dat(s, veV('be-go', { keo: true }), 2, 1);
           dat(s, may(XUONG_DONG, { chay: true, tay: { giu: true }, camBien: { bat: true } }, 1), 1, 1);
         }, 420);
       }
     },
-    { Chu: ['Gọi tether() kèm wait() để chuyển bè đang kéo ở mũi ra sau đuôi (hoặc buộc bè ngay sau đuôi).', 'Khi bè đã ở đúng bến hoặc nhánh dòng chảy, gọi untether() kèm wait() để tháo dây!'],
+    { Chu: ['Gọi set_length(n) kèm wait() để đặt độ dài dây lưới: n = 0 kéo bè về khoang tàu, n = 1..3 đặt số ô dây dưới nước.', 'Khi bè đã ở đúng ô bến hoặc nhánh dòng chảy, gọi drop_net() kèm wait() để mở lưới!'],
       ve: function (m) {
         nen(m);
         var s = sanSong(m, 3, 5);
         dat(s, veO('ben-nhan', { xong: true }), 2, 1);
         dat(s, veV('be-go', { keo: true }), 2, 1);
         dat(s, may(XUONG_DONG, { chay: true, tay: { giu: true }, camBien: { bat: true } }, 1), 3, 1);
-        m.appendChild(code('tether()\nwait()\nforward(2)\nuntether()\nwait()'));
+        m.appendChild(code('set_length(1)\nwait()\ndrop_net()\nwait()'));
       }
     },
-    { Chu: ['Chế các hàm tether_grab(), tether_drop(), tow_to_tail(), tug_corner() và deliver_tail().', 'Kéo bè mượt mà qua mọi khúc cua gấp trên bến sông!'],
+    { Chu: ['Chế các hàm tether_grab(), tether_drop(), tow_to_tail(), tug_corner() và deliver_tail().', 'Thu thả dây lưới mượt mà qua mọi khúc cua gấp trên bến sông!'],
       ve: function (m) {
         nen(m);
         var s = sanSong(m, 3, 5);

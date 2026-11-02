@@ -18,7 +18,7 @@
   var HAM_XICH_LOA = BANH.concat(['beat', 'note', 'distance', 'warm']);
   var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
   var HAM_CAU = ['swing_left', 'swing_right', 'extend', 'retract', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail', 'wait'];
-  var HAM_XUONG = BANH.concat(['anchor', 'unanchor', 'tow', 'drop_tow', 'tether', 'untether', 'flow', 'flow_dir']);
+  var HAM_XUONG = BANH.concat(['anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'flow', 'flow_dir']);
   var HAM_DRONE = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'land', 'take_off', 'dot', 'pen_down', 'pen_up', 'ink', 'color'];
   var HAM_OMNI = BANH.concat(['slide_left', 'slide_right', 'load', 'throw', 'radar', 'diag_left', 'diag_right', 'aim', 'shape']);
   var HAM_GAI = BANH.concat(['retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen']);
@@ -171,9 +171,9 @@
       ten: 'Hồ nước CLB: Xuồng ghép cầu phao cho xe kho qua kênh',
       vo: 'song', r1: R_XUONG, r2: R_BANH, mucTieu: 'dua-vat',
       hamCuaEmCan: ['move', 'forward', 'wait_n', 'bridge_lay', 'pick', 'drop', 'turn_right'],
-      deBai: 'Kênh nước giữa Khuôn viên CLB bị trôi cầu phao! Xuồng R1 (Mùa 5) tại (3, 2) gọi bridge_lay(1) kéo bè gỗ B(5, 2) về ghép cầu phao ở q(3, 2). Hãy lập trình cho R2 (xe hai bánh Mùa 1) ở (3, 1) chờ 2 nhịp, tiến 2 ô qua cầu phao sang bờ Nam nhặt kiện thiết bị o(3, 4) rồi quay phải thả vào D(2, 3).',
-      san: ['#######', '#=..=.#', '#~~q~B#', '#.D...#', '#..o..#', '#######'],
-      bd: [{ x: 3, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
+      deBai: 'Kênh nước giữa Khuôn viên CLB bị trôi cầu phao! Xuồng R1 (Mùa 5) tại (2, 2) gọi bridge_lay(1) kéo bè gỗ B(4, 2) về ghép cầu phao ở q(3, 2). Hãy lập trình cho R2 (xe hai bánh Mùa 1) ở (3, 1) chờ 2 nhịp, tiến 2 ô qua cầu phao sang bờ Nam nhặt kiện thiết bị o(3, 4) rồi quay phải thả vào D(2, 3).',
+      san: ['#######', '#=..=.#', '#~~qB~#', '#.D...#', '#..o..#', '#######'],
+      bd: [{ x: 2, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
       maMau: baiDoi(['bridge_lay(1)'], ['wait_n(2)', 'forward(2)']),
       loiGiai: baiDoi(['bridge_lay(1)'], ['wait_n(2)', 'forward(2)', 'pick()', 'turn_right()', 'drop()']),
       loiSai: [
