@@ -13,7 +13,7 @@ export const tamO = (c: number, r: number) => ({x: X0 + (c + 0.5) * O, y: Y0 + (
 
 /** Ngữ cảnh mùa hiện tại ('m1' .. 'm8'), mặc định 'm1'. */
 export const MuaCtx = React.createContext<string>('m1');
-const duongRobot = (mua: string, ten: string) => `robot/${ten.includes('/') ? ten : `${mua}/${ten}`}.png`;
+export const duongRobot = (mua: string, ten: string) => `robot/${ten.includes('/') ? ten : `${mua}/${ten}`}.png`;
 
 /** Mốc chuyển động: [khung, cột, hàng, góc độ (0 = mũi sang phải, -90 = lên)]; giữa hai mốc nội suy mượt. */
 export type Moc = [number, number, number, number?];
@@ -411,7 +411,7 @@ export const BangViec: React.FC<{tieuDe: string; dong: string[]; xong: number; m
               <div style={{display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4}}>
                 <Icon name="Trophy" size={24} color="#FDE047" stroke={2.8} />
                 <span style={{fontSize: 22, fontWeight: 900, color: '#FDE047', letterSpacing: '0.05em', whiteSpace: 'nowrap'}}>
-                  QUEST LOG · {hs.chuSo}
+                  {hs.chuSo}
                 </span>
               </div>
               <div style={{fontSize: 27, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.2}}>
@@ -472,23 +472,11 @@ export const BangViec: React.FC<{tieuDe: string; dong: string[]; xong: number; m
                       : biXoa ? <Icon name="X" size={40} color="#FFFFFF" stroke={4} />
                       : dangXet ? <Icon name="Zap" size={34} color={C.ink} stroke={3} /> : null}
                   </div>
-                  <span style={{fontFamily: MONO, fontSize: 26, fontWeight: 900, color: C.ink, background: '#FDE047',
-                    border: `3px solid ${C.ink}`, padding: '5px 14px', borderRadius: 12, whiteSpace: 'nowrap', flexShrink: 0}}>
-                    Q{String(i + 1).padStart(2, '0')}
-                  </span>
                   <span style={{fontSize: coChu, fontWeight: 900, color: biXoa ? '#991B1B' : C.ink, whiteSpace: 'nowrap'}}>
                     {d}
                   </span>
                 </div>
 
-                <div style={{display: 'flex', alignItems: 'center', flexShrink: 0, marginLeft: 12}}>
-                  <span style={{fontFamily: FONT, fontSize: 24, fontWeight: 900, padding: '10px 18px', borderRadius: 14,
-                    border: `3.5px solid ${C.ink}`, boxShadow: `0 4px 0 ${C.ink}`,
-                    background: biXoa ? '#EF4444' : vuaXong ? '#0284C7' : daXong ? '#16A34A' : '#E2E8F0',
-                    color: biXoa || vuaXong || daXong ? '#FFFFFF' : '#475569', whiteSpace: 'nowrap'}}>
-                    {biXoa ? 'LỖI MAP!' : vuaXong ? 'CLEAR!' : daXong ? 'ĐÃ QUA' : 'ĐANG KHÓA'}
-                  </span>
-                </div>
                 {vuaXong ? <Burst at={at} x={52} y={56} color={C.good} r={95} n={8} /> : null}
               </div>
             );
@@ -635,7 +623,7 @@ export const TrongXe: React.FC<{
             <Icon name={nangCap ? 'Sparkles' : 'Wrench'} size={24} color="#FDE047" stroke={2.8} />
           </div>
           <span style={{fontSize: 23, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.03em', whiteSpace: 'nowrap'}}>
-            {nangCap ? 'XƯỞNG ĐỘ CLB · NÂNG CẤP SKILL' : 'XƯỞNG ĐỘ CLB · LẮP TRANG BỊ'}
+            {nangCap ? 'Xe trạm · nâng cấp' : 'Xe trạm · lắp part'}
           </span>
         </div>
         {tenPart ? (
@@ -643,9 +631,7 @@ export const TrongXe: React.FC<{
             background: f >= cach ? 'linear-gradient(180deg, #22C55E 0%, #15803D 100%)' : nangCap ? '#7C3AED' : '#0284C7',
             color: '#FFFFFF', fontSize: 20, fontWeight: 900, border: '3px solid #FFFFFF',
             boxShadow: '0 4px 0 rgba(0,0,0,0.35)', whiteSpace: 'nowrap'}}>
-            {nangCap
-              ? (f >= cach ? `SKILL MỚI: ${tenPart.toUpperCase()}` : `ĐANG ĐỘ: ${tenPart.toUpperCase()}`)
-              : (f >= cach ? `ĐÃ LẮP: ${tenPart.toUpperCase()}` : `CHẾ TẠO: ${tenPart.toUpperCase()}`)}
+            {tenPart}
           </span>
         ) : null}
       </div>
@@ -658,19 +644,7 @@ export const TrongXe: React.FC<{
             border: `4px solid ${C.ink}`, boxShadow: `0 7px 0 ${C.ink}`}}>
             <Icon name="Cpu" size={30} color="#0284C7" stroke={2.8} />
             <span>
-              {nangCap === 'banh-lui'
-                ? 'Đang mở khóa cơ chế quay lùi cho Hai bánh xe…'
-                : nangCap === 'tay-xoay'
-                  ? 'Đang mở khóa khớp xoay cổ tay cho Tay kẹp…'
-                  : nangCap === 'cam-ben'
-                    ? 'Đang mở góc quét 2 bên hông cho Mắt khoảng cách…'
-                    : nangCap
-                      ? `Đang nâng cấp skill: ${tenPart ?? ''}…`
-                      : laLapHaiBanh
-                        ? (dangLap ? 'Đang ráp Hai bánh xe vào R1…' : 'Core R1 (chưa có bánh xe)')
-                        : laLapR2
-                          ? 'Đang triệu hồi thêm R2 của Luna lên sa bàn…'
-                          : `Đang ráp trang bị: ${tenPart ?? 'Part mới'}…`}
+              {nangCap ? 'Đang nâng cấp…' : 'Đang lắp…'}
             </span>
           </span>
         ) : tenPart ? (
@@ -679,7 +653,7 @@ export const TrongXe: React.FC<{
             border: `5px solid ${C.ink}`, boxShadow: `0 9px 0 ${C.ink}, 0 16px 30px rgba(0,0,0,0.4)`,
             transform: `scale(${0.85 + 0.15 * p})`}}>
             <Icon name="Sparkles" size={34} color={C.ink} stroke={3} />
-            <span>{nangCap ? `MỞ KHÓA SKILL: ${tenPart}!` : `LẮP XONG: ${tenPart}!`}</span>
+            <span>{tenPart}!</span>
           </span>
         ) : null}
       </div>
@@ -906,9 +880,9 @@ export const TrongXe: React.FC<{
       )}
 
       <Burst at={cach} x={540} y={890} color={C.yellow} r={260} />
-      <ChuNay chu={nangCap ? 'TÍT! MỞ KHÓA!' : 'CẠCH! LẮP XONG!'} at={cach} den={cach + 65} x={540} y={590} mau="#0F172A" co={42} />
-      <Mascot who="sola" x={240} h={520} at={0} faces={solaMat} says={sola} bubbleW={570} bubbleTop={1290} />
-      <Mascot who="luna" x={840} h={520} at={6} faces={lunaMat} says={luna} side="left" bubbleW={570} bubbleTop={1290} lat />
+      <ChuNay chu={nangCap ? 'TÍT!' : 'CẠCH!'} at={cach} den={cach + 65} x={540} y={590} mau="#0F172A" co={64} />
+      <Mascot who="sola" x={240} h={520} at={0} faces={solaMat} says={sola} bubbleW={560} bubbleTop={1180} />
+      <Mascot who="luna" x={840} h={520} at={6} faces={lunaMat} says={luna} side="left" bubbleW={560} bubbleTop={1180} lat />
     </AbsoluteFill>
   );
 };
@@ -932,14 +906,14 @@ export const CauTreo: React.FC<{anh: string; cau: string; so: number; ten: strin
           <Img src={staticFile(duongRobot(mua ?? m, anh))} style={{width: S, height: S}} />
         </div>
       </AbsoluteFill>
-      <Mascot who="sola" x={260} h={580} at={0} faces={[[0, 'confident'], [32, 'cheer']]} says={[{at: 6, out: 999, text: cau}]} bubbleW={600} bubbleTop={1240} />
+      <Mascot who="sola" x={260} h={580} at={0} faces={[[0, 'confident'], [32, 'cheer']]} says={[{at: 6, out: 999, text: cau}]} bubbleW={560} bubbleTop={1180} />
       <div style={{position: 'absolute', left: 0, right: 0, top: 190, textAlign: 'center', opacity: Math.min(1, nut * 2),
         transform: `scale(${(0.75 + 0.25 * nut) * (1 + 0.03 * Math.sin(f / 6))})`}}>
         <span style={{display: 'inline-flex', alignItems: 'center', gap: 18, padding: '22px 46px', borderRadius: 28,
           background: 'linear-gradient(180deg, #FDE047 0%, #F59E0B 100%)', color: C.ink, fontWeight: 900, fontSize: 48,
           border: `6px solid ${C.ink}`, boxShadow: `0 12px 0 ${C.ink}, 0 22px 38px rgba(0,0,0,0.45), inset 0 4px 0 #FEF08A`, whiteSpace: 'nowrap'}}>
           <Icon name="Play" size={46} color={C.ink} stroke={3.2} />
-          <span>CHIẾN GÓI {so} · {ten.toUpperCase()}!</span>
+          <span>Gói {so} · {ten}</span>
         </span>
       </div>
     </AbsoluteFill>

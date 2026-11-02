@@ -8,8 +8,8 @@ export const DS_GOI: Record<string, string[]> = {
     "banh-lui",
     "tay-xoay",
     "me-cung",
-    "hai-robot",
     "combo",
+    "hai-robot",
     "robot"
   ],
   "2": [

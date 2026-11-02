@@ -54,6 +54,7 @@ PHIM.set(PHIM_MO_DAU.id, PHIM_MO_DAU);
 
 const phimCuaGoi = (ma: string): Phim | undefined => {
   if (ma === 'mo-dau' || ma === PHIM_MO_DAU.id) return PHIM_MO_DAU;
+  if (PHIM.has(ma)) return PHIM.get(ma);                      // gọi thẳng bằng id phim (M1G10-Ket…) cho công cụ soát
   for (const [m, ds] of Object.entries(DS_GOI)) {
     const n = ds.indexOf(ma);
     if (n >= 0) return PHIM.get(`M${m}G${n + 1}-Mo`);
@@ -143,7 +144,7 @@ const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu,
         style={{width: '100%', height: '100%'}} controls={false} clickToPlay={false} moveToBeginningWhenEnded={false} showVolumeControls={false} allowFullscreen={false} numberOfSharedAudioTags={24} acknowledgeRemotionLicense />
       <div onClick={chamPhim} style={{position: 'absolute', inset: 0, zIndex: 1, cursor: 'pointer'}} />
       {dung && !cho && !het && (
-        <button className="bt g-wd md-chay" data-nut="md-chay" onClick={() => ref.current?.play()} aria-label="Chạy tiếp"
+        <button className="bt g-wd md-chay pc-play" data-nut="md-chay" onClick={() => ref.current?.play()} aria-label="Chạy tiếp"
           style={{position: 'absolute', left: '50%', top: '42%', transform: 'translate(-50%, -50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 26, zIndex: 2}}>▶</button>
       )}
       <div style={{position: 'absolute', left: 12, right: 12, bottom: 12, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 2}}>
@@ -174,4 +175,7 @@ const mo = (ma: string, stage: HTMLElement, chu: Chu, khiXong?: () => void) => {
   goc.render(<LopPhim phim={phim} chu={chu} xong={() => { if (daXong) return; daXong = true; dong(); khiXong?.(); }} />);
 };
 
-(window as any).PhimCLB = {mo, co: (ma: string) => !!phimCuaGoi(ma), dong, player: () => dangChieu, soKhung: (ma: string) => { const p = phimCuaGoi(ma); return p ? xep(p).total : 0; }, ds: () => ['mo-dau', ...Object.values(DS_GOI).flat()].filter((m) => phimCuaGoi(m))};
+(window as any).PhimCLB = {mo, co: (ma: string) => !!phimCuaGoi(ma), dong, player: () => dangChieu, soKhung: (ma: string) => { const p = phimCuaGoi(ma); return p ? xep(p).total : 0; },
+  /** mốc cảnh của phim gói (cho công cụ chụp khung soát, tools/chup-khung.mjs): khung bắt đầu từng cảnh, độ dài, tổng, id cảnh */
+  moc: (ma: string) => { const p = phimCuaGoi(ma); if (!p) return null; const {starts, total} = xep(p); return {starts, durs: p.canh.map((c) => c.dur), ids: p.canh.map((c) => c.id), total}; },
+  ds: () => ['mo-dau', ...Object.values(DS_GOI).flat()].filter((m) => phimCuaGoi(m))};

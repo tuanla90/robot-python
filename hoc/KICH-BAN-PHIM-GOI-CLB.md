@@ -43,6 +43,8 @@ Chỗ cần user duyệt đánh dấu **[DUYỆT]**.
 - Không thêm người ngoài danh sách: người lạc, đội thợ chỉ là dấu hiệu (đèn pin nhấp nháy, ba lô, bóng xa không nói).
 - Phụ đề ngắn: mỗi câu đọc được trong ~4 giây.
 
+> **Cập nhật 2/11 (phỏng vấn user, `hoc/KE-HOACH-SUA-PHIM-GOI.md`):** (1) **Mọi gói đều có cảnh giải thích cơ chế** trên sa bàn Lab (nhanh, ít chữ), thay cho "không chạy lời giải, không nói ra quy luật" ở trên. (2) Lệnh và hình trong phim phải thuộc gói đó; vật lý, hoạt cảnh giống game; grid nguyên (luật mục 8). (3) Chuẩn gói 8 = tổng duyệt yếu tố map (mùa 1: yếu tố của chính kho, phim lý giải "thử hết một lượt trước khi giao"), 9 = hai thiết bị (R2), 10 = tự động nhiều map; game mùa 1 đã đổi combo lên gói 8, hai-robot xuống gói 9 cho khớp. (4) Gói 2 mùa 1: R1 húc thùng thì **khựng + choáng**, thùng không văng (cú RẦM duy nhất của mùa là kệ sập gói 6).
+
 ## 1. Tám người nhờ (ảnh: `phim-clb/public/nguoi/<tên>-a.png`, `-b.png`; mỗi người hai bản, user chọn)
 
 | Mùa | Người nhờ | Mong muốn | Nỗi lo | Đồng hồ ở góc phim |

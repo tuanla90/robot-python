@@ -50,3 +50,13 @@ Khổ dọc 1080×1920, 30 khung/giây; trên game phim thu 1/3 (360×640).
 3. Tua khung bằng `PhimCLB.player().seekTo(f)`, **đợi ~2s cho ảnh tải** rồi chụp: khung giữa câu 1, **khung dừng của từng cảnh**, khung cuối phim. Khung đầu cảnh cách nhau `dur − 16`, bắt đầu từ 8.
 4. Soát theo bảng: chữ ≤ 10 chữ / bóng, không gì đè nhãn / mặt, không ô nhãn trống, ảnh sẫm có nền sáng, không chữ ở dải nút đáy, tên không kiểu thứ.
 5. `node hoc/kiem-phim-goi.mjs`, `node hoc/kiem-dong-goi-artifact.mjs`.
+
+## 8. Khớp game (phỏng vấn user 2/11, kế hoạch `hoc/KE-HOACH-SUA-PHIM-GOI.md`)
+
+- **Lệnh trong phim phải là lệnh được dùng trong gói đó** (đối chiếu `maMau` / `loiGiai` / `hamCuaEmCan` của 20 màn): `move()`, `pick()`, `drop()`, `back()`, `arm_left()`… Không bịa `forward()`, `grab()` cho gói không có, không `wait_n()`, `stay()`.
+- **Hình trong phim phải xuất hiện trong gói đó**: ô sàn, kệ, thùng, cửa, nút đè, part, R2 chỉ hiện khi gói có ký hiệu / part ấy. Hình lấy từ bộ vẽ vector game (`tools/xuat-m*.mjs`), xuất lại sau mỗi mốc đổi hình.
+- **Cơ chế vật lý và hoạt cảnh giống game**: đâm vật / tường = khựng tại chỗ + sao choáng (không văng, không đổ); xoay tại chỗ trong ô luôn được (vật đang cầm nằm trong kẹp, không chiếm ô); tay hạ mà bước = vướng tay; nút đè giữ cửa chỉ khi có xe / vật trên nút; đi từng ô một nhịp.
+- **Grid chuẩn**: mọi `Moc` của xe và vật là **số nguyên** (tâm ô); xe dừng ở ô kề vật, tay với sang ô kề. Số lẻ chỉ dùng cho hoạt cảnh rơi / rung trong một ô.
+- **Mọi gói đều có cảnh cơ chế trên sa bàn Lab** (1–2 cảnh 8s): thử sai một lần nhanh → đúng, quy tắc nói **một câu**. Nhịp nhanh, chữ ít; phần kể (hiện trường → chế part → câu treo) ~25s.
+- Không nhãn tiếng Anh kỹ thuật trên hình (`Test Case`, `hardcode`, `ONLINE`): nói "ca sáng / ca chiều", "đếm bước cứng".
+- **Chuẩn gói cuối mùa** (user 2/11): gói 8 = tổng duyệt mọi tình huống, yếu tố map của mùa trước với xe mới (mùa 1 chưa có mùa trước: yếu tố của chính kho, phim phải lý giải "thử hết một lượt trước khi giao"); gói 9 = hai thiết bị (R2) thử với môi trường mới; gói 10 = tự động hoá nhiều map. Thứ tự gói trong game (`lo-trinh-hoc.js` MUA_*) phải theo chuẩn này; phim theo thứ tự gói trong game.

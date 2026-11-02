@@ -615,10 +615,12 @@
     { ma: 'me-cung', ten: 'Cảm biến bên', loai: 'bo-phan', sao: 180, hinh: 'cam-bien-ben',
       // HD2 việc 4 (gói 7): cam-bien-ben.1 (trình diễn left_clear, chiChay) lên đầu chương, rồi che-cam-bien.4 chế to_gap() với right_clear (ép, ba sân).
       chuong: [['cam-bien-ben', ['cam-bien-ben.1', 'che-cam-bien.4'].concat(day('cam-bien-ben', [2, 3, 4, 5, 6, 7, 8, 9]))], ['me-cung', day('me-cung', [11, 4, 5, 6, 7, 8, 9, 12, 13, 10])]] },     // SM1-C: me-cung.1–.3 cất, .11 trình diễn đầu chương, .12 / .13 trước trùm .10 viết lại
-    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 210,
-      chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
-    { ma: 'combo', ten: 'Combo', loai: 'thu-thach', sao: 240, hinh: 'combo',
+    // 2/11 (user chuẩn hoá gói 8–10, hoc/KE-HOACH-SUA-PHIM-GOI.md): gói 8 = tổng duyệt mọi yếu tố của mùa với xe mới (combo), gói 9 = hai thiết bị (hai-robot),
+    // gói 10 = tự động nhiều sân. Trước đó hai-robot đứng 8, combo đứng 9; phim gói (phim-clb/src/doc/m1.tsx) vốn đã theo thứ tự mới.
+    { ma: 'combo', ten: 'Combo', loai: 'thu-thach', sao: 210, hinh: 'combo',
       chuong: [['combo', COMBO_1], ['che-combo', COMBO_2]] },
+    { ma: 'hai-robot', ten: 'Đội hai robot', loai: 'thu-thach', sao: 240,
+      chuong: [['hai-robot', day('hai-robot', MUOI)], ['che-hai-robot', (M.manDoiMua1 || []).map(function (m) { return m.ma; })]] },
     { ma: 'robot', ten: 'R1 xuất xưởng', loai: 'thu-thach', sao: 270, hinh: 'robot-hoan-thien',
       chuong: [['robot-hoan-thien', TRUM_1], ['trum-mua-1', TRUM_2]] }
   ];

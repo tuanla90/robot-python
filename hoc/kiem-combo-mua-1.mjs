@@ -179,11 +179,12 @@ async function main() {
 
   /* ------------------------------------------------------------------ 1. vị trí */
   const goi = TT.goi.find((g) => g.ma === 'combo');
-  kiem('gói combo (mùa 1) giữa hai-robot và robot; hai chương combo / che-combo đúng thứ tự, đúng hàng, đúng tên', () => {
+  kiem('gói combo (mùa 1) là gói 8 (tổng duyệt), giữa me-cung và hai-robot (2/11); hai chương combo / che-combo đúng thứ tự, đúng hàng, đúng tên', () => {
     assert.ok(goi && goi.mua === 'mua-1');
     const mua1 = TT.goi.filter((g) => g.mua === 'mua-1').map((g) => g.ma);
-    assert.equal(mua1.indexOf('combo'), mua1.indexOf('hai-robot') + 1);
-    assert.equal(mua1.indexOf('robot'), mua1.indexOf('combo') + 1);
+    assert.equal(mua1.indexOf('combo'), mua1.indexOf('me-cung') + 1);
+    assert.equal(mua1.indexOf('hai-robot'), mua1.indexOf('combo') + 1);
+    assert.equal(mua1.indexOf('robot'), mua1.indexOf('hai-robot') + 1);
     assert.deepEqual(goi.chuong, [C1, C2]);
     for (const c of goi.chuong) {
       const ds = M.danhSach.filter((m) => m.chuong === c);
@@ -194,7 +195,7 @@ async function main() {
     assert.equal(TT.ten[C1], 'Dừng cạnh thùng');      // tên theo quy tắc đặt tên (user duyệt 29/10): gói là 'Nhìn bên, nhặt bên'
     assert.equal(TT.ten[C2], 'Trực kho');
     assert.equal(goi.ten, 'Nhìn bên, nhặt bên');
-    assert.equal(TT.thuTu.indexOf(C1), TT.thuTu.indexOf('che-hai-robot') + 1);
+    assert.equal(TT.thuTu.indexOf(C1), TT.thuTu.indexOf('me-cung') + 1);      // 2/11: combo là gói 8, đứng ngay sau hai chương gói 7
     assert.equal(TT.thuTu.indexOf(C2), TT.thuTu.indexOf(C1) + 1);
   });
   kiem('mã mới không trùng màn đã cất; che-cam-bien.10 không còn cất; tên màn không trùng trong lộ trình', () => {
