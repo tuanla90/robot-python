@@ -338,8 +338,8 @@
 
     manSoAm({
       so: 3, ten: 'Chế hàm: Quay trái n nấc', hang: 'lam-quen', taoHam: ['swing_l'],
-      deBai: 'Sola nhờ bạn: vào Xưởng hàm tạo hàm swing_l(n) để quay cần sang trái n nấc. Sau đó chương trình chính sẽ gọi swing_l(abs(2 - 6)) và extend() để đưa cần từ nấc 6 tầm 1 về nấc 2 tầm 2.',
-      veMaMau: 'Chương trình chính đã gọi swing_l(abs(2 - 6)) và extend(), nhưng bạn chưa tạo hàm swing_l. Hãy vào Xưởng hàm tạo swing_l(n).',
+      deBai: 'Sola nhờ bạn: vào Xưởng hàm tạo hàm swing_l(n) để quay cần sang trái n nấc. Sau đó chương trình chính sẽ tính d = 2 - 6, t = abs(d), rồi gọi swing_l(t) và extend() để đưa cần từ nấc 6 tầm 1 về nấc 2 tầm 2.',
+      veMaMau: 'Chương trình chính đã có d = 2 - 6, t = abs(d), swing_l(t) và extend(), nhưng bạn chưa tạo hàm swing_l. Hãy vào Xưởng hàm tạo swing_l(n).',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 6, tam: 1 },
       bongMo: { x: 3, y: 3, nac: 2, tam: 2 },
@@ -347,7 +347,7 @@
       loiGiai: bai(['d = 2 - 6', 't = abs(d)', 'swing_l(t)', 'extend()'], { hamCuaEmMoi: [H('swing_l', ['n'], T_SWING_L)] }),
       sao: { o: 5, nhip: 5 },
       loiGiaiKhac: {
-        moTa: 'Gọi thẳng swing_l(abs(2 - 6)) rồi extend() kèm wait()',
+        moTa: 'Thêm wait() sau extend()',
         baiLam: bai(['d = 2 - 6', 't = abs(d)', 'swing_l(t)', 'extend()', 'wait()']),
         hamCuaEmMoi: [H('swing_l', ['n'], T_SWING_L)]
       },
@@ -360,7 +360,7 @@
 
     manSoAm({
       so: 4, ten: 'Chế hàm: Quay phải n nấc', hang: 'luyen', hamCuaEmCan: ['swing_l'], taoHam: ['swing_r'],
-      deBai: 'Sola nhờ bạn: tạo thêm hàm swing_r(n) để quay cần sang phải n nấc. Chương trình chính dùng swing_r(4) chạm mốc (3, 5) ở nấc 4 tầm 2, rồi dùng swing_l(abs(1 - 4)) quay về nấc 1 tầm 2.',
+      deBai: 'Sola nhờ bạn: tạo thêm hàm swing_r(n) để quay cần sang phải n nấc. Chương trình chính dùng swing_r(4) chạm mốc (3, 5) ở nấc 4 tầm 2, rồi tính t = 1 - 4, k = abs(t) và gọi swing_l(k) quay về nấc 1 tầm 2.',
       veMaMau: 'Chương trình chính đã viết sẵn lời gọi swing_r và swing_l. Hãy vào Xưởng hàm tạo swing_r(n).',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 0, tam: 2 },
@@ -382,7 +382,7 @@
 
     manSoAm({
       so: 5, ten: 'Chế hàm: Quay theo độ lệch có dấu', hang: 'luyen', hamCuaEmCan: ['swing_l', 'swing_r'], taoHam: ['swing_by'],
-      deBai: 'Sola nhờ bạn: chế hàm swing_by(d) nhận độ lệch có dấu d: nếu d < 0 thì gọi swing_l(abs(d)), ngược lại gọi swing_r(d). Chương trình sẽ gọi swing_by(5 - 1) chạm mốc (1, 5) rồi gọi swing_by(2 - 5) về đích.',
+      deBai: 'Sola nhờ bạn: chế hàm swing_by(d) nhận độ lệch có dấu d: nếu d < 0 thì tính t = abs(d) rồi gọi swing_l(t), ngược lại gọi swing_r(d). Chương trình chính tính t = 5 - 1, gọi swing_by(t) chạm mốc (1, 5), rồi t = 2 - 5, swing_by(t) về đích.',
       veMaMau: 'Chương trình chính đã gọi swing_by cho cả độ lệch dương (5 - 1) và độ lệch âm (2 - 5). Hãy vào Xưởng hàm tạo swing_by(d).',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 1, tam: 2 },
@@ -405,7 +405,7 @@
     manSoAm({
       so: 6, ten: 'Chế hàm: Đổi tầm theo độ lệch có dấu', hang: 'luyen', hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'], taoHam: ['reach_by'],
       deBai: 'Sola nhờ bạn: chế hàm reach_by(d) để đổi tầm theo độ lệch d: nếu d < 0 thì lặp abs(d) lần retract(), ngược lại lặp d lần extend(). Chương trình chính sẽ vươn từ tầm 1 lên tầm 3 chạm mốc (6, 3), rồi quay về nấc 5 tầm 1.',
-      veMaMau: 'Chương trình chính đã gọi reach_by(3 - 1) và reach_by(1 - 3). Hãy vào Xưởng hàm tạo reach_by(d).',
+      veMaMau: 'Chương trình chính đã tính t = 3 - 1 hay t = 1 - 3 rồi gọi reach_by(t). Hãy vào Xưởng hàm tạo reach_by(d).',
       san: SAN_CANG_RONG,
       batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       bongMo: { x: 3, y: 3, nac: 5, tam: 1, diQua: [{ x: 6, y: 3 }] },
@@ -521,7 +521,7 @@
         { moTa: 'Mới chạy chặng đầu tiên nên thiếu mốc thứ hai và lệch đích', baiLam: bai(['t = 5 - 1', 'k = 3 - 1', 'aim_crane(t, k)']), phaiCoMa: ['lech-bong-mo'] },
         { moTa: 'Tính ngược hiệu ở chặng 2 thành (5 - 2, 1 - 3) nên quay sai chiều', baiLam: bai(['t = 5 - 1', 'k = 3 - 1', 'aim_crane(t, k)', 't = 5 - 2', 'k = 1 - 3', 'aim_crane(t, k)', 't = 6 - 2', 'k = 2 - 1', 'aim_crane(t, k)']), phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Luna: Chặng 2 đi từ (nấc 5, tầm 3) về (nấc 2, tầm 1) nên gọi aim_crane(2 - 5, 1 - 3).', 'Luna: Chặng 3 đi từ (nấc 2, tầm 1) sang (nấc 6, tầm 2) nên gọi aim_crane(6 - 2, 2 - 1).']
+      goiY: ['Luna: Chặng 2 đi từ (nấc 5, tầm 3) về (nấc 2, tầm 1) nên tính t = 2 - 5, k = 1 - 3 rồi gọi aim_crane(t, k).', 'Luna: Chặng 3 đi từ (nấc 2, tầm 1) sang (nấc 6, tầm 2) nên tính t = 6 - 2, k = 2 - 1 rồi gọi aim_crane(t, k).']
     })
   ];
 
