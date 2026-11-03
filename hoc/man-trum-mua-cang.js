@@ -222,7 +222,7 @@
       maMau: B(['safe_carry(4)']),
       loiGiai: B(['safe_carry(4)']),
       sao: { o: 23, nhip: 30 },
-      goiY: ['Luna: safe_carry(4) tự kiểm tra weight() <= 2 để chọn carry2_by(4) hoặc carry_n(2, 4).', 'Luna: Ở ngày 1 R1 bốc đôi nhanh gọn, ở ngày 2 R1 tách từng kiện không sợ quá tải.']
+      goiY: ['Luna: safe_carry(4) tự đọc w = weight(), hỏi w <= 2 để chọn carry2_by(4) hoặc carry_n(2, 4).', 'Luna: Ở ngày 1 R1 bốc đôi nhanh gọn, ở ngày 2 R1 tách từng kiện không sợ quá tải.']
     }),
 
     manCang({
@@ -346,7 +346,7 @@
       chinhCoDinh: true,
       taiToiDa: 6,
       hamCuaEmCan: ['rail_drop'],
-      deBai: 'Hai ngày làm việc: R1 đứng tại (3, 3) hướng nấc 0 nhìn vào cầu cảng giữa (3, 2), hai bên là Tàu 1 ở (2, 2) và Tàu 2 ở (4, 2). Hàm smart_dock() kiểm tra nếu kiện ở (3, 2) có mã 1x (read_code() // 10 == 1) thì gọi rail_drop(-1) giao sang Tàu 1, ngược lại giao sang Tàu 2 bằng rail_drop(1). Nhưng nhánh else đang viết nhầm thành rail_drop(2) khiến hàng rơi xuống nước ở (5, 2)! Hãy sửa lại smart_dock().',
+      deBai: 'Hai ngày làm việc: R1 đứng tại (3, 3) hướng nấc 0 nhìn vào cầu cảng giữa (3, 2), hai bên là Tàu 1 ở (2, 2) và Tàu 2 ở (4, 2). Hàm smart_dock() kiểm tra nếu kiện ở (3, 2) có mã 1x (c = read_code(), t = c // 10, t == 1) thì gọi rail_drop(-1) giao sang Tàu 1, ngược lại giao sang Tàu 2 bằng rail_drop(1). Nhưng nhánh else đang viết nhầm thành rail_drop(2) khiến hàng rơi xuống nước ở (5, 2)! Hãy sửa lại smart_dock().',
       veMaMau: 'Sửa rail_drop(2) thành rail_drop(1) trong hàm smart_dock().',
       san: [SAN_CANG_2, SAN_CANG_2],
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
@@ -400,8 +400,8 @@
       so: 8, ten: 'Lọc kiện ưu tiên đuôi 9 và cân tải',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry'],
-      deBai: 'Hai ngày làm việc tại bến phân loại: R1 đứng ở (2, 3) hướng nấc 4. Nếu kiện trên cùng ở (2, 4) có chữ số hàng đơn vị bằng 9 (read_code() % 10 == 9) thì bốc ngay chồng hàng ở (2, 4) lên tàu bằng safe_carry(4); ngược lại phải bỏ qua kiện chờ ở (2, 4), trượt rail(1) sang cột 3 và gọi safe_carry(4) để bốc chồng hàng ở (3, 4)!',
-      veMaMau: 'Kiểm tra if read_code() % 10 == 9: gọi safe_carry(4), else: gọi rail(1) rồi safe_carry(4).',
+      deBai: 'Hai ngày làm việc tại bến phân loại: R1 đứng ở (2, 3) hướng nấc 4. Nếu kiện trên cùng ở (2, 4) có chữ số hàng đơn vị bằng 9 (c = read_code(), t = c % 10, t == 9) thì bốc ngay chồng hàng ở (2, 4) lên tàu bằng safe_carry(4); ngược lại phải bỏ qua kiện chờ ở (2, 4), trượt rail(1) sang cột 3 và gọi safe_carry(4) để bốc chồng hàng ở (3, 4)!',
+      veMaMau: 'Đọc c = read_code(), t = c % 10, kiểm tra if t == 9: gọi safe_carry(4), else: gọi rail(1) rồi safe_carry(4).',
       san: [SAN_CANG_1, SAN_CANG_1],
       batDau: { x: 2, y: 3, nac: 4, tam: 1 },
       chong: [
@@ -428,7 +428,7 @@
         cung('Chỉ gọi cứng safe_carry(4) ở cột 2 theo ngày 1: sang ngày 2 bốc nhầm kiện chờ 14 ở cột 2', B(['safe_carry(4)']), ['chua-giao-tau']),
         cung('Luôn trượt rail(1) sang cột 3 theo ngày 2: ở ngày 1 cột 3 trống nên móc hụt', B(['rail(1)', 'safe_carry(4)']), ['moc-hut'])
       ],
-      goiY: ['Luna: Phép chia lấy dư read_code() % 10 trả về chữ số hàng đơn vị của mã container.', 'Luna: Nếu read_code() % 10 == 9 thì gọi safe_carry(4), ngược lại gọi rail(1) rồi safe_carry(4).']
+      goiY: ['Luna: Phép chia lấy dư t = c % 10 (c = read_code()) trả về chữ số hàng đơn vị của mã container.', 'Luna: Nếu t == 9 thì gọi safe_carry(4), ngược lại gọi rail(1) rồi safe_carry(4).']
     }),
 
     manCang({
@@ -597,7 +597,7 @@
       chinhCoDinh: true,
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry', 'over_wall'],
-      deBai: 'Hai ngày làm việc: tại mỗi cột, hàng có thể đặt ngay ở tầm 1 (read_code() != -1) hoặc nằm ở tầm 2 phía sau bãi trống (read_code() == -1). Hàm port_step() kiểm tra nếu read_code() != -1 thì gọi safe_carry(4), ngược lại gọi over_wall(4) và swing_by(4). Nhưng nhánh else đang viết nhầm thành over_wall(2)! Hãy sửa lại port_step().',
+      deBai: 'Hai ngày làm việc: tại mỗi cột, hàng có thể đặt ngay ở tầm 1 (mã khác -1) hoặc nằm ở tầm 2 phía sau bãi trống (mã -1). Hàm port_step() đọc c = read_code(), nếu c != -1 thì gọi safe_carry(4), ngược lại gọi over_wall(4) và swing_by(4). Nhưng nhánh else đang viết nhầm thành over_wall(2)! Hãy sửa lại port_step().',
       veMaMau: 'Sửa over_wall(2) thành over_wall(4) trong hàm port_step().',
       san: [SAN_CANG_1, SAN_CANG_1],
       batDau: { x: 2, y: 3, nac: 4, tam: 1 },
