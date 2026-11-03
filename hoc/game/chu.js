@@ -371,6 +371,7 @@
       'goi.tieuDe': 'CHỌN GÓI',
       'goi.ve': 'Về màn đầu',
       'goi.so': 'GÓI {n}',
+      'goi.muaSo': 'MÙA {n}',
       'goi.thuThach': 'THỬ THÁCH',
       'goi.khoaMuaSao': 'Cần {sao} ★ ở {mua} để mở {ten}.',
       'goi.khoaMuaGoi': 'Qua hết các màn của gói {goi} để mở {ten}.',
