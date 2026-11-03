@@ -266,7 +266,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (!than.oGan[cams[i].o]) throw new Error('Thân ' + than.ma + ' không có ổ "' + cams[i].o + '".');
       if (ganCua(d).indexOf(cams[i].o) < 0) throw new Error('Cảm biến ' + d.ma + ' không gắn được vào ổ ' + cams[i].o + '.');
     }
+    /* M9A (3/11): BẢNG GHÉP MỘT CHỖ hoc/bang-ghep.js (ô ✗ / ★ chưa mở / · không mở → ném lý do của bảng). Chỉ áp cho tổ hợp có part THÊM SAU dữ liệu chụp bộ pixel
+       (BangGhep.laMoi: cần cẩu, xuồng, bánh gai; móc cẩu, tay lưới, loa; từ, camera-4, radar, chong chóng, đầu đọc mã, mic): các câu báo ở trên và tổ hợp cũ phải y như Part.ghep đã chụp
+       (kiem-ve-vector.mjs 12b), còn luật của lắp ráp cho ô cũ (nhện + kẹp xoay…) nằm ở lap-rap.js đọc cùng bảng. Ô ✔ chưa có hình tổ hợp riêng vẫn vẽ theo ổ gắn của thân. */
+    var BG = bangGhep();
+    if (BG && (BG.laMoi('than', than.ma) || (tay && BG.laMoi('tay', tay.ma)) || cams.some(function (c) { return BG.laMoi('camBien', c.ma); }))) {
+      var b = BG.kiemGhep(than.ma, tay ? tay.ma : null, cams.map(function (c) { return c.ma; }));
+      if (!b.ok) throw new Error(b.lyDo);
+    }
     return { than: than, tay: tay, cams: cams };
+  }
+  var bgNode = null;
+  /** Bảng ghép (hoc/bang-ghep.js): trình duyệt dùng window.BangGhep (choi.html nạp trước); Node tự require; trang không nạp bảng → null (bỏ bước này). */
+  function bangGhep() {
+    if (root.BangGhep) return root.BangGhep;
+    if (typeof module === 'object' && module.exports && typeof require === 'function') { try { return bgNode || (bgNode = require('../bang-ghep.js')); } catch (e) { return null; } }
+    return null;
   }
   /** Lệnh gốc mà cấu hình { than, tay, camBien } mở ra: hợp hamGoc của thân, tay rồi từng cảm biến, giữ thứ tự, không trùng (y Part.hamGoc của bộ pixel; V7c1). Thiếu bộ phận: ném "Không có …". */
   function hamGoc(cfg) {

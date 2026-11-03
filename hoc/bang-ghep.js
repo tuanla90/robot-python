@@ -203,6 +203,11 @@
     if (typeof x === 'string') return { tt: x, lyDo: '' };
     return { tt: x.tt, lai: x.lai || null, lyDo: x.lyDo || (x.tt === 'lai' ? 'Tổ hợp lai ' + x.lai + ' chưa mở ở mùa này.' : x.tt === 'khong-mo' ? 'Ghép được, nhưng mùa này chưa mở.' : '') };
   }
+  /** CHỈ cho máy kiểm (kiem-bang-ghep.mjs mục f: tự chứng minh bắt được lỗi): đổi một ô trong bộ nhớ, trả ô cũ để đặt lại. Không ghi tệp. */
+  function dat(than, khe, ma, oMoi) {
+    var b = bangCua(khe); if (!b || !b[than] || b[than][ma] === undefined) throw new Error('BangGhep.dat: không có ô ' + than + '/' + khe + '/' + ma);
+    var cu = b[than][ma]; b[than][ma] = oMoi; return cu;
+  }
   function trangThai(than, khe, ma) { var x = o(than, khe, ma); return x ? x.tt : null; }
   function lyDo(than, khe, ma) { var x = o(than, khe, ma); return x && x.tt === 'cam' ? x.lyDo : ''; }
   function laMoi(khe, ma) { return (MOI[khe] || []).indexOf(ma) >= 0; }
@@ -262,7 +267,7 @@
 
   var API = {
     THAN: THAN, TAY: TAY, CAM_BIEN: CAM_BIEN, TRANG_THAI: TRANG_THAI, KY_HIEU: KY_HIEU, NHOM_THAN: NHOM_THAN, NHOM: NHOM, MOI: MOI, MO_LAI: MO_LAI,
-    o: o, trangThai: trangThai, lyDo: lyDo, laMoi: laMoi, kiemGhep: kiemGhep, dsO: dsO, tongKet: tongKet, inBang: inBang, dsCua: dsCua
+    o: o, trangThai: trangThai, lyDo: lyDo, laMoi: laMoi, kiemGhep: kiemGhep, dsO: dsO, tongKet: tongKet, inBang: inBang, dsCua: dsCua, dat: dat
   };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.BangGhep = API;

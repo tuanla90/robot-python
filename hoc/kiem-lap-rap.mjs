@@ -62,8 +62,9 @@ for (const khe of LapRap.KHE) {
 kiem('thân: loại robot đúng lõi SanHoc (hai-banh→banh, còn lại cùng tên)', LapRap.DANH_MUC.than.every((d) => d.loai === (d.ma === 'hai-banh' ? 'banh' : d.ma) && !!SanHoc.HAM_GOC[d.loai]));
 kiem('cảm biến từ (tu) là part vector riêng "tu" (P1 mùa 3) chỉ có hai hàm front_metal / front_pole', LapRap.tim('camBien', 'tu').part === 'tu' && bang(LapRap.tim('camBien', 'tu').ham, ['front_metal', 'front_pole']));
 for (const khe of LapRap.KHE) {
-  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part); return !p || !bang(d.ham.concat(d.nangCap || [], d.tenCu || []), p.hamGoc); });
-  kiem('khe ' + khe + ': `ham` (+ nangCap + tenCu) của từng mục đúng hamGoc của bộ phận vector', sai.length === 0, sai.map((d) => d.ma).join(','));
+  // nangCap chỉ có trong bộ vẽ khi bộ vẽ biết nó (cần cẩu rail); nâng cấp thuần lõi (omni diag_left / diag_right) thì không
+  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part); return !p || !bang(d.ham.concat((d.nangCap || []).filter((h) => p.hamGoc.includes(h)), d.tenCu || []), p.hamGoc); });
+  kiem('khe ' + khe + ': `ham` (+ nangCap có trong bộ vẽ + tenCu) của từng mục đúng hamGoc của bộ phận vector', sai.length === 0, sai.map((d) => d.ma).join(','));
 }
 {
   const sai = [];

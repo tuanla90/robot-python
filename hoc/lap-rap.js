@@ -64,7 +64,7 @@
   var THAN = [
     { ma: 'hai-banh', part: 'hai-banh', loai: 'banh', ten: 'Hai bánh', gia: 2, icon: 'denBanh', vuot: 'Đi, rẽ trên sàn phẳng', ham: BANH.concat(['wait']) },
     { ma: 'xich', part: 'xich', loai: 'xich', ten: 'Bánh xích', gia: 3, icon: 'denXich', vuot: 'Leo bậc, không trôi băng chuyền', ham: BANH.concat(['wait']) },
-    { ma: 'omni', part: 'omni', loai: 'omni', ten: 'Bánh omni', gia: 4, icon: 'denTruot', vuot: 'Trượt ngang, không cần quay', ham: BANH.concat(['slide_left', 'slide_right', 'wait']) },
+    { ma: 'omni', part: 'omni', loai: 'omni', ten: 'Bánh omni', gia: 4, icon: 'denTruot', vuot: 'Trượt ngang, không cần quay', ham: BANH.concat(['slide_left', 'slide_right', 'wait']), nangCap: ['diag_left', 'diag_right'] },   // M9A: đi chéo (mùa 6 gói 5) là nâng cấp lõi, bộ vẽ không có
     { ma: 'nhen', part: 'nhen', loai: 'nhen', ten: 'Thân nhện', gia: 4, icon: 'denChan', vuot: 'Chui gầm, nhảy hố, leo bậc', ham: BAY.concat(['wait', 'crouch', 'stand']) },
     { ma: 'drone', part: 'drone', loai: 'drone', ten: 'Thân drone', gia: 5, icon: 'denCanh', vuot: 'Bay qua rào, băng chuyền, vật', ham: BAY.concat(['wait', 'battery', 'land', 'take_off']) },
     { ma: 'gai', part: 'gai', loai: 'gai', ten: 'Bánh gai', gia: 4, icon: 'denBanh', vuot: 'Bám đá ướt, bùn trơn khi bung gai', ham: BANH.concat(['wait', 'retract_spikes', 'extend_spikes']) },
