@@ -9,7 +9,7 @@ Khổ dọc 1080×1920, 30 khung/giây; trên game phim thu 1/3 (360×640).
 - **Bóng thoại ≤ 9–10 chữ**, một ý. Mỗi cảnh tối đa **2 bóng thoại** (hai người nói nối nhau). Câu dài ~20 chữ trước đây → user: "chữ bị nhiều, che chữ quá".
 - **Thẻ / bảng chỉ còn ảnh + tên** (tên nơi, tên part). Bỏ: dòng phụ dưới tiêu đề, mã kiểu `QUEST #1` / `#GARAGE`, nhãn trạng thái (`KHẨN CẤP`, `ONLINE`, `READY`), đoạn mô tả, dải liệt kê thêm.
 - Cỡ chữ tên trên thẻ ≥ 32px; tiêu đề cảnh giữ `Headline`.
-- **CHƯA ĐẠT (rà 3/11 qua cảnh mở đầu mọi gói)**: từ gói 4 của `m2.tsx` trở đi, và toàn bộ `m3.tsx`, `cang.tsx`, `m4.tsx`–`m8.tsx`, câu thoại giải thích lý do (Hạnh/Sơn/Mai/Bình/Lan/Dũng/Phong, cả một số câu Sola) phần lớn dài 11–25 chữ, vượt giới hạn — ước ~60-70/82 cảnh mở đầu dính. Chỉ `m1.tsx` và gói 1-3 của `m2.tsx` đúng chuẩn ≤9-10 chữ. Đây là việc viết lại hàng loạt, chưa làm — cần bàn cách chia việc (nhiều gói, nhiều mùa) trước khi sửa, không tự ý viết lại một mình.
+- **Đã đạt (3/11, giao agent qua /giao-viec + phiên chính rút nốt phần lệch phạm vi):** mọi cảnh mở đầu `G<n>Mo`/`G<n>Thu` của `m2.tsx`–`m8.tsx` + `cang.tsx` (kể cả gói 1-2 `m2.tsx` phát hiện sót lúc rà) và 5 cảnh "thả tay" mở đầu gói 10 (`ThaTayCang`/`ThaTayM4`/`ThaTayM6`/`ThaTayM7`/`ThaTayM8`, tên hàm khác `G<n>Mo` nên dễ bỏ sót khi rà bằng mẫu tên) nay ≤9-10 chữ/bóng. Soát lại bằng script đếm chữ độc lập (tách theo khoảng trắng, chỉ quét trong thân hàm `G<n>Mo`/`Thu`) ra 0 vi phạm. `m1.tsx` vẫn là mẫu văn phong tham khảo.
 
 ## 2. Nhịp
 
