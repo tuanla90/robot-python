@@ -237,8 +237,8 @@
 
     manThaNeo({
       so: 7, ten: 'Đọc dòng trước mũi để quyết định chờ thêm', hang: 'bien-the', nhipTheo: 'tong',
-      deBai: 'Sola thử thách trên 2 sân: từ (1, 1), hãy gọi anchor() và wait() trước. Sau nhịp đầu, nếu ô trước mũi (2, 1) vẫn có dòng chảy ngược (if flow_dir() == "back":) tức là bè B xuất phát từ xa (5, 1), hãy gọi thêm 1 lệnh wait() nữa! Cuối cùng gọi tow_grab(), unanchor(), wait() và forward(3) đưa bè tới bến q ở (2, 2).',
-      veMaMau: 'Sau anchor() và wait(), kiểm tra if flow_dir() == "back": wait(), rồi tow_grab(), unanchor(), wait(), forward(3).',
+      deBai: 'Sola thử thách trên 2 sân: từ (1, 1), hãy gọi anchor() và wait() trước. Sau nhịp đầu, nếu ô trước mũi (2, 1) vẫn có dòng chảy ngược (đọc h = flow_dir(), if h == "back":) tức là bè B xuất phát từ xa (5, 1), hãy gọi thêm 1 lệnh wait() nữa! Cuối cùng gọi tow_grab(), unanchor(), wait() và forward(3) đưa bè tới bến q ở (2, 2).',
+      veMaMau: 'Sau anchor() và wait(), đã có h = flow_dir() và if h == "back": wait(). Thêm tow_grab(), unanchor(), wait(), forward(3).',
       san: [
         [
           '########',
@@ -340,8 +340,8 @@
     manThaNeo({
       so: 10, ten: 'Trùm: Giữ nhịp neo trên bến sông đôi', hang: 'trum', nhipTheo: 'tong',
       huyHieu: { ma: 'tha-neo', ten: 'Huy hiệu Thả neo giữ nhịp' },
-      deBai: 'Sola giao thử thách Trùm chương 1 trên 2 sân: xuồng ở (1, 3) hướng lên van V ở (1, 0). Hãy gọi anchor() và wait() trước; nếu thấy ô trước mũi (1, 2) có dòng chảy (if flow_dir() == "front":) báo hiệu bè B xuất phát từ xa (7, 1), hãy gọi thêm 1 lệnh wait() nữa! Khi B đã xuống đúng ngã tư (7, 3), gọi tow_grab() gạt van V (mở cống K ở (2, 3) và tắt dòng giữ B lại), rồi gọi unanchor(), wait(), pair_step("R", 1), flow_step() để tiến tới (4, 3), và gọi tow_pair(1, 1) đưa B vào bến q ở (6, 3)!',
-      veMaMau: 'Kết hợp anchor(), wait(), if flow_dir() == "front": wait(), tow_grab(), unanchor(), wait(), pair_step("R", 1), flow_step() và tow_pair(1, 1).',
+      deBai: 'Sola giao thử thách Trùm chương 1 trên 2 sân: xuồng ở (1, 3) hướng lên van V ở (1, 0). Hãy gọi anchor() và wait() trước; nếu thấy ô trước mũi (1, 2) có dòng chảy (đọc h = flow_dir(), if h == "front":) báo hiệu bè B xuất phát từ xa (7, 1), hãy gọi thêm 1 lệnh wait() nữa! Khi B đã xuống đúng ngã tư (7, 3), gọi tow_grab() gạt van V (mở cống K ở (2, 3) và tắt dòng giữ B lại), rồi gọi unanchor(), wait(), pair_step("R", 1), flow_step() để tiến tới (4, 3), và gọi tow_pair(1, 1) đưa B vào bến q ở (6, 3)!',
+      veMaMau: 'Kết hợp anchor(), wait(), h = flow_dir(), if h == "front": wait(), tow_grab(), unanchor(), wait(), pair_step("R", 1), flow_step() và tow_pair(1, 1).',
       san: [
         [
           '#V########',
@@ -403,7 +403,7 @@
       ]),
       sao: { o: 34, nhip: 20 },
       loiGiaiKhac: {
-        moTa: 'Dùng if not is_calm_front(): wait() thay cho if flow_dir() == "front": wait()',
+        moTa: 'Dùng if not is_calm_front(): wait() thay cho h = flow_dir() và if h == "front": wait()',
         baiLam: bai([
           'anchor()',
           'wait()',
@@ -671,7 +671,7 @@
       so: 9, ten: 'Chọn số nhịp chờ van theo dòng chảy trước mũi', hang: 'bien-the', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['drop_anchor', 'lift_anchor', 'anchor_wait', 'anchor_tow', 'hold_and_valve']),
       deBai: 'Sola giao bài toán 2 sân: xuồng ở (1, 3) hướng lên van V ở (1, 0). Ô ngay trước mũi xuồng là (1, 2). Ở sân 1, ô (1, 2) có dòng chảy ("front") báo hiệu bè B xuất phát từ xa (5, 1) nên cần gọi hold_and_valve(1); ở sân 2, ô (1, 2) là nước êm ("none") báo hiệu bè B xuất phát gần ở (5, 2) nên chỉ cần gọi hold_and_valve(0)! Sau khối if/else, hãy gọi turn_right() và tow_pair(2, 1) đưa B tới bến q ở (4, 3).',
-      veMaMau: 'Dùng if flow_dir() == "front": hold_and_valve(1) else: hold_and_valve(0), rồi turn_right() và tow_pair(2, 1).',
+      veMaMau: 'Đã có h = flow_dir() và if h == "front": hold_and_valve(1) else: hold_and_valve(0). Thêm turn_right() và tow_pair(2, 1).',
       san: [
         [
           '#V######',
@@ -761,7 +761,7 @@
       loiGiai: bai(['if is_calm_front():', '    hold_and_valve(0)', 'else:', '    hold_and_valve(1)', 'turn_right()', 'move()', 'flow_step()', 'tow_pair(1, 1)']),
       sao: { o: 36, nhip: 20 },
       loiGiaiKhac: {
-        moTa: 'Dùng if flow_dir() == "front": hold_and_valve(1) else: hold_and_valve(0)',
+        moTa: 'Đọc h = flow_dir(), dùng if h == "front": hold_and_valve(1) else: hold_and_valve(0)',
         baiLam: bai(['h = flow_dir()', 'if h == "front":', '    hold_and_valve(1)', 'else:', '    hold_and_valve(0)', 'turn_right()', 'move()', 'flow_step()', 'tow_pair(1, 1)'])
       },
       loiSai: [

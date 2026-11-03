@@ -192,7 +192,7 @@
         { moTa: 'Đi ngược mật lệnh (đỏ là sang phải)', baiLam: bai(['a = []', 'for i in range(3):', '    go_right()', '    m = color("up")', '    a.append(m)', 'for c in a:', '    if c == "red":', '        go_right()', '    else:', '        go_down()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đọc ô dưới thay vì nhà phía trên: mật lệnh toàn "none"', baiLam: bai(['a = []', 'for i in range(3):', '    go_right()', '    m = color("down")', '    a.append(m)', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['a.append(color("up")) ghi màu nhà vào cuối danh sách.', 'for c in a: lấy lần lượt từng màu; mỗi màu là một bước bay.']
+      goiY: ['m = color("up") đọc màu nhà, a.append(m) ghi màu đó vào cuối danh sách.', 'for c in a: lấy lần lượt từng màu; mỗi màu là một bước bay.']
     }),
 
     man({
@@ -252,7 +252,7 @@
     manChe({
       so: 2, ten: 'Bay tới màu', hang: 'lam-quen', taoHam: ['fly_to'], hamCuaEmCan: [],
       deBai: 'Chế fly_to(col): bay sang phải cho tới khi ô bên phải có màu col. Chương trình chính gọi fly_to("yellow") rồi bay thêm một ô vào cờ vàng. Hai sân, cờ vàng ở hai chỗ, giữa đường có ô màu khác.',
-      veMaMau: 'Tạo fly_to với một đối số col. So color("right") với col, không so với một màu viết sẵn.',
+      veMaMau: 'Tạo fly_to với một đối số col. Đọc m = color("right") rồi so m với col, không so với một màu viết sẵn.',
       san: [['.r.gF'], ['.gF.r']],
       mau: [['....y'], ['..y..']],
       batDau: { x: 0, y: 0 },
@@ -278,7 +278,7 @@
       maMau: bai(C_GHI),
       loiGiai: bai(C_GHI, { hamCuaEmMoi: [H('read_row', ['a', 'n'], T_GHI)] }),
       sao: { o: 10, nhip: 4 },
-      congThucKhac: [{ moTa: 'Ghi màu vào biến rồi mới thêm vào danh sách', hamCuaEmMoi: [H('read_row', ['a', 'n'], ['for i in range(n):', '    go_right()', '    c = color("up")', '    a.append(c)'])] }],
+      congThucKhac: [{ moTa: 'Đặt tên biến màu là c thay cho m', hamCuaEmMoi: [H('read_row', ['a', 'n'], ['for i in range(n):', '    go_right()', '    c = color("up")', '    a.append(c)'])] }],
       loiSai: [
         { moTa: 'Gọi read_row mà chưa chế hàm', baiLam: bai(C_GHI), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Ghi màu trước khi bay sang nhà: mật lệnh lệch một nhà', baiLam: bai(C_GHI), hamCuaEmMoi: [H('read_row', ['a', 'n'], ['for i in range(n):', '    m = color("up")', '    a.append(m)', '    go_right()'])], phaiCoMa: ['chua-toi-co'] }
@@ -371,7 +371,7 @@
         { moTa: 'Gọi red_count mà chưa chế hàm', baiLam: bai(C_DEM), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Thêm mọi nhà vào a: len(a) luôn là 3', baiLam: bai(C_DEM), hamCuaEmMoi: [H('red_count', ['a', 'n'], ['for i in range(n):', '    go_right()', '    m = color("up")', '    a.append(m)'])], phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['len(a) là số phần tử của a.', 'Chỉ thêm vào a khi color("up") == "red".']
+      goiY: ['len(a) là số phần tử của a.', 'Đọc m = color("up"), chỉ thêm vào a khi m == "red".']
     }),
 
     manChe({

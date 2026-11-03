@@ -94,7 +94,7 @@
       maMau: bai(['smart_pad()', 'slide_r(1)']),
       loiGiai: bai(['smart_pad()', 'slide_r(1)']),
       sao: { o: 23, nhip: 10 },
-      goiY: ['smart_pad() kiểm tra shape("front") == "round" để lấp hố hoặc gọi lob_pad(3) mở cổng.', 'Sau khi tiến tới (3,1), gọi slide_r(1) để trượt xuống cờ F(3,2).']
+      goiY: ['smart_pad() đọc s = shape("front"), hỏi s == "round" để lấp hố hoặc gọi lob_pad(3) mở cổng.', 'Sau khi tiến tới (3,1), gọi slide_r(1) để trượt xuống cờ F(3,2).']
     }),
 
     man({
@@ -142,7 +142,7 @@
         cung('Hất cứng tầm 2, 3, 2 theo ca 1: hỏng ở ca 2 khi thứ tự quặng và đá tròn đảo ngược', bai(['lob()', 'slide_r(1)', 'aim_lob(3)', 'slide_r(1)', 'lob()']), ['nem-vo']),
         { moTa: 'Quên gọi sort_lob() ở hàng thứ ba', baiLam: bai(['sort_lob()', 'slide_r(1)', 'sort_lob()', 'slide_r(1)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['sort_lob() tự kiểm tra shape("front") == "ore" để chọn aim_lob(3) hay aim_lob(2).', 'Gọi lần lượt: sort_lob(), slide_r(1), sort_lob(), slide_r(1), sort_lob().']
+      goiY: ['sort_lob() tự đọc s = shape("front"), hỏi s == "ore" để chọn aim_lob(3) hay aim_lob(2).', 'Gọi lần lượt: sort_lob(), slide_r(1), sort_lob(), slide_r(1), sort_lob().']
     }),
 
     man({
@@ -272,7 +272,7 @@
     man({
       so: 9, ten: 'Sửa hàm dò đá tròn lấp hố', chinhCoDinh: true,
       hamCuaEmCan: ['fill_pit'],
-      deBai: 'Hai ca làm việc: hàm của màn fix_quarry() phải kiểm tra nếu trước mũi là đá tròn (shape("front") == "round") thì gọi fill_pit() lấp hố và tiến 2 ô, ngược lại thì move() 1 ô. Nhưng trong hàm đang viết nhầm điều kiện thành "ore". Hãy sửa lại hàm fix_quarry().',
+      deBai: 'Hai ca làm việc: hàm của màn fix_quarry() phải kiểm tra nếu trước mũi là đá tròn (s == "round" với s = shape("front")) thì gọi fill_pit() lấp hố và tiến 2 ô, ngược lại thì move() 1 ô. Nhưng trong hàm đang viết nhầm điều kiện thành "ore". Hãy sửa lại hàm fix_quarry().',
       veMaMau: 'Chương trình chính đã khoá. Sửa "ore" thành "round" trong hàm fix_quarry().',
       san: [
         ['#######', '#.ou.F#', '#######'],
@@ -290,7 +290,7 @@
         { moTa: 'Chưa sửa "ore" thành "round" nên R1 không lấp hố mà bước thẳng vào đá', baiLam: bai(['for i in range(3):', '    fix_quarry()'], { hamCuaMan: [H('fix_quarry', [], T_FIX_QUARRY_SAI)] }), phaiCoMa: ['dam-tuong'] },
         cung('Trong fix_quarry() luôn gọi fill_pit() không kiểm tra shape: hỏng ở bước trống', bai(['for i in range(3):', '    fix_quarry()'], { hamCuaMan: [H('fix_quarry', [], ['fill_pit()'])] }), ['nap-hut', 'dam-tuong'])
       ],
-      goiY: ['Viên đá lấp hố có hình dạng "round".', 'Đổi dòng đầu của fix_quarry() thành if shape("front") == "round":.']
+      goiY: ['Viên đá lấp hố có hình dạng "round".', 'Đổi điều kiện trong fix_quarry() thành if s == "round":.']
     }),
 
     man({
@@ -408,7 +408,7 @@
     manChe({
       so: 4, ten: 'Sửa hàm bước mỏ hai nhánh',
       hamCuaEmCan: ['aim_lob', 'forward', 'lob_pad', 'slide_r'],
-      deBai: 'Hai ca làm việc: hàm của màn pit_step() kiểm tra nếu shape("front") == "round" thì gọi aim_lob(2) và forward(2) để lấp hố, ngược lại gọi lob_pad(3) để hất quặng qua cổng C lên nút đè M. Nhưng nhánh else đang viết nhầm thành lob_pad(2). Hãy sửa lại hàm pit_step().',
+      deBai: 'Hai ca làm việc: hàm của màn pit_step() đọc s = shape("front"), nếu s == "round" thì gọi aim_lob(2) và forward(2) để lấp hố, ngược lại gọi lob_pad(3) để hất quặng qua cổng C lên nút đè M. Nhưng nhánh else đang viết nhầm thành lob_pad(2). Hãy sửa lại hàm pit_step().',
       veMaMau: 'Chương trình chính đã khoá. Sửa lob_pad(2) thành lob_pad(3) trong hàm pit_step().',
       san: [
         ['#########', '#.ou....#', '#...oCM.#', '#....F..#', '#########'],

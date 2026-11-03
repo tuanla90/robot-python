@@ -448,8 +448,8 @@
     manNhacDoi({
       so: 8, ten: 'Đọc mã chọn móc đơn hay đôi', hang: 'bien-the',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: dọc ba cột 2, 3, 4 ở hàng bãi y = 4, cột nào có kiện đỉnh mang chữ số hàng chục bằng 2 (read_code() // 10 == 2) thì cột đó có cặp 2 kiện, ngược lại chỉ có 1 kiện lẻ. Hãy lặp 3 lần qua 3 cột, dùng if để chọn pick_up2() hoặc pick_up() cho đúng.',
-      veMaMau: 'Trong vòng lặp for i in range(3): hãy kiểm tra read_code() // 10 == 2 để gọi pick_up2() hay pick_up().',
+      deBai: 'Sola nhờ bạn: dọc ba cột 2, 3, 4 ở hàng bãi y = 4, cột nào có kiện đỉnh mang chữ số hàng chục bằng 2 (c = read_code(), t = c // 10, t == 2) thì cột đó có cặp 2 kiện, ngược lại chỉ có 1 kiện lẻ. Hãy lặp 3 lần qua 3 cột, dùng if để chọn pick_up2() hoặc pick_up() cho đúng.',
+      veMaMau: 'Trong vòng lặp for i in range(3): đã có c = read_code(), t = c // 10 và if t == 2:. Thêm pick_up() cho nhánh else.',
       san: SAN_DOI_1,
       batDau: { x: 1, y: 3, nac: 4, tam: 1 },
       chong: [C(2, 4, [25, 21]), C(3, 4, [16]), C(4, 4, [29, 24])],
@@ -479,7 +479,7 @@
       ]),
       sao: { o: 15, nhip: 33 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra read_code() // 10 == 1 trước để gọi pick_up()',
+        moTa: 'Hỏi t == 1 trước để gọi pick_up()',
         baiLam: bai([
           'for i in range(3):',
           '    rail(1)',
@@ -556,7 +556,7 @@
       luatThap: true,
       huyHieu: { ma: 'nhac-doi', ten: 'Huy hiệu Móc đôi hai tầng' },
       hamCuaEmCan: [],
-      deBai: 'Trùm chương 1: trên hai sân có luật tháp, tại cầu cảng giữa (3, 2) có chồng 4 kiện gồm 2 cặp tháp. Bệ cẩu đứng ở (3, 3) hướng nấc 0. Hãy lặp 2 lần: nếu read_code() // 10 == 1 thì dùng pick_up2() nhấc cặp tháp trượt rail(-1) giao sang Tàu 1 rồi rail(1) quay về; ngược lại thì trượt rail(1) giao sang Tàu 2 rồi rail(-1) quay về.',
+      deBai: 'Trùm chương 1: trên hai sân có luật tháp, tại cầu cảng giữa (3, 2) có chồng 4 kiện gồm 2 cặp tháp. Bệ cẩu đứng ở (3, 3) hướng nấc 0. Hãy lặp 2 lần: đọc c = read_code(), t = c // 10, nếu t == 1 thì dùng pick_up2() nhấc cặp tháp trượt rail(-1) giao sang Tàu 1 rồi rail(1) quay về; ngược lại thì trượt rail(1) giao sang Tàu 2 rồi rail(-1) quay về.',
       veMaMau: 'Hoàn thiện vòng lặp 2 lần dùng pick_up2() và rail để chia 2 cặp tháp sang hai tàu.',
       san: [SAN_DOI_2, SAN_DOI_2],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
@@ -596,7 +596,7 @@
       ]),
       sao: { o: 11, nhip: 16 },
       loiGiaiKhac: {
-        moTa: 'Dùng while read_code() != -1 thay cho for i in range(2)',
+        moTa: 'Dùng while c != -1 thay cho for i in range(2)',
         baiLam: bai([
           'c = read_code()',
           'while c != -1:',
@@ -686,7 +686,7 @@
       so: 3, ten: 'Chế hàm fast_stack(n, d)', hang: 'lam-quen',
       taoHam: ['fast_stack'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by', 'carry2_n'],
-      deBai: 'Sola nhờ bạn: với chồng hàng có n kiện bất kỳ (chẵn hoặc lẻ), ta có thể bốc nhanh bằng n // 2 chuyến móc đôi và n % 2 chuyến móc đơn! Hãy chế hàm fast_stack(n, d) gồm 2 lệnh: carry2_n(n // 2, d) và carry_n(n % 2, d). Áp dụng gọi fast_stack(3, 4) để chuyển chồng 3 kiện ở (3, 4) lên tàu.',
+      deBai: 'Sola nhờ bạn: với chồng hàng có n kiện bất kỳ (chẵn hoặc lẻ), ta có thể bốc nhanh bằng n // 2 chuyến móc đôi và n % 2 chuyến móc đơn! Hãy chế hàm fast_stack(n, d) gồm 4 dòng: t = n // 2, carry2_n(t, d), t = n % 2, carry_n(t, d). Áp dụng gọi fast_stack(3, 4) để chuyển chồng 3 kiện ở (3, 4) lên tàu.',
       veMaMau: 'Tạo hàm fast_stack(n, d) rồi gọi fast_stack(3, 4).',
       san: SAN_DOI_1,
       batDau: { x: 3, y: 3, nac: 4, tam: 1 },
@@ -706,9 +706,9 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm fast_stack mà đã bấm Chạy', baiLam: bai(['fast_stack(3, 4)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên dòng carry_n(n % 2, d) nên còn sót kiện lẻ cuối cùng ở (3, 4)', baiLam: bai(['fast_stack(3, 4)']), hamCuaEmMoi: [hFastStack(['t = n // 2', 'carry2_n(t, d)'])], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Quên hai dòng t = n % 2 và carry_n(t, d) nên còn sót kiện lẻ cuối cùng ở (3, 4)', baiLam: bai(['fast_stack(3, 4)']), hamCuaEmMoi: [hFastStack(['t = n // 2', 'carry2_n(t, d)'])], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Phép chia nguyên n // 2 tính số cặp nhấc đôi, còn phép chia dư n % 2 tính kiện lẻ còn lại.', 'Luna: Thân hàm fast_stack(n, d) gồm carry2_n(n // 2, d) và carry_n(n % 2, d).']
+      goiY: ['Luna: Phép chia nguyên n // 2 tính số cặp nhấc đôi, còn phép chia dư n % 2 tính kiện lẻ còn lại.', 'Luna: Thân hàm fast_stack(n, d) gồm t = n // 2, carry2_n(t, d), rồi t = n % 2, carry_n(t, d).']
     }),
 
     manCheNhacDoi({
@@ -747,7 +747,7 @@
       so: 5, ten: 'Chế hàm ship_pair2()', hang: 'luyen-tap',
       taoHam: ['ship_pair2'],
       hamCuaEmCan: ['rail_carry2'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_pair2() kiểm tra if read_code() // 10 == 1: thì gọi rail_carry2(-1) sang Tàu 1, ngược lại gọi rail_carry2(1) sang Tàu 2. Áp dụng gọi ship_pair2() 2 lần để phân loại chồng 4 kiện ở (3, 2).',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_pair2(): đọc c = read_code(), t = c // 10, if t == 1: thì gọi rail_carry2(-1) sang Tàu 1, ngược lại gọi rail_carry2(1) sang Tàu 2. Áp dụng gọi ship_pair2() 2 lần để phân loại chồng 4 kiện ở (3, 2).',
       veMaMau: 'Tạo hàm ship_pair2() rồi gọi 2 lần ở chương trình chính.',
       san: SAN_DOI_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
@@ -772,7 +772,7 @@
         { moTa: 'Chưa tạo hàm ship_pair2 mà đã bấm Chạy', baiLam: bai(['ship_pair2()', 'ship_pair2()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Mới gọi ship_pair2() 1 lần nên còn cặp [18, 12] chưa giao', baiLam: bai(['ship_pair2()']), hamCuaEmMoi: [hShipPair2()], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Thân hàm ship_pair2() dùng if read_code() // 10 == 1: gọi rail_carry2(-1), else: gọi rail_carry2(1).', 'Luna: Chương trình chính gọi ship_pair2() 2 lần.']
+      goiY: ['Luna: Thân hàm ship_pair2() đọc c = read_code(), t = c // 10, rồi if t == 1: gọi rail_carry2(-1), else: gọi rail_carry2(1).', 'Luna: Chương trình chính gọi ship_pair2() 2 lần.']
     }),
 
     manCheNhacDoi({
@@ -816,7 +816,7 @@
       so: 7, ten: 'Sửa hàm split_stack2(n)', hang: 'bien-the',
       chinhCoDinh: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by', 'carry2_n'],
-      deBai: 'Sola nhờ bạn: hàm split_stack2(n) của màn cần chuyển chồng n kiện từ (3, 4) lên tàu ở (3, 2) bằng n // 2 chuyến nhấc đôi và n % 2 chuyến nhấc đơn. Nhưng hàm đang viết nhầm thành carry2_n(n % 2, 4) và carry_n(n // 2, 4) nên khi n = 4 chỉ chuyển được 2 kiện. Hãy sửa lại hàm split_stack2(n).',
+      deBai: 'Sola nhờ bạn: hàm split_stack2(n) của màn cần chuyển chồng n kiện từ (3, 4) lên tàu ở (3, 2) bằng n // 2 chuyến nhấc đôi và n % 2 chuyến nhấc đơn. Nhưng hàm đang tráo nhầm: t = n % 2 trước carry2_n(t, 4) và t = n // 2 trước carry_n(t, 4) nên khi n = 4 chỉ chuyển được 2 kiện. Hãy sửa lại hàm split_stack2(n).',
       veMaMau: 'Chương trình chính đã khóa. Hãy đổi % 2 và // 2 cho đúng trong hàm split_stack2(n).',
       san: SAN_DOI_1,
       batDau: { x: 3, y: 3, nac: 4, tam: 1 },
@@ -833,7 +833,7 @@
       ),
       sao: { o: 17, nhip: 20 },
       loiGiaiKhac: {
-        moTa: 'Bốc kiện lẻ trước bằng carry_n(n % 2, 4) rồi mới bốc cặp bằng carry2_n(n // 2, 4)',
+        moTa: 'Bốc kiện lẻ trước (t = n % 2, carry_n(t, 4)) rồi mới bốc cặp (t = n // 2, carry2_n(t, 4))',
         baiLam: bai(
           ['split_stack2(4)'],
           {
@@ -850,7 +850,7 @@
         { moTa: 'Để nguyên hàm mẫu nên chỉ chuyển 2 kiện bằng carry_n(2, 4)', baiLam: bai(['split_stack2(4)'], { hamCuaMan: [hSplitStack2(T_SPLIT_STACK2_SAI)] }), phaiCoMa: ['chua-giao-tau'] },
         { moTa: 'Chỉ gọi carry2_by(4) 1 lần nên mới giao được 2 kiện lên tàu', baiLam: bai(['split_stack2(4)'], { hamCuaMan: [hSplitStack2(['carry2_by(4)'])] }), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Với n = 4, số cặp nhấc đôi là n // 2 = 2 và số kiện lẻ nhấc đơn là n % 2 = 0.', 'Luna: Đổi dòng 1 thành carry2_n(n // 2, 4) và dòng 2 thành carry_n(n % 2, 4).']
+      goiY: ['Luna: Với n = 4, số cặp nhấc đôi là n // 2 = 2 và số kiện lẻ nhấc đơn là n % 2 = 0.', 'Luna: Đổi dòng 1 thành t = n // 2 và dòng 3 thành t = n % 2.']
     }),
 
     manCheNhacDoi({

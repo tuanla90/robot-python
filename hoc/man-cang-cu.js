@@ -432,8 +432,8 @@
       so: 8, ten: 'Cân tải sau thùng sắt', hang: 'bien-the',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'haul_to'],
-      deBai: 'Sola lưu ý: trên hai sân với taiToiDa = 4, bệ cẩu ở (4, 3) hướng nấc 4 tầm 2, vươn qua thùng nặng H ở (4, 4) tới chồng 2 kiện ở (4, 5). Ở tầm 2, nếu weight() == 1 thì nhấc đôi pick_up2() chỉ tốn tải (1 + 1) * 2 = 4 <= 4; nhưng nếu weight() == 2 thì phải lặp 2 lần gọi haul_to(4, -1) và aim_crane(4, 1) để chuyển đơn từng kiện! Hãy dùng if weight() == 1 để xử lý cả hai sân.',
-      veMaMau: 'Kiểm tra weight() == 1 ở tầm 2 để chọn nhấc đôi hoặc lặp 2 lần chuyển đơn.',
+      deBai: 'Sola lưu ý: trên hai sân với taiToiDa = 4, bệ cẩu ở (4, 3) hướng nấc 4 tầm 2, vươn qua thùng nặng H ở (4, 4) tới chồng 2 kiện ở (4, 5). Ở tầm 2, đọc w = weight(): nếu w == 1 thì nhấc đôi pick_up2() chỉ tốn tải (1 + 1) * 2 = 4 <= 4; nhưng nếu w == 2 thì phải lặp 2 lần gọi haul_to(4, -1) và aim_crane(4, 1) để chuyển đơn từng kiện! Hãy dùng if w == 1 để xử lý cả hai sân.',
+      veMaMau: 'Đã có w = weight() và if w == 1: ở tầm 2. Thêm nhánh else lặp 2 lần chuyển đơn.',
       san: [SAN_CU_2, SAN_CU_2],
       batDau: [{ x: 4, y: 3, nac: 4, tam: 2 }, { x: 4, y: 3, nac: 4, tam: 2 }],
       chong: [
@@ -567,7 +567,7 @@
         { moTa: 'Dùng pick_up2() thay cho safe_lift() nên gặp cột chỉ có 1 kiện 3 tấn bị lỗi móc thiếu', baiLam: bai(['for i in range(3):', '    rail(1)', '    extend()', '    pick_up2()', '    retract()', '    swing_by(4)', '    set_down()', '    swing_by(4)']), phaiCoMa: ['moc-thieu'] },
         { moTa: 'Dùng pick_up() thay cho safe_lift() nên cột có 2 kiện 1 tấn bị bỏ sót 1 kiện', baiLam: bai(['for i in range(3):', '    rail(1)', '    extend()', '    pick_up()', '    retract()', '    swing_by(4)', '    set_down()', '    swing_by(4)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Hàm safe_lift() kiểm tra weight() <= 2 để gọi pick_up2() cho cặp kiện 1 tấn và pick_up() cho kiện 3 tấn.', 'Luna: Sau safe_lift(), hãy gọi retract(), swing_by(4), set_down() rồi swing_by(4).']
+      goiY: ['Luna: Hàm safe_lift() đọc w = weight(), hỏi w <= 2 để gọi pick_up2() cho cặp kiện 1 tấn và pick_up() cho kiện 3 tấn.', 'Luna: Sau safe_lift(), hãy gọi retract(), swing_by(4), set_down() rồi swing_by(4).']
     }),
 
     /* ========================================================================
@@ -684,7 +684,7 @@
         { moTa: 'Dùng pick_up2() thay vì safe_lift() nên ở sân 2 gặp cặp 3 tấn ở tầm 2 bị quá tải (6 * 2 = 12 > 8)', baiLam: bai(['safe_over(4)', 'swing_by(4)', 'extend()', 'c = read_code()', 'if c != -1:', '    retract()', '    safe_over(4)']), hamCuaEmMoi: [hSafeOver(['extend()', 'pick_up2()', 'retract()', 'swing_by(d)', 'set_down()'])], phaiCoMa: ['qua-tai'] },
         { moTa: 'Chưa tạo hàm safe_over mà đã bấm Chạy', baiLam: bai(['safe_over(4)', 'swing_by(4)', 'extend()', 'c = read_code()', 'if c != -1:', '    retract()', '    safe_over(4)']), phaiCoMa: ['ham-chua-co'] }
       ],
-      goiY: ['Luna: Thân hàm safe_over(d) gồm 5 dòng: extend(), safe_lift(), retract(), swing_by(d), set_down().', 'Luna: Sân 1 nhấc đôi xong trong 1 chuyến, còn sân 2 còn lại kiện thứ hai nên chương trình chính tự kiểm tra read_code() != -1 để gọi safe_over(4) lần nữa.']
+      goiY: ['Luna: Thân hàm safe_over(d) gồm 5 dòng: extend(), safe_lift(), retract(), swing_by(d), set_down().', 'Luna: Sân 1 nhấc đôi xong trong 1 chuyến, còn sân 2 còn lại kiện thứ hai nên chương trình chính đọc c = read_code() và hỏi c != -1 để gọi safe_over(4) lần nữa.']
     }),
 
     manCheCangCu({
@@ -831,7 +831,7 @@
       taiToiDa: 4,
       huyHieu: { ma: 'che-cang-cu', ten: 'Huy hiệu Chế lệnh: vượt chướng ngại cũ' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'over_wall', 'over_wall2', 'vault_stack'],
-      deBai: 'Trùm chương 2: trên hai sân với taiToiDa = 4, bệ cẩu bắt đầu ở (1, 3) hướng nấc 4 tầm 1. Dọc 3 cột 2, 3, 4 phía sau hàng rào = và hố u (tại (2, 5), (3, 5), (4, 5)), mỗi cột có 2 kiện hàng (cột 1 tấn hoặc cột 2 tấn tùy sân). Trong vòng lặp 3 cột, hãy trượt rail(1), vươn extend() kiểm tra if weight() == 1 (rồi thu retract()) để chọn over_wall2(4) + swing_by(4) hoặc vault_stack(2, 4)!',
+      deBai: 'Trùm chương 2: trên hai sân với taiToiDa = 4, bệ cẩu bắt đầu ở (1, 3) hướng nấc 4 tầm 1. Dọc 3 cột 2, 3, 4 phía sau hàng rào = và hố u (tại (2, 5), (3, 5), (4, 5)), mỗi cột có 2 kiện hàng (cột 1 tấn hoặc cột 2 tấn tùy sân). Trong vòng lặp 3 cột, hãy trượt rail(1), vươn extend(), đọc w = weight(), thu retract(), rồi kiểm tra if w == 1 để chọn over_wall2(4) + swing_by(4) hoặc vault_stack(2, 4)!',
       veMaMau: 'Lặp 3 cột: trượt rail(1), kiểm tra khối lượng ở tầm 2 rồi gọi over_wall2(4) hoặc vault_stack(2, 4).',
       san: [SAN_CU_1, SAN_CU_1],
       batDau: [{ x: 1, y: 3, nac: 4, tam: 1 }, { x: 1, y: 3, nac: 4, tam: 1 }],

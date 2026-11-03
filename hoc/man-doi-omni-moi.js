@@ -210,7 +210,7 @@
         { moTa: 'R1 hất cứng lob() tầm 2: hỏng ở sân 2 khi gặp quặng', baiLam: B(['lob()'], ['wait_n(2)', 'fly_right(2)', 'span_sow("yellow", 2)']), phaiCoMa: ['nem-vo', 'dam-tuong'] },
         { moTa: 'R1 hất cứng aim_lob(3) tầm 3: hỏng ở sân 1 khi nút M ở cách 2 ô', baiLam: B(['aim_lob(3)'], ['wait_n(2)', 'fly_right(2)', 'span_sow("yellow", 2)']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['sort_lob() kiểm tra shape("front") == "ore" để hất tầm 3 hoặc tầm 2.', 'Cả hai trường hợp của sort_lob() đều mở cổng C ở cuối nhịp 2.']
+      goiY: ['sort_lob() đọc s = shape("front"), hỏi s == "ore" để hất tầm 3 hoặc tầm 2.', 'Cả hai trường hợp của sort_lob() đều mở cổng C ở cuối nhịp 2.']
     }),
 
     man({

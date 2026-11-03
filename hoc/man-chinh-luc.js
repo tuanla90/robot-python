@@ -254,11 +254,11 @@
       ten: 'Radar đo máng gần xa', hang: 'bien-the',
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['move'],
-      deBai: 'R1 xúc viên đá vào rổ rồi tiến 1 ô lên `(2, 4)`. Lúc này máng nhận `D` có thể nằm ngay sát trước mũi (`g[0][1] == "D"`, cách 1 ô) hoặc nằm xa hơn 1 ô (cách 2 ô). Hãy quét `g = radar()`, nếu `g[0][1] == "D"` thì `aim(1)`, ngược lại `aim(2)`, rồi `throw()` và `wait()`.',
+      deBai: 'R1 xúc viên đá vào rổ rồi tiến 1 ô lên `(2, 4)`. Lúc này máng nhận `D` có thể nằm ngay sát trước mũi (ô `g[0][1]` là `"D"`, cách 1 ô) hoặc nằm xa hơn 1 ô (cách 2 ô). Hãy quét `g = radar()`, đọc `t = g[0][1]`, nếu `t == "D"` thì `aim(1)`, ngược lại `aim(2)`, rồi `throw()` và `wait()`.',
       veMaMau: 'Chương trình có sẵn đã xúc đá, tiến lên (2, 4) và quét radar(). Hãy thêm if/else chọn aim(1) hoặc aim(2) trước khi ném.',
       goiY: [
         'Khi đứng ở (2, 4), ô (2, 3) ngay trước mũi là g[0][1] của radar().',
-        'Viết if g[0][1] == "D": aim(1) và else: aim(2), sau đó gọi throw() và wait().'
+        'Viết t = g[0][1], rồi if t == "D": aim(1) và else: aim(2), sau đó gọi throw() và wait().'
       ],
       san: [
         [
@@ -318,7 +318,7 @@
       id: 6608, chuong: 'chinh-luc', so: 8, ma: 'chinh-luc.8',
       ten: 'Cọc đá báo tầm hất', hang: 'bien-the',
       hamCuaEmCan: ['move', 'forward', 'lob'],
-      deBai: 'Hành lang gồm 2 chặng (mỗi chặng dài 3 ô). Ở đầu mỗi chặng, nếu bên phải R1 có cọc đá `#` (`g[1][2] == "#"`) thì hố sâu nằm cách 3 ô (`aim(3)`), còn không thì hố sâu nằm cách 2 ô (`aim(2)`). Trong vòng lặp 2 lần, hãy quét `g = radar()`, chọn `aim(3)` hoặc `aim(2)`, gọi `lob()` và `forward(3)`, rồi ngoài vòng lặp gọi `move()` vào cờ.',
+      deBai: 'Hành lang gồm 2 chặng (mỗi chặng dài 3 ô). Ở đầu mỗi chặng, nếu bên phải R1 có cọc đá `#` (ô `g[1][2]` là `"#"`) thì hố sâu nằm cách 3 ô (`aim(3)`), còn không thì hố sâu nằm cách 2 ô (`aim(2)`). Trong vòng lặp 2 lần, hãy quét `g = radar()`, chọn `aim(3)` hoặc `aim(2)`, gọi `lob()` và `forward(3)`, rồi ngoài vòng lặp gọi `move()` vào cờ.',
       veMaMau: 'Chương trình có sẵn mới viết nhánh if cho aim(3). Hãy thêm nhánh else đặt aim(2), gọi lob(), forward(3), rồi cuối cùng gọi move().',
       goiY: [
         'Trong vòng lặp for i in range(2):, sau khối if/else chọn aim(3) hay aim(2), gọi lob() rồi forward(3).',
@@ -424,11 +424,11 @@
       ten: 'Trùm chỉnh lực mỏ đá', hang: 'trum',
       huyHieu: { ma: 'chinh-luc', ten: 'Tay Hất Chuẩn Tầm' },
       hamCuaEmCan: ['move', 'forward', 'lob', 'diag_r'],
-      deBai: 'Từ cửa hầm bên trái, hãy gọi `diag_r(1)` để lách chéo vào trục chính ở `(2, 8)`. Sau đó lặp 2 chặng (`for i in range(2):`): quét `g = radar()`, nếu bên phải có cọc đá (`g[1][2] == "#"`) thì `aim(3)`, ngược lại `aim(2)`, rồi gọi `lob()` và `forward(3)`. Cuối cùng gọi `move()` vào cờ.',
+      deBai: 'Từ cửa hầm bên trái, hãy gọi `diag_r(1)` để lách chéo vào trục chính ở `(2, 8)`. Sau đó lặp 2 chặng (`for i in range(2):`): quét `g = radar()`, đọc `t = g[1][2]`, nếu bên phải có cọc đá (`t == "#"`) thì `aim(3)`, ngược lại `aim(2)`, rồi gọi `lob()` và `forward(3)`. Cuối cùng gọi `move()` vào cờ.',
       veMaMau: 'Chương trình có sẵn mới lách vào trục chính bằng diag_r(1). Hãy thêm vòng lặp 2 chặng và lệnh move() cuối.',
       goiY: [
         'Sau diag_r(1), viết for i in range(2): rồi quét g = radar().',
-        'Nếu g[1][2] == "#": aim(3), else: aim(2), tiếp theo gọi lob() và forward(3). Ngoài vòng lặp gọi move().'
+        'Đọc t = g[1][2]; nếu t == "#": aim(3), else: aim(2), tiếp theo gọi lob() và forward(3). Ngoài vòng lặp gọi move().'
       ],
       san: [
         [
@@ -649,10 +649,10 @@
       taoHam: ['auto_aim'],
       chinhCoDinh: true,
       hamCuaEmCan: ['move', 'forward', 'lob', 'aim_lob'],
-      deBai: 'Hãy viết hàm `auto_aim()` để vượt 1 chặng 3 ô: quét `g = radar()`, nếu bên phải có cọc đá (`g[1][2] == "#"`) thì gọi `aim_lob(3)` (hố xa 3 ô), ngược lại gọi `aim_lob(2)` (hố cách 2 ô), sau đó gọi `forward(3)`.',
+      deBai: 'Hãy viết hàm `auto_aim()` để vượt 1 chặng 3 ô: quét `g = radar()`, đọc `t = g[1][2]`, nếu bên phải có cọc đá (`t == "#"`) thì gọi `aim_lob(3)` (hố xa 3 ô), ngược lại gọi `aim_lob(2)` (hố cách 2 ô), sau đó gọi `forward(3)`.',
       veMaMau: 'Chương trình chính đã lặp 2 lần auto_aim() và bước vào cờ. Hãy viết thân hàm auto_aim() trong Xưởng hàm.',
       goiY: [
-        'Trong def auto_aim():, viết g = radar(), nếu g[1][2] == "#": gọi aim_lob(3), else: gọi aim_lob(2).',
+        'Trong def auto_aim():, viết g = radar(), t = g[1][2], nếu t == "#": gọi aim_lob(3), else: gọi aim_lob(2).',
         'Cuối hàm auto_aim() (ngoài khối if/else) gọi forward(3).'
       ],
       san: [

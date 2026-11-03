@@ -123,12 +123,12 @@
       loiSai: [
         { moTa: 'Đi ngược mật lệnh', baiLam: bai(['a = []', 'for i in range(3):', '    go_right()', '    m = color("here")', '    a.append(m)', 'for c in a:', '    if c == "red":', '        go_right()', '    else:', '        go_down()']), phaiCoMa: [] }
       ],
-      goiY: ['a.append(color("here")) ghi màu ô dưới chân.', 'Mỗi màu trong a là đúng một bước bay.']
+      goiY: ['m = color("here") đọc màu ô dưới chân, a.append(m) ghi màu đó vào a.', 'Mỗi màu trong a là đúng một bước bay.']
     }),
 
     man({
       so: 6, ten: 'Đọc dấu màu dưới bụng', hang: 'luyen', nam: true, hamCuaEmCan: [],
-      deBai: 'Bay sang phải lên ô dấu màu, đọc màu bằng color("here"), chọn màu đó bằng ink(c), rồi nếu là màu đỏ thì bay lên chấm, màu khác thì bay xuống chấm. Hai sân, hai màu khác nhau.',
+      deBai: 'Bay sang phải lên ô dấu màu, đọc màu bằng c = color("here"), chọn màu đó bằng ink(c), rồi nếu là màu đỏ thì bay lên chấm, màu khác thì bay xuống chấm. Hai sân, hai màu khác nhau.',
       veMaMau: 'Chương trình có sẵn luôn chấm màu đỏ ở ô phía trên. Thêm phần đọc màu, chọn màu và rẽ hướng.',
       san: [['..', '.r', '..'], ['..', '.b', '..']],
       hinh: [['.r', '..', '..'], ['..', '..', '.b']],
@@ -171,7 +171,7 @@
       loiSai: [
         { moTa: 'Bay cố định hai ô: sân thứ hai chấm lệch ra ngoài hình', baiLam: bai(['go_right()', 'go_right()', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['while color("here") != "red": bay sang phải tới đúng ô đỏ.', 'Từ ô đỏ bay lên hai ô rồi dot() và wait().']
+      goiY: ['Đọc m = color("here"), while m != "red": bay sang phải rồi đọc lại m, tới đúng ô đỏ thì dừng.', 'Từ ô đỏ bay lên hai ô rồi dot() và wait().']
     }),
 
     man({
@@ -203,14 +203,14 @@
         { moTa: 'Tìm ô đỏ cố định: lệch cột', baiLam: bai(['c = color("here")', 'go_right()', 'm = color("here")', 'while m != "red":', '    go_right()', '    m = color("here")', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] },
         { moTa: 'Quên rời ô đơn hàng trước khi tìm: vòng while không chạy', baiLam: bai(['c = color("here")', 'm = color("here")', 'while m != c:', '    go_right()', '    m = color("here")', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] }
       ],
-      goiY: ['Ô đơn hàng cũng có màu c: rời nó một ô rồi mới tìm.', 'while color("here") != c: bay tới ô cùng màu đơn, rồi ink(c) và bay lên chấm.']
+      goiY: ['Ô đơn hàng cũng có màu c: rời nó một ô rồi mới tìm.', 'Đọc m = color("here"), while m != c: bay tiếp và đọc lại m, tới ô cùng màu đơn thì dừng, rồi ink(c) và bay lên chấm.']
     }),
 
     /* ================================================= chương che-nhin-duoi "Chế lệnh: đọc đơn hàng" ================================================= */
     manChe({
       so: 1, ten: 'Hàm tìm ô màu', hang: 'lam-quen', taoHam: ['seek_here'], hamCuaEmCan: [],
       deBai: 'Chế seek_here(col): bay sang phải cho tới khi ô dưới chân có màu col. Chương trình chính đã khóa: seek_here("red") rồi hạ xuống cờ. Hai sân.',
-      veMaMau: 'Mở Xưởng hàm, tạo seek_here với một đối số col. So color("here") với col.',
+      veMaMau: 'Mở Xưởng hàm, tạo seek_here với một đối số col. Đọc m = color("here") rồi so m với col.',
       san: [['.gbr', '...F'], ['.rgb', '.F..']],
       batDau: { x: 0, y: 0 },
       maMau: bai(['seek_here("red")', 'go_down()']),

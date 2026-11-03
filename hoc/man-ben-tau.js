@@ -369,7 +369,7 @@
     manBenTau({
       so: 7, ten: 'Phân luồng hai tàu theo mã', hang: 'luyen-tap', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: đọc mã từng kiện trong chồng 3 kiện ở cầu cảng nấc 0 (3, 2) trên hai sân. Nếu read_code() // 10 == 1 thì giao cho Tàu 1 ở nấc 7 rồi quay về nấc 0, ngược lại giao cho Tàu 2 ở nấc 1 rồi quay về nấc 0.',
+      deBai: 'Sola nhờ bạn: đọc mã từng kiện trong chồng 3 kiện ở cầu cảng nấc 0 (3, 2) trên hai sân. Đọc c = read_code(), tính t = c // 10: nếu t == 1 thì giao cho Tàu 1 ở nấc 7 rồi quay về nấc 0, ngược lại giao cho Tàu 2 ở nấc 1 rồi quay về nấc 0.',
       veMaMau: 'Hoàn thiện nhánh else để giao các kiện 2x cho Tàu 2 ở nấc 1.',
       san: [SAN_BEN_2, SAN_BEN_2],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
@@ -405,7 +405,7 @@
       ]),
       sao: { o: 14, nhip: 22 },
       loiGiaiKhac: {
-        moTa: 'Dùng vòng for 3 lần thay cho while read_code() != -1',
+        moTa: 'Dùng vòng for 3 lần thay cho while c != -1',
         baiLam: bai([
           'for i in range(3):',
           '    c = read_code()',
@@ -422,7 +422,7 @@
         { moTa: 'Đưa mọi kiện sang Tàu 1 nên bị giao nhầm kiện 2x', baiLam: bai(['c = read_code()', 'while c != -1:', '    carry_by(-1)', '    swing_by(1)', '    c = read_code()']), phaiCoMa: ['giao-nham'] },
         { moTa: 'Không dùng vòng lặp nên chỉ giao được 1 kiện đầu tiên', baiLam: bai(['c = read_code()', 't = c // 10', 'if t == 1:', '    carry_by(-1)', 'else:', '    carry_by(1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Trong nhánh if read_code() // 10 == 1:, gọi carry_by(-1) rồi swing_by(1).', 'Luna: Trong nhánh else:, gọi carry_by(1) rồi swing_by(-1).']
+      goiY: ['Luna: Trong nhánh if t == 1: (t = c // 10), gọi carry_by(-1) rồi swing_by(1).', 'Luna: Trong nhánh else:, gọi carry_by(1) rồi swing_by(-1).']
     }),
 
     manBenTau({
@@ -640,7 +640,7 @@
       so: 3, ten: 'Chế hàm ship_pair()', hang: 'lam-quen',
       taoHam: ['ship_pair'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_pair() đọc kiện hàng ở cầu cảng nấc 0: nếu read_code() // 10 == 1 thì carry_by(-1) rồi swing_by(1) sang Tàu 1, ngược lại thì carry_by(1) rồi swing_by(-1) sang Tàu 2.',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_pair() đọc kiện hàng ở cầu cảng nấc 0: đọc c = read_code(), t = c // 10, nếu t == 1 thì carry_by(-1) rồi swing_by(1) sang Tàu 1, ngược lại thì carry_by(1) rồi swing_by(-1) sang Tàu 2.',
       veMaMau: 'Tạo hàm ship_pair() rồi gọi 2 lần để giao 2 kiện ở cầu cảng nấc 0.',
       san: SAN_BEN_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
@@ -665,14 +665,14 @@
         { moTa: 'Chưa tạo hàm ship_pair mà đã bấm Chạy', baiLam: bai(['ship_pair()', 'ship_pair()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Mới gọi ship_pair() 1 lần nên còn 1 kiện chưa giao', baiLam: bai(['ship_pair()']), hamCuaEmMoi: [hShipPair()], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Nhánh if read_code() // 10 == 1: gồm carry_by(-1) và swing_by(1).', 'Luna: Nhánh else: gồm carry_by(1) và swing_by(-1).']
+      goiY: ['Luna: Đọc c = read_code(), t = c // 10. Nhánh if t == 1: gồm carry_by(-1) và swing_by(1).', 'Luna: Nhánh else: gồm carry_by(1) và swing_by(-1).']
     }),
 
     manCheBenTau({
       so: 4, ten: 'Chế hàm ship_all_pair()', hang: 'luyen-tap',
       taoHam: ['ship_all_pair'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'ship_pair'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_all_pair() lặp while read_code() != -1: để gọi ship_pair() cho tới khi hết chồng hàng ở cầu cảng nấc 0.',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_all_pair(): đọc c = read_code(), lặp while c != -1: gọi ship_pair() rồi đọc lại c, cho tới khi hết chồng hàng ở cầu cảng nấc 0.',
       veMaMau: 'Tạo hàm ship_all_pair() rồi gọi ở chương trình chính.',
       san: SAN_BEN_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
@@ -694,7 +694,7 @@
         { moTa: 'Chưa tạo hàm ship_all_pair mà đã bấm Chạy', baiLam: bai(['ship_all_pair()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Trong ship_all_pair thiếu vòng lặp while nên chỉ giao 1 kiện', baiLam: bai(['ship_all_pair()']), hamCuaEmMoi: [hShipAllPair(['ship_pair()'])], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Thân hàm ship_all_pair() chỉ cần 2 dòng: while read_code() != -1: và ship_pair().', 'Luna: Chương trình chính gọi ship_all_pair().']
+      goiY: ['Luna: Thân hàm ship_all_pair() gồm 4 dòng: c = read_code(), while c != -1:, ship_pair() và c = read_code().', 'Luna: Chương trình chính gọi ship_all_pair().']
     }),
 
     manCheBenTau({
@@ -764,7 +764,7 @@
         { moTa: 'Chưa tạo hàm move_tower2 mà đã bấm Chạy', baiLam: bai(['move_tower2(1, -1)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Truyền ngược d1 và d2 nên dời tháp sang nấc 3 thay vì lên tàu ở nấc 1', baiLam: bai(['move_tower2(-1, 1)']), hamCuaEmMoi: [hMoveTower2()], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Thân hàm move_tower2(d1, d2) gồm 5 dòng: carry_by(d1), swing_by(-d1), carry_by(d2), swing_by(d1 - d2), carry_by(d2 - d1).', 'Luna: Ở chương trình chính gọi move_tower2(1, -1).']
+      goiY: ['Luna: Thân hàm move_tower2(d1, d2) gồm 7 dòng: carry_by(d1), swing_by(-d1), carry_by(d2), t = d1 - d2, swing_by(t), t = d2 - d1, carry_by(t).', 'Luna: Ở chương trình chính gọi move_tower2(1, -1).']
     }),
 
     manCheBenTau({
@@ -788,7 +788,7 @@
       ),
       sao: { o: 16, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Đảo điều kiện if read_code() // 10 != t lên trước',
+        moTa: 'Đảo điều kiện if k != t lên trước',
         baiLam: bai(
           ['filter_ship(1)'],
           {
@@ -811,7 +811,7 @@
         { moTa: 'Để nguyên hàm mẫu dùng % 10 nên cất nhầm cả 3 kiện sang nấc 3', baiLam: bai(['filter_ship(1)'], { hamCuaMan: [hFilterShip(T_FILTER_SHIP_SAI)] }), phaiCoMa: ['chua-giao-tau'] },
         { moTa: 'Đưa mọi kiện lên tàu nên kiện 24 bị lỗi giao nhầm', baiLam: bai(['filter_ship(1)'], { hamCuaMan: [hFilterShip(['c = read_code()', 'while c != -1:', '    carry_by(-1)', '    swing_by(1)', '    c = read_code()'])] }), phaiCoMa: ['giao-nham'] }
       ],
-      goiY: ['Luna: Phép % 10 lấy chữ số hàng đơn vị nên không khớp chữ số hàng chục t = 1.', 'Luna: Đổi dòng điều kiện thành if read_code() // 10 == t: là xong.']
+      goiY: ['Luna: Phép % 10 lấy chữ số hàng đơn vị nên không khớp chữ số hàng chục t = 1.', 'Luna: Đổi dòng k = c % 10 thành k = c // 10 là xong.']
     }),
 
     manCheBenTau({

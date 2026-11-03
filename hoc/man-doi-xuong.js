@@ -267,8 +267,8 @@
 
     manDoi({
       so: 6, ten: 'Lai dắt cầu phao qua cua theo sức nước', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola và Luna gặp khúc kênh chữ L có sức nước thay đổi qua 2 sân: từ (2, 1) hướng Đông với bè B ở (4, 1), R1 gọi tug_corner("R", 1) để thu B về sát mũi và rẽ xuống (2, 2) hướng Nam. Ô (2, 3) trước mũi có dòng xuôi sức 1 hoặc 2; R1 hãy gọi forward(3 - flow_power()) và tether_drop() để đưa B vào đúng ô cầu phao q ở (2, 4). R2 ở bờ Tây (1, 4) hướng Đông gọi wait_n(6) chờ cầu phao, rồi gọi forward(2) qua sông sang (3, 4), pick() hàng ở (4, 4), turn_left() và drop() vào D ở (3, 3)!',
-      veMaMau: 'R1 gọi tug_corner("R", 1), forward(3 - flow_power()), tether_drop(); R2 chờ 6 nhịp rồi qua cầu phao.',
+      deBai: 'Sola và Luna gặp khúc kênh chữ L có sức nước thay đổi qua 2 sân: từ (2, 1) hướng Đông với bè B ở (4, 1), R1 gọi tug_corner("R", 1) để thu B về sát mũi và rẽ xuống (2, 2) hướng Nam. Ô (2, 3) trước mũi có dòng xuôi sức 1 hoặc 2; R1 hãy đọc p = flow_power(), tính t = 3 - p, gọi forward(t) và tether_drop() để đưa B vào đúng ô cầu phao q ở (2, 4). R2 ở bờ Tây (1, 4) hướng Đông gọi wait_n(6) chờ cầu phao, rồi gọi forward(2) qua sông sang (3, 4), pick() hàng ở (4, 4), turn_left() và drop() vào D ở (3, 3)!',
+      veMaMau: 'R1 gọi tug_corner("R", 1), p = flow_power(), t = 3 - p, forward(t), tether_drop(); R2 chờ 6 nhịp rồi qua cầu phao.',
       san: [
         ['######', '#~~~B#', '#=~==#', '#u~D.#', '#.q.o#', '#~~~H#', '######'],
         ['######', '#~~~B#', '#=~==#', '#u~D.#', '#.q.o#', '#~~~H#', '######']
@@ -288,10 +288,10 @@
       ),
       sao: { o: 47, nhip: 24 },
       loiSai: [
-        { moTa: 'R1 đếm cứng forward(1) thay vì forward(3 - flow_power()) nên ở sân 1 bè B chưa tới ô cầu phao (2, 4)', baiLam: B(['tug_corner("R", 1)', 'forward(1)', 'tether_drop()'], ['wait_n(6)', 'forward(2)', 'pick()', 'turn_left()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R1 đếm cứng forward(1) thay vì tính t = 3 - p rồi forward(t) nên ở sân 1 bè B chưa tới ô cầu phao (2, 4)', baiLam: B(['tug_corner("R", 1)', 'forward(1)', 'tether_drop()'], ['wait_n(6)', 'forward(2)', 'pick()', 'turn_left()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
         { moTa: 'R2 chỉ chờ 3 nhịp wait_n(3) đã bước ra (2, 4) khi R1 chưa kéo bè tới nơi', baiLam: B(['tug_corner("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'], ['wait_n(3)', 'forward(2)', 'pick()', 'turn_left()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau tug_corner("R", 1), R1 ở (2, 2) và B ở (2, 1); tiến 3 - flow_power() bước đưa R1 xuống (2, 5) và B vào đúng (2, 4).', 'Luna: R2 chờ 6 nhịp rồi gọi forward(2), pick(), turn_left(), drop().']
+      goiY: ['Luna: Sau tug_corner("R", 1), R1 ở (2, 2) và B ở (2, 1); tiến t = 3 - p bước (p = flow_power()) đưa R1 xuống (2, 5) và B vào đúng (2, 4).', 'Luna: R2 chờ 6 nhịp rồi gọi forward(2), pick(), turn_left(), drop().']
     }),
 
     manDoi({
@@ -699,8 +699,8 @@
     cheDoi({
       so: 9, ten: 'Lai dắt cầu phao qua cống cổ và giao hàng liên bờ', hang: 'bien-the', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['bridge_lay', 'cross_and_pick', 'ferry_drop', 'sync_dock_pass', 'clear_river_bridge']),
-      deBai: 'Sola và Luna đối mặt thử thách 2 sân: từ (2, 1) hướng Đông, R1 gọi tail_over_calm("R", 1) để tự kiểm tra dòng chảy mở cống K/k ở (2, 3) khi cần và dắt lục bình L ở (4, 1) rẽ xuống (2, 2), rồi gọi forward(3 - flow_power()) và tether_drop() để đặt L vào đúng ô cầu phao q ở (2, 4)! R2 ở (1, 4) hướng Đông gọi sync_dock_pass(11, 2) vượt cầu sang (3, 4) nhặt hàng ở (4, 4), rồi gọi u_turn() và ferry_drop(2) chở hàng về thả vào D ở bờ Tây (0, 4)!',
-      veMaMau: 'R1 gọi tail_over_calm("R", 1), forward(3 - flow_power()), tether_drop(); R2 gọi sync_dock_pass(11, 2), u_turn(), ferry_drop(2).',
+      deBai: 'Sola và Luna đối mặt thử thách 2 sân: từ (2, 1) hướng Đông, R1 gọi tail_over_calm("R", 1) để tự kiểm tra dòng chảy mở cống K/k ở (2, 3) khi cần và dắt lục bình L ở (4, 1) rẽ xuống (2, 2), rồi đọc p = flow_power(), tính t = 3 - p, gọi forward(t) và tether_drop() để đặt L vào đúng ô cầu phao q ở (2, 4)! R2 ở (1, 4) hướng Đông gọi sync_dock_pass(11, 2) vượt cầu sang (3, 4) nhặt hàng ở (4, 4), rồi gọi u_turn() và ferry_drop(2) chở hàng về thả vào D ở bờ Tây (0, 4)!',
+      veMaMau: 'R1 gọi tail_over_calm("R", 1), p = flow_power(), t = 3 - p, forward(t), tether_drop(); R2 gọi sync_dock_pass(11, 2), u_turn(), ferry_drop(2).',
       san: [
         ['##V###', '#~~~L#', '#=~H=#', '#uK==#', 'D.q.o#', '#~~~~#', '######'],
         ['##V###', '#~~~L#', '#=~H=#', '#uk==#', 'D.q.o#', '#~~~~#', '######']
@@ -727,7 +727,7 @@
         { moTa: 'R1 dùng tug_corner("R", 1) thay vì tail_over_calm("R", 1) nên ở sân 1 cống K ở (2, 3) chưa mở', baiLam: B(['tug_corner("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'], ['sync_dock_pass(11, 2)', 'u_turn()', 'ferry_drop(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
         { moTa: 'R2 chỉ chờ 4 nhịp sync_dock_pass(4, 2) nên ở sân 1 bước ra (2, 4) trước khi L tới nơi', baiLam: B(['tail_over_calm("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'], ['sync_dock_pass(4, 2)', 'u_turn()', 'ferry_drop(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau tail_over_calm("R", 1), R1 gọi forward(3 - flow_power()) và tether_drop() để đặt L vào (2, 4) ở nhịp 10.', 'Luna: R2 gọi sync_dock_pass(11, 2) sang (3, 4) nhặt hàng ở (4, 4), rồi gọi u_turn() và ferry_drop(2) về (1, 4) thả hàng vào D ở (0, 4)!']
+      goiY: ['Luna: Sau tail_over_calm("R", 1), R1 đọc p = flow_power(), t = 3 - p, gọi forward(t) và tether_drop() để đặt L vào (2, 4) ở nhịp 10.', 'Luna: R2 gọi sync_dock_pass(11, 2) sang (3, 4) nhặt hàng ở (4, 4), rồi gọi u_turn() và ferry_drop(2) về (1, 4) thả hàng vào D ở (0, 4)!']
     }),
 
     cheDoi({

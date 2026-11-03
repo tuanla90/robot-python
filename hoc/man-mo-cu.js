@@ -214,7 +214,7 @@
       id: 6806, chuong: 'mo-cu', so: 6, ma: 'mo-cu.6',
       ten: 'Đá tròn lấp hố, đá vuông đè nút', hang: 'luyen',
       hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'fill_pit'],
-      deBai: 'Trên hai sân, đường lên cờ ở cột 3 hoặc có hố `u` kèm đá tròn `"round"` ở `(3, 3)`, hoặc có cổng `C` kèm đá vuông `"square"` ở `(3, 3)` và nút đè `M` ở `(3, 1)`. Đá vuông không lấp được hố nhưng đè được nút `M`! Hãy kiểm tra `if shape("front") == "round":` thì gọi `fill_pit()`, ngược lại (`else:`) gọi `aim_lob(3)` rồi `forward(2)`. Cuối cùng gọi `slide_r(2)` vào cờ `F`!',
+      deBai: 'Trên hai sân, đường lên cờ ở cột 3 hoặc có hố `u` kèm đá tròn `"round"` ở `(3, 3)`, hoặc có cổng `C` kèm đá vuông `"square"` ở `(3, 3)` và nút đè `M` ở `(3, 1)`. Đá vuông không lấp được hố nhưng đè được nút `M`! Hãy đọc `s = shape("front")`, kiểm tra `if s == "round":` thì gọi `fill_pit()`, ngược lại (`else:`) gọi `aim_lob(3)` rồi `forward(2)`. Cuối cùng gọi `slide_r(2)` vào cờ `F`!',
       veMaMau: 'Hoàn thiện nhánh else (aim_lob(3) và forward(2)) rồi thêm slide_r(2) ở ngoài if/else.',
       goiY: [
         'Trong nhánh else:, viết aim_lob(3) để hất đá vuông lên nút M ở (3, 1), rồi forward(2) để tiến vào ô cổng C vừa mở ở (3, 2).',
