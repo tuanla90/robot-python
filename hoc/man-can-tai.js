@@ -760,7 +760,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm load_safe_stack mà đã bấm Chạy', baiLam: bai(['load_safe_stack()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong load_safe_stack dùng weight() <= 2 nên gọi carry2_by(4) cho tháp 5 tấn bị quá tải', baiLam: bai(['load_safe_stack()']), hamCuaEmMoi: [hLoadSafeStack(['w = weight()', 'if w <= 2:', '    carry2_by(4)', 'else:', '    move_tower2(1, 4)'])], phaiCoMa: ['qua-tai'] }
+        { moTa: 'Trong load_safe_stack dùng w <= 2 nên gọi carry2_by(4) cho tháp 5 tấn bị quá tải', baiLam: bai(['load_safe_stack()']), hamCuaEmMoi: [hLoadSafeStack(['w = weight()', 'if w <= 2:', '    carry2_by(4)', 'else:', '    move_tower2(1, 4)'])], phaiCoMa: ['qua-tai'] }
       ],
       goiY: ['Luna: Vì kiện đáy nặng 3 tấn nên chỉ khi kiện đỉnh có w == 1 mới nhấc đôi được (3 + 1 = 4).', 'Luna: Thân hàm load_safe_stack() đọc w = weight(), kiểm tra if w == 1: gọi carry2_by(4), else: gọi move_tower2(1, 4).']
     }),
