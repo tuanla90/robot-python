@@ -3,8 +3,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    man-goi.js — "Robot Chấn Hưng": MÀN CHỌN GÓI (window.ChonGoi), BẢN ĐỒ CUỘN DỌC (3/11).
    Nền: ảnh dài 9 nơi chốn của phim CLB (phim-clb/a/ban-do/dai-9.webp: CLB, kho, nhà máy, bãi tái chế, cảng, bến sông, nông trại, mỏ đá, hang)
    lặp dọc vô hạn; cuộn qua hang thì vòng về cổng CLB, đúng chỗ mùa 9 "Về CLB". Mùa n nằm ở khúc ảnh nơi chốn của nó: đầu khúc một biển
-   "MÙA n · tên ★", rồi 10 gói là 10 huy hiệu tròn trên con đường, nhãn "GÓI k · tên · sao" bên cạnh. Mùa ẩn (`an`, chưa bật "Mở hết")
-   chỉ có biển "SẮP CÓ". Gói thử thách: viền hổ phách, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
+   "MÙA n · tên ★" đặt đúng chỗ giao giữa hai nơi chốn (cổng, cầu, đổi nền: mép khúc ảnh), rồi 10 gói là 10 huy hiệu tròn trên con
+   đường, nhãn "GÓI k · tên · sao" bên cạnh. Mùa ẩn (`an`, chưa bật "Mở hết") vẫn có biển tên mùa, kèm ổ khoá và "SẮP CÓ", chưa có gói. Gói thử thách: viền hổ phách, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
    Chạm gói đã mở → lưới màn của gói (App.vaoGoi). Gói và luật mở ở game/mo-goi.js.
    Bản đồ phủ cả màn hình; nổi trên đó chỉ có nút quay về (góc trái) và ô tổng sao (góc phải; giữ lâu 2 giây = bảng Gỡ lỗi).
    Mùa BÁN RIÊNG chưa mua (25/10): biển mùa có nút "Mua <mùa> · giá"; chạm biển, nút hay gói của mùa đó mở bảng
@@ -23,7 +23,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      (CUOI_DUONG): qua đó thì sang tấm ảnh kế. Khúc thứ r (đếm liền qua các tấm) là nơi chốn r % 9: 0 CLB, 1 kho … 8 hang. */
   var AW = 720, AH = 10477, SC = 0.8, DX = 120, BUOC_DUONG = 16, DAU_DUONG = 340, CUOI_DUONG = 10150;
   var VUNG = 1724 * AW / 1080;        // mỗi nơi chốn cao 1724 px ảnh gốc 1080
-  var BIEN_Y = 40, GOI_Y = 170, KHOANG = 86;   // trong một khúc (px ảnh): biển mùa, gói đầu (chừa chỗ nút mua dưới biển), giữa hai gói (= 69px màn hình)
+  var GOI_Y = 120, KHOANG = 92;      // px ảnh tính từ chỗ giao (biển mùa): gói đầu (chừa chỗ nút mua dưới biển), giữa hai gói (= 74px màn hình); 10 gói vừa khúc hang (đường hết ở vòng xuyến)
   var THEM_DUOI = 360;                // px màn hình dư dưới gói cuối; cuộn gần đáy thì nối thêm một tấm ảnh
   var DUONG = [
     362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,365,370,376,382,385,385,385,385,380,374,367,361,358,
@@ -134,13 +134,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var so = /^mua-(\d)$/.exec(mu.ma), laHien = hien.indexOf(mu) >= 0;
       if (!so && !laHien) return;                                     // Kho lưu trữ (mua-an): chỉ có khi bật Mở hết
       if (so) r = Math.max(r, +so[1]);
-      var y = trenDuong(Math.max(dauKhuc(r) + BIEN_Y, cuoiY ? cuoiY / SC + KHOANG : 0));
+      var y = Math.max(dauKhuc(r), cuoiY ? cuoiY / SC + KHOANG : 0);   // biển ở chỗ giao, kể cả mép tấm ảnh (hang → cổng CLB): không cần nằm trên đường
       var bn = bienMua(mu, laHien, so ? +so[1] : null), pb = diem(y);
       bn.style.top = pb.y + 'px';
       el.bd.appendChild(bn); S.bien.push({ ma: mu.ma, y: pb.y, hien: laHien });
       cuoiY = pb.y;
       if (laHien) {
-        y += GOI_Y - BIEN_Y;
+        y += GOI_Y;
         mu.goi.forEach(function (g, k) {
           y = trenDuong(y);
           var p = diem(y), n = nutGoi(g, k, g === cur, k % 2 ? 'trai' : 'phai');
@@ -177,7 +177,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var dong = h('div', 'g-bien-dong');
     if (!laHien) {
       var k0 = h('span'); k0.setAttribute('data-i', 'lock'); k0.setAttribute('data-s', '1'); dong.appendChild(k0);
-      dong.appendChild(h('span', 'g-bien-ten', t('goi.sapCo')));
+      if (so) dong.appendChild(h('span', 'g-bien-so', t('goi.muaSo', { n: so })));
+      dong.appendChild(h('span', 'g-bien-ten', mu.ten));
+      dong.appendChild(h('span', 'g-bien-sap', t('goi.sapCo')));
       b.appendChild(dong);
       return b;
     }

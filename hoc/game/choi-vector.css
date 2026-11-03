@@ -647,6 +647,7 @@ body.ve-vector .g-bien-dong{height:36px;padding:0 16px;border-radius:var(--r-ful
 body.ve-vector .g-bien-so{font:700 12px/1 var(--px);letter-spacing:1px;color:var(--g-vecBrand)}
 body.ve-vector .g-bien-sao{font:600 14px/1 var(--mono);color:var(--g-vecChu)}
 body.ve-vector .g-bien.sap .g-bien-dong{color:var(--g-vecChuPhu);background:var(--g-vecTheLom)}
+body.ve-vector .g-bien-sap{padding:4px 8px;border-radius:var(--r-full);font:700 10px/1 var(--px);letter-spacing:.8px;color:var(--g-vecChuPhu);background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
 body.ve-vector .g-bien.nope{animation:vec-rung .32s ease-in-out 1}
 body.ve-vector .g-tron{background:var(--g-vecThe);box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 5px var(--g-vecKeDam),var(--elev-2)}
 body.ve-vector .g-nut.xong .g-tron{box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 6px var(--g-vecLa),var(--elev-2)}

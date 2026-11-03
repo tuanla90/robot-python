@@ -352,6 +352,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .g-bien-ten{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .g-bien-sao{display:flex;align-items:center;gap:3px;margin-left:4px;font:var(--wm) calc(14px*var(--km))/1 var(--mono)}
 .g-bien.sap .g-bien-dong{color:var(--g-xamV7)}
+.g-bien-sap{margin-left:4px;padding:3px 6px 1px;font:700 calc(10px*var(--kp))/1 var(--px);letter-spacing:1px;color:var(--ink);background:var(--g-xamV1);text-shadow:none}
 .g-bien.nope{animation:shake .25s 2}
 /* gói: huy hiệu tròn 52px, tâm đặt bằng left/top; nhãn treo bên phải (.phai) hay trái (.trai) */
 .g-nut{position:absolute;width:0;height:0;z-index:1;cursor:pointer}
