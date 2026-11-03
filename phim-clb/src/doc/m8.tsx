@@ -100,7 +100,7 @@ const G1Mo: React.FC = () => (
       <GioKhaiMacBar con="Khai mạc: 10 giờ" />
       <NhanGoi so={1} ten="Thân lai: Nhện + Tay gắp" />
       <Nguoi anh="tu-hoang" ten="CHÚ TÙNG" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 58, out: 175, text: 'Cầu gỗ ở cửa ngõ Kho hàng gãy thành hố sâu rồi, xe hai bánh không qua lấy kiện hàng dự hội được!'}]} />
+        says={[{at: 58, out: 175, text: 'Cầu gỗ gãy rồi, xe hai bánh không qua được!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -135,7 +135,7 @@ const G2Mo: React.FC = () => (
       <GioKhaiMacBar con="Khai mạc: 9 giờ" />
       <NhanGoi so={2} ten="Tay lai: Xích + Máy ném" />
       <Nguoi anh="hanh-hoang" ten="CÔ HẠNH" mau="#DC2626" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 58, out: 175, text: 'Bão làm đá lăn chắn trước hàng rào cổng Nhà máy, phải dùng bánh xích và tay máy ném mới hất qua rào được!'}]} />
+        says={[{at: 58, out: 175, text: 'Cần bánh xích, tay máy ném hất đá qua rào!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -169,7 +169,7 @@ const G3Mo: React.FC = () => (
       <GioKhaiMacBar con="Khai mạc: 8 giờ" />
       <NhanGoi so={3} ten="Cảm biến lai: Gai + Camera" />
       <Nguoi anh="lan-sot-ruot" ten="CHỊ LAN" mau="#EC4899" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 58, out: 175, text: 'Mưa bão làm hầm chui vừa trơn trượt vừa ngập bùn che vạch màu, xe chở hoa Tết của chị chưa dám qua!'}]} />
+        says={[{at: 58, out: 175, text: 'Hầm trơn, bùn che vạch, xe hoa chưa dám qua!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -202,7 +202,7 @@ const G4Mo: React.FC = () => (
       <GioKhaiMacBar con="Khai mạc: 7 giờ" />
       <NhanGoi so={4} ten="Xuồng + Nam châm điện" />
       <Nguoi anh="ba-hoang" ten="BÁC BÌNH" mau="#0284C7" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 58, out: 175, text: 'Nước lũ tràn qua phố cuốn khối sắt của bác Sơn chắn miệng cống thoát nước rồi, cần xuồng có nam châm hút ngay!'}]} />
+        says={[{at: 58, out: 175, text: 'Sắt bác Sơn chắn cống, cần xuồng nam châm hút!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -236,7 +236,7 @@ const G5Mo: React.FC = () => (
       <GioKhaiMacBar con="Khai mạc: 6 giờ" />
       <NhanGoi so={5} ten="Omni + Dây kéo vượt mưa" />
       <Nguoi anh="dung-sot-ruot" ten="ANH DŨNG" mau="#D97706" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 58, out: 175, text: 'Mưa lớn làm đá tròn lăn chắn dốc, cần bánh Omni đi chéo né đá kết hợp dây phao kéo kiện đá mẫu về!'}]} />
+        says={[{at: 58, out: 175, text: 'Đi chéo né đá, dây phao kéo đá mẫu về!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -270,7 +270,7 @@ const G6Mo: React.FC = () => (
       <ChuNay chu="RÀO ĐỔ CHẮN LỐI!" at={60} den={145} x={tamO(2, 3).x + 60} y={tamO(2, 3).y - 45} />
       <GioKhaiMacBar con="GIÓ GIẬT SÂN TRƯỜNG!" gap />
       <NhanGoi so={6} ten="Drone + Nam châm dựng cổng" />
-      <Thay dang="thay-hoang" says={[{at: 52, out: 175, text: 'Gió giật làm nghiêng cổng chào lễ hội và đổ rào chắn lối rồi! Phải bay qua rào hút thanh dầm sắt gia cố lại ngay!'}]} at={40} />
+      <Thay dang="thay-hoang" says={[{at: 52, out: 175, text: 'Bay qua rào, hút dầm sắt gia cố cổng ngay!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -302,7 +302,7 @@ const G7Mo: React.FC = () => (
       <GioKhaiMacBar con="Khai mạc: 4 giờ" />
       <NhanGoi so={7} ten="Omni + Loa Sonar phá đá" />
       <Nguoi anh="phong-sot-ruot" ten="CHÚ PHONG" mau="#0D9488" x={820} h={600} at={45} side="left" bubbleW={560} bubbleTop={1230}
-        says={[{at: 58, out: 175, text: 'Cửa hầm dẫn về thị trấn bị mất điện tối đen lại vướng khối đá chuông, phải dùng tai Sonar và loa cộng hưởng!'}]} />
+        says={[{at: 58, out: 175, text: 'Hầm tối, cần tai Sonar và loa cộng hưởng!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -336,7 +336,7 @@ const G8Mo: React.FC = () => (
       <ChuNay chu="TỔ HỢP 7 MÙA!" at={58} den={140} x={tamO(2, 3).x + 80} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 3 giờ" />
       <NhanGoi so={8} ten="Sa bàn liên hoàn 7 mùa" />
-      <Thay dang="thay-dong-vien" says={[{at: 60, out: 175, text: 'Sa bàn thi đấu giữa sân trường hội tụ đủ băng chuyền, bàn xoay, đường ngầm và vạch màu của cả 7 mùa đấy!'}]} at={48} />
+      <Thay dang="thay-dong-vien" says={[{at: 60, out: 175, text: 'Sa bàn gom đủ thử thách cả 7 mùa đấy!'}]} at={48} />
     </NenHienTruong>
   </Shake>
 );
@@ -369,7 +369,7 @@ const G9Mo: React.FC = () => (
       <ChuNay chu="HAI ĐẦU SÂN KHẤU!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 40} />
       <GioKhaiMacBar con="Khai mạc: 2 giờ" />
       <NhanGoi so={9} ten="Sola-Bot & Luna-Bot" />
-      <Sola mat={[[0, 'normal'], [58, 'surprised']]} says={[{at: 16, out: 55, text: 'Hai trụ sân khấu chính ở hai đầu cần kích hoạt cùng một nhịp!'}, {at: 60, out: 175, text: 'Mình với Luna mỗi người điều khiển một Robot Lai song hành thôi!'}]} />
+      <Sola mat={[[0, 'normal'], [58, 'surprised']]} says={[{at: 16, out: 55, text: 'Hai trụ sân khấu phải bật cùng một nhịp!'}, {at: 60, out: 175, text: 'Mình với Luna mỗi người lái một Robot Lai!'}]} />
     </NenHienTruong>
   </Shake>
 );
