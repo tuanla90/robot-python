@@ -429,7 +429,7 @@ const ThaTayM8: React.FC = () => {
           </div>
         ))}
       </div>
-      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 110, text: 'Toàn bộ linh kiện và kiến thức Python của 8 mùa đã hội tụ, thả tay chạy màn trình diễn lớn nhất nào!'}]} />
+      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 110, text: '8 mùa hội tụ! Thả tay diễn màn lớn nào!'}]} />
     </NenHienTruong>
   );
 };

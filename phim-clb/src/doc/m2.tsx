@@ -133,8 +133,8 @@ const G1Mo: React.FC = () => (
     <ChuNay chu="BỊ BĂNG CHUYỀN ĐẨY!" at={68} den={145} x={540} y={tamO(2, 3).y - 60} mau={C.bad} co={42} />
     <DongHoApSuat tu={52} den={56} />
     <NhanGoi so={1} ten="Bánh xích" />
-    <Sola says={[{at: 8, out: 62, text: 'Tớ cho xe hai bánh chạy qua băng chuyền vào xưởng nha!'}]} mat={[[0, 'confident'], [68, 'shocked']]} />
-    <Hanh says={[{at: 72, out: 175, text: 'Nhà máy nhiều băng chuyền chạy liên tục, xe hai bánh thường đứng lên là bị đẩy trôi ngay!'}]} at={60} />
+    <Sola says={[{at: 8, out: 62, text: 'Tớ cho xe hai bánh chạy qua băng chuyền nha!'}]} mat={[[0, 'confident'], [68, 'shocked']]} />
+    <Hanh says={[{at: 72, out: 175, text: 'Băng chuyền chạy liên tục, xe hai bánh trôi ngay!'}]} at={60} />
   </NenHienTruong>
 );
 const R_G1K: Moc[] = [[0, 1, 5.4, -90], [15, 1, 5.4, -90], [55, 1, 3, -90], [68, 1, 3, 0], [95, 2, 3, 0], [108, 2, 3, -90], [135, 2, 1.7, -90]];
@@ -164,8 +164,8 @@ const G2Thu: React.FC = () => {
       <ChuNay chu="NÓNG!" at={80} den={150} x={tamO(2, 2).x + 150} y={tamO(2, 2).y} />
       <DongHoApSuat tu={58} den={64} />
       <NhanGoi so={2} ten="Vòi nước" />
-      <Sola says={[{at: 10, out: 72, text: 'Rãnh nước nóng chặn ngang, không tới gần vặn van được!'}]} mat={[[0, 'worried'], [80, 'shocked']]} />
-      {f >= 95 ? <Hanh dang="hanh-sot-ruot" says={[{at: 105, out: 230, text: 'Van kẹt lại nóng bỏng, đứng bên này làm sao đóng?'}]} at={95} /> : null}
+      <Sola says={[{at: 10, out: 72, text: 'Rãnh nóng chặn ngang, không vặn van được!'}]} mat={[[0, 'worried'], [80, 'shocked']]} />
+      {f >= 95 ? <Hanh dang="hanh-sot-ruot" says={[{at: 105, out: 230, text: 'Van nóng bỏng, đứng xa sao đóng?'}]} at={95} /> : null}
     </NenHienTruong>
   );
 };

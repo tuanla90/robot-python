@@ -433,7 +433,7 @@ const ThaTayM7: React.FC = () => {
           {m.nhan}
         </div>
       ))}
-      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 110, text: 'Xe thám hiểm hang động R1 hội tụ đủ 4 công nghệ âm học & địa hình, sẵn sàng xuất phát!'}]} />
+      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 110, text: 'R1 đủ công nghệ âm học, sẵn sàng xuất phát!'}]} />
     </NenHienTruong>
   );
 };

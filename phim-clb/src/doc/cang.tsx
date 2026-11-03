@@ -437,7 +437,7 @@ const ThaTayCang: React.FC = () => {
           {m.nhan}
         </div>
       ))}
-      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'Cần cẩu container R1 đã đủ trọn bộ đồ nghề bến cảng, sẵn sàng xuất 4 chuyến tàu lớn!'}]} />
+      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'Cần cẩu R1 đủ đồ nghề, sẵn sàng xuất bến!'}]} />
     </NenHienTruong>
   );
 };

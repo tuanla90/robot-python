@@ -416,7 +416,7 @@ const ThaTayM6: React.FC = () => {
           {m.nhan}
         </div>
       ))}
-      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'Máy khai thác đá R1 hoàn chỉnh cả 4 món nghề, thả tay tổng dọn toàn mỏ trước cơn mưa!'}]} />
+      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'R1 đủ nghề, thả tay dọn sạch mỏ trước mưa!'}]} />
     </NenHienTruong>
   );
 };
