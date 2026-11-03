@@ -416,14 +416,19 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
          Vai ô: 'la' (số, chữ, tên, nguồn không đối số như read_code()), 'ham' (tên hàm có đối số: chạm là thay cả lời gọi), 'op' (+ - * // %), 'ss' (== != < > <= >=),
          'noi' (and / or), 'am' (dấu trừ một ngôi), 'not', 'dich' (tên biến được gán / danh sách được append), 'them' (dấu + của danh sách rỗng).
          Chỉ dòng mà cách cũ không chạm đủ mới qua đây (cuDuoc): dòng cũ giữ bảng chọn riêng (màu, chữ chỉ đường, aim 1–3…). Phép gán và so sánh luôn qua đây (tên biến đổi được). */
-  var CHE_BT = false, BT = { nguon: [], ham: [], chu: [], ten: [], cam: [] };
-  /** o: { nguon: ['read_code()', 'shape("front")'…] (cảm biến trả giá trị), ham: ['round_steps(1)'…] (hàm trả về của kho / màn), chu: ['"front"'…] (chuỗi của màn),
-   *       ten: ['d', 'g'…] (tên biến được gán trong lời giải), cam: ['front_clear'…] (cảm biến của khối if / while cũ) } */
-  function datCheBT(b, o) { o = o || {}; CHE_BT = !!b; BT = { nguon: (o.nguon || []).slice(), ham: (o.ham || []).slice(), chu: (o.chu || []).slice(), ten: (o.ten || []).slice(), cam: (o.cam || []).slice() }; }
+  var CHE_BT = false, BT = { nguon: [], ham: [], chu: [], ten: [], cam: [], phep: null, soMax: 12 };
+  /** o: { nguon: ['read_code()', 'shape("front")'…] (cảm biến trả giá trị), ham: ['round_steps(1)'…] (hàm trả về màn gọi tới), chu: ['"front"'…] (chuỗi của màn),
+   *       ten: ['d', 'g'…] (tên biến được gán trong lời giải), cam: ['front_clear'…] (cảm biến của khối if / while cũ),
+   *       phep: ['+1', 'abs'…] (nút phép tính màn dùng; thiếu: mọi phép), soMax: số lớn nhất của lưới số (thiếu: 12) } */
+  function datCheBT(b, o) {
+    o = o || {}; CHE_BT = !!b;
+    BT = { nguon: (o.nguon || []).slice(), ham: (o.ham || []).slice(), chu: (o.chu || []).slice(), ten: (o.ten || []).slice(), cam: (o.cam || []).slice(), phep: o.phep ? o.phep.slice() : null, soMax: o.soMax >= 1 && o.soMax <= SO_TOI_DA ? o.soMax : SO_TOI_DA };
+  }
+  /** Nút phép tính của bảng lá: chỉ phép màn dùng (BT.phep), bỏ thêm những mã trong `tru`. */
+  function phepDuoc(tru) { return BT_PHEP.filter(function (p) { return (!BT.phep || BT.phep.indexOf(p) >= 0) && (tru || []).indexOf(p) < 0; }); }
   var BT_NGUON_TEN = ['read_code', 'weight', 'flow_dir', 'flow', 'radar', 'shape'];                  // cảm biến trả giá trị (mùa 4–7): ô của biểu thức, không phải lệnh
   var GOC_DOI_SO_BT = { rail: '1', set_length: '1' };                                               // lệnh gốc mùa 4–7 có đối số: khối chèn sẵn giá trị
   var GOC_HAI_KHOI = { cast_net: '"left"' };                                                          // lệnh gốc có đối số tuỳ ý: thêm một khối có đối số (cast_net() tung thẳng · cast_net("left") tung sang bên)
-  var BT_HUONG = { shape: ['front', 'left', 'right', 'back'], color: null };                         // hướng mặc định khi chèn cảm biến có đối số
   var BT_PHEP = ['+1', '-1', '*2', '//2', '%2', 'am', 'abs', 'min', 'max', 'chi', 'ds', 'ss', 'not'];  // nút phép tính của bảng chọn lá (xem phepBT)
   var BT_KW = ['and', 'or', 'not', 'in', 'if', 'elif', 'else', 'for', 'while', 'return', 'def', 'True', 'False', 'None'];
   /** Chia chuỗi thành từ tố; null nếu có ký tự lạ. */
@@ -686,9 +691,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var nguon = [];
     goc.forEach(function (n) {
       if (BT_NGUON_TEN.indexOf(n) < 0 && n !== 'color') return;
-      if (n === 'color' && huongCamCua(man).length) huongCamCua(man).forEach(function (x) { them(nguon, 'color("' + x + '")'); });
-      else if (n === 'shape') BT_HUONG.shape.forEach(function (x) { them(nguon, 'shape("' + x + '")'); });
-      else if (n !== 'color') them(nguon, n + '()');
+      if ((n === 'color' && huongCamCua(man).length) || n === 'shape') return;                 // camera có hướng: chỉ bày hướng lời giải / mã mẫu gọi tới (vòng dòng bên dưới), không bày đủ 4–5 hướng
+      if (n !== 'color') them(nguon, n + '()');
     });
     if (goc.indexOf('battery') >= 0) them(nguon, 'battery()');
     if (goc.indexOf('distance') >= 0) them(nguon, 'distance()');
@@ -697,12 +701,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var rc = /\b(color|shape)\("[a-z]+"\)/g; while ((m = rc.exec(s))) them(nguon, m[0]);          // hướng camera dùng trong lời giải (màn nhiều robot: camera của robot kia)
       var g = /^\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*=(?!=)/.exec(s); if (g) g[1].split(',').forEach(function (x) { them(ten, x.trim()); });
     });
-    var ham = [];
-    (kho || []).forEach(function (f) {
-      if (!f || !f.ten || !(f.than || []).some(function (x) { return /^\s*return\b/.test(String(x)); })) return;
+    var ham = [], phep = [], soMax = 9, goiTen = {};
+    dong.forEach(function (s) {
+      var tk = tachChuThich(boThut(s))[0].match(/"[^"]*"|\/\/|==|!=|<=|>=|[A-Za-z_]\w*|\d+|\S/g) || [], k, x, truoc;
+      for (k = 0; k < tk.length; k++) {
+        x = tk[k]; truoc = k ? tk[k - 1] : '';
+        var laVe = /^(\d+|"[^"]*"|[)\]])$/.test(truoc) || (/^[A-Za-z_]\w*$/.test(truoc) && BT_KW.indexOf(truoc) < 0) || /^(True|False|None)$/.test(truoc);      // từ tố trước là một vế (số, chuỗi, tên, ngoặc đóng)
+        if (/^\d+$/.test(x)) soMax = Math.max(soMax, Math.min(+x, SO_TOI_DA));
+        else if (x === '-') them(phep, laVe ? '-1' : 'am');
+        else if (x === '+' || x === '*' || x === '//' || x === '%') them(phep, x + (x === '+' ? '1' : '2'));
+        else if (x === '[') them(phep, laVe ? 'chi' : 'ds');
+        else if (/^(==|!=|<=|>=|<|>)$/.test(x)) them(phep, 'ss');
+        else if (x === 'not') them(phep, 'not');
+        else if (/^[A-Za-z_]\w*$/.test(x) && tk[k + 1] === '(') { goiTen[x] = 1; if (/^(abs|min|max)$/.test(x)) them(phep, x); }
+      }
+    });
+    (kho || []).forEach(function (f) {                                                        // hàm trả về: chỉ hàm màn gọi tới (kho của em còn hàm các mùa khác)
+      if (!f || !f.ten || !goiTen[f.ten] || !(f.than || []).some(function (x) { return /^\s*return\b/.test(String(x)); })) return;
       them(ham, f.ten + '(' + (f.thamSo || []).map(function () { return '1'; }).join(', ') + ')');
     });
-    return { nguon: nguon, chu: chu, ten: ten, ham: ham, cam: camBienCua(man) };
+    return { nguon: nguon, chu: chu, ten: ten, ham: ham, cam: camBienCua(man), phep: phep, soMax: soMax };
   }
   /** Hướng của camera bốn hướng của màn ([] nếu không có). */
   function huongCamCua(man) {
@@ -1174,7 +1192,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (CHE_BT && tdA === SO_TOI_DA) {                               // mùa 4–7: bảng số có thêm phép tính (số âm, // 2, % 2, abs…) và nguồn số của màn
           var cur = d ? String(d.ds[kk]) : '1', bs = bienTam('so', i, null, d && d.ten);
           bienBT(i).forEach(function (x) { if (bs.indexOf(x) < 0) bs.push(x); });
-          chonBT({ neo: so, v: cur, so: true, bien: bs, chu: [], phep: BT_PHEP.filter(function (p) { return p !== 'not' && p !== 'ss'; }),
+          chonBT({ neo: so, v: cur, so: true, bien: bs, chu: [], phep: phepDuoc(['not', 'ss']),
             khiChon: function (v) { ed.datSo(i, v, kk); }, khiPhep: function (p) { ed.datSo(i, phepBT(p, cur), kk); } });
           return;
         }
@@ -1224,7 +1242,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           khiChon: function (x) { dat(d.doi(kk, x)); }, khiBo: function () { dat(d.bo(kk)); } });
         return;
       }
-      chonBT({ neo: so, v: v, so: true, bien: bienBT(i), chu: BT.chu, phep: BT_PHEP.filter(function (p) { return p !== 'not' || d.kieu === 'dk'; }),
+      chonBT({ neo: so, v: v, so: true, bien: bienBT(i), chu: BT.chu, phep: phepDuoc(d.kieu === 'dk' ? [] : ['not']),
         ptu: cho && cho.ptu ? { coThem: cho.ptu.ds.e.length < LIST_TOI_DA } : null, bo: vai === 'ham' && /^(abs|min|max)$/.test(cho.nut.f),
         khiChon: function (x) { dat(d.doi(kk, x)); }, khiPhep: function (p) { dat(d.doi(kk, phepBT(p, v))); },
         khiThem: function () { dat(d.them(kk)); }, khiBo: function () { dat(d.bo(kk)); } });
@@ -2113,7 +2131,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   var BT_NHAN = { '+1': '+ 1', '-1': '− 1', '*2': '× 2', '//2': '// 2', '%2': '% 2', am: '−x', abs: 'abs()', min: 'min()', max: 'max()', chi: 'x[0]', ds: '[x]', ss: '== 1', not: 'not' };
   /**
-   * Bảng chọn của ô BIỂU THỨC (mùa 4–7) cạnh ô `neo`. o: { neo, v: chữ đang có, so: bool (lưới số 0–12), bien: [tên / nguồn / hàm], chu: [chuỗi có nháy], op: [phép] (ô phép tính),
+   * Bảng chọn của ô BIỂU THỨC (mùa 4–7) cạnh ô `neo`. o: { neo, v: chữ đang có, so: bool (lưới số 0 tới BT.soMax: số lớn nhất màn dùng, ít nhất 9), bien: [tên / nguồn / hàm], chu: [chuỗi có nháy], op: [phép] (ô phép tính),
    *   phep: [mã BT_PHEP] (bọc lá trong phép tính), ptu: { coThem } | null (lá trong danh sách: thêm / bỏ ô), bo: bool (nút "bỏ phép tính"), khiChon(v), khiPhep(mã), khiThem(), khiBo() }.
    */
   function chonBT(o) {
@@ -2125,7 +2143,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       cha.appendChild(b); return b;
     }
     function hang(cls) { var hb = h('div', 'cs-bien xuong ' + cls); el.appendChild(hb); return hb; }
-    if (o.so) for (var n = 0; n <= SO_TOI_DA; n++) (function (n) { nut(el, 'g-pu' + (String(n) === o.v ? ' on' : ''), String(n), 'data-so', n, function () { o.khiChon(String(n)); }); })(n);
+    if (o.so) for (var n = 0; n <= Math.max(BT.soMax, RE_SO.test(o.v) ? Math.min(+o.v, SO_TOI_DA) : 0); n++) (function (n) { nut(el, 'g-pu' + (String(n) === o.v ? ' on' : ''), String(n), 'data-so', n, function () { o.khiChon(String(n)); }); })(n);
     if (o.bien && o.bien.length) { var hb = hang('bt-bien'); hb.setAttribute('data-nut', 'chon-bien'); o.bien.forEach(function (x) { nut(hb, 'g-pk bien' + (x === o.v ? ' on' : ''), x, 'data-bien', x, function () { o.khiChon(x); }); }); }
     if (o.chu && o.chu.length) { var hc = hang('bt-chu'); o.chu.forEach(function (x) { nut(hc, 'g-cy bien' + (x === o.v ? ' on' : ''), x, 'data-chuoi', x, function () { o.khiChon(x); }); }); }
     if (o.op && o.op.length) { var ho = hang('bt-op'); o.op.forEach(function (x) { nut(ho, 'g-or bien' + (x === o.v ? ' on' : ''), x, 'data-op', x, function () { o.khiChon(x); }); }); }
