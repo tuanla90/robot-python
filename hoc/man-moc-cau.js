@@ -270,7 +270,7 @@
         { moTa: 'Duyệt ngược [1, 2, 3] nên móc sai nấc và sai thứ tự chồng', baiLam: bai(['for k in [1, 2, 3]:', '    pick_up()', '    swing_by(k)', '    set_down()', '    t = 1 - k', '    swing_by(t)']), phaiCoMa: ['chua-xep-chong'] },
         { moTa: 'Quay về bằng swing_by(-k) nên cả 3 lượt đều quay lại nấc 1 đã trống', baiLam: bai(['for k in [3, 2, 1]:', '    pick_up()', '    swing_by(k)', '    set_down()', '    swing_by(-k)']), phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
       ],
-      goiY: ['Luna: Đang ở nấc 4 muốn lùi về nấc kế tiếp thì cần lệch (1 - k) nấc.', 'Luna: Sau set_down(), thêm dòng swing_by(1 - k) để sang đúng nấc tiếp theo.']
+      goiY: ['Luna: Đang ở nấc 4 muốn lùi về nấc kế tiếp thì cần lệch (1 - k) nấc.', 'Luna: Sau set_down(), thêm t = 1 - k rồi swing_by(t) để sang đúng nấc tiếp theo.']
     }),
 
     manMocCau({
@@ -511,7 +511,7 @@
         { moTa: 'Mới chuyển phần nguyên n // 2, quên chuyển phần dư n % 2 sang nấc 1', baiLam: bai(['n = 3', 't = n // 2', 'for i in range(t):', '    pick_up()', '    swing_by(1)', '    set_down()', '    swing_by(-1)']), phaiCoMa: ['chua-xep-chong'] },
         { moTa: 'Đưa phần dư sang nấc 3 thay vì nấc 1', baiLam: bai(['n = 3', 't = n // 2', 'for i in range(t):', '    pick_up()', '    swing_by(1)', '    set_down()', '    swing_by(-1)', 't = n % 2', 'for i in range(t):', '    pick_up()', '    swing_by(1)', '    set_down()']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Với n = 3 thì n // 2 là 1 và n % 2 cũng là 1.', 'Luna: Thêm vòng for i in range(n % 2): nhấc hàng, swing_by(-1) rồi set_down().']
+      goiY: ['Luna: Với n = 3 thì n // 2 là 1 và n % 2 cũng là 1.', 'Luna: Thêm t = n % 2 và vòng for i in range(t): nhấc hàng, swing_by(-1) rồi set_down().']
     }),
 
     manChiaDu({
@@ -611,7 +611,7 @@
       taoHam: ['split_pair'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n'],
       deBai: 'Sola nhờ bạn: chế hàm split_pair(n, d1, d2) để chia chồng n kiện làm hai phần nguyên bằng nhau: chuyển n // 2 kiện tới độ lệch d1 và n // 2 kiện tới độ lệch d2 (phần dư n % 2 ở lại chỗ cũ).',
-      veMaMau: 'Trong split_pair(n, d1, d2), gọi carry_n(n // 2, d1) rồi carry_n(n // 2, d2).',
+      veMaMau: 'Trong split_pair(n, d1, d2), tính t = n // 2, gọi carry_n(t, d1); tính lại t = n // 2, gọi carry_n(t, d2).',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 2, tam: 2 },
       chong: [C(5, 3, [10, 20, 30]), C(1, 3, [40, 50])],
@@ -676,7 +676,7 @@
         { moTa: 'Chưa sửa hàm split_rem nên chồng 4 kiện bị chuyển nhầm sang hướng d2', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(T_SPLIT_REM_SAI)] }), phaiCoMa: ['chua-xep-chong'] },
         { moTa: 'Cả hai dòng đều dùng n // 2 nên chồng 3 kiện mất kiện cuối cùng', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(['t = n // 2', 'carry_n(t, d1)', 't = n // 2', 'carry_n(t, d2)'])] }), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Dòng đầu của split_rem phải chuyển phần nguyên: carry_n(n // 2, d1).', 'Luna: Dòng thứ hai của split_rem chuyển phần dư: carry_n(n % 2, d2).']
+      goiY: ['Luna: Hai dòng đầu của split_rem phải chuyển phần nguyên: t = n // 2 rồi carry_n(t, d1).', 'Luna: Hai dòng sau của split_rem chuyển phần dư: t = n % 2 rồi carry_n(t, d2).']
     }),
 
     manChiaDu({
