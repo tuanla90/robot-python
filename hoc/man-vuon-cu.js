@@ -147,7 +147,7 @@
       loiGiai: bai(['for i in range(4):', '    go_right()', '    m = color("here")', '    if m != "none":', '        ink(m)', '        dot()', 'wait()']),
       sao: { o: 6, nhip: 9 },
       congThucKhac: [
-        { moTa: 'Lưu color("here") vào biến c rồi xét c != "none"', baiLam: bai(['for i in range(4):', '    go_right()', '    c = color("here")', '    if c != "none":', '        ink(c)', '        dot()', 'wait()']) }
+        { moTa: 'Đặt tên biến màu là c thay cho m', baiLam: bai(['for i in range(4):', '    go_right()', '    c = color("here")', '    if c != "none":', '        ink(c)', '        dot()', 'wait()']) }
       ],
       loiSai: [
         { moTa: 'Gieo cứng ở ô 1 và ô 3 màu đỏ, vàng theo sân đầu', cung: true, baiLam: bai(['go_right()', 'ink("red")', 'dot()', 'go_right()', 'go_right()', 'ink("yellow")', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] },
@@ -286,7 +286,7 @@
         { hamCuaEmMoi: [H('mark_here', ['n'], T_MARK)] }),
       sao: { o: 7, nhip: 7 },
       congThucKhac: [
-        { moTa: 'Gán c = color("here") trước khi so sánh', hamCuaEmMoi: [H('mark_here', ['n'], ['for i in range(n):', '    c = color("here")', '    if c != "none":', '        ink(c)', '        dot()', '    go_right()'])] }
+        { moTa: 'Đặt tên biến màu là c thay cho m', hamCuaEmMoi: [H('mark_here', ['n'], ['for i in range(n):', '    c = color("here")', '    if c != "none":', '        ink(c)', '        dot()', '    go_right()'])] }
       ],
       loiSai: [
         { moTa: 'Gọi mark_here mà chưa tạo hàm', baiLam: bai(['mark_here(4)', 'wait()']), phaiCoMa: ['ham-chua-co'] },
