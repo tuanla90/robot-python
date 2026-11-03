@@ -361,7 +361,7 @@
       so: 6, ten: 'Trượt ray chia hai tàu', hang: 'luyen-tap',
       khung: { chinh: 12, moiHam: 10 },
       hamCuaEmCan: [],
-      deBai: 'Sola nhờ bạn: tại cầu cảng giữa (3, 2) có 2 kiện hàng [28, 13], hai bên là Tàu 1 ở (2, 2) và Tàu 2 ở (4, 2). Bệ cẩu đang ở (3, 3) hướng nấc 0 chỉ thẳng vào (3, 2). Với mỗi kiện, nếu read_code() // 10 == 1 thì nhấc lên, rail(-1) sang Tàu 1 hạ xuống rồi rail(1) quay về; ngược lại thì rail(1) sang Tàu 2 hạ xuống rồi rail(-1) quay về.',
+      deBai: 'Sola nhờ bạn: tại cầu cảng giữa (3, 2) có 2 kiện hàng [28, 13], hai bên là Tàu 1 ở (2, 2) và Tàu 2 ở (4, 2). Bệ cẩu đang ở (3, 3) hướng nấc 0 chỉ thẳng vào (3, 2). Với mỗi kiện, đọc c = read_code(), t = c // 10: nếu t == 1 thì nhấc lên, rail(-1) sang Tàu 1 hạ xuống rồi rail(1) quay về; ngược lại thì rail(1) sang Tàu 2 hạ xuống rồi rail(-1) quay về.',
       veMaMau: 'Hoàn thiện nhánh else để đưa kiện hàng chục bằng 2 sang Tàu 2 ở bên phải.',
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
@@ -396,7 +396,7 @@
       ]),
       sao: { o: 11, nhip: 8 },
       loiGiaiKhac: {
-        moTa: 'Dùng vòng lặp while read_code() != -1 thay cho for i in range(2)',
+        moTa: 'Dùng vòng lặp while c != -1 thay cho for i in range(2)',
         baiLam: bai([
           'c = read_code()',
           'while c != -1:',
@@ -424,7 +424,7 @@
     manDuongRay({
       so: 7, ten: 'Chuyển cả chồng ở đầu ray', hang: 'bien-the',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: tại đầu ray bên trái (1, 4) có chồng hàng [19, 15, 12]. Dùng vòng lặp while read_code() != -1: để nhấc từng kiện ở (1, 4), trượt sang cột 2 bằng rail(1), quay sang nấc 0 đặt lên tàu ở (2, 2), rồi quay lại nấc 4 và lùi rail(-1) về cột 1.',
+      deBai: 'Sola nhờ bạn: tại đầu ray bên trái (1, 4) có chồng hàng [19, 15, 12]. Đọc c = read_code(), dùng vòng lặp while c != -1: để nhấc từng kiện ở (1, 4), trượt sang cột 2 bằng rail(1), quay sang nấc 0 đặt lên tàu ở (2, 2), rồi quay lại nấc 4 và lùi rail(-1) về cột 1, cuối vòng đọc lại c.',
       veMaMau: 'Sau set_down() lên tàu, hãy quay về nấc 4 bằng swing_by(4) rồi lùi về cột 1 bằng rail(-1).',
       san: SAN_RAY_1,
       batDau: { x: 1, y: 3, nac: 4, tam: 1 },
@@ -580,7 +580,7 @@
       khung: { chinh: 12, moiHam: 10 },
       huyHieu: { ma: 'duong-ray', ten: 'Huy hiệu Chạy dọc đường ray' },
       hamCuaEmCan: [],
-      deBai: 'Trùm chương 1: trên hai sân, tại cầu cảng giữa (3, 2) có chồng 4 kiện hàng. Bệ cẩu đứng ở (3, 3) hướng nấc 0. Hãy dùng vòng lặp while read_code() != -1: kết hợp if read_code() // 10 == 1 để trượt rail(-1) giao kiện hàng chục bằng 1 sang Tàu 1, và trượt rail(1) giao kiện hàng chục bằng 2 sang Tàu 2.',
+      deBai: 'Trùm chương 1: trên hai sân, tại cầu cảng giữa (3, 2) có chồng 4 kiện hàng. Bệ cẩu đứng ở (3, 3) hướng nấc 0. Hãy đọc c = read_code(), lặp while c != -1:, trong vòng tính t = c // 10 và hỏi if t == 1 để trượt rail(-1) giao kiện hàng chục bằng 1 sang Tàu 1, và trượt rail(1) giao kiện hàng chục bằng 2 sang Tàu 2.',
       veMaMau: 'Hoàn thiện vòng lặp while phân loại cả 4 kiện ở (3, 2) sang hai tàu bằng lệnh rail.',
       san: [SAN_RAY_2, SAN_RAY_2],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
@@ -622,7 +622,7 @@
       ]),
       sao: { o: 11, nhip: 32 },
       loiGiaiKhac: {
-        moTa: 'Dùng for i in range(4) thay cho while read_code() != -1',
+        moTa: 'Dùng for i in range(4) thay cho while c != -1',
         baiLam: bai([
           'for i in range(4):',
           '    c = read_code()',
@@ -784,7 +784,7 @@
       so: 5, ten: 'Chế hàm rail_clear(dx)', hang: 'luyen-tap',
       taoHam: ['rail_clear'],
       hamCuaEmCan: ['rail_drop'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế rail_clear(dx) lặp while read_code() != -1: gọi rail_drop(dx) để dời toàn bộ chồng hàng tại chỗ sang cột cách dx. Áp dụng tại (3, 3) hướng nấc 0 để dời chồng 3 kiện ở (3, 2) sang Tàu 1 bằng rail_clear(-1).',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế rail_clear(dx): đọc c = read_code(), lặp while c != -1: gọi rail_drop(dx) rồi đọc lại c, để dời toàn bộ chồng hàng tại chỗ sang cột cách dx. Áp dụng tại (3, 3) hướng nấc 0 để dời chồng 3 kiện ở (3, 2) sang Tàu 1 bằng rail_clear(-1).',
       veMaMau: 'Tạo hàm rail_clear(dx) rồi gọi rail_clear(-1).',
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
@@ -806,14 +806,14 @@
         { moTa: 'Chưa tạo hàm rail_clear mà đã bấm Chạy', baiLam: bai(['rail_clear(-1)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Truyền dx = 1 nên chuyển nhầm cả chồng sang Tàu 2', baiLam: bai(['rail_clear(1)']), hamCuaEmMoi: [hRailClear()], phaiCoMa: ['giao-nham'] }
       ],
-      goiY: ['Luna: Thân hàm rail_clear(dx) gồm 2 dòng: while read_code() != -1: và rail_drop(dx).', 'Luna: Ở chương trình chính gọi rail_clear(-1).']
+      goiY: ['Luna: Thân hàm rail_clear(dx) gồm 4 dòng: c = read_code(), while c != -1:, rail_drop(dx) và c = read_code().', 'Luna: Ở chương trình chính gọi rail_clear(-1).']
     }),
 
     manCheDuongRay({
       so: 6, ten: 'Chế hàm scan_rail()', hang: 'luyen-tap',
       taoHam: ['scan_rail'],
       hamCuaEmCan: ['rail_drop'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế scan_rail() lặp while read_code() != -1:, nếu read_code() // 10 == 1 thì gọi rail_drop(-1) sang Tàu 1, ngược lại gọi rail_drop(1) sang Tàu 2. Áp dụng gọi scan_rail() để phân loại chồng 4 kiện ở (3, 2).',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế scan_rail(): đọc c = read_code(), lặp while c != -1:, tính t = c // 10, nếu t == 1 thì gọi rail_drop(-1) sang Tàu 1, ngược lại gọi rail_drop(1) sang Tàu 2, cuối vòng đọc lại c. Áp dụng gọi scan_rail() để phân loại chồng 4 kiện ở (3, 2).',
       veMaMau: 'Tạo hàm scan_rail() rồi gọi scan_rail() ở chương trình chính.',
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
@@ -835,14 +835,14 @@
         { moTa: 'Chưa tạo hàm scan_rail mà đã bấm Chạy', baiLam: bai(['scan_rail()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Trong scan_rail dùng nhầm % 10 thay vì // 10 nên giao nhầm tàu', baiLam: bai(['scan_rail()']), hamCuaEmMoi: [hScanRail(['c = read_code()', 'while c != -1:', '    t = c % 10', '    if t == 1:', '        rail_drop(-1)', '    else:', '        rail_drop(1)', '    c = read_code()'])], phaiCoMa: ['giao-nham'] }
       ],
-      goiY: ['Luna: Nhờ có sẵn rail_drop(dx), thân hàm scan_rail() rất gọn: kiểm tra if read_code() // 10 == 1: để gọi rail_drop(-1) hoặc rail_drop(1).', 'Luna: Ở chương trình chính chỉ cần gọi scan_rail().']
+      goiY: ['Luna: Nhờ có sẵn rail_drop(dx), thân hàm scan_rail() rất gọn: t = c // 10 rồi if t == 1: để gọi rail_drop(-1) hoặc rail_drop(1).', 'Luna: Ở chương trình chính chỉ cần gọi scan_rail().']
     }),
 
     manCheDuongRay({
       so: 7, ten: 'Sửa hàm rail_sort(n)', hang: 'bien-the',
       chinhCoDinh: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: hàm rail_sort(n) của màn cần tiến qua n cột dọc đường ray, cột nào có hàng (read_code() != -1) thì gọi carry_by(4) và swing_by(4) để đưa lên tàu. Nhưng hàm đang viết nhầm điều kiện thành read_code() == -1. Hãy sửa lại hàm rail_sort(n).',
+      deBai: 'Sola nhờ bạn: hàm rail_sort(n) của màn cần tiến qua n cột dọc đường ray, cột nào có hàng (c != -1 với c = read_code()) thì gọi carry_by(4) và swing_by(4) để đưa lên tàu. Nhưng hàm đang viết nhầm điều kiện thành c == -1. Hãy sửa lại hàm rail_sort(n).',
       veMaMau: 'Chương trình chính đã khóa. Hãy sửa == -1 thành != -1 trong hàm rail_sort(n).',
       san: SAN_RAY_1,
       batDau: { x: 1, y: 3, nac: 4, tam: 1 },
@@ -859,7 +859,7 @@
       ),
       sao: { o: 15, nhip: 23 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra read_code() > 0 thay vì read_code() != -1',
+        moTa: 'Hỏi c > 0 thay vì c != -1',
         baiLam: bai(
           ['rail_sort(3)'],
           {
@@ -878,7 +878,7 @@
         { moTa: 'Để nguyên hàm mẫu dùng == -1 nên nhấc hụt ở cột trống (3, 4)', baiLam: bai(['rail_sort(3)'], { hamCuaMan: [hRailSort(T_RAIL_SORT_SAI)] }), phaiCoMa: ['moc-hut'] },
         { moTa: 'Bỏ luôn câu lệnh if nên vẫn nhấc hụt ở cột trống (3, 4)', baiLam: bai(['rail_sort(3)'], { hamCuaMan: [hRailSort(['for i in range(n):', '    rail(1)', '    carry_by(4)', '    swing_by(4)'])] }), phaiCoMa: ['moc-hut'] }
       ],
-      goiY: ['Luna: Ô có kiện hàng trả về mã số dương (khác -1), còn ô trống trả về -1.', 'Luna: Đổi dòng if read_code() == -1: thành if read_code() != -1: trong hàm rail_sort(n).']
+      goiY: ['Luna: Ô có kiện hàng trả về mã số dương (khác -1), còn ô trống trả về -1.', 'Luna: Đổi dòng if c == -1: thành if c != -1: trong hàm rail_sort(n).']
     }),
 
     manCheDuongRay({
