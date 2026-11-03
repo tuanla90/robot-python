@@ -4,7 +4,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Nền: ảnh dài 9 nơi chốn của phim CLB (phim-clb/a/ban-do/dai-9.webp: CLB, kho, nhà máy, bãi tái chế, cảng, bến sông, nông trại, mỏ đá, hang)
    lặp dọc vô hạn; cuộn qua hang thì vòng về cổng CLB, đúng chỗ mùa 9 "Về CLB". Mùa n nằm ở khúc ảnh nơi chốn của nó: đầu khúc một biển
    "MÙA n · tên ★" đặt đúng chỗ giao giữa hai nơi chốn (cổng, cầu, đổi nền: mép khúc ảnh), rồi 10 gói là 10 huy hiệu tròn trên con
-   đường, nhãn "GÓI k · tên · sao" bên cạnh. Mùa ẩn (`an`, chưa bật "Mở hết") vẫn có biển tên mùa, kèm ổ khoá và "SẮP CÓ", chưa có gói. Gói thử thách: viền hổ phách, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
+   đường, nhãn "GÓI k · tên · sao" bên cạnh. Mùa ẩn (`an`, chưa bật "Mở hết") vẫn có biển tên mùa và 10 gói, cùng khoá "SẮP CÓ". Gói thử thách: viền hổ phách, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
    Chạm gói đã mở → lưới màn của gói (App.vaoGoi). Gói và luật mở ở game/mo-goi.js.
    Bản đồ phủ cả màn hình; nổi trên đó chỉ có nút quay về (góc trái) và ô tổng sao (góc phải; giữ lâu 2 giây = bảng Gỡ lỗi).
    Mùa BÁN RIÊNG chưa mua (25/10): biển mùa có nút "Mua <mùa> · giá"; chạm biển, nút hay gói của mùa đó mở bảng
@@ -139,17 +139,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       bn.style.top = pb.y + 'px';
       el.bd.appendChild(bn); S.bien.push({ ma: mu.ma, y: pb.y, hien: laHien });
       cuoiY = pb.y;
-      if (laHien) {
-        y += GOI_Y;
-        mu.goi.forEach(function (g, k) {
-          y = trenDuong(y);
-          var p = diem(y), n = nutGoi(g, k, g === cur, k % 2 ? 'trai' : 'phai');
-          n.style.left = p.x + 'px'; n.style.top = p.y + 'px';
-          el.bd.appendChild(n); S.ds.push({ g: g, y: p.y });
-          if (g === gDich) dichY = p.y;
-          cuoiY = p.y; y += KHOANG;
-        });
-      }
+      // mùa ẩn: gói vẫn hiện, khoá + SẮP CÓ
+      y += GOI_Y;
+      mu.goi.forEach(function (g, k) {
+        y = trenDuong(y);
+        var p = diem(y), n = nutGoi(g, k, g === cur, k % 2 ? 'trai' : 'phai', !laHien);
+        n.style.left = p.x + 'px'; n.style.top = p.y + 'px';
+        el.bd.appendChild(n); S.ds.push({ g: g, y: p.y });
+        if (g === gDich) dichY = p.y;
+        cuoiY = p.y; y += KHOANG;
+      });
       r++;
     });
     el.bd.style.height = Math.max(cuoiY + THEM_DUOI, el.khung.clientHeight + 1) + 'px';
@@ -201,23 +200,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return b;
   }
 
-  /** Một gói trên đường: huy hiệu tròn (tâm đặt bằng left/top) + nhãn bên trái / phải. */
-  function nutGoi(g, k, laCur, ben) {
-    var mo = App.goiMo(g), xong = mo && App.soQua(g) === g.man.length;
+  /** Một gói trên đường: huy hiệu tròn (tâm đặt bằng left/top) + nhãn bên trái / phải. muaAn: gói của mùa ẩn, hiện khoá như gói SẮP CÓ. */
+  function nutGoi(g, k, laCur, ben, muaAn) {
+    var sap = g.sapCo || muaAn, mo = !muaAn && App.goiMo(g), xong = mo && App.soQua(g) === g.man.length;
     var tt = g.loai === 'thu-thach';
     var muG = App.dsMua().filter(function (x) { return x.ma === g.mua; })[0];
-    var b = h('div', 'g-nut ' + ben + ' ' + (g.sapCo ? 'sap' : !mo ? 'khoa' : xong ? 'xong' : 'mo') + (laCur ? ' cur' : '') + (g.dot === 2 ? ' dot2' : '') + (tt ? ' thu-thach' : ''));
+    var b = h('div', 'g-nut ' + ben + ' ' + (sap ? 'sap' : !mo ? 'khoa' : xong ? 'xong' : 'mo') + (laCur ? ' cur' : '') + (g.dot === 2 ? ' dot2' : '') + (tt ? ' thu-thach' : ''));
     b.setAttribute('data-goi', g.ma); b.setAttribute('role', 'button'); b.setAttribute('aria-label', t('goi.so', { n: k + 1 }) + ' ' + g.ten);
     var tron = h('div', 'g-tron');
     var co = window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0;
-    tron.appendChild(co ? HuyHieu.mk(g.hinh, g.sapCo || !mo ? 'khoa' : xong ? 'xong' : 'mo', 1.3) : Ve.ico('plus', 3, { fill: BM.vang, line: BM.vienDam }));
+    tron.appendChild(co ? HuyHieu.mk(g.hinh, sap || !mo ? 'khoa' : xong ? 'xong' : 'mo', 1.3) : Ve.ico('plus', 3, { fill: BM.vang, line: BM.vienDam }));
     b.appendChild(tron);
 
     var nhan = h('div', 'g-nhan');
     nhan.appendChild(h('div', 'g-nh-so', tt ? t('goi.thuThach') : t('goi.so', { n: k + 1 })));
     nhan.appendChild(h('div', 'g-nh-ten', g.ten));
     var dong = h('div', 'g-nh-sao');
-    if (g.sapCo) dong.appendChild(h('span', 'g-nh-can', t('goi.sapCo')));
+    if (sap) dong.appendChild(h('span', 'g-nh-can', t('goi.sapCo')));
     else {
       dong.appendChild(Ve.sao(true, 1.2));
       if (mo) dong.appendChild(h('span', null, App.saoGoi(g) + '/' + g.saoToiDa));
@@ -228,7 +227,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     nhan.appendChild(dong);
     b.appendChild(nhan);
 
-    if (!g.sapCo) {
+    if (!sap) {
       var moDauGoi = g.ma === 'xe' && window.MoDau && window.Luu && Luu.daXem(MoDau.CO)     // gói 1 dùng phim mở đầu (mo-dau.js) làm phim của gói,
         && !(window.PhimGoi && PhimGoi.co(g.ma));                                           // trừ khi đã có phim CLB của gói (phim-clb/ds.js)
       if (mo && (moDauGoi || (window.PhimGoi && PhimGoi.co(g.ma) && (App.moHet || PhimGoi.daXem(g.ma))))) {        // đã xem phim gói (hoặc đang bật Mở hết): nút nhỏ ▶ xem lại (phim xong thì vào gói)
@@ -244,7 +243,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     }
     b.addEventListener('click', function () {
-      if (g.sapCo) { lac(b); thongBao(t('goi.sapCoTb')); return; }
+      if (sap) { lac(b); thongBao(t('goi.sapCoTb')); return; }
       if (!App.goiMo(g)) {
         if (App.chuaMua(muG)) { moMua(muG); return; }
         lac(b); thongBao(App.muaMo(muG) ? t('goi.khoa', { can: g.saoCan, co: App.saoMua(g.mua) }) : loiMua(muG)); return;
