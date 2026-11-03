@@ -98,7 +98,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="GIÓ NÚI GIẬT!" at={66} den={138} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <MayMuaBar con="Mưa còn: 10 giờ" />
       <NhanGoi so={1} ten="Bánh Omni đi ngang" />
-      <Dung says={[{at: 72, out: 175, text: 'Hẻm núi gió lốc mạnh lắm, drone nhẹ quá bị thổi bạt ngay, phải dùng khung gầm nặng bám đất!'}]} at={58} />
+      <Dung says={[{at: 72, out: 175, text: 'Gió lốc thổi bạt drone, cần khung nặng bám đất!'}]} at={58} />
     </NenHienTruong>
   </Shake>
 );
@@ -130,7 +130,7 @@ const G2Thu: React.FC = () => (
       <ChuNay chu="VƯỚNG RÀO!" at={65} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 45} />
       <MayMuaBar con="Mưa còn: 9 giờ" />
       <NhanGoi so={2} ten="Tay máy ném" />
-      <Dung says={[{at: 68, out: 225, text: 'Rào an toàn chắn ngang rồi, xe không bước qua được mà tay kẹp thường cũng không vươn tới bãi chứa!'}]} at={54} />
+      <Dung says={[{at: 68, out: 225, text: 'Rào chắn rồi, tay kẹp thường không vươn tới bãi!'}]} at={54} />
     </NenHienTruong>
   </Shake>
 );
@@ -161,7 +161,7 @@ const G3Thu: React.FC = () => (
       <ChuNay chu="MÙ BỤI ĐÁ!" at={88} den={145} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <MayMuaBar con="Mưa còn: 8 giờ" />
       <NhanGoi so={3} ten="Radar tròn 4 hướng" />
-      <Sola mat={[[0, 'normal'], [86, 'surprised']]} says={[{at: 12, out: 82, text: 'Bụi đá mù mịt, phải xoay 4 hướng mới biết tảng đá nằm phía nào...'}, {at: 88, out: 225, text: 'Xoay đủ 4 vòng thì chóng cả mặt mà hết giờ mất!'}]} />
+      <Sola mat={[[0, 'normal'], [86, 'surprised']]} says={[{at: 12, out: 82, text: 'Bụi mù mịt, xoay 4 hướng mới biết đá đâu...'}, {at: 88, out: 225, text: 'Xoay đủ 4 vòng thì chóng mặt, hết giờ mất!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -193,7 +193,7 @@ const G4Thu: React.FC = () => (
       <ChuNay chu="HỐ SÂU CHẮN LỐI!" at={70} den={140} x={tamO(3, 3).x + 60} y={tamO(3, 3).y - 45} />
       <MayMuaBar con="Mưa còn: 7 giờ" />
       <NhanGoi so={4} ten="Đá tròn lăn dốc" />
-      <Dung dang="dung-tin" says={[{at: 66, out: 230, text: 'Hố khai thác cũ sâu hoắm chắn giữa đường, phải lăn tảng đá tròn trên dốc xuống lấp đầy hố mới đi qua được!'}]} at={52} />
+      <Dung dang="dung-tin" says={[{at: 66, out: 230, text: 'Hố sâu chắn lối, lăn đá tròn lấp mới qua!'}]} at={52} />
     </NenHienTruong>
   </Shake>
 );
@@ -231,7 +231,7 @@ const G5Thu: React.FC = () => (
       <ChuNay chu="CHẬM 1 NHỊP!" at={80} den={142} x={tamO(2, 3).x + 100} y={tamO(2, 3).y - 35} />
       <MayMuaBar con="Mưa còn: 6 giờ" />
       <NhanGoi so={5} ten="Đi chéo 1 nhịp" />
-      <Luna mat={[[0, 'normal'], [78, 'surprised']]} says={[{at: 12, out: 74, text: 'Trượt ngang 1 nhịp rồi mới tiến lên 1 nhịp là mất 2 bước...'}, {at: 80, out: 225, text: 'Ối, mất 2 nhịp nên tảng đá tròn lăn tới kịp chắn đường rồi!'}]} />
+      <Luna mat={[[0, 'normal'], [78, 'surprised']]} says={[{at: 12, out: 74, text: 'Trượt ngang rồi mới tiến lên, mất 2 nhịp...'}, {at: 80, out: 225, text: 'Ối, chậm 2 nhịp, đá tròn lăn tới chắn rồi!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -268,7 +268,7 @@ const G6Thu: React.FC = () => (
       <ChuNay chu="BAY QUÁ BÃI!" at={75} den={145} x={tamO(3, 3).x + 60} y={tamO(3, 3).y - 45} />
       <MayMuaBar con="MƯA SẠT VÁCH ĐÁ!" gap />
       <NhanGoi so={6} ten="Chỉnh lực ném aim(n)" />
-      <Dung dang="dung-hoang" says={[{at: 52, out: 230, text: 'Mưa đầu mùa làm sạt vách đá rồi! Bãi chứa có ô gần ô xa, hất hết cỡ là đá bay vọt qua bãi rơi xuống đường!'}]} at={40} />
+      <Dung dang="dung-hoang" says={[{at: 52, out: 230, text: 'Ô gần ô xa, hất hết cỡ là quá bãi!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -304,7 +304,7 @@ const G7Thu: React.FC = () => (
       <ChuNay chu="MẺ ĐÁ XẺ VUÔNG!" at={75} den={142} x={tamO(3, 3).x + 60} y={tamO(3, 3).y - 45} />
       <MayMuaBar con="Mưa còn: 4 giờ" />
       <NhanGoi so={7} ten="Radar nhận hình dạng" />
-      <Dung dang="dung-hoang" says={[{at: 68, out: 230, text: 'Ấy chết, khối đó là đá xẻ vuông cao cấp để lát vườn hoa, ném vào dốc đá lăn là sứt mẻ hết góc cạnh!'}]} at={54} />
+      <Dung dang="dung-hoang" says={[{at: 68, out: 230, text: 'Ấy, đá xẻ lát vườn, ném dốc là sứt mẻ!'}]} at={54} />
     </NenHienTruong>
   </Shake>
 );
@@ -340,7 +340,7 @@ const G8Thu: React.FC = () => (
       <ChuNay chu="VẠCH VÀNG ĐÁ RƠI!" at={65} den={140} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <MayMuaBar con="Mưa còn: 3 giờ" />
       <NhanGoi so={8} ten="Vạch màu & Trạm sạc" />
-      <Dung dang="dung-tin" says={[{at: 66, out: 230, text: 'Trong mỏ kẻ sẵn vạch vàng cảnh báo đá rơi và vạch xanh an toàn dẫn tới trạm sạc P giống bên nông trại đấy!'}]} at={52} />
+      <Dung dang="dung-tin" says={[{at: 66, out: 230, text: 'Vạch vàng đá rơi, vạch xanh dẫn tới trạm sạc!'}]} at={52} />
     </NenHienTruong>
   </Shake>
 );
@@ -373,7 +373,7 @@ const G9Thu: React.FC = () => (
       <ChuNay chu="KHUẤT VÁCH CAO!" at={58} den={140} x={tamO(2, 2).x + 80} y={tamO(2, 2).y - 40} />
       <MayMuaBar con="Mưa còn: 2 giờ" />
       <NhanGoi so={9} ten="Phối hợp R2 Drone" />
-      <Sola mat={[[0, 'normal'], [58, 'surprised']]} says={[{at: 14, out: 55, text: 'Vách đá dựng đứng che khuất mất tầng mỏ bên trên rồi!'}, {at: 60, out: 220, text: 'R1 đứng dưới thấp không biết đá ở cột nào sắp lăn xuống!'}]} />
+      <Sola mat={[[0, 'normal'], [58, 'surprised']]} says={[{at: 14, out: 55, text: 'Vách đá dựng đứng che mất tầng mỏ trên rồi!'}, {at: 60, out: 220, text: 'R1 dưới thấp không biết đá cột nào sắp lăn!'}]} />
     </NenHienTruong>
   </Shake>
 );
