@@ -620,7 +620,8 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .bk.if.cuoi::after{background:var(--g-ngocToiV1);box-shadow:inset 0 1px 0 var(--g-ngocToi2),inset 0 -1px 0 var(--g-ngocToi2)}
 .num.chuoi{background:var(--g-camToi);min-width:1.4em;padding:0 2px;box-shadow:0 0 0 1px var(--g-goV1),inset 0 2px 0 var(--g-camSang),inset 0 -2px 0 var(--g-goSangV4)}
 .strip .num.chuoi{flex:0 1 auto;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.strip.ko-cat .num.chuoi{flex:none;max-width:none;overflow:visible}
+.strip.ko-cat .num.chuoi,.strip .num.chuoi.ngan{flex:none;max-width:none;overflow:visible}      /* .ngan: chuỗi ≤ 12 ký tự (vuaDong đánh dấu) không co thành "…" */
+.strip.chat .num{padding-left:2px;padding-right:2px}.strip.chat .pu{letter-spacing:-0.5px}      /* vuaDong: dòng có chuỗi ngắn thiếu vài px ở cỡ 9px thì bóp đệm chip thay vì xuống hai dòng */
 .chon-so .cs:disabled{opacity:.38;filter:saturate(.35);pointer-events:none}
 .chon-chuoi{display:flex;flex-direction:column;gap:6px;width:136px;grid-template-columns:none}
 .chon-chuoi .cc-chu{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}

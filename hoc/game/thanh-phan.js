@@ -927,16 +927,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return '<span class="' + cls + '">' + esc(m[1]) + '</span><span class="pu">(</span>' + args + '<span class="pu">)</span>';
   }
 
-  /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`, biểu thức distance()): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi tự rút gọn bằng "…" (CSS .num.chuoi). */
+  /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`, biểu thức distance()): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi dài tự rút gọn bằng "…" (CSS .num.chuoi), chuỗi ngắn giữ nguyên và dòng xuống hai dòng. */
   function vuaDong(el) {
     el.style.fontSize = '';
     if (!el.clientWidth || !el.querySelector('.chuoi, .dkc, .ptu, .lsten, .bth, .bt')) return;       // .bth: biểu thức dài (range(distance()), forward(distance() + n))
+    // chuỗi ngắn ("R", "back", "left") không bao giờ rút gọn: dòng chỉ thiếu 1 px ở cỡ 9px cũng đủ làm "R" thành "…" (2/11, màn dong-chay.3)
+    el.querySelectorAll('.chuoi').forEach(function (c) { c.classList.toggle('ngan', (c.textContent || '').length <= 14); });  // ≤ 12 ký tự, gồm 2 dấu nháy
     el.classList.add('ko-cat');                                                    // đo với chuỗi chưa bị cắt
     var fs = parseFloat(getComputedStyle(el).fontSize) || 15;
     while (el.scrollWidth > el.clientWidth + 1 && fs > 9) { fs -= 0.5; el.style.fontSize = fs + "px"; }
     var tran = el.scrollWidth > el.clientWidth + 1;
+    el.classList.remove('chat');
+    if (tran && el.querySelector('.chuoi.ngan')) { el.classList.add('chat'); tran = el.scrollWidth > el.clientWidth + 1; if (tran) el.classList.remove('chat'); }   // thiếu vài px: bóp đệm các chip trước khi xuống hai dòng
     el.classList.remove('ko-cat');
-    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế)
+    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
   }
 
   /* ------------------------------------------------------------- Editor */
