@@ -29,7 +29,9 @@
      tim(khe, ma) · tenCua(khe, ma) · moTa(cach) → "Hai bánh + Tay kẹp + Màu bụng"
      chuanCach(c) → { than, tay, camBien }      giaCach(c) → số xu
      cauHinhCua(c) → { than, tay, camBien: [{ ma, o }] }   (đưa thẳng cho VeRobot.ve / VeVector.kiemGhep)
-     kiemGhep(c) → { ok, lyDo, ma: 'ghep-sai' | 'khe-la', xung: [khe…] }   ghép có hợp lệ không (KHÔNG xét ngân sách, không xét danh sách màn cho phép)
+     kiemGhep(c, man?) → { ok, lyDo, ma: 'ghep-sai' | 'khe-la' | 'lai-chua-co' | 'khong-mo', xung: [khe…] }   ghép có hợp lệ không (KHÔNG xét ngân sách, không xét danh sách màn cho phép)
+                                  man (M9B1 4/11): màn mở lai ★ nào — moLaiCua(man) = man.lapRap.moLai, không thì man.moLai (vd ['L4']); không có man = không mở lai nào
+     moLaiCua(man) → ['L4', …]
      kiemCachLap(man, c) → { ok, gia, lyDo, ma, thieu, khe }    ma: 'khong-cho' | 'thieu-khe' | 'ghep-sai' | 'vuot-ngan-sach' | null; thieu = số xu còn thiếu khi vượt ngân sách; khe = khe liên quan (khong-cho, thieu-khe)
                                   (có thêm bí danh không đếm được `giá` = gia)
      dsCachLap(man) → [{ than, tay, camBien, gia }]  mọi cách lắp hợp lệ trong ngân sách, xếp theo giá rồi theo thứ tự danh sách
@@ -153,12 +155,19 @@
    * câu báo cũ nay nằm trong bảng, y nguyên chữ). ma: 'khe-la' | 'ghep-sai' (ô ✗, lyDo theo ba câu) | 'lai-chua-co' (ô ★, kèm `lai` = mã L; gói B bật BangGhep.MO_LAI) | 'khong-mo' (ô ·).
    * Cuối cùng nhờ VeVector.kiemGhep xét lại (ổ gắn thật của bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
    */
-  function kiemGhep(c) {
+  /** Mã lai ★ màn mở (M9B1 4/11): man.lapRap.moLai, không thì man.moLai (màn không lắp ráp mà robot là tổ hợp lai); mảng mới, không có thì []. */
+  function moLaiCua(man) {
+    if (!man) return [];
+    var g = man.manGoc || null;
+    var ds = (man.lapRap && man.lapRap.moLai) || man.moLai || (g && ((g.lapRap && g.lapRap.moLai) || g.moLai)) || [];
+    return Array.isArray(ds) ? ds.slice() : [];
+  }
+  function kiemGhep(c, man) {
     c = chuanCach(c);
     if (!c.than || !tim('than', c.than)) return { ok: false, ma: 'khe-la', lyDo: c.than ? 'Không có thân "' + c.than + '".' : 'Chưa chọn thân.', xung: ['than'] };
     if (c.tay && !tim('tay', c.tay)) return { ok: false, ma: 'khe-la', lyDo: 'Không có tay "' + c.tay + '".', xung: ['tay'] };
     if (c.camBien && !tim('camBien', c.camBien)) return { ok: false, ma: 'khe-la', lyDo: 'Không có cảm biến "' + c.camBien + '".', xung: ['camBien'] };
-    var b = BG().kiemGhep(c.than, c.tay, c.camBien);
+    var b = BG().kiemGhep(c.than, c.tay, c.camBien, { moLai: moLaiCua(man) });
     if (!b.ok) { var kq = { ok: false, ma: b.ma, lyDo: b.lyDo, xung: b.xung }; if (b.lai) kq.lai = b.lai; return kq; }
     var vv = VV();
     if (vv) {
@@ -193,7 +202,7 @@
     if (!c.than) return ketQua(false, gia, 'thieu-khe', 'Chưa chọn thân.', 0, 'than');
     var can = phaiCoCua(L).filter(function (k) { return (L[k] || []).length && !c[k]; })[0];
     if (can) return ketQua(false, gia, 'thieu-khe', 'Màn này cần gắn khe ' + TEN_KHE[can].toLowerCase() + '.', 0, can);
-    var g = kiemGhep(c);
+    var g = kiemGhep(c, man);
     if (!g.ok) return ketQua(false, gia, 'ghep-sai', g.lyDo);
     var ns = nganSachCua(L);
     if (gia > ns) return ketQua(false, gia, 'vuot-ngan-sach', 'Thiếu ' + (gia - ns) + ' xu.', gia - ns);
@@ -268,7 +277,7 @@
     return goc;
   }
   function apDung(man, cach) {
-    var c = chuanCach(cach), g = kiemGhep(c);
+    var c = chuanCach(cach), g = kiemGhep(c, man);
     if (!g.ok) throw new Error(g.lyDo);
     var th = tim('than', c.than), ch = cauHinhCua(c);
     var kq = Object.assign({}, man);
@@ -294,7 +303,7 @@
    */
   function macDinh(man) {
     var L = lapRapCua(man);
-    if (!L || !Array.isArray(L.cachLap) || !L.cachLap.length || !kiemGhep(L.cachLap[0]).ok) return man;
+    if (!L || !Array.isArray(L.cachLap) || !L.cachLap.length || !kiemGhep(L.cachLap[0], man).ok) return man;
     var a = apDung(man, L.cachLap[0]);
     ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
     if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
@@ -427,7 +436,7 @@
   var API = {
     KHE: KHE, TEN_KHE: TEN_KHE, DANH_MUC: DANH_MUC,
     tim: tim, tenCua: tenCua, moTa: moTa, chuanCach: chuanCach, giaCach: giaCach, cauHinhCua: cauHinhCua,
-    kiemGhep: kiemGhep, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
+    kiemGhep: kiemGhep, moLaiCua: moLaiCua, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
     macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV, bangGhep: BG
   };
   if (laNode) module.exports = API;

@@ -4,7 +4,8 @@
    a. bảng đủ hai mặt 8 thân × 9 tay và 8 thân × 11 cảm biến; mọi ô có trạng thái hợp lệ; ô ✗ có lý do tiếng Việt; ô ★ có mã lai L; mã part đúng bộ vẽ vector và danh mục lắp ráp;
    b. ô ● khớp đúng tám bộ cỗ máy trong co-may.js (đúng 16 ô, mỗi thân một cỗ máy, tay + cảm biến gốc);
    c. mọi ô ● / ✔: LapRap.apDung dựng robot, SanHoc.chay chạy "wait()" trên một sân nhỏ không lỗi, và MỘT LỆNH GỐC của part chạy được (không ném); VeVector.kiemGhep không ném, VeVector.robot vẽ được;
-   d. mọi ô ✗ / ★ / ·: LapRap.kiemGhep trả ok:false đúng mã (ghep-sai / lai-chua-co / khong-mo) với lý do của bảng; ★ có `lai`; VeVector.kiemGhep ném cho ô có part mới;
+   d. mọi ô ✗ / ★ / ·: LapRap.kiemGhep trả ok:false đúng mã (ghep-sai / lai-chua-co / khong-mo) với lý do của bảng; ★ có `lai`; VeVector.kiemGhep ném cho ô ✗ / · có part mới, ô ★ thì VẼ ĐƯỢC (M9B1);
+      lai mở theo màn: BangGhep.kiemGhep(…, { moLai }), LapRap.kiemGhep(c, man) đọc man.lapRap.moLai / man.moLai;
    e. tám cỗ máy: CoMay.dung chạy được trong lõi, ghép hợp lệ ở lap-rap và bộ vẽ;
    f. TỰ CHỨNG MINH: tạm đổi một ô ✔ thành ✗ (BangGhep.dat, trong bộ nhớ) → phép c phải kêu, phép d phải kêu ngược lại; đặt lại ô cũ.
    In bảng tổng số ô mỗi trạng thái và danh sách ô ✔ chưa có màn nào dùng (chưa có hình tổ hợp riêng: gói hình sau).
@@ -127,16 +128,28 @@ function kiemChan(ds) {
     let nemApDung = false; try { LapRap.apDung({ ma: 't' }, cachCua(x)); } catch (e) { nemApDung = true; }
     if (!nemApDung) sai.push(x.than + '/' + x.ma + ': apDung không ném');
     const moi = BG.laMoi('than', x.than) || BG.laMoi(x.khe, x.ma);
-    if (moi && !veO(x)) saiVe.push(x.than + '/' + x.ma);
+    if (moi && x.tt !== 'lai' && !veO(x)) saiVe.push(x.than + '/' + x.ma);
   }
   return { sai, saiVe };
 }
 {
   const r = kiemChan(chan);
   kiem(chan.length + ' ô ✗ / ★ / ·: LapRap.kiemGhep ok:false, đúng mã (ghep-sai / lai-chua-co / khong-mo), lý do của bảng, ★ kèm mã lai, xung có khe; apDung ném', r.sai.length === 0, r.sai.slice(0, 6).join(' | '));
-  kiem('ô ✗ / ★ / · có part mới (ngoài dữ liệu chụp bộ pixel): VeVector.kiemGhep cũng ném (bộ vẽ đọc cùng bảng)', r.saiVe.length === 0, r.saiVe.join(', '));
+  kiem('ô ✗ / · có part mới (ngoài dữ liệu chụp bộ pixel): VeVector.kiemGhep cũng ném (bộ vẽ đọc cùng bảng)', r.saiVe.length === 0, r.saiVe.join(', '));
 }
-kiem('mở cờ lai (BangGhep.MO_LAI.L1 = true) thì cần cẩu + nam châm ghép được ở lap-rap (gói B bật)', (() => { BG.MO_LAI.L1 = true; const ok = BG.kiemGhep('cau', 'nam-cham', null).ok; delete BG.MO_LAI.L1; return ok && !BG.kiemGhep('cau', 'nam-cham', null).ok; })());
+/* M9B1 (4/11): lai mở THEO MÀN (man.lapRap.moLai / man.moLai), không còn cờ toàn cục MO_LAI; bộ vẽ không biết màn nên ô ★ vẽ được */
+kiem('không còn cờ toàn cục BangGhep.MO_LAI', BG.MO_LAI === undefined);
+kiem('BangGhep.kiemGhep(…, { moLai: ["L1"] }): cần cẩu + nam châm ghép được; không khai / khai mã khác thì vẫn ★ bị chặn',
+  BG.kiemGhep('cau', 'nam-cham', null, { moLai: ['L1'] }).ok && BG.kiemGhep('cau', 'nam-cham', null).ma === 'lai-chua-co' && BG.kiemGhep('cau', 'nam-cham', null, { moLai: ['L4'] }).ma === 'lai-chua-co');
+kiem('LapRap.kiemGhep(c, màn): đọc man.lapRap.moLai, không thì man.moLai; không có màn = không mở',
+  LapRap.kiemGhep({ than: 'nhen', camBien: 'am-thanh' }, { lapRap: { moLai: ['L4'] } }).ok && LapRap.kiemGhep({ than: 'nhen', camBien: 'am-thanh' }, { moLai: ['L4'] }).ok &&
+  !LapRap.kiemGhep({ than: 'nhen', camBien: 'am-thanh' }).ok && !LapRap.kiemGhep({ than: 'nhen', camBien: 'am-thanh' }, { lapRap: { moLai: ['L5'] } }).ok);
+{
+  const lai = TAT_CA.filter((x) => x.tt === 'lai'), loiVe = [];
+  const CHO_HINH = ['cau/camBien/camera-bay'];                                       // L13 cần cẩu + camera bụng: thân cau chưa có ổ 'bung' (gói hình sau)
+  for (const x of lai) { const l = veO(x); if (l && !CHO_HINH.includes(x.than + '/' + x.khe + '/' + x.ma)) loiVe.push(x.than + '/' + x.ma + ' (' + x.lai + '): ' + l); }
+  kiem(lai.length + ' ô ★ (trừ ' + CHO_HINH.join(', ') + ': chờ ổ của hình): VeVector.kiemGhep không ném, VeVector.robot vẽ được (theo ổ gắn của thân; hình riêng để gói sau)', loiVe.length === 0, loiVe.join(' | '));
+}
 
 /* ----------------------------------------------------------- e. tám cỗ máy chạy */
 console.log('e. tám cỗ máy chạy được');

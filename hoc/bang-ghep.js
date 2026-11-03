@@ -11,7 +11,7 @@
    TRẠNG THÁI mỗi ô:
      'goc'      ●  part gốc của cỗ máy mùa đó (co-may.js)
      'duoc'     ✔  ghép được theo luật ba câu, lõi không chặn (máy kiểm chạy thử từng ô)
-     'lai'      ★  tổ hợp lai mới mùa 9, còn phải thêm luật (mã lai L1…L14, mục 4 kế hoạch); kiemGhep trả ok:false ma:'lai-chua-co' cho tới khi gói sau bật cờ MO_LAI[mã] = true
+     'lai'      ★  tổ hợp lai mới mùa 9, còn phải thêm luật (mã lai L1…L14, mục 4 kế hoạch); kiemGhep trả ok:false ma:'lai-chua-co' TRỪ KHI màn mở lai đó (opts.moLai có mã; lap-rap.js đọc man.lapRap.moLai / man.moLai — M9B1 4/11, thay cờ toàn cục MO_LAI)
      'khong-mo' ·  ghép được về lý nhưng mùa 9 không mở (giữ bảng chọn nhỏ); kiemGhep trả ok:false ma:'khong-mo'
      'cam'      ✗  không ghép; lý do tiếng Việt cho trẻ theo LUẬT BA CÂU (mục 2):
                    1. đồ "phía trước" (kẹp, kẹp xoay, vòi phun, máy ném, tay lưới, gieo hạt; khoảng cách, hồng ngoại, camera trước, chong chóng) cần thân CÓ MŨI;
@@ -24,12 +24,12 @@
      NHOM_THAN[than] → mã nhóm; NHOM[nhom] → { ten, mui, bung }   (xe có bánh / xuồng / không mũi / đứng yên) — lời báo sinh từ dữ liệu
      o(than, khe, ma)   → { tt, lai?, lyDo }   khe = 'tay' | 'camBien'; mã lạ → null
      trangThai(than, khe, ma) → tt | null ;  lyDo(than, khe, ma) → chuỗi ('' khi không phải ô cấm)
-     kiemGhep(than, tay, camBien)  → { ok, ma: null | 'khe-la' | 'ghep-sai' | 'lai-chua-co' | 'khong-mo', lyDo, xung: ['than', 'tay' | 'camBien'], lai?: 'L3' }
+     kiemGhep(than, tay, camBien, opts?)  → { ok, ma: null | 'khe-la' | 'ghep-sai' | 'lai-chua-co' | 'khong-mo', lyDo, xung: ['than', 'tay' | 'camBien'], lai?: 'L3' }
                                      camBien: mã hay [{ ma }] (cấu hình bộ vẽ) hay mảng mã; null / [] = không cảm biến
+                                     opts.moLai: ['L4', …] mã lai màn mở (ô ★ có mã trong đó coi như ✔); không khai = không mở lai nào
      dsO(tt?)           → [{ than, khe, ma, tt, lai, lyDo }]  mọi ô (lọc theo trạng thái)
      tongKet()          → { goc, duoc, lai, 'khong-mo', cam, tong }
      laMoi(khe, ma)     → part thêm sau dữ liệu chụp bộ pixel (bộ vẽ chỉ áp bảng cho ô có part mới: câu báo ô cũ của VeVector.kiemGhep phải y như đã chụp)
-     MO_LAI             { L1: true… } cờ mở lai (gói B / C bật)
    ========================================================================== */
 (function () {
   'use strict';
@@ -52,8 +52,6 @@
 
   /* part thêm SAU dữ liệu chụp bộ pixel (hoc/du-lieu-chup-pixel.json; kiem-ve-vector.mjs THEM_SAU_CHUP) — VeVector.kiemGhep chỉ áp bảng cho ô có part trong nhóm này */
   var MOI = { than: ['xuong', 'cau', 'gai'], tay: ['day-keo', 'moc-cau', 'loa'], camBien: ['tu', 'camera-4', 'radar', 'dong-chay', 'quet-ma', 'am-thanh'] };
-
-  var MO_LAI = {};                                                                      // gói B / C: MO_LAI.L1 = true khi luật lai đã có trong lõi + hình
 
   /* ---------------------------------------------------------- câu báo chung */
   var C = {
@@ -217,25 +215,26 @@
     if (typeof cb === 'string') return [cb];
     return cb.map(function (c) { return typeof c === 'string' ? c : c && c.ma; }).filter(function (m) { return m && m !== 'pin'; });
   }
-  function ketQua(x, khe) {
+  function ketQua(x, khe, moLai) {
     if (x.tt === 'goc' || x.tt === 'duoc') return null;
-    if (x.tt === 'lai') return MO_LAI[x.lai] ? null : { ok: false, ma: 'lai-chua-co', lyDo: 'Tổ hợp lai ' + x.lai + ' chưa mở ở mùa này.', xung: ['than', khe], lai: x.lai };
+    if (x.tt === 'lai') return moLai.indexOf(x.lai) >= 0 ? null : { ok: false, ma: 'lai-chua-co', lyDo: 'Tổ hợp lai ' + x.lai + ' chưa mở ở mùa này.', xung: ['than', khe], lai: x.lai };
     if (x.tt === 'khong-mo') return { ok: false, ma: 'khong-mo', lyDo: 'Ghép được, nhưng mùa này chưa mở.', xung: ['than', khe] };
     return { ok: false, ma: 'ghep-sai', lyDo: x.lyDo, xung: ['than', khe] };
   }
-  /** Luật ghép một chỗ: thân + (tay | null) + (cảm biến | null). Không xét ngân sách / danh sách màn. */
-  function kiemGhep(than, tay, camBien) {
+  /** Luật ghép một chỗ: thân + (tay | null) + (cảm biến | null). Không xét ngân sách / danh sách màn; opts.moLai = mã lai màn mở (M9B1). */
+  function kiemGhep(than, tay, camBien, opts) {
+    var moLai = (opts && Array.isArray(opts.moLai)) ? opts.moLai : [];
     if (!than || THAN.indexOf(than) < 0) return { ok: false, ma: 'khe-la', lyDo: than ? 'Không có thân "' + than + '".' : 'Chưa chọn thân.', xung: ['than'] };
     if (tay) {
       var xt = o(than, 'tay', tay);
       if (!xt) return { ok: false, ma: 'khe-la', lyDo: 'Không có tay "' + tay + '".', xung: ['tay'] };
-      var kt = ketQua(xt, 'tay'); if (kt) return kt;
+      var kt = ketQua(xt, 'tay', moLai); if (kt) return kt;
     }
     var cams = maCam(camBien);
     for (var i = 0; i < cams.length; i++) {
       var xc = o(than, 'camBien', cams[i]);
       if (!xc) return { ok: false, ma: 'khe-la', lyDo: 'Không có cảm biến "' + cams[i] + '".', xung: ['camBien'] };
-      var kc = ketQua(xc, 'camBien'); if (kc) return kc;
+      var kc = ketQua(xc, 'camBien', moLai); if (kc) return kc;
     }
     return { ok: true, ma: null, lyDo: '', xung: [] };
   }
@@ -266,7 +265,7 @@
   }
 
   var API = {
-    THAN: THAN, TAY: TAY, CAM_BIEN: CAM_BIEN, TRANG_THAI: TRANG_THAI, KY_HIEU: KY_HIEU, NHOM_THAN: NHOM_THAN, NHOM: NHOM, MOI: MOI, MO_LAI: MO_LAI,
+    THAN: THAN, TAY: TAY, CAM_BIEN: CAM_BIEN, TRANG_THAI: TRANG_THAI, KY_HIEU: KY_HIEU, NHOM_THAN: NHOM_THAN, NHOM: NHOM, MOI: MOI,
     o: o, trangThai: trangThai, lyDo: lyDo, laMoi: laMoi, kiemGhep: kiemGhep, dsO: dsO, tongKet: tongKet, inBang: inBang, dsCua: dsCua, dat: dat
   };
   if (laNode) module.exports = API;

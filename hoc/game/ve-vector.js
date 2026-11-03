@@ -254,8 +254,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     for (i = 0; i < cams.length; i++) if (!lay('cam-bien', cams[i].ma)) throw new Error('Không có cam-bien "' + cams[i].ma + '".');
     if (drone && co('camera')) throw new Error('Drone không gắn được camera: drone không có hướng mặt để nhìn "phía trước".');
     if (drone) {
-      if (tay && tay.ma !== 'nam-cham' && tay.ma !== 'son') throw new Error('Drone không gắn được ' + tay.ten + '.');          // mùa 4: máy sơn treo dưới bụng drone (combo gói 9)
-      for (i = 0; i < cams.length; i++) if (['khoang-cach', 'mau', 'camera-bay', 'camera-4'].indexOf(cams[i].ma) < 0) throw new Error('Drone không gắn được ' + lay('cam-bien', cams[i].ma).ten + '.');
+      if (tay && tay.ma !== 'nam-cham' && tay.ma !== 'son' && !laLaiBang(than.ma, 'tay', tay.ma)) throw new Error('Drone không gắn được ' + tay.ten + '.');          // mùa 4: máy sơn treo dưới bụng drone (combo gói 9)
+      for (i = 0; i < cams.length; i++) if (['khoang-cach', 'mau', 'camera-bay', 'camera-4'].indexOf(cams[i].ma) < 0 && !laLaiBang(than.ma, 'camBien', cams[i].ma)) throw new Error('Drone không gắn được ' + lay('cam-bien', cams[i].ma).ten + '.');   // M9B1: ô ★ của bảng (L11 drone + radar) vẽ được
     }
     if (!drone && co('camera-bay')) throw new Error('Camera nhìn xuống (camera-bay) chỉ gắn được lên drone.');
     if (co('camera') && co('mau')) throw new Error('Robot không gắn được cả cảm biến màu lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
@@ -272,10 +272,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var BG = bangGhep();
     if (BG && (BG.laMoi('than', than.ma) || (tay && BG.laMoi('tay', tay.ma)) || cams.some(function (c) { return BG.laMoi('camBien', c.ma); }))) {
       var b = BG.kiemGhep(than.ma, tay ? tay.ma : null, cams.map(function (c) { return c.ma; }));
-      if (!b.ok) throw new Error(b.lyDo);
+      if (!b.ok && b.ma !== 'lai-chua-co') throw new Error(b.lyDo);                   // M9B1 (4/11): bộ vẽ không biết màn — ô ★ (lai) VẼ ĐƯỢC theo ổ gắn của thân; màn có mở lai hay không là việc của lap-rap.js
     }
     return { than: than, tay: tay, cams: cams };
   }
+  /** Ô (thân, khe, mã) là ô ★ lai của bảng ghép (bộ vẽ cho qua; hình riêng của tổ hợp để gói hình sau). */
+  function laLaiBang(than, khe, ma) { var BG = bangGhep(); return !!(BG && BG.trangThai(than, khe, ma) === 'lai'); }
   var bgNode = null;
   /** Bảng ghép (hoc/bang-ghep.js): trình duyệt dùng window.BangGhep (choi.html nạp trước); Node tự require; trang không nạp bảng → null (bỏ bước này). */
   function bangGhep() {
