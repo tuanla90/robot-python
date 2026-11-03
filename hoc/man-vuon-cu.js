@@ -137,8 +137,8 @@
 
     man({
       so: 6, ten: 'Bay qua bãi đệm từ', hang: 'luyen',
-      deBai: 'Dưới đất có hai đệm từ N, S nhưng drone nông nghiệp không gắn nam châm nên không bị hút. Bay sang phải bốn ô, ô nào dưới chân có dấu màu (color("here") != "none") thì chọn màu đó và gieo. Hai sân.',
-      veMaMau: 'Dùng vòng lặp 4 lần: mỗi bước bay sang phải, nếu color("here") != "none" thì chọn màu đó và dot().',
+      deBai: 'Dưới đất có hai đệm từ N, S nhưng drone nông nghiệp không gắn nam châm nên không bị hút. Bay sang phải bốn ô, ô nào dưới chân có dấu màu thì chọn màu đó và gieo. Hai sân.',
+      veMaMau: 'Dùng vòng lặp 4 lần: mỗi bước bay sang phải, đọc m = color("here"), nếu m != "none" thì chọn màu m và dot().',
       san: [['.r.y.', '.....'], ['..b.g', '.....']],
       hinh: [['.r.y.', '.....'], ['..b.g', '.....']],
       demTu: [[{ x: 1, y: 1, cuc: 'N' }, { x: 3, y: 1, cuc: 'S' }], [{ x: 1, y: 1, cuc: 'N' }, { x: 3, y: 1, cuc: 'S' }]],
@@ -153,14 +153,14 @@
         { moTa: 'Gieo cứng ở ô 1 và ô 3 màu đỏ, vàng theo sân đầu', cung: true, baiLam: bai(['go_right()', 'ink("red")', 'dot()', 'go_right()', 'go_right()', 'ink("yellow")', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] },
         { moTa: 'Không xét khác "none", ô trống cũng gieo', baiLam: bai(['for i in range(4):', '    go_right()', '    m = color("here")', '    ink(m)', '    dot()', 'wait()']), phaiCoMa: ['mau-son-sai'] }
       ],
-      goiY: ['Mỗi bước trong vòng lặp: go_right() rồi hỏi if color("here") != "none":.', 'Cuối vòng lặp gọi wait() để nhịp cuối kịp gieo hạt ở ô thứ tư.']
+      goiY: ['Mỗi bước trong vòng lặp: go_right(), đọc m = color("here") rồi hỏi if m != "none":.', 'Cuối vòng lặp gọi wait() để nhịp cuối kịp gieo hạt ở ô thứ tư.']
     }),
 
     man({
       so: 7, ten: 'Ghé trạm giữa rào', hang: 'bien-the',
       pin: [5, 7],
-      deBai: 'Bay ba ô sang phải qua hàng rào = tới ô giữa sân. Nếu pin còn dưới 4 (battery() < 4) thì đáp xuống trạm P sạc rồi cất cánh, sau đó bay tiếp hai ô và gieo liền hai ô hoa đỏ cuối hàng. Hai sân: sân pin ít có trạm P, sân pin nhiều là hố u.',
-      veMaMau: 'Tại ô thứ ba, kiểm tra if battery() < 4: trước khi land() và take_off().',
+      deBai: 'Bay ba ô sang phải qua hàng rào = tới ô giữa sân. Nếu pin còn dưới 4 thì đáp xuống trạm P sạc rồi cất cánh, sau đó bay tiếp hai ô và gieo liền hai ô hoa đỏ cuối hàng. Hai sân: sân pin ít có trạm P, sân pin nhiều là hố u.',
+      veMaMau: 'Tại ô thứ ba, đọc b = battery() rồi kiểm tra if b < 4: trước khi land() và take_off().',
       san: [['..=P=..'], ['..=u=..']],
       hinh: [['.....rr'], ['.....rr']],
       batDau: { x: 0, y: 0 },
@@ -171,7 +171,7 @@
         { moTa: 'Không sạc khi pin yếu: hết pin giữa đường ở sân đầu', cung: true, baiLam: bai(['for i in range(5):', '    go_right()', 'pen_down()', 'go_right()']), phaiCoMa: ['het-pin'] },
         { moTa: 'Luôn đáp đất không hỏi pin: vướng hố u và hết pin ở sân hai', cung: true, baiLam: bai(['for i in range(3):', '    go_right()', 'land()', 'take_off()', 'go_right()', 'go_right()', 'pen_down()', 'go_right()']), phaiCoMa: [' dap-bi-chan'.trim()] }
       ],
-      goiY: ['Sân đầu tới ô (3, 0) chỉ còn 2 pin (< 4) nên cần land() rồi take_off().', 'Sân hai còn 4 pin và dưới chân là hố u, nhờ if battery() < 4: nên drone bay thẳng qua.']
+      goiY: ['Sân đầu tới ô (3, 0) chỉ còn 2 pin (< 4) nên cần land() rồi take_off().', 'Sân hai còn 4 pin và dưới chân là hố u, nhờ if b < 4: nên drone bay thẳng qua.']
     }),
 
     man({
@@ -188,7 +188,7 @@
         { moTa: 'Cố định màu đỏ cho cả ba luống, không đọc biển phía trên', cung: true, baiLam: bai(['for i in range(3):', '    ink("red")', '    dot()', '    go_right()', '    go_right()']), phaiCoMa: ['chua-to-hinh'] },
         { moTa: 'Chỉ bay một ô mỗi bước nên đọc nhầm bụi cây # phía trên', baiLam: bai(['for i in range(3):', '    m = color("up")', '    ink(m)', '    dot()', '    go_right()']), phaiCoMa: ['mau-son-sai'] }
       ],
-      goiY: ['Ở các cột 0, 2, 4, biển màu nằm ngay phía trên nên gọi ink(color("up")).', 'Lệnh go_right() đầu tiên sau dot() vừa bay vừa gieo xuống ô vừa đứng.']
+      goiY: ['Ở các cột 0, 2, 4, biển màu nằm ngay phía trên nên đọc m = color("up") rồi ink(m).', 'Lệnh go_right() đầu tiên sau dot() vừa bay vừa gieo xuống ô vừa đứng.']
     }),
 
     man({
@@ -275,8 +275,8 @@
     manChe({
       so: 3, ten: 'Hàm gieo theo dấu dưới chân', hang: 'lam-quen',
       taoHam: ['mark_here'],
-      deBai: 'Chế hàm mark_here(n): lặp n lần, mỗi bước nếu ô dưới chân có màu (color("here") != "none") thì chọn màu đó và dot(), sau đó bay sang phải một ô. Chương trình chính đã khóa. Hai sân.',
-      veMaMau: 'Bấm "+ Tạo hàm" để tạo mark_here(n) với một vòng lặp n bước xét color("here") != "none".',
+      deBai: 'Chế hàm mark_here(n): lặp n lần, mỗi bước nếu ô dưới chân có màu thì chọn màu đó và dot(), sau đó bay sang phải một ô. Chương trình chính đã khóa. Hai sân.',
+      veMaMau: 'Bấm "+ Tạo hàm" để tạo mark_here(n) với một vòng lặp n bước: đọc m = color("here"), xét m != "none".',
       san: [['r.b..', '.....'], ['.y.g.', '.....']],
       hinh: [['r.b..', '.....'], ['.y.g.', '.....']],
       demTu: [[{ x: 1, y: 1, cuc: 'N' }, { x: 3, y: 1, cuc: 'S' }], [{ x: 1, y: 1, cuc: 'N' }, { x: 3, y: 1, cuc: 'S' }]],
@@ -292,7 +292,7 @@
         { moTa: 'Gọi mark_here mà chưa tạo hàm', baiLam: bai(['mark_here(4)', 'wait()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Cố định gieo đỏ ở mọi ô có dấu', cung: true, baiLam: bai(['mark_here(4)', 'wait()']), hamCuaEmMoi: [H('mark_here', ['n'], ['for i in range(n):', '    m = color("here")', '    if m != "none":', '        ink("red")', '        dot()', '    go_right()'])], phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['Trong vòng lặp for i in range(n):, kiểm tra if color("here") != "none": rồi mới ink(color("here")) và dot().', 'Lệnh go_right() đặt ngoài khối if để bước nào drone cũng bay sang phải.']
+      goiY: ['Trong vòng lặp for i in range(n):, đọc m = color("here"), kiểm tra if m != "none": rồi mới ink(m) và dot().', 'Lệnh go_right() đặt ngoài khối if để bước nào drone cũng bay sang phải.']
     }),
 
     manChe({
