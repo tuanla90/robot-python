@@ -9,6 +9,7 @@ Khổ dọc 1080×1920, 30 khung/giây; trên game phim thu 1/3 (360×640).
 - **Bóng thoại ≤ 9–10 chữ**, một ý. Mỗi cảnh tối đa **2 bóng thoại** (hai người nói nối nhau). Câu dài ~20 chữ trước đây → user: "chữ bị nhiều, che chữ quá".
 - **Thẻ / bảng chỉ còn ảnh + tên** (tên nơi, tên part). Bỏ: dòng phụ dưới tiêu đề, mã kiểu `QUEST #1` / `#GARAGE`, nhãn trạng thái (`KHẨN CẤP`, `ONLINE`, `READY`), đoạn mô tả, dải liệt kê thêm.
 - Cỡ chữ tên trên thẻ ≥ 32px; tiêu đề cảnh giữ `Headline`.
+- **CHƯA ĐẠT (rà 3/11 qua cảnh mở đầu mọi gói)**: từ gói 4 của `m2.tsx` trở đi, và toàn bộ `m3.tsx`, `cang.tsx`, `m4.tsx`–`m8.tsx`, câu thoại giải thích lý do (Hạnh/Sơn/Mai/Bình/Lan/Dũng/Phong, cả một số câu Sola) phần lớn dài 11–25 chữ, vượt giới hạn — ước ~60-70/82 cảnh mở đầu dính. Chỉ `m1.tsx` và gói 1-3 của `m2.tsx` đúng chuẩn ≤9-10 chữ. Đây là việc viết lại hàng loạt, chưa làm — cần bàn cách chia việc (nhiều gói, nhiều mùa) trước khi sửa, không tự ý viết lại một mình.
 
 ## 2. Nhịp
 
@@ -63,3 +64,28 @@ Khổ dọc 1080×1920, 30 khung/giây; trên game phim thu 1/3 (360×640).
 - **Mọi gói đều có cảnh cơ chế trên sa bàn Lab** (1–2 cảnh 8s): thử sai một lần nhanh → đúng, quy tắc nói **một câu**. Nhịp nhanh, chữ ít; phần kể (hiện trường → chế part → câu treo) ~25s.
 - Không nhãn tiếng Anh kỹ thuật trên hình (`Test Case`, `hardcode`, `ONLINE`): nói "ca sáng / ca chiều", "đếm bước cứng".
 - **Chuẩn gói cuối mùa** (user 2/11): gói 8 = tổng duyệt mọi tình huống, yếu tố map của mùa trước với xe mới (mùa 1 chưa có mùa trước: yếu tố của chính kho, phim phải lý giải "thử hết một lượt trước khi giao"); gói 9 = hai thiết bị (R2) thử với môi trường mới; gói 10 = tự động hoá nhiều map. Thứ tự gói trong game (`lo-trinh-hoc.js` MUA_*) phải theo chuẩn này; phim theo thứ tự gói trong game.
+
+## 9. Lý do đổi thân phải thuyết phục: so thân cũ / thân mới trên ĐÚNG địa hình (3/11, góp ý user)
+
+User 3/11 chê phim mở gói "Bánh xích" (mùa 2): lý do nghe như kể miệng, chưa chắc người xem tự nhìn ra vấn đề trước khi nghe Sola/cô Hạnh nói.
+
+**Soát 3/11 (mọi gói 1 "thân mới" của mọi mùa, `G1Mo` + `G1Lam` trong từng `doc/m*.tsx` / `cang.tsx`): khuôn chuẩn đã đúng ở MỌI gói.**
+`G1Mo` luôn cho thân cũ thất bại trên đúng các ô địa hình gây ra nhu cầu (`ODat` cùng toạ độ), kèm `Shake` + `ChuNay` xuất hiện **trước** lời thoại giải thích (lệch vài khung, ví dụ mùa 2: chữ ở khung 68, lời Hạnh ở khung 72); `G1Lam` ở đoạn kết gói quay lại **đúng những ô đó** cho thân mới đi qua, không đổi sang ô khác. Giữ nguyên khuôn này khi viết gói 1 của mùa mới — không cần sửa lại các gói đã liệt kê.
+
+**Lỗ hổng không riêng gói 1 — nằm ở BẤT KỲ gói nào có thêm cảnh cơ chế Lab xen giữa** (soát 3/11 thấy cả 3 gói đầu mùa 2 đều dính: "Bánh xích" gói 1, "Vòi phun nước" gói 2, "Mắt hồng ngoại" gói 3 — vì cả 3 đều cần dạy cơ chế riêng khó giải thích bằng lời, xem `man-xich.js` cho luật xoay xích): cảnh thất bại (`G1Mo`/`G2Thu`/`G3Thu`...) và cảnh thành công (`G1Lam`/`G2Lam`/`G3Lam`...) cách nhau cả một gói chơi (10 màn) — quá xa để người xem nối lại "cùng một ô/cùng một van". Cảnh Lab chen giữa (`CANH_LAB_*`, `PhimMua2Lab.tsx`) trước đó chỉ dựng cơ chế bằng hình minh hoạ trừu tượng (khung Lab riêng, không phải địa hình thật), không nhắc lại pha thất bại.
+
+- **Sửa**: thêm một cảnh so sánh ngắn ngay sau khi Luna chế part (trước phần dạy cơ chế trừu tượng) — thân/trạng thái cũ và mới LẦN LƯỢT tác động lên CÙNG ô địa hình đã thấy ở cảnh thất bại (dùng lại toạ độ/`ODat`/component dựng địa hình của cảnh đó), không chờ tới cảnh thành công ở cuối gói. Đã làm cho cả 3 gói đầu mùa 2 (đều ở `PhimMua2Lab.tsx`, chèn làm phần tử đầu của mảng `CANH_LAB_*`):
+  - Gói 1 "Bánh xích": `xich-0-so-sanh` (`CanhXichSoSanh`, đầu `CANH_LAB_BANH_XICH`) — bánh bị băng chuyền đẩy trôi / xích đi vững, cùng ô băng chuyền.
+  - Gói 2 "Vòi phun nước": `voi-phun-0-so-sanh` (`CanhVoiPhunSoSanh`, đầu `CANH_LAB_VOI_PHUN`) — không vòi thì bó tay trước rãnh nóng / có vòi thì phun xa đóng van, cùng vị trí đứng.
+  - Gói 3 "Mắt hồng ngoại": `hong-ngoai-0-so-sanh` (`CanhHongNgoaiSoSanh`, đầu `CANH_LAB_HONG_NGOAI`) — không cảm biến thì không biết nóng/nguội / có cảm biến thì biết chắc và phun đúng, cùng một ống.
+- Áp lại quy tắc này cho **mọi gói (không riêng gói 1) của mùa mới (6+ hiện có / mùa về sau) hễ gói đó cần thêm cảnh Lab dạy cơ chế riêng** — gói chỉ có khuôn `G<n>Mo`/`G<n>Lam` sẵn có, không có cảnh Lab xen giữa, thì không cần thêm (đã đủ "thấy trước khi nghe" nhờ khoảng cách Mo/Lam gần).
+- **Đặt sprite `robot/lab/*.png` lên nền thật (`NenHienTruong`) là SAI — luôn dùng sprite `robot/<mua>/*.png` qua `<Xe anh="..." moc={...} vet={false} .../>`.** Người nhờ 3/11 phát hiện: sprite trong `robot/lab/` (banh-r1, xich-co-ban, voi-phun-truoc, cb-hong-ngoai…) được vẽ kèm khung/bóng nền cho card trắng của `KhungLabLuna`; đặt trực tiếp lên nền địa hình thật (ảnh `nen-doc/*.png` + lưới ô) thì khung đó nổi vênh hẳn lên, không hoà với nền. `robot/<mua>/*.png` (ví dụ `robot/m2/xich.png`) là sprite cắt nền trong suốt, dùng sẵn trong `G<n>Mo`/`Thu`/`Lam` của `doc/m*.tsx` nên luôn khớp. Cảnh tĩnh (không di chuyển) vẫn dùng `Xe` với `moc` một điểm, ví dụ `moc={[[0, c, r, goc]]}`, để vừa có đúng sprite vừa có bóng đổ `drop-shadow` khớp nền — KHÔNG `<Img src={staticFile('robot/lab/...')}>` trực tiếp. Chỉ dùng `robot/lab/*.png` bên trong `KhungLabLuna` (card trắng), không bao giờ trên `NenHienTruong`. Đã sửa cả 5 cảnh đang dùng sai ở `PhimMua2Lab.tsx`: `CanhXichSoSanh`, `CanhXich1NhipSai`, `CanhXich2NhipDung`, `CanhVoiPhunSoSanh`, `CanhHongNgoaiSoSanh`.
+- Đã dọn xong (3/11): mọi bản thảo cũ không đăng ký ở `index.ts`/`doc/m*.tsx` đã xoá — `PHIM_BANH_XICH`/`CanhXichVanDeBangChuyen`/`CanhXichLunaChePart`, `CanhVoiPhunVanDe`/`CanhVoiPhunLunaChePart`/`PHIM_VOI_PHUN`, `CanhHongNgoaiVanDe`/`CanhHongNgoaiLunaChePart`/`PHIM_HONG_NGOAI` (khỏi `PhimMua2Lab.tsx`); `CanhTayKepVanDe`/`CanhTayKepLunaChePart`/`CANH_LAB_TAY_KEP`/`CANH_LAB_TAY_XOAY`/`PHIM_TAY_KEP` và cảnh Lab riêng của chúng (khỏi `PhimTayKep.tsx`, giữ lại `KhungLabLuna`/`CongThucLab`/`HangSoTayLab`/`SanNgang`/`ThungNgang`/`R1Ngang` vì vẫn dùng ở `doc/m1.tsx`/`PhimMua2Lab.tsx`); và xoá hẳn 5 file toàn bộ nội dung không đăng ký ở đâu: `PhimKhoangCach.tsx`, `PhimXe.tsx`, `PhimMua34Lab.tsx`, `PhimMua56Lab.tsx`, `PhimXeMuaKhac.tsx`.
+
+**Rà 3/11 (toàn bộ cảnh mở đầu `G<n>Mo`/`G<n>Thu` của 82 gói, m1–m8 + cảng, theo fork đọc tĩnh — xem thêm ghi chú CHƯA ĐẠT ở mục 1):**
+- Sprite `robot/lab/*.png` trên `NenHienTruong`: KHÔNG tái phạm ở mùa khác ngoài mùa 2 (đã sửa ở trên) — `grep "robot/lab/"` trên m1–m8/cảng không ra kết quả.
+- Thứ tự "thấy trước khi nghe" (ChuNay/ChuO phải hiện **trước** lời thoại giải thích): phát hiện 3 cảnh ở `m1.tsx` bị đảo ngược (chữ hiệu ứng hiện SAU lời thoại) — **đã sửa**, đổi `at` của lời thoại sang sau mốc hiệu ứng (kiểm bằng Remotion Studio, đúng thứ tự):
+  - `G5Thu` (gói 5 "Bánh lùi"): lời Luna "Quay đầu tốn nhịp…" đổi từ `at=150` (cố định, trước hiệu ứng `tQuay=184`) sang `at={tQuay + 6}`.
+  - `G6Thu` (gói 6 "Tay xoay"): lời Sola "Quay cả xe mỗi thùng…" đổi từ `S2(...)` (`at=126`, trước hiệu ứng `tQuay=192`) sang say tường minh `at={tQuay + 6}`.
+  - `G7Thu` (gói 7 "Cảm biến bên"): câu 2 "Toang, ngõ cụt rồi!" đổi từ `at=126` (trước hiệu ứng `tCut=184`) sang `at={tCut + 6}`.
+- Mục 8 (lệnh/hình khớp gói), mục 3 (bố cục đè) qua đọc tĩnh: không thấy bất thường rõ ràng.

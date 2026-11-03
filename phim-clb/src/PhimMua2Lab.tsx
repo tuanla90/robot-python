@@ -1,13 +1,12 @@
-// Bộ 3 Phim Phòng Lab riêng cho từng Bộ phận Mùa 2 (Nhà máy) khổ dọc 1080×1920 (doc: true):
-// 1. PHIM_BANH_XICH (id: 'PhimBanhXich') — Bộ phận: Thân Bánh Xích (xich)
-// 2. PHIM_VOI_PHUN  (id: 'PhimVoiPhun')  — Bộ phận: Vòi Phun Nước (hoi)
-// 3. PHIM_HONG_NGOAI(id: 'PhimHongNgoai')— Bộ phận: Cảm Biến Hồng Ngoại (hong-ngoai)
+// Các cảnh Lab dạy cơ chế riêng cho 3 gói đầu Mùa 2 (Nhà máy), khổ dọc 1080×1920 (doc: true).
+// Phim thật của cả 3 gói (G<n>Mo/Thu + G<n>Lam) nằm trong doc/m2.tsx; mảng CANH_LAB_* ở đây
+// chỉ là phần cảnh cơ chế + so sánh được spread vào giữa mo()/ket() của từng gói.
 import React from 'react';
-import {AbsoluteFill, Img, staticFile, useCurrentFrame} from 'remotion';
-import {Burst, C, CodeBox, FONT, Icon, Mascot, MONO, PopIn, Shake} from './d10';
+import {Img, staticFile, useCurrentFrame} from 'remotion';
+import {Burst, C, CodeBox, FONT, Icon, Mascot, MONO, Shake} from './d10';
 import {ChuChot, San, mo} from './kit';
 import {Phim, W_IN, pops} from './may-phim';
-import {ChuNay, Moc, NenHienTruong, NhanGoi, Nguoi, O as OHienTruong, ODat, TrongXe, Xe, tamO} from './doc/kit-doc';
+import {ChuNay, NenHienTruong, O as OHienTruong, ODat, TrongXe, Xe, tamO} from './doc/kit-doc';
 import {CongThucLab, HangSoTayLab, KhungLabLuna} from './PhimTayKep';
 
 const O = 155;
@@ -26,56 +25,14 @@ const NutChayM2: React.FC<{bam: number[]; y?: number}> = ({bam, y = 125}) => {
 const dongSangM2 = (f: number, moc: [number, number][]) => moc.filter(([t]) => f >= t).pop()?.[1] ?? -1;
 
 /* ============================================================================
-   1. PHIM_BANH_XICH — Bộ phận: Thân Bánh Xích (xich)
-   Bố cục: Vấn đề (Map nhiều băng chuyền đẩy trôi xe 2 bánh) -> Luna chế Bánh Xích -> Show, Don't Tell cơ chế xích
+   1. CANH_LAB_BANH_XICH — Bộ phận: Thân Bánh Xích (xich)
+   Phim thật của gói 1 mùa 2 là G1Mo/G1Lam trong doc/m2.tsx; mảng này chỉ là
+   các cảnh dạy cơ chế xoay 2 nhịp chen vào giữa, xem mục 9 LUAT-SUA-PHIM-CLB.md.
    ========================================================================== */
-
-const R_XICH_VAN_DE: Moc[] = [[0, 1, 5.2, -90], [18, 1, 5.2, -90], [55, 1, 3, -90], [72, 1, 3, -90], [118, 3.6, 3, -45]];
-
-/** Cảnh Mở đầu (Vấn đề thực tế tại Nhà máy): Map có nhiều băng chuyền chạy liên tục, xe 2 bánh thường đi lên bị đẩy trôi! */
-export const CanhXichVanDeBangChuyen: React.FC = () => {
-  const f = useCurrentFrame();
-  return (
-    <Shake hits={[74]} amp={12}>
-      <NenHienTruong anh="nen-doc/mua-2.png" mua="m2">
-        {[0, 1, 2, 3, 4].map((c) => <ODat key={`b3-${c}`} ten="o-bang" c={c} r={3} />)}
-        {[1, 2, 3, 4].map((c) => <ODat key={`b2-${c}`} ten="o-bang" c={c} r={2} />)}
-        <ODat ten="o-nut-ban" c={1} r={1} />
-
-        <Xe anh="r1-banh" moc={R_XICH_VAN_DE} doi={[[74, 'r1-banh-ngac']]} />
-        <ChuNay chu="BỊ BĂNG CHUYỀN ĐẨY TRÔI!" at={74} den={165} x={540} y={tamO(2, 3).y - 75} mau={C.bad} co={38} />
-        <NhanGoi so={1} ten="Bánh xích" />
-
-        <Mascot who="sola" x={230} h={520} at={0}
-          faces={[[0, 'confident'], [74, 'shocked']]}
-          says={[
-            {at: 8, out: 68, text: 'Tớ cho R1 dùng hai bánh thường chạy qua băng chuyền vào đóng van nha!'},
-            {at: 76, out: 145, text: 'Á! Khu này nhiều băng chuyền quá, xe hai bánh vừa bước lên đã bị đẩy trôi lệch đi mất rồi!'},
-          ]}
-          bubbleW={550} bubbleTop={1230} />
-        {f >= 115 ? (
-          <Nguoi anh="hanh-nghi" ten="CÔ HẠNH" mau="#0284C7" x={820} h={600} at={115} side="left" bubbleW={560} bubbleTop={1230}
-            says={[{at: 122, out: 205, text: 'Nhà máy toàn băng chuyền chạy liên tục, xe hai bánh nhẹ thế đứng lên là bị đẩy trôi ngay!'}]} />
-        ) : null}
-      </NenHienTruong>
-    </Shake>
-  );
-};
-
-/** Cảnh 2 (Luna chế Part giải pháp): Luna chế tạo Thân bánh xích bám chặt băng chuyền cho R1. */
-export const CanhXichLunaChePart: React.FC = () => (
-  <TrongXe mua="m2" anh="xich" cach={120} tenPart="Thân bánh xích"
-    sola={[{at: 8, out: 72, text: 'Sàn nhà máy toàn băng chuyền chạy liên tục, xe hai bánh cứ bước lên là bị đẩy trôi mất Luna ơi!'}]}
-    luna={[{at: 78, out: 185, text: 'Vậy bắt buộc phải dùng Thân bánh xích rồi! Dải xích nặng bám chặt mặt sàn không sợ băng chuyền đẩy!'}]}
-    solaMat={[[0, 'worried'], [78, 'excited']]}
-    lunaMat={[[0, 'thinking'], [78, 'happy']]} />
-);
 
 /** Cảnh 1 Show, Don't Tell (260f): Sola gọi 1 nhịp left_move() + wait() tưởng rẽ đủ như xe 2 bánh, nhưng xích chỉ nhích 45°! */
 const CanhXich1NhipSai: React.FC = () => {
   const f = useCurrentFrame();
-  const goc = f < 40 ? -90 : f < 130 ? -90 + mo(f, 40, 85) * 45 : -90;
-  const yRobot = f < 130 ? 640 : 640 - mo(f, 130, 185) * O;
   const sang = dongSangM2(f, [[28, 0], [42, 1], [118, 2], [132, 3], [190, -1]]);
 
   return (
@@ -84,8 +41,7 @@ const CanhXich1NhipSai: React.FC = () => {
         {[1, 2, 3].map((c) => <ODat key={c} ten="o-bang" c={c} r={2} />)}
         <ODat ten="o-nut-ban" c={3} r={2} />
 
-        <Img src={staticFile('robot/lab/xich-co-ban.png')}
-          style={{position: 'absolute', left: 540 - 135, top: yRobot - 135, width: 270, height: 270, transform: `rotate(${goc}deg)`}} />
+        <Xe anh="xich" vet={false} moc={[[0, 2, 2, -90], [40, 2, 2, -90], [85, 2, 2, -45], [130, 2, 2, -45], [131, 2, 2, -90], [185, 2, 1, -90]]} />
 
         {f >= 82 && f < 130 ? <ChuNay chu="Mới nhích 45°?!" at={82} den={128} x={540} y={400} mau={C.warn} co={64} /> : null}
         {f >= 132 ? <ChuNay chu="Trả về hướng cũ!" at={132} den={200} x={540} y={390} mau={C.bad} co={60} /> : null}
@@ -112,8 +68,6 @@ const CanhXich1NhipSai: React.FC = () => {
 /** Cảnh 2 Show, Don't Tell (280f): Sola gọi 2 nhịp liên tiếp để rẽ đủ 90° rồi băng thẳng qua băng chuyền không bị trôi! */
 const CanhXich2NhipDung: React.FC = () => {
   const f = useCurrentFrame();
-  const goc = f < 40 ? -90 : f < 95 ? -90 + mo(f, 40, 80) * 45 : -45 + mo(f, 95, 135) * 45;
-  const xRobot = f < 150 ? 385 : 385 + mo(f, 150, 210) * 2 * O;
   const sang = dongSangM2(f, [[32, 0], [42, 1], [90, 2], [100, 3], [145, 4], [155, 5], [215, -1]]);
 
   return (
@@ -121,8 +75,8 @@ const CanhXich2NhipDung: React.FC = () => {
       {[1, 2, 3].map((c) => <ODat key={c} ten="o-bang" c={c} r={2} />)}
       <ODat ten="o-nut-ban" c={3} r={2} />
 
-      <Img src={staticFile('robot/lab/xich-co-ban.png')}
-        style={{position: 'absolute', left: xRobot - 135, top: tamO(1, 2).y - 135, width: 270, height: 270, transform: `rotate(${goc}deg)`}} />
+      <Xe anh="xich" vet={false}
+        moc={[[0, 1, 2, -90], [40, 1, 2, -90], [80, 1, 2, -45], [95, 1, 2, -45], [135, 1, 2, 0], [150, 1, 2, 0], [210, 3, 2, 0]]} />
 
       {f >= 75 && f < 130 ? <ChuNay chu="Nấc 1 · 45°" at={75} den={128} x={385} y={420} mau={C.warn} co={60} /> : null}
       {f >= 132 && f < 190 ? <ChuNay chu="Nấc 2 · Đủ 90°!" at={132} den={188} x={385} y={420} mau={C.good} co={64} /> : null}
@@ -151,56 +105,128 @@ const CanhXich2NhipDung: React.FC = () => {
   );
 };
 
+/** Nhãn thân (trung tính, không dùng ChuNay vì ChuNay có icon Zap dành cho câu reo/báo động). */
+const NhanThan: React.FC<{chu: string; at: number; den: number}> = ({chu, at, den}) => {
+  const f = useCurrentFrame();
+  if (f < at || f > den) return null;
+  return (
+    <div style={{position: 'absolute', left: 540, top: 300, transform: 'translate(-50%, -50%)',
+      padding: '10px 24px', borderRadius: 16, background: '#fff', color: C.ink, border: `4px solid ${C.ink}`,
+      boxShadow: `0 6px 0 ${C.ink}`, fontFamily: FONT, fontWeight: 800, fontSize: 32, whiteSpace: 'nowrap', zIndex: 20}}>
+      {chu}
+    </div>
+  );
+};
+
+/** Cảnh 0 So sánh (LUAT-SUA-PHIM-CLB.md mục 9): bánh và xích LẦN LƯỢT qua CÙNG một ô băng chuyền —
+    thấy trước khi nghe, thay cho chỉ nghe Sola / cô Hạnh kể lý do. */
+const CanhXichSoSanh: React.FC = () => {
+  const f = useCurrentFrame();
+
+  return (
+    <Shake hits={[98]} amp={10}>
+      <NenHienTruong anh="nen-doc/mua-2.png" mua="m2">
+        {[1, 2, 3].map((c) => <ODat key={c} ten="o-bang" c={c} r={2} />)}
+        <ODat ten="o-nut-ban" c={3} r={2} />
+
+        {f < 130 ? (
+          <Xe anh="r1-banh" vet={false} moc={[[0, 1, 2, 0], [40, 1, 2, 0], [95, 2, 2, 0], [125, 2, 3, 0]]} />
+        ) : (
+          <Xe anh="xich" vet={false} moc={[[130, 1, 2, 0], [190, 1, 2, 0], [250, 3, 2, 0]]} />
+        )}
+
+        <NhanThan chu="Thân cũ: xe hai bánh" at={10} den={95} />
+        <NhanThan chu="Thân mới: xích" at={135} den={190} />
+        {f >= 98 && f < 132 ? <ChuNay chu="BỊ BĂNG ĐẨY TRÔI!" at={98} den={130} x={385 + O} y={tamO(1, 2).y - 170} mau={C.bad} co={46} /> : null}
+        {f >= 258 ? <ChuNay chu="ĐI VỮNG, KHÔNG TRÔI!" at={258} den={305} x={tamO(3, 2).x} y={tamO(1, 2).y - 170} mau={C.good} co={44} /> : null}
+
+        <Mascot who="sola" x={230} h={480} at={0}
+          faces={[[0, 'confident'], [98, 'shocked'], [262, 'happy']]} bubbleTop={1250} bubbleW={540}
+          says={[{at: 270, out: 305, text: 'Cùng ô băng chuyền mà khác hẳn nhau!'}]} />
+        <ChuChot tu={262} y={960}>Bánh bị đẩy trôi, xích đi vững — cùng một ô</ChuChot>
+      </NenHienTruong>
+    </Shake>
+  );
+};
+
 export const CANH_LAB_BANH_XICH: Phim['canh'] = [
+  {id: 'xich-0-so-sanh', dur: 315, el: <CanhXichSoSanh />, sfx: [W_IN, [98, 'wrong.wav', 0.55], [258, 'ding.wav', 0.6]]},
   {id: 'xich-1-nhip-sai', dur: 260, el: <CanhXich1NhipSai />, sfx: [[24, 'click.wav', 0.8], [40, 'swish.wav', 0.45], [132, 'wrong.wav', 0.6]]},
   {id: 'xich-2-nhip-dung', dur: 280, el: <CanhXich2NhipDung />, sfx: [[26, 'click.wav', 0.8], [40, 'swish.wav', 0.45], [95, 'swish.wav', 0.45], [212, 'ding.wav', 0.7]]},
 ];
 
-export const PHIM_BANH_XICH: Phim = {
-  id: 'PhimBanhXich',
-  doc: true,
-  canh: [
-    {id: 'van-de-bang-chuyen', dur: 215, el: <CanhXichVanDeBangChuyen />, sfx: [W_IN, [74, 'wrong.wav', 0.6]]},
-    {id: 'luna-che-banh-xich', dur: 195, el: <CanhXichLunaChePart />, sfx: [[120, 'impact.wav', 0.5], [120, 'ding.wav', 0.4]]},
-    ...CANH_LAB_BANH_XICH,
-  ],
-};
-
 /* ============================================================================
-   2. PHIM_VOI_PHUN — Bộ phận: Vòi Phun Nước (hoi)
-   Bố cục: Vấn đề (Rào/băng chuyền chắn ngang không tới sát van được) -> Luna chế Vòi Phun -> Giải thích cơ chế cho Sola
+   2. CANH_LAB_VOI_PHUN — Bộ phận: Vòi Phun Nước (hoi)
+   Phim thật của gói 2 mùa 2 là G2Thu/G2Lam trong doc/m2.tsx; mảng này chỉ là
+   các cảnh dạy cơ chế spray()/spray_back() chen vào giữa.
    ========================================================================== */
 
-const R_VOI_VAN_DE: Moc[] = [[0, 2, 5.2, -90], [20, 2, 5.2, -90], [72, 2, 3.15, -90], [105, 2, 3.25, -90]];
-
-export const CanhVoiPhunVanDe: React.FC = () => {
-  const f = useCurrentFrame();
+/** Rãnh nước nóng bốc hơi (bản dùng lại trong cảnh so sánh, giống RanhNong ở doc/m2.tsx). */
+const RanhNongSS: React.FC<{r: number}> = ({r}) => {
+  const p = tamO(0, r);
   return (
-    <NenHienTruong anh="nen-doc/mua-2.png" mua="m2">
-      {[0, 1, 2, 3, 4].map((c) => <ODat key={c} ten="o-rao" c={c} r={2} />)}
-      <ODat ten="o-nut-ban" c={2} r={1} />
-      <Xe anh="xich" moc={R_VOI_VAN_DE} doi={[[76, 'xich-ngac']]} />
-      <ChuNay chu="CHẶN LỐI · KHÔNG TỚI ĐƯỢC VAN!" at={76} den={165} x={540} y={tamO(2, 2).y - 50} mau={C.bad} co={34} />
-      <NhanGoi so={2} ten="Vòi phun nước" />
-      <Mascot who="sola" x={230} h={520} at={0}
-        faces={[[0, 'worried'], [76, 'shocked']]}
-        says={[{at: 10, out: 92, text: 'Hàng rào sắt chặn kín ngang lối rồi, R1 không đi qua để vặn van hơi bên kia được!'}]}
-        bubbleW={550} bubbleTop={1230} />
-      {f >= 98 ? (
-        <Nguoi anh="hanh-sot-ruot" ten="CÔ HẠNH" mau="#0284C7" x={820} h={600} at={98} side="left" bubbleW={560} bubbleTop={1230}
-          says={[{at: 105, out: 195, text: 'Van hơi nằm cách bên kia hàng rào 2 ô, phải tác động từ xa mới đóng được!'}]} />
-      ) : null}
-    </NenHienTruong>
+    <div style={{position: 'absolute', left: p.x - OHienTruong / 2, top: p.y - OHienTruong * 0.38, width: 5 * OHienTruong, height: OHienTruong * 0.76,
+      background: 'linear-gradient(180deg, #7C2D12 0%, #EA580C 50%, #7C2D12 100%)', borderTop: '5px solid #FDBA74', borderBottom: '5px solid #FDBA74',
+      boxShadow: '0 0 24px rgba(249,115,22,.65)'}} />
   );
 };
 
-export const CanhVoiPhunLunaChePart: React.FC = () => (
-  <TrongXe mua="m2" anh="xich-voi" cach={120} tenPart="Vòi phun nước"
-    sola={[{at: 8, out: 72, text: 'Không bước qua rào được thì làm sao đóng van bên kia đây Luna ơi?'}]}
-    luna={[{at: 78, out: 185, text: 'Tớ chế Vòi phun nước hai đầu cho R1 rồi đây! Đứng xa 2 ô bắn tia nước bay vọt qua rào là đóng được van ngay!'}]}
-    solaMat={[[0, 'thinking'], [78, 'excited']]}
-    lunaMat={[[0, 'confident'], [78, 'happy']]} />
-);
+/** Quầng nóng đỏ trên van đang quá nhiệt (bản tĩnh dùng trong cảnh so sánh). */
+const QuangNongSS: React.FC<{c: number; r: number}> = ({c, r}) => {
+  const p = tamO(c, r);
+  return (
+    <div style={{position: 'absolute', left: p.x - OHienTruong * 0.65, top: p.y - OHienTruong * 0.65, width: OHienTruong * 1.3, height: OHienTruong * 1.3, borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(239,68,68,.65) 0%, rgba(249,115,22,.35) 55%, transparent 75%)'}} />
+  );
+};
+
+/** Tia nước phun từ mũi robot tới ô đích (bản dùng trong cảnh so sánh). */
+const TiaNuocSS: React.FC<{tu: {x: number; y: number}; den: {x: number; y: number}}> = ({tu, den}) => {
+  const dx = den.x - tu.x, dy = den.y - tu.y, dai = Math.hypot(dx, dy), g = (Math.atan2(dy, dx) * 180) / Math.PI;
+  return (
+    <div style={{position: 'absolute', left: tu.x, top: tu.y - 9, width: dai, height: 18, borderRadius: 99,
+      background: 'linear-gradient(90deg, #7DD3FC, #38BDF8)', transform: `rotate(${g}deg)`, transformOrigin: '0 50%', boxShadow: '0 0 22px #38BDF8', zIndex: 9}} />
+  );
+};
+
+/** Cảnh 0 So sánh (LUAT-SUA-PHIM-CLB.md mục 9): thân cũ (không vòi phun) đứng bó tay trước rãnh nóng,
+    thân mới (vòi phun) phun xa qua rãnh mở van — CÙNG vị trí, cùng rãnh, thấy trước khi nghe. */
+const CanhVoiPhunSoSanh: React.FC = () => {
+  const f = useCurrentFrame();
+  const diemXe = tamO(2, 3);
+  const diemVan = tamO(2, 1);
+  const phun = f >= 150 && f < 190;
+
+  return (
+    <Shake hits={[42]} amp={8}>
+      <NenHienTruong anh="nen-doc/mua-2.png" mua="m2">
+        <RanhNongSS r={2} />
+        {f < 182 ? <QuangNongSS c={2} r={1} /> : null}
+        <ODat ten={f >= 182 ? 'o-nut-ban-mo' : 'o-nut-ban'} c={2} r={1} />
+
+        {phun ? <TiaNuocSS tu={{x: diemXe.x, y: diemXe.y - 60}} den={{x: diemVan.x, y: diemVan.y}} /> : null}
+
+        {f < 130 ? (
+          <Xe anh="xich" vet={false} moc={[[0, 2, 3, -90]]} />
+        ) : (
+          <Xe anh="xich-voi" vet={false} moc={[[130, 2, 3, -90]]} doi={[[150, 'xich-voi-phun'], [190, 'xich-voi-vui']]} />
+        )}
+
+        <NhanThan chu="Thân cũ: không vòi phun" at={10} den={95} />
+        <NhanThan chu="Thân mới: vòi phun nước" at={135} den={188} />
+        {f >= 42 && f < 95 ? <ChuNay chu="RÃNH NÓNG CHẶN, BÓ TAY!" at={42} den={92} x={diemXe.x} y={diemXe.y - 190} mau={C.bad} co={36} /> : null}
+        {f >= 182 ? <ChuNay chu="ĐÓNG VAN TỪ XA!" at={182} den={228} x={diemVan.x} y={diemXe.y - 190} mau={C.good} co={38} /> : null}
+
+        <Burst at={182} x={diemVan.x} y={diemVan.y} color={C.yellow} />
+
+        <Mascot who="sola" x={230} h={480} at={0}
+          faces={[[0, 'worried'], [42, 'shocked'], [185, 'happy']]} bubbleTop={1250} bubbleW={540}
+          says={[{at: 192, out: 226, text: 'Không cần bước qua rãnh nóng mà vẫn đóng được van!'}]} />
+        <ChuChot tu={185} y={960}>Không vòi phun thì bó tay, có vòi phun thì đóng van từ xa</ChuChot>
+      </NenHienTruong>
+    </Shake>
+  );
+};
 
 /** Cảnh 1 (6.5s = 195f): Phun nhẹ spray() / spray_back() tầm 2 ô, đổi van, xe đứng yên. */
 const CanhVoiPhunNhe: React.FC = () => {
@@ -351,57 +377,55 @@ const CanhSoTayVoiPhun: React.FC = () => (
 );
 
 export const CANH_LAB_VOI_PHUN: Phim['canh'] = [
+  {id: 'voi-phun-0-so-sanh', dur: 240, el: <CanhVoiPhunSoSanh />, sfx: [W_IN, [42, 'wrong.wav', 0.5], [182, 'ding.wav', 0.6]]},
   {id: 'voi-phun-nhe', dur: 195, el: <CanhVoiPhunNhe />, sfx: [W_IN, [30, 'swish.wav', 0.45], [55, 'ding.wav', 0.6], [115, 'swish.wav', 0.45], [140, 'ding.wav', 0.6]]},
   {id: 'phun-manh-day-thung', dur: 195, el: <CanhPhunManhDayThung />, sfx: [W_IN, [45, 'swish.wav', 0.6], [112, 'ding.wav', 0.7]]},
   {id: 'so-tay-voi-phun', dur: 180, el: <CanhSoTayVoiPhun />, sfx: [W_IN, ...pops([12, 24, 36, 48, 60], 0.35), [80, 'ding.wav', 0.6]]},
 ];
 
-export const PHIM_VOI_PHUN: Phim = {
-  id: 'PhimVoiPhun',
-  doc: true,
-  canh: [
-    {id: 'van-de-voi-phun', dur: 205, el: <CanhVoiPhunVanDe />, sfx: [W_IN, [76, 'wrong.wav', 0.5]]},
-    {id: 'luna-che-voi-phun', dur: 195, el: <CanhVoiPhunLunaChePart />, sfx: [[120, 'impact.wav', 0.5], [120, 'ding.wav', 0.4]]},
-    ...CANH_LAB_VOI_PHUN,
-  ],
-};
-
 /* ============================================================================
-   3. PHIM_HONG_NGOAI — Bộ phận: Cảm Biến Hồng Ngoại (hong-ngoai)
-   Bố cục: Vấn đề (Không biết van cách mấy ô và ống nào đang quá nhiệt) -> Luna chế Cảm biến Hồng ngoại -> Giải thích cơ chế cho Sola
+   3. CANH_LAB_HONG_NGOAI — Bộ phận: Cảm Biến Hồng Ngoại (hong-ngoai)
+   Phim thật của gói 3 mùa 2 là G3Thu/G3Lam trong doc/m2.tsx; mảng này chỉ là
+   các cảnh dạy cơ chế distance()/warm() chen vào giữa.
    ========================================================================== */
 
-const R_HN_VAN_DE: Moc[] = [[0, 0, 3.2, -90], [35, 0, 2.2, -90], [140, 0, 2.2, -90]];
-
-export const CanhHongNgoaiVanDe: React.FC = () => {
+/** Cảnh 0 So sánh (LUAT-SUA-PHIM-CLB.md mục 9): thân cũ (không cảm biến) không biết ống trước mặt
+    nóng hay nguội, thân mới (cảm biến hồng ngoại) biết ngay và phun đúng — CÙNG một ống. */
+const CanhHongNgoaiSoSanh: React.FC = () => {
   const f = useCurrentFrame();
+  const diemXe = tamO(4, 2);
+  const diemVan = tamO(4, 1);
+  const phun = f >= 150 && f < 190;
+
   return (
-    <NenHienTruong anh="nen-doc/mua-2.png" mua="m2">
-      <ODat ten="o-nut-ban" c={0} r={1} />
-      <ODat ten="o-nut-ban" c={2} r={1} />
-      <ODat ten="o-nut-ban" c={4} r={1} />
-      <Xe anh="xich-voi" moc={R_HN_VAN_DE} doi={[[45, 'xich-voi-phun'], [90, 'xich-voi-ngac']]} />
-      <ChuNay chu="PHUN TRẬT ỐNG NGUỘI!" at={60} den={150} x={tamO(0, 1).x + 220} y={tamO(0, 1).y} mau={C.warn} co={36} />
-      <NhanGoi so={3} ten="Mắt hồng ngoại" />
-      <Mascot who="sola" x={230} h={520} at={0}
-        faces={[[0, 'confident'], [90, 'facepalm']]}
-        says={[{at: 8, out: 85, text: 'Ba ống nhìn giống hệt nhau, tớ đoán đại ống đầu tiên nóng rồi phun luôn! Ủa trật rồi!'}]}
-        bubbleW={550} bubbleTop={1230} />
-      {f >= 92 ? (
-        <Nguoi anh="hanh-nghi" ten="CÔ HẠNH" mau="#0284C7" x={820} h={600} at={92} side="left" bubbleW={560} bubbleTop={1230}
-          says={[{at: 100, out: 195, text: 'Ống nào đang quá nhiệt và nằm cách bao xa thì mắt thường đâu nhìn thấy được!'}]} />
-      ) : null}
-    </NenHienTruong>
+    <Shake hits={[42]} amp={8}>
+      <NenHienTruong anh="nen-doc/mua-2.png" mua="m2">
+        {f < 182 ? <QuangNongSS c={4} r={1} /> : null}
+        <ODat ten={f >= 182 ? 'o-nut-ban-mo' : 'o-nut-ban'} c={4} r={1} />
+
+        {phun ? <TiaNuocSS tu={{x: diemXe.x, y: diemXe.y - 60}} den={{x: diemVan.x, y: diemVan.y}} /> : null}
+
+        {f < 130 ? (
+          <Xe anh="xich-voi" vet={false} moc={[[0, 4, 2, -90]]} />
+        ) : (
+          <Xe anh="xich-hn" vet={false} moc={[[130, 4, 2, -90]]} doi={[[150, 'xich-hn-do'], [165, 'xich-hn-phun'], [190, 'xich-hn-vui']]} />
+        )}
+
+        <NhanThan chu="Thân cũ: không cảm biến" at={10} den={95} />
+        <NhanThan chu="Thân mới: cảm biến hồng ngoại" at={135} den={188} />
+        {f >= 42 && f < 95 ? <ChuNay chu="NÓNG HAY NGUỘI? KHÔNG BIẾT!" at={42} den={92} x={diemXe.x} y={diemXe.y - 190} mau={C.warn} co={32} /> : null}
+        {f >= 182 ? <ChuNay chu="warm() == True! ĐÚNG ỐNG NÓNG!" at={182} den={228} x={diemVan.x} y={diemXe.y - 190} mau={C.good} co={30} /> : null}
+
+        <Burst at={182} x={diemVan.x} y={diemVan.y} color={C.yellow} />
+
+        <Mascot who="sola" x={230} h={480} at={0}
+          faces={[[0, 'thinking'], [42, 'confused'], [185, 'happy']]} bubbleTop={1250} bubbleW={540}
+          says={[{at: 192, out: 226, text: 'Có cảm biến là biết chắc ống nào đang nóng!'}]} />
+        <ChuChot tu={185} y={960}>Không cảm biến thì đoán mò, có cảm biến thì biết chắc ống nóng</ChuChot>
+      </NenHienTruong>
+    </Shake>
   );
 };
-
-export const CanhHongNgoaiLunaChePart: React.FC = () => (
-  <TrongXe mua="m2" anh="xich-hn" cach={120} tenPart="Cảm biến hồng ngoại"
-    sola={[{at: 8, out: 72, text: 'Làm sao để R1 biết vật cản cách mấy ô và van nào đang nóng đây Luna?'}]}
-    luna={[{at: 78, out: 185, text: 'Tớ gắn Cảm biến hồng ngoại ở mũi xe! Vừa đo khoảng cách từ xa bằng số, vừa phát hiện nguồn nhiệt luôn!'}]}
-    solaMat={[[0, 'thinking'], [78, 'excited']]}
-    lunaMat={[[0, 'confident'], [78, 'happy']]} />
-);
 
 /** Cảnh 1 (7s = 210f): Cơ chế distance() trả về SỐ ô trống tới vật cản & warm() kiểm tra nhiệt. */
 const CanhHongNgoaiChiTiet: React.FC = () => {
@@ -511,16 +535,8 @@ const CanhSoTayHongNgoai: React.FC = () => (
 );
 
 export const CANH_LAB_HONG_NGOAI: Phim['canh'] = [
+  {id: 'hong-ngoai-0-so-sanh', dur: 240, el: <CanhHongNgoaiSoSanh />, sfx: [W_IN, [42, 'wrong.wav', 0.5], [182, 'ding.wav', 0.6]]},
   {id: 'hong-ngoai-chi-tiet', dur: 210, el: <CanhHongNgoaiChiTiet />, sfx: [W_IN, [95, 'swish.wav', 0.45], [150, 'swish.wav', 0.45], [180, 'ding.wav', 0.7]]},
   {id: 'so-tay-hong-ngoai', dur: 180, el: <CanhSoTayHongNgoai />, sfx: [W_IN, ...pops([12, 24, 36, 48, 60], 0.35), [80, 'ding.wav', 0.6]]},
 ];
 
-export const PHIM_HONG_NGOAI: Phim = {
-  id: 'PhimHongNgoai',
-  doc: true,
-  canh: [
-    {id: 'van-de-hong-ngoai', dur: 205, el: <CanhHongNgoaiVanDe />, sfx: [W_IN, [60, 'wrong.wav', 0.5]]},
-    {id: 'luna-che-hong-ngoai', dur: 195, el: <CanhHongNgoaiLunaChePart />, sfx: [[120, 'impact.wav', 0.5], [120, 'ding.wav', 0.4]]},
-    ...CANH_LAB_HONG_NGOAI,
-  ],
-};

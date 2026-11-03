@@ -302,7 +302,7 @@ const G5Thu: React.FC = () => {
       <DongHo tu={GIO(15)} den={GIO(15, 4)} dai={DUR} />
       <NhanGoi so={5} ten="Bánh lùi" />
       <Sola says={S1('Kẹp xong, quay đầu về!')} mat={[[0, 'confident'], [tQuay, 'worried']]} />
-      <Luna says={[{at: 150, out: DUR, text: 'Quay đầu tốn nhịp. Bánh chỉ tiến được à?'}]} mat={[[0, 'calm'], [150, 'thinking']]} at={100} />
+      <Luna says={[{at: tQuay + 6, out: DUR, text: 'Quay đầu tốn nhịp. Bánh chỉ tiến được à?'}]} mat={[[0, 'calm'], [tQuay, 'thinking']]} at={100} />
     </Kho>
   );
 };
@@ -322,17 +322,18 @@ const SAN_KHO_6 = ['#...#', '#o.o#', '#...#', '#o.o#', '#...#', '#...#', '#...#'
 const NHIP_QUAY = [N.move(), N.move(), N.move(), N.turnLeft(), ...N.pick(), N.turnRight()];   // kẹp thùng bên hông: phải quay cả xe, mất thêm hai nhịp
 const G6Thu: React.FC = () => {
   const f = useCurrentFrame();
+  const tQuay = khungNhip(7, 60);
   return (
     <Shake hits={[8, 20]} amp={16}>
       <Kho>
         <SaBan san={SAN_KHO_6} batDau={{x: 2, y: 6, huong: 0}} nhip={NHIP_QUAY} vo="kho" khongSan anhXe="kep-cam" tu={60}>
-          {(k) => f >= khungNhip(7, 60) ? <ChuO k={k} x={2} y={3} chu="+2 nhịp…" at={khungNhip(7, 60)} den={DUR} mau={C.warn} co={64} /> : null}
+          {(k) => f >= tQuay ? <ChuO k={k} x={2} y={3} chu="+2 nhịp…" at={tQuay} den={DUR} mau={C.warn} co={64} /> : null}
         </SaBan>
         <ChuNay chu="RẦM!" at={8} den={60} x={540} y={300} co={110} />
         <DongHo tu={GIO(15, 20)} den={GIO(15, 50)} dai={DUR} />
         <NhanGoi so={6} ten="Tay xoay" />
         <Tung dang="tu-hoang" says={S1('Kệ sập! Thùng tràn ra lối!')} />
-        <Sola says={S2('Quay cả xe mỗi thùng, lâu quá!')} mat={[[0, 'worried']]} />
+        <Sola says={[{at: tQuay + 6, out: DUR, text: 'Quay cả xe mỗi thùng, lâu quá!'}]} mat={[[0, 'worried']]} />
       </Kho>
     </Shake>
   );
@@ -370,7 +371,7 @@ const G7Thu: React.FC = () => {
       </SaBan>
       <DongHo tu={GIO(16)} den={GIO(16, 5)} dai={DUR} />
       <NhanGoi so={7} ten="Cảm biến bên" />
-      <Sola says={[{at: 14, out: 118, text: 'Hai lối y hệt… rẽ trái!'}, {at: 126, out: DUR, text: 'Toang, ngõ cụt rồi!'}]} mat={[[0, 'thinking'], [tRe, 'confident'], [tCut, 'shocked']]} />
+      <Sola says={[{at: 14, out: 118, text: 'Hai lối y hệt… rẽ trái!'}, {at: tCut + 6, out: DUR, text: 'Toang, ngõ cụt rồi!'}]} mat={[[0, 'thinking'], [tRe, 'confident'], [tCut, 'shocked']]} />
     </Kho>
   );
 };
