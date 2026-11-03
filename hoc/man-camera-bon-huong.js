@@ -181,7 +181,7 @@
       loiSai: [
         { moTa: 'Chỉ qua một bậc', baiLam: bai(['go_up()', 'm = color("left")', 'if m == "green":', '    go_left()', 'else:', '    go_right()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Mỗi vòng: bay lên một ô, rồi hỏi color("left") == "green" để chọn trái hay phải.', 'Hai bậc làm giống hệt nhau: dùng for i in range(2).']
+      goiY: ['Mỗi vòng: bay lên một ô, đọc m = color("left"), rồi hỏi m == "green" để chọn trái hay phải.', 'Hai bậc làm giống hệt nhau: dùng for i in range(2).']
     }),
 
     man({
@@ -235,7 +235,7 @@
     manChe({
       so: 2, ten: 'Hàm chạy tới màu', hang: 'lam-quen', mucTieu: 'bong-mo', taoHam: ['go_to'], hamCuaEmCan: [],
       deBai: 'Chế go_to(col): bay sang phải cho tới khi ô bên phải có màu col. Chương trình chính đã khóa: go_to("red"), drone phải dừng đúng chỗ bóng mờ trước ô đỏ. Hai sân.',
-      veMaMau: 'Tạo go_to với một đối số col. So color("right") với col.',
+      veMaMau: 'Tạo go_to với một đối số col. Đọc m = color("right") rồi so m với col.',
       san: [['....r.'], ['..r...']],
       batDau: [{ x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }],
       bongMo: [{ x: 3, y: 0 }, { x: 1, y: 0 }],
@@ -336,7 +336,7 @@
     manChe({
       so: 8, ten: 'Bay tới mẫu màu rồi gieo', hang: 'bien-the', mucTieu: 'to-hinh', chinhCoDinh: false, hamCuaEmCan: ['sort_by_color'],
       deBai: 'Ô mẫu màu nằm ở hàng trên, xa gần mỗi sân một khác. Bay sang phải cho tới khi ô phía trên có màu (khác "none"), rồi gieo hạt đúng phía bằng sort_by_color(). Tự viết chương trình chính. Hai sân.',
-      veMaMau: 'Chương trình có sẵn mới gọi sort_by_color(). Thêm vòng while bay sang phải khi color("up") == "none".',
+      veMaMau: 'Chương trình có sẵn mới gọi sort_by_color(). Đọc m = color("up"), thêm vòng while bay sang phải khi m == "none".',
       san: [['...r.', '.....'], ['..b..', '.....']],
       hinh: [['.....', '....r'], ['.....', '.b...']],
       batDau: { x: 0, y: 1, huong: 0 },
@@ -347,7 +347,7 @@
         { moTa: 'Gieo ngay từ đầu: phía trên chưa có màu mẫu', baiLam: bai(['sort_by_color()']), phaiCoMa: [] },
         { moTa: 'Chỉ bay cố định một ô: chưa tới dưới ô mẫu', baiLam: bai(['go_right()', 'sort_by_color()']), phaiCoMa: [] }
       ],
-      goiY: ['Còn bay khi ô phía trên chưa có màu: color("up") == "none".', 'Dừng rồi thì ô mẫu nằm ngay phía trên drone: gọi sort_by_color().']
+      goiY: ['Còn bay khi ô phía trên chưa có màu: m == "none". Bay xong một ô thì đọc lại m = color("up").', 'Dừng rồi thì ô mẫu nằm ngay phía trên drone: gọi sort_by_color().']
     }),
 
     manChe({
