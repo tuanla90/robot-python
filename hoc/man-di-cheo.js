@@ -244,11 +244,11 @@
       id: 6507, chuong: 'di-cheo', so: 7, ma: 'di-cheo.7',
       ten: 'Radar báo lách chéo', hang: 'bien-the',
       hamCuaEmCan: ['move'],
-      deBai: 'Trên 4 bước tiến lên cờ, có chỗ bị vách đá `#` chắn ngay trước mặt (`g[0][1] == "#"`). Mỗi bước hãy quét `g = radar()`, nếu `g[0][1] == "#"` thì `diag_right()` để lách sang cột bên, còn không thì `move()`.',
+      deBai: 'Trên 4 bước tiến lên cờ, có chỗ bị vách đá `#` chắn ngay trước mặt (ô `g[0][1]` là `"#"`). Mỗi bước hãy quét `g = radar()`, đọc `t = g[0][1]`, nếu `t == "#"` thì `diag_right()` để lách sang cột bên, còn không thì `move()`.',
       veMaMau: 'Chương trình có sẵn mới xử lý nhánh if khi gặp vách đá. Hãy thêm nhánh else để tiến thẳng khi đường trống.',
       goiY: [
         'Trong vòng lặp for i in range(4):, gọi g = radar().',
-        'Dùng if g[0][1] == "#": gọi diag_right(), nhánh else: gọi move().'
+        'Đọc t = g[0][1], dùng if t == "#": gọi diag_right(), nhánh else: gọi move().'
       ],
       san: [
         [
@@ -302,11 +302,11 @@
     manDC({
       id: 6508, chuong: 'di-cheo', so: 8, ma: 'di-cheo.8',
       ten: 'Chọn ngả lách chéo', hang: 'bien-the',
-      deBai: 'Đường lên mỏ phải đi chéo 4 bước qua các khe đá. Mỗi bước hãy quét `g = radar()`, kiểm tra `if g[0][2] != "#":` thì `diag_right()`, ngược lại thì `diag_left()`.',
+      deBai: 'Đường lên mỏ phải đi chéo 4 bước qua các khe đá. Mỗi bước hãy quét `g = radar()`, đọc `t = g[0][2]`, kiểm tra `if t != "#":` thì `diag_right()`, ngược lại thì `diag_left()`.',
       veMaMau: 'Chương trình có sẵn mới gọi diag_right() khi góc phải trước mặt trống. Hãy thêm nhánh else gọi diag_left().',
       goiY: [
         'Ô chéo tiến-phải của R1 khi hướng lên ứng với g[0][2] trong lưới 3x3 của radar().',
-        'Nếu g[0][2] != "#": gọi diag_right(), else: gọi diag_left().'
+        'Đọc t = g[0][2]; nếu t != "#": gọi diag_right(), else: gọi diag_left().'
       ],
       san: [
         [
@@ -391,11 +391,11 @@
       ten: 'Trùm lách chéo mỏ đá', hang: 'trum',
       huyHieu: { ma: 'di-cheo', ten: 'Bánh Chéo Vách Đá' },
       hamCuaEmCan: ['move', 'forward', 'lob', 'fill_pit'],
-      deBai: 'Đường mỏ dài 3 chặng (mỗi chặng tiến 2 hàng) rồi bước thêm 1 ô cuối vào cờ. Đầu mỗi chặng trong vòng lặp 3 lần, hãy quét `g = radar()`: nếu trước mặt có đá (`g[0][1] == "V"`) thì gọi `fill_pit()` để hất đá lấp hố rồi tiến 2 ô; ngược lại (gặp trụ đá `#`) thì gọi `diag_right()` rồi `diag_left()` để lách qua trụ đá. Cuối cùng gọi `move()` vào cờ.',
+      deBai: 'Đường mỏ dài 3 chặng (mỗi chặng tiến 2 hàng) rồi bước thêm 1 ô cuối vào cờ. Đầu mỗi chặng trong vòng lặp 3 lần, hãy quét `g = radar()`: nếu trước mặt có đá (ô `g[0][1]` là `"V"`) thì gọi `fill_pit()` để hất đá lấp hố rồi tiến 2 ô; ngược lại (gặp trụ đá `#`) thì gọi `diag_right()` rồi `diag_left()` để lách qua trụ đá. Cuối cùng gọi `move()` vào cờ.',
       veMaMau: 'Chương trình có sẵn mới viết nhánh if gọi fill_pit(). Hãy hoàn thiện nhánh else lách chéo và lệnh move() ở cuối.',
       goiY: [
         'Dùng vòng lặp for i in range(3): cho 3 chặng.',
-        'Trong vòng lặp: g = radar(), nếu g[0][1] == "V": gọi fill_pit(), else: gọi diag_right() rồi diag_left(). Ngoài vòng lặp gọi move().'
+        'Trong vòng lặp: g = radar(), t = g[0][1], nếu t == "V": gọi fill_pit(), else: gọi diag_right() rồi diag_left(). Ngoài vòng lặp gọi move().'
       ],
       san: [
         [
@@ -645,11 +645,11 @@
       taoHam: ['auto_bypass'],
       chinhCoDinh: true,
       hamCuaEmCan: ['move', 'forward', 'bypass_r'],
-      deBai: 'Mỗi chặng R1 cần tiến lên 2 hàng. Hãy viết hàm `auto_bypass()`: quét `g = radar()`, nếu ô ngay trước mặt là trụ đá (`g[0][1] == "#"`) thì gọi `bypass_r()`, ngược lại thì gọi `forward(2)`.',
+      deBai: 'Mỗi chặng R1 cần tiến lên 2 hàng. Hãy viết hàm `auto_bypass()`: quét `g = radar()`, nếu ô ngay trước mặt là trụ đá (ô `g[0][1]` là `"#"`) thì gọi `bypass_r()`, ngược lại thì gọi `forward(2)`.',
       veMaMau: 'Chương trình chính đã lặp 3 lần auto_bypass(). Hãy viết thân hàm auto_bypass() kiểm tra radar().',
       goiY: [
         'Trong def auto_bypass():, g = radar().',
-        'Nếu g[0][1] == "#": gọi bypass_r(), else: gọi forward(2).'
+        'Đọc t = g[0][1]; nếu t == "#": gọi bypass_r(), else: gọi forward(2).'
       ],
       san: [
         [
