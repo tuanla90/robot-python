@@ -187,9 +187,9 @@
     return null;
   }
 
-  var LOAI_VAT = { 'lua': 'đám cháy (còn cháy thì chặn như tường, dập tắt rồi mới đi qua)', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước phun trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)', 'da-chuong': 'khối đá chuông (phát đúng nốt cộng hưởng bằng loa thì đá nứt vỡ mở đường)' };
+  var LOAI_VAT = { 'lua': 'đám cháy (còn cháy thì chặn như tường, dập tắt rồi mới đi qua)', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước phun trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)', 'da-chuong': 'khối đá chuông (phát đúng nốt cộng hưởng bằng loa thì đá nứt vỡ mở đường)', 'nguoi': 'người cần cứu (robot không đi vào ô có người; người tự đi về trạm cứu khi lối trống)' };   // M9C1
   // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
-  var TEN_CHAN_NGAN = { 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
+  var TEN_CHAN_NGAN = { 'nguoi': 'người cần cứu', 'dong-doi': 'robot đồng đội', 'rao': 'hàng rào thấp', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng',
     'vat': 'vật nằm đất', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'gam-thap': 'gầm thấp', 'dem-tu': 'ô đệm từ', 'lua': 'đám cháy', 'bo': 'bờ', 'nuoc': 'mặt nước', 'cong': 'cống đang đóng', 'van': 'van cống', 'da-chuong': 'khối đá chuông' };
   // BẾN SÔNG (san-hoc.js phần BẾN SÔNG): thứ chặn vật nổi / dây lưới / xuồng
   LOAI_VAT['bo'] = 'bờ (xuồng chỉ đi được trên mặt nước)'; LOAI_VAT['nuoc'] = 'mặt nước (xe cạn không xuống nước được; chỉ đi lên bè đang nằm yên trên nước êm)';
@@ -575,9 +575,16 @@
             : 'dòng này kết thúc bằng dấu ":" nên phải có ít nhất một dòng thụt vào ngay bên dưới làm thân.';
         }
         them(l.loai === 'syntax-error' ? 'loi-cu-phap' : 'loi-thut-le', 'Ở ' + viTri(mm) + ': ' + td, { cho: cho(mm) });
+      } else if (l.ma === 'cham-nguoi') {                                   // M9C1 luật P: lệnh nhắm vào ô có người không làm, chương trình dừng
+        them('cham-nguoi', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Ô (' + l.o.x + ', ' + l.o.y + ') đang có người cần cứu: robot không kẹp, hút, ném, phun hay móc vào người. Chỉ tay lưới mới kéo được người dưới nước; trên cạn người tự đi về trạm cứu khi lối trống.', { cho: cho(m), kieu: l.kieu, o: l.o });
       } else {
         them('loi-chay', 'Ở ' + viTri(m) + ': ' + l.thongDiep, { cho: cho(m), loaiCore: l.loai });
       }
+    }
+    // M9C1 luật P: thua nhẹ — người trôi xa (mép sân / cống mở / thác)
+    var troiXa = res.suKien.filter(function (e) { return e.ma === 'nguoi-troi-xa'; })[0];
+    if (troiXa && res.dungSom === 'nguoi-troi-xa') {
+      them('nguoi-troi-xa', 'Ở nhịp ' + troiXa.nhip + ', ' + troiXa.thongDiep + ' Người trôi theo dòng tới ' + (troiXa.vi === 'cong' ? 'cống đang mở' : troiXa.vi === 'thac' ? 'thác' : 'mép sân') + ' ở ô (' + troiXa.o.x + ', ' + troiXa.o.y + ') mà chưa được lưới kéo vào bờ. Tung lưới sớm hơn, hay chặn dòng trước.', { nhip: troiXa.nhip, o: troiXa.o, vi: troiXa.vi });
     }
     if (l && l.loai === 'infinite-loop') {
       var mw = viTriWhile(g, l.dong);
@@ -1380,7 +1387,13 @@
             { robot: { x: rc.x, y: rc.y, huong: rc.huong } });
         }
       }
-    } else if (!sanThu && !res.thang && !res.loi && res.dungSom !== 'doi-thu-thang' && res.dungSom !== 'dam-tuong') {
+    } else if (!sanThu && !res.thang && !res.loi && res.dungSom !== 'nguoi-troi-xa' && res.nguoi && res.nguoi.length && res.nguoi.some(function (n) { return !n.toiTram; }) && (man.mucTieu === 'cuu-nguoi' || res.toiCo || (res.vet.length && res.vet[res.vet.length - 1].suKien && res.vet[res.vet.length - 1].suKien.some(function (e) { return e.ma === 'nguoi-cho' || e.ma === 'nguoi-troi' || e.ma === 'nguoi-troi-chan'; })))) {
+      var conNg = res.nguoi.filter(function (n) { return !n.toiTram; });        // M9C1 luật P: chạy xong mà còn người chưa tới trạm cứu
+      var choNg = (res.vet.length && res.vet[res.vet.length - 1].suKien || []).filter(function (e) { return e.ma === 'nguoi-cho'; })[0];
+      them('chua-cuu-nguoi', 'Chương trình chạy xong mà còn ' + conNg.length + ' người chưa tới trạm cứu (người ở ô ' + conNg.map(function (n) { return '(' + n.x + ', ' + n.y + ')' + (n.can ? '' : ' dưới nước'); }).join(', ') + ').' +
+        (choNg ? ' Người đang chờ vì ô (' + choNg.den.x + ', ' + choNg.den.y + ') trên đường về trạm có ' + (TEN_CHAN_NGAN[choNg.vat] || (choNg.vat === 'robot' ? 'robot' : choNg.vat === 'vat' ? 'vật nằm đất' : choNg.vat)) + ': dọn lối hay cho robot đi chỗ khác rồi chờ thêm nhịp.' : conNg.some(function (n) { return !n.can; }) ? ' Người dưới nước cần được tay lưới kéo tới ô nước sát bờ (cast_net rồi drop_net sát bờ, hay xe tời bờ kéo vào) thì mới tự lên bờ.' : ' Chờ thêm nhịp (wait()) cho người đi tới trạm.'),
+        { conNguoi: conNg.map(function (n) { return { x: n.x, y: n.y, can: n.can }; }) });
+    } else if (!sanThu && !res.thang && !res.loi && res.dungSom !== 'doi-thu-thang' && res.dungSom !== 'dam-tuong' && res.dungSom !== 'nguoi-troi-xa') {
       var r = res.robot;
       them('chua-toi-co', 'Chương trình chạy xong mà robot chưa tới cờ: robot đang ở ô (' + r.x + ', ' + r.y + ')' +
         (man.loaiRobot === 'nhen' || man.loaiRobot === 'drone' || man.loaiRobot === 'cau' ? '' : ', quay mặt hướng ' + SanHoc.TEN_HUONG[r.huong]) +
@@ -1566,6 +1579,7 @@
         ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         dong: lm.dong || undefined,                                         // BẾN SÔNG: lớp dòng chảy (san-hoc.js phần BẾN SÔNG)
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
+        nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1 người cần cứu, trạm cứu, thác
         damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
@@ -1580,7 +1594,8 @@
         chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
         pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua, son: res.son, daSon: res.daSon, hinh: res.hinh, sonBanDau: res.sonBanDau,
         loa: res.loa, daChoi: res.daChoi, dieu: res.dieu, dieuDung: res.dieuDung, dieuBatDau: res.dieuBatDau,
-        gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau });
+        gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau,
+        nguoi: res.nguoi, nguoiBanDau: res.nguoiBanDau, tramCuu: res.tramCuu });   // M9C1
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
@@ -1708,6 +1723,7 @@
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         dong: lm.dong || undefined,                                         // BẾN SÔNG
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
+        nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
         ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         doi: mans.map(function (mi, i) {
@@ -1740,7 +1756,8 @@
         chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
         pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: null, diQua: [], daSon: res.daSon, hinh: res.hinh,
         loa: res.loa, daChoi: res.daChoi, dieu: res.dieu, dieuDung: res.dieuDung, dieuBatDau: res.dieuBatDau,
-        gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau });
+        gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau,
+        nguoi: res.nguoi, nguoiBanDau: res.nguoiBanDau, tramCuu: res.tramCuu });   // M9C1
       if (!res.thang) thangHet = false;
       if (res.nhip > nhipMax) nhipMax = res.nhip;
       nhipTong += res.nhip;
