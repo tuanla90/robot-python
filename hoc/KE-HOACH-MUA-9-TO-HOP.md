@@ -66,6 +66,8 @@ Ký hiệu: **●** part gốc của cỗ máy · **✔** ghép được theo ba
 | Drone | ✗ | ✗ | ✗ | · | ✗ | ● bụng / bốn hướng | ★ L11 | · |
 | Cần cẩu | ✗ | ✗ | ★ L13 | ● | ✗ | ★ L13 bụng (ô đầu cần) | ✗ | ✗ |
 
+Khi làm lõi (gói M9A, 3/11) bảng một chỗ ở `hoc/bang-ghep.js` tách thêm: kẹp / kẹp xoay (cần cẩu + xoay ✗, nhện + xoay ✗), camera trước / bốn hướng / bụng, và giữ part cũ **màu bụng**. **Nhện + camera trước ✔** (ngoại lệ, như cảm biến từ 31/10: đọc theo cạnh trước cố định) vì màn `rap-nao.10` đang cho nhện chọn camera. Tổng 160 ô: ● 16 · ✔ 60 · ★ 21 · · 6 · ✗ 57.
+
 Tính nhanh: theo bảng, mùa 9 mở **8 thân · 8 tay · 8 cảm biến**, nhưng mỗi màn chương 2 chỉ đưa **2–3 thẻ mỗi khe** (mục 7, đường cong).
 
 ## 4. Tổ hợp lai mới (★) và tương tác mới
