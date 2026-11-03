@@ -292,7 +292,7 @@ const G5Thu: React.FC = () => {
         <ChuNay chu="KẸT!" at={68} den={135} x={tamO(2, 3).x + 130} y={tamO(2, 3).y} />
         <DongHoApSuat tu={66} den={72} />
         <NhanGoi so={5} ten="Lưỡi ủi" />
-        {f >= 85 ? <Hanh says={[{at: 92, out: 220, text: 'Kiện máy bằng sắt đặc đấy, mũi xe tròn đẩy sao thẳng được!'}]} at={85} /> : null}
+        {f >= 85 ? <Hanh says={[{at: 92, out: 220, text: 'Kiện sắt đặc, mũi xe tròn đẩy sao thẳng!'}]} at={85} /> : null}
       </NenHienTruong>
     </Shake>
   );
@@ -327,7 +327,7 @@ const G6Thu: React.FC = () => {
       <CodeBox lines={['spray()', 'move()', 'spray()']} x={270} y={145} w={440} size={30} title="Một mức phun nhẹ" />
       <DongHoApSuat tu={72} den={82} />
       <NhanGoi so={6} ten="Hai mức phun" />
-      {f >= 132 ? <Hanh dang="hanh-hoang" says={[{at: 140, out: 255, text: 'Van trong đó kẹt cứng lắm, phun nhẹ thế không ăn thua!'}]} at={132} /> : null}
+      {f >= 132 ? <Hanh dang="hanh-hoang" says={[{at: 140, out: 255, text: 'Van kẹt cứng, phun nhẹ không ăn thua!'}]} at={132} /> : null}
     </NenHienTruong>
   );
 };
@@ -365,7 +365,7 @@ const G7Thu: React.FC = () => {
       <CodeBox lines={['move()', 'left_move()', 'spray("low")']} x={260} y={145} w={480} size={30} title="Đi mù không hỏi cảm biến" />
       <DongHoApSuat tu={84} den={89} gap />
       <NhanGoi so={7} ten="Dò nguồn nhiệt" />
-      {f >= 100 ? <Hanh dang="hanh-sot-ruot" says={[{at: 108, out: 235, text: 'Khói mù thế này, ổ nóng đổi chỗ liên tục, đi mò sao trúng!'}]} at={100} /> : null}
+      {f >= 100 ? <Hanh dang="hanh-sot-ruot" says={[{at: 108, out: 235, text: 'Khói mù, ổ nóng đổi chỗ, đi mò sao trúng!'}]} at={100} /> : null}
     </NenHienTruong>
   );
 };
@@ -415,7 +415,7 @@ const G8Thu: React.FC = () => {
         </div>
         <DongHoApSuat tu={74} den={78} />
         <NhanGoi so={8} ten="Tiếp vận" />
-        {f >= 92 ? <Hanh dang="hanh-tin" says={[{at: 100, out: 235, text: 'Phải mở cửa rồi canh băng chuyền mới đưa thùng vào được!'}]} at={92} /> : null}
+        {f >= 92 ? <Hanh dang="hanh-tin" says={[{at: 100, out: 235, text: 'Mở cửa trước, canh băng chuyền đưa thùng vào!'}]} at={92} /> : null}
       </NenHienTruong>
     </Shake>
   );
@@ -464,7 +464,7 @@ const G9Thu: React.FC = () => {
       <ChuNay chu="BỊ CHẮN!" at={105} den={165} x={tamO(2, 2).x + 140} y={tamO(2, 2).y} />
       <DongHoApSuat tu={82} den={90} gap />
       <NhanGoi so={9} ten="R2 tiếp viện" />
-      <Sola says={[{at: 112, out: 230, text: 'Một mình R1 không vừa giữ băng chuyền vừa phun van tổng được!'}]} mat={[[0, 'worried'], [105, 'shocked']]} />
+      <Sola says={[{at: 112, out: 230, text: 'Một mình R1 sao vừa giữ băng chuyền vừa phun!'}]} mat={[[0, 'worried'], [105, 'shocked']]} />
     </NenHienTruong>
   );
 };
@@ -504,7 +504,7 @@ const G10Mo: React.FC = () => (
     <Xe anh="du" moc={[[0, 1, 5.4, -90]]} />
     <DongHoApSuat tu={94} den={98} gap />
     <NhanGoi so={10} ten="Xuất xưởng" />
-    <Hanh dang="hanh-sot-ruot" says={[{at: 10, out: 145, text: 'Áp suất lên tới đỉnh rồi, phải hạ nhiệt cả ba khu một mạch!'}]} />
+    <Hanh dang="hanh-sot-ruot" says={[{at: 10, out: 145, text: 'Áp suất chạm đỉnh, hạ nhiệt ba khu một mạch!'}]} />
   </NenHienTruong>
 );
 const ThaTay: React.FC = () => {
