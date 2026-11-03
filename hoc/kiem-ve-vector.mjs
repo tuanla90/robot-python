@@ -858,10 +858,10 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
     for (const than of ['hai-banh', 'xich', 'nhen', 'omni']) for (const h of [0, 1, 2, 3]) {
       VV.xoaDem(); const a = VV.robot({ than }, {}, h, 84).getContext().lenh.join('\n'), b = VV.robot({ than, camBien: [{ ma: 'camera', o: 'tren' }] }, {}, h, 84).getContext().lenh.join('\n');
       if (!b.startsWith(a.replace(/\nrestore(\(\))?$/, ''))) camSai.push(than + ' h' + h + ': camera đổi phần thân / mắt');
-      const p = VV.diemOngKinh({ than, camBien: [{ ma: 'camera', o: 'tren' }] }, h, 84), dx = [0, 1, 0, -1][h], dy = [-1, 0, 1, 0][h];
+      const dung = VV.lay('than', than).thanDung, p = VV.diemOngKinh({ than, camBien: [{ ma: 'camera', o: 'tren' }] }, h, 84), dx = dung ? 0 : [0, 1, 0, -1][h], dy = dung ? 1 : [-1, 0, 1, 0][h];   // thanDung (nhện, 3/11): thân và camera luôn đứng thẳng, đuôi luôn ở trên
       if (!p || ((p.x - 42) * dx + (p.y - 42) * dy) > -8) camSai.push(than + ' h' + h + ': ống kính không ở phía đuôi');
     }
-    kiem('(13d) camera KHÔNG còn đổi mắt (mắt luôn là mắt cảm xúc): hình có camera = hình không camera + khối camera vẽ thêm; ống kính ở phía ĐUÔI sau xoay (4 thân có hướng × 4 hướng)', camSai.length === 0, camSai.slice(0, 4).join('; '));
+    kiem('(13d) camera KHÔNG còn đổi mắt (mắt luôn là mắt cảm xúc): hình có camera = hình không camera + khối camera vẽ thêm; ống kính ở phía ĐUÔI sau xoay (4 thân có hướng × 4 hướng; nhện đứng thẳng: đuôi luôn ở trên)', camSai.length === 0, camSai.slice(0, 4).join('; '));
   }
 
   /* e. cảm biến dính vỏ (dùng VeVector của Node: lỗi giả dời ổ hông áp vào đây) */
@@ -1047,9 +1047,9 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
       return { nhac: new Set(chuanBi.map((t) => t.nhac)), lan: new Set(di.map((t) => t.lan).filter((x) => x !== undefined)), di: new Set(di.filter((t) => t.lan > 0).map((t) => t.di)), sau: ghi.slice(-1)[0] || {} };
     };
     const KQ = [
-      ['nhện không tay sang PHẢI (vẽ hướng 0 → hệ thân −x)', { than: 'nhen', tay: null, camBien: [] }, 0, { x: 1, y: 1 }, { x: 2, y: 1 }, 3],
-      ['nhện không tay XUỐNG (hệ thân −y, phía đuôi)', { than: 'nhen', tay: null, camBien: [] }, 0, { x: 1, y: 1 }, { x: 1, y: 2 }, 2],
-      ['nhện tay kẹp quay PHẢI, đi phải (về phía mũi +y)', { than: 'nhen', tay: 'kep', camBien: [] }, 1, { x: 1, y: 1 }, { x: 2, y: 1 }, 0]
+      ['nhện không tay sang PHẢI (thân đứng thẳng thanDung → hệ thân +x)', { than: 'nhen', tay: null, camBien: [] }, 0, { x: 1, y: 1 }, { x: 2, y: 1 }, 1],
+      ['nhện không tay XUỐNG (hệ thân +y, phía mũi)', { than: 'nhen', tay: null, camBien: [] }, 0, { x: 1, y: 1 }, { x: 1, y: 2 }, 0],
+      ['nhện tay kẹp quay PHẢI, đi phải (thân vẫn đứng thẳng → hệ thân +x)', { than: 'nhen', tay: 'kep', camBien: [] }, 1, { x: 1, y: 1 }, { x: 2, y: 1 }, 1]
     ], tom = [];
     for (const [ten, robot, h, tu, den, diMong] of KQ) {
       const k = await buoc(robot, h, tu, den);

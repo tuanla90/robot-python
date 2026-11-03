@@ -6,7 +6,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    mở xuống (hệ màn hình: drone không xoay), gợn từ trường dưới U. Vật hút / treo do san-ve.js vẽ (veVatTu, veDuoiDrone).
    NAM CHÂM BỤNG NHỆN (P1 mùa 3, 29/10; s.duoi + s.than 'nhen', chỗ treo oTayDuoi (50, 42) = giữa vỏ phía đuôi, dưới dải mắt; vẽ quanh điểm neo (50, 50) nên đĩa nằm đúng oTayDuoi): ĐĨA nam châm tròn nhìn từ trên
    (đế trắng viền chàm, vành bạc, lõi tròn màu cực: N đỏ / S xanh dương / chưa khai: nửa đỏ nửa xanh), đè lên giữa vỏ nhện như nam châm treo của drone đè lên thân drone;
-   s.bat: vòng gợn từ trường quanh đĩa theo màu cực. Thân nhện quay 180° ở hướng 0 nên đĩa đối xứng tròn, không lệch. Vật dính do san-ve.js vẽ dưới thân (veDuoiNhen). */
+   s.bat: vòng gợn từ trường quanh đĩa theo màu cực. Thân nhện và nam châm bụng luôn đứng thẳng theo màn hình (thanDung, 3/11), hướng nào cũng vậy. Vật dính do san-ve.js vẽ dưới thân (veDuoiNhen). */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   function mauCuc(cuc, ben) { return cuc === 'N' ? BM.luatVatDo : cuc === 'S' ? BM.luatVatXanhDuong : (ben === 'trai' ? BM.luatVatXanhDuong : BM.luatVatDo); }

@@ -1400,8 +1400,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (!v._bo) v._bo = { x: Math.round(v.x), y: Math.round(v.y), di: null };
         var sx = v.x - v._bo.x, sy = v.y - v._bo.y, tien = Math.min(1, Math.abs(sx) + Math.abs(sy));
         if (v._bo.di === null && tien > 0.001) {
-          var a = VeVector.gocXoay(this.cfg.robot.tay ? v.d : 0), ux = Math.sign(sx), uy = Math.sign(sy);
-          var bx = Math.round(ux * Math.cos(a) + uy * Math.sin(a)), by = Math.round(-ux * Math.sin(a) + uy * Math.cos(a));
+          var bx = Math.sign(sx), by = Math.sign(sy);                                     // thân nhện luôn đứng thẳng (thanDung, 3/11): hệ thân = hệ màn hình
           v._bo.di = by > 0 ? 0 : bx > 0 ? 1 : by < 0 ? 2 : 3;
         }
         ttR.lan = (Math.round(tien * bac) / bac) % 1;

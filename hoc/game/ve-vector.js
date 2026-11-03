@@ -283,9 +283,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function gocXoay(huong) { huong = ((huong || 0) % 4 + 4) % 4; return ((huong + 2 + (loiGia.gocXoay ? 1 : 0)) % 4) * Math.PI / 2; }   // thân vẽ quay XUỐNG: lên = 180°, phải = 270°, xuống = 0°, trái = 90°
   /** Góc quay thật của nhóm: thân không có hướng mặt (drone, khongHuong) KHÔNG xoay — vẽ thẳng theo màn hình (như bộ pixel: drone luôn hướng 0, ảnh không xoay). */
   function gocCua(than, huong) { return than && than.khongHuong ? 0 : gocXoay(huong); }
-  /** Điểm (x, y) trong hệ của thân → toạ độ pixel trên canvas ô cạnh `canh` sau khi thu CO_THAN và xoay theo hướng (than: để biết drone không xoay). */
-  function diemTrenO(pt, huong, canh, than) {
-    var k = (canh / HE) * CO_THAN, a = gocCua(than, huong), dx = pt.x - TAM_THAN.x, dy = pt.y - TAM_THAN.y;
+  /** Điểm (x, y) trong hệ của thân → toạ độ pixel trên canvas ô cạnh `canh` sau khi thu CO_THAN và xoay theo hướng (than: để biết drone không xoay; dung: điểm trên thân đứng thẳng thanDung, không xoay). */
+  function diemTrenO(pt, huong, canh, than, dung) {
+    var k = (canh / HE) * CO_THAN, a = dung ? 0 : gocCua(than, huong), dx = pt.x - TAM_THAN.x, dy = pt.y - TAM_THAN.y;
     return { x: canh / 2 + (dx * Math.cos(a) - dy * Math.sin(a)) * k, y: canh / 2 + (dx * Math.sin(a) + dy * Math.cos(a)) * k };
   }
   /** Ổ `o` của thân trong cfg (sau xoay) trên canvas ô cạnh `canh` (tâm canvas = tâm thân); null nếu thân không có ổ đó. */
@@ -301,7 +301,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function diemOngKinh(cfg, huong, canh) {
     var t = lay('than', (cfg && cfg.than) || 'hai-banh'), cb = lay('cam-bien', 'camera');
     if (!t || !t.oCam || !cb || !doiCam(cfg && cfg.camBien).some(function (c) { return c.ma === 'camera'; })) return null;
-    return diemTrenO({ x: t.oCam.x + cb.ongKinh.x - cb.diemNeo.x, y: t.oCam.y + cb.ongKinh.y - cb.diemNeo.y }, huong, canh, t);
+    return diemTrenO({ x: t.oCam.x + cb.ongKinh.x - cb.diemNeo.x, y: t.oCam.y + cb.ongKinh.y - cb.diemNeo.y }, huong, canh, t, t.thanDung);
   }
   /** Hộp kính (x, y, w, h) mà thân vẽ qua H.kinh (đo một lần bằng cách cho thân vẽ lên canvas giả với H.kinh ghi lại): để biết chỗ hai mắt. */
   var kinhDem = {};
@@ -316,7 +316,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function diemMat(cfg, huong, canh) {
     var t = lay('than', (cfg && cfg.than) || 'hai-banh'), k = kinhCua(t); if (!k) return [];
     var ew = k.w * 0.1522, ey = k.y + k.h / 2;
-    return [k.x + k.w * 0.2174 + ew / 2, k.x + k.w * 0.6304 + ew / 2].map(function (ex) { return diemTrenO({ x: ex, y: ey }, huong, canh, t); });
+    return [k.x + k.w * 0.2174 + ew / 2, k.x + k.w * 0.6304 + ew / 2].map(function (ex) { return diemTrenO({ x: ex, y: ey }, huong, canh, t, t.thanDung); });
   }
   /** Dịch của tay trong hệ thân (ổ − điểm neo) và ổ đã dùng; null nếu không gắn được. */
   function dichTay(than, tay, cfg) {
@@ -388,15 +388,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var cv = taoCanvas(canhCv, canhCv), g = cv.getContext('2d'), k = (canh / HE) * CO_THAN;
       g.save(); g.translate(canhCv / 2, canhCv / 2); g.scale(k, k);
       if (!than.bongRieng) { elip(g, 2, 5, 33, 31); to(g, rgba(BM.vecVienRgb, 0.12)); }   // bóng đổ: lớp riêng, không xoay, lệch phải-dưới; drone có bóng riêng theo độ cao (san-ve.js veDuoiDrone)
-      g.rotate(gocCua(than, huong)); g.translate(-TAM_THAN.x, -TAM_THAN.y);
-      than.ve(g, sT, M, H);
-      if (tay) {
-        var d = dichTay(than, tay, cfg), sau = than.oGan.sau ? { x: than.oGan.sau.x - d.x, y: than.oGan.sau.y - d.y } : null;
+      var a = gocCua(than, huong), d = tay ? dichTay(than, tay, cfg) : null, tayDung = !!(than.thanDung && d && d.o === 'duoi');
+      g.rotate(a); g.translate(-TAM_THAN.x, -TAM_THAN.y);
+      function veTay() {
+        var sau = than.oGan.sau ? { x: than.oGan.sau.x - d.x, y: than.oGan.sau.y - d.y } : null;
         g.save(); g.translate(d.x, d.y); tay.ve(g, Object.assign({}, sTay, { than: than.ma, duoi: d.o === 'duoi', sau: sau }), M, H); g.restore();
       }
+      if (than.thanDung) { g.save(); g.translate(TAM_THAN.x, TAM_THAN.y); g.rotate(-a); g.translate(-TAM_THAN.x, -TAM_THAN.y); }   // thanDung (nhện, 3/11): thân luôn đứng thẳng theo màn hình (chân chống xuống, mắt phía dưới), nam châm bụng theo thân; tay / cảm biến vẫn xoay theo hướng
+      than.ve(g, sT, M, H);
+      if (tayDung) veTay();
+      if (than.thanDung) g.restore();
+      if (tay && !tayDung) veTay();
       cams.forEach(function (c) {                                                       // cảm biến: vẽ ở ổ (điểm neo trùng ổ), trên thân và tay; ra = phía ngoài (dấu x) của ổ
-        var cb = lay('cam-bien', c.ma), o = cb.oVe === 'cam' && than.oCam ? than.oCam : than.oGan[c.o];     // camera (gói V4): vẽ ở đuôi (than.oCam), ổ logic giữ nguyên
-        g.save(); g.translate(o.x - cb.diemNeo.x, o.y - cb.diemNeo.y);
+        var cb = lay('cam-bien', c.ma), laCam = cb.oVe === 'cam' && than.oCam, o = laCam ? than.oCam : than.oGan[c.o];     // camera (gói V4): vẽ ở đuôi (than.oCam), ổ logic giữ nguyên
+        g.save(); if (laCam && than.thanDung) { g.translate(TAM_THAN.x, TAM_THAN.y); g.rotate(-a); g.translate(-TAM_THAN.x, -TAM_THAN.y); }   // camera nằm trên vỏ: đứng thẳng theo thân thanDung
+        g.translate(o.x - cb.diemNeo.x, o.y - cb.diemNeo.y);
         cb.ve(g, Object.assign({}, sCb, { ben: c.o === 'hongTrai' ? 'trai' : c.o === 'hongPhai' ? 'phai' : null, o: c.o, ra: o.x >= TAM_THAN.x ? 1 : -1, than: than.ma }), M, H);
         g.restore();
       });
