@@ -19,6 +19,9 @@
    MÃ PART lấy đúng mã bộ phận của bộ vẽ vector game/ve-vector-*.js (VeVector.lay; V7c1: bộ pixel game/part không còn là nguồn; bảng DANH_MUC giữ thêm `ham` = lệnh gốc
    của bộ phận, máy kiểm so với VeVector.hamGoc và dữ liệu chụp hoc/du-lieu-chup-pixel.json): thân hai-banh · xich · omni · nhen · drone; tay kep · xoay · nam-cham · nem · hoi;
    cảm biến khoang-cach · mau · camera · camera-bay · và 'tu' = CẢM BIẾN TỪ, part riêng từ P1 mùa 3 29/10 (trước: part khoang-cach + hai hàm front_metal / front_pole; hình giống khoang-cach).
+   M9A (3/11, mùa 9 Về CLB): thêm thân gai · xuong · cau; tay son · loa · moc-cau · day-keo; não hong-ngoai · camera-4 · radar · am-thanh · quet-ma · dong-chay (8 × 9 × 11).
+   LUẬT GHÉP đọc từ hoc/bang-ghep.js (BangGhep.kiemGhep, một chỗ cho cả game; trạng thái ● ✔ ★ · ✗ + lý do ba câu); kiemGhep trả thêm ma 'lai-chua-co' (ô ★, kèm lai 'L1'…) và 'khong-mo' (ô ·).
+   Mục có `nangCap` (cần cẩu rail): lệnh chỉ lên khay khi màn khai trong man.hamGoc; `tenCu` (tay lưới tow…): tên cũ trong bộ vẽ, không lên khay.
 
    API (window.LapRap, hay module.exports trong Node; trong Node tự nạp game/ve-vector.js + các bộ phận vector):
      KHE                          ['than', 'tay', 'camBien']
@@ -54,20 +57,30 @@
   /* ------------------------------------------------------------------ danh mục */
   // loai: loaiRobot của thân trong lõi SanHoc ('banh' cho hai bánh). gia: xu (khởi điểm, chỉnh khi cân màn).
   // ham: các lệnh gốc part mở ra (đúng hamGoc của bộ phận vector; kiem-lap-rap.mjs so từng mục) — để apDung / macDinh chạy được cả lúc nạp màn, khi bộ vẽ chưa nạp.
+  // M9A (3/11): danh mục 8 thân × 9 tay × 11 não (mùa 9 Về CLB, KE-HOACH-MUA-9-TO-HOP.md mục 9.3). Năm thân / tay / não đầu giữ nguyên thứ tự, giá, câu "vượt" (màn rap-* đang dùng).
+  // nangCap: lệnh nâng cấp của part CHỈ lên khay khi màn khai nó trong man.hamGoc (như land / take_off của drone): rail của cần cẩu cần xuất phát trên ray R.
+  // tenCu: tên lệnh cũ còn trong hamGoc của bộ vẽ (tay lưới: tow / drop_tow / tether / untether), lõi không nhận → không lên khay.
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back'], BAY = ['go_up', 'go_down', 'go_left', 'go_right'], KHOANG_CACH = ['front_clear', 'left_clear', 'right_clear'];
   var THAN = [
     { ma: 'hai-banh', part: 'hai-banh', loai: 'banh', ten: 'Hai bánh', gia: 2, icon: 'denBanh', vuot: 'Đi, rẽ trên sàn phẳng', ham: BANH.concat(['wait']) },
     { ma: 'xich', part: 'xich', loai: 'xich', ten: 'Bánh xích', gia: 3, icon: 'denXich', vuot: 'Leo bậc, không trôi băng chuyền', ham: BANH.concat(['wait']) },
     { ma: 'omni', part: 'omni', loai: 'omni', ten: 'Bánh omni', gia: 4, icon: 'denTruot', vuot: 'Trượt ngang, không cần quay', ham: BANH.concat(['slide_left', 'slide_right', 'wait']) },
     { ma: 'nhen', part: 'nhen', loai: 'nhen', ten: 'Thân nhện', gia: 4, icon: 'denChan', vuot: 'Chui gầm, nhảy hố, leo bậc', ham: BAY.concat(['wait', 'crouch', 'stand']) },
-    { ma: 'drone', part: 'drone', loai: 'drone', ten: 'Thân drone', gia: 5, icon: 'denCanh', vuot: 'Bay qua rào, băng chuyền, vật', ham: BAY.concat(['wait', 'battery', 'land', 'take_off']) }
+    { ma: 'drone', part: 'drone', loai: 'drone', ten: 'Thân drone', gia: 5, icon: 'denCanh', vuot: 'Bay qua rào, băng chuyền, vật', ham: BAY.concat(['wait', 'battery', 'land', 'take_off']) },
+    { ma: 'gai', part: 'gai', loai: 'gai', ten: 'Bánh gai', gia: 4, icon: 'denBanh', vuot: 'Bám đá ướt, bùn trơn khi bung gai', ham: BANH.concat(['wait', 'retract_spikes', 'extend_spikes']) },
+    { ma: 'xuong', part: 'xuong', loai: 'xuong', ten: 'Xuồng', gia: 5, icon: 'denTruot', vuot: 'Đi trên nước, thả neo', ham: BANH.concat(['wait', 'anchor', 'unanchor']) },
+    { ma: 'cau', part: 'cau', loai: 'cau', ten: 'Cần cẩu', gia: 6, icon: 'denTayLen', vuot: 'Quay, vươn cần qua tường, nước', ham: ['swing_left', 'swing_right', 'extend', 'retract', 'wait'], nangCap: ['rail'] }
   ];
   var TAY = [
     { ma: 'kep', part: 'kep', ten: 'Tay kẹp', gia: 2, icon: 'denKepMo', vuot: 'Nhặt vật lên, thả xuống', ham: ['arm_down', 'arm_up', 'grab', 'release'] },
     { ma: 'xoay', part: 'xoay', ten: 'Tay kẹp xoay', gia: 3, icon: 'denXoay', vuot: 'Kẹp vật ở trước, trái, phải', ham: ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'] },
     { ma: 'nam-cham', part: 'nam-cham', ten: 'Nam châm', gia: 3, icon: 'denNamCham', vuot: 'Hút vật sắt, vật nam châm từ xa', ham: ['magnet_n', 'magnet_s', 'magnet_off'] },
     { ma: 'nem', part: 'nem', ten: 'Máy ném', gia: 3, icon: 'denNem', vuot: 'Ném vật qua rào, xa 1 đến 3 ô', ham: ['aim', 'throw', 'load'] },
-    { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Phun mạnh đẩy thùng nặng', ham: ['spray', 'spray_back'] }
+    { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Phun mạnh đẩy thùng nặng', ham: ['spray', 'spray_back'] },
+    { ma: 'son', part: 'son', ten: 'Bộ gieo hạt', gia: 3, icon: 'denSon', vuot: 'Gieo hạt, chấm màu ô đang đứng', ham: ['ink', 'dot', 'pen_down', 'pen_up'] },
+    { ma: 'loa', part: 'loa', ten: 'Loa', gia: 3, icon: 'denLoa', vuot: 'Phát nốt nhạc, phá đá chuông', ham: ['note', 'beat'] },
+    { ma: 'moc-cau', part: 'moc-cau', ten: 'Móc cẩu', gia: 4, icon: 'denKepDong', vuot: 'Nhấc, hạ container ở đầu cần', ham: ['pick_up', 'set_down', 'pick_up2'] },
+    { ma: 'day-keo', part: 'day-keo', ten: 'Tay lưới', gia: 3, icon: 'denTayXuong', vuot: 'Tung lưới kéo bè, vật nổi về mũi', ham: ['cast_net', 'drop_net', 'set_length'], tenCu: ['tow', 'drop_tow', 'tether', 'untether'] }
   ];
   // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu'): PART RIÊNG (P1 mùa 3 29/10; hình ve-vector-cam.js 'tu'), chỉ hai hàm front_metal / front_pole; trước đó là
   // part khoang-cach + hai hàm. Giá giữ 2 (rap-du.9 cách mẫu 'tu' không dùng front_clear nên kết quả cũ y nguyên).
@@ -76,7 +89,13 @@
     { ma: 'mau', part: 'mau', o: 'hong', ten: 'Màu bụng', gia: 2, icon: 'denCam', vuot: 'Đọc màu ô dưới bụng xe', ham: ['color'] },
     { ma: 'camera', part: 'camera', o: 'tren', ten: 'Camera trước', gia: 2, icon: 'denCam', vuot: 'Đọc màu và vật ở ô trước mặt', ham: ['color'] },
     { ma: 'tu', part: 'tu', o: 'hong', ten: 'Cảm biến từ', gia: 2, icon: 'denCam', vuot: 'Biết vật sắt hay cực nam châm', ham: ['front_metal', 'front_pole'] },
-    { ma: 'camera-bay', part: 'camera-bay', o: 'bung', ten: 'Camera bụng', gia: 2, icon: 'denCam', vuot: 'Drone thấy màu ô và vật dưới bụng', ham: ['look'] }
+    { ma: 'camera-bay', part: 'camera-bay', o: 'bung', ten: 'Camera bụng', gia: 2, icon: 'denCam', vuot: 'Drone thấy màu ô và vật dưới bụng', ham: ['look'] },
+    { ma: 'hong-ngoai', part: 'hong-ngoai', o: 'tren', ten: 'Hồng ngoại', gia: 2, icon: 'denCam', vuot: 'Đếm ô trống phía trước, đo nóng', ham: ['distance', 'warm'] },
+    { ma: 'camera-4', part: 'camera-4', o: 'tren', ten: 'Camera bốn hướng', gia: 3, icon: 'denCam', vuot: 'Đọc màu ô ở bốn hướng quanh xe', ham: ['color'] },
+    { ma: 'radar', part: 'radar', o: 'tren', ten: 'Radar tròn', gia: 3, icon: 'denCam', vuot: 'Thấy 3 × 3 ô quanh xe, dạng đá', ham: ['radar', 'shape'] },
+    { ma: 'am-thanh', part: 'am-thanh', o: 'tren', ten: 'Mic', gia: 2, icon: 'denCam', vuot: 'Nghe nốt chuông đá quanh xe', ham: ['hear', 'listen'] },
+    { ma: 'quet-ma', part: 'quet-ma', o: 'tren', ten: 'Đầu đọc mã', gia: 2, icon: 'denCam', vuot: 'Đọc số, cân container ở đầu cần', ham: ['read_code', 'weight'] },
+    { ma: 'dong-chay', part: 'dong-chay', o: 'tren', ten: 'Chong chóng', gia: 2, icon: 'denCam', vuot: 'Biết hướng, sức dòng chảy trước mũi', ham: ['flow_dir', 'flow'] }
   ];
   var DANH_MUC = { than: THAN, tay: TAY, camBien: CAM_BIEN };
 
@@ -98,9 +117,17 @@
     if (!vvNode) {
       var fs = require('fs'), path = require('path'), dir = path.join(__dirname, 'game');
       vvNode = require(path.join(dir, 've-vector.js'));
-      fs.readdirSync(dir).filter(function (n) { return /^ve-vector-(than|tay)-[\w-]+\.js$|^ve-vector-cam\.js$/.test(n); }).sort().forEach(function (n) { require(path.join(dir, n)); });
+      fs.readdirSync(dir).filter(function (n) { return /^ve-vector-(than|tay)-[\w-]+\.js$|^ve-vector-cam(-[\w-]+)?\.js$/.test(n); }).sort().forEach(function (n) { require(path.join(dir, n)); });   // M9A: cả ve-vector-cam-cang / cam-song (quet-ma, dong-chay)
     }
     return vvNode;
+  }
+  /** Bảng ghép một chỗ (bang-ghep.js): trình duyệt dùng window.BangGhep (choi.html nạp trước lap-rap.js), Node tự require. */
+  var bgNode = null;
+  function BG() {
+    var b = (typeof window !== 'undefined' && window.BangGhep) || (typeof globalThis !== 'undefined' && globalThis.BangGhep) || null;
+    if (b) return b;
+    if (!laNode) throw new Error('lap-rap.js cần bang-ghep.js nạp trước (window.BangGhep).');
+    return bgNode || (bgNode = require('./bang-ghep.js'));
   }
 
   /* ------------------------------------------------------------- một cách lắp */
@@ -122,29 +149,17 @@
   function tenKhe(c, khe) { return c[khe] ? tenCua(khe, c[khe]) : ''; }
 
   /**
-   * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). Luật = luật của VeVector.kiemGhep + luật của lõi SanHoc.chay (cấu hình robot):
-   *   drone: chỉ treo nam châm dưới bụng, không camera trước / cảm biến khoảng cách / cảm biến từ (không có mặt trước); camera bụng chỉ gắn lên drone;
-   *   nhện: tay kẹp hoặc nam châm (nam châm treo dưới bụng, mùa 3 gói 9; không tay xoay, máy ném, súng hơi), không cảm biến khoảng cách / từ (không có hướng mặt).
-   * Cuối cùng nhờ VeVector.kiemGhep xét lại (bắt luật ghép mới thêm vào bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
+   * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). M9A (3/11): luật đọc từ BẢNG GHÉP MỘT CHỖ bang-ghep.js (trước: các nhánh if riêng cho drone / nhện,
+   * câu báo cũ nay nằm trong bảng, y nguyên chữ). ma: 'khe-la' | 'ghep-sai' (ô ✗, lyDo theo ba câu) | 'lai-chua-co' (ô ★, kèm `lai` = mã L; gói B bật BangGhep.MO_LAI) | 'khong-mo' (ô ·).
+   * Cuối cùng nhờ VeVector.kiemGhep xét lại (ổ gắn thật của bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
    */
   function kiemGhep(c) {
     c = chuanCach(c);
     if (!c.than || !tim('than', c.than)) return { ok: false, ma: 'khe-la', lyDo: c.than ? 'Không có thân "' + c.than + '".' : 'Chưa chọn thân.', xung: ['than'] };
     if (c.tay && !tim('tay', c.tay)) return { ok: false, ma: 'khe-la', lyDo: 'Không có tay "' + c.tay + '".', xung: ['tay'] };
     if (c.camBien && !tim('camBien', c.camBien)) return { ok: false, ma: 'khe-la', lyDo: 'Không có cảm biến "' + c.camBien + '".', xung: ['camBien'] };
-    var sai = null;
-    var than = tenKhe(c, 'than'), tay = tenKhe(c, 'tay'), cam = tenKhe(c, 'camBien');
-    if (c.than === 'drone') {
-      if (c.tay && c.tay !== 'nam-cham') sai = { lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };
-      else if (c.camBien === 'khoang-cach' || c.camBien === 'tu' || c.camBien === 'camera') sai = { lyDo: 'Drone không có mặt trước để đo hay nhìn phía trước, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };
-    } else {
-      if (c.camBien === 'camera-bay') sai = { lyDo: 'Camera bụng chỉ gắn được lên drone.', xung: ['than', 'camBien'] };
-      else if (c.than === 'nhen') {
-        if (c.tay && c.tay !== 'kep' && c.tay !== 'nam-cham') sai = { lyDo: 'Nhện không có hướng mặt, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };     // nam châm: treo dưới bụng (mùa 3)
-        else if (c.camBien === 'khoang-cach') sai = { lyDo: 'Nhện không có hướng mặt, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };     // 31/10: cảm biến từ gắn được lên nhện (đo theo cạnh trước cố định)
-      }
-    }
-    if (sai) return { ok: false, ma: 'ghep-sai', lyDo: sai.lyDo, xung: sai.xung };
+    var b = BG().kiemGhep(c.than, c.tay, c.camBien);
+    if (!b.ok) { var kq = { ok: false, ma: b.ma, lyDo: b.lyDo, xung: b.xung }; if (b.lai) kq.lai = b.lai; return kq; }
     var vv = VV();
     if (vv) {
       try { vv.kiemGhep(cauHinhCua(c)); }
@@ -245,6 +260,11 @@
     if (!(c.than === 'drone' && coPinMan(man))) goc = goc.filter(function (h) { return h !== 'battery'; });
     // land / take_off: nâng cấp drone đáp đất để sạc (mùa 4 gói 5) chỉ khi màn mở nó trên khay
     if (!(c.than === 'drone' && (man.hamGoc || []).indexOf('land') >= 0)) goc = goc.filter(function (h) { return h !== 'land' && h !== 'take_off'; });
+    // M9A: lệnh nâng cấp (nangCap) của part mới chỉ lên khay khi màn khai nó trong man.hamGoc (cần cẩu rail: bệ phải xuất phát trên ray)
+    KHE.forEach(function (k) {
+      var d = c[k] ? tim(k, c[k]) : null;
+      (d && d.nangCap || []).forEach(function (h) { if ((man.hamGoc || []).indexOf(h) < 0) goc = goc.filter(function (x) { return x !== h; }); else if (goc.indexOf(h) < 0) goc.push(h); });
+    });
     return goc;
   }
   function apDung(man, cach) {
@@ -388,7 +408,7 @@
   function lenhCuaMoiPart() {
     if (tatCaLenh) return tatCaLenh;
     var kq = [];
-    KHE.forEach(function (k) { DANH_MUC[k].forEach(function (d) { d.ham.forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
+    KHE.forEach(function (k) { DANH_MUC[k].forEach(function (d) { d.ham.concat(d.nangCap || []).forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
     return (tatCaLenh = kq);
   }
   /** Chỉ số (từ 0) các dòng của `dong` gọi một lệnh gốc của part (mọi part trong danh mục) mà robot của `man` KHÔNG có; wait() thì thân nào cũng có. */
@@ -408,7 +428,7 @@
     KHE: KHE, TEN_KHE: TEN_KHE, DANH_MUC: DANH_MUC,
     tim: tim, tenCua: tenCua, moTa: moTa, chuanCach: chuanCach, giaCach: giaCach, cauHinhCua: cauHinhCua,
     kiemGhep: kiemGhep, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
-    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV
+    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV, bangGhep: BG
   };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.LapRap = API;
